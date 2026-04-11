@@ -1,0 +1,18 @@
+# nnU-Net v2 + CARE Myocardium — install into env_CARE:
+#   /overflow/htzhu/CARE/env_CARE/bin/pip install -r requirements-nnunet.txt
+#
+# PyTorch CUDA 12.4 (H100 / typical NVIDIA servers). PyPI remains default for other packages.
+--extra-index-url https://download.pytorch.org/whl/cu124
+torch>=2.1.0
+torchvision>=0.16.0
+#
+# CPU-only: pip uninstall -y torch torchvision && pip install torch torchvision --index-url https://download.pytorch.org/whl/cpu
+#
+nnunetv2>=2.5.0
+nibabel>=5.0.0
+SimpleITK>=2.3.0
+numpy>=1.26.0
+scipy>=1.11.0
+tqdm>=4.66.0
+batchgenerators>=0.25.0
+acvl-utils>=0.2.0
