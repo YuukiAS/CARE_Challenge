@@ -1,12 +1,14 @@
-# CARE `code/` entrypoints
+# `code/` — Slurm and benchmark entrypoints
 
-| Path | Purpose |
-|------|---------|
-| **nnUNet/** | nnU-Net **v2** (CARE challenge baselines): Dataset 501 / 502 |
-| **MyoPS-Net/** | [MyoPS-Net](https://github.com/QJYBall/MyoPS-Net) paper code |
-| **U-MyoPS/** | [U-MyoPS / myops](https://github.com/NanYoMy/myops) |
-| **CineMyoPS/** | [CineMyoPS](https://github.com/NanYoMy/CineMyoPS) paper repo (legacy nnU-Net v1), **not** the same as `nnUNet/run_CineMyoPS.sh` (v2 dataset 502) |
-| **PaperBaselines/** | `run_all.sh` — optional orchestration of MyoPS-Net + U-MyoPS + CineMyoPS |
-| **lib/slurm_nnUNet.sh** | Shared logging / env / nnU-Net v2 convert+train helpers for Slurm jobs |
+| Path | Role |
+|------|------|
+| `run_unified_benchmark.sh` | Protocol, nnU-Net split injection, submit helpers, `print-all` |
+| `run_unified_benchmark_test.sh` | Splits + submit **all** models for **one** fold (default 0) |
+| `run_unified_benchmark_all.sh` | Splits + submit **all** models for **each** fold (default 0–4) |
+| `nnUNet/` | nnU-Net **v2** Slurm scripts (501 / 502 / both) |
+| `MyoPS-Net/` | `sbatch.sh` (+ upstream `run.sh` if present) |
+| `U-MyoPS/` | `run.sh`, `sbatch.sh` → `scripts/U-MyoPS/` + `third_party/U-MyoPS_myops` |
+| `CineMyoPS/` | `run.sh`, `sbatch.sh` → `scripts/CineMyoPS/` + `third_party/CineMyoPS` |
+| `PaperBaselines/run_all.sh` | Orchestrate the three paper methods locally |
 
-**Slurm:** use `sbatch` on the `run_*.sh` scripts under `nnUNet/`, or `*/sbatch.sh` for paper methods.
+Edit `#SBATCH` headers (partition, account, GPU) on your cluster. See [SERVER.md](../SERVER.md).

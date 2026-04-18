@@ -40,6 +40,7 @@ This project converts [data/CARE_Challenge](data/CARE_Challenge) into nnU-Net v2
   - `nnUNet_raw=/overflow/htzhu/CARE/data/nnUNet/nnUNet_raw`
   - `nnUNet_preprocessed=/overflow/htzhu/CARE/data/nnUNet/nnUNet_preprocessed`
   - `nnUNet_results=/overflow/htzhu/CARE/data/nnUNet/nnUNet_results`
+  - `CARE_NNUNET_TRAINER=nnUNetTrainer_500epochs` (500-epoch trainer; override with `nnUNetTrainer` for 1000 epochs)
 
 ## Dataset IDs
 
@@ -48,7 +49,7 @@ This project converts [data/CARE_Challenge](data/CARE_Challenge) into nnU-Net v2
 | 501  | `Dataset501_CAREMyoPS`        | `data/CARE_Challenge/MyoPS_train` | LGE, T2, C0      |
 | 502  | `Dataset502_CARECineMyoPS`    | `data/CARE_Challenge/CineMyoPS_train` | Cine (one frame) |
 
-**Label classes** (after conversion): `0` background, `1` myocardium, `2` LV blood, `3` RV blood, `4` edema, `5` scar. Original challenge pixel values are remapped in `scripts/nnunet/nnunet_label_utils.py`.
+**Label classes** (after conversion): `0` background, `1` myocardium, `2` LV blood, `3` RV blood, `4` edema, `5` scar. Original challenge pixel values are remapped in `scripts/nnUNet/nnunet_label_utils.py`.
 
 **MyoPS**: LGE is the reference grid; missing T2/C0 are **zero-filled**.  
 **CineMyoPS**: 4D Cine `(x,y,z,t)` is reduced to 3D using the **middle time frame** by default (`--time-index -1`). For ED-specific evaluation, replace with the correct frame index when metadata is available.
@@ -59,20 +60,18 @@ This project converts [data/CARE_Challenge](data/CARE_Challenge) into nnU-Net v2
 
 ```bash
 cd /overflow/htzhu/CARE
-bash scripts/run_smoke.sh
+bash scripts/nnUNet/run_smoke.sh
 ```
 
-Optional: `MAX_CASES=2 NPFP=2 bash scripts/run_smoke.sh` (wrapper calls `scripts/nnunet/run_smoke.sh`).
+Optional: `MAX_CASES=2 NPFP=2 bash scripts/nnUNet/run_smoke.sh`.
 
 ### Full training (GPU)
 
 ```bash
 cd /overflow/htzhu/CARE
 source env_nnunet.sh
-bash scripts/run_full_train.sh
+bash scripts/nnUNet/run_full_train.sh
 ```
-
-(`run_full_train.sh` is a thin wrapper that calls `scripts/nnunet/run_full_train.sh`.)
 
 Optional:
 
@@ -84,14 +83,15 @@ Optional:
 
 ```bash
 # Convert (full data)
-python scripts/nnunet/convert_myops_to_nnunet.py --output "$nnUNet_raw/Dataset501_CAREMyoPS"
-python scripts/nnunet/convert_cine_to_nnunet.py --output "$nnUNet_raw/Dataset502_CARECineMyoPS"
+python scripts/nnUNet/convert_myops_to_nnunet.py --output "$nnUNet_raw/Dataset501_CAREMyoPS"
+python scripts/nnUNet/convert_cine_to_nnunet.py --output "$nnUNet_raw/Dataset502_CARECineMyoPS"
 
 nnUNetv2_plan_and_preprocess -d 501 --verify_dataset_integrity
-nnUNetv2_train 501 3d_fullres 0 --npz
+source /overflow/htzhu/CARE/env_nnunet.sh
+nnUNetv2_train 501 3d_fullres 0 --npz -tr "${CARE_NNUNET_TRAINER}"
 
 nnUNetv2_plan_and_preprocess -d 502 --verify_dataset_integrity
-nnUNetv2_train 502 3d_fullres 0 --npz
+nnUNetv2_train 502 3d_fullres 0 --npz -tr "${CARE_NNUNET_TRAINER}"
 ```
 
 ## Outputs
@@ -105,9 +105,9 @@ After training, use `nnUNetv2_predict` with the dataset id, configuration, fold,
 
 ## Disk and runtime (rough)
 
-- Full **MyoPS** conversion + preprocessing: moderate disk (NIfTI copies + preprocessed npz); training time depends on GPU and epochs (default nnU-Net schedule).
+- Full **MyoPS** conversion + preprocessing: moderate disk (NIfTI copies + preprocessed npz); training time depends on GPU and epochs. CARE defaults to **500 epochs** via `env_nnunet.sh` (`CARE_NNUNET_TRAINER=nnUNetTrainer_500epochs`). Use the same `-tr` value for `nnUNetv2_predict` as for training so checkpoint paths match.
 - **Cine** subset is smaller (64 cases vs 220).
 
 ## Verified locally
 
-Smoke path (`run_smoke.sh` with 3 cases per dataset + `plan_and_preprocess` for 501 and 502) completed without dataset integrity errors on the development host (CPU torch).
+Smoke path (`scripts/nnUNet/run_smoke.sh` with 3 cases per dataset + `plan_and_preprocess` for 501 and 502) completed without dataset integrity errors on the development host (CPU torch).

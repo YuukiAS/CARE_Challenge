@@ -3,7 +3,7 @@
 Export CARE CineMyoPS_train into nnU-Net v1 task folder Task025_Cine_Seg (file naming matches
 third_party/CineMyoPS/code/nnunet/preprocessing/sanity_checks.py).
 
-Identifiers: <parent>_<case>_0000 derived from training image basename (see upstream verify_dataset_integrity).
+dataset.json "image" must be ./imagesTr/{case_id}.nii.gz (case_id without _0000); nnU-Net appends _%04d for modalities.
 """
 from __future__ import annotations
 
@@ -15,8 +15,8 @@ from pathlib import Path
 import numpy as np
 import SimpleITK as sitk
 
-# Reuse CARE label remap logic (copy compact mapping from scripts/nnunet/convert_cine)
-_SCRIPT = Path(__file__).resolve().parent.parent / "nnunet"
+# Reuse CARE label remap logic (copy compact mapping from scripts/nnUNet/convert_cine)
+_SCRIPT = Path(__file__).resolve().parent.parent / "nnUNet"
 if str(_SCRIPT) not in sys.path:
     sys.path.insert(0, str(_SCRIPT))
 from nnunet_label_utils import remap_segmentation
@@ -93,7 +93,8 @@ def main() -> None:
     for cine_p, gd_p in pairs:
         cid = cine_p.name.replace("_Cine.nii.gz", "")
         center = cine_p.parent.name
-        case_id = f"{center}_{cid}_0000"
+        # nnU-Net raw naming: case id without channel suffix; images use <case>_0000.nii.gz
+        case_id = f"{center}_{cid}"
         names.append(case_id)
 
         cine_3d = _extract_frame_3d(cine_p, ti)

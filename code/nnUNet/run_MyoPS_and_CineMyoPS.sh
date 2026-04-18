@@ -1,40 +1,41 @@
 #!/bin/bash
-# CARE nnU-Net v2 — both datasets in one Slurm job (MyoPS 501 then CineMyoPS 502).
-# For one dataset only: nnUNet/run_MyoPS.sh or nnUNet/run_CineMyoPS.sh
-#
-# Submit:  sbatch "${CARE_ROOT}/code/nnUNet/run_MyoPS_and_CineMyoPS.sh"
-#
 #SBATCH --ntasks=1
-#SBATCH --cpus-per-task=16
-#SBATCH --job-name=CARE_nnUNet_MyoPS_and_CineMyoPS
-#SBATCH --output=/overflow/htzhu/CARE/logs/slurm_%x_%j.out
+#SBATCH --cpus-per-task=8
+#SBATCH --job-name=nnUNet_D501_D502
+#SBATCH --output=/dev/null
+#SBATCH --error=/dev/null
 #SBATCH --mem=64G
-#SBATCH --time=144:00:00
-#SBATCH --partition=htzhulab
+#SBATCH --time=2-00:00:00
 #SBATCH --gres=gpu:1
+#SBATCH --partition=htzhulab
 #SBATCH --qos=gpu_access
+#
+# Full nnU-Net v2 CARE baseline: Dataset 501 then 502 (same fold).
+set -euo pipefail
 
-mkdir -p /overflow/htzhu/CARE/logs
-
-CARE_ROOT="${CARE_ROOT:-/overflow/htzhu/CARE}"
-ENV_PATH="${ENV_PATH:-$CARE_ROOT/env_CARE}"
-CONFIG="${CONFIG:-3d_fullres}"
-FOLD="${FOLD:-0}"
-NPFP="${NPFP:-8}"
-RUN_TEST="${RUN_TEST:-1}"
-SKIP_CONVERT="${SKIP_CONVERT:-0}"
-
+THIS_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+CARE_ROOT="${CARE_ROOT:-$(cd "${THIS_DIR}/../.." && pwd)}"
+cd "${CARE_ROOT}"
+export PATH="${CARE_ROOT}/env_CARE/bin:${PATH}"
 # shellcheck source=/dev/null
-source "$CARE_ROOT/code/lib/slurm_nnUNet.sh"
+source "${CARE_ROOT}/env_nnunet.sh"
 
-care_nnunet_init_logging "$CARE_ROOT" "MyoPS_CineMyoPS"
-care_nnunet_print_header "CARE nnU-Net — MyoPS + CineMyoPS (both)"
-care_nnunet_env_python
-care_nnunet_check_gpu_torch
+mkdir -p logs
+TS="$(date +%Y%m%d_%H%M%S)"
+LOG_FILE="${LOG_FILE:-${CARE_ROOT}/logs/nnUNet_D501_D502_${SLURM_JOB_ID:-local}_${TS}.log}"
+exec > >(tee -a "${LOG_FILE}") 2>&1
 
-care_nnunet_run_subtask "myops" "501" "Dataset501_CAREMyoPS"
-care_nnunet_run_subtask "cinemyops" "502" "Dataset502_CARECineMyoPS"
+echo "LOG_FILE=${LOG_FILE}"
+echo "===== CARE nnU-Net — MyoPS + CineMyoPS (501 + 502) ====="
+echo "Timestamp: $(date -Iseconds 2>/dev/null || date)"
+echo "Host: $(hostname 2>/dev/null || true) JobID: ${SLURM_JOB_ID:-local}"
+echo "CARE_ROOT=${CARE_ROOT} CONFIG=${CONFIG:-3d_fullres} FOLD=${FOLD:-0} SKIP_CONVERT=${SKIP_CONVERT:-0}"
 
-echo "===== Finished CARE nnU-Net (both datasets) ====="
-echo "End time: $(date -Iseconds)"
-echo "nnUNet_results: $nnUNet_results"
+export TRAIN_MYOPS=1
+export TRAIN_CINE=1
+export CONFIG="${CONFIG:-3d_fullres}"
+export FOLD="${FOLD:-0}"
+export SKIP_CONVERT="${SKIP_CONVERT:-0}"
+
+bash "${CARE_ROOT}/scripts/nnUNet/run_full_train.sh"
+echo "===== Finished 501 + 502 ====="

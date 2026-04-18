@@ -1,0 +1,20 @@
+# CineMyoPS bundled nnU-Net v1 (third_party/CineMyoPS). Use env: env_CARE_nnUNet_v1.
+# batchgenerators>=0.23 ships an empty transforms/__init__.py; legacy nnunet code needs 0.21.
+batchgenerators==0.21
+numpy>=1.26,<3
+scipy
+scikit-learn
+scikit-image
+pandas
+tqdm
+matplotlib
+nibabel
+SimpleITK
+pillow
+medpy
+tensorboardX
+tensorboard
+# U-MyoPS (jrs): experiment/baseexperiment + tools/excel
+seaborn
+xlwt
+xlrd<2

@@ -1,10 +1,33 @@
-# Byte-compiled / optimized / DLL files
+# ------------------------------------------------------------------------------
+# Project-specific (CARE)
+# ------------------------------------------------------------------------------
+archive/
+data/
+logs/
+models/
+temp/
+
+# Project-local conda env (see env_nnunet.sh PATH to env_CARE/bin)
+env_CARE/
+env_CARE_nnUNet_v1/
+
+# ------------------------------------------------------------------------------
+# AI / assistant tooling (local only)
+# ------------------------------------------------------------------------------
+.cursor/
+.codex/
+
+# ------------------------------------------------------------------------------
+# Python — bytecode & extensions
+# ------------------------------------------------------------------------------
 __pycache__/
 *.py[cod]
 *$py.class
 *.so
 
-# Distribution / packaging
+# ------------------------------------------------------------------------------
+# Python — distribution / packaging
+# ------------------------------------------------------------------------------
 .Python
 build/
 develop-eggs/
@@ -23,27 +46,33 @@ wheels/
 .installed.cfg
 *.egg
 
+# ------------------------------------------------------------------------------
 # Virtual environments
+# ------------------------------------------------------------------------------
 venv/
 .venv/
 env/
 .env/
 ENV/
-# Project-local conda env (see env_nnunet.sh PATH to env_CARE/bin)
-env_CARE/
 
-# Environment and secrets
+# ------------------------------------------------------------------------------
+# Secrets & environment files
+# ------------------------------------------------------------------------------
 .env
 .env.*
 !.env.example
 *.pem
 secrets/
 
+# ------------------------------------------------------------------------------
 # Jupyter
+# ------------------------------------------------------------------------------
 .ipynb_checkpoints/
 */.ipynb_checkpoints/*
 
-# pytest / coverage
+# ------------------------------------------------------------------------------
+# pytest, coverage, tox
+# ------------------------------------------------------------------------------
 .pytest_cache/
 .benchmarks/
 .coverage
@@ -55,13 +84,17 @@ coverage.xml
 *.cover
 .hypothesis/
 
-# mypy / ruff / other tools
+# ------------------------------------------------------------------------------
+# Type checkers & linters
+# ------------------------------------------------------------------------------
 .mypy_cache/
 .ruff_cache/
 .dmypy.json
 dmypy.json
 
-# IDEs and editors
+# ------------------------------------------------------------------------------
+# IDEs & editors
+# ------------------------------------------------------------------------------
 .idea/
 *.swp
 *.swo
@@ -75,73 +108,10 @@ dmypy.json
 # VS Code (uncomment if you do not want to share workspace settings)
 # .vscode/
 
+# ------------------------------------------------------------------------------
 # OS
+# ------------------------------------------------------------------------------
 .DS_Store
 Thumbs.db
 Desktop.ini
 __MACOSX/
-
-# Medical imaging data (often large; adjust if you version small public samples)
-data/
-datasets/
-raw/
-**/raw_data/
-*.dcm
-*.dicom
-*.nii
-*.nii.gz
-*.hdr
-*.img
-*.mha
-*.mhd
-*.nrrd
-
-# nnU-Net v2 (large; regenerate from scripts/nnunet). Also matches legacy paths if present.
-nnUNet_raw/
-nnUNet_preprocessed/
-nnUNet_results/
-# data/ is ignored above; physical nnU-Net dirs are under data/nnUNet/
-
-# Deep learning / challenge artifacts
-checkpoints/
-weights/
-runs/
-wandb/
-mlruns/
-lightning_logs/
-tensorboard/
-*.ckpt
-*.pth
-*.pt
-*.safetensors
-*.onnx
-*.h5
-*.hdf5
-*.pkl
-*.pickle
-*.joblib
-
-# Logs and temporary outputs
-logs/
-*.log
-slurm-*.out
-nohup.out
-tmp/
-temp/
-# legacy; caches now use temp/ via env_nnunet.sh
-.cache/
-outputs/
-predictions/
-submissions/*.zip
-!submissions/.gitkeep
-
-# DVC (commit dvc.yaml and dvc.lock; ignore local cache)
-.dvc/cache/
-.dvc/tmp/
-
-# HPC / containers (large local images)
-*.sif
-
-# Large downloaded bundles (uncomment or add paths as needed)
-# downloads/
-# archives/

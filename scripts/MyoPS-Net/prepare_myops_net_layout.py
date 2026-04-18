@@ -11,6 +11,7 @@ CARE provides C0, LGE, T2, gd; T1m and T2starm are zero-filled on the LGE grid.
 from __future__ import annotations
 
 import argparse
+import json
 import random
 import sys
 from pathlib import Path
@@ -121,6 +122,18 @@ def main() -> None:
     ap.add_argument("--val-ratio", type=float, default=0.2, help="Fraction of cases for validation (by count).")
     ap.add_argument("--max-cases", type=int, default=0, help="If >0, only use this many cases.")
     ap.add_argument("--seed", type=int, default=42, help="Shuffle seed for train/val split.")
+    ap.add_argument(
+        "--splits-file",
+        type=Path,
+        default=None,
+        help="Protocol JSON from scripts/benchmark/generate_splits.py (uses train/val for --fold).",
+    )
+    ap.add_argument(
+        "--fold",
+        type=int,
+        default=None,
+        help="Fold index when --splits-file is set (required with splits-file).",
+    )
     args = ap.parse_args()
 
     cases = discover_cases(args.input)
@@ -130,14 +143,37 @@ def main() -> None:
         print("No cases found.", file=sys.stderr)
         sys.exit(1)
 
-    rng = random.Random(args.seed)
-    rng.shuffle(cases)
-    n_val = max(1, int(round(len(cases) * args.val_ratio))) if len(cases) > 1 else 0
-    if len(cases) == 1:
-        train_cases, val_cases = cases, []
+    if args.splits_file is not None:
+        if args.fold is None:
+            print("--fold is required when --splits-file is set", file=sys.stderr)
+            sys.exit(1)
+        with args.splits_file.open(encoding="utf-8") as f:
+            sp = json.load(f)
+        folds = sp.get("folds", [])
+        if args.fold < 0 or args.fold >= len(folds):
+            print(f"--fold out of range [0, {len(folds)})", file=sys.stderr)
+            sys.exit(1)
+        train_ids = set(folds[args.fold]["train"])
+        val_ids = set(folds[args.fold]["val"])
+        train_cases = [c for c in cases if c.name in train_ids]
+        val_cases = [c for c in cases if c.name in val_ids]
+        missing_tr = train_ids - {c.name for c in train_cases}
+        missing_va = val_ids - {c.name for c in val_cases}
+        if missing_tr or missing_va:
+            print(
+                f"Warning: split references cases not in current --input scan: "
+                f"train {sorted(missing_tr)} val {sorted(missing_va)}",
+                file=sys.stderr,
+            )
     else:
-        val_cases = cases[:n_val]
-        train_cases = cases[n_val:]
+        rng = random.Random(args.seed)
+        rng.shuffle(cases)
+        n_val = max(1, int(round(len(cases) * args.val_ratio))) if len(cases) > 1 else 0
+        if len(cases) == 1:
+            train_cases, val_cases = cases, []
+        else:
+            val_cases = cases[:n_val]
+            train_cases = cases[n_val:]
 
     out = args.output
     tr_img = out / "train_set" / "train_image"
@@ -178,6 +214,8 @@ def main() -> None:
         print("Warning: single-case or empty val split; validation.txt duplicates a subset of train.", file=sys.stderr)
 
     print(f"Wrote MyoPS-Net staging to {out}")
+    if args.splits_file is not None:
+        print(f"  split: {args.splits_file} fold {args.fold}")
     print(f"  train cases: {len(train_cases)}, val cases: {len(val_cases)}")
     print(f"  train lines: {len(train_lines)}, val lines: {len(val_lines)}")
 
