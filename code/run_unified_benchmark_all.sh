@@ -1,33 +1,67 @@
 #!/usr/bin/env bash
-# Refresh protocol + nnU-Net splits; submit all benchmark models for each fold (default 0–4).
+# Unified benchmark entrypoint for all folds (default 0..4).
 #
-# Per fold: nnU-Net v2 D501 + D502 (two jobs), MyoPS-Net_D501, U-MyoPS-Stage1-D501 [+ Stage2 if UMYOPS_RUN_STAGE2=1], CineMyoPS_D502
-# (prepare only on the first fold in FOLDS to avoid redundant IO; set PREPARE_SHARE=0 to always PREPARE=1).
+# Lifecycle:
+#   1. prep    -> refresh protocol + inject splits + ensure Task025 preprocessed
+#   2. submit  -> submit training jobs for all requested folds
+#   3. collect -> collect trained weights into models/
+#   4. eval    -> run unified offline evaluation on all requested folds
+#   5. post    -> collect + eval
+#   6. full    -> prep + submit   (default)
 #
-# Prerequisites: nnUNet v2 plan_and_preprocess for 501/502; Task025 v1 preprocess runs once below (unless CINE_SKIP_V1_PREPROCESS=1).
-#
-# Usage:
+# Examples:
 #   bash code/run_unified_benchmark_all.sh
-# Env: SKIP_CONVERT, CONFIG, FOLDS (space-separated, default "0 1 2 3 4"), PREPARE_SHARE (default 1)
-#       CARE_ROOT_OVERRIDE — optional alternate repo root (must contain env_nnunet.sh); ignores inherited CARE_ROOT
-#       CARE_CONDA_ENV / CARE_CONDA_ENV_NNUNET_V1 — conda env prefixes (defaults under CARE_ROOT)
-#       CINE_SKIP_V1_PREPROCESS, CINE_FORCE_PREPROCESS — see scripts/CineMyoPS/ensure_task025_v1_preprocessed.sh
-#       UMYOPS_RUN_STAGE2=1 — also submit U-MyoPS-Stage2-D501 after Stage1 (Slurm afterok); default 0 in env_nnunet.sh
+#   bash code/run_unified_benchmark_all.sh submit --folds "0 1 2 3 4"
+#   bash code/run_unified_benchmark_all.sh post
 set -euo pipefail
 
-_CARE_SELF_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-if [[ -n "${CARE_ROOT_OVERRIDE:-}" ]]; then
-  CARE_ROOT="${CARE_ROOT_OVERRIDE}"
-else
-  CARE_ROOT="$(cd "${_CARE_SELF_DIR}/.." && pwd)"
+export CARE_ROOT="/overflow/htzhu/CARE"
+
+ACTION="full"
+if [[ $# -gt 0 ]]; then
+  case "$1" in
+    prep|submit|collect|eval|post|full|print)
+      ACTION="$1"
+      shift
+      ;;
+  esac
 fi
-unset _CARE_SELF_DIR
-if [[ ! -f "${CARE_ROOT}/env_nnunet.sh" ]]; then
-  echo "error: CARE_ROOT=${CARE_ROOT} has no env_nnunet.sh (expected .../code/$(basename "${BASH_SOURCE[0]}") inside the repo)." >&2
-  echo "  Or set CARE_ROOT_OVERRIDE=/path/to/CARE" >&2
-  exit 1
-fi
-export CARE_ROOT
+
+# Single source of truth for model participation in this script.
+# Modes:
+#   run  -> submit training, then later collect/eval
+#   eval -> do not submit; only collect/eval existing results
+#   skip -> ignore completely
+BENCHMARK_MODEL_PLAN=(
+  "nnUNet=run"
+  "MyoPS-Net=run"
+  "U-MyoPS=run"
+  "CineMyoPS=run"
+)
+
+FOLDS="${FOLDS:-0 1 2 3 4}"
+PREPARE_SHARE="${PREPARE_SHARE:-1}"
+
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    --folds)
+      FOLDS="${2:?}"
+      shift 2
+      ;;
+    --prepare-share)
+      PREPARE_SHARE="${2:?}"
+      shift 2
+      ;;
+    -h|--help)
+      sed -n '1,30p' "$0"
+      exit 0
+      ;;
+    *)
+      echo "unknown arg: $1" >&2
+      exit 1
+      ;;
+  esac
+done
 
 # shellcheck source=/dev/null
 source "${CARE_ROOT}/env_nnunet.sh"
@@ -36,7 +70,6 @@ CARE_CONDA_ENV="${CARE_CONDA_ENV:-${CARE_ROOT}/env_CARE}"
 CARE_CONDA_ENV_NNUNET_V1="${CARE_CONDA_ENV_NNUNET_V1:-${CARE_ROOT}/env_CARE_nnUNet_v1}"
 export CARE_CineMyoPS_ENV="${CARE_CineMyoPS_ENV:-${CARE_CINEMYOPS_ENV:-${CARE_CONDA_ENV_NNUNET_V1}}}"
 
-# Match submit-shell env to the job before sbatch --export=ALL (optional if conda is on PATH).
 _care_conda_hook_done=0
 care_conda_activate() {
   local env_path="$1"
@@ -49,68 +82,186 @@ care_conda_activate() {
   conda activate "${env_path}"
 }
 
-FOLDS="${FOLDS:-0 1 2 3 4}"
-PREPARE_SHARE="${PREPARE_SHARE:-1}"
-FIRST_FOLD="$(echo "${FOLDS}" | awk '{print $1}')"
+plan_mode() {
+  local model="$1" item key value
+  for item in "${BENCHMARK_MODEL_PLAN[@]}"; do
+    key="${item%%=*}"
+    value="${item#*=}"
+    if [[ "${key}" == "${model}" ]]; then
+      echo "${value}"
+      return 0
+    fi
+  done
+  echo "skip"
+}
 
-echo "=== Refresh protocol + nnU-Net splits (shared across folds) ==="
-bash "${CARE_ROOT}/code/run_unified_benchmark.sh" gen-protocol
-bash "${CARE_ROOT}/code/run_unified_benchmark.sh" write-splits-501 --backup
-bash "${CARE_ROOT}/code/run_unified_benchmark.sh" write-splits-502 --backup
+want_submit() {
+  [[ "$(plan_mode "$1")" == "run" ]]
+}
 
-echo "=== Task025 (CineMyoPS paper): nnU-Net v1 raw + plan_and_preprocess (once per run) ==="
-bash "${CARE_ROOT}/scripts/CineMyoPS/ensure_task025_v1_preprocessed.sh"
+want_post() {
+  case "$(plan_mode "$1")" in
+    run|eval) return 0 ;;
+    *) return 1 ;;
+  esac
+}
 
-echo "=== Submit all models for each fold (FOLDS=${FOLDS}) ==="
-for FOLD in ${FOLDS}; do
-  export FOLD
-  echo "--- FOLD=${FOLD} ---"
-  care_conda_activate "${CARE_CONDA_ENV}"
-  sbatch --export=ALL,CARE_ROOT,FOLD,SKIP_CONVERT,CONFIG \
-    "${CARE_ROOT}/code/nnUNet/run_MyoPS.sh"
-  care_conda_activate "${CARE_CONDA_ENV}"
-  sbatch --export=ALL,CARE_ROOT,FOLD,SKIP_CONVERT,CONFIG \
-    "${CARE_ROOT}/code/nnUNet/run_CineMyoPS.sh"
+collect_targets_csv() {
+  local out=()
+  want_post nnUNet && out+=(nnUNet)
+  want_post CineMyoPS && out+=(CineMyoPS)
+  want_post MyoPS-Net && out+=(MyoPS-Net)
+  want_post U-MyoPS && out+=(U-MyoPS)
+  local IFS=,
+  echo "${out[*]}"
+}
 
-  export PREPARE=1
-  care_conda_activate "${CARE_CONDA_ENV}"
-  sbatch --export=ALL,CARE_ROOT,FOLD,PREPARE \
-    "${CARE_ROOT}/code/MyoPS-Net/sbatch.sh"
-
-  if [[ "${PREPARE_SHARE}" == "1" ]] && [[ "${FOLD}" != "${FIRST_FOLD}" ]]; then
-    export PREPARE=0
-  else
-    export PREPARE=1
+eval_targets_words() {
+  local out=()
+  if want_post nnUNet; then
+    out+=(nnUNet501 nnUNet502)
   fi
-  care_conda_activate "${CARE_CONDA_ENV_NNUNET_V1}"
-  export CARE_CineMyoPS_ENV="${CARE_CineMyoPS_ENV:-${CARE_CONDA_ENV_NNUNET_V1}}"
-  _UMY_EXPORT="ALL,CARE_ROOT,FOLD,PREPARE,CARE_CineMyoPS_ENV,CARE_CINEMYOPS_ENV,UMYOPS_PYTHON,LEGACY_PYTHON"
-  UMYOPS_S1_JOB="$(sbatch --parsable --export="${_UMY_EXPORT}" "${CARE_ROOT}/code/U-MyoPS/sbatch_stage1.sh")"
-  echo "Submitted U-MyoPS Stage 1 job ${UMYOPS_S1_JOB} (FOLD=${FOLD})"
-  if [[ "${UMYOPS_RUN_STAGE2:-0}" == "1" ]]; then
-    UMYOPS_S2_JOB="$(sbatch --parsable --dependency=afterok:"${UMYOPS_S1_JOB}" \
-      --export=ALL,CARE_ROOT,FOLD,CARE_CineMyoPS_ENV,CARE_CINEMYOPS_ENV,UMYOPS_PYTHON,LEGACY_PYTHON,UMYOPS_STAGE2_TASK,UMYOPS_STAGE2_DIM,UMYOPS_STAGE2_TRAINER,UMYOPS_STAGE2_EPOCHS \
-      "${CARE_ROOT}/code/U-MyoPS/sbatch_stage2.sh")"
-    echo "Submitted U-MyoPS Stage 2 job ${UMYOPS_S2_JOB} (afterok:${UMYOPS_S1_JOB}, FOLD=${FOLD})"
-  fi
+  want_post MyoPS-Net && out+=(MyoPS-Net)
+  want_post U-MyoPS && out+=(U-MyoPS)
+  want_post CineMyoPS && out+=(CineMyoPS)
+  echo "${out[*]}"
+}
 
-  if [[ "${PREPARE_SHARE}" == "1" ]] && [[ "${FOLD}" != "${FIRST_FOLD}" ]]; then
-    export PREPARE=0
-  else
-    export PREPARE=1
-  fi
-  if [[ "${CINE_SKIP_V1_PREPROCESS:-0}" == "1" ]]; then
-    _cin_prep="${PREPARE}"
-  else
-    _cin_prep=0
-  fi
-  care_conda_activate "${CARE_CONDA_ENV_NNUNET_V1}"
-  sbatch --export=ALL,CARE_ROOT,FOLD,PREPARE="${_cin_prep}",CARE_CineMyoPS_ENV \
-    "${CARE_ROOT}/code/CineMyoPS/sbatch.sh"
-done
+run_prep() {
+  export PATH="${CARE_ROOT}/env_CARE/bin:${PATH}"
+  echo "=== CARE unified benchmark — PREP (FOLDS=${FOLDS}) ==="
+  bash "${CARE_ROOT}/code/run_unified_benchmark.sh" gen-protocol
+  bash "${CARE_ROOT}/code/run_unified_benchmark.sh" write-splits-501 --backup
+  bash "${CARE_ROOT}/code/run_unified_benchmark.sh" write-splits-502 --backup
+  bash "${CARE_ROOT}/scripts/CineMyoPS/ensure_task025_v1_preprocessed.sh"
+  bash "${CARE_ROOT}/code/run_unified_benchmark.sh" write-splits-task025 --backup
+}
 
-nfolds=$(echo "${FOLDS}" | wc -w)
-_JPF=5
-[[ "${UMYOPS_RUN_STAGE2:-0}" == "1" ]] && _JPF=6
-echo "Submitted $((nfolds * _JPF)) jobs (${nfolds} folds × ${_JPF} Slurm scripts: nnUNet_D501, nnUNet_D502, MyoPS-Net_D501, U-MyoPS-Stage1-D501[, Stage2 if UMYOPS_RUN_STAGE2=1], CineMyoPS_D502)."
-echo "Collect weights (all folds): bash \"${CARE_ROOT}/code/collect_benchmark_weights.sh\" --folds \"${FOLDS}\""
+run_submit() {
+  echo "=== CARE unified benchmark — SUBMIT (FOLDS=${FOLDS}) ==="
+  local first_fold
+  first_fold="$(echo "${FOLDS}" | awk '{print $1}')"
+
+  for FOLD in ${FOLDS}; do
+    export FOLD
+    echo "--- FOLD=${FOLD} ---"
+
+    if want_submit nnUNet; then
+      care_conda_activate "${CARE_CONDA_ENV}"
+      sbatch --export=ALL,CARE_ROOT,FOLD,SKIP_CONVERT,CONFIG \
+        "${CARE_ROOT}/code/nnUNet/run_MyoPS.sh"
+      care_conda_activate "${CARE_CONDA_ENV}"
+      sbatch --export=ALL,CARE_ROOT,FOLD,SKIP_CONVERT,CONFIG \
+        "${CARE_ROOT}/code/nnUNet/run_CineMyoPS.sh"
+    else
+      echo "Skip submit: nnUNet (FOLD=${FOLD})"
+    fi
+
+    if want_submit MyoPS-Net; then
+      export PREPARE=1
+      care_conda_activate "${CARE_CONDA_ENV}"
+      sbatch --export=ALL,CARE_ROOT,FOLD,PREPARE \
+        "${CARE_ROOT}/code/MyoPS-Net/sbatch.sh"
+    else
+      echo "Skip submit: MyoPS-Net (FOLD=${FOLD})"
+    fi
+
+    if want_submit U-MyoPS; then
+      if [[ "${PREPARE_SHARE}" == "1" ]] && [[ "${FOLD}" != "${first_fold}" ]]; then
+        export PREPARE=0
+      else
+        export PREPARE=1
+      fi
+      care_conda_activate "${CARE_CONDA_ENV_NNUNET_V1}"
+      export CARE_CineMyoPS_ENV="${CARE_CineMyoPS_ENV:-${CARE_CONDA_ENV_NNUNET_V1}}"
+      _UMY_EXPORT="ALL,CARE_ROOT,FOLD,PREPARE,CARE_CineMyoPS_ENV,CARE_CINEMYOPS_ENV,UMYOPS_PYTHON,LEGACY_PYTHON"
+      UMYOPS_S1_JOB="$(sbatch --parsable --export="${_UMY_EXPORT}" "${CARE_ROOT}/code/U-MyoPS/sbatch_stage1.sh")"
+      echo "Submitted U-MyoPS Stage 1 job ${UMYOPS_S1_JOB} (FOLD=${FOLD})"
+      if [[ "${UMYOPS_RUN_STAGE2:-0}" == "1" ]]; then
+        UMYOPS_S2_JOB="$(sbatch --parsable --dependency=afterok:"${UMYOPS_S1_JOB}" \
+          --export=ALL,CARE_ROOT,FOLD,CARE_CineMyoPS_ENV,CARE_CINEMYOPS_ENV,UMYOPS_PYTHON,LEGACY_PYTHON,UMYOPS_STAGE2_TASK,UMYOPS_STAGE2_DIM,UMYOPS_STAGE2_TRAINER,UMYOPS_STAGE2_EPOCHS \
+          "${CARE_ROOT}/code/U-MyoPS/sbatch_stage2.sh")"
+        echo "Submitted U-MyoPS Stage 2 job ${UMYOPS_S2_JOB} (afterok:${UMYOPS_S1_JOB}, FOLD=${FOLD})"
+      fi
+    else
+      echo "Skip submit: U-MyoPS (FOLD=${FOLD})"
+    fi
+
+    if want_submit CineMyoPS; then
+      if [[ "${PREPARE_SHARE}" == "1" ]] && [[ "${FOLD}" != "${first_fold}" ]]; then
+        export PREPARE=0
+      else
+        export PREPARE=1
+      fi
+      if [[ "${CINE_SKIP_V1_PREPROCESS:-0}" == "1" ]]; then
+        _cin_prep="${PREPARE}"
+      else
+        _cin_prep=0
+      fi
+      care_conda_activate "${CARE_CONDA_ENV_NNUNET_V1}"
+      sbatch --export=ALL,CARE_ROOT,FOLD,PREPARE="${_cin_prep}",CARE_CineMyoPS_ENV \
+        "${CARE_ROOT}/code/CineMyoPS/sbatch.sh"
+    else
+      echo "Skip submit: CineMyoPS (FOLD=${FOLD})"
+    fi
+  done
+
+  local nfolds jpf
+  nfolds=$(echo "${FOLDS}" | wc -w)
+  jpf=5
+  [[ "${UMYOPS_RUN_STAGE2:-0}" == "1" ]] && jpf=6
+  echo "Submitted $((nfolds * jpf)) jobs."
+}
+
+run_collect() {
+  echo "=== CARE unified benchmark — COLLECT (FOLDS=${FOLDS}) ==="
+  local targets
+  targets="$(collect_targets_csv)"
+  if [[ -z "${targets}" ]]; then
+    echo "No models enabled for collect."
+    return 0
+  fi
+  bash "${CARE_ROOT}/code/collect_benchmark_weights.sh" --folds "${FOLDS}" --only "${targets}"
+}
+
+run_eval() {
+  echo "=== CARE unified benchmark — EVAL (FOLDS=${FOLDS}) ==="
+  local eval_models
+  eval_models="$(eval_targets_words)"
+  if [[ -z "${eval_models}" ]]; then
+    echo "No models enabled for eval."
+    return 0
+  fi
+  MODELS="${eval_models}" FOLDS="${FOLDS}" \
+    bash "${CARE_ROOT}/scripts/evaluation/run_unified_eval_all.sh"
+}
+
+case "${ACTION}" in
+  prep)
+    run_prep
+    ;;
+  submit)
+    run_submit
+    ;;
+  collect)
+    run_collect
+    ;;
+  eval)
+    run_eval
+    ;;
+  post)
+    run_collect
+    run_eval
+    ;;
+  full)
+    run_prep
+    run_submit
+    ;;
+  print)
+    bash "${CARE_ROOT}/code/run_unified_benchmark.sh" print-all
+    ;;
+  *)
+    echo "unknown action: ${ACTION}" >&2
+    exit 1
+    ;;
+esac

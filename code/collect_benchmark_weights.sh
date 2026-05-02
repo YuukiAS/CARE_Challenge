@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
-# Collect trained benchmark weights into ${CARE_ROOT}/models/{nnUNet,CineMyoPS,MyoPS-Net,U-MyoPS}/...
+# Collect trained benchmark weights into canonical fold-wise directories under ${CARE_ROOT}/models/:
+#   nnUNet501/fold_k, nnUNet502/fold_k, MyoPS-Net/fold_k, CineMyoPS/fold_k, U-MyoPS/fold_k/{stage1,stage2}
 # Aligns with code/run_unified_benchmark_{test,all}.sh job layout (FOLD / env_nnunet.sh).
 #
 # Usage (repo root or any cwd):
@@ -76,6 +77,16 @@ _want() {
   echo ",${ONLY}," | grep -q ",${name},"
 }
 
+_want_any() {
+  local name
+  for name in "$@"; do
+    if _want "${name}"; then
+      return 0
+    fi
+  done
+  return 1
+}
+
 _abs() {
   readlink -f "$1"
 }
@@ -101,32 +112,44 @@ echo "FOLDS=${FOLDS} CONFIG=${CONFIG} CARE_NNUNET_TRAINER=${CARE_NNUNET_TRAINER}
 for FOLD in ${FOLDS}; do
   echo "--- fold ${FOLD} ---"
 
-  if _want nnUNet; then
+  if _want_any nnUNet nnUNet501 nnUNet502; then
     echo "[nnUNet v2]"
     D501="${NNRES}/Dataset501_CAREMyoPS/${CARE_NNUNET_TRAINER}__nnUNetPlans__${CONFIG}/fold_${FOLD}"
     D502="${NNRES}/Dataset502_CARECineMyoPS/${CARE_NNUNET_TRAINER}__nnUNetPlans__${CONFIG}/fold_${FOLD}"
-    DEST501="${MODELS_ROOT}/nnUNet/Dataset501_CAREMyoPS_${CONFIG}_fold${FOLD}"
-    DEST502="${MODELS_ROOT}/nnUNet/Dataset502_CARECineMyoPS_${CONFIG}_fold${FOLD}"
-    for f in checkpoint_final.pth checkpoint_best.pth; do
-      _place "${D501}/${f}" "${DEST501}" "${f}"
-      _place "${D502}/${f}" "${DEST502}" "${f}"
-    done
+    if _want_any nnUNet nnUNet501; then
+      DEST501="${MODELS_ROOT}/nnUNet501/fold_${FOLD}"
+      for f in checkpoint_final.pth checkpoint_best.pth; do
+        _place "${D501}/${f}" "${DEST501}" "${f}"
+      done
+      _place "${D501}/validation/summary.json" "${DEST501}" "validation_summary.json"
+    fi
+    if _want_any nnUNet nnUNet502; then
+      DEST502="${MODELS_ROOT}/nnUNet502/fold_${FOLD}"
+      for f in checkpoint_final.pth checkpoint_best.pth; do
+        _place "${D502}/${f}" "${DEST502}" "${f}"
+      done
+      _place "${D502}/validation/summary.json" "${DEST502}" "validation_summary.json"
+    fi
   fi
 
   if _want CineMyoPS; then
     echo "[CineMyoPS / nnU-Net v1 Task025]"
     CINE="${NNRES}/nnUNet/2d/${CINE_NNUNET_TASK}/nnUNetTrainerV2__nnUNetPlansv2.1/fold_${FOLD}"
-    DESTC="${MODELS_ROOT}/CineMyoPS/${CINE_NNUNET_TASK}_fold${FOLD}"
+    DESTC="${MODELS_ROOT}/CineMyoPS/fold_${FOLD}"
     for f in model_final_checkpoint.model model_best.model model_latest.model; do
       _place "${CINE}/${f}" "${DESTC}" "${f}"
     done
+    _place "${CINE}/validation_raw/summary.json" "${DESTC}" "validation_summary.json"
   fi
 
   if _want MyoPS-Net; then
     echo "[MyoPS-Net]"
-    # Training cwd is third_party/MyoPS-Net; checkpoints/ is shared across folds if you re-run jobs.
-    CKPT_DIR="${MYOPSNET_REPO}/checkpoints"
+    CKPT_DIR="${CARE_ROOT}/results/checkpoints/MyoPS-Net/fold_${FOLD}/checkpoints"
+    LEGACY_CKPT_DIR="${MYOPSNET_REPO}/checkpoints"
     DESTM="${MODELS_ROOT}/MyoPS-Net/fold_${FOLD}"
+    if [[ ! -d "${CKPT_DIR}" ]] && [[ -d "${LEGACY_CKPT_DIR}" ]]; then
+      CKPT_DIR="${LEGACY_CKPT_DIR}"
+    fi
     if [[ -d "${CKPT_DIR}" ]]; then
       shopt -s nullglob
       _n_myops=0
@@ -147,7 +170,7 @@ for FOLD in ${FOLDS}; do
     echo "[U-MyoPS stage1]"
     MID="asn_myo_tps_${UMYOPS_NET}_${UMYOPS_DATA_SOURCE}_${UMYOPS_WEIGHT}_fold${FOLD}"
     S1CK="${UMYO_REPO}/outputs/${MID}/checkpoint"
-    DEST1="${MODELS_ROOT}/U-MyoPS/stage1_${MID}"
+    DEST1="${MODELS_ROOT}/U-MyoPS/fold_${FOLD}/stage1"
     if [[ -d "${S1CK}" ]]; then
       shopt -s nullglob
       for p in "${S1CK}"/epoch_*.pth; do
@@ -164,10 +187,11 @@ for FOLD in ${FOLDS}; do
 
     echo "[U-MyoPS stage2 / nnU-Net v1 pathology]"
     S2BASE="${UMYO_REPO}/outputs/nnunet/output/nnUNet/${UMYOPS_STAGE2_DIM}/${UMYOPS_STAGE2_TASK}/${UMYOPS_STAGE2_TRAINER}__nnUNetPlansv2.1/fold_${FOLD}"
-    DEST2="${MODELS_ROOT}/U-MyoPS/stage2_${UMYOPS_STAGE2_TASK}_${UMYOPS_STAGE2_DIM}_fold${FOLD}"
+    DEST2="${MODELS_ROOT}/U-MyoPS/fold_${FOLD}/stage2"
     for f in model_final_checkpoint.model model_best.model model_latest.model; do
       _place "${S2BASE}/${f}" "${DEST2}" "${f}"
     done
+    _place "${S2BASE}/validation_raw/summary.json" "${DEST2}" "validation_summary.json"
   fi
 done
 

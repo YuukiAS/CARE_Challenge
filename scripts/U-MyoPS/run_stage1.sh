@@ -10,4 +10,8 @@ PY="${UMYOPS_PYTHON:-${_V1_ENV}/bin/python}"
 export PYTHONPATH="${REPO}/jrs:${REPO}:${PYTHONPATH:-}"
 cd "${REPO}/jrs"
 FOLD="${FOLD:-0}"
-exec "${PY}" joint_registration_myocardium_segmentation.py --fold "${FOLD}" "$@"
+# Upstream config defaults --phase to metric (eval only, no training). CARE benchmarks never passed --phase,
+# so jobs exited almost immediately with nearly empty logs. Default to train; override with UMYOPS_STAGE1_PHASE
+# or pass --phase ... in "$@" (last flag wins for typical argparse).
+UMYOPS_STAGE1_PHASE="${UMYOPS_STAGE1_PHASE:-train}"
+exec "${PY}" joint_registration_myocardium_segmentation.py --fold "${FOLD}" --phase "${UMYOPS_STAGE1_PHASE}" "$@"

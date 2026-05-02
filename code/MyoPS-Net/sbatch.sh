@@ -27,11 +27,15 @@ exec > >(tee -a "${LOG_FILE}") 2>&1
 
 PY="${CARE_ROOT}/env_CARE/bin/python"
 PREP="${CARE_ROOT}/scripts/MyoPS-Net/prepare_myops_net_layout.py"
-DATA="${MYOPS_NET_DATA:-${CARE_ROOT}/data/benchmarks/MyoPS-Net}"
 SPLITS="${SPLITS_FILE:-${CARE_ROOT}/data/benchmarks/protocol/splits_MyoPS.json}"
 FOLD="${FOLD:-0}"
+DATA="${MYOPS_NET_DATA:-${CARE_ROOT}/data/benchmarks/MyoPS-Net/fold_${FOLD}}"
+WORKDIR="${MYOPS_NET_WORKDIR:-${CARE_ROOT}/results/checkpoints/MyoPS-Net/fold_${FOLD}}"
 
-echo "===== MyoPS-Net train (data=${DATA}, fold=${FOLD}) ====="
+export MYOPS_NET_DATA="${DATA}"
+export MYOPS_NET_WORKDIR="${WORKDIR}"
+
+echo "===== MyoPS-Net train (data=${DATA}, workdir=${WORKDIR}, fold=${FOLD}) ====="
 
 if [[ "${PREPARE:-1}" == "1" ]]; then
   "${PY}" "${PREP}" --splits-file "${SPLITS}" --fold "${FOLD}" --output "${DATA}"

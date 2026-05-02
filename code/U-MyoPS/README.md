@@ -2,7 +2,7 @@
 
 Thin wrappers around `third_party/U-MyoPS_myops` and `scripts/U-MyoPS/`.
 
-- **Stage 1** — joint registration + myocardium (`run_stage1.sh`).
+- **Stage 1** — joint registration + myocardium (`run_stage1.sh`). Upstream Python defaults `--phase` to **`metric`** (no training). CARE sets **`UMYOPS_STAGE1_PHASE=train`** by default in `run_stage1.sh`; only evaluate metrics if you override (e.g. `metric` / `test`).
 - **Stage 2** — pathology head, legacy nnU-Net v1 API (`run_stage2.sh` → `pathology_segmentation_train.py`).
 - **Python env:** both stages default to `CARE_CineMyoPS_ENV` (same as CineMyoPS v1), usually `env_CARE_nnUNet_v1`. Override with `UMYOPS_PYTHON` / `LEGACY_PYTHON` if needed.
 - `run.sh` — local driver: prepare → stage 1; set **`UMYOPS_RUN_STAGE2=1`** to also run stage 2 in the same shell.
