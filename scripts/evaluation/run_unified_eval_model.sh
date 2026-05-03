@@ -56,6 +56,16 @@ abs_path() {
   readlink -f "$1"
 }
 
+resolve_umyo_stage2_task() {
+  local fold="$1"
+  local base="${UMYOPS_STAGE2_TASK:-Task901_CARE_UmyopsPathology}"
+  if [[ "${UMYOPS_STAGE2_PER_FOLD_TASK:-1}" == "1" ]]; then
+    printf '%s_fold%s\n' "${base}" "${fold}"
+  else
+    printf '%s\n' "${base}"
+  fi
+}
+
 link_exact_cases() {
   local src_dir="$1" dest_dir="$2" split_json="$3" fold="$4"
   mkdir -p "${dest_dir}"
@@ -87,6 +97,26 @@ run_myops_export_if_needed() {
   "${PY}" "${CARE_ROOT}/scripts/MyoPS-Net/export_val_predictions.py" \
     --data-root "${data_root}" \
     --output-dir "${pred_dir}"
+}
+
+run_umyops_export_if_needed() {
+  local fold="$1" pred_dir="$2"
+  if compgen -G "${pred_dir}/*.nii.gz" >/dev/null; then
+    return 0
+  fi
+  echo "Export U-MyoPS fold ${fold} validation predictions -> ${pred_dir}"
+  local cmd=(
+    "${PY}" "${CARE_ROOT}/scripts/U-MyoPS/export_stage2_val_predictions.py"
+    --fold "${fold}"
+    --base-task-name "${UMYOPS_STAGE2_TASK}"
+    --trainer "${UMYOPS_STAGE2_TRAINER:-nnUNetTrainerPSNV8}"
+    --dim "${UMYOPS_STAGE2_DIM:-2d}"
+    --output-dir "${pred_dir}"
+  )
+  if [[ "${UMYOPS_STAGE2_PER_FOLD_TASK:-1}" == "1" ]]; then
+    cmd+=( --per-fold-task )
+  fi
+  "${cmd[@]}"
 }
 
 SUMMARY_INPUTS=()
@@ -127,10 +157,8 @@ for FOLD in ${FOLDS}; do
       SPLIT_JSON="${CARE_ROOT}/data/benchmarks/protocol/splits_MyoPS.json"
       GT_DIR="${nnUNet_raw}/Dataset501_CAREMyoPS/labelsTr"
       FG="${FG_CLASSES:-4,5}"
-      [[ -d "${PRED_DIR}" ]] || {
-        echo "missing ${PRED_DIR}; U-MyoPS prediction export is not wired yet. Stage2 pathology outputs should be evaluated here." >&2
-        exit 1
-      }
+      mkdir -p "${PRED_DIR}"
+      run_umyops_export_if_needed "${FOLD}" "${PRED_DIR}"
       ;;
     *)
       echo "unsupported model: ${MODEL}" >&2

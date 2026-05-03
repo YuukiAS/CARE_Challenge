@@ -3,7 +3,7 @@
 set -euo pipefail
 
 CARE_ROOT="${CARE_ROOT:-$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)}"
-MODELS="${MODELS:-nnUNet501 MyoPS-Net nnUNet502 CineMyoPS}"
+MODELS="${MODELS:-nnUNet501 MyoPS-Net U-MyoPS nnUNet502 CineMyoPS}"
 FOLDS="${FOLDS:-0 1 2 3 4}"
 
 for MODEL in ${MODELS}; do

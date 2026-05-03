@@ -12,7 +12,7 @@ CINE_INPUT="${CINE_PROTOCOL_INPUT:-${CARE_ROOT}/data/CARE_Challenge/CineMyoPS_tr
 
 cmd="${1:-}"
 [[ -n "${cmd}" ]] || {
-  echo "usage: bash code/run_unified_benchmark.sh <gen-protocol|write-splits-501|write-splits-502|write-splits-task025|print-all> [args...]" >&2
+  echo "usage: bash code/run_unified_benchmark.sh <gen-protocol|write-splits-501|write-splits-502|write-splits-task025|write-splits-umyo-stage2|print-all> [args...]" >&2
   exit 1
 }
 shift || true
@@ -25,6 +25,16 @@ for arg in "$@"; do
     translated_args+=("${arg}")
   fi
 done
+
+resolve_umyo_stage2_task() {
+  local fold="${1:-${FOLD:-0}}"
+  local base="${UMYOPS_STAGE2_TASK:-Task901_CARE_UmyopsPathology}"
+  if [[ "${UMYOPS_STAGE2_PER_FOLD_TASK:-1}" == "1" ]]; then
+    printf '%s_fold%s\n' "${base}" "${fold}"
+  else
+    printf '%s\n' "${base}"
+  fi
+}
 
 case "${cmd}" in
   gen-protocol)
@@ -58,6 +68,14 @@ case "${cmd}" in
       --preprocessed-task-dir "${nnUNet_preprocessed}/Task025_Cine_Seg" \
       "${translated_args[@]}"
     ;;
+  write-splits-umyo-stage2)
+    UMYOPS_STAGE2_TASK_NAME="$(resolve_umyo_stage2_task "${FOLD:-0}")"
+    "${PY}" "${CARE_ROOT}/scripts/benchmark/nnunet_v1_write_splits_final.py" \
+      --protocol-json "${PROTO_DIR}/splits_MyoPS.json" \
+      --task-dir "${CARE_ROOT}/third_party/U-MyoPS_myops/outputs/nnunet/raw/nnUNet_raw_data/${UMYOPS_STAGE2_TASK_NAME}" \
+      --preprocessed-task-dir "${CARE_ROOT}/third_party/U-MyoPS_myops/outputs/nnunet/prepro/${UMYOPS_STAGE2_TASK_NAME}" \
+      "${translated_args[@]}"
+    ;;
   print-all)
     echo "CARE_ROOT=${CARE_ROOT}"
     echo "Protocol JSON:"
@@ -69,6 +87,10 @@ case "${cmd}" in
     echo
     echo "Task025 split:"
     ls -1 "${nnUNet_preprocessed}/Task025_Cine_Seg/splits_final.pkl" 2>/dev/null || true
+    echo
+    echo "U-MyoPS Stage2 split (current fold task):"
+    UMYOPS_STAGE2_TASK_NAME="$(resolve_umyo_stage2_task "${FOLD:-0}")"
+    ls -1 "${CARE_ROOT}/third_party/U-MyoPS_myops/outputs/nnunet/prepro/${UMYOPS_STAGE2_TASK_NAME}/splits_final.pkl" 2>/dev/null || true
     ;;
   *)
     echo "unknown command: ${cmd}" >&2

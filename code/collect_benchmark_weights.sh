@@ -12,6 +12,7 @@
 # Env (optional): CARE_ROOT, CARE_ROOT_OVERRIDE, FOLD, FOLDS, COLLECT_MODE=symlink|copy,
 #   CONFIG (nnUNet v2, default 3d_fullres), CARE_NNUNET_TRAINER,
 #   CINE_NNUNET_TASK, UMYOPS_STAGE2_TASK, UMYOPS_STAGE2_TRAINER, UMYOPS_STAGE2_DIM,
+#   UMYOPS_STAGE2_PER_FOLD_TASK=0|1,
 #   UMYOPS_WEIGHT (stage1 model_id weight segment, default 1.0), UMYOPS_NET/TPS (default tps),
 #   UMYOPS_DATA_SOURCE (default ZS_unaligned)
 set -euo pipefail
@@ -62,6 +63,7 @@ CINE_NNUNET_TASK="${CINE_NNUNET_TASK:-Task025_Cine_Seg}"
 UMYOPS_STAGE2_TASK="${UMYOPS_STAGE2_TASK:-Task901_CARE_UmyopsPathology}"
 UMYOPS_STAGE2_TRAINER="${UMYOPS_STAGE2_TRAINER:-nnUNetTrainerPSNV8}"
 UMYOPS_STAGE2_DIM="${UMYOPS_STAGE2_DIM:-2d}"
+UMYOPS_STAGE2_PER_FOLD_TASK="${UMYOPS_STAGE2_PER_FOLD_TASK:-1}"
 UMYOPS_WEIGHT="${UMYOPS_WEIGHT:-1.0}"
 UMYOPS_NET="${UMYOPS_NET:-tps}"
 UMYOPS_DATA_SOURCE="${UMYOPS_DATA_SOURCE:-ZS_unaligned}"
@@ -103,6 +105,44 @@ _place() {
     ln -sfn "$(_abs "${src}")" "${dest}"
     echo "  symlink -> ${dest}"
   fi
+}
+
+_resolve_umyo_stage2_task() {
+  local fold="$1"
+  if [[ "${UMYOPS_STAGE2_PER_FOLD_TASK}" == "1" ]]; then
+    printf '%s_fold%s\n' "${UMYOPS_STAGE2_TASK}" "${fold}"
+  else
+    printf '%s\n' "${UMYOPS_STAGE2_TASK}"
+  fi
+}
+
+_find_umyo_stage1_dir() {
+  local fold="$1"
+  local exact="${UMYO_REPO}/outputs/asn_myo_tps_${UMYOPS_NET}_${UMYOPS_DATA_SOURCE}_${UMYOPS_WEIGHT}_fold${fold}"
+  if [[ -d "${exact}/checkpoint" ]]; then
+    printf '%s\n' "${exact}"
+    return 0
+  fi
+
+  local best=""
+  local best_score=-1
+  local cand score
+  shopt -s nullglob
+  for cand in "${UMYO_REPO}"/outputs/*_fold"${fold}"; do
+    [[ -d "${cand}" ]] || continue
+    [[ -d "${cand}/checkpoint" || -d "${cand}/gen_res" ]] || continue
+    score=0
+    [[ "$(basename "${cand}")" == asn_myo_tps_"${UMYOPS_NET}"_"${UMYOPS_DATA_SOURCE}"_"${UMYOPS_WEIGHT}"_fold"${fold}" ]] && score=$((score + 100))
+    [[ "$(basename "${cand}")" == *"${UMYOPS_NET}"* ]] && score=$((score + 10))
+    [[ "$(basename "${cand}")" == *"${UMYOPS_DATA_SOURCE}"* ]] && score=$((score + 10))
+    [[ "$(basename "${cand}")" == *"${UMYOPS_WEIGHT}"* ]] && score=$((score + 10))
+    if [[ "${score}" -gt "${best_score}" ]]; then
+      best="${cand}"
+      best_score="${score}"
+    fi
+  done
+  shopt -u nullglob
+  [[ -n "${best}" ]] && printf '%s\n' "${best}"
 }
 
 echo "=== CARE collect_benchmark_weights ==="
@@ -168,10 +208,10 @@ for FOLD in ${FOLDS}; do
 
   if _want U-MyoPS; then
     echo "[U-MyoPS stage1]"
-    MID="asn_myo_tps_${UMYOPS_NET}_${UMYOPS_DATA_SOURCE}_${UMYOPS_WEIGHT}_fold${FOLD}"
-    S1CK="${UMYO_REPO}/outputs/${MID}/checkpoint"
+    S1DIR="$(_find_umyo_stage1_dir "${FOLD}" || true)"
+    S1CK="${S1DIR:+${S1DIR}/checkpoint}"
     DEST1="${MODELS_ROOT}/U-MyoPS/fold_${FOLD}/stage1"
-    if [[ -d "${S1CK}" ]]; then
+    if [[ -n "${S1CK}" && -d "${S1CK}" ]]; then
       shopt -s nullglob
       for p in "${S1CK}"/epoch_*.pth; do
         _place "${p}" "${DEST1}" "$(basename "${p}")"
@@ -182,11 +222,12 @@ for FOLD in ${FOLDS}; do
         _place "${_latest_s1}" "${DEST1}" "latest.pth"
       fi
     else
-      echo "  skip: no ${S1CK}" >&2
+      echo "  skip: no stage1 checkpoint dir found for fold ${FOLD} under ${UMYO_REPO}/outputs" >&2
     fi
 
     echo "[U-MyoPS stage2 / nnU-Net v1 pathology]"
-    S2BASE="${UMYO_REPO}/outputs/nnunet/output/nnUNet/${UMYOPS_STAGE2_DIM}/${UMYOPS_STAGE2_TASK}/${UMYOPS_STAGE2_TRAINER}__nnUNetPlansv2.1/fold_${FOLD}"
+    UMYOPS_STAGE2_TASK_NAME="$(_resolve_umyo_stage2_task "${FOLD}")"
+    S2BASE="${UMYO_REPO}/outputs/nnunet/output/nnUNet/${UMYOPS_STAGE2_DIM}/${UMYOPS_STAGE2_TASK_NAME}/${UMYOPS_STAGE2_TRAINER}__nnUNetPlansv2.1/fold_${FOLD}"
     DEST2="${MODELS_ROOT}/U-MyoPS/fold_${FOLD}/stage2"
     for f in model_final_checkpoint.model model_best.model model_latest.model; do
       _place "${S2BASE}/${f}" "${DEST2}" "${f}"

@@ -259,10 +259,11 @@ results/metrics/unified/<model>/aggregate.md
   - data staging: `data/benchmarks/MyoPS-Net/fold_k/`
   - outputs/checkpoints: `results/checkpoints/MyoPS-Net/fold_k/`
 - `CineMyoPS` unified evaluation can export predictions on protocol val cases even if historical `validation_raw` was produced with a different split.
-- `U-MyoPS` Stage 2 is **off by default**. Enable only after its nnU-Net v1 task and preprocessing are ready:
+- `U-MyoPS` unified benchmark submit mode is controlled by **`UMYOPS_BENCHMARK_STAGES`** (set near **`BENCHMARK_MODEL_PLAN`** in `run_unified_benchmark_all.sh` / `run_unified_benchmark_test.sh`, or export before running): **`stage1`** (default), **`stage2`** only, or **`both`** / **`all`** (Stage 1 then Stage 2 with Slurm `afterok`). Only applies when **`U-MyoPS=run`** in the plan. Local `code/U-MyoPS/run.sh` still uses **`UMYOPS_RUN_STAGE2`** from `env_nnunet.sh`.
 
 ```bash
-UMYOPS_RUN_STAGE2=1 bash code/run_unified_benchmark_all.sh
+# Example: submit Stage 1 + Stage 2 chained (after nnU-Net v1 Task + preprocessing exist)
+UMYOPS_BENCHMARK_STAGES=both bash code/run_unified_benchmark_all.sh submit
 ```
 
 - For cross-model comparison, `U-MyoPS` should ultimately be compared using **Stage 2 pathology predictions**, not Stage 1.

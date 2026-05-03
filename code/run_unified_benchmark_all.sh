@@ -39,6 +39,13 @@ BENCHMARK_MODEL_PLAN=(
   "CineMyoPS=run"
 )
 
+# U-MyoPS Slurm submit mode when BENCHMARK_MODEL_PLAN has U-MyoPS=run (ignored if U-MyoPS is skip/eval).
+#   stage1 -> only Stage 1 (sbatch_stage1.sh)
+#   stage2 -> only Stage 2 (sbatch_stage2.sh); no afterok (use when Stage 1 is already done)
+#   both   -> Stage 1 then Stage 2 with Slurm afterok on Stage 1
+# Alias: all -> same as both
+UMYOPS_BENCHMARK_STAGES="${UMYOPS_BENCHMARK_STAGES:-stage1}"
+
 FOLDS="${FOLDS:-0 1 2 3 4}"
 PREPARE_SHARE="${PREPARE_SHARE:-1}"
 
@@ -174,15 +181,29 @@ run_submit() {
       fi
       care_conda_activate "${CARE_CONDA_ENV_NNUNET_V1}"
       export CARE_CineMyoPS_ENV="${CARE_CineMyoPS_ENV:-${CARE_CONDA_ENV_NNUNET_V1}}"
-      _UMY_EXPORT="ALL,CARE_ROOT,FOLD,PREPARE,CARE_CineMyoPS_ENV,CARE_CINEMYOPS_ENV,UMYOPS_PYTHON,LEGACY_PYTHON"
-      UMYOPS_S1_JOB="$(sbatch --parsable --export="${_UMY_EXPORT}" "${CARE_ROOT}/code/U-MyoPS/sbatch_stage1.sh")"
-      echo "Submitted U-MyoPS Stage 1 job ${UMYOPS_S1_JOB} (FOLD=${FOLD})"
-      if [[ "${UMYOPS_RUN_STAGE2:-0}" == "1" ]]; then
-        UMYOPS_S2_JOB="$(sbatch --parsable --dependency=afterok:"${UMYOPS_S1_JOB}" \
-          --export=ALL,CARE_ROOT,FOLD,CARE_CineMyoPS_ENV,CARE_CINEMYOPS_ENV,UMYOPS_PYTHON,LEGACY_PYTHON,UMYOPS_STAGE2_TASK,UMYOPS_STAGE2_DIM,UMYOPS_STAGE2_TRAINER,UMYOPS_STAGE2_EPOCHS \
-          "${CARE_ROOT}/code/U-MyoPS/sbatch_stage2.sh")"
-        echo "Submitted U-MyoPS Stage 2 job ${UMYOPS_S2_JOB} (afterok:${UMYOPS_S1_JOB}, FOLD=${FOLD})"
-      fi
+      _UMY_EXPORT="ALL,CARE_ROOT,FOLD,PREPARE,CARE_CineMyoPS_ENV,CARE_CINEMYOPS_ENV,UMYOPS_PYTHON,LEGACY_PYTHON,UMYOPS_NET,UMYOPS_DATA_SOURCE,UMYOPS_WEIGHT"
+      _UMY_S2_EXPORT="ALL,CARE_ROOT,FOLD,CARE_CineMyoPS_ENV,CARE_CINEMYOPS_ENV,UMYOPS_PYTHON,LEGACY_PYTHON,UMYOPS_STAGE2_TASK,UMYOPS_STAGE2_PER_FOLD_TASK,UMYOPS_STAGE2_AUTO_PREP,UMYOPS_STAGE2_PRIOR_TAG,UMYOPS_STAGE2_FORCE_CLEAN,UMYOPS_STAGE2_PREPROCESS_TF,UMYOPS_STAGE2_PREPROCESS_TL,UMYOPS_STAGE2_DIM,UMYOPS_STAGE2_TRAINER,UMYOPS_STAGE2_EPOCHS,UMYOPS_NET,UMYOPS_DATA_SOURCE,UMYOPS_WEIGHT"
+      case "${UMYOPS_BENCHMARK_STAGES}" in
+        stage1)
+          UMYOPS_S1_JOB="$(sbatch --parsable --export="${_UMY_EXPORT}" "${CARE_ROOT}/code/U-MyoPS/sbatch_stage1.sh")"
+          echo "Submitted U-MyoPS Stage 1 job ${UMYOPS_S1_JOB} (FOLD=${FOLD})"
+          ;;
+        stage2)
+          UMYOPS_S2_JOB="$(sbatch --parsable --export="${_UMY_S2_EXPORT}" "${CARE_ROOT}/code/U-MyoPS/sbatch_stage2.sh")"
+          echo "Submitted U-MyoPS Stage 2 job ${UMYOPS_S2_JOB} (FOLD=${FOLD})"
+          ;;
+        both|all)
+          UMYOPS_S1_JOB="$(sbatch --parsable --export="${_UMY_EXPORT}" "${CARE_ROOT}/code/U-MyoPS/sbatch_stage1.sh")"
+          echo "Submitted U-MyoPS Stage 1 job ${UMYOPS_S1_JOB} (FOLD=${FOLD})"
+          UMYOPS_S2_JOB="$(sbatch --parsable --dependency=afterok:"${UMYOPS_S1_JOB}" \
+            --export="${_UMY_S2_EXPORT}" "${CARE_ROOT}/code/U-MyoPS/sbatch_stage2.sh")"
+          echo "Submitted U-MyoPS Stage 2 job ${UMYOPS_S2_JOB} (afterok:${UMYOPS_S1_JOB}, FOLD=${FOLD})"
+          ;;
+        *)
+          echo "Invalid UMYOPS_BENCHMARK_STAGES=${UMYOPS_BENCHMARK_STAGES} (use stage1, stage2, or both)" >&2
+          exit 1
+          ;;
+      esac
     else
       echo "Skip submit: U-MyoPS (FOLD=${FOLD})"
     fi
@@ -206,11 +227,21 @@ run_submit() {
     fi
   done
 
-  local nfolds jpf
+  local nfolds _jpf _umy
   nfolds=$(echo "${FOLDS}" | wc -w)
-  jpf=5
-  [[ "${UMYOPS_RUN_STAGE2:-0}" == "1" ]] && jpf=6
-  echo "Submitted $((nfolds * jpf)) jobs."
+  _jpf=0
+  want_submit nnUNet && _jpf=$((_jpf + 2))
+  want_submit MyoPS-Net && _jpf=$((_jpf + 1))
+  _umy=0
+  if want_submit U-MyoPS; then
+    case "${UMYOPS_BENCHMARK_STAGES}" in
+      both|all) _umy=2 ;;
+      stage1|stage2) _umy=1 ;;
+    esac
+  fi
+  _jpf=$((_jpf + _umy))
+  want_submit CineMyoPS && _jpf=$((_jpf + 1))
+  echo "Submitted ~$((nfolds * _jpf)) jobs (approx; U-MyoPS mode=${UMYOPS_BENCHMARK_STAGES})."
 }
 
 run_collect() {

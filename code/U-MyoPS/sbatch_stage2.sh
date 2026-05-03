@@ -24,13 +24,29 @@ export CARE_CineMyoPS_ENV
 export PATH="${CARE_CineMyoPS_ENV}/bin:${PATH}"
 export LEGACY_PYTHON="${LEGACY_PYTHON:-${CARE_CineMyoPS_ENV}/bin/python}"
 
+resolve_stage2_task_name() {
+  local base="${UMYOPS_STAGE2_TASK:-Task901_CARE_UmyopsPathology}"
+  if [[ "${UMYOPS_STAGE2_PER_FOLD_TASK:-1}" == "1" ]]; then
+    printf '%s_fold%s\n' "${base}" "${FOLD:-0}"
+  else
+    printf '%s\n' "${base}"
+  fi
+}
+
 mkdir -p logs
 TS="$(date +%Y%m%d_%H%M%S)"
 LOG_FILE="${LOG_FILE:-${CARE_ROOT}/logs/U-MyoPS_Stage2_${SLURM_JOB_ID:-local}_${TS}.log}"
 exec > >(tee -a "${LOG_FILE}") 2>&1
 
 UMYO_REPO="$(cd "${CARE_ROOT}/third_party/U-MyoPS_myops" && pwd)"
-_PREPRO="${UMYO_REPO}/outputs/nnunet/prepro/${UMYOPS_STAGE2_TASK}"
+UMYOPS_STAGE2_TASK_NAME="${UMYOPS_STAGE2_TASK_NAME:-$(resolve_stage2_task_name)}"
+export UMYOPS_STAGE2_TASK_NAME
+
+if [[ "${UMYOPS_STAGE2_AUTO_PREP:-0}" == "1" ]]; then
+  bash "${CARE_ROOT}/scripts/U-MyoPS/prepare_stage2_task.sh"
+fi
+
+_PREPRO="${UMYO_REPO}/outputs/nnunet/prepro/${UMYOPS_STAGE2_TASK_NAME}"
 if [[ "${UMYOPS_STAGE2_DIM:-2d}" == "2d" ]]; then
   _PLANS="${_PREPRO}/nnUNetPlansv2.1_plans_2D.pkl"
 else
@@ -39,16 +55,16 @@ fi
 if [[ ! -f "${_PLANS}" ]]; then
   echo "error: U-MyoPS stage 2 requires nnU-Net v1 preprocessing (missing plans pickle)." >&2
   echo "  Expected file: ${_PLANS}" >&2
-  echo "  Raw task root:   ${UMYO_REPO}/outputs/nnunet/raw/nnUNet_raw_data/${UMYOPS_STAGE2_TASK}/" >&2
+  echo "  Raw task root:   ${UMYO_REPO}/outputs/nnunet/raw/nnUNet_raw_data/${UMYOPS_STAGE2_TASK_NAME}/" >&2
   echo "  See code/U-MyoPS/README.md — Stage 2 prerequisites (create Task + plan_and_preprocess)." >&2
   exit 1
 fi
 
-echo "===== U-MyoPS Stage 2: pathology nnU-Net (task=${UMYOPS_STAGE2_TASK}, fold=${FOLD:-0}) ====="
+echo "===== U-MyoPS Stage 2: pathology nnU-Net (task=${UMYOPS_STAGE2_TASK_NAME}, fold=${FOLD:-0}) ====="
 bash "${CARE_ROOT}/scripts/U-MyoPS/run_stage2.sh" \
   "${UMYOPS_STAGE2_DIM:-2d}" \
   "${UMYOPS_STAGE2_TRAINER:-nnUNetTrainerPSNV8}" \
-  "${UMYOPS_STAGE2_TASK}" \
+  "${UMYOPS_STAGE2_TASK_NAME}" \
   "${FOLD:-0}" \
   --epochs "${UMYOPS_STAGE2_EPOCHS:-100}"
 echo "===== U-MyoPS Stage 2 done ====="
