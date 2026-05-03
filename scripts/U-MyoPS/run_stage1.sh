@@ -30,4 +30,5 @@ exec "${PY}" joint_registration_myocardium_segmentation.py \
   --data_source "${UMYOPS_DATA_SOURCE:-ZS_unaligned}" \
   --net "${UMYOPS_NET:-tps}" \
   --weight "${UMYOPS_WEIGHT:-1.0}" \
+  --epochs "${UMYOPS_STAGE1_EPOCHS:-500}" \
   "$@"

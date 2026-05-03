@@ -6,7 +6,9 @@ Upstream expects (see third_party/MyoPS-Net): train_set/train_image, train_set/t
 train.txt / validation.txt with lines: image_prefix gd_prefix z_index (paths relative to --path).
 
 File naming per slice stack: prefix_C0.nii.gz, _LGE, _T2, _T1m, _T2starm, and gd: prefix_gd.nii.gz.
-CARE provides C0, LGE, T2, gd; T1m and T2starm are zero-filled on the LGE grid.
+CARE challenge task only provides C0, LGE, T2, gd. T1m and T2starm are retained as
+zero-filled compatibility placeholders on the LGE grid, but the CARE challenge3 model
+variant ignores them during training and inference.
 """
 from __future__ import annotations
 

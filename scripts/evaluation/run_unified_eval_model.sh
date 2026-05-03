@@ -107,7 +107,8 @@ run_myops_export_if_needed() {
   echo "Export MyoPS-Net fold ${fold} validation predictions -> ${pred_dir}"
   "${PY}" "${CARE_ROOT}/scripts/MyoPS-Net/export_val_predictions.py" \
     --data-root "${data_root}" \
-    --output-dir "${pred_dir}"
+    --output-dir "${pred_dir}" \
+    --variant "${MYOPS_NET_VARIANT:-challenge3}"
 }
 
 run_umyops_export_if_needed() {

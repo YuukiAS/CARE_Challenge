@@ -68,7 +68,7 @@ def main() -> None:
         help="Task folder (contains imagesTr, labelsTr, dataset.json)",
     )
     ap.add_argument("--max-cases", type=int, default=0)
-    ap.add_argument("--time-index", type=int, default=-1, help="-1 = middle frame")
+    ap.add_argument("--time-index", type=int, default=-1, help="-1 = temporal midpoint")
     args = ap.parse_args()
 
     pairs = discover_pairs(args.input)

@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import argparse
+import os
 import re
 import sys
 from pathlib import Path
@@ -115,11 +116,15 @@ def run_case(
 
         seg_lge = torch.argmax(res_lge, dim=1).squeeze(0).cpu()
         seg_t2 = torch.argmax(res_t2, dim=1).squeeze(0).cpu()
-        seg_mapping = torch.argmax(res_mapping, dim=1).squeeze(0).cpu()
+        if res_mapping is not None:
+            seg_mapping = torch.argmax(res_mapping, dim=1).squeeze(0).cpu()
+        else:
+            seg_mapping = None
 
         seg_lge = keep_lcc(seg_lge, "scar")
         seg_t2 = keep_lcc(seg_t2, "edema")
-        seg_mapping = keep_lcc(seg_mapping, "scar")
+        if seg_mapping is not None:
+            seg_mapping = keep_lcc(seg_mapping, "scar")
 
         pathology = result_transform(seg_lge, seg_mapping, seg_t2).numpy().astype(np.uint8, copy=False)
         compact = np.zeros_like(pathology, dtype=np.uint8)
@@ -138,6 +143,12 @@ def main() -> None:
     ap.add_argument("--checkpoint-dir", type=Path, default=None, help="Folder containing *.pth; best score file is selected")
     ap.add_argument("--dim", type=int, default=192)
     ap.add_argument("--device", type=str, default="cuda" if torch.cuda.is_available() else "cpu")
+    ap.add_argument(
+        "--variant",
+        type=str,
+        default=os.environ.get("MYOPS_NET_VARIANT", "challenge3"),
+        choices=["full", "challenge3"],
+    )
     args = ap.parse_args()
 
     ckpt = args.checkpoint
@@ -148,7 +159,7 @@ def main() -> None:
         ckpt = select_checkpoint(ckpt_dir)
 
     device = torch.device(args.device)
-    model = MyoPSNet(in_chs=(5, 2, 2, 3), out_chs=(3, 3, 3, 3)).to(device)
+    model = MyoPSNet(in_chs=(5, 2, 2, 3), out_chs=(3, 3, 3, 3), variant=args.variant).to(device)
     state = torch.load(ckpt, map_location=device)
     model.load_state_dict(state)
     model.eval()

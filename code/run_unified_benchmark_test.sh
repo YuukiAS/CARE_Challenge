@@ -40,9 +40,9 @@ fi
 #   "CineMyoPS=run"
 BENCHMARK_MODEL_PLAN=(
   "nnUNet=skip"
-  "MyoPS-Net=skip"
+  "MyoPS-Net=run"
   "U-MyoPS=run"
-  "CineMyoPS=skip"
+  "CineMyoPS=run"
 )
 
 # * U-MyoPS Slurm submit mode when BENCHMARK_MODEL_PLAN has U-MyoPS=run (ignored if U-MyoPS is skip/eval).
