@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Collect trained benchmark weights into canonical fold-wise directories under ${CARE_ROOT}/models/:
 #   nnUNet501/fold_k, nnUNet502/fold_k, MyoPS-Net/fold_k, CineMyoPS/fold_k, U-MyoPS/fold_k/{stage1,stage2}
-# Aligns with code/run_unified_benchmark_{test,all}.sh job layout (FOLD / env_nnunet.sh).
+# Aligns with code/run_unified_benchmark_{test,all}.sh job layout (FOLD / env_nnunet.sh). Prep uses benchmark_protocol_helpers.sh.
 #
 # Usage (repo root or any cwd):
 #   bash code/collect_benchmark_weights.sh
@@ -191,15 +191,13 @@ for FOLD in ${FOLDS}; do
       CKPT_DIR="${LEGACY_CKPT_DIR}"
     fi
     if [[ -d "${CKPT_DIR}" ]]; then
-      shopt -s nullglob
-      _n_myops=0
-      for p in "${CKPT_DIR}"/*.pth; do
-        _place "${p}" "${DESTM}" "$(basename "${p}")"
-        _n_myops=$((_n_myops + 1))
-      done
-      shopt -u nullglob
-      if [[ "${_n_myops}" -eq 0 ]]; then
-        echo "  (no .pth under ${CKPT_DIR}; MyoPS-Net saves only when val dice > threshold)" >&2
+      mkdir -p "${DESTM}"
+      rm -f "${DESTM}"/*.pth
+      if [[ -f "${CKPT_DIR}/best.pth" ]]; then
+        _place "${CKPT_DIR}/best.pth" "${DESTM}" "best.pth"
+        _place "${CKPT_DIR}/best_metrics.txt" "${DESTM}" "best_metrics.txt"
+      else
+        echo "  (no best.pth under ${CKPT_DIR}; MyoPS-Net has not saved a best checkpoint yet)" >&2
       fi
     else
       echo "  skip: no directory ${CKPT_DIR}" >&2

@@ -4,7 +4,7 @@ CARE 对本模型的入口脚本在 **`scripts/U-MyoPS/`** 与本目录；上游
 
 **完整中文说明（目录结构、Stage1/2、缺口、环境、`models/` 权重）：请阅读**
 
-→ **[`third_party/U-MyoPS_myops/README.CARE.md`](../../third_party/U-MyoPS_myops/README.CARE.md)**
+→ **[`third_party/U-MyoPS_myops/README-CN.md`](../../third_party/U-MyoPS_myops/README-CN.md)**
 
 下文仅保留最常用的命令与环境提示。
 
@@ -13,6 +13,7 @@ CARE 对本模型的入口脚本在 **`scripts/U-MyoPS/`** 与本目录；上游
 ## 快速参考
 
 - **Stage 1**：联合配准 + 心肌 — `scripts/U-MyoPS/run_stage1.sh`。上游默认 `--phase` 为 `metric`（几乎不训练）；CARE 默认 **`UMYOPS_STAGE1_PHASE=train`**。
+- **Stage 1 数据协议（CARE patch）**：prepare 脚本现在会为每个病例写 `subject_meta.json`，按有效 `z` slices + per-slice bbox 训练/推断；不再默认丢成单个中心层。`run_stage1.sh` 也会在 staging 缺失 manifest 时自动重建。
 - **Stage 1 legacy layout**：`scripts/U-MyoPS/prepare_stage1_layout.sh` 会自动把 CARE staging 接到上游 `jrs` 期待的 `third_party/U-MyoPS_myops/data/gen_<data_source>/{data,croped}`。
 - **Stage 2**：病理 nnU-Net v1 — `scripts/U-MyoPS/run_stage2.sh` → `pathology_segmentation_train.py`。
 - **Python**：默认 `CARE_CineMyoPS_ENV`（常与 CineMyoPS v1 共用），一般为 `env_CARE_nnUNet_v1`；可用 `UMYOPS_PYTHON` / `LEGACY_PYTHON` 覆盖。
@@ -71,7 +72,7 @@ export UMYOPS_STAGE1_AUTO_LAYOUT=1
 bash code/collect_benchmark_weights.sh --only U-MyoPS --folds "0 1 2 3 4"
 ```
 
-输出 **`models/U-MyoPS/fold_k/stage1`** 与 **`stage2`**；详见 `README.CARE.md` 第六节。
+输出 **`models/U-MyoPS/fold_k/stage1`** 与 **`stage2`**；详见 **`README-CN.md`** 第六节。
 
 Stage1 路径发现会优先匹配这些变量，对应训练时的 `model_id` 片段：
 

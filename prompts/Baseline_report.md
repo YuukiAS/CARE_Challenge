@@ -122,7 +122,7 @@ Stage 1 is the paper’s registration-plus-myocardium part. `scripts/U-MyoPS/run
 
 Stage 2 is the pathology nnU-Net part. `scripts/U-MyoPS/run_stage2.sh` sets classic nnU-Net v1 paths via `nnUNet_raw_data_base`, `nnUNet_preprocessed`, and `RESULTS_FOLDER`, rooted under `third_party/U-MyoPS_myops/outputs/nnunet/{raw,prepro,output}` unless overridden. It then executes `third_party/U-MyoPS_myops/jrs/pathology_segmentation_train.py`, which is a thin wrapper around the vendored nnU-Net training entrypoint.
 
-The most important integration caveat is spelled out in `third_party/U-MyoPS_myops/README.CARE.md`: Stage 1 outputs checkpoints and `gen_res` artifacts, but it does not itself generate the nnU-Net Task folder required by Stage 2; the repository does not provide a one-click exporter from Stage-1 outputs to Stage-2 raw nnU-Net data. The same document explicitly states that this missing transformation must be implemented separately or obtained from the authors. Therefore, the CARE wrapper exposes the two stages, but the exact paper-faithful bridge between them is incomplete in the current repository.
+The most important integration caveat is spelled out in `third_party/U-MyoPS_myops/README-CN.md`: Stage 1 outputs checkpoints and `gen_res` artifacts, but it does not itself generate the nnU-Net Task folder required by Stage 2; the repository does not provide a one-click exporter from Stage-1 outputs to Stage-2 raw nnU-Net data. The same document explicitly states that this missing transformation must be implemented separately or obtained from the authors. Therefore, the CARE wrapper exposes the two stages, but the exact paper-faithful bridge between them is incomplete in the current repository.
 
 The data-preparation script also deserves attention. `scripts/U-MyoPS/prepare_u_myops_from_care.py` exports CARE cases into the `jrs` dataloader layout, but its docstring states that it uses a “unified gd for all three label paths (clinical approximation).” That is a concrete simplification relative to the original paper setting, where anatomy and pathology labels arise from sequence-specific annotation and common-space construction. The public upstream URL recorded in `third_party/README.md` is `https://github.com/NanYoMy/myops`.
 
@@ -291,7 +291,7 @@ Third, because no validated CARE metrics files were supplied for this request, n
 - `scripts/U-MyoPS/prepare_u_myops_from_care.py`
 - `scripts/U-MyoPS/run_stage1.sh`
 - `scripts/U-MyoPS/run_stage2.sh`
-- `third_party/U-MyoPS_myops/README.CARE.md`
+- `third_party/U-MyoPS_myops/README-CN.md`
 - `third_party/U-MyoPS_myops/jrs/joint_registration_myocardium_segmentation.py`
 - `third_party/U-MyoPS_myops/jrs/pathology_segmentation_train.py`
 - `scripts/CineMyoPS/prepare_task025_from_care.py`

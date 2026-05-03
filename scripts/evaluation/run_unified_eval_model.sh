@@ -52,6 +52,17 @@ for cid in folds[fold]["val"]:
 PY
 }
 
+# All protocol val NIfTI must exist; otherwise a previous partial export can leave
+# a few *.nii.gz and skip re-export (compgen -G is too weak).
+pred_dir_has_all_val_cases() {
+  local pred_dir="$1" split_json="$2" fold="$3"
+  local cid
+  while IFS= read -r cid; do
+    [[ -f "${pred_dir}/${cid}.nii.gz" ]] || return 1
+  done < <(case_list "${split_json}" "${fold}")
+  return 0
+}
+
 abs_path() {
   readlink -f "$1"
 }
@@ -88,8 +99,8 @@ link_suffix_cases() {
 }
 
 run_myops_export_if_needed() {
-  local fold="$1" pred_dir="$2"
-  if compgen -G "${pred_dir}/*.nii.gz" >/dev/null; then
+  local fold="$1" pred_dir="$2" split_json="$3"
+  if pred_dir_has_all_val_cases "${pred_dir}" "${split_json}" "${fold}"; then
     return 0
   fi
   local data_root="${CARE_ROOT}/data/benchmarks/MyoPS-Net/fold_${fold}"
@@ -100,8 +111,8 @@ run_myops_export_if_needed() {
 }
 
 run_umyops_export_if_needed() {
-  local fold="$1" pred_dir="$2"
-  if compgen -G "${pred_dir}/*.nii.gz" >/dev/null; then
+  local fold="$1" pred_dir="$2" split_json="$3"
+  if pred_dir_has_all_val_cases "${pred_dir}" "${split_json}" "${fold}"; then
     return 0
   fi
   echo "Export U-MyoPS fold ${fold} validation predictions -> ${pred_dir}"
@@ -143,13 +154,13 @@ for FOLD in ${FOLDS}; do
       GT_DIR="${nnUNet_raw}/Dataset501_CAREMyoPS/labelsTr"
       FG="${FG_CLASSES:-4,5}"
       mkdir -p "${PRED_DIR}"
-      run_myops_export_if_needed "${FOLD}" "${PRED_DIR}"
+      run_myops_export_if_needed "${FOLD}" "${PRED_DIR}" "${SPLIT_JSON}"
       ;;
     CineMyoPS)
       SPLIT_JSON="${CARE_ROOT}/data/benchmarks/protocol/splits_CineMyoPS.json"
       GT_DIR="${nnUNet_raw}/Dataset502_CARECineMyoPS/labelsTr"
       FG="${FG_CLASSES:-1,2,3}"
-      if ! compgen -G "${PRED_DIR}/*.nii.gz" >/dev/null; then
+      if ! pred_dir_has_all_val_cases "${PRED_DIR}" "${SPLIT_JSON}" "${FOLD}"; then
         FOLD="${FOLD}" bash "${CARE_ROOT}/scripts/CineMyoPS/export_protocol_val_predictions.sh"
       fi
       ;;
@@ -158,7 +169,7 @@ for FOLD in ${FOLDS}; do
       GT_DIR="${nnUNet_raw}/Dataset501_CAREMyoPS/labelsTr"
       FG="${FG_CLASSES:-4,5}"
       mkdir -p "${PRED_DIR}"
-      run_umyops_export_if_needed "${FOLD}" "${PRED_DIR}"
+      run_umyops_export_if_needed "${FOLD}" "${PRED_DIR}" "${SPLIT_JSON}"
       ;;
     *)
       echo "unsupported model: ${MODEL}" >&2

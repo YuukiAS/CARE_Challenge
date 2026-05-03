@@ -4,10 +4,17 @@
 set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 CARE_ROOT="$(cd "${SCRIPT_DIR}/../.." && pwd)"
+export CARE_ROOT
 REPO="${CARE_ROOT}/third_party/U-MyoPS_myops"
 _V1_ENV="${CARE_CineMyoPS_ENV:-${CARE_CINEMYOPS_ENV:-${CARE_ROOT}/env_CARE_nnUNet_v1}}"
 PY="${UMYOPS_PYTHON:-${_V1_ENV}/bin/python}"
 export PYTHONPATH="${REPO}/jrs:${REPO}:${PYTHONPATH:-}"
+STAGED_ROOT="${UMYOPS_STAGE1_STAGED_ROOT:-${CARE_ROOT}/data/benchmarks/U-MyoPS/gen_${UMYOPS_DATA_SOURCE:-ZS_unaligned}/data}"
+if [[ "${UMYOPS_STAGE1_AUTO_PREPARE:-1}" == "1" ]]; then
+  if [[ ! -d "${STAGED_ROOT}" ]] || ! find "${STAGED_ROOT}" -maxdepth 2 -name "subject_meta.json" -print -quit | grep -q .; then
+    "${PY}" "${CARE_ROOT}/scripts/U-MyoPS/prepare_u_myops_from_care.py"
+  fi
+fi
 if [[ "${UMYOPS_STAGE1_AUTO_LAYOUT:-1}" == "1" ]]; then
   bash "${CARE_ROOT}/scripts/U-MyoPS/prepare_stage1_layout.sh"
 fi

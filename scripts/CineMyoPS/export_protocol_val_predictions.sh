@@ -5,6 +5,9 @@ set -euo pipefail
 CARE_ROOT="${CARE_ROOT:-$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)}"
 source "${CARE_ROOT}/env_nnunet.sh"
 
+# CARE: quiet timestamped inference logs by default; set CINE_NNUNET_INFERENCE_VERBOSE=1 for legacy per-case prints.
+export CINE_NNUNET_INFERENCE_VERBOSE="${CINE_NNUNET_INFERENCE_VERBOSE:-0}"
+
 FOLD="${FOLD:-0}"
 TASK="${CINE_NNUNET_TASK:-Task025_Cine_Seg}"
 TRAINER="${CINE_NNUNET_TRAINER:-nnUNetTrainerV2}"

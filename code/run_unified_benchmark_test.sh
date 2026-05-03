@@ -5,7 +5,7 @@
 #   1. prep    -> refresh protocol + inject splits + ensure Task025 preprocessed
 #   2. submit  -> submit training jobs for one fold
 #   3. collect -> collect trained weights into models/
-#   4. eval    -> run unified offline evaluation on this fold
+#   4. eval    -> sbatch GPU unified eval -> logs/UnifiedEval_<jobid>.log (override: UNIFIED_EVAL_LOCAL=1)
 #   5. post    -> collect + eval
 #   6. full    -> prep + submit   (default)
 #
@@ -134,11 +134,11 @@ eval_targets_words() {
 run_prep() {
   export PATH="${CARE_ROOT}/env_CARE/bin:${PATH}"
   echo "=== CARE unified benchmark — PREP (FOLD=${FOLD}) ==="
-  bash "${CARE_ROOT}/code/run_unified_benchmark.sh" gen-protocol
-  bash "${CARE_ROOT}/code/run_unified_benchmark.sh" write-splits-501 --backup
-  bash "${CARE_ROOT}/code/run_unified_benchmark.sh" write-splits-502 --backup
+  bash "${CARE_ROOT}/code/benchmark_protocol_helpers.sh" gen-protocol
+  bash "${CARE_ROOT}/code/benchmark_protocol_helpers.sh" write-splits-501 --backup
+  bash "${CARE_ROOT}/code/benchmark_protocol_helpers.sh" write-splits-502 --backup
   bash "${CARE_ROOT}/scripts/CineMyoPS/ensure_task025_v1_preprocessed.sh"
-  bash "${CARE_ROOT}/code/run_unified_benchmark.sh" write-splits-task025 --backup
+  bash "${CARE_ROOT}/code/benchmark_protocol_helpers.sh" write-splits-task025 --backup
 }
 
 run_submit() {
@@ -227,8 +227,21 @@ run_eval() {
     echo "No models enabled for eval."
     return 0
   fi
-  MODELS="${eval_models}" FOLDS="${FOLD}" \
-    bash "${CARE_ROOT}/scripts/evaluation/run_unified_eval_all.sh"
+  if [[ "${UNIFIED_EVAL_LOCAL:-0}" == "1" ]]; then
+    MODELS="${eval_models}" FOLDS="${FOLD}" \
+      bash "${CARE_ROOT}/scripts/evaluation/run_unified_eval_all.sh"
+    return 0
+  fi
+  export MODELS="${eval_models}"
+  export FOLDS="${FOLD}"
+  local job_id
+  if [[ "${UNIFIED_EVAL_WAIT:-0}" == "1" ]]; then
+    job_id="$(sbatch --wait --parsable "${CARE_ROOT}/code/evaluation/sbatch_unified_eval.sh")"
+    echo "Unified eval GPU job ${job_id} finished. Log: ${CARE_ROOT}/logs/UnifiedEval_${job_id}.log"
+  else
+    job_id="$(sbatch --parsable "${CARE_ROOT}/code/evaluation/sbatch_unified_eval.sh")"
+    echo "Submitted unified eval GPU job ${job_id}; log ${CARE_ROOT}/logs/UnifiedEval_${job_id}.log"
+  fi
 }
 
 case "${ACTION}" in
@@ -253,7 +266,7 @@ case "${ACTION}" in
     run_submit
     ;;
   print)
-    bash "${CARE_ROOT}/code/run_unified_benchmark.sh" print-all
+    bash "${CARE_ROOT}/code/benchmark_protocol_helpers.sh" print-all
     ;;
   *)
     echo "unknown action: ${ACTION}" >&2

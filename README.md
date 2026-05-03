@@ -23,7 +23,7 @@ bash code/collect_benchmark_weights.sh --folds "0 1 2 3 4" --only nnUNet
 
 Notes:
 
-- `code/run_unified_benchmark.sh` is a helper for protocol generation and split injection. You usually do not call it directly except for inspection/debugging.
+- `code/benchmark_protocol_helpers.sh` is a helper for protocol generation and split injection. You usually do not call it directly except for inspection/debugging.
 - `code/run_unified_benchmark_test.sh` and `code/run_unified_benchmark_all.sh` each contain a single `BENCHMARK_MODEL_PLAN` block near the top. Edit that list to mark each model as `run`, `eval`, or `skip`. Right below it, **`UMYOPS_BENCHMARK_STAGES`** controls U-MyoPS Slurm submits when `U-MyoPS=run`: **`stage1`** (default), **`stage2`** only, or **`both`** / **`all`**.
 
 ```bash

@@ -1,5 +1,7 @@
 # `code/` — Benchmark Entrypoints
 
+**Convention:** `code/` holds shells you **run or `sbatch` directly** (workflows, cluster headers). **`scripts/`** holds **implementation** (Python and helper shell) invoked by those entrypoints. See [`scripts/README.md`](../scripts/README.md).
+
 This folder contains the benchmark runbook for:
 
 - `nnUNet501` vs `MyoPS-Net` vs `U-MyoPS`
@@ -11,10 +13,11 @@ Do **not** compare Dataset501 and Dataset502 against each other.
 
 | Path | Role |
 |------|------|
-| `run_unified_benchmark.sh` | Shared helper: generate CARE protocol JSON, inject nnU-Net v2 / v1 splits, print current split status |
+| `benchmark_protocol_helpers.sh` | **Helper:** generate CARE protocol JSON, inject nnU-Net v2 / v1 splits, print current split status |
 | `run_unified_benchmark_test.sh` | Single-fold workflow entrypoint (default `fold 0`) |
 | `run_unified_benchmark_all.sh` | Multi-fold workflow entrypoint (default `0 1 2 3 4`) |
 | `collect_benchmark_weights.sh` | Collect trained weights into canonical `models/<model>/fold_k/` layout |
+| `evaluation/sbatch_unified_eval.sh` | Slurm GPU job for unified offline eval (calls `scripts/evaluation/run_unified_eval_all.sh`) |
 | `nnUNet/` | nnU-Net **v2** Slurm scripts (Dataset501 / Dataset502) |
 | `MyoPS-Net/` | Slurm wrapper for fold-isolated MyoPS-Net training |
 | `U-MyoPS/` | Stage1 / Stage2 wrappers for vendored U-MyoPS |
@@ -22,9 +25,9 @@ Do **not** compare Dataset501 and Dataset502 against each other.
 
 Edit `#SBATCH` headers (partition, account, GPU) on your cluster. See [SERVER.md](../SERVER.md).
 
-## What `run_unified_benchmark.sh` Does
+## What `benchmark_protocol_helpers.sh` Does
 
-`run_unified_benchmark.sh` is a low-level helper. It is not the main script you normally operate.
+`benchmark_protocol_helpers.sh` is a low-level **protocol/split helper**. It is not the main workflow entrypoint.
 
 It handles:
 
@@ -37,7 +40,7 @@ It handles:
 Typical direct usage:
 
 ```bash
-bash code/run_unified_benchmark.sh print-all
+bash code/benchmark_protocol_helpers.sh print-all
 ```
 
 ## Main Entry Scripts

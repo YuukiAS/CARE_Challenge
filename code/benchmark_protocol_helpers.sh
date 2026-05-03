@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
-# CARE benchmark helpers: protocol generation + split injection.
+# CARE benchmark protocol/split helpers (low-level): JSON protocol generation + nnU-Net split injection.
+# Invoked by run_unified_benchmark_{test,all}.sh during prep; safe to run manually for debugging.
 set -euo pipefail
 
 CARE_ROOT="${CARE_ROOT:-$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)}"
@@ -12,7 +13,7 @@ CINE_INPUT="${CINE_PROTOCOL_INPUT:-${CARE_ROOT}/data/CARE_Challenge/CineMyoPS_tr
 
 cmd="${1:-}"
 [[ -n "${cmd}" ]] || {
-  echo "usage: bash code/run_unified_benchmark.sh <gen-protocol|write-splits-501|write-splits-502|write-splits-task025|write-splits-umyo-stage2|print-all> [args...]" >&2
+  echo "usage: bash code/benchmark_protocol_helpers.sh <gen-protocol|write-splits-501|write-splits-502|write-splits-task025|write-splits-umyo-stage2|print-all> [args...]" >&2
   exit 1
 }
 shift || true

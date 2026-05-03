@@ -11,7 +11,7 @@
 #SBATCH --qos=gpu_access
 #
 # U-MyoPS stage 1 only: data prepare (optional) + joint registration / myocardium segmentation.
-# Stage 2 (pathology nnU-Net v1): submit sbatch_stage2.sh (see run_unified_benchmark_*.sh).
+# Stage 2 (pathology nnU-Net v1): submit sbatch_stage2.sh (see run_unified_benchmark_{test,all}.sh, UMYOPS_BENCHMARK_STAGES).
 set -euo pipefail
 
 THIS_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
