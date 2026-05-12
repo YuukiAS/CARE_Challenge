@@ -32,7 +32,11 @@ def main() -> None:
             sys.exit(1)
         with p.open(encoding="utf-8") as f:
             data = json.load(f)
-        md = data.get("mean_dice", {})
+        md_raw = dict(data.get("mean_dice", {}))
+        md = {k: float(v) for k, v in md_raw.items() if v is not None}
+        for prefix, section in (("hd", data.get("mean_hd", {})), ("hd95", data.get("mean_hd95", {}))):
+            for key, value in section.items():
+                md[f"{prefix}_{key}"] = value
         fold_means.append({k: float(v) for k, v in md.items()})
         keys.update(md.keys())
 

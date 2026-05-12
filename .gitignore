@@ -121,3 +121,10 @@ __MACOSX/
 # ------------------------------------------------------------------------------
 results/checkpoints/
 results/predictions/
+
+# Fetched CARE2026 leaderboard snapshots (CSV + JSON from fetch_care2026_scores.py)
+results/leaderboard/care2026_*.csv
+results/leaderboard/care2026_*.json
+
+# Local validation submission workspaces (zips, nnU-Net prediction trees)
+results/submissions/

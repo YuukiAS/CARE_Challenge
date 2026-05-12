@@ -2,9 +2,9 @@
 
 This project converts [data/CARE_Challenge](data/CARE_Challenge) into nnU-Net v2 datasets and trains on a **GPU** node. Local development machines are often CPU-only; use them only for **smoke tests**.
 
-**Data layout:** see [data/README.md](data/README.md). Challenge **source** scans live under `data/CARE_Challenge/MyoPS_train` and `data/CARE_Challenge/CineMyoPS_train`. **nnU-Net** v2 `raw` / `preprocessed` / `results` are **physical directories** under `data/nnUNet/` (see `env_nnunet.sh`). **Paper baselines** (MyoPS-Net, U-MyoPS, CineMyoPS) use additional staging dirs under `data/benchmarks/<name>/`. After conversion, **`nnUNet_raw` holds exactly two** task folders: `Dataset501_CAREMyoPS` (MyoPS / multi-sequence) and `Dataset502_CARECineMyoPS` (Cine / single-frame). Do not keep duplicate exports or extra `Dataset503_*` copies there — they break nnU-Net ID resolution.
+**Data layout:** see [data/README.md](data/README.md). Challenge **source** scans live under `data/CARE_Challenge/MyoPS_train`, `data/CARE_Challenge/CineMyoPS_train`, and the validation counterparts `MyoPS_val` / `CineMyoPS_val`. **nnU-Net** v2 `raw` / `preprocessed` / `results` are **physical directories** under `data/nnUNet/` (see `env_nnunet.sh`). **Paper baselines** (MyoPS-Net, U-MyoPS, CineMyoPS) use additional staging dirs under `data/benchmarks/<name>/`. After conversion, **`nnUNet_raw` holds exactly two** task folders: `Dataset501_CAREMyoPS` (MyoPS / multi-sequence) and `Dataset502_CARECineMyoPS` (Cine / single-frame). Do not keep duplicate exports or extra `Dataset503_*` copies there — they break nnU-Net ID resolution.
 
-**Third-party code** is cloned under `third_party/` (see [third_party/README.md](third_party/README.md)). **Your own models** go under `src/`. Slurm / training entrypoints are grouped under [`code/`](code/README.md): **`code/nnUNet/`** (nnU-Net v2 CARE baselines), **`code/MyoPS-Net/`**, **`code/U-MyoPS/`**, **`code/CineMyoPS/`** (upstream paper repos), and **`code/PaperBaselines/run_all.sh`** to orchestrate the three paper methods (`MODEL`, `PREPARE_ONLY`, `STAGE` for U-MyoPS).
+**Third-party code** is cloned under `third_party/` (see [third_party/README.md](third_party/README.md)). **Your own models** go under `src/`. Slurm / training entrypoints are grouped under [`jobs/`](jobs/README.md): **`jobs/nnUNet/`** (nnU-Net v2 CARE baselines), **`jobs/MyoPS-Net/`**, **`jobs/U-MyoPS/`**, **`jobs/CineMyoPS/`** (upstream paper repos), and **`jobs/PaperBaselines/run_all.sh`** to orchestrate the three paper methods (`MODEL`, `PREPARE_ONLY`, `STAGE` for U-MyoPS).
 
 ## Environment
 
@@ -49,7 +49,7 @@ This project converts [data/CARE_Challenge](data/CARE_Challenge) into nnU-Net v2
 | 501  | `Dataset501_CAREMyoPS`        | `data/CARE_Challenge/MyoPS_train` | LGE, T2, C0      |
 | 502  | `Dataset502_CARECineMyoPS`    | `data/CARE_Challenge/CineMyoPS_train` | Cine (one frame) |
 
-**Label classes** (after conversion): `0` background, `1` myocardium, `2` LV blood, `3` RV blood, `4` edema, `5` scar. Original challenge pixel values are remapped in `scripts/nnUNet/nnunet_label_utils.py`.
+**Label classes** (after conversion): `0` background, `1` myocardium, `2` LV blood, `3` RV blood, `4` edema, `5` scar. Original challenge pixel values are remapped in `code/nnUNet/nnunet_label_utils.py`.
 
 **MyoPS**: LGE is the reference grid; missing T2/C0 are **zero-filled**.  
 **CineMyoPS**: 4D Cine `(x,y,z,t)` is reduced to 3D using the **middle time frame** by default (`--time-index -1`). For ED-specific evaluation, replace with the correct frame index when metadata is available.
@@ -60,17 +60,17 @@ This project converts [data/CARE_Challenge](data/CARE_Challenge) into nnU-Net v2
 
 ```bash
 cd /overflow/htzhu/CARE
-bash scripts/nnUNet/run_smoke.sh
+bash code/nnUNet/run_smoke.sh
 ```
 
-Optional: `MAX_CASES=2 NPFP=2 bash scripts/nnUNet/run_smoke.sh`.
+Optional: `MAX_CASES=2 NPFP=2 bash code/nnUNet/run_smoke.sh`.
 
 ### Full training (GPU)
 
 ```bash
 cd /overflow/htzhu/CARE
 source env_nnunet.sh
-bash scripts/nnUNet/run_full_train.sh
+bash code/nnUNet/run_full_train.sh
 ```
 
 Optional:
@@ -83,8 +83,8 @@ Optional:
 
 ```bash
 # Convert (full data)
-python scripts/nnUNet/convert_myops_to_nnunet.py --output "$nnUNet_raw/Dataset501_CAREMyoPS"
-python scripts/nnUNet/convert_cine_to_nnunet.py --output "$nnUNet_raw/Dataset502_CARECineMyoPS"
+python code/nnUNet/convert_myops_to_nnunet.py --output "$nnUNet_raw/Dataset501_CAREMyoPS"
+python code/nnUNet/convert_cine_to_nnunet.py --output "$nnUNet_raw/Dataset502_CARECineMyoPS"
 
 nnUNetv2_plan_and_preprocess -d 501 --verify_dataset_integrity
 source /overflow/htzhu/CARE/env_nnunet.sh
@@ -103,6 +103,14 @@ nnUNetv2_train 502 3d_fullres 0 --npz -tr "${CARE_NNUNET_TRAINER}"
 
 After training, use `nnUNetv2_predict` with the dataset id, configuration, fold, and trainer that match the run under `nnUNet_results`. See the [nnU-Net v2 inference documentation](https://github.com/MIC-DKFZ/nnUNet/blob/master/documentation/how_to_use_nnunet.md).
 
+For CARE2026 Myocardium validation submission packaging, use the GPU Slurm wrapper:
+
+```bash
+sbatch jobs/submission/prepare_care_myocardium_validation.sh
+```
+
+It writes timestamped upload packages under `results/submissions/care_myocardium_validation/<run-name>/packages/`.
+
 ## Disk and runtime (rough)
 
 - Full **MyoPS** conversion + preprocessing: moderate disk (NIfTI copies + preprocessed npz); training time depends on GPU and epochs. CARE defaults to **500 epochs** via `env_nnunet.sh` (`CARE_NNUNET_TRAINER=nnUNetTrainer_500epochs`). Use the same `-tr` value for `nnUNetv2_predict` as for training so checkpoint paths match.
@@ -110,4 +118,4 @@ After training, use `nnUNetv2_predict` with the dataset id, configuration, fold,
 
 ## Verified locally
 
-Smoke path (`scripts/nnUNet/run_smoke.sh` with 3 cases per dataset + `plan_and_preprocess` for 501 and 502) completed without dataset integrity errors on the development host (CPU torch).
+Smoke path (`code/nnUNet/run_smoke.sh` with 3 cases per dataset + `plan_and_preprocess` for 501 and 502) completed without dataset integrity errors on the development host (CPU torch).

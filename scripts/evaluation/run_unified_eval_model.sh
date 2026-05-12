@@ -8,7 +8,7 @@ PY="${CARE_EVAL_PYTHON:-${CARE_ROOT}/env_CARE/bin/python}"
 
 MODEL="${1:-}"
 [[ -n "${MODEL}" ]] || {
-  echo "usage: bash scripts/evaluation/run_unified_eval_model.sh <nnUNet501|nnUNet502|MyoPS-Net|CineMyoPS|U-MyoPS> [--folds \"0 1 2 3 4\"] [--foreground-classes \"...\"] [--hd95]" >&2
+  echo "usage: bash scripts/evaluation/run_unified_eval_model.sh <nnUNet501|nnUNet502|MyoPS-Net|CineMyoPS|U-MyoPS> [--folds \"0 1 2 3 4\"] [--foreground-classes \"...\"] [--no-hd] [--hd95]" >&2
   exit 1
 }
 shift || true
@@ -16,6 +16,7 @@ shift || true
 FOLDS="0 1 2 3 4"
 FG_CLASSES=""
 HD95=0
+HD=1
 while [[ $# -gt 0 ]]; do
   case "$1" in
     --folds)
@@ -25,6 +26,14 @@ while [[ $# -gt 0 ]]; do
     --foreground-classes)
       FG_CLASSES="${2:?}"
       shift 2
+      ;;
+    --no-hd)
+      HD=0
+      shift
+      ;;
+    --hd)
+      HD=1
+      shift
       ;;
     --hd95)
       HD95=1
@@ -105,7 +114,7 @@ run_myops_export_if_needed() {
   fi
   local data_root="${CARE_ROOT}/data/benchmarks/MyoPS-Net/fold_${fold}"
   echo "Export MyoPS-Net fold ${fold} validation predictions -> ${pred_dir}"
-  "${PY}" "${CARE_ROOT}/scripts/MyoPS-Net/export_val_predictions.py" \
+  "${PY}" "${CARE_ROOT}/code/MyoPS-Net/export_val_predictions.py" \
     --data-root "${data_root}" \
     --output-dir "${pred_dir}" \
     --variant "${MYOPS_NET_VARIANT:-challenge3}"
@@ -118,7 +127,7 @@ run_umyops_export_if_needed() {
   fi
   echo "Export U-MyoPS fold ${fold} validation predictions -> ${pred_dir}"
   local cmd=(
-    "${PY}" "${CARE_ROOT}/scripts/U-MyoPS/export_stage2_val_predictions.py"
+    "${PY}" "${CARE_ROOT}/code/U-MyoPS/export_stage2_val_predictions.py"
     --fold "${fold}"
     --base-task-name "${UMYOPS_STAGE2_TASK}"
     --trainer "${UMYOPS_STAGE2_TRAINER:-nnUNetTrainerPSNV8}"
@@ -127,6 +136,9 @@ run_umyops_export_if_needed() {
   )
   if [[ "${UMYOPS_STAGE2_PER_FOLD_TASK:-1}" == "1" ]]; then
     cmd+=( --per-fold-task )
+  fi
+  if [[ -n "${UMYOPS_STAGE2_WHICH_SUBNET:-}" ]]; then
+    cmd+=( --which-subnet "${UMYOPS_STAGE2_WHICH_SUBNET}" )
   fi
   "${cmd[@]}"
 }
@@ -162,7 +174,7 @@ for FOLD in ${FOLDS}; do
       GT_DIR="${nnUNet_raw}/Dataset502_CARECineMyoPS/labelsTr"
       FG="${FG_CLASSES:-1,2,3}"
       if ! pred_dir_has_all_val_cases "${PRED_DIR}" "${SPLIT_JSON}" "${FOLD}"; then
-        FOLD="${FOLD}" bash "${CARE_ROOT}/scripts/CineMyoPS/export_protocol_val_predictions.sh"
+        FOLD="${FOLD}" bash "${CARE_ROOT}/code/CineMyoPS/export_protocol_val_predictions.sh"
       fi
       ;;
     U-MyoPS)
@@ -186,6 +198,10 @@ for FOLD in ${FOLDS}; do
     --foreground-classes "${FG}"
     --output-dir "${OUT_DIR}"
   )
+  if [[ "${MODEL}" == "MyoPS-Net" ]]; then
+    cmd+=( --skip-dice-if-gt-empty )
+  fi
+  [[ "${HD}" == "1" ]] && cmd+=( --hd )
   [[ "${HD95}" == "1" ]] && cmd+=( --hd95 )
   "${cmd[@]}"
   SUMMARY_INPUTS+=( "${OUT_DIR}/evaluation_summary.json" )

@@ -114,7 +114,7 @@ CineMyoPS 子任务仅依赖 cine 单序列数据（`CineMyoPS_train` 共 64 例
 3.  **导出质量门控**：`sanity_check_task026.py` 在导出后对维度、文件对齐与关键元数据做检查，避免 silent corruption 进入训练。
 4.  **网络与训练器**：在 `third_party/CineMyoPS` 内新增 `CARECineMyoPSTrainer` 与 `care_cineloss.py`（`CARECineSegLoss`）。网络以 **`CineSegNet` 为基础**，经 `CARECineSegNet` 适配 CARE：**运动分支（encoder + ES-based motion decoder）+ 解剖分割（cardiac_seg，ED 帧）+ 瘢痕病理头（2D UNet；输入为 ED cine、运动场汇总与 ED 解剖特征拼接）**；损失在 CineSeg 组合形式基础上改为 **Lb3 瘢痕监督**，取代单帧 generic nnU-Net baseline。
 5.  **评测与产物路径兼容**：预测仍写入统一约定路径下的 `results/predictions/CineMyoPS/fold_X/<case>.nii.gz`，与仓库内统一基准评测衔接；与旧 Task025 相关的脚本保留作对照或历史任务，**Lb3 主路径以 Task026 + CARE trainer 为准**。
-6.  **工程配套**：补充 `code/CineMyoPS/README.md`、`sbatch_cinemyops.sh`、`scripts/CineMyoPS/smoke_test.sh` 等用于集群编排与训练前冒烟验证；具体操作见代码库说明，汇报稿不展开命令行。
+6.  **工程配套**：补充 `jobs/CineMyoPS/README.md`、`sbatch_cinemyops.sh`、`code/CineMyoPS/smoke_test.sh` 等用于集群编排与训练前冒烟验证；具体操作见代码库说明，汇报稿不展开命令行。
 
 ### 4.3 后续工作
 - 完成 **五折交叉验证** 与多 fold 指标汇总，形成可与 Lb1/Lb2 对齐的完整验证结论。

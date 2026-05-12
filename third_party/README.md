@@ -10,4 +10,4 @@ Cloned read-only baselines for CARE myocardium benchmarks. Prefer **not** editin
 
 **nnU-Net** v2 is installed via `pip` / `env_CARE` (not cloned). Dataset folders live under `data/nnUNet/nnUNet_raw` (etc.); see `env_nnunet.sh`.
 
-Run entrypoints: see [`code/README.md`](../code/README.md) (`MyoPS-Net/run.sh`, `U-MyoPS/run.sh`, `CineMyoPS/run.sh`, matching `sbatch.sh`).
+Run entrypoints: see [`jobs/README.md`](../jobs/README.md) (`MyoPS-Net/run.sh`, `U-MyoPS/run.sh`, `CineMyoPS/run.sh`, matching `sbatch.sh`).

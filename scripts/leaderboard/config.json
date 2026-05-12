@@ -1,0 +1,12 @@
+{
+  "base_url": "https://zmic.org.cn/flask",
+  "track": "myocardium",
+  "username": "OrganAgent",
+  "password": "uncalbany",
+  "default_tasks": [
+    "myops_scar",
+    "myops_edema",
+    "myocardium_cinemyops"
+  ],
+  "output_dir": "results/leaderboard"
+}

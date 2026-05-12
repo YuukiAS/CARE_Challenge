@@ -102,39 +102,39 @@ The full loss is `LMyoPS + lambda1 Lanatomy + lambda2 Lcons + lambda3 Lmotion + 
 
 ### 4.1 Repository-Level Entry Points
 
-The CARE repository groups the paper baselines under `code/`, with high-level orchestration described in `code/README.md`. That README states that `code/MyoPS-Net/`, `code/U-MyoPS/`, and `code/CineMyoPS/` are the entrypoints for the three paper methods, while `third_party/README.md` identifies the upstream repositories as `QJYBall/MyoPS-Net`, `NanYoMy/myops`, and `NanYoMy/CineMyoPS`, respectively. `SERVER.md` and `env_nnunet.sh` further define the local environment and dataset path conventions used by CARE.
+The CARE repository groups the paper baselines under `jobs/`, with high-level orchestration described in `jobs/README.md`. That README states that `jobs/MyoPS-Net/`, `jobs/U-MyoPS/`, and `jobs/CineMyoPS/` are the entrypoints for the three paper methods, while `third_party/README.md` identifies the upstream repositories as `QJYBall/MyoPS-Net`, `NanYoMy/myops`, and `NanYoMy/CineMyoPS`, respectively. `SERVER.md` and `env_nnunet.sh` further define the local environment and dataset path conventions used by CARE.
 
 ### 4.2 MyoPS-Net Mapping
 
-The CARE entry script is `code/MyoPS-Net/run.sh`. It first checks whether `data/benchmarks/MyoPS-Net/train.txt` exists; if not, it runs `scripts/MyoPS-Net/prepare_myops_net_layout.py` using `env_CARE/bin/python`, then dispatches training via `scripts/MyoPS-Net/run_train.sh`.
+The CARE entry script is `jobs/MyoPS-Net/run.sh`. It first checks whether `data/benchmarks/MyoPS-Net/train.txt` exists; if not, it runs `code/MyoPS-Net/prepare_myops_net_layout.py` using `env_CARE/bin/python`, then dispatches training via `code/MyoPS-Net/run_train.sh`.
 
-`scripts/MyoPS-Net/run_train.sh` changes directory into `third_party/MyoPS-Net` and executes `main.py` with `--path` pointing to the CARE-staged benchmark directory. Inside the upstream code, `third_party/MyoPS-Net/main.py` parses arguments and launches `MyoPSNetTrain(args)`. The upstream repository also exposes `predict.py` for inference.
+`code/MyoPS-Net/run_train.sh` changes directory into `third_party/MyoPS-Net` and executes `main.py` with `--path` pointing to the CARE-staged benchmark directory. Inside the upstream code, `third_party/MyoPS-Net/main.py` parses arguments and launches `MyoPSNetTrain(args)`. The upstream repository also exposes `predict.py` for inference.
 
 The staging script is clinically important. Its own docstring states that CARE only provides `C0`, `LGE`, `T2`, and `gd`, so it writes zero-filled placeholders for `T1m` and `T2starm` on the LGE grid. It also resamples all available volumes to the LGE reference image. This means the CARE wrapper does not reproduce the full five-sequence acquisition of the paper unless real mapping data are supplied externally. Instead, it adapts CARE data into the file layout that upstream MyoPS-Net expects. That is a repository fact, not an inference.
 
-Verified environment expectations are limited but concrete: `code/MyoPS-Net/run.sh` assumes `CARE_ROOT`, `env_CARE/bin/python`, and write access under `data/benchmarks/MyoPS-Net`. No separate `env_nnunet.sh` activation is required by this path. The public code URL stated in the paper and in `third_party/MyoPS-Net/README.md` is `https://github.com/QJYBall/MyoPS-Net`.
+Verified environment expectations are limited but concrete: `jobs/MyoPS-Net/run.sh` assumes `CARE_ROOT`, `env_CARE/bin/python`, and write access under `data/benchmarks/MyoPS-Net`. No separate `env_nnunet.sh` activation is required by this path. The public code URL stated in the paper and in `third_party/MyoPS-Net/README.md` is `https://github.com/QJYBall/MyoPS-Net`.
 
 ### 4.3 U-MyoPS Mapping
 
-The CARE entry script is `code/U-MyoPS/run.sh`. It exports `CARE_ROOT`, sources `env_nnunet.sh`, resolves a legacy environment through `CARE_CineMyoPS_ENV` or `CARE_CINEMYOPS_ENV` (defaulting to `${CARE_ROOT}/env_CARE_nnUNet_v1`), and sets `LEGACY_PYTHON`/`UMYOPS_PYTHON` accordingly. It then runs three steps in sequence: `scripts/U-MyoPS/prepare_u_myops_from_care.py`, `scripts/U-MyoPS/run_stage1.sh`, and, only if `UMYOPS_RUN_STAGE2=1`, `scripts/U-MyoPS/run_stage2.sh`.
+The CARE entry script is `jobs/U-MyoPS/run.sh`. It exports `CARE_ROOT`, sources `env_nnunet.sh`, resolves a legacy environment through `CARE_CineMyoPS_ENV` or `CARE_CINEMYOPS_ENV` (defaulting to `${CARE_ROOT}/env_CARE_nnUNet_v1`), and sets `LEGACY_PYTHON`/`UMYOPS_PYTHON` accordingly. It then runs three steps in sequence: `code/U-MyoPS/prepare_u_myops_from_care.py`, `code/U-MyoPS/run_stage1.sh`, and, only if `UMYOPS_RUN_STAGE2=1`, `code/U-MyoPS/run_stage2.sh`.
 
-Stage 1 is the paper’s registration-plus-myocardium part. `scripts/U-MyoPS/run_stage1.sh` sets `PYTHONPATH` to include `third_party/U-MyoPS_myops/jrs` and executes `third_party/U-MyoPS_myops/jrs/joint_registration_myocardium_segmentation.py`. CARE forces the default stage-1 phase to `train`, because the upstream config otherwise defaults to `metric` and would not actually train. The upstream entry file instantiates `TpsSegNetConfigRJ_Myo` and `ExperimentRJ_Myo`, then branches on `args.phase`.
+Stage 1 is the paper’s registration-plus-myocardium part. `code/U-MyoPS/run_stage1.sh` sets `PYTHONPATH` to include `third_party/U-MyoPS_myops/jrs` and executes `third_party/U-MyoPS_myops/jrs/joint_registration_myocardium_segmentation.py`. CARE forces the default stage-1 phase to `train`, because the upstream config otherwise defaults to `metric` and would not actually train. The upstream entry file instantiates `TpsSegNetConfigRJ_Myo` and `ExperimentRJ_Myo`, then branches on `args.phase`.
 
-Stage 2 is the pathology nnU-Net part. `scripts/U-MyoPS/run_stage2.sh` sets classic nnU-Net v1 paths via `nnUNet_raw_data_base`, `nnUNet_preprocessed`, and `RESULTS_FOLDER`, rooted under `third_party/U-MyoPS_myops/outputs/nnunet/{raw,prepro,output}` unless overridden. It then executes `third_party/U-MyoPS_myops/jrs/pathology_segmentation_train.py`, which is a thin wrapper around the vendored nnU-Net training entrypoint.
+Stage 2 is the pathology nnU-Net part. `code/U-MyoPS/run_stage2.sh` sets classic nnU-Net v1 paths via `nnUNet_raw_data_base`, `nnUNet_preprocessed`, and `RESULTS_FOLDER`, rooted under `third_party/U-MyoPS_myops/outputs/nnunet/{raw,prepro,output}` unless overridden. It then executes `third_party/U-MyoPS_myops/jrs/pathology_segmentation_train.py`, which is a thin wrapper around the vendored nnU-Net training entrypoint.
 
 The most important integration caveat is spelled out in `third_party/U-MyoPS_myops/README-CN.md`: Stage 1 outputs checkpoints and `gen_res` artifacts, but it does not itself generate the nnU-Net Task folder required by Stage 2; the repository does not provide a one-click exporter from Stage-1 outputs to Stage-2 raw nnU-Net data. The same document explicitly states that this missing transformation must be implemented separately or obtained from the authors. Therefore, the CARE wrapper exposes the two stages, but the exact paper-faithful bridge between them is incomplete in the current repository.
 
-The data-preparation script also deserves attention. `scripts/U-MyoPS/prepare_u_myops_from_care.py` exports CARE cases into the `jrs` dataloader layout, but its docstring states that it uses a “unified gd for all three label paths (clinical approximation).” That is a concrete simplification relative to the original paper setting, where anatomy and pathology labels arise from sequence-specific annotation and common-space construction. The public upstream URL recorded in `third_party/README.md` is `https://github.com/NanYoMy/myops`.
+The data-preparation script also deserves attention. `code/U-MyoPS/prepare_u_myops_from_care.py` exports CARE cases into the `jrs` dataloader layout, but its docstring states that it uses a “unified gd for all three label paths (clinical approximation).” That is a concrete simplification relative to the original paper setting, where anatomy and pathology labels arise from sequence-specific annotation and common-space construction. The public upstream URL recorded in `third_party/README.md` is `https://github.com/NanYoMy/myops`.
 
 ### 4.4 CineMyoPS Mapping
 
-The CARE entry script is `code/CineMyoPS/run.sh`. It exports `CARE_ROOT`, sources `env_nnunet.sh`, resolves a legacy environment via `CARE_CineMyoPS_ENV` or `CARE_CINEMYOPS_ENV` (again defaulting to `${CARE_ROOT}/env_CARE_nnUNet_v1`), runs `scripts/CineMyoPS/prepare_task025_from_care.py`, and then calls `scripts/CineMyoPS/run_train.sh`.
+The CARE entry script is `jobs/CineMyoPS/run.sh`. It exports `CARE_ROOT`, sources `env_nnunet.sh`, resolves a legacy environment via `CARE_CineMyoPS_ENV` or `CARE_CINEMYOPS_ENV` (again defaulting to `${CARE_ROOT}/env_CARE_nnUNet_v1`), runs `code/CineMyoPS/prepare_task025_from_care.py`, and then calls `code/CineMyoPS/run_train.sh`.
 
-`scripts/CineMyoPS/run_train.sh` changes into `third_party/CineMyoPS/code`, prepends that directory to `PYTHONPATH`, and executes `Lascar_3_train.py` with defaults `CINE_NNUNET_DIM=2d`, `CINE_NNUNET_TRAINER=nnUNetTrainerV2`, `CINE_NNUNET_TASK=Task025_Cine_Seg`, and `CINE_NNUNET_EPOCHS=500`. `Lascar_3_train.py` is itself a wrapper around the vendored nnU-Net v1 training stack. For inference, CARE provides `scripts/CineMyoPS/run_test.sh`, which dispatches to `third_party/CineMyoPS/code/Lascar_4_test.py`.
+`code/CineMyoPS/run_train.sh` changes into `third_party/CineMyoPS/code`, prepends that directory to `PYTHONPATH`, and executes `Lascar_3_train.py` with defaults `CINE_NNUNET_DIM=2d`, `CINE_NNUNET_TRAINER=nnUNetTrainerV2`, `CINE_NNUNET_TASK=Task025_Cine_Seg`, and `CINE_NNUNET_EPOCHS=500`. `Lascar_3_train.py` is itself a wrapper around the vendored nnU-Net v1 training stack. For inference, CARE provides `code/CineMyoPS/run_test.sh`, which dispatches to `third_party/CineMyoPS/code/Lascar_4_test.py`.
 
-The preprocessing dependency is explicit in `scripts/CineMyoPS/ensure_task025_v1_preprocessed.sh`: the CineMyoPS code expects an nnU-Net v1 raw task and corresponding planned/preprocessed files. That helper script will create raw data under `$nnUNet_raw/Task025_Cine_Seg` and run the old v1 planner if necessary, but `code/CineMyoPS/run.sh` itself does not call that helper automatically.
+The preprocessing dependency is explicit in `code/CineMyoPS/ensure_task025_v1_preprocessed.sh`: the CineMyoPS code expects an nnU-Net v1 raw task and corresponding planned/preprocessed files. That helper script will create raw data under `$nnUNet_raw/Task025_Cine_Seg` and run the old v1 planner if necessary, but `jobs/CineMyoPS/run.sh` itself does not call that helper automatically.
 
-The CARE staging script again diverges from the paper setting in a verifiable way. `scripts/CineMyoPS/prepare_task025_from_care.py` extracts a single 3D frame from each 4D cine sequence, choosing the middle frame by default (`--time-index -1`) unless overridden. More importantly, its `dataset.json` defines a compact label schema with only `background`, `myocardium`, `LV_blood`, and `scar`. The script’s explicit compact map keeps only labels `0`, `1`, `2`, and `5 -> 3`, which means edema is not exported into this CARE task. Consequently, the current CARE wrapper is not a faithful implementation of the paper’s joint scar-and-edema cine-only target; it is a repository-specific nnU-Net v1 task adaptation built from CARE labels. That mismatch should be treated as factual when interpreting any future local runs.
+The CARE staging script again diverges from the paper setting in a verifiable way. `code/CineMyoPS/prepare_task025_from_care.py` extracts a single 3D frame from each 4D cine sequence, choosing the middle frame by default (`--time-index -1`) unless overridden. More importantly, its `dataset.json` defines a compact label schema with only `background`, `myocardium`, `LV_blood`, and `scar`. The script’s explicit compact map keeps only labels `0`, `1`, `2`, and `5 -> 3`, which means edema is not exported into this CARE task. Consequently, the current CARE wrapper is not a faithful implementation of the paper’s joint scar-and-edema cine-only target; it is a repository-specific nnU-Net v1 task adaptation built from CARE labels. That mismatch should be treated as factual when interpreting any future local runs.
 
 The public upstream URL recorded in `third_party/README.md` is `https://github.com/NanYoMy/CineMyoPS`.
 
@@ -143,7 +143,7 @@ The public upstream URL recorded in `third_party/README.md` is `https://github.c
 The shared environment facts that can be verified from files are as follows.
 
 - `env_nnunet.sh` defines `nnUNet_raw`, `nnUNet_preprocessed`, and `nnUNet_results` under `data/nnUNet/`, plus `UMYOPS_STAGE2_TASK=Task901_CARE_UmyopsPathology` and `UMYOPS_RUN_STAGE2=0` by default.
-- `code/U-MyoPS/run.sh` and `code/CineMyoPS/run.sh` both assume an nnU-Net v1-style environment at `${CARE_ROOT}/env_CARE_nnUNet_v1` unless overridden.
+- `jobs/U-MyoPS/run.sh` and `jobs/CineMyoPS/run.sh` both assume an nnU-Net v1-style environment at `${CARE_ROOT}/env_CARE_nnUNet_v1` unless overridden.
 - `SERVER.md` states that CARE’s own nnU-Net datasets `Dataset501_CAREMyoPS` and `Dataset502_CARECineMyoPS` use the label classes `0 background, 1 myocardium, 2 LV blood, 3 RV blood, 4 edema, 5 scar`, which is distinct from the paper-reported task semantics of the baseline papers.
 
 Where the repository does not make the exact environment unambiguous, this report treats it as unclear rather than inferred.
@@ -267,7 +267,7 @@ The paper settings and the CARE repository settings should not be collapsed into
 
 First, the CARE repository’s own nnU-Net datasets, as documented in `SERVER.md`, use a six-label schema: background, myocardium, LV blood, RV blood, edema, and scar. **None of the three papers reports its main results in that exact label schema.** MyoPS-Net and U-MyoPS report pathology-centric scar and edema performance, with auxiliary anatomy prediction supporting the model. CineMyoPS reports cine-space scar and edema prediction, not a six-class CARE label benchmark.
 
-Second, the CARE wrappers for the paper baselines are adapters rather than perfect reproductions of the original paper protocols. `scripts/MyoPS-Net/prepare_myops_net_layout.py` zero-fills missing `T1m` and `T2starm` inputs when only CARE `C0/LGE/T2` are available. `scripts/U-MyoPS/prepare_u_myops_from_care.py` explicitly uses a unified ground truth as a “clinical approximation” for multiple label paths. `scripts/CineMyoPS/prepare_task025_from_care.py` exports a single-frame compact task that currently keeps myocardium, LV blood, and scar, but not the paper’s joint scar-and-edema target. These are repository facts and should be treated as methodological adaptation layers.
+Second, the CARE wrappers for the paper baselines are adapters rather than perfect reproductions of the original paper protocols. `code/MyoPS-Net/prepare_myops_net_layout.py` zero-fills missing `T1m` and `T2starm` inputs when only CARE `C0/LGE/T2` are available. `code/U-MyoPS/prepare_u_myops_from_care.py` explicitly uses a unified ground truth as a “clinical approximation” for multiple label paths. `code/CineMyoPS/prepare_task025_from_care.py` exports a single-frame compact task that currently keeps myocardium, LV blood, and scar, but not the paper’s joint scar-and-edema target. These are repository facts and should be treated as methodological adaptation layers.
 
 Third, because no validated CARE metrics files were supplied for this request, no numerical comparison should be made between the paper tables above and any local CARE training logs. The proper interpretation is narrower: the tables in Section 5 are paper-reported baselines, while the repository mapping in Section 4 explains how CARE attempts to stage and run related code paths. That is enough to support rigorous documentation, but not enough to claim replication or superiority of any local CARE run.
 
@@ -276,28 +276,28 @@ Third, because no validated CARE metrics files were supplied for this request, n
 - `literature/Qiu 等 - 2023 - MyoPS-Net Myocardial pathology segmentation with flexible combination of multi-sequence CMR images.pdf`
 - `literature/Ding 等 - 2023 - Aligning Multi-Sequence CMR Towards Fully Automated Myocardial Pathology Segmentation.pdf`
 - `literature/Ding 等 - 2025 - CineMyoPS Segmenting Myocardial Pathologies from Cine Cardiac MR.pdf`
-- `code/README.md`
-- `code/MyoPS-Net/run.sh`
-- `code/U-MyoPS/run.sh`
-- `code/CineMyoPS/run.sh`
+- `jobs/README.md`
+- `jobs/MyoPS-Net/run.sh`
+- `jobs/U-MyoPS/run.sh`
+- `jobs/CineMyoPS/run.sh`
 - `third_party/README.md`
 - `third_party/MyoPS-Net/README.md`
 - `third_party/U-MyoPS_myops/README.md`
 - `third_party/CineMyoPS/README.md`
-- `scripts/MyoPS-Net/prepare_myops_net_layout.py`
-- `scripts/MyoPS-Net/run_train.sh`
+- `code/MyoPS-Net/prepare_myops_net_layout.py`
+- `code/MyoPS-Net/run_train.sh`
 - `third_party/MyoPS-Net/main.py`
 - `third_party/MyoPS-Net/predict.py`
-- `scripts/U-MyoPS/prepare_u_myops_from_care.py`
-- `scripts/U-MyoPS/run_stage1.sh`
-- `scripts/U-MyoPS/run_stage2.sh`
+- `code/U-MyoPS/prepare_u_myops_from_care.py`
+- `code/U-MyoPS/run_stage1.sh`
+- `code/U-MyoPS/run_stage2.sh`
 - `third_party/U-MyoPS_myops/README-CN.md`
 - `third_party/U-MyoPS_myops/jrs/joint_registration_myocardium_segmentation.py`
 - `third_party/U-MyoPS_myops/jrs/pathology_segmentation_train.py`
-- `scripts/CineMyoPS/prepare_task025_from_care.py`
-- `scripts/CineMyoPS/run_train.sh`
-- `scripts/CineMyoPS/run_test.sh`
-- `scripts/CineMyoPS/ensure_task025_v1_preprocessed.sh`
+- `code/CineMyoPS/prepare_task025_from_care.py`
+- `code/CineMyoPS/run_train.sh`
+- `code/CineMyoPS/run_test.sh`
+- `code/CineMyoPS/ensure_task025_v1_preprocessed.sh`
 - `third_party/CineMyoPS/code/Lascar_3_train.py`
 - `third_party/CineMyoPS/code/Lascar_4_test.py`
 - `third_party/CineMyoPS/code/nnunet/paths.py`

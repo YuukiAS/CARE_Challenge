@@ -1,9 +1,8 @@
-# `scripts/` — Implementation
+# `scripts/` — Evaluation and Utilities
 
-This tree holds **libraries of concrete steps**: Python entrypoints, helper shell that train/export/prepare data, and evaluation glue. They are meant to be called from:
+This tree holds repository utilities that are not model implementations or Slurm entrypoints. Model-specific training, conversion, and export code lives in [`code/`](../code/README.md). Slurm job wrappers live in [`jobs/`](../jobs/README.md).
 
-- `code/*.sh` — benchmark workflows you run locally or via `sbatch`
-- `code/<model>/run.sh` / `sbatch*.sh` — per-model Slurm/local wrappers
+Evaluation scripts here are meant to be called from `jobs/*.sh` workflows or run directly for offline metrics.
 
 ## Layout
 
@@ -11,9 +10,7 @@ This tree holds **libraries of concrete steps**: Python entrypoints, helper shel
 |-----------|----------|
 | `benchmark/` | Protocol JSON generation, writing nnU-Net `splits_final` |
 | `evaluation/` | Unified metric pipeline (`run_unified_eval_*.sh`, `evaluate_predictions.py`, …) |
-| `MyoPS-Net/` | Layout prep, training shell, export predictions |
-| `CineMyoPS/` | Task025 prep, train/test shell, val export |
-| `U-MyoPS/` | Stage1/2 prep and run scripts, exports |
-| `nnUNet/` | Dataset conversion, full-train wrapper, smoke tests |
+| `leaderboard/` | CARE2026 validation leaderboard fetch/export helpers |
+| `submission/` | CARE2026 validation inference and upload packaging helpers |
 
-Do **not** treat paths here as the primary user interface; prefer `code/README.md` for runnable commands.
+Do **not** treat paths here as the primary user interface; prefer `jobs/README.md` for runnable commands.

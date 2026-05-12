@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 # Run unified offline evaluation for all currently supported benchmark models.
+# Exact HD is enabled by default in run_unified_eval_model.sh; pass --no-hd to
+# reproduce legacy Dice-only outputs.
 set -euo pipefail
 
 CARE_ROOT="${CARE_ROOT:-$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)}"

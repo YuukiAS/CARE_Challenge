@@ -1,0 +1,55 @@
+{
+  "include": [
+    "code",
+    "scripts",
+    "src"
+  ],
+  "exclude": [
+    "**/__pycache__",
+    "**/.ipynb_checkpoints",
+    "**/.mypy_cache",
+    "**/.ruff_cache",
+    "**/.pytest_cache",
+    "**/node_modules",
+
+    "data",
+    "logs",
+    "models",
+    "temp",
+    "archive",
+
+    "env_CARE",
+    "env_CARE_nnUNet_v1",
+    ".venv",
+    "venv",
+    "env",
+
+    "third_party",
+    "literature",
+    "prompts",
+
+    "results/checkpoints",
+    "results/predictions",
+    "results/**/*.nii.gz",
+    "results/**/*.npy",
+    "results/**/*.npz",
+
+    "**/*.pdf",
+    "**/*.nii",
+    "**/*.nii.gz",
+    "**/*.h5",
+    "**/*.pkl",
+    "**/*.ckpt",
+    "**/*.pth",
+    "**/*.pt",
+    "**/*.onnx"
+  ],
+  "ignore": [
+    "third_party"
+  ],
+  "reportMissingImports": "warning",
+  "reportMissingTypeStubs": "none",
+  "pythonVersion": "3.10",
+  "venvPath": ".",
+  "venv": "env_CARE"
+}
