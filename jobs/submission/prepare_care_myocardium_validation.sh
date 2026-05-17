@@ -10,8 +10,8 @@
 #SBATCH --partition=htzhulab
 #SBATCH --qos=gpu_access
 #
-# Run nnU-Net v2 inference on CARE-Myocardium validation data and package an
-# official validation submission zip.
+# Run CARE-Myocardium validation inference and package an official upload zip.
+# The zip filename has no timestamp; the parent upload_ready folder does.
 set -euo pipefail
 
 CARE_ROOT="${CARE_ROOT:-/overflow/htzhu/CARE}"
@@ -33,13 +33,19 @@ echo "Timestamp: $(date -Iseconds 2>/dev/null || date)"
 echo "Host: $(hostname 2>/dev/null || true) JobID: ${SLURM_JOB_ID:-local}"
 echo "CUDA_VISIBLE_DEVICES=${CUDA_VISIBLE_DEVICES:-unset}"
 
-"${CARE_ROOT}/env_CARE/bin/python" "${CARE_ROOT}/scripts/submission/prepare_care_myocardium_validation.py" \
-  --team-name "${TEAM_NAME:-OrganAgent}" \
-  --run-name "${RUN_NAME:-nnunet_5fold_best}" \
-  --timestamp "${SUBMISSION_TS:-${TS}}" \
-  --folds ${FOLDS:-0 1 2 3 4} \
-  --checkpoint "${CHECKPOINT:-checkpoint_best.pth}" \
-  --device "${DEVICE:-cuda}" \
+cmd=(
+  "${CARE_ROOT}/env_CARE/bin/python" "${CARE_ROOT}/scripts/submission/prepare_care_myocardium_validation.py"
+  --team-name "${TEAM_NAME:-OrganAgent}"
+  --submission-model "${SUBMISSION_MODEL:-nnUNet}"
+  --timestamp "${SUBMISSION_TS:-${TS}}"
+  --folds ${FOLDS:-0 1 2 3 4}
+  --checkpoint "${CHECKPOINT:-checkpoint_best.pth}"
+  --device "${DEVICE:-cuda}"
   --continue-prediction
+)
+if [[ -n "${RUN_NAME:-}" ]]; then
+  cmd+=( --run-name "${RUN_NAME}" )
+fi
+"${cmd[@]}"
 
 echo "===== Finished CARE-Myocardium validation submission ====="

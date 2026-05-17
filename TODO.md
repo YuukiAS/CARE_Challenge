@@ -1,121 +1,169 @@
-# CARE Challenge: Myocardium 任务汇报
+# CARE Challenge: Myocardium 当前模型研究与改进 TODO
 
-## 1. 任务背景 (Challenge Description)
+更新时间：2026-05-17
 
-本任务的核心目标是从心脏磁共振 (CMR) 序列中精确分割心肌病理区域（具体包括瘢痕 Scar 和水肿 Edema）。针对临床实际需求，任务分为两个子课题：
+本文件只保留当前仍需要执行或复核的内容；已经完成的历史修复说明移入 prompt / notes，不再作为 TODO 主体。当前判断基于：
 
-*   **MyoPS (Multi-Sequence Myocardial Pathology Segmentation)**: 利用多序列 CMR 数据（包含 LGE、T2 和 bSSFP）同时分割瘢痕和水肿。
-*   **CineMyoPS (Cine Myocardial Pathology Segmentation)**: 挑战仅利用单序列 Cine CMR 数据分割瘢痕区域。
-
-**核心挑战：**
-*   **多中心数据差异**：不同医疗机构采集的数据在成像协议和质量上存在显著差异。
-*   **序列缺失**：在实际临床中，部分中心可能缺失关键序列（如 T2 或 bSSFP）。
-*   **空间失配**：多序列 CMR 图像之间往往存在复杂的空间对齐问题，增加了多模态融合的难度。
-
-**目标标签定义：**
-*   瘢痕 (Scar) - 标签值: 2221
-*   水肿 (Edema) - 标签值: 1220
-*   左心室 (LV) - 标签值: 500
-*   心肌 (Myocardium) - 标签值: 200
-*   右心室 (RV) - 标签值: 600
-
-**评估指标 (Metrics)：**
-所有瘢痕与水肿分割结果以下列两项指标进行评估：
-*   **Dice 相似性系数 (Dice Similarity Coefficient, Dice)**：衡量预测与真值的体积重叠程度，取值范围 [0, 1]，越大越好。
-*   **豪斯多夫距离 (Hausdorff Distance, HD, mm)**：衡量预测与真值边界的最大偏差距离，单位为毫米，越小越好。
-
-**子任务排行榜 (Leaderboard) 划分：**
-
-| 子任务 | 目标 | 排行榜 |
-| --- | --- | --- |
-| MyoPS | Scar | Lb1 |
-| MyoPS | Edema | Lb2 |
-| CineMyoPS | Scar | Lb3 |
-
-**数据集模态完整性统计 (基于 `MyoPS_train`，共 220 例)：**
-
-| 模态组合 | 病例数 | 占比 | 主要来源中心 |
-| --- | --- | --- | --- |
-| C0 + LGE + T2 (三序列完整) | 80 | 36.4% | CenterB (35), CenterC (45) |
-| C0 + LGE (缺 T2) | 24 | 10.9% | CenterE (7), CenterF (9), CenterG (8) |
-| LGE only (缺 C0 与 T2) | 116 | 52.7% | CenterA (81), CenterH (35) |
-| LGE + T2 (缺 C0) | 0 | 0.0% | — |
-
-> 关键观察：**仅 36.4% 的训练病例为完整三序列**，超过半数为 LGE-only。这直接挑战了原始 MyoPS-Net / U-MyoPS 等论文模型对“完整多序列输入”的隐含假设。
-
-CineMyoPS 子任务仅依赖 cine 单序列数据（`CineMyoPS_train` 共 64 例：center_alpha 40 例、center_beta 24 例），不存在多模态缺失问题，但需要从 4D 时序中精确选取舒张末期 (ED) 帧作为分割输入。
+- 本地文献：`docs/literature/`
+- baseline report：`prompts/Baseline_report.md`
+- nnU-Net 5-fold reference：`results/metrics/nnUNet.md`
+- 官方 validation leaderboard：已运行 `python scripts/leaderboard/fetch_care2026_scores.py`，最新 `fetched_at_utc=20260517T075854Z`
+- 现有模型指标：`results/metrics/unified/*/fold_0/evaluation_summary.json`
 
 ---
 
-## 2. MyoPS-Net 表现分析与改进
+## 1. 两套参考标准
 
-### 2.1 表现不佳原因分析
-1.  **数据协议不一致**：CARE 数据集存在大量序列缺失（220 例中仅 80 例完整），而原始模型设计基于完整三序列输入。实验表明，LGE-only 情况下的表现远低于完整序列。
-2.  **指标定义差异**：原始代码将水肿定义为“水肿 ∪ 瘢痕”，而 CARE 评测要求严格的单类 Dice。这导致水肿指标在字面上看起来极低，但实际上模型具备一定的病理区域识别能力。
-3.  **模型实现错配**：当前运行的是包含占位符（补零）的全模型，而非针对三序列优化的变体，导致模型在处理缺失模态时存在计算冗余和干扰。
-4.  **实验规模不足**：目前仅完成 Fold 0 训练，且未进行多模型集成（Ensemble），与论文中的五折交叉验证结果存在基准差异。
+### 1.1 nnU-Net 本地 5-fold 强基线
 
-### 2.2 已完成的改进措施
-1.  **定制化 Challenge3 变体**：修改模型输入逻辑，将其调整为专门面向 C0, LGE, T2 的三模态任务，不再依赖缺失的 T1m / T2* 占位符。
-2.  **结构精简**：去除了无效的 Mapping 分支（`encoder_mapping` / `decoder_mapping`），解决了因“强行运行全模型”导致的特征错配问题。
-3.  **监督策略对齐**：将水肿的监督信号从“并集”改为“精确类”，并同步调整了损失函数（如禁用基于“瘢痕属于水肿”假设的 PI Loss），使训练目标与评测指标完全一致。
-4.  **全链路适配**：更新了训练、验证及预测导出脚本，确保整个流水线均在新的 Challenge3 协议下运行。
+| 数据集 / 任务 | 主要对照类 | nnU-Net 5-fold mean Dice | 备注 |
+| --- | --- | ---: | --- |
+| `Dataset501_CAREMyoPS` | `myops_scar` / class_5 | **0.5592** | MyoPS-Net、U-MyoPS 必须超过 |
+| `Dataset501_CAREMyoPS` | `myops_edema` / class_4 | **0.4197** | MyoPS-Net、U-MyoPS 必须超过 |
+| `Dataset502_CARECineMyoPS` | `myocardium_cinemyops` / class_1 | **0.6808** | 当前仓库把 hosted `myocardium_cinemyops` 对齐到 class_1 |
+| `Dataset502_CARECineMyoPS` | scar sanity / class_3 | 0.2586 | 论文 CineMyoPS 的 pathology scar 参考，不等同当前主 leaderboard 名称 |
 
-### 2.3 缺失模态 (T1m / T2*) 的处理变更
-| 维度 | 修复前 | 修复后 |
-| --- | --- | --- |
-| 模型结构 | 5 通道输入 `[C0, LGE, T2, T1m, T2*]`，并保留 `encoder_mapping` / `decoder_mapping` 与 max-fusion | 切换至 Challenge3 变体后退化为 3 通道输入 `[C0, LGE, T2]`，Mapping 编/解码分支整体禁用 |
-| 数据落盘 | `T1m` / `T2*` 直接以 `np.zeros_like(LGE)` 写出，并随训练前向传播 | 仍保留零张量文件，但**仅作为文件名兼容占位**（dataloader glob 需要），不参与任何前向计算 |
-| Loss / Fusion | 对全零的 mapping 分支计算 segmentation loss、Inclusive loss、PI loss，并参与最终 scar 融合 | mapping 分支全部禁用；scar 融合仅依赖 LGE 通道；PI loss 在 Challenge3 下关闭 |
-| 影响 | 无效零信号污染 LGE / T2 特征，扰乱融合并稀释梯度 | 模型彻底不再“看到”不存在的模态，特征通道与监督信号严格匹配 CARE 协议 |
+> 注意：CineMyoPS 的论文任务是 cine-only scar/edema pathology segmentation；当前 CARE 仓库与 AGENTS.md 将 leaderboard 主目标写成 `myocardium_cinemyops`，并用 Dataset502 class_1 做本地对照。后续 submission 后需要用官方 validation 结果确认 hosted metric 是否确实与本地 class_1 最一致。
 
-> 备注：对于 CARE 中仅有 LGE（116 例）或缺 T2（24 例）的病例，目前 C0 / T2 通道仍以零图填充进入 3 通道 UNet。该部分尚未做更细粒度的 modality dropout 或 mask-aware 处理，后续可作为优化方向。
+### 1.2 官方 validation leaderboard 最新参考
 
----
+| 官方 validation 任务 | Rank 1 user | time | Dice / score | HD |
+| --- | --- | --- | ---: | ---: |
+| `myops_scar` | ZQH | 20260515 16:16:04 | **0.8390** | 6.2775 |
+| `myops_edema` | ZQH | 20260515 16:16:04 | **0.8536** | 8.6853 |
+| `myocardium_cinemyops` | NCC1H | 20260515 16:16:58 | **0.2594** | 38.1004 |
 
-## 3. U-MyoPS 表现分析与改进
+解读：
 
-### 3.1 表现不佳原因分析
-1.  **病例采样策略缺陷**：原始实现将 3D 病例压成单个中心层进行处理，丢失了大量有效的切片数据。
-2.  **训练集选择硬编码**：之前固定使用前 20 个病例，未遵循 CARE 官方划分的五折交叉验证协议。
-3.  **维度处理错误**：在结果生成阶段存在 2D/3D 维度混淆，导致配准和变形操作（Warp）出现异常。
-4.  **指标计算偏差**：评测脚本使用了固定的分辨率和裁剪参数，未根据每个病例的真实 NIfTI 空间信息进行动态调整。
-
-### 3.2 已完成的改进措施
-1.  **3D 采样优化**：引入 `subject_meta.json` 记录所有有效 Z 轴切片，实现按切片采样的全数据利用，不再局限于“中心层”。
-2.  **数据流对齐**：接入 CARE 官方的 `splits_MyoPS.json`，支持标准的五折交叉验证训练模式。
-3.  **预测链路重构**：重写了 `gen_res` 逻辑，采用逐切片推断并按原空间坐标聚合的方案，解决了维度匹配和空间对齐的 Bug。
-4.  **动态指标评估**：修正了评估脚本，使其能够读取原始图像的 Spacing 信息，确保 Dice 和 HD 指标计算的准确性。
-
-### 3.3 缺失模态的处理变更
-> U-MyoPS 网络结构本身仅使用 C0 / T2 / DE(LGE) 三个分支，**不涉及 T1m / T2***。因此该模型的“缺失模态”问题特指 CARE 中部分病例缺失 C0 或 T2 的情况。
-
-| 维度 | 修复前 | 修复后 |
-| --- | --- | --- |
-| 病例选择 | 硬编码 `subjects[:20]`，没有任何模态完整性检查 | 通过 `subject_meta.json` 显式记录 `modalities_present = {c0, t2, de}`，并默认仅保留三序列完整病例参与训练（环境变量 `UMYOPS_TRAIN_REQUIRE_ALL_MODALITIES=1`） |
-| 数据落盘 | 缺失模态读到空文件直接报错 | staging 阶段以 `_blank_sitk` 写出零图保证 dataloader 不崩，但其使用范围被 manifest 严格控制 |
-| 配准 (Stage1) | 缺失模态被零图喂入 TPS warp，污染配准学习 | 推断阶段读取 `modalities_present`，对缺失模态**跳过 TPS warp**，避免“拿零图配准”这种伪监督 |
-| 推断覆盖 | 与训练耦合，缺失病例无法生成结果 | `gen_res` 覆盖全部 staged 病例（含缺模态），不再因模态缺失漏推断 |
-| 兜底开关 | —— | 提供 `UMYOPS_TRAIN_REQUIRE_ALL_MODALITIES=0` 的可选项，允许在需要时把零填充病例也送入训练做对照实验 |
+- 官方 validation 不能和本地 train/protocol validation 直接等同，但它是真正的 hosted metric 实现。
+- MyoPS validation top 分数远高于之前 TODO 中的 20260513 旧值，说明 validation 输入完整三序列时上限可能比本地缺模态训练评估乐观。
+- Cine leaderboard top 仍低，说明 hosted CineMyoPS metric 很可能比本地 class_1 myocardium Dice 更难或口径不同；必须通过 submission 校验。
 
 ---
 
-## 4. CineMyoPS 表现分析与改进
+## 2. 文献思想与 CARE 数据差异
 
-### 4.1 表现不佳原因分析
-1.  **模型基准错位**：此前路径使用 nnU-Net v1 的通用分割器，未纳入 CineMyoPS 论文中的运动估计、解剖分割与病理分支的联合训练，难以利用心动周期内的形变信息。
-2.  **关键帧与采样策略不当**：将 4D Cine 压成单帧时曾默认取**中间时刻**（更接近收缩末期 ES），与以**舒张末期 ED** 为参照的标签空间不一致，造成显著错配。
-3.  **任务与监督口径**：论文管线面向多类病理；CARE Lb3 仅评瘢痕，需在损失与输出上与评测口径对齐（避免沿用全论文 head 的假设）。
-4.  **指标解读**：若汇总多类的平均 Dice，会掩盖瘢痕类（紧凑映射下对应 scar）的真实难度；Lb3 应以瘢痕相关指标为主汇报。
+| 模型 | 论文核心思想 | 论文输入 / 输出 | CARE 当前差异 | 当前实现理解度 |
+| --- | --- | --- | --- | --- |
+| MyoPS-Net | CMFF 跨模态特征融合 + MPC 心肌先验 + PI scar-in-edema 约束；强调 flexible multi-sequence | 最完整设定为 C0/LGE/T2/T1 mapping/T2*；公开 MyoPS 使用 C0/LGE/T2 的 MyoPS-Net-L；输出 scar/edema | CARE 只有 C0/LGE/T2，且训练 220 例中仅 80 例三序列完整、24 例缺 T2、116 例 LGE-only；无 T1m/T2* | 已做 challenge3 三模态改造，基本理解论文主线；但 flexible missing-modality 还没有充分实现为 mask-aware/dropout/routing |
+| U-MyoPS | 先把未配准 bSSFP/T2 warp 到 LGE common space，再用 MSF + SPG 做 pathology segmentation | 输入完整 bSSFP/LGE/T2；重点解决多序列空间失配；输出 scar、edema、healthy myocardium | CARE 大量病例缺 C0/T2；Stage1/Stage2 bridge 需要额外构建；论文 edema 常按 scar+edema union 解释，CARE 主指标要求 strict class_4 | Stage1 manifest、Stage2 raw task、remap/export 已补；但 Stage1 prior 质量、缺模态策略、Stage2 scar 召回仍未达到论文思想 |
+| CineMyoPS | cine-only，通过 motion estimation + anatomy segmentation + time-series aggregation 预测 pathology | 输入完整 cine sequence；ED 作为 reference；输出 scar/edema；4/6 frames 为论文推荐 | CARE CineMyoPS 64 例，当前本地对照还包含 myocardium/LV/scar compact labels；旧 Task025 单帧/middle frame 与论文不符 | Task026 ED-first、4D channels、CARECineMyoPSTrainer 已开始接近论文；但 fold0 当前 unified eval 全 0，说明实现尚未形成可信闭环 |
 
-### 4.2 已完成的改进措施
-1.  **Task026（4D）数据管线**：新增 `Task026_Cine_4D` 导出流程（`prepare_task026_cine_4d.py`、`task026_utils.py`），将 CARE CineMyoPS 转为 **4D cine NIfTI + 3D 标签**，并按挑战赛标签做紧凑重映射；同时生成分通道的 nnU-Net v1 **raw** 任务目录供 planner / 训练读取。默认在完整心动周期内**均匀采样固定帧数**（可由环境变量配置），且 **首帧固定为 t=0（ED）**，替代原先「单帧 + 取中间层」的设定。
-2.  **ED 假设校验**：`verify_ed_at_t0.py` 对「第一帧为 ED」做一次性统计门控，降低帧定义错误导致的全链路偏差。
-3.  **导出质量门控**：`sanity_check_task026.py` 在导出后对维度、文件对齐与关键元数据做检查，避免 silent corruption 进入训练。
-4.  **网络与训练器**：在 `third_party/CineMyoPS` 内新增 `CARECineMyoPSTrainer` 与 `care_cineloss.py`（`CARECineSegLoss`）。网络以 **`CineSegNet` 为基础**，经 `CARECineSegNet` 适配 CARE：**运动分支（encoder + ES-based motion decoder）+ 解剖分割（cardiac_seg，ED 帧）+ 瘢痕病理头（2D UNet；输入为 ED cine、运动场汇总与 ED 解剖特征拼接）**；损失在 CineSeg 组合形式基础上改为 **Lb3 瘢痕监督**，取代单帧 generic nnU-Net baseline。
-5.  **评测与产物路径兼容**：预测仍写入统一约定路径下的 `results/predictions/CineMyoPS/fold_X/<case>.nii.gz`，与仓库内统一基准评测衔接；与旧 Task025 相关的脚本保留作对照或历史任务，**Lb3 主路径以 Task026 + CARE trainer 为准**。
-6.  **工程配套**：补充 `jobs/CineMyoPS/README.md`、`sbatch_cinemyops.sh`、`code/CineMyoPS/smoke_test.sh` 等用于集群编排与训练前冒烟验证；具体操作见代码库说明，汇报稿不展开命令行。
+---
 
-### 4.3 后续工作
-- 完成 **五折交叉验证** 与多 fold 指标汇总，形成可与 Lb1/Lb2 对齐的完整验证结论。
-- 视验证表现决定是否加入 **后处理**（连通域、边界平滑）以改善 HD；必要时可将官方 CineMyoPS 预训练权重仅作 **对照实验**（注意类别与域差异）。
+## 3. 当前本地表现
+
+| 模型 / 任务 | 当前最可信结果 | myops_scar | myops_edema | myocardium_cinemyops / class_1 | 状态 |
+| --- | --- | ---: | ---: | ---: | --- |
+| nnU-Net `Dataset501_CAREMyoPS` | 5-fold complete | **0.5592** | **0.4197** | - | MyoPS 强基线 |
+| MyoPS-Net | fold0 current unified eval | 0.4637 | 0.2794 | - | 两项仍低于 nnU-Net |
+| U-MyoPS old default | fold0 stale/default cache | 0.0699 | 0.5646 | - | 旧结果不可作为最终结论 |
+| U-MyoPS `model_best` | fold0 explicit checkpoint eval | 0.2800 | 0.6517 | - | scar 仍显著低；edema 受 empty-GT case 影响需分组解释 |
+| U-MyoPS `model_final_checkpoint` | fold0 explicit checkpoint eval | 0.2823 | 0.6507 | - | 与 `model_best` 接近 |
+| nnU-Net `Dataset502_CARECineMyoPS` | 5-fold complete | - | - | **0.6808** | Cine 本地 class_1 强基线 |
+| CineMyoPS | fold0 current unified eval | - | - | 0.0000 | pipeline/export/eval 尚未闭环 |
+
+关键结论：
+
+1. **MyoPS-Net 尚未超过 nnU-Net**：challenge3 修复了 T1m/T2* 零分支污染，但 edema/scar 都仍低，说明只裁掉无效 mapping 分支不够。
+2. **U-MyoPS 的旧 scar=0.0699 已不代表最新 checkpoint**：显式 checkpoint 复评后 scar 到约 0.28，但距离 nnU-Net 0.5592 仍很远；Stage1/Stage2 对 CenterB/CenterC 等完整三序列病例的 pathology 对齐可能失败。
+3. **CineMyoPS 当前不是模型性能问题，而是系统问题**：unified eval 全 0 必须先定位预测文件、checkpoint、label remap、Task025/Task026 混用和 export 路径。
+
+---
+
+## 4. 三个模型的主要问题与改进方向
+
+### 4.1 MyoPS-Net
+
+主要问题：
+
+- 论文的 flexible multi-sequence 被简化成 challenge3 三模态输入；对 CARE 的 LGE-only / 缺 T2 分布还没有真正做 mask-aware learning。
+- Edema 训练信号受 T2 缺失限制；严格 class_4 Dice 不能用论文式 edema union 解释。
+- 目前只有 fold0 可信结果，缺 5-fold 完整性和 ensemble。
+- 需要确认 `MYOPS_NET_VARIANT=challenge3`、pathology sampler、loss weights、export remap 在训练/推理/评测全链路一致。
+
+下一步：
+
+1. 写入显式 modality mask 或至少在 dataloader 中区分 real-zero vs missing-zero。
+2. 做 modality dropout：训练时随机 drop C0/T2，但保留 LGE 主通道；validation 按三组报告 LGE-only、C0+LGE、C0+LGE+T2。
+3. 对 scar/edema positive slices 做采样和 class-specific loss：scar 以召回为主，edema 对 T2-present 子集单独加权。
+4. 添加 class-specific 后处理：清理孤立小块、限制 pathology 在 myocardium prior/邻域内，重点改善 HD。
+5. 跑 5 folds，先要求本地 fold-wise mean 超过 nnU-Net 0.5592 / 0.4197，再做 validation package。
+
+### 4.2 U-MyoPS
+
+主要问题：
+
+- 论文假设完整 bSSFP/LGE/T2，CARE 训练集中只有 80/220 完整；Stage1 registration/MSF 的优势在 LGE-only case 中基本不可用。
+- 最新 `model_best` / `model_final_checkpoint` scar 约 0.28，说明 label remap 已不是唯一问题；更像 Stage1 prior/Stage2 scar recall/中心分布失败。
+- Edema 高分中大量 empty-GT case 被计为 1.0，不能直接说明 strict edema 已真正超过 nnU-Net。
+- Stage2 只输出 pathology 4/5，不输出 anatomy；需要检查 SPG/prior 是否和论文的 common-space 语义一致。
+
+下一步：
+
+1. 对 fold0 per-case 做中心和模态分组，特别复核 Case20xx / Case30xx 的 Stage1 aligned C0/T2/LGE、myocardium prior 与 GT pathology 空间重叠。
+2. 把 U-MyoPS 的 edema 汇报拆成 all cases、GT-positive-only、T2-present-only，避免 empty-GT 平均误导。
+3. Stage2 加 scar-positive patch/slice sampling、scar CE/Tversky/Focal 权重，并与当前 `nnUNetTrainerPSNV8ScarCE2` 做消融。
+4. 对缺模态 case 做 routing：完整三序列走 U-MyoPS full path；LGE-only / 缺 T2 走退化路径或降低 C0/T2 prior 权重。
+5. 链路稳定后再跑 fold1-4；不要在 scar 仍 0.28 时直接做 5-fold 规模化。
+
+### 4.3 CineMyoPS
+
+主要问题：
+
+- 旧 Task025 单帧 / middle frame 不符合论文；Task026 ED-first 是正确方向，但当前 fold0 unified eval 全 0，说明预测闭环仍断。
+- 论文 CineMyoPS 输出 scar/edema；当前 CARE 本地任务还同时评估 myocardium/LV/scar，且主 leaderboard 名称为 `myocardium_cinemyops`，需要 submission 校准。
+- `CARECineMyoPSTrainer` scar-only pathology head 是否能同时产生 class_1 myocardium 预测，必须通过 prediction unique labels 验证。
+- 需要确认训练和 export 都使用同一个 Task026、fold、checkpoint、`CINE_NUM_FRAMES`，没有混入 Task025 旧路径。
+
+下一步：
+
+1. 先修全 0：检查 `results/predictions/CineMyoPS/fold_0/*.nii.gz` 数量、unique labels、非零体素、spacing/origin/direction。
+2. 重新跑 `sanity_check_task026.py`、`verify_ed_at_t0.py`，确认 ED-first + sampled frames 没有被 export 改坏。
+3. 明确 `CARECineMyoPSTrainer` 输出语义：本地 class_1 myocardium、class_2 LV、class_3 scar 是否都可训练/预测。
+4. fold0 跑通后同时报告 class_1 和 class_3：class_1 对照本地 `myocardium_cinemyops`，class_3 对照论文 scar 思想。
+5. 只有非空预测且 fold0 达到可比水平后，再跑 5 folds、ensemble 和 validation submission。
+
+---
+
+## 5. 新增 prompt 文件
+
+已准备三个下一步改进 prompt：
+
+- `prompts/MyoPS-Net/prompt2_improve_myopsnet.md`
+- `prompts/U-MyoPS/prompt2_improve_umyops.md`
+- `prompts/CineMyoPS/prompt2_improve_cinemyops.md`
+
+使用顺序建议：
+
+1. 先跑 CineMyoPS prompt，修复全 0 和 Task026 闭环。
+2. 再跑 U-MyoPS prompt，集中修 Stage1/Stage2 scar 召回。
+3. 最后跑 MyoPS-Net prompt，做缺模态鲁棒训练和 5-fold。
+
+---
+
+## 6. 多轮运行策略
+
+默认采用“持续小步迭代”，不是一次性长训：
+
+- 每个模型每一轮训练/评估 job walltime 目标不超过 **8 小时**。
+- 每轮只验证一个主要假设，并在 `results/experiments/*_iteration_log.md` 记录代码改动、运行命令、实际 epoch、best checkpoint、停止原因和指标变化。
+- 优先给训练器或 Slurm 入口加 early stopping / max runtime / best checkpoint selection；不要用 1000/2000 epoch 长训赌结果。
+- 三个模型的 fold0 实验预算尽量按相近 walltime 对齐，先比较方向，再决定是否扩展到 5 folds。
+- 除非涉及数据合规、label 定义、官方 submission 口径或需要用户账号/手动提交，否则后续 agent 应继续下一轮小改动，不要每轮都停下来问。
+
+建议执行方式：
+
+1. 不需要另开“goal mode”也能做，但每次启动一个模型 prompt 时，应把上述预算约束作为硬要求。
+2. 如果要让我在同一个会话里持续推进多轮，可以明确说“开始一个持续目标：按 TODO 和三个 prompt 迭代改进模型，单轮不超过 8 小时”。这时再使用 goal 追踪更合适。
+3. 三个模型可按优先级串行推进：CineMyoPS 全 0闭环 → U-MyoPS scar 召回 → MyoPS-Net 缺模态鲁棒。
+
+---
+
+## 7. 当前最高优先级清单
+
+1. **CineMyoPS**：恢复非空、语义正确、空间对齐的 fold0 predictions。
+2. **U-MyoPS**：解释并修复完整三序列病例 scar 崩溃；重新报告 GT-positive-only edema。
+3. **MyoPS-Net**：实现/验证 modality-aware training，而不是仅靠零填充。
+4. **Leaderboard**：每次提交或查分前先运行 `scripts/leaderboard/fetch_care2026_scores.py`，记录 `fetched_at_utc`。
+5. **报告格式**：模型性能问题必须先确认 all folds 是否完成；完整汇报按 `results/metrics/nnUNet.md` 的结构写。

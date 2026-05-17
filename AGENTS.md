@@ -1,5 +1,16 @@
 # CARE repository — agent instructions
 
+## Codex rule source
+
+Treat this `AGENTS.md` as the repo-level Codex rules source. Do not rely on `.cursor/rules/`, `.cursor/skills/`, `.cursor/plans/`, or Cursor plugins; migrate future rule changes here.
+
+## Skill Source
+
+- Repo-level skills are installed under `.codex/skills/` from `/overflow/htzhu/mingcheng_new/AI_Skills_Collection/skills`.
+- The canonical upstream source remains `/overflow/htzhu/mingcheng_new/AI_Skills_Collection/skills`; when refreshing repo-local skills, replace duplicates with copies from that collection.
+- This repository should install the medical imaging skill set from `AI_Skills_Collection/skills/domain/medical-imaging`.
+- Do not add `.cursor/skills` or Cursor plugin copies in this repository.
+
 ## Reference papers
 
 Third-party papers for consultation live under **`literature/`** (PDFs, etc.). Use them when explaining methods, citations, or baseline details if copies exist there.
@@ -44,6 +55,19 @@ When asked about **model performance** (metrics, Dice, fold CV results):
 
 Mirror this layout for non–nnU-Net models; answer in **Simplified Chinese** with English for paths/names as needed.
 
+## Iterative model-improvement runs
+
+For CARE model-improvement work, use short, attributable experiment rounds instead of long speculative training runs.
+
+- Default single training/evaluation job walltime is **8 hours or less**. If an existing Slurm script requests more time, create or use a budgeted entrypoint for the current round.
+- Do **not** use very long runs such as 1000/2000 epochs to compensate for weak results. Prefer max-runtime guards, max-epoch caps, validation-based early stopping, and explicit best-checkpoint selection.
+- Each round should test one main hypothesis: for example modality dropout, label/remap repair, scar-positive sampling, class-weight tuning, Stage1 prior alignment, or export/cache isolation. Avoid bundling several unrelated changes into one run unless a blocker forces it.
+- Start with fold 0 or a small protocol validation loop. Expand to folds 1–4 only after predictions are non-empty, label semantics are verified, cache isolation is verified, and the target leaderboard metric improves or the change fixes a proven pipeline bug.
+- Record each round in the relevant file under `results/experiments/*_iteration_log.md`: code changes, command/env vars, fold, walltime, actual epochs, checkpoint used/exported, stop reason, and target metrics before/after.
+- Do not silently reuse stale prediction caches. Checkpoint-specific or config-specific prediction and metric directories are required when comparing variants.
+- For MyoPS models, optimize and report `myops_scar` and `myops_edema`; for U-MyoPS edema analysis, also report all-cases, GT-positive-only, and T2-present subsets when possible. For CineMyoPS, report both the local `class_1` myocardium proxy and `class_3` scar sanity metric until the hosted `myocardium_cinemyops` metric is calibrated by submission.
+- Continue small improvement rounds without asking the user after every run unless there is a decision about data compliance, label definitions, official submission strategy, external credentials, or materially longer compute.
+
 ## CARE2026 validation leaderboard
 
 When asked for the latest CARE2026 validation/leaderboard/reference scores, first run:
@@ -76,7 +100,18 @@ Validation raw data should live under:
 - `data/CARE_Challenge/MyoPS_val`
 - `data/CARE_Challenge/CineMyoPS_val`
 
-To prepare a CARE-Myocardium validation upload zip from the nnU-Net baselines, use:
+Use `scripts/submission/prepare_care_myocardium_validation.py` as the single entrypoint for validation submissions. It writes intermediate inputs/predictions under:
+
+- `results/submissions/care_myocardium_validation/workspaces/<model_combo>_<timestamp>/`
+
+and writes upload-ready packages under:
+
+- `results/submissions/care_myocardium_validation/upload_ready/<model_combo>_<timestamp>/CARE-Myocardium-OrganAgent.zip`
+- `results/submissions/care_myocardium_validation/upload_ready/<model_combo>_<timestamp>/manifest.json`
+
+The upload zip filename intentionally has **no timestamp**, because the official example is `CARE-Myocardium-TeamName.zip`. Keep the timestamp on the parent folder for ordering and auditability.
+
+To prepare the current default nnU-Net 5-fold validation upload zip, use:
 
 ```bash
 sbatch jobs/submission/prepare_care_myocardium_validation.sh
@@ -87,15 +122,20 @@ For a local/debug run, use:
 ```bash
 ./env_CARE/bin/python scripts/submission/prepare_care_myocardium_validation.py \
   --team-name OrganAgent \
-  --run-name nnunet_5fold_best \
+  --submission-model nnUNet \
   --folds 0 1 2 3 4 \
   --checkpoint checkpoint_best.pth
 ```
 
-The script converts validation inputs to nnU-Net channel files under the fixed `<run-name>` workspace, runs `Dataset501_CAREMyoPS` and `Dataset502_CARECineMyoPS`, remaps compact nnU-Net labels back to CARE raw labels (`200`, `500`, `600`, `1220`, `2221` as applicable), appends a timestamp to the submission package by default, and writes:
+Convenience model selection:
 
-- `results/submissions/care_myocardium_validation/<run-name>/packages/CARE-Myocardium-OrganAgent_<YYYYMMDD_HHMMSS>.zip`
-- `results/submissions/care_myocardium_validation/<run-name>/packages/CARE-Myocardium-OrganAgent_<YYYYMMDD_HHMMSS>_manifest.json`
+- `--submission-model nnUNet`: use nnU-Net for both MyoPS and CineMyoPS.
+- `--submission-model MyoPS-Net` or `--submission-model MyoPS`: use MyoPS-Net for the MyoPS side and nnU-Net for the CineMyoPS side.
+- `--submission-model CineMyoPS`: use nnU-Net for the MyoPS side and CineMyoPS for the CineMyoPS side.
+- `--submission-model U-MyoPS`: only valid when `--myops-pred-dir` points to compact-label U-MyoPS validation predictions; the current repo has protocol fold export for U-MyoPS but not a full validation Stage1→Stage2 inference pipeline.
+- `--myops-model ... --cine-model ...`: explicit hybrid combination, for example `--myops-model MyoPS-Net --cine-model CineMyoPS`.
+
+The script converts compact model labels back to CARE raw labels (`200`, `500`, `600`, `1220`, `2221` as applicable). If a prediction has no pathology label at all, it adds a one-voxel `2221` format fallback and records the case in the manifest, because the official validator rejects predictions missing scar/pathology labels.
 
 The official Myocardium validation zip layout is documented at `https://zmic.org.cn/care_2026/valid_submission/`: top-level `MyoPS/Anonymous Center/Case****/Case****_pred.nii.gz` and `CineMyoPS/Anonymous Center/Case****/Case****_pred.nii.gz`.
 
