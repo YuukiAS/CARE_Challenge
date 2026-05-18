@@ -19,7 +19,28 @@ Third-party papers for consultation live under **`literature/`** (PDFs, etc.). U
 
 The usual working environment is a compute node. The user also has access to the **`htzhulab`** partition; when CPU-only execution would be slow, use temporary GPU jobs there via `sbatch`, `srun`, or similar Slurm commands instead of letting long CPU runs crawl.
 
-When adding Slurm entrypoints under `jobs/`, mirror the existing header/logging style:
+For CARE model work, default to the lab partition first. If queue inspection suggests a materially long wait on `htzhulab`, school GPU partitions may be used as fallbacks. The priority order is:
+
+1. `htzhulab` — preferred/default for CARE jobs.
+2. `a100-gpu` — school A100 partition; use only when `htzhulab` is expected to wait too long.
+3. `volta-gpu` — school V100 partition; use after `a100-gpu`.
+
+Current Slurm-visible school GPU partitions include:
+
+- `a100-gpu`: `gpu:nvidia_a100-pcie-40gb`
+- `volta-gpu`: `gpu:tesla_v100-sxm2-16gb`
+- Other visible GPU partitions such as `l40-gpu`, `gpu` (GTX 1080), and `webportal_gpu` are not part of the default CARE fallback order; use them only if the user explicitly asks or the job requirements clearly fit them better.
+
+Before switching away from `htzhulab`, check queue state with commands such as:
+
+```bash
+squeue -p htzhulab
+sinfo -o '%P|%a|%l|%D|%t|%G'
+```
+
+Do **not** switch partitions for short waits or routine pending jobs. Switch only when `htzhulab` is full and the expected wait is long relative to the planned job budget. When switching to school partitions, keep the same logging style, but use the partition-specific Slurm headers below. Do not omit `--qos`: school GPU partitions may reject jobs that inherit an incompatible default QOS. The safe default QOS for CARE fallback jobs is `gpu_access`.
+
+When adding Slurm entrypoints under `jobs/`, mirror the existing header/logging style. Default CARE/lab jobs should use `htzhulab`:
 
 ```bash
 #SBATCH --ntasks=1
@@ -33,6 +54,40 @@ When adding Slurm entrypoints under `jobs/`, mirror the existing header/logging 
 #SBATCH --partition=htzhulab
 #SBATCH --qos=gpu_access
 ```
+
+For the school A100 fallback, use this directly usable header:
+
+```bash
+#SBATCH --ntasks=1
+#SBATCH --cpus-per-task=8
+#SBATCH --job-name=<ShortJobName>
+#SBATCH --output=/dev/null
+#SBATCH --error=/dev/null
+#SBATCH --mem=64G
+#SBATCH --time=<limit>
+#SBATCH --gres=gpu:nvidia_a100-pcie-40gb:1
+#SBATCH --partition=a100-gpu
+#SBATCH --qos=gpu_access
+```
+
+Notes for `a100-gpu`: `scontrol show partition a100-gpu` reports `AllowQos=gpu_access,gpu_access_plus`, `MaxTime=6-00:00:00`, nodes `g[141601-141608]`, and `gres/gpu:nvidia_a100-pcie-40gb`. Prefer `gpu_access`; use `gpu_access_plus` only when the user explicitly asks or there is a known reason to request that QOS.
+
+For the school V100 fallback, use this directly usable header:
+
+```bash
+#SBATCH --ntasks=1
+#SBATCH --cpus-per-task=8
+#SBATCH --job-name=<ShortJobName>
+#SBATCH --output=/dev/null
+#SBATCH --error=/dev/null
+#SBATCH --mem=64G
+#SBATCH --time=<limit>
+#SBATCH --gres=gpu:tesla_v100-sxm2-16gb:1
+#SBATCH --partition=volta-gpu
+#SBATCH --qos=gpu_access
+```
+
+Notes for `volta-gpu`: `scontrol show partition volta-gpu` reports `AllowQos=gpu_access,hp_volta_gpu,gpu_access_plus`, `MaxTime=11-00:00:00`, nodes `g[0301-0316]`, and `gres/gpu:tesla_v100-sxm2-16gb`. Prefer `gpu_access`; use `gpu_access_plus` or `hp_volta_gpu` only when the user explicitly asks or there is a known reason to request that QOS.
 
 Inside the script, create a timestamped log and tee stdout/stderr there:
 
@@ -100,7 +155,9 @@ Validation raw data should live under:
 - `data/CARE_Challenge/MyoPS_val`
 - `data/CARE_Challenge/CineMyoPS_val`
 
-Use `scripts/submission/prepare_care_myocardium_validation.py` as the single entrypoint for validation submissions. It writes intermediate inputs/predictions under:
+Use `scripts/submission/prepare_care_myocardium_validation.py` as the single entrypoint for validation submissions. One `CARE-Myocardium-OrganAgent.zip` upload contains both `MyoPS/` and `CineMyoPS/`, consumes one validation submission attempt, and returns the three hosted metrics (`myops_scar`, `myops_edema`, `myocardium_cinemyops`) together. Do not plan separate uploads for those three metrics; use per-metric interpretation after the single package is evaluated.
+
+The script writes intermediate inputs/predictions under:
 
 - `results/submissions/care_myocardium_validation/workspaces/<model_combo>_<timestamp>/`
 

@@ -82,6 +82,69 @@ def absolute_symlink(src: Path, dst: Path) -> None:
     os.symlink(src.resolve(), dst)
 
 
+def write_image_like(reference_path: Path, dst: Path, array: np.ndarray) -> None:
+    ref = sitk.ReadImage(str(reference_path))
+    img = sitk.GetImageFromArray(array.astype(np.uint8, copy=False))
+    img.CopyInformation(ref)
+    dst.parent.mkdir(parents=True, exist_ok=True)
+    if dst.exists() or dst.is_symlink():
+        dst.unlink()
+    sitk.WriteImage(img, str(dst))
+
+
+def write_zero_like(reference_path: Path, dst: Path) -> None:
+    ref = sitk.ReadImage(str(reference_path))
+    arr = np.zeros(sitk.GetArrayFromImage(ref).shape, dtype=np.uint8)
+    write_image_like(reference_path, dst, arr)
+
+
+def write_channel_on_reference(src_path: Path, reference_path: Path, dst: Path) -> None:
+    src = sitk.ReadImage(str(src_path))
+    ref = sitk.ReadImage(str(reference_path))
+    arr = sitk.GetArrayFromImage(src)
+    img = sitk.GetImageFromArray(arr)
+    img.CopyInformation(ref)
+    dst.parent.mkdir(parents=True, exist_ok=True)
+    if dst.exists() or dst.is_symlink():
+        dst.unlink()
+    sitk.WriteImage(img, str(dst))
+
+
+def write_oracle_support_prior(gt_path: Path, reference_path: Path, dst: Path) -> None:
+    gt = sitk.GetArrayFromImage(sitk.ReadImage(str(gt_path))).astype(np.int32, copy=False)
+    support = (
+        (gt == 1)
+        | (gt == 4)
+        | (gt == 5)
+        | (gt == 200)
+        | (gt == 1220)
+        | (gt == 2221)
+    )
+    write_image_like(reference_path, dst, support.astype(np.uint8))
+
+
+def write_lge_dilated_prior(prior_path: Path, reference_path: Path, dst: Path, radius_xy: int = 8) -> None:
+    """Write a CARE-aware Stage1 prior channel with in-plane slack.
+
+    The original Stage1 prior can be too narrow for scar. This keeps the prior-aware
+    U-MyoPS idea but reduces hard spatial restriction: original prior voxels get
+    value 2, the dilated support ring gets value 1, and everything else stays 0.
+    No GT label is used.
+    """
+    prior_img = sitk.ReadImage(str(prior_path))
+    prior = sitk.GetArrayFromImage(prior_img) != 0
+    mask_img = sitk.GetImageFromArray(prior.astype(np.uint8))
+    mask_img.CopyInformation(prior_img)
+    dim = mask_img.GetDimension()
+    radius = [int(radius_xy), int(radius_xy)] + ([0] if dim == 3 else [])
+    dilated_img = sitk.BinaryDilate(mask_img, radius, sitk.sitkBall)
+    dilated = sitk.GetArrayFromImage(dilated_img) != 0
+    out = np.zeros(prior.shape, dtype=np.uint8)
+    out[dilated] = 1
+    out[prior] = 2
+    write_image_like(reference_path, dst, out)
+
+
 def compact_pathology_label(gt_img: sitk.Image) -> sitk.Image:
     """
     Map CARE MyoPS pathology labels into nnU-Net Task901 internal ids {0,1,2}.
@@ -160,10 +223,13 @@ def discover_case_assets(
     return CaseAssets(case_id=case_id, subject_dir=subject_dir, prior=prior, c0=c0, t2=t2, lge=lge, gt=gt)
 
 
-def write_dataset_json(task_dir: Path, task_name: str, cases: list[str]) -> None:
+def write_dataset_json(task_dir: Path, task_name: str, cases: list[str], input_variant: str) -> None:
     dataset = {
         "name": task_name,
-        "description": "CARE U-MyoPS Stage2 fold-specific task built from Stage1 priors and aligned images",
+        "description": (
+            "CARE U-MyoPS Stage2 fold-specific task built from Stage1 priors/aligned images "
+            f"(input_variant={input_variant})"
+        ),
         "tensorImageSize": "4D",
         "reference": "CARE benchmark / U-MyoPS",
         "licence": "CARE internal benchmark dataset",
@@ -205,6 +271,18 @@ def main() -> None:
     ap.add_argument("--stage1-net", type=str, default="tps")
     ap.add_argument("--stage1-data-source", type=str, default="ZS_unaligned")
     ap.add_argument("--stage1-weight", type=str, default="1.0")
+    ap.add_argument(
+        "--input-variant",
+        choices=["existing_full", "lge_only_no_prior", "oracle_prior_diagnostic", "lge_dilated_prior"],
+        default="existing_full",
+        help=(
+            "Stage2 input ablation variant. existing_full keeps current Stage1 channels; "
+            "lge_only_no_prior zeros prior/C0/T2 and keeps LGE; oracle_prior_diagnostic "
+            "uses a GT-derived myocardium/pathology support prior for diagnostic upper-bound only; "
+            "lge_dilated_prior keeps a dilated/softened Stage1 prior, zeros C0/T2, and keeps LGE."
+        ),
+    )
+    ap.add_argument("--prior-dilation-radius-xy", type=int, default=8)
     ap.add_argument("--max-cases", type=int, default=0)
     ap.add_argument("--force-clean", action="store_true")
     ap.add_argument("--dry-run", action="store_true")
@@ -242,6 +320,7 @@ def main() -> None:
 
     print(f"Stage1 run dir: {stage1_run_dir}")
     print(f"Task dir: {task_dir}")
+    print(f"Input variant: {args.input_variant}")
     print(f"Cases: {len(assets)}")
     if args.dry_run:
         for item in assets[: min(5, len(assets))]:
@@ -258,15 +337,39 @@ def main() -> None:
     (task_dir / "imagesTs").mkdir(parents=True, exist_ok=True)
 
     for item in assets:
-        absolute_symlink(item.prior, task_dir / "imagesTr" / f"{item.case_id}_0000.nii.gz")
-        absolute_symlink(item.c0, task_dir / "imagesTr" / f"{item.case_id}_0001.nii.gz")
-        absolute_symlink(item.t2, task_dir / "imagesTr" / f"{item.case_id}_0002.nii.gz")
-        absolute_symlink(item.lge, task_dir / "imagesTr" / f"{item.case_id}_0003.nii.gz")
+        if args.input_variant == "existing_full":
+            absolute_symlink(item.prior, task_dir / "imagesTr" / f"{item.case_id}_0000.nii.gz")
+            absolute_symlink(item.c0, task_dir / "imagesTr" / f"{item.case_id}_0001.nii.gz")
+            absolute_symlink(item.t2, task_dir / "imagesTr" / f"{item.case_id}_0002.nii.gz")
+        elif args.input_variant == "lge_only_no_prior":
+            write_zero_like(item.gt, task_dir / "imagesTr" / f"{item.case_id}_0000.nii.gz")
+            write_zero_like(item.gt, task_dir / "imagesTr" / f"{item.case_id}_0001.nii.gz")
+            write_zero_like(item.gt, task_dir / "imagesTr" / f"{item.case_id}_0002.nii.gz")
+        elif args.input_variant == "lge_dilated_prior":
+            write_lge_dilated_prior(
+                item.prior,
+                item.gt,
+                task_dir / "imagesTr" / f"{item.case_id}_0000.nii.gz",
+                radius_xy=args.prior_dilation_radius_xy,
+            )
+            write_zero_like(item.gt, task_dir / "imagesTr" / f"{item.case_id}_0001.nii.gz")
+            write_zero_like(item.gt, task_dir / "imagesTr" / f"{item.case_id}_0002.nii.gz")
+        elif args.input_variant == "oracle_prior_diagnostic":
+            write_oracle_support_prior(item.gt, item.gt, task_dir / "imagesTr" / f"{item.case_id}_0000.nii.gz")
+            write_channel_on_reference(item.c0, item.gt, task_dir / "imagesTr" / f"{item.case_id}_0001.nii.gz")
+            write_channel_on_reference(item.t2, item.gt, task_dir / "imagesTr" / f"{item.case_id}_0002.nii.gz")
+        else:  # pragma: no cover
+            raise ValueError(f"unsupported input variant: {args.input_variant}")
+        if args.input_variant == "existing_full":
+            absolute_symlink(item.lge, task_dir / "imagesTr" / f"{item.case_id}_0003.nii.gz")
+        else:
+            write_channel_on_reference(item.lge, item.gt, task_dir / "imagesTr" / f"{item.case_id}_0003.nii.gz")
 
         gt_img = sitk.ReadImage(str(item.gt))
-        sitk.WriteImage(compact_pathology_label(gt_img), str(task_dir / "labelsTr" / f"{item.case_id}.nii.gz"))
+        compact_gt = compact_pathology_label(gt_img)
+        sitk.WriteImage(compact_gt, str(task_dir / "labelsTr" / f"{item.case_id}.nii.gz"))
 
-    write_dataset_json(task_dir, task_name, [item.case_id for item in assets])
+    write_dataset_json(task_dir, task_name, [item.case_id for item in assets], args.input_variant)
     print(f"Wrote raw task {task_name} to {task_dir}")
 
 

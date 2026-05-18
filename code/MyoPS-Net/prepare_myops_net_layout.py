@@ -22,6 +22,32 @@ import nibabel as nib
 import numpy as np
 import SimpleITK as sitk
 
+# nnU-Net compact ids -> CARE challenge raw pixel ids expected by third_party/MyoPS-Net LabelTransform.
+# Keep aligned with code/nnUNet/nnunet_label_utils.RAW_TO_NNUNET.
+_NNUNET_ID_TO_RAW: dict[int, float] = {
+    0: 0.0,
+    1: 200.0,
+    2: 500.0,
+    3: 600.0,
+    4: 1220.0,
+    5: 2221.0,
+}
+
+
+def _gd_array_to_myops_upstream_labels(arr: np.ndarray) -> np.ndarray:
+    """Convert CARE gd (nnU-Net uint8 0..5 or legacy raw challenge ids) to values MyoPS-Net expects."""
+    a = np.asarray(arr, dtype=np.int64)
+    uniq = {int(x) for x in np.unique(a).tolist()}
+    out = np.zeros_like(a, dtype=np.float32)
+    if uniq.issubset({0, 1, 2, 3, 4, 5}):
+        for nid, raw in _NNUNET_ID_TO_RAW.items():
+            out[a == nid] = raw
+        return out
+    for raw in (0, 200, 500, 600, 1220, 2221, 1):
+        if raw in uniq:
+            out[a == raw] = float(raw)
+    return out
+
 
 def discover_cases(root: Path) -> list[Path]:
     cases: list[Path] = []
@@ -60,6 +86,20 @@ def write_zeros_like_lge(case_lge: Path, out_path: Path) -> None:
     nib.save(img, str(out_path))
 
 
+def case_modalities_present(case_dir: Path) -> dict[str, bool]:
+    cid = case_dir.name
+    return {
+        "c0": (case_dir / f"{cid}_C0.nii.gz").is_file(),
+        "lge": (case_dir / f"{cid}_LGE.nii.gz").is_file(),
+        "t2": (case_dir / f"{cid}_T2.nii.gz").is_file(),
+    }
+
+
+def has_all_modalities(case_dir: Path) -> bool:
+    info = case_modalities_present(case_dir)
+    return bool(info["c0"] and info["lge"] and info["t2"])
+
+
 def export_case(case_dir: Path, img_root: Path, gd_root: Path, rel_prefix: Path) -> int:
     """Write modalities into train_image / train_gd trees; return z-depth (slice count)."""
     cid = case_dir.name
@@ -95,7 +135,11 @@ def export_case(case_dir: Path, img_root: Path, gd_root: Path, rel_prefix: Path)
 
     gd_sitk = _read_sitk(str(gd_path))
     gd_sitk = _resample_to_reference(gd_sitk, ref, is_label=True)
-    sitk.WriteImage(gd_sitk, str(sub_gd / f"{cid}_gd.nii.gz"))
+    gd_arr = sitk.GetArrayFromImage(gd_sitk)
+    gd_arr = _gd_array_to_myops_upstream_labels(gd_arr)
+    gd_out = sitk.GetImageFromArray(gd_arr.astype(np.float32))
+    gd_out.CopyInformation(gd_sitk)
+    sitk.WriteImage(gd_out, str(sub_gd / f"{cid}_gd.nii.gz"))
 
     return int(ref.GetSize()[2])
 
@@ -122,7 +166,17 @@ def main() -> None:
         help="Benchmark root (train_set/, train.txt created here)",
     )
     ap.add_argument("--val-ratio", type=float, default=0.2, help="Fraction of cases for validation (by count).")
-    ap.add_argument("--max-cases", type=int, default=0, help="If >0, only use this many cases.")
+    ap.add_argument("--max-cases", type=int, default=0, help="If >0, cap the number of *training* cases after split (val unchanged).")
+    ap.add_argument(
+        "--train-require-all-modalities",
+        action="store_true",
+        help="Keep only C0+LGE+T2-complete cases in the training split.",
+    )
+    ap.add_argument(
+        "--val-require-all-modalities",
+        action="store_true",
+        help="Keep only C0+LGE+T2-complete cases in the validation split.",
+    )
     ap.add_argument("--seed", type=int, default=42, help="Shuffle seed for train/val split.")
     ap.add_argument(
         "--splits-file",
@@ -139,8 +193,6 @@ def main() -> None:
     args = ap.parse_args()
 
     cases = discover_cases(args.input)
-    if args.max_cases > 0:
-        cases = cases[: args.max_cases]
     if not cases:
         print("No cases found.", file=sys.stderr)
         sys.exit(1)
@@ -177,6 +229,16 @@ def main() -> None:
             val_cases = cases[:n_val]
             train_cases = cases[n_val:]
 
+    train_before_filter = len(train_cases)
+    val_before_filter = len(val_cases)
+    if args.train_require_all_modalities:
+        train_cases = [c for c in train_cases if has_all_modalities(c)]
+    if args.val_require_all_modalities:
+        val_cases = [c for c in val_cases if has_all_modalities(c)]
+
+    if args.max_cases > 0:
+        train_cases = train_cases[: args.max_cases]
+
     out = args.output
     tr_img = out / "train_set" / "train_image"
     tr_gd = out / "train_set" / "train_gd"
@@ -188,10 +250,12 @@ def main() -> None:
 
     train_lines: list[str] = []
     val_lines: list[str] = []
+    modalities_present: dict[str, dict[str, bool]] = {}
 
     for case_dir in train_cases:
         center = case_dir.parent.name
         cid = case_dir.name
+        modalities_present[cid] = case_modalities_present(case_dir)
         rp = rel_prefix(center, cid)
         nz = export_case(case_dir, tr_img, tr_gd, rp)
         p_img = f"train_set/train_image/{rp}/{cid}"
@@ -202,6 +266,7 @@ def main() -> None:
     for case_dir in val_cases:
         center = case_dir.parent.name
         cid = case_dir.name
+        modalities_present[cid] = case_modalities_present(case_dir)
         rp = rel_prefix(center, cid)
         nz = export_case(case_dir, va_img, va_gd, rp)
         p_img = f"val_set/val_image/{rp}/{cid}"
@@ -211,6 +276,8 @@ def main() -> None:
 
     write_list_file(out / "train.txt", train_lines)
     write_list_file(out / "validation.txt", val_lines if val_lines else train_lines[: max(1, len(train_lines) // 10)])
+    with (out / "modalities_present.json").open("w", encoding="utf-8") as f:
+        json.dump(modalities_present, f, indent=2, sort_keys=True)
 
     if not val_cases:
         print("Warning: single-case or empty val split; validation.txt duplicates a subset of train.", file=sys.stderr)
@@ -218,8 +285,17 @@ def main() -> None:
     print(f"Wrote MyoPS-Net staging to {out}")
     if args.splits_file is not None:
         print(f"  split: {args.splits_file} fold {args.fold}")
+    if args.train_require_all_modalities or args.val_require_all_modalities:
+        print(
+            "  modality filters: "
+            f"train_require_all={args.train_require_all_modalities} "
+            f"({train_before_filter}->{len(train_cases)}), "
+            f"val_require_all={args.val_require_all_modalities} "
+            f"({val_before_filter}->{len(val_cases)})"
+        )
     print(f"  train cases: {len(train_cases)}, val cases: {len(val_cases)}")
     print(f"  train lines: {len(train_lines)}, val lines: {len(val_lines)}")
+    print(f"  modality metadata: {out / 'modalities_present.json'}")
 
 
 if __name__ == "__main__":

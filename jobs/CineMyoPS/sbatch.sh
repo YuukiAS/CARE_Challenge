@@ -5,7 +5,7 @@
 #SBATCH --output=/dev/null
 #SBATCH --error=/dev/null
 #SBATCH --mem=64G
-#SBATCH --time=2-00:00:00
+#SBATCH --time=08:00:00
 #SBATCH --gres=gpu:1
 #SBATCH --partition=htzhulab
 #SBATCH --qos=gpu_access
@@ -13,8 +13,15 @@
 # CineMyoPS paper repo: Task025 nnU-Net v1 via third_party/CineMyoPS/code/Lascar_3_train.py.
 set -euo pipefail
 
-THIS_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-CARE_ROOT="${CARE_ROOT:-$(cd "${THIS_DIR}/../.." && pwd)}"
+if [[ -z "${CARE_ROOT:-}" ]]; then
+  if [[ -n "${SLURM_SUBMIT_DIR:-}" && -f "${SLURM_SUBMIT_DIR}/env_nnunet.sh" ]]; then
+    CARE_ROOT="$(cd "${SLURM_SUBMIT_DIR}" && pwd)"
+  else
+    THIS_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+    CARE_ROOT="$(cd "${THIS_DIR}/../.." && pwd)"
+  fi
+fi
+export CARE_ROOT
 cd "${CARE_ROOT}"
 # shellcheck source=/dev/null
 source "${CARE_ROOT}/env_nnunet.sh"
@@ -27,7 +34,8 @@ export PYTHONUNBUFFERED=1
 
 mkdir -p logs
 TS="$(date +%Y%m%d_%H%M%S)"
-LOG_FILE="${LOG_FILE:-${CARE_ROOT}/logs/CineMyoPS_${SLURM_JOB_ID:-local}_${TS}.log}"
+_SHORT="${SLURM_JOB_NAME:-CineMyoPS_D502}"
+LOG_FILE="${LOG_FILE:-${CARE_ROOT}/logs/${_SHORT}_${SLURM_JOB_ID:-local}_${TS}.log}"
 exec > >(tee -a "${LOG_FILE}") 2>&1
 
 PY="${CARE_CineMyoPS_ENV}/bin/python"
@@ -67,5 +75,6 @@ if [[ ! -f "${PLANS_2D}" ]]; then
   fi
 fi
 
+export CINE_NNUNET_EPOCHS="${CINE_NNUNET_EPOCHS:-300}"
 bash "${CARE_ROOT}/code/CineMyoPS/run_train.sh" "$@"
 echo "===== CineMyoPS paper train done ====="

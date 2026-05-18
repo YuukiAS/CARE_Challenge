@@ -7,6 +7,9 @@ logs/
 models/
 temp/
 
+# Accidental self-referential symlink sometimes created in the repo root.
+/CARE
+
 # Project-local conda env (see env_nnunet.sh PATH to env_CARE/bin)
 env_CARE/
 env_CARE_nnUNet_v1/
@@ -126,5 +129,21 @@ results/predictions/
 results/leaderboard/care2026_*.csv
 results/leaderboard/care2026_*.json
 
-# Local validation submission workspaces (zips, nnU-Net prediction trees)
-results/submissions/
+# Local validation submission workspaces (zips, prediction trees). Keep only
+# lightweight README policy files under results/submissions tracked.
+results/submissions/**
+!results/submissions/
+!results/submissions/README.md
+!results/submissions/care_myocardium_validation/
+!results/submissions/care_myocardium_validation/README.md
+
+# Generated local metric variants and drill-down tables. Keep canonical metrics
+# tracked explicitly; ignore ad-hoc checkpoint/model comparison outputs.
+results/diagnostics/
+results/metrics/unified/CineMyoPS_*/
+results/metrics/unified/MyoPS-Net_*/
+results/metrics/unified/U-MyoPS_*/
+results/metrics/unified/*_model_best/
+results/metrics/unified/*_model_final_checkpoint/
+results/metrics/unified/*/fold_*/modality_group_metrics.json
+results/metrics/unified/*/fold_*/modality_group_metrics.md

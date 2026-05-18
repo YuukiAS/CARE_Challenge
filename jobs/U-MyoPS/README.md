@@ -39,6 +39,85 @@ Stage2 使用 **本仓库内** 的 nnU-Net v1 路径（**不是** `data/nnUNet` 
 FOLD=0 bash code/U-MyoPS/prepare_stage2_task.sh
 ```
 
+### GPU 冒烟（推荐验收）
+
+在已有 Stage2 `plan_and_preprocess` 产物时，用少量 epoch 验证 nnU-Net v1 训练能启动（默认 **Stage2**，不重跑 preprocess）：
+
+从仓库根目录提交 Slurm（以便 **`SLURM_SUBMIT_DIR`** 指向 `CARE_ROOT`；脚本在调度器 spool 中执行时不能依赖 `BASH_SOURCE` 的目录名解析兄弟脚本）：
+
+```bash
+cd /overflow/htzhu/CARE
+sbatch jobs/U-MyoPS/sbatch_smoke.sh
+
+# 只跑 Stage1 短训（子集数据 + 少量 epoch）
+UMYOPS_SMOKE_TARGET=stage1 UMYOPS_STAGE1_EPOCHS=3 UMYOPS_PREPARE_MAX_CASES=12 sbatch jobs/U-MyoPS/sbatch_smoke.sh
+```
+
+`sbatch_stage1.sh` / `sbatch_stage2.sh` 若已由外层设置 **`LOG_FILE`**（例如 `sbatch_smoke.sh`），则沿用该路径，便于冒烟与正式任务区分。
+
+### Stage2 导出 + unified eval（fold 0，GPU）
+
+对指定 nnU-Net checkpoint 做推理（非默认 checkpoint 时使用 GPU fallback）→ CARE 4/5 remap → `evaluate_predictions.py`：
+
+```bash
+cd /overflow/htzhu/CARE
+UMYOPS_EXPORT_CHECKPOINT=model_best sbatch jobs/U-MyoPS/sbatch_export_eval_fold0.sh
+```
+
+产物：`results/predictions/U-MyoPS_<chk>/fold_0/`、`results/metrics/unified/U-MyoPS_<chk>/fold_0/evaluation_summary.json`。迭代记录见 `results/experiments/U-MyoPS_iteration_log.md`。
+
+### Round4/5 LGE-only no-prior 对照
+
+Round4 已确认 `Task912_CARE_UmyopsLGEOnlyNoPrior_fold0` 能显著修复 scar：`model_final_checkpoint` 在 task-specific `v2` 导出下达到 all-cases `myops_scar=0.5248`、`myops_edema=0.6726`；完整三序列病例 scar 为 `0.6524`，但 edema 只有 `0.1622`。因此当前 U-MyoPS 更适合作为 scar 专家，不应直接当作完整 MyoPS edema 方案。
+
+下一步使用短导出脚本比较 final/best checkpoint，不重新训练：
+
+```bash
+cd /overflow/htzhu/CARE
+sbatch jobs/U-MyoPS/sbatch_round5_export_compare.sh
+```
+
+输出：
+
+- `results/metrics/unified/U-MyoPS_round5_lge_only_no_prior_model_final_checkpoint/fold_0/evaluation_summary.json`
+- `results/metrics/unified/U-MyoPS_round5_lge_only_no_prior_model_best/fold_0/evaluation_summary.json`
+- grouped diagnostics in the same metric directories
+
+注意：`code/U-MyoPS/export_stage2_val_predictions.py` 的 fallback temp root 已包含 task name，避免不同 Stage2 Task 复用旧 nnU-Net prediction cache。比较 variant 时不要手动指向旧 cache。
+
+### Round6 missing-modality scar calibration
+
+Round6 不训练，比较 U-MyoPS Task912 `model_best` 与 nnU-Net501 fold0，并生成纯 U-MyoPS scar 标定与明确标注的 hybrid routing 预测目录：
+
+```bash
+cd /overflow/htzhu/CARE
+sbatch jobs/U-MyoPS/sbatch_round6_scar_calibration.sh
+```
+
+诊断输出：
+
+- `results/diagnostics/U-MyoPS_round6/per_case_umyops_vs_nnunet_scar.csv`
+- `results/diagnostics/U-MyoPS_round6/per_case_umyops_vs_nnunet_scar.md`
+
+预测/指标输出包括：
+
+- `U-MyoPS_round6_scar_component_filter_100`
+- `U-MyoPS_round6_scar_component_filter_250`
+- `U-MyoPS_round6_missing_volume_cap_1500`
+- `U-MyoPS_round6_scar_complete_umyops_missing_nnunet`（hybrid scar diagnostic）
+- `U-MyoPS_round6_complete_umyops_missing_nnunet`（hybrid full diagnostic）
+
+含 `nnunet` 的 round6 目录是 hybrid diagnostic，不是纯 U-MyoPS，也不是论文完整 U-MyoPS 复现。
+
+### Stage2 继续训练（不重建 Task）
+
+在已有 `fold_k` 输出目录上追加 epoch：
+
+```bash
+sbatch --export=ALL,UMYOPS_STAGE2_CONTINUE=1,UMYOPS_STAGE2_EPOCHS=50,UMYOPS_STAGE2_AUTO_PREP=0,FOLD=0 -t 08:00:00 \
+  jobs/U-MyoPS/sbatch_stage2.sh
+```
+
 这一步会：
 
 - 从 Stage1 `gen_res/` 构建 4 通道 raw Task

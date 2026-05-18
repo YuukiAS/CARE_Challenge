@@ -44,24 +44,36 @@ echo "TASK_NAME=${TASK_NAME}"
 echo "RAW_TASK_DIR=${RAW_TASK_DIR}"
 echo "PREPRO_TASK_DIR=${PREPRO_TASK_DIR}"
 echo "VERIFY_DATASET=${VERIFY_DATASET}"
+echo "SKIP_BUILD=${UMYOPS_STAGE2_SKIP_BUILD:-0}"
+echo "SKIP_PREPROCESS=${UMYOPS_STAGE2_SKIP_PREPROCESS:-0}"
 
-build_cmd=(
-  "${PY}" "${CARE_ROOT}/code/U-MyoPS/build_stage2_task_from_stage1.py"
-  --fold "${FOLD}"
-  --base-task-name "${UMYOPS_STAGE2_TASK}"
-  --task-root-base "${nnUNet_raw_data_base}/nnUNet_raw_data"
-  --stage1-net "${UMYOPS_NET:-tps}"
-  --stage1-data-source "${UMYOPS_DATA_SOURCE:-ZS_unaligned}"
-  --stage1-weight "${UMYOPS_WEIGHT:-1.0}"
-  --prior-tag "${UMYOPS_STAGE2_PRIOR_TAG:-img_de_branch_lab}"
-)
-if [[ "${UMYOPS_STAGE2_PER_FOLD_TASK:-1}" == "1" ]]; then
-  build_cmd+=( --per-fold-task )
+UMYOPS_STAGE2_TASK="${UMYOPS_STAGE2_TASK:-Task901_CARE_UmyopsPathology}"
+export UMYOPS_STAGE2_TASK
+if [[ "${UMYOPS_STAGE2_SKIP_BUILD:-0}" != "1" ]]; then
+  build_cmd=(
+    "${PY}" "${CARE_ROOT}/code/U-MyoPS/build_stage2_task_from_stage1.py"
+    --fold "${FOLD}"
+    --base-task-name "${UMYOPS_STAGE2_TASK}"
+    --task-root-base "${nnUNet_raw_data_base}/nnUNet_raw_data"
+    --stage1-net "${UMYOPS_NET:-tps}"
+    --stage1-data-source "${UMYOPS_DATA_SOURCE:-ZS_unaligned}"
+    --stage1-weight "${UMYOPS_WEIGHT:-1.0}"
+    --prior-tag "${UMYOPS_STAGE2_PRIOR_TAG:-img_de_branch_lab}"
+    --input-variant "${UMYOPS_STAGE2_INPUT_VARIANT:-existing_full}"
+  )
+  if [[ -n "${UMYOPS_STAGE2_PRIOR_DILATION_RADIUS_XY:-}" ]]; then
+    build_cmd+=( --prior-dilation-radius-xy "${UMYOPS_STAGE2_PRIOR_DILATION_RADIUS_XY}" )
+  fi
+  if [[ "${UMYOPS_STAGE2_PER_FOLD_TASK:-1}" == "1" ]]; then
+    build_cmd+=( --per-fold-task )
+  fi
+  if [[ "${UMYOPS_STAGE2_FORCE_CLEAN:-1}" == "1" ]]; then
+    build_cmd+=( --force-clean )
+  fi
+  "${build_cmd[@]}"
+else
+  echo "Skipping raw task build; using existing RAW_TASK_DIR=${RAW_TASK_DIR}"
 fi
-if [[ "${UMYOPS_STAGE2_FORCE_CLEAN:-1}" == "1" ]]; then
-  build_cmd+=( --force-clean )
-fi
-"${build_cmd[@]}"
 
 cd "${REPO}/jrs"
 preprocess_cmd=(
@@ -78,7 +90,11 @@ fi
 if [[ "${VERIFY_DATASET}" == "1" ]]; then
   preprocess_cmd+=( --verify_dataset_integrity )
 fi
-"${preprocess_cmd[@]}"
+if [[ "${UMYOPS_STAGE2_SKIP_PREPROCESS:-0}" != "1" ]]; then
+  "${preprocess_cmd[@]}"
+else
+  echo "Skipping preprocessing; using existing PREPRO_TASK_DIR=${PREPRO_TASK_DIR}"
+fi
 
 if [[ -n "${UMYOPS_STAGE2_BATCH_SIZE:-}" ]]; then
   if [[ "${UMYOPS_STAGE2_DIM:-2d}" == "2d" ]]; then

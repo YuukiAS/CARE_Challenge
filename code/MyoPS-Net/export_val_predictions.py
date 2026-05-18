@@ -81,6 +81,17 @@ def paste_back(crop_pred: np.ndarray, shape_hw: tuple[int, int], meta: tuple[int
     return full
 
 
+def paste_back_float(
+    crop_pred: np.ndarray,
+    shape_hw: tuple[int, int],
+    meta: tuple[int, int, int, int, int, int, int, int],
+) -> np.ndarray:
+    full = np.zeros(shape_hw, dtype=np.float32)
+    src_y0, src_y1, src_x0, src_x1, dst_y0, dst_y1, dst_x0, dst_x1 = meta
+    full[src_y0:src_y1, src_x0:src_x1] = crop_pred[dst_y0:dst_y1, dst_x0:dst_x1]
+    return full
+
+
 def load_modalities(case_dir: Path, case_id: str) -> tuple[dict[str, np.ndarray], nib.Nifti1Image]:
     ref_img = nib.load(str(case_dir / f"{case_id}_LGE.nii.gz"))
     modalities = {}
@@ -98,7 +109,7 @@ def run_case(
     normalize: Normalization,
     keep_lcc: LargestConnectedComponents,
     result_transform: ResultTransform,
-) -> nib.Nifti1Image:
+) -> tuple[nib.Nifti1Image, nib.Nifti1Image, nib.Nifti1Image]:
     modalities, ref_img = load_modalities(case_dir, case_id)
     for key in modalities:
         if np.any(modalities[key]):
@@ -106,6 +117,8 @@ def run_case(
 
     h, w, z = modalities["LGE"].shape
     pred_vol = np.zeros((h, w, z), dtype=np.uint8)
+    myocardium_support = np.zeros((h, w, z), dtype=np.uint8)
+    edema_softmax = np.zeros((h, w, z), dtype=np.float32)
 
     for zi in range(z):
         crops = []
@@ -116,8 +129,10 @@ def run_case(
             crops.append(torch.from_numpy(crop).float().unsqueeze(0).unsqueeze(0).to(device))
 
         with torch.no_grad():
-            _, res_lge, res_t2, res_mapping = model(*crops)
+            res_c0, res_lge, res_t2, res_mapping = model(*crops)
+            edema_prob = torch.softmax(res_t2, dim=1)[0, 2].detach().cpu().numpy().astype(np.float32, copy=False)
 
+        seg_c0 = torch.argmax(res_c0, dim=1).squeeze(0).cpu()
         seg_lge = torch.argmax(res_lge, dim=1).squeeze(0).cpu()
         seg_t2 = torch.argmax(res_t2, dim=1).squeeze(0).cpu()
         if res_mapping is not None:
@@ -125,6 +140,7 @@ def run_case(
         else:
             seg_mapping = None
 
+        seg_c0 = keep_lcc(seg_c0, "cardiac")
         seg_lge = keep_lcc(seg_lge, "scar")
         seg_t2 = keep_lcc(seg_t2, "edema")
         if seg_mapping is not None:
@@ -135,8 +151,15 @@ def run_case(
         compact[pathology == 1] = 4
         compact[pathology == 2] = 5
         pred_vol[:, :, zi] = paste_back(compact, (h, w), crop_meta)
+        edema_softmax[:, :, zi] = paste_back_float(edema_prob, (h, w), crop_meta)
+        myo_crop = (seg_c0.numpy().astype(np.uint8, copy=False) == 1).astype(np.uint8)
+        myocardium_support[:, :, zi] = paste_back(myo_crop, (h, w), crop_meta)
 
-    return nib.Nifti1Image(pred_vol, ref_img.affine, ref_img.header)
+    return (
+        nib.Nifti1Image(pred_vol, ref_img.affine, ref_img.header),
+        nib.Nifti1Image(myocardium_support, ref_img.affine, ref_img.header),
+        nib.Nifti1Image(edema_softmax, ref_img.affine, ref_img.header),
+    )
 
 
 def main() -> None:
@@ -145,6 +168,8 @@ def main() -> None:
     ap.add_argument("--output-dir", type=Path, required=True)
     ap.add_argument("--checkpoint", type=Path, default=None)
     ap.add_argument("--checkpoint-dir", type=Path, default=None, help="Folder containing *.pth; best score file is selected")
+    ap.add_argument("--myocardium-support-dir", type=Path, default=None, help="Optionally save C0-branch myocardium support masks")
+    ap.add_argument("--edema-softmax-dir", type=Path, default=None, help="Optionally save T2-branch edema class softmax maps")
     ap.add_argument("--dim", type=int, default=192)
     ap.add_argument("--device", type=str, default="cuda" if torch.cuda.is_available() else "cpu")
     ap.add_argument(
@@ -177,10 +202,29 @@ def main() -> None:
         raise FileNotFoundError(f"No validation cases found under {args.data_root / 'val_set' / 'val_image'}")
 
     args.output_dir.mkdir(parents=True, exist_ok=True)
+    if args.myocardium_support_dir is not None:
+        args.myocardium_support_dir.mkdir(parents=True, exist_ok=True)
+    if args.edema_softmax_dir is not None:
+        args.edema_softmax_dir.mkdir(parents=True, exist_ok=True)
     for case_id, case_dir in cases:
-        pred_img = run_case(model, case_dir, case_id, args.dim, device, normalize, keep_lcc, result_transform)
+        pred_img, support_img, edema_softmax_img = run_case(
+            model,
+            case_dir,
+            case_id,
+            args.dim,
+            device,
+            normalize,
+            keep_lcc,
+            result_transform,
+        )
         nib.save(pred_img, str(args.output_dir / f"{case_id}.nii.gz"))
         print(f"Wrote {args.output_dir / f'{case_id}.nii.gz'}")
+        if args.myocardium_support_dir is not None:
+            nib.save(support_img, str(args.myocardium_support_dir / f"{case_id}.nii.gz"))
+            print(f"Wrote {args.myocardium_support_dir / f'{case_id}.nii.gz'}")
+        if args.edema_softmax_dir is not None:
+            nib.save(edema_softmax_img, str(args.edema_softmax_dir / f"{case_id}.nii.gz"))
+            print(f"Wrote {args.edema_softmax_dir / f'{case_id}.nii.gz'}")
 
 
 if __name__ == "__main__":

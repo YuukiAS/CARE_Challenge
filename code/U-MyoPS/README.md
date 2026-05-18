@@ -21,4 +21,4 @@ See **`env.example.sh`** and `jobs/U-MyoPS/run.sh` / `env_nnunet.sh` for `CARE_R
 - **`prepare_stage1_layout.sh`** — layout helper for Stage 1.
 - **`clamp_stage2_plans_batch_size.py`** — optional batch-size clamp on generated plans.
 
-There is **no** `scripts/U-MyoPS/` tree in this repository; do not reintroduce duplicate export paths.
+Slurm / GPU 冒烟：在仓库根执行 `sbatch jobs/U-MyoPS/sbatch_smoke.sh`（默认 Stage2 少量 epoch；依赖 `third_party/.../prepro` 已存在）。完整说明见 [`../jobs/U-MyoPS/README.md`](../jobs/U-MyoPS/README.md)。

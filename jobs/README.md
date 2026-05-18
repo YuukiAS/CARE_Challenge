@@ -20,7 +20,7 @@ Do **not** compare Dataset501 and Dataset502 against each other.
 | `evaluation/sbatch_unified_eval.sh` | Slurm GPU job for unified offline eval (calls `scripts/evaluation/run_unified_eval_all.sh`) |
 | `nnUNet/` | nnU-Net **v2** Slurm scripts (Dataset501 / Dataset502) |
 | `MyoPS-Net/` | Slurm wrapper for fold-isolated MyoPS-Net training |
-| `U-MyoPS/` | Stage1 / Stage2 wrappers for vendored U-MyoPS |
+| `U-MyoPS/` | Stage1 / Stage2 wrappers; **`sbatch_smoke.sh`**（短训冒烟）、`sbatch_stage{1,2}.sh`；从仓库根 `cd $CARE_ROOT && sbatch jobs/U-MyoPS/...` 以便 `SLURM_SUBMIT_DIR` 正确（见 `jobs/U-MyoPS/README.md`） |
 | `CineMyoPS/` | Slurm wrapper for CineMyoPS Task025 training |
 
 Edit `#SBATCH` headers (partition, account, GPU) on your cluster. See [SERVER.md](../SERVER.md).

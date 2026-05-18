@@ -14,7 +14,7 @@ NET="${CINE_NNUNET_DIM:-2d}"
 TRAINER="${CINE_NNUNET_TRAINER:-CARECineMyoPSTrainer}"
 TASK="${CINE_NNUNET_TASK:-Task026_Cine_4D}"
 FOLD="${FOLD:-0}"
-EPOCHS="${CINE_NNUNET_EPOCHS:-500}"
+EPOCHS="${CINE_NNUNET_EPOCHS:-300}"
 export CINE_NUM_FRAMES="${CINE_NUM_FRAMES:-4}"
 
 exec "${PY}" Lascar_3_train.py "${NET}" "${TRAINER}" "${TASK}" "${FOLD}" --epochs "${EPOCHS}" "$@"

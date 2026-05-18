@@ -20,10 +20,11 @@ import re
 import shutil
 import subprocess
 import sys
+import tempfile
 import zipfile
 from collections import Counter
 from datetime import datetime
-from pathlib import Path
+from pathlib import Path, PurePosixPath
 
 import numpy as np
 import SimpleITK as sitk
@@ -63,6 +64,14 @@ CINE_COMPACT_TO_RAW = {
     3: 2221,
 }
 PATHOLOGY_RAW_LABEL = 2221
+SUBMISSION_ALLOWED_LABELS = {
+    "MyoPS": {0, 200, 500, 600, 1220, 2221},
+    "CineMyoPS": {0, 200, 500, 2221},
+}
+SUBMISSION_REQUIRED_PATHOLOGY = {
+    "MyoPS": {1220, 2221},
+    "CineMyoPS": {2221},
+}
 
 
 def read_sitk(path: Path) -> sitk.Image:
@@ -319,6 +328,8 @@ def run_cinemyops_predict(
     trainer: str,
     dim: str,
     checkpoint: str,
+    combine_mode: str,
+    num_frames: int,
 ) -> None:
     reset_dir(output_dir, True)
     cmd = [
@@ -342,7 +353,11 @@ def run_cinemyops_predict(
         "--disable_tta",
     ]
     print("Running:", " ".join(cmd), flush=True)
-    subprocess.run(cmd, check=True, cwd=REPO_ROOT, env=nnunet_env())
+    print(f"CineMyoPS env: CINE_COMBINE_MODE={combine_mode} CINE_NUM_FRAMES={num_frames}", flush=True)
+    env = nnunet_env()
+    env["CINE_COMBINE_MODE"] = combine_mode
+    env["CINE_NUM_FRAMES"] = str(num_frames)
+    subprocess.run(cmd, check=True, cwd=REPO_ROOT, env=env)
 
 
 def find_prediction(src_dir: Path, case_id: str) -> Path:
@@ -460,14 +475,71 @@ def zip_submission(submission_dir: Path, zip_path: Path) -> None:
                 zf.write(path, path.relative_to(submission_dir))
 
 
-def validate_submission_zip(zip_path: Path) -> dict:
+def _read_zipped_nifti_labels(zf: zipfile.ZipFile, member: str) -> tuple[set[int], Counter]:
+    with tempfile.TemporaryDirectory() as tmpdir:
+        out_path = Path(tmpdir) / PurePosixPath(member).name
+        out_path.write_bytes(zf.read(member))
+        arr = sitk.GetArrayFromImage(sitk.ReadImage(str(out_path)))
+    values, counts = np.unique(arr, return_counts=True)
+    labels = {int(v) for v in values}
+    return labels, Counter({int(v): int(c) for v, c in zip(values, counts)})
+
+
+def validate_submission_zip(zip_path: Path, myops_case_ids: list[str], cine_case_ids: list[str]) -> dict:
+    expected_cases = {
+        "MyoPS": set(myops_case_ids),
+        "CineMyoPS": set(cine_case_ids),
+    }
+    branch_files: dict[str, dict[str, str]] = {"MyoPS": {}, "CineMyoPS": {}}
+    branch_counts: dict[str, Counter] = {"MyoPS": Counter(), "CineMyoPS": Counter()}
+
     with zipfile.ZipFile(zip_path) as zf:
         names = zf.namelist()
+        for name in names:
+            parts = PurePosixPath(name).parts
+            if PurePosixPath(name).is_absolute() or ".." in parts:
+                raise ValueError(f"Unsafe path in submission zip: {name}")
+            if not name.endswith("_pred.nii.gz"):
+                raise ValueError(f"Unexpected non-prediction file in submission zip: {name}")
+            if len(parts) != 4 or parts[0] not in branch_files or parts[1] != "Anonymous Center":
+                raise ValueError(f"Unexpected CARE-Myocardium zip layout: {name}")
+            branch, _, case_id, filename = parts
+            expected_name = f"{case_id}_pred.nii.gz"
+            if filename != expected_name:
+                raise ValueError(f"Prediction filename does not match case folder for {name}; expected {expected_name}")
+            if case_id in branch_files[branch]:
+                raise ValueError(f"Duplicate prediction for {branch}/{case_id}")
+            labels, counts = _read_zipped_nifti_labels(zf, name)
+            extra_labels = labels - SUBMISSION_ALLOWED_LABELS[branch]
+            if extra_labels:
+                raise ValueError(f"Unexpected labels in {branch}/{case_id}: {sorted(extra_labels)}. Present labels: {sorted(labels)}")
+            if not (labels & SUBMISSION_REQUIRED_PATHOLOGY[branch]):
+                raise ValueError(
+                    f"Missing pathology label in {branch}/{case_id}. "
+                    f"Expected at least one of {sorted(SUBMISSION_REQUIRED_PATHOLOGY[branch])}. "
+                    f"Present labels: {sorted(labels)}"
+                )
+            branch_files[branch][case_id] = name
+            branch_counts[branch].update(counts)
+
     required_roots = {"MyoPS/", "CineMyoPS/"}
     roots_present = {name.split("/", 1)[0] + "/" for name in names if "/" in name}
     if not required_roots.issubset(roots_present):
         raise ValueError(f"Submission zip missing roots: {sorted(required_roots - roots_present)}")
-    return {"files": len(names), "roots": sorted(roots_present)}
+    branch_summary = {}
+    for branch, expected in expected_cases.items():
+        present = set(branch_files[branch])
+        missing = sorted(expected - present)
+        extra = sorted(present - expected)
+        if missing or extra:
+            raise ValueError(f"{branch} case mismatch. Missing: {missing}; extra: {extra}")
+        branch_summary[branch] = {
+            "files": len(branch_files[branch]),
+            "cases": len(present),
+            "aggregate_labels": {str(k): int(v) for k, v in sorted(branch_counts[branch].items())},
+            "missing_pathology_cases": [],
+        }
+    return {"files": len(names), "roots": sorted(roots_present), "branches": branch_summary}
 
 
 def parse_args() -> argparse.Namespace:
@@ -500,6 +572,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--cine-task", default=os.environ.get("CINE_NNUNET_TASK", "Task026_Cine_4D"))
     parser.add_argument("--cine-trainer", default=os.environ.get("CINE_NNUNET_TRAINER", "CARECineMyoPSTrainer"))
     parser.add_argument("--cine-dim", default=os.environ.get("CINE_NNUNET_DIM", "2d"))
+    parser.add_argument("--cine-combine-mode", default=os.environ.get("CINE_COMBINE_MODE", "current"))
     return parser.parse_args()
 
 
@@ -602,7 +675,17 @@ def prepare_cine_predictions(args: argparse.Namespace, model: str, workspace: Pa
         fold_dirs: list[Path] = []
         for fold in folds:
             fold_dir = workspace / "predictions" / "CineMyoPS" / "CineMyoPS" / f"fold_{fold}"
-            run_cinemyops_predict(input_dir, fold_dir, fold, args.cine_task, args.cine_trainer, args.cine_dim, args.cine_checkpoint)
+            run_cinemyops_predict(
+                input_dir,
+                fold_dir,
+                fold,
+                args.cine_task,
+                args.cine_trainer,
+                args.cine_dim,
+                args.cine_checkpoint,
+                args.cine_combine_mode,
+                args.cine_num_frames,
+            )
             fold_dirs.append(fold_dir)
         majority_vote_predictions(fold_dirs, pred_final, case_ids)
         return pred_final, {
@@ -615,6 +698,7 @@ def prepare_cine_predictions(args: argparse.Namespace, model: str, workspace: Pa
             "dim": args.cine_dim,
             "checkpoint": args.cine_checkpoint,
             "num_frames": args.cine_num_frames,
+            "combine_mode": args.cine_combine_mode,
         }
     raise AssertionError(model)
 
@@ -658,7 +742,7 @@ def main() -> None:
     cine_pred, cine_info = prepare_cine_predictions(args, cine_model, workspace, cine_case_ids)
     patched_cases = build_submission_tree(myops_pred, cine_pred, submission_tree, myops_case_ids, cine_case_ids)
     zip_submission(submission_tree, zip_path)
-    zip_check = validate_submission_zip(zip_path)
+    zip_check = validate_submission_zip(zip_path, myops_case_ids, cine_case_ids)
 
     manifest = {
         "created_at_local": datetime.now().isoformat(timespec="seconds"),

@@ -122,7 +122,11 @@ run_myops_export_if_needed() {
 
 run_umyops_export_if_needed() {
   local fold="$1" pred_dir="$2" split_json="$3"
-  if pred_dir_has_all_val_cases "${pred_dir}" "${split_json}" "${fold}"; then
+  local explicit_export=0
+  if [[ -n "${UMYOPS_EXPORT_CHECKPOINT:-}" ]] || [[ "${UMYOPS_EXPORT_FORCE_FALLBACK:-0}" == "1" ]]; then
+    explicit_export=1
+  fi
+  if [[ "${explicit_export}" == "0" ]] && pred_dir_has_all_val_cases "${pred_dir}" "${split_json}" "${fold}"; then
     return 0
   fi
   echo "Export U-MyoPS fold ${fold} validation predictions -> ${pred_dir}"
@@ -139,6 +143,12 @@ run_umyops_export_if_needed() {
   fi
   if [[ -n "${UMYOPS_STAGE2_WHICH_SUBNET:-}" ]]; then
     cmd+=( --which-subnet "${UMYOPS_STAGE2_WHICH_SUBNET}" )
+  fi
+  if [[ -n "${UMYOPS_EXPORT_CHECKPOINT:-}" ]]; then
+    cmd+=( --checkpoint "${UMYOPS_EXPORT_CHECKPOINT}" )
+  fi
+  if [[ "${UMYOPS_EXPORT_FORCE_FALLBACK:-0}" == "1" ]]; then
+    cmd+=( --force-fallback )
   fi
   "${cmd[@]}"
 }
@@ -204,6 +214,15 @@ for FOLD in ${FOLDS}; do
   [[ "${HD}" == "1" ]] && cmd+=( --hd )
   [[ "${HD95}" == "1" ]] && cmd+=( --hd95 )
   "${cmd[@]}"
+  if [[ "${MODEL}" == "MyoPS-Net" ]]; then
+    "${PY}" "${CARE_ROOT}/code/MyoPS-Net/report_modality_groups.py" \
+      --evaluation-summary "${OUT_DIR}/evaluation_summary.json" \
+      --fold-json "${SPLIT_JSON}" \
+      --fold "${FOLD}" \
+      --data-root "${CARE_ROOT}/data/benchmarks/MyoPS-Net/fold_${FOLD}" \
+      --output-json "${OUT_DIR}/modality_group_metrics.json" \
+      --output-md "${OUT_DIR}/modality_group_metrics.md"
+  fi
   SUMMARY_INPUTS+=( "${OUT_DIR}/evaluation_summary.json" )
 done
 

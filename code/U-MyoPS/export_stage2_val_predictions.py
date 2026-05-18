@@ -15,6 +15,7 @@ import argparse
 import json
 import logging
 import os
+import re
 import shutil
 import subprocess
 import sys
@@ -105,9 +106,19 @@ def resolve_stage2_python() -> Path:
     return py
 
 
-def fallback_tmp_validation_raw_dir(fold: int) -> Path:
-    """Where ``build_fallback_predictions`` writes nnU-Net argmax outputs before CARE remap."""
-    return repo_root() / "results" / "predictions" / "_tmp" / "U-MyoPS" / f"fold_{fold}" / "validation_raw"
+_DEFAULT_NNUNET_CHK = "model_final_checkpoint"
+
+
+def _sanitize_tag(name: str) -> str:
+    return re.sub(r"[^0-9A-Za-z_-]+", "_", name).strip("_") or "chk"
+
+
+def fallback_tmp_root_for_checkpoint(fold: int, checkpoint_name: str, trainer: str, task_name: str = "") -> Path:
+    """Per-task/trainer/checkpoint temp root (input + validation_raw) for nnUNet fallback inference."""
+    task_tag = _sanitize_tag(task_name) if task_name else "task"
+    trainer_tag = _sanitize_tag(trainer)
+    chk_tag = _sanitize_tag(checkpoint_name)
+    return repo_root() / "results" / "predictions" / "_tmp" / "U-MyoPS" / f"fold_{fold}_{task_tag}_{trainer_tag}_{chk_tag}"
 
 
 def tmp_validation_raw_complete(tmp_raw: Path, case_ids: list[str]) -> bool:
@@ -117,13 +128,14 @@ def tmp_validation_raw_complete(tmp_raw: Path, case_ids: list[str]) -> bool:
 
 
 def build_fallback_predictions(
-    src_dir: Path,
     task_name: str,
     case_ids: list[str],
     trainer: str,
     dim: str,
     fold: int,
     which_subnet: str = "scar",
+    checkpoint_name: str = _DEFAULT_NNUNET_CHK,
+    tmp_root: Path | None = None,
 ) -> Path:
     repo = repo_root()
     umyo_repo = repo / "third_party" / "U-MyoPS_myops"
@@ -132,8 +144,8 @@ def build_fallback_predictions(
     if not images_dir.is_dir():
         raise FileNotFoundError(f"Missing Stage2 raw images directory: {images_dir}")
 
-    pred_dir = fallback_tmp_validation_raw_dir(fold)
-    tmp_root = pred_dir.parent
+    tmp_root = tmp_root or fallback_tmp_root_for_checkpoint(fold, checkpoint_name, trainer, task_name)
+    pred_dir = tmp_root / "validation_raw"
     input_dir = tmp_root / "input"
     shutil.rmtree(input_dir, ignore_errors=True)
     input_dir.mkdir(parents=True, exist_ok=True)
@@ -171,7 +183,7 @@ def build_fallback_predictions(
         "-f",
         str(fold),
         "--chk",
-        "model_final_checkpoint",
+        checkpoint_name,
         "--disable_tta",
         "--overwrite_existing",
         "--num_threads_preprocessing",
@@ -188,11 +200,12 @@ def build_fallback_predictions(
         "yes",
     )
     logging.info(
-        "[U-MyoPS export] fallback nnUNet inference: task=%s fold=%d val_cases=%d whichsubnet=%s -> %s",
+        "[U-MyoPS export] fallback nnUNet inference: task=%s fold=%d val_cases=%d whichsubnet=%s chk=%s -> %s",
         task_name,
         fold,
         len(case_ids),
         which_subnet,
+        checkpoint_name,
         pred_dir,
     )
     if verbose:
@@ -238,37 +251,77 @@ def main() -> None:
         help="PSNV8 subnet tag for pathology inference (default: env UMYOPS_STAGE2_WHICH_SUBNET or 'scar'). "
         "Must match training.",
     )
+    ap.add_argument(
+        "--checkpoint",
+        type=str,
+        default=None,
+        help="nnU-Net checkpoint stem for fallback inference: model_final_checkpoint, model_best, ... "
+        "(default: env UMYOPS_EXPORT_CHECKPOINT or model_final_checkpoint).",
+    )
+    ap.add_argument(
+        "--force-fallback",
+        action="store_true",
+        help="Always run (or reuse) nnUNet test-time inference instead of using training-time validation_raw. "
+        "Required when --checkpoint differs from model_final_checkpoint.",
+    )
     args = ap.parse_args()
 
     task_name = resolve_stage2_task_name(args.base_task_name, args.fold, args.per_fold_task)
     case_ids = val_case_ids(args.protocol_json, args.fold)
     which_subnet = (args.which_subnet or os.environ.get("UMYOPS_STAGE2_WHICH_SUBNET") or "scar").strip()
-    logging.info("[U-MyoPS export] whichsubnet=%s (must match Stage2 training)", which_subnet)
-    src_dir = args.results_root / args.dim / task_name / f"{args.trainer}__nnUNetPlansv2.1" / f"fold_{args.fold}" / "validation_raw"
-    if not src_dir.is_dir():
-        tmp_raw = fallback_tmp_validation_raw_dir(args.fold)
-        if tmp_validation_raw_complete(tmp_raw, case_ids):
+    chk = (
+        (args.checkpoint or os.environ.get("UMYOPS_EXPORT_CHECKPOINT") or _DEFAULT_NNUNET_CHK).strip()
+    )
+    force_fb = bool(args.force_fallback) or os.environ.get("UMYOPS_EXPORT_FORCE_FALLBACK", "").strip() in (
+        "1",
+        "true",
+        "True",
+        "yes",
+    )
+    logging.info(
+        "[U-MyoPS export] whichsubnet=%s chk=%s force_fallback=%s",
+        which_subnet,
+        chk,
+        force_fb,
+    )
+
+    nnunet_val = (
+        args.results_root
+        / args.dim
+        / task_name
+        / f"{args.trainer}__nnUNetPlansv2.1"
+        / f"fold_{args.fold}"
+        / "validation_raw"
+    )
+    tmp_root = fallback_tmp_root_for_checkpoint(args.fold, chk, args.trainer, task_name)
+    use_nnunet_val = (not force_fb) and (chk == _DEFAULT_NNUNET_CHK) and nnunet_val.is_dir()
+    if use_nnunet_val:
+        src_dir = nnunet_val
+        logging.info("[U-MyoPS export] using existing nnUNet training validation_raw -> %s", src_dir)
+    else:
+        pred_dir = tmp_root / "validation_raw"
+        if tmp_validation_raw_complete(pred_dir, case_ids):
             logging.warning(
-                "validation_raw missing under results tree for fold %s; reusing complete cached raw preds -> %s "
-                "(delete this dir to force re-inference)",
-                args.fold,
-                tmp_raw,
+                "[U-MyoPS export] reusing cached fallback raw preds (chk=%s) -> %s (delete tree to force re-infer)",
+                chk,
+                pred_dir,
             )
-            src_dir = tmp_raw
+            src_dir = pred_dir
         else:
             logging.warning(
-                "validation_raw missing for fold %s; running fallback nnUNet inference -> %s",
-                args.fold,
-                src_dir.parent,
+                "[U-MyoPS export] running fallback nnUNet inference (chk=%s) -> %s",
+                chk,
+                pred_dir,
             )
             src_dir = build_fallback_predictions(
-                src_dir=src_dir,
                 task_name=task_name,
                 case_ids=case_ids,
                 trainer=args.trainer,
                 dim=args.dim,
                 fold=args.fold,
                 which_subnet=which_subnet,
+                checkpoint_name=chk,
+                tmp_root=tmp_root,
             )
 
     out_dir = args.output_dir or repo_root() / "results" / "predictions" / "U-MyoPS" / f"fold_{args.fold}"

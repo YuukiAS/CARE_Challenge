@@ -33,22 +33,28 @@ export CINE_NNUNET_DIM="2d"
 export CINE_PROTOCOL_SPLIT_JSON="${SMOKE_PROTOCOL_JSON}"
 
 HAS_CUDA="$("${PY}" -c 'import torch; print(int(torch.cuda.is_available()))')"
-if [[ "${CINE_SMOKE_INTERNAL:-0}" != "1" && "${HAS_CUDA}" != "1" ]]; then
-  echo "smoke: no local CUDA device detected; relaunching via srun on one GPU"
-  exec srun \
-    --partition=htzhulab \
-    --qos=gpu_access \
-    --gres=gpu:1 \
-    --cpus-per-task=8 \
-    --mem=64G \
-    --time=00:20:00 \
-    env \
-      CARE_ROOT="${CARE_ROOT}" \
-      CINE_SMOKE_INTERNAL=1 \
-      CINE_NUM_FRAMES="${CINE_NUM_FRAMES}" \
-      bash "${CARE_ROOT}/code/CineMyoPS/smoke_test.sh"
-fi
-if [[ "${CINE_SMOKE_INTERNAL:-0}" == "1" && "${HAS_CUDA}" != "1" ]]; then
+if [[ "${HAS_CUDA}" != "1" ]]; then
+  if [[ -n "${SLURM_JOB_ID:-}" ]]; then
+    echo "smoke: PyTorch reports no CUDA inside Slurm job ${SLURM_JOB_ID} (need --gres=gpu and a CUDA torch build in ${CARE_CineMyoPS_ENV})." >&2
+    exit 1
+  fi
+  if [[ "${CINE_SMOKE_INTERNAL:-0}" != "1" ]]; then
+    echo "smoke: no local CUDA device detected; relaunching via srun on one GPU"
+    exec srun \
+      --partition=htzhulab \
+      --qos=gpu_access \
+      --gres=gpu:1 \
+      --cpus-per-task=8 \
+      --mem=64G \
+      --time=00:20:00 \
+      env \
+        CARE_ROOT="${CARE_ROOT}" \
+        CINE_SMOKE_INTERNAL=1 \
+        CINE_NUM_FRAMES="${CINE_NUM_FRAMES}" \
+        CINE_SMOKE_SKIP_EXPORT="${CINE_SMOKE_SKIP_EXPORT:-0}" \
+        CINE_SMOKE_EPOCHS="${CINE_SMOKE_EPOCHS:-2}" \
+        bash "${CARE_ROOT}/code/CineMyoPS/smoke_test.sh"
+  fi
   echo "smoke: expected a CUDA device inside the srun allocation, but torch.cuda.is_available() is still false" >&2
   exit 1
 fi
@@ -104,12 +110,17 @@ print(f"smoke wrote protocol json: {protocol_json.resolve()}")
 print(f"smoke wrote splits_final.pkl: {(preprocessed_task / 'splits_final.pkl').resolve()}")
 PY
 
+_SMOKE_EPOCHS="${CINE_SMOKE_EPOCHS:-2}"
 "${PY}" "${CARE_ROOT}/third_party/CineMyoPS/code/Lascar_3_train.py" \
   2d CARECineMyoPSTrainer "${TASK}" 0 \
-  --epochs 2 \
+  --epochs "${_SMOKE_EPOCHS}" \
   --disable_postprocessing_on_folds
 
-bash "${CARE_ROOT}/code/CineMyoPS/export_protocol_val_predictions.sh"
+if [[ "${CINE_SMOKE_SKIP_EXPORT:-0}" == "1" ]]; then
+  echo "smoke: skipping export_protocol_val_predictions.sh (CINE_SMOKE_SKIP_EXPORT=1)"
+else
+  bash "${CARE_ROOT}/code/CineMyoPS/export_protocol_val_predictions.sh"
+fi
 
 TRAIN_LOG="$(find "${MODEL_DIR}" -maxdepth 1 -name 'training_log_*.txt' | sort | tail -n 1)"
 [[ -n "${TRAIN_LOG}" ]] || { echo "missing smoke training log under ${MODEL_DIR}" >&2; exit 1; }

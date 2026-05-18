@@ -5,16 +5,23 @@
 #SBATCH --output=/dev/null
 #SBATCH --error=/dev/null
 #SBATCH --mem=64G
-#SBATCH --time=2-00:00:00
+#SBATCH --time=08:00:00
 #SBATCH --gres=gpu:1
 #SBATCH --partition=htzhulab
 #SBATCH --qos=gpu_access
 #
 # U-MyoPS stage 2 only: pathology nnU-Net v1 (requires Task raw + plan_and_preprocess under U-MyoPS_myops/outputs/nnunet).
 set -euo pipefail
+export PATH="/usr/local/bin:/usr/bin:/bin:${PATH:-}"
 
-THIS_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-CARE_ROOT="${CARE_ROOT:-$(cd "${THIS_DIR}/../.." && pwd)}"
+if [[ -n "${SLURM_SUBMIT_DIR:-}" ]]; then
+  CARE_ROOT="$(cd "${SLURM_SUBMIT_DIR}" && pwd)"
+  THIS_DIR="${CARE_ROOT}/jobs/U-MyoPS"
+else
+  THIS_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+  CARE_ROOT="${CARE_ROOT:-$(cd "${THIS_DIR}/../.." && pwd)}"
+fi
+export CARE_ROOT
 cd "${CARE_ROOT}"
 # shellcheck source=/dev/null
 source "${CARE_ROOT}/env_nnunet.sh"
@@ -34,8 +41,10 @@ resolve_stage2_task_name() {
 }
 
 mkdir -p logs
-TS="$(date +%Y%m%d_%H%M%S)"
-LOG_FILE="${LOG_FILE:-${CARE_ROOT}/logs/U-MyoPS_Stage2_${SLURM_JOB_ID:-local}_${TS}.log}"
+if [[ -z "${LOG_FILE:-}" ]]; then
+  TS="$(date +%Y%m%d_%H%M%S)"
+  LOG_FILE="${CARE_ROOT}/logs/U-MyoPS_Stage2_${SLURM_JOB_ID:-local}_${TS}.log"
+fi
 exec > >(tee -a "${LOG_FILE}") 2>&1
 
 UMYO_REPO="$(cd "${CARE_ROOT}/third_party/U-MyoPS_myops" && pwd)"
@@ -65,6 +74,11 @@ if [[ ! -f "${_PLANS}" ]]; then
 fi
 
 echo "===== U-MyoPS Stage 2: pathology nnU-Net (task=${UMYOPS_STAGE2_TASK_NAME}, fold=${FOLD:-0}) ====="
+export UMYOPS_STAGE2_MAX_RUNTIME_SECONDS="${UMYOPS_STAGE2_MAX_RUNTIME_SECONDS:-27000}"
+echo "UMYOPS_STAGE2_EPOCHS=${UMYOPS_STAGE2_EPOCHS:-100}"
+echo "UMYOPS_STAGE2_MAX_RUNTIME_SECONDS=${UMYOPS_STAGE2_MAX_RUNTIME_SECONDS}"
+echo "UMYOPS_STAGE2_TRAINER=${UMYOPS_STAGE2_TRAINER:-nnUNetTrainerPSNV8}"
+echo "UMYOPS_STAGE2_WHICH_SUBNET=${UMYOPS_STAGE2_WHICH_SUBNET:-scar}"
 bash "${CARE_ROOT}/code/U-MyoPS/run_stage2.sh" \
   "${UMYOPS_STAGE2_DIM:-2d}" \
   "${UMYOPS_STAGE2_TRAINER:-nnUNetTrainerPSNV8}" \

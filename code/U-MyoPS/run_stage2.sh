@@ -23,4 +23,17 @@ export PYTHONUNBUFFERED=1
 
 export PYTHONPATH="${REPO}/jrs:${REPO}:${PYTHONPATH:-}"
 cd "${REPO}/jrs"
-exec "${PY}" -u pathology_segmentation_train.py "$@"
+extra_args=()
+if [[ -n "${UMYOPS_STAGE2_WHICH_SUBNET:-}" ]]; then
+  extra_args+=( --whichsubnet "${UMYOPS_STAGE2_WHICH_SUBNET}" )
+fi
+if [[ "${UMYOPS_STAGE2_CONTINUE:-0}" == "1" ]]; then
+  extra_args+=( --continue_training )
+fi
+if [[ -n "${UMYOPS_STAGE2_ADJUST_WEIGHTS:-}" ]]; then
+  extra_args+=( --adjust_weights "${UMYOPS_STAGE2_ADJUST_WEIGHTS}" )
+fi
+if [[ -n "${UMYOPS_STAGE2_PRETRAINED_WEIGHTS:-}" ]]; then
+  extra_args+=( -pretrained_weights "${UMYOPS_STAGE2_PRETRAINED_WEIGHTS}" )
+fi
+exec "${PY}" -u pathology_segmentation_train.py "$@" "${extra_args[@]}"

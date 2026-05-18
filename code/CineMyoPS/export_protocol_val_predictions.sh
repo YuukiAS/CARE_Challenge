@@ -12,21 +12,40 @@ FOLD="${FOLD:-0}"
 TASK="${CINE_NNUNET_TASK:-Task026_Cine_4D}"
 TRAINER="${CINE_NNUNET_TRAINER:-CARECineMyoPSTrainer}"
 NET="${CINE_NNUNET_DIM:-2d}"
-CHK="${CINE_PRED_CHECKPOINT:-model_best}"
+CHK="${CINE_PRED_CHECKPOINT:-model_final_checkpoint}"
+OUTPUT_MODEL="${CINE_OUTPUT_MODEL:-CineMyoPS}"
 SPLIT_JSON="${CINE_PROTOCOL_SPLIT_JSON:-${CARE_ROOT}/data/benchmarks/protocol/splits_CineMyoPS.json}"
 RAW_IMAGES="${nnUNet_raw}/${TASK}/imagesTr"
-TMP_ROOT="${CARE_ROOT}/results/predictions/_tmp/CineMyoPS/fold_${FOLD}"
+TMP_ROOT="${CARE_ROOT}/results/predictions/_tmp/${OUTPUT_MODEL}/fold_${FOLD}"
 TMP_INPUT="${TMP_ROOT}/imagesTs"
 TMP_OUTPUT="${TMP_ROOT}/pred_prefixed"
-FINAL_OUTPUT="${CARE_ROOT}/results/predictions/CineMyoPS/fold_${FOLD}"
+FINAL_OUTPUT="${CARE_ROOT}/results/predictions/${OUTPUT_MODEL}/fold_${FOLD}"
 PY="${CARE_ROOT}/env_CARE_nnUNet_v1/bin/python"
+MODEL_DIR="${nnUNet_results}/nnUNet/${NET}/${TASK}/${TRAINER}__nnUNetPlansv2.1/fold_${FOLD}"
+CKPT_PATH="${MODEL_DIR}/${CHK}.model"
 
 mkdir -p "${TMP_INPUT}" "${TMP_OUTPUT}" "${FINAL_OUTPUT}"
 echo "export split json: $(readlink -f "${SPLIT_JSON}")"
 echo "export raw images: $(readlink -f "${RAW_IMAGES}")"
+echo "export output model: ${OUTPUT_MODEL}"
 echo "export tmp input: $(readlink -f "${TMP_INPUT}")"
 echo "export tmp output: $(readlink -f "${TMP_OUTPUT}")"
 echo "export final output: $(readlink -f "${FINAL_OUTPUT}")"
+echo "export checkpoint: ${CKPT_PATH}"
+echo "export BN recalibration: CINE_BN_RECALIBRATE=${CINE_BN_RECALIBRATE:-0} CINE_BN_RECALIB_BATCHES=${CINE_BN_RECALIB_BATCHES:-32}"
+echo "export combine mode: CINE_COMBINE_MODE=${CINE_COMBINE_MODE:-current}"
+
+if [[ ! -f "${CKPT_PATH}" ]]; then
+  echo "missing checkpoint: ${CKPT_PATH}" >&2
+  echo "available checkpoints under ${MODEL_DIR}:" >&2
+  find "${MODEL_DIR}" -maxdepth 1 -type f -name '*.model' -printf '%TY-%Tm-%Td %TH:%TM %p\n' 2>/dev/null | sort >&2 || true
+  exit 1
+fi
+
+if [[ "${CHK}" == "model_best" && -f "${MODEL_DIR}/model_final_checkpoint.model" && "${MODEL_DIR}/model_best.model" -ot "${MODEL_DIR}/model_final_checkpoint.model" ]]; then
+  echo "warning: model_best.model is older than model_final_checkpoint.model; export may not represent the latest training round." >&2
+fi
+stat -c 'export checkpoint mtime=%y size=%s path=%n' "${CKPT_PATH}"
 
 rm -f "${TMP_INPUT}"/*.nii.gz
 rm -f "${TMP_OUTPUT}"/*.nii.gz
