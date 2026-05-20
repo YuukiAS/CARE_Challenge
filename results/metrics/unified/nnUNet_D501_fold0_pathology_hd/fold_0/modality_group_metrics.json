@@ -1,0 +1,88 @@
+{
+  "fold": 0,
+  "groups": {
+    "C0+LGE": {
+      "cases": [
+        "Case5005",
+        "Case6001",
+        "Case6010",
+        "Case7005"
+      ],
+      "mean_dice": {
+        "foreground_mean": 0.3777873129448342,
+        "myops_edema_class_4": null,
+        "myops_scar_class_5": 0.3777873129448342
+      },
+      "n_cases": 4
+    },
+    "C0+LGE+T2": {
+      "cases": [
+        "Case2002",
+        "Case2007",
+        "Case2008",
+        "Case2017",
+        "Case2020",
+        "Case2031",
+        "Case2033",
+        "Case3004",
+        "Case3011",
+        "Case3012",
+        "Case3023",
+        "Case3026",
+        "Case3034",
+        "Case3038",
+        "Case3040",
+        "Case3044"
+      ],
+      "mean_dice": {
+        "foreground_mean": 0.543885253960627,
+        "myops_edema_class_4": 0.3944358976789887,
+        "myops_scar_class_5": 0.6933346102422654
+      },
+      "n_cases": 16
+    },
+    "LGE": {
+      "cases": [
+        "Case1002",
+        "Case1007",
+        "Case1009",
+        "Case1010",
+        "Case1021",
+        "Case1023",
+        "Case1029",
+        "Case1033",
+        "Case1040",
+        "Case1042",
+        "Case1045",
+        "Case1047",
+        "Case1053",
+        "Case1062",
+        "Case1070",
+        "Case1073",
+        "Case1080",
+        "Case8003",
+        "Case8011",
+        "Case8015",
+        "Case8019",
+        "Case8021",
+        "Case8022",
+        "Case8023"
+      ],
+      "mean_dice": {
+        "foreground_mean": 0.5017892925791079,
+        "myops_edema_class_4": null,
+        "myops_scar_class_5": 0.5017892925791079
+      },
+      "n_cases": 24
+    }
+  },
+  "leaderboard_labels": {
+    "class_4": "myops_edema",
+    "class_5": "myops_scar"
+  },
+  "n_cases": 44,
+  "notes": [
+    "Dice uses evaluation_summary per-case values; class means omit null GT-empty cases and score false positives as 0 when produced by evaluation.",
+    "Groups are source acquisition availability, not training dropout groups."
+  ]
+}

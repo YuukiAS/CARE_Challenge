@@ -573,6 +573,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--cine-trainer", default=os.environ.get("CINE_NNUNET_TRAINER", "CARECineMyoPSTrainer"))
     parser.add_argument("--cine-dim", default=os.environ.get("CINE_NNUNET_DIM", "2d"))
     parser.add_argument("--cine-combine-mode", default=os.environ.get("CINE_COMBINE_MODE", "current"))
+    parser.add_argument("--cine-postprocess-mode", default=os.environ.get("CINE_POSTPROCESS_MODE", "none"))
     return parser.parse_args()
 
 
@@ -647,7 +648,11 @@ def prepare_cine_predictions(args: argparse.Namespace, model: str, workspace: Pa
     pred_final = workspace / "predictions" / "CineMyoPS" / model / "ensemble"
     if args.cine_pred_dir is not None:
         copy_exact_predictions(args.cine_pred_dir, pred_final, case_ids)
-        return pred_final, {"source": "explicit", "pred_dir": str(args.cine_pred_dir)}
+        return pred_final, {
+            "source": "explicit",
+            "pred_dir": str(args.cine_pred_dir),
+            "postprocess_mode": args.cine_postprocess_mode,
+        }
     if args.skip_predict and pred_final.is_dir():
         return pred_final, {"source": "workspace-cache", "pred_dir": str(pred_final)}
     if args.skip_predict:
@@ -699,6 +704,7 @@ def prepare_cine_predictions(args: argparse.Namespace, model: str, workspace: Pa
             "checkpoint": args.cine_checkpoint,
             "num_frames": args.cine_num_frames,
             "combine_mode": args.cine_combine_mode,
+            "postprocess_mode": args.cine_postprocess_mode,
         }
     raise AssertionError(model)
 

@@ -70,6 +70,33 @@ Main outputs:
 
 The export wrapper also supports `--edema-softmax-dir` for future T2 edema probability maps if a separate threshold-sweep round is justified. Do not continue postprocessing if label-level calibration remains below the prompt7 stop threshold; the next distinct attempt should be a T2-present edema expert or robust missing-modality fusion round.
 
+## Round8 T2-Aware HD Expert
+
+This is the final fold0 MyoPS-Net model-level exit-gate attempt. It trains only on complete C0+LGE+T2 training cases, keeps validation on the full protocol fold0 list, and adds lesion-focused losses:
+
+- mask-gated branch/invariant losses;
+- Focal-Tversky terms for `class_4` edema and `class_5` scar;
+- boundary-gradient loss as a simple HD surrogate;
+- myocardium ROI penalty for pathology probability outside GT myocardium support during training.
+
+Run:
+
+```bash
+cd /overflow/htzhu/CARE
+sbatch jobs/MyoPS-Net/sbatch_round8_t2aware_hd_expert.sh
+```
+
+Main outputs:
+
+- raw expert: `results/metrics/unified/MyoPS-Net_round8_t2aware_hd_raw/fold_0`
+- round4-scar-preserving hybrid: `results/metrics/unified/MyoPS-Net_round8_t2aware_hd_round4scar_hybrid/fold_0`
+- diagnostics: `results/diagnostics/MyoPS-Net_round8_nnunet_vs_myopsnet_hd_profile.{csv,md}`
+
+Exit gate:
+
+- Continue MyoPS-Net only if fold0 reaches scar `>=0.535` and edema `>=0.40`, or complete C0+LGE+T2 cases clearly beat nnU-Net fold0 without HD/outlier regression.
+- Otherwise stop the MyoPS-Net baseline line and move effort to a new `src/` model route using CAA-Seg/SSA-style alignment plus a nnU-Net/MedNeXt-style pathology head.
+
 ## Slurm Notes
 
 Default partition is `htzhulab`. Only switch to `a100-gpu` or `volta-gpu` if `htzhulab` has a materially long wait; use the headers in repo `AGENTS.md` and always set an explicit `--qos`.

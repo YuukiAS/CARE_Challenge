@@ -424,3 +424,108 @@ Round5/fullmod expert 的 complete-case edema 可能能补 round4 `combined_safe
 - Component filtering did not help; support limiting was a no-op because round4 combined_safe had already constrained pathology support.
 - Do not expand folds 1-4 and do not continue postprocess stacking. Keep nnU-Net as the primary MyoPS submission/baseline route.
 - If continuing MyoPS-Net, the next round must be a distinct <=8h fold0 model-level attempt: T2-present edema expert, T2-aware edema head, modality-mask/dropout fusion, or robust missing-modality adaptation.
+
+## 2026-05-19 round8_t2aware_hd_loss_exit_gate
+
+### 主要假设
+
+MyoPS-Net 的失败不再归因于 export 后处理，而是小病灶在缺模态训练中被稀释。本轮做最后一次模型级 fold0 尝试：complete-case T2-aware edema/scar expert，加入 Focal-Tversky、boundary/HD surrogate 和 myocardium ROI penalty。如果仍不能接近 nnU-Net，则停止 MyoPS-Net 主线。
+
+### Leaderboard refresh
+
+Command:
+
+```bash
+python scripts/leaderboard/fetch_care2026_scores.py
+```
+
+Latest hosted OrganAgent nnU-Net branch:
+
+| hosted metric | Dice | HD | rank |
+| --- | ---: | ---: | ---: |
+| `myops_scar` | 0.5969 | 16.2536 | 4/5 |
+| `myops_edema` | 0.6496 | 22.0125 | 4/5 |
+
+### 代码改动
+
+- `code/MyoPS-Net/report_round8_hd_profile.py`: 新增 nnU-Net vs MyoPS-Net fold0 Dice/HD/HD95/component/outlier 诊断。
+- `third_party/MyoPS-Net/criterion/loss.py`: 新增可选 round8 loss 项：binary Focal-Tversky、boundary-gradient loss、myocardium ROI penalty。
+- `jobs/MyoPS-Net/sbatch_round8_t2aware_hd_expert.sh`: 新增 <=8h fold0 complete-case expert 训练、raw export/eval、round4-scar hybrid eval。
+- `jobs/MyoPS-Net/README.md`: 记录 round8 命令、输出和 exit gate。
+
+### Diagnostics
+
+Output:
+
+- `results/diagnostics/MyoPS-Net_round8_nnunet_vs_myopsnet_hd_profile.csv`
+- `results/diagnostics/MyoPS-Net_round8_nnunet_vs_myopsnet_hd_profile.md`
+
+| model | class | Dice | HD | HD95 | mean components | small comps | remote comps |
+| --- | --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| MyoPS-Net round4 combined_safe | edema | 0.3733 | 29.1300 | 18.9050 | 3.7273 | 102 | 4 |
+| MyoPS-Net round4 combined_safe | scar | 0.5048 | 32.6475 | 21.2635 | 1.2955 | 4 | 1 |
+| nnU-Net fold0 | edema | 0.3944 | 29.6089 | 20.0115 | 3.3182 | 109 | 1 |
+| nnU-Net fold0 | scar | 0.5602 | 25.9706 | 13.6005 | 4.6818 | 144 | 2 |
+
+### 作业
+
+- Slurm job: `51529189`
+- Log: `logs/MyoPS-Net_Round8HD_51529189_20260519_083832.log`
+- Partition: `htzhulab`
+- Walltime request: 8h
+- Actual stop: `early_stop_patience`
+- Actual elapsed: 777.3 sec
+- Best epoch: 12/80
+- Best 2D validation: scar 0.0996, edema 0.0566, weighted metric 0.0709
+
+Training split and validation split:
+
+| split | modality filter | cases | slice lines |
+| --- | --- | ---: | ---: |
+| train | C0+LGE+T2 complete only | 64 | 1435 |
+| val | full protocol fold0 | 44 | 408 |
+
+### Outputs
+
+| variant | prediction dir | metric dir |
+| --- | --- | --- |
+| raw expert | `results/predictions/MyoPS-Net_round8_t2aware_hd_raw/fold_0` | `results/metrics/unified/MyoPS-Net_round8_t2aware_hd_raw/fold_0` |
+| round4-scar hybrid | `results/predictions/MyoPS-Net_round8_t2aware_hd_round4scar_hybrid/fold_0` | `results/metrics/unified/MyoPS-Net_round8_t2aware_hd_round4scar_hybrid/fold_0` |
+| edema softmax maps | `results/predictions/MyoPS-Net_round8_t2aware_hd_edema_softmax/fold_0` | diagnostic only |
+
+### 整体结果
+
+| variant | n | myops_edema / class_4 | myops_scar / class_5 | edema HD | scar HD | edema HD95 | scar HD95 |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| nnU-Net fold0 | 44 | 0.3944 | 0.5602 | 10.7669 | 25.9706 | 7.2769 | 13.6005 |
+| round4 `combined_safe` | 44 | 0.3733 | 0.5048 | 29.1300 | 32.6475 | 18.9050 | 21.2635 |
+| round8 raw expert | 44 | 0.2779 | 0.2426 | 17.2042 | 48.7825 | 10.0216 | 23.3077 |
+| round8 round4-scar hybrid | 44 | 0.3293 | 0.5048 | 15.6402 | 32.6475 | 9.1328 | 21.2635 |
+
+### Source-group summary
+
+| variant | group | n | edema | scar | foreground_mean |
+| --- | --- | ---: | ---: | ---: | ---: |
+| nnU-Net fold0 | C0+LGE | 4 | NA | 0.3778 | 0.3778 |
+| nnU-Net fold0 | C0+LGE+T2 | 16 | 0.3944 | 0.6933 | 0.5439 |
+| nnU-Net fold0 | LGE | 24 | NA | 0.5018 | 0.5018 |
+| round8 raw expert | C0+LGE | 4 | 0.0000 | 0.2141 | 0.1070 |
+| round8 raw expert | C0+LGE+T2 | 16 | 0.3474 | 0.6135 | 0.4805 |
+| round8 raw expert | LGE | 24 | NA | 0.0000 | 0.0000 |
+| round8 round4-scar hybrid | C0+LGE | 4 | NA | 0.4068 | 0.4068 |
+| round8 round4-scar hybrid | C0+LGE+T2 | 16 | 0.3293 | 0.6258 | 0.4776 |
+| round8 round4-scar hybrid | LGE | 24 | NA | 0.4404 | 0.4404 |
+
+### Exit gate
+
+Failed. Round8 does not meet either continuation criterion:
+
+- All-case gate scar >=0.535 and edema >=0.40: raw expert 0.2426/0.2779, hybrid 0.5048/0.3293.
+- Complete-case superiority vs nnU-Net: raw expert 0.6135 scar and 0.3474 edema vs nnU-Net 0.6933 scar and 0.3944 edema.
+
+### 下一步判定
+
+- Stop MyoPS-Net baseline-improvement mainline before round9/10.
+- Do not expand folds 1-4.
+- Keep nnU-Net as the MyoPS submission baseline.
+- If continuing custom modeling, move to `src/` with a new architecture: CAA-Seg/SSA-style sequence alignment, anatomy/pathology cascade, and nnU-Net/MedNeXt-style pathology head. Reuse only the useful infrastructure from MyoPS-Net rounds: diagnostics, modality metadata, T2-present subgroup reporting, and ROI/boundary loss ideas.

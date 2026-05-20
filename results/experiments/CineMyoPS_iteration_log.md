@@ -238,3 +238,48 @@ Do not start another CineMyoPS training run until this diagnostic identifies whe
   - `pathology_label_fallback.cases=[]`; no one-voxel pathology fallback was needed.
 - **interpretation**: validation package truly uses paper-aligned `pathology_direct` CineMyoPS and is upload-ready. It was not uploaded.
 - **round7 report**: `docs/notes/CineMyoPS_improvement_round7.md`
+
+## 2026-05-19 round8: hosted metric calibration and HD repair
+
+- **规则**: no training; no automatic upload; all work is package QA, protocol fold0 HD audit, and export-only postprocessing.
+- **latest leaderboard refresh**: `./env_CARE/bin/python scripts/leaderboard/fetch_care2026_scores.py`.
+  - `myocardium_cinemyops` OrganAgent row: time `20260519 00:06:58`, Dice `0.1748`, HD `75.2130`, rank `6/9`.
+  - Interpretation: hosted `myocardium_cinemyops` should not be treated as the previous local `class_1` proxy; the returned HD behavior is more consistent with pathology/scar sensitivity.
+- **required context read**: prompt8, round7 report, iteration log, `docs/notes/baseline/Dice_HD.md`, submission README, submission script, DeepResearch prompt/PDF summaries, latest leaderboard CSV, AGENTS.md.
+- **code changes**:
+  - Added `scripts/evaluation/cinemyops_round8_hd_repair.py` for validation package QC and export-only compact-label repair variants.
+  - Updated `scripts/submission/prepare_care_myocardium_validation.py` with `--cine-postprocess-mode`, recorded in manifest for explicit Cine predictions.
+- **checks**:
+  - `./env_CARE/bin/python -m py_compile scripts/submission/prepare_care_myocardium_validation.py scripts/evaluation/cinemyops_round8_hd_repair.py`
+- **validation zip QC**:
+  - Original round7 zip: `results/submissions/care_myocardium_validation/upload_ready/nnUNet_MyoPS+CineMyoPS_pathology_direct_20260518_030921/CARE-Myocardium-OrganAgent.zip`.
+  - Outputs: `results/diagnostics/CineMyoPS_round8_validation_zip_qc.csv`, `results/diagnostics/CineMyoPS_round8_validation_zip_qc.md`.
+  - Findings: 15 Cine validation cases, total raw `2221` voxels `58952`, 14/15 cases have extra scar components or bbox-distance outlier flags, 0 cases have scar components outside the broad raw `200/500` anatomy bbox.
+  - Interpretation: HD=75 is most likely caused by disconnected intra-anatomy pathology islands rather than far-off cardiac-region drift.
+- **protocol fold0 HD audit**:
+  - Output root: `results/metrics/unified/CineMyoPS_R8_hd_audit/fold_0/`.
+  - Summary: `results/metrics/unified/CineMyoPS_R8_hd_audit/fold_0/summary.md` and `.csv`.
+  - `nnunet502_fold0`: class_1 Dice `0.6864`, class_3 Dice `0.2446`, class_1 HD `9.7380`, class_3 HD `39.0330`, class_1 HD95 `4.2299`, class_3 HD95 `29.9377`.
+  - `pathology_direct`: class_1 Dice `0.6933`, class_3 Dice `0.4378`, class_1 HD `14.5342`, class_3 HD `40.4694`, class_1 HD95 `6.0698`, class_3 HD95 `26.6533`.
+  - `class1_primary_overlay`: class_1 Dice `0.6934`, class_3 Dice `0.4374`, class_1 HD `14.4526`, class_3 HD `40.1611`, class_1 HD95 `6.0058`, class_3 HD95 `26.5847`.
+  - `cardiac_only`: class_1 Dice `0.7611`, class_3 Dice `0.0000`, class_1 HD `9.8425`, class_3 HD `NA`, class_1 HD95 `3.4140`, class_3 HD95 `NA`; anatomy upper bound only, not a final candidate.
+  - `pathology_largest_component`: class_1 Dice `0.6933`, class_3 Dice `0.4441`, class_1 HD `14.5342`, class_3 HD `27.7648`, class_1 HD95 `6.0698`, class_3 HD95 `18.7983`.
+  - `pathology_myocardium_roi`: class_1 Dice `0.6933`, class_3 Dice `0.4378`, class_1 HD `14.5342`, class_3 HD `40.4694`, class_1 HD95 `6.0698`, class_3 HD95 `26.6533`.
+  - `pathology_volume_guard`: class_1 Dice `0.6933`, class_3 Dice `0.4388`, class_1 HD `14.5342`, class_3 HD `37.7505`, class_1 HD95 `6.0698`, class_3 HD95 `26.4855`.
+  - `pathology_roi_lcc_volume_guard`: same as `pathology_volume_guard` in this run.
+- **best repair**: `pathology_largest_component`, because class_3 Dice improved from `0.4378` to `0.4441` while class_3 HD improved from `40.4694` to `27.7648` and HD95 from `26.6533` to `18.7983`.
+- **validation candidate package**:
+  - Compact Cine pred dir: `results/predictions/CineMyoPS_R8_validation_hd_repair/pathology_largest_component/fold_0`.
+  - Upload zip: `results/submissions/care_myocardium_validation/upload_ready/nnUNet_MyoPS+CineMyoPS_pathology_direct_lcc_hd_repair_20260519_083839/CARE-Myocardium-OrganAgent.zip`.
+  - Manifest: `results/submissions/care_myocardium_validation/upload_ready/nnUNet_MyoPS+CineMyoPS_pathology_direct_lcc_hd_repair_20260519_083839/manifest.json`.
+  - Manifest Cine info: `source=explicit`, `pred_dir=results/predictions/CineMyoPS_R8_validation_hd_repair/pathology_largest_component/fold_0`, `postprocess_mode=pathology_largest_component`.
+  - Zip QA: 30 files, 15 MyoPS cases, 15 CineMyoPS cases, no pathology fallback cases.
+  - Cine raw labels after repair: `{0: 14975281, 200: 115603, 500: 217577, 2221: 49263}`.
+  - Candidate QC: `results/diagnostics/CineMyoPS_round8_validation_lcc_candidate_zip_qc.csv`, `.md`; after repair all 15 Cine cases have exactly one `2221` component and 0 bbox-distance outliers.
+- **nnU-Net 5-fold baseline package**:
+  - Upload zip: `results/submissions/care_myocardium_validation/upload_ready/nnUNet_MyoPS+nnUNet_CineMyoPS_5fold_baseline_round8_20260519_084057/CARE-Myocardium-OrganAgent.zip`.
+  - Manifest: `results/submissions/care_myocardium_validation/upload_ready/nnUNet_MyoPS+nnUNet_CineMyoPS_5fold_baseline_round8_20260519_084057/manifest.json`.
+  - Caveat: CineMyoPS one-voxel `2221` fallback was required for `Case1009`, `Case1011`, and `Case1014`.
+- **stop reason**: export-only HD repair and packaging completed; no training started; no upload performed.
+- **round8 report**: `docs/notes/baseline/CineMyoPS_improvement_round8.md`.
+- **next step**: if hosted score for the LCC candidate remains poor, stop baseline postprocessing and move round9 to a new motion/strain model route in `src/` (MTI-MyoScarSeg-style motion-texture fusion or StrainNet-style cine strain features).

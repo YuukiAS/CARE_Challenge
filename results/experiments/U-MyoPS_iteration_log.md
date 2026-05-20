@@ -432,3 +432,111 @@ Worst U-MyoPS gaps include `Case3038` complete under-segmentation (`0.3256` vs n
 ### Report
 
 - `docs/notes/U-MyoPS_improvement_round6.md`
+
+## 2026-05-18 round7 LGE + dilated Stage1 prior
+
+### Goal
+
+- Return from export-only calibration to a more paper-aligned Stage1-prior route.
+- Test one fold0 hypothesis: a CARE-aware dilated Stage1 prior plus real LGE can preserve the U-MyoPS prior-aware idea without reintroducing unreliable C0/T2 aligned channels.
+- Keep training within the 8h round budget.
+
+### Command
+
+```bash
+sbatch jobs/U-MyoPS/sbatch_round7_lge_dilated_prior.sh
+```
+
+- Job ID: `51368430`
+- Node: `g1807htzh01`
+- Log: `logs/U-MyoPS_r7_lge_dilated_prior_51368430_20260518_031147.log`
+- Task: `Task914_CARE_UmyopsLGEDilatedPrior_fold0`
+- Input variant: `lge_dilated_prior`
+- Prior dilation radius XY: `8`
+- Trainer: `nnUNetTrainerPSNV8ScarCE2`
+- Stop reason: completed 80 epochs; final internal scar/class_2 validation metric `0.6170`.
+
+### Outputs
+
+- `results/metrics/unified/U-MyoPS_round7_lge_dilated_prior_model_best/fold_0/evaluation_summary.json`
+- `results/metrics/unified/U-MyoPS_round7_lge_dilated_prior_model_best/fold_0/grouped_diagnostics.md`
+- `results/metrics/unified/U-MyoPS_round7_lge_dilated_prior_model_final_checkpoint/fold_0/evaluation_summary.json`
+- `results/metrics/unified/U-MyoPS_round7_lge_dilated_prior_model_final_checkpoint/fold_0/grouped_diagnostics.md`
+
+### Results
+
+| checkpoint | group | n | myops_edema | myops_scar |
+| --- | --- | ---: | ---: | ---: |
+| `model_best` | all_cases | 44 | 0.7039 | 0.5539 |
+| `model_best` | scar_gt_positive_only | 43 | 0.6970 | 0.5668 |
+| `model_best` | complete/T2-present | 16 | 0.1858 | 0.6571 |
+| `model_best` | missing-modality | 28 | 1.0000 | 0.4949 |
+| `model_final_checkpoint` | all_cases | 44 | 0.7039 | 0.5538 |
+| `model_final_checkpoint` | scar_gt_positive_only | 43 | 0.6971 | 0.5667 |
+| `model_final_checkpoint` | complete/T2-present | 16 | 0.1858 | 0.6571 |
+| `model_final_checkpoint` | missing-modality | 28 | 1.0000 | 0.4948 |
+
+### Decision
+
+- Round7 is the best pure U-MyoPS scar result so far: `0.5539`, improving over round5 `0.5307` and round6 pure best `0.5352`.
+- It still does not cross nnU-Net Dataset501 5-fold scar `0.5592` or fold0 scar `0.5602`.
+- Edema remains not solved; the all-case edema value is inflated by empty-GT cases, while edema GT-positive/T2-present remains only about `0.1858`.
+- Do not expand U-MyoPS folds yet. If continuing, run only a small prior reliability/gating or low-case failure analysis round.
+
+### Report
+
+- `docs/notes/U-MyoPS_improvement_round7.md`
+
+## 2026-05-19 round8 prior reliability gate
+
+### Goal
+
+- No training and no fold expansion.
+- Test export-only Stage1 prior reliability gates and component/volume cleanup on round7 `model_best`.
+- Include HD/HD95 because current official MyoPS scar leaderboard shows Dice/HD mismatch risk.
+
+### Command
+
+```bash
+./env_CARE/bin/python code/U-MyoPS/apply_round8_prior_reliability_gate.py
+```
+
+### Inputs
+
+- Baseline predictions: `results/predictions/U-MyoPS_round7_lge_dilated_prior_model_best/fold_0`
+- LGE-only fallback: `results/predictions/U-MyoPS_round5_lge_only_no_prior_model_best/fold_0`
+- Stage1 prior root: `third_party/U-MyoPS_myops/outputs/asn_myo_tps_tps_ZS_unaligned_1.0_fold0/gen_res`
+- Latest leaderboard refreshed with `python scripts/leaderboard/fetch_care2026_scores.py`; current `OrganAgent` MyoPS scar validation row is Dice `0.5969`, HD `16.2536`, using nnU-Net for the MyoPS branch.
+
+### Diagnostics
+
+- Taxonomy: `results/diagnostics/U-MyoPS_round8_prior_gate/case_failure_taxonomy.csv`
+- Main low-case classes:
+  - `Case7005`: empty GT scar but non-empty U-MyoPS prediction.
+  - `Case1029`, `Case8021`: very low prior/pathology overlap.
+  - `Case1053`, `Case5005`, `Case2020`: under-segmentation.
+  - `Case3004`: over-segmentation.
+  - Many remaining cases are localization/mixed rather than simple volume failures.
+
+### Results
+
+| variant | all-case scar Dice | scar-positive Dice | complete/T2-present scar | missing-modality scar | scar HD | scar HD95 |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| round7 baseline | 0.5539 | 0.5668 | 0.6571 | 0.4949 | 35.0772 | 14.6865 |
+| `drop_empty_gt_like_false_positive_proxy` | 0.5581 | 0.5478 | 0.6255 | 0.5196 | 34.4867 | 13.8297 |
+| `tiny_c0_lge_no_t2_suppression` | 0.5766 | 0.5668 | 0.6571 | 0.5306 | 34.2800 | 14.3527 |
+| `prior_reliable_keep_lge_fallback` | 0.5426 | 0.5552 | 0.6500 | 0.4812 | 35.8062 | 16.0122 |
+| `component_hd_guard` | 0.5553 | 0.5682 | 0.6567 | 0.4974 | 28.3333 | 13.8978 |
+| `volume_ratio_guard` | 0.5542 | 0.5671 | 0.6570 | 0.4954 | 31.5742 | 14.6030 |
+
+### Decision
+
+- `tiny_c0_lge_no_t2_suppression` crosses the local all-case scar threshold, but only by deleting one tiny prediction in `Case7005`, an empty-GT case. It is diagnostic-only and not enough evidence for a robust U-MyoPS branch.
+- `component_hd_guard` is the best reliable export-only rule: Dice improves slightly and HD improves substantially, but scar Dice remains below nnU-Net Dataset501 fold0 `0.5602` and 5-fold mean `0.5592`.
+- Do not expand U-MyoPS folds 1-4.
+- Do not replace the current nnU-Net MyoPS submission branch with U-MyoPS.
+- If continuing U-MyoPS at all, round9 should be a single very small model-side HD/outlier fine-tune based on `component_hd_guard`; otherwise stop the U-MyoPS baseline mainline and move to a new `src/` model or stronger nnU-Net/MyoPS-Net improvements.
+
+### Report
+
+- `docs/notes/baseline/U-MyoPS_improvement_round8.md`
