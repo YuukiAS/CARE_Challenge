@@ -30,7 +30,7 @@ TS="$(date +%Y%m%d_%H%M%S)"
 LOG_FILE="${LOG_FILE:-${CARE_ROOT}/logs/U-MyoPS_r6_calibration_${SLURM_JOB_ID:-local}_${TS}.log}"
 exec > >(tee -a "${LOG_FILE}") 2>&1
 
-PY="${CARE_EVAL_PYTHON:-${CARE_ROOT}/env_CARE/bin/python}"
+PY="${CARE_EVAL_PYTHON:-${CARE_ROOT}/envs/env_CARE/bin/python}"
 GT_DIR="${CARE_ROOT}/data/nnUNet/nnUNet_raw/Dataset501_CAREMyoPS/labelsTr"
 SPLIT_JSON="${CARE_ROOT}/data/benchmarks/protocol/splits_MyoPS.json"
 

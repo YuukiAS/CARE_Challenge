@@ -11,7 +11,7 @@ export CARE_ROOT
 # shellcheck source=/dev/null
 source "${CARE_ROOT}/env_nnunet.sh"
 
-CARE_CineMyoPS_ENV="${CARE_CineMyoPS_ENV:-${CARE_CINEMYOPS_ENV:-${CARE_ROOT}/env_CARE_nnUNet_v1}}"
+CARE_CineMyoPS_ENV="${CARE_CineMyoPS_ENV:-${CARE_CINEMYOPS_ENV:-${CARE_ROOT}/envs/env_CARE_nnUNet_v1}}"
 export CARE_CineMyoPS_ENV
 export PATH="${CARE_CineMyoPS_ENV}/bin:${PATH}"
 PY="${CARE_CineMyoPS_ENV}/bin/python"
@@ -99,7 +99,7 @@ if [[ "${CINE_RUN_EXPORT_EVAL:-0}" == "1" ]]; then
   echo "===== export protocol val (fold ${FOLD}) ====="
   bash "${CARE_ROOT}/code/CineMyoPS/export_protocol_val_predictions.sh"
   echo "===== unified eval (Dataset502 GT, foreground 1,2,3; report class_1 = myocardium) ====="
-  PY_EVAL="${CARE_EVAL_PYTHON:-${CARE_ROOT}/env_CARE/bin/python}"
+  PY_EVAL="${CARE_EVAL_PYTHON:-${CARE_ROOT}/envs/env_CARE/bin/python}"
   EVAL_JSON="${CARE_ROOT}/results/metrics/unified/${CINE_OUTPUT_MODEL}/fold_${FOLD}/evaluation_summary.json"
   "${PY_EVAL}" "${CARE_ROOT}/scripts/evaluation/evaluate_predictions.py" \
     --pred-dir "${CARE_ROOT}/results/predictions/${CINE_OUTPUT_MODEL}/fold_${FOLD}" \

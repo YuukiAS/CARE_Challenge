@@ -7,7 +7,7 @@ CARE_ROOT="${CARE_ROOT:-$(cd "${SCRIPT_DIR}/../.." && pwd)}"
 # shellcheck source=/dev/null
 source "${CARE_ROOT}/env_nnunet.sh"
 
-_V1_ENV="${CARE_CineMyoPS_ENV:-${CARE_CINEMYOPS_ENV:-${CARE_ROOT}/env_CARE_nnUNet_v1}}"
+_V1_ENV="${CARE_CineMyoPS_ENV:-${CARE_CINEMYOPS_ENV:-${CARE_ROOT}/envs/env_CARE_nnUNet_v1}}"
 PY="${LEGACY_PYTHON:-${_V1_ENV}/bin/python}"
 REPO="${CARE_ROOT}/third_party/U-MyoPS_myops"
 FOLD="${FOLD:-0}"

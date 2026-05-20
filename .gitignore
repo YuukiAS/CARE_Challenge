@@ -10,7 +10,8 @@ temp/
 # Accidental self-referential symlink sometimes created in the repo root.
 /CARE
 
-# Project-local conda env (see env_nnunet.sh PATH to env_CARE/bin)
+# Project-local conda envs (see env_nnunet.sh and scripts using envs/env_CARE/bin)
+envs/
 env_CARE/
 env_CARE_nnUNet_v1/
 

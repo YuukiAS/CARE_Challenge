@@ -7,6 +7,6 @@ PREP="${CARE_ROOT}/code/MyoPS-Net/prepare_myops_net_layout.py"
 
 if [[ ! -f "${DATA}/train.txt" ]]; then
   echo "Preparing MyoPS-Net layout under ${DATA} ..."
-  "${CARE_ROOT}/env_CARE/bin/python" "${PREP}" --output "${DATA}"
+  "${CARE_ROOT}/envs/env_CARE/bin/python" "${PREP}" --output "${DATA}"
 fi
 exec bash "${CARE_ROOT}/code/MyoPS-Net/run_train.sh" "$@"

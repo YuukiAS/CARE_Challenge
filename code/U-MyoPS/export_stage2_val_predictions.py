@@ -95,7 +95,7 @@ def resolve_stage2_python() -> Path:
             if os.environ.get("CARE_CINEMYOPS_ENV")
             else None
         )
-        or str(repo / "env_CARE_nnUNet_v1" / "bin" / "python")
+        or str(repo / "envs" / "env_CARE_nnUNet_v1" / "bin" / "python")
     )
     py = Path(env_path)
     if not py.is_file():

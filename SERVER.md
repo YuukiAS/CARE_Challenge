@@ -8,10 +8,10 @@ This project converts [data/CARE_Challenge](data/CARE_Challenge) into nnU-Net v2
 
 ## Environment
 
-- **Python env**: install dependencies into `/overflow/htzhu/CARE/env_CARE` (or your own venv):
+- **Python env**: install dependencies into `/overflow/htzhu/CARE/envs/env_CARE` (or your own venv):
 
   ```bash
-  /overflow/htzhu/CARE/env_CARE/bin/pip install -r /overflow/htzhu/CARE/requirements-nnunet.txt
+  /overflow/htzhu/CARE/envs/env_CARE/bin/pip install -r /overflow/htzhu/CARE/requirements-nnunet.txt
   ```
 
 - **GPU PyTorch**: before training, replace CPU torch with a CUDA build, for example:
@@ -26,7 +26,7 @@ This project converts [data/CARE_Challenge](data/CARE_Challenge) into nnU-Net v2
 - **nnU-Net paths** (required). Either:
 
   ```bash
-  conda activate /overflow/htzhu/CARE/env_CARE
+  conda activate /overflow/htzhu/CARE/envs/env_CARE
   ```
 
   This runs `env_CARE/etc/conda/activate.d/care_nnunet_env.sh`, which sets `CARE_ROOT` and sources `env_nnunet.sh` (no echo spam). Or manually:

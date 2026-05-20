@@ -27,7 +27,7 @@ cd "${CARE_ROOT}"
 # shellcheck source=/dev/null
 source "${CARE_ROOT}/env_nnunet.sh"
 
-CARE_CineMyoPS_ENV="${CARE_CineMyoPS_ENV:-${CARE_CINEMYOPS_ENV:-${CARE_ROOT}/env_CARE_nnUNet_v1}}"
+CARE_CineMyoPS_ENV="${CARE_CineMyoPS_ENV:-${CARE_CINEMYOPS_ENV:-${CARE_ROOT}/envs/env_CARE_nnUNet_v1}}"
 export PATH="${CARE_CineMyoPS_ENV}/bin:${PATH}"
 export CARE_CineMyoPS_ENV
 export PYTHONUNBUFFERED=1
@@ -54,7 +54,7 @@ echo "LOG_FILE=$(readlink -f "${LOG_FILE}")"
 echo "FOLD=${FOLD} TASK=${CINE_NNUNET_TASK} TRAINER=${CINE_NNUNET_TRAINER} CHECKPOINT=${CINE_PRED_CHECKPOINT}"
 echo "CINE_BN_RECALIBRATE=${CINE_BN_RECALIBRATE} CINE_BN_RECALIB_BATCHES=${CINE_BN_RECALIB_BATCHES}"
 
-PY_EVAL="${CARE_EVAL_PYTHON:-${CARE_ROOT}/env_CARE/bin/python}"
+PY_EVAL="${CARE_EVAL_PYTHON:-${CARE_ROOT}/envs/env_CARE/bin/python}"
 
 run_mode() {
   local mode="$1"

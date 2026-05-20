@@ -14,7 +14,7 @@ CARE_ROOT="${CARE_ROOT:-$(cd "${SCRIPT_DIR}/../.." && pwd)}"
 # shellcheck source=/dev/null
 source "${CARE_ROOT}/env_nnunet.sh"
 
-PYTHON="${CARE_ROOT}/env_CARE/bin/python"
+PYTHON="${CARE_ROOT}/envs/env_CARE/bin/python"
 CONFIG="${CONFIG:-3d_fullres}"
 FOLD="${FOLD:-0}"
 TRAIN_MYOPS="${TRAIN_MYOPS:-1}"

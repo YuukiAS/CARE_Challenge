@@ -17,7 +17,7 @@ set -euo pipefail
 CARE_ROOT="${CARE_ROOT:-/overflow/htzhu/CARE}"
 cd "${CARE_ROOT}"
 
-export PATH="${CARE_ROOT}/env_CARE/bin:${PATH}"
+export PATH="${CARE_ROOT}/envs/env_CARE/bin:${PATH}"
 # shellcheck source=/dev/null
 source "${CARE_ROOT}/env_nnunet.sh"
 
@@ -34,7 +34,7 @@ echo "Host: $(hostname 2>/dev/null || true) JobID: ${SLURM_JOB_ID:-local}"
 echo "CUDA_VISIBLE_DEVICES=${CUDA_VISIBLE_DEVICES:-unset}"
 
 cmd=(
-  "${CARE_ROOT}/env_CARE/bin/python" "${CARE_ROOT}/scripts/submission/prepare_care_myocardium_validation.py"
+  "${CARE_ROOT}/envs/env_CARE/bin/python" "${CARE_ROOT}/scripts/submission/prepare_care_myocardium_validation.py"
   --team-name "${TEAM_NAME:-OrganAgent}"
   --submission-model "${SUBMISSION_MODEL:-nnUNet}"
   --timestamp "${SUBMISSION_TS:-${TS}}"

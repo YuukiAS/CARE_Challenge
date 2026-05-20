@@ -5,12 +5,12 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 CARE_ROOT="$(cd "${SCRIPT_DIR}/../.." && pwd)"
 REPO="${CARE_ROOT}/third_party/U-MyoPS_myops"
-_V1_ENV="${CARE_CineMyoPS_ENV:-${CARE_CINEMYOPS_ENV:-${CARE_ROOT}/env_CARE_nnUNet_v1}}"
+_V1_ENV="${CARE_CineMyoPS_ENV:-${CARE_CINEMYOPS_ENV:-${CARE_ROOT}/envs/env_CARE_nnUNet_v1}}"
 PY="${LEGACY_PYTHON:-${_V1_ENV}/bin/python}"
 
 if [[ -z "${PY}" ]] || [[ ! -x "${PY}" ]]; then
   echo "No usable Python for stage 2. Set LEGACY_PYTHON or CARE_CineMyoPS_ENV (nnU-Net v1 env). Example:" >&2
-  echo "  export CARE_CineMyoPS_ENV=${CARE_ROOT}/env_CARE_nnUNet_v1" >&2
+  echo "  export CARE_CineMyoPS_ENV=${CARE_ROOT}/envs/env_CARE_nnUNet_v1" >&2
   exit 1
 fi
 

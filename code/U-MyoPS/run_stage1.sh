@@ -6,7 +6,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 CARE_ROOT="$(cd "${SCRIPT_DIR}/../.." && pwd)"
 export CARE_ROOT
 REPO="${CARE_ROOT}/third_party/U-MyoPS_myops"
-_V1_ENV="${CARE_CineMyoPS_ENV:-${CARE_CINEMYOPS_ENV:-${CARE_ROOT}/env_CARE_nnUNet_v1}}"
+_V1_ENV="${CARE_CineMyoPS_ENV:-${CARE_CINEMYOPS_ENV:-${CARE_ROOT}/envs/env_CARE_nnUNet_v1}}"
 PY="${UMYOPS_PYTHON:-${_V1_ENV}/bin/python}"
 export PYTHONPATH="${REPO}/jrs:${REPO}:${PYTHONPATH:-}"
 STAGED_ROOT="${UMYOPS_STAGE1_STAGED_ROOT:-${CARE_ROOT}/data/benchmarks/U-MyoPS/gen_${UMYOPS_DATA_SOURCE:-ZS_unaligned}/data}"

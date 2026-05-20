@@ -6,7 +6,7 @@ set -euo pipefail
 CARE_ROOT="${CARE_ROOT:-$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)}"
 source "${CARE_ROOT}/env_nnunet.sh"
 
-PY="${CARE_PYTHON:-${CARE_ROOT}/env_CARE/bin/python}"
+PY="${CARE_PYTHON:-${CARE_ROOT}/envs/env_CARE/bin/python}"
 PROTO_DIR="${CARE_ROOT}/data/benchmarks/protocol"
 MYOPS_INPUT="${MYOPS_PROTOCOL_INPUT:-${CARE_ROOT}/data/CARE_Challenge/MyoPS_train}"
 CINE_INPUT="${CINE_PROTOCOL_INPUT:-${CARE_ROOT}/data/CARE_Challenge/CineMyoPS_train}"

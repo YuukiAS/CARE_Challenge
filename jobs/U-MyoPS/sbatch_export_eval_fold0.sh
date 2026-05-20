@@ -31,7 +31,7 @@ cd "${CARE_ROOT}"
 # shellcheck source=/dev/null
 source "${CARE_ROOT}/env_nnunet.sh"
 
-CARE_CineMyoPS_ENV="${CARE_CineMyoPS_ENV:-${CARE_CINEMYOPS_ENV:-${CARE_ROOT}/env_CARE_nnUNet_v1}}"
+CARE_CineMyoPS_ENV="${CARE_CineMyoPS_ENV:-${CARE_CINEMYOPS_ENV:-${CARE_ROOT}/envs/env_CARE_nnUNet_v1}}"
 export CARE_CineMyoPS_ENV
 export PATH="${CARE_CineMyoPS_ENV}/bin:${PATH}"
 export LEGACY_PYTHON="${LEGACY_PYTHON:-${CARE_CineMyoPS_ENV}/bin/python}"
@@ -55,7 +55,7 @@ OUT_DIR="${CARE_ROOT}/results/metrics/unified/U-MyoPS_${TAG}/fold_0"
 AGG_ROOT="${CARE_ROOT}/results/metrics/unified/U-MyoPS_${TAG}"
 GT_DIR="${nnUNet_raw}/Dataset501_CAREMyoPS/labelsTr"
 SPLIT_JSON="${CARE_ROOT}/data/benchmarks/protocol/splits_MyoPS.json"
-PY="${CARE_EVAL_PYTHON:-${CARE_ROOT}/env_CARE/bin/python}"
+PY="${CARE_EVAL_PYTHON:-${CARE_ROOT}/envs/env_CARE/bin/python}"
 
 echo "===== U-MyoPS export+eval fold0 task=${BASE_TASK} trainer=${TRAINER} chk=${CHK} tag=${TAG} force_fallback=${UMYOPS_EXPORT_FORCE_FALLBACK} ====="
 echo "PRED_DIR=${PRED_DIR} OUT_DIR=${OUT_DIR}"

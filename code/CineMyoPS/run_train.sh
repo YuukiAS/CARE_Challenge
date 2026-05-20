@@ -8,7 +8,7 @@ export PYTHONPATH="${REPO}:${PYTHONPATH:-}"
 cd "${REPO}"
 
 # nnU-Net v1 + legacy batchgenerators; separate from env_CARE (nnUNet v2).
-CARE_CineMyoPS_ENV="${CARE_CineMyoPS_ENV:-${CARE_CINEMYOPS_ENV:-${CARE_ROOT}/env_CARE_nnUNet_v1}}"
+CARE_CineMyoPS_ENV="${CARE_CineMyoPS_ENV:-${CARE_CINEMYOPS_ENV:-${CARE_ROOT}/envs/env_CARE_nnUNet_v1}}"
 PY="${CARE_CineMyoPS_ENV}/bin/python"
 NET="${CINE_NNUNET_DIM:-2d}"
 TRAINER="${CINE_NNUNET_TRAINER:-CARECineMyoPSTrainer}"

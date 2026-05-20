@@ -20,7 +20,7 @@ TMP_ROOT="${CARE_ROOT}/results/predictions/_tmp/${OUTPUT_MODEL}/fold_${FOLD}"
 TMP_INPUT="${TMP_ROOT}/imagesTs"
 TMP_OUTPUT="${TMP_ROOT}/pred_prefixed"
 FINAL_OUTPUT="${CARE_ROOT}/results/predictions/${OUTPUT_MODEL}/fold_${FOLD}"
-PY="${CARE_ROOT}/env_CARE_nnUNet_v1/bin/python"
+PY="${CARE_ROOT}/envs/env_CARE_nnUNet_v1/bin/python"
 MODEL_DIR="${nnUNet_results}/nnUNet/${NET}/${TASK}/${TRAINER}__nnUNetPlansv2.1/fold_${FOLD}"
 CKPT_PATH="${MODEL_DIR}/${CHK}.model"
 

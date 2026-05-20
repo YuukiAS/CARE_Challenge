@@ -19,7 +19,7 @@ TS="$(date +%Y%m%d_%H%M%S)"
 LOG_FILE="${LOG_FILE:-${CARE_ROOT}/logs/MyoPS-Net_Round7Cal_${SLURM_JOB_ID:-local}_${TS}.log}"
 exec > >(tee -a "${LOG_FILE}") 2>&1
 
-PY="${CARE_ROOT}/env_CARE/bin/python"
+PY="${CARE_ROOT}/envs/env_CARE/bin/python"
 DATA_ROOT="${CARE_ROOT}/data/benchmarks/MyoPS-Net/fold_0_maskgated_round3"
 FOLD_JSON="${CARE_ROOT}/data/benchmarks/protocol/splits_MyoPS.json"
 GT_DIR="${CARE_ROOT}/data/nnUNet/nnUNet_raw/Dataset501_CAREMyoPS/labelsTr"

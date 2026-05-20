@@ -27,7 +27,7 @@ cd "${CARE_ROOT}"
 # shellcheck source=/dev/null
 source "${CARE_ROOT}/env_nnunet.sh"
 
-CARE_CineMyoPS_ENV="${CARE_CineMyoPS_ENV:-${CARE_CINEMYOPS_ENV:-${CARE_ROOT}/env_CARE_nnUNet_v1}}"
+CARE_CineMyoPS_ENV="${CARE_CineMyoPS_ENV:-${CARE_CINEMYOPS_ENV:-${CARE_ROOT}/envs/env_CARE_nnUNet_v1}}"
 export PATH="${CARE_CineMyoPS_ENV}/bin:${PATH}"
 export CARE_CineMyoPS_ENV
 export PYTHONUNBUFFERED=1
@@ -60,7 +60,7 @@ bash "${CARE_ROOT}/jobs/CineMyoPS/run_task026_paper_steps.sh"
 _END_TS="$(date +%s)"
 _ELAPSED=$((_END_TS - _START_TS))
 
-PY_EVAL="${CARE_EVAL_PYTHON:-${CARE_ROOT}/env_CARE/bin/python}"
+PY_EVAL="${CARE_EVAL_PYTHON:-${CARE_ROOT}/envs/env_CARE/bin/python}"
 export CARE_ROOT FOLD
 _MYODICE="$("${PY_EVAL}" - <<'PY'
 import json

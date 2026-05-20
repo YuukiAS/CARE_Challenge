@@ -4,7 +4,7 @@ set -euo pipefail
 
 CARE_ROOT="${CARE_ROOT:-$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)}"
 source "${CARE_ROOT}/env_nnunet.sh"
-PY="${CARE_EVAL_PYTHON:-${CARE_ROOT}/env_CARE/bin/python}"
+PY="${CARE_EVAL_PYTHON:-${CARE_ROOT}/envs/env_CARE/bin/python}"
 
 MODEL="${1:-}"
 [[ -n "${MODEL}" ]] || {

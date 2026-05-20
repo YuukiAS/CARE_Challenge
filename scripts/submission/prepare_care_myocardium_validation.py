@@ -31,7 +31,7 @@ import SimpleITK as sitk
 
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
-DEFAULT_NNUNET = REPO_ROOT / "env_CARE" / "bin" / "nnUNetv2_predict"
+DEFAULT_NNUNET = REPO_ROOT / "envs" / "env_CARE" / "bin" / "nnUNetv2_predict"
 SUBMISSION_ROOT = REPO_ROOT / "results" / "submissions" / "care_myocardium_validation"
 
 MYOPS_MODELS = {"nnUNet", "MyoPS-Net", "U-MyoPS"}
@@ -303,7 +303,7 @@ def available_cinemyops_folds(requested: list[str], task: str, trainer: str, dim
 def run_myops_net_predict(data_root: Path, output_dir: Path, fold: str, device: str, variant: str) -> None:
     ckpt_dir = REPO_ROOT / "results" / "checkpoints" / "MyoPS-Net" / f"fold_{fold}" / "checkpoints"
     cmd = [
-        str(REPO_ROOT / "env_CARE" / "bin" / "python"),
+        str(REPO_ROOT / "envs" / "env_CARE" / "bin" / "python"),
         str(REPO_ROOT / "code" / "MyoPS-Net" / "export_val_predictions.py"),
         "--data-root",
         str(data_root),

@@ -16,7 +16,7 @@ set -euo pipefail
 CARE_ROOT="${CARE_ROOT:-/overflow/htzhu/CARE}"
 cd "${CARE_ROOT}"
 
-export PATH="${CARE_ROOT}/env_CARE/bin:${PATH}"
+export PATH="${CARE_ROOT}/envs/env_CARE/bin:${PATH}"
 # shellcheck source=/dev/null
 source "${CARE_ROOT}/env_nnunet.sh"
 
@@ -35,7 +35,7 @@ echo "CINE_COMBINE_MODE=${CINE_COMBINE_MODE:-pathology_direct}"
 echo "CINE_NUM_FRAMES=${CINE_NUM_FRAMES:-4}"
 
 cmd=(
-  "${CARE_ROOT}/env_CARE/bin/python" "${CARE_ROOT}/scripts/submission/prepare_care_myocardium_validation.py"
+  "${CARE_ROOT}/envs/env_CARE/bin/python" "${CARE_ROOT}/scripts/submission/prepare_care_myocardium_validation.py"
   --team-name "${TEAM_NAME:-OrganAgent}"
   --myops-model nnUNet
   --cine-model CineMyoPS

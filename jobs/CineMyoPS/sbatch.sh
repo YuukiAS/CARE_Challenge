@@ -26,7 +26,7 @@ cd "${CARE_ROOT}"
 # shellcheck source=/dev/null
 source "${CARE_ROOT}/env_nnunet.sh"
 
-CARE_CineMyoPS_ENV="${CARE_CineMyoPS_ENV:-${CARE_CINEMYOPS_ENV:-${CARE_ROOT}/env_CARE_nnUNet_v1}}"
+CARE_CineMyoPS_ENV="${CARE_CineMyoPS_ENV:-${CARE_CINEMYOPS_ENV:-${CARE_ROOT}/envs/env_CARE_nnUNet_v1}}"
 export PATH="${CARE_CineMyoPS_ENV}/bin:${PATH}"
 export CARE_CineMyoPS_ENV
 # Python block-buffers stdout when piped to tee; epoch/loss lines use print() and appear late without this.

@@ -32,7 +32,7 @@ TS="$(date +%Y%m%d_%H%M%S)"
 LOG_FILE="${LOG_FILE:-${CARE_ROOT}/logs/MyoPSNet_r6_hybrid_${SLURM_JOB_ID:-local}_${TS}.log}"
 exec > >(tee -a "${LOG_FILE}") 2>&1
 
-PY="${CARE_ROOT}/env_CARE/bin/python"
+PY="${CARE_ROOT}/envs/env_CARE/bin/python"
 FOLD="${FOLD:-0}"
 ALLVAL_DATA="${MYOPS_NET_ALLVAL_DATA:-${CARE_ROOT}/data/benchmarks/MyoPS-Net/fold_0_maskgated_round3}"
 ROUND5_CKPT="${MYOPS_NET_ROUND5_CKPT:-${CARE_ROOT}/results/checkpoints/MyoPS-Net/fold_0_fullmod_round5/checkpoints/best.pth}"

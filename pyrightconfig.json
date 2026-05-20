@@ -18,6 +18,7 @@
     "temp",
     "archive",
 
+    "envs",
     "env_CARE",
     "env_CARE_nnUNet_v1",
     ".venv",
@@ -50,6 +51,6 @@
   "reportMissingImports": "warning",
   "reportMissingTypeStubs": "none",
   "pythonVersion": "3.10",
-  "venvPath": ".",
+  "venvPath": "envs",
   "venv": "env_CARE"
 }

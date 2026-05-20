@@ -44,7 +44,7 @@ else
 fi
 
 cd "${CARE_ROOT}"
-export PATH="${CARE_ROOT}/env_CARE/bin:${PATH}"
+export PATH="${CARE_ROOT}/envs/env_CARE/bin:${PATH}"
 # shellcheck source=/dev/null
 source "${CARE_ROOT}/env_nnunet.sh"
 
@@ -65,7 +65,7 @@ LOG_FILE="${LOG_FILE:-${CARE_ROOT}/logs/MyoPS-Net_${SLURM_JOB_ID:-local}_${TS}.l
 mkdir -p "$(dirname "${LOG_FILE}")"
 exec > >(tee -a "${LOG_FILE}") 2>&1
 
-PY="${CARE_ROOT}/env_CARE/bin/python"
+PY="${CARE_ROOT}/envs/env_CARE/bin/python"
 PREP="${CARE_ROOT}/code/MyoPS-Net/prepare_myops_net_layout.py"
 SPLITS="${SPLITS_FILE:-${CARE_ROOT}/data/benchmarks/protocol/splits_MyoPS.json}"
 FOLD="${FOLD:-0}"

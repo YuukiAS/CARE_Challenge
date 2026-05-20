@@ -12,7 +12,7 @@ set -euo pipefail
 source "${CARE_ROOT}/env_nnunet.sh"
 
 TASK="${CINE_NNUNET_TASK:-Task025_Cine_Seg}"
-V1_ENV="${CARE_CONDA_ENV_NNUNET_V1:-${CARE_ROOT}/env_CARE_nnUNet_v1}"
+V1_ENV="${CARE_CONDA_ENV_NNUNET_V1:-${CARE_ROOT}/envs/env_CARE_nnUNet_v1}"
 PY="${V1_ENV}/bin/python"
 REPO="${CARE_ROOT}/third_party/CineMyoPS/code"
 PP="${REPO}/nnunet/experiment_planning/old/old_plan_and_preprocess_task.py"

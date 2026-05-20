@@ -55,21 +55,21 @@ Common commands:
 
 ```bash
 # nnU-Net for both MyoPS and CineMyoPS, 5-fold ensemble
-./env_CARE/bin/python scripts/submission/prepare_care_myocardium_validation.py \
+./envs/env_CARE/bin/python scripts/submission/prepare_care_myocardium_validation.py \
   --submission-model nnUNet \
   --folds 0 1 2 3 4 \
   --checkpoint checkpoint_best.pth
 
 # MyoPS-Net for MyoPS, nnU-Net for CineMyoPS
-./env_CARE/bin/python scripts/submission/prepare_care_myocardium_validation.py \
+./envs/env_CARE/bin/python scripts/submission/prepare_care_myocardium_validation.py \
   --submission-model MyoPS-Net
 
 # nnU-Net for MyoPS, CineMyoPS for CineMyoPS
-./env_CARE/bin/python scripts/submission/prepare_care_myocardium_validation.py \
+./envs/env_CARE/bin/python scripts/submission/prepare_care_myocardium_validation.py \
   --submission-model CineMyoPS
 
 # Explicit mixed-source package: one upload, three returned metrics
-./env_CARE/bin/python scripts/submission/prepare_care_myocardium_validation.py \
+./envs/env_CARE/bin/python scripts/submission/prepare_care_myocardium_validation.py \
   --myops-model MyoPS-Net \
   --cine-model CineMyoPS
 ```
@@ -77,7 +77,7 @@ Common commands:
 `U-MyoPS` currently requires explicit validation predictions:
 
 ```bash
-./env_CARE/bin/python scripts/submission/prepare_care_myocardium_validation.py \
+./envs/env_CARE/bin/python scripts/submission/prepare_care_myocardium_validation.py \
   --submission-model U-MyoPS \
   --myops-pred-dir /path/to/U-MyoPS/validation_predictions \
   --cine-model nnUNet

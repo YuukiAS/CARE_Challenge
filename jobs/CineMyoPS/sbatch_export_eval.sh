@@ -27,7 +27,7 @@ cd "${CARE_ROOT}"
 # shellcheck source=/dev/null
 source "${CARE_ROOT}/env_nnunet.sh"
 
-CARE_CineMyoPS_ENV="${CARE_CineMyoPS_ENV:-${CARE_CINEMYOPS_ENV:-${CARE_ROOT}/env_CARE_nnUNet_v1}}"
+CARE_CineMyoPS_ENV="${CARE_CineMyoPS_ENV:-${CARE_CINEMYOPS_ENV:-${CARE_ROOT}/envs/env_CARE_nnUNet_v1}}"
 export PATH="${CARE_CineMyoPS_ENV}/bin:${PATH}"
 export CARE_CineMyoPS_ENV
 export PYTHONUNBUFFERED=1
@@ -53,7 +53,7 @@ echo "FOLD=${FOLD} TASK=${CINE_NNUNET_TASK} TRAINER=${CINE_NNUNET_TRAINER} OUTPU
 
 bash "${CARE_ROOT}/code/CineMyoPS/export_protocol_val_predictions.sh"
 
-PY_EVAL="${CARE_EVAL_PYTHON:-${CARE_ROOT}/env_CARE/bin/python}"
+PY_EVAL="${CARE_EVAL_PYTHON:-${CARE_ROOT}/envs/env_CARE/bin/python}"
 EVAL_JSON="${CARE_ROOT}/results/metrics/unified/${CINE_OUTPUT_MODEL}/fold_${FOLD}/evaluation_summary.json"
 "${PY_EVAL}" "${CARE_ROOT}/scripts/evaluation/evaluate_predictions.py" \
   --pred-dir "${CARE_ROOT}/results/predictions/${CINE_OUTPUT_MODEL}/fold_${FOLD}" \

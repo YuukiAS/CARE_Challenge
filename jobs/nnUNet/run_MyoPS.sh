@@ -18,7 +18,7 @@ set -euo pipefail
 THIS_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 CARE_ROOT="${CARE_ROOT:-$(cd "${THIS_DIR}/../.." && pwd)}"
 cd "${CARE_ROOT}"
-export PATH="${CARE_ROOT}/env_CARE/bin:${PATH}"
+export PATH="${CARE_ROOT}/envs/env_CARE/bin:${PATH}"
 # shellcheck source=/dev/null
 source "${CARE_ROOT}/env_nnunet.sh"
 

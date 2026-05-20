@@ -78,8 +78,8 @@ export FOLD PREPARE
 # shellcheck source=/dev/null
 source "${CARE_ROOT}/env_nnunet.sh"
 
-CARE_CONDA_ENV="${CARE_CONDA_ENV:-${CARE_ROOT}/env_CARE}"
-CARE_CONDA_ENV_NNUNET_V1="${CARE_CONDA_ENV_NNUNET_V1:-${CARE_ROOT}/env_CARE_nnUNet_v1}"
+CARE_CONDA_ENV="${CARE_CONDA_ENV:-${CARE_ROOT}/envs/env_CARE}"
+CARE_CONDA_ENV_NNUNET_V1="${CARE_CONDA_ENV_NNUNET_V1:-${CARE_ROOT}/envs/env_CARE_nnUNet_v1}"
 export CARE_CineMyoPS_ENV="${CARE_CineMyoPS_ENV:-${CARE_CINEMYOPS_ENV:-${CARE_CONDA_ENV_NNUNET_V1}}}"
 
 care_conda_activate() {
@@ -136,7 +136,7 @@ eval_targets_words() {
 }
 
 run_prep() {
-  export PATH="${CARE_ROOT}/env_CARE/bin:${PATH}"
+  export PATH="${CARE_ROOT}/envs/env_CARE/bin:${PATH}"
   echo "=== CARE unified benchmark — PREP (FOLD=${FOLD}) ==="
   bash "${CARE_ROOT}/jobs/benchmark_protocol_helpers.sh" gen-protocol
   bash "${CARE_ROOT}/jobs/benchmark_protocol_helpers.sh" write-splits-501 --backup

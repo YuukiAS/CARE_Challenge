@@ -177,7 +177,7 @@ sbatch jobs/submission/prepare_care_myocardium_validation.sh
 For a local/debug run, use:
 
 ```bash
-./env_CARE/bin/python scripts/submission/prepare_care_myocardium_validation.py \
+./envs/env_CARE/bin/python scripts/submission/prepare_care_myocardium_validation.py \
   --team-name OrganAgent \
   --submission-model nnUNet \
   --folds 0 1 2 3 4 \
