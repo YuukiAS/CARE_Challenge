@@ -35,7 +35,7 @@ Strategic decision:
 All Round07 outputs must be isolated under:
 
 ```text
-results/diagnostics/phase0_phase1/laneA_myops/round7_modality_uncertainty/
+results/diagnostics/care_myocardium/laneA_myops/round07_modality_uncertainty/
 ```
 
 ## 2. Stage-Gated Goal-Mode Execution
@@ -429,7 +429,7 @@ Resource abundance does not permit skipping gates.
 Minimum required files under:
 
 ```text
-results/diagnostics/phase0_phase1/laneA_myops/round7_modality_uncertainty/
+results/diagnostics/care_myocardium/laneA_myops/round07_modality_uncertainty/
 ```
 
 Required:
@@ -451,7 +451,7 @@ Required:
 Optional:
 
 ```text
-results/diagnostics/phase0_phase1/laneA_myops/round7_modality_uncertainty/failure_overlays/
+results/diagnostics/care_myocardium/laneA_myops/round07_modality_uncertainty/failure_overlays/
 ```
 
 Overlay priority:
@@ -472,7 +472,7 @@ Overlay priority:
 
 所有输出写入：
 
-`results/diagnostics/phase0_phase1/laneA_myops/round7_modality_uncertainty/`
+`results/diagnostics/care_myocardium/laneA_myops/round07_modality_uncertainty/`
 
 必须先执行 `round7_setup_and_reproducibility_gate`：复核 Round6 outputs、fold0 split、nnU-Net501 baseline、label semantics、modality/center metadata、evaluation scripts、cache isolation 和 output roots。先写 `round7_goal_execution_readme.md`、`train_config_modality_presence.yaml`、`train_config_uncertainty_weighted.yaml`、`train_commands.txt`。
 
@@ -527,14 +527,14 @@ Implemented first-party files:
 
 - `src/care_myocardium/nnunet/laneA_round7_trainer.py`
 - `scripts/training/run_laneA_round7_nnunet_train.py`
-- `scripts/diagnostics/laneA_round7_modality_uncertainty.py`
+- `scripts/diagnostics/laneA_round07_modality_uncertainty.py`
 - `scripts/diagnostics/laneA_round7_fold0_eval.py`
 - `jobs/nnUNet/laneA_round7_fold0_very_short_train.sh`
 
 Generated output root:
 
 ```text
-results/diagnostics/phase0_phase1/laneA_myops/round7_modality_uncertainty/
+results/diagnostics/care_myocardium/laneA_myops/round07_modality_uncertainty/
 ```
 
 Executed:

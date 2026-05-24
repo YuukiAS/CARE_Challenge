@@ -33,7 +33,7 @@ export CARE_CineMyoPS_ENV
 export PYTHONUNBUFFERED=1
 export MPLCONFIGDIR="${TMPDIR:-/tmp}/matplotlib-${SLURM_JOB_ID:-local}"
 
-mkdir -p "${CARE_ROOT}/logs" "${CARE_ROOT}/results/diagnostics/CineMyoPS_round5"
+mkdir -p "${CARE_ROOT}/logs" "${CARE_ROOT}/results/diagnostics/baseline_paper_models/CineMyoPS/round05_fixed_inference"
 TS="$(date +%Y%m%d_%H%M%S)"
 LOG_FILE="${LOG_FILE:-${CARE_ROOT}/logs/CineMyoPS_r5_debug_${SLURM_JOB_ID:-local}_${TS}.log}"
 exec > >(tee -a "${LOG_FILE}") 2>&1
@@ -47,7 +47,7 @@ export CINE_BN_RECALIBRATE="${CINE_BN_RECALIBRATE:-1}"
 export CINE_BN_RECALIB_BATCHES="${CINE_BN_RECALIB_BATCHES:-32}"
 
 "${CARE_CineMyoPS_ENV}/bin/python" "${CARE_ROOT}/scripts/evaluation/debug_cinemyops_inference_semantics.py" \
-  --output-json "${CARE_ROOT}/results/diagnostics/CineMyoPS_round5/inference_semantics_fixed.json" \
+  --output-json "${CARE_ROOT}/results/diagnostics/baseline_paper_models/CineMyoPS/round05_fixed_inference/inference_semantics_fixed.json" \
   "$@"
 
 echo "===== CineMyoPS round5 fixed debug done ====="

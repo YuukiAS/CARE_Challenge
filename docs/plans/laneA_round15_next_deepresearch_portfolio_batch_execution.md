@@ -44,7 +44,7 @@ User token, Slurm, and GPU resources are sufficient for aggressive goal-mode pro
 All Round15 outputs should be isolated under:
 
 ```text
-results/diagnostics/phase0_phase1/laneA_myops/round15_deepresearch_portfolio/
+results/diagnostics/care_myocardium/laneA_myops/round15_deepresearch_portfolio/
 ```
 
 Recommended output files:
@@ -78,7 +78,7 @@ Recommended output files:
 If overlays or feature visualizations are generated, put them under:
 
 ```text
-results/diagnostics/phase0_phase1/laneA_myops/round15_deepresearch_portfolio/overlays/
+results/diagnostics/care_myocardium/laneA_myops/round15_deepresearch_portfolio/overlays/
 ```
 
 Non-negotiable rules:

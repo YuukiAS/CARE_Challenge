@@ -27,12 +27,12 @@ os.environ.setdefault("CARE_ROOT", str(REPO_ROOT))
 os.environ.setdefault("nnUNet_raw", str(REPO_ROOT / "data/nnUNet/nnUNet_raw"))
 os.environ.setdefault("nnUNet_preprocessed", str(REPO_ROOT / "data/nnUNet/nnUNet_preprocessed"))
 os.environ.setdefault("nnUNet_results", str(REPO_ROOT / "data/nnUNet/nnUNet_results"))
-os.environ.setdefault("MPLCONFIGDIR", str(REPO_ROOT / "results/diagnostics/phase0_phase1/laneA_myops/round11_component_safe_refiner/mpl_cache"))
+os.environ.setdefault("MPLCONFIGDIR", str(REPO_ROOT / "results/diagnostics/care_myocardium/laneA_myops/round11_component_safe_refiner/mpl_cache"))
 if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
 
 from scripts.diagnostics import laneA_round10_refiner_eval as r10_eval
-from scripts.diagnostics import laneA_round4_fold0_short_train_eval as base_eval
+from scripts.diagnostics import laneA_round04_fold0_short_train_eval as base_eval
 from src.care_myocardium.refiner.laneA_round10_dataset import RefinerCase, build_cases, load_case_features, write_csv
 from src.care_myocardium.refiner.laneA_round11_model import (
     BidirectionalEdemaResidualRefiner,
@@ -43,7 +43,7 @@ from src.care_myocardium.refiner.laneA_round11_model import (
 )
 
 
-OUT_ROOT = REPO_ROOT / "results/diagnostics/phase0_phase1/laneA_myops/round11_component_safe_refiner"
+OUT_ROOT = REPO_ROOT / "results/diagnostics/care_myocardium/laneA_myops/round11_component_safe_refiner"
 EDEMA = 4
 SCAR = 5
 

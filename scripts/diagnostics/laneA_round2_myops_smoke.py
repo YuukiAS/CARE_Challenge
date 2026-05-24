@@ -739,7 +739,7 @@ def parse_args() -> argparse.Namespace:
     ap.add_argument(
         "--output-dir",
         type=Path,
-        default=REPO_ROOT / "results/diagnostics/phase0_phase1/laneA_myops/round2",
+        default=REPO_ROOT / "results/diagnostics/care_myocardium/laneA_myops/round02_edema_postprocess_smoke",
     )
     ap.add_argument(
         "--component-quantile",

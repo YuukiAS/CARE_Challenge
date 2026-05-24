@@ -36,8 +36,8 @@ Local nnU-Net 5-fold reference remains edema `0.4197`, scar `0.5592`.
 
 Output:
 
-- `results/diagnostics/MyoPS-Net_round8_nnunet_vs_myopsnet_hd_profile.csv`
-- `results/diagnostics/MyoPS-Net_round8_nnunet_vs_myopsnet_hd_profile.md`
+- `results/diagnostics/baseline_paper_models/MyoPS-Net/round08_hd_profile/MyoPS-Net_round8_nnunet_vs_myopsnet_hd_profile.csv`
+- `results/diagnostics/baseline_paper_models/MyoPS-Net/round08_hd_profile/MyoPS-Net_round8_nnunet_vs_myopsnet_hd_profile.md`
 
 Summary:
 

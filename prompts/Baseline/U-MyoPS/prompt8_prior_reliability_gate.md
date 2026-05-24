@@ -51,7 +51,7 @@ DeepResearch 相关提示：B5/B6 强调 anatomy/pathology routing 和 HD/outlie
      - pred_scar/gt_scar 体积比过大；
      - under-segmentation；
      - complete vs missing modality。
-   - 输出 `results/diagnostics/U-MyoPS_round8_prior_gate/case_failure_taxonomy.{csv,md}`。
+   - 输出 `results/diagnostics/baseline_paper_models/U-MyoPS/round08_prior_gate/case_failure_taxonomy.{csv,md}`。
 
 2. **export-only reliability gating variants**
    - 不训练优先。基于 round7 `model_best` prediction 生成 variants：
@@ -87,6 +87,6 @@ DeepResearch 相关提示：B5/B6 强调 anatomy/pathology routing 和 HD/outlie
 
 - `docs/notes/U-MyoPS_improvement_round8.md`
 - 追加 `results/experiments/U-MyoPS_iteration_log.md`
-- `results/diagnostics/U-MyoPS_round8_prior_gate/`
+- `results/diagnostics/baseline_paper_models/U-MyoPS/round08_prior_gate/`
 - 每个 variant 的 `evaluation_summary.json`、grouped diagnostics、HD/component diagnostics
 - 明确回答：U-MyoPS 是否值得进入 round9；若否，是否停止 baseline 主线并转 `src/` 新模型

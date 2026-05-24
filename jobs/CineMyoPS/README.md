@@ -83,7 +83,7 @@ sbatch jobs/CineMyoPS/sbatch_round5_debug_fixed.sh
 
 Output:
 
-- `results/diagnostics/CineMyoPS_round5/inference_semantics_fixed.json`
+- `results/diagnostics/baseline_paper_models/CineMyoPS/round05_fixed_inference/inference_semantics_fixed.json`
 
 Decision rule:
 

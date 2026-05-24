@@ -11,7 +11,7 @@
 - `docs/notes/U-MyoPS_improvement_round6.md`
 - `results/experiments/U-MyoPS_iteration_log.md`
 - `prompts/U-MyoPS/prompt6_missing_modality_scar_calibration.md`
-- `results/diagnostics/U-MyoPS_round6/per_case_umyops_vs_nnunet_scar.md`
+- `results/diagnostics/baseline_paper_models/U-MyoPS/round06_scar_vs_nnunet/per_case_umyops_vs_nnunet_scar.md`
 - `results/metrics/unified/U-MyoPS_round6_scar_component_filter_250/fold_0/evaluation_summary.json`
 - `results/metrics/unified/U-MyoPS_round5_lge_only_no_prior_model_best/fold_0/evaluation_summary.json`
 - `third_party/U-MyoPS_myops/README.md`

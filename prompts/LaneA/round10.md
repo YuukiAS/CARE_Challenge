@@ -18,7 +18,7 @@
 `docs/notes/deep_research/Result1.pdf`
 `docs/notes/deep_research/Result2.pdf`
 `docs/notes/domain_adaptation/domain_adaptation_relevance_20260519.md`
-`phase0_phase1_execution_results.md`
+`care_myocardium_diagnostics_execution_results.md`
 
 重点读取 Lane A 相关计划与输出：
 
@@ -33,14 +33,14 @@
 
 重点读取 Round2-Round9 输出：
 
-`results/diagnostics/phase0_phase1/laneA_myops/round2/`
-`results/diagnostics/phase0_phase1/laneA_myops/round3_trainable_smoke/`
-`results/diagnostics/phase0_phase1/laneA_myops/round4_fold0_short_train/`
-`results/diagnostics/phase0_phase1/laneA_myops/round5_mechanism_integration_audit/`
-`results/diagnostics/phase0_phase1/laneA_myops/round6_anatomy_missing_modality/`
-`results/diagnostics/phase0_phase1/laneA_myops/round7_modality_uncertainty/`
-`results/diagnostics/phase0_phase1/laneA_myops/round8_t2_edema_expert/`
-`results/diagnostics/phase0_phase1/laneA_myops/round9_baseline_initialized_adaptation/`
+`results/diagnostics/care_myocardium/laneA_myops/round02_edema_postprocess_smoke/`
+`results/diagnostics/care_myocardium/laneA_myops/round03_trainable_smoke/`
+`results/diagnostics/care_myocardium/laneA_myops/round04_fold0_short_train/`
+`results/diagnostics/care_myocardium/laneA_myops/round05_mechanism_integration_audit/`
+`results/diagnostics/care_myocardium/laneA_myops/round06_anatomy_missing_modality/`
+`results/diagnostics/care_myocardium/laneA_myops/round07_modality_uncertainty/`
+`results/diagnostics/care_myocardium/laneA_myops/round08_t2_edema_expert/`
+`results/diagnostics/care_myocardium/laneA_myops/round09_baseline_initialized_adaptation/`
 
 也请读取 Round8 / Round9 实现相关文件：
 
@@ -48,7 +48,7 @@
 `src/care_myocardium/nnunet/laneA_round9_checkpoint_loader.py`
 `src/care_myocardium/nnunet/laneA_round9_trainer.py`
 `src/care_myocardium/nnunet/laneA_round9_refiner.py`
-`scripts/diagnostics/laneA_round8_t2_edema_expert.py`
+`scripts/diagnostics/laneA_round08_t2_edema_expert.py`
 `scripts/diagnostics/laneA_round9_*.py`
 `scripts/training/run_laneA_round9_nnunet_train.py`
 `jobs/nnUNet/` 下与 Lane A Round8 / Round9 相关 job 脚本
@@ -162,7 +162,7 @@ overlay summary
 
 计划必须规定输出根目录：
 
-`results/diagnostics/phase0_phase1/laneA_myops/round10_edema_refiner/`
+`results/diagnostics/care_myocardium/laneA_myops/round10_edema_refiner/`
 
 建议输出文件至少包括：
 
@@ -187,7 +187,7 @@ overlay summary
 
 如果生成 overlays，请放在：
 
-`results/diagnostics/phase0_phase1/laneA_myops/round10_edema_refiner/failure_overlays/`
+`results/diagnostics/care_myocardium/laneA_myops/round10_edema_refiner/failure_overlays/`
 
 计划中还必须包含后续 goal-mode 的 resource stance。请明确：用户 token、Slurm、GPU 资源充足，goal-mode 可以尽可能多往前推进；但推进方式必须 staged, gated, refiner-only, and baseline-preserving。goal-mode 可以在一个 run 中完成 cache construction、refiner implementation、unit tests、tiny-overfit、fold0 very-short train、fold0 short train、evaluation and decision table；如果所有 gates 通过，可以继续到 fold0 longer train；但只要任一 gate fail，必须停止该 candidate并记录原因，不能自动扩大规模。不要因为资源充足就跳过 gates。
 

@@ -6,7 +6,7 @@ Treat this `AGENTS.md` as the repo-level Codex rules source. Do not rely on `.cu
 
 ## Plan document governance
 
-CARE Myocardium plan files under `docs/plans/` must follow `docs/plans/00_plan_registry_rules.md`. Plan filenames must encode lane, round scope, role/status, and topic, for example `laneA_round03_next_edema_trainable_smoke_execution.md` or `laneB_round03plus_controller_cinemyops_hosted_topology_motion_plan.md`.
+CARE Myocardium plan files under `docs/plans/` must follow `docs/plans/care_myocardium_plan_registry_rules.md`. Plan filenames must encode lane, round scope, role/status, and topic, for example `laneA_round03_next_edema_trainable_smoke_execution.md` or `laneB_round03plus_controller_cinemyops_hosted_topology_motion_plan.md`.
 
 If a user prompt, generated prompt, or prior ChatGPT instruction conflicts with the plan registry or with `TODO.md`—for example by requesting an ambiguous filename, the wrong round, a controller edit for one-off execution, Round5 repo integration before gates pass, or Cine-only validation upload semantics—do **not** silently comply. Point out the specific contradiction and ask the user to decide before creating or renaming the plan. If the user explicitly overrides the rule, record the exception in the plan metadata.
 

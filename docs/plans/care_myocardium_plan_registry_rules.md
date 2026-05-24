@@ -64,7 +64,7 @@ Use these exact patterns:
 
 | plan kind | filename pattern | example |
 | --- | --- | --- |
-| registry/rules | `00_plan_registry_rules.md` | `00_plan_registry_rules.md` |
+| registry/rules | `care_myocardium_plan_registry_rules.md` | `care_myocardium_plan_registry_rules.md` |
 | lane controller | `lane<LETTER>_round<NN>plus_controller_<topic>_plan.md` | `laneA_round03plus_controller_myops_modality_aware_src_plan.md` |
 | completed round evidence/addendum | `lane<LETTER>_round<NN>_completed_<topic>_addendum.md` | `laneB_round02_completed_cinemyops_topology_lcc_addendum.md` |
 | next/planned round execution | `lane<LETTER>_round<NN>_next_<topic>_execution.md` | `laneA_round03_next_edema_trainable_smoke_execution.md` |

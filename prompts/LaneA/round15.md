@@ -18,7 +18,7 @@
 `docs/notes/deep_research/Result1.pdf`
 `docs/notes/deep_research/Result2.pdf`
 `docs/notes/domain_adaptation/domain_adaptation_relevance_20260519.md`
-`phase0_phase1_execution_results.md`
+`care_myocardium_diagnostics_execution_results.md`
 
 重点读取 Lane A 相关计划与输出：
 
@@ -38,20 +38,20 @@
 
 重点读取 Round10-Round14 输出：
 
-`results/diagnostics/phase0_phase1/laneA_myops/round10_edema_refiner/`
-`results/diagnostics/phase0_phase1/laneA_myops/round11_component_safe_refiner/`
-`results/diagnostics/phase0_phase1/laneA_myops/round11_component_safe_refiner/failure_case_summary/`
-`results/diagnostics/phase0_phase1/laneA_myops/round12_refiner_salvage_high_upside_transition/`
-`results/diagnostics/phase0_phase1/laneA_myops/round13_t2_lge_intensity_anatomy_consistency/`
-`results/diagnostics/phase0_phase1/laneA_myops/round14_feature_augmented_calibrator/`
+`results/diagnostics/care_myocardium/laneA_myops/round10_edema_refiner/`
+`results/diagnostics/care_myocardium/laneA_myops/round11_component_safe_refiner/`
+`results/diagnostics/care_myocardium/laneA_myops/round11_component_safe_refiner/failure_case_summary/`
+`results/diagnostics/care_myocardium/laneA_myops/round12_refiner_salvage_high_upside_transition/`
+`results/diagnostics/care_myocardium/laneA_myops/round13_t2_lge_intensity_anatomy_consistency/`
+`results/diagnostics/care_myocardium/laneA_myops/round14_feature_augmented_calibrator/`
 
 重点读取以下关键文件：
 
-`results/diagnostics/phase0_phase1/laneA_myops/round14_feature_augmented_calibrator/round14_decision_table.md`
-`results/diagnostics/phase0_phase1/laneA_myops/round14_feature_augmented_calibrator/round14_round15_recommendation.md`
-`results/diagnostics/phase0_phase1/laneA_myops/round14_feature_augmented_calibrator/feature_only_rule_grid.md`，如果存在
-`results/diagnostics/phase0_phase1/laneA_myops/round14_feature_augmented_calibrator/round14_component_model_smoke.csv`，如果存在
-`results/diagnostics/phase0_phase1/laneA_myops/round14_feature_augmented_calibrator/round14_external_method_readiness_matrix.md`，如果存在
+`results/diagnostics/care_myocardium/laneA_myops/round14_feature_augmented_calibrator/round14_decision_table.md`
+`results/diagnostics/care_myocardium/laneA_myops/round14_feature_augmented_calibrator/round14_round15_recommendation.md`
+`results/diagnostics/care_myocardium/laneA_myops/round14_feature_augmented_calibrator/feature_only_rule_grid.md`，如果存在
+`results/diagnostics/care_myocardium/laneA_myops/round14_feature_augmented_calibrator/round14_component_model_smoke.csv`，如果存在
+`results/diagnostics/care_myocardium/laneA_myops/round14_feature_augmented_calibrator/round14_external_method_readiness_matrix.md`，如果存在
 
 也请读取已有实现文件，判断哪些可以复用：
 
@@ -140,7 +140,7 @@ cache/label/evaluator integrity
 
 计划必须包含 output root：
 
-`results/diagnostics/phase0_phase1/laneA_myops/round15_deepresearch_portfolio/`
+`results/diagnostics/care_myocardium/laneA_myops/round15_deepresearch_portfolio/`
 
 建议输出文件至少包括：
 
@@ -163,7 +163,7 @@ cache/label/evaluator integrity
 
 如果生成 overlays 或 feature visualizations，请放在：
 
-`results/diagnostics/phase0_phase1/laneA_myops/round15_deepresearch_portfolio/overlays/`
+`results/diagnostics/care_myocardium/laneA_myops/round15_deepresearch_portfolio/overlays/`
 
 计划必须包含阶段化 goal-mode 执行路线。至少包含以下阶段：
 

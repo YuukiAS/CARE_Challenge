@@ -11,7 +11,7 @@ Date: 2026-05-20
 All Round2 outputs were written under:
 
 ```text
-results/diagnostics/phase0_phase1/laneB_cine/round2/
+results/diagnostics/care_myocardium/laneB_cine/round02_topology_lcc/
 ```
 
 ## Implementation
@@ -64,7 +64,7 @@ Execution:
 | `topology_thresholds.json` | train/fold0-derived thresholds |
 | `raw_label_topology_qc.csv` | raw `{0,200,500,2221}` topology and label validity QA |
 
-Failure registry categories added under `results/diagnostics/phase0_phase1/failure_registry/`:
+Failure registry categories added under `results/diagnostics/care_myocardium/failure_registry/`:
 
 - `cine_remote_pathology_island.md`
 - `cine_fragmented_pathology.md`

@@ -34,7 +34,7 @@ def main() -> None:
     os.environ.setdefault("nnUNet_raw", str(REPO_ROOT / "data/nnUNet/nnUNet_raw"))
     os.environ.setdefault("nnUNet_preprocessed", str(REPO_ROOT / "data/nnUNet/nnUNet_preprocessed"))
     os.environ.setdefault("nnUNet_results", str(REPO_ROOT / "data/nnUNet/nnUNet_results"))
-    os.environ.setdefault("MPLCONFIGDIR", str(REPO_ROOT / "results/diagnostics/phase0_phase1/laneA_myops/round4_fold0_short_train/mpl_cache"))
+    os.environ.setdefault("MPLCONFIGDIR", str(REPO_ROOT / "results/diagnostics/care_myocardium/laneA_myops/round04_fold0_short_train/mpl_cache"))
 
     from batchgenerators.utilities.file_and_folder_operations import load_json
     from nnunetv2.utilities.dataset_name_id_conversion import maybe_convert_to_dataset_name

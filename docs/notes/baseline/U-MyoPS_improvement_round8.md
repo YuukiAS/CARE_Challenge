@@ -29,8 +29,8 @@ Inputs:
 
 Artifacts:
 
-- `results/diagnostics/U-MyoPS_round8_prior_gate/case_failure_taxonomy.csv`
-- `results/diagnostics/U-MyoPS_round8_prior_gate/case_failure_taxonomy.md`
+- `results/diagnostics/baseline_paper_models/U-MyoPS/round08_prior_gate/case_failure_taxonomy.csv`
+- `results/diagnostics/baseline_paper_models/U-MyoPS/round08_prior_gate/case_failure_taxonomy.md`
 
 Main findings:
 

@@ -38,7 +38,7 @@ Important code context:
 
 ## Round5 目标
 
-1. Run the fixed diagnostic on GPU and inspect `results/diagnostics/CineMyoPS_round5/inference_semantics_fixed.json`.
+1. Run the fixed diagnostic on GPU and inspect `results/diagnostics/baseline_paper_models/CineMyoPS/round05_fixed_inference/inference_semantics_fixed.json`.
 2. Determine exactly where predictions collapse:
    - direct eval forward branch logits;
    - direct train-mode forward branch logits;
@@ -59,7 +59,7 @@ sbatch jobs/CineMyoPS/sbatch_round5_debug_fixed.sh
 
 Expected output:
 
-- `results/diagnostics/CineMyoPS_round5/inference_semantics_fixed.json`
+- `results/diagnostics/baseline_paper_models/CineMyoPS/round05_fixed_inference/inference_semantics_fixed.json`
 - log under `logs/CineMyoPS_R5_debug_<jobid>_<timestamp>.log`
 
 If the job fails, fix only the diagnostic shape/device/env issue and rerun. Do not move to training.
@@ -98,7 +98,7 @@ Then run only a short export/eval, not training. Use config-specific prediction 
 
 - 追加：`results/experiments/CineMyoPS_iteration_log.md`
 - 新报告：`docs/notes/CineMyoPS_improvement_round5.md`
-- Diagnostic JSON: `results/diagnostics/CineMyoPS_round5/inference_semantics_fixed.json`
+- Diagnostic JSON: `results/diagnostics/baseline_paper_models/CineMyoPS/round05_fixed_inference/inference_semantics_fixed.json`
 - 如修复 export/inference：对应 metric JSON and prediction dirs
 
 最终报告必须明确回答：CineMyoPS 当前是 direct logits collapse、eval-mode collapse、sliding-window collapse，还是 export label collapse；下一轮是否允许训练，以及训练要改什么。

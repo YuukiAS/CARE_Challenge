@@ -17,7 +17,7 @@ if str(REPO_ROOT) not in sys.path:
 from src.care_myocardium.refiner.laneA_round10_dataset import build_cases, summarize_geometry, write_csv
 
 
-OUT_ROOT = REPO_ROOT / "results/diagnostics/phase0_phase1/laneA_myops/round10_edema_refiner"
+OUT_ROOT = REPO_ROOT / "results/diagnostics/care_myocardium/laneA_myops/round10_edema_refiner"
 
 
 def main() -> None:

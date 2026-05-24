@@ -31,12 +31,12 @@ os.environ.setdefault("nnUNet_preprocessed", str(REPO_ROOT / "data/nnUNet/nnUNet
 os.environ.setdefault("nnUNet_results", str(REPO_ROOT / "data/nnUNet/nnUNet_results"))
 os.environ.setdefault(
     "MPLCONFIGDIR",
-    str(REPO_ROOT / "results/diagnostics/phase0_phase1/laneA_myops/round11_component_safe_refiner/mpl_cache"),
+    str(REPO_ROOT / "results/diagnostics/care_myocardium/laneA_myops/round11_component_safe_refiner/mpl_cache"),
 )
 if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
 
-from scripts.diagnostics import laneA_round4_fold0_short_train_eval as base_eval
+from scripts.diagnostics import laneA_round04_fold0_short_train_eval as base_eval
 from scripts.diagnostics import laneA_round10_refiner_eval as r10_eval
 from src.care_myocardium.refiner.laneA_round10_dataset import RefinerCase, build_cases, load_case_features, write_csv
 from src.care_myocardium.refiner.laneA_round10_model import (
@@ -46,9 +46,9 @@ from src.care_myocardium.refiner.laneA_round10_model import (
 )
 
 
-OUT_ROOT = REPO_ROOT / "results/diagnostics/phase0_phase1/laneA_myops/round11_component_safe_refiner"
+OUT_ROOT = REPO_ROOT / "results/diagnostics/care_myocardium/laneA_myops/round11_component_safe_refiner"
 OVERLAY_ROOT = OUT_ROOT / "failure_overlays"
-R10_ROOT = REPO_ROOT / "results/diagnostics/phase0_phase1/laneA_myops/round10_edema_refiner"
+R10_ROOT = REPO_ROOT / "results/diagnostics/care_myocardium/laneA_myops/round10_edema_refiner"
 R10_CKPT = R10_ROOT / "checkpoints/laneA_r10_edema_residual_refiner_fold0_very_short.pt"
 R10_PRED_DIR = R10_ROOT / "predictions/laneA_r10_edema_residual_refiner_fold0_very_short/validation"
 BASELINE_MODEL = "baseline_nnunet501_fold0"
@@ -907,7 +907,7 @@ def write_readme_and_decision(audit_rows: list[dict[str, object]], grid_rows: li
                 "stage_completed: offline_fusion_grid",
                 "trainable_bidirectional_refiner: not_started",
                 "baseline: nnUNet501 fold0 validation probabilities/predictions",
-                "round10_checkpoint: results/diagnostics/phase0_phase1/laneA_myops/round10_edema_refiner/checkpoints/laneA_r10_edema_residual_refiner_fold0_very_short.pt",
+                "round10_checkpoint: results/diagnostics/care_myocardium/laneA_myops/round10_edema_refiner/checkpoints/laneA_r10_edema_residual_refiner_fold0_very_short.pt",
                 "class_4_edema_only: true",
                 "class_5_scar_immutable: true",
                 f"decision_after_offline_grid: {decision}",

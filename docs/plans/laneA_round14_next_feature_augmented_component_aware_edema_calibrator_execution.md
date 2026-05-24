@@ -56,7 +56,7 @@ feature-augmented component-aware edema calibrator
 所有 Round14 输出必须放在：
 
 ```text
-results/diagnostics/phase0_phase1/laneA_myops/round14_feature_augmented_calibrator/
+results/diagnostics/care_myocardium/laneA_myops/round14_feature_augmented_calibrator/
 ```
 
 建议输出文件：
@@ -89,7 +89,7 @@ results/diagnostics/phase0_phase1/laneA_myops/round14_feature_augmented_calibrat
 如果生成 overlays 或 feature visualizations，放在：
 
 ```text
-results/diagnostics/phase0_phase1/laneA_myops/round14_feature_augmented_calibrator/overlays/
+results/diagnostics/care_myocardium/laneA_myops/round14_feature_augmented_calibrator/overlays/
 ```
 
 ## 3. 主路线 A: `component_level_support_calibrator`
@@ -746,7 +746,7 @@ Forbidden regardless of resources:
 
 所有输出放在：
 
-`results/diagnostics/phase0_phase1/laneA_myops/round14_feature_augmented_calibrator/`
+`results/diagnostics/care_myocardium/laneA_myops/round14_feature_augmented_calibrator/`
 
 必须输出 metrics、overlays、component accept/reject summary、scar unchanged guardrail、no-T2 empty-GT FP table、CenterC table、case2031/3011/3012/3040 focus table、failure flags、`round14_decision_table.md` 和 `round14_round15_recommendation.md`。
 

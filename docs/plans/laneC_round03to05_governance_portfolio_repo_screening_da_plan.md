@@ -18,7 +18,7 @@ Plan metadata:
 
 推荐攻击顺序：
 
-1. **Phase 0/1 先做可比性与冒烟测试**：统一 fold、label、Dice+HD/HD95、connected components、small/remote false positives、modality/center 分层、artifact 命名和 cache 隔离。下一轮 Codex 只应实现这些低成本检查，不启动完整训练 campaign。
+1. **initial audit/smoke 先做可比性与冒烟测试**：统一 fold、label、Dice+HD/HD95、connected components、small/remote false positives、modality/center 分层、artifact 命名和 cache 隔离。下一轮 Codex 只应实现这些低成本检查，不启动完整训练 campaign。
 2. **Lane A MyoPS 优先**：nnU-Net 仍是 operational baseline。MyoPS-Net 和 U-MyoPS 已经完成 baseline exit-gate，不再作为主线替代候选；后续 MyoPS 工作应进入 `src/`，以 modality-mask-aware、anatomy/pathology cascade、T2-aware edema route、HD/component diagnostics 为核心。
 3. **Lane B CineMyoPS 次优先**：只围绕 hosted `myocardium_cinemyops` 语义、HD 爆炸、connected components、motion/anatomy ideas 继续。若 round8 LCC/HD repair 的 hosted 结果仍低，应停止小 postprocess，转向 `src/` motion/strain route。
 4. **Lane C DA/normalization 是辅助机制**：只做 intensity/statistics/adapters/source-free BN 级别的轻量实验。Domain adaptation 不能作为独立主线，不能替代模态缺失、T2 supervision 不足和小病灶 HD/outlier 问题。
@@ -32,11 +32,11 @@ Plan metadata:
 - 不继续 patch MyoPS-Net/U-MyoPS 作为主线替代候选。
 - 不把 foreground_mean、LV、myocardium aggregate 当成主目标；主结论只看 `myops_scar`、`myops_edema`、`myocardium_cinemyops`。
 
-下一轮 Codex 只应实现 Phase 0/1 的原因：
+下一轮 Codex 只应实现 initial audit/smoke 的原因：
 
 - 当前最大风险不是缺一个复杂模型，而是实验不可比、hosted/local 语义不完全一致、HD/component 失败没有统一记录。
-- Phase 0/1 可在无训练或极短 smoke 下筛掉不合规、不可集成、会破坏 HD/component 的候选。
-- 只有通过 Phase 0/1 gate 的候选，才允许进入 pretrained backbone smoke 或 `src/` first-party model implementation。
+- initial audit/smoke 可在无训练或极短 smoke 下筛掉不合规、不可集成、会破坏 HD/component 的候选。
+- 只有通过 initial audit/smoke gate 的候选，才允许进入 pretrained backbone smoke 或 `src/` first-party model implementation。
 
 ## 2. 统一实验治理
 
@@ -65,7 +65,7 @@ Plan metadata:
 | BiomedParse | `docs/notes/deep_research/Result2.pdf`; https://github.com/microsoft/BiomedParse | MyoPS / Cine | foundation segmentation prompt model | yes | code likely Apache-2.0; weight license must be verified | broad biomedical images | medium/high | medium | anatomy prior or promptable QA | frozen inference on 2-3 CARE cases only after license check | license forbids challenge use or output cannot map to CARE labels | defer |
 | MS-CaReCNN / MyoPS++ concept | `docs/notes/deep_research/Result1.pdf` | MyoPS scar / edema | two-stage anatomy-first pathology cascade | no public weights | paper/concept | none if reimplemented | low | medium/high | better lesion localization and HD | simulate with existing nnU-Net anatomy masks and pathology maps | no complete-case gain or HD worsens | prioritize |
 | Cascaded FSN / anatomy-first pathology segmentation | `docs/notes/deep_research/Result2.pdf`; https://cinc.org/archives/2024/pdf/CinC2024-148.pdf | MyoPS scar / Cine scar | coarse anatomy probability into lesion head | no | unclear | none if reimplemented | low | medium | reduce remote pathology components | deterministic anatomy-constrained postprocess on existing predictions | HD worsens or scar-positive Dice drops | prioritize |
-| nnU-Net Task114 / M&Ms pretrained weights | `docs/notes/deep_research/Result2.pdf`; https://zenodo.org/records/4288362 | MyoPS / Cine anatomy | public pretrained initialization | yes | Zenodo license must be verified | M&Ms cardiac MRI | low if initialization/frozen only | low | better anatomy warm start | metadata-only check; no large download in screening | license unclear, label mismatch, or download too large without approval | prioritize after Phase 1 |
+| nnU-Net Task114 / M&Ms pretrained weights | `docs/notes/deep_research/Result2.pdf`; https://zenodo.org/records/4288362 | MyoPS / Cine anatomy | public pretrained initialization | yes | Zenodo license must be verified | M&Ms cardiac MRI | low if initialization/frozen only | low | better anatomy warm start | metadata-only check; no large download in screening | license unclear, label mismatch, or download too large without approval | prioritize after Stage 1 |
 | MedNeXt | `src/README.md`; https://github.com/MIC-DKFZ/MedNeXt | MyoPS / Cine backbone | robust segmentation backbone | maybe | verify repo license | none if trained CARE-only | low | medium | stronger pathology head than old paper baselines | import/config smoke only | cannot wrap into unified export/eval | watch |
 | CineMA | `docs/notes/deep_research/Result1.pdf`; https://huggingface.co/mathpluscode/CineMA | CineMyoPS | cine anatomy foundation model | yes | MIT per local note; verify HF card | cine CMR | low if frozen/init only | low/medium | improve cine anatomy mask and ROI | frozen anatomy inference on fold0 sample | no class_1/component benefit or license mismatch | prioritize |
 | CorSeg-CineSAX | `docs/notes/deep_research/Result1.pdf`; https://www.researchgate.net/publication/403490811_CorSeg-CineSAX_An_OpenSource_Deep_Learning_Framework_for_Fully_Automatic_Segmentation_of_ShortAxis_Cine_Cardiac_MRI_Across_Multiple_Cardiac_Diseases | CineMyoPS | cine anatomy + topology postprocess | yes | CC BY 4.0 per local note; verify repo | 1555 multi-center cine | low if public pretrained allowed | low/medium | reduce Cine anatomy/component/HD failures | frozen anatomy mask on local fold0 | topology postprocess deletes scar support | prioritize |
@@ -227,11 +227,11 @@ src/care_myocardium/
 
 | phase | deliverables | expected commands for future runs | expected runtime | pass/fail criteria |
 | --- | --- | --- | --- | --- |
-| Phase 0: audit and reproducibility | baseline metric snapshot、modality/center error table、label/package/cache QA、candidate license/provenance table | `python scripts/leaderboard/fetch_care2026_scores.py`; `bash scripts/evaluation/run_unified_eval_model.sh nnUNet501`; future `python scripts/evaluation/report_portfolio_phase0_audit.py` | CPU minutes to <1h | all baseline paths reproducible; no stale cache; labels and raw package valid |
-| Phase 1: postprocess/normalization/loss smoke | MyoPS component/HD postprocess report、Cine LCC diagnostics、normalization audit、loss gradient checks | future `python scripts/evaluation/report_myops_component_hd_audit.py`; existing `python scripts/evaluation/cinemyops_round8_hd_repair.py`; future `python scripts/evaluation/run_da_normalization_audit.py` | CPU/GPU <2h; no real training except tiny gradient/overfit smoke | Dice non-regression, HD/HD95 non-regression, components reduced or unchanged |
-| Phase 2: pretrained backbone smoke | metadata-only then tiny frozen-feature/import tests for CineMA、CorSeg、Task114、ViTa、StrainNet | future `python scripts/screening/check_pretrained_candidate.py --candidate CineMA` | metadata minutes; tiny inference <2h; no large download without approval | license/data provenance clear; output can map to CARE labels |
-| Phase 3: first-party model implementation | `src/` modality-mask-aware MyoPS cascade and Cine motion/anatomy wrapper | future `sbatch jobs/src/<candidate>_fold0_smoke.sh` with <=8h walltime | <=8h per fold0 job | beats nnU-Net fold0 target metric without HD/component regression |
-| Phase 4: fold expansion | folds 1-4 only for candidates that pass fold0 | future all-fold wrapper for selected `src/` candidate | <=8h/job by default | mean across folds beats baseline; no hidden subgroup failure |
+| Stage 0: audit and reproducibility | baseline metric snapshot、modality/center error table、label/package/cache QA、candidate license/provenance table | `python scripts/leaderboard/fetch_care2026_scores.py`; `bash scripts/evaluation/run_unified_eval_model.sh nnUNet501`; future `python scripts/evaluation/report_portfolio_diagnostic_anchor.py` | CPU minutes to <1h | all baseline paths reproducible; no stale cache; labels and raw package valid |
+| Stage 1: postprocess/normalization/loss smoke | MyoPS component/HD postprocess report、Cine LCC diagnostics、normalization audit、loss gradient checks | future `python scripts/evaluation/report_myops_component_hd_audit.py`; existing `python scripts/evaluation/cinemyops_round8_hd_repair.py`; future `python scripts/evaluation/run_da_normalization_audit.py` | CPU/GPU <2h; no real training except tiny gradient/overfit smoke | Dice non-regression, HD/HD95 non-regression, components reduced or unchanged |
+| Stage 2: pretrained backbone smoke | metadata-only then tiny frozen-feature/import tests for CineMA、CorSeg、Task114、ViTa、StrainNet | future `python scripts/screening/check_pretrained_candidate.py --candidate CineMA` | metadata minutes; tiny inference <2h; no large download without approval | license/data provenance clear; output can map to CARE labels |
+| Stage 3: first-party model implementation | `src/` modality-mask-aware MyoPS cascade and Cine motion/anatomy wrapper | future `sbatch jobs/src/<candidate>_fold0_smoke.sh` with <=8h walltime | <=8h per fold0 job | beats nnU-Net fold0 target metric without HD/component regression |
+| Stage 4: fold expansion | folds 1-4 only for candidates that pass fold0 | future all-fold wrapper for selected `src/` candidate | <=8h/job by default | mean across folds beats baseline; no hidden subgroup failure |
 | Phase 5: hosted submission | one validation zip with both branches, manifest proof, QA tables | `sbatch jobs/submission/prepare_care_myocardium_validation.sh` only after gates | GPU inference budget | hosted package only if local gates and compliance pass |
 
 ## 8. Stop Criteria
@@ -251,9 +251,9 @@ src/care_myocardium/
 
 ## 9. Recommended Follow-up Prompts
 
-### MyoPS Phase 0/1
+### MyoPS initial audit/smoke
 
-在 CARE repo 只做 MyoPS Phase 0/1：实现 modality/center 分层的 nnU-Net vs current candidates Dice+HD+HD95+component audit，并加一个不训练的 postprocess/loss smoke 报告；不要提交 Slurm，不要扩 folds。
+在 CARE repo 只做 MyoPS initial audit/smoke：实现 modality/center 分层的 nnU-Net vs current candidates Dice+HD+HD95+component audit，并加一个不训练的 postprocess/loss smoke 报告；不要提交 Slurm，不要扩 folds。
 
 ### Cine postprocess diagnostics
 

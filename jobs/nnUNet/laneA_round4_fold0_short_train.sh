@@ -23,7 +23,7 @@ exec > >(tee -a "${LOG_FILE}") 2>&1
 export PATH="${CARE_ROOT}/envs/env_CARE/bin:${PATH}"
 source "${CARE_ROOT}/env_nnunet.sh"
 
-export MPLCONFIGDIR="${CARE_ROOT}/results/diagnostics/phase0_phase1/laneA_myops/round4_fold0_short_train/mpl_cache"
+export MPLCONFIGDIR="${CARE_ROOT}/results/diagnostics/care_myocardium/laneA_myops/round04_fold0_short_train/mpl_cache"
 export PYTHONPATH="${CARE_ROOT}:${PYTHONPATH:-}"
 export OMP_NUM_THREADS=1
 export nnUNet_n_proc_DA="${nnUNet_n_proc_DA:-4}"
@@ -51,6 +51,6 @@ echo "PRETRAINED=${PRETRAINED}"
   --pretrained-weights "${PRETRAINED}" \
   --export-validation-probabilities
 
-"${CARE_ROOT}/envs/env_CARE/bin/python" "${CARE_ROOT}/scripts/diagnostics/laneA_round4_fold0_short_train_eval.py"
+"${CARE_ROOT}/envs/env_CARE/bin/python" "${CARE_ROOT}/scripts/diagnostics/laneA_round04_fold0_short_train_eval.py"
 
 echo "===== Lane A Round4 fold0 short train complete ====="

@@ -109,11 +109,11 @@ Plan metadata:
 
 | phase | future command/output | runtime | stop criteria |
 | --- | --- | ---: | --- |
-| Phase 0: reproduce diagnostics | `python scripts/evaluation/cinemyops_component_hd_audit.py --pred-dirs pathology_direct=results/predictions/CineMyoPS_R6_pathology_direct/fold_0 lcc=results/predictions/CineMyoPS_R8_hd_repair/pathology_largest_component/fold_0 --baseline-variant pathology_direct`; outputs `results/diagnostics/CineMyoPS_phase0_component_hd.{csv,md,json}` | CPU minutes | labels/geometry mismatch, missing fold0 cases, stale cache |
-| Phase 1: postprocess-only repair | repair modes above; evaluate via `evaluate_predictions.py --hd --hd95`; no training | CPU <1h | HD/HD95 not improved or plausible lesions deleted |
-| Phase 2: pretrained cine anatomy smoke | `python scripts/screening/check_cine_pretrained_candidate.py --candidate CineMA --output-dir results/diagnostics/cine_pretrained_screening`; authorized one-case inference only if weights local | metadata minutes; inference <2h | license/provenance unclear or output not mappable to ROI |
-| Phase 3: motion/strain smoke | future `python scripts/screening/extract_cine_motion_features.py --case Case1001 --method optical_flow|voxelmorph|strainnet` | <2h one case | folding, wrong geometry, no useful motion contrast |
-| Phase 4: trainable first-party model | future `src/care_myocardium/models/cine_motion_pathology.py`; fold0 <=8h Slurm only after Phase 0-3 gates | <=8h/job | no `class_3` Dice+HD gain over pathology_direct/LCC |
+| Stage 0: reproduce diagnostics | `python scripts/evaluation/cinemyops_component_hd_audit.py --pred-dirs pathology_direct=results/predictions/CineMyoPS_R6_pathology_direct/fold_0 lcc=results/predictions/CineMyoPS_R8_hd_repair/pathology_largest_component/fold_0 --baseline-variant pathology_direct`; outputs `results/diagnostics/care_myocardium/laneB_cine/round02_topology_lcc/cinemyops_component_hd.{csv,md,json}` | CPU minutes | labels/geometry mismatch, missing fold0 cases, stale cache |
+| Stage 1: postprocess-only repair | repair modes above; evaluate via `evaluate_predictions.py --hd --hd95`; no training | CPU <1h | HD/HD95 not improved or plausible lesions deleted |
+| Stage 2: pretrained cine anatomy smoke | `python scripts/screening/check_cine_pretrained_candidate.py --candidate CineMA --output-dir results/diagnostics/care_myocardium/laneB_cine/round03_pretrained_screening_metadata/cine_pretrained_screening`; authorized one-case inference only if weights local | metadata minutes; inference <2h | license/provenance unclear or output not mappable to ROI |
+| Stage 3: motion/strain smoke | future `python scripts/screening/extract_cine_motion_features.py --case Case1001 --method optical_flow|voxelmorph|strainnet` | <2h one case | folding, wrong geometry, no useful motion contrast |
+| Stage 4: trainable first-party model | future `src/care_myocardium/models/cine_motion_pathology.py`; fold0 <=8h Slurm only after Stage 0-3 gates | <=8h/job | no `class_3` Dice+HD gain over pathology_direct/LCC |
 | Phase 5: fold/hosted submission | only after fold0 and compliance pass; one zip with both branches through `prepare_care_myocardium_validation.py` | packaging GPU budget | manifest/labels/fallback/package QA fail, or local gains not tied to hosted hypothesis |
 
 ## 8. Promotion Gates
@@ -133,7 +133,7 @@ Plan metadata:
   - `scripts/screening/check_cine_pretrained_candidate.py`
   - `docs/notes/baseline/CineMyoPS_improvement_round9_plan_execution.md`
   - update `results/experiments/CineMyoPS_iteration_log.md`
-- Exact metric table: use the Phase 1 diagnostic columns listed above, plus aggregate rows for `mean`, `median`, `worst_hd`, `cases_with_removed_components`, `fallback_cases`.
+- Exact metric table: use the Stage 1 diagnostic columns listed above, plus aggregate rows for `mean`, `median`, `worst_hd`, `cases_with_removed_components`, `fallback_cases`.
 - Packaging checks before future submission:
   - `manifest.json` records `cine.source`, `pred_dir`, `combine_mode`, `postprocess_mode`, fold/checkpoint, and `pathology_label_fallback.cases`.
   - Zip roots exactly `MyoPS/` and `CineMyoPS/`; 15 cases each; no extra files.

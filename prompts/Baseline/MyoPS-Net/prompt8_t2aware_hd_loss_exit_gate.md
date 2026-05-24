@@ -44,7 +44,7 @@ DeepResearch 相关提示：MyoPS 方向可借鉴 CAA-Seg/SSA 的多序列对齐
 1. **先做官方 nnU-Net MyoPS error profile**
    - 基于本地 protocol fold0 和官方 leaderboard，写出 Dice/HD mismatch 分析。
    - 对 nnU-Net fold0 / MyoPS-Net round4 计算每例 component count、small remote components、bbox outlier、pathology volume ratio。
-   - 输出 `results/diagnostics/MyoPS-Net_round8_nnunet_vs_myopsnet_hd_profile.{csv,md}`。
+   - 输出 `results/diagnostics/baseline_paper_models/MyoPS-Net/round08_hd_profile/MyoPS-Net_round8_nnunet_vs_myopsnet_hd_profile.{csv,md}`。
 
 2. **实现一个短训 T2-aware edema/scar expert**
    - 只使用 T2-present/complete cases 做 edema 强监督，保留 scar route，不要让 missing-T2 empty cases 主导 edema。

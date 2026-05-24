@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
-"""Build Phase0/Phase1 CARE diagnostic tables from existing artifacts.
+"""Build CARE Myocardium diagnostic tables from existing artifacts.
 
 This script is intentionally read-only with respect to model outputs: it does
 not train, infer, submit Slurm jobs, create validation zips, or download
 weights. It only summarizes existing predictions, metrics, and raw training
-data into the governed phase0/phase1 diagnostics tree.
+data into the governed CARE Myocardium diagnostics tree.
 """
 
 from __future__ import annotations
@@ -22,7 +22,7 @@ from scipy.ndimage import generate_binary_structure, label
 
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
-OUT_ROOT = REPO_ROOT / "results/diagnostics/phase0_phase1"
+OUT_ROOT = REPO_ROOT / "results/diagnostics/care_myocardium"
 LANE_A = OUT_ROOT / "laneA_myops"
 LANE_B = OUT_ROOT / "laneB_cine"
 LANE_C = OUT_ROOT / "laneC_da"
@@ -46,8 +46,8 @@ MYOPS_CASES_JSON = REPO_ROOT / "data/benchmarks/protocol/cases_MyoPS.json"
 MYOPS_SPLITS_JSON = REPO_ROOT / "data/benchmarks/protocol/splits_MyoPS.json"
 MYOPS_DATASET_JSON = REPO_ROOT / "data/nnUNet/nnUNet_raw/Dataset501_CAREMyoPS/dataset.json"
 
-CINE_COMPONENT_JSON = REPO_ROOT / "results/diagnostics/CineMyoPS_phase0_component_hd.json"
-CINE_REPAIR_SUMMARY = REPO_ROOT / "results/diagnostics/CineMyoPS_round8_repair_summary.json"
+CINE_COMPONENT_JSON = REPO_ROOT / "results/diagnostics/care_myocardium/laneB_cine/round02_topology_lcc/cinemyops_component_hd.json"
+CINE_REPAIR_SUMMARY = REPO_ROOT / "results/diagnostics/baseline_paper_models/CineMyoPS/round08_hd_repair/CineMyoPS_round8_repair_summary.json"
 CINE_DATASET_JSON = REPO_ROOT / "data/nnUNet/nnUNet_raw/Dataset502_CARECineMyoPS/dataset.json"
 CINE_IMG_DIR = REPO_ROOT / "data/nnUNet/nnUNet_raw/Dataset502_CARECineMyoPS/imagesTr"
 
@@ -199,7 +199,7 @@ def build_myops_baseline_audit() -> None:
     csv_path = LANE_A / "myops_baseline_protocol_audit.csv"
     write_csv(csv_path, rows)
     lines = [
-        "# MyoPS Phase0 Baseline/Protocol Audit",
+        "# MyoPS CARE Diagnostics Baseline/Protocol Audit",
         "",
         f"- Metric source: `{MYOPS_METRICS_DIR}`",
         f"- Dataset label source: `{MYOPS_DATASET_JSON}`",
@@ -225,7 +225,7 @@ def build_myops_baseline_audit() -> None:
         )
     lines += [
         "",
-        "结论：fold0 已有可复现 prediction、checkpoint_best 和统一 Dice/HD/HD95 指标；fold1-4 有 validation prediction 和 checkpoint_best，但本轮不重算 HD/HD95，保持 Phase0 smoke 范围。",
+        "结论：fold0 已有可复现 prediction、checkpoint_best 和统一 Dice/HD/HD95 指标；fold1-4 有 validation prediction 和 checkpoint_best，但本轮不重算 HD/HD95，保持 CARE diagnostic smoke 范围。",
     ]
     (LANE_A / "myops_baseline_protocol_audit.md").write_text("\n".join(lines) + "\n", encoding="utf-8")
 
@@ -549,7 +549,7 @@ def build_decision_table() -> None:
             "target_metric": "myops_scar/myops_edema",
             "decision": "go",
             "reason": "fold0 prediction/checkpoint/label/evaluator gate passes; fold1-4 predictions exist but HD/HD95 not recomputed in this smoke run.",
-            "next_command": "python scripts/evaluation/evaluate_predictions.py --pred-dir <candidate> --gt-dir data/nnUNet/nnUNet_raw/Dataset501_CAREMyoPS/labelsTr --fold-json data/benchmarks/protocol/splits_MyoPS.json --fold 0 --foreground-classes 4,5 --skip-dice-if-gt-empty --hd --hd95 --output-dir results/diagnostics/phase0_phase1/<candidate>",
+            "next_command": "python scripts/evaluation/evaluate_predictions.py --pred-dir <candidate> --gt-dir data/nnUNet/nnUNet_raw/Dataset501_CAREMyoPS/labelsTr --fold-json data/benchmarks/protocol/splits_MyoPS.json --fold 0 --foreground-classes 4,5 --skip-dice-if-gt-empty --hd --hd95 --output-dir results/diagnostics/care_myocardium/<candidate>",
             "estimated_runtime": "minutes on CPU for fold0 pathology classes",
             "prohibited": "no cache reuse without candidate-specific output-dir; no label remap changes",
         },
@@ -569,7 +569,7 @@ def build_decision_table() -> None:
             "target_metric": "myocardium_cinemyops via class_3 sanity",
             "decision": "go",
             "reason": "existing before/after audit lowers class_3 HD95 and component count without Dice loss on the smoke set.",
-            "next_command": "python scripts/evaluation/cinemyops_component_hd_audit.py --pred-dirs pathology_direct=results/predictions/CineMyoPS_R6_pathology_direct/fold_0 lcc=results/predictions/CineMyoPS_R8_hd_repair/pathology_largest_component/fold_0 --baseline-variant pathology_direct --output-prefix results/diagnostics/phase0_phase1/laneB_cine/cinemyops_postprocess_before_after",
+            "next_command": "python scripts/evaluation/cinemyops_component_hd_audit.py --pred-dirs pathology_direct=results/predictions/CineMyoPS_R6_pathology_direct/fold_0 lcc=results/predictions/CineMyoPS_R8_hd_repair/pathology_largest_component/fold_0 --baseline-variant pathology_direct --output-prefix results/diagnostics/care_myocardium/laneB_cine/cinemyops_postprocess_before_after",
             "estimated_runtime": "minutes on CPU",
             "prohibited": "no validation zip in this phase; no empty pathology fallback increase",
         },
@@ -579,7 +579,7 @@ def build_decision_table() -> None:
             "target_metric": "all three leaderboard metrics",
             "decision": "watch",
             "reason": "intensity/missingness audit gives a lightweight diagnostic direction, but no model-training evidence yet.",
-            "next_command": "limit to 5-15 cases and write outputs under results/diagnostics/phase0_phase1/laneC_da/",
+            "next_command": "limit to 5-15 cases and write outputs under results/diagnostics/care_myocardium/laneC_da/",
             "estimated_runtime": "minutes for statistics; bounded smoke only for any transform",
             "prohibited": "no external harmonization, diffusion, foundation checkpoints, or validation pseudo-label",
         },

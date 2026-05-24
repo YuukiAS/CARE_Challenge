@@ -44,7 +44,7 @@ T2-present edema expert + separated edema head/route + modality-conditioned supe
 Round8 所有输出必须隔离到：
 
 ```text
-results/diagnostics/phase0_phase1/laneA_myops/round8_t2_edema_expert/
+results/diagnostics/care_myocardium/laneA_myops/round08_t2_edema_expert/
 ```
 
 建议输出文件：
@@ -68,7 +68,7 @@ results/diagnostics/phase0_phase1/laneA_myops/round8_t2_edema_expert/
 Optional overlays, if generated without heavy dependencies:
 
 ```text
-results/diagnostics/phase0_phase1/laneA_myops/round8_t2_edema_expert/failure_overlays/
+results/diagnostics/care_myocardium/laneA_myops/round08_t2_edema_expert/failure_overlays/
 ```
 
 Experiment names and cache roots must be unique. Suggested train experiment prefix:
@@ -526,11 +526,11 @@ Do not clone/train all repos indiscriminately. Do not use external data training
 
 请先读取：
 
-- `docs/plans/00_plan_registry_rules.md`
+- `docs/plans/care_myocardium_plan_registry_rules.md`
 - `docs/plans/laneA_round07_next_modality_presence_uncertainty_supervision_execution.md`
-- `results/diagnostics/phase0_phase1/laneA_myops/round7_modality_uncertainty/`
+- `results/diagnostics/care_myocardium/laneA_myops/round07_modality_uncertainty/`
 - `src/care_myocardium/nnunet/laneA_round7_trainer.py`
-- `scripts/diagnostics/laneA_round7_modality_uncertainty.py`
+- `scripts/diagnostics/laneA_round07_modality_uncertainty.py`
 - `jobs/nnUNet/laneA_round7_fold0_very_short_train.sh`
 - Round2-Round6 Lane A plan/output files referenced in the Round8 plan
 
@@ -546,7 +546,7 @@ Do not clone/train all repos indiscriminately. Do not use external data training
 
 必须输出到：
 
-`results/diagnostics/phase0_phase1/laneA_myops/round8_t2_edema_expert/`
+`results/diagnostics/care_myocardium/laneA_myops/round08_t2_edema_expert/`
 
 至少生成：
 
@@ -602,14 +602,14 @@ Implemented first-party files:
 
 - `src/care_myocardium/nnunet/laneA_round8_trainer.py`
 - `scripts/training/run_laneA_round8_nnunet_train.py`
-- `scripts/diagnostics/laneA_round8_t2_edema_expert.py`
+- `scripts/diagnostics/laneA_round08_t2_edema_expert.py`
 - `scripts/diagnostics/laneA_round8_fold0_eval.py`
 - `jobs/nnUNet/laneA_round8_fold0_very_short_train.sh`
 
 Generated output root:
 
 ```text
-results/diagnostics/phase0_phase1/laneA_myops/round8_t2_edema_expert/
+results/diagnostics/care_myocardium/laneA_myops/round08_t2_edema_expert/
 ```
 
 Executed:

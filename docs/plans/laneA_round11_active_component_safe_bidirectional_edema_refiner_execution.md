@@ -7,7 +7,7 @@ Status: `fail_stop_bidirectional_refiner_candidate_no_longer_train`
 Execution root:
 
 ```text
-results/diagnostics/phase0_phase1/laneA_myops/round11_component_safe_refiner/
+results/diagnostics/care_myocardium/laneA_myops/round11_component_safe_refiner/
 ```
 
 ## What Ran

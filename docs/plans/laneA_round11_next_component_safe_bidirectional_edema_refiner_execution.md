@@ -27,7 +27,7 @@ Lane A has now accumulated enough negative evidence to avoid broad retuning. Rou
 Latest Round10 evidence:
 
 - Plan/record: `docs/plans/laneA_round10_active_edema_only_residual_refiner_execution.md`
-- Output root: `results/diagnostics/phase0_phase1/laneA_myops/round10_edema_refiner/`
+- Output root: `results/diagnostics/care_myocardium/laneA_myops/round10_edema_refiner/`
 - Cache gate: `pass_cache_gate`
 - Tiny gate: `pass_tiny_refiner_safety_gate`
 - Fold0 very-short job: `52102044`, completed `0:0`, 44/44 validation predictions
@@ -69,7 +69,7 @@ Core principles:
 All Round11 outputs must be isolated under:
 
 ```text
-results/diagnostics/phase0_phase1/laneA_myops/round11_component_safe_refiner/
+results/diagnostics/care_myocardium/laneA_myops/round11_component_safe_refiner/
 ```
 
 Required or recommended outputs:
@@ -101,7 +101,7 @@ Required or recommended outputs:
 Optional overlays and snapshots:
 
 ```text
-results/diagnostics/phase0_phase1/laneA_myops/round11_component_safe_refiner/failure_overlays/
+results/diagnostics/care_myocardium/laneA_myops/round11_component_safe_refiner/failure_overlays/
 ```
 
 Suggested experiment names:
@@ -803,7 +803,7 @@ Stage 3：在不重训的情况下做 offline fusion/threshold grid。比较 res
 
 所有输出写入：
 
-`results/diagnostics/phase0_phase1/laneA_myops/round11_component_safe_refiner/`
+`results/diagnostics/care_myocardium/laneA_myops/round11_component_safe_refiner/`
 
 最终必须输出 `round11_decision_table.md` 和 `round11_next_actions.md`，并给出 `go_fusion_calibrated_refiner`、`go_bidirectional_refiner`、`watch_component_safe_refiner`、`fail_stop_refiner_candidate` 或 `postpone_refiner_route` 结论。评估必须分别报告 `myops_edema` class_4 与 `myops_scar` class_5 guardrail，包含 all-case、T2-present GT-positive、complete-modality、CenterB、CenterC、Case2031、Case3012、no-T2 empty-GT、C0+LGE no-T2、LGE-only、center/modality subsets。不要使用 foreground mean 或 all-case aggregate 掩盖失败。
 ```

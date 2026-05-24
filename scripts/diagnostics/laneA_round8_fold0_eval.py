@@ -14,10 +14,10 @@ REPO_ROOT = Path(__file__).resolve().parents[2]
 if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
 
-from scripts.diagnostics import laneA_round4_fold0_short_train_eval as base_eval
+from scripts.diagnostics import laneA_round04_fold0_short_train_eval as base_eval
 
 
-OUT_ROOT = REPO_ROOT / "results/diagnostics/phase0_phase1/laneA_myops/round8_t2_edema_expert"
+OUT_ROOT = REPO_ROOT / "results/diagnostics/care_myocardium/laneA_myops/round08_t2_edema_expert"
 CANDIDATE_PRED_DIR = (
     REPO_ROOT
     / "data/nnUNet/nnUNet_results/Dataset501_CAREMyoPS/"
@@ -25,7 +25,7 @@ CANDIDATE_PRED_DIR = (
 )
 BASELINE_PRED_DIR = base_eval.BASELINE_PRED_DIR
 BASELINE_MODEL = "baseline_nnunet501_fold0"
-CANDIDATE_MODEL = "candidate_laneA_round8_t2_edema_expert"
+CANDIDATE_MODEL = "candidate_laneA_round08_t2_edema_expert"
 
 SUBSETS = [
     "all_case",

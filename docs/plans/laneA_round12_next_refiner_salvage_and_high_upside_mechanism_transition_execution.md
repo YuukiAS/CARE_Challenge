@@ -6,7 +6,7 @@ Plan metadata:
 - Lane: Lane A / MyoPS scar-edema
 - Round scope: Round12
 - Status: planned, not executed
-- Parent roadmap: CARE Myocardium Phase0/Phase1 diagnostics and Lane A Round2-Round11 evidence chain
+- Parent roadmap: CARE Myocardium CARE Myocardium diagnostics diagnostics and Lane A Round2-Round11 evidence chain
 - Parent plans: `laneA_round10_active_edema_only_residual_refiner_execution.md`, `laneA_round11_active_component_safe_bidirectional_edema_refiner_execution.md`
 - Function: controller document for a future goal-mode run
 - Do not: train, submit Slurm, create validation zip, upload, download weights, pull external repos, change production code, or modify existing predictions during this planning pass
@@ -39,7 +39,7 @@ Round12 应分为两个方向：
 所有 Round12 输出必须隔离到：
 
 ```text
-results/diagnostics/phase0_phase1/laneA_myops/round12_refiner_salvage_high_upside_transition/
+results/diagnostics/care_myocardium/laneA_myops/round12_refiner_salvage_high_upside_transition/
 ```
 
 建议输出文件：
@@ -63,7 +63,7 @@ results/diagnostics/phase0_phase1/laneA_myops/round12_refiner_salvage_high_upsid
 若生成 overlays 或 feature visualizations，放到：
 
 ```text
-results/diagnostics/phase0_phase1/laneA_myops/round12_refiner_salvage_high_upside_transition/overlays/
+results/diagnostics/care_myocardium/laneA_myops/round12_refiner_salvage_high_upside_transition/overlays/
 ```
 
 ## 3. 主路线 A: `deployable_refiner_fallback_salvage_diagnostic`
@@ -499,7 +499,7 @@ docs/plans/laneA_round12_next_refiner_salvage_and_high_upside_mechanism_transiti
 接着执行 high-upside mechanism readiness audits：T2/LGE intensity prior audit、anatomy-lesion consistency audit、boundary/HD failure audit、external method readiness matrix。Deep Research 只作为 mechanism source，不要无差别拉取 repo，不要下载大权重，不要训练外部模型。最后输出 round12_decision_table.md 和 round12_round13_recommendation.md，明确 refiner 是 optional calibration、stop-as-mainline，还是进入某个 high-upside route。
 
 所有输出放在：
-results/diagnostics/phase0_phase1/laneA_myops/round12_refiner_salvage_high_upside_transition/
+results/diagnostics/care_myocardium/laneA_myops/round12_refiner_salvage_high_upside_transition/
 
 必须生成：
 round12_goal_execution_readme.md
@@ -519,7 +519,7 @@ round12_decision_table.md
 round12_round13_recommendation.md
 
 如生成 overlays 或 feature visualizations，放在：
-results/diagnostics/phase0_phase1/laneA_myops/round12_refiner_salvage_high_upside_transition/overlays/
+results/diagnostics/care_myocardium/laneA_myops/round12_refiner_salvage_high_upside_transition/overlays/
 
 禁止 validation submission、validation zip、fold1-4、5-fold、大规模 external repo training、下载大权重、外部数据训练、validation pseudo-label supervised training。资源充足，可以尽可能推进所有 diagnostic stages，但每个阶段必须 gate；失败即停或降级记录，不得自动跳到训练或 submission。
 ```

@@ -9,7 +9,7 @@
 - `docs/notes/CineMyoPS_improvement_round4.md`
 - `results/experiments/CineMyoPS_iteration_log.md`
 - `prompts/CineMyoPS/prompt5_fixed_inference_debug.md`
-- `results/diagnostics/CineMyoPS_round5/inference_semantics_fixed.json`
+- `results/diagnostics/baseline_paper_models/CineMyoPS/round05_fixed_inference/inference_semantics_fixed.json`
 - `results/metrics/unified/CineMyoPS_R5_fixed_inference/fold_0/evaluation_summary.json`
 - `logs/CineMyoPS_export_eval_51354763_20260517_232845.log`
 - `prompts/Baseline_report.md`

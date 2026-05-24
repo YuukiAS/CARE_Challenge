@@ -33,13 +33,13 @@ Metadata screening:
 
 ```bash
 ./envs/env_CARE/bin/python scripts/screening/check_cine_pretrained_candidate.py \
-  --output-dir results/diagnostics/cine_pretrained_screening
+  --output-dir results/diagnostics/care_myocardium/laneB_cine/round03_pretrained_screening_metadata/cine_pretrained_screening
 ```
 
 Outputs:
 
-- `results/diagnostics/cine_pretrained_screening/screening.json`
-- `results/diagnostics/cine_pretrained_screening/screening.md`
+- `results/diagnostics/care_myocardium/laneB_cine/round03_pretrained_screening_metadata/cine_pretrained_screening/screening.json`
+- `results/diagnostics/care_myocardium/laneB_cine/round03_pretrained_screening_metadata/cine_pretrained_screening/screening.md`
 
 Component/HD audit:
 
@@ -49,14 +49,14 @@ Component/HD audit:
     pathology_direct=results/predictions/CineMyoPS_R6_pathology_direct/fold_0 \
     lcc=results/predictions/CineMyoPS_R8_hd_repair/pathology_largest_component/fold_0 \
   --baseline-variant pathology_direct \
-  --output-prefix results/diagnostics/CineMyoPS_phase0_component_hd
+  --output-prefix results/diagnostics/care_myocardium/laneB_cine/round02_topology_lcc/cinemyops_component_hd
 ```
 
 Outputs:
 
-- `results/diagnostics/CineMyoPS_phase0_component_hd.csv`
-- `results/diagnostics/CineMyoPS_phase0_component_hd.json`
-- `results/diagnostics/CineMyoPS_phase0_component_hd.md`
+- `results/diagnostics/care_myocardium/laneB_cine/round02_topology_lcc/cinemyops_component_hd.csv`
+- `results/diagnostics/care_myocardium/laneB_cine/round02_topology_lcc/cinemyops_component_hd.json`
+- `results/diagnostics/care_myocardium/laneB_cine/round02_topology_lcc/cinemyops_component_hd.md`
 
 Aggregate result:
 

@@ -25,9 +25,9 @@ Lane A 现在不是一个单轮调参问题。Round2 到 Round9 已经把多个�
 
 Round9 关键证据：
 
-- `results/diagnostics/phase0_phase1/laneA_myops/round9_baseline_initialized_adaptation/round9_next_actions.md`
-- `results/diagnostics/phase0_phase1/laneA_myops/round9_baseline_initialized_adaptation/round9_decision_table.md`
-- `results/diagnostics/phase0_phase1/laneA_myops/round9_baseline_initialized_adaptation/round9_refiner_smoke.csv`
+- `results/diagnostics/care_myocardium/laneA_myops/round09_baseline_initialized_adaptation/round9_next_actions.md`
+- `results/diagnostics/care_myocardium/laneA_myops/round09_baseline_initialized_adaptation/round9_decision_table.md`
+- `results/diagnostics/care_myocardium/laneA_myops/round09_baseline_initialized_adaptation/round9_refiner_smoke.csv`
 - `src/care_myocardium/nnunet/laneA_round9_refiner.py`
 
 Round10 新结论：
@@ -64,7 +64,7 @@ Round10 要回答的问题：
 Round10 所有输出必须隔离到：
 
 ```text
-results/diagnostics/phase0_phase1/laneA_myops/round10_edema_refiner/
+results/diagnostics/care_myocardium/laneA_myops/round10_edema_refiner/
 ```
 
 建议输出文件：
@@ -91,7 +91,7 @@ results/diagnostics/phase0_phase1/laneA_myops/round10_edema_refiner/
 Optional overlays:
 
 ```text
-results/diagnostics/phase0_phase1/laneA_myops/round10_edema_refiner/failure_overlays/
+results/diagnostics/care_myocardium/laneA_myops/round10_edema_refiner/failure_overlays/
 ```
 
 Suggested experiment/cache names:
@@ -167,7 +167,7 @@ Each cached case must record:
 Cache must live under:
 
 ```text
-results/diagnostics/phase0_phase1/laneA_myops/round10_edema_refiner/cache/
+results/diagnostics/care_myocardium/laneA_myops/round10_edema_refiner/cache/
 ```
 
 Do not write into `data/nnUNet/nnUNet_preprocessed`, `data/nnUNet/nnUNet_results`, or any baseline prediction directory.
@@ -742,7 +742,7 @@ If reusing Round9 `EdemaResidualRefiner`, keep imports explicit and do not mutat
 
 若 Phase 1 通过，请执行 Phase 2：在
 
-`results/diagnostics/phase0_phase1/laneA_myops/round10_edema_refiner/`
+`results/diagnostics/care_myocardium/laneA_myops/round10_edema_refiner/`
 
 下构建 cached baseline refiner dataset。缓存必须记录 baseline prediction/logit/prob source、image modalities、GT edema mask、scar/anatomy guardrail labels、center、modality group、T2-present flag、no-T2 empty-GT flag、spacing/origin/direction、feature channel order 和 label set。不得污染 nnU-Net baseline cache。
 

@@ -36,7 +36,7 @@ SCAR = 5
 MYO = 1
 ANATOMY = (1, 2, 3)
 
-OUT_ROOT = REPO_ROOT / "results/diagnostics/phase0_phase1/laneA_myops/round6_anatomy_missing_modality"
+OUT_ROOT = REPO_ROOT / "results/diagnostics/care_myocardium/laneA_myops/round06_anatomy_missing_modality"
 PRED_OUT = OUT_ROOT / "predictions/anatomy_soft_prior_oracle_diagnostic"
 GT_DIR = REPO_ROOT / "data/nnUNet/nnUNet_raw/Dataset501_CAREMyoPS/labelsTr"
 BASELINE_PRED_DIR = (
@@ -45,7 +45,7 @@ BASELINE_PRED_DIR = (
     / "nnUNetTrainer_500epochs__nnUNetPlans__3d_fullres/fold_0/validation"
 )
 BASELINE_PROB_DIR = BASELINE_PRED_DIR
-CASE_METRICS = REPO_ROOT / "results/diagnostics/phase0_phase1/laneA_myops/myops_modality_center_case_metrics.csv"
+CASE_METRICS = REPO_ROOT / "results/diagnostics/care_myocardium/laneA_myops/myops_modality_center_case_metrics.csv"
 SPLITS_JSON = REPO_ROOT / "data/benchmarks/protocol/splits_MyoPS.json"
 CASES_JSON = REPO_ROOT / "data/benchmarks/protocol/cases_MyoPS.json"
 RAW_ROOT = REPO_ROOT / "data/CARE_Challenge/MyoPS_train"
@@ -680,7 +680,7 @@ def write_config(config: dict[str, object]) -> None:
             lines.append(f"{key}: {value}")
     (OUT_ROOT / "anatomy_soft_prior_train_config.yaml").write_text("\n".join(lines) + "\n", encoding="utf-8")
     (OUT_ROOT / "anatomy_soft_prior_train_command.txt").write_text(
-        "./envs/env_CARE/bin/python scripts/diagnostics/laneA_round6_anatomy_missing_modality.py\n",
+        "./envs/env_CARE/bin/python scripts/diagnostics/laneA_round06_anatomy_missing_modality.py\n",
         encoding="utf-8",
     )
 
@@ -791,7 +791,7 @@ def write_summaries(
     (OUT_ROOT / "round6_next_goal_prompt.md").write_text(
         "# Next Goal Prompt Draft\n\n"
         "你现在在 `/overflow/htzhu/CARE` 中工作。请基于 "
-        "`results/diagnostics/phase0_phase1/laneA_myops/round6_anatomy_missing_modality/round6_laneA_decision_table.md` "
+        "`results/diagnostics/care_myocardium/laneA_myops/round06_anatomy_missing_modality/round6_laneA_decision_table.md` "
         "继续 Lane A。若 anatomy soft-prior diagnostic 为 `go/watch`，下一步只能实现非 oracle first-party anatomy source 或 tiny trainable smoke；"
         "不得使用 GT anatomy 作为 submission path。禁止 fold1-4、5-fold、validation zip、上传、外部数据训练、validation pseudo-label supervised training、硬 ROI 删除和大型 repo/weights 下载。"
         "继续分别报告 `myops_edema` 与 `myops_scar`，并按 T2-present GT-positive、complete-modality、CenterC、no-T2 empty-GT、modality group、center 分组。\n",

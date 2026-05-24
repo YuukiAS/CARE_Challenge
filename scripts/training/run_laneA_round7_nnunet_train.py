@@ -35,7 +35,7 @@ def main() -> None:
     os.environ.setdefault("nnUNet_results", str(REPO_ROOT / "data/nnUNet/nnUNet_results"))
     os.environ.setdefault(
         "MPLCONFIGDIR",
-        str(REPO_ROOT / "results/diagnostics/phase0_phase1/laneA_myops/round7_modality_uncertainty/mpl_cache"),
+        str(REPO_ROOT / "results/diagnostics/care_myocardium/laneA_myops/round07_modality_uncertainty/mpl_cache"),
     )
 
     from batchgenerators.utilities.file_and_folder_operations import load_json

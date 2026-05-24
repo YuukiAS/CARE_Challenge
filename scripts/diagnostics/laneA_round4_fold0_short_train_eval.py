@@ -26,7 +26,7 @@ from scripts.evaluation.evaluate_predictions import dice_per_class, hd95_class, 
 
 EDEMA = 4
 SCAR = 5
-OUT_ROOT = REPO_ROOT / "results/diagnostics/phase0_phase1/laneA_myops/round4_fold0_short_train"
+OUT_ROOT = REPO_ROOT / "results/diagnostics/care_myocardium/laneA_myops/round04_fold0_short_train"
 GT_DIR = REPO_ROOT / "data/nnUNet/nnUNet_raw/Dataset501_CAREMyoPS/labelsTr"
 BASELINE_PRED_DIR = (
     REPO_ROOT
@@ -38,7 +38,7 @@ CANDIDATE_PRED_DIR = (
     / "data/nnUNet/nnUNet_results/Dataset501_CAREMyoPS/"
     / "laneA_edema_focal_tversky_t2down_fold0_short__nnUNetPlans__3d_fullres/fold_0/validation"
 )
-CASE_METRICS = REPO_ROOT / "results/diagnostics/phase0_phase1/laneA_myops/myops_modality_center_case_metrics.csv"
+CASE_METRICS = REPO_ROOT / "results/diagnostics/care_myocardium/laneA_myops/myops_modality_center_case_metrics.csv"
 SPLITS_JSON = REPO_ROOT / "data/benchmarks/protocol/splits_MyoPS.json"
 
 

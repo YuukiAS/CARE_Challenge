@@ -9,7 +9,7 @@ Round15 executed the DeepResearch-guided first-party portfolio gate for Lane A M
 Generated diagnostics are under:
 
 ```text
-results/diagnostics/phase0_phase1/laneA_myops/round15_deepresearch_portfolio/
+results/diagnostics/care_myocardium/laneA_myops/round15_deepresearch_portfolio/
 ```
 
 `results/diagnostics/` is intentionally gitignored, so this note preserves the durable result summary.

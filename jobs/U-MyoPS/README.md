@@ -96,8 +96,8 @@ sbatch jobs/U-MyoPS/sbatch_round6_scar_calibration.sh
 
 诊断输出：
 
-- `results/diagnostics/U-MyoPS_round6/per_case_umyops_vs_nnunet_scar.csv`
-- `results/diagnostics/U-MyoPS_round6/per_case_umyops_vs_nnunet_scar.md`
+- `results/diagnostics/baseline_paper_models/U-MyoPS/round06_scar_vs_nnunet/per_case_umyops_vs_nnunet_scar.csv`
+- `results/diagnostics/baseline_paper_models/U-MyoPS/round06_scar_vs_nnunet/per_case_umyops_vs_nnunet_scar.md`
 
 预测/指标输出包括：
 

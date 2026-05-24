@@ -88,14 +88,14 @@ Recommended initial model name: `CAREMyoPSModalityAwareUNetV1`.
 
 Architecture:
 
-- Backbone: nnU-Net/MedNeXt-like 3D encoder-decoder. Phase 1 should start with a PlainConvUNet-like first-party wrapper using nnU-Net spacing/patch conventions. MedNeXt is a Phase 2/3 backbone replacement candidate, not the first dependency.
+- Backbone: nnU-Net/MedNeXt-like 3D encoder-decoder. Stage 1 should start with a PlainConvUNet-like first-party wrapper using nnU-Net spacing/patch conventions. MedNeXt is a Stage 2/3 backbone replacement candidate, not the first dependency.
 - Inputs: `LGE`, `T2`, `C0` plus a modality-presence vector/mask `[lge_present, t2_present, c0_present]`. Zero-filled missing modalities must never be interpreted as real images without the mask.
 - Fusion: every fusion block receives modality presence metadata; missing channels are masked/gated before feature fusion.
 - Scar route: LGE-driven scar head, optionally helped by C0/anatomy context. Scar supervision remains valid for LGE-only and C0+LGE groups.
 - Edema route: T2-aware edema head. T2-missing cases must not be treated as reliable edema negatives; use them only for scar/anatomy or very low-weight consistency.
 - Heads: separate scar and edema logits/routes, merged into compact output label `4/5` at export. This avoids hiding scar/edema tradeoffs behind foreground mean.
 - Anatomy soft prior: myocardium probability or ROI used as input channel, attention bias, or loss regularizer. It must not be a hard deletion rule in the model path.
-- Optional alignment: CAA-Seg/SSA or U-MyoPS-style light alignment before fusion, staged after Phase 1. It should first be audited on complete C0+LGE+T2 fold0 cases before training with it.
+- Optional alignment: CAA-Seg/SSA or U-MyoPS-style light alignment before fusion, staged after Stage 1. It should first be audited on complete C0+LGE+T2 fold0 cases before training with it.
 - Loss: start with CE/Dice-compatible baseline plus scar/edema class balancing; then add Focal/Tversky and boundary/HD surrogate only after the baseline is reproducible.
 
 ## 4. Candidate Repo / Pretrained Asset Screening Matrix
@@ -114,11 +114,11 @@ Architecture:
 | nnU-Net Task114 / M&Ms weights | `Result2.pdf`; https://zenodo.org/records/4288362 | pretrained anatomy initialization | myocardium/LV/RV warm start | low | Zenodo license must verify | yes | M&Ms cardiac MRI | low/medium | no | metadata-only first; no large download without approval | license unclear, label mismatch, or large download not approved |
 | MedNeXt or equivalent | `src/README.md`; https://github.com/MIC-DKFZ/MedNeXt | backbone | stronger 3D segmentation head than old paper baselines | medium | verify repo license | maybe | none if trained CARE-only | low | no | import/config smoke only | cannot wrap into unified export/eval |
 
-Default screening rule: Phase 1 uses CARE data only and no large download. Public pretrained weights are only allowed after license, weight provenance, pretrained data source, and challenge compliance are recorded.
+Default screening rule: Stage 1 uses CARE data only and no large download. Public pretrained weights are only allowed after license, weight provenance, pretrained data source, and challenge compliance are recorded.
 
 ## 5. Experiment Plan, No Execution
 
-### Phase 0：reproducibility and metric audit
+### Stage 0：reproducibility and metric audit
 
 Purpose:
 
@@ -129,22 +129,22 @@ Future commands:
 
 ```bash
 bash scripts/evaluation/run_unified_eval_model.sh nnUNet501 --folds "0" --hd --hd95
-python scripts/evaluation/report_laneA_phase0_audit.py \
+python scripts/evaluation/report_laneA_diagnostic_anchor.py \
   --pred-dir results/predictions/nnUNet501/fold_0 \
   --gt-dir data/nnUNet/nnUNet_raw/Dataset501_CAREMyoPS/labelsTr \
   --fold-json data/benchmarks/protocol/splits_MyoPS.json \
   --fold 0 \
-  --output-dir results/diagnostics/laneA_phase0_myops_audit
+  --output-dir results/diagnostics/care_myocardium/laneA_myops/round01_protocol_anchor
 ```
 
 Estimated runtime: CPU minutes to <1h.
 
 Expected outputs:
 
-- `results/diagnostics/laneA_phase0_myops_audit/baseline_metrics_by_case.csv`
-- `results/diagnostics/laneA_phase0_myops_audit/modality_center_metrics.csv`
-- `results/diagnostics/laneA_phase0_myops_audit/component_hd_by_case.csv`
-- `results/diagnostics/laneA_phase0_myops_audit/phase0_summary.md`
+- `results/diagnostics/care_myocardium/laneA_myops/round01_protocol_anchor/baseline_metrics_by_case.csv`
+- `results/diagnostics/care_myocardium/laneA_myops/round01_protocol_anchor/modality_center_metrics.csv`
+- `results/diagnostics/care_myocardium/laneA_myops/round01_protocol_anchor/component_hd_by_case.csv`
+- `results/diagnostics/care_myocardium/laneA_myops/round01_protocol_anchor/diagnostic_anchor_summary.md`
 
 Stop criteria:
 
@@ -152,7 +152,7 @@ Stop criteria:
 - `class_4`/`class_5` label semantics or compact/raw mapping are inconsistent.
 - Prediction caches are stale or output directories do not encode model/config/fold.
 
-### Phase 1：fold0 first-party nnU-Net-compatible baseline with modality mask
+### Stage 1：fold0 first-party nnU-Net-compatible baseline with modality mask
 
 Purpose:
 
@@ -182,7 +182,7 @@ Stop criteria:
 - HD/HD95 or remote component count regresses.
 - Edema gain comes from treating no-T2 cases as clean negatives.
 
-### Phase 2：scar/edema dual-head and T2-aware edema route
+### Stage 2：scar/edema dual-head and T2-aware edema route
 
 Purpose:
 
@@ -211,7 +211,7 @@ Stop criteria:
 - Complete/T2-present subgroup improves but all-case LGE-only scar collapses.
 - GT-positive-only edema does not improve.
 
-### Phase 3：add one module only
+### Stage 3：add one module only
 
 Choose exactly one of:
 
@@ -219,7 +219,7 @@ Choose exactly one of:
 2. boundary/HD surrogate loss such as InverseForm-style or differentiable HD,
 3. light SSA/alignment preprocessing for complete cases.
 
-Recommended first Phase 3 candidate: anatomy soft prior or boundary/HD loss before heavy alignment.
+Recommended first Stage 3 candidate: anatomy soft prior or boundary/HD loss before heavy alignment.
 
 Future command example:
 
@@ -231,7 +231,7 @@ Estimated runtime: <=8h fold0.
 
 Expected outputs:
 
-- same unified prediction/metric layout as Phase 2;
+- same unified prediction/metric layout as Stage 2;
 - plus `component_delta_vs_phase2.csv` and `hd95_delta_vs_phase2.md`.
 
 Stop criteria:
@@ -240,7 +240,7 @@ Stop criteria:
 - Component count improves only by deleting scar-positive small lesions.
 - Anatomy prior hard-deletes true lesion voxels.
 
-### Phase 4：5-fold expansion
+### Stage 4：5-fold expansion
 
 Only expand after fold0 passes all gates.
 
@@ -292,7 +292,7 @@ src/care_myocardium/
   losses/pathology_losses.py
   losses/boundary_losses.py
   postprocess/component_diagnostics.py
-  reporting/myops_phase0_report.py
+  reporting/myops_diagnostic_anchor_report.py
   configs/laneA_masked_unet_v1.yaml
   configs/laneA_dualhead_t2gate_v1.yaml
 ```
@@ -300,7 +300,7 @@ src/care_myocardium/
 Add script/job entrypoints:
 
 ```text
-scripts/evaluation/report_laneA_phase0_audit.py
+scripts/evaluation/report_laneA_diagnostic_anchor.py
 scripts/evaluation/report_myops_component_hd_audit.py
 scripts/training/run_laneA_myops.py
 jobs/src/laneA_myops_masked_unet_fold0_smoke.sh
@@ -311,9 +311,9 @@ jobs/src/laneA_myops_selected_5fold.sh
 Required output tables:
 
 ```text
-results/diagnostics/laneA_phase0_myops_audit/baseline_metrics_by_case.csv
-results/diagnostics/laneA_phase0_myops_audit/modality_center_metrics.csv
-results/diagnostics/laneA_phase0_myops_audit/component_hd_by_case.csv
+results/diagnostics/care_myocardium/laneA_myops/round01_protocol_anchor/baseline_metrics_by_case.csv
+results/diagnostics/care_myocardium/laneA_myops/round01_protocol_anchor/modality_center_metrics.csv
+results/diagnostics/care_myocardium/laneA_myops/round01_protocol_anchor/component_hd_by_case.csv
 results/diagnostics/<experiment_id>/subgroup_metrics.csv
 results/diagnostics/<experiment_id>/component_hd_by_case.csv
 results/diagnostics/<experiment_id>/gate_summary.md
@@ -377,8 +377,8 @@ The `--myops-model nnUNet` placeholder above is only acceptable if the implement
 
 ## 9. Immediate Implementation Order for Next Codex Pass
 
-1. Implement Phase 0 audit script only.
-2. Generate no training jobs until Phase 0 proves baseline paths, label mapping, subgroup metadata, and HD/component diagnostics are reproducible.
-3. Implement Phase 1 first-party dataset/model skeleton under `src/care_myocardium/`.
+1. Implement Stage 0 audit script only.
+2. Generate no training jobs until Stage 0 proves baseline paths, label mapping, subgroup metadata, and HD/component diagnostics are reproducible.
+3. Implement Stage 1 first-party dataset/model skeleton under `src/care_myocardium/`.
 4. Add the fold0 smoke Slurm wrapper with `htzhulab` default header and <=8h walltime.
 5. Run fold0 only, then expand only if both scar and edema beat nnU-Net without HD/subgroup regression.

@@ -13,7 +13,7 @@ REPO_ROOT = Path(__file__).resolve().parents[2]
 os.environ.setdefault("CARE_ROOT", str(REPO_ROOT))
 os.environ.setdefault(
     "MPLCONFIGDIR",
-    str(REPO_ROOT / "results/diagnostics/phase0_phase1/laneA_myops/round9_baseline_initialized_adaptation/mpl_cache"),
+    str(REPO_ROOT / "results/diagnostics/care_myocardium/laneA_myops/round09_baseline_initialized_adaptation/mpl_cache"),
 )
 
 import numpy as np
@@ -28,7 +28,7 @@ from src.care_myocardium.nnunet.laneA_round7_trainer import MODALITY_PRESENCE_OR
 from src.care_myocardium.nnunet.laneA_round9_refiner import EdemaResidualRefiner, fuse_edema_only
 
 
-OUT_ROOT = REPO_ROOT / "results/diagnostics/phase0_phase1/laneA_myops/round9_baseline_initialized_adaptation"
+OUT_ROOT = REPO_ROOT / "results/diagnostics/care_myocardium/laneA_myops/round09_baseline_initialized_adaptation"
 BASELINE_PRED_DIR = (
     REPO_ROOT
     / "data/nnUNet/nnUNet_results/Dataset501_CAREMyoPS/"

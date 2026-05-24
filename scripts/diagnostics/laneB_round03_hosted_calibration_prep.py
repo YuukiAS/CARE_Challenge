@@ -23,7 +23,7 @@ from scipy.ndimage import generate_binary_structure, label
 
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
-OUT_ROOT = REPO_ROOT / "results/diagnostics/phase0_phase1/laneB_cine/round3_hosted_calibration"
+OUT_ROOT = REPO_ROOT / "results/diagnostics/care_myocardium/laneB_cine/round03_hosted_calibration"
 
 PATHOLOGY_DIRECT_UPLOAD = (
     REPO_ROOT

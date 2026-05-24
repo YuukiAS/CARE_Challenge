@@ -19,7 +19,7 @@ os.environ.setdefault("nnUNet_preprocessed", str(REPO_ROOT / "data/nnUNet/nnUNet
 os.environ.setdefault("nnUNet_results", str(REPO_ROOT / "data/nnUNet/nnUNet_results"))
 os.environ.setdefault(
     "MPLCONFIGDIR",
-    str(REPO_ROOT / "results/diagnostics/phase0_phase1/laneA_myops/round10_edema_refiner/mpl_cache"),
+    str(REPO_ROOT / "results/diagnostics/care_myocardium/laneA_myops/round10_edema_refiner/mpl_cache"),
 )
 if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
@@ -37,7 +37,7 @@ from src.care_myocardium.refiner.laneA_round10_model import (
 )
 
 
-OUT_ROOT = REPO_ROOT / "results/diagnostics/phase0_phase1/laneA_myops/round10_edema_refiner"
+OUT_ROOT = REPO_ROOT / "results/diagnostics/care_myocardium/laneA_myops/round10_edema_refiner"
 
 
 def crop_slices(shape: tuple[int, int, int], center: tuple[int, int, int], patch_shape: tuple[int, int, int]) -> tuple[slice, slice, slice]:

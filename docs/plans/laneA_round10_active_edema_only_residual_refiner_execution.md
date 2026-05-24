@@ -38,7 +38,7 @@ No validation zip was created. No upload was performed. No fold1-4 or 5-fold run
 All Round10 outputs are isolated under:
 
 ```text
-results/diagnostics/phase0_phase1/laneA_myops/round10_edema_refiner/
+results/diagnostics/care_myocardium/laneA_myops/round10_edema_refiner/
 ```
 
 Key outputs:
@@ -62,7 +62,7 @@ Key outputs:
 Prediction export:
 
 ```text
-results/diagnostics/phase0_phase1/laneA_myops/round10_edema_refiner/predictions/laneA_r10_edema_residual_refiner_fold0_very_short/validation/
+results/diagnostics/care_myocardium/laneA_myops/round10_edema_refiner/predictions/laneA_r10_edema_residual_refiner_fold0_very_short/validation/
 ```
 
 ## Cache Gate

@@ -49,7 +49,7 @@ DeepResearch 相关提示：Cine 方向优先考虑 motion/strain 特征（MTI-M
 
 1. **复盘官方提交**
    - 读取当前 hybrid zip 的 CineMyoPS validation prediction label counts、每例 2221 体素数、连通域数量、最大连通域占比、bbox 与 myocardium/LV bbox 的距离。
-   - 输出 `results/diagnostics/CineMyoPS_round8_validation_zip_qc.{csv,md}`。
+   - 输出 `results/diagnostics/baseline_paper_models/CineMyoPS/round08_hd_repair/CineMyoPS_round8_validation_zip_qc.{csv,md}`。
    - 明确是否存在远端离群小组件；结合 `Dice_HD.md` 判断 HD=75 的最可能原因。
 
 2. **建立 protocol fold0 的 Dice+HD 评估**

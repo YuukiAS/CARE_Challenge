@@ -26,7 +26,7 @@ sbatch jobs/CineMyoPS/sbatch_round5_debug_fixed.sh
 
 - Job: `51354672`
 - Log: `logs/CineMyoPS_r5_debug_51354672_20260517_232602.log`
-- Output: `results/diagnostics/CineMyoPS_round5/inference_semantics_fixed.json`
+- Output: `results/diagnostics/baseline_paper_models/CineMyoPS/round05_fixed_inference/inference_semantics_fixed.json`
 - BN recalibration: 32 batches, 56 BN layers, 3.23 s.
 
 Key finding:

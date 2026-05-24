@@ -90,7 +90,7 @@ Main outputs:
 
 - raw expert: `results/metrics/unified/MyoPS-Net_round8_t2aware_hd_raw/fold_0`
 - round4-scar-preserving hybrid: `results/metrics/unified/MyoPS-Net_round8_t2aware_hd_round4scar_hybrid/fold_0`
-- diagnostics: `results/diagnostics/MyoPS-Net_round8_nnunet_vs_myopsnet_hd_profile.{csv,md}`
+- diagnostics: `results/diagnostics/baseline_paper_models/MyoPS-Net/round08_hd_profile/MyoPS-Net_round8_nnunet_vs_myopsnet_hd_profile.{csv,md}`
 
 Exit gate:
 

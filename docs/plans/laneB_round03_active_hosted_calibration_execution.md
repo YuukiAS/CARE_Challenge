@@ -8,7 +8,7 @@ Plan metadata:
 - Round scope: Round03 hosted calibration preparation
 - Status: completed
 - Parent roadmap: `TODO.md`
-- Parent registry: `docs/plans/00_plan_registry_rules.md`
+- Parent registry: `docs/plans/care_myocardium_plan_registry_rules.md`
 - Controller: `docs/plans/laneB_round03plus_controller_cinemyops_hosted_topology_motion_plan.md`
 - Function: prepare validation-style QA and staging tree for the promoted `topology_lcc` Cine candidate while preserving the existing nnU-Net MyoPS branch
 - Do not: train, submit Slurm, run inference, download weights, upload validation, alter historical packages, or change the MyoPS branch source
@@ -30,12 +30,12 @@ Plan metadata:
 
 ## 已读取/核对的控制文件
 
-- `docs/plans/00_plan_registry_rules.md`
+- `docs/plans/care_myocardium_plan_registry_rules.md`
 - `docs/plans/laneB_round02_completed_cinemyops_topology_lcc_addendum.md`
 - `docs/plans/laneA_round02_completed_myops_edema_targeted_smoke_addendum.md`
 - `docs/plans/laneB_round03plus_controller_cinemyops_hosted_topology_motion_plan.md`
 - `docs/plans/laneC_round03to05_governance_portfolio_repo_screening_da_plan.md`
-- `docs/notes/baseline/phase0_phase1_execution_results.md`
+- `docs/notes/baseline/care_myocardium_diagnostics_execution_results.md`
 - `docs/notes/baseline/CineMyoPS_improvement_round10_topology_round2.md`
 - `results/experiments/CineMyoPS_iteration_log.md`
 - `README.md`
@@ -76,7 +76,7 @@ Expected validation cases:
 All Round03 outputs are under:
 
 ```text
-results/diagnostics/phase0_phase1/laneB_cine/round3_hosted_calibration/
+results/diagnostics/care_myocardium/laneB_cine/round03_hosted_calibration/
 ```
 
 Generated files:
@@ -91,7 +91,7 @@ Generated files:
 Candidate staging tree:
 
 ```text
-results/diagnostics/phase0_phase1/laneB_cine/round3_hosted_calibration/staging/nnUNet_MyoPS+Cine_topology_lcc_20260520_round03/submission_tree
+results/diagnostics/care_myocardium/laneB_cine/round03_hosted_calibration/staging/nnUNet_MyoPS+Cine_topology_lcc_20260520_round03/submission_tree
 ```
 
 Round03 initial pass did not create a zip. After user confirmation on 2026-05-20, a strict comparison zip was created from the QA-passed staging tree. It keeps the exact MyoPS branch from the user-specified previous 5-fold baseline package and changes only `CineMyoPS/`.
@@ -140,12 +140,12 @@ Aggregate Cine raw `2221` QC:
 
 Per-case QC table is in:
 
-- `results/diagnostics/phase0_phase1/laneB_cine/round3_hosted_calibration/raw_label_qc.csv`
-- `results/diagnostics/phase0_phase1/laneB_cine/round3_hosted_calibration/case_level_topology_lcc_qc.csv`
+- `results/diagnostics/care_myocardium/laneB_cine/round03_hosted_calibration/raw_label_qc.csv`
+- `results/diagnostics/care_myocardium/laneB_cine/round03_hosted_calibration/case_level_topology_lcc_qc.csv`
 
 Pathology-direct diff table is in:
 
-- `results/diagnostics/phase0_phase1/laneB_cine/round3_hosted_calibration/diff_from_pathology_direct.csv`
+- `results/diagnostics/care_myocardium/laneB_cine/round03_hosted_calibration/diff_from_pathology_direct.csv`
 
 ## Candidate 与 official pathology_direct 的差异
 

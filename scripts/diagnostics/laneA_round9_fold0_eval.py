@@ -15,7 +15,7 @@ if str(REPO_ROOT) not in sys.path:
 from scripts.diagnostics import laneA_round8_fold0_eval as r8_eval
 
 
-OUT_ROOT = REPO_ROOT / "results/diagnostics/phase0_phase1/laneA_myops/round9_baseline_initialized_adaptation"
+OUT_ROOT = REPO_ROOT / "results/diagnostics/care_myocardium/laneA_myops/round09_baseline_initialized_adaptation"
 CANDIDATE_PRED_DIR = (
     REPO_ROOT
     / "data/nnUNet/nnUNet_results/Dataset501_CAREMyoPS/"

@@ -30,12 +30,12 @@ os.environ.setdefault("nnUNet_preprocessed", str(REPO_ROOT / "data/nnUNet/nnUNet
 os.environ.setdefault("nnUNet_results", str(REPO_ROOT / "data/nnUNet/nnUNet_results"))
 os.environ.setdefault(
     "MPLCONFIGDIR",
-    str(REPO_ROOT / "results/diagnostics/phase0_phase1/laneA_myops/round15_deepresearch_portfolio/mpl_cache"),
+    str(REPO_ROOT / "results/diagnostics/care_myocardium/laneA_myops/round15_deepresearch_portfolio/mpl_cache"),
 )
 if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
 
-from scripts.diagnostics import laneA_round4_fold0_short_train_eval as eval4
+from scripts.diagnostics import laneA_round04_fold0_short_train_eval as eval4
 from src.care_myocardium.calibrator.laneA_round14_model import VoxelFeatureCalibrator
 from src.care_myocardium.refiner.laneA_round10_dataset import (
     RefinerCase,
@@ -45,7 +45,7 @@ from src.care_myocardium.refiner.laneA_round10_dataset import (
 )
 
 
-OUT_ROOT = REPO_ROOT / "results/diagnostics/phase0_phase1/laneA_myops/round15_deepresearch_portfolio"
+OUT_ROOT = REPO_ROOT / "results/diagnostics/care_myocardium/laneA_myops/round15_deepresearch_portfolio"
 EDEMA = 4
 SCAR = 5
 SEED = 15015

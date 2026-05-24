@@ -114,7 +114,7 @@ Domain adaptation 有用，但不能作为独立主线。它最适合解决 cent
 
 状态：已完成。
 
-目标是建立 nnU-Net501 fold0 protocol anchor、unified evaluator、modality/center stratification、failure registry、Cine topology diagnostics。结果显示 MyoPS edema 是主要弱点，Cine HD/component 是主要可修点。这个阶段的产物包括 `results/diagnostics/phase0_phase1/` 下的 audit 表格、failure registry 和 cross-lane decision table。
+目标是建立 nnU-Net501 fold0 protocol anchor、unified evaluator、modality/center stratification、failure registry、Cine topology diagnostics。结果显示 MyoPS edema 是主要弱点，Cine HD/component 是主要可修点。这个阶段的产物包括 `results/diagnostics/care_myocardium/` 下的 audit 表格、failure registry 和 cross-lane decision table。
 
 ### Round2, targeted diagnostic smoke
 
@@ -167,4 +167,4 @@ Lane A 的 repo 槽位包括 loss/HD/small-lesion、missing-modality conditionin
 输出建议放在：
 
 ```text
-results/diagnostics/phase0_phase1/laneB_cine/round3_packaging_qc/
+results/diagnostics/care_myocardium/laneB_cine/round03_packaging_qc/

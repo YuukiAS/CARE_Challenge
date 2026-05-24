@@ -43,8 +43,8 @@ results/submissions/care_myocardium_validation/upload_ready/nnUNet_MyoPS+CineMyo
 
 Outputs:
 
-- `results/diagnostics/CineMyoPS_round8_validation_zip_qc.csv`
-- `results/diagnostics/CineMyoPS_round8_validation_zip_qc.md`
+- `results/diagnostics/baseline_paper_models/CineMyoPS/round08_hd_repair/CineMyoPS_round8_validation_zip_qc.csv`
+- `results/diagnostics/baseline_paper_models/CineMyoPS/round08_hd_repair/CineMyoPS_round8_validation_zip_qc.md`
 
 Summary:
 
@@ -136,8 +136,8 @@ Zip QA:
 
 Candidate validation QA:
 
-- `results/diagnostics/CineMyoPS_round8_validation_lcc_candidate_zip_qc.csv`
-- `results/diagnostics/CineMyoPS_round8_validation_lcc_candidate_zip_qc.md`
+- `results/diagnostics/baseline_paper_models/CineMyoPS/round08_hd_repair/CineMyoPS_round8_validation_lcc_candidate_zip_qc.csv`
+- `results/diagnostics/baseline_paper_models/CineMyoPS/round08_hd_repair/CineMyoPS_round8_validation_lcc_candidate_zip_qc.md`
 
 After largest-component repair:
 

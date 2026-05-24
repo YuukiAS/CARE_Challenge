@@ -17,7 +17,7 @@ os.environ.setdefault("nnUNet_preprocessed", str(REPO_ROOT / "data/nnUNet/nnUNet
 os.environ.setdefault("nnUNet_results", str(REPO_ROOT / "data/nnUNet/nnUNet_results"))
 os.environ.setdefault(
     "MPLCONFIGDIR",
-    str(REPO_ROOT / "results/diagnostics/phase0_phase1/laneA_myops/round9_baseline_initialized_adaptation/mpl_cache"),
+    str(REPO_ROOT / "results/diagnostics/care_myocardium/laneA_myops/round09_baseline_initialized_adaptation/mpl_cache"),
 )
 
 import numpy as np
@@ -35,14 +35,14 @@ from src.care_myocardium.nnunet.laneA_round9_checkpoint_loader import load_adapt
 from src.care_myocardium.nnunet.laneA_round9_trainer import nnUNetTrainerLaneABaselineInitializedEdemaAdapt
 
 
-OUT_ROOT = REPO_ROOT / "results/diagnostics/phase0_phase1/laneA_myops/round9_baseline_initialized_adaptation"
+OUT_ROOT = REPO_ROOT / "results/diagnostics/care_myocardium/laneA_myops/round09_baseline_initialized_adaptation"
 CHECKPOINT = (
     REPO_ROOT
     / "data/nnUNet/nnUNet_results/Dataset501_CAREMyoPS/"
     / "nnUNetTrainer_500epochs__nnUNetPlans__3d_fullres/fold_0/checkpoint_best.pth"
 )
 PREPROCESSED_3D = REPO_ROOT / "data/nnUNet/nnUNet_preprocessed/Dataset501_CAREMyoPS/nnUNetPlans_3d_fullres"
-CASE_METRICS = REPO_ROOT / "results/diagnostics/phase0_phase1/laneA_myops/myops_modality_center_case_metrics.csv"
+CASE_METRICS = REPO_ROOT / "results/diagnostics/care_myocardium/laneA_myops/myops_modality_center_case_metrics.csv"
 
 
 def write_csv(path: Path, rows: list[dict[str, object]]) -> None:

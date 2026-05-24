@@ -1,12 +1,12 @@
-# Phase0/Phase1 execution results
+# CARE Myocardium diagnostics execution results
 
 Date: 2026-05-20
 
 ## Scope
 
-本轮按 `docs/plans/next_phase0_phase1_execution_plan.md` 执行诊断治理任务：不训练新模型，不提交 Slurm，不创建 validation zip，不下载外部权重。所有生成表格都写入：
+本轮执行 CARE Myocardium 初始诊断治理任务：不训练新模型，不提交 Slurm，不创建 validation zip，不下载外部权重。所有生成表格都写入：
 
-- `results/diagnostics/phase0_phase1/`
+- `results/diagnostics/care_myocardium/`
 
 注意：`results/diagnostics/` 当前被 `.gitignore` 忽略，因此本文件作为可跟踪摘要保留关键结论和产物路径。
 
@@ -14,28 +14,28 @@ Date: 2026-05-20
 
 | lane | output |
 | --- | --- |
-| Lane A MyoPS | `results/diagnostics/phase0_phase1/laneA_myops/myops_baseline_protocol_audit.csv` |
-| Lane A MyoPS | `results/diagnostics/phase0_phase1/laneA_myops/myops_baseline_protocol_audit.md` |
-| Lane A MyoPS | `results/diagnostics/phase0_phase1/laneA_myops/myops_modality_center_metrics.csv` |
-| Lane A MyoPS | `results/diagnostics/phase0_phase1/laneA_myops/myops_modality_center_metrics.md` |
-| Lane B CineMyoPS | `results/diagnostics/phase0_phase1/laneB_cine/cinemyops_postprocess_before_after.csv` |
-| Lane B CineMyoPS | `results/diagnostics/phase0_phase1/laneB_cine/cinemyops_postprocess_before_after.md` |
-| Lane C normalization/DA | `results/diagnostics/phase0_phase1/laneC_da/normalization_intensity_by_center_modality.csv` |
-| Lane C normalization/DA | `results/diagnostics/phase0_phase1/laneC_da/normalization_error_correlation.csv` |
-| Lane C normalization/DA | `results/diagnostics/phase0_phase1/laneC_da/normalization_audit.md` |
-| Failure registry | `results/diagnostics/phase0_phase1/failure_registry/` |
-| Cross-lane | `results/diagnostics/phase0_phase1/next_round_decision_table.md` |
+| Lane A MyoPS | `results/diagnostics/care_myocardium/laneA_myops/myops_baseline_protocol_audit.csv` |
+| Lane A MyoPS | `results/diagnostics/care_myocardium/laneA_myops/myops_baseline_protocol_audit.md` |
+| Lane A MyoPS | `results/diagnostics/care_myocardium/laneA_myops/myops_modality_center_metrics.csv` |
+| Lane A MyoPS | `results/diagnostics/care_myocardium/laneA_myops/myops_modality_center_metrics.md` |
+| Lane B CineMyoPS | `results/diagnostics/care_myocardium/laneB_cine/cinemyops_postprocess_before_after.csv` |
+| Lane B CineMyoPS | `results/diagnostics/care_myocardium/laneB_cine/cinemyops_postprocess_before_after.md` |
+| Lane C normalization/DA | `results/diagnostics/care_myocardium/laneC_da/normalization_intensity_by_center_modality.csv` |
+| Lane C normalization/DA | `results/diagnostics/care_myocardium/laneC_da/normalization_error_correlation.csv` |
+| Lane C normalization/DA | `results/diagnostics/care_myocardium/laneC_da/normalization_audit.md` |
+| Failure registry | `results/diagnostics/care_myocardium/failure_registry/` |
+| Cross-lane | `results/diagnostics/care_myocardium/next_round_decision_table.md` |
 
 The reproducible builder is:
 
 ```bash
-./envs/env_CARE/bin/python scripts/diagnostics/build_phase0_phase1_diagnostics.py
+./envs/env_CARE/bin/python scripts/diagnostics/build_care_myocardium_diagnostics.py
 ```
 
 Syntax check:
 
 ```bash
-./envs/env_CARE/bin/python -m py_compile scripts/diagnostics/build_phase0_phase1_diagnostics.py
+./envs/env_CARE/bin/python -m py_compile scripts/diagnostics/build_care_myocardium_diagnostics.py
 ```
 
 ## Key Findings
@@ -97,7 +97,7 @@ The strongest immediate examples are LGE-only `Case1029` and `Case1045`, both wi
 
 ## Stop Rules Preserved
 
-- Do not train or expand folds until candidate-specific fold0 smoke outputs are isolated under `results/diagnostics/phase0_phase1/`.
+- Do not train or expand folds until candidate-specific fold0 smoke outputs are isolated under `results/diagnostics/care_myocardium/`.
 - Do not report aggregate-only success; keep `myops_scar`, `myops_edema`, and `myocardium_cinemyops` separated.
 - Do not alter label semantics, spacing handling, connected-component rules, or evaluator implementation without explicitly recording the change.
 - Do not create validation zip or use validation pseudo-labels in this phase.

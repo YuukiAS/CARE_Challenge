@@ -72,7 +72,7 @@ Round5 因此进入 controlled high-upside mechanism integration：先用 CARE-o
 所有 Round5 第一批输出写入：
 
 ```text
-results/diagnostics/phase0_phase1/laneA_myops/round5_mechanism_integration_audit/
+results/diagnostics/care_myocardium/laneA_myops/round05_mechanism_integration_audit/
 ```
 
 ## 4. Route A: CAA-Seg / SSA-style Multi-sequence Alignment Audit
@@ -154,7 +154,7 @@ Go/watch/stop rule：
 
 1. 创建本正式 plan：
    - `docs/plans/laneA_round05_active_controlled_mechanism_integration_execution.md`
-   - copy summary: `results/diagnostics/phase0_phase1/laneA_myops/round5_mechanism_integration_audit/round5_laneA_plan.md`
+   - copy summary: `results/diagnostics/care_myocardium/laneA_myops/round05_mechanism_integration_audit/round5_laneA_plan.md`
 2. 运行 `alignment_feasibility_audit`。
 3. 运行 `anatomy_soft_prior_feasibility`。
 4. 运行 `boundary_distance_failure_audit`。
@@ -172,21 +172,21 @@ Go/watch/stop rule：
 ## 8. Required Outputs
 
 ```text
-results/diagnostics/phase0_phase1/laneA_myops/round5_mechanism_integration_audit/round5_laneA_plan.md
-results/diagnostics/phase0_phase1/laneA_myops/round5_mechanism_integration_audit/alignment_feasibility_audit.csv
-results/diagnostics/phase0_phase1/laneA_myops/round5_mechanism_integration_audit/alignment_feasibility_audit.md
-results/diagnostics/phase0_phase1/laneA_myops/round5_mechanism_integration_audit/anatomy_soft_prior_feasibility.csv
-results/diagnostics/phase0_phase1/laneA_myops/round5_mechanism_integration_audit/anatomy_soft_prior_feasibility.md
-results/diagnostics/phase0_phase1/laneA_myops/round5_mechanism_integration_audit/boundary_distance_failure_audit.csv
-results/diagnostics/phase0_phase1/laneA_myops/round5_mechanism_integration_audit/boundary_distance_failure_audit.md
-results/diagnostics/phase0_phase1/laneA_myops/round5_mechanism_integration_audit/round5_laneA_decision_table.md
-results/diagnostics/phase0_phase1/laneA_myops/round5_mechanism_integration_audit/round5_next_implementation_prompt.md
+results/diagnostics/care_myocardium/laneA_myops/round05_mechanism_integration_audit/round5_laneA_plan.md
+results/diagnostics/care_myocardium/laneA_myops/round05_mechanism_integration_audit/alignment_feasibility_audit.csv
+results/diagnostics/care_myocardium/laneA_myops/round05_mechanism_integration_audit/alignment_feasibility_audit.md
+results/diagnostics/care_myocardium/laneA_myops/round05_mechanism_integration_audit/anatomy_soft_prior_feasibility.csv
+results/diagnostics/care_myocardium/laneA_myops/round05_mechanism_integration_audit/anatomy_soft_prior_feasibility.md
+results/diagnostics/care_myocardium/laneA_myops/round05_mechanism_integration_audit/boundary_distance_failure_audit.csv
+results/diagnostics/care_myocardium/laneA_myops/round05_mechanism_integration_audit/boundary_distance_failure_audit.md
+results/diagnostics/care_myocardium/laneA_myops/round05_mechanism_integration_audit/round5_laneA_decision_table.md
+results/diagnostics/care_myocardium/laneA_myops/round05_mechanism_integration_audit/round5_next_implementation_prompt.md
 ```
 
 Optional, only if cheap:
 
 ```text
-results/diagnostics/phase0_phase1/laneA_myops/round5_mechanism_integration_audit/failure_overlays/
+results/diagnostics/care_myocardium/laneA_myops/round05_mechanism_integration_audit/failure_overlays/
 ```
 
 ## 9. Promotion Gate
@@ -207,7 +207,7 @@ Status after first audit batch: completed first low-risk audit batch.
 Executed:
 
 - Created formal plan: `docs/plans/laneA_round05_active_controlled_mechanism_integration_execution.md`.
-- Copied plan summary to `results/diagnostics/phase0_phase1/laneA_myops/round5_mechanism_integration_audit/round5_laneA_plan.md`.
+- Copied plan summary to `results/diagnostics/care_myocardium/laneA_myops/round05_mechanism_integration_audit/round5_laneA_plan.md`.
 - Added and ran diagnostic-only script: `scripts/diagnostics/laneA_round5_mechanism_audit.py`.
 - Generated:
   - `alignment_feasibility_audit.csv` / `.md`

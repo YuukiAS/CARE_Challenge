@@ -20,7 +20,7 @@ if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
 
 
-OUT_ROOT = REPO_ROOT / "results/diagnostics/phase0_phase1/laneA_myops/round15_deepresearch_portfolio"
+OUT_ROOT = REPO_ROOT / "results/diagnostics/care_myocardium/laneA_myops/round15_deepresearch_portfolio"
 CANDIDATES = [
     "R15_A_intensity_prior_feature_head_fold0_vs",
     "R15_B_anatomy_pathology_cascade_fold0_vs",

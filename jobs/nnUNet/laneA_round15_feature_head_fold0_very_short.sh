@@ -25,7 +25,7 @@ exec > >(tee -a "${LOG_FILE}") 2>&1
 export nnUNet_raw="${nnUNet_raw:-${CARE_ROOT}/data/nnUNet/nnUNet_raw}"
 export nnUNet_preprocessed="${nnUNet_preprocessed:-${CARE_ROOT}/data/nnUNet/nnUNet_preprocessed}"
 export nnUNet_results="${nnUNet_results:-${CARE_ROOT}/data/nnUNet/nnUNet_results}"
-export MPLCONFIGDIR="${MPLCONFIGDIR:-${CARE_ROOT}/results/diagnostics/phase0_phase1/laneA_myops/round15_deepresearch_portfolio/mpl_cache}"
+export MPLCONFIGDIR="${MPLCONFIGDIR:-${CARE_ROOT}/results/diagnostics/care_myocardium/laneA_myops/round15_deepresearch_portfolio/mpl_cache}"
 
 echo "[$(date)] Lane A Round15 feature-head fold0 very-short"
 echo "CARE_ROOT=${CARE_ROOT}"

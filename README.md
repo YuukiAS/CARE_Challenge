@@ -131,7 +131,7 @@ Stopped or downgraded Lane A routes:
 The detailed Round11 failure-case summary has been generated under:
 
 ```text
-results/diagnostics/phase0_phase1/laneA_myops/round11_component_safe_refiner/failure_case_summary/
+results/diagnostics/care_myocardium/laneA_myops/round11_component_safe_refiner/failure_case_summary/
 ```
 
 Key case findings:
@@ -175,11 +175,11 @@ Future mechanisms must enter by slot, not by wholesale repo reproduction:
 | Lane A Round11 refiner model | `src/care_myocardium/refiner/laneA_round11_model.py` |
 | Lane A Round11 diagnostic script | `scripts/diagnostics/laneA_round11_component_safe_refiner.py` |
 | Lane A Round11 train/smoke entrypoint | `scripts/training/run_laneA_round11_bidirectional_refiner_train.py` |
-| Lane A Round10 outputs | `results/diagnostics/phase0_phase1/laneA_myops/round10_edema_refiner/` |
-| Lane A Round11 outputs | `results/diagnostics/phase0_phase1/laneA_myops/round11_component_safe_refiner/` |
-| Lane A Round11 failure summary | `results/diagnostics/phase0_phase1/laneA_myops/round11_component_safe_refiner/failure_case_summary/` |
+| Lane A Round10 outputs | `results/diagnostics/care_myocardium/laneA_myops/round10_edema_refiner/` |
+| Lane A Round11 outputs | `results/diagnostics/care_myocardium/laneA_myops/round11_component_safe_refiner/` |
+| Lane A Round11 failure summary | `results/diagnostics/care_myocardium/laneA_myops/round11_component_safe_refiner/failure_case_summary/` |
 | Lane B Round3 hosted calibration prep | `scripts/diagnostics/laneB_round03_hosted_calibration_prep.py` |
-| Lane B Round3 hosted calibration outputs | `results/diagnostics/phase0_phase1/laneB_cine/round3_hosted_calibration/` |
+| Lane B Round3 hosted calibration outputs | `results/diagnostics/care_myocardium/laneB_cine/round03_hosted_calibration/` |
 | Current hosted calibration zip | `/overflow/htzhu/CARE/results/submissions/care_myocardium_validation/upload_ready/20260520_113408__nnUNet5fold_MyoPS+Cine_topology_lcc_round03_RECOMMENDED/CARE-Myocardium-OrganAgent.zip` |
 | Submission package registry | `results/submissions/care_myocardium_validation/upload_ready/README.md` |
 | MyoPS-Net stop note | `docs/notes/baseline/MyoPS-Net_improvement_round8.md` |

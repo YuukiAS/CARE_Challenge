@@ -356,7 +356,7 @@ def main() -> None:
     parser.add_argument("--fold-json", type=Path, default=REPO_ROOT / "data/benchmarks/protocol/splits_CineMyoPS.json")
     parser.add_argument("--fold", type=int, default=0)
     parser.add_argument("--cases", default=None, help="Comma-separated case ids; overrides fold-json.")
-    parser.add_argument("--output-prefix", type=Path, default=REPO_ROOT / "results/diagnostics/CineMyoPS_phase0_component_hd")
+    parser.add_argument("--output-prefix", type=Path, default=REPO_ROOT / "results/diagnostics/care_myocardium/laneB_cine/round02_topology_lcc/cinemyops_component_hd")
     args = parser.parse_args()
 
     variants = parse_variant_dirs(args.pred_dirs)

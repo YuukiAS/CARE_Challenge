@@ -51,7 +51,7 @@ CARE-first T2/LGE intensity prior + soft anatomy-lesion consistency
 所有 Round13 输出必须放在：
 
 ```text
-results/diagnostics/phase0_phase1/laneA_myops/round13_t2_lge_intensity_anatomy_consistency/
+results/diagnostics/care_myocardium/laneA_myops/round13_t2_lge_intensity_anatomy_consistency/
 ```
 
 建议输出文件：
@@ -90,7 +90,7 @@ results/diagnostics/phase0_phase1/laneA_myops/round13_t2_lge_intensity_anatomy_c
 若生成 overlays 或 feature visualizations，放在：
 
 ```text
-results/diagnostics/phase0_phase1/laneA_myops/round13_t2_lge_intensity_anatomy_consistency/overlays/
+results/diagnostics/care_myocardium/laneA_myops/round13_t2_lge_intensity_anatomy_consistency/overlays/
 ```
 
 ## 3. 主路线 A: `care_first_t2_lge_intensity_prior_feature_smoke`
@@ -657,7 +657,7 @@ docs/plans/laneA_round13_next_t2_lge_intensity_prior_anatomy_consistency_executi
 如果 feature-only gate 有正信号，再接入 feature-augmented edema-only refiner/calibrator substrate，先做 import/py_compile、unit/gradient、tiny-overfit；通过后才允许 fold0 very-short，进一步通过后才允许 fold0 short。禁止 whole nnU-Net training、禁止 class_5 scar 修改、禁止 no-T2 edema FP 增加、禁止 fold1-4/5-fold、禁止 validation zip/upload。输出全部 metrics、overlays、case-level failure flags、boundary/HD watch 和 Round14 external readiness matrix。
 
 所有输出放在：
-results/diagnostics/phase0_phase1/laneA_myops/round13_t2_lge_intensity_anatomy_consistency/
+results/diagnostics/care_myocardium/laneA_myops/round13_t2_lge_intensity_anatomy_consistency/
 
 资源充足，可以尽可能推进多个阶段；但每个阶段必须 gate，失败即停，不得自动跳到更大训练或 submission。
 ```

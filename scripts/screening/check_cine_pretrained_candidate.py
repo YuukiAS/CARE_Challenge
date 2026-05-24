@@ -214,7 +214,7 @@ def write_markdown(rows: list[dict[str, object]], path: Path) -> None:
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--candidate", default="all", help="Candidate name or 'all'.")
-    parser.add_argument("--output-dir", type=Path, default=REPO_ROOT / "results/diagnostics/cine_pretrained_screening")
+    parser.add_argument("--output-dir", type=Path, default=REPO_ROOT / "results/diagnostics/care_myocardium/laneB_cine/round03_pretrained_screening_metadata/cine_pretrained_screening")
     args = parser.parse_args()
 
     names = sorted(CANDIDATES) if args.candidate == "all" else [args.candidate]

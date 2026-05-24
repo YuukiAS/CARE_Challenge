@@ -23,7 +23,7 @@ export CARE_ROOT
 export nnUNet_raw="${CARE_ROOT}/data/nnUNet/nnUNet_raw"
 export nnUNet_preprocessed="${CARE_ROOT}/data/nnUNet/nnUNet_preprocessed"
 export nnUNet_results="${CARE_ROOT}/data/nnUNet/nnUNet_results"
-export MPLCONFIGDIR="${CARE_ROOT}/results/diagnostics/phase0_phase1/laneA_myops/round11_component_safe_refiner/mpl_cache"
+export MPLCONFIGDIR="${CARE_ROOT}/results/diagnostics/care_myocardium/laneA_myops/round11_component_safe_refiner/mpl_cache"
 
 "${CARE_ROOT}/envs/env_CARE/bin/python" scripts/training/run_laneA_round11_bidirectional_refiner_train.py \
   --mode train \

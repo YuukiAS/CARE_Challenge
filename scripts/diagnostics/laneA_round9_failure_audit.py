@@ -22,17 +22,17 @@ os.environ.setdefault("nnUNet_preprocessed", str(REPO_ROOT / "data/nnUNet/nnUNet
 os.environ.setdefault("nnUNet_results", str(REPO_ROOT / "data/nnUNet/nnUNet_results"))
 os.environ.setdefault(
     "MPLCONFIGDIR",
-    str(REPO_ROOT / "results/diagnostics/phase0_phase1/laneA_myops/round9_baseline_initialized_adaptation/mpl_cache"),
+    str(REPO_ROOT / "results/diagnostics/care_myocardium/laneA_myops/round09_baseline_initialized_adaptation/mpl_cache"),
 )
 
 if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
 
-from scripts.diagnostics import laneA_round4_fold0_short_train_eval as eval_base
+from scripts.diagnostics import laneA_round04_fold0_short_train_eval as eval_base
 
 
-OUT_ROOT = REPO_ROOT / "results/diagnostics/phase0_phase1/laneA_myops/round9_baseline_initialized_adaptation"
-ROUND8_ROOT = REPO_ROOT / "results/diagnostics/phase0_phase1/laneA_myops/round8_t2_edema_expert"
+OUT_ROOT = REPO_ROOT / "results/diagnostics/care_myocardium/laneA_myops/round09_baseline_initialized_adaptation"
+ROUND8_ROOT = REPO_ROOT / "results/diagnostics/care_myocardium/laneA_myops/round08_t2_edema_expert"
 ROUND8_PRED_DIR = (
     REPO_ROOT
     / "data/nnUNet/nnUNet_results/Dataset501_CAREMyoPS/"
@@ -173,7 +173,7 @@ def md_table(rows: list[dict[str, object]], columns: list[str]) -> str:
 def main() -> None:
     OUT_ROOT.mkdir(parents=True, exist_ok=True)
     baseline_rows = pred_audit_rows(BASELINE_PRED_DIR, "baseline_nnunet501_fold0")
-    round8_rows = pred_audit_rows(ROUND8_PRED_DIR, "candidate_laneA_round8_t2_edema_expert")
+    round8_rows = pred_audit_rows(ROUND8_PRED_DIR, "candidate_laneA_round08_t2_edema_expert")
     all_rows = baseline_rows + round8_rows
     write_csv(OUT_ROOT / "round9_failure_audit_case_table.csv", all_rows)
 
@@ -182,7 +182,7 @@ def main() -> None:
     fold0_cases = read_json(SPLITS_JSON)["folds"][0]["val"]
     summary_rows = [
         {"model": "baseline_nnunet501_fold0", **aggregate_basic(baseline_rows)},
-        {"model": "candidate_laneA_round8_t2_edema_expert", **aggregate_basic(round8_rows)},
+        {"model": "candidate_laneA_round08_t2_edema_expert", **aggregate_basic(round8_rows)},
     ]
     baseline_geom_bad = {
         str(r["case_id"]) for r in baseline_rows if r.get("status") == "ok" and not r.get("geometry_matches_gt")
@@ -268,7 +268,7 @@ def main() -> None:
         "# Lane A Round9 Goal Execution Readme",
         "",
         "- Plan: `docs/plans/laneA_round09_next_baseline_initialized_edema_adaptation_execution.md`",
-        "- Output root: `results/diagnostics/phase0_phase1/laneA_myops/round9_baseline_initialized_adaptation/`",
+        "- Output root: `results/diagnostics/care_myocardium/laneA_myops/round09_baseline_initialized_adaptation/`",
         "- Current stage: `round9_failure_audit_and_baseline_reproducibility_gate`",
         f"- Current decision: `{decision}`",
         "- No training, Slurm, validation zip, upload, external repo, or weight download has been performed by this audit.",

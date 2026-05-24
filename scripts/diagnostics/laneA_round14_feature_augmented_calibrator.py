@@ -33,22 +33,22 @@ os.environ.setdefault("nnUNet_preprocessed", str(REPO_ROOT / "data/nnUNet/nnUNet
 os.environ.setdefault("nnUNet_results", str(REPO_ROOT / "data/nnUNet/nnUNet_results"))
 os.environ.setdefault(
     "MPLCONFIGDIR",
-    str(REPO_ROOT / "results/diagnostics/phase0_phase1/laneA_myops/round14_feature_augmented_calibrator/mpl_cache"),
+    str(REPO_ROOT / "results/diagnostics/care_myocardium/laneA_myops/round14_feature_augmented_calibrator/mpl_cache"),
 )
 if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
 
-from scripts.diagnostics import laneA_round4_fold0_short_train_eval as base_eval
+from scripts.diagnostics import laneA_round04_fold0_short_train_eval as base_eval
 from src.care_myocardium.calibrator.laneA_round14_model import ComponentLogisticCalibrator, VoxelFeatureCalibrator
 from src.care_myocardium.refiner.laneA_round10_dataset import RefinerCase, build_cases, load_case_features, write_csv
 
 
-OUT_ROOT = REPO_ROOT / "results/diagnostics/phase0_phase1/laneA_myops/round14_feature_augmented_calibrator"
+OUT_ROOT = REPO_ROOT / "results/diagnostics/care_myocardium/laneA_myops/round14_feature_augmented_calibrator"
 OVERLAY_ROOT = OUT_ROOT / "overlays"
 PLAN_PATH = REPO_ROOT / "docs/plans/laneA_round14_next_feature_augmented_component_aware_edema_calibrator_execution.md"
-ROUND13_ROOT = REPO_ROOT / "results/diagnostics/phase0_phase1/laneA_myops/round13_t2_lge_intensity_anatomy_consistency"
-ROUND12_ROOT = REPO_ROOT / "results/diagnostics/phase0_phase1/laneA_myops/round12_refiner_salvage_high_upside_transition"
-ROUND11_ROOT = REPO_ROOT / "results/diagnostics/phase0_phase1/laneA_myops/round11_component_safe_refiner"
+ROUND13_ROOT = REPO_ROOT / "results/diagnostics/care_myocardium/laneA_myops/round13_t2_lge_intensity_anatomy_consistency"
+ROUND12_ROOT = REPO_ROOT / "results/diagnostics/care_myocardium/laneA_myops/round12_refiner_salvage_high_upside_transition"
+ROUND11_ROOT = REPO_ROOT / "results/diagnostics/care_myocardium/laneA_myops/round11_component_safe_refiner"
 ROUND11_PRED_DIR = ROUND11_ROOT / "predictions/laneA_r11_bidirectional_edema_refiner_fold0_very_short/validation"
 
 EDEMA = 4

@@ -33,7 +33,7 @@ os.environ.setdefault("CARE_ROOT", str(REPO_ROOT))
 os.environ.setdefault("nnUNet_raw", str(REPO_ROOT / "data/nnUNet/nnUNet_raw"))
 os.environ.setdefault("nnUNet_preprocessed", str(REPO_ROOT / "data/nnUNet/nnUNet_preprocessed"))
 os.environ.setdefault("nnUNet_results", str(REPO_ROOT / "data/nnUNet/nnUNet_results"))
-os.environ.setdefault("MPLCONFIGDIR", str(OUT_ROOT / "mpl_cache") if "OUT_ROOT" in globals() else str(REPO_ROOT / "results/diagnostics/phase0_phase1/laneA_myops/round15_deepresearch_portfolio/mpl_cache"))
+os.environ.setdefault("MPLCONFIGDIR", str(OUT_ROOT / "mpl_cache") if "OUT_ROOT" in globals() else str(REPO_ROOT / "results/diagnostics/care_myocardium/laneA_myops/round15_deepresearch_portfolio/mpl_cache"))
 if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
 
@@ -41,10 +41,10 @@ from src.care_myocardium.calibrator.laneA_round14_model import VoxelFeatureCalib
 from src.care_myocardium.refiner.laneA_round10_dataset import RefinerCase, build_cases, read_csv, write_csv
 
 
-OUT_ROOT = REPO_ROOT / "results/diagnostics/phase0_phase1/laneA_myops/round15_deepresearch_portfolio"
+OUT_ROOT = REPO_ROOT / "results/diagnostics/care_myocardium/laneA_myops/round15_deepresearch_portfolio"
 PLAN_PATH = REPO_ROOT / "docs/plans/laneA_round15_next_deepresearch_portfolio_batch_execution.md"
-ROUND13_ROOT = REPO_ROOT / "results/diagnostics/phase0_phase1/laneA_myops/round13_t2_lge_intensity_anatomy_consistency"
-ROUND14_ROOT = REPO_ROOT / "results/diagnostics/phase0_phase1/laneA_myops/round14_feature_augmented_calibrator"
+ROUND13_ROOT = REPO_ROOT / "results/diagnostics/care_myocardium/laneA_myops/round13_t2_lge_intensity_anatomy_consistency"
+ROUND14_ROOT = REPO_ROOT / "results/diagnostics/care_myocardium/laneA_myops/round14_feature_augmented_calibrator"
 BASELINE_ROOT = (
     REPO_ROOT
     / "data/nnUNet/nnUNet_results/Dataset501_CAREMyoPS/"
@@ -98,7 +98,7 @@ def safe_float(value: object, default: float = math.nan) -> float:
 
 
 def candidates() -> list[Candidate]:
-    base = "results/diagnostics/phase0_phase1/laneA_myops/round15_deepresearch_portfolio"
+    base = "results/diagnostics/care_myocardium/laneA_myops/round15_deepresearch_portfolio"
     return [
         Candidate(
             "R15_A_intensity_prior_feature_head_fold0_vs",

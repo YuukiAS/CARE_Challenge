@@ -20,10 +20,10 @@ os.environ.setdefault("CARE_ROOT", str(REPO_ROOT))
 if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
 
-from scripts.diagnostics import laneA_round4_fold0_short_train_eval as base_eval
+from scripts.diagnostics import laneA_round04_fold0_short_train_eval as base_eval
 
 
-OUT_ROOT = REPO_ROOT / "results/diagnostics/phase0_phase1/laneA_myops/round10_edema_refiner"
+OUT_ROOT = REPO_ROOT / "results/diagnostics/care_myocardium/laneA_myops/round10_edema_refiner"
 BASELINE_MODEL = "baseline_nnunet501_fold0"
 CANDIDATE_MODEL = "candidate_laneA_round10_edema_refiner"
 SUBSETS = [

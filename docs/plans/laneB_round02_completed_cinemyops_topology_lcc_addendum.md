@@ -18,11 +18,11 @@ Round2 objective: turn the existing LCC repair from a one-off trick into a forma
 
 All future Round2 outputs must live under:
 
-- `results/diagnostics/phase0_phase1/laneB_cine/round2/`
+- `results/diagnostics/care_myocardium/laneB_cine/round02_topology_lcc/`
 
 ## Current Evidence
 
-Phase0/1 before/after diagnostics show:
+CARE diagnostics before/after diagnostics show:
 
 | variant | cases | class_3 Dice | class_3 HD95 | scar components |
 | --- | ---: | ---: | ---: | ---: |
@@ -171,27 +171,27 @@ This QC estimates hosted-metric risk before any packaging decision.
    - Formalize current LCC as `topology_lcc`.
    - Write before/after metrics, raw label counts, components, largest fraction, removed voxels/components, bbox distance, and fallback flag.
    - Output:
-     - `results/diagnostics/phase0_phase1/laneB_cine/round2/topology_lcc_before_after.csv`
-     - `results/diagnostics/phase0_phase1/laneB_cine/round2/topology_lcc_summary.md`
+     - `results/diagnostics/care_myocardium/laneB_cine/round02_topology_lcc/topology_lcc_before_after.csv`
+     - `results/diagnostics/care_myocardium/laneB_cine/round02_topology_lcc/topology_lcc_summary.md`
    - Gate: class_3 HD/HD95 and component count improve; class_3 Dice does not drop; no empty pathology fallback increase.
 
 2. `component_anatomy_bbox_guard_grid`
    - Compare small-component, myocardium-overlap, bbox-distance, volume, and combined guards on the same fold0 smoke cases.
    - Output:
-     - `results/diagnostics/phase0_phase1/laneB_cine/round2/topology_guard_grid.csv`
-     - `results/diagnostics/phase0_phase1/laneB_cine/round2/topology_guard_grid.md`
+     - `results/diagnostics/care_myocardium/laneB_cine/round02_topology_lcc/topology_guard_grid.csv`
+     - `results/diagnostics/care_myocardium/laneB_cine/round02_topology_lcc/topology_guard_grid.md`
    - Gate: every removed component has an explicit action reason; combined guard must beat plain LCC on HD95 or explain why LCC should remain the default.
 
 3. `validation_style_raw_label_topology_qc`
    - No zip creation. Convert repaired compact predictions to raw-label QA tables only.
    - Check raw label subset `{0,200,500,2221}`, non-empty `2221`, raw `2221` component count, bbox, and volume.
    - Output:
-     - `results/diagnostics/phase0_phase1/laneB_cine/round2/raw_label_topology_qc.csv`
+     - `results/diagnostics/care_myocardium/laneB_cine/round02_topology_lcc/raw_label_topology_qc.csv`
    - Gate: raw mapping is unchanged and no repair creates unsafe empty pathology.
 
 ## Topology Failure Taxonomy Refinement
 
-Add or refine these categories under `results/diagnostics/phase0_phase1/failure_registry/`:
+Add or refine these categories under `results/diagnostics/care_myocardium/failure_registry/`:
 
 | category | definition | required evidence |
 | --- | --- | --- |
@@ -251,7 +251,7 @@ Do not accept:
 
 Implement Lane B Round2 topology diagnostics only. Do not train, submit Slurm, download weights, create a validation zip, upload, modify label semantics, modify the evaluator, or change controller plans.
 
-Create or extend a topology postprocess diagnostic under `scripts/diagnostics/` or `scripts/evaluation/` that reads existing compact CineMyoPS fold0 predictions and writes all outputs under `results/diagnostics/phase0_phase1/laneB_cine/round2/`.
+Create or extend a topology postprocess diagnostic under `scripts/diagnostics/` or `scripts/evaluation/` that reads existing compact CineMyoPS fold0 predictions and writes all outputs under `results/diagnostics/care_myocardium/laneB_cine/round02_topology_lcc/`.
 
 Execute only:
 

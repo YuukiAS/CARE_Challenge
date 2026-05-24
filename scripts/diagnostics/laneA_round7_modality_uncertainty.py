@@ -18,7 +18,7 @@ os.environ.setdefault("nnUNet_preprocessed", str(REPO_ROOT / "data/nnUNet/nnUNet
 os.environ.setdefault("nnUNet_results", str(REPO_ROOT / "data/nnUNet/nnUNet_results"))
 os.environ.setdefault(
     "MPLCONFIGDIR",
-    str(REPO_ROOT / "results/diagnostics/phase0_phase1/laneA_myops/round7_modality_uncertainty/mpl_cache"),
+    str(REPO_ROOT / "results/diagnostics/care_myocardium/laneA_myops/round07_modality_uncertainty/mpl_cache"),
 )
 
 import numpy as np
@@ -44,10 +44,10 @@ from src.care_myocardium.nnunet.laneA_round7_trainer import (
 
 
 SCAR_CLASS = 5
-OUT_ROOT = REPO_ROOT / "results/diagnostics/phase0_phase1/laneA_myops/round7_modality_uncertainty"
+OUT_ROOT = REPO_ROOT / "results/diagnostics/care_myocardium/laneA_myops/round07_modality_uncertainty"
 PLAN = REPO_ROOT / "docs/plans/laneA_round07_next_modality_presence_uncertainty_supervision_execution.md"
 SPLITS_JSON = REPO_ROOT / "data/benchmarks/protocol/splits_MyoPS.json"
-CASE_METRICS = REPO_ROOT / "results/diagnostics/phase0_phase1/laneA_myops/myops_modality_center_case_metrics.csv"
+CASE_METRICS = REPO_ROOT / "results/diagnostics/care_myocardium/laneA_myops/myops_modality_center_case_metrics.csv"
 PREPROCESSED = REPO_ROOT / "data/nnUNet/nnUNet_preprocessed/Dataset501_CAREMyoPS"
 PREPROCESSED_3D = PREPROCESSED / "nnUNetPlans_3d_fullres"
 BASELINE_VAL = (
@@ -55,7 +55,7 @@ BASELINE_VAL = (
     / "data/nnUNet/nnUNet_results/Dataset501_CAREMyoPS/"
     / "nnUNetTrainer_500epochs__nnUNetPlans__3d_fullres/fold_0/validation"
 )
-ROUND6_ROOT = REPO_ROOT / "results/diagnostics/phase0_phase1/laneA_myops/round6_anatomy_missing_modality"
+ROUND6_ROOT = REPO_ROOT / "results/diagnostics/care_myocardium/laneA_myops/round06_anatomy_missing_modality"
 
 
 def read_csv(path: Path) -> list[dict[str, str]]:
@@ -464,7 +464,7 @@ def write_configs() -> None:
         "\n".join(
             [
                 "# Import/unit/gradient smoke:",
-                "./envs/env_CARE/bin/python scripts/diagnostics/laneA_round7_modality_uncertainty.py",
+                "./envs/env_CARE/bin/python scripts/diagnostics/laneA_round07_modality_uncertainty.py",
                 "",
                 "# Bounded fold0 very-short train candidate; run only after smoke gates pass:",
                 "LANEA_ROUND7_AUX_WEIGHT=1.0 LANEA_ROUND7_NO_T2_NEGATIVE_WEIGHT=0.25 \\",

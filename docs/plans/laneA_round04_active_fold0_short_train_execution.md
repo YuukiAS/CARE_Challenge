@@ -9,7 +9,7 @@ Plan metadata:
 - Parent plan: `docs/plans/laneA_round03_next_edema_trainable_smoke_execution.md`
 - Function: execute one bounded fold0 short train for `edema_focal_tversky + no_t2_edema_loss_downweighting`
 - Do not: train folds 1-4, run a full schedule, create validation zip, upload, download weights, pull external repos, change label semantics, overwrite nnU-Net501 baseline cache
-- Rule exception: user suggested `laneA_round04_active_fold0_short_train.md`, but `00_plan_registry_rules.md` requires active execution filenames to include `_execution.md`; this file uses the compliant name.
+- Rule exception: user suggested `laneA_round04_active_fold0_short_train.md`, but `care_myocardium_plan_registry_rules.md` requires active execution filenames to include `_execution.md`; this file uses the compliant name.
 
 ## Execution Scope
 
@@ -18,7 +18,7 @@ Candidate:
 - base model path: existing local nnU-Net501 fold0 `checkpoint_best.pth`, used only as a local initialization checkpoint.
 - candidate experiment name: `laneA_edema_focal_tversky_t2down_fold0_short`.
 - candidate output root: `data/nnUNet/nnUNet_results/Dataset501_CAREMyoPS/laneA_edema_focal_tversky_t2down_fold0_short__nnUNetPlans__3d_fullres/fold_0/`.
-- diagnostic output root: `results/diagnostics/phase0_phase1/laneA_myops/round4_fold0_short_train/`.
+- diagnostic output root: `results/diagnostics/care_myocardium/laneA_myops/round04_fold0_short_train/`.
 
 Training cap:
 
@@ -36,7 +36,7 @@ The class_4 auxiliary term is added to the unchanged nnU-Net multiclass base los
 ## Command
 
 ```bash
-sbatch jobs/nnUNet/laneA_round4_fold0_short_train.sh
+sbatch jobs/nnUNet/laneA_round04_fold0_short_train.sh
 ```
 
 Submitted job:
@@ -77,13 +77,13 @@ Retry after hardcoding Slurm `CARE_ROOT=/overflow/htzhu/CARE`:
 
 ## Required Outputs
 
-- `results/diagnostics/phase0_phase1/laneA_myops/round4_fold0_short_train/train_config.yaml`
-- `results/diagnostics/phase0_phase1/laneA_myops/round4_fold0_short_train/train_command.txt`
-- `results/diagnostics/phase0_phase1/laneA_myops/round4_fold0_short_train/fold0_short_train_metrics.csv`
-- `results/diagnostics/phase0_phase1/laneA_myops/round4_fold0_short_train/fold0_short_train_summary.md`
-- `results/diagnostics/phase0_phase1/laneA_myops/round4_fold0_short_train/baseline_vs_candidate_by_subset.csv`
-- `results/diagnostics/phase0_phase1/laneA_myops/round4_fold0_short_train/case_level_failure_flags.csv`
-- `results/diagnostics/phase0_phase1/laneA_myops/round4_fold0_short_train/round4_laneA_decision.md`
+- `results/diagnostics/care_myocardium/laneA_myops/round04_fold0_short_train/train_config.yaml`
+- `results/diagnostics/care_myocardium/laneA_myops/round04_fold0_short_train/train_command.txt`
+- `results/diagnostics/care_myocardium/laneA_myops/round04_fold0_short_train/fold0_short_train_metrics.csv`
+- `results/diagnostics/care_myocardium/laneA_myops/round04_fold0_short_train/fold0_short_train_summary.md`
+- `results/diagnostics/care_myocardium/laneA_myops/round04_fold0_short_train/baseline_vs_candidate_by_subset.csv`
+- `results/diagnostics/care_myocardium/laneA_myops/round04_fold0_short_train/case_level_failure_flags.csv`
+- `results/diagnostics/care_myocardium/laneA_myops/round04_fold0_short_train/round4_laneA_decision.md`
 
 ## Gate
 
@@ -97,7 +97,7 @@ Completed run:
 - Training completed 20 bounded epochs and exported 44/44 fold0 validation predictions.
 - The Slurm job exited failed because the chained evaluator initially missed the `scar_gt_positive` CSV field. The evaluator was fixed and rerun locally against the completed candidate predictions.
 - Candidate prediction directory: `data/nnUNet/nnUNet_results/Dataset501_CAREMyoPS/laneA_edema_focal_tversky_t2down_fold0_short__nnUNetPlans__3d_fullres/fold_0/validation`.
-- Diagnostic output directory: `results/diagnostics/phase0_phase1/laneA_myops/round4_fold0_short_train/`.
+- Diagnostic output directory: `results/diagnostics/care_myocardium/laneA_myops/round04_fold0_short_train/`.
 
 Final gate:
 

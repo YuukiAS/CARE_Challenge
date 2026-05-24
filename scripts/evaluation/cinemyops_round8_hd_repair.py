@@ -271,15 +271,15 @@ def main() -> None:
         / "results/submissions/care_myocardium_validation/upload_ready/"
         / "nnUNet_MyoPS+CineMyoPS_pathology_direct_20260518_030921/submission_tree/CineMyoPS",
     )
-    ap.add_argument("--diagnostic-csv", type=Path, default=REPO_ROOT / "results/diagnostics/CineMyoPS_round8_validation_zip_qc.csv")
-    ap.add_argument("--diagnostic-md", type=Path, default=REPO_ROOT / "results/diagnostics/CineMyoPS_round8_validation_zip_qc.md")
+    ap.add_argument("--diagnostic-csv", type=Path, default=REPO_ROOT / "results/diagnostics/baseline_paper_models/CineMyoPS/round08_hd_repair/CineMyoPS_round8_validation_zip_qc.csv")
+    ap.add_argument("--diagnostic-md", type=Path, default=REPO_ROOT / "results/diagnostics/baseline_paper_models/CineMyoPS/round08_hd_repair/CineMyoPS_round8_validation_zip_qc.md")
     ap.add_argument("--source-dir", type=Path, default=REPO_ROOT / "results/predictions/CineMyoPS_R6_pathology_direct/fold_0")
     ap.add_argument("--anatomy-dir", type=Path, default=REPO_ROOT / "results/predictions/CineMyoPS_R6_cardiac_only/fold_0")
     ap.add_argument("--labels-dir", type=Path, default=REPO_ROOT / "data/nnUNet/nnUNet_raw/Dataset502_CARECineMyoPS/labelsTr")
     ap.add_argument("--splits-json", type=Path, default=REPO_ROOT / "data/benchmarks/protocol/splits_CineMyoPS.json")
     ap.add_argument("--fold", type=int, default=0)
     ap.add_argument("--repair-output-root", type=Path, default=REPO_ROOT / "results/predictions/CineMyoPS_R8_hd_repair")
-    ap.add_argument("--summary-json", type=Path, default=REPO_ROOT / "results/diagnostics/CineMyoPS_round8_repair_summary.json")
+    ap.add_argument("--summary-json", type=Path, default=REPO_ROOT / "results/diagnostics/baseline_paper_models/CineMyoPS/round08_hd_repair/CineMyoPS_round8_repair_summary.json")
     ap.add_argument("--dilation-iters", type=int, default=3)
     ap.add_argument(
         "--modes",

@@ -23,7 +23,7 @@ export CARE_ROOT
 export nnUNet_raw="${CARE_ROOT}/data/nnUNet/nnUNet_raw"
 export nnUNet_preprocessed="${CARE_ROOT}/data/nnUNet/nnUNet_preprocessed"
 export nnUNet_results="${CARE_ROOT}/data/nnUNet/nnUNet_results"
-export MPLCONFIGDIR="${CARE_ROOT}/results/diagnostics/phase0_phase1/laneA_myops/round10_edema_refiner/mpl_cache"
+export MPLCONFIGDIR="${CARE_ROOT}/results/diagnostics/care_myocardium/laneA_myops/round10_edema_refiner/mpl_cache"
 
 "${CARE_ROOT}/envs/env_CARE/bin/python" scripts/training/run_laneA_round10_refiner_train.py \
   --run-name laneA_r10_edema_residual_refiner_fold0_very_short \

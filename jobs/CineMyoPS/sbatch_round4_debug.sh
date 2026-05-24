@@ -33,7 +33,7 @@ export CARE_CineMyoPS_ENV
 export PYTHONUNBUFFERED=1
 export MPLCONFIGDIR="${TMPDIR:-/tmp}/matplotlib-${SLURM_JOB_ID:-local}"
 
-mkdir -p "${CARE_ROOT}/logs" "${CARE_ROOT}/results/diagnostics/CineMyoPS_round4"
+mkdir -p "${CARE_ROOT}/logs" "${CARE_ROOT}/results/diagnostics/baseline_paper_models/CineMyoPS/round04_inference_semantics"
 TS="$(date +%Y%m%d_%H%M%S)"
 LOG_FILE="${LOG_FILE:-${CARE_ROOT}/logs/CineMyoPS_r4_debug_${SLURM_JOB_ID:-local}_${TS}.log}"
 exec > >(tee -a "${LOG_FILE}") 2>&1

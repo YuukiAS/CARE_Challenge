@@ -240,7 +240,7 @@ def parse_args() -> argparse.Namespace:
     ap.add_argument(
         "--output-json",
         type=Path,
-        default=root / "results/diagnostics/CineMyoPS_round4/inference_semantics.json",
+        default=root / "results/diagnostics/baseline_paper_models/CineMyoPS/round04_inference_semantics/inference_semantics.json",
     )
     ap.add_argument("--bn-recalibrate", action="store_true", default=True)
     return ap.parse_args()

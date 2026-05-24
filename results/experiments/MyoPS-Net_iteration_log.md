@@ -457,8 +457,8 @@ Latest hosted OrganAgent nnU-Net branch:
 
 Output:
 
-- `results/diagnostics/MyoPS-Net_round8_nnunet_vs_myopsnet_hd_profile.csv`
-- `results/diagnostics/MyoPS-Net_round8_nnunet_vs_myopsnet_hd_profile.md`
+- `results/diagnostics/baseline_paper_models/MyoPS-Net/round08_hd_profile/MyoPS-Net_round8_nnunet_vs_myopsnet_hd_profile.csv`
+- `results/diagnostics/baseline_paper_models/MyoPS-Net/round08_hd_profile/MyoPS-Net_round8_nnunet_vs_myopsnet_hd_profile.md`
 
 | model | class | Dice | HD | HD95 | mean components | small comps | remote comps |
 | --- | --- | ---: | ---: | ---: | ---: | ---: | ---: |

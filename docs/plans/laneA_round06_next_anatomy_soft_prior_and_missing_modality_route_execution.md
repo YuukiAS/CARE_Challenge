@@ -9,7 +9,7 @@ Plan metadata:
 - Parent plan: `docs/plans/laneA_round05_active_controlled_mechanism_integration_execution.md`
 - Function: define the next bounded Lane A execution stage: anatomy-guided soft-prior smoke plus missing-modality routing/supervision audit
 - Do not: run fold1-4, run 5-fold, create validation zip, upload, download large weights, clone/build/train large external repos, use external data training, use validation pseudo-label supervised training, hard-delete edema by ROI, or use foreground/all-case aggregate as the success criterion
-- Rule exception: `docs/plans/00_plan_registry_rules.md` originally defines Round06 as fold expansion and submission strategy. The user explicitly selected `Round06 override`; this file uses Round06 for a mechanism-execution controller and is not a fold-expansion/submission plan.
+- Rule exception: `docs/plans/care_myocardium_plan_registry_rules.md` originally defines Round06 as fold expansion and submission strategy. The user explicitly selected `Round06 override`; this file uses Round06 for a mechanism-execution controller and is not a fold-expansion/submission plan.
 
 ## 1. Current Lane A Evidence Chain
 
@@ -126,7 +126,7 @@ Allowed next goal actions:
 - Keep all outputs isolated under:
 
 ```text
-results/diagnostics/phase0_phase1/laneA_myops/round6_anatomy_missing_modality/
+results/diagnostics/care_myocardium/laneA_myops/round06_anatomy_missing_modality/
 ```
 
 Explicitly disallowed next goal actions:
@@ -440,7 +440,7 @@ If any candidate requires external data training, generated external training sa
 All files must be written under:
 
 ```text
-results/diagnostics/phase0_phase1/laneA_myops/round6_anatomy_missing_modality/
+results/diagnostics/care_myocardium/laneA_myops/round06_anatomy_missing_modality/
 ```
 
 Required:
@@ -461,7 +461,7 @@ Required:
 Optional:
 
 ```text
-results/diagnostics/phase0_phase1/laneA_myops/round6_anatomy_missing_modality/failure_overlays/
+results/diagnostics/care_myocardium/laneA_myops/round06_anatomy_missing_modality/failure_overlays/
 ```
 
 Overlay rules:
@@ -557,7 +557,7 @@ Do not expand to folds 1-4 from Round06 alone. Fold expansion requires a separat
 The next goal-mode execution should follow this order:
 
 1. Create output root:
-   - `results/diagnostics/phase0_phase1/laneA_myops/round6_anatomy_missing_modality/`
+   - `results/diagnostics/care_myocardium/laneA_myops/round06_anatomy_missing_modality/`
 2. Write `anatomy_soft_prior_train_config.yaml` before running any smoke:
    - candidate name.
    - input channels.
@@ -592,7 +592,7 @@ If any fail-fast criterion triggers, stop and record `fail_stop_no_expand`.
 
 所有输出写入：
 
-`results/diagnostics/phase0_phase1/laneA_myops/round6_anatomy_missing_modality/`
+`results/diagnostics/care_myocardium/laneA_myops/round06_anatomy_missing_modality/`
 
 必须先写 `anatomy_soft_prior_train_config.yaml` 和 `anatomy_soft_prior_train_command.txt`，记录实际候选、distance/support map 来源、loss weights、no-T2 policy、fold、seed、输出目录和运行边界。
 
@@ -611,11 +611,11 @@ Execution date: 2026-05-20.
 
 Output root:
 
-- `results/diagnostics/phase0_phase1/laneA_myops/round6_anatomy_missing_modality/`
+- `results/diagnostics/care_myocardium/laneA_myops/round06_anatomy_missing_modality/`
 
 Implemented first-party diagnostic script:
 
-- `scripts/diagnostics/laneA_round6_anatomy_missing_modality.py`
+- `scripts/diagnostics/laneA_round06_anatomy_missing_modality.py`
 
 Executed tasks:
 

@@ -31,12 +31,12 @@ os.environ.setdefault("nnUNet_preprocessed", str(REPO_ROOT / "data/nnUNet/nnUNet
 os.environ.setdefault("nnUNet_results", str(REPO_ROOT / "data/nnUNet/nnUNet_results"))
 os.environ.setdefault(
     "MPLCONFIGDIR",
-    str(REPO_ROOT / "results/diagnostics/phase0_phase1/laneA_myops/round12_refiner_salvage_high_upside_transition/mpl_cache"),
+    str(REPO_ROOT / "results/diagnostics/care_myocardium/laneA_myops/round12_refiner_salvage_high_upside_transition/mpl_cache"),
 )
 if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
 
-from scripts.diagnostics import laneA_round4_fold0_short_train_eval as base_eval
+from scripts.diagnostics import laneA_round04_fold0_short_train_eval as base_eval
 from src.care_myocardium.refiner.laneA_round10_dataset import RefinerCase, build_cases, load_case_features, write_csv
 from src.care_myocardium.refiner.laneA_round11_model import (
     BidirectionalEdemaResidualRefiner,
@@ -44,10 +44,10 @@ from src.care_myocardium.refiner.laneA_round11_model import (
 )
 
 
-OUT_ROOT = REPO_ROOT / "results/diagnostics/phase0_phase1/laneA_myops/round12_refiner_salvage_high_upside_transition"
+OUT_ROOT = REPO_ROOT / "results/diagnostics/care_myocardium/laneA_myops/round12_refiner_salvage_high_upside_transition"
 OVERLAY_ROOT = OUT_ROOT / "overlays"
-R10_ROOT = REPO_ROOT / "results/diagnostics/phase0_phase1/laneA_myops/round10_edema_refiner"
-R11_ROOT = REPO_ROOT / "results/diagnostics/phase0_phase1/laneA_myops/round11_component_safe_refiner"
+R10_ROOT = REPO_ROOT / "results/diagnostics/care_myocardium/laneA_myops/round10_edema_refiner"
+R11_ROOT = REPO_ROOT / "results/diagnostics/care_myocardium/laneA_myops/round11_component_safe_refiner"
 R11_FAILURE_ROOT = R11_ROOT / "failure_case_summary"
 R10_PRED_DIR = R10_ROOT / "predictions/laneA_r10_edema_residual_refiner_fold0_very_short/validation"
 R11_PRED_DIR = R11_ROOT / "predictions/laneA_r11_bidirectional_edema_refiner_fold0_very_short/validation"

@@ -74,7 +74,7 @@ sbatch jobs/CineMyoPS/sbatch_round4_debug.sh
 - Job: `51268602`
 - Walltime: `02:00:00`
 - Status at note time: `PENDING (Resources)`
-- Expected output: `results/diagnostics/CineMyoPS_round4/inference_semantics.json`
+- Expected output: `results/diagnostics/baseline_paper_models/CineMyoPS/round04_inference_semantics/inference_semantics.json`
 
 ### Combine-mode export-only ablations
 
@@ -121,6 +121,6 @@ sbatch jobs/CineMyoPS/sbatch_round5_debug_fixed.sh
 
 Expected output:
 
-- `results/diagnostics/CineMyoPS_round5/inference_semantics_fixed.json`
+- `results/diagnostics/baseline_paper_models/CineMyoPS/round05_fixed_inference/inference_semantics_fixed.json`
 
 Do not launch another CineMyoPS training run until this diagnostic separates direct-logit collapse from inference/export collapse.

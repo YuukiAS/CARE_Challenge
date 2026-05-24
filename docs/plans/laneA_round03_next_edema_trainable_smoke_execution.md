@@ -48,7 +48,7 @@ Deep Research is used in this round only as a mechanism source: focal/Tversky lo
 All Round3 Lane A outputs must be written under:
 
 ```text
-results/diagnostics/phase0_phase1/laneA_myops/round3_trainable_smoke/
+results/diagnostics/care_myocardium/laneA_myops/round03_trainable_smoke/
 ```
 
 Expected outputs:
@@ -294,13 +294,13 @@ Hard fail conditions:
 
 - `docs/plans/laneA_round03_next_edema_trainable_smoke_execution.md`
 - `docs/plans/laneA_round02_completed_myops_edema_targeted_smoke_addendum.md`
-- `docs/notes/baseline/phase0_phase1_execution_results.md`
+- `docs/notes/baseline/care_myocardium_diagnostics_execution_results.md`
 - `docs/notes/domain_adaptation/domain_adaptation_relevance_20260519.md`
 
 所有输出写入：
 
 ```text
-results/diagnostics/phase0_phase1/laneA_myops/round3_trainable_smoke/
+results/diagnostics/care_myocardium/laneA_myops/round03_trainable_smoke/
 ```
 
 必须生成：

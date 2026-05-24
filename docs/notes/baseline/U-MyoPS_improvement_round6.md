@@ -38,9 +38,9 @@ New scripts:
 
 Diagnostics:
 
-- `results/diagnostics/U-MyoPS_round6/per_case_umyops_vs_nnunet_scar.csv`
-- `results/diagnostics/U-MyoPS_round6/per_case_umyops_vs_nnunet_scar.md`
-- `results/diagnostics/U-MyoPS_round6/manifest.json`
+- `results/diagnostics/baseline_paper_models/U-MyoPS/round06_scar_vs_nnunet/per_case_umyops_vs_nnunet_scar.csv`
+- `results/diagnostics/baseline_paper_models/U-MyoPS/round06_scar_vs_nnunet/per_case_umyops_vs_nnunet_scar.md`
+- `results/diagnostics/baseline_paper_models/U-MyoPS/round06_scar_vs_nnunet/manifest.json`
 
 ## Per-case comparison
 

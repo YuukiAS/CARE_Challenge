@@ -4,7 +4,7 @@
 This script is deterministic and diagnostic-only. It does not train, run
 inference, submit Slurm jobs, create validation zips, upload, or download
 weights. Candidate postprocess variants are evaluated in memory and summarized
-under results/diagnostics/phase0_phase1/laneB_cine/round2/.
+under results/diagnostics/care_myocardium/laneB_cine/round02_topology_lcc/.
 """
 
 from __future__ import annotations
@@ -24,8 +24,8 @@ from scipy.ndimage import binary_dilation, binary_erosion, distance_transform_ed
 
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
-OUT_ROOT = REPO_ROOT / "results/diagnostics/phase0_phase1/laneB_cine/round2"
-FAILURE_REGISTRY = REPO_ROOT / "results/diagnostics/phase0_phase1/failure_registry"
+OUT_ROOT = REPO_ROOT / "results/diagnostics/care_myocardium/laneB_cine/round02_topology_lcc"
+FAILURE_REGISTRY = REPO_ROOT / "results/diagnostics/care_myocardium/failure_registry"
 
 DEFAULT_SOURCE_DIR = REPO_ROOT / "results/predictions/CineMyoPS_R6_pathology_direct/fold_0"
 DEFAULT_GT_DIR = REPO_ROOT / "data/nnUNet/nnUNet_raw/Dataset502_CARECineMyoPS/labelsTr"

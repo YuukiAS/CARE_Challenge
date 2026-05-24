@@ -108,7 +108,7 @@ The combine-mode export-only ablations completed but did not rescue fold0 valida
 ### Code change
 
 - `scripts/evaluation/debug_cinemyops_inference_semantics.py`: fixed 2D network patch extraction by inferring the slice axis from trainer patch size and image dimensions.
-- `jobs/CineMyoPS/sbatch_round5_debug_fixed.sh`: short GPU diagnostic wrapper writing `results/diagnostics/CineMyoPS_round5/inference_semantics_fixed.json`.
+- `jobs/CineMyoPS/sbatch_round5_debug_fixed.sh`: short GPU diagnostic wrapper writing `results/diagnostics/baseline_paper_models/CineMyoPS/round05_fixed_inference/inference_semantics_fixed.json`.
 
 ### Next command
 
@@ -125,7 +125,7 @@ Do not start another CineMyoPS training run until this diagnostic identifies whe
 - **diagnostic job**: `51354672`
 - **diagnostic command**: `sbatch jobs/CineMyoPS/sbatch_round5_debug_fixed.sh`
 - **diagnostic log**: `logs/CineMyoPS_r5_debug_51354672_20260517_232602.log`
-- **diagnostic JSON**: `results/diagnostics/CineMyoPS_round5/inference_semantics_fixed.json`
+- **diagnostic JSON**: `results/diagnostics/baseline_paper_models/CineMyoPS/round05_fixed_inference/inference_semantics_fixed.json`
 - **BN recalibration evidence**: actual batches `32`, BN layers `56`, elapsed `3.23s`.
 - **diagnostic finding**:
   - Direct eval forward produced non-background cardiac/pathology logits on selected fold0 val slices.
@@ -253,7 +253,7 @@ Do not start another CineMyoPS training run until this diagnostic identifies whe
   - `./env_CARE/bin/python -m py_compile scripts/submission/prepare_care_myocardium_validation.py scripts/evaluation/cinemyops_round8_hd_repair.py`
 - **validation zip QC**:
   - Original round7 zip: `results/submissions/care_myocardium_validation/upload_ready/20260518_030921__nnUNet_MyoPS+CineMyoPS_pathology_direct/CARE-Myocardium-OrganAgent.zip`.
-  - Outputs: `results/diagnostics/CineMyoPS_round8_validation_zip_qc.csv`, `results/diagnostics/CineMyoPS_round8_validation_zip_qc.md`.
+  - Outputs: `results/diagnostics/baseline_paper_models/CineMyoPS/round08_hd_repair/CineMyoPS_round8_validation_zip_qc.csv`, `results/diagnostics/baseline_paper_models/CineMyoPS/round08_hd_repair/CineMyoPS_round8_validation_zip_qc.md`.
   - Findings: 15 Cine validation cases, total raw `2221` voxels `58952`, 14/15 cases have extra scar components or bbox-distance outlier flags, 0 cases have scar components outside the broad raw `200/500` anatomy bbox.
   - Interpretation: HD=75 is most likely caused by disconnected intra-anatomy pathology islands rather than far-off cardiac-region drift.
 - **protocol fold0 HD audit**:
@@ -275,7 +275,7 @@ Do not start another CineMyoPS training run until this diagnostic identifies whe
   - Manifest Cine info: `source=explicit`, `pred_dir=results/predictions/CineMyoPS_R8_validation_hd_repair/pathology_largest_component/fold_0`, `postprocess_mode=pathology_largest_component`.
   - Zip QA: 30 files, 15 MyoPS cases, 15 CineMyoPS cases, no pathology fallback cases.
   - Cine raw labels after repair: `{0: 14975281, 200: 115603, 500: 217577, 2221: 49263}`.
-  - Candidate QC: `results/diagnostics/CineMyoPS_round8_validation_lcc_candidate_zip_qc.csv`, `.md`; after repair all 15 Cine cases have exactly one `2221` component and 0 bbox-distance outliers.
+  - Candidate QC: `results/diagnostics/baseline_paper_models/CineMyoPS/round08_hd_repair/CineMyoPS_round8_validation_lcc_candidate_zip_qc.csv`, `.md`; after repair all 15 Cine cases have exactly one `2221` component and 0 bbox-distance outliers.
 - **nnU-Net 5-fold baseline package**:
   - Upload zip: `results/submissions/care_myocardium_validation/upload_ready/20260519_084057__nnUNet_MyoPS+nnUNet_CineMyoPS_5fold_baseline_round8/CARE-Myocardium-OrganAgent.zip`.
   - Manifest: `results/submissions/care_myocardium_validation/upload_ready/20260519_084057__nnUNet_MyoPS+nnUNet_CineMyoPS_5fold_baseline_round8/manifest.json`.
@@ -295,15 +295,15 @@ Do not start another CineMyoPS training run until this diagnostic identifies whe
   - `docs/notes/baseline/CineMyoPS_improvement_round9_plan_execution.md`: Chinese execution note and verification summary.
 - **checks**:
   - `./envs/env_CARE/bin/python -m py_compile scripts/evaluation/cinemyops_component_hd_audit.py scripts/screening/check_cine_pretrained_candidate.py`
-  - `./envs/env_CARE/bin/python scripts/screening/check_cine_pretrained_candidate.py --output-dir results/diagnostics/cine_pretrained_screening`
-  - `./envs/env_CARE/bin/python scripts/evaluation/cinemyops_component_hd_audit.py --pred-dirs pathology_direct=results/predictions/CineMyoPS_R6_pathology_direct/fold_0 lcc=results/predictions/CineMyoPS_R8_hd_repair/pathology_largest_component/fold_0 --baseline-variant pathology_direct --output-prefix results/diagnostics/CineMyoPS_phase0_component_hd`
+  - `./envs/env_CARE/bin/python scripts/screening/check_cine_pretrained_candidate.py --output-dir results/diagnostics/care_myocardium/laneB_cine/round03_pretrained_screening_metadata/cine_pretrained_screening`
+  - `./envs/env_CARE/bin/python scripts/evaluation/cinemyops_component_hd_audit.py --pred-dirs pathology_direct=results/predictions/CineMyoPS_R6_pathology_direct/fold_0 lcc=results/predictions/CineMyoPS_R8_hd_repair/pathology_largest_component/fold_0 --baseline-variant pathology_direct --output-prefix results/diagnostics/care_myocardium/laneB_cine/round02_topology_lcc/cinemyops_component_hd`
 - **diagnostic outputs**:
-  - `results/diagnostics/cine_pretrained_screening/screening.json`
-  - `results/diagnostics/cine_pretrained_screening/screening.md`
-  - `results/diagnostics/CineMyoPS_phase0_component_hd.csv`
-  - `results/diagnostics/CineMyoPS_phase0_component_hd.json`
-  - `results/diagnostics/CineMyoPS_phase0_component_hd.md`
-- **phase0 component/HD result**:
+  - `results/diagnostics/care_myocardium/laneB_cine/round03_pretrained_screening_metadata/cine_pretrained_screening/screening.json`
+  - `results/diagnostics/care_myocardium/laneB_cine/round03_pretrained_screening_metadata/cine_pretrained_screening/screening.md`
+  - `results/diagnostics/care_myocardium/laneB_cine/round02_topology_lcc/cinemyops_component_hd.csv`
+  - `results/diagnostics/care_myocardium/laneB_cine/round02_topology_lcc/cinemyops_component_hd.json`
+  - `results/diagnostics/care_myocardium/laneB_cine/round02_topology_lcc/cinemyops_component_hd.md`
+- **CARE diagnostic component/HD result**:
   - `pathology_direct`: class_1 Dice `0.6933`, class_3 Dice `0.4378`, class_3 HD `40.4694`, class_3 HD95 `26.6533`, mean scar components `5.5385`.
   - `lcc`: class_1 Dice `0.6933`, class_3 Dice `0.4441`, class_3 HD `27.7648`, class_3 HD95 `18.7983`, mean scar components `1.0000`, mean removed voxels `222.1538`.
 - **interpretation**: reusable diagnostics reproduce the round8 conclusion: LCC reduces disconnected scar components and substantially improves local scar HD/HD95 without hurting `class_1`.
@@ -322,13 +322,13 @@ Do not start another CineMyoPS training run until this diagnostic identifies whe
   - `./envs/env_CARE/bin/python -m py_compile scripts/diagnostics/laneB_round2_topology_diagnostics.py`
   - `./envs/env_CARE/bin/python scripts/diagnostics/laneB_round2_topology_diagnostics.py`
 - **outputs**:
-  - `results/diagnostics/phase0_phase1/laneB_cine/round2/topology_lcc_before_after.csv`
-  - `results/diagnostics/phase0_phase1/laneB_cine/round2/topology_lcc_summary.md`
-  - `results/diagnostics/phase0_phase1/laneB_cine/round2/topology_guard_grid.csv`
-  - `results/diagnostics/phase0_phase1/laneB_cine/round2/topology_guard_grid.md`
-  - `results/diagnostics/phase0_phase1/laneB_cine/round2/topology_component_actions.csv`
-  - `results/diagnostics/phase0_phase1/laneB_cine/round2/topology_thresholds.json`
-  - `results/diagnostics/phase0_phase1/laneB_cine/round2/raw_label_topology_qc.csv`
+  - `results/diagnostics/care_myocardium/laneB_cine/round02_topology_lcc/topology_lcc_before_after.csv`
+  - `results/diagnostics/care_myocardium/laneB_cine/round02_topology_lcc/topology_lcc_summary.md`
+  - `results/diagnostics/care_myocardium/laneB_cine/round02_topology_lcc/topology_guard_grid.csv`
+  - `results/diagnostics/care_myocardium/laneB_cine/round02_topology_lcc/topology_guard_grid.md`
+  - `results/diagnostics/care_myocardium/laneB_cine/round02_topology_lcc/topology_component_actions.csv`
+  - `results/diagnostics/care_myocardium/laneB_cine/round02_topology_lcc/topology_thresholds.json`
+  - `results/diagnostics/care_myocardium/laneB_cine/round02_topology_lcc/raw_label_topology_qc.csv`
 - **failure registry additions**:
   - `cine_remote_pathology_island`
   - `cine_fragmented_pathology`
@@ -363,14 +363,14 @@ Do not start another CineMyoPS training run until this diagnostic identifies whe
   - `./envs/env_CARE/bin/python -m py_compile scripts/diagnostics/laneB_round03_hosted_calibration_prep.py`
   - `./envs/env_CARE/bin/python scripts/diagnostics/laneB_round03_hosted_calibration_prep.py --run-id nnUNet_MyoPS+Cine_topology_lcc_20260520_round03`
 - **outputs**:
-  - `results/diagnostics/phase0_phase1/laneB_cine/round3_hosted_calibration/packaging_qc_summary.md`
-  - `results/diagnostics/phase0_phase1/laneB_cine/round3_hosted_calibration/raw_label_qc.csv`
-  - `results/diagnostics/phase0_phase1/laneB_cine/round3_hosted_calibration/case_level_topology_lcc_qc.csv`
-  - `results/diagnostics/phase0_phase1/laneB_cine/round3_hosted_calibration/diff_from_pathology_direct.csv`
-  - `results/diagnostics/phase0_phase1/laneB_cine/round3_hosted_calibration/candidate_package_manifest.txt`
-  - `results/diagnostics/phase0_phase1/laneB_cine/round3_hosted_calibration/hosted_calibration_candidate_readme.md`
+  - `results/diagnostics/care_myocardium/laneB_cine/round03_hosted_calibration/packaging_qc_summary.md`
+  - `results/diagnostics/care_myocardium/laneB_cine/round03_hosted_calibration/raw_label_qc.csv`
+  - `results/diagnostics/care_myocardium/laneB_cine/round03_hosted_calibration/case_level_topology_lcc_qc.csv`
+  - `results/diagnostics/care_myocardium/laneB_cine/round03_hosted_calibration/diff_from_pathology_direct.csv`
+  - `results/diagnostics/care_myocardium/laneB_cine/round03_hosted_calibration/candidate_package_manifest.txt`
+  - `results/diagnostics/care_myocardium/laneB_cine/round03_hosted_calibration/hosted_calibration_candidate_readme.md`
 - **candidate staging tree**:
-  - `results/diagnostics/phase0_phase1/laneB_cine/round3_hosted_calibration/staging/nnUNet_MyoPS+Cine_topology_lcc_20260520_round03/submission_tree`
+  - `results/diagnostics/care_myocardium/laneB_cine/round03_hosted_calibration/staging/nnUNet_MyoPS+Cine_topology_lcc_20260520_round03/submission_tree`
   - file count: `30` prediction files, with roots `MyoPS/` and `CineMyoPS/`.
   - no zip was created and no upload was performed.
 - **QA result**:
@@ -388,7 +388,7 @@ Do not start another CineMyoPS training run until this diagnostic identifies whe
 - **规则**: no training; no Slurm; no inference rerun; no hosted upload; no external weight download.
 - **objective**: create a manually uploadable zip from the Round03 QA-passed staging tree after user clarified that a new submission zip should be prepared.
 - **source staging tree**:
-  - `results/diagnostics/phase0_phase1/laneB_cine/round3_hosted_calibration/staging/nnUNet_MyoPS+Cine_topology_lcc_20260520_round03/submission_tree`
+  - `results/diagnostics/care_myocardium/laneB_cine/round03_hosted_calibration/staging/nnUNet_MyoPS+Cine_topology_lcc_20260520_round03/submission_tree`
 - **upload-ready directory for comparison against the user-specified previous 5-fold baseline**:
   - `results/submissions/care_myocardium_validation/upload_ready/20260520_113408__nnUNet5fold_MyoPS+Cine_topology_lcc_round03_RECOMMENDED`
 - **zip**:

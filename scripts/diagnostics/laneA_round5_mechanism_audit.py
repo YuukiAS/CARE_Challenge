@@ -20,9 +20,9 @@ from scipy import ndimage
 
 
 ROOT = Path(__file__).resolve().parents[2]
-OUT_DIR = ROOT / "results/diagnostics/phase0_phase1/laneA_myops/round5_mechanism_integration_audit"
+OUT_DIR = ROOT / "results/diagnostics/care_myocardium/laneA_myops/round05_mechanism_integration_audit"
 PLAN_PATH = ROOT / "docs/plans/laneA_round05_active_controlled_mechanism_integration_execution.md"
-METRICS_CSV = ROOT / "results/diagnostics/phase0_phase1/laneA_myops/round4_fold0_short_train/fold0_short_train_metrics.csv"
+METRICS_CSV = ROOT / "results/diagnostics/care_myocardium/laneA_myops/round04_fold0_short_train/fold0_short_train_metrics.csv"
 FOLD0_VAL = ROOT / "data/CARE_Challenge_folds/MyoPS/fold0/val"
 LABELS_TR = ROOT / "data/nnUNet/nnUNet_raw/Dataset501_CAREMyoPS/labelsTr"
 BASELINE_PRED = ROOT / "data/nnUNet/nnUNet_results/Dataset501_CAREMyoPS/nnUNetTrainer_500epochs__nnUNetPlans__3d_fullres/fold_0/validation"
@@ -557,7 +557,7 @@ def write_decision_table(alignment_df: pd.DataFrame, anatomy_df: pd.DataFrame, b
 def write_prompt() -> None:
     text = """# Next Implementation Prompt Draft
 
-你现在在 `/overflow/htzhu/CARE` 中工作。请执行 Lane A Round5 的下一步 bounded one-mechanism smoke，只能基于 `results/diagnostics/phase0_phase1/laneA_myops/round5_mechanism_integration_audit/round5_laneA_decision_table.md` 中标记为 `go` 的机制路线选择一个最小实验。
+你现在在 `/overflow/htzhu/CARE` 中工作。请执行 Lane A Round5 的下一步 bounded one-mechanism smoke，只能基于 `results/diagnostics/care_myocardium/laneA_myops/round05_mechanism_integration_audit/round5_laneA_decision_table.md` 中标记为 `go` 的机制路线选择一个最小实验。
 
 禁止训练 full schedule、禁止提交 validation zip、禁止上传、禁止下载权重、禁止拉大型外部 repo、禁止扩 fold1-4、禁止把 no-T2 empty-GT 当作强负样本、禁止 hard anatomy deletion。若选择 alignment，只做 CARE fold0 complete-case SSA/alignment preprocessing smoke；若选择 anatomy，只做 soft prior/input/loss/penalty smoke；若选择 boundary，只做 baseline Dice/CE + small-weight surface/distance auxiliary smoke，并保留 scar class_5 guardrail。
 

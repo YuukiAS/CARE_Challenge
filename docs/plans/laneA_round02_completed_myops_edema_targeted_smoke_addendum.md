@@ -16,11 +16,11 @@ This is a focused addendum to the frozen Lane A controller plan. It does not rep
 
 Round2 objective: edema-focused targeted smoke implementation under CARE-native constraints. Do not replace the backbone broadly, do not integrate external foundation models, do not train in this planning pass, and keep all future diagnostic outputs under:
 
-- `results/diagnostics/phase0_phase1/laneA_myops/round2/`
+- `results/diagnostics/care_myocardium/laneA_myops/round02_edema_postprocess_smoke/`
 
 ## Current Evidence
 
-Phase0/1 fixed the fold0 reference and failure landscape:
+CARE diagnostics fixed the fold0 reference and failure landscape:
 
 - `nnUNet501` fold0 anchor: `myops_scar` Dice `0.5602`, HD95 `13.6005`; `myops_edema` Dice `0.3944`, HD95 `7.2769`.
 - Complete-modality `CenterC` cases show scar Dice `0.7557` but edema Dice `0.3100` and edema HD95 `23.1833`.
@@ -111,7 +111,7 @@ The modality mask should serve the T2-aware edema route:
 - allow loss/routing logic to know which modalities are present;
 - support subgroup reporting and failure analysis.
 
-It does not replace the Phase0/1 failure landscape. Any future mask-conditioned smoke must report subgroup gain, especially T2-present class_4 and no-T2 FP behavior, not just all-case mean Dice.
+It does not replace the CARE diagnostics failure landscape. Any future mask-conditioned smoke must report subgroup gain, especially T2-present class_4 and no-T2 FP behavior, not just all-case mean Dice.
 
 ### 5. Anatomy-Aware Edema ROI
 
@@ -145,7 +145,7 @@ Reject the smoke if the main improvement comes from empty-GT artifact cases, if 
 | priority | candidate | mechanism | CARE fit | current priority | smoke complexity | fail-fast criterion | expected signal |
 | ---: | --- | --- | --- | --- | --- | --- | --- |
 | 1 | T2-aware edema gating | Apply edema supervision and/or inference routing conditional on T2 presence; report T2-present, GT-positive, and no-T2 subsets separately. | Directly addresses unreliable edema negatives in no-T2 groups while preserving scar routing. | high | low-medium | T2-present edema Dice/HD95 does not improve, or no-T2 false positives increase. | improves edema Dice and HD95 on T2-present/complete cases; reduces no-T2 artifact conclusions. |
-| 2 | anatomy-aware edema ROI restriction | Restrict or score edema candidates by myocardium/LV/RV dilated ROI, with soft fallback rather than hard deletion. | Edema should be anatomically close to myocardium; Phase0 shows HD/component issues. | high | low | GT-positive edema lesions are deleted or edema Dice drops >1 point while HD95 improves. | reduces remote components and HD95; component count decreases. |
+| 2 | anatomy-aware edema ROI restriction | Restrict or score edema candidates by myocardium/LV/RV dilated ROI, with soft fallback rather than hard deletion. | Edema should be anatomically close to myocardium; CARE diagnostics show HD/component issues. | high | low | GT-positive edema lesions are deleted or edema Dice drops >1 point while HD95 improves. | reduces remote components and HD95; component count decreases. |
 | 3 | small-component suppression for edema | Remove tiny edema islands below a fold0 train-derived voxel threshold, with GT-positive sanity checks. | Low-risk postprocess smoke against topology fragmentation. | high | low | HD95 does not decrease, or empty-GT artifact improvement is the only gain. | reduces component count and remote FP; HD95 improves with stable Dice. |
 | 4 | edema-only weighting | Increase class_4 loss weight or sample weighting only for edema-positive/T2-present cases. | Direct response to edema bottleneck without architecture change. | high | low | edema recall gain creates remote FP/HD95 regression or scar Dice regresses. | improves edema Dice/recall; may not fix HD95 alone. |
 | 5 | Focal Tversky | Penalize FN/FP asymmetrically for small/diffuse edema; tune beta to avoid overprediction. | Useful for imbalanced pathology, first-party implementation is small. | medium-high | low | recall gain causes component count or HD95 regression. | improves edema Dice/GT-positive recall; must be paired with topology metrics. |
@@ -153,7 +153,7 @@ Reject the smoke if the main improvement comes from empty-GT artifact cases, if 
 | 7 | boundary/distance/HD-aware loss | Add boundary or distance transform term for class_4 to reduce surface outliers. | Directly targets HD95, but gradient stability and spacing handling need care. | medium | medium | one-batch gradient unstable, Dice improves while HD95/component worsens. | improves HD95/boundary without major Dice gain. |
 | 8 | explicit modality-mask embedding | Add modality presence vector to model blocks or input channels. | Necessary for first-party model maturity, but not a standalone edema fix. | medium | medium | no subgroup improvement or model learns center shortcuts. | improves no-T2 vs T2-present calibration; supports later routing. |
 | 9 | hard anatomy deletion | Delete all edema outside myocardium ROI. | Tempting for HD95 but unsafe with anatomy uncertainty. | low/postpone | low | any plausible GT-positive edema is removed. | may reduce HD95 artificially; high false stop risk. |
-| 10 | new large foundation/backbone replacement | Replace segmentation stack with large pretrained model. | Not justified by Phase0/1; edema topology is the immediate bottleneck. | postpone | high | requires large weights, external data, or uncontrolled integration. | unclear; not Round2. |
+| 10 | new large foundation/backbone replacement | Replace segmentation stack with large pretrained model. | Not justified by CARE diagnostics; edema topology is the immediate bottleneck. | postpone | high | requires large weights, external data, or uncontrolled integration. | unclear; not Round2. |
 
 ## First Smoke Tests To Execute
 
@@ -161,23 +161,23 @@ Reject the smoke if the main improvement comes from empty-GT artifact cases, if 
    - Use existing nnUNet501 fold0 predictions as input.
    - Test edema small-component suppression plus soft anatomy ROI guard.
    - Output:
-     - `results/diagnostics/phase0_phase1/laneA_myops/round2/edema_component_roi_before_after.csv`
-     - `results/diagnostics/phase0_phase1/laneA_myops/round2/edema_component_roi_summary.md`
+     - `results/diagnostics/care_myocardium/laneA_myops/round02_edema_postprocess_smoke/edema_component_roi_before_after.csv`
+     - `results/diagnostics/care_myocardium/laneA_myops/round02_edema_postprocess_smoke/edema_component_roi_summary.md`
    - Gate: edema HD95 and component count decrease on T2-present/GT-positive subsets; edema Dice does not drop materially; no empty-GT artifact success.
 
 2. `t2_aware_edema_routing_audit`
    - No training first. Audit current class_4 predictions by T2-present, no-T2, GT-positive, and center.
    - Test whether no-T2 cases need suppression, low-confidence routing, or loss masking in a later trainable smoke.
    - Output:
-     - `results/diagnostics/phase0_phase1/laneA_myops/round2/t2_aware_edema_routing_audit.csv`
-     - `results/diagnostics/phase0_phase1/laneA_myops/round2/t2_aware_edema_routing_audit.md`
+     - `results/diagnostics/care_myocardium/laneA_myops/round02_edema_postprocess_smoke/t2_aware_edema_routing_audit.csv`
+     - `results/diagnostics/care_myocardium/laneA_myops/round02_edema_postprocess_smoke/t2_aware_edema_routing_audit.md`
    - Gate: the table must show actionable T2-present/no-T2 difference; otherwise keep routing as watch only.
 
 3. `edema_loss_gradient_smoke`
    - Planning target for next implementation: implement first-party loss unit tests only, no fold training first.
    - Compare edema-only weighting, Focal Tversky, and Unified Focal on cached CARE tensors or a tiny overfit batch.
    - Output:
-     - `results/diagnostics/phase0_phase1/laneA_myops/round2/edema_loss_gradient_smoke.md`
+     - `results/diagnostics/care_myocardium/laneA_myops/round02_edema_postprocess_smoke/edema_loss_gradient_smoke.md`
    - Gate: stable gradients, no class_5/scar objective interference, and clear per-class logging.
 
 ## Candidates To Postpone
@@ -223,7 +223,7 @@ Do not accept:
 
 Implement Lane A Round2 smoke diagnostics only. Do not train, submit Slurm, download weights, create a validation zip, upload, expand folds, modify label semantics, modify the evaluator, or change controller plans.
 
-Create a first-party diagnostic script under `scripts/diagnostics/` that reads existing `nnUNet501` fold0 predictions and GT, then writes all outputs under `results/diagnostics/phase0_phase1/laneA_myops/round2/`.
+Create a first-party diagnostic script under `scripts/diagnostics/` that reads existing `nnUNet501` fold0 predictions and GT, then writes all outputs under `results/diagnostics/care_myocardium/laneA_myops/round02_edema_postprocess_smoke/`.
 
 Execute only:
 
@@ -242,7 +242,7 @@ Execute only:
    - no fold training;
    - keep class_5 scar loss unchanged and log scar guardrail metrics.
 
-Required outputs under `results/diagnostics/phase0_phase1/laneA_myops/round2/`:
+Required outputs under `results/diagnostics/care_myocardium/laneA_myops/round02_edema_postprocess_smoke/`:
 
 - `edema_component_roi_before_after.csv/md`
 - `t2_aware_edema_routing_audit.csv/md`

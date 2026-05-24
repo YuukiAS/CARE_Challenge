@@ -29,7 +29,7 @@ BASELINE_RESULTS_ROOT = (
 GT_DIR = REPO_ROOT / "data/nnUNet/nnUNet_raw/Dataset501_CAREMyoPS/labelsTr"
 RAW_ROOT = REPO_ROOT / "data/CARE_Challenge/MyoPS_train"
 SPLITS_JSON = REPO_ROOT / "data/benchmarks/protocol/splits_MyoPS.json"
-CASE_METRICS = REPO_ROOT / "results/diagnostics/phase0_phase1/laneA_myops/myops_modality_center_case_metrics.csv"
+CASE_METRICS = REPO_ROOT / "results/diagnostics/care_myocardium/laneA_myops/myops_modality_center_case_metrics.csv"
 
 
 @dataclass(frozen=True)

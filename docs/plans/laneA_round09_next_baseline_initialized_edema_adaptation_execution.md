@@ -65,7 +65,7 @@ Round9 可以继续的机制：
 Round9 所有输出统一放在：
 
 ```text
-results/diagnostics/phase0_phase1/laneA_myops/round9_baseline_initialized_adaptation/
+results/diagnostics/care_myocardium/laneA_myops/round09_baseline_initialized_adaptation/
 ```
 
 建议输出文件至少包括：
@@ -95,7 +95,7 @@ results/diagnostics/phase0_phase1/laneA_myops/round9_baseline_initialized_adapta
 Optional overlays:
 
 ```text
-results/diagnostics/phase0_phase1/laneA_myops/round9_baseline_initialized_adaptation/failure_overlays/
+results/diagnostics/care_myocardium/laneA_myops/round09_baseline_initialized_adaptation/failure_overlays/
 ```
 
 Suggested isolated experiment names:
@@ -729,7 +729,7 @@ Use `htzhulab` by default for bounded GPU jobs. Keep the Slurm logging style use
 
 请先执行 Phase 1：Round8 catastrophic failure audit 和 baseline reproducibility gate。确认 Round8 崩溃不是 label/export/evaluator/cache/channel-order bug，确认 nnU-Net501 fold0 baseline checkpoint/predictions、fold split、label semantics、evaluator 和输出路径都正确。输出到：
 
-`results/diagnostics/phase0_phase1/laneA_myops/round9_baseline_initialized_adaptation/`
+`results/diagnostics/care_myocardium/laneA_myops/round09_baseline_initialized_adaptation/`
 
 若 Phase 1 通过，请执行 Phase 2：实现 nnU-Net501 checkpoint 到 6-channel Round9 model 的 loader。要求原始图像通道权重从 baseline checkpoint 复制，新增 `C0_present/LGE_present/T2_present` 通道权重初始化为 0 或极小值，其余兼容 backbone/decoder/head 权重尽量加载。生成 key report、loader audit 和 initial inference baseline reproduction table。若 initial predictions 不能接近 baseline，停止并修 loader，不训练。
 

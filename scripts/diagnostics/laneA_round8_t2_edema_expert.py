@@ -17,7 +17,7 @@ os.environ.setdefault("nnUNet_preprocessed", str(REPO_ROOT / "data/nnUNet/nnUNet
 os.environ.setdefault("nnUNet_results", str(REPO_ROOT / "data/nnUNet/nnUNet_results"))
 os.environ.setdefault(
     "MPLCONFIGDIR",
-    str(REPO_ROOT / "results/diagnostics/phase0_phase1/laneA_myops/round8_t2_edema_expert/mpl_cache"),
+    str(REPO_ROOT / "results/diagnostics/care_myocardium/laneA_myops/round08_t2_edema_expert/mpl_cache"),
 )
 
 import numpy as np
@@ -45,10 +45,10 @@ from src.care_myocardium.nnunet.laneA_round8_trainer import (
 )
 
 
-OUT_ROOT = REPO_ROOT / "results/diagnostics/phase0_phase1/laneA_myops/round8_t2_edema_expert"
+OUT_ROOT = REPO_ROOT / "results/diagnostics/care_myocardium/laneA_myops/round08_t2_edema_expert"
 PLAN = REPO_ROOT / "docs/plans/laneA_round08_next_t2_present_edema_expert_separated_head_execution.md"
 SPLITS_JSON = REPO_ROOT / "data/benchmarks/protocol/splits_MyoPS.json"
-CASE_METRICS = REPO_ROOT / "results/diagnostics/phase0_phase1/laneA_myops/myops_modality_center_case_metrics.csv"
+CASE_METRICS = REPO_ROOT / "results/diagnostics/care_myocardium/laneA_myops/myops_modality_center_case_metrics.csv"
 PREPROCESSED = REPO_ROOT / "data/nnUNet/nnUNet_preprocessed/Dataset501_CAREMyoPS"
 PREPROCESSED_3D = PREPROCESSED / "nnUNetPlans_3d_fullres"
 BASELINE_VAL = (

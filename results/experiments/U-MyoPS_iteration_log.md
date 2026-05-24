@@ -399,9 +399,9 @@ sbatch jobs/U-MyoPS/sbatch_round6_scar_calibration.sh
 
 Outputs:
 
-- `results/diagnostics/U-MyoPS_round6/per_case_umyops_vs_nnunet_scar.csv`
-- `results/diagnostics/U-MyoPS_round6/per_case_umyops_vs_nnunet_scar.md`
-- `results/diagnostics/U-MyoPS_round6/manifest.json`
+- `results/diagnostics/baseline_paper_models/U-MyoPS/round06_scar_vs_nnunet/per_case_umyops_vs_nnunet_scar.csv`
+- `results/diagnostics/baseline_paper_models/U-MyoPS/round06_scar_vs_nnunet/per_case_umyops_vs_nnunet_scar.md`
+- `results/diagnostics/baseline_paper_models/U-MyoPS/round06_scar_vs_nnunet/manifest.json`
 
 | group | n | U-MyoPS scar | nnU-Net scar | U - nnU-Net |
 | --- | ---: | ---: | ---: | ---: |
@@ -510,7 +510,7 @@ sbatch jobs/U-MyoPS/sbatch_round7_lge_dilated_prior.sh
 
 ### Diagnostics
 
-- Taxonomy: `results/diagnostics/U-MyoPS_round8_prior_gate/case_failure_taxonomy.csv`
+- Taxonomy: `results/diagnostics/baseline_paper_models/U-MyoPS/round08_prior_gate/case_failure_taxonomy.csv`
 - Main low-case classes:
   - `Case7005`: empty GT scar but non-empty U-MyoPS prediction.
   - `Case1029`, `Case8021`: very low prior/pathology overlap.
