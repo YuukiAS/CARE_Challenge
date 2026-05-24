@@ -715,7 +715,7 @@ def main() -> None:
     timestamp = args.timestamp or datetime.now().strftime("%Y%m%d_%H%M%S")
     combo_name = f"{myops_model}_MyoPS+{cine_model}_CineMyoPS"
     label = sanitize_name(args.run_name or combo_name)
-    submission_id = sanitize_name(f"{label}_{timestamp}")
+    submission_id = sanitize_name(f"{timestamp}__{label}")
 
     output_root = args.output_root
     upload_root = args.upload_root or (output_root / "upload_ready")
@@ -760,6 +760,7 @@ def main() -> None:
         "workspace": str(workspace),
         "upload_dir": str(upload_dir),
         "zip": str(zip_path),
+        "directory_name_policy": "timestamp-first folder: <YYYYMMDD_HHMMSS>__<run_label>; official upload zip name intentionally has no timestamp",
         "zip_name_policy": "official upload zip name intentionally has no timestamp; timestamp is on parent folder",
         "myops_cases": len(myops_case_ids),
         "cine_cases": len(cine_case_ids),

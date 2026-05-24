@@ -4,6 +4,12 @@
 
 Treat this `AGENTS.md` as the repo-level Codex rules source. Do not rely on `.cursor/rules/`, `.cursor/skills/`, `.cursor/plans/`, or Cursor plugins; migrate future rule changes here.
 
+## Plan document governance
+
+CARE Myocardium plan files under `docs/plans/` must follow `docs/plans/00_plan_registry_rules.md`. Plan filenames must encode lane, round scope, role/status, and topic, for example `laneA_round03_next_edema_trainable_smoke_execution.md` or `laneB_round03plus_controller_cinemyops_hosted_topology_motion_plan.md`.
+
+If a user prompt, generated prompt, or prior ChatGPT instruction conflicts with the plan registry or with `TODO.md`—for example by requesting an ambiguous filename, the wrong round, a controller edit for one-off execution, Round5 repo integration before gates pass, or Cine-only validation upload semantics—do **not** silently comply. Point out the specific contradiction and ask the user to decide before creating or renaming the plan. If the user explicitly overrides the rule, record the exception in the plan metadata.
+
 ## Skill Source
 
 - Repo-level skills are installed under `.codex/skills/` from `/overflow/htzhu/mingcheng_new/AI_Skills_Collection/skills`.
@@ -159,14 +165,22 @@ Use `scripts/submission/prepare_care_myocardium_validation.py` as the single ent
 
 The script writes intermediate inputs/predictions under:
 
-- `results/submissions/care_myocardium_validation/workspaces/<model_combo>_<timestamp>/`
+- `results/submissions/care_myocardium_validation/workspaces/<timestamp>__<model_combo_or_run_label>/`
 
 and writes upload-ready packages under:
 
-- `results/submissions/care_myocardium_validation/upload_ready/<model_combo>_<timestamp>/CARE-Myocardium-OrganAgent.zip`
-- `results/submissions/care_myocardium_validation/upload_ready/<model_combo>_<timestamp>/manifest.json`
+- `results/submissions/care_myocardium_validation/upload_ready/<timestamp>__<model_combo_or_run_label>/CARE-Myocardium-OrganAgent.zip`
+- `results/submissions/care_myocardium_validation/upload_ready/<timestamp>__<model_combo_or_run_label>/manifest.json`
 
-The upload zip filename intentionally has **no timestamp**, because the official example is `CARE-Myocardium-TeamName.zip`. Keep the timestamp on the parent folder for ordering and auditability.
+The upload zip filename intentionally has **no timestamp**, because the official example is `CARE-Myocardium-TeamName.zip`. Keep the timestamp at the **front** of the parent folder for chronological sorting and auditability.
+
+Submission organization rule:
+
+- Future upload-ready directory names must be timestamp-first: `<YYYYMMDD_HHMMSS>__<short_descriptive_run_label>`.
+- Keep `upload_ready/README.md` updated when manually creating a package outside `scripts/submission/prepare_care_myocardium_validation.py`.
+- Keep `upload_ready/` flat: do not add a duplicate chronological symlink layer such as `by_time/`.
+- Rename legacy package directories in place to timestamp-first names when cleaning this folder, and then update affected manifests/notes.
+- Mark the current best manual-submission candidate in `upload_ready/README.md`; avoid extra pointer directories or symlinks unless the user explicitly requests them.
 
 To prepare the current default nnU-Net 5-fold validation upload zip, use:
 
