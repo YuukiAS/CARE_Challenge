@@ -148,3 +148,12 @@ results/metrics/unified/*_model_best/
 results/metrics/unified/*_model_final_checkpoint/
 results/metrics/unified/*/fold_*/modality_group_metrics.json
 results/metrics/unified/*/fold_*/modality_group_metrics.md
+
+# LaTeX presentation build artifacts. Keep source .tex and final .pdf tracked.
+docs/presentation/*.aux
+docs/presentation/*.log
+docs/presentation/*.out
+docs/presentation/*.toc
+docs/presentation/*.fls
+docs/presentation/*.fdb_latexmk
+docs/presentation/*.synctex.gz
