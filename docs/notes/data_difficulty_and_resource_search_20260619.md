@@ -1,6 +1,6 @@
 # CARE Myocardium 数据困难机制与外部资源落地审计
 
-日期：2026-06-19  
+日期：2026-06-19
 范围：本报告只讨论 CARE Myocardium 数据机制、外部方法/代码/权重资源、以及未来七天可落地实验路线。它不以 validation submission、leaderboard forensic、旧 zip candidate、LCC calibration 或 MedNeXt 调参为中心。
 
 ## 0. 执行结论
@@ -221,16 +221,16 @@ Deep Research 报告中列出了大量方法，但多数没有直接解决 CARE 
 
 需要继续搜索，但搜索目标应缩小为以下判断问题：
 
-1. **有没有可直接 inference 的 cine SAX myocardium/LV segmentation 权重？**  
+1. **有没有可直接 inference 的 cine SAX myocardium/LV segmentation 权重？**
    若有，可快速为 `myocardium_cinemyops` 提供 anatomy prior 或 replacement branch。
 
-2. **有没有 MyoPS scar/edema 的 LGE/T2 实现可借鉴？**  
+2. **有没有 MyoPS scar/edema 的 LGE/T2 实现可借鉴？**
    重点不是直接复现论文，而是找到 label mapping、LGE/T2 preprocessing、小病灶处理、multi-sequence fusion 的成熟细节。
 
-3. **有没有轻量 missing-modality 实现可转成当前 nnU-Net/MONAI adapter？**  
+3. **有没有轻量 missing-modality 实现可转成当前 nnU-Net/MONAI adapter？**
    优先 missingness mask、modality dropout、late fusion、expert routing，而非复杂 transformer。
 
-4. **有没有小病灶/HD-sensitive loss 可作为低风险 smoke？**  
+4. **有没有小病灶/HD-sensitive loss 可作为低风险 smoke？**
    必须能嵌入现有 pipeline 或至少作为 bounded fold0 实验；不能引入大规模框架迁移。
 
 ## 6. 新外部资源搜索结果与快速落地评估
@@ -451,8 +451,8 @@ Deep Research 报告中列出了大量方法，但多数没有直接解决 CARE 
 
 ### Day 5-7：一个小训练/推理 smoke 的准备，不立即长训
 
-候选 A：CineMA anatomy branch 小批量 inference + local proxy。  
-候选 B：T2-present edema expert fold0 短训配置。  
+候选 A：CineMA anatomy branch 小批量 inference + local proxy。
+候选 B：T2-present edema expert fold0 短训配置。
 候选 C：LGE scar expert + myocardium prior fold0 短训配置。
 
 选择规则：

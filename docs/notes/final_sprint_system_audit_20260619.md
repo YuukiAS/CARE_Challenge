@@ -1,7 +1,7 @@
 # CARE Myocardium Final Sprint System Audit
 
-Date: 2026-06-19  
-Mode: read-only audit plus report writing. No training code was changed, no long training was launched, no prediction cache or submission zip was overwritten.  
+Date: 2026-06-19
+Mode: read-only audit plus report writing. No training code was changed, no long training was launched, no prediction cache or submission zip was overwritten.
 Report scope: final-sprint decision support for the three hosted validation metrics: `myops_scar`, `myops_edema`, and `myocardium_cinemyops`.
 
 ## Executive Summary
