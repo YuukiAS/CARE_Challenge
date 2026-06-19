@@ -1,0 +1,200 @@
+{
+  "schema_version": 3,
+  "target": "repo",
+  "install_kind": "mixed:domain:medical-imaging+domain:cmr",
+  "installed_at": "2026-06-19T15:42:51+00:00",
+  "collection_path": "/overflow/htzhu/mingcheng_new/AI_Skills_Collection",
+  "collection_commit": "cb6114aca5ec33d7ccd1a88d7ef5a47fa4783446",
+  "install_mode_requested": "symlink",
+  "install_mode_counts": {
+    "symlink": 9
+  },
+  "project_path": "/overflow/htzhu/CARE",
+  "skills_root": "/overflow/htzhu/CARE/.agents/skills",
+  "agents_md_managed": true,
+  "prune_managed": false,
+  "target_info": {},
+  "audit": {
+    "active_skill_count": 9,
+    "description_total_chars": 1997,
+    "longest_descriptions": [
+      {
+        "path": "skills/domains/medical-imaging/pathml",
+        "name": "pathml",
+        "chars": 322
+      },
+      {
+        "path": "skills/projects/cmr/cardiacnexus-strain-registration",
+        "name": "cardiacnexus-strain-registration",
+        "chars": 287
+      },
+      {
+        "path": "skills/projects/cmr/cardiacnexus-docs-markdoc",
+        "name": "cardiacnexus-docs-markdoc",
+        "chars": 275
+      },
+      {
+        "path": "skills/projects/cmr/cardiacnexus-pipeline-refactor",
+        "name": "cardiacnexus-pipeline-refactor",
+        "chars": 269
+      },
+      {
+        "path": "skills/projects/cmr/cardiacnexus-feature-contracts",
+        "name": "cardiacnexus-feature-contracts",
+        "chars": 238
+      }
+    ],
+    "duplicate_description_count": 0,
+    "scope_distribution": {
+      "domain": 5,
+      "project": 4
+    },
+    "domain_distribution": {
+      "medical-imaging": 5,
+      "cmr": 4
+    },
+    "category_distribution": {
+      "domain/medical-imaging": 5,
+      "cmr": 4
+    },
+    "agents_block_chars": 4084,
+    "warnings": []
+  },
+  "installed_skills": [
+    {
+      "name": "medical-imaging-classical-features",
+      "path": "skills/domains/medical-imaging/medical-imaging-classical-features",
+      "dest": "domains-medical-imaging-medical-imaging-classical-features",
+      "source": "/overflow/htzhu/mingcheng_new/AI_Skills_Collection/skills/domains/medical-imaging/medical-imaging-classical-features",
+      "mode": "symlink",
+      "selectors": [
+        "domain/medical-imaging/medical-imaging-classical-features",
+        "domains-medical-imaging-medical-imaging-classical-features",
+        "domains/medical-imaging/medical-imaging-classical-features",
+        "medical-imaging-classical-features",
+        "skills/domain/medical-imaging/medical-imaging-classical-features",
+        "skills/domains/medical-imaging/medical-imaging-classical-features"
+      ]
+    },
+    {
+      "name": "medical-imaging-deep-learning",
+      "path": "skills/domains/medical-imaging/medical-imaging-deep-learning",
+      "dest": "domains-medical-imaging-medical-imaging-deep-learning",
+      "source": "/overflow/htzhu/mingcheng_new/AI_Skills_Collection/skills/domains/medical-imaging/medical-imaging-deep-learning",
+      "mode": "symlink",
+      "selectors": [
+        "domain/medical-imaging/medical-imaging-deep-learning",
+        "domains-medical-imaging-medical-imaging-deep-learning",
+        "domains/medical-imaging/medical-imaging-deep-learning",
+        "medical-imaging-deep-learning",
+        "skills/domain/medical-imaging/medical-imaging-deep-learning",
+        "skills/domains/medical-imaging/medical-imaging-deep-learning"
+      ]
+    },
+    {
+      "name": "medical-imaging-terminology-measurement",
+      "path": "skills/domains/medical-imaging/medical-imaging-terminology-measurement",
+      "dest": "domains-medical-imaging-medical-imaging-terminology-measurement",
+      "source": "/overflow/htzhu/mingcheng_new/AI_Skills_Collection/skills/domains/medical-imaging/medical-imaging-terminology-measurement",
+      "mode": "symlink",
+      "selectors": [
+        "domain/medical-imaging/medical-imaging-terminology-measurement",
+        "domains-medical-imaging-medical-imaging-terminology-measurement",
+        "domains/medical-imaging/medical-imaging-terminology-measurement",
+        "medical-imaging-terminology-measurement",
+        "skills/domain/medical-imaging/medical-imaging-terminology-measurement",
+        "skills/domains/medical-imaging/medical-imaging-terminology-measurement"
+      ]
+    },
+    {
+      "name": "pathml",
+      "path": "skills/domains/medical-imaging/pathml",
+      "dest": "domains-medical-imaging-pathml",
+      "source": "/overflow/htzhu/mingcheng_new/AI_Skills_Collection/skills/domains/medical-imaging/pathml",
+      "mode": "symlink",
+      "selectors": [
+        "domain/medical-imaging/pathml",
+        "domains-medical-imaging-pathml",
+        "domains/medical-imaging/pathml",
+        "pathml",
+        "skills/domain/medical-imaging/pathml",
+        "skills/domains/medical-imaging/pathml"
+      ]
+    },
+    {
+      "name": "pydicom",
+      "path": "skills/domains/medical-imaging/pydicom",
+      "dest": "domains-medical-imaging-pydicom",
+      "source": "/overflow/htzhu/mingcheng_new/AI_Skills_Collection/skills/domains/medical-imaging/pydicom",
+      "mode": "symlink",
+      "selectors": [
+        "domain/medical-imaging/pydicom",
+        "domains-medical-imaging-pydicom",
+        "domains/medical-imaging/pydicom",
+        "pydicom",
+        "skills/domain/medical-imaging/pydicom",
+        "skills/domains/medical-imaging/pydicom"
+      ]
+    },
+    {
+      "name": "cardiacnexus-docs-markdoc",
+      "path": "skills/projects/cmr/cardiacnexus-docs-markdoc",
+      "dest": "projects-cmr-cardiacnexus-docs-markdoc",
+      "source": "/overflow/htzhu/mingcheng_new/AI_Skills_Collection/skills/projects/cmr/cardiacnexus-docs-markdoc",
+      "mode": "symlink",
+      "selectors": [
+        "cardiacnexus-docs-markdoc",
+        "project/cmr/cardiacnexus-docs-markdoc",
+        "projects-cmr-cardiacnexus-docs-markdoc",
+        "projects/cmr/cardiacnexus-docs-markdoc",
+        "skills/project/cmr/cardiacnexus-docs-markdoc",
+        "skills/projects/cmr/cardiacnexus-docs-markdoc"
+      ]
+    },
+    {
+      "name": "cardiacnexus-feature-contracts",
+      "path": "skills/projects/cmr/cardiacnexus-feature-contracts",
+      "dest": "projects-cmr-cardiacnexus-feature-contracts",
+      "source": "/overflow/htzhu/mingcheng_new/AI_Skills_Collection/skills/projects/cmr/cardiacnexus-feature-contracts",
+      "mode": "symlink",
+      "selectors": [
+        "cardiacnexus-feature-contracts",
+        "project/cmr/cardiacnexus-feature-contracts",
+        "projects-cmr-cardiacnexus-feature-contracts",
+        "projects/cmr/cardiacnexus-feature-contracts",
+        "skills/project/cmr/cardiacnexus-feature-contracts",
+        "skills/projects/cmr/cardiacnexus-feature-contracts"
+      ]
+    },
+    {
+      "name": "cardiacnexus-pipeline-refactor",
+      "path": "skills/projects/cmr/cardiacnexus-pipeline-refactor",
+      "dest": "projects-cmr-cardiacnexus-pipeline-refactor",
+      "source": "/overflow/htzhu/mingcheng_new/AI_Skills_Collection/skills/projects/cmr/cardiacnexus-pipeline-refactor",
+      "mode": "symlink",
+      "selectors": [
+        "cardiacnexus-pipeline-refactor",
+        "project/cmr/cardiacnexus-pipeline-refactor",
+        "projects-cmr-cardiacnexus-pipeline-refactor",
+        "projects/cmr/cardiacnexus-pipeline-refactor",
+        "skills/project/cmr/cardiacnexus-pipeline-refactor",
+        "skills/projects/cmr/cardiacnexus-pipeline-refactor"
+      ]
+    },
+    {
+      "name": "cardiacnexus-strain-registration",
+      "path": "skills/projects/cmr/cardiacnexus-strain-registration",
+      "dest": "projects-cmr-cardiacnexus-strain-registration",
+      "source": "/overflow/htzhu/mingcheng_new/AI_Skills_Collection/skills/projects/cmr/cardiacnexus-strain-registration",
+      "mode": "symlink",
+      "selectors": [
+        "cardiacnexus-strain-registration",
+        "project/cmr/cardiacnexus-strain-registration",
+        "projects-cmr-cardiacnexus-strain-registration",
+        "projects/cmr/cardiacnexus-strain-registration",
+        "skills/project/cmr/cardiacnexus-strain-registration",
+        "skills/projects/cmr/cardiacnexus-strain-registration"
+      ]
+    }
+  ]
+}

@@ -12,7 +12,7 @@ If a user prompt, generated prompt, or prior ChatGPT instruction conflicts with 
 
 ## Skill Source
 
-- Repo-level skills are installed under `.codex/skills/` from `/overflow/htzhu/mingcheng_new/AI_Skills_Collection/skills`.
+- Repo-level skills are installed under `.agents/skills/` from `/overflow/htzhu/mingcheng_new/AI_Skills_Collection/skills`.
 - The canonical upstream source remains `/overflow/htzhu/mingcheng_new/AI_Skills_Collection/skills`; when refreshing repo-local skills, replace duplicates with copies from that collection.
 - This repository should install the medical imaging skill set from `AI_Skills_Collection/skills/domain/medical-imaging`.
 - Do not add `.cursor/skills` or Cursor plugin copies in this repository.
@@ -211,3 +211,69 @@ The script converts compact model labels back to CARE raw labels (`200`, `500`, 
 The official Myocardium validation zip layout is documented at `https://zmic.org.cn/care_2026/valid_submission/`: top-level `MyoPS/Anonymous Center/Case****/Case****_pred.nii.gz` and `CineMyoPS/Anonymous Center/Case****/Case****_pred.nii.gz`.
 
 Default inference policy for the current nnU-Net baseline is a 5-fold ensemble (`fold_0`-`fold_4`) using `checkpoint_best.pth`, because all five folds exist for both Dataset501 and Dataset502. Run it on `htzhulab` GPU by default; use a single best fold only for quick experiments or if ensemble inference is too slow.
+
+<!-- AI_SKILLS_COLLECTION_START -->
+# AI Skills Collection
+
+Installed: `2026-06-19T15:42:51+00:00`
+Target: `repo`
+Install mode: `mixed:domain:medical-imaging+domain:cmr`
+Project skills: `.agents/skills/`
+Central collection: `/overflow/htzhu/mingcheng_new/AI_Skills_Collection`
+
+When a task matches an installed skill, read that skill's `SKILL.md` before acting. Keep progressive disclosure: load `references/` only when the skill says they are relevant.
+
+## Skill Routing
+
+### cmr
+- `cardiacnexus-docs-markdoc`: Project-specific guidance for the CardiacNexus documentation site in docs/. Use when editing Markdoc pages, navigation, metadata, Next.js static export settings, phenotype documentation, or preparing the site for stat... Path: `.agents/skills/projects-cmr-cardiacnexus-docs-markdoc/SKILL.md`
+- `cardiacnexus-feature-contracts`: Project-specific guidance for CardiacNexus phenotype outputs. Use when adding, renaming, validating, aggregating, or documenting CSV/NPZ/QC outputs, units, column schemas, cross-modality features, or downstream-facing... Path: `.agents/skills/projects-cmr-cardiacnexus-feature-contracts/SKILL.md`
+- `cardiacnexus-pipeline-refactor`: Project-specific guidance for refactoring the CardiacNexus UKB CMR pipeline. Use when touching config.py, step1-4 orchestration, Slurm script generation, segmentation wrappers, feature extraction boundaries, packaging... Path: `.agents/skills/projects-cmr-cardiacnexus-pipeline-refactor/SKILL.md`
+- `cardiacnexus-strain-registration`: Project-specific guidance for CardiacNexus strain and registration refactors. Use when editing eval_strain_lax.py, eval_strain_sax.py, cardiac_utils motion/contour code, MIRTK integrations, or when introducing ANTsPy... Path: `.agents/skills/projects-cmr-cardiacnexus-strain-registration/SKILL.md`
+
+### medical-imaging
+- `medical-imaging-classical-features`: Use when enforcing reproducible preprocessing, registration baselines, radiomics protocols, or DICOM SEG/SR provenance in CardiacNexus. Path: `.agents/skills/domains-medical-imaging-medical-imaging-classical-features/SKILL.md`
+- `medical-imaging-deep-learning`: Aligns with CardiacNexus MONAI-first refactor and high-risk registration/strain awareness. Path: `.agents/skills/domains-medical-imaging-medical-imaging-deep-learning/SKILL.md`
+- `medical-imaging-terminology-measurement`: Use medical imaging terminology and measurement conventions with source checks, modality-specific caveats, structured reporting boundaries, and uncertainty language. Path: `.agents/skills/domains-medical-imaging-medical-imaging-terminology-measurement/SKILL.md`
+- `pathml`: Full-featured computational pathology toolkit. Use for advanced WSI analysis including multiplexed immunofluorescence (CODEX, Vectra), nucleus segmentation, tissue graph construction, and ML model training on patholog... Path: `.agents/skills/domains-medical-imaging-pathml/SKILL.md`
+- `pydicom`: Python library for working with DICOM (Digital Imaging and Communications in Medicine) files. Applies to tasks involving medical image analysis, PACS systems, radiology workflows, and healthcare imaging applications. Path: `.agents/skills/domains-medical-imaging-pydicom/SKILL.md`
+
+## Skill Maintenance
+
+- Update command: `python3 /overflow/htzhu/mingcheng_new/AI_Skills_Collection/scripts/skills.py install --target repo --mode symlink --skill domain/medical-imaging/medical-imaging-classical-features --skill domain/medical-imaging/medical-imaging-deep-learning --skill domain/medical-imaging/medical-imaging-terminology-measurement --skill domain/medical-imaging/pathml --skill domain/medical-imaging/pydicom --skill project/cmr/cardiacnexus-docs-markdoc --skill project/cmr/cardiacnexus-feature-contracts --skill project/cmr/cardiacnexus-pipeline-refactor --skill project/cmr/cardiacnexus-strain-registration --write-agents-md`
+- Managed manifest: `.agents/skills/.ai-skills-collection-manifest.json`
+- The installer only manages paths recorded in that manifest.
+- User-created skills outside the manifest are never pruned.
+<!-- AI_SKILLS_COLLECTION_END -->
+
+<!-- ai-bridge-kit:start -->
+# Handoff Protocol
+
+本项目采用 `prompts/` handoff 协议，用于 ChatGPT 和 Codex 之间的文件化交接。
+
+## 默认入口
+
+- `prompts/AGENT_RULES.md`：长期执行规则。
+- `prompts/CHATGPT_RULES.md`：ChatGPT 通过 GitHub MCP 或仓库工具写 task、note、review 时应读取的规则。
+- `prompts/tasks/*_task.md`：唯一默认任务入口。
+- `prompts/tasks/*_result.md`：Codex 的结果回写位置。
+- `prompts/tasks/*_review.md`：ChatGPT 的复盘位置。
+- `docs/notes/`：参考笔记目录，不是默认任务入口。
+- `docs/wiki/`：长期研究知识库，不是默认任务入口。
+
+## Codex 行为规则
+
+- Codex 开始任务前应读取 `prompts/AGENT_RULES.md` 和指定的 `prompts/tasks/<id>_task.md`。
+- Codex 必须遵守 task frontmatter、允许动作、禁止动作和停止条件。
+- Codex 完成后必须写 `prompts/tasks/<id>_result.md`。
+- Codex 不应主动执行 `docs/notes/` 或 `docs/wiki/` 中的内容，除非任务单显式引用某篇 note 或 wiki 页面作为背景材料。
+- 如果任务需要联网、上传、删除数据、运行昂贵命令或修改高风险配置，但 task 没有授权，Codex 必须停止并在 result 中请求人工批准。
+
+## ChatGPT / GitHub MCP 行为规则
+
+- ChatGPT 通过 GitHub MCP 处理本仓库时，应先读取 `AGENTS.md` 和 `prompts/CHATGPT_RULES.md`。
+- 需要 Codex 执行的内容必须写成 `prompts/tasks/<id>_task.md`。
+- 只作参考的研究分析、方案比较、会议记录和复盘应写到 `docs/notes/`。
+- 有长期复用价值的论文摘要、报告摘要、概念、对比、gap 和综合讨论应写到 `docs/wiki/`。
+- ChatGPT 不应把 issue、PR description 或聊天正文当作 Codex 的唯一任务来源。
+<!-- ai-bridge-kit:end -->

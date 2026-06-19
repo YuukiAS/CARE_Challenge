@@ -20,6 +20,21 @@ env_CARE_nnUNet_v1/
 # ------------------------------------------------------------------------------
 .cursor/
 .codex/
+.agents/skills-legacy-ai-skills-*/
+
+# Retired auto-research / VibeResearch runtime state. Keep the lightweight
+# ai-bridge handoff files under prompts/, docs/notes/, and docs/wiki/ tracked.
+.vibe/
+VibeResearch/
+external_supervisors/
+code/Inspect/
+jobs/autopilot/
+results/autopilot/
+CARE-Vibe-Research.code-workspace
+CURRENT_RESEARCH_BRIEF.md
+RUN.md
+VIBE_*.md
+prompts/Vibe_Research.md
 
 # ------------------------------------------------------------------------------
 # Python — bytecode & extensions
@@ -148,6 +163,8 @@ results/metrics/unified/*_model_best/
 results/metrics/unified/*_model_final_checkpoint/
 results/metrics/unified/*/fold_*/modality_group_metrics.json
 results/metrics/unified/*/fold_*/modality_group_metrics.md
+results/metrics/unified/*/fold_*/hd_per_class.json
+results/metrics/unified/*/fold_*/hd95_per_class.json
 
 # LaTeX presentation build artifacts. Keep source .tex and final .pdf tracked.
 docs/presentation/*.aux
