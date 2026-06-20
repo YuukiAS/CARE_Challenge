@@ -141,6 +141,11 @@ __MACOSX/
 results/checkpoints/
 results/predictions/
 
+# Large task/pilot output trees. Keep lightweight task-scoped bridge artifacts
+# under results/<task_key>/ tracked, but ignore bulky domain outputs.
+results/cinema_adapter/
+results/experiments/*/
+
 # Fetched CARE2026 leaderboard snapshots (CSV + JSON from fetch_care2026_scores.py)
 results/leaderboard/care2026_*.csv
 results/leaderboard/care2026_*.json

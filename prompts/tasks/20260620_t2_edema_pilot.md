@@ -1,5 +1,5 @@
 ---
-task_id: "20260620_t2_present_edema_pilot"
+task_key: "20260620_t2_edema_pilot"
 project: "CARE-Myocardium"
 status: "ready"
 executor: "Codex"
@@ -24,7 +24,7 @@ max_single_job_walltime: "08:00:00"
 
 - `AGENTS.md`
 - `prompts/AGENT_RULES.md`
-- 本任务文件 `prompts/tasks/20260620_t2_present_edema_pilot_task.md`
+- 本任务文件 `prompts/tasks/20260620_t2_edema_pilot.md`
 
 还应读取这些背景材料，但不要把它们当作自动执行入口：
 
@@ -40,7 +40,7 @@ max_single_job_walltime: "08:00:00"
 - 读取与 CARE MyoPS、Dataset501、raw NIfTI、label mapping、已有 nnU-Net/MONAI pipeline、环境和 Slurm 相关的文件。
 - 在隔离目录新增 metadata builder、diagnostic 脚本、training/pilot config、job script、README、csv/json/markdown 结果。优先目录包括 `scripts/diagnostics/`、`scripts/experiments/`、`jobs/experiments/`、`results/diagnostics/`、`results/experiments/`、`docs/notes/`。
 - 使用 GPU 运行 complete-case edema fold0、reasonable split pilot、或充分的 feature/routing baseline。单个 Slurm job walltime 不得超过 8 小时，优先 `htzhulab`，fallback 必须按 `AGENTS.md` 规则检查队列后使用。
-- 完成后写 `prompts/tasks/20260620_t2_present_edema_pilot_result.md`。
+- 完成后写 `results/20260620_t2_edema_pilot/result.md`。
 
 ## 禁止动作
 
@@ -78,12 +78,13 @@ max_single_job_walltime: "08:00:00"
 
 必须写入：
 
-- `prompts/tasks/20260620_t2_present_edema_pilot_result.md`
+- `results/20260620_t2_edema_pilot/result.md`
+- `results/20260620_t2_edema_pilot/MANIFEST.md`
 
 建议写入：
 
 - `docs/notes/t2_present_edema_pilot_20260620.md`
-- `results/diagnostics/t2_present_edema_<timestamp>/` 或 `results/experiments/t2_present_edema_<timestamp>/` 下的 metadata、metrics、manifest、日志或诊断输出
+- `results/diagnostics/t2_present_edema_<timestamp>/` 或 `results/experiments/t2_present_edema_<timestamp>/` 下的 metadata、metrics、manifest、日志或诊断输出；同时在 `results/20260620_t2_edema_pilot/MANIFEST.md` 中索引这些路径
 - 新增 diagnostic/training/pilot 脚本和 Slurm job script，路径需在 result 中列出
 
 最终 result 至少包含：读取文件、修改文件、运行命令、job id、日志路径、退出状态、覆盖了多少 complete cases、是否完成训练或较大规模诊断、主要 local Dice/HD/HD95 或 proxy、输出路径、失败信息、git diff 摘要、下一步建议。
