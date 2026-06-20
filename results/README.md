@@ -46,3 +46,18 @@ results/diagnostics/care_myocardium/
 
 Do not add new CARE Myocardium outputs under legacy or ambiguous names such as
 legacy phase-style roots, bare `round3`, or top-level `CineMyoPS_roundX`.
+
+## AI Bridge Task Artifacts
+
+For new ChatGPT/Codex handoff tasks, use the same readable task key as the task file:
+
+```text
+prompts/tasks/<task_key>.md
+results/<task_key>/result.md
+results/<task_key>/review.md
+results/<task_key>/MANIFEST.md
+```
+
+`task_key` should be `<id>_<short_slug>`, with the short slug limited to 1-3 words joined by underscores, for example `20260620_t2_edema_pilot`.
+
+This handoff layout is for task-scoped artifacts only. Existing CARE result roots such as `predictions/`, `experiments/`, `diagnostics/`, and `leaderboard/` keep their domain-specific organization.
