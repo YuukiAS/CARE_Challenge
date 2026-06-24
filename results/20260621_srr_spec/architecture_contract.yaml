@@ -1,0 +1,79 @@
+task_key: 20260621_srr_spec
+status: frozen_for_minimal_fold0
+method_name: Selective Representation Retrieval for Partially Observed Multi-sequence Cardiac MR
+model_name: SRR-MyoPS-Lite
+source: docs/notes/deep_research/Result4.pdf
+extracted_text: results/20260621_srr_spec/Result4.txt
+dataset_contract:
+  dataset: Dataset501_CAREMyoPS
+  input_channel_order: [LGE, T2, C0]
+  real_training_patterns:
+    - C0+LGE+T2
+    - C0+LGE
+    - LGE-only
+  compact_labels:
+    0: background
+    1: myocardium
+    2: LV_blood
+    3: RV_blood
+    4: edema
+    5: scar
+  raw_export_labels:
+    200: myocardium
+    500: LV_blood
+    600: RV_blood
+    1220: edema
+    2221: scar
+minimal_trainable_version:
+  stems: modality-specific 3D stems for LGE, T2, C0
+  retrieval_dictionary:
+    per_scale_shared_experts: 1
+    per_modality_private_experts: 1
+    first_pass_scales: 1 implemented skeleton, contract allows multi-scale expansion in fold0
+  router_inputs: [availability_vector, masked_feature_summary]
+  invalid_modality_masking:
+    - mask image before each stem
+    - mask modality feature after each stem
+    - disable unavailable modality-private experts in router
+  heads:
+    anatomy: background/myocardium/LV/RV anatomy logits and union prior
+    scar: LGE-preserving binary head trained on all cases
+    edema: T2-conditioned binary head trained only on T2-present cases
+  optional_alignment: disabled in first pass; only allowed as later ablation after complete-case evidence
+loss:
+  total: L = La + Ls + Le + 0.1*Lprior + Lretrieval
+  anatomy: anatomy CE with pathology labels mapped to myocardium-union
+  scar: binary Dice+BCE on class 5 for all modality groups
+  edema: binary Dice+BCE on class 4 only when T2 is present
+  retrieval: entropy plus coverage/load-balancing regularizer
+  prior: soft anatomy containment for scar/edema, no hard deletion
+supervision_matrix:
+  C0+LGE+T2:
+    valid_encoders: [LGE, T2, C0]
+    edema_loss_weight: 1.0
+    scar_supervision: true
+    anatomy_supervision: true
+    modality_dropout: may_drop_C0_or_T2_but_keep_LGE_reference
+  C0+LGE:
+    valid_encoders: [LGE, C0]
+    edema_loss_weight: 0.0
+    scar_supervision: true
+    anatomy_supervision: true
+    modality_dropout: may_drop_C0_only
+  LGE-only:
+    valid_encoders: [LGE]
+    edema_loss_weight: 0.0
+    scar_supervision: true
+    anatomy_supervision: true
+    modality_dropout: false
+prohibited_synthetic_combinations:
+  - no_LGE_training_sample
+  - no_T2_as_edema_hard_negative
+  - center_id_required_at_inference
+  - unmasked_zero_filled_missing_modality_feature
+fallbacks:
+  scar_lge_only: supported
+  no_t2_edema_dense_loss: zero
+  router_failure: deterministic availability-aware late fusion fallback
+  artifact_isolation: variant/fold/checkpoint/config scoped paths required
+gate_decision: GO_FOLD0

@@ -1,0 +1,16 @@
+{
+  "best_step": 105000,
+  "best_val_patch_loss": 0.7121264139811198,
+  "checkpoint_best": "/overflow/htzhu/CARE/results/20260621_srr_fold0/variants/srr_minimal/checkpoints/fold_0/srr_fold0_config/checkpoint_best.pt",
+  "checkpoint_final": "/overflow/htzhu/CARE/results/20260621_srr_fold0/variants/srr_minimal/checkpoints/fold_0/srr_fold0_config/checkpoint_final.pt",
+  "complete_train_cases": 64,
+  "device": "cuda",
+  "elapsed_seconds": 16229.626262340695,
+  "export_skipped": false,
+  "fold": 0,
+  "prediction_dir": "/overflow/htzhu/CARE/results/20260621_srr_fold0/variants/srr_minimal/predictions/fold_0/checkpoint_best",
+  "stop_reason": "max_runtime_seconds",
+  "train_cases": 176,
+  "val_cases": 44,
+  "variant": "srr_minimal"
+}
