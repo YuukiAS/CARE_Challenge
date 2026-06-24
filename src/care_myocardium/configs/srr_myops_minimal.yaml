@@ -1,0 +1,36 @@
+model:
+  name: SRR-MyoPS-Lite
+  implementation: src.care_myocardium.models.srr_myops.SRRMyoPSLite
+  dataset: Dataset501_CAREMyoPS
+  input_channel_order: [LGE, T2, C0]
+  availability_order: [LGE, T2, C0]
+  compact_labels:
+    0: background
+    1: myocardium
+    2: LV_blood
+    3: RV_blood
+    4: edema
+    5: scar
+  base_channels: 16
+retrieval:
+  shared_experts_per_scale: 1
+  private_experts_per_modality_per_scale: 1
+  router_inputs: [availability_vector, masked_feature_summary]
+  invalid_modality_rule: mask_before_stem_and_after_stem_and_disable_private_experts
+heads:
+  anatomy: [background, myocardium, LV_blood, RV_blood]
+  scar: LGE_preserving_binary_head
+  edema: T2_conditioned_binary_head
+loss:
+  anatomy: DiceCE-compatible anatomy CE with pathology mapped to myocardium-union
+  scar: binary Dice+BCE on compact label 5 for all cases
+  edema: binary Dice+BCE on compact label 4 only when T2 is present
+  retrieval: entropy plus coverage/load-balancing regularizer
+  prior: soft anatomy containment, no hard deletion
+training_budget:
+  spec_smoke: synthetic one-batch forward/backward only
+  fold0_next_task_walltime: "<=08:00:00"
+paths:
+  checkpoints: results/checkpoints/20260621_srr_fold0/<variant>/fold_0/<checkpoint_or_config>/
+  predictions: results/predictions/20260621_srr_fold0/<variant>/fold_0/<checkpoint_or_config>/
+  metrics: results/metrics/unified/20260621_srr_fold0/<variant>/fold_0/<checkpoint_or_config>/
