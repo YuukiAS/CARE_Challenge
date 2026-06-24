@@ -30,11 +30,20 @@ external_supervisors/
 code/Inspect/
 jobs/autopilot/
 results/autopilot/
+scripts/autopilot/
 CARE-Vibe-Research.code-workspace
 CURRENT_RESEARCH_BRIEF.md
 RUN.md
 VIBE_*.md
 prompts/Vibe_Research.md
+
+# Local archive buckets for first-level directories.
+code/archive/
+envs/archive/
+jobs/archive/
+prompts/archive/
+results/archive/
+scripts/archive/
 
 # ------------------------------------------------------------------------------
 # Python — bytecode & extensions
@@ -170,6 +179,12 @@ results/metrics/unified/*/fold_*/modality_group_metrics.json
 results/metrics/unified/*/fold_*/modality_group_metrics.md
 results/metrics/unified/*/fold_*/hd_per_class.json
 results/metrics/unified/*/fold_*/hd95_per_class.json
+
+# Task-scoped experiment directories should keep summaries/manifests tracked but
+# not heavy rerunnable artifacts.
+results/*/variants/*/checkpoints/
+results/*/variants/*/predictions/
+results/*/coordinator/*.log
 
 # LaTeX presentation build artifacts. Keep source .tex and final .pdf tracked.
 docs/presentation/*.aux
