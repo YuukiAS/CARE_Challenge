@@ -1,0 +1,22 @@
+decision: `GO_RESCUE_ABLATION`
+
+- best_edema_gt_positive=srr_expert_dropout:0.1928
+- best_scar_all_cases=srr_expert_dropout:0.0923
+- srr_expert_dropout.anatomy.max_mean_weight=0.3437
+- srr_expert_dropout.anatomy.max_logged_weight=1.0000
+- srr_soft_entropy.anatomy.max_mean_weight=0.4188
+- srr_soft_entropy.anatomy.max_logged_weight=0.6389
+- srr_task_tempered.anatomy.max_mean_weight=0.4005
+- srr_task_tempered.anatomy.max_logged_weight=0.6252
+- srr_expert_dropout.scar.max_mean_weight=0.3311
+- srr_expert_dropout.scar.max_logged_weight=1.0000
+- srr_soft_entropy.scar.max_mean_weight=0.3978
+- srr_soft_entropy.scar.max_logged_weight=0.5815
+- srr_task_tempered.scar.max_mean_weight=0.3260
+- srr_task_tempered.scar.max_logged_weight=0.6737
+- srr_expert_dropout.edema.max_mean_weight=0.3262
+- srr_expert_dropout.edema.max_logged_weight=1.0000
+- srr_soft_entropy.edema.max_mean_weight=0.3003
+- srr_soft_entropy.edema.max_logged_weight=0.5226
+- srr_task_tempered.edema.max_mean_weight=0.3094
+- srr_task_tempered.edema.max_logged_weight=0.5473
