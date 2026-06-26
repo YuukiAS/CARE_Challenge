@@ -1,0 +1,3 @@
+variant,step,loss,anatomy_loss,scar_loss,edema_loss,retrieval_loss,edema_supervised_batch_fraction,batch_cases,elapsed_seconds
+cross_modal_interaction_dictionary,1,3.386626720428467,1.4182387590408325,0.8921903371810913,0.6807231903076172,0.0004322354798205197,1.0,Case2022,0.5774791371077299
+cross_modal_interaction_dictionary,1,3.386626720428467,,,,,,,2.14549976401031

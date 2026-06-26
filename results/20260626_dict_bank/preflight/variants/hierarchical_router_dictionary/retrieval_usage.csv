@@ -1,0 +1,13 @@
+variant,step,task,expert_index,mean_weight,batch_cases
+hierarchical_router_dictionary,1,anatomy,0,0.3254435062408447,Case2022
+hierarchical_router_dictionary,1,anatomy,1,0.3398514688014984,Case2022
+hierarchical_router_dictionary,1,anatomy,2,0.33470505475997925,Case2022
+hierarchical_router_dictionary,1,anatomy,3,0.0,Case2022
+hierarchical_router_dictionary,1,scar,0,0.0,Case2022
+hierarchical_router_dictionary,1,scar,1,0.31885913014411926,Case2022
+hierarchical_router_dictionary,1,scar,2,0.347345232963562,Case2022
+hierarchical_router_dictionary,1,scar,3,0.3337956964969635,Case2022
+hierarchical_router_dictionary,1,edema,0,0.3466998338699341,Case2022
+hierarchical_router_dictionary,1,edema,1,0.3534187078475952,Case2022
+hierarchical_router_dictionary,1,edema,2,0.2998814582824707,Case2022
+hierarchical_router_dictionary,1,edema,3,0.0,Case2022

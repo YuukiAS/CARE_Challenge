@@ -1,0 +1,3 @@
+variant,step,loss,anatomy_loss,scar_loss,edema_loss,retrieval_loss,edema_supervised_batch_fraction,batch_cases,elapsed_seconds
+task_specific_dictionary,1,3.965942621231079,1.4987952709197998,1.0252127647399902,0.9339606165885925,0.0024564608465880156,1.0,Case2022,0.9252273831516504
+task_specific_dictionary,1,3.965942621231079,,,,,,,3.5094687957316637

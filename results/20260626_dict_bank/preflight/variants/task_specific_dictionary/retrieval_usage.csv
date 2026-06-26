@@ -1,0 +1,16 @@
+variant,step,task,expert_index,mean_weight,batch_cases
+task_specific_dictionary,1,anatomy,0,0.0,Case2022
+task_specific_dictionary,1,anatomy,1,0.4572516977787018,Case2022
+task_specific_dictionary,1,anatomy,2,0.0,Case2022
+task_specific_dictionary,1,anatomy,3,0.5427483320236206,Case2022
+task_specific_dictionary,1,anatomy,4,0.0,Case2022
+task_specific_dictionary,1,scar,0,0.2778640687465668,Case2022
+task_specific_dictionary,1,scar,1,0.2588707506656647,Case2022
+task_specific_dictionary,1,scar,2,0.21263782680034637,Case2022
+task_specific_dictionary,1,scar,3,0.0,Case2022
+task_specific_dictionary,1,scar,4,0.25062745809555054,Case2022
+task_specific_dictionary,1,edema,0,0.2545672059059143,Case2022
+task_specific_dictionary,1,edema,1,0.0,Case2022
+task_specific_dictionary,1,edema,2,0.23572997748851776,Case2022
+task_specific_dictionary,1,edema,3,0.22445684671401978,Case2022
+task_specific_dictionary,1,edema,4,0.28524601459503174,Case2022
