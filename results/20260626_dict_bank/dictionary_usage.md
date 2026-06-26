@@ -16,3 +16,8 @@ This summarizes completed formal variants only. Context tasks are the multiscale
 - anatomy: per-expert mean weights `expert0=0.2446, expert1=0.2370, expert2=0.2177, expert3=0.1523, expert4=0.1485`; max logged row weight `0.7722`
 - edema: per-expert mean weights `expert0=0.2089, expert1=0.2640, expert2=0.2423, expert3=0.1248, expert4=0.1600`; max logged row weight `0.8053`
 - scar: per-expert mean weights `expert0=0.2379, expert1=0.2511, expert2=0.2063, expert3=0.1606, expert4=0.1440`; max logged row weight `0.8061`
+
+## cross_modal_interaction_dictionary
+- anatomy: per-expert mean weights `expert0=0.2951, expert1=0.2186, expert2=0.1167, expert3=0.1414, expert4=0.0664, expert5=0.1303, expert6=0.0316`; max logged row weight `1.0000`
+- edema: per-expert mean weights `expert0=0.2222, expert1=0.2304, expert2=0.1399, expert3=0.0866, expert4=0.1288, expert5=0.0976, expert6=0.0946`; max logged row weight `1.0000`
+- scar: per-expert mean weights `expert0=0.2421, expert1=0.2740, expert2=0.0794, expert3=0.1638, expert4=0.0786, expert5=0.1381, expert6=0.0240`; max logged row weight `1.0000`

@@ -6,17 +6,23 @@ This file is generated from the legacy SRR recovery reporter for completed varia
 
 legacy_reporter_decision: `GO_RESCUE_ABLATION`
 
-- best_edema_gt_positive=multiscale_dictionary:0.1001
-- best_scar_all_cases=task_specific_dictionary:0.0956
+- best_edema_gt_positive=cross_modal_interaction_dictionary:0.1599
+- best_scar_all_cases=cross_modal_interaction_dictionary:0.1054
 - multiscale_dictionary.anatomy.max_mean_weight=0.3762
 - multiscale_dictionary.anatomy.max_logged_weight=1.0000
 - task_specific_dictionary.anatomy.max_mean_weight=0.2446
 - task_specific_dictionary.anatomy.max_logged_weight=0.7722
+- cross_modal_interaction_dictionary.anatomy.max_mean_weight=0.2951
+- cross_modal_interaction_dictionary.anatomy.max_logged_weight=1.0000
 - multiscale_dictionary.scar.max_mean_weight=0.3503
 - multiscale_dictionary.scar.max_logged_weight=1.0000
 - task_specific_dictionary.scar.max_mean_weight=0.2511
 - task_specific_dictionary.scar.max_logged_weight=0.8061
+- cross_modal_interaction_dictionary.scar.max_mean_weight=0.2740
+- cross_modal_interaction_dictionary.scar.max_logged_weight=1.0000
 - multiscale_dictionary.edema.max_mean_weight=0.3400
 - multiscale_dictionary.edema.max_logged_weight=1.0000
 - task_specific_dictionary.edema.max_mean_weight=0.2640
 - task_specific_dictionary.edema.max_logged_weight=0.8053
+- cross_modal_interaction_dictionary.edema.max_mean_weight=0.2304
+- cross_modal_interaction_dictionary.edema.max_logged_weight=1.0000

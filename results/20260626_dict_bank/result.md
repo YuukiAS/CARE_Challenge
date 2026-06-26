@@ -130,9 +130,21 @@ At `2026-06-26 16:38 EDT`, D2 had completed successfully, D4/D5/D6 were running,
 
 D2 completed the formal runtime budget and interim aggregates were regenerated for D1+D2. Current best partial signals are D1 for edema GT-positive Dice (`0.1001`) and D2 for scar all-case Dice (`0.0956`), but D2 has high HD95/component/remote-FP burden and weak edema behavior. This remains partial evidence, not final selection.
 
+## Queue Evidence After Seventh Wait
+
+At `2026-06-26 18:42 EDT`, D4 had completed successfully and D5/D6 were still running:
+
+| job | variant | state | elapsed | node/reason |
+| --- | --- | --- | --- | --- |
+| `56611486` | `cross_modal_interaction_dictionary` | `COMPLETED` | `06:30:49` | `ExitCode=0:0` |
+| `56611487` | `anchor_guided_dictionary` | `R` | `05:55:46` | `g1807htzh01` |
+| `56611488` | `hierarchical_router_dictionary` | `R` | `02:30:17` | `g180702` |
+
+D4 completed the formal runtime budget and interim aggregates were regenerated for D1+D2+D4. Current best partial signal is D4: edema GT-positive Dice `0.1599`, scar all-case Dice `0.1054`. HD95/component/remote-FP burden remains high, so this is not final selection.
+
 ## Not Yet Done
 
-- D4, D5, and D6 formal metrics have not completed.
+- D5 and D6 formal metrics have not completed.
 - No `selection.md` has been written.
 - No compactness task has started, because it depends on `selection.md:SELECT_*`.
 - No validation upload, external upload, external data, external weights, fold expansion, or evaluator/label split change was performed.

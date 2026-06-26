@@ -109,6 +109,16 @@ After the sixth wait cycle, at `2026-06-26 16:38 EDT`, D2 had completed and D6 h
 
 D2 interim readout: scar all-case Dice `0.0956`, scar GT-positive Dice `0.0978`, edema GT-positive Dice `0.0968`, with high HD95/component/remote-FP burden. Root-level interim reports now aggregate D1+D2.
 
+After the seventh wait cycle, at `2026-06-26 18:42 EDT`, D4 had completed and D5/D6 were still running:
+
+| job | variant | state | elapsed | node/reason |
+| --- | --- | --- | --- | --- |
+| `56611486` | `cross_modal_interaction_dictionary` | `COMPLETED` | `06:30:49` | `ExitCode=0:0` |
+| `56611487` | `anchor_guided_dictionary` | `R` | `05:55:46` | `g1807htzh01` |
+| `56611488` | `hierarchical_router_dictionary` | `R` | `02:30:17` | `g180702` |
+
+D4 interim readout: edema GT-positive Dice `0.1599`, scar all-case Dice `0.1054`, but HD95/component/remote-FP burden remains high. Root-level interim reports now aggregate D1+D2+D4.
+
 ### Next
 
 - Continue monitoring the five dictionary jobs.
