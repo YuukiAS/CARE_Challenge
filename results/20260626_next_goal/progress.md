@@ -51,6 +51,18 @@ At `2026-06-26 04:17 EDT`, all five jobs were still pending on `htzhulab`; no fa
 
 Fallback queues were checked. `a100-gpu` and `volta-gpu` did not show a clear faster path for these five 7.5h formal jobs, so the `htzhulab` jobs remain live.
 
+After one complete 2-hour wait cycle, at `2026-06-26 06:23 EDT`, D1 `multiscale_dictionary` had started:
+
+| job | variant | state | elapsed | node/reason |
+| --- | --- | --- | --- | --- |
+| `56611484` | `multiscale_dictionary` | `R` | `01:21:50` | `g1807htzh01` |
+| `56611485` | `task_specific_dictionary` | `PD` | `0:00` | `Resources` |
+| `56611486` | `cross_modal_interaction_dictionary` | `PD` | `0:00` | `Priority` |
+| `56611487` | `anchor_guided_dictionary` | `PD` | `0:00` | `Priority` |
+| `56611488` | `hierarchical_router_dictionary` | `PD` | `0:00` | `Priority` |
+
+D1 has an ignored checkpoint at `results/20260626_dict_bank/variants/multiscale_dictionary/checkpoints/fold_0/srr_fold0_config/checkpoint_best.pt`; no formal metrics are ready yet.
+
 ### Next
 
 - Continue monitoring the five dictionary jobs.

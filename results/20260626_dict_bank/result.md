@@ -49,6 +49,20 @@ At `2026-06-26 04:17 EDT`, the five dictionary jobs were still pending:
 
 Fallback queues were checked before duplicating or moving work. `a100-gpu` had a deep pending queue with many long gridsearch jobs. `volta-gpu` also had many pending and running long jobs. There was no clear evidence that fallback would complete these five 7.5h formal jobs earlier, and the task's allowed 5 parallel GPU jobs were already submitted. The current action is to keep the `htzhulab` submissions live and monitor.
 
+## Queue Evidence After First Required Wait
+
+After one complete 2-hour wait cycle, at `2026-06-26 06:23 EDT`, `56611484` had started:
+
+| job | variant | state | elapsed | node/reason |
+| --- | --- | --- | --- | --- |
+| `56611484` | `multiscale_dictionary` | `R` | `01:21:50` | `g1807htzh01` |
+| `56611485` | `task_specific_dictionary` | `PD` | `0:00` | `Resources` |
+| `56611486` | `cross_modal_interaction_dictionary` | `PD` | `0:00` | `Priority` |
+| `56611487` | `anchor_guided_dictionary` | `PD` | `0:00` | `Priority` |
+| `56611488` | `hierarchical_router_dictionary` | `PD` | `0:00` | `Priority` |
+
+`scontrol show job 56611484` reported `JobState=RUNNING`, `NodeList=g1807htzh01`, `AllocTRES=...gres/gpu:nvidia_h100_nvl=1`, and `EndTime=2026-06-26T12:31:51`. The live log is `logs/SRRD1MultiF0_56611484_20260626_050152.log`. A checkpoint file exists under the ignored formal output path, confirming the job entered training/checkpoint logic; no formal metrics have completed yet.
+
 ## Not Yet Done
 
 - No formal metrics have completed.
