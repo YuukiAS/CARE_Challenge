@@ -63,6 +63,18 @@ After one complete 2-hour wait cycle, at `2026-06-26 06:23 EDT`, D1 `multiscale_
 
 D1 has an ignored checkpoint at `results/20260626_dict_bank/variants/multiscale_dictionary/checkpoints/fold_0/srr_fold0_config/checkpoint_best.pt`; no formal metrics are ready yet.
 
+After the third wait cycle, at `2026-06-26 10:27 EDT`, D1 and D2 were running:
+
+| job | variant | state | elapsed | node/reason |
+| --- | --- | --- | --- | --- |
+| `56611484` | `multiscale_dictionary` | `R` | `05:25:56` | `g1807htzh01` |
+| `56611485` | `task_specific_dictionary` | `R` | `00:48:39` | `g180702` |
+| `56611486` | `cross_modal_interaction_dictionary` | `PD` | `0:00` | `Resources` |
+| `56611487` | `anchor_guided_dictionary` | `PD` | `0:00` | `Priority` |
+| `56611488` | `hierarchical_router_dictionary` | `PD` | `0:00` | `Priority` |
+
+D2 has an ignored checkpoint at `results/20260626_dict_bank/variants/task_specific_dictionary/checkpoints/fold_0/srr_fold0_config/checkpoint_best.pt`. Remaining estimated starts: D4 `2026-06-26T12:31:51`, D5 `2026-06-26T17:09:08`, D6 `2026-06-26T20:05:00`.
+
 ### Next
 
 - Continue monitoring the five dictionary jobs.

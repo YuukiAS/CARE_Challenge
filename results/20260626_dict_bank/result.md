@@ -63,6 +63,24 @@ After one complete 2-hour wait cycle, at `2026-06-26 06:23 EDT`, `56611484` had 
 
 `scontrol show job 56611484` reported `JobState=RUNNING`, `NodeList=g1807htzh01`, `AllocTRES=...gres/gpu:nvidia_h100_nvl=1`, and `EndTime=2026-06-26T12:31:51`. The live log is `logs/SRRD1MultiF0_56611484_20260626_050152.log`. A checkpoint file exists under the ignored formal output path, confirming the job entered training/checkpoint logic; no formal metrics have completed yet.
 
+## Queue Evidence After Third Wait
+
+At `2026-06-26 10:27 EDT`, two variants were running:
+
+| job | variant | state | elapsed | node/reason |
+| --- | --- | --- | --- | --- |
+| `56611484` | `multiscale_dictionary` | `R` | `05:25:56` | `g1807htzh01` |
+| `56611485` | `task_specific_dictionary` | `R` | `00:48:39` | `g180702` |
+| `56611486` | `cross_modal_interaction_dictionary` | `PD` | `0:00` | `Resources` |
+| `56611487` | `anchor_guided_dictionary` | `PD` | `0:00` | `Priority` |
+| `56611488` | `hierarchical_router_dictionary` | `PD` | `0:00` | `Priority` |
+
+D1 and D2 both have live Python training processes and ignored checkpoints under their variant directories. D2's live log is `logs/SRRD2TaskF0_56611485_20260626_093909.log`. Current start estimates for the remaining pending variants are:
+
+- `56611486` D4 `cross_modal_interaction_dictionary`: `2026-06-26T12:31:51`
+- `56611487` D5 `anchor_guided_dictionary`: `2026-06-26T17:09:08`
+- `56611488` D6 `hierarchical_router_dictionary`: `2026-06-26T20:05:00`
+
 ## Not Yet Done
 
 - No formal metrics have completed.
