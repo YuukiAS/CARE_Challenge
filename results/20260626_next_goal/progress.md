@@ -75,6 +75,18 @@ After the third wait cycle, at `2026-06-26 10:27 EDT`, D1 and D2 were running:
 
 D2 has an ignored checkpoint at `results/20260626_dict_bank/variants/task_specific_dictionary/checkpoints/fold_0/srr_fold0_config/checkpoint_best.pt`. Remaining estimated starts: D4 `2026-06-26T12:31:51`, D5 `2026-06-26T17:09:08`, D6 `2026-06-26T20:05:00`.
 
+After the fourth wait cycle, at `2026-06-26 12:31 EDT`, D1 had completed and D4 had started:
+
+| job | variant | state | elapsed | node/reason |
+| --- | --- | --- | --- | --- |
+| `56611484` | `multiscale_dictionary` | `COMPLETED` | `06:31:05` | `ExitCode=0:0` |
+| `56611485` | `task_specific_dictionary` | `R` | `02:52:08` | `g180702` |
+| `56611486` | `cross_modal_interaction_dictionary` | `R` | `00:58:14` | `g1807htzh01` |
+| `56611487` | `anchor_guided_dictionary` | `PD` | `0:00` | `Resources` |
+| `56611488` | `hierarchical_router_dictionary` | `PD` | `0:00` | `Priority` |
+
+D1 interim readout: edema GT-positive Dice `0.1001`, scar all-case Dice `0.0253`, scar GT-positive Dice `0.0026`. Root-level interim reports have been generated, but no final `selection.md` has been written.
+
 ### Next
 
 - Continue monitoring the five dictionary jobs.

@@ -81,9 +81,32 @@ D1 and D2 both have live Python training processes and ignored checkpoints under
 - `56611487` D5 `anchor_guided_dictionary`: `2026-06-26T17:09:08`
 - `56611488` D6 `hierarchical_router_dictionary`: `2026-06-26T20:05:00`
 
+## Queue Evidence After Fourth Wait
+
+At `2026-06-26 12:31 EDT`, D1 had completed successfully, D2 and D4 were running, and D5/D6 were pending:
+
+| job | variant | state | elapsed | node/reason |
+| --- | --- | --- | --- | --- |
+| `56611484` | `multiscale_dictionary` | `COMPLETED` | `06:31:05` | `ExitCode=0:0` |
+| `56611485` | `task_specific_dictionary` | `R` | `02:52:08` | `g180702` |
+| `56611486` | `cross_modal_interaction_dictionary` | `R` | `00:58:14` | `g1807htzh01` |
+| `56611487` | `anchor_guided_dictionary` | `PD` | `0:00` | `Resources` |
+| `56611488` | `hierarchical_router_dictionary` | `PD` | `0:00` | `Priority` |
+
+D1 completed the formal runtime budget and wrote variant-level metrics. Interim root-level aggregates have been generated for completed variants only:
+
+- `results/20260626_dict_bank/metrics_summary.md`
+- `results/20260626_dict_bank/subgroup_metrics.csv`
+- `results/20260626_dict_bank/component_hd_by_case.csv`
+- `results/20260626_dict_bank/dictionary_usage.csv`
+- `results/20260626_dict_bank/dictionary_usage.md`
+- `results/20260626_dict_bank/failure_interpretation.md`
+
+Current D1 readout: edema GT-positive Dice `0.1001`; scar all-case Dice `0.0253`; scar GT-positive Dice `0.0026`; scar HD95 remains high. This is not final selection evidence by itself.
+
 ## Not Yet Done
 
-- No formal metrics have completed.
+- D2, D4, D5, and D6 formal metrics have not completed.
 - No `selection.md` has been written.
 - No compactness task has started, because it depends on `selection.md:SELECT_*`.
 - No validation upload, external upload, external data, external weights, fold expansion, or evaluator/label split change was performed.
