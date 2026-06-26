@@ -11,7 +11,7 @@ This goal is active. Current progress is recorded in `results/20260626_next_goal
 | `20260626_dict_research` | `COMPLETED_BOUNDED_SYNTHESIS` | `results/20260626_dict_research/result.md` |
 | `20260626_dict_bank` | `IN_PROGRESS` | five `htzhulab` jobs submitted; see `results/20260626_dict_bank/result.md` |
 | `20260626_lesion_compact` | `WAITING_FOR_DICT_SELECTION` | blocked by task dependency, not an execution block |
-| `20260626_cine_temporal` | `PENDING_START` | next non-blocking branch while MyoPS jobs wait |
+| `20260626_cine_temporal` | `KEEP_REFERENCE_CONTROL` | `results/20260626_cine_temporal/result.md` |
 
 ## Current Job IDs
 

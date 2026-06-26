@@ -31,6 +31,11 @@ Pulled latest task files from `origin/main` and read the goal entrypoint plus su
   - `56611486`: `cross_modal_interaction_dictionary`
   - `56611487`: `anchor_guided_dictionary`
   - `56611488`: `hierarchical_router_dictionary`
+- Advanced `20260626_cine_temporal` while MyoPS jobs were pending:
+  - added `scripts/evaluation/cinemyops_temporal_preflight.py`
+  - evaluated 59 strict-safe cases and kept 5 mismatch cases out
+  - wrote `results/20260626_cine_temporal/result.md`
+  - decision: `KEEP_REFERENCE_CONTROL`
 
 ### Current Queue State
 
@@ -41,4 +46,4 @@ At submission check, all five jobs were pending on `htzhulab`; no fail-fast logs
 - Continue monitoring the five dictionary jobs.
 - If they complete, aggregate formal metrics and write `results/20260626_dict_bank/selection.md`.
 - Only if dictionary bank selects a route, proceed to `20260626_lesion_compact`.
-- Start/advance `20260626_cine_temporal` while MyoPS jobs are pending, without blocking MyoPS.
+- Do not proceed to `20260626_lesion_compact` until dictionary bank writes a selection.

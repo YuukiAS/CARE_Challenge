@@ -1,0 +1,10 @@
+class_id,component_count_mean,dice_mean,empty_prediction_rate,hd95_mean,metric_name,n,variant
+1,2.7796610169491527,0.4661822331407898,0.0,12.06773746728978,class_1_myocardium,59,anatomy_consistency_temporal
+2,1.0338983050847457,0.6955386759416984,0.01694915254237288,11.855990928288145,class_2_lv,59,anatomy_consistency_temporal
+3,0.0,0.0,1.0,,class_3_scar_sanity,59,anatomy_consistency_temporal
+1,1.4745762711864407,0.5623431188033298,0.0,11.333070746298628,class_1_myocardium,59,keyframe_context_retrieval
+2,1.0847457627118644,0.7708625477165425,0.01694915254237288,11.039282918770342,class_2_lv,59,keyframe_context_retrieval
+3,0.0,0.0,1.0,,class_3_scar_sanity,59,keyframe_context_retrieval
+1,1.4745762711864407,0.5626213839689457,0.0,11.333070746298628,class_1_myocardium,59,reference_control_safe
+2,1.0847457627118644,0.7708784354888585,0.01694915254237288,11.04403893492186,class_2_lv,59,reference_control_safe
+3,0.0,0.0,1.0,,class_3_scar_sanity,59,reference_control_safe
