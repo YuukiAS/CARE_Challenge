@@ -36,6 +36,13 @@ RAW_ROOT = REPO_ROOT / "data/nnUNet/nnUNet_raw/Dataset501_CAREMyoPS"
 SPLIT_JSON = REPO_ROOT / "data/benchmarks/protocol/splits_MyoPS.json"
 DEFAULT_OUT_ROOT = REPO_ROOT / "results/20260621_srr_fold0"
 IGNORE_LABEL = -1
+DICTIONARY_BANK_VARIANTS = {
+    "multiscale_dictionary",
+    "task_specific_dictionary",
+    "cross_modal_interaction_dictionary",
+    "anchor_guided_dictionary",
+    "hierarchical_router_dictionary",
+}
 
 
 @dataclass
@@ -167,6 +174,21 @@ def variant_router_settings(args: argparse.Namespace) -> tuple[dict[str, float],
         temps = {"anatomy": 2.2, "scar": 1.25, "edema": 2.4}
     elif args.variant == "retrieval_no_sip_or_weak_sip":
         temps = {"anatomy": 1.4, "scar": 1.25, "edema": 1.5}
+    elif args.variant == "multiscale_dictionary":
+        temps = {"anatomy": 1.7, "scar": 1.45, "edema": 1.9}
+        dropout = 0.20 if args.expert_dropout == 0 else dropout
+    elif args.variant == "task_specific_dictionary":
+        temps = {"anatomy": 1.6, "scar": 1.35, "edema": 1.7}
+        dropout = 0.20 if args.expert_dropout == 0 else dropout
+    elif args.variant == "cross_modal_interaction_dictionary":
+        temps = {"anatomy": 1.8, "scar": 1.45, "edema": 1.9}
+        dropout = 0.20 if args.expert_dropout == 0 else dropout
+    elif args.variant == "anchor_guided_dictionary":
+        temps = {"anatomy": 1.5, "scar": 1.25, "edema": 1.5}
+        dropout = 0.15 if args.expert_dropout == 0 else dropout
+    elif args.variant == "hierarchical_router_dictionary":
+        temps = {"anatomy": 1.8, "scar": 1.55, "edema": 2.0}
+        dropout = 0.20 if args.expert_dropout == 0 else dropout
     if args.anatomy_router_temperature is not None:
         temps["anatomy"] = float(args.anatomy_router_temperature)
     if args.scar_router_temperature is not None:
@@ -185,6 +207,14 @@ def make_model(args: argparse.Namespace, device: torch.device) -> nn.Module:
     elif variant in {"srr_minimal", "srr_soft_entropy", "srr_expert_dropout", "srr_task_tempered", "retrieval_no_sip_or_weak_sip"}:
         temps, dropout = variant_router_settings(args)
         model = SRRMyoPSLite(base_channels=args.base_channels, router_temperatures=temps, expert_dropout=dropout)
+    elif variant in DICTIONARY_BANK_VARIANTS:
+        temps, dropout = variant_router_settings(args)
+        model = SRRMyoPSLite(
+            base_channels=args.base_channels,
+            router_temperatures=temps,
+            expert_dropout=dropout,
+            dictionary_mode=variant,
+        )
     else:
         raise ValueError(f"unknown variant {variant}")
     return model.to(device)
@@ -550,6 +580,7 @@ def train_variant(args: argparse.Namespace) -> None:
         "retrieval_config": retrieval_config,
         "router_temperatures": router_temperatures,
         "expert_dropout": effective_expert_dropout,
+        "dictionary_mode": args.variant if args.variant in DICTIONARY_BANK_VARIANTS else "standard",
     }
     (variant_dir / "summary.json").write_text(json.dumps(summary, indent=2, sort_keys=True), encoding="utf-8")
     write_text(
@@ -584,6 +615,11 @@ def main() -> None:
             "srr_task_tempered",
             "late_fusion_no_dictionary",
             "retrieval_no_sip_or_weak_sip",
+            "multiscale_dictionary",
+            "task_specific_dictionary",
+            "cross_modal_interaction_dictionary",
+            "anchor_guided_dictionary",
+            "hierarchical_router_dictionary",
         ],
     )
     parser.add_argument("--fold", type=int, default=0)

@@ -111,7 +111,7 @@ def decide(subgroups: list[dict[str, str]], usage: list[dict[str, str]], variant
 
 def decide_recovery(subgroups: list[dict[str, str]], usage: list[dict[str, str]], variants: list[str]) -> tuple[str, list[str]]:
     reasons: list[str] = []
-    revised = [v for v in variants if v.startswith("srr_")]
+    revised = [v for v in variants if v.startswith("srr_") or v.endswith("_dictionary")]
     if not revised:
         return "STOP_PIPELINE_BUG", ["no revised SRR variants found"]
 
@@ -223,7 +223,8 @@ def main() -> None:
     usage_lines = ["# Retrieval Usage", ""]
     for variant in variants:
         usage_lines.append(f"## {variant}")
-        for task in ("control_no_retrieval", "anatomy", "scar", "edema"):
+        tasks = sorted({row.get("task", "") for row in usage_rows if row.get("variant") == variant})
+        for task in [t for t in tasks if t]:
             per_expert, max_row = expert_weight_summary(usage_rows, variant, task)
             if per_expert:
                 parts = ", ".join(f"expert{idx}={value:.4f}" for idx, value in per_expert.items())

@@ -4,8 +4,10 @@
 archive/
 data/
 logs/
-models/
+/models/
 temp/
+!src/care_myocardium/models/
+!src/care_myocardium/models/*.py
 
 # Accidental self-referential symlink sometimes created in the repo root.
 /CARE
@@ -184,6 +186,12 @@ results/metrics/unified/*/fold_*/hd95_per_class.json
 # not heavy rerunnable artifacts.
 results/*/variants/*/checkpoints/
 results/*/variants/*/predictions/
+results/*/**/checkpoints/
+results/*/**/predictions/
+results/**/*.pt
+results/**/*.pth
+results/**/*.ckpt
+results/**/*.nii.gz
 results/*/coordinator/*.log
 
 # LaTeX presentation build artifacts. Keep source .tex and final .pdf tracked.
