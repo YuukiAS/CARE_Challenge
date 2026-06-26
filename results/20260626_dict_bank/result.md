@@ -104,6 +104,19 @@ D1 completed the formal runtime budget and wrote variant-level metrics. Interim 
 
 Current D1 readout: edema GT-positive Dice `0.1001`; scar all-case Dice `0.0253`; scar GT-positive Dice `0.0026`; scar HD95 remains high. This is not final selection evidence by itself.
 
+## Queue Evidence After Fifth Wait
+
+At `2026-06-26 14:36 EDT`, three variants were running:
+
+| job | variant | state | elapsed | node/reason |
+| --- | --- | --- | --- | --- |
+| `56611485` | `task_specific_dictionary` | `R` | `04:57:20` | `g180702` |
+| `56611486` | `cross_modal_interaction_dictionary` | `R` | `03:03:26` | `g1807htzh01` |
+| `56611487` | `anchor_guided_dictionary` | `R` | `01:49:37` | `g1807htzh01` |
+| `56611488` | `hierarchical_router_dictionary` | `PD` | `0:00` | `Resources` |
+
+D5 has started and has an ignored checkpoint under `results/20260626_dict_bank/variants/anchor_guided_dictionary/checkpoints/`. D6 is the only pending formal variant.
+
 ## Not Yet Done
 
 - D2, D4, D5, and D6 formal metrics have not completed.

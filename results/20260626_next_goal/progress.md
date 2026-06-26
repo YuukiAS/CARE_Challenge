@@ -87,6 +87,17 @@ After the fourth wait cycle, at `2026-06-26 12:31 EDT`, D1 had completed and D4 
 
 D1 interim readout: edema GT-positive Dice `0.1001`, scar all-case Dice `0.0253`, scar GT-positive Dice `0.0026`. Root-level interim reports have been generated, but no final `selection.md` has been written.
 
+After the fifth wait cycle, at `2026-06-26 14:36 EDT`, D2, D4, and D5 were running:
+
+| job | variant | state | elapsed | node/reason |
+| --- | --- | --- | --- | --- |
+| `56611485` | `task_specific_dictionary` | `R` | `04:57:20` | `g180702` |
+| `56611486` | `cross_modal_interaction_dictionary` | `R` | `03:03:26` | `g1807htzh01` |
+| `56611487` | `anchor_guided_dictionary` | `R` | `01:49:37` | `g1807htzh01` |
+| `56611488` | `hierarchical_router_dictionary` | `PD` | `0:00` | `Resources` |
+
+D6 is the only dictionary variant still waiting to start.
+
 ### Next
 
 - Continue monitoring the five dictionary jobs.
