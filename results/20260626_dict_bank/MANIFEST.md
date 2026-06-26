@@ -24,6 +24,11 @@ Task: `prompts/tasks/20260626_dict_bank.md`
 | `results/20260626_dict_bank/variants/multiscale_dictionary/component_hd_by_case.csv` | D1 completed formal case diagnostics. |
 | `results/20260626_dict_bank/variants/multiscale_dictionary/retrieval_usage.csv` | D1 completed formal dictionary usage rows. |
 | `results/20260626_dict_bank/variants/multiscale_dictionary/training_log.csv` | D1 completed formal training log. |
+| `results/20260626_dict_bank/variants/task_specific_dictionary/summary.*` | D2 completed formal summary. |
+| `results/20260626_dict_bank/variants/task_specific_dictionary/subgroup_metrics.csv` | D2 completed formal subgroup metrics. |
+| `results/20260626_dict_bank/variants/task_specific_dictionary/component_hd_by_case.csv` | D2 completed formal case diagnostics. |
+| `results/20260626_dict_bank/variants/task_specific_dictionary/retrieval_usage.csv` | D2 completed formal dictionary usage rows. |
+| `results/20260626_dict_bank/variants/task_specific_dictionary/training_log.csv` | D2 completed formal training log. |
 
 ## Review Placeholder
 

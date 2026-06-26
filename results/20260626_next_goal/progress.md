@@ -98,6 +98,17 @@ After the fifth wait cycle, at `2026-06-26 14:36 EDT`, D2, D4, and D5 were runni
 
 D6 is the only dictionary variant still waiting to start.
 
+After the sixth wait cycle, at `2026-06-26 16:38 EDT`, D2 had completed and D6 had started:
+
+| job | variant | state | elapsed | node/reason |
+| --- | --- | --- | --- | --- |
+| `56611485` | `task_specific_dictionary` | `COMPLETED` | `06:32:50` | `ExitCode=0:0` |
+| `56611486` | `cross_modal_interaction_dictionary` | `R` | `05:05:27` | `g1807htzh01` |
+| `56611487` | `anchor_guided_dictionary` | `R` | `03:51:38` | `g1807htzh01` |
+| `56611488` | `hierarchical_router_dictionary` | `R` | `00:26:09` | `g180702` |
+
+D2 interim readout: scar all-case Dice `0.0956`, scar GT-positive Dice `0.0978`, edema GT-positive Dice `0.0968`, with high HD95/component/remote-FP burden. Root-level interim reports now aggregate D1+D2.
+
 ### Next
 
 - Continue monitoring the five dictionary jobs.

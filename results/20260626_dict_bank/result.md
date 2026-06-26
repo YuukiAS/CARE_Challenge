@@ -117,9 +117,22 @@ At `2026-06-26 14:36 EDT`, three variants were running:
 
 D5 has started and has an ignored checkpoint under `results/20260626_dict_bank/variants/anchor_guided_dictionary/checkpoints/`. D6 is the only pending formal variant.
 
+## Queue Evidence After Sixth Wait
+
+At `2026-06-26 16:38 EDT`, D2 had completed successfully, D4/D5/D6 were running, and all five formal variants had at least started:
+
+| job | variant | state | elapsed | node/reason |
+| --- | --- | --- | --- | --- |
+| `56611485` | `task_specific_dictionary` | `COMPLETED` | `06:32:50` | `ExitCode=0:0` |
+| `56611486` | `cross_modal_interaction_dictionary` | `R` | `05:05:27` | `g1807htzh01` |
+| `56611487` | `anchor_guided_dictionary` | `R` | `03:51:38` | `g1807htzh01` |
+| `56611488` | `hierarchical_router_dictionary` | `R` | `00:26:09` | `g180702` |
+
+D2 completed the formal runtime budget and interim aggregates were regenerated for D1+D2. Current best partial signals are D1 for edema GT-positive Dice (`0.1001`) and D2 for scar all-case Dice (`0.0956`), but D2 has high HD95/component/remote-FP burden and weak edema behavior. This remains partial evidence, not final selection.
+
 ## Not Yet Done
 
-- D2, D4, D5, and D6 formal metrics have not completed.
+- D4, D5, and D6 formal metrics have not completed.
 - No `selection.md` has been written.
 - No compactness task has started, because it depends on `selection.md:SELECT_*`.
 - No validation upload, external upload, external data, external weights, fold expansion, or evaluator/label split change was performed.

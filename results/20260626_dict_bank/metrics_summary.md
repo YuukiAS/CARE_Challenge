@@ -14,6 +14,14 @@ This is an interim aggregate for completed formal variants only. It is not the f
 - checkpoint_best: `/overflow/htzhu/CARE/results/20260626_dict_bank/variants/multiscale_dictionary/checkpoints/fold_0/srr_fold0_config/checkpoint_best.pt`
 - predictions: `/overflow/htzhu/CARE/results/20260626_dict_bank/variants/multiscale_dictionary/predictions/fold_0/checkpoint_best`
 
+### task_specific_dictionary
+
+- stop_reason: `max_runtime_seconds`
+- elapsed_seconds: `23400.041554960422`
+- best_step: `105000`
+- checkpoint_best: `/overflow/htzhu/CARE/results/20260626_dict_bank/variants/task_specific_dictionary/checkpoints/fold_0/srr_fold0_config/checkpoint_best.pt`
+- predictions: `/overflow/htzhu/CARE/results/20260626_dict_bank/variants/task_specific_dictionary/predictions/fold_0/checkpoint_best`
+
 ## Key Subgroups
 
 | variant | class | group | n | Dice | HD | HD95 |
@@ -26,15 +34,29 @@ This is an interim aggregate for completed formal variants only. It is not the f
 | multiscale_dictionary | myops_scar | gt_positive_only | 43 | 0.0026184562637968146 | 185.10093383850474 | 117.63961898599226 |
 | multiscale_dictionary | myops_scar | complete_modality | 16 | 0.0038015243327258206 | 165.08875154481476 | 58.170698915212185 |
 | multiscale_dictionary | myops_scar | LGE-only | 24 | 0.0021570512508187457 | 191.10458852661174 | 135.4802950072263 |
+| task_specific_dictionary | myops_edema | all_cases | 44 | 0.03520867895237242 | 165.2098270451535 | 119.21921847391216 |
+| task_specific_dictionary | myops_edema | gt_positive_only | 16 | 0.09682386711902415 | 165.2098270451535 | 119.21921847391216 |
+| task_specific_dictionary | myops_edema | complete_modality | 16 | 0.09682386711902415 | 165.2098270451535 | 119.21921847391216 |
+| task_specific_dictionary | myops_edema | LGE-only | 24 | 0.0 |  |  |
+| task_specific_dictionary | myops_scar | all_cases | 44 | 0.09561766794724402 | 170.6192147529711 | 126.25229860179701 |
+| task_specific_dictionary | myops_scar | gt_positive_only | 43 | 0.09784133464369156 | 170.6192147529711 | 126.25229860179701 |
+| task_specific_dictionary | myops_scar | complete_modality | 16 | 0.11442544655722832 | 165.46871859282976 | 117.60531183320144 |
+| task_specific_dictionary | myops_scar | LGE-only | 24 | 0.08237688719283286 | 175.65481296432296 | 136.89927583621616 |
 
 Interim reporter signal: `GO_RESCUE_ABLATION`
 
 Reasons:
 - best_edema_gt_positive=multiscale_dictionary:0.1001
-- best_scar_all_cases=multiscale_dictionary:0.0253
+- best_scar_all_cases=task_specific_dictionary:0.0956
 - multiscale_dictionary.anatomy.max_mean_weight=0.3762
 - multiscale_dictionary.anatomy.max_logged_weight=1.0000
+- task_specific_dictionary.anatomy.max_mean_weight=0.2446
+- task_specific_dictionary.anatomy.max_logged_weight=0.7722
 - multiscale_dictionary.scar.max_mean_weight=0.3503
 - multiscale_dictionary.scar.max_logged_weight=1.0000
+- task_specific_dictionary.scar.max_mean_weight=0.2511
+- task_specific_dictionary.scar.max_logged_weight=0.8061
 - multiscale_dictionary.edema.max_mean_weight=0.3400
 - multiscale_dictionary.edema.max_logged_weight=1.0000
+- task_specific_dictionary.edema.max_mean_weight=0.2640
+- task_specific_dictionary.edema.max_logged_weight=0.8053
