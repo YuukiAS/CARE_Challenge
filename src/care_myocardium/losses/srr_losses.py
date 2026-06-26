@@ -46,22 +46,37 @@ def anatomy_loss(anatomy_logits: torch.Tensor, labels: torch.Tensor) -> torch.Te
     return F.cross_entropy(anatomy_logits, anatomy_target.long())
 
 
-def retrieval_regularization(gates: dict[str, torch.Tensor], eps: float = 1e-6) -> tuple[torch.Tensor | None, dict[str, torch.Tensor]]:
+def retrieval_regularization(
+    gates: dict[str, torch.Tensor],
+    eps: float = 1e-6,
+    entropy_floor: float = 0.5,
+    entropy_weight: float = 0.05,
+    coverage_weight: float = 0.05,
+    max_weight_penalty: float = 0.02,
+) -> tuple[torch.Tensor | None, dict[str, torch.Tensor]]:
     if not gates:
         return None, {}
-    entropy_terms = []
+    entropy_floor_terms = []
     coverage_terms = []
+    max_weight_terms = []
     metrics: dict[str, torch.Tensor] = {}
     for name, gate in gates.items():
         entropy = -(gate * torch.log(gate.clamp_min(eps))).sum(dim=1).mean()
         usage = gate.mean(dim=0)
         target = torch.full_like(usage, 1.0 / max(1, usage.numel()))
         coverage = torch.mean((usage - target).square())
-        entropy_terms.append(entropy)
+        max_weight = gate.max(dim=1).values.mean()
+        entropy_floor_terms.append(torch.relu(gate.new_tensor(float(entropy_floor)) - entropy))
         coverage_terms.append(coverage)
+        max_weight_terms.append(torch.relu(max_weight - 0.9).square())
         metrics[f"{name}_entropy"] = entropy.detach()
         metrics[f"{name}_coverage_mse"] = coverage.detach()
-    return 0.01 * torch.stack(entropy_terms).mean() + 0.05 * torch.stack(coverage_terms).mean(), metrics
+        metrics[f"{name}_max_weight"] = max_weight.detach()
+    return (
+        float(entropy_weight) * torch.stack(entropy_floor_terms).mean()
+        + float(coverage_weight) * torch.stack(coverage_terms).mean()
+        + float(max_weight_penalty) * torch.stack(max_weight_terms).mean()
+    ), metrics
 
 
 def soft_anatomy_prior_loss(outputs: dict[str, torch.Tensor], labels: torch.Tensor) -> torch.Tensor:
@@ -77,15 +92,17 @@ def srr_total_loss(
     labels: torch.Tensor,
     availability: torch.Tensor,
     weights: dict[str, float] | None = None,
+    retrieval_config: dict[str, float] | None = None,
 ) -> tuple[torch.Tensor, dict[str, torch.Tensor]]:
     weights = weights or {}
+    retrieval_config = retrieval_config or {}
     components = {
         "anatomy": anatomy_loss(outputs["anatomy_logits"], labels),
         "scar": scar_loss(outputs["scar_logits"], labels),
         "edema": t2_masked_edema_loss(outputs["edema_logits"], labels, availability),
         "prior": soft_anatomy_prior_loss(outputs, labels),
     }
-    reg, reg_metrics = retrieval_regularization(outputs["gates"])
+    reg, reg_metrics = retrieval_regularization(outputs["gates"], **retrieval_config)
     components["retrieval"] = reg if reg is not None else outputs["logits"].sum() * 0.0
     total = (
         weights.get("anatomy", 1.0) * components["anatomy"]

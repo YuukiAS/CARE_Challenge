@@ -11,7 +11,7 @@ from collections import defaultdict
 from statistics import mean
 
 
-VARIANTS = ("conditional_dualhead_control", "srr_minimal")
+DEFAULT_VARIANTS = ("conditional_dualhead_control", "srr_minimal")
 
 
 def read_csv(path: Path) -> list[dict[str, str]]:
@@ -72,7 +72,9 @@ def expert_weight_summary(rows: list[dict[str, str]], variant: str, task: str) -
     return {idx: float(mean(vals)) for idx, vals in sorted(by_expert.items())}, max_row
 
 
-def decide(subgroups: list[dict[str, str]], usage: list[dict[str, str]]) -> tuple[str, list[str]]:
+def decide(subgroups: list[dict[str, str]], usage: list[dict[str, str]], variants: list[str], mode: str) -> tuple[str, list[str]]:
+    if mode == "recovery":
+        return decide_recovery(subgroups, usage, variants)
     reasons: list[str] = []
     a_ede = find_row(subgroups, "conditional_dualhead_control", 4, "gt_positive_only")
     b_ede = find_row(subgroups, "srr_minimal", 4, "gt_positive_only")
@@ -107,16 +109,77 @@ def decide(subgroups: list[dict[str, str]], usage: list[dict[str, str]]) -> tupl
     return "STOP_SRR", [*reasons, "SRR scar degradation"]
 
 
+def decide_recovery(subgroups: list[dict[str, str]], usage: list[dict[str, str]], variants: list[str]) -> tuple[str, list[str]]:
+    reasons: list[str] = []
+    revised = [v for v in variants if v.startswith("srr_")]
+    if not revised:
+        return "STOP_PIPELINE_BUG", ["no revised SRR variants found"]
+
+    best_edema = None
+    best_scar = None
+    for variant in revised:
+        edema = find_row(subgroups, variant, 4, "gt_positive_only")
+        scar = find_row(subgroups, variant, 5, "all_cases")
+        if edema is not None:
+            dice = as_float(edema.get("dice_mean"))
+            if dice is not None and (best_edema is None or dice > best_edema[1]):
+                best_edema = (variant, dice)
+        if scar is not None:
+            dice = as_float(scar.get("dice_mean"))
+            if dice is not None and (best_scar is None or dice > best_scar[1]):
+                best_scar = (variant, dice)
+    if best_edema is None and best_scar is None:
+        return "STOP_PIPELINE_BUG", ["missing revised SRR subgroup Dice rows"]
+
+    for label, best in [("best_edema_gt_positive", best_edema), ("best_scar_all_cases", best_scar)]:
+        if best is not None:
+            reasons.append(f"{label}={best[0]}:{best[1]:.4f}")
+
+    max_weights = []
+    entropies = []
+    for row in usage:
+        if row.get("variant") not in revised or row.get("task") not in {"anatomy", "scar", "edema"}:
+            continue
+        val = as_float(row.get("mean_weight"))
+        if val is not None:
+            max_weights.append(val)
+    for task in ("anatomy", "scar", "edema"):
+        for variant in revised:
+            per_expert, max_row = expert_weight_summary(usage, variant, task)
+            if per_expert:
+                entropy_proxy = 1.0 - max(per_expert.values())
+                entropies.append(entropy_proxy)
+                reasons.append(f"{variant}.{task}.max_mean_weight={max(per_expert.values()):.4f}")
+                if max_row is not None:
+                    reasons.append(f"{variant}.{task}.max_logged_weight={max_row:.4f}")
+
+    best_edema_ok = best_edema is not None and best_edema[1] >= 0.10
+    best_scar_ok = best_scar is not None and best_scar[1] >= 0.05
+    any_usage_improved = bool(entropies and max(entropies) > 0.05)
+    if (best_edema_ok or best_scar_ok) and any_usage_improved:
+        return "GO_RESCUE_ABLATION", reasons
+    if best_edema_ok or best_scar_ok:
+        return "GO_CONDITIONAL_ABLATION", [*reasons, "metric signal present but routing remains weak"]
+    return "STOP_SRR_NO_SIGNAL", [*reasons, "no revised SRR metric signal reached the recovery floor"]
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--root", type=Path, default=Path("results/20260621_srr_fold0"))
+    parser.add_argument("--variants", nargs="*")
+    parser.add_argument("--decision-mode", choices=["fold0", "recovery"], default="fold0")
     args = parser.parse_args()
     root = args.root
+    if args.variants:
+        variants = list(args.variants)
+    else:
+        variant_dirs = sorted(p.name for p in (root / "variants").glob("*") if (p / "summary.json").is_file())
+        variants = variant_dirs or list(DEFAULT_VARIANTS)
     subgroup_rows: list[dict[str, str]] = []
     component_rows: list[dict[str, str]] = []
     usage_rows: list[dict[str, str]] = []
     summaries = {}
-    for variant in VARIANTS:
+    for variant in variants:
         vdir = root / "variants" / variant
         subgroup_rows.extend(read_csv(vdir / "subgroup_metrics.csv"))
         component_rows.extend(read_csv(vdir / "component_hd_by_case.csv"))
@@ -125,7 +188,7 @@ def main() -> None:
     write_csv(root / "subgroup_metrics.csv", subgroup_rows)
     write_csv(root / "component_hd_by_case.csv", component_rows)
     write_csv(root / "retrieval_usage.csv", usage_rows)
-    decision, reasons = decide(subgroup_rows, usage_rows)
+    decision, reasons = decide(subgroup_rows, usage_rows, variants, args.decision_mode)
     write = root.joinpath
     lines = [
         "# SRR Fold0 Metrics Summary",
@@ -133,7 +196,7 @@ def main() -> None:
         "## Variant Summaries",
         "",
     ]
-    for variant in VARIANTS:
+    for variant in variants:
         summary = summaries[variant]
         lines.extend(
             [
@@ -158,7 +221,7 @@ def main() -> None:
     write("metrics_summary.md").write_text("\n".join(lines) + "\n", encoding="utf-8")
     write("decision.md").write_text("\n".join([f"decision: `{decision}`", "", *[f"- {r}" for r in reasons]]) + "\n", encoding="utf-8")
     usage_lines = ["# Retrieval Usage", ""]
-    for variant in VARIANTS:
+    for variant in variants:
         usage_lines.append(f"## {variant}")
         for task in ("control_no_retrieval", "anatomy", "scar", "edema"):
             per_expert, max_row = expert_weight_summary(usage_rows, variant, task)

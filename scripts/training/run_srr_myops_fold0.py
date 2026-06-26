@@ -154,14 +154,59 @@ def parse_shape(text: str) -> tuple[int, int, int]:
     return tuple(parts)  # type: ignore[return-value]
 
 
-def make_model(variant: str, base_channels: int, device: torch.device) -> nn.Module:
+def variant_router_settings(args: argparse.Namespace) -> tuple[dict[str, float], float]:
+    temperature = float(args.router_temperature)
+    dropout = float(args.expert_dropout)
+    temps = {"anatomy": temperature, "scar": temperature, "edema": temperature}
+    if args.variant == "srr_soft_entropy":
+        temps = {"anatomy": 2.0, "scar": 1.8, "edema": 2.0}
+    elif args.variant == "srr_expert_dropout":
+        temps = {"anatomy": 1.6, "scar": 1.4, "edema": 1.8}
+        dropout = 0.25 if args.expert_dropout == 0 else dropout
+    elif args.variant == "srr_task_tempered":
+        temps = {"anatomy": 2.2, "scar": 1.25, "edema": 2.4}
+    elif args.variant == "retrieval_no_sip_or_weak_sip":
+        temps = {"anatomy": 1.4, "scar": 1.25, "edema": 1.5}
+    if args.anatomy_router_temperature is not None:
+        temps["anatomy"] = float(args.anatomy_router_temperature)
+    if args.scar_router_temperature is not None:
+        temps["scar"] = float(args.scar_router_temperature)
+    if args.edema_router_temperature is not None:
+        temps["edema"] = float(args.edema_router_temperature)
+    return temps, dropout
+
+
+def make_model(args: argparse.Namespace, device: torch.device) -> nn.Module:
+    variant = args.variant
     if variant == "conditional_dualhead_control":
-        model: nn.Module = ConditionalDualHeadControl(base_channels=base_channels)
-    elif variant == "srr_minimal":
-        model = SRRMyoPSLite(base_channels=base_channels)
+        model: nn.Module = ConditionalDualHeadControl(base_channels=args.base_channels)
+    elif variant == "late_fusion_no_dictionary":
+        model = ConditionalDualHeadControl(base_channels=args.base_channels)
+    elif variant in {"srr_minimal", "srr_soft_entropy", "srr_expert_dropout", "srr_task_tempered", "retrieval_no_sip_or_weak_sip"}:
+        temps, dropout = variant_router_settings(args)
+        model = SRRMyoPSLite(base_channels=args.base_channels, router_temperatures=temps, expert_dropout=dropout)
     else:
         raise ValueError(f"unknown variant {variant}")
     return model.to(device)
+
+
+def retrieval_config_from_args(args: argparse.Namespace) -> dict[str, float]:
+    return {
+        "entropy_floor": float(args.retrieval_entropy_floor),
+        "entropy_weight": float(args.retrieval_entropy_weight),
+        "coverage_weight": float(args.retrieval_coverage_weight),
+        "max_weight_penalty": float(args.retrieval_max_weight_penalty),
+    }
+
+
+def loss_weights_from_args(args: argparse.Namespace) -> dict[str, float]:
+    return {
+        "anatomy": float(args.anatomy_weight),
+        "scar": float(args.scar_weight),
+        "edema": float(args.edema_weight),
+        "prior": float(args.prior_weight),
+        "retrieval": float(args.retrieval_weight),
+    }
 
 
 def batch_from_cases(
@@ -330,7 +375,15 @@ def evaluate_and_export(model: nn.Module, cases: list[CaseData], variant_dir: Pa
     write_csv(variant_dir / "subgroup_metrics.csv", summarize_subgroups(variant, case_rows))
 
 
-def validate_patch_loss(model: nn.Module, val_cases: list[CaseData], patch_shape: tuple[int, int, int], device: torch.device, seed: int) -> float:
+def validate_patch_loss(
+    model: nn.Module,
+    val_cases: list[CaseData],
+    patch_shape: tuple[int, int, int],
+    device: torch.device,
+    seed: int,
+    weights: dict[str, float],
+    retrieval_config: dict[str, float],
+) -> float:
     rng = np.random.default_rng(seed)
     model.eval()
     losses = []
@@ -341,7 +394,7 @@ def validate_patch_loss(model: nn.Module, val_cases: list[CaseData], patch_shape
             y = torch.from_numpy(y_np[None]).long().to(device)
             av = torch.from_numpy(av_np[None]).float().to(device)
             outputs = model(x, av)
-            loss, _ = srr_total_loss(outputs, y, av)
+            loss, _ = srr_total_loss(outputs, y, av, weights=weights, retrieval_config=retrieval_config)
             losses.append(float(loss.detach().cpu()))
     model.train()
     return float(mean(losses)) if losses else float("inf")
@@ -377,8 +430,11 @@ def train_variant(args: argparse.Namespace) -> None:
     checkpoint_dir = variant_dir / "checkpoints/fold_0/srr_fold0_config"
     checkpoint_dir.mkdir(parents=True, exist_ok=True)
     patch_shape = parse_shape(args.patch_shape)
-    model = make_model(args.variant, args.base_channels, device)
+    model = make_model(args, device)
     optimizer = torch.optim.AdamW(model.parameters(), lr=args.lr, weight_decay=args.weight_decay)
+    loss_weights = loss_weights_from_args(args)
+    retrieval_config = retrieval_config_from_args(args)
+    router_temperatures, effective_expert_dropout = variant_router_settings(args)
     rng = np.random.default_rng(args.seed)
     start = time.monotonic()
     best_val = float("inf")
@@ -406,7 +462,7 @@ def train_variant(args: argparse.Namespace) -> None:
         av = av_cpu.to(device)
         optimizer.zero_grad(set_to_none=True)
         outputs = model(x, av)
-        loss, metrics = srr_total_loss(outputs, y, av)
+        loss, metrics = srr_total_loss(outputs, y, av, weights=loss_weights, retrieval_config=retrieval_config)
         loss.backward()
         torch.nn.utils.clip_grad_norm_(model.parameters(), args.grad_clip)
         optimizer.step()
@@ -428,7 +484,7 @@ def train_variant(args: argparse.Namespace) -> None:
             )
             record_gate_usage(usage_rows, args.variant, step, keys, outputs)
         if step == 1 or step % args.val_every == 0:
-            val_loss = validate_patch_loss(model, val_cases, patch_shape, device, args.seed + step)
+            val_loss = validate_patch_loss(model, val_cases, patch_shape, device, args.seed + step, loss_weights, retrieval_config)
             train_rows.append(
                 {
                     "variant": args.variant,
@@ -490,6 +546,10 @@ def train_variant(args: argparse.Namespace) -> None:
         "checkpoint_final": str(final_ckpt),
         "prediction_dir": str(variant_dir / "predictions/fold_0/checkpoint_best"),
         "export_skipped": bool(args.skip_export),
+        "loss_weights": loss_weights,
+        "retrieval_config": retrieval_config,
+        "router_temperatures": router_temperatures,
+        "expert_dropout": effective_expert_dropout,
     }
     (variant_dir / "summary.json").write_text(json.dumps(summary, indent=2, sort_keys=True), encoding="utf-8")
     write_text(
@@ -513,7 +573,19 @@ def train_variant(args: argparse.Namespace) -> None:
 
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--variant", required=True, choices=["conditional_dualhead_control", "srr_minimal"])
+    parser.add_argument(
+        "--variant",
+        required=True,
+        choices=[
+            "conditional_dualhead_control",
+            "srr_minimal",
+            "srr_soft_entropy",
+            "srr_expert_dropout",
+            "srr_task_tempered",
+            "late_fusion_no_dictionary",
+            "retrieval_no_sip_or_weak_sip",
+        ],
+    )
     parser.add_argument("--fold", type=int, default=0)
     parser.add_argument("--seed", type=int, default=20260621)
     parser.add_argument("--device", choices=["cuda", "cpu"], default="cuda")
@@ -531,6 +603,20 @@ def main() -> None:
     parser.add_argument("--val-every", type=int, default=500)
     parser.add_argument("--complete-oversample", type=float, default=0.55)
     parser.add_argument("--oversample-foreground", type=float, default=0.75)
+    parser.add_argument("--router-temperature", type=float, default=1.0)
+    parser.add_argument("--anatomy-router-temperature", type=float)
+    parser.add_argument("--scar-router-temperature", type=float)
+    parser.add_argument("--edema-router-temperature", type=float)
+    parser.add_argument("--expert-dropout", type=float, default=0.0)
+    parser.add_argument("--retrieval-entropy-floor", type=float, default=0.7)
+    parser.add_argument("--retrieval-entropy-weight", type=float, default=0.08)
+    parser.add_argument("--retrieval-coverage-weight", type=float, default=0.08)
+    parser.add_argument("--retrieval-max-weight-penalty", type=float, default=0.04)
+    parser.add_argument("--anatomy-weight", type=float, default=1.0)
+    parser.add_argument("--scar-weight", type=float, default=1.2)
+    parser.add_argument("--edema-weight", type=float, default=1.3)
+    parser.add_argument("--prior-weight", type=float, default=0.1)
+    parser.add_argument("--retrieval-weight", type=float, default=1.0)
     parser.add_argument("--skip-export", action="store_true", help="Preflight only: skip full validation prediction export.")
     args = parser.parse_args()
     train_variant(args)
