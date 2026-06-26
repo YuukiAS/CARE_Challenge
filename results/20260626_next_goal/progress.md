@@ -39,7 +39,17 @@ Pulled latest task files from `origin/main` and read the goal entrypoint plus su
 
 ### Current Queue State
 
-At submission check, all five jobs were pending on `htzhulab`; no fail-fast logs existed yet.
+At `2026-06-26 04:17 EDT`, all five jobs were still pending on `htzhulab`; no fail-fast logs existed yet.
+
+| job | variant | state | reason | estimated start |
+| --- | --- | --- | --- | --- |
+| `56611484` | `multiscale_dictionary` | `PD` | `Resources` | `2026-06-26T16:36:43` |
+| `56611485` | `task_specific_dictionary` | `PD` | `Priority` | `2026-06-26T21:15:24` |
+| `56611486` | `cross_modal_interaction_dictionary` | `PD` | `Priority` | `2026-06-27T00:10:00` |
+| `56611487` | `anchor_guided_dictionary` | `PD` | `Priority` | `2026-06-27T04:50:00` |
+| `56611488` | `hierarchical_router_dictionary` | `PD` | `Priority` | `2026-06-27T07:40:00` |
+
+Fallback queues were checked. `a100-gpu` and `volta-gpu` did not show a clear faster path for these five 7.5h formal jobs, so the `htzhulab` jobs remain live.
 
 ### Next
 

@@ -35,6 +35,20 @@ The five submitted routes are:
 
 This follows the task and Slurm skill requirement to prefer `htzhulab`.
 
+## Queue Evidence After Cine Temporal Push
+
+At `2026-06-26 04:17 EDT`, the five dictionary jobs were still pending:
+
+| job | variant | state | reason | estimated start |
+| --- | --- | --- | --- | --- |
+| `56611484` | `multiscale_dictionary` | `PD` | `Resources` | `2026-06-26T16:36:43` |
+| `56611485` | `task_specific_dictionary` | `PD` | `Priority` | `2026-06-26T21:15:24` |
+| `56611486` | `cross_modal_interaction_dictionary` | `PD` | `Priority` | `2026-06-27T00:10:00` |
+| `56611487` | `anchor_guided_dictionary` | `PD` | `Priority` | `2026-06-27T04:50:00` |
+| `56611488` | `hierarchical_router_dictionary` | `PD` | `Priority` | `2026-06-27T07:40:00` |
+
+Fallback queues were checked before duplicating or moving work. `a100-gpu` had a deep pending queue with many long gridsearch jobs. `volta-gpu` also had many pending and running long jobs. There was no clear evidence that fallback would complete these five 7.5h formal jobs earlier, and the task's allowed 5 parallel GPU jobs were already submitted. The current action is to keep the `htzhulab` submissions live and monitor.
+
 ## Not Yet Done
 
 - No formal metrics have completed.
