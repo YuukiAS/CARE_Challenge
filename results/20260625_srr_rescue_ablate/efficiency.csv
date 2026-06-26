@@ -1,0 +1,5 @@
+ablation_id,variant,source_variant,job_id,stop_reason,budget_status,elapsed_seconds,best_step,best_val_patch_loss,device,log
+B0,best_conditional_control,conditional_dualhead_control,20260621_anchor,max_steps,anchor,14733.059205545112,450000,0.7988663812478384,cuda,results/20260621_srr_fold0/result.md
+B1,best_srr_recovered,srr_expert_dropout,56315547,max_runtime_seconds,OK,23400.028288748115,105000,0.7864311883846918,cuda,logs/SRRDropF0_56315547_20260624_172908.log
+B2,late_fusion_no_dictionary,late_fusion_no_dictionary,56469952,max_runtime_seconds,OK,23400.022811809555,450000,0.8966296861569086,cuda,logs/SRRLateF0_56469952_20260625_001729.log
+B3,retrieval_no_sip_or_weak_sip,retrieval_no_sip_or_weak_sip,56469990,max_runtime_seconds,OK,23400.04669011943,105000,0.7693316588799158,cuda,logs/SRRWeakF0_56469990_20260625_064840.log

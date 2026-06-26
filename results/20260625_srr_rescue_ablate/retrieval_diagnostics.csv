@@ -1,0 +1,9 @@
+ablation_id,variant,task,mean_weight,max_logged_weight,max_expert_mean_weight,expert_means,n_logged_rows
+B0,best_conditional_control,control_no_retrieval,,,,,1001
+B1,best_srr_recovered,anatomy,0.25000000194025535,1.0,0.34374483949726536,expert0=0.3437;expert1=0.3186;expert2=0.1489;expert3=0.1888,3360
+B1,best_srr_recovered,scar,0.25000000200844147,1.0,0.33107832997505154,expert0=0.3311;expert1=0.3154;expert2=0.1591;expert3=0.1944,3360
+B1,best_srr_recovered,edema,0.2500000020777363,1.0,0.3261960194490495,expert0=0.3262;expert1=0.3178;expert2=0.1844;expert3=0.1715,3360
+B2,late_fusion_no_dictionary,control_no_retrieval,,,,,1382
+B3,retrieval_no_sip_or_weak_sip,anatomy,0.2500000025925261,0.7260739803314209,0.564727865766596,expert0=0.5647;expert1=0.2408;expert2=0.0521;expert3=0.1424,2700
+B3,retrieval_no_sip_or_weak_sip,scar,0.25000000257553806,0.9457595944404602,0.4094687737800457,expert0=0.1822;expert1=0.4095;expert2=0.0768;expert3=0.3316,2700
+B3,retrieval_no_sip_or_weak_sip,edema,0.2500000029388401,0.6133556365966797,0.3322950763834847,expert0=0.2952;expert1=0.3323;expert2=0.2236;expert3=0.1490,2700
