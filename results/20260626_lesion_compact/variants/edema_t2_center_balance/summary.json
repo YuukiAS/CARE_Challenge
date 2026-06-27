@@ -1,0 +1,50 @@
+{
+  "best_step": 725000,
+  "best_val_patch_loss": 1.1021502117315929,
+  "budget_status": "UNDER_BUDGET_MAX_STEPS",
+  "center_c_t2_edema_train_cases": 36,
+  "checkpoint_best": "/overflow/htzhu/CARE/results/20260626_lesion_compact/variants/edema_t2_center_balance/checkpoints/fold_0/srr_fold0_config/checkpoint_best.pt",
+  "checkpoint_final": "/overflow/htzhu/CARE/results/20260626_lesion_compact/variants/edema_t2_center_balance/checkpoints/fold_0/srr_fold0_config/checkpoint_final.pt",
+  "complete_train_cases": 64,
+  "device": "cuda",
+  "dictionary_mode": "cross_modal_interaction_dictionary",
+  "edema_t2_train_cases": 64,
+  "elapsed_seconds": 19277.472778752446,
+  "expert_dropout": 0.2,
+  "export_skipped": false,
+  "fold": 0,
+  "lesion_auxiliary_config": {
+    "compactness_weight": 0.0,
+    "containment_weight": 0.0
+  },
+  "lesion_mode": "edema_t2_center_balance",
+  "lge_only_scar_train_cases": 91,
+  "loss_weights": {
+    "anatomy": 1.0,
+    "edema": 1.6,
+    "prior": 0.1,
+    "retrieval": 1.0,
+    "scar": 1.15
+  },
+  "max_runtime_seconds": 23400.0,
+  "max_steps": 750000,
+  "min_effective_seconds": 21600.0,
+  "out_root": "/overflow/htzhu/CARE/results/20260626_lesion_compact",
+  "prediction_dir": "/overflow/htzhu/CARE/results/20260626_lesion_compact/variants/edema_t2_center_balance/predictions/fold_0/checkpoint_best",
+  "retrieval_config": {
+    "coverage_weight": 0.12,
+    "entropy_floor": 0.7,
+    "entropy_weight": 0.08,
+    "max_weight_penalty": 0.05
+  },
+  "router_temperatures": {
+    "anatomy": 1.8,
+    "edema": 2.1,
+    "scar": 1.45
+  },
+  "scar_train_cases": 169,
+  "stop_reason": "max_steps",
+  "train_cases": 176,
+  "val_cases": 44,
+  "variant": "edema_t2_center_balance"
+}

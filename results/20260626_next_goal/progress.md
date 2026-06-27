@@ -144,3 +144,16 @@ Final dictionary-bank selection: `SELECT_DICTIONARY_VARIANT`, selected variant `
 - If they complete, aggregate formal metrics and write `results/20260626_dict_bank/selection.md`.
 - Only if dictionary bank selects a route, proceed to `20260626_lesion_compact`.
 - Do not proceed to `20260626_lesion_compact` until dictionary bank writes a selection.
+
+## 2026-06-27 Lesion Compact Completion
+
+Completed all four lesion compact formal jobs on `htzhulab`:
+
+| job | variant | state | selection readout |
+| --- | --- | --- | --- |
+| `56728800` | `soft_anatomy_containment` | `COMPLETED` | Dice small positive signal, but HD95/component/remote-FP worsened |
+| `56728801` | `component_compactness_loss` | `COMPLETED` | best HD95 signal, but scar Dice/no-T2/FP burden insufficient |
+| `56728802` | `scar_lge_fallback_boost` | `COMPLETED` | scar route failed to improve |
+| `56728799` | `edema_t2_center_balance` | `COMPLETED` | GT-positive edema collapsed |
+
+Decision: `REVISE_COMPACTNESS_AND_REPEAT`; see `results/20260626_lesion_compact/selection.md`.

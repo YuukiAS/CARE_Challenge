@@ -30,7 +30,7 @@ echo "variant=component_compactness_loss"
   --batch-size 2 \
   --max-runtime-seconds 23400 \
   --min-effective-seconds 21600 \
-  --max-steps 750000 \
+  --max-steps 1000000 \
   --log-every 500 \
   --val-every 5000 \
   --out-root results/20260626_lesion_compact \
