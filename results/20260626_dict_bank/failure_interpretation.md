@@ -2,7 +2,7 @@
 
 Status: `PARTIAL`
 
-D1 `multiscale_dictionary`, D2 `task_specific_dictionary`, and D4 `cross_modal_interaction_dictionary` have completed so far. The remaining variants are still running, so this is not a final failure interpretation.
+D1 `multiscale_dictionary`, D2 `task_specific_dictionary`, D4 `cross_modal_interaction_dictionary`, and D5 `anchor_guided_dictionary` have completed so far. D6 is still running, so this is not a final failure interpretation.
 
 ## D1 `multiscale_dictionary`
 
@@ -22,6 +22,12 @@ D4 reached the intended runtime budget (`stop_reason=max_runtime_seconds`, `elap
 
 The caveat is localization quality. HD95 remains high (`114.03` for edema GT-positive and `129.22` for scar all-cases), and component/remote-FP burden remains large. D4 is the current partial front-runner, but it still needs comparison with D5 and D6 before writing `selection.md`.
 
+## D5 `anchor_guided_dictionary`
+
+D5 reached the intended runtime budget (`stop_reason=max_runtime_seconds`, `elapsed_seconds=23400.0`, `budget_status=OK`). It is currently the strongest partial edema variant (`gt_positive Dice=0.1755`) and has lower edema component burden than D4 on GT-positive/T2-present cases. Scar is weaker than D4 (`all_cases Dice=0.0877`), so it does not dominate the current partial comparison.
+
+The anchor route still has the same broad localization caveat: HD95 remains high (`102.88` edema GT-positive, `136.80` scar all-cases), and no-T2 edema empty-GT cases are not perfectly stable. It may be a useful edema-side idea, but it is not enough for final selection without D6 and the full decision table.
+
 ## Pending Evidence
 
-Final interpretation requires D5 and D6 formal outputs. No `selection.md` should be written until enough completed variants are available to compare against the base SRR route and the dictionary-bank decision criteria.
+Final interpretation requires D6 formal output. No `selection.md` should be written until enough completed variants are available to compare against the base SRR route and the dictionary-bank decision criteria.
