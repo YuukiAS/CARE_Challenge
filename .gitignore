@@ -188,6 +188,7 @@ results/*/variants/*/checkpoints/
 results/*/variants/*/predictions/
 results/*/**/checkpoints/
 results/*/**/predictions/
+results/*/preflight/
 results/**/*.pt
 results/**/*.pth
 results/**/*.ckpt

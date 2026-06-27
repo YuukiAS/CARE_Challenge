@@ -43,6 +43,13 @@ DICTIONARY_BANK_VARIANTS = {
     "anchor_guided_dictionary",
     "hierarchical_router_dictionary",
 }
+LESION_COMPACT_VARIANTS = {
+    "soft_anatomy_containment",
+    "component_compactness_loss",
+    "scar_lge_fallback_boost",
+    "edema_t2_center_balance",
+}
+LESION_BASE_DICTIONARY = "cross_modal_interaction_dictionary"
 
 
 @dataclass
@@ -130,9 +137,10 @@ def sample_patch(
     rng: np.random.Generator,
     oversample_foreground: float,
     modality_dropout: bool,
+    focus_classes: tuple[int, ...] = (4, 5),
 ) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
     label_arr = case.label_arr
-    focus = np.argwhere(np.isin(label_arr, [4, 5]))
+    focus = np.argwhere(np.isin(label_arr, focus_classes))
     if len(focus) and rng.random() < oversample_foreground:
         center = focus[int(rng.integers(0, len(focus)))]
     else:
@@ -143,7 +151,7 @@ def sample_patch(
     target = crop_or_pad(label_arr[None], starts, patch_shape, IGNORE_LABEL).astype(np.int64, copy=False)[0]
     availability = case.availability.copy()
     if modality_dropout:
-        # Preserve LGE. Drop C0/T2 only when originally present; dropped T2 also
+        # Preserve LGE. Drop T2/C0 only when originally present; dropped T2 also
         # disables edema dense loss through the availability vector.
         if availability[1] > 0 and rng.random() < 0.15:
             availability[1] = 0.0
@@ -159,6 +167,14 @@ def parse_shape(text: str) -> tuple[int, int, int]:
     if len(parts) != 3:
         raise ValueError(f"expected Dz,Y,X patch shape, got {text!r}")
     return tuple(parts)  # type: ignore[return-value]
+
+
+def dictionary_mode_for_variant(variant: str) -> str:
+    if variant in DICTIONARY_BANK_VARIANTS:
+        return variant
+    if variant in LESION_COMPACT_VARIANTS:
+        return LESION_BASE_DICTIONARY
+    return "standard"
 
 
 def variant_router_settings(args: argparse.Namespace) -> tuple[dict[str, float], float]:
@@ -189,6 +205,18 @@ def variant_router_settings(args: argparse.Namespace) -> tuple[dict[str, float],
     elif args.variant == "hierarchical_router_dictionary":
         temps = {"anatomy": 1.8, "scar": 1.55, "edema": 2.0}
         dropout = 0.20 if args.expert_dropout == 0 else dropout
+    elif args.variant == "soft_anatomy_containment":
+        temps = {"anatomy": 1.8, "scar": 1.45, "edema": 1.9}
+        dropout = 0.20 if args.expert_dropout == 0 else dropout
+    elif args.variant == "component_compactness_loss":
+        temps = {"anatomy": 1.8, "scar": 1.45, "edema": 1.9}
+        dropout = 0.20 if args.expert_dropout == 0 else dropout
+    elif args.variant == "scar_lge_fallback_boost":
+        temps = {"anatomy": 1.7, "scar": 1.25, "edema": 1.9}
+        dropout = 0.20 if args.expert_dropout == 0 else dropout
+    elif args.variant == "edema_t2_center_balance":
+        temps = {"anatomy": 1.8, "scar": 1.45, "edema": 2.1}
+        dropout = 0.20 if args.expert_dropout == 0 else dropout
     if args.anatomy_router_temperature is not None:
         temps["anatomy"] = float(args.anatomy_router_temperature)
     if args.scar_router_temperature is not None:
@@ -207,13 +235,14 @@ def make_model(args: argparse.Namespace, device: torch.device) -> nn.Module:
     elif variant in {"srr_minimal", "srr_soft_entropy", "srr_expert_dropout", "srr_task_tempered", "retrieval_no_sip_or_weak_sip"}:
         temps, dropout = variant_router_settings(args)
         model = SRRMyoPSLite(base_channels=args.base_channels, router_temperatures=temps, expert_dropout=dropout)
-    elif variant in DICTIONARY_BANK_VARIANTS:
+    elif variant in DICTIONARY_BANK_VARIANTS or variant in LESION_COMPACT_VARIANTS:
         temps, dropout = variant_router_settings(args)
+        dictionary_mode = dictionary_mode_for_variant(variant)
         model = SRRMyoPSLite(
             base_channels=args.base_channels,
             router_temperatures=temps,
             expert_dropout=dropout,
-            dictionary_mode=variant,
+            dictionary_mode=dictionary_mode,
         )
     else:
         raise ValueError(f"unknown variant {variant}")
@@ -239,21 +268,96 @@ def loss_weights_from_args(args: argparse.Namespace) -> dict[str, float]:
     }
 
 
+def _tv3d(prob: torch.Tensor) -> torch.Tensor:
+    dz = torch.abs(prob[:, :, 1:] - prob[:, :, :-1]).mean()
+    dy = torch.abs(prob[:, :, :, 1:] - prob[:, :, :, :-1]).mean()
+    dx = torch.abs(prob[:, :, :, :, 1:] - prob[:, :, :, :, :-1]).mean()
+    return (dz + dy + dx) / 3.0
+
+
+def lesion_auxiliary_loss(
+    outputs: dict[str, torch.Tensor],
+    labels: torch.Tensor,
+    availability: torch.Tensor,
+    args: argparse.Namespace,
+) -> tuple[torch.Tensor, dict[str, torch.Tensor]]:
+    zero = outputs["logits"].sum() * 0.0
+    metrics: dict[str, torch.Tensor] = {
+        "soft_containment": zero.detach(),
+        "component_compactness": zero.detach(),
+    }
+    total = zero
+    scar_prob = torch.sigmoid(outputs["scar_logits"][:, 0])
+    edema_prob = torch.sigmoid(outputs["edema_logits"][:, 0])
+    t2_present = availability[:, 1].to(device=labels.device, dtype=scar_prob.dtype).view(-1, 1, 1, 1)
+
+    if args.variant == "soft_anatomy_containment" and args.containment_weight > 0:
+        union_target = ((labels > 0) & (labels != IGNORE_LABEL)).to(dtype=scar_prob.dtype)
+        outside_union = 1.0 - union_target
+        scar_outside = (scar_prob * outside_union).mean()
+        edema_denom = (outside_union * t2_present).sum().clamp_min(1.0)
+        edema_outside = (edema_prob * outside_union * t2_present).sum() / edema_denom
+        containment = 0.5 * scar_outside + 0.5 * edema_outside
+        total = total + float(args.containment_weight) * containment
+        metrics["soft_containment"] = containment.detach()
+
+    if args.variant == "component_compactness_loss" and args.compactness_weight > 0:
+        scar_tv = _tv3d(scar_prob[:, None])
+        edema_tv = _tv3d(edema_prob[:, None] * t2_present[:, None])
+        compactness = 0.5 * scar_tv + 0.5 * edema_tv
+        total = total + float(args.compactness_weight) * compactness
+        metrics["component_compactness"] = compactness.detach()
+
+    return total, metrics
+
+
+def has_label(case: CaseData, class_id: int) -> bool:
+    return bool(np.any(case.label_arr == class_id))
+
+
 def batch_from_cases(
     cases: list[CaseData],
     complete_cases: list[CaseData],
+    scar_cases: list[CaseData],
+    lge_only_scar_cases: list[CaseData],
+    edema_t2_cases: list[CaseData],
+    center_c_t2_edema_cases: list[CaseData],
     batch_size: int,
     patch_shape: tuple[int, int, int],
     rng: np.random.Generator,
     complete_oversample: float,
     oversample_foreground: float,
     modality_dropout: bool,
+    lesion_mode: str,
 ) -> tuple[torch.Tensor, torch.Tensor, torch.Tensor, list[str]]:
     xs, ys, avs, keys = [], [], [], []
     for _ in range(batch_size):
-        pool = complete_cases if complete_cases and rng.random() < complete_oversample else cases
+        focus_classes = (4, 5)
+        effective_oversample = oversample_foreground
+        if lesion_mode == "scar_lge_fallback_boost":
+            draw = rng.random()
+            if lge_only_scar_cases and draw < 0.40:
+                pool = lge_only_scar_cases
+            elif scar_cases and draw < 0.85:
+                pool = scar_cases
+            else:
+                pool = complete_cases if complete_cases and rng.random() < complete_oversample else cases
+            focus_classes = (5,)
+            effective_oversample = max(oversample_foreground, 0.90)
+        elif lesion_mode == "edema_t2_center_balance":
+            draw = rng.random()
+            if center_c_t2_edema_cases and draw < 0.45:
+                pool = center_c_t2_edema_cases
+            elif edema_t2_cases and draw < 0.85:
+                pool = edema_t2_cases
+            else:
+                pool = complete_cases if complete_cases and rng.random() < complete_oversample else cases
+            focus_classes = (4,)
+            effective_oversample = max(oversample_foreground, 0.90)
+        else:
+            pool = complete_cases if complete_cases and rng.random() < complete_oversample else cases
         case = pool[int(rng.integers(0, len(pool)))]
-        x, y, av = sample_patch(case, patch_shape, rng, oversample_foreground, modality_dropout)
+        x, y, av = sample_patch(case, patch_shape, rng, effective_oversample, modality_dropout, focus_classes=focus_classes)
         xs.append(x)
         ys.append(y)
         avs.append(av)
@@ -413,6 +517,7 @@ def validate_patch_loss(
     seed: int,
     weights: dict[str, float],
     retrieval_config: dict[str, float],
+    args: argparse.Namespace,
 ) -> float:
     rng = np.random.default_rng(seed)
     model.eval()
@@ -425,6 +530,8 @@ def validate_patch_loss(
             av = torch.from_numpy(av_np[None]).float().to(device)
             outputs = model(x, av)
             loss, _ = srr_total_loss(outputs, y, av, weights=weights, retrieval_config=retrieval_config)
+            aux_loss, _ = lesion_auxiliary_loss(outputs, y, av, args)
+            loss = loss + aux_loss
             losses.append(float(loss.detach().cpu()))
     model.train()
     return float(mean(losses)) if losses else float("inf")
@@ -453,6 +560,10 @@ def train_variant(args: argparse.Namespace) -> None:
     train_cases = [read_case(cid, metadata) for cid in train_ids]
     val_cases = [read_case(cid, metadata) for cid in val_ids]
     complete_cases = [case for case in train_cases if case.metadata.modality_group == "C0+LGE+T2"]
+    scar_cases = [case for case in train_cases if has_label(case, 5)]
+    lge_only_scar_cases = [case for case in scar_cases if case.metadata.modality_group == "LGE-only"]
+    edema_t2_cases = [case for case in train_cases if case.metadata.t2_present and has_label(case, 4)]
+    center_c_t2_edema_cases = [case for case in edema_t2_cases if case.metadata.center == "CenterC"]
     out_root = Path(args.out_root)
     if not out_root.is_absolute():
         out_root = REPO_ROOT / out_root
@@ -480,12 +591,17 @@ def train_variant(args: argparse.Namespace) -> None:
         x_cpu, y_cpu, av_cpu, keys = batch_from_cases(
             train_cases,
             complete_cases,
+            scar_cases,
+            lge_only_scar_cases,
+            edema_t2_cases,
+            center_c_t2_edema_cases,
             args.batch_size,
             patch_shape,
             rng,
             args.complete_oversample,
             args.oversample_foreground,
             modality_dropout=True,
+            lesion_mode=args.variant if args.variant in LESION_COMPACT_VARIANTS else "",
         )
         x = x_cpu.to(device)
         y = y_cpu.to(device)
@@ -493,6 +609,9 @@ def train_variant(args: argparse.Namespace) -> None:
         optimizer.zero_grad(set_to_none=True)
         outputs = model(x, av)
         loss, metrics = srr_total_loss(outputs, y, av, weights=loss_weights, retrieval_config=retrieval_config)
+        aux_loss, aux_metrics = lesion_auxiliary_loss(outputs, y, av, args)
+        loss = loss + aux_loss
+        metrics.update(aux_metrics)
         loss.backward()
         torch.nn.utils.clip_grad_norm_(model.parameters(), args.grad_clip)
         optimizer.step()
@@ -507,6 +626,8 @@ def train_variant(args: argparse.Namespace) -> None:
                     "scar_loss": float(metrics["scar"].detach().cpu()),
                     "edema_loss": float(metrics["edema"].detach().cpu()),
                     "retrieval_loss": float(metrics["retrieval"].detach().cpu()),
+                    "soft_containment_loss": float(metrics["soft_containment"].detach().cpu()),
+                    "component_compactness_loss": float(metrics["component_compactness"].detach().cpu()),
                     "edema_supervised_batch_fraction": supervised_fraction,
                     "batch_cases": ",".join(keys),
                     "elapsed_seconds": time.monotonic() - start,
@@ -514,7 +635,7 @@ def train_variant(args: argparse.Namespace) -> None:
             )
             record_gate_usage(usage_rows, args.variant, step, keys, outputs)
         if step == 1 or step % args.val_every == 0:
-            val_loss = validate_patch_loss(model, val_cases, patch_shape, device, args.seed + step, loss_weights, retrieval_config)
+            val_loss = validate_patch_loss(model, val_cases, patch_shape, device, args.seed + step, loss_weights, retrieval_config, args)
             train_rows.append(
                 {
                     "variant": args.variant,
@@ -563,6 +684,10 @@ def train_variant(args: argparse.Namespace) -> None:
         "train_cases": len(train_cases),
         "val_cases": len(val_cases),
         "complete_train_cases": len(complete_cases),
+        "scar_train_cases": len(scar_cases),
+        "lge_only_scar_train_cases": len(lge_only_scar_cases),
+        "edema_t2_train_cases": len(edema_t2_cases),
+        "center_c_t2_edema_train_cases": len(center_c_t2_edema_cases),
         "best_step": best_step,
         "best_val_patch_loss": best_val,
         "stop_reason": stop_reason,
@@ -580,7 +705,12 @@ def train_variant(args: argparse.Namespace) -> None:
         "retrieval_config": retrieval_config,
         "router_temperatures": router_temperatures,
         "expert_dropout": effective_expert_dropout,
-        "dictionary_mode": args.variant if args.variant in DICTIONARY_BANK_VARIANTS else "standard",
+        "dictionary_mode": dictionary_mode_for_variant(args.variant),
+        "lesion_mode": args.variant if args.variant in LESION_COMPACT_VARIANTS else "none",
+        "lesion_auxiliary_config": {
+            "containment_weight": float(args.containment_weight),
+            "compactness_weight": float(args.compactness_weight),
+        },
     }
     (variant_dir / "summary.json").write_text(json.dumps(summary, indent=2, sort_keys=True), encoding="utf-8")
     write_text(
@@ -620,6 +750,10 @@ def main() -> None:
             "cross_modal_interaction_dictionary",
             "anchor_guided_dictionary",
             "hierarchical_router_dictionary",
+            "soft_anatomy_containment",
+            "component_compactness_loss",
+            "scar_lge_fallback_boost",
+            "edema_t2_center_balance",
         ],
     )
     parser.add_argument("--fold", type=int, default=0)
@@ -653,6 +787,8 @@ def main() -> None:
     parser.add_argument("--edema-weight", type=float, default=1.3)
     parser.add_argument("--prior-weight", type=float, default=0.1)
     parser.add_argument("--retrieval-weight", type=float, default=1.0)
+    parser.add_argument("--containment-weight", type=float, default=0.0)
+    parser.add_argument("--compactness-weight", type=float, default=0.0)
     parser.add_argument("--skip-export", action="store_true", help="Preflight only: skip full validation prediction export.")
     args = parser.parse_args()
     train_variant(args)
