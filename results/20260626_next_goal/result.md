@@ -9,8 +9,8 @@ This goal is active. Current progress is recorded in `results/20260626_next_goal
 | subtask | status | evidence |
 | --- | --- | --- |
 | `20260626_dict_research` | `COMPLETED_BOUNDED_SYNTHESIS` | `results/20260626_dict_research/result.md` |
-| `20260626_dict_bank` | `IN_PROGRESS` | D1/D2/D4/D5 complete; D6 running; see `results/20260626_dict_bank/result.md` |
-| `20260626_lesion_compact` | `WAITING_FOR_DICT_SELECTION` | blocked by task dependency, not an execution block |
+| `20260626_dict_bank` | `SELECT_DICTIONARY_VARIANT` | selected D4 `cross_modal_interaction_dictionary`; see `results/20260626_dict_bank/selection.md` |
+| `20260626_lesion_compact` | `READY_AFTER_DICT_SELECTION` | dependency satisfied by `results/20260626_dict_bank/selection.md` |
 | `20260626_cine_temporal` | `KEEP_REFERENCE_CONTROL` | `results/20260626_cine_temporal/result.md` |
 
 ## Current Job IDs

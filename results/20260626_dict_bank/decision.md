@@ -1,12 +1,12 @@
-# Interim Reporter Decision
+# Legacy Reporter Decision
 
-status: `PARTIAL_REPORTER_SIGNAL`
+status: `COMPLETE_REPORTER_SIGNAL`
 
-This file is generated from the legacy SRR recovery reporter for completed variants only. It is not the final dictionary-bank decision gate. The final allowed status must be written later to `results/20260626_dict_bank/selection.md` after the remaining formal variants complete.
+This file is generated from the legacy SRR recovery reporter. The final dictionary-bank decision gate is `results/20260626_dict_bank/selection.md`.
 
 legacy_reporter_decision: `GO_RESCUE_ABLATION`
 
-- best_edema_gt_positive=anchor_guided_dictionary:0.1755
+- best_edema_gt_positive=hierarchical_router_dictionary:0.2079
 - best_scar_all_cases=cross_modal_interaction_dictionary:0.1054
 - multiscale_dictionary.anatomy.max_mean_weight=0.3762
 - multiscale_dictionary.anatomy.max_logged_weight=1.0000
@@ -16,6 +16,8 @@ legacy_reporter_decision: `GO_RESCUE_ABLATION`
 - cross_modal_interaction_dictionary.anatomy.max_logged_weight=1.0000
 - anchor_guided_dictionary.anatomy.max_mean_weight=0.3339
 - anchor_guided_dictionary.anatomy.max_logged_weight=1.0000
+- hierarchical_router_dictionary.anatomy.max_mean_weight=0.3593
+- hierarchical_router_dictionary.anatomy.max_logged_weight=1.0000
 - multiscale_dictionary.scar.max_mean_weight=0.3503
 - multiscale_dictionary.scar.max_logged_weight=1.0000
 - task_specific_dictionary.scar.max_mean_weight=0.2511
@@ -24,6 +26,8 @@ legacy_reporter_decision: `GO_RESCUE_ABLATION`
 - cross_modal_interaction_dictionary.scar.max_logged_weight=1.0000
 - anchor_guided_dictionary.scar.max_mean_weight=0.3640
 - anchor_guided_dictionary.scar.max_logged_weight=1.0000
+- hierarchical_router_dictionary.scar.max_mean_weight=0.3214
+- hierarchical_router_dictionary.scar.max_logged_weight=1.0000
 - multiscale_dictionary.edema.max_mean_weight=0.3400
 - multiscale_dictionary.edema.max_logged_weight=1.0000
 - task_specific_dictionary.edema.max_mean_weight=0.2640
@@ -32,3 +36,5 @@ legacy_reporter_decision: `GO_RESCUE_ABLATION`
 - cross_modal_interaction_dictionary.edema.max_logged_weight=1.0000
 - anchor_guided_dictionary.edema.max_mean_weight=0.3092
 - anchor_guided_dictionary.edema.max_logged_weight=1.0000
+- hierarchical_router_dictionary.edema.max_mean_weight=0.3296
+- hierarchical_router_dictionary.edema.max_logged_weight=1.0000

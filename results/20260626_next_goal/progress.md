@@ -128,6 +128,16 @@ After the eighth wait cycle, at `2026-06-26 20:45 EDT`, D5 had completed and D6 
 
 D5 interim readout: edema GT-positive Dice `0.1755`, scar all-case Dice `0.0877`, with high HD95 and residual no-T2 instability. Root-level interim reports now aggregate D1+D2+D4+D5.
 
+After the ninth wait cycle, at `2026-06-26 22:48 EDT`, D6 had completed:
+
+| job | variant | state | elapsed | node/reason |
+| --- | --- | --- | --- | --- |
+| `56611488` | `hierarchical_router_dictionary` | `COMPLETED` | `05:50:04` | `ExitCode=0:0` |
+
+D6 interim readout: edema GT-positive Dice `0.2079`, scar all-case Dice `0.0651`, `budget_status=UNDER_BUDGET_MAX_STEPS`.
+
+Final dictionary-bank selection: `SELECT_DICTIONARY_VARIANT`, selected variant `cross_modal_interaction_dictionary`. Root-level reports now aggregate D1+D2+D4+D5+D6.
+
 ### Next
 
 - Continue monitoring the five dictionary jobs.

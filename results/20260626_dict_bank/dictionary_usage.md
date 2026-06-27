@@ -1,8 +1,8 @@
 # Dictionary Usage
 
-Status: `PARTIAL`
+Status: `COMPLETE`
 
-This summarizes completed formal variants only. Context tasks are the multiscale dictionary's second retrieval scale.
+This summarizes all completed formal dictionary variants. Context tasks are the multiscale dictionary's second retrieval scale.
 
 ## multiscale_dictionary
 - anatomy: per-expert mean weights `expert0=0.2971, expert1=0.3762, expert2=0.1336, expert3=0.1931`; max logged row weight `1.0000`
@@ -26,3 +26,8 @@ This summarizes completed formal variants only. Context tasks are the multiscale
 - anatomy: per-expert mean weights `expert0=0.3339, expert1=0.3281, expert2=0.1340, expert3=0.2039`; max logged row weight `1.0000`
 - edema: per-expert mean weights `expert0=0.3092, expert1=0.2758, expert2=0.2211, expert3=0.1938`; max logged row weight `1.0000`
 - scar: per-expert mean weights `expert0=0.2926, expert1=0.3640, expert2=0.1148, expert3=0.2286`; max logged row weight `1.0000`
+
+## hierarchical_router_dictionary
+- anatomy: per-expert mean weights `expert0=0.3593, expert1=0.3178, expert2=0.1453, expert3=0.1776`; max logged row weight `1.0000`
+- edema: per-expert mean weights `expert0=0.2966, expert1=0.3296, expert2=0.1986, expert3=0.1752`; max logged row weight `1.0000`
+- scar: per-expert mean weights `expert0=0.3173, expert1=0.3214, expert2=0.1580, expert3=0.2033`; max logged row weight `1.0000`

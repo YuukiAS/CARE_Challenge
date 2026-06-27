@@ -1,10 +1,10 @@
 # Result 20260626 Dictionary Bank
 
-status: `IN_PROGRESS`
+status: `SELECT_DICTIONARY_VARIANT`
 
 ## Current Summary
 
-Implemented and submitted five fold0 dictionary bank variants on top of the selected recovered SRR route. This task is still running; no model selection has been made yet.
+Implemented, submitted, and evaluated five fold0 dictionary bank variants on top of the selected recovered SRR route. Final selection is recorded in `results/20260626_dict_bank/selection.md`.
 
 The five submitted routes are:
 
@@ -153,9 +153,23 @@ At `2026-06-26 20:45 EDT`, D5 had completed successfully and D6 was still runnin
 
 D5 completed the formal runtime budget and interim aggregates were regenerated for D1+D2+D4+D5. Current best partial edema signal is D5 (`gt_positive Dice=0.1755`); current best partial scar signal remains D4 (`all_cases Dice=0.1054`). D6 is still required before final selection.
 
+## Final Queue Evidence
+
+At `2026-06-26 22:48 EDT`, D6 had completed successfully:
+
+| job | variant | state | elapsed | node/reason |
+| --- | --- | --- | --- | --- |
+| `56611488` | `hierarchical_router_dictionary` | `COMPLETED` | `05:50:04` | `ExitCode=0:0` |
+
+D6 has complete metrics but stopped at `max_steps` before reaching `min_effective_seconds` (`budget_status=UNDER_BUDGET_MAX_STEPS`). All five formal variants now have exported predictions and root-level aggregate metrics.
+
+## Final Selection
+
+`SELECT_DICTIONARY_VARIANT`: select D4 `cross_modal_interaction_dictionary` for the next compactness/localization step.
+
+See `results/20260626_dict_bank/selection.md`.
+
 ## Not Yet Done
 
-- D6 formal metrics have not completed.
-- No `selection.md` has been written.
-- No compactness task has started, because it depends on `selection.md:SELECT_*`.
+- `20260626_lesion_compact` has not yet been executed after this selection.
 - No validation upload, external upload, external data, external weights, fold expansion, or evaluator/label split change was performed.

@@ -1,8 +1,8 @@
 # Dictionary Bank Failure Interpretation
 
-Status: `PARTIAL`
+Status: `COMPLETE`
 
-D1 `multiscale_dictionary`, D2 `task_specific_dictionary`, D4 `cross_modal_interaction_dictionary`, and D5 `anchor_guided_dictionary` have completed so far. D6 is still running, so this is not a final failure interpretation.
+All five dictionary variants completed.
 
 ## D1 `multiscale_dictionary`
 
@@ -28,6 +28,14 @@ D5 reached the intended runtime budget (`stop_reason=max_runtime_seconds`, `elap
 
 The anchor route still has the same broad localization caveat: HD95 remains high (`102.88` edema GT-positive, `136.80` scar all-cases), and no-T2 edema empty-GT cases are not perfectly stable. It may be a useful edema-side idea, but it is not enough for final selection without D6 and the full decision table.
 
+## D6 `hierarchical_router_dictionary`
+
+D6 completed successfully but stopped by `max_steps` before reaching the requested `min_effective_seconds` (`elapsed_seconds=20961.2`, `budget_status=UNDER_BUDGET_MAX_STEPS`). It produced the strongest edema GT-positive Dice (`0.2079`) and the best edema Dice above the previous recovered SRR baseline, but scar all-case Dice fell to `0.0651`, below both D4 and the previous recovered SRR baseline. HD95 and no-T2 empty-GT component burden also remain high.
+
+D6 is evidence that the availability-aware hierarchical route can help edema sensitivity, but it is not the best single variant for the next compactness/localization step because its scar tradeoff is too large and its budget status is weaker than D4/D5.
+
 ## Pending Evidence
 
-Final interpretation requires D6 formal output. No `selection.md` should be written until enough completed variants are available to compare against the base SRR route and the dictionary-bank decision criteria.
+## Cross-Variant Conclusion
+
+D4 `cross_modal_interaction_dictionary` is the selected dictionary route for the next compactness/localization step. It has the strongest scar all-case Dice among new variants (`0.1054`) and beats the previous recovered SRR scar baseline (`0.0923`) while retaining a non-collapsed edema signal (`0.1599`). D5 and D6 show useful edema-side signals but do not offer the same scar tradeoff; D6 also ended under the effective-time budget. The common unresolved failure mode across all variants is localization quality: HD95, component count, and remote false positives remain too high, so the next step should target compactness and false-positive morphology rather than another pure dictionary expansion.
