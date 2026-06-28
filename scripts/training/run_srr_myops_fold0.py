@@ -49,6 +49,12 @@ LESION_COMPACT_VARIANTS = {
     "scar_lge_fallback_boost",
     "edema_t2_center_balance",
 }
+PROPOSAL_VARIANTS = {
+    "proposal_pos_neg_basic",
+    "proposal_anatomy_distance",
+    "proposal_uncertainty_gate",
+    "proposal_hard_negative_replay_preflight",
+}
 LESION_BASE_DICTIONARY = "cross_modal_interaction_dictionary"
 
 
@@ -172,9 +178,22 @@ def parse_shape(text: str) -> tuple[int, int, int]:
 def dictionary_mode_for_variant(variant: str) -> str:
     if variant in DICTIONARY_BANK_VARIANTS:
         return variant
-    if variant in LESION_COMPACT_VARIANTS:
+    if variant in LESION_COMPACT_VARIANTS or variant in PROPOSAL_VARIANTS:
         return LESION_BASE_DICTIONARY
     return "standard"
+
+
+def proposal_mode_for_variant(variant: str) -> str:
+    if variant in PROPOSAL_VARIANTS:
+        if variant == "proposal_pos_neg_basic":
+            return "proposal_pos_neg_basic"
+        if variant == "proposal_anatomy_distance":
+            return "proposal_anatomy_distance"
+        if variant == "proposal_uncertainty_gate":
+            return "proposal_uncertainty_gate"
+        if variant == "proposal_hard_negative_replay_preflight":
+            return "proposal_uncertainty_gate"
+    return "none"
 
 
 def variant_router_settings(args: argparse.Namespace) -> tuple[dict[str, float], float]:
@@ -217,6 +236,9 @@ def variant_router_settings(args: argparse.Namespace) -> tuple[dict[str, float],
     elif args.variant == "edema_t2_center_balance":
         temps = {"anatomy": 1.8, "scar": 1.45, "edema": 2.1}
         dropout = 0.20 if args.expert_dropout == 0 else dropout
+    elif args.variant in PROPOSAL_VARIANTS:
+        temps = {"anatomy": 1.8, "scar": 1.35, "edema": 1.75}
+        dropout = 0.20 if args.expert_dropout == 0 else dropout
     if args.anatomy_router_temperature is not None:
         temps["anatomy"] = float(args.anatomy_router_temperature)
     if args.scar_router_temperature is not None:
@@ -235,7 +257,7 @@ def make_model(args: argparse.Namespace, device: torch.device) -> nn.Module:
     elif variant in {"srr_minimal", "srr_soft_entropy", "srr_expert_dropout", "srr_task_tempered", "retrieval_no_sip_or_weak_sip"}:
         temps, dropout = variant_router_settings(args)
         model = SRRMyoPSLite(base_channels=args.base_channels, router_temperatures=temps, expert_dropout=dropout)
-    elif variant in DICTIONARY_BANK_VARIANTS or variant in LESION_COMPACT_VARIANTS:
+    elif variant in DICTIONARY_BANK_VARIANTS or variant in LESION_COMPACT_VARIANTS or variant in PROPOSAL_VARIANTS:
         temps, dropout = variant_router_settings(args)
         dictionary_mode = dictionary_mode_for_variant(variant)
         model = SRRMyoPSLite(
@@ -243,6 +265,7 @@ def make_model(args: argparse.Namespace, device: torch.device) -> nn.Module:
             router_temperatures=temps,
             expert_dropout=dropout,
             dictionary_mode=dictionary_mode,
+            proposal_mode=proposal_mode_for_variant(variant),
         )
     else:
         raise ValueError(f"unknown variant {variant}")
@@ -285,6 +308,9 @@ def lesion_auxiliary_loss(
     metrics: dict[str, torch.Tensor] = {
         "soft_containment": zero.detach(),
         "component_compactness": zero.detach(),
+        "proposal_bce": zero.detach(),
+        "proposal_margin": zero.detach(),
+        "proposal_uncertainty": zero.detach(),
     }
     total = zero
     scar_prob = torch.sigmoid(outputs["scar_logits"][:, 0])
@@ -308,6 +334,94 @@ def lesion_auxiliary_loss(
         total = total + float(args.compactness_weight) * compactness
         metrics["component_compactness"] = compactness.detach()
 
+    if args.variant in PROPOSAL_VARIANTS and "scar_proposal_logits" in outputs:
+        proposal_loss, proposal_metrics = proposal_auxiliary_loss(outputs, labels, availability, args)
+        total = total + proposal_loss
+        metrics.update(proposal_metrics)
+
+    return total, metrics
+
+
+def _masked_mean(values: torch.Tensor, mask: torch.Tensor) -> torch.Tensor:
+    mask = mask.to(device=values.device, dtype=values.dtype)
+    return (values * mask).sum() / mask.sum().clamp_min(1.0)
+
+
+def _proposal_bce_dice(logits: torch.Tensor, target: torch.Tensor, mask: torch.Tensor) -> torch.Tensor:
+    target_f = target.to(device=logits.device, dtype=logits.dtype)
+    mask_f = mask.to(device=logits.device, dtype=logits.dtype)
+    bce = torch.nn.functional.binary_cross_entropy_with_logits(logits, target_f, reduction="none")
+    bce = _masked_mean(bce, mask_f)
+    prob = torch.sigmoid(logits)
+    axes = tuple(range(1, prob.ndim))
+    inter = (prob * target_f * mask_f).sum(dim=axes)
+    denom = (prob * mask_f).sum(dim=axes) + (target_f * mask_f).sum(dim=axes)
+    dice = (1.0 - (2.0 * inter + 1e-6) / (denom + 1e-6)).mean()
+    return 0.5 * bce + 0.5 * dice
+
+
+def proposal_auxiliary_loss(
+    outputs: dict[str, torch.Tensor],
+    labels: torch.Tensor,
+    availability: torch.Tensor,
+    args: argparse.Namespace,
+) -> tuple[torch.Tensor, dict[str, torch.Tensor]]:
+    zero = outputs["logits"].sum() * 0.0
+    valid = labels != IGNORE_LABEL
+    t2_present = availability[:, 1].to(device=labels.device, dtype=torch.bool).view(-1, 1, 1, 1)
+    scar_target = labels == 5
+    edema_target = labels == 4
+
+    scar_bce = _proposal_bce_dice(outputs["scar_proposal_logits"][:, 0], scar_target, valid)
+    edema_dense_mask = valid & t2_present
+    edema_bce = (
+        _proposal_bce_dice(outputs["edema_proposal_logits"][:, 0], edema_target, edema_dense_mask)
+        if bool(edema_dense_mask.any())
+        else zero
+    )
+
+    scar_pos = scar_target & valid
+    scar_safe_neg = (~scar_target) & valid
+    edema_pos = edema_target & valid & t2_present
+    # On no-T2 cases, only true background is a safe edema negative; myocardium
+    # and scar voxels are intentionally excluded from edema hard negatives.
+    edema_safe_neg = ((~edema_target) & valid & t2_present) | ((labels == 0) & valid & (~t2_present))
+
+    margin_terms = []
+    margin = float(args.proposal_margin)
+    for prefix, pos_mask, neg_mask in [
+        ("scar", scar_pos, scar_safe_neg),
+        ("edema", edema_pos, edema_safe_neg),
+    ]:
+        pos_sim = outputs[f"{prefix}_pos_similarity"][:, 0]
+        neg_sim = outputs[f"{prefix}_neg_similarity"][:, 0]
+        if bool(pos_mask.any()):
+            margin_terms.append(_masked_mean(torch.relu(margin - pos_sim + neg_sim), pos_mask))
+        if bool(neg_mask.any()):
+            margin_terms.append(_masked_mean(torch.relu(margin + pos_sim - neg_sim), neg_mask))
+    margin_loss = torch.stack(margin_terms).mean() if margin_terms else zero
+
+    uncertainty_loss = zero
+    if args.variant == "proposal_uncertainty_gate" or args.variant == "proposal_hard_negative_replay_preflight":
+        scar_unc = outputs["scar_uncertainty"][:, 0]
+        edema_unc = outputs["edema_uncertainty"][:, 0]
+        confident_mask = scar_pos | edema_pos
+        safe_bg = (labels == 0) & valid
+        if bool(confident_mask.any()):
+            uncertainty_loss = uncertainty_loss + _masked_mean(scar_unc + edema_unc, confident_mask)
+        if bool(safe_bg.any()):
+            uncertainty_loss = uncertainty_loss + 0.25 * _masked_mean((1.0 - scar_unc) + (1.0 - edema_unc), safe_bg)
+
+    total = (
+        float(args.proposal_bce_weight) * (0.5 * scar_bce + 0.5 * edema_bce)
+        + float(args.proposal_margin_weight) * margin_loss
+        + float(args.proposal_uncertainty_weight) * uncertainty_loss
+    )
+    metrics = {
+        "proposal_bce": (0.5 * scar_bce + 0.5 * edema_bce).detach(),
+        "proposal_margin": margin_loss.detach(),
+        "proposal_uncertainty": uncertainty_loss.detach(),
+    }
     return total, metrics
 
 
@@ -412,13 +526,29 @@ def fp_counts(pred_mask: np.ndarray, gt_mask: np.ndarray, small_threshold: int =
     return small_fp, remote_fp
 
 
-def predict_full_case(model: nn.Module, case: CaseData, device: torch.device) -> np.ndarray:
+def predict_full_case(model: nn.Module, case: CaseData, device: torch.device) -> tuple[np.ndarray, dict[str, np.ndarray]]:
     model.eval()
     with torch.no_grad():
         x = torch.from_numpy(case.image[None]).float().to(device)
         av = torch.from_numpy(case.availability[None]).float().to(device)
-        pred = torch.argmax(model(x, av)["logits"], dim=1)[0].detach().cpu().numpy().astype(np.uint8)
-    return pred
+        outputs = model(x, av)
+        pred = torch.argmax(outputs["logits"], dim=1)[0].detach().cpu().numpy().astype(np.uint8)
+        aux: dict[str, np.ndarray] = {}
+        for key in (
+            "scar_proposal_logits",
+            "edema_proposal_logits",
+            "scar_pos_similarity",
+            "scar_neg_similarity",
+            "edema_pos_similarity",
+            "edema_neg_similarity",
+            "scar_uncertainty",
+            "edema_uncertainty",
+            "local_anatomy_confidence",
+        ):
+            value = outputs.get(key)
+            if isinstance(value, torch.Tensor):
+                aux[key] = value[0, 0].detach().cpu().numpy()
+    return pred, aux
 
 
 def write_prediction(path: Path, pred: np.ndarray, reference: sitk.Image) -> None:
@@ -461,6 +591,66 @@ def collect_case_metrics(variant: str, case: CaseData, pred: np.ndarray) -> list
     return rows
 
 
+def collect_proposal_metrics(
+    variant: str,
+    case: CaseData,
+    aux: dict[str, np.ndarray],
+) -> tuple[list[dict[str, object]], list[dict[str, object]]]:
+    if "scar_proposal_logits" not in aux:
+        return [], []
+    gt = case.label_arr.astype(np.uint8, copy=False)
+    rows: list[dict[str, object]] = []
+    usage_rows: list[dict[str, object]] = []
+    for cls, name, prefix in [(4, "myops_edema", "edema"), (5, "myops_scar", "scar")]:
+        logits = aux[f"{prefix}_proposal_logits"]
+        gate = 1.0 / (1.0 + np.exp(-logits))
+        proposal = gate >= 0.50
+        gt_mask = gt == cls
+        inter = int(np.logical_and(proposal, gt_mask).sum())
+        proposal_vox = int(proposal.sum())
+        gt_vox = int(gt_mask.sum())
+        small_fp, remote_fp = fp_counts(proposal, gt_mask)
+        outside_union_fp = int(np.logical_and(proposal, gt == 0).sum())
+        rows.append(
+            {
+                "variant": variant,
+                "case_id": case.case_id,
+                "center": case.metadata.center,
+                "modality_group": case.metadata.modality_group,
+                "t2_present": case.metadata.t2_present,
+                "class_id": cls,
+                "metric_name": name,
+                "proposal_threshold": 0.50,
+                "proposal_recall": None if gt_vox == 0 else inter / max(1, gt_vox),
+                "proposal_precision": None if proposal_vox == 0 else inter / max(1, proposal_vox),
+                "proposal_voxels": proposal_vox,
+                "gt_voxels": gt_vox,
+                "proposal_component_count": component_count(proposal),
+                "proposal_small_fp_count": small_fp,
+                "proposal_remote_fp_count": remote_fp,
+                "proposal_outside_union_fp_voxels": outside_union_fp,
+                "proposal_gate_mean": float(gate.mean()),
+                "proposal_gate_p95": float(np.percentile(gate, 95)),
+                "uncertainty_mean": float(aux.get(f"{prefix}_uncertainty", np.zeros_like(gate)).mean()),
+                "local_anatomy_confidence_mean": float(aux.get("local_anatomy_confidence", np.zeros_like(gate)).mean()),
+            }
+        )
+        usage_rows.append(
+            {
+                "variant": variant,
+                "case_id": case.case_id,
+                "task": prefix,
+                "pos_similarity_mean": float(aux[f"{prefix}_pos_similarity"].mean()),
+                "neg_similarity_mean": float(aux[f"{prefix}_neg_similarity"].mean()),
+                "pos_minus_neg_mean": float((aux[f"{prefix}_pos_similarity"] - aux[f"{prefix}_neg_similarity"]).mean()),
+                "proposal_gate_mean": float(gate.mean()),
+                "proposal_gate_p95": float(np.percentile(gate, 95)),
+                "uncertainty_mean": float(aux.get(f"{prefix}_uncertainty", np.zeros_like(gate)).mean()),
+            }
+        )
+    return rows, usage_rows
+
+
 def summarize_subgroups(variant: str, case_rows: list[dict[str, object]]) -> list[dict[str, object]]:
     rows = []
     groups: list[tuple[str, callable]] = [
@@ -501,12 +691,21 @@ def summarize_subgroups(variant: str, case_rows: list[dict[str, object]]) -> lis
 def evaluate_and_export(model: nn.Module, cases: list[CaseData], variant_dir: Path, variant: str, device: torch.device) -> None:
     pred_dir = variant_dir / "predictions/fold_0/checkpoint_best"
     case_rows: list[dict[str, object]] = []
+    proposal_rows: list[dict[str, object]] = []
+    prototype_rows: list[dict[str, object]] = []
     for case in cases:
-        pred = predict_full_case(model, case, device)
+        pred, aux = predict_full_case(model, case, device)
         write_prediction(pred_dir / f"{case.case_id}.nii.gz", pred, case.label_img)
         case_rows.extend(collect_case_metrics(variant, case, pred))
+        p_rows, u_rows = collect_proposal_metrics(variant, case, aux)
+        proposal_rows.extend(p_rows)
+        prototype_rows.extend(u_rows)
     write_csv(variant_dir / "component_hd_by_case.csv", case_rows)
     write_csv(variant_dir / "subgroup_metrics.csv", summarize_subgroups(variant, case_rows))
+    if proposal_rows:
+        write_csv(variant_dir / "proposal_metrics.csv", proposal_rows)
+    if prototype_rows:
+        write_csv(variant_dir / "prototype_usage.csv", prototype_rows)
 
 
 def validate_patch_loss(
@@ -628,6 +827,9 @@ def train_variant(args: argparse.Namespace) -> None:
                     "retrieval_loss": float(metrics["retrieval"].detach().cpu()),
                     "soft_containment_loss": float(metrics["soft_containment"].detach().cpu()),
                     "component_compactness_loss": float(metrics["component_compactness"].detach().cpu()),
+                    "proposal_bce_loss": float(metrics["proposal_bce"].detach().cpu()),
+                    "proposal_margin_loss": float(metrics["proposal_margin"].detach().cpu()),
+                    "proposal_uncertainty_loss": float(metrics["proposal_uncertainty"].detach().cpu()),
                     "edema_supervised_batch_fraction": supervised_fraction,
                     "batch_cases": ",".join(keys),
                     "elapsed_seconds": time.monotonic() - start,
@@ -706,10 +908,15 @@ def train_variant(args: argparse.Namespace) -> None:
         "router_temperatures": router_temperatures,
         "expert_dropout": effective_expert_dropout,
         "dictionary_mode": dictionary_mode_for_variant(args.variant),
+        "proposal_mode": proposal_mode_for_variant(args.variant),
         "lesion_mode": args.variant if args.variant in LESION_COMPACT_VARIANTS else "none",
         "lesion_auxiliary_config": {
             "containment_weight": float(args.containment_weight),
             "compactness_weight": float(args.compactness_weight),
+            "proposal_bce_weight": float(args.proposal_bce_weight),
+            "proposal_margin_weight": float(args.proposal_margin_weight),
+            "proposal_uncertainty_weight": float(args.proposal_uncertainty_weight),
+            "proposal_margin": float(args.proposal_margin),
         },
     }
     (variant_dir / "summary.json").write_text(json.dumps(summary, indent=2, sort_keys=True), encoding="utf-8")
@@ -754,6 +961,10 @@ def main() -> None:
             "component_compactness_loss",
             "scar_lge_fallback_boost",
             "edema_t2_center_balance",
+            "proposal_pos_neg_basic",
+            "proposal_anatomy_distance",
+            "proposal_uncertainty_gate",
+            "proposal_hard_negative_replay_preflight",
         ],
     )
     parser.add_argument("--fold", type=int, default=0)
@@ -789,6 +1000,10 @@ def main() -> None:
     parser.add_argument("--retrieval-weight", type=float, default=1.0)
     parser.add_argument("--containment-weight", type=float, default=0.0)
     parser.add_argument("--compactness-weight", type=float, default=0.0)
+    parser.add_argument("--proposal-bce-weight", type=float, default=0.45)
+    parser.add_argument("--proposal-margin-weight", type=float, default=0.20)
+    parser.add_argument("--proposal-uncertainty-weight", type=float, default=0.05)
+    parser.add_argument("--proposal-margin", type=float, default=0.25)
     parser.add_argument("--skip-export", action="store_true", help="Preflight only: skip full validation prediction export.")
     args = parser.parse_args()
     train_variant(args)

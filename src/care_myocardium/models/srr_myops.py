@@ -42,6 +42,7 @@ class SRRMyoPSLite(nn.Module):
         router_temperatures: dict[str, float] | None = None,
         expert_dropout: float = 0.0,
         dictionary_mode: str = "standard",
+        proposal_mode: str = "none",
     ) -> None:
         super().__init__()
         if in_channels != 3:
@@ -49,6 +50,7 @@ class SRRMyoPSLite(nn.Module):
         self.in_channels = in_channels
         self.base_channels = int(base_channels)
         self.dictionary_mode = dictionary_mode
+        self.proposal_mode = proposal_mode
         self.stems = nn.ModuleList([ModalityStem(base_channels) for _ in range(3)])
         retrieval_kwargs = {
             "router_temperatures": router_temperatures,
@@ -78,6 +80,11 @@ class SRRMyoPSLite(nn.Module):
             nn.LeakyReLU(0.01, inplace=True),
         )
         self.heads = AnatomyPathologyHeads(base_channels, prior_strength=prior_strength)
+        self.proposal_head = (
+            PathologyProposalHead(base_channels, mode=proposal_mode)
+            if proposal_mode != "none"
+            else None
+        )
 
     def forward(self, x: torch.Tensor, availability: torch.Tensor) -> dict[str, torch.Tensor]:
         if x.ndim != 5:
@@ -95,11 +102,12 @@ class SRRMyoPSLite(nn.Module):
                 context = F.interpolate(context_routed[name], size=fused.shape[-3:], mode="trilinear", align_corners=False)
                 routed[name] = 0.65 * routed[name] + 0.35 * context
                 gates[f"{name}_context"] = context_gates[name]
-        outputs = self.heads(
-            self.refine(routed["anatomy"]),
-            self.refine(routed["scar"]),
-            self.refine(routed["edema"]),
-        )
+        anatomy_features = self.refine(routed["anatomy"])
+        scar_features = self.refine(routed["scar"])
+        edema_features = self.refine(routed["edema"])
+        outputs = self.heads(anatomy_features, scar_features, edema_features)
+        if self.proposal_head is not None:
+            self.proposal_head(outputs, scar_features, edema_features, availability)
         outputs["gates"] = gates
         outputs["availability"] = availability
         outputs["expert_usage"] = {name: gate.mean(dim=0) for name, gate in gates.items()}
@@ -108,6 +116,126 @@ class SRRMyoPSLite(nn.Module):
 
 def build_srr_myops_lite(base_channels: int = 16) -> SRRMyoPSLite:
     return SRRMyoPSLite(base_channels=base_channels)
+
+
+class PathologyProposalHead(nn.Module):
+    """Prototype proposal head for scar/edema candidate generation.
+
+    The head keeps the original SRR evidence logits, but replaces the final
+    pathology logits with a soft proposal score that combines positive-vs-
+    negative prototype similarity, anatomy neighborhood confidence, and an
+    optional uncertainty gate. It never hard-deletes anatomy-outside voxels.
+    """
+
+    def __init__(self, channels: int, mode: str, n_prototypes: int = 4) -> None:
+        super().__init__()
+        self.mode = mode
+        self.temperature = 0.20
+        self.evidence_weight = 0.55
+        self.anatomy_weight = 0.25
+        self.distance_weight = 0.05
+        self.uncertainty_weight = 0.0
+        if mode == "proposal_anatomy_distance":
+            self.anatomy_weight = 0.38
+            self.distance_weight = 0.35
+        elif mode == "proposal_uncertainty_gate":
+            self.anatomy_weight = 0.30
+            self.distance_weight = 0.20
+            self.uncertainty_weight = 0.45
+        self.scar_embed = nn.Conv3d(channels, channels, kernel_size=1, bias=False)
+        self.edema_embed = nn.Conv3d(channels, channels, kernel_size=1, bias=False)
+        self.scar_pos = nn.Parameter(torch.randn(n_prototypes, channels) * 0.02)
+        self.scar_neg = nn.Parameter(torch.randn(n_prototypes, channels) * 0.02)
+        self.edema_pos = nn.Parameter(torch.randn(n_prototypes, channels) * 0.02)
+        self.edema_neg = nn.Parameter(torch.randn(n_prototypes, channels) * 0.02)
+
+    @staticmethod
+    def _similarity(emb: torch.Tensor, prototypes: torch.Tensor) -> torch.Tensor:
+        emb_n = F.normalize(emb, dim=1)
+        proto_n = F.normalize(prototypes, dim=1)
+        sims = torch.einsum("bcdhw,kc->bkdhw", emb_n, proto_n)
+        return sims.max(dim=1, keepdim=True).values
+
+    @staticmethod
+    def _local_anatomy_confidence(union_prior_logits: torch.Tensor) -> torch.Tensor:
+        union = torch.sigmoid(union_prior_logits)
+        kernel = []
+        padding = []
+        for dim in union.shape[-3:]:
+            k = min(7, int(dim))
+            if k % 2 == 0:
+                k = max(1, k - 1)
+            kernel.append(k)
+            padding.append(k // 2)
+        return F.avg_pool3d(union, kernel_size=tuple(kernel), stride=1, padding=tuple(padding))
+
+    @staticmethod
+    def _uncertainty(logits: torch.Tensor) -> torch.Tensor:
+        prob = torch.sigmoid(logits)
+        return (1.0 - torch.abs(2.0 * prob - 1.0)).clamp(0.0, 1.0)
+
+    def _proposal_logit(
+        self,
+        evidence_logits: torch.Tensor,
+        pos_sim: torch.Tensor,
+        neg_sim: torch.Tensor,
+        union_prior_logits: torch.Tensor,
+    ) -> tuple[torch.Tensor, torch.Tensor]:
+        local_anatomy = self._local_anatomy_confidence(union_prior_logits)
+        remote_penalty = (1.0 - local_anatomy).clamp(0.0, 1.0)
+        uncertainty = self._uncertainty(evidence_logits)
+        logit = (
+            (pos_sim - neg_sim) / self.temperature
+            + self.evidence_weight * evidence_logits
+            + self.anatomy_weight * torch.tanh(union_prior_logits)
+            - self.distance_weight * remote_penalty
+        )
+        if self.uncertainty_weight > 0:
+            logit = logit - self.uncertainty_weight * uncertainty
+        return logit, uncertainty
+
+    def forward(
+        self,
+        outputs: dict[str, torch.Tensor],
+        scar_features: torch.Tensor,
+        edema_features: torch.Tensor,
+        availability: torch.Tensor,
+    ) -> None:
+        scar_emb = self.scar_embed(scar_features)
+        edema_emb = self.edema_embed(edema_features)
+        scar_pos = self._similarity(scar_emb, self.scar_pos)
+        scar_neg = self._similarity(scar_emb, self.scar_neg)
+        edema_pos = self._similarity(edema_emb, self.edema_pos)
+        edema_neg = self._similarity(edema_emb, self.edema_neg)
+
+        original_scar = outputs["scar_logits"]
+        original_edema = outputs["edema_logits"]
+        scar_proposal, scar_uncertainty = self._proposal_logit(
+            original_scar, scar_pos, scar_neg, outputs["union_prior_logits"]
+        )
+        edema_proposal, edema_uncertainty = self._proposal_logit(
+            original_edema, edema_pos, edema_neg, outputs["union_prior_logits"]
+        )
+
+        outputs["scar_evidence_logits"] = original_scar
+        outputs["edema_evidence_logits"] = original_edema
+        outputs["scar_proposal_logits"] = scar_proposal
+        outputs["edema_proposal_logits"] = edema_proposal
+        outputs["scar_pos_similarity"] = scar_pos
+        outputs["scar_neg_similarity"] = scar_neg
+        outputs["edema_pos_similarity"] = edema_pos
+        outputs["edema_neg_similarity"] = edema_neg
+        outputs["scar_uncertainty"] = scar_uncertainty
+        outputs["edema_uncertainty"] = edema_uncertainty
+        outputs["local_anatomy_confidence"] = self._local_anatomy_confidence(outputs["union_prior_logits"])
+        outputs["proposal_mode"] = self.mode
+
+        outputs["scar_logits"] = 0.40 * original_scar + 0.60 * scar_proposal
+        outputs["edema_logits"] = 0.40 * original_edema + 0.60 * edema_proposal
+        outputs["logits"] = torch.cat(
+            [outputs["anatomy_logits"], outputs["edema_logits"], outputs["scar_logits"]],
+            dim=1,
+        )
 
 
 class ConditionalDualHeadControl(nn.Module):

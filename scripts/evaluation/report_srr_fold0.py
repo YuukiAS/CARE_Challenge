@@ -111,7 +111,7 @@ def decide(subgroups: list[dict[str, str]], usage: list[dict[str, str]], variant
 
 def decide_recovery(subgroups: list[dict[str, str]], usage: list[dict[str, str]], variants: list[str]) -> tuple[str, list[str]]:
     reasons: list[str] = []
-    revised = [v for v in variants if v.startswith("srr_") or v.endswith("_dictionary")]
+    revised = [v for v in variants if v.startswith("srr_") or v.startswith("proposal_") or v.endswith("_dictionary")]
     if not revised:
         return "STOP_PIPELINE_BUG", ["no revised SRR variants found"]
 
@@ -178,16 +178,26 @@ def main() -> None:
     subgroup_rows: list[dict[str, str]] = []
     component_rows: list[dict[str, str]] = []
     usage_rows: list[dict[str, str]] = []
+    proposal_rows: list[dict[str, str]] = []
+    prototype_rows: list[dict[str, str]] = []
     summaries = {}
     for variant in variants:
         vdir = root / "variants" / variant
         subgroup_rows.extend(read_csv(vdir / "subgroup_metrics.csv"))
         component_rows.extend(read_csv(vdir / "component_hd_by_case.csv"))
         usage_rows.extend(read_csv(vdir / "retrieval_usage.csv"))
+        if (vdir / "proposal_metrics.csv").is_file():
+            proposal_rows.extend(read_csv(vdir / "proposal_metrics.csv"))
+        if (vdir / "prototype_usage.csv").is_file():
+            prototype_rows.extend(read_csv(vdir / "prototype_usage.csv"))
         summaries[variant] = json.loads((vdir / "summary.json").read_text(encoding="utf-8"))
     write_csv(root / "subgroup_metrics.csv", subgroup_rows)
     write_csv(root / "component_hd_by_case.csv", component_rows)
     write_csv(root / "retrieval_usage.csv", usage_rows)
+    if proposal_rows:
+        write_csv(root / "proposal_metrics.csv", proposal_rows)
+    if prototype_rows:
+        write_csv(root / "prototype_usage.csv", prototype_rows)
     decision, reasons = decide(subgroup_rows, usage_rows, variants, args.decision_mode)
     write = root.joinpath
     lines = [
