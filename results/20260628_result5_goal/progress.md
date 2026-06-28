@@ -23,4 +23,26 @@ Active jobs:
 Not started yet:
 
 - `20260628_myops_refine`: waits for `SELECT_PROPOSAL_ROUTE`.
-- `20260628_cine_register`: allowed in parallel, but MyoPS proposal implementation was prioritized first.
+
+## 2026-06-28 Cine Registration Completed
+
+Completed `20260628_cine_register` as the parallel Cine secondary track.
+
+Outputs:
+
+- Result: `results/20260628_cine_register/result.md`
+- Selection: `results/20260628_cine_register/selection.md`
+- Metrics: `results/20260628_cine_register/registration_metrics.csv`
+- Warp sanity: `results/20260628_cine_register/warp_sanity.csv`
+
+Decision:
+
+- Cine status: `SELECT_MOTION_DESCRIPTOR_ONLY`
+- Safe cases evaluated: `59`
+- Mismatch cases held out: `5`
+- SimpleITK classical registration succeeded on all `116` non-reference frame evaluations after adding a thin-volume `slice2d_translation` fallback, but anatomy consistency improved only marginally (`class_1` delta mean `0.0001`, `class_2` delta mean `0.0000`), so it was not selected as a dense registration module.
+
+Still waiting:
+
+- `20260628_myops_refine`: waits for `SELECT_PROPOSAL_ROUTE`.
+- `20260628_myops_proposal`: formal jobs remain queued on `htzhulab`.
