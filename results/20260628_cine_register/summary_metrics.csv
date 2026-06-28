@@ -1,0 +1,5 @@
+class_id,consistency_dice_after_mean,consistency_dice_before_mean,consistency_dice_delta_mean,consistency_dice_delta_median,image_ncc_delta_mean,method,metric_name,n,runtime_seconds_mean,success_rate,translation_norm_mm_mean
+1,0.6653773315639386,0.6653773315639386,0.0,0.0,,motion_descriptor,class_1_myocardium,116,0.0,1.0,
+2,0.7166546081716877,0.7166546081716877,0.0,0.0,,motion_descriptor,class_2_lv,116,0.0,1.0,
+1,0.6655066255931076,0.6653773315639386,0.00012929402916884942,0.0,-0.00026894386472373175,simpleitk_translation,class_1_myocardium,116,0.6053347154359879,1.0,0.26244159284333474
+2,0.7166933195197582,0.7166546081716877,3.871134807053758e-05,0.0,-0.00026894386472373175,simpleitk_translation,class_2_lv,116,0.6053347154359879,1.0,0.26244159284333474
