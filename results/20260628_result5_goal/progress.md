@@ -104,3 +104,36 @@ Current gate state:
 - `SELECT_PROPOSAL_ROUTE` has not been reached.
 - Formal `20260628_myops_refine` remains blocked by the proposal selection gate.
 - The new loss fix should be treated as future-run infrastructure; the already-running formal proposal jobs still reflect the code state at their launch.
+
+## 2026-06-29 Loss/Decode and Checkpoint Audit Completed
+
+Completed the first non-idle continuation audits for the only finished proposal variant so far, `proposal_pos_neg_basic`.
+
+Slurm audit:
+
+- job: `56946010`
+- script: `jobs/evaluation/audit_result5_decode_calibration.sh`
+- log: `logs/R5DecodeAudit_56946010_20260629_055753.log`
+- state: `COMPLETED`
+- elapsed: `00:15:38`
+
+Outputs:
+
+- `results/20260629_loss_decode_calibration/result.md`
+- `results/20260629_loss_decode_calibration/selection.md`
+- `results/20260629_loss_decode_calibration/decode_metrics.csv`
+- `results/20260629_loss_decode_calibration/decode_case_metrics.csv`
+- `results/20260629_pathology_checkpoint_selection/result.md`
+- `results/20260629_pathology_checkpoint_selection/selection.md`
+- `results/20260629_pathology_checkpoint_selection/checkpoint_metrics.csv`
+
+Selections:
+
+- `20260629_loss_decode_calibration`: `DECODE_CALIBRATION_SIGNAL`
+- `20260629_pathology_checkpoint_selection`: `FINAL_BETTER_THAN_PATCH_BEST`
+
+Interpretation:
+
+- The signal is positive for pipeline debugging: raw argmax is not the right decode surface, and patch-loss best checkpoint is not reliably pathology-optimal.
+- The signal is not enough to start formal MyoPS refinement: best calibrated local combo remains around `0.28` on fold0 pathology targets, far below a credible proposal-route selection threshold.
+- The loss masking bug repair and calibration/checkpoint findings should inform future runs after the `20260628_myops_proposal` formal jobs finish, but they do not retroactively change those running jobs.
