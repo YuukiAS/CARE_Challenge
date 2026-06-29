@@ -1,0 +1,86 @@
+---
+task_key: "20260629_result4_srr_core_rebuild"
+project: "CARE-Myocardium"
+status: "ready"
+executor: "Codex"
+risk_level: "high"
+allow_code_change: true
+allow_shell_command: true
+allow_network: false
+allow_external_upload: false
+requires_human_approval: false
+max_single_job_walltime: "08:00:00"
+max_parallel_gpu_jobs: 1
+---
+
+# Task 20260629 Result4 SRR Core Rebuild
+
+## Objective
+
+Implement a stronger first-party SRR core that actually satisfies the Result4 intent more closely than the current single-scale `SRRMyoPSLite`. This task should not replace or overwrite currently running `20260628_myops_proposal` artifacts. It is a parallel implementation/preflight task for a future repeat if the current Result5 jobs confirm weak or invalid proposal signal.
+
+The aim is not to fall back to nnU-Net. The aim is to make the SRR story scientifically defensible: multi-scale evidence, truly modality-private dictionaries, sparse retrieval, and pathology-specific routing.
+
+## Required reading
+
+Read `docs/notes/20260629_result5_gap_audit.md`, `prompts/tasks/20260628_result5_goal.md`, `prompts/tasks/20260628_myops_proposal.md`, `results/20260626_dict_bank/selection.md`, `results/20260626_dict_bank/failure_interpretation.md`, current `src/care_myocardium/models/srr_myops.py`, `src/care_myocardium/models/srr_blocks.py`, `src/care_myocardium/models/pathology_heads.py`, and `src/care_myocardium/losses/srr_losses.py`.
+
+## Non-conflict rule
+
+Do not change the behavior of existing variants unless explicitly gated by a new variant name. Add a new model/variant such as `srr_v2_multiscale_private_sparse` or an equivalent isolated route. Put outputs under `results/20260629_result4_srr_core_rebuild/`. Do not kill or overwrite the current proposal jobs.
+
+## Required design improvements
+
+1. True modality-private feature streams. LGE, T2, and C0 private experts must operate on modality-specific features, not only on the masked-averaged fused feature. Shared experts may operate on fused evidence, but private experts must retain modality identity.
+
+2. Multi-scale retrieval. Implement at least two scales for the sprint version; four scales is preferred if time allows. Each scale should expose routed features for anatomy, scar, and edema.
+
+3. Sparse retrieval. Replace dense softmax-only routing with a sparse option: top-k soft gate, sparsemax, entmax if already available, or a small custom differentiable sparse gate. Keep a soft fallback if training becomes unstable, but report both.
+
+4. Pathology-specific routing. Scar must be biased toward LGE-private and LGE interaction evidence; edema must be biased toward T2-private and T2 interaction evidence. This bias can be a router prior, not a hard rule.
+
+5. Segmentation-native SIP-inspired regularization. Go beyond uniform coverage MSE. Track expert usage by availability pattern and by pathology head. Encourage useful cross-pattern sharing without forcing all experts uniform.
+
+6. Availability correctness. Missing modalities must be mathematically inert. Do not infer missingness from zero intensity.
+
+7. Compatibility. Keep Dataset501 channel order and label semantics unchanged.
+
+## Minimum implementation path
+
+1. Add the new SRR core with isolated unit tests.
+2. Add a CPU smoke test for forward shapes, missing modality masks, sparse gate sums, and no gradients through unavailable modality-private experts.
+3. Run a tiny overfit or short preflight to confirm losses decrease and exports are valid.
+4. Only if `20260629_loss_decode_calibration` has ruled out a pure decode/loss bug and GPU resources are safe, launch one formal fold0 job with 6-7h effective budget.
+
+## Evaluation
+
+Report:
+
+- scar all Dice/HD95, scar GT-positive Dice, component count, remote FP
+- edema all Dice/HD95, edema GT-positive Dice, T2-present Dice, no-T2 stability
+- expert usage by task, modality, scale, and availability pattern
+- whether private experts actually receive modality-specific input
+- comparison to D4 `cross_modal_interaction_dictionary` and to current Result5 proposal variants when available
+
+## Outputs
+
+Write:
+
+- `results/20260629_result4_srr_core_rebuild/result.md`
+- `results/20260629_result4_srr_core_rebuild/MANIFEST.md`
+- `results/20260629_result4_srr_core_rebuild/architecture_note.md`
+- `results/20260629_result4_srr_core_rebuild/gate_usage.csv`
+- `results/20260629_result4_srr_core_rebuild/subgroup_metrics.csv` if a formal run is executed
+- `results/20260629_result4_srr_core_rebuild/selection.md`
+
+Selection states:
+
+- `CORE_REBUILD_PREFLIGHT_ONLY`
+- `CORE_REBUILD_FORMAL_SIGNAL`
+- `CORE_REBUILD_NO_SIGNAL`
+- `CORE_REBUILD_BLOCKED_BY_PIPELINE_BUG`
+- `CORE_REBUILD_DEFER`
+
+## Stop conditions
+
+Stop only for label/evaluator contract errors, missing data paths, unrecoverable shape bugs, or GPU/resource conflict with the current Result5 proposal jobs. Do not stop because the first sparse gate is unstable; fall back to soft gate and document the instability.
