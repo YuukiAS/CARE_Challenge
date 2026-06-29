@@ -82,6 +82,13 @@ def write_text(path: Path, text: str) -> None:
     path.write_text(text, encoding="utf-8")
 
 
+def save_checkpoint_atomic(payload: dict[str, object], path: Path) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    tmp_path = path.with_name(f".{path.name}.tmp")
+    torch.save(payload, tmp_path)
+    tmp_path.replace(path)
+
+
 def load_split(fold: int) -> tuple[list[str], list[str]]:
     data = json.loads(SPLIT_JSON.read_text(encoding="utf-8"))
     split = data["folds"][fold]
@@ -851,7 +858,7 @@ def train_variant(args: argparse.Namespace) -> None:
             if val_loss < best_val:
                 best_val = val_loss
                 best_step = step
-                torch.save(
+                save_checkpoint_atomic(
                     {
                         "variant": args.variant,
                         "step": step,
@@ -866,13 +873,13 @@ def train_variant(args: argparse.Namespace) -> None:
     if stop_reason == "max_steps" and elapsed_seconds < args.min_effective_seconds:
         budget_status = "UNDER_BUDGET_MAX_STEPS"
     final_ckpt = checkpoint_dir / "checkpoint_final.pt"
-    torch.save({"variant": args.variant, "model_state_dict": model.state_dict(), "args": vars(args)}, final_ckpt)
+    save_checkpoint_atomic({"variant": args.variant, "model_state_dict": model.state_dict(), "args": vars(args)}, final_ckpt)
     best_path = checkpoint_dir / "checkpoint_best.pt"
-    if best_path.is_file():
+    if best_path.is_file() and best_path.stat().st_size > 0:
         state = torch.load(best_path, map_location=device, weights_only=False)
         model.load_state_dict(state["model_state_dict"])
     else:
-        torch.save({"variant": args.variant, "model_state_dict": model.state_dict(), "args": vars(args)}, best_path)
+        save_checkpoint_atomic({"variant": args.variant, "model_state_dict": model.state_dict(), "args": vars(args)}, best_path)
         best_step = args.max_steps
         best_val = float("nan")
     if not args.skip_export:

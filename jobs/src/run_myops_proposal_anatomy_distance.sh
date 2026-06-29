@@ -21,7 +21,7 @@ exec > >(tee -a "${LOG_FILE}") 2>&1
 
 echo "LOG_FILE=${LOG_FILE}"
 echo "variant=proposal_anatomy_distance"
-./envs/env_CARE/bin/python scripts/training/run_srr_myops_fold0.py \
+./envs/env_CARE/bin/python -u scripts/training/run_srr_myops_fold0.py \
   --variant proposal_anatomy_distance \
   --fold 0 \
   --device cuda \
