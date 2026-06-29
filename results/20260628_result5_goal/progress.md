@@ -189,3 +189,24 @@ Sanity result:
 Caveat:
 
 - Mean ROI volume ratio on GT-positive rows is high at about `0.74`; this proves safe extraction/restoration, but it is not yet a focused refinement crop policy.
+
+## 2026-06-29 Result4 SRR-v2 Core Rebuild Preflight
+
+Completed `20260629_result4_srr_core_rebuild` as an architecture preflight/defer package. No SRR-v2 formal GPU job was launched.
+
+Outputs:
+
+- `results/20260629_result4_srr_core_rebuild/result.md`
+- `results/20260629_result4_srr_core_rebuild/selection.md`
+- `results/20260629_result4_srr_core_rebuild/architecture_note.md`
+- `results/20260629_result4_srr_core_rebuild/gate_usage.csv`
+
+Selection:
+
+- `CORE_REBUILD_DEFER`
+
+Reason:
+
+- The current sprint has already confirmed nearer pipeline blockers: ignore-label loss masking, decode calibration, and pathology checkpoint selection.
+- Current formal proposal jobs are still running, so a new SRR-v2 formal GPU run would weaken attribution and compete with unfinished gated evidence.
+- Code review confirms the current `ExpertBank` private experts operate on fused features, so future SRR-v2 should be an isolated new route with modality-private inputs rather than an in-place change to existing variants.

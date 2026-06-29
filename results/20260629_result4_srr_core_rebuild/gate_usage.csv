@@ -1,0 +1,7 @@
+route,status,task,scale,modality_or_expert,expected_behavior,current_gap,next_check
+srr_v2_multiscale_private_sparse,deferred,scar,scale1,LGE_private,scar-biased private evidence,current private experts consume fused features,verify nonzero LGE-private gradients on LGE-present cases
+srr_v2_multiscale_private_sparse,deferred,edema,scale1,T2_private,edema-biased private evidence,current private experts consume fused features,verify zero T2-private gradients on no-T2 cases
+srr_v2_multiscale_private_sparse,deferred,anatomy,scale1,shared,shared anatomy context,shared route exists but only one main scale unless multiscale mode,log shared usage by availability pattern
+srr_v2_multiscale_private_sparse,deferred,scar,scale2,LGE_interaction,large-context scar evidence,interaction experts receive fused input in current D4,verify modality-specific interaction input construction
+srr_v2_multiscale_private_sparse,deferred,edema,scale2,T2_interaction,large-context T2 edema evidence,interaction experts receive fused input in current D4,verify T2-present-only edema supervision
+srr_v2_multiscale_private_sparse,deferred,all,all,sparse_topk,top-k valid expert routing,current router is dense softmax,verify invalid experts remain zero and selected gates renormalize

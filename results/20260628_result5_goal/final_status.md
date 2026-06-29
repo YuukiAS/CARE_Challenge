@@ -15,6 +15,7 @@ status: `IN_PROGRESS`
 - Completed `20260629_pathology_checkpoint_selection` for the finished `proposal_pos_neg_basic` variant.
 - Completed `20260629_proposal_memory_hardneg` as preflight mining only.
 - Completed `20260629_true_soft_roi_refine` as geometry-only preflight.
+- Completed `20260629_result4_srr_core_rebuild` as architecture preflight/defer package.
 - Confirmed and repaired the SRR ignore-label loss masking bug for future runs.
 
 ## Positive Signals
@@ -23,6 +24,7 @@ status: `IN_PROGRESS`
 - Pathology checkpoint selection status: `FINAL_BETTER_THAN_PATCH_BEST`.
 - Hard-negative memory status: `HARDNEG_PREFLIGHT_ONLY` with `7237` mined false-positive components and safe replay pools identified.
 - Soft-ROI status: `REFINE_WAITING_FOR_PROPOSAL_SELECTION`; restore sanity passed with `0` invalid rows, but ROI volume ratio remains high.
+- SRR-v2 core rebuild status: `CORE_REBUILD_DEFER`; current private experts operate on fused features, but formal rebuild should wait until current proposal jobs finish.
 
 ## Remaining
 
