@@ -8,13 +8,29 @@ import torch.nn.functional as F
 
 EDEMA_CLASS = 4
 SCAR_CLASS = 5
+IGNORE_LABEL = -1
 
 
-def _binary_dice_loss(prob: torch.Tensor, target: torch.Tensor, eps: float = 1e-6) -> torch.Tensor:
+def _binary_dice_loss(
+    prob: torch.Tensor,
+    target: torch.Tensor,
+    mask: torch.Tensor | None = None,
+    eps: float = 1e-6,
+) -> torch.Tensor:
+    if mask is not None:
+        mask_f = mask.to(device=prob.device, dtype=prob.dtype)
+        prob = prob * mask_f
+        target = target * mask_f
     axes = tuple(range(1, prob.ndim))
     inter = (prob * target).sum(dim=axes)
     denom = prob.sum(dim=axes) + target.sum(dim=axes)
     return (1.0 - (2.0 * inter + eps) / (denom + eps)).mean()
+
+
+def _masked_bce_with_logits(logits: torch.Tensor, target: torch.Tensor, mask: torch.Tensor) -> torch.Tensor:
+    mask_f = mask.to(device=logits.device, dtype=logits.dtype)
+    loss = F.binary_cross_entropy_with_logits(logits, target, reduction="none")
+    return (loss * mask_f).sum() / mask_f.sum().clamp_min(1.0)
 
 
 def t2_masked_edema_loss(edema_logits: torch.Tensor, labels: torch.Tensor, availability: torch.Tensor) -> torch.Tensor:
@@ -24,17 +40,23 @@ def t2_masked_edema_loss(edema_logits: torch.Tensor, labels: torch.Tensor, avail
     if not bool(t2_present.any()):
         return edema_logits.sum() * 0.0
     logits = edema_logits[t2_present, 0]
+    valid = labels[t2_present] != IGNORE_LABEL
+    if not bool(valid.any()):
+        return edema_logits.sum() * 0.0
     target = (labels[t2_present] == EDEMA_CLASS).float()
-    bce = F.binary_cross_entropy_with_logits(logits, target)
-    dice = _binary_dice_loss(torch.sigmoid(logits), target)
+    bce = _masked_bce_with_logits(logits, target, valid)
+    dice = _binary_dice_loss(torch.sigmoid(logits), target, valid)
     return 0.5 * bce + 0.5 * dice
 
 
 def scar_loss(scar_logits: torch.Tensor, labels: torch.Tensor) -> torch.Tensor:
+    valid = labels != IGNORE_LABEL
+    if not bool(valid.any()):
+        return scar_logits.sum() * 0.0
     target = (labels == SCAR_CLASS).float()
     logits = scar_logits[:, 0]
-    bce = F.binary_cross_entropy_with_logits(logits, target)
-    dice = _binary_dice_loss(torch.sigmoid(logits), target)
+    bce = _masked_bce_with_logits(logits, target, valid)
+    dice = _binary_dice_loss(torch.sigmoid(logits), target, valid)
     return 0.5 * bce + 0.5 * dice
 
 
@@ -42,8 +64,12 @@ def anatomy_loss(anatomy_logits: torch.Tensor, labels: torch.Tensor) -> torch.Te
     anatomy_target = labels.clone()
     anatomy_target = torch.where(anatomy_target == EDEMA_CLASS, torch.ones_like(anatomy_target), anatomy_target)
     anatomy_target = torch.where(anatomy_target == SCAR_CLASS, torch.ones_like(anatomy_target), anatomy_target)
-    anatomy_target = anatomy_target.clamp(0, 3)
-    return F.cross_entropy(anatomy_logits, anatomy_target.long())
+    anatomy_target = torch.where(
+        anatomy_target == IGNORE_LABEL,
+        anatomy_target,
+        anatomy_target.clamp(0, 3),
+    )
+    return F.cross_entropy(anatomy_logits, anatomy_target.long(), ignore_index=IGNORE_LABEL)
 
 
 def retrieval_regularization(
@@ -84,7 +110,11 @@ def soft_anatomy_prior_loss(outputs: dict[str, torch.Tensor], labels: torch.Tens
     scar = torch.sigmoid(outputs["scar_logits"][:, 0])
     edema = torch.sigmoid(outputs["edema_logits"][:, 0])
     outside = (1.0 - union.detach()).clamp(0, 1)
-    return 0.5 * (scar * outside).mean() + 0.5 * (edema * outside).mean()
+    valid = (labels != IGNORE_LABEL).to(dtype=scar.dtype, device=scar.device)
+    denom = valid.sum().clamp_min(1.0)
+    scar_loss_value = (scar * outside * valid).sum() / denom
+    edema_loss_value = (edema * outside * valid).sum() / denom
+    return 0.5 * scar_loss_value + 0.5 * edema_loss_value
 
 
 def srr_total_loss(

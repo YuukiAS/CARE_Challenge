@@ -74,3 +74,33 @@ Coordination policy recorded:
 - If extra Codex sessions or subagents are used, each must own non-overlapping files and output directories.
 - Do not create new git branches unless explicitly approved by a human.
 - Do not fall back to nnU-Net as the method; nnU-Net can only remain a reference metric.
+
+## 2026-06-29 Orchestrator Continuation
+
+Executed the requested synchronization sequence on `main`:
+
+- `git status`
+- `git pull --ff-only`
+- `git status`
+
+The pull fast-forwarded the continuation registry from `origin/main`; the branch stayed on `main`.
+
+Formal proposal job status at continuation:
+
+| job_id | variant | status |
+| --- | --- | --- |
+| `56912267` | `proposal_pos_neg_basic` | completed; weak local fold0 pathology signal |
+| `56912269` | `proposal_anatomy_distance` | still running on `htzhulab`; not killed, restarted, or overwritten |
+| `56942380` | `proposal_uncertainty_gate` | repaired resubmission still running on `htzhulab`; not killed, restarted, or overwritten |
+
+Non-idle parallel work started:
+
+- `20260629_loss_decode_calibration`: confirmed a core SRR loss bug where `-1` ignore/padding voxels contributed as background to anatomy, scar, edema, and soft anatomy prior losses. Repaired this for future runs without changing fold split, label mapping, evaluator, or hosted validation semantics.
+- `20260629_pathology_checkpoint_selection`: added a read-only audit script for completed proposal checkpoints, comparing raw/decode alternatives and best-vs-final checkpoints with pathology-aware metrics.
+- Preflight smoke completed on two cases for `proposal_pos_neg_basic` under ignored `results/20260629_*/preflight/` directories. It produced the expected task files and confirmed the audit pipeline runs before launching a full fold0 GPU audit.
+
+Current gate state:
+
+- `SELECT_PROPOSAL_ROUTE` has not been reached.
+- Formal `20260628_myops_refine` remains blocked by the proposal selection gate.
+- The new loss fix should be treated as future-run infrastructure; the already-running formal proposal jobs still reflect the code state at their launch.
