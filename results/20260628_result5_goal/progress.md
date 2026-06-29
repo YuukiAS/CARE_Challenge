@@ -137,3 +137,29 @@ Interpretation:
 - The signal is positive for pipeline debugging: raw argmax is not the right decode surface, and patch-loss best checkpoint is not reliably pathology-optimal.
 - The signal is not enough to start formal MyoPS refinement: best calibrated local combo remains around `0.28` on fold0 pathology targets, far below a credible proposal-route selection threshold.
 - The loss masking bug repair and calibration/checkpoint findings should inform future runs after the `20260628_myops_proposal` formal jobs finish, but they do not retroactively change those running jobs.
+
+## 2026-06-29 Hard-Negative Memory Preflight
+
+Completed `20260629_proposal_memory_hardneg` as a non-conflicting preflight using only the completed `proposal_pos_neg_basic/checkpoint_best` predictions.
+
+Outputs:
+
+- `results/20260629_proposal_memory_hardneg/result.md`
+- `results/20260629_proposal_memory_hardneg/selection.md`
+- `results/20260629_proposal_memory_hardneg/mined_components.csv`
+- `results/20260629_proposal_memory_hardneg/memory_usage.csv`
+
+Selection:
+
+- `HARDNEG_PREFLIGHT_ONLY`
+
+Mining result:
+
+- mined false-positive components: `7237`
+- scar replay-safe components: `4167`
+- edema replay-safe components: `1561`
+
+Safety note:
+
+- No-T2 edema handling followed the continuation rule: no-T2 myocardium or scar-adjacent components were excluded from edema replay, while no-T2 true-background components were allowed as safe background negatives.
+- No formal hard-negative replay training was started because `proposal_anatomy_distance` and repaired `proposal_uncertainty_gate` are still running.

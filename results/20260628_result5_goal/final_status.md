@@ -13,12 +13,14 @@ status: `IN_PROGRESS`
 - Synced `main` with `git pull --ff-only`.
 - Completed `20260629_loss_decode_calibration` for the finished `proposal_pos_neg_basic` variant.
 - Completed `20260629_pathology_checkpoint_selection` for the finished `proposal_pos_neg_basic` variant.
+- Completed `20260629_proposal_memory_hardneg` as preflight mining only.
 - Confirmed and repaired the SRR ignore-label loss masking bug for future runs.
 
 ## Positive Signals
 
 - Decode calibration status: `DECODE_CALIBRATION_SIGNAL`.
 - Pathology checkpoint selection status: `FINAL_BETTER_THAN_PATCH_BEST`.
+- Hard-negative memory status: `HARDNEG_PREFLIGHT_ONLY` with `7237` mined false-positive components and safe replay pools identified.
 
 ## Remaining
 

@@ -1,0 +1,11 @@
+class_id,component_count,max_component_size,median_component_size,memory_role,metric_name,replay_safe,safety_type,total_voxels
+4,450,164,2.0,hard_negative_replay,myops_edema,True,edema_no_t2_true_background_safe,1959
+4,251,157,1.0,audit_only_excluded,myops_edema,False,edema_no_t2_unsafe_anatomy_or_scar,1259
+4,131,396,4.0,hard_negative_replay,myops_edema,True,edema_t2_far_from_gt_anatomy_negative,2083
+4,334,1497,2.0,audit_only_excluded,myops_edema,False,edema_t2_near_gt_unsafe,7503
+4,980,1787,5.0,hard_negative_replay,myops_edema,True,edema_t2_remote_fp_safe,24511
+5,56,1705,2.0,hard_negative_replay,myops_scar,True,scar_anatomy_adjacent_negative,1989
+5,146,824,3.0,hard_negative_replay,myops_scar,True,scar_blood_pool_negative,2988
+5,46,3192,2.0,hard_negative_replay,myops_scar,True,scar_myocardium_or_edema_negative,3576
+5,924,15232,2.0,audit_only_excluded,myops_scar,False,scar_near_gt_unsafe,100980
+5,3919,11959,3.0,hard_negative_replay,myops_scar,True,scar_remote_fp_safe,185789
