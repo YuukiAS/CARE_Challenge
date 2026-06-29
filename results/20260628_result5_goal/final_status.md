@@ -28,7 +28,12 @@ status: `IN_PROGRESS`
 
 ## Remaining
 
-- Wait for and evaluate `proposal_anatomy_distance`.
 - Wait for and evaluate repaired `proposal_uncertainty_gate`.
 - Aggregate `20260628_myops_proposal`.
 - Decide whether any proposal route reaches `SELECT_PROPOSAL_ROUTE`; only then enter formal MyoPS refinement.
+
+## Latest Formal Proposal Readout
+
+- `proposal_pos_neg_basic`: completed; weak pathology signal.
+- `proposal_anatomy_distance`: completed; no credible route improvement, with worse no-T2 edema stability.
+- `proposal_uncertainty_gate`: repaired formal job still running.

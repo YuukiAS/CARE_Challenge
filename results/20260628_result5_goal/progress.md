@@ -210,3 +210,35 @@ Reason:
 - The current sprint has already confirmed nearer pipeline blockers: ignore-label loss masking, decode calibration, and pathology checkpoint selection.
 - Current formal proposal jobs are still running, so a new SRR-v2 formal GPU run would weaken attribution and compete with unfinished gated evidence.
 - Code review confirms the current `ExpertBank` private experts operate on fused features, so future SRR-v2 should be an isolated new route with modality-private inputs rather than an in-place change to existing variants.
+
+## 2026-06-29 Anatomy-Distance Proposal Completed
+
+`proposal_anatomy_distance` job `56912269` completed naturally.
+
+Slurm:
+
+- state: `COMPLETED`
+- exit code: `0:0`
+- elapsed: `06:33:09`
+- node: `g180702`
+- MaxRSS batch: about `5.9 GiB`
+
+Summary:
+
+- `stop_reason=max_runtime_seconds`
+- `budget_status=OK`
+- `best_step=105000`
+- summary: `results/20260628_myops_proposal/variants/proposal_anatomy_distance/summary.md`
+
+Initial readout:
+
+| variant | edema all Dice | edema GT+ Dice | edema no-T2 empty Dice | scar all Dice | scar LGE-only Dice |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| `proposal_pos_neg_basic` | `0.1768` | `0.1737` | `0.1786` | `0.1017` | `0.0722` |
+| `proposal_anatomy_distance` | `0.0635` | `0.1745` | `0.0000` | `0.0956` | `0.0783` |
+
+Interpretation:
+
+- Anatomy-distance did not provide a credible proposal-route improvement.
+- The no-T2 edema stability is worse than `proposal_pos_neg_basic`; do not select this route from the partial readout.
+- Final proposal aggregation still waits for repaired `proposal_uncertainty_gate` job `56942380`.
