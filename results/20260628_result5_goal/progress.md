@@ -46,3 +46,31 @@ Still waiting:
 
 - `20260628_myops_refine`: waits for `SELECT_PROPOSAL_ROUTE`.
 - `20260628_myops_proposal`: formal jobs remain queued on `htzhulab`.
+
+## 2026-06-29 Result5 Continuation Tasks Prepared
+
+A ChatGPT audit concluded that the current Result5 implementation should keep running its formal proposal jobs, but should not wait idle because several Result4/Result5 mechanisms are not yet implemented. The audit note was added at `docs/notes/20260629_result5_gap_audit.md`.
+
+Main conclusions recorded:
+
+- Current proposal jobs can still answer whether the existing proposal head has weak signal, but they cannot add true soft-ROI refinement, memory-based hard-negative replay, multi-scale modality-private SRR, pathology-aware checkpointing, or calibrated final decoding.
+- The current implementation is closer to an SRR-lite proposal-head run than to the full Result4-to-Result5 architecture in the figure.
+- High-priority suspected bottlenecks include ignore-label loss masking, raw argmax decoding of mixed multiclass/binary logits, patch-loss checkpoint selection, proposal logits directly mixed into final outputs, lack of memory hard negatives, and lack of true modality-private sparse multi-scale retrieval.
+
+New non-conflicting task prompts were added:
+
+- `prompts/tasks/20260629_result5_continuation_goal.md`
+- `prompts/tasks/20260629_loss_decode_calibration.md`
+- `prompts/tasks/20260629_pathology_checkpoint_selection.md`
+- `prompts/tasks/20260629_proposal_memory_hardneg.md`
+- `prompts/tasks/20260629_true_soft_roi_refine.md`
+- `prompts/tasks/20260629_result4_srr_core_rebuild.md`
+
+The existing goal prompt `prompts/tasks/20260628_result5_goal.md` was amended with a 2026-06-29 continuation section. The amendment says to keep monitoring and aggregating the running `20260628_myops_proposal` jobs, but to run the new audit/calibration/checkpoint tasks in parallel when they do not conflict. Formal MyoPS refinement remains gated on `SELECT_PROPOSAL_ROUTE`.
+
+Coordination policy recorded:
+
+- One orchestrator should own code writes.
+- If extra Codex sessions or subagents are used, each must own non-overlapping files and output directories.
+- Do not create new git branches unless explicitly approved by a human.
+- Do not fall back to nnU-Net as the method; nnU-Net can only remain a reference metric.
