@@ -45,3 +45,15 @@ No proposal selection can be made until at least one formal job produces fold0 v
 - latest observed artifact: `results/20260628_myops_proposal/variants/proposal_pos_neg_basic/checkpoints/fold_0/srr_fold0_config/checkpoint_best.pt`
 
 The log currently only contains wrapper startup lines; progress is being inferred from Slurm state, process/GPU utilization, and checkpoint mtime. The remaining formal variants are still queued on `htzhulab`.
+
+## 2026-06-29 All Formal Jobs Running
+
+At `2026-06-29 01:45 EDT`, all three formal proposal variants were running:
+
+| job_id | variant | partition | state | runtime | node | log |
+| --- | --- | --- | --- | --- | --- | --- |
+| `56912267` | `proposal_pos_neg_basic` | `htzhulab` | `R` | `4:43:16` | `g1807htzh01` | `logs/PropPNF0_56912267_20260628_210159.log` |
+| `56912268` | `proposal_uncertainty_gate` | `htzhulab` | `R` | `18:06` | `g1807htzh01` | `logs/PropUncF0_56912268_20260629_012709.log` |
+| `56912269` | `proposal_anatomy_distance` | `htzhulab` | `R` | `8:22` | `g180702` | `logs/PropAnatF0_56912269_20260629_013654.log` |
+
+The variant checkpoint directories exist under `results/20260628_myops_proposal/variants/`. Formal metrics/export/selection are still pending job completion.
