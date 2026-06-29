@@ -163,3 +163,29 @@ Safety note:
 
 - No-T2 edema handling followed the continuation rule: no-T2 myocardium or scar-adjacent components were excluded from edema replay, while no-T2 true-background components were allowed as safe background negatives.
 - No formal hard-negative replay training was started because `proposal_anatomy_distance` and repaired `proposal_uncertainty_gate` are still running.
+
+## 2026-06-29 True Soft-ROI Geometry Preflight
+
+Completed `20260629_true_soft_roi_refine` as geometry-only scaffold and preflight. No formal refinement job was launched because `SELECT_PROPOSAL_ROUTE` has not been reached.
+
+Outputs:
+
+- `results/20260629_true_soft_roi_refine/result.md`
+- `results/20260629_true_soft_roi_refine/selection.md`
+- `results/20260629_true_soft_roi_refine/roi_sanity.csv`
+
+Selection:
+
+- `REFINE_WAITING_FOR_PROPOSAL_SELECTION`
+
+Sanity result:
+
+- ROI rows: `88`
+- restore invalid rows: `0`
+- GT-positive rows with ROI coverage < `0.95`: `0`
+- edema GT-positive mean coverage: `1.0`
+- scar GT-positive mean coverage: `1.0`
+
+Caveat:
+
+- Mean ROI volume ratio on GT-positive rows is high at about `0.74`; this proves safe extraction/restoration, but it is not yet a focused refinement crop policy.
