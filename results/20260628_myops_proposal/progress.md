@@ -79,3 +79,16 @@ Resubmission:
 
 - New uncertainty-gated formal job: `56942380`
 - Initial state: `PD (None)` on `htzhulab`
+
+## 2026-06-29 Pos-Neg Proposal Completed
+
+`proposal_pos_neg_basic` job `56912267` completed successfully:
+
+- Slurm state: `COMPLETED`
+- Exit code: `0:0`
+- Elapsed: `06:31:10`
+- Summary: `results/20260628_myops_proposal/variants/proposal_pos_neg_basic/summary.md`
+- Summary status: `budget_status=OK`, `stop_reason=max_runtime_seconds`, `best_step=105000`
+- Exported full-volume predictions and wrote `subgroup_metrics.csv`, `component_hd_by_case.csv`, `proposal_metrics.csv`, `prototype_usage.csv`, `training_log.csv`, and checkpoints.
+
+Initial readout is weak: all-case edema Dice `0.1768`, all-case scar Dice `0.1017`, with high component and remote-FP burden. Do not select or reject the proposal route from this single variant; wait for `proposal_anatomy_distance` and repaired `proposal_uncertainty_gate`, then run the aggregate report.
