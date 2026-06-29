@@ -181,6 +181,7 @@ def evaluate_checkpoint(
     val_cases: list[runner.CaseData],
     device: torch.device,
     thresholds: list[float],
+    fast_metrics: bool,
 ) -> list[dict[str, Any]]:
     model = load_model(checkpoint_path, device)
     rows: list[dict[str, Any]] = []
@@ -192,7 +193,11 @@ def evaluate_checkpoint(
         preds = decode_predictions(outputs)
         preds.update(threshold_predictions(outputs, thresholds))
         for mode, pred in preds.items():
-            metric_fn = collect_fast_case_metrics if mode.startswith("threshold_sweep_") else runner.collect_case_metrics
+            metric_fn = (
+                collect_fast_case_metrics
+                if fast_metrics or mode.startswith("threshold_sweep_")
+                else runner.collect_case_metrics
+            )
             for row in metric_fn(f"{variant}__{checkpoint_name}__{mode}", case, pred):
                 row["variant"] = variant
                 row["checkpoint"] = checkpoint_name
@@ -461,6 +466,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--device", choices=["cpu", "cuda"], default="cpu")
     parser.add_argument("--thresholds", default="0.10,0.20,0.30,0.40,0.50,0.60,0.70,0.80,0.90")
     parser.add_argument("--limit-cases", type=int, default=0, help="Debug only: evaluate the first N fold0 validation cases.")
+    parser.add_argument("--fast-metrics", action="store_true", help="Skip HD/HD95 for all decode modes; keep Dice, components, remote FP, and volumes.")
     return parser.parse_args()
 
 
@@ -488,7 +494,7 @@ def main() -> int:
         for checkpoint_name, path in checkpoints.items():
             if not path.is_file() or path.stat().st_size == 0:
                 continue
-            case_rows.extend(evaluate_checkpoint(variant, checkpoint_name, path, val_cases, device, thresholds))
+            case_rows.extend(evaluate_checkpoint(variant, checkpoint_name, path, val_cases, device, thresholds, args.fast_metrics))
             variant_done = True
         if variant_done:
             evaluated_variants.append(variant)

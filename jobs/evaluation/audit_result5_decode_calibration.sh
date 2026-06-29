@@ -37,6 +37,7 @@ echo "CUDA_VISIBLE_DEVICES=${CUDA_VISIBLE_DEVICES:-}"
 "${CARE_ROOT}/envs/env_CARE/bin/python" -u scripts/evaluation/audit_result5_decode_calibration.py \
   --variants ${VARIANTS} \
   --device cuda \
+  --fast-metrics \
   --decode-dir results/20260629_loss_decode_calibration \
   --checkpoint-dir results/20260629_pathology_checkpoint_selection
 
