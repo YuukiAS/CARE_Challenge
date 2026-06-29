@@ -14,7 +14,8 @@
 # Reads completed proposal checkpoints only; writes task outputs under results/20260629_*.
 set -euo pipefail
 
-THIS_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+SCRIPT_PATH="${BASH_SOURCE[0]:-$0}"
+THIS_DIR="$(cd "$(dirname "${SCRIPT_PATH}")" && pwd)"
 CARE_ROOT="${CARE_ROOT:-$(cd "${THIS_DIR}/../.." && pwd)}"
 cd "${CARE_ROOT}"
 
