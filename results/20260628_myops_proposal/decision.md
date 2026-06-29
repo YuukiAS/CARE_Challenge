@@ -1,0 +1,22 @@
+decision: `GO_RESCUE_ABLATION`
+
+- best_edema_gt_positive=proposal_uncertainty_gate:0.2034
+- best_scar_all_cases=proposal_pos_neg_basic:0.1017
+- proposal_pos_neg_basic.anatomy.max_mean_weight=0.2835
+- proposal_pos_neg_basic.anatomy.max_logged_weight=1.0000
+- proposal_anatomy_distance.anatomy.max_mean_weight=0.2640
+- proposal_anatomy_distance.anatomy.max_logged_weight=1.0000
+- proposal_uncertainty_gate.anatomy.max_mean_weight=0.2854
+- proposal_uncertainty_gate.anatomy.max_logged_weight=1.0000
+- proposal_pos_neg_basic.scar.max_mean_weight=0.2697
+- proposal_pos_neg_basic.scar.max_logged_weight=1.0000
+- proposal_anatomy_distance.scar.max_mean_weight=0.2378
+- proposal_anatomy_distance.scar.max_logged_weight=1.0000
+- proposal_uncertainty_gate.scar.max_mean_weight=0.2347
+- proposal_uncertainty_gate.scar.max_logged_weight=1.0000
+- proposal_pos_neg_basic.edema.max_mean_weight=0.2421
+- proposal_pos_neg_basic.edema.max_logged_weight=1.0000
+- proposal_anatomy_distance.edema.max_mean_weight=0.2363
+- proposal_anatomy_distance.edema.max_logged_weight=1.0000
+- proposal_uncertainty_gate.edema.max_mean_weight=0.2219
+- proposal_uncertainty_gate.edema.max_logged_weight=1.0000
