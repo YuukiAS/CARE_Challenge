@@ -3,7 +3,7 @@
 - selection: `HARDNEG_PREFLIGHT_ONLY`
 - source variant: `proposal_pos_neg_basic/checkpoint_best`
 - action: mined false-positive connected components from completed local predictions.
-- formal replay training: not launched, because `proposal_anatomy_distance` and `proposal_uncertainty_gate` are still running.
+- formal replay training: not launched; this remained preflight-only after proposal aggregation because `SELECT_PROPOSAL_ROUTE` was not reached.
 
 ## Safety Counts
 
