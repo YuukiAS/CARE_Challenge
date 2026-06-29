@@ -57,3 +57,25 @@ At `2026-06-29 01:45 EDT`, all three formal proposal variants were running:
 | `56912269` | `proposal_anatomy_distance` | `htzhulab` | `R` | `8:22` | `g180702` | `logs/PropAnatF0_56912269_20260629_013654.log` |
 
 The variant checkpoint directories exist under `results/20260628_myops_proposal/variants/`. Formal metrics/export/selection are still pending job completion.
+
+## 2026-06-29 Uncertainty Job Repair
+
+Original uncertainty-gated job `56912268` failed:
+
+- Slurm state: `FAILED`
+- Exit code: `1:0`
+- Elapsed: `00:24:49`
+- MaxRSS from batch step: about `4.8 GiB`, so this was not an obvious memory exhaustion failure.
+- Log: `logs/PropUncF0_56912268_20260629_012709.log`
+- Only observed formal artifact: `results/20260628_myops_proposal/variants/proposal_uncertainty_gate/checkpoints/fold_0/srr_fold0_config/checkpoint_best.pt`, size `0` bytes.
+
+Repair applied:
+
+- `scripts/training/run_srr_myops_fold0.py` now saves checkpoints via same-directory atomic temp file replacement and treats zero-byte `checkpoint_best.pt` as invalid.
+- Proposal Slurm wrappers now invoke `python -u` so future traceback/log output is unbuffered.
+- CPU uncertainty preflight passed under ignored `results/20260628_myops_proposal/preflight/uncertainty_debug/`, including non-empty `checkpoint_best.pt`, `checkpoint_final.pt`, `training_log.csv`, and summary files.
+
+Resubmission:
+
+- New uncertainty-gated formal job: `56942380`
+- Initial state: `PD (None)` on `htzhulab`
