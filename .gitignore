@@ -204,3 +204,7 @@ docs/presentation/*.toc
 docs/presentation/*.fls
 docs/presentation/*.fdb_latexmk
 docs/presentation/*.synctex.gz
+
+# Raw formal proposal variant outputs are aggregated into results/20260628_myops_proposal/*.csv.
+# Keep the raw per-variant job directories local to avoid duplicating logs/checkpoints/predictions.
+results/20260628_myops_proposal/variants/
