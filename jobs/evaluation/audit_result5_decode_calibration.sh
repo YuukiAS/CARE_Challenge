@@ -14,9 +14,15 @@
 # Reads completed proposal checkpoints only; writes task outputs under results/20260629_*.
 set -euo pipefail
 
-SCRIPT_PATH="${BASH_SOURCE[0]:-$0}"
-THIS_DIR="$(cd "$(dirname "${SCRIPT_PATH}")" && pwd)"
-CARE_ROOT="${CARE_ROOT:-$(cd "${THIS_DIR}/../.." && pwd)}"
+if [[ -z "${CARE_ROOT:-}" ]]; then
+  if [[ -n "${SLURM_SUBMIT_DIR:-}" ]]; then
+    CARE_ROOT="${SLURM_SUBMIT_DIR}"
+  else
+    SCRIPT_PATH="${BASH_SOURCE[0]:-$0}"
+    THIS_DIR="$(cd "$(dirname "${SCRIPT_PATH}")" && pwd)"
+    CARE_ROOT="$(cd "${THIS_DIR}/../.." && pwd)"
+  fi
+fi
 cd "${CARE_ROOT}"
 
 export PYTHONUNBUFFERED=1
