@@ -242,3 +242,62 @@ Interpretation:
 - Anatomy-distance did not provide a credible proposal-route improvement.
 - The no-T2 edema stability is worse than `proposal_pos_neg_basic`; do not select this route from the partial readout.
 - Final proposal aggregation still waits for repaired `proposal_uncertainty_gate` job `56942380`.
+
+## 2026-06-29 Uncertainty Proposal Completed and Proposal Gate Closed
+
+`proposal_uncertainty_gate` repaired job `56942380` completed naturally.
+
+Slurm:
+
+- state: `COMPLETED`
+- exit code: `0:0`
+- elapsed: `06:31:05`
+- node: `g1807htzh01`
+- MaxRSS batch: about `5.2 GiB`
+
+Aggregate outputs were written under `results/20260628_myops_proposal/`:
+
+- `result.md`
+- `selection.md`
+- `failure_interpretation.md`
+- `metrics_summary.md`
+- `subgroup_metrics.csv`
+- `component_hd_by_case.csv`
+- `proposal_metrics.csv`
+- `prototype_usage.csv`
+- `retrieval_usage.csv`
+
+Final proposal selection:
+
+- `REVISE_PROPOSAL_AND_REPEAT`
+
+Reason:
+
+- `proposal_uncertainty_gate` gave the best edema signal (`edema all Dice=0.4376`, `edema GT+ Dice=0.2034`, no-T2 empty Dice `0.5714`), but scar remained weak (`scar all Dice=0.0969`) and localization/remote-FP burden remained high.
+- `SELECT_PROPOSAL_ROUTE` was not reached, so formal MyoPS refinement remains not started.
+
+## 2026-06-29 Three-Variant Decode Audit Failure Recorded
+
+After all proposal variants completed, attempted to rerun `jobs/evaluation/audit_result5_decode_calibration.sh` over all three variants:
+
+- job: `56949174`
+- variants: `proposal_pos_neg_basic,proposal_anatomy_distance,proposal_uncertainty_gate`
+- state: `FAILED`
+- exit code: `1:0`
+- elapsed: `00:57:06`
+- observed log: startup lines only; no Python traceback was written.
+
+Failure side effect:
+
+- `results/20260629_loss_decode_calibration/decode_case_metrics.csv` was truncated to `0` bytes, then partially to `16384` bytes during restore attempts under project quota pressure.
+- The artifact was restored in place from the last committed valid single-variant audit version; restored size is `1602608` bytes.
+
+Capacity note:
+
+- CARE write attempts briefly failed with `No space left on device` despite filesystem-level free space, consistent with a local quota/project limit.
+- Removed only non-current, non-formal debug/old logs to recover enough write capacity. No formal proposal checkpoint, prediction, metric, or summary artifact was deleted.
+
+Current interpretation:
+
+- The all-variant decode/checkpoint rerun is not considered valid evidence.
+- The valid `20260629_loss_decode_calibration` and `20260629_pathology_checkpoint_selection` outputs remain the earlier single-variant audit for `proposal_pos_neg_basic`.
