@@ -35,6 +35,22 @@ allow_subtask_execution: true
 
 主线任务是 `prompts/tasks/20260628_myops_proposal.md` 和 `prompts/tasks/20260628_myops_refine.md`。Cine 次线任务是 `prompts/tasks/20260628_cine_register.md`。本 goal 自身必须写 `results/20260628_result5_goal/result.md`、`MANIFEST.md`、`progress.md` 和 `final_status.md`。
 
+## 2026-06-29 continuation amendment
+
+新的 continuation prompt 已写入 `prompts/tasks/20260629_result5_continuation_goal.md`。如果启动新的 Codex goal session，应优先使用该文件；如果继续使用当前 Codex session，则本 amendment 作为当前 goal 的附加要求执行。
+
+不要停止或覆盖当前仍在跑的 `20260628_myops_proposal` formal jobs。继续等待并评估 `proposal_pos_neg_basic`、`proposal_anatomy_distance`、`proposal_uncertainty_gate`，并在三者完成后写 proposal aggregate/selection。只有满足 `SELECT_PROPOSAL_ROUTE` 后才进入 formal MyoPS refinement。
+
+同时不要等待 idle。由于当前实现与 Result4/Result5/示意图之间存在明确差距，允许并行执行以下非冲突任务，所有输出必须隔离在 `results/20260629_*`：
+
+1. `prompts/tasks/20260629_loss_decode_calibration.md`：最高优先级，审计 ignore-label loss、raw argmax 解码、binary pathology priority decode、original/proposal/mixed logits、threshold sweep，以及 checkpoint_best vs checkpoint_final。
+2. `prompts/tasks/20260629_pathology_checkpoint_selection.md`：用 full-volume scar/edema Dice、HD95、remote FP 和 component burden 审计 checkpoint selection，而不是只用 patch loss。
+3. `prompts/tasks/20260629_proposal_memory_hardneg.md`：补 Result5 当前缺失的 hard-negative replay、remote FP mining、safe negative memory/prototype bank。当前 proposal jobs 未完成前只能做 preflight/audit，不得覆盖 formal outputs。
+4. `prompts/tasks/20260629_true_soft_roi_refine.md`：实现真正 soft-ROI refinement scaffold、ROI geometry test 和 crop-restore sanity；未达到 `SELECT_PROPOSAL_ROUTE` 前不得启动 formal refinement。
+5. `prompts/tasks/20260629_result4_srr_core_rebuild.md`：实现更接近 Result4 的 SRR-v2 preflight，包括 multi-scale、true modality-private features、sparse retrieval 和 SIP-inspired usage regularization；formal run 只有在资源安全且 orchestrator 判定需要时才启动。
+
+协调规则：默认一个 orchestrator 拥有代码写入权。如果它决定开额外 Codex session/subagent，必须给每个 subagent 分配不重叠文件和输出目录。不要新增 git branch，除非 human explicit approval。不要回退到 nnU-Net 作为方法；nnU-Net 只能作为 reference metric。
+
 ## Phase 0：安全与结果复核
 
 记录 branch、HEAD、git status、Slurm 队列、上轮 selected dictionary route、上轮 compactness 失败原因、Cine safe/mismatch split。确认不会覆盖 `results/20260625_*` 或 `results/20260626_*`。若并行 worktree 可用，应将 MyoPS proposal、MyoPS refinement 和 Cine registration 隔离；否则以 MyoPS proposal 为最高优先级。
@@ -69,7 +85,7 @@ Phase 2 的成功不要求达到 validation submission 水平，但必须回答�
 
 ## 最终状态
 
-写 `results/20260628_result5_goal/final_status.md`，状态只能是 `PROPOSAL_REFINE_SELECTED`、`PROPOSAL_SELECTED_REFINE_REVISE`、`PROPOSAL_REVISE_REPEAT`、`FALLBACK_TO_SRR`、`STOP_PIPELINE_BUG`、`STOP_NO_PROPOSAL_SIGNAL`。同时记录 Cine 状态：`CINE_REGISTRATION_SELECTED`、`CINE_CLASSICAL_BASELINE_ONLY`、`CINE_REVISE_REGISTRATION` 或 `CINE_STOP`。
+写 `results/20260628_result5_goal/final_status.md`，状态只能是 `PROPOSAL_REFINE_SELECTED`、`PROPOSAL_SELECTED_REFINE_REVISE`、`PROPOSAL_REVISE_REPEAT`、`PROPOSAL_REVISE_REPEAT_WITH_REPAIRS`、`SRR_CORE_REBUILD_REQUIRED`、`FALLBACK_TO_SRR`、`STOP_PIPELINE_BUG`、`STOP_NO_PROPOSAL_SIGNAL`。同时记录 Cine 状态：`CINE_REGISTRATION_SELECTED`、`CINE_CLASSICAL_BASELINE_ONLY`、`CINE_REVISE_REGISTRATION` 或 `CINE_STOP`。
 
 final_status 必须列出每个 subtask 的 result/selection 路径、所有 job IDs、logs、runtime、GPU、proposal/refinement/Cine registration 结果、未执行事项和下一轮建议。不得自动生成 validation package。
 
