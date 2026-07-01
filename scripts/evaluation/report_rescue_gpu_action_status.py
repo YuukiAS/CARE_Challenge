@@ -26,6 +26,8 @@ JOB_IDS = {
     "srr_v2_light_refine_extras": "57277361",
     "srr_v2_capacity_extras": "57279322",
     "srr_v2_targeted_extras": "57334792",
+    "srr_v2_targeted_extras_a100": "57340171",
+    "srr_v2_targeted_extras_volta": "57340161",
 }
 
 RECHECK_INTERVAL_HOURS = 2
@@ -41,6 +43,8 @@ ROUTE_ROOTS = {
     "srr_v2_light_refine_extras": REPO_ROOT / "results/20260629_srr_v2_unet_core/light_refine_extras",
     "srr_v2_capacity_extras": REPO_ROOT / "results/20260629_srr_v2_unet_core/capacity_extras",
     "srr_v2_targeted_extras": REPO_ROOT / "results/20260629_srr_v2_unet_core/targeted_extras",
+    "srr_v2_targeted_extras_a100": REPO_ROOT / "results/20260629_srr_v2_unet_core/targeted_extras_a100",
+    "srr_v2_targeted_extras_volta": REPO_ROOT / "results/20260629_srr_v2_unet_core/targeted_extras_volta",
 }
 
 PARTITION_PRIORITY = [
@@ -311,6 +315,18 @@ def build_rows() -> list[dict[str, Any]]:
             "srr_v2_targeted_extras",
             JOB_IDS["srr_v2_targeted_extras"],
             "srr_v2_targeted_extras",
+            "srr_v2_edema_t2_focus;srr_v2_scar_precision_nointeract",
+        ),
+        job_status_row(
+            "srr_v2_targeted_extras_a100",
+            JOB_IDS["srr_v2_targeted_extras_a100"],
+            "srr_v2_targeted_extras_a100",
+            "srr_v2_edema_t2_focus;srr_v2_scar_precision_nointeract",
+        ),
+        job_status_row(
+            "srr_v2_targeted_extras_volta",
+            JOB_IDS["srr_v2_targeted_extras_volta"],
+            "srr_v2_targeted_extras_volta",
             "srr_v2_edema_t2_focus;srr_v2_scar_precision_nointeract",
         ),
     ]
