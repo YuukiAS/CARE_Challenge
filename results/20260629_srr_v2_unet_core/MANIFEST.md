@@ -1,0 +1,30 @@
+# Manifest 20260629 SRR-v2 U-Net Core
+
+- Task: `prompts/tasks/20260629_srr_v2_unet_core.md`
+- Architecture audit: `results/20260629_srr_v2_unet_core/architecture_audit.md`
+- Architecture contract: `results/20260629_srr_v2_unet_core/architecture_contract.md`
+- Test summary: `results/20260629_srr_v2_unet_core/test_summary.md`
+- CPU preflight output:
+  - `results/20260629_srr_v2_unet_core/cpu_preflight/variants/srr_v2_multiscale_private_basic/`
+  - `results/20260629_srr_v2_unet_core/cpu_preflight/variants/srr_v2_multiscale_private_proposal/`
+  - `results/20260629_srr_v2_unet_core/cpu_preflight/variants/srr_v2_proposal_uncertainty_hardneg/`
+- Variant matrix: `results/20260629_srr_v2_unet_core/variant_matrix.md`
+- Model implementation: `src/care_myocardium/models/srr_v2_unet.py`
+- Runner: `scripts/training/run_srr_myops_fold0.py`
+- Slurm wrapper: `jobs/src/run_srr_v2_unet_core.sh`
+- Aggregation helper: `scripts/evaluation/finalize_rescue_srr_route.py --route srr_v2`
+- Aggregation status: `results/20260629_srr_v2_unet_core/aggregation_status.md`
+- Aggregation status CSV: `results/20260629_srr_v2_unet_core/aggregation_status.csv`
+- Interim result: `results/20260629_srr_v2_unet_core/result.md`
+- Failure interpretation: `results/20260629_srr_v2_unet_core/failure_interpretation.md`
+- Submitted jobs:
+  - `57094446` (`htzhulab`, array `0`): failed during export, recovered from checkpoint.
+  - `57095505` (`a100-gpu`, array `1-2`): pending for variants 1-2.
+- Current metrics and diagnostics:
+  - `results/20260629_srr_v2_unet_core/metrics_summary.md`
+  - `results/20260629_srr_v2_unet_core/subgroup_metrics.csv`
+  - `results/20260629_srr_v2_unet_core/component_hd_by_case.csv`
+  - `results/20260629_srr_v2_unet_core/dictionary_usage.csv`
+  - `results/20260629_srr_v2_unet_core/decode_checkpoint_metrics.csv`
+- Pending after remaining formal variants complete:
+  - `results/20260629_srr_v2_unet_core/selection.md`

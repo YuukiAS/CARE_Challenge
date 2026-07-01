@@ -1,0 +1,4 @@
+variant,source,class_filter,replay_safe_targets_available,hardneg_sample_prob,note
+repaired_uncertainty_hardneg,results/20260629_proposal_memory_hardneg/mined_components.csv,4,1561,0.30,edema-safe mined FP replay; no-T2 unsafe myocardium excluded
+repaired_posneg_scar_hardneg,results/20260629_proposal_memory_hardneg/mined_components.csv,5,4167,0.30,scar-safe mined FP replay
+repaired_joint_calibrated_proposal,results/20260629_proposal_memory_hardneg/mined_components.csv,4+5,5728,0.30,joint route configured for replay-safe scar/edema negatives

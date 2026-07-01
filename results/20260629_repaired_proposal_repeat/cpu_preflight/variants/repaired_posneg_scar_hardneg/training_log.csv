@@ -1,0 +1,3 @@
+variant,step,loss,anatomy_loss,scar_loss,edema_loss,retrieval_loss,soft_containment_loss,component_compactness_loss,proposal_bce_loss,proposal_margin_loss,proposal_uncertainty_loss,edema_supervised_batch_fraction,batch_cases,elapsed_seconds
+repaired_posneg_scar_hardneg,1,5.130001068115234,1.3979461193084717,1.1092182397842407,0.9849807024002075,0.0010630220640450716,0.0,0.0,1.439760684967041,0.5612306594848633,0.0,1.0,Case2022,0.4431720550637692
+repaired_posneg_scar_hardneg,1,5.130001068115234,,,,,,,,,,,,0.6119787211064249

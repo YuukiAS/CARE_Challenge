@@ -1,0 +1,23 @@
+{
+  "budget_status": "OK",
+  "cascade_variant": "coarse_to_fine_srr_roi",
+  "checkpoint": "/users/a/e/aereinh/CARE/results/20260629_cascade_teacher_route/revision_component_guard/variants/coarse_to_fine_srr_roi_component_guard/checkpoints/coarse_to_fine_srr_roi_component_guard.pt",
+  "decision_path": "/users/a/e/aereinh/CARE/results/20260629_cascade_teacher_route/revision_component_guard/variants/coarse_to_fine_srr_roi_component_guard/round10_decision_table.md",
+  "elapsed_seconds": 149.21944785118103,
+  "epochs": 45,
+  "eval_decision": "fail_stop_refiner_candidate",
+  "eval_returncode": "0",
+  "evaluation_ran": true,
+  "metrics_path": "/users/a/e/aereinh/CARE/results/20260629_cascade_teacher_route/revision_component_guard/variants/coarse_to_fine_srr_roi_component_guard/round10_fold0_very_short_metrics.csv",
+  "out_root": "/users/a/e/aereinh/CARE/results/20260629_cascade_teacher_route/revision_component_guard/variants/coarse_to_fine_srr_roi_component_guard",
+  "output_mode": "scar_edema_pathology_residual",
+  "prediction_dir": "/users/a/e/aereinh/CARE/results/20260629_cascade_teacher_route/revision_component_guard/variants/coarse_to_fine_srr_roi_component_guard/predictions/coarse_to_fine_srr_roi_component_guard/validation",
+  "predictions_exported": true,
+  "residual_summary_path": "/users/a/e/aereinh/CARE/results/20260629_cascade_teacher_route/revision_component_guard/variants/coarse_to_fine_srr_roi_component_guard/residual_magnitude_summary.csv",
+  "run_name": "coarse_to_fine_srr_roi_component_guard",
+  "scar_threshold": 0.86,
+  "steps_per_epoch": 250,
+  "stop_reason": "completed",
+  "threshold": 0.58,
+  "train_log_path": "/users/a/e/aereinh/CARE/results/20260629_cascade_teacher_route/revision_component_guard/variants/coarse_to_fine_srr_roi_component_guard/round10_refiner_train_log.csv"
+}

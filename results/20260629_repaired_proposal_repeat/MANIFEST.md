@@ -1,0 +1,28 @@
+# Manifest 20260629 Repaired Proposal Repeat
+
+- Task: `prompts/tasks/20260629_repaired_proposal_repeat.md`
+- Repair contract: `results/20260629_repaired_proposal_repeat/repair_contract.md`
+- Variant matrix: `results/20260629_repaired_proposal_repeat/variant_matrix.md`
+- CPU preflight summary: `results/20260629_repaired_proposal_repeat/preflight_summary.md`
+- CPU preflight output:
+  - `results/20260629_repaired_proposal_repeat/cpu_preflight/variants/repaired_uncertainty_hardneg/`
+  - `results/20260629_repaired_proposal_repeat/cpu_preflight/variants/repaired_posneg_scar_hardneg/`
+  - `results/20260629_repaired_proposal_repeat/cpu_preflight/variants/repaired_joint_calibrated_proposal/`
+- Slurm wrapper: `jobs/src/run_repaired_proposal_repeat.sh`
+- Aggregation helper: `scripts/evaluation/finalize_rescue_srr_route.py --route repaired`
+- Aggregation status: `results/20260629_repaired_proposal_repeat/aggregation_status.md`
+- Aggregation status CSV: `results/20260629_repaired_proposal_repeat/aggregation_status.csv`
+- Result: `results/20260629_repaired_proposal_repeat/result.md`
+- Selection: `results/20260629_repaired_proposal_repeat/selection.md`
+- Failure interpretation: `results/20260629_repaired_proposal_repeat/failure_interpretation.md`
+- Submitted job: `57094448` (`htzhulab`, array `0-2`, completed)
+- Metrics and diagnostics:
+  - `results/20260629_repaired_proposal_repeat/metrics_summary.md`
+  - `results/20260629_repaired_proposal_repeat/subgroup_metrics.csv`
+  - `results/20260629_repaired_proposal_repeat/component_hd_by_case.csv`
+  - `results/20260629_repaired_proposal_repeat/proposal_metrics.csv`
+  - `results/20260629_repaired_proposal_repeat/decode_checkpoint_metrics.csv`
+  - `results/20260629_repaired_proposal_repeat/hardneg_replay_usage.csv`
+  - `results/20260629_repaired_proposal_repeat/retrieval_usage.csv`
+  - `results/20260629_repaired_proposal_repeat/retrieval_usage.md`
+  - `results/20260629_repaired_proposal_repeat/prototype_usage.csv`

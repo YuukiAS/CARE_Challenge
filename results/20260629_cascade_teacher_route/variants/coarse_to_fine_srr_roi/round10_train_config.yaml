@@ -1,0 +1,16 @@
+candidate: conservative_pathology_residual_refiner
+run_name: coarse_to_fine_srr_roi_oof_refiner
+epochs: 30
+steps_per_epoch: 200
+lr: 0.001
+hidden_channels: 24
+delta_max: 1.25
+threshold: 0.45
+scar_threshold: 0.65
+seed: 42
+patch_shape: 8,128,128
+cascade_variant: coarse_to_fine_srr_roi
+output_mode: scar_edema_pathology_residual
+train_cases: fold0 train, using existing nnU-Net501 out-of-fold baseline probabilities
+validation_cases: fold0 validation, using existing nnU-Net501 fold0 probabilities
+fusion_rule: scar_edema_pathology_residual; no-T2 edema remains weakly suppressed

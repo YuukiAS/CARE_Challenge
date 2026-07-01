@@ -1,0 +1,22 @@
+decision: `GO_RESCUE_ABLATION`
+
+- best_edema_gt_positive=repaired_uncertainty_hardneg:0.1545
+- best_scar_all_cases=repaired_posneg_scar_hardneg:0.1038
+- repaired_uncertainty_hardneg.anatomy.max_mean_weight=0.2743
+- repaired_uncertainty_hardneg.anatomy.max_logged_weight=1.0000
+- repaired_posneg_scar_hardneg.anatomy.max_mean_weight=0.2634
+- repaired_posneg_scar_hardneg.anatomy.max_logged_weight=1.0000
+- repaired_joint_calibrated_proposal.anatomy.max_mean_weight=0.2706
+- repaired_joint_calibrated_proposal.anatomy.max_logged_weight=1.0000
+- repaired_uncertainty_hardneg.scar.max_mean_weight=0.2328
+- repaired_uncertainty_hardneg.scar.max_logged_weight=1.0000
+- repaired_posneg_scar_hardneg.scar.max_mean_weight=0.2331
+- repaired_posneg_scar_hardneg.scar.max_logged_weight=1.0000
+- repaired_joint_calibrated_proposal.scar.max_mean_weight=0.2228
+- repaired_joint_calibrated_proposal.scar.max_logged_weight=1.0000
+- repaired_uncertainty_hardneg.edema.max_mean_weight=0.2286
+- repaired_uncertainty_hardneg.edema.max_logged_weight=1.0000
+- repaired_posneg_scar_hardneg.edema.max_mean_weight=0.2274
+- repaired_posneg_scar_hardneg.edema.max_logged_weight=1.0000
+- repaired_joint_calibrated_proposal.edema.max_mean_weight=0.2202
+- repaired_joint_calibrated_proposal.edema.max_logged_weight=1.0000

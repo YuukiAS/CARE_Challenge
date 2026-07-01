@@ -1,0 +1,7 @@
+route,status,formal_ready,best_scar_all_dice,best_scar_all_hd95,best_edema_gtpos_dice,best_edema_gtpos_hd95,reference_gap,current_interpretation,next_action
+repaired_proposal,ROUTE_TO_CASCADE_TEACHER,3/3,0.1038,136.0183,0.1545,128.6386,scar remains near D4 and far below nnU-Net; edema GT+ below previous proposal,completed negative evidence for shallow repaired proposal,do not expand; use as evidence to continue SRR-v2/cascade
+srr_v2,missing,1/3,0.1998,82.7490,0.1431,94.9052,scar signal improves over repaired proposal but remains far below nnU-Net; 2 variants missing,"partial positive scar signal, incomplete route",monitor 57095505_[1-2] or run approved isolated fallback
+cascade_teacher,PENDING_FORMAL_CASCADE,0/3,,,,,formal refiner metrics missing; teacher cache baseline is strong enough to justify route,best next MyoPS route to run once GPU approval/capacity exists,explicitly approve and submit sbatch --array=0-2 jobs/src/run_cascade_oof_refiner.sh
+nnUNet_fold0_reference,reference_only,44 cases,0.5602,,,,edema all-case Dice 0.7798,"hard reference, not a custom route selection","use as benchmark, not validation upload"
+cine_motion_alignment,SELECT_MOTION_DESCRIPTOR_ONLY,complete,,,,,translation delta was approximately zero,"motion descriptor only, no alignment route selected",keep as secondary-line evidence
+cine_motion_pathology,SELECT_REFERENCE_CONTROL_ONLY,complete,,,,,local proxy only; no hosted metric calibration,reference control only,do not block MyoPS

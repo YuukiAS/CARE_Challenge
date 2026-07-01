@@ -1,0 +1,16 @@
+candidate: conservative_edema_residual_refiner
+run_name: nnunet_anatomy_prior_refiner_oof_refiner
+epochs: 30
+steps_per_epoch: 200
+lr: 0.001
+hidden_channels: 24
+delta_max: 1.0
+threshold: 0.5
+scar_threshold: 0.8
+seed: 42
+patch_shape: 8,128,128
+cascade_variant: nnunet_anatomy_prior_refiner
+output_mode: edema_only_residual_scar_guarded
+train_cases: fold0 train, using existing nnU-Net501 out-of-fold baseline probabilities
+validation_cases: fold0 validation, using existing nnU-Net501 fold0 probabilities
+fusion_rule: edema_only_residual_scar_guarded; no-T2 edema remains weakly suppressed

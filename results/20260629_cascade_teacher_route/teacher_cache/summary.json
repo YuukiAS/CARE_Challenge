@@ -1,0 +1,16 @@
+{
+  "case_index": "/users/a/e/aereinh/CARE/results/20260629_cascade_teacher_route/teacher_cache/case_index.csv",
+  "fold": 0,
+  "low_gt_roi_coverage_rows_lt_0_95": 26,
+  "nnunet_base_root": "/users/a/e/aereinh/CARE/data/nnUNet/nnUNet_results/Dataset501_CAREMyoPS/nnUNetTrainer_500epochs__nnUNetPlans__3d_fullres",
+  "nnunet_validation_dir": "/users/a/e/aereinh/CARE/data/nnUNet/nnUNet_results/Dataset501_CAREMyoPS/nnUNetTrainer_500epochs__nnUNetPlans__3d_fullres/fold_0/validation",
+  "raw_root": "/users/a/e/aereinh/CARE/data/nnUNet/nnUNet_raw/Dataset501_CAREMyoPS",
+  "roi_coverage": "/users/a/e/aereinh/CARE/results/20260629_cascade_teacher_route/teacher_cache/roi_coverage.csv",
+  "teacher_mode": "oof5",
+  "train_cases": 176,
+  "train_prior_source": "nnunet_oof5_validation_teacher",
+  "train_teacher_predictions": 176,
+  "val_cases": 44,
+  "val_prior_source": "nnunet_fold0_validation_teacher",
+  "val_teacher_predictions": 44
+}

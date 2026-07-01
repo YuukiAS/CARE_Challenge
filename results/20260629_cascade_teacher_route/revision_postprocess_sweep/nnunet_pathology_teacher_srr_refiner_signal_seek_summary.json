@@ -1,0 +1,59 @@
+{
+  "source_label": "nnunet_pathology_teacher_srr_refiner_signal_seek",
+  "modes": [
+    "pathology_overlap_dilate1",
+    "pathology_overlap_dilate2",
+    "edema_overlap_dilate2_keep_scar",
+    "top2_pathology_overlap_dilate2"
+  ],
+  "rows": [
+    {
+      "source_label": "nnunet_pathology_teacher_srr_refiner_signal_seek",
+      "mode": "pathology_overlap_dilate1",
+      "variant_dir": "results/20260629_cascade_teacher_route/revision_postprocess_sweep/variants/nnunet_pathology_teacher_srr_refiner_signal_seek__pathology_overlap_dilate1",
+      "prediction_dir": "results/20260629_cascade_teacher_route/revision_postprocess_sweep/variants/nnunet_pathology_teacher_srr_refiner_signal_seek__pathology_overlap_dilate1/predictions/nnunet_pathology_teacher_srr_refiner_signal_seek__pathology_overlap_dilate1/validation",
+      "delta_t2pos_edema_dice": "0.0009657243156219741",
+      "delta_t2pos_edema_hd95_improvement": "-0.06859872097972186",
+      "delta_t2pos_component_count_improvement": "0.75",
+      "delta_t2pos_remote_fp_improvement": "-0.0625",
+      "delta_t2pos_scar_dice": "0.0004961934486349406",
+      "decision_table": "results/20260629_cascade_teacher_route/revision_postprocess_sweep/variants/nnunet_pathology_teacher_srr_refiner_signal_seek__pathology_overlap_dilate1/round10_decision_table.md"
+    },
+    {
+      "source_label": "nnunet_pathology_teacher_srr_refiner_signal_seek",
+      "mode": "pathology_overlap_dilate2",
+      "variant_dir": "results/20260629_cascade_teacher_route/revision_postprocess_sweep/variants/nnunet_pathology_teacher_srr_refiner_signal_seek__pathology_overlap_dilate2",
+      "prediction_dir": "results/20260629_cascade_teacher_route/revision_postprocess_sweep/variants/nnunet_pathology_teacher_srr_refiner_signal_seek__pathology_overlap_dilate2/predictions/nnunet_pathology_teacher_srr_refiner_signal_seek__pathology_overlap_dilate2/validation",
+      "delta_t2pos_edema_dice": "0.0009017478565593873",
+      "delta_t2pos_edema_hd95_improvement": "-0.06675367070535998",
+      "delta_t2pos_component_count_improvement": "0.1875",
+      "delta_t2pos_remote_fp_improvement": "-0.0625",
+      "delta_t2pos_scar_dice": "0.0004961934486349406",
+      "decision_table": "results/20260629_cascade_teacher_route/revision_postprocess_sweep/variants/nnunet_pathology_teacher_srr_refiner_signal_seek__pathology_overlap_dilate2/round10_decision_table.md"
+    },
+    {
+      "source_label": "nnunet_pathology_teacher_srr_refiner_signal_seek",
+      "mode": "edema_overlap_dilate2_keep_scar",
+      "variant_dir": "results/20260629_cascade_teacher_route/revision_postprocess_sweep/variants/nnunet_pathology_teacher_srr_refiner_signal_seek__edema_overlap_dilate2_keep_scar",
+      "prediction_dir": "results/20260629_cascade_teacher_route/revision_postprocess_sweep/variants/nnunet_pathology_teacher_srr_refiner_signal_seek__edema_overlap_dilate2_keep_scar/predictions/nnunet_pathology_teacher_srr_refiner_signal_seek__edema_overlap_dilate2_keep_scar/validation",
+      "delta_t2pos_edema_dice": "0.0009017478565593873",
+      "delta_t2pos_edema_hd95_improvement": "-0.06675367070535998",
+      "delta_t2pos_component_count_improvement": "0.1875",
+      "delta_t2pos_remote_fp_improvement": "-0.0625",
+      "delta_t2pos_scar_dice": "0.000476863071790401",
+      "decision_table": "results/20260629_cascade_teacher_route/revision_postprocess_sweep/variants/nnunet_pathology_teacher_srr_refiner_signal_seek__edema_overlap_dilate2_keep_scar/round10_decision_table.md"
+    },
+    {
+      "source_label": "nnunet_pathology_teacher_srr_refiner_signal_seek",
+      "mode": "top2_pathology_overlap_dilate2",
+      "variant_dir": "results/20260629_cascade_teacher_route/revision_postprocess_sweep/variants/nnunet_pathology_teacher_srr_refiner_signal_seek__top2_pathology_overlap_dilate2",
+      "prediction_dir": "results/20260629_cascade_teacher_route/revision_postprocess_sweep/variants/nnunet_pathology_teacher_srr_refiner_signal_seek__top2_pathology_overlap_dilate2/predictions/nnunet_pathology_teacher_srr_refiner_signal_seek__top2_pathology_overlap_dilate2/validation",
+      "delta_t2pos_edema_dice": "0.001011821441587346",
+      "delta_t2pos_edema_hd95_improvement": "-0.01784385300428326",
+      "delta_t2pos_component_count_improvement": "0.375",
+      "delta_t2pos_remote_fp_improvement": "-0.0625",
+      "delta_t2pos_scar_dice": "0.0004099178065516407",
+      "decision_table": "results/20260629_cascade_teacher_route/revision_postprocess_sweep/variants/nnunet_pathology_teacher_srr_refiner_signal_seek__top2_pathology_overlap_dilate2/round10_decision_table.md"
+    }
+  ]
+}

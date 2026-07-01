@@ -1,0 +1,59 @@
+{
+  "source_label": "coarse_to_fine_srr_roi_signal_seek",
+  "modes": [
+    "pathology_overlap_dilate1",
+    "pathology_overlap_dilate2",
+    "edema_overlap_dilate2_keep_scar",
+    "top2_pathology_overlap_dilate2"
+  ],
+  "rows": [
+    {
+      "source_label": "coarse_to_fine_srr_roi_signal_seek",
+      "mode": "pathology_overlap_dilate1",
+      "variant_dir": "results/20260629_cascade_teacher_route/revision_postprocess_sweep/variants/coarse_to_fine_srr_roi_signal_seek__pathology_overlap_dilate1",
+      "prediction_dir": "results/20260629_cascade_teacher_route/revision_postprocess_sweep/variants/coarse_to_fine_srr_roi_signal_seek__pathology_overlap_dilate1/predictions/coarse_to_fine_srr_roi_signal_seek__pathology_overlap_dilate1/validation",
+      "delta_t2pos_edema_dice": "0.002368149804271469",
+      "delta_t2pos_edema_hd95_improvement": "-0.05035899842963687",
+      "delta_t2pos_component_count_improvement": "0.5625",
+      "delta_t2pos_remote_fp_improvement": "-0.0625",
+      "delta_t2pos_scar_dice": "0.0008658861302901499",
+      "decision_table": "results/20260629_cascade_teacher_route/revision_postprocess_sweep/variants/coarse_to_fine_srr_roi_signal_seek__pathology_overlap_dilate1/round10_decision_table.md"
+    },
+    {
+      "source_label": "coarse_to_fine_srr_roi_signal_seek",
+      "mode": "pathology_overlap_dilate2",
+      "variant_dir": "results/20260629_cascade_teacher_route/revision_postprocess_sweep/variants/coarse_to_fine_srr_roi_signal_seek__pathology_overlap_dilate2",
+      "prediction_dir": "results/20260629_cascade_teacher_route/revision_postprocess_sweep/variants/coarse_to_fine_srr_roi_signal_seek__pathology_overlap_dilate2/predictions/coarse_to_fine_srr_roi_signal_seek__pathology_overlap_dilate2/validation",
+      "delta_t2pos_edema_dice": "0.00256489147641753",
+      "delta_t2pos_edema_hd95_improvement": "-0.016417586009385587",
+      "delta_t2pos_component_count_improvement": "-0.0625",
+      "delta_t2pos_remote_fp_improvement": "-0.125",
+      "delta_t2pos_scar_dice": "0.0008658861302901499",
+      "decision_table": "results/20260629_cascade_teacher_route/revision_postprocess_sweep/variants/coarse_to_fine_srr_roi_signal_seek__pathology_overlap_dilate2/round10_decision_table.md"
+    },
+    {
+      "source_label": "coarse_to_fine_srr_roi_signal_seek",
+      "mode": "edema_overlap_dilate2_keep_scar",
+      "variant_dir": "results/20260629_cascade_teacher_route/revision_postprocess_sweep/variants/coarse_to_fine_srr_roi_signal_seek__edema_overlap_dilate2_keep_scar",
+      "prediction_dir": "results/20260629_cascade_teacher_route/revision_postprocess_sweep/variants/coarse_to_fine_srr_roi_signal_seek__edema_overlap_dilate2_keep_scar/predictions/coarse_to_fine_srr_roi_signal_seek__edema_overlap_dilate2_keep_scar/validation",
+      "delta_t2pos_edema_dice": "0.00256489147641753",
+      "delta_t2pos_edema_hd95_improvement": "-0.016417586009385587",
+      "delta_t2pos_component_count_improvement": "-0.0625",
+      "delta_t2pos_remote_fp_improvement": "-0.125",
+      "delta_t2pos_scar_dice": "0.0008301468020336378",
+      "decision_table": "results/20260629_cascade_teacher_route/revision_postprocess_sweep/variants/coarse_to_fine_srr_roi_signal_seek__edema_overlap_dilate2_keep_scar/round10_decision_table.md"
+    },
+    {
+      "source_label": "coarse_to_fine_srr_roi_signal_seek",
+      "mode": "top2_pathology_overlap_dilate2",
+      "variant_dir": "results/20260629_cascade_teacher_route/revision_postprocess_sweep/variants/coarse_to_fine_srr_roi_signal_seek__top2_pathology_overlap_dilate2",
+      "prediction_dir": "results/20260629_cascade_teacher_route/revision_postprocess_sweep/variants/coarse_to_fine_srr_roi_signal_seek__top2_pathology_overlap_dilate2/predictions/coarse_to_fine_srr_roi_signal_seek__top2_pathology_overlap_dilate2/validation",
+      "delta_t2pos_edema_dice": "0.0024257079509335533",
+      "delta_t2pos_edema_hd95_improvement": "0.030703373041195192",
+      "delta_t2pos_component_count_improvement": "0.3125",
+      "delta_t2pos_remote_fp_improvement": "-0.0625",
+      "delta_t2pos_scar_dice": "0.000878850537918141",
+      "decision_table": "results/20260629_cascade_teacher_route/revision_postprocess_sweep/variants/coarse_to_fine_srr_roi_signal_seek__top2_pathology_overlap_dilate2/round10_decision_table.md"
+    }
+  ]
+}

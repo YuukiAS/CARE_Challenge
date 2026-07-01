@@ -1,0 +1,4 @@
+variant,summary_present,predictions_present,subgroup_metrics_present,component_metrics_present,ready
+repaired_uncertainty_hardneg,True,True,True,True,True
+repaired_posneg_scar_hardneg,True,True,True,True,True
+repaired_joint_calibrated_proposal,True,True,True,True,True

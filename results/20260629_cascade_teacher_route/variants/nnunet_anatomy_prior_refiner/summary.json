@@ -1,0 +1,23 @@
+{
+  "budget_status": "OK",
+  "cascade_variant": "nnunet_anatomy_prior_refiner",
+  "checkpoint": "/users/a/e/aereinh/CARE/results/20260629_cascade_teacher_route/variants/nnunet_anatomy_prior_refiner/checkpoints/nnunet_anatomy_prior_refiner_oof_refiner.pt",
+  "decision_path": "/users/a/e/aereinh/CARE/results/20260629_cascade_teacher_route/variants/nnunet_anatomy_prior_refiner/round10_decision_table.md",
+  "elapsed_seconds": 288.87228083610535,
+  "epochs": 30,
+  "eval_decision": "fail_stop_refiner_candidate",
+  "eval_returncode": "0",
+  "evaluation_ran": true,
+  "metrics_path": "/users/a/e/aereinh/CARE/results/20260629_cascade_teacher_route/variants/nnunet_anatomy_prior_refiner/round10_fold0_very_short_metrics.csv",
+  "out_root": "/users/a/e/aereinh/CARE/results/20260629_cascade_teacher_route/variants/nnunet_anatomy_prior_refiner",
+  "output_mode": "edema_only_residual_scar_guarded",
+  "prediction_dir": "/users/a/e/aereinh/CARE/results/20260629_cascade_teacher_route/variants/nnunet_anatomy_prior_refiner/predictions/nnunet_anatomy_prior_refiner_oof_refiner/validation",
+  "predictions_exported": true,
+  "residual_summary_path": "/users/a/e/aereinh/CARE/results/20260629_cascade_teacher_route/variants/nnunet_anatomy_prior_refiner/residual_magnitude_summary.csv",
+  "run_name": "nnunet_anatomy_prior_refiner_oof_refiner",
+  "scar_threshold": 0.8,
+  "steps_per_epoch": 200,
+  "stop_reason": "completed",
+  "threshold": 0.5,
+  "train_log_path": "/users/a/e/aereinh/CARE/results/20260629_cascade_teacher_route/variants/nnunet_anatomy_prior_refiner/round10_refiner_train_log.csv"
+}

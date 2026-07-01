@@ -1,0 +1,23 @@
+{
+  "budget_status": "OK",
+  "cascade_variant": "nnunet_pathology_teacher_srr_refiner",
+  "checkpoint": "/users/a/e/aereinh/CARE/results/20260629_cascade_teacher_route/revision_signal_seek/variants/nnunet_pathology_teacher_srr_refiner_signal_seek/checkpoints/nnunet_pathology_teacher_srr_refiner_signal_seek.pt",
+  "decision_path": "/users/a/e/aereinh/CARE/results/20260629_cascade_teacher_route/revision_signal_seek/variants/nnunet_pathology_teacher_srr_refiner_signal_seek/round10_decision_table.md",
+  "elapsed_seconds": 289.6578559875488,
+  "epochs": 90,
+  "eval_decision": "fail_stop_refiner_candidate",
+  "eval_returncode": "0",
+  "evaluation_ran": true,
+  "metrics_path": "/users/a/e/aereinh/CARE/results/20260629_cascade_teacher_route/revision_signal_seek/variants/nnunet_pathology_teacher_srr_refiner_signal_seek/round10_fold0_very_short_metrics.csv",
+  "out_root": "/users/a/e/aereinh/CARE/results/20260629_cascade_teacher_route/revision_signal_seek/variants/nnunet_pathology_teacher_srr_refiner_signal_seek",
+  "output_mode": "scar_edema_pathology_residual",
+  "prediction_dir": "/users/a/e/aereinh/CARE/results/20260629_cascade_teacher_route/revision_signal_seek/variants/nnunet_pathology_teacher_srr_refiner_signal_seek/predictions/nnunet_pathology_teacher_srr_refiner_signal_seek/validation",
+  "predictions_exported": true,
+  "residual_summary_path": "/users/a/e/aereinh/CARE/results/20260629_cascade_teacher_route/revision_signal_seek/variants/nnunet_pathology_teacher_srr_refiner_signal_seek/residual_magnitude_summary.csv",
+  "run_name": "nnunet_pathology_teacher_srr_refiner_signal_seek",
+  "scar_threshold": 0.68,
+  "steps_per_epoch": 300,
+  "stop_reason": "completed",
+  "threshold": 0.5,
+  "train_log_path": "/users/a/e/aereinh/CARE/results/20260629_cascade_teacher_route/revision_signal_seek/variants/nnunet_pathology_teacher_srr_refiner_signal_seek/round10_refiner_train_log.csv"
+}

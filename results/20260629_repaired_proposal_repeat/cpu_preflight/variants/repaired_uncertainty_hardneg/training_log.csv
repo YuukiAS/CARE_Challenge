@@ -1,0 +1,3 @@
+variant,step,loss,anatomy_loss,scar_loss,edema_loss,retrieval_loss,soft_containment_loss,component_compactness_loss,proposal_bce_loss,proposal_margin_loss,proposal_uncertainty_loss,edema_supervised_batch_fraction,batch_cases,elapsed_seconds
+repaired_uncertainty_hardneg,1,4.737174987792969,1.3979461193084717,1.0974986553192139,0.9055145978927612,0.000968242937233299,0.0,0.0,1.3091686964035034,0.5087653398513794,1.454727053642273,1.0,Case2022,0.2399356751702726
+repaired_uncertainty_hardneg,1,4.737174987792969,,,,,,,,,,,,0.4118394369725138

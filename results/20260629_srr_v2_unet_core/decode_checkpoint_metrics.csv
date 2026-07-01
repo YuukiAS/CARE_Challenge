@@ -1,0 +1,2 @@
+variant,checkpoint_source,decode_mode,best_step,stop_reason,checkpoint_best,predictions,note
+srr_v2_multiscale_private_basic,checkpoint_best,pathology_priority_threshold,407500,recovered_export_from_checkpoint,/users/a/e/aereinh/CARE/results/20260629_srr_v2_unet_core/variants/srr_v2_multiscale_private_basic/checkpoints/fold_0/srr_fold0_config/checkpoint_best.pt,,

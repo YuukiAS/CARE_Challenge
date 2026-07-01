@@ -1,0 +1,98 @@
+# Manifest 20260629 Rescue Goal
+
+- Goal task: `prompts/tasks/20260629_rescue_goal.md`
+- Result report: `results/20260629_rescue_goal/result.md`
+- Progress: `results/20260629_rescue_goal/progress.md`
+- Pending status: `results/20260629_rescue_goal/pending_status.md`
+- Route status CSV: `results/20260629_rescue_goal/route_status.csv`
+- GPU action status: `results/20260629_rescue_goal/gpu_action_status.md`
+- GPU action status CSV: `results/20260629_rescue_goal/gpu_action_status.csv`
+- GPU partition status: `results/20260629_rescue_goal/gpu_partition_status.md`
+- GPU partition status CSV: `results/20260629_rescue_goal/gpu_partition_status.csv`
+- Completion audit: `results/20260629_rescue_goal/completion_audit.md`
+- Completion audit CSV: `results/20260629_rescue_goal/completion_audit.csv`
+- Completion audit update, 2026-07-01 03:19 EDT: added operational rows for cascade GPU `ACTION_REQUIRED` and SRR-v2 isolated fallback readiness.
+- Completion audit update, 2026-07-01 03:22 EDT: `ACTION_REQUIRED` now counts as a completion blocker.
+- Completion audit update, 2026-07-01 03:29 EDT: cascade operational row now reflects formal variant readiness dynamically, and SRR-v2 fallback readiness notes command-review approval requirements for duplicate GPU launches.
+- Completion audit update, 2026-07-01 03:39 EDT: GPU action status CSV/Markdown are now required non-final artifacts and are summarized in the audit as `operational: GPU action ledger`.
+- Continuation update, 2026-07-01 03:49 EDT: refreshed queue/partition state, confirmed SRR-v2 remains `1/3`, cascade remains `0/3`, GPU action ledger remains `5` rows with `3` open actions, and recorded that no duplicate GPU launch was attempted after prior command-review rejections.
+- GPU action ledger update, 2026-07-01 03:53 EDT: added two-hour wait-policy fields (`pending_hours`, `recheck_windows_elapsed`, `next_recheck_after`, `max_recheck_after`, `wait_policy_status`) and propagated those details into the completion audit summary.
+- GPU partition snapshot update, 2026-07-01 03:57 EDT: added `gpu_partition_status.csv/.md` and a completion-audit row summarizing `htzhulab`, `a100-gpu`, and `volta-gpu` queue states under the fixed routing priority.
+- Mid-run route assessment: `results/20260629_rescue_goal/midrun_route_assessment.md`
+- Status reporter: `scripts/evaluation/report_rescue_goal_status.py`
+- GPU action status reporter: `scripts/evaluation/report_rescue_gpu_action_status.py`
+- Completion finalizer/auditor: `scripts/evaluation/finalize_rescue_goal.py`
+- SRR route aggregation helper: `scripts/evaluation/finalize_rescue_srr_route.py`
+- SRR route aggregation helper update, 2026-07-01 03:17 EDT: added `--root` so future approved fallback/retry outputs can be summarized from isolated result roots without changing canonical defaults.
+- SRR route aggregation helper update, 2026-07-01 11:52 EDT: added `--source-root` fallback-aware aggregation, combined-source view generation, canonical SRR-v2 `selection.md`/`result.md` writing, and nnU-Net reference-gated SRR-v2 selection.
+- SRR route aggregation helper update, 2026-07-01 12:00 EDT: added
+  `srr_v2_light_refine_extras` route support and verified it reports `0/2`
+  ready while the extra jobs are still running.
+- Repaired proposal contract: `results/20260629_repaired_proposal_repeat/repair_contract.md`
+- Repaired proposal CPU preflight summary: `results/20260629_repaired_proposal_repeat/preflight_summary.md`
+- Repaired proposal manifest: `results/20260629_repaired_proposal_repeat/MANIFEST.md`
+- Repaired proposal aggregation status: `results/20260629_repaired_proposal_repeat/aggregation_status.md`
+- Repaired proposal result: `results/20260629_repaired_proposal_repeat/result.md`
+- Repaired proposal selection: `results/20260629_repaired_proposal_repeat/selection.md`
+- SRR-v2 architecture audit: `results/20260629_srr_v2_unet_core/architecture_audit.md`
+- SRR-v2 test summary: `results/20260629_srr_v2_unet_core/test_summary.md`
+- SRR-v2 manifest: `results/20260629_srr_v2_unet_core/MANIFEST.md`
+- SRR-v2 aggregation status: `results/20260629_srr_v2_unet_core/aggregation_status.md`
+- SRR-v2 wrapper: `jobs/src/run_srr_v2_unet_core.sh`
+- SRR-v2 wrapper cleanup, 2026-07-01 03:15 EDT: added `OUT_ROOT` and `PREFLIGHT_OUT_ROOT` env overrides so future approved fallback/retry jobs can write isolated outputs instead of racing the queued default-root array.
+- Cascade teacher artifact contract: `results/20260629_cascade_teacher_route/teacher_artifact_contract.md`
+- Cascade manifest: `results/20260629_cascade_teacher_route/MANIFEST.md`
+- Cascade teacher cache preflight: `results/20260629_cascade_teacher_route/teacher_cache/summary.json`
+- Cascade teacher metrics summary: `results/20260629_cascade_teacher_route/metrics_summary.md`
+- Cascade train teacher inference wrapper: `jobs/src/run_cascade_teacher_train_inference.sh`
+- Cascade OOF refiner wrapper: `jobs/src/run_cascade_oof_refiner.sh`
+- Cascade OOF wrapper cleanup, 2026-07-01 03:12 EDT: default `RUN_NAME` changed to `${VARIANT}_oof_refiner` so pathology variants are not mislabeled as edema-only residual runs.
+- Cascade OOF refiner preflight summary: `results/20260629_cascade_teacher_route/preflight_summary.md`
+- Cine motion alignment result: `results/20260629_cine_motion_alignment/result.md`
+- Cine motion alignment selection: `results/20260629_cine_motion_alignment/selection.md`
+- Cine motion pathology result: `results/20260629_cine_motion_pathology/result.md`
+- Cine motion pathology selection: `results/20260629_cine_motion_pathology/selection.md`
+- Submitted GPU jobs:
+  - `57094448`: repaired proposal repeat array on `htzhulab`, completed.
+  - `57094446`: SRR-v2 basic on `htzhulab`, failed during export and recovered from checkpoint.
+  - `57095505`: SRR-v2 variants 1-2 array on `a100-gpu`, cancelled after the
+    same variants were running on preferred `htzhulab`.
+  - `57272337`: isolated SRR-v2 variants 1-2 fallback array on `htzhulab`, running, output root `results/20260629_srr_v2_unet_core_htzhulab_fallback/`.
+  - `57272502`: cascade formal array on `htzhulab`, completed, selection `STOP_NO_CASCADE_SIGNAL`.
+  - `57274444`: cascade component-guard revision array on `htzhulab`, completed, selection `STOP_NO_COMPONENT_GUARD_SIGNAL`.
+  - `57275246`: cascade signal-seek revision array on `htzhulab`, completed, selection `STOP_NO_SIGNAL_SEEK_ROUTE`.
+  - `57277361`: SRR-v2 light-refine extra array on `htzhulab`, running, output root `results/20260629_srr_v2_unet_core/light_refine_extras/`.
+- Fallback prepared:
+  - `jobs/src/run_cascade_teacher_train_inference.sh`
+  - `jobs/src/run_cascade_oof_refiner.sh`
+- Cascade OOF refiner submission note: attempted after GPU budget freed, but command approval review rejected it as requiring explicit approval for a 7.5-hour shared-GPU job in the current interaction context.
+- Cascade OOF refiner submission note, 2026-07-01 03:08 EDT: retried `sbatch --array=0-2 jobs/src/run_cascade_oof_refiner.sh` after re-reading the goal and checking `htzhulab`; command approval review again rejected it as three new 7.5-hour shared-GPU jobs requiring explicit approval.
+- SRR-v2 isolated fallback submission note, 2026-07-01 03:29 EDT: attempted an isolated htzhulab fallback for variants 1-2 after the a100 job had been pending for more than 20 hours; command approval review rejected it as two new 7.5-hour shared-GPU jobs requiring explicit approval. No workaround was attempted.
+- Queue refresh note, 2026-07-01 03:49 EDT: `57095505_[1-2]` remains pending on `a100-gpu`; `htzhulab`, `a100-gpu`, and `volta-gpu` are busy or constrained, so the current non-conflicting action is monitoring rather than duplicate submission.
+- Queue refresh note, 2026-07-01 03:53 EDT: `57095505_[1-2]` is still pending on `a100-gpu`; the ledger records `21.28` pending hours, `10/12` two-hour recheck windows elapsed, next recheck after `2026-07-01 04:36:09`, and max policy checkpoint after `2026-07-01 06:36:09`.
+- Partition snapshot note, 2026-07-01 03:57 EDT: `htzhulab` has `3` pending and `8` running jobs; `a100-gpu` has `547` pending and `5` running jobs; `volta-gpu` has `268` pending and `62` running jobs. Snapshot is evidence only and does not authorize a duplicate GPU submission.
+- Queue refresh note, 2026-07-01 04:04 EDT: `57095505_[1-2]` remains pending on `a100-gpu` before the next scheduled wait-policy recheck; route status remains `11` rows with `6` ready, SRR-v2 remains `1/3`, cascade remains `0/3`, completion remains unproven, and `final_status.md` is still absent.
+- GPU action ledger note, 2026-07-01 04:08 EDT: refreshed `gpu_action_status.csv/.md`, `gpu_partition_status.csv/.md`, and `completion_audit.csv/.md`; SRR-v2 variants 1-2 remain pending on `a100-gpu` with `21.54` pending hours and `10/12` recheck windows elapsed.
+- Queue refresh note, 2026-07-01 04:10 EDT: checked before the next scheduled recheck point; `57095505_[1-2]` remains pending and non-GPU aggregators still report SRR-v2 `1/3`, cascade `0/3`, completion unproven, and no `final_status.md`.
+- Queue refresh note, 2026-07-01 04:12 EDT: checked before the next scheduled recheck point; `57095505_[1-2]` remains pending and non-GPU completion gates remain unchanged.
+- Queue refresh note, 2026-07-01 04:14 EDT: checked before the next scheduled recheck point; `57095505_[1-2]` remains pending and non-GPU completion gates remain unchanged.
+- Queue refresh note, 2026-07-01 04:16 EDT: checked before the next scheduled recheck point; `57095505_[1-2]` remains pending and non-GPU completion gates remain unchanged.
+- Queue refresh note, 2026-07-01 04:18 EDT: checked before the next scheduled recheck point; `57095505_[1-2]` remains pending and non-GPU completion gates remain unchanged.
+- Effective GPU ledger note, 2026-07-01 04:37 EDT: `gpu_action_status.csv/.md`, `gpu_partition_status.csv/.md`, and `completion_audit.csv/.md` now record `57095505_[1-2]` pending on `a100-gpu` for `22.02` hours, `11/12` recheck windows elapsed, next recheck after `2026-07-01 06:36:09`, and `completion_proven=False`.
+- Continuation note, 2026-07-01 04:40 EDT: re-read required rule/task/background files, reran local non-scheduler aggregators, confirmed route status `11` rows with `6` ready, SRR-v2 `1/3`, cascade `0/3`, route evidence matrix `6` rows, and `final_status.md` absent.
+- Local check note, 2026-07-01 04:45 EDT: `py_compile` passed for rescue reporters/finalizers, SRR/SRR-v2 code, and cascade refiner code; `bash -n` passed for repaired proposal, SRR-v2, cascade teacher inference, and cascade OOF refiner wrappers. Local aggregators still report `completion_proven=False`.
+- Effective recheck note, 2026-07-01 06:37 EDT: `57095505_[1-2]` remains `PENDING` on `a100-gpu` with `(Priority)`, `Start=Unknown`, and no new formal SRR-v2/cascade artifacts. Refreshed ledger records `pending_hours=24.02`, `12/12` recheck windows elapsed, and `max_rechecks_elapsed_requires_partition_and_work_audit`; partition snapshot shows `htzhulab` `0` pending/`7` running, so strict blocked criteria are not met.
+- Effective recheck note, 2026-07-01 08:37 EDT: `57095505_[1-2]` remains `PENDING` on `a100-gpu` with `(Priority)`, `Start=Unknown`, and no new formal SRR-v2/cascade artifacts. Refreshed ledger records `pending_hours=26.02`, next advisory recheck after `2026-07-01 10:36:09`, and `completion_proven=False`; partition snapshot shows `htzhulab` `1` pending dependency row/`3` running, so strict blocked criteria are still not met.
+- Effective recheck note, 2026-07-01 10:36 EDT: `57095505_[1-2]` remains `PENDING` on `a100-gpu` with `(Priority)`, `Start=Unknown`, and no new formal SRR-v2/cascade artifacts. Refreshed ledger records `pending_hours=28.01`, next advisory recheck after `2026-07-01 12:36:09`, and `completion_proven=False`; partition snapshot shows `htzhulab` `0` pending/`2` running, so strict blocked criteria are still not met.
+- Htzhulab fallback note, 2026-07-01 10:57 EDT: after user clarified `htzhulab` should be preferred and remaining independent jobs should run there, submitted isolated SRR-v2 fallback `57272337_[1-2]` to `htzhulab` with `OUT_ROOT=results/20260629_srr_v2_unet_core_htzhulab_fallback` and submitted cascade formal array `57272502_[0-2]` to `htzhulab`.
+- GPU action ledger update, 2026-07-01 10:57 EDT: `scripts/evaluation/report_rescue_gpu_action_status.py` now tracks `57272337` and `57272502`; `scripts/evaluation/finalize_rescue_goal.py` now reports submitted cascade execution as `IN_PROGRESS` rather than approval-required while formal artifacts are missing.
+- Cascade formal completion note, 2026-07-01 11:20 EDT: formal cascade job `57272502_[0-2]` completed on `htzhulab`; `selection.md` is `STOP_NO_CASCADE_SIGNAL`, selected variant `none`, and all three formal variants reported `fail_stop_refiner_candidate`.
+- Cascade component-guard revision note, 2026-07-01 11:24 EDT: `57274444_[0-1]` completed on `htzhulab`; revision selection is `STOP_NO_COMPONENT_GUARD_SIGNAL`, selected variant `none`.
+- Cascade signal-seek revision note, 2026-07-01 11:34 EDT: `57275246_[0-1]` completed on `htzhulab`; revision selection is `STOP_NO_SIGNAL_SEEK_ROUTE`, selected variant `none`.
+- Cascade postprocess sweep note, 2026-07-01 11:45 EDT: `results/20260629_cascade_teacher_route/revision_postprocess_sweep/selection.md` is `STOP_NO_POSTPROCESS_ROUTE`, selected mode `none`.
+- SRR-v2 light-refine extras note, 2026-07-01 11:45 EDT: submitted `57277361_[0-1]` to `htzhulab` with output root `results/20260629_srr_v2_unet_core/light_refine_extras/`.
+- Final goal status: pending SRR-v2 variants 1-2 and SRR-v2 light-refine extras; repaired proposal, formal cascade, cascade component-guard revision, cascade signal-seek revision, and cascade postprocess sweep are complete but not selected.
+- SRR-v2 monitoring note, 2026-07-01 11:52 EDT: all four running SRR-v2 tasks are in formal stage and have written `checkpoint_best.pt`; no formal summary/export artifacts are present yet for those tasks.
+- SRR-v2 queue cleanup note, 2026-07-01 12:00 EDT: cancelled obsolete duplicate
+  A100 fallback `57095505_[1-2]`; refreshed GPU ledger now has two open monitor
+  actions, `57272337` and `57277361`, both on `htzhulab`.
