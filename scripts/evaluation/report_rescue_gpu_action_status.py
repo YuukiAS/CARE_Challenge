@@ -25,6 +25,7 @@ JOB_IDS = {
     "cascade_signal_seek_revision": "57275246",
     "srr_v2_light_refine_extras": "57277361",
     "srr_v2_capacity_extras": "57279322",
+    "srr_v2_targeted_extras": "57334792",
 }
 
 RECHECK_INTERVAL_HOURS = 2
@@ -39,6 +40,7 @@ ROUTE_ROOTS = {
     "cascade_teacher_revision_signal_seek": REPO_ROOT / "results/20260629_cascade_teacher_route/revision_signal_seek",
     "srr_v2_light_refine_extras": REPO_ROOT / "results/20260629_srr_v2_unet_core/light_refine_extras",
     "srr_v2_capacity_extras": REPO_ROOT / "results/20260629_srr_v2_unet_core/capacity_extras",
+    "srr_v2_targeted_extras": REPO_ROOT / "results/20260629_srr_v2_unet_core/targeted_extras",
 }
 
 PARTITION_PRIORITY = [
@@ -304,6 +306,12 @@ def build_rows() -> list[dict[str, Any]]:
             JOB_IDS["srr_v2_capacity_extras"],
             "srr_v2_capacity_extras",
             "srr_v2_capacity12_proposal;srr_v2_capacity12_hardneg",
+        ),
+        job_status_row(
+            "srr_v2_targeted_extras",
+            JOB_IDS["srr_v2_targeted_extras"],
+            "srr_v2_targeted_extras",
+            "srr_v2_edema_t2_focus;srr_v2_scar_precision_nointeract",
         ),
     ]
     return rows
