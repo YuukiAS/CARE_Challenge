@@ -96,3 +96,7 @@
 - SRR-v2 queue cleanup note, 2026-07-01 12:00 EDT: cancelled obsolete duplicate
   A100 fallback `57095505_[1-2]`; refreshed GPU ledger now has two open monitor
   actions, `57272337` and `57277361`, both on `htzhulab`.
+- SRR-v2 capacity extra note, 2026-07-01 12:06 EDT: added
+  `jobs/src/run_srr_v2_capacity_extra.sh`, added `srr_v2_capacity_extras`
+  aggregation support, and submitted `57279322_[0-1]` to `htzhulab` for
+  `base_channels=12` proposal/hard-negative probes.

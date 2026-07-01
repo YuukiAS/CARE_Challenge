@@ -42,6 +42,14 @@ ROUTE_CONFIG = {
         ],
         "task": "prompts/tasks/20260629_srr_v2_unet_core.md",
     },
+    "srr_v2_capacity_extras": {
+        "root": REPO_ROOT / "results/20260629_srr_v2_unet_core/capacity_extras",
+        "variants": [
+            "srr_v2_capacity12_proposal",
+            "srr_v2_capacity12_hardneg",
+        ],
+        "task": "prompts/tasks/20260629_srr_v2_unet_core.md",
+    },
 }
 
 NNUNET_REFERENCE = {

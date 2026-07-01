@@ -1265,3 +1265,34 @@
   - `./envs/env_CARE/bin/python scripts/evaluation/finalize_rescue_srr_route.py --route srr_v2_light_refine_extras`
 - Current light-refine aggregation status is `0/2` ready and `finalized=False`,
   as expected while the two jobs are still running.
+
+## SRR-v2 Capacity Extra Submission 2026-07-01 12:06 EDT
+
+- Current active SRR-v2 evidence was still incomplete: the four running
+  `htzhulab` tasks had checkpoints but no formal summaries or exported
+  prediction metrics.
+- Because the goal allows up to six parallel GPU jobs and only four were active,
+  prepared an additional isolated two-task SRR-v2 capacity probe instead of
+  waiting idly.
+- Added `jobs/src/run_srr_v2_capacity_extra.sh`.
+- Hypothesis: if the weak SRR-v2 basic result reflects model capacity rather
+  than only proposal/hard-negative tuning, increasing the U-Net-style route
+  from `base_channels=8` to `base_channels=12` should improve pathology signal
+  while preserving the same fold/evaluator/label contract.
+- Variants:
+  - `srr_v2_capacity12_proposal`: base variant
+    `srr_v2_multiscale_private_proposal`, `base_channels=12`,
+    `proposal_final_mix=0.35`, no hard-negative replay.
+  - `srr_v2_capacity12_hardneg`: base variant
+    `srr_v2_proposal_uncertainty_hardneg`, `base_channels=12`,
+    `proposal_final_mix=0.35`, `hardneg_sample_prob=0.30`.
+- Added `srr_v2_capacity_extras` support to
+  `scripts/evaluation/finalize_rescue_srr_route.py`; validation reports
+  `0/2` ready before outputs exist.
+- Submitted to preferred `htzhulab`:
+  - job: `57279322_[0-1]`
+  - initial state: `PENDING`, reason `(Resources)`
+  - output root: `results/20260629_srr_v2_unet_core/capacity_extras/`
+- Updated GPU action ledger:
+  - `results/20260629_rescue_goal/gpu_action_status.md`: nine rows, three open
+    monitor actions (`57272337`, `57277361`, `57279322`).

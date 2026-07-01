@@ -105,6 +105,22 @@ the free GPU capacity was redirected to SRR-v2:
   - `srr_v2_light_refine_lowmix`
   - `srr_v2_light_refine_hardneg`
 
+Because two GPU slots remained available under the goal budget, an additional
+capacity probe was submitted rather than waiting idly:
+
+- wrapper: `jobs/src/run_srr_v2_capacity_extra.sh`
+- job: `57279322_[0-1]`
+- partition: `htzhulab`
+- status at submission refresh: pending, reason `(Resources)`
+- output root:
+  `results/20260629_srr_v2_unet_core/capacity_extras/`
+- variants:
+  - `srr_v2_capacity12_proposal`
+  - `srr_v2_capacity12_hardneg`
+- hypothesis: test whether increasing SRR-v2 U-Net capacity from
+  `base_channels=8` to `base_channels=12` improves pathology signal while
+  keeping the same fold/evaluator/label contract.
+
 Cine secondary-line tasks are complete:
 
 - `results/20260629_cine_motion_alignment/selection.md`:
@@ -126,9 +142,10 @@ Latest GPU ledger:
 
 - path: `results/20260629_rescue_goal/gpu_action_status.md`
 - rows: `8`
-- open monitor actions: `2`
+- open monitor actions: `3`
   - `57272337`: isolated htzhulab SRR-v2 fallback, running.
   - `57277361`: SRR-v2 light-refine extras, running.
+  - `57279322`: SRR-v2 capacity extras, pending on htzhulab resources.
 
 ## Decision
 
