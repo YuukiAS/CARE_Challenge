@@ -1,6 +1,6 @@
 # 20260629 Rescue Goal GPU Action Status
 
-- generated_at: `2026-07-01 12:08:08 EDT`
+- generated_at: `2026-07-01 12:11:48 EDT`
 - open_actions: `3`
 - recheck_policy: `2h interval, max 12 checks before partition/work audit`
 
@@ -14,7 +14,7 @@
 | cascade_component_guard_revision | cascade_teacher_revision_component_guard | DONE | 57274444 | htzhulab | COMPLETED |  | not_pending |  | inspect_outputs |
 | cascade_signal_seek_revision | cascade_teacher_revision_signal_seek | DONE | 57275246 | htzhulab | COMPLETED |  | not_pending |  | inspect_outputs |
 | srr_v2_light_refine_extras | srr_v2_light_refine_extras | QUEUED_OR_RUNNING | 57277361 | htzhulab | RUNNING |  | not_pending |  | monitor |
-| srr_v2_capacity_extras | srr_v2_capacity_extras | QUEUED_OR_RUNNING | 57279322 | htzhulab | PENDING | 0.01 | continue_monitoring | 2026-07-01 14:07:40 | monitor |
+| srr_v2_capacity_extras | srr_v2_capacity_extras | QUEUED_OR_RUNNING | 57279322 | htzhulab | RUNNING |  | not_pending |  | monitor |
 
 ## Notes
 
