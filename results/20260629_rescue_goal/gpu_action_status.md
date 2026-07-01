@@ -1,21 +1,21 @@
 # 20260629 Rescue Goal GPU Action Status
 
-- generated_at: `2026-07-01 17:35:42 EDT`
-- open_actions: `3`
+- generated_at: `2026-07-01 18:47:56 EDT`
+- open_actions: `1`
 - recheck_policy: `2h interval, max 12 checks before partition/work audit`
 
 | item | route | status | job_id | partition | scheduler_state | pending_hours | wait_policy_status | next_recheck_after | required_action |
 | --- | --- | --- | --- | --- | --- | ---: | --- | --- | --- |
-| repaired_proposal_formal | repaired_proposal | UNKNOWN_RECHECK | 57094448 |  | UNKNOWN |  | not_pending |  | inspect_outputs |
-| srr_v2_basic_formal | srr_v2 | UNKNOWN_RECHECK | 57094446 |  | UNKNOWN |  | not_pending |  | inspect_outputs |
-| srr_v2_missing_variants_a100 | srr_v2 | UNKNOWN_RECHECK | 57095505 |  | UNKNOWN |  | not_pending |  | inspect_outputs |
-| srr_v2_missing_variants_htzhulab_fallback | srr_v2 | UNKNOWN_RECHECK | 57272337 |  | UNKNOWN |  | not_pending |  | inspect_outputs |
-| cascade_formal_array | cascade_teacher | UNKNOWN_RECHECK | 57272502 |  | UNKNOWN |  | not_pending |  | inspect_outputs |
-| cascade_component_guard_revision | cascade_teacher_revision_component_guard | UNKNOWN_RECHECK | 57274444 |  | UNKNOWN |  | not_pending |  | inspect_outputs |
-| cascade_signal_seek_revision | cascade_teacher_revision_signal_seek | UNKNOWN_RECHECK | 57275246 |  | UNKNOWN |  | not_pending |  | inspect_outputs |
-| srr_v2_light_refine_extras | srr_v2_light_refine_extras | QUEUED_OR_RUNNING | 57277361 | htzhulab | RUNNING |  | not_pending |  | monitor |
-| srr_v2_capacity_extras | srr_v2_capacity_extras | QUEUED_OR_RUNNING | 57279322 | htzhulab | RUNNING |  | not_pending |  | monitor |
-| srr_v2_targeted_extras | srr_v2_targeted_extras | QUEUED_OR_RUNNING | 57334792 | htzhulab | PENDING |  | pending_submit_time_unknown |  | monitor |
+| repaired_proposal_formal | repaired_proposal | DONE | 57094448 | htzhulab | COMPLETED |  | not_pending |  | inspect_outputs |
+| srr_v2_basic_formal | srr_v2 | DONE_RECOVERED | 57094446 | htzhulab | FAILED |  | not_pending |  | inspect_outputs |
+| srr_v2_missing_variants_a100 | srr_v2 | UNKNOWN_RECHECK | 57095505 | a100-gpu | CANCELLED by 397557 |  | not_pending |  | inspect_outputs |
+| srr_v2_missing_variants_htzhulab_fallback | srr_v2 | DONE | 57272337 | htzhulab | COMPLETED |  | not_pending |  | inspect_outputs |
+| cascade_formal_array | cascade_teacher | DONE | 57272502 | htzhulab | COMPLETED |  | not_pending |  | inspect_outputs |
+| cascade_component_guard_revision | cascade_teacher_revision_component_guard | DONE | 57274444 | htzhulab | COMPLETED |  | not_pending |  | inspect_outputs |
+| cascade_signal_seek_revision | cascade_teacher_revision_signal_seek | DONE | 57275246 | htzhulab | COMPLETED |  | not_pending |  | inspect_outputs |
+| srr_v2_light_refine_extras | srr_v2_light_refine_extras | DONE | 57277361 | htzhulab | COMPLETED |  | not_pending |  | inspect_outputs |
+| srr_v2_capacity_extras | srr_v2_capacity_extras | DONE | 57279322 | htzhulab | COMPLETED |  | not_pending |  | inspect_outputs |
+| srr_v2_targeted_extras | srr_v2_targeted_extras | QUEUED_OR_RUNNING | 57334792 | htzhulab | PENDING | 0.50 | continue_monitoring | 2026-07-01 20:17:51 | monitor |
 
 ## Notes
 
