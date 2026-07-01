@@ -20,7 +20,7 @@ os.environ.setdefault("CARE_ROOT", str(REPO_ROOT))
 if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
 
-from scripts.diagnostics import laneA_round04_fold0_short_train_eval as base_eval
+from scripts.diagnostics import laneA_round4_fold0_short_train_eval as base_eval
 
 
 OUT_ROOT = REPO_ROOT / "results/diagnostics/care_myocardium/laneA_myops/round10_edema_refiner"
@@ -178,7 +178,7 @@ def scar_guardrail(candidate_pred_dir: Path) -> list[dict[str, object]]:
     return rows
 
 
-def failure_flags(all_rows: list[dict[str, object]], scar_rows: list[dict[str, object]]) -> list[dict[str, object]]:
+def failure_flags(all_rows: list[dict[str, object]], scar_rows: list[dict[str, object]], *, enforce_scar_unchanged: bool) -> list[dict[str, object]]:
     by_case: dict[str, dict[str, dict[str, object]]] = {}
     for row in all_rows:
         by_case.setdefault(str(row["case_id"]), {})[str(row["model"])] = row
@@ -205,7 +205,7 @@ def failure_flags(all_rows: list[dict[str, object]], scar_rows: list[dict[str, o
                 if float(c.get("myops_edema_component_count") or 0) > float(b.get("myops_edema_component_count") or 0):
                     flags.append("no_t2_empty_gt_new_edema_fp")
         scar = scar_by_case.get(cid, {})
-        if int(scar.get("scar_changed_voxels") or 0) != 0:
+        if enforce_scar_unchanged and int(scar.get("scar_changed_voxels") or 0) != 0:
             flags.append("scar_changed")
         out.append(
             {
@@ -220,13 +220,14 @@ def failure_flags(all_rows: list[dict[str, object]], scar_rows: list[dict[str, o
     return out
 
 
-def decide(comparison_rows: list[dict[str, object]], flags: list[dict[str, object]]) -> tuple[str, list[str]]:
+def decide(comparison_rows: list[dict[str, object]], flags: list[dict[str, object]], *, cascade_variant: str) -> tuple[str, list[str]]:
     hard = [r for r in flags if r.get("flags")]
     if hard:
         return "fail_stop_refiner_candidate", [f"{r['case_id']}: {r['flags']}" for r in hard[:20]]
     by_subset = {r["subset"]: r for r in comparison_rows}
     center = by_subset["CenterC"]
     t2pos = by_subset["t2_present_gt_positive"]
+    all_case = by_subset["all_case"]
     positive = any(
         [
             isinstance(center.get("delta_edema_dice"), float) and center["delta_edema_dice"] > 0.005,
@@ -235,9 +236,16 @@ def decide(comparison_rows: list[dict[str, object]], flags: list[dict[str, objec
             isinstance(t2pos.get("delta_edema_hd95_improvement"), float) and t2pos["delta_edema_hd95_improvement"] > 0.5,
         ]
     )
+    if cascade_variant in {"nnunet_pathology_teacher_srr_refiner", "coarse_to_fine_srr_roi"}:
+        positive = positive or any(
+            [
+                isinstance(all_case.get("delta_scar_dice"), float) and all_case["delta_scar_dice"] > 0.005,
+                isinstance(all_case.get("delta_scar_hd95_improvement"), float) and all_case["delta_scar_hd95_improvement"] > 0.5,
+            ]
+        )
     if positive:
-        return "pass_watch_consider_fold0_short_refiner", ["clean positive T2-present or CenterC edema signal"]
-    return "watch_stop_no_clear_positive_signal", ["no clean positive T2-present or CenterC edema signal"]
+        return "pass_watch_consider_fold0_short_refiner", [f"clean positive signal for {cascade_variant}"]
+    return "watch_stop_no_clear_positive_signal", [f"no clean positive edema/scar signal for {cascade_variant}"]
 
 
 def md_table(rows: list[dict[str, object]], columns: list[str]) -> list[str]:
@@ -248,10 +256,18 @@ def md_table(rows: list[dict[str, object]], columns: list[str]) -> list[str]:
 
 
 def main() -> None:
+    global OUT_ROOT
     parser = argparse.ArgumentParser()
     parser.add_argument("--candidate-pred-dir", type=Path, required=True)
+    parser.add_argument("--out-root", type=Path, default=OUT_ROOT)
     parser.add_argument("--metrics-name", default="round10_fold0_very_short_metrics.csv")
+    parser.add_argument(
+        "--cascade-variant",
+        default="nnunet_anatomy_prior_refiner",
+        choices=["nnunet_anatomy_prior_refiner", "nnunet_pathology_teacher_srr_refiner", "coarse_to_fine_srr_roi"],
+    )
     args = parser.parse_args()
+    OUT_ROOT = args.out_root
     OUT_ROOT.mkdir(parents=True, exist_ok=True)
     baseline_rows = base_eval.build_case_rows(base_eval.BASELINE_PRED_DIR, BASELINE_MODEL)
     candidate_rows = base_eval.build_case_rows(args.candidate_pred_dir, CANDIDATE_MODEL)
@@ -267,13 +283,16 @@ def main() -> None:
     write_csv(OUT_ROOT / "centerB_centerC_edema_table.csv", [r for r in candidate_rows if r.get("center") in {"CenterB", "CenterC"}])
     scar_rows = scar_guardrail(args.candidate_pred_dir)
     write_csv(OUT_ROOT / "scar_unchanged_guardrail_table.csv", scar_rows)
-    flags = failure_flags(all_rows, scar_rows)
+    enforce_scar_unchanged = args.cascade_variant == "nnunet_anatomy_prior_refiner"
+    flags = failure_flags(all_rows, scar_rows, enforce_scar_unchanged=enforce_scar_unchanged)
     write_csv(OUT_ROOT / "case_level_failure_flags.csv", flags)
-    decision, reasons = decide(comparison, flags)
+    decision, reasons = decide(comparison, flags, cascade_variant=args.cascade_variant)
     lines = [
         "# Lane A Round10 Refiner Decision",
         "",
         f"Decision: `{decision}`",
+        f"Cascade variant: `{args.cascade_variant}`",
+        f"Enforce scar unchanged: `{enforce_scar_unchanged}`",
         "",
         "## Baseline vs Refiner By Subset",
         "",
