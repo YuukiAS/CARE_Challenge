@@ -30,6 +30,7 @@ from scripts.evaluation.evaluate_predictions import dice_per_class, hd95_class, 
 from src.care_myocardium.data.case_metadata import MyoPSCaseMetadata, load_myops_case_metadata
 from src.care_myocardium.losses.srr_losses import srr_total_loss
 from src.care_myocardium.models.srr_myops import ConditionalDualHeadControl, SRRMyoPSLite
+from src.care_myocardium.models.srr_v2_unet import SRRV2MyoPSUNet
 
 
 RAW_ROOT = REPO_ROOT / "data/nnUNet/nnUNet_raw/Dataset501_CAREMyoPS"
@@ -55,6 +56,18 @@ PROPOSAL_VARIANTS = {
     "proposal_uncertainty_gate",
     "proposal_hard_negative_replay_preflight",
 }
+REPAIRED_PROPOSAL_VARIANTS = {
+    "repaired_uncertainty_hardneg",
+    "repaired_posneg_scar_hardneg",
+    "repaired_joint_calibrated_proposal",
+    "repaired_final_checkpoint_route",
+}
+SRR_V2_VARIANTS = {
+    "srr_v2_multiscale_private_basic",
+    "srr_v2_multiscale_private_proposal",
+    "srr_v2_proposal_uncertainty_hardneg",
+    "srr_v2_light_refine",
+}
 LESION_BASE_DICTIONARY = "cross_modal_interaction_dictionary"
 
 
@@ -66,6 +79,14 @@ class CaseData:
     label_img: sitk.Image
     availability: np.ndarray
     metadata: MyoPSCaseMetadata
+
+
+@dataclass(frozen=True)
+class HardNegativeTarget:
+    case_id: str
+    center_zyx: tuple[int, int, int]
+    class_id: int
+    safety_type: str
 
 
 def write_csv(path: Path, rows: list[dict[str, object]], fieldnames: list[str] | None = None) -> None:
@@ -80,6 +101,39 @@ def write_csv(path: Path, rows: list[dict[str, object]], fieldnames: list[str] |
 def write_text(path: Path, text: str) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(text, encoding="utf-8")
+
+
+def _parse_zyx(text: str) -> tuple[int, int, int]:
+    parts = [float(x) for x in str(text).replace("x", ",").split(",") if x != ""]
+    if len(parts) != 3:
+        raise ValueError(f"expected zyx triplet, got {text!r}")
+    return tuple(int(round(v)) for v in parts)  # type: ignore[return-value]
+
+
+def load_hard_negative_targets(path: Path | None, variant: str) -> dict[str, list[HardNegativeTarget]]:
+    if path is None or not path.is_file():
+        return {}
+    by_case: dict[str, list[HardNegativeTarget]] = {}
+    with path.open(newline="", encoding="utf-8") as f:
+        for row in csv.DictReader(f):
+            if str(row.get("replay_safe", "")).lower() != "true":
+                continue
+            class_id = int(float(row.get("class_id", "0") or 0))
+            safety = row.get("safety_type", "")
+            if variant in {"repaired_posneg_scar_hardneg"} and class_id != 5:
+                continue
+            if variant in {"repaired_uncertainty_hardneg"} and class_id != 4:
+                continue
+            if class_id == 4 and "unsafe" in safety:
+                continue
+            target = HardNegativeTarget(
+                case_id=str(row["case_id"]),
+                center_zyx=_parse_zyx(str(row["component_center_zyx"])),
+                class_id=class_id,
+                safety_type=safety,
+            )
+            by_case.setdefault(target.case_id, []).append(target)
+    return by_case
 
 
 def save_checkpoint_atomic(payload: dict[str, object], path: Path) -> None:
@@ -151,10 +205,13 @@ def sample_patch(
     oversample_foreground: float,
     modality_dropout: bool,
     focus_classes: tuple[int, ...] = (4, 5),
+    forced_center_zyx: tuple[int, int, int] | None = None,
 ) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
     label_arr = case.label_arr
     focus = np.argwhere(np.isin(label_arr, focus_classes))
-    if len(focus) and rng.random() < oversample_foreground:
+    if forced_center_zyx is not None:
+        center = np.asarray(forced_center_zyx, dtype=np.int64)
+    elif len(focus) and rng.random() < oversample_foreground:
         center = focus[int(rng.integers(0, len(focus)))]
     else:
         valid = np.argwhere(label_arr >= 0)
@@ -185,13 +242,13 @@ def parse_shape(text: str) -> tuple[int, int, int]:
 def dictionary_mode_for_variant(variant: str) -> str:
     if variant in DICTIONARY_BANK_VARIANTS:
         return variant
-    if variant in LESION_COMPACT_VARIANTS or variant in PROPOSAL_VARIANTS:
+    if variant in LESION_COMPACT_VARIANTS or variant in PROPOSAL_VARIANTS or variant in REPAIRED_PROPOSAL_VARIANTS:
         return LESION_BASE_DICTIONARY
     return "standard"
 
 
 def proposal_mode_for_variant(variant: str) -> str:
-    if variant in PROPOSAL_VARIANTS:
+    if variant in PROPOSAL_VARIANTS or variant in REPAIRED_PROPOSAL_VARIANTS or variant in SRR_V2_VARIANTS:
         if variant == "proposal_pos_neg_basic":
             return "proposal_pos_neg_basic"
         if variant == "proposal_anatomy_distance":
@@ -199,6 +256,17 @@ def proposal_mode_for_variant(variant: str) -> str:
         if variant == "proposal_uncertainty_gate":
             return "proposal_uncertainty_gate"
         if variant == "proposal_hard_negative_replay_preflight":
+            return "proposal_uncertainty_gate"
+        if variant == "repaired_posneg_scar_hardneg":
+            return "proposal_pos_neg_basic"
+        if variant in {
+            "repaired_uncertainty_hardneg",
+            "repaired_joint_calibrated_proposal",
+            "repaired_final_checkpoint_route",
+            "srr_v2_multiscale_private_proposal",
+            "srr_v2_proposal_uncertainty_hardneg",
+            "srr_v2_light_refine",
+        }:
             return "proposal_uncertainty_gate"
     return "none"
 
@@ -243,9 +311,15 @@ def variant_router_settings(args: argparse.Namespace) -> tuple[dict[str, float],
     elif args.variant == "edema_t2_center_balance":
         temps = {"anatomy": 1.8, "scar": 1.45, "edema": 2.1}
         dropout = 0.20 if args.expert_dropout == 0 else dropout
-    elif args.variant in PROPOSAL_VARIANTS:
+    elif args.variant == "repaired_posneg_scar_hardneg":
+        temps = {"anatomy": 1.8, "scar": 1.20, "edema": 1.9}
+        dropout = 0.25 if args.expert_dropout == 0 else dropout
+    elif args.variant in PROPOSAL_VARIANTS or args.variant in REPAIRED_PROPOSAL_VARIANTS:
         temps = {"anatomy": 1.8, "scar": 1.35, "edema": 1.75}
         dropout = 0.20 if args.expert_dropout == 0 else dropout
+    elif args.variant.startswith("srr_v2_"):
+        temps = {"anatomy": 1.5, "scar": 1.25, "edema": 1.55}
+        dropout = 0.0
     if args.anatomy_router_temperature is not None:
         temps["anatomy"] = float(args.anatomy_router_temperature)
     if args.scar_router_temperature is not None:
@@ -264,7 +338,7 @@ def make_model(args: argparse.Namespace, device: torch.device) -> nn.Module:
     elif variant in {"srr_minimal", "srr_soft_entropy", "srr_expert_dropout", "srr_task_tempered", "retrieval_no_sip_or_weak_sip"}:
         temps, dropout = variant_router_settings(args)
         model = SRRMyoPSLite(base_channels=args.base_channels, router_temperatures=temps, expert_dropout=dropout)
-    elif variant in DICTIONARY_BANK_VARIANTS or variant in LESION_COMPACT_VARIANTS or variant in PROPOSAL_VARIANTS:
+    elif variant in DICTIONARY_BANK_VARIANTS or variant in LESION_COMPACT_VARIANTS or variant in PROPOSAL_VARIANTS or variant in REPAIRED_PROPOSAL_VARIANTS:
         temps, dropout = variant_router_settings(args)
         dictionary_mode = dictionary_mode_for_variant(variant)
         model = SRRMyoPSLite(
@@ -273,6 +347,14 @@ def make_model(args: argparse.Namespace, device: torch.device) -> nn.Module:
             expert_dropout=dropout,
             dictionary_mode=dictionary_mode,
             proposal_mode=proposal_mode_for_variant(variant),
+            proposal_final_mix_weight=args.proposal_final_mix_weight,
+        )
+    elif variant in SRR_V2_VARIANTS:
+        model = SRRV2MyoPSUNet(
+            base_channels=args.base_channels,
+            proposal_mode=proposal_mode_for_variant(variant),
+            use_interactions=not args.disable_srr_v2_interactions,
+            proposal_final_mix_weight=args.proposal_final_mix_weight,
         )
     else:
         raise ValueError(f"unknown variant {variant}")
@@ -341,7 +423,7 @@ def lesion_auxiliary_loss(
         total = total + float(args.compactness_weight) * compactness
         metrics["component_compactness"] = compactness.detach()
 
-    if args.variant in PROPOSAL_VARIANTS and "scar_proposal_logits" in outputs:
+    if (args.variant in PROPOSAL_VARIANTS or args.variant in REPAIRED_PROPOSAL_VARIANTS or args.variant in SRR_V2_VARIANTS) and "scar_proposal_logits" in outputs:
         proposal_loss, proposal_metrics = proposal_auxiliary_loss(outputs, labels, availability, args)
         total = total + proposal_loss
         metrics.update(proposal_metrics)
@@ -409,7 +491,15 @@ def proposal_auxiliary_loss(
     margin_loss = torch.stack(margin_terms).mean() if margin_terms else zero
 
     uncertainty_loss = zero
-    if args.variant == "proposal_uncertainty_gate" or args.variant == "proposal_hard_negative_replay_preflight":
+    if args.variant in {
+        "proposal_uncertainty_gate",
+        "proposal_hard_negative_replay_preflight",
+        "repaired_uncertainty_hardneg",
+        "repaired_joint_calibrated_proposal",
+        "repaired_final_checkpoint_route",
+        "srr_v2_proposal_uncertainty_hardneg",
+        "srr_v2_light_refine",
+    }:
         scar_unc = outputs["scar_uncertainty"][:, 0]
         edema_unc = outputs["edema_uncertainty"][:, 0]
         confident_mask = scar_pos | edema_pos
@@ -450,12 +540,23 @@ def batch_from_cases(
     oversample_foreground: float,
     modality_dropout: bool,
     lesion_mode: str,
+    hardneg_targets: dict[str, list[HardNegativeTarget]] | None = None,
+    hardneg_sample_prob: float = 0.0,
 ) -> tuple[torch.Tensor, torch.Tensor, torch.Tensor, list[str]]:
     xs, ys, avs, keys = [], [], [], []
+    hardneg_targets = hardneg_targets or {}
+    hardneg_cases = [case for case in cases if hardneg_targets.get(case.case_id)]
     for _ in range(batch_size):
         focus_classes = (4, 5)
         effective_oversample = oversample_foreground
-        if lesion_mode == "scar_lge_fallback_boost":
+        forced_center = None
+        if hardneg_cases and rng.random() < hardneg_sample_prob:
+            case = hardneg_cases[int(rng.integers(0, len(hardneg_cases)))]
+            target = hardneg_targets[case.case_id][int(rng.integers(0, len(hardneg_targets[case.case_id])))]
+            forced_center = target.center_zyx
+            focus_classes = (target.class_id,)
+            effective_oversample = 0.0
+        elif lesion_mode == "scar_lge_fallback_boost":
             draw = rng.random()
             if lge_only_scar_cases and draw < 0.40:
                 pool = lge_only_scar_cases
@@ -477,8 +578,17 @@ def batch_from_cases(
             effective_oversample = max(oversample_foreground, 0.90)
         else:
             pool = complete_cases if complete_cases and rng.random() < complete_oversample else cases
-        case = pool[int(rng.integers(0, len(pool)))]
-        x, y, av = sample_patch(case, patch_shape, rng, effective_oversample, modality_dropout, focus_classes=focus_classes)
+        if forced_center is None:
+            case = pool[int(rng.integers(0, len(pool)))]
+        x, y, av = sample_patch(
+            case,
+            patch_shape,
+            rng,
+            effective_oversample,
+            modality_dropout,
+            focus_classes=focus_classes,
+            forced_center_zyx=forced_center,
+        )
         xs.append(x)
         ys.append(y)
         avs.append(av)
@@ -773,7 +883,8 @@ def train_variant(args: argparse.Namespace) -> None:
     out_root = Path(args.out_root)
     if not out_root.is_absolute():
         out_root = REPO_ROOT / out_root
-    variant_dir = out_root / "variants" / args.variant
+    output_variant_name = args.output_variant_name or args.variant
+    variant_dir = out_root / "variants" / output_variant_name
     checkpoint_dir = variant_dir / "checkpoints/fold_0/srr_fold0_config"
     checkpoint_dir.mkdir(parents=True, exist_ok=True)
     patch_shape = parse_shape(args.patch_shape)
@@ -783,6 +894,10 @@ def train_variant(args: argparse.Namespace) -> None:
     retrieval_config = retrieval_config_from_args(args)
     router_temperatures, effective_expert_dropout = variant_router_settings(args)
     rng = np.random.default_rng(args.seed)
+    hardneg_path = Path(args.hardneg_components_csv) if args.hardneg_components_csv else None
+    if hardneg_path is not None and not hardneg_path.is_absolute():
+        hardneg_path = REPO_ROOT / hardneg_path
+    hardneg_targets = load_hard_negative_targets(hardneg_path, args.variant)
     start = time.monotonic()
     best_val = float("inf")
     best_step = 0
@@ -808,6 +923,8 @@ def train_variant(args: argparse.Namespace) -> None:
             args.oversample_foreground,
             modality_dropout=True,
             lesion_mode=args.variant if args.variant in LESION_COMPACT_VARIANTS else "",
+            hardneg_targets=hardneg_targets,
+            hardneg_sample_prob=args.hardneg_sample_prob,
         )
         x = x_cpu.to(device)
         y = y_cpu.to(device)
@@ -825,7 +942,8 @@ def train_variant(args: argparse.Namespace) -> None:
             supervised_fraction = float(av[:, 1].mean().detach().cpu())
             train_rows.append(
                 {
-                    "variant": args.variant,
+                    "variant": output_variant_name,
+                    "base_variant": args.variant,
                     "step": step,
                     "loss": float(loss.detach().cpu()),
                     "anatomy_loss": float(metrics["anatomy"].detach().cpu()),
@@ -842,12 +960,13 @@ def train_variant(args: argparse.Namespace) -> None:
                     "elapsed_seconds": time.monotonic() - start,
                 }
             )
-            record_gate_usage(usage_rows, args.variant, step, keys, outputs)
+            record_gate_usage(usage_rows, output_variant_name, step, keys, outputs)
         if step == 1 or step % args.val_every == 0:
             val_loss = validate_patch_loss(model, val_cases, patch_shape, device, args.seed + step, loss_weights, retrieval_config, args)
             train_rows.append(
                 {
-                    "variant": args.variant,
+                    "variant": output_variant_name,
+                    "base_variant": args.variant,
                     "step": step,
                     "loss": float(loss.detach().cpu()),
                     "val_patch_loss": val_loss,
@@ -883,11 +1002,12 @@ def train_variant(args: argparse.Namespace) -> None:
         best_step = args.max_steps
         best_val = float("nan")
     if not args.skip_export:
-        evaluate_and_export(model, val_cases, variant_dir, args.variant, device)
+        evaluate_and_export(model, val_cases, variant_dir, output_variant_name, device)
     write_csv(variant_dir / "training_log.csv", train_rows)
     write_csv(variant_dir / "retrieval_usage.csv", usage_rows)
     summary = {
-        "variant": args.variant,
+        "variant": output_variant_name,
+        "base_variant": args.variant,
         "fold": args.fold,
         "device": str(device),
         "train_cases": len(train_cases),
@@ -924,6 +1044,11 @@ def train_variant(args: argparse.Namespace) -> None:
             "proposal_margin_weight": float(args.proposal_margin_weight),
             "proposal_uncertainty_weight": float(args.proposal_uncertainty_weight),
             "proposal_margin": float(args.proposal_margin),
+            "proposal_final_mix_weight": float(args.proposal_final_mix_weight),
+            "hardneg_components_csv": str(hardneg_path) if hardneg_path else "",
+            "hardneg_case_count": len(hardneg_targets),
+            "hardneg_component_count": sum(len(v) for v in hardneg_targets.values()),
+            "hardneg_sample_prob": float(args.hardneg_sample_prob),
         },
     }
     (variant_dir / "summary.json").write_text(json.dumps(summary, indent=2, sort_keys=True), encoding="utf-8")
@@ -931,7 +1056,7 @@ def train_variant(args: argparse.Namespace) -> None:
         variant_dir / "summary.md",
         "\n".join(
             [
-                f"# {args.variant} Fold0 Summary",
+                f"# {output_variant_name} Fold0 Summary",
                 "",
                 f"- stop_reason: `{stop_reason}`",
                 f"- budget_status: `{budget_status}`",
@@ -940,6 +1065,7 @@ def train_variant(args: argparse.Namespace) -> None:
                 f"- elapsed_seconds: `{summary['elapsed_seconds']:.1f}`",
                 f"- checkpoint_best: `{best_path}`",
                 f"- predictions: `{summary['prediction_dir']}`",
+                f"- base_variant: `{args.variant}`",
             ]
         )
         + "\n",
@@ -972,6 +1098,14 @@ def main() -> None:
             "proposal_anatomy_distance",
             "proposal_uncertainty_gate",
             "proposal_hard_negative_replay_preflight",
+            "repaired_uncertainty_hardneg",
+            "repaired_posneg_scar_hardneg",
+            "repaired_joint_calibrated_proposal",
+            "repaired_final_checkpoint_route",
+            "srr_v2_multiscale_private_basic",
+            "srr_v2_multiscale_private_proposal",
+            "srr_v2_proposal_uncertainty_hardneg",
+            "srr_v2_light_refine",
         ],
     )
     parser.add_argument("--fold", type=int, default=0)
@@ -984,6 +1118,7 @@ def main() -> None:
     parser.add_argument("--max-runtime-seconds", type=float, default=16200.0)
     parser.add_argument("--min-effective-seconds", type=float, default=0.0)
     parser.add_argument("--out-root", default=str(DEFAULT_OUT_ROOT))
+    parser.add_argument("--output-variant-name", default="")
     parser.add_argument("--lr", type=float, default=1e-3)
     parser.add_argument("--weight-decay", type=float, default=1e-4)
     parser.add_argument("--grad-clip", type=float, default=12.0)
@@ -1011,6 +1146,10 @@ def main() -> None:
     parser.add_argument("--proposal-margin-weight", type=float, default=0.20)
     parser.add_argument("--proposal-uncertainty-weight", type=float, default=0.05)
     parser.add_argument("--proposal-margin", type=float, default=0.25)
+    parser.add_argument("--proposal-final-mix-weight", type=float, default=0.60)
+    parser.add_argument("--hardneg-components-csv", default="")
+    parser.add_argument("--hardneg-sample-prob", type=float, default=0.0)
+    parser.add_argument("--disable-srr-v2-interactions", action="store_true")
     parser.add_argument("--skip-export", action="store_true", help="Preflight only: skip full validation prediction export.")
     args = parser.parse_args()
     train_variant(args)

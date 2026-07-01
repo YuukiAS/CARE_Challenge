@@ -43,6 +43,7 @@ class SRRMyoPSLite(nn.Module):
         expert_dropout: float = 0.0,
         dictionary_mode: str = "standard",
         proposal_mode: str = "none",
+        proposal_final_mix_weight: float = 0.60,
     ) -> None:
         super().__init__()
         if in_channels != 3:
@@ -81,7 +82,7 @@ class SRRMyoPSLite(nn.Module):
         )
         self.heads = AnatomyPathologyHeads(base_channels, prior_strength=prior_strength)
         self.proposal_head = (
-            PathologyProposalHead(base_channels, mode=proposal_mode)
+            PathologyProposalHead(base_channels, mode=proposal_mode, final_mix_weight=proposal_final_mix_weight)
             if proposal_mode != "none"
             else None
         )
@@ -127,9 +128,10 @@ class PathologyProposalHead(nn.Module):
     optional uncertainty gate. It never hard-deletes anatomy-outside voxels.
     """
 
-    def __init__(self, channels: int, mode: str, n_prototypes: int = 4) -> None:
+    def __init__(self, channels: int, mode: str, n_prototypes: int = 4, final_mix_weight: float = 0.60) -> None:
         super().__init__()
         self.mode = mode
+        self.final_mix_weight = float(final_mix_weight)
         self.temperature = 0.20
         self.evidence_weight = 0.55
         self.anatomy_weight = 0.25
@@ -230,8 +232,10 @@ class PathologyProposalHead(nn.Module):
         outputs["local_anatomy_confidence"] = self._local_anatomy_confidence(outputs["union_prior_logits"])
         outputs["proposal_mode"] = self.mode
 
-        outputs["scar_logits"] = 0.40 * original_scar + 0.60 * scar_proposal
-        outputs["edema_logits"] = 0.40 * original_edema + 0.60 * edema_proposal
+        proposal_w = min(max(self.final_mix_weight, 0.0), 1.0)
+        evidence_w = 1.0 - proposal_w
+        outputs["scar_logits"] = evidence_w * original_scar + proposal_w * scar_proposal
+        outputs["edema_logits"] = evidence_w * original_edema + proposal_w * edema_proposal
         outputs["logits"] = torch.cat(
             [outputs["anatomy_logits"], outputs["edema_logits"], outputs["scar_logits"]],
             dim=1,

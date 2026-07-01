@@ -111,7 +111,14 @@ def decide(subgroups: list[dict[str, str]], usage: list[dict[str, str]], variant
 
 def decide_recovery(subgroups: list[dict[str, str]], usage: list[dict[str, str]], variants: list[str]) -> tuple[str, list[str]]:
     reasons: list[str] = []
-    revised = [v for v in variants if v.startswith("srr_") or v.startswith("proposal_") or v.endswith("_dictionary")]
+    revised = [
+        v
+        for v in variants
+        if v.startswith("srr_")
+        or v.startswith("proposal_")
+        or v.startswith("repaired_")
+        or v.endswith("_dictionary")
+    ]
     if not revised:
         return "STOP_PIPELINE_BUG", ["no revised SRR variants found"]
 
@@ -185,7 +192,9 @@ def main() -> None:
         vdir = root / "variants" / variant
         subgroup_rows.extend(read_csv(vdir / "subgroup_metrics.csv"))
         component_rows.extend(read_csv(vdir / "component_hd_by_case.csv"))
-        usage_rows.extend(read_csv(vdir / "retrieval_usage.csv"))
+        usage_path = vdir / "retrieval_usage.csv"
+        if usage_path.is_file():
+            usage_rows.extend(read_csv(usage_path))
         if (vdir / "proposal_metrics.csv").is_file():
             proposal_rows.extend(read_csv(vdir / "proposal_metrics.csv"))
         if (vdir / "prototype_usage.csv").is_file():
