@@ -1,6 +1,6 @@
 # 20260629 Rescue Goal Partition Status
 
-- generated_at: `2026-07-01 12:22:11 EDT`
+- generated_at: `2026-07-01 12:28:41 EDT`
 - routing_priority: `htzhulab > a100-gpu > volta-gpu`
 
 | partition | rank | role | pending | running | other | pending reasons |

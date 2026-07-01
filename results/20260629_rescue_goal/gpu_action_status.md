@@ -1,6 +1,6 @@
 # 20260629 Rescue Goal GPU Action Status
 
-- generated_at: `2026-07-01 12:22:11 EDT`
+- generated_at: `2026-07-01 12:28:41 EDT`
 - open_actions: `3`
 - recheck_policy: `2h interval, max 12 checks before partition/work audit`
 
