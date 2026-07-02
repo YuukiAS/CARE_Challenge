@@ -1503,3 +1503,42 @@
     and the targeted jobs are already running on the preferred partition.
   - Keep `final_status.md` absent until these open actions either produce
     formal metrics/selections or satisfy the strict blocked audit.
+
+## Continuation Snapshot 2026-07-02 04:54 EDT
+
+- Completed the first two-hour wait-policy recheck for both pending targeted
+  extra arrays.
+- Current Slurm/accounting status:
+  - `57334792_0` and `57334792_1` (`SRRv2Tgt`) remain `RUNNING` on preferred
+    `htzhulab`, node `g180702`, elapsed about `03:07`.
+  - `57354982_[0-1]` (`SRRv2CapT`) remains `PENDING` on `htzhulab`, reason
+    `(Priority)`, projected start `2026-07-02T08:50:00`; next wait-policy
+    recheck after `2026-07-02 06:29:25`.
+  - `57358073_[0-1]` (`SRRv2BalT`) remains `PENDING` on `htzhulab`, reason
+    `(Priority)`, projected start `2026-07-02T23:50:00`; next wait-policy
+    recheck after `2026-07-02 06:51:50`.
+- Partition/routing status:
+  - `htzhulab`, `a100-gpu`, and `volta-gpu` remain `up`.
+  - `a100-gpu` still has hundreds of pending jobs and is not a clearly better
+    fallback than keeping the already-queued `htzhulab` jobs.
+  - `volta-gpu` is also busy and is behind `a100-gpu` in the allowed fallback
+    order.
+  - The goal already has six active or pending GPU array elements, so no new
+    GPU job was submitted.
+- Node health/output status:
+  - `g180702` A100 remains at `100%` GPU utilization with two Python training
+    processes.
+  - Formal output roots still have no `summary.json`, prediction export,
+    subgroup metrics, task-level `metrics_summary.md`, or `selection.md` for
+    `targeted_extras`, `capacity_targeted_extras`, or
+    `balanced_targeted_extras`.
+  - `targeted_extras` checkpoints continue to update, most recently
+    `srr_v2_scar_precision_nointeract` at `2026-07-02 04:37:59`.
+  - `finalize_rescue_srr_route.py` still returns `ready=0/2` for all three
+    extra routes.
+- Decision:
+  - Continue monitoring on preferred `htzhulab`; do not cancel or duplicate the
+    pending arrays on fallback partitions because fallback queues are not
+    clearly better and the parallel GPU limit is already full.
+  - Do not write `final_status.md`, and do not mark the goal complete or
+    blocked.
