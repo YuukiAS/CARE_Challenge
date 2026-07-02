@@ -1622,3 +1622,35 @@
     elements are active/pending.
   - Do not write `final_status.md`, and do not mark the goal complete or
     blocked.
+
+## Continuation Snapshot 2026-07-02 06:45 EDT
+
+- Re-read the active medical-imaging deep-learning skill, repo rules, goal
+  task, required prior selections/audits, Result5 text, and SRR model/runner
+  entrypoints before acting.
+- Current Slurm/accounting status:
+  - `57334792_0` and `57334792_1` (`SRRv2Tgt`) remain `RUNNING` on preferred
+    `htzhulab`, node `g180702`, elapsed about `04:59`.
+  - `57354982_0` (`SRRv2CapT`) remains `RUNNING` on preferred `htzhulab`,
+    node `g1807htzh01`, elapsed about `01:14`.
+  - `57354982_1` (`SRRv2CapT`) remains `RUNNING` on preferred `htzhulab`,
+    node `g180702`, elapsed about `00:58`.
+  - `57358073_[0-1]` (`SRRv2BalT`) remains `PENDING` on `htzhulab`, reason
+    `(Resources)`, projected start `2026-07-02T08:01:52`.
+- Formal output status:
+  - No formal `summary.json`, prediction export, subgroup metrics,
+    `metrics_summary.md`, or `selection.md` exists yet for
+    `targeted_extras`, `capacity_targeted_extras`, or
+    `balanced_targeted_extras`.
+  - `finalize_rescue_srr_route.py` still returns `ready=0/2` for all three
+    extra routes.
+- Refreshed status artifacts:
+  - `report_rescue_goal_status.py`: `rows=25`, `ready=15`.
+  - `report_rescue_gpu_action_status.py`: `rows=14`, `open_actions=3`.
+  - `finalize_rescue_goal.py`: `completion_proven=False`,
+    `cine_status_candidate=CINE_REFERENCE_ONLY`.
+- Decision:
+  - Continue monitoring; do not submit extra GPU work while the goal already
+    has six active or pending array elements.
+  - Do not write `final_status.md`, and do not mark the goal complete or
+    blocked.
