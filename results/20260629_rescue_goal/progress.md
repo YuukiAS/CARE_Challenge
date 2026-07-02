@@ -1459,3 +1459,47 @@
     the two-hour recheck threshold, and fallback partitions are also busy.
   - Do not write `final_status.md`, and do not mark the goal complete or
     blocked.
+
+## Continuation Snapshot 2026-07-02 03:40 EDT
+
+- Re-read the active goal rules, five subtask task files, required prior
+  selections/audits, Result5 text, and SRR model/runner code before acting.
+- Current Slurm/accounting status:
+  - `57334792_0` and `57334792_1` (`SRRv2Tgt`) remain `RUNNING` on preferred
+    `htzhulab`, node `g180702`, elapsed about `01:53`.
+  - `57354982_[0-1]` (`SRRv2CapT`) remains `PENDING` on `htzhulab`, reason
+    `(Priority)`, projected start `2026-07-02T08:50:00`; the first two-hour
+    recheck threshold is still `2026-07-02 04:29:25`.
+  - `57358073_[0-1]` (`SRRv2BalT`) remains `PENDING` on `htzhulab`, reason
+    `(Priority)`, projected start `2026-07-02T23:50:00`; the first two-hour
+    recheck threshold is still `2026-07-02 04:51:50`.
+  - Previous duplicate fallback attempts `57340171_[0-1]` on `a100-gpu` and
+    `57340161_[0-1]` on `volta-gpu` are `CANCELLED`, so they are not hidden
+    active work.
+- Partition status:
+  - `htzhulab`, `a100-gpu`, and `volta-gpu` are all `up`.
+  - `htzhulab` has one A100 80GB node in `mix` and one H100 node in `drain*`;
+    this is not an all-partitions-down condition.
+- Node health check on `g180702`:
+  - `nvidia-smi` reported the A100 at `100%` GPU utilization with about
+    `21627/81920 MiB` used.
+  - `nvidia-smi pmon` reported two Python GPU processes, consistent with both
+    targeted variants actively training.
+- Formal output check:
+  - No formal `summary.json`, prediction export, subgroup metrics,
+    `metrics_summary.md`, or `selection.md` exists yet for
+    `targeted_extras`, `capacity_targeted_extras`, or
+    `balanced_targeted_extras`.
+  - `finalize_rescue_srr_route.py` still returns `ready=0/2` for all three
+    extra routes.
+- Refreshed status artifacts:
+  - `report_rescue_goal_status.py`: `rows=25`, `ready=15`.
+  - `report_rescue_gpu_action_status.py`: `rows=14`, `open_actions=3`.
+- Decision:
+  - Keep the six active/pending array elements on `htzhulab`; do not submit
+    more GPU work while the goal's parallel limit is full.
+  - Do not fallback to `a100-gpu` or `volta-gpu` yet because the pending
+    capacity/balanced jobs have not reached the first two-hour recheck point,
+    and the targeted jobs are already running on the preferred partition.
+  - Keep `final_status.md` absent until these open actions either produce
+    formal metrics/selections or satisfy the strict blocked audit.
