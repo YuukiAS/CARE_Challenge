@@ -3,5 +3,5 @@ htzhulab,1,preferred,7,5,2,0,(PartitionDown):5,PENDING:5; RUNNING:2,"htzhulab|do
 htzhulab|down|11-00:00:00|1|drain|gpu:nvidia_h100_nvl:2(S:1)",
 a100-gpu,2,fallback_after_htzhulab_long_wait,488,472,16,0,(JobHeldUser):219; (PartitionDown):253,PENDING:472; RUNNING:16,"a100-gpu|down|6-00:00:00|7|mix|gpu:nvidia_a100-pcie-40gb:3
 a100-gpu|down|6-00:00:00|1|idle|gpu:nvidia_a100-pcie-40gb:3",
-volta-gpu,3,fallback_after_a100_long_wait,158,125,33,0,(Dependency):3; (PartitionDown):122,PENDING:125; RUNNING:33,"volta-gpu|down|11-00:00:00|15|drng|gpu:tesla_v100-sxm2-16gb:4(S:0),myJob:1
+volta-gpu,3,fallback_after_a100_long_wait,159,126,33,0,(Dependency):3; (PartitionDown):123,PENDING:126; RUNNING:33,"volta-gpu|down|11-00:00:00|15|drng|gpu:tesla_v100-sxm2-16gb:4(S:0),myJob:1
 volta-gpu|down|11-00:00:00|1|mix|gpu:tesla_v100-sxm2-16gb:4(S:0),myJob:1",

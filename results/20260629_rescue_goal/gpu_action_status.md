@@ -1,6 +1,6 @@
 # 20260629 Rescue Goal GPU Action Status
 
-- generated_at: `2026-07-01 23:07:24 EDT`
+- generated_at: `2026-07-01 23:18:36 EDT`
 - open_actions: `3`
 - recheck_policy: `2h interval, max 12 checks before partition/work audit`
 
@@ -15,9 +15,9 @@
 | cascade_signal_seek_revision | cascade_teacher_revision_signal_seek | DONE | 57275246 | htzhulab | COMPLETED |  | not_pending |  | inspect_outputs |
 | srr_v2_light_refine_extras | srr_v2_light_refine_extras | DONE | 57277361 | htzhulab | COMPLETED |  | not_pending |  | inspect_outputs |
 | srr_v2_capacity_extras | srr_v2_capacity_extras | DONE | 57279322 | htzhulab | COMPLETED |  | not_pending |  | inspect_outputs |
-| srr_v2_targeted_extras | srr_v2_targeted_extras | QUEUED_OR_RUNNING | 57334792 | htzhulab | PENDING | 4.82 | continue_monitoring | 2026-07-02 00:17:53 | monitor |
-| srr_v2_targeted_extras_a100 | srr_v2_targeted_extras_a100 | QUEUED_OR_RUNNING | 57340171 | a100-gpu | PENDING | 3.76 | continue_monitoring | 2026-07-01 23:21:46 | monitor |
-| srr_v2_targeted_extras_volta | srr_v2_targeted_extras_volta | QUEUED_OR_RUNNING | 57340161 | volta-gpu | PENDING | 3.78 | continue_monitoring | 2026-07-01 23:20:25 | monitor |
+| srr_v2_targeted_extras | srr_v2_targeted_extras | QUEUED_OR_RUNNING | 57334792 | htzhulab | PENDING | 5.01 | continue_monitoring | 2026-07-02 00:17:53 | monitor |
+| srr_v2_targeted_extras_a100 | srr_v2_targeted_extras_a100 | QUEUED_OR_RUNNING | 57340171 | a100-gpu | PENDING | 3.95 | continue_monitoring | 2026-07-01 23:21:46 | monitor |
+| srr_v2_targeted_extras_volta | srr_v2_targeted_extras_volta | QUEUED_OR_RUNNING | 57340161 | volta-gpu | PENDING | 3.97 | continue_monitoring | 2026-07-01 23:20:25 | monitor |
 
 ## Notes
 
