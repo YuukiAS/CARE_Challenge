@@ -3,6 +3,7 @@
 - Goal task: `prompts/tasks/20260629_rescue_goal.md`
 - Result report: `results/20260629_rescue_goal/result.md`
 - Progress: `results/20260629_rescue_goal/progress.md`
+- Final status: `results/20260629_rescue_goal/final_status.md`
 - Pending status: `results/20260629_rescue_goal/pending_status.md`
 - Route status CSV: `results/20260629_rescue_goal/route_status.csv`
 - GPU action status: `results/20260629_rescue_goal/gpu_action_status.md`
