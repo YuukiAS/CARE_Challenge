@@ -1414,3 +1414,48 @@
   not a partition outage. Do not switch to `a100-gpu` or `volta-gpu` for this
   route unless `htzhulab` develops a long material wait under the goal's wait
   policy and the fallback partitions are clearly better.
+
+## Continuation Snapshot 2026-07-02 03:25 EDT
+
+- Re-read the active task rules and required goal evidence from the
+  `/users/a/e/aereinh/CARE` copy before acting.
+- Refreshed Slurm/accounting state:
+  - `57334792_0` and `57334792_1` (`SRRv2Tgt`) are `RUNNING` on preferred
+    `htzhulab`, node `g180702`, started `2026-07-02T01:46:19`.
+  - `57354982_[0-1]` (`SRRv2CapT`) is `PENDING` on `htzhulab`, reason
+    `(Priority)`, projected start `2026-07-02T08:50:00`; next wait-policy
+    recheck after `2026-07-02 04:29:25`.
+  - `57358073_[0-1]` (`SRRv2BalT`) is `PENDING` on `htzhulab`, reason
+    `(Priority)`, projected start `2026-07-02T23:50:00`; next wait-policy
+    recheck after `2026-07-02 04:51:50`.
+- Partition status:
+  - `htzhulab`, `a100-gpu`, and `volta-gpu` are all visible/up.
+  - `htzhulab` has one H100 node in `drain*`, but the A100 node is active and
+    running the targeted SRR-v2 jobs.
+  - This is not an all-partitions-down condition.
+- Node health check on `g180702`:
+  - `nvidia-smi` reported the A100 at `100%` GPU utilization with about `21GB`
+    used.
+  - `nvidia-smi pmon` showed two Python training processes using the GPU.
+  - Remote `ps` confirmed the processes correspond to
+    `srr_v2_edema_t2_focus` and `srr_v2_scar_precision_nointeract`.
+- Formal output check:
+  - No new formal `summary.json`, prediction export, `subgroup_metrics.csv`,
+    `metrics_summary.md`, or `selection.md` exists yet for
+    `targeted_extras`, `capacity_targeted_extras`, or
+    `balanced_targeted_extras`.
+  - `finalize_rescue_srr_route.py` returned `ready=0/2` for all three routes.
+- Refreshed status/audit artifacts:
+  - `scripts/evaluation/report_rescue_gpu_action_status.py` reported
+    `rows=14`, `open_actions=3`.
+  - `scripts/evaluation/report_rescue_goal_status.py` reported `rows=25`,
+    `ready=15`.
+  - `scripts/evaluation/finalize_rescue_goal.py` reported
+    `completion_proven=False`.
+- Decision:
+  - Do not submit more GPU work because the goal already has six active or
+    queued array elements.
+  - Do not switch away from `htzhulab` yet; the pending jobs have not reached
+    the two-hour recheck threshold, and fallback partitions are also busy.
+  - Do not write `final_status.md`, and do not mark the goal complete or
+    blocked.

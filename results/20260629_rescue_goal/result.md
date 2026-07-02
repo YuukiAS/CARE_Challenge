@@ -4,8 +4,9 @@ Status: active; not final. The required repaired proposal, SRR-v2, cascade
 teacher, and Cine subtask routes are complete. Repaired proposal, required
 SRR-v2, cascade teacher, cascade follow-ups, SRR-v2 light-refine extras, and
 SRR-v2 capacity extras are all not selected. The remaining live work is the
-targeted SRR-v2 extra pair, which is queued on `htzhulab`, `a100-gpu`, and
-`volta-gpu` but has not started because those partitions are down.
+targeted SRR-v2 set: one two-variant targeted array is running on preferred
+`htzhulab`, and two more two-variant targeted/capacity arrays are queued on
+`htzhulab` under the two-hour wait policy.
 
 ## What Was Done
 
@@ -134,19 +135,43 @@ capacity probe was submitted rather than waiting idly:
   below the nnU-Net gate.
 
 Because the above results were still weak, a final targeted SRR-v2 extra pair
-was prepared and queued on all allowed partitions:
+was prepared and run on the preferred partition:
 
 - wrapper: `jobs/src/run_srr_v2_targeted_extra.sh`
 - htzhulab job: `57334792_[0-1]`
-- a100 fallback job: `57340171_[0-1]`
-- volta fallback job: `57340161_[0-1]`
 - variants:
   - `srr_v2_edema_t2_focus`
   - `srr_v2_scar_precision_nointeract`
-- status at latest refresh: all pending with `(PartitionDown)`, `START_TIME=N/A`.
+- status at latest refresh: both array elements are `RUNNING` on `htzhulab`,
+  node `g180702`, started `2026-07-02T01:46:19`.
+- node health check at `2026-07-02 03:21 EDT`: `nvidia-smi` showed the A100
+  at `100%` utilization with two Python training processes and about `21GB`
+  GPU memory in use, so this is active training rather than a scheduler hang.
 - CPU-only two-step preflight passed for both variants under
-  `results/20260629_srr_v2_unet_core/targeted_extras_cpu_preflight/`, but full
-  GPU training/export/evaluation has not started.
+  `results/20260629_srr_v2_unet_core/targeted_extras_cpu_preflight/`.
+- No formal `summary.json`, predictions, `subgroup_metrics.csv`, or route
+  `selection.md` exists yet, so there is no new metric to select or reject.
+
+Because the capacity-extra run produced the best first-party scar signal so far,
+two additional isolated targeted arrays were prepared on `htzhulab` while
+respecting the six-array-element GPU budget:
+
+- wrapper: `jobs/src/run_srr_v2_capacity_targeted_extra.sh`
+- job: `57354982_[0-1]`
+- status: `PENDING` on `htzhulab`, reason `(Priority)`, projected start
+  `2026-07-02T08:50:00`, next wait-policy recheck after
+  `2026-07-02 04:29:25`.
+- variants:
+  - `srr_v2_capacity12_edema_t2_focus`
+  - `srr_v2_capacity12_scar_precision_nointeract`
+- wrapper: `jobs/src/run_srr_v2_balanced_targeted_extra.sh`
+- job: `57358073_[0-1]`
+- status: `PENDING` on `htzhulab`, reason `(Priority)`, projected start
+  `2026-07-02T23:50:00`, next wait-policy recheck after
+  `2026-07-02 04:51:50`.
+- variants:
+  - `srr_v2_capacity12_balanced_lowmix`
+  - `srr_v2_capacity12_scar_precision_interact`
 
 Cine secondary-line tasks are complete:
 
@@ -160,22 +185,27 @@ Cine secondary-line tasks are complete:
 Latest completion audit:
 
 - path: `results/20260629_rescue_goal/completion_audit.md`
-- `completion_proven: True`
-- `final_status.md` remains intentionally absent because the user requested
-  continued targeted improvement attempts after poor results, and those full
-  GPU jobs are still queued.
+- `completion_proven: False`
+- `final_status.md` remains intentionally absent because live targeted SRR-v2
+  work still lacks formal full-GPU metrics.
 
 Latest GPU ledger:
 
 - path: `results/20260629_rescue_goal/gpu_action_status.md`
-- rows: `12`
+- rows: `14`
 - open monitor actions: `3`
-  - `57334792`: targeted SRR-v2 extras on `htzhulab`, pending with
-    `(PartitionDown)`.
-  - `57340171`: targeted SRR-v2 extras on `a100-gpu`, pending with
-    `(PartitionDown)`.
-  - `57340161`: targeted SRR-v2 extras on `volta-gpu`, pending with
-    `(PartitionDown)`.
+  - `57334792`: targeted SRR-v2 extras on `htzhulab`, running.
+  - `57354982`: capacity-targeted SRR-v2 extras on `htzhulab`, pending with
+    `(Priority)`.
+  - `57358073`: balanced targeted SRR-v2 extras on `htzhulab`, pending with
+    `(Priority)`.
+
+Latest partition snapshot:
+
+- `htzhulab`: up; current goal jobs are either running or pending by priority.
+- `a100-gpu`: up; fallback queue remains much deeper than `htzhulab`.
+- `volta-gpu`: up; fallback queue remains deep.
+- Therefore this is not an all-GPU-partitions-down condition.
 
 ## Decision
 
