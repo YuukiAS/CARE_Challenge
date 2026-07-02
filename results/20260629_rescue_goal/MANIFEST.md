@@ -70,6 +70,22 @@
   `results/20260629_srr_v2_unet_core/capacity_targeted_extras/prototype_usage.csv`,
   `results/20260629_srr_v2_unet_core/capacity_targeted_extras/retrieval_usage.md`,
   and `results/20260629_srr_v2_unet_core/capacity_targeted_extras/retrieval_usage.csv`
+- SRR-v2 balanced-targeted extra wrapper:
+  `jobs/src/run_srr_v2_balanced_targeted_extra.sh`
+- SRR-v2 balanced-targeted extra result:
+  `results/20260629_srr_v2_unet_core/balanced_targeted_extras/result.md`
+- SRR-v2 balanced-targeted extra selection:
+  `results/20260629_srr_v2_unet_core/balanced_targeted_extras/selection.md`
+- SRR-v2 balanced-targeted extra metrics summary:
+  `results/20260629_srr_v2_unet_core/balanced_targeted_extras/metrics_summary.md`
+- SRR-v2 balanced-targeted extra subgroup metrics:
+  `results/20260629_srr_v2_unet_core/balanced_targeted_extras/subgroup_metrics.csv`
+- SRR-v2 balanced-targeted extra component/proposal/prototype/retrieval evidence:
+  `results/20260629_srr_v2_unet_core/balanced_targeted_extras/component_hd_by_case.csv`,
+  `results/20260629_srr_v2_unet_core/balanced_targeted_extras/proposal_metrics.csv`,
+  `results/20260629_srr_v2_unet_core/balanced_targeted_extras/prototype_usage.csv`,
+  `results/20260629_srr_v2_unet_core/balanced_targeted_extras/retrieval_usage.md`,
+  and `results/20260629_srr_v2_unet_core/balanced_targeted_extras/retrieval_usage.csv`
 - SRR-v2 wrapper cleanup, 2026-07-01 03:15 EDT: added `OUT_ROOT` and `PREFLIGHT_OUT_ROOT` env overrides so future approved fallback/retry jobs can write isolated outputs instead of racing the queued default-root array.
 - Cascade teacher artifact contract: `results/20260629_cascade_teacher_route/teacher_artifact_contract.md`
 - Cascade manifest: `results/20260629_cascade_teacher_route/MANIFEST.md`

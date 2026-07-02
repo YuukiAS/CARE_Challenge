@@ -1725,3 +1725,39 @@
   - Commit the capacity-targeted evidence without checkpoints or predictions.
   - Continue monitoring balanced-targeted jobs before writing any final goal
     status.
+
+## Continuation Snapshot 2026-07-02 15:00 EDT
+
+- `srr_v2_balanced_targeted_extras` completed both formal variants on
+  preferred `htzhulab` and was aggregated with
+  `scripts/evaluation/finalize_rescue_srr_route.py --route
+  srr_v2_balanced_targeted_extras`.
+- Aggregation outputs:
+  - `results/20260629_srr_v2_unet_core/balanced_targeted_extras/result.md`
+  - `results/20260629_srr_v2_unet_core/balanced_targeted_extras/selection.md`
+  - `results/20260629_srr_v2_unet_core/balanced_targeted_extras/metrics_summary.md`
+  - `results/20260629_srr_v2_unet_core/balanced_targeted_extras/subgroup_metrics.csv`
+- Route status: `STOP_NO_SRR_V2_SIGNAL`, selected variant `none`.
+- Metrics:
+  - `srr_v2_capacity12_balanced_lowmix`: edema GT-positive Dice `0.1572`,
+    scar all-case Dice `0.2408`.
+  - `srr_v2_capacity12_scar_precision_interact`: edema GT-positive Dice
+    `0.2063`, scar all-case Dice `0.2678`.
+  - Both remain below the 80% nnU-Net gates used by the route finalizer
+    (edema GT-positive `0.3155`, scar all-case `0.4481`) and below the earlier
+    capacity-extra scar best (`0.3090`).
+- Interpretation:
+  - Balanced low-mix reduced neither the edema GT-positive gap nor the scar
+    all-case gap enough to change the SRR-v2 decision.
+  - Re-enabling interaction for the scar-precision variant modestly improved
+    the targeted-extra edema GT-positive score, but the improvement remains far
+    below the nnU-Net gate and still carries high surface-distance/remote-FP
+    burden.
+- Current live jobs after this aggregation:
+  - `squeue -j 57358073` returns `Invalid job id specified`, consistent with
+    both balanced array elements having completed and left the active queue.
+- Decision:
+  - Commit balanced-targeted evidence without checkpoints or predictions.
+  - Run the goal-level completion audit/finalizer next; do not write
+    `final_status.md` until the audit proves that all required routes and
+    artifacts are complete.
