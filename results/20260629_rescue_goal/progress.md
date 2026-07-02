@@ -1316,3 +1316,25 @@
 - No `final_status.md` was written because the targeted extra jobs have not
   run yet and the user requested continued improvement attempts after weak
   SRR-v2/cascade/Cine results.
+
+## Targeted Extras CPU Preflight 2026-07-02 00:32 EDT
+
+- Current targeted GPU jobs still have not started:
+  - `57334792_[0-1]` on `htzhulab`: `PENDING`, reason `(PartitionDown)`.
+  - `57340171_[0-1]` on `a100-gpu`: `PENDING`, reason `(PartitionDown)`.
+  - `57340161_[0-1]` on `volta-gpu`: `PENDING`, reason `(PartitionDown)`.
+- To avoid idle waiting while all allowed GPU partitions are unavailable, ran
+  CPU-only two-step preflights for the two queued targeted SRR-v2 variants under
+  `results/20260629_srr_v2_unet_core/targeted_extras_cpu_preflight/`.
+- Preflight results:
+  - `srr_v2_edema_t2_focus`: `budget_status=OK`, `stop_reason=max_steps`,
+    `best_val_patch_loss=2.0601760347684226`, elapsed `27.6` seconds.
+  - `srr_v2_scar_precision_nointeract`: `budget_status=OK`,
+    `stop_reason=max_steps`, `best_val_patch_loss=3.3605021437009177`,
+    elapsed `19.3` seconds.
+- Interpretation: the targeted variants are not blocked by argument wiring,
+  fold0 data loading, mined hard-negative loading, loss computation, or
+  checkpoint writing. This is preflight-only evidence, not route-quality
+  evidence, because export/evaluation was skipped.
+- `final_status.md` remains intentionally absent until either the targeted
+  full GPU runs produce metrics or the strict blocked criteria are met.

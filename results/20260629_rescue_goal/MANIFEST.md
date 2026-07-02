@@ -39,6 +39,7 @@
 - SRR-v2 manifest: `results/20260629_srr_v2_unet_core/MANIFEST.md`
 - SRR-v2 aggregation status: `results/20260629_srr_v2_unet_core/aggregation_status.md`
 - SRR-v2 wrapper: `jobs/src/run_srr_v2_unet_core.sh`
+- SRR-v2 targeted extra CPU preflight: `results/20260629_srr_v2_unet_core/targeted_extras_cpu_preflight/README.md`
 - SRR-v2 wrapper cleanup, 2026-07-01 03:15 EDT: added `OUT_ROOT` and `PREFLIGHT_OUT_ROOT` env overrides so future approved fallback/retry jobs can write isolated outputs instead of racing the queued default-root array.
 - Cascade teacher artifact contract: `results/20260629_cascade_teacher_route/teacher_artifact_contract.md`
 - Cascade manifest: `results/20260629_cascade_teacher_route/MANIFEST.md`

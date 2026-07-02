@@ -8,6 +8,10 @@
   - `results/20260629_srr_v2_unet_core/cpu_preflight/variants/srr_v2_multiscale_private_basic/`
   - `results/20260629_srr_v2_unet_core/cpu_preflight/variants/srr_v2_multiscale_private_proposal/`
   - `results/20260629_srr_v2_unet_core/cpu_preflight/variants/srr_v2_proposal_uncertainty_hardneg/`
+- Targeted extra CPU preflight output:
+  - `results/20260629_srr_v2_unet_core/targeted_extras_cpu_preflight/README.md`
+  - `results/20260629_srr_v2_unet_core/targeted_extras_cpu_preflight/variants/srr_v2_edema_t2_focus/summary.md`
+  - `results/20260629_srr_v2_unet_core/targeted_extras_cpu_preflight/variants/srr_v2_scar_precision_nointeract/summary.md`
 - Variant matrix: `results/20260629_srr_v2_unet_core/variant_matrix.md`
 - Model implementation: `src/care_myocardium/models/srr_v2_unet.py`
 - Runner: `scripts/training/run_srr_myops_fold0.py`
@@ -20,6 +24,10 @@
 - Submitted jobs:
   - `57094446` (`htzhulab`, array `0`): failed during export, recovered from checkpoint.
   - `57095505` (`a100-gpu`, array `1-2`): pending for variants 1-2.
+- Targeted extra GPU jobs:
+  - `57334792` (`htzhulab`, array `0-1`): pending with `(PartitionDown)`.
+  - `57340171` (`a100-gpu`, array `0-1`): pending with `(PartitionDown)`.
+  - `57340161` (`volta-gpu`, array `0-1`): pending with `(PartitionDown)`.
 - Current metrics and diagnostics:
   - `results/20260629_srr_v2_unet_core/metrics_summary.md`
   - `results/20260629_srr_v2_unet_core/subgroup_metrics.csv`
