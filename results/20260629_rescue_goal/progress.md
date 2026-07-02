@@ -1296,3 +1296,23 @@
 - Updated GPU action ledger:
   - `results/20260629_rescue_goal/gpu_action_status.md`: nine rows, three open
     monitor actions (`57272337`, `57277361`, `57279322`).
+
+## Targeted Extras Partition Outage Recheck 2026-07-01 23:07 EDT
+
+- Pushed status/evidence commits through `9080fe4`.
+- Current remaining targeted jobs:
+  - `57334792_[0-1]` on `htzhulab`, pending with `(PartitionDown)`.
+  - `57340171_[0-1]` on `a100-gpu`, pending with `(PartitionDown)`.
+  - `57340161_[0-1]` on `volta-gpu`, pending with `(PartitionDown)`.
+- Current CARE-allowed GPU routing partitions are all unavailable:
+  `htzhulab`, `a100-gpu`, and `volta-gpu` all report `AVAIL=down`.
+- A broader Slurm GPU partition scan also shows the visible GPU partitions
+  `gpu`, `l40-gpu`, `webportal`, and `webportal_gpu` with `AVAIL=down`, so
+  there is no useful alternative GPU partition to submit more CARE jobs to at
+  this checkpoint.
+- Targeted route aggregation was checked for all duplicate output roots:
+  `srr_v2_targeted_extras`, `srr_v2_targeted_extras_a100`, and
+  `srr_v2_targeted_extras_volta` are each `0/2` ready and not finalized.
+- No `final_status.md` was written because the targeted extra jobs have not
+  run yet and the user requested continued improvement attempts after weak
+  SRR-v2/cascade/Cine results.
