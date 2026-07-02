@@ -1,8 +1,11 @@
 # Result 20260629 Rescue Goal
 
-Status: active; not final. Repaired proposal and all cascade follow-ups through
-postprocess sweep are complete but not selected. SRR-v2 remains incomplete, with
-the required fallback variants and extra light-refine probes running.
+Status: active; not final. The required repaired proposal, SRR-v2, cascade
+teacher, and Cine subtask routes are complete. Repaired proposal, required
+SRR-v2, cascade teacher, cascade follow-ups, SRR-v2 light-refine extras, and
+SRR-v2 capacity extras are all not selected. The remaining live work is the
+targeted SRR-v2 extra pair, which is queued on `htzhulab`, `a100-gpu`, and
+`volta-gpu` but has not started because those partitions are down.
 
 ## What Was Done
 
@@ -10,8 +13,9 @@ the required fallback variants and extra light-refine probes running.
   under `/users`.
 - Refreshed remote refs earlier in the run; local `main` and `origin/main`
   were even at that check.
-- Ran the repaired proposal repeat route, SRR-v2 route setup/basic recovery,
-  cascade teacher route, and the two Cine secondary routes.
+- Ran the repaired proposal repeat route, SRR-v2 required route, cascade
+  teacher route, cascade follow-up revisions/sweep, SRR-v2 light-refine/capacity
+  extras, and the two Cine secondary routes.
 - Added evidence-gated goal auditing in
   `scripts/evaluation/finalize_rescue_goal.py` so `final_status.md` is not
   written while required MyoPS evidence is missing.
@@ -30,20 +34,21 @@ Repaired proposal is complete and not selected:
 - best repaired scar all-case Dice: `0.1038`
 - best repaired edema GT-positive Dice: `0.1545`
 
-SRR-v2 is incomplete:
+Required SRR-v2 is complete and not selected:
 
 - basic job `57094446_0` failed during export after `06:37:38`, then was
   recovered from checkpoint after the safe-pooling fix.
-- recovered basic metrics: scar all-case Dice `0.1998`, edema GT-positive Dice
-  `0.1431`.
 - old A100 variants job `57095505_[1-2]` was cancelled after the same variants
   were running on the preferred `htzhulab` partition.
-- isolated htzhulab fallback `57272337_[1-2]` is running for the two missing
+- isolated htzhulab fallback `57272337_[1-2]` completed for the two missing
   variants under
   `results/20260629_srr_v2_unet_core_htzhulab_fallback/`.
-- canonical SRR-v2 final artifacts are still missing:
-  `results/20260629_srr_v2_unet_core/result.md`,
-  `selection.md`, and `metrics_summary.md`.
+- selection: `results/20260629_srr_v2_unet_core/selection.md`
+- status: `STOP_NO_SRR_V2_SIGNAL`
+- best required SRR-v2 scar all-case Dice: `0.2474`, below the 80% nnU-Net
+  gate `0.4481`.
+- best required SRR-v2 edema GT-positive Dice: `0.1855`, below the 80% nnU-Net
+  gate `0.3155`.
 
 Formal cascade teacher route is complete and not selected:
 
@@ -93,17 +98,20 @@ pruning:
   FP regressions remain and Dice movement is still tiny.
 
 After cascade formal, component-guard, signal-seek, and postprocess all failed,
-the free GPU capacity was redirected to SRR-v2:
+the free GPU capacity was redirected to SRR-v2 extras:
 
 - wrapper: `jobs/src/run_srr_v2_light_refine_extra.sh`
 - job: `57277361_[0-1]`
 - partition: `htzhulab`
-- status at latest refresh: running
+- status: completed
 - output root:
   `results/20260629_srr_v2_unet_core/light_refine_extras/`
 - variants:
   - `srr_v2_light_refine_lowmix`
   - `srr_v2_light_refine_hardneg`
+- selection: `STOP_NO_SRR_V2_SIGNAL`; selected variant `none`.
+- best light-refine scar all-case Dice: `0.2431`; best edema GT-positive Dice:
+  `0.1879`.
 
 Because two GPU slots remained available under the goal budget, an additional
 capacity probe was submitted rather than waiting idly:
@@ -111,7 +119,7 @@ capacity probe was submitted rather than waiting idly:
 - wrapper: `jobs/src/run_srr_v2_capacity_extra.sh`
 - job: `57279322_[0-1]`
 - partition: `htzhulab`
-- status at submission refresh: pending, reason `(Resources)`
+- status: completed
 - output root:
   `results/20260629_srr_v2_unet_core/capacity_extras/`
 - variants:
@@ -120,6 +128,25 @@ capacity probe was submitted rather than waiting idly:
 - hypothesis: test whether increasing SRR-v2 U-Net capacity from
   `base_channels=8` to `base_channels=12` improves pathology signal while
   keeping the same fold/evaluator/label contract.
+- selection: `STOP_NO_SRR_V2_SIGNAL`; selected variant `none`.
+- best capacity-extra scar all-case Dice: `0.3090`; best edema GT-positive
+  Dice: `0.1894`. This is the best first-party scar signal so far, but remains
+  below the nnU-Net gate.
+
+Because the above results were still weak, a final targeted SRR-v2 extra pair
+was prepared and queued on all allowed partitions:
+
+- wrapper: `jobs/src/run_srr_v2_targeted_extra.sh`
+- htzhulab job: `57334792_[0-1]`
+- a100 fallback job: `57340171_[0-1]`
+- volta fallback job: `57340161_[0-1]`
+- variants:
+  - `srr_v2_edema_t2_focus`
+  - `srr_v2_scar_precision_nointeract`
+- status at latest refresh: all pending with `(PartitionDown)`, `START_TIME=N/A`.
+- CPU-only two-step preflight passed for both variants under
+  `results/20260629_srr_v2_unet_core/targeted_extras_cpu_preflight/`, but full
+  GPU training/export/evaluation has not started.
 
 Cine secondary-line tasks are complete:
 
@@ -133,29 +160,31 @@ Cine secondary-line tasks are complete:
 Latest completion audit:
 
 - path: `results/20260629_rescue_goal/completion_audit.md`
-- `completion_proven: False`
-- current blockers:
-  - SRR-v2 result/selection/metrics artifacts are missing.
-  - SRR-v2 has only `1/3` canonical formal variants ready.
+- `completion_proven: True`
+- `final_status.md` remains intentionally absent because the user requested
+  continued targeted improvement attempts after poor results, and those full
+  GPU jobs are still queued.
 
 Latest GPU ledger:
 
 - path: `results/20260629_rescue_goal/gpu_action_status.md`
-- rows: `8`
+- rows: `12`
 - open monitor actions: `3`
-  - `57272337`: isolated htzhulab SRR-v2 fallback, running.
-  - `57277361`: SRR-v2 light-refine extras, running.
-  - `57279322`: SRR-v2 capacity extras, pending on htzhulab resources.
+  - `57334792`: targeted SRR-v2 extras on `htzhulab`, pending with
+    `(PartitionDown)`.
+  - `57340171`: targeted SRR-v2 extras on `a100-gpu`, pending with
+    `(PartitionDown)`.
+  - `57340161`: targeted SRR-v2 extras on `volta-gpu`, pending with
+    `(PartitionDown)`.
 
 ## Decision
 
-Do not write `final_status.md` yet. The goal is not complete because SRR-v2
-formal evidence is still incomplete. The cascade formal route also should not
-be treated as a success; it produced only tiny deltas and was explicitly stopped
-by the route finalizer.
+Do not write `final_status.md` yet while the targeted extras are queued and the
+user has asked to continue improvement attempts after weak results. Current
+evidence points to `STOP_NO_ROUTE_BEATS_BASELINE_SIGNAL` if those targeted full
+runs also fail to beat the nnU-Net gate. The strongest first-party route to
+watch is SRR-v2 capacity/targeted tuning: capacity extras produced the best scar
+signal (`0.3090`), while repaired proposal and cascade routes are weaker.
 
-The correct current action is to monitor the running SRR-v2 htzhulab fallback
-and light-refine extras, then aggregate SRR-v2 evidence when outputs land.
-Cascade should not be selected from current evidence. No validation upload,
-upload-ready package, fold expansion, evaluator change, or label mapping change
-has been performed.
+No validation upload, upload-ready package, fold expansion, evaluator change, or
+label mapping change has been performed.

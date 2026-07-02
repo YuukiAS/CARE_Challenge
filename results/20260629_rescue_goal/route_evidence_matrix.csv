@@ -1,7 +1,13 @@
 route,status,formal_ready,best_scar_all_dice,best_scar_all_hd95,best_edema_gtpos_dice,best_edema_gtpos_hd95,reference_gap,current_interpretation,next_action
-repaired_proposal,ROUTE_TO_CASCADE_TEACHER,3/3,0.1038,136.0183,0.1545,128.6386,scar remains near D4 and far below nnU-Net; edema GT+ below previous proposal,completed negative evidence for shallow repaired proposal,do not expand; use as evidence to continue SRR-v2/cascade
-srr_v2,missing,1/3,0.1998,82.7490,0.1431,94.9052,scar signal improves over repaired proposal but remains far below nnU-Net; 2 variants missing,"partial positive scar signal, incomplete route",monitor 57095505_[1-2] or run approved isolated fallback
-cascade_teacher,PENDING_FORMAL_CASCADE,0/3,,,,,formal refiner metrics missing; teacher cache baseline is strong enough to justify route,best next MyoPS route to run once GPU approval/capacity exists,explicitly approve and submit sbatch --array=0-2 jobs/src/run_cascade_oof_refiner.sh
-nnUNet_fold0_reference,reference_only,44 cases,0.5602,,,,edema all-case Dice 0.7798,"hard reference, not a custom route selection","use as benchmark, not validation upload"
-cine_motion_alignment,SELECT_MOTION_DESCRIPTOR_ONLY,complete,,,,,translation delta was approximately zero,"motion descriptor only, no alignment route selected",keep as secondary-line evidence
+repaired_proposal,ROUTE_TO_CASCADE_TEACHER,3/3,0.1038,136.0183,0.1545,128.6386,scar remains near D4 and far below nnU-Net; edema GT+ below previous proposal,completed negative evidence for shallow repaired proposal,do not expand
+srr_v2_required,STOP_NO_SRR_V2_SIGNAL,3/3,0.2474,83.1291,0.1855,106.3624,best required SRR-v2 values below nnU-Net 80pct gates,completed negative evidence for required SRR-v2 route; hardneg improved scar but stayed below nnU-Net gate,do not expand
+cascade_teacher,STOP_NO_CASCADE_SIGNAL,3/3,,,,,formal refiner variants had tiny deltas and failed route selection,completed negative evidence,do not select
+cascade_component_guard,STOP_NO_COMPONENT_GUARD_SIGNAL,2/2,,,,,component guard did not create selectable component or remote-FP improvement,revision failed,do not select
+cascade_signal_seek,STOP_NO_SIGNAL_SEEK_ROUTE,2/2,,,,,wider residual signal-seeking still failed selection,revision failed,do not select
+cascade_postprocess_sweep,STOP_NO_POSTPROCESS_ROUTE,postprocess,,,,,pruning did not fix remote FP and Dice tradeoff,postprocess failed,do not select
+srr_v2_light_refine_extras,STOP_NO_SRR_V2_SIGNAL,2/2,0.2431,76.7039,0.1879,84.7449,still below nnU-Net 80pct gates,completed extra probe,do not expand
+srr_v2_capacity_extras,STOP_NO_SRR_V2_SIGNAL,2/2,0.3090,70.3468,0.1894,108.8751,best first-party scar signal but still below nnU-Net 80pct gate,capacity improved scar but not enough,monitor targeted extras
+srr_v2_targeted_extras,QUEUED_OR_RUNNING,0/2,,,,,full GPU runs pending because allowed partitions are down; CPU preflight passed,remaining live improvement attempt,monitor queued jobs and aggregate if outputs land
+nnUNet_fold0_reference,reference_only,44 cases,0.5602,,,,hard benchmark reference; not a custom route selection,reference only,use as gate
+cine_motion_alignment,SELECT_MOTION_DESCRIPTOR_ONLY,complete,,,,,translation delta was approximately zero,motion descriptor only; no alignment route selected,keep as secondary-line evidence
 cine_motion_pathology,SELECT_REFERENCE_CONTROL_ONLY,complete,,,,,local proxy only; no hosted metric calibration,reference control only,do not block MyoPS
