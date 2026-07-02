@@ -1691,3 +1691,37 @@
 - Decision:
   - Continue monitoring; do not write `final_status.md`, and do not mark the
     goal complete or blocked.
+
+## Continuation Snapshot 2026-07-02 12:26 EDT
+
+- `srr_v2_capacity_targeted_extras` completed both formal variants on
+  preferred `htzhulab` and was aggregated with
+  `scripts/evaluation/finalize_rescue_srr_route.py --route
+  srr_v2_capacity_targeted_extras`.
+- Aggregation outputs:
+  - `results/20260629_srr_v2_unet_core/capacity_targeted_extras/result.md`
+  - `results/20260629_srr_v2_unet_core/capacity_targeted_extras/selection.md`
+  - `results/20260629_srr_v2_unet_core/capacity_targeted_extras/metrics_summary.md`
+  - `results/20260629_srr_v2_unet_core/capacity_targeted_extras/subgroup_metrics.csv`
+- Route status: `STOP_NO_SRR_V2_SIGNAL`, selected variant `none`.
+- Metrics:
+  - `srr_v2_capacity12_edema_t2_focus`: edema GT-positive Dice `0.1835`,
+    scar all-case Dice `0.1972`.
+  - `srr_v2_capacity12_scar_precision_nointeract`: edema GT-positive Dice
+    `0.1939`, scar all-case Dice `0.2643`.
+  - Both remain below the 80% nnU-Net gates used by the route finalizer
+    (edema GT-positive `0.3155`, scar all-case `0.4481`) and below the earlier
+    capacity-extra scar best (`0.3090`).
+- Interpretation:
+  - More channel capacity plus targeted edema/scar weighting did not recover
+    enough signal; the limiting factor is not only shallow capacity.
+  - The scar-precision/no-interaction variant improved over targeted extras
+    but still has high HD95 and remote false-positive burden, so it is not a
+    selected SRR-v2 route.
+- Current live jobs after this aggregation:
+  - `57358073_0` and `57358073_1` (`srr_v2_balanced_targeted_extras`) remain
+    `RUNNING` on `htzhulab`.
+- Decision:
+  - Commit the capacity-targeted evidence without checkpoints or predictions.
+  - Continue monitoring balanced-targeted jobs before writing any final goal
+    status.
