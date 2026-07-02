@@ -31,6 +31,9 @@
 - SRR route aggregation helper update, 2026-07-01 12:00 EDT: added
   `srr_v2_light_refine_extras` route support and verified it reports `0/2`
   ready while the extra jobs are still running.
+- SRR route aggregation helper update, 2026-07-02 02:24 EDT: added
+  `srr_v2_capacity_targeted_extras` route support for the capacity-targeted
+  rescue probe.
 - Repaired proposal contract: `results/20260629_repaired_proposal_repeat/repair_contract.md`
 - Repaired proposal CPU preflight summary: `results/20260629_repaired_proposal_repeat/preflight_summary.md`
 - Repaired proposal manifest: `results/20260629_repaired_proposal_repeat/MANIFEST.md`
@@ -43,6 +46,12 @@
 - SRR-v2 aggregation status: `results/20260629_srr_v2_unet_core/aggregation_status.md`
 - SRR-v2 wrapper: `jobs/src/run_srr_v2_unet_core.sh`
 - SRR-v2 targeted extra CPU preflight: `results/20260629_srr_v2_unet_core/targeted_extras_cpu_preflight/README.md`
+- SRR-v2 capacity-targeted extra wrapper:
+  `jobs/src/run_srr_v2_capacity_targeted_extra.sh`
+- SRR-v2 capacity-targeted extra CPU preflight:
+  `results/20260629_srr_v2_unet_core/capacity_targeted_extras_cpu_preflight/README.md`
+- SRR-v2 capacity-targeted extra aggregation status:
+  `results/20260629_srr_v2_unet_core/capacity_targeted_extras/aggregation_status.md`
 - SRR-v2 wrapper cleanup, 2026-07-01 03:15 EDT: added `OUT_ROOT` and `PREFLIGHT_OUT_ROOT` env overrides so future approved fallback/retry jobs can write isolated outputs instead of racing the queued default-root array.
 - Cascade teacher artifact contract: `results/20260629_cascade_teacher_route/teacher_artifact_contract.md`
 - Cascade manifest: `results/20260629_cascade_teacher_route/MANIFEST.md`
@@ -104,3 +113,10 @@
   `jobs/src/run_srr_v2_capacity_extra.sh`, added `srr_v2_capacity_extras`
   aggregation support, and submitted `57279322_[0-1]` to `htzhulab` for
   `base_channels=12` proposal/hard-negative probes.
+- SRR-v2 capacity-targeted extra note, 2026-07-02 02:24 EDT: added
+  `jobs/src/run_srr_v2_capacity_targeted_extra.sh`, added
+  `srr_v2_capacity_targeted_extras` aggregation support, and completed two
+  CPU-only preflights under
+  `results/20260629_srr_v2_unet_core/capacity_targeted_extras_cpu_preflight/`.
+  Formal `htzhulab` submission was attempted twice but failed both times with
+  Slurm controller connect failure; no formal metrics exist yet.

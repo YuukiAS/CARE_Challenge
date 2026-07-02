@@ -1338,3 +1338,41 @@
   evidence, because export/evaluation was skipped.
 - `final_status.md` remains intentionally absent until either the targeted
   full GPU runs produce metrics or the strict blocked criteria are met.
+
+## SRR-v2 Capacity-Targeted Extra Preflight 2026-07-02 02:24 EDT
+
+- Current formal targeted jobs `57334792_[0-1]` are running on preferred
+  `htzhulab` and have not yet produced formal `summary.json`, predictions, or
+  subgroup metrics.
+- Because the goal permits up to six parallel GPU jobs and only two full
+  targeted jobs are currently running, prepared an additional isolated
+  capacity-targeted SRR-v2 probe instead of waiting idly.
+- Added `jobs/src/run_srr_v2_capacity_targeted_extra.sh`.
+- Added `srr_v2_capacity_targeted_extras` support to
+  `scripts/evaluation/finalize_rescue_srr_route.py`.
+- Hypothesis: the best first-party scar signal so far came from
+  `base_channels=12` (`srr_v2_capacity12_hardneg`, scar all-case Dice
+  `0.3090`), while the currently running targeted variants use
+  `base_channels=8`. The new route tests whether the same targeted edema and
+  scar-precision ideas become stronger when combined with the capacity setting
+  that previously helped scar.
+- CPU preflight outputs were written under
+  `results/20260629_srr_v2_unet_core/capacity_targeted_extras_cpu_preflight/`.
+- Preflight results:
+  - `srr_v2_capacity12_edema_t2_focus`: `budget_status=OK`,
+    `stop_reason=max_steps`, `best_step=2`,
+    `best_val_patch_loss=2.3302699526151023`.
+  - `srr_v2_capacity12_scar_precision_nointeract`: `budget_status=OK`,
+    `stop_reason=max_steps`, `best_step=2`,
+    `best_val_patch_loss=2.902617414792379`.
+- Formal GPU route status:
+  - output root: `results/20260629_srr_v2_unet_core/capacity_targeted_extras/`
+  - aggregation status: `0/2` ready and `finalized=False`
+  - two `sbatch --array=0-1 jobs/src/run_srr_v2_capacity_targeted_extra.sh`
+    attempts failed with `Unable to contact slurm controller (connect failure)`.
+- Interpretation: the new variants are wired correctly and can run through
+  data loading, loss, hard-negative arguments, and checkpoint writing, but they
+  do not yet have formal GPU metrics. This is not a route-quality result.
+  Continue retrying preferred `htzhulab` submission when the Slurm controller is
+  reachable; do not switch to `a100-gpu`/`volta-gpu` solely because the
+  controller was temporarily unreachable.

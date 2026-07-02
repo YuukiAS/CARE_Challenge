@@ -1,0 +1,5 @@
+variant,base_variant,step,loss,anatomy_loss,scar_loss,edema_loss,retrieval_loss,soft_containment_loss,component_compactness_loss,proposal_bce_loss,proposal_margin_loss,proposal_uncertainty_loss,edema_supervised_batch_fraction,batch_cases,elapsed_seconds
+srr_v2_capacity12_edema_t2_focus,srr_v2_multiscale_private_proposal,1,4.736834526062012,1.5315146446228027,0.9260604381561279,0.7570387721061707,3.9248421671800315e-05,0.0,0.0,0.924362063407898,0.2725444734096527,0.0,1.0,Case3009,3.6337691221851856
+srr_v2_capacity12_edema_t2_focus,srr_v2_multiscale_private_proposal,1,4.736834526062012,,,,,,,,,,,,16.967769396025687
+srr_v2_capacity12_edema_t2_focus,srr_v2_multiscale_private_proposal,2,4.321181297302246,1.67788827419281,0.7673195600509644,0.6624947786331177,3.8211088394746184e-05,-0.0,-0.0,0.6421635746955872,0.1015552282333374,-0.0,1.0,Case2019,20.269690596032888
+srr_v2_capacity12_edema_t2_focus,srr_v2_multiscale_private_proposal,2,4.321181297302246,,,,,,,,,,,,33.64265338308178

@@ -58,6 +58,14 @@ ROUTE_CONFIG = {
         ],
         "task": "prompts/tasks/20260629_srr_v2_unet_core.md",
     },
+    "srr_v2_capacity_targeted_extras": {
+        "root": REPO_ROOT / "results/20260629_srr_v2_unet_core/capacity_targeted_extras",
+        "variants": [
+            "srr_v2_capacity12_edema_t2_focus",
+            "srr_v2_capacity12_scar_precision_nointeract",
+        ],
+        "task": "prompts/tasks/20260629_srr_v2_unet_core.md",
+    },
     "srr_v2_targeted_extras_a100": {
         "root": REPO_ROOT / "results/20260629_srr_v2_unet_core/targeted_extras_a100",
         "variants": [
