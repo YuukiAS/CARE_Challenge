@@ -1,6 +1,6 @@
 # 20260629 Rescue Goal GPU Action Status
 
-- generated_at: `2026-07-02 02:52:21 EDT`
+- generated_at: `2026-07-02 03:07:36 EDT`
 - open_actions: `3`
 - recheck_policy: `2h interval, max 12 checks before partition/work audit`
 
@@ -18,8 +18,8 @@
 | srr_v2_targeted_extras | srr_v2_targeted_extras | QUEUED_OR_RUNNING | 57334792 | htzhulab | RUNNING |  | not_pending |  | monitor |
 | srr_v2_targeted_extras_a100 | srr_v2_targeted_extras_a100 | ENDED_WITH_ATTENTION | 57340171 | a100-gpu | CANCELLED |  | not_pending |  | inspect_outputs |
 | srr_v2_targeted_extras_volta | srr_v2_targeted_extras_volta | ENDED_WITH_ATTENTION | 57340161 | volta-gpu | CANCELLED |  | not_pending |  | inspect_outputs |
-| srr_v2_capacity_targeted_extras | srr_v2_capacity_targeted_extras | QUEUED_OR_RUNNING | 57354982 | htzhulab | PENDING | 0.38 | continue_monitoring | 2026-07-02 04:29:25 | monitor |
-| srr_v2_balanced_targeted_extras | srr_v2_balanced_targeted_extras | QUEUED_OR_RUNNING | 57358073 | htzhulab | PENDING | 0.01 | continue_monitoring | 2026-07-02 04:51:50 | monitor |
+| srr_v2_capacity_targeted_extras | srr_v2_capacity_targeted_extras | QUEUED_OR_RUNNING | 57354982 | htzhulab | PENDING | 0.64 | continue_monitoring | 2026-07-02 04:29:25 | monitor |
+| srr_v2_balanced_targeted_extras | srr_v2_balanced_targeted_extras | QUEUED_OR_RUNNING | 57358073 | htzhulab | PENDING | 0.26 | continue_monitoring | 2026-07-02 04:51:50 | monitor |
 
 ## Notes
 

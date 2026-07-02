@@ -218,6 +218,24 @@
   - `logs/RePropF0_repaired_joint_calibrated_proposal_57094448_20260630_194156.log`
 - GPU preflight summaries were created under the task-scoped `preflight/` roots and show `budget_status: OK` with `stop_reason: max_steps`.
 - No formal MyoPS `summary.json`, formal prediction directory, task-level metrics, or selection existed at recheck.
+
+## Continuation Snapshot 2026-07-02 03:07 EDT
+
+- Re-read `AGENTS.md`, `prompts/AGENT_RULES.md`, `prompts/CHATGPT_RULES.md`, `prompts/tasks/20260629_rescue_goal.md`, the goal-required audit/selection files, `Result5.pdf` text, and the SRR model/training entrypoints from the `/users/a/e/aereinh/CARE` copy.
+- Slurm status at recheck:
+  - `57334792_0` and `57334792_1` (`SRRv2Tgt`) were `RUNNING` on `htzhulab` for about `01:21:11`, node `g180702`.
+  - `57354982_[0-1]` (`SRRv2CapT`) remained `PENDING` on `htzhulab`, reason `(Priority)`, projected start `2026-07-02T08:50:00`; next wait-policy recheck after `2026-07-02 04:29:25`.
+  - `57358073_[0-1]` (`SRRv2BalT`) remained `PENDING` on `htzhulab`, reason `(Priority)`, projected start `2026-07-02T23:50:00`; next wait-policy recheck after `2026-07-02 04:51:50`.
+- Partition check:
+  - `htzhulab`, `a100-gpu`, and `volta-gpu` were all visible/up.
+  - Some nodes were `drain`, but this was not an all-partition-down condition.
+  - Queue pressure remained high on fallback partitions (`a100-gpu` had hundreds of pending jobs; `volta-gpu` had about one hundred pending jobs), so the current routing decision remains to monitor the already queued `htzhulab` jobs rather than duplicate variants.
+- Route aggregation was re-run for `srr_v2_targeted_extras`, `srr_v2_capacity_targeted_extras`, and `srr_v2_balanced_targeted_extras`; all three reported `ready=0/2`, because no formal `summary.json`, prediction export, or `subgroup_metrics.csv` exists yet.
+- Targeted formal logs still contain only startup lines, but checkpoint files exist under `targeted_extras/variants/*/checkpoints/`; `sstat` showed CPU/RSS accounting rather than an immediate scheduler failure.
+- Decision:
+  - Do not mark the goal complete or blocked.
+  - Do not submit additional GPU jobs because six array elements are already active or queued, matching the goal `max_parallel_gpu_jobs=6`.
+  - Recheck after the capacity-targeted and balanced-targeted two-hour wait-policy windows or when Slurm state changes; aggregate immediately if formal summaries appear.
 - Re-ran `scripts/evaluation/report_rescue_goal_status.py`; status remained `11` rows total, `2` ready rows because formal outputs are still pending.
 - Decision:
   - Monitor the four running formal jobs; do not submit cascade while the goal GPU budget is still filled by four running plus two pending array elements.
