@@ -23,7 +23,11 @@
 - Status reporter update, 2026-07-02 00:54 EDT: fallback-aware SRR-v2 status
   now searches `results/20260629_srr_v2_unet_core_htzhulab_fallback/` and
   tracks light-refine, capacity, and targeted extra roots.
+- Status reporter update, 2026-07-02 02:29 EDT: added
+  `srr_v2_capacity_targeted_extras` route status rows.
 - GPU action status reporter: `scripts/evaluation/report_rescue_gpu_action_status.py`
+- GPU action status reporter update, 2026-07-02 02:29 EDT: added
+  `57354982` / `srr_v2_capacity_targeted_extras`.
 - Completion finalizer/auditor: `scripts/evaluation/finalize_rescue_goal.py`
 - SRR route aggregation helper: `scripts/evaluation/finalize_rescue_srr_route.py`
 - SRR route aggregation helper update, 2026-07-01 03:17 EDT: added `--root` so future approved fallback/retry outputs can be summarized from isolated result roots without changing canonical defaults.
@@ -120,3 +124,6 @@
   `results/20260629_srr_v2_unet_core/capacity_targeted_extras_cpu_preflight/`.
   Formal `htzhulab` submission was attempted twice but failed both times with
   Slurm controller connect failure; no formal metrics exist yet.
+- SRR-v2 capacity-targeted formal submission note, 2026-07-02 02:29 EDT:
+  submitted `57354982_[0-1]` to `htzhulab`; initial state `PENDING`
+  with `(Resources)`.

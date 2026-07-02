@@ -285,7 +285,7 @@ def audit_gpu_action_ledger() -> list[EvidenceRow]:
     return [
         EvidenceRow(
             requirement="operational: GPU action ledger",
-            status="PASS",
+            status="INCOMPLETE" if open_rows else "PASS",
             evidence=", ".join(rel(path) for path in [csv_path, md_path]),
             detail=f"rows={len(rows)}, open_actions={len(open_rows)}" + (f"; {detail}" if detail else ""),
         )

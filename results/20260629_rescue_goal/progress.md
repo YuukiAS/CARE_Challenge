@@ -1376,3 +1376,23 @@
   Continue retrying preferred `htzhulab` submission when the Slurm controller is
   reachable; do not switch to `a100-gpu`/`volta-gpu` solely because the
   controller was temporarily unreachable.
+
+## SRR-v2 Capacity-Targeted Formal Submission 2026-07-02 02:29 EDT
+
+- Slurm controller became responsive enough for bounded `squeue`/`sbatch`
+  checks after the earlier controller contact failures.
+- Submitted the capacity-targeted formal SRR-v2 array to preferred `htzhulab`:
+  - command: `timeout 90 sbatch --array=0-1 jobs/src/run_srr_v2_capacity_targeted_extra.sh`
+  - job: `57354982_[0-1]`
+  - initial state: `PENDING`
+  - reason: `(Resources)`
+  - output root: `results/20260629_srr_v2_unet_core/capacity_targeted_extras/`
+- Existing targeted formal jobs remain active:
+  - `57334792_0` and `57334792_1` are `RUNNING` on `htzhulab`, started
+    `2026-07-02T01:46:19`.
+- Added the new job/route to status reporters so pending and formal-readiness
+  checks include the capacity-targeted route.
+- Interpretation: this is a normal resource wait on the preferred partition,
+  not a partition outage. Do not switch to `a100-gpu` or `volta-gpu` for this
+  route unless `htzhulab` develops a long material wait under the goal's wait
+  policy and the fallback partitions are clearly better.

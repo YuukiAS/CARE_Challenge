@@ -5,7 +5,7 @@ This is a status snapshot, not a final route selection.
 ## Ready Rows
 
 - ready_to_aggregate rows: `15`
-- missing/pending rows: `6`
+- missing/pending rows: `8`
 
 ## Route Matrix
 
@@ -23,6 +23,8 @@ This is a status snapshot, not a final route selection.
 | srr_v2_capacity_extras | srr_v2_capacity12_hardneg | status: `STOP_NO_SRR_V2_SIGNAL` | True | True | True |
 | srr_v2_targeted_extras | srr_v2_edema_t2_focus |  | False | False | False |
 | srr_v2_targeted_extras | srr_v2_scar_precision_nointeract |  | False | False | False |
+| srr_v2_capacity_targeted_extras | srr_v2_capacity12_edema_t2_focus |  | False | False | False |
+| srr_v2_capacity_targeted_extras | srr_v2_capacity12_scar_precision_nointeract |  | False | False | False |
 | srr_v2_targeted_extras_a100 | srr_v2_edema_t2_focus |  | False | False | False |
 | srr_v2_targeted_extras_a100 | srr_v2_scar_precision_nointeract |  | False | False | False |
 | srr_v2_targeted_extras_volta | srr_v2_edema_t2_focus |  | False | False | False |

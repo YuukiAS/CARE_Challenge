@@ -2,15 +2,15 @@
 
 This audit is evidence-gated. It does not redefine the goal around partial outputs.
 
-- completion_proven: `True`
-- blocking_requirements: `0`
+- completion_proven: `False`
+- blocking_requirements: `1`
 
 | requirement | status | evidence | detail |
 | --- | --- | --- | --- |
 | goal: required non-final artifacts | PASS | `results/20260629_rescue_goal/result.md, results/20260629_rescue_goal/MANIFEST.md, results/20260629_rescue_goal/progress.md, results/20260629_rescue_goal/route_status.csv, results/20260629_rescue_goal/pending_status.md, results/20260629_rescue_goal/gpu_action_status.csv, results/20260629_rescue_goal/gpu_action_status.md, results/20260629_rescue_goal/gpu_partition_status.csv, results/20260629_rescue_goal/gpu_partition_status.md` | all present |
 | goal: final_status.md only after all evidence is complete | PENDING | `results/20260629_rescue_goal/final_status.md` | not written yet |
-| operational: GPU action ledger | PASS | `results/20260629_rescue_goal/gpu_action_status.csv, results/20260629_rescue_goal/gpu_action_status.md` | rows=12, open_actions=3; srr_v2_targeted_extras:QUEUED_OR_RUNNING:monitor:wait=continue_monitoring:pending_hours=6.02:rechecks=3/12:next=2026-07-02 02:17:53; srr_v2_targeted_extras_a100:QUEUED_OR_RUNNING:monitor:wait=continue_monitoring:pending_hours=4.95:rechecks=2/12:next=2026-07-02 01:21:46; srr_v2_targeted_extras_volta:QUEUED_OR_RUNNING:monitor:wait=continue_monitoring:pending_hours=4.98:rechecks=2/12:next=2026-07-02 01:20:25 |
-| operational: GPU partition snapshot | PASS | `results/20260629_rescue_goal/gpu_partition_status.csv, results/20260629_rescue_goal/gpu_partition_status.md` | rows=3; htzhulab:pending=5:running=2:reasons=(PartitionDown):5; a100-gpu:pending=473:running=15:reasons=(JobHeldUser):219; (PartitionDown):254; volta-gpu:pending=125:running=31:reasons=(Dependency):3; (PartitionDown):122 |
+| operational: GPU action ledger | INCOMPLETE | `results/20260629_rescue_goal/gpu_action_status.csv, results/20260629_rescue_goal/gpu_action_status.md` | rows=13, open_actions=2; srr_v2_targeted_extras:QUEUED_OR_RUNNING:monitor:wait=not_pending; srr_v2_capacity_targeted_extras:QUEUED_OR_RUNNING:monitor:wait=continue_monitoring:pending_hours=0.04:rechecks=0/12:next=2026-07-02 04:29:25 |
+| operational: GPU partition snapshot | PASS | `results/20260629_rescue_goal/gpu_partition_status.csv, results/20260629_rescue_goal/gpu_partition_status.md` | rows=3; htzhulab:pending=2:running=6:reasons=(None):1; (Resources):1; a100-gpu:pending=442:running=22:reasons=(AssocGrpGRES):4; (JobHeldUser):219; (Priority):218; (Resources):1; volta-gpu:pending=100:running=56:reasons=(AssocGrpGRES):2; (Dependency):3; (Priority):94; (Resources):1 |
 | operational: cascade formal GPU action | PASS | `jobs/src/run_cascade_oof_refiner.sh` | formal cascade variants ready 3/3; no GPU action required |
 | operational: SRR-v2 isolated fallback readiness | PASS | `jobs/src/run_srr_v2_unet_core.sh, scripts/evaluation/finalize_rescue_srr_route.py` | OUT_ROOT/PREFLIGHT_OUT_ROOT and aggregation --root are available; new duplicate fallback GPU launches still require explicit approval if command review rejects them |
 | repaired_proposal: result/selection/metrics artifacts | PASS | `results/20260629_repaired_proposal_repeat/result.md, results/20260629_repaired_proposal_repeat/selection.md, results/20260629_repaired_proposal_repeat/metrics_summary.md` | selection_status=ROUTE_TO_CASCADE_TEACHER |
@@ -21,3 +21,7 @@ This audit is evidence-gated. It does not redefine the goal around partial outpu
 | cascade_teacher: all formal variants ready | PASS | `3/3 variants ready` | nnunet_anatomy_prior_refiner: ready under results/20260629_cascade_teacher_route/variants/nnunet_anatomy_prior_refiner with 44/44 validation predictions; nnunet_pathology_teacher_srr_refiner: ready under results/20260629_cascade_teacher_route/variants/nnunet_pathology_teacher_srr_refiner with 44/44 validation predictions; coarse_to_fine_srr_roi: ready under results/20260629_cascade_teacher_route/variants/coarse_to_fine_srr_roi with 44/44 validation predictions |
 | cine_motion_alignment: result/selection artifacts | PASS | `results/20260629_cine_motion_alignment/result.md, results/20260629_cine_motion_alignment/selection.md, results/20260629_cine_motion_alignment/metrics_summary.md` | selection_status=SELECT_MOTION_DESCRIPTOR_ONLY |
 | cine_motion_pathology: result/selection artifacts | PASS | `results/20260629_cine_motion_pathology/result.md, results/20260629_cine_motion_pathology/selection.md, results/20260629_cine_motion_pathology/metrics_summary.md` | selection_status=SELECT_REFERENCE_CONTROL_ONLY |
+
+## Conclusion
+
+The rescue goal is not complete. Do not write `final_status.md` until every MyoPS route has formal variant evidence and the final route decision can be justified against the nnU-Net reference.
