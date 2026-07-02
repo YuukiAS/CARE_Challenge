@@ -1,0 +1,5 @@
+variant,base_variant,step,loss,anatomy_loss,scar_loss,edema_loss,retrieval_loss,soft_containment_loss,component_compactness_loss,proposal_bce_loss,proposal_margin_loss,proposal_uncertainty_loss,edema_supervised_batch_fraction,batch_cases,elapsed_seconds
+srr_v2_scar_precision_nointeract,srr_v2_proposal_uncertainty_hardneg,1,3.621398448944092,1.5215815305709839,0.8528056144714355,0.0,0.0038471382576972246,0.0,0.0,0.42333999276161194,0.17940865457057953,1.8165743350982666,0.0,Case1030,24.232124822214246
+srr_v2_scar_precision_nointeract,srr_v2_proposal_uncertainty_hardneg,1,3.621398448944092,,,,,,,,,,,,25.371440453454852
+srr_v2_scar_precision_nointeract,srr_v2_proposal_uncertainty_hardneg,2,3.5053789615631104,1.4561258554458618,0.8457530736923218,-0.0,0.0014115569647401571,-0.0,-0.0,0.37586838006973267,0.22448758780956268,1.6351542472839355,0.0,Case6006,25.547276000492275
+srr_v2_scar_precision_nointeract,srr_v2_proposal_uncertainty_hardneg,2,3.5053789615631104,,,,,,,,,,,,26.487166977487504

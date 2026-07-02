@@ -1,0 +1,61 @@
+{
+  "base_variant": "srr_v2_multiscale_private_proposal",
+  "best_step": 2,
+  "best_val_patch_loss": 2.060576409101486,
+  "budget_status": "OK",
+  "center_c_t2_edema_train_cases": 36,
+  "checkpoint_best": "/users/a/e/aereinh/CARE/results/20260629_srr_v2_unet_core/targeted_extras/preflight/variants/srr_v2_edema_t2_focus/checkpoints/fold_0/srr_fold0_config/checkpoint_best.pt",
+  "checkpoint_final": "/users/a/e/aereinh/CARE/results/20260629_srr_v2_unet_core/targeted_extras/preflight/variants/srr_v2_edema_t2_focus/checkpoints/fold_0/srr_fold0_config/checkpoint_final.pt",
+  "complete_train_cases": 64,
+  "device": "cuda",
+  "dictionary_mode": "standard",
+  "edema_t2_train_cases": 64,
+  "elapsed_seconds": 26.149900468066335,
+  "expert_dropout": 0.0,
+  "export_skipped": true,
+  "fold": 0,
+  "lesion_auxiliary_config": {
+    "compactness_weight": 0.0,
+    "containment_weight": 0.0,
+    "hardneg_case_count": 44,
+    "hardneg_component_count": 5728,
+    "hardneg_components_csv": "/users/a/e/aereinh/CARE/results/20260629_proposal_memory_hardneg/mined_components.csv",
+    "hardneg_sample_prob": 0.05,
+    "proposal_bce_weight": 0.58,
+    "proposal_final_mix_weight": 0.3,
+    "proposal_margin": 0.25,
+    "proposal_margin_weight": 0.18,
+    "proposal_uncertainty_weight": 0.04
+  },
+  "lesion_mode": "none",
+  "lge_only_scar_train_cases": 91,
+  "loss_weights": {
+    "anatomy": 1.0,
+    "edema": 2.3,
+    "prior": 0.1,
+    "retrieval": 1.0,
+    "scar": 1.0
+  },
+  "max_runtime_seconds": 600.0,
+  "max_steps": 2,
+  "min_effective_seconds": 0.0,
+  "out_root": "/users/a/e/aereinh/CARE/results/20260629_srr_v2_unet_core/targeted_extras/preflight",
+  "prediction_dir": "/users/a/e/aereinh/CARE/results/20260629_srr_v2_unet_core/targeted_extras/preflight/variants/srr_v2_edema_t2_focus/predictions/fold_0/checkpoint_best",
+  "proposal_mode": "proposal_uncertainty_gate",
+  "retrieval_config": {
+    "coverage_weight": 0.06,
+    "entropy_floor": 0.55,
+    "entropy_weight": 0.05,
+    "max_weight_penalty": 0.04
+  },
+  "router_temperatures": {
+    "anatomy": 1.5,
+    "edema": 1.55,
+    "scar": 1.25
+  },
+  "scar_train_cases": 169,
+  "stop_reason": "max_steps",
+  "train_cases": 176,
+  "val_cases": 44,
+  "variant": "srr_v2_edema_t2_focus"
+}
