@@ -1654,3 +1654,40 @@
     has six active or pending array elements.
   - Do not write `final_status.md`, and do not mark the goal complete or
     blocked.
+
+## Continuation Snapshot 2026-07-02 09:36 EDT
+
+- Re-read the active medical-imaging deep-learning skill, repo rules, and goal
+  task before acting in this continuation.
+- Current Slurm/accounting status:
+  - `57354982_0` (`SRRv2CapT`) is `RUNNING` on preferred `htzhulab`, node
+    `g1807htzh01`, elapsed about `04:06`.
+  - `57354982_1` (`SRRv2CapT`) is `RUNNING` on preferred `htzhulab`, node
+    `g180702`, elapsed about `03:50`.
+  - `57358073_0` (`SRRv2BalT`) is `RUNNING` on preferred `htzhulab`, node
+    `g180702`, elapsed about `01:34`.
+  - `57358073_1` (`SRRv2BalT`) is `RUNNING` on preferred `htzhulab`, node
+    `g180702`, elapsed about `01:14`.
+- Partition/routing status:
+  - `htzhulab`, `a100-gpu`, and `volta-gpu` are all visible/up.
+  - No job is pending in the current four-element SRR-v2 extra set, and no
+    additional GPU job was submitted because the formal outputs from these
+    non-conflicting probes are the next required evidence.
+- Formal output status:
+  - `srr_v2_capacity_targeted_extras` finalizer reports
+    `ready=0/2 finalized=False`.
+  - `srr_v2_balanced_targeted_extras` finalizer reports
+    `ready=0/2 finalized=False`.
+  - Only preflight `summary.json`/`training_log.csv` files and in-progress
+    `checkpoint_best.pt` files exist; no formal `summary.json`,
+    `subgroup_metrics.csv`, `metrics_summary.md`, or `selection.md` exists
+    yet for either route.
+- Runtime expectation:
+  - Both wrappers use `min-effective-seconds=21600`,
+    `max-runtime-seconds=23400`, and Slurm time `07:30:00`.
+  - The next expected evidence is capacity-targeted export/evaluation after
+    the formal jobs satisfy the six-hour effective runtime, followed by the
+    balanced-targeted route later in the afternoon.
+- Decision:
+  - Continue monitoring; do not write `final_status.md`, and do not mark the
+    goal complete or blocked.
