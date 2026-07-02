@@ -1,13 +1,13 @@
 # 20260629 Rescue Goal Partition Status
 
-- generated_at: `2026-07-01 23:22:57 EDT`
+- generated_at: `2026-07-02 00:19:03 EDT`
 - routing_priority: `htzhulab > a100-gpu > volta-gpu`
 
 | partition | rank | role | pending | running | other | pending reasons |
 | --- | ---: | --- | ---: | ---: | ---: | --- |
 | htzhulab | 1 | preferred | 5 | 2 | 0 | (PartitionDown):5 |
-| a100-gpu | 2 | fallback_after_htzhulab_long_wait | 473 | 16 | 0 | (JobHeldUser):219; (PartitionDown):254 |
-| volta-gpu | 3 | fallback_after_a100_long_wait | 126 | 32 | 1 | (Dependency):3; (PartitionDown):123 |
+| a100-gpu | 2 | fallback_after_htzhulab_long_wait | 473 | 15 | 0 | (JobHeldUser):219; (PartitionDown):254 |
+| volta-gpu | 3 | fallback_after_a100_long_wait | 125 | 31 | 0 | (Dependency):3; (PartitionDown):122 |
 
 ## Notes
 
