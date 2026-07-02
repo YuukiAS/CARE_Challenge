@@ -1,7 +1,6 @@
 partition,priority_rank,policy_role,total_jobs,pending_jobs,running_jobs,other_jobs,pending_reasons,state_counts,sinfo,error
-htzhulab,1,preferred,10,4,6,0,(Dependency):1; (Priority):2; (Resources):1,PENDING:4; RUNNING:6,"htzhulab|up|11-00:00:00|1|mix-|gpu:nvidia_a100-sxm4-80gb:8
-htzhulab|up|11-00:00:00|1|drain|gpu:nvidia_h100_nvl:2(S:1)",
-a100-gpu,2,fallback_after_htzhulab_long_wait,463,441,22,0,(AssocGrpGRES):4; (JobHeldUser):219; (Priority):217; (Resources):1,PENDING:441; RUNNING:22,a100-gpu|up|6-00:00:00|8|mix-|gpu:nvidia_a100-pcie-40gb:3,
-volta-gpu,3,fallback_after_a100_long_wait,147,92,55,0,(AssocGrpGRES):12; (Dependency):2; (Priority):78,PENDING:92; RUNNING:55,"volta-gpu|up|11-00:00:00|12|mix-|gpu:tesla_v100-sxm2-16gb:4(S:0),myJob:1
-volta-gpu|up|11-00:00:00|2|drain*|gpu:tesla_v100-sxm2-16gb:4(S:0),myJob:1
+htzhulab,1,preferred,9,1,8,0,(Resources):1,PENDING:1; RUNNING:8,"htzhulab|up|11-00:00:00|1|mix-|gpu:nvidia_h100_nvl:2(S:1)
+htzhulab|up|11-00:00:00|1|mix-|gpu:nvidia_a100-sxm4-80gb:8",
+a100-gpu,2,fallback_after_htzhulab_long_wait,459,437,22,0,(AssocGrpGRES):3; (JobHeldUser):219; (Priority):214; (Resources):1,PENDING:437; RUNNING:22,a100-gpu|up|6-00:00:00|8|mix-|gpu:nvidia_a100-pcie-40gb:3,
+volta-gpu,3,fallback_after_a100_long_wait,126,64,62,0,(AssocGrpGRES):12; (Dependency):2; (Priority):49; (Resources):1,PENDING:64; RUNNING:62,"volta-gpu|up|11-00:00:00|14|mix-|gpu:tesla_v100-sxm2-16gb:4(S:0),myJob:1
 volta-gpu|up|11-00:00:00|2|mix|gpu:tesla_v100-sxm2-16gb:4(S:0),myJob:1",

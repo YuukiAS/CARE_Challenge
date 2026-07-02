@@ -127,3 +127,10 @@
 - SRR-v2 capacity-targeted formal submission note, 2026-07-02 02:29 EDT:
   submitted `57354982_[0-1]` to `htzhulab`; initial state `PENDING`
   with `(Resources)`.
+- SRR-v2 capacity-targeted preflight/status note, 2026-07-02 06:37 EDT:
+  both capacity-targeted preflights completed under
+  `results/20260629_srr_v2_unet_core/capacity_targeted_extras/preflight/`;
+  formal `57354982_[0-1]` is now `RUNNING`, targeted `57334792_[0-1]` remains
+  `RUNNING`, balanced `57358073_[0-1]` remains `PENDING`, and refreshed GPU
+  action/partition/completion audit artifacts still report
+  `completion_proven=False`.
