@@ -20,6 +20,9 @@
 - GPU partition snapshot update, 2026-07-01 03:57 EDT: added `gpu_partition_status.csv/.md` and a completion-audit row summarizing `htzhulab`, `a100-gpu`, and `volta-gpu` queue states under the fixed routing priority.
 - Mid-run route assessment: `results/20260629_rescue_goal/midrun_route_assessment.md`
 - Status reporter: `scripts/evaluation/report_rescue_goal_status.py`
+- Status reporter update, 2026-07-02 00:54 EDT: fallback-aware SRR-v2 status
+  now searches `results/20260629_srr_v2_unet_core_htzhulab_fallback/` and
+  tracks light-refine, capacity, and targeted extra roots.
 - GPU action status reporter: `scripts/evaluation/report_rescue_gpu_action_status.py`
 - Completion finalizer/auditor: `scripts/evaluation/finalize_rescue_goal.py`
 - SRR route aggregation helper: `scripts/evaluation/finalize_rescue_srr_route.py`

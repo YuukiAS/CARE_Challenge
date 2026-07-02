@@ -26,10 +26,54 @@ ROUTES = {
     "srr_v2": {
         "task": "prompts/tasks/20260629_srr_v2_unet_core.md",
         "root": REPO_ROOT / "results/20260629_srr_v2_unet_core",
+        "source_roots": [
+            REPO_ROOT / "results/20260629_srr_v2_unet_core",
+            REPO_ROOT / "results/20260629_srr_v2_unet_core_htzhulab_fallback",
+        ],
         "variants": [
             "srr_v2_multiscale_private_basic",
             "srr_v2_multiscale_private_proposal",
             "srr_v2_proposal_uncertainty_hardneg",
+        ],
+    },
+    "srr_v2_light_refine_extras": {
+        "task": "prompts/tasks/20260629_srr_v2_unet_core.md",
+        "root": REPO_ROOT / "results/20260629_srr_v2_unet_core/light_refine_extras",
+        "variants": [
+            "srr_v2_light_refine_lowmix",
+            "srr_v2_light_refine_hardneg",
+        ],
+    },
+    "srr_v2_capacity_extras": {
+        "task": "prompts/tasks/20260629_srr_v2_unet_core.md",
+        "root": REPO_ROOT / "results/20260629_srr_v2_unet_core/capacity_extras",
+        "variants": [
+            "srr_v2_capacity12_proposal",
+            "srr_v2_capacity12_hardneg",
+        ],
+    },
+    "srr_v2_targeted_extras": {
+        "task": "prompts/tasks/20260629_srr_v2_unet_core.md",
+        "root": REPO_ROOT / "results/20260629_srr_v2_unet_core/targeted_extras",
+        "variants": [
+            "srr_v2_edema_t2_focus",
+            "srr_v2_scar_precision_nointeract",
+        ],
+    },
+    "srr_v2_targeted_extras_a100": {
+        "task": "prompts/tasks/20260629_srr_v2_unet_core.md",
+        "root": REPO_ROOT / "results/20260629_srr_v2_unet_core/targeted_extras_a100",
+        "variants": [
+            "srr_v2_edema_t2_focus",
+            "srr_v2_scar_precision_nointeract",
+        ],
+    },
+    "srr_v2_targeted_extras_volta": {
+        "task": "prompts/tasks/20260629_srr_v2_unet_core.md",
+        "root": REPO_ROOT / "results/20260629_srr_v2_unet_core/targeted_extras_volta",
+        "variants": [
+            "srr_v2_edema_t2_focus",
+            "srr_v2_scar_precision_nointeract",
         ],
     },
     "cascade_teacher": {
@@ -72,6 +116,26 @@ def load_summary(path: Path) -> dict[str, Any]:
         return {}
 
 
+def variant_artifacts(roots: list[Path], variant: str) -> tuple[Path, dict[str, Any], Path, str]:
+    searched: list[str] = []
+    fallback_vdir = roots[0] / "variants" / variant
+    fallback_summary: dict[str, Any] = {}
+    fallback_pred = fallback_vdir / "predictions/fold_0/checkpoint_best"
+    for root in roots:
+        vdir = root / "variants" / variant
+        summary = load_summary(vdir / "summary.json")
+        pred_dir = Path(summary.get("prediction_dir", vdir / "predictions/fold_0/checkpoint_best")) if summary else vdir / "predictions/fold_0/checkpoint_best"
+        ready = bool(summary and pred_dir.is_dir())
+        searched.append(f"{root.relative_to(REPO_ROOT)}:{'ready' if ready else 'missing'}")
+        if ready:
+            return vdir, summary, pred_dir, "; ".join(searched)
+        if summary and not fallback_summary:
+            fallback_vdir = vdir
+            fallback_summary = summary
+            fallback_pred = pred_dir
+    return fallback_vdir, fallback_summary, fallback_pred, "; ".join(searched)
+
+
 def route_rows() -> list[dict[str, Any]]:
     rows: list[dict[str, Any]] = []
     for route, cfg in ROUTES.items():
@@ -100,15 +164,16 @@ def route_rows() -> list[dict[str, Any]]:
             )
             continue
         for variant in variants:
-            vdir = root / "variants" / variant
-            summary = load_summary(vdir / "summary.json")
-            pred_dir = Path(summary.get("prediction_dir", vdir / "predictions/fold_0/checkpoint_best"))
+            source_roots = [Path(p) for p in cfg.get("source_roots", [root])]
+            vdir, summary, pred_dir, searched_roots = variant_artifacts(source_roots, variant)
             rows.append(
                 {
                     "route": route,
                     "variant": variant,
                     "task": cfg["task"],
                     "root": str(root),
+                    "source_variant_dir": str(vdir),
+                    "searched_roots": searched_roots,
                     "selection_status": read_status(selection),
                     "result_present": result.is_file(),
                     "metrics_present": metrics.is_file(),
@@ -168,9 +233,10 @@ def write_markdown(path: Path, rows: list[dict[str, Any]]) -> None:
             "## Interpretation",
             "",
             f"- Repaired proposal rows ready: `{repaired_ready}/{len(repaired)}`.",
-            f"- SRR-v2 rows ready: `{srr_ready}/{len(srr_v2)}`.",
+            f"- Required SRR-v2 rows ready: `{srr_ready}/{len(srr_v2)}`.",
             f"- Cascade teacher formal rows ready: `{cascade_ready}/{len(cascade)}`.",
-            "- Cascade teacher artifact coverage is tracked separately in `results/20260629_cascade_teacher_route/metrics_summary.md`; formal cascade refiner rows remain pending until a GPU job is submitted and evaluated.",
+            "- SRR-v2 light-refine and capacity extras are tracked as separate rows because they are post-required-route improvement probes.",
+            "- Targeted extra rows remain pending until full GPU training/export/evaluation writes summaries, predictions, and subgroup metrics under their isolated roots.",
             "- Cine alignment/pathology rows already have selections and are ready as secondary-line evidence.",
         ]
     )
