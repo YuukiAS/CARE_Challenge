@@ -22,6 +22,7 @@ env_CARE_nnUNet_v1/
 # ------------------------------------------------------------------------------
 .cursor/
 .codex/
+.agents/skills/
 .agents/skills-legacy-ai-skills-*/
 
 # Retired auto-research / VibeResearch runtime state. Keep the lightweight
@@ -93,6 +94,7 @@ ENV/
 !.env.example
 .envrc
 .care-codex-env.sh
+env_nnunet.sh
 *.pem
 secrets/
 
