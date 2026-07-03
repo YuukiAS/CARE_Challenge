@@ -58,11 +58,11 @@ The following subtasks may run in parallel if they do not conflict with the curr
    - Add or preflight hard-negative replay, remote FP mining, and pathology-specific prototype memory.
    - It should use completed proposal artifacts when available; before all proposal jobs finish, keep this as preflight/audit only.
 
-4. `prompts/tasks/20260629_true_soft_roi_refine.md`
+4. `prompts/tasks/20260629_soft_roi.md`
    - Implement actual soft-ROI refinement scaffolding and geometry tests.
    - Do not run formal refinement until `SELECT_PROPOSAL_ROUTE`; preflight only is allowed.
 
-5. `prompts/tasks/20260629_result4_srr_core_rebuild.md`
+5. `prompts/tasks/20260629_result4_srr.md`
    - Implement an isolated SRR-v2 route closer to Result4: multi-scale, true modality-private features, sparse retrieval, and SIP-inspired usage by availability pattern.
    - Use preflight first. Formal training only if resources are safe and the orchestrator decides it is needed.
 
@@ -74,9 +74,9 @@ Phase B: Run `20260629_loss_decode_calibration` and `20260629_pathology_checkpoi
 
 Phase C: If decode/loss/checkpoint bugs are confirmed, implement the smallest safe repair and run a short isolated sanity/preflight. Do not reinterpret old Result5 jobs as failed science if the pipeline was broken.
 
-Phase D: Once all proposal jobs are complete, write proposal aggregate and selection. If `SELECT_PROPOSAL_ROUTE`, proceed to true refinement using the existing or updated refine task plus `20260629_true_soft_roi_refine`. If not selected but there is proposal signal, route to `REVISE_PROPOSAL_AND_REPEAT` using the hard-negative memory and calibration repairs.
+Phase D: Once all proposal jobs are complete, write proposal aggregate and selection. If `SELECT_PROPOSAL_ROUTE`, proceed to true refinement using the existing or updated refine task plus `20260629_soft_roi`. If not selected but there is proposal signal, route to `REVISE_PROPOSAL_AND_REPEAT` using the hard-negative memory and calibration repairs.
 
-Phase E: If the current SRR trunk remains near 0.1 after calibration, use `20260629_result4_srr_core_rebuild` to produce a more faithful SRR-v2 implementation. This is a paper-preserving first-party route, not a fallback to nnU-Net.
+Phase E: If the current SRR trunk remains near 0.1 after calibration, use `20260629_result4_srr` to produce a more faithful SRR-v2 implementation. This is a paper-preserving first-party route, not a fallback to nnU-Net.
 
 ## Hard constraints
 

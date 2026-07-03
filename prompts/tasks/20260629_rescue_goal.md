@@ -29,7 +29,7 @@ allow_subtask_execution: true
 
 ## Subtask registry
 
-主线任务：`prompts/tasks/20260629_repaired_proposal_repeat.md`、`prompts/tasks/20260629_srr_v2_unet_core.md`、`prompts/tasks/20260629_cascade_teacher_route.md`。
+主线任务：`prompts/tasks/20260629_repaired_proposal_repeat.md`、`prompts/tasks/20260629_srr_v2.md`、`prompts/tasks/20260629_cascade_teacher_route.md`。
 
 Cine 次线任务：`prompts/tasks/20260629_cine_motion_alignment.md`、`prompts/tasks/20260629_cine_motion_pathology.md`。先执行 motion alignment；若 alignment 选出可用路线或仅选 motion descriptor，则把结果传给 motion pathology。若无法完成 alignment，但 first-party motion descriptor 可用，也不得阻塞 MyoPS。
 
@@ -39,7 +39,7 @@ Cine 次线任务：`prompts/tasks/20260629_cine_motion_alignment.md`、`prompts
 
 Phase 0 是安全与容量审计。记录 branch、HEAD、git status、available disk/quota、GPU队列、已存在的 Result5 outputs、nnU-Net reference artifacts、hard-negative mined components、current SRR code diff。确认新结果不会覆盖 `results/20260626_*`、`results/20260628_*`、`results/20260629_*` 已有审计结果。
 
-Phase 1 同时启动两件事。第一，执行 `20260629_repaired_proposal_repeat`，用修复后的 loss/decode/checkpoint/hardneg replay 重跑 proposal，验证当前弱信号是否被管线问题压低。第二，执行 `20260629_srr_v2_unet_core` 的 architecture/test/preflight，并在通过后尽快启动 formal jobs。两者可以并行，因为一个验证管线修复，一个验证架构容量。
+Phase 1 同时启动两件事。第一，执行 `20260629_repaired_proposal_repeat`，用修复后的 loss/decode/checkpoint/hardneg replay 重跑 proposal，验证当前弱信号是否被管线问题压低。第二，执行 `20260629_srr_v2` 的 architecture/test/preflight，并在通过后尽快启动 formal jobs。两者可以并行，因为一个验证管线修复，一个验证架构容量。
 
 Phase 2 根据 Phase 1 结果决定强备胎。若 repaired proposal 或 SRR-v2 任一出现接近 nnU-Net 或明显高于旧SRR的正信号，继续该路线并记录。若二者仍远低于 nnU-Net，必须执行 `20260629_cascade_teacher_route`，用 nnU-Net/anatomy coarse prior 作为强空间先验，让 SRR承担 pathology-specific refinement，而不是继续让弱SRR单独替代 nnU-Net。
 

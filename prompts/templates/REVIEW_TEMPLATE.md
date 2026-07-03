@@ -1,105 +1,70 @@
-# Review 000 Short Task
+---
+review_key: "YYYYMMDD_short_slug_review"
+task_key: "YYYYMMDD_short_slug"
+project: "CARE_Challenge"
+reviewer: "separate read-only Codex auditor session or ChatGPT reviewer"
+role: "auditor"
+read_only: true
+audited_status: "TRUE_DONE | PARTIAL_MECHANISM_INCOMPLETE | PREFLIGHT_SMOKE_ONLY | NOT_DONE"
+promotion_decision: "GO_FOLD_EXPAND | GO_SUBMISSION_PACKAGE | REVISE | STOP | OPEN_NEXT_TASK | NEEDS_GPT_PLANNER"
+---
 
-audited_status: NEEDS_EVIDENCE
-promotion_decision: BLOCKED
+# CARE Evidence Audit: <task_key>
 
-Allowed `audited_status` values:
+## Read-Only Boundary
+The auditor must not modify code, create missing artifacts, launch training, rerun experiments, package submissions, or upload. If evidence is missing, report it as missing.
 
-- `AUDITED_GO`
-- `NEEDS_EVIDENCE`
-- `NEEDS_REVISION`
-- `NEEDS_HUMAN_APPROVAL`
-- `NEEDS_GPT_PLANNER`
-- `STOP`
-
-Allowed `promotion_decision` values:
-
-- `PROMOTE`
-- `BLOCKED`
-- `HUMAN_APPROVAL_REQUIRED`
-- `RETURN_TO_EXECUTOR`
-- `RETURN_TO_GPT_PLANNER`
-- `STOP`
+## Inputs Reviewed
+- Task file:
+- Result file:
+- MANIFEST:
+- Controller report, if any:
+- Selection file, if any:
+- `metrics_summary` or metric CSV:
+- Key logs:
+- Key code paths:
+- Checkpoint/prediction/export paths:
 
 ## Task Goal
-
-Restate the task goal and promotion gate from the task file.
+Summarize the claimed CARE target metric, mechanism class, and authorized scope.
 
 ## Claimed Completion
-
-Summarize the executor's self-assessed status and claims without accepting them
-yet.
-
-## Audited Status
-
-State the controlled decision enum. Do not write vague decisions such as
-`looks good`, `probably done`, or `mostly fine`.
+List executor/controller claims as `claim.<name>: <description>`.
 
 ## Claim Ledger
-
-| Claim | Auditor judgment | Evidence | Notes |
+| Claim | Decision (`SUPPORTED`, `PARTIAL`, `UNSUPPORTED`, `CONTRADICTED`) | Evidence | Notes |
 | --- | --- | --- | --- |
-| `claim.example` | `SUPPORTED` | `path:line` or command exit status | concise note |
-
-Allowed claim judgments:
-
-- `SUPPORTED`
-- `PARTIAL`
-- `UNSUPPORTED`
-- `CONTRADICTED`
+| claim.example | UNSUPPORTED | evidence not found | Replace with real claim. |
 
 ## Supported Claims
-
-- claim:
-- evidence:
+List claims fully supported by files, metrics, logs, and CARE gate evidence.
 
 ## Partial Claims
-
-- claim:
-- missing evidence:
+List claims with incomplete or proxy evidence.
 
 ## Unsupported Claims
-
-- claim:
-- reason:
+List claims lacking evidence.
 
 ## Contradicted Claims
-
-- claim:
-- contradiction:
+List claims contradicted by task boundaries, metrics, logs, label/export checks, no-T2 semantics, or CARE overlay.
 
 ## Missing Evidence
-
-- evidence needed:
-- why it matters:
+Report missing checkpoint, prediction, metric, log, same-split baseline, subgroup metric, HD95, component count, remote FP, volume ratio, cache isolation, label/export QC, or hosted-metric caveat as `evidence not found` or `未找到证据`.
 
 ## Permission Boundary Check
+State whether the executor stayed within task authorization. Include any unauthorized code change, shell command, commit, push, upload, fold expansion, package build, or training.
 
-- allowed actions respected:
-- forbidden actions touched:
-- network/upload/delete/high-risk actions:
-- human approval required:
+## CARE Gate Check
+Check the Bridge Kit handoff state, the medical-imaging skill mechanism gate, and `prompts/CARE_OVERLAY_GATES.md`. Note any conflict or overlap explicitly.
 
-The auditor must remain read-only. Do not fix code, generate missing artifacts,
-or continue execution unless a new execution task explicitly authorizes it.
+## Audited Status
+Use exactly one: `TRUE_DONE`, `PARTIAL_MECHANISM_INCOMPLETE`, `PREFLIGHT_SMOKE_ONLY`, or `NOT_DONE`.
 
 ## Promotion Decision
+Use exactly one: `GO_FOLD_EXPAND`, `GO_SUBMISSION_PACKAGE`, `REVISE`, `STOP`, `OPEN_NEXT_TASK`, or `NEEDS_GPT_PLANNER`.
 
-- promotion_decision:
-- blocked_promotion_reason:
-- next_allowed_action:
-
-For medium/high risk tasks, no promotion, release, deployment, commit, push, or
-high-cost expansion should happen without supported claims and a passing audit,
-unless the task explicitly waives review.
+## Blocked Promotion Reason
+If promotion is blocked, explain the missing evidence, boundary issue, failed gate, or need for GPT strategic planning.
 
 ## Next Allowed Action
-
-Choose exactly one:
-
-- `STOP`
-- `REQUEST_EVIDENCE`
-- `REQUEST_REVISION`
-- `REQUEST_HUMAN_APPROVAL`
-- `PROMOTE_AND_SYNC_REMOTE`
-- `RETURN_TO_GPT_PLANNER`
+State the next action allowed under the task and CARE overlay. Without `review.md`, `audit.md`, or `controller_report.md`, high-risk/controller work must not proceed to fold expansion, validation packaging, upload, or next-stage training.

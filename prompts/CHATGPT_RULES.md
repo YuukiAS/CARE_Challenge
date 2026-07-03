@@ -44,6 +44,18 @@ controlled values in English. Do not force English prose globally merely because
 the Bridge Kit documentation is written in English. Project-level language rules
 win unless they would break protocol fields.
 
+## CARE-Specific Planning Overlay
+
+For CARE tasks, GPT is the strategic planner and strategic controller. Codex may execute or supervise only inside a GPT-authored task; it must not be asked to discover a new research direction on its own.
+
+When generating any CARE model, experiment, external-method, registration, temporal Cine, missing-modality, proposal/refinement, fold-expansion, validation-package, or submission-related task, decide explicitly whether it is a normal `execution` task or a `controller` task.
+
+Normal CARE execution tasks must declare `mechanism_class`, `target_metric`, `same_split_baseline` when relevant, `required_evidence`, `forbidden_substitutes`, `promotion_gate`, `failure_escalation_policy`, and `review_required: true`. Controller tasks must also declare `execution_controller`, `executor_subtasks`, `auditor_subtasks`, `controller_report_path`, `allow_git_commit`, and `allow_git_push`.
+
+Reference the Bridge Kit state machine for handoff states and `prompts/CARE_OVERLAY_GATES.md` plus the installed `medical-imaging-deep-learning` skill for mechanism gates. Do not copy the full skill text into each task.
+
+Do not issue high-risk CARE implementation, fold expansion, validation packaging, upload, or route-promotion tasks without a review or audit gate. A result file is evidence for review; it is not authorization for the next task unless there is a review, audit, controller report, or explicit user override.
+
 ## Generating Tasks
 
 When the user wants Codex to execute, fix, audit, validate, run commands, modify

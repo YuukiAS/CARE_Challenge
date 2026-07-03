@@ -162,3 +162,15 @@ If the task cannot be completed safely:
 - Use `NEEDS_GPT_PLANNER` when a new direction or strategic judgment is needed.
 - Do not bypass `STOP`, `NEEDS_EVIDENCE`, `NEEDS_REVISION`,
   `NEEDS_HUMAN_APPROVAL`, or `NEEDS_GPT_PLANNER`.
+
+## CARE-Specific Execution Overlay
+
+For CARE tasks, keep the role boundary strict. GPT is the strategic planner and strategic controller. A Codex executor only executes the authorized task, writes `result.md`, updates `MANIFEST.md`, and indexes artifacts. Executor self-assessment is not final completion.
+
+A Codex execution controller may start or generate executor/auditor subtasks only inside a GPT-authored CARE controller task. It must not switch to a new scientific route, bypass the auditor, or commit/push unless the task explicitly allows it with `allow_git_commit: true` and `allow_git_push: true`.
+
+If the current session is the executor, do not also act as auditor. If the task is an audit or review, stay read-only: do not fix code, produce missing artifacts, launch training, or rerun experiments unless a separate execution task explicitly authorizes that work.
+
+High-risk CARE tasks require read-only review/audit before fold expansion, validation packaging, upload, or next-stage training. `STOP_*`, `REVISE_*`, `selected_variant: none`, and `*_WAITING_*` block automatic fold expansion, packaging, upload, and continuation unless the user explicitly overrides the block.
+
+Do not claim `TRUE_DONE` when required CARE evidence is missing. Missing checkpoint, prediction, metric file, run log, same-split baseline, cache isolation, label/export QC, or hosted-metric caveat must be reported as missing evidence rather than inferred completion.

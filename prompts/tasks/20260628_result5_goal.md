@@ -46,8 +46,8 @@ allow_subtask_execution: true
 1. `prompts/tasks/20260629_loss_decode_calibration.md`：最高优先级，审计 ignore-label loss、raw argmax 解码、binary pathology priority decode、original/proposal/mixed logits、threshold sweep，以及 checkpoint_best vs checkpoint_final。
 2. `prompts/tasks/20260629_pathology_checkpoint_selection.md`：用 full-volume scar/edema Dice、HD95、remote FP 和 component burden 审计 checkpoint selection，而不是只用 patch loss。
 3. `prompts/tasks/20260629_proposal_memory_hardneg.md`：补 Result5 当前缺失的 hard-negative replay、remote FP mining、safe negative memory/prototype bank。当前 proposal jobs 未完成前只能做 preflight/audit，不得覆盖 formal outputs。
-4. `prompts/tasks/20260629_true_soft_roi_refine.md`：实现真正 soft-ROI refinement scaffold、ROI geometry test 和 crop-restore sanity；未达到 `SELECT_PROPOSAL_ROUTE` 前不得启动 formal refinement。
-5. `prompts/tasks/20260629_result4_srr_core_rebuild.md`：实现更接近 Result4 的 SRR-v2 preflight，包括 multi-scale、true modality-private features、sparse retrieval 和 SIP-inspired usage regularization；formal run 只有在资源安全且 orchestrator 判定需要时才启动。
+4. `prompts/tasks/20260629_soft_roi.md`：实现真正 soft-ROI refinement scaffold、ROI geometry test 和 crop-restore sanity；未达到 `SELECT_PROPOSAL_ROUTE` 前不得启动 formal refinement。
+5. `prompts/tasks/20260629_result4_srr.md`：实现更接近 Result4 的 SRR-v2 preflight，包括 multi-scale、true modality-private features、sparse retrieval 和 SIP-inspired usage regularization；formal run 只有在资源安全且 orchestrator 判定需要时才启动。
 
 协调规则：默认一个 orchestrator 拥有代码写入权。如果它决定开额外 Codex session/subagent，必须给每个 subagent 分配不重叠文件和输出目录。不要新增 git branch，除非 human explicit approval。不要回退到 nnU-Net 作为方法；nnU-Net 只能作为 reference metric。
 
