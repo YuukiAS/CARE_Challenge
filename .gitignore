@@ -185,8 +185,9 @@ results/metrics/unified/*/fold_*/hd_per_class.json
 results/metrics/unified/*/fold_*/hd95_per_class.json
 
 # Generated handoff/controller run directories are data-derived local evidence
-# packages. Keep them out of normal commits; publish curated summaries only with
-# an explicit forced add after review.
+# packages. Keep them out of normal commits. When GPT needs repository-visible
+# context, publish only the smallest reviewed Markdown decision packet with an
+# explicit forced add; do not unignore whole result trees.
 results/20??????_*/
 
 # Task-scoped experiment directories should keep summaries/manifests tracked but

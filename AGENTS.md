@@ -262,6 +262,24 @@ When a task matches an installed skill, read that skill's `SKILL.md` before acti
 - `results/<task_key>/`：Codex、脚本或实验生成的文件型产物目录；目录名必须与 task 文件名完全一致。
 - `docs/wiki/`：长期研究知识库，不是默认任务入口。
 
+## Result Publication Boundary
+
+Generated `results/20??????_*` handoff/controller run directories are
+data-derived local evidence packages. They are ignored by default and must not be
+published wholesale.
+
+When GPT needs repository-visible context for deciding the next task, publish
+only the smallest reviewed Markdown decision packet. Prefer the controller
+`controller_report.md` and `execution_plan.md`, plus each relevant subtask's
+`result.md` and `review.md`. Do not publish CSV tables, prediction outputs,
+checkpoints, logs, environment dumps, command transcripts, subagent prompts, or
+full result manifests unless the user explicitly approves that narrower
+disclosure after review.
+
+Because the result directories are ignored, any approved decision packet should
+be added with explicit `git add -f <file>` paths. Do not change `.gitignore` to
+unignore an entire generated result tree.
+
 ## Codex 行为规则
 
 - Codex 开始任务前应读取 `prompts/AGENT_RULES.md` 和指定的 `prompts/tasks/<task_key>.md`。
