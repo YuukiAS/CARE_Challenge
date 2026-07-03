@@ -24,7 +24,7 @@ required_secondary_metrics: ["Dice", "HD", "HD95", "component_count", "remote_FP
 required_evidence: ["result.md", "review.md", "MANIFEST.md", "prediction_path", "metric_csv", "postprocess_config", "same_split_baseline", "label_export_QC", "run_log"]
 forbidden_substitutes: ["val-tuned threshold reported as challenge improvement", "hard deletion without full metrics", "compact-label-only gain", "preflight-only completion", "no-T2 samples as edema dense negatives"]
 promotion_gate: "Audited fold0 evidence must show interpretable improvement over same-split nnU-Net on at least one target or secondary metric without unacceptable regression in the other pathology."
-failure_escalation_policy: "If fixed rules fail, escalate within this task to train/OOF component scoring or local refiner input generation. If evidence is missing, stop at NEEDS_EVIDENCE. If a new mechanism is needed, write NEEDS_GPT_PLANNER."
+failure_escalation_policy: "If fixed rules fail, escalate within this task to train/OOF component scoring or route evidence to SRR-ProposeRefine / local refiner input generation. If evidence is missing, stop at NEEDS_EVIDENCE. If a new mechanism is needed, write NEEDS_GPT_PLANNER."
 allowed_next_states: ["EXECUTED_UNAUDITED", "NEEDS_EVIDENCE", "NEEDS_REVISION", "NEEDS_GPT_PLANNER", "STOP"]
 auto_git_commit: false
 auto_git_push: false
@@ -38,7 +38,7 @@ allow_git_push: false
 
 验证一个新的短期假设：当前实用起点仍是 nnU-Net；可增益空间应来自 pathology-specific component/remote-FP control、soft anatomy support、raw-label/export-safe postprocessing，而不是继续 SRR-v2 温度、gate、mix weight、threshold 微调。
 
-本任务是 fast fixed-rule / component-scoring phase，不替代 `20260703_myops_srr_propose_refine` 或 `20260703_myops_anchor_refine`。如果固定规则失败，必须升级到 train/OOF component scoring 或生成给后续 refiner 使用的 local ROI/refiner inputs。不能只写“结果差”后停止。
+本任务是 fast fixed-rule / component-scoring phase，不替代 `20260703_myops_srr_propose_refine` 或 `20260703_myops_anchor_refine`。如果固定规则失败，必须升级到 train/OOF component scoring，或把 component/action evidence 转交给 SRR-ProposeRefine / anchor-refine 的 local ROI/refiner inputs。不能只写“结果差”后停止。
 
 ## Dependencies
 
