@@ -26,8 +26,10 @@ forbidden_substitutes: ["STOP_NO_SIGNAL from undertrained run", "using step1 che
 route_promotion_gate: "Only after experiment adequacy passes, same-split comparison exists, no leakage is found, and auditor supports promotion."
 route_negative_gate: "STOP_NO_* is allowed only after experiment adequacy passes and failure cannot be explained by undertraining, checkpoint selection, decode, label/export, cache, or pipeline bug."
 experiment_adequacy_gate: "Must pass one-batch/tiny-overfit, minimum optimizer-step/time evidence, post-warmup validation/checkpoint evidence, foreground/decode sanity, proposal PR sanity, and clean logs/provenance."
-diagnostic_publication_gate: "Even without route promotion, reviewed diagnostic code and small reports may be committed/pushed as diagnostic-only if the controller records published files and blocked actions."
 scientific_completion_gate: "Controller operational completion is not scientific completion. Scientific status must be promoted, stop-supported, undertrained, pipeline-bug, needs-evidence, needs-revision, or unresolved."
+diagnostic_publication_gate: "Even without route promotion, reviewed diagnostic code and small reports may be committed/pushed as diagnostic-only if the controller records published files and blocked actions."
+diagnostic_publication_scope: ["controller_report.md", "execution_plan.md", "subtask result.md", "subtask review.md", "small reviewed Markdown decision packets", "reviewed first-party source code/scripts required to reproduce the diagnostic conclusion"]
+blocked_after_diagnostic_publication: ["validation packaging", "validation upload", "fold expansion", "hosted metric claims", "label/evaluator/fold split changes", "unauthorized next-stage training"]
 executor_subtasks: ["prompts/tasks/20260703_srr_failure_audit.md", "prompts/tasks/20260703_srr_propref_repair.md", "prompts/tasks/20260703_nnunet_oof_component.md", "prompts/tasks/20260703_anchor_refine_learned.md"]
 auditor_subtasks: ["results/20260703_srr_recovery_goal/subagents/auditor_prompt.md"]
 controller_report_path: "results/20260703_srr_recovery_goal/controller_report.md"
@@ -58,6 +60,8 @@ The controller and all subtasks must read the handoff protocol, CARE overlay, me
 - `prompts/HANDOFF_ROLES.md`
 - `prompts/HANDOFF_STATE_MACHINE.md`
 - `prompts/CONTROLLER_TASK_PROTOCOL.md`
+- `prompts/DIAGNOSTIC_PUBLICATION_GATE.md`
+- `prompts/EXPERIMENT_ADEQUACY_GATE.md`
 - `prompts/CARE_OVERLAY_GATES.md`
 - `.agents/skills/domains-medical-imaging-medical-imaging-deep-learning/SKILL.md`
 - `prompts/tasks/20260703_hardmode_goal.md`
@@ -78,7 +82,7 @@ The controller and all subtasks must read the handoff protocol, CARE overlay, me
 
 1. Start with `20260703_srr_failure_audit`. It must classify the prior Phase 2B result using the new experiment adequacy standard. It should identify checkpoint, validation cadence, max-step, train-loop, proposal precision/recall, decode, and provenance failures.
 2. Launch `20260703_srr_propref_repair` only after the failure audit returns an audited adequacy diagnosis. This task repairs the PropRef runner/model/aggregator and reruns an adequate fold0 test. It must not emit `STOP_NO_PROPREF_SIGNAL` unless experiment adequacy passes.
-3. Launch `20260703_nnunet_oof_component` to turn the bounded fixed-rule FP/component signal into train/OOF component-scoring evidence without fold0 validation GT leakage.
+3. Launch `20260703_nnunet_oof_component` after the failure audit review, and in parallel with PropRef repair only if it does not block the primary SRR repair. Its job is to turn the bounded fixed-rule FP/component signal into train/OOF component-scoring evidence without leakage.
 4. Launch `20260703_anchor_refine_learned` only if the OOF component scorer or PropRef repair produces usable inputs. If learned training/cache evidence is missing, this task must write `NEEDS_EVIDENCE`, not deterministic postprocess `STOP`.
 5. Each executor writes `results/<task_key>/result.md` and `MANIFEST.md`, then stops at `EXECUTED_UNAUDITED`.
 6. Each auditor writes `results/<task_key>/review.md`. Auditors must evaluate both artifact presence and experiment adequacy; artifact presence alone cannot support route-negative conclusions.
@@ -113,7 +117,14 @@ experiment_adequacy_decision: PASS | FAIL | PARTIAL | EVIDENCE_NOT_FOUND
 route_promotion_decision: PROMOTE | NO_PROMOTION | NOT_EVALUABLE
 route_negative_decision: STOP_SUPPORTED | STOP_NOT_SUPPORTED | NOT_EVALUABLE
 scientific_resolution_status: SCIENTIFIC_PROMOTED | SCIENTIFIC_STOP_SUPPORTED | SCIENTIFIC_UNRESOLVED | SCIENTIFIC_UNDERTRAINED | SCIENTIFIC_PIPELINE_BUG | SCIENTIFIC_NEEDS_EVIDENCE | SCIENTIFIC_NEEDS_REVISION
-diagnostic_publication_decision: PUBLISH_REVIEWED_DIAGNOSTIC_PACKET | DO_NOT_PUBLISH
-blocked_actions: [validation_upload, validation_packaging, fold_expansion, hosted_metric_claim, unauthorized_training]
+diagnostic_publication_decision: PUBLISH_REVIEWED_DIAGNOSTIC_PACKET | DO_NOT_PUBLISH | NOT_APPLICABLE
+git_commit_decision: COMMIT_ROUTE_PROMOTION | COMMIT_DIAGNOSTIC_ONLY | SKIP_COMMIT
+git_push_decision: PUSH_ROUTE_PROMOTION | PUSH_DIAGNOSTIC_ONLY | SKIP_PUSH
+published_files:
+  - path
+blocked_actions:
+  - validation upload/fold expansion/next-stage training remain blocked
 next_required_action: ...
+reason_if_not_published: ...
+reason_if_no_route_promotion: ...
 ```
