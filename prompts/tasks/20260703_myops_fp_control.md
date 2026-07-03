@@ -38,7 +38,7 @@ allow_git_push: false
 
 验证一个新的短期假设：当前实用起点仍是 nnU-Net；可增益空间应来自 pathology-specific component/remote-FP control、soft anatomy support、raw-label/export-safe postprocessing，而不是继续 SRR-v2 温度、gate、mix weight、threshold 微调。
 
-本任务优先使用现有 same-split nnU-Net 和已完成 first-party predictions。先做固定规则和可审计 postprocessor；如果简单规则失败，必须升级到 train/OOF component scoring 或生成给 `20260703_myops_anchor_refine` 使用的 local ROI/refiner inputs。不能只写“结果差”后停止。
+本任务是 fast fixed-rule / component-scoring phase，不替代 `20260703_myops_srr_propose_refine` 或 `20260703_myops_anchor_refine`。如果固定规则失败，必须升级到 train/OOF component scoring 或生成给后续 refiner 使用的 local ROI/refiner inputs。不能只写“结果差”后停止。
 
 ## Dependencies
 
