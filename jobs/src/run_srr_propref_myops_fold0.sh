@@ -31,7 +31,7 @@ VARIANTS=(
 
 TASK_ID="${SLURM_ARRAY_TASK_ID:-0}"
 VARIANT="${VARIANTS[$TASK_ID]}"
-OUT_ROOT="${CARE_ROOT}/results/20260703_myops_srr_propose_refine"
+OUT_ROOT="${CARE_ROOT}/results/20260703_srr_propref_repair"
 CONFIG_DIR="${OUT_ROOT}/variants/${VARIANT}/configs"
 mkdir -p "${CONFIG_DIR}"
 
@@ -42,9 +42,15 @@ job_id=${SLURM_JOB_ID:-local}
 array_task_id=${TASK_ID}
 max_runtime_seconds=25200
 max_steps=${MAX_STEPS:-1800}
+min_effective_optimizer_steps=1500
+min_effective_train_loop_seconds=1800
 patch_shape=${PATCH_SHAPE:-12,96,96}
 batch_size=${BATCH_SIZE:-2}
 base_channels=${BASE_CHANNELS:-10}
+val_every=${VAL_EVERY:-300}
+proposal_thresholds=${PROPOSAL_THRESHOLDS:-0.05,0.10,0.20,0.30,0.40,0.50,0.60,0.70,0.80,0.90}
+scar_decode_threshold=${SCAR_DECODE_THRESHOLD:-0.50}
+edema_decode_threshold=${EDEMA_DECODE_THRESHOLD:-0.50}
 log_file=${LOG_FILE}
 EOF
 
@@ -57,5 +63,9 @@ python scripts/training/run_srr_propref_myops_fold0.py \
   --batch-size "${BATCH_SIZE:-2}" \
   --max-steps "${MAX_STEPS:-1800}" \
   --max-runtime-seconds 25200 \
+  --val-every "${VAL_EVERY:-300}" \
+  --proposal-thresholds "${PROPOSAL_THRESHOLDS:-0.05,0.10,0.20,0.30,0.40,0.50,0.60,0.70,0.80,0.90}" \
+  --scar-decode-threshold "${SCAR_DECODE_THRESHOLD:-0.50}" \
+  --edema-decode-threshold "${EDEMA_DECODE_THRESHOLD:-0.50}" \
   --out-root "${OUT_ROOT}" \
   --hardneg-components-csv results/20260629_proposal_memory_hardneg/mined_components.csv

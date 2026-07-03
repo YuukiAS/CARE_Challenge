@@ -1,0 +1,4 @@
+case_id,gt_coverage,metric_name,not_run_reason,outside_myocardium_roi_ratio,source_path,variant
+evidence not found,evidence not found,evidence not found,variant evidence not found,evidence not found,/users/a/e/aereinh/CARE/results/20260703_srr_propref_repair/variants/srr_propref_shared_dual_dict,srr_propref_shared_dual_dict
+evidence not found,evidence not found,evidence not found,variant evidence not found,evidence not found,/users/a/e/aereinh/CARE/results/20260703_srr_propref_repair/variants/srr_propref_scar_precision,srr_propref_scar_precision
+evidence not found,evidence not found,evidence not found,variant evidence not found,evidence not found,/users/a/e/aereinh/CARE/results/20260703_srr_propref_repair/variants/srr_propref_no_proto_cascade,srr_propref_no_proto_cascade
