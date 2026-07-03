@@ -1,0 +1,176 @@
+{
+  "actual_optimizer_steps": 1800,
+  "best_step": 1800,
+  "best_val_patch_loss": 1.3568663597106934,
+  "checkpoint_best": "/users/a/e/aereinh/CARE/results/20260703_srr_formal_training/variants/srr_propref_shared_dual_dict/checkpoints/fold_0/propref_config/checkpoint_best.pt",
+  "checkpoint_final": "/users/a/e/aereinh/CARE/results/20260703_srr_formal_training/variants/srr_propref_shared_dual_dict/checkpoints/fold_0/propref_config/checkpoint_final.pt",
+  "device": "cuda",
+  "edema_decode_threshold": 0.5,
+  "elapsed_seconds": 138.16752211099083,
+  "eval_cases": 44,
+  "first_train_loss": 3.735300302505493,
+  "fold": 0,
+  "hardneg_case_count": 44,
+  "hardneg_component_count": 5728,
+  "hardneg_components_csv": "/users/a/e/aereinh/CARE/results/20260629_proposal_memory_hardneg/mined_components.csv",
+  "last_train_loss": 1.636760950088501,
+  "loss_decrease": 2.098539352416992,
+  "max_runtime_seconds": 25200.0,
+  "max_steps": 1800,
+  "one_batch_overfit": {
+    "case_id": "Case1037",
+    "elapsed_seconds": 3.124815713003045,
+    "first_loss": 4.332773208618164,
+    "last_loss": 2.9362637996673584,
+    "loss_decrease": 1.3965094089508057,
+    "min_required_loss_decrease": 0.01,
+    "process_seconds": 2.457738718,
+    "prototype_rows": "/users/a/e/aereinh/CARE/results/20260703_srr_formal_training/variants/srr_propref_shared_dual_dict/prototype_update_sanity.csv",
+    "status": "PASS",
+    "steps": 40,
+    "variant": "srr_propref_shared_dual_dict"
+  },
+  "optimizer_steps": 1800,
+  "prediction_dirs": [
+    "/users/a/e/aereinh/CARE/results/20260703_srr_formal_training/variants/srr_propref_shared_dual_dict/predictions/fold_0/checkpoint_best/argmax",
+    "/users/a/e/aereinh/CARE/results/20260703_srr_formal_training/variants/srr_propref_shared_dual_dict/predictions/fold_0/checkpoint_best/pathology_aware",
+    "/users/a/e/aereinh/CARE/results/20260703_srr_formal_training/variants/srr_propref_shared_dual_dict/predictions/fold_0/checkpoint_final/argmax",
+    "/users/a/e/aereinh/CARE/results/20260703_srr_formal_training/variants/srr_propref_shared_dual_dict/predictions/fold_0/checkpoint_final/pathology_aware"
+  ],
+  "process_wall_seconds": 137.516704345,
+  "proposal_thresholds": [
+    0.05,
+    0.1,
+    0.2,
+    0.3,
+    0.4,
+    0.5,
+    0.6,
+    0.7,
+    0.8,
+    0.9
+  ],
+  "scar_decode_threshold": 0.5,
+  "skip_export": false,
+  "stage_step_counts": {
+    "evidence_warmup": 361,
+    "low_lr_calibration": 179,
+    "proposal_dictionary": 720,
+    "soft_roi_refinement": 540
+  },
+  "stop_reason": "max_steps",
+  "three_stage_schedule": [
+    "evidence_warmup",
+    "proposal_dictionary",
+    "soft_roi_refinement",
+    "low_lr_calibration"
+  ],
+  "train_cases": 176,
+  "train_loop_seconds": 138.16752211099083,
+  "val_cases": 44,
+  "validation_event_count": 9,
+  "validation_events": [
+    {
+      "checkpoint_path": "/users/a/e/aereinh/CARE/results/20260703_srr_formal_training/variants/srr_propref_shared_dual_dict/checkpoints/fold_0/propref_config/checkpoint_validation_step_300.pt",
+      "elapsed_seconds": 21.043121502996655,
+      "eligible_for_best": false,
+      "event": "validation",
+      "stage": "evidence_warmup",
+      "step": 300,
+      "val_patch_loss": 2.092493939399719,
+      "variant": "srr_propref_shared_dual_dict"
+    },
+    {
+      "checkpoint_path": "/users/a/e/aereinh/CARE/results/20260703_srr_formal_training/variants/srr_propref_shared_dual_dict/checkpoints/fold_0/propref_config/checkpoint_validation_step_360.pt",
+      "elapsed_seconds": 25.394807639997452,
+      "eligible_for_best": true,
+      "event": "validation",
+      "stage": "evidence_warmup",
+      "step": 360,
+      "val_patch_loss": 2.1048988819122316,
+      "variant": "srr_propref_shared_dual_dict"
+    },
+    {
+      "checkpoint_path": "/users/a/e/aereinh/CARE/results/20260703_srr_formal_training/variants/srr_propref_shared_dual_dict/checkpoints/fold_0/propref_config/checkpoint_validation_step_600.pt",
+      "elapsed_seconds": 43.65319917099259,
+      "eligible_for_best": true,
+      "event": "validation",
+      "stage": "proposal_dictionary",
+      "step": 600,
+      "val_patch_loss": 1.7246049165725708,
+      "variant": "srr_propref_shared_dual_dict"
+    },
+    {
+      "checkpoint_path": "/users/a/e/aereinh/CARE/results/20260703_srr_formal_training/variants/srr_propref_shared_dual_dict/checkpoints/fold_0/propref_config/checkpoint_validation_step_900.pt",
+      "elapsed_seconds": 66.44552298399503,
+      "eligible_for_best": true,
+      "event": "validation",
+      "stage": "proposal_dictionary",
+      "step": 900,
+      "val_patch_loss": 1.6382542729377747,
+      "variant": "srr_propref_shared_dual_dict"
+    },
+    {
+      "checkpoint_path": "/users/a/e/aereinh/CARE/results/20260703_srr_formal_training/variants/srr_propref_shared_dual_dict/checkpoints/fold_0/propref_config/checkpoint_validation_step_1080.pt",
+      "elapsed_seconds": 80.3176489819889,
+      "eligible_for_best": true,
+      "event": "validation",
+      "stage": "proposal_dictionary",
+      "step": 1080,
+      "val_patch_loss": 1.5625720500946045,
+      "variant": "srr_propref_shared_dual_dict"
+    },
+    {
+      "checkpoint_path": "/users/a/e/aereinh/CARE/results/20260703_srr_formal_training/variants/srr_propref_shared_dual_dict/checkpoints/fold_0/propref_config/checkpoint_validation_step_1200.pt",
+      "elapsed_seconds": 90.14643936499488,
+      "eligible_for_best": true,
+      "event": "validation",
+      "stage": "soft_roi_refinement",
+      "step": 1200,
+      "val_patch_loss": 1.4741867423057555,
+      "variant": "srr_propref_shared_dual_dict"
+    },
+    {
+      "checkpoint_path": "/users/a/e/aereinh/CARE/results/20260703_srr_formal_training/variants/srr_propref_shared_dual_dict/checkpoints/fold_0/propref_config/checkpoint_validation_step_1500.pt",
+      "elapsed_seconds": 114.03949925299094,
+      "eligible_for_best": true,
+      "event": "validation",
+      "stage": "soft_roi_refinement",
+      "step": 1500,
+      "val_patch_loss": 1.3820432662963866,
+      "variant": "srr_propref_shared_dual_dict"
+    },
+    {
+      "checkpoint_path": "/users/a/e/aereinh/CARE/results/20260703_srr_formal_training/variants/srr_propref_shared_dual_dict/checkpoints/fold_0/propref_config/checkpoint_validation_step_1620.pt",
+      "elapsed_seconds": 123.69777922799403,
+      "eligible_for_best": true,
+      "event": "validation",
+      "stage": "soft_roi_refinement",
+      "step": 1620,
+      "val_patch_loss": 1.4092694640159606,
+      "variant": "srr_propref_shared_dual_dict"
+    },
+    {
+      "checkpoint_path": "/users/a/e/aereinh/CARE/results/20260703_srr_formal_training/variants/srr_propref_shared_dual_dict/checkpoints/fold_0/propref_config/checkpoint_validation_step_1800.pt",
+      "elapsed_seconds": 138.1080794199952,
+      "eligible_for_best": true,
+      "event": "validation",
+      "stage": "low_lr_calibration",
+      "step": 1800,
+      "val_patch_loss": 1.3568663597106934,
+      "variant": "srr_propref_shared_dual_dict"
+    }
+  ],
+  "validation_schedule": [
+    300,
+    360,
+    600,
+    900,
+    1080,
+    1200,
+    1500,
+    1620,
+    1800
+  ],
+  "variant": "srr_propref_shared_dual_dict"
+}

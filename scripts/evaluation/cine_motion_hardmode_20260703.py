@@ -28,6 +28,8 @@ DEFAULT_ADAPTER_METRICS = Path("results/cinema_adapter/20260619_131229__cinema_a
 DEFAULT_OUTPUT_DIR = Path("results/20260703_cine_motion")
 DEFAULT_CINEMA_REPO = Path("results/cinema_adapter/external/CineMA")
 DEFAULT_CINEMA_RUN_INFO = Path("results/cinema_adapter/20260619_131229__cinema_acdc_seed0_ed_mid_repr/run_info.json")
+DEFAULT_TASK_KEY = "20260703_cine_motion"
+DEFAULT_CONTROLLER_TASK_KEY = "20260703_hardmode_goal"
 
 CLASS_NAMES = {
     1: "class_1_myocardium",
@@ -443,6 +445,13 @@ def safe_rel_path(path: str | Path) -> str:
     return str(path).replace("/overflow/htzhu/CARE/", "").replace("/users/a/e/aereinh/CARE/", "")
 
 
+def sanitize_case_rows(rows: list[dict[str, str]]) -> list[dict[str, Any]]:
+    return [
+        {key: safe_rel_path(value) if key.endswith("_path") else value for key, value in row.items()}
+        for row in rows
+    ]
+
+
 def git_head() -> str:
     try:
         return subprocess.check_output(["git", "rev-parse", "--short", "HEAD"], text=True).strip()
@@ -488,8 +497,20 @@ def write_reports(
         and desc_delta > 0.002
         and desc_lv_delta > -0.02
     )
-    route_decision = "TEMPORAL_PROXY_SIGNAL_DIAGNOSTIC" if positive else "STOP_NO_TEMPORAL_PROXY_GAIN"
+    route_decision = "TEMPORAL_PROXY_SIGNAL_DIAGNOSTIC" if positive else "STOP_CINE_NO_TEMPORAL_SIGNAL"
     next_state = "EXECUTED_UNAUDITED"
+    experiment_adequacy_decision = (
+        "PARTIAL"
+        if len(safe_rows) == 59
+        and len(mismatch_rows) == 5
+        and ref_myo is not None
+        and (flow_delta is not None or desc_delta is not None)
+        else "EVIDENCE_NOT_FOUND"
+    )
+    route_promotion_decision = "NO_PROMOTION"
+    route_negative_decision = "STOP_NOT_SUPPORTED"
+    scientific_resolution_status = "SCIENTIFIC_UNRESOLVED"
+    result_title = " ".join(part.capitalize() for part in args.task_key.split("_")[1:])
 
     ref_weight = finite_mean([r["reference_weight"] for r in descriptor_rows])
     ref_dom_rate = finite_mean([1.0 if r["reference_dominance"] else 0.0 for r in descriptor_rows])
@@ -545,6 +566,43 @@ def write_reports(
                 "- `cine_deformable_or_feature_warp`: completed as first-party dense optical-flow/feature-warp proxy with folding/smoothness sanity; not claimed as validated registration.",
                 "- `cine_motion_descriptor_temporal_refiner`: completed as descriptor/temporal aggregation proxy; not claimed as registration.",
                 "- `cine_anatomy_prior_temporal_adapter`: local CineMA artifacts exist and are audited in `anatomy_prior_adapter_audit.md`; no new adapter run or external download was performed.",
+            ]
+        ),
+    )
+
+    observed_pred_labels = sorted(
+        {
+            int(r["class_id"])
+            for r in case_rows
+            if int(r["pred_voxels"]) > 0
+        }
+    )
+    observed_gt_labels = sorted(
+        {
+            int(r["class_id"])
+            for r in case_rows
+            if int(r["gt_voxels"]) > 0
+        }
+    )
+    write_text(
+        args.output_dir / "label_export_qc.md",
+        "\n".join(
+            [
+                "# Label Export QC",
+                "",
+                "scope: local diagnostic only",
+                "",
+                "- evaluator: local safe-case proxy from `scripts/evaluation/cine_motion_hardmode_20260703.py`.",
+                "- raw ground-truth labels: `200 -> compact 1 myocardium`, `500 -> compact 2 LV`, `2221 -> compact 3 scar_sanity`.",
+                "- CineMA anatomy-prior prediction remap: `2 -> compact 1 myocardium`, `3 -> compact 2 LV`; no scar/pathology prediction head exists.",
+                f"- observed compact GT labels in scored case metrics: `{observed_gt_labels}`.",
+                f"- observed compact predicted labels with nonzero volume: `{observed_pred_labels}`.",
+                "- validation export: `not performed`.",
+                "- upload-ready package: `not performed`.",
+                "- raw-label submission decode path: `evidence not found` because validation packaging/upload were forbidden.",
+                "- hosted `myocardium_cinemyops`: `evidence not found`.",
+                "",
+                "Conclusion: compact-label local proxy scoring is internally consistent for the safe subset, but this is not challenge-facing raw-label export QC.",
             ]
         ),
     )
@@ -631,6 +689,10 @@ def write_reports(
             "",
             f"route_decision: `{route_decision}`",
             f"self_assessed_status: `{next_state}`",
+            f"experiment_adequacy_decision: `{experiment_adequacy_decision}`",
+            f"route_promotion_decision: `{route_promotion_decision}`",
+            f"route_negative_decision: `{route_negative_decision}`",
+            f"scientific_resolution_status: `{scientific_resolution_status}`",
         ]
     )
     write_text(args.output_dir / "temporal_metrics_summary.md", "\n".join(lines))
@@ -642,6 +704,10 @@ def write_reports(
                 "# Failure Interpretation",
                 "",
                 f"route_decision: `{route_decision}`",
+                f"experiment_adequacy_decision: `{experiment_adequacy_decision}`",
+                f"route_promotion_decision: `{route_promotion_decision}`",
+                f"route_negative_decision: `{route_negative_decision}`",
+                f"scientific_resolution_status: `{scientific_resolution_status}`",
                 "",
                 "Interpretation:",
                 "",
@@ -677,10 +743,14 @@ def write_reports(
     )
 
     result_lines = [
-        "# Result 20260703 Cine Motion",
+        f"# Result {result_title}",
         "",
-        "status: EXECUTED_UNAUDITED",
+        "self_assessed_status: EXECUTED_UNAUDITED",
         f"route_decision: {route_decision}",
+        f"experiment_adequacy_decision: {experiment_adequacy_decision}",
+        f"route_promotion_decision: {route_promotion_decision}",
+        f"route_negative_decision: {route_negative_decision}",
+        f"scientific_resolution_status: {scientific_resolution_status}",
         "domain_evidence_label: PARTIAL_MECHANISM_INCOMPLETE",
         "",
         "## Execution Summary",
@@ -712,14 +782,20 @@ def write_reports(
         "- handoff protocol files under `prompts/`",
         "- `.agents/skills/agent-task-executor/SKILL.md`",
         "- `.agents/skills/domains-medical-imaging-medical-imaging-deep-learning/SKILL.md` and `references/reference.md`",
-        "- `prompts/tasks/20260703_cine_motion.md`",
+        f"- `prompts/tasks/{args.task_key}.md`",
+        "- `prompts/CONTROLLER_TASK_PROTOCOL.md`",
+        "- `prompts/EXPERIMENT_ADEQUACY_GATE.md`",
+        "- `prompts/DIAGNOSTIC_PUBLICATION_GATE.md`",
+        "- `prompts/CARE_OVERLAY_GATES.md`",
+        "- `results/20260703_srr_formal_training/review.md`",
+        "- `results/20260703_cine_motion/result.md` and `review.md`",
         "- prior Cine result files under `results/20260625_cine_geometry/`, `results/20260629_cine_motion_alignment/`, `results/20260629_cine_motion_pathology/`, and `results/cinema_adapter/`",
         "- current controller report and selected MyoPS reviews under `results/20260703_hardmode_goal/` and `results/20260703_myops_*`",
         "",
         "## Files Changed",
         "",
         "- `scripts/evaluation/cine_motion_hardmode_20260703.py`",
-        "- `results/20260703_cine_motion/*`",
+        f"- `{args.output_dir}/*`",
         "",
         "## Commands",
         "",
@@ -731,21 +807,30 @@ def write_reports(
         "- hosted `myocardium_cinemyops`: `evidence not found` because upload/package generation was forbidden.",
         "- learned target pathology head: `evidence not found`; source CineMA prior has no scar head.",
         "- validated registration: `evidence not found`; optical flow is a proxy with warp sanity, and descriptor route is not registration.",
+        "",
+        "## Blocked Actions",
+        "",
+        "- validation packaging/upload remains blocked.",
+        "- fold expansion remains blocked.",
+        "- hosted metric claims remain blocked.",
+        "- label/evaluator/fold split changes remain blocked.",
+        "- next-stage training remains blocked unless a later GPT-authored task explicitly authorizes it.",
     ]
     write_text(args.output_dir / "result.md", "\n".join(result_lines))
 
     manifest_lines = [
         "# MANIFEST",
         "",
-        "- Task: `prompts/tasks/20260703_cine_motion.md`",
-        "- Controller task: `prompts/tasks/20260703_hardmode_goal.md`",
-        "- Result: `results/20260703_cine_motion/result.md`",
-        "- Review placeholder: `results/20260703_cine_motion/review.md` (not written by executor)",
+        f"- Task: `prompts/tasks/{args.task_key}.md`",
+        f"- Controller task: `prompts/tasks/{args.controller_task_key}.md`",
+        f"- Result: `{args.output_dir / 'result.md'}`",
+        f"- Review placeholder: `{args.output_dir / 'review.md'}` (not written by executor)",
         "",
         "## Artifacts",
         "",
         "- `resource_audit.md`: dependencies, resource use, and variant coverage.",
         "- `safe_cases_used.csv`: safe case list with reference/non-reference frame usage.",
+        "- `mismatch_cases_heldout.csv`: held-out mismatch cases requiring header/resample repair before supervised scoring.",
         "- `reference_frame_contract.md`: reference frame and non-reference frame route statement.",
         "- `motion_or_warp_metrics.csv`: per-case/per-class anatomy consistency and frame-to-reference similarity summary.",
         "- `warp_sanity.csv`: dense optical-flow/descriptor runtime, smoothness, folding, and similarity diagnostics.",
@@ -754,8 +839,10 @@ def write_reports(
         "- `summary_metrics.csv`: aggregate case metric table.",
         "- `center_summary_metrics.csv`: per-center subgroup metrics for available safe-case centers.",
         "- `anatomy_prior_adapter_audit.md`: local CineMA license/provenance/adapter sanity.",
+        "- `label_export_qc.md`: compact-label local proxy and non-export caveat.",
         "- `failure_interpretation.md`: route decision, caveats, and missing evidence.",
         "- `command_transcript.md`: command, exit status, environment, and elapsed time.",
+        "- `motion_or_warp_summary.csv`: aggregate motion/warp diagnostic table.",
         f"- Source script: `scripts/evaluation/{Path(__file__).name}`",
     ]
     write_text(args.output_dir / "MANIFEST.md", "\n".join(manifest_lines))
@@ -768,6 +855,8 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--mismatch-cases", type=Path, default=DEFAULT_MISMATCH_CASES)
     parser.add_argument("--adapter-metrics", type=Path, default=DEFAULT_ADAPTER_METRICS)
     parser.add_argument("--output-dir", type=Path, default=DEFAULT_OUTPUT_DIR)
+    parser.add_argument("--task-key", default=DEFAULT_TASK_KEY)
+    parser.add_argument("--controller-task-key", default=DEFAULT_CONTROLLER_TASK_KEY)
     parser.add_argument("--cinema-repo", type=Path, default=DEFAULT_CINEMA_REPO)
     parser.add_argument("--cinema-run-info", type=Path, default=DEFAULT_CINEMA_RUN_INFO)
     parser.add_argument("--max-nonreference-frames", type=int, default=2)
@@ -949,6 +1038,7 @@ def main() -> int:
     center_summary_rows = summarize_case_metrics_by_center(case_rows)
     motion_summary_rows = summarize_motion(motion_rows, warp_rows + descriptor_rows)
     write_csv(safe_used, args.output_dir / "safe_cases_used.csv")
+    write_csv(sanitize_case_rows(mismatch_rows), args.output_dir / "mismatch_cases_heldout.csv")
     write_csv(case_rows, args.output_dir / "case_metrics.csv")
     write_csv(summary_rows, args.output_dir / "summary_metrics.csv")
     write_csv(center_summary_rows, args.output_dir / "center_summary_metrics.csv")

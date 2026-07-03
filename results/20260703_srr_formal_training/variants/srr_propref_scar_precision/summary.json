@@ -1,0 +1,176 @@
+{
+  "actual_optimizer_steps": 1800,
+  "best_step": 1800,
+  "best_val_patch_loss": 1.5820083022117615,
+  "checkpoint_best": "/users/a/e/aereinh/CARE/results/20260703_srr_formal_training/variants/srr_propref_scar_precision/checkpoints/fold_0/propref_config/checkpoint_best.pt",
+  "checkpoint_final": "/users/a/e/aereinh/CARE/results/20260703_srr_formal_training/variants/srr_propref_scar_precision/checkpoints/fold_0/propref_config/checkpoint_final.pt",
+  "device": "cuda",
+  "edema_decode_threshold": 0.5,
+  "elapsed_seconds": 138.57422352800495,
+  "eval_cases": 44,
+  "first_train_loss": 3.910296678543091,
+  "fold": 0,
+  "hardneg_case_count": 44,
+  "hardneg_component_count": 5728,
+  "hardneg_components_csv": "/users/a/e/aereinh/CARE/results/20260629_proposal_memory_hardneg/mined_components.csv",
+  "last_train_loss": 1.8523439168930054,
+  "loss_decrease": 2.0579527616500854,
+  "max_runtime_seconds": 25200.0,
+  "max_steps": 1800,
+  "one_batch_overfit": {
+    "case_id": "Case1037",
+    "elapsed_seconds": 3.1232464669883484,
+    "first_loss": 4.575705051422119,
+    "last_loss": 3.2903923988342285,
+    "loss_decrease": 1.2853126525878906,
+    "min_required_loss_decrease": 0.01,
+    "process_seconds": 2.4624510199999996,
+    "prototype_rows": "/users/a/e/aereinh/CARE/results/20260703_srr_formal_training/variants/srr_propref_scar_precision/prototype_update_sanity.csv",
+    "status": "PASS",
+    "steps": 40,
+    "variant": "srr_propref_scar_precision"
+  },
+  "optimizer_steps": 1800,
+  "prediction_dirs": [
+    "/users/a/e/aereinh/CARE/results/20260703_srr_formal_training/variants/srr_propref_scar_precision/predictions/fold_0/checkpoint_best/argmax",
+    "/users/a/e/aereinh/CARE/results/20260703_srr_formal_training/variants/srr_propref_scar_precision/predictions/fold_0/checkpoint_best/pathology_aware",
+    "/users/a/e/aereinh/CARE/results/20260703_srr_formal_training/variants/srr_propref_scar_precision/predictions/fold_0/checkpoint_final/argmax",
+    "/users/a/e/aereinh/CARE/results/20260703_srr_formal_training/variants/srr_propref_scar_precision/predictions/fold_0/checkpoint_final/pathology_aware"
+  ],
+  "process_wall_seconds": 137.964784168,
+  "proposal_thresholds": [
+    0.05,
+    0.1,
+    0.2,
+    0.3,
+    0.4,
+    0.5,
+    0.6,
+    0.7,
+    0.8,
+    0.9
+  ],
+  "scar_decode_threshold": 0.5,
+  "skip_export": false,
+  "stage_step_counts": {
+    "evidence_warmup": 361,
+    "low_lr_calibration": 179,
+    "proposal_dictionary": 720,
+    "soft_roi_refinement": 540
+  },
+  "stop_reason": "max_steps",
+  "three_stage_schedule": [
+    "evidence_warmup",
+    "proposal_dictionary",
+    "soft_roi_refinement",
+    "low_lr_calibration"
+  ],
+  "train_cases": 176,
+  "train_loop_seconds": 138.57422352800495,
+  "val_cases": 44,
+  "validation_event_count": 9,
+  "validation_events": [
+    {
+      "checkpoint_path": "/users/a/e/aereinh/CARE/results/20260703_srr_formal_training/variants/srr_propref_scar_precision/checkpoints/fold_0/propref_config/checkpoint_validation_step_300.pt",
+      "elapsed_seconds": 21.0714428749925,
+      "eligible_for_best": false,
+      "event": "validation",
+      "stage": "evidence_warmup",
+      "step": 300,
+      "val_patch_loss": 2.3874935507774353,
+      "variant": "srr_propref_scar_precision"
+    },
+    {
+      "checkpoint_path": "/users/a/e/aereinh/CARE/results/20260703_srr_formal_training/variants/srr_propref_scar_precision/checkpoints/fold_0/propref_config/checkpoint_validation_step_360.pt",
+      "elapsed_seconds": 25.417184150006506,
+      "eligible_for_best": true,
+      "event": "validation",
+      "stage": "evidence_warmup",
+      "step": 360,
+      "val_patch_loss": 2.358366322517395,
+      "variant": "srr_propref_scar_precision"
+    },
+    {
+      "checkpoint_path": "/users/a/e/aereinh/CARE/results/20260703_srr_formal_training/variants/srr_propref_scar_precision/checkpoints/fold_0/propref_config/checkpoint_validation_step_600.pt",
+      "elapsed_seconds": 43.717093942992506,
+      "eligible_for_best": true,
+      "event": "validation",
+      "stage": "proposal_dictionary",
+      "step": 600,
+      "val_patch_loss": 2.0532681941986084,
+      "variant": "srr_propref_scar_precision"
+    },
+    {
+      "checkpoint_path": "/users/a/e/aereinh/CARE/results/20260703_srr_formal_training/variants/srr_propref_scar_precision/checkpoints/fold_0/propref_config/checkpoint_validation_step_900.pt",
+      "elapsed_seconds": 66.55387581899413,
+      "eligible_for_best": true,
+      "event": "validation",
+      "stage": "proposal_dictionary",
+      "step": 900,
+      "val_patch_loss": 1.8537062287330628,
+      "variant": "srr_propref_scar_precision"
+    },
+    {
+      "checkpoint_path": "/users/a/e/aereinh/CARE/results/20260703_srr_formal_training/variants/srr_propref_scar_precision/checkpoints/fold_0/propref_config/checkpoint_validation_step_1080.pt",
+      "elapsed_seconds": 80.50597914999526,
+      "eligible_for_best": true,
+      "event": "validation",
+      "stage": "proposal_dictionary",
+      "step": 1080,
+      "val_patch_loss": 1.7926700830459594,
+      "variant": "srr_propref_scar_precision"
+    },
+    {
+      "checkpoint_path": "/users/a/e/aereinh/CARE/results/20260703_srr_formal_training/variants/srr_propref_scar_precision/checkpoints/fold_0/propref_config/checkpoint_validation_step_1200.pt",
+      "elapsed_seconds": 90.35891993700352,
+      "eligible_for_best": true,
+      "event": "validation",
+      "stage": "soft_roi_refinement",
+      "step": 1200,
+      "val_patch_loss": 1.8195385217666626,
+      "variant": "srr_propref_scar_precision"
+    },
+    {
+      "checkpoint_path": "/users/a/e/aereinh/CARE/results/20260703_srr_formal_training/variants/srr_propref_scar_precision/checkpoints/fold_0/propref_config/checkpoint_validation_step_1500.pt",
+      "elapsed_seconds": 114.37105977699684,
+      "eligible_for_best": true,
+      "event": "validation",
+      "stage": "soft_roi_refinement",
+      "step": 1500,
+      "val_patch_loss": 1.5856748819351196,
+      "variant": "srr_propref_scar_precision"
+    },
+    {
+      "checkpoint_path": "/users/a/e/aereinh/CARE/results/20260703_srr_formal_training/variants/srr_propref_scar_precision/checkpoints/fold_0/propref_config/checkpoint_validation_step_1620.pt",
+      "elapsed_seconds": 124.07217976200627,
+      "eligible_for_best": true,
+      "event": "validation",
+      "stage": "soft_roi_refinement",
+      "step": 1620,
+      "val_patch_loss": 1.6627541542053224,
+      "variant": "srr_propref_scar_precision"
+    },
+    {
+      "checkpoint_path": "/users/a/e/aereinh/CARE/results/20260703_srr_formal_training/variants/srr_propref_scar_precision/checkpoints/fold_0/propref_config/checkpoint_validation_step_1800.pt",
+      "elapsed_seconds": 138.51609437400475,
+      "eligible_for_best": true,
+      "event": "validation",
+      "stage": "low_lr_calibration",
+      "step": 1800,
+      "val_patch_loss": 1.5820083022117615,
+      "variant": "srr_propref_scar_precision"
+    }
+  ],
+  "validation_schedule": [
+    300,
+    360,
+    600,
+    900,
+    1080,
+    1200,
+    1500,
+    1620,
+    1800
+  ],
+  "variant": "srr_propref_scar_precision"
+}

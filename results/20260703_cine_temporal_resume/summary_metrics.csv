@@ -1,0 +1,10 @@
+class_id,component_count_mean,dice_mean,empty_prediction_rate,hd95_mean,hd95_median,metric_name,n,variant,volume_ratio_mean
+1,2.152542372881356,0.6032289610200348,0.0,10.383418691739434,6.0,class_1_myocardium,59,cine_deformable_or_feature_warp,1.1260013559880515
+2,1.0677966101694916,0.8163176206796446,0.0,10.592285332939262,6.0,class_2_lv,59,cine_deformable_or_feature_warp,0.8562350009061057
+3,0.0,0.0,1.0,,,class_3_scar_sanity,59,cine_deformable_or_feature_warp,0.0
+1,1.4745762711864407,0.5624209950925786,0.0,11.333070746298628,6.0,class_1_myocardium,59,cine_motion_descriptor_temporal_refiner,1.0167234739405846
+2,1.0847457627118644,0.7708264208673689,0.01694915254237288,11.04403893492186,6.0,class_2_lv,59,cine_motion_descriptor_temporal_refiner,0.7731041347766636
+3,0.0,0.0,1.0,,,class_3_scar_sanity,59,cine_motion_descriptor_temporal_refiner,0.0
+1,1.4745762711864407,0.5626213839689457,0.0,11.333070746298628,6.0,class_1_myocardium,59,cine_reference_control_recheck,1.0168238739012443
+2,1.0847457627118644,0.7708784354888585,0.01694915254237288,11.04403893492186,6.0,class_2_lv,59,cine_reference_control_recheck,0.7733314706527907
+3,0.0,0.0,1.0,,,class_3_scar_sanity,59,cine_reference_control_recheck,0.0

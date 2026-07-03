@@ -1,0 +1,176 @@
+{
+  "actual_optimizer_steps": 1800,
+  "best_step": 1800,
+  "best_val_patch_loss": 1.2471287965774536,
+  "checkpoint_best": "/users/a/e/aereinh/CARE/results/20260703_srr_formal_training/variants/srr_propref_no_proto_cascade/checkpoints/fold_0/propref_config/checkpoint_best.pt",
+  "checkpoint_final": "/users/a/e/aereinh/CARE/results/20260703_srr_formal_training/variants/srr_propref_no_proto_cascade/checkpoints/fold_0/propref_config/checkpoint_final.pt",
+  "device": "cuda",
+  "edema_decode_threshold": 0.5,
+  "elapsed_seconds": 151.5252923797816,
+  "eval_cases": 44,
+  "first_train_loss": 3.6055402755737305,
+  "fold": 0,
+  "hardneg_case_count": 44,
+  "hardneg_component_count": 5728,
+  "hardneg_components_csv": "/users/a/e/aereinh/CARE/results/20260629_proposal_memory_hardneg/mined_components.csv",
+  "last_train_loss": 1.5840171575546265,
+  "loss_decrease": 2.021523118019104,
+  "max_runtime_seconds": 25200.0,
+  "max_steps": 1800,
+  "one_batch_overfit": {
+    "case_id": "Case1037",
+    "elapsed_seconds": 3.1721458304673433,
+    "first_loss": 3.8072898387908936,
+    "last_loss": 2.686082601547241,
+    "loss_decrease": 1.1212072372436523,
+    "min_required_loss_decrease": 0.01,
+    "process_seconds": 3.0384690909999996,
+    "prototype_rows": "/users/a/e/aereinh/CARE/results/20260703_srr_formal_training/variants/srr_propref_no_proto_cascade/prototype_update_sanity.csv",
+    "status": "PASS",
+    "steps": 40,
+    "variant": "srr_propref_no_proto_cascade"
+  },
+  "optimizer_steps": 1800,
+  "prediction_dirs": [
+    "/users/a/e/aereinh/CARE/results/20260703_srr_formal_training/variants/srr_propref_no_proto_cascade/predictions/fold_0/checkpoint_best/argmax",
+    "/users/a/e/aereinh/CARE/results/20260703_srr_formal_training/variants/srr_propref_no_proto_cascade/predictions/fold_0/checkpoint_best/pathology_aware",
+    "/users/a/e/aereinh/CARE/results/20260703_srr_formal_training/variants/srr_propref_no_proto_cascade/predictions/fold_0/checkpoint_final/argmax",
+    "/users/a/e/aereinh/CARE/results/20260703_srr_formal_training/variants/srr_propref_no_proto_cascade/predictions/fold_0/checkpoint_final/pathology_aware"
+  ],
+  "process_wall_seconds": 150.584912997,
+  "proposal_thresholds": [
+    0.05,
+    0.1,
+    0.2,
+    0.3,
+    0.4,
+    0.5,
+    0.6,
+    0.7,
+    0.8,
+    0.9
+  ],
+  "scar_decode_threshold": 0.5,
+  "skip_export": false,
+  "stage_step_counts": {
+    "evidence_warmup": 361,
+    "low_lr_calibration": 179,
+    "proposal_dictionary": 720,
+    "soft_roi_refinement": 540
+  },
+  "stop_reason": "max_steps",
+  "three_stage_schedule": [
+    "evidence_warmup",
+    "proposal_dictionary",
+    "soft_roi_refinement",
+    "low_lr_calibration"
+  ],
+  "train_cases": 176,
+  "train_loop_seconds": 151.5252923797816,
+  "val_cases": 44,
+  "validation_event_count": 9,
+  "validation_events": [
+    {
+      "checkpoint_path": "/users/a/e/aereinh/CARE/results/20260703_srr_formal_training/variants/srr_propref_no_proto_cascade/checkpoints/fold_0/propref_config/checkpoint_validation_step_300.pt",
+      "elapsed_seconds": 24.140442247502506,
+      "eligible_for_best": false,
+      "event": "validation",
+      "stage": "evidence_warmup",
+      "step": 300,
+      "val_patch_loss": 1.860410475730896,
+      "variant": "srr_propref_no_proto_cascade"
+    },
+    {
+      "checkpoint_path": "/users/a/e/aereinh/CARE/results/20260703_srr_formal_training/variants/srr_propref_no_proto_cascade/checkpoints/fold_0/propref_config/checkpoint_validation_step_360.pt",
+      "elapsed_seconds": 29.101576023735106,
+      "eligible_for_best": true,
+      "event": "validation",
+      "stage": "evidence_warmup",
+      "step": 360,
+      "val_patch_loss": 1.91825110912323,
+      "variant": "srr_propref_no_proto_cascade"
+    },
+    {
+      "checkpoint_path": "/users/a/e/aereinh/CARE/results/20260703_srr_formal_training/variants/srr_propref_no_proto_cascade/checkpoints/fold_0/propref_config/checkpoint_validation_step_600.pt",
+      "elapsed_seconds": 48.715674724429846,
+      "eligible_for_best": true,
+      "event": "validation",
+      "stage": "proposal_dictionary",
+      "step": 600,
+      "val_patch_loss": 1.603836226463318,
+      "variant": "srr_propref_no_proto_cascade"
+    },
+    {
+      "checkpoint_path": "/users/a/e/aereinh/CARE/results/20260703_srr_formal_training/variants/srr_propref_no_proto_cascade/checkpoints/fold_0/propref_config/checkpoint_validation_step_900.pt",
+      "elapsed_seconds": 73.13180352840573,
+      "eligible_for_best": true,
+      "event": "validation",
+      "stage": "proposal_dictionary",
+      "step": 900,
+      "val_patch_loss": 1.487539494037628,
+      "variant": "srr_propref_no_proto_cascade"
+    },
+    {
+      "checkpoint_path": "/users/a/e/aereinh/CARE/results/20260703_srr_formal_training/variants/srr_propref_no_proto_cascade/checkpoints/fold_0/propref_config/checkpoint_validation_step_1080.pt",
+      "elapsed_seconds": 88.0498223118484,
+      "eligible_for_best": true,
+      "event": "validation",
+      "stage": "proposal_dictionary",
+      "step": 1080,
+      "val_patch_loss": 1.4102227568626404,
+      "variant": "srr_propref_no_proto_cascade"
+    },
+    {
+      "checkpoint_path": "/users/a/e/aereinh/CARE/results/20260703_srr_formal_training/variants/srr_propref_no_proto_cascade/checkpoints/fold_0/propref_config/checkpoint_validation_step_1200.pt",
+      "elapsed_seconds": 98.7909295130521,
+      "eligible_for_best": true,
+      "event": "validation",
+      "stage": "soft_roi_refinement",
+      "step": 1200,
+      "val_patch_loss": 1.375052523612976,
+      "variant": "srr_propref_no_proto_cascade"
+    },
+    {
+      "checkpoint_path": "/users/a/e/aereinh/CARE/results/20260703_srr_formal_training/variants/srr_propref_no_proto_cascade/checkpoints/fold_0/propref_config/checkpoint_validation_step_1500.pt",
+      "elapsed_seconds": 125.00315426196903,
+      "eligible_for_best": true,
+      "event": "validation",
+      "stage": "soft_roi_refinement",
+      "step": 1500,
+      "val_patch_loss": 1.27071670293808,
+      "variant": "srr_propref_no_proto_cascade"
+    },
+    {
+      "checkpoint_path": "/users/a/e/aereinh/CARE/results/20260703_srr_formal_training/variants/srr_propref_no_proto_cascade/checkpoints/fold_0/propref_config/checkpoint_validation_step_1620.pt",
+      "elapsed_seconds": 135.6130683934316,
+      "eligible_for_best": true,
+      "event": "validation",
+      "stage": "soft_roi_refinement",
+      "step": 1620,
+      "val_patch_loss": 1.3084470987319947,
+      "variant": "srr_propref_no_proto_cascade"
+    },
+    {
+      "checkpoint_path": "/users/a/e/aereinh/CARE/results/20260703_srr_formal_training/variants/srr_propref_no_proto_cascade/checkpoints/fold_0/propref_config/checkpoint_validation_step_1800.pt",
+      "elapsed_seconds": 151.46500606182963,
+      "eligible_for_best": true,
+      "event": "validation",
+      "stage": "low_lr_calibration",
+      "step": 1800,
+      "val_patch_loss": 1.2471287965774536,
+      "variant": "srr_propref_no_proto_cascade"
+    }
+  ],
+  "validation_schedule": [
+    300,
+    360,
+    600,
+    900,
+    1080,
+    1200,
+    1500,
+    1620,
+    1800
+  ],
+  "variant": "srr_propref_no_proto_cascade"
+}

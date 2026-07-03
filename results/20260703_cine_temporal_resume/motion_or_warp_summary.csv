@@ -1,0 +1,5 @@
+anatomy_consistency_mean,candidate_component_mean,class_id,flow_smoothness_mean,folding_voxels_mean,image_ncc_after_mean,image_ncc_before_mean,image_ncc_delta_mean,jacobian_min_proxy_min,metric_name,n,runtime_seconds_mean,variant
+0.7407496015129024,2.7796610169491527,1,0.22031378085307785,5335.406779661017,0.8329577567213673,0.5800094422647508,0.2529483144566164,-282.40972900390625,class_1_myocardium,59,0.39146251071607535,cine_deformable_or_feature_warp
+0.8262375745077202,1.1016949152542372,2,0.22031378085307785,5335.406779661017,0.8329577567213673,0.5800094422647508,0.2529483144566164,-282.40972900390625,class_2_lv,59,0.39146251071607535,cine_deformable_or_feature_warp
+0.7781929740652394,1.3428571428571427,1,,,,,,,class_1_myocardium,175,0.0,cine_motion_descriptor_temporal_refiner
+0.8116490169927404,1.0685714285714285,2,,,,,,,class_2_lv,175,0.0,cine_motion_descriptor_temporal_refiner
