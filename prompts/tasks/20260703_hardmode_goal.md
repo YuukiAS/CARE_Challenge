@@ -20,12 +20,12 @@ mechanism_class: "controller / CARE rescue hardmode"
 target_metric: "myops_scar, myops_edema, myocardium_cinemyops"
 same_split_baseline: "nnU-Net fold0 reference and rescue final status artifacts; evidence not found if unavailable"
 required_subgroups: ["MyoPS all-case", "MyoPS T2-present/complete", "MyoPS GT-positive", "MyoPS no-T2 empty-GT stability", "MyoPS CenterB/CenterC", "Cine safe/mismatch status"]
-required_secondary_metrics: ["Dice", "HD", "HD95", "component_count", "remote_FP", "small_FP", "volume_ratio", "proposal_recall_precision", "label_export_QC"]
+required_secondary_metrics: ["Dice", "HD", "HD95", "component_count", "remote_FP", "small_FP", "volume_ratio", "proposal_recall_precision", "alignment_sanity", "label_export_QC"]
 required_evidence: ["executor_result", "auditor_review", "controller_report", "checkpoint_or_explicit_no-training", "prediction_path", "metric_csv", "run_log", "same_split_baseline", "cache_isolation", "label_export_QC"]
-forbidden_substitutes: ["preflight-only completion", "smoke/dryrun as route evidence", "continuing SRR temperature/gate/threshold tuning as a new mechanism", "compact-label proxy as challenge improvement", "no-T2 myocardium as edema negative", "frame0-only Cine as temporal completion", "executor self-review", "audit bypass", "validation upload or package generation"]
+forbidden_substitutes: ["preflight-only completion", "smoke/dryrun as route evidence", "continuing SRR temperature/gate/threshold tuning as a new mechanism", "compact-label proxy as challenge improvement", "no-T2 myocardium as edema negative", "translation-only alignment as hardmode completion", "frame0-only Cine as temporal completion", "executor self-review", "audit bypass", "validation upload or package generation"]
 promotion_gate: "Every executor claim is audited. A MyoPS route can be promoted only if same-split nnU-Net comparison and CARE overlay evidence support it; diagnostic-only gains over weak SRR do not promote. Cine can promote only as a secondary temporal route with non-reference frame evidence."
 failure_escalation_policy: "Escalate only along the bounded task policies below. If label/evaluator evidence is missing, return NEEDS_EVIDENCE. If all authorized mechanisms fail, write NEEDS_GPT_PLANNER; do not invent another research route."
-executor_subtasks: ["prompts/tasks/20260703_myops_audit.md", "prompts/tasks/20260703_myops_fp_control.md", "prompts/tasks/20260703_myops_anchor_refine.md", "prompts/tasks/20260703_cine_motion.md"]
+executor_subtasks: ["prompts/tasks/20260703_myops_audit.md", "prompts/tasks/20260703_myops_fp_control.md", "prompts/tasks/20260703_myops_srr_propose_refine.md", "prompts/tasks/20260703_myops_alignment_gate.md", "prompts/tasks/20260703_myops_anchor_refine.md", "prompts/tasks/20260703_cine_motion.md"]
 auditor_subtasks: ["results/20260703_hardmode_goal/subagents/auditor_prompt.md"]
 controller_report_path: "results/20260703_hardmode_goal/controller_report.md"
 allowed_next_states: ["EXECUTION_PLANNED", "EXECUTOR_RUNNING", "EXECUTED_UNAUDITED", "AUDITOR_RUNNING", "AUDITED_GO", "NEEDS_EVIDENCE", "NEEDS_REVISION", "NEEDS_SUBAGENT_LAUNCH", "NEEDS_HUMAN_APPROVAL", "NEEDS_GPT_PLANNER", "STOP"]
@@ -39,7 +39,7 @@ allow_git_push: true
 
 ## 背景
 
-上一轮 rescue goal 已完成并停止：MyoPS 为 `STOP_NO_ROUTE_BEATS_BASELINE_SIGNAL`，Cine 为 `CINE_REFERENCE_ONLY`。这不是继续同一条 SRR 参数梯子的授权。新的 goal 只能验证新的机制假设：MyoPS 优先转向 label/data mechanism audit、nnU-Net anchored false-positive control、pathology-specific postprocessor/refiner；Cine 作为次线补 motion/warping/temporal aggregation 证据。
+上一轮 rescue goal 已完成并停止：MyoPS 为 `STOP_NO_ROUTE_BEATS_BASELINE_SIGNAL`，Cine 为 `CINE_REFERENCE_ONLY`。这不是继续同一条 SRR 参数梯子的授权。新的 goal 只能验证新的机制假设：MyoPS 优先转向 label/data mechanism audit、nnU-Net anchored false-positive control、SRR evidence-engine propose-refine、complete-case alignment gate、pathology-specific postprocessor/refiner；Cine 作为次线补 motion/warping/temporal aggregation 证据。
 
 本 controller task 是给 Codex controller session 的入口。Controller 只负责执行 GPT 已写好的任务，不得成为战略规划者，不得在失败后自行发明新路线。
 
@@ -62,18 +62,22 @@ allow_git_push: true
 
 ## Controller 工作流
 
-1. 读取本 controller task 和四个 executor subtasks。
+1. 读取本 controller task 和六个 executor subtasks。
 2. 写 `results/20260703_hardmode_goal/execution_plan.md`，列出任务顺序、资源预算、cache isolation、审核计划。
 3. 尝试创建或启动 separate executor sessions 和 read-only auditor sessions。若运行时不支持自动 subagent launch，则写：
    - `results/20260703_hardmode_goal/subagents/myops_audit_executor_prompt.md`
    - `results/20260703_hardmode_goal/subagents/myops_fp_control_executor_prompt.md`
+   - `results/20260703_hardmode_goal/subagents/myops_srr_propose_refine_executor_prompt.md`
+   - `results/20260703_hardmode_goal/subagents/myops_alignment_gate_executor_prompt.md`
    - `results/20260703_hardmode_goal/subagents/myops_anchor_refine_executor_prompt.md`
    - `results/20260703_hardmode_goal/subagents/cine_motion_executor_prompt.md`
    - `results/20260703_hardmode_goal/subagents/auditor_prompt.md`
    然后设置状态 `NEEDS_SUBAGENT_LAUNCH` 或 `NEEDS_HUMAN_APPROVAL`，不要假装已经完成 executor/auditor 分离。
 4. 严格按顺序执行：
    - Phase 0/1: `20260703_myops_audit`。没有 audit 的机制结论，不允许启动 expensive route promotion。
-   - Phase 2: `20260703_myops_fp_control`。优先用现有 nnU-Net / first-party predictions 做 fast, auditable false-positive control。
+   - Phase 2A: `20260703_myops_fp_control`。优先用现有 nnU-Net / first-party predictions 做 fast, auditable false-positive control。
+   - Phase 2B: `20260703_myops_srr_propose_refine`。这是 SRR 的唯一继续方式：SRR 降位为 evidence engine，必须接病种 proposal dictionaries、negative-space learning、soft cascade refinement。不得再跑 dictionary-only/tuning-only variants。
+   - Phase 2C: `20260703_myops_alignment_gate`。只在 complete tri-modal evidence 显示 cross-sequence mismatch 是主要瓶颈时推进 alignment expert；translation-only 负结果不能作为 hardmode completion。
    - Phase 3: `20260703_myops_anchor_refine`。只有 Phase 1/2 的证据支持 trainable refinement 时启动；否则写 `NEEDS_EVIDENCE` 或 `NEEDS_GPT_PLANNER`。
    - Phase 4: `20260703_cine_motion`。Cine 是次线；可在 MyoPS GPU 等待期间并行 CPU/轻 GPU 工作，但不得阻塞 MyoPS 主线。
 5. 每个 executor 写自己的 `results/<task_key>/result.md` 和 `MANIFEST.md` 后，必须停在 `EXECUTED_UNAUDITED`。
@@ -82,14 +86,17 @@ allow_git_push: true
 
 ## MyoPS 主线优先级
 
-第一优先级不是再跑 SRR-v2 参数变体，而是确认为什么 nnU-Net baseline 仍然是 practical baseline，并尝试可解释的 nnU-Net anchored improvement：
+第一优先级不是再跑 SRR-v2 参数变体，而是确认为什么 nnU-Net baseline 仍然是 practical baseline，并尝试可解释的 nnU-Net anchored improvement 与 SRR-ProposeRefine：
 
 - raw/compact label 与 export QC
 - T2/no-T2 edema supervision mechanism
 - CenterB/CenterC 与 modality pattern failure audit
 - nnU-Net prediction remote FP/component/HD95 error profile
 - pathology-specific false-positive control
+- SRR as evidence engine, not final dense segmenter
+- scar/edema proposal dictionaries and negative prototype memory
 - soft myocardium/anatomy support，不做 hard deletion
+- complete-case alignment only when error audit supports it
 - trainable component veto 或 ROI refiner 只能用 train/OOF evidence 训练；fold0 val label 只能评估，不能被当成调参训练源，除非结果显式标为 diagnostic-only
 
 ## Cine 次线优先级
@@ -106,6 +113,7 @@ Cine 不允许再以 frame0/reference-only 或 descriptor-only 作为 temporal c
 - 不要用 compact-label proxy 当 challenge improvement。
 - 不要用 executor 自评替代 review。
 - 不要把 `STOP_*` 或 `selected_variant: none` 的旧路线改名后继续跑。
+- 不要把 translation-only alignment、smoke、preflight、dryrun 当作 completion。
 
 ## Promotion / Stop 判定
 
