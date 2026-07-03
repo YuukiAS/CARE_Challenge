@@ -39,7 +39,7 @@ allow_git_push: true
 
 ## 背景
 
-上一轮 rescue goal 已完成并停止：MyoPS 为 `STOP_NO_ROUTE_BEATS_BASELINE_SIGNAL`，Cine 为 `CINE_REFERENCE_ONLY`。这不是继续同一条 SRR 参数梯子的授权。新的 goal 只能验证新的机制假设：MyoPS 优先转向 label/data mechanism audit、nnU-Net anchored false-positive control、SRR evidence-engine propose-refine、complete-case alignment gate、pathology-specific postprocessor/refiner；Cine 作为次线补 motion/warping/temporal aggregation 证据。
+上一轮 rescue goal 已完成并停止：MyoPS 为 `STOP_NO_ROUTE_BEATS_BASELINE_SIGNAL`，Cine 为 `CINE_REFERENCE_ONLY`。这不是继续同一条 SRR 参数梯子的授权。新的 goal 只能验证新的机制假设：MyoPS 优先转向 label/data/architecture mechanism audit、nnU-Net anchored false-positive control、SRR evidence-engine propose-refine、complete-case alignment gate、pathology-specific postprocessor/refiner；Cine 作为次线补 motion/warping/temporal aggregation 证据。
 
 本 controller task 是给 Codex controller session 的入口。Controller 只负责执行 GPT 已写好的任务，不得成为战略规划者，不得在失败后自行发明新路线。
 
