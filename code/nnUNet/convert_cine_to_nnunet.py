@@ -3,7 +3,7 @@
 Convert CARE CineMyoPS_train to nnU-Net v2 Dataset folder.
 
 - Cine volumes are 4D (x, y, z, time). We export a single 3D frame (default: middle time index)
-  to match the 3D label mask. Document this in SERVER.md (ED frame preferred when metadata exists).
+  to match the 3D label mask. ED frame selection is preferred when metadata exists.
 - Single input channel: Cine (frame).
 """
 from __future__ import annotations

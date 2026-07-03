@@ -1,5 +1,11 @@
 # nnU-Net CARE Myocardium — server runbook
 
+Archived note: this is a legacy server runbook moved out of the repository
+root. It contains historical `/overflow/htzhu/CARE` paths and should not be
+used as the active environment source for the current `/users/a/e/aereinh/CARE`
+workspace. Use `AGENTS.md`, `env_nnunet.sh`, and the current `jobs/` wrappers
+for active execution.
+
 This project converts [data/CARE_Challenge](data/CARE_Challenge) into nnU-Net v2 datasets and trains on a **GPU** node. Local development machines are often CPU-only; use them only for **smoke tests**.
 
 **Data layout:** see [data/README.md](data/README.md). Challenge **source** scans live under `data/CARE_Challenge/MyoPS_train`, `data/CARE_Challenge/CineMyoPS_train`, and the validation counterparts `MyoPS_val` / `CineMyoPS_val`. **nnU-Net** v2 `raw` / `preprocessed` / `results` are **physical directories** under `data/nnUNet/` (see `env_nnunet.sh`). **Paper baselines** (MyoPS-Net, U-MyoPS, CineMyoPS) use additional staging dirs under `data/benchmarks/<name>/`. After conversion, **`nnUNet_raw` holds exactly two** task folders: `Dataset501_CAREMyoPS` (MyoPS / multi-sequence) and `Dataset502_CARECineMyoPS` (Cine / single-frame). Do not keep duplicate exports or extra `Dataset503_*` copies there — they break nnU-Net ID resolution.

@@ -102,7 +102,7 @@ The full loss is `LMyoPS + lambda1 Lanatomy + lambda2 Lcons + lambda3 Lmotion + 
 
 ### 4.1 Repository-Level Entry Points
 
-The CARE repository groups the paper baselines under `jobs/`, with high-level orchestration described in `jobs/README.md`. That README states that `jobs/MyoPS-Net/`, `jobs/U-MyoPS/`, and `jobs/CineMyoPS/` are the entrypoints for the three paper methods, while `third_party/README.md` identifies the upstream repositories as `QJYBall/MyoPS-Net`, `NanYoMy/myops`, and `NanYoMy/CineMyoPS`, respectively. `SERVER.md` and `env_nnunet.sh` further define the local environment and dataset path conventions used by CARE.
+The CARE repository groups the paper baselines under `jobs/`, with high-level orchestration described in `jobs/README.md`. That README states that `jobs/MyoPS-Net/`, `jobs/U-MyoPS/`, and `jobs/CineMyoPS/` are the entrypoints for the three paper methods, while `third_party/README.md` identifies the upstream repositories as `QJYBall/MyoPS-Net`, `NanYoMy/myops`, and `NanYoMy/CineMyoPS`, respectively. `env_nnunet.sh` defines active nnU-Net path conventions; the legacy server runbook is archived at `docs/archive/SERVER.md`.
 
 ### 4.2 MyoPS-Net Mapping
 
@@ -144,7 +144,7 @@ The shared environment facts that can be verified from files are as follows.
 
 - `env_nnunet.sh` defines `nnUNet_raw`, `nnUNet_preprocessed`, and `nnUNet_results` under `data/nnUNet/`, plus `UMYOPS_STAGE2_TASK=Task901_CARE_UmyopsPathology` and `UMYOPS_RUN_STAGE2=0` by default.
 - `jobs/U-MyoPS/run.sh` and `jobs/CineMyoPS/run.sh` both assume an nnU-Net v1-style environment at `${CARE_ROOT}/env_CARE_nnUNet_v1` unless overridden.
-- `SERVER.md` states that CARE’s own nnU-Net datasets `Dataset501_CAREMyoPS` and `Dataset502_CARECineMyoPS` use the label classes `0 background, 1 myocardium, 2 LV blood, 3 RV blood, 4 edema, 5 scar`, which is distinct from the paper-reported task semantics of the baseline papers.
+- The archived `docs/archive/SERVER.md` runbook states that CARE’s own nnU-Net datasets `Dataset501_CAREMyoPS` and `Dataset502_CARECineMyoPS` use the label classes `0 background, 1 myocardium, 2 LV blood, 3 RV blood, 4 edema, 5 scar`, which is distinct from the paper-reported task semantics of the baseline papers.
 
 Where the repository does not make the exact environment unambiguous, this report treats it as unclear rather than inferred.
 
@@ -265,7 +265,7 @@ Source: Ding et al., 2025, Table VI.
 
 The paper settings and the CARE repository settings should not be collapsed into a single benchmark narrative.
 
-First, the CARE repository’s own nnU-Net datasets, as documented in `SERVER.md`, use a six-label schema: background, myocardium, LV blood, RV blood, edema, and scar. **None of the three papers reports its main results in that exact label schema.** MyoPS-Net and U-MyoPS report pathology-centric scar and edema performance, with auxiliary anatomy prediction supporting the model. CineMyoPS reports cine-space scar and edema prediction, not a six-class CARE label benchmark.
+First, the CARE repository’s own nnU-Net datasets, as documented in the archived `docs/archive/SERVER.md` runbook and active conversion code, use a six-label schema: background, myocardium, LV blood, RV blood, edema, and scar. **None of the three papers reports its main results in that exact label schema.** MyoPS-Net and U-MyoPS report pathology-centric scar and edema performance, with auxiliary anatomy prediction supporting the model. CineMyoPS reports cine-space scar and edema prediction, not a six-class CARE label benchmark.
 
 Second, the CARE wrappers for the paper baselines are adapters rather than perfect reproductions of the original paper protocols. `code/MyoPS-Net/prepare_myops_net_layout.py` zero-fills missing `T1m` and `T2starm` inputs when only CARE `C0/LGE/T2` are available. `code/U-MyoPS/prepare_u_myops_from_care.py` explicitly uses a unified ground truth as a “clinical approximation” for multiple label paths. `code/CineMyoPS/prepare_task025_from_care.py` exports a single-frame compact task that currently keeps myocardium, LV blood, and scar, but not the paper’s joint scar-and-edema target. These are repository facts and should be treated as methodological adaptation layers.
 
@@ -302,5 +302,4 @@ Third, because no validated CARE metrics files were supplied for this request, n
 - `third_party/CineMyoPS/code/Lascar_4_test.py`
 - `third_party/CineMyoPS/code/nnunet/paths.py`
 - `env_nnunet.sh`
-- `SERVER.md`
-
+- `docs/archive/SERVER.md`

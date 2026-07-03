@@ -5,7 +5,7 @@
 #   bash code/nnUNet/run_full_train.sh
 #
 # Env:
-#   CONFIG, FOLD, TRAIN_MYOPS, TRAIN_CINE, SKIP_CONVERT — see SERVER.md
+#   CONFIG, FOLD, TRAIN_MYOPS, TRAIN_CINE, SKIP_CONVERT — see variables below
 #   CARE_NNUNET_TRAINER — default nnUNetTrainer_500epochs (set in env_nnunet.sh)
 set -euo pipefail
 

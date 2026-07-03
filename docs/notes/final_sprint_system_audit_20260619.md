@@ -25,7 +25,7 @@ Required files/directories checked:
 | `README.md` | exists | current runbook, status, submission semantics, method conclusions |
 | `CARE-README.md` | missing | no separate CARE README found |
 | `AGENTS.md` | exists | repo governance; current worktree has pre-existing modifications |
-| `SERVER.md` | exists | data conversion and nnU-Net runbook |
+| `docs/archive/SERVER.md` | archived | legacy data conversion and nnU-Net runbook |
 | `env_nnunet.sh` | exists | sets `nnUNet_raw`, `nnUNet_preprocessed`, `nnUNet_results`, trainer |
 | `jobs/README.md` | exists | benchmark entrypoint documentation |
 | `jobs/run_unified_benchmark_test.sh` | exists | single-fold workflow; currently defaults `nnUNet=skip`, other baselines `run` |
@@ -142,7 +142,7 @@ Important consequence: do not plan three separate validation uploads for scar, e
 | MyoPS | `data/CARE_Challenge/MyoPS_train` | `data/nnUNet/nnUNet_raw/Dataset501_CAREMyoPS` | 220 | 15 | 3D LGE/T2/C0 |
 | CineMyoPS | `data/CARE_Challenge/CineMyoPS_train` | `data/nnUNet/nnUNet_raw/Dataset502_CARECineMyoPS` | 64 | 15 | 4D cine reduced to one 3D frame for Dataset502 |
 
-`SERVER.md` and `data/nnUNet/nnUNet_raw/*/dataset.json` define:
+The archived `docs/archive/SERVER.md` runbook and `data/nnUNet/nnUNet_raw/*/dataset.json` define:
 
 - Dataset501 channels: `0=LGE`, `1=T2`, `2=C0`.
 - Dataset501 labels: `1=myocardium`, `2=LV_blood`, `3=RV_blood`, `4=edema`, `5=scar`.

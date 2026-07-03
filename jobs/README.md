@@ -23,7 +23,9 @@ Do **not** compare Dataset501 and Dataset502 against each other.
 | `U-MyoPS/` | Stage1 / Stage2 wrappers; **`sbatch_smoke.sh`**（短训冒烟）、`sbatch_stage{1,2}.sh`；从仓库根 `cd $CARE_ROOT && sbatch jobs/U-MyoPS/...` 以便 `SLURM_SUBMIT_DIR` 正确（见 `jobs/U-MyoPS/README.md`） |
 | `CineMyoPS/` | Slurm wrapper for CineMyoPS Task025 training |
 
-Edit `#SBATCH` headers (partition, account, GPU) on your cluster. See [SERVER.md](../SERVER.md).
+Edit `#SBATCH` headers (partition, account, GPU) on your cluster. Current
+CARE cluster defaults live in [AGENTS.md](../AGENTS.md); the legacy server
+runbook is archived at [docs/archive/SERVER.md](../docs/archive/SERVER.md).
 
 CARE2026 Myocardium validation submission packaging is under `jobs/submission/`:
 

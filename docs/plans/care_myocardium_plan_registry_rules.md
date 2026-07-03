@@ -2,21 +2,21 @@
 
 Date: 2026-05-20
 
-本目录是 CARE Myocardium 的计划控制台。`/overflow/htzhu/CARE/TODO.md` 是长期路线图；本目录里的 plan 是可执行控制文档。后续每一轮只新增或更新对应 lane/round 的 plan，不把 controller、round addendum、repo portfolio governance、执行日志混在同一个文件里。
+本目录是 CARE Myocardium 的计划控制台，也是当前活跃路线与执行控制文档的来源。历史上的根目录 `TODO.md` 路线图已经退役；后续每一轮只新增或更新对应 lane/round 的 plan，不把 controller、round addendum、repo portfolio governance、执行日志混在同一个文件里。
 
 Plan metadata:
 - Type: plan registry and naming rules
 - Lane: all CARE Myocardium lanes
 - Round scope: all rounds
 - Status: active rule source for `docs/plans`
-- Parent roadmap: `/overflow/htzhu/CARE/TODO.md`
+- Parent roadmap: `docs/plans/`
 - Parent plan: none
 - Function: define file naming, plan roles, round ownership, and conflict handling for future plan generation
 - Do not: use ambiguous plan filenames or silently override this registry when a prompt conflicts with it
 
 ## 当前项目阶段
 
-`TODO.md` 将当前阶段定义为：
+本 registry 记录当前阶段为：
 
 > CARE-native targeted mechanism testing, between Round2 and Round3.
 
@@ -30,7 +30,7 @@ Plan metadata:
 
 | round | name | status | purpose | plan relationship |
 | --- | --- | --- | --- | --- |
-| Round0 | baseline interpretation and paper-baseline exit-gate | completed | 判断 MyoPS-Net/U-MyoPS/CineMyoPS 是否继续作为主线；保留负证据和 nnU-Net operational baseline。 | Reflected in lane controller plans and README/TODO. |
+| Round0 | baseline interpretation and paper-baseline exit-gate | completed | 判断 MyoPS-Net/U-MyoPS/CineMyoPS 是否继续作为主线；保留负证据和 nnU-Net operational baseline。 | Reflected in lane controller plans and README. |
 | Round1 | protocol anchor and failure landscape mapping | completed | 固定 nnU-Net501/502 anchors、fold、label mapping、unified evaluator、modality/center stratification、failure registry。 | Reflected in controllers; do not create new Round1 plans unless reconstructing evidence. |
 | Round2 | targeted diagnostic smoke | completed / evidence stage | Lane A 验证 edema postprocess 是负信号；Lane B 验证 topology LCC 是正信号。 | `laneA_round02_completed_myops_edema_targeted_smoke_addendum.md`, `laneB_round02_completed_cinemyops_topology_lcc_addendum.md`. |
 | Round3 | targeted trainable smoke and hosted calibration | next | Lane A 做 training-side edema mechanism smoke；Lane B 做 topology_lcc validation-style QA/hosted calibration preparation；Lane C 只做必要 audit。 | Create new `laneA_round03_next_<topic>_execution.md` and/or `laneB_round03_next_<topic>_execution.md`. |
@@ -90,20 +90,20 @@ Plan metadata:
 
 ## Conflict Rule
 
-If a future user prompt, ChatGPT-generated instruction, or agent-generated filename conflicts with this registry or with `TODO.md`, the agent must **not** silently comply. It must stop before writing the conflicting plan, state the exact conflict, and ask the user to decide.
+If a future user prompt, ChatGPT-generated instruction, or agent-generated filename conflicts with this registry or active governed plans, the agent must **not** silently comply. It must stop before writing the conflicting plan, state the exact conflict, and ask the user to decide.
 
 Examples that require escalation to the user:
 
 - Prompt asks for `docs/plans/implementation_plan.md`, but the plan is really Lane A Round3. The compliant name should be `laneA_round03_next_<topic>_execution.md`.
 - Prompt asks to update a controller for one round of execution; the compliant action is to create a round addendum instead.
-- Prompt asks to start Round5 repo portfolio integration while `TODO.md` says Round3/Round4 gates have not passed.
+- Prompt asks to start Round5 repo portfolio integration while this registry says Round3/Round4 gates have not passed.
 - Prompt asks for a Cine-only validation plan that ignores one-zip MyoPS+Cine submission semantics.
 
 If the user explicitly chooses to override the rule, record the exception in the plan metadata under `Rule exception:` with the user's reason.
 
 ## Editing Rules
 
-- `TODO.md` remains the long-term roadmap; do not duplicate the whole roadmap in every plan.
+- `docs/plans/` is the active plan source; do not duplicate the whole roadmap in every plan.
 - Controller plans define durable lane rules. Do not rewrite them for every experiment; add a round addendum.
 - Round addenda are scoped to one lane and one round. Mark them completed/evidence once the round result is known.
 - Lane C does not mean “run DA as a standalone mainline”; it governs portfolio/weights/loss/DA eligibility.
