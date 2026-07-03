@@ -18,7 +18,7 @@ requires_human_approval: false
 review_required: true
 mechanism_class: "proposal_refinement / nnU-Net anchored segmentation / cascade"
 target_metric: "myops_scar, myops_edema"
-same_split_baseline: "same-split nnU-Net fold0 reference, results/20260703_myops_audit, and results/20260703_myops_fp_control; evidence not found if unavailable"
+same_split_baseline: "same-split nnU-Net fold0 reference, results/20260703_myops_audit, results/20260703_myops_fp_control, and optionally results/20260703_myops_srr_propose_refine; evidence not found if unavailable"
 required_subgroups: ["all-case", "T2-present/complete", "GT-positive", "no-T2 empty-GT stability", "CenterB", "CenterC", "LGE-only", "complete"]
 required_secondary_metrics: ["Dice", "HD", "HD95", "component_count", "remote_FP", "small_FP", "volume_ratio", "ROI coverage", "teacher/student delta"]
 required_evidence: ["result.md", "review.md", "MANIFEST.md", "checkpoint", "prediction_path", "metric_csv", "run_log", "same_split_baseline", "cache_isolation", "label_export_QC", "train/val separation statement"]
@@ -38,11 +38,11 @@ allow_git_push: false
 
 建立一个新的 MyoPS 主线机制：以 same-split nnU-Net/coarse anatomy 为 anchor，训练 pathology-specific postprocessor/refiner，专门解决 remote FP、component burden、HD95 和 class-specific scar/edema tradeoff。不要继续旧 SRR-v2 tuning ladder。
 
-本任务必须在 `20260703_myops_audit` 和 preferably `20260703_myops_fp_control` 给出证据后执行。若这些证据缺失，先写 `NEEDS_EVIDENCE`。
+本任务必须在 `20260703_myops_audit` 给出证据后执行，并应优先读取 `20260703_myops_fp_control`、`20260703_myops_srr_propose_refine` 和 `20260703_myops_alignment_gate` 的结果。若这些证据缺失，先写 `NEEDS_EVIDENCE`，不要绕过前置 gate。
 
 ## Required Reads
 
-读取 handoff rules、CARE overlay、medical-imaging skill、rescue final status、`results/20260703_myops_audit/`、`results/20260703_myops_fp_control/`、nnU-Net fold0 predictions/probabilities/checkpoints if available、Dataset501 split/evaluator/label export code。
+读取 handoff rules、CARE overlay、medical-imaging skill、rescue final status、`results/20260703_myops_audit/`、`results/20260703_myops_fp_control/`、`results/20260703_myops_srr_propose_refine/`（若存在）、`results/20260703_myops_alignment_gate/`（若存在）、nnU-Net fold0 predictions/probabilities/checkpoints if available、Dataset501 split/evaluator/label export code。
 
 ## Authorized Scope
 
@@ -57,6 +57,8 @@ allow_git_push: false
 - scar and edema separate heads or separate candidate logic。
 - edema supervision remains T2-aware; no no-T2 dense negative misuse。
 - train/validation separation: promoted learned thresholds or component scoring must not train on fold0 validation labels。
+- if `myops_srr_propose_refine` produced useful proposal metrics, the refiner may consume its proposal gates as inputs, but must still compare against unchanged nnU-Net.
+- if `myops_alignment_gate` supports an alignment hypothesis, the refiner may consume aligned feature/probability inputs; otherwise do not add registration just because it is available.
 
 ## Required Variants
 
