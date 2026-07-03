@@ -13,3 +13,8 @@ source of truth is split as follows:
 
 For current CARE Myocardium status, read the top-level `README.md` first, then
 the relevant `docs/plans/lane*_round*` controller or execution file.
+
+For handoff/controller status semantics, use `prompts/CONTROLLER_TASK_PROTOCOL.md`,
+`prompts/DIAGNOSTIC_PUBLICATION_GATE.md`, and
+`prompts/EXPERIMENT_ADEQUACY_GATE.md`. Operational controller completion,
+diagnostic publication, and scientific route resolution are separate decisions.

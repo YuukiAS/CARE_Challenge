@@ -10,6 +10,10 @@ strategic planner and the user-supervised strategic controller.
 - `prompts/HANDOFF_ROLES.md`: strategic and execution role definitions.
 - `prompts/HANDOFF_STATE_MACHINE.md`: controlled task states.
 - `prompts/CONTROLLER_TASK_PROTOCOL.md`: controller task rules.
+- `prompts/DIAGNOSTIC_PUBLICATION_GATE.md`: route promotion vs diagnostic
+  publication migration note.
+- `prompts/EXPERIMENT_ADEQUACY_GATE.md`: experiment adequacy, route-negative,
+  and scientific completion migration note.
 - `prompts/MECHANISM_GATE_TEMPLATE.md`: reusable evidence-gate pattern.
 - `prompts/tasks/<task_key>.md`: GPT-authored task entry.
 - `results/<task_key>/result.md`: executor report and evidence index.
@@ -50,11 +54,24 @@ For CARE tasks, GPT is the strategic planner and strategic controller. Codex may
 
 When generating any CARE model, experiment, external-method, registration, temporal Cine, missing-modality, proposal/refinement, fold-expansion, validation-package, or submission-related task, decide explicitly whether it is a normal `execution` task or a `controller` task.
 
-Normal CARE execution tasks must declare `mechanism_class`, `target_metric`, `same_split_baseline` when relevant, `required_evidence`, `forbidden_substitutes`, `promotion_gate`, `failure_escalation_policy`, and `review_required: true`. Controller tasks must also declare `execution_controller`, `executor_subtasks`, `auditor_subtasks`, `controller_report_path`, `allow_git_commit`, and `allow_git_push`.
+Normal CARE execution tasks must declare `mechanism_class`, `target_metric`, `same_split_baseline` when relevant, `required_evidence`, `forbidden_substitutes`, `promotion_gate` or `route_promotion_gate`, `experiment_adequacy_gate`, `route_negative_gate`, `scientific_completion_gate`, `failure_escalation_policy`, and `review_required: true`. Controller tasks must also declare `execution_controller`, `executor_subtasks`, `auditor_subtasks`, `controller_report_path`, `route_promotion_gate`, `diagnostic_publication_gate`, `diagnostic_publication_scope`, `blocked_after_diagnostic_publication`, `experiment_adequacy_gate`, `route_negative_gate`, `scientific_completion_gate`, `allow_git_commit`, and `allow_git_push`.
 
 Reference the Bridge Kit state machine for handoff states and `prompts/CARE_OVERLAY_GATES.md` plus the installed `medical-imaging-deep-learning` skill for mechanism gates. Do not copy the full skill text into each task.
 
 Do not issue high-risk CARE implementation, fold expansion, validation packaging, upload, or route-promotion tasks without a review or audit gate. A result file is evidence for review; it is not authorization for the next task unless there is a review, audit, controller report, or explicit user override.
+
+Diagnostic artifact publication is a separate controller outcome. It lets GPT
+planner see reviewed diagnostic code, minimal decision packets, and subtask
+reports when no route is promoted. It does not mean the route is selected,
+challenge-facing, validation-ready, or authorized for fold expansion,
+validation packaging, upload, hosted metric claims, label/evaluator/fold split
+changes, or next-stage training.
+
+Operational controller completion is also separate from scientific route
+resolution. A controller can complete subagent launch, executor results, auditor
+reviews, and a controller report while the scientific route remains
+`SCIENTIFIC_UNRESOLVED` or `SCIENTIFIC_UNDERTRAINED`. Do not let a controller
+task collapse these into a single `status: complete`.
 
 ## Generating Tasks
 
@@ -72,9 +89,17 @@ Before writing the task, decide:
 - Is review required?
 - Can an execution controller escalate within policy, or must failure return to
   GPT planner?
-- What evidence is required before promotion?
+- What evidence is required before route promotion?
+- What evidence is required before a route-negative stop is scientifically
+  supported?
+- What minimum training budget, one-batch/tiny-overfit check, loss decrease,
+  prediction sanity, proposal sanity, provenance, and same-split baseline are
+  required for `experiment_adequacy_gate`?
+- If route promotion fails, can a reviewed diagnostic packet still be published?
+- Which diagnostic files may be published, and which actions remain blocked?
 - What substitutes are forbidden?
-- Should automatic commit/push proceed after audit passes?
+- Should automatic commit/push proceed after audit passes through the route
+  promotion gate or diagnostic publication gate?
 
 Medium/high risk tasks and controller tasks must explicitly fill the new
 frontmatter fields. Low-risk tasks may use defaults, `none`, or empty lists.
@@ -108,17 +133,42 @@ auditor: "ChatGPT reviewer"
 review_required: false
 mechanism_class: "general"
 promotion_gate: "..."
+route_promotion_gate: "..."
+experiment_adequacy_gate: "..."
+route_negative_gate: "..."
+scientific_completion_gate: "..."
+minimum_effective_training:
+  min_optimizer_steps: 0
+  min_train_loop_seconds: 0
+  require_one_batch_overfit: true
+  require_prediction_sanity: true
+  require_loss_decrease: true
+  allow_stop_without_training: false
+diagnostic_publication_gate: "none"
+diagnostic_publication_scope: []
+blocked_after_diagnostic_publication: ["validation_upload", "validation_packaging", "fold_expansion", "hosted_metric_claim", "next_stage_training"]
 failure_escalation_policy: "..."
 forbidden_substitutes: []
 required_evidence: []
 allowed_next_states: []
 auto_git_commit: true
 auto_git_push: true
+allow_git_commit: false
+allow_git_push: false
 ```
 
 For controller tasks, set `task_type: "controller"`, `controller_mode: true`,
 `execution_controller: "Codex controller session"`, and specify a controller
-report path.
+report path. Existing task files that only have `promotion_gate` are legacy
+compatible: treat it as a route-promotion gate, and use safe defaults of no
+diagnostic publication, no git commit, and no git push unless explicit fields
+say otherwise.
+
+Existing model/training task files that lack `experiment_adequacy_gate` or
+`minimum_effective_training` are legacy compatible but conservative: they cannot
+support route-negative scientific stop unless result/review/controller evidence
+explicitly reconstructs experiment adequacy and the auditor approves the
+route-negative conclusion.
 
 ## Reviews And Audits
 
@@ -134,8 +184,13 @@ execution. Use `REVIEW_TEMPLATE.md` and a claim ledger with:
 Controlled audit decisions:
 
 - `AUDITED_GO`
+- `AUDITED_DIAGNOSTIC_PUBLISH`
+- `AUDITED_SCIENTIFIC_STOP`
 - `NEEDS_EVIDENCE`
 - `NEEDS_REVISION`
+- `SCIENTIFIC_UNDERTRAINED`
+- `SCIENTIFIC_PIPELINE_BUG`
+- `SCIENTIFIC_UNRESOLVED`
 - `NEEDS_HUMAN_APPROVAL`
 - `NEEDS_GPT_PLANNER`
 - `STOP`
@@ -154,10 +209,15 @@ If the review is:
 - `NEEDS_GPT_PLANNER`: GPT must decide the next direction.
 - `STOP`: do not continue that route unless the user explicitly chooses a new
   direction.
+- `SCIENTIFIC_UNDERTRAINED` or `SCIENTIFIC_UNRESOLVED`: do not treat the route
+  as disproven; write a revision/evidence task or return to GPT planning with
+  the unresolved scientific status.
 
-Assume successful controller tasks synchronize remote state by default. For the
-next planning round, prefer checking the remote repository state instead of
-relying on unpushed local assumptions.
+Assume successful controller tasks synchronize remote state by default only when
+the controller report says either route promotion or diagnostic publication
+triggered an authorized push. For the next planning round, prefer checking the
+remote repository state when `git_push_decision` reports a push, and otherwise
+use the local controller report as the latest evidence.
 
 ## Notes And Wiki
 
@@ -176,4 +236,6 @@ them explicitly.
   or task explicitly authorizes them.
 - If execution is needed, write a task file first.
 - If a controller task passes audit and `auto_git_push: true`, expect the remote
-  to become the default source for subsequent planning.
+  to become the default source for subsequent planning only when the controller
+  report records an authorized push through the route promotion gate or
+  diagnostic publication gate.

@@ -15,5 +15,6 @@ Evaluation scripts here are meant to be called from `jobs/*.sh` workflows or run
 | `screening/` | Metadata-only or lightweight compatibility screening for candidate external/pretrained methods. |
 | `submission/` | CARE2026 validation inference and upload packaging helpers |
 | `training/` | Bounded experiment entrypoints used by Slurm wrappers in `jobs/`; these are not full training campaigns unless a plan explicitly authorizes expansion. |
+| `validation/` | Lightweight repository policy validators, including handoff/controller publication checks. |
 
 Do **not** treat paths here as the primary user interface; prefer `jobs/README.md` for runnable commands.

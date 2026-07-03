@@ -1,5 +1,25 @@
 # CARE repository — agent instructions
 
+
+## Temporary /users Workspace Safety
+
+Temporary rule for the `/users/a/e/aereinh/CARE` development copy only: while working from this migrated copy, treat `/users/a/e/aereinh/CARE` as the active CARE root. Do not write to `/overflow/htzhu/CARE` or other `/overflow` workspace paths from this copy. Reading `/overflow` is allowed only when needed for comparison, recovery, or historical reference; any `/overflow` write requires explicit human approval.
+
+For Codex sessions in this temporary `/users` copy, keep runtime state, cache, and temporary files under `/users`. The only shared file that may need preservation during auth migration is Codex login auth; active config, plugins, rules, skills, memories, SQLite state, logs, cache, and temp paths must not depend on `/nas` home-directory symlinks. Use:
+
+```bash
+cd /users/a/e/aereinh/CARE
+source /users/a/e/aereinh/CARE/.care-codex-env.sh
+source /users/a/e/aereinh/CARE/env_nnunet.sh
+export PATH=/users/a/e/aereinh/codex-runtime/bin:/users/a/e/aereinh/CARE/envs/env_CARE/bin:$PATH
+```
+
+For this temporary migrated workspace only, prefer the `/users` local Codex runtime at `/users/a/e/aereinh/codex-runtime/bin/codex`. Codex home standardization for `/overflow/htzhu/mingcheng_new` must be explicit human-requested maintenance; otherwise do not modify the original `/overflow` wrappers from this `/users` copy. Repo writes, Codex state, logs, temp files, and CARE outputs should stay under `/users/a/e/aereinh/CARE` or the `/users/a/e/aereinh` runtime directories above, not under `/nas`.
+
+The active Codex home model is defined by the shared standard in `/overflow/htzhu/mingcheng_new/Codex_Home_Configuration`. The `/users` CARE runtime may read that standard, but persistent repo state belongs under `/users/a/e/aereinh/.codex-homes/CARE`, while tmux/runtime isolation may use `/users/a/e/aereinh/.codex-runtime-homes/CARE__<session_slug>`. Treat `/users/a/e/aereinh/.codex-home-care` as legacy migration state, not the active home for new sessions. If a future audit finds `/nas` symlinks under `.codex-home*`, `.codex-homes`, `.codex-runtime-homes`, or `.codex-global`, replace them with namespace-local files or links before starting new Codex sessions.
+
+For this temporary `/users` copy, repo-local skills under `.agents/skills/` should be real directories, not symlinks back to `/overflow`. Do not refresh skills from `/overflow/htzhu/mingcheng_new/AI_Skills_Collection` unless the user explicitly asks; if a refresh is needed, copy into `/users` and keep the `/overflow` source read-only.
+
 ## Codex rule source
 
 Treat this `AGENTS.md` as the repo-level Codex rules source. Do not rely on `.cursor/rules/`, `.cursor/skills/`, `.cursor/plans/`, or Cursor plugins; migrate future rule changes here.
@@ -215,9 +235,9 @@ Default inference policy for the current nnU-Net baseline is a 5-fold ensemble (
 <!-- AI_SKILLS_COLLECTION_START -->
 # AI Skills Collection
 
-Installed: `2026-06-19T15:42:51+00:00`
+Installed: `2026-07-03T06:17:10+00:00`
 Target: `repo`
-Install mode: `mixed:domain:medical-imaging+domain:cmr`
+Install mode: `domain:medical-imaging`
 Project skills: `.agents/skills/`
 Central collection: `/overflow/htzhu/mingcheng_new/AI_Skills_Collection`
 
@@ -225,42 +245,52 @@ When a task matches an installed skill, read that skill's `SKILL.md` before acti
 
 ## Skill Routing
 
-### cmr
-- `cardiacnexus-docs-markdoc`: Project-specific guidance for the CardiacNexus documentation site in docs/. Use when editing Markdoc pages, navigation, metadata, Next.js static export settings, phenotype documentation, or preparing the site for stat... Path: `.agents/skills/projects-cmr-cardiacnexus-docs-markdoc/SKILL.md`
-- `cardiacnexus-feature-contracts`: Project-specific guidance for CardiacNexus phenotype outputs. Use when adding, renaming, validating, aggregating, or documenting CSV/NPZ/QC outputs, units, column schemas, cross-modality features, or downstream-facing... Path: `.agents/skills/projects-cmr-cardiacnexus-feature-contracts/SKILL.md`
-- `cardiacnexus-pipeline-refactor`: Project-specific guidance for refactoring the CardiacNexus UKB CMR pipeline. Use when touching config.py, step1-4 orchestration, Slurm script generation, segmentation wrappers, feature extraction boundaries, packaging... Path: `.agents/skills/projects-cmr-cardiacnexus-pipeline-refactor/SKILL.md`
-- `cardiacnexus-strain-registration`: Project-specific guidance for CardiacNexus strain and registration refactors. Use when editing eval_strain_lax.py, eval_strain_sax.py, cardiac_utils motion/contour code, MIRTK integrations, or when introducing ANTsPy... Path: `.agents/skills/projects-cmr-cardiacnexus-strain-registration/SKILL.md`
-
 ### medical-imaging
-- `medical-imaging-classical-features`: Use when enforcing reproducible preprocessing, registration baselines, radiomics protocols, or DICOM SEG/SR provenance in CardiacNexus. Path: `.agents/skills/domains-medical-imaging-medical-imaging-classical-features/SKILL.md`
-- `medical-imaging-deep-learning`: Aligns with CardiacNexus MONAI-first refactor and high-risk registration/strain awareness. Path: `.agents/skills/domains-medical-imaging-medical-imaging-deep-learning/SKILL.md`
+- `cardiac-mri`: Use for cardiac MRI / CMR domain knowledge, cine SAX/LAX, ED/ES timing, LV/RV function, myocardial strain, tagged MRI, feature tracking, and cardiac phenotype validation independent of any single project. Path: `.agents/skills/domains-medical-imaging-cardiac-mri/SKILL.md`
+- `medical-imaging-classical-features`: Use when enforcing reproducible medical-imaging preprocessing, physical-space geometry, classical registration baselines, radiomics protocols, or DICOM SEG/SR provenance. Path: `.agents/skills/domains-medical-imaging-medical-imaging-classical-features/SKILL.md`
+- `medical-imaging-deep-learning`: Use for medical-imaging deep learning tasks involving segmentation, MONAI/nnU-Net baselines, registration or warping, temporal/video imaging, missing-modality fusion, proposal/cascade/refinement models, external metho... Path: `.agents/skills/domains-medical-imaging-medical-imaging-deep-learning/SKILL.md`
 - `medical-imaging-terminology-measurement`: Use medical imaging terminology and measurement conventions with source checks, modality-specific caveats, structured reporting boundaries, and uncertainty language. Path: `.agents/skills/domains-medical-imaging-medical-imaging-terminology-measurement/SKILL.md`
 - `pathml`: Full-featured computational pathology toolkit. Use for advanced WSI analysis including multiplexed immunofluorescence (CODEX, Vectra), nucleus segmentation, tissue graph construction, and ML model training on patholog... Path: `.agents/skills/domains-medical-imaging-pathml/SKILL.md`
 - `pydicom`: Python library for working with DICOM (Digital Imaging and Communications in Medicine) files. Applies to tasks involving medical image analysis, PACS systems, radiology workflows, and healthcare imaging applications. Path: `.agents/skills/domains-medical-imaging-pydicom/SKILL.md`
 
 ## Skill Maintenance
 
-- Update command: `python3 /overflow/htzhu/mingcheng_new/AI_Skills_Collection/scripts/skills.py install --target repo --mode symlink --skill domain/medical-imaging/medical-imaging-classical-features --skill domain/medical-imaging/medical-imaging-deep-learning --skill domain/medical-imaging/medical-imaging-terminology-measurement --skill domain/medical-imaging/pathml --skill domain/medical-imaging/pydicom --skill project/cmr/cardiacnexus-docs-markdoc --skill project/cmr/cardiacnexus-feature-contracts --skill project/cmr/cardiacnexus-pipeline-refactor --skill project/cmr/cardiacnexus-strain-registration --write-agents-md`
+- Update command: `python3 /overflow/htzhu/mingcheng_new/AI_Skills_Collection/scripts/skills.py install --target repo --mode copy --domain medical-imaging --write-agents-md --prune-managed`
 - Managed manifest: `.agents/skills/.ai-skills-collection-manifest.json`
 - The installer only manages paths recorded in that manifest.
 - User-created skills outside the manifest are never pruned.
 <!-- AI_SKILLS_COLLECTION_END -->
-
 <!-- ai-bridge-kit:start -->
 # Handoff Protocol
 
-本项目采用 `prompts/` handoff 协议，用于 ChatGPT 和 Codex 之间的文件化交接。
+This repository uses the `prompts/` handoff protocol: a lightweight file bridge
+between a GPT strategic planner and Codex execution sessions.
 
-## 默认入口
+## Read First
 
-- `prompts/AGENT_RULES.md`：长期执行规则。
-- `prompts/CHATGPT_RULES.md`：ChatGPT 通过 GitHub MCP 或仓库工具写 task、note、review 时应读取的规则。
-- `prompts/tasks/<task_key>.md`：唯一默认任务入口；`task_key` 使用 `<id>_<short_slug>`，short slug 控制在 1-3 个词内。
-- `results/<task_key>/result.md`：Codex 的执行报告和证据索引。
-- `results/<task_key>/review.md`：ChatGPT 的复盘位置。
-- `docs/notes/`：参考笔记、方案分析、会议记录和讨论沉淀，不是默认任务入口。
-- `results/<task_key>/`：Codex、脚本或实验生成的文件型产物目录；目录名必须与 task 文件名完全一致。
-- `docs/wiki/`：长期研究知识库，不是默认任务入口。
+- `prompts/AGENT_RULES.md`: Codex execution rules.
+- `prompts/CHATGPT_RULES.md`: GPT planning/review rules.
+- `prompts/HANDOFF_ROLES.md`: two-layer role model.
+- `prompts/HANDOFF_STATE_MACHINE.md`: controlled states.
+- `prompts/CONTROLLER_TASK_PROTOCOL.md`: controller task behavior.
+- `prompts/DIAGNOSTIC_PUBLICATION_GATE.md`: route promotion vs diagnostic
+  publication behavior.
+- `prompts/EXPERIMENT_ADEQUACY_GATE.md`: experiment adequacy, route-negative,
+  and scientific completion behavior.
+- `prompts/tasks/<task_key>.md`: default task entry.
+
+## File Mapping
+
+```text
+prompts/tasks/<task_key>.md
+results/<task_key>/result.md
+results/<task_key>/review.md
+results/<task_key>/controller_report.md   # controller tasks
+results/<task_key>/MANIFEST.md
+```
+
+`docs/notes/` and `docs/wiki/` are reference stores, not default execution
+entries.
 
 ## Result Publication Boundary
 
@@ -268,32 +298,72 @@ Generated `results/20??????_*` handoff/controller run directories are
 data-derived local evidence packages. They are ignored by default and must not be
 published wholesale.
 
-When GPT needs repository-visible context for deciding the next task, publish
-only the smallest reviewed Markdown decision packet. Prefer the controller
-`controller_report.md` and `execution_plan.md`, plus each relevant subtask's
-`result.md` and `review.md`. Do not publish CSV tables, prediction outputs,
-checkpoints, logs, environment dumps, command transcripts, subagent prompts, or
-full result manifests unless the user explicitly approves that narrower
-disclosure after review.
+When GPT needs repository-visible context for deciding the next task, the
+controller may publish only the smallest reviewed diagnostic packet after audit
+or re-audit. Prefer the controller `controller_report.md` and
+`execution_plan.md`, plus each relevant subtask's `result.md` and `review.md`.
+Small reviewed Markdown decision packets such as `failure_interpretation.md`,
+`architecture_gap_audit.md`, `label_export_qc.md`, `training_schedule.md`, or
+`provenance_reconciliation.md` may be published when they are necessary for GPT
+planner review. Small first-party source code/scripts required to reproduce the
+diagnostic conclusion may be published only when reviewed and free of heavy
+data/output.
+
+Do not publish checkpoints, prediction outputs, NIfTI outputs, heavy logs,
+secret-bearing command transcripts, environment dumps, large or
+privacy-sensitive raw CSV dumps, full result trees, upload packages, hosted
+validation packages, external credentials, or `.env`-style files.
 
 Because the result directories are ignored, any approved decision packet should
 be added with explicit `git add -f <file>` paths. Do not change `.gitignore` to
 unignore an entire generated result tree.
 
-## Codex 行为规则
+Diagnostic artifact publication is not route promotion. It does not authorize a
+challenge-facing route, validation packaging, validation upload, fold expansion,
+hosted metric claims, label/evaluator/fold split changes, or next-stage
+training.
 
-- Codex 开始任务前应读取 `prompts/AGENT_RULES.md` 和指定的 `prompts/tasks/<task_key>.md`。
-- Codex 必须遵守 task frontmatter、允许动作、禁止动作和停止条件。
-- Codex 完成后必须写 `results/<task_key>/result.md`；如果生成日志、表格、图、导出包、长报告或中间输出，写入同名 `results/<task_key>/`，写 `results/<task_key>/MANIFEST.md`，并在 result 中列出产物清单。
-- Codex 不应主动执行 `docs/notes/` 或 `docs/wiki/` 中的内容，除非任务单显式引用某篇 note 或 wiki 页面作为背景材料。
-- 如果任务需要联网、上传、删除数据、运行昂贵命令或修改高风险配置，但 task 没有授权，Codex 必须停止并在 result 中请求人工批准。
+Controller operational completion is not scientific route resolution. A
+controller may finish executor/auditor/report workflow and publish diagnostics
+while `scientific_resolution_status` remains `SCIENTIFIC_UNRESOLVED` or
+`SCIENTIFIC_UNDERTRAINED`. Route-negative conclusions such as `STOP_NO_SIGNAL`,
+`STOP_NO_PROPREF_SIGNAL`, `STOP_NO_CLEAN_ANCHOR_SIGNAL`, or
+`STOP_NO_ROUTE_BEATS_BASELINE_SIGNAL` require `experiment_adequacy_decision:
+PASS`, `route_negative_decision: STOP_SUPPORTED`, same-split baseline evidence,
+and explicit auditor support.
 
-## ChatGPT / GitHub MCP 行为规则
+## Codex Rules
 
-- ChatGPT 通过 GitHub MCP 处理本仓库时，应先读取 `AGENTS.md` 和 `prompts/CHATGPT_RULES.md`。
-- 需要 Codex 执行的内容必须写成 `prompts/tasks/<task_key>.md`。
-- 只作参考的研究分析、方案比较、会议记录和复盘应写到 `docs/notes/`。
-- 执行产生的文件型产物应写到同名 `results/<task_key>/`，并用 `results/<task_key>/MANIFEST.md` 反向链接 task/result/review；不要塞进 `prompts/tasks/` 或 `docs/notes/`。
-- 有长期复用价值的论文摘要、报告摘要、概念、对比、gap 和综合讨论应写到 `docs/wiki/`。
-- ChatGPT 不应把 issue、PR description 或聊天正文当作 Codex 的唯一任务来源。
+- Execute only the GPT-authored task scope.
+- Obey frontmatter permission fields and stop on unauthorized actions.
+- If acting as executor, write `result.md` and stop at self-assessment; do not
+  claim final audited completion or open the next task.
+- If the task requires an auditor and the current session is executor, do not
+  also audit.
+- If acting as auditor, remain read-only; do not fix code, generate missing
+  artifacts, or continue execution.
+- If acting as execution controller, coordinate executor/auditor sessions only
+  inside the GPT-authored controller task.
+- The execution controller must not invent new research/product directions. If a
+  new direction is needed, write `NEEDS_GPT_PLANNER`.
+- Controller reports must separate `controller_run_status`,
+  `operational_completion_status`, `experiment_adequacy_decision`,
+  `route_promotion_decision`, `route_negative_decision`, and
+  `scientific_resolution_status`.
+- For controller tasks, when audit passes and no human approval gate is
+  triggered, follow `auto_git_commit` and `auto_git_push` only if the task also
+  authorizes git and either the `route_promotion_gate` or
+  `diagnostic_publication_gate` is satisfied within the authorized scope. If the
+  trigger is diagnostic publication only, the commit message and
+  `controller_report.md` must say `diagnostic publication only; no route
+  promotion`. If commit or push is skipped, state the reason in
+  `controller_report.md`.
 <!-- ai-bridge-kit:end -->
+
+### CARE GPT-Codex Overlay
+
+This repo uses the Bridge Kit handoff protocol plus a CARE-specific overlay. Generic role/state/task/result/review/controller rules live in the Bridge Kit-managed files under `prompts/`. Generic medical-imaging mechanism gates live in `.agents/skills/domains-medical-imaging-medical-imaging-deep-learning/SKILL.md` and its upstream AI_Skills_Collection source.
+
+CARE-specific additions live in `prompts/CARE_OVERLAY_GATES.md` and the CARE task/review/controller templates under `prompts/templates/`. Keep this layer limited to CARE Challenge contracts: `myops_scar`, `myops_edema`, `myocardium_cinemyops`, raw-vs-compact labels, no-T2 edema semantics, CineMyoPS temporal evidence, one-zip validation packaging, CenterB/CenterC reporting, and historical stop/revise failure rules. Do not copy the full medical-imaging skill into CARE rules.
+
+For high-risk CARE work, a Codex executor result cannot authorize fold expansion, validation packaging, upload, or next-stage training by itself. Use a separate read-only audit or a controller report, and escalate new scientific directions to the user-supervised GPT strategic controller.
