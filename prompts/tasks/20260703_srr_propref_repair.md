@@ -45,7 +45,7 @@ The prior diagnostic packet is not an adequate negative result if it used `max_s
 
 ## Required prerequisites
 
-Read `results/20260703_srr_failure_audit/review.md` if present. If the failure audit is missing, write `NEEDS_EVIDENCE` unless the controller provides equivalent reviewed evidence.
+Read `prompts/EXPERIMENT_ADEQUACY_GATE.md`, `prompts/DIAGNOSTIC_PUBLICATION_GATE.md`, `prompts/CONTROLLER_TASK_PROTOCOL.md`, and `results/20260703_srr_failure_audit/review.md` if present. If the failure audit is missing, write `NEEDS_EVIDENCE` unless the controller provides equivalent reviewed evidence.
 
 ## Required repairs
 
@@ -70,6 +70,8 @@ Outputs should be isolated under `results/20260703_srr_propref_repair/variants/<
 ## Required outputs
 
 Write `result.md`, `MANIFEST.md`, `experiment_adequacy_report.md`, `one_batch_overfit.md`, `checkpoint_policy.md`, `prediction_sanity.md`, `proposal_pr_sweep.csv`, `metrics_summary.md`, `subgroup_metrics.csv`, `component_hd_by_case.csv`, `roi_coverage.csv`, `label_export_qc.md`, `failure_interpretation.md`, and `command_transcript.md` under `results/20260703_srr_propref_repair/`. Include updated reviewed code/scripts if needed.
+
+`result.md` must include `experiment_adequacy_decision`, `route_promotion_decision`, `route_negative_decision`, and `scientific_resolution_status`, even though this is an execution subtask.
 
 ## Decision rules
 
