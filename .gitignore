@@ -91,6 +91,8 @@ ENV/
 .env
 .env.*
 !.env.example
+.envrc
+.care-codex-env.sh
 *.pem
 secrets/
 
@@ -182,6 +184,11 @@ results/metrics/unified/*/fold_*/modality_group_metrics.md
 results/metrics/unified/*/fold_*/hd_per_class.json
 results/metrics/unified/*/fold_*/hd95_per_class.json
 
+# Generated handoff/controller run directories are data-derived local evidence
+# packages. Keep them out of normal commits; publish curated summaries only with
+# an explicit forced add after review.
+results/20??????_*/
+
 # Task-scoped experiment directories should keep summaries/manifests tracked but
 # not heavy rerunnable artifacts.
 results/*/variants/*/checkpoints/
@@ -190,6 +197,7 @@ results/*/**/checkpoints/
 results/*/**/predictions/
 results/*/preflight/
 results/*/preflight_probe/
+results/*/smoke/
 results/**/*.pt
 results/**/*.pth
 results/**/*.ckpt
