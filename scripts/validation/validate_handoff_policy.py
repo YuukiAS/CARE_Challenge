@@ -1,0 +1,495 @@
+#!/usr/bin/env python3
+"""Validate CARE handoff route, publication, and scientific-status policy."""
+
+from __future__ import annotations
+
+import argparse
+import ast
+from dataclasses import dataclass
+from pathlib import Path
+import re
+import sys
+from typing import Iterable, Sequence
+
+
+FORBIDDEN_PUBLICATION_PATTERNS = [
+    re.compile(pattern, re.IGNORECASE)
+    for pattern in [
+        r"(^|/)checkpoints?(/|$)",
+        r"checkpoint_.*\.(pth|pt|ckpt)$",
+        r"\.(pth|pt|ckpt)$",
+        r"(^|/)predictions?(/|$)",
+        r"\.nii(\.gz)?$",
+        r"\.zip$",
+        r"(^|/)upload_ready(/|$)",
+        r"validation[_-]?package",
+        r"hosted[_-]?validation",
+        r"(^|/)logs?(/|$)",
+        r"\.log$",
+        r"transcript",
+        r"environment[_-]?dump",
+        r"\.env($|[./])",
+        r"credential",
+        r"secret",
+        r"\.csv$",
+    ]
+]
+
+REPORT_REQUIRED_FIELDS = [
+    "controller_run_status",
+    "operational_completion_status",
+    "experiment_adequacy_decision",
+    "route_promotion_decision",
+    "route_negative_decision",
+    "scientific_resolution_status",
+    "diagnostic_publication_decision",
+    "git_commit_decision",
+    "git_push_decision",
+    "published_files",
+    "blocked_actions",
+    "next_required_action",
+    "reason_if_not_published",
+    "reason_if_no_route_promotion",
+]
+
+DIAGNOSTIC_ONLY_PHRASE = "diagnostic publication only; no route promotion"
+ROUTE_NEGATIVE_RE = re.compile(r"\bSTOP_NO_[A-Z0-9_]+\b|\b[A-Z0-9_]*NO_SIGNAL\b")
+TRAINING_EVIDENCE_FIELDS = [
+    "actual_steps",
+    "train_loop_seconds",
+    "loss_decrease",
+    "prediction_sanity",
+]
+
+
+@dataclass(frozen=True)
+class Finding:
+    severity: str
+    path: Path
+    message: str
+
+
+def parse_frontmatter(text: str) -> dict[str, object]:
+    if not text.startswith("---\n"):
+        return {}
+    end = text.find("\n---", 4)
+    if end == -1:
+        return {}
+    block = text[4:end]
+    values: dict[str, object] = {}
+    for raw_line in block.splitlines():
+        line = raw_line.strip()
+        if not line or line.startswith("#") or ":" not in line:
+            continue
+        key, raw_value = line.split(":", 1)
+        key = key.strip()
+        raw_value = raw_value.strip()
+        if not raw_value:
+            values[key] = ""
+            continue
+        lower_value = raw_value.lower()
+        if lower_value == "true":
+            values[key] = True
+        elif lower_value == "false":
+            values[key] = False
+        elif raw_value.startswith("[") and raw_value.endswith("]"):
+            try:
+                values[key] = ast.literal_eval(raw_value)
+            except (SyntaxError, ValueError):
+                values[key] = raw_value
+        else:
+            values[key] = raw_value.strip("\"'")
+    return values
+
+
+def as_bool(value: object) -> bool:
+    if isinstance(value, bool):
+        return value
+    if isinstance(value, str):
+        return value.lower() == "true"
+    return False
+
+
+def is_controller_task(frontmatter: dict[str, object], text: str) -> bool:
+    return (
+        frontmatter.get("task_type") == "controller"
+        or as_bool(frontmatter.get("controller_mode"))
+        or "controller_report_path" in frontmatter
+        or "# CARE Controller Task:" in text
+    )
+
+
+def is_execution_task(frontmatter: dict[str, object]) -> bool:
+    return frontmatter.get("task_type") in ("execution", None) and not as_bool(
+        frontmatter.get("controller_mode")
+    )
+
+
+def has_any_git_permission(frontmatter: dict[str, object]) -> bool:
+    return as_bool(frontmatter.get("allow_git_commit")) or as_bool(
+        frontmatter.get("allow_git_push")
+    )
+
+
+def is_model_training_task(frontmatter: dict[str, object], text: str) -> bool:
+    mechanism = str(frontmatter.get("mechanism_class", "")).lower()
+    haystack = f"{mechanism}\n{text[:1200].lower()}"
+    return any(
+        token in haystack
+        for token in (
+            "segmentation",
+            "training",
+            "train",
+            "proposal",
+            "refinement",
+            "cascade",
+            "missing_modality",
+            "cine_temporal",
+            "external_adapter",
+        )
+    )
+
+
+def severity(strict: bool) -> str:
+    return "error" if strict else "warning"
+
+
+def validate_task_file(path: Path, text: str, strict: bool) -> list[Finding]:
+    frontmatter = parse_frontmatter(text)
+    findings: list[Finding] = []
+    if not frontmatter:
+        return findings
+
+    if is_controller_task(frontmatter, text) and has_any_git_permission(frontmatter):
+        missing = [
+            field
+            for field in (
+                "route_promotion_gate",
+                "experiment_adequacy_gate",
+                "route_negative_gate",
+                "scientific_completion_gate",
+                "diagnostic_publication_gate",
+                "diagnostic_publication_scope",
+                "blocked_after_diagnostic_publication",
+            )
+            if not frontmatter.get(field)
+        ]
+        if missing:
+            legacy_note = ""
+            if frontmatter.get("promotion_gate") and "route_promotion_gate" in missing:
+                legacy_note = " Legacy promotion_gate is compatible but should be split."
+            findings.append(
+                Finding(
+                    severity(strict),
+                    path,
+                    "controller task with git permission is missing explicit "
+                    + ", ".join(missing)
+                    + "."
+                    + legacy_note,
+                )
+            )
+
+    risk_level = str(frontmatter.get("risk_level", "")).lower()
+    if (
+        risk_level in {"medium", "high"}
+        and is_model_training_task(frontmatter, text)
+        and (
+            frontmatter.get("task_type") in {"execution", "controller"}
+            or as_bool(frontmatter.get("controller_mode"))
+        )
+    ):
+        missing_model_fields = [
+            field
+            for field in (
+                "experiment_adequacy_gate",
+                "route_negative_gate",
+                "scientific_completion_gate",
+            )
+            if not frontmatter.get(field)
+        ]
+        if "minimum_effective_training" not in text:
+            missing_model_fields.append("minimum_effective_training")
+        if missing_model_fields:
+            findings.append(
+                Finding(
+                    severity(strict),
+                    path,
+                    "medium/high-risk model task is missing explicit "
+                    + ", ".join(missing_model_fields)
+                    + ". Legacy tasks default to not supporting route-negative stops.",
+                )
+            )
+
+    if (
+        is_execution_task(frontmatter)
+        and risk_level in {"medium", "high"}
+        and has_any_git_permission(frontmatter)
+    ):
+        if not as_bool(frontmatter.get("review_required")):
+            findings.append(
+                Finding(
+                    severity(strict),
+                    path,
+                    "medium/high-risk executor task allows git without review_required: true.",
+                )
+            )
+        if "audit" not in text.lower() and "review" not in text.lower():
+            findings.append(
+                Finding(
+                    severity(strict),
+                    path,
+                    "medium/high-risk executor task allows git without explicit audit/review text.",
+                )
+            )
+
+    return findings
+
+
+def extract_published_files(text: str) -> list[str]:
+    files: list[str] = []
+    in_block = False
+    for raw_line in text.splitlines():
+        line = raw_line.rstrip()
+        stripped = line.strip()
+        if re.match(r"^published_files\s*:", stripped):
+            in_block = True
+            after = stripped.split(":", 1)[1].strip()
+            if after and after not in {"[]", "none"}:
+                files.append(after.strip("- `"))
+            continue
+        if in_block:
+            if not stripped:
+                continue
+            if re.match(r"^[A-Za-z_][A-Za-z0-9_ -]*\s*:", stripped):
+                break
+            if stripped.startswith("-"):
+                files.append(stripped[1:].strip().strip("`"))
+            elif raw_line.startswith((" ", "\t")):
+                files.append(stripped.strip("`"))
+            else:
+                break
+    return [item for item in files if item and item.lower() != "none"]
+
+
+def field_value(text: str, field: str) -> str | None:
+    match = re.search(rf"(?m)^{re.escape(field)}[ \t]*:[ \t]*(.*)$", text)
+    if not match:
+        return None
+    return match.group(1).strip()
+
+
+def field_nonempty(text: str, field: str) -> bool:
+    value = field_value(text, field)
+    return value is not None and value.strip().lower() not in {"", "none", "..."}
+
+
+def has_route_negative_conclusion(text: str) -> bool:
+    return bool(ROUTE_NEGATIVE_RE.search(text)) or bool(
+        re.search(r"(?m)^route_negative_decision\s*:\s*STOP_SUPPORTED\s*$", text)
+    ) or bool(
+        re.search(
+            r"(?m)^scientific_resolution_status\s*:\s*SCIENTIFIC_STOP_SUPPORTED\s*$",
+            text,
+        )
+    )
+
+
+def has_forbidden_publication_path(path_text: str) -> bool:
+    normalized = path_text.replace("\\", "/")
+    return any(pattern.search(normalized) for pattern in FORBIDDEN_PUBLICATION_PATTERNS)
+
+
+def validate_controller_report(path: Path, text: str) -> list[Finding]:
+    findings: list[Finding] = []
+    lower_text = text.lower()
+    if path.name != "controller_report.md":
+        return findings
+
+    for field in REPORT_REQUIRED_FIELDS:
+        if not re.search(rf"(?m)^{re.escape(field)}\s*:", text):
+            findings.append(Finding("error", path, f"controller report missing {field}."))
+
+    if has_route_negative_conclusion(text):
+        if field_value(text, "experiment_adequacy_decision") != "PASS":
+            findings.append(
+                Finding(
+                    "error",
+                    path,
+                    "route-negative conclusion requires experiment_adequacy_decision: PASS.",
+                )
+            )
+        if field_value(text, "route_negative_decision") != "STOP_SUPPORTED":
+            findings.append(
+                Finding(
+                    "error",
+                    path,
+                    "STOP_NO_* or scientific stop requires route_negative_decision: STOP_SUPPORTED.",
+                )
+            )
+
+    if (
+        field_value(text, "controller_run_status") == "COMPLETE"
+        and field_value(text, "scientific_resolution_status") == "SCIENTIFIC_UNRESOLVED"
+        and not field_nonempty(text, "next_required_action")
+    ):
+        findings.append(
+            Finding(
+                "error",
+                path,
+                "COMPLETE controller with SCIENTIFIC_UNRESOLVED must state next_required_action.",
+            )
+        )
+
+    no_promotion = re.search(r"route_promotion_decision\s*:\s*NO_PROMOTION", text)
+    diagnostic_commit = re.search(
+        r"git_commit_decision\s*:\s*(COMMIT_DIAGNOSTIC_ONLY|COMMIT_[A-Z_]*DIAGNOSTIC[A-Z_]*)",
+        text,
+    )
+    diagnostic_push = re.search(
+        r"git_push_decision\s*:\s*(PUSH_DIAGNOSTIC_ONLY|PUSH_[A-Z_]*DIAGNOSTIC[A-Z_]*)",
+        text,
+    )
+    any_commit_or_push = diagnostic_commit or diagnostic_push or re.search(
+        r"(commit_executed|push_executed)\s*:\s*true", lower_text
+    )
+
+    if no_promotion and any_commit_or_push:
+        if not re.search(
+            r"diagnostic_publication_decision\s*:\s*PUBLISH_REVIEWED_DIAGNOSTIC_PACKET",
+            text,
+        ):
+            findings.append(
+                Finding(
+                    "error",
+                    path,
+                    "no-promotion report with commit/push must publish through diagnostic_publication_decision.",
+                )
+            )
+        if DIAGNOSTIC_ONLY_PHRASE not in lower_text:
+            findings.append(
+                Finding(
+                    "error",
+                    path,
+                    f"diagnostic-only commit/push must state `{DIAGNOSTIC_ONLY_PHRASE}`.",
+                )
+            )
+        if not extract_published_files(text):
+            findings.append(
+                Finding(
+                    "error",
+                    path,
+                    "no-promotion report with commit/push must list published_files.",
+                )
+            )
+
+    for published in extract_published_files(text):
+        if has_forbidden_publication_path(published):
+            findings.append(
+                Finding(
+                    "error",
+                    path,
+                    f"published_files contains forbidden diagnostic artifact path: {published}",
+                )
+            )
+
+    return findings
+
+
+def validate_review_file(path: Path, text: str) -> list[Finding]:
+    if path.name != "review.md":
+        return []
+    findings: list[Finding] = []
+    route_negative_supported = (
+        field_value(text, "route_negative_decision") == "STOP_SUPPORTED"
+        or field_value(text, "scientific_resolution_status") == "SCIENTIFIC_STOP_SUPPORTED"
+        or ("AUDITED_GO" in text and has_route_negative_conclusion(text))
+    )
+    if not route_negative_supported:
+        return findings
+    if field_value(text, "experiment_adequacy_decision") != "PASS":
+        findings.append(
+            Finding(
+                "error",
+                path,
+                "review cannot support route-negative stop without experiment_adequacy_decision: PASS.",
+            )
+        )
+    missing = [field for field in TRAINING_EVIDENCE_FIELDS if field not in text]
+    if missing:
+        findings.append(
+            Finding(
+                "error",
+                path,
+                "review supports route-negative stop but lacks training adequacy fields: "
+                + ", ".join(missing)
+                + ".",
+            )
+        )
+    return findings
+
+
+def iter_markdown_files(paths: Sequence[Path]) -> Iterable[Path]:
+    for path in paths:
+        if path.is_dir():
+            yield from sorted(path.rglob("*.md"))
+        elif path.suffix == ".md":
+            yield path
+
+
+def validate_paths(paths: Sequence[Path], strict_tasks: bool = False) -> list[Finding]:
+    findings: list[Finding] = []
+    for path in iter_markdown_files(paths):
+        text = path.read_text(encoding="utf-8")
+        findings.extend(validate_task_file(path, text, strict=strict_tasks))
+        findings.extend(validate_controller_report(path, text))
+        findings.extend(validate_review_file(path, text))
+    return findings
+
+
+def default_paths(repo_root: Path) -> list[Path]:
+    return [
+        repo_root / "prompts" / "AGENT_RULES.md",
+        repo_root / "prompts" / "CHATGPT_RULES.md",
+        repo_root / "prompts" / "HANDOFF_ROLES.md",
+        repo_root / "prompts" / "HANDOFF_STATE_MACHINE.md",
+        repo_root / "prompts" / "CONTROLLER_TASK_PROTOCOL.md",
+        repo_root / "prompts" / "CARE_OVERLAY_GATES.md",
+        repo_root / "prompts" / "DIAGNOSTIC_PUBLICATION_GATE.md",
+        repo_root / "prompts" / "EXPERIMENT_ADEQUACY_GATE.md",
+        repo_root / "prompts" / "templates",
+        repo_root / "results" / "README.md",
+    ]
+
+
+def main(argv: Sequence[str] | None = None) -> int:
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("paths", nargs="*", type=Path, help="Markdown files or directories to validate.")
+    parser.add_argument(
+        "--strict-tasks",
+        action="store_true",
+        help="Treat legacy task frontmatter omissions as errors instead of warnings.",
+    )
+    parser.add_argument(
+        "--warnings-as-errors",
+        action="store_true",
+        help="Return non-zero when warnings are present.",
+    )
+    args = parser.parse_args(argv)
+
+    repo_root = Path.cwd()
+    paths = args.paths or default_paths(repo_root)
+    findings = validate_paths(paths, strict_tasks=args.strict_tasks)
+
+    for item in findings:
+        print(f"{item.severity}: {item.path}: {item.message}")
+
+    has_errors = any(item.severity == "error" for item in findings)
+    has_warnings = any(item.severity == "warning" for item in findings)
+    if has_errors or (args.warnings_as_errors and has_warnings):
+        return 1
+    print("handoff policy validation passed")
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())
