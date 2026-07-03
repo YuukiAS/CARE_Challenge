@@ -16,15 +16,15 @@ allow_network: false
 allow_external_upload: false
 requires_human_approval: false
 review_required: true
-mechanism_class: "audit / label-data-mechanism / missing_modality"
+mechanism_class: "audit / label-data-mechanism / architecture adequacy / missing_modality"
 target_metric: "myops_scar, myops_edema"
 same_split_baseline: "nnU-Net fold0 reference and rescue final status artifacts; evidence not found if unavailable"
 required_subgroups: ["all-case", "T2-present/complete", "GT-positive", "no-T2 empty-GT stability", "CenterB", "CenterC", "LGE-only", "C0+LGE", "C0+LGE+T2"]
 required_secondary_metrics: ["Dice", "HD", "HD95", "component_count", "remote_FP", "small_FP", "volume_ratio", "empty_prediction_rate"]
-required_evidence: ["result.md", "review.md", "MANIFEST.md", "mechanism_audit.md", "label_export_qc.md", "route_gap_table.csv", "failure_case_table.csv", "same_split_baseline", "code_path_audit", "cache_isolation"]
+required_evidence: ["result.md", "review.md", "MANIFEST.md", "mechanism_audit.md", "label_export_qc.md", "architecture_gap_audit.md", "route_gap_table.csv", "failure_case_table.csv", "same_split_baseline", "code_path_audit", "cache_isolation"]
 forbidden_substitutes: ["intention-only audit", "metrics without file paths", "compact-label proxy as challenge evidence", "missing evidence inferred from logs", "preflight-only conclusion", "executor self-review"]
 promotion_gate: "Read-only review supports all audit claims and explicitly marks missing evidence as evidence not found."
-failure_escalation_policy: "If same-split baseline, label/export path, or evaluator evidence is missing, stop at NEEDS_EVIDENCE. If the audit shows a new scientific direction is needed, write NEEDS_GPT_PLANNER."
+failure_escalation_policy: "If same-split baseline, label/export path, architecture evidence, or evaluator evidence is missing, stop at NEEDS_EVIDENCE. If the audit shows a new scientific direction is needed, write NEEDS_GPT_PLANNER."
 allowed_next_states: ["EXECUTED_UNAUDITED", "NEEDS_EVIDENCE", "NEEDS_REVISION", "NEEDS_GPT_PLANNER", "STOP"]
 auto_git_commit: false
 auto_git_push: false
@@ -32,11 +32,11 @@ allow_git_commit: false
 allow_git_push: false
 ---
 
-# Task: MyoPS Label/Data Mechanism Audit
+# Task: MyoPS Label/Data/Architecture Mechanism Audit
 
 ## Goal
 
-在启动新训练或 postprocessor 前，给 MyoPS 做一次 evidence-gated 机制审计。上一轮 rescue final status 已经证明当前 custom SRR/cascade 路线没有超过 nnU-Net-relative gate；本任务要回答：问题是否来自 label/export/evaluator、T2/no-T2 监督机制、CenterB/CenterC data mechanism、prediction failure distribution，还是确实需要新的 nnU-Net anchored pathology postprocessor/refiner。
+在启动新训练或 postprocessor 前，给 MyoPS 做一次 evidence-gated 机制审计。上一轮 rescue final status 已经证明当前 custom SRR/cascade 路线没有超过 nnU-Net-relative gate；本任务要回答：问题是否来自 label/export/evaluator、T2/no-T2 监督机制、CenterB/CenterC data mechanism、architecture too shallow / wrong head design、prediction failure distribution，还是确实需要新的 nnU-Net anchored pathology postprocessor/refiner 或 SRR-ProposeRefine。
 
 本任务是 MyoPS 主线的 Phase 1。它不做 validation upload、不做 fold expansion、不做新模型训练。允许新增只读/汇总脚本和审计表。
 
@@ -53,8 +53,9 @@ allow_git_push: false
 3. T2/no-T2 edema contract 是否被当前代码和结果满足？审查 loss、hard-negative mining、sampling、subgroup metrics。若发现违反，必须标为 `CONTRADICTED`。
 4. CenterB/CenterC 与 modality pattern 是否解释 edema failure？必须报告 CenterB/CenterC、T2-present、complete、GT-positive、LGE-only/C0+LGE/C0+LGE+T2 的 Dice/HD95/component/remote FP。
 5. nnU-Net fold0 reference 与 custom routes 的主要差距是否来自 remote FP/component burden、volume ratio、CenterC collapse、scar LGE-only failure、edema recall/precision，还是 label/evaluator问题？
-6. 当前代码机制中哪些已经被实验证伪？不要只说“低于 baseline”，必须写机制解释。
-7. 下一步是否应启动 `20260703_myops_fp_control` 和 `20260703_myops_anchor_refine`？分别写 GO/NO-GO 条件和所需证据。
+6. architecture adequacy: 当前实现是否仍存在 shallow stem、1x1 pathology heads、proposal logits mixed directly into final logits、no independent lesion candidate/refinement、insufficient local ROI/high-resolution decoder、or no true trainable alignment expert。必须写 `architecture_gap_audit.md`。
+7. 当前代码机制中哪些已经被实验证伪？不要只说“低于 baseline”，必须写机制解释。
+8. 下一步是否应启动 `20260703_myops_fp_control`、`20260703_myops_srr_propose_refine`、`20260703_myops_alignment_gate`、`20260703_myops_anchor_refine`？分别写 GO/NO-GO 条件和所需证据。
 
 ## Authorized Scope
 
@@ -66,10 +67,10 @@ allow_git_push: false
 
 ## Evidence Requirements
 
-必须写 `results/20260703_myops_audit/result.md`、`MANIFEST.md`、`mechanism_audit.md`、`label_export_qc.md`、`route_gap_table.csv`、`failure_case_table.csv`、`code_path_audit.md`、`next_route_gate.md`。
+必须写 `results/20260703_myops_audit/result.md`、`MANIFEST.md`、`mechanism_audit.md`、`label_export_qc.md`、`architecture_gap_audit.md`、`route_gap_table.csv`、`failure_case_table.csv`、`code_path_audit.md`、`next_route_gate.md`。
 
 如果生成 review，请写 `results/20260703_myops_audit/review.md`。普通 executor 必须停在 `EXECUTED_UNAUDITED`。
 
 ## Completion Definition
 
-完成是：审计表可复核、路径齐全、missing evidence 显式标出，并给出是否允许进入 `myops_fp_control` / `myops_anchor_refine` 的证据门。
+完成是：审计表可复核、路径齐全、missing evidence 显式标出，并给出是否允许进入 `myops_fp_control` / `myops_srr_propose_refine` / `myops_alignment_gate` / `myops_anchor_refine` 的证据门。
