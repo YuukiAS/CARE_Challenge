@@ -1,3 +1,17 @@
+---
+name: agent-task-executor
+description: Execute repository handoff tasks from prompts/tasks/<task_key>.md by reading bridge rules, checking task frontmatter permissions, performing only authorized actions, and writing results/<task_key>/result.md plus manifests when needed.
+status: active
+provenance: project-local
+trusted: true
+requires_network: false
+writes_files: true
+executes_code: true
+profile_tags:
+  - care
+  - handoff
+recommended_scope: project
+---
 # Agent Task Executor
 
 这个 skill 是通用 Codex 执行规程。它可以复制到真实项目：
