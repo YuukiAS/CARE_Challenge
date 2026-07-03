@@ -1,0 +1,26 @@
+{
+  "best_step": 1,
+  "best_val_patch_loss": 3.735498881340027,
+  "checkpoint_best": "/users/a/e/aereinh/CARE/results/20260703_myops_srr_propose_refine/smoke/variants/srr_propref_shared_dual_dict/checkpoints/fold_0/propref_config/checkpoint_best.pt",
+  "checkpoint_final": "/users/a/e/aereinh/CARE/results/20260703_myops_srr_propose_refine/smoke/variants/srr_propref_shared_dual_dict/checkpoints/fold_0/propref_config/checkpoint_final.pt",
+  "device": "cpu",
+  "elapsed_seconds": 4.4228669120930135,
+  "fold": 0,
+  "hardneg_case_count": 44,
+  "hardneg_component_count": 5728,
+  "hardneg_components_csv": "/users/a/e/aereinh/CARE/results/20260629_proposal_memory_hardneg/mined_components.csv",
+  "max_runtime_seconds": 600.0,
+  "max_steps": 1,
+  "prediction_dir": "/users/a/e/aereinh/CARE/results/20260703_myops_srr_propose_refine/smoke/variants/srr_propref_shared_dual_dict/predictions/fold_0/checkpoint_best",
+  "skip_export": true,
+  "stop_reason": "max_steps",
+  "three_stage_schedule": [
+    "evidence_warmup",
+    "proposal_dictionary",
+    "soft_roi_refinement",
+    "low_lr_calibration"
+  ],
+  "train_cases": 176,
+  "val_cases": 44,
+  "variant": "srr_propref_shared_dual_dict"
+}
