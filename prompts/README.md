@@ -10,9 +10,9 @@ prompts are source material, not the source of truth. The former root
 | Path | Purpose |
 | --- | --- |
 | `Baseline/` | Archived baseline-improvement prompts for MyoPS-Net, U-MyoPS, and CineMyoPS. These are historical inputs for negative evidence and should not be treated as current mainline plans. |
-| `LaneA/` | Lane A MyoPS prompt drafts for later rounds. Use the matching `docs/plans/laneA_roundXX_*` file as the controller before executing. |
-| `DeepResearch/` | Deep research prompt material and mechanism-source notes. External methods still require license, compliance, input/output, label mapping, and one-case smoke gates before use. |
-| `CARE_Challenge_Analysis.md` | General CARE challenge analysis prompt/material. |
+| `archive/LaneA/` | Historical Lane A MyoPS prompt drafts that have been superseded by governed `docs/plans/laneA_roundXX_*` controller files. |
+| `archive/DeepResearch/` | Historical deep research prompt material and mechanism-source notes. External methods still require license, compliance, input/output, label mapping, and one-case smoke gates before use. |
+| `archive/CARE_Challenge_Analysis.md` | Archived general CARE challenge analysis prompt/material. |
 | `Baseline_report.md` | Legacy baseline reporting prompt/material. |
 | `DIAGNOSTIC_PUBLICATION_GATE.md` | Migration note and policy split between route promotion and diagnostic artifact publication. |
 | `EXPERIMENT_ADEQUACY_GATE.md` | Migration note and policy split between operational completion and scientific route resolution. |
