@@ -1,0 +1,5 @@
+Run the controller task `prompts/tasks/20260704_anchor_srr_v25_goal.md`.
+
+MyoPS is primary. Do not spend the first phase re-auditing the completed v2.5 audit; convert it into a locked implementation contract, then proceed through the ordered subtasks. The repair path must consume nnU-Net probabilities/predictions/components, replace the old one-block-per-category retrieval with a true multi-slot shared/private/interaction dictionary bank, build data-derived scar/edema positive and safe-negative prototype banks, add proposal logits based on positive-vs-negative similarity plus anchor/anatomy/distance evidence, add real soft-ROI crop refiners using original LGE/T2 crops, enforce no-T2-safe edema inference, and run formal fold0 only after preflight/guardrails pass.
+
+Cine is secondary and may run only with non-reference frame temporal evidence; frame0-only is not completion. Do not train the old tiny PropRef again, do not use no-T2 as edema negative, do not mark undertrained runs as route failure, and do not package/upload validation.
