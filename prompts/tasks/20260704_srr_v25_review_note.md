@@ -1,0 +1,1 @@
+Review note: use prompts/tasks/20260704_srr_v25_subtask_index.md as the authoritative list of this planning round. Do not execute until user review.
