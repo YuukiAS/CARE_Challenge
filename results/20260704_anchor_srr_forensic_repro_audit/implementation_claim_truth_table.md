@@ -1,0 +1,23 @@
+# Implementation Claim Truth Table
+
+| claim | status | committed_source_evidence | runtime_artifact_evidence | risk_to_conclusion | required_fix_or_next_action |
+| --- | --- | --- | --- | --- | --- |
+| nnU-Net anchor probability consumption | SUPPORTED | `srr_propref.py:502-520`; `run_srr_propref_myops_fold0.py:127-159,229-234,518-519,752-756,906,1083` | `variants/*/summary.json` records `nnunet_anchor_manifest`; `run_config.env` records `nnunet_anchor_root` | low for current packet | keep as supported |
+| nnU-Net component consumption | SUPPORTED | `srr_propref.py:125-155,519-528,538-552,576-577`; `run_srr_propref_myops_fold0.py:140-148,237-241,518-519,752-756,1079-1083` | `summary.json` component source; anchor/component present fractions in logs/summaries | low for current packet | keep as supported |
+| true multi-slot dictionary bank | SUPPORTED | `srr_v2_unet.py:59-111`; `srr_propref.py:425-430,597-600` | `gate_usage_by_pattern.csv`, `dictionary_stats.csv` | low | keep diagnostics |
+| task-specific gates with missing-modality slot masking | SUPPORTED | `ScaleRetrieval` delegates to `MultiSlotSRRRetrievalBlock`; `srr_propref.py:493-500,597-600` | `gate_usage_by_pattern.csv` | medium because block internals not reprinted in report | cite block internals if challenged |
+| data-derived scar-positive prototypes | PARTIAL | `ProposalDictionary` has `load_prototype_bank`, but initialization uses deterministic buffers at `srr_propref.py:37-57` | `prototype_update_sanity*.csv` tracks updates, not pretrain/OOF positive bank loading | medium | implement or cite actual train/OOF prototype cache loading |
+| data-derived scar-safe-negative prototypes | PARTIAL | deterministic negative and memory buffers at `srr_propref.py:47-50`; hardneg replay loader at runner lines `779-810` | `hardneg_component_count=5728` in summaries | medium | add explicit safe-negative prototype cache provenance |
+| data-derived edema-positive prototypes | PARTIAL | same as above; edema dictionary instantiated at `srr_propref.py:444-450` | summaries and prototype sanity only | medium-high for full SRR-v2.5 claim | add edema-positive T2-present prototype cache |
+| edema-safe-negative policy excluding no-T2 myocardium | SUPPORTED | `run_srr_propref_myops_fold0.py:156-159,220-225,303-311,779-810`; `srr_losses.py:36-49` | `no_t2_decode_sanity.csv`, `summary.json` no-T2 policy | low | keep as supported |
+| hard-negative memory use | SUPPORTED | `srr_propref.py:39-50,116-149`; `run_srr_propref_myops_fold0.py:779-810,1001-1004,1256-1258` | `hardneg_case_count=44`, `hardneg_component_count=5728` | low-medium | keep as diagnostic support |
+| original LGE crop scar refinement | SUPPORTED | `CropSoftROIRefinementHead` consumes modality crop and bounded crop at `srr_propref.py:210-215,299-381`; scar modality index 0 at `454-464` | ROI/component/prediction CSVs | low | keep as supported |
+| original T2 crop edema refinement | SUPPORTED | edema modality index 1 at `srr_propref.py:465-475`; no-T2 block at `329-333,555-557` | ROI CSVs; no-T2 sanity CSV | low | keep as supported |
+| soft anatomy/ROI prior | SUPPORTED | `srr_propref.py:257-291,315-324`; `srr_losses.py:108-117` | ROI coverage and proposal PR files | low | keep as supported |
+| no-T2 inference/decode/export guardrail | SUPPORTED | model blocks edema logits at `srr_propref.py:555-557`; full-case anchors zeroed at runner `303-311`; decode uses model logits at `491-503` | `no_t2_decode_sanity.csv` max no-T2 edema voxels 0 | low | keep as supported |
+| SRR-v2/v2.5 diagram-consistent loss stack | PARTIAL | loss stack includes anatomy/scar/edema/prior/retrieval and proposal/refinement scheduling in runner | `loss_stage_status.md`, summaries | medium | full diagram-to-code trace still needed |
+| convergence/plateau training evidence | SUPPORTED | formal runner has min steps/seconds guards in job script `21-30,91-98` | adequacy report: 24000/22800/22800 steps, 40/38/38 validation events | low | keep as supported |
+| same-split nnU-Net comparison | SUPPORTED | evaluator aggregation script is committed | `metrics_summary.md`: scar 0.4183 vs 0.5602; edema 0.1872 vs 0.3944 | low | use only for current packet STOP |
+| CineMA attempt or blocker | PARTIAL | not in MyoPS runner | `controller_report.md` says CineMA import timed out and registration gap remains | medium | separate Cine task required |
+| registration option matrix | EVIDENCE_MISSING | no committed matrix found in this audit packet | controller notes SimpleITK demons fallback but no validated ANTs/SyN/VoxelMorph matrix | medium for full v2.5 goal | write separate registration audit/plan before Cine claims |
+
