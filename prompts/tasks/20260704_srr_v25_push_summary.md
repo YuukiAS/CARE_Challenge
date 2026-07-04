@@ -15,6 +15,7 @@ This planning round now contains 17 review-first tasks after visual review of th
 
 - `20260704_srr_v25_full_completion_goal.md`
 - `20260704_srr_v25_subtask_index.md`
+- `20260704_srr_v25_gap_matrix_and_contract.md`
 - `20260704_srr_v25_encoder_context_interface.md`
 - `20260704_srr_v25_local_refinement_ablation.md`
 - `20260704_srr_v25_training_objectives_ablation.md`
