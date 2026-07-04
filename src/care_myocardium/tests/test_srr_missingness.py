@@ -27,9 +27,12 @@ class TestSRRMissingness(unittest.TestCase):
         model = SRRMyoPSLite(base_channels=8)
         availability = torch.tensor([[1.0, 0.0, 0.0]])  # LGE-only
         outputs = model(torch.randn(1, 3, 6, 8, 8), availability)
-        for gate in outputs["gates"].values():
-            self.assertEqual(float(gate[0, 2].detach()), 0.0)  # T2 private expert
-            self.assertEqual(float(gate[0, 3].detach()), 0.0)  # C0 private expert
+        for name, gate in outputs["gates"].items():
+            metadata = outputs["dictionary_slot_metadata"][name]
+            for idx, spec in enumerate(metadata):
+                group = spec["group"]
+                if group in {"t2_private", "c0_private"} or str(group).startswith("interaction_"):
+                    self.assertEqual(float(gate[0, idx].detach()), 0.0)
 
 
 if __name__ == "__main__":

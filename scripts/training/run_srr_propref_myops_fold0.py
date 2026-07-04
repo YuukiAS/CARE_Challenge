@@ -10,6 +10,7 @@ import math
 import random
 import sys
 import time
+from dataclasses import dataclass
 from pathlib import Path
 from statistics import mean
 
@@ -26,8 +27,8 @@ if str(REPO_ROOT) not in sys.path:
 
 from scripts.training.run_srr_myops_fold0 import (  # noqa: E402
     CaseData,
-    batch_from_cases,
     collect_case_metrics,
+    crop_or_pad,
     load_hard_negative_targets,
     load_split,
     parse_shape,
@@ -45,6 +46,25 @@ from src.care_myocardium.models.srr_propref import SRRProposeRefineMyoPS  # noqa
 OUT_ROOT = REPO_ROOT / "results/20260703_srr_propref_repair"
 IGNORE_LABEL = -1
 DEFAULT_PROPOSAL_THRESHOLDS = "0.05,0.10,0.20,0.30,0.40,0.50,0.60,0.70,0.80,0.90"
+DEFAULT_NNUNET_ANCHOR_ROOT = (
+    REPO_ROOT
+    / "data/nnUNet/nnUNet_results/Dataset501_CAREMyoPS/"
+    "nnUNetTrainer_500epochs__nnUNetPlans__3d_fullres"
+)
+
+
+@dataclass
+class AnchoredCaseData:
+    case_id: str
+    image: np.ndarray
+    label_arr: np.ndarray
+    label_img: sitk.Image
+    availability: np.ndarray
+    metadata: object
+    anchor_probabilities: np.ndarray
+    component_features: np.ndarray
+    anchor_source: str
+    anchor_fold: int
 
 
 def _masked_bce_dice(logits: torch.Tensor, target: torch.Tensor, mask: torch.Tensor) -> torch.Tensor:
@@ -81,6 +101,214 @@ def parse_float_list(text: str) -> list[float]:
     if not values:
         raise ValueError("at least one threshold is required")
     return sorted({min(max(v, 0.0), 1.0) for v in values})
+
+
+def _anchor_root(path_text: str) -> Path:
+    path = Path(path_text)
+    return path if path.is_absolute() else REPO_ROOT / path
+
+
+def _find_anchor_paths(case_id: str, anchor_root: Path) -> tuple[int, Path, Path]:
+    matches: list[tuple[int, Path, Path]] = []
+    for fold_dir in sorted(anchor_root.glob("fold_*")):
+        try:
+            fold = int(fold_dir.name.split("_", 1)[1])
+        except (IndexError, ValueError):
+            continue
+        prob_path = fold_dir / "validation" / f"{case_id}.npz"
+        pred_path = fold_dir / "validation" / f"{case_id}.nii.gz"
+        if prob_path.is_file() and pred_path.is_file():
+            matches.append((fold, prob_path, pred_path))
+    if not matches:
+        raise FileNotFoundError(f"nnU-Net anchor probabilities/prediction not found for {case_id} under {anchor_root}")
+    return matches[0]
+
+
+def _load_anchor_probabilities(prob_path: Path, reference_shape: tuple[int, int, int]) -> np.ndarray:
+    with np.load(prob_path) as data:
+        if "probabilities" not in data:
+            raise KeyError(f"{prob_path} does not contain a 'probabilities' array")
+        probs = data["probabilities"].astype(np.float32, copy=False)
+    if probs.ndim != 4 or probs.shape[0] < 6:
+        raise ValueError(f"{prob_path} must have shape (C,D,H,W) with at least 6 classes, got {probs.shape}")
+    probs = probs[:6]
+    if tuple(probs.shape[-3:]) != tuple(reference_shape):
+        raise ValueError(f"{prob_path} spatial shape {probs.shape[-3:]} does not match label shape {reference_shape}")
+    return np.clip(probs, 0.0, 1.0).astype(np.float32, copy=False)
+
+
+def _load_component_features(pred_path: Path, reference_shape: tuple[int, int, int]) -> np.ndarray:
+    pred = sitk.GetArrayFromImage(sitk.ReadImage(str(pred_path))).astype(np.uint8, copy=False)
+    if tuple(pred.shape) != tuple(reference_shape):
+        raise ValueError(f"{pred_path} spatial shape {pred.shape} does not match label shape {reference_shape}")
+    components = []
+    for cls in (5, 4):
+        cc, n_cc = label((pred == cls).astype(bool), structure=generate_binary_structure(pred.ndim, 1))
+        components.append((cc > 0 if n_cc > 0 else np.zeros_like(pred, dtype=bool)).astype(np.float32, copy=False))
+    return np.stack(components, axis=0).astype(np.float32, copy=False)
+
+
+def read_anchored_case(case_id: str, metadata: dict[str, object], anchor_root: Path) -> AnchoredCaseData:
+    base = read_case(case_id, metadata)  # type: ignore[arg-type]
+    fold, prob_path, pred_path = _find_anchor_paths(case_id, anchor_root)
+    anchor = _load_anchor_probabilities(prob_path, tuple(base.label_arr.shape))
+    components = _load_component_features(pred_path, tuple(base.label_arr.shape))
+    if not bool(base.availability[1] > 0):
+        anchor[4] = 0.0
+        components[1] = 0.0
+    return AnchoredCaseData(
+        case_id=base.case_id,
+        image=base.image,
+        label_arr=base.label_arr,
+        label_img=base.label_img,
+        availability=base.availability,
+        metadata=base.metadata,
+        anchor_probabilities=anchor,
+        component_features=components,
+        anchor_source=str(prob_path),
+        anchor_fold=fold,
+    )
+
+
+def _crop_patch_arrays(
+    case: AnchoredCaseData,
+    patch_shape: tuple[int, int, int],
+    rng: np.random.Generator,
+    oversample_foreground: float,
+    focus_classes: tuple[int, ...],
+    forced_center_zyx: tuple[int, int, int] | None,
+) -> tuple[np.ndarray, np.ndarray, tuple[int, int, int]]:
+    label_arr = case.label_arr
+    focus = np.argwhere(np.isin(label_arr, focus_classes))
+    if forced_center_zyx is not None:
+        center = np.asarray(forced_center_zyx, dtype=np.int64)
+    elif len(focus) and rng.random() < oversample_foreground:
+        center = focus[int(rng.integers(0, len(focus)))]
+    else:
+        valid = np.argwhere(label_arr >= 0)
+        center = valid[int(rng.integers(0, len(valid)))] if len(valid) else np.asarray(label_arr.shape) // 2
+    starts = tuple(int(c - p // 2) for c, p in zip(center, patch_shape))
+    image = crop_or_pad(case.image, starts, patch_shape, 0.0).astype(np.float32, copy=False)
+    target = crop_or_pad(label_arr[None], starts, patch_shape, IGNORE_LABEL).astype(np.int64, copy=False)[0]
+    return image, target, starts
+
+
+def sample_patch_with_anchor(
+    case: AnchoredCaseData,
+    patch_shape: tuple[int, int, int],
+    rng: np.random.Generator,
+    oversample_foreground: float,
+    modality_dropout: bool,
+    focus_classes: tuple[int, ...] = (4, 5),
+    forced_center_zyx: tuple[int, int, int] | None = None,
+) -> tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
+    image, target, starts = _crop_patch_arrays(case, patch_shape, rng, oversample_foreground, focus_classes, forced_center_zyx)
+    anchor = crop_or_pad(case.anchor_probabilities, starts, patch_shape, 0.0).astype(np.float32, copy=False)
+    components = crop_or_pad(case.component_features, starts, patch_shape, 0.0).astype(np.float32, copy=False)
+    availability = case.availability.copy()
+    original_availability = availability.copy()
+    if modality_dropout:
+        # Preserve LGE. If virtual dropout changes the observed modality set,
+        # the precomputed nnU-Net anchor is no longer valid for that synthetic
+        # missing-modality view, so anchor/component evidence is removed.
+        if availability[1] > 0 and rng.random() < 0.15:
+            availability[1] = 0.0
+            image[1] = 0.0
+        if availability[2] > 0 and rng.random() < 0.15:
+            availability[2] = 0.0
+            image[2] = 0.0
+    if not np.array_equal(availability, original_availability):
+        anchor[...] = 0.0
+        components[...] = 0.0
+    if not bool(availability[1] > 0):
+        anchor[4] = 0.0
+        components[1] = 0.0
+    return image, target, availability, anchor, components
+
+
+def anchor_dict_from_tensor(anchor: torch.Tensor) -> dict[str, torch.Tensor]:
+    return {
+        "probabilities": anchor,
+        "scar_prob": anchor[:, 5:6],
+        "edema_prob": anchor[:, 4:5],
+    }
+
+
+def component_dict_from_tensor(component: torch.Tensor) -> dict[str, torch.Tensor]:
+    return {
+        "scar_component": component[:, 0:1],
+        "edema_component": component[:, 1:2],
+    }
+
+
+def batch_from_anchored_cases(
+    cases: list[AnchoredCaseData],
+    complete_cases: list[AnchoredCaseData],
+    scar_cases: list[AnchoredCaseData],
+    lge_only_scar_cases: list[AnchoredCaseData],
+    edema_t2_cases: list[AnchoredCaseData],
+    center_c_t2_edema_cases: list[AnchoredCaseData],
+    batch_size: int,
+    patch_shape: tuple[int, int, int],
+    rng: np.random.Generator,
+    complete_oversample: float,
+    oversample_foreground: float,
+    modality_dropout: bool,
+    hardneg_targets: dict[str, list[object]] | None = None,
+    hardneg_sample_prob: float = 0.0,
+) -> tuple[torch.Tensor, torch.Tensor, torch.Tensor, dict[str, torch.Tensor], dict[str, torch.Tensor], list[str]]:
+    xs, ys, avs, anchors, components, keys = [], [], [], [], [], []
+    hardneg_targets = hardneg_targets or {}
+    hardneg_cases = [case for case in cases if hardneg_targets.get(case.case_id)]
+    for _ in range(batch_size):
+        focus_classes = (4, 5)
+        effective_oversample = oversample_foreground
+        forced_center = None
+        if hardneg_cases and rng.random() < hardneg_sample_prob:
+            case = hardneg_cases[int(rng.integers(0, len(hardneg_cases)))]
+            target = hardneg_targets[case.case_id][int(rng.integers(0, len(hardneg_targets[case.case_id])))]
+            forced_center = target.center_zyx
+            focus_classes = (target.class_id,)
+            effective_oversample = 0.0
+        else:
+            pool = complete_cases if complete_cases and rng.random() < complete_oversample else cases
+            case = pool[int(rng.integers(0, len(pool)))]
+        x, y, av, anchor, component = sample_patch_with_anchor(
+            case,
+            patch_shape,
+            rng,
+            effective_oversample,
+            modality_dropout,
+            focus_classes=focus_classes,
+            forced_center_zyx=forced_center,
+        )
+        xs.append(x)
+        ys.append(y)
+        avs.append(av)
+        anchors.append(anchor)
+        components.append(component)
+        keys.append(case.case_id)
+    anchor_t = torch.from_numpy(np.stack(anchors, axis=0)).float()
+    component_t = torch.from_numpy(np.stack(components, axis=0)).float()
+    return (
+        torch.from_numpy(np.stack(xs, axis=0)).float(),
+        torch.from_numpy(np.stack(ys, axis=0)).long(),
+        torch.from_numpy(np.stack(avs, axis=0)).float(),
+        anchor_dict_from_tensor(anchor_t),
+        component_dict_from_tensor(component_t),
+        keys,
+    )
+
+
+def full_case_anchor_tensors(case: AnchoredCaseData, device: torch.device) -> tuple[dict[str, torch.Tensor], dict[str, torch.Tensor]]:
+    anchor = case.anchor_probabilities.copy()
+    component = case.component_features.copy()
+    if not bool(case.availability[1] > 0):
+        anchor[4] = 0.0
+        component[1] = 0.0
+    anchor_t = torch.from_numpy(anchor[None]).float().to(device)
+    component_t = torch.from_numpy(component[None]).float().to(device)
+    return anchor_dict_from_tensor(anchor_t), component_dict_from_tensor(component_t)
 
 
 def required_validation_steps(max_steps: int, val_every: int) -> set[int]:
@@ -156,7 +384,7 @@ def propref_loss(
     margin_terms = []
     for prefix, pos_mask, safe_neg in [
         ("scar", scar_target & valid, (~scar_target) & valid),
-        ("edema", edema_target & valid & t2_present, ((~edema_target) & valid & t2_present) | ((labels == 0) & valid & (~t2_present))),
+        ("edema", edema_target & valid & t2_present, (~edema_target) & valid & t2_present),
     ]:
         pos = outputs[f"{prefix}_pos_similarity"][:, 0]
         neg = outputs[f"{prefix}_neg_similarity"][:, 0]
@@ -277,7 +505,7 @@ def _decode_pathology_aware(
 
 def predict_case(
     model: SRRProposeRefineMyoPS,
-    case: CaseData,
+    case: AnchoredCaseData,
     device: torch.device,
     *,
     scar_decode_threshold: float,
@@ -287,7 +515,8 @@ def predict_case(
     with torch.no_grad():
         x = torch.from_numpy(case.image[None]).float().to(device)
         av = torch.from_numpy(case.availability[None]).float().to(device)
-        outputs = model(x, av)
+        anchor_features, component_features = full_case_anchor_tensors(case, device)
+        outputs = model(x, av, anchor_features=anchor_features, component_features=component_features)
         preds = {
             "argmax": _decode_argmax(outputs)[0].detach().cpu().numpy().astype(np.uint8),
             "pathology_aware": _decode_pathology_aware(
@@ -497,7 +726,7 @@ def evaluate(
 
 def validate_patch_loss(
     model: SRRProposeRefineMyoPS,
-    cases: list[CaseData],
+    cases: list[AnchoredCaseData],
     patch_shape: tuple[int, int, int],
     device: torch.device,
     seed: int,
@@ -508,11 +737,24 @@ def validate_patch_loss(
     model.eval()
     with torch.no_grad():
         for case in cases[: min(10, len(cases))]:
-            x_np, y_np, av_np = sample_patch(case, patch_shape, rng, oversample_foreground=1.0, modality_dropout=False)
+            x_np, y_np, av_np, anchor_np, component_np = sample_patch_with_anchor(
+                case,
+                patch_shape,
+                rng,
+                oversample_foreground=1.0,
+                modality_dropout=False,
+            )
             x = torch.from_numpy(x_np[None]).float().to(device)
             y = torch.from_numpy(y_np[None]).long().to(device)
             av = torch.from_numpy(av_np[None]).float().to(device)
-            outputs = model(x, av)
+            anchor_t = torch.from_numpy(anchor_np[None]).float().to(device)
+            component_t = torch.from_numpy(component_np[None]).float().to(device)
+            outputs = model(
+                x,
+                av,
+                anchor_features=anchor_dict_from_tensor(anchor_t),
+                component_features=component_dict_from_tensor(component_t),
+            )
             loss, _ = propref_loss(outputs, y, av, "soft_roi_refinement", args)
             losses.append(float(loss.detach().cpu()))
     model.train()
@@ -623,7 +865,7 @@ def prototype_sanity_row(
 
 def run_one_batch_overfit(
     args: argparse.Namespace,
-    train_cases: list[CaseData],
+    train_cases: list[AnchoredCaseData],
     patch_shape: tuple[int, int, int],
     device: torch.device,
     variant_dir: Path,
@@ -640,10 +882,14 @@ def run_one_batch_overfit(
     rng = np.random.default_rng(args.seed + 991)
     case_pool = [case for case in train_cases if np.any(np.isin(case.label_arr, [4, 5]))] or train_cases
     case = case_pool[int(rng.integers(0, len(case_pool)))]
-    x_np, y_np, av_np = sample_patch(case, patch_shape, rng, oversample_foreground=1.0, modality_dropout=False)
+    x_np, y_np, av_np, anchor_np, component_np = sample_patch_with_anchor(case, patch_shape, rng, oversample_foreground=1.0, modality_dropout=False)
     x = torch.from_numpy(x_np[None]).float().to(device)
     y = torch.from_numpy(y_np[None]).long().to(device)
     av = torch.from_numpy(av_np[None]).float().to(device)
+    anchor_t = torch.from_numpy(anchor_np[None]).float().to(device)
+    component_t = torch.from_numpy(component_np[None]).float().to(device)
+    anchor_features = anchor_dict_from_tensor(anchor_t)
+    component_features = component_dict_from_tensor(component_t)
     model = SRRProposeRefineMyoPS(base_channels=args.base_channels, variant=args.variant).to(device)
     optimizer = torch.optim.AdamW(model.parameters(), lr=args.lr, weight_decay=args.weight_decay)
     rows: list[dict[str, object]] = []
@@ -657,7 +903,7 @@ def run_one_batch_overfit(
         stage = "soft_roi_refinement"
         before = {name: param.detach().clone() for name, param in prototype_parameters(model)} if step == 1 else {}
         optimizer.zero_grad(set_to_none=True)
-        outputs = model(x, av)
+        outputs = model(x, av, anchor_features=anchor_features, component_features=component_features)
         loss, metrics = propref_loss(outputs, y, av, stage, args)
         loss.backward()
         torch.nn.utils.clip_grad_norm_(model.parameters(), args.grad_clip)
@@ -691,6 +937,10 @@ def run_one_batch_overfit(
         "variant": args.variant,
         "status": "PASS" if passed else "FAIL",
         "case_id": case.case_id,
+        "anchor_source": case.anchor_source,
+        "anchor_fold": case.anchor_fold,
+        "anchor_present": bool(np.any(anchor_np)),
+        "component_present": bool(np.any(component_np)),
         "steps": args.overfit_steps,
         "first_loss": first_loss,
         "last_loss": last_loss,
@@ -719,8 +969,22 @@ def train_variant(args: argparse.Namespace) -> None:
     if args.limit_val_cases > 0:
         val_ids = val_ids[: args.limit_val_cases]
     metadata = load_myops_case_metadata()
-    train_cases = [read_case(cid, metadata) for cid in train_ids]
-    val_cases = [read_case(cid, metadata) for cid in val_ids]
+    anchor_root = _anchor_root(args.nnunet_anchor_root)
+    train_cases = [read_anchored_case(cid, metadata, anchor_root) for cid in train_ids]
+    val_cases = [read_anchored_case(cid, metadata, anchor_root) for cid in val_ids]
+    anchor_fold_counts: dict[str, int] = {}
+    for case in train_cases + val_cases:
+        key = f"fold_{case.anchor_fold}"
+        anchor_fold_counts[key] = anchor_fold_counts.get(key, 0) + 1
+    anchor_manifest = {
+        "anchor_root": str(anchor_root),
+        "source_kind": "nnUNet fold validation probabilities; train cases use their OOF fold, fold0 validation cases use fold0 validation anchors",
+        "train_anchor_case_count": len(train_cases),
+        "val_anchor_case_count": len(val_cases),
+        "anchor_fold_counts": anchor_fold_counts,
+        "component_source": "connected components derived from nnU-Net hard predictions for compact scar class 5 and edema class 4",
+        "no_t2_policy": "class-4 edema anchor/component evidence is zeroed when T2 is unavailable or virtual modality dropout removes T2",
+    }
     complete_cases = [case for case in train_cases if case.metadata.modality_group == "C0+LGE+T2"]
     scar_cases = [case for case in train_cases if np.any(case.label_arr == 5)]
     lge_only_scar_cases = [case for case in scar_cases if case.metadata.modality_group == "LGE-only"]
@@ -771,6 +1035,7 @@ def train_variant(args: argparse.Namespace) -> None:
     rng = np.random.default_rng(args.seed)
     best_val = float("inf")
     best_step = 0
+    no_improve_validation_events = 0
     stop_reason = "max_steps"
     train_rows: list[dict[str, object]] = []
     usage_rows: list[dict[str, object]] = []
@@ -792,7 +1057,7 @@ def train_variant(args: argparse.Namespace) -> None:
         if stage == "low_lr_calibration":
             for group in optimizer.param_groups:
                 group["lr"] = args.lr * 0.20
-        x_cpu, y_cpu, av_cpu, keys = batch_from_cases(
+        x_cpu, y_cpu, av_cpu, anchor_cpu, component_cpu, keys = batch_from_anchored_cases(
             train_cases,
             complete_cases,
             scar_cases,
@@ -805,16 +1070,17 @@ def train_variant(args: argparse.Namespace) -> None:
             args.complete_oversample,
             args.oversample_foreground,
             modality_dropout=True,
-            lesion_mode="",
             hardneg_targets=hardneg_targets,
             hardneg_sample_prob=float(args.hardneg_sample_prob),
         )
         x = x_cpu.to(device)
         y = y_cpu.to(device)
         av = av_cpu.to(device)
+        anchor_features = {key: value.to(device) for key, value in anchor_cpu.items()}
+        component_features = {key: value.to(device) for key, value in component_cpu.items()}
         before = {name: param.detach().clone() for name, param in prototype_parameters(model)} if step in {1, max(1, args.max_steps // 2)} else {}
         optimizer.zero_grad(set_to_none=True)
-        outputs = model(x, av)
+        outputs = model(x, av, anchor_features=anchor_features, component_features=component_features)
         loss, metrics = propref_loss(outputs, y, av, stage, args)
         loss.backward()
         torch.nn.utils.clip_grad_norm_(model.parameters(), args.grad_clip)
@@ -843,6 +1109,8 @@ def train_variant(args: argparse.Namespace) -> None:
                     "proposal_weight": float(metrics["proposal_weight"].cpu()),
                     "refine_weight": float(metrics["refine_weight"].cpu()),
                     "edema_supervised_batch_fraction": float(av[:, 1].mean().detach().cpu()),
+                    "anchor_present_batch_fraction": float((anchor_features["probabilities"].flatten(1).abs().sum(dim=1) > 0).float().mean().detach().cpu()),
+                    "component_present_batch_fraction": float((component_features["scar_component"].flatten(1).abs().sum(dim=1) + component_features["edema_component"].flatten(1).abs().sum(dim=1) > 0).float().mean().detach().cpu()),
                     "batch_cases": ",".join(keys),
                     "elapsed_seconds": time.monotonic() - start,
                 }
@@ -876,9 +1144,13 @@ def train_variant(args: argparse.Namespace) -> None:
             validation_event = dict(validation_row)
             validation_event["checkpoint_path"] = str(checkpoint_step_path)
             validation_events.append(validation_event)
-            if validation_row["eligible_for_best"] and val_loss < best_val:
+            improved = bool(validation_row["eligible_for_best"] and val_loss < best_val - args.early_stop_min_delta)
+            validation_row["best_improved"] = improved
+            validation_event["best_improved"] = improved
+            if improved:
                 best_val = val_loss
                 best_step = step
+                no_improve_validation_events = 0
                 save_checkpoint(
                     {
                         "variant": args.variant,
@@ -890,6 +1162,16 @@ def train_variant(args: argparse.Namespace) -> None:
                     },
                     checkpoint_dir / "checkpoint_best.pt",
                 )
+            elif validation_row["eligible_for_best"]:
+                no_improve_validation_events += 1
+            if (
+                args.early_stop_patience > 0
+                and no_improve_validation_events >= args.early_stop_patience
+                and optimizer_steps >= args.min_optimizer_steps_for_plateau
+                and time.monotonic() - start >= args.min_train_loop_seconds_for_plateau
+            ):
+                stop_reason = "validation_plateau_patience"
+                break
 
     elapsed = time.monotonic() - start
     process_elapsed = time.process_time() - process_start
@@ -945,6 +1227,11 @@ def train_variant(args: argparse.Namespace) -> None:
         "process_wall_seconds": process_elapsed,
         "max_runtime_seconds": args.max_runtime_seconds,
         "max_steps": args.max_steps,
+        "early_stop_patience": args.early_stop_patience,
+        "early_stop_min_delta": args.early_stop_min_delta,
+        "min_optimizer_steps_for_plateau": args.min_optimizer_steps_for_plateau,
+        "min_train_loop_seconds_for_plateau": args.min_train_loop_seconds_for_plateau,
+        "no_improve_validation_events": no_improve_validation_events,
         "actual_optimizer_steps": actual_steps,
         "optimizer_steps": optimizer_steps,
         "validation_events": validation_events,
@@ -969,6 +1256,11 @@ def train_variant(args: argparse.Namespace) -> None:
         "hardneg_components_csv": str(hardneg_path) if hardneg_path else "evidence not found",
         "hardneg_case_count": len(hardneg_targets),
         "hardneg_component_count": sum(len(v) for v in hardneg_targets.values()),
+        "nnunet_anchor_manifest": anchor_manifest,
+        "nnunet_anchor_root": str(anchor_root),
+        "nnunet_anchor_train_case_count": len(train_cases),
+        "nnunet_anchor_val_case_count": len(val_cases),
+        "nnunet_anchor_fold_counts": anchor_fold_counts,
         "three_stage_schedule": ["evidence_warmup", "proposal_dictionary", "soft_roi_refinement", "low_lr_calibration"],
         "skip_export": bool(args.skip_export),
     }
@@ -987,12 +1279,17 @@ def main() -> None:
     parser.add_argument("--max-steps", type=int, default=1800)
     parser.add_argument("--max-runtime-seconds", type=float, default=25200.0)
     parser.add_argument("--out-root", default=str(OUT_ROOT))
+    parser.add_argument("--nnunet-anchor-root", default=str(DEFAULT_NNUNET_ANCHOR_ROOT))
     parser.add_argument("--lr", type=float, default=8e-4)
     parser.add_argument("--weight-decay", type=float, default=1e-4)
     parser.add_argument("--grad-clip", type=float, default=12.0)
     parser.add_argument("--log-every", type=int, default=50)
     parser.add_argument("--val-every", type=int, default=300)
     parser.add_argument("--min-best-step-fraction", type=float, default=0.20)
+    parser.add_argument("--early-stop-patience", type=int, default=8)
+    parser.add_argument("--early-stop-min-delta", type=float, default=1e-3)
+    parser.add_argument("--min-optimizer-steps-for-plateau", type=int, default=1500)
+    parser.add_argument("--min-train-loop-seconds-for-plateau", type=float, default=1800.0)
     parser.add_argument("--complete-oversample", type=float, default=0.55)
     parser.add_argument("--oversample-foreground", type=float, default=0.82)
     parser.add_argument("--anatomy-weight", type=float, default=1.0)

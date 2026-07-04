@@ -7,6 +7,7 @@ import torch.nn.functional as F
 from torch import nn
 
 from src.care_myocardium.models.pathology_heads import AnatomyPathologyHeads
+from src.care_myocardium.models.srr_blocks import MultiSlotSRRRetrievalBlock, gate_diagnostics
 from src.care_myocardium.models.srr_myops import PathologyProposalHead
 
 
@@ -56,68 +57,58 @@ class ModalityEncoder(nn.Module):
 
 
 class ScaleRetrieval(nn.Module):
-    """Shared/private/interaction retrieval at one U-Net scale."""
+    """Per-scale multi-slot shared/private/interaction retrieval bank.
 
-    def __init__(self, channels: int, modalities: int = 3, use_interactions: bool = True) -> None:
+    The class name remains for existing callers, but the old implementation
+    with one shared block plus one block per modality is no longer used.
+    """
+
+    def __init__(
+        self,
+        channels: int,
+        modalities: int = 3,
+        use_interactions: bool = True,
+        shared_slots: int = 4,
+        private_slots: int = 2,
+        interaction_slots: int = 2,
+        router_top_k: int | None = 4,
+    ) -> None:
         super().__init__()
-        self.modalities = modalities
-        self.use_interactions = use_interactions
-        self.shared = ConvBlock(channels, channels)
-        self.private = nn.ModuleList([ConvBlock(channels, channels) for _ in range(modalities)])
-        self.interaction_pairs = [(0, 1), (0, 2), (1, 2)] if use_interactions else []
-        self.interaction = nn.ModuleList([ConvBlock(channels, channels) for _ in self.interaction_pairs])
-        self.n_experts = 1 + modalities + len(self.interaction_pairs)
-        hidden = max(16, channels // 2)
-        self.routers = nn.ModuleDict(
-            {
-                task: nn.Sequential(
-                    nn.Linear(channels + modalities, hidden),
-                    nn.LeakyReLU(0.01, inplace=True),
-                    nn.Linear(hidden, self.n_experts),
-                )
-                for task in ("anatomy", "scar", "edema")
-            }
+        if modalities != 3:
+            raise ValueError("ScaleRetrieval is locked to Dataset501 modalities LGE,T2,C0")
+        interaction_pairs = [(0, 1), (0, 2), (1, 2)] if use_interactions else []
+        self.block = MultiSlotSRRRetrievalBlock(
+            channels,
+            shared_slots=shared_slots,
+            private_slots=private_slots,
+            interaction_slots=interaction_slots if use_interactions else 0,
+            interaction_pairs=interaction_pairs,
+            router_top_k=router_top_k,
         )
 
-    def _valid_mask(self, availability: torch.Tensor) -> torch.Tensor:
-        shared = torch.ones((availability.shape[0], 1), dtype=availability.dtype, device=availability.device)
-        masks = [availability[:, idx : idx + 1] for idx in range(self.modalities)]
-        for pair in self.interaction_pairs:
-            pair_mask = torch.ones_like(shared)
-            for idx in pair:
-                pair_mask = pair_mask * availability[:, idx : idx + 1]
-            masks.append(pair_mask)
-        return torch.cat([shared, *masks], dim=1)
+    @property
+    def n_experts(self) -> int:
+        return self.block.n_experts
 
-    @staticmethod
-    def _fuse(features: list[torch.Tensor], availability: torch.Tensor) -> torch.Tensor:
-        weighted = []
-        for idx, feat in enumerate(features):
-            mask = availability[:, idx].view(-1, 1, 1, 1, 1).to(dtype=feat.dtype, device=feat.device)
-            weighted.append(feat * mask)
-        denom = availability.sum(dim=1).clamp_min(1.0).view(-1, 1, 1, 1, 1).to(dtype=features[0].dtype, device=features[0].device)
-        return torch.stack(weighted, dim=0).sum(dim=0) / denom
+    @property
+    def slot_metadata(self) -> list[dict[str, object]]:
+        return self.block.slot_metadata
 
-    def forward(self, modality_features: list[torch.Tensor], availability: torch.Tensor) -> tuple[dict[str, torch.Tensor], dict[str, torch.Tensor]]:
-        fused = self._fuse(modality_features, availability)
-        experts = [self.shared(fused)]
-        experts.extend(block(feat) for block, feat in zip(self.private, modality_features))
-        for block, pair in zip(self.interaction, self.interaction_pairs):
-            pair_features = [modality_features[idx] for idx in pair]
-            pair_av = availability[:, list(pair)]
-            experts.append(block(self._fuse(pair_features, pair_av)))
-        expert_outputs = torch.stack(experts, dim=1)
-        valid = self._valid_mask(availability)
-        query = torch.cat([fused.mean(dim=(2, 3, 4)), availability], dim=1)
-        routed: dict[str, torch.Tensor] = {}
-        gates: dict[str, torch.Tensor] = {}
-        for task, router in self.routers.items():
-            logits = router(query).masked_fill(valid <= 0, torch.finfo(query.dtype).min)
-            gate = torch.softmax(logits, dim=1) * valid
-            gate = gate / gate.sum(dim=1, keepdim=True).clamp_min(1e-6)
-            gates[task] = gate
-            routed[task] = (gate.view(gate.shape[0], gate.shape[1], 1, 1, 1, 1) * expert_outputs).sum(dim=1)
-        return routed, gates
+    @property
+    def slot_counts(self) -> dict[str, int]:
+        return self.block.slot_counts
+
+    @property
+    def last_valid_mask(self) -> torch.Tensor | None:
+        return self.block.last_valid_mask
+
+    def forward(
+        self,
+        modality_features: list[torch.Tensor],
+        availability: torch.Tensor,
+        anchor_features: torch.Tensor | dict[str, torch.Tensor] | None = None,
+    ) -> tuple[dict[str, torch.Tensor], dict[str, torch.Tensor]]:
+        return self.block(modality_features, availability, anchor_features)
 
 
 class TaskDecoder(nn.Module):
@@ -172,7 +163,13 @@ class SRRV2MyoPSUNet(nn.Module):
             else None
         )
 
-    def forward(self, x: torch.Tensor, availability: torch.Tensor) -> dict[str, torch.Tensor]:
+    def forward(
+        self,
+        x: torch.Tensor,
+        availability: torch.Tensor,
+        anchor_features: torch.Tensor | dict[str, torch.Tensor] | None = None,
+        component_features: torch.Tensor | dict[str, torch.Tensor] | None = None,
+    ) -> dict[str, torch.Tensor]:
         if x.shape[1] != 3:
             raise ValueError(f"SRRV2MyoPSUNet expects 3 image channels, got {x.shape[1]}")
         availability = availability.to(device=x.device, dtype=x.dtype).clamp(0, 1)
@@ -180,17 +177,39 @@ class SRRV2MyoPSUNet(nn.Module):
         routed_by_task = {task: [] for task in ("anatomy", "scar", "edema")}
         gates: dict[str, torch.Tensor] = {}
         for scale, retrieval in enumerate(self.retrieval):
-            routed, scale_gates = retrieval([features[scale] for features in per_modality], availability)
+            routed, scale_gates = retrieval([features[scale] for features in per_modality], availability, anchor_features)
             for task in routed_by_task:
                 routed_by_task[task].append(routed[task])
                 gates[f"{task}_scale{scale}"] = scale_gates[task]
+        gate_metadata = {
+            f"{task}_scale{scale}": self.retrieval[scale].slot_metadata
+            for scale in range(len(self.retrieval))
+            for task in routed_by_task
+        }
+        gate_valid_masks = {
+            f"{task}_scale{scale}": self.retrieval[scale].last_valid_mask
+            for scale in range(len(self.retrieval))
+            for task in routed_by_task
+            if self.retrieval[scale].last_valid_mask is not None
+        }
         anatomy_features = self.decoders["anatomy"](routed_by_task["anatomy"])
         scar_features = self.decoders["scar"](routed_by_task["scar"])
         edema_features = self.decoders["edema"](routed_by_task["edema"])
         outputs = self.heads(anatomy_features, scar_features, edema_features)
         if self.proposal_head is not None:
-            self.proposal_head(outputs, scar_features, edema_features, availability)
+            self.proposal_head(
+                outputs,
+                scar_features,
+                edema_features,
+                availability,
+                anchor_features=anchor_features,
+                component_features=component_features,
+            )
         outputs["gates"] = gates
         outputs["availability"] = availability
         outputs["expert_usage"] = {name: gate.mean(dim=0) for name, gate in gates.items()}
+        outputs["dictionary_slot_counts"] = {f"scale{idx}": block.slot_counts for idx, block in enumerate(self.retrieval)}
+        outputs["dictionary_slot_metadata"] = gate_metadata
+        outputs["gate_valid_masks"] = gate_valid_masks
+        outputs["dictionary_diagnostics"] = gate_diagnostics(gates, gate_metadata, gate_valid_masks)
         return outputs

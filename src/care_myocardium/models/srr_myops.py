@@ -7,7 +7,8 @@ import torch.nn.functional as F
 from torch import nn
 
 from src.care_myocardium.models.pathology_heads import AnatomyPathologyHeads
-from src.care_myocardium.models.srr_blocks import SRRRetrievalBlock, TaskSpecificSRRRetrievalBlock, masked_modality_fusion
+from src.care_myocardium.models.proposal_prototypes import deterministic_axis_prototypes
+from src.care_myocardium.models.srr_blocks import SRRRetrievalBlock, TaskSpecificSRRRetrievalBlock, gate_diagnostics, masked_modality_fusion
 
 
 class ModalityStem(nn.Module):
@@ -87,7 +88,13 @@ class SRRMyoPSLite(nn.Module):
             else None
         )
 
-    def forward(self, x: torch.Tensor, availability: torch.Tensor) -> dict[str, torch.Tensor]:
+    def forward(
+        self,
+        x: torch.Tensor,
+        availability: torch.Tensor,
+        anchor_features: torch.Tensor | dict[str, torch.Tensor] | None = None,
+        component_features: torch.Tensor | dict[str, torch.Tensor] | None = None,
+    ) -> dict[str, torch.Tensor]:
         if x.ndim != 5:
             raise ValueError(f"expected x shape (B,3,D,H,W), got {tuple(x.shape)}")
         if availability.shape != (x.shape[0], 3):
@@ -95,23 +102,43 @@ class SRRMyoPSLite(nn.Module):
         availability = availability.to(device=x.device, dtype=x.dtype).clamp(0, 1)
         features = [stem(x[:, idx : idx + 1], availability[:, idx]) for idx, stem in enumerate(self.stems)]
         fused = masked_modality_fusion(features, availability)
-        routed, gates = self.retrieval(fused, availability)
+        routed, gates = self.retrieval(fused, availability, anchor_features)
+        gate_metadata = {name: self.retrieval.slot_metadata for name in gates}
+        gate_valid_masks = {
+            name: self.retrieval.last_valid_mask
+            for name in gates
+            if self.retrieval.last_valid_mask is not None
+        }
         if self.context_retrieval is not None:
             pooled = F.avg_pool3d(fused, kernel_size=2, stride=2, ceil_mode=True)
-            context_routed, context_gates = self.context_retrieval(pooled, availability)
+            context_routed, context_gates = self.context_retrieval(pooled, availability, anchor_features)
             for name in routed:
                 context = F.interpolate(context_routed[name], size=fused.shape[-3:], mode="trilinear", align_corners=False)
                 routed[name] = 0.65 * routed[name] + 0.35 * context
                 gates[f"{name}_context"] = context_gates[name]
+                gate_metadata[f"{name}_context"] = self.context_retrieval.slot_metadata
+                if self.context_retrieval.last_valid_mask is not None:
+                    gate_valid_masks[f"{name}_context"] = self.context_retrieval.last_valid_mask
         anatomy_features = self.refine(routed["anatomy"])
         scar_features = self.refine(routed["scar"])
         edema_features = self.refine(routed["edema"])
         outputs = self.heads(anatomy_features, scar_features, edema_features)
         if self.proposal_head is not None:
-            self.proposal_head(outputs, scar_features, edema_features, availability)
+            self.proposal_head(
+                outputs,
+                scar_features,
+                edema_features,
+                availability,
+                anchor_features=anchor_features,
+                component_features=component_features,
+            )
         outputs["gates"] = gates
         outputs["availability"] = availability
         outputs["expert_usage"] = {name: gate.mean(dim=0) for name, gate in gates.items()}
+        outputs["dictionary_slot_counts"] = {"scale0": self.retrieval.slot_counts}
+        outputs["dictionary_slot_metadata"] = gate_metadata
+        outputs["gate_valid_masks"] = gate_valid_masks
+        outputs["dictionary_diagnostics"] = gate_diagnostics(gates, gate_metadata, gate_valid_masks)
         return outputs
 
 
@@ -134,6 +161,8 @@ class PathologyProposalHead(nn.Module):
         self.final_mix_weight = float(final_mix_weight)
         self.temperature = 0.20
         self.evidence_weight = 0.55
+        self.anchor_weight = 0.35
+        self.component_weight = 0.30
         self.anatomy_weight = 0.25
         self.distance_weight = 0.05
         self.uncertainty_weight = 0.0
@@ -146,10 +175,37 @@ class PathologyProposalHead(nn.Module):
             self.uncertainty_weight = 0.45
         self.scar_embed = nn.Conv3d(channels, channels, kernel_size=1, bias=False)
         self.edema_embed = nn.Conv3d(channels, channels, kernel_size=1, bias=False)
-        self.scar_pos = nn.Parameter(torch.randn(n_prototypes, channels) * 0.02)
-        self.scar_neg = nn.Parameter(torch.randn(n_prototypes, channels) * 0.02)
-        self.edema_pos = nn.Parameter(torch.randn(n_prototypes, channels) * 0.02)
-        self.edema_neg = nn.Parameter(torch.randn(n_prototypes, channels) * 0.02)
+        self.register_buffer("scar_pos", deterministic_axis_prototypes(n_prototypes, channels, offset=0))
+        self.register_buffer("scar_neg", deterministic_axis_prototypes(n_prototypes, channels, offset=1))
+        self.register_buffer("edema_pos", deterministic_axis_prototypes(n_prototypes, channels, offset=2))
+        self.register_buffer("edema_neg", deterministic_axis_prototypes(n_prototypes, channels, offset=3))
+        self.prototype_source = "deterministic_axis_bootstrap_pending_train_or_oof_fit"
+
+    def load_prototype_bank(
+        self,
+        *,
+        scar_positive: torch.Tensor,
+        scar_negative: torch.Tensor,
+        edema_positive: torch.Tensor,
+        edema_negative: torch.Tensor,
+        source: str,
+    ) -> None:
+        self.scar_pos.copy_(self._resize_bank(scar_positive, self.scar_pos))
+        self.scar_neg.copy_(self._resize_bank(scar_negative, self.scar_neg))
+        self.edema_pos.copy_(self._resize_bank(edema_positive, self.edema_pos))
+        self.edema_neg.copy_(self._resize_bank(edema_negative, self.edema_neg))
+        self.prototype_source = str(source)
+
+    @staticmethod
+    def _resize_bank(bank: torch.Tensor, target: torch.Tensor) -> torch.Tensor:
+        value = bank.detach().to(device=target.device, dtype=target.dtype)
+        if value.ndim != 2 or value.shape[1] != target.shape[1]:
+            raise ValueError(f"prototype bank must have shape (K,{target.shape[1]}), got {tuple(value.shape)}")
+        if value.shape[0] >= target.shape[0]:
+            value = value[: target.shape[0]]
+        else:
+            value = torch.cat([value, value[-1:].repeat(target.shape[0] - value.shape[0], 1)], dim=0)
+        return F.normalize(value, dim=1)
 
     @staticmethod
     def _similarity(emb: torch.Tensor, prototypes: torch.Tensor) -> torch.Tensor:
@@ -176,12 +232,55 @@ class PathologyProposalHead(nn.Module):
         prob = torch.sigmoid(logits)
         return (1.0 - torch.abs(2.0 * prob - 1.0)).clamp(0.0, 1.0)
 
+    @staticmethod
+    def _evidence_map(
+        evidence: torch.Tensor | dict[str, torch.Tensor] | None,
+        keys: tuple[str, ...],
+        channel: int,
+        reference: torch.Tensor,
+    ) -> torch.Tensor:
+        if evidence is None:
+            return torch.zeros_like(reference)
+        value: torch.Tensor | None = None
+        if isinstance(evidence, dict):
+            for key in keys:
+                candidate = evidence.get(key)
+                if isinstance(candidate, torch.Tensor):
+                    value = candidate
+                    break
+            if value is None:
+                for key in ("probabilities", "probs", "logits", "anchor", "features"):
+                    candidate = evidence.get(key)
+                    if isinstance(candidate, torch.Tensor):
+                        value = candidate
+                        break
+        elif isinstance(evidence, torch.Tensor):
+            value = evidence
+        if value is None:
+            return torch.zeros_like(reference)
+        value = value.to(device=reference.device, dtype=reference.dtype)
+        if value.ndim != 5:
+            return torch.zeros_like(reference)
+        if value.shape[1] == 1:
+            out = value
+        elif value.shape[1] > channel:
+            out = value[:, channel : channel + 1]
+        else:
+            return torch.zeros_like(reference)
+        if out.shape[-3:] != reference.shape[-3:]:
+            out = F.interpolate(out, size=reference.shape[-3:], mode="trilinear", align_corners=False)
+        if bool((out.detach().min() < 0).item()) or bool((out.detach().max() > 1).item()):
+            out = torch.sigmoid(out)
+        return out.clamp(0, 1)
+
     def _proposal_logit(
         self,
         evidence_logits: torch.Tensor,
         pos_sim: torch.Tensor,
         neg_sim: torch.Tensor,
         union_prior_logits: torch.Tensor,
+        anchor_map: torch.Tensor,
+        component_map: torch.Tensor,
     ) -> tuple[torch.Tensor, torch.Tensor]:
         local_anatomy = self._local_anatomy_confidence(union_prior_logits)
         remote_penalty = (1.0 - local_anatomy).clamp(0.0, 1.0)
@@ -189,6 +288,8 @@ class PathologyProposalHead(nn.Module):
         logit = (
             (pos_sim - neg_sim) / self.temperature
             + self.evidence_weight * evidence_logits
+            + self.anchor_weight * torch.logit(anchor_map.clamp(1e-4, 1.0 - 1e-4))
+            + self.component_weight * torch.logit(component_map.clamp(1e-4, 1.0 - 1e-4))
             + self.anatomy_weight * torch.tanh(union_prior_logits)
             - self.distance_weight * remote_penalty
         )
@@ -202,6 +303,8 @@ class PathologyProposalHead(nn.Module):
         scar_features: torch.Tensor,
         edema_features: torch.Tensor,
         availability: torch.Tensor,
+        anchor_features: torch.Tensor | dict[str, torch.Tensor] | None = None,
+        component_features: torch.Tensor | dict[str, torch.Tensor] | None = None,
     ) -> None:
         scar_emb = self.scar_embed(scar_features)
         edema_emb = self.edema_embed(edema_features)
@@ -212,12 +315,18 @@ class PathologyProposalHead(nn.Module):
 
         original_scar = outputs["scar_logits"]
         original_edema = outputs["edema_logits"]
+        scar_anchor = self._evidence_map(anchor_features, ("scar", "scar_prob", "scar_probability"), 5, original_scar)
+        edema_anchor = self._evidence_map(anchor_features, ("edema", "edema_prob", "edema_probability"), 4, original_edema)
+        scar_component = self._evidence_map(component_features, ("scar_component", "scar_components", "scar"), 0, original_scar)
+        edema_component = self._evidence_map(component_features, ("edema_component", "edema_components", "edema"), 0, original_edema)
         scar_proposal, scar_uncertainty = self._proposal_logit(
-            original_scar, scar_pos, scar_neg, outputs["union_prior_logits"]
+            original_scar, scar_pos, scar_neg, outputs["union_prior_logits"], scar_anchor, scar_component
         )
         edema_proposal, edema_uncertainty = self._proposal_logit(
-            original_edema, edema_pos, edema_neg, outputs["union_prior_logits"]
+            original_edema, edema_pos, edema_neg, outputs["union_prior_logits"], edema_anchor, edema_component
         )
+        t2_present = availability[:, 1].view(-1, 1, 1, 1, 1).to(dtype=torch.bool, device=edema_proposal.device)
+        edema_proposal = torch.where(t2_present, edema_proposal, torch.full_like(edema_proposal, -20.0))
 
         outputs["scar_evidence_logits"] = original_scar
         outputs["edema_evidence_logits"] = original_edema
@@ -229,8 +338,14 @@ class PathologyProposalHead(nn.Module):
         outputs["edema_neg_similarity"] = edema_neg
         outputs["scar_uncertainty"] = scar_uncertainty
         outputs["edema_uncertainty"] = edema_uncertainty
+        outputs["scar_anchor_evidence"] = scar_anchor
+        outputs["edema_anchor_evidence"] = edema_anchor
+        outputs["scar_component_evidence"] = scar_component
+        outputs["edema_component_evidence"] = edema_component
         outputs["local_anatomy_confidence"] = self._local_anatomy_confidence(outputs["union_prior_logits"])
         outputs["proposal_mode"] = self.mode
+        outputs["proposal_math"] = "positive_similarity - negative_similarity + nnUNet/component evidence + anatomy/distance prior"
+        outputs["prototype_source"] = self.prototype_source
 
         proposal_w = min(max(self.final_mix_weight, 0.0), 1.0)
         evidence_w = 1.0 - proposal_w
