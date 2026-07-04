@@ -19,9 +19,9 @@ review_required: true
 mechanism_class: "formal MyoPS training / dictionary / proposal_refinement / missing_modality"
 target_metric: "myops_scar, myops_edema"
 required_subgroups: ["all-case", "T2-present/complete", "GT-positive", "no-T2 empty-GT stability", "CenterB/CenterC if relevant"]
-required_secondary_metrics: ["Dice", "HD95", "component_count", "remote_FP", "volume_ratio", "dictionary_slot_usage", "gate_entropy", "proposal_recall", "proposal_precision", "outside_myocardium_FP", "no_T2_edema_voxels"]
-required_evidence: ["one_batch_overfit", "training_log", "checkpoint", "prediction_path", "metric_csv", "subgroup_metrics", "component_hd_by_case", "dictionary_stats", "proposal_pr_sweep", "no_T2_decode_sanity", "label_export_QC", "same_split_baseline", "MANIFEST.md"]
-forbidden_substitutes: ["CPU smoke as formal training", "pending jobs marked complete", "short run below budget used as route-negative stop", "current tiny PropRef training", "stale cache", "compact-label-only promotion", "undertrained result marked STOP_NO_SIGNAL"]
+required_secondary_metrics: ["Dice", "HD95", "component_count", "remote_FP", "volume_ratio", "dictionary_slot_usage", "gate_entropy", "proposal_recall", "proposal_precision", "outside_myocardium_FP", "no_T2_edema_voxels", "loss_stage_status"]
+required_evidence: ["one_batch_overfit", "training_log", "checkpoint", "prediction_path", "metric_csv", "subgroup_metrics", "component_hd_by_case", "dictionary_stats", "proposal_pr_sweep", "no_T2_decode_sanity", "label_export_QC", "loss_variant_schedule", "same_split_baseline", "MANIFEST.md"]
+forbidden_substitutes: ["CPU smoke as formal training", "pending jobs marked complete", "short run below budget used as route-negative stop", "current tiny PropRef training", "stale cache", "compact-label-only promotion", "undertrained result marked STOP_NO_SIGNAL", "generic loss ignoring scar/edema differences", "unbounded variant grid"]
 promotion_gate: "No route promotion without separate read-only audit."
 minimum_effective_training:
   min_optimizer_steps: 1800
@@ -30,7 +30,7 @@ minimum_effective_training:
   require_prediction_sanity: true
   require_loss_decrease: true
   allow_stop_without_training: false
-experiment_adequacy_gate: "Formal training requires one-batch/tiny-overfit, train_loop_seconds, max_steps, actual_steps, optimizer_steps, validation_events, loss_decrease, prediction sanity, dictionary sanity, proposal sanity, logs/provenance, cache isolation, and same-split baseline comparability."
+experiment_adequacy_gate: "Formal training requires one-batch/tiny-overfit, train_loop_seconds, max_steps, actual_steps, optimizer_steps, validation_events, loss decrease, staged loss schedule evidence, prediction sanity, dictionary sanity, proposal sanity, no-T2 decode sanity, logs/provenance, cache isolation, and same-split baseline comparability."
 route_negative_gate: "No STOP_NO_* conclusion unless adequacy PASS, same-split comparison, no forbidden substitute, and explicit auditor support."
 allowed_next_states: ["EXECUTED_UNAUDITED", "NEEDS_EVIDENCE", "NEEDS_REVISION", "NEEDS_MONITOR", "STOP"]
 auto_git_commit: false
@@ -43,11 +43,11 @@ allow_git_push: false
 
 ## Goal
 
-Run a formal fold0 train/evaluate cycle for the anchored SRR-v2.5 repair after the implementation and guardrail tasks pass. This is the first task that may generate real performance evidence, but it must still stop at `EXECUTED_UNAUDITED`.
+Run a formal fold0 train/evaluate cycle for the anchored SRR-v2.5 repair after the implementation, guardrail, loss, and variant tasks pass. This is the first task that may generate real performance evidence, but it must still stop at `EXECUTED_UNAUDITED`.
 
 ## Prerequisites
 
-Before submitting or running training, verify PASS/PASS_PREFLIGHT from `results/20260704_v25_contract_lock/result.md`, `results/20260704_myops_anchor_inputs_decode_qc/result.md`, `results/20260704_myops_dictionary_retrieval_bank_impl/result.md`, `results/20260704_myops_proposal_proto_hardneg_impl/result.md`, and `results/20260704_myops_soft_roi_no_t2_guardrails/result.md`. If any prerequisite is absent or `NEEDS_REVISION`, stop with `NEEDS_EVIDENCE` or `NEEDS_REVISION`.
+Before submitting or running training, verify PASS/PASS_PREFLIGHT from `results/20260704_v25_contract_lock/result.md`, `results/20260704_myops_anchor_inputs_decode_qc/result.md`, `results/20260704_myops_dictionary_retrieval_bank_impl/result.md`, `results/20260704_myops_proposal_proto_hardneg_impl/result.md`, `results/20260704_myops_soft_roi_no_t2_guardrails/result.md`, and `results/20260704_myops_loss_variant_schedule/result.md`. If any prerequisite is absent or `NEEDS_REVISION`, stop with `NEEDS_EVIDENCE` or `NEEDS_REVISION`.
 
 ## Training Budget
 
@@ -55,7 +55,7 @@ Use a controlled fold0 job on the CARE default GPU policy. Do not exceed the nor
 
 ## Required Variants
 
-Run at least these bounded variants unless a prerequisite blocks them: anchored dictionary plus scar/edema proposal prototypes; scar-focused high-precision proposal plus conservative edema proposal; conservative no-prototype cascade fallback. Do not run dictionary-only topology variants that do not connect proposal, negative space, and refinement.
+Use the bounded matrix from `results/20260704_myops_loss_variant_schedule/variant_matrix.md`. At minimum, if prerequisites pass, run: `anchored_srr_v25_full`, `anchored_scar_precision_edema_safe`, and `anchored_conservative_cascade_no_proto_or_frozen_proto`. Do not run dictionary-only topology variants that do not connect anchor, proposal, negative space, crop refinement, and no-T2 guardrails. Do not run a broad temperature/threshold grid unless the controller explicitly narrows it after preflight.
 
 ## Required Metrics
 
@@ -63,7 +63,7 @@ Report against same-split nnU-Net fold0: scar Dice and HD95; edema all-case, T2-
 
 ## Required Outputs
 
-Write under `results/20260704_myops_anchor_srr_fold0_formal/`: `result.md`, `MANIFEST.md`, `job_status.md`, `experiment_adequacy_report.md`, `one_batch_overfit.md`, `checkpoint_policy.md`, `prediction_sanity.md`, `dictionary_stats.csv`, `gate_usage_by_pattern.csv`, `proposal_pr_sweep.csv`, `metrics_summary.md`, `subgroup_metrics.csv`, `component_hd_by_case.csv`, `no_t2_decode_sanity.csv`, `label_export_qc.md`, and `failure_interpretation.md` if not promoted.
+Write under `results/20260704_myops_anchor_srr_fold0_formal/`: `result.md`, `MANIFEST.md`, `job_status.md`, `experiment_adequacy_report.md`, `one_batch_overfit.md`, `checkpoint_policy.md`, `prediction_sanity.md`, `dictionary_stats.csv`, `gate_usage_by_pattern.csv`, `proposal_pr_sweep.csv`, `metrics_summary.md`, `subgroup_metrics.csv`, `component_hd_by_case.csv`, `no_t2_decode_sanity.csv`, `label_export_qc.md`, `loss_stage_status.md`, and `failure_interpretation.md` if not promoted.
 
 ## Completion Definition
 
