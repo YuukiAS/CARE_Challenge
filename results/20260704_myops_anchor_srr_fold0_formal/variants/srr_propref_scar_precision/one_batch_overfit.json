@@ -1,0 +1,17 @@
+{
+  "anchor_fold": 4,
+  "anchor_present": true,
+  "anchor_source": "/users/a/e/aereinh/CARE/data/nnUNet/nnUNet_results/Dataset501_CAREMyoPS/nnUNetTrainer_500epochs__nnUNetPlans__3d_fullres/fold_4/validation/Case1037.npz",
+  "case_id": "Case1037",
+  "component_present": true,
+  "elapsed_seconds": 4.247042751987465,
+  "first_loss": 4.717623710632324,
+  "last_loss": 1.7456912994384766,
+  "loss_decrease": 2.9719324111938477,
+  "min_required_loss_decrease": 0.01,
+  "process_seconds": 4.075710919999999,
+  "prototype_rows": "/users/a/e/aereinh/CARE/results/20260704_myops_anchor_srr_fold0_formal/variants/srr_propref_scar_precision/prototype_update_sanity.csv",
+  "status": "PASS",
+  "steps": 40,
+  "variant": "srr_propref_scar_precision"
+}

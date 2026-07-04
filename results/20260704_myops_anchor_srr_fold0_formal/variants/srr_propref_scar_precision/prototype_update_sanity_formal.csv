@@ -1,0 +1,13 @@
+variant,step,parameter,grad_norm,update_norm,parameter_norm,status
+srr_propref_scar_precision,1,scar_dictionary.embedding.weight,,0.0,3.1851322650909424,tracked
+srr_propref_scar_precision,1,scar_dictionary.conv_score.weight,,0.0,0.5554970502853394,tracked
+srr_propref_scar_precision,1,scar_dictionary.conv_score.bias,,0.0,0.07406113296747208,tracked
+srr_propref_scar_precision,1,edema_dictionary.embedding.weight,,0.0,3.3009371757507324,tracked
+srr_propref_scar_precision,1,edema_dictionary.conv_score.weight,,0.0,0.5624434351921082,tracked
+srr_propref_scar_precision,1,edema_dictionary.conv_score.bias,,0.0,0.000525002193171531,tracked
+srr_propref_scar_precision,12000,scar_dictionary.embedding.weight,0.014294041320681572,0.002329044509679079,4.429376602172852,tracked
+srr_propref_scar_precision,12000,scar_dictionary.conv_score.weight,0.03237731382250786,0.0002838007058016956,1.7385283708572388,tracked
+srr_propref_scar_precision,12000,scar_dictionary.conv_score.bias,0.00327998585999012,5.930662155151367e-06,0.07262728363275528,tracked
+srr_propref_scar_precision,12000,edema_dictionary.embedding.weight,0.03012886457145214,0.004307602997869253,3.878919839859009,tracked
+srr_propref_scar_precision,12000,edema_dictionary.conv_score.weight,0.03680324926972389,0.0004679847334045917,1.7709121704101562,tracked
+srr_propref_scar_precision,12000,edema_dictionary.conv_score.bias,0.004993193782866001,1.430511474609375e-06,0.20862582325935364,tracked

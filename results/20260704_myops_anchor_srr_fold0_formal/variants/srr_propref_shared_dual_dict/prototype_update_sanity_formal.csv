@@ -1,0 +1,13 @@
+variant,step,parameter,grad_norm,update_norm,parameter_norm,status
+srr_propref_shared_dual_dict,1,scar_dictionary.embedding.weight,,0.0,3.1851322650909424,tracked
+srr_propref_shared_dual_dict,1,scar_dictionary.conv_score.weight,,0.0,0.5554970502853394,tracked
+srr_propref_shared_dual_dict,1,scar_dictionary.conv_score.bias,,0.0,0.07406113296747208,tracked
+srr_propref_shared_dual_dict,1,edema_dictionary.embedding.weight,,0.0,3.3009371757507324,tracked
+srr_propref_shared_dual_dict,1,edema_dictionary.conv_score.weight,,0.0,0.5624434351921082,tracked
+srr_propref_shared_dual_dict,1,edema_dictionary.conv_score.bias,,0.0,0.000525002193171531,tracked
+srr_propref_shared_dual_dict,12000,scar_dictionary.embedding.weight,0.021909823641180992,0.004989080596715212,4.139610290527344,tracked
+srr_propref_shared_dual_dict,12000,scar_dictionary.conv_score.weight,0.042405541986227036,0.0005035035428591073,1.8992639780044556,tracked
+srr_propref_shared_dual_dict,12000,scar_dictionary.conv_score.bias,0.004847646690905094,7.040798664093018e-05,0.15127572417259216,tracked
+srr_propref_shared_dual_dict,12000,edema_dictionary.embedding.weight,0.014359635300934315,0.004731253255158663,4.107171058654785,tracked
+srr_propref_shared_dual_dict,12000,edema_dictionary.conv_score.weight,0.024118714034557343,0.00048230303218588233,1.9480105638504028,tracked
+srr_propref_shared_dual_dict,12000,edema_dictionary.conv_score.bias,0.003000508528202772,9.208917617797852e-05,0.2871105372905731,tracked

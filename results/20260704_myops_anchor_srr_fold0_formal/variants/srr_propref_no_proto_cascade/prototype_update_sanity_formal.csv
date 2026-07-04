@@ -1,0 +1,13 @@
+variant,step,parameter,grad_norm,update_norm,parameter_norm,status
+srr_propref_no_proto_cascade,1,scar_dictionary.embedding.weight,,0.0,3.1851322650909424,tracked
+srr_propref_no_proto_cascade,1,scar_dictionary.conv_score.weight,,0.0,0.5554970502853394,tracked
+srr_propref_no_proto_cascade,1,scar_dictionary.conv_score.bias,,0.0,0.07406113296747208,tracked
+srr_propref_no_proto_cascade,1,edema_dictionary.embedding.weight,,0.0,3.3009371757507324,tracked
+srr_propref_no_proto_cascade,1,edema_dictionary.conv_score.weight,,0.0,0.5624434351921082,tracked
+srr_propref_no_proto_cascade,1,edema_dictionary.conv_score.bias,,0.0,0.000525002193171531,tracked
+srr_propref_no_proto_cascade,12000,scar_dictionary.embedding.weight,,0.0,3.1851322650909424,tracked
+srr_propref_no_proto_cascade,12000,scar_dictionary.conv_score.weight,0.02042398415505886,0.001021124771796167,1.4142820835113525,tracked
+srr_propref_no_proto_cascade,12000,scar_dictionary.conv_score.bias,0.0019092257134616375,0.00011713802814483643,0.1283138245344162,tracked
+srr_propref_no_proto_cascade,12000,edema_dictionary.embedding.weight,,0.0,3.3009371757507324,tracked
+srr_propref_no_proto_cascade,12000,edema_dictionary.conv_score.weight,0.004408529959619045,0.00097534159431234,1.4280242919921875,tracked
+srr_propref_no_proto_cascade,12000,edema_dictionary.conv_score.bias,2.5077453756239265e-05,0.00019087456166744232,0.024361006915569305,tracked
