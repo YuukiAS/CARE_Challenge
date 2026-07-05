@@ -1381,7 +1381,17 @@ def train_variant(args: argparse.Namespace) -> None:
             setattr(args, key, value)
     device = torch.device("cuda" if args.device == "cuda" and torch.cuda.is_available() else "cpu")
     train_ids, full_val_ids = load_split(args.fold)
+    full_train_ids = list(train_ids)
     val_ids = list(full_val_ids)
+    explicit_train_ids = parse_case_id_list(args.train_case_ids)
+    if explicit_train_ids:
+        invalid_train_ids = [case_id for case_id in explicit_train_ids if case_id not in full_train_ids]
+        if invalid_train_ids:
+            raise ValueError(
+                "--train-case-ids must be a subset of the requested fold training split; "
+                f"invalid ids for fold {args.fold}: {','.join(invalid_train_ids)}"
+            )
+        train_ids = explicit_train_ids
     if args.limit_train_cases > 0:
         train_ids = train_ids[: args.limit_train_cases]
     if args.limit_val_cases > 0:
@@ -1399,7 +1409,7 @@ def train_variant(args: argparse.Namespace) -> None:
     train_cases = [read_anchored_case(cid, metadata, anchor_root) for cid in train_ids]
     train_cases, prototype_t2_repair_added_case_ids = ensure_t2_edema_prototype_cases(
         train_cases,
-        list(load_split(args.fold)[0]),
+        full_train_ids,
         metadata,
         anchor_root,
         args,
@@ -1417,6 +1427,8 @@ def train_variant(args: argparse.Namespace) -> None:
         "train_anchor_case_count": len(train_cases),
         "val_anchor_case_count": len(val_cases),
         "eval_case_ids": eval_case_ids,
+        "train_case_ids": train_ids,
+        "train_case_selection": "explicit_train_case_ids" if explicit_train_ids else "fold_training_prefix_or_all",
         "anchor_fold_counts": anchor_fold_counts,
         "component_source": "connected components derived from nnU-Net hard predictions for compact scar class 5 and edema class 4",
         "no_t2_policy": "class-4 edema anchor/component evidence is zeroed when T2 is unavailable or virtual modality dropout removes T2",
@@ -1701,6 +1713,8 @@ def train_variant(args: argparse.Namespace) -> None:
         "encoder_scale_channels": list(getattr(model, "encoder_scale_channels", encoder_scale_channels_from_args(args))),
         "parameter_count": model_param_count,
         "train_cases": len(train_cases),
+        "train_case_ids": train_ids,
+        "train_case_selection": "explicit_train_case_ids" if explicit_train_ids else "fold_training_prefix_or_all",
         "val_cases": len(val_cases),
         "eval_cases": len(eval_cases) if not args.skip_export else 0,
         "eval_case_ids": [case.case_id for case in eval_cases] if not args.skip_export else [],
@@ -1834,6 +1848,7 @@ def main() -> None:
     parser.add_argument("--skip-prototype-bank-fit", action="store_true")
     parser.add_argument("--max-eval-cases", type=int, default=0)
     parser.add_argument("--eval-case-ids", default="", help="Comma/semicolon-separated fold validation case ids to export/evaluate.")
+    parser.add_argument("--train-case-ids", default="", help="Comma/semicolon-separated fold training case ids for controlled pilot subsets.")
     parser.add_argument("--limit-train-cases", type=int, default=0)
     parser.add_argument("--limit-val-cases", type=int, default=0)
     parser.add_argument("--hardneg-components-csv", default="results/20260629_proposal_memory_hardneg/mined_components.csv")
