@@ -318,6 +318,19 @@ Because the result directories are ignored, any approved decision packet should
 be added with explicit `git add -f <file>` paths. Do not change `.gitignore` to
 unignore an entire generated result tree.
 
+For routine handoff/result publication commits, Codex may stage the safe
+first-level Markdown packet without a separate user reminder by running:
+
+```bash
+python scripts/git/stage_handoff_result_packet.py results/<task_key>
+```
+
+This helper force-adds only small first-level Markdown files from the specified
+`results/<task_key>/` directory and skips transcript/secret/env-dump style names.
+It must not be used as permission to publish checkpoints, predictions, NIfTI
+outputs, heavy logs, CSV/JSON dumps, upload packages, nested artifact trees, or
+unreviewed sensitive material.
+
 Diagnostic artifact publication is not route promotion. It does not authorize a
 challenge-facing route, validation packaging, validation upload, fold expansion,
 hosted metric claims, label/evaluator/fold split changes, or next-stage

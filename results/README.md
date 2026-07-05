@@ -39,6 +39,19 @@ promotion and does not authorize validation packaging/upload, fold expansion,
 hosted metric claims, label/evaluator/fold split changes, or next-stage
 training.
 
+For routine handoff publication commits, Codex should stage the safe first-level
+Markdown packet automatically with:
+
+```bash
+python scripts/git/stage_handoff_result_packet.py results/<task_key>
+```
+
+This helper uses `git add -f` internally but only for first-level Markdown files
+under `results/<task_key>/`, skips transcript/secret/env-dump style names, and
+does not stage nested artifacts, CSV/JSON dumps, logs, predictions,
+checkpoints, NIfTI outputs, zips, or upload packages. Use explicit `git add -f
+<path>` only when a reviewed nonstandard packet file is intentionally needed.
+
 Allowed diagnostic packet defaults: controller `controller_report.md`,
 `execution_plan.md`, relevant subtask `result.md`/`review.md`, small reviewed
 Markdown decision packets, and reviewed first-party scripts needed to reproduce
