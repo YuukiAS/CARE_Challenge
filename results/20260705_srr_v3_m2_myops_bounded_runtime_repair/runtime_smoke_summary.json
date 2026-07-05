@@ -14,5 +14,6 @@
   "mode": "m2_smoke_only_no_training_no_upload_no_m2_review",
   "patch_shape": "8x32x32",
   "prototype_summary_path": "/users/a/e/aereinh/CARE/results/20260705_srr_v3_m2_myops_bounded_runtime_repair/runtime_smoke/prototype_bank_summary.json",
+  "provenance_summary_path": "/users/a/e/aereinh/CARE/results/20260705_srr_v3_m2_myops_bounded_runtime_repair/provenance_cache_summary.json",
   "strict_validator_expected": "PASS"
 }

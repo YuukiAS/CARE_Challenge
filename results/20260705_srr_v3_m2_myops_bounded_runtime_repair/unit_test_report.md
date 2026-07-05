@@ -2,8 +2,8 @@
 
 ## Commands
 
-- `python -m py_compile scripts/evaluation/export_srr_v3_m2_runtime_repair_smoke.py scripts/training/run_srr_propref_myops_fold0.py`: PASS.
-- `python scripts/evaluation/export_srr_v3_m2_runtime_repair_smoke.py --known-bad-validator-smoke`: PASS; claim-only packet failed closed.
+- `python -m py_compile scripts/evaluation/export_srr_v3_m2_runtime_repair_smoke.py`: PASS.
+- `python scripts/evaluation/export_srr_v3_m2_runtime_repair_smoke.py --known-bad-validator-smoke`: PASS; claim-only and missing-provenance packet failed closed.
 - `python scripts/evaluation/export_srr_v3_m2_runtime_repair_smoke.py`: PASS; generated M2 smoke outputs.
 - `python scripts/evaluation/export_srr_v3_m2_runtime_repair_smoke.py --strict-validate`: PASS.
 
@@ -17,4 +17,4 @@
 
 ## Validator
 
-The M2 strict validator requires every required CSV to have headers, rows, non-claim evidence, and passing statuses. The real packet passes; the synthetic known-bad packet fails closed.
+The M2 strict validator requires every required CSV to have headers, rows, non-claim evidence, and passing statuses. It also requires `runtime_gap_closure_table.csv` to point `cache_provenance_isolation` at `provenance_cache_summary.json`, and requires that JSON to contain non-empty checkpoint, optimizer, encoder, prototype, case-id, patch, smoke-scope, command-path, and artifact-path fields. The real packet passes; the synthetic known-bad packet fails closed.

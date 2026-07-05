@@ -18,12 +18,14 @@
 ## Additional Small Evidence
 
 - `runtime_smoke_summary.json`
+- `provenance_cache_summary.json`
 - `runtime_smoke/prototype_bank_summary.json`
 
 ## Source Changes
 
-- `scripts/training/run_srr_propref_myops_fold0.py`
 - `scripts/evaluation/export_srr_v3_m2_runtime_repair_smoke.py`
+
+Note: `scripts/training/run_srr_propref_myops_fold0.py` was part of the prior M2 bounded runtime repair packet. This continued revision only changes the smoke/export validator and regenerated lightweight evidence.
 
 ## Publication Boundary
 

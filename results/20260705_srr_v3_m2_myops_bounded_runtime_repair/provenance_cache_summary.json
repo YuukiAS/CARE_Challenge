@@ -1,0 +1,32 @@
+{
+  "artifact_paths": {
+    "baseline_gate_safety_sanity": "/users/a/e/aereinh/CARE/results/20260705_srr_v3_m2_myops_bounded_runtime_repair/baseline_gate_safety_sanity.csv",
+    "no_t2_safety_sanity": "/users/a/e/aereinh/CARE/results/20260705_srr_v3_m2_myops_bounded_runtime_repair/no_t2_safety_sanity.csv",
+    "proposal_refinement_sanity": "/users/a/e/aereinh/CARE/results/20260705_srr_v3_m2_myops_bounded_runtime_repair/proposal_refinement_sanity.csv",
+    "prototype_bank_summary": "/users/a/e/aereinh/CARE/results/20260705_srr_v3_m2_myops_bounded_runtime_repair/runtime_smoke/prototype_bank_summary.json",
+    "prototype_t2_coverage_sanity": "/users/a/e/aereinh/CARE/results/20260705_srr_v3_m2_myops_bounded_runtime_repair/prototype_t2_coverage_sanity.csv",
+    "runtime_gap_closure_table": "/users/a/e/aereinh/CARE/results/20260705_srr_v3_m2_myops_bounded_runtime_repair/runtime_gap_closure_table.csv",
+    "runtime_smoke_summary": "/users/a/e/aereinh/CARE/results/20260705_srr_v3_m2_myops_bounded_runtime_repair/runtime_smoke_summary.json",
+    "strong_encoder_context_sanity": "/users/a/e/aereinh/CARE/results/20260705_srr_v3_m2_myops_bounded_runtime_repair/strong_encoder_context_sanity.csv"
+  },
+  "checkpoint_path": "N/A_NO_TRAINING_SMOKE",
+  "commands_run_path": "/users/a/e/aereinh/CARE/results/20260705_srr_v3_m2_myops_bounded_runtime_repair/commands_run.md",
+  "encoder_profile": "strong_4scale",
+  "encoder_scale_channels": "8;16;32;64",
+  "eval_case_ids": [
+    "Case1002",
+    "Case2002"
+  ],
+  "mode": "m2_smoke_only_no_training_no_upload_no_m2_review",
+  "optimizer_steps": 0,
+  "patch_shape": "8x32x32",
+  "prototype_source": "train_oof_runtime_features_fold0",
+  "prototype_summary_path": "/users/a/e/aereinh/CARE/results/20260705_srr_v3_m2_myops_bounded_runtime_repair/runtime_smoke/prototype_bank_summary.json",
+  "selected_case_ids": [
+    "Case2001",
+    "Case2003",
+    "Case2004",
+    "Case2005"
+  ],
+  "smoke_scope": "synthetic gate/crop unit checks plus Case1002 no-T2 patch and Case2002 strong encoder patch"
+}

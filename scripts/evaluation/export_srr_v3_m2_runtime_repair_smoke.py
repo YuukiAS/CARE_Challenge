@@ -334,7 +334,7 @@ def gap_rows(paths: dict[str, Path], summaries: dict[str, list[dict[str, object]
         "pathology_proposal_refinement_path": paths["proposal"],
         "real_prototype_dictionary_runtime_evidence": paths["prototype"],
         "no_t2_edema_end_to_end_safety": paths["no_t2"],
-        "cache_provenance_isolation": paths["summary"],
+        "cache_provenance_isolation": paths["provenance"],
     }
     return [
         {
@@ -366,7 +366,69 @@ def validate_packet(output_dir: Path) -> tuple[bool, list[str]]:
         valid_statuses = {"CLOSED"} if name == "runtime_gap_closure_table.csv" else {"PASS"}
         if rows and any(str(row.get("status", "")) not in valid_statuses for row in rows):
             issues.append(f"{name}: failing_status")
+    issues.extend(validate_provenance(output_dir))
     return not issues, issues
+
+
+def validate_provenance(output_dir: Path) -> list[str]:
+    issues: list[str] = []
+    gap_path = output_dir / "runtime_gap_closure_table.csv"
+    provenance_path = output_dir / "provenance_cache_summary.json"
+    if gap_path.is_file():
+        with gap_path.open(newline="", encoding="utf-8") as f:
+            gap_rows_read = list(csv.DictReader(f))
+        cache_rows = [row for row in gap_rows_read if row.get("runtime_gap") == "cache_provenance_isolation"]
+        if not cache_rows:
+            issues.append("runtime_gap_closure_table.csv: cache_provenance_isolation_missing")
+        else:
+            artifact_path = Path(str(cache_rows[0].get("artifact_path", "")))
+            if artifact_path != provenance_path:
+                issues.append("runtime_gap_closure_table.csv: cache_provenance_artifact_path_not_provenance_summary")
+            if not artifact_path.is_file():
+                issues.append("runtime_gap_closure_table.csv: cache_provenance_artifact_missing")
+    if not provenance_path.is_file():
+        issues.append("provenance_cache_summary.json: missing")
+        return issues
+    try:
+        provenance = json.loads(provenance_path.read_text(encoding="utf-8"))
+    except json.JSONDecodeError:
+        issues.append("provenance_cache_summary.json: invalid_json")
+        return issues
+    required = [
+        "checkpoint_path",
+        "optimizer_steps",
+        "encoder_profile",
+        "encoder_scale_channels",
+        "prototype_source",
+        "prototype_summary_path",
+        "selected_case_ids",
+        "eval_case_ids",
+        "patch_shape",
+        "mode",
+        "smoke_scope",
+        "commands_run_path",
+        "artifact_paths",
+    ]
+    for key in required:
+        if key not in provenance:
+            issues.append(f"provenance_cache_summary.json: missing_{key}")
+        elif provenance[key] in ("", [], {}, None):
+            issues.append(f"provenance_cache_summary.json: empty_{key}")
+    if provenance.get("checkpoint_path") != "N/A_NO_TRAINING_SMOKE":
+        issues.append("provenance_cache_summary.json: checkpoint_path_not_explicit_no_training")
+    if provenance.get("optimizer_steps") != 0:
+        issues.append("provenance_cache_summary.json: optimizer_steps_not_zero")
+    commands_run_path = provenance.get("commands_run_path")
+    if not commands_run_path or not Path(str(commands_run_path)).is_file():
+        issues.append("provenance_cache_summary.json: commands_run_path_missing")
+    artifact_paths = provenance.get("artifact_paths", {})
+    if isinstance(artifact_paths, dict):
+        for key, value in artifact_paths.items():
+            if not value or not Path(str(value)).is_file():
+                issues.append(f"provenance_cache_summary.json: artifact_missing_{key}")
+    else:
+        issues.append("provenance_cache_summary.json: artifact_paths_not_object")
+    return issues
 
 
 def run_known_bad_validator() -> tuple[bool, list[str]]:
@@ -397,6 +459,8 @@ def export(args: argparse.Namespace) -> dict[str, object]:
         "proposal": output_dir / "proposal_refinement_sanity.csv",
         "no_t2": output_dir / "no_t2_safety_sanity.csv",
         "summary": output_dir / "runtime_smoke_summary.json",
+        "provenance": output_dir / "provenance_cache_summary.json",
+        "commands": output_dir / "commands_run.md",
     }
     summaries = {"baseline": baseline, "strong": strong, "prototype": prototype, "proposal": proposal, "no_t2": no_t2}
     gaps = gap_rows(paths, summaries)
@@ -406,14 +470,40 @@ def export(args: argparse.Namespace) -> dict[str, object]:
     write_csv(paths["proposal"], proposal, PROPOSAL_FIELDS)
     write_csv(paths["no_t2"], no_t2, NO_T2_FIELDS)
     write_csv(output_dir / "runtime_gap_closure_table.csv", gaps, GAP_FIELDS)
+    provenance = {
+        "checkpoint_path": "N/A_NO_TRAINING_SMOKE",
+        "optimizer_steps": 0,
+        "encoder_profile": strong[0]["encoder_profile"],
+        "encoder_scale_channels": strong[0]["encoder_scale_channels"],
+        "prototype_source": prototype[0]["prototype_source"],
+        "prototype_summary_path": str(prototype_dir / "prototype_bank_summary.json"),
+        "selected_case_ids": str(prototype[0]["selected_case_ids"]).split(";"),
+        "eval_case_ids": ["Case1002", "Case2002"],
+        "patch_shape": "x".join(str(v) for v in patch_shape),
+        "mode": "m2_smoke_only_no_training_no_upload_no_m2_review",
+        "smoke_scope": "synthetic gate/crop unit checks plus Case1002 no-T2 patch and Case2002 strong encoder patch",
+        "commands_run_path": str(paths["commands"]),
+        "artifact_paths": {
+            "runtime_gap_closure_table": str(output_dir / "runtime_gap_closure_table.csv"),
+            "baseline_gate_safety_sanity": str(paths["baseline"]),
+            "strong_encoder_context_sanity": str(paths["strong"]),
+            "prototype_t2_coverage_sanity": str(paths["prototype"]),
+            "proposal_refinement_sanity": str(paths["proposal"]),
+            "no_t2_safety_sanity": str(paths["no_t2"]),
+            "runtime_smoke_summary": str(paths["summary"]),
+            "prototype_bank_summary": str(prototype_dir / "prototype_bank_summary.json"),
+        },
+    }
     summary = {
         "mode": "m2_smoke_only_no_training_no_upload_no_m2_review",
         "patch_shape": "x".join(str(v) for v in patch_shape),
         "strict_validator_expected": "PASS",
         "prototype_summary_path": str(prototype_dir / "prototype_bank_summary.json"),
         "eval_case_ids": ["Case1002", "Case2002"],
+        "provenance_summary_path": str(paths["provenance"]),
         "all_gap_status": {row["runtime_gap"]: row["status"] for row in gaps},
     }
+    paths["provenance"].write_text(json.dumps(provenance, indent=2, sort_keys=True), encoding="utf-8")
     paths["summary"].write_text(json.dumps(summary, indent=2, sort_keys=True), encoding="utf-8")
     return summary
 
