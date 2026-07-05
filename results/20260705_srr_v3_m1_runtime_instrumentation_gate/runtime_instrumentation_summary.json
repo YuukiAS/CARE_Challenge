@@ -1,0 +1,16 @@
+{
+  "alignment_rows": 4,
+  "case_ids": [
+    "Case1002",
+    "Case2002",
+    "Case3004",
+    "Case3011"
+  ],
+  "checkpoint": "/users/a/e/aereinh/CARE/results/20260704_srr_v25_training_ablation_matrix/bounded_matrix/variants/srr_propref_shared_dual_dict/checkpoints/fold_0/propref_config/checkpoint_final.pt",
+  "device": "cpu",
+  "gate_rows": 10,
+  "no_t2_rows": 4,
+  "output_dir": "/users/a/e/aereinh/CARE/results/20260705_srr_v3_m1_runtime_instrumentation_gate",
+  "prototype_rows": 1,
+  "variant": "srr_propref_shared_dual_dict"
+}
