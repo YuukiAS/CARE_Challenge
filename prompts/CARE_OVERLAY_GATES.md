@@ -5,8 +5,12 @@ This file is the CARE-specific overlay for GPT-Codex handoff tasks. It does not 
 Source-of-truth layering:
 
 1. Bridge Kit handoff protocol: roles, state machine, task/result/review/controller report fields, review_required, experiment adequacy gates, route promotion gates, route negative gates, diagnostic publication gates, scientific resolution states, and commit/push authorization.
-2. `medical-imaging-deep-learning` skill: generic medical-imaging deep-learning mechanism gates, including U-Net-like segmentation, registration/warping, cine temporal modeling, missing-modality handling, external adapters, and proposal/refinement/cascade completion standards. Use `.agents/skills/domains-medical-imaging-medical-imaging-deep-learning/SKILL.md` and upstream `AI_Skills_Collection/skills/domains/medical-imaging/medical-imaging-deep-learning/` as the source of truth.
-3. CARE overlay: CARE Challenge-specific leaderboard, label/export, T2-edema, CineMyoPS, controller, submission, and historical failure-escalation constraints.
+2. CARE hard-gate policy: `prompts/HANDOFF_GATE_POLICY.md` and
+   `prompts/GPT_HARD_GATE_PROMPT.md` define exact task graph, strict validator,
+   completion-check-before-final-audit, terminal report schema, current bad
+   packet regression, and smoke-scale evidence classification requirements.
+3. `medical-imaging-deep-learning` skill: generic medical-imaging deep-learning mechanism gates, including U-Net-like segmentation, registration/warping, cine temporal modeling, missing-modality handling, external adapters, and proposal/refinement/cascade completion standards. Use `.agents/skills/domains-medical-imaging-medical-imaging-deep-learning/SKILL.md` and upstream `AI_Skills_Collection/skills/domains/medical-imaging/medical-imaging-deep-learning/` as the source of truth.
+4. CARE overlay: CARE Challenge-specific leaderboard, label/export, T2-edema, CineMyoPS, controller, submission, and historical failure-escalation constraints.
 
 If a generic mechanism rule conflicts with this file, the skill owns the generic method standard and this file owns only the CARE-specific challenge contract. Record the conflict in the task result or review instead of silently overriding it.
 
@@ -41,6 +45,12 @@ If a generic mechanism rule conflicts with this file, the skill owns the generic
 - A CARE execution controller may only orchestrate subtasks inside a GPT-authored controller task.
 - The controller must not choose a new scientific route. If SRR, proposal, registration, or Cine evidence requires a new direction, write `NEEDS_GPT_PLANNER` and stop.
 - The controller must report `controller_run_status`, `operational_completion_status`, and `scientific_resolution_status` separately. Operational completion does not imply route promotion or a supported scientific stop.
+- Before final audit or completion, the controller must pass the hard-gate
+  checks in `prompts/HANDOFF_GATE_POLICY.md`. Missing blocking subtask result
+  directories, missing exact required output filenames, final audit without a
+  ready completion-check `decision.md`, strict validator errors, missing
+  terminal controller-report fields, or smoke-scale training used as full route
+  evidence block completion.
 - The controller may commit only when `allow_git_commit: true` is explicit. It may push only when `allow_git_push: true` is explicit.
 - Controller commit/push after audit may be triggered by `route_promotion_gate` or by `diagnostic_publication_gate` inside the authorized scope. Diagnostic publication must be labeled `diagnostic publication only; no route promotion`.
 - Diagnostic publication may include only reviewed minimal artifacts such as controller reports, execution plans, subtask results/reviews, small Markdown decision packets, and reviewed first-party reproducibility scripts. It must not publish checkpoints, predictions, NIfTI outputs, upload packages, heavy logs, secret-bearing transcripts, large/privacy-sensitive raw CSV dumps, full result trees, credentials, or `.env` files.

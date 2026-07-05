@@ -14,6 +14,11 @@ strategic planner and the user-supervised strategic controller.
   publication migration note.
 - `prompts/EXPERIMENT_ADEQUACY_GATE.md`: experiment adequacy, route-negative,
   and scientific completion migration note.
+- `prompts/HANDOFF_GATE_POLICY.md`: hard-gate policy for exact task graph,
+  strict validators, completion-check readiness, and smoke-scale evidence
+  classification.
+- `prompts/GPT_HARD_GATE_PROMPT.md`: GPT checklist to apply before writing a
+  high-risk CARE controller goal.
 - `prompts/MECHANISM_GATE_TEMPLATE.md`: reusable evidence-gate pattern.
 - `prompts/tasks/<task_key>.md`: GPT-authored task entry.
 - `results/<task_key>/result.md`: executor report and evidence index.
@@ -57,6 +62,14 @@ When generating any CARE model, experiment, external-method, registration, tempo
 Normal CARE execution tasks must declare `mechanism_class`, `target_metric`, `same_split_baseline` when relevant, `required_evidence`, `forbidden_substitutes`, `promotion_gate` or `route_promotion_gate`, `experiment_adequacy_gate`, `route_negative_gate`, `scientific_completion_gate`, `failure_escalation_policy`, and `review_required: true`. Controller tasks must also declare `execution_controller`, `executor_subtasks`, `auditor_subtasks`, `controller_report_path`, `route_promotion_gate`, `diagnostic_publication_gate`, `diagnostic_publication_scope`, `blocked_after_diagnostic_publication`, `experiment_adequacy_gate`, `route_negative_gate`, `scientific_completion_gate`, `allow_git_commit`, and `allow_git_push`.
 
 Reference the Bridge Kit state machine for handoff states and `prompts/CARE_OVERLAY_GATES.md` plus the installed `medical-imaging-deep-learning` skill for mechanism gates. Do not copy the full skill text into each task.
+
+Before writing a high-risk CARE controller task, apply
+`prompts/GPT_HARD_GATE_PROMPT.md` and require `prompts/HANDOFF_GATE_POLICY.md`
+as a completion gate. A controller task must list blocking subtasks exactly and
+must not allow final audit, route promotion, scientific stop, fold expansion,
+validation packaging, or upload when required result directories, exact output
+filenames, completion-check readiness, strict validator success, or minimum
+effective training evidence are missing.
 
 Do not issue high-risk CARE implementation, fold expansion, validation packaging, upload, or route-promotion tasks without a review or audit gate. A result file is evidence for review; it is not authorization for the next task unless there is a review, audit, controller report, or explicit user override.
 

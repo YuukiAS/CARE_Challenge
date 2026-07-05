@@ -24,6 +24,8 @@ prompts/HANDOFF_ROLES.md
 prompts/HANDOFF_STATE_MACHINE.md
 prompts/CONTROLLER_TASK_PROTOCOL.md
 prompts/EXPERIMENT_ADEQUACY_GATE.md
+prompts/HANDOFF_GATE_POLICY.md
+prompts/GPT_HARD_GATE_PROMPT.md
 prompts/MECHANISM_GATE_TEMPLATE.md
 ```
 
@@ -121,6 +123,12 @@ For `task_type: execution`:
 For `task_type: controller` or `controller_mode: true`:
 
 - Read the GPT-authored controller task and stay inside it.
+- For high-risk CARE controller work, enforce `prompts/HANDOFF_GATE_POLICY.md`
+  before final audit or completion decisions: exact ordered task graph, exact
+  result directories and required filenames, strict validator exit behavior,
+  completion-check readiness before final audit, controller report terminal
+  fields, training adequacy classification, and the current-bad-packet
+  regression when applicable.
 - Build an execution plan.
 - Create or launch separate executor and auditor sessions when supported.
 - If automatic subagent launch is unavailable, write prompt files such as:

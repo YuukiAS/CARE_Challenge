@@ -20,12 +20,34 @@ from typing import Iterable
 
 CONTROLLER_TASK_PATTERN = re.compile(r"prompts/tasks/([0-9]{8}_[a-zA-Z0-9_]+)\.md")
 OUTPUT_FILE_PATTERN = re.compile(r"`([^`]+?\.(?:md|csv|json|yaml|yml|txt))`")
+TASK_KEY_PATTERN = re.compile(r"\b([0-9]{8}_[a-zA-Z0-9_]+)\b")
+STATUS_FIELD_PATTERN = re.compile(r"^\s*([a-zA-Z_]+)\s*:", re.MULTILINE)
 FAILURE_SOURCE_PATTERNS = (
     "deterministic_axis",
     "random",
     "trainable_parameter_only",
     "no_proto_variant",
     "pending_train_or_oof_fit",
+)
+READY_FOR_FINAL_AUDIT_TOKENS = {
+    "READY_FOR_FINAL_AUDIT",
+    "FINAL_AUDIT_READY",
+}
+REQUIRED_CONTROLLER_REPORT_FIELDS = (
+    "controller_run_status",
+    "operational_completion_status",
+    "experiment_adequacy_decision",
+    "route_promotion_decision",
+    "route_negative_decision",
+    "scientific_resolution_status",
+    "diagnostic_publication_decision",
+    "git_commit_decision",
+    "git_push_decision",
+    "published_files",
+    "blocked_actions",
+    "next_required_action",
+    "reason_if_not_published",
+    "reason_if_no_route_promotion",
 )
 
 
@@ -47,6 +69,33 @@ def iter_task_keys(controller_text: str) -> list[str]:
         key = match.group(1)
         if key not in seen:
             seen.append(key)
+    return seen
+
+
+def controller_key_from_path(controller: Path) -> str:
+    return controller.stem
+
+
+def controller_report_path(controller: Path, results_root: Path) -> Path:
+    return results_root / controller_key_from_path(controller) / "controller_report.md"
+
+
+def iter_executor_subtask_keys(report_text: str) -> list[str]:
+    section = report_text
+    marker = "## Executor Subtask List"
+    if marker in report_text:
+        section = report_text.split(marker, 1)[1]
+        next_header = re.search(r"\n## ", section)
+        if next_header:
+            section = section[: next_header.start()]
+
+    seen: list[str] = []
+    for line in section.splitlines():
+        table_match = re.match(r"\|\s*`([0-9]{8}_[a-zA-Z0-9_]+)`\s*\|", line)
+        keys = [table_match.group(1)] if table_match else TASK_KEY_PATTERN.findall(line)
+        for key in keys:
+            if key not in seen:
+                seen.append(key)
     return seen
 
 
@@ -77,6 +126,7 @@ def check_required_file_names(repo: Path, controller: Path, results_root: Path) 
         required = required_outputs_from_task(read_text(task_path))
         result_dir = results_root / key
         if not result_dir.exists():
+            issues.append(Issue("REQUIRED_RESULT_DIR_MISSING", "error", f"required subtask {key} has no exact result directory", str(result_dir)))
             continue
         existing = {p.name for p in result_dir.iterdir() if p.is_file()}
         for name in required:
@@ -85,6 +135,148 @@ def check_required_file_names(repo: Path, controller: Path, results_root: Path) 
                 hint = f"; similar={similar}" if similar else ""
                 issues.append(Issue("REQUIRED_FILE_MISSING", "error", f"{key} missing exact required file {name}{hint}", str(result_dir / name)))
     return issues
+
+
+def check_task_graph_consistency(repo: Path, controller: Path, results_root: Path) -> list[Issue]:
+    issues: list[Issue] = []
+    controller_text = read_text(controller)
+    required_keys = iter_task_keys(controller_text)
+    report_path = controller_report_path(controller, results_root)
+    if not report_path.exists():
+        return [
+            Issue(
+                "CONTROLLER_REPORT_MISSING",
+                "error",
+                f"controller report missing for {controller_key_from_path(controller)}",
+                str(report_path),
+            )
+        ]
+
+    report_keys = iter_executor_subtask_keys(read_text(report_path))
+    existing_result_dirs = {p.name for p in results_root.iterdir() if p.is_dir()} if results_root.exists() else set()
+    for key in required_keys:
+        if key not in report_keys:
+            issues.append(
+                Issue(
+                    "CONTROLLER_REPORT_SUBTASK_MISSING",
+                    "error",
+                    f"required subtask {key} is missing from controller report executor subtask list",
+                    str(report_path),
+                )
+            )
+        if key not in existing_result_dirs:
+            issues.append(
+                Issue(
+                    "TASK_GRAPH_RESULT_DIR_MISSING",
+                    "error",
+                    f"required subtask {key} is missing from results tree",
+                    str(results_root / key),
+                )
+            )
+    return issues
+
+
+def check_completion_check_before_final_review(controller: Path, results_root: Path) -> list[Issue]:
+    controller_text = read_text(controller)
+    keys = iter_task_keys(controller_text)
+    completion_keys = [key for key in keys if "completion_check" in key]
+    final_review_keys = [key for key in keys if "final" in key and ("audit" in key or "review" in key)]
+    if not completion_keys or not final_review_keys:
+        return []
+
+    first_completion_idx = min(keys.index(key) for key in completion_keys)
+    first_final_idx = min(keys.index(key) for key in final_review_keys)
+    if first_completion_idx > first_final_idx:
+        return [
+            Issue(
+                "COMPLETION_CHECK_ORDER_INVALID",
+                "error",
+                "completion check is ordered after final review/audit",
+                str(controller),
+            )
+        ]
+
+    issues: list[Issue] = []
+    for completion_key in completion_keys:
+        decision_path = results_root / completion_key / "decision.md"
+        if not decision_path.exists():
+            issues.append(
+                Issue(
+                    "COMPLETION_CHECK_READINESS_MISSING",
+                    "error",
+                    f"final review is blocked because {completion_key} has no decision.md readiness file",
+                    str(decision_path),
+                )
+            )
+            continue
+        decision_text = read_text(decision_path)
+        if not any(token in decision_text for token in READY_FOR_FINAL_AUDIT_TOKENS):
+            issues.append(
+                Issue(
+                    "COMPLETION_CHECK_NOT_READY",
+                    "error",
+                    f"final review is blocked because {completion_key}/decision.md does not declare READY_FOR_FINAL_AUDIT",
+                    str(decision_path),
+                )
+            )
+    return issues
+
+
+def check_controller_report_schema(controller: Path, results_root: Path) -> list[Issue]:
+    path = controller_report_path(controller, results_root)
+    if not path.exists():
+        return []
+    text = read_text(path)
+    present = set(STATUS_FIELD_PATTERN.findall(text))
+    issues: list[Issue] = []
+    for field in REQUIRED_CONTROLLER_REPORT_FIELDS:
+        if field not in present:
+            issues.append(
+                Issue(
+                    "CONTROLLER_REPORT_FIELD_MISSING",
+                    "error",
+                    f"controller report missing terminal field {field}",
+                    str(path),
+                )
+            )
+    return issues
+
+
+def check_training_evidence_adequacy(controller: Path, results_root: Path) -> list[Issue]:
+    path = controller_report_path(controller, results_root)
+    if not path.exists():
+        return []
+    text = read_text(path)
+    lowered = text.lower()
+    step_values = [int(value) for value in re.findall(r"actual_optimizer_steps\s*[`:= ]+\s*`?(\d+)", text)]
+    has_tiny_steps = any(value <= 20 for value in step_values)
+    has_bounded_probe = "bounded" in lowered and ("max_steps 6" in lowered or "max-steps 6" in lowered or "6-step" in lowered or "actual_optimizer_steps=6" in lowered)
+    has_limited_eval = "eval_cases=4" in lowered or "eval cases=4" in lowered or "limited explicit eval" in lowered
+    final_reached = "final_readonly_audit" in lowered or "final read-only audit" in lowered or "report_status: `complete" in lowered
+    promotion_or_stop_claim = bool(
+        re.search(r"route_promotion_decision\s*:\s*`?(PROMOTE|DO_NOT_PROMOTE_CHALLENGE_CANDIDATE)", text)
+        or re.search(r"route_negative_decision\s*:\s*`?(STOP_|STOP_CURRENT|STOP_SUPPORTED)", text)
+        or "scientific stop" in lowered
+    )
+
+    if (has_tiny_steps or has_bounded_probe or has_limited_eval) and (final_reached or promotion_or_stop_claim):
+        evidence_bits = []
+        if step_values:
+            evidence_bits.append(f"actual_optimizer_steps={min(step_values)}")
+        if has_bounded_probe:
+            evidence_bits.append("bounded 6-step probe")
+        if has_limited_eval:
+            evidence_bits.append("limited eval cases")
+        evidence = ", ".join(evidence_bits) if evidence_bits else "smoke-scale training evidence"
+        return [
+            Issue(
+                "SMOKE_SCALE_TRAINING_INADEQUATE",
+                "error",
+                "6-step bounded SRR probes are diagnostic/undertrained and cannot support full-route completion, route promotion, or scientific stop",
+                f"{path}: {evidence}",
+            )
+        ]
+    return []
 
 
 def ast_defined_and_called(paths: Iterable[Path]) -> tuple[set[str], set[str]]:
@@ -231,6 +423,10 @@ def check_claim_runtime_evidence(results_root: Path) -> list[Issue]:
 def run_checks(repo: Path, controller: Path, results_root: Path) -> list[Issue]:
     issues: list[Issue] = []
     issues.extend(check_required_file_names(repo, controller, results_root))
+    issues.extend(check_task_graph_consistency(repo, controller, results_root))
+    issues.extend(check_completion_check_before_final_review(controller, results_root))
+    issues.extend(check_controller_report_schema(controller, results_root))
+    issues.extend(check_training_evidence_adequacy(controller, results_root))
     issues.extend(check_runtime_call_trace(repo))
     issues.extend(check_prototype_sources(repo, results_root))
     issues.extend(check_residual_gate_contract(repo))
@@ -245,7 +441,8 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--controller", type=Path, default=Path("prompts/tasks/20260704_srr_v25_full_completion_goal.md"))
     parser.add_argument("--results-root", type=Path, default=Path("results"))
     parser.add_argument("--json", action="store_true", help="emit JSON instead of text")
-    parser.add_argument("--strict", action="store_true", help="return nonzero when error-severity issues are found")
+    parser.add_argument("--strict", action="store_true", help="deprecated compatibility flag; strict completion behavior is now the default")
+    parser.add_argument("--diagnostic-non-strict", action="store_true", help="diagnostic scan only; return zero even when errors are found")
     args = parser.parse_args(argv)
 
     repo = args.repo_root.resolve()
@@ -266,7 +463,7 @@ def main(argv: list[str] | None = None) -> int:
         print(f"issue_count={payload['issue_count']} error_count={payload['error_count']} warning_count={payload['warning_count']}")
         for issue in issues:
             print(f"{issue.severity.upper()} {issue.code}: {issue.message} [{issue.evidence}]")
-    return 1 if args.strict and payload["error_count"] else 0
+    return 0 if args.diagnostic_non_strict else (1 if payload["error_count"] else 0)
 
 
 if __name__ == "__main__":
