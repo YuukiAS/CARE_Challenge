@@ -1,0 +1,18 @@
+{
+  "all_gap_status": {
+    "baseline_preserving_anchor_residual_safety": "CLOSED",
+    "cache_provenance_isolation": "CLOSED",
+    "no_t2_edema_end_to_end_safety": "CLOSED",
+    "pathology_proposal_refinement_path": "CLOSED",
+    "real_prototype_dictionary_runtime_evidence": "CLOSED",
+    "strong_encoder_context_path": "CLOSED"
+  },
+  "eval_case_ids": [
+    "Case1002",
+    "Case2002"
+  ],
+  "mode": "m2_smoke_only_no_training_no_upload_no_m2_review",
+  "patch_shape": "8x32x32",
+  "prototype_summary_path": "/users/a/e/aereinh/CARE/results/20260705_srr_v3_m2_myops_bounded_runtime_repair/runtime_smoke/prototype_bank_summary.json",
+  "strict_validator_expected": "PASS"
+}

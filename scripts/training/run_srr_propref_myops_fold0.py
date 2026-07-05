@@ -110,6 +110,43 @@ def parse_case_id_list(text: str | None) -> list[str]:
     return [item.strip() for item in str(text).replace(";", ",").split(",") if item.strip()]
 
 
+def ensure_t2_edema_prototype_cases(
+    train_cases: list[AnchoredCaseData],
+    all_train_ids: list[str],
+    metadata: dict[str, object],
+    anchor_root: Path,
+    args: argparse.Namespace,
+) -> tuple[list[AnchoredCaseData], list[str]]:
+    """Preserve T2-present edema prototype evidence after small train-subset limits.
+
+    Earlier bounded smoke runs could pass only the first LGE-only cases through
+    ``--limit-train-cases`` and then fit an empty edema prototype bank.  M2 keeps
+    the smoke subset small but appends a few same-split T2 edema-positive cases
+    when prototype fitting would otherwise have no valid edema positives.
+    """
+
+    if args.variant == "srr_propref_no_proto_cascade" or bool(getattr(args, "skip_prototype_bank_fit", False)):
+        return train_cases, []
+    if any(case.metadata.t2_present and np.any(case.label_arr == 4) for case in train_cases):
+        return train_cases, []
+    selected_ids = {case.case_id for case in train_cases}
+    target = max(1, min(int(getattr(args, "prototype_bank_cases", 1)), 4))
+    added: list[str] = []
+    repaired = list(train_cases)
+    for case_id in all_train_ids:
+        if case_id in selected_ids:
+            continue
+        case = read_anchored_case(case_id, metadata, anchor_root)
+        if not (case.metadata.t2_present and np.any(case.label_arr == 4)):
+            continue
+        repaired.append(case)
+        selected_ids.add(case_id)
+        added.append(case_id)
+        if len(added) >= target:
+            break
+    return repaired, added
+
+
 def _anchor_root(path_text: str) -> Path:
     path = Path(path_text)
     return path if path.is_absolute() else REPO_ROOT / path
@@ -1360,6 +1397,14 @@ def train_variant(args: argparse.Namespace) -> None:
     metadata = load_myops_case_metadata()
     anchor_root = _anchor_root(args.nnunet_anchor_root)
     train_cases = [read_anchored_case(cid, metadata, anchor_root) for cid in train_ids]
+    train_cases, prototype_t2_repair_added_case_ids = ensure_t2_edema_prototype_cases(
+        train_cases,
+        list(load_split(args.fold)[0]),
+        metadata,
+        anchor_root,
+        args,
+    )
+    train_ids = [case.case_id for case in train_cases]
     val_cases = [read_anchored_case(cid, metadata, anchor_root) for cid in val_ids]
     eval_cases_override = [read_anchored_case(cid, metadata, anchor_root) for cid in eval_case_ids] if eval_case_ids else []
     anchor_fold_counts: dict[str, int] = {}
@@ -1375,6 +1420,8 @@ def train_variant(args: argparse.Namespace) -> None:
         "anchor_fold_counts": anchor_fold_counts,
         "component_source": "connected components derived from nnU-Net hard predictions for compact scar class 5 and edema class 4",
         "no_t2_policy": "class-4 edema anchor/component evidence is zeroed when T2 is unavailable or virtual modality dropout removes T2",
+        "prototype_t2_repair_added_case_ids": prototype_t2_repair_added_case_ids,
+        "prototype_t2_repair_policy": "if a limited train subset lacks T2-present edema-positive cases, append same-split T2 edema-positive cases for prototype fitting evidence",
     }
     complete_cases = [case for case in train_cases if case.metadata.modality_group == "C0+LGE+T2"]
     scar_cases = [case for case in train_cases if np.any(case.label_arr == 5)]
@@ -1702,6 +1749,7 @@ def train_variant(args: argparse.Namespace) -> None:
         "nnunet_anchor_root": str(anchor_root),
         "nnunet_anchor_train_case_count": len(train_cases),
         "nnunet_anchor_val_case_count": len(val_cases),
+        "prototype_t2_repair_added_case_ids": prototype_t2_repair_added_case_ids,
         "nnunet_anchor_fold_counts": anchor_fold_counts,
         "nnunet_anchor_usage_status": "disabled_for_ablation" if bool(getattr(args, "disable_nnunet_anchor", False)) else "enabled",
         "three_stage_schedule": ["evidence_warmup", "proposal_dictionary", "soft_roi_refinement", "low_lr_calibration"],

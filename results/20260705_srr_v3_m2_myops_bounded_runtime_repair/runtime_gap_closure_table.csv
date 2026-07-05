@@ -1,0 +1,7 @@
+runtime_gap,status,artifact_path,notes
+baseline_preserving_anchor_residual_safety,CLOSED,/users/a/e/aereinh/CARE/results/20260705_srr_v3_m2_myops_bounded_runtime_repair/baseline_gate_safety_sanity.csv,"small smoke evidence; no full-fold training, no route promotion"
+strong_encoder_context_path,CLOSED,/users/a/e/aereinh/CARE/results/20260705_srr_v3_m2_myops_bounded_runtime_repair/strong_encoder_context_sanity.csv,"small smoke evidence; no full-fold training, no route promotion"
+pathology_proposal_refinement_path,CLOSED,/users/a/e/aereinh/CARE/results/20260705_srr_v3_m2_myops_bounded_runtime_repair/proposal_refinement_sanity.csv,"small smoke evidence; no full-fold training, no route promotion"
+real_prototype_dictionary_runtime_evidence,CLOSED,/users/a/e/aereinh/CARE/results/20260705_srr_v3_m2_myops_bounded_runtime_repair/prototype_t2_coverage_sanity.csv,"small smoke evidence; no full-fold training, no route promotion"
+no_t2_edema_end_to_end_safety,CLOSED,/users/a/e/aereinh/CARE/results/20260705_srr_v3_m2_myops_bounded_runtime_repair/no_t2_safety_sanity.csv,"small smoke evidence; no full-fold training, no route promotion"
+cache_provenance_isolation,CLOSED,/users/a/e/aereinh/CARE/results/20260705_srr_v3_m2_myops_bounded_runtime_repair/runtime_smoke_summary.json,"small smoke evidence; no full-fold training, no route promotion"

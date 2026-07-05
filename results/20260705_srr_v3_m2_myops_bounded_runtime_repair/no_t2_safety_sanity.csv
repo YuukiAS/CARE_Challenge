@@ -1,0 +1,2 @@
+case_id,status,t2_present,edema_proposal_logit_max,edema_roi_mean,edema_logit_max,final_edema_logit_max,argmax_edema_voxels,pathology_aware_edema_voxels,edema_proposal_loss,loss_value,export_safety_status,evidence_status
+Case1002,PASS,False,-20.0,0.004446144215762615,-20.0,-20.0,0,0,-0.0,4.151083946228027,PASS_NO_T2_DECODE_HAS_ZERO_EDEMA,real_no_t2_case_runtime

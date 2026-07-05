@@ -1,0 +1,2 @@
+case_id,status,encoder_profile,base_channels,encoder_scale_channels,parameter_count,input_shape,output_logits_shape,local_refinement_status,anatomy_roi_prior_status,evidence_status
+Case2002,PASS,strong_4scale,8,8;16;32;64,5790336,1x3x8x32x32,1x6x8x32x32,enabled_crop_soft_roi,enabled_distance_soft_gates,real_case_forward_runtime

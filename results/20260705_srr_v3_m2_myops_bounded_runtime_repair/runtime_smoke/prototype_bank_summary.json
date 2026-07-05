@@ -1,0 +1,56 @@
+{
+  "case_count": 4,
+  "category_counts": {
+    "artifact": 0,
+    "blood_pool": 6188,
+    "hard_fp": 435,
+    "normal_myocardium": 1858,
+    "outside_myocardium": 19286,
+    "scar_positive": 1085,
+    "t2_present_artifact": 32,
+    "t2_present_blood_pool": 6188,
+    "t2_present_edema_positive": 4351,
+    "t2_present_hard_fp": 363,
+    "t2_present_normal_myocardium_far_from_edema": 313,
+    "t2_present_outside_myocardium": 19286
+  },
+  "counts": {
+    "edema_negative": 17,
+    "edema_positive": 4,
+    "scar_negative": 16,
+    "scar_positive": 4
+  },
+  "edema_negative_shape": [
+    8,
+    4
+  ],
+  "edema_positive_shape": [
+    6,
+    4
+  ],
+  "feature_stage": "SRRProposeRefineMyoPS._evidence_features",
+  "hard_negative_counts": {
+    "edema_no_t2_myocardium_negative_voxels": 0,
+    "edema_t2_present_artifact": 32,
+    "edema_t2_present_hard_fp": 363,
+    "scar_artifact": 0,
+    "scar_hard_fp": 435
+  },
+  "leakage_policy": "train split and OOF nnU-Net anchor probabilities only; validation labels are not used",
+  "safe_negative_policy": "edema positives and negatives restricted to T2-present samples; no-T2 myocardium never contributes edema negatives",
+  "scar_negative_shape": [
+    8,
+    4
+  ],
+  "scar_positive_shape": [
+    6,
+    4
+  ],
+  "selected_case_ids": [
+    "Case2001",
+    "Case2003",
+    "Case2004",
+    "Case2005"
+  ],
+  "source": "train_oof_runtime_features_fold0"
+}
