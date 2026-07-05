@@ -34,6 +34,19 @@ forbidden_substitutes:
 
 # Milestone M1: Runtime Instrumentation Gate
 
+## Milestone Review Gate
+
+This is an executor/controller milestone only. Execute M1 and stop after writing
+all required outputs, `completion_check.md`, `review_request.md`, and
+`MANIFEST.md`. Do not write `review.md`, do not mark `M1_AUDITED_GO`, do not
+approve yourself, and do not start M2.
+
+M1 may start only after
+`results/20260705_srr_v3_m0_architecture_master_contract/review.md` contains
+`M0_AUDITED_GO`. `review_request.md` must request a separate read-only review of
+the M1 result directory and must state that M2 remains blocked until
+`M1_AUDITED_GO`.
+
 ## Goal
 
 Close the evidence gaps identified by the SRR-v2.5 evidence supplement audit before changing scientific behavior. This milestone should add or run lightweight eval-only instrumentation so that future training can answer why a prediction is near-identity, harmful, or helpful. It must not run long training, package validation, upload, expand folds, or claim route promotion.
@@ -73,6 +86,10 @@ Write all required outputs under `results/20260705_srr_v3_m1_runtime_instrumenta
 - `M1_READY_FOR_REVIEW`
 - `M1_NEEDS_REVISION`
 - `M1_NEEDS_EVIDENCE`
+
+`review_request.md` must state that `review.md` is intentionally absent at
+executor stop and that M2 remains blocked until a separate read-only reviewer
+writes `M1_AUDITED_GO`.
 
 A separate read-only reviewer should later write `review.md` with one of:
 

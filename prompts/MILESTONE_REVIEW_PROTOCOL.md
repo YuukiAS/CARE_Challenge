@@ -4,7 +4,17 @@ This protocol applies to SRR-v3 / SRR-ProposeRefine milestone work and any futur
 
 ## Purpose
 
-Milestones are intentionally smaller than previous all-in-one controller goals. Each milestone must be executed, checked, and reviewed independently. A milestone result is not authorization to continue. Continuation requires a separate read-only review.
+Milestones are intentionally smaller than previous all-in-one controller goals.
+Each milestone must be executed, checked, and reviewed independently. A
+milestone result is not authorization to continue. Continuation requires a
+separate read-only review.
+
+This is a two-step milestone gate:
+
+1. executor/controller step;
+2. independent read-only reviewer/auditor step.
+
+The two steps must not be collapsed into one Codex session.
 
 ## Roles
 
@@ -22,7 +32,12 @@ The main Codex session executes exactly one milestone at a time. It may:
 - update `MANIFEST.md`;
 - commit/push only if the milestone prompt explicitly authorizes it and no gate blocks it.
 
-The main Codex session must stop after `completion_check.md` and `review_request.md`. It must not write the milestone's final `review.md`, must not approve itself, and must not start the next milestone.
+The main Codex session must stop after `completion_check.md` and
+`review_request.md`. It must not write the milestone's final `review.md`, must
+not approve itself, must not mark `*_AUDITED_GO`, and must not start or prepare
+the next milestone. Executor self-assessment can be `READY_FOR_REVIEW`,
+`NEEDS_REVISION`, `NEEDS_EVIDENCE`, or a milestone-defined blocked state, but it
+is never an audited continuation decision.
 
 ### Independent Codex Session: Read-Only Reviewer / Auditor
 
@@ -46,6 +61,10 @@ The reviewer/auditor must not:
 - start the next milestone;
 - convert missing evidence into a pass.
 
+The reviewer/auditor is the only role allowed to write a milestone `review.md`.
+The reviewer/auditor may approve continuation only with the exact audited-go
+state defined by that milestone, such as `M0_AUDITED_GO`.
+
 ## Milestone Flow
 
 ```text
@@ -58,6 +77,30 @@ The reviewer/auditor must not:
 7. Only if review.md contains the audited-go state may the next milestone start.
 ```
 
+## Required Files Per Milestone
+
+Every milestone executor result directory must include:
+
+```text
+results/<task_key>/result.md
+results/<task_key>/completion_check.md
+results/<task_key>/review_request.md
+results/<task_key>/MANIFEST.md
+```
+
+Milestone-specific required outputs may add contract files, CSV/JSON summaries,
+unit-test reports, or other evidence files. Missing required files are blockers
+for review.
+
+Every milestone reviewer writes:
+
+```text
+results/<task_key>/review.md
+```
+
+`review.md` is absent by design at the end of the executor step. The absence of
+`review.md` blocks the next milestone until a separate reviewer writes it.
+
 ## Review Decisions
 
 Each milestone defines its own controlled review states. Examples:
@@ -68,7 +111,23 @@ M0_AUDITED_NEEDS_REVISION
 M0_AUDITED_NEEDS_EVIDENCE
 ```
 
-A milestone may not continue on executor self-assessment alone. `completion_check.md` can say ready for review, but only `review.md` can authorize continuation.
+A milestone may not continue on executor self-assessment alone.
+`completion_check.md` can say ready for review, but only `review.md` can
+authorize continuation.
+
+## Prerequisite Rule For Next Milestones
+
+Every milestone after M0 must check the previous blocking milestone review
+before doing any scientific work:
+
+```text
+results/<previous_task_key>/review.md:<PREVIOUS_MILESTONE>_AUDITED_GO
+```
+
+If the file is missing or does not contain the exact audited-go token, the
+executor must stop with the milestone's blocked state, write no scientific
+outputs beyond a minimal blocked result packet, and must not start repair work
+unless the current milestone explicitly authorizes such repair.
 
 ## Relationship To Controller Subagents
 
@@ -79,11 +138,14 @@ Internal self-checks, subagent notes, or executor-launched audit drafts are allo
 ## Forbidden Shortcuts
 
 - Do not let an executor write its own final `review.md`.
+- Do not let an executor/controller mark `*_AUDITED_GO`.
 - Do not treat `completion_check.md` as audited continuation permission.
 - Do not let a controller report absorb a missing review.
 - Do not continue to the next milestone while `review.md` is missing.
 - Do not mark a milestone audited-go if required output files are missing.
 - Do not call smoke-scale or eval-only evidence formal route evidence.
+- Do not start the next milestone from the same Codex session that produced the
+  current milestone result.
 
 ## Required Wording For Milestone Executor Prompts
 

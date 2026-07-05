@@ -26,6 +26,7 @@ prompts/CONTROLLER_TASK_PROTOCOL.md
 prompts/EXPERIMENT_ADEQUACY_GATE.md
 prompts/HANDOFF_GATE_POLICY.md
 prompts/GPT_HARD_GATE_PROMPT.md
+prompts/MILESTONE_REVIEW_PROTOCOL.md
 prompts/MECHANISM_GATE_TEMPLATE.md
 ```
 
@@ -118,11 +119,34 @@ For `task_type: execution`:
 - Do not open the next task, invent a new direction, bypass review, or claim
   final audited completion.
 
+## Milestone Task Rules
+
+For `task_type: milestone`, read `prompts/MILESTONE_REVIEW_PROTOCOL.md` before
+acting. A Codex executor/controller session may execute exactly one milestone.
+It must write the milestone's required outputs, `completion_check.md`,
+`review_request.md`, and `MANIFEST.md` under the exact `results/<task_key>/`
+directory, then stop.
+
+A milestone executor/controller session must not write `review.md`, must not
+write or claim a `*_AUDITED_GO` state, must not approve itself, and must not
+start the next milestone. The next milestone is blocked until a separate
+read-only reviewer/auditor session writes `results/<task_key>/review.md` with
+the exact audited-go token defined by the milestone.
+
+If a milestone prerequisite review is missing or lacks the required audited-go
+token, stop before scientific work with the milestone's blocked/needs-evidence
+state. Do not generate replacement review evidence inside the executor session.
+
 ## Controller Task Rules
 
 For `task_type: controller` or `controller_mode: true`:
 
 - Read the GPT-authored controller task and stay inside it.
+- If the controller task is part of a milestone chain, the two-step milestone
+  gate in `prompts/MILESTONE_REVIEW_PROTOCOL.md` overrides same-session
+  controller review: the controller may coordinate the executor step but must
+  stop after `completion_check.md` and `review_request.md`; a separate
+  read-only reviewer must write `review.md`.
 - For high-risk CARE controller work, enforce `prompts/HANDOFF_GATE_POLICY.md`
   before final audit or completion decisions: exact ordered task graph, exact
   result directories and required filenames, strict validator exit behavior,
@@ -231,7 +255,12 @@ If the task cannot be completed safely:
 
 ## CARE-Specific Execution Overlay
 
-For CARE tasks, keep the role boundary strict. GPT is the strategic planner and strategic controller. A Codex executor only executes the authorized task, writes `result.md`, updates `MANIFEST.md`, and indexes artifacts. Executor self-assessment is not final completion.
+For CARE tasks, keep the role boundary strict. GPT is the strategic planner and
+strategic controller. A Codex executor only executes the authorized task, writes
+`result.md`, updates `MANIFEST.md`, and indexes artifacts. Executor
+self-assessment is not final completion. For milestone tasks, the Codex executor
+also writes `completion_check.md` and `review_request.md`, then stops. It must
+not write `review.md` or start the next milestone.
 
 A Codex execution controller may start or generate executor/auditor subtasks only inside a GPT-authored CARE controller task. It must not switch to a new scientific route, bypass the auditor, or commit/push unless the task explicitly allows it with `allow_git_commit: true` and `allow_git_push: true`, and either the `route_promotion_gate` or `diagnostic_publication_gate` is satisfied within the authorized scope.
 

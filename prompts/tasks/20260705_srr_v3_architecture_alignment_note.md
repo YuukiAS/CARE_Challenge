@@ -52,6 +52,14 @@ This means:
 - M4 isolates which SRR mechanisms cause help, harm, or near-identity behavior.
 - M5 keeps Cine as a secondary diagnostic line and prevents it from blocking MyoPS.
 
+## Milestone Review Boundary
+
+Each milestone is a two-step gate. The executor/controller writes required
+outputs, `completion_check.md`, `review_request.md`, and `MANIFEST.md`, then
+stops. It does not write `review.md`, does not approve itself, and does not
+start the next milestone. A separate read-only reviewer must write `review.md`
+with the exact audited-go state before continuation.
+
 ## Non-Goals
 
 - Do not turn SRR into plain nnU-Net copy.

@@ -26,6 +26,15 @@ For every anti-laziness validator, GPT must require strict mode by default. A va
 
 For every controller report, GPT must require the ending fields from `prompts/templates/CONTROLLER_TASK_TEMPLATE.md`: `controller_run_status`, `operational_completion_status`, `experiment_adequacy_decision`, `route_promotion_decision`, `route_negative_decision`, `scientific_resolution_status`, `diagnostic_publication_decision`, `git_commit_decision`, `git_push_decision`, `published_files`, `blocked_actions`, `next_required_action`, `reason_if_not_published`, and `reason_if_no_route_promotion`.
 
+For every milestone chain, GPT must apply `prompts/MILESTONE_REVIEW_PROTOCOL.md`.
+Write executor prompts for exactly one milestone. Require exact
+`results/<task_key>/completion_check.md` and
+`results/<task_key>/review_request.md`; forbid the executor/controller from
+writing `review.md`, approving itself, or starting the next milestone. Then
+write a separate read-only reviewer prompt. The next milestone may be launched
+only when the previous milestone's `review.md` contains the exact audited-go
+token, such as `M0_AUDITED_GO`.
+
 ## Known Bad Packet Regression
 
 The 20260704 SRR-v2.5 full completion packet is the current regression counterexample. It listed 17 required subtasks, including `20260704_cine_temporal_dictionary_integration` and `20260704_srr_v25_completion_check`, but the controller report entered final audit without those result directories. Any future hard-gate validator must fail that packet by name. If the validator does not fail that packet, the anti-laziness system is not repaired.
@@ -37,6 +46,14 @@ The same packet also shows why smoke-scale training must not be promoted: bounde
 When giving Codex a high-risk CARE controller goal, include this sentence:
 
 `Before executing the scientific task, enforce the hard-gate policy: exact task graph, strict validator, completion-check-before-final-audit, minimum effective training, and current-bad-packet regression. If any hard gate fails, stop with NEEDS_REVISION or NEEDS_EVIDENCE; do not continue to final audit.`
+
+When giving Codex a milestone executor goal, also include this sentence:
+
+`This is an executor/controller session for one milestone only. Stop after writing completion_check.md and review_request.md. Do not write review.md, do not approve yourself, and do not start the next milestone; a separate read-only Codex reviewer must write review.md before continuation.`
+
+When giving Codex a milestone reviewer goal, include this sentence:
+
+`This is a separate read-only reviewer/auditor session. Do not fix code, do not generate missing artifacts, do not train, do not package validation, do not upload, and do not start the next milestone. Write only review.md with the controlled audit decision.`
 
 ## State Mapping
 

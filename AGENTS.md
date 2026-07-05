@@ -351,10 +351,17 @@ and explicit auditor support.
 - Obey frontmatter permission fields and stop on unauthorized actions.
 - If acting as executor, write `result.md` and stop at self-assessment; do not
   claim final audited completion or open the next task.
+- If acting as milestone executor/controller, execute exactly one milestone,
+  write required outputs plus `completion_check.md`, `review_request.md`, and
+  `MANIFEST.md`, then stop. Do not write `review.md`, do not approve yourself,
+  and do not start the next milestone.
 - If the task requires an auditor and the current session is executor, do not
   also audit.
 - If acting as auditor, remain read-only; do not fix code, generate missing
   artifacts, or continue execution.
+- If acting as milestone reviewer/auditor, read only the completed result
+  directory and write `review.md`; only an exact audited-go token in that review
+  permits the next milestone.
 - If acting as execution controller, coordinate executor/auditor sessions only
   inside the GPT-authored controller task.
 - The execution controller must not invent new research/product directions. If a

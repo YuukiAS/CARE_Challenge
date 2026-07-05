@@ -35,7 +35,13 @@ Before executing the scientific task, enforce the hard-gate policy: exact task g
 
 ## Execution Policy
 
-Execute only one milestone at a time. Do not start a later blocking milestone until the previous milestone writes `completion_check.md` with a readiness decision and a separate read-only `review.md` supports continuation. A diagnostic result may be useful, but it must not be promoted as a full implementation.
+Execute only one milestone at a time. The executor/controller session writes
+required outputs, `completion_check.md`, `review_request.md`, and
+`MANIFEST.md`, then stops. It must not write `review.md`, must not approve
+itself, and must not start the next milestone. Do not start a later blocking
+milestone until a separate read-only `review.md` supports continuation with the
+exact audited-go token. A diagnostic result may be useful, but it must not be
+promoted as a full implementation.
 
 ## First Task To Execute
 

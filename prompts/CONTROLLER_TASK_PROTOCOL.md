@@ -4,6 +4,11 @@ A controller task lets a Codex execution controller coordinate executor and
 auditor work for one GPT-approved task. It does not authorize Codex to become
 the strategic planner.
 
+For milestone chains, also apply `prompts/MILESTONE_REVIEW_PROTOCOL.md`. The
+milestone protocol is stricter than the general controller protocol: the main
+Codex executor/controller may complete only one milestone and must stop before
+review; a separate read-only reviewer/auditor writes `review.md`.
+
 ## Required Shape
 
 Controller tasks should include:
@@ -89,6 +94,27 @@ The report must include:
 - incomplete items
 - whether GPT planner is needed
 
+For milestone tasks, a controller report is optional unless the milestone
+requires one. It does not replace `completion_check.md`, `review_request.md`, or
+the independent `review.md` gate.
+
+## Milestone Controller Boundary
+
+When a controller task or local controller session executes a milestone:
+
+1. run exactly one milestone;
+2. write the required outputs in `results/<task_key>/`;
+3. write `completion_check.md` with the milestone readiness/blocked state;
+4. write `review_request.md` naming the required independent review and exact
+   audited-go token;
+5. update `MANIFEST.md`;
+6. stop.
+
+The same Codex session must not write `review.md`, must not mark
+`*_AUDITED_GO`, and must not start the next milestone. The next milestone may
+start only after a separate read-only reviewer/auditor writes `review.md` with
+the exact audited-go state.
+
 ## Gate Semantics
 
 `route_promotion_gate` answers whether a model/route may become
@@ -124,6 +150,10 @@ If `route_negative_gate` fails, controller reports must not write
 resolved. It can resolve as `SCIENTIFIC_PROMOTED` or
 `SCIENTIFIC_STOP_SUPPORTED`. Operational controller completion alone does not
 satisfy this gate.
+
+For milestone chains, milestone completion is also separate from milestone
+review. `completion_check.md` can make a result ready for review, but only
+independent `review.md` can satisfy the continuation gate.
 
 `diagnostic_publication_gate` answers whether reviewed diagnostic artifacts may
 be published even when `route_promotion_gate` fails. Diagnostic publication is

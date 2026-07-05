@@ -38,6 +38,19 @@ forbidden_substitutes:
 
 # Milestone M2: MyoPS Bounded Runtime Repair
 
+## Milestone Review Gate
+
+This is an executor/controller milestone only. Execute M2 and stop after writing
+all required outputs, `completion_check.md`, `review_request.md`, and
+`MANIFEST.md`. Do not write `review.md`, do not mark `M2_AUDITED_GO`, do not
+approve yourself, and do not start M3.
+
+M2 may start only after
+`results/20260705_srr_v3_m1_runtime_instrumentation_gate/review.md` contains
+`M1_AUDITED_GO`. `review_request.md` must request a separate read-only review of
+the M2 result directory and must state that M3 remains blocked until
+`M2_AUDITED_GO`.
+
 ## Goal
 
 Repair the MyoPS runtime architecture so that the next pilot can train a real SRR-v3 correction instead of a near-identity diagnostic packet. This is the first bounded implementation milestone. It may modify model/training/evaluation code and run toy or small-case smoke tests, but it must not run full folds, package validation, upload, or claim route promotion.
@@ -88,6 +101,10 @@ Write all required outputs under `results/20260705_srr_v3_m2_myops_bounded_runti
 - `M2_READY_FOR_REVIEW`
 - `M2_NEEDS_REVISION`
 - `M2_NEEDS_EVIDENCE`
+
+`review_request.md` must state that `review.md` is intentionally absent at
+executor stop and that M3 remains blocked until a separate read-only reviewer
+writes `M2_AUDITED_GO`.
 
 A separate read-only reviewer should later write `review.md` with one of:
 

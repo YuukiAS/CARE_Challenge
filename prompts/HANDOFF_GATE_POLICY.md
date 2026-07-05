@@ -16,6 +16,14 @@ Trainable model evidence must be classified by adequacy. Small probes and smoke 
 
 Operational completion and scientific route status are separate. A controller may finish its assigned workflow while the model route remains undertrained, unresolved, or in need of evidence.
 
+Milestone executor completion and milestone review are also separate. For
+`task_type: milestone`, the executor/controller step must stop after writing
+`completion_check.md` and `review_request.md`. It must not write `review.md`,
+must not mark `*_AUDITED_GO`, and must not start the next milestone. A separate
+read-only reviewer/auditor must inspect the result directory and write
+`review.md`; only the exact audited-go token in that review permits the next
+milestone.
+
 ## Required Controller Report Ending
 
 Every high-risk controller report should end with these fields:
@@ -57,3 +65,11 @@ Before any future SRR, Cine, missing-modality, registration, proposal/refinement
 8. known-bad-packet regression.
 
 If any of these gates fail, the controller must stop with `NEEDS_EVIDENCE` or `NEEDS_REVISION`. It must not continue to final review, route promotion, fold expansion, validation packaging, validation upload, or scientific stop.
+
+For milestone chains, also enforce:
+
+9. exact prerequisite `review.md:<MILESTONE>_AUDITED_GO` before starting any
+   non-initial milestone;
+10. exact `completion_check.md` and `review_request.md` before executor stop;
+11. missing independent `review.md` blocks the next milestone;
+12. same-session executor/controller review is invalid for continuation.

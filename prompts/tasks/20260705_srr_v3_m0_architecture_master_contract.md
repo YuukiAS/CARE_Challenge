@@ -41,6 +41,18 @@ forbidden_substitutes:
 
 # Milestone M0: SRR-v3 Architecture Master Contract
 
+## Milestone Review Gate
+
+This is an executor/controller milestone only. Execute M0 and stop after writing
+all required outputs, `completion_check.md`, `review_request.md`, and
+`MANIFEST.md`. Do not write `review.md`, do not mark `M0_AUDITED_GO`, do not
+approve yourself, and do not start M1.
+
+`review_request.md` must name the exact required independent reviewer action:
+read-only review of `results/20260705_srr_v3_m0_architecture_master_contract/`
+and write `review.md` with `M0_AUDITED_GO`, `M0_AUDITED_NEEDS_REVISION`, or
+`M0_AUDITED_NEEDS_EVIDENCE`.
+
 ## Goal
 
 Create the binding SRR-v3 / SRR-ProposeRefine master contract before any new implementation. This milestone must turn the lessons from the SRR-v2.5 diagnostic packet and hard-gate repair into a small, checkable milestone graph. It must not edit model code, run training, package validation, upload, expand folds, or claim route promotion.
@@ -88,6 +100,10 @@ Write the required output files under `results/20260705_srr_v3_m0_architecture_m
 - `M0_READY_FOR_REVIEW`
 - `M0_NEEDS_REVISION`
 - `M0_NEEDS_EVIDENCE`
+
+`review_request.md` must state that `review.md` is intentionally absent at
+executor stop and that M1 remains blocked until a separate read-only reviewer
+writes `M0_AUDITED_GO`.
 
 A separate read-only reviewer should later write `review.md` with one of:
 

@@ -35,6 +35,19 @@ forbidden_substitutes:
 
 # Milestone M4: MyoPS Mechanism Ablation Readiness
 
+## Milestone Review Gate
+
+This is an executor/controller milestone only. Execute M4 and stop after writing
+all required outputs, `completion_check.md`, `review_request.md`, and
+`MANIFEST.md`. Do not write `review.md`, do not mark `M4_AUDITED_GO`, do not
+approve yourself, and do not start any later milestone.
+
+M4 may start only after
+`results/20260705_srr_v3_m3_myops_min_effective_pilot_training/review.md`
+contains `M3_AUDITED_GO`. `review_request.md` must request a separate read-only
+review of the M4 result directory and must state that any later MyoPS milestone
+remains blocked until `M4_AUDITED_GO`.
+
 ## Goal
 
 After a minimum-effective pilot has passed review, isolate which SRR-v3 mechanisms are actually responsible for help, harm, or near-identity. This milestone prepares bounded ablations only; it does not train full folds or promote a route.
@@ -81,6 +94,10 @@ Write all required outputs under `results/20260705_srr_v3_m4_myops_mechanism_abl
 - `M4_NEEDS_REVISION`
 - `M4_NEEDS_EVIDENCE`
 - `M4_RESOURCE_BLOCKED`
+
+`review_request.md` must state that `review.md` is intentionally absent at
+executor stop and that later MyoPS milestones remain blocked until a separate
+read-only reviewer writes `M4_AUDITED_GO`.
 
 A separate read-only reviewer should later write `review.md` with one of:
 

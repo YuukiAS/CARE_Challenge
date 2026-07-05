@@ -47,6 +47,19 @@ forbidden_substitutes:
 
 # Milestone M3: MyoPS Minimum-Effective Pilot Training
 
+## Milestone Review Gate
+
+This is an executor/controller milestone only. Execute M3 and stop after writing
+all required outputs, `completion_check.md`, `review_request.md`, and
+`MANIFEST.md`. Do not write `review.md`, do not mark `M3_AUDITED_GO`, do not
+approve yourself, and do not start M4.
+
+M3 may start only after
+`results/20260705_srr_v3_m2_myops_bounded_runtime_repair/review.md` contains
+`M2_AUDITED_GO`. `review_request.md` must request a separate read-only review of
+the M3 result directory and must state that M4 remains blocked until
+`M3_AUDITED_GO`.
+
 ## Goal
 
 Run the first scientifically interpretable MyoPS SRR-v3 pilot after M0-M2 pass. This is not full-fold training and not a challenge candidate. It is a minimum-effective pilot designed to answer whether SRR can learn non-trivial, bounded corrections over nnU-Net on a controlled subset.
@@ -93,6 +106,10 @@ Write all required outputs under `results/20260705_srr_v3_m3_myops_min_effective
 - `M3_NEEDS_REVISION`
 - `M3_NEEDS_EVIDENCE`
 - `M3_RESOURCE_BLOCKED`
+
+`review_request.md` must state that `review.md` is intentionally absent at
+executor stop and that M4 remains blocked until a separate read-only reviewer
+writes `M3_AUDITED_GO`.
 
 A separate read-only reviewer should later write `review.md` with one of:
 

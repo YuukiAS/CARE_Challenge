@@ -19,6 +19,8 @@ strategic planner and the user-supervised strategic controller.
   classification.
 - `prompts/GPT_HARD_GATE_PROMPT.md`: GPT checklist to apply before writing a
   high-risk CARE controller goal.
+- `prompts/MILESTONE_REVIEW_PROTOCOL.md`: two-step milestone executor/reviewer
+  gate for SRR-v3 and future milestone chains.
 - `prompts/MECHANISM_GATE_TEMPLATE.md`: reusable evidence-gate pattern.
 - `prompts/tasks/<task_key>.md`: GPT-authored task entry.
 - `results/<task_key>/result.md`: executor report and evidence index.
@@ -63,6 +65,14 @@ Normal CARE execution tasks must declare `mechanism_class`, `target_metric`, `sa
 
 Reference the Bridge Kit state machine for handoff states and `prompts/CARE_OVERLAY_GATES.md` plus the installed `medical-imaging-deep-learning` skill for mechanism gates. Do not copy the full skill text into each task.
 
+For milestone chains such as SRR-v3, apply
+`prompts/MILESTONE_REVIEW_PROTOCOL.md`. GPT must issue one milestone at a time.
+The executor/controller prompt must require `completion_check.md` and
+`review_request.md`, must forbid writing `review.md`, and must forbid starting
+the next milestone. GPT must then issue a separate read-only reviewer prompt.
+Only a `review.md` containing the milestone's exact audited-go token authorizes
+the next milestone.
+
 Before writing a high-risk CARE controller task, apply
 `prompts/GPT_HARD_GATE_PROMPT.md` and require `prompts/HANDOFF_GATE_POLICY.md`
 as a completion gate. A controller task must list blocking subtasks exactly and
@@ -98,6 +108,7 @@ prompts/tasks/<task_key>.md
 Before writing the task, decide:
 
 - Is this a normal `execution` task or a `controller` task?
+- Is this a `milestone` task that requires the two-step milestone review gate?
 - Does it need separate executor and auditor sessions?
 - Is review required?
 - Can an execution controller escalate within policy, or must failure return to
@@ -183,6 +194,13 @@ support route-negative scientific stop unless result/review/controller evidence
 explicitly reconstructs experiment adequacy and the auditor approves the
 route-negative conclusion.
 
+For milestone tasks, set `task_type: "milestone"`, `milestone_id`, exact
+`expected_result_dir`, `required_outputs` including `completion_check.md`,
+`review_request.md`, and `MANIFEST.md`, and the prerequisite review token for
+non-initial milestones. The executor prompt must state that the same Codex
+session cannot write `review.md`, cannot approve itself, and cannot start the
+next milestone.
+
 ## Reviews And Audits
 
 Review is an evidence audit, not a casual recap. The reviewer/auditor is
@@ -213,6 +231,11 @@ Controlled audit decisions:
 Only the strategic controller, the user-supervised GPT thread, may write the
 next high-level task after reading a review or controller report. Do not ask
 Codex to continue indefinitely from its own result.
+
+For milestone chains, the next milestone may be written or launched only after
+the previous milestone's independent `review.md` contains the exact audited-go
+token. `completion_check.md`, `review_request.md`, `result.md`, or
+`controller_report.md` alone is not enough.
 
 If the review is:
 

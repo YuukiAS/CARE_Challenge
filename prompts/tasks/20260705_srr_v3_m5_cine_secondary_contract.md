@@ -34,6 +34,20 @@ forbidden_substitutes:
 
 # Milestone M5: Cine Secondary Contract
 
+## Milestone Review Gate
+
+This is an executor/controller milestone only. Execute M5 and stop after writing
+all required outputs, `completion_check.md`, `review_request.md`, and
+`MANIFEST.md`. Do not write `review.md`, do not mark
+`M5_AUDITED_DIAGNOSTIC_GO`, do not approve yourself, and do not start any later
+Cine milestone.
+
+M5 may start only after
+`results/20260705_srr_v3_m0_architecture_master_contract/review.md` contains
+`M0_AUDITED_GO`. `review_request.md` must request a separate read-only review of
+the M5 result directory. Diagnostic Cine continuation remains blocked until
+`M5_AUDITED_DIAGNOSTIC_GO`.
+
 ## Goal
 
 Keep Cine as a secondary diagnostic line while MyoPS remains primary. This milestone does not attempt route promotion. It should define and, if lightweight, probe the missing Cine evidence needed before any future temporal dictionary integration: same-safe-subset registration matrix, frame-quality/motion-saliency routing evidence, and temporal aggregation readiness.
@@ -70,6 +84,10 @@ Write all required outputs under `results/20260705_srr_v3_m5_cine_secondary_cont
 - `M5_DIAGNOSTIC_READY_FOR_REVIEW`
 - `M5_NEEDS_REVISION`
 - `M5_NEEDS_EVIDENCE`
+
+`review_request.md` must state that `review.md` is intentionally absent at
+executor stop and that later Cine work remains blocked until a separate
+read-only reviewer writes `M5_AUDITED_DIAGNOSTIC_GO`.
 
 A separate read-only reviewer should later write `review.md` with one of:
 
