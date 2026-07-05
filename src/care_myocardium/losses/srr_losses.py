@@ -105,6 +105,148 @@ def retrieval_regularization(
     ), metrics
 
 
+def _gate_task_name(name: str) -> str:
+    for task in ("anatomy", "scar", "edema"):
+        if name == task or name.startswith(f"{task}_"):
+            return task
+    return str(name).split("_", 1)[0]
+
+
+def _semantic_slot_weight(task: str, group: str, kind: str) -> float:
+    """Task-specific slot prior used by the semantic retrieval objective."""
+
+    if task == "scar":
+        if group == "lge_private":
+            return 1.00
+        if group in {"interaction_lge_t2", "interaction_lge_c0"}:
+            return 0.70
+        if group == "shared":
+            return 0.35
+        if group == "c0_private":
+            return 0.15
+        return 0.02
+    if task == "edema":
+        if group == "t2_private":
+            return 1.00
+        if group in {"interaction_lge_t2", "interaction_t2_c0"}:
+            return 0.70
+        if group == "shared":
+            return 0.35
+        if group == "c0_private":
+            return 0.15
+        return 0.02
+    if task == "anatomy":
+        if group == "shared":
+            return 0.85
+        if group == "c0_private":
+            return 0.45
+        if kind == "interaction":
+            return 0.25
+        return 0.12
+    return 1.0
+
+
+def _semantic_group_family(task: str) -> set[str]:
+    if task == "scar":
+        return {"lge_private", "interaction_lge_t2", "interaction_lge_c0"}
+    if task == "edema":
+        return {"t2_private", "interaction_lge_t2", "interaction_t2_c0"}
+    if task == "anatomy":
+        return {"shared", "c0_private", "interaction_lge_c0", "interaction_t2_c0"}
+    return {"shared"}
+
+
+def semantic_retrieval_regularization(
+    gates: dict[str, torch.Tensor],
+    metadata: dict[str, list[dict[str, object]]],
+    valid_masks: dict[str, torch.Tensor] | None = None,
+    *,
+    semantic_weight: float = 0.04,
+    coverage_weight: float = 0.03,
+    integrative_weight: float = 0.02,
+    coverage_floor: float = 0.35,
+    interaction_floor: float = 0.08,
+    eps: float = 1e-6,
+) -> tuple[torch.Tensor | None, dict[str, torch.Tensor]]:
+    """SIP-style semantic retrieval objective for multi-slot SRR dictionaries.
+
+    The term is intentionally stronger than generic entropy/coverage: each task
+    receives a slot-family prior, invalid missing-modality slots are masked out,
+    and pathology tasks are encouraged to keep interaction slots active when
+    available. It remains a soft objective; it should be paired with ablations
+    and same-split metrics before making scientific claims.
+    """
+
+    if not gates:
+        return None, {}
+    valid_masks = valid_masks or {}
+    alignment_terms = []
+    coverage_terms = []
+    integrative_terms = []
+    metrics: dict[str, torch.Tensor] = {}
+    for name, gate in gates.items():
+        specs = metadata.get(name)
+        if not specs or len(specs) != gate.shape[1]:
+            continue
+        task = _gate_task_name(name)
+        weights = gate.new_tensor(
+            [
+                _semantic_slot_weight(task, str(spec.get("group", "")), str(spec.get("kind", "")))
+                for spec in specs
+            ]
+        )
+        valid = valid_masks.get(name)
+        if valid is None:
+            valid_f = torch.ones_like(gate)
+        else:
+            valid_f = valid.to(device=gate.device, dtype=gate.dtype)
+        target = weights.view(1, -1) * valid_f
+        fallback = valid_f / valid_f.sum(dim=1, keepdim=True).clamp_min(eps)
+        target = torch.where(target.sum(dim=1, keepdim=True) > eps, target, fallback)
+        target = target / target.sum(dim=1, keepdim=True).clamp_min(eps)
+
+        alignment = ((gate - target).square() * valid_f).sum(dim=1).mean()
+        alignment_terms.append(alignment)
+        metrics[f"{name}_semantic_alignment_mse"] = alignment.detach()
+
+        family = _semantic_group_family(task)
+        family_indices = [
+            idx
+            for idx, spec in enumerate(specs)
+            if str(spec.get("group", "")) in family
+        ]
+        if family_indices:
+            family_mass = (gate[:, family_indices] * valid_f[:, family_indices]).sum(dim=1).mean()
+            coverage = torch.relu(gate.new_tensor(float(coverage_floor)) - family_mass).square()
+            coverage_terms.append(coverage)
+            metrics[f"{name}_semantic_family_mass"] = family_mass.detach()
+            metrics[f"{name}_semantic_coverage_penalty"] = coverage.detach()
+
+        interaction_indices = [
+            idx
+            for idx, spec in enumerate(specs)
+            if str(spec.get("kind", "")) == "interaction" and str(spec.get("group", "")) in family
+        ]
+        if interaction_indices:
+            valid_interaction = valid_f[:, interaction_indices].sum(dim=1) > 0
+            if bool(valid_interaction.any()):
+                interaction_mass = gate[valid_interaction][:, interaction_indices].sum(dim=1).mean()
+                integrative = torch.relu(gate.new_tensor(float(interaction_floor)) - interaction_mass).square()
+                integrative_terms.append(integrative)
+                metrics[f"{name}_semantic_interaction_mass"] = interaction_mass.detach()
+                metrics[f"{name}_semantic_integrative_penalty"] = integrative.detach()
+
+    if not alignment_terms:
+        return None, metrics
+    loss = float(semantic_weight) * torch.stack(alignment_terms).mean()
+    if coverage_terms:
+        loss = loss + float(coverage_weight) * torch.stack(coverage_terms).mean()
+    if integrative_terms:
+        loss = loss + float(integrative_weight) * torch.stack(integrative_terms).mean()
+    metrics["semantic_retrieval_loss"] = loss.detach()
+    return loss, metrics
+
+
 def soft_anatomy_prior_loss(outputs: dict[str, torch.Tensor], labels: torch.Tensor) -> torch.Tensor:
     union = torch.sigmoid(outputs["union_prior_logits"][:, 0])
     scar = torch.sigmoid(outputs["scar_logits"][:, 0])
@@ -133,13 +275,20 @@ def srr_total_loss(
         "prior": soft_anatomy_prior_loss(outputs, labels),
     }
     reg, reg_metrics = retrieval_regularization(outputs["gates"], **retrieval_config)
+    sem_reg, sem_metrics = semantic_retrieval_regularization(
+        outputs.get("gates", {}),
+        outputs.get("dictionary_slot_metadata", {}),
+        outputs.get("gate_valid_masks", {}),
+    )
     components["retrieval"] = reg if reg is not None else outputs["logits"].sum() * 0.0
+    components["semantic_retrieval"] = sem_reg if sem_reg is not None else outputs["logits"].sum() * 0.0
     total = (
         weights.get("anatomy", 1.0) * components["anatomy"]
         + weights.get("scar", 1.0) * components["scar"]
         + weights.get("edema", 1.0) * components["edema"]
         + weights.get("prior", 0.1) * components["prior"]
         + weights.get("retrieval", 1.0) * components["retrieval"]
+        + weights.get("semantic_retrieval", 1.0) * components["semantic_retrieval"]
     )
-    metrics = {**components, **reg_metrics}
+    metrics = {**components, **reg_metrics, **sem_metrics}
     return total, metrics

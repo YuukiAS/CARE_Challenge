@@ -1,0 +1,17 @@
+srr_variant,metric_name,metric,n,delta_mean,help_count,harm_count,neutral_count,not_evaluable_count
+srr_propref_shared_dual_dict__checkpoint_final_full_fold0__argmax,myops_edema,component_count,44,-0.045454545454545456,2,0,42,0
+srr_propref_shared_dual_dict__checkpoint_final_full_fold0__argmax,myops_edema,dice,44,-2.3248135711161708e-05,4,5,35,0
+srr_propref_shared_dual_dict__checkpoint_final_full_fold0__argmax,myops_edema,hd95,44,2.9633139506657358e-05,0,2,42,0
+srr_propref_shared_dual_dict__checkpoint_final_full_fold0__argmax,myops_edema,remote_fp_count,44,0.0,0,0,44,0
+srr_propref_shared_dual_dict__checkpoint_final_full_fold0__argmax,myops_scar,component_count,44,-0.022727272727272728,2,1,41,0
+srr_propref_shared_dual_dict__checkpoint_final_full_fold0__argmax,myops_scar,dice,44,5.497634884262349e-05,17,6,21,0
+srr_propref_shared_dual_dict__checkpoint_final_full_fold0__argmax,myops_scar,hd95,44,0.001840107398469462,2,2,38,2
+srr_propref_shared_dual_dict__checkpoint_final_full_fold0__argmax,myops_scar,remote_fp_count,44,0.0,0,0,44,0
+srr_propref_shared_dual_dict__checkpoint_final_full_fold0__pathology_aware,myops_edema,component_count,44,-0.045454545454545456,2,0,42,0
+srr_propref_shared_dual_dict__checkpoint_final_full_fold0__pathology_aware,myops_edema,dice,44,-2.3248135711161708e-05,4,5,35,0
+srr_propref_shared_dual_dict__checkpoint_final_full_fold0__pathology_aware,myops_edema,hd95,44,2.9633139506657358e-05,0,2,42,0
+srr_propref_shared_dual_dict__checkpoint_final_full_fold0__pathology_aware,myops_edema,remote_fp_count,44,0.0,0,0,44,0
+srr_propref_shared_dual_dict__checkpoint_final_full_fold0__pathology_aware,myops_scar,component_count,44,-0.045454545454545456,2,0,42,0
+srr_propref_shared_dual_dict__checkpoint_final_full_fold0__pathology_aware,myops_scar,dice,44,4.408249499845216e-05,16,6,22,0
+srr_propref_shared_dual_dict__checkpoint_final_full_fold0__pathology_aware,myops_scar,hd95,44,0.001840107398469462,2,2,38,2
+srr_propref_shared_dual_dict__checkpoint_final_full_fold0__pathology_aware,myops_scar,remote_fp_count,44,0.0,0,0,44,0

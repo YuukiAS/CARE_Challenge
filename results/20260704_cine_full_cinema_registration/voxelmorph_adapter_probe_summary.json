@@ -1,0 +1,21 @@
+{
+  "case_id": "Case1001",
+  "csv": "results/20260704_cine_full_cinema_registration/voxelmorph_adapter_probe.csv",
+  "device": "cpu",
+  "fixed_frame": 0,
+  "folding_proxy_voxels": 0,
+  "image_ncc_after": 0.9587688134462471,
+  "image_ncc_before": 0.9587671858433946,
+  "max_abs_displacement": 4.5732329454040155e-05,
+  "mean_abs_displacement": 1.8810484107234515e-05,
+  "model_status": "untrained PyTorch VxmPairwise; no cardiac pretrained weights loaded",
+  "moving_frame": 9,
+  "probe_shape_dhw": [
+    16,
+    64,
+    64
+  ],
+  "runtime_seconds": 0.140364408493042,
+  "status": "VOXELMORPH_ADAPTER_PROBE_COMPLETE_NOT_TRAINED_NOT_FULL_REGISTRATION",
+  "voxelmorph_file": "/users/a/e/aereinh/CARE/results/20260704_external_assets_cinema_registration/external_assets/voxelmorph/voxelmorph/__init__.py"
+}

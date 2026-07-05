@@ -39,7 +39,8 @@ from scripts.training.run_srr_myops_fold0 import (  # noqa: E402
     write_csv,
 )
 from src.care_myocardium.data.case_metadata import load_myops_case_metadata  # noqa: E402
-from src.care_myocardium.losses.srr_losses import anatomy_loss, retrieval_regularization, scar_loss, t2_masked_edema_loss  # noqa: E402
+from src.care_myocardium.losses.srr_losses import anatomy_loss, retrieval_regularization, scar_loss, semantic_retrieval_regularization, t2_masked_edema_loss  # noqa: E402
+from src.care_myocardium.models.proposal_prototypes import PrototypeBank, build_prototype_bank_from_labeled_features  # noqa: E402
 from src.care_myocardium.models.srr_propref import SRRProposeRefineMyoPS  # noqa: E402
 
 
@@ -101,6 +102,12 @@ def parse_float_list(text: str) -> list[float]:
     if not values:
         raise ValueError("at least one threshold is required")
     return sorted({min(max(v, 0.0), 1.0) for v in values})
+
+
+def parse_case_id_list(text: str | None) -> list[str]:
+    if text is None:
+        return []
+    return [item.strip() for item in str(text).replace(";", ",").split(",") if item.strip()]
 
 
 def _anchor_root(path_text: str) -> Path:
@@ -311,6 +318,41 @@ def full_case_anchor_tensors(case: AnchoredCaseData, device: torch.device) -> tu
     return anchor_dict_from_tensor(anchor_t), component_dict_from_tensor(component_t)
 
 
+def output_variant_name(args: argparse.Namespace) -> str:
+    label = str(getattr(args, "run_label", "") or "").strip()
+    return label or str(args.variant)
+
+
+def model_kwargs_from_args(args: argparse.Namespace) -> dict[str, object]:
+    return {
+        "base_channels": args.base_channels,
+        "variant": args.variant,
+        "encoder_profile": args.encoder_profile,
+        "disable_local_refinement": bool(getattr(args, "disable_local_refinement", False)),
+        "disable_anatomy_roi_prior": bool(getattr(args, "disable_anatomy_roi_prior", False)),
+    }
+
+
+def maybe_disable_context(
+    args: argparse.Namespace,
+    anchor_features: dict[str, torch.Tensor],
+    component_features: dict[str, torch.Tensor],
+) -> tuple[dict[str, torch.Tensor] | None, dict[str, torch.Tensor] | None]:
+    if bool(getattr(args, "disable_nnunet_anchor", False)):
+        return None, None
+    return anchor_features, component_features
+
+
+def context_present_fraction(context: dict[str, torch.Tensor] | None, keys: tuple[str, ...]) -> float:
+    if context is None:
+        return 0.0
+    tensors = [context[key].flatten(1).abs().sum(dim=1) for key in keys if key in context and isinstance(context[key], torch.Tensor)]
+    if not tensors:
+        return 0.0
+    summed = torch.stack(tensors, dim=0).sum(dim=0)
+    return float((summed > 0).float().mean().detach().cpu())
+
+
 def required_validation_steps(max_steps: int, val_every: int) -> set[int]:
     steps = {
         max(1, min(max_steps, int(math.ceil(max_steps * 0.20)))),
@@ -328,6 +370,106 @@ def stage_counts(actual_steps: int, max_steps: int) -> dict[str, int]:
     for step in range(1, actual_steps + 1):
         counts[stage_for_step(step, max_steps)] += 1
     return counts
+
+
+def parameter_count(model: torch.nn.Module) -> int:
+    return int(sum(param.numel() for param in model.parameters()))
+
+
+def encoder_scale_channels_from_args(args: argparse.Namespace) -> list[int]:
+    base = int(args.base_channels)
+    if args.encoder_profile == "strong_4scale":
+        return [base, base * 2, base * 4, base * 8]
+    return [base, base * 2, base * 4]
+
+
+def _component_proposal_ranking_loss(
+    logits: torch.Tensor,
+    target: torch.Tensor,
+    valid: torch.Tensor,
+    safe_negative: torch.Tensor,
+    *,
+    margin: float,
+    max_negative_voxels: int = 64,
+) -> torch.Tensor:
+    """Rank each GT lesion component above safe-negative proposal islands.
+
+    Connected-component labels are used only to choose fixed target voxels; the
+    loss remains differentiable with respect to proposal logits selected by
+    those masks. This gives the proposal decoder a component-level objective in
+    addition to dense BCE/Dice.
+    """
+
+    losses: list[torch.Tensor] = []
+    for bidx in range(int(logits.shape[0])):
+        target_np = target[bidx].detach().cpu().numpy().astype(bool)
+        cc, n_cc = label(target_np, structure=generate_binary_structure(target_np.ndim, 1))
+        neg_mask = (safe_negative[bidx] & valid[bidx] & (~target[bidx])).to(device=logits.device, dtype=torch.bool)
+        neg_values = logits[bidx][neg_mask]
+        if neg_values.numel() == 0:
+            continue
+        topk = min(int(max_negative_voxels), int(neg_values.numel()))
+        neg_score = torch.topk(neg_values, k=topk).values.mean()
+        for comp_idx in range(1, int(n_cc) + 1):
+            comp_mask_np = cc == comp_idx
+            if not bool(comp_mask_np.any()):
+                continue
+            comp_mask = torch.from_numpy(comp_mask_np).to(device=logits.device, dtype=torch.bool)
+            pos_values = logits[bidx][comp_mask]
+            if pos_values.numel() == 0:
+                continue
+            pos_score = torch.logsumexp(pos_values, dim=0) - pos_values.new_tensor(float(pos_values.numel())).log()
+            losses.append(torch.relu(logits.new_tensor(float(margin)) - pos_score + neg_score))
+    if not losses:
+        return logits.sum() * 0.0
+    return torch.stack(losses).mean()
+
+
+def _baseline_preservation_loss(
+    outputs: dict[str, torch.Tensor],
+    labels: torch.Tensor,
+    valid: torch.Tensor,
+    *,
+    confidence_threshold: float,
+    gate_weight: float,
+) -> tuple[torch.Tensor, dict[str, torch.Tensor]]:
+    anchor_logits = outputs.get("nnunet_anchor_logits")
+    final_logits = outputs.get("logits")
+    gate = outputs.get("baseline_residual_gate")
+    if anchor_logits is None or final_logits is None or gate is None:
+        zero = labels.new_tensor(0.0, dtype=torch.float32)
+        return zero, {
+            "baseline_preservation_loss": zero,
+            "baseline_preserve_voxels": zero,
+            "baseline_preserve_gate_mean": zero,
+        }
+    if str(outputs.get("baseline_gate_status", "")) != "baseline_preserving_residual":
+        zero = final_logits.sum() * 0.0
+        return zero, {
+            "baseline_preservation_loss": zero.detach(),
+            "baseline_preserve_voxels": zero.detach(),
+            "baseline_preserve_gate_mean": zero.detach(),
+        }
+    anchor_prob = torch.softmax(anchor_logits, dim=1)
+    final_prob = torch.softmax(final_logits, dim=1)
+    anchor_conf, anchor_pred = anchor_prob.max(dim=1)
+    preserve_mask = valid & (anchor_pred == labels) & (anchor_conf >= float(confidence_threshold))
+    if not bool(preserve_mask.any()):
+        zero = final_logits.sum() * 0.0
+        return zero, {
+            "baseline_preservation_loss": zero.detach(),
+            "baseline_preserve_voxels": zero.detach(),
+            "baseline_preserve_gate_mean": zero.detach(),
+        }
+    mask_f = preserve_mask.to(device=final_logits.device, dtype=final_logits.dtype).unsqueeze(1)
+    prob_diff = ((final_prob - anchor_prob).abs() * mask_f).sum() / mask_f.sum().clamp_min(1.0)
+    gate_penalty = (gate.abs() * mask_f).sum() / mask_f.sum().clamp_min(1.0)
+    loss = prob_diff + float(gate_weight) * gate_penalty
+    return loss, {
+        "baseline_preservation_loss": loss.detach(),
+        "baseline_preserve_voxels": preserve_mask.to(dtype=final_logits.dtype).sum().detach(),
+        "baseline_preserve_gate_mean": gate_penalty.detach(),
+    }
 
 
 def propref_loss(
@@ -362,8 +504,18 @@ def propref_loss(
         + args.edema_weight * t2_masked_edema_loss(evidence_outputs["edema_logits"], labels, availability)
     )
     reg, _ = retrieval_regularization(outputs["gates"], entropy_floor=0.55, entropy_weight=0.04, coverage_weight=0.04, max_weight_penalty=0.02)
+    semantic_reg, semantic_metrics = semantic_retrieval_regularization(
+        outputs.get("gates", {}),
+        outputs.get("dictionary_slot_metadata", {}),
+        outputs.get("gate_valid_masks", {}),
+        semantic_weight=args.semantic_retrieval_weight,
+        coverage_weight=args.semantic_coverage_weight,
+        integrative_weight=args.semantic_integrative_weight,
+    )
     if reg is not None:
         evidence = evidence + reg
+    if semantic_reg is not None:
+        evidence = evidence + semantic_reg
 
     final = (
         args.anatomy_weight * anatomy_loss(final_outputs["anatomy_logits"], labels)
@@ -393,6 +545,21 @@ def propref_loss(
         if bool(safe_neg.any()):
             margin_terms.append(_masked_mean(torch.relu(args.proposal_margin + pos - neg), safe_neg))
     margin = torch.stack(margin_terms).mean() if margin_terms else outputs["logits"].sum() * 0.0
+    scar_component_rank = _component_proposal_ranking_loss(
+        outputs["scar_proposal_logits"][:, 0],
+        scar_target,
+        valid,
+        (~scar_target) & valid,
+        margin=args.component_proposal_margin,
+    )
+    edema_component_rank = _component_proposal_ranking_loss(
+        outputs["edema_proposal_logits"][:, 0],
+        edema_target & t2_present,
+        edema_mask,
+        (~edema_target) & edema_mask,
+        margin=args.component_proposal_margin,
+    )
+    component_rank = 0.5 * (scar_component_rank + edema_component_rank)
 
     scar_roi = outputs["scar_soft_roi"][:, 0]
     edema_roi = outputs["edema_soft_roi"][:, 0]
@@ -403,6 +570,14 @@ def propref_loss(
     if bool(t2_present.any()):
         roi_remote = roi_remote + (edema_roi * (labels == 0).to(edema_roi.dtype) * t2_present.to(edema_roi.dtype)).mean()
 
+    baseline_preserve, baseline_metrics = _baseline_preservation_loss(
+        outputs,
+        labels,
+        valid,
+        confidence_threshold=args.baseline_preservation_confidence,
+        gate_weight=args.baseline_gate_harm_weight,
+    )
+
     if stage == "evidence_warmup":
         total = evidence
         proposal_weight = 0.0
@@ -410,25 +585,44 @@ def propref_loss(
     elif stage == "proposal_dictionary":
         proposal_weight = args.proposal_weight
         refine_weight = 0.20
-        total = evidence + proposal_weight * (scar_proposal + edema_proposal + args.margin_weight * margin)
+        total = evidence + proposal_weight * (
+            scar_proposal
+            + edema_proposal
+            + args.margin_weight * margin
+            + args.component_proposal_weight * component_rank
+        )
     else:
         proposal_weight = args.proposal_weight
         refine_weight = 1.0
         total = (
             0.35 * evidence
             + refine_weight * final
-            + proposal_weight * (scar_proposal + edema_proposal + args.margin_weight * margin)
+            + proposal_weight * (
+                scar_proposal
+                + edema_proposal
+                + args.margin_weight * margin
+                + args.component_proposal_weight * component_rank
+            )
             + args.roi_weight * roi_cover
             + args.roi_remote_weight * roi_remote
         )
+    total = total + args.baseline_preservation_weight * baseline_preserve
+
     return total, {
         "evidence_loss": evidence.detach(),
         "final_loss": final.detach(),
         "scar_proposal_loss": scar_proposal.detach(),
         "edema_proposal_loss": edema_proposal.detach(),
         "proposal_margin_loss": margin.detach(),
+        "scar_component_ranking_loss": scar_component_rank.detach(),
+        "edema_component_ranking_loss": edema_component_rank.detach(),
+        "component_proposal_ranking_loss": component_rank.detach(),
         "roi_cover_loss": roi_cover.detach(),
         "roi_remote_loss": roi_remote.detach(),
+        "semantic_retrieval_loss": semantic_metrics.get("semantic_retrieval_loss", outputs["logits"].sum().detach() * 0.0),
+        "baseline_preservation_loss": baseline_metrics["baseline_preservation_loss"],
+        "baseline_preserve_voxels": baseline_metrics["baseline_preserve_voxels"],
+        "baseline_preserve_gate_mean": baseline_metrics["baseline_preserve_gate_mean"],
         "proposal_weight": outputs["logits"].new_tensor(proposal_weight),
         "refine_weight": outputs["logits"].new_tensor(refine_weight),
     }
@@ -490,11 +684,19 @@ def _decode_pathology_aware(
     scar_threshold: float,
     edema_threshold: float,
 ) -> torch.Tensor:
-    pred = torch.argmax(outputs["anatomy_logits"], dim=1)
+    pred = _decode_argmax(outputs)
     scar_prob = torch.sigmoid(outputs["scar_logits"][:, 0])
     edema_prob = torch.sigmoid(outputs["edema_logits"][:, 0])
-    scar_mask = scar_prob >= scar_threshold
-    edema_mask = edema_prob >= edema_threshold
+    scar_support = (
+        (torch.sigmoid(outputs["scar_proposal_logits"][:, 0]) >= scar_threshold)
+        | (pred == 5)
+    )
+    edema_support = (
+        (torch.sigmoid(outputs["edema_proposal_logits"][:, 0]) >= edema_threshold)
+        | (pred == 4)
+    )
+    scar_mask = (scar_prob >= scar_threshold) & scar_support
+    edema_mask = (edema_prob >= edema_threshold) & edema_support
     conflict = scar_mask & edema_mask
     pred = torch.where(edema_mask, torch.full_like(pred, 4), pred)
     pred = torch.where(scar_mask, torch.full_like(pred, 5), pred)
@@ -508,6 +710,7 @@ def predict_case(
     case: AnchoredCaseData,
     device: torch.device,
     *,
+    disable_nnunet_anchor: bool = False,
     scar_decode_threshold: float,
     edema_decode_threshold: float,
 ) -> tuple[dict[str, np.ndarray], dict[str, np.ndarray]]:
@@ -516,6 +719,8 @@ def predict_case(
         x = torch.from_numpy(case.image[None]).float().to(device)
         av = torch.from_numpy(case.availability[None]).float().to(device)
         anchor_features, component_features = full_case_anchor_tensors(case, device)
+        if disable_nnunet_anchor:
+            anchor_features, component_features = None, None
         outputs = model(x, av, anchor_features=anchor_features, component_features=component_features)
         preds = {
             "argmax": _decode_argmax(outputs)[0].detach().cpu().numpy().astype(np.uint8),
@@ -543,8 +748,12 @@ def predict_case(
             "edema_refinement_residual",
             "scar_soft_roi",
             "edema_soft_roi",
+            "scar_crop_region_mask",
+            "edema_crop_region_mask",
         ):
             aux[key] = outputs[key][0, 0].detach().cpu().numpy()
+        for key in ("scar_crop_bounds_zyx", "edema_crop_bounds_zyx", "scar_roi_stats", "edema_roi_stats"):
+            aux[key] = outputs[key][0].detach().cpu().numpy()
     return preds, aux
 
 
@@ -637,6 +846,49 @@ def roi_rows(variant: str, case: CaseData, pred: np.ndarray, aux: dict[str, np.n
     return rows
 
 
+def crop_bounds_rows(variant: str, case: CaseData, aux: dict[str, np.ndarray], *, checkpoint_name: str) -> list[dict[str, object]]:
+    spatial_shape = tuple(int(v) for v in case.label_arr.shape)
+    total_voxels = int(np.prod(spatial_shape))
+    rows: list[dict[str, object]] = []
+    for cls, metric_name, prefix in [(5, "myops_scar", "scar"), (4, "myops_edema", "edema")]:
+        z0, z1, y0, y1, x0, x1 = [int(v) for v in aux[f"{prefix}_crop_bounds_zyx"].tolist()]
+        crop_voxels = max(0, z1 - z0) * max(0, y1 - y0) * max(0, x1 - x0)
+        stats = aux[f"{prefix}_roi_stats"]
+        crop_mask_voxels = int(np.count_nonzero(aux[f"{prefix}_crop_region_mask"]))
+        rows.append(
+            {
+                "variant": variant,
+                "checkpoint_name": checkpoint_name,
+                "case_id": case.case_id,
+                "center": case.metadata.center,
+                "modality_group": case.metadata.modality_group,
+                "t2_present": case.metadata.t2_present,
+                "class_id": cls,
+                "metric_name": metric_name,
+                "z0": z0,
+                "z1": z1,
+                "y0": y0,
+                "y1": y1,
+                "x0": x0,
+                "x1": x1,
+                "crop_voxels": crop_voxels,
+                "crop_mask_voxels": crop_mask_voxels,
+                "crop_volume_ratio": None if total_voxels == 0 else crop_voxels / max(1, total_voxels),
+                "crop_mask_volume_ratio": None if total_voxels == 0 else crop_mask_voxels / max(1, total_voxels),
+                "is_full_volume_crop": bool(crop_voxels >= total_voxels),
+                "roi_mean": float(stats[0]),
+                "roi_max": float(stats[1]),
+                "roi_threshold_fraction": float(stats[2]),
+                "stats_crop_volume_ratio": float(stats[3]),
+                "post_refine_positive_fraction": float(stats[4]),
+                "crop_residual_abs_mean": float(stats[5]),
+                "stats_full_volume_flag": float(stats[6]),
+                "crop_source_code": float(stats[7]),
+            }
+        )
+    return rows
+
+
 def prediction_sanity_rows(
     variant: str,
     case: CaseData,
@@ -692,6 +944,7 @@ def evaluate(
     variant: str,
     device: torch.device,
     *,
+    disable_nnunet_anchor: bool = False,
     checkpoint_name: str,
     proposal_thresholds: list[float],
     scar_decode_threshold: float,
@@ -700,16 +953,19 @@ def evaluate(
     case_rows: list[dict[str, object]] = []
     proposal: list[dict[str, object]] = []
     roi: list[dict[str, object]] = []
+    bounds: list[dict[str, object]] = []
     sanity: list[dict[str, object]] = []
     for case in cases:
         preds, aux = predict_case(
             model,
             case,
             device,
+            disable_nnunet_anchor=disable_nnunet_anchor,
             scar_decode_threshold=scar_decode_threshold,
             edema_decode_threshold=edema_decode_threshold,
         )
         proposal.extend(proposal_rows(variant, case, aux, checkpoint_name=checkpoint_name, thresholds=proposal_thresholds))
+        bounds.extend(crop_bounds_rows(variant, case, aux, checkpoint_name=checkpoint_name))
         sanity.extend(prediction_sanity_rows(variant, case, preds, checkpoint_name=checkpoint_name))
         for decode_mode, pred in preds.items():
             pred_dir = variant_dir / "predictions/fold_0" / checkpoint_name / decode_mode
@@ -721,6 +977,7 @@ def evaluate(
     write_csv(variant_dir / f"subgroup_metrics_{checkpoint_name}.csv", summarize_context_subgroups(case_rows))
     write_csv(variant_dir / f"proposal_pr_sweep_{checkpoint_name}.csv", proposal)
     write_csv(variant_dir / f"roi_coverage_{checkpoint_name}.csv", roi)
+    write_csv(variant_dir / f"crop_bounds_{checkpoint_name}.csv", bounds)
     write_csv(variant_dir / f"prediction_sanity_{checkpoint_name}.csv", sanity)
 
 
@@ -749,11 +1006,16 @@ def validate_patch_loss(
             av = torch.from_numpy(av_np[None]).float().to(device)
             anchor_t = torch.from_numpy(anchor_np[None]).float().to(device)
             component_t = torch.from_numpy(component_np[None]).float().to(device)
+            anchor_features, component_features = maybe_disable_context(
+                args,
+                anchor_dict_from_tensor(anchor_t),
+                component_dict_from_tensor(component_t),
+            )
             outputs = model(
                 x,
                 av,
-                anchor_features=anchor_dict_from_tensor(anchor_t),
-                component_features=component_dict_from_tensor(component_t),
+                anchor_features=anchor_features,
+                component_features=component_features,
             )
             loss, _ = propref_loss(outputs, y, av, "soft_roi_refinement", args)
             losses.append(float(loss.detach().cpu()))
@@ -810,6 +1072,111 @@ def memory_rows(variant: str, mined_csv: Path | None, loaded_case_count: int, lo
             }
         )
     return rows
+
+
+
+def _prototype_bank_summary(bank: PrototypeBank, *, selected_case_ids: list[str], feature_stage: str) -> dict[str, object]:
+    return {
+        "source": bank.source,
+        "feature_stage": feature_stage,
+        "selected_case_ids": selected_case_ids,
+        "case_count": len(selected_case_ids),
+        "counts": bank.counts,
+        "category_counts": bank.category_counts,
+        "hard_negative_counts": bank.hard_negative_counts,
+        "scar_positive_shape": list(bank.scar_positive.shape),
+        "scar_negative_shape": list(bank.scar_negative.shape),
+        "edema_positive_shape": list(bank.edema_positive.shape),
+        "edema_negative_shape": list(bank.edema_negative.shape),
+        "leakage_policy": "train split and OOF nnU-Net anchor probabilities only; validation labels are not used",
+        "safe_negative_policy": "edema positives and negatives restricted to T2-present samples; no-T2 myocardium never contributes edema negatives",
+    }
+
+
+def fit_and_load_runtime_prototype_bank(
+    model: SRRProposeRefineMyoPS,
+    cases: list[AnchoredCaseData],
+    patch_shape: tuple[int, int, int],
+    device: torch.device,
+    args: argparse.Namespace,
+    variant_dir: Path,
+) -> dict[str, object]:
+    """Fit real train/OOF prototype banks and load them into the formal model."""
+
+    if args.variant == "srr_propref_no_proto_cascade" or args.skip_prototype_bank_fit:
+        summary = {
+            "status": "SKIPPED",
+            "reason": "no-prototype variant or skip_prototype_bank_fit",
+            "source": "not_loaded",
+            "case_count": 0,
+            "counts": {},
+            "leakage_policy": "not_applicable",
+        }
+        (variant_dir / "prototype_bank_summary.json").write_text(json.dumps(summary, indent=2, sort_keys=True), encoding="utf-8")
+        return summary
+
+    rng = np.random.default_rng(args.seed + 1907)
+    lesion_cases = [case for case in cases if np.any(np.isin(case.label_arr, [4, 5]))]
+    t2_edema_cases = [case for case in cases if case.metadata.t2_present and np.any(case.label_arr == 4)]
+    selected: list[AnchoredCaseData] = []
+    for pool in (t2_edema_cases, lesion_cases, cases):
+        for case in pool:
+            if case.case_id not in {item.case_id for item in selected}:
+                selected.append(case)
+            if len(selected) >= max(1, int(args.prototype_bank_cases)):
+                break
+        if len(selected) >= max(1, int(args.prototype_bank_cases)):
+            break
+    if not selected:
+        raise ValueError("cannot fit prototype bank without train cases")
+
+    xs, ys, avs, anchors, keys = [], [], [], [], []
+    for case in selected:
+        if case.metadata.t2_present and np.any(case.label_arr == 4):
+            focus_classes = (4,)
+        elif np.any(case.label_arr == 5):
+            focus_classes = (5,)
+        else:
+            focus_classes = (4, 5)
+        x_np, y_np, av_np, anchor_np, _component_np = sample_patch_with_anchor(
+            case,
+            patch_shape,
+            rng,
+            oversample_foreground=1.0,
+            modality_dropout=False,
+            focus_classes=focus_classes,
+        )
+        xs.append(x_np)
+        ys.append(y_np)
+        avs.append(av_np)
+        anchors.append(anchor_np)
+        keys.append(case.case_id)
+    x = torch.from_numpy(np.stack(xs, axis=0)).float().to(device)
+    y = torch.from_numpy(np.stack(ys, axis=0)).long().to(device)
+    av = torch.from_numpy(np.stack(avs, axis=0)).float().to(device)
+    anchor_t = torch.from_numpy(np.stack(anchors, axis=0)).float().to(device)
+    model_was_training = model.training
+    model.eval()
+    with torch.no_grad():
+        anchor_for_fit = None if bool(getattr(args, "disable_nnunet_anchor", False)) else anchor_dict_from_tensor(anchor_t)
+        features, _gates, _metadata, _valid = model._evidence_features(x, av, anchor_for_fit)
+        bank = build_prototype_bank_from_labeled_features(
+            scar_features=features["scar"].detach(),
+            edema_features=features["edema"].detach(),
+            labels=y,
+            availability=av,
+            anchor_probabilities=None if bool(getattr(args, "disable_nnunet_anchor", False)) else anchor_t,
+            source="train_runtime_features_fold0_no_nnunet_anchor"
+            if bool(getattr(args, "disable_nnunet_anchor", False))
+            else "train_oof_runtime_features_fold0",
+        )
+    if model_was_training:
+        model.train()
+    model.scar_dictionary.load_prototype_bank(positive=bank.scar_positive, negative=bank.scar_negative, source=bank.source)
+    model.edema_dictionary.load_prototype_bank(positive=bank.edema_positive, negative=bank.edema_negative, source=bank.source)
+    summary = _prototype_bank_summary(bank, selected_case_ids=keys, feature_stage="SRRProposeRefineMyoPS._evidence_features")
+    (variant_dir / "prototype_bank_summary.json").write_text(json.dumps(summary, indent=2, sort_keys=True), encoding="utf-8")
+    return summary
 
 
 def prototype_parameters(model: SRRProposeRefineMyoPS) -> list[tuple[str, torch.nn.Parameter]]:
@@ -870,9 +1237,11 @@ def run_one_batch_overfit(
     device: torch.device,
     variant_dir: Path,
 ) -> tuple[bool, dict[str, object]]:
+    output_variant = output_variant_name(args)
     if args.skip_overfit_sanity:
         summary = {
-            "variant": args.variant,
+            "variant": output_variant,
+            "model_variant": args.variant,
             "status": "SKIPPED",
             "reason": "skip_overfit_sanity was set",
             "required_by_task": True,
@@ -890,7 +1259,9 @@ def run_one_batch_overfit(
     component_t = torch.from_numpy(component_np[None]).float().to(device)
     anchor_features = anchor_dict_from_tensor(anchor_t)
     component_features = component_dict_from_tensor(component_t)
-    model = SRRProposeRefineMyoPS(base_channels=args.base_channels, variant=args.variant).to(device)
+    anchor_features, component_features = maybe_disable_context(args, anchor_features, component_features)
+    model = SRRProposeRefineMyoPS(**model_kwargs_from_args(args)).to(device)
+    fit_and_load_runtime_prototype_bank(model, [case], patch_shape, device, args, variant_dir)
     optimizer = torch.optim.AdamW(model.parameters(), lr=args.lr, weight_decay=args.weight_decay)
     rows: list[dict[str, object]] = []
     proto_rows: list[dict[str, object]] = []
@@ -913,11 +1284,12 @@ def run_one_batch_overfit(
             first_loss = loss_value
         last_loss = loss_value
         if step == 1:
-            proto_rows.extend(prototype_sanity_row(args.variant, step, before, model))
+            proto_rows.extend(prototype_sanity_row(output_variant, step, before, model))
         if step == 1 or step == args.overfit_steps or step % max(1, args.overfit_log_every) == 0:
             rows.append(
                 {
-                    "variant": args.variant,
+                    "variant": output_variant,
+                    "model_variant": args.variant,
                     "case_id": case.case_id,
                     "step": step,
                     "loss": loss_value,
@@ -934,13 +1306,20 @@ def run_one_batch_overfit(
     write_csv(variant_dir / "one_batch_overfit.csv", rows)
     write_csv(variant_dir / "prototype_update_sanity.csv", proto_rows)
     summary = {
-        "variant": args.variant,
+        "variant": output_variant,
+        "model_variant": args.variant,
+        "encoder_profile": getattr(model, "encoder_profile", args.encoder_profile),
+        "encoder_scale_channels": list(getattr(model, "encoder_scale_channels", encoder_scale_channels_from_args(args))),
+        "parameter_count": parameter_count(model),
         "status": "PASS" if passed else "FAIL",
         "case_id": case.case_id,
         "anchor_source": case.anchor_source,
         "anchor_fold": case.anchor_fold,
-        "anchor_present": bool(np.any(anchor_np)),
-        "component_present": bool(np.any(component_np)),
+        "anchor_present": bool(np.any(anchor_np)) and not bool(getattr(args, "disable_nnunet_anchor", False)),
+        "component_present": bool(np.any(component_np)) and not bool(getattr(args, "disable_nnunet_anchor", False)),
+        "disable_local_refinement": bool(getattr(args, "disable_local_refinement", False)),
+        "disable_anatomy_roi_prior": bool(getattr(args, "disable_anatomy_roi_prior", False)),
+        "disable_nnunet_anchor": bool(getattr(args, "disable_nnunet_anchor", False)),
         "steps": args.overfit_steps,
         "first_loss": first_loss,
         "last_loss": last_loss,
@@ -958,20 +1337,31 @@ def train_variant(args: argparse.Namespace) -> None:
     random.seed(args.seed)
     np.random.seed(args.seed)
     torch.manual_seed(args.seed)
+    output_variant = output_variant_name(args)
     hp = variant_hparams(args.variant)
     for key, value in hp.items():
         if getattr(args, key) is None:
             setattr(args, key, value)
     device = torch.device("cuda" if args.device == "cuda" and torch.cuda.is_available() else "cpu")
-    train_ids, val_ids = load_split(args.fold)
+    train_ids, full_val_ids = load_split(args.fold)
+    val_ids = list(full_val_ids)
     if args.limit_train_cases > 0:
         train_ids = train_ids[: args.limit_train_cases]
     if args.limit_val_cases > 0:
         val_ids = val_ids[: args.limit_val_cases]
+    eval_case_ids = parse_case_id_list(args.eval_case_ids)
+    if eval_case_ids:
+        invalid_eval_ids = [case_id for case_id in eval_case_ids if case_id not in full_val_ids]
+        if invalid_eval_ids:
+            raise ValueError(
+                "--eval-case-ids must be a subset of the requested fold validation split; "
+                f"invalid ids for fold {args.fold}: {','.join(invalid_eval_ids)}"
+            )
     metadata = load_myops_case_metadata()
     anchor_root = _anchor_root(args.nnunet_anchor_root)
     train_cases = [read_anchored_case(cid, metadata, anchor_root) for cid in train_ids]
     val_cases = [read_anchored_case(cid, metadata, anchor_root) for cid in val_ids]
+    eval_cases_override = [read_anchored_case(cid, metadata, anchor_root) for cid in eval_case_ids] if eval_case_ids else []
     anchor_fold_counts: dict[str, int] = {}
     for case in train_cases + val_cases:
         key = f"fold_{case.anchor_fold}"
@@ -981,6 +1371,7 @@ def train_variant(args: argparse.Namespace) -> None:
         "source_kind": "nnUNet fold validation probabilities; train cases use their OOF fold, fold0 validation cases use fold0 validation anchors",
         "train_anchor_case_count": len(train_cases),
         "val_anchor_case_count": len(val_cases),
+        "eval_case_ids": eval_case_ids,
         "anchor_fold_counts": anchor_fold_counts,
         "component_source": "connected components derived from nnU-Net hard predictions for compact scar class 5 and edema class 4",
         "no_t2_policy": "class-4 edema anchor/component evidence is zeroed when T2 is unavailable or virtual modality dropout removes T2",
@@ -993,7 +1384,7 @@ def train_variant(args: argparse.Namespace) -> None:
     out_root = Path(args.out_root)
     if not out_root.is_absolute():
         out_root = REPO_ROOT / out_root
-    variant_dir = out_root / "variants" / args.variant
+    variant_dir = out_root / "variants" / output_variant
     checkpoint_dir = variant_dir / "checkpoints/fold_0/propref_config"
     checkpoint_dir.mkdir(parents=True, exist_ok=True)
     patch_shape = parse_shape(args.patch_shape)
@@ -1006,9 +1397,13 @@ def train_variant(args: argparse.Namespace) -> None:
     overfit_passed, overfit_summary = run_one_batch_overfit(args, train_cases, patch_shape, device, variant_dir)
     if not overfit_passed:
         summary = {
-            "variant": args.variant,
+            "variant": output_variant,
+            "model_variant": args.variant,
             "fold": args.fold,
             "device": str(device),
+            "encoder_profile": args.encoder_profile,
+            "encoder_scale_channels": encoder_scale_channels_from_args(args),
+            "parameter_count": "evidence not found; overfit sanity stopped before model persisted",
             "train_cases": len(train_cases),
             "val_cases": len(val_cases),
             "stop_reason": "overfit_sanity_failed_or_skipped",
@@ -1026,11 +1421,16 @@ def train_variant(args: argparse.Namespace) -> None:
             "checkpoint_final": "evidence not found",
             "prediction_dirs": [],
             "skip_export": bool(args.skip_export),
+            "disable_local_refinement": bool(getattr(args, "disable_local_refinement", False)),
+            "disable_anatomy_roi_prior": bool(getattr(args, "disable_anatomy_roi_prior", False)),
+            "disable_nnunet_anchor": bool(getattr(args, "disable_nnunet_anchor", False)),
         }
         (variant_dir / "summary.json").write_text(json.dumps(summary, indent=2, sort_keys=True), encoding="utf-8")
         return
 
-    model = SRRProposeRefineMyoPS(base_channels=args.base_channels, variant=args.variant).to(device)
+    model = SRRProposeRefineMyoPS(**model_kwargs_from_args(args)).to(device)
+    model_param_count = parameter_count(model)
+    prototype_bank_summary = fit_and_load_runtime_prototype_bank(model, train_cases, patch_shape, device, args, variant_dir)
     optimizer = torch.optim.AdamW(model.parameters(), lr=args.lr, weight_decay=args.weight_decay)
     rng = np.random.default_rng(args.seed)
     best_val = float("inf")
@@ -1078,6 +1478,7 @@ def train_variant(args: argparse.Namespace) -> None:
         av = av_cpu.to(device)
         anchor_features = {key: value.to(device) for key, value in anchor_cpu.items()}
         component_features = {key: value.to(device) for key, value in component_cpu.items()}
+        anchor_features, component_features = maybe_disable_context(args, anchor_features, component_features)
         before = {name: param.detach().clone() for name, param in prototype_parameters(model)} if step in {1, max(1, args.max_steps // 2)} else {}
         optimizer.zero_grad(set_to_none=True)
         outputs = model(x, av, anchor_features=anchor_features, component_features=component_features)
@@ -1091,11 +1492,12 @@ def train_variant(args: argparse.Namespace) -> None:
             first_train_loss = loss_value
         last_train_loss = loss_value
         if before:
-            proto_rows.extend(prototype_sanity_row(args.variant, step, before, model))
+            proto_rows.extend(prototype_sanity_row(output_variant, step, before, model))
         if step == 1 or step % args.log_every == 0:
             train_rows.append(
                 {
-                    "variant": args.variant,
+                    "variant": output_variant,
+                    "model_variant": args.variant,
                     "step": step,
                     "stage": stage,
                     "loss": loss_value,
@@ -1104,22 +1506,48 @@ def train_variant(args: argparse.Namespace) -> None:
                     "scar_proposal_loss": float(metrics["scar_proposal_loss"].cpu()),
                     "edema_proposal_loss": float(metrics["edema_proposal_loss"].cpu()),
                     "proposal_margin_loss": float(metrics["proposal_margin_loss"].cpu()),
+                    "scar_component_ranking_loss": float(metrics["scar_component_ranking_loss"].cpu()),
+                    "edema_component_ranking_loss": float(metrics["edema_component_ranking_loss"].cpu()),
+                    "component_proposal_ranking_loss": float(metrics["component_proposal_ranking_loss"].cpu()),
                     "roi_cover_loss": float(metrics["roi_cover_loss"].cpu()),
                     "roi_remote_loss": float(metrics["roi_remote_loss"].cpu()),
+                    "semantic_retrieval_loss": float(metrics["semantic_retrieval_loss"].cpu()),
+                    "baseline_preservation_loss": float(metrics["baseline_preservation_loss"].cpu()),
+                    "baseline_preserve_voxels": float(metrics["baseline_preserve_voxels"].cpu()),
+                    "baseline_preserve_gate_mean": float(metrics["baseline_preserve_gate_mean"].cpu()),
                     "proposal_weight": float(metrics["proposal_weight"].cpu()),
                     "refine_weight": float(metrics["refine_weight"].cpu()),
                     "edema_supervised_batch_fraction": float(av[:, 1].mean().detach().cpu()),
-                    "anchor_present_batch_fraction": float((anchor_features["probabilities"].flatten(1).abs().sum(dim=1) > 0).float().mean().detach().cpu()),
-                    "component_present_batch_fraction": float((component_features["scar_component"].flatten(1).abs().sum(dim=1) + component_features["edema_component"].flatten(1).abs().sum(dim=1) > 0).float().mean().detach().cpu()),
+                    "anchor_present_batch_fraction": context_present_fraction(anchor_features, ("probabilities",)),
+                    "component_present_batch_fraction": context_present_fraction(component_features, ("scar_component", "edema_component")),
+                    "baseline_gate_mean": float(outputs["baseline_residual_gate"].detach().mean().cpu()) if "baseline_residual_gate" in outputs else 0.0,
+                    "baseline_residual_abs_mean": float(outputs["baseline_residual_magnitude"].detach().mean().cpu()) if "baseline_residual_magnitude" in outputs else 0.0,
+                    "baseline_gate_status": str(outputs.get("baseline_gate_status", "evidence_not_found")),
+                    "local_refinement_status": str(outputs.get("local_refinement_status", "evidence_not_found")),
+                    "anatomy_roi_prior_status": str(outputs.get("anatomy_roi_prior_status", "evidence_not_found")),
+                    "encoder_profile": str(outputs.get("encoder_profile", args.encoder_profile)),
+                    "encoder_scale_channels": ";".join(str(v) for v in outputs.get("encoder_scale_channels", [])),
+                    "p_union_mean": float(outputs["p_union"].detach().mean().cpu()) if "p_union" in outputs else 0.0,
+                    "p_lv_mean": float(outputs["p_lv"].detach().mean().cpu()) if "p_lv" in outputs else 0.0,
+                    "p_rv_mean": float(outputs["p_rv"].detach().mean().cpu()) if "p_rv" in outputs else 0.0,
+                    "union_distance_mean": float(outputs["union_distance"].detach().mean().cpu()) if "union_distance" in outputs else 0.0,
+                    "lv_distance_mean": float(outputs["lv_distance"].detach().mean().cpu()) if "lv_distance" in outputs else 0.0,
+                    "rv_distance_mean": float(outputs["rv_distance"].detach().mean().cpu()) if "rv_distance" in outputs else 0.0,
+                    "scar_anatomy_soft_gate_mean": float(outputs["scar_anatomy_soft_gate"].detach().mean().cpu()) if "scar_anatomy_soft_gate" in outputs else 0.0,
+                    "edema_anatomy_soft_gate_mean": float(outputs["edema_anatomy_soft_gate"].detach().mean().cpu()) if "edema_anatomy_soft_gate" in outputs else 0.0,
+                    "empty_union_fallback_fraction": float(outputs["empty_union_fallback"].detach().mean().cpu()) if "empty_union_fallback" in outputs else 0.0,
+                    "prototype_source_scar": str(outputs["prototype_source"]["scar"]),
+                    "prototype_source_edema": str(outputs["prototype_source"]["edema"]),
                     "batch_cases": ",".join(keys),
                     "elapsed_seconds": time.monotonic() - start,
                 }
             )
-            record_gate_usage(usage_rows, args.variant, step, keys, outputs)
+            record_gate_usage(usage_rows, output_variant, step, keys, outputs)
         if step in validation_schedule:
             val_loss = validate_patch_loss(model, val_cases, patch_shape, device, args.seed + step, args)
             validation_row = {
-                "variant": args.variant,
+                "variant": output_variant,
+                "model_variant": args.variant,
                 "step": step,
                 "stage": stage,
                 "event": "validation",
@@ -1132,7 +1560,8 @@ def train_variant(args: argparse.Namespace) -> None:
             checkpoint_step_path = checkpoint_dir / f"checkpoint_validation_step_{step}.pt"
             save_checkpoint(
                 {
-                    "variant": args.variant,
+                    "variant": output_variant,
+                    "model_variant": args.variant,
                     "step": step,
                     "model_state_dict": model.state_dict(),
                     "args": vars(args),
@@ -1153,7 +1582,8 @@ def train_variant(args: argparse.Namespace) -> None:
                 no_improve_validation_events = 0
                 save_checkpoint(
                     {
-                        "variant": args.variant,
+                        "variant": output_variant,
+                        "model_variant": args.variant,
                         "step": step,
                         "model_state_dict": model.state_dict(),
                         "args": vars(args),
@@ -1178,7 +1608,8 @@ def train_variant(args: argparse.Namespace) -> None:
     actual_steps = optimizer_steps
     save_checkpoint(
         {
-            "variant": args.variant,
+            "variant": output_variant,
+            "model_variant": args.variant,
             "step": actual_steps,
             "model_state_dict": model.state_dict(),
             "args": vars(args),
@@ -1191,7 +1622,8 @@ def train_variant(args: argparse.Namespace) -> None:
         best_path = checkpoint_dir / "checkpoint_final.pt"
         best_step = actual_steps
     if not args.skip_export:
-        eval_cases = val_cases[: args.max_eval_cases] if args.max_eval_cases > 0 else val_cases
+        eval_source_cases = eval_cases_override if eval_cases_override else val_cases
+        eval_cases = eval_source_cases[: args.max_eval_cases] if args.max_eval_cases > 0 else eval_source_cases
         for checkpoint_name, checkpoint_path in [("checkpoint_best", best_path), ("checkpoint_final", checkpoint_dir / "checkpoint_final.pt")]:
             state = torch.load(checkpoint_path, map_location=device, weights_only=False)
             model.load_state_dict(state["model_state_dict"])
@@ -1199,8 +1631,9 @@ def train_variant(args: argparse.Namespace) -> None:
                 model,
                 eval_cases,
                 variant_dir,
-                args.variant,
+                output_variant,
                 device,
+                disable_nnunet_anchor=bool(getattr(args, "disable_nnunet_anchor", False)),
                 checkpoint_name=checkpoint_name,
                 proposal_thresholds=proposal_thresholds,
                 scar_decode_threshold=args.scar_decode_threshold,
@@ -1210,15 +1643,21 @@ def train_variant(args: argparse.Namespace) -> None:
     write_csv(variant_dir / "validation_events.csv", validation_rows)
     write_csv(variant_dir / "retrieval_usage.csv", usage_rows)
     write_csv(variant_dir / "prototype_update_sanity_formal.csv", proto_rows)
-    write_csv(variant_dir / "hardneg_memory.csv", memory_rows(args.variant, hardneg_path, len(hardneg_targets), sum(len(v) for v in hardneg_targets.values())))
+    write_csv(variant_dir / "hardneg_memory.csv", memory_rows(output_variant, hardneg_path, len(hardneg_targets), sum(len(v) for v in hardneg_targets.values())))
     loss_decrease = None if first_train_loss is None or last_train_loss is None else first_train_loss - last_train_loss
     summary = {
-        "variant": args.variant,
+        "variant": output_variant,
+        "model_variant": args.variant,
         "fold": args.fold,
         "device": str(device),
+        "encoder_profile": getattr(model, "encoder_profile", args.encoder_profile),
+        "encoder_scale_channels": list(getattr(model, "encoder_scale_channels", encoder_scale_channels_from_args(args))),
+        "parameter_count": model_param_count,
         "train_cases": len(train_cases),
         "val_cases": len(val_cases),
-        "eval_cases": args.max_eval_cases if args.max_eval_cases > 0 else len(val_cases),
+        "eval_cases": len(eval_cases) if not args.skip_export else 0,
+        "eval_case_ids": [case.case_id for case in eval_cases] if not args.skip_export else [],
+        "eval_case_selection": "explicit_eval_case_ids" if eval_case_ids else "fold_validation_prefix_or_all",
         "best_step": best_step,
         "best_val_patch_loss": best_val,
         "stop_reason": stop_reason,
@@ -1253,6 +1692,9 @@ def train_variant(args: argparse.Namespace) -> None:
         "proposal_thresholds": proposal_thresholds,
         "scar_decode_threshold": args.scar_decode_threshold,
         "edema_decode_threshold": args.edema_decode_threshold,
+        "disable_local_refinement": bool(getattr(args, "disable_local_refinement", False)),
+        "disable_anatomy_roi_prior": bool(getattr(args, "disable_anatomy_roi_prior", False)),
+        "disable_nnunet_anchor": bool(getattr(args, "disable_nnunet_anchor", False)),
         "hardneg_components_csv": str(hardneg_path) if hardneg_path else "evidence not found",
         "hardneg_case_count": len(hardneg_targets),
         "hardneg_component_count": sum(len(v) for v in hardneg_targets.values()),
@@ -1261,7 +1703,30 @@ def train_variant(args: argparse.Namespace) -> None:
         "nnunet_anchor_train_case_count": len(train_cases),
         "nnunet_anchor_val_case_count": len(val_cases),
         "nnunet_anchor_fold_counts": anchor_fold_counts,
+        "nnunet_anchor_usage_status": "disabled_for_ablation" if bool(getattr(args, "disable_nnunet_anchor", False)) else "enabled",
         "three_stage_schedule": ["evidence_warmup", "proposal_dictionary", "soft_roi_refinement", "low_lr_calibration"],
+        "baseline_preserving_residual_gate": "final_logits = nnunet_anchor_logits + gate * bounded_delta_srr when anchor probabilities are present",
+        "baseline_gate_init": "closed-biased 1x1 gate; summary/training_log record gate mean and residual magnitude",
+        "anatomy_distance_roi_prior": {
+            "status": "implemented_runtime_consumed_needs_formal_ablation",
+            "maps": [
+                "p_union",
+                "p_lv",
+                "p_rv",
+                "union_distance",
+                "lv_distance",
+                "rv_distance",
+                "anatomy_uncertainty",
+                "scar_anatomy_soft_gate",
+                "edema_anatomy_soft_gate",
+            ],
+            "proposal_consumption": "scar/edema dictionaries receive task-specific anatomy soft gate logits instead of union-only logits",
+            "refinement_consumption": "crop refiner receives P_union/P_LV/P_RV, distance maps, uncertainty, and task gate channels",
+            "empty_union_policy": "bounded center fallback crop, not full-volume ROI",
+            "no_t2_policy": "edema anatomy soft gate is zero and edema refiner emits blocked logits on no-T2 samples",
+        },
+        "prototype_bank_summary": prototype_bank_summary,
+        "prototype_bank_summary_path": str(variant_dir / "prototype_bank_summary.json"),
         "skip_export": bool(args.skip_export),
     }
     (variant_dir / "summary.json").write_text(json.dumps(summary, indent=2, sort_keys=True), encoding="utf-8")
@@ -1270,10 +1735,12 @@ def train_variant(args: argparse.Namespace) -> None:
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--variant", required=True, choices=["srr_propref_shared_dual_dict", "srr_propref_scar_precision", "srr_propref_no_proto_cascade"])
+    parser.add_argument("--run-label", default="", help="Optional isolated output label under variants/ without changing model hparams.")
     parser.add_argument("--fold", type=int, default=0)
     parser.add_argument("--seed", type=int, default=20260703)
     parser.add_argument("--device", choices=["cuda", "cpu"], default="cuda")
-    parser.add_argument("--base-channels", type=int, default=10)
+    parser.add_argument("--base-channels", type=int, default=32)
+    parser.add_argument("--encoder-profile", choices=["tiny_3scale", "strong_4scale"], default="strong_4scale")
     parser.add_argument("--patch-shape", default="12,96,96")
     parser.add_argument("--batch-size", type=int, default=2)
     parser.add_argument("--max-steps", type=int, default=1800)
@@ -1298,6 +1765,14 @@ def main() -> None:
     parser.add_argument("--proposal-weight", type=float)
     parser.add_argument("--margin-weight", type=float, default=0.20)
     parser.add_argument("--proposal-margin", type=float, default=0.25)
+    parser.add_argument("--component-proposal-margin", type=float, default=0.35)
+    parser.add_argument("--component-proposal-weight", type=float, default=0.20)
+    parser.add_argument("--semantic-retrieval-weight", type=float, default=0.04)
+    parser.add_argument("--semantic-coverage-weight", type=float, default=0.03)
+    parser.add_argument("--semantic-integrative-weight", type=float, default=0.02)
+    parser.add_argument("--baseline-preservation-weight", type=float, default=0.10)
+    parser.add_argument("--baseline-preservation-confidence", type=float, default=0.80)
+    parser.add_argument("--baseline-gate-harm-weight", type=float, default=0.25)
     parser.add_argument("--roi-weight", type=float, default=0.25)
     parser.add_argument("--roi-remote-weight", type=float, default=0.05)
     parser.add_argument("--proposal-thresholds", default=DEFAULT_PROPOSAL_THRESHOLDS)
@@ -1307,11 +1782,17 @@ def main() -> None:
     parser.add_argument("--overfit-log-every", type=int, default=10)
     parser.add_argument("--min-overfit-loss-decrease", type=float, default=0.01)
     parser.add_argument("--skip-overfit-sanity", action="store_true")
+    parser.add_argument("--prototype-bank-cases", type=int, default=16)
+    parser.add_argument("--skip-prototype-bank-fit", action="store_true")
     parser.add_argument("--max-eval-cases", type=int, default=0)
+    parser.add_argument("--eval-case-ids", default="", help="Comma/semicolon-separated fold validation case ids to export/evaluate.")
     parser.add_argument("--limit-train-cases", type=int, default=0)
     parser.add_argument("--limit-val-cases", type=int, default=0)
     parser.add_argument("--hardneg-components-csv", default="results/20260629_proposal_memory_hardneg/mined_components.csv")
     parser.add_argument("--hardneg-sample-prob", type=float)
+    parser.add_argument("--disable-local-refinement", action="store_true", help="Bypass crop ROI refinement and use proposal logits for pathology heads.")
+    parser.add_argument("--disable-anatomy-roi-prior", action="store_true", help="Replace P_union/P_LV/P_RV distance gates with neutral ROI context.")
+    parser.add_argument("--disable-nnunet-anchor", action="store_true", help="Remove nnU-Net anchor/component context from training, prototype fitting, and evaluation.")
     parser.add_argument("--skip-export", action="store_true")
     args = parser.parse_args()
     train_variant(args)

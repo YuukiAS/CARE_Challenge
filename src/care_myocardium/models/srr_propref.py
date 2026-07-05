@@ -10,7 +10,7 @@ from src.care_myocardium.anchors.myops_decode import canonical_t2_present
 from src.care_myocardium.models.pathology_heads import AnatomyPathologyHeads
 from src.care_myocardium.models.proposal_prototypes import deterministic_axis_prototypes
 from src.care_myocardium.models.srr_blocks import gate_diagnostics
-from src.care_myocardium.models.srr_v2_unet import ModalityEncoder, ScaleRetrieval, TaskDecoder
+from src.care_myocardium.models.srr_v2_unet import FlexibleTaskDecoder, ScaleRetrieval, build_modality_encoder, encoder_profile_scale_channels
 
 
 def _groups(channels: int) -> int:
@@ -206,6 +206,109 @@ def _bounded_box(
     return tuple(starts), tuple(ends)  # type: ignore[return-value]
 
 
+def _safe_logit(prob: torch.Tensor) -> torch.Tensor:
+    return torch.logit(prob.clamp(1e-4, 1.0 - 1e-4))
+
+
+class AnatomyDistanceROIPrior(nn.Module):
+    """Build P_union/P_LV/P_RV distance and uncertainty maps for soft ROI gates."""
+
+    def __init__(self, *, distance_steps: int = 6, empty_threshold: float = 0.05) -> None:
+        super().__init__()
+        self.distance_steps = int(distance_steps)
+        self.empty_threshold = float(empty_threshold)
+
+    @staticmethod
+    def _anchor_tensor(anchor_features: torch.Tensor | dict[str, torch.Tensor] | None) -> torch.Tensor | None:
+        if anchor_features is None:
+            return None
+        if isinstance(anchor_features, dict):
+            for key in ("probabilities", "probs", "logits", "anchor", "features"):
+                value = anchor_features.get(key)
+                if isinstance(value, torch.Tensor):
+                    return value
+            return None
+        return anchor_features
+
+    @staticmethod
+    def _class_probs(value: torch.Tensor, reference: torch.Tensor) -> torch.Tensor:
+        value = value.to(device=reference.device, dtype=reference.dtype)
+        if value.shape[-3:] != reference.shape[-3:]:
+            value = F.interpolate(value, size=reference.shape[-3:], mode="trilinear", align_corners=False)
+        if bool((value.detach().min() >= 0).item()) and bool((value.detach().max() <= 1).item()):
+            denom = value.sum(dim=1, keepdim=True).clamp_min(1e-6)
+            return (value / denom).clamp(0.0, 1.0)
+        return torch.softmax(value, dim=1)
+
+    def _soft_distance(self, support: torch.Tensor) -> torch.Tensor:
+        support = support.clamp(0.0, 1.0)
+        dilated = support
+        accum = torch.zeros_like(support)
+        for _ in range(max(1, self.distance_steps)):
+            accum = accum + (1.0 - dilated)
+            dilated = F.max_pool3d(dilated, kernel_size=3, stride=1, padding=1)
+        return (accum / float(max(1, self.distance_steps))).clamp(0.0, 1.0)
+
+    def forward(
+        self,
+        anatomy_logits: torch.Tensor,
+        anchor_features: torch.Tensor | dict[str, torch.Tensor] | None,
+        availability: torch.Tensor,
+    ) -> dict[str, torch.Tensor]:
+        probs = torch.softmax(anatomy_logits, dim=1)
+        p_union = probs[:, 1:4].sum(dim=1, keepdim=True).clamp(0.0, 1.0)
+        p_lv = probs[:, 2:3].clamp(0.0, 1.0)
+        p_rv = probs[:, 3:4].clamp(0.0, 1.0)
+        union_distance = self._soft_distance(p_union)
+        lv_distance = self._soft_distance(p_lv)
+        rv_distance = self._soft_distance(p_rv)
+        union_proximity = (1.0 - union_distance).clamp(0.0, 1.0)
+        lv_proximity = (1.0 - lv_distance).clamp(0.0, 1.0)
+        rv_proximity = (1.0 - rv_distance).clamp(0.0, 1.0)
+        anatomy_uncertainty = (1.0 - probs.max(dim=1, keepdim=True).values).clamp(0.0, 1.0)
+
+        anchor = self._anchor_tensor(anchor_features)
+        if anchor is not None and anchor.ndim == 5 and anchor.shape[1] >= 4:
+            anchor_probs = self._class_probs(anchor, anatomy_logits)
+            anchor_uncertainty = (1.0 - anchor_probs.max(dim=1, keepdim=True).values).clamp(0.0, 1.0)
+        else:
+            anchor_uncertainty = torch.zeros_like(anatomy_uncertainty)
+        uncertainty = torch.maximum(anatomy_uncertainty, anchor_uncertainty)
+        confidence = (1.0 - uncertainty).clamp(0.0, 1.0)
+
+        empty_union = (p_union.amax(dim=(2, 3, 4), keepdim=True) < self.empty_threshold).to(dtype=anatomy_logits.dtype)
+        scar_base = 0.55 * p_union + 0.25 * union_proximity + 0.12 * lv_proximity + 0.03 * rv_proximity
+        edema_base = 0.48 * p_union + 0.34 * union_proximity + 0.06 * lv_proximity + 0.06 * rv_proximity
+        scar_gate = (scar_base * (0.70 + 0.30 * confidence)).clamp(0.0, 1.0)
+        edema_gate = (edema_base * (0.62 + 0.38 * confidence)).clamp(0.0, 1.0)
+        scar_gate = torch.where(empty_union.bool(), torch.zeros_like(scar_gate), scar_gate)
+        edema_gate = torch.where(empty_union.bool(), torch.zeros_like(edema_gate), edema_gate)
+
+        t2_present = canonical_t2_present(availability).to(device=anatomy_logits.device)
+        no_t2 = (~t2_present).view(-1, 1, 1, 1, 1)
+        edema_gate = torch.where(no_t2, torch.zeros_like(edema_gate), edema_gate)
+
+        return {
+            "p_union": p_union,
+            "p_lv": p_lv,
+            "p_rv": p_rv,
+            "union_distance": union_distance,
+            "lv_distance": lv_distance,
+            "rv_distance": rv_distance,
+            "union_proximity": union_proximity,
+            "lv_proximity": lv_proximity,
+            "rv_proximity": rv_proximity,
+            "anatomy_uncertainty": anatomy_uncertainty,
+            "anchor_uncertainty": anchor_uncertainty,
+            "uncertainty": uncertainty,
+            "scar_soft_gate": scar_gate,
+            "edema_soft_gate": edema_gate,
+            "scar_soft_gate_logits": _safe_logit(scar_gate),
+            "edema_soft_gate_logits": torch.where(no_t2, torch.full_like(edema_gate, -20.0), _safe_logit(edema_gate)),
+            "empty_union_fallback": empty_union.expand_as(p_union),
+        }
+
+
 class CropSoftROIRefinementHead(nn.Module):
     """Refine pathology logits by cropping a local soft ROI and pasting back.
 
@@ -240,7 +343,7 @@ class CropSoftROIRefinementHead(nn.Module):
         self.roi_threshold = float(roi_threshold)
         self.containment_penalty = float(containment_penalty)
         self.refine = nn.Sequential(
-            nn.Conv3d(channels + 11, channels, kernel_size=3, padding=1, bias=False),
+            nn.Conv3d(channels + 18, channels, kernel_size=3, padding=1, bias=False),
             nn.GroupNorm(_groups(channels), channels),
             nn.LeakyReLU(0.01, inplace=True),
             nn.Conv3d(channels, channels, kernel_size=3, padding=1, bias=False),
@@ -261,33 +364,48 @@ class CropSoftROIRefinementHead(nn.Module):
         anchor_evidence: torch.Tensor,
         component_evidence: torch.Tensor,
         evidence_logits: torch.Tensor,
+        anatomy_context: dict[str, torch.Tensor] | None = None,
     ) -> tuple[torch.Tensor, torch.Tensor, torch.Tensor]:
         proposal = torch.sigmoid(proposal_logits)
         anatomy = torch.sigmoid(anatomy_prior)
         k = _odd_kernel(self.roi_kernel, tuple(int(v) for v in proposal.shape[-3:]))
         proposal_context = F.avg_pool3d(proposal, kernel_size=k, stride=1, padding=k // 2)
-        anatomy_context = F.avg_pool3d(anatomy, kernel_size=k, stride=1, padding=k // 2)
+        anatomy_neighborhood = F.avg_pool3d(anatomy, kernel_size=k, stride=1, padding=k // 2)
         uncertainty = self._uncertainty(evidence_logits)
+        if anatomy_context is None:
+            anatomy_gate = anatomy_neighborhood.clamp(0.0, 1.0)
+            distance_support = anatomy_neighborhood.clamp(0.0, 1.0)
+        else:
+            gate_key = "scar_soft_gate" if self.pathology == "scar" else "edema_soft_gate"
+            anatomy_gate = anatomy_context[gate_key].to(device=proposal.device, dtype=proposal.dtype)
+            distance_support = anatomy_context["union_proximity"].to(device=proposal.device, dtype=proposal.dtype)
+            uncertainty = torch.maximum(
+                uncertainty,
+                anatomy_context["uncertainty"].to(device=proposal.device, dtype=proposal.dtype),
+            )
         if self.pathology == "scar":
             roi = (
                 0.55 * proposal
                 + 0.15 * proposal_context
                 + 0.10 * anchor_evidence
                 + 0.08 * component_evidence
-                + 0.07 * anatomy_context
+                + 0.07 * anatomy_gate
                 + 0.05 * uncertainty
             )
+            gate_floor = 0.08
         else:
             roi = (
                 0.45 * proposal
                 + 0.20 * proposal_context
                 + 0.10 * anchor_evidence
                 + 0.08 * component_evidence
-                + 0.12 * anatomy_context
+                + 0.12 * anatomy_gate
                 + 0.05 * uncertainty
             )
-        distance_support = anatomy_context.clamp(0.0, 1.0)
-        roi = roi.clamp(0.0, 1.0) * (0.25 + 0.75 * distance_support)
+            gate_floor = 0.12
+        distance_support = distance_support.clamp(0.0, 1.0)
+        soft_gate = (gate_floor + (1.0 - gate_floor) * anatomy_gate.clamp(0.0, 1.0)).clamp(0.0, 1.0)
+        roi = roi.clamp(0.0, 1.0) * soft_gate * (0.25 + 0.75 * distance_support)
         return roi.clamp(0.0, 1.0), uncertainty, distance_support
 
     @staticmethod
@@ -295,6 +413,13 @@ class CropSoftROIRefinementHead(nn.Module):
         z0, y0, x0 = starts
         z1, y1, x1 = ends
         return tensor[batch_idx : batch_idx + 1, :, z0:z1, y0:y1, x0:x1]
+
+    @staticmethod
+    def _center_seed(spatial_shape: tuple[int, int, int], device: torch.device) -> torch.Tensor:
+        depth, height, width = spatial_shape
+        seed = torch.zeros(spatial_shape, dtype=torch.bool, device=device)
+        seed[int(depth) // 2, int(height) // 2, int(width) // 2] = True
+        return seed
 
     def forward(
         self,
@@ -309,6 +434,7 @@ class CropSoftROIRefinementHead(nn.Module):
         component_evidence: torch.Tensor,
         pos_similarity: torch.Tensor,
         neg_similarity: torch.Tensor,
+        anatomy_context: dict[str, torch.Tensor] | None = None,
     ) -> tuple[torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor]:
         if image.shape[1] <= self.modality_index:
             raise ValueError(f"image has {image.shape[1]} channels, cannot read modality index {self.modality_index}")
@@ -318,6 +444,7 @@ class CropSoftROIRefinementHead(nn.Module):
             anchor_evidence,
             component_evidence,
             evidence_logits,
+            anatomy_context=anatomy_context,
         )
         batch, _, depth, height, width = evidence_logits.shape
         spatial_shape = (int(depth), int(height), int(width))
@@ -342,7 +469,7 @@ class CropSoftROIRefinementHead(nn.Module):
                 crop_seed = anatomy_seed
                 source_code = 1.0
             if not bool(crop_seed.any().item()):
-                crop_seed = torch.ones_like(roi_b, dtype=torch.bool)
+                crop_seed = self._center_seed(spatial_shape, roi_b.device)
                 source_code = 2.0
             starts, ends = _bounded_box(
                 crop_seed,
@@ -371,6 +498,50 @@ class CropSoftROIRefinementHead(nn.Module):
                     self._crop(uncertainty, bidx, starts, ends),
                     self._crop(distance_support, bidx, starts, ends),
                     self._crop(roi, bidx, starts, ends),
+                    self._crop(
+                        anatomy_context["p_union"] if anatomy_context is not None else torch.sigmoid(anatomy_prior),
+                        bidx,
+                        starts,
+                        ends,
+                    ),
+                    self._crop(
+                        anatomy_context["p_lv"] if anatomy_context is not None else torch.zeros_like(anatomy_prior),
+                        bidx,
+                        starts,
+                        ends,
+                    ),
+                    self._crop(
+                        anatomy_context["p_rv"] if anatomy_context is not None else torch.zeros_like(anatomy_prior),
+                        bidx,
+                        starts,
+                        ends,
+                    ),
+                    self._crop(
+                        anatomy_context["union_distance"] if anatomy_context is not None else 1.0 - distance_support,
+                        bidx,
+                        starts,
+                        ends,
+                    ),
+                    self._crop(
+                        anatomy_context["lv_distance"] if anatomy_context is not None else torch.ones_like(anatomy_prior),
+                        bidx,
+                        starts,
+                        ends,
+                    ),
+                    self._crop(
+                        anatomy_context["rv_distance"] if anatomy_context is not None else torch.ones_like(anatomy_prior),
+                        bidx,
+                        starts,
+                        ends,
+                    ),
+                    self._crop(
+                        anatomy_context["scar_soft_gate" if self.pathology == "scar" else "edema_soft_gate"]
+                        if anatomy_context is not None
+                        else distance_support,
+                        bidx,
+                        starts,
+                        ends,
+                    ),
                 ],
                 dim=1,
             )
@@ -396,6 +567,84 @@ class CropSoftROIRefinementHead(nn.Module):
 SoftROIRefinementHead = CropSoftROIRefinementHead
 
 
+
+class BaselinePreservingResidualGate(nn.Module):
+    """Bounded SRR correction around same-case nnU-Net anchor logits."""
+
+    def __init__(self, num_classes: int = 6, max_delta: float = 4.0, init_gate_bias: float = -4.0) -> None:
+        super().__init__()
+        self.num_classes = int(num_classes)
+        self.max_delta = float(max_delta)
+        self.gate = nn.Conv3d(self.num_classes * 2 + 4, self.num_classes, kernel_size=1)
+        nn.init.zeros_(self.gate.weight)
+        nn.init.constant_(self.gate.bias, float(init_gate_bias))
+
+    @staticmethod
+    def _anchor_tensor(anchor_features: torch.Tensor | dict[str, torch.Tensor] | None) -> torch.Tensor | None:
+        if anchor_features is None:
+            return None
+        if isinstance(anchor_features, dict):
+            for key in ("logits", "probabilities", "probs", "anchor", "features"):
+                value = anchor_features.get(key)
+                if isinstance(value, torch.Tensor):
+                    return value
+            return None
+        return anchor_features
+
+    @staticmethod
+    def _as_logits(anchor: torch.Tensor, reference: torch.Tensor) -> torch.Tensor:
+        value = anchor.to(device=reference.device, dtype=reference.dtype)
+        if value.shape[1] != reference.shape[1]:
+            raise ValueError(f"nnU-Net anchor class count {value.shape[1]} does not match SRR logits {reference.shape[1]}")
+        if value.shape[-3:] != reference.shape[-3:]:
+            value = F.interpolate(value, size=reference.shape[-3:], mode="trilinear", align_corners=False)
+        if bool((value.detach().min() >= 0).item()) and bool((value.detach().max() <= 1).item()):
+            value = torch.logit(value.clamp(1e-4, 1.0 - 1e-4))
+        return value
+
+    def forward(
+        self,
+        srr_logits: torch.Tensor,
+        anchor_features: torch.Tensor | dict[str, torch.Tensor] | None,
+        availability: torch.Tensor,
+        *,
+        force_closed: bool = False,
+    ) -> dict[str, torch.Tensor | str]:
+        anchor = self._anchor_tensor(anchor_features)
+        if anchor is None:
+            zero = torch.zeros_like(srr_logits)
+            return {
+                "final_logits": srr_logits,
+                "anchor_logits": zero,
+                "gate": zero,
+                "bounded_delta": zero,
+                "residual_magnitude": zero[:, :1],
+                "gate_status": "anchor_missing_passthrough",
+            }
+        anchor_logits = self._as_logits(anchor, srr_logits)
+        probs = torch.softmax(anchor_logits, dim=1)
+        uncertainty = (1.0 - probs.max(dim=1, keepdim=True).values).clamp(0.0, 1.0)
+        availability_maps = availability.to(device=srr_logits.device, dtype=srr_logits.dtype).view(-1, 3, 1, 1, 1)
+        availability_maps = availability_maps.expand(-1, -1, *srr_logits.shape[-3:])
+        gate_input = torch.cat([srr_logits, anchor_logits, uncertainty, availability_maps], dim=1)
+        gate = torch.sigmoid(self.gate(gate_input))
+        if force_closed:
+            gate = torch.zeros_like(gate)
+        bounded_delta = self.max_delta * torch.tanh(srr_logits - anchor_logits)
+        final = anchor_logits + gate * bounded_delta
+        t2_present = canonical_t2_present(availability).to(device=final.device)
+        no_t2_mask = (~t2_present).view(-1, 1, 1, 1, 1)
+        final[:, 4:5] = torch.where(no_t2_mask, torch.full_like(final[:, 4:5], -20.0), final[:, 4:5])
+        return {
+            "final_logits": final,
+            "anchor_logits": anchor_logits,
+            "gate": gate,
+            "bounded_delta": bounded_delta,
+            "residual_magnitude": (gate * bounded_delta).abs().mean(dim=1, keepdim=True),
+            "gate_status": "baseline_preserving_residual",
+        }
+
+
 class SRRProposeRefineMyoPS(nn.Module):
     """SRR evidence trunk with pathology dictionaries and soft ROI refinement.
 
@@ -411,6 +660,9 @@ class SRRProposeRefineMyoPS(nn.Module):
         base_channels: int = 10,
         variant: str = "srr_propref_shared_dual_dict",
         use_interactions: bool = True,
+        encoder_profile: str = "tiny_3scale",
+        disable_local_refinement: bool = False,
+        disable_anatomy_roi_prior: bool = False,
     ) -> None:
         super().__init__()
         if variant not in {
@@ -421,16 +673,17 @@ class SRRProposeRefineMyoPS(nn.Module):
             raise ValueError(f"unknown PropRef variant: {variant}")
         self.variant = variant
         self.base_channels = int(base_channels)
-        self.encoders = nn.ModuleList([ModalityEncoder(base_channels) for _ in range(3)])
+        self.encoder_profile = str(encoder_profile)
+        self.disable_local_refinement = bool(disable_local_refinement)
+        self.disable_anatomy_roi_prior = bool(disable_anatomy_roi_prior)
+        self.encoder_scale_channels = encoder_profile_scale_channels(base_channels, self.encoder_profile)
+        self.encoders = nn.ModuleList([build_modality_encoder(base_channels, self.encoder_profile) for _ in range(3)])
         self.retrieval = nn.ModuleList(
-            [
-                ScaleRetrieval(base_channels, use_interactions=use_interactions),
-                ScaleRetrieval(base_channels * 2, use_interactions=use_interactions),
-                ScaleRetrieval(base_channels * 4, use_interactions=use_interactions),
-            ]
+            [ScaleRetrieval(channels, use_interactions=use_interactions) for channels in self.encoder_scale_channels]
         )
-        self.decoders = nn.ModuleDict({task: TaskDecoder(base_channels) for task in ("anatomy", "scar", "edema")})
+        self.decoders = nn.ModuleDict({task: FlexibleTaskDecoder(self.encoder_scale_channels) for task in ("anatomy", "scar", "edema")})
         self.evidence_heads = AnatomyPathologyHeads(base_channels, prior_strength=0.35)
+        self.anatomy_roi_prior = AnatomyDistanceROIPrior(distance_steps=6)
         no_proto = variant == "srr_propref_no_proto_cascade"
         scar_neg = 10 if variant == "srr_propref_scar_precision" else 6
         edema_pos = 8 if variant == "srr_propref_shared_dual_dict" else 4
@@ -473,6 +726,101 @@ class SRRProposeRefineMyoPS(nn.Module):
             roi_threshold=0.12,
             containment_penalty=0.18,
         )
+        self.baseline_gate = BaselinePreservingResidualGate(num_classes=6)
+
+    @staticmethod
+    def _neutral_anatomy_context(anatomy_logits: torch.Tensor, availability: torch.Tensor) -> dict[str, torch.Tensor]:
+        zero = anatomy_logits[:, :1] * 0.0
+        one = zero + 1.0
+        t2_present = canonical_t2_present(availability).to(device=anatomy_logits.device)
+        no_t2 = (~t2_present).view(-1, 1, 1, 1, 1)
+        edema_gate = torch.where(no_t2, zero, one)
+        return {
+            "p_union": one,
+            "p_lv": zero,
+            "p_rv": zero,
+            "union_distance": zero,
+            "lv_distance": one,
+            "rv_distance": one,
+            "union_proximity": one,
+            "lv_proximity": zero,
+            "rv_proximity": zero,
+            "anatomy_uncertainty": zero,
+            "anchor_uncertainty": zero,
+            "uncertainty": zero,
+            "scar_soft_gate": one,
+            "edema_soft_gate": edema_gate,
+            "scar_soft_gate_logits": _safe_logit(one),
+            "edema_soft_gate_logits": torch.where(no_t2, torch.full_like(zero, -20.0), _safe_logit(one)),
+            "empty_union_fallback": zero,
+        }
+
+    @staticmethod
+    def _bypass_refinement(
+        refiner: CropSoftROIRefinementHead,
+        *,
+        proposal_logits: torch.Tensor,
+        anatomy_prior: torch.Tensor,
+        availability: torch.Tensor,
+        anchor_evidence: torch.Tensor,
+        component_evidence: torch.Tensor,
+        evidence_logits: torch.Tensor,
+        anatomy_context: dict[str, torch.Tensor] | None,
+    ) -> tuple[torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor]:
+        roi, _uncertainty, _distance_support = refiner.soft_roi(
+            proposal_logits,
+            anatomy_prior,
+            anchor_evidence,
+            component_evidence,
+            evidence_logits,
+            anatomy_context=anatomy_context,
+        )
+        final = proposal_logits
+        residual = torch.zeros_like(proposal_logits)
+        crop_mask = torch.zeros_like(proposal_logits)
+        batch = int(proposal_logits.shape[0])
+        bounds = torch.zeros((batch, 6), dtype=torch.long, device=proposal_logits.device)
+        stats = torch.zeros((batch, 8), dtype=proposal_logits.dtype, device=proposal_logits.device)
+        stats[:, 0] = roi.flatten(1).mean(dim=1)
+        stats[:, 1] = roi.flatten(1).amax(dim=1)
+        stats[:, 2] = (roi >= refiner.roi_threshold).to(dtype=proposal_logits.dtype).flatten(1).mean(dim=1)
+        stats[:, 4] = (torch.sigmoid(final) >= 0.5).to(dtype=proposal_logits.dtype).flatten(1).mean(dim=1)
+        stats[:, 7] = 4.0
+        if refiner.pathology == "edema":
+            t2_present = canonical_t2_present(availability).to(device=proposal_logits.device)
+            no_t2 = (~t2_present).view(-1, 1, 1, 1, 1)
+            final = torch.where(no_t2, torch.full_like(final, -20.0), final)
+            stats[:, 7] = torch.where(no_t2.flatten(), torch.full_like(stats[:, 7], 3.0), stats[:, 7])
+        return final, residual, roi, crop_mask, bounds, stats
+
+    @staticmethod
+    def _iter_context_tensors(context: torch.Tensor | dict[str, torch.Tensor] | None) -> list[tuple[str, torch.Tensor]]:
+        if context is None:
+            return []
+        if isinstance(context, torch.Tensor):
+            return [("tensor", context)]
+        return [(str(key), value) for key, value in context.items() if isinstance(value, torch.Tensor)]
+
+    def _validate_context_shapes(
+        self,
+        x: torch.Tensor,
+        anchor_features: torch.Tensor | dict[str, torch.Tensor] | None,
+        component_features: torch.Tensor | dict[str, torch.Tensor] | None,
+    ) -> None:
+        expected_batch = int(x.shape[0])
+        expected_spatial = tuple(int(v) for v in x.shape[-3:])
+        for source_name, context in (("anchor_features", anchor_features), ("component_features", component_features)):
+            for key, value in self._iter_context_tensors(context):
+                if value.ndim != 5:
+                    continue
+                if int(value.shape[0]) != expected_batch:
+                    raise ValueError(
+                        f"{source_name}.{key} batch {value.shape[0]} does not match image batch {expected_batch}"
+                    )
+                if tuple(int(v) for v in value.shape[-3:]) != expected_spatial:
+                    raise ValueError(
+                        f"{source_name}.{key} spatial shape {tuple(value.shape[-3:])} does not match image spatial shape {expected_spatial}"
+                    )
 
     def _evidence_features(
         self,
@@ -508,14 +856,21 @@ class SRRProposeRefineMyoPS(nn.Module):
     ) -> dict[str, torch.Tensor]:
         if x.shape[1] != 3:
             raise ValueError(f"SRRProposeRefineMyoPS expects 3 channels, got {x.shape[1]}")
+        self._validate_context_shapes(x, anchor_features, component_features)
         availability = availability.to(device=x.device, dtype=x.dtype).clamp(0, 1)
         features, gates, gate_metadata, gate_valid_masks = self._evidence_features(x, availability, anchor_features)
         evidence = self.evidence_heads(features["anatomy"], features["scar"], features["edema"])
         anatomy_prior = evidence["union_prior_logits"]
+        if self.disable_anatomy_roi_prior:
+            anatomy_context = self._neutral_anatomy_context(evidence["anatomy_logits"], availability)
+        else:
+            anatomy_context = self.anatomy_roi_prior(evidence["anatomy_logits"], anchor_features, availability)
+        scar_anatomy_prior = anatomy_context["scar_soft_gate_logits"]
+        edema_anatomy_prior = anatomy_context["edema_soft_gate_logits"]
         scar_dict = self.scar_dictionary(
             features["scar"],
             evidence["scar_logits"],
-            anatomy_prior,
+            scar_anatomy_prior,
             anchor_features=anchor_features,
             component_features=component_features,
             availability=availability,
@@ -523,44 +878,92 @@ class SRRProposeRefineMyoPS(nn.Module):
         edema_dict = self.edema_dictionary(
             features["edema"],
             evidence["edema_logits"],
-            anatomy_prior,
+            edema_anatomy_prior,
             anchor_features=anchor_features,
             component_features=component_features,
             availability=availability,
         )
-        scar_logits, scar_residual, scar_roi, scar_crop_mask, scar_crop_bounds, scar_roi_stats = self.scar_refine(
-            x,
-            features["scar"],
-            evidence["scar_logits"],
-            scar_dict["proposal_logits"],
-            anatomy_prior,
-            availability,
-            anchor_evidence=scar_dict["anchor_evidence"],
-            component_evidence=scar_dict["component_evidence"],
-            pos_similarity=scar_dict["pos_similarity"],
-            neg_similarity=scar_dict["neg_similarity"],
-        )
-        edema_logits, edema_residual, edema_roi, edema_crop_mask, edema_crop_bounds, edema_roi_stats = self.edema_refine(
-            x,
-            features["edema"],
-            evidence["edema_logits"],
-            edema_dict["proposal_logits"],
-            anatomy_prior,
-            availability,
-            anchor_evidence=edema_dict["anchor_evidence"],
-            component_evidence=edema_dict["component_evidence"],
-            pos_similarity=edema_dict["pos_similarity"],
-            neg_similarity=edema_dict["neg_similarity"],
-        )
+        if self.disable_local_refinement:
+            scar_logits, scar_residual, scar_roi, scar_crop_mask, scar_crop_bounds, scar_roi_stats = self._bypass_refinement(
+                self.scar_refine,
+                proposal_logits=scar_dict["proposal_logits"],
+                anatomy_prior=scar_anatomy_prior,
+                availability=availability,
+                anchor_evidence=scar_dict["anchor_evidence"],
+                component_evidence=scar_dict["component_evidence"],
+                evidence_logits=evidence["scar_logits"],
+                anatomy_context=anatomy_context,
+            )
+            edema_logits, edema_residual, edema_roi, edema_crop_mask, edema_crop_bounds, edema_roi_stats = self._bypass_refinement(
+                self.edema_refine,
+                proposal_logits=edema_dict["proposal_logits"],
+                anatomy_prior=edema_anatomy_prior,
+                availability=availability,
+                anchor_evidence=edema_dict["anchor_evidence"],
+                component_evidence=edema_dict["component_evidence"],
+                evidence_logits=evidence["edema_logits"],
+                anatomy_context=anatomy_context,
+            )
+        else:
+            scar_logits, scar_residual, scar_roi, scar_crop_mask, scar_crop_bounds, scar_roi_stats = self.scar_refine(
+                x,
+                features["scar"],
+                evidence["scar_logits"],
+                scar_dict["proposal_logits"],
+                scar_anatomy_prior,
+                availability,
+                anchor_evidence=scar_dict["anchor_evidence"],
+                component_evidence=scar_dict["component_evidence"],
+                pos_similarity=scar_dict["pos_similarity"],
+                neg_similarity=scar_dict["neg_similarity"],
+                anatomy_context=anatomy_context,
+            )
+            edema_logits, edema_residual, edema_roi, edema_crop_mask, edema_crop_bounds, edema_roi_stats = self.edema_refine(
+                x,
+                features["edema"],
+                evidence["edema_logits"],
+                edema_dict["proposal_logits"],
+                edema_anatomy_prior,
+                availability,
+                anchor_evidence=edema_dict["anchor_evidence"],
+                component_evidence=edema_dict["component_evidence"],
+                pos_similarity=edema_dict["pos_similarity"],
+                neg_similarity=edema_dict["neg_similarity"],
+                anatomy_context=anatomy_context,
+            )
         t2_present = canonical_t2_present(availability).to(device=edema_logits.device)
         no_t2_mask = (~t2_present).view(-1, 1, 1, 1, 1)
         edema_logits = torch.where(no_t2_mask, torch.full_like(edema_logits, -20.0), edema_logits)
+        srr_logits = torch.cat([evidence["anatomy_logits"], edema_logits, scar_logits], dim=1)
+        baseline_blend = self.baseline_gate(srr_logits, anchor_features, availability)
         outputs = {
-            "logits": torch.cat([evidence["anatomy_logits"], edema_logits, scar_logits], dim=1),
+            "logits": baseline_blend["final_logits"],
+            "srr_logits_pre_anchor": srr_logits,
+            "nnunet_anchor_logits": baseline_blend["anchor_logits"],
+            "baseline_residual_gate": baseline_blend["gate"],
+            "bounded_delta_srr": baseline_blend["bounded_delta"],
+            "baseline_residual_magnitude": baseline_blend["residual_magnitude"],
+            "baseline_gate_status": baseline_blend["gate_status"],
+            "encoder_profile": self.encoder_profile,
+            "encoder_scale_channels": tuple(self.encoder_scale_channels),
+            "local_refinement_status": "disabled_bypass_to_proposal_logits" if self.disable_local_refinement else "enabled_crop_soft_roi",
+            "anatomy_roi_prior_status": "disabled_neutral_context" if self.disable_anatomy_roi_prior else "enabled_distance_soft_gates",
             "anatomy_logits": evidence["anatomy_logits"],
             "scar_logits": scar_logits,
             "edema_logits": edema_logits,
             "union_prior_logits": anatomy_prior,
+            "p_union": anatomy_context["p_union"],
+            "p_lv": anatomy_context["p_lv"],
+            "p_rv": anatomy_context["p_rv"],
+            "union_distance": anatomy_context["union_distance"],
+            "lv_distance": anatomy_context["lv_distance"],
+            "rv_distance": anatomy_context["rv_distance"],
+            "union_proximity": anatomy_context["union_proximity"],
+            "anatomy_uncertainty": anatomy_context["anatomy_uncertainty"],
+            "anchor_anatomy_uncertainty": anatomy_context["anchor_uncertainty"],
+            "scar_anatomy_soft_gate": anatomy_context["scar_soft_gate"],
+            "edema_anatomy_soft_gate": anatomy_context["edema_soft_gate"],
+            "empty_union_fallback": anatomy_context["empty_union_fallback"],
             "scar_evidence_logits": evidence["scar_logits"],
             "edema_evidence_logits": evidence["edema_logits"],
             "scar_proposal_logits": scar_dict["proposal_logits"],
@@ -586,7 +989,11 @@ class SRRProposeRefineMyoPS(nn.Module):
             "scar_roi_stats": scar_roi_stats,
             "edema_roi_stats": edema_roi_stats,
             "no_t2_inference_policy": "block_edema",
-            "proposal_math": "positive_similarity - negative_similarity + nnU-Net/component evidence + anatomy/distance prior",
+            "proposal_math": (
+                "positive_similarity - negative_similarity + nnU-Net/component evidence + neutral anatomy ROI context"
+                if self.disable_anatomy_roi_prior
+                else "positive_similarity - negative_similarity + nnU-Net/component evidence + P_union/P_LV/P_RV distance/uncertainty soft ROI prior"
+            ),
             "prototype_source": {
                 "scar": self.scar_dictionary.prototype_source,
                 "edema": self.edema_dictionary.prototype_source,

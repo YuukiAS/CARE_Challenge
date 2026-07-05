@@ -858,10 +858,32 @@ def record_gate_usage(rows: list[dict[str, object]], variant: str, step: int, ke
     if not gates:
         rows.append({"variant": variant, "step": step, "task": "control_no_retrieval", "expert_index": "NA", "mean_weight": "NA", "batch_cases": ",".join(keys)})
         return
+    metadata = outputs.get("dictionary_slot_metadata", {}) if isinstance(outputs.get("dictionary_slot_metadata", {}), dict) else {}
+    valid_masks = outputs.get("gate_valid_masks", {}) if isinstance(outputs.get("gate_valid_masks", {}), dict) else {}
     for task, gate in gates.items():
         usage = gate.detach().mean(dim=0).cpu().tolist()
+        specs = metadata.get(task, []) if isinstance(metadata, dict) else []
+        valid = valid_masks.get(task) if isinstance(valid_masks, dict) else None
+        valid_usage = valid.detach().mean(dim=0).cpu().tolist() if hasattr(valid, "detach") else []
+        task_prefix = str(task).split("_", 1)[0]
         for idx, value in enumerate(usage):
-            rows.append({"variant": variant, "step": step, "task": task, "expert_index": idx, "mean_weight": float(value), "batch_cases": ",".join(keys)})
+            spec = specs[idx] if idx < len(specs) else {}
+            rows.append(
+                {
+                    "variant": variant,
+                    "step": step,
+                    "task": task,
+                    "semantic_task": task_prefix,
+                    "expert_index": idx,
+                    "slot_group": spec.get("group", "unknown") if isinstance(spec, dict) else "unknown",
+                    "slot_kind": spec.get("kind", "unknown") if isinstance(spec, dict) else "unknown",
+                    "slot_modality": spec.get("modality", "") if isinstance(spec, dict) else "",
+                    "slot_modalities": ";".join(str(v) for v in spec.get("modalities", ())) if isinstance(spec, dict) else "",
+                    "valid_fraction": float(valid_usage[idx]) if idx < len(valid_usage) else "NA",
+                    "mean_weight": float(value),
+                    "batch_cases": ",".join(keys),
+                }
+            )
 
 
 def train_variant(args: argparse.Namespace) -> None:

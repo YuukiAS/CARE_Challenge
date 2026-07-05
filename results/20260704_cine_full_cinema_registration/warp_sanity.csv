@@ -1,0 +1,8 @@
+method,transform_family,status,warp_plausibility_evidence,folding_or_jacobian_evidence,downstream_metric_evidence,decision
+frame0_control,none,control_not_registration,not_applicable,not_applicable,prior CineMA frame0 anatomy metrics exist,control_only
+simpleitk_translation,translation,existing_lower_baseline,existing preflight script only,no deformation field,needs same-split table,not_full_registration
+simpleitk_demons,deformable_displacement_fallback,existing_fallback_script,script computes displacement magnitude,script computes displacement-field Jacobian determinant,needs same-split comparison to SyN/VoxelMorph,fallback_only
+optical_flow,dense_flow_proxy,existing_proxy_script,proxy smoothness/folding-style sanity in prior script,proxy only,needs same-split comparison,proxy_only
+antspy_syn,SyN_deformable,bounded_smoke_completed,Case1001 frame 9 -> 0; NCC 0.9483->0.9627,transform files written; Jacobian/folding not yet computed,one-case anatomy consistency only; no same-split downstream metric,smoke_only_needs_safe_subset
+voxelmorph,learned_deformable,pytorch_adapter_probe_complete_untrained,Case1001 frame 9 -> 0 near-identity displacement; mean |disp| 0.0000188 and max |disp| 0.0000457,jacobian min 0.999951 max 1.000023 folding proxy voxels 0,myocardium/LV consistency unchanged; NCC 0.958767->0.958769,adapter_only_not_full_registration
+tps_bspline,classical_deformable,not_yet_run,not_yet_run,not_yet_run,not_yet_run,needs_evidence

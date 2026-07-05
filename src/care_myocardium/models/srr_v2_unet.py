@@ -56,6 +56,48 @@ class ModalityEncoder(nn.Module):
         return [f0, f1, f2]
 
 
+
+class StrongModalityEncoder(nn.Module):
+    """Four-scale modality-private encoder with strict missing-modality closure."""
+
+    def __init__(self, base_channels: int) -> None:
+        super().__init__()
+        self.stage0 = ConvBlock(1, base_channels)
+        self.stage1 = ConvBlock(base_channels, base_channels * 2)
+        self.stage2 = ConvBlock(base_channels * 2, base_channels * 4)
+        self.stage3 = ConvBlock(base_channels * 4, base_channels * 8)
+
+    @staticmethod
+    def _safe_pool(x: torch.Tensor) -> torch.Tensor:
+        return ModalityEncoder._safe_pool(x)
+
+    def forward(self, x: torch.Tensor, present: torch.Tensor) -> list[torch.Tensor]:
+        mask = present.view(-1, 1, 1, 1, 1).to(device=x.device, dtype=x.dtype)
+        x = x * mask
+        f0 = self.stage0(x) * mask
+        f1 = self.stage1(self._safe_pool(f0)) * mask
+        f2 = self.stage2(self._safe_pool(f1)) * mask
+        f3 = self.stage3(self._safe_pool(f2)) * mask
+        return [f0, f1, f2, f3]
+
+
+def encoder_profile_scale_channels(base_channels: int, encoder_profile: str) -> list[int]:
+    base = int(base_channels)
+    if encoder_profile == "tiny_3scale":
+        return [base, base * 2, base * 4]
+    if encoder_profile == "strong_4scale":
+        return [base, base * 2, base * 4, base * 8]
+    raise ValueError(f"unknown encoder_profile: {encoder_profile!r}")
+
+
+def build_modality_encoder(base_channels: int, encoder_profile: str) -> nn.Module:
+    if encoder_profile == "tiny_3scale":
+        return ModalityEncoder(base_channels)
+    if encoder_profile == "strong_4scale":
+        return StrongModalityEncoder(base_channels)
+    raise ValueError(f"unknown encoder_profile: {encoder_profile!r}")
+
+
 class ScaleRetrieval(nn.Module):
     """Per-scale multi-slot shared/private/interaction retrieval bank.
 
@@ -111,22 +153,38 @@ class ScaleRetrieval(nn.Module):
         return self.block(modality_features, availability, anchor_features)
 
 
-class TaskDecoder(nn.Module):
-    def __init__(self, base_channels: int) -> None:
+class FlexibleTaskDecoder(nn.Module):
+    """Decoder for 3- or 4-scale SRR feature pyramids."""
+
+    def __init__(self, scale_channels: list[int] | tuple[int, ...]) -> None:
         super().__init__()
-        self.up1 = nn.ConvTranspose3d(base_channels * 4, base_channels * 2, 2, stride=2)
-        self.dec1 = ConvBlock(base_channels * 4, base_channels * 2)
-        self.up0 = nn.ConvTranspose3d(base_channels * 2, base_channels, 2, stride=2)
-        self.dec0 = ConvBlock(base_channels * 2, base_channels)
+        if len(scale_channels) < 3:
+            raise ValueError("FlexibleTaskDecoder requires at least three scales")
+        self.scale_channels = [int(ch) for ch in scale_channels]
+        self.ups = nn.ModuleList()
+        self.decoders = nn.ModuleList()
+        current = self.scale_channels[-1]
+        for skip_channels in reversed(self.scale_channels[:-1]):
+            self.ups.append(nn.ConvTranspose3d(current, skip_channels, 2, stride=2))
+            self.decoders.append(ConvBlock(skip_channels * 2, skip_channels))
+            current = skip_channels
 
     def forward(self, routed: list[torch.Tensor]) -> torch.Tensor:
-        f0, f1, f2 = routed
-        x = self.up1(f2)
-        x = F.interpolate(x, size=f1.shape[-3:], mode="trilinear", align_corners=False) if x.shape[-3:] != f1.shape[-3:] else x
-        x = self.dec1(torch.cat([x, f1], dim=1))
-        x = self.up0(x)
-        x = F.interpolate(x, size=f0.shape[-3:], mode="trilinear", align_corners=False) if x.shape[-3:] != f0.shape[-3:] else x
-        return self.dec0(torch.cat([x, f0], dim=1))
+        if len(routed) != len(self.scale_channels):
+            raise ValueError(f"decoder expected {len(self.scale_channels)} scales, got {len(routed)}")
+        x = routed[-1]
+        skips = list(reversed(routed[:-1]))
+        for up, dec, skip in zip(self.ups, self.decoders, skips):
+            x = up(x)
+            if x.shape[-3:] != skip.shape[-3:]:
+                x = F.interpolate(x, size=skip.shape[-3:], mode="trilinear", align_corners=False)
+            x = dec(torch.cat([x, skip], dim=1))
+        return x
+
+
+class TaskDecoder(FlexibleTaskDecoder):
+    def __init__(self, base_channels: int) -> None:
+        super().__init__([base_channels, base_channels * 2, base_channels * 4])
 
 
 class SRRV2MyoPSUNet(nn.Module):

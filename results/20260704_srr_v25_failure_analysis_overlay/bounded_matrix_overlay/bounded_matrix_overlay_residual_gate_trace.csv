@@ -1,0 +1,7 @@
+matrix_variant,variant,step,baseline_gate_mean,baseline_residual_abs_mean,baseline_preservation_loss,baseline_preserve_voxels,baseline_preserve_gate_mean,refine_weight,crop_residual_abs_mean_scar
+srr_propref_shared_dual_dict,srr_propref_shared_dual_dict,1,0.01798621006309986,0.07187064737081528,0.02705109491944313,149674.0,0.10791725665330887,0.0,
+srr_propref_no_proto_cascade,srr_propref_no_proto_cascade,1,0.01798621006309986,0.0718708410859108,0.027051132172346115,149674.0,0.10791725665330887,0.0,
+srr_propref_scar_precision,srr_propref_scar_precision,1,0.01798621006309986,0.0718705877661705,0.027051087468862534,149674.0,0.10791725665330887,0.0,
+srr_v25_no_local_refine,srr_v25_no_local_refine,1,0.01798621006309986,0.06514367461204529,0.0270428154617548,149674.0,0.10791725665330887,0.0,
+srr_v25_no_anatomy_roi,srr_v25_no_anatomy_roi,1,0.01798621006309986,0.0718715637922287,0.027051370590925217,149674.0,0.10791725665330887,0.0,
+srr_v25_no_anchor,srr_v25_no_anchor,1,0.0,0.0,-0.0,-0.0,-0.0,0.0,

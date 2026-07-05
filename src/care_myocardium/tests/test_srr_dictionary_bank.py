@@ -4,7 +4,7 @@ import unittest
 
 import torch
 
-from src.care_myocardium.losses.srr_losses import retrieval_regularization
+from src.care_myocardium.losses.srr_losses import retrieval_regularization, semantic_retrieval_regularization
 from src.care_myocardium.models.srr_v2_unet import ScaleRetrieval, SRRV2MyoPSUNet
 
 
@@ -61,6 +61,60 @@ class TestSRRDictionaryBank(unittest.TestCase):
         reg, metrics = retrieval_regularization(outputs["gates"])
         self.assertIsNotNone(reg)
         self.assertIn("scar_scale0_entropy", metrics)
+
+
+    def test_semantic_regularizer_prefers_task_specific_slot_families(self) -> None:
+        torch.manual_seed(13)
+        block = ScaleRetrieval(8)
+        metadata = {"scar_scale0": block.slot_metadata, "edema_scale0": block.slot_metadata}
+        valid = block.block.bank.availability_mask(torch.ones(2, 3))
+        gates_bad = {
+            "scar_scale0": torch.full((2, block.n_experts), 1.0 / block.n_experts),
+            "edema_scale0": torch.full((2, block.n_experts), 1.0 / block.n_experts),
+        }
+        gates_good = {name: gate.clone() * 0.01 for name, gate in gates_bad.items()}
+        for idx, spec in enumerate(block.slot_metadata):
+            group = str(spec["group"])
+            if group == "lge_private" or group.startswith("interaction_lge"):
+                gates_good["scar_scale0"][:, idx] = 1.0
+            if group == "t2_private" or group in {"interaction_lge_t2", "interaction_t2_c0"}:
+                gates_good["edema_scale0"][:, idx] = 1.0
+        for name in gates_good:
+            gates_good[name] = gates_good[name] / gates_good[name].sum(dim=1, keepdim=True)
+
+        bad_loss, bad_metrics = semantic_retrieval_regularization(gates_bad, metadata, {"scar_scale0": valid, "edema_scale0": valid})
+        good_loss, good_metrics = semantic_retrieval_regularization(gates_good, metadata, {"scar_scale0": valid, "edema_scale0": valid})
+        self.assertIsNotNone(bad_loss)
+        self.assertIsNotNone(good_loss)
+        self.assertLess(float(good_loss.detach()), float(bad_loss.detach()))
+        self.assertIn("scar_scale0_semantic_family_mass", good_metrics)
+        self.assertIn("edema_scale0_semantic_interaction_mass", good_metrics)
+
+    def test_propref_outputs_feed_semantic_retrieval_regularizer(self) -> None:
+        from src.care_myocardium.models.srr_propref import SRRProposeRefineMyoPS
+
+        torch.manual_seed(14)
+        model = SRRProposeRefineMyoPS(base_channels=4, encoder_profile="tiny_3scale")
+        x = torch.randn(2, 3, 4, 6, 8)
+        availability = torch.tensor([[1.0, 1.0, 1.0], [1.0, 0.0, 1.0]])
+        anchor = torch.rand(2, 6, 4, 6, 8)
+        with torch.no_grad():
+            outputs = model(x, availability, anchor_features=anchor)
+        loss, metrics = semantic_retrieval_regularization(
+            outputs["gates"],
+            outputs["dictionary_slot_metadata"],
+            outputs["gate_valid_masks"],
+        )
+        self.assertIsNotNone(loss)
+        self.assertTrue(torch.isfinite(loss).item())
+        self.assertIn("semantic_retrieval_loss", metrics)
+        no_t2_row = 1
+        metadata = outputs["dictionary_slot_metadata"]["edema_scale0"]
+        valid = outputs["gate_valid_masks"]["edema_scale0"]
+        for idx, spec in enumerate(metadata):
+            group = str(spec["group"])
+            if group == "t2_private" or ("t2" in group and group.startswith("interaction_")):
+                self.assertEqual(float(valid[no_t2_row, idx].detach()), 0.0)
 
 
 if __name__ == "__main__":

@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import unittest
+from argparse import Namespace
 
 import torch
 
@@ -8,7 +9,59 @@ from src.care_myocardium.models.proposal_prototypes import build_prototype_bank_
 from src.care_myocardium.models.srr_propref import CropSoftROIRefinementHead, SRRProposeRefineMyoPS
 
 
+def _loss_args() -> Namespace:
+    return Namespace(
+        anatomy_weight=1.0,
+        scar_weight=1.0,
+        edema_weight=1.0,
+        proposal_margin=0.25,
+        component_proposal_margin=0.35,
+        component_proposal_weight=0.20,
+        semantic_retrieval_weight=0.04,
+        semantic_coverage_weight=0.03,
+        semantic_integrative_weight=0.02,
+        baseline_preservation_weight=0.10,
+        baseline_preservation_confidence=0.80,
+        baseline_gate_harm_weight=0.25,
+        margin_weight=0.30,
+        proposal_weight=0.45,
+        roi_weight=0.25,
+        roi_remote_weight=0.05,
+    )
+
+
 class TestSRRProposalPrototypes(unittest.TestCase):
+    def test_pathology_aware_decode_is_support_constrained(self) -> None:
+        from scripts.training.run_srr_propref_myops_fold0 import _decode_pathology_aware
+
+        logits = torch.full((1, 6, 3, 5, 5), -8.0)
+        logits[:, 0] = 8.0
+        scar_logits = torch.full((1, 1, 3, 5, 5), 8.0)
+        edema_logits = torch.full((1, 1, 3, 5, 5), -8.0)
+        scar_roi = torch.zeros((1, 1, 3, 5, 5))
+        scar_crop = torch.zeros_like(scar_roi)
+        scar_proposal = torch.full_like(scar_roi, -8.0)
+        scar_roi[:, :, 1, 2, 2] = 1.0
+        scar_proposal[:, :, 1, 2, 2] = 8.0
+        outputs = {
+            "logits": logits,
+            "anatomy_logits": torch.zeros((1, 4, 3, 5, 5)),
+            "scar_logits": scar_logits,
+            "edema_logits": edema_logits,
+            "scar_soft_roi": scar_roi,
+            "edema_soft_roi": torch.zeros_like(scar_roi),
+            "scar_crop_region_mask": scar_crop,
+            "edema_crop_region_mask": torch.zeros_like(scar_roi),
+            "scar_proposal_logits": scar_proposal,
+            "edema_proposal_logits": torch.full_like(scar_roi, -8.0),
+        }
+
+        decoded = _decode_pathology_aware(outputs, scar_threshold=0.5, edema_threshold=0.5)
+
+        self.assertEqual(int((decoded == 5).sum()), 1)
+        self.assertEqual(int(decoded[0, 1, 2, 2]), 5)
+        self.assertTrue(torch.all(decoded[decoded != 5] == 0).item())
+
     def test_crop_soft_roi_refiner_uses_bounded_original_modality_crop(self) -> None:
         torch.manual_seed(10)
         head = CropSoftROIRefinementHead(
@@ -149,6 +202,49 @@ class TestSRRProposalPrototypes(unittest.TestCase):
             if name.endswith("positive") or name.endswith("negative") or "negative_memory_" in name
         ]
         self.assertEqual(random_proto_parameters, [])
+
+
+    def test_propref_loss_reports_component_ranking_terms(self) -> None:
+        from scripts.training.run_srr_propref_myops_fold0 import propref_loss
+
+        torch.manual_seed(15)
+        model = SRRProposeRefineMyoPS(base_channels=4, variant="srr_propref_shared_dual_dict")
+        x = torch.randn(2, 3, 4, 6, 8)
+        availability = torch.tensor([[1.0, 1.0, 1.0], [1.0, 0.0, 1.0]])
+        labels = torch.zeros(2, 4, 6, 8, dtype=torch.long)
+        labels[0, 1:3, 2:5, 2:6] = 4
+        labels[0, 1, 3, 3] = 5
+        labels[1, 1:3, 2:4, 2:4] = 5
+        anchor = torch.zeros(2, 6, 4, 6, 8)
+        anchor[:, 5, 1:3, 2:4, 2:5] = 0.8
+        anchor[0, 4, 1:3, 2:5, 2:6] = 0.8
+        component = {
+            "scar_component": (anchor[:, 5:6] > 0.5).float(),
+            "edema_component": (anchor[:, 4:5] > 0.5).float(),
+        }
+        outputs = model(x, availability, anchor_features=anchor, component_features=component)
+        args = _loss_args()
+        loss, metrics = propref_loss(outputs, labels, availability, "proposal_dictionary", args)
+        self.assertTrue(torch.isfinite(loss).item())
+        self.assertIn("scar_component_ranking_loss", metrics)
+        self.assertIn("edema_component_ranking_loss", metrics)
+        self.assertIn("component_proposal_ranking_loss", metrics)
+        self.assertGreaterEqual(float(metrics["scar_component_ranking_loss"].detach()), 0.0)
+        self.assertGreaterEqual(float(metrics["edema_component_ranking_loss"].detach()), 0.0)
+
+    def test_no_t2_edema_component_ranking_is_zero(self) -> None:
+        from scripts.training.run_srr_propref_myops_fold0 import propref_loss
+
+        torch.manual_seed(16)
+        model = SRRProposeRefineMyoPS(base_channels=4, variant="srr_propref_shared_dual_dict")
+        x = torch.randn(1, 3, 4, 6, 8)
+        availability = torch.tensor([[1.0, 0.0, 1.0]])
+        labels = torch.zeros(1, 4, 6, 8, dtype=torch.long)
+        labels[0, 1:3, 2:4, 2:4] = 5
+        outputs = model(x, availability)
+        args = _loss_args()
+        _, metrics = propref_loss(outputs, labels, availability, "proposal_dictionary", args)
+        self.assertEqual(float(metrics["edema_component_ranking_loss"].detach()), 0.0)
 
 
 if __name__ == "__main__":

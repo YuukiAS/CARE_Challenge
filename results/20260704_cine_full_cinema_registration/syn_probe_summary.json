@@ -1,0 +1,30 @@
+{
+  "ants_version": "0.6.3",
+  "case_id": "Case1001",
+  "center": "center_alpha",
+  "cine_path": "data/CARE_Challenge/CineMyoPS_train/center_alpha/Case1001_Cine.nii.gz",
+  "fixed_frame_index": 0,
+  "fixed_shape_zyx_after_shrink": [
+    14,
+    128,
+    128
+  ],
+  "fwdtransforms": [
+    "results/20260704_cine_full_cinema_registration/strong_registration_probe/Case1001_syn_1Warp.nii.gz",
+    "results/20260704_cine_full_cinema_registration/strong_registration_probe/Case1001_syn_0GenericAffine.mat"
+  ],
+  "image_ncc_after": 0.9626535016024731,
+  "image_ncc_before": 0.9482843459252879,
+  "invtransforms": [
+    "results/20260704_cine_full_cinema_registration/strong_registration_probe/Case1001_syn_0GenericAffine.mat",
+    "results/20260704_cine_full_cinema_registration/strong_registration_probe/Case1001_syn_1InverseWarp.nii.gz"
+  ],
+  "moving_frame_index": 9,
+  "moving_prediction_path": "results/cinema_adapter/20260619_131229__cinema_acdc_seed0_ed_mid_repr/predictions/train/center_alpha/Case1001_t09_cinema_acdc_s0.nii.gz",
+  "output_prefix": "results/20260704_cine_full_cinema_registration/strong_registration_probe/Case1001_syn_",
+  "reference_prediction_path": "results/cinema_adapter/20260619_131229__cinema_acdc_seed0_ed_mid_repr/predictions/train/center_alpha/Case1001_t00_cinema_acdc_s0.nii.gz",
+  "runtime_seconds": 5.705,
+  "status": "SYN_SMOKE_COMPLETED",
+  "total_elapsed_seconds": 9.777,
+  "transform_family": "ANTsPy SyN deformable smoke, downsampled x/y by 2"
+}

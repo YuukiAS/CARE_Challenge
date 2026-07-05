@@ -1,0 +1,7 @@
+{
+  "case_count": 44,
+  "fold": 0,
+  "nnunet_anchor_root": "/users/a/e/aereinh/CARE/data/nnUNet/nnUNet_results/Dataset501_CAREMyoPS/nnUNetTrainer_500epochs__nnUNetPlans__3d_fullres",
+  "row_count": 704,
+  "srr_metrics": "results/20260704_srr_v25_training_ablation_matrix/full_fold0_eval/variants/srr_propref_no_proto_cascade/component_hd_by_case_checkpoint_final_full_fold0.csv"
+}

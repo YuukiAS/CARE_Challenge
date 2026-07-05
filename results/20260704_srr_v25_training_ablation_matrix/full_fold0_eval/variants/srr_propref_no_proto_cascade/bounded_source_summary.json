@@ -1,0 +1,215 @@
+{
+  "actual_optimizer_steps": 6,
+  "anatomy_distance_roi_prior": {
+    "empty_union_policy": "bounded center fallback crop, not full-volume ROI",
+    "maps": [
+      "p_union",
+      "p_lv",
+      "p_rv",
+      "union_distance",
+      "lv_distance",
+      "rv_distance",
+      "anatomy_uncertainty",
+      "scar_anatomy_soft_gate",
+      "edema_anatomy_soft_gate"
+    ],
+    "no_t2_policy": "edema anatomy soft gate is zero and edema refiner emits blocked logits on no-T2 samples",
+    "proposal_consumption": "scar/edema dictionaries receive task-specific anatomy soft gate logits instead of union-only logits",
+    "refinement_consumption": "crop refiner receives P_union/P_LV/P_RV, distance maps, uncertainty, and task gate channels",
+    "status": "implemented_runtime_consumed_needs_formal_ablation"
+  },
+  "baseline_gate_init": "closed-biased 1x1 gate; summary/training_log record gate mean and residual magnitude",
+  "baseline_preserving_residual_gate": "final_logits = nnunet_anchor_logits + gate * bounded_delta_srr when anchor probabilities are present",
+  "best_step": 6,
+  "best_val_patch_loss": 3.472760021686554,
+  "checkpoint_best": "/users/a/e/aereinh/CARE/results/20260704_srr_v25_training_ablation_matrix/bounded_matrix/variants/srr_propref_no_proto_cascade/checkpoints/fold_0/propref_config/checkpoint_best.pt",
+  "checkpoint_final": "/users/a/e/aereinh/CARE/results/20260704_srr_v25_training_ablation_matrix/bounded_matrix/variants/srr_propref_no_proto_cascade/checkpoints/fold_0/propref_config/checkpoint_final.pt",
+  "device": "cpu",
+  "early_stop_min_delta": 0.001,
+  "early_stop_patience": 8,
+  "edema_decode_threshold": 0.5,
+  "elapsed_seconds": 58.040639793965966,
+  "encoder_profile": "tiny_3scale",
+  "encoder_scale_channels": [
+    4,
+    8,
+    16
+  ],
+  "eval_case_ids": [
+    "Case1002",
+    "Case2002",
+    "Case3004",
+    "Case3011"
+  ],
+  "eval_case_selection": "explicit_eval_case_ids",
+  "eval_cases": 4,
+  "first_train_loss": 2.6778416633605957,
+  "fold": 0,
+  "hardneg_case_count": 44,
+  "hardneg_component_count": 5728,
+  "hardneg_components_csv": "/users/a/e/aereinh/CARE/results/20260629_proposal_memory_hardneg/mined_components.csv",
+  "last_train_loss": 3.457185745239258,
+  "loss_decrease": -0.7793440818786621,
+  "max_runtime_seconds": 1200.0,
+  "max_steps": 6,
+  "min_optimizer_steps_for_plateau": 1500,
+  "min_train_loop_seconds_for_plateau": 1800.0,
+  "nnunet_anchor_fold_counts": {
+    "fold_0": 4,
+    "fold_1": 5,
+    "fold_2": 3,
+    "fold_3": 1,
+    "fold_4": 3
+  },
+  "nnunet_anchor_manifest": {
+    "anchor_fold_counts": {
+      "fold_0": 4,
+      "fold_1": 5,
+      "fold_2": 3,
+      "fold_3": 1,
+      "fold_4": 3
+    },
+    "anchor_root": "/users/a/e/aereinh/CARE/data/nnUNet/nnUNet_results/Dataset501_CAREMyoPS/nnUNetTrainer_500epochs__nnUNetPlans__3d_fullres",
+    "component_source": "connected components derived from nnU-Net hard predictions for compact scar class 5 and edema class 4",
+    "eval_case_ids": [
+      "Case1002",
+      "Case2002",
+      "Case3004",
+      "Case3011"
+    ],
+    "no_t2_policy": "class-4 edema anchor/component evidence is zeroed when T2 is unavailable or virtual modality dropout removes T2",
+    "source_kind": "nnUNet fold validation probabilities; train cases use their OOF fold, fold0 validation cases use fold0 validation anchors",
+    "train_anchor_case_count": 12,
+    "val_anchor_case_count": 4
+  },
+  "nnunet_anchor_root": "/users/a/e/aereinh/CARE/data/nnUNet/nnUNet_results/Dataset501_CAREMyoPS/nnUNetTrainer_500epochs__nnUNetPlans__3d_fullres",
+  "nnunet_anchor_train_case_count": 12,
+  "nnunet_anchor_val_case_count": 4,
+  "no_improve_validation_events": 0,
+  "one_batch_overfit": {
+    "anchor_fold": 1,
+    "anchor_present": true,
+    "anchor_source": "/users/a/e/aereinh/CARE/data/nnUNet/nnUNet_results/Dataset501_CAREMyoPS/nnUNetTrainer_500epochs__nnUNetPlans__3d_fullres/fold_1/validation/Case1004.npz",
+    "case_id": "Case1004",
+    "component_present": true,
+    "elapsed_seconds": 5.631416402058676,
+    "encoder_profile": "tiny_3scale",
+    "encoder_scale_channels": [
+      4,
+      8,
+      16
+    ],
+    "first_loss": 3.348937749862671,
+    "last_loss": 3.348937749862671,
+    "loss_decrease": 0.0,
+    "min_required_loss_decrease": -999.0,
+    "parameter_count": 367312,
+    "process_seconds": 5.5689529239999995,
+    "prototype_rows": "/users/a/e/aereinh/CARE/results/20260704_srr_v25_training_ablation_matrix/bounded_matrix/variants/srr_propref_no_proto_cascade/prototype_update_sanity.csv",
+    "status": "PASS",
+    "steps": 1,
+    "variant": "srr_propref_no_proto_cascade"
+  },
+  "optimizer_steps": 6,
+  "parameter_count": 367312,
+  "prediction_dirs": [
+    "/users/a/e/aereinh/CARE/results/20260704_srr_v25_training_ablation_matrix/bounded_matrix/variants/srr_propref_no_proto_cascade/predictions/fold_0/checkpoint_best/argmax",
+    "/users/a/e/aereinh/CARE/results/20260704_srr_v25_training_ablation_matrix/bounded_matrix/variants/srr_propref_no_proto_cascade/predictions/fold_0/checkpoint_best/pathology_aware",
+    "/users/a/e/aereinh/CARE/results/20260704_srr_v25_training_ablation_matrix/bounded_matrix/variants/srr_propref_no_proto_cascade/predictions/fold_0/checkpoint_final/argmax",
+    "/users/a/e/aereinh/CARE/results/20260704_srr_v25_training_ablation_matrix/bounded_matrix/variants/srr_propref_no_proto_cascade/predictions/fold_0/checkpoint_final/pathology_aware"
+  ],
+  "process_wall_seconds": 57.024589121000005,
+  "proposal_thresholds": [
+    0.05,
+    0.1,
+    0.2,
+    0.3,
+    0.4,
+    0.5,
+    0.6,
+    0.7,
+    0.8,
+    0.9
+  ],
+  "prototype_bank_summary": {
+    "case_count": 0,
+    "counts": {},
+    "leakage_policy": "not_applicable",
+    "reason": "no-prototype variant or skip_prototype_bank_fit",
+    "source": "not_loaded",
+    "status": "SKIPPED"
+  },
+  "prototype_bank_summary_path": "/users/a/e/aereinh/CARE/results/20260704_srr_v25_training_ablation_matrix/bounded_matrix/variants/srr_propref_no_proto_cascade/prototype_bank_summary.json",
+  "scar_decode_threshold": 0.5,
+  "skip_export": false,
+  "stage_step_counts": {
+    "evidence_warmup": 2,
+    "low_lr_calibration": 0,
+    "proposal_dictionary": 2,
+    "soft_roi_refinement": 2
+  },
+  "stop_reason": "max_steps",
+  "three_stage_schedule": [
+    "evidence_warmup",
+    "proposal_dictionary",
+    "soft_roi_refinement",
+    "low_lr_calibration"
+  ],
+  "train_cases": 12,
+  "train_loop_seconds": 58.040639793965966,
+  "val_cases": 4,
+  "validation_event_count": 4,
+  "validation_events": [
+    {
+      "best_improved": true,
+      "checkpoint_path": "/users/a/e/aereinh/CARE/results/20260704_srr_v25_training_ablation_matrix/bounded_matrix/variants/srr_propref_no_proto_cascade/checkpoints/fold_0/propref_config/checkpoint_validation_step_2.pt",
+      "elapsed_seconds": 16.85576887615025,
+      "eligible_for_best": true,
+      "event": "validation",
+      "stage": "evidence_warmup",
+      "step": 2,
+      "val_patch_loss": 3.552404224872589,
+      "variant": "srr_propref_no_proto_cascade"
+    },
+    {
+      "best_improved": true,
+      "checkpoint_path": "/users/a/e/aereinh/CARE/results/20260704_srr_v25_training_ablation_matrix/bounded_matrix/variants/srr_propref_no_proto_cascade/checkpoints/fold_0/propref_config/checkpoint_validation_step_3.pt",
+      "elapsed_seconds": 28.702240996994078,
+      "eligible_for_best": true,
+      "event": "validation",
+      "stage": "proposal_dictionary",
+      "step": 3,
+      "val_patch_loss": 3.5131974816322327,
+      "variant": "srr_propref_no_proto_cascade"
+    },
+    {
+      "best_improved": false,
+      "checkpoint_path": "/users/a/e/aereinh/CARE/results/20260704_srr_v25_training_ablation_matrix/bounded_matrix/variants/srr_propref_no_proto_cascade/checkpoints/fold_0/propref_config/checkpoint_validation_step_4.pt",
+      "elapsed_seconds": 40.68771968409419,
+      "eligible_for_best": true,
+      "event": "validation",
+      "stage": "proposal_dictionary",
+      "step": 4,
+      "val_patch_loss": 3.5504958629608154,
+      "variant": "srr_propref_no_proto_cascade"
+    },
+    {
+      "best_improved": true,
+      "checkpoint_path": "/users/a/e/aereinh/CARE/results/20260704_srr_v25_training_ablation_matrix/bounded_matrix/variants/srr_propref_no_proto_cascade/checkpoints/fold_0/propref_config/checkpoint_validation_step_6.pt",
+      "elapsed_seconds": 57.99165268312208,
+      "eligible_for_best": true,
+      "event": "validation",
+      "stage": "soft_roi_refinement",
+      "step": 6,
+      "val_patch_loss": 3.472760021686554,
+      "variant": "srr_propref_no_proto_cascade"
+    }
+  ],
+  "validation_schedule": [
+    2,
+    3,
+    4,
+    6
+  ],
+  "variant": "srr_propref_no_proto_cascade"
+}

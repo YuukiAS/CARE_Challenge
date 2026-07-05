@@ -1,0 +1,17 @@
+srr_variant,metric_name,metric,n,delta_mean,help_count,harm_count,neutral_count,not_evaluable_count
+srr_v25_no_anatomy_roi__checkpoint_final_full_fold0__argmax,myops_edema,component_count,44,-0.06818181818181818,2,0,42,0
+srr_v25_no_anatomy_roi__checkpoint_final_full_fold0__argmax,myops_edema,dice,44,-3.614192942984396e-05,6,6,32,0
+srr_v25_no_anatomy_roi__checkpoint_final_full_fold0__argmax,myops_edema,hd95,44,0.00018630055269957586,0,3,41,0
+srr_v25_no_anatomy_roi__checkpoint_final_full_fold0__argmax,myops_edema,remote_fp_count,44,0.0,0,0,44,0
+srr_v25_no_anatomy_roi__checkpoint_final_full_fold0__argmax,myops_scar,component_count,44,-0.022727272727272728,2,1,41,0
+srr_v25_no_anatomy_roi__checkpoint_final_full_fold0__argmax,myops_scar,dice,44,4.0638925660208247e-05,14,6,24,0
+srr_v25_no_anatomy_roi__checkpoint_final_full_fold0__argmax,myops_scar,hd95,44,0.003928535912099486,1,3,38,2
+srr_v25_no_anatomy_roi__checkpoint_final_full_fold0__argmax,myops_scar,remote_fp_count,44,0.0,0,0,44,0
+srr_v25_no_anatomy_roi__checkpoint_final_full_fold0__pathology_aware,myops_edema,component_count,44,-0.06818181818181818,2,0,42,0
+srr_v25_no_anatomy_roi__checkpoint_final_full_fold0__pathology_aware,myops_edema,dice,44,-3.614192942984396e-05,6,6,32,0
+srr_v25_no_anatomy_roi__checkpoint_final_full_fold0__pathology_aware,myops_edema,hd95,44,0.00018630055269957586,0,3,41,0
+srr_v25_no_anatomy_roi__checkpoint_final_full_fold0__pathology_aware,myops_edema,remote_fp_count,44,0.0,0,0,44,0
+srr_v25_no_anatomy_roi__checkpoint_final_full_fold0__pathology_aware,myops_scar,component_count,44,-0.045454545454545456,2,0,42,0
+srr_v25_no_anatomy_roi__checkpoint_final_full_fold0__pathology_aware,myops_scar,dice,44,3.188677044456664e-05,13,7,24,0
+srr_v25_no_anatomy_roi__checkpoint_final_full_fold0__pathology_aware,myops_scar,hd95,44,0.003928535912099486,1,3,38,2
+srr_v25_no_anatomy_roi__checkpoint_final_full_fold0__pathology_aware,myops_scar,remote_fp_count,44,0.0,0,0,44,0
