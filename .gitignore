@@ -190,9 +190,25 @@ results/metrics/unified/*/fold_*/hd95_per_class.json
 
 # Generated handoff/controller run directories are data-derived local evidence
 # packages. Keep them out of normal commits. When GPT needs repository-visible
-# context, publish only the smallest reviewed Markdown decision packet with an
-# explicit forced add; do not unignore whole result trees.
+# context, publish only the smallest reviewed decision packet; do not unignore
+# whole result trees.
 results/20??????_*/
+
+# Milestone result packets are part of the handoff protocol: the next
+# independent reviewer must see the executor's exact top-level outputs. Track
+# only first-level text/table artifacts and keep nested runtime outputs ignored.
+!results/20??????_*_m[0-9]_*/
+results/20??????_*_m[0-9]_*/*
+!results/20??????_*_m[0-9]_*/MANIFEST.md
+!results/20??????_*_m[0-9]_*/README.md
+!results/20??????_*_m[0-9]_*/result.md
+!results/20??????_*_m[0-9]_*/review.md
+!results/20??????_*_m[0-9]_*/completion_check.md
+!results/20??????_*_m[0-9]_*/review_request.md
+!results/20??????_*_m[0-9]_*/decision.md
+!results/20??????_*_m[0-9]_*/*.md
+!results/20??????_*_m[0-9]_*/*.csv
+!results/20??????_*_m[0-9]_*/*.json
 
 # Task-scoped experiment directories should keep summaries/manifests tracked but
 # not heavy rerunnable artifacts.

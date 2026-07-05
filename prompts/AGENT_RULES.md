@@ -127,6 +127,13 @@ It must write the milestone's required outputs, `completion_check.md`,
 `review_request.md`, and `MANIFEST.md` under the exact `results/<task_key>/`
 directory, then stop.
 
+Milestone result directories matching `results/20??????_*_m[0-9]_*/` are a
+repository-visible handoff packet by default. Track the top-level task-required
+`.md`, `.csv`, and `.json` files when they are small, reviewable, and free of
+secrets or raw data. Do not track nested runtime artifacts, checkpoints,
+predictions, NIfTI files, logs, uploads, transcripts, environment dumps, or
+heavy/sensitive tables.
+
 A milestone executor/controller session must not write `review.md`, must not
 write or claim a `*_AUDITED_GO` state, must not approve itself, and must not
 start the next milestone. The next milestone is blocked until a separate

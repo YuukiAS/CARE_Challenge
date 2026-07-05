@@ -314,9 +314,20 @@ secret-bearing command transcripts, environment dumps, large or
 privacy-sensitive raw CSV dumps, full result trees, upload packages, hosted
 validation packages, external credentials, or `.env`-style files.
 
-Because the result directories are ignored, any approved decision packet should
-be added with explicit `git add -f <file>` paths. Do not change `.gitignore` to
-unignore an entire generated result tree.
+Because most result directories are ignored, any approved non-milestone decision
+packet should be added with explicit `git add -f <file>` paths. Do not change
+`.gitignore` to unignore an entire generated result tree.
+
+For `task_type: milestone` result directories whose task key matches
+`results/20??????_*_m[0-9]_*/`, the top-level executor/reviewer handoff packet
+is repository-visible by default: first-level `.md`, `.csv`, and `.json` files
+may be tracked when they are exact task-required outputs and are small,
+reviewable, and free of secrets or raw data. This exists so the next independent
+reviewer can see `completion_check.md`, `review_request.md`, contracts, and
+required evidence tables without relying on local ignored state. Nested
+runtime artifacts, checkpoints, predictions, NIfTI files, logs, uploads,
+transcripts, environment dumps, and heavy or sensitive tables remain forbidden
+unless an explicit audited publication gate approves the exact files.
 
 For routine handoff/result publication commits, Codex may stage the safe
 first-level Markdown packet without a separate user reminder by running:
