@@ -36,6 +36,7 @@ from src.care_myocardium.models.srr_propref import SRRProposeRefineMyoPS  # noqa
 
 DEFAULT_MATRIX_ROOT = REPO_ROOT / "results/20260704_srr_v25_training_ablation_matrix/bounded_matrix"
 DEFAULT_OUTPUT_DIR = REPO_ROOT / "results/20260705_srr_v3_m1_runtime_instrumentation_gate"
+DEFAULT_PROTOTYPE_SOURCE_SUMMARY = REPO_ROOT / "results/20260704_srr_v25_prototype_bank_cache/prototype_bank_summary.json"
 DEFAULT_CASE_IDS = "Case1002,Case2002,Case3004,Case3011"
 CSV_NAMES = (
     "gate_residual_export.csv",
@@ -100,10 +101,26 @@ def anchor_uncertainty(anchor_logits: torch.Tensor) -> dict[str, float]:
     }
 
 
-def source_summary_row(variant: str, source_summary: dict[str, object], checkpoint_path: Path) -> dict[str, object]:
-    proto = source_summary.get("prototype_bank_summary", {})
-    if not isinstance(proto, dict):
-        proto = {}
+def prototype_coverage_status(counts: dict[str, object]) -> str:
+    try:
+        edema_positive = int(counts.get("edema_positive", 0) or 0)
+        edema_negative = int(counts.get("edema_negative", 0) or 0)
+    except (TypeError, ValueError):
+        return "EDEMA_PROTOTYPE_COUNTS_INVALID"
+    return "PRESENT" if edema_positive > 0 and edema_negative > 0 else "EDEMA_PROTOTYPES_EMPTY"
+
+
+def prototype_summary_row(
+    *,
+    variant: str,
+    proto: dict[str, object],
+    source: Path,
+    checkpoint_path: Path,
+    coverage_role: str,
+    actual_optimizer_steps: object = "",
+    train_cases: object = "",
+    eval_cases: object = "",
+) -> dict[str, object]:
     counts = proto.get("counts", {})
     if not isinstance(counts, dict):
         counts = {}
@@ -113,13 +130,17 @@ def source_summary_row(variant: str, source_summary: dict[str, object], checkpoi
     selected = proto.get("selected_case_ids", [])
     if not isinstance(selected, list):
         selected = []
+    hardneg = proto.get("hard_negative_counts", {})
+    if not isinstance(hardneg, dict):
+        hardneg = {}
     return {
         "variant": variant,
-        "source": str(source_summary.get("prototype_bank_summary_path", "")),
+        "coverage_role": coverage_role,
+        "source": str(source),
         "checkpoint_path": str(checkpoint_path),
-        "actual_optimizer_steps": source_summary.get("actual_optimizer_steps", ""),
-        "train_cases": source_summary.get("train_cases", ""),
-        "eval_cases": source_summary.get("eval_cases", ""),
+        "actual_optimizer_steps": actual_optimizer_steps,
+        "train_cases": train_cases,
+        "eval_cases": eval_cases,
         "prototype_case_count": proto.get("case_count", ""),
         "selected_case_ids": ";".join(str(item) for item in selected),
         "scar_positive": counts.get("scar_positive", ""),
@@ -128,12 +149,26 @@ def source_summary_row(variant: str, source_summary: dict[str, object], checkpoi
         "edema_negative": counts.get("edema_negative", ""),
         "t2_present_edema_positive": categories.get("t2_present_edema_positive", ""),
         "t2_present_normal_myocardium_far_from_edema": categories.get("t2_present_normal_myocardium_far_from_edema", ""),
-        "edema_no_t2_myocardium_negative_voxels": (proto.get("hard_negative_counts", {}) or {}).get("edema_no_t2_myocardium_negative_voxels", "")
-        if isinstance(proto.get("hard_negative_counts", {}), dict)
-        else "",
-        "coverage_status": "EDEMA_PROTOTYPES_EMPTY" if int(counts.get("edema_positive", 0) or 0) == 0 or int(counts.get("edema_negative", 0) or 0) == 0 else "PRESENT",
+        "edema_no_t2_myocardium_negative_voxels": hardneg.get("edema_no_t2_myocardium_negative_voxels", ""),
+        "coverage_status": prototype_coverage_status(counts),
         "evidence_status": "source_summary_runtime_json",
     }
+
+
+def checkpoint_source_summary_row(variant: str, source_summary: dict[str, object], checkpoint_path: Path) -> dict[str, object]:
+    proto = source_summary.get("prototype_bank_summary", {})
+    if not isinstance(proto, dict):
+        proto = {}
+    return prototype_summary_row(
+        variant=variant,
+        proto=proto,
+        source=Path(str(source_summary.get("prototype_bank_summary_path", ""))),
+        checkpoint_path=checkpoint_path,
+        coverage_role="previous_blocking_checkpoint_source",
+        actual_optimizer_steps=source_summary.get("actual_optimizer_steps", ""),
+        train_cases=source_summary.get("train_cases", ""),
+        eval_cases=source_summary.get("eval_cases", ""),
+    )
 
 
 def load_model(variant: str, matrix_root: Path, checkpoint_name: str, device: torch.device) -> tuple[SRRProposeRefineMyoPS, SimpleNamespace, dict[str, object], Path]:
@@ -160,6 +195,7 @@ def export_variant(args: argparse.Namespace) -> dict[str, object]:
     matrix_root = resolve(args.matrix_root)
     output_dir = resolve(args.output_dir)
     anchor_root = resolve(args.nnunet_anchor_root)
+    prototype_source_summary = resolve(args.prototype_source_summary)
     device = torch.device("cuda" if args.device == "cuda" and torch.cuda.is_available() else "cpu")
     model, run_args, source_summary, checkpoint_path = load_model(args.variant, matrix_root, args.checkpoint_name, device)
     metadata = load_myops_case_metadata()
@@ -171,7 +207,20 @@ def export_variant(args: argparse.Namespace) -> dict[str, object]:
     gate_rows: list[dict[str, object]] = []
     align_rows: list[dict[str, object]] = []
     no_t2_rows: list[dict[str, object]] = []
-    proto_rows = [source_summary_row(args.variant, source_summary, checkpoint_path)]
+    selected_proto = read_json(prototype_source_summary)
+    proto_rows = [
+        prototype_summary_row(
+            variant=args.variant,
+            proto=selected_proto,
+            source=prototype_source_summary,
+            checkpoint_path=checkpoint_path,
+            coverage_role="selected_nonempty_t2_source",
+            actual_optimizer_steps="not_training_selected_existing_prototype_source",
+            train_cases=selected_proto.get("case_count", ""),
+            eval_cases=0,
+        ),
+        checkpoint_source_summary_row(args.variant, source_summary, checkpoint_path),
+    ]
 
     for case in cases:
         focus = (4,) if bool(case.metadata.t2_present) and np.any(case.label_arr == 4) else (5, 4)
@@ -353,6 +402,7 @@ def export_variant(args: argparse.Namespace) -> dict[str, object]:
         "alignment_rows": len(align_rows),
         "no_t2_rows": len(no_t2_rows),
         "prototype_rows": len(proto_rows),
+        "prototype_source_summary": str(prototype_source_summary),
     }
 
 
@@ -394,6 +444,7 @@ GATE_FIELDS = [
 
 PROTO_FIELDS = [
     "variant",
+    "coverage_role",
     "source",
     "checkpoint_path",
     "actual_optimizer_steps",
@@ -486,8 +537,24 @@ def validate_packet(output_dir: Path) -> tuple[bool, list[str]]:
     if proto_path.is_file():
         with proto_path.open(newline="", encoding="utf-8") as f:
             rows = list(csv.DictReader(f))
-        if rows and any(str(row.get("coverage_status")) == "EDEMA_PROTOTYPES_EMPTY" for row in rows):
-            issues.append("prototype_coverage_export.csv: edema_prototypes_empty")
+        selected_rows = [row for row in rows if str(row.get("coverage_role")) == "selected_nonempty_t2_source"]
+        if not selected_rows:
+            issues.append("prototype_coverage_export.csv: selected_nonempty_t2_source_missing")
+        selected_ok = False
+        for row in selected_rows:
+            try:
+                selected_ok = (
+                    int(row.get("edema_positive", 0) or 0) > 0
+                    and int(row.get("edema_negative", 0) or 0) > 0
+                    and int(row.get("t2_present_edema_positive", 0) or 0) > 0
+                    and str(row.get("coverage_status")) == "PRESENT"
+                )
+            except (TypeError, ValueError):
+                selected_ok = False
+            if selected_ok:
+                break
+        if not selected_ok:
+            issues.append("prototype_coverage_export.csv: selected_t2_edema_prototypes_empty")
     return not issues, issues
 
 
@@ -506,6 +573,7 @@ def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("--matrix-root", type=Path, default=DEFAULT_MATRIX_ROOT)
     ap.add_argument("--output-dir", type=Path, default=DEFAULT_OUTPUT_DIR)
+    ap.add_argument("--prototype-source-summary", type=Path, default=DEFAULT_PROTOTYPE_SOURCE_SUMMARY)
     ap.add_argument("--variant", default="srr_propref_shared_dual_dict")
     ap.add_argument("--checkpoint-name", default="checkpoint_final")
     ap.add_argument("--case-ids", default=DEFAULT_CASE_IDS)

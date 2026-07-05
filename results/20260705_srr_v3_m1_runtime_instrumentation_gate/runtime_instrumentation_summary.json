@@ -11,6 +11,7 @@
   "gate_rows": 10,
   "no_t2_rows": 4,
   "output_dir": "/users/a/e/aereinh/CARE/results/20260705_srr_v3_m1_runtime_instrumentation_gate",
-  "prototype_rows": 1,
+  "prototype_rows": 2,
+  "prototype_source_summary": "/users/a/e/aereinh/CARE/results/20260704_srr_v25_prototype_bank_cache/prototype_bank_summary.json",
   "variant": "srr_propref_shared_dual_dict"
 }

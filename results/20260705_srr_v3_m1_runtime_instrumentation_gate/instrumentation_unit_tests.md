@@ -4,8 +4,9 @@
 
 - `python -m py_compile scripts/evaluation/export_srr_v3_m1_runtime_instrumentation.py`: PASS.
 - `python scripts/evaluation/export_srr_v3_m1_runtime_instrumentation.py --known-bad-validator-smoke`: PASS; the synthetic claim-only packet failed closed.
-- `python scripts/evaluation/export_srr_v3_m1_runtime_instrumentation.py --strict-validate`: FAIL as expected for readiness because `prototype_coverage_export.csv: edema_prototypes_empty`.
+- `python scripts/evaluation/export_srr_v3_m1_runtime_instrumentation.py --device cpu`: PASS; regenerated M1 continued runtime CSVs from an existing checkpoint and selected prototype summary.
+- `python scripts/evaluation/export_srr_v3_m1_runtime_instrumentation.py --strict-validate`: PASS; no issues.
 
 ## Validator Behavior
 
-The known-bad smoke generated CSVs with `CLAIM_WITHOUT_RUNTIME_EVIDENCE`; strict validation rejected them with `claim_only_rows` and `no_runtime_instrumented_row`. The real packet contains runtime rows, but is not M1-ready because the actual bounded source summary has zero edema positive and zero edema negative prototype counts.
+The known-bad smoke generated claim-only CSVs and was rejected with `claim_only_rows`, missing runtime gate evidence, and missing selected prototype source checks. The continued real packet passes only because `prototype_coverage_export.csv` contains a `selected_nonempty_t2_source` row with non-zero edema positive, edema negative, and T2-present edema positive counts.
