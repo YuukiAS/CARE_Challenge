@@ -1,5 +1,4 @@
 ---
-
 task_key: "20260705_handoff_hard_gate_repair"
 project: "CARE_Challenge"
 status: "READY"
@@ -13,34 +12,32 @@ review_required: true
 mechanism_class: "handoff hard gate repair / controller completion safety"
 target_metric: "handoff correctness"
 required_evidence:
-
-* "code_diff"
-* "unit_tests"
-* "strict_validator"
-* "task_graph_gate"
-* "completion_check_gate"
-* "current_bad_packet_regression"
-* "controller_report_schema_gate"
-* "doc_update_summary"
-  forbidden_substitutes:
-* "missing result directory ignored"
-* "similar filename accepted"
-* "validator exits zero with errors"
-* "final review without completion check"
-* "smoke-scale training treated as full route evidence"
-* "controller report missing terminal status fields"
-* "legacy errors swallowed without explicit allowlist"
-  promotion_gate: "The repaired gate must fail the known 20260704 SRR-v2.5 incomplete packet and pass new unit/regression tests."
-  experiment_adequacy_gate: "Not a model-training task. Do not run training. Validate handoff mechanics only."
-  route_negative_gate: "Not applicable. This task repairs governance and must not draw scientific conclusions about SRR."
-  scientific_completion_gate: "Operational completion means hard-gate repair is implemented and audited; it does not promote or stop any model route."
-  allowed_next_states:
-* "EXECUTED_UNAUDITED"
-* "NEEDS_REVISION"
-* "NEEDS_EVIDENCE"
-  auto_git_commit: false
-  auto_git_push: false
-
+  - "code_diff"
+  - "unit_tests"
+  - "strict_validator"
+  - "task_graph_gate"
+  - "completion_check_gate"
+  - "current_bad_packet_regression"
+  - "controller_report_schema_gate"
+  - "doc_update_summary"
+forbidden_substitutes:
+  - "missing result directory ignored"
+  - "similar filename accepted"
+  - "validator exits zero with errors"
+  - "final review without completion check"
+  - "smoke-scale training treated as full route evidence"
+  - "controller report missing terminal status fields"
+  - "legacy errors swallowed without explicit allowlist"
+promotion_gate: "The repaired gate must fail the known 20260704 SRR-v2.5 incomplete packet and pass new unit/regression tests."
+experiment_adequacy_gate: "Not a model-training task. Do not run training. Validate handoff mechanics only."
+route_negative_gate: "Not applicable. This task repairs governance and must not draw scientific conclusions about SRR."
+scientific_completion_gate: "Operational completion means hard-gate repair is implemented and audited; it does not promote or stop any model route."
+allowed_next_states:
+  - "EXECUTED_UNAUDITED"
+  - "NEEDS_REVISION"
+  - "NEEDS_EVIDENCE"
+auto_git_commit: false
+auto_git_push: false
 ---
 
 # Task: Handoff Hard-Gate Repair
