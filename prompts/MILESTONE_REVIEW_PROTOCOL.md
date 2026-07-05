@@ -5,7 +5,7 @@ This protocol applies to SRR-v3 / SRR-ProposeRefine milestone work and any futur
 ## Purpose
 
 Milestones are intentionally smaller than previous all-in-one controller goals.
-Each milestone must be executed, checked, published, and reviewed independently. A
+Each milestone must be executed, checked, committed, and reviewed independently. A
 milestone result is not authorization to continue. Continuation requires a
 separate read-only review.
 
@@ -30,7 +30,7 @@ The main Codex session executes exactly one milestone at a time. It may:
 - write `completion_check.md`;
 - write `review_request.md`;
 - update `MANIFEST.md`;
-- publish the lightweight milestone report files with `git add -f` when the task authorizes commit/push and no gate blocks it.
+- commit the lightweight milestone report files with `git add -f` when the task authorizes commit and no gate blocks it.
 
 The main Codex session must stop after `completion_check.md` and
 `review_request.md`. It must not write the milestone's final `review.md`, must
@@ -41,7 +41,7 @@ is never an audited continuation decision.
 
 ### Independent Codex Session: Read-Only Reviewer / Auditor
 
-The reviewer/auditor is a separate Codex session started after the executor has pushed the milestone result. It may:
+The reviewer/auditor is a separate Codex session started after the executor has committed the milestone result and the user has pushed or otherwise made it available. It may:
 
 - read the milestone prompt;
 - read `results/<task_key>/`;
@@ -49,7 +49,7 @@ The reviewer/auditor is a separate Codex session started after the executor has 
 - run allowed read-only validators if the review prompt authorizes them;
 - check required outputs, completion check, strict validator behavior, forbidden substitutes, evidence quality, and completion gates;
 - write only `results/<task_key>/review.md` and, if explicitly requested, a small review manifest;
-- publish the review file with `git add -f` when the review prompt authorizes commit/push.
+- commit the review file with `git add -f` when the review prompt authorizes commit.
 
 The reviewer/auditor must not:
 
@@ -72,12 +72,14 @@ state defined by that milestone, such as `M0_AUDITED_GO`.
 1. User/GPT selects exactly one milestone.
 2. Main Codex executor runs that milestone only.
 3. Executor writes required outputs, completion_check.md, review_request.md, and MANIFEST.md.
-4. Executor force-adds and commits/pushes the lightweight result files, then stops.
-5. User/GPT starts a separate read-only reviewer Codex session.
-6. Reviewer writes review.md with the milestone audit decision.
-7. Reviewer force-adds and commits/pushes review.md.
-8. User/GPT reads review.md.
-9. Only if review.md contains the audited-go state may the next milestone start.
+4. Executor force-adds and commits the lightweight result files, then stops.
+5. User manually pushes or otherwise makes the executor commit available.
+6. User/GPT starts a separate read-only reviewer Codex session.
+7. Reviewer writes review.md with the milestone audit decision.
+8. Reviewer force-adds and commits review.md, then stops.
+9. User manually pushes or otherwise makes the review commit available.
+10. User/GPT reads review.md.
+11. Only if review.md contains the audited-go state may the next milestone start.
 ```
 
 ## Required Files Per Milestone
@@ -107,25 +109,26 @@ results/<task_key>/review.md
 ## Publication Rule For Ignored Result Directories
 
 CARE `.gitignore` ignores generated `results/20??????_*/` directories. Milestone
-report files are still intended to be repository-visible. Therefore executor and
-reviewer sessions must use `git add -f` for the exact lightweight Markdown/CSV/JSON
-files required by the milestone. Do not add checkpoints, predictions, NIfTI files,
+report files are still intended to be committed. Therefore executor and reviewer
+sessions must use `git add -f` for the exact lightweight Markdown/CSV/JSON files
+required by the milestone. Do not add checkpoints, predictions, NIfTI files,
 large logs, uploads, secrets, or full bulky result trees.
 
-Recommended executor publication command:
+The executor/reviewer should commit locally but should not push automatically.
+The user manually pushes after checking the commit.
+
+Recommended executor commit command:
 
 ```bash
 git add -f results/<task_key>/result.md results/<task_key>/completion_check.md results/<task_key>/review_request.md results/<task_key>/MANIFEST.md results/<task_key>/*.md results/<task_key>/*.csv results/<task_key>/*.json
 git commit -m "Add <task_key> milestone result"
-git push
 ```
 
-Recommended reviewer publication command:
+Recommended reviewer commit command:
 
 ```bash
 git add -f results/<task_key>/review.md
 git commit -m "Add <task_key> milestone review"
-git push
 ```
 
 ## Review Decisions
@@ -179,7 +182,7 @@ Internal self-checks, subagent notes, or executor-launched audit drafts are allo
 Every milestone executor prompt should include:
 
 ```text
-This is an executor/controller session for one milestone only. Stop after writing completion_check.md and review_request.md, force-add/commit/push the lightweight required result files, then stop. Do not write review.md and do not start the next milestone. The milestone must be reviewed by a separate read-only Codex session before continuation.
+This is an executor/controller session for one milestone only. Stop after writing completion_check.md and review_request.md, force-add/commit the lightweight required result files, then stop. Do not push automatically. Do not write review.md and do not start the next milestone. The milestone must be reviewed by a separate read-only Codex session before continuation.
 ```
 
 ## Required Wording For Milestone Reviewer Prompts
@@ -187,5 +190,5 @@ This is an executor/controller session for one milestone only. Stop after writin
 Every milestone reviewer prompt should include:
 
 ```text
-This is a separate read-only reviewer/auditor session. Do not fix code, do not generate missing artifacts, do not train, and do not start the next milestone. Review only the completed result directory, write review.md with the controlled milestone decision, then force-add/commit/push review.md.
+This is a separate read-only reviewer/auditor session. Do not fix code, do not generate missing artifacts, do not train, and do not start the next milestone. Review only the completed result directory, write review.md with the controlled milestone decision, then force-add/commit review.md. Do not push automatically.
 ```
