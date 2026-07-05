@@ -1,10 +1,14 @@
 # SRR-v3 Milestone Prompt File Check
 
-This marker exists only to make the latest prompt-file update easy to locate in commit history.
+This marker exists to make the milestone prompt files easy to locate in commit history.
 
-Authoritative prompt file:
+Executor prompt index:
 
 - `prompts/tasks/20260705_srr_v3_milestone_codex_goal_prompts.md`
+
+Reviewer prompt index:
+
+- `prompts/tasks/20260705_srr_v3_milestone_reviewer_goal_prompts.md`
 
 Architecture alignment note:
 
