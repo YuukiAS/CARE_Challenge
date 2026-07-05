@@ -1,0 +1,49 @@
+# GPT Hard-Gate Prompt For CARE Handoff
+
+This prompt is for future GPT/ChatGPT planning threads before writing CARE Codex goals. Its purpose is to prevent a controller task from being treated as complete when required subtasks, completion checks, training adequacy, or audits are missing.
+
+## Core Rule
+
+Do not write another high-risk CARE goal that relies on natural-language warnings alone. Every anti-laziness requirement must become one of the following:
+
+1. an exact required file path;
+2. a machine-readable frontmatter field;
+3. a validator check that exits nonzero on failure;
+4. a required report field in `controller_report.md`, `result.md`, or `review.md`;
+5. a regression test against a known bad packet.
+
+If a requirement cannot be checked by file existence, parsed status, command exit, metric/provenance field, or explicit audit decision, do not call it a gate. Call it advice only.
+
+## Mandatory GPT Checklist Before Writing A New Goal
+
+For every controller task, GPT must define an explicit ordered task graph. The graph must include every required subtask key, the exact expected `results/<task_key>/` directory, and whether that subtask is blocking or optional. A blocking subtask that has no result directory must be treated as `INCOMPLETE`, not as skipped, replaced, or diagnostic.
+
+For every high-risk model/training route, GPT must include `minimum_effective_training` with concrete fields. At minimum use `min_optimizer_steps`, `min_train_loop_seconds`, `min_eval_cases`, `require_one_batch_overfit`, `require_prediction_sanity`, `require_loss_decrease`, `require_same_split_baseline`, and `require_cache_isolation`. A run that falls below this budget may be useful as smoke evidence, but it cannot support route promotion or scientific stop.
+
+For every goal with final audit, GPT must require a separate read-only completion check before final audit. The final audit must be blocked if `results/<completion_check_task>/decision.md` is missing or does not contain a state equivalent to `READY_FOR_FINAL_AUDIT`. Final audit is not allowed to silently absorb missing completion checks.
+
+For every anti-laziness validator, GPT must require strict mode by default. A validator with `error_count > 0` must exit nonzero unless the command is explicitly named `diagnostic_non_strict`. Legacy findings require an explicit allowlist file with reason, expiry, and owner; vague labels such as `legacy issue` are not sufficient.
+
+For every controller report, GPT must require the ending fields from `prompts/templates/CONTROLLER_TASK_TEMPLATE.md`: `controller_run_status`, `operational_completion_status`, `experiment_adequacy_decision`, `route_promotion_decision`, `route_negative_decision`, `scientific_resolution_status`, `diagnostic_publication_decision`, `git_commit_decision`, `git_push_decision`, `published_files`, `blocked_actions`, `next_required_action`, `reason_if_not_published`, and `reason_if_no_route_promotion`.
+
+## Known Bad Packet Regression
+
+The 20260704 SRR-v2.5 full completion packet is the current regression counterexample. It listed 17 required subtasks, including `20260704_cine_temporal_dictionary_integration` and `20260704_srr_v25_completion_check`, but the controller report entered final audit without those result directories. Any future hard-gate validator must fail that packet by name. If the validator does not fail that packet, the anti-laziness system is not repaired.
+
+The same packet also shows why smoke-scale training must not be promoted: bounded SRR variants with only 6 optimizer steps and limited explicit eval cases can support diagnostics, but cannot be called a formal full route test. Future GPT goals must make this distinction in the frontmatter and completion gate.
+
+## Required Wording In Future Start Prompts
+
+When giving Codex a high-risk CARE controller goal, include this sentence:
+
+`Before executing the scientific task, enforce the hard-gate policy: exact task graph, strict validator, completion-check-before-final-audit, minimum effective training, and current-bad-packet regression. If any hard gate fails, stop with NEEDS_REVISION or NEEDS_EVIDENCE; do not continue to final audit.`
+
+## State Mapping
+
+If all subtasks were executed but training is smoke-scale or undertrained, use `scientific_resolution_status: SCIENTIFIC_UNDERTRAINED`.
+
+If required subtasks are missing, use `operational_completion_status: INCOMPLETE` and `scientific_resolution_status: SCIENTIFIC_NEEDS_EVIDENCE` or `SCIENTIFIC_NEEDS_REVISION`.
+
+If a diagnostic packet is useful but no route is promoted, use `diagnostic_publication_decision: PUBLISH_REVIEWED_DIAGNOSTIC_PACKET` only after audit, and keep validation packaging, upload, fold expansion, hosted metric claims, and next-stage training blocked.
+
+Do not use `COMPLETE`, `PASS`, `PROMOTE`, `STOP_NO_SIGNAL`, or `SCIENTIFIC_STOP_SUPPORTED` unless the corresponding machine-checkable gates pass.
