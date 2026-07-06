@@ -5,6 +5,8 @@ strategic planner and the user-supervised strategic controller.
 
 ## Directory Responsibilities
 
+- `START_HERE_FOR_GPT.md`: root entrypoint for new GPT/ChatGPT planning
+  threads before CARE milestone, Codex goal, handoff, or route planning.
 - `prompts/AGENT_RULES.md`: Codex execution rules.
 - `prompts/CHATGPT_RULES.md`: GPT task/review/next-task rules.
 - `prompts/HANDOFF_ROLES.md`: strategic and execution role definitions.
@@ -19,6 +21,8 @@ strategic planner and the user-supervised strategic controller.
   classification.
 - `prompts/GPT_HARD_GATE_PROMPT.md`: GPT checklist to apply before writing a
   high-risk CARE controller goal.
+- `prompts/THREAD_BOOTSTRAP_ROUTE_IMAGE_PROTOCOL.md`: mandatory image
+  bootstrap protocol for SRR/MyoPS/Cine route planning from repository diagrams.
 - `prompts/MILESTONE_REVIEW_PROTOCOL.md`: two-step milestone executor/reviewer
   gate for SRR-v3 and future milestone chains.
 - `prompts/MECHANISM_GATE_TEMPLATE.md`: reusable evidence-gate pattern.
@@ -58,6 +62,8 @@ win unless they would break protocol fields.
 ## CARE-Specific Planning Overlay
 
 For CARE tasks, GPT is the strategic planner and strategic controller. Codex may execute or supervise only inside a GPT-authored task; it must not be asked to discover a new research direction on its own.
+
+Every new GPT/ChatGPT planning thread must start from `START_HERE_FOR_GPT.md`. Before writing any new SRR/MyoPS/Cine milestone, Codex goal, handoff, or route judgment, GPT must complete `prompts/THREAD_BOOTSTRAP_ROUTE_IMAGE_PROTOCOL.md`: locate `images/`, copy or download `v2` and later SRR/MyoPS diagrams, read them in the current thread, state the recovered route objective, and block if the diagrams cannot be acquired or interpreted.
 
 When generating any CARE model, experiment, external-method, registration, temporal Cine, missing-modality, proposal/refinement, fold-expansion, validation-package, or submission-related task, decide explicitly whether it is a normal `execution` task or a `controller` task.
 

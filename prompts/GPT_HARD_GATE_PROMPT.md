@@ -2,6 +2,8 @@
 
 This prompt is for future GPT/ChatGPT planning threads before writing CARE Codex goals. Its purpose is to prevent a controller task from being treated as complete when required subtasks, completion checks, training adequacy, audits, or route-defining diagrams are missing.
 
+New GPT/ChatGPT planning threads must start from `START_HERE_FOR_GPT.md` before applying this hard gate.
+
 ## Core Rule
 
 Do not write another high-risk CARE goal that relies on natural-language warnings alone. Every anti-laziness requirement must become one of the following:

@@ -1,5 +1,8 @@
 # CARE repository — agent instructions
 
+## GPT / ChatGPT route bootstrap
+
+New GPT/ChatGPT planning threads must read `START_HERE_FOR_GPT.md` before writing CARE milestones, Codex goals, handoffs, or route judgments. For any SRR/MyoPS/Cine route planning, they must execute `prompts/THREAD_BOOTSTRAP_ROUTE_IMAGE_PROTOCOL.md`, read the `images/` SRR diagrams at `v2` and later, and block without generating a milestone if those diagrams cannot be located, copied/downloaded, opened, or interpreted.
 
 ## Temporary /users Workspace Safety
 
