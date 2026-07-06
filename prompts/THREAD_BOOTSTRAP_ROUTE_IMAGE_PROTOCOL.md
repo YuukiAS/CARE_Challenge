@@ -10,29 +10,22 @@ The SRR route is defined by the repository diagrams, not by a loose natural-lang
 
 Before writing any SRR/MyoPS/Cine milestone, Codex goal, handoff, or route judgment, the planner must read the current repository entrypoints, starting with `START_HERE_FOR_GPT.md`, then `AGENTS.md`, `README.md`, `prompts/CHATGPT_RULES.md`, and `prompts/GPT_HARD_GATE_PROMPT.md`.
 
-## Required local image acquisition
+## Required Project background visual reading
 
-After reading the repository, the planner must locate the repository `images/` directory and download or copy every SRR design diagram at version `v2` or later to local working storage. This includes, when present, diagrams named or described as:
+After reading the repository, the planner must visually read every SRR design diagram at version `v2` or later from the current ChatGPT Project background files / project materials. This includes, when present, diagrams named or described as:
 
 - `v2`
 - `v2.5`
 - `v3`
 - later versions such as `v3.1`, `v4`, or successor SRR/MyoPS architecture diagrams
 
-At minimum, the planner must acquire and read `images/SRR-v2.png`, `images/SRR-v2.5.png`, and `images/SRR-v3.png` when those files exist in the repository.
+At minimum, the planner must visually read the Project background diagrams corresponding to the canonical repository references `images/SRR-v2.png`, `images/SRR-v2.5.png`, and `images/SRR-v3.png`.
 
-The local-copy step is required even if the user pasted a screenshot in the current chat, because the repo copy is the auditable source for route planning.
+The repository `images/` paths remain canonical filenames and version references. They are not the required GPT visual-reading entrypoint, because GitHub connector access to `.png` files may expose only blob, SHA, or base64 metadata instead of a stable multimodal visual input.
 
-A local Codex/GPT environment should use an explicit image staging directory, for example:
+Do not require GPT to open repository PNG files through the GitHub connector, and do not treat GitHub connector binary metadata as visual reading. If the Project background is missing a diagram, the user may either add the corresponding image to the ChatGPT Project background materials or upload it into the current conversation.
 
-```bash
-mkdir -p /tmp/care_srr_route_images
-git ls-files 'images/*' | grep -Ei 'v2|v2\.5|v3|srr|myops' > /tmp/care_srr_route_images/source_files.txt
-while IFS= read -r p; do cp "$p" /tmp/care_srr_route_images/; done < /tmp/care_srr_route_images/source_files.txt
-find /tmp/care_srr_route_images -maxdepth 1 -type f -print | sort
-```
-
-When operating through a GitHub connector rather than a checked-out workspace, the planner must fetch the raw image files or otherwise make local copies before planning. A link, filename listing, or prior chat screenshot alone is not enough unless the image contents are actually read in the current thread.
+A link, filename listing, GitHub blob SHA, base64 metadata, old chat screenshot reference, or prior natural-language summary is not enough unless the image content is actually read through the current thread's visual channel.
 
 ## Required route statement before planning
 
@@ -47,7 +40,7 @@ Before writing any new milestone, task prompt, or route judgment, the planner mu
 
 ## Blocking rule
 
-If the planner cannot locate the `images/` directory, cannot copy/download the diagrams, cannot read the diagrams, or cannot determine the content of `v2` and later diagrams, it must stop before writing milestones or Codex goals. The response must explicitly report `BLOCKED_ROUTE_DIAGRAMS_UNAVAILABLE`, the missing/failed image paths, and the exact user action needed, such as uploading the diagrams, fixing repository access, or confirming an alternate source.
+If the planner cannot access or visually interpret the `v2` and later diagrams from ChatGPT Project background materials or images uploaded into the current conversation, it must stop before writing milestones or Codex goals. The response must explicitly report `BLOCKED_PROJECT_ROUTE_DIAGRAMS_UNAVAILABLE`, the missing versions, the canonical repository references for those versions, and the exact user action needed: add the diagrams to the ChatGPT Project background materials or upload them into the current conversation.
 
 Do not silently continue from memory, prior summaries, or a partial text description when the diagrams are unavailable.
 
@@ -55,7 +48,16 @@ Do not silently continue from memory, prior summaries, or a partial text descrip
 
 Any new SRR MyoPS milestone after M4 must include either:
 
-- a `diagram_source` or equivalent field listing the local copied diagram paths and versions used; or
+- route-bootstrap fields such as:
+
+```yaml
+diagram_source: "ChatGPT Project background materials"
+diagram_versions_read: ["SRR-v2", "SRR-v2.5", "SRR-v3"]
+canonical_repo_paths: ["images/SRR-v2.png", "images/SRR-v2.5.png", "images/SRR-v3.png"]
+visual_read_status: "READ_FROM_PROJECT_BACKGROUND"
+```
+
+- an equivalent result artifact proving the same Project-background visual-read status and version coverage; or
 - a result artifact such as `srr_v3_fidelity_contract.md` / `architecture_component_trace.csv` that maps the diagram modules to code paths, runtime evidence, and unresolved gaps.
 
-A reviewer must treat missing diagram-source evidence as a route-definition blocker for new SRR/MyoPS planning tasks.
+A reviewer must treat missing `diagram_versions_read`, missing `visual_read_status`, reliance only on repository filenames/GitHub blob metadata/base64 metadata/old summaries, or claimed visual image reading from GitHub connector without actual visual input as a route-definition blocker for new SRR/MyoPS planning tasks.

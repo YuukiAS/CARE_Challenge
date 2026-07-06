@@ -2,7 +2,7 @@
 
 ## GPT / ChatGPT Route Bootstrap
 
-Any new GPT/ChatGPT planning thread must read [START_HERE_FOR_GPT.md](START_HERE_FOR_GPT.md), [prompts/THREAD_BOOTSTRAP_ROUTE_IMAGE_PROTOCOL.md](prompts/THREAD_BOOTSTRAP_ROUTE_IMAGE_PROTOCOL.md), and [prompts/GPT_HARD_GATE_PROMPT.md](prompts/GPT_HARD_GATE_PROMPT.md) before writing SRR/MyoPS/Cine milestones. It must read the SRR route diagrams from `images/` first; old chat summaries are not enough.
+Any new GPT/ChatGPT planning thread must read [START_HERE_FOR_GPT.md](START_HERE_FOR_GPT.md), [prompts/THREAD_BOOTSTRAP_ROUTE_IMAGE_PROTOCOL.md](prompts/THREAD_BOOTSTRAP_ROUTE_IMAGE_PROTOCOL.md), and [prompts/GPT_HARD_GATE_PROMPT.md](prompts/GPT_HARD_GATE_PROMPT.md) before writing SRR/MyoPS/Cine milestones. It must visually read the SRR route diagrams from ChatGPT Project background files / project materials first; repository `images/` paths are canonical filenames/version references, and old chat summaries are not enough.
 
 Benchmark training / collection / unified evaluation commands live in [jobs/README.md](/overflow/htzhu/CARE/jobs/README.md).
 

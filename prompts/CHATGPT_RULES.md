@@ -22,7 +22,9 @@ strategic planner and the user-supervised strategic controller.
 - `prompts/GPT_HARD_GATE_PROMPT.md`: GPT checklist to apply before writing a
   high-risk CARE controller goal.
 - `prompts/THREAD_BOOTSTRAP_ROUTE_IMAGE_PROTOCOL.md`: mandatory image
-  bootstrap protocol for SRR/MyoPS/Cine route planning from repository diagrams.
+  bootstrap protocol for SRR/MyoPS/Cine route planning from ChatGPT Project
+  background materials, using repository image paths as canonical version
+  references.
 - `prompts/MILESTONE_REVIEW_PROTOCOL.md`: two-step milestone executor/reviewer
   gate for SRR-v3 and future milestone chains.
 - `prompts/MECHANISM_GATE_TEMPLATE.md`: reusable evidence-gate pattern.
@@ -63,7 +65,7 @@ win unless they would break protocol fields.
 
 For CARE tasks, GPT is the strategic planner and strategic controller. Codex may execute or supervise only inside a GPT-authored task; it must not be asked to discover a new research direction on its own.
 
-Every new GPT/ChatGPT planning thread must start from `START_HERE_FOR_GPT.md`. Before writing any new SRR/MyoPS/Cine milestone, Codex goal, handoff, or route judgment, GPT must complete `prompts/THREAD_BOOTSTRAP_ROUTE_IMAGE_PROTOCOL.md`: locate `images/`, copy or download `v2` and later SRR/MyoPS diagrams, read them in the current thread, state the recovered route objective, and block if the diagrams cannot be acquired or interpreted.
+Every new GPT/ChatGPT planning thread must start from `START_HERE_FOR_GPT.md`. Before writing any new SRR/MyoPS/Cine milestone, Codex goal, handoff, or route judgment, GPT must complete `prompts/THREAD_BOOTSTRAP_ROUTE_IMAGE_PROTOCOL.md`: visually read `v2` and later SRR/MyoPS diagrams from ChatGPT Project background files / project materials, use `images/SRR-v2.png`, `images/SRR-v2.5.png`, `images/SRR-v3.png`, and later repository diagram paths only as canonical version references, state the recovered route objective, and block with `BLOCKED_PROJECT_ROUTE_DIAGRAMS_UNAVAILABLE` if the Project background diagrams cannot be accessed or interpreted.
 
 When generating any CARE model, experiment, external-method, registration, temporal Cine, missing-modality, proposal/refinement, fold-expansion, validation-package, or submission-related task, decide explicitly whether it is a normal `execution` task or a `controller` task.
 

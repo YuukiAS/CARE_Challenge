@@ -20,11 +20,11 @@ If a requirement cannot be checked by file existence, parsed status, command exi
 
 Before writing or revising any SRR/MyoPS/Cine milestone, Codex goal, handoff, or route decision, GPT must apply `prompts/THREAD_BOOTSTRAP_ROUTE_IMAGE_PROTOCOL.md`.
 
-The planner must locate the repository `images/` directory, download or copy every SRR design diagram at version `v2` or later to local working storage, and inspect those diagrams before proposing milestones. At minimum, this covers `v2`, `v2.5`, `v3`, and any later SRR/MyoPS architecture diagrams present in the repository.
+The planner must visually read every SRR design diagram at version `v2` or later from ChatGPT Project background files / project materials before proposing milestones. At minimum, this covers `v2`, `v2.5`, `v3`, and any later SRR/MyoPS architecture diagrams present in the project materials. Repository paths such as `images/SRR-v2.png`, `images/SRR-v2.5.png`, and `images/SRR-v3.png` remain canonical filenames and version references; they are not the required GPT visual-reading entrypoint.
 
 After reading the diagrams, GPT must explicitly state the recovered route objective before planning. The statement must make clear that SRR-MyoPS is an availability-aware selective retrieval, anatomy-guided lesion proposal, pathology-specific soft-ROI refinement, and explicit loss/objective framework. A strong segmenter such as nnU-Net may provide anchor/context/evidence, but SRR must not be reduced to an optional post-processing add-on or a generic black-box competitor.
 
-If the images cannot be located, copied/downloaded, opened, or interpreted, GPT must stop before writing milestones or Codex goals. It must explicitly report the blocked state, the failed image paths, and what the user must provide or fix. Do not continue from memory or a partial text summary when the diagrams are unavailable.
+If the images cannot be accessed or visually interpreted from ChatGPT Project background materials, GPT must stop before writing milestones or Codex goals. It must explicitly report `BLOCKED_PROJECT_ROUTE_DIAGRAMS_UNAVAILABLE`, the missing versions, the canonical repository references, and that the user must add the diagrams to the ChatGPT Project background materials or upload them into the current conversation. Do not continue from memory, GitHub connector blob/SHA/base64 metadata, filenames, old chat summaries, or partial text recaps when the diagrams are unavailable.
 
 ## Mandatory GPT Checklist Before Writing A New Goal
 
@@ -53,7 +53,14 @@ The 20260704 SRR-v2.5 full completion packet is the current regression counterex
 
 The same packet also shows why smoke-scale training must not be promoted: bounded SRR variants with only 6 optimizer steps and limited explicit eval cases can support diagnostics, but cannot be called a formal full route test. Future GPT goals must make this distinction in the frontmatter and completion gate.
 
-A new regression class is route-definition drift: a planner writes SRR/MyoPS milestones without first acquiring and reading the repository `images/` diagrams from version `v2` onward. Future milestones should treat missing diagram bootstrap evidence as `NEEDS_EVIDENCE`, not as a harmless omission.
+A new regression class is route-definition drift: a planner writes SRR/MyoPS milestones without first visually reading the `v2` and later route diagrams from ChatGPT Project background materials. Future milestones should treat missing diagram bootstrap evidence as `NEEDS_EVIDENCE`, not as a harmless omission.
+
+Hard-gate validators and reviewers must treat each of these as a route-definition blocker:
+
+1. the planner did not state that route diagrams were read from ChatGPT Project background materials;
+2. the planner relied only on repository filenames, GitHub blob SHA, base64 metadata, old chat summaries, or natural-language recaps;
+3. the planner claimed visual image reading from GitHub connector without actual visual input;
+4. the planner generated an SRR/MyoPS/Cine milestone without `diagram_versions_read` and `visual_read_status`.
 
 ## Required Wording In Future Start Prompts
 
@@ -75,7 +82,7 @@ If all subtasks were executed but training is smoke-scale or undertrained, use `
 
 If required subtasks are missing, use `operational_completion_status: INCOMPLETE` and `scientific_resolution_status: SCIENTIFIC_NEEDS_EVIDENCE` or `SCIENTIFIC_NEEDS_REVISION`.
 
-If SRR/MyoPS/Cine route diagrams were required but could not be acquired or interpreted, use `operational_completion_status: BLOCKED_ROUTE_DIAGRAMS_UNAVAILABLE` and `scientific_resolution_status: SCIENTIFIC_NEEDS_EVIDENCE`.
+If SRR/MyoPS/Cine route diagrams were required but could not be visually read from ChatGPT Project background materials or current-conversation uploads, use `operational_completion_status: BLOCKED_PROJECT_ROUTE_DIAGRAMS_UNAVAILABLE` and `scientific_resolution_status: SCIENTIFIC_NEEDS_EVIDENCE`.
 
 If a diagnostic packet is useful but no route is promoted, use `diagnostic_publication_decision: PUBLISH_REVIEWED_DIAGNOSTIC_PACKET` only after audit, and keep validation packaging, upload, fold expansion, hosted metric claims, and next-stage training blocked.
 
