@@ -1,0 +1,13 @@
+checkpoint_name,decision,decode_mode,edema_dice_delta_mean,edema_hd95_delta_mean,remote_fp_delta_mean,scar_dice_delta_mean,scar_hd95_delta_mean,variant
+checkpoint_best,NO_PROMOTION_SCIENTIFIC_UNRESOLVED,argmax,0.0,0.0,0.0,-1.5103343102271238e-05,0.0,m7_conservative_component_arbitration
+checkpoint_best,NO_PROMOTION_SCIENTIFIC_UNRESOLVED,pathology_aware,0.0,0.0,0.0,0.0007171918491678438,-0.004463390701448485,m7_conservative_component_arbitration
+checkpoint_final,NO_PROMOTION_SCIENTIFIC_UNRESOLVED,argmax,0.0,0.0,0.0,-1.025301096394445e-05,0.0,m7_conservative_component_arbitration
+checkpoint_final,NO_PROMOTION_SCIENTIFIC_UNRESOLVED,pathology_aware,0.0,0.0,0.0,0.00013849858589320974,0.07838311738320762,m7_conservative_component_arbitration
+checkpoint_best,NO_PROMOTION_SCIENTIFIC_UNRESOLVED,argmax,0.0,0.0,0.0,-9.364925350636525e-06,0.0,m7_full_srr_context_arbitration
+checkpoint_best,NO_PROMOTION_SCIENTIFIC_UNRESOLVED,pathology_aware,0.0,0.0,0.041666666666666664,0.00014070810814225768,0.08157774807352565,m7_full_srr_context_arbitration
+checkpoint_final,NO_PROMOTION_SCIENTIFIC_UNRESOLVED,argmax,0.0,0.0,0.0,5.88991581358204e-05,-0.00045684373735799255,m7_full_srr_context_arbitration
+checkpoint_final,NO_PROMOTION_SCIENTIFIC_UNRESOLVED,pathology_aware,0.0,0.0,0.0,0.004617755235648668,-0.08099789436597497,m7_full_srr_context_arbitration
+checkpoint_best,NO_PROMOTION_SCIENTIFIC_UNRESOLVED,argmax,0.0,0.0,0.0,4.137061883682329e-06,0.0,m7_scar_precision_edema_safe
+checkpoint_best,NO_PROMOTION_SCIENTIFIC_UNRESOLVED,pathology_aware,0.0,0.0,0.08333333333333333,0.004824428206111696,0.10255812104356583,m7_scar_precision_edema_safe
+checkpoint_final,NO_PROMOTION_SCIENTIFIC_UNRESOLVED,argmax,0.0,0.0,0.0,5.437605902387094e-05,0.0,m7_scar_precision_edema_safe
+checkpoint_final,NO_PROMOTION_SCIENTIFIC_UNRESOLVED,pathology_aware,0.0,0.0,0.041666666666666664,0.006052879325744249,-0.03748207362611389,m7_scar_precision_edema_safe

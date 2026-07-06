@@ -1,5 +1,5 @@
 # CineMA/Cine Blocker Report
 
-status: `CINE_SECONDARY_NOT_RUN_IN_CURRENT_MONITOR_PACKET`
+status: `SUPERSEDED_BY_CINEMA_USAGE_REPORT_WITH_REGISTRATION_GAP`
 
-M5 has `M5_AUDITED_DIAGNOSTIC_GO`, but this M7 monitor packet has not yet run a same-safe-subset CineMA/registration/temporal dictionary matrix. Frame0-only, one-case SyN smoke, optical-flow descriptor, and untrained VoxelMorph remain insufficient as completed registration or temporal retrieval evidence.
+The Cine secondary diagnostic subline has started in M7. See `cinema_usage_report.md`, `registration_same_subset_matrix.csv`, `cine_metrics_summary.csv`, and `temporal_dictionary_evidence.csv`. The remaining blocker is `TEMPORAL_DICTIONARY_BLOCKED_BY_REGISTRATION_GAP`.

@@ -1,5 +1,5 @@
 # Review Request
 
-status: `NOT_READY_FOR_REVIEW_M7_NEEDS_MONITOR`
+status: `READY_FOR_REVIEW`
 
-Do not review as completed M7 yet. Reviewer should wait for required variant runtime summaries, same-split help/harm, hard subgroup metrics, loss component curves, gradient sanity, no-T2 safety, and Cine blocker/evidence update.
+Review this M7 executor packet only if `completion_check.md` says `M7_READY_FOR_REVIEW`. The reviewer should verify all three variants, same-split help/harm, hard subgroup metrics, loss component curves, gradient sanity, no-T2 safety, and Cine registration/temporal dictionary blockers.

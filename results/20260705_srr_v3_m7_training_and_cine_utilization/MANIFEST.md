@@ -21,8 +21,13 @@ task_key: `20260705_srr_v3_m7_training_and_cine_utilization`
 | `proposal_refiner_by_case.csv` | M7 executor monitor or runtime evidence artifact. |
 | `no_t2_safety_by_variant.csv` | M7 executor monitor or runtime evidence artifact. |
 | `best_variant_decision.md` | M7 executor monitor or runtime evidence artifact. |
+| `best_variant_decision_table.csv` | M7 executor monitor or runtime evidence artifact. |
 | `failure_interpretation.md` | M7 executor monitor or runtime evidence artifact. |
+| `cinema_usage_report.md` | M7 executor monitor or runtime evidence artifact. |
 | `cinema_blocker_report.md` | M7 executor monitor or runtime evidence artifact. |
+| `registration_same_subset_matrix.csv` | M7 executor monitor or runtime evidence artifact. |
+| `temporal_dictionary_evidence.csv` | M7 executor monitor or runtime evidence artifact. |
+| `cine_metrics_summary.csv` | M7 executor monitor or runtime evidence artifact. |
 | `label_export_qc.md` | M7 executor monitor or runtime evidence artifact. |
 | `commands_run.md` | M7 executor monitor or runtime evidence artifact. |
 | `completion_check.md` | M7 executor monitor or runtime evidence artifact. |
