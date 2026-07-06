@@ -17,6 +17,17 @@ After reading the repository, the planner must locate the repository `images/` d
 
 The local-copy step is required even if the user pasted a screenshot in the current chat, because the repo copy is the auditable source for route planning.
 
+A local Codex/GPT environment should use an explicit image staging directory, for example:
+
+```bash
+mkdir -p /tmp/care_srr_route_images
+git ls-files 'images/*' | grep -Ei 'v2|v2\.5|v3|srr|myops' > /tmp/care_srr_route_images/source_files.txt
+while IFS= read -r p; do cp "$p" /tmp/care_srr_route_images/; done < /tmp/care_srr_route_images/source_files.txt
+find /tmp/care_srr_route_images -maxdepth 1 -type f -print | sort
+```
+
+When operating through a GitHub connector rather than a checked-out workspace, the planner must fetch the raw image files or otherwise make local copies before planning. A link, filename listing, or prior chat screenshot alone is not enough unless the image contents are actually read in the current thread.
+
 ## Required route statement before planning
 
 Before writing any new milestone, task prompt, or route judgment, the planner must explicitly state the recovered route objective in its own words. At minimum it must cover:
@@ -40,3 +51,5 @@ Any new SRR MyoPS milestone after M4 must include either:
 
 - a `diagram_source` or equivalent field listing the local copied diagram paths and versions used; or
 - a result artifact such as `srr_v3_fidelity_contract.md` / `architecture_component_trace.csv` that maps the diagram modules to code paths, runtime evidence, and unresolved gaps.
+
+A reviewer must treat missing diagram-source evidence as a route-definition blocker for new SRR/Myops planning tasks.
