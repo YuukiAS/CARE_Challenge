@@ -509,4 +509,95 @@ M7 结果写入 `results/20260705_srr_v3_m7_training_and_cine_utilization/`，�
 - reviewer 所需轻量证据没有 git-tracked。
 
 完成后必须 `git add -f` 并本地 commit M7 轻量证据和必要 first-party helper/source/config；不要提交 checkpoint、NIfTI、upload package、大日志、raw data、secrets、environment dump 或整棵 runtime tree；不要 push；不要写 `review.md`；不要启动后续 milestone。
+
+开始前必须确认：
+
+1. `results/20260705_srr_v3_m6_myops_concrete_architecture_repair/review.md` 存在且包含 `M6_AUDITED_GO`。如果没有，写 `M7_BLOCKED_BY_M6` 并停止。
+2. 如果启用 Cine 子线，必须确认 `results/20260705_srr_v3_m5_cine_secondary_contract/review.md` 包含 `M5_AUDITED_DIAGNOSTIC_GO`。如果没有，只阻塞 Cine 子线，写清 `CINE_BLOCKED_BY_M5`，不得阻塞 MyoPS M7 训练。
+3. M6 只证明 architecture/runtime smoke，不是 train/OOF prototype readiness、real-case runtime proof 或 M7 training evidence。M7 必须重新训练并评估，不得复用 M6 synthetic tensors 作为训练或性能证据。
+
+M7 必须训练并评估 shared M7 规定的三个 required variants，除非 M6 review 明确禁止某个 variant：
+
+1. `m7_full_srr_context_arbitration`
+2. `m7_conservative_component_arbitration`
+3. `m7_scar_precision_edema_safe`
+
+不得自行缩减 matrix；不得把未跑 variant 写成 skipped success；不得退回旧 `srr_total_loss()`、旧 SRR baseline path、旧 `tiny_3scale` shortcut 或 M6 synthetic-only generator。M7 必须使用 M6 修复后的 concrete architecture/runtime path、expanded total loss、branch arbitration、segmentation context interface、dictionary/prototype/proposal/refiner/no-T2 safety wiring。
+
+每个 required MyoPS variant 必须先做 one-batch overfit；one-batch 失败时写 `M7_NEEDS_REVISION` 或 `M7_NEEDS_EVIDENCE`，不得继续把失败 variant 当作训练充分。正式训练每个 variant 必须满足以下之一：
+
+- `optimizer_steps >= 3000` 且 `train_loop_seconds >= 1800`；
+- 或最近 5 个 validation events 显示 primary composite objective 相对改善 `< 1%`，且核心 loss component 没有单项爆炸；
+- 或因 scheduler/OOM/bug 中止，并明确写 `M7_NEEDS_REVISION` / `M7_NEEDS_EVIDENCE` / `M7_NEEDS_MONITOR`，不得写成功或失败结论。
+
+推荐目标为 `6000-12000` optimizer steps，validation interval 每 `300-500` steps，至少 12 个固定 eval cases，优先 20 个。hard subgroup 至少覆盖 all-case、T2-present、GT-positive、no-T2 empty-GT、CenterB/CenterC、remote-FP-positive、small-lesion、large-lesion。
+
+M7 必须用 same-split nnU-Net 作为唯一主 baseline reference，不能只和旧 SRR 比。每个 variant 必须报告：
+
+- scar Dice、HD95、component count、remote FP、volume ratio；
+- edema all-case Dice/HD95；
+- edema T2-present/complete Dice/HD95；
+- edema GT-positive Dice/HD95；
+- no-T2 empty-GT edema stability；
+- CenterB/CenterC 指标；
+- per-case help/harm；
+- branch arbitration chosen_source 分布；
+- dictionary/prototype usage；
+- proposal recall/precision proxy；
+- refiner crop/residual statistics；
+- label/export caveat。
+
+best variant decision 必须由 metric table 决定，不得自然语言主观选择。任何 no-T2 edema unsafe 的 variant 直接 `REJECT`。任何 scar 相比 nnU-Net 明显退化且没有 edema 大幅收益的 variant 直接 `REJECT`。若没有任何 variant 同时满足 no-T2 safety、scar non-regression 和 edema hard-subgroup improvement，写 `NO_PROMOTION_SCIENTIFIC_UNRESOLVED`，不得包装为成功。
+
+必须按 step 导出 loss component 曲线，至少包含 anatomy union/LV/RV、scar proposal、edema proposal T2-present、scar refiner ROI、edema refiner ROI、anchor preservation、branch arbitration consistency、bounded correction、component/remote-FP、no-T2 edema safety、dictionary entropy/coverage/load-balance、semantic family/interaction mass、prototype diversity/margin。必须输出 `loss_component_by_step.csv` 和 `loss_component_gradient_sanity.csv`。长期为 0 的 component 必须解释是合法不适用还是 bug；无解释的空 loss component 是 blocker。
+
+如果 Cine 子线运行，必须把 CineMA 用作 anatomy/frame-quality/registration/temporal-dictionary evidence，而不是只写“尝试过”。必须记录 CineMA source path、version、weights/source status、input preprocessing、frame selection、class mapping、output label/probability shape、myocardium/anatomy Dice/HD95 against local reference 或 frame0 control，并明确 CineMA output 不能直接当 pathology prediction。若已有 CineMA output 可用却未使用，写 `M7_NEEDS_EVIDENCE`；若缺权重、缺输出或合规不明，写 `cinema_blocker_report.md` 并说明 exact blocker。
+
+registration 必须是 same-safe-subset matrix，至少区分 frame0/ED identity control、CineMA frame-wise anatomy prior control、CineMA + ANTsPy SyN、CineMA + SimpleITK Demons/B-spline fallback、optical-flow/feature-warp proxy、VoxelMorph status。one-case SyN、frame0-only、untrained VoxelMorph、optical-flow descriptor 不得冒充 completed registration。若 registration matrix 没有至少一个合格 non-reference option，temporal dictionary 必须写 `TEMPORAL_DICTIONARY_BLOCKED_BY_REGISTRATION_GAP`，不得写 ready。
+
+M7 result directory 必须是：
+
+`results/20260705_srr_v3_m7_training_and_cine_utilization/`
+
+必须写齐 shared M7 要求的所有文件：
+
+- `result.md`
+- `m7_execution_plan.md`
+- `variant_matrix.csv`
+- `training_adequacy_by_variant.csv`
+- `one_batch_overfit_by_variant.csv`
+- `training_curve_by_variant.csv`
+- `validation_curve_by_variant.csv`
+- `loss_component_by_step.csv`
+- `loss_component_gradient_sanity.csv`
+- `prediction_sanity_by_variant.csv`
+- `same_split_help_harm.csv`
+- `hard_subgroup_metrics.csv`
+- `branch_arbitration_by_case.csv`
+- `dictionary_prototype_usage_by_variant.csv`
+- `proposal_refiner_by_case.csv`
+- `no_t2_safety_by_variant.csv`
+- `best_variant_decision.md`
+- `failure_interpretation.md`
+- `cinema_usage_report.md` if Cine subline runs, otherwise `cinema_blocker_report.md`
+- `registration_same_subset_matrix.csv` if Cine subline runs
+- `temporal_dictionary_evidence.csv` if temporal dictionary is attempted
+- `cine_metrics_summary.csv` if Cine metrics are computed
+- `label_export_qc.md`
+- `commands_run.md`
+- `completion_check.md`
+- `review_request.md`
+- `MANIFEST.md`
+
+`completion_check.md` 只能写：
+
+- `M7_READY_FOR_REVIEW`
+- `M7_NEEDS_REVISION`
+- `M7_NEEDS_EVIDENCE`
+- `M7_NEEDS_MONITOR`
+- `M7_BLOCKED_BY_M6`
+
+不能写 `M7_READY_FOR_REVIEW` 的情况包括：任一必跑 MyoPS variant 没有训练且没有 blocker；required variant 被自行缩减；未跑 variant 被当作 skipped success；M7 退回旧 loss/model path；训练不足 1800 秒且没有 plateau；没有 same-split nnU-Net help/harm；没有 loss component 曲线；没有 hard subgroup metrics；no-T2 edema unsafe；best variant decision 不是由 metric table 决定；Cine 子线声称使用 CineMA 但没有 class mapping/output path/metric 或 blocker；registration 被 one-case SyN/untrained VoxelMorph/frame0-only 冒充完成；temporal dictionary 在 registration gap 下仍写成 ready；reviewer 所需轻量证据没有 git-tracked。
+
+完成后 `git add -f` 并本地 commit M7 轻量证据和必要 first-party helper/source/config；不要提交 checkpoint、NIfTI、upload package、大日志、raw data、secrets、environment dump 或整棵 runtime tree；不要 push；不要写 `review.md`；不要启动后续 milestone。
 ```
