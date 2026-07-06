@@ -1,0 +1,2 @@
+variant,status,required_fields
+m7_full_srr_context_arbitration,PENDING_MONITOR,"case_id,center,modality_group,t2_present,c0_present,scar_gt_positive,edema_gt_positive,used_in_training,used_in_gradient_sanity,used_in_validation"

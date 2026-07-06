@@ -355,10 +355,18 @@ def srr_m6_expanded_total_loss(
     loss_edema_ref = t2_masked_edema_loss(outputs["edema_logits"], labels, availability)
 
     anchor_logits = outputs.get("nnunet_anchor_logits")
+    loss_correction_opportunity = outputs["logits"].sum() * 0.0
     if isinstance(anchor_logits, torch.Tensor):
         anchor_probs = torch.softmax(anchor_logits, dim=1)
         final_probs = torch.softmax(outputs["logits"], dim=1)
         loss_anchor = _masked_abs_mean(final_probs - anchor_probs, outside_roi.unsqueeze(1))
+        anchor_conf, anchor_pred = anchor_probs.max(dim=1)
+        pathology_target = scar_target | (edema_target & t2_present)
+        anchor_error = valid & pathology_target & ((anchor_pred != labels) | (anchor_conf < 0.70))
+        segmentation_weight = outputs.get("segmentation_weight")
+        if isinstance(segmentation_weight, torch.Tensor) and bool(anchor_error.any()):
+            open_signal = (1.0 - segmentation_weight[:, 0]).clamp(0.0, 1.0)
+            loss_correction_opportunity = _masked_abs_mean(1.0 - open_signal, anchor_error)
     else:
         loss_anchor = outputs["logits"].sum() * 0.0
 
@@ -398,6 +406,7 @@ def srr_m6_expanded_total_loss(
         "loss_scar_refiner_roi": weights.get("loss_scar_refiner_roi", 1.0),
         "loss_edema_refiner_t2_present_roi": weights.get("loss_edema_refiner_t2_present_roi", 1.0),
         "loss_anchor_preservation_outside_roi": weights.get("loss_anchor_preservation_outside_roi", 0.20),
+        "loss_correction_opportunity": weights.get("loss_correction_opportunity", 0.20),
         "loss_branch_arbitration_consistency": weights.get("loss_branch_arbitration_consistency", 0.15),
         "loss_bounded_correction": weights.get("loss_bounded_correction", 0.02),
         "loss_component_remote_fp": weights.get("loss_component_remote_fp", 0.10),
@@ -412,6 +421,7 @@ def srr_m6_expanded_total_loss(
         "loss_scar_refiner_roi": loss_scar_ref,
         "loss_edema_refiner_t2_present_roi": loss_edema_ref,
         "loss_anchor_preservation_outside_roi": loss_anchor,
+        "loss_correction_opportunity": loss_correction_opportunity,
         "loss_branch_arbitration_consistency": loss_arbitration,
         "loss_bounded_correction": loss_bounded,
         "loss_component_remote_fp": loss_remote_fp,

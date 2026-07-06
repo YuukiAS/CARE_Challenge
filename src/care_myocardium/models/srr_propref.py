@@ -852,8 +852,18 @@ class BranchArbitrationGate(nn.Module):
             fallback_weight = torch.ones_like(fallback_weight)
             segmentation_weight = torch.ones_like(segmentation_weight)
         bounded_delta = self.max_delta * torch.tanh(srr_logits - anchor_logits)
+        proposal_delta = torch.zeros_like(bounded_delta)
+        proposal_delta[:, 4:5] = self.max_delta * torch.tanh(edema_proposal_logits - anchor_logits[:, 4:5])
+        proposal_delta[:, 5:6] = self.max_delta * torch.tanh(scar_proposal_logits - anchor_logits[:, 5:6])
+        refiner_delta = torch.zeros_like(bounded_delta)
+        refiner_delta[:, 4:6] = bounded_delta[:, 4:6]
         correction_mask = ((srr_weight + proposal_weight + refiner_weight) > 1e-4).to(dtype=srr_logits.dtype)
-        final = anchor_logits + srr_weight * bounded_delta
+        branch_delta = (
+            srr_weight * bounded_delta
+            + proposal_weight * proposal_delta
+            + refiner_weight * refiner_delta
+        ).clamp(min=-self.max_delta, max=self.max_delta)
+        final = anchor_logits + branch_delta
         t2_present = canonical_t2_present(availability).to(device=final.device)
         no_t2_mask = (~t2_present).view(-1, 1, 1, 1, 1)
         final[:, 4:5] = torch.where(no_t2_mask, torch.full_like(final[:, 4:5], -20.0), final[:, 4:5])
@@ -865,6 +875,9 @@ class BranchArbitrationGate(nn.Module):
             "refiner_weight": refiner_weight,
             "fallback_weight": fallback_weight,
             "bounded_delta": bounded_delta,
+            "proposal_delta": proposal_delta,
+            "refiner_delta": refiner_delta,
+            "branch_delta": branch_delta,
             "correction_mask": correction_mask,
             "anchor_confidence": anchor_conf,
             "srr_confidence": proposal_support,
@@ -1236,6 +1249,9 @@ class SRRProposeRefineMyoPS(nn.Module):
             "baseline_residual_gate": baseline_blend["gate"],
             "bounded_delta_srr": baseline_blend["bounded_delta"],
             "arbitration_bounded_delta": arbitration["bounded_delta"],
+            "arbitration_proposal_delta": arbitration["proposal_delta"],
+            "arbitration_refiner_delta": arbitration["refiner_delta"],
+            "arbitration_branch_delta": arbitration["branch_delta"],
             "baseline_residual_magnitude": baseline_blend["residual_magnitude"],
             "baseline_gate_status": baseline_blend["gate_status"],
             "encoder_profile": self.encoder_profile,

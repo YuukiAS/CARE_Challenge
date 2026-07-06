@@ -1,4 +1,5 @@
-method,n_rows,n_cases,mean_before_myocardium_dice,mean_after_myocardium_dice,mean_before_lv_dice,mean_after_lv_dice,decision
-ANTsPy_SyNOnly,6,3,0.6989459374997669,0.7050612697339972,0.756807814587103,0.7633464649887273,NOT_USABLE_FOR_TEMPORAL_DICTIONARY
-SimpleITK_Demons,6,3,0.6989459374997669,0.7420313712302186,0.756807814587103,0.8450501597185741,NOT_USABLE_FOR_TEMPORAL_DICTIONARY
-frame0_identity_control,6,3,1.0,1.0,1.0,1.0,NOT_USABLE_REFERENCE_CONTROL
+method,case_id,reference_frame_id,moving_frame_id,before_myo_dice,after_myo_dice,before_lv_dice,after_lv_dice,before_hd95,after_hd95,before_ncc,after_ncc,displacement_smoothness,jacobian_or_fold_proxy,roundtrip_proxy,runtime_seconds,usable_for_temporal_dictionary,failure_reason
+heart_crop_center_of_mass_affine,Case1001,0,9,0.6624609618988132,0.6082448469706433,0.767775651405859,0.7565876637715295,7.605709075927734,8.374707221984863,0.9459638321575794,EVIDENCE_NOT_FOUND_SEGMENTATION_WARP_ONLY,4.12803236800584,0,4.12803236800584,0.011639031581580639,False,COM affine did not improve all required anatomy metrics
+heart_crop_SimpleITK_BSpline_or_Demons_tuned,Case1001,0,9,0.6624609618988132,0.7017311136167672,0.767775651405859,0.8501382365677359,7.605709075927734,6.4390788078308105,0.9459638321575794,EVIDENCE_NOT_FOUND_SEGMENTATION_WARP_ONLY,1.429950475692749,26191,EVIDENCE_NOT_FOUND,0.647418973967433,True,
+optical_flow_proxy_warp,Case1001,0,9,0.6624609618988132,0.6624609618988132,0.767775651405859,0.767775651405859,7.605709075927734,7.605709075927734,0.9459638321575794,EVIDENCE_NOT_FOUND_SEGMENTATION_WARP_ONLY,,,EVIDENCE_NOT_FOUND,0.0,False,proxy-only diagnostic; not sufficient as sole usable registration
+trained_or_trainable_voxelmorph_probe,availability_probe,,,,,,,,,,,,,,,False,No trained CARE CineMyoPS VoxelMorph weights found; untrained VoxelMorph remains negative control.

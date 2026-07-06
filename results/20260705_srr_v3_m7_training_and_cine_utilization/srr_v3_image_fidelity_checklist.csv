@@ -1,0 +1,17 @@
+route_component,expected_module,current_code_path,runtime_evidence_path,status,blocker_if_missing
+availability-aware modality handling,SRRProposeRefineMyoPS.forward,src/care_myocardium/models/srr_propref.py,modality_order_unit_tests.md,PARTIAL_VERIFIED,
+modality-specific stems,ModalityStem encoders,src/care_myocardium/models/srr_propref.py,srr_v3_image_fidelity_checklist.csv,CODE_PATH_EXISTS,
+strong encoder / nnU-Net context interface,segmentation_context_interface,src/care_myocardium/models/srr_propref.py,branch_arbitration_formula_report.md,PARTIAL_VERIFIED,
+semantic representation retrieval bank,SemanticRetrieval modules,src/care_myocardium/models/srr_propref.py,dictionary_prototype_usage_by_variant.csv,RUNTIME_SMOKE_VERIFIED,
+shared/private/interaction dictionary slot usage,dictionary slot metadata,src/care_myocardium/models/srr_propref.py,dictionary_prototype_usage_by_variant.csv,RUNTIME_SMOKE_VERIFIED,
+train/OOF prototype banks,PrototypeBank loader,scripts/training/run_srr_propref_myops_fold0.py,dictionary_prototype_usage_by_variant.csv,RUNTIME_SMOKE_VERIFIED,
+scar proposal,scar_dictionary proposal logits,src/care_myocardium/models/srr_propref.py,proposal_refiner_by_case.csv,RUNTIME_SMOKE_VERIFIED,
+edema proposal,edema_dictionary proposal logits,src/care_myocardium/models/srr_propref.py,proposal_refiner_by_case.csv,RUNTIME_SMOKE_VERIFIED,
+anatomy union/LV/RV prior,AnatomyROIPrior,src/care_myocardium/models/srr_propref.py,loss_component_by_step.csv,RUNTIME_SMOKE_VERIFIED,
+distance/uncertainty/nnU-Net component evidence,SegmentationContextInterface,src/care_myocardium/models/srr_propref.py,branch_arbitration_formula_report.md,PARTIAL_VERIFIED,
+scar soft-ROI refinement,scar_refine,src/care_myocardium/models/srr_propref.py,proposal_refiner_by_case.csv,RUNTIME_SMOKE_VERIFIED,
+edema soft-ROI refinement,edema_refine,src/care_myocardium/models/srr_propref.py,proposal_refiner_by_case.csv,RUNTIME_SMOKE_VERIFIED,
+baseline-preserving residual correction,BranchArbitrationGate,src/care_myocardium/models/srr_propref.py,branch_arbitration_unit_tests.md,REPAIRED_PENDING_FORMAL_TRAINING,
+scar/edema no-T2-safe output,canonical_t2_present masks,src/care_myocardium/models/srr_propref.py,modality_order_unit_tests.md,PARTIAL_VERIFIED,
+expanded loss objectives,srr_m6_expanded_total_loss,src/care_myocardium/losses/srr_losses.py,loss_component_gradient_sanity.csv,REPAIRED_PENDING_FORMAL_TRAINING,
+Cine registration-aware temporal retrieval,followup2 Cine helper,scripts/evaluation/run_srr_v3_m7_cine_registration_followup2.py,cine_registration_followup2_report.md,PENDING_CINE_ESCALATION,blocks temporal dictionary if no usable registration

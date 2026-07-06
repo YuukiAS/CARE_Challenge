@@ -29,3 +29,15 @@ job_state_snapshot: `58004740_0 COMPLETED 00:32:04; 58005318_1 COMPLETED 00:32:1
 | `python -m py_compile scripts/evaluation/aggregate_srr_v3_m7_training_and_cine.py` | exit 0 | Validate aggregator syntax after adding M7 continued fail-closed guard. |
 | `python scripts/evaluation/aggregate_srr_v3_m7_training_and_cine.py --job-state-snapshot 'M7 continued CPU helper 58013504 completed; A100 fallback 58014829 canceled'` | exit 0 | Exercise M7 continued fail-closed aggregator guard without overwriting continued metric CSVs. |
 | `scancel 58014829` | exit 0 | Cancel pending A100 fallback after CPU helper completed successfully. |
+| `python scripts/evaluation/run_srr_v3_m7_followup2_repair.py` | exit 0 | Generate follow-up2 repair packet and validator fixture evidence. |
+| `python scripts/evaluation/run_srr_v3_m7_followup2_repair.py` | exit 0 | Generate follow-up2 repair packet and validator fixture evidence. |
+| `python scripts/evaluation/run_srr_v3_m7_followup2_repair.py` | exit 0 | Generate follow-up2 repair packet and validator fixture evidence. |
+| `python scripts/evaluation/run_srr_v3_m7_followup2_repair.py` | exit 0 | Generate follow-up2 repair packet and validator fixture evidence. |
+| `python -m py_compile src/care_myocardium/models/srr_propref.py src/care_myocardium/losses/srr_losses.py scripts/training/run_srr_propref_myops_fold0.py scripts/evaluation/validate_srr_v3_m7_continued_packet.py scripts/evaluation/run_srr_v3_m7_followup2_repair.py scripts/evaluation/run_srr_v3_m7_cine_registration_followup2.py` | exit 0 | Validate follow-up2 source/helper syntax. |
+| `bash -n jobs/src/run_srr_v3_m7_followup2_primary_probe.sh` | exit 0 | Validate follow-up2 primary probe Slurm entrypoint syntax. |
+| `python scripts/evaluation/run_srr_v3_m7_cine_registration_followup2.py --max-cases 3 --pairs-per-case 2 --demons-iterations 40 --antspy-iterations 20` | interrupted after output write | Initial Cine follow-up2 escalation wrote registration evidence but was interrupted after long ANTs/SyN runtime. |
+| `python scripts/evaluation/run_srr_v3_m7_cine_registration_followup2.py --max-cases 1 --pairs-per-case 1 --demons-iterations 5 --antspy-iterations 1 --skip-antspy` | exit 0 | Lightweight Cine follow-up2 escalation; found a usable non-reference Demons row and therefore marked temporal dictionary as required/not executed. |
+| `squeue -u "$USER" ... && sbatch jobs/src/run_srr_v3_m7_followup2_primary_probe.sh` | submitted job 58021931 | Submit repaired MyoPS primary probe for monitor state; no validation packaging/upload. |
+| `timeout 120s python scripts/evaluation/run_srr_v3_m7_followup2_repair.py --training-job-id 58021931` | exit 0 | Regenerate follow-up2 packet with Slurm monitor job id and real known-bad validator evidence. |
+| `squeue -j 58021931 -o "%.18i %.9P %.20j %.8T %.10M %.6D %R"` | PENDING Priority | Confirm follow-up2 primary probe state before local commit. |
+| `python scripts/evaluation/run_srr_v3_m7_followup2_repair.py` | exit 0 | Generate follow-up2 repair packet and validator fixture evidence. |

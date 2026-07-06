@@ -72,6 +72,7 @@ M6_LOSS_COMPONENT_KEYS = (
     "loss_scar_refiner_roi",
     "loss_edema_refiner_t2_present_roi",
     "loss_anchor_preservation_outside_roi",
+    "loss_correction_opportunity",
     "loss_branch_arbitration_consistency",
     "loss_bounded_correction",
     "loss_component_remote_fp",
@@ -459,6 +460,33 @@ def component_dict_from_tensor(component: torch.Tensor) -> dict[str, torch.Tenso
     }
 
 
+def batch_composition_row(case: AnchoredCaseData, *, step: int, stage: str, usage_role: str) -> dict[str, object]:
+    scar_gt_voxels = int(np.count_nonzero(case.label_arr == 5))
+    edema_gt_voxels = int(np.count_nonzero(case.label_arr == 4))
+    scar_component_voxels = int(np.count_nonzero(case.component_features[0] > 0.5)) if case.component_features.shape[0] > 0 else 0
+    edema_component_voxels = int(np.count_nonzero(case.component_features[1] > 0.5)) if case.component_features.shape[0] > 1 else 0
+    return {
+        "step": step,
+        "stage": stage,
+        "case_id": case.case_id,
+        "split_role": "train",
+        "center": getattr(case.metadata, "center", "EVIDENCE_NOT_FOUND"),
+        "modality_group": getattr(case.metadata, "modality_group", "EVIDENCE_NOT_FOUND"),
+        "t2_present": bool(getattr(case.metadata, "t2_present", bool(case.availability[1] > 0))),
+        "c0_present": bool(case.availability[2] > 0),
+        "scar_gt_voxels": scar_gt_voxels,
+        "edema_gt_voxels": edema_gt_voxels,
+        "scar_gt_positive": scar_gt_voxels > 0,
+        "edema_gt_positive": edema_gt_voxels > 0,
+        "anchor_remote_fp_scar": scar_component_voxels > scar_gt_voxels,
+        "anchor_remote_fp_edema": edema_component_voxels > edema_gt_voxels,
+        "no_t2_safety_role": "no_t2_edema_block" if not bool(case.availability[1] > 0) else "t2_present_edema_supervision_allowed",
+        "used_in_training": usage_role == "training",
+        "used_in_gradient_sanity": usage_role == "gradient_sanity",
+        "used_in_validation": usage_role == "validation",
+    }
+
+
 def batch_from_anchored_cases(
     cases: list[AnchoredCaseData],
     complete_cases: list[AnchoredCaseData],
@@ -719,6 +747,7 @@ def propref_loss(
             "roi_remote_loss": m6_metrics.get("loss_component_remote_fp", zero),
             "semantic_retrieval_loss": m6_metrics.get("loss_dictionary_entropy_coverage_load_balance", zero),
             "baseline_preservation_loss": m6_metrics.get("loss_anchor_preservation_outside_roi", zero),
+            "correction_opportunity_loss": m6_metrics.get("loss_correction_opportunity", zero),
             "baseline_preserve_voxels": zero,
             "baseline_preserve_gate_mean": zero,
             "proposal_weight": outputs["logits"].new_tensor(1.0),
@@ -1718,6 +1747,7 @@ def train_variant(args: argparse.Namespace) -> None:
     usage_rows: list[dict[str, object]] = []
     proto_rows: list[dict[str, object]] = []
     gradient_rows: list[dict[str, object]] = []
+    batch_composition_rows: list[dict[str, object]] = []
     validation_rows: list[dict[str, object]] = []
     validation_events: list[dict[str, object]] = []
     first_train_loss: float | None = None
@@ -1764,6 +1794,12 @@ def train_variant(args: argparse.Namespace) -> None:
         anchor_features = {key: value.to(device) for key, value in anchor_cpu.items()}
         component_features = {key: value.to(device) for key, value in component_cpu.items()}
         anchor_features, component_features = maybe_disable_context(args, anchor_features, component_features)
+        case_lookup = {case.case_id: case for case in train_cases}
+        batch_composition_rows.extend(
+            batch_composition_row(case_lookup[key], step=step, stage=stage, usage_role="training")
+            for key in keys
+            if key in case_lookup
+        )
         before = {name: param.detach().clone() for name, param in prototype_parameters(model)} if step in {1, max(1, args.max_steps // 2)} else {}
         optimizer.zero_grad(set_to_none=True)
         outputs = model(x, av, anchor_features=anchor_features, component_features=component_features)
@@ -1790,6 +1826,11 @@ def train_variant(args: argparse.Namespace) -> None:
                     stage=stage,
                     batch_cases=keys,
                 )
+            )
+            batch_composition_rows.extend(
+                batch_composition_row(case_lookup[key], step=step, stage=stage, usage_role="gradient_sanity")
+                for key in keys
+                if key in case_lookup
             )
         loss.backward()
         torch.nn.utils.clip_grad_norm_(model.parameters(), args.grad_clip)
@@ -1821,6 +1862,7 @@ def train_variant(args: argparse.Namespace) -> None:
                 "roi_remote_loss": float(metrics["roi_remote_loss"].cpu()),
                 "semantic_retrieval_loss": float(metrics["semantic_retrieval_loss"].cpu()),
                 "baseline_preservation_loss": float(metrics["baseline_preservation_loss"].cpu()),
+                "correction_opportunity_loss": float(metrics["correction_opportunity_loss"].cpu()),
                 "baseline_preserve_voxels": float(metrics["baseline_preserve_voxels"].cpu()),
                 "baseline_preserve_gate_mean": float(metrics["baseline_preserve_gate_mean"].cpu()),
                 "proposal_weight": float(metrics["proposal_weight"].cpu()),
@@ -1830,6 +1872,10 @@ def train_variant(args: argparse.Namespace) -> None:
                 "component_present_batch_fraction": context_present_fraction(component_features, ("scar_component", "edema_component")),
                 "baseline_gate_mean": float(outputs["baseline_residual_gate"].detach().mean().cpu()) if "baseline_residual_gate" in outputs else 0.0,
                 "baseline_residual_abs_mean": float(outputs["baseline_residual_magnitude"].detach().mean().cpu()) if "baseline_residual_magnitude" in outputs else 0.0,
+                "branch_correction_open_rate": float(outputs["branch_correction_mask"].detach().mean().cpu()) if "branch_correction_mask" in outputs else 0.0,
+                "proposal_weight_mean": float(outputs["proposal_weight"].detach().mean().cpu()) if "proposal_weight" in outputs else 0.0,
+                "refiner_weight_mean": float(outputs["refiner_weight"].detach().mean().cpu()) if "refiner_weight" in outputs else 0.0,
+                "final_logit_delta_roi_abs_mean": float(outputs["arbitration_branch_delta"].detach().abs().mean().cpu()) if "arbitration_branch_delta" in outputs else 0.0,
                 "baseline_gate_status": str(outputs.get("baseline_gate_status", "evidence_not_found")),
                 "local_refinement_status": str(outputs.get("local_refinement_status", "evidence_not_found")),
                 "anatomy_roi_prior_status": str(outputs.get("anatomy_roi_prior_status", "evidence_not_found")),
@@ -1954,6 +2000,7 @@ def train_variant(args: argparse.Namespace) -> None:
     write_csv(variant_dir / "validation_events.csv", validation_rows)
     write_csv(variant_dir / "retrieval_usage.csv", usage_rows)
     write_csv(variant_dir / "loss_component_gradient_sanity.csv", gradient_rows)
+    write_csv(variant_dir / "batch_composition.csv", batch_composition_rows)
     write_csv(variant_dir / "prototype_update_sanity_formal.csv", proto_rows)
     write_csv(variant_dir / "hardneg_memory.csv", memory_rows(output_variant, hardneg_path, len(hardneg_targets), sum(len(v) for v in hardneg_targets.values())))
     loss_decrease = None if first_train_loss is None or last_train_loss is None else first_train_loss - last_train_loss
@@ -2018,10 +2065,11 @@ def train_variant(args: argparse.Namespace) -> None:
         "nnunet_anchor_train_case_count": len(train_cases),
         "nnunet_anchor_val_case_count": len(val_cases),
         "prototype_t2_repair_added_case_ids": prototype_t2_repair_added_case_ids,
+        "batch_composition_path": str(variant_dir / "batch_composition.csv"),
         "nnunet_anchor_fold_counts": anchor_fold_counts,
         "nnunet_anchor_usage_status": "disabled_for_ablation" if bool(getattr(args, "disable_nnunet_anchor", False)) else "enabled",
         "three_stage_schedule": ["evidence_warmup", "proposal_dictionary", "soft_roi_refinement", "low_lr_calibration"],
-        "baseline_preserving_residual_gate": "final_logits = nnunet_anchor_logits + gate * bounded_delta_srr when anchor probabilities are present",
+        "baseline_preserving_residual_gate": "follow-up2 arbitration keeps exact fallback but otherwise uses anchor_logits + clipped(srr_weight*delta + proposal_weight*proposal_delta + refiner_weight*refiner_delta)",
         "baseline_gate_init": "closed-biased 1x1 gate; summary/training_log record gate mean and residual magnitude",
         "anatomy_distance_roi_prior": {
             "status": "implemented_runtime_consumed_needs_formal_ablation",
