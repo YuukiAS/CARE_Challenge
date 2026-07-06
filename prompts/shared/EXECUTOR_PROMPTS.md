@@ -118,3 +118,43 @@ artifact paths for the required CSV outputs
 ```text
 只执行 prompts/tasks/20260705_srr_v3_m5_cine_secondary_contract.md。开始前必须确认 results/20260705_srr_v3_m0_architecture_master_contract/review.md 存在且包含 M0_AUDITED_GO，否则停止。Cine 是副线，不阻塞 MyoPS。目标是审计和补足 Cine secondary diagnostic evidence：CineMA/anatomy prior、ANTsPy SyN same-safe-subset matrix、VoxelMorph trained/usable status、frame0/ED controls、temporal dictionary readiness、frame-quality/motion-saliency router。不能把 frame0-only、one-case SyN smoke、untrained VoxelMorph adapter 冒充 full temporal retrieval。结果写入 results/20260705_srr_v3_m5_cine_secondary_contract/。完成后用 git add -f 提交该 milestone 供 reviewer 审阅所需的全部轻量文件：required outputs、小型 Markdown/CSV/JSON 证据、以及必要的小型 first-party helper/source/config；不要提交重型 runtime 产物或整个 result tree；不要 push，由用户手动 push。不要写 review.md。
 ```
+
+## M6 executor: MyoPS co-equal SRR/segmentation decode-refiner repair
+
+```text
+只执行 M6：MyoPS co-equal SRR/segmentation decode-refiner repair。M5 是 Cine 副线，不是 M6 前置条件。开始前必须确认 results/20260705_srr_v3_m4_myops_mechanism_ablation_readiness/review.md 存在且包含 M4_AUDITED_GO，否则停止并写 M6_BLOCKED_BY_M4。
+
+这是 MyoPS 主线的 implementation/runtime-repair milestone，不是 full fold，不是 route promotion，不是 validation packaging/upload。M6 的科学前提是：接受 nnU-Net 或其他强分割模型作为安全分割分支和上下文来源，但不能让 SRR 退化成可有可无的后处理。SRR 分支、分割分支、loss function、proposal/refiner 必须在机制中有同等地位。closed-gate fallback 只是安全刹车，不是目标路线；最终系统必须能报告 SRR 分支何时赢、何时输、为何被仲裁器采用或拒绝。
+
+背景证据来自 M3/M4：M3 最小有效训练通过但同 split 指标伤害 nnU-Net；M4 证明 closed-gate identity 是中性的，no-anchor 很伤，M3 trained gate 几乎关闭但 decode/proposal/refinement 仍会改标签，说明当前主要问题不是 fallback 本身，而是 proposal/refinement/decode 与分支仲裁没有被正确约束。M6 只修这个问题，不重新跑 M3，也不把 M4 结果包装成成功路线。
+
+必须实现或重构以下机制，并用小规模 synthetic + explicit real-case smoke 证明它们真的运行：
+
+1. Co-equal branch arbitration：把分割模型分支和 SRR 分支作为两个同级候选，而不是“nnU-Net 最终答案 + SRR 小修补”。仲裁器必须输出 per-class/per-case 的 anchor_weight、srr_weight、refiner_weight、chosen_source 或等价字段。SRR 分支必须能在 synthetic known-error / high-uncertainty 区域被选择；分割分支必须能在 SRR 证据低质时被选择。
+2. Decode/gate consistency：如果仲裁器选择分割分支或 gate/refiner mask 关闭，最终标签必须精确等于分割分支；不允许出现 M4 中那种 gate 近零但 pathology-aware decode 仍大量改标签的隐藏路径。所有 label delta 都必须能追溯到显式的 SRR arbitration/refiner mask。
+3. Loss/refiner centrality：loss function 必须显式包含 SRR 分支监督、分割分支保持项、仲裁一致性项、bounded correction 项、component/remote-FP 惩罚项、no-T2 edema 条件项和 local refiner ROI 项。不要只把 loss/refiner 当辅助日志；必须导出每一项的非空数值、梯度或 one-step update sanity。
+4. Refiner as mechanism：local refiner 必须消费 SRR proposal、分割分支 logits/probabilities、anatomy prior、prototype/dictionary features 和 uncertainty/context，并输出 bounded local correction。必须证明 crop 是 bounded，不是 full-volume residual；必须导出 scar/edema crop ratio、residual magnitude、component/remote-FP proxy。
+5. SRR contribution floor without unsafe forcing：不能强行让 SRR 改所有 case，但在 correction-positive synthetic/real smoke 中，SRR contribution 不能全为 0；在 no-T2 case 中，edema 仍必须全链路安全。
+6. Provenance and strict validation：所有 smoke 必须记录 checkpoint/source status、selected case ids、eval case ids、patch shape、commands、code paths、artifact paths；strict validator 必须 fail closed 于 claim-only packet、hidden-decode-delta packet、SRR-zero-contribution packet、no-T2 edema unsafe packet、full-volume-refiner packet。
+
+结果写入 results/20260705_srr_v3_m6_myops_coequal_decode_refiner_repair/，必须写齐以下轻量文件：
+
+result.md
+coequal_repair_contract.md
+code_diff_summary.md
+m4_failure_mapping.csv
+branch_arbitration_sanity.csv
+decode_gate_consistency_sanity.csv
+loss_refiner_component_sanity.csv
+refiner_roi_component_sanity.csv
+no_t2_safety_sanity.csv
+strict_validator_report.md
+unit_test_report.md
+completion_check.md
+review_request.md
+MANIFEST.md
+
+completion_check.md 只能写 M6_READY_FOR_REVIEW、M6_NEEDS_REVISION 或 M6_NEEDS_EVIDENCE。不能 mark ready 的情况包括：SRR 分支贡献在所有 correction-positive sanity 中为 0；gate/refiner mask 关闭时最终标签仍改变；loss/refiner 只有自然语言说明没有数值/梯度/one-step sanity；local refiner 证据是 full-volume；no-T2 edema 出现非零 decode；strict validator 不能 fail closed known-bad packet。
+
+完成后用 git add -f 提交 M6 packet 供 reviewer 审阅所需的全部轻量文件和必要 helper/source/config；不要提交 checkpoints、NIfTI predictions、upload packages、大日志、raw data、secrets、environment dumps 或整个 runtime result tree；不要 push，由用户手动 push。不要写 review.md，不要批准自己，不要启动 M7。M6 是否给 M6_AUDITED_GO 由独立 reviewer 决定。
+```
