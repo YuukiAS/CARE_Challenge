@@ -14,8 +14,18 @@ def now() -> str:
     return datetime.now().astimezone().isoformat(timespec="seconds")
 
 
-def run_command(cmd: list[str]) -> subprocess.CompletedProcess[str]:
-    return subprocess.run(cmd, check=False, text=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+def run_command(cmd: list[str], *, timeout: float = 30.0) -> subprocess.CompletedProcess[str]:
+    try:
+        return subprocess.run(
+            cmd,
+            check=False,
+            text=True,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.STDOUT,
+            timeout=timeout,
+        )
+    except subprocess.TimeoutExpired as exc:
+        return subprocess.CompletedProcess(cmd, 124, (exc.stdout or "") + f"\nTIMEOUT after {timeout} seconds")
 
 
 def job_lines(job_ids: list[str]) -> list[tuple[str, str, str, str]]:
@@ -48,6 +58,8 @@ def main() -> int:
         log.write(f"{now()} watcher_start a100={args.a100_job} htzhulab={args.htzhulab_job}\n")
         log.flush()
         for _ in range(args.max_iterations):
+            log.write(f"{now()} poll_begin\n")
+            log.flush()
             rows = job_lines(job_ids)
             snapshot = "; ".join("|".join(row) for row in rows) or "NO_ROWS"
             log.write(f"{now()} snapshot {snapshot}\n")
