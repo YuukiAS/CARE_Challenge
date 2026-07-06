@@ -144,6 +144,8 @@ M6 的任务不是“再训练一下 M3”，也不是“把 SRR 变成 nnU-Net 
 - SRR 在 correction-positive synthetic/real smoke 中必须能产生非零贡献；
 - no-T2 edema 在 proposal、refiner、loss、decode、export 全链路安全。
 
+M6 必须首先写出 code-gap map，不得直接跑旧代码导表。code-gap map 写入 `code_diff_summary.md` 与 `architecture_component_trace.csv`，逐项列出当前 first-party code 到目标实现的差距、修复状态、证据路径和仍未关闭的 blocker。至少要检查并修复 encoder profile、pair-specific dictionary config、prototype loading/source checks、segmentation context interface、pathology-specific proposal、bounded soft-ROI refiner、explicit arbitration、expanded total loss 和 strict validator。只生成 CSV/Markdown 而没有对应 first-party code 改动或明确 blocker，不能写 ready。
+
 Codex 不能自己设计 variant。M6 必须实现或明确保留以下三个 variant；如果某个 variant 由于真实 blocker 无法实现，必须写清 blocker，不得悄悄省略。
 
 1. `m6_full_srr_context_arbitration`
@@ -173,7 +175,11 @@ M6 必须把 encoder/decoder 容量写死为可审计 profile，而不是继续�
 - `balanced_4scale`: `16/32/64/128`，默认 M7 候选；
 - `safe_4scale`: `12/24/48/96` 或 `8/16/32/64`，只作为 OOM fallback 或 smoke，不得无理由作为最终设计。
 
-每个 profile 必须导出：input shape、availability pattern、encoder scale shapes、decoder scale shapes、parameter count、activation/memory estimate、runtime seconds。decoder 必须是 anatomy/scar/edema task-specific decoder，不能把所有任务压成一个 shallow shared head。
+不得继续以 `tiny_3scale`、`base_channels=10` 或旧 `strong_4scale` 名称糊弄。每个 profile 必须导出：input shape、availability pattern、encoder scale shapes、decoder scale shapes、parameter count、activation/memory estimate、runtime seconds。decoder 必须是 anatomy/scar/edema task-specific decoder，不能把所有任务压成一个 shallow shared head。
+
+Dictionary 必须实现 pair-specific config，而不是只复用旧 `interaction_slots` 默认值。`dict_full_interaction`、`dict_conservative_private_shared` 和 `m6_scar_precision_edema_safe` 的 task-specific router bias 都必须在代码/config 中可审计。无对应 modality 时 private/interaction slot 必须 mask；no-T2 case 中 T2-private 与含 T2 interaction slot 不得作为 edema evidence。`retrieval_bank_runtime_sanity.csv` 必须证明这些 mask 和 usage 规则。
+
+Prototype bank 不得使用 deterministic placeholder 作为 ready evidence。允许 deterministic prototype 仅用于 synthetic smoke 或 known-bad validator，但 `M6_READY_FOR_REVIEW` 必须有 real train/OOF 或可审计 anchor-derived prototype source。若任一 edema bank 为空，或 no-T2 myocardium 进入 edema negative，必须写 `M6_NEEDS_EVIDENCE` 或 `M6_NEEDS_REVISION`。
 
 M6 必须新增或明确修复 `segmentation_context_interface`，使 nnU-Net/强分割模型作为 evidence 进入 SRR，而不是绕过 SRR。输入字段至少包括：
 
@@ -193,6 +199,12 @@ M6 必须导出 `prototype_bank_runtime_sanity.csv`，至少包含：variant、b
 M6 必须导出 `anatomy_proposal_sanity.csv` 和 `refiner_roi_component_sanity.csv`。
 
 `anatomy_proposal_sanity.csv` 至少包含：`P_union/P_LV/P_RV` nonzero rate、distance/proximity map range、uncertainty range、scar proposal foreground rate、edema proposal foreground rate、positive/negative similarity means、anchor component evidence contribution、proposal recall/precision proxy、outside-myocardium FP proxy、no-T2 edema proposal voxels（必须为 0）。
+
+Proposal 必须显式实现 pathology-specific 公式，不得退化为一层 dense head。对 `k in {scar, edema}`，proposal logit 至少包含：
+
+`ell_k = w_pos_k * s_pos_k - w_neg_k * s_neg_k + w_anatomy_k * A_k + w_context_k * C_k + w_uncertainty_k * U_k + r_k`
+
+其中 `s_pos_k` 是 positive prototype similarity，`s_neg_k` 是 safe-negative / hard-negative similarity，`A_k` 是 anatomy/distance prior，`C_k` 是 nnU-Net component/context evidence，`U_k` 是 uncertainty，`r_k` 是 learned residual。Scar 必须 LGE-dominant；edema 必须 T2-conditioned；no-T2 edema proposal 必须为 0 或 logits 强关闭。
 
 `refiner_roi_component_sanity.csv` 至少包含：refiner type: scar_small_roi / edema_context_roi、crop bounds、crop_volume_ratio、crop_mask_volume_ratio、`is_full_volume_crop`（必须为 false）、original modality crop used: scar 必须 LGE，edema 必须 T2-present only、anchor/prototype/dictionary/anatomy/uncertainty inputs used、residual magnitude、bounded_delta max、component_count_delta proxy、remote_FP_delta proxy、no-T2 edema final voxels（必须为 0）。
 
@@ -220,7 +232,11 @@ M6 必须新增或改造 loss，使 `loss_refiner_component_sanity.csv` 至少�
 - `loss_dictionary_entropy_coverage_load_balance`；
 - `loss_prototype_diversity_margin`。
 
-每个 loss 组件必须导出 value、weight、nonzero flag、requires_grad flag、gradient_norm 或 synthetic backward/one-step update evidence。不能只有自然语言说明。
+这些 loss component 必须进入实际 total loss，不得只写日志。Canonical total loss 至少包含：
+
+`L_total = lambda_ana * L_ana + lambda_scar_prop * L_scar_prop + m_T2 * lambda_edema_prop * L_edema_prop + lambda_scar_ref * L_scar_ref + m_T2 * lambda_edema_ref * L_edema_ref + lambda_anchor * L_anchor + lambda_arb * L_arb + lambda_delta * L_bounded + lambda_neg * L_neg + lambda_noT2 * L_noT2 + lambda_dict * L_dict + lambda_proto * L_proto`
+
+也就是说，至少包含 anatomy、scar proposal、T2-present edema proposal、scar refiner、T2-present edema refiner、anchor preservation、arbitration consistency、bounded correction、negative/hard-negative、no-T2 safety、dictionary regularization 和 prototype regularization。每个 non-N/A component 必须有 positive weight、nonzero or justified zero、requires_grad、gradient_norm 或 synthetic backward/one-step update evidence。不能只有自然语言说明。M7 必须用同一套 expanded loss 训练，不能 M6 只做 synthetic backward、M7 又退回旧 `srr_total_loss()`。
 
 M6 必须新增或加严 strict validator，使以下 known-bad packet fail closed：
 
@@ -269,7 +285,9 @@ M6 结果写入 `results/20260705_srr_v3_m6_myops_concrete_architecture_repair/`
 不能写 `M6_READY_FOR_REVIEW` 的情况：
 
 - 没有逐项 architecture trace；
+- 没有先写 code-gap map，或 code-gap map 只列 claim 没有 first-party code path / runtime artifact / blocker；
 - 使用 tiny three-scale 结构作为唯一证据；
+- 只复用旧 `interaction_slots` / deterministic placeholder prototype / 旧 baseline residual gate 当作通过证据；
 - dictionary/prototype/proposal/refiner/loss/arbitration 任一核心模块没有 runtime evidence；
 - no-T2 edema 不安全；
 - local refiner 是 full-volume；
@@ -316,6 +334,8 @@ M7 必须训练并评估下列 variants，除非 M6 review 明确禁止某个 va
 
 不得跑大规模 temperature/threshold grid。阈值、温度、gate bias 只能在预先记录的有限集合中选择，且不能用 validation GT 做 case-id tuning。
 
+M7 必须按 shared 的三个 required variants 训练。不得把未跑 variant 当作 skipped success；资源不足时只能按顺序记录 blocker。M7 必须使用 M6 expanded total loss 和 concrete architecture/runtime repairs，不能退回旧 `srr_total_loss()` 或旧 SRR baseline path。
+
 M7 不要求超过 8 小时，但必须避免几分钟结束的训练假证据。每个 MyoPS variant 必须满足以下条件之一：
 
 - `optimizer_steps >= 3000` 且 `train_loop_seconds >= 1800`；或
@@ -353,6 +373,8 @@ M5 已经说明 CineMA/anatomy prior 目前只是部分支持，不能当成 reg
 1. CineMA anatomy prior：对 same-safe-subset 的 cine frames 运行或读取 CineMA/equivalent anatomy output，记录 source path、version、weights/source status、input preprocessing、frame selection、class mapping、output label/probability shape、myocardium/anatomy Dice/HD95 against available local reference 或 frame0 control、whether anatomy-only or pathology-capable。CineMA 输出不能直接当 pathology prediction。
 2. CineMA-assisted registration：构建 same-safe-subset matrix，至少包含 frame0/ED identity control、CineMA frame-wise anatomy prior control、CineMA + ANTsPy SyN、CineMA + SimpleITK Demons/B-spline fallback、optical-flow/feature-warp proxy（必须标为 descriptor/proxy）、VoxelMorph（如果没有训练或可审计 weights，必须标 `UNTRAINED_NOT_USABLE`，不能进 usable registration）。每行必须报告 same case/frame、before/after anatomy Dice/HD95、Jacobian/fold proxy、round-trip/inverse consistency proxy、runtime、failure reason。one-case SyN smoke 不能作为 full registration matrix。
 3. Cine temporal dictionary：如果 registration matrix 至少有一个非-reference option 合格，才允许构建 temporal dictionary。temporal dictionary 必须包括 ED/reference anchor features、selected non-reference frame features、warped or descriptor features、frame-quality score、motion-saliency score、temporal representer slot usage、temporal aggregation output、local class_1 myocardium proxy and class_3 sanity、hosted metric caveat。如果 registration matrix 不合格，必须写 `TEMPORAL_DICTIONARY_BLOCKED_BY_REGISTRATION_GAP`，不得用 frame0-only 代替 temporal retrieval。
+
+若已有 CineMA output 可用却未使用，写 `M7_NEEDS_EVIDENCE`；若缺权重、缺输出或合规不明，写 `cinema_blocker_report.md` 并说明 exact blocker。Frame0-only、one-case SyN smoke、untrained VoxelMorph、optical-flow descriptor 都不得冒充 completed registration or temporal retrieval。
 
 Cine 是 secondary diagnostic，不得阻塞 MyoPS 主线训练。M7 可以把 Cine 子线作为同一 milestone 的 secondary packet，但必须分开写 MyoPS 与 Cine 的 decision：
 
@@ -401,6 +423,7 @@ M7 结果写入 `results/20260705_srr_v3_m7_training_and_cine_utilization/`，�
 不能写 `M7_READY_FOR_REVIEW` 的情况：
 
 - 任一必跑 MyoPS variant 没有训练且没有 blocker；
+- required variant 被自行缩减、未跑 variant 被当作 skipped success，或 M7 退回旧 loss/model path；
 - 训练不足 1800 秒且没有 plateau；
 - 没有 same-split nnU-Net help/harm；
 - 没有 loss component 曲线；

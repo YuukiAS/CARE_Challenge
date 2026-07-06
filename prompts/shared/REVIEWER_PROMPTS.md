@@ -71,6 +71,8 @@ M6 reviewer 必须读取：
 - M6 executor 没有启动 M7；
 - M6 lightweight evidence 和必要 helper/source/config 已 git-tracked。
 
+如果 M6 只是生成 CSV/Markdown，但 first-party code 中没有实际新增或修复 full/balanced/safe encoder profile、pair-specific dictionary config、prototype loading/source checks、segmentation context interface、pathology-specific proposal、bounded soft-ROI refiner、explicit arbitration、expanded total loss 和 strict validator，decision 必须是 `M6_AUDITED_NEEDS_REVISION`。Reviewer 必须检查 code diff，而不是只检查 result table 是否存在。
+
 `architecture_component_trace.csv` 必须逐项覆盖：
 
 - inputs/availability/no zero-filling semantics；
@@ -101,19 +103,31 @@ M6 reviewer 必须读取：
 
 `retrieval_bank_runtime_sanity.csv` 必须显示 dictionary slots 在 runtime 非空、invalid modality slots 被 mask、T2 缺失时 T2 slots 不被当作 edema evidence、task-specific routers 有 usage/entropy/collapse 统计。
 
+Dictionary 必须真的实现 full/conservative/pathology-specific 三类 variant。若 full dictionary 没有 shared 8、LGE-private 4、C0-private 4、T2-private 4、三组 pair interaction 各 4 的可审计配置，不能通过。若 no-T2 case 中 T2 slot 或 T2 interaction slot 被 edema router 使用，必须 fail。
+
 `prototype_bank_runtime_sanity.csv` 必须显示 scar-positive、scar-safe-negative、edema-positive、edema-safe-negative 四类 bank；edema-positive 和 edema-safe-negative 必须来自 T2-present 安全证据。若 no-T2 myocardium 被当作 edema negative，必须判 `M6_AUDITED_NEEDS_REVISION` 或 `M6_AUDITED_NEEDS_EVIDENCE`。
 
+若 scar/edema prototype 仍主要来自 deterministic placeholder，并被 executor 标为 ready evidence，必须判 `M6_AUDITED_NEEDS_EVIDENCE`。
+
 `anatomy_proposal_sanity.csv` 必须证明 anatomy prior/distance/uncertainty、scar proposal、edema proposal 均有非空 runtime evidence，并且 no-T2 edema proposal 为 0。
+
+Proposal/refiner 必须实际在 forward 中参与最终 logits。若 proposal 只是生成辅助热图，不进入 refiner/arbitration；或 refiner 是 full-volume residual；或 no-T2 edema final voxels 非 0，不能通过。
 
 `refiner_roi_component_sanity.csv` 必须证明 refiner 是 bounded crop/local correction，不是 full-volume residual。若 `is_full_volume_crop=True` 且被当作通过证据，必须 fail。
 
 `branch_arbitration_sanity.csv` 必须导出 segmentation_weight、srr_retrieval_weight、proposal_weight、refiner_weight、chosen_source 或等价字段。必须同时证明 correction-positive 时 SRR 可被采用，SRR 低质时 segmentation branch 可被采用。
 
+若只有旧 baseline residual gate，没有 per-case/per-class `segmentation_weight/srr_retrieval_weight/proposal_weight/refiner_weight/chosen_source/fallback_reason`，不能通过。
+
 `decode_gate_consistency_sanity.csv` 必须证明 fallback/closed gate/refiner mask 关闭时 final labels 精确等于 segmentation branch。任何 hidden decode delta 都是 blocker。
 
 `loss_refiner_component_sanity.csv` 必须包含每个 loss component 的 value、weight、nonzero flag、requires_grad、gradient_norm 或 one-step update evidence。必须覆盖 anatomy、scar proposal、edema proposal、scar refiner、edema refiner、anchor preservation、arbitration consistency、bounded correction、component/remote-FP、no-T2 safety、dictionary regularization、prototype margin/diversity。如果 loss 只有 total loss 或自然语言说明，必须 fail。
 
+`loss_refiner_component_sanity.csv` 必须证明每个核心 component 进入 total loss 或有合法 N/A 解释。若只存在 old total loss：anatomy、scar、edema、prior、retrieval、semantic_retrieval，而没有 proposal/refiner/anchor preservation/arbitration/bounded correction/component/prototype/no-T2 safety loss 的 gradient 或 one-step evidence，不能给 `M6_AUDITED_GO`。
+
 `strict_validator_report.md` 必须证明 validator 对真实 packet 通过，对 known-bad packets fail closed。Known-bad 至少包括 claim-only、missing architecture trace、empty dictionary/prototype、hidden decode delta、SRR-zero-contribution、loss empty、no-T2 unsafe、full-volume-refiner。若 validator 不能 fail closed，不能给 `M6_AUDITED_GO`。
+
+若 validator 只对真实 packet pass，但没有 known-bad fail evidence，不能通过。
 
 M6 reviewer decision 只能是：
 
@@ -152,6 +166,8 @@ M7 reviewer 必须读取：
 - M7 没有启动后续 milestone；
 - M7 lightweight evidence 和必要 helper/source/config 已 git-tracked。
 
+若 `results/20260705_srr_v3_m6_myops_concrete_architecture_repair/review.md` 不存在或不含 `M6_AUDITED_GO`，M7 必须为 `M7_AUDITED_NEEDS_EVIDENCE` 或 blocked；不能审成通过。
+
 `training_adequacy_by_variant.csv` 必须显示每个 required variant 的 optimizer steps、train_loop_seconds、validation events、eval cases、one-batch overfit、loss decrease、same-split baseline、cache isolation。
 
 不能通过的情况：
@@ -164,6 +180,7 @@ M7 reviewer 必须读取：
 - 没有 validation curve；
 - 没有 loss component curve；
 - 训练中断却被写成成功或失败结论。
+- required variant 被自行缩减、未跑 variant 被当作 skipped success，或 M7 退回旧 `srr_total_loss()` / 旧 model path。
 
 `same_split_help_harm.csv`、`hard_subgroup_metrics.csv`、`best_variant_decision.md` 必须证明 best variant 是按预定义规则选择，而不是 executor 主观判断。
 
@@ -184,6 +201,8 @@ Reviewer 必须 reject：
 - `proposal_refiner_by_case.csv` 是否显示 bounded ROI/refiner behavior；
 - `no_t2_safety_by_variant.csv` 是否显示 no-T2 全链路安全。
 
+长期为 0 的 loss component 必须有合法 N/A 解释，否则 fail。M7 的 loss curves 必须覆盖 anatomy、scar proposal、edema proposal T2-present、scar refiner、edema refiner、anchor preservation、arbitration consistency、bounded correction、component/remote-FP、no-T2 safety、dictionary entropy/coverage/load-balance、semantic family/interaction mass、prototype diversity/margin。
+
 如果 Cine 子线运行，必须审阅：
 
 - `cinema_usage_report.md` 是否记录 CineMA source/version/weights/input preprocessing/class mapping/output path/anatomy-only caveat；
@@ -196,6 +215,8 @@ Reviewer 必须 reject：
 - Cine metrics 是否保留 hosted metric caveat。
 
 若 `cinema_usage_report.md` 只有自然语言“尝试 CineMA”但没有输出路径、class mapping 或 metric/blocker，必须 fail。
+
+若 M7 声称使用 CineMA，`cinema_usage_report.md` 还必须包括 source/version/weights、input preprocessing、frame selection、output shape 和 anatomy metric 或明确 blocker。
 
 M7 reviewer decision 只能是：
 
