@@ -43,3 +43,22 @@ Copy exactly one section into a separate read-only Codex reviewer/auditor sessio
 ```text
 只读审阅 results/20260705_srr_v3_m5_cine_secondary_contract/。请读取 prompts/tasks/20260705_srr_v3_m5_cine_secondary_contract.md、M0 review、milestone review protocol、handoff gate policy、GPT hard-gate prompt，以及 M5 result directory。检查 CineMA/anatomy prior、ANTsPy SyN same-safe-subset matrix、VoxelMorph status、frame0/ED controls、temporal dictionary readiness、frame-quality/motion-saliency router、missing evidence 和 required outputs。确认没有把 frame0-only、one-case SyN smoke 或 untrained VoxelMorph adapter 冒充 full temporal retrieval，没有 hosted Cine metric claim，没有 validation package/upload。最后只写 results/20260705_srr_v3_m5_cine_secondary_contract/review.md，decision 只能是 M5_AUDITED_DIAGNOSTIC_GO、M5_AUDITED_NEEDS_REVISION 或 M5_AUDITED_NEEDS_EVIDENCE。完成后 git add -f review.md 并 commit；不要 push，由用户手动 push。
 ```
+
+## M6 reviewer: MyoPS co-equal SRR/segmentation decode-refiner repair
+
+```text
+只读审阅 results/20260705_srr_v3_m6_myops_coequal_decode_refiner_repair/。请读取 prompts/shared/EXECUTOR_PROMPTS.md 中的 M6 executor、prompts/MILESTONE_REVIEW_PROTOCOL.md、prompts/HANDOFF_GATE_POLICY.md、prompts/GPT_HARD_GATE_PROMPT.md、M4 review，以及 M6 result directory。不要补 executor 缺失文件，不要修改模型代码，不要训练，不要 validation packaging/upload，不要 route promotion，不要启动 M7。
+
+重点检查 M6 是否真正按 M4 结论修复 MyoPS 主线，而不是把 SRR 降级成 nnU-Net 的可有可无后处理。必须审阅：
+
+1. coequal_repair_contract.md 是否明确把分割模型分支和 SRR 分支写成同级候选，并说明 closed-gate fallback 只是安全刹车，不是目标路线。
+2. branch_arbitration_sanity.csv 是否导出 anchor_weight、srr_weight、refiner_weight、chosen_source 或等价字段，并证明 SRR 在 correction-positive sanity 中能被采用，分割分支在 SRR 低质时也能被采用。
+3. decode_gate_consistency_sanity.csv 是否证明 gate/refiner mask 关闭或仲裁选择分割分支时 final labels 精确等于分割分支；不能允许 hidden decode delta。
+4. loss_refiner_component_sanity.csv 是否有非空 loss component 数值、梯度或 one-step update sanity，覆盖 SRR 分支监督、分割分支保持、仲裁一致性、bounded correction、component/remote-FP、no-T2 edema 和 local refiner ROI 项。
+5. refiner_roi_component_sanity.csv 是否证明 local refiner 是 bounded crop/local correction，不是 full-volume residual，并导出 scar/edema crop ratio、residual magnitude、component/remote-FP proxy。
+6. no_t2_safety_sanity.csv 是否证明 no-T2 edema 在 proposal、loss、refiner、final decode、export 上全链路安全。
+7. strict_validator_report.md 和 unit_test_report.md 是否 fail closed 于 claim-only、hidden-decode-delta、SRR-zero-contribution、no-T2 unsafe、full-volume-refiner 等 known-bad cases。
+8. required outputs、completion_check.md、review_request.md、MANIFEST.md 和必要 first-party helper/source/config 是否已 git-tracked；是否没有提交 checkpoints、NIfTI predictions、upload packages、大日志、raw data、secrets 或整个 runtime tree。
+
+如果 SRR contribution 在所有 correction-positive sanity 中为 0，或者 gate/refiner mask 关闭时 final labels 仍改变，或者 loss/refiner 只有自然语言说明没有数值/梯度/one-step evidence，或者 no-T2 edema 不安全，decision 必须是 M6_AUDITED_NEEDS_REVISION 或 M6_AUDITED_NEEDS_EVIDENCE。最后只写 results/20260705_srr_v3_m6_myops_coequal_decode_refiner_repair/review.md，decision 只能是 M6_AUDITED_GO、M6_AUDITED_NEEDS_REVISION 或 M6_AUDITED_NEEDS_EVIDENCE。完成后 git add -f review.md 并 commit；不要 push，由用户手动 push。
+```
