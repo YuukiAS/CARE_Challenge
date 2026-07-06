@@ -1,0 +1,4 @@
+artifact,issue,source_path,status,variant
+same_split_help_harm,M7 runtime evidence not found yet,/users/a/e/aereinh/CARE/results/20260705_srr_v3_m7_training_and_cine_utilization/runtime/variants/m7_full_srr_context_arbitration/same_split_help_harm*.csv,EVIDENCE_NOT_FOUND,m7_full_srr_context_arbitration
+same_split_help_harm,M7 runtime evidence not found yet,/users/a/e/aereinh/CARE/results/20260705_srr_v3_m7_training_and_cine_utilization/runtime/variants/m7_conservative_component_arbitration/same_split_help_harm*.csv,EVIDENCE_NOT_FOUND,m7_conservative_component_arbitration
+same_split_help_harm,M7 runtime evidence not found yet,/users/a/e/aereinh/CARE/results/20260705_srr_v3_m7_training_and_cine_utilization/runtime/variants/m7_scar_precision_edema_safe/same_split_help_harm*.csv,EVIDENCE_NOT_FOUND,m7_scar_precision_edema_safe

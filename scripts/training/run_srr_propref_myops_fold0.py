@@ -13,6 +13,7 @@ import time
 from dataclasses import dataclass
 from pathlib import Path
 from statistics import mean
+from typing import Iterable
 
 import numpy as np
 import SimpleITK as sitk
@@ -52,6 +53,131 @@ DEFAULT_NNUNET_ANCHOR_ROOT = (
     / "data/nnUNet/nnUNet_results/Dataset501_CAREMyoPS/"
     "nnUNetTrainer_500epochs__nnUNetPlans__3d_fullres"
 )
+
+M7_TO_M6_VARIANT = {
+    "m7_full_srr_context_arbitration": "m6_full_srr_context_arbitration",
+    "m7_conservative_component_arbitration": "m6_conservative_component_arbitration",
+    "m7_scar_precision_edema_safe": "m6_scar_precision_edema_safe",
+}
+
+
+def canonical_model_variant(variant: str) -> str:
+    return M7_TO_M6_VARIANT.get(str(variant), str(variant))
+
+
+M6_LOSS_COMPONENT_KEYS = (
+    "loss_anatomy_union_lv_rv",
+    "loss_scar_proposal",
+    "loss_edema_proposal_t2_present_only",
+    "loss_scar_refiner_roi",
+    "loss_edema_refiner_t2_present_roi",
+    "loss_anchor_preservation_outside_roi",
+    "loss_branch_arbitration_consistency",
+    "loss_bounded_correction",
+    "loss_component_remote_fp",
+    "loss_no_t2_edema_safety",
+    "loss_dictionary_entropy_coverage_load_balance",
+    "loss_prototype_diversity_margin",
+    "m6_expanded_total_loss",
+)
+
+
+def loss_component_metric_row(metrics: dict[str, torch.Tensor]) -> dict[str, float]:
+    row: dict[str, float] = {}
+    for key in M6_LOSS_COMPONENT_KEYS:
+        value = metrics.get(key)
+        if isinstance(value, torch.Tensor):
+            row[key] = float(value.detach().cpu())
+    for key, value in metrics.items():
+        if key.endswith("_semantic_family_mass") or key.endswith("_semantic_interaction_mass"):
+            row[key] = float(value.detach().cpu())
+    return row
+
+
+def total_grad_l2_norm(parameters: Iterable[torch.nn.Parameter]) -> tuple[float, int]:
+    total = 0.0
+    count = 0
+    for param in parameters:
+        if param.grad is None:
+            continue
+        grad = param.grad.detach()
+        if grad.numel() == 0:
+            continue
+        norm = float(grad.norm(2).cpu())
+        total += norm * norm
+        count += 1
+    return math.sqrt(total), count
+
+
+def loss_component_gradient_sanity_rows(
+    *,
+    model: torch.nn.Module,
+    output_variant: str,
+    args: argparse.Namespace,
+    outputs: dict[str, torch.Tensor],
+    metrics: dict[str, torch.Tensor],
+    step: int,
+    stage: str,
+    batch_cases: list[str],
+) -> list[dict[str, object]]:
+    rows: list[dict[str, object]] = []
+    component_keys = list(M6_LOSS_COMPONENT_KEYS)
+    component_keys.extend(
+        sorted(
+            key
+            for key, value in metrics.items()
+            if isinstance(value, torch.Tensor)
+            and (key.endswith("_semantic_family_mass") or key.endswith("_semantic_interaction_mass"))
+        )
+    )
+    for key in component_keys:
+        value = metrics.get(key)
+        if not isinstance(value, torch.Tensor):
+            rows.append(
+                {
+                    "variant": output_variant,
+                    "model_variant": args.variant,
+                    "source_model_variant": canonical_model_variant(args.variant),
+                    "step": step,
+                    "stage": stage,
+                    "component": key,
+                    "loss_value": "EVIDENCE_NOT_FOUND",
+                    "grad_l2_norm": "EVIDENCE_NOT_FOUND",
+                    "param_with_grad_count": 0,
+                    "status": "EVIDENCE_NOT_FOUND",
+                    "batch_cases": ",".join(batch_cases),
+                }
+            )
+            continue
+        model.zero_grad(set_to_none=True)
+        try:
+            value.backward(retain_graph=True)
+            grad_norm, grad_count = total_grad_l2_norm(model.parameters())
+            status = "PASS" if grad_count > 0 and grad_norm > 0.0 else "ZERO_GRAD_OR_DETACHED"
+            loss_value: object = float(value.detach().cpu())
+            grad_value: object = grad_norm
+        except RuntimeError as exc:
+            grad_count = 0
+            status = f"BACKWARD_FAILED:{type(exc).__name__}"
+            loss_value = float(value.detach().cpu()) if value.numel() == 1 else "NON_SCALAR"
+            grad_value = "EVIDENCE_NOT_FOUND"
+        rows.append(
+            {
+                "variant": output_variant,
+                "model_variant": args.variant,
+                "source_model_variant": canonical_model_variant(args.variant),
+                "step": step,
+                "stage": stage,
+                "component": key,
+                "loss_value": loss_value,
+                "grad_l2_norm": grad_value,
+                "param_with_grad_count": grad_count,
+                "status": status,
+                "batch_cases": ",".join(batch_cases),
+            }
+        )
+    model.zero_grad(set_to_none=True)
+    return rows
 
 
 @dataclass
@@ -125,7 +251,8 @@ def ensure_t2_edema_prototype_cases(
     when prototype fitting would otherwise have no valid edema positives.
     """
 
-    if args.variant == "srr_propref_no_proto_cascade" or bool(getattr(args, "skip_prototype_bank_fit", False)):
+    model_variant = canonical_model_variant(args.variant)
+    if model_variant == "srr_propref_no_proto_cascade" or bool(getattr(args, "skip_prototype_bank_fit", False)):
         return train_cases, []
     if any(case.metadata.t2_present and np.any(case.label_arr == 4) for case in train_cases):
         return train_cases, []
@@ -363,7 +490,7 @@ def output_variant_name(args: argparse.Namespace) -> str:
 def model_kwargs_from_args(args: argparse.Namespace) -> dict[str, object]:
     return {
         "base_channels": args.base_channels,
-        "variant": args.variant,
+        "variant": canonical_model_variant(args.variant),
         "encoder_profile": args.encoder_profile,
         "disable_local_refinement": bool(getattr(args, "disable_local_refinement", False)),
         "disable_anatomy_roi_prior": bool(getattr(args, "disable_anatomy_roi_prior", False)),
@@ -1089,10 +1216,15 @@ def validate_patch_loss(
 
 
 def variant_hparams(variant: str) -> dict[str, float | int]:
+    variant = canonical_model_variant(variant)
     if variant == "srr_propref_scar_precision":
         return {"scar_weight": 1.65, "edema_weight": 1.10, "hardneg_sample_prob": 0.45, "proposal_weight": 0.55}
     if variant == "srr_propref_no_proto_cascade":
         return {"scar_weight": 1.20, "edema_weight": 1.20, "hardneg_sample_prob": 0.10, "proposal_weight": 0.25}
+    if variant == "m6_conservative_component_arbitration":
+        return {"scar_weight": 1.30, "edema_weight": 1.20, "hardneg_sample_prob": 0.35, "proposal_weight": 0.35}
+    if variant == "m6_scar_precision_edema_safe":
+        return {"scar_weight": 1.65, "edema_weight": 1.10, "hardneg_sample_prob": 0.45, "proposal_weight": 0.50}
     return {"scar_weight": 1.35, "edema_weight": 1.35, "hardneg_sample_prob": 0.30, "proposal_weight": 0.45}
 
 
@@ -1168,7 +1300,7 @@ def fit_and_load_runtime_prototype_bank(
 ) -> dict[str, object]:
     """Fit real train/OOF prototype banks and load them into the formal model."""
 
-    if args.variant == "srr_propref_no_proto_cascade" or args.skip_prototype_bank_fit:
+    if canonical_model_variant(args.variant) == "srr_propref_no_proto_cascade" or args.skip_prototype_bank_fit:
         summary = {
             "status": "SKIPPED",
             "reason": "no-prototype variant or skip_prototype_bank_fit",
@@ -1307,6 +1439,7 @@ def run_one_batch_overfit(
         summary = {
             "variant": output_variant,
             "model_variant": args.variant,
+            "source_model_variant": canonical_model_variant(args.variant),
             "status": "SKIPPED",
             "reason": "skip_overfit_sanity was set",
             "required_by_task": True,
@@ -1351,21 +1484,22 @@ def run_one_batch_overfit(
         if step == 1:
             proto_rows.extend(prototype_sanity_row(output_variant, step, before, model))
         if step == 1 or step == args.overfit_steps or step % max(1, args.overfit_log_every) == 0:
-            rows.append(
-                {
-                    "variant": output_variant,
-                    "model_variant": args.variant,
-                    "case_id": case.case_id,
-                    "step": step,
-                    "loss": loss_value,
-                    "evidence_loss": float(metrics["evidence_loss"].cpu()),
-                    "final_loss": float(metrics["final_loss"].cpu()),
-                    "scar_proposal_loss": float(metrics["scar_proposal_loss"].cpu()),
-                    "edema_proposal_loss": float(metrics["edema_proposal_loss"].cpu()),
-                    "proposal_margin_loss": float(metrics["proposal_margin_loss"].cpu()),
-                    "elapsed_seconds": time.monotonic() - start,
-                }
-            )
+            row = {
+                "variant": output_variant,
+                "model_variant": args.variant,
+                "source_model_variant": canonical_model_variant(args.variant),
+                "case_id": case.case_id,
+                "step": step,
+                "loss": loss_value,
+                "evidence_loss": float(metrics["evidence_loss"].cpu()),
+                "final_loss": float(metrics["final_loss"].cpu()),
+                "scar_proposal_loss": float(metrics["scar_proposal_loss"].cpu()),
+                "edema_proposal_loss": float(metrics["edema_proposal_loss"].cpu()),
+                "proposal_margin_loss": float(metrics["proposal_margin_loss"].cpu()),
+                "elapsed_seconds": time.monotonic() - start,
+            }
+            row.update(loss_component_metric_row(metrics))
+            rows.append(row)
     loss_decrease = None if first_loss is None or last_loss is None else first_loss - last_loss
     passed = bool(loss_decrease is not None and loss_decrease >= args.min_overfit_loss_decrease)
     write_csv(variant_dir / "one_batch_overfit.csv", rows)
@@ -1373,6 +1507,7 @@ def run_one_batch_overfit(
     summary = {
         "variant": output_variant,
         "model_variant": args.variant,
+        "source_model_variant": canonical_model_variant(args.variant),
         "encoder_profile": getattr(model, "encoder_profile", args.encoder_profile),
         "encoder_scale_channels": list(getattr(model, "encoder_scale_channels", encoder_scale_channels_from_args(args))),
         "parameter_count": parameter_count(model),
@@ -1479,13 +1614,14 @@ def train_variant(args: argparse.Namespace) -> None:
     hardneg_path = Path(args.hardneg_components_csv) if args.hardneg_components_csv else None
     if hardneg_path is not None and not hardneg_path.is_absolute():
         hardneg_path = REPO_ROOT / hardneg_path
-    hardneg_targets = load_hard_negative_targets(hardneg_path, args.variant)
+    hardneg_targets = load_hard_negative_targets(hardneg_path, canonical_model_variant(args.variant))
 
     overfit_passed, overfit_summary = run_one_batch_overfit(args, train_cases, patch_shape, device, variant_dir)
     if not overfit_passed:
         summary = {
             "variant": output_variant,
             "model_variant": args.variant,
+            "source_model_variant": canonical_model_variant(args.variant),
             "fold": args.fold,
             "device": str(device),
             "encoder_profile": args.encoder_profile,
@@ -1527,6 +1663,7 @@ def train_variant(args: argparse.Namespace) -> None:
     train_rows: list[dict[str, object]] = []
     usage_rows: list[dict[str, object]] = []
     proto_rows: list[dict[str, object]] = []
+    gradient_rows: list[dict[str, object]] = []
     validation_rows: list[dict[str, object]] = []
     validation_events: list[dict[str, object]] = []
     first_train_loss: float | None = None
@@ -1570,6 +1707,19 @@ def train_variant(args: argparse.Namespace) -> None:
         optimizer.zero_grad(set_to_none=True)
         outputs = model(x, av, anchor_features=anchor_features, component_features=component_features)
         loss, metrics = propref_loss(outputs, y, av, stage, args)
+        if step == 1:
+            gradient_rows.extend(
+                loss_component_gradient_sanity_rows(
+                    model=model,
+                    output_variant=output_variant,
+                    args=args,
+                    outputs=outputs,
+                    metrics=metrics,
+                    step=step,
+                    stage=stage,
+                    batch_cases=keys,
+                )
+            )
         loss.backward()
         torch.nn.utils.clip_grad_norm_(model.parameters(), args.grad_clip)
         optimizer.step()
@@ -1581,60 +1731,62 @@ def train_variant(args: argparse.Namespace) -> None:
         if before:
             proto_rows.extend(prototype_sanity_row(output_variant, step, before, model))
         if step == 1 or step % args.log_every == 0:
-            train_rows.append(
-                {
-                    "variant": output_variant,
-                    "model_variant": args.variant,
-                    "step": step,
-                    "stage": stage,
-                    "loss": loss_value,
-                    "evidence_loss": float(metrics["evidence_loss"].cpu()),
-                    "final_loss": float(metrics["final_loss"].cpu()),
-                    "scar_proposal_loss": float(metrics["scar_proposal_loss"].cpu()),
-                    "edema_proposal_loss": float(metrics["edema_proposal_loss"].cpu()),
-                    "proposal_margin_loss": float(metrics["proposal_margin_loss"].cpu()),
-                    "scar_component_ranking_loss": float(metrics["scar_component_ranking_loss"].cpu()),
-                    "edema_component_ranking_loss": float(metrics["edema_component_ranking_loss"].cpu()),
-                    "component_proposal_ranking_loss": float(metrics["component_proposal_ranking_loss"].cpu()),
-                    "roi_cover_loss": float(metrics["roi_cover_loss"].cpu()),
-                    "roi_remote_loss": float(metrics["roi_remote_loss"].cpu()),
-                    "semantic_retrieval_loss": float(metrics["semantic_retrieval_loss"].cpu()),
-                    "baseline_preservation_loss": float(metrics["baseline_preservation_loss"].cpu()),
-                    "baseline_preserve_voxels": float(metrics["baseline_preserve_voxels"].cpu()),
-                    "baseline_preserve_gate_mean": float(metrics["baseline_preserve_gate_mean"].cpu()),
-                    "proposal_weight": float(metrics["proposal_weight"].cpu()),
-                    "refine_weight": float(metrics["refine_weight"].cpu()),
-                    "edema_supervised_batch_fraction": float(av[:, 1].mean().detach().cpu()),
-                    "anchor_present_batch_fraction": context_present_fraction(anchor_features, ("probabilities",)),
-                    "component_present_batch_fraction": context_present_fraction(component_features, ("scar_component", "edema_component")),
-                    "baseline_gate_mean": float(outputs["baseline_residual_gate"].detach().mean().cpu()) if "baseline_residual_gate" in outputs else 0.0,
-                    "baseline_residual_abs_mean": float(outputs["baseline_residual_magnitude"].detach().mean().cpu()) if "baseline_residual_magnitude" in outputs else 0.0,
-                    "baseline_gate_status": str(outputs.get("baseline_gate_status", "evidence_not_found")),
-                    "local_refinement_status": str(outputs.get("local_refinement_status", "evidence_not_found")),
-                    "anatomy_roi_prior_status": str(outputs.get("anatomy_roi_prior_status", "evidence_not_found")),
-                    "encoder_profile": str(outputs.get("encoder_profile", args.encoder_profile)),
-                    "encoder_scale_channels": ";".join(str(v) for v in outputs.get("encoder_scale_channels", [])),
-                    "p_union_mean": float(outputs["p_union"].detach().mean().cpu()) if "p_union" in outputs else 0.0,
-                    "p_lv_mean": float(outputs["p_lv"].detach().mean().cpu()) if "p_lv" in outputs else 0.0,
-                    "p_rv_mean": float(outputs["p_rv"].detach().mean().cpu()) if "p_rv" in outputs else 0.0,
-                    "union_distance_mean": float(outputs["union_distance"].detach().mean().cpu()) if "union_distance" in outputs else 0.0,
-                    "lv_distance_mean": float(outputs["lv_distance"].detach().mean().cpu()) if "lv_distance" in outputs else 0.0,
-                    "rv_distance_mean": float(outputs["rv_distance"].detach().mean().cpu()) if "rv_distance" in outputs else 0.0,
-                    "scar_anatomy_soft_gate_mean": float(outputs["scar_anatomy_soft_gate"].detach().mean().cpu()) if "scar_anatomy_soft_gate" in outputs else 0.0,
-                    "edema_anatomy_soft_gate_mean": float(outputs["edema_anatomy_soft_gate"].detach().mean().cpu()) if "edema_anatomy_soft_gate" in outputs else 0.0,
-                    "empty_union_fallback_fraction": float(outputs["empty_union_fallback"].detach().mean().cpu()) if "empty_union_fallback" in outputs else 0.0,
-                    "prototype_source_scar": str(outputs["prototype_source"]["scar"]),
-                    "prototype_source_edema": str(outputs["prototype_source"]["edema"]),
-                    "batch_cases": ",".join(keys),
-                    "elapsed_seconds": time.monotonic() - start,
-                }
-            )
+            row = {
+                "variant": output_variant,
+                "model_variant": args.variant,
+                "source_model_variant": canonical_model_variant(args.variant),
+                "step": step,
+                "stage": stage,
+                "loss": loss_value,
+                "evidence_loss": float(metrics["evidence_loss"].cpu()),
+                "final_loss": float(metrics["final_loss"].cpu()),
+                "scar_proposal_loss": float(metrics["scar_proposal_loss"].cpu()),
+                "edema_proposal_loss": float(metrics["edema_proposal_loss"].cpu()),
+                "proposal_margin_loss": float(metrics["proposal_margin_loss"].cpu()),
+                "scar_component_ranking_loss": float(metrics["scar_component_ranking_loss"].cpu()),
+                "edema_component_ranking_loss": float(metrics["edema_component_ranking_loss"].cpu()),
+                "component_proposal_ranking_loss": float(metrics["component_proposal_ranking_loss"].cpu()),
+                "roi_cover_loss": float(metrics["roi_cover_loss"].cpu()),
+                "roi_remote_loss": float(metrics["roi_remote_loss"].cpu()),
+                "semantic_retrieval_loss": float(metrics["semantic_retrieval_loss"].cpu()),
+                "baseline_preservation_loss": float(metrics["baseline_preservation_loss"].cpu()),
+                "baseline_preserve_voxels": float(metrics["baseline_preserve_voxels"].cpu()),
+                "baseline_preserve_gate_mean": float(metrics["baseline_preserve_gate_mean"].cpu()),
+                "proposal_weight": float(metrics["proposal_weight"].cpu()),
+                "refine_weight": float(metrics["refine_weight"].cpu()),
+                "edema_supervised_batch_fraction": float(av[:, 1].mean().detach().cpu()),
+                "anchor_present_batch_fraction": context_present_fraction(anchor_features, ("probabilities",)),
+                "component_present_batch_fraction": context_present_fraction(component_features, ("scar_component", "edema_component")),
+                "baseline_gate_mean": float(outputs["baseline_residual_gate"].detach().mean().cpu()) if "baseline_residual_gate" in outputs else 0.0,
+                "baseline_residual_abs_mean": float(outputs["baseline_residual_magnitude"].detach().mean().cpu()) if "baseline_residual_magnitude" in outputs else 0.0,
+                "baseline_gate_status": str(outputs.get("baseline_gate_status", "evidence_not_found")),
+                "local_refinement_status": str(outputs.get("local_refinement_status", "evidence_not_found")),
+                "anatomy_roi_prior_status": str(outputs.get("anatomy_roi_prior_status", "evidence_not_found")),
+                "encoder_profile": str(outputs.get("encoder_profile", args.encoder_profile)),
+                "encoder_scale_channels": ";".join(str(v) for v in outputs.get("encoder_scale_channels", [])),
+                "p_union_mean": float(outputs["p_union"].detach().mean().cpu()) if "p_union" in outputs else 0.0,
+                "p_lv_mean": float(outputs["p_lv"].detach().mean().cpu()) if "p_lv" in outputs else 0.0,
+                "p_rv_mean": float(outputs["p_rv"].detach().mean().cpu()) if "p_rv" in outputs else 0.0,
+                "union_distance_mean": float(outputs["union_distance"].detach().mean().cpu()) if "union_distance" in outputs else 0.0,
+                "lv_distance_mean": float(outputs["lv_distance"].detach().mean().cpu()) if "lv_distance" in outputs else 0.0,
+                "rv_distance_mean": float(outputs["rv_distance"].detach().mean().cpu()) if "rv_distance" in outputs else 0.0,
+                "scar_anatomy_soft_gate_mean": float(outputs["scar_anatomy_soft_gate"].detach().mean().cpu()) if "scar_anatomy_soft_gate" in outputs else 0.0,
+                "edema_anatomy_soft_gate_mean": float(outputs["edema_anatomy_soft_gate"].detach().mean().cpu()) if "edema_anatomy_soft_gate" in outputs else 0.0,
+                "empty_union_fallback_fraction": float(outputs["empty_union_fallback"].detach().mean().cpu()) if "empty_union_fallback" in outputs else 0.0,
+                "prototype_source_scar": str(outputs["prototype_source"]["scar"]),
+                "prototype_source_edema": str(outputs["prototype_source"]["edema"]),
+                "batch_cases": ",".join(keys),
+                "elapsed_seconds": time.monotonic() - start,
+            }
+            row.update(loss_component_metric_row(metrics))
+            train_rows.append(row)
             record_gate_usage(usage_rows, output_variant, step, keys, outputs)
         if step in validation_schedule:
             val_loss = validate_patch_loss(model, val_cases, patch_shape, device, args.seed + step, args)
             validation_row = {
                 "variant": output_variant,
                 "model_variant": args.variant,
+                "source_model_variant": canonical_model_variant(args.variant),
                 "step": step,
                 "stage": stage,
                 "event": "validation",
@@ -1729,12 +1881,14 @@ def train_variant(args: argparse.Namespace) -> None:
     write_csv(variant_dir / "training_log.csv", train_rows)
     write_csv(variant_dir / "validation_events.csv", validation_rows)
     write_csv(variant_dir / "retrieval_usage.csv", usage_rows)
+    write_csv(variant_dir / "loss_component_gradient_sanity.csv", gradient_rows)
     write_csv(variant_dir / "prototype_update_sanity_formal.csv", proto_rows)
     write_csv(variant_dir / "hardneg_memory.csv", memory_rows(output_variant, hardneg_path, len(hardneg_targets), sum(len(v) for v in hardneg_targets.values())))
     loss_decrease = None if first_train_loss is None or last_train_loss is None else first_train_loss - last_train_loss
     summary = {
         "variant": output_variant,
         "model_variant": args.variant,
+        "source_model_variant": canonical_model_variant(args.variant),
         "fold": args.fold,
         "device": str(device),
         "encoder_profile": getattr(model, "encoder_profile", args.encoder_profile),
@@ -1834,6 +1988,9 @@ def main() -> None:
             "m6_full_srr_context_arbitration",
             "m6_conservative_component_arbitration",
             "m6_scar_precision_edema_safe",
+            "m7_full_srr_context_arbitration",
+            "m7_conservative_component_arbitration",
+            "m7_scar_precision_edema_safe",
         ],
     )
     parser.add_argument("--run-label", default="", help="Optional isolated output label under variants/ without changing model hparams.")

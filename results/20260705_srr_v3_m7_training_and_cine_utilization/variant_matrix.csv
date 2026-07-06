@@ -1,0 +1,4 @@
+encoder_profile,order,required_by_m7,source_model_variant,status,variant
+balanced_4scale,1,True,m6_full_srr_context_arbitration,required; runtime collected from Slurm routing jobs when available,m7_full_srr_context_arbitration
+safe_4scale,2,True,m6_conservative_component_arbitration,required; runtime collected from Slurm routing jobs when available,m7_conservative_component_arbitration
+balanced_4scale,3,True,m6_scar_precision_edema_safe,required; runtime collected from Slurm routing jobs when available,m7_scar_precision_edema_safe
