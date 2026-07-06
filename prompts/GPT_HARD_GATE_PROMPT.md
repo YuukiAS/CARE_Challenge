@@ -1,6 +1,6 @@
 # GPT Hard-Gate Prompt For CARE Handoff
 
-This prompt is for future GPT/ChatGPT planning threads before writing CARE Codex goals. Its purpose is to prevent a controller task from being treated as complete when required subtasks, completion checks, training adequacy, or audits are missing.
+This prompt is for future GPT/ChatGPT planning threads before writing CARE Codex goals. Its purpose is to prevent a controller task from being treated as complete when required subtasks, completion checks, training adequacy, audits, or route-defining diagrams are missing.
 
 ## Core Rule
 
@@ -13,6 +13,16 @@ Do not write another high-risk CARE goal that relies on natural-language warning
 5. a regression test against a known bad packet.
 
 If a requirement cannot be checked by file existence, parsed status, command exit, metric/provenance field, or explicit audit decision, do not call it a gate. Call it advice only.
+
+## Mandatory SRR Diagram Bootstrap Before New CARE Goals
+
+Before writing or revising any SRR/MyoPS/Cine milestone, Codex goal, handoff, or route decision, GPT must apply `prompts/THREAD_BOOTSTRAP_ROUTE_IMAGE_PROTOCOL.md`.
+
+The planner must locate the repository `images/` directory, download or copy every SRR design diagram at version `v2` or later to local working storage, and inspect those diagrams before proposing milestones. At minimum, this covers `v2`, `v2.5`, `v3`, and any later SRR/MyoPS architecture diagrams present in the repository.
+
+After reading the diagrams, GPT must explicitly state the recovered route objective before planning. The statement must make clear that SRR-MyoPS is an availability-aware selective retrieval, anatomy-guided lesion proposal, pathology-specific soft-ROI refinement, and explicit loss/objective framework. A strong segmenter such as nnU-Net may provide anchor/context/evidence, but SRR must not be reduced to an optional post-processing add-on or a generic black-box competitor.
+
+If the images cannot be located, copied/downloaded, opened, or interpreted, GPT must stop before writing milestones or Codex goals. It must explicitly report the blocked state, the failed image paths, and what the user must provide or fix. Do not continue from memory or a partial text summary when the diagrams are unavailable.
 
 ## Mandatory GPT Checklist Before Writing A New Goal
 
@@ -41,11 +51,13 @@ The 20260704 SRR-v2.5 full completion packet is the current regression counterex
 
 The same packet also shows why smoke-scale training must not be promoted: bounded SRR variants with only 6 optimizer steps and limited explicit eval cases can support diagnostics, but cannot be called a formal full route test. Future GPT goals must make this distinction in the frontmatter and completion gate.
 
+A new regression class is route-definition drift: a planner writes SRR/MyoPS milestones without first acquiring and reading the repository `images/` diagrams from version `v2` onward. Future milestones should treat missing diagram bootstrap evidence as `NEEDS_EVIDENCE`, not as a harmless omission.
+
 ## Required Wording In Future Start Prompts
 
 When giving Codex a high-risk CARE controller goal, include this sentence:
 
-`Before executing the scientific task, enforce the hard-gate policy: exact task graph, strict validator, completion-check-before-final-audit, minimum effective training, and current-bad-packet regression. If any hard gate fails, stop with NEEDS_REVISION or NEEDS_EVIDENCE; do not continue to final audit.`
+`Before executing the scientific task, enforce the hard-gate policy: exact task graph, strict validator, completion-check-before-final-audit, minimum effective training, current-bad-packet regression, and SRR diagram-bootstrap evidence when the task touches SRR/MyoPS/Cine route planning. If any hard gate fails, stop with NEEDS_REVISION or NEEDS_EVIDENCE; do not continue to final audit.`
 
 When giving Codex a milestone executor goal, also include this sentence:
 
@@ -60,6 +72,8 @@ When giving Codex a milestone reviewer goal, include this sentence:
 If all subtasks were executed but training is smoke-scale or undertrained, use `scientific_resolution_status: SCIENTIFIC_UNDERTRAINED`.
 
 If required subtasks are missing, use `operational_completion_status: INCOMPLETE` and `scientific_resolution_status: SCIENTIFIC_NEEDS_EVIDENCE` or `SCIENTIFIC_NEEDS_REVISION`.
+
+If SRR/MyoPS/Cine route diagrams were required but could not be acquired or interpreted, use `operational_completion_status: BLOCKED_ROUTE_DIAGRAMS_UNAVAILABLE` and `scientific_resolution_status: SCIENTIFIC_NEEDS_EVIDENCE`.
 
 If a diagnostic packet is useful but no route is promoted, use `diagnostic_publication_decision: PUBLISH_REVIEWED_DIAGNOSTIC_PACKET` only after audit, and keep validation packaging, upload, fold expansion, hosted metric claims, and next-stage training blocked.
 
