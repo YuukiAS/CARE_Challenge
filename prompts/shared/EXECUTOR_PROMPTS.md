@@ -602,10 +602,10 @@ M7 result directory 必须是：
 完成后 `git add -f` 并本地 commit M7 轻量证据和必要 first-party helper/source/config；不要提交 checkpoint、NIfTI、upload package、大日志、raw data、secrets、environment dump 或整棵 runtime tree；不要 push；不要写 `review.md`；不要启动后续 milestone。
 ```
 
-## M7 executor (continued): reviewer-blocker repair
+## M7 executor follow-up 1 (continued): reviewer-blocker repair
 
 ```text
-只执行 M7 continued：reviewer-blocker repair for `results/20260705_srr_v3_m7_training_and_cine_utilization/`。
+只执行 M7 follow-up 1 / continued：reviewer-blocker repair for `results/20260705_srr_v3_m7_training_and_cine_utilization/`。
 
 开始前确认：
 
@@ -613,7 +613,7 @@ M7 result directory 必须是：
 - `results/20260705_srr_v3_m6_myops_concrete_architecture_repair/review.md` 包含 `M6_AUDITED_GO`。
 - 如果继续 Cine 子线，`results/20260705_srr_v3_m5_cine_secondary_contract/review.md` 包含 `M5_AUDITED_DIAGNOSTIC_GO`。
 
-不要 validation packaging/upload，不要 hosted metric claim，不要 route promotion，不要 scientific stop，不要启动 M8，不要写 `review.md`。不得复制旧 M7 executor 段、旧 M5 evidence、旧 training curves、diagnostic-only rows 或自然语言解释来绕过本 continued hard gates。本段是当前 M7 continued 的唯一执行合同；原 M7 executor 段只保留为第一次 M7 run 的记录。
+不要 validation packaging/upload，不要 hosted metric claim，不要 route promotion，不要 scientific stop，不要启动 M8，不要写 `review.md`。不得复制旧 M7 executor 段、旧 M5 evidence、旧 training curves、diagnostic-only rows 或自然语言解释来绕过本 follow-up 1 hard gates。本段是 M7 follow-up 1 的执行合同；原 M7 executor 段只保留为第一次 M7 run 的记录。后续 M7 follow-up 必须使用独立编号段落，不得复用一个笼统 `continued` 段。
 
 ### A. Training-loss validity gate
 
@@ -850,4 +850,427 @@ Update these files in `results/20260705_srr_v3_m7_training_and_cine_utilization/
 Do not write `M7_CONTINUED_READY_FOR_REVIEW` if any blocker above remains unresolved. `M7_CONTINUED_READY_FOR_REVIEW` only means continued blockers are ready for independent reviewer audit. It does not authorize route promotion, hosted metric claim, fold expansion, validation packaging/upload, challenge submission, M8, scientific stop, or leaderboard readiness.
 
 Finish by force-adding and locally committing only the lightweight M7 continued packet plus necessary first-party helper/source/test files. Do not write `review.md` and do not start M8.
+```
+
+## M7 executor follow-up 2: leaderboard-oriented repair
+
+```text
+只执行 M7 follow-up 2：leaderboard-oriented repair after `M7_CONTINUED_AUDITED_NEEDS_REVISION`。
+
+开始前必须确认：
+
+- `results/20260705_srr_v3_m7_training_and_cine_utilization/review.md` 存在且包含 `M7_CONTINUED_AUDITED_NEEDS_REVISION`；
+- `results/20260705_srr_v3_m6_myops_concrete_architecture_repair/review.md` 存在且包含 `M6_AUDITED_GO`；
+- 当前任务仍是 M7 follow-up 2，不是 M8，不是 route promotion，不是 validation packaging/upload，不是 hosted metric claim，不是 challenge submission；
+- 不要写 `review.md`，不要启动 M8。
+
+本任务有两个层次。第一层是关闭最新 reviewer 指出的 strict-validator blocker。第二层是利用 M7/follow-up 1 的真实证据做 leaderboard-oriented method repair，不允许只修 validator 表格后停止。
+
+Latest M7 continued review context that must be treated as evidence, not success:
+
+- gradient sanity improved: `loss_component_gradient_sanity.csv` has no `BACKWARD_FAILED`, but strict validator proof is still insufficient;
+- formal validation subgroup coverage improved, but best-variant decision remains non-promotional and scientifically unresolved;
+- scar Dice deltas and edema Dice deltas remain tiny;
+- Cine registration repair was attempted, but no non-reference row is usable for temporal dictionary;
+- the next packet must convert useful M7 evidence into actual leaderboard-oriented repair instead of doing only validator bookkeeping.
+
+Route objective remains strict. MyoPS SRR must become a baseline-preserving, error-targeted correction system over the nnU-Net anchor, with real dictionary/prototype/proposal/refiner/arbitration contributions on hard cases, especially T2-present edema, CenterB/CenterC, remote-FP-positive cases, and small/large lesion strata. Cine must not remain descriptor-only or frame0-only; registration-aware temporal retrieval is required, and if classical registration fails, executor must attempt stronger cropped/anatomy-guided registration escalation before preserving a gap.
+
+### A. SRR-v3 image fidelity hard gate
+
+M7 follow-up 2 must prove code/runtime fidelity to the SRR-v3 route diagram instead of relying on narrative claims. Create:
+
+- `srr_v3_image_fidelity_checklist.csv`
+- `architecture_gap_table.md`
+
+The checklist must cover each row below with fields:
+
+`route_component, expected_module, current_code_path, runtime_evidence_path, status, blocker_if_missing`
+
+Required route components:
+
+- availability-aware modality handling;
+- modality-specific stems;
+- strong encoder / nnU-Net context interface;
+- semantic representation retrieval bank;
+- shared/private/interaction dictionary slot usage;
+- train/OOF prototype banks;
+- scar proposal;
+- edema proposal;
+- anatomy union/LV/RV prior;
+- distance/uncertainty/nnU-Net component evidence;
+- scar soft-ROI refinement;
+- edema soft-ROI refinement;
+- baseline-preserving residual correction;
+- scar/edema no-T2-safe output;
+- expanded loss objectives;
+- Cine registration-aware temporal retrieval.
+
+`architecture_gap_table.md` must explain unresolved code gaps with exact code paths, evidence paths, and whether each gap blocks follow-up 2 readiness. Natural-language-only restatement is not enough. If a route component is only a stub, diagnostic export, or table column without runtime effect, mark `status=BLOCKER` or `status=PARTIAL_WITH_BLOCKER`.
+
+### B. Branch arbitration no-op repair gate
+
+Current code evidence shows `BranchArbitrationGate` exports `proposal_weight` and `refiner_weight`, but the audited formula path can still reduce final logits to `anchor_logits + srr_weight * bounded_delta`. M7 follow-up 2 must explicitly check and repair this no-op risk.
+
+Create or update:
+
+- `branch_arbitration_formula_report.md`
+- `branch_arbitration_unit_tests.md`
+- `arbitration_opening_diagnostics.csv`
+
+Hard requirement:
+
+- proposal/refiner/arbitration must directly affect final logits, or the executor must prove with code-level and runtime evidence that proposal/refiner contributions enter `srr_logits` and produce measurable nonzero final-logit changes inside ROI;
+- `proposal_weight` and `refiner_weight` must not be only exported diagnostic columns;
+- if the formula remains dead-weight, write `M7_FOLLOWUP2_NEEDS_REVISION` and list exact code blockers.
+
+Unit tests must cover at least:
+
+1. closed-gate / force segmentation fallback makes final labels exactly equal to the nnU-Net anchor;
+2. high anchor uncertainty or injected anchor-error regions open the SRR correction gate;
+3. changing proposal/refiner evidence causes nonzero final-logit changes inside ROI;
+4. disabling proposal/refiner evidence removes their contribution and records it;
+5. no-T2 cases keep edema final logits/decode/export safely blocked;
+6. proposal/refiner weights cannot pass as mere diagnostic exports without prediction effect.
+
+`arbitration_opening_diagnostics.csv` must include per-case/subgroup fields for anchor uncertainty, correction gate open rate, proposal/refiner weight summaries, final-logit delta magnitude in ROI, chosen source, no-T2 status, and blocker reason if no opening occurs.
+
+### C. Modality order and no-zero-fill contract
+
+Create:
+
+- `modality_order_contract.md`
+- `modality_order_unit_tests.md`
+
+The contract must state the current implementation channel order and availability order, including the fact that current code uses `LGE,T2,C0` while the route diagram may describe semantic order as `LGE,C0,T2`. It must prove how the mapping is handled without semantic drift.
+
+Required proof:
+
+- `availability[:,1]` in current implementation is T2, not C0;
+- no-T2 samples are not treated as edema-negative supervision or as real T2 evidence;
+- no-T2 safety is enforced in edema loss, edema proposal, edema ROI/refiner, final logits, decode, and export;
+- unavailable modalities are masked by availability and are not zero-filled as evidence.
+
+Reviewer must be able to verify this from exact code paths and unit-test rows. A packet that omits modality order is not ready.
+
+### D. 修复 strict validator：必须是真 known-bad fail-closed
+
+当前 strict validator 是假的 fail-closed：它读取当前 good packet 的布尔状态，然后把 known-bad 名称标成 `PASS_FAIL_CLOSED`。这不满足 reviewer gate。
+
+必须实现或新增一个可运行的 M7 continued/follow-up validator，例如：
+
+`scripts/evaluation/validate_srr_v3_m7_continued_packet.py`
+
+要求：
+
+1. 接收 `--packet <result_dir>`。
+2. 对真实 packet 成功时 exit code 为 0。
+3. 对 bad packet 失败时 exit code 非 0。
+4. 输出 JSON 或 Markdown summary。
+5. 检查至少以下 gates：
+   - loss gradient sanity rows 不得全 `BACKWARD_FAILED`；
+   - `loss_graph_training_validity_report.md` 必须存在且说明 original training graph validity；
+   - hard subgroup 不得全 CenterA/LGE-only/no-T2；
+   - diagnostic hardcase rows 不得混入 formal best-variant decision；
+   - Cine branch 必须有 M7 continued/follow-up registration repair attempt；
+   - frame0-only / one-case SyN / untrained VoxelMorph 不得标为 usable registration；
+   - temporal dictionary 不得在无 usable non-reference registration 时标 ready；
+   - `completion_check.md` 不得在 blocker 未关闭时写 ready。
+
+必须构造真实 known-bad fixtures。可以用临时目录复制当前 packet 后进行小范围 mutation。必须覆盖：
+
+- `all_gradient_rows_backward_failed`;
+- `missing_loss_graph_training_validity_report`;
+- `hard_subgroup_all_centerA_lge_only_no_t2`;
+- `diagnostic_rows_mixed_into_formal_best_variant`;
+- `cine_copies_m5_no_new_registration_attempt`;
+- `frame0_or_one_case_syn_marked_usable`;
+- `untrained_voxelmorph_marked_usable`;
+- `temporal_dictionary_ready_without_usable_registration`;
+- `completion_ready_with_unresolved_blocker`.
+
+Required output:
+
+- `strict_validator_report.md`
+- `strict_validator_report.csv`
+- `validator_unit_test_report.md`
+- `strict_validator_known_bad_cases/README.md` or equivalent fixture summary; do not commit large fixture directories.
+
+Each row must include:
+
+`known_bad_case, fixture_or_mutation, validator_command, expected_exit_code, actual_exit_code, expected_failure, actual_failure_reason, pass_fail_closed`
+
+Do not mark M7 follow-up 2 ready unless every known-bad fixture fails with `actual_exit_code != 0`, or the validator CLI explicitly returns `ok=false` and the command is treated as a non-completion failure. Do not accept any exit-0 failure label for a known-bad fixture.
+
+`validator_unit_test_report.md` must cover at least:
+
+- good packet exits 0;
+- every mutated bad packet exits nonzero;
+- missing required files fail;
+- completion ready with blocker fails;
+- temporal dictionary ready without usable registration fails;
+- diagnostic-hardcase rows mixed into formal decision fail.
+
+### E. Training evidence validity and rerun decision
+
+The latest M7 continued packet states that old training used graph-connected total loss and only logging metrics were detached. That may be true, but it is not enough for leaderboard-oriented repair because the metric deltas are negligible.
+
+Update or create:
+
+`loss_graph_training_validity_report.md`
+`m7_followup2_training_rerun_decision.md`
+
+The rerun decision must answer:
+
+1. Did the original M7 training truly optimize the expanded loss graph?
+2. Did each proposal/refiner/arbitration/dictionary component receive nonzero gradient on any real batch?
+3. Did SRR actually open correction gates on hard cases, or did it remain near-anchor/no-op?
+4. Did the trained variants materially change predictions in T2-present / CenterB / CenterC / remote-FP-positive rows?
+5. If not, what architecture/training mechanism must be repaired before further training?
+
+Hard rule:
+
+If the original M7 training is graph-invalid, rerun at least the primary variant after fixing the loss. If graph-valid but scientifically no-op, do not pretend it succeeded. Instead run the mandatory MyoPS repairs in Section F, preserve the formal/diagnostic boundary in Section G, and run a short but real retraining/probe of the repaired primary variant.
+
+Minimum retraining/probe requirement for follow-up 2:
+
+- Train at least one pre-specified primary variant after mechanism repair.
+- The default primary variant is `m7_full_srr_context_arbitration` unless the M7 evidence shows it is unsafe; if unsafe, choose `m7_scar_precision_edema_safe` and justify.
+- Minimum: `optimizer_steps >= 1200` and `train_loop_seconds >= 900`, or explicit `M7_FOLLOWUP2_NEEDS_MONITOR` if the job is still running.
+- Preferred: `optimizer_steps >= 3000` and `train_loop_seconds >= 1800`.
+- Use hardcase-aware sampling or batch construction so that T2-present and GT-positive edema appear in gradient sanity and validation events when available.
+- Do not rank all variants if only one is retrained. Mark non-rerun variants `NOT_COMPARABLE_AFTER_FOLLOWUP2_REPAIR`.
+
+Required files:
+
+- `m7_followup2_training_rerun_decision.md`
+- `followup2_training_adequacy.csv`
+- `followup2_loss_component_by_step.csv`
+- `followup2_loss_component_gradient_sanity.csv`
+- `followup2_same_split_help_harm.csv`
+- `followup2_hard_subgroup_metrics.csv`
+
+### F. MyoPS mechanism no-op diagnosis and mandatory repair
+
+The current M7/continued evidence is not enough because best-variant deltas are tiny and every row remains `NO_PROMOTION_SCIENTIFIC_UNRESOLVED`. The next executor must diagnose why SRR is not materially helping.
+
+Create:
+
+`m7_followup2_mechanism_noop_diagnosis.md`
+`srr_contribution_by_case.csv`
+`arbitration_opening_diagnostics.csv`
+`proposal_refiner_effectiveness.csv`
+
+Required diagnostics:
+
+1. `anchor_delta_rate`: fraction of voxels changed vs nnU-Net anchor by class and case.
+2. `correction_gate_open_rate`: scar/edema gate opening by case, subgroup, and variant.
+3. `proposal_recall_proxy`: whether GT-positive scar/edema regions are inside proposal/ROI.
+4. `remote_fp_suppression_proxy`: whether SRR reduces or increases remote false positives.
+5. `refiner_delta_magnitude`: whether bounded delta is nonzero inside ROI.
+6. `arbitration_chosen_source`: distribution over anchor/SRR/proposal/refiner per class and subgroup.
+7. `prototype_margin`: positive-vs-safe-negative similarity margins on GT-positive and hard-negative regions.
+8. `dictionary_family_mass`: shared/private/interaction mass by class and subgroup.
+9. `T2_signal_use`: whether T2-private / T2 interaction evidence is active on T2-present edema rows and masked on no-T2 rows.
+10. `hardcase_effect`: deltas on T2-present, CenterB/CenterC, remote-FP-positive, GT-positive edema, small lesion and large lesion strata.
+
+Because M7 continued already shows near-zero best-variant deltas, follow-up 2 has a minimum mandatory repair floor. The executor must execute both C1 and C2 below. C3 and C4 become mandatory when their diagnostic triggers are present. The executor may not write "diagnosis shows no repair needed" as an escape hatch.
+
+#### F1. Mandatory gate opening calibration / correction-opportunity objective
+
+Add a controlled gate-opening calibration and correction-opportunity objective:
+
+- initialize arbitration bias to open SRR only in high anchor-uncertainty or remote-FP-positive regions;
+- add `loss_correction_opportunity` on train/OOF anchor-error masks;
+- keep exact anchor fallback outside correction mask;
+- prove no-T2 edema safety remains.
+
+Required evidence must appear in `followup2_repair_summary.md`, `followup2_loss_component_by_step.csv`, `arbitration_opening_diagnostics.csv`, and `followup2_same_split_help_harm.csv`.
+
+#### F2. Mandatory hardcase-aware sampler
+
+Add deterministic hardcase-aware sampling so T2-present, GT-positive edema, CenterB/CenterC, remote-FP-positive, scar-positive, and no-T2 safety cases enter training/gradient sanity/validation events when available.
+
+`followup2_batch_composition.csv` is required for every retraining/probe. It must record case IDs, split role, center, modality group, T2 availability, scar/edema GT positivity, remote-FP flags, no-T2 safety role, and whether each row was used in training, gradient sanity, or validation.
+
+#### F3. Conditional prototype / hard-negative memory repair
+
+If prototype margins are weak or remote FP persists:
+
+- refresh scar-safe-negative and edema-safe-negative banks from hard FP components;
+- for edema, only use T2-present safe negatives;
+- add margin loss on hard negatives;
+- report prototype source and leakage checks.
+
+#### F4. Conditional proposal/refiner ROI repair
+
+If proposals miss GT-positive pathology or ROI is too small/too large:
+
+- scar: smaller but recall-safe ROI with remote-FP penalty;
+- edema: larger T2-conditioned context ROI, lower threshold, boundary uncertainty;
+- report ROI volume ratio, recall proxy, precision proxy, and component burden.
+
+If C1 or C2 cannot be implemented, or if C3/C4 triggers are present but the repair cannot be implemented, write `M7_FOLLOWUP2_NEEDS_REVISION` and explain exact code blocker. Do not use extra tables as a substitute for repair.
+
+### G. Formal validation and diagnostic hardcase decision boundary
+
+Update:
+
+`m7_case_pool_audit.csv`
+`formal_val_coverage_limitations.md`
+`hard_subgroup_coverage_report.md`
+
+Formal-val rows may be used for metric decision. Diagnostic train/hardcase rows may only support mechanism diagnosis.
+
+Required fields remain:
+
+`case_id, split_role, center, modality_group, t2_present, c0_present, scar_gt_voxels, edema_gt_voxels, scar_gt_positive, edema_gt_positive, anchor_remote_fp_scar, anchor_remote_fp_edema, small_lesion_flag, large_lesion_flag, selected_for_formal_val, selected_for_diagnostic_hardcase, eligible_for_best_variant_decision, exclusion_reason`
+
+Additional required fields:
+
+`used_in_gradient_sanity, used_in_retraining, used_in_mechanism_diagnosis, eligible_for_promotion_decision`
+
+Hard rule:
+
+If formal-val coverage is still too small for T2-present/CenterB/CenterC conclusions, `best_variant_decision.md` must remain `NO_PROMOTION_SCIENTIFIC_UNRESOLVED` or `NEEDS_EVIDENCE`. Diagnostic hardcases cannot be used to select a challenge candidate.
+
+### H. Cine registration follow-up 2 escalation
+
+The current continued packet attempted SimpleITK/ANTsPy/VoxelMorph availability, but no non-reference registration row is usable. That is honest but not enough for a leaderboard-oriented Cine route.
+
+The follow-up 2 executor must attempt a stronger cropped/anatomy-guided registration escalation before preserving the gap again.
+
+Create or update:
+
+`scripts/evaluation/run_srr_v3_m7_cine_registration_followup2.py`
+`cine_registration_followup2_report.md`
+`registration_same_subset_matrix.csv`
+`temporal_dictionary_evidence.csv`
+
+Required new registration candidates:
+
+1. `heart_crop_center_of_mass_affine`
+   - Crop to a heart/anatomy bounding box.
+   - Align reference and moving anatomy by center of mass / translation / scale if possible.
+   - This is a simple but robust baseline and must be attempted if masks/probabilities exist.
+2. `heart_crop_SimpleITK_BSpline_or_Demons_tuned`
+   - Run multi-resolution registration inside cropped ROI.
+   - Use anatomy/probability distance maps if available.
+   - Report before/after anatomy Dice/HD95 and image NCC.
+3. `ANTsPy_SyN_cropped_subset`
+   - If ANTsPy is installed, rerun on cropped ROI for at least 3 cases x 2 non-reference pairs when feasible.
+   - If not installed, record import failure and environment.
+4. `optical_flow_proxy_warp`
+   - Still only proxy, but report whether it improves anatomy metrics.
+   - It cannot be the only usable registration unless explicitly reclassified by reviewer in a later task.
+5. `trained_or_trainable_voxelmorph_probe`
+   - Only if trained weights exist or a short self-supervised training run is feasible.
+   - Untrained VoxelMorph remains negative control.
+
+A usable row must include:
+
+`method, case_id, reference_frame_id, moving_frame_id, before_myo_dice, after_myo_dice, before_lv_dice, after_lv_dice, before_hd95, after_hd95, before_ncc, after_ncc, displacement_smoothness, jacobian_or_fold_proxy, roundtrip_proxy, runtime_seconds, usable_for_temporal_dictionary, failure_reason`
+
+If at least one usable row exists, temporal dictionary follow-up 2 is mandatory and must include warped non-reference evidence. If none exists, write `CINE_REGISTRATION_BLOCKED_AFTER_FOLLOWUP2_ESCALATION`, not ready.
+
+### I. Temporal dictionary anti-cheat
+
+If no usable non-reference registration row exists, `temporal_dictionary_evidence.csv` must contain only blocked rows.
+
+If usable registration exists, temporal dictionary must contain:
+
+- ED/reference anchor feature;
+- selected non-reference frame id;
+- warped image/probability/feature source;
+- registration quality;
+- frame quality;
+- motion saliency;
+- temporal representer slot usage;
+- aggregation output summary;
+- local class_1 myocardium proxy;
+- hosted metric caveat.
+
+Descriptor-only, no-warp, frame0-only dictionary cannot be marked ready.
+
+### J. Required follow-up 2 outputs
+
+Write all outputs under:
+
+`results/20260705_srr_v3_m7_training_and_cine_utilization/`
+
+Required new or updated files:
+
+- `result.md`
+- `completion_check.md`
+- `review_request.md`
+- `MANIFEST.md`
+- `commands_run.md`
+- `strict_validator_report.md`
+- `strict_validator_report.csv`
+- `strict_validator_known_bad_cases/README.md` or equivalent fixture summary
+- `validator_unit_test_report.md`
+- `srr_v3_image_fidelity_checklist.csv`
+- `architecture_gap_table.md`
+- `branch_arbitration_formula_report.md`
+- `branch_arbitration_unit_tests.md`
+- `modality_order_contract.md`
+- `modality_order_unit_tests.md`
+- `loss_graph_training_validity_report.md`
+- `m7_followup2_training_rerun_decision.md`
+- `followup2_training_adequacy.csv`
+- `followup2_loss_component_by_step.csv`
+- `followup2_loss_component_gradient_sanity.csv`
+- `followup2_batch_composition.csv` for every retraining/probe
+- `followup2_same_split_help_harm.csv`
+- `followup2_hard_subgroup_metrics.csv`
+- `m7_followup2_mechanism_noop_diagnosis.md`
+- `srr_contribution_by_case.csv`
+- `arbitration_opening_diagnostics.csv`
+- `proposal_refiner_effectiveness.csv`
+- `followup2_repair_summary.md`
+- `route_to_leaderboard_gap_report.md`
+- `m7_case_pool_audit.csv`
+- `formal_val_coverage_limitations.md`
+- `hard_subgroup_coverage_report.md`
+- `cine_registration_followup2_report.md`
+- `registration_same_subset_matrix.csv`
+- `temporal_dictionary_evidence.csv`
+- `cine_metrics_summary.csv` if computed
+- `failure_interpretation.md`
+
+If a file is not applicable, it must exist with an explicit `NOT_APPLICABLE_WITH_REASON` section. Missing required files are not allowed.
+
+`followup2_repair_summary.md` must state which repairs were executed, which were not, why, and whether SRR still appears no-op. `route_to_leaderboard_gap_report.md` must state what remains before leaderboard-ready/challenge-ready status; it must not present follow-up 2 as challenge-ready.
+
+### K. Completion states
+
+`completion_check.md` may contain only:
+
+- `M7_FOLLOWUP2_READY_FOR_REVIEW`
+- `M7_FOLLOWUP2_NEEDS_REVISION`
+- `M7_FOLLOWUP2_NEEDS_EVIDENCE`
+- `M7_FOLLOWUP2_NEEDS_MONITOR`
+- `M7_FOLLOWUP2_BLOCKED_BY_REVIEW_STATE`
+- `M7_BLOCKED_BY_M6`
+
+Do not write `M7_FOLLOWUP2_READY_FOR_REVIEW` if:
+
+- strict validator does not run real known-bad fixtures;
+- strict validator uses exit-0 "controlled fail" wording instead of nonzero bad-fixture failures;
+- `validator_unit_test_report.md` is missing or does not cover required bad cases;
+- SRR-v3 image fidelity checklist or architecture gap table is missing, incomplete, or natural-language-only;
+- branch arbitration still leaves proposal/refiner as dead-weight diagnostic exports;
+- modality order/no-zero-fill contract or unit tests are missing;
+- current training evidence is graph-invalid and no rerun/probe was done;
+- mechanism no-op diagnosis is missing;
+- C1 gate-opening calibration and C2 hardcase-aware sampler were not both implemented when retraining/probe occurs;
+- SRR contribution remains near-zero and no concrete repair was attempted;
+- formal/diagnostic rows are mixed in formal decision;
+- Cine registration follow-up 2 escalation was not attempted;
+- temporal dictionary is marked ready without usable registration;
+- no-promotion/scientific unresolved boundary is missing;
+- `route_to_leaderboard_gap_report.md` is missing or claims leaderboard/challenge readiness;
+- route promotion, hosted metric claim, validation packaging/upload, M8, fold expansion, challenge submission, scientific stop, or leaderboard readiness is claimed.
+
+Finish by force-adding and locally committing only lightweight evidence plus necessary first-party helper/source/test files. Do not commit checkpoints, NIfTI predictions, upload packages, large logs, raw data, secrets, environment dumps, or runtime trees. Do not write `review.md`. Do not push.
 ```

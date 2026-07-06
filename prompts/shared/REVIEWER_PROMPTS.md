@@ -231,22 +231,22 @@ M7 reviewer decision 只能是：
 最后只写 `results/20260705_srr_v3_m7_training_and_cine_utilization/review.md`。完成后 `git add -f review.md` 并 commit；不要 push，由用户手动 push。
 ```
 
-## M7 reviewer (continued): blocker repair audit
+## M7 reviewer follow-up 1 (continued): blocker repair audit
 
 ```text
-这是独立只读 reviewer/auditor session。只审阅 `results/20260705_srr_v3_m7_training_and_cine_utilization/` 的 M7 continued packet 和必要 first-party helper/source/test files。不要补 executor 缺失文件，不要改代码，不要训练，不要 validation packaging/upload，不要 route promotion，不要启动 M8。最后只写该目录下的 `review.md`。
+这是独立只读 reviewer/auditor session。只审阅 `results/20260705_srr_v3_m7_training_and_cine_utilization/` 的 M7 follow-up 1 / continued packet 和必要 first-party helper/source/test files。不要补 executor 缺失文件，不要改代码，不要训练，不要 validation packaging/upload，不要 route promotion，不要启动 M8。最后只写该目录下的 `review.md`。
 
 必须读取：
 
-- `prompts/shared/EXECUTOR_PROMPTS.md` 中的 `M7 executor (continued): reviewer-blocker repair`；
-- `prompts/shared/REVIEWER_PROMPTS.md` 中的本 reviewer continued 段；
+- `prompts/shared/EXECUTOR_PROMPTS.md` 中的 `M7 executor follow-up 1 (continued): reviewer-blocker repair`；
+- `prompts/shared/REVIEWER_PROMPTS.md` 中的本 reviewer follow-up 1 段；
 - `prompts/MILESTONE_REVIEW_PROTOCOL.md`；
 - `prompts/HANDOFF_GATE_POLICY.md`；
 - `prompts/GPT_HARD_GATE_PROMPT.md`；
 - prior M7 `review.md`；
 - M7 continued result directory；
 - modified first-party training/evaluation/Cine/loss/model/test files。
-- current shared executor/reviewer prompt sections，确认 continued contract 已正确体现在 `prompts/shared/EXECUTOR_PROMPTS.md` 和 `prompts/shared/REVIEWER_PROMPTS.md`，且没有 standalone continued prompt 被维护或用旧 M7 executor 段绕过 hard gates。
+- current shared executor/reviewer prompt sections，确认 follow-up 1 contract 已正确体现在 `prompts/shared/EXECUTOR_PROMPTS.md` 和 `prompts/shared/REVIEWER_PROMPTS.md`，且没有 standalone continued prompt 被维护或用旧 M7 executor 段绕过 hard gates。后续 M7 follow-up 必须使用独立编号段落，不得复用一个笼统 `continued` 段。
 
 ### A. Loss graph training-validity gate
 
@@ -349,6 +349,164 @@ Allowed decisions:
 - `M7_CONTINUED_AUDITED_NO_PROMOTION_SCIENTIFIC_UNRESOLVED`
 
 `M7_CONTINUED_AUDITED_GO_FOR_NEXT_PLANNING` only means the repaired evidence is adequate for GPT planner review. It does not authorize validation packaging/upload, hosted metric claim, fold expansion, challenge submission, M8, route promotion, scientific stop, or leaderboard readiness.
+
+最后只写 `results/20260705_srr_v3_m7_training_and_cine_utilization/review.md`。完成后 `git add -f review.md` 并 commit；不要 push，由用户手动 push。
+```
+
+## M7 reviewer follow-up 2: leaderboard-oriented repair audit
+
+```text
+这是独立只读 reviewer/auditor session。只审阅 `results/20260705_srr_v3_m7_training_and_cine_utilization/` 的 M7 follow-up 2 packet 和必要 first-party helper/source/test files。不要补 executor 缺失文件，不要改代码，不要训练，不要 validation packaging/upload，不要 hosted metric claim，不要 route promotion，不要启动 M8。最后只写该目录下的 `review.md`。
+
+必须读取：
+
+- `prompts/shared/EXECUTOR_PROMPTS.md` 中的 `M7 executor follow-up 2: leaderboard-oriented repair`；
+- `prompts/shared/REVIEWER_PROMPTS.md` 中的本 reviewer follow-up 2 段；
+- `prompts/MILESTONE_REVIEW_PROTOCOL.md`；
+- `prompts/HANDOFF_GATE_POLICY.md`；
+- `prompts/GPT_HARD_GATE_PROMPT.md`；
+- latest M7 continued `review.md`；
+- M7 follow-up 2 result files；
+- modified first-party loss/training/evaluation/Cine/validator/test files。
+
+### A. Scope gate
+
+Reject if the packet claims M8, route promotion, hosted metric, validation packaging/upload, fold expansion, challenge submission, scientific stop, or leaderboard readiness.
+
+Reject if the packet treats M7 continued as success instead of evidence. The review must preserve the follow-up 2 route objective: MyoPS SRR is a baseline-preserving, error-targeted correction system over nnU-Net anchor with real dictionary/prototype/proposal/refiner/arbitration contributions on hard cases; Cine must not remain descriptor-only or frame0-only and must attempt stronger cropped/anatomy-guided registration escalation before preserving a temporal retrieval gap.
+
+Reject if the prompt contract is not explicit. Either the current follow-up 2 contract must be merged into `prompts/shared/EXECUTOR_PROMPTS.md` and `prompts/shared/REVIEWER_PROMPTS.md`, or the executor must explicitly state it used a standalone follow-up 2 prompt as higher priority. If neither is true, reject.
+
+### B. SRR-v3 image fidelity gate
+
+Reject unless `srr_v3_image_fidelity_checklist.csv` and `architecture_gap_table.md` exist and are specific enough to audit.
+
+`srr_v3_image_fidelity_checklist.csv` must cover availability-aware modality handling, modality-specific stems, strong encoder / nnU-Net context interface, semantic representation retrieval bank, shared/private/interaction dictionary slot usage, train/OOF prototype banks, scar proposal, edema proposal, anatomy union/LV/RV prior, distance/uncertainty/nnU-Net component evidence, scar soft-ROI refinement, edema soft-ROI refinement, baseline-preserving residual correction, scar/edema no-T2-safe output, expanded loss objectives, and Cine registration-aware temporal retrieval.
+
+Reject if any row lacks `expected_module`, `current_code_path`, `runtime_evidence_path`, `status`, or `blocker_if_missing`, or if the checklist is only natural language without code/runtime evidence.
+
+### C. Branch arbitration no-op gate
+
+Reject unless `branch_arbitration_formula_report.md`, `branch_arbitration_unit_tests.md`, and `arbitration_opening_diagnostics.csv` prove that proposal/refiner/arbitration are not dead-weight diagnostic exports.
+
+The reviewer must check whether final logits are still effectively `anchor_logits + srr_weight * bounded_delta`. If proposal/refiner weights are exported but cannot change final logits directly, the packet must prove measurable nonzero proposal/refiner contribution through `srr_logits` inside ROI. Otherwise reject.
+
+Required unit-test coverage:
+
+- closed-gate / force segmentation fallback final labels equal nnU-Net anchor;
+- high anchor uncertainty or injected anchor-error opens the correction gate;
+- proposal/refiner evidence changes final logits inside ROI;
+- disabled proposal/refiner evidence removes the contribution and records it;
+- no-T2 edema final logits/decode/export remain blocked;
+- proposal/refiner weights cannot pass as diagnostic-only columns.
+
+### D. Modality order and no-zero-fill gate
+
+Reject unless `modality_order_contract.md` and `modality_order_unit_tests.md` exist and state the current implementation order and semantic mapping.
+
+The packet must prove whether current code uses `LGE,T2,C0`, how that maps to diagram semantics such as `LGE,C0,T2`, and that `availability[:,1]` is T2 in the current implementation. Reject if no-T2 samples can be treated as edema-negative supervision or real T2 evidence, or if no-T2 safety is not checked in edema loss, proposal, ROI/refiner, final logits, decode, and export.
+
+### E. Strict validator gate
+
+Reject unless a real validator is run against real mutated known-bad fixtures and returns nonzero exit/fail status. A current-packet boolean checklist is not acceptable.
+
+Required known-bad fixtures:
+
+- all gradients backward failed;
+- missing loss graph validity report;
+- all hard subgroup evidence CenterA/LGE-only/no-T2;
+- diagnostic hardcases mixed into formal best-variant decision;
+- Cine copied M5 without registration repair;
+- frame0/one-case SyN marked usable;
+- untrained VoxelMorph marked usable;
+- temporal dictionary ready without usable registration;
+- completion ready with unresolved blocker.
+
+Reject if any known-bad fixture exits 0, or if the report uses an ambiguous exit-0 failure label for a known-bad validator run. `validator_unit_test_report.md` must cover good packet exit 0, each mutated bad packet exit nonzero, missing required files fail, completion ready with blocker fail, temporal dictionary ready without usable registration fail, and diagnostic-hardcase mixed into formal decision fail.
+
+### F. Training validity / rerun gate
+
+Reject if `loss_graph_training_validity_report.md` and `m7_followup2_training_rerun_decision.md` do not prove whether original M7 training was graph-connected.
+
+If original training was not graph-valid, reject unless at least one primary variant was retrained/probed after repair and the packet does not rank non-rerun variants as comparable.
+
+If original training was graph-valid but scientifically no-op, reject unless mechanism diagnosis and at least one targeted repair/probe are present, or a clear `NEEDS_EVIDENCE` state is used.
+
+If training/probe is still running or has not met the follow-up 2 minimum requirement, the reviewer may only use `M7_FOLLOWUP2_AUDITED_NEEDS_MONITOR` or `M7_FOLLOWUP2_AUDITED_NEEDS_EVIDENCE`; do not grant go-for-next-planning.
+
+### G. MyoPS mechanism and mandatory repair gate
+
+Reject if `m7_followup2_mechanism_noop_diagnosis.md`, `srr_contribution_by_case.csv`, `arbitration_opening_diagnostics.csv`, and `proposal_refiner_effectiveness.csv` are missing or only natural language.
+
+The reviewer must check:
+
+- SRR correction gate opening on hard cases;
+- anchor delta rate;
+- proposal recall proxy;
+- remote FP suppression proxy;
+- refiner delta magnitude;
+- prototype margins;
+- dictionary family mass;
+- T2 evidence use and no-T2 masking;
+- T2-present / CenterB / CenterC / GT-positive edema / remote-FP-positive effects.
+
+Because current M7 continued best-variant deltas are near zero, reject unless the executor completed both mandatory repairs:
+
+- C1/F1 gate-opening calibration / correction-opportunity objective;
+- C2/F2 hardcase-aware sampler covering T2-present, GT-positive edema, CenterB/CenterC, remote-FP-positive, scar-positive, and no-T2 safety cases when available.
+
+Reject if the packet only writes diagnostic tables and does not implement repair. If prototype margin is weak or remote FP remains poor, reject unless C3/F3 prototype/hard-negative memory repair is executed or a concrete code blocker is documented. If proposal recall or ROI coverage is poor, reject unless C4/F4 proposal/refiner ROI repair is executed or a concrete code blocker is documented.
+
+Reject if `followup2_batch_composition.csv` is missing for any retraining/probe, or if it lacks case IDs, split role, center, modality group, T2 availability, scar/edema GT positivity, remote-FP flags, no-T2 safety role, and training/gradient/validation usage fields.
+
+### H. Formal validation / hardcase boundary gate
+
+Reject if diagnostic hardcases are used for formal best-variant decision or promotion-style ranking.
+
+Reject if formal-val coverage limitations are not explicit. Diagnostic hardcases may support mechanism interpretation only.
+
+### I. Cine registration / temporal dictionary gate
+
+Reject if follow-up 2 does not attempt a stronger cropped/anatomy-guided non-reference registration escalation.
+
+Reject if frame0-only, one-case SyN, untrained VoxelMorph, or optical-flow proxy is marked usable registration.
+
+Reject if `registration_same_subset_matrix.csv` lacks an explicit `usable_for_temporal_dictionary` field.
+
+Reject if temporal dictionary is marked ready without at least one usable non-reference registration row.
+
+If no usable registration remains after follow-up 2 escalation, `CINE_REGISTRATION_BLOCKED_AFTER_FOLLOWUP2_ESCALATION` is acceptable only if the repair attempt is real and fully documented.
+
+### J. Output presence and route boundary gate
+
+Reject if any required follow-up 2 output is missing without an explicit `NOT_APPLICABLE_WITH_REASON` section. The reviewer must specifically check:
+
+- `srr_v3_image_fidelity_checklist.csv`
+- `architecture_gap_table.md`
+- `branch_arbitration_formula_report.md`
+- `branch_arbitration_unit_tests.md`
+- `modality_order_contract.md`
+- `modality_order_unit_tests.md`
+- `validator_unit_test_report.md`
+- `followup2_batch_composition.csv` for every retraining/probe
+- `followup2_repair_summary.md`
+- `route_to_leaderboard_gap_report.md`
+
+Reject if `followup2_repair_summary.md` does not state which repairs were executed, which were not, why, and whether SRR remains no-op. Reject if `route_to_leaderboard_gap_report.md` is missing or claims leaderboard-ready/challenge-ready status.
+
+Reject if no route promotion, no validation upload, no hosted metric claim, no M8, no scientific stop, and no challenge-ready boundary is not explicit in `completion_check.md`, `result.md`, and `review_request.md`.
+
+### K. Reviewer decision states
+
+Allowed decisions:
+
+- `M7_FOLLOWUP2_AUDITED_GO_FOR_NEXT_PLANNING`
+- `M7_FOLLOWUP2_AUDITED_NEEDS_REVISION`
+- `M7_FOLLOWUP2_AUDITED_NEEDS_EVIDENCE`
+- `M7_FOLLOWUP2_AUDITED_NEEDS_MONITOR`
+- `M7_FOLLOWUP2_AUDITED_NO_PROMOTION_SCIENTIFIC_UNRESOLVED`
+
+`M7_FOLLOWUP2_AUDITED_GO_FOR_NEXT_PLANNING` only means GPT planner can inspect the repaired evidence. It does not authorize M8, route promotion, validation packaging/upload, hosted metric claim, fold expansion, challenge submission, scientific stop, or leaderboard readiness.
 
 最后只写 `results/20260705_srr_v3_m7_training_and_cine_utilization/review.md`。完成后 `git add -f review.md` 并 commit；不要 push，由用户手动 push。
 ```
