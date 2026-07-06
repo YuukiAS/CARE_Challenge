@@ -230,3 +230,58 @@ M7 reviewer decision 只能是：
 
 最后只写 `results/20260705_srr_v3_m7_training_and_cine_utilization/review.md`。完成后 `git add -f review.md` 并 commit；不要 push，由用户手动 push。
 ```
+
+## M7 reviewer (continued): blocker repair audit
+
+```text
+这是独立只读 reviewer/auditor session。只审阅 `results/20260705_srr_v3_m7_training_and_cine_utilization/` 的 M7 continued packet 和必要 first-party helper/source/test files。不要补 executor 缺失文件，不要改代码，不要训练，不要 validation packaging/upload，不要 route promotion，不要启动 M8。最后只写该目录下的 `review.md`。
+
+必须读取：
+
+- `prompts/shared/EXECUTOR_PROMPTS.md` 中的 `M7 executor (continued): reviewer-blocker repair`；
+- `prompts/shared/REVIEWER_PROMPTS.md` 中的本 reviewer continued 段；
+- `prompts/MILESTONE_REVIEW_PROTOCOL.md`；
+- `prompts/HANDOFF_GATE_POLICY.md`；
+- `prompts/GPT_HARD_GATE_PROMPT.md`；
+- prior M7 `review.md`；
+- M7 continued result directory；
+- modified first-party training/evaluation/Cine/loss/model/test files。
+
+### A. Loss gradient gate
+
+Reject if any required loss component still has `BACKWARD_FAILED`, `EVIDENCE_NOT_FOUND`, unjustified `ZERO_GRAD_OR_DETACHED`, missing `requires_grad`, or `param_with_grad_count=0` without a documented legitimate mask gate.
+
+Allow `LEGITIMATE_MASKED_NA` only when batch cases, T2-present fraction, target voxel count, and zero justification are present. At least one T2-present gradient sanity batch is required if T2-present cases are available.
+
+### B. Hard subgroup gate
+
+Review `m7_hard_subgroup_case_manifest.csv`, `hard_subgroup_coverage_report.md`, `same_split_help_harm.csv`, and `hard_subgroup_metrics.csv`.
+
+Reject if evidence remains all CenterA/LGE-only/no-T2, if diagnostic rows are mixed into formal best-variant decision, or if missing groups have no exact reason. Required groups are T2-present/complete, CenterB or CenterC, no-T2 empty-GT, GT-positive scar, GT-positive edema when available, remote-FP-positive, small-lesion, and large-lesion.
+
+### C. Metric decision gate
+
+`best_variant_decision.md` must use only formal-val rows for formal decisions. Diagnostic hardcase rows may support mechanism interpretation but not route promotion. Reject if no-T2 unsafe variants are not rejected, scar regression is ignored, HD95/component/remote-FP are omitted, or case-ID/GT-tuned fallback is used.
+
+### D. Cine repair gate
+
+Review `cine_registration_repair_report.md`, `registration_same_subset_matrix.csv`, `temporal_dictionary_evidence.csv`, and `cine_metrics_summary.csv` if present.
+
+Reject if M7 continued merely copied M5 evidence again. The packet must show a real same-safe-subset non-reference registration attempt. One-case SyN, frame0-only, untrained VoxelMorph, and optical-flow proxy cannot be marked usable. Every registration row must include before/after anatomy metrics, quality/folding/round-trip proxies, runtime, and failure reason.
+
+If a usable registration row exists, temporal dictionary evidence must be attempted. If no usable row exists, `TEMPORAL_DICTIONARY_BLOCKED_BY_REGISTRATION_GAP_AFTER_REPAIR_ATTEMPT` is acceptable only if the registration repair attempt is well documented.
+
+### E. Reviewer decision
+
+Allowed decisions:
+
+- `M7_CONTINUED_AUDITED_GO_FOR_NEXT_PLANNING`
+- `M7_CONTINUED_AUDITED_NEEDS_REVISION`
+- `M7_CONTINUED_AUDITED_NEEDS_EVIDENCE`
+- `M7_CONTINUED_AUDITED_UNDERTRAINED`
+- `M7_CONTINUED_AUDITED_NO_PROMOTION_SCIENTIFIC_UNRESOLVED`
+
+`M7_CONTINUED_AUDITED_GO_FOR_NEXT_PLANNING` only means the repaired evidence is adequate for GPT planner review. It does not authorize validation packaging/upload, hosted metric claim, fold expansion, challenge submission, M8, route promotion, or scientific stop.
+
+最后只写 `results/20260705_srr_v3_m7_training_and_cine_utilization/review.md`。完成后 `git add -f review.md` 并 commit；不要 push，由用户手动 push。
+```
