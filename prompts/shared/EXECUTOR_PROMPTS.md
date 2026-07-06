@@ -121,100 +121,296 @@ artifact paths for the required CSV outputs
 只执行 prompts/tasks/20260705_srr_v3_m5_cine_secondary_contract.md。开始前必须确认 results/20260705_srr_v3_m0_architecture_master_contract/review.md 存在且包含 M0_AUDITED_GO，否则停止。Cine 是副线，不阻塞 MyoPS。目标是审计和补足 Cine secondary diagnostic evidence：CineMA/anatomy prior、ANTsPy SyN same-safe-subset matrix、VoxelMorph trained/usable status、frame0/ED controls、temporal dictionary readiness、frame-quality/motion-saliency router。不能把 frame0-only、one-case SyN smoke、untrained VoxelMorph adapter 冒充 full temporal retrieval。结果写入 results/20260705_srr_v3_m5_cine_secondary_contract/。完成后用 git add -f 提交该 milestone 供 reviewer 审阅所需的全部轻量文件：required outputs、小型 Markdown/CSV/JSON 证据、以及必要的小型 first-party helper/source/config；不要提交重型 runtime 产物或整个 result tree；不要 push，由用户手动 push。不要写 review.md。
 ```
 
-## M6 executor: MyoPS co-equal SRR/segmentation decode-refiner repair
+## M6 executor: concrete SRR-v3 MyoPS architecture/runtime repair
 
 ```text
-只执行 M6：MyoPS co-equal SRR/segmentation decode-refiner repair。M5 是 Cine 副线，不是 M6 前置条件。开始前必须确认 results/20260705_srr_v3_m4_myops_mechanism_ablation_readiness/review.md 存在且包含 M4_AUDITED_GO，否则停止并写 M6_BLOCKED_BY_M4。
+只执行 M6：concrete SRR-v3 MyoPS architecture/runtime repair。开始前必须确认：
 
-这是 MyoPS 主线的 implementation/runtime-repair milestone，不是 full fold，不是 route promotion，不是 validation packaging/upload。M6 的科学前提是：接受 nnU-Net 或其他强分割模型作为安全分割分支和上下文来源，但不能让 SRR 退化成可有可无的后处理。SRR 分支、分割分支、loss function、proposal/refiner 必须在机制中有同等地位。closed-gate fallback 只是安全刹车，不是目标路线；最终系统必须能报告 SRR 分支何时赢、何时输、为何被仲裁器采用或拒绝。
+- `results/20260705_srr_v3_m4_myops_mechanism_ablation_readiness/review.md` 存在且包含 `M4_AUDITED_GO`；
+- M6 不依赖 M5；M5 是 Cine 副线诊断，不是 MyoPS M6 的前置条件；
+- 不允许 full fold training；不允许 validation packaging/upload；不允许 route promotion；不允许 hosted metric claim；不允许启动 M7；
+- 必须提交 lightweight evidence packet 供独立 reviewer 审阅；不要 push。
 
-背景证据来自 M3/M4：M3 最小有效训练通过但同 split 指标伤害 nnU-Net；M4 证明 closed-gate identity 是中性的，no-anchor 很伤，M3 trained gate 几乎关闭但 decode/proposal/refinement 仍会改标签，说明当前主要问题不是 fallback 本身，而是 proposal/refinement/decode 与分支仲裁没有被正确约束。M6 只修这个问题，不重新跑 M3，也不把 M4 结果包装成成功路线。
+如果 M4 prerequisite 不满足，停止并写 `M6_BLOCKED_BY_M4`，不得做科学任务。
 
-必须实现或重构以下机制，并用小规模 synthetic + explicit real-case smoke 证明它们真的运行：
+图像读取与证据边界：当前仓库规则要求 SRR-v2、SRR-v2.5、SRR-v3 以及后续版本的架构图必须通过 ChatGPT Project background materials 或当前对话上传图片进行视觉读取；GitHub connector 暴露的 PNG blob、SHA、base64 metadata、文件名或旧总结都不能替代视觉读取。本 M6 prompt 是基于仓库中可读、可审计的文本、源码、M0-M4 review 和 shared design addendum 合并出的具体执行合同；executor 不得声称自己已经完成 `visual_read_status: READ_FROM_PROJECT_BACKGROUND`，除非当前线程实际具备并读取了 Project background 或当前对话图片。
 
-1. Co-equal branch arbitration：把分割模型分支和 SRR 分支作为两个同级候选，而不是“nnU-Net 最终答案 + SRR 小修补”。仲裁器必须输出 per-class/per-case 的 anchor_weight、srr_weight、refiner_weight、chosen_source 或等价字段。SRR 分支必须能在 synthetic known-error / high-uncertainty 区域被选择；分割分支必须能在 SRR 证据低质时被选择。
-2. Decode/gate consistency：如果仲裁器选择分割分支或 gate/refiner mask 关闭，最终标签必须精确等于分割分支；不允许出现 M4 中那种 gate 近零但 pathology-aware decode 仍大量改标签的隐藏路径。所有 label delta 都必须能追溯到显式的 SRR arbitration/refiner mask。
-3. Loss/refiner centrality：loss function 必须显式包含 SRR 分支监督、分割分支保持项、仲裁一致性项、bounded correction 项、component/remote-FP 惩罚项、no-T2 edema 条件项和 local refiner ROI 项。不要只把 loss/refiner 当辅助日志；必须导出每一项的非空数值、梯度或 one-step update sanity。
-4. Refiner as mechanism：local refiner 必须消费 SRR proposal、分割分支 logits/probabilities、anatomy prior、prototype/dictionary features 和 uncertainty/context，并输出 bounded local correction。必须证明 crop 是 bounded，不是 full-volume residual；必须导出 scar/edema crop ratio、residual magnitude、component/remote-FP proxy。
-5. SRR contribution floor without unsafe forcing：不能强行让 SRR 改所有 case，但在 correction-positive synthetic/real smoke 中，SRR contribution 不能全为 0；在 no-T2 case 中，edema 仍必须全链路安全。
-6. Provenance and strict validation：所有 smoke 必须记录 checkpoint/source status、selected case ids、eval case ids、patch shape、commands、code paths、artifact paths；strict validator 必须 fail closed 于 claim-only packet、hidden-decode-delta packet、SRR-zero-contribution packet、no-T2 edema unsafe packet、full-volume-refiner packet。
+M6 的任务不是“再训练一下 M3”，也不是“把 SRR 变成 nnU-Net 后处理”。M6 必须把当前 SRR-v3 MyoPS path 修成一个可以进入 M7 最小有效训练的 architecture/runtime 系统。它必须同时满足：
 
-结果写入 results/20260705_srr_v3_m6_myops_coequal_decode_refiner_repair/，必须写齐以下轻量文件：
+- SRR retrieval/proposal/refiner/arbitration 在 forward 中实际被调用；
+- loss components 不是空日志，而是有数值、梯度或 one-step update evidence；
+- nnU-Net 作为 segmentation context/evidence/safety fallback，不是唯一最终答案；
+- closed/fallback path 必须精确复现 nnU-Net；
+- SRR 在 correction-positive synthetic/real smoke 中必须能产生非零贡献；
+- no-T2 edema 在 proposal、refiner、loss、decode、export 全链路安全。
 
-result.md
-coequal_repair_contract.md
-code_diff_summary.md
-m4_failure_mapping.csv
-branch_arbitration_sanity.csv
-decode_gate_consistency_sanity.csv
-loss_refiner_component_sanity.csv
-refiner_roi_component_sanity.csv
-no_t2_safety_sanity.csv
-strict_validator_report.md
-unit_test_report.md
-completion_check.md
-review_request.md
-MANIFEST.md
+Codex 不能自己设计 variant。M6 必须实现或明确保留以下三个 variant；如果某个 variant 由于真实 blocker 无法实现，必须写清 blocker，不得悄悄省略。
 
-completion_check.md 只能写 M6_READY_FOR_REVIEW、M6_NEEDS_REVISION 或 M6_NEEDS_EVIDENCE。不能 mark ready 的情况包括：SRR 分支贡献在所有 correction-positive sanity 中为 0；gate/refiner mask 关闭时最终标签仍改变；loss/refiner 只有自然语言说明没有数值/梯度/one-step sanity；local refiner 证据是 full-volume；no-T2 edema 出现非零 decode；strict validator 不能 fail closed known-bad packet。
+1. `m6_full_srr_context_arbitration`
+   - encoder profile: 默认 `balanced_4scale`，channels `16/32/64/128`；另做 `full_4scale` `32/64/128/256` 的 forward/memory smoke；
+   - dictionary: `dict_full_interaction`，每尺度 shared 8、LGE-private 4、C0-private 4、T2-private 4、LGE-T2 interaction 4、LGE-C0 interaction 4、T2-C0 interaction 4；
+   - prototype: scar-positive、scar-safe-negative、edema-positive、edema-safe-negative 四组；edema-positive 和 edema-safe-negative 只能来自 T2-present 安全证据；
+   - proposal: scar/edema separate proposal decoder，`positive_similarity - negative_similarity + anchor_component + anatomy_distance + uncertainty + learned_residual`；
+   - refiner: scar small-ROI crop refiner、edema context-ROI crop refiner；
+   - arbitration: learnable or rule-initialized branch/evidence arbitration，输出 per-case/per-class weights。
 
-完成后用 git add -f 提交 M6 packet 供 reviewer 审阅所需的全部轻量文件和必要 helper/source/config；不要提交 checkpoints、NIfTI predictions、upload packages、大日志、raw data、secrets、environment dumps 或整个 runtime result tree；不要 push，由用户手动 push。不要写 review.md，不要批准自己，不要启动 M7。M6 是否给 M6_AUDITED_GO 由独立 reviewer 决定。
+2. `m6_conservative_component_arbitration`
+   - encoder profile: `safe_4scale` 或 `balanced_4scale`；
+   - dictionary: `dict_conservative_private_shared`，shared 6、LGE-private 4、C0-private 2、T2-private 4，可选 LGE-T2 interaction 2；
+   - proposal: 强依赖 nnU-Net components 和 uncertainty，只允许 bounded correction；
+   - refiner: scar 更高 precision，edema no-T2 更强关闭；
+   - arbitration: component-level 或 class-level conservative rule，只有在 SRR evidence 高于阈值且 anchor uncertainty 高时打开。
+
+3. `m6_scar_precision_edema_safe`
+   - scar 分支偏向 LGE-private、LGE-C0/LGE-T2 interaction、small ROI、remote-FP suppression；
+   - edema 分支偏向 T2-private、T2 interaction、larger context ROI、T2-present-only learning；
+   - no-T2 case 中 edema proposal/refiner/final decode/export 全部 inert；
+   - scar 不得因 edema safety 改动而退化为全空或大面积 FP。
+
+M6 必须把 encoder/decoder 容量写死为可审计 profile，而不是继续让 Codex 用 tiny 结构偷懒。必需 profile：
+
+- `full_4scale`: `32/64/128/256`，至少跑 synthetic 或 one real patch forward；如果 OOM，要记录 exact command、patch shape、error、memory context；
+- `balanced_4scale`: `16/32/64/128`，默认 M7 候选；
+- `safe_4scale`: `12/24/48/96` 或 `8/16/32/64`，只作为 OOM fallback 或 smoke，不得无理由作为最终设计。
+
+每个 profile 必须导出：input shape、availability pattern、encoder scale shapes、decoder scale shapes、parameter count、activation/memory estimate、runtime seconds。decoder 必须是 anatomy/scar/edema task-specific decoder，不能把所有任务压成一个 shallow shared head。
+
+M6 必须新增或明确修复 `segmentation_context_interface`，使 nnU-Net/强分割模型作为 evidence 进入 SRR，而不是绕过 SRR。输入字段至少包括：
+
+- `anchor_probabilities` 或 `anchor_logits`；
+- `anchor_hard_prediction`；
+- `scar_component_mask`、`edema_component_mask`；
+- `anchor_entropy`、`anchor_margin`、`anchor_confidence`；
+- `component_size`、`component_distance_to_union`、`remote_component_flag`；
+- `anatomy_union_support` 或从 anchor/anatomy decoder 派生的 union/LV/RV context。
+
+必须导出 `segmentation_context_interface_sanity.csv`，每行包含 case_id、class、anchor source path、tensor shapes、nonzero rates、component counts、uncertainty statistics、used_by_proposal、used_by_refiner、used_by_arbitration。
+
+M6 必须导出 `retrieval_bank_runtime_sanity.csv`，至少包含：variant、case_id、availability pattern、scale、task、group、slot_count、active_slot_count、mean_usage、entropy、max_weight、collapse_warning、masked_invalid_slot_usage、t2_private_usage_when_no_t2、gradient_norm 或 one-step update status。
+
+M6 必须导出 `prototype_bank_runtime_sanity.csv`，至少包含：variant、bank_type: scar_positive / scar_safe_negative / edema_positive / edema_safe_negative、source split、source cases、component count、voxel count、feature stage、prototype count、no_t2_used_as_edema_negative: 必须为 false、leakage_check、empty_bank_status。如果 edema-positive 或 edema-safe-negative 为空，M6 不能写 ready。
+
+M6 必须导出 `anatomy_proposal_sanity.csv` 和 `refiner_roi_component_sanity.csv`。
+
+`anatomy_proposal_sanity.csv` 至少包含：`P_union/P_LV/P_RV` nonzero rate、distance/proximity map range、uncertainty range、scar proposal foreground rate、edema proposal foreground rate、positive/negative similarity means、anchor component evidence contribution、proposal recall/precision proxy、outside-myocardium FP proxy、no-T2 edema proposal voxels（必须为 0）。
+
+`refiner_roi_component_sanity.csv` 至少包含：refiner type: scar_small_roi / edema_context_roi、crop bounds、crop_volume_ratio、crop_mask_volume_ratio、`is_full_volume_crop`（必须为 false）、original modality crop used: scar 必须 LGE，edema 必须 T2-present only、anchor/prototype/dictionary/anatomy/uncertainty inputs used、residual magnitude、bounded_delta max、component_count_delta proxy、remote_FP_delta proxy、no-T2 edema final voxels（必须为 0）。
+
+M6 必须实现 explicit arbitration。每个 case/class 至少输出：`segmentation_weight`、`srr_retrieval_weight`、`proposal_weight`、`refiner_weight`、`chosen_source`、`fallback_reason`、`anchor_confidence`、`srr_confidence`、`correction_mask_rate`、`label_delta_vs_anchor`。
+
+必须有两个 sanity：
+
+1. correction-positive sanity：在 synthetic known-error 或 explicit high-uncertainty real patch 中，SRR/proposal/refiner contribution 必须非零；
+2. low-quality SRR sanity：当 SRR evidence 被置空、prototype bank 为空或 proposal confidence 低时，arbitration 必须选择 segmentation branch，final labels 必须精确等于 anchor。
+
+`decode_gate_consistency_sanity.csv` 必须证明：当 explicit fallback、closed gate 或 refiner mask 关闭时，final labels 与 segmentation branch 完全一致。若出现 hidden decode delta，strict validator 必须失败。
+
+M6 必须新增或改造 loss，使 `loss_refiner_component_sanity.csv` 至少覆盖以下组件：
+
+- `loss_anatomy_union_lv_rv`；
+- `loss_scar_proposal`；
+- `loss_edema_proposal_t2_present_only`；
+- `loss_scar_refiner_roi`；
+- `loss_edema_refiner_t2_present_roi`；
+- `loss_anchor_preservation_outside_roi`；
+- `loss_branch_arbitration_consistency`；
+- `loss_bounded_correction`；
+- `loss_component_remote_fp`；
+- `loss_no_t2_edema_safety`；
+- `loss_dictionary_entropy_coverage_load_balance`；
+- `loss_prototype_diversity_margin`。
+
+每个 loss 组件必须导出 value、weight、nonzero flag、requires_grad flag、gradient_norm 或 synthetic backward/one-step update evidence。不能只有自然语言说明。
+
+M6 必须新增或加严 strict validator，使以下 known-bad packet fail closed：
+
+- claim-only architecture trace；
+- missing `srr_v3_fidelity_contract.md`；
+- dictionary slot usage 全空；
+- prototype bank 空或 no-T2 myocardium 被当作 edema negative；
+- segmentation context 直接绕过 SRR 成为 final output 且无 explicit fallback reason；
+- closed/fallback gate 下 final labels 仍改变；
+- refiner 是 full-volume residual；
+- loss components 为空或无 backward evidence；
+- SRR contribution 在 correction-positive sanity 中全为 0；
+- no-T2 edema 在 proposal/refiner/final decode/export 任一环节非零。
+
+M6 结果写入 `results/20260705_srr_v3_m6_myops_concrete_architecture_repair/`，必须写齐：
+
+- `result.md`
+- `srr_v3_fidelity_contract.md`
+- `architecture_component_trace.csv`
+- `m4_failure_mapping.csv`
+- `code_diff_summary.md`
+- `encoder_decoder_capacity_sanity.csv`
+- `segmentation_context_interface_sanity.csv`
+- `retrieval_bank_runtime_sanity.csv`
+- `prototype_bank_runtime_sanity.csv`
+- `anatomy_proposal_sanity.csv`
+- `branch_arbitration_sanity.csv`
+- `decode_gate_consistency_sanity.csv`
+- `loss_refiner_component_sanity.csv`
+- `refiner_roi_component_sanity.csv`
+- `no_t2_safety_sanity.csv`
+- `strict_validator_report.md`
+- `unit_test_report.md`
+- `commands_run.md`
+- `completion_check.md`
+- `review_request.md`
+- `MANIFEST.md`
+
+`completion_check.md` 只能写：
+
+- `M6_READY_FOR_REVIEW`
+- `M6_NEEDS_REVISION`
+- `M6_NEEDS_EVIDENCE`
+- `M6_BLOCKED_BY_M4`
+
+不能写 `M6_READY_FOR_REVIEW` 的情况：
+
+- 没有逐项 architecture trace；
+- 使用 tiny three-scale 结构作为唯一证据；
+- dictionary/prototype/proposal/refiner/loss/arbitration 任一核心模块没有 runtime evidence；
+- no-T2 edema 不安全；
+- local refiner 是 full-volume；
+- closed/fallback 下 final labels 改变；
+- SRR contribution 在 correction-positive sanity 中为 0；
+- loss components 没有数值/梯度/one-step sanity；
+- strict validator 不能 fail closed known-bad packets；
+- reviewer 需要的轻量证据没有 git-tracked。
+
+完成后必须 `git add -f` 并本地 commit M6 轻量证据和必要 first-party helper/source/config；不要提交 checkpoint、NIfTI、upload package、大日志、raw data、secrets、environment dump 或整棵 runtime tree；不要 push；不要写 `review.md`；不要启动 M7。
 ```
 
-## M6 executor: SRR-v3 diagram-faithful MyoPS repair
-
-Use this version instead of the earlier abstract co-equal M6 prompt when starting M6.
+## M7 executor: concrete MyoPS training and CineMA/Cine diagnostic utilization
 
 ```text
-只执行 M6：SRR-v3 diagram-faithful MyoPS repair。M5 是 Cine 副线，不是 M6 前置条件。开始前必须确认 `results/20260705_srr_v3_m4_myops_mechanism_ablation_readiness/review.md` 存在且包含 `M4_AUDITED_GO`，否则停止并写 `M6_BLOCKED_BY_M4`。
+只执行 M7：concrete MyoPS training and CineMA/Cine diagnostic utilization。M7 只能在 M6 独立审阅通过后启动。必须确认：
 
-这是 MyoPS 主线的 architecture-faithfulness / runtime-repair milestone，不是 full fold，不是 route promotion，不是 validation packaging/upload。M6 不是发明新路线，也不是把 SRR 抽象成一个和 nnU-Net 竞争的黑盒分支。M6 必须回到 v2/v2.5/v3 图中的完整设计：availability-aware modality-specific retrieval、strong encoder、semantic representation retrieval bank、real train/OOF prototypes、anatomy-guided lesion proposal、pathology-specific soft-ROI refinement、显式 training objectives，以及 nnU-Net/强分割模型提供的 anchor/context/uncertainty/component/anatomy evidence。
+- `results/20260705_srr_v3_m6_myops_concrete_architecture_repair/review.md` 存在且包含 `M6_AUDITED_GO`；
+- 如果 M7 中启用 Cine 子线，还必须确认 `results/20260705_srr_v3_m5_cine_secondary_contract/review.md` 包含 `M5_AUDITED_DIAGNOSTIC_GO`；
+- M7 仍不是 route promotion、不是 validation packaging/upload、不是 hosted metric claim；
+- M7 必须停止在 executor result + completion_check + review_request，不得写 `review.md`，不得启动后续 milestone。
 
-核心原则：nnU-Net 或其他强分割模型可以作为同等重要的分割证据和安全上下文，但不能成为唯一主角；SRR 也不能成为可有可无的后处理。最终系统应是“分割证据 + SRR 检索证据 + 解剖 proposal + pathology-specific refiner + 显式损失/仲裁”的联合机制。closed-gate fallback 只是防止伤害 baseline 的安全刹车，不是论文方法本身。
+如果 M6 未通过，写 `M7_BLOCKED_BY_M6` 并停止。Cine 子线若 M5 未通过，可以只阻塞 Cine 子线，不应阻塞 MyoPS M7 训练；但必须写清 `CINE_BLOCKED_BY_M5`。
 
-背景证据来自 M3/M4：M3 最小有效训练通过但同 split 指标伤害 nnU-Net；M4 证明 closed-gate identity 中性，no-anchor 很伤，M3 trained gate 几乎关闭但 pathology-aware decode/proposal/refinement 仍会改标签。结论是：SRR-v3 思想本身没有被证明失败，失败更像是图里的关键约束没有被充分实现，尤其是 decode/gate consistency、proposal/refiner 校准、loss/refiner 中心性和分割上下文接口。
+M7 是第一个允许训练 M6 修复后 concrete variants 的 milestone。它的目标不是把结果包装成 challenge candidate，而是判断 M6 修复后的 SRR-v3 是否在最小有效训练下产生可靠、可解释、可审计的 help/harm 证据，并且判断 CineMA/registration/temporal evidence 是否已经从 M5 的 diagnostic gap 走向可用的 Cine secondary diagnostic path。
 
-必须先写 `srr_v3_fidelity_contract.md`，逐项映射 v2/v2.5/v3 图中的模块到当前代码路径和 M6 修复目标。至少覆盖：
+M7 必须回答四个问题：
 
-1. Inputs & availability：LGE/C0/T2 modality-specific stems、availability mask、no zero-filling semantics、no-T2 edema conditional supervision。
-2. Strong encoder & segmentation context interface：shared/strong multi-scale encoder；nnU-Net/强分割模型的 probabilities/logits、hard prediction、scar/edema components、uncertainty/confidence、anatomy context。这里叫 context/evidence interface，不叫 final answer。
-3. Semantic retrieval bank：每个尺度的 shared dictionary、LGE-private、C0-private、T2-private、optional interaction dictionary、router、anatomy/scar/edema routed features、dictionary slot usage、real train/OOF prototype source。
-4. Anatomy-guided lesion proposal：anatomy decoder 输出 `P_union/P_LV/P_RV`；anatomy prior/distance/uncertainty soft gate；scar proposal decoder 和 edema proposal decoder；nnU-Net component/uncertainty 只作为 proposal evidence 之一。
-5. Soft-ROI refinement & outputs：soft-ROI generator；scar small-ROI refiner；edema large-ROI refiner；refiner 必须消费 SRR proposal、anatomy prior、distance/uncertainty、segmentation context、prototype similarity、原始 LGE/T2 crop，并输出 bounded local correction。
-6. Training objectives：anatomy loss、scar proposal loss、T2-masked edema proposal loss、scar refiner loss、T2-masked edema refiner loss、negative-space/hard-negative loss、prior/ROI loss、dictionary sparsity/coverage/load-balance/prototype-diversity loss、branch arbitration/decode consistency loss、optional alignment loss。
+1. M6 的三个 concrete variants 在足够训练后是否有任一 variant 相对同 split nnU-Net 改善或至少不伤害关键 metric？
+2. 改善或伤害来自哪里：dictionary、prototype、proposal、refiner、arbitration、loss 还是 no-T2 safety？
+3. 训练是否稳定：loss 是否下降并 plateau，validation 是否稳定，不是几分钟结束的假证据？
+4. CineMA 是否真正被用作 Cine anatomy/frame-quality/registration/temporal-dictionary evidence，而不是只作为 frame0 control 或文字状态？
 
-必须实现或重构以下机制，并用小规模 synthetic + explicit real-case smoke 证明它们真的运行：
+M7 必须训练并评估下列 variants，除非 M6 review 明确禁止某个 variant。Codex 不能自行缩减 matrix；如资源不足，必须按顺序训练并记录 blocker。
 
-1. SRR-v3 architecture fidelity：retrieval bank、prototype groups、anatomy proposal、scar/edema proposal、soft-ROI refiner 和 loss components 都必须在 forward/loss 中被调用，并导出非空 runtime evidence。
-2. Segmentation context as evidence, not sole answer：nnU-Net/强分割模型以 logits/probabilities/components/uncertainty/anatomy context 进入 proposal/refiner/arbitration；final output 不能绕过 SRR/proposal/refiner 直接等于 nnU-Net，除非 explicit safety fallback 被触发并记录 reason。
-3. Branch/evidence arbitration：仲裁器必须输出 per-class/per-case 的 segmentation_weight、srr_retrieval_weight、proposal_weight、refiner_weight、chosen_source 或等价字段。SRR 分支必须能在 synthetic known-error / high-uncertainty 区域被采用；分割分支必须能在 SRR 证据低质时被采用。
-4. Decode/gate consistency：如果 explicit fallback、gate/refiner mask 关闭或仲裁选择纯分割分支，final labels 必须精确等于分割分支；不允许 gate 近零但 pathology-aware decode 仍大量改标签。所有 label delta 都必须能追溯到显式的 SRR/proposal/refiner/arbitration mask。
-5. Loss/refiner centrality：loss function 必须显式包含 SRR retrieval/proposal/refiner 相关项，而不是只保留分割分支 DiceCE。必须导出每一项的非空数值、是否参与梯度、one-step update sanity 或 synthetic backward check。
-6. Refiner as mechanism：local refiner 必须是 bounded soft-ROI correction，不是 full-volume residual。必须导出 scar/edema crop ratio、residual magnitude、proposal recall/precision proxy、component/remote-FP proxy。
-7. No-T2 edema safety：no-T2 case 中 edema proposal、edema refiner、edema loss、final decode、export 全链路安全；no-T2 myocardium 不能作为 edema negative。
-8. Strict validation：strict validator 必须 fail closed 于 claim-only packet、missing architecture trace、hidden-decode-delta packet、SRR-zero-contribution packet、loss-components-empty packet、no-T2 edema unsafe packet、full-volume-refiner packet。
+1. `m7_full_srr_context_arbitration`：来自 M6 的 `m6_full_srr_context_arbitration`。默认 encoder 为 `balanced_4scale` `16/32/64/128`。如果 `full_4scale` `32/64/128/256` 在 M6 smoke 中可运行，允许作为额外 high-capacity variant，但不能替代 balanced 默认。
+2. `m7_conservative_component_arbitration`：来自 M6 的 `m6_conservative_component_arbitration`。它是安全/稳定对照，目标是减少 remote FP、HD95 和 component explosion。
+3. `m7_scar_precision_edema_safe`：来自 M6 的 `m6_scar_precision_edema_safe`。它必须报告 scar 和 edema 分支的不同 loss、ROI、proposal、arbitration 行为，不能只给总 Dice。
 
-结果写入 `results/20260705_srr_v3_m6_myops_diagram_faithful_repair/`，必须写齐：
+只有当前三项主 variant 至少完成 one-batch overfit 与 baseline sanity 后，才允许新增最多两个 ablation：
 
-`result.md`
-`srr_v3_fidelity_contract.md`
-`architecture_component_trace.csv`
-`m4_failure_mapping.csv`
-`segmentation_context_interface_sanity.csv`
-`retrieval_bank_runtime_sanity.csv`
-`anatomy_proposal_sanity.csv`
-`branch_arbitration_sanity.csv`
-`decode_gate_consistency_sanity.csv`
-`loss_refiner_component_sanity.csv`
-`refiner_roi_component_sanity.csv`
-`no_t2_safety_sanity.csv`
-`strict_validator_report.md`
-`unit_test_report.md`
-`completion_check.md`
-`review_request.md`
-`MANIFEST.md`
+- `no_interaction_dictionary`：去掉 interaction slots；
+- `frozen_prototype_bank`：prototype 固定，仅训练 proposal/refiner/arbitration。
 
-`completion_check.md` 只能写 `M6_READY_FOR_REVIEW`、`M6_NEEDS_REVISION` 或 `M6_NEEDS_EVIDENCE`。不能 mark ready 的情况包括：没有 `srr_v3_fidelity_contract.md`；`architecture_component_trace.csv` 没有逐项覆盖图中模块；SRR retrieval/proposal/refiner 在 runtime evidence 中全为空或未调用；segmentation context 绕过 SRR 直接成为最终输出且没有 explicit fallback reason；gate/refiner mask 关闭时 final labels 仍改变；loss/refiner 只有自然语言说明没有数值/梯度/one-step evidence；local refiner 是 full-volume；no-T2 edema 出现非零 decode；strict validator 不能 fail closed known-bad packet。
+不得跑大规模 temperature/threshold grid。阈值、温度、gate bias 只能在预先记录的有限集合中选择，且不能用 validation GT 做 case-id tuning。
 
-完成后用 `git add -f` 提交 M6 packet 供 reviewer 审阅所需的全部轻量文件和必要 helper/source/config；不要提交 checkpoints、NIfTI predictions、upload packages、大日志、raw data、敏感信息、environment dumps 或整个 runtime result tree；不要 push，由用户手动 push。不要写 `review.md`，不要批准自己，不要启动 M7。M6 是否给 `M6_AUDITED_GO` 由独立 reviewer 决定。
+M7 不要求超过 8 小时，但必须避免几分钟结束的训练假证据。每个 MyoPS variant 必须满足以下条件之一：
+
+- `optimizer_steps >= 3000` 且 `train_loop_seconds >= 1800`；或
+- 明确达到 plateau：最近 5 个 validation events 中 primary composite objective 相对改善 `< 1%`，且各核心 loss component 没有单项爆炸；或
+- 因 scheduler/OOM/bug 中止，并写 `M7_NEEDS_REVISION` 或 `M7_NEEDS_EVIDENCE`，不得写成功或失败。
+
+推荐训练目标：
+
+- `optimizer_steps`: `6000-12000`；
+- validation interval: 每 `300-500` steps；
+- eval cases: 至少 `12` 个固定 case，优先 `20` 个；
+- hard subgroups: all-case、T2-present、GT-positive、no-T2 empty-GT、CenterB/CenterC、remote-FP-positive、small-lesion、large-lesion；
+- one-batch overfit: 每个 variant 必须 pass；
+- loss decrease: total loss 与关键 loss component 均需报告，不只总 loss。
+
+如果训练不足 1800 秒且没有 plateau，`experiment_adequacy_decision` 必须是 `FAIL` 或 `PARTIAL`，`scientific_resolution_status` 必须是 `SCIENTIFIC_UNDERTRAINED` 或 `SCIENTIFIC_NEEDS_EVIDENCE`。不得把 undertrained run 写成 route failure 或 route promotion。
+
+M7 必须用同 split nnU-Net 作为 reference，不能只和旧 SRR 比。每个 variant 必须报告：scar Dice、HD95、component count、remote FP、volume ratio；edema all-case Dice/HD95；edema T2-present/complete Dice/HD95；edema GT-positive Dice/HD95；no-T2 empty-GT edema stability；CenterB/CenterC 指标；per-case help/harm；branch arbitration chosen_source 分布；dictionary/prototype usage；proposal recall/precision proxy；refiner crop/residual statistics；label/export caveat。
+
+Best variant selection 不是 Codex 主观判断，必须按下列规则：
+
+1. 任何 no-T2 edema unsafe 的 variant 直接 `REJECT`；
+2. 任何 scar 相比 nnU-Net 明显退化且没有 edema 大幅收益的 variant 直接 `REJECT`；
+3. 首先看 primary target：`myops_scar` 与 `myops_edema` 的同 split help/harm；
+4. 若 Dice 接近，优先 HD95、component_count、remote_FP 更好者；
+5. 若 MyoPS 没有任何 variant 同时满足 no-T2 safety、scar non-regression 和 edema hard-subgroup improvement，则写 `NO_PROMOTION_SCIENTIFIC_UNRESOLVED`，不得包装为成功；
+6. 只有在至少一个 primary 或 critical secondary metric 明确改善，且无 catastrophic regression，且 M7 review 支持时，后续 GPT 才能考虑下一 milestone；M7 executor 本身不许 route promotion。
+
+M7 必须按 step 导出 loss component 曲线，至少包含：anatomy union/LV/RV、scar proposal、edema proposal T2-present、scar refiner ROI、edema refiner ROI、anchor preservation、branch arbitration consistency、bounded correction、component/remote-FP、no-T2 edema safety、dictionary entropy/coverage/load-balance、semantic family/interaction mass、prototype diversity/margin。
+
+必须输出 `loss_component_by_step.csv` 与 `loss_component_gradient_sanity.csv`。如果某个 loss component 长期为 0，必须解释它是合法不适用还是 bug；无解释的空 loss component 是 reviewer blocker。
+
+M5 已经说明 CineMA/anatomy prior 目前只是部分支持，不能当成 registration 或 temporal retrieval completion。M7 若启用 Cine 子线，必须把 CineMA 用成以下三类 evidence，而不是只写“尝试过”：
+
+1. CineMA anatomy prior：对 same-safe-subset 的 cine frames 运行或读取 CineMA/equivalent anatomy output，记录 source path、version、weights/source status、input preprocessing、frame selection、class mapping、output label/probability shape、myocardium/anatomy Dice/HD95 against available local reference 或 frame0 control、whether anatomy-only or pathology-capable。CineMA 输出不能直接当 pathology prediction。
+2. CineMA-assisted registration：构建 same-safe-subset matrix，至少包含 frame0/ED identity control、CineMA frame-wise anatomy prior control、CineMA + ANTsPy SyN、CineMA + SimpleITK Demons/B-spline fallback、optical-flow/feature-warp proxy（必须标为 descriptor/proxy）、VoxelMorph（如果没有训练或可审计 weights，必须标 `UNTRAINED_NOT_USABLE`，不能进 usable registration）。每行必须报告 same case/frame、before/after anatomy Dice/HD95、Jacobian/fold proxy、round-trip/inverse consistency proxy、runtime、failure reason。one-case SyN smoke 不能作为 full registration matrix。
+3. Cine temporal dictionary：如果 registration matrix 至少有一个非-reference option 合格，才允许构建 temporal dictionary。temporal dictionary 必须包括 ED/reference anchor features、selected non-reference frame features、warped or descriptor features、frame-quality score、motion-saliency score、temporal representer slot usage、temporal aggregation output、local class_1 myocardium proxy and class_3 sanity、hosted metric caveat。如果 registration matrix 不合格，必须写 `TEMPORAL_DICTIONARY_BLOCKED_BY_REGISTRATION_GAP`，不得用 frame0-only 代替 temporal retrieval。
+
+Cine 是 secondary diagnostic，不得阻塞 MyoPS 主线训练。M7 可以把 Cine 子线作为同一 milestone 的 secondary packet，但必须分开写 MyoPS 与 Cine 的 decision：
+
+- `myops_decision`: variant improvement / no promotion / needs revision / undertrained；
+- `cine_decision`: CineMA used / registration gap remains / temporal dictionary ready or blocked；
+- `combined_decision`: 不得把 Cine diagnostic success 当成 MyoPS promotion，也不得把 MyoPS failure 当成 Cine stop。
+
+M7 结果写入 `results/20260705_srr_v3_m7_training_and_cine_utilization/`，必须写齐：
+
+- `result.md`
+- `m7_execution_plan.md`
+- `variant_matrix.csv`
+- `training_adequacy_by_variant.csv`
+- `one_batch_overfit_by_variant.csv`
+- `training_curve_by_variant.csv`
+- `validation_curve_by_variant.csv`
+- `loss_component_by_step.csv`
+- `loss_component_gradient_sanity.csv`
+- `prediction_sanity_by_variant.csv`
+- `same_split_help_harm.csv`
+- `hard_subgroup_metrics.csv`
+- `branch_arbitration_by_case.csv`
+- `dictionary_prototype_usage_by_variant.csv`
+- `proposal_refiner_by_case.csv`
+- `no_t2_safety_by_variant.csv`
+- `best_variant_decision.md`
+- `failure_interpretation.md`
+- `cinema_usage_report.md` if Cine subline runs, otherwise `cinema_blocker_report.md`
+- `registration_same_subset_matrix.csv` if Cine subline runs
+- `temporal_dictionary_evidence.csv` if temporal dictionary is attempted
+- `cine_metrics_summary.csv` if Cine metrics are computed
+- `label_export_qc.md`
+- `commands_run.md`
+- `completion_check.md`
+- `review_request.md`
+- `MANIFEST.md`
+
+`completion_check.md` 只能写：
+
+- `M7_READY_FOR_REVIEW`
+- `M7_NEEDS_REVISION`
+- `M7_NEEDS_EVIDENCE`
+- `M7_NEEDS_MONITOR`
+- `M7_BLOCKED_BY_M6`
+
+不能写 `M7_READY_FOR_REVIEW` 的情况：
+
+- 任一必跑 MyoPS variant 没有训练且没有 blocker；
+- 训练不足 1800 秒且没有 plateau；
+- 没有 same-split nnU-Net help/harm；
+- 没有 loss component 曲线；
+- 没有 hard subgroup metrics；
+- no-T2 edema unsafe；
+- best variant decision 由自然语言主观判断而非 metric table 决定；
+- Cine 子线声称使用 CineMA 但没有 class mapping/output path/metric 或 blocker；
+- registration 被 one-case SyN/untrained VoxelMorph/frame0-only 冒充完成；
+- temporal dictionary 在 registration gap 下仍被写成 ready；
+- reviewer 所需轻量证据没有 git-tracked。
+
+完成后必须 `git add -f` 并本地 commit M7 轻量证据和必要 first-party helper/source/config；不要提交 checkpoint、NIfTI、upload package、大日志、raw data、secrets、environment dump 或整棵 runtime tree；不要 push；不要写 `review.md`；不要启动后续 milestone。
 ```
