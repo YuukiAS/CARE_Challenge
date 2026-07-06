@@ -1,114 +1,131 @@
-# Review 20260705 SRR-v3 M7 Training and Cine Utilization
+# Review 20260705 SRR-v3 M7 Continued Repair
 
 task_key: `20260705_srr_v3_m7_training_and_cine_utilization`
+continued_task: `M7 reviewer-blocker repair`
 reviewed_result_dir: `results/20260705_srr_v3_m7_training_and_cine_utilization/`
-reviewed_executor_commit: `8cb619e Complete SRR v3 M7 training and Cine diagnostic packet`
+reviewed_executor_commit: `d049d68 Complete SRR v3 M7 continued repair packet`
 reviewer_role: `independent read-only reviewer/auditor`
-decision: `M7_AUDITED_NEEDS_REVISION`
+decision: `M7_CONTINUED_AUDITED_NEEDS_REVISION`
 
 ## Scope
 
-This is a read-only review of the M7 executor packet. I did not modify model/training/evaluation code, did not train, did not package or upload validation data, did not claim route promotion, and did not start any later milestone. This review writes only this `review.md`.
+This is a read-only review of the M7 continued blocker-repair packet. I did not modify model/training/evaluation code, did not train, did not package or upload validation data, did not claim hosted metrics, did not promote a route, and did not start M8. This review overwrites the prior non-continued M7 `review.md` with the controlled M7 continued audit decision.
 
-M7 is reviewed as two linked but separate lines: MyoPS training/help-harm evidence, and Cine secondary diagnostic utilization. The Cine gap is real. The packet mostly preserves that gap honestly, but the MyoPS packet has hard evidence failures that prevent audited-go.
+The continued packet is reviewed against the current `M7 reviewer (continued): blocker repair audit` contract in `prompts/shared/REVIEWER_PROMPTS.md`.
 
 ## Source Files Reviewed
 
-- `prompts/shared/REVIEWER_PROMPTS.md`
-- `prompts/shared/EXECUTOR_PROMPTS.md`, M7 executor section
+- `prompts/shared/REVIEWER_PROMPTS.md`, `M7 reviewer (continued): blocker repair audit`
+- `prompts/shared/EXECUTOR_PROMPTS.md`, `M7 executor (continued): reviewer-blocker repair`
 - `prompts/MILESTONE_REVIEW_PROTOCOL.md`
 - `prompts/HANDOFF_GATE_POLICY.md`
 - `prompts/GPT_HARD_GATE_PROMPT.md`
-- `results/20260705_srr_v3_m6_myops_concrete_architecture_repair/review.md`
-- `results/20260705_srr_v3_m5_cine_secondary_contract/review.md`
+- prior M7 `review.md` content from this result directory before overwrite
 - files under `results/20260705_srr_v3_m7_training_and_cine_utilization/`
-- `jobs/src/run_srr_v3_m7_myops_training.sh`
-- `scripts/training/run_srr_propref_myops_fold0.py`
+- `scripts/evaluation/run_srr_v3_m7_continued_repair.py`
+- `scripts/evaluation/run_srr_v3_m7_cine_registration_repair.py`
 - `scripts/evaluation/aggregate_srr_v3_m7_training_and_cine.py`
+- `src/care_myocardium/losses/srr_losses.py`
+- `scripts/training/run_srr_propref_myops_fold0.py`
 
 ## Claim Table
 
 | Claim | Decision | Evidence |
 | --- | --- | --- |
-| M6 prerequisite gate is satisfied. | `SUPPORTED` | `results/20260705_srr_v3_m6_myops_concrete_architecture_repair/review.md` contains `decision: M6_AUDITED_GO`. |
-| M5 Cine prerequisite is satisfied for a diagnostic Cine subline. | `SUPPORTED_WITH_LIMITS` | `results/20260705_srr_v3_m5_cine_secondary_contract/review.md` contains `decision: M5_AUDITED_DIAGNOSTIC_GO`, but that review explicitly preserved `CINE_REGISTRATION_GAP_REMAINS` and `TEMPORAL_DICTIONARY_NOT_READY`. |
-| M7 did not self-approve or start M8. | `SUPPORTED` | No `review.md` existed in the M7 packet before this review. `result.md` and `completion_check.md` state no M8, validation package/upload, hosted metric claim, or route promotion. |
-| Required M7 lightweight result files are tracked. | `SUPPORTED` | `git ls-files results/20260705_srr_v3_m7_training_and_cine_utilization` lists the first-level M7 packet files, including MyoPS evidence, Cine reports, and this review after writing. Runtime subdirectories are local evidence and are not part of the tracked lightweight packet. |
-| Three required MyoPS variants were included. | `SUPPORTED` | `variant_matrix.csv` contains `m7_full_srr_context_arbitration`, `m7_conservative_component_arbitration`, and `m7_scar_precision_edema_safe`, all marked required. |
-| Training duration and optimizer-step adequacy are present. | `SUPPORTED` | `training_adequacy_by_variant.csv` has 3 `PASS` rows: 12382, 17660, and 14029 optimizer steps; each has `train_loop_seconds` just over 1800 seconds, 20 validation events, and 12 eval cases. |
-| One-batch overfit evidence is present. | `SUPPORTED` | `one_batch_overfit_by_variant.csv` has 3 `PASS` rows with 40 steps and decreasing losses for all required variants. |
-| Same-split nnU-Net help/harm evidence exists. | `SUPPORTED_WITH_CAVEAT` | `same_split_help_harm.csv` has 288 rows across 3 variants, 12 cases, best/final checkpoints, argmax/pathology-aware decode, and scar/edema metrics. However, all rows are `CenterA`, `LGE-only`, and `t2_present=False`, limiting subgroup conclusions. |
-| Hard subgroup coverage satisfies M7 prompt. | `NOT_SUPPORTED` | `hard_subgroup_metrics.csv` only includes groups `all_cases`, `LGE-only`, `no_T2_empty_GT`, and `gt_positive_only`. The M7 prompt required hard subgroup coverage including T2-present, GT-positive, no-T2 empty-GT, CenterB/CenterC, remote-FP-positive, small-lesion, and large-lesion. CenterB/CenterC and T2-present evidence are absent from the M7 evaluation rows reviewed. |
-| Loss component curves exist. | `SUPPORTED` | `loss_component_by_step.csv` has 11050 rows covering required M7 loss components, and no audited component is all-zero across the packet. |
-| Loss component gradient sanity passes. | `NOT_SUPPORTED` | `loss_component_gradient_sanity.csv` has 75 rows and all 75 are `BACKWARD_FAILED:RuntimeError` with `grad_l2_norm=EVIDENCE_NOT_FOUND` and `param_with_grad_count=0`. This is a hard M7 gate failure, not merely a low-signal finding. |
-| No-T2 edema safety is preserved in the evaluated cases. | `SUPPORTED` | `no_t2_safety_by_variant.csv` has 144 rows and reviewer parsing found max `no_t2_edema_voxels=0`. This is limited to the evaluated no-T2/LGE-only cases. |
-| Metric-table decision avoids route promotion. | `SUPPORTED` | `best_variant_decision.md` and `best_variant_decision_table.csv` assign every variant/checkpoint/decode row `NO_PROMOTION_SCIENTIFIC_UNRESOLVED`; max scar Dice delta is small (`0.006052879325744249`) and edema Dice delta is always `0.0`. |
-| CineMA usage has enough evidence to count as completed Cine registration/temporal dictionary. | `NOT_SUPPORTED` | `cinema_usage_report.md`, `registration_same_subset_matrix.csv`, and `temporal_dictionary_evidence.csv` all preserve `CINE_REGISTRATION_GAP_REMAINS` and `TEMPORAL_DICTIONARY_BLOCKED_BY_REGISTRATION_GAP`. No qualified non-reference registration option exists. |
-| Cine gap is honestly blocked rather than falsely promoted. | `SUPPORTED_WITH_CAVEAT` | The matrix correctly marks frame0 control, one-case SyN smoke, untrained VoxelMorph, SimpleITK/Demons fallback with Jacobian concerns, and optical-flow proxy as `NOT_USABLE_FOR_TEMPORAL_DICTIONARY`. This is honest, but it means M7 did not materially close the Cine registration/temporal dictionary gap. |
-| `completion_check.md` is valid as `M7_READY_FOR_REVIEW`. | `NOT_SUPPORTED` | The packet claims `experiment_adequacy_decision: PASS`, but gradient sanity entirely failed and hard subgroup coverage is incomplete. Under the M7 prompt, these are blockers for a ready packet. |
+| M7 continued contract is present in shared prompts. | `SUPPORTED` | `prompts/shared/EXECUTOR_PROMPTS.md` contains `M7 executor (continued): reviewer-blocker repair`; `prompts/shared/REVIEWER_PROMPTS.md` contains this reviewer continued section. The standalone continued prompt file is not part of the active contract. |
+| Executor did not claim route promotion, hosted metrics, validation packaging/upload, scientific stop, or M8. | `SUPPORTED` | `completion_check.md` sets `route_promotion_decision: NO_PROMOTION`, `hosted_metric_claim: false`, and `validation_packaging_or_upload: false`; `result.md` repeats the same boundary. |
+| Loss gradient sanity was repaired relative to prior M7. | `SUPPORTED_WITH_REVIEW_LIMITS` | `loss_component_gradient_sanity.csv` has 107 rows: 93 `PASS`, 14 `PASS_ZERO_JUSTIFIED`, no `BACKWARD_FAILED`, no `EVIDENCE_NOT_FOUND`, and all rows have `requires_grad=True`. The audited batch includes `t2_present_batch_fraction=0.5`. |
+| Loss graph training-validity report exists and addresses the prior detached-metric issue. | `SUPPORTED_WITH_REVIEW_LIMITS` | `loss_graph_training_validity_report.md` identifies `src/care_myocardium/losses/srr_losses.py::srr_m6_expanded_total_loss` through `scripts/training/run_srr_propref_myops_fold0.py::propref_loss`, states that optimizer backward used the graph-connected `total`, and states that the old failure came from detached logging metrics. I did not rerun training or gradient probes in this reviewer session. |
+| Formal-val subgroup coverage is no longer all CenterA/LGE-only/no-T2. | `SUPPORTED` | `m7_case_pool_audit.csv` has 8 selected formal-val cases spanning CenterA, CenterB, CenterC; `same_split_help_harm.csv` has 192 formal-val rows with 120 CenterA, 48 CenterB, 24 CenterC, and 72 T2-present rows; `hard_subgroup_metrics.csv` includes `T2_present_complete`, `GT_positive_edema`, `GT_positive_scar`, `CenterB`, `CenterC`, `remote_FP_positive`, `small_lesion`, and `large_lesion`. |
+| Diagnostic hardcases were excluded from formal best-variant decision. | `SUPPORTED` | `m7_case_pool_audit.csv` has `selected_for_diagnostic_hardcase=False` for all 220 rows; `same_split_help_harm.csv` rows are all `split_role=formal_val` and `eligible_for_best_variant_decision=True`; `best_variant_decision.md` states no diagnostic train hardcase rows are mixed into formal ranking. |
+| Best-variant table avoids promotion. | `SUPPORTED` | `best_variant_decision_table.csv` has 12 rows and every row is `NO_PROMOTION_SCIENTIFIC_UNRESOLVED`; scar Dice deltas range from about `-0.0028249` to `0.0012990`, edema Dice deltas from about `-0.0000805` to `0.0010844`. |
+| Cine repair helper ran instead of only copying M5. | `SUPPORTED_WITH_BLOCKED_CINE_STATUS` | `cine_registration_repair_report.md` records 3 safe cases, 6 non-reference pairs, SimpleITK Demons, ANTsPy SyNOnly, and VoxelMorph availability/no-weights evidence. `registration_same_subset_matrix.csv` contains 6 SimpleITK rows, 6 ANTsPy rows, 6 frame0 control rows, and 1 VoxelMorph availability row. |
+| Cine temporal dictionary remains correctly blocked because no usable non-reference registration row exists. | `SUPPORTED` | `registration_same_subset_matrix.csv` marks SimpleITK and ANTsPy rows `NOT_USABLE_FOR_TEMPORAL_DICTIONARY`; VoxelMorph is `NOT_USABLE_UNTRAINED_OR_NO_WEIGHTS`; `temporal_dictionary_evidence.csv` has only `TEMPORAL_DICTIONARY_BLOCKED_BY_REGISTRATION_GAP_AFTER_REPAIR_ATTEMPT`. |
+| Registration evidence fully satisfies the reviewer row-field gate. | `NOT_SUPPORTED_BUT_NOT_PRIMARY_BLOCKER` | `registration_same_subset_matrix.csv` includes the main anatomy/HD95/NCC/displacement/Jacobian/runtime fields, but uses `m7_continued_decision` rather than the reviewer prompt's explicit `usable_for_temporal_dictionary` field. ANTsPy rows also lack displacement/Jacobian/registration-metric values. Because all non-reference rows are blocked and no temporal readiness is claimed, this is a documentation/field-compliance weakness rather than the strongest blocker. |
+| Strict validator known-bad gate passes. | `NOT_SUPPORTED` | `strict_validator_report.csv` has only `known_bad_packet,expected_failure,actual_status,failure_reason`; it lacks actual exit code/status from running mutated known-bad packets. The source `scripts/evaluation/run_srr_v3_m7_continued_repair.py` lines 593-626 build `PASS_FAIL_CLOSED` from boolean checks on the current packet, not by creating bad packets and proving the validator rejects them. This violates the reviewer prompt's strict validator gate. |
+| `completion_check.md` is acceptable as `M7_CONTINUED_READY_FOR_REVIEW`. | `NOT_SUPPORTED` | The strict validator gate remains unresolved. The prompt explicitly says to reject if `completion_check.md` claims ready while any continued blocker remains. |
 
 ## Commands Run
 
 ```bash
-git status --short --branch
+env GIT_OPTIONAL_LOCKS=0 timeout 8 git status --short --branch
 ```
 
-Result before writing this review: `## main...origin/main [ahead 8]`.
+Result before writing this review:
+
+```text
+## main...origin/main [ahead 3]
+?? .tmp/
+```
+
+I did not touch the untracked `.tmp/` directory.
 
 ```bash
-find results/20260705_srr_v3_m7_training_and_cine_utilization -maxdepth 3 -type f | sort
+find results/20260705_srr_v3_m7_training_and_cine_utilization -maxdepth 2 -type f | sort
 git ls-files results/20260705_srr_v3_m7_training_and_cine_utilization | sort
 ```
 
-Result: M7 packet files are present and tracked; local runtime subdirectories exist but are not tracked as lightweight packet files.
+Result: the M7 continued lightweight packet files are present and tracked; local runtime lock/done files are not part of the tracked packet.
 
 ```bash
 python - <<'PY'
 import csv, pathlib, collections
 base=pathlib.Path('results/20260705_srr_v3_m7_training_and_cine_utilization')
-for fn,key in [('hard_subgroup_metrics.csv','group'),('same_split_help_harm.csv','center'),('same_split_help_harm.csv','modality_group'),('same_split_help_harm.csv','t2_present')]:
+for fn in ['loss_component_gradient_sanity.csv','m7_case_pool_audit.csv','same_split_help_harm.csv','hard_subgroup_metrics.csv','best_variant_decision_table.csv','registration_same_subset_matrix.csv','temporal_dictionary_evidence.csv','strict_validator_report.csv']:
     rows=list(csv.DictReader((base/fn).open(newline='')))
-    print(fn,key,collections.Counter(r.get(key,'') for r in rows).most_common())
-rows=list(csv.DictReader((base/'loss_component_gradient_sanity.csv').open(newline='')))
-print('gradient status', collections.Counter(r['status'] for r in rows))
-print('gradient param counts', collections.Counter(r['param_with_grad_count'] for r in rows).most_common())
-rows=list(csv.DictReader((base/'training_adequacy_by_variant.csv').open(newline='')))
-print('adequacy', [(r['variant'], r['optimizer_steps'], r['train_loop_seconds'], r['validation_event_count'], r['eval_case_count'], r['decision']) for r in rows])
-rows=list(csv.DictReader((base/'best_variant_decision_table.csv').open(newline='')))
-print('best max scar delta', max(float(r['scar_dice_delta_mean']) for r in rows))
-print('any edema nonzero delta', any(float(r['edema_dice_delta_mean']) != 0 for r in rows))
-rows=list(csv.DictReader((base/'no_t2_safety_by_variant.csv').open(newline='')))
-print('no_t2 max edema voxels', max(int(float(r.get('no_t2_edema_voxels') or 0)) for r in rows))
+    print(fn, len(rows), rows[0].keys() if rows else [])
 PY
 ```
 
-Result:
+Reviewer parsing found:
 
-- hard subgroup groups are only `all_cases`, `LGE-only`, `no_T2_empty_GT`, and `gt_positive_only`.
-- same-split evidence is all `CenterA`, all `LGE-only`, and all `t2_present=False`.
-- gradient sanity status is 75 `BACKWARD_FAILED:RuntimeError` rows with `param_with_grad_count=0`.
-- training adequacy rows pass nominal duration/step gates.
-- best scar Dice delta is `0.006052879325744249`, no edema row has nonzero Dice delta, and no-T2 edema voxels remain `0`.
+- `loss_component_gradient_sanity.csv`: 107 rows; 93 `PASS`, 14 `PASS_ZERO_JUSTIFIED`; no `BACKWARD_FAILED` or `EVIDENCE_NOT_FOUND`.
+- `m7_case_pool_audit.csv`: 220 rows; selected formal-val cases are `Case1002`, `Case1007`, `Case1009`, `Case1029`, `Case1042`, `Case2002`, `Case2007`, `Case3004`.
+- `same_split_help_harm.csv`: 192 rows, all `formal_val`, all eligible for best-variant decision, covering CenterA/CenterB/CenterC and T2-present/T2-absent rows.
+- `hard_subgroup_metrics.csv`: 1008 rows including the continued hard subgroup names.
+- `best_variant_decision_table.csv`: 12 rows, all `NO_PROMOTION_SCIENTIFIC_UNRESOLVED`.
+- `registration_same_subset_matrix.csv`: 19 rows; no row is marked usable for temporal dictionary.
+- `temporal_dictionary_evidence.csv`: one blocked row, no ready row.
+- `strict_validator_report.csv`: 9 rows but no actual exit-code/status field.
 
 ```bash
-rg -n "M7|validation package|validation packaging|upload|hosted|route promotion|full fold|full-fold|checkpoint|NIfTI|nii.gz|TEMPORAL_DICTIONARY|CINE_REGISTRATION" results/20260705_srr_v3_m7_training_and_cine_utilization
+nl -ba scripts/evaluation/run_srr_v3_m7_continued_repair.py | sed -n '576,632p'
+nl -ba results/20260705_srr_v3_m7_training_and_cine_utilization/strict_validator_report.csv | sed -n '1,20p'
 ```
 
-Result: relevant matches are boundary statements, no-promotion decisions, Cine blocker statements, and local checkpoint/source path references inside evidence tables; no validation package/upload or hosted metric claim was found.
+Result: `write_strict_validator_report()` reads the current packet and assigns `PASS_FAIL_CLOSED` when current-good conditions are true. It does not mutate a packet, invoke a validator, capture an exit code, or prove each named known-bad packet fails closed.
 
 ## Required Revision
 
-M7 should not proceed as audited-go until the executor fixes the evidence packet and, if needed, the training/evaluation code:
+M7 continued should not proceed as audited-go until the strict validator evidence is repaired.
 
-1. Fix `loss_component_gradient_sanity.csv` so required loss components have valid backward evidence, nonzero gradients where applicable, and explicit legitimate N/A explanations where truly mask-gated. A packet with 75/75 `BACKWARD_FAILED:RuntimeError` rows cannot be `M7_READY_FOR_REVIEW`.
-2. Repair hard subgroup coverage or explicitly downgrade completion. The prompt required T2-present, GT-positive, no-T2 empty-GT, CenterB/CenterC, remote-FP-positive, small-lesion, and large-lesion evidence. Current same-split evidence is all CenterA/LGE-only/no-T2.
-3. Keep the Cine status strict. `CINE_REGISTRATION_GAP_REMAINS` and `TEMPORAL_DICTIONARY_BLOCKED_BY_REGISTRATION_GAP` are the correct current conclusion unless a real same-safe-subset non-reference registration option is added with acceptable plausibility evidence.
-4. Revise `completion_check.md` and `review_request.md` to stop claiming a fully ready M7 packet while these hard blockers remain, or rerun/aggregate enough evidence to close them.
+Required executor repair:
+
+1. Implement or invoke a real M7 continued validator that can be run against a packet directory and exits nonzero when a gate fails.
+2. For each required known-bad case, create a temporary mutated packet or fixture that actually contains the bad condition:
+   - all gradient rows `BACKWARD_FAILED`;
+   - gradient sanity fixed but `loss_graph_training_validity_report.md` missing or insufficient;
+   - hard subgroup rows all CenterA/LGE-only/no-T2;
+   - diagnostic hardcase rows mixed into formal best-variant decision;
+   - Cine branch copies M5 evidence without new registration attempt;
+   - frame0-only or one-case SyN marked usable registration;
+   - untrained VoxelMorph marked usable;
+   - temporal dictionary marked ready despite no usable registration;
+   - `completion_check.md` says ready while any continued blocker remains.
+3. Re-run the validator on each known-bad packet and record expected failure, actual exit code/status, and failure reason in `strict_validator_report.md` and `strict_validator_report.csv`.
+4. Keep the current no-promotion boundary: even after validator repair, `M7_CONTINUED_AUDITED_GO_FOR_NEXT_PLANNING` would only mean GPT planner review is allowed. It must not authorize M8, validation packaging/upload, hosted metric claims, fold expansion, challenge submission, route promotion, scientific stop, or leaderboard readiness.
+
+Optional cleanup for the same repair pass:
+
+- Add an explicit `usable_for_temporal_dictionary` field, or document why `m7_continued_decision` is the controlled substitute, in `registration_same_subset_matrix.csv`.
+- Add clear failure reasons to blocked SimpleITK/ANTsPy non-reference rows instead of leaving `failure_reason` blank when the row is already `NOT_USABLE_FOR_TEMPORAL_DICTIONARY`.
 
 ## Decision
 
-decision: `M7_AUDITED_NEEDS_REVISION`
+decision: `M7_CONTINUED_AUDITED_NEEDS_REVISION`
 
-M7 contains useful training-duration evidence and correctly avoids route promotion. It also correctly refuses to turn the existing Cine gap into a completed temporal dictionary. However, the all-failed gradient sanity table and incomplete hard subgroup coverage violate M7 readiness gates. The packet is not acceptable for `M7_AUDITED_GO_FOR_NEXT_PLANNING`, and it also should not be treated as a final route-negative scientific stop.
+M7 continued made real progress on the prior MyoPS blockers: the gradient sanity table no longer fails wholesale, formal-val coverage is broader, diagnostic rows are separated from formal decision rows, and the best-variant decision remains non-promotional. Cine is also handled more honestly than before: a bounded repair was attempted and temporal dictionary readiness remains blocked.
 
-This decision does not authorize route promotion, validation packaging/upload, hosted metric claims, fold expansion, challenge submission, scientific stop, or any downstream milestone.
+The packet still fails the current reviewer contract because the strict validator gate is not real known-bad fail-closed evidence. It is a current-packet boolean checklist labeled as known-bad validation. Therefore this review cannot grant `M7_CONTINUED_AUDITED_GO_FOR_NEXT_PLANNING`.
+
+This decision does not authorize route promotion, validation packaging/upload, hosted metric claims, fold expansion, challenge submission, M8, scientific stop, or leaderboard readiness.
