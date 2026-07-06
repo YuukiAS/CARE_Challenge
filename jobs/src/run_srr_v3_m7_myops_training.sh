@@ -109,6 +109,7 @@ python scripts/training/run_srr_propref_myops_fold0.py \
   --min-overfit-loss-decrease "${MIN_OVERFIT_LOSS_DECREASE:-0.001}" \
   --min-optimizer-steps-for-plateau "${MIN_OPTIMIZER_STEPS_FOR_PLATEAU:-3000}" \
   --min-train-loop-seconds-for-plateau "${MIN_TRAIN_LOOP_SECONDS_FOR_PLATEAU:-1800}" \
+  --enforce-min-train-loop-seconds \
   --max-eval-cases "${MAX_EVAL_CASES:-12}" \
   --proposal-thresholds "${PROPOSAL_THRESHOLDS:-0.05,0.10,0.20,0.30,0.40,0.50,0.60,0.70,0.80,0.90}" \
   --scar-decode-threshold "${SCAR_DECODE_THRESHOLD:-0.50}" \

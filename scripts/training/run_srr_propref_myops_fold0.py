@@ -1673,10 +1673,17 @@ def train_variant(args: argparse.Namespace) -> None:
     start = time.monotonic()
     process_start = time.process_time()
     model.train()
-    for step in range(1, args.max_steps + 1):
+    step = 1
+    while True:
         if time.monotonic() - start > args.max_runtime_seconds:
             stop_reason = "max_runtime_seconds"
             break
+        if step > args.max_steps:
+            if not args.enforce_min_train_loop_seconds:
+                break
+            if time.monotonic() - start >= args.min_train_loop_seconds_for_plateau:
+                stop_reason = "max_steps_min_train_loop_seconds_satisfied"
+                break
         stage = stage_for_step(step, args.max_steps)
         if stage == "low_lr_calibration":
             for group in optimizer.param_groups:
@@ -1841,6 +1848,7 @@ def train_variant(args: argparse.Namespace) -> None:
             ):
                 stop_reason = "validation_plateau_patience"
                 break
+        step += 1
 
     elapsed = time.monotonic() - start
     process_elapsed = time.process_time() - process_start
@@ -2019,6 +2027,11 @@ def main() -> None:
     parser.add_argument("--early-stop-min-delta", type=float, default=1e-3)
     parser.add_argument("--min-optimizer-steps-for-plateau", type=int, default=1500)
     parser.add_argument("--min-train-loop-seconds-for-plateau", type=float, default=1800.0)
+    parser.add_argument(
+        "--enforce-min-train-loop-seconds",
+        action="store_true",
+        help="Continue low-LR calibration past max_steps until min_train_loop_seconds_for_plateau is reached.",
+    )
     parser.add_argument("--complete-oversample", type=float, default=0.55)
     parser.add_argument("--oversample-foreground", type=float, default=0.82)
     parser.add_argument("--anatomy-weight", type=float, default=1.0)
