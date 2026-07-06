@@ -1,0 +1,5 @@
+m4_failure,m6_fix,evidence
+trained gate near closed and anchor-enabled rows near identity,explicit BranchArbitrationGate plus fallback identity evidence,branch_arbitration_sanity.csv;decode_gate_consistency_sanity.csv
+old profile capacity could be tiny/ambiguous,balanced/full/safe 4-scale audited profiles,encoder_decoder_capacity_sanity.csv
+prototype edema bank could be empty in full eval sources,T2-present-only prototype extraction and no-T2 exclusion,prototype_bank_runtime_sanity.csv
+dictionary config reused old slots,pair-specific dictionary_slot_config,retrieval_bank_runtime_sanity.csv

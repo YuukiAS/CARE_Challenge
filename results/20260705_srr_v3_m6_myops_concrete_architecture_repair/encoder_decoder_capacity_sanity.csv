@@ -1,0 +1,5 @@
+variant,encoder_profile,dictionary_config,input_shape,encoder_scale_channels,decoder_tasks,output_shape,parameter_count,activation_memory_estimate_mb,runtime_seconds,status
+m6_full_srr_context_arbitration,balanced_4scale,dict_full_interaction,1x3x6x20x20,16;32;64;128,anatomy;scar;edema,1x6x6x20x20,41929052,0.1099,,PASS
+m6_conservative_component_arbitration,safe_4scale,dict_conservative_private_shared,1x3x6x20x20,12;24;48;96,anatomy;scar;edema,1x6x6x20x20,14331468,0.1099,,PASS
+m6_scar_precision_edema_safe,balanced_4scale,dict_scar_precision_edema_safe,1x3x6x20x20,16;32;64;128,anatomy;scar;edema,1x6x6x20x20,36047072,0.1099,,PASS
+m6_full_srr_context_arbitration,full_4scale,dict_full_interaction,1x3x3x10x10,32;64;128;256,anatomy;scar;edema,1x6x3x10x10,167574764,0.0137,0.3212,PASS

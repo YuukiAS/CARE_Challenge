@@ -1,0 +1,23 @@
+# M6 Manifest
+
+- `result.md`
+- `srr_v3_fidelity_contract.md`
+- `architecture_component_trace.csv`
+- `m4_failure_mapping.csv`
+- `code_diff_summary.md`
+- `encoder_decoder_capacity_sanity.csv`
+- `segmentation_context_interface_sanity.csv`
+- `retrieval_bank_runtime_sanity.csv`
+- `prototype_bank_runtime_sanity.csv`
+- `anatomy_proposal_sanity.csv`
+- `branch_arbitration_sanity.csv`
+- `decode_gate_consistency_sanity.csv`
+- `loss_refiner_component_sanity.csv`
+- `refiner_roi_component_sanity.csv`
+- `no_t2_safety_sanity.csv`
+- `strict_validator_report.md`
+- `unit_test_report.md`
+- `commands_run.md`
+- `completion_check.md`
+- `review_request.md`
+- `MANIFEST.md`

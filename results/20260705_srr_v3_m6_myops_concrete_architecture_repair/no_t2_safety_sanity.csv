@@ -1,0 +1,4 @@
+variant,case_id,edema_proposal_voxels,edema_refiner_voxels,edema_final_decode_voxels,t2_private_or_t2_interaction_invalid_usage,loss_no_t2_edema_safety_status,status
+m6_full_srr_context_arbitration,synthetic_no_t2,0,0,0,0.0,covered_by_loss_backward_sanity,PASS
+m6_conservative_component_arbitration,synthetic_no_t2,0,0,0,0.0,covered_by_loss_backward_sanity,PASS
+m6_scar_precision_edema_safe,synthetic_no_t2,0,0,0,0.0,covered_by_loss_backward_sanity,PASS

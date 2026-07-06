@@ -1,0 +1,4 @@
+variant,sanity_type,final_equals_anchor_labels,hidden_decode_delta_voxels,closed_gate_or_fallback,status
+m6_full_srr_context_arbitration,explicit_segmentation_fallback,True,0,True,PASS
+m6_conservative_component_arbitration,explicit_segmentation_fallback,True,0,True,PASS
+m6_scar_precision_edema_safe,explicit_segmentation_fallback,True,0,True,PASS

@@ -292,3 +292,132 @@ def srr_total_loss(
     )
     metrics = {**components, **reg_metrics, **sem_metrics}
     return total, metrics
+
+
+def _masked_abs_mean(values: torch.Tensor, mask: torch.Tensor | None = None) -> torch.Tensor:
+    if mask is None:
+        return values.abs().mean()
+    mask_f = mask.to(device=values.device, dtype=values.dtype)
+    return (values.abs() * mask_f).sum() / mask_f.sum().clamp_min(1.0)
+
+
+def _prototype_margin_loss(outputs: dict[str, torch.Tensor], labels: torch.Tensor, availability: torch.Tensor) -> torch.Tensor:
+    valid = labels != IGNORE_LABEL
+    t2_present = availability[:, 1].to(device=labels.device, dtype=torch.bool).view(-1, 1, 1, 1)
+    terms = []
+    for prefix, cls, mask in (
+        ("scar", SCAR_CLASS, valid),
+        ("edema", EDEMA_CLASS, valid & t2_present),
+    ):
+        pos = outputs.get(f"{prefix}_pos_similarity")
+        neg = outputs.get(f"{prefix}_neg_similarity")
+        if not isinstance(pos, torch.Tensor) or not isinstance(neg, torch.Tensor):
+            continue
+        target = (labels == cls) & mask
+        safe_neg = (labels != cls) & mask
+        if bool(target.any()):
+            terms.append(_masked_abs_mean(torch.relu(0.25 - pos[:, 0] + neg[:, 0]), target))
+        if bool(safe_neg.any()):
+            terms.append(_masked_abs_mean(torch.relu(0.10 + pos[:, 0] - neg[:, 0]), safe_neg))
+    if not terms:
+        ref = outputs["logits"]
+        return ref.sum() * 0.0
+    return torch.stack(terms).mean()
+
+
+def srr_m6_expanded_total_loss(
+    outputs: dict[str, torch.Tensor],
+    labels: torch.Tensor,
+    availability: torch.Tensor,
+    weights: dict[str, float] | None = None,
+) -> tuple[torch.Tensor, dict[str, torch.Tensor]]:
+    """M6 SRR-v3 total loss with explicit proposal/refiner/arbitration terms."""
+
+    weights = weights or {}
+    valid = labels != IGNORE_LABEL
+    t2_present = availability[:, 1].to(device=labels.device, dtype=torch.bool).view(-1, 1, 1, 1)
+    scar_target = labels == SCAR_CLASS
+    edema_target = labels == EDEMA_CLASS
+    outside_roi = valid & (outputs["scar_soft_roi"][:, 0] < 0.05) & (outputs["edema_soft_roi"][:, 0] < 0.05)
+
+    loss_anatomy = anatomy_loss(outputs["anatomy_logits"], labels)
+    loss_scar_prop = _masked_bce_with_logits(outputs["scar_proposal_logits"][:, 0], scar_target.float(), valid)
+    edema_mask = valid & t2_present
+    loss_edema_prop = (
+        _masked_bce_with_logits(outputs["edema_proposal_logits"][:, 0], edema_target.float(), edema_mask)
+        if bool(edema_mask.any())
+        else outputs["logits"].sum() * 0.0
+    )
+    loss_scar_ref = scar_loss(outputs["scar_logits"], labels)
+    loss_edema_ref = t2_masked_edema_loss(outputs["edema_logits"], labels, availability)
+
+    anchor_logits = outputs.get("nnunet_anchor_logits")
+    if isinstance(anchor_logits, torch.Tensor):
+        anchor_probs = torch.softmax(anchor_logits, dim=1)
+        final_probs = torch.softmax(outputs["logits"], dim=1)
+        loss_anchor = _masked_abs_mean(final_probs - anchor_probs, outside_roi.unsqueeze(1))
+    else:
+        loss_anchor = outputs["logits"].sum() * 0.0
+
+    segmentation_weight = outputs.get("segmentation_weight")
+    correction_mask = outputs.get("branch_correction_mask")
+    if isinstance(segmentation_weight, torch.Tensor) and isinstance(correction_mask, torch.Tensor):
+        loss_arbitration = _masked_abs_mean((1.0 - segmentation_weight) * (1.0 - correction_mask))
+    else:
+        loss_arbitration = outputs["logits"].sum() * 0.0
+
+    loss_bounded = _masked_abs_mean(outputs.get("arbitration_bounded_delta", outputs.get("bounded_delta_srr", outputs["logits"] * 0.0)))
+    loss_remote_fp = (
+        _masked_abs_mean(torch.sigmoid(outputs["scar_logits"][:, 0]), (labels == 0) & valid)
+        + _masked_abs_mean(torch.sigmoid(outputs["edema_logits"][:, 0]), (labels == 0) & valid & t2_present)
+    )
+    no_t2 = (~availability[:, 1].to(device=labels.device, dtype=torch.bool)).view(-1, 1, 1, 1)
+    if bool(no_t2.any()):
+        no_t2_edema = torch.sigmoid(outputs["edema_proposal_logits"][:, 0]) + torch.sigmoid(outputs["edema_logits"][:, 0])
+        loss_no_t2 = _masked_abs_mean(no_t2_edema, no_t2)
+    else:
+        loss_no_t2 = outputs["logits"].sum() * 0.0
+
+    dict_loss, dict_metrics = semantic_retrieval_regularization(
+        outputs.get("gates", {}),
+        outputs.get("dictionary_slot_metadata", {}),
+        outputs.get("gate_valid_masks", {}),
+    )
+    if dict_loss is None:
+        dict_loss = outputs["logits"].sum() * 0.0
+    loss_proto = _prototype_margin_loss(outputs, labels, availability)
+
+    component_weights = {
+        "loss_anatomy_union_lv_rv": weights.get("loss_anatomy_union_lv_rv", 1.0),
+        "loss_scar_proposal": weights.get("loss_scar_proposal", 1.0),
+        "loss_edema_proposal_t2_present_only": weights.get("loss_edema_proposal_t2_present_only", 1.0),
+        "loss_scar_refiner_roi": weights.get("loss_scar_refiner_roi", 1.0),
+        "loss_edema_refiner_t2_present_roi": weights.get("loss_edema_refiner_t2_present_roi", 1.0),
+        "loss_anchor_preservation_outside_roi": weights.get("loss_anchor_preservation_outside_roi", 0.20),
+        "loss_branch_arbitration_consistency": weights.get("loss_branch_arbitration_consistency", 0.15),
+        "loss_bounded_correction": weights.get("loss_bounded_correction", 0.02),
+        "loss_component_remote_fp": weights.get("loss_component_remote_fp", 0.10),
+        "loss_no_t2_edema_safety": weights.get("loss_no_t2_edema_safety", 0.50),
+        "loss_dictionary_entropy_coverage_load_balance": weights.get("loss_dictionary_entropy_coverage_load_balance", 0.20),
+        "loss_prototype_diversity_margin": weights.get("loss_prototype_diversity_margin", 0.20),
+    }
+    components = {
+        "loss_anatomy_union_lv_rv": loss_anatomy,
+        "loss_scar_proposal": loss_scar_prop,
+        "loss_edema_proposal_t2_present_only": loss_edema_prop,
+        "loss_scar_refiner_roi": loss_scar_ref,
+        "loss_edema_refiner_t2_present_roi": loss_edema_ref,
+        "loss_anchor_preservation_outside_roi": loss_anchor,
+        "loss_branch_arbitration_consistency": loss_arbitration,
+        "loss_bounded_correction": loss_bounded,
+        "loss_component_remote_fp": loss_remote_fp,
+        "loss_no_t2_edema_safety": loss_no_t2,
+        "loss_dictionary_entropy_coverage_load_balance": dict_loss,
+        "loss_prototype_diversity_margin": loss_proto,
+    }
+    total = sum(float(component_weights[name]) * value for name, value in components.items())
+    metrics = {name: value.detach() for name, value in components.items()}
+    metrics.update({f"{name}_weight": outputs["logits"].new_tensor(float(weight)) for name, weight in component_weights.items()})
+    metrics.update(dict_metrics)
+    metrics["m6_expanded_total_loss"] = total.detach()
+    return total, metrics

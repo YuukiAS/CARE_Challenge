@@ -29,6 +29,55 @@ def _as_slot_count(value: int | Mapping[str, int], modality: str) -> int:
     return int(value)
 
 
+def _as_interaction_slot_count(value: int | Mapping[str, int], pair_name: str) -> int:
+    if isinstance(value, Mapping):
+        return int(value.get(pair_name, value.get(pair_name.replace("_", "-"), 0)))
+    return int(value)
+
+
+def dictionary_slot_config(name: str, *, use_interactions: bool = True) -> dict[str, object]:
+    """Return audited SRR-v3 dictionary slot configuration.
+
+    The M6 contract requires named pair-specific dictionary configs rather than
+    reusing the old uniform ``interaction_slots`` default.  The returned values
+    are consumed by ``ScaleRetrieval`` and exported through slot metadata.
+    """
+
+    if name == "dict_full_interaction":
+        return {
+            "shared_slots": 8,
+            "private_slots": {"LGE": 4, "T2": 4, "C0": 4},
+            "interaction_slots": {"lge_t2": 4, "lge_c0": 4, "t2_c0": 4} if use_interactions else {},
+            "interaction_pairs": [(0, 1), (0, 2), (1, 2)] if use_interactions else [],
+            "router_top_k": 8,
+        }
+    if name == "dict_conservative_private_shared":
+        return {
+            "shared_slots": 6,
+            "private_slots": {"LGE": 4, "T2": 4, "C0": 2},
+            "interaction_slots": {"lge_t2": 2} if use_interactions else {},
+            "interaction_pairs": [(0, 1)] if use_interactions else [],
+            "router_top_k": 5,
+        }
+    if name == "dict_scar_precision_edema_safe":
+        return {
+            "shared_slots": 6,
+            "private_slots": {"LGE": 6, "T2": 5, "C0": 2},
+            "interaction_slots": {"lge_t2": 3, "lge_c0": 3, "t2_c0": 2} if use_interactions else {},
+            "interaction_pairs": [(0, 1), (0, 2), (1, 2)] if use_interactions else [],
+            "router_top_k": 6,
+        }
+    if name == "legacy_interaction_slots":
+        return {
+            "shared_slots": 4,
+            "private_slots": {"LGE": 2, "T2": 2, "C0": 2},
+            "interaction_slots": {"lge_t2": 2, "lge_c0": 2, "t2_c0": 2} if use_interactions else {},
+            "interaction_pairs": [(0, 1), (0, 2), (1, 2)] if use_interactions else [],
+            "router_top_k": 4,
+        }
+    raise ValueError(f"unknown dictionary_config: {name!r}")
+
+
 def _fuse_feature_list(features: list[torch.Tensor], availability: torch.Tensor, indices: tuple[int, ...] | None = None) -> torch.Tensor:
     if indices is None:
         indices = tuple(range(len(features)))
@@ -105,7 +154,7 @@ class GroupedExpertBank(nn.Module):
         *,
         shared_slots: int = 4,
         private_slots: int | Mapping[str, int] = 2,
-        interaction_slots: int = 2,
+        interaction_slots: int | Mapping[str, int] = 2,
         modality_names: tuple[str, ...] = MODALITY_NAMES,
         interaction_pairs: list[tuple[int, ...]] | None = None,
     ) -> None:
@@ -137,7 +186,7 @@ class GroupedExpertBank(nn.Module):
                 modules.append(_conv_block(channels))
         for pair in self.interaction_pairs:
             pair_name = "_".join(self.modality_names[idx].lower() for idx in pair)
-            for slot in range(int(interaction_slots)):
+            for slot in range(_as_interaction_slot_count(interaction_slots, pair_name)):
                 self.slot_specs.append(
                     {
                         "index": len(self.slot_specs),
@@ -297,7 +346,7 @@ class MultiSlotSRRRetrievalBlock(nn.Module):
         *,
         shared_slots: int = 4,
         private_slots: int | Mapping[str, int] = 2,
-        interaction_slots: int = 2,
+        interaction_slots: int | Mapping[str, int] = 2,
         router_temperatures: dict[str, float] | None = None,
         router_top_k: int | None = 4,
         expert_dropout: float = 0.0,

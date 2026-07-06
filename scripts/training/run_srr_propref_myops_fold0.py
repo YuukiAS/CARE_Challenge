@@ -39,7 +39,7 @@ from scripts.training.run_srr_myops_fold0 import (  # noqa: E402
     write_csv,
 )
 from src.care_myocardium.data.case_metadata import load_myops_case_metadata  # noqa: E402
-from src.care_myocardium.losses.srr_losses import anatomy_loss, retrieval_regularization, scar_loss, semantic_retrieval_regularization, t2_masked_edema_loss  # noqa: E402
+from src.care_myocardium.losses.srr_losses import anatomy_loss, retrieval_regularization, scar_loss, semantic_retrieval_regularization, srr_m6_expanded_total_loss, t2_masked_edema_loss  # noqa: E402
 from src.care_myocardium.models.proposal_prototypes import PrototypeBank, build_prototype_bank_from_labeled_features  # noqa: E402
 from src.care_myocardium.models.srr_propref import SRRProposeRefineMyoPS  # noqa: E402
 
@@ -417,6 +417,12 @@ def encoder_scale_channels_from_args(args: argparse.Namespace) -> list[int]:
     base = int(args.base_channels)
     if args.encoder_profile == "strong_4scale":
         return [base, base * 2, base * 4, base * 8]
+    if args.encoder_profile == "balanced_4scale":
+        return [16, 32, 64, 128]
+    if args.encoder_profile == "full_4scale":
+        return [32, 64, 128, 256]
+    if args.encoder_profile == "safe_4scale":
+        return [12, 24, 48, 96]
     return [base, base * 2, base * 4]
 
 
@@ -516,6 +522,28 @@ def propref_loss(
     stage: str,
     args: argparse.Namespace,
 ) -> tuple[torch.Tensor, dict[str, torch.Tensor]]:
+    if str(args.variant).startswith("m6_") or str(args.variant).startswith("m7_"):
+        total, m6_metrics = srr_m6_expanded_total_loss(outputs, labels, availability)
+        zero = outputs["logits"].sum().detach() * 0.0
+        return total, {
+            "evidence_loss": m6_metrics.get("loss_anatomy_union_lv_rv", zero),
+            "final_loss": m6_metrics.get("m6_expanded_total_loss", zero),
+            "scar_proposal_loss": m6_metrics.get("loss_scar_proposal", zero),
+            "edema_proposal_loss": m6_metrics.get("loss_edema_proposal_t2_present_only", zero),
+            "proposal_margin_loss": m6_metrics.get("loss_prototype_diversity_margin", zero),
+            "scar_component_ranking_loss": m6_metrics.get("loss_component_remote_fp", zero),
+            "edema_component_ranking_loss": m6_metrics.get("loss_no_t2_edema_safety", zero),
+            "component_proposal_ranking_loss": m6_metrics.get("loss_component_remote_fp", zero),
+            "roi_cover_loss": m6_metrics.get("loss_scar_refiner_roi", zero),
+            "roi_remote_loss": m6_metrics.get("loss_component_remote_fp", zero),
+            "semantic_retrieval_loss": m6_metrics.get("loss_dictionary_entropy_coverage_load_balance", zero),
+            "baseline_preservation_loss": m6_metrics.get("loss_anchor_preservation_outside_roi", zero),
+            "baseline_preserve_voxels": zero,
+            "baseline_preserve_gate_mean": zero,
+            "proposal_weight": outputs["logits"].new_tensor(1.0),
+            "refine_weight": outputs["logits"].new_tensor(1.0),
+            **m6_metrics,
+        }
     valid = labels != IGNORE_LABEL
     t2_present = availability[:, 1].to(dtype=torch.bool, device=labels.device).view(-1, 1, 1, 1)
     evidence_outputs = {
@@ -1796,13 +1824,28 @@ def train_variant(args: argparse.Namespace) -> None:
 
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--variant", required=True, choices=["srr_propref_shared_dual_dict", "srr_propref_scar_precision", "srr_propref_no_proto_cascade"])
+    parser.add_argument(
+        "--variant",
+        required=True,
+        choices=[
+            "srr_propref_shared_dual_dict",
+            "srr_propref_scar_precision",
+            "srr_propref_no_proto_cascade",
+            "m6_full_srr_context_arbitration",
+            "m6_conservative_component_arbitration",
+            "m6_scar_precision_edema_safe",
+        ],
+    )
     parser.add_argument("--run-label", default="", help="Optional isolated output label under variants/ without changing model hparams.")
     parser.add_argument("--fold", type=int, default=0)
     parser.add_argument("--seed", type=int, default=20260703)
     parser.add_argument("--device", choices=["cuda", "cpu"], default="cuda")
     parser.add_argument("--base-channels", type=int, default=32)
-    parser.add_argument("--encoder-profile", choices=["tiny_3scale", "strong_4scale"], default="strong_4scale")
+    parser.add_argument(
+        "--encoder-profile",
+        choices=["tiny_3scale", "strong_4scale", "balanced_4scale", "full_4scale", "safe_4scale"],
+        default="balanced_4scale",
+    )
     parser.add_argument("--patch-shape", default="12,96,96")
     parser.add_argument("--batch-size", type=int, default=2)
     parser.add_argument("--max-steps", type=int, default=1800)

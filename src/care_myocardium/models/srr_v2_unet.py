@@ -81,12 +81,46 @@ class StrongModalityEncoder(nn.Module):
         return [f0, f1, f2, f3]
 
 
+class ProfileModalityEncoder(nn.Module):
+    """Four-scale encoder with explicit audited channel profiles."""
+
+    def __init__(self, scale_channels: list[int] | tuple[int, int, int, int]) -> None:
+        super().__init__()
+        if len(scale_channels) != 4:
+            raise ValueError("ProfileModalityEncoder requires exactly four channel scales")
+        c0, c1, c2, c3 = [int(v) for v in scale_channels]
+        self.scale_channels = [c0, c1, c2, c3]
+        self.stage0 = ConvBlock(1, c0)
+        self.stage1 = ConvBlock(c0, c1)
+        self.stage2 = ConvBlock(c1, c2)
+        self.stage3 = ConvBlock(c2, c3)
+
+    @staticmethod
+    def _safe_pool(x: torch.Tensor) -> torch.Tensor:
+        return ModalityEncoder._safe_pool(x)
+
+    def forward(self, x: torch.Tensor, present: torch.Tensor) -> list[torch.Tensor]:
+        mask = present.view(-1, 1, 1, 1, 1).to(device=x.device, dtype=x.dtype)
+        x = x * mask
+        f0 = self.stage0(x) * mask
+        f1 = self.stage1(self._safe_pool(f0)) * mask
+        f2 = self.stage2(self._safe_pool(f1)) * mask
+        f3 = self.stage3(self._safe_pool(f2)) * mask
+        return [f0, f1, f2, f3]
+
+
 def encoder_profile_scale_channels(base_channels: int, encoder_profile: str) -> list[int]:
     base = int(base_channels)
     if encoder_profile == "tiny_3scale":
         return [base, base * 2, base * 4]
     if encoder_profile == "strong_4scale":
         return [base, base * 2, base * 4, base * 8]
+    if encoder_profile == "balanced_4scale":
+        return [16, 32, 64, 128]
+    if encoder_profile == "full_4scale":
+        return [32, 64, 128, 256]
+    if encoder_profile == "safe_4scale":
+        return [12, 24, 48, 96]
     raise ValueError(f"unknown encoder_profile: {encoder_profile!r}")
 
 
@@ -95,6 +129,8 @@ def build_modality_encoder(base_channels: int, encoder_profile: str) -> nn.Modul
         return ModalityEncoder(base_channels)
     if encoder_profile == "strong_4scale":
         return StrongModalityEncoder(base_channels)
+    if encoder_profile in {"balanced_4scale", "full_4scale", "safe_4scale"}:
+        return ProfileModalityEncoder(encoder_profile_scale_channels(base_channels, encoder_profile))
     raise ValueError(f"unknown encoder_profile: {encoder_profile!r}")
 
 
@@ -113,12 +149,25 @@ class ScaleRetrieval(nn.Module):
         shared_slots: int = 4,
         private_slots: int = 2,
         interaction_slots: int = 2,
+        dictionary_config: str = "legacy_interaction_slots",
         router_top_k: int | None = 4,
     ) -> None:
         super().__init__()
         if modalities != 3:
             raise ValueError("ScaleRetrieval is locked to Dataset501 modalities LGE,T2,C0")
-        interaction_pairs = [(0, 1), (0, 2), (1, 2)] if use_interactions else []
+        if dictionary_config != "legacy_interaction_slots":
+            from src.care_myocardium.models.srr_blocks import dictionary_slot_config
+
+            cfg = dictionary_slot_config(dictionary_config, use_interactions=use_interactions)
+            shared_slots = int(cfg["shared_slots"])
+            private_slots = cfg["private_slots"]  # type: ignore[assignment]
+            interaction_slots = cfg["interaction_slots"]  # type: ignore[assignment]
+            interaction_pairs = cfg["interaction_pairs"]  # type: ignore[assignment]
+            router_top_k = cfg.get("router_top_k", router_top_k)  # type: ignore[assignment]
+            self.dictionary_config = str(dictionary_config)
+        else:
+            interaction_pairs = [(0, 1), (0, 2), (1, 2)] if use_interactions else []
+            self.dictionary_config = "legacy_interaction_slots"
         self.block = MultiSlotSRRRetrievalBlock(
             channels,
             shared_slots=shared_slots,

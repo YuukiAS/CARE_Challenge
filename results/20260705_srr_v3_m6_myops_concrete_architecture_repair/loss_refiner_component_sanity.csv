@@ -1,0 +1,37 @@
+variant,component,value,weight,enters_total_loss,requires_grad,gradient_norm,backward_status,zero_justification
+m6_full_srr_context_arbitration,loss_anatomy_union_lv_rv,1.4677314758300781,1.0,True,True,6.187664031982422,PASS,
+m6_full_srr_context_arbitration,loss_scar_proposal,0.06125381588935852,1.0,True,True,6.187664031982422,PASS,
+m6_full_srr_context_arbitration,loss_edema_proposal_t2_present_only,0.17379169166088104,1.0,True,True,6.187664031982422,PASS,
+m6_full_srr_context_arbitration,loss_scar_refiner_roi,0.7300391793251038,1.0,True,True,6.187664031982422,PASS,
+m6_full_srr_context_arbitration,loss_edema_refiner_t2_present_roi,0.9888780117034912,1.0,True,True,6.187664031982422,PASS,
+m6_full_srr_context_arbitration,loss_anchor_preservation_outside_roi,0.024211803451180458,0.20000000298023224,True,True,6.187664031982422,PASS,
+m6_full_srr_context_arbitration,loss_branch_arbitration_consistency,0.0,0.15000000596046448,True,True,6.187664031982422,PASS,zero allowed only when mask absent or safety already closed in this synthetic batch
+m6_full_srr_context_arbitration,loss_bounded_correction,3.83540415763855,0.019999999552965164,True,True,6.187664031982422,PASS,
+m6_full_srr_context_arbitration,loss_component_remote_fp,1.030698537826538,0.10000000149011612,True,True,6.187664031982422,PASS,
+m6_full_srr_context_arbitration,loss_no_t2_edema_safety,-0.0,0.5,True,True,6.187664031982422,PASS,zero allowed only when mask absent or safety already closed in this synthetic batch
+m6_full_srr_context_arbitration,loss_dictionary_entropy_coverage_load_balance,0.0021166293881833553,0.20000000298023224,True,True,6.187664031982422,PASS,
+m6_full_srr_context_arbitration,loss_prototype_diversity_margin,0.3042793273925781,0.20000000298023224,True,True,6.187664031982422,PASS,
+m6_conservative_component_arbitration,loss_anatomy_union_lv_rv,1.4326157569885254,1.0,True,True,7.145482063293457,PASS,
+m6_conservative_component_arbitration,loss_scar_proposal,0.07916916161775589,1.0,True,True,7.145482063293457,PASS,
+m6_conservative_component_arbitration,loss_edema_proposal_t2_present_only,0.1346847414970398,1.0,True,True,7.145482063293457,PASS,
+m6_conservative_component_arbitration,loss_scar_refiner_roi,0.8059369325637817,1.0,True,True,7.145482063293457,PASS,
+m6_conservative_component_arbitration,loss_edema_refiner_t2_present_roi,0.8843216896057129,1.0,True,True,7.145482063293457,PASS,
+m6_conservative_component_arbitration,loss_anchor_preservation_outside_roi,3.6893950891681015e-05,0.20000000298023224,True,True,7.145482063293457,PASS,
+m6_conservative_component_arbitration,loss_branch_arbitration_consistency,9.439885673145909e-08,0.15000000596046448,True,True,7.145482063293457,PASS,
+m6_conservative_component_arbitration,loss_bounded_correction,3.8524587154388428,0.019999999552965164,True,True,7.145482063293457,PASS,
+m6_conservative_component_arbitration,loss_component_remote_fp,1.0301152467727661,0.10000000149011612,True,True,7.145482063293457,PASS,
+m6_conservative_component_arbitration,loss_no_t2_edema_safety,-0.0,0.5,True,True,7.145482063293457,PASS,zero allowed only when mask absent or safety already closed in this synthetic batch
+m6_conservative_component_arbitration,loss_dictionary_entropy_coverage_load_balance,0.0023613774683326483,0.20000000298023224,True,True,7.145482063293457,PASS,
+m6_conservative_component_arbitration,loss_prototype_diversity_margin,0.309298038482666,0.20000000298023224,True,True,7.145482063293457,PASS,
+m6_scar_precision_edema_safe,loss_anatomy_union_lv_rv,1.2650288343429565,1.0,True,True,7.729440212249756,PASS,
+m6_scar_precision_edema_safe,loss_scar_proposal,0.06804617494344711,1.0,True,True,7.729440212249756,PASS,
+m6_scar_precision_edema_safe,loss_edema_proposal_t2_present_only,0.14557141065597534,1.0,True,True,7.729440212249756,PASS,
+m6_scar_precision_edema_safe,loss_scar_refiner_roi,0.8409358859062195,1.0,True,True,7.729440212249756,PASS,
+m6_scar_precision_edema_safe,loss_edema_refiner_t2_present_roi,0.8989293575286865,1.0,True,True,7.729440212249756,PASS,
+m6_scar_precision_edema_safe,loss_anchor_preservation_outside_roi,0.0062778000719845295,0.20000000298023224,True,True,7.729440212249756,PASS,
+m6_scar_precision_edema_safe,loss_branch_arbitration_consistency,0.0,0.15000000596046448,True,True,7.729440212249756,PASS,zero allowed only when mask absent or safety already closed in this synthetic batch
+m6_scar_precision_edema_safe,loss_bounded_correction,3.8264122009277344,0.019999999552965164,True,True,7.729440212249756,PASS,
+m6_scar_precision_edema_safe,loss_component_remote_fp,1.0714845657348633,0.10000000149011612,True,True,7.729440212249756,PASS,
+m6_scar_precision_edema_safe,loss_no_t2_edema_safety,-0.0,0.5,True,True,7.729440212249756,PASS,zero allowed only when mask absent or safety already closed in this synthetic batch
+m6_scar_precision_edema_safe,loss_dictionary_entropy_coverage_load_balance,0.0027767641004174948,0.20000000298023224,True,True,7.729440212249756,PASS,
+m6_scar_precision_edema_safe,loss_prototype_diversity_margin,0.23739278316497803,0.20000000298023224,True,True,7.729440212249756,PASS,

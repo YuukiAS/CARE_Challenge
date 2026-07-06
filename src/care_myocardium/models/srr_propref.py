@@ -141,6 +141,14 @@ class ProposalDictionary(nn.Module):
                 "memory_negative_similarity": zero,
                 "anchor_evidence": anchor_map,
                 "component_evidence": component_map,
+                "proposal_formula_terms": {
+                    "w_pos_s_pos": zero,
+                    "w_neg_s_neg": zero,
+                    "w_anatomy_A": 0.20 * torch.tanh(anatomy_prior),
+                    "w_context_C": 0.25 * torch.logit(anchor_map.clamp(1e-4, 1.0 - 1e-4)),
+                    "w_uncertainty_U": zero,
+                    "learned_residual_r": conv + 0.35 * evidence_logits,
+                },
             }
         pos_sim = self._max_similarity(emb, self.positive)
         neg_proto = self._max_similarity(emb, self.negative)
@@ -165,6 +173,14 @@ class ProposalDictionary(nn.Module):
             "memory_negative_similarity": neg_memory,
             "anchor_evidence": anchor_map,
             "component_evidence": component_map,
+            "proposal_formula_terms": {
+                "w_pos_s_pos": 2.5 * pos_sim,
+                "w_neg_s_neg": -2.5 * neg_sim,
+                "w_anatomy_A": 0.20 * torch.tanh(anatomy_prior),
+                "w_context_C": 0.35 * torch.logit(anchor_map.clamp(1e-4, 1.0 - 1e-4)) + 0.30 * torch.logit(component_map.clamp(1e-4, 1.0 - 1e-4)),
+                "w_uncertainty_U": torch.zeros_like(proposal),
+                "learned_residual_r": conv + 0.45 * evidence_logits,
+            },
         }
 
 
@@ -208,6 +224,43 @@ def _bounded_box(
 
 def _safe_logit(prob: torch.Tensor) -> torch.Tensor:
     return torch.logit(prob.clamp(1e-4, 1.0 - 1e-4))
+
+
+M6_VARIANT_CONFIGS: dict[str, dict[str, object]] = {
+    "m6_full_srr_context_arbitration": {
+        "default_encoder_profile": "balanced_4scale",
+        "dictionary_config": "dict_full_interaction",
+        "scar_negative": 8,
+        "edema_positive": 6,
+        "scar_kernel": 5,
+        "edema_kernel": 9,
+        "scar_scale": 0.75,
+        "edema_scale": 0.65,
+        "arbitration_mode": "full_context",
+    },
+    "m6_conservative_component_arbitration": {
+        "default_encoder_profile": "safe_4scale",
+        "dictionary_config": "dict_conservative_private_shared",
+        "scar_negative": 10,
+        "edema_positive": 6,
+        "scar_kernel": 3,
+        "edema_kernel": 7,
+        "scar_scale": 0.55,
+        "edema_scale": 0.45,
+        "arbitration_mode": "conservative_component",
+    },
+    "m6_scar_precision_edema_safe": {
+        "default_encoder_profile": "balanced_4scale",
+        "dictionary_config": "dict_scar_precision_edema_safe",
+        "scar_negative": 12,
+        "edema_positive": 8,
+        "scar_kernel": 3,
+        "edema_kernel": 9,
+        "scar_scale": 0.70,
+        "edema_scale": 0.50,
+        "arbitration_mode": "scar_precision_edema_safe",
+    },
+}
 
 
 class AnatomyDistanceROIPrior(nn.Module):
@@ -645,6 +698,180 @@ class BaselinePreservingResidualGate(nn.Module):
         }
 
 
+class SegmentationContextInterface(nn.Module):
+    """Expose nnU-Net anchor context as SRR evidence instead of a silent bypass."""
+
+    @staticmethod
+    def _anchor_tensor(anchor_features: torch.Tensor | dict[str, torch.Tensor] | None) -> torch.Tensor | None:
+        return BaselinePreservingResidualGate._anchor_tensor(anchor_features)
+
+    @staticmethod
+    def _class_probs(anchor: torch.Tensor, reference: torch.Tensor) -> torch.Tensor:
+        value = anchor.to(device=reference.device, dtype=reference.dtype)
+        if value.shape[-3:] != reference.shape[-3:]:
+            value = F.interpolate(value, size=reference.shape[-3:], mode="trilinear", align_corners=False)
+        if bool((value.detach().min() >= 0).item()) and bool((value.detach().max() <= 1).item()):
+            denom = value.sum(dim=1, keepdim=True).clamp_min(1e-6)
+            return (value / denom).clamp(0.0, 1.0)
+        return torch.softmax(value, dim=1)
+
+    @staticmethod
+    def _component_tensor(
+        component_features: torch.Tensor | dict[str, torch.Tensor] | None,
+        key: str,
+        channel: int,
+        reference: torch.Tensor,
+    ) -> torch.Tensor:
+        value: torch.Tensor | None = None
+        if isinstance(component_features, dict):
+            candidate = component_features.get(key)
+            if isinstance(candidate, torch.Tensor):
+                value = candidate
+        elif isinstance(component_features, torch.Tensor):
+            value = component_features[:, channel : channel + 1] if component_features.shape[1] > channel else None
+        if value is None:
+            return torch.zeros_like(reference[:, :1])
+        value = value.to(device=reference.device, dtype=reference.dtype)
+        if value.shape[-3:] != reference.shape[-3:]:
+            value = F.interpolate(value, size=reference.shape[-3:], mode="nearest")
+        return value[:, :1].clamp(0.0, 1.0)
+
+    def forward(
+        self,
+        reference_logits: torch.Tensor,
+        anchor_features: torch.Tensor | dict[str, torch.Tensor] | None,
+        component_features: torch.Tensor | dict[str, torch.Tensor] | None,
+        anatomy_context: dict[str, torch.Tensor],
+    ) -> dict[str, torch.Tensor | str]:
+        anchor = self._anchor_tensor(anchor_features)
+        if anchor is None:
+            probs = torch.softmax(reference_logits.detach(), dim=1)
+            source_status = "anchor_missing_reference_softmax"
+        else:
+            probs = self._class_probs(anchor, reference_logits)
+            source_status = "nnunet_anchor_context"
+        hard = probs.argmax(dim=1, keepdim=True).to(dtype=reference_logits.dtype)
+        sorted_probs = probs.sort(dim=1, descending=True).values
+        margin = (sorted_probs[:, 0:1] - sorted_probs[:, 1:2]).clamp(0.0, 1.0)
+        entropy = -(probs * torch.log(probs.clamp_min(1e-6))).sum(dim=1, keepdim=True)
+        entropy = entropy / reference_logits.new_tensor(float(max(2, probs.shape[1]))).log()
+        confidence = probs.max(dim=1, keepdim=True).values
+        scar_component = self._component_tensor(component_features, "scar_component", 0, reference_logits)
+        edema_component = self._component_tensor(component_features, "edema_component", 1, reference_logits)
+        p_union = anatomy_context["p_union"].to(device=reference_logits.device, dtype=reference_logits.dtype)
+        union_distance = anatomy_context["union_distance"].to(device=reference_logits.device, dtype=reference_logits.dtype)
+        scar_size = scar_component.flatten(2).mean(dim=2).view(-1, 1, 1, 1, 1).expand_as(scar_component)
+        edema_size = edema_component.flatten(2).mean(dim=2).view(-1, 1, 1, 1, 1).expand_as(edema_component)
+        remote_scar = ((scar_component > 0.5) & (union_distance > 0.65)).to(dtype=reference_logits.dtype)
+        remote_edema = ((edema_component > 0.5) & (union_distance > 0.65)).to(dtype=reference_logits.dtype)
+        return {
+            "anchor_probabilities": probs,
+            "anchor_hard_prediction": hard,
+            "anchor_entropy": entropy,
+            "anchor_margin": margin,
+            "anchor_confidence": confidence,
+            "scar_component_mask": scar_component,
+            "edema_component_mask": edema_component,
+            "scar_component_size": scar_size,
+            "edema_component_size": edema_size,
+            "component_distance_to_union": union_distance,
+            "scar_remote_component_flag": remote_scar,
+            "edema_remote_component_flag": remote_edema,
+            "anatomy_union_support": p_union,
+            "segmentation_context_status": source_status,
+        }
+
+
+class BranchArbitrationGate(nn.Module):
+    """Explicit branch arbitration with exact segmentation fallback."""
+
+    def __init__(self, *, mode: str = "full_context", max_delta: float = 4.0) -> None:
+        super().__init__()
+        self.mode = str(mode)
+        self.max_delta = float(max_delta)
+        init_bias = -2.0 if self.mode == "conservative_component" else -1.2
+        self.context_gate = nn.Conv3d(10, 4, kernel_size=1)
+        nn.init.zeros_(self.context_gate.weight)
+        nn.init.constant_(self.context_gate.bias, float(init_bias))
+
+    def forward(
+        self,
+        srr_logits: torch.Tensor,
+        anchor_logits: torch.Tensor,
+        availability: torch.Tensor,
+        *,
+        segmentation_context: dict[str, torch.Tensor | str],
+        scar_proposal_logits: torch.Tensor,
+        edema_proposal_logits: torch.Tensor,
+        scar_roi: torch.Tensor,
+        edema_roi: torch.Tensor,
+        force_segmentation_fallback: bool = False,
+    ) -> dict[str, torch.Tensor | str]:
+        anchor_conf = segmentation_context["anchor_confidence"]  # type: ignore[assignment]
+        anchor_entropy = segmentation_context["anchor_entropy"]  # type: ignore[assignment]
+        scar_component = segmentation_context["scar_component_mask"]  # type: ignore[assignment]
+        edema_component = segmentation_context["edema_component_mask"]  # type: ignore[assignment]
+        union_support = segmentation_context["anatomy_union_support"]  # type: ignore[assignment]
+        if not isinstance(anchor_conf, torch.Tensor) or not isinstance(anchor_entropy, torch.Tensor):
+            raise TypeError("segmentation context tensors missing")
+        context = torch.cat(
+            [
+                anchor_conf,
+                anchor_entropy,
+                scar_component if isinstance(scar_component, torch.Tensor) else torch.zeros_like(anchor_conf),
+                edema_component if isinstance(edema_component, torch.Tensor) else torch.zeros_like(anchor_conf),
+                union_support if isinstance(union_support, torch.Tensor) else torch.zeros_like(anchor_conf),
+                torch.sigmoid(scar_proposal_logits),
+                torch.sigmoid(edema_proposal_logits),
+                scar_roi,
+                edema_roi,
+                (1.0 - anchor_conf).clamp(0.0, 1.0),
+            ],
+            dim=1,
+        )
+        weights = torch.sigmoid(self.context_gate(context))
+        uncertainty = (1.0 - anchor_conf).clamp(0.0, 1.0)
+        proposal_support = torch.maximum(torch.sigmoid(scar_proposal_logits), torch.sigmoid(edema_proposal_logits))
+        if self.mode == "conservative_component":
+            open_signal = (uncertainty * proposal_support).clamp(0.0, 1.0)
+            weights = weights * open_signal
+        elif self.mode == "scar_precision_edema_safe":
+            weights = weights * (0.35 + 0.65 * proposal_support)
+        else:
+            weights = weights * (0.20 + 0.80 * torch.maximum(uncertainty, proposal_support))
+        segmentation_weight = (1.0 - weights[:, 0:1]).clamp(0.0, 1.0)
+        srr_weight = weights[:, 0:1]
+        proposal_weight = weights[:, 1:2]
+        refiner_weight = weights[:, 2:3]
+        fallback_weight = weights[:, 3:4]
+        if force_segmentation_fallback:
+            srr_weight = torch.zeros_like(srr_weight)
+            proposal_weight = torch.zeros_like(proposal_weight)
+            refiner_weight = torch.zeros_like(refiner_weight)
+            fallback_weight = torch.ones_like(fallback_weight)
+            segmentation_weight = torch.ones_like(segmentation_weight)
+        bounded_delta = self.max_delta * torch.tanh(srr_logits - anchor_logits)
+        correction_mask = ((srr_weight + proposal_weight + refiner_weight) > 1e-4).to(dtype=srr_logits.dtype)
+        final = anchor_logits + srr_weight * bounded_delta
+        t2_present = canonical_t2_present(availability).to(device=final.device)
+        no_t2_mask = (~t2_present).view(-1, 1, 1, 1, 1)
+        final[:, 4:5] = torch.where(no_t2_mask, torch.full_like(final[:, 4:5], -20.0), final[:, 4:5])
+        return {
+            "final_logits": final,
+            "segmentation_weight": segmentation_weight,
+            "srr_retrieval_weight": srr_weight,
+            "proposal_weight": proposal_weight,
+            "refiner_weight": refiner_weight,
+            "fallback_weight": fallback_weight,
+            "bounded_delta": bounded_delta,
+            "correction_mask": correction_mask,
+            "anchor_confidence": anchor_conf,
+            "srr_confidence": proposal_support,
+            "fallback_reason": "explicit_segmentation_fallback" if force_segmentation_fallback else "evidence_arbitration",
+            "chosen_source": "segmentation_fallback" if force_segmentation_fallback else f"srr_v3_{self.mode}",
+        }
+
+
 class SRRProposeRefineMyoPS(nn.Module):
     """SRR evidence trunk with pathology dictionaries and soft ROI refinement.
 
@@ -669,64 +896,80 @@ class SRRProposeRefineMyoPS(nn.Module):
             "srr_propref_shared_dual_dict",
             "srr_propref_scar_precision",
             "srr_propref_no_proto_cascade",
+            *M6_VARIANT_CONFIGS.keys(),
         }:
             raise ValueError(f"unknown PropRef variant: {variant}")
         self.variant = variant
         self.base_channels = int(base_channels)
+        self.m6_config = M6_VARIANT_CONFIGS.get(variant, {})
+        if self.m6_config and str(encoder_profile) in {"tiny_3scale", ""}:
+            encoder_profile = str(self.m6_config["default_encoder_profile"])
         self.encoder_profile = str(encoder_profile)
         self.disable_local_refinement = bool(disable_local_refinement)
         self.disable_anatomy_roi_prior = bool(disable_anatomy_roi_prior)
         self.encoder_scale_channels = encoder_profile_scale_channels(base_channels, self.encoder_profile)
+        self.feature_channels = int(self.encoder_scale_channels[0])
+        self.dictionary_config = str(self.m6_config.get("dictionary_config", "legacy_interaction_slots"))
         self.encoders = nn.ModuleList([build_modality_encoder(base_channels, self.encoder_profile) for _ in range(3)])
         self.retrieval = nn.ModuleList(
-            [ScaleRetrieval(channels, use_interactions=use_interactions) for channels in self.encoder_scale_channels]
+            [
+                ScaleRetrieval(
+                    channels,
+                    use_interactions=use_interactions,
+                    dictionary_config=self.dictionary_config,
+                )
+                for channels in self.encoder_scale_channels
+            ]
         )
         self.decoders = nn.ModuleDict({task: FlexibleTaskDecoder(self.encoder_scale_channels) for task in ("anatomy", "scar", "edema")})
-        self.evidence_heads = AnatomyPathologyHeads(base_channels, prior_strength=0.35)
+        self.evidence_heads = AnatomyPathologyHeads(self.feature_channels, prior_strength=0.35)
         self.anatomy_roi_prior = AnatomyDistanceROIPrior(distance_steps=6)
         no_proto = variant == "srr_propref_no_proto_cascade"
-        scar_neg = 10 if variant == "srr_propref_scar_precision" else 6
-        edema_pos = 8 if variant == "srr_propref_shared_dual_dict" else 4
+        scar_neg = int(self.m6_config.get("scar_negative", 10 if variant == "srr_propref_scar_precision" else 6))
+        edema_pos = int(self.m6_config.get("edema_positive", 8 if variant == "srr_propref_shared_dual_dict" else 4))
         self.scar_dictionary = ProposalDictionary(
-            base_channels,
+            self.feature_channels,
             pathology="scar",
             n_positive=6,
             n_negative=scar_neg,
             no_proto=no_proto,
         )
         self.edema_dictionary = ProposalDictionary(
-            base_channels,
+            self.feature_channels,
             pathology="edema",
             n_positive=edema_pos,
             n_negative=6,
             no_proto=no_proto,
         )
-        scar_kernel = 3 if variant == "srr_propref_scar_precision" else 5
-        scar_scale = 0.85 if variant == "srr_propref_scar_precision" else 0.70
-        edema_kernel = 9 if variant != "srr_propref_scar_precision" else 7
+        scar_kernel = int(self.m6_config.get("scar_kernel", 3 if variant == "srr_propref_scar_precision" else 5))
+        scar_scale = float(self.m6_config.get("scar_scale", 0.85 if variant == "srr_propref_scar_precision" else 0.70))
+        edema_kernel = int(self.m6_config.get("edema_kernel", 9 if variant != "srr_propref_scar_precision" else 7))
+        edema_scale = float(self.m6_config.get("edema_scale", 0.65))
         self.scar_refine = CropSoftROIRefinementHead(
-            base_channels,
+            self.feature_channels,
             pathology="scar",
             modality_index=0,
             roi_kernel=scar_kernel,
-            crop_margin=1 if variant == "srr_propref_scar_precision" else 2,
+            crop_margin=1 if variant in {"srr_propref_scar_precision", "m6_scar_precision_edema_safe", "m6_conservative_component_arbitration"} else 2,
             min_crop_shape=(3, 4, 4),
             residual_scale=scar_scale,
-            roi_threshold=0.22 if variant == "srr_propref_scar_precision" else 0.18,
-            containment_penalty=0.45 if variant == "srr_propref_scar_precision" else 0.30,
+            roi_threshold=0.22 if variant in {"srr_propref_scar_precision", "m6_scar_precision_edema_safe"} else 0.18,
+            containment_penalty=0.45 if variant in {"srr_propref_scar_precision", "m6_scar_precision_edema_safe"} else 0.30,
         )
         self.edema_refine = CropSoftROIRefinementHead(
-            base_channels,
+            self.feature_channels,
             pathology="edema",
             modality_index=1,
             roi_kernel=edema_kernel,
             crop_margin=3,
             min_crop_shape=(5, 8, 8),
-            residual_scale=0.65,
+            residual_scale=edema_scale,
             roi_threshold=0.12,
             containment_penalty=0.18,
         )
         self.baseline_gate = BaselinePreservingResidualGate(num_classes=6)
+        self.segmentation_context_interface = SegmentationContextInterface()
+        self.branch_arbitration = BranchArbitrationGate(mode=str(self.m6_config.get("arbitration_mode", "legacy_baseline")))
 
     @staticmethod
     def _neutral_anatomy_context(anatomy_logits: torch.Tensor, availability: torch.Tensor) -> dict[str, torch.Tensor]:
@@ -853,6 +1096,10 @@ class SRRProposeRefineMyoPS(nn.Module):
         availability: torch.Tensor,
         anchor_features: torch.Tensor | dict[str, torch.Tensor] | None = None,
         component_features: torch.Tensor | dict[str, torch.Tensor] | None = None,
+        *,
+        force_segmentation_fallback: bool = False,
+        force_closed_gate: bool = False,
+        disable_srr_evidence: bool = False,
     ) -> dict[str, torch.Tensor]:
         if x.shape[1] != 3:
             raise ValueError(f"SRRProposeRefineMyoPS expects 3 channels, got {x.shape[1]}")
@@ -865,6 +1112,12 @@ class SRRProposeRefineMyoPS(nn.Module):
             anatomy_context = self._neutral_anatomy_context(evidence["anatomy_logits"], availability)
         else:
             anatomy_context = self.anatomy_roi_prior(evidence["anatomy_logits"], anchor_features, availability)
+        segmentation_context = self.segmentation_context_interface(
+            evidence["anatomy_logits"],
+            anchor_features,
+            component_features,
+            anatomy_context,
+        )
         scar_anatomy_prior = anatomy_context["scar_soft_gate_logits"]
         edema_anatomy_prior = anatomy_context["edema_soft_gate_logits"]
         scar_dict = self.scar_dictionary(
@@ -935,19 +1188,59 @@ class SRRProposeRefineMyoPS(nn.Module):
         no_t2_mask = (~t2_present).view(-1, 1, 1, 1, 1)
         edema_logits = torch.where(no_t2_mask, torch.full_like(edema_logits, -20.0), edema_logits)
         srr_logits = torch.cat([evidence["anatomy_logits"], edema_logits, scar_logits], dim=1)
-        baseline_blend = self.baseline_gate(srr_logits, anchor_features, availability)
+        baseline_blend = self.baseline_gate(srr_logits, anchor_features, availability, force_closed=force_closed_gate)
+        arbitration = self.branch_arbitration(
+            srr_logits,
+            baseline_blend["anchor_logits"],
+            availability,
+            segmentation_context=segmentation_context,
+            scar_proposal_logits=scar_dict["proposal_logits"],
+            edema_proposal_logits=edema_dict["proposal_logits"],
+            scar_roi=scar_roi,
+            edema_roi=edema_roi,
+            force_segmentation_fallback=bool(force_segmentation_fallback or force_closed_gate or disable_srr_evidence),
+        )
+        use_arbitration = self.variant in M6_VARIANT_CONFIGS
+        final_logits = arbitration["final_logits"] if use_arbitration else baseline_blend["final_logits"]
         outputs = {
-            "logits": baseline_blend["final_logits"],
+            "logits": final_logits,
+            "branch_arbitration_status": "enabled_explicit_arbitration" if use_arbitration else "legacy_baseline_gate_only",
+            "branch_chosen_source": arbitration["chosen_source"],
+            "branch_fallback_reason": arbitration["fallback_reason"],
+            "segmentation_weight": arbitration["segmentation_weight"],
+            "srr_retrieval_weight": arbitration["srr_retrieval_weight"],
+            "proposal_weight": arbitration["proposal_weight"],
+            "refiner_weight": arbitration["refiner_weight"],
+            "branch_fallback_weight": arbitration["fallback_weight"],
+            "branch_correction_mask": arbitration["correction_mask"],
+            "branch_anchor_confidence": arbitration["anchor_confidence"],
+            "branch_srr_confidence": arbitration["srr_confidence"],
             "srr_logits_pre_anchor": srr_logits,
             "nnunet_anchor_logits": baseline_blend["anchor_logits"],
             "baseline_residual_gate": baseline_blend["gate"],
             "bounded_delta_srr": baseline_blend["bounded_delta"],
+            "arbitration_bounded_delta": arbitration["bounded_delta"],
             "baseline_residual_magnitude": baseline_blend["residual_magnitude"],
             "baseline_gate_status": baseline_blend["gate_status"],
             "encoder_profile": self.encoder_profile,
             "encoder_scale_channels": tuple(self.encoder_scale_channels),
+            "dictionary_config": self.dictionary_config,
             "local_refinement_status": "disabled_bypass_to_proposal_logits" if self.disable_local_refinement else "enabled_crop_soft_roi",
             "anatomy_roi_prior_status": "disabled_neutral_context" if self.disable_anatomy_roi_prior else "enabled_distance_soft_gates",
+            "segmentation_context_status": segmentation_context["segmentation_context_status"],
+            "anchor_probabilities": segmentation_context["anchor_probabilities"],
+            "anchor_hard_prediction": segmentation_context["anchor_hard_prediction"],
+            "anchor_entropy": segmentation_context["anchor_entropy"],
+            "anchor_margin": segmentation_context["anchor_margin"],
+            "anchor_confidence": segmentation_context["anchor_confidence"],
+            "scar_component_mask": segmentation_context["scar_component_mask"],
+            "edema_component_mask": segmentation_context["edema_component_mask"],
+            "scar_component_size": segmentation_context["scar_component_size"],
+            "edema_component_size": segmentation_context["edema_component_size"],
+            "component_distance_to_union": segmentation_context["component_distance_to_union"],
+            "scar_remote_component_flag": segmentation_context["scar_remote_component_flag"],
+            "edema_remote_component_flag": segmentation_context["edema_remote_component_flag"],
+            "anatomy_union_support": segmentation_context["anatomy_union_support"],
             "anatomy_logits": evidence["anatomy_logits"],
             "scar_logits": scar_logits,
             "edema_logits": edema_logits,
@@ -978,6 +1271,8 @@ class SRRProposeRefineMyoPS(nn.Module):
             "edema_anchor_evidence": edema_dict["anchor_evidence"],
             "scar_component_evidence": scar_dict["component_evidence"],
             "edema_component_evidence": edema_dict["component_evidence"],
+            "scar_proposal_formula_terms": scar_dict["proposal_formula_terms"],
+            "edema_proposal_formula_terms": edema_dict["proposal_formula_terms"],
             "scar_refinement_residual": scar_residual,
             "edema_refinement_residual": edema_residual,
             "scar_soft_roi": scar_roi,
