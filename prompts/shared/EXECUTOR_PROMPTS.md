@@ -613,15 +613,32 @@ M7 result directory 必须是：
 - `results/20260705_srr_v3_m6_myops_concrete_architecture_repair/review.md` 包含 `M6_AUDITED_GO`。
 - 如果继续 Cine 子线，`results/20260705_srr_v3_m5_cine_secondary_contract/review.md` 包含 `M5_AUDITED_DIAGNOSTIC_GO`。
 
-不要 validation packaging/upload，不要 hosted metric claim，不要 route promotion，不要 scientific stop，不要启动 M8，不要写 `review.md`。
+不要 validation packaging/upload，不要 hosted metric claim，不要 route promotion，不要 scientific stop，不要启动 M8，不要写 `review.md`。不得复制旧 M7 executor 段、旧 M5 evidence、旧 training curves、diagnostic-only rows 或自然语言解释来绕过本 continued hard gates。本段是当前 M7 continued 的唯一执行合同；原 M7 executor 段只保留为第一次 M7 run 的记录。
 
-### A. 修复 loss gradient sanity
+### A. Training-loss validity gate
 
-当前 75/75 `BACKWARD_FAILED` 是硬 blocker。不能通过重命名或改表格文字修复，必须修代码。
+当前 75/75 `BACKWARD_FAILED` 是硬 blocker。不能通过重命名、修表格文字或 post-hoc logging fix 修复。Executor 必须先判断原 M7 training 是否真的使用 graph-connected expanded loss；如果原训练的 total loss 与 expanded loss components 脱节，或 gradient sanity 修复只证明 logging path 被修复，原 M7 training 结果不得继续作为有效 M7 evidence。
+
+必须新增 `loss_graph_training_validity_report.md`，至少包含：
+
+- 原 M7 training 使用的 total loss function 名称和代码路径；
+- expanded loss components 是否进入 optimizer backward；
+- `detach_metrics=True/False` 对 training loss 与 logging metrics 的影响；
+- 是否需要 rerun training；
+- 如果不 rerun，必须给出代码级证据说明原训练 already graph-connected；
+- 如果 rerun，必须记录 rerun variant、steps、seconds、validation events、eval cases。
+
+Rerun rule:
+
+- 如果 gradient 修复后证明原训练不可信，不能写 `M7_CONTINUED_READY_FOR_REVIEW`，除非重新训练全部三个 required variants：`m7_full_srr_context_arbitration`、`m7_conservative_component_arbitration`、`m7_scar_precision_edema_safe`；
+- 或至少重新训练一个预先指定的 primary variant，并把其他 variants 标为 `M7_NEEDS_EVIDENCE_NOT_COMPARABLE`，且 `best_variant_decision.md` 不得做 full variant ranking；
+- 不得把旧 training curves 与新 gradient sanity 混合成同一个“有效训练证据”，除非 `loss_graph_training_validity_report.md` 证明二者同源、同代码路径、同 loss graph。
+
+### B. 修复 loss gradient sanity
 
 具体实现决定：
 
-1. 修改 `src/care_myocardium/losses/srr_losses.py` 的 `srr_m6_expanded_total_loss`，增加类似参数：`detach_metrics: bool = True`。
+1. 修改 `src/care_myocardium/losses/srr_losses.py` 的 `srr_m6_expanded_total_loss`，增加或确认类似参数：`detach_metrics: bool = True`。
    - 默认 `True` 保持日志安全。
    - M7 gradient sanity 使用 `False`，返回 graph-connected component tensors。
    - 必须让以下 component 在 gradient sanity mode 下保持 graph：`loss_anatomy_union_lv_rv`、`loss_scar_proposal`、`loss_edema_proposal_t2_present_only`、`loss_scar_refiner_roi`、`loss_edema_refiner_t2_present_roi`、`loss_anchor_preservation_outside_roi`、`loss_branch_arbitration_consistency`、`loss_bounded_correction`、`loss_component_remote_fp`、`loss_no_t2_edema_safety`、`loss_dictionary_entropy_coverage_load_balance`、`loss_prototype_diversity_margin`、`m6_expanded_total_loss`。
@@ -637,11 +654,12 @@ M7 result directory 必须是：
 4. 更新：
    - `loss_component_gradient_sanity.csv`
    - `loss_component_gradient_fix_report.md`
+   - `loss_graph_training_validity_report.md`
    - relevant unit tests and `unit_test_report.md`
 
 不得写 ready，如果任何 required component 仍是 `BACKWARD_FAILED`、`EVIDENCE_NOT_FOUND`、无解释 `ZERO_GRAD_OR_DETACHED`、或 `param_with_grad_count=0`。
 
-### B. 修复 hard subgroup coverage
+### C. Formal-val insufficiency gate and hard subgroup coverage
 
 实现确定性的 hard subgroup case selector，不允许临场挑 case。
 
@@ -655,6 +673,21 @@ M7 result directory 必须是：
 - `large_lesion`：pathology GT voxel volume upper tertile；
 - `GT_positive_scar` / `GT_positive_edema`。
 
+如果数据中可用，M7 continued hard subgroup evidence 至少覆盖：
+
+- at least 1 T2-present complete case；
+- at least 1 GT-positive edema case；
+- at least 1 GT-positive scar case；
+- at least 1 CenterB or CenterC case；
+- at least 1 remote-FP-positive case if anchor/prediction produces one；
+- small-lesion and large-lesion strata if label volume permits。
+
+如果任何组不可用，必须在 `hard_subgroup_coverage_report.md` 写 exact unavailable reason，并给出 case-pool audit，不能只写 “not found”。
+
+新增或更新 `m7_case_pool_audit.csv`，字段至少包括：
+
+`case_id, split_role, center, modality_group, t2_present, c0_present, scar_gt_voxels, edema_gt_voxels, scar_gt_positive, edema_gt_positive, anchor_remote_fp_scar, anchor_remote_fp_edema, small_lesion_flag, large_lesion_flag, selected_for_formal_val, selected_for_diagnostic_hardcase, eligible_for_best_variant_decision, exclusion_reason`
+
 Formal best-variant metrics must prefer fold validation cases. If fold validation lacks a subgroup, create a separate `diagnostic_hardcase_eval` stratum from same-split train/hardcase cases, with explicit fields:
 
 - `split_role=formal_val` or `diagnostic_train_hardcase`
@@ -662,18 +695,43 @@ Formal best-variant metrics must prefer fold validation cases. If fold validatio
 - `leakage_caveat`
 - `reason_if_not_formal_val`
 
-Diagnostic hardcase rows may support mechanism interpretation only. They must not be used for route promotion or formal best-variant selection.
+Diagnostic hardcase rows may support mechanism interpretation only. They must not be used for route promotion or formal best-variant selection. If formal validation rows still lack core subgroups such as T2-present, CenterB, CenterC, edema-positive, or remote-FP-positive, M7 continued cannot make a formal promotion-style best variant selection. It may write diagnostic mechanism interpretation only.
+
+必须新增 `formal_val_coverage_limitations.md`，至少说明：
+
+- formal_val 覆盖了哪些 center、modality pattern、T2-present、GT-positive scar/edema；
+- 缺哪些 subgroup；
+- diagnostic_train_hardcase 是否被使用；
+- diagnostic rows 是否被排除在 formal best-variant decision 之外；
+- 是否需要后续 stratified fold/eval expansion；
+- 当前 conclusion 是否只能是 `NO_PROMOTION_SCIENTIFIC_UNRESOLVED` 或 `NEEDS_EVIDENCE`。
 
 Required outputs:
 
-- `m7_hard_subgroup_case_manifest.csv`
+- `m7_case_pool_audit.csv`
+- `m7_hard_subgroup_case_manifest.csv` if retained as a selector manifest
+- `formal_val_coverage_limitations.md`
 - updated `same_split_help_harm.csv`
 - updated `hard_subgroup_metrics.csv`
 - `hard_subgroup_coverage_report.md`
 
-Do not write ready if coverage remains all CenterA/LGE-only/no-T2. If required groups are genuinely unavailable, write `M7_NEEDS_EVIDENCE` or `M7_NEEDS_REVISION`, not ready.
+Do not write ready if coverage remains all CenterA/LGE-only/no-T2, or if diagnostic hardcases are mixed into formal best-variant ranking. If required groups are genuinely unavailable, write `M7_NEEDS_EVIDENCE` or `M7_NEEDS_REVISION`, not ready.
 
-### C. Cine registration repair: implement before preserving the gap
+### D. Cine decision separation
+
+MyoPS blockers fixed does not imply Cine ready. Cine registration repair failure does not block MyoPS continued evidence, but it must block Cine readiness. `result.md`, `failure_interpretation.md`, and `completion_check.md` must separate:
+
+- `myops_decision`
+- `cine_decision`
+- `combined_decision`
+
+Rules:
+
+- If Cine branch has no usable non-reference registration row, `cine_decision` must be `CINE_REGISTRATION_BLOCKED_AFTER_REPAIR_ATTEMPT` or `CINE_NEEDS_EVIDENCE`, not ready;
+- If a usable non-reference registration row exists, executor must attempt temporal dictionary; not attempting it prevents ready;
+- `combined_decision` cannot package MyoPS partial success plus Cine blocked as overall success.
+
+### E. Cine registration minimum run gate
 
 Do not only copy M5 evidence. Implement and run a M7 continued Cine registration repair helper, for example:
 
@@ -683,13 +741,14 @@ The helper must discover or generate CineMA/equivalent frame-wise anatomy output
 
 Build a same-safe-subset with at least 3 cases and at least 2 non-reference frame pairs per case when data allow. Use ED/frame0 as reference and mid/ES or nearest available non-reference frames.
 
-Run actual non-reference registration options:
+Run at least two non-reference registration families unless tools are unavailable:
 
-- `CineMA_anatomy_distance_SimpleITK_BSpline`
-- `CineMA_anatomy_distance_SimpleITK_Demons`
-- `ANTsPy_SyN` if installed
+- `SimpleITK_Demons` or `SimpleITK_BSpline` as the required fast classical path when SimpleITK is available;
+- `ANTsPy_SyN` if installed, with import/availability check recorded if unavailable;
 - optical-flow/feature-warp only as proxy, never as usable registration
 - VoxelMorph only if trained/auditable weights exist; otherwise `UNTRAINED_NOT_USABLE`
+
+If SimpleITK is available but neither Demons nor B-spline is run, M7 continued cannot be ready. Each usable candidate must have same-safe-subset rows; one-case smoke cannot represent the registration matrix. Frame0-only, one-case SyN, untrained VoxelMorph, and optical-flow proxy cannot be marked usable registration.
 
 Each registration row must report myocardium Dice before/after, LV Dice before/after, HD95 before/after when computable, image NCC before/after, Jacobian/fold or displacement smoothness proxy, inverse/round-trip proxy where feasible, runtime seconds, and failure reason.
 
@@ -706,21 +765,52 @@ Required outputs:
 - updated `registration_same_subset_matrix.csv`
 - local runtime artifacts under a non-tracked runtime directory
 
-### D. Temporal dictionary after registration gate
+### F. Temporal dictionary anti-cheat gate
 
-If at least one usable non-reference registration option exists, attempt a minimal diagnostic temporal dictionary build. It must include ED/reference anchor features, selected non-reference frame features, warped features, frame-quality score, motion-saliency score, temporal representer slot usage, temporal aggregation output, local class_1 myocardium proxy, class_3 sanity, and hosted metric caveat.
+If no usable non-reference registration row exists, `temporal_dictionary_evidence.csv` may only contain blocked rows and must not contain ready rows. If at least one usable non-reference registration option exists, attempt a minimal diagnostic temporal dictionary build. It must include:
+
+- ED/reference anchor feature;
+- selected non-reference frame feature;
+- warped feature or warped probability;
+- frame-quality score;
+- motion-saliency score;
+- registration-quality score;
+- temporal representer slot usage;
+- temporal aggregation output;
+- local class_1 myocardium proxy;
+- hosted metric caveat.
 
 If no usable registration row exists after the repair attempt, write `TEMPORAL_DICTIONARY_BLOCKED_BY_REGISTRATION_GAP_AFTER_REPAIR_ATTEMPT`. This is acceptable only if the registration helper actually ran and recorded failures.
 
-### E. Aggregation and completion state
+Descriptor-only, no-warp, frame0-only, or one-case temporal rows cannot be marked ready.
+
+### G. Strict validator known-bad cases
+
+Update M7 continued strict validation so it fails closed, and output or update `strict_validator_report.md`. The report must record each known-bad packet's expected failure, actual exit code/status, and failure reason. Known-bad packets must include:
+
+- all loss gradient rows `BACKWARD_FAILED`;
+- gradient sanity fixed but training-loss validity missing;
+- hard subgroup rows all CenterA/LGE-only/no-T2;
+- diagnostic hardcase rows mixed into formal best-variant decision;
+- Cine branch copies M5 evidence without new registration attempt;
+- frame0-only or one-case SyN marked usable registration;
+- untrained VoxelMorph marked usable;
+- temporal dictionary marked ready despite no usable registration;
+- completion_check says ready while any continued blocker remains.
+
+### H. Aggregation and completion state
 
 Update `scripts/evaluation/aggregate_srr_v3_m7_training_and_cine.py` so completion is fail-closed. It must explicitly check:
 
 - no required loss component has failed/missing gradient evidence;
+- `loss_graph_training_validity_report.md` exists and supports either original graph-connected training or required rerun evidence;
 - hard subgroup coverage report exists and is not all missing;
+- `m7_case_pool_audit.csv` exists with required fields;
+- `formal_val_coverage_limitations.md` exists and prevents formal promotion-style selection when formal validation is insufficient;
 - formal-val and diagnostic hardcase rows are separated;
 - Cine registration repair was attempted if Cine subline is enabled;
 - temporal dictionary is ready only if registration gate passes.
+- strict validator known-bad cases fail closed.
 
 Update these files in `results/20260705_srr_v3_m7_training_and_cine_utilization/`:
 
@@ -728,7 +818,10 @@ Update these files in `results/20260705_srr_v3_m7_training_and_cine_utilization/
 - `m7_execution_plan.md`
 - `loss_component_gradient_sanity.csv`
 - `loss_component_gradient_fix_report.md`
+- `loss_graph_training_validity_report.md`
+- `m7_case_pool_audit.csv`
 - `m7_hard_subgroup_case_manifest.csv`
+- `formal_val_coverage_limitations.md`
 - `hard_subgroup_coverage_report.md`
 - `same_split_help_harm.csv`
 - `hard_subgroup_metrics.csv`
@@ -739,6 +832,7 @@ Update these files in `results/20260705_srr_v3_m7_training_and_cine_utilization/
 - `temporal_dictionary_evidence.csv`
 - `cine_metrics_summary.csv` if Cine metrics are computed
 - `failure_interpretation.md`
+- `strict_validator_report.md`
 - `completion_check.md`
 - `review_request.md`
 - `MANIFEST.md`
@@ -753,7 +847,7 @@ Update these files in `results/20260705_srr_v3_m7_training_and_cine_utilization/
 - `M7_BLOCKED_BY_M6`
 - `M7_CONTINUED_BLOCKED_BY_REVIEW_STATE`
 
-Do not write `M7_CONTINUED_READY_FOR_REVIEW` if any blocker above remains unresolved.
+Do not write `M7_CONTINUED_READY_FOR_REVIEW` if any blocker above remains unresolved. `M7_CONTINUED_READY_FOR_REVIEW` only means continued blockers are ready for independent reviewer audit. It does not authorize route promotion, hosted metric claim, fold expansion, validation packaging/upload, challenge submission, M8, scientific stop, or leaderboard readiness.
 
 Finish by force-adding and locally committing only the lightweight M7 continued packet plus necessary first-party helper/source/test files. Do not write `review.md` and do not start M8.
 ```

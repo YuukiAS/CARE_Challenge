@@ -246,32 +246,99 @@ M7 reviewer decision 只能是：
 - prior M7 `review.md`；
 - M7 continued result directory；
 - modified first-party training/evaluation/Cine/loss/model/test files。
+- current shared executor/reviewer prompt sections，确认 continued contract 已正确体现在 `prompts/shared/EXECUTOR_PROMPTS.md` 和 `prompts/shared/REVIEWER_PROMPTS.md`，且没有 standalone continued prompt 被维护或用旧 M7 executor 段绕过 hard gates。
 
-### A. Loss gradient gate
+### A. Loss graph training-validity gate
+
+Review `loss_graph_training_validity_report.md` before accepting any repaired gradient sanity. Reject if it is missing.
+
+The report must identify the original M7 training total loss function name and code path, whether expanded loss components entered optimizer backward, and the effect of `detach_metrics=True/False` on training loss versus logging metrics.
+
+Reject if gradient sanity was fixed only post-hoc but original training evidence is still treated as valid. If original training was not graph-connected, reviewer must require either:
+
+- rerun of all three required variants: `m7_full_srr_context_arbitration`, `m7_conservative_component_arbitration`, `m7_scar_precision_edema_safe`; or
+- rerun of at least one pre-specified primary variant, with non-rerun variants marked `M7_NEEDS_EVIDENCE_NOT_COMPARABLE` and no full variant ranking in `best_variant_decision.md`.
+
+Reject if old training curves are mixed with new gradient sanity as one valid evidence packet unless `loss_graph_training_validity_report.md` proves same source, same code path, and same loss graph.
+
+### B. Loss gradient gate
 
 Reject if any required loss component still has `BACKWARD_FAILED`, `EVIDENCE_NOT_FOUND`, unjustified `ZERO_GRAD_OR_DETACHED`, missing `requires_grad`, or `param_with_grad_count=0` without a documented legitimate mask gate.
 
 Allow `LEGITIMATE_MASKED_NA` only when batch cases, T2-present fraction, target voxel count, and zero justification are present. At least one T2-present gradient sanity batch is required if T2-present cases are available.
 
-### B. Hard subgroup gate
+### C. Formal-val and hard subgroup gate
 
-Review `m7_hard_subgroup_case_manifest.csv`, `hard_subgroup_coverage_report.md`, `same_split_help_harm.csv`, and `hard_subgroup_metrics.csv`.
+Review `m7_case_pool_audit.csv`, `m7_hard_subgroup_case_manifest.csv` if present, `formal_val_coverage_limitations.md`, `hard_subgroup_coverage_report.md`, `same_split_help_harm.csv`, and `hard_subgroup_metrics.csv`.
 
-Reject if evidence remains all CenterA/LGE-only/no-T2, if diagnostic rows are mixed into formal best-variant decision, or if missing groups have no exact reason. Required groups are T2-present/complete, CenterB or CenterC, no-T2 empty-GT, GT-positive scar, GT-positive edema when available, remote-FP-positive, small-lesion, and large-lesion.
+`m7_case_pool_audit.csv` must include at least:
 
-### C. Metric decision gate
+`case_id, split_role, center, modality_group, t2_present, c0_present, scar_gt_voxels, edema_gt_voxels, scar_gt_positive, edema_gt_positive, anchor_remote_fp_scar, anchor_remote_fp_edema, small_lesion_flag, large_lesion_flag, selected_for_formal_val, selected_for_diagnostic_hardcase, eligible_for_best_variant_decision, exclusion_reason`
+
+Reject if evidence remains all CenterA/LGE-only/no-T2, if diagnostic rows are mixed into formal best-variant decision, or if missing groups have no exact unavailable reason and case-pool audit. Required groups are at least one T2-present complete case, at least one GT-positive edema case, at least one GT-positive scar case, at least one CenterB or CenterC case, remote-FP-positive if anchor/prediction produces one, and small-lesion/large-lesion strata if label volume permits.
+
+If formal validation rows still lack core subgroups such as T2-present, CenterB, CenterC, edema-positive, or remote-FP-positive, reject any formal promotion-style best variant selection. In that case `best_variant_decision.md` may only support diagnostic mechanism interpretation, and the conclusion must remain `NO_PROMOTION_SCIENTIFIC_UNRESOLVED` or `NEEDS_EVIDENCE`.
+
+Reject if diagnostic_train_hardcase rows are used for formal ranking, route promotion, or full best-variant decision.
+
+### D. Metric decision gate
 
 `best_variant_decision.md` must use only formal-val rows for formal decisions. Diagnostic hardcase rows may support mechanism interpretation but not route promotion. Reject if no-T2 unsafe variants are not rejected, scar regression is ignored, HD95/component/remote-FP are omitted, or case-ID/GT-tuned fallback is used.
 
-### D. Cine repair gate
+### E. Cine repair and decision-separation gate
 
 Review `cine_registration_repair_report.md`, `registration_same_subset_matrix.csv`, `temporal_dictionary_evidence.csv`, and `cine_metrics_summary.csv` if present.
 
-Reject if M7 continued merely copied M5 evidence again. The packet must show a real same-safe-subset non-reference registration attempt. One-case SyN, frame0-only, untrained VoxelMorph, and optical-flow proxy cannot be marked usable. Every registration row must include before/after anatomy metrics, quality/folding/round-trip proxies, runtime, and failure reason.
+Reject if M7 continued merely copied M5 evidence again or if the Cine registration repair helper did not actually run. The packet must show real same-safe-subset non-reference registration attempts.
+
+M7 continued must separate `myops_decision`, `cine_decision`, and `combined_decision`. Reject if MyoPS partial success plus Cine blocked is packaged as overall success, or if MyoPS blocker repair is used to imply Cine readiness.
+
+The registration minimum run gate is:
+
+- If SimpleITK is available, `SimpleITK_Demons` or `SimpleITK_BSpline` must run as the fast classical path; otherwise reject.
+- `ANTsPy_SyN` must run if installed, or the packet must record import/availability failure.
+- At least two non-reference registration families must be attempted unless tools are unavailable.
+- Optical flow / feature warp can only be proxy evidence.
+- VoxelMorph can be usable only with trained/auditable weights; otherwise it must be `UNTRAINED_NOT_USABLE`.
+
+Reject one-case SyN, frame0-only, untrained VoxelMorph, or optical-flow proxy marked usable. Every usable candidate must have same-safe-subset rows, not one-case smoke. Every registration row must include before/after anatomy metrics, quality/folding/round-trip proxies, runtime, and failure reason.
 
 If a usable registration row exists, temporal dictionary evidence must be attempted. If no usable row exists, `TEMPORAL_DICTIONARY_BLOCKED_BY_REGISTRATION_GAP_AFTER_REPAIR_ATTEMPT` is acceptable only if the registration repair attempt is well documented.
 
-### E. Reviewer decision
+If no usable non-reference registration row exists, reject any `temporal_dictionary_evidence.csv` ready row. If usable registration exists, temporal dictionary must include ED/reference anchor feature, selected non-reference frame feature, warped feature or warped probability, frame-quality score, motion-saliency score, registration-quality score, temporal representer slot usage, temporal aggregation output, local class_1 myocardium proxy, and hosted metric caveat. Descriptor-only, no-warp, frame0-only, or one-case temporal rows cannot be marked ready.
+
+### F. Strict validator gate
+
+Review `strict_validator_report.md`; reject if missing. It must record each known-bad packet's expected failure, actual exit code/status, and failure reason.
+
+The validator must fail closed at least these known-bad packets:
+
+- all loss gradient rows `BACKWARD_FAILED`;
+- gradient sanity fixed but training-loss validity missing;
+- hard subgroup rows all CenterA/LGE-only/no-T2;
+- diagnostic hardcase rows mixed into formal best-variant decision;
+- Cine branch copies M5 evidence without new registration attempt;
+- frame0-only or one-case SyN marked usable registration;
+- untrained VoxelMorph marked usable;
+- temporal dictionary marked ready despite no usable registration;
+- completion_check says ready while any continued blocker remains.
+
+Reject if `completion_check.md` claims ready while any continued blocker remains unresolved.
+
+### G. Required rejection cases
+
+Reviewer must reject if any of the following holds:
+
+- continued contract is not correctly reflected in shared executor/reviewer prompt sections;
+- `loss_graph_training_validity_report.md` is missing or insufficient;
+- gradient sanity fixed only post-hoc but original training evidence is still treated as valid;
+- formal-val coverage is inadequate but conclusion is treated as formal best variant decision;
+- diagnostic hardcases are used for formal ranking;
+- Cine registration repair helper did not actually run;
+- no usable registration exists but temporal dictionary is marked ready;
+- any completion state claims ready with unresolved blockers.
+
+### H. Reviewer decision
 
 Allowed decisions:
 
@@ -281,7 +348,7 @@ Allowed decisions:
 - `M7_CONTINUED_AUDITED_UNDERTRAINED`
 - `M7_CONTINUED_AUDITED_NO_PROMOTION_SCIENTIFIC_UNRESOLVED`
 
-`M7_CONTINUED_AUDITED_GO_FOR_NEXT_PLANNING` only means the repaired evidence is adequate for GPT planner review. It does not authorize validation packaging/upload, hosted metric claim, fold expansion, challenge submission, M8, route promotion, or scientific stop.
+`M7_CONTINUED_AUDITED_GO_FOR_NEXT_PLANNING` only means the repaired evidence is adequate for GPT planner review. It does not authorize validation packaging/upload, hosted metric claim, fold expansion, challenge submission, M8, route promotion, scientific stop, or leaderboard readiness.
 
 最后只写 `results/20260705_srr_v3_m7_training_and_cine_utilization/review.md`。完成后 `git add -f review.md` 并 commit；不要 push，由用户手动 push。
 ```
