@@ -2,4 +2,4 @@
 
 status: `READY_FOR_REVIEW`
 
-Review this M7 executor packet only if `completion_check.md` says `M7_READY_FOR_REVIEW`. The reviewer should verify all three variants, same-split help/harm, hard subgroup metrics, loss component curves, gradient sanity, no-T2 safety, and Cine registration/temporal dictionary blockers.
+This is an unaudited M7 continued blocker-repair packet. Independent review should check graph-connected gradient sanity, original training-loss validity, hard subgroup coverage, Cine registration repair, temporal dictionary blocking, and strict validator fail-closed behavior.

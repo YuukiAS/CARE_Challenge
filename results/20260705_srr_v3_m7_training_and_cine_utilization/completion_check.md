@@ -1,12 +1,12 @@
 # Completion Check
 
-status: `M7_READY_FOR_REVIEW`
-experiment_adequacy_decision: `PASS`
+status: `M7_CONTINUED_READY_FOR_REVIEW`
 route_promotion_decision: `NO_PROMOTION`
-route_negative_decision: `STOP_NOT_SUPPORTED`
-scientific_resolution_status: `SCIENTIFIC_UNRESOLVED`
-cine_decision: `CINE_REGISTRATION_GAP_REMAINS`
-temporal_dictionary_status: `TEMPORAL_DICTIONARY_BLOCKED_BY_REGISTRATION_GAP`
+hosted_metric_claim: `false`
+validation_packaging_or_upload: `false`
+myops_decision: `NO_PROMOTION_SCIENTIFIC_UNRESOLVED`
+cine_decision: `CINE_REGISTRATION_BLOCKED_AFTER_REPAIR_ATTEMPT`
+combined_decision: `M7_CONTINUED_READY_FOR_REVIEW_NO_PROMOTION`
 self_assessed_status: `EXECUTED_UNAUDITED`
 
-This is an executor packet only. It does not write review.md, start M8, package validation, upload, or claim hosted metrics.
+M7 continued does not write review.md, start M8, package validation, upload, claim hosted metrics, or authorize route promotion/scientific stop.

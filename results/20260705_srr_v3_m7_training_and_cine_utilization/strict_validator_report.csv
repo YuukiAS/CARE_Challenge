@@ -1,0 +1,10 @@
+known_bad_packet,expected_failure,actual_status,failure_reason
+all loss gradient rows BACKWARD_FAILED,True,PASS_FAIL_CLOSED,gradient sanity must not be all BACKWARD_FAILED
+gradient fixed but training-loss validity missing,True,PASS_FAIL_CLOSED,loss graph report exists
+hard subgroup rows all CenterA/LGE-only/no-T2,True,PASS_FAIL_CLOSED,continued hard subgroup groups are present
+diagnostic hardcase rows mixed into formal best-variant decision,True,PASS_FAIL_CLOSED,formal best rows remain formal_val only
+Cine branch copies M5 evidence without new registration attempt,True,PASS_FAIL_CLOSED,M7 continued Cine repair report exists
+frame0-only or one-case SyN marked usable registration,True,PASS_FAIL_CLOSED,no frame0/one-case usable registration
+untrained VoxelMorph marked usable,True,PASS_FAIL_CLOSED,untrained VoxelMorph is not usable
+temporal dictionary marked ready despite no usable registration,True,PASS_FAIL_CLOSED,temporal dictionary remains blocked without usable registration
+completion_check says ready while any continued blocker remains,True,PASS_FAIL_CLOSED,"ready check requires fixed gradients, subgroup coverage, Cine repair report, and temporal evidence"

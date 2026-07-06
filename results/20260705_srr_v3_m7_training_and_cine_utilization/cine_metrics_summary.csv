@@ -1,3 +1,4 @@
-frame_strategy,hosted_myocardium_cinemyops_claim,lv_dice_mean_train_frames,lv_hd95_mean_train_frames,myocardium_dice_mean_train_frames,myocardium_hd95_mean_train_frames,pathology_capable,registration_status,seed,source,source_path,train_cases,trained_dataset,val_cases
-ed_middle_representative,false,0.6775167911385374,12.367483748073948,0.4655017392177521,12.138975499891407,false,,0,CineMA anatomy prior adapter,/users/a/e/aereinh/CARE/results/cinema_adapter/20260619_131229__cinema_acdc_seed0_ed_mid_repr/metrics_summary.json,64,acdc,15
-,false,,,,,false,CINE_REGISTRATION_GAP_REMAINS,,M7 registration same-subset matrix,/users/a/e/aereinh/CARE/results/20260705_srr_v3_m7_training_and_cine_utilization/registration_same_subset_matrix.csv,,,
+method,n_rows,n_cases,mean_before_myocardium_dice,mean_after_myocardium_dice,mean_before_lv_dice,mean_after_lv_dice,decision
+ANTsPy_SyNOnly,6,3,0.6989459374997669,0.7050612697339972,0.756807814587103,0.7633464649887273,NOT_USABLE_FOR_TEMPORAL_DICTIONARY
+SimpleITK_Demons,6,3,0.6989459374997669,0.7420313712302186,0.756807814587103,0.8450501597185741,NOT_USABLE_FOR_TEMPORAL_DICTIONARY
+frame0_identity_control,6,3,1.0,1.0,1.0,1.0,NOT_USABLE_REFERENCE_CONTROL

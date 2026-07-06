@@ -1,0 +1,9 @@
+case_id,split_role,center,modality_group,selected_for_formal_val,eligible_for_best_variant_decision,reason,leakage_caveat,reason_if_not_formal_val
+Case1002,formal_val,CenterA,LGE-only,True,True,deterministic formal-val subgroup coverage selector,fold validation case; eligible for formal best-variant decision,
+Case1007,formal_val,CenterA,LGE-only,True,True,deterministic formal-val subgroup coverage selector,fold validation case; eligible for formal best-variant decision,
+Case1009,formal_val,CenterA,LGE-only,True,True,deterministic formal-val subgroup coverage selector,fold validation case; eligible for formal best-variant decision,
+Case1029,formal_val,CenterA,LGE-only,True,True,deterministic formal-val subgroup coverage selector,fold validation case; eligible for formal best-variant decision,
+Case1042,formal_val,CenterA,LGE-only,True,True,deterministic formal-val subgroup coverage selector,fold validation case; eligible for formal best-variant decision,
+Case2002,formal_val,CenterB,C0+LGE+T2,True,True,deterministic formal-val subgroup coverage selector,fold validation case; eligible for formal best-variant decision,
+Case2007,formal_val,CenterB,C0+LGE+T2,True,True,deterministic formal-val subgroup coverage selector,fold validation case; eligible for formal best-variant decision,
+Case3004,formal_val,CenterC,C0+LGE+T2,True,True,deterministic formal-val subgroup coverage selector,fold validation case; eligible for formal best-variant decision,

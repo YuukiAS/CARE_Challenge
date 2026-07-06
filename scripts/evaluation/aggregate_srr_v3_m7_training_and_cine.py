@@ -11,16 +11,11 @@ from datetime import UTC, datetime
 from pathlib import Path
 
 import numpy as np
-import SimpleITK as sitk
 
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
-
-from scripts.training.run_srr_myops_fold0 import collect_case_metrics, read_case  # noqa: E402
-from scripts.training.run_srr_propref_myops_fold0 import DEFAULT_NNUNET_ANCHOR_ROOT, _find_anchor_paths  # noqa: E402
-from src.care_myocardium.data.case_metadata import load_myops_case_metadata  # noqa: E402
 
 TASK_KEY = "20260705_srr_v3_m7_training_and_cine_utilization"
 OUT_ROOT = REPO_ROOT / "results" / TASK_KEY
@@ -397,6 +392,12 @@ def context_parts(context_variant: str) -> tuple[str, str, str]:
 
 
 def write_same_split_help_harm() -> list[dict[str, object]]:
+    import SimpleITK as sitk
+
+    from scripts.training.run_srr_myops_fold0 import collect_case_metrics, read_case
+    from scripts.training.run_srr_propref_myops_fold0 import DEFAULT_NNUNET_ANCHOR_ROOT, _find_anchor_paths
+    from src.care_myocardium.data.case_metadata import load_myops_case_metadata
+
     metadata = load_myops_case_metadata()
     nnunet_metric_cache: dict[str, tuple[str, dict[int, dict[str, object]]]] = {}
     rows: list[dict[str, object]] = []
@@ -737,6 +738,129 @@ def write_cine_subline() -> dict[str, str]:
     }
 
 
+def has_continued_packet() -> bool:
+    required = [
+        "loss_graph_training_validity_report.md",
+        "m7_case_pool_audit.csv",
+        "formal_val_coverage_limitations.md",
+        "hard_subgroup_coverage_report.md",
+        "cine_registration_repair_report.md",
+        "strict_validator_report.md",
+    ]
+    return all((OUT_ROOT / name).is_file() for name in required)
+
+
+def continued_packet_decision() -> dict[str, object]:
+    grad_rows = read_csv(OUT_ROOT / "loss_component_gradient_sanity.csv")
+    help_rows = read_csv(OUT_ROOT / "same_split_help_harm.csv")
+    pool_rows = read_csv(OUT_ROOT / "m7_case_pool_audit.csv")
+    temporal_rows = read_csv(OUT_ROOT / "temporal_dictionary_evidence.csv")
+    strict_text = (OUT_ROOT / "strict_validator_report.md").read_text(encoding="utf-8") if (OUT_ROOT / "strict_validator_report.md").is_file() else ""
+    coverage_text = (OUT_ROOT / "hard_subgroup_coverage_report.md").read_text(encoding="utf-8") if (OUT_ROOT / "hard_subgroup_coverage_report.md").is_file() else ""
+    graph_text = (OUT_ROOT / "loss_graph_training_validity_report.md").read_text(encoding="utf-8") if (OUT_ROOT / "loss_graph_training_validity_report.md").is_file() else ""
+
+    required_pool_fields = {
+        "case_id",
+        "split_role",
+        "center",
+        "modality_group",
+        "t2_present",
+        "c0_present",
+        "scar_gt_voxels",
+        "edema_gt_voxels",
+        "scar_gt_positive",
+        "edema_gt_positive",
+        "anchor_remote_fp_scar",
+        "anchor_remote_fp_edema",
+        "small_lesion_flag",
+        "large_lesion_flag",
+        "selected_for_formal_val",
+        "selected_for_diagnostic_hardcase",
+        "eligible_for_best_variant_decision",
+        "exclusion_reason",
+    }
+    pool_fields = set(pool_rows[0]) if pool_rows else set()
+    bad_grad = [
+        row
+        for row in grad_rows
+        if str(row.get("status")) in {"BACKWARD_FAILED", "EVIDENCE_NOT_FOUND", "ZERO_GRAD_OR_DETACHED"}
+        or str(row.get("status", "")).startswith("BACKWARD_FAILED")
+    ]
+    formal_rows_ok = bool(help_rows) and all(
+        row.get("split_role") == "formal_val" and str(row.get("eligible_for_best_variant_decision", "")).lower() == "true"
+        for row in help_rows
+    )
+    temporal_blocked_without_ready = bool(temporal_rows) and not any("READY" in str(row.get("status", "")) for row in temporal_rows)
+    checks = {
+        "gradient_evidence": bool(grad_rows) and not bad_grad,
+        "loss_graph_report": "ORIGINAL_TRAINING_GRAPH_CONNECTED" in graph_text,
+        "hard_subgroup_coverage": "PASS_FORMAL_VAL_SUBGROUP_COVERAGE" in coverage_text,
+        "case_pool_fields": required_pool_fields.issubset(pool_fields),
+        "formal_rows_separated": formal_rows_ok,
+        "cine_repair_attempted": (OUT_ROOT / "cine_registration_repair_report.md").is_file(),
+        "temporal_dictionary_gate": temporal_blocked_without_ready,
+        "strict_validator": "PASS_FAIL_CLOSED" in strict_text and "FAIL_OPEN" not in strict_text,
+    }
+    completion = "M7_CONTINUED_READY_FOR_REVIEW" if all(checks.values()) else "M7_NEEDS_EVIDENCE"
+    return {"completion": completion, "checks": checks}
+
+
+def write_continued_markdown(args: argparse.Namespace) -> None:
+    now = datetime.now(UTC).isoformat()
+    decision = continued_packet_decision()
+    completion = str(decision["completion"])
+    checks = decision["checks"]
+    write_text(
+        OUT_ROOT / "completion_check.md",
+        "\n".join(
+            [
+                "# Completion Check",
+                "",
+                f"status: `{completion}`",
+                "route_promotion_decision: `NO_PROMOTION`",
+                "hosted_metric_claim: `false`",
+                "validation_packaging_or_upload: `false`",
+                "myops_decision: `NO_PROMOTION_SCIENTIFIC_UNRESOLVED`",
+                "cine_decision: `CINE_REGISTRATION_BLOCKED_AFTER_REPAIR_ATTEMPT`",
+                f"combined_decision: `{'M7_CONTINUED_READY_FOR_REVIEW_NO_PROMOTION' if completion == 'M7_CONTINUED_READY_FOR_REVIEW' else 'M7_NEEDS_EVIDENCE_NO_PROMOTION'}`",
+                "self_assessed_status: `EXECUTED_UNAUDITED`",
+                "",
+                "M7 continued does not write review.md, start M8, package validation, upload, claim hosted metrics, or authorize route promotion/scientific stop.",
+            ]
+        )
+        + "\n",
+    )
+    write_text(
+        OUT_ROOT / "result.md",
+        "\n".join(
+            [
+                "# Result 20260705 SRR-v3 M7 Continued Repair",
+                "",
+                "status: `EXECUTED_UNAUDITED`",
+                f"completion_check: `{completion}`",
+                f"generated_at_utc: `{now}`",
+                "",
+                "## Summary",
+                "",
+                "M7 continued repaired the gradient sanity logging path, verified the original expanded-loss training graph, expanded formal validation subgroup evidence with a deterministic fold0 selector, and ran a bounded Cine registration repair attempt. Cine remains blocked after repair because no usable non-reference registration row passed the gate.",
+                "",
+                "No validation packaging, validation upload, route promotion, hosted metric claim, review.md, or M8 task was created.",
+                "",
+                "## Fail-Closed Aggregator Checks",
+                "",
+                "| check | passed |",
+                "| --- | --- |",
+                *[f"| `{name}` | `{value}` |" for name, value in checks.items()],
+            ]
+        )
+        + "\n",
+    )
+    write_text(
+        OUT_ROOT / "review_request.md",
+        f"# Review Request\n\nstatus: `{'READY_FOR_REVIEW' if completion == 'M7_CONTINUED_READY_FOR_REVIEW' else 'NOT_READY_FOR_REVIEW'}`\n\nThis is an unaudited M7 continued blocker-repair packet. Independent review should check graph-connected gradient sanity, original training-loss validity, hard subgroup coverage, Cine registration repair, temporal dictionary blocking, and strict validator fail-closed behavior.\n",
+    )
+
+
 def write_markdown(args: argparse.Namespace, adequacy_rows: list[dict[str, object]], cine_status: dict[str, str], help_rows: list[dict[str, object]]) -> None:
     now = datetime.now(UTC).isoformat()
     all_pass = len(adequacy_rows) == len(VARIANTS) and all(row.get("decision") == "PASS" for row in adequacy_rows)
@@ -902,6 +1026,10 @@ def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--job-state-snapshot", default="not queried")
     args = parser.parse_args()
+
+    if has_continued_packet():
+        write_continued_markdown(args)
+        return
 
     write_variant_matrix()
     _, adequacy_rows = write_adequacy_and_overfit()

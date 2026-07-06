@@ -167,6 +167,7 @@ def semantic_retrieval_regularization(
     coverage_floor: float = 0.35,
     interaction_floor: float = 0.08,
     eps: float = 1e-6,
+    detach_metrics: bool = True,
 ) -> tuple[torch.Tensor | None, dict[str, torch.Tensor]]:
     """SIP-style semantic retrieval objective for multi-slot SRR dictionaries.
 
@@ -207,7 +208,7 @@ def semantic_retrieval_regularization(
 
         alignment = ((gate - target).square() * valid_f).sum(dim=1).mean()
         alignment_terms.append(alignment)
-        metrics[f"{name}_semantic_alignment_mse"] = alignment.detach()
+        metrics[f"{name}_semantic_alignment_mse"] = alignment.detach() if detach_metrics else alignment
 
         family = _semantic_group_family(task)
         family_indices = [
@@ -219,8 +220,8 @@ def semantic_retrieval_regularization(
             family_mass = (gate[:, family_indices] * valid_f[:, family_indices]).sum(dim=1).mean()
             coverage = torch.relu(gate.new_tensor(float(coverage_floor)) - family_mass).square()
             coverage_terms.append(coverage)
-            metrics[f"{name}_semantic_family_mass"] = family_mass.detach()
-            metrics[f"{name}_semantic_coverage_penalty"] = coverage.detach()
+            metrics[f"{name}_semantic_family_mass"] = family_mass.detach() if detach_metrics else family_mass
+            metrics[f"{name}_semantic_coverage_penalty"] = coverage.detach() if detach_metrics else coverage
 
         interaction_indices = [
             idx
@@ -233,8 +234,8 @@ def semantic_retrieval_regularization(
                 interaction_mass = gate[valid_interaction][:, interaction_indices].sum(dim=1).mean()
                 integrative = torch.relu(gate.new_tensor(float(interaction_floor)) - interaction_mass).square()
                 integrative_terms.append(integrative)
-                metrics[f"{name}_semantic_interaction_mass"] = interaction_mass.detach()
-                metrics[f"{name}_semantic_integrative_penalty"] = integrative.detach()
+                metrics[f"{name}_semantic_interaction_mass"] = interaction_mass.detach() if detach_metrics else interaction_mass
+                metrics[f"{name}_semantic_integrative_penalty"] = integrative.detach() if detach_metrics else integrative
 
     if not alignment_terms:
         return None, metrics
@@ -243,7 +244,7 @@ def semantic_retrieval_regularization(
         loss = loss + float(coverage_weight) * torch.stack(coverage_terms).mean()
     if integrative_terms:
         loss = loss + float(integrative_weight) * torch.stack(integrative_terms).mean()
-    metrics["semantic_retrieval_loss"] = loss.detach()
+    metrics["semantic_retrieval_loss"] = loss.detach() if detach_metrics else loss
     return loss, metrics
 
 
@@ -330,6 +331,8 @@ def srr_m6_expanded_total_loss(
     labels: torch.Tensor,
     availability: torch.Tensor,
     weights: dict[str, float] | None = None,
+    *,
+    detach_metrics: bool = True,
 ) -> tuple[torch.Tensor, dict[str, torch.Tensor]]:
     """M6 SRR-v3 total loss with explicit proposal/refiner/arbitration terms."""
 
@@ -382,6 +385,7 @@ def srr_m6_expanded_total_loss(
         outputs.get("gates", {}),
         outputs.get("dictionary_slot_metadata", {}),
         outputs.get("gate_valid_masks", {}),
+        detach_metrics=detach_metrics,
     )
     if dict_loss is None:
         dict_loss = outputs["logits"].sum() * 0.0
@@ -416,8 +420,8 @@ def srr_m6_expanded_total_loss(
         "loss_prototype_diversity_margin": loss_proto,
     }
     total = sum(float(component_weights[name]) * value for name, value in components.items())
-    metrics = {name: value.detach() for name, value in components.items()}
+    metrics = {name: value.detach() if detach_metrics else value for name, value in components.items()}
     metrics.update({f"{name}_weight": outputs["logits"].new_tensor(float(weight)) for name, weight in component_weights.items()})
     metrics.update(dict_metrics)
-    metrics["m6_expanded_total_loss"] = total.detach()
+    metrics["m6_expanded_total_loss"] = total.detach() if detach_metrics else total
     return total, metrics
