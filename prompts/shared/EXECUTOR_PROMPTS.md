@@ -8,6 +8,8 @@ At goal completion, the executor must create one local commit containing every s
 
 The commit must include the milestone required outputs, `result.md`, `completion_check.md`, `review_request.md`, `MANIFEST.md`, small Markdown/CSV/JSON evidence tables, and any small first-party helper/source/config files needed to reproduce or interpret the evidence. Use `git add -f` for ignored `results/20??????_*` milestone packets. If any required review evidence is intentionally not committed, the executor must state the exact reason in `result.md`, `completion_check.md`, and `MANIFEST.md`; otherwise omission of necessary review evidence is a protocol violation.
 
+This rule applies to every milestone and continued milestone prompt in this file. If a milestone-specific section omits or abbreviates the local commit instruction, this global rule still controls, and the goal remains incomplete until the required reviewer evidence has been committed locally.
+
 Do not commit checkpoints, NIfTI predictions, upload packages, large logs, raw data, secrets, environment dumps, or whole runtime result trees. Do not push; the user manually pushes.
 
 ## Global executor rule
