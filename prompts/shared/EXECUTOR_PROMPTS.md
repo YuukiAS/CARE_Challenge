@@ -300,6 +300,79 @@ M6 结果写入 `results/20260705_srr_v3_m6_myops_concrete_architecture_repair/`
 完成后必须 `git add -f` 并本地 commit M6 轻量证据和必要 first-party helper/source/config；不要提交 checkpoint、NIfTI、upload package、大日志、raw data、secrets、environment dump 或整棵 runtime tree；不要 push；不要写 `review.md`；不要启动 M7。
 ```
 
+## M6 executor (continued): reviewer-blocker repair
+
+```text
+只继续执行 M6，不是 M7。开始前必须确认：
+
+- `results/20260705_srr_v3_m4_myops_mechanism_ablation_readiness/review.md` 存在且包含 `M4_AUDITED_GO`；
+- `results/20260705_srr_v3_m6_myops_concrete_architecture_repair/review.md` 存在且包含 `M6_AUDITED_NEEDS_REVISION`；
+- 当前任务只修复 M6 review 指出的 blocker，不允许 full fold training、validation packaging/upload、route promotion、hosted metric claim、scientific stop 或启动 M7；
+- 完成后必须提交 lightweight evidence packet 供独立 reviewer 重新审阅；不要 push。
+
+本 continued 任务不是重新设计 SRR-v3，也不是用更多自然语言解释原 M6。只允许围绕 M6 review 的四个 blocker 做最小必要 first-party code/helper/test/result 修复：
+
+1. 补齐 low-quality SRR branch arbitration sanity。
+   - `branch_arbitration_sanity.csv` 必须同时包含 correction-positive sanity 和 low-quality SRR/prototype/proposal sanity；
+   - low-quality sanity 必须构造 SRR evidence 被置空、prototype bank 为空或 proposal confidence 低的 case；
+   - 该 case 必须让 arbitration 选择 segmentation branch；
+   - final labels 必须逐 voxel 精确等于 segmentation/anchor branch；
+   - 必须导出明确字段：`sanity_type`、`chosen_source`、`fallback_reason`、`anchor_confidence`、`srr_confidence`、`correction_mask_rate`、`label_delta_vs_anchor`、`final_equals_anchor_labels` 或等价可审计字段；
+   - 不能把 `decode_gate_consistency_sanity.csv` 的 explicit fallback identity 当作替代证据。
+
+2. 把 strict validator 改成真实 fail-closed validator 或等价 command-driven known-bad 检查。
+   - 必须构造并验证 M6 prompt 中列出的 known-bad packets，至少覆盖：claim-only architecture trace、missing fidelity contract、dictionary slot usage 全空、prototype bank 空或 no-T2 myocardium 被当作 edema negative、segmentation context 直接绕过 SRR 且无 explicit fallback reason、closed/fallback gate 下 final labels 改变、full-volume refiner、loss components 为空或无 backward evidence、correction-positive sanity 中 SRR contribution 全 0、no-T2 edema 在 proposal/refiner/final decode/export 任一环节非零；
+   - `strict_validator_report.md` 必须记录每个 known-bad packet 的名称、命令或 validator entrypoint、expected failure、actual exit code、failure reason；
+   - actual exit code 必须是非零或等价 fail status，不能只从 in-memory good packet 推导 `PASS_FAIL_CLOSED`；
+   - 如果某个 known-bad case 因真实技术 blocker 无法实现，必须写 `M6_NEEDS_REVISION`，不能写 ready。
+
+3. 修正 readiness/status 边界。
+   - `result.md`、`completion_check.md`、`review_request.md`、`srr_v3_fidelity_contract.md` 必须明确区分 synthetic anchor-derived smoke、real train/OOF evidence、real-case runtime evidence；
+   - 如果 continued packet 仍然只有 synthetic anchor-derived smoke，则不得声称 train/OOF prototype readiness、M7 training readiness 已完全证明，除非 prompt 中的 M6 gate 被真实满足且证据文件清楚限定为 architecture/runtime smoke；
+   - 不得把 18 分钟或短 runtime 本身作为成功证据；必须靠 hard-gate evidence 通过。
+
+4. 新增或补足 unit tests 覆盖 M6 hard gates。
+   - 测试必须覆盖 low-quality SRR arbitration 选择 segmentation branch 且 final labels 等于 anchor；
+   - 测试必须覆盖 strict validator 对至少两个 known-bad packet 返回 fail-closed，其中一个必须是 hidden decode delta 或 no-T2 edema unsafe，另一个必须是 missing/claim-only evidence 或 zero SRR contribution；
+   - `unit_test_report.md` 必须记录 exact test command、exit code、测试模块/用例名和结果；
+   - 仅 py_compile 或旧 unittest 通过不算满足 continued blocker。
+
+允许修改 `scripts/evaluation/run_srr_v3_m6_concrete_architecture_repair.py`、M6 strict validator/helper、M6 相关 first-party model/loss/runtime 代码和聚焦 unit tests；不要做无关重构。可以重新生成 M6 result 目录中的轻量 Markdown/CSV/JSON 证据。必须保留或更新 `MANIFEST.md`，列出 revised evidence 和必要 first-party code/test 文件。
+
+M6 continued 结果仍写入：
+
+`results/20260705_srr_v3_m6_myops_concrete_architecture_repair/`
+
+必须至少更新：
+
+- `result.md`
+- `branch_arbitration_sanity.csv`
+- `strict_validator_report.md`
+- `unit_test_report.md`
+- `completion_check.md`
+- `review_request.md`
+- `MANIFEST.md`
+
+如 readiness 边界或 generator/helper 发生变化，也必须同步更新相关 evidence：
+
+- `srr_v3_fidelity_contract.md`
+- `code_diff_summary.md`
+- `architecture_component_trace.csv`
+- `commands_run.md`
+- 相关 first-party helper/source/test files
+
+`completion_check.md` 只能写：
+
+- `M6_READY_FOR_REVIEW`
+- `M6_NEEDS_REVISION`
+- `M6_NEEDS_EVIDENCE`
+- `M6_BLOCKED_BY_M4`
+
+只有在 low-quality SRR arbitration、真实 fail-closed known-bad validator、readiness/status 边界和 hard-gate unit tests 全部有可审计证据时，才能写 `M6_READY_FOR_REVIEW`。如果任一 blocker 未关闭，必须写 `M6_NEEDS_REVISION` 或 `M6_NEEDS_EVIDENCE` 并停止。
+
+完成后必须 `git add -f` 并本地 commit M6 continued 轻量证据和必要 first-party helper/source/test/config；不要提交 checkpoint、NIfTI、upload package、大日志、raw data、secrets、environment dump 或整棵 runtime tree；不要 push；不要写 `review.md`；不要批准自己；不要启动 M7。
+```
+
 ## M7 executor: concrete MyoPS training and CineMA/Cine diagnostic utilization
 
 ```text
