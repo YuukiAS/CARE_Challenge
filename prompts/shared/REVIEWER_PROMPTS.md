@@ -62,3 +62,26 @@ Copy exactly one section into a separate read-only Codex reviewer/auditor sessio
 
 如果 SRR contribution 在所有 correction-positive sanity 中为 0，或者 gate/refiner mask 关闭时 final labels 仍改变，或者 loss/refiner 只有自然语言说明没有数值/梯度/one-step evidence，或者 no-T2 edema 不安全，decision 必须是 M6_AUDITED_NEEDS_REVISION 或 M6_AUDITED_NEEDS_EVIDENCE。最后只写 results/20260705_srr_v3_m6_myops_coequal_decode_refiner_repair/review.md，decision 只能是 M6_AUDITED_GO、M6_AUDITED_NEEDS_REVISION 或 M6_AUDITED_NEEDS_EVIDENCE。完成后 git add -f review.md 并 commit；不要 push，由用户手动 push。
 ```
+
+## M6 reviewer: SRR-v3 diagram-faithful MyoPS repair
+
+Use this version instead of the earlier abstract co-equal M6 reviewer prompt when reviewing M6.
+
+```text
+只读审阅 `results/20260705_srr_v3_m6_myops_diagram_faithful_repair/`。请读取本文件的 M6 executor、`prompts/MILESTONE_REVIEW_PROTOCOL.md`、`prompts/HANDOFF_GATE_POLICY.md`、`prompts/GPT_HARD_GATE_PROMPT.md`、M4 review，以及 M6 result directory。不要补 executor 缺失文件，不要改模型代码，不要训练，不要 validation packaging/upload，不要 route promotion，不要启动 M7。
+
+重点检查 M6 是否回到 v2/v2.5/v3 图中的完整 SRR-MyoPS 路线，而不是把 SRR 抽象成普通后处理，也不是把 nnU-Net/分割模型当成唯一主角。必须审阅：
+
+1. `srr_v3_fidelity_contract.md` 与 `architecture_component_trace.csv` 是否逐项覆盖图中模块：inputs/availability、modality-specific stems、strong encoder、segmentation context interface、semantic retrieval bank、shared/private/interaction dictionaries、real train/OOF prototypes、anatomy decoder、scar/edema proposal、soft-ROI refinement、training objectives。
+2. `segmentation_context_interface_sanity.csv` 是否证明 nnU-Net/强分割模型以 logits/probabilities/hard prediction/components/uncertainty/anatomy context 进入 proposal/refiner/arbitration，而不是绕过 SRR 直接成为最终答案。
+3. `retrieval_bank_runtime_sanity.csv` 是否证明 retrieval bank、router、dictionary slot usage、prototype source、anatomy/scar/edema routed features 在 runtime 中非空、可追踪。
+4. `anatomy_proposal_sanity.csv` 是否证明 `P_union/P_LV/P_RV`、anatomy prior/distance/uncertainty gate、scar/edema proposal decoder 都产生有效证据。
+5. `branch_arbitration_sanity.csv` 是否导出 segmentation_weight、srr_retrieval_weight、proposal_weight、refiner_weight、chosen_source 或等价字段，并证明 SRR 在 correction-positive sanity 中能被采用，分割分支在 SRR 证据低质时也能被采用。
+6. `decode_gate_consistency_sanity.csv` 是否证明 explicit fallback、gate/refiner mask 关闭或仲裁选择纯分割分支时 final labels 精确等于分割分支；不能允许 hidden decode delta。
+7. `loss_refiner_component_sanity.csv` 是否有非空 loss component 数值、梯度或 one-step update sanity，覆盖 SRR retrieval/proposal/refiner、分割分支保持、仲裁一致性、bounded correction、component/remote-FP、no-T2 edema、local refiner ROI、dictionary/prototype regularization。
+8. `refiner_roi_component_sanity.csv` 是否证明 local refiner 是 bounded soft-ROI correction，不是 full-volume residual，并导出 scar/edema crop ratio、residual magnitude、proposal recall/precision proxy、component/remote-FP proxy。
+9. `no_t2_safety_sanity.csv` 是否证明 no-T2 edema 在 proposal、loss、refiner、final decode、export 上全链路安全，且 no-T2 myocardium 没有被当作 edema negative。
+10. `strict_validator_report.md` 和 `unit_test_report.md` 是否 fail closed 于 claim-only、missing architecture trace、hidden-decode-delta、SRR-zero-contribution、loss-components-empty、no-T2 unsafe、full-volume-refiner 等 known-bad cases。
+
+如果图中关键模块没有 runtime evidence，或者 SRR retrieval/proposal/refiner 全为空，或者 segmentation context 绕过 SRR 直接成为最终输出，或者 gate/refiner mask 关闭时 final labels 仍改变，或者 loss/refiner 只有自然语言说明没有数值/梯度/one-step evidence，或者 no-T2 edema 不安全，decision 必须是 `M6_AUDITED_NEEDS_REVISION` 或 `M6_AUDITED_NEEDS_EVIDENCE`。最后只写 `results/20260705_srr_v3_m6_myops_diagram_faithful_repair/review.md`，decision 只能是 `M6_AUDITED_GO`、`M6_AUDITED_NEEDS_REVISION` 或 `M6_AUDITED_NEEDS_EVIDENCE`。完成后 `git add -f review.md` 并 commit；不要 push，由用户手动 push。
+```
