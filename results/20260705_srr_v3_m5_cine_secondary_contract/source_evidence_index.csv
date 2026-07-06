@@ -1,0 +1,20 @@
+source_path,exists,size_bytes,role
+results/20260620_cinema_adapter_pilot/result.md,True,12299,M5 evidence source
+results/20260620_cinema_adapter_pilot/review.md,True,3779,M5 evidence source
+results/cinema_adapter/20260619_131229__cinema_acdc_seed0_ed_mid_repr/metrics_summary.json,True,620,M5 evidence source
+results/cinema_adapter/20260619_131229__cinema_acdc_seed0_ed_mid_repr/metrics.csv,True,80591,M5 evidence source
+results/20260703_cine_motion/temporal_metrics_summary.md,True,2183,M5 evidence source
+results/20260703_cine_motion/motion_or_warp_summary.csv,True,898,M5 evidence source
+results/20260703_cine_motion/warp_sanity.csv,True,34752,M5 evidence source
+results/20260703_cine_motion/safe_cases_used.csv,True,48163,M5 evidence source
+results/20260704_cine_temporal_motion_resume/result.md,True,6503,M5 evidence source
+results/20260704_cine_temporal_motion_resume/review.md,True,2191,M5 evidence source
+results/20260704_cine_temporal_motion_resume/simpleitk_demons_summary.csv,True,985,M5 evidence source
+results/20260704_cine_temporal_motion_resume/simpleitk_demons_case_metrics.csv,True,7929,M5 evidence source
+results/20260704_cine_full_cinema_registration/result.md,True,5062,M5 evidence source
+results/20260704_cine_full_cinema_registration/syn_probe_summary.json,True,1483,M5 evidence source
+results/20260704_cine_full_cinema_registration/syn_voxelmorph_probe.csv,True,958,M5 evidence source
+results/20260704_cine_full_cinema_registration/voxelmorph_adapter_probe_summary.json,True,802,M5 evidence source
+results/20260704_cine_full_cinema_registration/voxelmorph_adapter_probe.csv,True,1149,M5 evidence source
+results/20260704_external_assets_cinema_registration/usable_asset_matrix.md,True,3326,M5 evidence source
+results/20260704_external_assets_cinema_registration/environment_probe.md,True,3290,M5 evidence source
