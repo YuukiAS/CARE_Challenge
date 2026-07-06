@@ -1,5 +1,7 @@
 # M6 Manifest
 
+Revised M6 continued evidence packet for reviewer-blocker repair. Required result files:
+
 - `result.md`
 - `srr_v3_fidelity_contract.md`
 - `architecture_component_trace.csv`
@@ -21,3 +23,9 @@
 - `completion_check.md`
 - `review_request.md`
 - `MANIFEST.md`
+
+Necessary first-party source/helper/test files included in the commit:
+
+- `scripts/evaluation/run_srr_v3_m6_concrete_architecture_repair.py`
+- `src/care_myocardium/models/srr_propref.py`
+- `src/care_myocardium/tests/test_srr_m6_continued_gates.py`

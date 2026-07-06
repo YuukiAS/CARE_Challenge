@@ -3,10 +3,13 @@
 
 from __future__ import annotations
 
+import argparse
 import csv
 import json
+import shutil
 import subprocess
 import sys
+import tempfile
 import time
 from pathlib import Path
 
@@ -127,6 +130,197 @@ def run_command(command: list[str]) -> tuple[int, str]:
     return int(proc.returncode), proc.stdout[-4000:]
 
 
+def read_csv_rows(path: Path) -> list[dict[str, str]]:
+    if not path.is_file():
+        return []
+    with path.open(newline="", encoding="utf-8") as f:
+        return list(csv.DictReader(f))
+
+
+def write_csv_rows(path: Path, rows: list[dict[str, object]]) -> None:
+    write_csv(path, rows)
+
+
+def _as_float(value: object, default: float = 0.0) -> float:
+    try:
+        return float(value)
+    except (TypeError, ValueError):
+        return default
+
+
+def _as_bool_text(value: object) -> bool:
+    return str(value).strip().lower() in {"true", "1", "yes", "pass"}
+
+
+def validate_packet(packet_dir: Path) -> tuple[bool, list[str]]:
+    """Strict fail-closed validator for M6 packet artifacts."""
+
+    reasons: list[str] = []
+    if not (packet_dir / "srr_v3_fidelity_contract.md").is_file():
+        reasons.append("missing_fidelity_contract")
+
+    arch = read_csv_rows(packet_dir / "architecture_component_trace.csv")
+    if not arch:
+        reasons.append("missing_architecture_trace")
+    elif not all(row.get("first_party_code_path") and "claim" not in row.get("fix_status", "").lower() for row in arch):
+        reasons.append("claim_only_architecture_trace")
+
+    retrieval = read_csv_rows(packet_dir / "retrieval_bank_runtime_sanity.csv")
+    if not retrieval or not any(_as_float(row.get("mean_usage")) > 0 for row in retrieval):
+        reasons.append("dictionary_slot_usage_all_empty")
+    if any(_as_float(row.get("masked_invalid_slot_usage")) > 1e-7 for row in retrieval):
+        reasons.append("invalid_slot_usage_nonzero")
+    if any(_as_float(row.get("t2_private_usage_when_no_t2")) > 1e-7 for row in retrieval):
+        reasons.append("t2_slot_usage_when_no_t2")
+
+    proto = read_csv_rows(packet_dir / "prototype_bank_runtime_sanity.csv")
+    if not proto:
+        reasons.append("missing_prototype_bank")
+    for row in proto:
+        if row.get("empty_bank_status") != "NONEMPTY":
+            reasons.append("prototype_bank_empty")
+            break
+        if _as_bool_text(row.get("no_t2_used_as_edema_negative")):
+            reasons.append("no_t2_used_as_edema_negative")
+            break
+
+    branch = read_csv_rows(packet_dir / "branch_arbitration_sanity.csv")
+    correction = [row for row in branch if row.get("sanity_type") == "correction_positive"]
+    low_quality = [row for row in branch if row.get("sanity_type") == "low_quality_srr"]
+    if not correction or not all(row.get("status") == "PASS" and _as_float(row.get("logit_delta_abs_mean")) > 0 for row in correction):
+        reasons.append("zero_srr_contribution_correction_positive")
+    if not low_quality:
+        reasons.append("missing_low_quality_srr_arbitration")
+    elif not all(
+        row.get("status") == "PASS"
+        and row.get("chosen_source") == "segmentation_branch"
+        and row.get("fallback_reason") == "low_quality_srr_evidence_empty"
+        and _as_float(row.get("srr_confidence")) <= 1e-3
+        and _as_float(row.get("correction_mask_rate")) == 0.0
+        and _as_float(row.get("label_delta_vs_anchor")) == 0.0
+        and _as_bool_text(row.get("final_equals_anchor_labels"))
+        for row in low_quality
+    ):
+        reasons.append("low_quality_srr_did_not_choose_segmentation_branch")
+
+    decode = read_csv_rows(packet_dir / "decode_gate_consistency_sanity.csv")
+    if not decode or any(row.get("status") != "PASS" or int(_as_float(row.get("hidden_decode_delta_voxels"))) != 0 for row in decode):
+        reasons.append("closed_fallback_hidden_decode_delta")
+
+    roi = read_csv_rows(packet_dir / "refiner_roi_component_sanity.csv")
+    if not roi or any(_as_bool_text(row.get("is_full_volume_crop")) for row in roi):
+        reasons.append("full_volume_refiner")
+
+    losses = read_csv_rows(packet_dir / "loss_refiner_component_sanity.csv")
+    if not losses or any(row.get("backward_status") != "PASS" or _as_float(row.get("gradient_norm")) <= 0 for row in losses):
+        reasons.append("loss_components_missing_backward_evidence")
+
+    no_t2 = read_csv_rows(packet_dir / "no_t2_safety_sanity.csv")
+    if not no_t2 or any(
+        row.get("status") != "PASS"
+        or int(_as_float(row.get("edema_proposal_voxels"))) != 0
+        or int(_as_float(row.get("edema_refiner_voxels"))) != 0
+        or int(_as_float(row.get("edema_final_decode_voxels"))) != 0
+        for row in no_t2
+    ):
+        reasons.append("no_t2_edema_nonzero")
+
+    return not reasons, reasons
+
+
+def mutate_known_bad_packet(src_dir: Path, dst_dir: Path, bad_name: str) -> None:
+    shutil.copytree(src_dir, dst_dir)
+    if bad_name == "claim_only_architecture_trace":
+        write_csv_rows(dst_dir / "architecture_component_trace.csv", [{"variant": "bad", "component": "claim", "fix_status": "CLAIM_ONLY"}])
+    elif bad_name == "missing_fidelity_contract":
+        (dst_dir / "srr_v3_fidelity_contract.md").unlink(missing_ok=True)
+    elif bad_name == "dictionary_slot_usage_all_empty":
+        rows = read_csv_rows(dst_dir / "retrieval_bank_runtime_sanity.csv")
+        for row in rows:
+            row["mean_usage"] = "0"
+        write_csv_rows(dst_dir / "retrieval_bank_runtime_sanity.csv", rows)
+    elif bad_name == "prototype_bank_empty_or_no_t2_negative":
+        rows = read_csv_rows(dst_dir / "prototype_bank_runtime_sanity.csv")
+        if rows:
+            rows[0]["empty_bank_status"] = "EMPTY"
+            rows[0]["no_t2_used_as_edema_negative"] = "True"
+        write_csv_rows(dst_dir / "prototype_bank_runtime_sanity.csv", rows)
+    elif bad_name == "segmentation_bypass_without_fallback_reason":
+        rows = read_csv_rows(dst_dir / "branch_arbitration_sanity.csv")
+        for row in rows:
+            if row.get("sanity_type") == "low_quality_srr":
+                row["chosen_source"] = "segmentation_branch"
+                row["fallback_reason"] = ""
+        write_csv_rows(dst_dir / "branch_arbitration_sanity.csv", rows)
+    elif bad_name == "hidden_decode_delta":
+        rows = read_csv_rows(dst_dir / "decode_gate_consistency_sanity.csv")
+        if rows:
+            rows[0]["hidden_decode_delta_voxels"] = "1"
+            rows[0]["final_equals_anchor_labels"] = "False"
+            rows[0]["status"] = "FAIL"
+        write_csv_rows(dst_dir / "decode_gate_consistency_sanity.csv", rows)
+    elif bad_name == "full_volume_refiner":
+        rows = read_csv_rows(dst_dir / "refiner_roi_component_sanity.csv")
+        if rows:
+            rows[0]["is_full_volume_crop"] = "True"
+        write_csv_rows(dst_dir / "refiner_roi_component_sanity.csv", rows)
+    elif bad_name == "loss_components_no_backward":
+        rows = read_csv_rows(dst_dir / "loss_refiner_component_sanity.csv")
+        if rows:
+            rows[0]["backward_status"] = "FAIL"
+            rows[0]["gradient_norm"] = "0"
+        write_csv_rows(dst_dir / "loss_refiner_component_sanity.csv", rows)
+    elif bad_name == "zero_srr_contribution":
+        rows = read_csv_rows(dst_dir / "branch_arbitration_sanity.csv")
+        for row in rows:
+            if row.get("sanity_type") == "correction_positive":
+                row["logit_delta_abs_mean"] = "0"
+                row["status"] = "FAIL"
+        write_csv_rows(dst_dir / "branch_arbitration_sanity.csv", rows)
+    elif bad_name == "no_t2_edema_nonzero":
+        rows = read_csv_rows(dst_dir / "no_t2_safety_sanity.csv")
+        if rows:
+            rows[0]["edema_final_decode_voxels"] = "1"
+            rows[0]["status"] = "FAIL"
+        write_csv_rows(dst_dir / "no_t2_safety_sanity.csv", rows)
+    else:
+        raise ValueError(f"unknown known-bad packet: {bad_name}")
+
+
+def run_known_bad_validator(good_packet: Path) -> tuple[bool, list[dict[str, object]]]:
+    rows: list[dict[str, object]] = []
+    cases = [
+        "claim_only_architecture_trace",
+        "missing_fidelity_contract",
+        "dictionary_slot_usage_all_empty",
+        "prototype_bank_empty_or_no_t2_negative",
+        "segmentation_bypass_without_fallback_reason",
+        "hidden_decode_delta",
+        "full_volume_refiner",
+        "loss_components_no_backward",
+        "zero_srr_contribution",
+        "no_t2_edema_nonzero",
+    ]
+    with tempfile.TemporaryDirectory(prefix="m6_known_bad_") as tmp:
+        tmp_root = Path(tmp)
+        for case in cases:
+            bad_dir = tmp_root / case
+            mutate_known_bad_packet(good_packet, bad_dir, case)
+            command = [sys.executable, str(Path(__file__).resolve()), "--validate-packet", str(bad_dir)]
+            code, output = run_command(command)
+            rows.append(
+                {
+                    "known_bad_packet": case,
+                    "validator_entrypoint": " ".join(command),
+                    "expected_failure": "nonzero_exit",
+                    "actual_exit_code": code,
+                    "failure_reason": output.strip().replace("\n", " | ")[:700],
+                    "status": "PASS_FAIL_CLOSED" if code != 0 else "FAIL_OPEN",
+                }
+            )
+    return all(int(row["actual_exit_code"]) != 0 for row in rows), rows
+
+
 def main() -> int:
     torch.set_num_threads(1)
     OUT_DIR.mkdir(parents=True, exist_ok=True)
@@ -166,15 +360,19 @@ def main() -> int:
         with torch.no_grad():
             out = model(x, av, anchor_features=anchor, component_features=component)
             fallback = model(x, av, anchor_features=anchor, component_features=component, force_segmentation_fallback=True)
+            low_quality = model(x, av, anchor_features=anchor, component_features=component, disable_srr_evidence=True)
             no_t2 = model(x_no_t2, av_no_t2, anchor_features=anchor_no_t2, component_features=component_no_t2)
 
         pred = out["logits"].argmax(dim=1)
         anchor_pred = out["nnunet_anchor_logits"].argmax(dim=1)
         fallback_pred = fallback["logits"].argmax(dim=1)
         fallback_anchor = fallback["nnunet_anchor_logits"].argmax(dim=1)
+        low_quality_pred = low_quality["logits"].argmax(dim=1)
+        low_quality_anchor = low_quality["nnunet_anchor_logits"].argmax(dim=1)
         correction_rate = float((pred != anchor_pred).float().mean().item())
         logit_delta_abs_mean = float((out["logits"] - out["nnunet_anchor_logits"]).abs().mean().item())
         fallback_equal = bool(torch.equal(fallback_pred, fallback_anchor))
+        low_quality_equal = bool(torch.equal(low_quality_pred, low_quality_anchor))
 
         cfg = M6_VARIANT_CONFIGS[variant]
         for component_name, code_path, evidence_file in [
@@ -300,20 +498,25 @@ def main() -> int:
         counts = proto_summary["counts"]
         cats = proto_summary["category_counts"]
         hard = proto_summary["hard_negative_counts"]
-        for bank_type in ("scar_positive", "scar_negative", "edema_positive", "edema_negative"):
+        for bank_type, count_key in (
+            ("scar_positive", "scar_positive"),
+            ("scar_safe_negative", "scar_negative"),
+            ("edema_positive", "edema_positive"),
+            ("edema_safe_negative", "edema_negative"),
+        ):
             proto_rows.append(
                 {
                     "variant": variant,
                     "bank_type": bank_type,
                     "source_split": "synthetic_anchor_derived_runtime_sanity",
                     "source_cases": "synthetic_anchor_derived_t2_present",
-                    "component_count": counts.get(bank_type, 0),  # type: ignore[union-attr]
+                    "component_count": counts.get(count_key, 0),  # type: ignore[union-attr]
                     "voxel_count": cats.get("t2_present_edema_positive", "") if bank_type.startswith("edema") else cats.get(bank_type, ""),  # type: ignore[union-attr]
                     "feature_stage": "SRRProposeRefineMyoPS._evidence_features",
                     "prototype_count": 6 if "positive" in bank_type else 8,
                     "no_t2_used_as_edema_negative": bool(hard.get("edema_no_t2_myocardium_negative_voxels", 0)),  # type: ignore[union-attr]
                     "leakage_check": "same synthetic sanity tensor only; no validation metric claim",
-                    "empty_bank_status": "NONEMPTY" if int(counts.get(bank_type, 0)) > 0 else "EMPTY",  # type: ignore[union-attr]
+                    "empty_bank_status": "NONEMPTY" if int(counts.get(count_key, 0)) > 0 else "EMPTY",  # type: ignore[union-attr]
                     "source": proto_summary["source"],
                 }
             )
@@ -381,6 +584,33 @@ def main() -> int:
                 "logit_delta_abs_mean": logit_delta_abs_mean,
                 "sanity_type": "correction_positive",
                 "status": "PASS" if float(out["srr_retrieval_weight"].mean().item()) > 0 and logit_delta_abs_mean > 0 else "FAIL",
+            }
+        )
+        branch_rows.append(
+            {
+                "variant": variant,
+                "case_id": "synthetic_low_quality_srr_evidence_empty",
+                "class": "global",
+                "segmentation_weight": float(low_quality["segmentation_weight"].mean().item()),
+                "srr_retrieval_weight": float(low_quality["srr_retrieval_weight"].mean().item()),
+                "proposal_weight": float(low_quality["proposal_weight"].mean().item()),
+                "refiner_weight": float(low_quality["refiner_weight"].mean().item()),
+                "chosen_source": low_quality["branch_chosen_source"],
+                "fallback_reason": low_quality["branch_fallback_reason"],
+                "anchor_confidence": float(low_quality["branch_anchor_confidence"].mean().item()),
+                "srr_confidence": float(low_quality["branch_srr_confidence"].mean().item()),
+                "correction_mask_rate": float(low_quality["branch_correction_mask"].mean().item()),
+                "label_delta_vs_anchor": float((low_quality_pred != low_quality_anchor).float().mean().item()),
+                "logit_delta_abs_mean": float((low_quality["logits"] - low_quality["nnunet_anchor_logits"]).abs().mean().item()),
+                "final_equals_anchor_labels": low_quality_equal,
+                "evidence_mutation": "disable_srr_evidence=True; proposal logits set to -20; ROI masks zeroed; prototypes not used for arbitration",
+                "sanity_type": "low_quality_srr",
+                "status": "PASS"
+                if low_quality["branch_chosen_source"] == "segmentation_branch"
+                and low_quality["branch_fallback_reason"] == "low_quality_srr_evidence_empty"
+                and low_quality_equal
+                and float(low_quality["branch_correction_mask"].mean().item()) == 0.0
+                else "FAIL",
             }
         )
         decode_rows.append(
@@ -492,8 +722,25 @@ def main() -> int:
     write_csv(OUT_DIR / "no_t2_safety_sanity.csv", no_t2_rows)
 
     unit_commands = [
-        [sys.executable, "-m", "py_compile", "src/care_myocardium/models/srr_propref.py", "src/care_myocardium/losses/srr_losses.py", "scripts/training/run_srr_propref_myops_fold0.py"],
-        [sys.executable, "-m", "unittest", "src.care_myocardium.tests.test_srr_dictionary_bank", "src.care_myocardium.tests.test_srr_encoder_context_interface", "src.care_myocardium.tests.test_srr_losses"],
+        [
+            sys.executable,
+            "-m",
+            "py_compile",
+            "scripts/evaluation/run_srr_v3_m6_concrete_architecture_repair.py",
+            "src/care_myocardium/models/srr_propref.py",
+            "src/care_myocardium/losses/srr_losses.py",
+            "scripts/training/run_srr_propref_myops_fold0.py",
+            "src/care_myocardium/tests/test_srr_m6_continued_gates.py",
+        ],
+        [
+            sys.executable,
+            "-m",
+            "unittest",
+            "src.care_myocardium.tests.test_srr_dictionary_bank",
+            "src.care_myocardium.tests.test_srr_encoder_context_interface",
+            "src.care_myocardium.tests.test_srr_losses",
+            "src.care_myocardium.tests.test_srr_m6_continued_gates",
+        ],
     ]
     unit_lines = ["# Unit Test Report", ""]
     for command in unit_commands:
@@ -502,22 +749,20 @@ def main() -> int:
         unit_lines.extend([f"## `{' '.join(command)}`", "", f"exit_code: {code}", "", "```text", output.strip(), "```", ""])
     (OUT_DIR / "unit_test_report.md").write_text("\n".join(unit_lines), encoding="utf-8")
 
-    fail_closed_checks = [
-        ("claim_only_architecture_trace", bool(arch_rows)),
-        ("missing_srr_v3_fidelity_contract", True),
-        ("dictionary_slot_usage_all_empty", any(float(row["mean_usage"]) > 0 for row in retrieval_rows)),
-        ("prototype_bank_empty_or_no_t2_edema_negative", all(row["empty_bank_status"] == "NONEMPTY" and not row["no_t2_used_as_edema_negative"] for row in proto_rows)),
-        ("segmentation_bypass_without_fallback_reason", all(row["fallback_reason"] for row in branch_rows)),
-        ("closed_fallback_hidden_delta", all(row["status"] == "PASS" for row in decode_rows)),
-        ("full_volume_refiner", all(not row["is_full_volume_crop"] for row in roi_rows)),
-        ("loss_components_no_backward", all(row["backward_status"] == "PASS" for row in loss_rows)),
-        ("zero_srr_contribution_correction_positive", all(row["status"] == "PASS" for row in branch_rows)),
-        ("no_t2_edema_nonzero", all(row["edema_proposal_voxels"] == 0 and row["edema_refiner_voxels"] == 0 and row["edema_final_decode_voxels"] == 0 for row in no_t2_rows)),
-    ]
-    strict_pass = all(passed for _name, passed in fail_closed_checks)
+    good_ok, good_reasons = validate_packet(OUT_DIR)
+    known_bad_pass, known_bad_rows = run_known_bad_validator(OUT_DIR)
+    strict_pass = bool(good_ok and known_bad_pass)
     (OUT_DIR / "strict_validator_report.md").write_text(
         "# Strict Validator Report\n\n"
-        + "\n".join(f"- {name}: {'PASS_FAIL_CLOSED' if passed else 'FAIL'}" for name, passed in fail_closed_checks)
+        "validator_entrypoint: `python scripts/evaluation/run_srr_v3_m6_concrete_architecture_repair.py --validate-packet <packet_dir>`\n\n"
+        f"good_packet_validation: {'PASS' if good_ok else 'FAIL'}\n\n"
+        f"good_packet_failure_reasons: `{';'.join(good_reasons) if good_reasons else 'none'}`\n\n"
+        "| known_bad_packet | expected_failure | actual_exit_code | status | failure_reason |\n"
+        "| --- | --- | --- | --- | --- |\n"
+        + "\n".join(
+            f"| {row['known_bad_packet']} | {row['expected_failure']} | {row['actual_exit_code']} | {row['status']} | {row['failure_reason']} |"
+            for row in known_bad_rows
+        )
         + f"\n\nstrict_validator_status: {'PASS' if strict_pass else 'FAIL'}\n",
         encoding="utf-8",
     )
@@ -536,12 +781,14 @@ def main() -> int:
     code_diff = subprocess.run(["git", "diff", "--stat"], cwd=REPO_ROOT, text=True, stdout=subprocess.PIPE, check=False).stdout
     (OUT_DIR / "code_diff_summary.md").write_text(
         "# Code Diff Summary\n\n"
-        "First-party code paths modified for M6:\n\n"
+        "First-party code/test paths modified for M6 continued reviewer-blocker repair:\n\n"
         "- `src/care_myocardium/models/srr_v2_unet.py`: audited encoder profiles and dictionary config wiring.\n"
         "- `src/care_myocardium/models/srr_blocks.py`: named pair-specific dictionary configurations.\n"
         "- `src/care_myocardium/models/srr_propref.py`: M6 variants, segmentation context interface, explicit branch arbitration.\n"
         "- `src/care_myocardium/losses/srr_losses.py`: M6 expanded total loss.\n"
         "- `scripts/training/run_srr_propref_myops_fold0.py`: M6 variant/profile/loss wiring.\n\n"
+        "- `src/care_myocardium/tests/test_srr_m6_continued_gates.py`: focused low-quality arbitration and strict-validator fail-closed tests.\n"
+        "- `scripts/evaluation/run_srr_v3_m6_concrete_architecture_repair.py`: command-driven strict validator and revised M6 result packet generator.\n\n"
         "```text\n" + code_diff.strip() + "\n```\n",
         encoding="utf-8",
     )
@@ -551,27 +798,34 @@ def main() -> int:
         "- Retrieval uses named pair-specific multi-scale dictionaries with invalid missing-modality slot masks.\n"
         "- Proposals combine positive similarity, negative similarity, anatomy distance, context/component evidence, uncertainty, and learned residual terms.\n"
         "- Refiners are bounded crop ROI heads; no-T2 edema is inert in proposal, refiner, loss, and decode sanity.\n"
-        "- Explicit branch arbitration emits weights and has a verified segmentation fallback path.\n"
-        "- Evidence is bounded runtime/synthetic anchor-derived only; no fold training, route promotion, validation package, upload, or hosted metric claim is made.\n",
+        "- Explicit branch arbitration emits weights and has both correction-positive and low-quality-SRR segmentation-branch sanity evidence.\n"
+        "- Evidence is bounded architecture/runtime smoke with synthetic anchor-derived tensors. It is not train/OOF prototype readiness, real-case runtime proof, M7 training readiness, route promotion, validation package, upload, or hosted metric evidence.\n",
         encoding="utf-8",
     )
     (OUT_DIR / "result.md").write_text(
         "# M6 Result\n\n"
         f"completion_status: `{status}`\n\n"
-        "M6 concrete SRR-v3 architecture/runtime repair was executed as a bounded executor task. "
-        "The packet contains first-party code changes, synthetic anchor-derived runtime sanity evidence, expanded-loss backward evidence, no-T2 safety checks, and strict validator known-bad fail-closed checks. "
+        "M6 continued reviewer-blocker repair was executed as a bounded executor task. "
+        "The revised packet closes the low-quality SRR arbitration blocker, uses command-driven known-bad strict-validator checks, and adds focused hard-gate unit tests. "
+        "All runtime evidence remains bounded architecture/runtime smoke with synthetic anchor-derived tensors; it is not train/OOF prototype evidence, real-case runtime evidence, or M7 training evidence. "
         "No full fold training, validation packaging, upload, route promotion, hosted metric claim, review.md, or M7 execution was performed.\n",
         encoding="utf-8",
     )
     (OUT_DIR / "review_request.md").write_text(
         "# Review Request\n\n"
-        "Please review this M6 executor packet. Do not treat this as M7 training evidence or route promotion. "
-        "The reviewer should verify that code paths, sanity CSVs, strict validator checks, and no-T2 safety satisfy the M6 gate before authorizing M7.\n",
+        "Please re-review this M6 continued packet against the four `M6_AUDITED_NEEDS_REVISION` blockers. "
+        "Do not treat this as M7 training evidence, route promotion, hosted metric evidence, or challenge readiness. "
+        "The revised ready state is limited to M6 architecture/runtime smoke gate evidence.\n",
         encoding="utf-8",
     )
     (OUT_DIR / "MANIFEST.md").write_text(
         "# M6 Manifest\n\n"
+        "Revised M6 continued evidence packet for reviewer-blocker repair. Required result files:\n\n"
         + "\n".join(f"- `{name}`" for name in REQUIRED)
+        + "\n\nNecessary first-party source/helper/test files included in the commit:\n\n"
+        "- `scripts/evaluation/run_srr_v3_m6_concrete_architecture_repair.py`\n"
+        "- `src/care_myocardium/models/srr_propref.py`\n"
+        "- `src/care_myocardium/tests/test_srr_m6_continued_gates.py`\n"
         + "\n",
         encoding="utf-8",
     )
@@ -592,5 +846,16 @@ def main() -> int:
     return 0 if ready else 1
 
 
+def cli() -> int:
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--validate-packet", default="", help="Validate an existing M6 packet and return nonzero on fail-closed violations.")
+    args = parser.parse_args()
+    if args.validate_packet:
+        ok, reasons = validate_packet(Path(args.validate_packet))
+        print(json.dumps({"packet": args.validate_packet, "ok": ok, "reasons": reasons}, indent=2, sort_keys=True))
+        return 0 if ok else 1
+    return main()
+
+
 if __name__ == "__main__":
-    raise SystemExit(main())
+    raise SystemExit(cli())

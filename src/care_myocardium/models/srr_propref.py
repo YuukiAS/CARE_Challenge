@@ -806,6 +806,7 @@ class BranchArbitrationGate(nn.Module):
         scar_roi: torch.Tensor,
         edema_roi: torch.Tensor,
         force_segmentation_fallback: bool = False,
+        fallback_reason_override: str | None = None,
     ) -> dict[str, torch.Tensor | str]:
         anchor_conf = segmentation_context["anchor_confidence"]  # type: ignore[assignment]
         anchor_entropy = segmentation_context["anchor_entropy"]  # type: ignore[assignment]
@@ -867,8 +868,8 @@ class BranchArbitrationGate(nn.Module):
             "correction_mask": correction_mask,
             "anchor_confidence": anchor_conf,
             "srr_confidence": proposal_support,
-            "fallback_reason": "explicit_segmentation_fallback" if force_segmentation_fallback else "evidence_arbitration",
-            "chosen_source": "segmentation_fallback" if force_segmentation_fallback else f"srr_v3_{self.mode}",
+            "fallback_reason": fallback_reason_override or ("explicit_segmentation_fallback" if force_segmentation_fallback else "evidence_arbitration"),
+            "chosen_source": "segmentation_branch" if force_segmentation_fallback else f"srr_v3_{self.mode}",
         }
 
 
@@ -1187,8 +1188,22 @@ class SRRProposeRefineMyoPS(nn.Module):
         t2_present = canonical_t2_present(availability).to(device=edema_logits.device)
         no_t2_mask = (~t2_present).view(-1, 1, 1, 1, 1)
         edema_logits = torch.where(no_t2_mask, torch.full_like(edema_logits, -20.0), edema_logits)
+        if disable_srr_evidence:
+            scar_dict["proposal_logits"] = torch.full_like(scar_dict["proposal_logits"], -20.0)
+            edema_dict["proposal_logits"] = torch.full_like(edema_dict["proposal_logits"], -20.0)
+            scar_logits = torch.full_like(scar_logits, -20.0)
+            edema_logits = torch.full_like(edema_logits, -20.0)
+            scar_roi = torch.zeros_like(scar_roi)
+            edema_roi = torch.zeros_like(edema_roi)
         srr_logits = torch.cat([evidence["anatomy_logits"], edema_logits, scar_logits], dim=1)
         baseline_blend = self.baseline_gate(srr_logits, anchor_features, availability, force_closed=force_closed_gate)
+        fallback_reason_override = None
+        if disable_srr_evidence:
+            fallback_reason_override = "low_quality_srr_evidence_empty"
+        elif force_closed_gate:
+            fallback_reason_override = "closed_gate_identity"
+        elif force_segmentation_fallback:
+            fallback_reason_override = "explicit_segmentation_fallback"
         arbitration = self.branch_arbitration(
             srr_logits,
             baseline_blend["anchor_logits"],
@@ -1199,6 +1214,7 @@ class SRRProposeRefineMyoPS(nn.Module):
             scar_roi=scar_roi,
             edema_roi=edema_roi,
             force_segmentation_fallback=bool(force_segmentation_fallback or force_closed_gate or disable_srr_evidence),
+            fallback_reason_override=fallback_reason_override,
         )
         use_arbitration = self.variant in M6_VARIANT_CONFIGS
         final_logits = arbitration["final_logits"] if use_arbitration else baseline_blend["final_logits"]

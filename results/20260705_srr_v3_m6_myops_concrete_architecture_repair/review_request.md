@@ -1,3 +1,3 @@
 # Review Request
 
-Please review this M6 executor packet. Do not treat this as M7 training evidence or route promotion. The reviewer should verify that code paths, sanity CSVs, strict validator checks, and no-T2 safety satisfy the M6 gate before authorizing M7.
+Please re-review this M6 continued packet against the four `M6_AUDITED_NEEDS_REVISION` blockers. Do not treat this as M7 training evidence, route promotion, hosted metric evidence, or challenge readiness. The revised ready state is limited to M6 architecture/runtime smoke gate evidence.
