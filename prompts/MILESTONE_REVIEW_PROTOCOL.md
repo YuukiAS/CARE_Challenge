@@ -39,6 +39,16 @@ the next milestone. Executor self-assessment can be `READY_FOR_REVIEW`,
 `NEEDS_REVISION`, `NEEDS_EVIDENCE`, or a milestone-defined blocked state, but it
 is never an audited continuation decision.
 
+### MONITOR_PACKET_IS_NOT_COMPLETION
+
+This rule applies to M7 follow-up2/follow-up3 and all future milestones.
+
+A monitor packet, pending Slurm job packet, watcher packet, or submitted-only Slurm packet is not completion. The executor must not write `READY_FOR_REVIEW` or an equivalent ready state after only `sbatch` submission, `squeue` pending output, pending `sacct`, monitor watcher setup, or placeholder evidence.
+
+If `completion_check.md`, `result.md`, `commands_run.md`, or a training adequacy table contains `NEEDS_MONITOR`, `PENDING_MONITOR`, `JOB_SUBMITTED`, `PENDING_PRIORITY`, `RUNNING`, `AWAITING_SACCT`, or equivalent monitor/pending state, the result must remain `NEEDS_MONITOR` or `NEEDS_EVIDENCE`.
+
+After the Slurm job completes, the executor must rerun the milestone aggregator or evidence collector and commit tracked lightweight evidence derived from runtime outputs before requesting review. The packet must record job id, state, exit code, runtime, log path, runtime output path, aggregation command, aggregation exit code, and updated tracked evidence files. If runtime output is missing or aggregation fails, completion must be `NEEDS_EVIDENCE`.
+
 ### Independent Codex Session: Read-Only Reviewer / Auditor
 
 The reviewer/auditor is a separate Codex session started after the executor has committed the milestone result and the user has pushed or otherwise made it available. It may:
@@ -61,6 +71,8 @@ The reviewer/auditor must not:
 - upload;
 - start the next milestone;
 - convert missing evidence into a pass.
+
+The reviewer/auditor must also reject monitor packets as completion. If the tracked packet still shows monitor/pending states, only submitted/pending commands, a Slurm job id without completed aggregation, `result.md` saying monitor packet, or runtime outputs not merged into tracked evidence, the reviewer must decide `NEEDS_EVIDENCE` or `NEEDS_MONITOR`, never audited-go.
 
 The reviewer/auditor is the only role allowed to write a milestone `review.md`.
 The reviewer/auditor may approve continuation only with the exact audited-go
@@ -170,6 +182,7 @@ Internal self-checks, subagent notes, or executor-launched audit drafts are allo
 - Do not let an executor write its own final `review.md`.
 - Do not let an executor/controller mark `*_AUDITED_GO`.
 - Do not treat `completion_check.md` as audited continuation permission.
+- Do not treat monitor packets, pending Slurm packets, submitted-only jobs, or watcher packets as milestone completion.
 - Do not let a controller report absorb a missing review.
 - Do not continue to the next milestone while `review.md` is missing.
 - Do not mark a milestone audited-go if required output files are missing.

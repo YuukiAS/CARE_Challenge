@@ -10,6 +10,20 @@ A controller report must not replace a missing required subtask with a similar n
 
 A final review must be preceded by a completion check when the controller task lists one. The completion check must write a decision file declaring readiness. Without that readiness file, the final review is blocked.
 
+## MONITOR_PACKET_IS_NOT_COMPLETION
+
+A monitor packet, pending Slurm job packet, watcher packet, or submitted-only Slurm packet is not a completion packet. This applies to M7 follow-up2/follow-up3 and every future milestone.
+
+An executor must not write milestone ready when it has only submitted a Slurm job, monitor job, watcher, or pending monitor packet. If `completion_check.md`, `result.md`, `commands_run.md`, or an adequacy table contains `NEEDS_MONITOR`, `PENDING_MONITOR`, `JOB_SUBMITTED`, `PENDING_PRIORITY`, `RUNNING`, `AWAITING_SACCT`, or an equivalent monitor/pending state, the packet is not reviewable as complete.
+
+After a Slurm job completes, the executor must rerun the relevant aggregator or evidence collector and write the runtime outputs into tracked lightweight result files before requesting review. `commands_run.md` that only records `sbatch submitted`, `squeue pending`, `PENDING Priority`, or pending `sacct` is not completion evidence.
+
+A job-derived completion packet must record job id, state, exit code, runtime, log path, runtime output path, aggregation command, aggregation exit code, and the tracked evidence files updated from runtime output. If the job completed but runtime output is missing or aggregation fails, the completion state must be `NEEDS_EVIDENCE`, not ready.
+
+Reviewers must check that the tracked packet is the final post-completion aggregation rather than a job-submission placeholder. A reviewer must return `NEEDS_EVIDENCE` or `NEEDS_MONITOR`, not audited-go, if monitor placeholders remain or runtime output has not been merged into tracked evidence.
+
+Validators and reviewer known-bad cases must include: `completion_check.md` ready while `followup*_training_adequacy.csv` contains `PENDING_MONITOR`; `commands_run.md` contains only submitted/pending job state; a Slurm job id exists but no completed aggregation record exists; `result.md` says monitor packet; runtime output is not merged into tracked evidence.
+
 Validation scripts used for completion decisions must fail closed. If errors are reported, the command must return failure unless it is explicitly invoked as a non-completion diagnostic scan. Historical tolerated findings require a named allowlist with reason, expiry, and owner.
 
 Trainable model evidence must be classified by adequacy. Small probes and smoke runs can support debugging, but not route promotion or scientific stop. Adequacy requires training budget, validation events, loss behavior, prediction sanity, provenance paths, cache isolation, and same-split baseline comparison.
@@ -62,14 +76,15 @@ Before any future SRR, Cine, missing-modality, registration, proposal/refinement
 5. strict validator behavior;
 6. minimum effective training classification;
 7. controller report schema validation;
-8. known-bad-packet regression.
+8. known-bad-packet regression;
+9. `MONITOR_PACKET_IS_NOT_COMPLETION`.
 
 If any of these gates fail, the controller must stop with `NEEDS_EVIDENCE` or `NEEDS_REVISION`. It must not continue to final review, route promotion, fold expansion, validation packaging, validation upload, or scientific stop.
 
 For milestone chains, also enforce:
 
-9. exact prerequisite `review.md:<MILESTONE>_AUDITED_GO` before starting any
+10. exact prerequisite `review.md:<MILESTONE>_AUDITED_GO` before starting any
    non-initial milestone;
-10. exact `completion_check.md` and `review_request.md` before executor stop;
-11. missing independent `review.md` blocks the next milestone;
-12. same-session executor/controller review is invalid for continuation.
+11. exact `completion_check.md` and `review_request.md` before executor stop;
+12. missing independent `review.md` blocks the next milestone;
+13. same-session executor/controller review is invalid for continuation.

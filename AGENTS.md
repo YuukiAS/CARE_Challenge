@@ -27,6 +27,20 @@ For this temporary `/users` copy, repo-local skills under `.agents/skills/` shou
 
 Treat this `AGENTS.md` as the repo-level Codex rules source. Do not rely on `.cursor/rules/`, `.cursor/skills/`, `.cursor/plans/`, or Cursor plugins; migrate future rule changes here.
 
+## MONITOR_PACKET_IS_NOT_COMPLETION
+
+This rule applies to M7 follow-up2/follow-up3 and every future CARE milestone.
+
+A Slurm submission, monitor job, watcher, pending queue state, or submitted-only packet is not a milestone completion packet. If an executor only submitted a job or wrote a monitor packet, it must not write milestone ready or request normal review.
+
+If `completion_check.md`, `result.md`, `commands_run.md`, or a training adequacy table contains `NEEDS_MONITOR`, `PENDING_MONITOR`, `JOB_SUBMITTED`, `PENDING_PRIORITY`, `RUNNING`, `AWAITING_SACCT`, or an equivalent pending/monitor state, the packet is not reviewable as complete. A reviewer must return `NEEDS_EVIDENCE` or `NEEDS_MONITOR`, not audited-go.
+
+After a Slurm job completes, the executor must rerun the relevant aggregator or evidence collector and commit the tracked lightweight result files produced from runtime outputs before requesting review. `commands_run.md` entries showing only `sbatch submitted`, `squeue pending`, `PENDING Priority`, or pending `sacct` are not completion evidence.
+
+Every job-derived completion packet must record job id, state, exit code, runtime, log path, runtime output path, aggregation command, aggregation exit code, and the tracked evidence files updated from runtime output. If the job completed but runtime output is missing or aggregation fails, completion must be `NEEDS_EVIDENCE`, not ready.
+
+Reviewers must check that the tracked packet is the final post-completion aggregation, not the placeholder packet from job submission time. Validators and reviewer prompts must include known-bad cases for: ready completion while `followup*_training_adequacy.csv` contains `PENDING_MONITOR`; `commands_run.md` contains only submitted/pending job state; a Slurm job id exists without completed aggregation record; `result.md` says monitor packet; runtime output is not merged into tracked evidence.
+
 ## Plan document governance
 
 CARE Myocardium plan files under `docs/plans/` must follow `docs/plans/care_myocardium_plan_registry_rules.md`. Plan filenames must encode lane, round scope, role/status, and topic, for example `laneA_round03_next_edema_trainable_smoke_execution.md` or `laneB_round03plus_controller_cinemyops_hosted_topology_motion_plan.md`.

@@ -12,10 +12,22 @@ This rule applies to every milestone and continued milestone prompt in this file
 
 Do not commit checkpoints, NIfTI predictions, upload packages, large logs, raw data, secrets, environment dumps, or whole runtime result trees. Do not push; the user manually pushes.
 
+## MONITOR_PACKET_IS_NOT_COMPLETION
+
+This rule applies to every milestone, continued milestone, M7 follow-up2/follow-up3, and future follow-up prompt in this file.
+
+Submitting a Slurm job, monitor job, watcher, or pending packet is not completion. If the executor has only submitted a job or written a monitor packet, it must not write milestone ready, must not write a normal `review_request.md`, and must not claim the goal complete.
+
+If `completion_check.md`, `result.md`, `commands_run.md`, or any `followup*_training_adequacy.csv` / adequacy table contains `NEEDS_MONITOR`, `PENDING_MONITOR`, `JOB_SUBMITTED`, `PENDING_PRIORITY`, `RUNNING`, `AWAITING_SACCT`, or equivalent monitor/pending state, completion must be `NEEDS_MONITOR` or `NEEDS_EVIDENCE`, not ready.
+
+After the job completes, the executor must rerun the relevant aggregator or evidence collector and commit tracked lightweight evidence files derived from runtime outputs before requesting review. `commands_run.md` entries that only show `sbatch submitted`, `squeue pending`, `PENDING Priority`, or pending `sacct` do not count as completion evidence.
+
+Every job-derived completion packet must record `job_id`, `state`, `exit_code`, `runtime`, `log_path`, `runtime_output_path`, `aggregation_command`, `aggregation_exit_code`, and the tracked evidence files updated from runtime output. If the job completed but runtime output cannot be found or the aggregator fails, write `NEEDS_EVIDENCE`, not ready.
+
 ## Global executor rule
 
 ```text
-这是单个 milestone 的 executor/controller session。只执行当前 milestone。goal 完成前必须用 git add -f 提交供 reviewer 审阅所需的全部轻量证据文件；只把文件留在本地 ignored results 目录里不算完成，因为 reviewer 在用户 push 后必须能从 git 中恢复证据。提交范围包括 required outputs、result.md、completion_check.md、review_request.md、MANIFEST.md、小型 Markdown/CSV/JSON 证据表，以及生成或解释这些证据所需的小型 first-party helper/source/config 文件；不要提交 checkpoints、NIfTI predictions、upload packages、大日志、raw data、secrets、environment dumps 或整个 runtime result tree。如果任何 reviewer 必需证据不提交，必须在 result.md、completion_check.md 和 MANIFEST.md 写清具体原因，否则视为 protocol violation。不要 push，由用户手动 push。随后停止；不要写 review.md、不要批准自己、不要启动下一个 milestone。必须由另一个独立只读 Codex reviewer 写 review.md 并给出 audited-go 后，才允许进入下一 milestone。
+这是单个 milestone 的 executor/controller session。只执行当前 milestone。goal 完成前必须用 git add -f 提交供 reviewer 审阅所需的全部轻量证据文件；只把文件留在本地 ignored results 目录里不算完成，因为 reviewer 在用户 push 后必须能从 git 中恢复证据。提交范围包括 required outputs、result.md、completion_check.md、review_request.md、MANIFEST.md、小型 Markdown/CSV/JSON 证据表，以及生成或解释这些证据所需的小型 first-party helper/source/config 文件；不要提交 checkpoints、NIfTI predictions、upload packages、大日志、raw data、secrets、environment dumps 或整个 runtime result tree。如果任何 reviewer 必需证据不提交，必须在 result.md、completion_check.md 和 MANIFEST.md 写清具体原因，否则视为 protocol violation。MONITOR_PACKET_IS_NOT_COMPLETION：仅提交 Slurm job、monitor job、watcher 或 pending packet 不算完成；含 NEEDS_MONITOR、PENDING_MONITOR、JOB_SUBMITTED、PENDING_PRIORITY、RUNNING、AWAITING_SACCT 或等价状态时不能写 ready，必须等 job 完成后重新运行 aggregator/evidence collector 并提交 tracked lightweight evidence。不要 push，由用户手动 push。随后停止；不要写 review.md、不要批准自己、不要启动下一个 milestone。必须由另一个独立只读 Codex reviewer 写 review.md 并给出 audited-go 后，才允许进入下一 milestone。
 ```
 
 ## M0 executor

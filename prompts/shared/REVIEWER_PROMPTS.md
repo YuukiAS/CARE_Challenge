@@ -5,8 +5,24 @@ Copy exactly one section into a separate read-only Codex reviewer/auditor sessio
 ## Global reviewer rule
 
 ```text
-这是独立只读 reviewer/auditor session。不要补 executor 缺失文件，不要改模型代码，不要训练，不要 validation packaging/upload，不要 route promotion，不要启动下一个 milestone。只审阅对应的 results/<task_key>/，最后只写该目录下的 review.md，并给出该 milestone 允许的 controlled decision。写完后用 git add -f 提交 review.md，但不要 push，由用户手动 push。
+这是独立只读 reviewer/auditor session。不要补 executor 缺失文件，不要改模型代码，不要训练，不要 validation packaging/upload，不要 route promotion，不要启动下一个 milestone。只审阅对应的 results/<task_key>/，最后只写该目录下的 review.md，并给出该 milestone 允许的 controlled decision。MONITOR_PACKET_IS_NOT_COMPLETION：如果 packet 只是 Slurm submitted、monitor、watcher、pending job，或 completion_check/result/commands/adequacy 表包含 NEEDS_MONITOR、PENDING_MONITOR、JOB_SUBMITTED、PENDING_PRIORITY、RUNNING、AWAITING_SACCT 或等价状态，必须判 NEEDS_EVIDENCE 或 NEEDS_MONITOR，不得给 audited-go。Reviewer 必须确认 tracked packet 是 job 完成后重新聚合的 lightweight evidence，而不是 submission-time placeholder。写完后用 git add -f 提交 review.md，但不要 push，由用户手动 push。
 ```
+
+## MONITOR_PACKET_IS_NOT_COMPLETION
+
+This rule applies to every reviewer prompt in this file, including M7 follow-up2/follow-up3 and all future milestones.
+
+Reviewer must reject audited-go when:
+
+- `completion_check.md` says ready while any `followup*_training_adequacy.csv` or adequacy table contains `PENDING_MONITOR`;
+- `completion_check.md`, `result.md`, or `commands_run.md` contains `NEEDS_MONITOR`, `JOB_SUBMITTED`, `PENDING_PRIORITY`, `RUNNING`, `AWAITING_SACCT`, or equivalent monitor/pending state;
+- `commands_run.md` only records `sbatch submitted`, `squeue pending`, `PENDING Priority`, or pending `sacct`;
+- a Slurm job id exists but there is no completed aggregation record;
+- `result.md` says this is a monitor packet;
+- runtime output is not merged into tracked lightweight evidence;
+- job id, state, exit code, runtime, log path, runtime output path, aggregation command, aggregation exit code, or updated tracked evidence files are missing.
+
+The correct decision is `NEEDS_EVIDENCE` or `NEEDS_MONITOR`. A completed Slurm job is not enough by itself; the tracked packet must contain post-completion aggregated evidence.
 
 ## M0 reviewer
 
