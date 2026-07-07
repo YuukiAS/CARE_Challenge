@@ -630,7 +630,7 @@ def model_kwargs_from_args(args: argparse.Namespace) -> dict[str, object]:
     return {
         "base_channels": args.base_channels,
         "variant": canonical_model_variant(args.variant),
-            "encoder_profile": args.encoder_profile,
+        "encoder_profile": args.encoder_profile,
         "disable_local_refinement": bool(getattr(args, "disable_local_refinement", False)),
         "disable_anatomy_roi_prior": bool(getattr(args, "disable_anatomy_roi_prior", False)),
     }
@@ -790,7 +790,7 @@ def propref_loss(
     *,
     detach_m6_metrics: bool = True,
 ) -> tuple[torch.Tensor, dict[str, torch.Tensor]]:
-    if str(args.variant).startswith("m6_") or str(args.variant).startswith("m7_"):
+    if str(args.variant).startswith(("m6_", "m7_", "m8_")):
         total, m6_metrics = srr_m6_expanded_total_loss(
             outputs,
             labels,

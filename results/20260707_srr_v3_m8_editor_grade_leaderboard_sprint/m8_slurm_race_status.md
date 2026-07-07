@@ -2,51 +2,73 @@
 
 status: `M8_NEEDS_MONITOR_NO_REVIEW`
 
-## Routing Decision
+## First Race Attempt
 
-AGENTS.md compute-resource rules were applied after the initial single-partition a100-gpu job was found still pending.
+The first AGENTS-compliant race replaced the initial single-partition a100-gpu job.
 
 - cancelled pre-race job: `58080244`
-- htzhulab mirror array: `58080628`
-- a100-gpu mirror array: `58080627`
-- race watcher job: `58080636`
-- watcher log: `logs/SRRv3M8MyOPSRace_58080628_58080627.log`
+- first htzhulab mirror array: `58080628`
+- first a100-gpu mirror array: `58080627`
+- first watcher job: `58080636`
 
-## Current Evidence
+Watcher evidence from `logs/SRRv3M8MyOPSRace_58080628_58080627.log` showed htzhulab tasks `0` and `1` started and a100 `58080627_[0-2]` was cancelled while pending.
 
-`squeue -j 58080627,58080628,58080636` showed:
+The first htzhulab race failed quickly:
 
-- `58080628_0`: `RUNNING` on `htzhulab`, node `g1807htzh01`
-- `58080628_1`: `RUNNING` on `htzhulab`, node `g1807htzh01`
-- `58080628_[2]`: `PENDING (Resources)` on `htzhulab`
-- `58080627`: absent from current `squeue` after watcher cancellation
-- `58080636`: absent from current `squeue` after watcher completion
+- `58080628_0`: `FAILED`, exit `1:0`, elapsed `00:01:39`
+- `58080628_1`: `FAILED`, exit `1:0`, elapsed `00:01:38`
+- `58080628_2`: `FAILED`, exit `1:0`, elapsed `00:00:52`
 
-`sacct -j 58080627,58080628,58080636` showed:
+All three logs showed the same training-loop bug:
 
-- `58080627_[0-2]`: `CANCELLED by 397557`, partition `a100-gpu`, end `2026-07-07T00:10:33`
-- `58080628_0`: `RUNNING`, partition `htzhulab`, start `2026-07-07T00:10:12`
-- `58080628_1`: `RUNNING`, partition `htzhulab`, start `2026-07-07T00:10:12`
-- `58080628_[2]`: `PENDING`
-- `58080636`: `COMPLETED`, partition `spill`, elapsed `00:00:05`
+```text
+KeyError: 'correction_opportunity_loss'
+```
+
+The fix was to route `m8_` variants through the same expanded SRR loss path as `m6_` and `m7_` variants in `scripts/training/run_srr_propref_myops_fold0.py`.
+
+## Corrected Race Attempt
+
+After removing stale failed runtime locks/partials under `results/20260707_srr_v3_m8_editor_grade_leaderboard_sprint/runtime/`, the corrected race was submitted:
+
+- corrected htzhulab mirror array: `58081007`
+- corrected a100-gpu mirror array: `58081025`
+- corrected watcher job: `58081026`
+- watcher log: `logs/SRRv3M8MyOPSRace_58081007_58081025.log`
+
+Current `squeue -j 58081007,58081025,58081026` evidence:
+
+- `58081007_0`: `RUNNING` on `htzhulab`, node `g1807htzh01`, elapsed at check `00:03:03`
+- `58081007_1`: `RUNNING` on `htzhulab`, node `g1807htzh01`, elapsed at check `00:03:03`
+- `58081007_[2]`: `PENDING (Resources)` on `htzhulab`
+- `58081025`: absent from current `squeue` after cancellation
+- `58081026`: absent from current `squeue` after watcher completion
+
+Current `sacct -j 58081007,58081025,58081026` evidence:
+
+- `58081007_0`: `RUNNING`, partition `htzhulab`, start `2026-07-07T00:18:35`
+- `58081007_1`: `RUNNING`, partition `htzhulab`, start `2026-07-07T00:18:35`
+- `58081007_[2]`: `PENDING`
+- `58081025_[0-2]`: `CANCELLED by 397557`, partition `a100-gpu`, end `2026-07-07T00:19:10`
+- `58081026`: `COMPLETED`, partition `spill`, elapsed `00:00:01`
 
 Watcher log excerpt:
 
 ```text
-2026-07-07T00:10:32.984597 watch_start htzhulab=58080628 a100=58080627
-2026-07-07T00:10:33.043613 check=1 htzhulab=[('58080628_[2]', 'htzhulab', 'PENDING', '(Resources)'), ('58080628_1', 'htzhulab', 'RUNNING', 'g1807htzh01'), ('58080628_0', 'htzhulab', 'RUNNING', 'g1807htzh01')] a100=[('58080627_[0-2]', 'a100-gpu', 'PENDING', '(Priority)')]
-2026-07-07T00:10:33.066950 cancel_a100 code=0 output=
+2026-07-07T00:19:10.285172 watch_start htzhulab=58081007 a100=58081025
+2026-07-07T00:19:10.346125 check=1 htzhulab=[('58081007_[2]', 'htzhulab', 'PENDING', '(Resources)'), ('58081007_1', 'htzhulab', 'RUNNING', 'g1807htzh01'), ('58081007_0', 'htzhulab', 'RUNNING', 'g1807htzh01')] a100=[('58081025_[0-2]', 'a100-gpu', 'PENDING', '(Priority)')]
+2026-07-07T00:19:10.366487 cancel_a100 code=0 output=
 ```
 
 ## Lock Evidence
 
 Runtime locks currently exist for:
 
-- `m8_full_srr_context_arbitration_longrun`: claimed by job `58080629`, task `0`, partition `htzhulab`
-- `m8_scar_precision_edema_safe_longrun`: claimed by job `58080630`, task `1`, partition `htzhulab`
+- `m8_full_srr_context_arbitration_longrun`: claimed by job `58081023`, task `0`, partition `htzhulab`
+- `m8_scar_precision_edema_safe_longrun`: claimed by job `58081024`, task `1`, partition `htzhulab`
 
-The third variant has not started yet and remains monitor evidence only.
+The third variant has not started yet and remains pending monitor evidence.
 
 ## Completion Boundary
 
-This is not M8 completion. Training is still running/pending, the 28800-second MyoPS training budget is not proven, and no completed runtime aggregation has been committed.
+This is not M8 completion. Training is still running/pending, the 28800-second MyoPS training budget is not proven, Cine mature registration has not been launched in this corrected packet, and no completed runtime aggregation has been committed.
