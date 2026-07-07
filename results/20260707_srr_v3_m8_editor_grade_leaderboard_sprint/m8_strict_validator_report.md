@@ -10,4 +10,4 @@ python scripts/evaluation/validate_srr_v3_m8_leaderboard_sprint_packet.py --pack
 
 Result: exit `0`, `error_count=0`.
 
-Interpretation: this validates only that the packet is a controlled non-ready monitor packet. It does not validate M8 completion or readiness. `M8_READY_FOR_REVIEW` remains blocked until completed MyoPS training is re-aggregated, the 28800 second training budget is proven, Cine mature registration/temporal dictionary evidence is present, and all M8 ready gates pass.
+Interpretation: this validates only that the packet is a controlled non-ready monitor packet. It does not validate M8 completion or readiness. The ready state remains blocked until completed MyoPS training is re-aggregated, the 28800 second training budget is proven, Cine mature registration/temporal dictionary evidence is present, and all M8 ready gates pass.

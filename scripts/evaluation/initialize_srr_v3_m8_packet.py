@@ -277,6 +277,11 @@ def variant_matrix_rows(config_path: Path, contract: dict[str, object]) -> list[
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--myops-job-id", default="")
+    parser.add_argument("--myops-htzhulab-job-id", default="")
+    parser.add_argument("--myops-a100-job-id", default="")
+    parser.add_argument("--myops-cancelled-job-id", default="")
+    parser.add_argument("--myops-race-watcher-job-id", default="")
+    parser.add_argument("--myops-race-log-path", default="")
     parser.add_argument("--cine-job-id", default="")
     parser.add_argument("--partition-note", default="")
     args = parser.parse_args()
@@ -306,13 +311,21 @@ def main() -> None:
     write_csv(OUT_DIR / "m8_variant_matrix.csv", variant_matrix_rows(config_path, contract), CSV_HEADERS["m8_variant_matrix.csv"])
 
     variants = list(contract["variants"])
+    routed_job_id = ";".join(
+        item
+        for item in [
+            f"htzhulab:{args.myops_htzhulab_job_id}" if args.myops_htzhulab_job_id else "",
+            f"a100-gpu:{args.myops_a100_job_id or args.myops_job_id}" if (args.myops_a100_job_id or args.myops_job_id) else "",
+        ]
+        if item
+    ) or "JOB_NOT_SUBMITTED"
     ledger_rows = []
     for idx, variant in enumerate(variants):
         ledger_rows.append(
             {
                 "run_id": f"myops_array_{idx}",
                 "variant": variant,
-                "job_id": args.myops_job_id or "JOB_NOT_SUBMITTED",
+                "job_id": routed_job_id,
                 "is_training_run": "true",
                 "is_eval_only": "false",
                 "start_time": "AWAITING_SACCT",
@@ -360,7 +373,18 @@ def main() -> None:
         )
     write_csv(OUT_DIR / "m8_architecture_gap_closure_table.csv", closure_rows, CSV_HEADERS["m8_architecture_gap_closure_table.csv"])
 
-    monitor_csv_files = [name for name in REQUIRED_FILES if name.endswith(".csv") and name not in {"m8_training_budget_ledger.csv", "m8_variant_matrix.csv", "m8_architecture_gap_closure_table.csv"}]
+    monitor_csv_files = [
+        name
+        for name in REQUIRED_FILES
+        if name.endswith(".csv")
+        and name
+        not in {
+            "m8_training_budget_ledger.csv",
+            "m8_variant_matrix.csv",
+            "m8_architecture_gap_closure_table.csv",
+            "m8_strict_validator_report.csv",
+        }
+    ]
     for name in monitor_csv_files:
         write_csv(
             OUT_DIR / name,
@@ -383,7 +407,7 @@ def main() -> None:
 
     write_text(
         OUT_DIR / "result.md",
-        f"# M8 Executor Result\n\nstatus: `M8_NEEDS_MONITOR_NO_REVIEW`\n\nM8 start gates passed, config contract was written, and Slurm jobs were submitted or prepared for MyoPS long training and Cine mature registration. This packet is monitor-only until completed jobs are re-aggregated. It is not ready for review and does not claim route promotion, validation packaging/upload, hosted metrics, challenge readiness, scientific stop, fold expansion, or M9.\n\n- git_head: `{head}`\n- generated_at_utc: `{now}`\n- myops_job_id: `{args.myops_job_id or 'JOB_NOT_SUBMITTED'}`\n- cine_job_id: `{args.cine_job_id or 'JOB_NOT_SUBMITTED'}`\n- partition_note: `{args.partition_note}`\n\n",
+        f"# M8 Executor Result\n\nstatus: `M8_NEEDS_MONITOR_NO_REVIEW`\n\nM8 start gates passed, config contract was written, and Slurm jobs were submitted or prepared for MyoPS long training and Cine mature registration. This packet is monitor-only until completed jobs are re-aggregated. It is not ready for review and does not claim route promotion, validation packaging/upload, hosted metrics, challenge readiness, scientific stop, fold expansion, or M9.\n\n- git_head: `{head}`\n- generated_at_utc: `{now}`\n- myops_cancelled_pre_race_job_id: `{args.myops_cancelled_job_id or 'NONE'}`\n- myops_htzhulab_job_id: `{args.myops_htzhulab_job_id or 'JOB_NOT_SUBMITTED'}`\n- myops_a100_job_id: `{args.myops_a100_job_id or args.myops_job_id or 'JOB_NOT_SUBMITTED'}`\n- myops_race_watcher_job_id: `{args.myops_race_watcher_job_id or 'JOB_NOT_SUBMITTED'}`\n- myops_race_log_path: `{args.myops_race_log_path or 'EVIDENCE_NOT_FOUND'}`\n- cine_job_id: `{args.cine_job_id or 'JOB_NOT_SUBMITTED'}`\n- partition_note: `{args.partition_note}`\n\n",
     )
     write_text(
         OUT_DIR / "completion_check.md",
@@ -401,9 +425,12 @@ def main() -> None:
                 "",
                 "| command | status | purpose |",
                 "| --- | --- | --- |",
-                f"| `sbatch jobs/src/run_srr_v3_m8_myops_leaderboard_sprint.sh` | {'submitted `' + args.myops_job_id + '`' if args.myops_job_id else 'not submitted'} | Start M8 MyoPS long-training array. |",
+                f"| `scancel {args.myops_cancelled_job_id}` | {'exit 0' if args.myops_cancelled_job_id else 'not run'} | Cancel pre-race single-partition M8 MyoPS job before resubmitting lock-safe mirror jobs. |",
+                f"| `sbatch jobs/src/run_srr_v3_m8_myops_leaderboard_sprint_htzhulab.sh` | {'submitted `' + args.myops_htzhulab_job_id + '`' if args.myops_htzhulab_job_id else 'not submitted'} | Start M8 MyoPS htzhulab race mirror. |",
+                f"| `sbatch jobs/src/run_srr_v3_m8_myops_leaderboard_sprint.sh` | {'submitted `' + (args.myops_a100_job_id or args.myops_job_id) + '`' if (args.myops_a100_job_id or args.myops_job_id) else 'not submitted'} | Start M8 MyoPS a100-gpu race mirror. |",
+                f"| `sbatch --wrap python scripts/evaluation/watch_srr_v3_m8_myops_race.py ...` | {'submitted `' + args.myops_race_watcher_job_id + '`' if args.myops_race_watcher_job_id else 'not submitted'} | Watch htzhulab/a100 race and cancel the pending mirror when one starts. |",
                 f"| `sbatch jobs/src/run_srr_v3_m8_cine_registration_mature.sh` | {'submitted `' + args.cine_job_id + '`' if args.cine_job_id else 'not submitted'} | Start M8 mature Cine registration attempt. |",
-                f"| `python scripts/evaluation/initialize_srr_v3_m8_packet.py --myops-job-id {args.myops_job_id} --cine-job-id {args.cine_job_id}` | exit 0 | Initialize monitor-only M8 packet. |",
+                f"| `python scripts/evaluation/initialize_srr_v3_m8_packet.py ...` | exit 0 | Initialize monitor-only M8 packet. |",
             ]
         )
         + "\n",
@@ -413,7 +440,19 @@ def main() -> None:
         manifest.append(f"- `{name}`")
     write_text(OUT_DIR / "MANIFEST.md", "\n".join(manifest) + "\n")
 
-    print(json.dumps({"status": "M8_NEEDS_MONITOR_NO_REVIEW", "out_dir": str(OUT_DIR), "myops_job_id": args.myops_job_id, "cine_job_id": args.cine_job_id}, indent=2))
+    print(
+        json.dumps(
+            {
+                "status": "M8_NEEDS_MONITOR_NO_REVIEW",
+                "out_dir": str(OUT_DIR),
+                "myops_htzhulab_job_id": args.myops_htzhulab_job_id,
+                "myops_a100_job_id": args.myops_a100_job_id or args.myops_job_id,
+                "myops_race_watcher_job_id": args.myops_race_watcher_job_id,
+                "cine_job_id": args.cine_job_id,
+            },
+            indent=2,
+        )
+    )
 
 
 if __name__ == "__main__":

@@ -6,8 +6,8 @@
 #SBATCH --error=/dev/null
 #SBATCH --mem=64G
 #SBATCH --time=05:45:00
-#SBATCH --gres=gpu:nvidia_a100-pcie-40gb:1
-#SBATCH --partition=a100-gpu
+#SBATCH --gres=gpu:1
+#SBATCH --partition=htzhulab
 #SBATCH --qos=gpu_access
 #SBATCH --array=0-2
 
@@ -43,7 +43,7 @@ fi
 
 mkdir -p logs "${RUNTIME_ROOT}"
 TS="$(date +%Y%m%d_%H%M%S)"
-LOG_FILE="${LOG_FILE:-${CARE_ROOT}/logs/SRRv3M8MyOPS_${SLURM_ARRAY_TASK_ID:-local}_${SLURM_JOB_ID:-local}_${TS}.log}"
+LOG_FILE="${LOG_FILE:-${CARE_ROOT}/logs/SRRv3M8MyOPS_htzhulab_${SLURM_ARRAY_TASK_ID:-local}_${SLURM_JOB_ID:-local}_${TS}.log}"
 exec > >(tee -a "${LOG_FILE}") 2>&1
 
 VARIANTS=(

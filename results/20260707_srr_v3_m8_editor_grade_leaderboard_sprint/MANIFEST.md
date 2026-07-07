@@ -1,7 +1,7 @@
 # M8 Manifest
 
 task_key: `20260707_srr_v3_m8_editor_grade_leaderboard_sprint`
-generated_at_utc: `2026-07-07T04:02:20.382202+00:00`
+generated_at_utc: `2026-07-07T04:10:41.892469+00:00`
 
 ## Files
 - `result.md`
@@ -55,3 +55,4 @@ generated_at_utc: `2026-07-07T04:02:20.382202+00:00`
 - `m8_validator_unit_test_report.md`
 - `m8_leaderboard_readiness_report.md`
 - `m8_next_action.md`
+- `m8_slurm_race_status.md`
