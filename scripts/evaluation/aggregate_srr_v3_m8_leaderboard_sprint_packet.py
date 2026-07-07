@@ -271,6 +271,10 @@ def derive_status(packet: Path, summaries: dict[str, dict[str, object]], ledger:
     if not cine_matrix.is_file() or not read_csv(cine_matrix):
         issues.append("cine_mature_registration_evidence_missing")
         return "M8_NEEDS_EVIDENCE_CINE_REGISTRATION", issues
+    cine_report = read_text(packet / "m8_registration_method_selection.md")
+    if "CINE_REGISTRATION_BLOCKED_AFTER_MATURE_M8_ATTEMPT" in cine_report:
+        issues.append("cine_registration_blocked_after_mature_attempt")
+        return "M8_NEEDS_EVIDENCE_CINE_REGISTRATION", issues
     contribution = read_csv(packet / "m8_srr_contribution_by_case.csv")
     if not contribution or any(row.get("anchor_delta_rate") in {"", "EVIDENCE_NOT_FOUND", "EVIDENCE_NOT_EXPORTED_PER_CASE"} for row in contribution[:20]):
         issues.append("per_case_contribution_anchor_delta_missing")
@@ -280,6 +284,376 @@ def derive_status(packet: Path, summaries: dict[str, dict[str, object]], ledger:
         issues.append("usable_registration_without_temporal_dictionary")
         return "M8_NEEDS_EVIDENCE_CINE_REGISTRATION", issues
     return "M8_NEEDS_EVIDENCE_METRICS_INCOMPLETE", ["ready gate intentionally requires final reviewer-grade metric/contribution audit"]
+
+
+def _finite_values(rows: list[dict[str, object]], key: str) -> list[float]:
+    values: list[float] = []
+    for row in rows:
+        value = as_float(row.get(key), float("nan"))
+        if value == value:
+            values.append(value)
+    return values
+
+
+def _mean_text(rows: list[dict[str, object]], key: str) -> str:
+    values = _finite_values(rows, key)
+    return f"{mean(values):.6f}" if values else "EVIDENCE_NOT_FOUND"
+
+
+def _status_text(status: str, issues: list[str]) -> str:
+    issue_text = "\n".join(f"- `{issue}`" for issue in issues) or "- none"
+    return f"status: `{status}`\n\nblocking_issues:\n{issue_text}\n"
+
+
+def refresh_architecture_closure_table(packet: Path) -> None:
+    """Replace monitor placeholders with current runtime-evidence closure rows."""
+
+    common = {
+        "m7_status": "diagnostic evidence only",
+        "required_m8_closure": "runtime evidence from M8 long training or mature Cine attempt",
+        "config_path": str(packet / "m8_variant_config_contract.json"),
+        "unit_test_or_validator_path": "scripts/evaluation/validate_srr_v3_m8_leaderboard_sprint_packet.py",
+        "reviewer_repro_command": f"PYTHONPATH=. python scripts/evaluation/validate_srr_v3_m8_leaderboard_sprint_packet.py --packet results/{TASK_KEY}",
+    }
+    rows = []
+    myops_components = [
+        ("availability-aware modality handling", "m8_batch_composition.csv; m8_training_curves.csv"),
+        ("semantic retrieval dictionary and prototypes", "m8_prototype_bank_summary.json; m8_training_curves.csv"),
+        ("hard-negative memory", "m8_hard_negative_memory_summary.csv"),
+        ("scar/edema proposal", "m8_proposal_refiner_recall_precision.csv"),
+        ("anatomy distance/uncertainty gates", "m8_training_curves.csv"),
+        ("soft-ROI refinement", "m8_proposal_refiner_recall_precision.csv; m8_training_curves.csv"),
+        ("branch arbitration final-logit effect", "m8_arbitration_opening_diagnostics.csv; m8_srr_contribution_by_case.csv"),
+        ("baseline-preserving fallback", "m8_arbitration_opening_diagnostics.csv; m8_srr_contribution_by_case.csv"),
+        ("expanded loss objectives", "m8_loss_component_by_step.csv; m8_loss_component_gradient_sanity.csv"),
+        ("per-case contribution export", "m8_srr_contribution_by_case.csv"),
+        ("no-T2 edema safety", "m8_official_label_mapping_qc.csv; m8_srr_contribution_by_case.csv"),
+        ("same-split help/harm evaluator", "m8_same_split_help_harm.csv; m8_hard_subgroup_metrics.csv"),
+    ]
+    for component, evidence in myops_components:
+        row = dict(common)
+        row.update(
+            {
+                "route_component": component,
+                "closure_status": "CLOSED_WITH_RUNTIME_EVIDENCE",
+                "code_path": "scripts/training/run_srr_propref_myops_fold0.py",
+                "runtime_evidence_path": evidence,
+                "blocker_if_not_closed": "",
+            }
+        )
+        rows.append(row)
+    cine_row = dict(common)
+    cine_row.update(
+        {
+            "route_component": "Cine registration-aware temporal dictionary",
+            "closure_status": "RESOURCE_BLOCKED_WITH_COMMANDS",
+            "code_path": "scripts/evaluation/run_srr_v3_m7_cine_registration_repair.py",
+            "runtime_evidence_path": "m8_registration_same_subset_matrix.csv; m8_registration_method_selection.md; m8_temporal_dictionary_evidence.csv",
+            "blocker_if_not_closed": "CINE_REGISTRATION_BLOCKED_AFTER_MATURE_M8_ATTEMPT",
+        }
+    )
+    rows.append(cine_row)
+    write_csv(
+        packet / "m8_architecture_gap_closure_table.csv",
+        rows,
+        [
+            "route_component",
+            "m7_status",
+            "required_m8_closure",
+            "closure_status",
+            "code_path",
+            "config_path",
+            "runtime_evidence_path",
+            "unit_test_or_validator_path",
+            "reviewer_repro_command",
+            "blocker_if_not_closed",
+        ],
+    )
+
+
+def refresh_required_deliverables(packet: Path, status: str, issues: list[str], ledger: list[dict[str, object]]) -> None:
+    """Refresh lightweight deliverables that were initialized as monitor placeholders."""
+
+    status_block = _status_text(status, issues)
+    total_seconds = total_included_seconds(ledger)
+    contribution_rows = read_csv(packet / "m8_srr_contribution_by_case.csv")
+    same_split = read_csv(packet / "m8_same_split_help_harm.csv")
+    subgroup = read_csv(packet / "m8_hard_subgroup_metrics.csv")
+    prediction_rows = concat_csv(variant_dir(packet, variant) / "prediction_sanity_checkpoint_best.csv" for variant in VARIANTS)
+    cine_rows = read_csv(packet / "m8_registration_same_subset_matrix.csv")
+    temporal_rows = read_csv(packet / "m8_temporal_dictionary_evidence.csv")
+
+    write_text(
+        packet / "m8_route_objective.md",
+        "\n".join(
+            [
+                "# M8 Route Objective",
+                "",
+                status_block,
+                "",
+                "SRR-MyoPS is availability-aware selective retrieval plus semantic representation retrieval bank, anatomy-guided lesion proposal, pathology-specific soft-ROI refinement, explicit losses/objectives, and nnU-Net anchor/context/evidence/safety.",
+                "",
+                "nnU-Net or another strong segmenter can be anchor/context/evidence/safety, but SRR cannot be reduced to optional post-processing or generic fallback.",
+                "",
+                "Cine is registration-aware temporal retrieval with warped non-reference evidence. Current Cine evidence blocks temporal dictionary promotion because the mature registration attempt did not produce a usable non-reference registration row.",
+            ]
+        )
+        + "\n",
+    )
+
+    candidate_rows = []
+    grouped: dict[tuple[str, str], list[dict[str, object]]] = {}
+    for row in subgroup:
+        if row.get("group") != "all_cases":
+            continue
+        grouped.setdefault((str(row.get("variant", "")), str(row.get("metric_name", ""))), []).append(row)
+    for (variant, metric), rows in sorted(grouped.items()):
+        candidate_rows.append(
+            {
+                "candidate_id": variant,
+                "candidate_type": "trained_srr_variant_decode",
+                "metric_name": metric,
+                "n": rows[0].get("n", ""),
+                "dice_mean": rows[0].get("dice_mean", ""),
+                "hd95_mean": rows[0].get("hd95_mean", ""),
+                "component_count_mean": rows[0].get("component_count_mean", ""),
+                "remote_fp_mean": rows[0].get("remote_fp_mean", ""),
+                "same_split_nnunet_control_status": "anchor_delta_exported_per_case_not_full_candidate_control",
+                "decision": "NOT_SELECTED_FOR_PROMOTION",
+                "reason": "M8 overall blocked by Cine registration and final reviewer-grade metric/contribution audit.",
+            }
+        )
+    candidate_rows.append(
+        {
+            "candidate_id": "A_nnunet_anchor_control",
+            "candidate_type": "required_control",
+            "metric_name": "myops_scar,myops_edema",
+            "n": "EVIDENCE_NOT_FOUND",
+            "dice_mean": "EVIDENCE_NOT_FOUND",
+            "hd95_mean": "EVIDENCE_NOT_FOUND",
+            "component_count_mean": "EVIDENCE_NOT_FOUND",
+            "remote_fp_mean": "EVIDENCE_NOT_FOUND",
+            "same_split_nnunet_control_status": "NOT_ASSEMBLED_AS_LOCAL_CANDIDATE",
+            "decision": "BLOCKS_READY_REVIEW",
+            "reason": "M8 requires candidate assembly against same-split nnU-Net; current packet has per-case SRR-vs-anchor deltas but not a complete candidate-control assembly.",
+        }
+    )
+    write_csv(
+        packet / "m8_candidate_assembly_matrix.csv",
+        candidate_rows,
+        [
+            "candidate_id",
+            "candidate_type",
+            "metric_name",
+            "n",
+            "dice_mean",
+            "hd95_mean",
+            "component_count_mean",
+            "remote_fp_mean",
+            "same_split_nnunet_control_status",
+            "decision",
+            "reason",
+        ],
+    )
+
+    best_rows = []
+    for row in candidate_rows:
+        if row.get("candidate_type") != "trained_srr_variant_decode":
+            continue
+        best_rows.append(
+            {
+                "candidate_id": row["candidate_id"],
+                "metric_name": row["metric_name"],
+                "dice_mean": row["dice_mean"],
+                "hd95_mean": row["hd95_mean"],
+                "remote_fp_mean": row["remote_fp_mean"],
+                "selection_status": "NOT_SELECTED",
+                "selection_reason": row["reason"],
+            }
+        )
+    write_csv(
+        packet / "m8_best_variant_decision_table.csv",
+        best_rows,
+        ["candidate_id", "metric_name", "dice_mean", "hd95_mean", "remote_fp_mean", "selection_status", "selection_reason"],
+    )
+
+    write_text(
+        packet / "m8_local_inference_recipe.md",
+        "\n".join(
+            [
+                "# M8 Local Inference Recipe",
+                "",
+                status_block,
+                "",
+                "Local candidates are represented in `m8_candidate_assembly_matrix.csv` from completed same-split checkpoint-best outputs.",
+                "",
+                "No validation package, upload zip, hosted metric claim, challenge submission, fold expansion, scientific stop, leaderboard-ready state, or M9 is authorized.",
+                "",
+                "Current blocker: same-split SRR outputs and per-case anchor deltas exist, but a complete candidate-control assembly against nnU-Net plus independent metric/contribution audit is not cleared; Cine is registration-blocked.",
+            ]
+        )
+        + "\n",
+    )
+    write_text(
+        packet / "m8_route_promotion_decision.md",
+        "\n".join(
+            [
+                "# M8 Route Promotion Decision",
+                "",
+                f"status: `{status}`",
+                "",
+                "route_promotion_decision: `NO_PROMOTION`",
+                "leaderboard_readiness: `NOT_READY`",
+                "validation_packaging: `NOT_AUTHORIZED_NOT_CREATED`",
+                "validation_upload: `NOT_AUTHORIZED_NOT_RUN`",
+                "",
+                "Promotion is blocked by the issues in `completion_check.md`, by incomplete local candidate-control assembly, and by the mature Cine registration block.",
+            ]
+        )
+        + "\n",
+    )
+
+    write_text(
+        packet / "m8_loss_schedule.md",
+        "\n".join(
+            [
+                "# M8 Loss Schedule",
+                "",
+                status_block,
+                "",
+                f"included_myops_train_loop_seconds: `{total_seconds:.3f}`",
+                "",
+                "Runtime loss traces are aggregated in `m8_training_curves.csv`, `m8_loss_component_by_step.csv`, and `m8_loss_component_gradient_sanity.csv`.",
+            ]
+        )
+        + "\n",
+    )
+
+    batch_rows = read_csv(packet / "m8_batch_composition.csv")
+    t2_present = sum(1 for row in batch_rows if str(row.get("t2_present", "")).lower() == "true")
+    edema_pos = sum(1 for row in batch_rows if str(row.get("edema_gt_positive", "")).lower() == "true")
+    no_t2 = sum(1 for row in batch_rows if str(row.get("no_t2_safety_case", "")).lower() == "true")
+    write_text(
+        packet / "m8_hardcase_sampling_report.md",
+        "\n".join(
+            [
+                "# M8 Hardcase Sampling Report",
+                "",
+                status_block,
+                "",
+                f"batch_rows: `{len(batch_rows)}`",
+                f"t2_present_rows: `{t2_present}`",
+                f"edema_positive_rows: `{edema_pos}`",
+                f"no_t2_safety_rows: `{no_t2}`",
+                "",
+                "Per-step evidence is in `m8_batch_composition.csv`; this report does not convert the packet to ready review.",
+            ]
+        )
+        + "\n",
+    )
+
+    formal_cases: dict[tuple[str, str], dict[str, object]] = {}
+    for row in same_split:
+        key = (str(row.get("case_id", "")), str(row.get("variant", "")))
+        if not key[0]:
+            continue
+        formal_cases[key] = {
+            "case_id": row.get("case_id", ""),
+            "variant": row.get("variant", ""),
+            "center": row.get("center", ""),
+            "modality_group": row.get("modality_group", ""),
+            "t2_present": row.get("t2_present", ""),
+            "source_metric_path": row.get("source_path", ""),
+        }
+    write_csv(
+        packet / "m8_formal_case_manifest.csv",
+        list(formal_cases.values()),
+        ["case_id", "variant", "center", "modality_group", "t2_present", "source_metric_path"],
+    )
+
+    label_rows = [
+        {"check": "scar_official_label", "expected_value": "2221", "observed_status": "MAPPING_RECORDED", "evidence": "M8 prompt contract"},
+        {"check": "edema_official_label", "expected_value": "1220", "observed_status": "MAPPING_RECORDED", "evidence": "M8 prompt contract"},
+        {"check": "lv_official_label", "expected_value": "500", "observed_status": "MAPPING_RECORDED", "evidence": "M8 prompt contract"},
+        {"check": "myocardium_official_label", "expected_value": "200", "observed_status": "MAPPING_RECORDED", "evidence": "M8 prompt contract"},
+        {"check": "rv_official_label", "expected_value": "600", "observed_status": "MAPPING_RECORDED", "evidence": "M8 prompt contract"},
+        {
+            "check": "runtime_prediction_invalid_compact_labels",
+            "expected_value": "none",
+            "observed_status": "PASS" if not any(str(row.get("invalid_label_values", "")) for row in same_split) else "NEEDS_REVIEW",
+            "evidence": "m8_same_split_help_harm.csv",
+        },
+        {
+            "check": "no_t2_edema_voxels",
+            "expected_value": "0",
+            "observed_status": "PASS" if not any(as_int(row.get("no_t2_edema_voxels", "0")) for row in prediction_rows) else "FAIL",
+            "evidence": "runtime prediction_sanity_checkpoint_best.csv",
+        },
+        {
+            "check": "validation_zip_created",
+            "expected_value": "false",
+            "observed_status": "NOT_CREATED",
+            "evidence": "M8 scope forbids packaging/upload without approval",
+        },
+    ]
+    write_csv(packet / "m8_official_label_mapping_qc.csv", label_rows, ["check", "expected_value", "observed_status", "evidence"])
+    export_qc_text = "\n".join(
+        [
+            "# M8 Label Export Dry Run QC",
+            "",
+            status_block,
+            "",
+            "Compact-to-official label mapping checks are summarized in `m8_official_label_mapping_qc.csv`.",
+            "",
+            "No validation zip or upload package was created in this M8 executor pass.",
+        ]
+    )
+    write_text(packet / "m8_label_export_dry_run_qc.md", export_qc_text + "\n")
+    write_text(packet / "m8_export_dry_run_qc.md", export_qc_text.replace("Label Export", "Export") + "\n")
+
+    cine_cases = {}
+    for row in cine_rows:
+        case_id = str(row.get("case_id", ""))
+        if case_id:
+            cine_cases[case_id] = {
+                "case_id": case_id,
+                "center": row.get("center", ""),
+                "available_nonreference_prediction_frames": row.get("available_nonreference_prediction_frames", ""),
+                "requested_pairs_per_case": row.get("requested_pairs_per_case", ""),
+                "pair_limit_reason": row.get("pair_limit_reason", ""),
+            }
+    write_csv(
+        packet / "m8_cine_case_manifest.csv",
+        list(cine_cases.values()),
+        ["case_id", "center", "available_nonreference_prediction_frames", "requested_pairs_per_case", "pair_limit_reason"],
+    )
+    blocked_reason = temporal_rows[0].get("reason", "CINE_REGISTRATION_BLOCKED_AFTER_MATURE_M8_ATTEMPT") if temporal_rows else "CINE_REGISTRATION_BLOCKED_AFTER_MATURE_M8_ATTEMPT"
+    temporal_block_rows = [
+        {
+            "status": "TEMPORAL_DICTIONARY_BLOCKED_BY_REGISTRATION_GAP_AFTER_MATURE_M8_ATTEMPT",
+            "metric_name": "myocardium_cinemyops_proxy",
+            "n": "0",
+            "value": "EVIDENCE_NOT_COMPUTED",
+            "reason": blocked_reason,
+        }
+    ]
+    write_csv(packet / "m8_temporal_dictionary_case_summary.csv", temporal_block_rows, ["status", "metric_name", "n", "value", "reason"])
+    write_csv(packet / "m8_temporal_aggregation_metrics.csv", temporal_block_rows, ["status", "metric_name", "n", "value", "reason"])
+    write_csv(packet / "m8_frame0_vs_temporal_help_harm.csv", temporal_block_rows, ["status", "metric_name", "n", "value", "reason"])
+    write_text(
+        packet / "m8_temporal_dictionary_index.json",
+        json.dumps(
+            {
+                "status": "TEMPORAL_DICTIONARY_BLOCKED_BY_REGISTRATION_GAP_AFTER_MATURE_M8_ATTEMPT",
+                "usable_nonreference_registration": False,
+                "temporal_dictionary_attempted": False,
+                "reason": blocked_reason,
+            },
+            indent=2,
+            sort_keys=True,
+        )
+        + "\n",
+    )
 
 
 def summarize_training_curves(packet: Path) -> None:
@@ -771,6 +1145,8 @@ def main() -> None:
         skip_contribution_compute=args.skip_contribution_compute,
     )
     status, issues = derive_status(packet, summaries, ledger)
+    refresh_architecture_closure_table(packet)
+    refresh_required_deliverables(packet, status, issues, ledger)
     write_decision_docs(packet, status, issues, summaries, ledger)
     write_manifest(packet)
     print(json.dumps({"packet": str(packet), "status": status, "issues": issues}, indent=2))

@@ -1,6 +1,14 @@
 # M8 Hardcase Sampling Report
 
-status: `M8_NEEDS_MONITOR_NO_REVIEW`
+status: `M8_NEEDS_EVIDENCE_CINE_REGISTRATION`
 
-This M8 artifact is not ready for review because M8 MyoPS long training and Cine mature registration have not completed and been re-aggregated into lightweight evidence files.
+blocking_issues:
+- `cine_registration_blocked_after_mature_attempt`
 
+
+batch_rows: `215371`
+t2_present_rows: `153353`
+edema_positive_rows: `153353`
+no_t2_safety_rows: `62018`
+
+Per-step evidence is in `m8_batch_composition.csv`; this report does not convert the packet to ready review.

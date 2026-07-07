@@ -1,2 +1,13 @@
-status,reason,source_path
-M8_NEEDS_MONITOR_NO_REVIEW,Awaiting completed M8 runtime aggregation.,results/20260707_srr_v3_m8_editor_grade_leaderboard_sprint/runtime/
+candidate_id,metric_name,dice_mean,hd95_mean,remote_fp_mean,selection_status,selection_reason
+m8_full_srr_context_arbitration_longrun__checkpoint_best__argmax,myops_edema,1.0,0.0,0.0,NOT_SELECTED,M8 overall blocked by Cine registration and final reviewer-grade metric/contribution audit.
+m8_full_srr_context_arbitration_longrun__checkpoint_best__argmax,myops_scar,0.5271438600615608,14.645222728135428,0.3333333333333333,NOT_SELECTED,M8 overall blocked by Cine registration and final reviewer-grade metric/contribution audit.
+m8_full_srr_context_arbitration_longrun__checkpoint_best__pathology_aware,myops_edema,1.0,0.0,0.0,NOT_SELECTED,M8 overall blocked by Cine registration and final reviewer-grade metric/contribution audit.
+m8_full_srr_context_arbitration_longrun__checkpoint_best__pathology_aware,myops_scar,0.530516511390692,14.633213648176524,0.3333333333333333,NOT_SELECTED,M8 overall blocked by Cine registration and final reviewer-grade metric/contribution audit.
+m8_scar_precision_edema_safe_longrun__checkpoint_best__argmax,myops_edema,1.0,0.0,0.0,NOT_SELECTED,M8 overall blocked by Cine registration and final reviewer-grade metric/contribution audit.
+m8_scar_precision_edema_safe_longrun__checkpoint_best__argmax,myops_scar,0.5333490122682826,14.52868484647662,0.3333333333333333,NOT_SELECTED,M8 overall blocked by Cine registration and final reviewer-grade metric/contribution audit.
+m8_scar_precision_edema_safe_longrun__checkpoint_best__pathology_aware,myops_edema,1.0,0.0,0.0,NOT_SELECTED,M8 overall blocked by Cine registration and final reviewer-grade metric/contribution audit.
+m8_scar_precision_edema_safe_longrun__checkpoint_best__pathology_aware,myops_scar,0.5382414476509874,14.381077131748953,0.5,NOT_SELECTED,M8 overall blocked by Cine registration and final reviewer-grade metric/contribution audit.
+m8_t2_centerC_edema_repair_longrun__checkpoint_best__argmax,myops_edema,1.0,0.0,0.0,NOT_SELECTED,M8 overall blocked by Cine registration and final reviewer-grade metric/contribution audit.
+m8_t2_centerC_edema_repair_longrun__checkpoint_best__argmax,myops_scar,0.5334873964279128,14.408764479612765,0.5833333333333334,NOT_SELECTED,M8 overall blocked by Cine registration and final reviewer-grade metric/contribution audit.
+m8_t2_centerC_edema_repair_longrun__checkpoint_best__pathology_aware,myops_edema,1.0,0.0,0.0,NOT_SELECTED,M8 overall blocked by Cine registration and final reviewer-grade metric/contribution audit.
+m8_t2_centerC_edema_repair_longrun__checkpoint_best__pathology_aware,myops_scar,0.5341988372484342,14.529217057316652,0.4166666666666667,NOT_SELECTED,M8 overall blocked by Cine registration and final reviewer-grade metric/contribution audit.

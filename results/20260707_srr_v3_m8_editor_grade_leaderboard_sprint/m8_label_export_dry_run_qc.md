@@ -1,6 +1,11 @@
-# M8 Label Export Dry Run Qc
+# M8 Label Export Dry Run QC
 
-status: `M8_NEEDS_MONITOR_NO_REVIEW`
+status: `M8_NEEDS_EVIDENCE_CINE_REGISTRATION`
 
-This M8 artifact is not ready for review because M8 MyoPS long training and Cine mature registration have not completed and been re-aggregated into lightweight evidence files.
+blocking_issues:
+- `cine_registration_blocked_after_mature_attempt`
 
+
+Compact-to-official label mapping checks are summarized in `m8_official_label_mapping_qc.csv`.
+
+No validation zip or upload package was created in this M8 executor pass.

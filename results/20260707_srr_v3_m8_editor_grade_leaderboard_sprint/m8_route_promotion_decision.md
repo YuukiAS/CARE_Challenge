@@ -1,6 +1,10 @@
 # M8 Route Promotion Decision
 
-status: `M8_NEEDS_MONITOR_NO_REVIEW`
+status: `M8_NEEDS_EVIDENCE_CINE_REGISTRATION`
 
-This M8 artifact is not ready for review because M8 MyoPS long training and Cine mature registration have not completed and been re-aggregated into lightweight evidence files.
+route_promotion_decision: `NO_PROMOTION`
+leaderboard_readiness: `NOT_READY`
+validation_packaging: `NOT_AUTHORIZED_NOT_CREATED`
+validation_upload: `NOT_AUTHORIZED_NOT_RUN`
 
+Promotion is blocked by the issues in `completion_check.md`, by incomplete local candidate-control assembly, and by the mature Cine registration block.

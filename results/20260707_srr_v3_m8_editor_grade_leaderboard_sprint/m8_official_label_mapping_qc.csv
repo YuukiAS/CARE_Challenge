@@ -1,2 +1,9 @@
-status,reason,source_path
-M8_NEEDS_MONITOR_NO_REVIEW,Awaiting completed M8 runtime aggregation.,results/20260707_srr_v3_m8_editor_grade_leaderboard_sprint/runtime/
+check,expected_value,observed_status,evidence
+scar_official_label,2221,MAPPING_RECORDED,M8 prompt contract
+edema_official_label,1220,MAPPING_RECORDED,M8 prompt contract
+lv_official_label,500,MAPPING_RECORDED,M8 prompt contract
+myocardium_official_label,200,MAPPING_RECORDED,M8 prompt contract
+rv_official_label,600,MAPPING_RECORDED,M8 prompt contract
+runtime_prediction_invalid_compact_labels,none,PASS,m8_same_split_help_harm.csv
+no_t2_edema_voxels,0,PASS,runtime prediction_sanity_checkpoint_best.csv
+validation_zip_created,false,NOT_CREATED,M8 scope forbids packaging/upload without approval

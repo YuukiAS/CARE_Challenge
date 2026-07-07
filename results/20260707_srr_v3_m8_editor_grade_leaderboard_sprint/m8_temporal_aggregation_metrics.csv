@@ -1,2 +1,2 @@
-status,reason,source_path
-M8_NEEDS_MONITOR_NO_REVIEW,Awaiting completed M8 runtime aggregation.,results/20260707_srr_v3_m8_editor_grade_leaderboard_sprint/runtime/
+status,metric_name,n,value,reason
+TEMPORAL_DICTIONARY_BLOCKED_BY_REGISTRATION_GAP_AFTER_MATURE_M8_ATTEMPT,myocardium_cinemyops_proxy,0,EVIDENCE_NOT_COMPUTED,M8 requires a usable non-reference registration row before temporal dictionary integration.

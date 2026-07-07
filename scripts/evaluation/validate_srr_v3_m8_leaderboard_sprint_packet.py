@@ -7,7 +7,9 @@ import argparse
 import csv
 import json
 import re
+import shutil
 import sys
+import tempfile
 from datetime import UTC, datetime
 from pathlib import Path
 
@@ -21,6 +23,8 @@ MONITOR_TOKENS = {
     "RUNNING",
     "AWAITING_SACCT",
     "AWAITING_RUNTIME_AGGREGATION",
+    "AWAITING COMPLETED",
+    "AWAITING COMPLETED M8 RUNTIME AGGREGATION",
 }
 ALLOWED_STATES = {
     READY_STATE,
@@ -49,9 +53,12 @@ REQUIRED_READY_FILES = [
     "m8_srr_contribution_by_case.csv",
     "m8_same_split_help_harm.csv",
     "m8_registration_same_subset_matrix.csv",
+    "m8_registration_method_selection.md",
     "m8_temporal_dictionary_evidence.csv",
     "m8_label_export_dry_run_qc.md",
     "m8_official_label_mapping_qc.csv",
+    "m8_formal_case_manifest.csv",
+    "m8_candidate_assembly_matrix.csv",
 ]
 
 
@@ -87,6 +94,25 @@ def numeric(value: str) -> float | None:
         return None
 
 
+def is_usable_registration(row: dict[str, str]) -> bool:
+    text = " ".join(str(value).upper() for value in row.values())
+    if "NOT_USABLE" in text or "REFERENCE_CONTROL" in text:
+        return False
+    return "USABLE" in text or str(row.get("failure_reason", "")).strip() == ""
+
+
+def has_unnegated_claim(text: str, phrase: str) -> bool:
+    start = 0
+    while True:
+        idx = text.find(phrase, start)
+        if idx < 0:
+            return False
+        context = text[max(0, idx - 140):idx]
+        if not any(marker in context for marker in ("not ", "no ", "without ", "does not ", "do not ", "not authorized", "not created", "not run")):
+            return True
+        start = idx + len(phrase)
+
+
 def validate(packet: Path) -> list[str]:
     errors: list[str] = []
     state = completion_state(packet)
@@ -106,8 +132,9 @@ def validate(packet: Path) -> list[str]:
         "M9",
     ]
     if state == READY_STATE:
+        all_text_upper = all_text.upper()
         for token in MONITOR_TOKENS:
-            if token in all_text:
+            if token in all_text_upper:
                 errors.append(f"ready packet contains monitor token {token}")
         for file_name in REQUIRED_READY_FILES:
             if not (packet / file_name).is_file():
@@ -126,9 +153,13 @@ def validate(packet: Path) -> list[str]:
         except Exception as exc:
             errors.append(f"variant config contract unreadable: {type(exc).__name__}")
             contract = {}
+        if "run_srr_propref_myops_fold0.py" not in str(contract.get("code_path", "")) or "--variant-config-contract" not in str(contract.get("code_path", "")):
+            errors.append("variant config contract is not tied to the training code reader")
         variants = contract.get("variants") if isinstance(contract, dict) else {}
         if not isinstance(variants, dict) or len(variants) < 3:
             errors.append("variant config contract does not define three M8 variants")
+        elif len({json.dumps(value, sort_keys=True) for value in variants.values()}) == 1:
+            errors.append("variant config variants only differ by name")
         contribution = read_csv(packet / "m8_srr_contribution_by_case.csv")
         if not contribution:
             errors.append("m8_srr_contribution_by_case.csv has no rows")
@@ -136,10 +167,41 @@ def validate(packet: Path) -> list[str]:
             if row.get("anchor_delta_rate") in {"", None, "EVIDENCE_NOT_EXPORTED_PER_CASE", "EVIDENCE_NOT_FOUND"}:
                 errors.append("m8_srr_contribution_by_case.csv lacks real per-case anchor_delta_rate")
                 break
+        if any(numeric(row.get("no_t2_edema_voxels", "")) and numeric(row.get("no_t2_edema_voxels", "")) > 0 for row in contribution):
+            errors.append("ready packet contains no-T2 edema voxel safety violation")
         architecture = read_csv(packet / "m8_architecture_gap_closure_table.csv")
         bad_status = [row.get("closure_status", "") for row in architecture if row.get("closure_status") in {"CLOSED", "NEEDS_REVISION", "NEEDS_EVIDENCE"}]
         if bad_status:
             errors.append("architecture closure table contains bare/blocked closure statuses")
+        formal = read_csv(packet / "m8_formal_case_manifest.csv")
+        if not formal or not any(str(row.get("t2_present", "")).lower() == "true" for row in formal):
+            errors.append("ready packet lacks broad formal evidence with T2-present cases")
+        candidates = read_csv(packet / "m8_candidate_assembly_matrix.csv")
+        if not candidates or any(row.get("decision") in {"BLOCKS_READY_REVIEW", "EVIDENCE_NOT_FOUND"} for row in candidates):
+            errors.append("ready packet lacks complete local candidate assembly")
+        label_qc = read_csv(packet / "m8_official_label_mapping_qc.csv")
+        if any(row.get("observed_status") == "FAIL" for row in label_qc):
+            errors.append("official label/export QC contains a failing row")
+        cine_matrix = read_csv(packet / "m8_registration_same_subset_matrix.csv")
+        cine_cases = {row.get("case_id", "") for row in cine_matrix if row.get("case_id")}
+        cine_methods = {
+            row.get("method", "")
+            for row in cine_matrix
+            if row.get("method") and "identity" not in row.get("method", "").lower()
+        }
+        if len(cine_cases) < 12:
+            errors.append("ready packet Cine registration covers fewer than 12 cases")
+        if len(cine_methods) < 2:
+            errors.append("ready packet lacks at least two mature non-reference Cine registration families")
+        if "selected" not in read_text(packet / "m8_registration_method_selection.md").lower():
+            errors.append("ready packet lacks quantitative best-registration selection text")
+        usable_registration = any(is_usable_registration(row) for row in cine_matrix)
+        temporal = read_csv(packet / "m8_temporal_dictionary_evidence.csv")
+        temporal_attempted = any(str(row.get("temporal_dictionary_attempted", "")).lower() == "true" or str(row.get("status", "")).upper().startswith("TEMPORAL_DICTIONARY_EXECUTED") for row in temporal)
+        if usable_registration and not temporal_attempted:
+            errors.append("usable Cine registration exists but temporal dictionary was not executed")
+        if not usable_registration and state == READY_STATE:
+            errors.append("ready packet has no usable non-reference Cine registration")
     else:
         if READY_STATE in all_text:
             errors.append(f"non-ready packet text contains {READY_STATE}")
@@ -148,7 +210,7 @@ def validate(packet: Path) -> list[str]:
     if "upload_ready/" in lower_text or "care-myocardium-organagent.zip" in lower_text:
         errors.append("packet references upload package path or zip")
     for phrase in forbidden_claims:
-        if phrase in lower_text and "not " not in lower_text[max(0, lower_text.find(phrase) - 20): lower_text.find(phrase)]:
+        if has_unnegated_claim(lower_text, phrase):
             errors.append(f"packet may contain forbidden claim: {phrase}")
     return errors
 
@@ -189,13 +251,193 @@ def write_reports(packet: Path, errors: list[str]) -> None:
     )
 
 
+def make_ready_fixture(root: Path) -> None:
+    root.mkdir(parents=True, exist_ok=True)
+    for name in REQUIRED_READY_FILES + ["result.md", "completion_check.md"]:
+        path = root / name
+        path.parent.mkdir(parents=True, exist_ok=True)
+        if path.suffix == ".csv":
+            path.write_text("status,value\nPASS,1\n", encoding="utf-8")
+        else:
+            path.write_text(f"# {name}\n\nstatus: `{READY_STATE}`\n", encoding="utf-8")
+    (root / "completion_check.md").write_text(f"# Completion\n\nstatus: `{READY_STATE}`\n", encoding="utf-8")
+    (root / "commands_run.md").write_text("# Commands\n\n- Aggregation completed.\n", encoding="utf-8")
+    write_csv(
+        root / "m8_training_budget_ledger.csv",
+        [{"run_id": "run0", "included_in_8h_budget": "true", "train_loop_seconds": "28800", "optimizer_steps": "6000", "validation_event_count": "3"}],
+        ["run_id", "included_in_8h_budget", "train_loop_seconds", "optimizer_steps", "validation_event_count"],
+    )
+    variants = {
+        "v0": {"encoder_profile": "a", "dictionary_slot_counts": {"shared": 4}},
+        "v1": {"encoder_profile": "b", "dictionary_slot_counts": {"shared": 6}},
+        "v2": {"encoder_profile": "c", "dictionary_slot_counts": {"shared": 8}},
+    }
+    (root / "m8_variant_config_contract.json").write_text(
+        json.dumps({"code_path": "scripts/training/run_srr_propref_myops_fold0.py --variant-config-contract", "variants": variants}),
+        encoding="utf-8",
+    )
+    write_csv(
+        root / "m8_srr_contribution_by_case.csv",
+        [{"case_id": "Case1", "anchor_delta_rate": "0.01", "no_t2_edema_voxels": "0"}],
+        ["case_id", "anchor_delta_rate", "no_t2_edema_voxels"],
+    )
+    write_csv(
+        root / "m8_architecture_gap_closure_table.csv",
+        [{"route_component": "x", "closure_status": "CLOSED_WITH_RUNTIME_EVIDENCE"}],
+        ["route_component", "closure_status"],
+    )
+    write_csv(
+        root / "m8_formal_case_manifest.csv",
+        [{"case_id": "Case1", "t2_present": "true"}, {"case_id": "Case2", "t2_present": "false"}],
+        ["case_id", "t2_present"],
+    )
+    write_csv(
+        root / "m8_candidate_assembly_matrix.csv",
+        [{"candidate_id": "A", "decision": "SELECTABLE_FOR_REVIEW"}],
+        ["candidate_id", "decision"],
+    )
+    write_csv(
+        root / "m8_official_label_mapping_qc.csv",
+        [{"check": "no_t2_edema_voxels", "observed_status": "PASS"}],
+        ["check", "observed_status"],
+    )
+    cine_rows = []
+    for idx in range(12):
+        case_id = f"Case{idx:04d}"
+        cine_rows.append({"method": "SimpleITK_Demons", "case_id": case_id, "failure_reason": "", "m7_continued_decision": "USABLE_FOR_TEMPORAL_DICTIONARY"})
+        cine_rows.append({"method": "ANTsPy_SyNOnly", "case_id": case_id, "failure_reason": "", "m7_continued_decision": "USABLE_FOR_TEMPORAL_DICTIONARY"})
+    write_csv(root / "m8_registration_same_subset_matrix.csv", cine_rows, ["method", "case_id", "failure_reason", "m7_continued_decision"])
+    (root / "m8_registration_method_selection.md").write_text("# Method Selection\n\nselected method: `SimpleITK_Demons`\n", encoding="utf-8")
+    write_csv(
+        root / "m8_temporal_dictionary_evidence.csv",
+        [{"status": "TEMPORAL_DICTIONARY_EXECUTED", "temporal_dictionary_attempted": "true"}],
+        ["status", "temporal_dictionary_attempted"],
+    )
+
+
+def mutate_fixture(name: str, path: Path) -> None:
+    if name == "total_training_budget_under_8h":
+        write_csv(path / "m8_training_budget_ledger.csv", [{"run_id": "run0", "included_in_8h_budget": "true", "train_loop_seconds": "1000"}], ["run_id", "included_in_8h_budget", "train_loop_seconds"])
+    elif name == "missing_training_budget_ledger":
+        (path / "m8_training_budget_ledger.csv").unlink()
+    elif name == "pending_monitor_packet_marked_ready":
+        (path / "commands_run.md").write_text("# Commands\n\nPENDING_PRIORITY RUNNING AWAITING_RUNTIME_AGGREGATION\n", encoding="utf-8")
+    elif name == "completed_job_not_reaggregated":
+        (path / "commands_run.md").write_text("# Commands\n\nsbatch submitted; PENDING_PRIORITY only.\n", encoding="utf-8")
+    elif name == "config_contract_not_read_by_code":
+        contract = json.loads((path / "m8_variant_config_contract.json").read_text(encoding="utf-8"))
+        contract["code_path"] = "EVIDENCE_NOT_FOUND"
+        (path / "m8_variant_config_contract.json").write_text(json.dumps(contract), encoding="utf-8")
+    elif name == "variants_only_renamed":
+        contract = json.loads((path / "m8_variant_config_contract.json").read_text(encoding="utf-8"))
+        contract["variants"] = {key: {"encoder_profile": "same", "dictionary_slot_counts": {"shared": 4}} for key in contract["variants"]}
+        (path / "m8_variant_config_contract.json").write_text(json.dumps(contract), encoding="utf-8")
+    elif name == "missing_per_case_anchor_delta":
+        write_csv(path / "m8_srr_contribution_by_case.csv", [{"case_id": "Case1", "anchor_delta_rate": "EVIDENCE_NOT_EXPORTED_PER_CASE"}], ["case_id", "anchor_delta_rate"])
+    elif name == "easy_only_formal_evaluation":
+        write_csv(path / "m8_formal_case_manifest.csv", [{"case_id": "Case2", "t2_present": "false"}], ["case_id", "t2_present"])
+    elif name == "no_t2_safety_violation":
+        write_csv(path / "m8_srr_contribution_by_case.csv", [{"case_id": "Case1", "anchor_delta_rate": "0.01", "no_t2_edema_voxels": "3"}], ["case_id", "anchor_delta_rate", "no_t2_edema_voxels"])
+    elif name == "missing_local_candidate_assembly":
+        (path / "m8_candidate_assembly_matrix.csv").unlink()
+    elif name == "cine_three_case_smoke":
+        rows = [{"method": "SimpleITK_Demons", "case_id": f"Case{idx:04d}", "failure_reason": "", "m7_continued_decision": "USABLE"} for idx in range(3)]
+        write_csv(path / "m8_registration_same_subset_matrix.csv", rows, ["method", "case_id", "failure_reason", "m7_continued_decision"])
+    elif name == "no_best_registration_selection":
+        (path / "m8_registration_method_selection.md").write_text("# Method Selection\n\nEVIDENCE_NOT_FOUND\n", encoding="utf-8")
+    elif name == "usable_registration_without_temporal_dictionary":
+        write_csv(path / "m8_temporal_dictionary_evidence.csv", [{"status": "TEMPORAL_DICTIONARY_BLOCKED", "temporal_dictionary_attempted": "false"}], ["status", "temporal_dictionary_attempted"])
+    elif name == "missing_label_export_qc":
+        (path / "m8_official_label_mapping_qc.csv").unlink()
+    elif name == "placeholder_final_proof":
+        (path / "result.md").write_text(f"# Result\n\nstatus: `{READY_STATE}`\n\nAwaiting completed M8 runtime aggregation.\n", encoding="utf-8")
+    elif name == "unauthorized_upload_claim":
+        (path / "result.md").write_text(f"# Result\n\nstatus: `{READY_STATE}`\n\nCreated upload_ready/CARE-Myocardium-OrganAgent.zip\n", encoding="utf-8")
+    else:
+        raise ValueError(name)
+
+
+def validator_reason(errors: list[str]) -> str:
+    return "; ".join(errors[:2]) if errors else ""
+
+
+def run_self_tests(packet: Path) -> list[dict[str, str]]:
+    cases = [
+        "total_training_budget_under_8h",
+        "missing_training_budget_ledger",
+        "pending_monitor_packet_marked_ready",
+        "completed_job_not_reaggregated",
+        "config_contract_not_read_by_code",
+        "variants_only_renamed",
+        "missing_per_case_anchor_delta",
+        "easy_only_formal_evaluation",
+        "no_t2_safety_violation",
+        "missing_local_candidate_assembly",
+        "cine_three_case_smoke",
+        "no_best_registration_selection",
+        "usable_registration_without_temporal_dictionary",
+        "missing_label_export_qc",
+        "placeholder_final_proof",
+        "unauthorized_upload_claim",
+    ]
+    rows: list[dict[str, str]] = []
+    with tempfile.TemporaryDirectory(prefix="m8_validator_selftest_") as tmp:
+        base = Path(tmp) / "good"
+        make_ready_fixture(base)
+        good_errors = validate(base)
+        rows.append(
+            {
+                "fixture": "good_ready_fixture",
+                "expected": "PASS",
+                "actual": "PASS" if not good_errors else "FAIL",
+                "failure_reason": validator_reason(good_errors),
+            }
+        )
+        for case in cases:
+            fixture = Path(tmp) / case
+            shutil.copytree(base, fixture)
+            mutate_fixture(case, fixture)
+            errors = validate(fixture)
+            rows.append(
+                {
+                    "fixture": case,
+                    "expected": "FAIL_CLOSED",
+                    "actual": "FAIL_CLOSED" if errors else "FAIL_OPEN",
+                    "failure_reason": validator_reason(errors),
+                }
+            )
+    write_csv(packet / "m8_validator_unit_test_report.csv", rows, ["fixture", "expected", "actual", "failure_reason"])
+    all_ok = all((row["expected"] == "PASS" and row["actual"] == "PASS") or (row["expected"] == "FAIL_CLOSED" and row["actual"] == "FAIL_CLOSED") for row in rows)
+    lines = [
+        "# M8 Validator Unit Test Report",
+        "",
+        f"status: `{'PASS_FAIL_CLOSED' if all_ok else 'FAIL_OPEN'}`",
+        "",
+        "Temporary known-bad fixtures were generated outside the repo and are not committed. Summary rows are in `m8_validator_unit_test_report.csv`.",
+        "",
+        "| fixture | expected | actual | failure_reason |",
+        "| --- | --- | --- | --- |",
+    ]
+    lines.extend(f"| {row['fixture']} | {row['expected']} | {row['actual']} | {row['failure_reason']} |" for row in rows)
+    (packet / "m8_validator_unit_test_report.md").write_text("\n".join(lines) + "\n", encoding="utf-8")
+    return rows
+
+
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--packet", required=True)
+    parser.add_argument("--self-test", action="store_true")
     args = parser.parse_args()
     packet = Path(args.packet)
     if not packet.is_absolute():
         packet = Path.cwd() / packet
+    if args.self_test:
+        rows = run_self_tests(packet)
+        failed = [row for row in rows if row["actual"] not in {"PASS", "FAIL_CLOSED"}]
+        print(json.dumps({"packet": str(packet), "self_test_rows": len(rows), "failed": failed}, indent=2))
+        if failed:
+            sys.exit(1)
+        return
     errors = validate(packet)
     write_reports(packet, errors)
     print(json.dumps({"packet": str(packet), "error_count": len(errors), "errors": errors}, indent=2))

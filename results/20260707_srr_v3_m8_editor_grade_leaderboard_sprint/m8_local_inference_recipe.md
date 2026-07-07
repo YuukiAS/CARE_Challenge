@@ -1,6 +1,13 @@
 # M8 Local Inference Recipe
 
-status: `M8_NEEDS_MONITOR_NO_REVIEW`
+status: `M8_NEEDS_EVIDENCE_CINE_REGISTRATION`
 
-This M8 artifact is not ready for review because M8 MyoPS long training and Cine mature registration have not completed and been re-aggregated into lightweight evidence files.
+blocking_issues:
+- `cine_registration_blocked_after_mature_attempt`
 
+
+Local candidates are represented in `m8_candidate_assembly_matrix.csv` from completed same-split checkpoint-best outputs.
+
+No validation package, upload zip, hosted metric claim, challenge submission, fold expansion, scientific stop, leaderboard-ready state, or M9 is authorized.
+
+Current blocker: same-split SRR outputs and per-case anchor deltas exist, but a complete candidate-control assembly against nnU-Net plus independent metric/contribution audit is not cleared; Cine is registration-blocked.

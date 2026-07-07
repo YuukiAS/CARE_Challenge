@@ -1,6 +1,11 @@
 # M8 Loss Schedule
 
-status: `M8_NEEDS_MONITOR_NO_REVIEW`
+status: `M8_NEEDS_EVIDENCE_CINE_REGISTRATION`
 
-This M8 artifact is not ready for review because M8 MyoPS long training and Cine mature registration have not completed and been re-aggregated into lightweight evidence files.
+blocking_issues:
+- `cine_registration_blocked_after_mature_attempt`
 
+
+included_myops_train_loop_seconds: `28800.190`
+
+Runtime loss traces are aggregated in `m8_training_curves.csv`, `m8_loss_component_by_step.csv`, and `m8_loss_component_gradient_sanity.csv`.

@@ -1,7 +1,7 @@
 # M8 Manifest
 
 task_key: `20260707_srr_v3_m8_editor_grade_leaderboard_sprint`
-updated_at_utc: `2026-07-07T09:12:08.139770+00:00`
+updated_at_utc: `2026-07-07T09:31:15.257950+00:00`
 
 ## Files
 - `MANIFEST.md`
@@ -53,6 +53,7 @@ updated_at_utc: `2026-07-07T09:12:08.139770+00:00`
 - `m8_training_budget_ledger.csv`
 - `m8_training_curves.csv`
 - `m8_validation_events.csv`
+- `m8_validator_unit_test_report.csv`
 - `m8_validator_unit_test_report.md`
 - `m8_variant_config_contract.json`
 - `m8_variant_matrix.csv`
