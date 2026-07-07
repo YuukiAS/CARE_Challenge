@@ -1,0 +1,25 @@
+candidate_id,candidate_type,metric_name,case_id,center,modality_group,t2_present,class_id,dice,hd95,component_count,remote_fp_count,no_t2_edema_voxels,derived_from_variant_count,source_evidence
+A_nnunet_anchor_control,same_split_nnunet_anchor_control,myops_scar,Case2002,CenterB,C0+LGE+T2,True,5,0.5602700096432015,21.415372143918024,5,0,0,1,broad_eval direct nnU-Net anchor logits
+A_nnunet_anchor_control,same_split_nnunet_anchor_control,myops_edema,Case2002,CenterB,C0+LGE+T2,True,4,0.5376005596362364,17.453201935819685,5,0,0,1,broad_eval direct nnU-Net anchor logits
+A_nnunet_anchor_control,same_split_nnunet_anchor_control,myops_scar,Case2007,CenterB,C0+LGE+T2,True,5,0.4898728214790391,11.682996338833703,3,0,0,1,broad_eval direct nnU-Net anchor logits
+A_nnunet_anchor_control,same_split_nnunet_anchor_control,myops_edema,Case2007,CenterB,C0+LGE+T2,True,4,0.5701357466063348,7.5130097186944615,14,0,0,1,broad_eval direct nnU-Net anchor logits
+A_nnunet_anchor_control,same_split_nnunet_anchor_control,myops_scar,Case2008,CenterB,C0+LGE+T2,True,5,0.7531584062196307,6.640625,1,0,0,1,broad_eval direct nnU-Net anchor logits
+A_nnunet_anchor_control,same_split_nnunet_anchor_control,myops_edema,Case2008,CenterB,C0+LGE+T2,True,4,0.3485546711353163,33.237885822186755,5,0,0,1,broad_eval direct nnU-Net anchor logits
+A_nnunet_anchor_control,same_split_nnunet_anchor_control,myops_scar,Case2017,CenterB,C0+LGE+T2,True,5,0.5470588235294118,11.338866091557966,2,0,0,1,broad_eval direct nnU-Net anchor logits
+A_nnunet_anchor_control,same_split_nnunet_anchor_control,myops_edema,Case2017,CenterB,C0+LGE+T2,True,4,0.6796246648793566,10.0,6,0,0,1,broad_eval direct nnU-Net anchor logits
+A_nnunet_anchor_control,same_split_nnunet_anchor_control,myops_scar,Case2020,CenterB,C0+LGE+T2,True,5,0.4196185286103542,20.994429281533453,1,0,0,1,broad_eval direct nnU-Net anchor logits
+A_nnunet_anchor_control,same_split_nnunet_anchor_control,myops_edema,Case2020,CenterB,C0+LGE+T2,True,4,0.5630676084762866,7.5130097186944615,4,0,0,1,broad_eval direct nnU-Net anchor logits
+A_nnunet_anchor_control,same_split_nnunet_anchor_control,myops_scar,Case2031,CenterB,C0+LGE+T2,True,5,0.8013937282229965,5.008673145796307,2,0,0,1,broad_eval direct nnU-Net anchor logits
+A_nnunet_anchor_control,same_split_nnunet_anchor_control,myops_edema,Case2031,CenterB,C0+LGE+T2,True,4,0.29880478087649404,25.052956799932126,16,0,0,1,broad_eval direct nnU-Net anchor logits
+A_nnunet_anchor_control,same_split_nnunet_anchor_control,myops_scar,Case2033,CenterB,C0+LGE+T2,True,5,0.7208988764044943,10.0,2,0,0,1,broad_eval direct nnU-Net anchor logits
+A_nnunet_anchor_control,same_split_nnunet_anchor_control,myops_edema,Case2033,CenterB,C0+LGE+T2,True,4,0.523033309709426,10.76453641085509,4,0,0,1,broad_eval direct nnU-Net anchor logits
+A_nnunet_anchor_control,same_split_nnunet_anchor_control,myops_scar,Case3004,CenterC,C0+LGE+T2,True,5,0.6247040252565115,24.000003814697266,1,0,0,1,broad_eval direct nnU-Net anchor logits
+A_nnunet_anchor_control,same_split_nnunet_anchor_control,myops_edema,Case3004,CenterC,C0+LGE+T2,True,4,0.4530451866404715,9.222044972510458,4,0,0,1,broad_eval direct nnU-Net anchor logits
+A_nnunet_anchor_control,same_split_nnunet_anchor_control,myops_scar,Case3011,CenterC,C0+LGE+T2,True,5,0.6389535925461387,10.960275328815657,3,0,0,1,broad_eval direct nnU-Net anchor logits
+A_nnunet_anchor_control,same_split_nnunet_anchor_control,myops_edema,Case3011,CenterC,C0+LGE+T2,True,4,0.26666666666666666,34.26613348722458,7,0,0,1,broad_eval direct nnU-Net anchor logits
+A_nnunet_anchor_control,same_split_nnunet_anchor_control,myops_scar,Case3012,CenterC,C0+LGE+T2,True,5,0.8267066766691673,2.916266679763794,2,1,0,1,broad_eval direct nnU-Net anchor logits
+A_nnunet_anchor_control,same_split_nnunet_anchor_control,myops_edema,Case3012,CenterC,C0+LGE+T2,True,4,0.45068083693125205,22.41202445117764,18,0,0,1,broad_eval direct nnU-Net anchor logits
+A_nnunet_anchor_control,same_split_nnunet_anchor_control,myops_scar,Case3023,CenterC,C0+LGE+T2,True,5,0.6612691466083152,4.124789669313123,2,1,0,1,broad_eval direct nnU-Net anchor logits
+A_nnunet_anchor_control,same_split_nnunet_anchor_control,myops_edema,Case3023,CenterC,C0+LGE+T2,True,4,0.16291793313069908,41.324851944191856,13,1,0,1,broad_eval direct nnU-Net anchor logits
+A_nnunet_anchor_control,same_split_nnunet_anchor_control,myops_scar,Case3026,CenterC,C0+LGE+T2,True,5,0.8081740276862228,2.916266679763794,1,0,0,1,broad_eval direct nnU-Net anchor logits
+A_nnunet_anchor_control,same_split_nnunet_anchor_control,myops_edema,Case3026,CenterC,C0+LGE+T2,True,4,0.21919504643962848,17.325748731744103,4,0,0,1,broad_eval direct nnU-Net anchor logits

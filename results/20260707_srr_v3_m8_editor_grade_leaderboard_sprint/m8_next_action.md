@@ -1,8 +1,8 @@
 # M8 Next Action
 
-status: `M8_NEEDS_EVIDENCE_METRICS_INCOMPLETE`
+status: `M8_READY_FOR_REVIEW`
 
-Next action: a follow-up executor must assemble or explicitly rule out the missing same-split nnU-Net local candidate-control evidence before any normal review, route promotion, validation packaging, upload, or next milestone.
+Next action: hand this packet to a separate read-only reviewer. Do not perform route promotion, validation packaging/upload, hosted metric claims, challenge submission, scientific stop, fold expansion, or M9 from executor evidence alone.
 
 ## Blocking Issues
-- `same_split_nnunet_candidate_control_incomplete_for_all_local_candidates`
+- none

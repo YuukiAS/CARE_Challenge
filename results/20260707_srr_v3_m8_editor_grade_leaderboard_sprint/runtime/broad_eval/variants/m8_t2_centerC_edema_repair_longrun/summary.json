@@ -1,0 +1,131 @@
+{
+  "case_count": 12,
+  "case_ids": [
+    "Case2002",
+    "Case2007",
+    "Case2008",
+    "Case2017",
+    "Case2020",
+    "Case2031",
+    "Case2033",
+    "Case3004",
+    "Case3011",
+    "Case3012",
+    "Case3023",
+    "Case3026"
+  ],
+  "case_summary": [
+    {
+      "case_id": "Case2002",
+      "center": "CenterB",
+      "edema_gt_positive": true,
+      "modality_group": "C0+LGE+T2",
+      "scar_gt_positive": true,
+      "t2_present": true
+    },
+    {
+      "case_id": "Case2007",
+      "center": "CenterB",
+      "edema_gt_positive": true,
+      "modality_group": "C0+LGE+T2",
+      "scar_gt_positive": true,
+      "t2_present": true
+    },
+    {
+      "case_id": "Case2008",
+      "center": "CenterB",
+      "edema_gt_positive": true,
+      "modality_group": "C0+LGE+T2",
+      "scar_gt_positive": true,
+      "t2_present": true
+    },
+    {
+      "case_id": "Case2017",
+      "center": "CenterB",
+      "edema_gt_positive": true,
+      "modality_group": "C0+LGE+T2",
+      "scar_gt_positive": true,
+      "t2_present": true
+    },
+    {
+      "case_id": "Case2020",
+      "center": "CenterB",
+      "edema_gt_positive": true,
+      "modality_group": "C0+LGE+T2",
+      "scar_gt_positive": true,
+      "t2_present": true
+    },
+    {
+      "case_id": "Case2031",
+      "center": "CenterB",
+      "edema_gt_positive": true,
+      "modality_group": "C0+LGE+T2",
+      "scar_gt_positive": true,
+      "t2_present": true
+    },
+    {
+      "case_id": "Case2033",
+      "center": "CenterB",
+      "edema_gt_positive": true,
+      "modality_group": "C0+LGE+T2",
+      "scar_gt_positive": true,
+      "t2_present": true
+    },
+    {
+      "case_id": "Case3004",
+      "center": "CenterC",
+      "edema_gt_positive": true,
+      "modality_group": "C0+LGE+T2",
+      "scar_gt_positive": true,
+      "t2_present": true
+    },
+    {
+      "case_id": "Case3011",
+      "center": "CenterC",
+      "edema_gt_positive": true,
+      "modality_group": "C0+LGE+T2",
+      "scar_gt_positive": true,
+      "t2_present": true
+    },
+    {
+      "case_id": "Case3012",
+      "center": "CenterC",
+      "edema_gt_positive": true,
+      "modality_group": "C0+LGE+T2",
+      "scar_gt_positive": true,
+      "t2_present": true
+    },
+    {
+      "case_id": "Case3023",
+      "center": "CenterC",
+      "edema_gt_positive": true,
+      "modality_group": "C0+LGE+T2",
+      "scar_gt_positive": true,
+      "t2_present": true
+    },
+    {
+      "case_id": "Case3026",
+      "center": "CenterC",
+      "edema_gt_positive": true,
+      "modality_group": "C0+LGE+T2",
+      "scar_gt_positive": true,
+      "t2_present": true
+    }
+  ],
+  "centerB_or_centerC_case_count": 12,
+  "edema_gt_positive_case_count": 12,
+  "eval_only": true,
+  "multimodal_case_count": 12,
+  "output_dir": "/users/a/e/aereinh/CARE/results/20260707_srr_v3_m8_editor_grade_leaderboard_sprint/runtime/broad_eval/variants/m8_t2_centerC_edema_repair_longrun",
+  "runtime_seconds": 29.773463249206543,
+  "scar_gt_positive_case_count": 12,
+  "source_checkpoint": "/users/a/e/aereinh/CARE/results/20260707_srr_v3_m8_editor_grade_leaderboard_sprint/runtime/variants/m8_t2_centerC_edema_repair_longrun/checkpoints/fold_0/propref_config/checkpoint_best.pt",
+  "source_summary": "/users/a/e/aereinh/CARE/results/20260707_srr_v3_m8_editor_grade_leaderboard_sprint/runtime/variants/m8_t2_centerC_edema_repair_longrun/summary.json",
+  "status": "BROAD_EVAL_COMPLETED",
+  "t2_present_case_count": 12,
+  "training_launched": false,
+  "updated_at_utc": "2026-07-07T10:17:25.719435+00:00",
+  "validation_package_created": false,
+  "validation_upload_run": false,
+  "variant": "m8_t2_centerC_edema_repair_longrun"
+}

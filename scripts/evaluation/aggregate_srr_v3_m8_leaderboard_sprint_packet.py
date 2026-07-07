@@ -85,6 +85,10 @@ def variant_dir(packet: Path, variant: str) -> Path:
     return packet / "runtime" / "variants" / variant
 
 
+def broad_eval_variant_dir(packet: Path, variant: str) -> Path:
+    return packet / "runtime" / "broad_eval" / "variants" / variant
+
+
 def budget_supplement_dirs(packet: Path) -> list[Path]:
     """Return isolated M8 budget supplement runs explicitly marked by job config."""
 
@@ -108,6 +112,16 @@ def evidence_dirs(packet: Path, *, include_budget_supplements: bool = False) -> 
     return dirs
 
 
+def formal_eval_dirs(packet: Path) -> list[Path]:
+    dirs: list[Path] = []
+    for variant in VARIANTS:
+        dirs.append(variant_dir(packet, variant))
+        broad_dir = broad_eval_variant_dir(packet, variant)
+        if broad_dir.is_dir():
+            dirs.append(broad_dir)
+    return dirs
+
+
 def summary_path(packet: Path, variant: str) -> Path:
     return variant_dir(packet, variant) / "summary.json"
 
@@ -124,6 +138,15 @@ def concat_csv(paths: Iterable[Path]) -> list[dict[str, object]]:
             merged.update(row)
             rows.append(merged)
     return rows
+
+
+def dedupe_rows(rows: list[dict[str, object]], key_fields: list[str]) -> list[dict[str, object]]:
+    deduped: dict[tuple[str, ...], dict[str, object]] = {}
+    for row in rows:
+        key = tuple(str(row.get(field, "")) for field in key_fields)
+        if any(key):
+            deduped[key] = row
+    return list(deduped.values())
 
 
 def ledger_rows(packet: Path, summaries: dict[str, dict[str, object]]) -> list[dict[str, object]]:
@@ -283,9 +306,26 @@ def derive_status(packet: Path, summaries: dict[str, dict[str, object]], ledger:
     if temporal and any("USABLE" in str(row).upper() for row in read_csv(cine_matrix)) and not any(row.get("status") not in {"", MONITOR_STATUS} for row in temporal):
         issues.append("usable_registration_without_temporal_dictionary")
         return "M8_NEEDS_EVIDENCE_CINE_REGISTRATION", issues
-    return "M8_NEEDS_EVIDENCE_METRICS_INCOMPLETE", [
-        "same_split_nnunet_candidate_control_incomplete_for_all_local_candidates"
-    ]
+    same_split = read_csv(packet / "m8_same_split_help_harm.csv")
+    anchor_control = read_csv(packet / "m8_nnunet_anchor_control_metrics.csv")
+    expected_candidates = {
+        str(row.get("variant", ""))
+        for row in same_split
+        if str(row.get("variant", "")).endswith("__argmax")
+        or str(row.get("variant", "")).endswith("__pathology_aware")
+    }
+    expected_metrics = {str(row.get("metric_name", "")) for row in same_split if row.get("metric_name")}
+    anchor_metrics = {str(row.get("metric_name", "")) for row in anchor_control if row.get("metric_name")}
+    if not anchor_control or not expected_metrics.issubset(anchor_metrics):
+        return "M8_NEEDS_EVIDENCE_METRICS_INCOMPLETE", [
+            "same_split_nnunet_candidate_control_incomplete_for_all_local_candidates"
+        ]
+    if not expected_candidates or len(expected_candidates) < 6:
+        return "M8_NEEDS_EVIDENCE_METRICS_INCOMPLETE", ["local_candidate_assembly_incomplete"]
+    breadth_issues = formal_breadth_issues_from_rows(same_split)
+    if breadth_issues:
+        return "M8_NEEDS_EVIDENCE_METRICS_INCOMPLETE", breadth_issues
+    return "M8_READY_FOR_REVIEW", []
 
 
 def _finite_values(rows: list[dict[str, object]], key: str) -> list[float]:
@@ -300,6 +340,200 @@ def _finite_values(rows: list[dict[str, object]], key: str) -> list[float]:
 def _mean_text(rows: list[dict[str, object]], key: str) -> str:
     values = _finite_values(rows, key)
     return f"{mean(values):.6f}" if values else "EVIDENCE_NOT_FOUND"
+
+
+def _split_candidate_id(candidate_id: str) -> tuple[str, str]:
+    marker = "__checkpoint_best__"
+    if marker not in candidate_id:
+        return candidate_id, ""
+    base, decode = candidate_id.split(marker, 1)
+    return base, decode
+
+
+def derive_anchor_control_rows(
+    same_split: list[dict[str, object]],
+    contribution_rows: list[dict[str, object]],
+) -> list[dict[str, object]]:
+    """Derive same-split nnU-Net control metrics from exported final-vs-anchor deltas."""
+
+    same_split_by_key: dict[tuple[str, str, str, str], dict[str, object]] = {}
+    for row in same_split:
+        variant, decode = _split_candidate_id(str(row.get("variant", "")))
+        if not variant or not decode:
+            continue
+        same_split_by_key[
+            (
+                variant,
+                decode,
+                str(row.get("case_id", "")),
+                str(row.get("metric_name", "")),
+            )
+        ] = row
+
+    derived_by_case_metric: dict[tuple[str, str], list[dict[str, object]]] = {}
+    for row in contribution_rows:
+        variant = str(row.get("variant", ""))
+        decode = str(row.get("decode_mode", ""))
+        case_id = str(row.get("case_id", ""))
+        metric_name = str(row.get("class_name", ""))
+        if not variant or not decode or not case_id or metric_name not in {"myops_scar", "myops_edema"}:
+            continue
+        same_row = same_split_by_key.get((variant, decode, case_id, metric_name))
+        if not same_row:
+            continue
+        derived = {
+            "candidate_id": "A_nnunet_anchor_control",
+            "candidate_type": "same_split_nnunet_anchor_control",
+            "metric_name": metric_name,
+            "case_id": case_id,
+            "center": same_row.get("center", ""),
+            "modality_group": same_row.get("modality_group", ""),
+            "t2_present": same_row.get("t2_present", ""),
+            "class_id": same_row.get("class_id", ""),
+            "dice": as_float(same_row.get("dice")) - as_float(row.get("dice_delta")),
+            "hd95": as_float(same_row.get("hd95")) - as_float(row.get("hd95_delta")),
+            "component_count": as_float(same_row.get("component_count")) - as_float(row.get("component_count_delta")),
+            "remote_fp_count": as_float(same_row.get("remote_fp_count")) - as_float(row.get("remote_fp_delta")),
+            "no_t2_edema_voxels": 0 if metric_name == "myops_edema" and str(same_row.get("t2_present", "")).lower() == "false" else "",
+            "source_evidence": "m8_same_split_help_harm.csv + m8_srr_contribution_by_case.csv",
+        }
+        derived_by_case_metric.setdefault((case_id, metric_name), []).append(derived)
+
+    rows: list[dict[str, object]] = []
+    for (_case_id, _metric_name), values in sorted(derived_by_case_metric.items()):
+        first = values[0]
+        rows.append(
+            {
+                **first,
+                "dice": mean(as_float(v.get("dice")) for v in values),
+                "hd95": mean(as_float(v.get("hd95")) for v in values),
+                "component_count": mean(as_float(v.get("component_count")) for v in values),
+                "remote_fp_count": mean(as_float(v.get("remote_fp_count")) for v in values),
+                "derived_from_variant_count": len(values),
+            }
+        )
+    return rows
+
+
+def _group_mean_rows(rows: list[dict[str, object]], key_field: str, value_fields: list[str]) -> dict[tuple[str, str], dict[str, object]]:
+    grouped: dict[tuple[str, str], list[dict[str, object]]] = {}
+    for row in rows:
+        key = (str(row.get(key_field, "")), str(row.get("metric_name", "")))
+        if not key[0] or not key[1]:
+            continue
+        grouped.setdefault(key, []).append(row)
+    summaries: dict[tuple[str, str], dict[str, object]] = {}
+    for key, values in grouped.items():
+        summary: dict[str, object] = {key_field: key[0], "metric_name": key[1], "n": len(values)}
+        for field in value_fields:
+            vals = [as_float(row.get(field), float("nan")) for row in values]
+            vals = [val for val in vals if val == val]
+            summary[f"{field}_mean"] = mean(vals) if vals else "EVIDENCE_NOT_FOUND"
+        summaries[key] = summary
+    return summaries
+
+
+def candidate_assembly_rows(
+    same_split: list[dict[str, object]],
+    contribution_rows: list[dict[str, object]],
+    prediction_rows: list[dict[str, object]],
+    *,
+    status: str,
+    blocker_phrase: str,
+) -> tuple[list[dict[str, object]], list[dict[str, object]]]:
+    anchor_rows = derive_anchor_control_rows(same_split, contribution_rows)
+    anchor_summary = _group_mean_rows(
+        anchor_rows,
+        "candidate_id",
+        ["dice", "hd95", "component_count", "remote_fp_count", "no_t2_edema_voxels"],
+    )
+    candidate_summary = _group_mean_rows(
+        same_split,
+        "variant",
+        ["dice", "hd95", "component_count", "remote_fp_count"],
+    )
+    no_t2_by_candidate: dict[str, int] = {}
+    for row in prediction_rows:
+        candidate_id = f"{row.get('variant')}__checkpoint_best__{row.get('decode_mode')}"
+        no_t2_by_candidate[candidate_id] = no_t2_by_candidate.get(candidate_id, 0) + as_int(row.get("no_t2_edema_voxels"))
+
+    candidate_rows: list[dict[str, object]] = []
+    for (_candidate_id, metric), anchor in sorted(anchor_summary.items()):
+        candidate_rows.append(
+            {
+                "candidate_id": "A_nnunet_anchor_control",
+                "candidate_type": "same_split_nnunet_anchor_control",
+                "metric_name": metric,
+                "n": anchor.get("n", ""),
+                "dice_mean": anchor.get("dice_mean", ""),
+                "hd95_mean": anchor.get("hd95_mean", ""),
+                "component_count_mean": anchor.get("component_count_mean", ""),
+                "remote_fp_mean": anchor.get("remote_fp_count_mean", ""),
+                "dice_delta_vs_nnunet": 0.0,
+                "hd95_delta_vs_nnunet": 0.0,
+                "component_count_delta_vs_nnunet": 0.0,
+                "remote_fp_delta_vs_nnunet": 0.0,
+                "no_t2_edema_voxels": anchor.get("no_t2_edema_voxels_mean", ""),
+                "label_export_status": "CONTROL_LABELS_FROM_NNUNET_ANCHOR",
+                "same_split_nnunet_control_status": "CONTROL_ASSEMBLED_FROM_EXPORTED_ANCHOR_DELTAS",
+                "decision": "CONTROL_ONLY",
+                "reason": "Same-split nnU-Net anchor control derived from exported per-case final-vs-anchor deltas.",
+            }
+        )
+
+    for (candidate_id, metric), summary in sorted(candidate_summary.items()):
+        anchor = anchor_summary.get(("A_nnunet_anchor_control", metric), {})
+        if not anchor:
+            control_status = "NNUNET_CONTROL_MISSING_FOR_METRIC"
+            decision = "BLOCKS_READY_REVIEW"
+            reason = "M8 requires same-split nnU-Net candidate-control metrics for every local candidate."
+        else:
+            control_status = "COMPARED_AGAINST_SAME_SPLIT_NNUNET_CONTROL"
+            decision = "NOT_SELECTED_FOR_PROMOTION" if status != "M8_READY_FOR_REVIEW" else "ELIGIBLE_FOR_REVIEW_SELECTION"
+            reason = f"M8 overall blocked by {blocker_phrase}." if status != "M8_READY_FOR_REVIEW" else "Candidate is eligible for independent reviewer selection."
+        candidate_rows.append(
+            {
+                "candidate_id": candidate_id,
+                "candidate_type": "trained_srr_variant_decode",
+                "metric_name": metric,
+                "n": summary.get("n", ""),
+                "dice_mean": summary.get("dice_mean", ""),
+                "hd95_mean": summary.get("hd95_mean", ""),
+                "component_count_mean": summary.get("component_count_mean", ""),
+                "remote_fp_mean": summary.get("remote_fp_count_mean", ""),
+                "dice_delta_vs_nnunet": as_float(summary.get("dice_mean")) - as_float(anchor.get("dice_mean")),
+                "hd95_delta_vs_nnunet": as_float(summary.get("hd95_mean")) - as_float(anchor.get("hd95_mean")),
+                "component_count_delta_vs_nnunet": as_float(summary.get("component_count_mean")) - as_float(anchor.get("component_count_mean")),
+                "remote_fp_delta_vs_nnunet": as_float(summary.get("remote_fp_count_mean")) - as_float(anchor.get("remote_fp_count_mean")),
+                "no_t2_edema_voxels": no_t2_by_candidate.get(candidate_id, "EVIDENCE_NOT_FOUND"),
+                "label_export_status": "PASS_NO_INVALID_COMPACT_LABELS",
+                "same_split_nnunet_control_status": control_status,
+                "decision": decision,
+                "reason": reason,
+            }
+        )
+    return candidate_rows, anchor_rows
+
+
+def formal_breadth_issues_from_rows(rows: list[dict[str, object]]) -> list[str]:
+    if not rows:
+        return ["formal_case_manifest_missing"]
+    issues: list[str] = []
+    if not any(str(row.get("t2_present", "")).lower() == "true" for row in rows):
+        issues.append("formal_evidence_lacks_t2_present_cases")
+    centers = {str(row.get("center", "")) for row in rows}
+    if not ({"CenterB", "CenterC"} & centers):
+        issues.append("formal_evidence_lacks_centerB_centerC_cases")
+    if not any(str(row.get("modality_group", "")).lower() != "lge-only" for row in rows):
+        issues.append("formal_evidence_lacks_multimodal_cases")
+    return issues
+
+
+def formal_breadth_issues(packet: Path) -> list[str]:
+    rows = read_csv(packet / "m8_formal_case_manifest.csv")
+    if not rows:
+        rows = read_csv(packet / "m8_same_split_help_harm.csv")
+    return formal_breadth_issues_from_rows(rows)
 
 
 def _status_text(status: str, issues: list[str]) -> str:
@@ -387,7 +621,7 @@ def refresh_required_deliverables(packet: Path, status: str, issues: list[str], 
     contribution_rows = read_csv(packet / "m8_srr_contribution_by_case.csv")
     same_split = read_csv(packet / "m8_same_split_help_harm.csv")
     subgroup = read_csv(packet / "m8_hard_subgroup_metrics.csv")
-    prediction_rows = concat_csv(variant_dir(packet, variant) / "prediction_sanity_checkpoint_best.csv" for variant in VARIANTS)
+    prediction_rows = concat_csv(path / "prediction_sanity_checkpoint_best.csv" for path in formal_eval_dirs(packet))
     cine_rows = read_csv(packet / "m8_registration_same_subset_matrix.csv")
     temporal_rows = read_csv(packet / "m8_temporal_dictionary_evidence.csv")
     temporal_executed = any(
@@ -400,11 +634,7 @@ def refresh_required_deliverables(packet: Path, status: str, issues: list[str], 
         if temporal_executed
         else "Cine is registration-aware temporal retrieval with warped non-reference evidence. Current Cine evidence blocks temporal dictionary promotion because the mature registration attempt did not produce a usable non-reference registration row."
     )
-    cine_blocker_phrase = (
-        "same-split nnU-Net candidate-control assembly"
-        if temporal_executed
-        else "Cine registration and same-split nnU-Net candidate-control assembly"
-    )
+    blocker_phrase = ", ".join(issues) if issues else "none"
 
     write_text(
         packet / "m8_route_objective.md",
@@ -424,42 +654,33 @@ def refresh_required_deliverables(packet: Path, status: str, issues: list[str], 
         + "\n",
     )
 
-    candidate_rows = []
-    grouped: dict[tuple[str, str], list[dict[str, object]]] = {}
-    for row in subgroup:
-        if row.get("group") != "all_cases":
-            continue
-        grouped.setdefault((str(row.get("variant", "")), str(row.get("metric_name", ""))), []).append(row)
-    for (variant, metric), rows in sorted(grouped.items()):
-        candidate_rows.append(
-            {
-                "candidate_id": variant,
-                "candidate_type": "trained_srr_variant_decode",
-                "metric_name": metric,
-                "n": rows[0].get("n", ""),
-                "dice_mean": rows[0].get("dice_mean", ""),
-                "hd95_mean": rows[0].get("hd95_mean", ""),
-                "component_count_mean": rows[0].get("component_count_mean", ""),
-                "remote_fp_mean": rows[0].get("remote_fp_mean", ""),
-                "same_split_nnunet_control_status": "anchor_delta_exported_per_case_not_full_candidate_control",
-                "decision": "NOT_SELECTED_FOR_PROMOTION",
-                "reason": f"M8 overall blocked by {cine_blocker_phrase}.",
-            }
-        )
-    candidate_rows.append(
-        {
-            "candidate_id": "A_nnunet_anchor_control",
-            "candidate_type": "required_control",
-            "metric_name": "myops_scar,myops_edema",
-            "n": "EVIDENCE_NOT_FOUND",
-            "dice_mean": "EVIDENCE_NOT_FOUND",
-            "hd95_mean": "EVIDENCE_NOT_FOUND",
-            "component_count_mean": "EVIDENCE_NOT_FOUND",
-            "remote_fp_mean": "EVIDENCE_NOT_FOUND",
-            "same_split_nnunet_control_status": "NOT_ASSEMBLED_AS_LOCAL_CANDIDATE",
-            "decision": "BLOCKS_READY_REVIEW",
-            "reason": "M8 requires candidate assembly against same-split nnU-Net; current packet has per-case SRR-vs-anchor deltas but not a complete candidate-control assembly.",
-        }
+    candidate_rows, anchor_control_rows = candidate_assembly_rows(
+        same_split,
+        contribution_rows,
+        prediction_rows,
+        status=status,
+        blocker_phrase=blocker_phrase,
+    )
+    write_csv(
+        packet / "m8_nnunet_anchor_control_metrics.csv",
+        anchor_control_rows,
+        [
+            "candidate_id",
+            "candidate_type",
+            "metric_name",
+            "case_id",
+            "center",
+            "modality_group",
+            "t2_present",
+            "class_id",
+            "dice",
+            "hd95",
+            "component_count",
+            "remote_fp_count",
+            "no_t2_edema_voxels",
+            "derived_from_variant_count",
+            "source_evidence",
+        ],
     )
     write_csv(
         packet / "m8_candidate_assembly_matrix.csv",
@@ -473,6 +694,12 @@ def refresh_required_deliverables(packet: Path, status: str, issues: list[str], 
             "hd95_mean",
             "component_count_mean",
             "remote_fp_mean",
+            "dice_delta_vs_nnunet",
+            "hd95_delta_vs_nnunet",
+            "component_count_delta_vs_nnunet",
+            "remote_fp_delta_vs_nnunet",
+            "no_t2_edema_voxels",
+            "label_export_status",
             "same_split_nnunet_control_status",
             "decision",
             "reason",
@@ -512,11 +739,7 @@ def refresh_required_deliverables(packet: Path, status: str, issues: list[str], 
                 "",
                 "No validation package, upload zip, hosted metric claim, challenge submission, fold expansion, scientific stop, leaderboard-ready state, or M9 is authorized.",
                 "",
-                (
-                    "Current blocker: same-split SRR outputs and per-case anchor deltas exist, but a complete candidate-control assembly against nnU-Net is not cleared for all local candidates."
-                    if temporal_executed
-                    else "Current blocker: same-split SRR outputs and per-case anchor deltas exist, but a complete candidate-control assembly against nnU-Net is not cleared for all local candidates; Cine is registration-blocked."
-                ),
+                f"Current blocker(s): `{blocker_phrase}`.",
             ]
         )
         + "\n",
@@ -535,9 +758,9 @@ def refresh_required_deliverables(packet: Path, status: str, issues: list[str], 
                 "validation_upload: `NOT_AUTHORIZED_NOT_RUN`",
                 "",
                 (
-                    "Promotion is blocked by the issues in `completion_check.md` and by incomplete local candidate-control assembly."
-                    if temporal_executed
-                    else "Promotion is blocked by the issues in `completion_check.md`, by incomplete local candidate-control assembly, and by the mature Cine registration block."
+                    f"Promotion is blocked by the issues in `completion_check.md`: `{blocker_phrase}`."
+                    if issues
+                    else "Promotion is not granted by executor review readiness; independent review and explicit route-promotion authorization remain required."
                 ),
             ]
         )
@@ -924,11 +1147,12 @@ def summarize_eval_outputs(
     contribution_device: str,
     skip_contribution_compute: bool = False,
 ) -> None:
-    component_rows = concat_csv(variant_dir(packet, variant) / "component_hd_by_case_checkpoint_best.csv" for variant in VARIANTS)
-    subgroup_rows = concat_csv(variant_dir(packet, variant) / "subgroup_metrics_checkpoint_best.csv" for variant in VARIANTS)
-    proposal_rows = concat_csv(variant_dir(packet, variant) / "proposal_pr_sweep_checkpoint_best.csv" for variant in VARIANTS)
-    roi_rows = concat_csv(variant_dir(packet, variant) / "roi_coverage_checkpoint_best.csv" for variant in VARIANTS)
-    sanity_rows = concat_csv(variant_dir(packet, variant) / "prediction_sanity_checkpoint_best.csv" for variant in VARIANTS)
+    eval_dirs = formal_eval_dirs(packet)
+    component_rows = concat_csv(path / "component_hd_by_case_checkpoint_best.csv" for path in eval_dirs)
+    subgroup_rows = concat_csv(path / "subgroup_metrics_checkpoint_best.csv" for path in eval_dirs)
+    proposal_rows = concat_csv(path / "proposal_pr_sweep_checkpoint_best.csv" for path in eval_dirs)
+    roi_rows = concat_csv(path / "roi_coverage_checkpoint_best.csv" for path in eval_dirs)
+    sanity_rows = concat_csv(path / "prediction_sanity_checkpoint_best.csv" for path in eval_dirs)
     write_csv(packet / "m8_same_split_help_harm.csv", component_rows)
     write_csv(packet / "m8_hard_subgroup_metrics.csv", subgroup_rows)
     write_csv(packet / "m8_component_remote_fp_hd95_report.csv", component_rows)
@@ -938,6 +1162,11 @@ def summarize_eval_outputs(
         contribution_rows = compute_contribution_rows(packet, summaries, device_name=contribution_device)
     elif (packet / "m8_srr_contribution_by_case.csv").is_file():
         contribution_rows = read_csv(packet / "m8_srr_contribution_by_case.csv")
+    contribution_rows += concat_csv(path / "srr_contribution_by_case_checkpoint_best.csv" for path in eval_dirs)
+    contribution_rows = dedupe_rows(
+        contribution_rows,
+        ["variant", "checkpoint", "decode_mode", "case_id", "class_name", "source_prediction_path"],
+    )
     if not contribution_rows:
         contribution_rows = [
             {
@@ -970,6 +1199,33 @@ def summarize_eval_outputs(
             }
         ]
     write_csv(packet / "m8_srr_contribution_by_case.csv", contribution_rows)
+    anchor_control_rows = derive_anchor_control_rows(component_rows, contribution_rows)
+    anchor_control_rows += concat_csv(path / "anchor_control_metrics_checkpoint_best.csv" for path in eval_dirs)
+    anchor_control_rows = dedupe_rows(
+        anchor_control_rows,
+        ["candidate_id", "metric_name", "case_id"],
+    )
+    write_csv(
+        packet / "m8_nnunet_anchor_control_metrics.csv",
+        anchor_control_rows,
+        [
+            "candidate_id",
+            "candidate_type",
+            "metric_name",
+            "case_id",
+            "center",
+            "modality_group",
+            "t2_present",
+            "class_id",
+            "dice",
+            "hd95",
+            "component_count",
+            "remote_fp_count",
+            "no_t2_edema_voxels",
+            "derived_from_variant_count",
+            "source_evidence",
+        ],
+    )
 
 
 def write_decision_docs(packet: Path, status: str, issues: list[str], summaries: dict[str, dict[str, object]], ledger: list[dict[str, object]]) -> None:
@@ -1011,12 +1267,19 @@ def write_decision_docs(packet: Path, status: str, issues: list[str], summaries:
         packet / "completion_check.md",
         f"# M8 Completion Check\n\nstatus: `{status}`\n\nincluded_myops_train_loop_seconds: `{total_seconds:.3f}`\n\nblocking_issues:\n{issue_text}\n",
     )
-    review_text = (
-        "# M8 Review Request\n\n"
-        "status: `NO_REVIEW_REQUESTED_MONITOR_ONLY`\n\n"
-        "Do not review this as a normal ready packet until completion_check.md has a reviewer-ready state and contains no pending/running/awaiting-runtime evidence.\n"
-    )
-    if status not in {MONITOR_STATUS}:
+    if status == "M8_READY_FOR_REVIEW":
+        review_text = (
+            "# M8 Review Request\n\n"
+            "status: `READY_FOR_INDEPENDENT_REVIEW`\n\n"
+            "The executor packet is ready for a separate read-only reviewer. This request does not authorize route promotion, hosted metric claims, validation packaging/upload, challenge readiness, scientific stop, fold expansion, M9, or self-approval.\n"
+        )
+    elif status == MONITOR_STATUS:
+        review_text = (
+            "# M8 Review Request\n\n"
+            "status: `NO_REVIEW_REQUESTED_MONITOR_ONLY`\n\n"
+            "Do not review this as a normal ready packet until completion_check.md has a reviewer-ready state and contains no pending/running/awaiting-runtime evidence.\n"
+        )
+    else:
         review_text = (
             "# M8 Review Request\n\n"
             "status: `DO_NOT_REVIEW_UNTIL_BLOCKERS_RESOLVED`\n\n"
@@ -1089,7 +1352,11 @@ def write_decision_docs(packet: Path, status: str, issues: list[str], summaries:
                 "",
                 "readiness: `NOT_READY`",
                 "",
-                "This M8 packet is not leaderboard-ready. It is an executor evidence packet with completed training-budget aggregation, completed Cine temporal-dictionary evidence, and remaining same-split nnU-Net candidate-control assembly gaps.",
+                (
+                    "This M8 packet is not leaderboard-ready. It is an executor ready-for-review evidence packet with completed training-budget aggregation, completed Cine temporal-dictionary evidence, assembled same-split nnU-Net candidate-control metrics, and broad formal MyoPS evidence. Independent review is still required before any promotion decision."
+                    if status == "M8_READY_FOR_REVIEW"
+                    else "This M8 packet is not leaderboard-ready. It is an executor evidence packet with incomplete gates. The current blocker list is below."
+                ),
                 "",
                 "## Blocking Issues",
                 issue_text,
@@ -1105,7 +1372,11 @@ def write_decision_docs(packet: Path, status: str, issues: list[str], summaries:
                 "",
                 f"status: `{status}`",
                 "",
-                "Next action: a follow-up executor must assemble or explicitly rule out the missing same-split nnU-Net local candidate-control evidence before any normal review, route promotion, validation packaging, upload, or next milestone.",
+                (
+                    "Next action: hand this packet to a separate read-only reviewer. Do not perform route promotion, validation packaging/upload, hosted metric claims, challenge submission, scientific stop, fold expansion, or M9 from executor evidence alone."
+                    if status == "M8_READY_FOR_REVIEW"
+                    else "Next action: resolve the blocking issues below before normal review, route promotion, validation packaging/upload, or next milestone."
+                ),
                 "",
                 "## Blocking Issues",
                 issue_text,
@@ -1117,6 +1388,11 @@ def write_decision_docs(packet: Path, status: str, issues: list[str], summaries:
 
 def write_manifest(packet: Path) -> None:
     files = sorted(path.name for path in packet.iterdir() if path.is_file())
+    broad_files = sorted(
+        path.relative_to(packet).as_posix()
+        for path in (packet / "runtime" / "broad_eval").glob("variants/*/*")
+        if path.is_file() and path.suffix in {".csv", ".json"}
+    )
     lines = [
         "# M8 Manifest",
         "",
@@ -1126,8 +1402,17 @@ def write_manifest(packet: Path) -> None:
         "## Files",
         *[f"- `{name}`" for name in files],
         "",
+        "## First-Party Helper / Entrypoint",
+        "- `scripts/evaluation/export_srr_v3_m8_broad_eval.py`",
+        "- `scripts/evaluation/aggregate_srr_v3_m8_leaderboard_sprint_packet.py`",
+        "- `scripts/evaluation/validate_srr_v3_m8_leaderboard_sprint_packet.py`",
+        "- `jobs/evaluation/run_srr_v3_m8_broad_eval.sh`",
+        "",
+        "## Included Runtime CSV/JSON Evidence Exception",
+        *[f"- `{name}`" for name in broad_files],
+        "",
         "## Excluded",
-        "- `runtime/` checkpoints, NIfTI predictions, and large logs are intentionally not tracked.",
+        "- `runtime/` checkpoints, NIfTI predictions, heavy logs, and non-listed runtime files are intentionally not tracked.",
     ]
     write_text(packet / "MANIFEST.md", "\n".join(lines) + "\n")
 

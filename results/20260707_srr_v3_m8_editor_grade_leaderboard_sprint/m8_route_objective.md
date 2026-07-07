@@ -1,9 +1,9 @@
 # M8 Route Objective
 
-status: `M8_NEEDS_EVIDENCE_METRICS_INCOMPLETE`
+status: `M8_READY_FOR_REVIEW`
 
 blocking_issues:
-- `same_split_nnunet_candidate_control_incomplete_for_all_local_candidates`
+- none
 
 
 SRR-MyoPS is availability-aware selective retrieval plus semantic representation retrieval bank, anatomy-guided lesion proposal, pathology-specific soft-ROI refinement, explicit losses/objectives, and nnU-Net anchor/context/evidence/safety.

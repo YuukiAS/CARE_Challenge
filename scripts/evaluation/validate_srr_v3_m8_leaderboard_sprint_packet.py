@@ -59,6 +59,7 @@ REQUIRED_READY_FILES = [
     "m8_official_label_mapping_qc.csv",
     "m8_formal_case_manifest.csv",
     "m8_candidate_assembly_matrix.csv",
+    "m8_nnunet_anchor_control_metrics.csv",
 ]
 
 
@@ -122,7 +123,7 @@ def validate(packet: Path) -> list[str]:
     all_text = "\n".join(
         read_text(path)
         for path in packet.glob("*.md")
-        if path.name not in {"m8_strict_validator_report.md", "m8_validator_unit_test_report.md"}
+        if path.name not in {"commands_run.md", "m8_strict_validator_report.md", "m8_validator_unit_test_report.md"}
     )
     forbidden_claims = [
         "validation upload",
@@ -136,6 +137,9 @@ def validate(packet: Path) -> list[str]:
         for token in MONITOR_TOKENS:
             if token in all_text_upper:
                 errors.append(f"ready packet contains monitor token {token}")
+        commands_text = read_text(packet / "commands_run.md").upper()
+        if any(token in commands_text for token in MONITOR_TOKENS) and "FINAL_M8_READY_AGGREGATION" not in commands_text:
+            errors.append("ready packet commands_run.md contains historical monitor tokens without final completed aggregation marker")
         for file_name in REQUIRED_READY_FILES:
             if not (packet / file_name).is_file():
                 errors.append(f"ready packet missing required file {file_name}")
@@ -176,9 +180,40 @@ def validate(packet: Path) -> list[str]:
         formal = read_csv(packet / "m8_formal_case_manifest.csv")
         if not formal or not any(str(row.get("t2_present", "")).lower() == "true" for row in formal):
             errors.append("ready packet lacks broad formal evidence with T2-present cases")
+        if not formal or not ({"CenterB", "CenterC"} & {str(row.get("center", "")) for row in formal}):
+            errors.append("ready packet lacks broad formal evidence with CenterB/CenterC cases")
+        if not formal or not any(str(row.get("modality_group", "")).lower() != "lge-only" for row in formal):
+            errors.append("ready packet lacks broad formal evidence with multimodal cases")
         candidates = read_csv(packet / "m8_candidate_assembly_matrix.csv")
         if not candidates or any(row.get("decision") in {"BLOCKS_READY_REVIEW", "EVIDENCE_NOT_FOUND"} for row in candidates):
             errors.append("ready packet lacks complete local candidate assembly")
+        anchor_control = read_csv(packet / "m8_nnunet_anchor_control_metrics.csv")
+        anchor_metrics = {row.get("metric_name", "") for row in anchor_control}
+        if not {"myops_scar", "myops_edema"}.issubset(anchor_metrics):
+            errors.append("ready packet lacks same-split nnU-Net anchor control metrics")
+        trained_candidate_keys = {
+            (row.get("candidate_id", ""), row.get("metric_name", ""))
+            for row in candidates
+            if row.get("candidate_type") == "trained_srr_variant_decode"
+            and row.get("same_split_nnunet_control_status") == "COMPARED_AGAINST_SAME_SPLIT_NNUNET_CONTROL"
+        }
+        trained_candidate_ids = {key[0] for key in trained_candidate_keys}
+        if len(trained_candidate_ids) < 6 or any((candidate_id, metric) not in trained_candidate_keys for candidate_id in trained_candidate_ids for metric in ("myops_scar", "myops_edema")):
+            errors.append("ready packet does not compare every local SRR candidate against nnU-Net for scar and edema")
+        required_candidate_fields = [
+            "dice_delta_vs_nnunet",
+            "hd95_delta_vs_nnunet",
+            "component_count_delta_vs_nnunet",
+            "remote_fp_delta_vs_nnunet",
+            "no_t2_edema_voxels",
+            "label_export_status",
+        ]
+        for row in candidates:
+            if row.get("candidate_type") != "trained_srr_variant_decode":
+                continue
+            if any(row.get(field, "") in {"", "EVIDENCE_NOT_FOUND"} for field in required_candidate_fields):
+                errors.append("ready packet candidate assembly lacks required comparison fields")
+                break
         label_qc = read_csv(packet / "m8_official_label_mapping_qc.csv")
         if any(row.get("observed_status") == "FAIL" for row in label_qc):
             errors.append("official label/export QC contains a failing row")
@@ -288,13 +323,54 @@ def make_ready_fixture(root: Path) -> None:
     )
     write_csv(
         root / "m8_formal_case_manifest.csv",
-        [{"case_id": "Case1", "t2_present": "true"}, {"case_id": "Case2", "t2_present": "false"}],
-        ["case_id", "t2_present"],
+        [
+            {"case_id": "Case1", "center": "CenterB", "modality_group": "LGE+T2", "t2_present": "true"},
+            {"case_id": "Case2", "center": "CenterC", "modality_group": "C0+LGE+T2", "t2_present": "true"},
+        ],
+        ["case_id", "center", "modality_group", "t2_present"],
     )
     write_csv(
+        root / "m8_nnunet_anchor_control_metrics.csv",
+        [
+            {"candidate_id": "A_nnunet_anchor_control", "metric_name": "myops_scar", "dice": "0.5"},
+            {"candidate_id": "A_nnunet_anchor_control", "metric_name": "myops_edema", "dice": "0.6"},
+        ],
+        ["candidate_id", "metric_name", "dice"],
+    )
+    candidate_rows = []
+    for candidate_idx in range(6):
+        for metric in ("myops_scar", "myops_edema"):
+            candidate_rows.append(
+                {
+                    "candidate_id": f"candidate_{candidate_idx}",
+                    "candidate_type": "trained_srr_variant_decode",
+                    "metric_name": metric,
+                    "decision": "SELECTABLE_FOR_REVIEW",
+                    "same_split_nnunet_control_status": "COMPARED_AGAINST_SAME_SPLIT_NNUNET_CONTROL",
+                    "dice_delta_vs_nnunet": "0.01",
+                    "hd95_delta_vs_nnunet": "-0.1",
+                    "component_count_delta_vs_nnunet": "0",
+                    "remote_fp_delta_vs_nnunet": "0",
+                    "no_t2_edema_voxels": "0",
+                    "label_export_status": "PASS_NO_INVALID_COMPACT_LABELS",
+                }
+            )
+    write_csv(
         root / "m8_candidate_assembly_matrix.csv",
-        [{"candidate_id": "A", "decision": "SELECTABLE_FOR_REVIEW"}],
-        ["candidate_id", "decision"],
+        candidate_rows,
+        [
+            "candidate_id",
+            "candidate_type",
+            "metric_name",
+            "decision",
+            "same_split_nnunet_control_status",
+            "dice_delta_vs_nnunet",
+            "hd95_delta_vs_nnunet",
+            "component_count_delta_vs_nnunet",
+            "remote_fp_delta_vs_nnunet",
+            "no_t2_edema_voxels",
+            "label_export_status",
+        ],
     )
     write_csv(
         root / "m8_official_label_mapping_qc.csv",
@@ -335,7 +411,11 @@ def mutate_fixture(name: str, path: Path) -> None:
     elif name == "missing_per_case_anchor_delta":
         write_csv(path / "m8_srr_contribution_by_case.csv", [{"case_id": "Case1", "anchor_delta_rate": "EVIDENCE_NOT_EXPORTED_PER_CASE"}], ["case_id", "anchor_delta_rate"])
     elif name == "easy_only_formal_evaluation":
-        write_csv(path / "m8_formal_case_manifest.csv", [{"case_id": "Case2", "t2_present": "false"}], ["case_id", "t2_present"])
+        write_csv(
+            path / "m8_formal_case_manifest.csv",
+            [{"case_id": "Case2", "center": "CenterA", "modality_group": "LGE-only", "t2_present": "false"}],
+            ["case_id", "center", "modality_group", "t2_present"],
+        )
     elif name == "no_t2_safety_violation":
         write_csv(path / "m8_srr_contribution_by_case.csv", [{"case_id": "Case1", "anchor_delta_rate": "0.01", "no_t2_edema_voxels": "3"}], ["case_id", "anchor_delta_rate", "no_t2_edema_voxels"])
     elif name == "missing_local_candidate_assembly":

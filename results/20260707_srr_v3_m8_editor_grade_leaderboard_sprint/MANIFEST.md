@@ -1,7 +1,7 @@
 # M8 Manifest
 
 task_key: `20260707_srr_v3_m8_editor_grade_leaderboard_sprint`
-updated_at_utc: `2026-07-07T09:52:56.050484+00:00`
+updated_at_utc: `2026-07-07T10:26:04.563299+00:00`
 
 ## Files
 - `MANIFEST.md`
@@ -35,6 +35,7 @@ updated_at_utc: `2026-07-07T09:52:56.050484+00:00`
 - `m8_loss_schedule.md`
 - `m8_myops_decision.md`
 - `m8_next_action.md`
+- `m8_nnunet_anchor_control_metrics.csv`
 - `m8_official_label_mapping_qc.csv`
 - `m8_proposal_refiner_recall_precision.csv`
 - `m8_prototype_bank_summary.json`
@@ -69,5 +70,40 @@ updated_at_utc: `2026-07-07T09:52:56.050484+00:00`
 - `temporal_dictionary_evidence.csv`
 - `temporal_dictionary_index.json`
 
+## First-Party Helper / Entrypoint
+- `scripts/evaluation/export_srr_v3_m8_broad_eval.py`
+- `scripts/evaluation/aggregate_srr_v3_m8_leaderboard_sprint_packet.py`
+- `scripts/evaluation/validate_srr_v3_m8_leaderboard_sprint_packet.py`
+- `jobs/evaluation/run_srr_v3_m8_broad_eval.sh`
+
+## Included Runtime CSV/JSON Evidence Exception
+- `runtime/broad_eval/variants/m8_full_srr_context_arbitration_longrun/anchor_control_metrics_checkpoint_best.csv`
+- `runtime/broad_eval/variants/m8_full_srr_context_arbitration_longrun/component_hd_by_case_checkpoint_best.csv`
+- `runtime/broad_eval/variants/m8_full_srr_context_arbitration_longrun/crop_bounds_checkpoint_best.csv`
+- `runtime/broad_eval/variants/m8_full_srr_context_arbitration_longrun/prediction_sanity_checkpoint_best.csv`
+- `runtime/broad_eval/variants/m8_full_srr_context_arbitration_longrun/proposal_pr_sweep_checkpoint_best.csv`
+- `runtime/broad_eval/variants/m8_full_srr_context_arbitration_longrun/roi_coverage_checkpoint_best.csv`
+- `runtime/broad_eval/variants/m8_full_srr_context_arbitration_longrun/srr_contribution_by_case_checkpoint_best.csv`
+- `runtime/broad_eval/variants/m8_full_srr_context_arbitration_longrun/subgroup_metrics_checkpoint_best.csv`
+- `runtime/broad_eval/variants/m8_full_srr_context_arbitration_longrun/summary.json`
+- `runtime/broad_eval/variants/m8_scar_precision_edema_safe_longrun/anchor_control_metrics_checkpoint_best.csv`
+- `runtime/broad_eval/variants/m8_scar_precision_edema_safe_longrun/component_hd_by_case_checkpoint_best.csv`
+- `runtime/broad_eval/variants/m8_scar_precision_edema_safe_longrun/crop_bounds_checkpoint_best.csv`
+- `runtime/broad_eval/variants/m8_scar_precision_edema_safe_longrun/prediction_sanity_checkpoint_best.csv`
+- `runtime/broad_eval/variants/m8_scar_precision_edema_safe_longrun/proposal_pr_sweep_checkpoint_best.csv`
+- `runtime/broad_eval/variants/m8_scar_precision_edema_safe_longrun/roi_coverage_checkpoint_best.csv`
+- `runtime/broad_eval/variants/m8_scar_precision_edema_safe_longrun/srr_contribution_by_case_checkpoint_best.csv`
+- `runtime/broad_eval/variants/m8_scar_precision_edema_safe_longrun/subgroup_metrics_checkpoint_best.csv`
+- `runtime/broad_eval/variants/m8_scar_precision_edema_safe_longrun/summary.json`
+- `runtime/broad_eval/variants/m8_t2_centerC_edema_repair_longrun/anchor_control_metrics_checkpoint_best.csv`
+- `runtime/broad_eval/variants/m8_t2_centerC_edema_repair_longrun/component_hd_by_case_checkpoint_best.csv`
+- `runtime/broad_eval/variants/m8_t2_centerC_edema_repair_longrun/crop_bounds_checkpoint_best.csv`
+- `runtime/broad_eval/variants/m8_t2_centerC_edema_repair_longrun/prediction_sanity_checkpoint_best.csv`
+- `runtime/broad_eval/variants/m8_t2_centerC_edema_repair_longrun/proposal_pr_sweep_checkpoint_best.csv`
+- `runtime/broad_eval/variants/m8_t2_centerC_edema_repair_longrun/roi_coverage_checkpoint_best.csv`
+- `runtime/broad_eval/variants/m8_t2_centerC_edema_repair_longrun/srr_contribution_by_case_checkpoint_best.csv`
+- `runtime/broad_eval/variants/m8_t2_centerC_edema_repair_longrun/subgroup_metrics_checkpoint_best.csv`
+- `runtime/broad_eval/variants/m8_t2_centerC_edema_repair_longrun/summary.json`
+
 ## Excluded
-- `runtime/` checkpoints, NIfTI predictions, and large logs are intentionally not tracked.
+- `runtime/` checkpoints, NIfTI predictions, heavy logs, and non-listed runtime files are intentionally not tracked.

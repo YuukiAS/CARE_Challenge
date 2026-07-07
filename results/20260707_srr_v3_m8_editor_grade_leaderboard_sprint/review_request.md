@@ -1,5 +1,5 @@
 # M8 Review Request
 
-status: `DO_NOT_REVIEW_UNTIL_BLOCKERS_RESOLVED`
+status: `READY_FOR_INDEPENDENT_REVIEW`
 
-The packet has post-job aggregation where available, but the blocking issues in completion_check.md still prevent normal review.
+The executor packet is ready for a separate read-only reviewer. This request does not authorize route promotion, hosted metric claims, validation packaging/upload, challenge readiness, scientific stop, fold expansion, M9, or self-approval.

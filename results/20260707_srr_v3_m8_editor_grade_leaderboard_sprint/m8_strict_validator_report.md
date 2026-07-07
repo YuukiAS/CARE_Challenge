@@ -1,7 +1,7 @@
 # M8 Strict Validator Report
 
-status: `M8_NEEDS_EVIDENCE_METRICS_INCOMPLETE`
-updated_at_utc: `2026-07-07T09:55:31.838080+00:00`
+status: `M8_READY_FOR_REVIEW`
+updated_at_utc: `2026-07-07T10:27:38.391980+00:00`
 
 Command:
 

@@ -1,9 +1,9 @@
 # M8 Hardcase Sampling Report
 
-status: `M8_NEEDS_EVIDENCE_METRICS_INCOMPLETE`
+status: `M8_READY_FOR_REVIEW`
 
 blocking_issues:
-- `same_split_nnunet_candidate_control_incomplete_for_all_local_candidates`
+- none
 
 
 batch_rows: `215371`
