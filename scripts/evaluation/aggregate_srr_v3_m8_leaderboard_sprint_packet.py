@@ -507,7 +507,13 @@ def compute_contribution_rows(packet: Path, summaries: dict[str, dict[str, objec
     return rows
 
 
-def summarize_eval_outputs(packet: Path, summaries: dict[str, dict[str, object]], *, contribution_device: str) -> None:
+def summarize_eval_outputs(
+    packet: Path,
+    summaries: dict[str, dict[str, object]],
+    *,
+    contribution_device: str,
+    skip_contribution_compute: bool = False,
+) -> None:
     component_rows = concat_csv(variant_dir(packet, variant) / "component_hd_by_case_checkpoint_best.csv" for variant in VARIANTS)
     subgroup_rows = concat_csv(variant_dir(packet, variant) / "subgroup_metrics_checkpoint_best.csv" for variant in VARIANTS)
     proposal_rows = concat_csv(variant_dir(packet, variant) / "proposal_pr_sweep_checkpoint_best.csv" for variant in VARIANTS)
@@ -517,7 +523,11 @@ def summarize_eval_outputs(packet: Path, summaries: dict[str, dict[str, object]]
     write_csv(packet / "m8_hard_subgroup_metrics.csv", subgroup_rows)
     write_csv(packet / "m8_component_remote_fp_hd95_report.csv", component_rows)
     write_csv(packet / "m8_proposal_refiner_recall_precision.csv", proposal_rows + roi_rows)
-    contribution_rows = compute_contribution_rows(packet, summaries, device_name=contribution_device)
+    contribution_rows = []
+    if not skip_contribution_compute:
+        contribution_rows = compute_contribution_rows(packet, summaries, device_name=contribution_device)
+    elif (packet / "m8_srr_contribution_by_case.csv").is_file():
+        contribution_rows = read_csv(packet / "m8_srr_contribution_by_case.csv")
     if not contribution_rows:
         contribution_rows = [
             {
@@ -621,6 +631,11 @@ def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--packet", default=str(DEFAULT_PACKET))
     parser.add_argument("--contribution-device", default="cpu", choices=["cpu", "cuda"])
+    parser.add_argument(
+        "--skip-contribution-compute",
+        action="store_true",
+        help="Skip expensive checkpoint replay for contribution rows; use only for monitor-state aggregation.",
+    )
     args = parser.parse_args()
     packet = Path(args.packet)
     if not packet.is_absolute():
@@ -650,7 +665,12 @@ def main() -> None:
     summarize_training_curves(packet)
     summarize_batch_and_memory(packet)
     summarize_prototypes(packet)
-    summarize_eval_outputs(packet, summaries, contribution_device=args.contribution_device)
+    summarize_eval_outputs(
+        packet,
+        summaries,
+        contribution_device=args.contribution_device,
+        skip_contribution_compute=args.skip_contribution_compute,
+    )
     status, issues = derive_status(packet, summaries, ledger)
     write_decision_docs(packet, status, issues, summaries, ledger)
     write_manifest(packet)
