@@ -69,6 +69,39 @@ Runtime locks currently exist for:
 
 The third variant has not started yet and remains pending monitor evidence.
 
+## Task2 Supplemental Race
+
+The initial array-level watcher cancelled the full a100 mirror after tasks `0` and `1` started on htzhulab. Because task `2` remained pending, a task-specific a100 mirror was submitted under the same per-variant atomic lock:
+
+- htzhulab task-specific job id: `58081007_2`
+- a100-gpu task2 mirror array: `58081494`
+- task2 watcher job: `58081496`
+- task2 watcher log: `logs/SRRv3M8MyOPSTask2Race_58081007_2_58081494.log`
+
+Current `squeue -j 58081007,58081494,58081496` evidence:
+
+- `58081007_0`: `RUNNING` on `htzhulab`, elapsed at check `00:20:08`
+- `58081007_1`: `RUNNING` on `htzhulab`, elapsed at check `00:20:08`
+- `58081007_[2]`: `PENDING (Resources)` on `htzhulab`
+- `58081494_[2]`: `PENDING (Priority)` on `a100-gpu`
+- `58081496`: `RUNNING` on `spill`
+
+Current `sacct -j 58081007,58081494,58081496` evidence:
+
+- `58081007_0`: `RUNNING`, partition `htzhulab`, start `2026-07-07T00:18:35`
+- `58081007_1`: `RUNNING`, partition `htzhulab`, start `2026-07-07T00:18:35`
+- `58081007_[2]`: `PENDING`
+- `58081494_[2]`: `PENDING`, partition `a100-gpu`
+- `58081496`: `RUNNING`, partition `spill`
+
+Task2 watcher log excerpt:
+
+```text
+2026-07-07T00:35:16.673408 watch_start htzhulab=58081007_2 a100=58081494
+2026-07-07T00:35:16.713044 check=1 htzhulab=[('58081007_2', 'htzhulab', 'PENDING', '(Resources)')] a100=[('58081494_[2]', 'a100-gpu', 'PENDING', '(Priority)')]
+2026-07-07T00:37:16.754405 check=2 htzhulab=[('58081007_2', 'htzhulab', 'PENDING', '(Resources)')] a100=[('58081494_[2]', 'a100-gpu', 'PENDING', '(Priority)')]
+```
+
 ## Completion Boundary
 
-This is not M8 completion. Training is still running/pending, the 28800-second MyoPS training budget is not proven, Cine mature registration has not been launched in this corrected packet, and no completed runtime aggregation has been committed.
+This is not M8 completion. Training is still running/pending, the 28800-second MyoPS training budget is not proven, task2 has not started yet, and no completed runtime aggregation has been committed.

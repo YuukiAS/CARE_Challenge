@@ -2,6 +2,7 @@
 
 task_key: `20260707_srr_v3_m8_editor_grade_leaderboard_sprint`
 generated_at_utc: `2026-07-07T04:25:52.503360+00:00`
+updated_at_utc: `2026-07-07T04:36:09Z`
 
 ## Files
 - `result.md`
@@ -57,3 +58,11 @@ generated_at_utc: `2026-07-07T04:25:52.503360+00:00`
 - `m8_next_action.md`
 - `m8_slurm_race_status.md`
 - `m8_cine_slurm_status.md`
+
+## Current Monitor Jobs
+- MyoPS htzhulab array: `58081007`
+- MyoPS task2 a100 mirror: `58081494`
+- MyoPS task2 watcher: `58081496`
+- Cine htzhulab mirror: `58081476`
+- Cine a100 mirror: `58081477`
+- Cine watcher: `58081479`
