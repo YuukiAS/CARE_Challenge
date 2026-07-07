@@ -1,4 +1,4 @@
-# 20260707 M7 follow-up3: completion-safe aggregation and temporal-dictionary repair prompt
+# 20260707 M7 follow-up3: completion-safe re-aggregation and temporal dictionary repair prompt
 
 status: `NEW_SHARED_PROMPT_FOR_EXECUTOR_AND_REVIEWER`
 source_result_dir: `results/20260705_srr_v3_m7_training_and_cine_utilization/`
@@ -10,217 +10,230 @@ intended_merge_target:
 
 ## 0. Why follow-up3 exists
 
-M7 follow-up2 did not fail because the scientific idea was completed and negative. It failed because the executor committed a monitor packet and requested review before the submitted primary MyoPS probe was incorporated into the tracked lightweight evidence. The reviewer found that live Slurm accounting later showed job `58021931` completed successfully, but the committed packet still contained `PENDING_MONITOR` rows for training adequacy, loss components, gradient sanity, and batch composition. The reviewer also found a separate Cine blocker: `registration_same_subset_matrix.csv` contained a row with `usable_for_temporal_dictionary=True`, while `temporal_dictionary_evidence.csv` said `TEMPORAL_DICTIONARY_FOLLOWUP2_REQUIRED_NOT_EXECUTED`.
+M7 follow-up3 remains M7. It is not M8, not route promotion, not validation packaging/upload, not a hosted metric claim, not challenge submission, not fold expansion, not scientific stop, and not leaderboard readiness.
 
-Therefore follow-up3 is not allowed to be another prompt-only or monitor-only packet. It must either produce a fully regenerated, reviewable M7 packet from the completed runtime artifacts and resolve the Cine temporal-dictionary gate, or stop with a non-reviewable monitor/evidence-blocked state that explicitly forbids review, route promotion, validation packaging/upload, hosted metric claims, M8, fold expansion, challenge submission, scientific stop, and leaderboard readiness.
+Follow-up3 only repairs two hard follow-up2 problems:
 
-Follow-up3 remains M7. It is not M8, not route promotion, not validation packaging/upload, not hosted metric claim, not challenge submission, not fold expansion, not scientific stop, and not leaderboard readiness. Its purpose is to turn the already submitted/completed follow-up2 work into auditable evidence, close the temporal-dictionary inconsistency, and make it impossible for Codex to mark a pending Slurm job or placeholder CSVs as completion.
+1. The follow-up2 executor committed a monitor packet as if it were a reviewable completion packet. The tracked packet still contained `M7_FOLLOWUP2_NEEDS_MONITOR` / `PENDING_MONITOR` evidence after submitting Slurm job `58021931`, while live Slurm accounting later showed that the job completed successfully.
+2. Cine follow-up2 produced at least one registration row with `usable_for_temporal_dictionary=True`, but temporal dictionary execution did not happen and `temporal_dictionary_evidence.csv` contained `TEMPORAL_DICTIONARY_FOLLOWUP2_REQUIRED_NOT_EXECUTED`.
+
+Follow-up3 must not execute a new M7 scientific direction. It must convert the completed follow-up2 runtime outputs into tracked lightweight evidence, close the temporal dictionary gate, and make it impossible to treat a monitor packet as completion.
 
 ---
 
-# 1. Executor prompt: M7 follow-up3 completion-safe aggregation and temporal-dictionary repair
+# 1. Executor prompt: M7 follow-up3 completion-safe re-aggregation and temporal dictionary repair
 
 ```text
-只执行 M7 follow-up3：completion-safe aggregation and temporal-dictionary repair after `M7_FOLLOWUP2_AUDITED_NEEDS_EVIDENCE`.
+只执行 M7 follow-up3：completion-safe re-aggregation and temporal dictionary repair after `M7_FOLLOWUP2_AUDITED_NEEDS_EVIDENCE`.
 
-开始前必须确认：
-- `results/20260705_srr_v3_m7_training_and_cine_utilization/review.md` 存在且包含 `M7_FOLLOWUP2_AUDITED_NEEDS_EVIDENCE`；
-- `results/20260705_srr_v3_m6_myops_concrete_architecture_repair/review.md` 存在且包含 `M6_AUDITED_GO`；
-- 当前任务仍是 M7 follow-up3，不是 M8，不是 route promotion，不是 validation packaging/upload，不是 hosted metric claim，不是 challenge submission，不是 leaderboard readiness；
-- 不要写 `review.md`，不要启动 M8。
+Scope:
 
-必须读取：
+- This is still M7.
+- It is not M8.
+- It is not route promotion.
+- It is not validation packaging/upload.
+- It is not a hosted metric claim.
+- It is not challenge submission.
+- It is not fold expansion.
+- It is not scientific stop.
+- It is not leaderboard readiness.
+- Do not train a new route unless the already-submitted follow-up2 probe must be re-aggregated from completed runtime outputs.
+- Do not write `review.md`.
+- Do not push.
+
+Start gates:
+
+- `results/20260705_srr_v3_m7_training_and_cine_utilization/review.md` must exist and contain `M7_FOLLOWUP2_AUDITED_NEEDS_EVIDENCE`.
+- `results/20260705_srr_v3_m6_myops_concrete_architecture_repair/review.md` must exist and contain `M6_AUDITED_GO`.
+- If either prerequisite is missing, write `M7_FOLLOWUP3_BLOCKED_BY_REVIEW_STATE` or `M7_BLOCKED_BY_M6` and stop.
+
+Must read before edits:
+
 - `results/20260705_srr_v3_m7_training_and_cine_utilization/review.md`
 - `results/20260705_srr_v3_m7_training_and_cine_utilization/result.md`
 - `results/20260705_srr_v3_m7_training_and_cine_utilization/completion_check.md`
 - `results/20260705_srr_v3_m7_training_and_cine_utilization/followup2_training_adequacy.csv`
+- `results/20260705_srr_v3_m7_training_and_cine_utilization/commands_run.md`
 - `results/20260705_srr_v3_m7_training_and_cine_utilization/registration_same_subset_matrix.csv`
 - `results/20260705_srr_v3_m7_training_and_cine_utilization/temporal_dictionary_evidence.csv`
+- runtime output path and logs for Slurm job `58021931` or any explicitly superseding job
 - `prompts/shared/EXECUTOR_PROMPTS.md`
 - `prompts/shared/REVIEWER_PROMPTS.md`
 - `prompts/MILESTONE_REVIEW_PROTOCOL.md`
 - `prompts/HANDOFF_GATE_POLICY.md`
 - `prompts/GPT_HARD_GATE_PROMPT.md`
 
-## A. Completion safety preflight: monitor packets cannot be review packets
+## A. Monitor packet is not completion
 
-The core follow-up3 rule is fail-closed completion safety.
+Executor must read and report:
 
-Before doing any aggregation, inspect the current tracked packet and detect monitor placeholders. If any of the following files contain `PENDING_MONITOR`, `NEEDS_MONITOR`, `PRIMARY_PROBE_SUBMITTED_NEEDS_MONITOR`, or equivalent placeholder rows, the executor must treat the packet as not reviewable until the corresponding runtime output is regenerated:
-
-- `followup2_training_adequacy.csv`
-- `followup2_loss_component_by_step.csv`
-- `followup2_loss_component_gradient_sanity.csv`
-- `followup2_batch_composition.csv`
-- `followup2_same_split_help_harm.csv`
-- `followup2_hard_subgroup_metrics.csv`
-- `srr_contribution_by_case.csv`
-- `arbitration_opening_diagnostics.csv`
-- `proposal_refiner_effectiveness.csv`
 - `completion_check.md`
-- `result.md`
+- `followup2_training_adequacy.csv`
+- `commands_run.md`
+- Slurm job id, normally `58021931`
+- `sacct` or equivalent Slurm completion record
+- active queue state if still visible in `squeue`
+- runtime output path / logs
+- whether the tracked follow-up2 packet already contains re-aggregated job-completion outputs
 
-If a Slurm job id is recorded, the executor must query both active and accounting state before writing a reviewable packet:
+Required Slurm checks:
 
 ```bash
-squeue -j <job_id> -o '%i|%P|%j|%T|%M|%l|%R'
-sacct -j <job_id> --format=JobID,JobName,Partition,State,Elapsed,ExitCode,Start,End -P
+squeue -j 58021931 -o '%i|%P|%j|%T|%M|%l|%R'
+sacct -j 58021931 --format=JobID,JobName,Partition,State,Elapsed,ExitCode,Start,End -P
 ```
 
-If the job is still `PENDING`, `RUNNING`, `CONFIGURING`, `COMPLETING`, or cannot yet be resolved in `sacct`, do not write `review_request.md`, do not write `*_READY_FOR_REVIEW`, and do not commit a reviewable packet. Instead write or update only:
+If `completion_check.md` is `M7_FOLLOWUP2_NEEDS_MONITOR`, or `followup2_training_adequacy.csv` still contains `PENDING_MONITOR`, or `commands_run.md` only shows submitted/pending job state without completed-job aggregation outputs, the packet is not reviewable. It must not be marked ready. Executor must first re-aggregate the completed job results, or write a non-ready follow-up3 state.
 
-- `m7_followup3_monitor_state.md`
-- `result.md` with `status: M7_FOLLOWUP3_NEEDS_MONITOR_NO_REVIEW`
-- `completion_check.md` with `M7_FOLLOWUP3_NEEDS_MONITOR_NO_REVIEW`
+If the job is pending/running/unresolved, write `M7_FOLLOWUP3_NEEDS_MONITOR`. Do not write a normal review request. If a monitor packet is committed, `review_request.md` must say `DO_NOT_REVIEW_MONITOR_PACKET`.
+
+## B. Completed Slurm job re-aggregation
+
+If Slurm job `58021931` or a clearly documented superseding job completed with exit code `0:0`, executor must:
+
+1. Find the job runtime outputs and logs.
+2. Re-run or invoke the M7 follow-up2 aggregator against the completed runtime outputs.
+3. Aggregate runtime outputs into tracked lightweight files.
+4. Remove stale monitor placeholders from tracked follow-up2 files.
+5. Record job id, job state, exit code, runtime seconds, output/log path, aggregation command, and aggregation exit code.
+
+Required updated tracked files:
+
+- `result.md`
+- `completion_check.md`
+- `followup2_training_adequacy.csv`
+- `followup2_loss_component_by_step.csv`
+- `followup2_same_split_help_harm.csv`
+- `followup2_hard_subgroup_metrics.csv`
+- `m7_followup2_training_rerun_decision.md`
+- `failure_interpretation.md`
 - `commands_run.md`
 - `MANIFEST.md`
 
-In this monitor-only state, `review_request.md` must be absent or must explicitly say `DO_NOT_REVIEW_MONITOR_PACKET`. If any pending/running job is packaged with a normal review request, the task fails.
+Also update these when runtime evidence is available:
 
-If the job completed with nonzero exit code or runtime artifacts are missing, write `M7_FOLLOWUP3_NEEDS_EVIDENCE_RUNTIME_ARTIFACT_MISSING` or `M7_FOLLOWUP3_RUNTIME_FAILED`, not ready.
-
-## B. Regenerate the tracked MyoPS evidence from completed runtime artifacts
-
-For job `58021931` or any superseding job explicitly justified in `commands_run.md`, the executor must read the completed runtime directory and regenerate the tracked lightweight M7 packet. Do not leave old monitor placeholders in tracked files.
-
-Required regenerated files:
-
-- `followup2_training_adequacy.csv`
-- `followup2_loss_component_by_step.csv`
 - `followup2_loss_component_gradient_sanity.csv`
 - `followup2_batch_composition.csv`
-- `followup2_same_split_help_harm.csv`
-- `followup2_hard_subgroup_metrics.csv`
 - `srr_contribution_by_case.csv`
 - `arbitration_opening_diagnostics.csv`
 - `proposal_refiner_effectiveness.csv`
-- `m7_followup3_runtime_ingestion_report.md`
-- `m7_followup3_probe_summary.json`
+- `followup2_repair_summary.md`
+- `route_to_leaderboard_gap_report.md`
 
-`m7_followup3_runtime_ingestion_report.md` must record:
+Create:
 
-- job id;
-- Slurm state;
-- exit code;
-- start/end/elapsed;
-- runtime summary path;
-- checkpoint path or explicit no-checkpoint reason;
-- actual optimizer steps;
-- train loop seconds;
-- validation event count;
-- eval case ids;
-- batch composition source;
-- every tracked CSV regenerated from runtime evidence;
-- whether any runtime artifact was missing.
+- `m7_followup3_runtime_reaggregation_report.md`
+- `m7_followup3_slurm_completion_record.md`
 
-`followup2_training_adequacy.csv` must no longer contain monitor placeholders. It must include at least:
+`m7_followup3_runtime_reaggregation_report.md` must include:
 
-`variant, job_id, slurm_state, exit_code, optimizer_steps, train_loop_seconds, validation_event_count, eval_case_count, one_batch_overfit_status, loss_decrease, adequacy_decision, issue, runtime_summary_path`
+`job_id, job_state, exit_code, runtime_seconds, start_time, end_time, runtime_output_path, log_path, aggregation_command, aggregation_exit_code, regenerated_files, files_still_missing, tracked_packet_monitor_placeholders_remaining`
 
-Minimum probe adequacy for follow-up3 is inherited from follow-up2 unless runtime proves otherwise:
+If the Slurm job completed but runtime outputs are missing, corrupted, not written, or cannot be recovered by the aggregator, write `M7_FOLLOWUP3_NEEDS_EVIDENCE`. Do not write ready.
 
-- minimum: `optimizer_steps >= 1200` and `train_loop_seconds >= 900`;
-- preferred: `optimizer_steps >= 3000` and `train_loop_seconds >= 1800`;
-- at least one validation event;
-- batch composition must include T2-present / GT-positive edema evidence when available;
-- no-T2 safety rows must be retained.
+## C. MyoPS follow-up2 result aggregation gate
 
-If minimum adequacy fails, write `M7_FOLLOWUP3_NEEDS_EVIDENCE_UNDERTRAINED` or `M7_FOLLOWUP3_NEEDS_MONITOR` as appropriate, and do not claim mechanism success. Do not call an undertrained probe a scientific negative stop.
+If the primary MyoPS probe remains incomplete or monitor-only after re-checking Slurm/runtime outputs, follow-up3 cannot be audited as M7 follow-up2 completion.
 
-## C. Mechanism evidence must be runtime evidence, not stale or placeholder evidence
+Required decision fields in `completion_check.md` and `result.md`:
 
-The regenerated mechanism files must answer whether SRR actually contributed on the completed primary probe.
+- `myops_decision: M7_FOLLOWUP3_NEEDS_MONITOR` or `myops_decision: M7_FOLLOWUP3_NEEDS_EVIDENCE` if MyoPS remains incomplete;
+- separate `cine_decision`;
+- separate `combined_decision`.
 
-`srr_contribution_by_case.csv` must contain per-case/per-class rows with at least:
+`combined_decision` must not package MyoPS monitor/evidence-blocked state plus Cine progress as overall success.
 
-`case_id, center, modality_group, t2_present, scar_gt_positive, edema_gt_positive, class_name, anchor_delta_rate, final_delta_rate, correction_gate_open_rate, srr_weight_mean, proposal_weight_mean, refiner_weight_mean, final_logit_delta_abs_mean, roi_delta_abs_mean, no_t2_edema_voxels, source_runtime_path`
+If the MyoPS probe completed but metrics remain no-op or near-identity, update:
 
-`arbitration_opening_diagnostics.csv` must contain runtime rows, not only synthetic unit rows. Required fields:
+- `m7_followup2_mechanism_noop_diagnosis.md`
+- `srr_contribution_by_case.csv`
+- `arbitration_opening_diagnostics.csv`
+- `proposal_refiner_effectiveness.csv`
+- `failure_interpretation.md`
+- `route_to_leaderboard_gap_report.md`
 
-`case_id, class_name, subgroup, anchor_uncertainty_mean, anchor_error_proxy, correction_gate_open_rate, proposal_weight_mean, refiner_weight_mean, final_logit_delta_in_roi, chosen_source, fallback_reason, no_t2_status, runtime_or_synthetic, blocker_reason`
+Those files must state whether the completed probe supports `NO_PROMOTION_SCIENTIFIC_UNRESOLVED`, needs another mechanism repair, or remains undertrained/evidence-blocked. Do not convert a no-op result into route promotion or scientific stop.
 
-At least one runtime row is required for scar and at least one runtime row is required for T2-present edema when such cases exist. Synthetic rows may remain, but they cannot substitute for runtime evidence.
+## D. Temporal dictionary forced closure
 
-`proposal_refiner_effectiveness.csv` must report runtime proposal/refiner effectiveness with:
+Executor must inspect `registration_same_subset_matrix.csv`. If any row satisfies either condition:
 
-`case_id, class_name, proposal_recall_proxy, proposal_precision_proxy, roi_volume_ratio, refiner_delta_magnitude, component_delta, remote_fp_delta, hd95_delta, dice_delta, source_runtime_path, status`
+- `usable_for_temporal_dictionary=True`
+- equivalent controlled field such as `m7_continued_decision=USABLE_NONREFERENCE_REGISTRATION_ROW`
 
-If SRR remains near-zero/no-op after regeneration, do not hide this. Write `m7_followup3_noop_or_harm_interpretation.md` and mark:
+then temporal dictionary follow-up3 is mandatory. Executor must not write `TEMPORAL_DICTIONARY_FOLLOWUP2_REQUIRED_NOT_EXECUTED` and then ready.
 
-- `MYOPS_NO_PROMOTION_NEAR_IDENTITY` if final deltas are near-zero;
-- `MYOPS_NO_PROMOTION_HARMFUL` if same-split help/harm is worse than nnU-Net;
-- `MYOPS_NEEDS_NEXT_ARCHITECTURE_REPAIR` if proposal/refiner/arbitration still have weak runtime effect;
-- `MYOPS_NEEDS_EVIDENCE_UNDERTRAINED` only if adequacy failed.
+Required outputs or updates:
 
-Do not write a new best-variant promotion table if the regenerated formal evidence is still too small, undertrained, near-identity, or harmful. Keep non-rerun variants marked `NOT_COMPARABLE_AFTER_FOLLOWUP2_REPAIR` unless they were rerun under the same repaired mechanism.
+- `temporal_dictionary_evidence.csv`
+- `temporal_dictionary_index.json`
+- `temporal_dictionary_case_summary.csv`
+- `temporal_aggregation_metrics.csv`
+- `frame0_vs_temporal_help_harm.csv`
+- `cine_metrics_summary.csv`
+- `cine_temporal_dictionary_followup3_report.md`
 
-## D. Cine temporal dictionary gate: usable registration forces temporal dictionary attempt
+Every usable registration row must have a corresponding temporal dictionary attempt. If only a subset of usable rows is attempted, write the deterministic selection rule and the reason each unattempted usable row was not attempted.
 
-Read `registration_same_subset_matrix.csv`. If any row has `usable_for_temporal_dictionary=True`, the executor must not leave `temporal_dictionary_evidence.csv` as `TEMPORAL_DICTIONARY_FOLLOWUP2_REQUIRED_NOT_EXECUTED`.
+## E. Temporal dictionary minimum content
 
-There are only two valid paths:
+If any usable non-reference registration row exists, temporal dictionary rows cannot be descriptor-only, no-warp, or frame0-only. They must include:
 
-### D1. Execute minimal temporal dictionary follow-up
+- ED/reference anchor feature;
+- selected non-reference frame id;
+- warped image/probability/feature source;
+- registration method and registration quality;
+- frame-quality score;
+- motion-saliency score;
+- temporal representer slot usage;
+- temporal aggregation output summary;
+- local `class_1` myocardium proxy;
+- `class_3` sanity if available;
+- hosted metric caveat;
+- frame0/control comparison.
 
-If the usable row is truly usable, implement or run a minimal diagnostic temporal dictionary builder, for example:
+If warped evidence cannot be generated, executor must either:
 
-`scripts/evaluation/run_srr_v3_m7_temporal_dictionary_followup3.py`
+1. revoke the usable registration judgment in `registration_same_subset_matrix.csv`, with evidence and `failure_reason`; or
+2. write `TEMPORAL_DICTIONARY_BLOCKED_BY_USABLE_ROW_INVALIDATED`, with evidence.
 
-The temporal dictionary must use at least one usable non-reference registration row and write `temporal_dictionary_evidence.csv` with runtime rows containing:
+Executor must not simultaneously keep a usable registration row and skip temporal dictionary execution.
 
-`status, method, case_id, reference_frame_id, selected_non_reference_frame_id, ed_reference_anchor_feature, non_reference_feature, warped_source, registration_quality, frame_quality, motion_saliency, temporal_representer_slot_usage, aggregation_output_summary, local_class_1_myocardium_proxy, ed_only_control_proxy, temporal_delta_proxy, hosted_metric_caveat, temporal_dictionary_attempted, failure_reason`
+## F. Strict validator
 
-It must also write:
+Add or update an M7 follow-up3 validator, for example:
 
-- `temporal_dictionary_followup3_report.md`
-- `temporal_dictionary_unit_tests.md` or `temporal_dictionary_validator_report.md`
+`scripts/evaluation/validate_srr_v3_m7_followup3_packet.py`
 
-A ready temporal dictionary row cannot be descriptor-only, frame0-only, one-case SyN-only, unwarped, or unregistered. It must use a warped non-reference image/probability/feature or explicitly fail.
+The validator must accept `--packet <result_dir>` and return exit code `0` only for a reviewable follow-up3 packet. It must return nonzero for known-bad packets.
 
-### D2. Reclassify registration usability with evidence
+Known-bad fixtures must be real mutated fixtures, not current-good boolean checks. They must include at least:
 
-If the row with `usable_for_temporal_dictionary=True` is not actually usable under the contract, update `registration_same_subset_matrix.csv` to set `usable_for_temporal_dictionary=False`, fill `failure_reason`, and explain in `cine_registration_followup3_reclassification.md` why the previous usable decision was wrong. This must be based on metrics or missing warp artifacts, not convenience.
+- `completion_check.md` is `M7_FOLLOWUP2_NEEDS_MONITOR` but packet is marked ready;
+- `followup2_training_adequacy.csv` contains `PENDING_MONITOR` but packet is marked ready;
+- Slurm job submitted/pending only, with no completed aggregation;
+- Slurm job completed but runtime output not aggregated into tracked packet;
+- `usable_for_temporal_dictionary=True` but `temporal_dictionary_evidence.csv` is not executed;
+- temporal dictionary ready but only frame0/no-warp/descriptor evidence exists;
+- diagnostic hardcase is used for formal best-variant decision;
+- completion ready while MyoPS or Cine blocker remains.
 
-If no usable row remains after reclassification, `temporal_dictionary_evidence.csv` may contain only blocked rows and must say `CINE_REGISTRATION_BLOCKED_AFTER_FOLLOWUP3_RECLASSIFICATION` or `TEMPORAL_DICTIONARY_BLOCKED_BY_REGISTRATION_GAP_AFTER_FOLLOWUP3`.
+Validator outputs:
 
-The executor must not choose neither path. If a usable registration row exists and no temporal dictionary is attempted or reclassification is made, write `M7_FOLLOWUP3_NEEDS_REVISION_TEMPORAL_DICTIONARY_GATE` and do not request ready review.
-
-## E. Validator and unit-test repair: no fake fail-closed, no monitor-ready pass
-
-Keep the follow-up2 strict validator repair, but extend it with monitor and temporal-dictionary gates. Update or create:
-
-- `scripts/evaluation/validate_srr_v3_m7_continued_packet.py`
 - `strict_validator_report.md`
 - `strict_validator_report.csv`
 - `strict_validator_known_bad_cases/README.md`
 - `validator_unit_test_report.md`
 
-The validator must accept `--packet <result_dir>` and return:
+Each `strict_validator_report.csv` row must include:
 
-- exit `0` only for a fully reviewable packet;
-- nonzero exit for bad packets.
+`known_bad_case, fixture_or_mutation, validator_command, expected_failure, expected_exit_code, actual_exit_code, actual_status, actual_failure_reason, pass_fail_closed`
 
-Required known-bad fixtures now include all follow-up2 fixtures plus these follow-up3-specific cases:
+Rows that do not run a real validator command do not count. Any known-bad fixture with exit code 0 fails the validator gate.
 
-- monitor packet with `PENDING_MONITOR` rows and normal `review_request.md`;
-- `completion_check.md` says ready while job is still pending/running;
-- completed Slurm job exists but tracked training adequacy still says `PENDING_MONITOR`;
-- `srr_contribution_by_case.csv` contains only `PENDING_FOLLOWUP2_PROBE` rows;
-- `arbitration_opening_diagnostics.csv` contains only synthetic rows and no runtime rows;
-- usable registration row exists but temporal dictionary is not attempted;
-- temporal dictionary row marked ready without warped non-reference evidence;
-- registration usability reclassified without failure reason;
-- non-rerun variants ranked as comparable after a single repaired probe.
+## G. Required output set
 
-Every row in `strict_validator_report.csv` must include:
-
-`known_bad_case, fixture_or_mutation, validator_command, expected_exit_code, actual_exit_code, expected_failure, actual_failure_reason, pass_fail_closed`
-
-Rows that do not execute a real validator command do not count.
-
-## F. Required outputs
-
-Write or update all outputs under:
+All follow-up3 outputs live under:
 
 `results/20260705_srr_v3_m7_training_and_cine_utilization/`
 
@@ -228,61 +241,60 @@ Required new or updated files:
 
 - `result.md`
 - `completion_check.md`
-- `review_request.md` only if fully reviewable; otherwise absent or explicitly `DO_NOT_REVIEW_MONITOR_PACKET`
+- `review_request.md` only when fully reviewable; monitor packets must say `DO_NOT_REVIEW_MONITOR_PACKET`
 - `MANIFEST.md`
 - `commands_run.md`
-- `m7_followup3_runtime_ingestion_report.md`
-- `m7_followup3_probe_summary.json`
+- `m7_followup3_runtime_reaggregation_report.md`
+- `m7_followup3_slurm_completion_record.md`
 - `followup2_training_adequacy.csv`
 - `followup2_loss_component_by_step.csv`
 - `followup2_loss_component_gradient_sanity.csv`
 - `followup2_batch_composition.csv`
 - `followup2_same_split_help_harm.csv`
 - `followup2_hard_subgroup_metrics.csv`
+- `m7_followup2_training_rerun_decision.md`
+- `m7_followup2_mechanism_noop_diagnosis.md`
 - `srr_contribution_by_case.csv`
 - `arbitration_opening_diagnostics.csv`
 - `proposal_refiner_effectiveness.csv`
-- `m7_followup3_noop_or_harm_interpretation.md` if no-op/harm is observed
-- `best_variant_decision.md`
+- `failure_interpretation.md`
+- `followup2_repair_summary.md`
 - `route_to_leaderboard_gap_report.md`
 - `registration_same_subset_matrix.csv`
-- `cine_registration_followup3_reclassification.md` if registration usability is changed
 - `temporal_dictionary_evidence.csv`
-- `temporal_dictionary_followup3_report.md` if temporal dictionary is attempted
-- `temporal_dictionary_unit_tests.md` or `temporal_dictionary_validator_report.md` if temporal dictionary is attempted
+- `temporal_dictionary_index.json`
+- `temporal_dictionary_case_summary.csv`
+- `temporal_aggregation_metrics.csv`
+- `frame0_vs_temporal_help_harm.csv`
+- `cine_metrics_summary.csv`
+- `cine_temporal_dictionary_followup3_report.md`
 - `strict_validator_report.md`
 - `strict_validator_report.csv`
 - `strict_validator_known_bad_cases/README.md`
 - `validator_unit_test_report.md`
 
-If a required file is not applicable, it must exist with `NOT_APPLICABLE_WITH_REASON` and must not hide a mandatory gate. For example, temporal dictionary is not applicable only if no usable registration row remains after evidence-based reclassification.
+If a file is not applicable, it must exist with `NOT_APPLICABLE_WITH_REASON`, and the reason must not hide a mandatory gate. Temporal dictionary outputs are not applicable only if no usable registration row remains after evidence-based invalidation.
 
-## G. Completion states
+## H. Completion states
 
 `completion_check.md` may contain only:
 
 - `M7_FOLLOWUP3_READY_FOR_REVIEW`
-- `M7_FOLLOWUP3_NEEDS_MONITOR_NO_REVIEW`
-- `M7_FOLLOWUP3_NEEDS_EVIDENCE_RUNTIME_ARTIFACT_MISSING`
-- `M7_FOLLOWUP3_RUNTIME_FAILED`
-- `M7_FOLLOWUP3_NEEDS_EVIDENCE_UNDERTRAINED`
-- `M7_FOLLOWUP3_NEEDS_REVISION_TEMPORAL_DICTIONARY_GATE`
+- `M7_FOLLOWUP3_NEEDS_MONITOR`
+- `M7_FOLLOWUP3_NEEDS_EVIDENCE`
 - `M7_FOLLOWUP3_NEEDS_REVISION`
+- `M7_FOLLOWUP3_BLOCKED_BY_REVIEW_STATE`
 - `M7_BLOCKED_BY_M6`
 
 Do not write `M7_FOLLOWUP3_READY_FOR_REVIEW` if:
 
-- any tracked CSV still has `PENDING_MONITOR`, `PRIMARY_PROBE_SUBMITTED_NEEDS_MONITOR`, or `PENDING_FOLLOWUP2_PROBE` placeholders in required evidence fields;
-- the Slurm job is not complete with exit code `0:0`;
-- runtime artifacts are missing;
-- strict validator does not run real known-bad fixtures;
-- current training evidence is under the required minimum and not explicitly marked undertrained;
-- mechanism evidence is stale old-M7 evidence rather than regenerated runtime evidence;
-- a usable registration row exists but temporal dictionary was not attempted;
-- temporal dictionary is marked ready without warped non-reference evidence;
-- route promotion, hosted metric claim, validation packaging/upload, M8, fold expansion, challenge submission, scientific stop, or leaderboard readiness is claimed.
-
-`M7_FOLLOWUP3_READY_FOR_REVIEW` only means the follow-up3 packet is ready for independent read-only review. It does not authorize M8, route promotion, validation packaging/upload, hosted metric claim, fold expansion, challenge submission, scientific stop, or leaderboard readiness.
+- follow-up2 training adequacy still contains `PENDING_MONITOR`;
+- Slurm job completion outputs are not aggregated into tracked lightweight evidence;
+- a usable registration row exists but temporal dictionary was not executed;
+- temporal dictionary contains only descriptor/frame0/no-warp evidence;
+- strict validator is not real known-bad fail-closed;
+- MyoPS/Cine decisions are mixed together as overall success;
+- route promotion, hosted metric claim, validation packaging/upload, M8, fold expansion, challenge submission, scientific stop, leaderboard readiness, or challenge readiness is claimed.
 
 Finish by force-adding and locally committing only lightweight evidence plus necessary first-party helper/source/test files. Do not commit checkpoints, NIfTI predictions, upload packages, raw data, secrets, environment dumps, whole runtime trees, or large logs. Do not write `review.md`. Do not push.
 ```
@@ -296,74 +308,98 @@ Finish by force-adding and locally committing only lightweight evidence plus nec
 
 必须读取：
 
+- `prompts/shared/20260707_M7_followup3_completion_temporal_dictionary_repair_prompt.md`
 - `prompts/shared/EXECUTOR_PROMPTS.md`
 - `prompts/shared/REVIEWER_PROMPTS.md`
-- `prompts/shared/20260707_M7_followup3_completion_temporal_dictionary_repair_prompt.md` if present
 - `prompts/MILESTONE_REVIEW_PROTOCOL.md`
 - `prompts/HANDOFF_GATE_POLICY.md`
 - `prompts/GPT_HARD_GATE_PROMPT.md`
 - latest M7 follow-up2 `review.md`
 - M7 follow-up3 result files
-- modified first-party evaluation/training/Cine/validator/test files
+- modified first-party aggregation/Cine/validator/test files
 
 ## A. Scope gate
 
-Reject if the packet claims M8, route promotion, hosted metric, validation packaging/upload, fold expansion, challenge submission, scientific stop, or leaderboard readiness.
+Reject if the packet claims M8, route promotion, hosted metric, validation packaging/upload, fold expansion, challenge submission, scientific stop, leaderboard readiness, or challenge readiness.
 
-## B. Monitor/completion safety gate
+## B. Monitor packet is not completion gate
 
-Reject if a normal review request was created while Slurm job evidence is still pending/running/unresolved.
+Reject if a monitor packet is treated as completion.
 
-Reject if any required tracked evidence file still contains monitor placeholders such as `PENDING_MONITOR`, `NEEDS_MONITOR`, `PRIMARY_PROBE_SUBMITTED_NEEDS_MONITOR`, or `PENDING_FOLLOWUP2_PROBE`, unless the packet explicitly uses `M7_FOLLOWUP3_NEEDS_MONITOR_NO_REVIEW` and does not request review.
+Reject if:
 
-Reject if `completion_check.md` says ready but job status is not complete with exit code `0:0`, runtime artifacts are missing, or regenerated tracked CSVs are absent.
+- `completion_check.md` is ready while `followup2_training_adequacy.csv` still contains `PENDING_MONITOR`;
+- `commands_run.md` only shows Slurm submitted/pending state;
+- completed Slurm job outputs were not re-aggregated into tracked lightweight evidence;
+- `review_request.md` asks for normal review while the packet is still monitor/evidence-blocked.
 
-## C. Runtime ingestion gate
+Reviewer must inspect Slurm job id, job state, exit code, runtime seconds, runtime output path/log path, aggregation command, and aggregation exit code in `m7_followup3_runtime_reaggregation_report.md` and `m7_followup3_slurm_completion_record.md`.
 
-Reject unless `m7_followup3_runtime_ingestion_report.md` and `m7_followup3_probe_summary.json` trace the completed job and regenerated tracked evidence. The reviewer must verify actual optimizer steps, train-loop seconds, validation events, eval case ids, batch composition, and regenerated file paths.
+## C. Completed Slurm job re-aggregation gate
 
-If the minimum probe budget is not met, do not grant audited-go for completed evidence. Use an undertrained/evidence decision.
+Reject if job `58021931` or the justified superseding job completed but tracked files still reflect pre-completion monitor evidence.
 
-## D. MyoPS mechanism evidence gate
+Reject if any of these files are missing or stale after completed aggregation:
 
-Reject if `srr_contribution_by_case.csv`, `arbitration_opening_diagnostics.csv`, or `proposal_refiner_effectiveness.csv` are stale, placeholder, or only synthetic. At least one runtime scar row and one runtime T2-present edema row are required when such cases exist.
+- `result.md`
+- `completion_check.md`
+- `followup2_training_adequacy.csv`
+- `followup2_loss_component_by_step.csv`
+- `followup2_same_split_help_harm.csv`
+- `followup2_hard_subgroup_metrics.csv`
+- `m7_followup2_training_rerun_decision.md`
+- `failure_interpretation.md`
+- `commands_run.md`
+- `MANIFEST.md`
 
-The reviewer must check:
+If runtime outputs are missing/corrupt/unrecoverable, reviewer must use an evidence/revision decision, not audited-go.
 
-- anchor delta rate;
-- final delta rate;
-- correction gate opening;
-- SRR/proposal/refiner weights;
-- final-logit delta in ROI;
-- proposal recall proxy;
-- remote FP suppression or worsening;
-- component/HD95/Dice deltas;
-- no-T2 edema voxel safety.
+## D. MyoPS/Cine decision separation gate
 
-If SRR is still near-zero or harmful, this is acceptable only as negative/no-promotion evidence, not as route promotion or leaderboard readiness. The packet must contain `m7_followup3_noop_or_harm_interpretation.md` and `route_to_leaderboard_gap_report.md`.
+Reject if MyoPS and Cine decisions are merged into overall success.
 
-## E. Cine temporal dictionary gate
+If MyoPS remains monitor/evidence-blocked, `myops_decision` must be `M7_FOLLOWUP3_NEEDS_MONITOR` or `M7_FOLLOWUP3_NEEDS_EVIDENCE`, and `combined_decision` must not imply success.
 
-Reject if `registration_same_subset_matrix.csv` contains `usable_for_temporal_dictionary=True` and temporal dictionary follow-up3 was not attempted.
+If MyoPS completed but remains no-op, reviewer must check updated `m7_followup2_mechanism_noop_diagnosis.md`, `srr_contribution_by_case.csv`, `arbitration_opening_diagnostics.csv`, `proposal_refiner_effectiveness.csv`, and `route_to_leaderboard_gap_report.md`. No-op may support no-promotion evidence only; it cannot support route promotion, leaderboard readiness, or scientific stop.
 
-Reject if temporal dictionary is marked ready without warped non-reference evidence.
+## E. Temporal dictionary gate
 
-If the executor reclassifies the usable registration row as not usable, verify `cine_registration_followup3_reclassification.md` and the updated `failure_reason`. Convenience reclassification without evidence is not acceptable.
+Reject if `registration_same_subset_matrix.csv` contains `usable_for_temporal_dictionary=True` or equivalent `USABLE_NONREFERENCE_REGISTRATION_ROW` and temporal dictionary was not executed.
 
-If no usable registration remains after evidence-based reclassification, a blocked temporal dictionary state is acceptable only if it is explicit and honest.
+Reject if `temporal_dictionary_evidence.csv` still says `TEMPORAL_DICTIONARY_FOLLOWUP2_REQUIRED_NOT_EXECUTED` while a usable row exists.
+
+Reject if temporal dictionary is marked ready but contains only descriptor, frame0, or no-warp evidence.
+
+Required temporal dictionary outputs:
+
+- `temporal_dictionary_evidence.csv`
+- `temporal_dictionary_index.json`
+- `temporal_dictionary_case_summary.csv`
+- `temporal_aggregation_metrics.csv`
+- `frame0_vs_temporal_help_harm.csv`
+- `cine_metrics_summary.csv`
+- `cine_temporal_dictionary_followup3_report.md`
+
+The reviewer must confirm at least one temporal dictionary attempt for each usable registration row, or a deterministic subset rule plus explicit unattempted-row reasons.
+
+If warped evidence cannot be generated, reviewer must verify that the usable registration judgment was revoked or that `TEMPORAL_DICTIONARY_BLOCKED_BY_USABLE_ROW_INVALIDATED` is supported by evidence. It is invalid to keep a usable row and skip temporal dictionary.
 
 ## F. Strict validator gate
 
-Reject unless a real validator was run against real mutated known-bad fixtures and each bad fixture has actual nonzero exit code or equivalent CLI failure. A current-packet boolean checklist is not acceptable.
+Reject unless a real follow-up3 validator was run against mutated known-bad fixtures. A current-good packet boolean checklist is not acceptable.
 
-The reviewer must verify follow-up3-specific known-bad fixtures, especially:
+Known-bad fixtures must include:
 
-- monitor packet with normal review request;
-- completion ready while job pending/running;
-- completed job but tracked files still pending;
-- only synthetic arbitration diagnostics;
-- usable registration but no temporal dictionary;
-- temporal dictionary ready without warped non-reference evidence.
+- ready completion while `completion_check.md` was `M7_FOLLOWUP2_NEEDS_MONITOR`;
+- ready completion while `followup2_training_adequacy.csv` contained `PENDING_MONITOR`;
+- Slurm job submitted/pending only;
+- Slurm job completed but runtime output not aggregated into tracked files;
+- usable registration row but no temporal dictionary;
+- temporal dictionary ready with only frame0/no-warp/descriptor evidence;
+- diagnostic hardcase used for formal best-variant decision;
+- ready completion while MyoPS or Cine blocker remains.
+
+Reject if any known-bad fixture has actual exit code 0 or if `strict_validator_report.csv` lacks expected failure, actual exit code/status, and failure reason.
 
 ## G. Reviewer decision states
 
@@ -375,7 +411,7 @@ Allowed decisions:
 - `M7_FOLLOWUP3_AUDITED_NEEDS_MONITOR`
 - `M7_FOLLOWUP3_AUDITED_NO_PROMOTION_SCIENTIFIC_UNRESOLVED`
 
-`M7_FOLLOWUP3_AUDITED_GO_FOR_NEXT_PLANNING` only means GPT planner can inspect a complete, non-monitor, reviewable follow-up3 packet. It does not authorize M8, route promotion, validation packaging/upload, hosted metric claim, fold expansion, challenge submission, scientific stop, or leaderboard readiness.
+`M7_FOLLOWUP3_AUDITED_GO_FOR_NEXT_PLANNING` only means GPT planner can inspect a complete, non-monitor, reviewable follow-up3 packet. It does not authorize M8, route promotion, validation packaging/upload, hosted metric claim, fold expansion, challenge submission, scientific stop, leaderboard readiness, or challenge readiness.
 ```
 
 ## 3. Merge note
