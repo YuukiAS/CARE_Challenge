@@ -60,9 +60,73 @@ M7_TO_M6_VARIANT = {
     "m7_scar_precision_edema_safe": "m6_scar_precision_edema_safe",
 }
 
+M8_TO_M6_VARIANT = {
+    "m8_full_srr_context_arbitration_longrun": "m6_full_srr_context_arbitration",
+    "m8_scar_precision_edema_safe_longrun": "m6_scar_precision_edema_safe",
+    "m8_t2_centerC_edema_repair_longrun": "m6_full_srr_context_arbitration",
+}
+
 
 def canonical_model_variant(variant: str) -> str:
-    return M7_TO_M6_VARIANT.get(str(variant), str(variant))
+    value = str(variant)
+    return M8_TO_M6_VARIANT.get(value, M7_TO_M6_VARIANT.get(value, value))
+
+
+def apply_variant_config_contract(args: argparse.Namespace) -> None:
+    """Apply the M8 JSON config contract to CLI defaults when provided."""
+
+    config_path = str(getattr(args, "variant_config_contract", "") or "")
+    if not config_path:
+        args.variant_config_record = {}
+        return
+    path = Path(config_path)
+    if not path.is_absolute():
+        path = REPO_ROOT / path
+    data = json.loads(path.read_text(encoding="utf-8"))
+    variants = data.get("variants", {})
+    key = str(getattr(args, "variant_config_key", "") or args.variant)
+    if key not in variants:
+        raise ValueError(f"variant config key {key!r} not found in {path}")
+    variant_cfg = variants[key]
+    args.variant_config_record = {
+        "config_path": str(path),
+        "config_key": key,
+        "variant_config": variant_cfg,
+    }
+
+    loss_weights = variant_cfg.get("loss_weights", {}) if isinstance(variant_cfg, dict) else {}
+    for attr, cfg_key in [
+        ("scar_weight", "scar"),
+        ("edema_weight", "edema"),
+        ("proposal_weight", "proposal"),
+        ("margin_weight", "prototype_margin"),
+        ("component_proposal_weight", "component_proposal"),
+        ("semantic_retrieval_weight", "semantic_retrieval"),
+        ("baseline_preservation_weight", "baseline_preservation"),
+        ("roi_weight", "roi"),
+        ("roi_remote_weight", "roi_remote"),
+    ]:
+        if getattr(args, attr, None) is None and cfg_key in loss_weights:
+            setattr(args, attr, float(loss_weights[cfg_key]))
+
+    sampler = variant_cfg.get("sampler_quotas", {}) if isinstance(variant_cfg, dict) else {}
+    if getattr(args, "hardneg_sample_prob", None) is None and "hard_negative" in sampler:
+        setattr(args, "hardneg_sample_prob", float(sampler["hard_negative"]))
+
+    optimizer = variant_cfg.get("optimizer", {}) if isinstance(variant_cfg, dict) else {}
+    if "lr" in optimizer:
+        args.lr = float(optimizer["lr"])
+    if "weight_decay" in optimizer:
+        args.weight_decay = float(optimizer["weight_decay"])
+
+    thresholds = variant_cfg.get("proposal_thresholds", {}) if isinstance(variant_cfg, dict) else {}
+    if isinstance(thresholds, dict):
+        if "sweep" in thresholds:
+            args.proposal_thresholds = ",".join(str(x) for x in thresholds["sweep"])
+        if "scar_decode" in thresholds:
+            args.scar_decode_threshold = float(thresholds["scar_decode"])
+        if "edema_decode" in thresholds:
+            args.edema_decode_threshold = float(thresholds["edema_decode"])
 
 
 M6_LOSS_COMPONENT_KEYS = (
@@ -566,7 +630,7 @@ def model_kwargs_from_args(args: argparse.Namespace) -> dict[str, object]:
     return {
         "base_channels": args.base_channels,
         "variant": canonical_model_variant(args.variant),
-        "encoder_profile": args.encoder_profile,
+            "encoder_profile": args.encoder_profile,
         "disable_local_refinement": bool(getattr(args, "disable_local_refinement", False)),
         "disable_anatomy_roi_prior": bool(getattr(args, "disable_anatomy_roi_prior", False)),
     }
@@ -1705,6 +1769,7 @@ def train_variant(args: argparse.Namespace) -> None:
             "variant": output_variant,
             "model_variant": args.variant,
             "source_model_variant": canonical_model_variant(args.variant),
+            "variant_config_contract": getattr(args, "variant_config_record", {}),
             "fold": args.fold,
             "device": str(device),
             "encoder_profile": args.encoder_profile,
@@ -2008,6 +2073,7 @@ def train_variant(args: argparse.Namespace) -> None:
         "variant": output_variant,
         "model_variant": args.variant,
         "source_model_variant": canonical_model_variant(args.variant),
+        "variant_config_contract": getattr(args, "variant_config_record", {}),
         "fold": args.fold,
         "device": str(device),
         "encoder_profile": getattr(model, "encoder_profile", args.encoder_profile),
@@ -2111,6 +2177,9 @@ def main() -> None:
             "m7_full_srr_context_arbitration",
             "m7_conservative_component_arbitration",
             "m7_scar_precision_edema_safe",
+            "m8_full_srr_context_arbitration_longrun",
+            "m8_scar_precision_edema_safe_longrun",
+            "m8_t2_centerC_edema_repair_longrun",
         ],
     )
     parser.add_argument("--run-label", default="", help="Optional isolated output label under variants/ without changing model hparams.")
@@ -2178,11 +2247,14 @@ def main() -> None:
     parser.add_argument("--limit-val-cases", type=int, default=0)
     parser.add_argument("--hardneg-components-csv", default="results/20260629_proposal_memory_hardneg/mined_components.csv")
     parser.add_argument("--hardneg-sample-prob", type=float)
+    parser.add_argument("--variant-config-contract", default="", help="JSON contract file whose selected variant config is applied and recorded.")
+    parser.add_argument("--variant-config-key", default="", help="Variant key inside --variant-config-contract; defaults to --variant.")
     parser.add_argument("--disable-local-refinement", action="store_true", help="Bypass crop ROI refinement and use proposal logits for pathology heads.")
     parser.add_argument("--disable-anatomy-roi-prior", action="store_true", help="Replace P_union/P_LV/P_RV distance gates with neutral ROI context.")
     parser.add_argument("--disable-nnunet-anchor", action="store_true", help="Remove nnU-Net anchor/component context from training, prototype fitting, and evaluation.")
     parser.add_argument("--skip-export", action="store_true")
     args = parser.parse_args()
+    apply_variant_config_contract(args)
     train_variant(args)
 
 

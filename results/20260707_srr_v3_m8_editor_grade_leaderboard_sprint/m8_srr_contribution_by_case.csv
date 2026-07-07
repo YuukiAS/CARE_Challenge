@@ -1,0 +1,2 @@
+variant,checkpoint,decode_mode,case_id,center,modality_group,t2_present,class_name,anchor_delta_rate,final_delta_rate,correction_gate_open_rate,srr_weight_mean,proposal_weight_mean,refiner_weight_mean,fallback_weight_mean,final_logit_delta_abs_mean,roi_delta_abs_mean,proposal_recall_proxy,proposal_precision_proxy,refiner_delta_magnitude,no_t2_edema_voxels,dice_delta,hd95_delta,remote_fp_delta,component_count_delta,source_prediction_path
+,,,,,,,,,,,,,,,,,,,,,,,,,

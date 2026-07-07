@@ -1,0 +1,2 @@
+command,exit_code,error_count,status,reason
+python scripts/evaluation/validate_srr_v3_m8_leaderboard_sprint_packet.py --packet results/20260707_srr_v3_m8_editor_grade_leaderboard_sprint,0,0,M8_NEEDS_MONITOR_NO_REVIEW,Validator accepts this as non-ready monitor packet only; M8_READY_FOR_REVIEW is not claimed.

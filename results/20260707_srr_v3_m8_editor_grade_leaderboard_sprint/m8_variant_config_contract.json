@@ -1,0 +1,185 @@
+{
+  "code_path": "scripts/training/run_srr_propref_myops_fold0.py --variant-config-contract",
+  "config_status": "M8_MONITOR_CONFIG_CONTRACT_WRITTEN",
+  "task_key": "20260707_srr_v3_m8_editor_grade_leaderboard_sprint",
+  "variants": {
+    "m8_full_srr_context_arbitration_longrun": {
+      "checkpoint_selection_rule": "eligible best validation loss after min-best-step-fraction, plus final checkpoint",
+      "dictionary_slot_counts": {
+        "interaction": 6,
+        "private_lge": 8,
+        "private_t2": 8,
+        "shared": 12
+      },
+      "encoder_profile": "full_4scale",
+      "hard_negative_mining_source": "results/20260629_proposal_memory_hardneg/mined_components.csv",
+      "inference_arbitration_rule": "anchor-preserving SRR residual plus proposal/refiner bounded final-logit effect",
+      "loss_weights": {
+        "baseline_preservation": 0.1,
+        "component_proposal": 0.2,
+        "edema": 1.35,
+        "proposal": 0.45,
+        "prototype_margin": 0.2,
+        "roi": 0.25,
+        "roi_remote": 0.05,
+        "scar": 1.35,
+        "semantic_retrieval": 0.04
+      },
+      "no_t2_edema_safety_rule": "no-T2 samples block edema loss/proposal/refiner/export voxels instead of acting as edema negatives",
+      "optimizer": {
+        "lr": 0.0008,
+        "scheduler": "validation early-stop with low-lr calibration floor",
+        "weight_decay": 0.0001
+      },
+      "proposal_thresholds": {
+        "edema_decode": 0.5,
+        "scar_decode": 0.5,
+        "sweep": [
+          0.05,
+          0.1,
+          0.2,
+          0.3,
+          0.4,
+          0.5,
+          0.6,
+          0.7,
+          0.8,
+          0.9
+        ]
+      },
+      "prototype_bank_source": "same-split train/OOF labeled features with T2 edema repair",
+      "roi_dilation_crop_policy": "task soft-gate ROI with anatomy probability, LV/RV distance, uncertainty and crop refiner channels",
+      "router_bias_gate_opening_strategy": "correction-opportunity curriculum with closed fallback outside uncertain/error regions",
+      "sampler_quotas": {
+        "complete": 0.55,
+        "foreground": 0.82,
+        "hard_negative": 0.3,
+        "t2_edema_centerC": 0.12
+      },
+      "training_stages": [
+        "evidence_warmup",
+        "proposal_dictionary",
+        "soft_roi_refinement",
+        "low_lr_calibration"
+      ]
+    },
+    "m8_scar_precision_edema_safe_longrun": {
+      "checkpoint_selection_rule": "best same-split scar Dice/HD95 guard among eligible checkpoints",
+      "dictionary_slot_counts": {
+        "interaction": 4,
+        "private_lge": 10,
+        "private_t2": 6,
+        "shared": 8
+      },
+      "encoder_profile": "safe_4scale",
+      "hard_negative_mining_source": "remote-FP mined nnU-Net components",
+      "inference_arbitration_rule": "conservative fallback when SRR increases remote FP or scar HD95 risk",
+      "loss_weights": {
+        "baseline_preservation": 0.14,
+        "component_proposal": 0.3,
+        "edema": 1.1,
+        "proposal": 0.5,
+        "prototype_margin": 0.25,
+        "roi": 0.22,
+        "roi_remote": 0.08,
+        "scar": 1.65,
+        "semantic_retrieval": 0.04
+      },
+      "no_t2_edema_safety_rule": "strict no-T2 edema suppression through loss, decode and dry-run export",
+      "optimizer": {
+        "lr": 0.0007,
+        "scheduler": "validation early-stop with scar HD95 guard",
+        "weight_decay": 0.00012
+      },
+      "proposal_thresholds": {
+        "edema_decode": 0.55,
+        "scar_decode": 0.55,
+        "sweep": [
+          0.1,
+          0.2,
+          0.3,
+          0.4,
+          0.5,
+          0.6,
+          0.7,
+          0.8,
+          0.9
+        ]
+      },
+      "prototype_bank_source": "same-split train/OOF labeled features; scar-positive priority",
+      "roi_dilation_crop_policy": "smaller scar ROI, conservative edema ROI, HD95 guard",
+      "router_bias_gate_opening_strategy": "conservative scar precision and remote-FP suppression with stronger baseline preservation",
+      "sampler_quotas": {
+        "complete": 0.5,
+        "foreground": 0.86,
+        "hard_negative": 0.45,
+        "remote_fp": 0.2
+      },
+      "training_stages": [
+        "evidence_warmup",
+        "proposal_dictionary",
+        "soft_roi_refinement",
+        "low_lr_calibration"
+      ]
+    },
+    "m8_t2_centerC_edema_repair_longrun": {
+      "checkpoint_selection_rule": "best T2-present edema subgroup subject to no-T2 safety",
+      "dictionary_slot_counts": {
+        "interaction": 8,
+        "private_lge": 6,
+        "private_t2": 12,
+        "shared": 10
+      },
+      "encoder_profile": "balanced_4scale",
+      "hard_negative_mining_source": "edema false-positive and false-negative cases from same split",
+      "inference_arbitration_rule": "edema candidate allowed only with T2-present evidence and safety export guard",
+      "loss_weights": {
+        "baseline_preservation": 0.1,
+        "component_proposal": 0.25,
+        "edema": 1.65,
+        "proposal": 0.55,
+        "prototype_margin": 0.2,
+        "roi": 0.32,
+        "roi_remote": 0.04,
+        "scar": 1.2,
+        "semantic_retrieval": 0.05
+      },
+      "no_t2_edema_safety_rule": "no-T2 myocardium is never used as edema-negative supervision and export blocks edema voxels",
+      "optimizer": {
+        "lr": 0.0008,
+        "scheduler": "validation early-stop with edema recall/HD95 guard",
+        "weight_decay": 0.0001
+      },
+      "proposal_thresholds": {
+        "edema_decode": 0.45,
+        "scar_decode": 0.5,
+        "sweep": [
+          0.03,
+          0.05,
+          0.1,
+          0.2,
+          0.3,
+          0.4,
+          0.5,
+          0.6,
+          0.7
+        ]
+      },
+      "prototype_bank_source": "T2-present edema-positive/negative same-split cases with CenterC oversampling",
+      "roi_dilation_crop_policy": "larger edema ROI with no-T2 block and CenterC edema recall guard",
+      "router_bias_gate_opening_strategy": "T2-present CenterB/CenterC edema recall with LGE-T2 interaction mass floor",
+      "sampler_quotas": {
+        "complete": 0.65,
+        "foreground": 0.88,
+        "hard_negative": 0.3,
+        "t2_edema_centerC": 0.25
+      },
+      "training_stages": [
+        "evidence_warmup",
+        "proposal_dictionary",
+        "soft_roi_refinement",
+        "low_lr_calibration"
+      ]
+    }
+  }
+}

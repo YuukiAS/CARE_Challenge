@@ -26,7 +26,7 @@ REPO_ROOT = Path(__file__).resolve().parents[2]
 if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
 
-TASK_KEY = "20260705_srr_v3_m7_training_and_cine_utilization"
+TASK_KEY = os.environ.get("SRR_CINE_TASK_KEY", "20260705_srr_v3_m7_training_and_cine_utilization")
 OUT_ROOT = REPO_ROOT / "results" / TASK_KEY
 SAFE_CASES = REPO_ROOT / "results/20260703_cine_motion/safe_cases_used.csv"
 CINEMA_ROOT = REPO_ROOT / "results/cinema_adapter/20260619_131229__cinema_acdc_seed0_ed_mid_repr"

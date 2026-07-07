@@ -1,0 +1,2 @@
+step,variant,case_id,center,modality_group,t2_present,c0_present,scar_gt_positive,edema_gt_positive,no_t2_safety_case,remote_fp_positive,small_lesion,large_lesion,selected_reason,loss_terms_active
+,,,,,,,,,,,,,,
