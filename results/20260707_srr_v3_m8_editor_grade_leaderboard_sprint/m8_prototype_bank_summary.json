@@ -136,6 +136,73 @@
       ],
       "source": "train_oof_runtime_features_fold0"
     },
-    "m8_t2_centerC_edema_repair_longrun": {}
+    "m8_t2_centerC_edema_repair_longrun": {
+      "case_count": 16,
+      "category_counts": {
+        "artifact": 68,
+        "blood_pool": 91750,
+        "hard_fp": 3569,
+        "normal_myocardium": 25837,
+        "outside_myocardium": 368202,
+        "scar_positive": 14746,
+        "t2_present_artifact": 231,
+        "t2_present_blood_pool": 91750,
+        "t2_present_edema_positive": 23753,
+        "t2_present_hard_fp": 7511,
+        "t2_present_normal_myocardium_far_from_edema": 13891,
+        "t2_present_outside_myocardium": 368202
+      },
+      "counts": {
+        "edema_negative": 77,
+        "edema_positive": 16,
+        "scar_negative": 67,
+        "scar_positive": 16
+      },
+      "edema_negative_shape": [
+        8,
+        16
+      ],
+      "edema_positive_shape": [
+        6,
+        16
+      ],
+      "feature_stage": "SRRProposeRefineMyoPS._evidence_features",
+      "hard_negative_counts": {
+        "edema_no_t2_myocardium_negative_voxels": 0,
+        "edema_t2_present_artifact": 231,
+        "edema_t2_present_hard_fp": 7511,
+        "scar_artifact": 68,
+        "scar_hard_fp": 3569
+      },
+      "leakage_policy": "train split and OOF nnU-Net anchor probabilities only; validation labels are not used",
+      "safe_negative_policy": "edema positives and negatives restricted to T2-present samples; no-T2 myocardium never contributes edema negatives",
+      "scar_negative_shape": [
+        8,
+        16
+      ],
+      "scar_positive_shape": [
+        6,
+        16
+      ],
+      "selected_case_ids": [
+        "Case2001",
+        "Case2003",
+        "Case2004",
+        "Case2005",
+        "Case2006",
+        "Case2009",
+        "Case2010",
+        "Case2011",
+        "Case2012",
+        "Case2013",
+        "Case2014",
+        "Case2015",
+        "Case2016",
+        "Case2018",
+        "Case2019",
+        "Case2021"
+      ],
+      "source": "train_oof_runtime_features_fold0"
+    }
   }
 }

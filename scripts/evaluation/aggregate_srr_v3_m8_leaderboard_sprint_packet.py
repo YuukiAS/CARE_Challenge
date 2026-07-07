@@ -241,28 +241,48 @@ def summarize_training_curves(packet: Path) -> None:
 
 def summarize_batch_and_memory(packet: Path) -> None:
     rows = []
-    for row in concat_csv(variant_dir(packet, variant) / "batch_composition.csv" for variant in VARIANTS):
-        rows.append(
-            {
-                "step": row.get("step", ""),
-                "variant": row.get("variant", row.get("source_path", "")),
-                "case_id": row.get("case_id", ""),
-                "center": row.get("center", ""),
-                "modality_group": row.get("modality_group", ""),
-                "t2_present": row.get("t2_present", ""),
-                "c0_present": row.get("c0_present", ""),
-                "scar_gt_positive": row.get("scar_gt_positive", ""),
-                "edema_gt_positive": row.get("edema_gt_positive", ""),
-                "no_t2_safety_case": str(row.get("t2_present", "")).lower() == "false",
-                "remote_fp_positive": row.get("anchor_remote_fp_scar", "") or row.get("anchor_remote_fp_edema", ""),
-                "small_lesion": "",
-                "large_lesion": "",
-                "selected_reason": row.get("split_role", ""),
-                "loss_terms_active": row.get("stage", ""),
-                "source_path": row.get("source_path", ""),
-            }
-        )
-    write_csv(packet / "m8_batch_composition.csv", rows)
+    for variant in VARIANTS:
+        for row in read_csv(variant_dir(packet, variant) / "batch_composition.csv"):
+            rows.append(
+                {
+                    "step": row.get("step", ""),
+                    "variant": variant,
+                    "case_id": row.get("case_id", ""),
+                    "center": row.get("center", ""),
+                    "modality_group": row.get("modality_group", ""),
+                    "t2_present": row.get("t2_present", ""),
+                    "c0_present": row.get("c0_present", ""),
+                    "scar_gt_positive": row.get("scar_gt_positive", ""),
+                    "edema_gt_positive": row.get("edema_gt_positive", ""),
+                    "no_t2_safety_case": str(row.get("t2_present", "")).lower() == "false",
+                    "remote_fp_positive": row.get("anchor_remote_fp_scar", "") or row.get("anchor_remote_fp_edema", ""),
+                    "small_lesion": "",
+                    "large_lesion": "",
+                    "selected_reason": row.get("split_role", ""),
+                    "loss_terms_active": row.get("stage", ""),
+                }
+            )
+    write_csv(
+        packet / "m8_batch_composition.csv",
+        rows,
+        [
+            "step",
+            "variant",
+            "case_id",
+            "center",
+            "modality_group",
+            "t2_present",
+            "c0_present",
+            "scar_gt_positive",
+            "edema_gt_positive",
+            "no_t2_safety_case",
+            "remote_fp_positive",
+            "small_lesion",
+            "large_lesion",
+            "selected_reason",
+            "loss_terms_active",
+        ],
+    )
     write_csv(packet / "m8_hard_negative_memory_summary.csv", concat_csv(variant_dir(packet, variant) / "hardneg_memory.csv" for variant in VARIANTS))
 
 

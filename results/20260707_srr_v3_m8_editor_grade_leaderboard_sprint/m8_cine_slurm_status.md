@@ -90,8 +90,35 @@ Cine watcher latest excerpt:
 2026-07-07T01:06:41.671198 check=17 htzhulab=[('58081476', 'htzhulab', 'PENDING', '(Priority)')] a100=[('58081477', 'a100-gpu', 'PENDING', '(Priority)')]
 ```
 
-No Cine registration matrix or temporal dictionary evidence has been produced from this race yet.
+No Cine registration matrix or temporal dictionary evidence had been produced at that point.
+
+## Post-Poll Failure Evidence
+
+The htzhulab Cine mirror started and failed quickly.
+
+Post-poll `sacct -j 58081007,58081476,58081477,58081479,58081494,58081496` evidence:
+
+- `58081476`: `FAILED`, exit `1:0`, elapsed `00:00:02`, partition `htzhulab`, start `2026-07-07T02:20:53`, end `2026-07-07T02:20:55`
+- `58081477`: `PENDING`, partition `a100-gpu`, start `Unknown`, end `Unknown`
+- `58081479`: `RUNNING`, partition `spill`, watcher still active
+
+The htzhulab Cine log was:
+
+```text
+Traceback (most recent call last):
+  File "/users/a/e/aereinh/CARE/scripts/evaluation/run_srr_v3_m7_cine_registration_repair.py", line 523, in <module>
+    main()
+  File "/users/a/e/aereinh/CARE/scripts/evaluation/run_srr_v3_m7_cine_registration_repair.py", line 433, in main
+    usable, decision = usability_decision(rows)
+                       ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/users/a/e/aereinh/CARE/scripts/evaluation/run_srr_v3_m7_cine_registration_repair.py", line 290, in usability_decision
+    if float(r["after_myocardium_dice"]) >= float(r["before_myocardium_dice"])
+             ~^^^^^^^^^^^^^^^^^^^^^^^^^
+KeyError: 'after_myocardium_dice'
+```
+
+This is a runtime evidence blocker for the htzhulab Cine mirror. The a100 mirror is still pending, so the Cine branch is still not complete and cannot be reviewed as ready.
 
 ## Completion Boundary
 
-This is not Cine evidence completion. Mature registration has been submitted in a lock-safe partition race but has not started/completed, and no M8 Cine registration matrix or temporal dictionary aggregation has been produced from the submitted job.
+This is not Cine evidence completion. Mature registration has not produced an M8 Cine registration matrix or temporal dictionary aggregation. The htzhulab mirror failed with a field-name runtime error, and the a100 mirror remains pending.

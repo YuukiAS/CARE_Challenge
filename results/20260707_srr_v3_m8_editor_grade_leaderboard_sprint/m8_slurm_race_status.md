@@ -136,6 +136,43 @@ Runtime artifact check showed that task0 and task1 have written validation check
 
 `find results/20260707_srr_v3_m8_editor_grade_leaderboard_sprint/runtime -maxdepth 5 -type f \( -name 'summary.json' -o -name 'training_log.csv' -o -name 'validation_events.csv' -o -name 'checkpoint_final.pt' -o -name 'registration_same_subset_matrix.csv' \) -print | sort` returned no files, so the M8 post-job aggregator correctly kept the packet in monitor state.
 
+## Post-Poll Partial Runtime Aggregation
+
+After the 7200-second minimum train-loop threshold, MyoPS tasks `0` and `1` completed and wrote final runtime outputs.
+
+Post-poll `sacct -j 58081007,58081476,58081477,58081479,58081494,58081496` evidence:
+
+- `58081023` / array task `0`: `COMPLETED`, exit `0:0`, elapsed `02:02:09`, start `2026-07-07T00:18:35`, end `2026-07-07T02:20:44`
+- `58081024` / array task `1`: `COMPLETED`, exit `0:0`, elapsed `02:02:00`, start `2026-07-07T00:18:35`, end `2026-07-07T02:20:35`
+- `58081007` / array task `2`: `RUNNING`, partition `htzhulab`, start `2026-07-07T02:20:53`
+- `58081494`: `CANCELLED by 397557`, a100 task2 mirror cancelled by the watcher after htzhulab task2 started
+- `58081496`: `COMPLETED`, exit `0:0`, task2 watcher ended after cancelling the a100 mirror
+
+Completed runtime artifacts now exist for:
+
+- `runtime/variants/m8_full_srr_context_arbitration_longrun/summary.json`
+- `runtime/variants/m8_full_srr_context_arbitration_longrun/training_log.csv`
+- `runtime/variants/m8_full_srr_context_arbitration_longrun/validation_events.csv`
+- `runtime/variants/m8_full_srr_context_arbitration_longrun/checkpoints/fold_0/propref_config/checkpoint_final.pt`
+- `runtime/variants/m8_scar_precision_edema_safe_longrun/summary.json`
+- `runtime/variants/m8_scar_precision_edema_safe_longrun/training_log.csv`
+- `runtime/variants/m8_scar_precision_edema_safe_longrun/validation_events.csv`
+- `runtime/variants/m8_scar_precision_edema_safe_longrun/checkpoints/fold_0/propref_config/checkpoint_final.pt`
+
+The fail-closed aggregator was rerun after these files appeared:
+
+```bash
+python scripts/evaluation/aggregate_srr_v3_m8_leaderboard_sprint_packet.py --packet results/20260707_srr_v3_m8_editor_grade_leaderboard_sprint --contribution-device cpu
+```
+
+It exited `0` and kept the packet in `M8_NEEDS_MONITOR_NO_REVIEW` with blocker:
+
+```text
+missing_runtime_summary=m8_t2_centerC_edema_repair_longrun
+```
+
+The post-aggregation validator exited `0` with `error_count=0`, validating only the controlled non-ready monitor state.
+
 ## Completion Boundary
 
-This is not M8 completion. Training is still running/pending, the 28800-second MyoPS training budget is not proven, task2 has not started yet, and no completed runtime aggregation has been committed.
+This is not M8 completion. Two MyoPS variants have completed and been partially aggregated, but task2 is still running, the full 28800-second MyoPS budget is not proven, Cine mature registration is not complete, and no normal review-ready packet exists.

@@ -2,16 +2,16 @@
 
 status: `M8_NEEDS_MONITOR_NO_REVIEW`
 
-updated_at_utc: `2026-07-07T05:08:57.245581+00:00`
-git_head: `b30b2ae75fa7cd84dd397835fa549c33bec6061a`
-included_myops_train_loop_seconds: `0.000`
+updated_at_utc: `2026-07-07T06:26:45.569925+00:00`
+git_head: `5f82ab64d4fcf39bfc3ba861049e1e329fecd6c2`
+included_myops_train_loop_seconds: `14400.086`
 
 This packet was aggregated from local runtime evidence where available. It does not claim validation packaging/upload, hosted metrics, challenge readiness, scientific stop, fold expansion, or M9.
 
 ## Blocking Issues
-- `missing_runtime_summary=m8_full_srr_context_arbitration_longrun,m8_scar_precision_edema_safe_longrun,m8_t2_centerC_edema_repair_longrun`
+- `missing_runtime_summary=m8_t2_centerC_edema_repair_longrun`
 
 ## Runtime Summary Status
-- `m8_full_srr_context_arbitration_longrun`: summary.json missing
-- `m8_scar_precision_edema_safe_longrun`: summary.json missing
+- `m8_full_srr_context_arbitration_longrun`: summary.json present
+- `m8_scar_precision_edema_safe_longrun`: summary.json present
 - `m8_t2_centerC_edema_repair_longrun`: summary.json missing
