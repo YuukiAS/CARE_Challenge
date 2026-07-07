@@ -23,6 +23,12 @@ After a Slurm job completes, the executor must rerun the relevant aggregator/evi
 
 This applies to M7 follow-up2/follow-up3 and all future milestones.
 
+## Slurm Job Planning Skill
+
+Before writing any GPT/ChatGPT milestone, Codex goal, handoff, or execution instruction that will submit a Slurm job, read and apply `.agents/skills/slurm-routing-partition/SKILL.md`. The same skill must be used before every actual `sbatch` or `srun` submission in this repo.
+
+The skill is the local source for CARE partition priority, fallback routing, routing races, QOS/header defaults, monitor packet handling, and scheduler block rules. For goal tasks, if all submitted routing partitions remain pending, poll every 2 hours; only after 12 consecutive 2-hour checks, 24 hours total, with every submitted routing partition still pending and no job started may the goal be marked blocked for scheduler saturation.
+
 ## SRR/MyoPS/Cine Route Bootstrap
 
 Before writing any SRR/MyoPS/Cine milestone, Codex goal, handoff, or route decision, read the SRR route diagrams from the current ChatGPT Project background files / project materials. Use these canonical repository filenames and versions as identifiers:

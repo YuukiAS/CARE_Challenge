@@ -52,6 +52,7 @@ If a user prompt, generated prompt, or prior ChatGPT instruction conflicts with 
 - Repo-level skills are installed under `.agents/skills/` from `/overflow/htzhu/mingcheng_new/AI_Skills_Collection/skills`.
 - The canonical upstream source remains `/overflow/htzhu/mingcheng_new/AI_Skills_Collection/skills`; when refreshing repo-local skills, replace duplicates with copies from that collection.
 - This repository should install the medical imaging skill set from `AI_Skills_Collection/skills/domain/medical-imaging`.
+- CARE Slurm partition/routing rules are also installed as a repo-local skill at `.agents/skills/slurm-routing-partition/SKILL.md`; use it before every Slurm job submission and before writing any GPT/Codex milestone, goal, or handoff that will submit Slurm jobs.
 - Do not add `.cursor/skills` or Cursor plugin copies in this repository.
 
 ## Reference papers
@@ -83,7 +84,7 @@ sinfo -o '%P|%a|%l|%D|%t|%G'
 
 Do **not** switch partitions for short waits or routine pending jobs. Switch only when `htzhulab` is full and the expected wait is long relative to the planned job budget. When switching to school partitions, keep the same logging style, but use the partition-specific Slurm headers below. Do not omit `--qos`: school GPU partitions may reject jobs that inherit an incompatible default QOS. The safe default QOS for CARE fallback jobs is `gpu_access`.
 
-For long CARE model runs where all relevant GPU partitions appear saturated, do not declare the task blocked merely because jobs are pending. Pending-only monitor checks should be spaced 2 hours apart. Only after 12 consecutive 2-hour checks where every submitted routing partition is still pending may an executor report a scheduler block. This is a 24-hour pending evidence threshold, not a short interactive wait threshold.
+For long CARE model runs where all relevant GPU partitions appear saturated, do not declare the task blocked merely because jobs are pending. For goal tasks, pending-only monitor checks should be spaced 2 hours apart. Only after 12 consecutive 2-hour checks where every submitted routing partition is still pending and no submitted job has started may an executor report a scheduler block. This is a 24-hour pending evidence threshold, not a short interactive wait threshold.
 
 When both `htzhulab` and `a100-gpu` are plausibly long-wait but either may start first, it is allowed to submit a routing race to both partitions. The raced jobs must use isolated output directories or an atomic per-run/per-variant lock so duplicate starts cannot write the same runtime artifacts. As soon as one partition starts running, cancel the other partition's still-pending mirror job. Record the job IDs, partition states, cancellation command, and watcher/log path in the result packet. Do not include `volta-gpu` in this race unless `htzhulab` and `a100-gpu` are unusable or the user explicitly approves it.
 
