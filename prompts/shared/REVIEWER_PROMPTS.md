@@ -247,6 +247,197 @@ M7 reviewer decision 只能是：
 最后只写 `results/20260705_srr_v3_m7_training_and_cine_utilization/review.md`。完成后 `git add -f review.md` 并 commit；不要 push，由用户手动 push。
 ```
 
+## M7 reviewer follow-up 3: completion-safe re-aggregation and temporal dictionary repair audit
+
+```text
+这是独立只读 reviewer prompt，只审 M7 follow-up3 packet。不要修代码，不要训练，不要运行 follow-up3，不要 validation packaging/upload，不要 push，不要启动 M8。
+
+必须读取：
+
+- `prompts/shared/EXECUTOR_PROMPTS.md` 中的 `M7 executor follow-up 3: completion-safe re-aggregation and temporal dictionary repair`
+- `prompts/shared/REVIEWER_PROMPTS.md` 中的本 reviewer follow-up 3 段
+- `prompts/MILESTONE_REVIEW_PROTOCOL.md`
+- `prompts/HANDOFF_GATE_POLICY.md`
+- `prompts/GPT_HARD_GATE_PROMPT.md`
+- `prompts/THREAD_BOOTSTRAP_ROUTE_IMAGE_PROTOCOL.md`
+- `results/20260705_srr_v3_m7_training_and_cine_utilization/review.md`
+- `results/20260705_srr_v3_m7_training_and_cine_utilization/completion_check.md`
+- `results/20260705_srr_v3_m7_training_and_cine_utilization/review_request.md`
+- `results/20260705_srr_v3_m7_training_and_cine_utilization/result.md`
+- `results/20260705_srr_v3_m7_training_and_cine_utilization/commands_run.md`
+- `results/20260705_srr_v3_m7_training_and_cine_utilization/MANIFEST.md`
+
+### A. Review scope
+
+M7 follow-up3 is still M7. It is not M8, not route promotion, not validation packaging/upload, not hosted metric claim, not challenge submission, not fold expansion, not scientific stop, and not leaderboard readiness.
+
+Reviewer must reject any packet that uses follow-up3 to launch a new scientific route, claim challenge readiness, claim hosted metrics, package validation, upload, expand folds, promote SRR, or start M8.
+
+### B. Monitor packet is not completion
+
+Reject if a monitor packet was submitted as completion.
+
+Hard reject conditions:
+
+- `completion_check.md` contains `M7_FOLLOWUP2_NEEDS_MONITOR`, `PENDING_MONITOR`, `JOB_SUBMITTED`, `PENDING_PRIORITY`, `RUNNING`, `AWAITING_SACCT`, or equivalent, while the packet asks for ready review;
+- `followup2_training_adequacy.csv` contains `PENDING_MONITOR` while `completion_check.md` says ready;
+- `commands_run.md` only records `sbatch submitted`, `squeue pending`, `PENDING Priority`, `sacct pending`, or submitted-only state;
+- Slurm job id exists, but there is no completed aggregation record;
+- `result.md` says this is a monitor packet;
+- runtime output was not merged into tracked evidence;
+- the packet does not identify job id, state, exit code, runtime, log path, runtime output path, aggregation command, aggregation exit code, and regenerated tracked evidence files.
+
+Reviewer must verify that the tracked packet is the final post-completion aggregation, not a submission-time placeholder.
+
+### C. Slurm completion re-aggregation audit
+
+If job `58021931` or a superseding follow-up2 job is named, reviewer must check:
+
+- `m7_followup3_slurm_completion_record.md`;
+- `m7_followup3_runtime_reaggregation_report.md`;
+- `commands_run.md`;
+- `MANIFEST.md`;
+- regenerated lightweight evidence file timestamps/content;
+- Slurm state and exit code if accessible.
+
+Reject if the job completed but runtime outputs were not located, parsed, and merged into tracked files. If the job is pending/running/unresolved, the only acceptable state is `M7_FOLLOWUP3_NEEDS_MONITOR`, not ready.
+
+If runtime outputs are missing, corrupt, unwritten, or aggregator failed, acceptable executor state is `M7_FOLLOWUP3_NEEDS_EVIDENCE`. Reject any ready claim.
+
+### D. MyoPS/Cine decisions must be separated
+
+Reviewer must require separate:
+
+- `myops_decision`;
+- `cine_decision`;
+- `combined_decision`.
+
+Reject if MyoPS remains pending/monitor/no-evidence but the packet wraps a Cine-only repair as overall M7 success.
+
+If MyoPS completed and remains no-op, reviewer must check updates to:
+
+- `m7_followup2_mechanism_noop_diagnosis.md`
+- `srr_contribution_by_case.csv`
+- `arbitration_opening_diagnostics.csv`
+- `proposal_refiner_effectiveness.csv`
+- `failure_interpretation.md`
+- `route_to_leaderboard_gap_report.md`
+
+Reject if no-op evidence is hidden, omitted, or converted into route promotion/scientific stop.
+
+### E. Temporal dictionary forced closure audit
+
+Reviewer must inspect `registration_same_subset_matrix.csv`. If any row has `usable_for_temporal_dictionary=True` or equivalent `m7_continued_decision=USABLE_NONREFERENCE_REGISTRATION_ROW`, reject unless temporal dictionary follow-up3 was executed.
+
+Required temporal dictionary outputs when usable registration exists:
+
+- `temporal_dictionary_evidence.csv`
+- `temporal_dictionary_index.json`
+- `temporal_dictionary_case_summary.csv`
+- `temporal_aggregation_metrics.csv`
+- `frame0_vs_temporal_help_harm.csv`
+- `cine_metrics_summary.csv`
+- `cine_temporal_dictionary_followup3_report.md`
+
+Reject if executor writes `TEMPORAL_DICTIONARY_FOLLOWUP2_REQUIRED_NOT_EXECUTED` and still marks ready.
+
+Reject if usable registration rows exist but only some were attempted without a deterministic selection rule and unattempted-row reasons.
+
+### F. Temporal dictionary evidence quality
+
+Reject if temporal dictionary evidence is descriptor-only, frame0-only, no-warp-only, or natural-language-only.
+
+For each usable non-reference registration row, reviewer must look for:
+
+- ED/reference anchor feature;
+- selected non-reference frame id;
+- warped image/probability/feature source;
+- registration method and registration quality;
+- frame-quality score;
+- motion-saliency score;
+- temporal representer slot usage;
+- temporal aggregation output summary;
+- local class_1 myocardium proxy;
+- class_3 sanity if available;
+- hosted metric caveat;
+- frame0/control comparison.
+
+If executor cannot generate warped evidence, reviewer must require either a revoked usable registration judgment with concrete failure reason, or `TEMPORAL_DICTIONARY_BLOCKED_BY_USABLE_ROW_INVALIDATED`. Reject packets that keep a usable row and skip temporal dictionary.
+
+### G. Strict validator audit
+
+Reviewer must inspect the follow-up3 validator and reports. Reject if the validator is only a current-good checklist.
+
+Known-bad fixtures must include:
+
+- ready packet with `completion_check.md` still `M7_FOLLOWUP2_NEEDS_MONITOR`;
+- ready packet with `followup2_training_adequacy.csv` containing `PENDING_MONITOR`;
+- Slurm submitted/pending-only packet;
+- completed Slurm job with runtime output not aggregated into tracked evidence;
+- usable temporal-dictionary registration row with missing temporal dictionary evidence;
+- temporal dictionary ready with only frame0/no-warp/descriptor evidence;
+- diagnostic hardcase used for formal best-variant decision;
+- ready packet while MyoPS or Cine blocker remains.
+
+Each fixture must record expected failure, actual exit code/status, failure reason, and whether it failed closed. Reject if mutated bad fixtures do not actually fail.
+
+### H. Required output audit
+
+Review these files when applicable:
+
+- `result.md`
+- `completion_check.md`
+- `review_request.md`
+- `MANIFEST.md`
+- `commands_run.md`
+- `m7_followup3_runtime_reaggregation_report.md`
+- `m7_followup3_slurm_completion_record.md`
+- `followup2_training_adequacy.csv`
+- `followup2_loss_component_by_step.csv`
+- `followup2_same_split_help_harm.csv`
+- `followup2_hard_subgroup_metrics.csv`
+- `m7_followup2_training_rerun_decision.md`
+- `failure_interpretation.md`
+- `temporal_dictionary_evidence.csv`
+- `temporal_dictionary_index.json`
+- `temporal_dictionary_case_summary.csv`
+- `temporal_aggregation_metrics.csv`
+- `frame0_vs_temporal_help_harm.csv`
+- `cine_metrics_summary.csv`
+- `cine_temporal_dictionary_followup3_report.md`
+- `strict_validator_report.md`
+- `strict_validator_report.csv`
+- `validator_unit_test_report.md`
+- `route_to_leaderboard_gap_report.md`
+
+Reject if `route_to_leaderboard_gap_report.md` is missing or claims leaderboard/challenge readiness.
+
+### I. Allowed review decisions
+
+Allowed reviewer decisions:
+
+- `M7_FOLLOWUP3_AUDITED_GO_FOR_NEXT_PLANNING`
+- `M7_FOLLOWUP3_AUDITED_NEEDS_MONITOR`
+- `M7_FOLLOWUP3_AUDITED_NEEDS_EVIDENCE`
+- `M7_FOLLOWUP3_AUDITED_NEEDS_REVISION`
+- `M7_FOLLOWUP3_AUDITED_BLOCKED_BY_REVIEW_STATE`
+- `M7_AUDITED_BLOCKED_BY_M6`
+
+`M7_FOLLOWUP3_AUDITED_GO_FOR_NEXT_PLANNING` only means GPT can inspect the repaired evidence. It does not authorize M8, route promotion, validation packaging/upload, hosted metric claim, fold expansion, challenge submission, scientific stop, or leaderboard readiness.
+
+Reject any packet that claims ready while:
+
+- follow-up2 training adequacy still has `PENDING_MONITOR`;
+- Slurm job completion outputs are not aggregated;
+- usable registration exists but temporal dictionary was not executed;
+- temporal dictionary has only descriptor/frame0/no-warp evidence;
+- strict validator is not true known-bad fail-closed;
+- MyoPS/Cine decisions are not separated;
+- executor merely copied old follow-up2 evidence and did not read runtime completion outputs.
+
+最后只写 `results/20260705_srr_v3_m7_training_and_cine_utilization/review.md`。完成后 `git add -f review.md` 并 commit；不要 push，由用户手动 push。
+```
+
 ## M7 reviewer follow-up 1 (continued): blocker repair audit
 
 ```text
