@@ -283,6 +283,7 @@ def main() -> None:
     parser.add_argument("--myops-race-watcher-job-id", default="")
     parser.add_argument("--myops-race-log-path", default="")
     parser.add_argument("--cine-job-id", default="")
+    parser.add_argument("--cine-job-script", default="jobs/src/run_srr_v3_m8_cine_registration_mature.sh")
     parser.add_argument("--partition-note", default="")
     args = parser.parse_args()
 
@@ -429,7 +430,7 @@ def main() -> None:
                 f"| `sbatch jobs/src/run_srr_v3_m8_myops_leaderboard_sprint_htzhulab.sh` | {'submitted `' + args.myops_htzhulab_job_id + '`' if args.myops_htzhulab_job_id else 'not submitted'} | Start M8 MyoPS htzhulab race mirror. |",
                 f"| `sbatch jobs/src/run_srr_v3_m8_myops_leaderboard_sprint.sh` | {'submitted `' + (args.myops_a100_job_id or args.myops_job_id) + '`' if (args.myops_a100_job_id or args.myops_job_id) else 'not submitted'} | Start M8 MyoPS a100-gpu race mirror. |",
                 f"| `sbatch --wrap python scripts/evaluation/watch_srr_v3_m8_myops_race.py ...` | {'submitted `' + args.myops_race_watcher_job_id + '`' if args.myops_race_watcher_job_id else 'not submitted'} | Watch htzhulab/a100 race and cancel the pending mirror when one starts. |",
-                f"| `sbatch jobs/src/run_srr_v3_m8_cine_registration_mature.sh` | {'submitted `' + args.cine_job_id + '`' if args.cine_job_id else 'not submitted'} | Start M8 mature Cine registration attempt. |",
+                f"| `sbatch {args.cine_job_script}` | {'submitted `' + args.cine_job_id + '`' if args.cine_job_id else 'not submitted'} | Start M8 mature Cine registration attempt. |",
                 f"| `python scripts/evaluation/initialize_srr_v3_m8_packet.py ...` | exit 0 | Initialize monitor-only M8 packet. |",
             ]
         )
