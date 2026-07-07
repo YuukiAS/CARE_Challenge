@@ -1,49 +1,59 @@
-# Review 20260705 SRR-v3 M7 Continued Repair
+# Review 20260705 SRR-v3 M7 Follow-up 2
 
 task_key: `20260705_srr_v3_m7_training_and_cine_utilization`
-continued_task: `M7 reviewer-blocker repair`
+continued_task: `M7 follow-up 2 leaderboard-oriented repair`
 reviewed_result_dir: `results/20260705_srr_v3_m7_training_and_cine_utilization/`
-reviewed_executor_commit: `d049d68 Complete SRR v3 M7 continued repair packet`
+reviewed_executor_commit: `3229765 Add SRR v3 M7 follow-up2 monitor packet`
 reviewer_role: `independent read-only reviewer/auditor`
-decision: `M7_CONTINUED_AUDITED_NEEDS_REVISION`
+decision: `M7_FOLLOWUP2_AUDITED_NEEDS_EVIDENCE`
 
 ## Scope
 
-This is a read-only review of the M7 continued blocker-repair packet. I did not modify model/training/evaluation code, did not train, did not package or upload validation data, did not claim hosted metrics, did not promote a route, and did not start M8. This review overwrites the prior non-continued M7 `review.md` with the controlled M7 continued audit decision.
+This is a read-only review of the M7 follow-up 2 packet. I did not modify model/training/evaluation code, did not train, did not package or upload validation data, did not claim hosted metrics, did not promote a route, and did not start M8. This review writes only this `review.md`.
 
-The continued packet is reviewed against the current `M7 reviewer (continued): blocker repair audit` contract in `prompts/shared/REVIEWER_PROMPTS.md`.
+The packet is reviewed against `M7 reviewer follow-up 2: leaderboard-oriented repair audit` in `prompts/shared/REVIEWER_PROMPTS.md`.
 
 ## Source Files Reviewed
 
-- `prompts/shared/REVIEWER_PROMPTS.md`, `M7 reviewer (continued): blocker repair audit`
-- `prompts/shared/EXECUTOR_PROMPTS.md`, `M7 executor (continued): reviewer-blocker repair`
+- `prompts/shared/REVIEWER_PROMPTS.md`, `M7 reviewer follow-up 2: leaderboard-oriented repair audit`
+- `prompts/shared/EXECUTOR_PROMPTS.md`, `M7 executor follow-up 2: leaderboard-oriented repair`
 - `prompts/MILESTONE_REVIEW_PROTOCOL.md`
 - `prompts/HANDOFF_GATE_POLICY.md`
 - `prompts/GPT_HARD_GATE_PROMPT.md`
-- prior M7 `review.md` content from this result directory before overwrite
+- latest M7 continued `review.md` content from this result directory before overwrite
 - files under `results/20260705_srr_v3_m7_training_and_cine_utilization/`
-- `scripts/evaluation/run_srr_v3_m7_continued_repair.py`
-- `scripts/evaluation/run_srr_v3_m7_cine_registration_repair.py`
-- `scripts/evaluation/aggregate_srr_v3_m7_training_and_cine.py`
-- `src/care_myocardium/losses/srr_losses.py`
-- `scripts/training/run_srr_propref_myops_fold0.py`
+- `scripts/evaluation/run_srr_v3_m7_followup2_repair.py`
+- `scripts/evaluation/validate_srr_v3_m7_continued_packet.py`
+- `scripts/evaluation/run_srr_v3_m7_cine_registration_followup2.py`
+- `jobs/src/run_srr_v3_m7_followup2_primary_probe.sh`
+- `logs/M7FU2Probe_58021931_20260706_150447.log`
+
+## Executive Finding
+
+The follow-up 2 packet is not complete evidence. It was committed as a monitor packet while the primary MyoPS probe was still pending, and the tracked lightweight evidence was not regenerated after the Slurm job later completed.
+
+This is not an acceptable audited-go state. At review time, live Slurm accounting shows job `58021931` completed successfully, but the committed packet still reports `PENDING_MONITOR` for the follow-up 2 training adequacy, loss components, gradient sanity, and batch composition files. A reviewer cannot convert ignored runtime outputs into audited packet evidence.
+
+There is also a separate Cine blocker: follow-up 2 found a `usable_for_temporal_dictionary=True` registration row, but `temporal_dictionary_evidence.csv` says `TEMPORAL_DICTIONARY_FOLLOWUP2_REQUIRED_NOT_EXECUTED`. Under the follow-up 2 contract, a usable non-reference registration row makes temporal dictionary follow-up mandatory.
 
 ## Claim Table
 
 | Claim | Decision | Evidence |
 | --- | --- | --- |
-| M7 continued contract is present in shared prompts. | `SUPPORTED` | `prompts/shared/EXECUTOR_PROMPTS.md` contains `M7 executor (continued): reviewer-blocker repair`; `prompts/shared/REVIEWER_PROMPTS.md` contains this reviewer continued section. The standalone continued prompt file is not part of the active contract. |
-| Executor did not claim route promotion, hosted metrics, validation packaging/upload, scientific stop, or M8. | `SUPPORTED` | `completion_check.md` sets `route_promotion_decision: NO_PROMOTION`, `hosted_metric_claim: false`, and `validation_packaging_or_upload: false`; `result.md` repeats the same boundary. |
-| Loss gradient sanity was repaired relative to prior M7. | `SUPPORTED_WITH_REVIEW_LIMITS` | `loss_component_gradient_sanity.csv` has 107 rows: 93 `PASS`, 14 `PASS_ZERO_JUSTIFIED`, no `BACKWARD_FAILED`, no `EVIDENCE_NOT_FOUND`, and all rows have `requires_grad=True`. The audited batch includes `t2_present_batch_fraction=0.5`. |
-| Loss graph training-validity report exists and addresses the prior detached-metric issue. | `SUPPORTED_WITH_REVIEW_LIMITS` | `loss_graph_training_validity_report.md` identifies `src/care_myocardium/losses/srr_losses.py::srr_m6_expanded_total_loss` through `scripts/training/run_srr_propref_myops_fold0.py::propref_loss`, states that optimizer backward used the graph-connected `total`, and states that the old failure came from detached logging metrics. I did not rerun training or gradient probes in this reviewer session. |
-| Formal-val subgroup coverage is no longer all CenterA/LGE-only/no-T2. | `SUPPORTED` | `m7_case_pool_audit.csv` has 8 selected formal-val cases spanning CenterA, CenterB, CenterC; `same_split_help_harm.csv` has 192 formal-val rows with 120 CenterA, 48 CenterB, 24 CenterC, and 72 T2-present rows; `hard_subgroup_metrics.csv` includes `T2_present_complete`, `GT_positive_edema`, `GT_positive_scar`, `CenterB`, `CenterC`, `remote_FP_positive`, `small_lesion`, and `large_lesion`. |
-| Diagnostic hardcases were excluded from formal best-variant decision. | `SUPPORTED` | `m7_case_pool_audit.csv` has `selected_for_diagnostic_hardcase=False` for all 220 rows; `same_split_help_harm.csv` rows are all `split_role=formal_val` and `eligible_for_best_variant_decision=True`; `best_variant_decision.md` states no diagnostic train hardcase rows are mixed into formal ranking. |
-| Best-variant table avoids promotion. | `SUPPORTED` | `best_variant_decision_table.csv` has 12 rows and every row is `NO_PROMOTION_SCIENTIFIC_UNRESOLVED`; scar Dice deltas range from about `-0.0028249` to `0.0012990`, edema Dice deltas from about `-0.0000805` to `0.0010844`. |
-| Cine repair helper ran instead of only copying M5. | `SUPPORTED_WITH_BLOCKED_CINE_STATUS` | `cine_registration_repair_report.md` records 3 safe cases, 6 non-reference pairs, SimpleITK Demons, ANTsPy SyNOnly, and VoxelMorph availability/no-weights evidence. `registration_same_subset_matrix.csv` contains 6 SimpleITK rows, 6 ANTsPy rows, 6 frame0 control rows, and 1 VoxelMorph availability row. |
-| Cine temporal dictionary remains correctly blocked because no usable non-reference registration row exists. | `SUPPORTED` | `registration_same_subset_matrix.csv` marks SimpleITK and ANTsPy rows `NOT_USABLE_FOR_TEMPORAL_DICTIONARY`; VoxelMorph is `NOT_USABLE_UNTRAINED_OR_NO_WEIGHTS`; `temporal_dictionary_evidence.csv` has only `TEMPORAL_DICTIONARY_BLOCKED_BY_REGISTRATION_GAP_AFTER_REPAIR_ATTEMPT`. |
-| Registration evidence fully satisfies the reviewer row-field gate. | `NOT_SUPPORTED_BUT_NOT_PRIMARY_BLOCKER` | `registration_same_subset_matrix.csv` includes the main anatomy/HD95/NCC/displacement/Jacobian/runtime fields, but uses `m7_continued_decision` rather than the reviewer prompt's explicit `usable_for_temporal_dictionary` field. ANTsPy rows also lack displacement/Jacobian/registration-metric values. Because all non-reference rows are blocked and no temporal readiness is claimed, this is a documentation/field-compliance weakness rather than the strongest blocker. |
-| Strict validator known-bad gate passes. | `NOT_SUPPORTED` | `strict_validator_report.csv` has only `known_bad_packet,expected_failure,actual_status,failure_reason`; it lacks actual exit code/status from running mutated known-bad packets. The source `scripts/evaluation/run_srr_v3_m7_continued_repair.py` lines 593-626 build `PASS_FAIL_CLOSED` from boolean checks on the current packet, not by creating bad packets and proving the validator rejects them. This violates the reviewer prompt's strict validator gate. |
-| `completion_check.md` is acceptable as `M7_CONTINUED_READY_FOR_REVIEW`. | `NOT_SUPPORTED` | The strict validator gate remains unresolved. The prompt explicitly says to reject if `completion_check.md` claims ready while any continued blocker remains. |
+| Follow-up 2 did not claim route promotion, hosted metrics, validation packaging/upload, challenge-ready status, scientific stop, or M8. | `SUPPORTED` | `completion_check.md` has `route_promotion_decision: NO_PROMOTION`, `hosted_metric_claim: false`, and `validation_packaging_or_upload: false`; `route_to_leaderboard_gap_report.md` states follow-up 2 is not leaderboard-ready or challenge-ready. |
+| The packet was submitted as a monitor state, not a completed training result. | `SUPPORTED` | `result.md` says `status: M7_FOLLOWUP2_NEEDS_MONITOR`; `completion_check.md` says `status: M7_FOLLOWUP2_NEEDS_MONITOR`; `followup2_training_adequacy.csv` has `PENDING_MONITOR` for optimizer steps and train-loop seconds. |
+| The primary probe had not been incorporated into the tracked evidence packet. | `NOT_SUPPORTED_AS_COMPLETE_EVIDENCE` | `followup2_training_adequacy.csv`, `followup2_loss_component_by_step.csv`, `followup2_loss_component_gradient_sanity.csv`, and `followup2_batch_composition.csv` each contain only pending/monitor placeholders. The tracked packet therefore does not meet the follow-up 2 minimum training/probe evidence requirement. |
+| Live Slurm status now proves the job eventually completed. | `SUPPORTED_BUT_NOT_PACKET_EVIDENCE` | `sacct -j 58021931` reports `COMPLETED`, elapsed `00:18:38`, exit code `0:0`, start `2026-07-06T15:04:47`, end `2026-07-06T15:23:25`. `logs/M7FU2Probe_58021931_20260706_150447.log` records start and end. However, this completion happened outside the committed lightweight packet and was not aggregated into the tracked follow-up 2 evidence files. |
+| The script explains how an unfinished job entered the result packet. | `SUPPORTED` | `scripts/evaluation/run_srr_v3_m7_followup2_repair.py` sets `M7_FOLLOWUP2_NEEDS_MONITOR` whenever a `training_job_id` is supplied, writes `PENDING_MONITOR` rows, and does not query Slurm or parse the runtime variant output before writing `result.md` and `completion_check.md`. This is a monitor packet generator, not a completion aggregator. |
+| Strict validator known-bad gate was repaired relative to follow-up 1. | `SUPPORTED` | `strict_validator_report.csv` includes a good-packet exit `0` and nine mutated known-bad fixtures with actual exit code `1`; `validator_unit_test_report.md` states good packet exits 0, every mutated bad packet exits nonzero, and the key missing-file/ready-with-blocker/temporal/dignostic-mix cases fail. |
+| SRR-v3 image fidelity artifacts exist. | `SUPPORTED_WITH_LIMITS` | `srr_v3_image_fidelity_checklist.csv` and `architecture_gap_table.md` exist. The checklist has code/runtime paths, but several rows are only `PARTIAL_VERIFIED`, `REPAIRED_PENDING_FORMAL_TRAINING`, or `PENDING_CINE_ESCALATION`, so this is not route-complete evidence. |
+| Branch arbitration no-op repair has code/unit evidence. | `SUPPORTED_WITH_LIMITS` | `branch_arbitration_formula_report.md`, `branch_arbitration_unit_tests.md`, and `arbitration_opening_diagnostics.csv` exist. The diagnostics are still largely smoke/synthetic or pending runtime-probe evidence: `arbitration_opening_diagnostics.csv` has a single `synthetic_unit_roi` row and runtime training probe placeholders. |
+| Modality order and no-zero-fill contract artifacts exist. | `SUPPORTED_WITH_LIMITS` | `modality_order_contract.md` and `modality_order_unit_tests.md` exist. I did not find this to be the blocking issue in this review. |
+| Follow-up 2 mechanism diagnosis is adequate as completed repaired evidence. | `NOT_SUPPORTED` | `srr_contribution_by_case.csv` still has `correction_gate_open_rate=PENDING_FOLLOWUP2_PROBE` for 192 rows. `proposal_refiner_effectiveness.csv` rows are marked `OLD_M7_EVIDENCE_NOT_REPAIRED_PROBE`. These are diagnostic placeholders, not completed repaired primary-probe evidence. |
+| Formal validation and hardcase boundary are preserved. | `SUPPORTED_WITH_LIMITS` | Follow-up 2 files keep promotion blocked and use `NOT_COMPARABLE_AFTER_FOLLOWUP2_REPAIR` for old M7 rows. This is the correct boundary, but it also confirms that old metric rows cannot support a new best-variant or leaderboard conclusion. |
+| Cine follow-up 2 attempted stronger cropped/anatomy-guided registration escalation. | `SUPPORTED` | `cine_registration_followup2_report.md` lists heart-crop affine, tuned SimpleITK Demons/B-spline, cropped ANTsPy attempt when available, optical-flow proxy, and VoxelMorph probe; `registration_same_subset_matrix.csv` has the required `usable_for_temporal_dictionary` field. |
+| Cine temporal dictionary gate passes. | `NOT_SUPPORTED` | `registration_same_subset_matrix.csv` contains one row with `usable_for_temporal_dictionary=True` for `heart_crop_SimpleITK_BSpline_or_Demons_tuned`; `temporal_dictionary_evidence.csv` says `TEMPORAL_DICTIONARY_FOLLOWUP2_REQUIRED_NOT_EXECUTED` and `temporal_dictionary_attempted=False`. The prompt requires temporal dictionary follow-up 2 when at least one usable non-reference registration row exists. |
+| `completion_check.md` is acceptable for audited-go. | `NOT_SUPPORTED` | It correctly avoids ready/promotion, but it is a monitor state. It cannot authorize next planning or downstream milestone work. |
 
 ## Commands Run
 
@@ -54,78 +64,97 @@ env GIT_OPTIONAL_LOCKS=0 timeout 8 git status --short --branch
 Result before writing this review:
 
 ```text
-## main...origin/main [ahead 3]
+## main...origin/main [ahead 2]
 ?? .tmp/
 ```
 
-I did not touch the untracked `.tmp/` directory.
+I did not touch `.tmp/`.
 
 ```bash
-find results/20260705_srr_v3_m7_training_and_cine_utilization -maxdepth 2 -type f | sort
-git ls-files results/20260705_srr_v3_m7_training_and_cine_utilization | sort
+squeue -j 58021931 -o '%i|%P|%j|%T|%M|%l|%R'
+sacct -j 58021931 --format=JobID,JobName,Partition,State,Elapsed,ExitCode,Start,End -P
 ```
 
-Result: the M7 continued lightweight packet files are present and tracked; local runtime lock/done files are not part of the tracked packet.
+Result:
+
+- `squeue`: no active job row now; Slurm reports invalid job id because the job is no longer in the active queue.
+- `sacct`: job `58021931` / `M7FU2Probe` on `htzhulab` is `COMPLETED`, elapsed `00:18:38`, exit code `0:0`, start `2026-07-06T15:04:47`, end `2026-07-06T15:23:25`.
+
+```bash
+sed -n '1,260p' results/20260705_srr_v3_m7_training_and_cine_utilization/commands_run.md
+sed -n '1,220p' results/20260705_srr_v3_m7_training_and_cine_utilization/followup2_training_adequacy.csv
+sed -n '1,220p' results/20260705_srr_v3_m7_training_and_cine_utilization/m7_followup2_training_rerun_decision.md
+```
+
+Result: the packet records `squeue ... PENDING Priority` before local commit, `followup2_training_adequacy.csv` is still `PENDING_MONITOR`, and `m7_followup2_training_rerun_decision.md` says `PRIMARY_PROBE_SUBMITTED_NEEDS_MONITOR`.
+
+```bash
+sed -n '1,260p' logs/M7FU2Probe_58021931_20260706_150447.log
+sed -n '1,260p' results/20260705_srr_v3_m7_training_and_cine_utilization/runtime/variants/m7_followup2_primary_repair/summary.json
+```
+
+Result: ignored runtime artifacts show the job later completed and produced runtime outputs, including `actual_optimizer_steps=3316` and `elapsed_seconds=900.238...`. These are not reflected in the tracked follow-up 2 CSV/report packet.
 
 ```bash
 python - <<'PY'
 import csv, pathlib, collections
 base=pathlib.Path('results/20260705_srr_v3_m7_training_and_cine_utilization')
-for fn in ['loss_component_gradient_sanity.csv','m7_case_pool_audit.csv','same_split_help_harm.csv','hard_subgroup_metrics.csv','best_variant_decision_table.csv','registration_same_subset_matrix.csv','temporal_dictionary_evidence.csv','strict_validator_report.csv']:
-    rows=list(csv.DictReader((base/fn).open(newline='')))
-    print(fn, len(rows), rows[0].keys() if rows else [])
+for rel in [
+ 'followup2_training_adequacy.csv',
+ 'followup2_loss_component_by_step.csv',
+ 'followup2_loss_component_gradient_sanity.csv',
+ 'followup2_batch_composition.csv',
+ 'srr_contribution_by_case.csv',
+ 'arbitration_opening_diagnostics.csv',
+ 'proposal_refiner_effectiveness.csv',
+ 'registration_same_subset_matrix.csv',
+ 'temporal_dictionary_evidence.csv',
+ 'strict_validator_report.csv',
+]:
+    rows=list(csv.DictReader((base/rel).open(newline='')))
+    print(rel, len(rows), rows[0].keys() if rows else [])
 PY
 ```
 
 Reviewer parsing found:
 
-- `loss_component_gradient_sanity.csv`: 107 rows; 93 `PASS`, 14 `PASS_ZERO_JUSTIFIED`; no `BACKWARD_FAILED` or `EVIDENCE_NOT_FOUND`.
-- `m7_case_pool_audit.csv`: 220 rows; selected formal-val cases are `Case1002`, `Case1007`, `Case1009`, `Case1029`, `Case1042`, `Case2002`, `Case2007`, `Case3004`.
-- `same_split_help_harm.csv`: 192 rows, all `formal_val`, all eligible for best-variant decision, covering CenterA/CenterB/CenterC and T2-present/T2-absent rows.
-- `hard_subgroup_metrics.csv`: 1008 rows including the continued hard subgroup names.
-- `best_variant_decision_table.csv`: 12 rows, all `NO_PROMOTION_SCIENTIFIC_UNRESOLVED`.
-- `registration_same_subset_matrix.csv`: 19 rows; no row is marked usable for temporal dictionary.
-- `temporal_dictionary_evidence.csv`: one blocked row, no ready row.
-- `strict_validator_report.csv`: 9 rows but no actual exit-code/status field.
+- `followup2_training_adequacy.csv`: one row, `PENDING_MONITOR`.
+- `followup2_loss_component_by_step.csv`: one row, `PENDING_MONITOR`.
+- `followup2_loss_component_gradient_sanity.csv`: one row, `PENDING_MONITOR`.
+- `followup2_batch_composition.csv`: one row, `PENDING_MONITOR` and a `required_fields` string, not actual batch rows.
+- `srr_contribution_by_case.csv`: 192 rows, all `correction_gate_open_rate=PENDING_FOLLOWUP2_PROBE`.
+- `arbitration_opening_diagnostics.csv`: one synthetic row.
+- `proposal_refiner_effectiveness.csv`: old-M7 diagnostic evidence, not repaired-probe evidence.
+- `registration_same_subset_matrix.csv`: four rows, including one usable registration row.
+- `temporal_dictionary_evidence.csv`: one row, temporal dictionary required but not executed.
+- `strict_validator_report.csv`: good packet exit 0 plus known-bad failures with exit code 1.
 
-```bash
-nl -ba scripts/evaluation/run_srr_v3_m7_continued_repair.py | sed -n '576,632p'
-nl -ba results/20260705_srr_v3_m7_training_and_cine_utilization/strict_validator_report.csv | sed -n '1,20p'
-```
+## Why This Happened
 
-Result: `write_strict_validator_report()` reads the current packet and assigns `PASS_FAIL_CLOSED` when current-good conditions are true. It does not mutate a packet, invoke a validator, capture an exit code, or prove each named known-bad packet fails closed.
+The problem is not that the executor claimed the primary probe had completed. The tracked files mostly say the opposite: `M7_FOLLOWUP2_NEEDS_MONITOR` and `PENDING_MONITOR`.
 
-## Required Revision
+The actual issue is that the packet was committed too early for a review that could decide follow-up 2 adequacy. The monitor packet recorded a submitted Slurm job and then stopped. After the job completed, the executor did not regenerate `followup2_training_adequacy.csv`, `followup2_loss_component_by_step.csv`, `followup2_loss_component_gradient_sanity.csv`, `followup2_batch_composition.csv`, same-split help/harm, hard subgroup metrics, and mechanism diagnostics from the completed run before committing a reviewable packet.
 
-M7 continued should not proceed as audited-go until the strict validator evidence is repaired.
+This created a misleading workflow state: there is a committed "follow-up2 monitor packet" with a review request, but the required primary-probe evidence is still pending in tracked files. That cannot be audited as completed evidence.
 
-Required executor repair:
+## Required Executor Repair
 
-1. Implement or invoke a real M7 continued validator that can be run against a packet directory and exits nonzero when a gate fails.
-2. For each required known-bad case, create a temporary mutated packet or fixture that actually contains the bad condition:
-   - all gradient rows `BACKWARD_FAILED`;
-   - gradient sanity fixed but `loss_graph_training_validity_report.md` missing or insufficient;
-   - hard subgroup rows all CenterA/LGE-only/no-T2;
-   - diagnostic hardcase rows mixed into formal best-variant decision;
-   - Cine branch copies M5 evidence without new registration attempt;
-   - frame0-only or one-case SyN marked usable registration;
-   - untrained VoxelMorph marked usable;
-   - temporal dictionary marked ready despite no usable registration;
-   - `completion_check.md` says ready while any continued blocker remains.
-3. Re-run the validator on each known-bad packet and record expected failure, actual exit code/status, and failure reason in `strict_validator_report.md` and `strict_validator_report.csv`.
-4. Keep the current no-promotion boundary: even after validator repair, `M7_CONTINUED_AUDITED_GO_FOR_NEXT_PLANNING` would only mean GPT planner review is allowed. It must not authorize M8, validation packaging/upload, hosted metric claims, fold expansion, challenge submission, route promotion, scientific stop, or leaderboard readiness.
-
-Optional cleanup for the same repair pass:
-
-- Add an explicit `usable_for_temporal_dictionary` field, or document why `m7_continued_decision` is the controlled substitute, in `registration_same_subset_matrix.csv`.
-- Add clear failure reasons to blocked SimpleITK/ANTsPy non-reference rows instead of leaving `failure_reason` blank when the row is already `NOT_USABLE_FOR_TEMPORAL_DICTIONARY`.
+1. Regenerate the follow-up 2 lightweight packet from completed job `58021931`:
+   - update `followup2_training_adequacy.csv` with actual optimizer steps, train-loop seconds, validation events, and pass/fail decision;
+   - update `followup2_loss_component_by_step.csv`;
+   - update `followup2_loss_component_gradient_sanity.csv`;
+   - update `followup2_batch_composition.csv` with real per-case rows, not a placeholder;
+   - update `followup2_same_split_help_harm.csv`, `followup2_hard_subgroup_metrics.csv`, `srr_contribution_by_case.csv`, `arbitration_opening_diagnostics.csv`, and `proposal_refiner_effectiveness.csv` from the repaired primary probe.
+2. Keep non-rerun variants marked not comparable unless they are rerun under the same repaired mechanism.
+3. Resolve the Cine temporal dictionary gate:
+   - either execute temporal dictionary follow-up 2 using the usable non-reference registration row and report the required fields;
+   - or revise the registration usability decision if that row is not actually usable under the contract, with exact failure reasons.
+4. Keep `route_to_leaderboard_gap_report.md`, `completion_check.md`, and `result.md` explicit that no route promotion, validation packaging/upload, hosted metric claim, M8, scientific stop, challenge-ready, or leaderboard-ready status is authorized.
 
 ## Decision
 
-decision: `M7_CONTINUED_AUDITED_NEEDS_REVISION`
+decision: `M7_FOLLOWUP2_AUDITED_NEEDS_EVIDENCE`
 
-M7 continued made real progress on the prior MyoPS blockers: the gradient sanity table no longer fails wholesale, formal-val coverage is broader, diagnostic rows are separated from formal decision rows, and the best-variant decision remains non-promotional. Cine is also handled more honestly than before: a bounded repair was attempted and temporal dictionary readiness remains blocked.
+The strict validator blocker from follow-up 1 appears repaired. However, the follow-up 2 packet is still not complete evidence: the primary MyoPS probe was committed as pending monitor evidence and the tracked packet was not regenerated after the job completed. The Cine branch also found a usable registration row but did not run the mandatory temporal dictionary follow-up.
 
-The packet still fails the current reviewer contract because the strict validator gate is not real known-bad fail-closed evidence. It is a current-packet boolean checklist labeled as known-bad validation. Therefore this review cannot grant `M7_CONTINUED_AUDITED_GO_FOR_NEXT_PLANNING`.
-
-This decision does not authorize route promotion, validation packaging/upload, hosted metric claims, fold expansion, challenge submission, M8, scientific stop, or leaderboard readiness.
+This decision does not authorize M8, route promotion, validation packaging/upload, hosted metric claim, fold expansion, challenge submission, scientific stop, leaderboard readiness, or challenge-ready status.
