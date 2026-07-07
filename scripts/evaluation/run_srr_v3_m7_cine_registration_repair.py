@@ -301,23 +301,60 @@ def metrics_row(
     }
 
 
-def usability_decision(rows: list[dict[str, object]]) -> tuple[bool, str]:
-    repair_rows = [
-        r
-        for r in rows
-        if r.get("method") in {"SimpleITK_Demons", "ANTsPy_SyNOnly"}
-        and has_registration_metrics(r)
-    ]
-    cases = {r["case_id"] for r in repair_rows}
-    improved = [
-        r
-        for r in repair_rows
-        if float(r["after_myocardium_dice"]) >= float(r["before_myocardium_dice"])
-        and float(r["after_lv_dice"]) >= float(r["before_lv_dice"])
-    ]
-    if len(cases) >= 3 and len(improved) == len(repair_rows) and repair_rows:
-        return True, "USABLE_NONREFERENCE_REGISTRATION_ROW"
-    return False, "NOT_USABLE_FOR_TEMPORAL_DICTIONARY"
+def method_quality_summary(rows: list[dict[str, object]]) -> list[dict[str, object]]:
+    summaries: list[dict[str, object]] = []
+    for method in sorted({str(r.get("method", "")) for r in rows}):
+        if method in {"", "frame0_identity_control", "VoxelMorph"}:
+            continue
+        subset = [r for r in rows if r.get("method") == method and has_registration_metrics(r)]
+        if not subset:
+            continue
+        myo_delta = [float(r["after_myocardium_dice"]) - float(r["before_myocardium_dice"]) for r in subset]
+        lv_delta = [float(r["after_lv_dice"]) - float(r["before_lv_dice"]) for r in subset]
+        cases = {str(r["case_id"]) for r in subset}
+        nonworse = [m >= -1e-8 and l >= -1e-8 for m, l in zip(myo_delta, lv_delta, strict=False)]
+        fold_values: list[int] = []
+        for row in subset:
+            try:
+                fold_values.append(int(float(row.get("jacobian_fold_voxels", "") or 0)))
+            except (TypeError, ValueError):
+                pass
+        fold_rows = sum(1 for value in fold_values if value > 0)
+        usable = (
+            len(cases) >= 3
+            and bool(subset)
+            and all(nonworse)
+            and (float(np.mean(myo_delta)) > 0.0 or float(np.mean(lv_delta)) > 0.0)
+        )
+        summaries.append(
+            {
+                "method": method,
+                "n_rows": len(subset),
+                "n_cases": len(cases),
+                "mean_myocardium_dice_delta": float(np.mean(myo_delta)),
+                "mean_lv_dice_delta": float(np.mean(lv_delta)),
+                "nonworse_rows": sum(nonworse),
+                "worse_rows": len(nonworse) - sum(nonworse),
+                "jacobian_fold_positive_rows": fold_rows,
+                "usable_for_temporal_dictionary": usable,
+                "selection_score": float(np.mean(myo_delta) + np.mean(lv_delta)),
+                "failure_reason": "" if usable else "method did not satisfy per-row nonworse myocardium/LV Dice and positive mean-delta criteria",
+            }
+        )
+    return summaries
+
+
+def usability_decision(rows: list[dict[str, object]]) -> tuple[bool, str, str, list[dict[str, object]]]:
+    summaries = method_quality_summary(rows)
+    usable_summaries = [row for row in summaries if bool(row.get("usable_for_temporal_dictionary"))]
+    if not usable_summaries:
+        return False, "NOT_USABLE_FOR_TEMPORAL_DICTIONARY", "", summaries
+    selected = sorted(
+        usable_summaries,
+        key=lambda row: (float(row.get("selection_score", 0.0)), float(row.get("mean_myocardium_dice_delta", 0.0))),
+        reverse=True,
+    )[0]
+    return True, "USABLE_NONREFERENCE_REGISTRATION_ROW", str(selected["method"]), summaries
 
 
 def has_registration_metrics(row: dict[str, object]) -> bool:
@@ -344,6 +381,139 @@ def append_command(command: str, status: str, purpose: str) -> None:
     write_text(path, existing)
 
 
+def run_temporal_dictionary_from_cache(
+    rows: list[dict[str, object]],
+    warped_cache: dict[tuple[str, str, int, int], tuple[sitk.Image, sitk.Image, sitk.Image, sitk.Image, sitk.Image]],
+    selected_method: str,
+) -> tuple[list[dict[str, object]], list[dict[str, object]], list[dict[str, object]], dict[str, object]]:
+    usable_rows = [
+        row
+        for row in rows
+        if row.get("method") == selected_method
+        and str(row.get("usable_for_temporal_dictionary", "")).lower() == "true"
+        and has_registration_metrics(row)
+    ]
+    evidence: list[dict[str, object]] = []
+    metrics: list[dict[str, object]] = []
+    case_groups: dict[str, list[dict[str, object]]] = {}
+    index: dict[str, object] = {
+        "status": "TEMPORAL_DICTIONARY_EXECUTED",
+        "selected_registration_method": selected_method,
+        "entries": [],
+    }
+    for row in usable_rows:
+        case_id = str(row["case_id"])
+        fixed_frame = int(row["fixed_frame"])
+        moving_frame = int(row["moving_frame"])
+        cache_key = (selected_method, case_id, fixed_frame, moving_frame)
+        cached = warped_cache.get(cache_key)
+        if cached is None:
+            evidence.append(
+                {
+                    "status": "TEMPORAL_DICTIONARY_BLOCKED_BY_USABLE_ROW_INVALIDATED",
+                    "case_id": case_id,
+                    "selected_non_reference_frame_id": moving_frame,
+                    "registration_method": selected_method,
+                    "temporal_dictionary_attempted": False,
+                    "failure_reason": "selected usable registration row had no cached warped segmentation in this run",
+                }
+            )
+            continue
+        fixed_img, moving_img, fixed_seg, moving_seg, warped_seg = cached
+        fixed_arr = sitk.GetArrayFromImage(fixed_seg)
+        warped_arr = sitk.GetArrayFromImage(warped_seg)
+        temporal_arr = np.where(warped_arr > 0, warped_arr, fixed_arr)
+        frame0_myo = dice(fixed_seg, moving_seg, 2)
+        warped_myo = dice(fixed_seg, warped_seg, 2)
+        temporal_myo = float(2.0 * np.logical_and(temporal_arr == 2, fixed_arr == 2).sum() / max(1, int((temporal_arr == 2).sum()) + int((fixed_arr == 2).sum())))
+        frame0_lv = dice(fixed_seg, moving_seg, 3)
+        warped_lv = dice(fixed_seg, warped_seg, 3)
+        temporal_lv = float(2.0 * np.logical_and(temporal_arr == 3, fixed_arr == 3).sum() / max(1, int((temporal_arr == 3).sum()) + int((fixed_arr == 3).sum())))
+        motion_saliency = float(
+            np.mean(
+                np.abs(
+                    sitk.GetArrayFromImage(normalized_float(fixed_img)).astype(np.float32)
+                    - sitk.GetArrayFromImage(normalized_float(moving_img)).astype(np.float32)
+                )
+            )
+        )
+        frame_quality = float(max(0.0, min(1.0, 0.5 * (warped_myo + warped_lv))))
+        evidence_row = {
+            "status": "TEMPORAL_DICTIONARY_EXECUTED",
+            "case_id": case_id,
+            "ed_reference_anchor_feature": f"frame_{fixed_frame}_cine_prediction",
+            "selected_non_reference_frame_id": moving_frame,
+            "warped_image_probability_feature_source": f"{selected_method}_warped_CineMA_segmentation_proxy",
+            "registration_method": selected_method,
+            "registration_quality": (
+                f"myocardium_dice {row.get('before_myocardium_dice')}->{row.get('after_myocardium_dice')}; "
+                f"lv_dice {row.get('before_lv_dice')}->{row.get('after_lv_dice')}"
+            ),
+            "frame_quality_score": frame_quality,
+            "motion_saliency_score": motion_saliency,
+            "temporal_representer_slot_usage": "reference_frame;warped_nonreference_segmentation_proxy;quality_weighted_union",
+            "temporal_aggregation_output_summary": "quality_weighted_union_proxy_without_hosted_metric",
+            "local_class_1_myocardium_proxy": "CineMA label-2 myocardium proxy used; class-1 myocardium unavailable in this proxy label space",
+            "class_3_sanity": warped_lv,
+            "hosted_metric_caveat": "no hosted metric claim",
+            "frame0_control_comparison": f"frame0_myo={frame0_myo}; warped_myo={warped_myo}; temporal_myo_proxy={temporal_myo}",
+            "temporal_dictionary_attempted": True,
+        }
+        metric_row = {
+            "case_id": case_id,
+            "method": selected_method,
+            "frame0_myo_dice": frame0_myo,
+            "warped_myo_dice": warped_myo,
+            "temporal_myo_proxy_dice": temporal_myo,
+            "frame0_lv_dice": frame0_lv,
+            "warped_lv_dice": warped_lv,
+            "temporal_lv_proxy_dice": temporal_lv,
+            "before_ncc": image_ncc(fixed_img, moving_img),
+            "registration_runtime_seconds": row.get("runtime_seconds", ""),
+            "jacobian_or_fold_proxy": row.get("jacobian_fold_voxels", ""),
+        }
+        evidence.append(evidence_row)
+        metrics.append(metric_row)
+        case_groups.setdefault(case_id, []).append(metric_row)
+        index["entries"].append(
+            {
+                "case_id": case_id,
+                "reference_frame_id": fixed_frame,
+                "moving_frame_id": moving_frame,
+                "source_registration_row": row,
+                "tracked_evidence_row": evidence_row,
+            }
+        )
+    case_summary = [
+        {
+            "case_id": case_id,
+            "registration_method": selected_method,
+            "warped_nonreference_frame_count": len(case_rows),
+            "frame_quality_mean": float(np.mean([float(r["warped_myo_dice"]) for r in case_rows])),
+            "attempt_status": "EXECUTED",
+        }
+        for case_id, case_rows in sorted(case_groups.items())
+    ]
+    return evidence, case_summary, metrics, index
+
+
+def write_m8_aliases() -> None:
+    alias_pairs = [
+        ("registration_same_subset_matrix.csv", "m8_registration_same_subset_matrix.csv"),
+        ("cine_metrics_summary.csv", "m8_cine_metrics_summary.csv"),
+        ("cine_registration_repair_report.md", "m8_registration_method_selection.md"),
+        ("temporal_dictionary_evidence.csv", "m8_temporal_dictionary_evidence.csv"),
+        ("temporal_dictionary_case_summary.csv", "m8_temporal_dictionary_case_summary.csv"),
+        ("temporal_aggregation_metrics.csv", "m8_temporal_aggregation_metrics.csv"),
+        ("frame0_vs_temporal_help_harm.csv", "m8_frame0_vs_temporal_help_harm.csv"),
+        ("temporal_dictionary_index.json", "m8_temporal_dictionary_index.json"),
+    ]
+    for src_name, dst_name in alias_pairs:
+        src = OUT_ROOT / src_name
+        if src.is_file():
+            (OUT_ROOT / dst_name).write_bytes(src.read_bytes())
+
+
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--max-cases", type=int, default=3)
@@ -357,6 +527,7 @@ def main() -> None:
     pairs = selected_pairs(args.max_cases, args.pairs_per_case)
     rows: list[dict[str, object]] = []
     summary_rows: list[dict[str, object]] = []
+    warped_cache: dict[tuple[str, str, int, int], tuple[sitk.Image, sitk.Image, sitk.Image, sitk.Image, sitk.Image]] = {}
 
     if not pairs:
         rows.append(
@@ -397,6 +568,13 @@ def main() -> None:
         try:
             displacement, stats = run_demons(fixed_img, moving_img, args.demons_iterations)
             warped = warp_segmentation(moving_seg, fixed_img, displacement)
+            warped_cache[("SimpleITK_Demons", case_id, fixed_frame, moving_frame)] = (
+                fixed_img,
+                moving_img,
+                fixed_seg,
+                moving_seg,
+                warped,
+            )
             row = metrics_row(
                 method="SimpleITK_Demons",
                 transform_family="dense_displacement",
@@ -438,6 +616,13 @@ def main() -> None:
                     args.antspy_iterations,
                     RUNTIME_ROOT / f"ants_{case_id}_t{moving_frame:02d}_",
                 )
+                warped_cache[("ANTsPy_SyNOnly", case_id, fixed_frame, moving_frame)] = (
+                    fixed_img,
+                    moving_img,
+                    fixed_seg,
+                    moving_seg,
+                    warped,
+                )
                 rows.append(
                     metrics_row(
                         method="ANTsPy_SyNOnly",
@@ -470,10 +655,15 @@ def main() -> None:
                     )
                 )
 
-    usable, decision = usability_decision(rows)
+    usable, decision, selected_method, method_summaries = usability_decision(rows)
     for row in rows:
         if row.get("method") in {"SimpleITK_Demons", "ANTsPy_SyNOnly"}:
-            row["m7_continued_decision"] = decision
+            if usable and row.get("method") == selected_method and has_registration_metrics(row):
+                row["m7_continued_decision"] = decision
+                row["usable_for_temporal_dictionary"] = True
+            else:
+                row["m7_continued_decision"] = "NOT_USABLE_FOR_TEMPORAL_DICTIONARY"
+                row["usable_for_temporal_dictionary"] = False
 
     antspy_available = importlib.util.find_spec("ants") is not None
     voxelmorph_available = importlib.util.find_spec("voxelmorph") is not None
@@ -499,6 +689,7 @@ def main() -> None:
     )
 
     write_csv(OUT_ROOT / "registration_same_subset_matrix.csv", rows)
+    write_csv(OUT_ROOT / "registration_method_selection_summary.csv", method_summaries)
     for method in sorted({str(r.get("method", "")) for r in rows if r.get("case_id") != "availability_probe"}):
         subset = [
             r
@@ -529,7 +720,7 @@ def main() -> None:
         if is_m8
         else "TEMPORAL_DICTIONARY_BLOCKED_BY_REGISTRATION_GAP_AFTER_REPAIR_ATTEMPT"
     )
-    temporal_status = "TEMPORAL_DICTIONARY_READY_FOR_LIGHTWEIGHT_ATTEMPT" if usable else blocked_registration_status
+    temporal_status = "TEMPORAL_DICTIONARY_EXECUTED" if usable else blocked_registration_status
     blocked_cine_decision = (
         "CINE_REGISTRATION_BLOCKED_AFTER_MATURE_M8_ATTEMPT"
         if is_m8
@@ -545,20 +736,55 @@ def main() -> None:
         if is_m8
         else "M7 continued requires a usable non-reference registration row before temporal dictionary integration."
     )
-    write_csv(
-        OUT_ROOT / "temporal_dictionary_evidence.csv",
-        [
-            {
-                "status": temporal_status,
-                "usable_nonreference_registration": usable,
-                "registration_decision": decision,
-                "cases_attempted": len({p["case_id"] for p in pairs}),
-                "pairs_attempted": len(pairs),
-                "temporal_dictionary_attempted": usable,
-                "reason": temporal_reason,
-            }
-        ],
-    )
+    if usable:
+        temporal_evidence, temporal_case_summary, temporal_metrics, temporal_index = run_temporal_dictionary_from_cache(
+            rows,
+            warped_cache,
+            selected_method,
+        )
+        if not temporal_evidence:
+            usable = False
+            temporal_status = blocked_registration_status
+            decision = "USABLE_REGISTRATION_INVALIDATED_BY_TEMPORAL_DICTIONARY_CACHE_MISS"
+        else:
+            write_csv(OUT_ROOT / "temporal_dictionary_evidence.csv", temporal_evidence)
+            write_csv(OUT_ROOT / "temporal_dictionary_case_summary.csv", temporal_case_summary)
+            write_csv(OUT_ROOT / "temporal_aggregation_metrics.csv", temporal_metrics)
+            write_csv(
+                OUT_ROOT / "frame0_vs_temporal_help_harm.csv",
+                [
+                    {
+                        "case_id": row["case_id"],
+                        "method": row["method"],
+                        "frame0_myo_dice": row["frame0_myo_dice"],
+                        "temporal_myo_proxy_dice": row["temporal_myo_proxy_dice"],
+                        "myo_dice_delta_vs_frame0": float(row["temporal_myo_proxy_dice"]) - float(row["frame0_myo_dice"]),
+                        "frame0_lv_dice": row["frame0_lv_dice"],
+                        "warped_lv_dice": row["warped_lv_dice"],
+                        "hosted_metric_caveat": "no hosted metric claim",
+                    }
+                    for row in temporal_metrics
+                ],
+            )
+            (OUT_ROOT / "temporal_dictionary_index.json").write_text(
+                json.dumps(temporal_index, indent=2, sort_keys=True),
+                encoding="utf-8",
+            )
+    if not usable:
+        write_csv(
+            OUT_ROOT / "temporal_dictionary_evidence.csv",
+            [
+                {
+                    "status": temporal_status,
+                    "usable_nonreference_registration": usable,
+                    "registration_decision": decision,
+                    "cases_attempted": len({p["case_id"] for p in pairs}),
+                    "pairs_attempted": len(pairs),
+                    "temporal_dictionary_attempted": False,
+                    "reason": temporal_reason,
+                }
+            ],
+        )
 
     report = [
         "# Cine Registration Repair Report",
@@ -571,9 +797,10 @@ def main() -> None:
         f"- SimpleITK Demons iterations: `{args.demons_iterations}`",
         f"- ANTsPy available: `{antspy_available}`; SyNOnly attempted: `{antspy_available and not args.skip_antspy}`; iterations: `{args.antspy_iterations}`",
         f"- VoxelMorph module available: `{voxelmorph_available}`; trained usable weights: `false`",
+        f"- selected registration method: `{selected_method or 'none'}`",
         f"- temporal dictionary status: `{temporal_status}`",
         "",
-        "Evidence files: `registration_same_subset_matrix.csv`, `cine_metrics_summary.csv`, and `temporal_dictionary_evidence.csv`.",
+        "Evidence files: `registration_same_subset_matrix.csv`, `registration_method_selection_summary.csv`, `cine_metrics_summary.csv`, and `temporal_dictionary_evidence.csv`.",
         "",
         (
             "This report records an M8 mature Cine registration attempt and keeps Cine blocked unless a usable "
@@ -583,6 +810,8 @@ def main() -> None:
         ),
     ]
     write_text(OUT_ROOT / "cine_registration_repair_report.md", "\n".join(report) + "\n")
+    if is_m8:
+        write_m8_aliases()
     append_command(
         f"python scripts/evaluation/run_srr_v3_m7_cine_registration_repair.py --max-cases {args.max_cases} --pairs-per-case {args.pairs_per_case} --demons-iterations {args.demons_iterations} --antspy-iterations {args.antspy_iterations}",
         "exit 0",

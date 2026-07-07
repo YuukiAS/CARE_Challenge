@@ -1,12 +1,15 @@
 # M8 Manifest
 
 task_key: `20260707_srr_v3_m8_editor_grade_leaderboard_sprint`
-updated_at_utc: `2026-07-07T09:31:15.257950+00:00`
+updated_at_utc: `2026-07-07T09:52:56.050484+00:00`
 
 ## Files
 - `MANIFEST.md`
+- `cine_metrics_summary.csv`
+- `cine_registration_repair_report.md`
 - `commands_run.md`
 - `completion_check.md`
+- `frame0_vs_temporal_help_harm.csv`
 - `m8_arbitration_opening_diagnostics.csv`
 - `m8_architecture_gap_closure_table.csv`
 - `m8_batch_composition.csv`
@@ -57,8 +60,14 @@ updated_at_utc: `2026-07-07T09:31:15.257950+00:00`
 - `m8_validator_unit_test_report.md`
 - `m8_variant_config_contract.json`
 - `m8_variant_matrix.csv`
+- `registration_method_selection_summary.csv`
+- `registration_same_subset_matrix.csv`
 - `result.md`
 - `review_request.md`
+- `temporal_aggregation_metrics.csv`
+- `temporal_dictionary_case_summary.csv`
+- `temporal_dictionary_evidence.csv`
+- `temporal_dictionary_index.json`
 
 ## Excluded
 - `runtime/` checkpoints, NIfTI predictions, and large logs are intentionally not tracked.

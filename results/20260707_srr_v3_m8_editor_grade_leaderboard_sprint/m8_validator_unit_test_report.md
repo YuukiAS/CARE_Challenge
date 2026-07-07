@@ -9,7 +9,7 @@ Temporary known-bad fixtures were generated outside the repo and are not committ
 | good_ready_fixture | PASS | PASS |  |
 | total_training_budget_under_8h | FAIL_CLOSED | FAIL_CLOSED | ready packet has included train_loop_seconds 1000.0 < 28800 |
 | missing_training_budget_ledger | FAIL_CLOSED | FAIL_CLOSED | ready packet missing required file m8_training_budget_ledger.csv; ready packet has included train_loop_seconds 0.0 < 28800 |
-| pending_monitor_packet_marked_ready | FAIL_CLOSED | FAIL_CLOSED | ready packet contains monitor token AWAITING_RUNTIME_AGGREGATION; ready packet contains monitor token PENDING_PRIORITY |
+| pending_monitor_packet_marked_ready | FAIL_CLOSED | FAIL_CLOSED | ready packet contains monitor token RUNNING; ready packet contains monitor token AWAITING_RUNTIME_AGGREGATION |
 | completed_job_not_reaggregated | FAIL_CLOSED | FAIL_CLOSED | ready packet contains monitor token PENDING_PRIORITY |
 | config_contract_not_read_by_code | FAIL_CLOSED | FAIL_CLOSED | variant config contract is not tied to the training code reader |
 | variants_only_renamed | FAIL_CLOSED | FAIL_CLOSED | variant config variants only differ by name |

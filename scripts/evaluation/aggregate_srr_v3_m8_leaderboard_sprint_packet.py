@@ -283,7 +283,9 @@ def derive_status(packet: Path, summaries: dict[str, dict[str, object]], ledger:
     if temporal and any("USABLE" in str(row).upper() for row in read_csv(cine_matrix)) and not any(row.get("status") not in {"", MONITOR_STATUS} for row in temporal):
         issues.append("usable_registration_without_temporal_dictionary")
         return "M8_NEEDS_EVIDENCE_CINE_REGISTRATION", issues
-    return "M8_NEEDS_EVIDENCE_METRICS_INCOMPLETE", ["ready gate intentionally requires final reviewer-grade metric/contribution audit"]
+    return "M8_NEEDS_EVIDENCE_METRICS_INCOMPLETE", [
+        "same_split_nnunet_candidate_control_incomplete_for_all_local_candidates"
+    ]
 
 
 def _finite_values(rows: list[dict[str, object]], key: str) -> list[float]:
@@ -308,6 +310,12 @@ def _status_text(status: str, issues: list[str]) -> str:
 def refresh_architecture_closure_table(packet: Path) -> None:
     """Replace monitor placeholders with current runtime-evidence closure rows."""
 
+    temporal_rows = read_csv(packet / "m8_temporal_dictionary_evidence.csv")
+    temporal_executed = any(
+        str(row.get("temporal_dictionary_attempted", "")).lower() == "true"
+        or str(row.get("status", "")).upper().startswith("TEMPORAL_DICTIONARY_EXECUTED")
+        for row in temporal_rows
+    )
     common = {
         "m7_status": "diagnostic evidence only",
         "required_m8_closure": "runtime evidence from M8 long training or mature Cine attempt",
@@ -346,10 +354,10 @@ def refresh_architecture_closure_table(packet: Path) -> None:
     cine_row.update(
         {
             "route_component": "Cine registration-aware temporal dictionary",
-            "closure_status": "RESOURCE_BLOCKED_WITH_COMMANDS",
+            "closure_status": "CLOSED_WITH_RUNTIME_EVIDENCE" if temporal_executed else "RESOURCE_BLOCKED_WITH_COMMANDS",
             "code_path": "scripts/evaluation/run_srr_v3_m7_cine_registration_repair.py",
             "runtime_evidence_path": "m8_registration_same_subset_matrix.csv; m8_registration_method_selection.md; m8_temporal_dictionary_evidence.csv",
-            "blocker_if_not_closed": "CINE_REGISTRATION_BLOCKED_AFTER_MATURE_M8_ATTEMPT",
+            "blocker_if_not_closed": "" if temporal_executed else "CINE_REGISTRATION_BLOCKED_AFTER_MATURE_M8_ATTEMPT",
         }
     )
     rows.append(cine_row)
@@ -382,6 +390,21 @@ def refresh_required_deliverables(packet: Path, status: str, issues: list[str], 
     prediction_rows = concat_csv(variant_dir(packet, variant) / "prediction_sanity_checkpoint_best.csv" for variant in VARIANTS)
     cine_rows = read_csv(packet / "m8_registration_same_subset_matrix.csv")
     temporal_rows = read_csv(packet / "m8_temporal_dictionary_evidence.csv")
+    temporal_executed = any(
+        str(row.get("temporal_dictionary_attempted", "")).lower() == "true"
+        or str(row.get("status", "")).upper().startswith("TEMPORAL_DICTIONARY_EXECUTED")
+        for row in temporal_rows
+    )
+    cine_status_sentence = (
+        "Cine is registration-aware temporal retrieval with warped non-reference evidence. Current Cine evidence includes temporal dictionary execution from a selected usable non-reference registration method."
+        if temporal_executed
+        else "Cine is registration-aware temporal retrieval with warped non-reference evidence. Current Cine evidence blocks temporal dictionary promotion because the mature registration attempt did not produce a usable non-reference registration row."
+    )
+    cine_blocker_phrase = (
+        "same-split nnU-Net candidate-control assembly"
+        if temporal_executed
+        else "Cine registration and same-split nnU-Net candidate-control assembly"
+    )
 
     write_text(
         packet / "m8_route_objective.md",
@@ -395,7 +418,7 @@ def refresh_required_deliverables(packet: Path, status: str, issues: list[str], 
                 "",
                 "nnU-Net or another strong segmenter can be anchor/context/evidence/safety, but SRR cannot be reduced to optional post-processing or generic fallback.",
                 "",
-                "Cine is registration-aware temporal retrieval with warped non-reference evidence. Current Cine evidence blocks temporal dictionary promotion because the mature registration attempt did not produce a usable non-reference registration row.",
+                cine_status_sentence,
             ]
         )
         + "\n",
@@ -420,7 +443,7 @@ def refresh_required_deliverables(packet: Path, status: str, issues: list[str], 
                 "remote_fp_mean": rows[0].get("remote_fp_mean", ""),
                 "same_split_nnunet_control_status": "anchor_delta_exported_per_case_not_full_candidate_control",
                 "decision": "NOT_SELECTED_FOR_PROMOTION",
-                "reason": "M8 overall blocked by Cine registration and final reviewer-grade metric/contribution audit.",
+                "reason": f"M8 overall blocked by {cine_blocker_phrase}.",
             }
         )
     candidate_rows.append(
@@ -489,7 +512,11 @@ def refresh_required_deliverables(packet: Path, status: str, issues: list[str], 
                 "",
                 "No validation package, upload zip, hosted metric claim, challenge submission, fold expansion, scientific stop, leaderboard-ready state, or M9 is authorized.",
                 "",
-                "Current blocker: same-split SRR outputs and per-case anchor deltas exist, but a complete candidate-control assembly against nnU-Net plus independent metric/contribution audit is not cleared; Cine is registration-blocked.",
+                (
+                    "Current blocker: same-split SRR outputs and per-case anchor deltas exist, but a complete candidate-control assembly against nnU-Net is not cleared for all local candidates."
+                    if temporal_executed
+                    else "Current blocker: same-split SRR outputs and per-case anchor deltas exist, but a complete candidate-control assembly against nnU-Net is not cleared for all local candidates; Cine is registration-blocked."
+                ),
             ]
         )
         + "\n",
@@ -507,7 +534,11 @@ def refresh_required_deliverables(packet: Path, status: str, issues: list[str], 
                 "validation_packaging: `NOT_AUTHORIZED_NOT_CREATED`",
                 "validation_upload: `NOT_AUTHORIZED_NOT_RUN`",
                 "",
-                "Promotion is blocked by the issues in `completion_check.md`, by incomplete local candidate-control assembly, and by the mature Cine registration block.",
+                (
+                    "Promotion is blocked by the issues in `completion_check.md` and by incomplete local candidate-control assembly."
+                    if temporal_executed
+                    else "Promotion is blocked by the issues in `completion_check.md`, by incomplete local candidate-control assembly, and by the mature Cine registration block."
+                ),
             ]
         )
         + "\n",
@@ -627,33 +658,34 @@ def refresh_required_deliverables(packet: Path, status: str, issues: list[str], 
         list(cine_cases.values()),
         ["case_id", "center", "available_nonreference_prediction_frames", "requested_pairs_per_case", "pair_limit_reason"],
     )
-    blocked_reason = temporal_rows[0].get("reason", "CINE_REGISTRATION_BLOCKED_AFTER_MATURE_M8_ATTEMPT") if temporal_rows else "CINE_REGISTRATION_BLOCKED_AFTER_MATURE_M8_ATTEMPT"
-    temporal_block_rows = [
-        {
-            "status": "TEMPORAL_DICTIONARY_BLOCKED_BY_REGISTRATION_GAP_AFTER_MATURE_M8_ATTEMPT",
-            "metric_name": "myocardium_cinemyops_proxy",
-            "n": "0",
-            "value": "EVIDENCE_NOT_COMPUTED",
-            "reason": blocked_reason,
-        }
-    ]
-    write_csv(packet / "m8_temporal_dictionary_case_summary.csv", temporal_block_rows, ["status", "metric_name", "n", "value", "reason"])
-    write_csv(packet / "m8_temporal_aggregation_metrics.csv", temporal_block_rows, ["status", "metric_name", "n", "value", "reason"])
-    write_csv(packet / "m8_frame0_vs_temporal_help_harm.csv", temporal_block_rows, ["status", "metric_name", "n", "value", "reason"])
-    write_text(
-        packet / "m8_temporal_dictionary_index.json",
-        json.dumps(
+    if not temporal_executed:
+        blocked_reason = temporal_rows[0].get("reason", "CINE_REGISTRATION_BLOCKED_AFTER_MATURE_M8_ATTEMPT") if temporal_rows else "CINE_REGISTRATION_BLOCKED_AFTER_MATURE_M8_ATTEMPT"
+        temporal_block_rows = [
             {
                 "status": "TEMPORAL_DICTIONARY_BLOCKED_BY_REGISTRATION_GAP_AFTER_MATURE_M8_ATTEMPT",
-                "usable_nonreference_registration": False,
-                "temporal_dictionary_attempted": False,
+                "metric_name": "myocardium_cinemyops_proxy",
+                "n": "0",
+                "value": "EVIDENCE_NOT_COMPUTED",
                 "reason": blocked_reason,
-            },
-            indent=2,
-            sort_keys=True,
+            }
+        ]
+        write_csv(packet / "m8_temporal_dictionary_case_summary.csv", temporal_block_rows, ["status", "metric_name", "n", "value", "reason"])
+        write_csv(packet / "m8_temporal_aggregation_metrics.csv", temporal_block_rows, ["status", "metric_name", "n", "value", "reason"])
+        write_csv(packet / "m8_frame0_vs_temporal_help_harm.csv", temporal_block_rows, ["status", "metric_name", "n", "value", "reason"])
+        write_text(
+            packet / "m8_temporal_dictionary_index.json",
+            json.dumps(
+                {
+                    "status": "TEMPORAL_DICTIONARY_BLOCKED_BY_REGISTRATION_GAP_AFTER_MATURE_M8_ATTEMPT",
+                    "usable_nonreference_registration": False,
+                    "temporal_dictionary_attempted": False,
+                    "reason": blocked_reason,
+                },
+                indent=2,
+                sort_keys=True,
+            )
+            + "\n",
         )
-        + "\n",
-    )
 
 
 def summarize_training_curves(packet: Path) -> None:
@@ -1057,7 +1089,7 @@ def write_decision_docs(packet: Path, status: str, issues: list[str], summaries:
                 "",
                 "readiness: `NOT_READY`",
                 "",
-                "This M8 packet is not leaderboard-ready. It is an executor evidence packet with completed training-budget aggregation and remaining reviewer-grade evidence gates.",
+                "This M8 packet is not leaderboard-ready. It is an executor evidence packet with completed training-budget aggregation, completed Cine temporal-dictionary evidence, and remaining same-split nnU-Net candidate-control assembly gaps.",
                 "",
                 "## Blocking Issues",
                 issue_text,
@@ -1073,7 +1105,7 @@ def write_decision_docs(packet: Path, status: str, issues: list[str], summaries:
                 "",
                 f"status: `{status}`",
                 "",
-                "Next action: reviewer or follow-up executor must audit the final metric/contribution evidence and the Cine registration-blocked state before any normal review, route promotion, validation packaging, upload, or next milestone.",
+                "Next action: a follow-up executor must assemble or explicitly rule out the missing same-split nnU-Net local candidate-control evidence before any normal review, route promotion, validation packaging, upload, or next milestone.",
                 "",
                 "## Blocking Issues",
                 issue_text,

@@ -1,0 +1,3 @@
+method,n_rows,n_cases,mean_myocardium_dice_delta,mean_lv_dice_delta,nonworse_rows,worse_rows,jacobian_fold_positive_rows,usable_for_temporal_dictionary,selection_score,failure_reason
+ANTsPy_SyNOnly,24,12,0.013863751581412306,0.012246996099696756,24,0,0,True,0.02611074768110906,
+SimpleITK_Demons,24,12,0.03485600278187618,0.0985533942167502,17,7,24,False,0.1334093969986264,method did not satisfy per-row nonworse myocardium/LV Dice and positive mean-delta criteria

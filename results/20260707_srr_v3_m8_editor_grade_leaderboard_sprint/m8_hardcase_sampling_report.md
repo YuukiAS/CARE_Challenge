@@ -1,9 +1,9 @@
 # M8 Hardcase Sampling Report
 
-status: `M8_NEEDS_EVIDENCE_CINE_REGISTRATION`
+status: `M8_NEEDS_EVIDENCE_METRICS_INCOMPLETE`
 
 blocking_issues:
-- `cine_registration_blocked_after_mature_attempt`
+- `same_split_nnunet_candidate_control_incomplete_for_all_local_candidates`
 
 
 batch_rows: `215371`

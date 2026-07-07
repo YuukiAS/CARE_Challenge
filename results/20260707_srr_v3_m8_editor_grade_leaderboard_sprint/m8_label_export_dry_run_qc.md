@@ -1,9 +1,9 @@
 # M8 Label Export Dry Run QC
 
-status: `M8_NEEDS_EVIDENCE_CINE_REGISTRATION`
+status: `M8_NEEDS_EVIDENCE_METRICS_INCOMPLETE`
 
 blocking_issues:
-- `cine_registration_blocked_after_mature_attempt`
+- `same_split_nnunet_candidate_control_incomplete_for_all_local_candidates`
 
 
 Compact-to-official label mapping checks are summarized in `m8_official_label_mapping_qc.csv`.

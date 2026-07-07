@@ -1,6 +1,6 @@
 # M8 Cine Decision
 
-status: `CINE_REGISTRATION_BLOCKED_AFTER_MATURE_M8_ATTEMPT`
+status: `CINE_EVIDENCE_REQUIRES_REVIEW`
 
 Cine mature registration evidence is present, but the current M8 evidence does not claim `myocardium_cinemyops` readiness.
 
