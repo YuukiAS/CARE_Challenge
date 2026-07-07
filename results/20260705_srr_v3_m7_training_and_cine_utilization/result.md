@@ -1,5 +1,8 @@
-# M7 Follow-up2 Result
+# M7 Follow-up3 Result
 
-status: `M7_FOLLOWUP2_NEEDS_MONITOR`
+status: `M7_FOLLOWUP3_READY_FOR_REVIEW`
+myops_decision: `M7_FOLLOWUP3_MYOPS_COMPLETED_NO_PROMOTION_SCIENTIFIC_UNRESOLVED`
+cine_decision: `M7_FOLLOWUP3_CINE_TEMPORAL_DICTIONARY_EXECUTED_DIAGNOSTIC_ONLY`
+combined_decision: `M7_FOLLOWUP3_READY_FOR_REVIEW_NO_PROMOTION`
 
-Strict validator fixtures and branch arbitration unit tests were executed. MyoPS mechanism repair was applied. Primary training probe status: `58021931`. Cine follow-up2 must be read from `cine_registration_followup2_report.md`.
+Follow-up3 re-aggregated completed Slurm job `58021931`, removed monitor placeholders from tracked adequacy evidence, and executed Cine temporal dictionary diagnostic evidence for the usable registration row. This is not route promotion, validation packaging/upload, hosted metric claim, M8, fold expansion, scientific stop, leaderboard readiness, or challenge readiness.

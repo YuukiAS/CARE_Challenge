@@ -41,3 +41,9 @@ job_state_snapshot: `58004740_0 COMPLETED 00:32:04; 58005318_1 COMPLETED 00:32:1
 | `timeout 120s python scripts/evaluation/run_srr_v3_m7_followup2_repair.py --training-job-id 58021931` | exit 0 | Regenerate follow-up2 packet with Slurm monitor job id and real known-bad validator evidence. |
 | `squeue -j 58021931 -o "%.18i %.9P %.20j %.8T %.10M %.6D %R"` | PENDING Priority | Confirm follow-up2 primary probe state before local commit. |
 | `python scripts/evaluation/run_srr_v3_m7_followup2_repair.py` | exit 0 | Generate follow-up2 repair packet and validator fixture evidence. |
+| `sacct -j 58021931 --format=JobID,JobName,Partition,State,Elapsed,ExitCode,Start,End -P` | None None | Verify completion state for follow-up2 primary probe before follow-up3 reaggregation. |
+| `python scripts/evaluation/run_srr_v3_m7_followup3_completion_repair.py --job-id 58021931` | exit 0 | Reaggregate completed follow-up2 runtime outputs and execute Cine temporal dictionary follow-up3. |
+| `sacct -j 58021931 --format=JobID,JobName,Partition,State,Elapsed,ExitCode,Start,End -P` | COMPLETED 0:0 | Verify completion state for follow-up2 primary probe before follow-up3 reaggregation. |
+| `python scripts/evaluation/run_srr_v3_m7_followup3_completion_repair.py --job-id 58021931` | exit 0 | Reaggregate completed follow-up2 runtime outputs and execute Cine temporal dictionary follow-up3. |
+| `sacct -j 58021931 --format=JobID,JobName,Partition,State,Elapsed,ExitCode,Start,End -P` | COMPLETED 0:0 | Verify completion state for follow-up2 primary probe before follow-up3 reaggregation. |
+| `python scripts/evaluation/run_srr_v3_m7_followup3_completion_repair.py --job-id 58021931` | exit 0 | Reaggregate completed follow-up2 runtime outputs and execute Cine temporal dictionary follow-up3. |

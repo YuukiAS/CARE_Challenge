@@ -1,0 +1,2 @@
+case_id,reference_frame_id,moving_frame_id,registration_method,frame_quality_score,motion_saliency_score,attempt_status
+Case1001,0,9,heart_crop_SimpleITK_BSpline_or_Demons_tuned,0.7759346750922516,35.5336799621582,EXECUTED

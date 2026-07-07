@@ -1,3 +1,3 @@
 # Route to Leaderboard Gap Report
 
-Follow-up2 is not leaderboard-ready or challenge-ready. Remaining minimum evidence: completed repaired primary probe, same-split help/harm after repair, hard subgroup deltas after repair, usable Cine registration or explicit Cine gap review, and separate reviewer audit.
+Follow-up3 is not leaderboard-ready or challenge-ready. Remaining blockers: independent reviewer audit, no hosted validation metric, no fold expansion, no route-promotion decision, no proof that repaired SRR consistently beats nnU-Net on formal hard subgroups, and Cine temporal dictionary is diagnostic proxy evidence only.

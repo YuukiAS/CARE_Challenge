@@ -1,0 +1,48 @@
+{
+  "entries": [
+    {
+      "case_id": "Case1001",
+      "moving_frame_id": 9,
+      "reference_frame_id": 0,
+      "source_registration_row": {
+        "after_hd95": "6.4390788078308105",
+        "after_lv_dice": "0.8501382365677359",
+        "after_myo_dice": "0.7017311136167672",
+        "after_ncc": "EVIDENCE_NOT_FOUND_SEGMENTATION_WARP_ONLY",
+        "before_hd95": "7.605709075927734",
+        "before_lv_dice": "0.767775651405859",
+        "before_myo_dice": "0.6624609618988132",
+        "before_ncc": "0.9459638321575794",
+        "case_id": "Case1001",
+        "displacement_smoothness": "1.429950475692749",
+        "failure_reason": "",
+        "jacobian_or_fold_proxy": "26191",
+        "method": "heart_crop_SimpleITK_BSpline_or_Demons_tuned",
+        "moving_frame_id": "9",
+        "reference_frame_id": "0",
+        "roundtrip_proxy": "EVIDENCE_NOT_FOUND",
+        "runtime_seconds": "0.647418973967433",
+        "usable_for_temporal_dictionary": "True"
+      },
+      "tracked_evidence_row": {
+        "case_id": "Case1001",
+        "class_3_sanity": 0.8501382365677359,
+        "ed_reference_anchor_feature": "frame_0_cine_prediction",
+        "frame0_control_comparison": "frame0_myo=0.6624609618988132; warped_myo=0.7017311136167672; temporal_myo_proxy=0.8471980918166023",
+        "frame_quality_score": 0.7759346750922516,
+        "hosted_metric_caveat": "no hosted metric claim",
+        "local_class_1_myocardium_proxy": "CineMA label-2 myocardium proxy used; class-1 myocardium unavailable in this proxy label space",
+        "motion_saliency_score": 35.5336799621582,
+        "registration_method": "heart_crop_SimpleITK_BSpline_or_Demons_tuned",
+        "registration_quality": "myo_dice 0.6624609618988132->0.7017311136167672; lv_dice 0.767775651405859->0.8501382365677359",
+        "selected_non_reference_frame_id": 9,
+        "status": "TEMPORAL_DICTIONARY_FOLLOWUP3_EXECUTED",
+        "temporal_aggregation_output_summary": "quality_weighted_union_proxy_without_hosted_metric",
+        "temporal_dictionary_attempted": true,
+        "temporal_representer_slot_usage": "reference_frame;warped_nonreference_segmentation_proxy;quality_weighted_union",
+        "warped_image_probability_feature_source": "SimpleITK_Demons_warped_CineMA_segmentation_proxy"
+      }
+    }
+  ],
+  "status": "TEMPORAL_DICTIONARY_FOLLOWUP3_EXECUTED"
+}

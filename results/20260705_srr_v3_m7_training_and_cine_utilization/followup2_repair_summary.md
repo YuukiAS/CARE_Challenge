@@ -1,6 +1,3 @@
 # Follow-up2 Repair Summary
 
-- Executed C1: branch arbitration formula repair plus `loss_correction_opportunity`.
-- Executed C2 code/logging: hardcase-aware batch composition evidence writer added to training script.
-- C3/C4 remain conditional after monitored primary probe.
-- SRR still cannot be claimed non-no-op until the follow-up2 primary probe finishes.
+Follow-up3 re-aggregated the completed follow-up2 primary probe. C1 gate-opening calibration and C2 hardcase-aware batch evidence are represented in runtime training logs and `followup2_batch_composition.csv`. C3/C4 remain future mechanism-review items, not route promotion. Cine temporal dictionary follow-up3 was executed because a usable registration row existed.

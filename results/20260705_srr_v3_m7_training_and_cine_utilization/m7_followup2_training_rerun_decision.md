@@ -1,8 +1,8 @@
 # M7 Follow-up2 Training Rerun Decision
 
-status: `PRIMARY_PROBE_SUBMITTED_NEEDS_MONITOR`
+status: `PRIMARY_PROBE_COMPLETED_REAGGREGATED_BY_FOLLOWUP3`
 
-- Original M7 training was not treated as sufficient because same-split deltas were near zero.
-- Follow-up2 repaired branch arbitration and added correction-opportunity loss.
-- Required primary variant: `m7_full_srr_context_arbitration`.
-- Slurm/job evidence: `58021931`.
+- job id: `58021931` completed with `COMPLETED` / `0:0`.
+- optimizer steps: `3316`; train loop seconds: `900.2381211798638`.
+- primary variant: `m7_full_srr_context_arbitration` / output label `m7_followup2_primary_repair`.
+- non-rerun variants remain `NOT_COMPARABLE_AFTER_FOLLOWUP2_REPAIR`.

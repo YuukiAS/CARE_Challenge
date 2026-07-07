@@ -1,0 +1,2 @@
+case_id,method,frame0_myo_dice,warped_myo_dice,temporal_myo_proxy_dice,frame0_lv_dice,warped_lv_dice,before_ncc,demons_metric_value,jacobian_or_fold_proxy
+Case1001,heart_crop_SimpleITK_BSpline_or_Demons_tuned,0.6624609618988132,0.7017311136167672,0.8471980918166023,0.767775651405859,0.8501382365677359,0.9459638321575794,0.0032100560985809747,26191

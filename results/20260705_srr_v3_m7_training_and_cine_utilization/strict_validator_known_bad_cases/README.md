@@ -1,3 +1,3 @@
 # Strict Validator Known-Bad Cases
 
-Fixtures were generated under ignored `runtime/followup2_validator_fixtures/` and are not committed. Summary rows are in `strict_validator_report.csv`.
+Fixtures are generated under ignored `runtime/followup3_validator_fixtures/`; tracked evidence is summarized in `strict_validator_report.csv`.

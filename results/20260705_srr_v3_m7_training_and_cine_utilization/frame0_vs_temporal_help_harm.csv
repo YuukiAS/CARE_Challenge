@@ -1,0 +1,2 @@
+case_id,method,frame0_myo_dice,temporal_myo_proxy_dice,myo_dice_delta_vs_frame0,frame0_lv_dice,warped_lv_dice,hosted_metric_caveat
+Case1001,heart_crop_SimpleITK_BSpline_or_Demons_tuned,0.6624609618988132,0.8471980918166023,0.18473712991778912,0.767775651405859,0.8501382365677359,no hosted metric claim

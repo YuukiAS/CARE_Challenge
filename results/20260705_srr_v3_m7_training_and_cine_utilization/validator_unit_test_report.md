@@ -1,8 +1,10 @@
 # Validator Unit Test Report
 
 - good packet exits 0
-- every mutated bad packet exits nonzero
-- missing required files fail
-- completion ready with blocker fails
-- temporal dictionary ready without usable registration fails
-- diagnostic-hardcase rows mixed into formal decision fail
+- monitor-ready fixture exits nonzero
+- pending training adequacy fixture exits nonzero
+- submitted-only Slurm fixture exits nonzero
+- completed-but-not-aggregated fixture exits nonzero
+- usable-registration-without-temporal-dictionary fixture exits nonzero
+- frame0-only temporal fixture exits nonzero
+- diagnostic-hardcase formal-decision fixture exits nonzero
