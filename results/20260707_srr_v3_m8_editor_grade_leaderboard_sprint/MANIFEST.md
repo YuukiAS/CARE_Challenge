@@ -1,7 +1,7 @@
 # M8 Manifest
 
 task_key: `20260707_srr_v3_m8_editor_grade_leaderboard_sprint`
-updated_at_utc: `2026-07-07T06:53:37.061438+00:00`
+updated_at_utc: `2026-07-07T06:57:56.872010+00:00`
 
 ## Files
 - `MANIFEST.md`
@@ -49,6 +49,7 @@ updated_at_utc: `2026-07-07T06:53:37.061438+00:00`
 - `m8_temporal_dictionary_case_summary.csv`
 - `m8_temporal_dictionary_evidence.csv`
 - `m8_temporal_dictionary_index.json`
+- `m8_topup_race_watcher_58105084_58105082.log`
 - `m8_training_budget_ledger.csv`
 - `m8_training_curves.csv`
 - `m8_validation_events.csv`

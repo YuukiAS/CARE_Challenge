@@ -173,6 +173,34 @@ missing_runtime_summary=m8_t2_centerC_edema_repair_longrun
 
 The post-aggregation validator exited `0` with `error_count=0`, validating only the controlled non-ready monitor state.
 
+## M8 Budget Top-Up Race
+
+After top-up support was committed, an isolated budget supplement run was submitted for `m8_t2_centerC_edema_repair_longrun` using run label `m8_t2_centerC_edema_repair_budget_topup_01`.
+
+- htzhulab top-up job: `58105084`
+- a100-gpu mirror job: `58105082`
+- watcher command: `python scripts/evaluation/watch_srr_v3_m8_myops_race.py --htzhulab-job-id 58105084 --a100-job-id 58105082 --log-path results/20260707_srr_v3_m8_editor_grade_leaderboard_sprint/m8_topup_race_watcher_58105084_58105082.log --check-interval-seconds 1 --max-checks 1`
+
+Current top-up `squeue -j 58105084,58105082` evidence:
+
+- `58105084`: `RUNNING` on `htzhulab`, node `g1807htzh01`
+- `58105082`: absent from current queue after cancellation
+
+Current top-up `sacct -j 58105084,58105082` evidence:
+
+- `58105084`: `RUNNING`, partition `htzhulab`, start `2026-07-07T02:55:57`
+- `58105082`: `CANCELLED by 397557`, partition `a100-gpu`, end `2026-07-07T02:57:08`
+
+Watcher log excerpt:
+
+```text
+2026-07-07T02:57:08.624750 watch_start htzhulab=58105084 a100=58105082
+2026-07-07T02:57:08.662313 check=1 htzhulab=[('58105084', 'htzhulab', 'RUNNING', 'g1807htzh01')] a100=[('58105082', 'a100-gpu', 'PENDING', '(Priority)')]
+2026-07-07T02:57:08.676414 cancel_a100 code=0 output=
+```
+
+The supplement run wrote `runtime/variants/m8_t2_centerC_edema_repair_budget_topup_01/configs/run_config.env` with `m8_budget_supplement=true`, `job_id=58105084`, and `git_head=50f6ede8e1315f388fdcc37c8bc3d3c9d97aabaa`. It has not yet produced `summary.json`, so it is monitor evidence only.
+
 ## Completion Boundary
 
-This is not M8 completion. Two MyoPS variants have completed and been partially aggregated, but task2 is still running, the full 28800-second MyoPS budget is not proven, Cine mature registration is not complete, and no normal review-ready packet exists.
+This is not M8 completion. Two MyoPS variants have completed and been partially aggregated, the primary task2 variant is still running, and the budget top-up supplement is still running. The full 28800-second MyoPS budget is not proven. The corrected Cine mature registration attempt completed and produced a controlled registration-gap result, but it did not produce usable temporal-dictionary evidence. No normal review-ready packet exists.
