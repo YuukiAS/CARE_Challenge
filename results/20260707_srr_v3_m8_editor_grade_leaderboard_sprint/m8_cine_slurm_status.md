@@ -64,6 +64,16 @@ Watcher log excerpt:
 2026-07-07T00:36:39.992282 check=2 htzhulab=[('58081476', 'htzhulab', 'PENDING', '(Priority)')] a100=[('58081477', 'a100-gpu', 'PENDING', '(Priority)')]
 ```
 
+## Latest Check After Aggregator Installation
+
+`squeue -j 58081007,58081476,58081477,58081479,58081494,58081496` showed:
+
+- `58081476`: `PENDING`, partition `htzhulab`, reason `(Priority)`
+- `58081477`: `PENDING`, partition `a100-gpu`, reason `(Priority)`
+- `58081479`: `RUNNING`, partition `spill`
+
+`sacct -j 58081476,58081477,58081479` still showed both Cine mirror jobs pending and the watcher running. No Cine registration matrix or temporal dictionary evidence has been produced from this race yet.
+
 ## Completion Boundary
 
 This is not Cine evidence completion. Mature registration has been submitted in a lock-safe partition race but has not started/completed, and no M8 Cine registration matrix or temporal dictionary aggregation has been produced from the submitted job.

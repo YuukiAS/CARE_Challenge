@@ -20,3 +20,8 @@
 | `sbatch --wrap python scripts/evaluation/watch_srr_v3_m8_myops_race.py --htzhulab-job-id 58081007_2 --a100-job-id 58081494 ...` | submitted `58081496` | Watch the task-specific MyoPS task2 race without treating task0/1 as task2 progress. |
 | `squeue -j 58081007,58081476,58081477,58081479,58081494,58081496 -o '%i|%P|%j|%t|%M|%D|%R'` | exit 0 | Check current MyoPS and Cine race states after supplemental submissions. |
 | `sacct -j 58081007,58081476,58081477,58081479,58081494,58081496 --format=JobID,JobName%30,Partition,State,ExitCode,Elapsed,Start,End -P` | exit 0 | Record current accounting state after supplemental submissions. |
+| `python -m py_compile scripts/evaluation/aggregate_srr_v3_m8_leaderboard_sprint_packet.py` | exit 0 | Syntax-check the fail-closed M8 post-job aggregator. |
+| `python scripts/evaluation/aggregate_srr_v3_m8_leaderboard_sprint_packet.py --packet results/20260707_srr_v3_m8_editor_grade_leaderboard_sprint` | exit 0; status `M8_NEEDS_MONITOR_NO_REVIEW` | Aggregate available runtime evidence without claiming readiness; all three MyoPS summaries are still missing because jobs are running/pending. |
+| `python scripts/evaluation/validate_srr_v3_m8_leaderboard_sprint_packet.py --packet results/20260707_srr_v3_m8_editor_grade_leaderboard_sprint` | exit 0; `error_count=0` | Validate the current non-ready monitor packet after aggregation. |
+| `squeue -j 58081007,58081476,58081477,58081479,58081494,58081496 -o '%i|%P|%j|%t|%M|%D|%R'` | exit 0 | Refresh current job states after aggregation. |
+| `sacct -j 58081007,58081476,58081477,58081479,58081494,58081496 --format=JobID,JobName%30,Partition,State,ExitCode,Elapsed,Start,End -P` | exit 0 | Refresh current accounting states after aggregation. |

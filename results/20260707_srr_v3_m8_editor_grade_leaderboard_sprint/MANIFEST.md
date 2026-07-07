@@ -1,68 +1,62 @@
 # M8 Manifest
 
 task_key: `20260707_srr_v3_m8_editor_grade_leaderboard_sprint`
-generated_at_utc: `2026-07-07T04:25:52.503360+00:00`
-updated_at_utc: `2026-07-07T04:36:09Z`
+updated_at_utc: `2026-07-07T04:45:19.017366+00:00`
 
 ## Files
-- `result.md`
-- `completion_check.md`
-- `review_request.md`
 - `MANIFEST.md`
 - `commands_run.md`
-- `m8_route_objective.md`
-- `m8_training_budget_ledger.csv`
-- `m8_variant_config_contract.json`
-- `m8_variant_matrix.csv`
+- `completion_check.md`
+- `m8_arbitration_opening_diagnostics.csv`
 - `m8_architecture_gap_closure_table.csv`
-- `m8_hardcase_sampling_report.md`
 - `m8_batch_composition.csv`
-- `m8_prototype_bank_summary.json`
+- `m8_best_variant_decision_table.csv`
+- `m8_candidate_assembly_matrix.csv`
+- `m8_cine_case_manifest.csv`
+- `m8_cine_decision.md`
+- `m8_cine_metrics_summary.csv`
+- `m8_cine_slurm_status.md`
+- `m8_combined_decision.md`
+- `m8_component_remote_fp_hd95_report.csv`
+- `m8_export_dry_run_qc.md`
+- `m8_formal_case_manifest.csv`
+- `m8_frame0_vs_temporal_help_harm.csv`
 - `m8_hard_negative_memory_summary.csv`
-- `m8_prototype_margin_by_case.csv`
-- `m8_proposal_refiner_recall_precision.csv`
-- `m8_loss_schedule.md`
-- `m8_training_curves.csv`
-- `m8_validation_events.csv`
+- `m8_hard_subgroup_metrics.csv`
+- `m8_hardcase_sampling_report.md`
+- `m8_label_export_dry_run_qc.md`
+- `m8_leaderboard_readiness_report.md`
+- `m8_local_inference_recipe.md`
 - `m8_loss_component_by_step.csv`
 - `m8_loss_component_gradient_sanity.csv`
-- `m8_srr_contribution_by_case.csv`
-- `m8_arbitration_opening_diagnostics.csv`
-- `m8_formal_case_manifest.csv`
-- `m8_same_split_help_harm.csv`
-- `m8_hard_subgroup_metrics.csv`
-- `m8_component_remote_fp_hd95_report.csv`
-- `m8_local_inference_recipe.md`
-- `m8_candidate_assembly_matrix.csv`
-- `m8_export_dry_run_qc.md`
-- `m8_best_variant_decision_table.csv`
-- `m8_route_promotion_decision.md`
-- `m8_cine_case_manifest.csv`
-- `m8_registration_same_subset_matrix.csv`
+- `m8_loss_schedule.md`
+- `m8_myops_decision.md`
+- `m8_next_action.md`
+- `m8_official_label_mapping_qc.csv`
+- `m8_proposal_refiner_recall_precision.csv`
+- `m8_prototype_bank_summary.json`
+- `m8_prototype_margin_by_case.csv`
 - `m8_registration_method_selection.md`
+- `m8_registration_same_subset_matrix.csv`
+- `m8_route_objective.md`
+- `m8_route_promotion_decision.md`
+- `m8_same_split_help_harm.csv`
+- `m8_slurm_race_status.md`
+- `m8_srr_contribution_by_case.csv`
+- `m8_strict_validator_report.csv`
+- `m8_strict_validator_report.md`
+- `m8_temporal_aggregation_metrics.csv`
+- `m8_temporal_dictionary_case_summary.csv`
 - `m8_temporal_dictionary_evidence.csv`
 - `m8_temporal_dictionary_index.json`
-- `m8_temporal_dictionary_case_summary.csv`
-- `m8_temporal_aggregation_metrics.csv`
-- `m8_frame0_vs_temporal_help_harm.csv`
-- `m8_cine_metrics_summary.csv`
-- `m8_myops_decision.md`
-- `m8_cine_decision.md`
-- `m8_combined_decision.md`
-- `m8_label_export_dry_run_qc.md`
-- `m8_official_label_mapping_qc.csv`
-- `m8_strict_validator_report.md`
-- `m8_strict_validator_report.csv`
+- `m8_training_budget_ledger.csv`
+- `m8_training_curves.csv`
+- `m8_validation_events.csv`
 - `m8_validator_unit_test_report.md`
-- `m8_leaderboard_readiness_report.md`
-- `m8_next_action.md`
-- `m8_slurm_race_status.md`
-- `m8_cine_slurm_status.md`
+- `m8_variant_config_contract.json`
+- `m8_variant_matrix.csv`
+- `result.md`
+- `review_request.md`
 
-## Current Monitor Jobs
-- MyoPS htzhulab array: `58081007`
-- MyoPS task2 a100 mirror: `58081494`
-- MyoPS task2 watcher: `58081496`
-- Cine htzhulab mirror: `58081476`
-- Cine a100 mirror: `58081477`
-- Cine watcher: `58081479`
+## Excluded
+- `runtime/` checkpoints, NIfTI predictions, and large logs are intentionally not tracked.

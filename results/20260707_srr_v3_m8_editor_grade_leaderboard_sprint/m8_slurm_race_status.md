@@ -102,6 +102,18 @@ Task2 watcher log excerpt:
 2026-07-07T00:37:16.754405 check=2 htzhulab=[('58081007_2', 'htzhulab', 'PENDING', '(Resources)')] a100=[('58081494_[2]', 'a100-gpu', 'PENDING', '(Priority)')]
 ```
 
+## Latest Check After Aggregator Installation
+
+`squeue -j 58081007,58081476,58081477,58081479,58081494,58081496` showed:
+
+- `58081007_0`: `RUNNING` on `htzhulab`, elapsed at check `00:27:37`
+- `58081007_1`: `RUNNING` on `htzhulab`, elapsed at check `00:27:37`
+- `58081007_[2]`: `PENDING (Resources)` on `htzhulab`
+- `58081494_[2]`: `PENDING (Priority)` on `a100-gpu`
+- `58081496`: `RUNNING` watcher on `spill`
+
+`find results/20260707_srr_v3_m8_editor_grade_leaderboard_sprint/runtime/variants -maxdepth 3 -name summary.json` returned no files, so the M8 post-job aggregator correctly kept the packet in monitor state.
+
 ## Completion Boundary
 
 This is not M8 completion. Training is still running/pending, the 28800-second MyoPS training budget is not proven, task2 has not started yet, and no completed runtime aggregation has been committed.
