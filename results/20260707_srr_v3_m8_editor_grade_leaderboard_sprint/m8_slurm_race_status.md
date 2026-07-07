@@ -106,16 +106,16 @@ Task2 watcher log excerpt:
 
 `squeue -j 58081007,58081476,58081477,58081479,58081494,58081496` showed:
 
-- `58081007_0`: `RUNNING` on `htzhulab`, node `g1807htzh01`, elapsed at check `00:44:59`
-- `58081007_1`: `RUNNING` on `htzhulab`, node `g1807htzh01`, elapsed at check `00:44:59`
+- `58081007_0`: `RUNNING` on `htzhulab`, node `g1807htzh01`, elapsed at check `00:50:03`
+- `58081007_1`: `RUNNING` on `htzhulab`, node `g1807htzh01`, elapsed at check `00:50:03`
 - `58081007_[2]`: `PENDING (Resources)` on `htzhulab`
 - `58081494_[2]`: `PENDING (Priority)` on `a100-gpu`
 - `58081496`: `RUNNING` watcher on `spill`
 
 `sacct -j 58081007,58081476,58081477,58081479,58081494,58081496` showed:
 
-- `58081007_0`: `RUNNING`, partition `htzhulab`, elapsed `00:44:55`, start `2026-07-07T00:18:35`
-- `58081007_1`: `RUNNING`, partition `htzhulab`, elapsed `00:44:55`, start `2026-07-07T00:18:35`
+- `58081007_0`: `RUNNING`, partition `htzhulab`, elapsed `00:50:05`, start `2026-07-07T00:18:35`
+- `58081007_1`: `RUNNING`, partition `htzhulab`, elapsed `00:50:05`, start `2026-07-07T00:18:35`
 - `58081007_[2]`: `PENDING`
 - `58081494_[2]`: `PENDING`, partition `a100-gpu`
 - `58081496`: `RUNNING`, partition `spill`
@@ -128,6 +128,8 @@ Task2 watcher latest excerpt:
 2026-07-07T00:59:18.559476 check=13 htzhulab=[('58081007_2', 'htzhulab', 'PENDING', '(Resources)')] a100=[('58081494_[2]', 'a100-gpu', 'PENDING', '(Priority)')]
 2026-07-07T01:01:18.603520 check=14 htzhulab=[('58081007_2', 'htzhulab', 'PENDING', '(Resources)')] a100=[('58081494_[2]', 'a100-gpu', 'PENDING', '(Priority)')]
 2026-07-07T01:03:18.648452 check=15 htzhulab=[('58081007_2', 'htzhulab', 'PENDING', '(Resources)')] a100=[('58081494_[2]', 'a100-gpu', 'PENDING', '(Priority)')]
+2026-07-07T01:05:18.690857 check=16 htzhulab=[('58081007_2', 'htzhulab', 'PENDING', '(Resources)')] a100=[('58081494_[2]', 'a100-gpu', 'PENDING', '(Priority)')]
+2026-07-07T01:07:18.734620 check=17 htzhulab=[('58081007_2', 'htzhulab', 'PENDING', '(Resources)')] a100=[('58081494_[2]', 'a100-gpu', 'PENDING', '(Priority)')]
 ```
 
 Runtime artifact check showed that task0 and task1 have written validation checkpoints up to `checkpoint_validation_step_9000.pt` and `checkpoint_best.pt`, but no `checkpoint_final.pt`, `training_log.csv`, `validation_events.csv`, or `summary.json` has been written yet. This is consistent with `--enforce-min-train-loop-seconds`: the 9000-step validation checkpoints are intermediate evidence only and cannot be used as M8 completion.

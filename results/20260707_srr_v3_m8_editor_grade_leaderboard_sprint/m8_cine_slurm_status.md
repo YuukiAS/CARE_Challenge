@@ -76,7 +76,7 @@ Watcher log excerpt:
 
 - `58081476`: `PENDING`, partition `htzhulab`, start `Unknown`
 - `58081477`: `PENDING`, partition `a100-gpu`, start `Unknown`
-- `58081479`: `RUNNING`, partition `spill`, elapsed `00:28:51`, start `2026-07-07T00:34:39`
+- `58081479`: `RUNNING`, partition `spill`, elapsed `00:34:01`, start `2026-07-07T00:34:39`
 
 Cine watcher latest excerpt:
 
@@ -86,6 +86,8 @@ Cine watcher latest excerpt:
 2026-07-07T00:58:41.409066 check=13 htzhulab=[('58081476', 'htzhulab', 'PENDING', '(Priority)')] a100=[('58081477', 'a100-gpu', 'PENDING', '(Priority)')]
 2026-07-07T01:00:41.473848 check=14 htzhulab=[('58081476', 'htzhulab', 'PENDING', '(Priority)')] a100=[('58081477', 'a100-gpu', 'PENDING', '(Priority)')]
 2026-07-07T01:02:41.535571 check=15 htzhulab=[('58081476', 'htzhulab', 'PENDING', '(Priority)')] a100=[('58081477', 'a100-gpu', 'PENDING', '(Priority)')]
+2026-07-07T01:04:41.608644 check=16 htzhulab=[('58081476', 'htzhulab', 'PENDING', '(Priority)')] a100=[('58081477', 'a100-gpu', 'PENDING', '(Priority)')]
+2026-07-07T01:06:41.671198 check=17 htzhulab=[('58081476', 'htzhulab', 'PENDING', '(Priority)')] a100=[('58081477', 'a100-gpu', 'PENDING', '(Priority)')]
 ```
 
 No Cine registration matrix or temporal dictionary evidence has been produced from this race yet.
