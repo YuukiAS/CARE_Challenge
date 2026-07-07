@@ -243,6 +243,14 @@ def derive_status(packet: Path, summaries: dict[str, dict[str, object]], ledger:
     if missing:
         issues.append(f"missing_runtime_summary={','.join(missing)}")
         return MONITOR_STATUS, issues
+    pending_budget_runs = [
+        str(row.get("run_id", "unknown"))
+        for row in ledger
+        if str(row.get("included_in_8h_budget", "")).lower() == "false_until_completed_and_aggregated"
+    ]
+    if pending_budget_runs:
+        issues.append(f"pending_budget_runtime_summary={','.join(pending_budget_runs)}")
+        return MONITOR_STATUS, issues
     total_seconds = total_included_seconds(ledger)
     if total_seconds < 28800.0:
         issues.append(f"included_train_loop_seconds={total_seconds:.1f}<28800")
