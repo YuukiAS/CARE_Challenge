@@ -1,5 +1,5 @@
 # M8 Review Request
 
-status: `NO_REVIEW_REQUESTED_MONITOR_ONLY`
+status: `DO_NOT_REVIEW_UNTIL_BLOCKERS_RESOLVED`
 
-Do not review this as a normal ready packet until completion_check.md has a reviewer-ready state and contains no pending/running/awaiting-runtime evidence.
+The packet has post-job aggregation where available, but the blocking issues in completion_check.md still prevent normal review.

@@ -8,6 +8,7 @@ import csv
 import json
 import re
 import sys
+from datetime import UTC, datetime
 from pathlib import Path
 
 
@@ -65,6 +66,14 @@ def read_csv(path: Path) -> list[dict[str, str]]:
         return list(csv.DictReader(f))
 
 
+def write_csv(path: Path, rows: list[dict[str, str]], fieldnames: list[str]) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with path.open("w", newline="", encoding="utf-8") as f:
+        writer = csv.DictWriter(f, fieldnames=fieldnames, lineterminator="\n")
+        writer.writeheader()
+        writer.writerows(rows)
+
+
 def completion_state(packet: Path) -> str:
     text = read_text(packet / "completion_check.md")
     match = re.search(r"status:\s*`?([A-Z0-9_]+)`?", text)
@@ -84,7 +93,11 @@ def validate(packet: Path) -> list[str]:
     if state not in ALLOWED_STATES:
         errors.append(f"completion_check.md has invalid or missing status: {state}")
 
-    all_text = "\n".join(read_text(path) for path in packet.glob("*.md"))
+    all_text = "\n".join(
+        read_text(path)
+        for path in packet.glob("*.md")
+        if path.name not in {"m8_strict_validator_report.md", "m8_validator_unit_test_report.md"}
+    )
     forbidden_claims = [
         "validation upload",
         "hosted metric claim",
@@ -140,6 +153,42 @@ def validate(packet: Path) -> list[str]:
     return errors
 
 
+def write_reports(packet: Path, errors: list[str]) -> None:
+    state = completion_state(packet)
+    now = datetime.now(UTC).isoformat()
+    rows = [{"status": state, "error_count": str(len(errors)), "error": error} for error in errors]
+    if not rows:
+        rows = [{"status": state, "error_count": "0", "error": ""}]
+    write_csv(packet / "m8_strict_validator_report.csv", rows, ["status", "error_count", "error"])
+    result = "pass" if not errors else "fail"
+    error_text = "\n".join(f"- `{error}`" for error in errors) or "- none"
+    (packet / "m8_strict_validator_report.md").write_text(
+        "\n".join(
+            [
+                "# M8 Strict Validator Report",
+                "",
+                f"status: `{state}`",
+                f"updated_at_utc: `{now}`",
+                "",
+                "Command:",
+                "",
+                "```bash",
+                "PYTHONPATH=. python scripts/evaluation/validate_srr_v3_m8_leaderboard_sprint_packet.py --packet results/20260707_srr_v3_m8_editor_grade_leaderboard_sprint",
+                "```",
+                "",
+                f"Result: `{result}`, `error_count={len(errors)}`.",
+                "",
+                "Interpretation: this validates the current packet state only. A non-ready status is not M8 completion.",
+                "",
+                "## Errors",
+                error_text,
+            ]
+        )
+        + "\n",
+        encoding="utf-8",
+    )
+
+
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--packet", required=True)
@@ -148,6 +197,7 @@ def main() -> None:
     if not packet.is_absolute():
         packet = Path.cwd() / packet
     errors = validate(packet)
+    write_reports(packet, errors)
     print(json.dumps({"packet": str(packet), "error_count": len(errors), "errors": errors}, indent=2))
     if errors:
         sys.exit(1)

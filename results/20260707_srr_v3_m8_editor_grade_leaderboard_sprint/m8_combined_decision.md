@@ -1,6 +1,11 @@
 # M8 Combined Decision
 
-status: `M8_NEEDS_MONITOR_NO_REVIEW`
+status: `M8_NEEDS_EVIDENCE_METRICS_INCOMPLETE`
 
-This M8 artifact is not ready for review because M8 MyoPS long training and Cine mature registration have not completed and been re-aggregated into lightweight evidence files.
+myops_status: `M8_NEEDS_EVIDENCE_METRICS_INCOMPLETE`
+cine_status: `CINE_REGISTRATION_BLOCKED_AFTER_MATURE_M8_ATTEMPT`
 
+MyoPS and Cine decisions remain separated. The packet does not claim leaderboard readiness, validation packaging/upload, hosted metrics, challenge submission, scientific stop, fold expansion, or M9.
+
+## Blocking Issues
+- `ready gate intentionally requires final reviewer-grade metric/contribution audit`

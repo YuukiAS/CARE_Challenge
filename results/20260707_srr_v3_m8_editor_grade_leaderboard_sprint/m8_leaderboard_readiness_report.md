@@ -1,6 +1,10 @@
 # M8 Leaderboard Readiness Report
 
-status: `M8_NEEDS_MONITOR_NO_REVIEW`
+status: `M8_NEEDS_EVIDENCE_METRICS_INCOMPLETE`
 
-This M8 artifact is not ready for review because M8 MyoPS long training and Cine mature registration have not completed and been re-aggregated into lightweight evidence files.
+readiness: `NOT_READY`
 
+This M8 packet is not leaderboard-ready. It is an executor evidence packet with completed training-budget aggregation and remaining reviewer-grade evidence gates.
+
+## Blocking Issues
+- `ready gate intentionally requires final reviewer-grade metric/contribution audit`

@@ -1,8 +1,8 @@
 # M8 Completion Check
 
-status: `M8_NEEDS_MONITOR_NO_REVIEW`
+status: `M8_NEEDS_EVIDENCE_METRICS_INCOMPLETE`
 
-included_myops_train_loop_seconds: `21600.097`
+included_myops_train_loop_seconds: `28800.190`
 
 blocking_issues:
-- `pending_budget_runtime_summary=m8_t2_centerC_edema_repair_budget_topup_01`
+- `ready gate intentionally requires final reviewer-grade metric/contribution audit`

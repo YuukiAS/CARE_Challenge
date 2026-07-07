@@ -1,6 +1,11 @@
-# M8 Myops Decision
+# M8 MyoPS Decision
 
-status: `M8_NEEDS_MONITOR_NO_REVIEW`
+status: `M8_NEEDS_EVIDENCE_METRICS_INCOMPLETE`
 
-This M8 artifact is not ready for review because M8 MyoPS long training and Cine mature registration have not completed and been re-aggregated into lightweight evidence files.
+included_myops_train_loop_seconds: `28800.190`
+per_case_contribution_status: `present`
 
+MyoPS training budget evidence is aggregated from completed runtime summaries. This is not a validation upload, hosted-score assertion, fold expansion, challenge submission, scientific stop, or M9.
+
+## Blocking Issues
+- `ready gate intentionally requires final reviewer-grade metric/contribution audit`

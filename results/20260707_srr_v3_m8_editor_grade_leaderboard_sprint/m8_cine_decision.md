@@ -1,6 +1,10 @@
 # M8 Cine Decision
 
-status: `M8_NEEDS_MONITOR_NO_REVIEW`
+status: `CINE_REGISTRATION_BLOCKED_AFTER_MATURE_M8_ATTEMPT`
 
-This M8 artifact is not ready for review because M8 MyoPS long training and Cine mature registration have not completed and been re-aggregated into lightweight evidence files.
+Cine mature registration evidence is present, but the current M8 evidence does not claim `myocardium_cinemyops` readiness.
 
+## Evidence
+- `m8_registration_same_subset_matrix.csv`
+- `m8_registration_method_selection.md`
+- `m8_temporal_dictionary_evidence.csv`

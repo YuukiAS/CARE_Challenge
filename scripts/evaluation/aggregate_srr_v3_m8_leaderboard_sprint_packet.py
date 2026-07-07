@@ -50,6 +50,10 @@ def write_text(path: Path, text: str) -> None:
     path.write_text(text, encoding="utf-8")
 
 
+def read_text(path: Path) -> str:
+    return path.read_text(encoding="utf-8") if path.is_file() else ""
+
+
 def read_json(path: Path) -> dict[str, object]:
     if not path.is_file():
         return {}
@@ -566,6 +570,11 @@ def write_decision_docs(packet: Path, status: str, issues: list[str], summaries:
     now = datetime.now(UTC).isoformat()
     total_seconds = total_included_seconds(ledger)
     issue_text = "\n".join(f"- `{issue}`" for issue in issues) or "- none"
+    contribution_rows = read_csv(packet / "m8_srr_contribution_by_case.csv")
+    contribution_status = "present" if contribution_rows and contribution_rows[0].get("anchor_delta_rate") not in {"", "EVIDENCE_NOT_EXPORTED_PER_CASE"} else "missing"
+    cine_report = read_text(packet / "m8_registration_method_selection.md")
+    cine_blocked = "CINE_REGISTRATION_BLOCKED_AFTER_MATURE_M8_ATTEMPT" in cine_report
+    cine_status = "CINE_REGISTRATION_BLOCKED_AFTER_MATURE_M8_ATTEMPT" if cine_blocked else "CINE_EVIDENCE_REQUIRES_REVIEW"
     write_text(
         packet / "result.md",
         "\n".join(
@@ -608,6 +617,96 @@ def write_decision_docs(packet: Path, status: str, issues: list[str], summaries:
             "The packet has post-job aggregation where available, but the blocking issues in completion_check.md still prevent normal review.\n"
         )
     write_text(packet / "review_request.md", review_text)
+    write_text(
+        packet / "m8_myops_decision.md",
+        "\n".join(
+            [
+                "# M8 MyoPS Decision",
+                "",
+                f"status: `{status}`",
+                "",
+                f"included_myops_train_loop_seconds: `{total_seconds:.3f}`",
+                f"per_case_contribution_status: `{contribution_status}`",
+                "",
+                "MyoPS training budget evidence is aggregated from completed runtime summaries. This is not a validation upload, hosted-score assertion, fold expansion, challenge submission, scientific stop, or M9.",
+                "",
+                "## Blocking Issues",
+                issue_text,
+            ]
+        )
+        + "\n",
+    )
+    write_text(
+        packet / "m8_cine_decision.md",
+        "\n".join(
+            [
+                "# M8 Cine Decision",
+                "",
+                f"status: `{cine_status}`",
+                "",
+                "Cine mature registration evidence is present, but the current M8 evidence does not claim `myocardium_cinemyops` readiness.",
+                "",
+                "## Evidence",
+                "- `m8_registration_same_subset_matrix.csv`",
+                "- `m8_registration_method_selection.md`",
+                "- `m8_temporal_dictionary_evidence.csv`",
+            ]
+        )
+        + "\n",
+    )
+    write_text(
+        packet / "m8_combined_decision.md",
+        "\n".join(
+            [
+                "# M8 Combined Decision",
+                "",
+                f"status: `{status}`",
+                "",
+                f"myops_status: `{status}`",
+                f"cine_status: `{cine_status}`",
+                "",
+                "MyoPS and Cine decisions remain separated. The packet does not claim leaderboard readiness, validation packaging/upload, hosted metrics, challenge submission, scientific stop, fold expansion, or M9.",
+                "",
+                "## Blocking Issues",
+                issue_text,
+            ]
+        )
+        + "\n",
+    )
+    write_text(
+        packet / "m8_leaderboard_readiness_report.md",
+        "\n".join(
+            [
+                "# M8 Leaderboard Readiness Report",
+                "",
+                f"status: `{status}`",
+                "",
+                "readiness: `NOT_READY`",
+                "",
+                "This M8 packet is not leaderboard-ready. It is an executor evidence packet with completed training-budget aggregation and remaining reviewer-grade evidence gates.",
+                "",
+                "## Blocking Issues",
+                issue_text,
+            ]
+        )
+        + "\n",
+    )
+    write_text(
+        packet / "m8_next_action.md",
+        "\n".join(
+            [
+                "# M8 Next Action",
+                "",
+                f"status: `{status}`",
+                "",
+                "Next action: reviewer or follow-up executor must audit the final metric/contribution evidence and the Cine registration-blocked state before any normal review, route promotion, validation packaging, upload, or next milestone.",
+                "",
+                "## Blocking Issues",
+                issue_text,
+            ]
+        )
+        + "\n",
+    )
 
 
 def write_manifest(packet: Path) -> None:
