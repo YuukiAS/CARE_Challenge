@@ -247,6 +247,92 @@ M7 reviewer decision 只能是：
 最后只写 `results/20260705_srr_v3_m7_training_and_cine_utilization/review.md`。完成后 `git add -f review.md` 并 commit；不要 push，由用户手动 push。
 ```
 
+## M8 reviewer: editor-grade leaderboard sprint audit
+
+```text
+这是独立只读 reviewer/auditor session。只审阅 `results/20260707_srr_v3_m8_editor_grade_leaderboard_sprint/` 的 M8 packet 和必要 first-party helper/source/test files。不要补 executor 缺失文件，不要改代码，不要训练，不要 validation packaging/upload，不要 hosted metric claim，不要 route promotion，不要启动 M9。最后只写该目录下的 `review.md`。
+
+必须读取：
+
+- `prompts/shared/EXECUTOR_PROMPTS.md`
+- `prompts/shared/REVIEWER_PROMPTS.md`
+- `prompts/THREAD_BOOTSTRAP_ROUTE_IMAGE_PROTOCOL.md`
+- `prompts/MILESTONE_REVIEW_PROTOCOL.md`
+- `prompts/HANDOFF_GATE_POLICY.md`
+- `prompts/GPT_HARD_GATE_PROMPT.md`
+- latest M7 follow-up3 `review.md`
+- all M8 required result files
+- modified first-party model/training/evaluation/validator/test files
+
+### A. Scope and shared-prompt merge gate
+
+Reject if the M8 executor section is not present in `prompts/shared/EXECUTOR_PROMPTS.md` or the M8 reviewer section is not present in `prompts/shared/REVIEWER_PROMPTS.md`.
+
+Reject if M8 claims validation upload, hosted metric, challenge submission, leaderboard readiness, scientific stop, route promotion, fold expansion, or M9. Reject if SRR is reduced to postprocessing or fallback instead of the full SRR-v3 route. Verify `m8_route_objective.md` and `m8_architecture_gap_closure_table.csv` against SRR-v2/v2.5/v3 design intent.
+
+### B. Training budget and monitor gate
+
+Reject any ready packet if total included MyoPS `train_loop_seconds` in `m8_training_budget_ledger.csv` is below `28800` without `M8_RESOURCE_BLOCKED` or user-approved exception. Reject if `m8_training_budget_ledger.csv` is missing.
+
+Reject if a formal decision uses a minutes-long smoke: each decision training/probe must have `train_loop_seconds >= 900` and at least 3 validation events, or explicit plateau/early-stop evidence. Reject if there is no serious long primary candidate, recommended `train_loop_seconds >= 7200` or `optimizer_steps >= 6000`, without resource blocker.
+
+Reject any ready packet containing `PENDING_MONITOR`, `NEEDS_MONITOR`, `JOB_SUBMITTED`, `PENDING_PRIORITY`, `RUNNING`, `AWAITING_SACCT`, or submitted-only `commands_run.md`. Reviewer must confirm completed jobs were re-aggregated into tracked lightweight evidence after completion.
+
+### C. Variant config and architecture closure gate
+
+Reject if `m8_variant_config_contract.yaml/json` is missing, only natural language, not read/enforced by code, or if variants differ only by name. Check that V1, V2, and V3 have distinct encoder profile, dictionary slots, router/gate strategy, prototype source, hard-negative source, proposal thresholds, ROI policy, loss weights, sampler quotas, stages, optimizer/LR/scheduler, checkpoint rule, inference arbitration, and no-T2 safety.
+
+Reject if `m8_architecture_gap_closure_table.csv` uses bare `CLOSED`; allowed closure statuses are `CLOSED_WITH_RUNTIME_EVIDENCE`, `CLOSED_BY_PREVIOUS_AUDITED_EVIDENCE`, `RESOURCE_BLOCKED_WITH_COMMANDS`, `NEEDS_REVISION`, and `NEEDS_EVIDENCE`. Reject code-path-only closure without runtime evidence, validator/test path, and reviewer reproduction command.
+
+### D. Hardcase, mechanism, and contribution gate
+
+Reject if `m8_batch_composition.csv` lacks per-step evidence or shows batches dominated by LGE-only/no-T2/easy cases. Reject if T2-present or edema-positive cases do not appear or are clearly below available-data proportion. Reject if no-T2 cases are used as edema negatives.
+
+Reject if `m8_srr_contribution_by_case.csv` lacks per-case `anchor_delta_rate`, `final_delta_rate`, gate opening, SRR/proposal/refiner/fallback weights, final/ROI logit deltas, proposal recall/precision proxy, refiner delta magnitude, no-T2 edema voxels, Dice/HD95/remote-FP/component deltas, and source prediction path. `EVIDENCE_NOT_EXPORTED_PER_CASE` is a hard failure.
+
+Reject if prototype, hard-negative, proposal, refiner, branch arbitration, or loss-gradient evidence is stale, synthetic-only, or not connected to final logits.
+
+### E. Formal MyoPS evidence and local candidate assembly gate
+
+Reject if formal evaluation is narrow/easy-only, lacks T2-present/CenterB/CenterC/GT-positive/remote-FP/no-T2 coverage when available, or uses foreground mean/empty-GT edema to hide failure.
+
+Reject if `m8_local_inference_recipe.md`, `m8_candidate_assembly_matrix.csv`, or `m8_export_dry_run_qc.md` is missing. The candidate matrix must compare nnU-Net anchor control, best single SRR, anchor-preserving SRR correction, SRR plus component/remote-FP postprocessing, feasible TTA/flip ensemble, feasible SRR variant/checkpoint ensemble, and no-T2 safety enforced export rule.
+
+### F. Cine mature registration and temporal dictionary gate
+
+Reject if Cine is skipped. Reject if Cine is only a 3-case smoke, optical-flow-only proxy, descriptor-only proxy, untrained VoxelMorph, or one-case SyN.
+
+Reviewer must confirm at least 12 Cine cases or maximum available same-safe subset, at least 3 non-reference frame pairs per case when possible, at least two mature registration families, quantitative before/after metrics, runtime/failure reason, and a best-registration selection.
+
+If fewer than 12 cases are available, require `CINE_RESOURCE_OR_DATA_BLOCKED` with the available case pool. If no method is usable after mature attempts, require `CINE_REGISTRATION_BLOCKED_AFTER_MATURE_M8_ATTEMPT`; do not allow `myocardium_cinemyops` ready.
+
+If any usable non-reference registration exists, reject unless temporal dictionary was executed. Temporal dictionary must include at least 3 usable cases or all usable cases; ED/reference anchor feature; at least 2 warped non-reference frame features per case; registration quality; frame quality; motion saliency; temporal representer slot usage; aggregation output; frame0 comparison; local class-1 Dice/HD95 proxy; class-3 sanity if available; hosted metric caveat.
+
+### G. Decision separation and export QC gate
+
+Reject if `m8_myops_decision.md`, `m8_cine_decision.md`, or `m8_combined_decision.md` is missing. MyoPS ready cannot imply Cine ready; Cine diagnostics cannot hide MyoPS no-promotion; skipped Cine fails M8.
+
+Reject if `m8_label_export_dry_run_qc.md` or `m8_official_label_mapping_qc.csv` is missing. Check official label values scar `2221`, edema `1220`, LV `500`, myocardium `200`, RV `600`, invalid labels, folder schema, and explicit no-upload/no-hosted-metric caveat.
+
+### H. Strict validator gate
+
+Reject unless the M8 strict validator exits 0 on the real packet and nonzero on real mutated known-bad fixtures covering: under-8h ready packet; missing budget ledger; pending monitor ready packet; completed job not re-aggregated; config contract not used; renamed-only variants; missing per-case contribution; easy-only formal eval; no-T2 violation; missing candidate assembly; Cine smoke/proxy-only; no best-registration selection; usable registration without temporal dictionary; missing export dry-run QC; placeholder/synthetic-only final proof; unauthorized validation/upload/hosted claim.
+
+### I. Reviewer decision states
+
+Allowed decisions:
+
+- `M8_AUDITED_LOCAL_PROMOTION_CANDIDATE`
+- `M8_AUDITED_GO_FOR_FOLD_EXPANSION_PLANNING`
+- `M8_AUDITED_NO_PROMOTION_SCIENTIFIC_UNRESOLVED`
+- `M8_AUDITED_NEEDS_REVISION`
+- `M8_AUDITED_NEEDS_EVIDENCE`
+- `M8_AUDITED_RESOURCE_BLOCKED`
+- `M8_AUDITED_NEEDS_MONITOR`
+
+`M8_AUDITED_LOCAL_PROMOTION_CANDIDATE` does not authorize validation upload, hosted metric claim, leaderboard-ready status, challenge submission, or M9. It only authorizes GPT/user planning for fold expansion, packaging design, or a separate human-approved validation submission milestone.
+```
+
 ## M7 reviewer follow-up 3: completion-safe re-aggregation and temporal dictionary repair audit
 
 ```text

@@ -1542,3 +1542,219 @@ Do not write ready if:
 
 Finish by force-adding and locally committing only lightweight prompt/code/evidence files required by the governed packet. Do not commit checkpoints, NIfTI predictions, upload packages, large logs, raw data, secrets, environment dumps, or runtime trees. Do not write `review.md`. Do not push.
 ```
+
+## M8 executor: editor-grade leaderboard sprint
+
+```text
+只执行 M8：editor-grade SRR-v3 leaderboard sprint after `M7_FOLLOWUP3_AUDITED_GO_FOR_NEXT_PLANNING`.
+
+M8 scope:
+
+- MyoPS is the primary line.
+- Cine is secondary but mandatory.
+- M8 is not validation packaging/upload.
+- M8 is not hosted metric claim.
+- M8 is not challenge submission.
+- M8 is not scientific stop.
+- M8 is not M9.
+- Do not write `review.md`.
+- Do not approve yourself.
+- Do not push.
+
+Start gates:
+
+- Confirm `results/20260705_srr_v3_m7_training_and_cine_utilization/review.md` exists and contains `M7_FOLLOWUP3_AUDITED_GO_FOR_NEXT_PLANNING`; otherwise write `M8_BLOCKED_BY_M7`.
+- Confirm `results/20260705_srr_v3_m6_myops_concrete_architecture_repair/review.md` exists and contains `M6_AUDITED_GO`; otherwise write `M8_BLOCKED_BY_M7`.
+- Confirm this M8 executor section is active in `prompts/shared/EXECUTOR_PROMPTS.md` and the M8 reviewer section is active in `prompts/shared/REVIEWER_PROMPTS.md`; otherwise write `M8_NEEDS_REVISION` and do not execute the milestone.
+- Execute `prompts/THREAD_BOOTSTRAP_ROUTE_IMAGE_PROTOCOL.md` before route planning. The visual route diagrams must be read from ChatGPT Project background materials / current thread visual materials using canonical version references `images/SRR-v2.png`, `images/SRR-v2.5.png`, `images/SRR-v3.png`, and any later SRR/MyoPS diagrams.
+
+Must read:
+
+- `prompts/shared/EXECUTOR_PROMPTS.md`
+- `prompts/shared/REVIEWER_PROMPTS.md`
+- `prompts/THREAD_BOOTSTRAP_ROUTE_IMAGE_PROTOCOL.md`
+- `prompts/GPT_HARD_GATE_PROMPT.md`
+- `prompts/HANDOFF_GATE_POLICY.md`
+- `prompts/MILESTONE_REVIEW_PROTOCOL.md`
+- `results/20260705_srr_v3_m0_architecture_master_contract/architecture_contract.md`
+- `results/20260705_srr_v3_m0_architecture_master_contract/interface_contract.md`
+- `results/20260705_srr_v3_m0_architecture_master_contract/metric_contract.md`
+- `results/20260705_srr_v3_m7_training_and_cine_utilization/review.md`
+- `results/20260705_srr_v3_m7_training_and_cine_utilization/route_to_leaderboard_gap_report.md`
+- `results/20260705_srr_v3_m7_training_and_cine_utilization/failure_interpretation.md`
+
+Write `m8_route_objective.md` before scientific work. It must state that SRR-MyoPS is availability-aware selective retrieval plus semantic representation retrieval bank, anatomy-guided lesion proposal, pathology-specific soft-ROI refinement, explicit losses/objectives, and nnU-Net anchor/context/evidence/safety. nnU-Net or another strong segmenter can be anchor/context/evidence/safety, but SRR cannot be reduced to optional post-processing or generic fallback. Cine is registration-aware temporal retrieval with warped non-reference evidence.
+
+### A. M8 training budget semantics
+
+M8 is a leaderboard sprint. It must not complete with a smoke, placeholder, monitor packet, submitted-only Slurm job, or a few-minute probe.
+
+Training budget rule:
+
+- Cumulative MyoPS `train_loop_seconds` across real M8 MyoPS training, continued training, targeted repair, and targeted probe runs must be at least `28800` seconds unless the packet is explicitly `M8_RESOURCE_BLOCKED` or the user has approved a written exception.
+- A single job, candidate, or variant does not need to run 8 hours by itself.
+- The 8-hour aggregate must come from real training loops only. Do not count queue time, monitor time, aggregation, evaluation-only, data preprocessing, export, registration-only Cine work, or validation packaging.
+- Any actual training/probe used for a formal decision must not be a minutes-long smoke. Each such run must have `train_loop_seconds >= 900` and at least 3 validation events, or must provide explicit plateau/early-stop evidence.
+- At least one primary candidate must be a serious long candidate, recommended `train_loop_seconds >= 7200` or `optimizer_steps >= 6000`, unless resources block it.
+- If a job is pending/running or waiting on scheduler accounting, write `M8_NEEDS_MONITOR_NO_REVIEW`; do not create a normal ready review packet.
+- After a job completes, rerun the aggregator/evidence collector and merge runtime outputs into tracked lightweight files before requesting review.
+
+Write `m8_training_budget_ledger.csv` with fields:
+
+`run_id, variant, job_id, is_training_run, is_eval_only, start_time, end_time, train_loop_seconds, optimizer_steps, validation_event_count, checkpoint_in, checkpoint_out, included_in_8h_budget, exclusion_reason`
+
+`m8_training_budget_ledger.csv` must prove the total included real training loop seconds. If it is missing or the included sum is below `28800` without resource/user exception, do not write `M8_READY_FOR_REVIEW`.
+
+### B. M8 variant config contract
+
+Create `m8_variant_config_contract.yaml` or `m8_variant_config_contract.json`. The training code must read this config, or an equivalent code path must prove the same fields are used. Natural-language variant descriptions are not enough.
+
+Each variant must specify encoder profile, dictionary slot counts, router bias / gate-opening strategy, prototype bank source, hard-negative mining source, proposal thresholds, ROI dilation / crop policy, loss weights, sampler quotas, training stages, optimizer / LR / scheduler, checkpoint selection rule, inference arbitration rule, and no-T2 edema safety rule.
+
+Required variants:
+
+- `m8_full_srr_context_arbitration_longrun`: full dictionary, correction opportunity, gate-opening curriculum, hard-negative memory, full proposal/refiner/arbitration final-logit effect.
+- `m8_scar_precision_edema_safe_longrun`: scar precision, no-T2 safety, conservative arbitration, remote-FP suppression, scar HD95 guard.
+- `m8_t2_centerC_edema_repair_longrun`: T2-present edema, CenterB/CenterC oversampling, larger edema ROI, T2-private plus LGE-T2 interaction mass floor, edema recall and HD95 guard.
+
+Write `m8_variant_matrix.csv` and include the config path and code path that reads or enforces each variant. If variants only differ by name, write `M8_NEEDS_REVISION`.
+
+### C. Architecture gap closure
+
+Write `m8_architecture_gap_closure_table.csv` with fields:
+
+`route_component, m7_status, required_m8_closure, closure_status, code_path, config_path, runtime_evidence_path, unit_test_or_validator_path, reviewer_repro_command, blocker_if_not_closed`
+
+Allowed `closure_status` values are `CLOSED_WITH_RUNTIME_EVIDENCE`, `CLOSED_BY_PREVIOUS_AUDITED_EVIDENCE`, `RESOURCE_BLOCKED_WITH_COMMANDS`, `NEEDS_REVISION`, and `NEEDS_EVIDENCE`. Do not write a bare `CLOSED`.
+
+If closure reuses M7 evidence, state why that audited evidence still applies to M8. If M8 changes the code path, config, training schedule, decoder, or inference arbitration, old M7 evidence cannot be directly reused.
+
+Rows must cover availability-aware modality handling; modality-specific stems and modality-order contract; strong encoder/context; nnU-Net anchor probability/logit/component/uncertainty interface; shared/private/interaction dictionary slot usage; train/OOF prototype banks; hard-negative memory; scar proposal; edema proposal; anatomy union/LV/RV distance/uncertainty support; scar soft-ROI refinement; edema soft-ROI refinement; branch arbitration final-logit effect; baseline-preserving fallback; expanded loss objectives; per-case tensor export; no-T2 edema safety; same-split help/harm evaluator; Cine registration-aware temporal dictionary.
+
+### D. Hardcase-aware training and batch evidence
+
+Implement or harden a hardcase-aware sampler. Write `m8_batch_composition.csv` and `m8_hardcase_sampling_report.md`.
+
+`m8_batch_composition.csv` must report per step/epoch:
+
+`step, variant, case_id, center, modality_group, t2_present, c0_present, scar_gt_positive, edema_gt_positive, no_t2_safety_case, remote_fp_positive, small_lesion, large_lesion, selected_reason, loss_terms_active`
+
+Rejectable executor states include batches dominated over the run by LGE-only/no-T2/easy cases; T2-present or edema-positive cases absent or far below their available-data proportion; no-T2 cases used as edema negative supervision; sampler explained only in prose without per-step evidence.
+
+### E. Prototype, hard-negative, proposal, refiner, and contribution evidence
+
+Write `m8_prototype_bank_summary.json`, `m8_hard_negative_memory_summary.csv`, `m8_prototype_margin_by_case.csv`, `m8_proposal_refiner_recall_precision.csv`, `m8_srr_contribution_by_case.csv`, and `m8_arbitration_opening_diagnostics.csv`.
+
+`m8_srr_contribution_by_case.csv` must export real per-case `anchor_delta_rate`; `EVIDENCE_NOT_EXPORTED_PER_CASE` is not allowed. Required fields:
+
+`variant, checkpoint, decode_mode, case_id, center, modality_group, t2_present, class_name, anchor_delta_rate, final_delta_rate, correction_gate_open_rate, srr_weight_mean, proposal_weight_mean, refiner_weight_mean, fallback_weight_mean, final_logit_delta_abs_mean, roi_delta_abs_mean, proposal_recall_proxy, proposal_precision_proxy, refiner_delta_magnitude, no_t2_edema_voxels, dice_delta, hd95_delta, remote_fp_delta, component_count_delta, source_prediction_path`
+
+If per-case delta/contribution export is missing, M8 cannot be ready.
+
+### F. Loss, validation, and broad same-split formal evidence
+
+Write `m8_loss_schedule.md`, `m8_training_curves.csv`, `m8_validation_events.csv`, `m8_loss_component_by_step.csv`, `m8_loss_component_gradient_sanity.csv`, `m8_formal_case_manifest.csv`, `m8_same_split_help_harm.csv`, `m8_hard_subgroup_metrics.csv`, and `m8_component_remote_fp_hd95_report.csv`.
+
+Formal evidence must be broad, not narrow/easy-only. It must include T2-present complete cases, CenterB/CenterC when available, scar-positive cases, GT-positive edema cases, no-T2 safety cases, and remote-FP-positive cases when those cases exist in the same-split pool.
+
+Primary MyoPS metrics are `myops_scar` and `myops_edema`. Do not use foreground mean or empty-GT edema to hide failure.
+
+### G. MyoPS local candidate assembly
+
+M8 must assemble local candidates, not only train raw variants. Write `m8_local_inference_recipe.md`, `m8_candidate_assembly_matrix.csv`, `m8_export_dry_run_qc.md`, `m8_best_variant_decision_table.csv`, and `m8_route_promotion_decision.md`.
+
+Compare at least:
+
+- A. nnU-Net anchor control;
+- B. best single SRR variant;
+- C. anchor-preserving SRR correction with conservative fallback;
+- D. SRR plus component/remote-FP postprocessing;
+- E. SRR plus TTA/flip ensemble if feasible;
+- F. SRR variant ensemble or checkpoint ensemble if feasible;
+- G. no-T2 safety enforced export rule.
+
+Each candidate must be compared against same-split nnU-Net for scar/edema Dice, HD95, component count, remote FP, no-T2 edema voxels, and label/export correctness. A MyoPS local candidate cannot be selected using foreground mean or empty-GT edema masking.
+
+### H. Cine mandatory secondary: mature registration, not smoke/proxy
+
+Cine is mandatory. M8 cannot skip Cine. It must run a mature multi-algorithm registration attempt, not a 3-case smoke or proxy-only path.
+
+Registration minimum:
+
+- at least 12 Cine cases or the maximum available same-safe subset;
+- if fewer than 12 cases are available, write `CINE_RESOURCE_OR_DATA_BLOCKED` and list the available case pool;
+- at least 3 non-reference frame pairs per case when frames allow; if not, write the per-case reason;
+- at least two mature non-reference registration families from `heart_crop_center_of_mass_affine` or affine/translation initialization, `heart_crop_SimpleITK_Demons`, `heart_crop_SimpleITK_BSpline`, `ANTsPy_SyN_cropped_subset` if installed, and trained/auditable VoxelMorph only if weights/training evidence exists.
+
+Optical flow or feature warp can be proxy evidence only; it cannot be the sole usable registration. Untrained VoxelMorph is never usable. One-case SyN is never usable.
+
+For each algorithm on the same-safe subset, report before/after myocardium Dice, LV Dice, HD95, NCC, displacement smoothness/Jacobian/fold proxy, runtime, and failure reason. Select the best registration method using quantitative criteria.
+
+Write `m8_cine_case_manifest.csv`, `m8_registration_same_subset_matrix.csv`, `m8_registration_method_selection.md`, and `m8_cine_decision.md`.
+
+If no usable method remains after a mature attempt, write `CINE_REGISTRATION_BLOCKED_AFTER_MATURE_M8_ATTEMPT` and say whether this blocks M8 overall ready or only the Cine local candidate. Do not write `myocardium_cinemyops` ready.
+
+### I. Cine temporal dictionary
+
+If any usable non-reference registration row exists, M8 must execute temporal dictionary. Do not leave it blocked while retaining usable registration.
+
+Temporal dictionary minimum: at least 3 cases with usable registration, or all usable cases if fewer exist; ED/reference anchor feature; at least 2 warped non-reference frame features per case; registration quality; frame quality; motion saliency; temporal representer slot usage; aggregation output; frame0 vs temporal same-case comparison; local class-1 myocardium Dice/HD95 proxy; class-3 sanity if available; hosted metric caveat.
+
+Descriptor-only, frame0-only, no-warp, or optical-flow-only proxy temporal dictionary cannot be ready.
+
+Write `m8_temporal_dictionary_evidence.csv`, `m8_temporal_dictionary_index.json`, `m8_temporal_dictionary_case_summary.csv`, `m8_temporal_aggregation_metrics.csv`, `m8_frame0_vs_temporal_help_harm.csv`, and `m8_cine_metrics_summary.csv`.
+
+### J. Decision separation
+
+Write `m8_myops_decision.md`, `m8_cine_decision.md`, and `m8_combined_decision.md`.
+
+Rules: MyoPS local candidate does not automatically make Cine ready; Cine blocked does not erase useful MyoPS evidence, but M8 overall cannot be leaderboard-ready; if MyoPS has no promotion candidate, Cine diagnostics cannot create overall success; if Cine is skipped, M8 must fail; if Cine mature attempt is complete but fails, use `CINE_REGISTRATION_BLOCKED_AFTER_MATURE_M8_ATTEMPT` and do not claim `myocardium_cinemyops` ready.
+
+### K. Official export / label-map dry run, no upload
+
+M8 must not upload validation or create a validation package unless explicitly human-approved. It must still perform local export dry-run QC.
+
+Write `m8_label_export_dry_run_qc.md` and `m8_official_label_mapping_qc.csv`. Check compact-to-official values: scar `2221`, edema `1220`, LV `500`, myocardium `200`, RV `600`; no missing class mismatch; no invalid label values; MyoPS and Cine branch output folder schema; zip/package not created unless human-approved; no validation upload or hosted metric claim.
+
+### L. Strict monitor/completion and validator gate
+
+M8 inherits `MONITOR_PACKET_IS_NOT_COMPLETION`.
+
+- Pending/running Slurm jobs cannot receive normal review.
+- Completed jobs must be re-aggregated into tracked lightweight evidence.
+- `commands_run.md` with only `sbatch`, `squeue pending`, `PENDING Priority`, or `sacct pending` is not completion evidence.
+- `M8_READY_FOR_REVIEW` must not contain unresolved `PENDING_MONITOR`, `NEEDS_MONITOR`, `JOB_SUBMITTED`, `PENDING_PRIORITY`, `RUNNING`, `AWAITING_SACCT`, or equivalent states.
+
+Implement or update `scripts/evaluation/validate_srr_v3_m8_leaderboard_sprint_packet.py`.
+
+Known-bad fixtures must include total training budget under 8h marked ready; missing `m8_training_budget_ledger.csv`; pending monitor packet marked ready; completed job not re-aggregated; config contract not read by code; variants only renamed; missing per-case anchor delta; easy-only formal evaluation; no-T2 safety violation; missing local candidate assembly; Cine 3-case smoke/proxy-only registration; no best-registration selection; usable registration without temporal dictionary; missing label/export dry-run QC; real packet containing placeholder/synthetic-only final proof; unauthorized validation/upload/hosted claim.
+
+Write `m8_strict_validator_report.md`, `m8_strict_validator_report.csv`, and `m8_validator_unit_test_report.md`. No `M8_READY_FOR_REVIEW` unless the validator passes on the real packet and fails closed on mutated known-bad fixtures.
+
+### M. Required outputs
+
+Write all outputs under `results/20260707_srr_v3_m8_editor_grade_leaderboard_sprint/`.
+
+Required files: `result.md`, `completion_check.md`, `review_request.md`, `MANIFEST.md`, `commands_run.md`, `m8_route_objective.md`, `m8_training_budget_ledger.csv`, `m8_variant_config_contract.yaml` or `m8_variant_config_contract.json`, `m8_variant_matrix.csv`, `m8_architecture_gap_closure_table.csv`, `m8_hardcase_sampling_report.md`, `m8_batch_composition.csv`, `m8_prototype_bank_summary.json`, `m8_hard_negative_memory_summary.csv`, `m8_prototype_margin_by_case.csv`, `m8_proposal_refiner_recall_precision.csv`, `m8_loss_schedule.md`, `m8_training_curves.csv`, `m8_validation_events.csv`, `m8_loss_component_by_step.csv`, `m8_loss_component_gradient_sanity.csv`, `m8_srr_contribution_by_case.csv`, `m8_arbitration_opening_diagnostics.csv`, `m8_formal_case_manifest.csv`, `m8_same_split_help_harm.csv`, `m8_hard_subgroup_metrics.csv`, `m8_component_remote_fp_hd95_report.csv`, `m8_local_inference_recipe.md`, `m8_candidate_assembly_matrix.csv`, `m8_export_dry_run_qc.md`, `m8_best_variant_decision_table.csv`, `m8_route_promotion_decision.md`, `m8_cine_case_manifest.csv`, `m8_registration_same_subset_matrix.csv`, `m8_registration_method_selection.md`, `m8_temporal_dictionary_evidence.csv`, `m8_temporal_dictionary_index.json`, `m8_temporal_dictionary_case_summary.csv`, `m8_temporal_aggregation_metrics.csv`, `m8_frame0_vs_temporal_help_harm.csv`, `m8_cine_metrics_summary.csv`, `m8_myops_decision.md`, `m8_cine_decision.md`, `m8_combined_decision.md`, `m8_label_export_dry_run_qc.md`, `m8_official_label_mapping_qc.csv`, `m8_strict_validator_report.md`, `m8_strict_validator_report.csv`, `m8_validator_unit_test_report.md`, `m8_leaderboard_readiness_report.md`, and `m8_next_action.md`.
+
+If a file is not applicable, it must exist and state `NOT_APPLICABLE_WITH_REASON`; this cannot bypass required MyoPS training budget, real config use, broad formal evidence, per-case contribution export, local candidate assembly, mature Cine registration, temporal dictionary when usable registration exists, label/export dry-run QC, or strict validator.
+
+### N. Completion states
+
+`completion_check.md` may contain only:
+
+- `M8_READY_FOR_REVIEW`
+- `M8_NEEDS_MONITOR_NO_REVIEW`
+- `M8_RESOURCE_BLOCKED`
+- `M8_NEEDS_REVISION_TRAINING_UNDERRUN`
+- `M8_NEEDS_REVISION_ARCHITECTURE_GAP`
+- `M8_NEEDS_EVIDENCE_UNDERTRAINED`
+- `M8_NEEDS_EVIDENCE_METRICS_INCOMPLETE`
+- `M8_NEEDS_EVIDENCE_CINE_REGISTRATION`
+- `M8_NEEDS_REVISION`
+- `M8_BLOCKED_BY_M7`
+
+Do not write `M8_READY_FOR_REVIEW` if total MyoPS training loop seconds are below `28800` without resource/user exception; `m8_training_budget_ledger.csv` is missing or does not prove the budget; any formal decision training/probe is only a few-minute smoke; variant config contract is missing or not used by code; variants only differ by name; architecture gaps remain `NEEDS_REVISION` or `NEEDS_EVIDENCE`; `m8_srr_contribution_by_case.csv` lacks per-case delta/contribution export; hardcase sampler lacks per-step evidence; local inference recipe or candidate assembly is missing; official label/export dry-run QC is missing; Cine mature multi-algorithm registration attempt is missing; usable Cine registration exists but temporal dictionary is not executed; monitor/pending/submitted-only evidence is present; this M8 prompt is not merged into shared executor/reviewer prompts; any placeholder, stale, synthetic-only, or table-only evidence is used as final M8 proof; validation packaging/upload, hosted metric claim, fold expansion, challenge submission, scientific stop, leaderboard readiness, challenge-ready status, or M9 is claimed.
+
+Finish by force-adding and locally committing only lightweight evidence plus necessary first-party helper/source/test files. Do not commit checkpoints, NIfTI predictions, upload packages, raw data, secrets, environment dumps, whole runtime trees, or large logs. Do not write `review.md`. Do not push.
+```
