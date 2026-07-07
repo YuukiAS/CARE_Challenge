@@ -218,18 +218,35 @@ def selected_pairs(max_cases: int, pairs_per_case: int) -> list[dict[str, object
     for row in rows:
         frames = [int(x) for x in row.get("descriptor_frame_indices", "").split(",") if x.strip()]
         moving_frames = [f for f in frames if f != 0]
-        if len(moving_frames) < pairs_per_case:
-            continue
         center = row["center"]
         case_id = row["case_id"]
         cine_path = REPO_ROOT / row["cine_path"]
         if not cine_path.is_file():
             continue
-        needed = [frame_path(case_id, center, 0)] + [frame_path(case_id, center, f) for f in moving_frames[:pairs_per_case]]
-        if not all(path.is_file() for path in needed):
+        if not frame_path(case_id, center, 0).is_file():
             continue
-        for frame in moving_frames[:pairs_per_case]:
-            pairs.append({"case_id": case_id, "center": center, "cine_path": cine_path, "fixed_frame": 0, "moving_frame": frame})
+        available_moving = [f for f in moving_frames if frame_path(case_id, center, f).is_file()]
+        if not available_moving:
+            continue
+        selected_moving = available_moving[:pairs_per_case]
+        pair_limit_reason = ""
+        if len(selected_moving) < pairs_per_case:
+            pair_limit_reason = (
+                f"ONLY_{len(selected_moving)}_NONREFERENCE_CINEMA_PREDICTIONS_AVAILABLE_FOR_REQUESTED_{pairs_per_case}"
+            )
+        for frame in selected_moving:
+            pairs.append(
+                {
+                    "case_id": case_id,
+                    "center": center,
+                    "cine_path": cine_path,
+                    "fixed_frame": 0,
+                    "moving_frame": frame,
+                    "available_nonreference_prediction_frames": len(available_moving),
+                    "requested_pairs_per_case": pairs_per_case,
+                    "pair_limit_reason": pair_limit_reason,
+                }
+            )
         if len({p["case_id"] for p in pairs}) >= max_cases:
             break
     return pairs
@@ -259,6 +276,9 @@ def metrics_row(
         "center": pair["center"],
         "fixed_frame": pair["fixed_frame"],
         "moving_frame": pair["moving_frame"],
+        "available_nonreference_prediction_frames": pair.get("available_nonreference_prediction_frames", ""),
+        "requested_pairs_per_case": pair.get("requested_pairs_per_case", ""),
+        "pair_limit_reason": pair.get("pair_limit_reason", ""),
         "before_myocardium_dice": dice(fixed_seg, moving_seg, 2),
         "after_myocardium_dice": dice(fixed_seg, seg, 2),
         "before_lv_dice": dice(fixed_seg, moving_seg, 3),
@@ -282,7 +302,12 @@ def metrics_row(
 
 
 def usability_decision(rows: list[dict[str, object]]) -> tuple[bool, str]:
-    repair_rows = [r for r in rows if r["method"] in {"SimpleITK_Demons", "ANTsPy_SyNOnly"}]
+    repair_rows = [
+        r
+        for r in rows
+        if r.get("method") in {"SimpleITK_Demons", "ANTsPy_SyNOnly"}
+        and has_registration_metrics(r)
+    ]
     cases = {r["case_id"] for r in repair_rows}
     improved = [
         r
@@ -293,6 +318,21 @@ def usability_decision(rows: list[dict[str, object]]) -> tuple[bool, str]:
     if len(cases) >= 3 and len(improved) == len(repair_rows) and repair_rows:
         return True, "USABLE_NONREFERENCE_REGISTRATION_ROW"
     return False, "NOT_USABLE_FOR_TEMPORAL_DICTIONARY"
+
+
+def has_registration_metrics(row: dict[str, object]) -> bool:
+    required = (
+        "before_myocardium_dice",
+        "after_myocardium_dice",
+        "before_lv_dice",
+        "after_lv_dice",
+    )
+    for key in required:
+        try:
+            float(row[key])
+        except (KeyError, TypeError, ValueError):
+            return False
+    return True
 
 
 def append_command(command: str, status: str, purpose: str) -> None:
@@ -460,7 +500,13 @@ def main() -> None:
 
     write_csv(OUT_ROOT / "registration_same_subset_matrix.csv", rows)
     for method in sorted({str(r.get("method", "")) for r in rows if r.get("case_id") != "availability_probe"}):
-        subset = [r for r in rows if r.get("method") == method and r.get("case_id") != "availability_probe"]
+        subset = [
+            r
+            for r in rows
+            if r.get("method") == method
+            and r.get("case_id") != "availability_probe"
+            and has_registration_metrics(r)
+        ]
         if not subset:
             continue
         summary_rows.append(
@@ -477,7 +523,28 @@ def main() -> None:
         )
     write_csv(OUT_ROOT / "cine_metrics_summary.csv", summary_rows)
 
-    temporal_status = "TEMPORAL_DICTIONARY_READY_FOR_LIGHTWEIGHT_ATTEMPT" if usable else "TEMPORAL_DICTIONARY_BLOCKED_BY_REGISTRATION_GAP_AFTER_REPAIR_ATTEMPT"
+    is_m8 = "srr_v3_m8" in TASK_KEY
+    blocked_registration_status = (
+        "TEMPORAL_DICTIONARY_BLOCKED_BY_REGISTRATION_GAP_AFTER_MATURE_M8_ATTEMPT"
+        if is_m8
+        else "TEMPORAL_DICTIONARY_BLOCKED_BY_REGISTRATION_GAP_AFTER_REPAIR_ATTEMPT"
+    )
+    temporal_status = "TEMPORAL_DICTIONARY_READY_FOR_LIGHTWEIGHT_ATTEMPT" if usable else blocked_registration_status
+    blocked_cine_decision = (
+        "CINE_REGISTRATION_BLOCKED_AFTER_MATURE_M8_ATTEMPT"
+        if is_m8
+        else "CINE_REGISTRATION_BLOCKED_AFTER_REPAIR_ATTEMPT"
+    )
+    ready_cine_decision = (
+        "CINE_REGISTRATION_MATURE_M8_ATTEMPT_READY_FOR_TEMPORAL_DICTIONARY"
+        if is_m8
+        else "CINE_REGISTRATION_REPAIRED_READY_FOR_TEMPORAL_DICTIONARY"
+    )
+    temporal_reason = (
+        "M8 requires a usable non-reference registration row before temporal dictionary integration."
+        if is_m8
+        else "M7 continued requires a usable non-reference registration row before temporal dictionary integration."
+    )
     write_csv(
         OUT_ROOT / "temporal_dictionary_evidence.csv",
         [
@@ -488,7 +555,7 @@ def main() -> None:
                 "cases_attempted": len({p["case_id"] for p in pairs}),
                 "pairs_attempted": len(pairs),
                 "temporal_dictionary_attempted": usable,
-                "reason": "M7 continued requires a usable non-reference registration row before temporal dictionary integration.",
+                "reason": temporal_reason,
             }
         ],
     )
@@ -497,7 +564,7 @@ def main() -> None:
         "# Cine Registration Repair Report",
         "",
         "status: `EXECUTED_UNAUDITED`",
-        f"cine_decision: `{'CINE_REGISTRATION_REPAIRED_READY_FOR_TEMPORAL_DICTIONARY' if usable else 'CINE_REGISTRATION_BLOCKED_AFTER_REPAIR_ATTEMPT'}`",
+        f"cine_decision: `{ready_cine_decision if usable else blocked_cine_decision}`",
         "",
         f"- safe cases selected: `{','.join(sorted({str(p['case_id']) for p in pairs}))}`",
         f"- non-reference pairs attempted: `{len(pairs)}`",
@@ -508,7 +575,12 @@ def main() -> None:
         "",
         "Evidence files: `registration_same_subset_matrix.csv`, `cine_metrics_summary.csv`, and `temporal_dictionary_evidence.csv`.",
         "",
-        "This report does not copy M5 as a conclusion. It records a bounded M7 continued repair attempt and keeps Cine blocked unless a usable non-reference registration row is actually present.",
+        (
+            "This report records an M8 mature Cine registration attempt and keeps Cine blocked unless a usable "
+            "non-reference registration row is actually present."
+            if is_m8
+            else "This report does not copy M5 as a conclusion. It records a bounded M7 continued repair attempt and keeps Cine blocked unless a usable non-reference registration row is actually present."
+        ),
     ]
     write_text(OUT_ROOT / "cine_registration_repair_report.md", "\n".join(report) + "\n")
     append_command(

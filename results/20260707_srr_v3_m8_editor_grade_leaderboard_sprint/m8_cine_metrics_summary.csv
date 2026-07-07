@@ -1,2 +1,4 @@
-status,reason,source_path
-M8_NEEDS_MONITOR_NO_REVIEW,Awaiting completed M8 runtime aggregation.,results/20260707_srr_v3_m8_editor_grade_leaderboard_sprint/runtime/
+method,n_rows,n_cases,mean_before_myocardium_dice,mean_after_myocardium_dice,mean_before_lv_dice,mean_after_lv_dice,decision
+ANTsPy_SyNOnly,24,12,0.6542573962521824,0.6681211478335948,0.7443721598701926,0.7566191559698895,NOT_USABLE_FOR_TEMPORAL_DICTIONARY
+SimpleITK_Demons,24,12,0.6542573962521824,0.6891133990340587,0.7443721598701926,0.842925554086943,NOT_USABLE_FOR_TEMPORAL_DICTIONARY
+frame0_identity_control,24,12,1.0,1.0,1.0,1.0,NOT_USABLE_REFERENCE_CONTROL

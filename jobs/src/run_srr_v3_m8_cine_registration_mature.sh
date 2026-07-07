@@ -53,3 +53,4 @@ python scripts/evaluation/run_srr_v3_m7_cine_registration_repair.py \
 [[ -f "${OUT_DIR}/registration_same_subset_matrix.csv" ]] && cp "${OUT_DIR}/registration_same_subset_matrix.csv" "${OUT_DIR}/m8_registration_same_subset_matrix.csv"
 [[ -f "${OUT_DIR}/cine_metrics_summary.csv" ]] && cp "${OUT_DIR}/cine_metrics_summary.csv" "${OUT_DIR}/m8_cine_metrics_summary.csv"
 [[ -f "${OUT_DIR}/cine_registration_repair_report.md" ]] && cp "${OUT_DIR}/cine_registration_repair_report.md" "${OUT_DIR}/m8_registration_method_selection.md"
+[[ -f "${OUT_DIR}/temporal_dictionary_evidence.csv" ]] && cp "${OUT_DIR}/temporal_dictionary_evidence.csv" "${OUT_DIR}/m8_temporal_dictionary_evidence.csv"
