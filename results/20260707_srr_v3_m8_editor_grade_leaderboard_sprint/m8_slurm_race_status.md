@@ -106,11 +106,26 @@ Task2 watcher log excerpt:
 
 `squeue -j 58081007,58081476,58081477,58081479,58081494,58081496` showed:
 
-- `58081007_0`: `RUNNING` on `htzhulab`, elapsed at check `00:27:37`
-- `58081007_1`: `RUNNING` on `htzhulab`, elapsed at check `00:27:37`
+- `58081007_0`: `RUNNING` on `htzhulab`, node `g1807htzh01`, elapsed at check `00:40:16`
+- `58081007_1`: `RUNNING` on `htzhulab`, node `g1807htzh01`, elapsed at check `00:40:16`
 - `58081007_[2]`: `PENDING (Resources)` on `htzhulab`
 - `58081494_[2]`: `PENDING (Priority)` on `a100-gpu`
 - `58081496`: `RUNNING` watcher on `spill`
+
+`sacct -j 58081007,58081476,58081477,58081479,58081494,58081496` showed:
+
+- `58081007_0`: `RUNNING`, partition `htzhulab`, elapsed `00:40:20`, start `2026-07-07T00:18:35`
+- `58081007_1`: `RUNNING`, partition `htzhulab`, elapsed `00:40:20`, start `2026-07-07T00:18:35`
+- `58081007_[2]`: `PENDING`
+- `58081494_[2]`: `PENDING`, partition `a100-gpu`
+- `58081496`: `RUNNING`, partition `spill`
+
+Task2 watcher latest excerpt:
+
+```text
+2026-07-07T00:55:18.471719 check=11 htzhulab=[('58081007_2', 'htzhulab', 'PENDING', '(Resources)')] a100=[('58081494_[2]', 'a100-gpu', 'PENDING', '(Priority)')]
+2026-07-07T00:57:18.517628 check=12 htzhulab=[('58081007_2', 'htzhulab', 'PENDING', '(Resources)')] a100=[('58081494_[2]', 'a100-gpu', 'PENDING', '(Priority)')]
+```
 
 `find results/20260707_srr_v3_m8_editor_grade_leaderboard_sprint/runtime/variants -maxdepth 3 -name summary.json` returned no files, so the M8 post-job aggregator correctly kept the packet in monitor state.
 

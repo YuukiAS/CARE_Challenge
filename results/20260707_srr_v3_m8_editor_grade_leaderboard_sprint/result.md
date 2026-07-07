@@ -2,8 +2,8 @@
 
 status: `M8_NEEDS_MONITOR_NO_REVIEW`
 
-updated_at_utc: `2026-07-07T04:51:59.009169+00:00`
-git_head: `e7d3141b6b9764c1218db68e000c376f0960f70b`
+updated_at_utc: `2026-07-07T04:59:29.045470+00:00`
+git_head: `451db3fe56f09312348f0f6bf6b1a356bdad29ab`
 included_myops_train_loop_seconds: `0.000`
 
 This packet was aggregated from local runtime evidence where available. It does not claim validation packaging/upload, hosted metrics, challenge readiness, scientific stop, fold expansion, or M9.

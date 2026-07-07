@@ -72,7 +72,20 @@ Watcher log excerpt:
 - `58081477`: `PENDING`, partition `a100-gpu`, reason `(Priority)`
 - `58081479`: `RUNNING`, partition `spill`
 
-`sacct -j 58081476,58081477,58081479` still showed both Cine mirror jobs pending and the watcher running. No Cine registration matrix or temporal dictionary evidence has been produced from this race yet.
+`sacct -j 58081007,58081476,58081477,58081479,58081494,58081496` showed:
+
+- `58081476`: `PENDING`, partition `htzhulab`, start `Unknown`
+- `58081477`: `PENDING`, partition `a100-gpu`, start `Unknown`
+- `58081479`: `RUNNING`, partition `spill`, elapsed `00:24:16`, start `2026-07-07T00:34:39`
+
+Cine watcher latest excerpt:
+
+```text
+2026-07-07T00:54:41.081725 check=11 htzhulab=[('58081476', 'htzhulab', 'PENDING', '(Priority)')] a100=[('58081477', 'a100-gpu', 'PENDING', '(Priority)')]
+2026-07-07T00:56:41.142459 check=12 htzhulab=[('58081476', 'htzhulab', 'PENDING', '(Priority)')] a100=[('58081477', 'a100-gpu', 'PENDING', '(Priority)')]
+```
+
+No Cine registration matrix or temporal dictionary evidence has been produced from this race yet.
 
 ## Completion Boundary
 
