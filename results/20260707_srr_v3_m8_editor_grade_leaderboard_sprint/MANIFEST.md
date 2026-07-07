@@ -1,12 +1,10 @@
 # M8 Manifest
 
 task_key: `20260707_srr_v3_m8_editor_grade_leaderboard_sprint`
-updated_at_utc: `2026-07-07T06:43:18.902666+00:00`
+updated_at_utc: `2026-07-07T06:53:37.061438+00:00`
 
 ## Files
 - `MANIFEST.md`
-- `cine_metrics_summary.csv`
-- `cine_registration_repair_report.md`
 - `commands_run.md`
 - `completion_check.md`
 - `m8_arbitration_opening_diagnostics.csv`
@@ -57,10 +55,8 @@ updated_at_utc: `2026-07-07T06:43:18.902666+00:00`
 - `m8_validator_unit_test_report.md`
 - `m8_variant_config_contract.json`
 - `m8_variant_matrix.csv`
-- `registration_same_subset_matrix.csv`
 - `result.md`
 - `review_request.md`
-- `temporal_dictionary_evidence.csv`
 
 ## Excluded
 - `runtime/` checkpoints, NIfTI predictions, and large logs are intentionally not tracked.

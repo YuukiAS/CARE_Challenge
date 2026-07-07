@@ -81,6 +81,29 @@ def variant_dir(packet: Path, variant: str) -> Path:
     return packet / "runtime" / "variants" / variant
 
 
+def budget_supplement_dirs(packet: Path) -> list[Path]:
+    """Return isolated M8 budget supplement runs explicitly marked by job config."""
+
+    root = packet / "runtime" / "variants"
+    dirs: list[Path] = []
+    if not root.is_dir():
+        return dirs
+    for path in sorted(root.iterdir()):
+        if not path.is_dir() or path.name in VARIANTS:
+            continue
+        config = read_config_env(path / "configs" / "run_config.env")
+        if config.get("m8_budget_supplement", "").lower() == "true":
+            dirs.append(path)
+    return dirs
+
+
+def evidence_dirs(packet: Path, *, include_budget_supplements: bool = False) -> list[Path]:
+    dirs = [variant_dir(packet, variant) for variant in VARIANTS]
+    if include_budget_supplements:
+        dirs.extend(budget_supplement_dirs(packet))
+    return dirs
+
+
 def summary_path(packet: Path, variant: str) -> Path:
     return variant_dir(packet, variant) / "summary.json"
 
@@ -146,6 +169,51 @@ def ledger_rows(packet: Path, summaries: dict[str, dict[str, object]]) -> list[d
                 "exclusion_reason": "" if include else "completed summary lacks train seconds/steps/validation events",
             }
         )
+    for supplement_dir in budget_supplement_dirs(packet):
+        summary = read_json(supplement_dir / "summary.json")
+        run_config = read_config_env(supplement_dir / "configs" / "run_config.env")
+        if not summary:
+            rows.append(
+                {
+                    "run_id": supplement_dir.name,
+                    "variant": run_config.get("source_variant", supplement_dir.name),
+                    "job_id": run_config.get("job_id", "AWAITING_RUNTIME_SUMMARY"),
+                    "is_training_run": "true",
+                    "is_eval_only": "false",
+                    "start_time": "AWAITING_RUNTIME_SUMMARY",
+                    "end_time": "AWAITING_RUNTIME_SUMMARY",
+                    "train_loop_seconds": "AWAITING_RUNTIME_AGGREGATION",
+                    "optimizer_steps": "AWAITING_RUNTIME_AGGREGATION",
+                    "validation_event_count": "AWAITING_RUNTIME_AGGREGATION",
+                    "checkpoint_in": run_config.get("checkpoint_in", "none"),
+                    "checkpoint_out": str(supplement_dir / "checkpoints/fold_0/propref_config"),
+                    "included_in_8h_budget": "false_until_completed_and_aggregated",
+                    "exclusion_reason": f"{MONITOR_STATUS}: budget supplement summary.json missing or job still running/pending",
+                }
+            )
+            continue
+        seconds = as_float(summary.get("train_loop_seconds"))
+        steps = as_int(summary.get("actual_optimizer_steps"))
+        val_count = as_int(summary.get("validation_event_count"))
+        include = seconds > 0 and steps > 0 and val_count > 0
+        rows.append(
+            {
+                "run_id": supplement_dir.name,
+                "variant": run_config.get("source_variant", summary.get("model_variant", supplement_dir.name)),
+                "job_id": run_config.get("job_id", "EVIDENCE_NOT_FOUND"),
+                "is_training_run": "true",
+                "is_eval_only": "false",
+                "start_time": "SEE_SLURM_ACCOUNTING",
+                "end_time": "SEE_SLURM_ACCOUNTING",
+                "train_loop_seconds": seconds,
+                "optimizer_steps": steps,
+                "validation_event_count": val_count,
+                "checkpoint_in": run_config.get("checkpoint_in", "none"),
+                "checkpoint_out": summary.get("checkpoint_best", "EVIDENCE_NOT_FOUND"),
+                "included_in_8h_budget": str(include).lower(),
+                "exclusion_reason": "" if include else "budget supplement summary lacks train seconds/steps/validation events",
+            }
+        )
     return rows
 
 
@@ -203,20 +271,21 @@ def derive_status(packet: Path, summaries: dict[str, dict[str, object]], ledger:
 
 
 def summarize_training_curves(packet: Path) -> None:
+    dirs = evidence_dirs(packet, include_budget_supplements=True)
     write_csv(
         packet / "m8_training_curves.csv",
-        concat_csv(variant_dir(packet, variant) / "training_log.csv" for variant in VARIANTS),
+        concat_csv(path / "training_log.csv" for path in dirs),
     )
     write_csv(
         packet / "m8_validation_events.csv",
-        concat_csv(variant_dir(packet, variant) / "validation_events.csv" for variant in VARIANTS),
+        concat_csv(path / "validation_events.csv" for path in dirs),
     )
     write_csv(
         packet / "m8_loss_component_gradient_sanity.csv",
-        concat_csv(variant_dir(packet, variant) / "loss_component_gradient_sanity.csv" for variant in VARIANTS),
+        concat_csv(path / "loss_component_gradient_sanity.csv" for path in dirs),
     )
     loss_rows = []
-    for row in concat_csv(variant_dir(packet, variant) / "training_log.csv" for variant in VARIANTS):
+    for row in concat_csv(path / "training_log.csv" for path in dirs):
         if row.get("event") == "validation":
             continue
         loss_rows.append(row)
@@ -241,8 +310,10 @@ def summarize_training_curves(packet: Path) -> None:
 
 def summarize_batch_and_memory(packet: Path) -> None:
     rows = []
-    for variant in VARIANTS:
-        for row in read_csv(variant_dir(packet, variant) / "batch_composition.csv"):
+    for path in evidence_dirs(packet, include_budget_supplements=True):
+        config = read_config_env(path / "configs" / "run_config.env")
+        variant = config.get("source_variant") or path.name
+        for row in read_csv(path / "batch_composition.csv"):
             rows.append(
                 {
                     "step": row.get("step", ""),
@@ -283,7 +354,7 @@ def summarize_batch_and_memory(packet: Path) -> None:
             "loss_terms_active",
         ],
     )
-    write_csv(packet / "m8_hard_negative_memory_summary.csv", concat_csv(variant_dir(packet, variant) / "hardneg_memory.csv" for variant in VARIANTS))
+    write_csv(packet / "m8_hard_negative_memory_summary.csv", concat_csv(path / "hardneg_memory.csv" for path in evidence_dirs(packet, include_budget_supplements=True)))
 
 
 def summarize_prototypes(packet: Path) -> None:
