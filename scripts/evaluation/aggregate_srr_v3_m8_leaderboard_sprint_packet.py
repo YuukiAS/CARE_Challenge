@@ -276,7 +276,139 @@ def summarize_prototypes(packet: Path) -> None:
     )
 
 
-def summarize_eval_outputs(packet: Path) -> None:
+def _metric_value(row: dict[str, object], key: str) -> float:
+    return as_float(row.get(key), 0.0)
+
+
+def _sigmoid_np(values: object) -> object:
+    import numpy as np
+
+    arr = np.asarray(values, dtype=np.float32)
+    return 1.0 / (1.0 + np.exp(-arr))
+
+
+def _proposal_recall_precision(proposal: object, gt_mask: object) -> tuple[object, object]:
+    import numpy as np
+
+    proposal_arr = np.asarray(proposal, dtype=bool)
+    gt_arr = np.asarray(gt_mask, dtype=bool)
+    proposal_voxels = int(proposal_arr.sum())
+    gt_voxels = int(gt_arr.sum())
+    inter = int(np.logical_and(proposal_arr, gt_arr).sum())
+    recall: object = "" if gt_voxels == 0 else inter / max(1, gt_voxels)
+    precision: object = "" if proposal_voxels == 0 else inter / max(1, proposal_voxels)
+    return recall, precision
+
+
+def compute_contribution_rows(packet: Path, summaries: dict[str, dict[str, object]], *, device_name: str) -> list[dict[str, object]]:
+    """Compute M8 per-case branch contribution rows from completed checkpoints."""
+
+    if any(not summaries.get(variant) for variant in VARIANTS):
+        return []
+    import numpy as np
+    import torch
+    from argparse import Namespace
+
+    from scripts.training.run_srr_myops_fold0 import collect_case_metrics
+    from scripts.training.run_srr_propref_myops_fold0 import (
+        SRRProposeRefineMyoPS,
+        anchor_dict_from_tensor,
+        component_dict_from_tensor,
+        full_case_anchor_tensors,
+        load_myops_case_metadata,
+        maybe_disable_context,
+        model_kwargs_from_args,
+        read_anchored_case,
+    )
+
+    device = torch.device(device_name if device_name == "cpu" or torch.cuda.is_available() else "cpu")
+    metadata = load_myops_case_metadata()
+    rows: list[dict[str, object]] = []
+    for variant in VARIANTS:
+        summary = summaries.get(variant, {})
+        checkpoint = Path(str(summary.get("checkpoint_best", "")))
+        if not checkpoint.is_file():
+            rows.append({"variant": variant, "checkpoint": str(checkpoint), "status": "CHECKPOINT_NOT_FOUND"})
+            continue
+        state = torch.load(checkpoint, map_location=device, weights_only=False)
+        args = Namespace(**dict(state.get("args", {})))
+        model = SRRProposeRefineMyoPS(**model_kwargs_from_args(args)).to(device)
+        model.load_state_dict(state["model_state_dict"])
+        model.eval()
+        anchor_root = Path(str(summary.get("nnunet_anchor_root", "")))
+        eval_case_ids = [str(case_id) for case_id in summary.get("eval_case_ids", [])]
+        if not eval_case_ids:
+            rows.append({"variant": variant, "checkpoint": str(checkpoint), "status": "EVAL_CASE_IDS_NOT_FOUND"})
+            continue
+        for case_id in eval_case_ids:
+            case = read_anchored_case(case_id, metadata, anchor_root)
+            with torch.no_grad():
+                x = torch.from_numpy(case.image[None]).float().to(device)
+                av = torch.from_numpy(case.availability[None]).float().to(device)
+                anchor_features, component_features = full_case_anchor_tensors(case, device)
+                anchor_features, component_features = maybe_disable_context(args, anchor_features, component_features)
+                outputs = model(x, av, anchor_features=anchor_features, component_features=component_features)
+                final_logits = outputs["logits"]
+                anchor_logits = outputs.get("nnunet_anchor_logits")
+                if anchor_logits is None:
+                    rows.append({"variant": variant, "checkpoint": str(checkpoint), "case_id": case_id, "status": "ANCHOR_LOGITS_NOT_FOUND"})
+                    continue
+                final_pred = torch.argmax(final_logits, dim=1)[0].detach().cpu().numpy().astype(np.uint8)
+                anchor_pred = torch.argmax(anchor_logits, dim=1)[0].detach().cpu().numpy().astype(np.uint8)
+                final_np = final_logits[0].detach().cpu().numpy()
+                anchor_np = anchor_logits[0].detach().cpu().numpy()
+                correction_mask = outputs.get("branch_correction_mask")
+                srr_weight = outputs.get("srr_retrieval_weight")
+                proposal_weight = outputs.get("proposal_weight")
+                refiner_weight = outputs.get("refiner_weight")
+                fallback_weight = outputs.get("branch_fallback_weight")
+                branch_delta = outputs.get("arbitration_branch_delta")
+                final_metrics = {row["metric_name"]: row for row in collect_case_metrics(variant, case, final_pred)}
+                anchor_metrics = {row["metric_name"]: row for row in collect_case_metrics(f"{variant}__anchor", case, anchor_pred)}
+                for cls, class_name, prefix in [(5, "myops_scar", "scar"), (4, "myops_edema", "edema")]:
+                    final_row = final_metrics.get(class_name, {})
+                    anchor_row = anchor_metrics.get(class_name, {})
+                    final_cls = final_pred == cls
+                    anchor_cls = anchor_pred == cls
+                    proposal_logits = outputs[f"{prefix}_proposal_logits"][0, 0].detach().cpu().numpy()
+                    proposal = _sigmoid_np(proposal_logits) >= 0.10
+                    gt_mask = case.label_arr == cls
+                    proposal_recall, proposal_precision = _proposal_recall_precision(proposal, gt_mask)
+                    residual = outputs[f"{prefix}_refinement_residual"][0, 0].detach().cpu().numpy()
+                    rows.append(
+                        {
+                            "variant": variant,
+                            "checkpoint": str(checkpoint),
+                            "decode_mode": "argmax",
+                            "case_id": case.case_id,
+                            "center": case.metadata.center,
+                            "modality_group": case.metadata.modality_group,
+                            "t2_present": case.metadata.t2_present,
+                            "class_name": class_name,
+                            "anchor_delta_rate": float(np.mean(final_cls != anchor_cls)),
+                            "final_delta_rate": float(np.mean(final_pred != anchor_pred)),
+                            "correction_gate_open_rate": float(correction_mask.detach().mean().cpu()) if correction_mask is not None else "EVIDENCE_NOT_FOUND",
+                            "srr_weight_mean": float(srr_weight.detach().mean().cpu()) if srr_weight is not None else "EVIDENCE_NOT_FOUND",
+                            "proposal_weight_mean": float(proposal_weight.detach().mean().cpu()) if proposal_weight is not None else "EVIDENCE_NOT_FOUND",
+                            "refiner_weight_mean": float(refiner_weight.detach().mean().cpu()) if refiner_weight is not None else "EVIDENCE_NOT_FOUND",
+                            "fallback_weight_mean": float(fallback_weight.detach().mean().cpu()) if fallback_weight is not None else "EVIDENCE_NOT_FOUND",
+                            "final_logit_delta_abs_mean": float(np.mean(np.abs(final_np[cls] - anchor_np[cls]))),
+                            "roi_delta_abs_mean": float(np.mean(np.abs(residual))),
+                            "proposal_recall_proxy": proposal_recall,
+                            "proposal_precision_proxy": proposal_precision,
+                            "refiner_delta_magnitude": float(np.mean(np.abs(residual))),
+                            "no_t2_edema_voxels": int(np.count_nonzero(final_pred == 4)) if not case.metadata.t2_present else 0,
+                            "dice_delta": _metric_value(final_row, "dice") - _metric_value(anchor_row, "dice"),
+                            "hd95_delta": _metric_value(final_row, "hd95") - _metric_value(anchor_row, "hd95"),
+                            "remote_fp_delta": _metric_value(final_row, "remote_fp_count") - _metric_value(anchor_row, "remote_fp_count"),
+                            "component_count_delta": _metric_value(final_row, "component_count") - _metric_value(anchor_row, "component_count"),
+                            "source_prediction_path": str(variant_dir(packet, variant) / "predictions/fold_0/checkpoint_best/argmax" / f"{case.case_id}.nii.gz"),
+                        }
+                    )
+    return rows
+
+
+def summarize_eval_outputs(packet: Path, summaries: dict[str, dict[str, object]], *, contribution_device: str) -> None:
     component_rows = concat_csv(variant_dir(packet, variant) / "component_hd_by_case_checkpoint_best.csv" for variant in VARIANTS)
     subgroup_rows = concat_csv(variant_dir(packet, variant) / "subgroup_metrics_checkpoint_best.csv" for variant in VARIANTS)
     proposal_rows = concat_csv(variant_dir(packet, variant) / "proposal_pr_sweep_checkpoint_best.csv" for variant in VARIANTS)
@@ -286,18 +418,18 @@ def summarize_eval_outputs(packet: Path) -> None:
     write_csv(packet / "m8_hard_subgroup_metrics.csv", subgroup_rows)
     write_csv(packet / "m8_component_remote_fp_hd95_report.csv", component_rows)
     write_csv(packet / "m8_proposal_refiner_recall_precision.csv", proposal_rows + roi_rows)
-    contribution_rows = []
-    for row in component_rows:
-        contribution_rows.append(
+    contribution_rows = compute_contribution_rows(packet, summaries, device_name=contribution_device)
+    if not contribution_rows:
+        contribution_rows = [
             {
-                "variant": row.get("variant", ""),
-                "checkpoint": "checkpoint_best",
-                "decode_mode": str(row.get("variant", "")).split("__")[-1] if "__" in str(row.get("variant", "")) else "",
-                "case_id": row.get("case_id", ""),
-                "center": row.get("center", ""),
-                "modality_group": row.get("modality_group", ""),
-                "t2_present": row.get("t2_present", ""),
-                "class_name": row.get("metric_name", ""),
+                "variant": "M8_NEEDS_MONITOR_NO_REVIEW",
+                "checkpoint": "AWAITING_COMPLETED_SUMMARIES",
+                "decode_mode": "",
+                "case_id": "",
+                "center": "",
+                "modality_group": "",
+                "t2_present": "",
+                "class_name": "",
                 "anchor_delta_rate": "EVIDENCE_NOT_EXPORTED_PER_CASE",
                 "final_delta_rate": "EVIDENCE_NOT_EXPORTED_PER_CASE",
                 "correction_gate_open_rate": "EVIDENCE_NOT_EXPORTED_PER_CASE",
@@ -310,14 +442,14 @@ def summarize_eval_outputs(packet: Path) -> None:
                 "proposal_recall_proxy": "",
                 "proposal_precision_proxy": "",
                 "refiner_delta_magnitude": "",
-                "no_t2_edema_voxels": next((s.get("no_t2_edema_voxels", "") for s in sanity_rows if s.get("case_id") == row.get("case_id")), ""),
+                "no_t2_edema_voxels": "",
                 "dice_delta": "EVIDENCE_NOT_COMPUTED_VS_ANCHOR",
                 "hd95_delta": "EVIDENCE_NOT_COMPUTED_VS_ANCHOR",
                 "remote_fp_delta": "EVIDENCE_NOT_COMPUTED_VS_ANCHOR",
                 "component_count_delta": "EVIDENCE_NOT_COMPUTED_VS_ANCHOR",
                 "source_prediction_path": "runtime prediction directories",
             }
-        )
+        ]
     write_csv(packet / "m8_srr_contribution_by_case.csv", contribution_rows)
 
 
@@ -389,6 +521,7 @@ def write_manifest(packet: Path) -> None:
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--packet", default=str(DEFAULT_PACKET))
+    parser.add_argument("--contribution-device", default="cpu", choices=["cpu", "cuda"])
     args = parser.parse_args()
     packet = Path(args.packet)
     if not packet.is_absolute():
@@ -418,7 +551,7 @@ def main() -> None:
     summarize_training_curves(packet)
     summarize_batch_and_memory(packet)
     summarize_prototypes(packet)
-    summarize_eval_outputs(packet)
+    summarize_eval_outputs(packet, summaries, contribution_device=args.contribution_device)
     status, issues = derive_status(packet, summaries, ledger)
     write_decision_docs(packet, status, issues, summaries, ledger)
     write_manifest(packet)
