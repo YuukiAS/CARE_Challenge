@@ -120,3 +120,27 @@ Latest Slurm state observed after the Cine supplement:
 ```
 
 Runtime NIfTI predictions and ANTs transform files were written only under ignored `runtime_m9_cine_temporal_output/` and are not intended for git tracking.
+
+## 2026-07-08 partial MyoPS formal aggregation
+
+```text
+find results/20260708_srr_v3_m9_dictionary_fidelity_repair_training/runtime_htzhulab* -maxdepth 4 -type f \( -name 'summary.json' -o -name 'training_log.csv' -o -name 'validation_events.csv' -o -name 'component_hd_by_case_*.csv' -o -name 'subgroup_metrics_*.csv' -o -name 'proposal_pr_sweep_*.csv' -o -name 'roi_coverage_*.csv' -o -name 'retrieval_usage.csv' -o -name 'loss_component_gradient_sanity.csv' -o -name 'hardneg_memory.csv' \) -printf '%TY-%Tm-%Td %TH:%TM:%TS %s %p\n' | sort
+python scripts/evaluation/aggregate_srr_v3_m9_dictionary_fidelity_packet.py --runtime-root results/20260708_srr_v3_m9_dictionary_fidelity_repair_training/runtime_htzhulab_mirror --runtime-root results/20260708_srr_v3_m9_dictionary_fidelity_repair_training/runtime_htzhulab_lesion_memory --runtime-root results/20260708_srr_v3_m9_dictionary_fidelity_repair_training/runtime_htzhulab_t2_edema_focus --out-dir /tmp/m9_partial_aggregator_check
+python -m py_compile scripts/evaluation/aggregate_srr_v3_m9_dictionary_fidelity_packet.py
+python scripts/evaluation/aggregate_srr_v3_m9_dictionary_fidelity_packet.py --runtime-root results/20260708_srr_v3_m9_dictionary_fidelity_repair_training/runtime_htzhulab_mirror --runtime-root results/20260708_srr_v3_m9_dictionary_fidelity_repair_training/runtime_htzhulab_lesion_memory --runtime-root results/20260708_srr_v3_m9_dictionary_fidelity_repair_training/runtime_htzhulab_t2_edema_focus --out-dir results/20260708_srr_v3_m9_dictionary_fidelity_repair_training
+python scripts/evaluation/validate_srr_v3_m9_dictionary_fidelity_packet.py results/20260708_srr_v3_m9_dictionary_fidelity_repair_training
+wc -l results/20260708_srr_v3_m9_dictionary_fidelity_repair_training/m9_pattern_sip_usage_by_group.csv results/20260708_srr_v3_m9_dictionary_fidelity_repair_training/m9_dictionary_slot_group_stability.csv results/20260708_srr_v3_m9_dictionary_fidelity_repair_training/m9_integrativeness_gamma_soft.csv results/20260708_srr_v3_m9_dictionary_fidelity_repair_training/m9_proposal_refiner_recall_precision.csv
+```
+
+Partial aggregation summary:
+
+```text
+m9_srr_main_true_br2_pattern_sip actual_optimizer_steps=6000
+train_loop_seconds=1660.0970819266513
+validation_event_count=20
+mean_dice_delta_vs_m8_anchor myops_scar=-0.009682347345035466
+mean_dice_delta_vs_m8_anchor myops_edema=-0.076883272409283
+validator error_count=0
+```
+
+The partial aggregation is not ready evidence. Two required formal candidate families are still running, and the available formal row is below the M9 training-budget threshold.

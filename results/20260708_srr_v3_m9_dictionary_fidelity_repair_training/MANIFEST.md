@@ -13,6 +13,7 @@ Current runtime state:
 - MyoPS isolated job `58297806` on `htzhulab`: running.
 - Cine job `58297511` on `htzhulab`: completed with initial local-backbone-missing evidence.
 - Local M9 Cine temporal output rerun: completed with `FOUND_LOCAL_TEMPORAL_FINAL_OUTPUTS`, 12 safe train cases, 12 non-reference frames, and ignored runtime predictions.
+- Partial MyoPS aggregation: `m9_srr_main_true_br2_pattern_sip` formal runtime outputs aggregated; remaining formal candidates still running.
 - A100 mirrors `58297196` and `58297197`: cancelled after htzhulab race decisions.
 
 File count: 53 lightweight files.
@@ -30,9 +31,10 @@ Tracked files currently written:
 - `scripts/evaluation/aggregate_srr_v3_m9_dictionary_fidelity_packet.py`: post-job aggregator now supports runtime-derived tables beyond budget/selection, including same-split help/harm from runtime component metrics matched to the tracked M8 nnU-Net anchor metrics.
 - `m9_route_promotion_decision.md`: `M9_NEEDS_MONITOR`.
 - `m9_next_required_action.md`: `NEEDS_MONITOR`.
-- All M9 prompt-required Markdown/CSV/JSON output names are present, but most MyoPS runtime-derived tables contain `PENDING_RUNTIME` or `EVIDENCE_NOT_FOUND` rows pending Slurm completion.
+- All M9 prompt-required Markdown/CSV/JSON output names are present. MyoPS runtime-derived tables now include one completed formal variant (`m9_srr_main_true_br2_pattern_sip`) but remain incomplete for the other required formal candidate families.
 - `m9_training_curves.csv`, `m9_prototype_memory_summary.json`, `m9_prototype_update_ledger.csv`, and `m9_no_t2_edema_negative_violation_report.csv` now include partial one-batch/prototype evidence from the three running formal M9 variants. These are pre-formal-training sanity rows, not completion evidence.
 - `m9_cine_final_output_manifest.csv`, `m9_cine_registration_quality.csv`, `m9_cine_temporal_dictionary_usage.csv`, `m9_cine_temporal_case_metrics.csv`, `m9_cine_frame0_vs_temporal_help_harm.csv`, `m9_cine_failure_matrix.csv`, and `m9_cine_temporal_output_summary.json` now contain local M9 Cine final-output proxy evidence from the bounded rerun. Runtime NIfTI predictions and ANTs transforms remain ignored and untracked.
+- Pattern-SIP raw retrieval rows are summarized into lightweight group-level tables in `m9_pattern_sip_usage_by_group.csv`, `m9_dictionary_slot_group_stability.csv`, and `m9_integrativeness_gamma_soft.csv`; the raw runtime `retrieval_usage.csv` is intentionally not committed.
 
 Required M9 evidence not yet populated from runtime:
 

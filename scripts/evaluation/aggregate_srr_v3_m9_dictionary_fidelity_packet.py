@@ -89,6 +89,106 @@ def write_dynamic_csv(path: Path, rows: list[dict[str, object]], preferred: list
     write_csv(path, rows, dynamic_fieldnames(rows, preferred))
 
 
+def percentile(values: list[float], q: float) -> float:
+    if not values:
+        return 0.0
+    ordered = sorted(values)
+    if len(ordered) == 1:
+        return ordered[0]
+    pos = (len(ordered) - 1) * q
+    lo = int(pos)
+    hi = min(lo + 1, len(ordered) - 1)
+    frac = pos - lo
+    return ordered[lo] * (1.0 - frac) + ordered[hi] * frac
+
+
+def summarize_pattern_rows(pattern_rows: list[dict[str, object]]) -> tuple[list[dict[str, object]], list[dict[str, object]], list[dict[str, object]]]:
+    if not pattern_rows or pattern_rows[0].get("candidate_id") == "EVIDENCE_NOT_FOUND":
+        fallback = [
+            {
+                "candidate_id": "EVIDENCE_NOT_FOUND",
+                "semantic_task": "EVIDENCE_NOT_FOUND",
+                "slot_group": "EVIDENCE_NOT_FOUND",
+                "status": "EVIDENCE_NOT_FOUND",
+            }
+        ]
+        return fallback, fallback, fallback
+
+    groups: dict[tuple[str, str, str, str, str, str], list[dict[str, object]]] = {}
+    for row in pattern_rows:
+        key = (
+            str(row.get("candidate_id", row.get("variant", ""))),
+            str(row.get("semantic_task", row.get("task", ""))),
+            str(row.get("slot_group", "")),
+            str(row.get("slot_kind", "")),
+            str(row.get("slot_modality", "")),
+            str(row.get("expert_index", "")),
+        )
+        groups.setdefault(key, []).append(row)
+
+    usage_rows: list[dict[str, object]] = []
+    stability_rows: list[dict[str, object]] = []
+    gamma_rows: list[dict[str, object]] = []
+    grouped_for_gamma: dict[tuple[str, str, str, str, str], list[dict[str, object]]] = {}
+    for (candidate, semantic_task, slot_group, slot_kind, slot_modality, expert_index), rows in sorted(groups.items()):
+        weights = [as_float(row.get("mean_weight")) for row in rows]
+        weights = [value for value in weights if value is not None]
+        valid = [as_float(row.get("valid_fraction")) for row in rows]
+        valid = [value for value in valid if value is not None]
+        steps = {str(row.get("step", "")) for row in rows if row.get("step", "") != ""}
+        cases: set[str] = set()
+        for row in rows:
+            for case_id in str(row.get("batch_cases", "")).split(","):
+                if case_id:
+                    cases.add(case_id)
+        mean_weight = statistics.mean(weights) if weights else 0.0
+        p95_weight = percentile(weights, 0.95)
+        min_weight = min(weights) if weights else 0.0
+        max_weight = max(weights) if weights else 0.0
+        usage = {
+            "candidate_id": candidate,
+            "semantic_task": semantic_task,
+            "slot_group": slot_group,
+            "slot_kind": slot_kind,
+            "slot_modality": slot_modality,
+            "expert_index": expert_index,
+            "row_count": len(rows),
+            "step_count": len(steps),
+            "case_count": len(cases),
+            "mean_weight": mean_weight,
+            "p95_weight": p95_weight,
+            "min_weight": min_weight,
+            "max_weight": max_weight,
+            "mean_valid_fraction": statistics.mean(valid) if valid else 0.0,
+        }
+        usage_rows.append(usage)
+        stability_rows.append(
+            {
+                **usage,
+                "weight_range": max_weight - min_weight,
+                "stability_status": "STABLE_NONZERO" if mean_weight > 0 and (max_weight - min_weight) < 0.5 else "REQUIRES_REVIEW",
+            }
+        )
+        grouped_for_gamma.setdefault((candidate, semantic_task, slot_group, slot_kind, slot_modality), []).append(usage)
+
+    for (candidate, semantic_task, slot_group, slot_kind, slot_modality), rows in sorted(grouped_for_gamma.items()):
+        active = [row for row in rows if as_float(row.get("mean_weight")) and (as_float(row.get("mean_weight")) or 0.0) > 0.01]
+        gamma_rows.append(
+            {
+                "candidate_id": candidate,
+                "semantic_task": semantic_task,
+                "slot_group": slot_group,
+                "slot_kind": slot_kind,
+                "slot_modality": slot_modality,
+                "expert_count": len(rows),
+                "active_expert_count_soft_gamma": len(active),
+                "mean_active_weight": statistics.mean([float(row["mean_weight"]) for row in active]) if active else 0.0,
+                "status": "RUNTIME_SUMMARY_FROM_RETRIEVAL_USAGE",
+            }
+        )
+    return usage_rows, stability_rows, gamma_rows
+
+
 def parse_context_variant(value: str) -> tuple[str, str, str]:
     if "__" not in value:
         return value, "EVIDENCE_NOT_FOUND", "EVIDENCE_NOT_FOUND"
@@ -349,6 +449,7 @@ def main() -> None:
         ["retrieval_usage.csv"],
         ["candidate_id", "variant", "step", "task", "expert_index", "mean_weight", "batch_cases"],
     )
+    pattern_usage_rows, pattern_stability_rows, pattern_gamma_rows = summarize_pattern_rows(pattern_rows)
     prototype_rows = concat_variant_files(
         runtime_roots,
         ["prototype_update_sanity_formal.csv", "prototype_update_sanity.csv"],
@@ -377,9 +478,39 @@ def main() -> None:
     write_dynamic_csv(out_dir / "m9_training_curves.csv", train_rows, ["candidate_id", "variant", "step", "stage", "loss", "elapsed_seconds"])
     write_dynamic_csv(out_dir / "m9_validation_events.csv", validation_rows, ["candidate_id", "variant", "step", "stage", "val_patch_loss", "elapsed_seconds"])
     write_dynamic_csv(out_dir / "m9_loss_component_gradient_sanity.csv", gradient_rows, ["candidate_id", "variant", "component", "grad_norm", "status"])
-    write_dynamic_csv(out_dir / "m9_pattern_sip_usage_by_group.csv", pattern_rows, ["candidate_id", "variant", "step", "task", "expert_index", "mean_weight", "batch_cases"])
-    write_dynamic_csv(out_dir / "m9_dictionary_slot_group_stability.csv", pattern_rows, ["candidate_id", "variant", "step", "task", "expert_index", "mean_weight", "batch_cases"])
-    write_dynamic_csv(out_dir / "m9_integrativeness_gamma_soft.csv", pattern_rows, ["candidate_id", "variant", "step", "task", "expert_index", "mean_weight", "batch_cases"])
+    pattern_preferred = [
+        "candidate_id",
+        "semantic_task",
+        "slot_group",
+        "slot_kind",
+        "slot_modality",
+        "expert_index",
+        "row_count",
+        "step_count",
+        "case_count",
+        "mean_weight",
+        "p95_weight",
+        "min_weight",
+        "max_weight",
+        "mean_valid_fraction",
+    ]
+    write_dynamic_csv(out_dir / "m9_pattern_sip_usage_by_group.csv", pattern_usage_rows, pattern_preferred)
+    write_dynamic_csv(out_dir / "m9_dictionary_slot_group_stability.csv", pattern_stability_rows, pattern_preferred + ["weight_range", "stability_status"])
+    write_dynamic_csv(
+        out_dir / "m9_integrativeness_gamma_soft.csv",
+        pattern_gamma_rows,
+        [
+            "candidate_id",
+            "semantic_task",
+            "slot_group",
+            "slot_kind",
+            "slot_modality",
+            "expert_count",
+            "active_expert_count_soft_gamma",
+            "mean_active_weight",
+            "status",
+        ],
+    )
     write_dynamic_csv(out_dir / "m9_prototype_update_ledger.csv", prototype_rows, ["candidate_id", "variant", "parameter", "grad_norm", "update_norm"])
     write_dynamic_csv(out_dir / "m9_hard_negative_replay_ledger.csv", hardneg_rows, ["candidate_id", "variant", "memory_source", "case_count", "component_count"])
     write_dynamic_csv(out_dir / "m9_component_remote_fp_hd95_report.csv", component_rows, ["candidate_id", "variant", "case_id", "metric_name", "dice", "hd95", "component_count", "remote_fp_count"])

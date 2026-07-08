@@ -6,6 +6,15 @@ This packet is not `M9_READY_FOR_REVIEW`.
 
 Reason: M9 MyoPS training jobs are running on `htzhulab` and have not completed. A running monitor packet is not completion evidence.
 
+Partial aggregation evidence:
+
+- `m9_srr_main_true_br2_pattern_sip` has runtime formal outputs aggregated.
+- optimizer steps: `6000`
+- validation events: `20`
+- train loop seconds: `1660.097`
+- mean Dice delta vs tracked M8 nnU-Net anchor control: `myops_scar=-0.009682347345035466`, `myops_edema=-0.076883272409283`
+- interpretation: `SCIENTIFIC_UNDERTRAINED_OR_NEGATIVE_PARTIAL_EVIDENCE`; not ready, not promotion.
+
 Submitted jobs:
 
 - `58297196` `M9SRRDict` on `a100-gpu`: cancelled after htzhulab mirror started.
@@ -18,8 +27,8 @@ Submitted jobs:
 
 Required before ready review:
 
-- Jobs complete with successful exit code.
-- Runtime summaries are aggregated after MyoPS completion.
+- Remaining jobs complete with successful exit code.
+- Runtime summaries are aggregated after MyoPS completion for all required formal candidate families.
 - All required M9 Markdown/CSV/JSON outputs are populated from current runtime evidence.
 - `scripts/evaluation/validate_srr_v3_m9_dictionary_fidelity_packet.py` passes the real packet with `error_count=0`.
 - Validator self-test covers all 29 known-bad mutations and fails closed. This part is now satisfied, but the packet remains non-ready until runtime evidence is complete.
