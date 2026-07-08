@@ -1,0 +1,31 @@
+check_id,status,detail
+required_output:result.md,PASS,result.md
+required_output:completion_check.md,PASS,completion_check.md
+required_output:review_request.md,PASS,review_request.md
+required_output:MANIFEST.md,PASS,MANIFEST.md
+required_output:commands_run.md,PASS,commands_run.md
+required_output:m8_followup_route_objective.md,PASS,m8_followup_route_objective.md
+required_output:m8_review_findings_ledger.csv,PASS,m8_review_findings_ledger.csv
+required_output:m8_candidate_failure_matrix.csv,PASS,m8_candidate_failure_matrix.csv
+required_output:m8_proxy_feature_schema.csv,PASS,m8_proxy_feature_schema.csv
+required_output:m8_proxy_arbitration_help_harm.csv,PASS,m8_proxy_arbitration_help_harm.csv
+required_output:m8_hard_subgroup_help_harm.csv,PASS,m8_hard_subgroup_help_harm.csv
+required_output:m8_no_t2_safety_report.csv,PASS,m8_no_t2_safety_report.csv
+required_output:m8_repair_contract.md,PASS,m8_repair_contract.md
+required_output:m8_next_required_action.md,PASS,m8_next_required_action.md
+required_output:m8_followup_strict_validator_report.csv,PASS,m8_followup_strict_validator_report.csv
+required_output:m8_followup_strict_validator_report.md,PASS,m8_followup_strict_validator_report.md
+required_output:m8_followup_validator_selftest_report.csv,PASS,m8_followup_validator_selftest_report.csv
+required_output:m8_followup_validator_selftest_report.md,PASS,m8_followup_validator_selftest_report.md
+previous_review_token,PASS,requires M8 no-promotion review token
+forbidden_policy_features,PASS,all forbidden marked false
+policy_families,PASS,"policies=['anchor_only_control', 'candidate_only_control', 'deployable_conservative_proxy_fallback', 'deployable_high_srr_signal_fallback']"
+policies_use_only_allowed_features,PASS,bad_rows=0
+no_t2_policy_safety,PASS,bad_rows=0
+candidate_only_not_promoted,PASS,bad_rows=0
+hard_subgroup_labels,PASS,missing=[]
+contract_state_allowed,PASS,controlled contract state
+next_action_allowed,PASS,controlled next action
+ready_requires_zero_validator_errors,PASS,ready packets must have validator_error_count 0
+forbidden_claims_absent,PASS,no forbidden claims
+monitor_not_completion,PASS,no monitor completion claim

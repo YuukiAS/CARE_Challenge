@@ -1,0 +1,5 @@
+policy_id,metric_name,candidate_source,no_t2_edema_voxels,selected_for_repair_contract,safety_status,notes
+anchor_only_control,myops_edema,A_nnunet_anchor_control,0,false,PASS,selected repair contract is false because no deployable repair signal is promoted
+candidate_only_control,myops_edema,m8_scar_precision_edema_safe_longrun__checkpoint_best__pathology_aware,0,false,PASS,selected repair contract is false because no deployable repair signal is promoted
+deployable_conservative_proxy_fallback,myops_edema,m8_scar_precision_edema_safe_longrun__checkpoint_best__argmax,0,false,PASS,selected repair contract is false because no deployable repair signal is promoted
+deployable_high_srr_signal_fallback,myops_edema,m8_scar_precision_edema_safe_longrun__checkpoint_best__argmax,0,false,PASS,selected repair contract is false because no deployable repair signal is promoted

@@ -1,0 +1,16 @@
+test_id,expected_validator_pass,actual_validator_pass,fail_closed,error_count
+good_fixture,true,true,true,0
+missing_m8_review_token,false,false,true,1
+missing_anchor_comparison,false,false,true,1
+policy_uses_case_id,false,false,true,1
+policy_uses_dice_metric,false,false,true,1
+hosted_feedback_allowed,false,false,true,1
+no_t2_edema_selected,false,false,true,1
+foreground_mean_only,false,false,true,2
+candidate_only_promoted,false,false,true,1
+required_output_missing,false,false,true,1
+ready_with_nonzero_validator_errors,false,false,true,1
+route_promotion_claimed,false,false,true,1
+monitor_marked_completion,false,false,true,1
+cine_frame0_temporal_ready,false,false,true,1
+placeholder_only_proof,false,false,true,1

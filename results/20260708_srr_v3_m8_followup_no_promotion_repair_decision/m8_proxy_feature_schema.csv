@@ -1,0 +1,16 @@
+feature_name,source,available_at_inference,uses_ground_truth,uses_case_id,uses_hosted_feedback,allowed_for_policy,reason
+t2_present,case metadata availability mask,true,false,false,false,true,required for no-T2-safe edema routing
+modality_group,case metadata availability mask,true,false,false,false,true,availability group allowed when not using center or case identity
+final_delta_rate,M8 contribution export,true,false,false,false,true,deployable proxy for candidate-anchor disagreement magnitude
+anchor_delta_rate,M8 contribution export,true,false,false,false,true,deployable proxy for anchor/candidate label delta
+srr_weight_mean,M8 contribution export,true,false,false,false,true,SRR branch contribution proxy
+refiner_delta_magnitude,M8 contribution export,true,false,false,false,true,refiner effect magnitude proxy
+fallback_weight_mean,M8 contribution export,true,false,false,false,true,fallback/safety branch proxy
+no_t2_edema_voxels,output safety check,true,false,false,false,true,"allowed as safety guardrail, not as GT metric"
+case_id,metadata,true,false,true,false,false,manual case routing is forbidden
+center,metadata,true,false,false,false,false,center-only routing is diagnostic-only because it risks center leakage
+dice,validation metric,false,true,false,false,false,GT metric cannot select deployable policy
+hd95,validation metric,false,true,false,false,false,GT metric cannot select deployable policy
+component_count_delta,validation metric,false,true,false,false,false,component metric cannot select deployable policy
+hosted_feedback,external leaderboard,false,false,false,true,false,hosted feedback is unavailable and forbidden
+foreground_mean,aggregate metric,false,true,false,false,false,foreground mean cannot hide scar/edema failures
