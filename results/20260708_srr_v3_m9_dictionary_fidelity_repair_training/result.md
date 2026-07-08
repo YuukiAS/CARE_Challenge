@@ -40,7 +40,7 @@ Submitted Slurm jobs and routing race state:
 
 The MyoPS jobs have not completed, so M9 cannot be marked `M9_READY_FOR_REVIEW`.
 
-Partial MyoPS formal aggregation is now present for one completed formal variant:
+Partial MyoPS formal aggregation is now present for two completed formal variant outputs:
 
 - candidate: `m9_srr_main_true_br2_pattern_sip`
 - optimizer steps: `6000`
@@ -50,8 +50,15 @@ Partial MyoPS formal aggregation is now present for one completed formal variant
 - same-split mean Dice delta vs tracked M8 nnU-Net anchor control:
   - `myops_scar`: `-0.009682347345035466`
   - `myops_edema`: `-0.076883272409283`
+- candidate: `m9_srr_main_lesion_proposal_memory`
+- optimizer steps: `6000`
+- train loop seconds: `1499.562`
+- selected runtime checkpoint row: `checkpoint_final` / `pathology_aware`
+- same-split mean Dice delta vs tracked M8 nnU-Net anchor control:
+  - `myops_scar`: `-0.03627368193360481`
+  - `myops_edema`: `-0.07598376935449123`
 
-This is useful runtime evidence but not completion. It is below the M9 training-budget requirement and does not beat the same-split anchor.
+This is useful runtime evidence but not completion. The aggregate formal train-loop seconds currently total `3159.659`, below the M9 training-budget requirement, and neither aggregated formal candidate beats the same-split anchor.
 
 Cine local temporal final-output evidence is now present:
 
@@ -74,6 +81,7 @@ This is local proxy final-output evidence only. It does not claim hosted `myocar
 - Aggregator smoke test wrote a separate `/tmp/m9_aggregator_smoke` packet successfully without modifying the real M9 packet while formal jobs are still running.
 - M9 Cine local temporal output run completed with `FOUND_LOCAL_TEMPORAL_FINAL_OUTPUTS`, wrote 12 ignored runtime NIfTI predictions, and updated the required M9 Cine manifest/QC/registration/temporal-dictionary/metrics/help-harm/failure files.
 - Post-job partial aggregation was run after `m9_srr_main_true_br2_pattern_sip` wrote formal runtime outputs. It updated MyoPS training curves, validation events, Pattern-SIP summaries, component/HD95/remote-FP rows, same-split help/harm, hard-subgroup rows, proposal/refiner rows, and metric-aligned checkpoint selection. Pattern-SIP raw retrieval rows were summarized into lightweight group-level tables rather than publishing the full raw `retrieval_usage.csv`.
+- A second partial aggregation was run after `m9_srr_main_lesion_proposal_memory` wrote formal runtime outputs under `runtime_htzhulab_mirror`. It updated the lightweight MyoPS runtime-derived CSV files and preserved `M9_NEEDS_MONITOR` because `m9_srr_main_t2_edema_recall_focus` is not yet aggregated as formal evidence and the training-budget gate is still unmet.
 - All three formal M9 variants have early one-batch overfit `PASS` evidence and prototype bank summaries:
   - `m9_srr_main_true_br2_pattern_sip`: loss decrease `1.3056663274765015`.
   - `m9_srr_main_lesion_proposal_memory`: loss decrease `1.2432777881622314`.
@@ -82,4 +90,4 @@ This is local proxy final-output evidence only. It does not claim hosted `myocar
 
 ## Not Yet Completed
 
-M9 formal MyoPS training/evaluation remains incomplete for the two other required formal SRR-main candidates, and the aggregate training budget is still below the M9 prompt threshold. Cine has local final-output proxy evidence, but it is not hosted/challenge evidence and does not make the overall packet review-ready while MyoPS jobs are still running.
+M9 formal MyoPS training/evaluation remains incomplete for the remaining required formal SRR-main candidate `m9_srr_main_t2_edema_recall_focus`, and the aggregate training budget is still below the M9 prompt threshold. Cine has local final-output proxy evidence, but it is not hosted/challenge evidence and does not make the overall packet review-ready while MyoPS jobs are still running.

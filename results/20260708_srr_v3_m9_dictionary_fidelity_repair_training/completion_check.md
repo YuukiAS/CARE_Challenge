@@ -9,10 +9,16 @@ Reason: M9 MyoPS training jobs are running on `htzhulab` and have not completed.
 Partial aggregation evidence:
 
 - `m9_srr_main_true_br2_pattern_sip` has runtime formal outputs aggregated.
-- optimizer steps: `6000`
-- validation events: `20`
-- train loop seconds: `1660.097`
-- mean Dice delta vs tracked M8 nnU-Net anchor control: `myops_scar=-0.009682347345035466`, `myops_edema=-0.076883272409283`
+  - optimizer steps: `6000`
+  - validation events: `20`
+  - train loop seconds: `1660.097`
+  - mean Dice delta vs tracked M8 nnU-Net anchor control: `myops_scar=-0.009682347345035466`, `myops_edema=-0.076883272409283`
+- `m9_srr_main_lesion_proposal_memory` has runtime formal outputs aggregated from `runtime_htzhulab_mirror`.
+  - optimizer steps: `6000`
+  - train loop seconds: `1499.562`
+  - mean Dice delta vs tracked M8 nnU-Net anchor control: `myops_scar=-0.03627368193360481`, `myops_edema=-0.07598376935449123`
+- Current aggregated formal training budget rows: `2`.
+- Current aggregate train-loop seconds: `3159.659`, below the M9 threshold of `28800` seconds and below the alternative gate of three formal SRR-main candidates with `>=7200` seconds each plus one control eval.
 - interpretation: `SCIENTIFIC_UNDERTRAINED_OR_NEGATIVE_PARTIAL_EVIDENCE`; not ready, not promotion.
 
 Submitted jobs:
@@ -28,7 +34,7 @@ Submitted jobs:
 Required before ready review:
 
 - Remaining jobs complete with successful exit code.
-- Runtime summaries are aggregated after MyoPS completion for all required formal candidate families.
+- Runtime summaries are aggregated after MyoPS completion for all required formal candidate families, including `m9_srr_main_t2_edema_recall_focus`.
 - All required M9 Markdown/CSV/JSON outputs are populated from current runtime evidence.
 - `scripts/evaluation/validate_srr_v3_m9_dictionary_fidelity_packet.py` passes the real packet with `error_count=0`.
 - Validator self-test covers all 29 known-bad mutations and fails closed. This part is now satisfied, but the packet remains non-ready until runtime evidence is complete.
