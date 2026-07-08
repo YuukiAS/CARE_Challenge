@@ -1,0 +1,6 @@
+fixture,expected,actual_error_count,status
+good,pass,0,PASS
+missing_followup_token,fail,1,PASS
+missing_required_file,fail,1,PASS
+review_written,fail,1,PASS
+patch_loss_only,fail,1,PASS

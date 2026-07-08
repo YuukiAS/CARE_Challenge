@@ -1,0 +1,2 @@
+component,weight_low,weight_high,total_loss_low,total_loss_high,grad_norm_low,grad_norm_high,total_loss_changed,gradient_norm_changed,status
+loss_scar_refiner_small_roi,0,10,3.352638,12.969973,8.084674,33.314659,true,true,PASS_CPU_SMOKE

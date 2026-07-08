@@ -1,0 +1,2 @@
+variant,scar_roi_policy,edema_roi_policy,identical_behavior,metric_status,status
+EVIDENCE_NOT_FOUND,small_roi,large_roi_t2_present,false,EVIDENCE_NOT_FOUND,PENDING_RUNTIME

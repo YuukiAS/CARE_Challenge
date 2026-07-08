@@ -260,6 +260,48 @@ M6_VARIANT_CONFIGS: dict[str, dict[str, object]] = {
         "edema_scale": 0.50,
         "arbitration_mode": "scar_precision_edema_safe",
     },
+    "m9_srr_main_true_br2_pattern_sip": {
+        "default_encoder_profile": "balanced_4scale",
+        "dictionary_config": "dict_full_interaction",
+        "scar_negative": 12,
+        "edema_positive": 10,
+        "scar_kernel": 3,
+        "edema_kernel": 11,
+        "scar_scale": 0.70,
+        "edema_scale": 0.60,
+        "scar_crop_margin": 1,
+        "edema_crop_margin": 4,
+        "arbitration_mode": "m9_srr_main_control_only",
+        "m9_final_output_mode": "SRR_MAIN_NOT_ANCHOR_RESIDUAL",
+    },
+    "m9_srr_main_lesion_proposal_memory": {
+        "default_encoder_profile": "balanced_4scale",
+        "dictionary_config": "dict_scar_precision_edema_safe",
+        "scar_negative": 14,
+        "edema_positive": 10,
+        "scar_kernel": 3,
+        "edema_kernel": 9,
+        "scar_scale": 0.75,
+        "edema_scale": 0.58,
+        "scar_crop_margin": 1,
+        "edema_crop_margin": 4,
+        "arbitration_mode": "m9_srr_main_control_only",
+        "m9_final_output_mode": "SRR_MAIN_NOT_ANCHOR_RESIDUAL",
+    },
+    "m9_srr_main_t2_edema_recall_focus": {
+        "default_encoder_profile": "balanced_4scale",
+        "dictionary_config": "dict_full_interaction",
+        "scar_negative": 10,
+        "edema_positive": 12,
+        "scar_kernel": 5,
+        "edema_kernel": 11,
+        "scar_scale": 0.65,
+        "edema_scale": 0.70,
+        "scar_crop_margin": 2,
+        "edema_crop_margin": 5,
+        "arbitration_mode": "m9_srr_main_control_only",
+        "m9_final_output_mode": "SRR_MAIN_NOT_ANCHOR_RESIDUAL",
+    },
 }
 
 
@@ -916,6 +958,7 @@ class SRRProposeRefineMyoPS(nn.Module):
         self.variant = variant
         self.base_channels = int(base_channels)
         self.m6_config = M6_VARIANT_CONFIGS.get(variant, {})
+        self.m9_srr_main_output = str(self.m6_config.get("m9_final_output_mode", "")) == "SRR_MAIN_NOT_ANCHOR_RESIDUAL"
         if self.m6_config and str(encoder_profile) in {"tiny_3scale", ""}:
             encoder_profile = str(self.m6_config["default_encoder_profile"])
         self.encoder_profile = str(encoder_profile)
@@ -964,7 +1007,12 @@ class SRRProposeRefineMyoPS(nn.Module):
             pathology="scar",
             modality_index=0,
             roi_kernel=scar_kernel,
-            crop_margin=1 if variant in {"srr_propref_scar_precision", "m6_scar_precision_edema_safe", "m6_conservative_component_arbitration"} else 2,
+            crop_margin=int(
+                self.m6_config.get(
+                    "scar_crop_margin",
+                    1 if variant in {"srr_propref_scar_precision", "m6_scar_precision_edema_safe", "m6_conservative_component_arbitration"} else 2,
+                )
+            ),
             min_crop_shape=(3, 4, 4),
             residual_scale=scar_scale,
             roi_threshold=0.22 if variant in {"srr_propref_scar_precision", "m6_scar_precision_edema_safe"} else 0.18,
@@ -975,7 +1023,7 @@ class SRRProposeRefineMyoPS(nn.Module):
             pathology="edema",
             modality_index=1,
             roi_kernel=edema_kernel,
-            crop_margin=3,
+            crop_margin=int(self.m6_config.get("edema_crop_margin", 3)),
             min_crop_shape=(5, 8, 8),
             residual_scale=edema_scale,
             roi_threshold=0.12,
@@ -1229,11 +1277,23 @@ class SRRProposeRefineMyoPS(nn.Module):
             force_segmentation_fallback=bool(force_segmentation_fallback or force_closed_gate or disable_srr_evidence),
             fallback_reason_override=fallback_reason_override,
         )
-        use_arbitration = self.variant in M6_VARIANT_CONFIGS
-        final_logits = arbitration["final_logits"] if use_arbitration else baseline_blend["final_logits"]
+        proposal_logits = torch.cat([evidence["anatomy_logits"], edema_dict["proposal_logits"], scar_dict["proposal_logits"]], dim=1)
+        refiner_logits = srr_logits
+        use_arbitration = self.variant in M6_VARIANT_CONFIGS and not self.m9_srr_main_output
+        if self.m9_srr_main_output:
+            final_logits = srr_logits
+            branch_arbitration_status = "m9_srr_main_output_anchor_control_only"
+        else:
+            final_logits = arbitration["final_logits"] if use_arbitration else baseline_blend["final_logits"]
+            branch_arbitration_status = "enabled_explicit_arbitration" if use_arbitration else "legacy_baseline_gate_only"
+        final_labels = final_logits.argmax(dim=1)
+        srr_labels = srr_logits.argmax(dim=1)
+        anchor_labels = baseline_blend["anchor_logits"].argmax(dim=1)
+        final_delta_vs_srr = (final_labels != srr_labels).to(dtype=final_logits.dtype).flatten(1).mean(dim=1)
+        final_delta_vs_anchor = (final_labels != anchor_labels).to(dtype=final_logits.dtype).flatten(1).mean(dim=1)
         outputs = {
             "logits": final_logits,
-            "branch_arbitration_status": "enabled_explicit_arbitration" if use_arbitration else "legacy_baseline_gate_only",
+            "branch_arbitration_status": branch_arbitration_status,
             "branch_chosen_source": arbitration["chosen_source"],
             "branch_fallback_reason": arbitration["fallback_reason"],
             "segmentation_weight": arbitration["segmentation_weight"],
@@ -1245,6 +1305,14 @@ class SRRProposeRefineMyoPS(nn.Module):
             "branch_anchor_confidence": arbitration["anchor_confidence"],
             "branch_srr_confidence": arbitration["srr_confidence"],
             "srr_logits_pre_anchor": srr_logits,
+            "m9_final_output_mode": "SRR_MAIN_NOT_ANCHOR_RESIDUAL" if self.m9_srr_main_output else "ANCHOR_RESIDUAL_OR_LEGACY_CONTROL",
+            "nnunet_role": "CONTEXT_TEACHER_SAFETY_CONTROL_ONLY" if self.m9_srr_main_output else "ANCHOR_RESIDUAL_CONTROL_OR_LEGACY_CONTEXT",
+            "srr_main_logits": srr_logits,
+            "proposal_logits": proposal_logits,
+            "refiner_logits": refiner_logits,
+            "anatomy_context_logits": evidence["anatomy_logits"],
+            "final_label_delta_vs_srr_without_dictionary": final_delta_vs_srr,
+            "final_label_delta_vs_anchor_control": final_delta_vs_anchor,
             "nnunet_anchor_logits": baseline_blend["anchor_logits"],
             "baseline_residual_gate": baseline_blend["gate"],
             "bounded_delta_srr": baseline_blend["bounded_delta"],

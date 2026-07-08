@@ -1967,3 +1967,675 @@ git commit -m "Add M8 follow-up repair decision packet"
 ```
 
 Do not push automatically.
+
+# M9 SRR Dictionary Fidelity Repair + Pathology-specific Refiner + Cine Final-output Training Evidence
+
+This canonical shared prompt was merged from the GPT-authored M9 staging files and those staging files were deleted after merge verification.
+
+This section is intentionally a milestone prompt, not a result packet and not a route-promotion claim. It does not authorize validation packaging, validation upload, hosted metric claims, leaderboard claims, fold expansion, scientific stop, or M10.
+
+## Route Bootstrap Evidence
+
+```yaml
+diagram_source: "current conversation uploaded visual materials / ChatGPT visual channel"
+diagram_versions_read: ["SRR-v2", "SRR-v2.5", "SRR-v3"]
+canonical_repo_paths: ["images/SRR-v2.png", "images/SRR-v2.5.png", "images/SRR-v3.png"]
+visual_read_status: "READ_FROM_CURRENT_CONVERSATION_UPLOADS"
+previous_m8_review_path: "results/20260707_srr_v3_m8_editor_grade_leaderboard_sprint/review.md"
+previous_m8_review_token: "M8_AUDITED_NO_PROMOTION_SCIENTIFIC_UNRESOLVED"
+previous_followup_review_path: "results/20260708_srr_v3_m8_followup_no_promotion_repair_decision/review.md"
+previous_followup_review_token: "M8_FOLLOWUP_AUDITED_NO_DEPLOYABLE_REPAIR_SCIENTIFIC_UNRESOLVED"
+source_todo: "TODO.md"
+source_dictionary_todo: "TODO-dictionary.md"
+source_paper_local: "Representation Retrieval Learning for Heterogeneous Data Integration.pdf"
+merged_into: "prompts/shared/EXECUTOR_PROMPTS.md and prompts/shared/REVIEWER_PROMPTS.md"
+```
+
+Recovered route objective: SRR-MyoPS is a primary availability-aware selective representation retrieval system for medical imaging, not an nnU-Net postprocess. The key research claim is that a Blockwise Representation Retrieval-style dictionary can be adapted from heterogeneous tabular/multi-source learning into multi-modal CMR segmentation by using real modality-specific image encoders, source/availability-aware representer retrieval, pathology-specific lesion proposal dictionaries, pattern-SIP regularization, anatomy-guided soft ROI refinement, safe negative-space learning, and final output evidence where SRR is the primary lesion-evidence generator. nnU-Net may be used only as context, teacher, uncertainty feature, safety source, and same-split control. It must not be the normal final-logit anchor for candidate models.
+
+The diagrams explicitly distinguish scar and edema. Scar is LGE-dominant, typically smaller/focal, and needs a small-ROI high-resolution precision refiner that reduces remote false positives and HD95 while preserving small lesions. Edema is T2-conditioned, more spatially diffuse/contextual, and needs a larger-ROI context-preserving refiner that improves T2-present edema recall/HD95 without ever treating no-T2 cases as edema negatives. A shared generic pathology refiner, or a refiner that only changes a class label string while using the same ROI/crop/loss/gate behavior for scar and edema, is not faithful to the route diagrams.
+
+Cine remains the secondary line, but it is not optional future work. The Cine branch in the diagrams is registration-aware anatomy-first temporal retrieval: cine sequence -> ED/reference anchor + selected key frames -> frame quality / motion-saliency router -> reference-frame registration / warping -> temporal representation dictionary -> frame-wise anatomy prior + temporal aggregation -> final myocardium_cinemyops output. M9 must therefore include a real Cine final-output branch on a local/safe subset. CineMA or any local frame-wise anatomy model may be a backbone/context source, but downloading weights, listing provenance, running one SyN/Demons smoke, or producing descriptor-only evidence is not completion.
+
+The R2 / BR2 paper basis to preserve in this milestone:
+
+1. R2 learns a shared representer dictionary `Theta = {theta_1, ..., theta_D}` and source/task-specific sparse retrieval coefficients `beta^(s)` so each source retrieves a relevant subset of representers.
+2. Integrativeness is the number of sources that retrieve a representer, `gamma_d = sum_s I(beta_d^(s) != 0)`.
+3. SIP encourages integrative representers instead of forcing either full sharing or isolated per-source experts.
+4. BR2 handles blockwise missingness by using modality-specific dictionaries `Theta_m`, observed-modality indicators `I_m^(s)`, and no imputation. Missing modalities must contribute zero by construction, not by fake zero-filled images.
+5. For medical imaging, the natural extension is pattern-conditioned dictionary retrieval across availability groups, centers/styles, hard subgroups, and lesion contexts; dictionary usefulness must be proven by final-logit/final-label causal effect, not by slot names or diagnostic CSVs alone.
+
+M8 / M8 follow-up scientific state: current M8 candidate family is `NO_PROMOTION`; M8 follow-up found `NO_DEPLOYABLE_REPAIR_CONTRACT_FOUND`; neither packet scientifically disproves SRR. They show that the current implementation is too anchor-centered, loss-weight wiring is suspect, checkpoint selection is not metric-aligned, prototype memory is not strong enough, scar/edema refiners are not yet proven as distinct lesion formation modules, and Cine evidence is proxy-only. M9 is therefore a fidelity-repair-plus-training milestone with a required Cine final-output branch, not a route abandonment milestone.
+
+## M9 executor: SRR dictionary fidelity repair + pathology-specific refiner + Cine final-output training evidence
+
+
+You are the Codex executor/controller for exactly one milestone: M9 SRR dictionary fidelity repair + pathology-specific refiner + Cine final-output training evidence. This is a high-risk CARE model implementation milestone. It is not fold expansion, not validation packaging, not validation upload, not route promotion, and not M10.
+
+Required protocol sentence: This is an executor/controller session for one milestone only. Stop after writing completion_check.md and review_request.md, force-add/commit the lightweight required result files, then stop. Do not push automatically. Do not write review.md and do not start the next milestone. The milestone must be reviewed by a separate read-only Codex session before continuation.
+
+Before executing the scientific task, enforce the hard-gate policy: exact task graph, strict validator, completion-check-before-final-audit, minimum effective training, current-bad-packet regression, and SRR diagram-bootstrap evidence when the task touches SRR/MyoPS/Cine route planning. If any hard gate fails, stop with NEEDS_REVISION or NEEDS_EVIDENCE; do not continue to final audit.
+
+### 1. Required reading before execution
+
+Read these files before editing code or running training:
+
+```text
+START_HERE_FOR_GPT.md
+GPT_PLANNER_CARE_PROTOCOL.md
+AGENTS.md
+README.md
+prompts/CHATGPT_RULES.md
+prompts/GPT_HARD_GATE_PROMPT.md
+prompts/MILESTONE_REVIEW_PROTOCOL.md
+prompts/THREAD_BOOTSTRAP_ROUTE_IMAGE_PROTOCOL.md
+prompts/shared/EXECUTOR_PROMPTS.md
+prompts/shared/REVIEWER_PROMPTS.md
+TODO.md
+TODO-dictionary.md
+results/20260707_srr_v3_m8_editor_grade_leaderboard_sprint/review.md
+results/20260708_srr_v3_m8_followup_no_promotion_repair_decision/review.md
+results/20260708_srr_v3_m8_followup_no_promotion_repair_decision/m8_repair_contract.md
+results/20260708_srr_v3_m8_followup_no_promotion_repair_decision/m8_next_required_action.md
+prompts/tasks/20260703_cine_motion.md
+src/care_myocardium/models/srr_blocks.py
+src/care_myocardium/models/srr_propref.py
+src/care_myocardium/models/proposal_prototypes.py
+src/care_myocardium/losses/srr_losses.py
+scripts/training/run_srr_propref_myops_fold0.py
+scripts/evaluation/run_srr_v3_m7_cine_registration_repair.py
+```
+
+If any required M8 or M8 follow-up review file is missing, write a blocked packet with status `M9_NEEDS_EVIDENCE_MISSING_PREREQUISITE_REVIEW` and stop. Do not infer from chat summaries.
+
+If this milestone will submit any Slurm job, also read and apply:
+
+```text
+.agents/skills/slurm-routing-partition/SKILL.md
+```
+
+### 2. Task identity and result directory
+
+Use this result directory:
+
+```text
+results/20260708_srr_v3_m9_dictionary_fidelity_repair_training/
+```
+
+Allowed first-party code paths:
+
+```text
+src/care_myocardium/models/srr_blocks.py
+src/care_myocardium/models/srr_propref.py
+src/care_myocardium/models/proposal_prototypes.py
+src/care_myocardium/models/srr_dictionary_memory.py
+src/care_myocardium/losses/srr_losses.py
+src/care_myocardium/cine/
+scripts/training/run_srr_propref_myops_fold0.py
+scripts/training/run_cine_temporal_output_m9.py
+scripts/evaluation/aggregate_srr_v3_m9_dictionary_fidelity_packet.py
+scripts/evaluation/validate_srr_v3_m9_dictionary_fidelity_packet.py
+jobs/src/run_srr_v3_m9_dictionary_fidelity_training_htzhulab.sh
+jobs/src/run_srr_v3_m9_dictionary_fidelity_training.sh
+jobs/src/run_srr_v3_m9_cine_temporal_output_htzhulab.sh
+jobs/src/run_srr_v3_m9_cine_temporal_output.sh
+```
+
+You may add small unit tests under an appropriate first-party test path if the repo already has a test convention. If no test convention exists, place validator self-tests inside the M9 validator and report them in result files.
+
+### 3. Scientific goal
+
+M9 must answer two questions:
+
+1. After repairing implementation fidelity, does a true BR2-inspired SRR dictionary system produce stable lesion-evidence improvement over current M8-style anchor-residual behavior, especially for T2-present edema-positive CenterB/CenterC cases, while preserving scar and no-T2 safety?
+2. Can the Cine secondary branch be advanced from proxy evidence to a real local final-output model/pipeline that uses non-reference cine frames through registration/warping or temporal feature aggregation and produces `myocardium_cinemyops` predictions on a safe local subset?
+
+Do not answer either question by claiming a leaderboard result. Answer by code fidelity checks, causal ablations, M8-equivalent training evidence, same-split metrics, hard-subgroup metrics, local final-output Cine metrics, and independent review.
+
+### 4. Non-negotiable design constraints
+
+nnU-Net must not be the main model in M9 candidate outputs. It is allowed only as:
+
+```text
+same_split_control
+context_feature
+teacher_feature
+uncertainty_feature
+safety_fallback_for_explicit_failure_cases
+anatomy/context source when explicitly tagged
+```
+
+Forbidden for M9 candidate outputs:
+
+```text
+final_logits = nnunet_anchor_logits + bounded_srr_delta
+normal output path uses anchor logits as the base logits
+candidate selected because it preserves anchor identity
+route promotion based on anchor-only or foreground_mean
+silent fallback to nnU-Net
+hidden nnU-Net identity under SRR naming
+```
+
+A separate `anchor_only_control` and an `m8_anchor_residual_control` are required as controls. They may not be selected as SRR route candidates.
+
+Cine is not allowed to be skipped as "optional future work." A missing Cine final-output branch is a M9 blocker unless the result packet honestly returns `M9_NEEDS_EVIDENCE` or `M9_RESOURCE_BLOCKED` with exact missing files/dependencies and no scientific claim.
+
+### 5. Required repairs
+
+#### 5.1 Loss-weight wiring repair
+
+Fix the M8/M9 loss contract bug: variant-specific JSON or CLI loss weights must actually enter `srr_m6_expanded_total_loss(...)` or its M9 replacement. The repair must support explicit weights for at least:
+
+```text
+loss_anatomy_union_lv_rv
+loss_scar_proposal
+loss_edema_proposal_t2_present_only
+loss_scar_refiner_small_roi
+loss_edema_refiner_large_roi_t2_present
+loss_anchor_preservation_outside_roi
+loss_correction_opportunity
+loss_branch_arbitration_consistency
+loss_bounded_correction
+loss_component_remote_fp
+loss_no_t2_edema_safety
+loss_dictionary_entropy_coverage_load_balance
+loss_pattern_sip_integrativeness
+loss_prototype_diversity_margin
+loss_memory_bank_update_or_alignment
+loss_refiner_final_label_effect
+loss_cine_temporal_consistency
+loss_cine_reference_warp_consistency
+```
+
+Required proof: a unit/validator test must set a component weight to `0` and a large value such as `10`, then prove that total loss and at least one relevant gradient norm change. If this test is missing, M9 must be `NEEDS_REVISION`.
+
+#### 5.2 Metric-aligned checkpoint selection repair
+
+Stop selecting best checkpoint by patch loss alone. Patch loss may remain a sanity metric. For formal M9 candidates, scheduled checkpoints must be evaluated on a bounded same-split validation subset and best selection must use metric-facing fields:
+
+```text
+scar Dice
+scar HD95
+scar remote-FP count
+scar component count
+scar small-ROI refiner precision / recall
+edema Dice on T2-present edema-positive cases
+edema HD95 on T2-present edema-positive cases
+edema remote-FP count
+edema component count
+edema large-ROI coverage / false-positive ratio
+CenterB / CenterC subgroup help-harm
+no-T2 edema safety
+```
+
+The selected checkpoint must be recorded in `m9_metric_aligned_checkpoint_selection.csv`. If GPU budget prevents full-volume evaluation at every checkpoint, evaluate at a fixed schedule and document the exact cases and cost. Do not select by `val_patch_loss` alone.
+
+#### 5.3 SRR-main final-output repair
+
+Add a formal M9 candidate mode where SRR, proposal, and refiner logits are the primary final evidence. In this mode nnU-Net may enter as context/teacher/safety features but not as final-logit base. The model must expose:
+
+```text
+m9_final_output_mode: SRR_MAIN_NOT_ANCHOR_RESIDUAL
+nnunet_role: CONTEXT_TEACHER_SAFETY_CONTROL_ONLY
+srr_main_logits
+proposal_logits
+refiner_logits
+anatomy_context_logits
+final_logits
+final_label_delta_vs_srr_without_dictionary
+final_label_delta_vs_anchor_control
+```
+
+You may preserve an explicit safety fallback branch only for diagnostic rows. If a candidate mostly collapses to fallback, it must be labeled `FALLBACK_DOMINATED_NOT_SRR_MAIN`.
+
+#### 5.4 True-BR2 modality dictionary repair
+
+Implement a true BR2 medical-imaging dictionary path. It must prohibit `[fused, fused, fused]` pseudo-modality input for formal M9 candidates. Each scale dictionary must consume real per-modality features:
+
+```text
+LGE_scale_l
+T2_scale_l when T2 is available
+C0_scale_l when C0 is available
+```
+
+Required dictionary families:
+
+```text
+shared dictionary D_l^shared
+LGE private dictionary D_l^LGE
+T2 private dictionary D_l^T2
+C0 private dictionary D_l^C0
+LGE-T2 interaction dictionary D_l^{LGE,T2}
+LGE-C0 interaction dictionary D_l^{LGE,C0}
+optional T2-C0 interaction dictionary D_l^{T2,C0} only when justified
+```
+
+Invalid missing-modality slots must be masked before routing. Interaction slots must be unavailable unless all modalities in the pair are present.
+
+#### 5.5 Pattern-SIP / integrativeness repair
+
+Implement a differentiable medical-imaging adaptation of SIP. It should not merely force uniform gate coverage. It must estimate soft integrativeness by task, slot, and pattern group:
+
+```text
+u_{task, slot, group} = mean gate usage for task/slot over group
+```
+
+Pattern groups must include, when available:
+
+```text
+availability pattern: LGE-only, C0+LGE, C0+LGE+T2
+center/style group: CenterA/CenterB/CenterC or documented available centers
+pathology group: scar-positive, edema-positive, empty-GT
+hard subgroup: remote-FP, component-burden, T2-present edema-positive
+```
+
+The M9 pattern-SIP objective should encourage true shared slots to have stable usage across multiple compatible groups, encourage LGE-private slots for scar evidence, T2-private / LGE-T2 interaction slots for edema evidence when T2 is present, and avoid invalid slot usage. It must report:
+
+```text
+m9_pattern_sip_usage_by_group.csv
+m9_integrativeness_gamma_soft.csv
+m9_dictionary_slot_group_stability.csv
+m9_dictionary_invalid_slot_mask_report.csv
+```
+
+#### 5.6 Prototype / memory repair
+
+Replace or augment fixed-buffer prototypes with a stronger auditable prototype memory. Acceptable implementations:
+
+```text
+learnable prototype parameters initialized from same-split train/OOF features
+or EMA prototype buffers updated from train features with explicit update ledger
+or a hybrid: fitted prototypes plus learnable projection and EMA category means
+```
+
+The memory must separately track scar-positive, scar-safe-negative, edema-positive, and edema-safe-negative categories. Edema negatives must be T2-present only. no-T2 myocardium must never enter edema negative memory.
+
+Required evidence:
+
+```text
+m9_prototype_memory_summary.json
+m9_prototype_update_ledger.csv
+m9_hard_negative_replay_ledger.csv
+m9_no_t2_edema_negative_violation_report.csv
+```
+
+If any formal candidate still uses deterministic axis prototypes as the only prototype source, mark it `DETERMINISTIC_BOOTSTRAP_NOT_FORMAL` and do not use it for route decisions.
+
+#### 5.7 Lesion proposal dictionary and T2-present edema recall repair
+
+M9 must prioritize lesion formation, not just evidence selection. For scar and edema proposal dictionaries, report proposal recall/precision and lesion-wise recall before final mask evaluation.
+
+Required for edema:
+
+```text
+T2-present edema-positive proposal recall
+CenterB edema proposal recall
+CenterC edema proposal recall
+edema HD95 and component count on T2-present edema-positive subset
+no-T2 edema blocked logits and export safety
+```
+
+Training must stratify or oversample T2-present edema-positive cases, especially CenterB/CenterC, without turning no-T2 cases into edema negatives.
+
+#### 5.8 Pathology-specific refiner asymmetry repair
+
+This is a hard requirement from the SRR diagrams. Scar and edema must not share a generic refiner disguised by different class names.
+
+Implement or verify separate refiner behavior:
+
+```text
+scar_refiner:
+  objective: focal scar localization, small-ROI high-resolution correction
+  dominant_modality: LGE
+  roi_policy: small ROI / tighter crop / high precision
+  safety_target: reduce remote FP and HD95, preserve small true lesions
+  evidence_inputs: scar proposal, scar prototype similarity, LGE crop, anatomy prior, uncertainty, scar component context
+  required_metrics: small lesion recall, scar proposal precision, scar HD95, scar remote-FP, final-label delta
+
+edema_refiner:
+  objective: diffuse/contextual edema refinement, large-ROI context-preserving correction
+  dominant_modality: T2 when present
+  roi_policy: larger ROI / broader crop / context preserving
+  safety_target: improve T2-present edema recall and HD95 without no-T2 edema leakage
+  evidence_inputs: edema proposal, edema prototype similarity, T2 crop, anatomy prior, uncertainty, edema component context
+  required_metrics: T2-present edema proposal recall, CenterB/CenterC edema Dice/HD95, component count, no-T2 safety
+```
+
+Required outputs:
+
+```text
+m9_pathology_specific_refiner_contract.md
+m9_scar_refiner_roi_stats.csv
+m9_edema_refiner_roi_stats.csv
+m9_refiner_asymmetry_ablation.csv
+```
+
+The validator must fail if scar and edema use identical crop sizes, identical ROI thresholds, identical modality inputs, identical loss weights, and identical reported success criteria in a formal candidate. Shared helper code is allowed only if the actual instantiated behavior is pathology-specific and auditable.
+
+#### 5.9 Refiner causal-effect repair
+
+The refiner must prove it changes final logits/final labels in a useful way, not only produce residual tensors. Required ablations:
+
+```text
+SRR-main without refiner
+SRR-main with proposal only
+SRR-main with proposal + scar small-ROI refiner
+SRR-main with proposal + edema large-ROI refiner
+SRR-main with both pathology-specific refiners
+SRR-main with dictionary disabled
+SRR-main with pattern-SIP disabled
+M8 anchor-residual control
+anchor-only control
+```
+
+For each ablation, report final-label delta, Dice/HD95/component/remote-FP, hard-subgroup help/harm, and scar/edema separate refiner effect. The refiner is not considered implemented for scientific purposes unless it changes final labels on at least one nontrivial scar or edema-positive case and does not violate no-T2 safety.
+
+#### 5.10 Cine final-output branch: required secondary line, not optional
+
+M9 must implement a real local Cine final-output branch or honestly block. It cannot stop at weight download, provenance listing, single SyN/Demons smoke, descriptor-only temporal retrieval, or frame0-only output.
+
+Minimum architecture:
+
+```text
+Cine input sequence
+-> ED/reference selection contract
+-> frame quality / motion saliency router
+-> frame-wise anatomy backbone or local CineMA/adapter feature source with license/provenance
+-> non-reference frame registration / warping OR feature-level temporal alignment
+-> temporal representation dictionary with frame-quality and motion-saliency slots
+-> temporal aggregation / anatomy prior fusion
+-> final compact label prediction for myocardium_cinemyops local safe subset
+-> local same-subset metrics vs frame0/reference and existing local controls
+```
+
+Allowed implementation modes:
+
+```text
+mode_A_registration_temporal_dictionary:
+  use frame-wise CineMA/local anatomy predictions as anatomy evidence
+  register selected non-reference frames to reference
+  build temporal dictionary from reference + warped non-reference evidence
+  aggregate to final myocardium_cinemyops prediction
+
+mode_B_feature_temporal_output_model:
+  encode reference and selected non-reference frames
+  use motion saliency / frame quality router
+  aggregate features through temporal representation dictionary
+  decode final myocardium_cinemyops mask
+
+mode_C_anatomy_first_temporal_adapter:
+  use local CineMA/CorSeg-like frame-wise anatomy outputs if already available
+  train or calibrate a first-party temporal adapter on local train/safe split
+  output final compact labels and compare against frame0-only control
+```
+
+Forbidden Cine completions:
+
+```text
+downloaded weights only
+license/provenance only
+frame0-only output marked temporal
+descriptor CSV without final prediction
+single-case or near-single-case SyN/Demons smoke
+untrained or unverified VoxelMorph claim
+registration metrics without temporal aggregation
+temporal dictionary without final output labels
+final output without local same-subset comparison to frame0/reference control
+validation package or upload
+```
+
+Required Cine outputs:
+
+```text
+m9_cine_architecture_contract.md
+m9_cine_weight_provenance.md
+m9_cine_reference_frame_contract.md
+m9_cine_final_output_manifest.csv
+m9_cine_final_output_qc.md
+m9_cine_registration_quality.csv
+m9_cine_temporal_dictionary_usage.csv
+m9_cine_temporal_case_metrics.csv
+m9_cine_frame0_vs_temporal_help_harm.csv
+m9_cine_failure_matrix.csv
+m9_cine_next_required_action.md
+```
+
+Cine runtime NIfTI predictions may be written under ignored runtime directories for local evaluation, but do not commit NIfTI files. Commit only lightweight metrics/QC/manifest files.
+
+If no local CineMA/Cine anatomy artifacts are available, do not download weights. Either use existing local frame-wise predictions if present and record provenance, or write `M9_NEEDS_EVIDENCE_CINE_LOCAL_BACKBONE_MISSING`. Missing Cine evidence is not permission to skip Cine while marking MyoPS M9 ready; the completion state must reflect the blocker.
+
+### 6. Required M9 variants and controls
+
+Formal MyoPS M9 must include at least these candidate/control families:
+
+```text
+anchor_only_control
+m8_anchor_residual_control
+m9_srr_main_true_br2_pattern_sip
+m9_srr_main_lesion_proposal_memory
+m9_srr_main_t2_edema_recall_focus
+```
+
+Minimum causal ablations may be done by toggles or separate runs, but the result packet must include their metric rows:
+
+```text
+no_dictionary
+no_pattern_sip
+no_prototype_memory
+no_refiner
+scar_refiner_only
+edema_refiner_only
+proposal_only
+refiner_enabled
+```
+
+The controls are mandatory for interpretation but cannot be promoted.
+
+Formal Cine M9 must include at least:
+
+```text
+cine_reference_frame_control
+cine_framewise_cinema_or_local_anatomy_control
+cine_registration_temporal_dictionary_output
+cine_temporal_output_model_or_adapter
+```
+
+If a Cine variant is blocked, the result must include exact blocker, missing files/dependencies, and next required action. Do not silently mark it optional.
+
+### 7. Minimum training budget and runtime rules
+
+M9 must include M8-like MyoPS training evidence, not just smoke. Minimum formal MyoPS budget:
+
+```text
+aggregate_train_loop_seconds >= 28800 OR at least three formal SRR-main candidates with >= 7200 train_loop_seconds each plus one control eval
+min_optimizer_steps_per_formal_candidate >= 6000 unless train_loop_seconds >= 7200 and loss plateau is documented
+validation_event_count_per_formal_candidate >= 20
+one_batch_overfit required
+loss decrease required
+prediction sanity required
+same-split anchor/control metrics required
+hard subgroup metrics required
+```
+
+M9 must also include Cine final-output evidence. Minimum formal Cine evidence:
+
+```text
+safe local case count >= 12 when available, otherwise all available safe cases with blocker if < 8
+at least one non-reference frame per evaluated case when available
+frame0/reference control comparison required
+final compact-label output required
+temporal aggregation output required
+registration/warp or feature-alignment sanity required
+component/HD95/volume or documented local proxy metrics required
+```
+
+If a Cine temporal head is trained, use a bounded job with max 8 hours and report optimizer steps, loss, validation events, and final-output metrics. If using a deterministic temporal aggregation pipeline first, it must still produce final predictions and metrics; do not call it a trained model.
+
+If scheduler or runtime blocks training, write `M9_NEEDS_MONITOR` or `M9_RESOURCE_BLOCKED` as appropriate. A monitor packet is not completion.
+
+Training must produce stable loss and metrics. If loss is NaN/Inf, detached, non-decreasing without explanation, or if required loss components have zero gradient without a valid mask reason, M9 must be `NEEDS_REVISION` or `SCIENTIFIC_UNDERTRAINED`, not ready.
+
+### 8. Required outputs
+
+The result directory must contain at least:
+
+```text
+result.md
+completion_check.md
+review_request.md
+MANIFEST.md
+commands_run.md
+m9_route_objective.md
+m9_rrl_brr2_adaptation_contract.md
+m9_dictionary_fidelity_matrix.csv
+m9_code_patch_summary.md
+m9_loss_weight_wiring_test_report.md
+m9_metric_aligned_checkpoint_selection.csv
+m9_nnunet_role_audit.md
+m9_pattern_sip_usage_by_group.csv
+m9_integrativeness_gamma_soft.csv
+m9_dictionary_slot_group_stability.csv
+m9_dictionary_invalid_slot_mask_report.csv
+m9_prototype_memory_summary.json
+m9_prototype_update_ledger.csv
+m9_hard_negative_replay_ledger.csv
+m9_no_t2_edema_negative_violation_report.csv
+m9_pathology_specific_refiner_contract.md
+m9_scar_refiner_roi_stats.csv
+m9_edema_refiner_roi_stats.csv
+m9_refiner_asymmetry_ablation.csv
+m9_training_budget_ledger.csv
+m9_training_curves.csv
+m9_validation_events.csv
+m9_loss_component_gradient_sanity.csv
+m9_candidate_assembly_matrix.csv
+m9_same_split_help_harm.csv
+m9_hard_subgroup_metrics.csv
+m9_component_remote_fp_hd95_report.csv
+m9_proposal_refiner_recall_precision.csv
+m9_refiner_causal_effect.csv
+m9_ablation_matrix.csv
+m9_cine_architecture_contract.md
+m9_cine_weight_provenance.md
+m9_cine_reference_frame_contract.md
+m9_cine_final_output_manifest.csv
+m9_cine_final_output_qc.md
+m9_cine_registration_quality.csv
+m9_cine_temporal_dictionary_usage.csv
+m9_cine_temporal_case_metrics.csv
+m9_cine_frame0_vs_temporal_help_harm.csv
+m9_cine_failure_matrix.csv
+m9_cine_next_required_action.md
+m9_route_promotion_decision.md
+m9_next_required_action.md
+m9_strict_validator_report.csv
+m9_strict_validator_report.md
+m9_validator_selftest_report.csv
+m9_validator_selftest_report.md
+```
+
+`m9_route_promotion_decision.md` may state only one of:
+
+```text
+M9_NO_PROMOTION_DIAGNOSTIC_ONLY
+M9_REPAIR_CONTRACT_READY_FOR_REVIEW
+M9_NEEDS_EVIDENCE
+M9_NEEDS_REVISION
+M9_SCIENTIFIC_UNDERTRAINED
+M9_NEEDS_MONITOR
+M9_RESOURCE_BLOCKED
+```
+
+`M9_REPAIR_CONTRACT_READY_FOR_REVIEW` means only that an independent reviewer may consider whether GPT can plan M10. It does not authorize validation packaging/upload, hosted metric claims, leaderboard claims, fold expansion, or scientific stop.
+
+`m9_next_required_action.md` must choose exactly one:
+
+```text
+GPT_PLAN_M10_DICTIONARY_ITERATION
+GPT_PLAN_M10_CINE_TEMPORAL_ROUTE
+GPT_PLAN_M10_DICTIONARY_AND_CINE_EXPANSION
+GPT_REPLAN_AFTER_M9_NO_PROMOTION
+NEEDS_EVIDENCE_BEFORE_NEXT_TASK
+NEEDS_REVISION_BEFORE_REVIEW
+NEEDS_MONITOR
+```
+
+### 9. Strict validator and known-bad self-tests
+
+Implement `scripts/evaluation/validate_srr_v3_m9_dictionary_fidelity_packet.py`. It must fail closed on at least these mutations:
+
+1. missing M8 follow-up review token;
+2. missing diagram bootstrap fields;
+3. missing required output file;
+4. loss-weight wiring test absent or does not prove total loss/gradient changes;
+5. checkpoint selected by patch loss only;
+6. formal candidate uses `final_logits = nnunet_anchor_logits + bounded_delta` as normal output;
+7. anchor-only or M8 anchor-residual control marked as candidate promotion;
+8. pseudo-modality `[fused,fused,fused]` used in a formal BR2 candidate;
+9. invalid modality interaction slot active when a modality is missing;
+10. pattern-SIP report missing or uniform coverage substituted for integrativeness;
+11. deterministic axis prototypes are the only formal prototype source;
+12. no-T2 myocardium used as edema negative;
+13. no-T2 formal candidate emits edema voxels;
+14. scar/edema refiners use identical ROI/crop/modality/loss behavior in a formal candidate;
+15. scar refiner does not report small-ROI precision/HD95/remote-FP evidence;
+16. edema refiner does not report large-ROI T2-present recall/HD95/no-T2 safety evidence;
+17. refiner has no final-label effect but is claimed implemented;
+18. hard subgroup metrics missing CenterB/CenterC/T2-present/edema-positive/no-T2 safety rows when present in evidence;
+19. Cine is omitted as optional while M9 is marked ready;
+20. Cine completion is only weight download/provenance;
+21. Cine completion is frame0-only or descriptor-only;
+22. Cine completion is single SyN/Demons smoke without final output labels;
+23. untrained/unverified VoxelMorph is claimed ready;
+24. Cine temporal dictionary exists but no final output labels or local metrics exist;
+25. monitor/pending Slurm packet marked ready;
+26. smoke-only or synthetic-only evidence marked formal training;
+27. validation package/upload/hosted metric claim present;
+28. M10 or fold expansion started automatically;
+29. reviewer output written by executor.
+
+Self-test must include one good fixture and all known-bad mutations. If any known-bad mutation passes, completion must be `M9_NEEDS_REVISION_VALIDATOR_NOT_FAIL_CLOSED`.
+
+### 10. Allowed executor completion states
+
+```text
+M9_READY_FOR_REVIEW
+M9_NEEDS_EVIDENCE
+M9_NEEDS_REVISION
+M9_SCIENTIFIC_UNDERTRAINED
+M9_NEEDS_MONITOR
+M9_RESOURCE_BLOCKED
+M9_BLOCKED_PROJECT_ROUTE_DIAGRAMS_UNAVAILABLE
+```
+
+`M9_READY_FOR_REVIEW` requires all required outputs, completed post-job aggregation, validator pass with `error_count=0`, known-bad self-tests fail closed, M8-like MyoPS training evidence, Cine final-output evidence or a controlled non-ready blocker, and no forbidden claims. It is not an audited decision.
+
+### 11. Git and artifact policy
+
+Commit only first-party code/helpers/tests and lightweight Markdown/CSV/JSON result files. Do not commit checkpoints, predictions, NIfTI files, upload zips, raw data, large logs, secrets, or full runtime trees.
+
+Recommended local commit command after successful completion:
+
+```bash
+git add -f \
+  src/care_myocardium/models/srr_blocks.py \
+  src/care_myocardium/models/srr_propref.py \
+  src/care_myocardium/models/proposal_prototypes.py \
+  src/care_myocardium/models/srr_dictionary_memory.py \
+  src/care_myocardium/losses/srr_losses.py \
+  src/care_myocardium/cine/*.py \
+  scripts/training/run_srr_propref_myops_fold0.py \
+  scripts/training/run_cine_temporal_output_m9.py \
+  scripts/evaluation/aggregate_srr_v3_m9_dictionary_fidelity_packet.py \
+  scripts/evaluation/validate_srr_v3_m9_dictionary_fidelity_packet.py \
+  jobs/src/run_srr_v3_m9_dictionary_fidelity_training_htzhulab.sh \
+  jobs/src/run_srr_v3_m9_dictionary_fidelity_training.sh \
+  jobs/src/run_srr_v3_m9_cine_temporal_output_htzhulab.sh \
+  jobs/src/run_srr_v3_m9_cine_temporal_output.sh \
+  results/20260708_srr_v3_m9_dictionary_fidelity_repair_training/*.md \
+  results/20260708_srr_v3_m9_dictionary_fidelity_repair_training/*.csv \
+  results/20260708_srr_v3_m9_dictionary_fidelity_repair_training/*.json
+git commit -m "Add M9 SRR dictionary fidelity and Cine output packet"
+```
+
+Do not push automatically unless the user explicitly instructs it in the Codex session.

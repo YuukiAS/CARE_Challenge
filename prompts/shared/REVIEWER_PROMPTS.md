@@ -910,3 +910,121 @@ git commit -m "Add M8 follow-up repair decision review"
 ```
 
 Do not push automatically.
+
+## M9 reviewer: SRR dictionary fidelity repair + pathology-specific refiner + Cine final-output training evidence
+
+
+You are the separate read-only reviewer/auditor for M9 SRR dictionary fidelity repair + pathology-specific refiner + Cine final-output training evidence.
+
+Required protocol sentence: This is a separate read-only reviewer/auditor session. Do not fix code, do not generate missing artifacts, do not train, and do not start the next milestone. Review only the completed result directory, write review.md with the controlled milestone decision, then force-add/commit review.md. Do not push automatically.
+
+### 1. Review scope
+
+Review only:
+
+```text
+prompts/shared/EXECUTOR_PROMPTS.md
+prompts/shared/REVIEWER_PROMPTS.md
+src/care_myocardium/models/srr_blocks.py
+src/care_myocardium/models/srr_propref.py
+src/care_myocardium/models/proposal_prototypes.py
+src/care_myocardium/models/srr_dictionary_memory.py
+src/care_myocardium/losses/srr_losses.py
+src/care_myocardium/cine/
+scripts/training/run_srr_propref_myops_fold0.py
+scripts/training/run_cine_temporal_output_m9.py
+scripts/evaluation/aggregate_srr_v3_m9_dictionary_fidelity_packet.py
+scripts/evaluation/validate_srr_v3_m9_dictionary_fidelity_packet.py
+jobs/src/run_srr_v3_m9_dictionary_fidelity_training_htzhulab.sh
+jobs/src/run_srr_v3_m9_dictionary_fidelity_training.sh
+jobs/src/run_srr_v3_m9_cine_temporal_output_htzhulab.sh
+jobs/src/run_srr_v3_m9_cine_temporal_output.sh
+results/20260708_srr_v3_m9_dictionary_fidelity_repair_training/
+results/20260708_srr_v3_m8_followup_no_promotion_repair_decision/review.md
+TODO.md
+TODO-dictionary.md
+prompts/tasks/20260703_cine_motion.md
+```
+
+You may read protocol files as needed:
+
+```text
+START_HERE_FOR_GPT.md
+GPT_PLANNER_CARE_PROTOCOL.md
+AGENTS.md
+README.md
+prompts/CHATGPT_RULES.md
+prompts/GPT_HARD_GATE_PROMPT.md
+prompts/MILESTONE_REVIEW_PROTOCOL.md
+prompts/THREAD_BOOTSTRAP_ROUTE_IMAGE_PROTOCOL.md
+```
+
+### 2. Required review checks
+
+Check M9 did not claim validation packaging, validation upload, hosted metrics, leaderboard readiness, fold expansion, scientific stop, or M10.
+
+Check loss-weight wiring. The review must inspect both code and `m9_loss_weight_wiring_test_report.md`. If component weights do not reach the actual M9 total loss, return `M9_AUDITED_NEEDS_REVISION`.
+
+Check checkpoint selection. If best checkpoint is selected only by patch loss, return `M9_AUDITED_NEEDS_REVISION`.
+
+Check nnU-Net role. If formal M9 candidate outputs normally use `nnunet_anchor_logits + bounded_delta` as final logits, or if anchor-only / M8 anchor-residual controls are treated as SRR candidate wins, return `M9_AUDITED_PROTOCOL_BLOCKED` or `M9_AUDITED_NEEDS_REVISION`.
+
+Check True-BR2 dictionary fidelity. Formal M9 candidates must use real per-modality features and invalid-slot masks. `[fused,fused,fused]` pseudo-modality paths may appear only in legacy controls, never formal M9 candidates.
+
+Check Pattern-SIP. The packet must report pattern-conditioned soft integrativeness across availability/style/hard-subgroup groups. Uniform entropy/coverage alone is insufficient.
+
+Check prototype memory. Deterministic axis prototypes alone cannot support formal evidence. Edema negatives must be T2-present safe negatives only, and no-T2 myocardium must not enter edema negative memory.
+
+Check pathology-specific refiner fidelity. Scar must have small-ROI high-resolution LGE-dominant precision refinement evidence. Edema must have large-ROI T2-conditioned context-preserving refinement evidence. Identical scar/edema refiner behavior is not acceptable for a formal candidate.
+
+Check refiner causal effect. The refiner must be evaluated by final-label/logit effect and ablations. A residual tensor without final-label impact is not enough.
+
+Check training adequacy. M9 must meet its MyoPS training budget or use a controlled undertrained/monitor/resource-blocked state. Monitor packets, pending Slurm jobs, smoke-only evidence, or synthetic evidence cannot be audited-go.
+
+Check metrics. Same-split comparison must report scar and edema separately, hard subgroups, no-T2 safety, remote FP, component count, HD95, proposal recall/precision, and refiner causal effect. Do not accept foreground mean as evidence.
+
+Check Cine final-output branch. Cine must not be optional. The review must reject weight-download-only, single SyN/Demons smoke, descriptor-only temporal retrieval, frame0-only output, unverified VoxelMorph claims, registration-only evidence without final labels, and temporal dictionary evidence without final output. A valid M9 Cine packet must include final local predictions under ignored runtime, tracked manifests/QC/metrics, non-reference-frame evidence, frame0/reference comparison, and no hosted metric claim.
+
+Check validator. The strict validator must pass the real packet with zero errors and fail all known-bad self-tests. If known-bad passes, return `M9_AUDITED_NEEDS_REVISION`.
+
+### 3. Review decisions
+
+Write `results/20260708_srr_v3_m9_dictionary_fidelity_repair_training/review.md` with exactly one of:
+
+```text
+M9_AUDITED_REPAIR_CONTRACT_READY
+M9_AUDITED_NO_PROMOTION_SCIENTIFIC_UNRESOLVED
+M9_AUDITED_SCIENTIFIC_UNDERTRAINED
+M9_AUDITED_NEEDS_EVIDENCE
+M9_AUDITED_NEEDS_REVISION
+M9_AUDITED_NEEDS_MONITOR
+M9_AUDITED_RESOURCE_BLOCKED
+M9_AUDITED_PROTOCOL_BLOCKED
+```
+
+`M9_AUDITED_REPAIR_CONTRACT_READY` means only this: GPT may plan a future M10 dictionary iteration, Cine temporal route expansion, or combined repair continuation based on reviewed M9 evidence. It does not authorize validation packaging/upload, hosted claims, leaderboard claims, fold expansion, scientific stop, or automatic M10 execution.
+
+Use `M9_AUDITED_NO_PROMOTION_SCIENTIFIC_UNRESOLVED` if M9 validly repairs fidelity and trains adequately but still does not show enough SRR-main/dictionary/Cine final-output signal for the next implementation step.
+
+Use `M9_AUDITED_SCIENTIFIC_UNDERTRAINED` if implementation fidelity is improved but training did not meet adequacy or loss/metrics are too immature for scientific judgment.
+
+Use `M9_AUDITED_NEEDS_EVIDENCE` if required output files, runtime evidence, same-split controls, hard subgroup metrics, or Cine final-output evidence are missing.
+
+Use `M9_AUDITED_NEEDS_REVISION` if code, loss wiring, checkpoint selection, dictionary fidelity, prototype memory, scar/edema refiner asymmetry, refiner causal effect, no-T2 safety, Cine architecture, or validator behavior is broken.
+
+Use `M9_AUDITED_NEEDS_MONITOR` if any required Slurm-derived evidence is still pending/running/awaiting aggregation.
+
+Use `M9_AUDITED_RESOURCE_BLOCKED` if the packet honestly documents a resource/dependency blocker and does not claim completion.
+
+Use `M9_AUDITED_PROTOCOL_BLOCKED` if the executor wrote review.md, started M10, packaged validation, uploaded, claimed hosted metrics, omitted Cine while marking M9 ready, or made nnU-Net the formal candidate protagonist.
+
+### 4. Commit policy
+
+Commit only the review file:
+
+```bash
+git add -f results/20260708_srr_v3_m9_dictionary_fidelity_repair_training/review.md
+git commit -m "Add M9 SRR dictionary fidelity and Cine output review"
+```
+
+Do not push automatically.

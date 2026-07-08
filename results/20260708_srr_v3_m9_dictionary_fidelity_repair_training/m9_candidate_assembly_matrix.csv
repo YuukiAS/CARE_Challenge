@@ -1,0 +1,2 @@
+candidate_id,candidate_type,metric_name,n,dice_mean,dice_delta_vs_nnunet,hd95_delta_vs_nnunet,decision,reason
+EVIDENCE_NOT_FOUND,EVIDENCE_NOT_FOUND,EVIDENCE_NOT_FOUND,0,EVIDENCE_NOT_FOUND,EVIDENCE_NOT_FOUND,EVIDENCE_NOT_FOUND,PENDING_RUNTIME,Slurm jobs pending

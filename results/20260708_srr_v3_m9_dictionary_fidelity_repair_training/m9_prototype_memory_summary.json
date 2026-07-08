@@ -1,0 +1,10 @@
+{
+  "status": "PENDING_RUNTIME",
+  "memory_type": "ema_prototype_memory_code_added",
+  "scar_positive": "EVIDENCE_NOT_FOUND",
+  "scar_safe_negative": "EVIDENCE_NOT_FOUND",
+  "edema_positive": "EVIDENCE_NOT_FOUND",
+  "edema_safe_negative": "EVIDENCE_NOT_FOUND",
+  "no_t2_edema_negative_policy": "REJECT_NO_T2_EDEMA_NEGATIVE",
+  "runtime_update_ledger": "PENDING_RUNTIME"
+}

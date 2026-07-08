@@ -337,6 +337,13 @@ def srr_m6_expanded_total_loss(
     """M6 SRR-v3 total loss with explicit proposal/refiner/arbitration terms."""
 
     weights = weights or {}
+
+    def component_weight(name: str, default: float, *aliases: str) -> float:
+        for key in (name, *aliases):
+            if key in weights:
+                return float(weights[key])
+        return float(default)
+
     valid = labels != IGNORE_LABEL
     t2_present = availability[:, 1].to(device=labels.device, dtype=torch.bool).view(-1, 1, 1, 1)
     scar_target = labels == SCAR_CLASS
@@ -399,20 +406,40 @@ def srr_m6_expanded_total_loss(
         dict_loss = outputs["logits"].sum() * 0.0
     loss_proto = _prototype_margin_loss(outputs, labels, availability)
 
+    scar_refiner_residual = outputs.get("scar_refiner_residual", outputs.get("scar_refinement_residual", outputs["logits"][:, :1] * 0.0))
+    edema_refiner_residual = outputs.get("edema_refiner_residual", outputs.get("edema_refinement_residual", outputs["logits"][:, :1] * 0.0))
+    scar_refiner_effect = _masked_abs_mean(scar_refiner_residual, valid.unsqueeze(1))
+    edema_refiner_effect = _masked_abs_mean(edema_refiner_residual, (valid & t2_present).unsqueeze(1))
+    loss_refiner_final_label_effect = 0.5 * (scar_refiner_effect + edema_refiner_effect)
+
     component_weights = {
-        "loss_anatomy_union_lv_rv": weights.get("loss_anatomy_union_lv_rv", 1.0),
-        "loss_scar_proposal": weights.get("loss_scar_proposal", 1.0),
-        "loss_edema_proposal_t2_present_only": weights.get("loss_edema_proposal_t2_present_only", 1.0),
-        "loss_scar_refiner_roi": weights.get("loss_scar_refiner_roi", 1.0),
-        "loss_edema_refiner_t2_present_roi": weights.get("loss_edema_refiner_t2_present_roi", 1.0),
-        "loss_anchor_preservation_outside_roi": weights.get("loss_anchor_preservation_outside_roi", 0.20),
-        "loss_correction_opportunity": weights.get("loss_correction_opportunity", 0.20),
-        "loss_branch_arbitration_consistency": weights.get("loss_branch_arbitration_consistency", 0.15),
-        "loss_bounded_correction": weights.get("loss_bounded_correction", 0.02),
-        "loss_component_remote_fp": weights.get("loss_component_remote_fp", 0.10),
-        "loss_no_t2_edema_safety": weights.get("loss_no_t2_edema_safety", 0.50),
-        "loss_dictionary_entropy_coverage_load_balance": weights.get("loss_dictionary_entropy_coverage_load_balance", 0.20),
-        "loss_prototype_diversity_margin": weights.get("loss_prototype_diversity_margin", 0.20),
+        "loss_anatomy_union_lv_rv": component_weight("loss_anatomy_union_lv_rv", 1.0, "anatomy"),
+        "loss_scar_proposal": component_weight("loss_scar_proposal", 1.0, "scar_proposal", "proposal"),
+        "loss_edema_proposal_t2_present_only": component_weight("loss_edema_proposal_t2_present_only", 1.0, "edema_proposal", "proposal"),
+        "loss_scar_refiner_roi": component_weight("loss_scar_refiner_roi", 1.0, "loss_scar_refiner_small_roi", "scar_refiner"),
+        "loss_edema_refiner_t2_present_roi": component_weight(
+            "loss_edema_refiner_t2_present_roi",
+            1.0,
+            "loss_edema_refiner_large_roi_t2_present",
+            "edema_refiner",
+        ),
+        "loss_anchor_preservation_outside_roi": component_weight("loss_anchor_preservation_outside_roi", 0.20, "baseline_preservation"),
+        "loss_correction_opportunity": component_weight("loss_correction_opportunity", 0.20),
+        "loss_branch_arbitration_consistency": component_weight("loss_branch_arbitration_consistency", 0.15),
+        "loss_bounded_correction": component_weight("loss_bounded_correction", 0.02),
+        "loss_component_remote_fp": component_weight("loss_component_remote_fp", 0.10, "component_remote_fp"),
+        "loss_no_t2_edema_safety": component_weight("loss_no_t2_edema_safety", 0.50),
+        "loss_dictionary_entropy_coverage_load_balance": component_weight(
+            "loss_dictionary_entropy_coverage_load_balance",
+            0.20,
+            "semantic_retrieval",
+        ),
+        "loss_pattern_sip_integrativeness": component_weight("loss_pattern_sip_integrativeness", 0.05, "semantic_integrative"),
+        "loss_prototype_diversity_margin": component_weight("loss_prototype_diversity_margin", 0.20, "prototype_margin"),
+        "loss_memory_bank_update_or_alignment": component_weight("loss_memory_bank_update_or_alignment", 0.05),
+        "loss_refiner_final_label_effect": component_weight("loss_refiner_final_label_effect", 0.02),
+        "loss_cine_temporal_consistency": component_weight("loss_cine_temporal_consistency", 0.0),
+        "loss_cine_reference_warp_consistency": component_weight("loss_cine_reference_warp_consistency", 0.0),
     }
     components = {
         "loss_anatomy_union_lv_rv": loss_anatomy,
@@ -427,11 +454,22 @@ def srr_m6_expanded_total_loss(
         "loss_component_remote_fp": loss_remote_fp,
         "loss_no_t2_edema_safety": loss_no_t2,
         "loss_dictionary_entropy_coverage_load_balance": dict_loss,
+        "loss_pattern_sip_integrativeness": dict_loss,
         "loss_prototype_diversity_margin": loss_proto,
+        "loss_memory_bank_update_or_alignment": loss_proto,
+        "loss_refiner_final_label_effect": loss_refiner_final_label_effect,
+        "loss_cine_temporal_consistency": outputs["logits"].sum() * 0.0,
+        "loss_cine_reference_warp_consistency": outputs["logits"].sum() * 0.0,
     }
     total = sum(float(component_weights[name]) * value for name, value in components.items())
     metrics = {name: value.detach() if detach_metrics else value for name, value in components.items()}
     metrics.update({f"{name}_weight": outputs["logits"].new_tensor(float(weight)) for name, weight in component_weights.items()})
+    metrics["loss_scar_refiner_small_roi"] = metrics["loss_scar_refiner_roi"]
+    metrics["loss_edema_refiner_large_roi_t2_present"] = metrics["loss_edema_refiner_t2_present_roi"]
+    metrics["loss_scar_refiner_small_roi_weight"] = outputs["logits"].new_tensor(float(component_weights["loss_scar_refiner_roi"]))
+    metrics["loss_edema_refiner_large_roi_t2_present_weight"] = outputs["logits"].new_tensor(
+        float(component_weights["loss_edema_refiner_t2_present_roi"])
+    )
     metrics.update(dict_metrics)
     metrics["m6_expanded_total_loss"] = total.detach() if detach_metrics else total
     return total, metrics

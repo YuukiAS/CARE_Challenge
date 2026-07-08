@@ -1,0 +1,2 @@
+variant,ablation,metric_name,dice_mean,dice_delta_vs_control,status
+EVIDENCE_NOT_FOUND,EVIDENCE_NOT_FOUND,EVIDENCE_NOT_FOUND,EVIDENCE_NOT_FOUND,EVIDENCE_NOT_FOUND,PENDING_RUNTIME

@@ -66,6 +66,12 @@ M8_TO_M6_VARIANT = {
     "m8_t2_centerC_edema_repair_longrun": "m6_full_srr_context_arbitration",
 }
 
+M9_FORMAL_VARIANTS = (
+    "m9_srr_main_true_br2_pattern_sip",
+    "m9_srr_main_lesion_proposal_memory",
+    "m9_srr_main_t2_edema_recall_focus",
+)
+
 
 def canonical_model_variant(variant: str) -> str:
     value = str(variant)
@@ -129,12 +135,14 @@ def apply_variant_config_contract(args: argparse.Namespace) -> None:
             args.edema_decode_threshold = float(thresholds["edema_decode"])
 
 
-M6_LOSS_COMPONENT_KEYS = (
+EXPANDED_SRR_LOSS_COMPONENT_KEYS = (
     "loss_anatomy_union_lv_rv",
     "loss_scar_proposal",
     "loss_edema_proposal_t2_present_only",
     "loss_scar_refiner_roi",
+    "loss_scar_refiner_small_roi",
     "loss_edema_refiner_t2_present_roi",
+    "loss_edema_refiner_large_roi_t2_present",
     "loss_anchor_preservation_outside_roi",
     "loss_correction_opportunity",
     "loss_branch_arbitration_consistency",
@@ -142,14 +150,19 @@ M6_LOSS_COMPONENT_KEYS = (
     "loss_component_remote_fp",
     "loss_no_t2_edema_safety",
     "loss_dictionary_entropy_coverage_load_balance",
+    "loss_pattern_sip_integrativeness",
     "loss_prototype_diversity_margin",
+    "loss_memory_bank_update_or_alignment",
+    "loss_refiner_final_label_effect",
+    "loss_cine_temporal_consistency",
+    "loss_cine_reference_warp_consistency",
     "m6_expanded_total_loss",
 )
 
 
 def loss_component_metric_row(metrics: dict[str, torch.Tensor]) -> dict[str, float]:
     row: dict[str, float] = {}
-    for key in M6_LOSS_COMPONENT_KEYS:
+    for key in EXPANDED_SRR_LOSS_COMPONENT_KEYS:
         value = metrics.get(key)
         if isinstance(value, torch.Tensor):
             row[key] = float(value.detach().cpu())
@@ -157,6 +170,56 @@ def loss_component_metric_row(metrics: dict[str, torch.Tensor]) -> dict[str, flo
         if key.endswith("_semantic_family_mass") or key.endswith("_semantic_interaction_mass"):
             row[key] = float(value.detach().cpu())
     return row
+
+
+def _load_loss_weight_json(raw: str) -> dict[str, float]:
+    value = str(raw or "").strip()
+    if not value:
+        return {}
+    candidate = Path(value)
+    if candidate.is_file():
+        data = json.loads(candidate.read_text(encoding="utf-8"))
+    else:
+        data = json.loads(value)
+    if not isinstance(data, dict):
+        raise ValueError("--loss-weight-json must be a JSON object or a path to one")
+    return {str(key): float(val) for key, val in data.items()}
+
+
+def collect_expanded_loss_weights(args: argparse.Namespace) -> dict[str, float]:
+    """Collect legacy, JSON-contract, and explicit CLI loss weights for M6-M9 loss."""
+
+    weights: dict[str, float] = {}
+    variant_cfg = getattr(args, "variant_config_record", {}).get("variant_config", {})
+    if isinstance(variant_cfg, dict) and isinstance(variant_cfg.get("loss_weights"), dict):
+        for key, value in variant_cfg["loss_weights"].items():
+            try:
+                weights[str(key)] = float(value)
+            except (TypeError, ValueError):
+                continue
+    legacy_aliases = {
+        "scar_weight": "loss_scar_proposal",
+        "edema_weight": "loss_edema_proposal_t2_present_only",
+        "proposal_weight": "loss_scar_proposal",
+        "margin_weight": "loss_prototype_diversity_margin",
+        "component_proposal_weight": "loss_component_remote_fp",
+        "semantic_retrieval_weight": "loss_dictionary_entropy_coverage_load_balance",
+        "semantic_integrative_weight": "loss_pattern_sip_integrativeness",
+        "baseline_preservation_weight": "loss_anchor_preservation_outside_roi",
+        "roi_weight": "loss_scar_refiner_small_roi",
+        "roi_remote_weight": "loss_component_remote_fp",
+    }
+    for attr, key in legacy_aliases.items():
+        value = getattr(args, attr, None)
+        if value is not None and key not in weights:
+            weights[key] = float(value)
+    weights.update(_load_loss_weight_json(getattr(args, "loss_weight_json", "")))
+    for item in getattr(args, "loss_weight", []) or []:
+        if "=" not in str(item):
+            raise ValueError(f"--loss-weight expects key=value, got {item!r}")
+        key, value = str(item).split("=", 1)
+        weights[key.strip()] = float(value)
+    return weights
 
 
 def total_grad_l2_norm(parameters: Iterable[torch.nn.Parameter]) -> tuple[float, int]:
@@ -188,7 +251,7 @@ def loss_component_gradient_sanity_rows(
     batch_cases: list[str],
 ) -> list[dict[str, object]]:
     rows: list[dict[str, object]] = []
-    component_keys = list(M6_LOSS_COMPONENT_KEYS)
+    component_keys = list(EXPANDED_SRR_LOSS_COMPONENT_KEYS)
     component_keys.extend(
         sorted(
             key
@@ -790,11 +853,12 @@ def propref_loss(
     *,
     detach_m6_metrics: bool = True,
 ) -> tuple[torch.Tensor, dict[str, torch.Tensor]]:
-    if str(args.variant).startswith(("m6_", "m7_", "m8_")):
+    if str(args.variant).startswith(("m6_", "m7_", "m8_", "m9_")):
         total, m6_metrics = srr_m6_expanded_total_loss(
             outputs,
             labels,
             availability,
+            weights=collect_expanded_loss_weights(args),
             detach_metrics=detach_m6_metrics,
         )
         zero = outputs["logits"].sum().detach() * 0.0
@@ -1806,6 +1870,11 @@ def train_variant(args: argparse.Namespace) -> None:
     rng = np.random.default_rng(args.seed)
     best_val = float("inf")
     best_step = 0
+    checkpoint_selection_mode = (
+        "m9_runtime_proxy_requires_post_job_metric_aggregation"
+        if str(args.variant).startswith("m9_")
+        else "legacy_val_patch_loss"
+    )
     no_improve_validation_events = 0
     stop_reason = "max_steps"
     train_rows: list[dict[str, object]] = []
@@ -1973,6 +2042,13 @@ def train_variant(args: argparse.Namespace) -> None:
                 "stage": stage,
                 "event": "validation",
                 "val_patch_loss": val_loss,
+                "checkpoint_selection_mode": checkpoint_selection_mode,
+                "checkpoint_selection_score": val_loss,
+                "checkpoint_selection_score_status": (
+                    "proxy_not_formal_m9_selection"
+                    if str(args.variant).startswith("m9_")
+                    else "legacy_patch_loss_selection"
+                ),
                 "elapsed_seconds": time.monotonic() - start,
                 "eligible_for_best": step >= max(2, int(math.ceil(args.max_steps * args.min_best_step_fraction))),
             }
@@ -1985,10 +2061,12 @@ def train_variant(args: argparse.Namespace) -> None:
                     "model_variant": args.variant,
                     "step": step,
                     "model_state_dict": model.state_dict(),
-                    "args": vars(args),
-                    "val_patch_loss": val_loss,
-                    "checkpoint_role": "validation_milestone",
-                },
+                        "args": vars(args),
+                        "val_patch_loss": val_loss,
+                        "checkpoint_selection_mode": checkpoint_selection_mode,
+                        "checkpoint_selection_score": val_loss,
+                        "checkpoint_role": "validation_milestone",
+                    },
                 checkpoint_step_path,
             )
             validation_event = dict(validation_row)
@@ -2009,6 +2087,8 @@ def train_variant(args: argparse.Namespace) -> None:
                         "model_state_dict": model.state_dict(),
                         "args": vars(args),
                         "val_patch_loss": best_val,
+                        "checkpoint_selection_mode": checkpoint_selection_mode,
+                        "checkpoint_selection_score": best_val,
                         "checkpoint_role": "eligible_best",
                     },
                     checkpoint_dir / "checkpoint_best.pt",
@@ -2104,6 +2184,12 @@ def train_variant(args: argparse.Namespace) -> None:
         "validation_events": validation_events,
         "validation_event_count": len(validation_events),
         "validation_schedule": sorted(validation_schedule),
+        "checkpoint_selection_mode": checkpoint_selection_mode,
+        "checkpoint_selection_status": (
+            "M9_POST_JOB_METRIC_ALIGNED_SELECTION_REQUIRED"
+            if str(args.variant).startswith("m9_")
+            else "LEGACY_PATCH_LOSS_SELECTION"
+        ),
         "stage_step_counts": stage_counts(actual_steps, args.max_steps),
         "first_train_loss": first_train_loss,
         "last_train_loss": last_train_loss,
@@ -2180,6 +2266,7 @@ def main() -> None:
             "m8_full_srr_context_arbitration_longrun",
             "m8_scar_precision_edema_safe_longrun",
             "m8_t2_centerC_edema_repair_longrun",
+            *M9_FORMAL_VARIANTS,
         ],
     )
     parser.add_argument("--run-label", default="", help="Optional isolated output label under variants/ without changing model hparams.")
@@ -2231,6 +2318,17 @@ def main() -> None:
     parser.add_argument("--baseline-gate-harm-weight", type=float, default=0.25)
     parser.add_argument("--roi-weight", type=float, default=0.25)
     parser.add_argument("--roi-remote-weight", type=float, default=0.05)
+    parser.add_argument(
+        "--loss-weight-json",
+        default="",
+        help="JSON object or path mapping expanded SRR loss component names to weights.",
+    )
+    parser.add_argument(
+        "--loss-weight",
+        action="append",
+        default=[],
+        help="Repeatable expanded SRR loss override as key=value; applied after config and --loss-weight-json.",
+    )
     parser.add_argument("--proposal-thresholds", default=DEFAULT_PROPOSAL_THRESHOLDS)
     parser.add_argument("--scar-decode-threshold", type=float, default=0.50)
     parser.add_argument("--edema-decode-threshold", type=float, default=0.50)

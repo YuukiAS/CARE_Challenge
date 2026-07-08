@@ -1,0 +1,2 @@
+variant,case_id,roi_policy,crop_margin,roi_threshold,final_label_delta,status
+EVIDENCE_NOT_FOUND,EVIDENCE_NOT_FOUND,large_roi_t2_present,EVIDENCE_NOT_FOUND,EVIDENCE_NOT_FOUND,EVIDENCE_NOT_FOUND,PENDING_RUNTIME

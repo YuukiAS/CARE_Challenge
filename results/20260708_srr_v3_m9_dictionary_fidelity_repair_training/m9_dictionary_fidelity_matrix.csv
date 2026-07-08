@@ -1,0 +1,6 @@
+item,status,evidence_path,issue
+formal_m9_variant_names,PASS_CODE_SMOKE,src/care_myocardium/models/srr_propref.py,m9 variants added
+srr_main_output_mode,PASS_CODE_SMOKE,m9_nnunet_role_audit.md,SRR_MAIN_NOT_ANCHOR_RESIDUAL observed in CPU smoke
+true_br2_runtime_slot_usage,PENDING_RUNTIME,m9_pattern_sip_usage_by_group.csv,Slurm jobs pending
+invalid_slot_mask_runtime,PENDING_RUNTIME,m9_dictionary_invalid_slot_mask_report.csv,Slurm jobs pending
+final_metric_causal_effect,PENDING_RUNTIME,m9_refiner_causal_effect.csv,Slurm jobs pending

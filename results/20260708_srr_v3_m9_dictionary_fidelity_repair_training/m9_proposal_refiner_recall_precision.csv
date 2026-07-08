@@ -1,0 +1,2 @@
+variant,pathology,proposal_recall,proposal_precision,refiner_recall,refiner_precision,status
+EVIDENCE_NOT_FOUND,EVIDENCE_NOT_FOUND,EVIDENCE_NOT_FOUND,EVIDENCE_NOT_FOUND,EVIDENCE_NOT_FOUND,EVIDENCE_NOT_FOUND,PENDING_RUNTIME
