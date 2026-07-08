@@ -187,3 +187,48 @@ error_count=0
 ```
 
 This second partial aggregation is still not ready evidence. `m9_srr_main_t2_edema_recall_focus` formal evidence is not yet aggregated, all three MyoPS jobs remain running, and the aggregate formal train-loop budget is only `3159.659` seconds.
+
+## 2026-07-08 third partial MyoPS formal aggregation
+
+```text
+git status --short --branch
+squeue -j 58297510,58297806,58297807 -o "%.18i %.12P %.25j %.8T %.10M %.9l %.20R"
+sacct -j 58297510,58297806,58297807 --format=JobID,JobName%24,Partition,State,ExitCode,Elapsed,Start,End,NodeList%24 -P
+sstat -j 58297510.batch,58297806.batch,58297807.batch --format=JobID,AveCPU,AveRSS,MaxRSS,AveVMSize,MaxVMSize -P
+find results/20260708_srr_v3_m9_dictionary_fidelity_repair_training -maxdepth 6 -type f \( -name summary.json -o -name training_log.csv -o -name validation_events.csv \) -printf '%TY-%Tm-%Td %TH:%TM:%TS %s %p\n' | sort
+python scripts/evaluation/validate_srr_v3_m9_dictionary_fidelity_packet.py results/20260708_srr_v3_m9_dictionary_fidelity_repair_training
+python scripts/evaluation/aggregate_srr_v3_m9_dictionary_fidelity_packet.py --runtime-root results/20260708_srr_v3_m9_dictionary_fidelity_repair_training/runtime_htzhulab_mirror --runtime-root results/20260708_srr_v3_m9_dictionary_fidelity_repair_training/runtime_htzhulab_lesion_memory --runtime-root results/20260708_srr_v3_m9_dictionary_fidelity_repair_training/runtime_htzhulab_t2_edema_focus --out-dir results/20260708_srr_v3_m9_dictionary_fidelity_repair_training
+sed -n '1,80p' results/20260708_srr_v3_m9_dictionary_fidelity_repair_training/m9_training_budget_ledger.csv
+sed -n '1,80p' results/20260708_srr_v3_m9_dictionary_fidelity_repair_training/m9_metric_aligned_checkpoint_selection.csv
+```
+
+Third partial aggregation summary:
+
+```text
+latest Slurm state:
+58297510 htzhulab M9SRRDict RUNNING
+58297806 htzhulab M9SRRDict RUNNING
+58297807 htzhulab M9SRRDict RUNNING
+
+sstat confirmed nonzero CPU/RSS for all three running batch steps.
+
+formal summaries currently aggregated:
+m9_srr_main_true_br2_pattern_sip actual_optimizer_steps=6000 train_loop_seconds=1660.0970819266513 validation_event_count=20
+m9_srr_main_lesion_proposal_memory actual_optimizer_steps=6000 train_loop_seconds=1499.561819610186
+m9_srr_main_t2_edema_recall_focus actual_optimizer_steps=6000 train_loop_seconds=1655.3431665934622 validation_event_count=20
+
+metric-aligned checkpoint selection:
+m9_srr_main_true_br2_pattern_sip checkpoint_best/pathology_aware mean_dice_delta=-0.039907359093456156
+m9_srr_main_lesion_proposal_memory checkpoint_final/pathology_aware mean_dice_delta=-0.05545883664777711
+m9_srr_main_t2_edema_recall_focus checkpoint_final/argmax mean_dice_delta=-0.07449802134395549
+
+mean Dice deltas vs tracked M8 nnU-Net anchor:
+m9_srr_main_true_br2_pattern_sip myops_scar=-0.009682347345035466 myops_edema=-0.076883272409283
+m9_srr_main_lesion_proposal_memory myops_scar=-0.03627368193360481 myops_edema=-0.07598376935449123
+m9_srr_main_t2_edema_recall_focus myops_scar=-0.06778769437264179 myops_edema=-0.08746046393754325
+
+real packet validator before aggregation:
+error_count=0
+```
+
+This third partial aggregation is still not ready evidence. All three MyoPS jobs remain running, and the aggregate formal train-loop budget is only `4815.002` seconds, below both M9 training-budget gates.
