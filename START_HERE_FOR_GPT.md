@@ -5,11 +5,13 @@ This is the root entrypoint for any new GPT/ChatGPT planning thread reading this
 ## Required Reading Order
 
 1. `START_HERE_FOR_GPT.md`
-2. `AGENTS.md`
-3. `README.md`
-4. `prompts/CHATGPT_RULES.md`
-5. `prompts/GPT_HARD_GATE_PROMPT.md`
-6. `prompts/THREAD_BOOTSTRAP_ROUTE_IMAGE_PROTOCOL.md`
+2. `GPT_PLANNER_CARE_PROTOCOL.md`
+3. `AGENTS.md`
+4. `README.md`
+5. `prompts/CHATGPT_RULES.md`
+6. `prompts/GPT_HARD_GATE_PROMPT.md`
+7. `prompts/MILESTONE_REVIEW_PROTOCOL.md`
+8. `prompts/THREAD_BOOTSTRAP_ROUTE_IMAGE_PROTOCOL.md`
 
 Do not rely only on old chat summaries, memory, or natural-language recaps when planning SRR/MyoPS/Cine routes.
 
@@ -17,7 +19,7 @@ Do not rely only on old chat summaries, memory, or natural-language recaps when 
 
 For any future CARE milestone, GPT/ChatGPT must write both the Codex executor prompt content and the independent reviewer/auditor prompt content. Do not provide only an executor prompt or only a reviewer prompt.
 
-Because direct GPT edits to the large canonical shared files can fail or corrupt context, author each new milestone first as a standalone Markdown staging file under `prompts/shared/` named `M<id>_<short_slug>.md`, for example `M8_editor_grade_leaderboard_sprint.md`. The file must contain clearly labeled executor and reviewer sections. After that, the user may ask Codex to split/merge the staged content into `prompts/shared/EXECUTOR_PROMPTS.md` and `prompts/shared/REVIEWER_PROMPTS.md`, then delete the standalone staging file after successful merge.
+Because direct GPT edits to the large canonical shared files can fail or corrupt context, author each new milestone first as a standalone Markdown staging file under `prompts/shared/` named `M<id>_<short_slug>.md`, for example `M8_editor_grade_leaderboard_sprint.md`. The file must contain clearly labeled executor and reviewer sections. The staged file is temporary: a later Codex maintenance step will split/merge its content into `prompts/shared/EXECUTOR_PROMPTS.md` and `prompts/shared/REVIEWER_PROMPTS.md`, then delete the standalone staging file after successful merge.
 
 ## MONITOR_PACKET_IS_NOT_COMPLETION
 

@@ -8,7 +8,7 @@ The SRR route is defined by the repository diagrams, not by a loose natural-lang
 
 ## Repository read first
 
-Before writing any SRR/MyoPS/Cine milestone, Codex goal, handoff, or route judgment, the planner must read the current repository entrypoints, starting with `START_HERE_FOR_GPT.md`, then `AGENTS.md`, `README.md`, `prompts/CHATGPT_RULES.md`, and `prompts/GPT_HARD_GATE_PROMPT.md`.
+Before writing any SRR/MyoPS/Cine milestone, Codex goal, handoff, or route judgment, the planner must read the current repository entrypoints, starting with `START_HERE_FOR_GPT.md`, then `GPT_PLANNER_CARE_PROTOCOL.md`, `AGENTS.md`, `README.md`, `prompts/CHATGPT_RULES.md`, and `prompts/GPT_HARD_GATE_PROMPT.md`.
 
 ## Required Project background visual reading
 

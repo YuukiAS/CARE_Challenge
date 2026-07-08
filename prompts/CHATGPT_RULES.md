@@ -7,6 +7,8 @@ strategic planner and the user-supervised strategic controller.
 
 - `START_HERE_FOR_GPT.md`: root entrypoint for new GPT/ChatGPT planning
   threads before CARE milestone, Codex goal, handoff, or route planning.
+- `GPT_PLANNER_CARE_PROTOCOL.md`: Chinese-first startup prompt and checklist
+  for GPT planner threads before milestone authoring.
 - `prompts/AGENT_RULES.md`: Codex execution rules.
 - `prompts/CHATGPT_RULES.md`: GPT task/review/next-task rules.
 - `prompts/HANDOFF_ROLES.md`: strategic and execution role definitions.
@@ -65,7 +67,7 @@ win unless they would break protocol fields.
 
 For CARE tasks, GPT is the strategic planner and strategic controller. Codex may execute or supervise only inside a GPT-authored task; it must not be asked to discover a new research direction on its own.
 
-Every new GPT/ChatGPT planning thread must start from `START_HERE_FOR_GPT.md`. Before writing any new SRR/MyoPS/Cine milestone, Codex goal, handoff, or route judgment, GPT must complete `prompts/THREAD_BOOTSTRAP_ROUTE_IMAGE_PROTOCOL.md`: visually read `v2` and later SRR/MyoPS diagrams from ChatGPT Project background files / project materials, use `images/SRR-v2.png`, `images/SRR-v2.5.png`, `images/SRR-v3.png`, and later repository diagram paths only as canonical version references, state the recovered route objective, and block with `BLOCKED_PROJECT_ROUTE_DIAGRAMS_UNAVAILABLE` if the Project background diagrams cannot be accessed or interpreted.
+Every new GPT/ChatGPT planning thread must start from `START_HERE_FOR_GPT.md` and `GPT_PLANNER_CARE_PROTOCOL.md`. Before writing any new SRR/MyoPS/Cine milestone, Codex goal, handoff, or route judgment, GPT must complete `prompts/THREAD_BOOTSTRAP_ROUTE_IMAGE_PROTOCOL.md`: visually read `v2` and later SRR/MyoPS diagrams from ChatGPT Project background files / project materials, use `images/SRR-v2.png`, `images/SRR-v2.5.png`, `images/SRR-v3.png`, and later repository diagram paths only as canonical version references, state the recovered route objective, and block with `BLOCKED_PROJECT_ROUTE_DIAGRAMS_UNAVAILABLE` if the Project background diagrams cannot be accessed or interpreted.
 
 Before planning any milestone, Codex goal, handoff, or execution instruction that will submit a Slurm job, GPT must read and apply `.agents/skills/slurm-routing-partition/SKILL.md`. That skill must also be used before every actual `sbatch` or `srun` submission in this repo. For goal tasks, all-pending scheduler states may be marked blocked only after 12 consecutive 2-hour checks, 24 hours total, where every submitted routing partition is still pending and no job has started.
 
@@ -84,13 +86,13 @@ Only a `review.md` containing the milestone's exact audited-go token authorizes
 the next milestone.
 
 When authoring a future milestone, GPT must provide both sides of the contract:
-the Codex executor prompt and the independent reviewer/auditor prompt. Stage the
+the Codex executor prompt and the independent reviewer/auditor prompt. It must stage the
 new milestone prompt as a standalone Markdown file under `prompts/shared/` named
 `M<id>_<short_slug>.md`, for example `M8_editor_grade_leaderboard_sprint.md`.
 Use clear section headings for executor and reviewer content. Do not ask GPT to
 write directly into the large `prompts/shared/EXECUTOR_PROMPTS.md` and
 `prompts/shared/REVIEWER_PROMPTS.md` files for new milestone drafting; a later
-Codex maintenance step should split/merge the staged file into those canonical
+Codex maintenance step will split/merge the staged file into those canonical
 shared files and delete the standalone staging file after merge.
 
 Before writing a high-risk CARE controller task, apply
