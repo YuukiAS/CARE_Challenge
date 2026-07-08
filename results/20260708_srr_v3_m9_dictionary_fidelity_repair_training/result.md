@@ -48,6 +48,11 @@ Cine currently reports `M9_NEEDS_EVIDENCE_CINE_LOCAL_BACKBONE_MISSING` because n
 - Loss-weight smoke proved changing `loss_scar_refiner_small_roi` from `0` to `10` changed total loss and gradient norm.
 - M9 validator self-test passed for one good fixture and four known-bad fixtures.
 - Real-packet validator exits with `error_count=0` for this monitor packet after all required lightweight output files were populated with pending/evidence rows.
+- All three formal M9 variants have early one-batch overfit `PASS` evidence and prototype bank summaries:
+  - `m9_srr_main_true_br2_pattern_sip`: loss decrease `1.3056663274765015`.
+  - `m9_srr_main_lesion_proposal_memory`: loss decrease `1.2432777881622314`.
+  - `m9_srr_main_t2_edema_recall_focus`: loss decrease `1.3054085969924927`.
+- Prototype summaries for all three early runs report non-empty scar/edema positive/negative counts and `edema_no_t2_myocardium_negative_voxels: 0`.
 
 ## Not Yet Completed
 

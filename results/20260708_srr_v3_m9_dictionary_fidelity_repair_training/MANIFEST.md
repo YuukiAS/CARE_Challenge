@@ -28,6 +28,7 @@ Tracked files currently written:
 - `m9_route_promotion_decision.md`: `M9_NEEDS_MONITOR`.
 - `m9_next_required_action.md`: `NEEDS_MONITOR`.
 - All M9 prompt-required Markdown/CSV/JSON output names are present, but most runtime-derived tables contain `PENDING_RUNTIME` or `EVIDENCE_NOT_FOUND` rows pending Slurm completion.
+- `m9_training_curves.csv`, `m9_prototype_memory_summary.json`, `m9_prototype_update_ledger.csv`, and `m9_no_t2_edema_negative_violation_report.csv` now include partial one-batch/prototype evidence from the three running formal M9 variants. These are pre-formal-training sanity rows, not completion evidence.
 
 Required M9 evidence not yet populated from runtime:
 

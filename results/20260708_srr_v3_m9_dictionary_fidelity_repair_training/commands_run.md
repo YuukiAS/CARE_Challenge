@@ -40,6 +40,7 @@ python scripts/evaluation/aggregate_srr_v3_m9_dictionary_fidelity_packet.py --ou
 sbatch --export=ALL,M9_VARIANT_LIST=m9_srr_main_lesion_proposal_memory,M9_RUNTIME_ROOT=/users/a/e/aereinh/CARE/results/20260708_srr_v3_m9_dictionary_fidelity_repair_training/runtime_htzhulab_lesion_memory,M9_ENFORCE_MIN_TRAIN_LOOP_SECONDS=1,M9_MIN_TRAIN_LOOP_SECONDS=7200 jobs/src/run_srr_v3_m9_dictionary_fidelity_training_htzhulab.sh
 sbatch --export=ALL,M9_VARIANT_LIST=m9_srr_main_t2_edema_recall_focus,M9_RUNTIME_ROOT=/users/a/e/aereinh/CARE/results/20260708_srr_v3_m9_dictionary_fidelity_repair_training/runtime_htzhulab_t2_edema_focus,M9_ENFORCE_MIN_TRAIN_LOOP_SECONDS=1,M9_MIN_TRAIN_LOOP_SECONDS=7200 jobs/src/run_srr_v3_m9_dictionary_fidelity_training_htzhulab.sh
 squeue -j 58297510,58297807,58297806 -o '%.18i %.9P %.30j %.8u %.2t %.12M %.12l %.6D %R'
+python one-off structured aggregation of one_batch_overfit.json and prototype_bank_summary.json into m9_training_curves.csv, m9_prototype_memory_summary.json, m9_prototype_update_ledger.csv, and m9_no_t2_edema_negative_violation_report.csv
 ```
 
 Slurm submission output:

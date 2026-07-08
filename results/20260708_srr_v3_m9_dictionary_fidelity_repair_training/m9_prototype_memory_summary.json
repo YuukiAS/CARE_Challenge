@@ -1,10 +1,129 @@
 {
-  "status": "PENDING_RUNTIME",
-  "memory_type": "ema_prototype_memory_code_added",
-  "scar_positive": "EVIDENCE_NOT_FOUND",
-  "scar_safe_negative": "EVIDENCE_NOT_FOUND",
-  "edema_positive": "EVIDENCE_NOT_FOUND",
-  "edema_safe_negative": "EVIDENCE_NOT_FOUND",
-  "no_t2_edema_negative_policy": "REJECT_NO_T2_EDEMA_NEGATIVE",
-  "runtime_update_ledger": "PENDING_RUNTIME"
+  "no_t2_edema_negative_policy": "edema positives and negatives restricted to T2-present samples; no-T2 myocardium never contributes edema negatives",
+  "status": "PARTIAL_ONE_BATCH_PROTOTYPE_EVIDENCE_FORMAL_TRAINING_RUNNING",
+  "variants": {
+    "m9_srr_main_lesion_proposal_memory": {
+      "case_count": 16,
+      "category_counts": {
+        "t2_present_edema_positive": 31230,
+        "t2_present_hard_fp": 10954,
+        "t2_present_normal_myocardium_far_from_edema": 26027
+      },
+      "counts": {
+        "edema_negative": 77,
+        "edema_positive": 16,
+        "scar_negative": 67,
+        "scar_positive": 16
+      },
+      "hard_negative_counts": {
+        "edema_no_t2_myocardium_negative_voxels": 0,
+        "edema_t2_present_artifact": 382,
+        "edema_t2_present_hard_fp": 10954,
+        "scar_artifact": 70,
+        "scar_hard_fp": 4659
+      },
+      "safe_negative_policy": "edema positives and negatives restricted to T2-present samples; no-T2 myocardium never contributes edema negatives",
+      "selected_case_ids": [
+        "Case2001",
+        "Case2003",
+        "Case2004",
+        "Case2005",
+        "Case2006",
+        "Case2009",
+        "Case2010",
+        "Case2011",
+        "Case2012",
+        "Case2013",
+        "Case2014",
+        "Case2015",
+        "Case2016",
+        "Case2018",
+        "Case2019",
+        "Case2021"
+      ],
+      "source": "train_oof_runtime_features_fold0"
+    },
+    "m9_srr_main_t2_edema_recall_focus": {
+      "case_count": 16,
+      "category_counts": {
+        "t2_present_edema_positive": 31230,
+        "t2_present_hard_fp": 10954,
+        "t2_present_normal_myocardium_far_from_edema": 26027
+      },
+      "counts": {
+        "edema_negative": 77,
+        "edema_positive": 16,
+        "scar_negative": 67,
+        "scar_positive": 16
+      },
+      "hard_negative_counts": {
+        "edema_no_t2_myocardium_negative_voxels": 0,
+        "edema_t2_present_artifact": 382,
+        "edema_t2_present_hard_fp": 10954,
+        "scar_artifact": 70,
+        "scar_hard_fp": 4659
+      },
+      "safe_negative_policy": "edema positives and negatives restricted to T2-present samples; no-T2 myocardium never contributes edema negatives",
+      "selected_case_ids": [
+        "Case2001",
+        "Case2003",
+        "Case2004",
+        "Case2005",
+        "Case2006",
+        "Case2009",
+        "Case2010",
+        "Case2011",
+        "Case2012",
+        "Case2013",
+        "Case2014",
+        "Case2015",
+        "Case2016",
+        "Case2018",
+        "Case2019",
+        "Case2021"
+      ],
+      "source": "train_oof_runtime_features_fold0"
+    },
+    "m9_srr_main_true_br2_pattern_sip": {
+      "case_count": 16,
+      "category_counts": {
+        "t2_present_edema_positive": 31230,
+        "t2_present_hard_fp": 10954,
+        "t2_present_normal_myocardium_far_from_edema": 26027
+      },
+      "counts": {
+        "edema_negative": 77,
+        "edema_positive": 16,
+        "scar_negative": 67,
+        "scar_positive": 16
+      },
+      "hard_negative_counts": {
+        "edema_no_t2_myocardium_negative_voxels": 0,
+        "edema_t2_present_artifact": 382,
+        "edema_t2_present_hard_fp": 10954,
+        "scar_artifact": 70,
+        "scar_hard_fp": 4659
+      },
+      "safe_negative_policy": "edema positives and negatives restricted to T2-present samples; no-T2 myocardium never contributes edema negatives",
+      "selected_case_ids": [
+        "Case2001",
+        "Case2003",
+        "Case2004",
+        "Case2005",
+        "Case2006",
+        "Case2009",
+        "Case2010",
+        "Case2011",
+        "Case2012",
+        "Case2013",
+        "Case2014",
+        "Case2015",
+        "Case2016",
+        "Case2018",
+        "Case2019",
+        "Case2021"
+      ],
+      "source": "train_oof_runtime_features_fold0"
+    }
+  }
 }
