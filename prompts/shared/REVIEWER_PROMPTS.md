@@ -803,3 +803,110 @@ Allowed decisions:
 
 `M8_AUDITED_LOCAL_PROMOTION_CANDIDATE` does not authorize validation upload, hosted metric claim, leaderboard-ready status, challenge submission, or M9. It only authorizes GPT/user planning for fold expansion, packaging design, or a separate human-approved validation submission milestone.
 ```
+
+## M8 reviewer follow-up: no-promotion repair decision audit
+
+You are the separate read-only reviewer/auditor for the M8 follow-up no-promotion repair decision milestone.
+
+Required protocol sentence: This is a separate read-only reviewer/auditor session. Do not fix code, do not generate missing artifacts, do not train, and do not start the next milestone. Review only the completed result directory, write review.md with the controlled milestone decision, then force-add/commit review.md. Do not push automatically.
+
+### 1. Review scope
+
+Review only:
+
+```text
+prompts/shared/EXECUTOR_PROMPTS.md
+prompts/shared/REVIEWER_PROMPTS.md
+scripts/evaluation/diagnose_srr_v3_m8_followup_repair_decision.py
+results/20260708_srr_v3_m8_followup_no_promotion_repair_decision/
+results/20260707_srr_v3_m8_editor_grade_leaderboard_sprint/review.md
+results/20260707_srr_v3_m8_editor_grade_leaderboard_sprint/m8_route_promotion_decision.md
+results/20260707_srr_v3_m8_editor_grade_leaderboard_sprint/m8_best_variant_decision_table.csv
+```
+
+You may also read the required protocol files if needed:
+
+```text
+START_HERE_FOR_GPT.md
+GPT_PLANNER_CARE_PROTOCOL.md
+AGENTS.md
+README.md
+prompts/CHATGPT_RULES.md
+prompts/GPT_HARD_GATE_PROMPT.md
+prompts/MILESTONE_REVIEW_PROTOCOL.md
+prompts/THREAD_BOOTSTRAP_ROUTE_IMAGE_PROTOCOL.md
+```
+
+### 2. Required checks
+
+Check that the executor did not convert M8 into route promotion, fold expansion, validation packaging, hosted metric claim, leaderboard readiness, scientific stop, or M9.
+
+Check that `results/20260708_srr_v3_m8_followup_no_promotion_repair_decision/` includes:
+
+```text
+result.md
+completion_check.md
+review_request.md
+MANIFEST.md
+commands_run.md
+m8_followup_route_objective.md
+m8_review_findings_ledger.csv
+m8_candidate_failure_matrix.csv
+m8_proxy_feature_schema.csv
+m8_proxy_arbitration_help_harm.csv
+m8_hard_subgroup_help_harm.csv
+m8_no_t2_safety_report.csv
+m8_repair_contract.md
+m8_next_required_action.md
+m8_followup_strict_validator_report.csv
+m8_followup_strict_validator_report.md
+m8_followup_validator_selftest_report.csv
+m8_followup_validator_selftest_report.md
+```
+
+Check that the policy feature schema marks these as forbidden for selected deployable policies: case ID, GT metric values as decision inputs, hosted feedback, manual case lists, foreground_mean-only selection, and center-ID-only routing.
+
+Check that the same-split nnU-Net anchor is included and that scar and edema are reported separately. Do not accept a foreground mean as route evidence.
+
+Check no-T2 edema safety. Any selected policy with nonzero no-T2 edema voxels must be rejected unless it is clearly diagnostic-only and not selected.
+
+Check hard subgroups. The packet must not be easy-only. It must include T2-present, no-T2 safety, CenterB/CenterC or the strongest available equivalents, scar-positive/edema-positive, and remote-FP/component-burden analysis where available.
+
+Check repair-contract readiness. Treat a policy as diagnostic-only, not repair-contract-ready, if its benefit comes mainly from anchor-only fallback, uses SRR on only a negligible fraction of cases, improves only a single easy metric while leaving edema/remote-FP/component hard subgroups unresolved, or cannot explain why the deployable proxy selects SRR in terms of the SRR-v3 mechanism. A valid repair contract must show that SRR contributes a nontrivial, mechanism-consistent, same-split help signal under allowed non-GT proxy features; otherwise the correct next action is `GPT_REPLAN_ROUTE_AFTER_NO_DEPLOYABLE_REPAIR`, not a repair-ready decision.
+
+Check validator behavior. The real packet validator must pass with zero errors only for a valid packet, and known-bad self-tests must fail closed. If a known-bad mutation passes, return `M8_FOLLOWUP_AUDITED_NEEDS_REVISION`.
+
+Check evidence quality. Monitor packets, pending Slurm jobs, smoke-only evidence, synthetic evidence, placeholder evidence, old summaries, executor self-review, or missing aggregation cannot support audited-go.
+
+### 3. Review decision states
+
+Write `results/20260708_srr_v3_m8_followup_no_promotion_repair_decision/review.md` with exactly one of these controlled decisions:
+
+```text
+M8_FOLLOWUP_AUDITED_REPAIR_CONTRACT_READY
+M8_FOLLOWUP_AUDITED_NO_DEPLOYABLE_REPAIR_SCIENTIFIC_UNRESOLVED
+M8_FOLLOWUP_AUDITED_NEEDS_EVIDENCE
+M8_FOLLOWUP_AUDITED_NEEDS_REVISION
+M8_FOLLOWUP_AUDITED_PROTOCOL_BLOCKED
+```
+
+`M8_FOLLOWUP_AUDITED_REPAIR_CONTRACT_READY` means only this: GPT may plan a future bounded repair implementation milestone using the reviewed repair contract. It does not authorize Codex to start that implementation automatically, and it does not authorize route promotion, fold expansion, validation packaging, upload, hosted metric claims, leaderboard claims, scientific stop, or M9.
+
+Use `M8_FOLLOWUP_AUDITED_NO_DEPLOYABLE_REPAIR_SCIENTIFIC_UNRESOLVED` if the executor produced a valid diagnostic packet but no deployable non-GT arbitration/repair contract improves the situation enough to justify implementation.
+
+Use `M8_FOLLOWUP_AUDITED_NEEDS_EVIDENCE` if required M8 inputs or follow-up outputs are missing, if runtime/proxy evidence is insufficient, or if the packet relies only on natural-language claims.
+
+Use `M8_FOLLOWUP_AUDITED_NEEDS_REVISION` if code, schema, validator, leakage prevention, no-T2 safety, same-split comparison, or hard-subgroup reporting is broken.
+
+Use `M8_FOLLOWUP_AUDITED_PROTOCOL_BLOCKED` if the executor violated role boundaries by writing `review.md`, starting the next milestone, claiming M9, packaging validation, uploading, or claiming hosted metrics.
+
+### 4. Commit policy
+
+Commit only the review file:
+
+```bash
+git add -f results/20260708_srr_v3_m8_followup_no_promotion_repair_decision/review.md
+git commit -m "Add M8 follow-up repair decision review"
+```
+
+Do not push automatically.
