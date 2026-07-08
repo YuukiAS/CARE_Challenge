@@ -46,6 +46,8 @@ squeue -j 58297510,58297807,58297806,58297511 -o '%.18i %.9P %.30j %.8u %.2t %.1
 python -m py_compile scripts/evaluation/validate_srr_v3_m9_dictionary_fidelity_packet.py
 python scripts/evaluation/validate_srr_v3_m9_dictionary_fidelity_packet.py --self-test
 python scripts/evaluation/validate_srr_v3_m9_dictionary_fidelity_packet.py results/20260708_srr_v3_m9_dictionary_fidelity_repair_training
+python -m py_compile scripts/evaluation/aggregate_srr_v3_m9_dictionary_fidelity_packet.py scripts/evaluation/validate_srr_v3_m9_dictionary_fidelity_packet.py
+python scripts/evaluation/aggregate_srr_v3_m9_dictionary_fidelity_packet.py --runtime-root results/20260708_srr_v3_m9_dictionary_fidelity_repair_training/runtime_htzhulab_mirror --runtime-root results/20260708_srr_v3_m9_dictionary_fidelity_repair_training/runtime_htzhulab_lesion_memory --runtime-root results/20260708_srr_v3_m9_dictionary_fidelity_repair_training/runtime_htzhulab_t2_edema_focus --out-dir /tmp/m9_aggregator_smoke
 ```
 
 Slurm submission output:
@@ -84,3 +86,5 @@ Updated validator self-test output:
 good pass 0 PASS
 29 known-bad fixtures fail-closed PASS
 ```
+
+Aggregator smoke output was written to `/tmp/m9_aggregator_smoke` only. The real M9 packet was not re-aggregated because formal M9 training jobs were still running and no `summary.json` / `training_log.csv` / `component_hd_by_case_*.csv` formal outputs existed yet.

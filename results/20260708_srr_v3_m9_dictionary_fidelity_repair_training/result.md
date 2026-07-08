@@ -24,6 +24,7 @@ This is an executor/controller monitor packet for M9. It is not review-ready and
 - Added safe prototype memory helper that rejects no-T2 edema-negative updates.
 - Added Cine final-output inspection entrypoint that fails closed when local final outputs are absent.
 - Added M9 aggregator, validator, validator self-test, and Slurm wrappers.
+- Expanded the M9 aggregator so post-job runtime aggregation can populate training curves, validation events, gradient sanity, Pattern-SIP usage proxies, proposal/refiner rows, component/HD95/remote-FP rows, same-split help/harm against the tracked M8 nnU-Net anchor metrics, hard subgroup rows, and metric-aligned checkpoint selection.
 
 ## Runtime State
 
@@ -48,6 +49,7 @@ Cine currently reports `M9_NEEDS_EVIDENCE_CINE_LOCAL_BACKBONE_MISSING` because n
 - Loss-weight smoke proved changing `loss_scar_refiner_small_roi` from `0` to `10` changed total loss and gradient norm.
 - M9 validator self-test passed for one good fixture and all 29 required known-bad fixtures.
 - Real-packet validator exits with `error_count=0` for this monitor packet after all required lightweight output files were populated with pending/evidence rows.
+- Aggregator smoke test wrote a separate `/tmp/m9_aggregator_smoke` packet successfully without modifying the real M9 packet while formal jobs are still running.
 - All three formal M9 variants have early one-batch overfit `PASS` evidence and prototype bank summaries:
   - `m9_srr_main_true_br2_pattern_sip`: loss decrease `1.3056663274765015`.
   - `m9_srr_main_lesion_proposal_memory`: loss decrease `1.2432777881622314`.

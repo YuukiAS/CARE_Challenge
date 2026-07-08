@@ -26,6 +26,7 @@ Tracked files currently written:
 - `m9_loss_weight_wiring_test_report.md`: CPU loss-weight wiring proof.
 - `m9_nnunet_role_audit.md`: SRR-main/nnU-Net role code audit.
 - `m9_validator_selftest_report.*`: one good fixture plus all 29 required known-bad mutations passed fail-closed self-test.
+- `scripts/evaluation/aggregate_srr_v3_m9_dictionary_fidelity_packet.py`: post-job aggregator now supports runtime-derived tables beyond budget/selection, including same-split help/harm from runtime component metrics matched to the tracked M8 nnU-Net anchor metrics.
 - `m9_route_promotion_decision.md`: `M9_NEEDS_MONITOR`.
 - `m9_next_required_action.md`: `NEEDS_MONITOR`.
 - All M9 prompt-required Markdown/CSV/JSON output names are present, but most runtime-derived tables contain `PENDING_RUNTIME` or `EVIDENCE_NOT_FOUND` rows pending Slurm completion.
