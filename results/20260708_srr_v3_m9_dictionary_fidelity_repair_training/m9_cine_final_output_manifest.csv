@@ -1,2 +1,13 @@
-status,case_count,non_reference_frame_count,prediction_dir,message
-M9_NEEDS_EVIDENCE_CINE_LOCAL_BACKBONE_MISSING,0,0,/users/a/e/aereinh/CARE/results/20260708_srr_v3_m9_dictionary_fidelity_repair_training/runtime_htzhulab_mirror/cine_predictions,no local Cine final-output predictions found
+status,case_count,case_id,center,reference_frame,non_reference_frames,prediction_path,label_values,hosted_metric_caveat
+FOUND_LOCAL_TEMPORAL_FINAL_OUTPUTS,1,Case1001,center_alpha,0,9,results/20260708_srr_v3_m9_dictionary_fidelity_repair_training/runtime_m9_cine_temporal_output/predictions/Case1001_pred.nii.gz,0;1;2;3,no hosted metric claim
+FOUND_LOCAL_TEMPORAL_FINAL_OUTPUTS,1,Case1002,center_alpha,0,8,results/20260708_srr_v3_m9_dictionary_fidelity_repair_training/runtime_m9_cine_temporal_output/predictions/Case1002_pred.nii.gz,0;1;2;3,no hosted metric claim
+FOUND_LOCAL_TEMPORAL_FINAL_OUTPUTS,1,Case1003,center_alpha,0,6,results/20260708_srr_v3_m9_dictionary_fidelity_repair_training/runtime_m9_cine_temporal_output/predictions/Case1003_pred.nii.gz,0;1;2;3,no hosted metric claim
+FOUND_LOCAL_TEMPORAL_FINAL_OUTPUTS,1,Case1004,center_alpha,0,10,results/20260708_srr_v3_m9_dictionary_fidelity_repair_training/runtime_m9_cine_temporal_output/predictions/Case1004_pred.nii.gz,0;1;2;3,no hosted metric claim
+FOUND_LOCAL_TEMPORAL_FINAL_OUTPUTS,1,Case1005,center_alpha,0,8,results/20260708_srr_v3_m9_dictionary_fidelity_repair_training/runtime_m9_cine_temporal_output/predictions/Case1005_pred.nii.gz,0;1;2;3,no hosted metric claim
+FOUND_LOCAL_TEMPORAL_FINAL_OUTPUTS,1,Case1006,center_alpha,0,9,results/20260708_srr_v3_m9_dictionary_fidelity_repair_training/runtime_m9_cine_temporal_output/predictions/Case1006_pred.nii.gz,0;1;2;3,no hosted metric claim
+FOUND_LOCAL_TEMPORAL_FINAL_OUTPUTS,1,Case1007,center_alpha,0,10,results/20260708_srr_v3_m9_dictionary_fidelity_repair_training/runtime_m9_cine_temporal_output/predictions/Case1007_pred.nii.gz,0;1;2;3,no hosted metric claim
+FOUND_LOCAL_TEMPORAL_FINAL_OUTPUTS,1,Case1008,center_alpha,0,15,results/20260708_srr_v3_m9_dictionary_fidelity_repair_training/runtime_m9_cine_temporal_output/predictions/Case1008_pred.nii.gz,0;1;2;3,no hosted metric claim
+FOUND_LOCAL_TEMPORAL_FINAL_OUTPUTS,1,Case1010,center_alpha,0,6,results/20260708_srr_v3_m9_dictionary_fidelity_repair_training/runtime_m9_cine_temporal_output/predictions/Case1010_pred.nii.gz,0;1;2;3,no hosted metric claim
+FOUND_LOCAL_TEMPORAL_FINAL_OUTPUTS,1,Case1011,center_alpha,0,8,results/20260708_srr_v3_m9_dictionary_fidelity_repair_training/runtime_m9_cine_temporal_output/predictions/Case1011_pred.nii.gz,0;1;2;3,no hosted metric claim
+FOUND_LOCAL_TEMPORAL_FINAL_OUTPUTS,1,Case1012,center_alpha,0,6,results/20260708_srr_v3_m9_dictionary_fidelity_repair_training/runtime_m9_cine_temporal_output/predictions/Case1012_pred.nii.gz,0;1;2;3,no hosted metric claim
+FOUND_LOCAL_TEMPORAL_FINAL_OUTPUTS,1,Case1013,center_alpha,0,9,results/20260708_srr_v3_m9_dictionary_fidelity_repair_training/runtime_m9_cine_temporal_output/predictions/Case1013_pred.nii.gz,0;1;2;3,no hosted metric claim

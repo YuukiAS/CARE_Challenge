@@ -1,0 +1,8 @@
+{
+  "case_count": 12,
+  "hosted_metric_caveat": "no hosted metric claim",
+  "non_reference_frame_count": 12,
+  "prediction_dir": "results/20260708_srr_v3_m9_dictionary_fidelity_repair_training/runtime_m9_cine_temporal_output/predictions",
+  "registration_method": "ANTsPy_SyNOnly",
+  "status": "FOUND_LOCAL_TEMPORAL_FINAL_OUTPUTS"
+}

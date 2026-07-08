@@ -1,2 +1,2 @@
 item,status,issue,next_required_action
-local_final_output_predictions,M9_NEEDS_EVIDENCE_CINE_LOCAL_BACKBONE_MISSING,no local Cine final-output predictions found,provide local safe-subset Cine final-output predictions or train temporal adapter
+m9_cine_temporal_output,FOUND_LOCAL_TEMPORAL_FINAL_OUTPUTS,,review local proxy evidence; do not claim hosted metric

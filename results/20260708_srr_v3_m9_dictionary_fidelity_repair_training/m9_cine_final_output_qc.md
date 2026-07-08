@@ -1,9 +1,11 @@
 # M9 Cine Final-output QC
 
-status: `M9_NEEDS_EVIDENCE_CINE_LOCAL_BACKBONE_MISSING`
-case_count: `0`
-non_reference_frame_count: `0`
-prediction_dir: `/users/a/e/aereinh/CARE/results/20260708_srr_v3_m9_dictionary_fidelity_repair_training/runtime_htzhulab_mirror/cine_predictions`
-message: no local Cine final-output predictions found
+status: `FOUND_LOCAL_TEMPORAL_FINAL_OUTPUTS`
+case_count: `12`
+non_reference_frame_count: `12`
+prediction_dir: `results/20260708_srr_v3_m9_dictionary_fidelity_repair_training/runtime_m9_cine_temporal_output/predictions`
+registration_method: `ANTsPy_SyNOnly`
 
-No validation package or upload was created.
+This is a local safe-subset temporal final-output run using existing local CineMA frame-wise anatomy predictions.
+It writes runtime NIfTI predictions under an ignored directory and commits only lightweight evidence.
+No validation package, upload, hosted metric, route promotion, fold expansion, scientific stop, or M10 was created.

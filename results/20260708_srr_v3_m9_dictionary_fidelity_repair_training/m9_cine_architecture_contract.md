@@ -1,7 +1,20 @@
 # M9 Cine Architecture Contract
 
-status: `M9_NEEDS_EVIDENCE_CINE_LOCAL_BACKBONE_MISSING`
+status: `FOUND_LOCAL_TEMPORAL_FINAL_OUTPUTS`
 
-M9 requires a Cine final-output branch using non-reference frames and local compact-label outputs. Current local inspection found no final-output prediction directory under the inspected M9 runtime Cine prediction directories.
+mode: `mode_A_registration_temporal_dictionary`
 
-No weights were downloaded. No validation package or upload was created.
+Pipeline:
+
+```text
+Cine input sequence
+-> frame 0 reference anchor
+-> safe-case descriptor-selected non-reference frame
+-> existing local CineMA frame-wise anatomy predictions
+-> ANTsPy SyNOnly registration when available, SimpleITK Demons fallback otherwise
+-> temporal representation slots: reference_frame, registered_nonreference_anatomy, quality_weighted_union
+-> deterministic temporal compact-label proxy output
+-> local same-subset metrics vs frame0/reference control
+```
+
+Caveat: this is a local final-output proxy run, not a hosted myocardium_cinemyops metric claim.

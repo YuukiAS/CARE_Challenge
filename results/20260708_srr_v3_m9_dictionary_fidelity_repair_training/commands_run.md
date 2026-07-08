@@ -88,3 +88,35 @@ good pass 0 PASS
 ```
 
 Aggregator smoke output was written to `/tmp/m9_aggregator_smoke` only. The real M9 packet was not re-aggregated because formal M9 training jobs were still running and no `summary.json` / `training_log.csv` / `component_hd_by_case_*.csv` formal outputs existed yet.
+
+## 2026-07-08 Cine local temporal-output supplement
+
+```text
+sed -n '1971,2645p' prompts/shared/EXECUTOR_PROMPTS.md
+squeue -u "$USER" -o "%.18i %.12P %.25j %.8T %.10M %.9l %.20R"
+squeue -j 58297510,58297806,58297807 -o "%.18i %.12P %.25j %.8T %.10M %.9l %.20R"
+sacct -j 58297510,58297806,58297807,58297511,58297196,58297197 --format=JobID,JobName%24,Partition,State,ExitCode,Elapsed,Timelimit,MaxRSS,AllocTRES%60 -P
+python -m py_compile src/care_myocardium/cine/temporal_output.py scripts/training/run_cine_temporal_output_m9.py
+./envs/env_CARE/bin/python scripts/training/run_cine_temporal_output_m9.py --local-pred-dir results/20260708_srr_v3_m9_dictionary_fidelity_repair_training/runtime_m9_cine_temporal_output/predictions --out-dir results/20260708_srr_v3_m9_dictionary_fidelity_repair_training --run-local-temporal-output --max-cases 12 --pairs-per-case 1 --antspy-iterations 25
+python -m py_compile src/care_myocardium/cine/temporal_output.py scripts/training/run_cine_temporal_output_m9.py
+```
+
+Local Cine temporal-output rerun output:
+
+```text
+FOUND_LOCAL_TEMPORAL_FINAL_OUTPUTS
+case_count=12
+non_reference_frame_count=12
+registration_method=ANTsPy_SyNOnly
+prediction_dir=results/20260708_srr_v3_m9_dictionary_fidelity_repair_training/runtime_m9_cine_temporal_output/predictions
+```
+
+Latest Slurm state observed after the Cine supplement:
+
+```text
+58297510 htzhulab M9SRRDict RUNNING
+58297807 htzhulab M9SRRDict RUNNING
+58297806 htzhulab M9SRRDict RUNNING
+```
+
+Runtime NIfTI predictions and ANTs transform files were written only under ignored `runtime_m9_cine_temporal_output/` and are not intended for git tracking.

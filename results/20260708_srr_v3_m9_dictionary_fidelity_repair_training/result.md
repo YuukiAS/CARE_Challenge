@@ -23,6 +23,7 @@ This is an executor/controller monitor packet for M9. It is not review-ready and
 - Added M9 loss keys and aliases for scar small-ROI refiner and edema large-ROI T2-present refiner.
 - Added safe prototype memory helper that rejects no-T2 edema-negative updates.
 - Added Cine final-output inspection entrypoint that fails closed when local final outputs are absent.
+- Added a bounded M9 local Cine temporal final-output mode that reuses existing local CineMA frame-wise anatomy predictions, registers one descriptor-selected non-reference frame per safe case with ANTsPy SyNOnly, writes ignored runtime compact-label proxy outputs, and records lightweight local metrics for 12 safe train cases.
 - Added M9 aggregator, validator, validator self-test, and Slurm wrappers.
 - Expanded the M9 aggregator so post-job runtime aggregation can populate training curves, validation events, gradient sanity, Pattern-SIP usage proxies, proposal/refiner rows, component/HD95/remote-FP rows, same-split help/harm against the tracked M8 nnU-Net anchor metrics, hard subgroup rows, and metric-aligned checkpoint selection.
 
@@ -39,7 +40,15 @@ Submitted Slurm jobs and routing race state:
 
 The MyoPS jobs have not completed, so M9 cannot be marked `M9_READY_FOR_REVIEW`.
 
-Cine currently reports `M9_NEEDS_EVIDENCE_CINE_LOCAL_BACKBONE_MISSING` because no local final-output Cine predictions were found under the inspected runtime directory.
+Cine local temporal final-output evidence is now present:
+
+- status: `FOUND_LOCAL_TEMPORAL_FINAL_OUTPUTS`
+- local safe train cases: `12`
+- non-reference frames used: `12`
+- registration method: `ANTsPy_SyNOnly`
+- runtime prediction directory: `results/20260708_srr_v3_m9_dictionary_fidelity_repair_training/runtime_m9_cine_temporal_output/predictions`
+
+This is local proxy final-output evidence only. It does not claim hosted `myocardium_cinemyops` performance or route readiness.
 
 ## Verification Completed
 
@@ -50,6 +59,7 @@ Cine currently reports `M9_NEEDS_EVIDENCE_CINE_LOCAL_BACKBONE_MISSING` because n
 - M9 validator self-test passed for one good fixture and all 29 required known-bad fixtures.
 - Real-packet validator exits with `error_count=0` for this monitor packet after all required lightweight output files were populated with pending/evidence rows.
 - Aggregator smoke test wrote a separate `/tmp/m9_aggregator_smoke` packet successfully without modifying the real M9 packet while formal jobs are still running.
+- M9 Cine local temporal output run completed with `FOUND_LOCAL_TEMPORAL_FINAL_OUTPUTS`, wrote 12 ignored runtime NIfTI predictions, and updated the required M9 Cine manifest/QC/registration/temporal-dictionary/metrics/help-harm/failure files.
 - All three formal M9 variants have early one-batch overfit `PASS` evidence and prototype bank summaries:
   - `m9_srr_main_true_br2_pattern_sip`: loss decrease `1.3056663274765015`.
   - `m9_srr_main_lesion_proposal_memory`: loss decrease `1.2432777881622314`.
@@ -58,4 +68,4 @@ Cine currently reports `M9_NEEDS_EVIDENCE_CINE_LOCAL_BACKBONE_MISSING` because n
 
 ## Not Yet Completed
 
-M9 formal training/evaluation, post-job runtime aggregation, real Cine final-output metrics, and replacement of pending/evidence rows with runtime-derived evidence remain incomplete.
+M9 formal MyoPS training/evaluation, post-job runtime aggregation, and replacement of pending/evidence rows with runtime-derived MyoPS evidence remain incomplete. Cine has local final-output proxy evidence, but it is not hosted/challenge evidence and does not make the overall packet review-ready while MyoPS jobs are still running.
