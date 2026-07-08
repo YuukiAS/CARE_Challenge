@@ -31,10 +31,12 @@ Submitted Slurm jobs and routing race state:
 
 - MyoPS M9 dictionary fidelity training A100 mirror: job `58297196`, partition `a100-gpu`, cancelled after htzhulab mirror started.
 - MyoPS M9 dictionary fidelity training htzhulab mirror: job `58297510`, partition `htzhulab`, last observed state `RUNNING`.
+- MyoPS M9 lesion/prototype memory isolated htzhulab job: job `58297807`, partition `htzhulab`, last observed state `RUNNING`.
+- MyoPS M9 T2 edema recall focus isolated htzhulab job: job `58297806`, partition `htzhulab`, last observed state `RUNNING`.
 - Cine M9 temporal final-output evidence A100 mirror: job `58297197`, partition `a100-gpu`, cancelled after htzhulab mirror completed.
 - Cine M9 temporal final-output evidence htzhulab mirror: job `58297511`, partition `htzhulab`, completed with exit code `0:0`.
 
-The MyoPS job has not completed, so M9 cannot be marked `M9_READY_FOR_REVIEW`.
+The MyoPS jobs have not completed, so M9 cannot be marked `M9_READY_FOR_REVIEW`.
 
 Cine currently reports `M9_NEEDS_EVIDENCE_CINE_LOCAL_BACKBONE_MISSING` because no local final-output Cine predictions were found under the inspected runtime directory.
 

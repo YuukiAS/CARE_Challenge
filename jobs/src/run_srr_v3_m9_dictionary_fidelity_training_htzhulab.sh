@@ -22,18 +22,22 @@ LOG_FILE="${LOG_FILE:-${CARE_ROOT}/logs/M9SRRDict_${SLURM_JOB_ID:-local}_${TS}.l
 exec > >(tee -a "${LOG_FILE}") 2>&1
 
 OUT_ROOT="${M9_RUNTIME_ROOT:-${CARE_ROOT}/results/20260708_srr_v3_m9_dictionary_fidelity_repair_training/runtime}"
-for VARIANT in \
-  m9_srr_main_true_br2_pattern_sip \
-  m9_srr_main_lesion_proposal_memory \
-  m9_srr_main_t2_edema_recall_focus
-do
+DEFAULT_VARIANTS="m9_srr_main_true_br2_pattern_sip m9_srr_main_lesion_proposal_memory m9_srr_main_t2_edema_recall_focus"
+read -r -a VARIANTS <<< "${M9_VARIANT_LIST:-${DEFAULT_VARIANTS}}"
+EXTRA_ARGS=()
+if [[ "${M9_ENFORCE_MIN_TRAIN_LOOP_SECONDS:-0}" == "1" ]]; then
+  EXTRA_ARGS+=(--enforce-min-train-loop-seconds)
+fi
+for VARIANT in "${VARIANTS[@]}"; do
   "${CARE_ROOT}/envs/env_CARE/bin/python" scripts/training/run_srr_propref_myops_fold0.py \
     --variant "${VARIANT}" \
     --out-root "${OUT_ROOT}" \
-    --max-steps 6000 \
-    --max-runtime-seconds 27000 \
-    --val-every 300 \
+    --max-steps "${M9_MAX_STEPS:-6000}" \
+    --max-runtime-seconds "${M9_MAX_RUNTIME_SECONDS:-27000}" \
+    --val-every "${M9_VAL_EVERY:-300}" \
+    --min-train-loop-seconds-for-plateau "${M9_MIN_TRAIN_LOOP_SECONDS:-7200}" \
     --loss-weight loss_scar_refiner_small_roi=1.0 \
-    --loss-weight loss_edema_refiner_large_roi_t2_present=1.0
+    --loss-weight loss_edema_refiner_large_roi_t2_present=1.0 \
+    "${EXTRA_ARGS[@]}"
 done
 "${CARE_ROOT}/envs/env_CARE/bin/python" scripts/evaluation/aggregate_srr_v3_m9_dictionary_fidelity_packet.py

@@ -28,34 +28,52 @@ def load_summary(path: Path) -> dict[str, object]:
 
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--runtime-root", default="results/20260708_srr_v3_m9_dictionary_fidelity_repair_training/runtime")
+    parser.add_argument(
+        "--runtime-root",
+        action="append",
+        default=[],
+        help="Runtime root to scan; may be repeated. Defaults to runtime and runtime_* under the output directory.",
+    )
     parser.add_argument("--out-dir", default=str(REQUIRED_OUTPUT_DIR))
     args = parser.parse_args()
-    runtime_root = Path(args.runtime_root)
     out_dir = Path(args.out_dir)
     out_dir.mkdir(parents=True, exist_ok=True)
+    runtime_roots = [Path(item) for item in args.runtime_root]
+    if not runtime_roots:
+        candidates = [out_dir / "runtime"]
+        candidates.extend(sorted(out_dir.glob("runtime_*")))
+        runtime_roots = []
+        seen: set[Path] = set()
+        for candidate in candidates:
+            resolved = candidate.resolve()
+            if resolved not in seen:
+                runtime_roots.append(candidate)
+                seen.add(resolved)
 
     rows: list[dict[str, object]] = []
-    for summary_path in sorted(runtime_root.glob("variants/*/summary.json")):
-        summary = load_summary(summary_path)
-        variant = str(summary.get("variant", summary_path.parent.name))
-        rows.append(
-            {
-                "candidate_id": variant,
-                "summary_path": str(summary_path),
-                "actual_optimizer_steps": summary.get("actual_optimizer_steps", "EVIDENCE_NOT_FOUND"),
-                "train_loop_seconds": summary.get("train_loop_seconds", summary.get("elapsed_seconds", "EVIDENCE_NOT_FOUND")),
-                "checkpoint_selection_mode": summary.get("checkpoint_selection_mode", "EVIDENCE_NOT_FOUND"),
-                "checkpoint_selection_status": summary.get("checkpoint_selection_status", "EVIDENCE_NOT_FOUND"),
-                "checkpoint_best": summary.get("checkpoint_best", "EVIDENCE_NOT_FOUND"),
-            }
-        )
+    for runtime_root in runtime_roots:
+        for summary_path in sorted(runtime_root.glob("variants/*/summary.json")):
+            summary = load_summary(summary_path)
+            variant = str(summary.get("variant", summary_path.parent.name))
+            rows.append(
+                {
+                    "candidate_id": variant,
+                    "runtime_root": str(runtime_root),
+                    "summary_path": str(summary_path),
+                    "actual_optimizer_steps": summary.get("actual_optimizer_steps", "EVIDENCE_NOT_FOUND"),
+                    "train_loop_seconds": summary.get("train_loop_seconds", summary.get("elapsed_seconds", "EVIDENCE_NOT_FOUND")),
+                    "checkpoint_selection_mode": summary.get("checkpoint_selection_mode", "EVIDENCE_NOT_FOUND"),
+                    "checkpoint_selection_status": summary.get("checkpoint_selection_status", "EVIDENCE_NOT_FOUND"),
+                    "checkpoint_best": summary.get("checkpoint_best", "EVIDENCE_NOT_FOUND"),
+                }
+            )
 
     if not rows:
         rows.append(
             {
                 "candidate_id": "EVIDENCE_NOT_FOUND",
-                "summary_path": str(runtime_root),
+                "runtime_root": ";".join(str(path) for path in runtime_roots),
+                "summary_path": "EVIDENCE_NOT_FOUND",
                 "actual_optimizer_steps": "EVIDENCE_NOT_FOUND",
                 "train_loop_seconds": "EVIDENCE_NOT_FOUND",
                 "checkpoint_selection_mode": "EVIDENCE_NOT_FOUND",
@@ -68,6 +86,7 @@ def main() -> None:
         rows,
         [
             "candidate_id",
+            "runtime_root",
             "summary_path",
             "actual_optimizer_steps",
             "train_loop_seconds",

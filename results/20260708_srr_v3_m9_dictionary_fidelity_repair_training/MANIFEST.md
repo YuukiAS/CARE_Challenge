@@ -9,6 +9,8 @@ Current state: `M9_NEEDS_MONITOR`
 Current runtime state:
 
 - MyoPS job `58297510` on `htzhulab`: running.
+- MyoPS isolated job `58297807` on `htzhulab`: running.
+- MyoPS isolated job `58297806` on `htzhulab`: running.
 - Cine job `58297511` on `htzhulab`: completed with local-backbone-missing evidence.
 - A100 mirrors `58297196` and `58297197`: cancelled after htzhulab race decisions.
 

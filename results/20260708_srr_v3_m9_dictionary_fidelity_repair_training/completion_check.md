@@ -4,12 +4,14 @@ status: `M9_NEEDS_MONITOR`
 
 This packet is not `M9_READY_FOR_REVIEW`.
 
-Reason: M9 MyoPS training is running on `htzhulab` and has not completed. A running monitor packet is not completion evidence.
+Reason: M9 MyoPS training jobs are running on `htzhulab` and have not completed. A running monitor packet is not completion evidence.
 
 Submitted jobs:
 
 - `58297196` `M9SRRDict` on `a100-gpu`: cancelled after htzhulab mirror started.
 - `58297510` `M9SRRDict` on `htzhulab`: running.
+- `58297807` `M9SRRDict` lesion/prototype memory isolated run on `htzhulab`: running.
+- `58297806` `M9SRRDict` T2 edema focus isolated run on `htzhulab`: running.
 - `58297197` `M9CineOut` on `a100-gpu`: cancelled after htzhulab mirror completed.
 - `58297511` `M9CineOut` on `htzhulab`: completed, exit code `0:0`, output status `M9_NEEDS_EVIDENCE_CINE_LOCAL_BACKBONE_MISSING`.
 

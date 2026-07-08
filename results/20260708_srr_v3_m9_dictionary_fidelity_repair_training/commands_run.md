@@ -36,6 +36,10 @@ squeue -j 58297196,58297197,58297510,58297511 -o '%.18i %.9P %.30j %.8u %.2t %.1
 sacct -j 58297196,58297197,58297510,58297511 --format=JobID,JobName,Partition,State,ExitCode,Elapsed,Start,End -P
 scancel 58297196
 scancel 58297197
+python scripts/evaluation/aggregate_srr_v3_m9_dictionary_fidelity_packet.py --out-dir results/20260708_srr_v3_m9_dictionary_fidelity_repair_training
+sbatch --export=ALL,M9_VARIANT_LIST=m9_srr_main_lesion_proposal_memory,M9_RUNTIME_ROOT=/users/a/e/aereinh/CARE/results/20260708_srr_v3_m9_dictionary_fidelity_repair_training/runtime_htzhulab_lesion_memory,M9_ENFORCE_MIN_TRAIN_LOOP_SECONDS=1,M9_MIN_TRAIN_LOOP_SECONDS=7200 jobs/src/run_srr_v3_m9_dictionary_fidelity_training_htzhulab.sh
+sbatch --export=ALL,M9_VARIANT_LIST=m9_srr_main_t2_edema_recall_focus,M9_RUNTIME_ROOT=/users/a/e/aereinh/CARE/results/20260708_srr_v3_m9_dictionary_fidelity_repair_training/runtime_htzhulab_t2_edema_focus,M9_ENFORCE_MIN_TRAIN_LOOP_SECONDS=1,M9_MIN_TRAIN_LOOP_SECONDS=7200 jobs/src/run_srr_v3_m9_dictionary_fidelity_training_htzhulab.sh
+squeue -j 58297510,58297807,58297806 -o '%.18i %.9P %.30j %.8u %.2t %.12M %.12l %.6D %R'
 ```
 
 Slurm submission output:
@@ -52,6 +56,8 @@ Last observed Slurm state:
 58297197 a100-gpu M9CineOut CANCELLED by 397557
 58297510 htzhulab M9SRRDict RUNNING
 58297511 htzhulab M9CineOut COMPLETED exit_code=0:0
+58297807 htzhulab M9SRRDict RUNNING
+58297806 htzhulab M9SRRDict RUNNING
 ```
 
 Local Cine inspection initially failed with `ModuleNotFoundError: No module named 'src'`; `scripts/training/run_cine_temporal_output_m9.py` was repaired to add the repo root to `sys.path`. Rerun output:
