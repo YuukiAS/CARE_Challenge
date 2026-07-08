@@ -83,6 +83,16 @@ the next milestone. GPT must then issue a separate read-only reviewer prompt.
 Only a `review.md` containing the milestone's exact audited-go token authorizes
 the next milestone.
 
+When authoring a future milestone, GPT must provide both sides of the contract:
+the Codex executor prompt and the independent reviewer/auditor prompt. Stage the
+new milestone prompt as a standalone Markdown file under `prompts/shared/` named
+`M<id>_<short_slug>.md`, for example `M8_editor_grade_leaderboard_sprint.md`.
+Use clear section headings for executor and reviewer content. Do not ask GPT to
+write directly into the large `prompts/shared/EXECUTOR_PROMPTS.md` and
+`prompts/shared/REVIEWER_PROMPTS.md` files for new milestone drafting; a later
+Codex maintenance step should split/merge the staged file into those canonical
+shared files and delete the standalone staging file after merge.
+
 Before writing a high-risk CARE controller task, apply
 `prompts/GPT_HARD_GATE_PROMPT.md` and require `prompts/HANDOFF_GATE_POLICY.md`
 as a completion gate. A controller task must list blocking subtasks exactly and

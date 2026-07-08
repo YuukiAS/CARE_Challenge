@@ -614,7 +614,7 @@ M7 result directory 必须是：
 完成后 `git add -f` 并本地 commit M7 轻量证据和必要 first-party helper/source/config；不要提交 checkpoint、NIfTI、upload package、大日志、raw data、secrets、environment dump 或整棵 runtime tree；不要 push；不要写 `review.md`；不要启动后续 milestone。
 ```
 
-## M7 executor follow-up 1 (continued): reviewer-blocker repair
+## M7 executor follow-up 1: reviewer-blocker repair (continued)
 
 ```text
 只执行 M7 follow-up 1 / continued：reviewer-blocker repair for `results/20260705_srr_v3_m7_training_and_cine_utilization/`。

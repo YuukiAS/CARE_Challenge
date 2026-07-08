@@ -13,6 +13,12 @@ This is the root entrypoint for any new GPT/ChatGPT planning thread reading this
 
 Do not rely only on old chat summaries, memory, or natural-language recaps when planning SRR/MyoPS/Cine routes.
 
+## Future Milestone Prompt Authoring
+
+For any future CARE milestone, GPT/ChatGPT must write both the Codex executor prompt content and the independent reviewer/auditor prompt content. Do not provide only an executor prompt or only a reviewer prompt.
+
+Because direct GPT edits to the large canonical shared files can fail or corrupt context, author each new milestone first as a standalone Markdown staging file under `prompts/shared/` named `M<id>_<short_slug>.md`, for example `M8_editor_grade_leaderboard_sprint.md`. The file must contain clearly labeled executor and reviewer sections. After that, the user may ask Codex to split/merge the staged content into `prompts/shared/EXECUTOR_PROMPTS.md` and `prompts/shared/REVIEWER_PROMPTS.md`, then delete the standalone staging file after successful merge.
+
 ## MONITOR_PACKET_IS_NOT_COMPLETION
 
 Any GPT/ChatGPT milestone, handoff, or review instruction must enforce this rule: a monitor packet, pending Slurm job packet, watcher packet, or submitted-only job packet is not completion.
