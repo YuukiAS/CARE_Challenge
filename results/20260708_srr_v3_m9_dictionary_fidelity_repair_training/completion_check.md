@@ -4,7 +4,7 @@ status: `M9_NEEDS_MONITOR`
 
 This packet is not `M9_READY_FOR_REVIEW`.
 
-Reason: M9 MyoPS training jobs are running on `htzhulab` and have not completed. A running monitor packet is not completion evidence.
+Reason: M9 isolated MyoPS training jobs are running on `htzhulab` and have not completed. A running monitor packet is not completion evidence.
 
 Partial aggregation evidence:
 
@@ -29,7 +29,7 @@ Partial aggregation evidence:
 Submitted jobs:
 
 - `58297196` `M9SRRDict` on `a100-gpu`: cancelled after htzhulab mirror started.
-- `58297510` `M9SRRDict` on `htzhulab`: running.
+- `58297510` `M9SRRDict` on `htzhulab`: completed with exit code `0:0`.
 - `58297807` `M9SRRDict` lesion/prototype memory isolated run on `htzhulab`: running.
 - `58297806` `M9SRRDict` T2 edema focus isolated run on `htzhulab`: running.
 - `58297197` `M9CineOut` on `a100-gpu`: cancelled after htzhulab mirror completed.

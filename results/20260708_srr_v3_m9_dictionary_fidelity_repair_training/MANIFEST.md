@@ -8,7 +8,7 @@ Current state: `M9_NEEDS_MONITOR`
 
 Current runtime state:
 
-- MyoPS job `58297510` on `htzhulab`: running.
+- MyoPS job `58297510` on `htzhulab`: completed with exit code `0:0`.
 - MyoPS isolated job `58297807` on `htzhulab`: running.
 - MyoPS isolated job `58297806` on `htzhulab`: running.
 - Cine job `58297511` on `htzhulab`: completed with initial local-backbone-missing evidence.

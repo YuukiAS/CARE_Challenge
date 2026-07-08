@@ -32,13 +32,13 @@ This is an executor/controller monitor packet for M9. It is not review-ready and
 Submitted Slurm jobs and routing race state:
 
 - MyoPS M9 dictionary fidelity training A100 mirror: job `58297196`, partition `a100-gpu`, cancelled after htzhulab mirror started.
-- MyoPS M9 dictionary fidelity training htzhulab mirror: job `58297510`, partition `htzhulab`, last observed state `RUNNING`.
+- MyoPS M9 dictionary fidelity training htzhulab mirror: job `58297510`, partition `htzhulab`, completed with exit code `0:0`.
 - MyoPS M9 lesion/prototype memory isolated htzhulab job: job `58297807`, partition `htzhulab`, last observed state `RUNNING`.
 - MyoPS M9 T2 edema recall focus isolated htzhulab job: job `58297806`, partition `htzhulab`, last observed state `RUNNING`.
 - Cine M9 temporal final-output evidence A100 mirror: job `58297197`, partition `a100-gpu`, cancelled after htzhulab mirror completed.
 - Cine M9 temporal final-output evidence htzhulab mirror: job `58297511`, partition `htzhulab`, completed with exit code `0:0`.
 
-The MyoPS jobs have not completed, so M9 cannot be marked `M9_READY_FOR_REVIEW`.
+Two MyoPS isolated jobs have not completed, so M9 cannot be marked `M9_READY_FOR_REVIEW`.
 
 Partial MyoPS formal aggregation is now present for three formal variant outputs written under `runtime_htzhulab_mirror`:
 
@@ -90,7 +90,7 @@ This is local proxy final-output evidence only. It does not claim hosted `myocar
 - M9 Cine local temporal output run completed with `FOUND_LOCAL_TEMPORAL_FINAL_OUTPUTS`, wrote 12 ignored runtime NIfTI predictions, and updated the required M9 Cine manifest/QC/registration/temporal-dictionary/metrics/help-harm/failure files.
 - Post-job partial aggregation was run after `m9_srr_main_true_br2_pattern_sip` wrote formal runtime outputs. It updated MyoPS training curves, validation events, Pattern-SIP summaries, component/HD95/remote-FP rows, same-split help/harm, hard-subgroup rows, proposal/refiner rows, and metric-aligned checkpoint selection. Pattern-SIP raw retrieval rows were summarized into lightweight group-level tables rather than publishing the full raw `retrieval_usage.csv`.
 - A second partial aggregation was run after `m9_srr_main_lesion_proposal_memory` wrote formal runtime outputs under `runtime_htzhulab_mirror`. It updated the lightweight MyoPS runtime-derived CSV files and preserved `M9_NEEDS_MONITOR`.
-- A third partial aggregation was run after `m9_srr_main_t2_edema_recall_focus` wrote formal runtime outputs under `runtime_htzhulab_mirror`. It updated the lightweight MyoPS runtime-derived CSV files and preserved `M9_NEEDS_MONITOR` because all MyoPS jobs are still running and the training-budget gate is still unmet.
+- A third partial aggregation was run after `m9_srr_main_t2_edema_recall_focus` wrote formal runtime outputs under `runtime_htzhulab_mirror`. It updated the lightweight MyoPS runtime-derived CSV files and preserved `M9_NEEDS_MONITOR` because isolated MyoPS jobs are still running and the training-budget gate is still unmet.
 - All three formal M9 variants have early one-batch overfit `PASS` evidence and prototype bank summaries:
   - `m9_srr_main_true_br2_pattern_sip`: loss decrease `1.3056663274765015`.
   - `m9_srr_main_lesion_proposal_memory`: loss decrease `1.2432777881622314`.
@@ -99,4 +99,4 @@ This is local proxy final-output evidence only. It does not claim hosted `myocar
 
 ## Not Yet Completed
 
-M9 formal MyoPS training/evaluation remains incomplete as a milestone because the submitted MyoPS jobs are still running and the aggregate training budget is still below the M9 prompt threshold. Cine has local final-output proxy evidence, but it is not hosted/challenge evidence and does not make the overall packet review-ready while MyoPS jobs are still running.
+M9 formal MyoPS training/evaluation remains incomplete as a milestone because the isolated MyoPS jobs are still running and the aggregate training budget is still below the M9 prompt threshold. Cine has local final-output proxy evidence, but it is not hosted/challenge evidence and does not make the overall packet review-ready while MyoPS jobs are still running.

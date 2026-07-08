@@ -231,4 +231,22 @@ real packet validator before aggregation:
 error_count=0
 ```
 
-This third partial aggregation is still not ready evidence. All three MyoPS jobs remain running, and the aggregate formal train-loop budget is only `4815.002` seconds, below both M9 training-budget gates.
+This third partial aggregation is still not ready evidence. All three MyoPS jobs were still running at the time of aggregation, and the aggregate formal train-loop budget was only `4815.002` seconds, below both M9 training-budget gates.
+
+Follow-up accounting check after the third partial aggregation:
+
+```text
+sacct -j 58297510,58297806,58297807 --format=JobID,JobName%24,Partition,State,ExitCode,Elapsed,Start,End,NodeList%24 -P
+cat logs/M9SRRDict_58297510_20260708_131821.log
+find results/20260708_srr_v3_m9_dictionary_fidelity_repair_training -maxdepth 6 -type f \( -name summary.json -o -name training_log.csv -o -name validation_events.csv \) -printf '%TY-%Tm-%Td %TH:%TM:%TS %s %p\n' | sort
+```
+
+Updated job state:
+
+```text
+58297510 htzhulab M9SRRDict COMPLETED exit=0:0 elapsed=01:35:04 end=2026-07-08T14:53:22
+58297806 htzhulab M9SRRDict RUNNING
+58297807 htzhulab M9SRRDict RUNNING
+```
+
+The overall packet remains `M9_NEEDS_MONITOR` because two isolated MyoPS jobs are still running.
