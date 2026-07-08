@@ -21,6 +21,6 @@ Required before ready review:
 - Runtime summaries and Cine outputs are aggregated.
 - All required M9 Markdown/CSV/JSON outputs are populated from current runtime evidence.
 - `scripts/evaluation/validate_srr_v3_m9_dictionary_fidelity_packet.py` passes the real packet with `error_count=0`.
-- Validator self-test covers all 29 known-bad mutations and fails closed.
+- Validator self-test covers all 29 known-bad mutations and fails closed. This part is now satisfied, but the packet remains non-ready until runtime evidence is complete.
 
 No validation package or upload was created.

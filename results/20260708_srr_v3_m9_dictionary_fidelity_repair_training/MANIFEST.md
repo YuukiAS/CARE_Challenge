@@ -25,6 +25,7 @@ Tracked files currently written:
 - `m9_code_patch_summary.md`: first-pass code modifications.
 - `m9_loss_weight_wiring_test_report.md`: CPU loss-weight wiring proof.
 - `m9_nnunet_role_audit.md`: SRR-main/nnU-Net role code audit.
+- `m9_validator_selftest_report.*`: one good fixture plus all 29 required known-bad mutations passed fail-closed self-test.
 - `m9_route_promotion_decision.md`: `M9_NEEDS_MONITOR`.
 - `m9_next_required_action.md`: `NEEDS_MONITOR`.
 - All M9 prompt-required Markdown/CSV/JSON output names are present, but most runtime-derived tables contain `PENDING_RUNTIME` or `EVIDENCE_NOT_FOUND` rows pending Slurm completion.

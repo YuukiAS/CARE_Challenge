@@ -46,7 +46,7 @@ Cine currently reports `M9_NEEDS_EVIDENCE_CINE_LOCAL_BACKBONE_MISSING` because n
 - Job shell syntax check passed with `bash -n`.
 - CPU smoke proved M9 SRR-main model outputs `SRR_MAIN_NOT_ANCHOR_RESIDUAL` and `CONTEXT_TEACHER_SAFETY_CONTROL_ONLY`.
 - Loss-weight smoke proved changing `loss_scar_refiner_small_roi` from `0` to `10` changed total loss and gradient norm.
-- M9 validator self-test passed for one good fixture and four known-bad fixtures.
+- M9 validator self-test passed for one good fixture and all 29 required known-bad fixtures.
 - Real-packet validator exits with `error_count=0` for this monitor packet after all required lightweight output files were populated with pending/evidence rows.
 - All three formal M9 variants have early one-batch overfit `PASS` evidence and prototype bank summaries:
   - `m9_srr_main_true_br2_pattern_sip`: loss decrease `1.3056663274765015`.
@@ -56,4 +56,4 @@ Cine currently reports `M9_NEEDS_EVIDENCE_CINE_LOCAL_BACKBONE_MISSING` because n
 
 ## Not Yet Completed
 
-M9 formal training/evaluation, post-job runtime aggregation, real Cine final-output metrics, replacement of pending/evidence rows with runtime-derived evidence, and known-bad coverage expansion to all 29 required mutations remain incomplete.
+M9 formal training/evaluation, post-job runtime aggregation, real Cine final-output metrics, and replacement of pending/evidence rows with runtime-derived evidence remain incomplete.
