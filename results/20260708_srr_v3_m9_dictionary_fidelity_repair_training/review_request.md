@@ -1,24 +1,25 @@
-# M9 Review Request
+# M9 Follow-up Re-audit Request
 
-status: `M9_READY_FOR_REVIEW`
+status: `M9_FOLLOWUP_READY_FOR_REAUDIT`
 
 review_boundary: `READ_ONLY_REVIEW_ONLY`
 
-This is not a route-promotion request. It is a request for an independent read-only reviewer to audit the completed M9 executor packet.
+This is not a route-promotion request. It is a request for an independent read-only reviewer to re-audit the reconciled M9 follow-up packet.
 
 Do not issue route promotion from this packet unless a later GPT planner explicitly authorizes it after review. Explicit safety boundary: no validation upload, no hosted metric claim, no fold expansion, no M10.
 
-## What Changed Since Monitor Packet
+## What Changed Since The M9 Needs-Revision Review
 
-- Job `58348646` completed on `htzhulab` with exit code `0:0`, elapsed `02:03:33`.
-- Final runtime outputs for `m9_srr_main_true_br2_pattern_sip` are present: `summary.json`, `training_log.csv`, and `validation_events.csv`.
-- Post-job aggregation was rerun against:
+- Previous review decision was `M9_AUDITED_NEEDS_REVISION` for `evidence_state_and_validator_consistency`.
+- Post-job aggregation was rerun against existing terminal runtime roots:
   - `runtime_htzhulab_mirror`
   - `runtime_htzhulab_lesion_memory`
   - `runtime_htzhulab_t2_edema_focus`
   - `runtime_htzhulab_true_br2_pattern_sip`
-- Top-level lightweight MyoPS evidence tables were updated from completed runtime outputs.
-- M9 validator self-test and real-packet validator were rerun after final aggregation.
+- The stale dictionary/prototype/refiner/role evidence files were reconciled to concrete tracked runtime evidence paths.
+- The validator now scans required Markdown, CSV, and JSON files for unresolved stale runtime states.
+- The validator self-test now includes eight follow-up stale-state fixtures in addition to the prior known-bad set.
+- The executor did not write `review.md`, did not start M10, did not package or upload validation, and did not claim hosted metrics.
 
 ## Current Evidence
 
@@ -32,4 +33,4 @@ Do not issue route promotion from this packet unless a later GPT planner explici
 
 ## Review Boundary
 
-Reviewer should audit whether M9 satisfies the executor prompt and whether the `M9_NO_PROMOTION_DIAGNOSTIC_ONLY` decision is supported. Reviewer must not write implementation fixes or promote the route. Explicit safety boundary: no validation upload, no hosted metric claim, no fold expansion, no M10.
+Reviewer should audit whether the M9 follow-up satisfies the evidence reconciliation prompt and whether the `M9_NO_PROMOTION_DIAGNOSTIC_ONLY` decision is supported by internally consistent evidence. Reviewer must not write implementation fixes or promote the route. Explicit safety boundary: no validation upload, no hosted metric claim, no fold expansion, no M10.

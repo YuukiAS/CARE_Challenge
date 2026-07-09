@@ -1,6 +1,6 @@
 # M9 nnU-Net Role Audit
 
-status: `PARTIAL_CODE_REPAIR_NEEDS_RUNTIME_EVIDENCE`
+status: `RUNTIME_RECONCILED_FOR_M9_FOLLOWUP`
 
 Formal M9 variants expose:
 
@@ -16,4 +16,11 @@ Formal M9 variants expose:
 
 The new formal M9 code path sets `final_logits = srr_logits` for `m9_` variants. It does not use the older anchor-plus-bounded-delta residual equation as the normal output path.
 
-Anchor-only and M8 anchor-residual controls still need post-job aggregation rows before M9 can be reviewed.
+Post-job aggregation rows are now tracked in:
+
+- `m9_same_split_help_harm.csv`
+- `m9_component_remote_fp_hd95_report.csv`
+- `m9_metric_aligned_checkpoint_selection.csv`
+- `m9_route_promotion_decision.md`
+
+The reconciled evidence supports the same no-promotion direction: formal M9 candidates remain negative against the tracked M8 nnU-Net anchor, and nnU-Net remains context/teacher/safety control rather than the formal M9 candidate output base.

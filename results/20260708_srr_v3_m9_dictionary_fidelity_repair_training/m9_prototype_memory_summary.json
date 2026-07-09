@@ -1,6 +1,11 @@
 {
   "no_t2_edema_negative_policy": "edema positives and negatives restricted to T2-present samples; no-T2 myocardium never contributes edema negatives",
-  "status": "PARTIAL_ONE_BATCH_PROTOTYPE_EVIDENCE_FORMAL_TRAINING_RUNNING",
+  "status": "RUNTIME_RECONCILED_TRAIN_OOF_PROTOTYPE_MEMORY",
+  "reconciliation_evidence_paths": [
+    "m9_prototype_update_ledger.csv",
+    "m9_hard_negative_replay_ledger.csv",
+    "m9_training_budget_ledger.csv"
+  ],
   "variants": {
     "m9_srr_main_lesion_proposal_memory": {
       "case_count": 16,

@@ -1,10 +1,10 @@
 # M9 SRR Dictionary Fidelity Repair + Cine Output Result
 
-status: `M9_READY_FOR_REVIEW`
+status: `M9_FOLLOWUP_READY_FOR_REAUDIT`
 
 route_promotion_decision: `M9_NO_PROMOTION_DIAGNOSTIC_ONLY`
 
-This is an executor/controller packet for one M9 milestone only. It does not claim route promotion. Explicit safety boundary: no validation upload, no hosted metric claim, no fold expansion, no M10.
+This is an executor/controller packet for one bounded M9 follow-up only. The follow-up reconciles stale evidence-state contradictions identified by the independent M9 reviewer, hardens the validator, reruns aggregation/validation, and prepares the existing M9 packet for separate read-only re-audit. It does not claim route promotion. Explicit safety boundary: no validation upload, no hosted metric claim, no fold expansion, no M10.
 
 ## Prerequisite Gate
 
@@ -95,16 +95,26 @@ Cine local temporal final-output evidence is present:
 
 This is local proxy final-output evidence only. It does not claim hosted `myocardium_cinemyops` performance or route readiness.
 
+## Follow-up Evidence Reconciliation
+
+- Previous review decision confirmed: `M9_AUDITED_NEEDS_REVISION`.
+- Previous blocker class: `evidence_state_and_validator_consistency`.
+- `m9_dictionary_fidelity_matrix.csv` now maps true-BR2 runtime slot usage, invalid-slot mask runtime, and final metric causal effect to concrete tracked runtime-derived tables.
+- `m9_code_patch_summary.md`, `m9_rrl_brr2_adaptation_contract.md`, `m9_nnunet_role_audit.md`, and `m9_pathology_specific_refiner_contract.md` now describe final post-job evidence paths.
+- `m9_prototype_memory_summary.json` now uses a reconciled train/OOF runtime prototype-memory status and keeps non-empty scar/edema prototype counts plus zero no-T2 myocardium edema-negative contribution.
+- `scripts/evaluation/validate_srr_v3_m9_dictionary_fidelity_packet.py` now scans required Markdown, CSV, and JSON evidence for unresolved stale runtime states and includes eight follow-up stale-state known-bad fixtures.
+- `m9_followup_reconciliation_report.md`, `m9_followup_stale_status_scan.csv`, `m9_followup_validator_repair_summary.md`, `m9_followup_reaudit_request.md`, and `m9_followup_commands_run.md` were added for the re-audit.
+
 ## Verification Completed
 
 - `python -m py_compile` passed for modified Python modules and new M9 scripts.
 - Job shell syntax check passed with `bash -n`.
 - CPU smoke proved M9 SRR-main model outputs `SRR_MAIN_NOT_ANCHOR_RESIDUAL` and `CONTEXT_TEACHER_SAFETY_CONTROL_ONLY`.
 - Loss-weight smoke proved changing `loss_scar_refiner_small_roi` from `0` to `10` changed total loss and gradient norm.
-- Final M9 validator self-test passed for one good fixture and all 29 required known-bad fixtures.
+- Final M9 validator self-test passed for one good fixture and all 37 required known-bad fixtures, including the eight M9 follow-up stale-state fixtures.
 - Final real-packet validator exited with `error_count=0`.
 - `git diff --check` passed after final packet updates.
 
 ## Current Executor Decision
 
-M9 is `M9_READY_FOR_REVIEW` for a separate read-only reviewer. The executor decision is `M9_NO_PROMOTION_DIAGNOSTIC_ONLY`. Explicit safety boundary: no validation upload, no hosted metric claim, no fold expansion, no M10.
+M9 follow-up is `M9_FOLLOWUP_READY_FOR_REAUDIT` for a separate read-only reviewer. The executor decision remains `M9_NO_PROMOTION_DIAGNOSTIC_ONLY`. Explicit safety boundary: no validation upload, no hosted metric claim, no fold expansion, no M10.

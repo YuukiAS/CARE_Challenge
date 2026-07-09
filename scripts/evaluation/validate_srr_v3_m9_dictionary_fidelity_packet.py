@@ -13,16 +13,41 @@ from pathlib import Path
 
 
 READY_STATE = "M9_READY_FOR_REVIEW"
+FOLLOWUP_READY_STATE = "M9_FOLLOWUP_READY_FOR_REAUDIT"
 ALLOWED_STATES = {
     READY_STATE,
+    FOLLOWUP_READY_STATE,
     "M9_NEEDS_EVIDENCE",
     "M9_NEEDS_REVISION",
     "M9_SCIENTIFIC_UNDERTRAINED",
     "M9_NEEDS_MONITOR",
     "M9_RESOURCE_BLOCKED",
     "M9_BLOCKED_PROJECT_ROUTE_DIAGRAMS_UNAVAILABLE",
+    "M9_FOLLOWUP_NEEDS_EVIDENCE",
+    "M9_FOLLOWUP_NEEDS_REVISION",
+    "M9_FOLLOWUP_NEEDS_MONITOR",
+    "M9_FOLLOWUP_RESOURCE_BLOCKED",
+    "M9_FOLLOWUP_BLOCKED_PREREQUISITE_REVIEW_MISSING",
 }
+READY_STATES = {READY_STATE, FOLLOWUP_READY_STATE}
 MONITOR_TOKENS = {"NEEDS_MONITOR", "PENDING_MONITOR", "JOB_SUBMITTED", "PENDING_PRIORITY", "RUNNING", "AWAITING_SACCT"}
+UNRESOLVED_TOKENS = {
+    "PENDING_RUNTIME",
+    "PARTIAL_CODE_REPAIR_NEEDS_RUNTIME_EVIDENCE",
+    "PARTIAL_ONE_BATCH_PROTOTYPE_EVIDENCE_FORMAL_TRAINING_RUNNING",
+    "FORMAL_TRAINING_RUNNING",
+    "NEEDS_RUNTIME_EVIDENCE",
+    "RUNTIME_EVIDENCE_PENDING",
+    "SLURM JOBS PENDING",
+    "JOBS PENDING",
+    "AWAITING_SACCT",
+    "NEEDS_MONITOR",
+    "PENDING_MONITOR",
+    "JOB_SUBMITTED",
+    "PENDING_PRIORITY",
+    "RUNNING",
+    "NOT SUFFICIENT FOR M9_READY_FOR_REVIEW",
+}
 FORBIDDEN_READY_PHRASES = {"validation upload", "hosted metric claim", "leaderboard-ready", "fold expansion", "M10"}
 REQUIRED_FILES = [
     "result.md",
@@ -78,6 +103,14 @@ REQUIRED_FILES = [
     "m9_validator_selftest_report.csv",
     "m9_validator_selftest_report.md",
 ]
+FOLLOWUP_REQUIRED_FILES = [
+    "m9_followup_reconciliation_report.md",
+    "m9_followup_stale_status_scan.csv",
+    "m9_followup_validator_repair_summary.md",
+    "m9_followup_reaudit_request.md",
+    "m9_followup_commands_run.md",
+]
+STALE_SCAN_EXCLUDE_PREFIXES = ("m9_validator_selftest_report",)
 
 
 def read_text(path: Path) -> str:
@@ -97,28 +130,67 @@ def completion_state(packet: Path) -> str:
     return match.group(1) if match else "EVIDENCE_NOT_FOUND"
 
 
+def required_file_names(packet: Path) -> list[str]:
+    names = list(REQUIRED_FILES)
+    if any((packet / name).is_file() for name in FOLLOWUP_REQUIRED_FILES) or completion_state(packet).startswith("M9_FOLLOWUP_"):
+        names.extend(name for name in FOLLOWUP_REQUIRED_FILES if name not in names)
+    return names
+
+
+def stale_scan_paths(packet: Path) -> list[Path]:
+    paths: list[Path] = []
+    for file_name in required_file_names(packet):
+        path = packet / file_name
+        if not path.is_file():
+            continue
+        if path.name.startswith(STALE_SCAN_EXCLUDE_PREFIXES):
+            continue
+        if path.suffix.lower() in {".md", ".csv", ".json"}:
+            paths.append(path)
+    return paths
+
+
+def unresolved_token_errors(packet: Path) -> list[str]:
+    errors: list[str] = []
+    for path in stale_scan_paths(packet):
+        text = read_text(path)
+        upper = text.upper()
+        allow_historical = "HISTORICAL_NONREADY_STATE_RESOLVED" in upper and "EVIDENCE" in upper
+        for token in sorted(UNRESOLVED_TOKENS):
+            if token in upper and not allow_historical:
+                errors.append(f"ready packet contains unresolved token in {path.name}: {token}")
+    return errors
+
+
 def validate(packet: Path) -> list[str]:
     errors: list[str] = []
     state = completion_state(packet)
     if state not in ALLOWED_STATES:
         errors.append(f"invalid completion state: {state}")
-    for file_name in REQUIRED_FILES:
+    for file_name in required_file_names(packet):
         if not (packet / file_name).is_file():
             errors.append(f"missing required file: {file_name}")
-    all_md = "\n".join(read_text(path) for path in packet.glob("*.md"))
+    evidence_md_paths = [
+        packet / name
+        for name in required_file_names(packet)
+        if name.endswith(".md") and not name.startswith(STALE_SCAN_EXCLUDE_PREFIXES)
+    ]
+    all_md = "\n".join(read_text(path) for path in evidence_md_paths if path.is_file())
     if "M8_FOLLOWUP_AUDITED_NO_DEPLOYABLE_REPAIR_SCIENTIFIC_UNRESOLVED" not in all_md:
         errors.append("missing M8 follow-up review token")
     if "SRR_MAIN_NOT_ANCHOR_RESIDUAL" not in all_md:
         errors.append("missing SRR-main final-output evidence token")
     if "CONTEXT_TEACHER_SAFETY_CONTROL_ONLY" not in all_md:
         errors.append("missing nnU-Net role audit token")
-    if (packet / "review.md").exists():
-        errors.append("executor packet must not contain review.md")
-    if state == READY_STATE:
+    review_text = read_text(packet / "review.md")
+    if review_text and "M9_AUDITED_NEEDS_REVISION" not in review_text:
+        errors.append("unexpected review.md content for M9 follow-up input")
+    if state in READY_STATES:
         upper_md = all_md.upper()
         for token in MONITOR_TOKENS:
             if token in upper_md:
                 errors.append(f"ready packet contains monitor token: {token}")
+        errors.extend(unresolved_token_errors(packet))
         lower_md = all_md.lower()
         for phrase in FORBIDDEN_READY_PHRASES:
             if phrase.lower() in lower_md and f"not {phrase.lower()}" not in lower_md and f"no {phrase.lower()}" not in lower_md:
@@ -132,11 +204,7 @@ def validate(packet: Path) -> list[str]:
         nnunet_audit = read_text(packet / "m9_nnunet_role_audit.md")
         if "final_logits = nnunet_anchor_logits + bounded_srr_delta" in nnunet_audit:
             errors.append("formal M9 candidate uses forbidden anchor-residual final logits")
-        ready_text = "\n".join(
-            read_text(path)
-            for path in packet.glob("*")
-            if not path.name.startswith("m9_validator_selftest_report")
-        )
+        ready_text = "\n".join(read_text(path) for path in stale_scan_paths(packet))
         ready_upper = ready_text.upper()
         if "SRR_DIAGRAM_BOOTSTRAP_EVIDENCE" not in ready_upper:
             errors.append("missing diagram bootstrap fields")
@@ -247,6 +315,14 @@ def run_selftest() -> tuple[int, list[dict[str, str]]]:
         root = Path(tmp)
         good = root / "good"
         write_good_fixture(good)
+        fixture_md = (
+            "status: `M9_READY_FOR_REVIEW`\n"
+            "SRR_DIAGRAM_BOOTSTRAP_EVIDENCE\n"
+            "M8_FOLLOWUP_AUDITED_NO_DEPLOYABLE_REPAIR_SCIENTIFIC_UNRESOLVED\n"
+            "SRR_MAIN_NOT_ANCHOR_RESIDUAL\n"
+            "CONTEXT_TEACHER_SAFETY_CONTROL_ONLY\n"
+            "No validation upload, no hosted metric claim, no fold expansion, no M10.\n"
+        )
         good_errors = validate(good)
         rows.append({"fixture": "good", "expected": "pass", "actual_error_count": str(len(good_errors)), "status": "PASS" if not good_errors else "FAIL"})
         mutations = {
@@ -320,6 +396,39 @@ def run_selftest() -> tuple[int, list[dict[str, str]]]:
                 encoding="utf-8",
             ),
             "29_review_written": lambda p: (p / "review.md").write_text("bad\n", encoding="utf-8"),
+            "30_stale_pending_runtime_in_dictionary_fidelity_matrix": lambda p: (p / "m9_dictionary_fidelity_matrix.csv").write_text(
+                "item,status,evidence_path,issue\n"
+                "true_br2_runtime_slot_usage,PENDING_RUNTIME,m9_pattern_sip_usage_by_group.csv,Slurm jobs pending\n",
+                encoding="utf-8",
+            ),
+            "31_stale_partial_code_repair_in_code_patch_summary": lambda p: (p / "m9_code_patch_summary.md").write_text(
+                fixture_md + "status: `PARTIAL_CODE_REPAIR_NEEDS_RUNTIME_EVIDENCE`\n",
+                encoding="utf-8",
+            ),
+            "32_stale_partial_brr2_contract_pending_runtime": lambda p: (p / "m9_rrl_brr2_adaptation_contract.md").write_text(
+                fixture_md + "status: `NEEDS_RUNTIME_EVIDENCE`\n",
+                encoding="utf-8",
+            ),
+            "33_stale_nnunet_controls_need_post_job_rows": lambda p: (p / "m9_nnunet_role_audit.md").write_text(
+                fixture_md + "controls require RUNTIME_EVIDENCE_PENDING post-job rows\n",
+                encoding="utf-8",
+            ),
+            "34_stale_pathology_refiner_pending_runtime": lambda p: (p / "m9_pathology_specific_refiner_contract.md").write_text(
+                fixture_md + "runtime ROI stats are PENDING_RUNTIME\n",
+                encoding="utf-8",
+            ),
+            "35_stale_formal_training_running_in_prototype_memory_json": lambda p: (p / "m9_prototype_memory_summary.json").write_text(
+                '{"status": "PARTIAL_ONE_BATCH_PROTOTYPE_EVIDENCE_FORMAL_TRAINING_RUNNING"}\n',
+                encoding="utf-8",
+            ),
+            "36_ready_packet_with_csv_pending_runtime_token": lambda p: (p / "m9_training_budget_ledger.csv").write_text(
+                "status,case_count\nPENDING_RUNTIME,1\n",
+                encoding="utf-8",
+            ),
+            "37_ready_packet_with_json_running_token": lambda p: (p / "m9_prototype_memory_summary.json").write_text(
+                '{"status": "RUNNING"}\n',
+                encoding="utf-8",
+            ),
         }
         for name, mutate in mutations.items():
             bad = root / name

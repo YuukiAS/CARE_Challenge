@@ -2,7 +2,7 @@
 
 decision: `M9_NO_PROMOTION_DIAGNOSTIC_ONLY`
 
-M9 is complete enough for independent review, but it does not support route promotion.
+M9 follow-up reconciles the prior evidence-state/validator consistency blocker enough to request independent re-audit, but it does not support route promotion.
 
 Evidence:
 
@@ -13,5 +13,6 @@ Evidence:
   - `m9_srr_main_lesion_proposal_memory`: mean Dice delta `-0.055947265941412486`, HD95 delta `14.009386143746562`, remote-FP delta `1.7604166666666667`.
   - `m9_srr_main_t2_edema_recall_focus`: mean Dice delta `-0.06009304704870019`, HD95 delta `21.32252454340387`, remote-FP delta `6.614583333333333`.
 - Cine final-output evidence exists only as local safe-subset proxy evidence, not hosted/challenge evidence.
+- The follow-up changed evidence consistency and validator coverage only. It did not improve the metric outcome or add a hosted/challenge result.
 
 No route promotion is authorized. Explicit safety boundary: no validation upload, no hosted metric claim, no fold expansion, no M10.

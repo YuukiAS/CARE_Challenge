@@ -24,8 +24,16 @@ good,pass,0,PASS
 22_cine_single_registration_smoke,fail,1,PASS
 23_untrained_voxelmorph_ready,fail,1,PASS
 24_temporal_dict_without_final_labels,fail,1,PASS
-25_monitor_packet_marked_ready,fail,1,PASS
+25_monitor_packet_marked_ready,fail,2,PASS
 26_smoke_only_formal_training,fail,1,PASS
 27_validation_upload_hosted_claim,fail,1,PASS
 28_m10_or_fold_expansion_started,fail,1,PASS
 29_review_written,fail,1,PASS
+30_stale_pending_runtime_in_dictionary_fidelity_matrix,fail,3,PASS
+31_stale_partial_code_repair_in_code_patch_summary,fail,2,PASS
+32_stale_partial_brr2_contract_pending_runtime,fail,1,PASS
+33_stale_nnunet_controls_need_post_job_rows,fail,1,PASS
+34_stale_pathology_refiner_pending_runtime,fail,1,PASS
+35_stale_formal_training_running_in_prototype_memory_json,fail,3,PASS
+36_ready_packet_with_csv_pending_runtime_token,fail,1,PASS
+37_ready_packet_with_json_running_token,fail,1,PASS

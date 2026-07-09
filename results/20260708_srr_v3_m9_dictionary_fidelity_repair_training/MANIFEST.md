@@ -4,7 +4,7 @@ Task source: `prompts/shared/EXECUTOR_PROMPTS.md`
 
 Result directory: `results/20260708_srr_v3_m9_dictionary_fidelity_repair_training/`
 
-Current state: `M9_READY_FOR_REVIEW`
+Current state: `M9_FOLLOWUP_READY_FOR_REAUDIT`
 
 Route decision: `M9_NO_PROMOTION_DIAGNOSTIC_ONLY`
 
@@ -38,8 +38,8 @@ Aggregation exit status: `0`.
 The top-level M9 Markdown/CSV/JSON packet is intended for independent review. It includes:
 
 - `result.md`: executor result.
-- `completion_check.md`: explicit `M9_READY_FOR_REVIEW` completion check with `M9_NO_PROMOTION_DIAGNOSTIC_ONLY` route decision.
-- `review_request.md`: read-only review request.
+- `completion_check.md`: explicit `M9_FOLLOWUP_READY_FOR_REAUDIT` completion check with `M9_NO_PROMOTION_DIAGNOSTIC_ONLY` route decision.
+- `review_request.md`: read-only follow-up re-audit request.
 - `commands_run.md`: commands, Slurm accounting, aggregation, and verification log.
 - `m9_route_promotion_decision.md`: `M9_NO_PROMOTION_DIAGNOSTIC_ONLY`.
 - `m9_next_required_action.md`: `GPT_REPLAN_AFTER_M9_NO_PROMOTION`.
@@ -52,11 +52,16 @@ The top-level M9 Markdown/CSV/JSON packet is intended for independent review. It
 - `m9_prototype_memory_summary.json`, `m9_prototype_update_ledger.csv`, `m9_hard_negative_replay_ledger.csv`, `m9_no_t2_edema_negative_violation_report.csv`: prototype and no-T2 safety evidence.
 - `m9_cine_*.md`, `m9_cine_*.csv`, `m9_cine_temporal_output_summary.json`: local Cine final-output proxy evidence.
 - `m9_strict_validator_report.*` and `m9_validator_selftest_report.*`: validator reports.
+- `m9_followup_reconciliation_report.md`: follow-up reconciliation status and summary.
+- `m9_followup_stale_status_scan.csv`: Markdown/CSV/JSON stale-status scan summary.
+- `m9_followup_validator_repair_summary.md`: validator bug and fail-closed repair summary.
+- `m9_followup_reaudit_request.md`: independent re-audit request.
+- `m9_followup_commands_run.md`: follow-up command log.
 
 ## Non-Tracked Runtime Artifacts
 
 Heavy runtime outputs, checkpoints, predictions, NIfTI files, ANTs transforms, upload zips, raw data, secrets, full runtime trees, and large logs are not intended for commit.
 
-## Ready State
+## Follow-up Ready State
 
-The packet has completed post-job aggregation and validator checks. It is ready for independent read-only review, but it does not support route promotion. Explicit safety boundary: no validation upload, no hosted metric claim, no fold expansion, no M10.
+The packet has completed follow-up evidence reconciliation, post-job aggregation refresh, and validator checks. It is ready for independent read-only re-audit, but it does not support route promotion. Explicit safety boundary: no validation upload, no hosted metric claim, no fold expansion, no M10.

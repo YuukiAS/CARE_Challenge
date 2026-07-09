@@ -1,10 +1,10 @@
-# M9 Completion Check
+# M9 Follow-up Completion Check
 
-status: `M9_READY_FOR_REVIEW`
+status: `M9_FOLLOWUP_READY_FOR_REAUDIT`
 
 route_promotion_decision: `M9_NO_PROMOTION_DIAGNOSTIC_ONLY`
 
-This packet is ready for independent read-only review. It is not an audited decision. Explicit safety boundary: no validation upload, no hosted metric claim, no fold expansion, no M10.
+This follow-up reconciles the prior reviewer blocker class `evidence_state_and_validator_consistency`. It is ready for independent read-only re-audit. It is not an audited decision. Explicit safety boundary: no validation upload, no hosted metric claim, no fold expansion, no M10.
 
 ## Slurm Terminal Accounting
 
@@ -68,12 +68,19 @@ Cine local temporal final-output evidence is present:
 
 This is local proxy final-output evidence only. It does not claim hosted `myocardium_cinemyops` performance or route readiness.
 
+## Follow-up Evidence Reconciliation
+
+- `m9_dictionary_fidelity_matrix.csv` now records runtime-derived evidence paths for true-BR2 slot usage, invalid-slot mask runtime, and final metric causal effect.
+- `m9_code_patch_summary.md`, `m9_rrl_brr2_adaptation_contract.md`, `m9_nnunet_role_audit.md`, and `m9_pathology_specific_refiner_contract.md` now describe the final post-job aggregation evidence instead of stale intermediate states.
+- `m9_prototype_memory_summary.json` now carries a reconciled train/OOF runtime prototype-memory status while preserving the non-empty scar/edema counts and no-T2 safety counts.
+- `m9_followup_stale_status_scan.csv` records Markdown, CSV, and JSON stale-status scanning.
+
 ## Verification
 
-- M9 validator self-test passed one good fixture and all 29 known-bad fixtures.
+- M9 validator self-test passed one good fixture and all 37 known-bad fixtures, including the eight follow-up stale-state fixtures.
 - Final real-packet validator exited with `error_count=0`.
 - `git diff --check` passed.
 
 ## Completion Decision
 
-M9 is ready for independent reviewer audit as a completed negative/diagnostic milestone. The executor decision is `M9_NO_PROMOTION_DIAGNOSTIC_ONLY`; the next planner action is `GPT_REPLAN_AFTER_M9_NO_PROMOTION`.
+M9 follow-up is ready for independent reviewer re-audit as a reconciled negative/diagnostic packet. The executor decision remains `M9_NO_PROMOTION_DIAGNOSTIC_ONLY`; the next planner action remains `GPT_REPLAN_AFTER_M9_NO_PROMOTION` unless a separate reviewer decides otherwise.
