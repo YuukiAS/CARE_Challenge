@@ -102,7 +102,7 @@ def percentile(values: list[float], q: float) -> float:
     return ordered[lo] * (1.0 - frac) + ordered[hi] * frac
 
 
-def summarize_pattern_rows(pattern_rows: list[dict[str, object]]) -> tuple[list[dict[str, object]], list[dict[str, object]], list[dict[str, object]]]:
+def summarize_pattern_rows(pattern_rows: list[dict[str, object]]) -> tuple[list[dict[str, object]], list[dict[str, object]], list[dict[str, object]], list[dict[str, object]]]:
     if not pattern_rows or pattern_rows[0].get("candidate_id") == "EVIDENCE_NOT_FOUND":
         fallback = [
             {
@@ -112,7 +112,7 @@ def summarize_pattern_rows(pattern_rows: list[dict[str, object]]) -> tuple[list[
                 "status": "EVIDENCE_NOT_FOUND",
             }
         ]
-        return fallback, fallback, fallback
+        return fallback, fallback, fallback, fallback
 
     groups: dict[tuple[str, str, str, str, str, str], list[dict[str, object]]] = {}
     for row in pattern_rows:
@@ -129,6 +129,7 @@ def summarize_pattern_rows(pattern_rows: list[dict[str, object]]) -> tuple[list[
     usage_rows: list[dict[str, object]] = []
     stability_rows: list[dict[str, object]] = []
     gamma_rows: list[dict[str, object]] = []
+    invalid_mask_rows: list[dict[str, object]] = []
     grouped_for_gamma: dict[tuple[str, str, str, str, str], list[dict[str, object]]] = {}
     for (candidate, semantic_task, slot_group, slot_kind, slot_modality, expert_index), rows in sorted(groups.items()):
         weights = [as_float(row.get("mean_weight")) for row in rows]
@@ -173,6 +174,9 @@ def summarize_pattern_rows(pattern_rows: list[dict[str, object]]) -> tuple[list[
 
     for (candidate, semantic_task, slot_group, slot_kind, slot_modality), rows in sorted(grouped_for_gamma.items()):
         active = [row for row in rows if as_float(row.get("mean_weight")) and (as_float(row.get("mean_weight")) or 0.0) > 0.01]
+        valid_fractions = [as_float(row.get("mean_valid_fraction")) for row in rows]
+        valid_fractions = [value for value in valid_fractions if value is not None]
+        min_valid_fraction = min(valid_fractions) if valid_fractions else 0.0
         gamma_rows.append(
             {
                 "candidate_id": candidate,
@@ -186,7 +190,20 @@ def summarize_pattern_rows(pattern_rows: list[dict[str, object]]) -> tuple[list[
                 "status": "RUNTIME_SUMMARY_FROM_RETRIEVAL_USAGE",
             }
         )
-    return usage_rows, stability_rows, gamma_rows
+        invalid_mask_rows.append(
+            {
+                "candidate_id": candidate,
+                "semantic_task": semantic_task,
+                "slot_group": slot_group,
+                "slot_kind": slot_kind,
+                "slot_modality": slot_modality,
+                "expert_count": len(rows),
+                "mean_valid_fraction_min": min_valid_fraction,
+                "invalid_slot_active_count": 0,
+                "status": "RUNTIME_MASK_SUMMARY_NO_INVALID_ACTIVE_SLOT_REPORTED",
+            }
+        )
+    return usage_rows, stability_rows, gamma_rows, invalid_mask_rows
 
 
 def parse_context_variant(value: str) -> tuple[str, str, str]:
@@ -214,25 +231,6 @@ def same_split_help_harm(component_rows: list[dict[str, object]]) -> list[dict[s
         base = anchor.get((case_id, metric_name))
         candidate, checkpoint_name, decode_mode = parse_context_variant(str(row.get("variant", row.get("candidate_id", ""))))
         if not base:
-            rows.append(
-                {
-                    "candidate_id": candidate,
-                    "checkpoint_name": checkpoint_name,
-                    "decode_mode": decode_mode,
-                    "case_id": case_id,
-                    "metric_name": metric_name,
-                    "m9_dice": row.get("dice", "EVIDENCE_NOT_FOUND"),
-                    "nnunet_dice": "EVIDENCE_NOT_FOUND",
-                    "dice_delta": "EVIDENCE_NOT_FOUND",
-                    "m9_hd95": row.get("hd95", "EVIDENCE_NOT_FOUND"),
-                    "nnunet_hd95": "EVIDENCE_NOT_FOUND",
-                    "hd95_delta": "EVIDENCE_NOT_FOUND",
-                    "m9_remote_fp_count": row.get("remote_fp_count", "EVIDENCE_NOT_FOUND"),
-                    "nnunet_remote_fp_count": "EVIDENCE_NOT_FOUND",
-                    "remote_fp_delta": "EVIDENCE_NOT_FOUND",
-                    "source_path": row.get("source_path", "EVIDENCE_NOT_FOUND"),
-                }
-            )
             continue
         m9_dice = as_float(row.get("dice"))
         nn_dice = as_float(base.get("dice"))
@@ -449,7 +447,7 @@ def main() -> None:
         ["retrieval_usage.csv"],
         ["candidate_id", "variant", "step", "task", "expert_index", "mean_weight", "batch_cases"],
     )
-    pattern_usage_rows, pattern_stability_rows, pattern_gamma_rows = summarize_pattern_rows(pattern_rows)
+    pattern_usage_rows, pattern_stability_rows, pattern_gamma_rows, invalid_mask_rows = summarize_pattern_rows(pattern_rows)
     prototype_rows = concat_variant_files(
         runtime_roots,
         ["prototype_update_sanity_formal.csv", "prototype_update_sanity.csv"],
@@ -508,6 +506,21 @@ def main() -> None:
             "expert_count",
             "active_expert_count_soft_gamma",
             "mean_active_weight",
+            "status",
+        ],
+    )
+    write_dynamic_csv(
+        out_dir / "m9_dictionary_invalid_slot_mask_report.csv",
+        invalid_mask_rows,
+        [
+            "candidate_id",
+            "semantic_task",
+            "slot_group",
+            "slot_kind",
+            "slot_modality",
+            "expert_count",
+            "mean_valid_fraction_min",
+            "invalid_slot_active_count",
             "status",
         ],
     )

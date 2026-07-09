@@ -1,5 +1,7 @@
 # M9 Next Required Action
 
-next_action: `NEEDS_MONITOR`
+next_action: `GPT_REPLAN_AFTER_M9_NO_PROMOTION`
 
-Wait for running Slurm jobs `58297510`, `58297807`, and `58297806`. After completion, run aggregation, populate all required M9 outputs, rerun strict validator and self-tests, then decide whether the packet is ready for independent review or needs evidence/revision. Cine local final-output evidence is still missing after completed job `58297511`.
+M9 is ready for independent reviewer audit as a completed executor packet, but the executor decision is `M9_NO_PROMOTION_DIAGNOSTIC_ONLY`.
+
+Do not promote the route from this executor packet. A separate read-only reviewer must audit this M9 packet first. Explicit safety boundary: no validation upload, no hosted metric claim, no fold expansion, no M10.

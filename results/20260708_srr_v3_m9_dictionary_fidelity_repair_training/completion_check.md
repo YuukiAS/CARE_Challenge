@@ -1,47 +1,79 @@
 # M9 Completion Check
 
-status: `M9_NEEDS_MONITOR`
+status: `M9_READY_FOR_REVIEW`
 
-This packet is not `M9_READY_FOR_REVIEW`.
+route_promotion_decision: `M9_NO_PROMOTION_DIAGNOSTIC_ONLY`
 
-Reason: M9 isolated MyoPS training jobs are running on `htzhulab` and have not completed. A running monitor packet is not completion evidence.
+This packet is ready for independent read-only review. It is not an audited decision. Explicit safety boundary: no validation upload, no hosted metric claim, no fold expansion, no M10.
 
-Partial aggregation evidence:
+## Slurm Terminal Accounting
 
-- `m9_srr_main_true_br2_pattern_sip` has runtime formal outputs aggregated.
-  - optimizer steps: `6000`
-  - validation events: `20`
-  - train loop seconds: `1660.097`
-  - mean Dice delta vs tracked M8 nnU-Net anchor control: `myops_scar=-0.009682347345035466`, `myops_edema=-0.076883272409283`
-- `m9_srr_main_lesion_proposal_memory` has runtime formal outputs aggregated from `runtime_htzhulab_mirror`.
-  - optimizer steps: `6000`
-  - train loop seconds: `1499.562`
-  - mean Dice delta vs tracked M8 nnU-Net anchor control: `myops_scar=-0.03627368193360481`, `myops_edema=-0.07598376935449123`
-- `m9_srr_main_t2_edema_recall_focus` has runtime formal outputs aggregated from `runtime_htzhulab_mirror`.
-  - optimizer steps: `6000`
-  - validation events: `20`
-  - train loop seconds: `1655.343`
-  - mean Dice delta vs tracked M8 nnU-Net anchor control: `myops_scar=-0.06778769437264179`, `myops_edema=-0.08746046393754325`
-- Current aggregated formal training budget rows: `3`.
-- Current aggregate train-loop seconds: `4815.002`, below the M9 threshold of `28800` seconds and below the alternative gate of three formal SRR-main candidates with `>=7200` seconds each plus one control eval.
-- interpretation: `SCIENTIFIC_UNDERTRAINED_OR_NEGATIVE_PARTIAL_EVIDENCE`; not ready, not promotion.
-
-Submitted jobs:
-
-- `58297196` `M9SRRDict` on `a100-gpu`: cancelled after htzhulab mirror started.
+- `58297196` `M9SRRDict` on `a100-gpu`: cancelled after the `htzhulab` mirror started.
 - `58297510` `M9SRRDict` on `htzhulab`: completed with exit code `0:0`.
-- `58297807` `M9SRRDict` lesion/prototype memory isolated run on `htzhulab`: running.
-- `58297806` `M9SRRDict` T2 edema focus isolated run on `htzhulab`: running.
-- `58297197` `M9CineOut` on `a100-gpu`: cancelled after htzhulab mirror completed.
-- `58297511` `M9CineOut` on `htzhulab`: completed, exit code `0:0`, initial output status `M9_NEEDS_EVIDENCE_CINE_LOCAL_BACKBONE_MISSING`.
-- local M9 Cine temporal output rerun: completed locally with status `FOUND_LOCAL_TEMPORAL_FINAL_OUTPUTS`, 12 safe train cases, 12 non-reference frames, and ignored runtime predictions under `runtime_m9_cine_temporal_output/predictions`.
+- `58297807` `M9SRRDict` lesion/prototype memory isolated run on `htzhulab`: completed with exit code `0:0`, elapsed `02:03:52`.
+- `58297806` `M9SRRDict` T2 edema focus isolated run on `htzhulab`: completed with exit code `0:0`, elapsed `02:04:07`.
+- `58348646` `M9SRRDict` true-BR2 top-up isolated run on `htzhulab`: completed with exit code `0:0`, elapsed `02:03:33`.
+- `58297197` `M9CineOut` on `a100-gpu`: cancelled after the `htzhulab` Cine mirror completed.
+- `58297511` `M9CineOut` on `htzhulab`: completed with exit code `0:0`.
 
-Required before ready review:
+## Post-Job Aggregation
 
-- Remaining jobs complete with successful exit code.
-- Runtime summaries are aggregated again after MyoPS jobs reach terminal states.
-- All required M9 Markdown/CSV/JSON outputs are populated from current runtime evidence.
-- `scripts/evaluation/validate_srr_v3_m9_dictionary_fidelity_packet.py` passes the real packet with `error_count=0`.
-- Validator self-test covers all 29 known-bad mutations and fails closed. This part is now satisfied, but the packet remains non-ready until runtime evidence is complete.
+Final aggregation command:
 
-No validation package or upload was created. The Cine evidence is local proxy final-output evidence only and does not claim hosted `myocardium_cinemyops` performance.
+```bash
+python scripts/evaluation/aggregate_srr_v3_m9_dictionary_fidelity_packet.py \
+  --runtime-root results/20260708_srr_v3_m9_dictionary_fidelity_repair_training/runtime_htzhulab_mirror \
+  --runtime-root results/20260708_srr_v3_m9_dictionary_fidelity_repair_training/runtime_htzhulab_lesion_memory \
+  --runtime-root results/20260708_srr_v3_m9_dictionary_fidelity_repair_training/runtime_htzhulab_t2_edema_focus \
+  --runtime-root results/20260708_srr_v3_m9_dictionary_fidelity_repair_training/runtime_htzhulab_true_br2_pattern_sip \
+  --out-dir results/20260708_srr_v3_m9_dictionary_fidelity_repair_training
+```
+
+Aggregation exit status: `0`.
+
+Updated tracked evidence includes `m9_training_budget_ledger.csv`, `m9_metric_aligned_checkpoint_selection.csv`, `m9_training_curves.csv`, `m9_validation_events.csv`, `m9_same_split_help_harm.csv`, `m9_hard_subgroup_metrics.csv`, `m9_component_remote_fp_hd95_report.csv`, `m9_proposal_refiner_recall_precision.csv`, `m9_refiner_causal_effect.csv`, and `m9_ablation_matrix.csv`.
+
+## Training Adequacy
+
+- Aggregated formal training-budget rows: `6`.
+- Aggregate train-loop seconds: `26415.268`, below the aggregate `28800` second gate.
+- Formal SRR-main candidates with `>=7200` train-loop seconds: `3`, satisfying the alternate M9 hard gate.
+- `m9_srr_main_lesion_proposal_memory` isolated run: `29575` optimizer steps, `7200.120` train-loop seconds, `20` validation events.
+- `m9_srr_main_t2_edema_recall_focus` isolated run: `26321` optimizer steps, `7200.065` train-loop seconds, `20` validation events.
+- `m9_srr_main_true_br2_pattern_sip` top-up run: `26233` optimizer steps, `7200.081` train-loop seconds, `20` validation events.
+
+## Metric-Facing Outcome
+
+Selected checkpoint rows in `m9_metric_aligned_checkpoint_selection.csv` remain negative against the tracked M8 nnU-Net anchor:
+
+- `m9_srr_main_true_br2_pattern_sip`: selected `checkpoint_best` / `pathology_aware`, mean Dice delta `-0.0419089071946592`, mean HD95 delta `14.723931326384324`, mean remote-FP delta `2.28125`.
+- `m9_srr_main_lesion_proposal_memory`: selected `checkpoint_best` / `pathology_aware`, mean Dice delta `-0.055947265941412486`, mean HD95 delta `14.009386143746562`, mean remote-FP delta `1.7604166666666667`.
+- `m9_srr_main_t2_edema_recall_focus`: selected `checkpoint_best` / `pathology_aware`, mean Dice delta `-0.06009304704870019`, mean HD95 delta `21.32252454340387`, mean remote-FP delta `6.614583333333333`.
+
+Per-class selected paired Dice evidence:
+
+- `m9_srr_main_true_br2_pattern_sip`: scar `0.568263` vs anchor `0.587634` (`-0.019371`); edema `0.646942` vs anchor `0.711389` (`-0.064447`).
+- `m9_srr_main_lesion_proposal_memory`: scar `0.529388` vs anchor `0.587634` (`-0.058247`); edema `0.657741` vs anchor `0.711389` (`-0.053648`).
+- `m9_srr_main_t2_edema_recall_focus`: scar `0.546225` vs anchor `0.587634` (`-0.041409`); edema `0.632612` vs anchor `0.711389` (`-0.078777`).
+
+## Cine Evidence
+
+Cine local temporal final-output evidence is present:
+
+- status: `FOUND_LOCAL_TEMPORAL_FINAL_OUTPUTS`
+- local safe train cases: `12`
+- non-reference frames used: `12`
+- registration method: `ANTsPy_SyNOnly`
+- runtime prediction directory: `results/20260708_srr_v3_m9_dictionary_fidelity_repair_training/runtime_m9_cine_temporal_output/predictions`
+
+This is local proxy final-output evidence only. It does not claim hosted `myocardium_cinemyops` performance or route readiness.
+
+## Verification
+
+- M9 validator self-test passed one good fixture and all 29 known-bad fixtures.
+- Final real-packet validator exited with `error_count=0`.
+- `git diff --check` passed.
+
+## Completion Decision
+
+M9 is ready for independent reviewer audit as a completed negative/diagnostic milestone. The executor decision is `M9_NO_PROMOTION_DIAGNOSTIC_ONLY`; the next planner action is `GPT_REPLAN_AFTER_M9_NO_PROMOTION`.

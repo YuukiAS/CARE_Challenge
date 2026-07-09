@@ -1,17 +1,35 @@
 # M9 Review Request
 
-status: `DO_NOT_REVIEW_AS_READY_NEEDS_MONITOR`
+status: `M9_READY_FOR_REVIEW`
 
-This is not a normal review-ready request. It records current executor progress and pending Slurm job IDs only.
+review_boundary: `READ_ONLY_REVIEW_ONLY`
 
-Do not issue `M9_AUDITED_REPAIR_CONTRACT_READY` or any ready/audited-go decision from this monitor packet. The next executor step is to wait for running jobs `58297807` and `58297806`, rerun aggregation after additional runtime summaries are written or terminal accounting changes, replace pending runtime rows with evidence, rerun strict validation, then write a final review request if evidence supports it.
+This is not a route-promotion request. It is a request for an independent read-only reviewer to audit the completed M9 executor packet.
 
-Cine local proxy final-output evidence has been added after the initial Cine job: `m9_cine_final_output_manifest.csv` now records 12 safe train cases and 12 non-reference frames with ignored runtime predictions under `runtime_m9_cine_temporal_output/predictions`. This does not claim hosted `myocardium_cinemyops` performance or route readiness.
+Do not issue route promotion from this packet unless a later GPT planner explicitly authorizes it after review. Explicit safety boundary: no validation upload, no hosted metric claim, no fold expansion, no M10.
 
-Partial MyoPS runtime aggregation is present for three formal outputs:
+## What Changed Since Monitor Packet
 
-- `m9_srr_main_true_br2_pattern_sip`: `6000` optimizer steps, `20` validation events, `1660.097` train-loop seconds, and negative mean Dice deltas vs the tracked M8 nnU-Net anchor (`myops_scar=-0.009682347345035466`, `myops_edema=-0.076883272409283`).
-- `m9_srr_main_lesion_proposal_memory`: `6000` optimizer steps, `1499.562` train-loop seconds, and negative mean Dice deltas vs the tracked M8 nnU-Net anchor (`myops_scar=-0.03627368193360481`, `myops_edema=-0.07598376935449123`).
-- `m9_srr_main_t2_edema_recall_focus`: `6000` optimizer steps, `20` validation events, `1655.343` train-loop seconds, and negative mean Dice deltas vs the tracked M8 nnU-Net anchor (`myops_scar=-0.06778769437264179`, `myops_edema=-0.08746046393754325`).
+- Job `58348646` completed on `htzhulab` with exit code `0:0`, elapsed `02:03:33`.
+- Final runtime outputs for `m9_srr_main_true_br2_pattern_sip` are present: `summary.json`, `training_log.csv`, and `validation_events.csv`.
+- Post-job aggregation was rerun against:
+  - `runtime_htzhulab_mirror`
+  - `runtime_htzhulab_lesion_memory`
+  - `runtime_htzhulab_t2_edema_focus`
+  - `runtime_htzhulab_true_br2_pattern_sip`
+- Top-level lightweight MyoPS evidence tables were updated from completed runtime outputs.
+- M9 validator self-test and real-packet validator were rerun after final aggregation.
 
-This is monitor evidence, not a review-ready completion packet. The aggregate formal train-loop seconds are still only `4815.002`, two isolated MyoPS jobs are still running, and none of the aggregated formal candidates beats the tracked M8 nnU-Net anchor.
+## Current Evidence
+
+- Aggregate train-loop seconds: `26415.268`.
+- Formal SRR-main candidates with `>=7200` train-loop seconds: `3`.
+- Selected candidate mean Dice deltas remain negative:
+  - `m9_srr_main_true_br2_pattern_sip`: `-0.0419089071946592`
+  - `m9_srr_main_lesion_proposal_memory`: `-0.055947265941412486`
+  - `m9_srr_main_t2_edema_recall_focus`: `-0.06009304704870019`
+- Cine local final-output proxy evidence is present for 12 safe train cases, but it is not hosted/challenge evidence.
+
+## Review Boundary
+
+Reviewer should audit whether M9 satisfies the executor prompt and whether the `M9_NO_PROMOTION_DIAGNOSTIC_ONLY` decision is supported. Reviewer must not write implementation fixes or promote the route. Explicit safety boundary: no validation upload, no hosted metric claim, no fold expansion, no M10.

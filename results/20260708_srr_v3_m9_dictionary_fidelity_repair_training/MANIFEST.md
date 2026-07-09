@@ -4,41 +4,59 @@ Task source: `prompts/shared/EXECUTOR_PROMPTS.md`
 
 Result directory: `results/20260708_srr_v3_m9_dictionary_fidelity_repair_training/`
 
-Current state: `M9_NEEDS_MONITOR`
+Current state: `M9_READY_FOR_REVIEW`
 
-Current runtime state:
+Route decision: `M9_NO_PROMOTION_DIAGNOSTIC_ONLY`
+
+## Runtime State
 
 - MyoPS job `58297510` on `htzhulab`: completed with exit code `0:0`.
-- MyoPS isolated job `58297807` on `htzhulab`: running.
-- MyoPS isolated job `58297806` on `htzhulab`: running.
-- Cine job `58297511` on `htzhulab`: completed with initial local-backbone-missing evidence.
+- MyoPS isolated job `58297807` on `htzhulab`: completed with exit code `0:0`, elapsed `02:03:52`.
+- MyoPS isolated job `58297806` on `htzhulab`: completed with exit code `0:0`, elapsed `02:04:07`.
+- MyoPS true-BR2 top-up job `58348646` on `htzhulab`: completed with exit code `0:0`, elapsed `02:03:33`, output root `runtime_htzhulab_true_br2_pattern_sip`.
+- Cine job `58297511` on `htzhulab`: completed with exit code `0:0`.
 - Local M9 Cine temporal output rerun: completed with `FOUND_LOCAL_TEMPORAL_FINAL_OUTPUTS`, 12 safe train cases, 12 non-reference frames, and ignored runtime predictions.
-- Partial MyoPS aggregation: `m9_srr_main_true_br2_pattern_sip`, `m9_srr_main_lesion_proposal_memory`, and `m9_srr_main_t2_edema_recall_focus` formal runtime outputs aggregated from `runtime_htzhulab_mirror`.
-- A100 mirrors `58297196` and `58297197`: cancelled after htzhulab race decisions.
+- A100 mirrors `58297196` and `58297197`: cancelled after `htzhulab` race decisions.
 
-File count: 53 lightweight files.
+## Aggregation State
 
-Tracked files currently written:
+Final post-job aggregation was rerun after all MyoPS jobs completed:
 
-- `result.md`: monitor-state summary and code repair evidence.
-- `completion_check.md`: explicit non-ready completion state.
-- `review_request.md`: states not to review as ready.
-- `commands_run.md`: commands, Slurm submissions, and pending state.
-- `m9_code_patch_summary.md`: first-pass code modifications.
-- `m9_loss_weight_wiring_test_report.md`: CPU loss-weight wiring proof.
-- `m9_nnunet_role_audit.md`: SRR-main/nnU-Net role code audit.
-- `m9_validator_selftest_report.*`: one good fixture plus all 29 required known-bad mutations passed fail-closed self-test.
-- `scripts/evaluation/aggregate_srr_v3_m9_dictionary_fidelity_packet.py`: post-job aggregator now supports runtime-derived tables beyond budget/selection, including same-split help/harm from runtime component metrics matched to the tracked M8 nnU-Net anchor metrics.
-- `m9_route_promotion_decision.md`: `M9_NEEDS_MONITOR`.
-- `m9_next_required_action.md`: `NEEDS_MONITOR`.
-- All M9 prompt-required Markdown/CSV/JSON output names are present. MyoPS runtime-derived tables now include three formal outputs (`m9_srr_main_true_br2_pattern_sip`, `m9_srr_main_lesion_proposal_memory`, and `m9_srr_main_t2_edema_recall_focus`) but remain incomplete for the full M9 training-budget gate and terminal post-job accounting.
-- `m9_training_curves.csv`, `m9_prototype_memory_summary.json`, `m9_prototype_update_ledger.csv`, and `m9_no_t2_edema_negative_violation_report.csv` now include partial one-batch/prototype evidence from the three running formal M9 variants. These are pre-formal-training sanity rows, not completion evidence.
-- `m9_cine_final_output_manifest.csv`, `m9_cine_registration_quality.csv`, `m9_cine_temporal_dictionary_usage.csv`, `m9_cine_temporal_case_metrics.csv`, `m9_cine_frame0_vs_temporal_help_harm.csv`, `m9_cine_failure_matrix.csv`, and `m9_cine_temporal_output_summary.json` now contain local M9 Cine final-output proxy evidence from the bounded rerun. Runtime NIfTI predictions and ANTs transforms remain ignored and untracked.
-- Pattern-SIP raw retrieval rows are summarized into lightweight group-level tables in `m9_pattern_sip_usage_by_group.csv`, `m9_dictionary_slot_group_stability.csv`, and `m9_integrativeness_gamma_soft.csv`; the raw runtime `retrieval_usage.csv` is intentionally not committed.
+```bash
+python scripts/evaluation/aggregate_srr_v3_m9_dictionary_fidelity_packet.py \
+  --runtime-root results/20260708_srr_v3_m9_dictionary_fidelity_repair_training/runtime_htzhulab_mirror \
+  --runtime-root results/20260708_srr_v3_m9_dictionary_fidelity_repair_training/runtime_htzhulab_lesion_memory \
+  --runtime-root results/20260708_srr_v3_m9_dictionary_fidelity_repair_training/runtime_htzhulab_t2_edema_focus \
+  --runtime-root results/20260708_srr_v3_m9_dictionary_fidelity_repair_training/runtime_htzhulab_true_br2_pattern_sip \
+  --out-dir results/20260708_srr_v3_m9_dictionary_fidelity_repair_training
+```
 
-Required M9 evidence not yet populated from runtime:
+Aggregation exit status: `0`.
 
-- M8-like MyoPS training-budget evidence: current aggregated formal train-loop seconds are `4815.002`, below the `28800` second gate and below the alternative three-candidate `>=7200` second gate.
-- Final post-job aggregation after all running MyoPS jobs reach a terminal state.
+## Tracked Lightweight Files
 
-Heavy runtime outputs, checkpoints, predictions, NIfTI files, upload zips, raw data, secrets, and full runtime trees are not committed.
+The top-level M9 Markdown/CSV/JSON packet is intended for independent review. It includes:
+
+- `result.md`: executor result.
+- `completion_check.md`: explicit `M9_READY_FOR_REVIEW` completion check with `M9_NO_PROMOTION_DIAGNOSTIC_ONLY` route decision.
+- `review_request.md`: read-only review request.
+- `commands_run.md`: commands, Slurm accounting, aggregation, and verification log.
+- `m9_route_promotion_decision.md`: `M9_NO_PROMOTION_DIAGNOSTIC_ONLY`.
+- `m9_next_required_action.md`: `GPT_REPLAN_AFTER_M9_NO_PROMOTION`.
+- `m9_training_budget_ledger.csv`: six runtime rows, aggregate `26415.268` train-loop seconds, and three formal candidates with `>=7200` seconds.
+- `m9_metric_aligned_checkpoint_selection.csv`: metric-facing selected checkpoint rows for three formal M9 candidates.
+- `m9_training_curves.csv`, `m9_validation_events.csv`, `m9_loss_component_gradient_sanity.csv`: runtime training and loss evidence.
+- `m9_same_split_help_harm.csv`, `m9_hard_subgroup_metrics.csv`, `m9_component_remote_fp_hd95_report.csv`: same-split metric evidence against the tracked M8 nnU-Net anchor.
+- `m9_proposal_refiner_recall_precision.csv`, `m9_refiner_causal_effect.csv`, `m9_refiner_asymmetry_ablation.csv`, `m9_scar_refiner_roi_stats.csv`, `m9_edema_refiner_roi_stats.csv`: proposal/refiner evidence.
+- `m9_pattern_sip_usage_by_group.csv`, `m9_dictionary_slot_group_stability.csv`, `m9_integrativeness_gamma_soft.csv`, `m9_dictionary_invalid_slot_mask_report.csv`: dictionary and Pattern-SIP summaries.
+- `m9_prototype_memory_summary.json`, `m9_prototype_update_ledger.csv`, `m9_hard_negative_replay_ledger.csv`, `m9_no_t2_edema_negative_violation_report.csv`: prototype and no-T2 safety evidence.
+- `m9_cine_*.md`, `m9_cine_*.csv`, `m9_cine_temporal_output_summary.json`: local Cine final-output proxy evidence.
+- `m9_strict_validator_report.*` and `m9_validator_selftest_report.*`: validator reports.
+
+## Non-Tracked Runtime Artifacts
+
+Heavy runtime outputs, checkpoints, predictions, NIfTI files, ANTs transforms, upload zips, raw data, secrets, full runtime trees, and large logs are not intended for commit.
+
+## Ready State
+
+The packet has completed post-job aggregation and validator checks. It is ready for independent read-only review, but it does not support route promotion. Explicit safety boundary: no validation upload, no hosted metric claim, no fold expansion, no M10.

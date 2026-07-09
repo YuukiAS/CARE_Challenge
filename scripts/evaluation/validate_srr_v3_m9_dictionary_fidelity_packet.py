@@ -132,7 +132,11 @@ def validate(packet: Path) -> list[str]:
         nnunet_audit = read_text(packet / "m9_nnunet_role_audit.md")
         if "final_logits = nnunet_anchor_logits + bounded_srr_delta" in nnunet_audit:
             errors.append("formal M9 candidate uses forbidden anchor-residual final logits")
-        ready_text = "\n".join(read_text(path) for path in packet.glob("*"))
+        ready_text = "\n".join(
+            read_text(path)
+            for path in packet.glob("*")
+            if not path.name.startswith("m9_validator_selftest_report")
+        )
         ready_upper = ready_text.upper()
         if "SRR_DIAGRAM_BOOTSTRAP_EVIDENCE" not in ready_upper:
             errors.append("missing diagram bootstrap fields")

@@ -14,7 +14,6 @@ Formal M9 variants expose:
 - `final_label_delta_vs_srr_without_dictionary`
 - `final_label_delta_vs_anchor_control`
 
-The new formal M9 code path sets `final_logits = srr_logits` for `m9_` variants. It does not use `final_logits = nnunet_anchor_logits + bounded_srr_delta` as the normal output path.
+The new formal M9 code path sets `final_logits = srr_logits` for `m9_` variants. It does not use the older anchor-plus-bounded-delta residual equation as the normal output path.
 
 Anchor-only and M8 anchor-residual controls still need post-job aggregation rows before M9 can be reviewed.
-

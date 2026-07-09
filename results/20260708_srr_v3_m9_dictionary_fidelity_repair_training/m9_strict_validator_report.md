@@ -1,7 +1,7 @@
 # M9 Strict Validator Report
 
-status: `PASS_MONITOR_PACKET_NOT_READY`
+status: `PASS_READY_PACKET`
 
-The real-packet validator exits with `error_count=0` for the current monitor packet.
+The final real-packet validator exits with `error_count=0` for the completed M9 packet after job `58348646` reached terminal state and aggregation was rerun including `runtime_htzhulab_true_br2_pattern_sip`.
 
-This does not mean `M9_READY_FOR_REVIEW`. The packet status remains `M9_NEEDS_MONITOR` because MyoPS Slurm jobs `58297510`, `58297807`, and `58297806` are still running and post-job MyoPS runtime-derived metric evidence is not complete. Cine local proxy final-output evidence is present, but it is not a hosted metric claim.
+This does not mean route promotion. The executor route decision remains `M9_NO_PROMOTION_DIAGNOSTIC_ONLY` because all selected formal M9 candidates remain negative against the tracked M8 nnU-Net anchor.

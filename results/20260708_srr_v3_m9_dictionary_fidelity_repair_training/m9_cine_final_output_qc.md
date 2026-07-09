@@ -8,4 +8,4 @@ registration_method: `ANTsPy_SyNOnly`
 
 This is a local safe-subset temporal final-output run using existing local CineMA frame-wise anatomy predictions.
 It writes runtime NIfTI predictions under an ignored directory and commits only lightweight evidence.
-No validation package, upload, hosted metric, route promotion, fold expansion, scientific stop, or M10 was created.
+Explicit safety boundary: no validation upload, no hosted metric claim, no fold expansion, no M10.
