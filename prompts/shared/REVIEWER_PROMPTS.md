@@ -911,6 +911,87 @@ git commit -m "Add M8 follow-up repair decision review"
 
 Do not push automatically.
 
+# M9 follow-up reviewer: evidence reconciliation + validator re-audit
+
+This shared M9 follow-up reviewer prompt was merged from the deleted M9 follow-up staging file.
+
+You are the separate read-only reviewer/auditor for the M9 follow-up evidence reconciliation and validator re-audit.
+
+Required protocol sentence: This is a separate read-only reviewer/auditor session. Do not fix code, do not generate missing artifacts, do not train, and do not start M10. Review only the completed M9 follow-up packet, write `review.md` with the controlled decision, then force-add/commit `review.md`. Do not push automatically.
+
+## M9 follow-up review scope
+
+Review:
+
+```text
+prompts/shared/EXECUTOR_PROMPTS.md
+prompts/shared/REVIEWER_PROMPTS.md
+results/20260708_srr_v3_m9_dictionary_fidelity_repair_training/review.md
+results/20260708_srr_v3_m9_dictionary_fidelity_repair_training/result.md
+results/20260708_srr_v3_m9_dictionary_fidelity_repair_training/completion_check.md
+results/20260708_srr_v3_m9_dictionary_fidelity_repair_training/m9_dictionary_fidelity_matrix.csv
+results/20260708_srr_v3_m9_dictionary_fidelity_repair_training/m9_code_patch_summary.md
+results/20260708_srr_v3_m9_dictionary_fidelity_repair_training/m9_rrl_brr2_adaptation_contract.md
+results/20260708_srr_v3_m9_dictionary_fidelity_repair_training/m9_nnunet_role_audit.md
+results/20260708_srr_v3_m9_dictionary_fidelity_repair_training/m9_pathology_specific_refiner_contract.md
+results/20260708_srr_v3_m9_dictionary_fidelity_repair_training/m9_prototype_memory_summary.json
+results/20260708_srr_v3_m9_dictionary_fidelity_repair_training/m9_followup_reconciliation_report.md
+results/20260708_srr_v3_m9_dictionary_fidelity_repair_training/m9_followup_stale_status_scan.csv
+results/20260708_srr_v3_m9_dictionary_fidelity_repair_training/m9_followup_validator_repair_summary.md
+results/20260708_srr_v3_m9_dictionary_fidelity_repair_training/m9_followup_reaudit_request.md
+scripts/evaluation/validate_srr_v3_m9_dictionary_fidelity_packet.py
+scripts/evaluation/aggregate_srr_v3_m9_dictionary_fidelity_packet.py
+```
+
+You may read other M9 evidence files as needed to verify source paths and metrics.
+
+## M9 follow-up required review checks
+
+Check that the executor did not start M10, fold expansion, validation packaging, validation upload, or hosted metric claiming.
+
+Check that previous reviewer blockers are resolved or the packet is explicitly non-ready. The following stale states must not remain in ready evidence: `PENDING_RUNTIME`, `PARTIAL_CODE_REPAIR_NEEDS_RUNTIME_EVIDENCE`, `PARTIAL_ONE_BATCH_PROTOTYPE_EVIDENCE_FORMAL_TRAINING_RUNNING`, `FORMAL_TRAINING_RUNNING`, `Slurm jobs pending`, and `not sufficient for M9_READY_FOR_REVIEW`.
+
+Check `m9_followup_stale_status_scan.csv`. It must scan Markdown, CSV, and JSON files. If it scans only Markdown, return needs revision.
+
+Check `m9_dictionary_fidelity_matrix.csv`. The rows for true-BR2 runtime slot usage, invalid-slot mask runtime, and final metric causal effect must be backed by actual runtime-derived evidence paths or the packet must be non-ready.
+
+Check `m9_prototype_memory_summary.json`. A ready packet cannot retain `PARTIAL_ONE_BATCH_PROTOTYPE_EVIDENCE_FORMAL_TRAINING_RUNNING` or equivalent.
+
+Check the validator. It must fail ready packets with stale unresolved tokens in Markdown, CSV, and JSON files. Known-bad self-tests must include stale pending/runtime states in the exact M9 evidence files and must fail closed.
+
+Check the science separately from protocol. If the packet is consistent and current metrics remain negative, the audited decision may acknowledge directionally supported no-promotion. Do not let negative metrics excuse unresolved evidence.
+
+## M9 follow-up review decisions
+
+Write `results/20260708_srr_v3_m9_dictionary_fidelity_repair_training/review.md` with exactly one of:
+
+```text
+M9_FOLLOWUP_AUDITED_READY_NO_PROMOTION_DIAGNOSTIC_ONLY
+M9_FOLLOWUP_AUDITED_NEEDS_EVIDENCE
+M9_FOLLOWUP_AUDITED_NEEDS_REVISION
+M9_FOLLOWUP_AUDITED_NEEDS_MONITOR
+M9_FOLLOWUP_AUDITED_PROTOCOL_BLOCKED
+```
+
+`M9_FOLLOWUP_AUDITED_READY_NO_PROMOTION_DIAGNOSTIC_ONLY` means only this: M9 is now internally consistent and its no-promotion diagnostic direction is auditable. It does not authorize route promotion, validation packaging/upload, hosted metric claims, fold expansion, scientific stop, or automatic M10 execution. GPT/user must decide any future M10 design separately.
+
+Use `M9_FOLLOWUP_AUDITED_NEEDS_EVIDENCE` if required runtime evidence is still missing or stale status rows remain unreconciled.
+
+Use `M9_FOLLOWUP_AUDITED_NEEDS_REVISION` if validator scanning, self-tests, evidence reconciliation, or completion-state logic remains broken.
+
+Use `M9_FOLLOWUP_AUDITED_NEEDS_MONITOR` only if genuinely running/pending jobs are required and not terminal.
+
+Use `M9_FOLLOWUP_AUDITED_PROTOCOL_BLOCKED` if the executor wrote `review.md`, started M10, packaged/uploaded validation, claimed hosted metrics, or altered route conclusions beyond the bounded reconciliation task.
+
+Commit only the review file:
+
+```bash
+git add -f results/20260708_srr_v3_m9_dictionary_fidelity_repair_training/review.md
+git commit -m "Add M9 follow-up evidence reconciliation review"
+```
+
+Do not push automatically.
+
 ## M9 reviewer: SRR dictionary fidelity repair + pathology-specific refiner + Cine final-output training evidence
 
 

@@ -2639,3 +2639,168 @@ git commit -m "Add M9 SRR dictionary fidelity and Cine output packet"
 ```
 
 Do not push automatically unless the user explicitly instructs it in the Codex session.
+
+# M9 follow-up executor: evidence reconciliation + validator re-audit
+
+This shared M9 follow-up prompt was merged from the deleted M9 follow-up staging file. This is not M10, not route promotion, not fold expansion, not validation packaging/upload, not hosted metric claim, not leaderboard claim, and not scientific stop.
+
+You are the Codex executor/controller for exactly one bounded M9 follow-up milestone: reconcile M9 evidence state, harden the validator, rerun aggregation/validation, and prepare the packet for a separate read-only re-audit.
+
+Required protocol sentence: This is an executor/controller session for one M9 follow-up only. Stop after writing `completion_check.md` and `review_request.md`, force-add/commit the lightweight required result files and validator/code changes, then stop. Do not push automatically. Do not write `review.md` and do not start M10. The packet must be reviewed by a separate read-only reviewer before any continuation.
+
+Background:
+
+- Previous M9 result path: `results/20260708_srr_v3_m9_dictionary_fidelity_repair_training/result.md`
+- Previous M9 executor state: `M9_READY_FOR_REVIEW`
+- Previous M9 executor route decision: `M9_NO_PROMOTION_DIAGNOSTIC_ONLY`
+- Previous M9 review path: `results/20260708_srr_v3_m9_dictionary_fidelity_repair_training/review.md`
+- Previous M9 review decision: `M9_AUDITED_NEEDS_REVISION`
+- Review blocker class: `evidence_state_and_validator_consistency`
+- Next stage: `M9_FOLLOWUP_REAUDIT_BEFORE_ANY_M10`
+
+M9 executor directionally supports no-promotion: the formal SRR-main candidates remain negative against the tracked M8 nnU-Net anchor, and Cine remains local proxy final-output evidence only. However, the independent reviewer found that the packet is not auditable because required tracked evidence files still contain pending/runtime-needed states while `completion_check.md` claims `M9_READY_FOR_REVIEW`. Therefore this bounded M9 follow-up repair and re-audit is required before any M10 planning.
+
+## M9 follow-up required reading
+
+Read these files before editing code or evidence:
+
+```text
+START_HERE_FOR_GPT.md
+GPT_PLANNER_CARE_PROTOCOL.md
+AGENTS.md
+README.md
+prompts/CHATGPT_RULES.md
+prompts/GPT_HARD_GATE_PROMPT.md
+prompts/MILESTONE_REVIEW_PROTOCOL.md
+prompts/THREAD_BOOTSTRAP_ROUTE_IMAGE_PROTOCOL.md
+prompts/shared/EXECUTOR_PROMPTS.md
+prompts/shared/REVIEWER_PROMPTS.md
+results/20260708_srr_v3_m9_dictionary_fidelity_repair_training/review.md
+results/20260708_srr_v3_m9_dictionary_fidelity_repair_training/result.md
+results/20260708_srr_v3_m9_dictionary_fidelity_repair_training/completion_check.md
+results/20260708_srr_v3_m9_dictionary_fidelity_repair_training/m9_route_promotion_decision.md
+results/20260708_srr_v3_m9_dictionary_fidelity_repair_training/m9_next_required_action.md
+results/20260708_srr_v3_m9_dictionary_fidelity_repair_training/m9_dictionary_fidelity_matrix.csv
+results/20260708_srr_v3_m9_dictionary_fidelity_repair_training/m9_code_patch_summary.md
+results/20260708_srr_v3_m9_dictionary_fidelity_repair_training/m9_rrl_brr2_adaptation_contract.md
+results/20260708_srr_v3_m9_dictionary_fidelity_repair_training/m9_nnunet_role_audit.md
+results/20260708_srr_v3_m9_dictionary_fidelity_repair_training/m9_pathology_specific_refiner_contract.md
+results/20260708_srr_v3_m9_dictionary_fidelity_repair_training/m9_prototype_memory_summary.json
+results/20260708_srr_v3_m9_dictionary_fidelity_repair_training/m9_strict_validator_report.md
+results/20260708_srr_v3_m9_dictionary_fidelity_repair_training/m9_validator_selftest_report.md
+scripts/evaluation/aggregate_srr_v3_m9_dictionary_fidelity_packet.py
+scripts/evaluation/validate_srr_v3_m9_dictionary_fidelity_packet.py
+```
+
+If `review.md` is missing or its decision is not `M9_AUDITED_NEEDS_REVISION`, write a blocked follow-up packet and stop. Do not infer from chat summaries.
+
+## M9 follow-up task identity and result policy
+
+Continue using the M9 result directory:
+
+```text
+results/20260708_srr_v3_m9_dictionary_fidelity_repair_training/
+```
+
+This follow-up repairs the existing M9 packet. Do not create a new route result directory unless the validator architecture requires temporary fixtures. Do not launch new long training. Do not submit new Slurm jobs unless a required runtime artifact is genuinely missing and the packet cannot be reconciled from terminal M9 runtime outputs. If any new Slurm job is unavoidable, it must be justified in `m9_followup_commands_run.md` and the packet must remain non-ready until terminal accounting and aggregation are complete.
+
+Separate three questions: evidence consistency, scientific direction, and next planning state. A validator repair does not make the route good. Negative metrics do not excuse stale pending evidence. A no-promotion executor direction is not an audited route-stop decision.
+
+## M9 follow-up required repairs
+
+### Reconcile stale pending evidence
+
+Replace or correct stale pending/runtime-needed statuses in the required tracked evidence files. At minimum inspect and reconcile:
+
+```text
+m9_dictionary_fidelity_matrix.csv
+m9_code_patch_summary.md
+m9_rrl_brr2_adaptation_contract.md
+m9_nnunet_role_audit.md
+m9_pathology_specific_refiner_contract.md
+m9_prototype_memory_summary.json
+m9_route_promotion_decision.md
+m9_next_required_action.md
+completion_check.md
+result.md
+```
+
+If runtime evidence exists, update statuses from `PENDING_RUNTIME`, `PARTIAL_CODE_REPAIR_NEEDS_RUNTIME_EVIDENCE`, `PARTIAL_ONE_BATCH_PROTOTYPE_EVIDENCE_FORMAL_TRAINING_RUNNING`, `FORMAL_TRAINING_RUNNING`, or equivalent stale tokens to runtime-derived states with exact evidence paths. If runtime evidence does not exist, do not mark ready. Set completion to `M9_FOLLOWUP_NEEDS_EVIDENCE` and explain the missing evidence.
+
+Required matrix rows must be evidence-backed: `true_br2_runtime_slot_usage`, `invalid_slot_mask_runtime`, `final_metric_causal_effect`, `prototype_memory_runtime_status`, `pathology_specific_refiner_runtime_status`, and `cine_final_output_runtime_status`. Each row must have a non-pending status and a concrete tracked evidence path. Do not invent evidence.
+
+### Harden validator across Markdown, CSV, and JSON
+
+Update `scripts/evaluation/validate_srr_v3_m9_dictionary_fidelity_packet.py` so a ready packet fails closed when unresolved tokens appear anywhere in required Markdown, CSV, or JSON files, not just top-level Markdown.
+
+The unresolved-token scan must include at least: `PENDING_RUNTIME`, `PARTIAL_CODE_REPAIR_NEEDS_RUNTIME_EVIDENCE`, `PARTIAL_ONE_BATCH_PROTOTYPE_EVIDENCE_FORMAL_TRAINING_RUNNING`, `FORMAL_TRAINING_RUNNING`, `NEEDS_RUNTIME_EVIDENCE`, `RUNTIME_EVIDENCE_PENDING`, `SLURM JOBS PENDING`, `JOBS PENDING`, `AWAITING_SACCT`, `NEEDS_MONITOR`, `PENDING_MONITOR`, `JOB_SUBMITTED`, `PENDING_PRIORITY`, `RUNNING`, and `not sufficient for M9_READY_FOR_REVIEW`.
+
+A ready packet may contain historical narrative about these tokens only if the row is explicitly marked `HISTORICAL_NONREADY_STATE_RESOLVED` and the same file contains the final resolved runtime status and evidence path. Simpler is better: remove stale non-ready language from final packet files.
+
+### Add known-bad self-tests for this exact failure
+
+Known-bad fixtures must fail closed:
+
+```text
+stale_pending_runtime_in_dictionary_fidelity_matrix
+stale_partial_code_repair_in_code_patch_summary
+stale_partial_brr2_contract_pending_runtime
+stale_nnunet_controls_need_post_job_rows
+stale_pathology_refiner_pending_runtime
+stale_formal_training_running_in_prototype_memory_json
+ready_packet_with_csv_pending_runtime_token
+ready_packet_with_json_running_token
+```
+
+The self-test report must show one good fixture passes and all known-bad fixtures fail. If any known-bad mutation passes, completion must be `M9_FOLLOWUP_NEEDS_REVISION_VALIDATOR_NOT_FAIL_CLOSED`.
+
+### Re-run aggregation only when needed
+
+If tracked evidence can be refreshed from existing terminal runtime roots, rerun the M9 aggregator. Record the exact command, exit status, runtime roots, and changed files. Do not alter metrics by hand except to repair stale status text that clearly contradicts existing runtime-derived evidence. If metric tables are regenerated, cite the runtime source paths.
+
+### Produce follow-up evidence
+
+Add these lightweight files to the existing result directory:
+
+```text
+m9_followup_reconciliation_report.md
+m9_followup_stale_status_scan.csv
+m9_followup_validator_repair_summary.md
+m9_followup_reaudit_request.md
+m9_followup_commands_run.md
+```
+
+`m9_followup_reconciliation_report.md` must state one of `M9_FOLLOWUP_READY_FOR_REAUDIT`, `M9_FOLLOWUP_NEEDS_EVIDENCE`, `M9_FOLLOWUP_NEEDS_REVISION`, or `M9_FOLLOWUP_NEEDS_MONITOR`.
+
+`m9_followup_stale_status_scan.csv` must include `file_path, scanned_type, unresolved_token_count, unresolved_tokens, final_status, action_taken`.
+
+`m9_followup_validator_repair_summary.md` must explain the validator bug and the new fail-closed behavior. `m9_followup_reaudit_request.md` must request independent re-audit and explicitly state that the executor did not write `review.md` or start M10.
+
+### Scientific interpretation after reconciliation
+
+After the packet is internally consistent, write a short but explicit scientific interpretation in `m9_route_promotion_decision.md` and `m9_next_required_action.md`.
+
+Allowed route decisions: `M9_NO_PROMOTION_DIAGNOSTIC_ONLY`, `M9_NEEDS_EVIDENCE`, `M9_NEEDS_REVISION`, `M9_SCIENTIFIC_UNDERTRAINED`, `M9_NEEDS_MONITOR`.
+
+Do not write route promotion. Based on the current M9 metrics, the likely decision remains `M9_NO_PROMOTION_DIAGNOSTIC_ONLY`, but this must be supported by reconciled evidence.
+
+Allowed next actions: `GPT_REPLAN_AFTER_M9_NO_PROMOTION`, `NEEDS_EVIDENCE_BEFORE_NEXT_TASK`, `NEEDS_REVISION_BEFORE_REVIEW`, `NEEDS_MONITOR`, `GPT_PLAN_M10_AFTER_AUDITED_REVIEW_ONLY`.
+
+Do not select `GPT_PLAN_M10_AFTER_AUDITED_REVIEW_ONLY` unless the separate reviewer later audits the corrected packet. The executor should normally stop at `GPT_REPLAN_AFTER_M9_NO_PROMOTION` or a non-ready state.
+
+## M9 follow-up completion states
+
+Allowed executor completion states:
+
+```text
+M9_FOLLOWUP_READY_FOR_REAUDIT
+M9_FOLLOWUP_NEEDS_EVIDENCE
+M9_FOLLOWUP_NEEDS_REVISION
+M9_FOLLOWUP_NEEDS_MONITOR
+M9_FOLLOWUP_RESOURCE_BLOCKED
+M9_FOLLOWUP_BLOCKED_PREREQUISITE_REVIEW_MISSING
+```
+
+`M9_FOLLOWUP_READY_FOR_REAUDIT` requires reviewer blocker files reconciled or packet marked non-ready; validator scans required Markdown/CSV/JSON for stale unresolved states; validator real-packet pass with `error_count=0`; self-tests include the exact stale-pending known-bad fixtures and all fail closed; `completion_check.md` no longer conflicts with tracked evidence; no validation packaging/upload/hosted claim/fold expansion/M10.
+
+Commit only first-party validator/aggregator changes and lightweight Markdown/CSV/JSON result files. Do not commit checkpoints, predictions, NIfTI files, upload zips, raw data, large logs, secrets, or full runtime trees. Do not push automatically.
