@@ -148,3 +148,142 @@ The follow-up protocol repair is done only when:
 - Context bootstrap is disk/live-state based, not informal context compression.
 - Validators reject `RUNNING/PENDING -> blocked` misclassification unless the Slurm skill threshold is proven.
 - The updated files clearly state the user command pattern: short task uses executor; long Slurm uses controller; final review remains separate.
+
+## Documentation audit and architecture diagram extension
+
+Add a controller-owned documentation audit role. This is a read-only documentation subagent or controller phase, not a reviewer/auditor and not a scientific route judge.
+
+Purpose:
+
+- Keep a current, milestone-local description of what the model and execution system actually implement.
+- Help GPT planner and the user understand the current codebase without relying on chat memory.
+- Detect divergence between the GPT-authored design, code implementation, runtime evidence, and final packet.
+
+Required long-milestone outputs:
+
+- `results/<task_key>/architecture_snapshot.md`
+- `results/<task_key>/implementation_map.csv`
+- `results/<task_key>/model_dataflow.mmd`
+- `results/<task_key>/execution_flow.mmd`
+- `results/<task_key>/loss_and_metric_contract.csv`
+- `results/<task_key>/placeholder_vs_real_implementation.md`
+- `results/<task_key>/documentation_audit_report.md`
+
+Optional rendered outputs when local tools are available:
+
+- `results/<task_key>/model_dataflow.svg`
+- `results/<task_key>/execution_flow.svg`
+- `results/<task_key>/model_dataflow.d2`
+- `results/<task_key>/model_dataflow_d2.svg`
+
+Timing:
+
+- Run documentation audit once after executor implementation / Slurm submission, while training is waiting or running.
+- Run it again after terminal jobs, aggregation, and validator outputs exist.
+
+Tool policy:
+
+- Mermaid `.mmd` is the mandatory baseline diagram format because it is text, version-control friendly, and GitHub-renderable in Markdown.
+- Mermaid CLI rendering is optional. If `mmdc` is available, render SVG. If not available, still commit `.mmd` and report `MERMAID_CLI_NOT_AVAILABLE`.
+- D2 is optional for cleaner architecture diagrams if the `d2` CLI is installed. Do not make D2 required for pass.
+- Graphify, if installed, may be used only as a code/docs knowledge-graph aid. It must not replace the architecture snapshot, Mermaid/D2 diagram sources, implementation map, or documentation audit report.
+- Do not run Graphify or any documentation audit tool over raw data, NIfTI predictions, checkpoints, upload packages, secrets, or large runtime trees.
+
+Architecture diagram content requirements:
+
+- MyoPS model diagram must show modality inputs, availability mask, modality stems, shared/private/interaction dictionary or gated fusion, anatomy prior, scar proposal/refiner, edema proposal/refiner, no-T2 edema blocking, losses, final logits/labels, and export mapping.
+- Cine diagram must show cine sequence input, ED/reference selection, keyframe selection, registration/warping slot, temporal representation dictionary or frame aggregator, anatomy prior, final myocardium output, and explicit placeholder/scaffold status when not fully implemented.
+- Execution flow diagram must show GPT planner, direct executor mode, controller-supervised mode, executor worker/subagent, Slurm jobs, monitor/finalizer, documentation audit subagent, aggregator/validator, commit, and separate reviewer/auditor.
+
+Documentation audit must classify each module as one of:
+
+- `REAL_IMPLEMENTATION`
+- `SCAFFOLD_ONLY`
+- `PLACEHOLDER_OR_STUB`
+- `LEGACY_CONTROL_ONLY`
+- `UNUSED_DEAD_PATH`
+- `UNKNOWN_NEEDS_EVIDENCE`
+
+## Tool assessment notes for GPT/Codex maintainers
+
+Graphify assessment:
+
+- Useful for building a project-level queryable knowledge graph from code/docs and for helping a documentation audit subagent find cross-file relationships.
+- Not sufficient as the primary architecture drawing tool. It produces `graph.html`, `GRAPH_REPORT.md`, and `graph.json`; these are useful exploration artifacts but do not by themselves provide the controlled scientific model architecture diagram needed for CARE milestones.
+- Recommended only as an optional helper if installed project-scoped under `.agents/skills/graphify/` and used on code/docs only.
+
+Preferred diagram baseline:
+
+- Use Mermaid `.mmd` as required output for milestone architecture and execution flow diagrams.
+- Use Mermaid CLI `mmdc` to render SVG only when installed.
+- Use D2 only as an optional higher-quality architecture diagram layer.
+- If no external diagram tool is installed, the minimum pass is still valid `.mmd` plus a documentation audit report; do not let Codex skip diagrams by claiming no skill is installed.
+
+## Follow-up Codex implementation prompt
+
+Use this prompt for the unified Codex maintenance task that updates the active protocol files. This is a maintenance/protocol task, not a model-training milestone.
+
+```text
+You are the Codex maintenance executor for CARE agent-flow protocol repair. Your task is to implement the protocol changes specified in root `TODO-agents.md`, including the documentation audit / architecture diagram extension. Do not train models, do not submit validation packages, do not upload, and do not start a scientific milestone.
+
+Required reading before edits:
+
+1. `AGENTS.md`
+2. `TODO-agents.md`
+3. `START_HERE_FOR_GPT.md`
+4. `GPT_PLANNER_CARE_PROTOCOL.md`
+5. `prompts/HANDOFF_ROLES.md`
+6. `prompts/GPT_HARD_GATE_PROMPT.md`
+7. `prompts/templates/CONTROLLER_TASK_TEMPLATE.md`
+8. `.agents/skills/slurm-routing-partition/SKILL.md`
+9. Any shared executor/reviewer prompt files whose wording conflicts with the new flow.
+
+Implement these changes without weakening existing rules:
+
+1. Add explicit execution-mode selection to GPT planning: `direct_executor` for short tasks and `controller_supervised` for long Slurm / overnight / multi-job / high resume-risk tasks.
+2. Require controller-supervised execution for overnight Slurm milestones. The user should start one top-level execution controller goal, not a standalone overnight executor goal.
+3. Keep reviewer/auditor strictly read-only. Reviewer must never monitor, resume, train, fix code, generate missing artifacts, or act as execution controller.
+4. Define execution controller as runtime-continuity supervisor only. It may monitor live Slurm/git/result-dir state, resume the same milestone, run final aggregation/validation/commit, and write controller/supervision reports. It must not write `review.md`, claim audited-go, choose a new scientific route, or start the next milestone.
+5. Add deterministic context bootstrap requirements for controller-supervised milestones: before each major phase, read disk rules/task files and refresh live `git status`, `git log`, `squeue/sacct`, required runtime-output existence, and tracked evidence existence. Do not rely on compressed context as the safety mechanism.
+6. Add Slurm finalizer behavior: `PENDING`, `RUNNING`, `CONFIGURING`, `COMPLETING`, and `AWAITING_SACCT` stay `NEEDS_MONITOR`; terminal jobs trigger aggregator/validator/commit; terminal jobs with missing outputs become `NEEDS_EVIDENCE`; scheduler/resource blocked is allowed only with the Slurm skill's 24-hour pending-only threshold.
+7. Add known-bad validator/reviewer expectations for `RUNNING/PENDING -> blocked`, reviewer prompt authorizing executor recovery, controller writing `review.md`, normal executor prompt used for overnight Slurm, and GPT Slurm milestone missing `execution_mode` / `requires_execution_controller`.
+8. Add controller-owned documentation audit requirements for long milestones. This must be a read-only documentation subagent or controller phase, not reviewer work.
+9. Require long-milestone documentation outputs: `architecture_snapshot.md`, `implementation_map.csv`, `model_dataflow.mmd`, `execution_flow.mmd`, `loss_and_metric_contract.csv`, `placeholder_vs_real_implementation.md`, and `documentation_audit_report.md`.
+10. Require architecture diagrams to be Mermaid `.mmd` at minimum. If `mmdc` exists, render SVG; otherwise report `MERMAID_CLI_NOT_AVAILABLE` and still commit the `.mmd`. D2 is optional. Graphify is optional and may only be used as a code/docs knowledge-graph aid, never as the primary architecture diagram or as a substitute for controlled documentation outputs.
+11. If project-scoped Graphify is already installed, document how to use it safely on code/docs only. If it is not installed, do not install it unless the user explicitly asked. Do not run any graph/documentation tool over raw data, NIfTI predictions, checkpoints, upload packages, secrets, or large runtime trees.
+12. Ensure GPT-facing files clearly tell GPT to choose `execution_mode` while designing milestones, and to write controller prompts for long Slurm/overnight tasks.
+
+Expected edited files include, but are not limited to:
+
+- `AGENTS.md`
+- `START_HERE_FOR_GPT.md`
+- `GPT_PLANNER_CARE_PROTOCOL.md`
+- `prompts/HANDOFF_ROLES.md`
+- `prompts/GPT_HARD_GATE_PROMPT.md`
+- `prompts/templates/CONTROLLER_TASK_TEMPLATE.md`
+- `.agents/skills/slurm-routing-partition/SKILL.md` if needed for centralized Slurm finalizer wording
+- Shared executor/reviewer prompt files only if they contain conflicting default flow language.
+
+Add small helper templates if useful, for example under `prompts/templates/`:
+
+- `DOCUMENTATION_AUDIT_TEMPLATE.md`
+- `ARCHITECTURE_SNAPSHOT_TEMPLATE.md`
+- `IMPLEMENTATION_MAP_SCHEMA.md`
+
+Validation requirements:
+
+- Run `git diff --check`.
+- Search the repository for wording that still implies reviewer-supervised execution or standalone overnight executor mode, and either fix it or document why it is legacy/non-authoritative.
+- Verify the final protocol states the user-facing rule exactly: short task uses executor; long Slurm/overnight task uses execution controller; final review remains separate and read-only.
+
+Git policy:
+
+- Commit only lightweight Markdown/template/protocol files.
+- Do not push.
+- Do not modify model code, results packets, checkpoints, data, logs, upload zips, or large artifacts.
+
+Completion output:
+
+- Update `TODO-agents.md` status or add a short completion note only if you also preserve the original task list.
+- Write a concise maintenance summary in the commit message and final response.
+```
