@@ -100,6 +100,10 @@ state.
 with `scripts/ops/validate_executor_plan.py`. The controller launches executors
 only by declared wave, records launch and merge ledgers, and remains the only
 merge owner.
+Prepare waves with `scripts/ops/prepare_care_executor_wave.py`; merge completed
+executor branches with `scripts/ops/merge_care_executor_wave.py`. If subagent
+launch is unavailable, the controller must write `NEEDS_SUBAGENT_LAUNCH`
+instead of pretending the executor started.
 
 ## Durable Continuity
 
@@ -114,11 +118,19 @@ job ID, command, log path, lock path, and result directory.
 For `tmux_watcher`, a namespace-local watcher must record session name, PID,
 command, log path, lock path, and result directory. Merely writing
 `continuity_backend: tmux_watcher` is not evidence.
+The watcher must inspect `finalizer_state.json` after each iteration. It
+continues on `NEEDS_MONITOR`, `AWAITING_SACCT_RETRY_EXHAUSTED`, and
+`INITIALIZING`, stops successfully only on `READY_FOR_MAPPER_FINAL`,
+`PACKET_COMMITTED_FOR_REVIEW`, or `READY_FOR_LOCAL_PACKET_COMMIT`, and stops
+nonzero on failure/evidence/revision/mapper/validator states.
 
 `PENDING`, `RUNNING`, `CONFIGURING`, `COMPLETING`, and `AWAITING_SACCT` are
 monitor states. They map to `NEEDS_MONITOR`, not `NEEDS_EVIDENCE` and not
 `BLOCKED`. A scheduler block requires the Slurm routing skill's pending
 threshold evidence.
+`AWAITING_SACCT` exhaustion is retryable monitor evidence, not success; the
+finalizer must record retry fields and the watcher/finalizer backend that will
+continue accounting.
 
 ## Controller Report
 

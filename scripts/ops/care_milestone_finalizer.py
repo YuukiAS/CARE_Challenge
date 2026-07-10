@@ -20,6 +20,7 @@ MONITOR_STATES = {"PENDING", "RUNNING", "CONFIGURING", "COMPLETING", "AWAITING_S
 SUCCESS_STATES = {"COMPLETED"}
 FAILED_STATES = {"FAILED", "CANCELLED", "TIMEOUT", "NODE_FAIL", "OUT_OF_MEMORY", "PREEMPTED", "BOOT_FAIL"}
 TERMINAL_STATES = SUCCESS_STATES | FAILED_STATES
+DEFAULT_ACCOUNTING_RETRY_SECONDS = 3600
 
 
 def run(cmd: str | list[str], cwd: Path, shell: bool = False) -> subprocess.CompletedProcess[str]:
@@ -215,7 +216,7 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--stage", choices=("accounting", "commit", "all"), default="all")
     parser.add_argument("--lock-ttl-seconds", type=int, default=3600)
     parser.add_argument("--recover-stale-lock", action="store_true")
-    parser.add_argument("--awaiting-sacct-retry-seconds", type=int, default=900)
+    parser.add_argument("--awaiting-sacct-retry-seconds", type=int, default=DEFAULT_ACCOUNTING_RETRY_SECONDS)
     parser.add_argument("--awaiting-sacct-retry-interval", type=int, default=30)
     parser.add_argument("--mapper-final-required", action="store_true")
     parser.add_argument("--validator-required", action="store_true")
@@ -250,6 +251,11 @@ def main(argv: list[str] | None = None) -> int:
         "awaiting_sacct_retry_seconds": args.awaiting_sacct_retry_seconds,
         "awaiting_sacct_retry_interval": args.awaiting_sacct_retry_interval,
         "awaiting_sacct_attempts": [],
+        "retryable": False,
+        "retry_count": 0,
+        "retry_backend": "bounded_polling",
+        "next_retry_job_id_or_tmux_session": None,
+        "accounting_wait_seconds": 0,
         "lock_released": False,
     }
 
@@ -270,6 +276,11 @@ def main(argv: list[str] | None = None) -> int:
             args.awaiting_sacct_retry_interval,
         )
         state["awaiting_sacct_attempts"] = attempts
+        state["retry_count"] = max(0, len(attempts) - 1)
+        state["accounting_wait_seconds"] = min(
+            args.awaiting_sacct_retry_seconds,
+            max(0, len(attempts) - 1) * max(1, args.awaiting_sacct_retry_interval),
+        )
         state["job_states"] = {jid: job.get("state") for jid, job in jobs.items()}
         state["exit_codes"] = {jid: job.get("exit_code", job.get("ExitCode", "UNKNOWN")) for jid, job in jobs.items()}
         state["elapsed"] = {jid: job.get("elapsed", "UNKNOWN") for jid, job in jobs.items()}
@@ -278,10 +289,13 @@ def main(argv: list[str] | None = None) -> int:
         job_state = final_state_from_jobs(jobs, args.pending_check_count)
         if exhausted and "AWAITING_SACCT" in set(state["job_states"].values()):
             state["final_state"] = "AWAITING_SACCT_RETRY_EXHAUSTED"
+            state["retryable"] = True
+            state["retry_backend"] = "state_aware_tmux_watcher_or_resubmitted_finalizer"
             write_state(result_dir, state)
             return 0
         if job_state == "NEEDS_MONITOR":
             state["final_state"] = "NEEDS_MONITOR"
+            state["retryable"] = True
             write_state(result_dir, state)
             return 0
         if job_state == "RUNTIME_FAILURE":

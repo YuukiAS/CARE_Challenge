@@ -1,0 +1,39 @@
+{
+  "task_key": "20260711_agent_flow_v2_pre_m10_final_repair",
+  "required_job_ids": [],
+  "job_states": {},
+  "exit_codes": {},
+  "elapsed": {},
+  "log_paths": {},
+  "runtime_output_paths": {},
+  "aggregation_command": "not_applicable_non_slurm_protocol_repair",
+  "aggregation_exit_code": 0,
+  "validator_commands": [
+    "python scripts/validation/validate_handoff_policy.py --strict-tasks --warnings-as-errors",
+    "python scripts/architecture/validate_care_architecture_wiki.py --strict --history",
+    "python scripts/architecture/generate_care_architecture_wiki.py --check-all",
+    "python scripts/ops/validate_executor_plan.py prompts/templates/EXECUTOR_PLAN_TEMPLATE.yaml",
+    "python -m unittest src.care_myocardium.tests.test_handoff_policy_validator",
+    "python -m py_compile scripts/ops/care_milestone_finalizer.py scripts/ops/submit_care_dependency_finalizer.py scripts/ops/start_care_tmux_watcher.py scripts/ops/validate_executor_plan.py scripts/ops/prepare_care_executor_wave.py scripts/ops/merge_care_executor_wave.py scripts/architecture/reconcile_review_status.py scripts/architecture/generate_care_architecture_wiki.py scripts/architecture/validate_care_architecture_wiki.py scripts/validation/validate_handoff_policy.py",
+    "bash -n jobs/src/care_milestone_finalizer.sh",
+    "git diff --check"
+  ],
+  "validator_exit_codes": {
+    "handoff_policy": 0,
+    "architecture_wiki_history": 0,
+    "diagram_check_all": 0,
+    "executor_plan_template": 0,
+    "unit_tests": 0,
+    "py_compile": 0,
+    "bash_n_finalizer": 0,
+    "git_diff_check": 0
+  },
+  "mapper_final_status": "READY_FOR_REVIEW",
+  "lock_path": "not_applicable",
+  "git_head_before": "d82c6475d23a1e5a40eb1f624d2e46f433381072",
+  "git_commit_after": "local_commit_created; final SHA reported by controller",
+  "final_state": "PACKET_COMMITTED_FOR_REVIEW",
+  "route_promotion_decision": "NOT_REVIEWED",
+  "route_negative_decision": "NOT_REVIEWED",
+  "scientific_resolution_status": "AWAITING_REVIEW"
+}

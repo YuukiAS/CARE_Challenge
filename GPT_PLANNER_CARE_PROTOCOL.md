@@ -137,6 +137,20 @@ prompts/shared/M<id>_<short_slug>.md
 
 不要直接让 GPT 大段改标准共享文件；这些文件太大，容易发生上下文丢失或位置错误。
 
+合并位置必须明确：`Execution Contract`、`Controller Prompt`、`Executor Worker Contract` 和 `Mapper Contract` 合并到 `prompts/shared/EXECUTOR_PROMPTS.md`；`Reviewer Prompt` 合并到 `prompts/shared/REVIEWER_PROMPTS.md`。`executor_plan.yaml` 保留为 `prompts/tasks/<task_key>_executor_plan.yaml`，不要塞进巨大的 shared prompt。
+
+## 4.1 M10 / system-level 历史分析读取
+
+M10 或任何 system-level redesign 之前，GPT 必须读取并在输出中列出：
+
+- `wiki/history/COMPARISON.md`
+- `wiki/history/M08/README.md`
+- `wiki/history/M09/README.md`
+- `wiki/history/M09/COMPONENTS.csv`
+- `wiki/history/M09/components/*.md`
+
+如果只是修改少数组件，可以读取 M09 README、COMPARISON、COMPONENTS 和相关 component files；但 M10 这种全局重设计必须读取所有 M09 component 分析。没有列出 history files read 的 M10/system milestone 是 hard-gate failure。
+
 ## 5. Codex 执行提示词必须包含
 
 每个执行提示词至少写清：

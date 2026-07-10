@@ -1,24 +1,11 @@
-# M08 历史架构分析
+# M08 历史分析快照
 
-analysis_as_written: 本目录从 `TODO.md` 迁移，保留当时的路线级判断和批评，不把后续结果静默覆盖到原判断中。
+原始分析已按原文保存为 `ORIGINAL_ANALYSIS.md`。根目录旧文件 `TODO.pdf` 是同一份 M8 审阅分析的 PDF 渲染版，已归档为 `ORIGINAL_ANALYSIS.pdf`，不再作为根目录 TODO 使用。
 
-later_status_update: M8 后续进入 M9 分析；本快照仅记录 M8 实现审阅，不作为当前 promotion 证据。
+- source filename: `TODO.md`
+- sha256: `a78de2a48f40b75cb5031c251217e0cf73c8920ceae1245c5132f4c0b9f0fff2`
+- pdf archive: `ORIGINAL_ANALYSIS.pdf`
+- pdf sha256: `309e0315d03ac88377cae179e9d5344a6c07812be6a11351483170a6f419c625`
+- review token: `M8_AUDITED_NO_PROMOTION_SCIENTIFIC_UNRESOLVED`
 
-## 组件入口
-
-- [可用性与 no-T2 安全](components/availability-no-t2.md)
-- [检索字典与表示槽](components/retrieval-dictionary.md)
-- [原型与负样本记忆](components/prototype-memory.md)
-- [解剖先验](components/anatomy-prior.md)
-- [病灶 proposal](components/proposal.md)
-- [soft-ROI refiner](components/refiner.md)
-- [分支仲裁与最终输出](components/arbitration.md)
-- [loss 与优化目标](components/losses.md)
-- [checkpoint 选择](components/checkpoint-selection.md)
-- [训练证据与指标](components/training-evidence.md)
-- [Cine temporal 分支](components/cine-temporal.md)
-
-## 图
-
-- [architecture](figures/architecture.png)
-- [gap](figures/gap.png)
+组件页只归档对应段落，不作为当前 runtime 证据。

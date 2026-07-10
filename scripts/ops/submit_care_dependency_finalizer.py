@@ -11,6 +11,8 @@ import subprocess
 import sys
 from datetime import datetime, timezone
 
+from care_milestone_finalizer import DEFAULT_ACCOUNTING_RETRY_SECONDS
+
 
 def run(cmd: list[str], cwd: Path) -> subprocess.CompletedProcess[str]:
     return subprocess.run(cmd, cwd=cwd, text=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
@@ -38,7 +40,7 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--validator-command", action="append", default=[])
     parser.add_argument("--mapper-final-command", default="")
     parser.add_argument("--stage", choices=("accounting", "commit", "all"), default="accounting")
-    parser.add_argument("--awaiting-sacct-retry-seconds", type=int, default=900)
+    parser.add_argument("--awaiting-sacct-retry-seconds", type=int, default=DEFAULT_ACCOUNTING_RETRY_SECONDS)
     parser.add_argument("--awaiting-sacct-retry-interval", type=int, default=30)
     parser.add_argument("--recover-stale-lock", action="store_true")
     parser.add_argument("--lock-path", type=Path)

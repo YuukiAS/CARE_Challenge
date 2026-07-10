@@ -1,27 +1,7 @@
 # 分支仲裁与最终输出
 
-## 历史分析原文迁移
+> 历史快照：M09。本页只保存从 `todo-m10.md` 迁移来的原文段落；当前状态以 root wiki 和最新 review 为准。
 
-## 2. nnU-Net 角色问题
+### 7.1 M9 metrics 负面，且问题不只在 edema
 
-M9 已经把 formal M9 variants 改成 `SRR_MAIN_NOT_ANCHOR_RESIDUAL`，代码里 M9 path 的 `final_logits = srr_logits`，不再是 M8 的 `nnunet_anchor_logits + bounded_delta`。这是正确方向。
-
-但 nnU-Net 仍深度进入 SRR：
-
-- `anchor_features` 仍进入 anatomy prior；
-- proposal dictionary 仍使用 `anchor_map` 和 `component_map`；
-- segmentation context 仍来自 nnU-Net anchor probabilities / hard prediction / component masks；
-- loss 里仍有 anchor preservation / correction opportunity 相关项；
-- 评估仍以 M8 nnU-Net anchor 为主要对照。
-
-这不一定错，nnU-Net 可以作为 control / context / teacher / safety source，但 M10 必须继续防止它成为隐式主角。M10 中每个 formal candidate 必须报告：
-
-```text
-nnunet_role
-anchor_feature_usage
-anchor_context_weight
-final_output_base
-final_label_delta_vs_anchor_control
-```
-
-并且必须有一个 formal ablation：`SRR_MAIN_NO_NNUNET_CONTEXT` 或等价版本，用来确认 SRR 是否能在没有 nnU-Net context 的情况下形成基本 lesion evidence。这个 ablation 可以不作为 final candidate，但必须作为 scientific control。
+M8 主要是 scar 小涨、edema 变差；M9 SRR-main 反而 scar 和 edema 都显著低于 anchor。说明从 anchor-residual 改成 SRR-main 后，模型没有形成足够稳定的 segmentation basis。当前不是简单调 threshold 能解决的问题。

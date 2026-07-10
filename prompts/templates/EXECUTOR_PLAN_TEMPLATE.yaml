@@ -2,6 +2,7 @@ version: 1
 max_parallel: 1
 executors:
   - id: default_executor
+    lane: tooling
     prompt_path: results/<task_key>/subagents/default_executor_prompt.md
     wave: 1
     depends_on: []
@@ -11,7 +12,8 @@ executors:
     branch_name: codex/<task_key>/default_executor
     worktree_path: /users/a/e/aereinh/.tmp/codex-CARE/worktrees/<task_key>/default_executor
     read_scope: []
-    write_scope: []
+    write_scope:
+      - results/<task_key>/executors/default_executor
     shared_files_forbidden:
       - AGENTS.md
       - prompts/shared/EXECUTOR_PROMPTS.md

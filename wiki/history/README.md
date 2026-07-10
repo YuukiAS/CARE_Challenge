@@ -1,7 +1,7 @@
-# 历史版本知识层
+# CARE 历史分析索引
 
-这里保存 CARE SRR-v3 路线分析的版本化历史快照。current wiki 只展示当前状态；历史判断放在本目录中，避免根目录 TODO 文件继续被误读为待办任务。
+本目录保存 M8/M9 路线级分析的不可变原文、组件化迁移和版本图。历史分析不是当前 runtime evidence；当前状态以 root `wiki/` 与最新 review token 为准。
 
-- [M08](M08/README.md)
-- [M09](M09/README.md)
-- [M8 vs M9 对比](COMPARISON.md)
+- `M08/ORIGINAL_ANALYSIS.md`：从 `git show 10878dc:TODO.md` 恢复。
+- `M09/ORIGINAL_ANALYSIS.md`：从 `git show 10878dc:todo-m10.md` 恢复。
+- `COMPARISON.md`：M8 -> M9 组件级变化和对 M10 的约束。

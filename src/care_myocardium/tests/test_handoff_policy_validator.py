@@ -11,6 +11,10 @@ import unittest
 VALIDATOR_PATH = Path(__file__).resolve().parents[3] / "scripts" / "validation" / "validate_handoff_policy.py"
 FINALIZER_PATH = Path(__file__).resolve().parents[3] / "scripts" / "ops" / "care_milestone_finalizer.py"
 EXECUTOR_PLAN_PATH = Path(__file__).resolve().parents[3] / "scripts" / "ops" / "validate_executor_plan.py"
+WATCHER_PATH = Path(__file__).resolve().parents[3] / "scripts" / "ops" / "start_care_tmux_watcher.py"
+ARCH_VALIDATOR_PATH = Path(__file__).resolve().parents[3] / "scripts" / "architecture" / "validate_care_architecture_wiki.py"
+RECONCILE_PATH = Path(__file__).resolve().parents[3] / "scripts" / "architecture" / "reconcile_review_status.py"
+MERGE_PATH = Path(__file__).resolve().parents[3] / "scripts" / "ops" / "merge_care_executor_wave.py"
 SPEC = importlib.util.spec_from_file_location("validate_handoff_policy", VALIDATOR_PATH)
 assert SPEC is not None
 validator = importlib.util.module_from_spec(SPEC)
@@ -27,6 +31,26 @@ assert PLAN_SPEC is not None and PLAN_SPEC.loader is not None
 executor_plan = importlib.util.module_from_spec(PLAN_SPEC)
 sys.modules["validate_executor_plan"] = executor_plan
 PLAN_SPEC.loader.exec_module(executor_plan)
+WATCHER_SPEC = importlib.util.spec_from_file_location("start_care_tmux_watcher", WATCHER_PATH)
+assert WATCHER_SPEC is not None and WATCHER_SPEC.loader is not None
+watcher = importlib.util.module_from_spec(WATCHER_SPEC)
+sys.modules["start_care_tmux_watcher"] = watcher
+WATCHER_SPEC.loader.exec_module(watcher)
+ARCH_SPEC = importlib.util.spec_from_file_location("validate_care_architecture_wiki", ARCH_VALIDATOR_PATH)
+assert ARCH_SPEC is not None and ARCH_SPEC.loader is not None
+arch_validator = importlib.util.module_from_spec(ARCH_SPEC)
+sys.modules["validate_care_architecture_wiki"] = arch_validator
+ARCH_SPEC.loader.exec_module(arch_validator)
+RECONCILE_SPEC = importlib.util.spec_from_file_location("reconcile_review_status", RECONCILE_PATH)
+assert RECONCILE_SPEC is not None and RECONCILE_SPEC.loader is not None
+reconcile = importlib.util.module_from_spec(RECONCILE_SPEC)
+sys.modules["reconcile_review_status"] = reconcile
+RECONCILE_SPEC.loader.exec_module(reconcile)
+MERGE_SPEC = importlib.util.spec_from_file_location("merge_care_executor_wave", MERGE_PATH)
+assert MERGE_SPEC is not None and MERGE_SPEC.loader is not None
+merge_wave = importlib.util.module_from_spec(MERGE_SPEC)
+sys.modules["merge_care_executor_wave"] = merge_wave
+MERGE_SPEC.loader.exec_module(merge_wave)
 
 
 class TestHandoffPolicyValidator(unittest.TestCase):
@@ -571,11 +595,216 @@ bad,MyoPS,test,implemented,verified,implemented,src/x.py,Sym,entry,grep,key,in,o
             "version": 1,
             "max_parallel": 1,
             "executors": [
-                {"id": "a", "wave": 1, "can_run_parallel": False, "isolation_mode": "separate_worktree", "branch_name": "a", "worktree_path": "/tmp/a", "write_scope": ["x.py"], "prompt_path": "pa", "result_dir": "ra", "runtime_output_root": "oa", "slurm_job_namespace": "ja", "merge_order": 1},
-                {"id": "b", "wave": 2, "depends_on": ["a"], "can_run_parallel": False, "isolation_mode": "separate_worktree", "branch_name": "b", "worktree_path": "/tmp/b", "write_scope": ["x.py"], "prompt_path": "pb", "result_dir": "rb", "runtime_output_root": "ob", "slurm_job_namespace": "jb", "merge_order": 2},
+                {"id": "a", "lane": "tooling", "wave": 1, "can_run_parallel": False, "isolation_mode": "separate_worktree", "branch_name": "a", "worktree_path": "/tmp/a", "write_scope": ["x.py"], "prompt_path": "pa", "result_dir": "ra", "runtime_output_root": "oa", "slurm_job_namespace": "ja", "merge_order": 1},
+                {"id": "b", "lane": "tooling", "wave": 2, "depends_on": ["a"], "can_run_parallel": False, "isolation_mode": "separate_worktree", "branch_name": "b", "worktree_path": "/tmp/b", "write_scope": ["x.py"], "prompt_path": "pb", "result_dir": "rb", "runtime_output_root": "ob", "slurm_job_namespace": "jb", "merge_order": 2},
             ],
         }
         self.assertEqual(executor_plan.validate_plan(data), [])
+
+    def test_watcher_does_not_exit_on_needs_monitor_exit_zero(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            result = root / "result"
+            script = root / "fake_finalizer.py"
+            script.write_text(
+                """import json
+from pathlib import Path
+p=Path('count.txt')
+n=int(p.read_text()) if p.exists() else 0
+p.write_text(str(n+1))
+state='NEEDS_MONITOR' if n < 2 else 'READY_FOR_MAPPER_FINAL'
+Path('result').mkdir(exist_ok=True)
+(Path('result')/'finalizer_state.json').write_text(json.dumps({'final_state': state, 'job_states': {'1': 'RUNNING' if n < 2 else 'COMPLETED'}}))
+""",
+                encoding="utf-8",
+            )
+            old = Path.cwd()
+            try:
+                import os
+
+                os.chdir(root)
+                code = watcher.main(["--task-key", "demo", "--result-dir", str(result), "--finalizer-command", f"{sys.executable} {script}", "--foreground", "--poll-interval", "1", "--max-iterations", "4"])
+            finally:
+                os.chdir(old)
+            receipt = json.loads((result / "tmux_watcher_receipt.json").read_text(encoding="utf-8"))
+            ledger = (result / "tmux_watcher_iteration_ledger.csv").read_text(encoding="utf-8")
+            self.assertEqual(code, 0)
+            self.assertEqual(receipt["iterations"], 3)
+            self.assertIn("NEEDS_MONITOR", ledger)
+            self.assertIn("READY_FOR_MAPPER_FINAL", ledger)
+
+    def test_finalizer_awaiting_sacct_exhaustion_is_retryable(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            result = root / "result"
+            fixture = root / "awaiting.json"
+            fixture.write_text(json.dumps({"jobs": {"1": {"state": "AWAITING_SACCT"}}}), encoding="utf-8")
+            old = Path.cwd()
+            try:
+                import os
+
+                os.chdir(root)
+                code = finalizer.main(["--task-key", "demo", "--result-dir", str(result), "--required-job-id", "1", "--sacct-fixture", str(fixture), "--awaiting-sacct-retry-seconds", "0", "--stage", "accounting"])
+            finally:
+                os.chdir(old)
+            state = json.loads((result / "finalizer_state.json").read_text(encoding="utf-8"))
+            self.assertEqual(code, 0)
+            self.assertEqual(state["final_state"], "AWAITING_SACCT_RETRY_EXHAUSTED")
+            self.assertTrue(state["retryable"])
+            self.assertIn("retry_backend", state)
+
+    def test_executor_plan_rejects_nested_write_scope_overlap(self) -> None:
+        data = {"version": 1, "max_parallel": 2, "executors": [
+            {"id": "a", "lane": "tooling", "wave": 1, "can_run_parallel": True, "isolation_mode": "separate_worktree", "branch_name": "a", "worktree_path": "/tmp/a", "write_scope": ["wiki"], "prompt_path": "pa", "result_dir": "ra", "runtime_output_root": "oa", "slurm_job_namespace": "ja", "merge_order": 1},
+            {"id": "b", "lane": "tooling", "wave": 1, "can_run_parallel": True, "isolation_mode": "separate_worktree", "branch_name": "b", "worktree_path": "/tmp/b", "write_scope": ["wiki/history"], "prompt_path": "pb", "result_dir": "rb", "runtime_output_root": "ob", "slurm_job_namespace": "jb", "merge_order": 2},
+        ]}
+        self.assertTrue(any("write_scope overlap" in item for item in executor_plan.validate_plan(data)))
+
+    def test_executor_plan_rejects_lowercase_myops_cine_without_isolation(self) -> None:
+        data = {"version": 1, "max_parallel": 2, "executors": [
+            {"id": "left", "lane": "myops", "wave": 1, "can_run_parallel": True, "isolation_mode": "separate_worktree", "branch_name": "a", "worktree_path": "/tmp/a", "write_scope": ["src/a.py"], "prompt_path": "pa", "result_dir": "ra", "runtime_output_root": "oa", "slurm_job_namespace": "ja", "merge_order": 1},
+            {"id": "right", "lane": "cine", "wave": 1, "can_run_parallel": True, "isolation_mode": "separate_worktree", "branch_name": "b", "worktree_path": "/tmp/b", "write_scope": ["src/b.py"], "prompt_path": "pb", "result_dir": "rb", "runtime_output_root": "ob", "slurm_job_namespace": "jb", "merge_order": 2},
+        ]}
+        self.assertTrue(any("MyoPS/Cine" in item for item in executor_plan.validate_plan(data)))
+
+    def test_executor_plan_rejects_duplicate_worktree_branch_merge_order_and_cycle(self) -> None:
+        data = {"version": 1, "max_parallel": 2, "executors": [
+            {"id": "a", "lane": "tooling", "wave": 1, "depends_on": ["b"], "can_run_parallel": False, "isolation_mode": "separate_worktree", "branch_name": "same", "worktree_path": "/tmp/same", "write_scope": ["a"], "prompt_path": "pa", "result_dir": "same_result", "runtime_output_root": "oa", "slurm_job_namespace": "same_ns", "merge_order": 1},
+            {"id": "b", "lane": "tooling", "wave": 1, "depends_on": ["a"], "can_run_parallel": False, "isolation_mode": "separate_worktree", "branch_name": "same", "worktree_path": "/tmp/same/child", "write_scope": ["b"], "prompt_path": "pb", "result_dir": "same_result/child", "runtime_output_root": "ob", "slurm_job_namespace": "same_ns", "merge_order": 1},
+        ]}
+        messages = "\n".join(executor_plan.validate_plan(data))
+        self.assertIn("branch_name", messages)
+        self.assertIn("worktree_path", messages)
+        self.assertIn("merge_order", messages)
+        self.assertIn("dependency cycle", messages)
+
+    def test_executor_plan_accepts_valid_isolated_two_executor_wave(self) -> None:
+        data = {"version": 1, "max_parallel": 2, "executors": [
+            {"id": "myops_worker", "lane": "myops", "wave": 1, "can_run_parallel": True, "isolation_mode": "separate_worktree", "branch_name": "myops", "worktree_path": "/tmp/myops", "write_scope": ["src/myops"], "prompt_path": "pa", "result_dir": "ra", "runtime_output_root": "oa", "slurm_job_namespace": "ja", "lock_path": "la", "log_path": "loga", "merge_order": 1, "isolation_proof": "separate source/runtime paths"},
+            {"id": "cine_worker", "lane": "cine", "wave": 1, "can_run_parallel": True, "isolation_mode": "separate_worktree", "branch_name": "cine", "worktree_path": "/tmp/cine", "write_scope": ["src/cine"], "prompt_path": "pb", "result_dir": "rb", "runtime_output_root": "ob", "slurm_job_namespace": "jb", "lock_path": "lb", "log_path": "logb", "merge_order": 2, "isolation_proof": "separate source/runtime paths"},
+        ]}
+        self.assertEqual(executor_plan.validate_plan(data), [])
+
+    def test_history_m8_proposal_and_todo_m10_case_are_validated(self) -> None:
+        repo = Path(__file__).resolve().parents[3]
+        proposal = repo / "wiki/history/M08/components/proposal.md"
+        manifest = repo / "wiki/history/MIGRATION_MANIFEST.csv"
+        self.assertIn("1.5 Proposal", proposal.read_text(encoding="utf-8"))
+        self.assertIn("todo-m10.md", manifest.read_text(encoding="utf-8"))
+        self.assertNotIn("TODO-M10.md", manifest.read_text(encoding="utf-8"))
+
+    def test_history_comparison_not_generic_placeholder(self) -> None:
+        repo = Path(__file__).resolve().parents[3]
+        errors = arch_validator.validate_history(repo)
+        self.assertFalse(any("generic placeholder" in item for item in errors), errors)
+
+    def test_current_graph_node_component_id_consistency(self) -> None:
+        repo = Path(__file__).resolve().parents[3]
+        self.assertEqual(arch_validator.validate_architecture(repo), [])
+
+    def test_gpt_m10_planning_missing_history_reading_fails(self) -> None:
+        text = """---
+task_type: "controller"
+controller_mode: true
+execution_mode: "controller_supervised"
+requires_execution_controller: true
+executor_slots: 1
+executor_count: 1
+parallel_execution_allowed: false
+executor_plan_path: "prompts/tasks/m10_executor_plan.yaml"
+mapper_slots: 1
+mapper_required: true
+architecture_impact: "system"
+wiki_update_required: true
+diagram_update_required: true
+slurm_runtime_continuity_required: false
+continuity_backend: "none"
+review_mode: "independent_thread"
+reviewer: "separate_readonly"
+---
+# M10 redesign
+"""
+        findings = validator.validate_task_file(Path("prompts/tasks/M10_demo.md"), text, strict=True)
+        self.assertTrue(any("history_files_read" in item.message for item in findings))
+
+    def test_post_review_token_reconciliation(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            (root / "wiki/history/M09").mkdir(parents=True)
+            (root / "wiki").mkdir(exist_ok=True)
+            (root / "wiki/README.md").write_text("# Wiki\n", encoding="utf-8")
+            (root / "wiki/LINEAGE.md").write_text("# Lineage\n", encoding="utf-8")
+            (root / "wiki/history/M09/snapshot.yaml").write_text("later_status_update: none\n", encoding="utf-8")
+            review = root / "review.md"
+            review.write_text("review token: M9_FOLLOWUP_AUDITED_READY_NO_PROMOTION_DIAGNOSTIC_ONLY\nreview decision: ready\nreviewed commit: abc\nroute status: no promotion\n", encoding="utf-8")
+            old = Path.cwd()
+            try:
+                import os
+
+                os.chdir(root)
+                code = reconcile.main(["--review-md", str(review), "--no-generate"])
+            finally:
+                os.chdir(old)
+            self.assertEqual(code, 0)
+            self.assertIn("M9_FOLLOWUP_AUDITED_READY_NO_PROMOTION_DIAGNOSTIC_ONLY", (root / "wiki/README.md").read_text(encoding="utf-8"))
+
+    def test_merge_conflict_fail_closed(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            def git(*args: str) -> None:
+                cp = __import__("subprocess").run(["git", *args], cwd=root, text=True, stdout=__import__("subprocess").PIPE, stderr=__import__("subprocess").PIPE)
+                self.assertEqual(cp.returncode, 0, cp.stderr or cp.stdout)
+            git("init", "-b", "main")
+            git("config", "user.email", "test@example.com")
+            git("config", "user.name", "Test")
+            (root / "file.txt").write_text("base\n", encoding="utf-8")
+            git("add", "file.txt")
+            git("commit", "-m", "base")
+            git("checkout", "-b", "executor_branch")
+            (root / "file.txt").write_text("branch\n", encoding="utf-8")
+            git("commit", "-am", "branch")
+            git("checkout", "main")
+            (root / "file.txt").write_text("main\n", encoding="utf-8")
+            git("commit", "-am", "main")
+            (root / "results/e/result").mkdir(parents=True)
+            (root / "results/e/result/result.md").write_text("done\n", encoding="utf-8")
+            plan = root / "plan.yaml"
+            plan.write_text("""version: 1
+max_parallel: 1
+executors:
+  - id: e
+    lane: tooling
+    wave: 1
+    depends_on: []
+    blocking: true
+    can_run_parallel: false
+    isolation_mode: separate_worktree
+    branch_name: executor_branch
+    worktree_path: .
+    read_scope: []
+    write_scope:
+      - file.txt
+    result_dir: results/e/result
+    prompt_path: results/e/prompt.md
+    runtime_output_root: results/e/runtime
+    slurm_job_namespace: e
+    lock_path: results/e/lock
+            log_path: results/e/log
+            merge_order: 1
+""", encoding="utf-8")
+            git("add", "plan.yaml", "results/e/result/result.md")
+            git("commit", "-m", "add packet")
+            old = Path.cwd()
+            try:
+                import os
+
+                os.chdir(root)
+                code = merge_wave.main(["--plan", str(plan), "--wave", "1"])
+            finally:
+                os.chdir(old)
+            receipt = json.loads((root / "results/executor_wave_receipts/wave_1_merge_receipt.json").read_text(encoding="utf-8"))
+            self.assertNotEqual(code, 0)
+            self.assertEqual(receipt["merge_state"], "NEEDS_REVISION_PARALLEL_MERGE_CONFLICT")
 
     def test_components_csv_rejects_scaffold_marked_implemented(self) -> None:
         text = """component_id,branch,role,current_status,evidence_status,target_status,source_file,symbol,entrypoint,grep_key,config_keys,inputs,outputs,losses,final_output_effect,runtime_evidence,code_fingerprint_member,last_verified_milestone,review_token,notes

@@ -8,6 +8,9 @@ from pathlib import Path
 import sys
 from typing import Any
 
+VALID_LANES = {"myops", "cine", "shared", "tooling"}
+PATH_FIELDS = ("branch_name", "worktree_path", "result_dir", "runtime_output_root", "slurm_job_namespace", "lock_path", "log_path")
+
 
 def parse_scalar(value: str) -> Any:
     value = value.strip()
@@ -122,8 +125,59 @@ def as_list(value: Any) -> list[str]:
     return [str(value)]
 
 
-def overlap(left: list[str], right: list[str]) -> set[str]:
-    return set(left) & set(right)
+def normalized_path(value: Any) -> str:
+    text = str(value or "").strip()
+    if not text:
+        return ""
+    return str(Path(text).expanduser())
+
+
+def path_overlap(left: str, right: str) -> bool:
+    if not left or not right:
+        return False
+    lp = Path(normalized_path(left))
+    rp = Path(normalized_path(right))
+    return lp == rp or lp in rp.parents or rp in lp.parents
+
+
+def scopes_overlap(left: list[str], right: list[str]) -> bool:
+    for lpath in left:
+        for rpath in right:
+            if path_overlap(lpath, rpath):
+                return True
+    return False
+
+
+def build_dependency_graph(executors: list[dict[str, Any]]) -> dict[str, list[str]]:
+    return {str(item.get("id")): as_list(item.get("depends_on")) for item in executors}
+
+
+def find_cycle(graph: dict[str, list[str]]) -> list[str]:
+    visiting: set[str] = set()
+    visited: set[str] = set()
+    stack: list[str] = []
+
+    def visit(node: str) -> list[str]:
+        if node in visiting:
+            return stack[stack.index(node) :] + [node] if node in stack else [node]
+        if node in visited:
+            return []
+        visiting.add(node)
+        stack.append(node)
+        for dep in graph.get(node, []):
+            cycle = visit(dep)
+            if cycle:
+                return cycle
+        stack.pop()
+        visiting.remove(node)
+        visited.add(node)
+        return []
+
+    for node in graph:
+        cycle = visit(node)
+        if cycle:
+            return cycle
+    return []
 
 
 def validate_plan(data: dict[str, Any]) -> list[str]:
@@ -136,6 +190,8 @@ def validate_plan(data: dict[str, Any]) -> list[str]:
         errors.append("max_parallel must be >= 1")
     ids: set[str] = set()
     by_wave: dict[int, list[dict[str, Any]]] = {}
+    seen_values: dict[str, dict[str, str]] = {field: {} for field in PATH_FIELDS}
+    merge_orders: dict[int, str] = {}
     for item in executors:
         if not isinstance(item, dict):
             errors.append("each executor entry must be a mapping")
@@ -147,14 +203,41 @@ def validate_plan(data: dict[str, Any]) -> list[str]:
         if eid in ids:
             errors.append(f"duplicate executor id: {eid}")
         ids.add(eid)
+        lane = str(item.get("lane", "")).strip().lower()
+        if lane not in VALID_LANES:
+            errors.append(f"{eid}: lane must be one of {sorted(VALID_LANES)}")
         wave = int(item.get("wave", 1))
         by_wave.setdefault(wave, []).append(item)
         for field in ("prompt_path", "result_dir", "runtime_output_root", "slurm_job_namespace", "merge_order"):
             if not str(item.get(field, "")).strip():
                 errors.append(f"{eid}: missing {field}")
+        if lane in {"myops", "cine", "shared"} and not as_list(item.get("write_scope")):
+            errors.append(f"{eid}: code-writing executor must define non-empty write_scope")
+        try:
+            merge_order = int(item.get("merge_order"))
+            if merge_order in merge_orders:
+                errors.append(f"duplicate merge_order {merge_order}: {merge_orders[merge_order]} and {eid}")
+            merge_orders[merge_order] = eid
+        except (TypeError, ValueError):
+            errors.append(f"{eid}: merge_order must be an integer")
+        for field in PATH_FIELDS:
+            value = normalized_path(item.get(field))
+            if not value:
+                continue
+            for other_id, other_value in seen_values[field].items():
+                if field == "branch_name":
+                    conflict = value == other_value
+                else:
+                    conflict = path_overlap(value, other_value)
+                if conflict:
+                    errors.append(f"{eid}: {field} conflicts with {other_id}")
+            seen_values[field][eid] = value
         if str(item.get("isolation_mode", "")) == "separate_worktree":
             if not str(item.get("branch_name", "")).strip() or not str(item.get("worktree_path", "")).strip():
                 errors.append(f"{eid}: separate_worktree requires branch_name and worktree_path")
+    cycle = find_cycle(build_dependency_graph([item for item in executors if isinstance(item, dict)]))
+    if cycle:
+        errors.append("dependency cycle: " + " -> ".join(cycle))
     for wave, entries in by_wave.items():
         parallel_entries = [entry for entry in entries if bool(entry.get("can_run_parallel", False))]
         if len(entries) > max_parallel:
@@ -171,18 +254,19 @@ def validate_plan(data: dict[str, Any]) -> list[str]:
             for right in parallel_entries[idx + 1 :]:
                 lid = str(left.get("id"))
                 rid = str(right.get("id"))
-                if overlap(as_list(left.get("write_scope")), as_list(right.get("write_scope"))):
+                if scopes_overlap(as_list(left.get("write_scope")), as_list(right.get("write_scope"))):
                     errors.append(f"wave {wave}: write_scope overlap between {lid} and {rid}")
-                for field in ("result_dir", "runtime_output_root", "slurm_job_namespace", "worktree_path", "lock_path", "log_path"):
-                    if left.get(field) and right.get(field) and str(left.get(field)) == str(right.get(field)):
-                        errors.append(f"wave {wave}: {field} conflict between {lid} and {rid}")
-                if "MyoPS" in lid + rid and "Cine" in lid + rid:
+                left_lane = str(left.get("lane", "")).lower()
+                right_lane = str(right.get("lane", "")).lower()
+                if {left_lane, right_lane} == {"myops", "cine"}:
                     if not left.get("isolation_proof") or not right.get("isolation_proof"):
                         errors.append(f"wave {wave}: MyoPS/Cine parallel execution requires explicit isolation_proof")
+                    if not (bool(left.get("can_run_parallel")) and bool(right.get("can_run_parallel"))):
+                        errors.append(f"wave {wave}: MyoPS/Cine same-wave execution requires both entries to opt into parallel execution")
         for entry in parallel_entries:
             forbidden = set(as_list(entry.get("shared_files_forbidden")))
             writes = set(as_list(entry.get("write_scope")))
-            if forbidden & writes:
+            if any(path_overlap(forbid, write) for forbid in forbidden for write in writes):
                 errors.append(f"{entry.get('id')}: write_scope includes forbidden shared files")
     return errors
 

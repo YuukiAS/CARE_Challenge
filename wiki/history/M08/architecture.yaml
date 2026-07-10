@@ -1,122 +1,122 @@
-architecture_version: care-srr-v3-m08-history
-review_token: M8_AUDITED_NO_PROMOTION_SCIENTIFIC_UNRESOLVED
-code_fingerprint: history-source=74ed3caad971
+architecture_version: "care-srr-v3-m08-history"
+review_token: "M8_AUDITED_NO_PROMOTION_SCIENTIFIC_UNRESOLVED"
+code_fingerprint: "history-source=a78de2a48f40"
 nodes:
-  - id: availability-no-t2
-    label: 可用性与 no-T2 安全
-    branch: MyoPS
-    current_status: partial
-    target_status: implemented
-    source_file: wiki/history/M08/components/availability-no-t2.md
-    symbol: 可用性与 no-T2 安全
-  - id: retrieval-dictionary
-    label: 检索字典与表示槽
-    branch: MyoPS
-    current_status: partial
-    target_status: implemented
-    source_file: wiki/history/M08/components/retrieval-dictionary.md
-    symbol: 检索字典与表示槽
-  - id: prototype-memory
-    label: 原型与负样本记忆
-    branch: MyoPS
-    current_status: partial
-    target_status: implemented
-    source_file: wiki/history/M08/components/prototype-memory.md
-    symbol: 原型与负样本记忆
-  - id: anatomy-prior
-    label: 解剖先验
-    branch: MyoPS
-    current_status: partial
-    target_status: implemented
-    source_file: wiki/history/M08/components/anatomy-prior.md
-    symbol: 解剖先验
-  - id: proposal
-    label: 病灶 proposal
-    branch: MyoPS
-    current_status: partial
-    target_status: implemented
-    source_file: wiki/history/M08/components/proposal.md
-    symbol: 病灶 proposal
-  - id: refiner
-    label: soft-ROI refiner
-    branch: MyoPS
-    current_status: partial
-    target_status: implemented
-    source_file: wiki/history/M08/components/refiner.md
-    symbol: soft-ROI refiner
-  - id: arbitration
-    label: 分支仲裁与最终输出
-    branch: MyoPS
-    current_status: partial
-    target_status: implemented
-    source_file: wiki/history/M08/components/arbitration.md
-    symbol: 分支仲裁与最终输出
-  - id: losses
-    label: loss 与优化目标
-    branch: MyoPS
-    current_status: partial
-    target_status: implemented
-    source_file: wiki/history/M08/components/losses.md
-    symbol: loss 与优化目标
-  - id: checkpoint-selection
-    label: checkpoint 选择
-    branch: MyoPS
-    current_status: partial
-    target_status: implemented
-    source_file: wiki/history/M08/components/checkpoint-selection.md
-    symbol: checkpoint 选择
-  - id: training-evidence
-    label: 训练证据与指标
-    branch: MyoPS
-    current_status: partial
-    target_status: implemented
-    source_file: wiki/history/M08/components/training-evidence.md
-    symbol: 训练证据与指标
-  - id: cine-temporal
-    label: Cine temporal 分支
-    branch: Cine
-    current_status: partial
-    target_status: implemented
-    source_file: wiki/history/M08/components/cine-temporal.md
-    symbol: Cine temporal 分支
+  - id: "availability-no-t2"
+    label: "可用性与 no-T2 安全 / availability / no-T2 安全"
+    branch: "MyoPS"
+    current_status: "partial"
+    target_status: "implemented"
+    source_file: "wiki/history/M08/components/availability-no-t2.md"
+    symbol: "可用性与 no-T2 安全"
+  - id: "retrieval-dictionary"
+    label: "检索字典与表示槽 / dictionary / 表示槽"
+    branch: "MyoPS"
+    current_status: "partial"
+    target_status: "implemented"
+    source_file: "wiki/history/M08/components/retrieval-dictionary.md"
+    symbol: "检索字典与表示槽"
+  - id: "prototype-memory"
+    label: "原型与负样本记忆 / prototype / 负样本记忆"
+    branch: "MyoPS"
+    current_status: "partial"
+    target_status: "implemented"
+    source_file: "wiki/history/M08/components/prototype-memory.md"
+    symbol: "原型与负样本记忆"
+  - id: "anatomy-prior"
+    label: "解剖先验 / anatomy prior"
+    branch: "MyoPS"
+    current_status: "partial"
+    target_status: "implemented"
+    source_file: "wiki/history/M08/components/anatomy-prior.md"
+    symbol: "解剖先验"
+  - id: "proposal"
+    label: "病灶 proposal / proposal"
+    branch: "MyoPS"
+    current_status: "partial"
+    target_status: "implemented"
+    source_file: "wiki/history/M08/components/proposal.md"
+    symbol: "病灶 proposal"
+  - id: "refiner"
+    label: "soft-ROI refiner / soft-ROI refiner"
+    branch: "MyoPS"
+    current_status: "partial"
+    target_status: "implemented"
+    source_file: "wiki/history/M08/components/refiner.md"
+    symbol: "soft-ROI refiner"
+  - id: "arbitration"
+    label: "分支仲裁与最终输出 / anchor-centered / residual arbitration"
+    branch: "MyoPS"
+    current_status: "partial"
+    target_status: "implemented"
+    source_file: "wiki/history/M08/components/arbitration.md"
+    symbol: "分支仲裁与最终输出"
+  - id: "losses"
+    label: "loss 与优化目标 / loss/checkpoint / 目标"
+    branch: "MyoPS"
+    current_status: "partial"
+    target_status: "implemented"
+    source_file: "wiki/history/M08/components/losses.md"
+    symbol: "loss 与优化目标"
+  - id: "checkpoint-selection"
+    label: "checkpoint 选择 / checkpoint / 选择"
+    branch: "MyoPS"
+    current_status: "partial"
+    target_status: "implemented"
+    source_file: "wiki/history/M08/components/checkpoint-selection.md"
+    symbol: "checkpoint 选择"
+  - id: "cine-temporal"
+    label: "Cine temporal 分支 / Cine proxy"
+    branch: "Cine"
+    current_status: "partial"
+    target_status: "implemented"
+    source_file: "wiki/history/M08/components/cine-temporal.md"
+    symbol: "Cine temporal 分支"
+  - id: "training-evidence"
+    label: "训练证据与指标 / final logits / 本地指标"
+    branch: "MyoPS"
+    current_status: "partial"
+    target_status: "implemented"
+    source_file: "wiki/history/M08/components/training-evidence.md"
+    symbol: "训练证据与指标"
 edges:
-  - from: availability-no-t2
-    to: retrieval-dictionary
-    kind: history
-    condition: 组件分析顺序
-  - from: retrieval-dictionary
-    to: prototype-memory
-    kind: history
-    condition: 组件分析顺序
-  - from: prototype-memory
-    to: anatomy-prior
-    kind: history
-    condition: 组件分析顺序
-  - from: anatomy-prior
-    to: proposal
-    kind: history
-    condition: 组件分析顺序
-  - from: proposal
-    to: refiner
-    kind: history
-    condition: 组件分析顺序
-  - from: refiner
-    to: arbitration
-    kind: history
-    condition: 组件分析顺序
-  - from: arbitration
-    to: losses
-    kind: history
-    condition: 组件分析顺序
-  - from: losses
-    to: checkpoint-selection
-    kind: history
-    condition: 组件分析顺序
-  - from: checkpoint-selection
-    to: training-evidence
-    kind: history
-    condition: 组件分析顺序
-  - from: training-evidence
-    to: cine-temporal
-    kind: history
-    condition: 组件分析顺序
+  - from: "availability-no-t2"
+    to: "retrieval-dictionary"
+    kind: "history"
+    condition: "可用性约束检索槽"
+  - from: "retrieval-dictionary"
+    to: "prototype-memory"
+    kind: "history"
+    condition: "检索表示进入原型记忆"
+  - from: "prototype-memory"
+    to: "anatomy-prior"
+    kind: "history"
+    condition: "原型证据辅助解剖先验"
+  - from: "anatomy-prior"
+    to: "proposal"
+    kind: "history"
+    condition: "解剖范围引导 proposal"
+  - from: "proposal"
+    to: "refiner"
+    kind: "history"
+    condition: "proposal 进入 soft-ROI refiner"
+  - from: "refiner"
+    to: "arbitration"
+    kind: "history"
+    condition: "refiner 影响残差仲裁"
+  - from: "arbitration"
+    to: "losses"
+    kind: "history"
+    condition: "最终 logits 接受目标约束"
+  - from: "losses"
+    to: "checkpoint-selection"
+    kind: "history"
+    condition: "loss 曲线影响 checkpoint 选择"
+  - from: "checkpoint-selection"
+    to: "cine-temporal"
+    kind: "history"
+    condition: "Cine 仍为独立 proxy 分支"
+  - from: "cine-temporal"
+    to: "training-evidence"
+    kind: "history"
+    condition: "本地 Cine proxy 汇入证据"

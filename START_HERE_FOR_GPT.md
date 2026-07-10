@@ -42,6 +42,13 @@ Long Slurm, overnight, multi-job, controller-supervised, or high-resume-risk tas
 
 Long Slurm or overnight tasks without a Controller Prompt and durable finalizer contract are invalid.
 
+When a staged long milestone is later merged into the shared prompts, merge
+`Execution Contract`, `Controller Prompt`, `Executor Worker Contract`, and
+`Mapper Contract` into `prompts/shared/EXECUTOR_PROMPTS.md`. Merge only
+`Reviewer Prompt` into `prompts/shared/REVIEWER_PROMPTS.md`. Keep any
+`executor_plan.yaml` as `prompts/tasks/<task_key>_executor_plan.yaml`; do not
+paste executor plans into the large shared prompt files.
+
 ## Agent-Flow v2 Handoff Model
 
 Before writing a CARE handoff, read `prompts/AGENT_FLOW_V2_PROTOCOL.md` and the current architecture entry at `wiki/README.md`. Use only the v2 role names from the permanent protocol: `planner`, `controller`, `executor`, `mapper`, `finalizer`, `validator`, and `reviewer`. New tasks must not introduce an internal `auditor` role; historical `auditor` fields are legacy aliases for the independent `reviewer`.
@@ -69,6 +76,21 @@ reviewer: separate_readonly
 Use `controller_supervised` for overnight, long Slurm, multi-job, or high-resume-risk work. Default to exactly one executor and one mapper unless the GPT-authored task graph explicitly grants more isolated slots. Any `executor_count > 1`, `executor_slots > 1`, or `parallel_execution_allowed: true` task must include a validated executor plan with isolated write scopes, worktrees, runtime outputs, logs, locks, and merge order. The controller owns continuity and phase grounding; the executor performs authorized implementation/jobs; the mapper is read-only architecture/evidence mapping; the finalizer is deterministic `FINALIZER_A` accounting/aggregation plus `FINALIZER_B` validation/local packet commit; the reviewer is a separate read-only thread after the final packet is committed. Controller reports written before review must use `route_promotion_decision: NOT_REVIEWED`, `route_negative_decision: NOT_REVIEWED`, and `scientific_resolution_status: AWAITING_REVIEW`.
 
 For architecture-affecting work, use `.agents/skills/care-mapper/SKILL.md` and the helpers in `scripts/architecture/`. A route or handoff update is not complete if `wiki/COMPONENTS.csv`, `wiki/architecture.yaml`, required figures, Toolkit healthcheck, or mapper/finalizer evidence is stale.
+
+## History Reading For M10 / System-Level Redesign
+
+Before writing M10 or any later system-level milestone, GPT must read:
+
+- `wiki/history/COMPARISON.md`
+- `wiki/history/M08/README.md`
+- `wiki/history/M09/README.md`
+- `wiki/history/M09/COMPONENTS.csv`
+- every file matching `wiki/history/M09/components/*.md`
+
+If the milestone touches only a small component subset, GPT may read M09
+README, COMPARISON, COMPONENTS, and the relevant component files. For M10 or
+system-level redesign, all M09 component files are mandatory. GPT output must
+list the exact history files read before proposing execution.
 
 ## MONITOR_PACKET_IS_NOT_COMPLETION
 

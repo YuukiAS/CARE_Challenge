@@ -1,31 +1,8 @@
-milestone: M09
-analysis_source: TODO-M10.md
-source_blob_sha: 51ea0fdc39d38963bfd37e6e5f02c199de0c3908
-analysis_as_of_commit: current-local-main
-review_token_at_time: M9_AUDITED_NEEDS_REVISION
-latest_known_review_token: M9_FOLLOWUP_AUDITED_READY_NO_PROMOTION_DIAGNOSTIC_ONLY
-architecture_version: care-srr-v3-m09-history
-code_fingerprint: history-source=51ea0fdc39d3
-component_files:
-  - components/availability-no-t2.md
-  - components/retrieval-dictionary.md
-  - components/prototype-memory.md
-  - components/anatomy-prior.md
-  - components/proposal.md
-  - components/refiner.md
-  - components/arbitration.md
-  - components/losses.md
-  - components/checkpoint-selection.md
-  - components/training-evidence.md
-  - components/cine-temporal.md
-figure_files:
-  - figures/architecture.d2
-  - figures/architecture.svg
-  - figures/architecture.png
-  - figures/gap.d2
-  - figures/gap.svg
-  - figures/gap.png
-  - figures/delta-from-M08.d2
-  - figures/delta-from-M08.svg
-  - figures/delta-from-M08.png
-created_at_utc: 2026-07-10T16:06:43Z
+version: "M09"
+analysis_source: "todo-m10.md"
+original_analysis_path: "wiki/history/M09/ORIGINAL_ANALYSIS.md"
+original_analysis_sha256: "226eeb53bc30eee0f4163b2bdc28dd4deb4c9a156ab9042aa7dbe766d4f52cb4"
+review_token: "M9_FOLLOWUP_AUDITED_READY_NO_PROMOTION_DIAGNOSTIC_ONLY"
+later_status_update: "none"
+nodes:
+edges:

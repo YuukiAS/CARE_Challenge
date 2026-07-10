@@ -1,6 +1,6 @@
 # soft-ROI refiner
 
-## 历史分析原文迁移
+> 历史快照：M08。本页只保存从 `TODO.md` 迁移来的原文段落；当前状态以 root wiki 和最新 review 为准。
 
 ### 1.6 Soft ROI refiner：有实现，但实际是小 crop residual，不是完整 lesion formation engine
 

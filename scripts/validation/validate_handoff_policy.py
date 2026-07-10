@@ -130,6 +130,12 @@ ACTIVE_DOC_BASENAMES = {
 }
 PUSH_TRUE_RE = re.compile(r"(?m)^\s*(auto_git_push|allow_git_push|allow_diagnostic_push)\s*:\s*true\s*$", re.IGNORECASE)
 TODO_RUNTIME_RE = re.compile(r"\bTODO-agents(?:-v2)?\.md\b")
+HISTORY_READ_FILES = [
+    "wiki/history/COMPARISON.md",
+    "wiki/history/M08/README.md",
+    "wiki/history/M09/README.md",
+    "wiki/history/M09/COMPONENTS.csv",
+]
 
 
 @dataclass(frozen=True)
@@ -358,6 +364,19 @@ def validate_task_file(path: Path, text: str, strict: bool) -> list[Finding]:
                     "architecture_impact component/system requires mapper_required: true.",
                 )
             )
+        if "system" in text.lower() or path.name.lower().startswith("m10") or "m10" in path.name.lower():
+            missing_history = [item for item in HISTORY_READ_FILES if item not in text]
+            if "wiki/history/M09/components/" not in text and "wiki/history/M09/components/*.md" not in text:
+                missing_history.append("wiki/history/M09/components/*.md")
+            if missing_history:
+                findings.append(
+                    Finding(
+                        severity(strict),
+                        path,
+                        "M10/system-level milestone must list history_files_read including: "
+                        + ", ".join(missing_history),
+                    )
+                )
         if not is_truthy_field(frontmatter, "wiki_update_required"):
             findings.append(
                 Finding(

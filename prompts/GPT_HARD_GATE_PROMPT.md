@@ -52,6 +52,22 @@ Overnight, long Slurm, multi-job, or high-resume-risk work must be `controller_s
 
 Long Slurm / overnight staging prompts must contain these sections exactly: `## Execution Contract`, `## Controller Prompt`, `## Executor Worker Contract`, `## Mapper Contract`, and `## Reviewer Prompt`. They must include a durable finalizer contract naming required job IDs or how they will be captured, runtime output paths, aggregator command, validator commands, lock/log paths, and local packet commit policy. Short staging prompts must contain `## Execution Contract`, `## Executor Prompt`, and `## Reviewer Prompt`.
 
+For staged long milestones, `Execution Contract`, `Controller Prompt`,
+`Executor Worker Contract`, and `Mapper Contract` are executor-side material
+and must merge into `prompts/shared/EXECUTOR_PROMPTS.md`. Only `Reviewer
+Prompt` merges into `prompts/shared/REVIEWER_PROMPTS.md`. Executor plans stay
+as `prompts/tasks/<task_key>_executor_plan.yaml`; putting a full executor plan
+inside a shared prompt is a hard-gate failure.
+
+M10 or any later system-level redesign must list the history files read from
+`wiki/history/` before writing the milestone. Mandatory files are
+`wiki/history/COMPARISON.md`, `wiki/history/M08/README.md`,
+`wiki/history/M09/README.md`, `wiki/history/M09/COMPONENTS.csv`, and all
+`wiki/history/M09/components/*.md`. A small component-only milestone may list
+only the relevant component files, but M10 must read all component analyses.
+Missing `history_files_read` or equivalent explicit file list is a hard-gate
+failure.
+
 Controller reports written before the independent reviewer must not claim reviewer approval, audited-go, route promotion, or scientific stop. They must use `route_promotion_decision: NOT_REVIEWED`, `route_negative_decision: NOT_REVIEWED`, and `scientific_resolution_status: AWAITING_REVIEW`. Any controller prompt that requires `reviewer_review` as evidence before controller commit, permits controller/reviewer push, or sets `auto_git_push` / `allow_git_push` / `allow_diagnostic_push` true is a hard-gate failure.
 
 For every controller task, GPT must define an explicit ordered task graph. The graph must include every required subtask key, the exact expected `results/<task_key>/` directory, and whether that subtask is blocking or optional. A blocking subtask that has no result directory must be treated as `INCOMPLETE`, not as skipped, replaced, or diagnostic.

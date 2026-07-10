@@ -124,6 +124,9 @@ Parallel executors are allowed only when the plan proves non-overlapping
 result/runtime/log/lock paths, completed dependencies, and deterministic
 controller merge order. MyoPS and Cine are sequential by default unless GPT
 explicitly supplies isolation proof.
+Use `scripts/ops/prepare_care_executor_wave.py` to prepare each declared wave
+and `scripts/ops/merge_care_executor_wave.py` to merge completed executor
+branches. Executors must not merge their own branches into the shared branch.
 
 Long Slurm or overnight tasks require a durable finalizer contract. Declaring
 `continuity_backend` without a real dependency finalizer job or namespace-local
@@ -158,6 +161,18 @@ Slurm-backed controller tasks should use `slurm_dependency` with
 If dependency finalizer submission fails, a namespace-local tmux watcher may be
 used only when it records session name, PID, command, log path, lock path, and
 result directory.
+
+The tmux watcher must read `results/<task_key>/finalizer_state.json` after each
+finalizer run. Finalizer exit code alone is not a completion signal.
+`NEEDS_MONITOR`, `AWAITING_SACCT_RETRY_EXHAUSTED`, and `INITIALIZING` continue
+polling; `READY_FOR_MAPPER_FINAL`, `PACKET_COMMITTED_FOR_REVIEW`, and
+`READY_FOR_LOCAL_PACKET_COMMIT` stop successfully; runtime failure, evidence,
+mapper, validator, or revision states stop fail-closed.
+
+`AWAITING_SACCT` retry must be automatic. The default bounded accounting wait is
+at least 60 minutes, and `finalizer_state.json` must record `retryable`,
+`retry_count`, `retry_backend`, `next_retry_job_id_or_tmux_session`, and
+`accounting_wait_seconds`.
 
 Monitor states (`PENDING`, `RUNNING`, `CONFIGURING`, `COMPLETING`,
 `AWAITING_SACCT`) map to `NEEDS_MONITOR`, not `NEEDS_EVIDENCE` and not

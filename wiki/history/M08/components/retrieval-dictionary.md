@@ -1,6 +1,6 @@
 # 检索字典与表示槽
 
-## 历史分析原文迁移
+> 历史快照：M08。本页只保存从 `TODO.md` 迁移来的原文段落；当前状态以 root wiki 和最新 review 为准。
 
 ### 1.2 Modality encoder + retrieval dictionary：有实现，但不等于完整 SRR 语义检索系统
 
