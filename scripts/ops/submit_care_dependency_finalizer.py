@@ -42,6 +42,7 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--stage", choices=("accounting", "commit", "all"), default="accounting")
     parser.add_argument("--awaiting-sacct-retry-seconds", type=int, default=DEFAULT_ACCOUNTING_RETRY_SECONDS)
     parser.add_argument("--awaiting-sacct-retry-interval", type=int, default=30)
+    parser.add_argument("--accounting-exhaustion-backend", choices=("tmux_watcher", "resubmit_finalizer"), default="tmux_watcher")
     parser.add_argument("--recover-stale-lock", action="store_true")
     parser.add_argument("--lock-path", type=Path)
     parser.add_argument("--receipt-path", type=Path)
@@ -73,6 +74,8 @@ def main(argv: list[str] | None = None) -> int:
         str(args.awaiting_sacct_retry_seconds),
         "--awaiting-sacct-retry-interval",
         str(args.awaiting_sacct_retry_interval),
+        "--accounting-exhaustion-backend",
+        args.accounting_exhaustion_backend,
     ]
     if args.recover_stale_lock:
         finalizer_args.append("--recover-stale-lock")
@@ -112,6 +115,7 @@ def main(argv: list[str] | None = None) -> int:
         "command": " ".join(quote_items(command)),
         "log_path": str(log_path),
         "lock_path": str(lock_path),
+        "accounting_exhaustion_backend": args.accounting_exhaustion_backend,
         "submitted_at_utc": datetime.now(timezone.utc).isoformat(),
         "finalizer_job_id": None,
         "submit_exit_code": None,

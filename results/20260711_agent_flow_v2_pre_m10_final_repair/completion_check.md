@@ -9,3 +9,5 @@ Not scientific route resolution:
 - `scientific_resolution_status: AWAITING_REVIEW`
 
 No Slurm training jobs were submitted. No monitor packet was used as completion evidence.
+
+Controller packet completeness was repaired with `controller_report.md` and validator coverage for required packet files. This packet remains pre-review; independent reviewer must write `review.md`.

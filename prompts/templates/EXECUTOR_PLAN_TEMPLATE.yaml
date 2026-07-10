@@ -26,5 +26,7 @@ executors:
     slurm_job_namespace: <task_key>_default_executor
     lock_path: results/<task_key>/locks/default_executor.lock
     log_path: results/<task_key>/logs/default_executor.log
+    required_completion_file: results/<task_key>/executors/default_executor/completion_check.md
+    required_completion_token: READY_FOR_CONTROLLER_MERGE
     merge_order: 1
     isolation_proof: ""

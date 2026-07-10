@@ -57,7 +57,8 @@ COMPONENT_REQUIRED_COLUMNS = [
 VALID_CURRENT_STATUS = {"implemented", "partial", "scaffold", "legacy", "disabled", "unknown"}
 VALID_EVIDENCE_STATUS = {"verified", "unverified", "stale", "missing"}
 EXPECTED_M9_REVIEW_TOKEN = "M9_FOLLOWUP_AUDITED_READY_NO_PROMOTION_DIAGNOSTIC_ONLY"
-HISTORY_VERSIONS = ("M08", "M09")
+HISTORY_VERSION_RE = re.compile(r"^M[0-9]{2,}$")
+HISTORY_REQUIRED_FILES = ("README.md", "snapshot.yaml", "COMPONENTS.csv", "architecture.yaml", "components", "figures")
 HISTORY_COMPONENTS = (
     "availability-no-t2",
     "retrieval-dictionary",
@@ -97,6 +98,19 @@ FORBIDDEN_HISTORY_DIAGRAM_TOKENS = (
     "component delta",
     "COMPONENT_DELTA",
 )
+
+
+def discover_history_versions(repo_root: Path) -> list[str]:
+    history_root = repo_root / "wiki" / "history"
+    if not history_root.is_dir():
+        return []
+    versions: list[str] = []
+    for path in sorted(history_root.iterdir()):
+        if not path.is_dir() or not HISTORY_VERSION_RE.match(path.name):
+            continue
+        if all((path / rel).exists() for rel in HISTORY_REQUIRED_FILES):
+            versions.append(path.name)
+    return versions
 
 
 def parse_yaml_ids(text: str, key: str) -> set[str]:
@@ -313,7 +327,7 @@ def validate_history(repo_root: Path) -> list[str]:
     if (repo_root / "TODO.md").exists() or (repo_root / "todo-m10.md").exists() or (repo_root / "TODO-M10.md").exists():
         errors.append("root TODO analysis files must be removed after wiki/history migration")
     generator = load_generator(repo_root)
-    for version in HISTORY_VERSIONS:
+    for version in discover_history_versions(repo_root):
         base = hist / version
         for rel in ("README.md", "snapshot.yaml", "COMPONENTS.csv", "architecture.yaml", "figures/architecture.d2", "figures/architecture.svg", "figures/architecture.png", "figures/gap.d2", "figures/gap.svg", "figures/gap.png"):
             if not (base / rel).is_file():
@@ -322,12 +336,13 @@ def validate_history(repo_root: Path) -> list[str]:
             for rel in ("figures/delta-from-M08.d2", "figures/delta-from-M08.svg", "figures/delta-from-M08.png"):
                 if not (base / rel).is_file():
                     errors.append(f"missing history delta file: wiki/history/{version}/{rel}")
-        for comp in HISTORY_COMPONENTS:
-            comp_path = base / "components" / f"{comp}.md"
-            if not comp_path.is_file():
-                errors.append(f"missing history component: wiki/history/{version}/components/{comp}.md")
+        if version in {"M08", "M09"}:
+            for comp in HISTORY_COMPONENTS:
+                comp_path = base / "components" / f"{comp}.md"
+                if not comp_path.is_file():
+                    errors.append(f"missing history component: wiki/history/{version}/components/{comp}.md")
         snapshot = base / "snapshot.yaml"
-        if snapshot.is_file() and "original_analysis_sha256" not in snapshot.read_text(encoding="utf-8"):
+        if version in {"M08", "M09"} and snapshot.is_file() and "original_analysis_sha256" not in snapshot.read_text(encoding="utf-8"):
             errors.append(f"{snapshot.relative_to(repo_root)} missing original_analysis_sha256")
         try:
             sources = generator.generated_history_sources(repo_root, version)

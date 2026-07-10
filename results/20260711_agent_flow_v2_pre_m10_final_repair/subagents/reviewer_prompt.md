@@ -7,6 +7,8 @@ Read this packet and the changed repository files. Do not edit files, do not tra
 Reject the packet if any of the following are true:
 
 - controller wrote `review.md` or made a scientific route decision;
+- `controller_report.md` is missing or lacks required ending fields;
+- controller packet required files are incomplete;
 - M10 was designed or executed;
 - model code, historical M8/M9 result packets, checkpoints, NIfTI, predictions, uploads, raw data, or secrets were modified;
 - watcher stops on finalizer exit code 0 while state is still `NEEDS_MONITOR` or `AWAITING_SACCT_RETRY_EXHAUSTED`;
@@ -20,5 +22,10 @@ Reject the packet if any of the following are true:
 - current/history diagrams contain `历史组件关系`, `component_delta`, `component delta`, or `COMPONENT_DELTA`;
 - M10/system-level GPT planning can pass without listing required history files read;
 - post-review reconciliation makes scientific judgments instead of copying controlled review fields.
+- history generator, validator, or reconciliation still hard-codes only `M08`/`M09`;
+- the repository cannot create a future `M10` history snapshot with `scripts/architecture/create_care_history_snapshot.py`;
+- `AWAITING_SACCT_RETRY_EXHAUSTED` only records metadata and does not actually launch a watcher or resubmitted finalizer;
+- multi-executor merge validates only the main worktree packet instead of executor worktree/branch packet;
+- merge helper does not parse and enforce the executor completion token.
 
 If the packet passes, write `review.md` in this result directory with a conservative audited token. Do not push.

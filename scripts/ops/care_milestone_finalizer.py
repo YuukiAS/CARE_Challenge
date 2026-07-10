@@ -21,6 +21,7 @@ SUCCESS_STATES = {"COMPLETED"}
 FAILED_STATES = {"FAILED", "CANCELLED", "TIMEOUT", "NODE_FAIL", "OUT_OF_MEMORY", "PREEMPTED", "BOOT_FAIL"}
 TERMINAL_STATES = SUCCESS_STATES | FAILED_STATES
 DEFAULT_ACCOUNTING_RETRY_SECONDS = 3600
+ACCOUNTING_EXHAUSTION_BACKENDS = {"tmux_watcher", "resubmit_finalizer"}
 
 
 def run(cmd: str | list[str], cwd: Path, shell: bool = False) -> subprocess.CompletedProcess[str]:
@@ -147,6 +148,136 @@ def command_record(command: str, cp: subprocess.CompletedProcess[str]) -> dict[s
     }
 
 
+def build_finalizer_retry_command(args: argparse.Namespace, retry_seconds: int | None = None) -> str:
+    parts = [
+        sys.executable,
+        str(Path(__file__).resolve()),
+        "--task-key",
+        args.task_key,
+        "--result-dir",
+        str(args.result_dir),
+        "--stage",
+        args.stage,
+        "--awaiting-sacct-retry-seconds",
+        str(DEFAULT_ACCOUNTING_RETRY_SECONDS if retry_seconds is None else retry_seconds),
+        "--awaiting-sacct-retry-interval",
+        str(args.awaiting_sacct_retry_interval),
+        "--accounting-exhaustion-backend",
+        args.accounting_exhaustion_backend,
+        "--recover-stale-lock",
+    ]
+    lock_path = args.lock_path or args.result_dir / ".finalizer.lock"
+    parts.extend(["--lock-path", str(lock_path)])
+    for job_id in args.required_job_id:
+        parts.extend(["--required-job-id", job_id])
+    for path in args.runtime_output_path:
+        parts.extend(["--runtime-output-path", path])
+    for path in args.log_path:
+        parts.extend(["--log-path", path])
+    if args.aggregation_command:
+        parts.extend(["--aggregation-command", args.aggregation_command])
+    for command in args.validator_command:
+        parts.extend(["--validator-command", command])
+    if args.mapper_final_command:
+        parts.extend(["--mapper-final-command", args.mapper_final_command])
+    if args.mapper_final_required:
+        parts.append("--mapper-final-required")
+    if args.validator_required:
+        parts.append("--validator-required")
+    if args.commit:
+        parts.append("--commit")
+    parts.extend(["--commit-message", args.commit_message])
+    for path in args.tracked_file:
+        parts.extend(["--tracked-file", path])
+    return " ".join(shlex.quote(part) for part in parts)
+
+
+def launch_accounting_continuation(
+    args: argparse.Namespace,
+    repo_root: Path,
+    result_dir: Path,
+    state: dict[str, Any],
+    lock_path: Path,
+) -> None:
+    backend = args.accounting_exhaustion_backend
+    receipt_path = args.accounting_continuation_receipt_path or result_dir / "accounting_continuation_receipt.json"
+    if backend == "tmux_watcher":
+        session_name = args.accounting_retry_session_name or f"care_{args.task_key}_accounting_retry"
+        finalizer_command = build_finalizer_retry_command(args, retry_seconds=DEFAULT_ACCOUNTING_RETRY_SECONDS)
+        command = [
+            sys.executable,
+            "scripts/ops/start_care_tmux_watcher.py",
+            "--task-key",
+            args.task_key,
+            "--result-dir",
+            str(result_dir),
+            "--session-name",
+            session_name,
+            "--lock-path",
+            str(lock_path),
+            "--log-path",
+            str(result_dir / "accounting_retry_watcher.log"),
+            "--receipt-path",
+            str(receipt_path),
+            "--finalizer-command",
+            finalizer_command,
+            "--poll-interval",
+            str(args.accounting_continuation_poll_interval),
+        ]
+        cp = run(command, repo_root)
+        state["retry_backend"] = "tmux_watcher"
+        state["next_retry_job_id_or_tmux_session"] = session_name if cp.returncode == 0 else None
+        state["accounting_continuation_receipt_path"] = str(receipt_path)
+        state["accounting_continuation_launch"] = command_record(" ".join(shlex.quote(part) for part in command), cp)
+        return
+    if backend == "resubmit_finalizer":
+        submit_script = repo_root / "scripts" / "ops" / "submit_care_dependency_finalizer.py"
+        command = [
+            sys.executable,
+            str(submit_script),
+            "--task-key",
+            args.task_key,
+            "--result-dir",
+            str(result_dir),
+            "--stage",
+            args.stage,
+            "--awaiting-sacct-retry-seconds",
+            str(DEFAULT_ACCOUNTING_RETRY_SECONDS),
+            "--awaiting-sacct-retry-interval",
+            str(args.awaiting_sacct_retry_interval),
+            "--accounting-exhaustion-backend",
+            backend,
+            "--receipt-path",
+            str(receipt_path),
+        ]
+        for job_id in args.required_job_id:
+            command.extend(["--required-job-id", job_id])
+        for path in args.runtime_output_path:
+            command.extend(["--runtime-output-path", path])
+        for path in args.log_path:
+            command.extend(["--log-path", path])
+        if args.aggregation_command:
+            command.extend(["--aggregation-command", args.aggregation_command])
+        for validator in args.validator_command:
+            command.extend(["--validator-command", validator])
+        if args.mapper_final_command:
+            command.extend(["--mapper-final-command", args.mapper_final_command])
+        if args.commit:
+            command.append("--commit")
+        command.extend(["--commit-message", args.commit_message])
+        for path in args.tracked_file:
+            command.extend(["--tracked-file", path])
+        cp = run(command, repo_root)
+        state["retry_backend"] = "resubmit_finalizer"
+        stdout_tokens = cp.stdout.replace(";", " ").split()
+        job_id = next((token for token in stdout_tokens if token.isdigit()), None)
+        state["next_retry_job_id_or_tmux_session"] = job_id
+        state["accounting_continuation_receipt_path"] = str(receipt_path)
+        state["accounting_continuation_launch"] = command_record(" ".join(shlex.quote(part) for part in command), cp)
+        return
+    raise ValueError(f"unsupported accounting exhaustion backend: {backend}")
+
+
 def maybe_commit(repo_root: Path, files: list[str], message: str) -> tuple[str | None, list[dict[str, Any]]]:
     records: list[dict[str, Any]] = []
     if any(Path(path).name == "review.md" for path in files):
@@ -218,6 +349,10 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--recover-stale-lock", action="store_true")
     parser.add_argument("--awaiting-sacct-retry-seconds", type=int, default=DEFAULT_ACCOUNTING_RETRY_SECONDS)
     parser.add_argument("--awaiting-sacct-retry-interval", type=int, default=30)
+    parser.add_argument("--accounting-exhaustion-backend", choices=sorted(ACCOUNTING_EXHAUSTION_BACKENDS), default="tmux_watcher")
+    parser.add_argument("--accounting-continuation-poll-interval", type=int, default=300)
+    parser.add_argument("--accounting-continuation-receipt-path", type=Path)
+    parser.add_argument("--accounting-retry-session-name", default="")
     parser.add_argument("--mapper-final-required", action="store_true")
     parser.add_argument("--validator-required", action="store_true")
     parser.add_argument("--commit", action="store_true")
@@ -253,9 +388,11 @@ def main(argv: list[str] | None = None) -> int:
         "awaiting_sacct_attempts": [],
         "retryable": False,
         "retry_count": 0,
-        "retry_backend": "bounded_polling",
+        "retry_backend": args.accounting_exhaustion_backend,
         "next_retry_job_id_or_tmux_session": None,
         "accounting_wait_seconds": 0,
+        "accounting_continuation_receipt_path": None,
+        "accounting_continuation_launch": None,
         "lock_released": False,
     }
 
@@ -290,7 +427,10 @@ def main(argv: list[str] | None = None) -> int:
         if exhausted and "AWAITING_SACCT" in set(state["job_states"].values()):
             state["final_state"] = "AWAITING_SACCT_RETRY_EXHAUSTED"
             state["retryable"] = True
-            state["retry_backend"] = "state_aware_tmux_watcher_or_resubmitted_finalizer"
+            launch_accounting_continuation(args, repo_root, result_dir, state, lock_path)
+            if not state.get("next_retry_job_id_or_tmux_session"):
+                state["final_state"] = "NEEDS_MONITOR"
+                state["continuation_error"] = "accounting retry continuation did not return a session or job id"
             write_state(result_dir, state)
             return 0
         if job_state == "NEEDS_MONITOR":

@@ -6,6 +6,10 @@ Controller status: `PACKET_COMMITTED_FOR_REVIEW`
 
 This packet records handoff, Slurm continuity, parallel executor, wiki/history, and validator repairs only. It did not design or execute M10, train models, submit ordinary training jobs, modify historical M8/M9 result packets, package validation, upload, or push.
 
+Requested baseline commit for this follow-up repair: `20650aa5a7082433449c2012c752774edf9b44fb`.
+
+Live HEAD at repair start was `094dd905c368f66204d6b62e223f962813346a46`, a local unpushed M10 controller-initialization packet. This follow-up did not revert that local packet; it repaired the pre-M10 controller infrastructure and current `20260711_agent_flow_v2_pre_m10_final_repair` packet on top of it.
+
 ## Fixed conflicts
 
 - Replaced watcher exit-code-only behavior with state-aware finalizer polling. `NEEDS_MONITOR`, `AWAITING_SACCT_RETRY_EXHAUSTED`, and `INITIALIZING` continue polling; terminal ready states stop cleanly; failure states stop nonzero.
@@ -16,6 +20,12 @@ This packet records handoff, Slurm continuity, parallel executor, wiki/history, 
 - Fixed the history diagrams that previously showed placeholder relationships such as `历史组件关系` or generic `component_delta`. The history graph edges now describe concrete component relationships and the validator rejects these placeholder tokens.
 - Added GPT M10/system-level history-reading gates and prompt merge-position rules.
 - Added deterministic post-review wiki reconciliation script.
+- Added missing `controller_report.md` and made controller packet completeness fail closed in the handoff validator.
+- Changed history generation, validation, and review reconciliation from hard-coded `M08/M09` choices to dynamic `wiki/history/M*/` discovery with `^M[0-9]{2,}$` validation.
+- Added `scripts/architecture/create_care_history_snapshot.py` so future M10 mapper final can create `wiki/history/M10/` from the current wiki without overwriting existing history.
+- Implemented actual `AWAITING_SACCT_RETRY_EXHAUSTED` continuation via namespace-local state-aware tmux watcher or resubmitted finalizer, with receipt fields for command, session/job id, log, lock, and result directory.
+- Strengthened multi-executor merge to verify completion packets from executor worktree/branch, enforce completion tokens, reject monitor/evidence/revision tokens, and record source branch head plus merged commit details.
+- Made watcher startup write real stdout/stderr to `log_path` and reject duplicate tmux sessions.
 
 ## Verification
 
@@ -26,10 +36,11 @@ python scripts/validation/validate_handoff_policy.py --strict-tasks --warnings-a
 python scripts/architecture/validate_care_architecture_wiki.py --strict --history
 python scripts/architecture/generate_care_architecture_wiki.py --check-all
 python scripts/ops/validate_executor_plan.py prompts/templates/EXECUTOR_PLAN_TEMPLATE.yaml
+python scripts/architecture/create_care_history_snapshot.py --milestone M10 --dry-run
 python -m unittest src.care_myocardium.tests.test_handoff_policy_validator
-python -m py_compile scripts/ops/care_milestone_finalizer.py scripts/ops/submit_care_dependency_finalizer.py scripts/ops/start_care_tmux_watcher.py scripts/ops/validate_executor_plan.py scripts/ops/prepare_care_executor_wave.py scripts/ops/merge_care_executor_wave.py scripts/architecture/reconcile_review_status.py scripts/architecture/generate_care_architecture_wiki.py scripts/architecture/validate_care_architecture_wiki.py scripts/validation/validate_handoff_policy.py
+python -m py_compile scripts/ops/care_milestone_finalizer.py scripts/ops/submit_care_dependency_finalizer.py scripts/ops/start_care_tmux_watcher.py scripts/ops/validate_executor_plan.py scripts/ops/prepare_care_executor_wave.py scripts/ops/merge_care_executor_wave.py scripts/architecture/create_care_history_snapshot.py scripts/architecture/reconcile_review_status.py scripts/architecture/generate_care_architecture_wiki.py scripts/architecture/validate_care_architecture_wiki.py scripts/validation/validate_handoff_policy.py
 bash -n jobs/src/care_milestone_finalizer.sh
 git diff --check
 ```
 
-The unit test suite reported `Ran 44 tests ... OK`. Its printed merge-conflict line is from the intentional known-bad merge-conflict test.
+The unit test suite reported `Ran 49 tests ... OK`. Its printed merge-conflict and monitor-token lines are intentional known-bad tests.

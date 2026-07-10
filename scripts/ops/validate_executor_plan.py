@@ -208,7 +208,15 @@ def validate_plan(data: dict[str, Any]) -> list[str]:
             errors.append(f"{eid}: lane must be one of {sorted(VALID_LANES)}")
         wave = int(item.get("wave", 1))
         by_wave.setdefault(wave, []).append(item)
-        for field in ("prompt_path", "result_dir", "runtime_output_root", "slurm_job_namespace", "merge_order"):
+        for field in (
+            "prompt_path",
+            "result_dir",
+            "runtime_output_root",
+            "slurm_job_namespace",
+            "merge_order",
+            "required_completion_file",
+            "required_completion_token",
+        ):
             if not str(item.get(field, "")).strip():
                 errors.append(f"{eid}: missing {field}")
         if lane in {"myops", "cine", "shared"} and not as_list(item.get("write_scope")):

@@ -12,6 +12,7 @@ Tracked lightweight packet files:
 - `architecture_delta_final.md`
 - `finalizer_state.json`
 - `validator_report.md`
+- `controller_report.md`
 - `completion_check.md`
 - `review_request.md`
 - `MANIFEST.md`

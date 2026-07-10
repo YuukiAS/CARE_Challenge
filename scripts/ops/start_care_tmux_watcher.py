@@ -129,6 +129,7 @@ def run_watcher_loop(
 
 
 def build_foreground_command(args: argparse.Namespace, repo_root: Path, receipt_path: Path, ledger_path: Path) -> str:
+    log_path = args.log_path or Path(args.result_dir) / "tmux_watcher.log"
     parts = [
         sys.executable,
         str(Path(__file__).resolve()),
@@ -154,7 +155,16 @@ def build_foreground_command(args: argparse.Namespace, repo_root: Path, receipt_
         parts.extend(["--lock-path", str(args.lock_path)])
     if args.log_path:
         parts.extend(["--log-path", str(args.log_path)])
-    return "cd " + shlex.quote(str(repo_root)) + "; " + " ".join(shlex.quote(part) for part in parts)
+    return (
+        "cd "
+        + shlex.quote(str(repo_root))
+        + "; mkdir -p "
+        + shlex.quote(str(log_path.parent))
+        + "; exec > >(tee -a "
+        + shlex.quote(str(log_path))
+        + ") 2>&1; "
+        + " ".join(shlex.quote(part) for part in parts)
+    )
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -186,6 +196,7 @@ def main(argv: list[str] | None = None) -> int:
         "task_key": args.task_key,
         "session_name": session,
         "pid": None,
+        "pane_pid": None,
         "command": "",
         "watcher_shell_command": "",
         "finalizer_command": args.finalizer_command,
@@ -219,6 +230,15 @@ def main(argv: list[str] | None = None) -> int:
         receipt_path.write_text(json.dumps(receipt, indent=2, sort_keys=True) + "\n", encoding="utf-8")
         print(receipt["command"])
         return 0
+    existing = run(["tmux", "has-session", "-t", session], repo_root)
+    if existing.returncode == 0:
+        receipt["start_exit_code"] = 1
+        receipt["watcher_final_status"] = "START_REJECTED_SESSION_EXISTS"
+        receipt["watcher_stop_reason"] = "tmux session already exists"
+        receipt["finished_at"] = utc_now()
+        receipt_path.write_text(json.dumps(receipt, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+        print(f"tmux session already exists: {session}", file=sys.stderr)
+        return 1
     cp = run(tmux_cmd, repo_root)
     if cp.returncode != 0:
         print(cp.stderr or cp.stdout, file=sys.stderr)
@@ -230,7 +250,10 @@ def main(argv: list[str] | None = None) -> int:
         return 1
     pid = run(["tmux", "display-message", "-p", "-t", session, "#{pane_pid}"], repo_root)
     receipt["pid"] = pid.stdout.strip() if pid.returncode == 0 else None
+    receipt["pane_pid"] = receipt["pid"]
     receipt["start_exit_code"] = 0
+    receipt["watcher_final_status"] = "STARTED"
+    receipt["watcher_stop_reason"] = "running in tmux"
     receipt_path.write_text(json.dumps(receipt, indent=2, sort_keys=True) + "\n", encoding="utf-8")
     print(session)
     return 0

@@ -15,6 +15,7 @@ WATCHER_PATH = Path(__file__).resolve().parents[3] / "scripts" / "ops" / "start_
 ARCH_VALIDATOR_PATH = Path(__file__).resolve().parents[3] / "scripts" / "architecture" / "validate_care_architecture_wiki.py"
 RECONCILE_PATH = Path(__file__).resolve().parents[3] / "scripts" / "architecture" / "reconcile_review_status.py"
 MERGE_PATH = Path(__file__).resolve().parents[3] / "scripts" / "ops" / "merge_care_executor_wave.py"
+CREATE_HISTORY_PATH = Path(__file__).resolve().parents[3] / "scripts" / "architecture" / "create_care_history_snapshot.py"
 SPEC = importlib.util.spec_from_file_location("validate_handoff_policy", VALIDATOR_PATH)
 assert SPEC is not None
 validator = importlib.util.module_from_spec(SPEC)
@@ -51,6 +52,17 @@ assert MERGE_SPEC is not None and MERGE_SPEC.loader is not None
 merge_wave = importlib.util.module_from_spec(MERGE_SPEC)
 sys.modules["merge_care_executor_wave"] = merge_wave
 MERGE_SPEC.loader.exec_module(merge_wave)
+CREATE_HISTORY_SPEC = importlib.util.spec_from_file_location("create_care_history_snapshot", CREATE_HISTORY_PATH)
+assert CREATE_HISTORY_SPEC is not None and CREATE_HISTORY_SPEC.loader is not None
+create_history = importlib.util.module_from_spec(CREATE_HISTORY_SPEC)
+sys.modules["create_care_history_snapshot"] = create_history
+CREATE_HISTORY_SPEC.loader.exec_module(create_history)
+
+
+def add_completion_contract(entry: dict[str, object], token: str = "READY_FOR_CONTROLLER_MERGE") -> dict[str, object]:
+    entry.setdefault("required_completion_file", f"{entry.get('result_dir', 'results/demo')}/completion_check.md")
+    entry.setdefault("required_completion_token", token)
+    return entry
 
 
 class TestHandoffPolicyValidator(unittest.TestCase):
@@ -595,8 +607,8 @@ bad,MyoPS,test,implemented,verified,implemented,src/x.py,Sym,entry,grep,key,in,o
             "version": 1,
             "max_parallel": 1,
             "executors": [
-                {"id": "a", "lane": "tooling", "wave": 1, "can_run_parallel": False, "isolation_mode": "separate_worktree", "branch_name": "a", "worktree_path": "/tmp/a", "write_scope": ["x.py"], "prompt_path": "pa", "result_dir": "ra", "runtime_output_root": "oa", "slurm_job_namespace": "ja", "merge_order": 1},
-                {"id": "b", "lane": "tooling", "wave": 2, "depends_on": ["a"], "can_run_parallel": False, "isolation_mode": "separate_worktree", "branch_name": "b", "worktree_path": "/tmp/b", "write_scope": ["x.py"], "prompt_path": "pb", "result_dir": "rb", "runtime_output_root": "ob", "slurm_job_namespace": "jb", "merge_order": 2},
+                add_completion_contract({"id": "a", "lane": "tooling", "wave": 1, "can_run_parallel": False, "isolation_mode": "separate_worktree", "branch_name": "a", "worktree_path": "/tmp/a", "write_scope": ["x.py"], "prompt_path": "pa", "result_dir": "ra", "runtime_output_root": "oa", "slurm_job_namespace": "ja", "merge_order": 1}),
+                add_completion_contract({"id": "b", "lane": "tooling", "wave": 2, "depends_on": ["a"], "can_run_parallel": False, "isolation_mode": "separate_worktree", "branch_name": "b", "worktree_path": "/tmp/b", "write_scope": ["x.py"], "prompt_path": "pb", "result_dir": "rb", "runtime_output_root": "ob", "slurm_job_namespace": "jb", "merge_order": 2}),
             ],
         }
         self.assertEqual(executor_plan.validate_plan(data), [])
@@ -636,6 +648,28 @@ Path('result').mkdir(exist_ok=True)
     def test_finalizer_awaiting_sacct_exhaustion_is_retryable(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
+            watcher_script = root / "scripts/ops/start_care_tmux_watcher.py"
+            watcher_script.parent.mkdir(parents=True)
+            watcher_script.write_text(
+                """import argparse, json
+from pathlib import Path
+p=argparse.ArgumentParser()
+p.add_argument('--task-key')
+p.add_argument('--result-dir')
+p.add_argument('--session-name')
+p.add_argument('--receipt-path')
+p.add_argument('--finalizer-command')
+p.add_argument('--lock-path')
+p.add_argument('--log-path')
+p.add_argument('--poll-interval')
+args=p.parse_args()
+receipt={'session_name': args.session_name, 'watcher_final_status': 'STARTED', 'log_path': args.log_path, 'lock_path': args.lock_path, 'result_dir': args.result_dir}
+Path(args.receipt_path).parent.mkdir(parents=True, exist_ok=True)
+Path(args.receipt_path).write_text(json.dumps(receipt))
+print(args.session_name)
+""",
+                encoding="utf-8",
+            )
             result = root / "result"
             fixture = root / "awaiting.json"
             fixture.write_text(json.dumps({"jobs": {"1": {"state": "AWAITING_SACCT"}}}), encoding="utf-8")
@@ -651,7 +685,9 @@ Path('result').mkdir(exist_ok=True)
             self.assertEqual(code, 0)
             self.assertEqual(state["final_state"], "AWAITING_SACCT_RETRY_EXHAUSTED")
             self.assertTrue(state["retryable"])
-            self.assertIn("retry_backend", state)
+            self.assertEqual(state["retry_backend"], "tmux_watcher")
+            self.assertEqual(state["next_retry_job_id_or_tmux_session"], "care_demo_accounting_retry")
+            self.assertTrue((result / "accounting_continuation_receipt.json").is_file())
 
     def test_executor_plan_rejects_nested_write_scope_overlap(self) -> None:
         data = {"version": 1, "max_parallel": 2, "executors": [
@@ -680,8 +716,8 @@ Path('result').mkdir(exist_ok=True)
 
     def test_executor_plan_accepts_valid_isolated_two_executor_wave(self) -> None:
         data = {"version": 1, "max_parallel": 2, "executors": [
-            {"id": "myops_worker", "lane": "myops", "wave": 1, "can_run_parallel": True, "isolation_mode": "separate_worktree", "branch_name": "myops", "worktree_path": "/tmp/myops", "write_scope": ["src/myops"], "prompt_path": "pa", "result_dir": "ra", "runtime_output_root": "oa", "slurm_job_namespace": "ja", "lock_path": "la", "log_path": "loga", "merge_order": 1, "isolation_proof": "separate source/runtime paths"},
-            {"id": "cine_worker", "lane": "cine", "wave": 1, "can_run_parallel": True, "isolation_mode": "separate_worktree", "branch_name": "cine", "worktree_path": "/tmp/cine", "write_scope": ["src/cine"], "prompt_path": "pb", "result_dir": "rb", "runtime_output_root": "ob", "slurm_job_namespace": "jb", "lock_path": "lb", "log_path": "logb", "merge_order": 2, "isolation_proof": "separate source/runtime paths"},
+            add_completion_contract({"id": "myops_worker", "lane": "myops", "wave": 1, "can_run_parallel": True, "isolation_mode": "separate_worktree", "branch_name": "myops", "worktree_path": "/tmp/myops", "write_scope": ["src/myops"], "prompt_path": "pa", "result_dir": "ra", "runtime_output_root": "oa", "slurm_job_namespace": "ja", "lock_path": "la", "log_path": "loga", "merge_order": 1, "isolation_proof": "separate source/runtime paths"}),
+            add_completion_contract({"id": "cine_worker", "lane": "cine", "wave": 1, "can_run_parallel": True, "isolation_mode": "separate_worktree", "branch_name": "cine", "worktree_path": "/tmp/cine", "write_scope": ["src/cine"], "prompt_path": "pb", "result_dir": "rb", "runtime_output_root": "ob", "slurm_job_namespace": "jb", "lock_path": "lb", "log_path": "logb", "merge_order": 2, "isolation_proof": "separate source/runtime paths"}),
         ]}
         self.assertEqual(executor_plan.validate_plan(data), [])
 
@@ -748,6 +784,45 @@ reviewer: "separate_readonly"
             self.assertEqual(code, 0)
             self.assertIn("M9_FOLLOWUP_AUDITED_READY_NO_PROMOTION_DIAGNOSTIC_ONLY", (root / "wiki/README.md").read_text(encoding="utf-8"))
 
+    def test_post_review_token_reconciliation_accepts_m10(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            (root / "wiki/history/M10").mkdir(parents=True)
+            (root / "wiki").mkdir(exist_ok=True)
+            (root / "wiki/README.md").write_text("# Wiki\n", encoding="utf-8")
+            (root / "wiki/LINEAGE.md").write_text("# Lineage\n", encoding="utf-8")
+            (root / "wiki/history/M10/snapshot.yaml").write_text("later_status_update: none\n", encoding="utf-8")
+            review = root / "review.md"
+            review.write_text("review token: M10_AUDITED_READY_DIAGNOSTIC_ONLY\nreview decision: ready\nreviewed commit: abc\nroute status: no promotion\n", encoding="utf-8")
+            old = Path.cwd()
+            try:
+                import os
+
+                os.chdir(root)
+                code = reconcile.main(["--review-md", str(review), "--history-version", "M10", "--no-generate"])
+            finally:
+                os.chdir(old)
+            self.assertEqual(code, 0)
+            self.assertIn("M10_AUDITED_READY_DIAGNOSTIC_ONLY", (root / "wiki/history/M10/snapshot.yaml").read_text(encoding="utf-8"))
+
+    def test_create_history_snapshot_m10_dry_run(self) -> None:
+        repo = Path(__file__).resolve().parents[3]
+        code = create_history.main(["--milestone", "M10", "--dry-run"])
+        self.assertEqual(code, 0)
+
+    def test_controller_packet_missing_controller_report_fails(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            packet = Path(tmp) / "results/demo_controller"
+            (packet / "subagents").mkdir(parents=True)
+            for rel in validator.CONTROLLER_PACKET_REQUIRED_FILES:
+                if rel == "controller_report.md":
+                    continue
+                path = packet / rel
+                path.parent.mkdir(parents=True, exist_ok=True)
+                path.write_text("PACKET_COMMITTED_FOR_REVIEW\n" if rel == "completion_check.md" else "{}\n", encoding="utf-8")
+            findings = validator.validate_controller_packet_dir(packet)
+            self.assertTrue(any("controller_report.md" in item.message for item in findings))
+
     def test_merge_conflict_fail_closed(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
@@ -762,12 +837,13 @@ reviewer: "separate_readonly"
             git("commit", "-m", "base")
             git("checkout", "-b", "executor_branch")
             (root / "file.txt").write_text("branch\n", encoding="utf-8")
-            git("commit", "-am", "branch")
+            (root / "results/e/result").mkdir(parents=True)
+            (root / "results/e/result/completion_check.md").write_text("READY_FOR_CONTROLLER_MERGE\n", encoding="utf-8")
+            git("add", "file.txt", "results/e/result/completion_check.md")
+            git("commit", "-m", "branch")
             git("checkout", "main")
             (root / "file.txt").write_text("main\n", encoding="utf-8")
             git("commit", "-am", "main")
-            (root / "results/e/result").mkdir(parents=True)
-            (root / "results/e/result/result.md").write_text("done\n", encoding="utf-8")
             plan = root / "plan.yaml"
             plan.write_text("""version: 1
 max_parallel: 1
@@ -789,10 +865,12 @@ executors:
     runtime_output_root: results/e/runtime
     slurm_job_namespace: e
     lock_path: results/e/lock
-            log_path: results/e/log
-            merge_order: 1
+    log_path: results/e/log
+    required_completion_file: results/e/result/completion_check.md
+    required_completion_token: READY_FOR_CONTROLLER_MERGE
+    merge_order: 1
 """, encoding="utf-8")
-            git("add", "plan.yaml", "results/e/result/result.md")
+            git("add", "plan.yaml")
             git("commit", "-m", "add packet")
             old = Path.cwd()
             try:
@@ -805,6 +883,158 @@ executors:
             receipt = json.loads((root / "results/executor_wave_receipts/wave_1_merge_receipt.json").read_text(encoding="utf-8"))
             self.assertNotEqual(code, 0)
             self.assertEqual(receipt["merge_state"], "NEEDS_REVISION_PARALLEL_MERGE_CONFLICT")
+
+    def test_merge_helper_rejects_incomplete_completion_token(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+
+            def git(*args: str) -> None:
+                cp = __import__("subprocess").run(["git", *args], cwd=root, text=True, stdout=__import__("subprocess").PIPE, stderr=__import__("subprocess").PIPE)
+                self.assertEqual(cp.returncode, 0, cp.stderr or cp.stdout)
+
+            git("init", "-b", "main")
+            git("config", "user.email", "test@example.com")
+            git("config", "user.name", "Test")
+            (root / "base.txt").write_text("base\n", encoding="utf-8")
+            git("add", "base.txt")
+            git("commit", "-m", "base")
+            git("checkout", "-b", "executor_branch")
+            (root / "results/e/result").mkdir(parents=True)
+            (root / "results/e/result/completion_check.md").write_text("NEEDS_MONITOR\n", encoding="utf-8")
+            git("add", "results/e/result/completion_check.md")
+            git("commit", "-m", "monitor packet")
+            git("checkout", "main")
+            plan = root / "plan.yaml"
+            plan.write_text("""version: 1
+max_parallel: 1
+executors:
+  - id: e
+    lane: tooling
+    wave: 1
+    depends_on: []
+    blocking: true
+    can_run_parallel: false
+    isolation_mode: separate_worktree
+    branch_name: executor_branch
+    worktree_path: .
+    read_scope: []
+    write_scope:
+      - results/e/result
+    result_dir: results/e/result
+    prompt_path: results/e/prompt.md
+    runtime_output_root: results/e/runtime
+    slurm_job_namespace: e
+    lock_path: results/e/lock
+    log_path: results/e/log
+    required_completion_file: results/e/result/completion_check.md
+    required_completion_token: READY_FOR_CONTROLLER_MERGE
+    merge_order: 1
+""", encoding="utf-8")
+            git("add", "plan.yaml")
+            git("commit", "-m", "add plan")
+            old = Path.cwd()
+            try:
+                import os
+
+                os.chdir(root)
+                code = merge_wave.main(["--plan", str(plan), "--wave", "1"])
+            finally:
+                os.chdir(old)
+            self.assertNotEqual(code, 0)
+            receipt = json.loads((root / "results/executor_wave_receipts/wave_1_merge_receipt.json").read_text(encoding="utf-8"))
+            self.assertEqual(receipt["merge_state"], "NEEDS_EVIDENCE")
+            self.assertIn("NEEDS_MONITOR", receipt["failure_reason"])
+
+    def test_merge_helper_reads_packets_from_separate_worktrees(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp) / "repo"
+            work1 = Path(tmp) / "work1"
+            work2 = Path(tmp) / "work2"
+            root.mkdir()
+
+            def git(cwd: Path, *args: str) -> None:
+                cp = __import__("subprocess").run(["git", *args], cwd=cwd, text=True, stdout=__import__("subprocess").PIPE, stderr=__import__("subprocess").PIPE)
+                self.assertEqual(cp.returncode, 0, cp.stderr or cp.stdout)
+
+            git(root, "init", "-b", "main")
+            git(root, "config", "user.email", "test@example.com")
+            git(root, "config", "user.name", "Test")
+            (root / "base.txt").write_text("base\n", encoding="utf-8")
+            git(root, "add", "base.txt")
+            git(root, "commit", "-m", "base")
+            git(root, "worktree", "add", "-b", "exec1", str(work1), "HEAD")
+            git(root, "worktree", "add", "-b", "exec2", str(work2), "HEAD")
+            for work, eid in ((work1, "e1"), (work2, "e2")):
+                git(work, "config", "user.email", "test@example.com")
+                git(work, "config", "user.name", "Test")
+                packet = work / f"results/{eid}/result"
+                packet.mkdir(parents=True)
+                (packet / "completion_check.md").write_text("READY_FOR_CONTROLLER_MERGE\n", encoding="utf-8")
+                (packet / "result.md").write_text(f"{eid} done\n", encoding="utf-8")
+                git(work, "add", f"results/{eid}/result/completion_check.md", f"results/{eid}/result/result.md")
+                git(work, "commit", "-m", f"{eid} packet")
+            self.assertFalse((root / "results/e1/result/completion_check.md").exists())
+            plan = root / "plan.yaml"
+            plan.write_text(f"""version: 1
+max_parallel: 2
+executors:
+  - id: e1
+    lane: tooling
+    wave: 1
+    depends_on: []
+    blocking: true
+    can_run_parallel: false
+    isolation_mode: separate_worktree
+    branch_name: exec1
+    worktree_path: {work1}
+    read_scope: []
+    write_scope:
+      - results/e1/result
+    result_dir: results/e1/result
+    prompt_path: results/e1/prompt.md
+    runtime_output_root: results/e1/runtime
+    slurm_job_namespace: e1
+    lock_path: results/e1/lock
+    log_path: results/e1/log
+    required_completion_file: results/e1/result/completion_check.md
+    required_completion_token: READY_FOR_CONTROLLER_MERGE
+    merge_order: 1
+  - id: e2
+    lane: tooling
+    wave: 1
+    depends_on: []
+    blocking: true
+    can_run_parallel: false
+    isolation_mode: separate_worktree
+    branch_name: exec2
+    worktree_path: {work2}
+    read_scope: []
+    write_scope:
+      - results/e2/result
+    result_dir: results/e2/result
+    prompt_path: results/e2/prompt.md
+    runtime_output_root: results/e2/runtime
+    slurm_job_namespace: e2
+    lock_path: results/e2/lock
+    log_path: results/e2/log
+    required_completion_file: results/e2/result/completion_check.md
+    required_completion_token: READY_FOR_CONTROLLER_MERGE
+    merge_order: 2
+""", encoding="utf-8")
+            old = Path.cwd()
+            try:
+                import os
+
+                os.chdir(root)
+                code = merge_wave.main(["--plan", str(plan), "--wave", "1"])
+            finally:
+                os.chdir(old)
+            self.assertEqual(code, 0)
+            self.assertTrue((root / "results/e1/result/completion_check.md").is_file())
+            self.assertTrue((root / "results/e2/result/completion_check.md").is_file())
+            receipt = json.loads((root / "results/executor_wave_receipts/wave_1_merge_receipt.json").read_text(encoding="utf-8"))
+            self.assertEqual(receipt["merge_state"], "MERGED")
+            self.assertEqual(receipt["merged_executors"], ["e1", "e2"])
 
     def test_components_csv_rejects_scaffold_marked_implemented(self) -> None:
         text = """component_id,branch,role,current_status,evidence_status,target_status,source_file,symbol,entrypoint,grep_key,config_keys,inputs,outputs,losses,final_output_effect,runtime_evidence,code_fingerprint_member,last_verified_milestone,review_token,notes

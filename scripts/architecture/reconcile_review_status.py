@@ -12,6 +12,7 @@ import sys
 
 
 CONTROLLED_FIELDS = ("review token", "review decision", "reviewed commit", "route status", "review timestamp")
+HISTORY_VERSION_RE = re.compile(r"^M[0-9]{2,}$")
 
 
 def run(cmd: list[str], cwd: Path) -> subprocess.CompletedProcess[str]:
@@ -67,11 +68,18 @@ def update_snapshot(path: Path, fields: dict[str, str]) -> None:
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--review-md", required=True, type=Path)
-    parser.add_argument("--history-version", choices=("M08", "M09"), default="M09")
+    parser.add_argument("--history-version", default="M09")
     parser.add_argument("--no-generate", action="store_true")
     args = parser.parse_args(argv)
 
     repo_root = Path.cwd()
+    if not HISTORY_VERSION_RE.match(args.history_version):
+        print(f"error: invalid history version: {args.history_version}", file=sys.stderr)
+        return 1
+    snapshot_path = repo_root / "wiki" / "history" / args.history_version / "snapshot.yaml"
+    if not snapshot_path.is_file():
+        print(f"error: missing history snapshot: {snapshot_path}", file=sys.stderr)
+        return 1
     review_path = args.review_md
     if not review_path.is_file():
         print(f"error: missing review.md: {review_path}", file=sys.stderr)
@@ -94,7 +102,7 @@ def main(argv: list[str] | None = None) -> int:
     ]
     upsert_block(repo_root / "wiki" / "README.md", "post-review-status", lines)
     upsert_block(repo_root / "wiki" / "LINEAGE.md", "post-review-status", lines)
-    update_snapshot(repo_root / "wiki" / "history" / args.history_version / "snapshot.yaml", fields)
+    update_snapshot(snapshot_path, fields)
     if not args.no_generate:
         for cmd in (
             ["python", "scripts/architecture/generate_care_architecture_wiki.py"],

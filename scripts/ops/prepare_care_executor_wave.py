@@ -35,7 +35,7 @@ def selected_wave(plan: dict[str, Any], wave: int) -> list[dict[str, Any]]:
     return [item for item in plan.get("executors", []) if int(item.get("wave", 1)) == wave]
 
 
-def dependency_errors(plan: dict[str, Any], wave: int) -> list[str]:
+def dependency_errors(plan: dict[str, Any], wave: int, repo_root: Path) -> list[str]:
     executors = plan.get("executors", [])
     waves = {str(item.get("id")): int(item.get("wave", 1)) for item in executors}
     errors: list[str] = []
@@ -44,6 +44,16 @@ def dependency_errors(plan: dict[str, Any], wave: int) -> list[str]:
         for dep in as_list(item.get("depends_on")):
             if waves.get(dep, wave) >= wave:
                 errors.append(f"{eid}: dependency {dep} is not completed in an earlier wave")
+                continue
+            dep_wave = waves.get(dep)
+            receipt_path = repo_root / "results" / "executor_wave_receipts" / f"wave_{dep_wave}_merge_receipt.json"
+            try:
+                receipt = json.loads(receipt_path.read_text(encoding="utf-8"))
+            except (OSError, json.JSONDecodeError):
+                errors.append(f"{eid}: dependency {dep} has no successful merge receipt: {receipt_path}")
+                continue
+            if receipt.get("merge_state") != "MERGED" or dep not in receipt.get("merged_executors", []):
+                errors.append(f"{eid}: dependency {dep} is not recorded as merged in {receipt_path}")
     return errors
 
 
@@ -68,7 +78,7 @@ def main(argv: list[str] | None = None) -> int:
     repo_root = Path.cwd()
     plan = load_yaml(args.plan)
     errors = validate_plan(plan)
-    errors.extend(dependency_errors(plan, args.wave))
+    errors.extend(dependency_errors(plan, args.wave, repo_root))
     entries = selected_wave(plan, args.wave)
     if not entries:
         errors.append(f"wave {args.wave}: no executors")

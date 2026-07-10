@@ -136,6 +136,22 @@ HISTORY_READ_FILES = [
     "wiki/history/M09/README.md",
     "wiki/history/M09/COMPONENTS.csv",
 ]
+CONTROLLER_PACKET_REQUIRED_FILES = [
+    "controller_context.json",
+    "controller_ledger.csv",
+    "controller_bootstrap_snapshot.md",
+    "implementation_snapshot.md",
+    "finalizer_state.json",
+    "mapper_report_draft.md",
+    "mapper_report_final.md",
+    "architecture_delta_final.md",
+    "validator_report.md",
+    "controller_report.md",
+    "completion_check.md",
+    "review_request.md",
+    "MANIFEST.md",
+    "subagents/reviewer_prompt.md",
+]
 
 
 @dataclass(frozen=True)
@@ -868,6 +884,26 @@ def validate_architecture_yaml(path: Path, text: str) -> list[Finding]:
     return findings
 
 
+def validate_controller_packet_dir(path: Path) -> list[Finding]:
+    findings: list[Finding] = []
+    completion = path / "completion_check.md"
+    if not completion.is_file():
+        return findings
+    text = completion.read_text(encoding="utf-8")
+    if "PACKET_COMMITTED_FOR_REVIEW" not in text:
+        return findings
+    missing = [rel for rel in CONTROLLER_PACKET_REQUIRED_FILES if not (path / rel).is_file()]
+    if missing:
+        findings.append(
+            Finding(
+                "error",
+                path,
+                "controller packet committed for review is missing required files: " + ", ".join(missing),
+            )
+        )
+    return findings
+
+
 def iter_policy_files(paths: Sequence[Path]) -> Iterable[Path]:
     for path in paths:
         if path.is_dir():
@@ -879,6 +915,11 @@ def iter_policy_files(paths: Sequence[Path]) -> Iterable[Path]:
 
 def validate_paths(paths: Sequence[Path], strict_tasks: bool = False) -> list[Finding]:
     findings: list[Finding] = []
+    for path in paths:
+        if path.is_dir():
+            findings.extend(validate_controller_packet_dir(path))
+            for completion in path.rglob("completion_check.md"):
+                findings.extend(validate_controller_packet_dir(completion.parent))
     for path in iter_policy_files(paths):
         text = path.read_text(encoding="utf-8")
         findings.extend(validate_active_policy_doc(path, text))
@@ -910,6 +951,7 @@ def default_paths(repo_root: Path) -> list[Path]:
         repo_root / "prompts" / "shared" / "EXECUTOR_PROMPTS.md",
         repo_root / "prompts" / "shared" / "REVIEWER_PROMPTS.md",
         repo_root / "wiki",
+        repo_root / "results" / "20260711_agent_flow_v2_pre_m10_final_repair",
     ]
 
 
