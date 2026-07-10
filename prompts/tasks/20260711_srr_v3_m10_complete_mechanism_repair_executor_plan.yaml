@@ -1,0 +1,71 @@
+version: 1
+task_key: 20260711_srr_v3_m10_complete_mechanism_repair
+max_parallel: 1
+parallel_execution_allowed: false
+merge_owner: controller
+executors:
+  - id: m10_executor
+    lane: myops_cine_sequential
+    prompt_path: results/20260711_srr_v3_m10_complete_mechanism_repair/subagents/executor_prompt.md
+    wave: 1
+    depends_on: []
+    blocking: true
+    can_run_parallel: false
+    isolation_mode: separate_worktree
+    branch_name: codex/20260711_srr_v3_m10_complete_mechanism_repair/m10_executor
+    worktree_path: /users/a/e/aereinh/.tmp/codex-CARE/worktrees/20260711_srr_v3_m10_complete_mechanism_repair/m10_executor
+    read_scope:
+      - AGENTS.md
+      - START_HERE_FOR_GPT.md
+      - GPT_PLANNER_CARE_PROTOCOL.md
+      - prompts/
+      - wiki/
+      - TODO-dictionary.md
+      - src/care_myocardium/
+      - scripts/
+      - jobs/
+      - configs/
+      - results/20260708_srr_v3_m9_dictionary_fidelity_repair_training/
+    write_scope:
+      - src/care_myocardium/models/
+      - src/care_myocardium/losses/
+      - src/care_myocardium/cine/
+      - src/care_myocardium/tests/test_srr_v3_m10_fidelity.py
+      - scripts/training/run_srr_v3_m10_complete_repair.py
+      - scripts/training/run_cine_temporal_model_m10.py
+      - scripts/evaluation/aggregate_srr_v3_m10_packet.py
+      - scripts/evaluation/validate_srr_v3_m10_packet.py
+      - jobs/src/run_srr_v3_m10_myops_full.sh
+      - jobs/src/run_srr_v3_m10_hard_negative_refresh.sh
+      - jobs/src/run_srr_v3_m10_no_context_control.sh
+      - jobs/src/run_srr_v3_m10_cine_temporal.sh
+      - configs/srr_v3_m10_complete_repair.yaml
+      - results/20260711_srr_v3_m10_architecture_fidelity/
+      - results/20260711_srr_v3_m10_mechanism_smoke/
+      - results/20260711_srr_v3_m10_myops_full_train/
+      - results/20260711_srr_v3_m10_hard_negative_refresh/
+      - results/20260711_srr_v3_m10_no_nnunet_context_control/
+      - results/20260711_srr_v3_m10_cine_learned_temporal/
+      - results/20260711_srr_v3_m10_component_causal_audit/
+      - results/20260711_srr_v3_m10_completion_check/
+      - results/20260711_srr_v3_m10_complete_mechanism_repair/executors/m10_executor/
+    shared_files_forbidden:
+      - AGENTS.md
+      - prompts/shared/EXECUTOR_PROMPTS.md
+      - prompts/shared/REVIEWER_PROMPTS.md
+      - results/20260711_srr_v3_m10_complete_mechanism_repair/review.md
+      - wiki/README.md
+      - wiki/MODEL.md
+      - wiki/EXECUTION.md
+      - wiki/COMPONENTS.csv
+      - wiki/LINEAGE.md
+      - wiki/architecture.yaml
+      - wiki/figures/
+    result_dir: results/20260711_srr_v3_m10_complete_mechanism_repair/executors/m10_executor
+    runtime_output_root: results/20260711_srr_v3_m10_complete_mechanism_repair/runtime/m10_executor
+    slurm_job_namespace: 20260711_srr_v3_m10_complete_mechanism_repair_m10_executor
+    lock_path: results/20260711_srr_v3_m10_complete_mechanism_repair/locks/m10_executor.lock
+    log_path: results/20260711_srr_v3_m10_complete_mechanism_repair/logs/m10_executor.log
+    merge_order: 1
+    isolation_proof: single executor; MyoPS and Cine jobs run sequentially through Slurm dependencies; mapper owns wiki writes
+    completion_receipt: results/20260711_srr_v3_m10_complete_mechanism_repair/executors/m10_executor/completion_receipt.json
