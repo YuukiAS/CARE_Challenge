@@ -14,11 +14,11 @@ profile_tags:
 ---
 # CARE Mapper Skill
 
-Use this skill for the `mapper` role defined by `TODO-agents-v2.md`. The mapper is a read-only architecture/evidence mapper inside a controller-supervised task. It is not a reviewer and does not make route-promotion decisions.
+Use this skill for the `mapper` role defined by `prompts/AGENT_FLOW_V2_PROTOCOL.md`. The mapper is a read-only architecture/evidence mapper inside a controller-supervised task. It is not a reviewer and does not make route-promotion decisions.
 
 ## Required Inputs
 
-Before mapping, read `AGENTS.md`, `START_HERE_FOR_GPT.md`, `GPT_PLANNER_CARE_PROTOCOL.md`, `TODO-agents-v2.md`, the handoff role/state/controller protocol files, the current GPT-authored task or milestone prompt, current `wiki/` files, and the current result packet evidence named by the task. If the task uses Slurm, also read `.agents/skills/slurm-routing-partition/SKILL.md`.
+Before mapping, read `AGENTS.md`, `START_HERE_FOR_GPT.md`, `GPT_PLANNER_CARE_PROTOCOL.md`, `prompts/AGENT_FLOW_V2_PROTOCOL.md`, the handoff role/state/controller protocol files, the current GPT-authored task or milestone prompt, current `wiki/` files, and the current result packet evidence named by the task. If the task uses Slurm, also read `.agents/skills/slurm-routing-partition/SKILL.md`.
 
 For architecture-changing work, also read the AI Research Toolkit source files from the current checkout:
 
@@ -132,13 +132,13 @@ python scripts/architecture/generate_care_architecture_wiki.py --check
 python scripts/architecture/run_toolkit_healthcheck.py --check
 ```
 
-To regenerate figures after editing D2 sources:
+To regenerate figures after editing `wiki/architecture.yaml` or `wiki/COMPONENTS.csv`:
 
 ```bash
 python scripts/architecture/generate_care_architecture_wiki.py
 ```
 
-The generator must produce `.d2 + .svg + .png` for each canonical figure. If D2 PNG export fails because Playwright is unavailable, SVG generation plus ImageMagick `convert` fallback is acceptable and must be reported.
+The generator must read `architecture.yaml` and `COMPONENTS.csv`, produce generated `.d2 + .svg + .png` for each canonical figure, and fail `--check` when committed D2/SVG/PNG artifacts are stale. If D2 PNG export fails because Playwright is unavailable, SVG generation plus ImageMagick `convert` fallback is acceptable and must be reported.
 
 ## Controller Output Paths
 

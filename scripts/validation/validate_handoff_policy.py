@@ -6,6 +6,7 @@ from __future__ import annotations
 import argparse
 import ast
 import csv
+import json
 from dataclasses import dataclass
 from pathlib import Path
 import re
@@ -111,6 +112,21 @@ COMPONENT_REQUIRED_COLUMNS = [
     "review_token",
     "notes",
 ]
+ACTIVE_DOC_BASENAMES = {
+    "AGENTS.md",
+    "START_HERE_FOR_GPT.md",
+    "GPT_PLANNER_CARE_PROTOCOL.md",
+    "AGENT_FLOW_V2_PROTOCOL.md",
+    "HANDOFF_ROLES.md",
+    "HANDOFF_STATE_MACHINE.md",
+    "CONTROLLER_TASK_PROTOCOL.md",
+    "HANDOFF_GATE_POLICY.md",
+    "GPT_HARD_GATE_PROMPT.md",
+    "MILESTONE_REVIEW_PROTOCOL.md",
+    "CONTROLLER_TASK_TEMPLATE.md",
+}
+PUSH_TRUE_RE = re.compile(r"(?m)^\s*(auto_git_push|allow_git_push|allow_diagnostic_push)\s*:\s*true\s*$", re.IGNORECASE)
+TODO_RUNTIME_RE = re.compile(r"\bTODO-agents(?:-v2)?\.md\b")
 
 
 @dataclass(frozen=True)
@@ -236,6 +252,22 @@ def validate_task_file(path: Path, text: str, strict: bool) -> list[Finding]:
                     + ".",
                 )
             )
+        if as_bool(frontmatter.get("auto_git_push")) or as_bool(frontmatter.get("allow_git_push")) or as_bool(frontmatter.get("allow_diagnostic_push")):
+            findings.append(
+                Finding(
+                    severity(strict),
+                    path,
+                    "new controller tasks must not enable auto_git_push, allow_git_push, or allow_diagnostic_push; user pushes manually.",
+                )
+            )
+        if "reviewer_review" in text:
+            findings.append(
+                Finding(
+                    severity(strict),
+                    path,
+                    "controller task must not require reviewer_review before controller local packet commit.",
+                )
+            )
 
     if LONG_TASK_RE.search(text) and execution_mode == "direct_executor":
         findings.append(
@@ -254,6 +286,32 @@ def validate_task_file(path: Path, text: str, strict: bool) -> list[Finding]:
                 severity(strict),
                 path,
                 "slurm_runtime_continuity_required task must set continuity_backend to slurm_dependency or tmux_watcher.",
+            )
+        )
+
+    if is_truthy_field(frontmatter, "slurm_runtime_continuity_required") and "finalizer_state.json" not in text:
+        findings.append(
+            Finding(
+                severity(strict),
+                path,
+                "long Slurm/controller task declares continuity but lacks finalizer_state.json durable finalizer evidence contract.",
+            )
+        )
+
+    if LONG_TASK_RE.search(text) and "## Controller Prompt" not in text and path.name.startswith("M"):
+        findings.append(
+            Finding(
+                severity(strict),
+                path,
+                "long/overnight staging prompt must include ## Controller Prompt.",
+            )
+        )
+    if LONG_TASK_RE.search(text) and "durable finalizer" not in text.lower() and path.name.startswith("M"):
+        findings.append(
+            Finding(
+                severity(strict),
+                path,
+                "long/overnight staging prompt must include a durable finalizer contract.",
             )
         )
 
@@ -517,6 +575,16 @@ def validate_controller_report(path: Path, text: str) -> list[Finding]:
         if not re.search(rf"(?m)^{re.escape(field)}\s*:", text):
             findings.append(Finding("error", path, f"controller report missing {field}."))
 
+    git_push = field_value(text, "git_push_decision")
+    if git_push and git_push != "SKIP_PUSH":
+        findings.append(Finding("error", path, "controller report must not push; user pushes manually."))
+
+    if (
+        field_value(text, "route_promotion_decision") not in {None, "NOT_REVIEWED"}
+        and re.search(r"(?i)awaiting independent review|before reviewer|pre[- ]review", text)
+    ):
+        findings.append(Finding("error", path, "pre-review controller report must use route_promotion_decision: NOT_REVIEWED."))
+
     if has_route_negative_conclusion(text):
         if field_value(text, "experiment_adequacy_decision") != "PASS":
             findings.append(
@@ -654,6 +722,72 @@ def validate_review_file(path: Path, text: str) -> list[Finding]:
     return findings
 
 
+def validate_active_policy_doc(path: Path, text: str) -> list[Finding]:
+    findings: list[Finding] = []
+    if path.name in ACTIVE_DOC_BASENAMES:
+        if TODO_RUNTIME_RE.search(text) and not re.search(r"(?i)retired|legacy|must not be used", text):
+            findings.append(
+                Finding(
+                    "error",
+                    path,
+                    "active runtime policy references retired TODO-agents/TODO-agents-v2.md; use prompts/AGENT_FLOW_V2_PROTOCOL.md.",
+                )
+            )
+        if re.search(r"(?i)controller\s+(launches|starts|creates|uses)\s+(an\s+)?internal auditor|auditor_subtasks", text) and not re.search(r"(?i)must not.*internal auditor|do not create.*internal auditor", text):
+            findings.append(Finding("error", path, "active policy still describes controller-internal auditor behavior."))
+        if re.search(r"(?i)controller.*(decide|decides|decision).*route promotion", text) and "NOT_REVIEWED" not in text:
+            findings.append(Finding("error", path, "active policy lets controller decide route promotion before reviewer."))
+        if "reviewer_review" in text and not re.search(r"(?i)must not require `?reviewer_review`?|without reviewer_review|requires `?reviewer_review`?.*failure", text):
+            findings.append(Finding("error", path, "active policy requires reviewer_review before controller commit."))
+        if PUSH_TRUE_RE.search(text):
+            findings.append(Finding("error", path, "active policy enables controller/reviewer push; user pushes manually."))
+    if path.name in {"EXECUTOR_PROMPTS.md", "REVIEWER_PROMPTS.md"}:
+        head = "\n".join(text.splitlines()[:220])
+        if TODO_RUNTIME_RE.search(head):
+            findings.append(Finding("error", path, "shared global rule section references retired TODO-agents files."))
+        if PUSH_TRUE_RE.search(head):
+            findings.append(Finding("error", path, "shared global rule section enables push."))
+    return findings
+
+
+def validate_finalizer_state(path: Path, text: str) -> list[Finding]:
+    if path.name != "finalizer_state.json":
+        return []
+    findings: list[Finding] = []
+    try:
+        data = json.loads(text)
+    except json.JSONDecodeError as exc:
+        return [Finding("error", path, f"finalizer_state.json is not valid JSON: {exc}")]
+    required = [
+        "task_key",
+        "required_job_ids",
+        "job_states",
+        "exit_codes",
+        "elapsed",
+        "log_paths",
+        "runtime_output_paths",
+        "aggregation_command",
+        "aggregation_exit_code",
+        "validator_commands",
+        "validator_exit_codes",
+        "mapper_final_status",
+        "lock_path",
+        "git_head_before",
+        "git_commit_after",
+        "final_state",
+    ]
+    missing = [field for field in required if field not in data]
+    if missing:
+        findings.append(Finding("error", path, "finalizer_state.json missing fields: " + ", ".join(missing)))
+    states = {str(value).upper() for value in dict(data.get("job_states", {})).values()}
+    final_state = str(data.get("final_state", "")).upper()
+    if states & {"PENDING", "RUNNING", "CONFIGURING", "COMPLETING", "AWAITING_SACCT"} and final_state not in {"NEEDS_MONITOR"}:
+        findings.append(Finding("error", path, "nonterminal Slurm states must map to NEEDS_MONITOR."))
+    if final_state in {"PACKET_COMMITTED_FOR_REVIEW", "READY_FOR_LOCAL_PACKET_COMMIT"} and states & {"PENDING", "RUNNING", "CONFIGURING", "COMPLETING", "AWAITING_SACCT"}:
+        findings.append(Finding("error", path, "completion finalizer_state contains nonterminal Slurm state."))
+    return findings
+
+
 def validate_components_csv(path: Path, text: str) -> list[Finding]:
     if path.name != "COMPONENTS.csv":
         return []
@@ -693,9 +827,9 @@ def validate_architecture_yaml(path: Path, text: str) -> list[Finding]:
 def iter_policy_files(paths: Sequence[Path]) -> Iterable[Path]:
     for path in paths:
         if path.is_dir():
-            for suffix in ("*.md", "*.csv", "*.yaml", "*.yml"):
+            for suffix in ("*.md", "*.csv", "*.yaml", "*.yml", "*.json"):
                 yield from sorted(path.rglob(suffix))
-        elif path.suffix in {".md", ".csv", ".yaml", ".yml"}:
+        elif path.suffix in {".md", ".csv", ".yaml", ".yml", ".json"}:
             yield path
 
 
@@ -703,6 +837,8 @@ def validate_paths(paths: Sequence[Path], strict_tasks: bool = False) -> list[Fi
     findings: list[Finding] = []
     for path in iter_policy_files(paths):
         text = path.read_text(encoding="utf-8")
+        findings.extend(validate_active_policy_doc(path, text))
+        findings.extend(validate_finalizer_state(path, text))
         if path.suffix == ".md":
             findings.extend(validate_task_file(path, text, strict=strict_tasks))
             findings.extend(validate_controller_report(path, text))
@@ -716,17 +852,20 @@ def validate_paths(paths: Sequence[Path], strict_tasks: bool = False) -> list[Fi
 
 def default_paths(repo_root: Path) -> list[Path]:
     return [
-        repo_root / "prompts" / "AGENT_RULES.md",
-        repo_root / "prompts" / "CHATGPT_RULES.md",
+        repo_root / "AGENTS.md",
+        repo_root / "START_HERE_FOR_GPT.md",
+        repo_root / "GPT_PLANNER_CARE_PROTOCOL.md",
+        repo_root / "prompts" / "AGENT_FLOW_V2_PROTOCOL.md",
         repo_root / "prompts" / "HANDOFF_ROLES.md",
         repo_root / "prompts" / "HANDOFF_STATE_MACHINE.md",
         repo_root / "prompts" / "CONTROLLER_TASK_PROTOCOL.md",
-        repo_root / "prompts" / "CARE_OVERLAY_GATES.md",
-        repo_root / "prompts" / "DIAGNOSTIC_PUBLICATION_GATE.md",
-        repo_root / "prompts" / "EXPERIMENT_ADEQUACY_GATE.md",
+        repo_root / "prompts" / "HANDOFF_GATE_POLICY.md",
+        repo_root / "prompts" / "GPT_HARD_GATE_PROMPT.md",
+        repo_root / "prompts" / "MILESTONE_REVIEW_PROTOCOL.md",
         repo_root / "prompts" / "templates",
+        repo_root / "prompts" / "shared" / "EXECUTOR_PROMPTS.md",
+        repo_root / "prompts" / "shared" / "REVIEWER_PROMPTS.md",
         repo_root / "wiki",
-        repo_root / "results" / "README.md",
     ]
 
 

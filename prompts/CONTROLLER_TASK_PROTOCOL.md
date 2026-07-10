@@ -1,69 +1,70 @@
 # Controller Task Protocol
 
-A controller task lets a Codex controller coordinate executor, mapper,
-deterministic finalizer, validator, and final reviewer handoff for one
-GPT-approved task. It does not authorize Codex to become the strategic planner.
+Controller tasks are governed by `prompts/AGENT_FLOW_V2_PROTOCOL.md`. A
+controller is a Codex continuity supervisor for one GPT-authored task, not a
+strategic planner and not a reviewer.
 
-For milestone chains, also apply `prompts/MILESTONE_REVIEW_PROTOCOL.md`. The
-milestone protocol is stricter than the general controller protocol: the main
-Codex executor/controller may complete only one milestone and must stop before
-review; a separate read-only reviewer/auditor writes `review.md`.
+## Required Frontmatter
 
-## Required Shape
+Controller-supervised tasks must include:
 
-Controller tasks should include:
-
-- `task_type: "controller"`
-- `controller_mode: true`
-- `planner: "ChatGPT/GPT thread"`
-- `strategic_controller: "user-supervised GPT thread"`
-- `execution_mode: "controller_supervised"`
-- `requires_execution_controller: true`
-- `controller: "Codex controller session"`
-- `executor: "Codex executor session"`
-- `executor_slots: 1`
-- `mapper_slots: 1`
-- `mapper_required: true` or `false`
-- `architecture_impact: "none"` or `"component"` or `"system"`
-- `wiki_update_required: true` or `false`
-- `diagram_update_required: true` or `false`
-- `slurm_runtime_continuity_required: true` or `false`
-- `continuity_backend: "none"` or `"slurm_dependency"` or `"tmux_watcher"`
-- `review_mode: "independent_thread"` or `"short_goal"`
-- `reviewer: "separate_readonly"`
-- `review_required: true`
-- `route_promotion_gate`
-- `experiment_adequacy_gate`
-- `route_negative_gate`
-- `scientific_completion_gate`
-- `diagnostic_publication_gate`
-- `diagnostic_publication_scope`
-- `blocked_after_diagnostic_publication`
-- `failure_escalation_policy`
-- `forbidden_substitutes`
-- `required_evidence`
-- `allowed_next_states`
-- `auto_git_commit: true`
-- `auto_git_push: true`
-- a controller report path, normally
-  `results/<task_key>/controller_report.md`
-
-## Controller Lifecycle
-
-For controller-supervised long Slurm, overnight, multi-job, or high-resume-risk
-tasks, the controller must re-ground at each major phase:
-
-```text
-BOOTSTRAP
-PRE_SUBMISSION
-MONITOR_RESUME
-FINALIZE_A
-MAPPER_FINAL
-FINALIZE_B
+```yaml
+task_type: "controller"
+controller_mode: true
+execution_mode: "controller_supervised"
+requires_execution_controller: true
+planner: "ChatGPT/GPT thread"
+controller: "Codex controller session"
+executor: "separate Codex executor session/subagent"
+executor_slots: 1
+mapper_slots: 1
+mapper_required: true | false
+architecture_impact: "none" | "component" | "system"
+wiki_update_required: true | false
+diagram_update_required: true | false
+slurm_runtime_continuity_required: true | false
+continuity_backend: "none" | "slurm_dependency" | "tmux_watcher"
+review_mode: "independent_thread" | "short_goal"
+reviewer: "separate_readonly"
+allow_git_commit: true
+auto_git_commit: true
+allow_git_push: false
+auto_git_push: false
+allow_diagnostic_push: false
 ```
 
-At each phase, read disk/live state rather than relying on old context or
-executor self-report. Write or update:
+`allow_git_commit` and `auto_git_commit` authorize only a local lightweight
+final-packet commit for the current task. They do not authorize route promotion,
+validation packaging/upload, hosted metric claims, fold expansion, next
+milestone execution, or pushing.
+
+## Lifecycle
+
+Controller-supervised long Slurm, overnight, multi-job, or high-resume-risk
+tasks must follow this order:
+
+```text
+1. controller bootstrap
+2. executor implementation
+3. implementation snapshot
+4. mapper draft
+5. durable continuity
+6. terminal finalizer
+7. mapper final
+8. validators
+9. controller local commit of the final packet
+10. controller stops
+11. separate reviewer independently runs
+12. reviewer separately commits review.md
+13. user manually pushes
+```
+
+At each phase, the controller re-grounds from disk/live state. It must not rely
+on stale chat summaries or executor self-assessment.
+
+## Required Receipts
+
+Controller-supervised result packets must produce or validate:
 
 ```text
 results/<task_key>/controller_context.json
@@ -71,25 +72,83 @@ results/<task_key>/controller_ledger.csv
 results/<task_key>/controller_bootstrap_snapshot.md
 results/<task_key>/implementation_snapshot.md
 results/<task_key>/finalizer_state.json
+results/<task_key>/mapper_report_draft.md
+results/<task_key>/mapper_report_final.md
+results/<task_key>/architecture_delta_final.md
+results/<task_key>/controller_report.md
 ```
 
+`controller_context.json` must include task prompt path and sha256,
+`AGENTS.md` sha256, Slurm skill sha256 when Slurm is involved, git head,
+required job IDs, required runtime paths, continuity backend evidence, and files
+read.
+
+`controller_ledger.csv` is append-only and records timestamp, phase, git head,
+task hash, job states, decision, and next action.
+
+`finalizer_state.json` is the terminal accounting receipt. It must record job
+states and exit codes, runtime/log/output paths, aggregation command and exit
+code, validator commands and exit codes, mapper-final status, lock path, git
+head before finalization, optional local commit after finalization, and final
+state.
+
+## Durable Continuity
+
+If `slurm_runtime_continuity_required: true`, `continuity_backend` must be
+`slurm_dependency` or `tmux_watcher`.
+
+For `slurm_dependency`, use `scripts/ops/submit_care_dependency_finalizer.py` to
+submit `jobs/src/care_milestone_finalizer.sh` with
+`--dependency=afterany:<jobids>`. The submission receipt must include finalizer
+job ID, command, log path, lock path, and result directory.
+
+For `tmux_watcher`, a namespace-local watcher must record session name, PID,
+command, log path, lock path, and result directory. Merely writing
+`continuity_backend: tmux_watcher` is not evidence.
+
 `PENDING`, `RUNNING`, `CONFIGURING`, `COMPLETING`, and `AWAITING_SACCT` are
-normal monitor states, not blockers. A scheduler block is allowed only after the
-Slurm routing skill's threshold is met.
+monitor states. They map to `NEEDS_MONITOR`, not `NEEDS_EVIDENCE` and not
+`BLOCKED`. A scheduler block requires the Slurm routing skill's pending
+threshold evidence.
+
+## Controller Report
+
+`controller_report.md` is written before independent review. It must not claim
+reviewer approval, audited-go, final route promotion, or final scientific stop.
+
+Before review, the report ending must use:
+
+```text
+route_promotion_decision: NOT_REVIEWED
+route_negative_decision: NOT_REVIEWED
+scientific_resolution_status: AWAITING_REVIEW
+```
+
+Required ending fields:
+
+```text
+controller_run_status: COMPLETE | INCOMPLETE | BLOCKED
+operational_completion_status: COMPLETE | INCOMPLETE
+experiment_adequacy_decision: PASS | FAIL | PARTIAL | EVIDENCE_NOT_FOUND | NOT_REVIEWED
+route_promotion_decision: NOT_REVIEWED
+route_negative_decision: NOT_REVIEWED
+scientific_resolution_status: AWAITING_REVIEW
+diagnostic_publication_decision: LOCAL_PACKET_COMMITTED_FOR_REVIEW | DO_NOT_PUBLISH | NOT_APPLICABLE
+git_commit_decision: COMMIT_LOCAL_PACKET | SKIP_COMMIT
+git_push_decision: SKIP_PUSH
+published_files:
+  - path
+blocked_actions:
+  - validation packaging/upload/fold expansion/hosted metric claim/next-stage training remain blocked
+next_required_action: separate reviewer writes review.md
+reason_if_not_published: ...
+reason_if_no_route_promotion: awaiting independent review
+```
 
 ## Subagent Fallback
 
-Do not assume every Codex runtime can open new sessions automatically.
-
-If automatic launch is supported, the controller records:
-
-- launch command
-- session id
-- prompt path
-- log path
-- exit status
-
-If automatic launch is not supported, the controller must write files such as:
+If automatic subagent launch is unavailable, the controller writes prompt files
+such as:
 
 ```text
 results/<task_key>/subagents/executor_prompt.md
@@ -97,195 +156,20 @@ results/<task_key>/subagents/mapper_prompt.md
 results/<task_key>/subagents/reviewer_prompt.md
 ```
 
-The controller then marks the state as `NEEDS_SUBAGENT_LAUNCH` or
-`NEEDS_HUMAN_APPROVAL`. It must not pretend executor/mapper/reviewer separation
-already happened.
+The controller then records `NEEDS_SUBAGENT_LAUNCH` or
+`NEEDS_HUMAN_APPROVAL`. It must not pretend executor, mapper, or reviewer
+separation happened.
 
-## Controller Report
+## Forbidden Controller Behavior
 
-Controller tasks must end with:
+The controller must not:
 
-```text
-results/<task_key>/controller_report.md
-```
-
-The report must include:
-
-- controller task id
-- executor subtask list
-- mapper subtask list when enabled
-- reviewer handoff path
-- prompt, result, and review path for every subtask
-- session, command, and log evidence
-- claims summary
-- finalizer and validator decision
-- reviewer decision if it exists
-- controller run status
-- operational completion status
-- experiment adequacy decision
-- route promotion decision
-- route negative decision
-- scientific resolution status
-- diagnostic publication decision
-- git commit decision
-- git push decision
-- published files
-- blocked actions
-- next required action
-- reason if diagnostic artifacts were not published
-- reason if no route promotion occurred
-- incomplete items
-- whether GPT planner is needed
-
-For milestone tasks, a controller report is optional unless the milestone
-requires one. It does not replace `completion_check.md`, `review_request.md`, or
-the independent `review.md` gate.
-
-## Milestone Controller Boundary
-
-When a controller task or local controller session executes a milestone:
-
-1. run exactly one milestone;
-2. write the required outputs in `results/<task_key>/`;
-3. write `completion_check.md` with the milestone readiness/blocked state;
-4. write `review_request.md` naming the required independent review and exact
-   audited-go token;
-5. update `MANIFEST.md`;
-6. stop.
-
-The same Codex session must not write `review.md`, must not mark
-`*_AUDITED_GO`, and must not start the next milestone. The next milestone may
-start only after a separate read-only reviewer/auditor writes `review.md` with
-the exact audited-go state.
-
-## Gate Semantics
-
-`route_promotion_gate` answers whether a model/route may become
-challenge-facing, expand folds, enter validation packaging/upload, or trigger
-next-stage training. It must not be inferred from executor self-assessment.
-
-`experiment_adequacy_gate` answers whether the experiment was sufficient to
-support scientific conclusions. For CARE training/segmentation routes, adequacy
-requires one-batch or one-case overfit sanity when applicable, minimum effective
-training evidence, prediction sanity, proposal/refinement sanity when
-applicable, logs/provenance, and same-split baseline comparability. Slurm
-elapsed time alone is not adequate evidence.
-
-`route_negative_gate` answers whether a route can be scientifically stopped.
-It passes only when:
-
-1. `experiment_adequacy_gate` passes;
-2. forbidden substitutes are absent;
-3. same-split baseline comparison exists;
-4. metric failure is not explainable by undertraining, smoke/preflight,
-   decode error, cache contamination, label/export mismatch, missing log, or
-   pipeline bug;
-5. the auditor explicitly approves the route-negative conclusion.
-
-If `route_negative_gate` fails, controller reports must not write
-`STOP_NO_SIGNAL`, `STOP_NO_PROPREF_SIGNAL`, `STOP_NO_CLEAN_ANCHOR_SIGNAL`,
-`STOP_NO_ROUTE_BEATS_BASELINE_SIGNAL`, or equivalent scientific stops. Use
-`SCIENTIFIC_UNDERTRAINED`, `SCIENTIFIC_PIPELINE_BUG`,
-`SCIENTIFIC_NEEDS_EVIDENCE`, `SCIENTIFIC_NEEDS_REVISION`, or
-`SCIENTIFIC_UNRESOLVED`.
-
-`scientific_completion_gate` answers whether the route is scientifically
-resolved. It can resolve as `SCIENTIFIC_PROMOTED` or
-`SCIENTIFIC_STOP_SUPPORTED`. Operational controller completion alone does not
-satisfy this gate.
-
-For milestone chains, milestone completion is also separate from milestone
-review. `completion_check.md` can make a result ready for review, but only
-independent `review.md` can satisfy the continuation gate.
-
-`diagnostic_publication_gate` answers whether reviewed diagnostic artifacts may
-be published even when `route_promotion_gate` fails. Diagnostic publication is
-for GPT planner review only. It is not model selection, not a challenge-facing
-improvement claim, and not validation readiness.
-
-`diagnostic_publication_scope` lists the exact allowed file classes. Default
-allowed classes are controller `controller_report.md`, controller
-`execution_plan.md`, relevant subtask `result.md` and `review.md`, small
-Markdown decision packets, and reviewed first-party scripts needed to reproduce
-the diagnostic conclusion. Default forbidden classes include checkpoints,
-predictions, NIfTI outputs, heavy logs, secret-bearing command transcripts,
-large or privacy-sensitive raw CSV dumps, full result trees, upload packages,
-hosted validation packages, external credentials, and `.env`-style files.
-
-`blocked_after_diagnostic_publication` lists actions that remain forbidden after
-diagnostic publication. Defaults include validation packaging, validation
-upload, fold expansion, hosted metric claims, label/evaluator/fold split
-changes, and next-stage training.
-
-When `allow_git_commit: true`, `auto_git_commit: true`, audit passes, and no
-human approval is triggered, the controller may commit approved changes if
-`route_promotion_gate` is satisfied or may commit reviewed diagnostic artifacts
-if `diagnostic_publication_gate` is satisfied. When `allow_git_push: true` and
-`auto_git_push: true` under the same conditions, it may push to the remote. If
-the trigger is diagnostic publication only, the commit message and controller
-report must state `diagnostic publication only; no route promotion`.
-
-If neither gate is satisfied, the controller must not commit or push. Not
-committing or not pushing requires an explicit reason in the controller report.
-
-## Controller Report Required Ending
-
-End every controller report with these fields:
-
-```text
-controller_run_status: COMPLETE | INCOMPLETE | BLOCKED
-operational_completion_status: COMPLETE | INCOMPLETE
-experiment_adequacy_decision: PASS | FAIL | PARTIAL | EVIDENCE_NOT_FOUND
-route_promotion_decision: PROMOTE | NO_PROMOTION | NOT_EVALUABLE
-route_negative_decision: STOP_SUPPORTED | STOP_NOT_SUPPORTED | NOT_EVALUABLE
-scientific_resolution_status: SCIENTIFIC_PROMOTED | SCIENTIFIC_STOP_SUPPORTED | SCIENTIFIC_UNRESOLVED | SCIENTIFIC_UNDERTRAINED | SCIENTIFIC_PIPELINE_BUG | SCIENTIFIC_NEEDS_EVIDENCE | SCIENTIFIC_NEEDS_REVISION
-diagnostic_publication_decision: PUBLISH_REVIEWED_DIAGNOSTIC_PACKET | DO_NOT_PUBLISH | NOT_APPLICABLE
-git_commit_decision: COMMIT_ROUTE_PROMOTION | COMMIT_DIAGNOSTIC_ONLY | SKIP_COMMIT
-git_push_decision: PUSH_ROUTE_PROMOTION | PUSH_DIAGNOSTIC_ONLY | SKIP_PUSH
-published_files:
-  - path
-blocked_actions:
-  - validation upload/fold expansion/next-stage training remain blocked
-next_required_action: ...
-reason_if_not_published: ...
-reason_if_no_route_promotion: ...
-```
-
-## Examples
-
-Example A: controller executed all subtasks, but the main training route only
-ran `actual_steps=120` and `train_loop_seconds=30`.
-
-```text
-controller_run_status: COMPLETE
-operational_completion_status: COMPLETE
-experiment_adequacy_decision: FAIL
-route_promotion_decision: NOT_EVALUABLE
-route_negative_decision: STOP_NOT_SUPPORTED
-scientific_resolution_status: SCIENTIFIC_UNDERTRAINED
-next_required_action: write revision task with minimum effective training gate
-```
-
-Example B: controller executed all subtasks, fully trained variants,
-loss/prediction sanity passed, and metrics remain far below baseline.
-
-```text
-controller_run_status: COMPLETE
-operational_completion_status: COMPLETE
-experiment_adequacy_decision: PASS
-route_promotion_decision: NO_PROMOTION
-route_negative_decision: STOP_SUPPORTED
-scientific_resolution_status: SCIENTIFIC_STOP_SUPPORTED
-next_required_action: return to GPT planner for new direction
-```
-
-Example C: controller executed all subtasks and no route promoted, but a
-reviewed diagnostic package is useful.
-
-```text
-route_promotion_decision: NO_PROMOTION
-diagnostic_publication_decision: PUBLISH_REVIEWED_DIAGNOSTIC_PACKET
-scientific_resolution_status: SCIENTIFIC_UNRESOLVED
-blocked_actions:
-  - validation upload, fold expansion, next-stage training
-```
+- launch an internal auditor;
+- write `review.md`;
+- collect reviewer review before committing the packet;
+- write audited-go;
+- decide final route promotion or final scientific stop;
+- push;
+- increase executor or mapper slots beyond the GPT-authored task graph;
+- convert pending/running Slurm states to blocked before the Slurm skill
+  threshold.

@@ -2,7 +2,7 @@
 
 This prompt is for future GPT/ChatGPT planning threads before writing CARE Codex goals. Its purpose is to prevent a controller task from being treated as complete when required subtasks, completion checks, training adequacy, audits, or route-defining diagrams are missing.
 
-New GPT/ChatGPT planning threads must start from `START_HERE_FOR_GPT.md` and `GPT_PLANNER_CARE_PROTOCOL.md` before applying this hard gate.
+New GPT/ChatGPT planning threads must start from `START_HERE_FOR_GPT.md`, `GPT_PLANNER_CARE_PROTOCOL.md`, and `prompts/AGENT_FLOW_V2_PROTOCOL.md` before applying this hard gate.
 
 ## Core Rule
 
@@ -46,6 +46,10 @@ reviewer: separate_readonly
 ```
 
 Overnight, long Slurm, multi-job, or high-resume-risk work must be `controller_supervised` and must have a durable continuity backend. Architecture/loss/dataflow/export/registration/temporal changes must enable mapper and update root `wiki/` unless explicitly classified as `architecture_impact: none` with fingerprint evidence. New tasks must not introduce a controller-internal `auditor`; use `mapper` for internal read-only architecture mapping and `reviewer` for the final independent read-only audit.
+
+Long Slurm / overnight staging prompts must contain these sections exactly: `## Execution Contract`, `## Controller Prompt`, `## Executor Worker Contract`, `## Mapper Contract`, and `## Reviewer Prompt`. They must include a durable finalizer contract naming required job IDs or how they will be captured, runtime output paths, aggregator command, validator commands, lock/log paths, and local packet commit policy. Short staging prompts must contain `## Execution Contract`, `## Executor Prompt`, and `## Reviewer Prompt`.
+
+Controller reports written before the independent reviewer must not claim reviewer approval, audited-go, route promotion, or scientific stop. They must use `route_promotion_decision: NOT_REVIEWED`, `route_negative_decision: NOT_REVIEWED`, and `scientific_resolution_status: AWAITING_REVIEW`. Any controller prompt that requires `reviewer_review` as evidence before controller commit, permits controller/reviewer push, or sets `auto_git_push` / `allow_git_push` / `allow_diagnostic_push` true is a hard-gate failure.
 
 For every controller task, GPT must define an explicit ordered task graph. The graph must include every required subtask key, the exact expected `results/<task_key>/` directory, and whether that subtask is blocking or optional. A blocking subtask that has no result directory must be treated as `INCOMPLETE`, not as skipped, replaced, or diagnostic.
 

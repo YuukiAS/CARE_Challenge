@@ -4,9 +4,13 @@ This policy defines how future CARE controller goals should be accepted or block
 
 ## Agent-Flow v2 Gate
 
-New CARE controller goals must declare `execution_mode`, `requires_execution_controller`, `executor_slots`, `mapper_slots`, `mapper_required`, `architecture_impact`, `wiki_update_required`, `diagram_update_required`, `slurm_runtime_continuity_required`, `continuity_backend`, `review_mode`, and `reviewer`.
+New CARE controller goals must declare `execution_mode`, `requires_execution_controller`, `executor_slots`, `mapper_slots`, `mapper_required`, `architecture_impact`, `wiki_update_required`, `diagram_update_required`, `slurm_runtime_continuity_required`, `continuity_backend`, `review_mode`, and `reviewer`. `prompts/AGENT_FLOW_V2_PROTOCOL.md` is the canonical source for these fields.
 
 Overnight, long Slurm, multi-job, or high-resume-risk tasks must use `execution_mode: controller_supervised` and a durable continuity backend. Architecture-changing tasks must enable mapper and update root `wiki/` unless they provide a machine-readable no-change fingerprint receipt. A controller must not increase executor/mapper slots beyond the GPT-authored task graph. New tasks must not use an internal `auditor`; historical `auditor` fields are legacy aliases for the final independent `reviewer`.
+
+Controller reports are written before independent review. They must not require `reviewer_review` as evidence before local packet commit, must not claim audited-go, and must use `route_promotion_decision: NOT_REVIEWED`, `route_negative_decision: NOT_REVIEWED`, and `scientific_resolution_status: AWAITING_REVIEW`.
+
+For new controller tasks, push permissions are invalid by default: `auto_git_push`, `allow_git_push`, and `allow_diagnostic_push` must be false. Local commit only means the lightweight final packet is ready for separate reviewer inspection.
 
 ## Gate Principles
 

@@ -11,19 +11,40 @@ This is the root entrypoint for any new GPT/ChatGPT planning thread reading this
 5. `prompts/CHATGPT_RULES.md`
 6. `prompts/GPT_HARD_GATE_PROMPT.md`
 7. `prompts/MILESTONE_REVIEW_PROTOCOL.md`
-8. `prompts/THREAD_BOOTSTRAP_ROUTE_IMAGE_PROTOCOL.md`
+8. `prompts/AGENT_FLOW_V2_PROTOCOL.md`
+9. `prompts/THREAD_BOOTSTRAP_ROUTE_IMAGE_PROTOCOL.md`
 
 Do not rely only on old chat summaries, memory, or natural-language recaps when planning SRR/MyoPS/Cine routes.
 
 ## Future Milestone Prompt Authoring
 
-For any future CARE milestone, GPT/ChatGPT must write both the Codex executor prompt content and the independent reviewer/auditor prompt content. Do not provide only an executor prompt or only a reviewer prompt.
+For any future CARE milestone, GPT/ChatGPT must write both the Codex executor prompt content and the independent reviewer prompt content. Do not provide only an executor prompt or only a reviewer prompt.
 
-Because direct GPT edits to the large canonical shared files can fail or corrupt context, author each new milestone first as a standalone Markdown staging file under `prompts/shared/` named `M<id>_<short_slug>.md`, for example `M8_editor_grade_leaderboard_sprint.md`. The file must contain clearly labeled executor and reviewer sections. The staged file is temporary: a later Codex maintenance step will split/merge its content into `prompts/shared/EXECUTOR_PROMPTS.md` and `prompts/shared/REVIEWER_PROMPTS.md`, then delete the standalone staging file after successful merge.
+Because direct GPT edits to the large canonical shared files can fail or corrupt context, author each new milestone first as a standalone Markdown staging file under `prompts/shared/` named `M<id>_<short_slug>.md`, for example `M8_editor_grade_leaderboard_sprint.md`. The staged file is temporary: a later Codex maintenance step will split/merge its content into `prompts/shared/EXECUTOR_PROMPTS.md` and `prompts/shared/REVIEWER_PROMPTS.md`, then delete the standalone staging file after successful merge.
+
+Short tasks must use this structure:
+
+```text
+## Execution Contract
+## Executor Prompt
+## Reviewer Prompt
+```
+
+Long Slurm, overnight, multi-job, controller-supervised, or high-resume-risk tasks must use this structure:
+
+```text
+## Execution Contract
+## Controller Prompt
+## Executor Worker Contract
+## Mapper Contract
+## Reviewer Prompt
+```
+
+Long Slurm or overnight tasks without a Controller Prompt and durable finalizer contract are invalid.
 
 ## Agent-Flow v2 Handoff Model
 
-Before writing a CARE handoff, read the current architecture entry at `wiki/README.md`. Use the v2 role names from `TODO-agents-v2.md`: `planner`, `controller`, `executor`, `mapper`, `finalizer`, `validator`, and `reviewer`. New tasks must not introduce an internal `auditor` role; historical `auditor` fields are legacy aliases for the independent `reviewer`.
+Before writing a CARE handoff, read `prompts/AGENT_FLOW_V2_PROTOCOL.md` and the current architecture entry at `wiki/README.md`. Use only the v2 role names from the permanent protocol: `planner`, `controller`, `executor`, `mapper`, `finalizer`, `validator`, and `reviewer`. New tasks must not introduce an internal `auditor` role; historical `auditor` fields are legacy aliases for the independent `reviewer`.
 
 Every new CARE milestone or controller task must explicitly declare:
 
@@ -42,7 +63,7 @@ review_mode: independent_thread | short_goal
 reviewer: separate_readonly
 ```
 
-Use `controller_supervised` for overnight, long Slurm, multi-job, or high-resume-risk work. Default to exactly one executor and one mapper unless the GPT-authored task graph explicitly grants more isolated slots. The controller owns continuity and phase grounding; the executor performs authorized implementation/jobs; the mapper is read-only architecture/evidence mapping; the finalizer is deterministic terminal accounting/aggregation/validation; the reviewer is a separate read-only thread after the final packet is committed.
+Use `controller_supervised` for overnight, long Slurm, multi-job, or high-resume-risk work. Default to exactly one executor and one mapper unless the GPT-authored task graph explicitly grants more isolated slots. The controller owns continuity and phase grounding; the executor performs authorized implementation/jobs; the mapper is read-only architecture/evidence mapping; the finalizer is deterministic terminal accounting/aggregation/validation/local packet commit; the reviewer is a separate read-only thread after the final packet is committed. Controller reports written before review must use `route_promotion_decision: NOT_REVIEWED`, `route_negative_decision: NOT_REVIEWED`, and `scientific_resolution_status: AWAITING_REVIEW`.
 
 For architecture-affecting work, use `.agents/skills/care-mapper/SKILL.md` and the helpers in `scripts/architecture/`. A route or handoff update is not complete if `wiki/COMPONENTS.csv`, `wiki/architecture.yaml`, required figures, Toolkit healthcheck, or mapper/finalizer evidence is stale.
 

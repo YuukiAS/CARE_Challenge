@@ -4,7 +4,7 @@ Copy exactly one section into the main Codex executor/controller session. The ex
 
 ## Agent-flow v2 executor/controller rule
 
-For new CARE work, use role names `planner`, `controller`, `executor`, `mapper`, `finalizer`, `validator`, and `reviewer`. Historical `auditor` wording in older sections means the independent read-only `reviewer`; do not create a controller-internal auditor subagent.
+For new CARE work, `prompts/AGENT_FLOW_V2_PROTOCOL.md` is the canonical source. Use role names `planner`, `controller`, `executor`, `mapper`, `finalizer`, `validator`, and `reviewer`. Historical `auditor` wording in older sections means the independent read-only `reviewer`; do not create a controller-internal auditor subagent.
 
 Short work may be `execution_mode: direct_executor`. Overnight, long Slurm, multi-job, or high-resume-risk work must be `execution_mode: controller_supervised`, must use the Slurm routing skill before job submission, and must have durable continuity via `slurm_dependency` or `tmux_watcher`. A controller must obey GPT-authored `executor_slots` and `mapper_slots`; default is one executor and one mapper.
 

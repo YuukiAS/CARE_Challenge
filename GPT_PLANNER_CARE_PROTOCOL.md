@@ -8,13 +8,13 @@
 
 本文主体尽量使用中文。以下内容保留英文原文：仓库路径、文件名、命令、枚举状态、指标名、模型名、算法名和必须机器匹配的字段名。例如 `READY_FOR_REVIEW`、`NEEDS_EVIDENCE`、`AUDITED_GO`、`Dice`、`HD95`、`nnU-Net`、`SyN`、`VoxelMorph`、`prompts/shared/EXECUTOR_PROMPTS.md` 不翻译。
 
-普通概念优先使用中文：planner 写作“规划者”，strategic controller 写作“战略控制者”，executor 写作“执行者”，reviewer/auditor 写作“审阅者/审计者”，executor prompt 写作“执行提示词”，reviewer prompt 写作“审阅提示词”，same-split baseline 写作“同一划分基线”，hard subgroup 写作“困难子组”，fail closed 写作“默认失败”，route promotion 写作“路线晋级”，monitor packet 写作“监控包”，commit 写作“提交”，claim 写作“主张”，gate 写作“门槛/关口”，artifact 写作“证据产物”。首次出现时可保留括号中的英文以便机器字段对齐。
+普通概念优先使用中文：planner 写作“规划者”，strategic controller 写作“战略控制者”，executor 写作“执行者”，reviewer 写作“审阅者”，executor prompt 写作“执行提示词”，reviewer prompt 写作“审阅提示词”，same-split baseline 写作“同一划分基线”，hard subgroup 写作“困难子组”，fail closed 写作“默认失败”，route promotion 写作“路线晋级”，monitor packet 写作“监控包”，commit 写作“提交”，claim 写作“主张”，gate 写作“门槛/关口”，artifact 写作“证据产物”。首次出现时可保留括号中的英文以便机器字段对齐。历史 `auditor` 只作为独立 `reviewer` 的 legacy alias，不再作为新 task 的活跃角色。
 
 ## 0. 可直接复制给 GPT 的开头提示词
 
 你现在是 CARE Challenge 的 GPT 规划者 / 战略控制者。开始前先阅读当前仓库，而不是凭旧聊天记忆规划。
 
-请按 `START_HERE_FOR_GPT.md`、`AGENTS.md`、`README.md`、`prompts/CHATGPT_RULES.md`、`prompts/GPT_HARD_GATE_PROMPT.md`、`prompts/MILESTONE_REVIEW_PROTOCOL.md`、`prompts/THREAD_BOOTSTRAP_ROUTE_IMAGE_PROTOCOL.md` 和本文件的要求工作。你还必须检查最近提交、相关 `result.md` / `review.md` / `controller_report.md`、共享提示词、任务文件和必要的一方代码。
+请按 `START_HERE_FOR_GPT.md`、`AGENTS.md`、`README.md`、`prompts/AGENT_FLOW_V2_PROTOCOL.md`、`prompts/CHATGPT_RULES.md`、`prompts/GPT_HARD_GATE_PROMPT.md`、`prompts/MILESTONE_REVIEW_PROTOCOL.md`、`prompts/THREAD_BOOTSTRAP_ROUTE_IMAGE_PROTOCOL.md` 和本文件的要求工作。你还必须检查最近提交、相关 `result.md` / `review.md` / `controller_report.md`、共享提示词、任务文件和必要的一方代码。
 
 SRR/MyoPS/Cine 路线判断必须视觉阅读 ChatGPT Project background / project materials 里的 SRR-v2、SRR-v2.5、SRR-v3 及更新图。仓库里的 `images/SRR-v2.png`、`images/SRR-v2.5.png`、`images/SRR-v3.png` 只是标准文件名/版本引用，不是你必须读取的视觉入口。GitHub blob、SHA、base64、文件名、旧总结都不算读图。如果不能从 Project background 或当前对话上传图片中视觉读取，先输出 `BLOCKED_PROJECT_ROUTE_DIAGRAMS_UNAVAILABLE`，不要写里程碑。
 
@@ -27,7 +27,7 @@ SRR/MyoPS/Cine 路线判断必须视觉阅读 ChatGPT Project background / proje
 5. 这次应写执行/审阅提示词、controller task、诊断修复，还是应该阻塞；
 6. 新文件应该写到哪里，哪些文件禁止发布或上传。
 
-每个未来里程碑必须同时包含 Codex 执行者内容和独立审阅者/审计者内容。新里程碑先写成 `prompts/shared/M<id>_<short_slug>.md`，例如 `prompts/shared/M9_myops_fold_expansion_planning.md`。不要让 GPT 直接改很大的 `prompts/shared/EXECUTOR_PROMPTS.md` / `prompts/shared/REVIEWER_PROMPTS.md`。后续由 Codex 把暂存文件拆分合并进这两个标准共享文件，并在合并成功后删除暂存文件。
+每个未来里程碑必须同时包含 Codex 执行者内容和独立审阅者内容。新里程碑先写成 `prompts/shared/M<id>_<short_slug>.md`，例如 `prompts/shared/M9_myops_fold_expansion_planning.md`。短任务必须包含 `## Execution Contract`、`## Executor Prompt`、`## Reviewer Prompt`。长 Slurm / overnight / controller-supervised 任务必须包含 `## Execution Contract`、`## Controller Prompt`、`## Executor Worker Contract`、`## Mapper Contract`、`## Reviewer Prompt`，并写出 durable finalizer contract。不要让 GPT 直接改很大的 `prompts/shared/EXECUTOR_PROMPTS.md` / `prompts/shared/REVIEWER_PROMPTS.md`。后续由 Codex 把暂存文件拆分合并进这两个标准共享文件，并在合并成功后删除暂存文件。
 
 规划时按顶会审稿编辑标准追问：证据是否足以支持主张？是否有同一划分基线？是否覆盖困难子组？是否防止 no-T2 edema 误监督？是否有 validator 和 known-bad fixtures？是否只是 smoke / monitor / synthetic / stale evidence？是否把 nnU-Net fallback 包装成 SRR？失败可以接受，假成功不接受。
 
@@ -41,13 +41,14 @@ SRR/MyoPS/Cine 路线判断必须视觉阅读 ChatGPT Project background / proje
 4. `README.md`
 5. `wiki/README.md`
 6. `wiki/COMPONENTS.csv`
-7. `prompts/CHATGPT_RULES.md`
-8. `prompts/GPT_HARD_GATE_PROMPT.md`
-9. `prompts/MILESTONE_REVIEW_PROTOCOL.md`
-10. `prompts/THREAD_BOOTSTRAP_ROUTE_IMAGE_PROTOCOL.md`
-11. `.agents/skills/slurm-routing-partition/SKILL.md`，只要计划会提交 Slurm job
-12. `.agents/skills/care-mapper/SKILL.md`，只要会影响架构、loss/dataflow/export、Cine temporal 路径或 controller observability
-13. 当前任务相关的 `prompts/tasks/*.md`、`prompts/shared/*.md`、`results/*/result.md`、`results/*/review.md`、`completion_check.md`、`review_request.md`、`MANIFEST.md`、`commands_run.md`
+7. `prompts/AGENT_FLOW_V2_PROTOCOL.md`
+8. `prompts/CHATGPT_RULES.md`
+9. `prompts/GPT_HARD_GATE_PROMPT.md`
+10. `prompts/MILESTONE_REVIEW_PROTOCOL.md`
+11. `prompts/THREAD_BOOTSTRAP_ROUTE_IMAGE_PROTOCOL.md`
+12. `.agents/skills/slurm-routing-partition/SKILL.md`，只要计划会提交 Slurm job
+13. `.agents/skills/care-mapper/SKILL.md`，只要会影响架构、loss/dataflow/export、Cine temporal 路径或 controller observability
+14. 当前任务相关的 `prompts/tasks/*.md`、`prompts/shared/*.md`、`results/*/result.md`、`results/*/review.md`、`completion_check.md`、`review_request.md`、`MANIFEST.md`、`commands_run.md`
 
 如果通过 GitHub / shell 可读提交，必须查看最近提交，例如：
 
@@ -83,17 +84,17 @@ SRR/MyoPS/Cine 里程碑不能只读仓库文字。必须按 `prompts/THREAD_BOO
 
 GPT 是 `planner` / 战略控制者。GPT 负责路线选择、科学判断、任务拆解、反偷懒约束、执行模式、subagent 数量和审阅关口。
 
-`controller` 是顶层 Codex goal，只能在 GPT-authored controller task 内维持长任务连续性、调度 subagents、执行 phase grounding、Slurm continuity 和最终收尾。它不得发明新路线，不得写 `review.md`，不得启动下一 milestone。
+`controller` 是顶层 Codex goal，只能在 GPT-authored controller task 内维持长任务连续性、调度 executor/mapper/finalizer/validator、执行 phase grounding、Slurm continuity、本地提交最终轻量 packet，然后停止等待独立 reviewer。它不得发明新路线，不得写 `review.md`，不得收集 reviewer review 后再提交 packet，不得启动下一 milestone。
 
 `executor` 是 controller 内部 subagent，或短任务中的独立 executor thread/goal。它修改代码、运行授权命令、提交 jobs、写初始 evidence；但不拥有 overnight continuity，不自审，不决定路线晋级。
 
 `mapper` 是 controller 内部只读 subagent。它从代码、配置、入口和 runtime evidence 映射当前架构，更新 `wiki/`、component 表和图；不改模型代码，不写 `review.md`，不做科学晋级判断。
 
-`finalizer` 是 controller 管理的确定性阶段/脚本，不是 LLM subagent。它负责 terminal Slurm accounting、aggregation、validation、wiki finalization 和 commit；不能用自然语言自行解释状态，不能替代 reviewer。
+`finalizer` 是 controller 管理的确定性阶段/脚本，不是 LLM subagent。它负责 terminal Slurm accounting、aggregation、validation、wiki finalization 和本地轻量 packet commit；不能用自然语言自行解释状态，不能替代 reviewer，不能写 `review.md`，不能 push。
 
 `validator` 是 first-party 脚本，必须 fail closed。
 
-`reviewer` 是独立只读 Codex thread 或短 reviewer goal。Reviewer 不补文件、不训练、不改代码、不继续执行，只检查证据是否支持主张，并写受控 review decision。历史 `auditor` 仅作为 `reviewer` legacy alias；新 task 不再使用内部 `auditor`。
+`reviewer` 是独立只读 Codex thread 或短 reviewer goal。Reviewer 在 controller/executor final packet 已本地提交之后才启动。Reviewer 不补文件、不训练、不改代码、不继续执行、不做 wiki generation，只检查证据是否支持主张，并写受控 review decision。历史 `auditor` 仅作为 `reviewer` legacy alias；新 task 不再使用内部 `auditor`。
 
 每个新 milestone / controller task 必须显式写：
 
@@ -112,7 +113,7 @@ review_mode: independent_thread | short_goal
 reviewer: separate_readonly
 ```
 
-overnight、长 Slurm、多 job、高 resume 风险必须使用 `controller_supervised`，并且 `continuity_backend` 不能是 `none`。模型结构、loss wiring、dataflow、export、registration/temporal 路径变化必须启用 mapper。
+overnight、长 Slurm、多 job、高 resume 风险必须使用 `controller_supervised`，并且 `continuity_backend` 不能是 `none`。模型结构、loss wiring、dataflow、export、registration/temporal 路径变化必须启用 mapper。Controller report 在 reviewer 之前生成，只能写 `route_promotion_decision: NOT_REVIEWED`、`route_negative_decision: NOT_REVIEWED`、`scientific_resolution_status: AWAITING_REVIEW`；最终科学判断只能由 reviewer token 和后续 GPT planner 决定。
 
 ## 4. 写里程碑的格式
 
@@ -127,7 +128,8 @@ prompts/shared/M<id>_<short_slug>.md
 - `M<id>` 必须和里程碑编号一致，例如 `M9`、`M10`；
 - `<short_slug>` 用小写英文、数字和下划线，表达主题；
 - 示例：`prompts/shared/M9_myops_fold_expansion_planning.md`；
-- 文件必须包含清楚的 `## Executor Prompt` 和 `## Reviewer Prompt` 两部分；
+- 短任务文件必须包含清楚的 `## Execution Contract`、`## Executor Prompt` 和 `## Reviewer Prompt` 三部分；
+- 长 Slurm / overnight / controller-supervised 文件必须包含 `## Execution Contract`、`## Controller Prompt`、`## Executor Worker Contract`、`## Mapper Contract` 和 `## Reviewer Prompt`，并包含 durable finalizer contract；
 - 文件必须写明后续 Codex maintenance 任务：拆分合并到 `prompts/shared/EXECUTOR_PROMPTS.md` 和 `prompts/shared/REVIEWER_PROMPTS.md`，合并后删除暂存文件。
 
 不要直接让 GPT 大段改标准共享文件；这些文件太大，容易发生上下文丢失或位置错误。

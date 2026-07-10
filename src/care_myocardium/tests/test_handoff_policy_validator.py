@@ -116,7 +116,7 @@ route_negative_decision: STOP_NOT_SUPPORTED
 scientific_resolution_status: SCIENTIFIC_UNRESOLVED
 diagnostic_publication_decision: PUBLISH_REVIEWED_DIAGNOSTIC_PACKET
 git_commit_decision: COMMIT_DIAGNOSTIC_ONLY
-git_push_decision: PUSH_DIAGNOSTIC_ONLY
+git_push_decision: SKIP_PUSH
 published_files:
   - results/20260703_demo/controller_report.md
   - results/20260703_demo/execution_plan.md
@@ -131,6 +131,29 @@ diagnostic publication only; no route promotion
 """
         findings = validator.validate_controller_report(Path("results/20260703_demo/controller_report.md"), text)
         self.assertEqual(findings, [])
+
+    def test_controller_report_rejects_push_decision(self) -> None:
+        text = """# Controller Report
+
+route_promotion_decision: NOT_REVIEWED
+controller_run_status: COMPLETE
+operational_completion_status: COMPLETE
+experiment_adequacy_decision: NOT_REVIEWED
+route_negative_decision: NOT_REVIEWED
+scientific_resolution_status: AWAITING_REVIEW
+diagnostic_publication_decision: LOCAL_PACKET_COMMITTED_FOR_REVIEW
+git_commit_decision: COMMIT_LOCAL_PACKET
+git_push_decision: PUSH_DIAGNOSTIC_ONLY
+published_files:
+  - results/demo/controller_report.md
+blocked_actions:
+  - validation upload remains blocked
+next_required_action: separate reviewer writes review.md
+reason_if_not_published: none
+reason_if_no_route_promotion: awaiting independent review
+"""
+        findings = validator.validate_controller_report(Path("results/demo/controller_report.md"), text)
+        self.assertTrue(any("must not push" in item.message for item in findings))
 
     def test_diagnostic_publication_rejects_forbidden_artifacts(self) -> None:
         text = """# Controller Report
@@ -393,6 +416,38 @@ bad,MyoPS,test,implemented,verified,implemented,src/x.py,Sym,entry,grep,key,in,o
 """
         findings = validator.validate_components_csv(Path("wiki/COMPONENTS.csv"), text)
         self.assertTrue(any("final_output_effect" in item.message for item in findings))
+
+    def test_active_policy_rejects_retired_todo_reference(self) -> None:
+        text = "Read TODO-agents-v2.md before acting.\n"
+        findings = validator.validate_active_policy_doc(Path("START_HERE_FOR_GPT.md"), text)
+        self.assertTrue(any("retired TODO" in item.message for item in findings))
+
+    def test_active_policy_rejects_push_true(self) -> None:
+        text = "auto_git_push: true\n"
+        findings = validator.validate_active_policy_doc(Path("CONTROLLER_TASK_TEMPLATE.md"), text)
+        self.assertTrue(any("enables controller/reviewer push" in item.message for item in findings))
+
+    def test_finalizer_state_rejects_running_completion(self) -> None:
+        text = """{
+  "task_key": "demo",
+  "required_job_ids": ["1"],
+  "job_states": {"1": "RUNNING"},
+  "exit_codes": {"1": "0:0"},
+  "elapsed": {"1": "00:01:00"},
+  "log_paths": [],
+  "runtime_output_paths": [],
+  "aggregation_command": "",
+  "aggregation_exit_code": null,
+  "validator_commands": [],
+  "validator_exit_codes": [],
+  "mapper_final_status": "not_requested",
+  "lock_path": "results/demo/.lock",
+  "git_head_before": "abc",
+  "git_commit_after": null,
+  "final_state": "PACKET_COMMITTED_FOR_REVIEW"
+}"""
+        findings = validator.validate_finalizer_state(Path("results/demo/finalizer_state.json"), text)
+        self.assertTrue(any("nonterminal Slurm" in item.message or "completion" in item.message for item in findings))
 
     def test_components_csv_rejects_scaffold_marked_implemented(self) -> None:
         text = """component_id,branch,role,current_status,evidence_status,target_status,source_file,symbol,entrypoint,grep_key,config_keys,inputs,outputs,losses,final_output_effect,runtime_evidence,code_fingerprint_member,last_verified_milestone,review_token,notes

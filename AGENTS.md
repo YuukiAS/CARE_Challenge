@@ -2,7 +2,7 @@
 
 ## GPT / ChatGPT route bootstrap
 
-New GPT/ChatGPT planning threads must read `START_HERE_FOR_GPT.md` and `GPT_PLANNER_CARE_PROTOCOL.md` before writing CARE milestones, Codex goals, handoffs, or route judgments. For any SRR/MyoPS/Cine route planning, they must execute `prompts/THREAD_BOOTSTRAP_ROUTE_IMAGE_PROTOCOL.md`, visually read the SRR diagrams at `v2` and later from ChatGPT Project background files / project materials, and block without generating a milestone if those project-background diagrams cannot be accessed or interpreted. Repository paths such as `images/SRR-v2.png`, `images/SRR-v2.5.png`, and `images/SRR-v3.png` remain canonical filenames and version references, not the required GPT visual-reading entrypoint.
+New GPT/ChatGPT planning threads must read `START_HERE_FOR_GPT.md`, `GPT_PLANNER_CARE_PROTOCOL.md`, and `prompts/AGENT_FLOW_V2_PROTOCOL.md` before writing CARE milestones, Codex goals, handoffs, or route judgments. For any SRR/MyoPS/Cine route planning, they must execute `prompts/THREAD_BOOTSTRAP_ROUTE_IMAGE_PROTOCOL.md`, visually read the SRR diagrams at `v2` and later from ChatGPT Project background files / project materials, and block without generating a milestone if those project-background diagrams cannot be accessed or interpreted. Repository paths such as `images/SRR-v2.png`, `images/SRR-v2.5.png`, and `images/SRR-v3.png` remain canonical filenames and version references, not the required GPT visual-reading entrypoint.
 
 For future CARE milestones, GPT/ChatGPT must author both executor and reviewer content before asking Codex to implement the milestone. To avoid oversized direct edits to `prompts/shared/EXECUTOR_PROMPTS.md` and `prompts/shared/REVIEWER_PROMPTS.md`, GPT must place the new milestone prompt as a standalone Markdown staging file under `prompts/shared/` named `M<id>_<short_slug>.md`, for example `M8_editor_grade_leaderboard_sprint.md`. That staging file must clearly separate executor and reviewer sections. A later Codex maintenance step will split/merge those sections into the canonical shared prompt files and delete the standalone staging file after merge.
 
@@ -31,13 +31,15 @@ Treat this `AGENTS.md` as the repo-level Codex rules source. Do not rely on `.cu
 
 ## Agent-Flow v2 controller handoff
 
-For new CARE handoffs, use only these active role names: `planner`, `controller`, `executor`, `mapper`, `finalizer`, `validator`, and `reviewer`. Historical `auditor` fields are legacy aliases for the independent read-only `reviewer`; do not create a controller-internal auditor subagent in new tasks.
+For new CARE handoffs, `prompts/AGENT_FLOW_V2_PROTOCOL.md` is the canonical source. Use only these active role names: `planner`, `controller`, `executor`, `mapper`, `finalizer`, `validator`, and `reviewer`. Historical `auditor` fields are legacy aliases for the independent read-only `reviewer`; do not create a controller-internal auditor subagent in new tasks.
 
 Short, non-Slurm, low-resume-risk work may use `planner -> executor -> reviewer`. Overnight, long Slurm, multi-job, or high-resume-risk work must use `planner -> controller -> executor/mapper/finalizer/validator -> separate reviewer`.
 
 Every new CARE task or milestone must declare `execution_mode`, `requires_execution_controller`, `executor_slots`, `mapper_slots`, `mapper_required`, `architecture_impact`, `wiki_update_required`, `diagram_update_required`, `slurm_runtime_continuity_required`, `continuity_backend`, `review_mode`, and `reviewer`. Defaults are one executor and one mapper for controller-supervised work; the controller must not increase subagent counts beyond the GPT-authored task graph.
 
-The `controller` owns task continuity, phase re-grounding, Slurm monitor state, and finalizer handoff inside one GPT-authored task. The `executor` performs authorized implementation and job submission but does not own overnight continuity or self-review. The `mapper` is read-only architecture/evidence mapping and uses `.agents/skills/care-mapper/SKILL.md`. The `finalizer` is deterministic terminal accounting, aggregation, validation, wiki finalization, and commit; it is not an LLM subagent. The `reviewer` starts only after the final packet is committed and remains read-only.
+The `controller` owns task continuity, phase re-grounding, Slurm monitor state, and finalizer handoff inside one GPT-authored task. The `executor` performs authorized implementation and job submission but does not own overnight continuity or self-review. The `mapper` is read-only architecture/evidence mapping and uses `.agents/skills/care-mapper/SKILL.md`. The `finalizer` is deterministic terminal accounting, aggregation, validation, wiki finalization, and local packet commit; it is not an LLM subagent. The `reviewer` starts only after the final packet is committed and remains read-only.
+
+Controller reports are generated before independent review. Before reviewer execution, controllers may only write `route_promotion_decision: NOT_REVIEWED`, `route_negative_decision: NOT_REVIEWED`, and `scientific_resolution_status: AWAITING_REVIEW`; final scientific decisions require reviewer evidence and later GPT planner judgment.
 
 Root architecture/current-state knowledge lives at `wiki/README.md`; GPT, controller, mapper, and reviewer threads must consult it before architecture-affecting planning or review. If wiki fingerprint/evidence is stale, mark it stale and use current code/live evidence as source of truth.
 
@@ -386,13 +388,13 @@ hosted metric claims, label/evaluator/fold split changes, or next-stage
 training.
 
 Controller operational completion is not scientific route resolution. A
-controller may finish executor/auditor/report workflow and publish diagnostics
-while `scientific_resolution_status` remains `SCIENTIFIC_UNRESOLVED` or
-`SCIENTIFIC_UNDERTRAINED`. Route-negative conclusions such as `STOP_NO_SIGNAL`,
+controller may finish executor/mapper/finalizer/validator workflow and locally
+commit a lightweight final packet while `scientific_resolution_status` remains
+`AWAITING_REVIEW`. Route-negative conclusions such as `STOP_NO_SIGNAL`,
 `STOP_NO_PROPREF_SIGNAL`, `STOP_NO_CLEAN_ANCHOR_SIGNAL`, or
-`STOP_NO_ROUTE_BEATS_BASELINE_SIGNAL` require `experiment_adequacy_decision:
-PASS`, `route_negative_decision: STOP_SUPPORTED`, same-split baseline evidence,
-and explicit auditor support.
+`STOP_NO_ROUTE_BEATS_BASELINE_SIGNAL` require later independent reviewer
+support and GPT planner judgment; controller reports generated before review
+must not claim that decision.
 
 ## Codex Rules
 
@@ -420,15 +422,15 @@ and explicit auditor support.
 - Controller reports must separate `controller_run_status`,
   `operational_completion_status`, `experiment_adequacy_decision`,
   `route_promotion_decision`, `route_negative_decision`, and
-  `scientific_resolution_status`.
-- For controller tasks, when audit passes and no human approval gate is
-  triggered, follow `auto_git_commit` and `auto_git_push` only if the task also
-  authorizes git and either the `route_promotion_gate` or
-  `diagnostic_publication_gate` is satisfied within the authorized scope. If the
-  trigger is diagnostic publication only, the commit message and
-  `controller_report.md` must say `diagnostic publication only; no route
-  promotion`. If commit or push is skipped, state the reason in
-  `controller_report.md`.
+  `scientific_resolution_status`. Before independent review, these must be
+  `route_promotion_decision: NOT_REVIEWED`,
+  `route_negative_decision: NOT_REVIEWED`, and
+  `scientific_resolution_status: AWAITING_REVIEW`.
+- For controller tasks, `auto_git_commit: true` and `allow_git_commit: true`
+  authorize only a local lightweight final-packet commit for the current task.
+  `auto_git_push`, `allow_git_push`, and `allow_diagnostic_push` must remain
+  false for new tasks. If commit is skipped, state the reason in
+  `controller_report.md`. No role pushes; the user pushes manually.
 <!-- ai-bridge-kit:end -->
 
 ### CARE GPT-Codex Overlay

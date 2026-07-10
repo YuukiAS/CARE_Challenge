@@ -1,93 +1,71 @@
 # Handoff State Machine
 
-Use these states in task frontmatter, results, reviews, and controller reports
-when a controlled state is needed.
+Use these states in new CARE task frontmatter, controller reports, finalizer
+receipts, and reviews. See `prompts/AGENT_FLOW_V2_PROTOCOL.md` for the canonical
+agent-flow v2 lifecycle.
 
-## States
+## Execution States
 
-- `READY`: GPT planner has written the task and it is ready to execute.
-- `EXECUTION_PLANNED`: an execution controller has read the task and written an
-  execution plan.
-- `EXECUTOR_RUNNING`: an executor session is active.
-- `MAPPER_DRAFT_RUNNING`: a read-only mapper draft pass is active while runtime
-  evidence may still be pending.
-- `FINALIZER_RUNNING`: a deterministic finalizer is collecting terminal job
-  accounting, aggregation, validation, and tracked evidence.
-- `MAPPER_FINAL_RUNNING`: a read-only mapper final pass is reconciling code,
-  runtime evidence, component table, wiki, and diagrams.
-- `EXECUTED_UNAUDITED`: executor has written result artifacts, but no independent
-  audit has accepted the claims.
-- `REVIEWER_RUNNING`: a separate reviewer is reviewing evidence.
+- `READY`: GPT planner has written the task.
+- `EXECUTION_PLANNED`: controller or executor has grounded the task and written
+  an execution plan.
+- `EXECUTOR_RUNNING`: executor worker is active.
+- `MAPPER_DRAFT_RUNNING`: mapper draft pass is active.
+- `FINALIZER_RUNNING`: deterministic finalizer is collecting terminal job
+  accounting, aggregation, validators, and tracked evidence.
+- `MAPPER_FINAL_RUNNING`: mapper final pass is reconciling current code,
+  runtime evidence, wiki, component table, and diagrams.
+- `VALIDATOR_RUNNING`: fail-closed validators are active.
+- `PACKET_COMMITTED_FOR_REVIEW`: controller/executor locally committed the
+  lightweight final packet and stopped before review.
+- `REVIEWER_RUNNING`: separate read-only reviewer is active.
+- `REVIEWED`: reviewer wrote `review.md`.
+
+## Outcome States
+
+- `NEEDS_MONITOR`: jobs or watchers are pending/running/awaiting accounting.
+- `NEEDS_EVIDENCE`: required evidence is missing after terminal execution.
+- `NEEDS_REVISION`: implementation or packet must be revised inside task scope.
+- `NEEDS_HUMAN_APPROVAL`: human approval is required.
+- `NEEDS_SUBAGENT_LAUNCH`: controller wrote subagent prompts but could not
+  launch required separate sessions.
+- `NEEDS_GPT_PLANNER`: next action requires strategic GPT/user judgment.
+- `STOP`: do not continue this task.
+
+## Scientific States
+
+Controller reports written before independent review must use:
+
+```text
+route_promotion_decision: NOT_REVIEWED
+route_negative_decision: NOT_REVIEWED
+scientific_resolution_status: AWAITING_REVIEW
+```
+
+Reviewer reviews may use milestone-specific audited tokens. Final route
+promotion or final scientific stop is a reviewer-plus-GPT-planner decision, not
+a controller decision.
+
+## Legacy States
+
 - `AUDITOR_RUNNING`: legacy alias for `REVIEWER_RUNNING` in old task files.
-- `AUDITED_GO`: audit supports the claims and the route promotion gate is
-  satisfied.
-- `AUDITED_DIAGNOSTIC_PUBLISH`: audit supports publishing a reviewed diagnostic
-  packet, but no route promotion is approved.
-- `AUDITED_SCIENTIFIC_STOP`: audit supports a route-negative conclusion; this
-  requires `experiment_adequacy_gate` and `route_negative_gate` to pass.
-- `NEEDS_EVIDENCE`: evidence is missing or insufficient.
-- `NEEDS_REVISION`: implementation or output must be revised inside the current
-  task scope.
-- `SCIENTIFIC_PROMOTED`: route is scientifically supported for promotion inside
-  the task's authorization.
-- `SCIENTIFIC_STOP_SUPPORTED`: route is scientifically stopped by adequate
-  negative evidence and auditor approval.
-- `SCIENTIFIC_UNRESOLVED`: controller may be operationally complete, but the
-  scientific route is neither promoted nor stopped.
-- `SCIENTIFIC_UNDERTRAINED`: the run is too short or too weak to support
-  promotion or route-negative conclusions.
-- `SCIENTIFIC_PIPELINE_BUG`: results are dominated by a pipeline, decode, cache,
-  label/export, or optimization bug.
-- `SCIENTIFIC_NEEDS_EVIDENCE`: scientific evidence is missing.
-- `SCIENTIFIC_NEEDS_REVISION`: scientific route needs a bounded revision before
-  promotion or stop can be decided.
-- `NEEDS_HUMAN_APPROVAL`: a human approval point was reached.
-- `NEEDS_SUBAGENT_LAUNCH`: the controller generated executor/auditor prompts but
-  the runtime could not launch separate sessions automatically.
-- `ESCALATE_WITHIN_POLICY`: the controller may use an escalation path that the
-  task explicitly allowed.
-- `NEEDS_GPT_PLANNER`: the next move requires strategic judgment or a new
-  direction from the GPT planner.
-- `STOP`: do not continue this route.
+- `AUDITED_GO`, `AUDITED_DIAGNOSTIC_PUBLISH`, and
+  `AUDITED_SCIENTIFIC_STOP`: reviewer-side legacy/controlled decisions only.
+  Controllers must not write them.
 
 ## Rules
 
-- After an executor writes `result.md`, the state may become
-  `EXECUTED_UNAUDITED`, `NEEDS_EVIDENCE`, `NEEDS_REVISION`,
-  `NEEDS_HUMAN_APPROVAL`, or `STOP`. The executor must not self-promote to final
-  completion.
-- Controller operational completion must be reported separately from scientific
-  route resolution. `controller_run_status: COMPLETE` and
-  `operational_completion_status: COMPLETE` do not imply
-  `scientific_resolution_status: SCIENTIFIC_STOP_SUPPORTED` or
-  `SCIENTIFIC_PROMOTED`.
-- Medium/high risk tasks and controller tasks should not move to release,
-  deployment, submission, commit, push, or expensive expansion without an
-  independent audit unless the task explicitly says review is not required.
-  Commit/push after audit must be triggered by an authorized
-  `route_promotion_gate` or `diagnostic_publication_gate`.
-- `STOP`, `NEEDS_EVIDENCE`, `NEEDS_REVISION`, `NEEDS_HUMAN_APPROVAL`, and
-  `NEEDS_GPT_PLANNER` cannot be bypassed by the executor or execution
-  controller.
-- `AUDITED_DIAGNOSTIC_PUBLISH` allows only the reviewed files listed in
-  `diagnostic_publication_scope` to be committed/pushed. It does not authorize
-  fold expansion, validation packaging, validation upload, hosted metric claims,
-  label/evaluator/fold split changes, or next-stage training.
-- Route-negative states or strings such as `STOP_NO_SIGNAL`,
-  `STOP_NO_PROPREF_SIGNAL`, `STOP_NO_CLEAN_ANCHOR_SIGNAL`, and
-  `STOP_NO_ROUTE_BEATS_BASELINE_SIGNAL` are invalid scientific conclusions
-  unless `experiment_adequacy_decision: PASS`,
-  `route_negative_decision: STOP_SUPPORTED`, and auditor support are present.
-  Otherwise use `SCIENTIFIC_UNDERTRAINED`, `SCIENTIFIC_UNRESOLVED`,
-  `SCIENTIFIC_NEEDS_EVIDENCE`, `SCIENTIFIC_NEEDS_REVISION`, or
-  `SCIENTIFIC_PIPELINE_BUG`.
-- Only the strategic controller, meaning the user-supervised GPT thread, may
-  decide a new research/product direction or write the next high-level task.
-- A controller can continue only along `allowed_next_states` and only within the
-  task's `failure_escalation_policy`.
-- New controller-supervised tasks must not use `auditor` as an internal child
-  role. Internal read-only architecture checking is `mapper`; final independent
-  audit is `reviewer`.
+- `controller`, `executor`, `mapper`, `finalizer`, and `validator` never write
+  `review.md`.
+- `reviewer` is never an internal controller subagent and never fixes or
+  resumes execution.
 - `PENDING`, `RUNNING`, `CONFIGURING`, `COMPLETING`, and `AWAITING_SACCT`
-  Slurm states are monitor states. They cannot be converted to `blocked` or
-  scheduler block unless the Slurm routing skill's pending threshold is met.
+  Slurm states map to `NEEDS_MONITOR`.
+- Running jobs with missing outputs are still monitor state, not
+  `NEEDS_EVIDENCE`.
+- Completed jobs with missing runtime outputs or failed aggregation map to
+  `NEEDS_EVIDENCE`.
+- Failed jobs map to runtime failure evidence, not scheduler block.
+- Scheduler block requires the Slurm routing skill's pending threshold.
+- Controller local commit does not authorize push, validation upload, hosted
+  metric claims, route promotion, scientific stop, or next milestone.

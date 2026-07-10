@@ -4,7 +4,7 @@ Copy exactly one section into a separate read-only Codex reviewer session after 
 
 ## Agent-flow v2 reviewer rule
 
-For new CARE work, reviewer must verify the v2 handoff boundary: planner wrote `execution_mode`; controller-supervised long work used controller + executor + mapper/finalizer/validator; any architecture-impacting task updated or explicitly fingerprint-validated root `wiki/`; and final review was not performed by the controller, executor, mapper, or finalizer.
+For new CARE work, `prompts/AGENT_FLOW_V2_PROTOCOL.md` is the canonical source. Reviewer must verify the v2 handoff boundary: planner wrote `execution_mode`; controller-supervised long work used controller + executor + mapper/finalizer/validator; any architecture-impacting task updated or explicitly fingerprint-validated root `wiki/`; and final review was not performed by the controller, executor, mapper, or finalizer.
 
 Reject audited-go if a long Slurm or overnight packet used `direct_executor`, lacks durable continuity evidence, lacks controller phase receipts, lacks finalizer terminal accounting/aggregation, exceeds GPT-authored executor/mapper slots, treats mapper as final reviewer, or introduces a controller-internal `auditor` instead of a separate final `reviewer`.
 
