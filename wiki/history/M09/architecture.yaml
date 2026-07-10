@@ -1,0 +1,122 @@
+architecture_version: care-srr-v3-m09-history
+review_token: M9_FOLLOWUP_AUDITED_READY_NO_PROMOTION_DIAGNOSTIC_ONLY
+code_fingerprint: history-source=51ea0fdc39d3
+nodes:
+  - id: availability-no-t2
+    label: 可用性与 no-T2 安全
+    branch: MyoPS
+    current_status: partial
+    target_status: implemented
+    source_file: wiki/history/M09/components/availability-no-t2.md
+    symbol: 可用性与 no-T2 安全
+  - id: retrieval-dictionary
+    label: 检索字典与表示槽
+    branch: MyoPS
+    current_status: partial
+    target_status: implemented
+    source_file: wiki/history/M09/components/retrieval-dictionary.md
+    symbol: 检索字典与表示槽
+  - id: prototype-memory
+    label: 原型与负样本记忆
+    branch: MyoPS
+    current_status: partial
+    target_status: implemented
+    source_file: wiki/history/M09/components/prototype-memory.md
+    symbol: 原型与负样本记忆
+  - id: anatomy-prior
+    label: 解剖先验
+    branch: MyoPS
+    current_status: partial
+    target_status: implemented
+    source_file: wiki/history/M09/components/anatomy-prior.md
+    symbol: 解剖先验
+  - id: proposal
+    label: 病灶 proposal
+    branch: MyoPS
+    current_status: partial
+    target_status: implemented
+    source_file: wiki/history/M09/components/proposal.md
+    symbol: 病灶 proposal
+  - id: refiner
+    label: soft-ROI refiner
+    branch: MyoPS
+    current_status: partial
+    target_status: implemented
+    source_file: wiki/history/M09/components/refiner.md
+    symbol: soft-ROI refiner
+  - id: arbitration
+    label: 分支仲裁与最终输出
+    branch: MyoPS
+    current_status: partial
+    target_status: implemented
+    source_file: wiki/history/M09/components/arbitration.md
+    symbol: 分支仲裁与最终输出
+  - id: losses
+    label: loss 与优化目标
+    branch: MyoPS
+    current_status: partial
+    target_status: implemented
+    source_file: wiki/history/M09/components/losses.md
+    symbol: loss 与优化目标
+  - id: checkpoint-selection
+    label: checkpoint 选择
+    branch: MyoPS
+    current_status: partial
+    target_status: implemented
+    source_file: wiki/history/M09/components/checkpoint-selection.md
+    symbol: checkpoint 选择
+  - id: training-evidence
+    label: 训练证据与指标
+    branch: MyoPS
+    current_status: partial
+    target_status: implemented
+    source_file: wiki/history/M09/components/training-evidence.md
+    symbol: 训练证据与指标
+  - id: cine-temporal
+    label: Cine temporal 分支
+    branch: Cine
+    current_status: partial
+    target_status: implemented
+    source_file: wiki/history/M09/components/cine-temporal.md
+    symbol: Cine temporal 分支
+edges:
+  - from: availability-no-t2
+    to: retrieval-dictionary
+    kind: history
+    condition: 组件分析顺序
+  - from: retrieval-dictionary
+    to: prototype-memory
+    kind: history
+    condition: 组件分析顺序
+  - from: prototype-memory
+    to: anatomy-prior
+    kind: history
+    condition: 组件分析顺序
+  - from: anatomy-prior
+    to: proposal
+    kind: history
+    condition: 组件分析顺序
+  - from: proposal
+    to: refiner
+    kind: history
+    condition: 组件分析顺序
+  - from: refiner
+    to: arbitration
+    kind: history
+    condition: 组件分析顺序
+  - from: arbitration
+    to: losses
+    kind: history
+    condition: 组件分析顺序
+  - from: losses
+    to: checkpoint-selection
+    kind: history
+    condition: 组件分析顺序
+  - from: checkpoint-selection
+    to: training-evidence
+    kind: history
+    condition: 组件分析顺序
+  - from: training-evidence
+    to: cine-temporal
+    kind: history
+    condition: 组件分析顺序

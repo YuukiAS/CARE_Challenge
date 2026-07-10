@@ -1,0 +1,28 @@
+milestone: M08
+analysis_source: TODO.md
+source_blob_sha: 74ed3caad97184249af8a5e2cfa7241d05c849cd
+analysis_as_of_commit: current-local-main
+review_token_at_time: M8_AUDITED_NO_PROMOTION_SCIENTIFIC_UNRESOLVED
+latest_known_review_token: M8_AUDITED_NO_PROMOTION_SCIENTIFIC_UNRESOLVED
+architecture_version: care-srr-v3-m08-history
+code_fingerprint: history-source=74ed3caad971
+component_files:
+  - components/availability-no-t2.md
+  - components/retrieval-dictionary.md
+  - components/prototype-memory.md
+  - components/anatomy-prior.md
+  - components/proposal.md
+  - components/refiner.md
+  - components/arbitration.md
+  - components/losses.md
+  - components/checkpoint-selection.md
+  - components/training-evidence.md
+  - components/cine-temporal.md
+figure_files:
+  - figures/architecture.d2
+  - figures/architecture.svg
+  - figures/architecture.png
+  - figures/gap.d2
+  - figures/gap.svg
+  - figures/gap.png
+created_at_utc: 2026-07-10T16:06:43Z

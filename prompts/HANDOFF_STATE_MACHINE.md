@@ -13,8 +13,13 @@ agent-flow v2 lifecycle.
 - `MAPPER_DRAFT_RUNNING`: mapper draft pass is active.
 - `FINALIZER_RUNNING`: deterministic finalizer is collecting terminal job
   accounting, aggregation, validators, and tracked evidence.
+- `FINALIZER_A_RUNNING`: deterministic accounting/aggregation stage is active.
 - `MAPPER_FINAL_RUNNING`: mapper final pass is reconciling current code,
   runtime evidence, wiki, component table, and diagrams.
+- `FINALIZER_B_RUNNING`: deterministic validation and single local commit stage
+  is active after mapper final.
+- `PARALLEL_EXECUTOR_WAVE_RUNNING`: a GPT-authored executor wave is active under
+  an executor plan.
 - `VALIDATOR_RUNNING`: fail-closed validators are active.
 - `PACKET_COMMITTED_FOR_REVIEW`: controller/executor locally committed the
   lightweight final packet and stopped before review.
@@ -66,6 +71,11 @@ a controller decision.
 - Completed jobs with missing runtime outputs or failed aggregation map to
   `NEEDS_EVIDENCE`.
 - Failed jobs map to runtime failure evidence, not scheduler block.
+- `AWAITING_SACCT` in a dependency finalizer must retry within the finalizer
+  before returning `AWAITING_SACCT_RETRY_EXHAUSTED`.
+- Parallel executor waves require a validated executor plan. Overlapping write
+  scopes, shared worktrees, missing dependencies, or merge conflicts map to
+  `NEEDS_REVISION_PARALLEL_MERGE_CONFLICT` or `NEEDS_REVISION`.
 - Scheduler block requires the Slurm routing skill's pending threshold.
 - Controller local commit does not authorize push, validation upload, hosted
   metric claims, route promotion, scientific stop, or next milestone.

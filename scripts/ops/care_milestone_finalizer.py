@@ -6,32 +6,91 @@ from __future__ import annotations
 import argparse
 import json
 import os
+import socket
 from pathlib import Path
 import shlex
+import signal
 import subprocess
 import sys
+import time
 from typing import Any
 
 
 MONITOR_STATES = {"PENDING", "RUNNING", "CONFIGURING", "COMPLETING", "AWAITING_SACCT"}
 SUCCESS_STATES = {"COMPLETED"}
 FAILED_STATES = {"FAILED", "CANCELLED", "TIMEOUT", "NODE_FAIL", "OUT_OF_MEMORY", "PREEMPTED", "BOOT_FAIL"}
+TERMINAL_STATES = SUCCESS_STATES | FAILED_STATES
 
 
 def run(cmd: str | list[str], cwd: Path, shell: bool = False) -> subprocess.CompletedProcess[str]:
     return subprocess.run(cmd, cwd=cwd, shell=shell, text=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
 
-def acquire_lock(path: Path) -> int:
+def pid_is_running(pid: int) -> bool:
+    if pid <= 0:
+        return False
+    try:
+        os.kill(pid, 0)
+    except ProcessLookupError:
+        return False
+    except PermissionError:
+        return True
+    return True
+
+
+def read_lock(path: Path) -> dict[str, Any]:
+    try:
+        return json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        return {}
+
+
+def lock_is_stale(path: Path, ttl_seconds: int) -> tuple[bool, str]:
+    data = read_lock(path)
+    pid = int(data.get("pid", -1)) if str(data.get("pid", "")).lstrip("-").isdigit() else -1
+    host = str(data.get("host", ""))
+    started = float(data.get("started_epoch", 0.0) or 0.0)
+    age = time.time() - started if started else 10**9
+    if host == socket.gethostname() and pid_is_running(pid):
+        return False, "active local process still owns lock"
+    if host != socket.gethostname() and age < ttl_seconds:
+        return False, "foreign-host lock is younger than stale ttl"
+    if pid > 0 and not pid_is_running(pid):
+        return True, "pid is not running"
+    if age >= ttl_seconds:
+        return True, "lock exceeded stale ttl"
+    return False, "lock is not stale"
+
+
+def acquire_lock(path: Path, task_key: str, ttl_seconds: int, recover_stale: bool) -> int:
     path.parent.mkdir(parents=True, exist_ok=True)
-    return os.open(path, os.O_CREAT | os.O_EXCL | os.O_WRONLY, 0o644)
+    payload = {
+        "pid": os.getpid(),
+        "host": socket.gethostname(),
+        "started_at": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
+        "started_epoch": time.time(),
+        "task_key": task_key,
+    }
+    try:
+        fd = os.open(path, os.O_CREAT | os.O_EXCL | os.O_WRONLY, 0o644)
+    except FileExistsError:
+        stale, reason = lock_is_stale(path, ttl_seconds)
+        if recover_stale and stale:
+            path.unlink()
+            fd = os.open(path, os.O_CREAT | os.O_EXCL | os.O_WRONLY, 0o644)
+            payload["recovered_stale_lock_reason"] = reason
+        else:
+            raise FileExistsError(reason)
+    os.write(fd, json.dumps(payload, sort_keys=True).encode("utf-8"))
+    os.fsync(fd)
+    return fd
 
 
 def read_fixture(path: Path) -> dict[str, dict[str, str]]:
     raw = json.loads(path.read_text(encoding="utf-8"))
     jobs: dict[str, dict[str, str]] = {}
     for job_id, value in raw.get("jobs", raw).items():
-        jobs[str(job_id)] = {str(k): str(v) for k, v in value.items()}
+        jobs[str(job_id)] = value
     return jobs
 
 
@@ -59,11 +118,15 @@ def sacct_job(job_id: str, repo_root: Path) -> dict[str, str]:
     }
 
 
-def load_job_states(job_ids: list[str], repo_root: Path, fixture: Path | None) -> dict[str, dict[str, str]]:
+def load_job_states(job_ids: list[str], repo_root: Path, fixture: Path | None, fixture_poll: int = 0) -> dict[str, dict[str, str]]:
     fixture_jobs = read_fixture(fixture) if fixture else {}
     jobs: dict[str, dict[str, str]] = {}
     for job_id in job_ids:
-        jobs[job_id] = fixture_jobs.get(job_id) or sacct_job(job_id, repo_root)
+        fixture_value = fixture_jobs.get(job_id)
+        if isinstance(fixture_value, dict) and "polls" in fixture_value:
+            polls = fixture_value.get("polls", [])
+            fixture_value = polls[min(fixture_poll, len(polls) - 1)] if polls else {}
+        jobs[job_id] = fixture_value or sacct_job(job_id, repo_root)
         jobs[job_id].setdefault("job_id", job_id)
         jobs[job_id]["state"] = jobs[job_id].get("state", "UNKNOWN").split()[0].upper()
     return jobs
@@ -114,6 +177,28 @@ def final_state_from_jobs(jobs: dict[str, dict[str, str]], pending_checks: int) 
     return "NEEDS_EVIDENCE"
 
 
+def wait_for_accounting(
+    job_ids: list[str],
+    repo_root: Path,
+    fixture: Path | None,
+    retry_seconds: int,
+    retry_interval: int,
+) -> tuple[dict[str, dict[str, str]], list[dict[str, Any]], bool]:
+    attempts: list[dict[str, Any]] = []
+    deadline = time.time() + max(0, retry_seconds)
+    poll = 0
+    while True:
+        jobs = load_job_states(job_ids, repo_root, fixture, fixture_poll=poll)
+        states = {job.get("state", "UNKNOWN") for job in jobs.values()}
+        attempts.append({"poll": poll, "states": sorted(states)})
+        if "AWAITING_SACCT" not in states:
+            return jobs, attempts, False
+        if retry_seconds <= 0 or time.time() >= deadline:
+            return jobs, attempts, True
+        time.sleep(max(1, retry_interval))
+        poll += 1
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--task-key", required=True)
@@ -127,6 +212,13 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--lock-path", type=Path)
     parser.add_argument("--sacct-fixture", type=Path)
     parser.add_argument("--pending-check-count", type=int, default=0)
+    parser.add_argument("--stage", choices=("accounting", "commit", "all"), default="all")
+    parser.add_argument("--lock-ttl-seconds", type=int, default=3600)
+    parser.add_argument("--recover-stale-lock", action="store_true")
+    parser.add_argument("--awaiting-sacct-retry-seconds", type=int, default=900)
+    parser.add_argument("--awaiting-sacct-retry-interval", type=int, default=30)
+    parser.add_argument("--mapper-final-required", action="store_true")
+    parser.add_argument("--validator-required", action="store_true")
     parser.add_argument("--commit", action="store_true")
     parser.add_argument("--commit-message", default="Finalize CARE milestone packet")
     parser.add_argument("--tracked-file", action="append", default=[])
@@ -154,25 +246,40 @@ def main(argv: list[str] | None = None) -> int:
         "git_commit_after": None,
         "final_state": "INITIALIZING",
         "records": [],
+        "stage": args.stage,
+        "awaiting_sacct_retry_seconds": args.awaiting_sacct_retry_seconds,
+        "awaiting_sacct_retry_interval": args.awaiting_sacct_retry_interval,
+        "awaiting_sacct_attempts": [],
+        "lock_released": False,
     }
 
     try:
-        lock_fd = acquire_lock(lock_path)
-    except FileExistsError:
+        lock_fd = acquire_lock(lock_path, args.task_key, args.lock_ttl_seconds, args.recover_stale_lock)
+    except FileExistsError as exc:
         state["final_state"] = "NEEDS_MONITOR"
-        state["lock_error"] = "lock already exists; another finalizer or manual resume may be active"
+        state["lock_error"] = f"lock already exists; {exc}"
         write_state(result_dir, state)
         return 2
 
     try:
-        os.write(lock_fd, str(os.getpid()).encode("utf-8"))
-        jobs = load_job_states(args.required_job_id, repo_root, args.sacct_fixture)
+        jobs, attempts, exhausted = wait_for_accounting(
+            args.required_job_id,
+            repo_root,
+            args.sacct_fixture,
+            args.awaiting_sacct_retry_seconds,
+            args.awaiting_sacct_retry_interval,
+        )
+        state["awaiting_sacct_attempts"] = attempts
         state["job_states"] = {jid: job.get("state") for jid, job in jobs.items()}
         state["exit_codes"] = {jid: job.get("exit_code", job.get("ExitCode", "UNKNOWN")) for jid, job in jobs.items()}
         state["elapsed"] = {jid: job.get("elapsed", "UNKNOWN") for jid, job in jobs.items()}
         state["nodes"] = {jid: job.get("node", "UNKNOWN") for jid, job in jobs.items()}
 
         job_state = final_state_from_jobs(jobs, args.pending_check_count)
+        if exhausted and "AWAITING_SACCT" in set(state["job_states"].values()):
+            state["final_state"] = "AWAITING_SACCT_RETRY_EXHAUSTED"
+            write_state(result_dir, state)
+            return 0
         if job_state == "NEEDS_MONITOR":
             state["final_state"] = "NEEDS_MONITOR"
             write_state(result_dir, state)
@@ -189,7 +296,7 @@ def main(argv: list[str] | None = None) -> int:
             write_state(result_dir, state)
             return 1
 
-        if args.aggregation_command:
+        if args.stage in {"accounting", "all"} and args.aggregation_command:
             cp = run(args.aggregation_command, repo_root, shell=True)
             state["aggregation_exit_code"] = cp.returncode
             state["records"].append(command_record(args.aggregation_command, cp))
@@ -198,19 +305,34 @@ def main(argv: list[str] | None = None) -> int:
                 write_state(result_dir, state)
                 return 1
 
-        for command in args.validator_command:
-            cp = run(command, repo_root, shell=True)
-            state["validator_exit_codes"].append(cp.returncode)
-            state["records"].append(command_record(command, cp))
-            if cp.returncode != 0:
-                state["final_state"] = "NEEDS_REVISION"
-                write_state(result_dir, state)
-                return 1
+        if args.stage == "accounting":
+            state["final_state"] = "READY_FOR_MAPPER_FINAL"
+            write_state(result_dir, state)
+            return 0
+
+        if args.mapper_final_required and not args.mapper_final_command and state.get("mapper_final_status") != "complete":
+            state["final_state"] = "NEEDS_MAPPER_FINAL"
+            write_state(result_dir, state)
+            return 1
 
         if args.mapper_final_command:
             cp = run(args.mapper_final_command, repo_root, shell=True)
             state["records"].append(command_record(args.mapper_final_command, cp))
             state["mapper_final_status"] = "complete" if cp.returncode == 0 else "failed"
+            if cp.returncode != 0:
+                state["final_state"] = "NEEDS_REVISION"
+                write_state(result_dir, state)
+                return 1
+
+        if args.validator_required and not args.validator_command:
+            state["final_state"] = "NEEDS_VALIDATOR"
+            write_state(result_dir, state)
+            return 1
+
+        for command in args.validator_command:
+            cp = run(command, repo_root, shell=True)
+            state["validator_exit_codes"].append(cp.returncode)
+            state["records"].append(command_record(command, cp))
             if cp.returncode != 0:
                 state["final_state"] = "NEEDS_REVISION"
                 write_state(result_dir, state)
@@ -237,6 +359,12 @@ def main(argv: list[str] | None = None) -> int:
         return 0
     finally:
         os.close(lock_fd)
+        try:
+            lock_path.unlink()
+            state["lock_released"] = True
+            write_state(result_dir, state)
+        except FileNotFoundError:
+            pass
 
 
 if __name__ == "__main__":

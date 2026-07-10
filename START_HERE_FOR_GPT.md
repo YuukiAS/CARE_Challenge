@@ -52,6 +52,9 @@ Every new CARE milestone or controller task must explicitly declare:
 execution_mode: direct_executor | controller_supervised
 requires_execution_controller: true | false
 executor_slots: 1
+executor_count: 1
+parallel_execution_allowed: false
+executor_plan_path: prompts/tasks/<task_key>_executor_plan.yaml
 mapper_slots: 1
 mapper_required: true | false
 architecture_impact: none | component | system
@@ -63,7 +66,7 @@ review_mode: independent_thread | short_goal
 reviewer: separate_readonly
 ```
 
-Use `controller_supervised` for overnight, long Slurm, multi-job, or high-resume-risk work. Default to exactly one executor and one mapper unless the GPT-authored task graph explicitly grants more isolated slots. The controller owns continuity and phase grounding; the executor performs authorized implementation/jobs; the mapper is read-only architecture/evidence mapping; the finalizer is deterministic terminal accounting/aggregation/validation/local packet commit; the reviewer is a separate read-only thread after the final packet is committed. Controller reports written before review must use `route_promotion_decision: NOT_REVIEWED`, `route_negative_decision: NOT_REVIEWED`, and `scientific_resolution_status: AWAITING_REVIEW`.
+Use `controller_supervised` for overnight, long Slurm, multi-job, or high-resume-risk work. Default to exactly one executor and one mapper unless the GPT-authored task graph explicitly grants more isolated slots. Any `executor_count > 1`, `executor_slots > 1`, or `parallel_execution_allowed: true` task must include a validated executor plan with isolated write scopes, worktrees, runtime outputs, logs, locks, and merge order. The controller owns continuity and phase grounding; the executor performs authorized implementation/jobs; the mapper is read-only architecture/evidence mapping; the finalizer is deterministic `FINALIZER_A` accounting/aggregation plus `FINALIZER_B` validation/local packet commit; the reviewer is a separate read-only thread after the final packet is committed. Controller reports written before review must use `route_promotion_decision: NOT_REVIEWED`, `route_negative_decision: NOT_REVIEWED`, and `scientific_resolution_status: AWAITING_REVIEW`.
 
 For architecture-affecting work, use `.agents/skills/care-mapper/SKILL.md` and the helpers in `scripts/architecture/`. A route or handoff update is not complete if `wiki/COMPONENTS.csv`, `wiki/architecture.yaml`, required figures, Toolkit healthcheck, or mapper/finalizer evidence is stale.
 

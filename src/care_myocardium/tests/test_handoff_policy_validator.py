@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import importlib.util
+import json
 from pathlib import Path
 import sys
 import tempfile
@@ -8,12 +9,24 @@ import unittest
 
 
 VALIDATOR_PATH = Path(__file__).resolve().parents[3] / "scripts" / "validation" / "validate_handoff_policy.py"
+FINALIZER_PATH = Path(__file__).resolve().parents[3] / "scripts" / "ops" / "care_milestone_finalizer.py"
+EXECUTOR_PLAN_PATH = Path(__file__).resolve().parents[3] / "scripts" / "ops" / "validate_executor_plan.py"
 SPEC = importlib.util.spec_from_file_location("validate_handoff_policy", VALIDATOR_PATH)
 assert SPEC is not None
 validator = importlib.util.module_from_spec(SPEC)
 sys.modules["validate_handoff_policy"] = validator
 assert SPEC.loader is not None
 SPEC.loader.exec_module(validator)
+FINALIZER_SPEC = importlib.util.spec_from_file_location("care_milestone_finalizer", FINALIZER_PATH)
+assert FINALIZER_SPEC is not None and FINALIZER_SPEC.loader is not None
+finalizer = importlib.util.module_from_spec(FINALIZER_SPEC)
+sys.modules["care_milestone_finalizer"] = finalizer
+FINALIZER_SPEC.loader.exec_module(finalizer)
+PLAN_SPEC = importlib.util.spec_from_file_location("validate_executor_plan", EXECUTOR_PLAN_PATH)
+assert PLAN_SPEC is not None and PLAN_SPEC.loader is not None
+executor_plan = importlib.util.module_from_spec(PLAN_SPEC)
+sys.modules["validate_executor_plan"] = executor_plan
+PLAN_SPEC.loader.exec_module(executor_plan)
 
 
 class TestHandoffPolicyValidator(unittest.TestCase):
@@ -41,6 +54,9 @@ controller_mode: true
 execution_mode: "direct_executor"
 requires_execution_controller: false
 executor_slots: 1
+executor_count: 1
+parallel_execution_allowed: false
+executor_plan_path: "prompts/tasks/demo_executor_plan.yaml"
 mapper_slots: 0
 mapper_required: false
 architecture_impact: "none"
@@ -65,6 +81,9 @@ controller_mode: true
 execution_mode: "controller_supervised"
 requires_execution_controller: true
 executor_slots: 1
+executor_count: 1
+parallel_execution_allowed: false
+executor_plan_path: "prompts/tasks/demo_executor_plan.yaml"
 mapper_slots: 0
 mapper_required: false
 architecture_impact: "component"
@@ -89,6 +108,9 @@ controller_mode: true
 execution_mode: "controller_supervised"
 requires_execution_controller: true
 executor_slots: 1
+executor_count: 1
+parallel_execution_allowed: false
+executor_plan_path: "prompts/tasks/demo_executor_plan.yaml"
 mapper_slots: 1
 mapper_required: true
 architecture_impact: "component"
@@ -104,6 +126,30 @@ auditor_subtasks: ["results/demo/subagents/auditor_prompt.md"]
 """
         findings = validator.validate_task_file(Path("prompts/tasks/controller.md"), text, strict=True)
         self.assertTrue(any("auditor_subtasks" in item.message for item in findings))
+
+    def test_parallel_executor_requires_plan_path(self) -> None:
+        text = """---
+task_type: "controller"
+controller_mode: true
+execution_mode: "controller_supervised"
+requires_execution_controller: true
+executor_slots: 2
+executor_count: 2
+parallel_execution_allowed: true
+mapper_slots: 1
+mapper_required: true
+architecture_impact: "component"
+wiki_update_required: true
+diagram_update_required: true
+slurm_runtime_continuity_required: false
+continuity_backend: "none"
+review_mode: "independent_thread"
+reviewer: "separate_readonly"
+---
+# Controller
+"""
+        findings = validator.validate_task_file(Path("prompts/tasks/controller.md"), text, strict=True)
+        self.assertTrue(any("executor_plan_path" in item.message for item in findings))
 
     def test_diagnostic_only_controller_report_passes_with_reviewed_packet(self) -> None:
         text = """# Controller Report
@@ -448,6 +494,88 @@ bad,MyoPS,test,implemented,verified,implemented,src/x.py,Sym,entry,grep,key,in,o
 }"""
         findings = validator.validate_finalizer_state(Path("results/demo/finalizer_state.json"), text)
         self.assertTrue(any("nonterminal Slurm" in item.message or "completion" in item.message for item in findings))
+
+    def test_finalizer_lock_release_and_retry_after_release(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            result = root / "result"
+            fixture = root / "completed.json"
+            output = root / "runtime.txt"
+            output.write_text("ok", encoding="utf-8")
+            fixture.write_text(json.dumps({"jobs": {"1": {"state": "COMPLETED", "exit_code": "0:0", "elapsed": "00:01:00"}}}), encoding="utf-8")
+            lock = root / "lock.json"
+            old = Path.cwd()
+            try:
+                import os
+
+                os.chdir(root)
+                code1 = finalizer.main(["--task-key", "demo", "--result-dir", str(result), "--required-job-id", "1", "--sacct-fixture", str(fixture), "--runtime-output-path", str(output), "--lock-path", str(lock), "--stage", "accounting"])
+                code2 = finalizer.main(["--task-key", "demo", "--result-dir", str(result), "--required-job-id", "1", "--sacct-fixture", str(fixture), "--runtime-output-path", str(output), "--lock-path", str(lock), "--stage", "accounting"])
+            finally:
+                os.chdir(old)
+            self.assertEqual(code1, 0)
+            self.assertEqual(code2, 0)
+            self.assertFalse(lock.exists())
+
+    def test_finalizer_active_lock_refuses(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            lock = root / "lock.json"
+            lock.write_text(json.dumps({"pid": 1, "host": __import__("socket").gethostname(), "started_epoch": __import__("time").time(), "task_key": "demo"}), encoding="utf-8")
+            result = root / "result"
+            fixture = root / "pending.json"
+            fixture.write_text(json.dumps({"jobs": {"1": {"state": "PENDING", "exit_code": "0:0", "elapsed": "00:00:00"}}}), encoding="utf-8")
+            old = Path.cwd()
+            try:
+                import os
+
+                os.chdir(root)
+                code = finalizer.main(["--task-key", "demo", "--result-dir", str(result), "--required-job-id", "1", "--sacct-fixture", str(fixture), "--lock-path", str(lock)])
+            finally:
+                os.chdir(old)
+            self.assertEqual(code, 2)
+
+    def test_finalizer_awaiting_sacct_then_completed(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            result = root / "result"
+            output = root / "runtime.txt"
+            output.write_text("ok", encoding="utf-8")
+            fixture = root / "polls.json"
+            fixture.write_text(json.dumps({"jobs": {"1": {"polls": [{"state": "AWAITING_SACCT"}, {"state": "COMPLETED", "exit_code": "0:0", "elapsed": "00:01:00"}]}}}), encoding="utf-8")
+            old = Path.cwd()
+            try:
+                import os
+
+                os.chdir(root)
+                code = finalizer.main(["--task-key", "demo", "--result-dir", str(result), "--required-job-id", "1", "--sacct-fixture", str(fixture), "--runtime-output-path", str(output), "--awaiting-sacct-retry-seconds", "2", "--awaiting-sacct-retry-interval", "1", "--stage", "accounting"])
+            finally:
+                os.chdir(old)
+            state = json.loads((result / "finalizer_state.json").read_text(encoding="utf-8"))
+            self.assertEqual(code, 0)
+            self.assertEqual(state["final_state"], "READY_FOR_MAPPER_FINAL")
+
+    def test_executor_plan_rejects_overlapping_write_scope(self) -> None:
+        data = {
+            "version": 1,
+            "max_parallel": 2,
+            "executors": [
+                {"id": "a", "wave": 1, "can_run_parallel": True, "isolation_mode": "separate_worktree", "branch_name": "a", "worktree_path": "/tmp/a", "write_scope": ["x.py"], "prompt_path": "pa", "result_dir": "ra", "runtime_output_root": "oa", "slurm_job_namespace": "ja", "merge_order": 1},
+                {"id": "b", "wave": 1, "can_run_parallel": True, "isolation_mode": "separate_worktree", "branch_name": "b", "worktree_path": "/tmp/b", "write_scope": ["x.py"], "prompt_path": "pb", "result_dir": "rb", "runtime_output_root": "ob", "slurm_job_namespace": "jb", "merge_order": 2},
+            ],
+        }
+        self.assertTrue(any("write_scope overlap" in item for item in executor_plan.validate_plan(data)))
+
+    def test_executor_plan_allows_sequential_waves_over_slots(self) -> None:
+        data = {
+            "version": 1,
+            "max_parallel": 1,
+            "executors": [
+                {"id": "a", "wave": 1, "can_run_parallel": False, "isolation_mode": "separate_worktree", "branch_name": "a", "worktree_path": "/tmp/a", "write_scope": ["x.py"], "prompt_path": "pa", "result_dir": "ra", "runtime_output_root": "oa", "slurm_job_namespace": "ja", "merge_order": 1},
+                {"id": "b", "wave": 2, "depends_on": ["a"], "can_run_parallel": False, "isolation_mode": "separate_worktree", "branch_name": "b", "worktree_path": "/tmp/b", "write_scope": ["x.py"], "prompt_path": "pb", "result_dir": "rb", "runtime_output_root": "ob", "slurm_job_namespace": "jb", "merge_order": 2},
+            ],
+        }
+        self.assertEqual(executor_plan.validate_plan(data), [])
 
     def test_components_csv_rejects_scaffold_marked_implemented(self) -> None:
         text = """component_id,branch,role,current_status,evidence_status,target_status,source_file,symbol,entrypoint,grep_key,config_keys,inputs,outputs,losses,final_output_effect,runtime_evidence,code_fingerprint_member,last_verified_milestone,review_token,notes

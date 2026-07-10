@@ -1,0 +1,25 @@
+{
+  "skills": [
+    {
+      "skill_name": "chinese-prose",
+      "scope": "global",
+      "source_path_or_runtime_identifier": "/users/a/e/aereinh/.codex-global/skills/writing-core-chinese-prose/SKILL.md",
+      "sha256_or_version": "0a54ffd8d0b48cd16fb383f9026d7d395b335e56165beda6872603aa44b7c492"
+    },
+    {
+      "skill_name": "scientific-prose",
+      "scope": "global",
+      "source_path_or_runtime_identifier": "/users/a/e/aereinh/.codex-global/skills/writing-core-scientific-prose/SKILL.md",
+      "sha256_or_version": "15b78c3dd50c1479d30cb7505b465f30451a0ecae764022fc853e6ea96c67c58"
+    }
+  ],
+  "files_written": [
+    "wiki/README.md",
+    "wiki/MODEL.md",
+    "wiki/EXECUTION.md",
+    "wiki/LINEAGE.md",
+    "wiki/history/**/*.md",
+    "wiki/figures/*.d2"
+  ],
+  "invoked_at_utc": "2026-07-10T16:06:43Z"
+}

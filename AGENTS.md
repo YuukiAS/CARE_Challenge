@@ -35,11 +35,13 @@ For new CARE handoffs, `prompts/AGENT_FLOW_V2_PROTOCOL.md` is the canonical sour
 
 Short, non-Slurm, low-resume-risk work may use `planner -> executor -> reviewer`. Overnight, long Slurm, multi-job, or high-resume-risk work must use `planner -> controller -> executor/mapper/finalizer/validator -> separate reviewer`.
 
-Every new CARE task or milestone must declare `execution_mode`, `requires_execution_controller`, `executor_slots`, `mapper_slots`, `mapper_required`, `architecture_impact`, `wiki_update_required`, `diagram_update_required`, `slurm_runtime_continuity_required`, `continuity_backend`, `review_mode`, and `reviewer`. Defaults are one executor and one mapper for controller-supervised work; the controller must not increase subagent counts beyond the GPT-authored task graph.
+Every new CARE task or milestone must declare `execution_mode`, `requires_execution_controller`, `executor_slots`, `executor_count`, `parallel_execution_allowed`, `executor_plan_path`, `mapper_slots`, `mapper_required`, `architecture_impact`, `wiki_update_required`, `diagram_update_required`, `slurm_runtime_continuity_required`, `continuity_backend`, `review_mode`, and `reviewer`. Defaults are one executor and one mapper for controller-supervised work; the controller must not increase subagent counts beyond the GPT-authored task graph.
 
 The `controller` owns task continuity, phase re-grounding, Slurm monitor state, and finalizer handoff inside one GPT-authored task. The `executor` performs authorized implementation and job submission but does not own overnight continuity or self-review. The `mapper` is read-only architecture/evidence mapping and uses `.agents/skills/care-mapper/SKILL.md`. The `finalizer` is deterministic terminal accounting, aggregation, validation, wiki finalization, and local packet commit; it is not an LLM subagent. The `reviewer` starts only after the final packet is committed and remains read-only.
 
 Controller reports are generated before independent review. Before reviewer execution, controllers may only write `route_promotion_decision: NOT_REVIEWED`, `route_negative_decision: NOT_REVIEWED`, and `scientific_resolution_status: AWAITING_REVIEW`; final scientific decisions require reviewer evidence and later GPT planner judgment.
+
+Executor parallelism gate: any `executor_count > 1`, `executor_slots > 1`, or `parallel_execution_allowed: true` task must provide `executor_plan_path` and pass `scripts/ops/validate_executor_plan.py`. MyoPS and Cine remain sequential unless GPT provides explicit isolation proof.
 
 Root architecture/current-state knowledge lives at `wiki/README.md`; GPT, controller, mapper, and reviewer threads must consult it before architecture-affecting planning or review. If wiki fingerprint/evidence is stale, mark it stale and use current code/live evidence as source of truth.
 

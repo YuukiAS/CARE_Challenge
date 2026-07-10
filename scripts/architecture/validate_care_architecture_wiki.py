@@ -7,6 +7,7 @@ import argparse
 import csv
 import hashlib
 import importlib.util
+import json
 from pathlib import Path
 import re
 import sys
@@ -56,6 +57,20 @@ COMPONENT_REQUIRED_COLUMNS = [
 VALID_CURRENT_STATUS = {"implemented", "partial", "scaffold", "legacy", "disabled", "unknown"}
 VALID_EVIDENCE_STATUS = {"verified", "unverified", "stale", "missing"}
 EXPECTED_M9_REVIEW_TOKEN = "M9_FOLLOWUP_AUDITED_READY_NO_PROMOTION_DIAGNOSTIC_ONLY"
+HISTORY_VERSIONS = ("M08", "M09")
+HISTORY_COMPONENTS = (
+    "availability-no-t2",
+    "retrieval-dictionary",
+    "prototype-memory",
+    "anatomy-prior",
+    "proposal",
+    "refiner",
+    "arbitration",
+    "losses",
+    "checkpoint-selection",
+    "training-evidence",
+    "cine-temporal",
+)
 
 
 def parse_yaml_ids(text: str, key: str) -> set[str]:
@@ -199,7 +214,83 @@ def validate_generated_diagrams(repo_root: Path) -> list[str]:
     return errors
 
 
-def validate(repo_root: Path, strict: bool) -> list[str]:
+def validate_writing_receipt(repo_root: Path) -> list[str]:
+    path = repo_root / "wiki" / "writing_skill_receipt.json"
+    if not path.is_file():
+        return ["missing wiki/writing_skill_receipt.json"]
+    try:
+        data = json.loads(path.read_text(encoding="utf-8"))
+    except json.JSONDecodeError as exc:
+        return [f"writing_skill_receipt.json invalid JSON: {exc}"]
+    skills = data.get("skills", [])
+    names = {item.get("skill_name") for item in skills if isinstance(item, dict)}
+    errors: list[str] = []
+    if "chinese-prose" not in names:
+        errors.append("writing_skill_receipt missing global chinese-prose skill")
+    if "scientific-prose" not in names:
+        errors.append("writing_skill_receipt missing global scientific-prose skill")
+    for item in skills:
+        source = Path(str(item.get("source_path_or_runtime_identifier", "")))
+        if not source.is_file():
+            errors.append(f"writing skill source missing: {source}")
+    return errors
+
+
+def validate_history(repo_root: Path) -> list[str]:
+    errors: list[str] = []
+    hist = repo_root / "wiki" / "history"
+    for rel in ("README.md", "COMPARISON.md", "MIGRATION_MANIFEST.csv"):
+        if not (hist / rel).is_file():
+            errors.append(f"missing history file: wiki/history/{rel}")
+    source_headings: set[tuple[str, str]] = set()
+    for source_name in ("TODO.md", "TODO-M10.md"):
+        source_path = repo_root / source_name
+        if source_path.exists():
+            for line in source_path.read_text(encoding="utf-8").splitlines():
+                if re.match(r"^#{1,3} ", line):
+                    source_headings.add((source_name, line.strip()))
+    manifest_path = hist / "MIGRATION_MANIFEST.csv"
+    covered: set[tuple[str, str]] = set()
+    if manifest_path.is_file():
+        for row in csv.DictReader(manifest_path.read_text(encoding="utf-8").splitlines()):
+            covered.add((row.get("source_file", ""), row.get("source_heading", "")))
+            dest = repo_root / str(row.get("destination_file", ""))
+            if row.get("migration_status") != "migrated":
+                errors.append(f"manifest row not migrated: {row.get('source_heading')}")
+            if not dest.is_file():
+                errors.append(f"manifest destination missing: {dest}")
+    missing_headings = source_headings - covered
+    for source, heading in sorted(missing_headings):
+        errors.append(f"manifest missing heading from {source}: {heading}")
+    if (repo_root / "TODO.md").exists() or (repo_root / "todo-m10.md").exists() or (repo_root / "TODO-M10.md").exists():
+        errors.append("root TODO analysis files must be removed after wiki/history migration")
+    generator = load_generator(repo_root)
+    for version in HISTORY_VERSIONS:
+        base = hist / version
+        for rel in ("README.md", "snapshot.yaml", "COMPONENTS.csv", "architecture.yaml", "figures/architecture.d2", "figures/architecture.svg", "figures/architecture.png", "figures/gap.d2", "figures/gap.svg", "figures/gap.png"):
+            if not (base / rel).is_file():
+                errors.append(f"missing history file: wiki/history/{version}/{rel}")
+        if version == "M09":
+            for rel in ("figures/delta-from-M08.d2", "figures/delta-from-M08.svg", "figures/delta-from-M08.png"):
+                if not (base / rel).is_file():
+                    errors.append(f"missing history delta file: wiki/history/{version}/{rel}")
+        for comp in HISTORY_COMPONENTS:
+            comp_path = base / "components" / f"{comp}.md"
+            if not comp_path.is_file():
+                errors.append(f"missing history component: wiki/history/{version}/components/{comp}.md")
+        try:
+            sources = generator.generated_history_sources(repo_root, version)
+        except Exception as exc:
+            errors.append(f"failed to generate history sources for {version}: {exc}")
+            continue
+        for stem, source in sources.items():
+            d2 = base / "figures" / f"{stem}.d2"
+            if d2.is_file() and d2.read_text(encoding="utf-8") != source:
+                errors.append(f"stale history D2: {d2.relative_to(repo_root)}")
+    return errors
+
+
+def validate(repo_root: Path, strict: bool, history: bool) -> list[str]:
     wiki_root = repo_root / "wiki"
     errors: list[str] = []
     for rel in REQUIRED_WIKI_FILES:
@@ -209,6 +300,9 @@ def validate(repo_root: Path, strict: bool) -> list[str]:
     errors.extend(validate_architecture(repo_root))
     errors.extend(validate_review_token(repo_root))
     errors.extend(validate_generated_diagrams(repo_root))
+    errors.extend(validate_writing_receipt(repo_root))
+    if history:
+        errors.extend(validate_history(repo_root))
     readme = wiki_root / "README.md"
     if readme.is_file():
         text = readme.read_text(encoding="utf-8")
@@ -221,8 +315,9 @@ def validate(repo_root: Path, strict: bool) -> list[str]:
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--strict", action="store_true")
+    parser.add_argument("--history", action="store_true")
     args = parser.parse_args(argv)
-    errors = validate(Path.cwd(), strict=args.strict)
+    errors = validate(Path.cwd(), strict=args.strict, history=args.history)
     if errors:
         for error in errors:
             print(f"error: {error}", file=sys.stderr)

@@ -34,6 +34,9 @@ For every new CARE milestone or controller goal, GPT must declare the agent-flow
 execution_mode: direct_executor | controller_supervised
 requires_execution_controller: true | false
 executor_slots: 1
+executor_count: 1
+parallel_execution_allowed: false
+executor_plan_path: prompts/tasks/<task_key>_executor_plan.yaml
 mapper_slots: 1
 mapper_required: true | false
 architecture_impact: none | component | system
@@ -110,3 +113,6 @@ If SRR/MyoPS/Cine route diagrams were required but could not be visually read fr
 If a diagnostic packet is useful but no route is promoted, use `diagnostic_publication_decision: PUBLISH_REVIEWED_DIAGNOSTIC_PACKET` only after audit, and keep validation packaging, upload, fold expansion, hosted metric claims, and next-stage training blocked.
 
 Do not use `COMPLETE`, `PASS`, `PROMOTE`, `STOP_NO_SIGNAL`, or `SCIENTIFIC_STOP_SUPPORTED` unless the corresponding machine-checkable gates pass.
+
+
+Executor parallelism gate: any `executor_count > 1`, `executor_slots > 1`, or `parallel_execution_allowed: true` task must provide `executor_plan_path` and pass `scripts/ops/validate_executor_plan.py`. MyoPS and Cine remain sequential unless GPT provides explicit isolation proof.

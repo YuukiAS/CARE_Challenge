@@ -1,8 +1,9 @@
-# CARE Architecture Lineage
+# CARE 架构沿革
 
-| Milestone | Commit / base | Architecture version | Code fingerprint | Delta | Review token | Evidence |
+| 里程碑 | 基线 | 架构版本 | fingerprint | 变化 | review token | evidence |
 | --- | --- | --- | --- | --- | --- | --- |
-| M9 follow-up evidence reconciliation | current local `main` | `care-agent-flow-v2-bootstrap` | `srr_propref=f7f9df91;srr_blocks=8d126023;srr_losses=dca8e5e1` | Bootstrap root wiki and v2 controller/mapper observability entry. Does not promote M9. | `M9_FOLLOWUP_AUDITED_READY_NO_PROMOTION_DIAGNOSTIC_ONLY` | `results/20260708_srr_v3_m9_dictionary_fidelity_repair_training/review.md` |
-| Agent-flow v2 completion | pending completion commit | `care-agent-flow-v2-complete` | `wiki+validator+skills+toolkit-healthcheck` | Adds architecture helper scripts, Toolkit healthcheck, repo-local visualization/report skills, full known-bad validator coverage, and removes TODO handoff specs after validation. | protocol-only | `wiki/toolkit_healthcheck.json` |
+| M8 implementation analysis | `TODO.md` historical source | `care-srr-v3-m08-history` | history snapshot | 迁移 M8 路线审阅分析，不作为 current runtime evidence。 | `M8_AUDITED_NO_PROMOTION_SCIENTIFIC_UNRESOLVED` | `wiki/history/M08/README.md` |
+| M9 follow-up evidence reconciliation | current `main` | `care-srr-v3-m09-history` | history snapshot | 迁移 M9 follow-up 期间路线级审计；later status 更新为 no-promotion diagnostic-only。 | `M9_FOLLOWUP_AUDITED_READY_NO_PROMOTION_DIAGNOSTIC_ONLY` | `wiki/history/M09/README.md` |
+| Agent-flow v2 continuity repair | `10878dc` and follow-up | `care-agent-flow-v2-complete` | `wiki+validator+skills+toolkit-healthcheck` | 增加 durable finalizer、并行 executor plan gate、中文 wiki 和 history generator。 | protocol-only | `wiki/writing_skill_receipt.json` |
 
-Future mapper-final updates must append one row with the architecture version, code fingerprint, component status delta, review token, and evidence link.
+后续 mapper-final 更新必须追加新行，记录 architecture version、code fingerprint、component status delta、review token 和 evidence path。历史版本默认不可静默改写；纠错使用 `ERRATA.md` 或 `later_status_update`。

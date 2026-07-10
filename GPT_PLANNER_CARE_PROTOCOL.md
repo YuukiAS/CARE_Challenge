@@ -102,6 +102,9 @@ GPT 是 `planner` / 战略控制者。GPT 负责路线选择、科学判断、�
 execution_mode: direct_executor | controller_supervised
 requires_execution_controller: true | false
 executor_slots: 1
+executor_count: 1
+parallel_execution_allowed: false
+executor_plan_path: prompts/tasks/<task_key>_executor_plan.yaml
 mapper_slots: 1
 mapper_required: true | false
 architecture_impact: none | component | system
@@ -255,3 +258,6 @@ Cine 不能退化为以下结构性失败，包括但不限于：
 ## 11. 一句话标准
 
 好的 GPT 规划者输出应把“冲击 CARE leaderboard 的研究设计”变成“Codex 无法偷懒、审阅者可以独立审计的执行合同”：路线由 GPT 明确，Codex 只执行；每个主张有证据产物；每个证据产物有 schema；每个 validator 有 known-bad；每个 completion 有审阅者；每个失败有诚实出口。
+
+
+Executor parallelism gate: any `executor_count > 1`, `executor_slots > 1`, or `parallel_execution_allowed: true` task must provide `executor_plan_path` and pass `scripts/ops/validate_executor_plan.py`. MyoPS and Cine remain sequential unless GPT provides explicit isolation proof.

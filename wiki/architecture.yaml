@@ -7,42 +7,42 @@ code_fingerprint: srr_propref=f7f9df91;srr_blocks=8d126023;srr_losses=dca8e5e1;w
 evidence_fingerprint: m9_followup_review=results/20260708_srr_v3_m9_dictionary_fidelity_repair_training/review.md
 nodes:
   - id: inputs
-    label: LGE/T2/C0 + availability
+    label: LGE/T2/C0 输入与 availability
     branch: MyoPS
     current_status: implemented
     target_status: implemented
     source_file: src/care_myocardium/models/srr_propref.py
     symbol: SRRProposeRefineNet
   - id: retrieval
-    label: availability-aware retrieval bank
+    label: 可用性感知 retrieval bank
     branch: MyoPS
     current_status: partial
     target_status: implemented
     source_file: src/care_myocardium/models/srr_blocks.py
     symbol: SRR blocks
   - id: proposal_refiner
-    label: lesion proposal + soft-ROI refiner
+    label: 病灶 proposal 与 soft-ROI refiner
     branch: MyoPS
     current_status: partial
     target_status: implemented
     source_file: src/care_myocardium/models/srr_propref.py
     symbol: BranchArbitrationGate
   - id: final_logits
-    label: final logits / export
+    label: final logits 与 export
     branch: MyoPS
     current_status: implemented
     target_status: implemented
     source_file: src/care_myocardium/models/srr_propref.py
     symbol: final logits
   - id: cine
-    label: Cine local proxy / temporal line
+    label: Cine 本地 proxy 与 temporal 线
     branch: Cine
     current_status: partial
     target_status: implemented
     source_file: scripts/evaluation/aggregate_srr_v3_m9_dictionary_fidelity_packet.py
     symbol: Cine aggregation
   - id: controller
-    label: controller-supervised execution
+    label: controller-supervised 执行
     branch: AgentFlow
     current_status: partial
     target_status: implemented
@@ -52,20 +52,20 @@ edges:
   - from: inputs
     to: retrieval
     kind: data
-    condition: modality availability gates retrieval
+    condition: 模态 availability 控制 retrieval
   - from: retrieval
     to: proposal_refiner
     kind: data
-    condition: retrieval features support proposal/refinement
+    condition: retrieval features 支持 proposal/refinement
   - from: proposal_refiner
     to: final_logits
     kind: data
-    condition: branch arbitration affects final logits when gates open
+    condition: gate 打开时 branch arbitration 影响 final logits
   - from: cine
     to: final_logits
     kind: evidence
-    condition: local proxy evidence only; no hosted readiness
+    condition: 仅 local proxy evidence；没有 hosted readiness
   - from: controller
     to: final_logits
     kind: evidence
-    condition: finalizer and validator collect tracked evidence before review
+    condition: finalizer 和 validator 在 review 前收集 tracked evidence

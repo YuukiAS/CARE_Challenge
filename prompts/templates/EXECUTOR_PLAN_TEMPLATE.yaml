@@ -1,0 +1,28 @@
+version: 1
+max_parallel: 1
+executors:
+  - id: default_executor
+    prompt_path: results/<task_key>/subagents/default_executor_prompt.md
+    wave: 1
+    depends_on: []
+    blocking: true
+    can_run_parallel: false
+    isolation_mode: separate_worktree
+    branch_name: codex/<task_key>/default_executor
+    worktree_path: /users/a/e/aereinh/.tmp/codex-CARE/worktrees/<task_key>/default_executor
+    read_scope: []
+    write_scope: []
+    shared_files_forbidden:
+      - AGENTS.md
+      - prompts/shared/EXECUTOR_PROMPTS.md
+      - prompts/shared/REVIEWER_PROMPTS.md
+      - wiki/README.md
+      - wiki/COMPONENTS.csv
+      - wiki/architecture.yaml
+    result_dir: results/<task_key>/executors/default_executor
+    runtime_output_root: results/<task_key>/runtime/default_executor
+    slurm_job_namespace: <task_key>_default_executor
+    lock_path: results/<task_key>/locks/default_executor.lock
+    log_path: results/<task_key>/logs/default_executor.log
+    merge_order: 1
+    isolation_proof: ""

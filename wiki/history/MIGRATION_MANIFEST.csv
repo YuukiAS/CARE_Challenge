@@ -1,0 +1,63 @@
+source_file,source_heading,destination_file,destination_anchor,migration_status,content_note
+TODO.md,# SRR-v3 / M8 实现审阅 TODO,wiki/history/M08/components/training-evidence.md,训练证据与指标,migrated,保留原 heading 与正文，按组件归档
+TODO.md,## 1. 按模块逐项审计：哪些做到了，哪些没做到位,wiki/history/M08/components/training-evidence.md,训练证据与指标,migrated,保留原 heading 与正文，按组件归档
+TODO.md,### 1.1 Availability / no-T2 safety：基本落实，但只解决了安全，不解决性能,wiki/history/M08/components/availability-no-t2.md,可用性与 no-T2 安全,migrated,保留原 heading 与正文，按组件归档
+TODO.md,### 1.2 Modality encoder + retrieval dictionary：有实现，但不等于完整 SRR 语义检索系统,wiki/history/M08/components/retrieval-dictionary.md,检索字典与表示槽,migrated,保留原 heading 与正文，按组件归档
+TODO.md,### 1.3 Prototype / negative memory：有真实 train/OOF fitting，但不是我们想象中的强 memory bank,wiki/history/M08/components/prototype-memory.md,原型与负样本记忆,migrated,保留原 heading 与正文，按组件归档
+TODO.md,### 1.4 Anatomy prior：有实现，但仍然依赖内部 anatomy head 和 anchor context，没有被证明是强解剖定位器,wiki/history/M08/components/anatomy-prior.md,解剖先验,migrated,保留原 heading 与正文，按组件归档
+TODO.md,### 1.5 Proposal：有公式、有 logits、有 prototype similarity，但可能被 anchor/context 和保守 gate 稀释,wiki/history/M08/components/prototype-memory.md,原型与负样本记忆,migrated,保留原 heading 与正文，按组件归档
+TODO.md,### 1.6 Soft ROI refiner：有实现，但实际是小 crop residual，不是完整 lesion formation engine,wiki/history/M08/components/refiner.md,soft-ROI refiner,migrated,保留原 heading 与正文，按组件归档
+TODO.md,### 1.7 Branch arbitration / final output：这是当前最接近“nnU-Net 做主角”的地方,wiki/history/M08/components/arbitration.md,分支仲裁与最终输出,migrated,保留原 heading 与正文，按组件归档
+TODO.md,### 1.8 Loss：有很多 loss，但 M8 变体 loss weight 可能严重 miswired,wiki/history/M08/components/losses.md,loss 与优化目标,migrated,保留原 heading 与正文，按组件归档
+TODO.md,### 1.9 Checkpoint selection：实现与配置声明不一致,wiki/history/M08/components/checkpoint-selection.md,checkpoint 选择,migrated,保留原 heading 与正文，按组件归档
+TODO.md,### 1.10 Training budget：不是 smoke，但仍不等于完整路线验证,wiki/history/M08/components/training-evidence.md,训练证据与指标,migrated,保留原 heading 与正文，按组件归档
+TODO.md,### 1.11 CineMA / Cine registration：只是诊断性 proxy，不是完整 Cine route,wiki/history/M08/components/cine-temporal.md,Cine temporal 分支,migrated,保留原 heading 与正文，按组件归档
+TODO.md,## 2. 我对 Codex 当前实现的信任结论,wiki/history/M08/components/training-evidence.md,训练证据与指标,migrated,保留原 heading 与正文，按组件归档
+TODO.md,## 3. 为什么“按照挑战赛难点设计”仍然可能没涨分,wiki/history/M08/components/training-evidence.md,训练证据与指标,migrated,保留原 heading 与正文，按组件归档
+TODO.md,## 4. 下一步应该做什么,wiki/history/M08/components/training-evidence.md,训练证据与指标,migrated,保留原 heading 与正文，按组件归档
+TODO-M10.md,# TODO M10：M9 follow-up 期间的路线级代码审计与下一轮规划,wiki/history/M09/components/training-evidence.md,训练证据与指标,migrated,保留原 heading 与正文，按组件归档
+TODO-M10.md,## 0. 当前总判断,wiki/history/M09/components/training-evidence.md,训练证据与指标,migrated,保留原 heading 与正文，按组件归档
+TODO-M10.md,## 1. 协议和证据层问题,wiki/history/M09/components/training-evidence.md,训练证据与指标,migrated,保留原 heading 与正文，按组件归档
+TODO-M10.md,### 1.1 M9 packet ready 状态与证据文件冲突,wiki/history/M09/components/training-evidence.md,训练证据与指标,migrated,保留原 heading 与正文，按组件归档
+TODO-M10.md,### 1.2 Validator 不是 fail-closed,wiki/history/M09/components/training-evidence.md,训练证据与指标,migrated,保留原 heading 与正文，按组件归档
+TODO-M10.md,## 2. nnU-Net 角色问题,wiki/history/M09/components/arbitration.md,分支仲裁与最终输出,migrated,保留原 heading 与正文，按组件归档
+TODO-M10.md,## 3. Dictionary / representer 问题,wiki/history/M09/components/retrieval-dictionary.md,检索字典与表示槽,migrated,保留原 heading 与正文，按组件归档
+TODO-M10.md,### 3.1 True-BR2 骨架存在，但还没有证明 representer 的医学价值,wiki/history/M09/components/retrieval-dictionary.md,检索字典与表示槽,migrated,保留原 heading 与正文，按组件归档
+TODO-M10.md,### 3.2 Router 仍偏 case/global，不够 lesion-local,wiki/history/M09/components/retrieval-dictionary.md,检索字典与表示槽,migrated,保留原 heading 与正文，按组件归档
+TODO-M10.md,### 3.3 Pattern-SIP 目前更像后处理报告，不是真正优化目标,wiki/history/M09/components/retrieval-dictionary.md,检索字典与表示槽,migrated,保留原 heading 与正文，按组件归档
+TODO-M10.md,### 3.4 Invalid-slot mask 证据仍偏弱,wiki/history/M09/components/retrieval-dictionary.md,检索字典与表示槽,migrated,保留原 heading 与正文，按组件归档
+TODO-M10.md,## 4. Prototype / memory 问题,wiki/history/M09/components/prototype-memory.md,原型与负样本记忆,migrated,保留原 heading 与正文，按组件归档
+TODO-M10.md,### 4.1 ProposalDictionary 仍以 buffer prototypes 为主,wiki/history/M09/components/retrieval-dictionary.md,检索字典与表示槽,migrated,保留原 heading 与正文，按组件归档
+TODO-M10.md,### 4.2 SafePrototypeMemoryBank 目前像孤立 helper,wiki/history/M09/components/prototype-memory.md,原型与负样本记忆,migrated,保留原 heading 与正文，按组件归档
+TODO-M10.md,### 4.3 Hard-negative replay 还没有形成闭环,wiki/history/M09/components/prototype-memory.md,原型与负样本记忆,migrated,保留原 heading 与正文，按组件归档
+TODO-M10.md,## 5. Refiner 问题,wiki/history/M09/components/refiner.md,soft-ROI refiner,migrated,保留原 heading 与正文，按组件归档
+TODO-M10.md,### 5.1 scar / edema refiner 的结构差异已经有，但科学证据不足,wiki/history/M09/components/refiner.md,soft-ROI refiner,migrated,保留原 heading 与正文，按组件归档
+TODO-M10.md,### 5.2 Scar 与 edema 应分开优化目标,wiki/history/M09/components/losses.md,loss 与优化目标,migrated,保留原 heading 与正文，按组件归档
+TODO-M10.md,## 6. Loss / training 问题,wiki/history/M09/components/losses.md,loss 与优化目标,migrated,保留原 heading 与正文，按组件归档
+TODO-M10.md,### 6.1 M8 的 loss wiring bug 已修，但 M9 loss 仍可能是“名义丰富，优化不充分”,wiki/history/M09/components/losses.md,loss 与优化目标,migrated,保留原 heading 与正文，按组件归档
+TODO-M10.md,### 6.2 Checkpoint selection 仍不够彻底,wiki/history/M09/components/checkpoint-selection.md,checkpoint 选择,migrated,保留原 heading 与正文，按组件归档
+TODO-M10.md,### 6.3 Patch-based training 可能限制 lesion formation,wiki/history/M09/components/training-evidence.md,训练证据与指标,migrated,保留原 heading 与正文，按组件归档
+TODO-M10.md,## 7. Metrics / aggregation 问题,wiki/history/M09/components/training-evidence.md,训练证据与指标,migrated,保留原 heading 与正文，按组件归档
+TODO-M10.md,### 7.1 M9 metrics 负面，且问题不只在 edema,wiki/history/M09/components/training-evidence.md,训练证据与指标,migrated,保留原 heading 与正文，按组件归档
+TODO-M10.md,### 7.2 Aggregator 的一些 evidence 文件名称过强,wiki/history/M09/components/training-evidence.md,训练证据与指标,migrated,保留原 heading 与正文，按组件归档
+TODO-M10.md,### 7.3 Same-split anchor 对照需要保留，但不能变成主角,wiki/history/M09/components/training-evidence.md,训练证据与指标,migrated,保留原 heading 与正文，按组件归档
+TODO-M10.md,## 8. Cine 分支问题,wiki/history/M09/components/cine-temporal.md,Cine temporal 分支,migrated,保留原 heading 与正文，按组件归档
+TODO-M10.md,### 8.1 M9 Cine 有进步，但仍是 local proxy,wiki/history/M09/components/cine-temporal.md,Cine temporal 分支,migrated,保留原 heading 与正文，按组件归档
+TODO-M10.md,### 8.2 Cine 不能再 optional，但也不能拿来救 MyoPS,wiki/history/M09/components/cine-temporal.md,Cine temporal 分支,migrated,保留原 heading 与正文，按组件归档
+TODO-M10.md,## 9. M10 不应做什么,wiki/history/M09/components/training-evidence.md,训练证据与指标,migrated,保留原 heading 与正文，按组件归档
+TODO-M10.md,## 10. M10 的可能路线,wiki/history/M09/components/training-evidence.md,训练证据与指标,migrated,保留原 heading 与正文，按组件归档
+TODO-M10.md,### 10.1 若 M9 follow-up 仍是 NEEDS_REVISION / NEEDS_EVIDENCE,wiki/history/M09/components/training-evidence.md,训练证据与指标,migrated,保留原 heading 与正文，按组件归档
+TODO-M10.md,### 10.2 若 M9 follow-up 是 READY_NO_PROMOTION_DIAGNOSTIC_ONLY,wiki/history/M09/components/training-evidence.md,训练证据与指标,migrated,保留原 heading 与正文，按组件归档
+TODO-M10.md,### 10.3 若 MyoPS dictionary route 连续失败但 Cine proxy有正信号,wiki/history/M09/components/retrieval-dictionary.md,检索字典与表示槽,migrated,保留原 heading 与正文，按组件归档
+TODO-M10.md,### 10.4 若 M9 follow-up 发现 evidence 缺失导致 M9 科学结论不可靠,wiki/history/M09/components/training-evidence.md,训练证据与指标,migrated,保留原 heading 与正文，按组件归档
+TODO-M10.md,## 11. 我建议的 M10 优先级,wiki/history/M09/components/training-evidence.md,训练证据与指标,migrated,保留原 heading 与正文，按组件归档
+TODO-M10.md,## 12. M10 prompt 编写前必须确认的问题,wiki/history/M09/components/training-evidence.md,训练证据与指标,migrated,保留原 heading 与正文，按组件归档
+TODO-M10.md,## 1. 哪些问题确实可以解释 M9 为什么表现差,wiki/history/M09/components/training-evidence.md,训练证据与指标,migrated,保留原 heading 与正文，按组件归档
+TODO-M10.md,### Dictionary 仍是全局 MoE，而不是局部病灶检索,wiki/history/M09/components/retrieval-dictionary.md,检索字典与表示槽,migrated,保留原 heading 与正文，按组件归档
+TODO-M10.md,### Pattern-SIP 目前不是真正的 pattern-conditioned 优化目标,wiki/history/M09/components/retrieval-dictionary.md,检索字典与表示槽,migrated,保留原 heading 与正文，按组件归档
+TODO-M10.md,### Prototype memory 可能没有真正进入正式前向闭环,wiki/history/M09/components/prototype-memory.md,原型与负样本记忆,migrated,保留原 heading 与正文，按组件归档
+TODO-M10.md,### SRR-main 去掉了 anchor 底座，但没有同时增强主干,wiki/history/M09/components/training-evidence.md,训练证据与指标,migrated,保留原 heading 与正文，按组件归档
+TODO-M10.md,### Refiner 有结构差异，但没有被真正因果验证,wiki/history/M09/components/refiner.md,soft-ROI refiner,migrated,保留原 heading 与正文，按组件归档
+TODO-M10.md,### Patch training 与 full-volume lesion topology 不匹配,wiki/history/M09/components/training-evidence.md,训练证据与指标,migrated,保留原 heading 与正文，按组件归档
+TODO-M10.md,## 2. 哪些问题不能解释性能，只能解释为什么结论不可信,wiki/history/M09/components/training-evidence.md,训练证据与指标,migrated,保留原 heading 与正文，按组件归档
+TODO-M10.md,## 3. 我现在认为 M9 最可能的根本原因,wiki/history/M09/components/training-evidence.md,训练证据与指标,migrated,保留原 heading 与正文，按组件归档

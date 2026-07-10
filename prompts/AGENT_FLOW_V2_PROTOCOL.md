@@ -65,10 +65,12 @@ Controller-supervised tasks follow this exact order:
 3. implementation snapshot;
 4. mapper draft;
 5. durable continuity;
-6. terminal finalizer;
+6. `FINALIZER_A`: terminal accounting, runtime-output check, aggregation, and
+   `finalizer_state.json` with `READY_FOR_MAPPER_FINAL` or a failure state;
 7. mapper final;
-8. validators;
-9. controller local commit of the lightweight final packet;
+8. `FINALIZER_B`: validators, wiki/history checks, `git diff --check`, and the
+   single local packet commit;
+9. controller report confirming the committed packet;
 10. controller stops;
 11. separate reviewer independently runs;
 12. reviewer separately commits `review.md`;
@@ -95,6 +97,9 @@ Every new CARE milestone or controller task must declare:
 execution_mode: direct_executor | controller_supervised
 requires_execution_controller: true | false
 executor_slots: 1
+executor_count: 1
+parallel_execution_allowed: false
+executor_plan_path: prompts/tasks/<task_key>_executor_plan.yaml
 mapper_slots: 1
 mapper_required: true | false
 architecture_impact: none | component | system
@@ -108,6 +113,17 @@ reviewer: separate_readonly
 
 The controller must not increase executor or mapper counts beyond the
 GPT-authored task graph.
+
+If `executor_count` is greater than `1` or `executor_slots` is greater than
+`1`, the task must provide a machine-readable executor plan. The controller may
+only launch executors by wave from that plan, must not exceed `executor_slots`,
+and must not change sequential work into parallel work.
+
+Parallel executors are allowed only when the plan proves non-overlapping
+`write_scope`, separate worktrees/branches for code-writing executors, isolated
+result/runtime/log/lock paths, completed dependencies, and deterministic
+controller merge order. MyoPS and Cine are sequential by default unless GPT
+explicitly supplies isolation proof.
 
 Long Slurm or overnight tasks require a durable finalizer contract. Declaring
 `continuity_backend` without a real dependency finalizer job or namespace-local

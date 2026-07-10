@@ -37,6 +37,10 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--aggregation-command", default="")
     parser.add_argument("--validator-command", action="append", default=[])
     parser.add_argument("--mapper-final-command", default="")
+    parser.add_argument("--stage", choices=("accounting", "commit", "all"), default="accounting")
+    parser.add_argument("--awaiting-sacct-retry-seconds", type=int, default=900)
+    parser.add_argument("--awaiting-sacct-retry-interval", type=int, default=30)
+    parser.add_argument("--recover-stale-lock", action="store_true")
     parser.add_argument("--lock-path", type=Path)
     parser.add_argument("--receipt-path", type=Path)
     parser.add_argument("--commit", action="store_true")
@@ -61,7 +65,15 @@ def main(argv: list[str] | None = None) -> int:
         str(result_dir),
         "--lock-path",
         str(lock_path),
+        "--stage",
+        args.stage,
+        "--awaiting-sacct-retry-seconds",
+        str(args.awaiting_sacct_retry_seconds),
+        "--awaiting-sacct-retry-interval",
+        str(args.awaiting_sacct_retry_interval),
     ]
+    if args.recover_stale_lock:
+        finalizer_args.append("--recover-stale-lock")
     for job_id in args.required_job_id:
         finalizer_args.extend(["--required-job-id", job_id])
     for path in args.runtime_output_path:

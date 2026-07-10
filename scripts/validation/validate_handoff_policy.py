@@ -80,6 +80,9 @@ V2_FRONTMATTER_FIELDS = [
     "execution_mode",
     "requires_execution_controller",
     "executor_slots",
+    "executor_count",
+    "parallel_execution_allowed",
+    "executor_plan_path",
     "mapper_slots",
     "mapper_required",
     "architecture_impact",
@@ -227,6 +230,13 @@ def is_blank_or_none(value: object) -> bool:
     return str(value).strip().strip("\"'").lower() in {"", "none", "null"}
 
 
+def as_int(value: object, default: int = 0) -> int:
+    try:
+        return int(str(value).strip().strip("\"'"))
+    except (TypeError, ValueError):
+        return default
+
+
 def severity(strict: bool) -> str:
     return "error" if strict else "warning"
 
@@ -266,6 +276,21 @@ def validate_task_file(path: Path, text: str, strict: bool) -> list[Finding]:
                     severity(strict),
                     path,
                     "controller task must not require reviewer_review before controller local packet commit.",
+                )
+            )
+        executor_slots = as_int(frontmatter.get("executor_slots"), 0)
+        executor_count = as_int(frontmatter.get("executor_count"), 0)
+        if executor_slots < 1:
+            findings.append(Finding(severity(strict), path, "executor_slots must be a positive integer."))
+        if executor_count < 1:
+            findings.append(Finding(severity(strict), path, "executor_count must be a positive integer."))
+        parallel_allowed = as_bool(frontmatter.get("parallel_execution_allowed"))
+        if (executor_slots > 1 or executor_count > 1 or parallel_allowed) and is_blank_or_none(frontmatter.get("executor_plan_path")):
+            findings.append(
+                Finding(
+                    severity(strict),
+                    path,
+                    "parallel/multi-executor controller task must declare executor_plan_path.",
                 )
             )
 

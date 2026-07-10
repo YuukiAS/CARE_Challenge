@@ -10,6 +10,9 @@ planner: "ChatGPT/GPT thread"
 controller: "Codex controller session"
 executor: "separate Codex executor session/subagent"
 executor_slots: 1
+executor_count: 1
+parallel_execution_allowed: false
+executor_plan_path: "prompts/tasks/<task_key>_executor_plan.yaml"
 mapper: "separate read-only Codex mapper session/subagent"
 mapper_slots: 1
 mapper_required: true
@@ -66,12 +69,13 @@ GPT-authored scope.
 5. Mapper draft runs if `mapper_required: true`.
 6. Durable continuity runs through `slurm_dependency` or `tmux_watcher` when
    required.
-7. Deterministic finalizer performs terminal accounting, aggregation,
-   validation, mapper-final handoff, and authorized local packet commit.
+7. `FINALIZER_A` performs terminal accounting, runtime-output checks, and
+   aggregation, then writes `finalizer_state.json`.
 8. Mapper final reconciles code/evidence/wiki when required.
-9. Validators run fail-closed.
-10. Controller writes `controller_report.md`, commits the lightweight final
-    packet locally if authorized, and stops.
+9. `FINALIZER_B` runs validators, wiki/history checks, `git diff --check`, and
+   the single authorized local packet commit.
+10. Controller writes `controller_report.md` confirming the committed packet and
+    stops.
 11. Separate read-only reviewer later writes and commits `review.md`.
 12. User manually pushes.
 
@@ -86,6 +90,15 @@ command, log path, lock path, and result directory.
 
 For `tmux_watcher`, record namespace-local session name, PID, command, log path,
 lock path, and result directory.
+
+## Parallel Executor Contract
+
+If `executor_count > 1`, `executor_slots > 1`, or
+`parallel_execution_allowed: true`, provide a machine-readable executor plan at
+`executor_plan_path` using `prompts/templates/EXECUTOR_PLAN_TEMPLATE.yaml`.
+Validate it with `scripts/ops/validate_executor_plan.py`. The controller must
+not increase executor count, overlap write scopes, share worktrees, merge out of
+order, or ignore merge conflicts.
 
 ## Required Receipts
 

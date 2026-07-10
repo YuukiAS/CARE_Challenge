@@ -17,6 +17,9 @@ planner: "ChatGPT/GPT thread"
 controller: "Codex controller session"
 executor: "separate Codex executor session/subagent"
 executor_slots: 1
+executor_count: 1
+parallel_execution_allowed: false
+executor_plan_path: "prompts/tasks/<task_key>_executor_plan.yaml"
 mapper_slots: 1
 mapper_required: true | false
 architecture_impact: "none" | "component" | "system"
@@ -49,10 +52,10 @@ tasks must follow this order:
 3. implementation snapshot
 4. mapper draft
 5. durable continuity
-6. terminal finalizer
+6. FINALIZER_A terminal accounting, runtime-output check, and aggregation
 7. mapper final
-8. validators
-9. controller local commit of the final packet
+8. FINALIZER_B validators, wiki/history checks, and the single local commit
+9. controller report confirming the committed packet
 10. controller stops
 11. separate reviewer independently runs
 12. reviewer separately commits review.md
@@ -91,6 +94,12 @@ states and exit codes, runtime/log/output paths, aggregation command and exit
 code, validator commands and exit codes, mapper-final status, lock path, git
 head before finalization, optional local commit after finalization, and final
 state.
+
+`executor_plan_path` is required when `executor_count > 1`,
+`executor_slots > 1`, or `parallel_execution_allowed: true`. It must validate
+with `scripts/ops/validate_executor_plan.py`. The controller launches executors
+only by declared wave, records launch and merge ledgers, and remains the only
+merge owner.
 
 ## Durable Continuity
 

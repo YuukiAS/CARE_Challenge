@@ -87,6 +87,9 @@ wiki/figures/model-gap.png
 wiki/figures/execution-flow.d2
 wiki/figures/execution-flow.svg
 wiki/figures/execution-flow.png
+wiki/history/README.md
+wiki/history/COMPARISON.md
+wiki/history/MIGRATION_MANIFEST.csv
 ```
 
 `COMPONENTS.csv` must include:
@@ -138,7 +141,7 @@ To regenerate figures after editing `wiki/architecture.yaml` or `wiki/COMPONENTS
 python scripts/architecture/generate_care_architecture_wiki.py
 ```
 
-The generator must read `architecture.yaml` and `COMPONENTS.csv`, produce generated `.d2 + .svg + .png` for each canonical figure, and fail `--check` when committed D2/SVG/PNG artifacts are stale. If D2 PNG export fails because Playwright is unavailable, SVG generation plus ImageMagick `convert` fallback is acceptable and must be reported.
+The generator must read `architecture.yaml` and `COMPONENTS.csv`, produce generated `.d2 + .svg + .png` for each canonical current figure, and support history versions under `wiki/history/M08` and `wiki/history/M09`. Use `--check-all` when history exists. If D2 PNG export fails because Playwright is unavailable, SVG generation plus ImageMagick `convert` fallback is acceptable and must be reported.
 
 ## Controller Output Paths
 
