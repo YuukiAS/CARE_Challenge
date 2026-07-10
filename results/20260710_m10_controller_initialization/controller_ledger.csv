@@ -1,0 +1,2 @@
+timestamp_utc,phase,git_head,task_hash,job_states,decision,next_action
+2026-07-10T16:58:53Z,controller_initialization,20650aa5a7082433449c2012c752774edf9b44fb,NONE_NO_M10_STAGED_PROMPT,none,BLOCKED_MISSING_M10_STAGED_PROMPT,GPT must provide prompts/shared/M10_<short_slug>.md with required contracts

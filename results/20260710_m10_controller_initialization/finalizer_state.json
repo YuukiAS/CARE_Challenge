@@ -1,0 +1,30 @@
+{
+  "task_key": "20260710_m10_controller_initialization",
+  "phase": "initialization_finalizer",
+  "created_at_utc": "2026-07-10T16:58:53Z",
+  "ordinary_training_jobs_submitted": [],
+  "validation_packages_created": [],
+  "uploads_performed": [],
+  "review_md_written": false,
+  "executor_phase_started": false,
+  "blocked": true,
+  "blockers": [
+    {
+      "id": "missing_m10_staged_prompt",
+      "severity": "blocking",
+      "detail": "No GPT-authored M10 staged prompt was found under prompts/shared/ or prompts/tasks/."
+    }
+  ],
+  "executor_plan_validation": {
+    "required": "unknown_without_m10_execution_contract",
+    "path": null,
+    "status": "not_run_no_plan_present"
+  },
+  "validator_commands": [
+    "python scripts/validation/validate_handoff_policy.py --strict-tasks --warnings-as-errors",
+    "python scripts/architecture/validate_care_architecture_wiki.py --strict --history",
+    "python scripts/architecture/generate_care_architecture_wiki.py --check-all",
+    "git diff --check"
+  ],
+  "git_push_decision": "SKIP_PUSH"
+}
