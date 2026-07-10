@@ -7,6 +7,14 @@ vars: {
 direction: right
 
 title: "CARE current vs target gap"
+meta: "version: care-agent-flow-v2-complete\nreview: M9 follow-up no-promotion\nfingerprint: wiki+validator+skills+toolkit" {
+  style.fill: "#ffffff"
+  style.stroke: "#6b7280"
+}
+legend: "Legend\nsolid: target expectation\ndashed: current gap to close\npurple: Cine secondary line" {
+  style.fill: "#ffffff"
+  style.stroke: "#6b7280"
+}
 
 target: {
   label: "SRR-v3 target"
@@ -28,3 +36,5 @@ current: {
 target -> current: "gaps must be closed with runtime evidence" {
   style.stroke-dash: 4
 }
+meta -> target: "context"
+legend -> current: "style key"

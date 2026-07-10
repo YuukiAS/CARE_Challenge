@@ -67,6 +67,8 @@ If a user prompt, generated prompt, or prior ChatGPT instruction conflicts with 
 - The canonical upstream source remains `/overflow/htzhu/mingcheng_new/AI_Skills_Collection/skills`; when refreshing repo-local skills, replace duplicates with copies from that collection.
 - This repository should install the medical imaging skill set from `AI_Skills_Collection/skills/domain/medical-imaging`.
 - CARE Slurm partition/routing rules are also installed as a repo-local skill at `.agents/skills/slurm-routing-partition/SKILL.md`; use it before every Slurm job submission and before writing any GPT/Codex milestone, goal, or handoff that will submit Slurm jobs.
+- CARE mapper and architecture-observability rules are installed as `.agents/skills/care-mapper/SKILL.md`; use it for any architecture, loss/dataflow/export, Cine temporal, or controller-observability change.
+- Agent-flow v2 also installs repo-local real-directory copies of `codex-workflow-protocol`, `d2-diagrams`, `drawio-diagrams`, `plantuml-diagrams`, `markdown-mermaid-writing`, `scientific-visualization`, `chinese-prose`, `scientific-prose`, and the medical-imaging deep-learning skill. Do not replace these with symlinks to `/overflow`.
 - Do not add `.cursor/skills` or Cursor plugin copies in this repository.
 
 ## Reference papers

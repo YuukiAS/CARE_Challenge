@@ -6,9 +6,9 @@ task_type: "controller"
 controller_mode: true
 planner: "ChatGPT/GPT thread"
 strategic_controller: "user-supervised GPT thread"
-execution_controller: "Codex controller session"
+controller: "Codex controller session"
 executor: "separate Codex executor sessions/subagents"
-auditor: "separate read-only Codex auditor sessions or ChatGPT reviewer"
+reviewer: "separate_readonly"
 risk_level: "high"
 allow_code_change: true
 allow_shell_command: true
@@ -21,9 +21,9 @@ target_metric: "myops_scar, myops_edema"
 same_split_baseline: "same-split nnU-Net fold0 reference plus 20260703 diagnostic packet; evidence not found if unavailable"
 required_subgroups: ["all-case", "scar-positive", "edema GT-positive", "T2-present/complete", "no-T2 empty-GT stability", "CenterB", "CenterC", "LGE-only"]
 required_secondary_metrics: ["Dice", "HD", "HD95", "component_count", "remote_FP", "small_FP", "volume_ratio", "proposal_recall", "proposal_precision", "foreground_rate", "loss_decrease", "optimizer_steps"]
-required_evidence: ["executor_result", "auditor_review", "controller_report", "experiment_adequacy_report", "one_batch_overfit", "prediction_sanity", "checkpoint_policy", "metric_csv", "run_log", "same_split_baseline", "cache_isolation", "label_export_QC"]
+required_evidence: ["executor_result", "reviewer_review", "controller_report", "experiment_adequacy_report", "one_batch_overfit", "prediction_sanity", "checkpoint_policy", "metric_csv", "run_log", "same_split_baseline", "cache_isolation", "label_export_QC"]
 forbidden_substitutes: ["STOP_NO_SIGNAL from undertrained run", "using step1 checkpoint as formal evidence when later training has no validation", "smoke/preflight/dryrun as route evidence", "full-volume argmax-only decode without pathology foreground sanity", "no-T2 myocardium as edema negative", "validation GT leakage", "validation upload or package generation"]
-route_promotion_gate: "Only after experiment adequacy passes, same-split comparison exists, no leakage is found, and auditor supports promotion."
+route_promotion_gate: "Only after experiment adequacy passes, same-split comparison exists, no leakage is found, and reviewer supports promotion."
 route_negative_gate: "STOP_NO_* is allowed only after experiment adequacy passes and failure cannot be explained by undertraining, checkpoint selection, decode, label/export, cache, or pipeline bug."
 experiment_adequacy_gate: "Must pass one-batch/tiny-overfit, minimum optimizer-step/time evidence, post-warmup validation/checkpoint evidence, foreground/decode sanity, proposal PR sanity, and clean logs/provenance."
 scientific_completion_gate: "Controller operational completion is not scientific completion. Scientific status must be promoted, stop-supported, undertrained, pipeline-bug, needs-evidence, needs-revision, or unresolved."
@@ -31,9 +31,9 @@ diagnostic_publication_gate: "Even without route promotion, reviewed diagnostic 
 diagnostic_publication_scope: ["controller_report.md", "execution_plan.md", "subtask result.md", "subtask review.md", "small reviewed Markdown decision packets", "reviewed first-party source code/scripts required to reproduce the diagnostic conclusion"]
 blocked_after_diagnostic_publication: ["validation packaging", "validation upload", "fold expansion", "hosted metric claims", "label/evaluator/fold split changes", "unauthorized next-stage training"]
 executor_subtasks: ["prompts/tasks/20260703_srr_failure_audit.md", "prompts/tasks/20260703_srr_propref_repair.md", "prompts/tasks/20260703_nnunet_oof_component.md", "prompts/tasks/20260703_anchor_refine_learned.md"]
-auditor_subtasks: ["results/20260703_srr_recovery_goal/subagents/auditor_prompt.md"]
+reviewer_prompt_path: "results/20260703_srr_recovery_goal/subagents/reviewer_prompt.md"
 controller_report_path: "results/20260703_srr_recovery_goal/controller_report.md"
-allowed_next_states: ["EXECUTION_PLANNED", "EXECUTOR_RUNNING", "EXECUTED_UNAUDITED", "AUDITOR_RUNNING", "AUDITED_GO", "NEEDS_EVIDENCE", "NEEDS_REVISION", "NEEDS_SUBAGENT_LAUNCH", "NEEDS_HUMAN_APPROVAL", "NEEDS_GPT_PLANNER", "STOP"]
+allowed_next_states: ["EXECUTION_PLANNED", "EXECUTOR_RUNNING", "EXECUTED_UNAUDITED", "REVIEWER_RUNNING", "AUDITED_GO", "NEEDS_EVIDENCE", "NEEDS_REVISION", "NEEDS_SUBAGENT_LAUNCH", "NEEDS_HUMAN_APPROVAL", "NEEDS_GPT_PLANNER", "STOP"]
 auto_git_commit: true
 auto_git_push: true
 allow_git_commit: true

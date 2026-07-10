@@ -6,6 +6,15 @@ vars: {
 
 direction: right
 
+meta: "CARE agent-flow v2 complete\nreviewer remains independent\nToolkit healthcheck tracked" {
+  style.fill: "#ffffff"
+  style.stroke: "#6b7280"
+}
+legend: "Legend\nblue: planner/reviewer\norange: executor\npurple: mapper\ngray: deterministic finalizer\nred: validator" {
+  style.fill: "#ffffff"
+  style.stroke: "#6b7280"
+}
+
 planner: "planner\nGPT route/task author" {
   style.fill: "#eef7ff"
 }
@@ -38,3 +47,5 @@ executor -> finalizer: "job ids + runtime paths"
 finalizer -> mapper2: "tracked evidence"
 mapper2 -> validator: "wiki/component/fingerprint checks"
 validator -> reviewer: "committed final packet"
+meta -> planner: "startup"
+legend -> validator: "gate"

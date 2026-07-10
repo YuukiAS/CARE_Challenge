@@ -7,6 +7,14 @@ vars: {
 direction: right
 
 title: "CARE current model architecture"
+meta: "version: care-agent-flow-v2-complete\nreview: M9 follow-up no-promotion\nfingerprint: f7f9df91/8d126023/dca8e5e1" {
+  style.fill: "#ffffff"
+  style.stroke: "#6b7280"
+}
+legend: "Legend\nsolid: implemented/verified path\ndashed: partial or diagnostic evidence\ngray: anchor/safety context" {
+  style.fill: "#ffffff"
+  style.stroke: "#6b7280"
+}
 
 inputs: "LGE/T2/C0\navailability" {
   style.fill: "#eef7ff"
@@ -35,4 +43,8 @@ anchor -> proposal: "anchor/context"
 retrieval -> proposal: "semantic evidence"
 proposal -> arbitration: "proposal/refiner evidence"
 arbitration -> final: "bounded correction"
-cine -> final: "local proxy evidence"
+cine -> final: "local proxy evidence" {
+  style.stroke-dash: 4
+}
+meta -> inputs: "context"
+legend -> anchor: "style key"

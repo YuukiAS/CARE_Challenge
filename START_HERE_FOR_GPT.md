@@ -44,6 +44,8 @@ reviewer: separate_readonly
 
 Use `controller_supervised` for overnight, long Slurm, multi-job, or high-resume-risk work. Default to exactly one executor and one mapper unless the GPT-authored task graph explicitly grants more isolated slots. The controller owns continuity and phase grounding; the executor performs authorized implementation/jobs; the mapper is read-only architecture/evidence mapping; the finalizer is deterministic terminal accounting/aggregation/validation; the reviewer is a separate read-only thread after the final packet is committed.
 
+For architecture-affecting work, use `.agents/skills/care-mapper/SKILL.md` and the helpers in `scripts/architecture/`. A route or handoff update is not complete if `wiki/COMPONENTS.csv`, `wiki/architecture.yaml`, required figures, Toolkit healthcheck, or mapper/finalizer evidence is stale.
+
 ## MONITOR_PACKET_IS_NOT_COMPLETION
 
 Any GPT/ChatGPT milestone, handoff, or review instruction must enforce this rule: a monitor packet, pending Slurm job packet, watcher packet, or submitted-only job packet is not completion.

@@ -1,6 +1,6 @@
 # Research Wiki
 
-Current architecture and handoff state have moved to the root [wiki/](../../wiki/). Use `wiki/README.md`, `wiki/COMPONENTS.csv`, and `wiki/architecture.yaml` for GPT planner, controller, mapper, finalizer, validator, and reviewer grounding.
+Current architecture and handoff state have moved to the root [wiki/](../../wiki/). Use `wiki/README.md`, `wiki/COMPONENTS.csv`, and `wiki/architecture.yaml` for GPT planner, controller, mapper, finalizer, validator, and reviewer grounding. The remaining `docs/wiki/` files are historical research-note templates; they are not the canonical architecture source.
 
 `docs/wiki/` 是项目内可长期复用的研究知识层。它用于沉淀论文摘要、报告摘要、概念页、方法对比、研究空白和讨论结论。
 

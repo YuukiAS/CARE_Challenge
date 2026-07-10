@@ -6,6 +6,8 @@ Any new GPT/ChatGPT planning thread must read [START_HERE_FOR_GPT.md](START_HERE
 
 For current architecture and handoff state, start at [wiki/README.md](wiki/README.md). Long Slurm or high-resume-risk work must use the v2 controller-supervised flow: planner -> controller -> executor/mapper/finalizer/validator -> independent reviewer.
 
+Architecture wiki generation and validation helpers live under [scripts/architecture/](scripts/architecture/). Use them to check `wiki/COMPONENTS.csv`, `wiki/architecture.yaml`, D2/SVG/PNG figures, and AI Research Toolkit health before claiming agent-flow v2 completion.
+
 Benchmark training / collection / unified evaluation commands live in [jobs/README.md](/overflow/htzhu/CARE/jobs/README.md).
 
 Most common entrypoints:

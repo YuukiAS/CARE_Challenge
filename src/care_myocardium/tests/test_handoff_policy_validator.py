@@ -246,12 +246,174 @@ reason_if_no_route_promotion: PENDING_MONITOR remains
         findings = validator.validate_controller_report(Path("results/demo/controller_report.md"), text)
         self.assertTrue(any("unresolved monitor" in item.message for item in findings))
 
+    def test_blocked_controller_report_rejects_pending_state(self) -> None:
+        text = """# Controller Report
+
+controller_run_status: BLOCKED
+operational_completion_status: INCOMPLETE
+experiment_adequacy_decision: EVIDENCE_NOT_FOUND
+route_promotion_decision: NOT_EVALUABLE
+route_negative_decision: NOT_EVALUABLE
+scientific_resolution_status: SCIENTIFIC_NEEDS_EVIDENCE
+diagnostic_publication_decision: DO_NOT_PUBLISH
+git_commit_decision: SKIP_COMMIT
+git_push_decision: SKIP_PUSH
+published_files:
+blocked_actions:
+  - validation upload remains blocked
+next_required_action: wait
+reason_if_not_published: none
+reason_if_no_route_promotion: job is RUNNING
+"""
+        findings = validator.validate_controller_report(Path("results/demo/controller_report.md"), text)
+        self.assertTrue(any("monitor state to BLOCKED" in item.message for item in findings))
+
+    def test_scheduler_block_requires_24_hour_threshold(self) -> None:
+        text = """# Controller Report
+
+controller_run_status: BLOCKED
+operational_completion_status: INCOMPLETE
+experiment_adequacy_decision: EVIDENCE_NOT_FOUND
+route_promotion_decision: NOT_EVALUABLE
+route_negative_decision: NOT_EVALUABLE
+scientific_resolution_status: SCIENTIFIC_NEEDS_EVIDENCE
+diagnostic_publication_decision: DO_NOT_PUBLISH
+git_commit_decision: SKIP_COMMIT
+git_push_decision: SKIP_PUSH
+published_files:
+blocked_actions:
+  - validation upload remains blocked
+next_required_action: scheduler block
+reason_if_not_published: none
+reason_if_no_route_promotion: scheduler block while PENDING
+"""
+        findings = validator.validate_controller_report(Path("results/demo/controller_report.md"), text)
+        self.assertTrue(any("24-hour threshold" in item.message for item in findings))
+
+    def test_controller_report_rejects_internal_reviewer_and_slot_overrun(self) -> None:
+        text = """# Controller Report
+
+execution_mode: controller_supervised
+controller_context.json: present
+executor_slots_allowed: 1
+actual_executor_slots: 2
+reviewer: internal controller child resume agent
+controller_run_status: INCOMPLETE
+operational_completion_status: INCOMPLETE
+experiment_adequacy_decision: PARTIAL
+route_promotion_decision: NO_PROMOTION
+route_negative_decision: STOP_NOT_SUPPORTED
+scientific_resolution_status: SCIENTIFIC_UNRESOLVED
+diagnostic_publication_decision: DO_NOT_PUBLISH
+git_commit_decision: SKIP_COMMIT
+git_push_decision: SKIP_PUSH
+published_files:
+blocked_actions:
+  - validation upload remains blocked
+next_required_action: fix controller
+reason_if_not_published: none
+reason_if_no_route_promotion: none
+"""
+        findings = validator.validate_controller_report(Path("results/demo/controller_report.md"), text)
+        messages = "\n".join(item.message for item in findings)
+        self.assertIn("executor_slots", messages)
+        self.assertIn("internal recovery", messages)
+
+    def test_running_job_outputs_missing_is_monitor_not_evidence_closeout(self) -> None:
+        text = """# Controller Report
+
+controller_run_status: INCOMPLETE
+operational_completion_status: INCOMPLETE
+experiment_adequacy_decision: EVIDENCE_NOT_FOUND
+route_promotion_decision: NOT_EVALUABLE
+route_negative_decision: NOT_EVALUABLE
+scientific_resolution_status: SCIENTIFIC_NEEDS_EVIDENCE
+diagnostic_publication_decision: DO_NOT_PUBLISH
+git_commit_decision: SKIP_COMMIT
+git_push_decision: SKIP_PUSH
+published_files:
+blocked_actions:
+  - validation upload remains blocked
+next_required_action: collect evidence
+reason_if_not_published: runtime output missing while job is still RUNNING
+reason_if_no_route_promotion: NEEDS_EVIDENCE
+"""
+        findings = validator.validate_controller_report(Path("results/demo/controller_report.md"), text)
+        self.assertTrue(any("running jobs cannot be closed" in item.message for item in findings))
+
+    def test_chat_claimed_followup_completion_without_committed_evidence_is_rejected(self) -> None:
+        text = """# Controller Report
+
+controller_run_status: INCOMPLETE
+operational_completion_status: INCOMPLETE
+experiment_adequacy_decision: EVIDENCE_NOT_FOUND
+route_promotion_decision: NOT_EVALUABLE
+route_negative_decision: NOT_EVALUABLE
+scientific_resolution_status: SCIENTIFIC_NEEDS_EVIDENCE
+diagnostic_publication_decision: DO_NOT_PUBLISH
+git_commit_decision: SKIP_COMMIT
+git_push_decision: SKIP_PUSH
+published_files:
+blocked_actions:
+  - validation upload remains blocked
+next_required_action: find evidence
+reason_if_not_published: chat/user statement finished
+reason_if_no_route_promotion: none
+"""
+        findings = validator.validate_controller_report(Path("results/demo/controller_report.md"), text)
+        self.assertTrue(any("from chat without committed evidence" in item.message for item in findings))
+
+    def test_controller_report_rejects_forbidden_mapper_scan_and_stale_toolkit_report(self) -> None:
+        text = """# Controller Report
+
+controller_run_status: INCOMPLETE
+operational_completion_status: INCOMPLETE
+experiment_adequacy_decision: PARTIAL
+route_promotion_decision: NO_PROMOTION
+route_negative_decision: STOP_NOT_SUPPORTED
+scientific_resolution_status: SCIENTIFIC_UNRESOLVED
+diagnostic_publication_decision: DO_NOT_PUBLISH
+git_commit_decision: SKIP_COMMIT
+git_push_decision: SKIP_PUSH
+published_files:
+blocked_actions:
+  - validation upload remains blocked
+next_required_action: fix mapper
+reason_if_not_published: mapper scanned raw data checkpoints
+reason_if_no_route_promotion: used docs/local_install_report.md
+"""
+        findings = validator.validate_controller_report(Path("results/demo/controller_report.md"), text)
+        messages = "\n".join(item.message for item in findings)
+        self.assertIn("forbidden", messages)
+        self.assertIn("local_install_report", messages)
+
     def test_components_csv_requires_final_output_effect_for_verified_rows(self) -> None:
         text = """component_id,branch,role,current_status,evidence_status,target_status,source_file,symbol,entrypoint,grep_key,config_keys,inputs,outputs,losses,final_output_effect,runtime_evidence,code_fingerprint_member,last_verified_milestone,review_token,notes
 bad,MyoPS,test,implemented,verified,implemented,src/x.py,Sym,entry,grep,key,in,out,loss,,results/demo/result.md,fp,M9,TOKEN,note
 """
         findings = validator.validate_components_csv(Path("wiki/COMPONENTS.csv"), text)
         self.assertTrue(any("final_output_effect" in item.message for item in findings))
+
+    def test_components_csv_rejects_scaffold_marked_implemented(self) -> None:
+        text = """component_id,branch,role,current_status,evidence_status,target_status,source_file,symbol,entrypoint,grep_key,config_keys,inputs,outputs,losses,final_output_effect,runtime_evidence,code_fingerprint_member,last_verified_milestone,review_token,notes
+bad,MyoPS,scaffold module,implemented,unverified,implemented,src/x.py,Sym,entry,grep,key,in,out,loss,effect,,fp,M9,TOKEN,scaffold only
+"""
+        findings = validator.validate_components_csv(Path("wiki/COMPONENTS.csv"), text)
+        self.assertTrue(any("scaffold" in item.message for item in findings))
+
+    def test_architecture_yaml_requires_stale_on_fingerprint_mismatch(self) -> None:
+        text = """architecture_version: demo
+review_token: TOKEN
+code_fingerprint: old
+fingerprint_status: mismatch
+nodes:
+  - id: a
+edges:
+  - from: a
+    to: a
+"""
+        findings = validator.validate_architecture_yaml(Path("wiki/architecture.yaml"), text)
+        self.assertTrue(any("stale" in item.message for item in findings))
 
     def test_review_cannot_support_route_negative_without_training_fields(self) -> None:
         text = """# Review

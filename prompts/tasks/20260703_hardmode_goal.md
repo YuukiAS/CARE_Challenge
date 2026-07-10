@@ -6,9 +6,9 @@ task_type: "controller"
 controller_mode: true
 planner: "ChatGPT/GPT thread"
 strategic_controller: "user-supervised GPT thread"
-execution_controller: "Codex controller session"
+controller: "Codex controller session"
 executor: "separate Codex executor sessions/subagents"
-auditor: "separate read-only Codex auditor sessions or ChatGPT reviewer"
+reviewer: "separate_readonly"
 risk_level: "high"
 allow_code_change: true
 allow_shell_command: true
@@ -21,7 +21,7 @@ target_metric: "myops_scar, myops_edema, myocardium_cinemyops"
 same_split_baseline: "nnU-Net fold0 reference and rescue final status artifacts; evidence not found if unavailable"
 required_subgroups: ["MyoPS all-case", "MyoPS T2-present/complete", "MyoPS GT-positive", "MyoPS no-T2 empty-GT stability", "MyoPS CenterB/CenterC", "Cine safe/mismatch status"]
 required_secondary_metrics: ["Dice", "HD", "HD95", "component_count", "remote_FP", "small_FP", "volume_ratio", "proposal_recall_precision", "alignment_sanity", "label_export_QC"]
-required_evidence: ["executor_result", "auditor_review", "controller_report", "checkpoint_or_explicit_no-training", "prediction_path", "metric_csv", "run_log", "same_split_baseline", "cache_isolation", "label_export_QC"]
+required_evidence: ["executor_result", "reviewer_review", "controller_report", "checkpoint_or_explicit_no-training", "prediction_path", "metric_csv", "run_log", "same_split_baseline", "cache_isolation", "label_export_QC"]
 forbidden_substitutes: ["preflight-only completion", "smoke/dryrun as route evidence", "continuing SRR temperature/gate/threshold tuning as a new mechanism", "compact-label proxy as challenge improvement", "no-T2 myocardium as edema negative", "translation-only alignment as hardmode completion", "frame0-only Cine as temporal completion", "executor self-review", "audit bypass", "validation upload or package generation"]
 promotion_gate: "Every executor claim is audited. A MyoPS route can be promoted only if same-split nnU-Net comparison and CARE overlay evidence support it; diagnostic-only gains over weak SRR do not promote. Cine can promote only as a secondary temporal route with non-reference frame evidence."
 route_promotion_gate: "Every executor claim is audited. A MyoPS route can be promoted only if same-split nnU-Net comparison and CARE overlay evidence support it; diagnostic-only gains over weak SRR do not promote. Cine can promote only as a secondary temporal route with non-reference frame evidence."
@@ -33,16 +33,16 @@ minimum_effective_training:
   require_loss_decrease: true
   allow_stop_without_training: false
 experiment_adequacy_gate: "A trainable route must report one-batch/tiny-overfit or explicit not-applicable rationale; train_loop_seconds, max_steps, actual_steps, optimizer_steps, validation_events, loss_decrease; prediction foreground/volume/component/empty-rate sanity; proposal recall/precision/lesion-wise recall/outside-myocardium FP ratio for proposal routes; logs/provenance; and same-split baseline comparability."
-route_negative_gate: "STOP_NO_* conclusions require experiment_adequacy_decision PASS, absent forbidden substitutes, same-split baseline comparison, failure not explained by undertraining/smoke/preflight/decode/cache/label/log/pipeline issues, and explicit auditor approval."
+route_negative_gate: "STOP_NO_* conclusions require experiment_adequacy_decision PASS, absent forbidden substitutes, same-split baseline comparison, failure not explained by undertraining/smoke/preflight/decode/cache/label/log/pipeline issues, and explicit reviewer approval."
 scientific_completion_gate: "Controller operational completion is not scientific completion. Scientific resolution must be SCIENTIFIC_PROMOTED, SCIENTIFIC_STOP_SUPPORTED, SCIENTIFIC_UNRESOLVED, SCIENTIFIC_UNDERTRAINED, SCIENTIFIC_PIPELINE_BUG, SCIENTIFIC_NEEDS_EVIDENCE, or SCIENTIFIC_NEEDS_REVISION."
 diagnostic_publication_gate: "If audit/re-audit passes but no route is promoted, publish only the reviewed diagnostic packet needed for GPT planner review."
 diagnostic_publication_scope: ["controller_report", "execution_plan", "subtask_result_review", "small_reviewed_markdown", "reviewed_repro_scripts"]
 blocked_after_diagnostic_publication: ["validation_upload", "validation_packaging", "fold_expansion", "hosted_metric_claim", "label_or_evaluator_or_fold_split_change", "next_stage_training"]
 failure_escalation_policy: "Escalate only along the bounded task policies below. If label/evaluator evidence is missing, return NEEDS_EVIDENCE. If all authorized mechanisms fail, write NEEDS_GPT_PLANNER; do not invent another research route."
 executor_subtasks: ["prompts/tasks/20260703_myops_audit.md", "prompts/tasks/20260703_myops_fp_control.md", "prompts/tasks/20260703_myops_srr_propose_refine.md", "prompts/tasks/20260703_myops_alignment_gate.md", "prompts/tasks/20260703_myops_anchor_refine.md", "prompts/tasks/20260703_cine_motion.md"]
-auditor_subtasks: ["results/20260703_hardmode_goal/subagents/auditor_prompt.md"]
+reviewer_prompt_path: "results/20260703_hardmode_goal/subagents/reviewer_prompt.md"
 controller_report_path: "results/20260703_hardmode_goal/controller_report.md"
-allowed_next_states: ["EXECUTION_PLANNED", "EXECUTOR_RUNNING", "EXECUTED_UNAUDITED", "AUDITOR_RUNNING", "AUDITED_GO", "AUDITED_DIAGNOSTIC_PUBLISH", "NEEDS_EVIDENCE", "NEEDS_REVISION", "NEEDS_SUBAGENT_LAUNCH", "NEEDS_HUMAN_APPROVAL", "NEEDS_GPT_PLANNER", "STOP"]
+allowed_next_states: ["EXECUTION_PLANNED", "EXECUTOR_RUNNING", "EXECUTED_UNAUDITED", "REVIEWER_RUNNING", "AUDITED_GO", "AUDITED_DIAGNOSTIC_PUBLISH", "NEEDS_EVIDENCE", "NEEDS_REVISION", "NEEDS_SUBAGENT_LAUNCH", "NEEDS_HUMAN_APPROVAL", "NEEDS_GPT_PLANNER", "STOP"]
 auto_git_commit: true
 auto_git_push: true
 allow_git_commit: true

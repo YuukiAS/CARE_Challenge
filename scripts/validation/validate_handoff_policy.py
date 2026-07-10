@@ -62,9 +62,14 @@ TRAINING_EVIDENCE_FIELDS = [
     "prediction_sanity",
 ]
 MONITOR_STATE_RE = re.compile(
-    r"\b(NEEDS_MONITOR|PENDING_MONITOR|JOB_SUBMITTED|PENDING_PRIORITY|RUNNING|AWAITING_SACCT|CONFIGURING|COMPLETING)\b",
+    r"\b(NEEDS_MONITOR|PENDING_MONITOR|JOB_SUBMITTED|PENDING_PRIORITY|PENDING|RUNNING|AWAITING_SACCT|CONFIGURING|COMPLETING)\b",
     re.IGNORECASE,
 )
+FORBIDDEN_MAPPER_SCAN_RE = re.compile(
+    r"mapper.*(raw data|NIfTI|\.nii(\.gz)?|checkpoint|\.pt|\.pth|large log|secret|credential|upload package)",
+    re.IGNORECASE,
+)
+STALE_INSTALL_REPORT_RE = re.compile(r"docs/local_install_report\.md", re.IGNORECASE)
 LONG_TASK_RE = re.compile(
     r"\b(overnight|long[ -]?slurm|multi[ -]?job|high[ -]?resume[ -]?risk|slurm_runtime_continuity_required\s*:\s*true)\b",
     re.IGNORECASE,
@@ -424,12 +429,30 @@ def validate_controller_report(path: Path, text: str) -> list[Finding]:
     if path.name != "controller_report.md":
         return findings
 
+    if "review.md" in text and re.search(r"(?i)controller.*wrote|wrote.*review\.md|AUDITED_GO", text):
+        findings.append(
+            Finding(
+                "error",
+                path,
+                "controller report appears to write review.md or audited-go; final review must be separate.",
+            )
+        )
+
     if field_value(text, "controller_run_status") == "COMPLETE" and MONITOR_STATE_RE.search(text):
         findings.append(
             Finding(
                 "error",
                 path,
                 "COMPLETE controller report contains unresolved monitor/pending state.",
+            )
+        )
+
+    if field_value(text, "controller_run_status") == "BLOCKED" and MONITOR_STATE_RE.search(text):
+        findings.append(
+            Finding(
+                "error",
+                path,
+                "controller report maps pending/running monitor state to BLOCKED.",
             )
         )
 
@@ -446,6 +469,17 @@ def validate_controller_report(path: Path, text: str) -> list[Finding]:
             )
         )
 
+    if re.search(r"(?i)outputs? missing|runtime output.*missing|NEEDS_EVIDENCE", text) and re.search(
+        r"(?i)\bRUNNING\b|job.*still.*running", text
+    ):
+        findings.append(
+            Finding(
+                "error",
+                path,
+                "running jobs cannot be closed as output-missing completion; use NEEDS_MONITOR.",
+            )
+        )
+
     if "controller_supervised" in text and "controller_context.json" not in text:
         findings.append(
             Finding(
@@ -454,6 +488,30 @@ def validate_controller_report(path: Path, text: str) -> list[Finding]:
                 "controller_supervised report must reference fresh controller_context.json receipts.",
             )
         )
+
+    if re.search(r"(?i)executor_slots(_allowed)?\s*:\s*1", text) and re.search(
+        r"(?i)(launched_executor_count|executor_sessions|actual_executor_slots)\s*:\s*[2-9]", text
+    ):
+        findings.append(Finding("error", path, "controller exceeded GPT-authored executor_slots."))
+
+    if re.search(r"(?i)mapper_slots(_allowed)?\s*:\s*1", text) and re.search(
+        r"(?i)(launched_mapper_count|mapper_sessions|actual_mapper_slots)\s*:\s*[2-9]", text
+    ):
+        findings.append(Finding("error", path, "controller exceeded GPT-authored mapper_slots."))
+
+    if re.search(r"(?i)reviewer.*(internal|subagent|resume|monitor|controller child)", text):
+        findings.append(Finding("error", path, "controller treats reviewer as an internal recovery/subagent role."))
+
+    if FORBIDDEN_MAPPER_SCAN_RE.search(text):
+        findings.append(Finding("error", path, "mapper scanned forbidden raw/heavy/secret/upload artifacts."))
+
+    if STALE_INSTALL_REPORT_RE.search(text):
+        findings.append(Finding("error", path, "controller/mapper must not rely on stale Toolkit docs/local_install_report.md."))
+
+    if re.search(r"(?i)chat/user statement.*finished|from chat.*follow-up.*complete|claimed.*from chat", text) and not re.search(
+        r"(?i)committed.*review|committed.*evidence|review\.md", text
+    ):
+        findings.append(Finding("error", path, "planner/mapper cannot claim follow-up completion from chat without committed evidence/review."))
 
     for field in REPORT_REQUIRED_FIELDS:
         if not re.search(rf"(?m)^{re.escape(field)}\s*:", text):
@@ -557,6 +615,8 @@ def validate_review_file(path: Path, text: str) -> list[Finding]:
                 "review cannot grant audited-go while monitor/pending states remain.",
             )
         )
+    if "AUDITED_GO" in text and re.search(r"(?i)missing.*wiki|missing.*COMPONENTS|missing.*PNG|missing.*architecture_delta", text):
+        findings.append(Finding("error", path, "review cannot grant audited-go when architecture wiki/diagram evidence is missing."))
     if "AUDITED_GO" in text and re.search(r"(?i)long[ -]?slurm|overnight|multi[ -]?job", text) and "direct_executor" in text:
         findings.append(
             Finding(
@@ -611,6 +671,10 @@ def validate_components_csv(path: Path, text: str) -> list[Finding]:
             findings.append(Finding("error", path, f"row {index} is implemented without source_file."))
         if row.get("evidence_status") == "verified" and not row.get("final_output_effect", "").strip():
             findings.append(Finding("error", path, f"row {index} is verified without final_output_effect."))
+        if row.get("current_status") == "implemented":
+            row_text = " ".join(str(value) for value in row.values()).lower()
+            if "scaffold" in row_text:
+                findings.append(Finding("error", path, f"row {index} marks scaffold as implemented."))
     return findings
 
 
@@ -621,6 +685,8 @@ def validate_architecture_yaml(path: Path, text: str) -> list[Finding]:
     for token in ("architecture_version:", "review_token:", "code_fingerprint:", "nodes:", "edges:"):
         if token not in text:
             findings.append(Finding("error", path, f"architecture.yaml missing {token}"))
+    if re.search(r"(?i)fingerprint_?(status)?:\s*(mismatch|different|changed)", text) and "stale" not in text.lower():
+        findings.append(Finding("error", path, "architecture fingerprint mismatch must mark wiki stale."))
     return findings
 
 

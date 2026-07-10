@@ -6,9 +6,9 @@ task_type: "controller"
 controller_mode: true
 planner: "ChatGPT/GPT thread"
 strategic_controller: "user-supervised GPT thread"
-execution_controller: "Codex controller session"
+controller: "Codex controller session"
 executor: "separate Codex executor sessions/subagents"
-auditor: "separate read-only Codex auditor sessions or ChatGPT reviewer"
+reviewer: "separate_readonly"
 risk_level: "high"
 allow_code_change: true
 allow_shell_command: true
@@ -19,19 +19,19 @@ review_required: true
 mechanism_class: "controller / MyoPS primary formal training / Cine secondary resume"
 target_metric: "myops_scar, myops_edema, myocardium_cinemyops diagnostic proxy"
 same_split_baseline: "nnU-Net fold0 reference, SRR recovery diagnostics, and Cine diagnostic packet; evidence not found if unavailable"
-required_evidence: ["executor_result", "auditor_review", "controller_report", "experiment_adequacy_report", "job_status", "same_split_baseline", "cache_isolation", "label_export_QC"]
+required_evidence: ["executor_result", "reviewer_review", "controller_report", "experiment_adequacy_report", "job_status", "same_split_baseline", "cache_isolation", "label_export_QC"]
 forbidden_substitutes: ["formal completion without MyoPS Slurm launch or adequate artifacts", "pending jobs marked complete", "CPU smoke as formal training", "Cine blocking MyoPS GPU", "route-negative stop without adequacy", "validation upload or fold expansion"]
 route_promotion_gate: "MyoPS or Cine promotion requires adequacy and independent audit; Cine remains diagnostic unless hosted evidence exists."
-route_negative_gate: "No STOP_NO_* conclusion unless experiment adequacy passes and auditor supports route-negative decision."
+route_negative_gate: "No STOP_NO_* conclusion unless experiment adequacy passes and reviewer supports route-negative decision."
 experiment_adequacy_gate: "MyoPS formal training requires minimum effective training evidence; Cine diagnostic requires non-reference frame evidence."
 scientific_completion_gate: "Controller operational completion is not scientific completion. Pending jobs must be reported as incomplete/needs-monitor."
 diagnostic_publication_gate: "Reviewed diagnostic-only code and reports may be committed/pushed if no route is promoted and publication scope is respected."
 diagnostic_publication_scope: ["controller_report.md", "execution_plan.md", "subtask result.md", "subtask review.md", "small reviewed Markdown decision packets", "reviewed first-party scripts"]
 blocked_after_diagnostic_publication: ["validation packaging", "validation upload", "fold expansion", "hosted metric claims", "label/evaluator/fold split changes", "unauthorized next-stage training"]
 executor_subtasks: ["prompts/tasks/20260703_srr_formal_training.md", "prompts/tasks/20260703_cine_temporal_resume.md"]
-auditor_subtasks: ["results/20260703_mainline_resume_goal/subagents/auditor_prompt.md"]
+reviewer_prompt_path: "results/20260703_mainline_resume_goal/subagents/reviewer_prompt.md"
 controller_report_path: "results/20260703_mainline_resume_goal/controller_report.md"
-allowed_next_states: ["EXECUTION_PLANNED", "EXECUTOR_RUNNING", "EXECUTED_UNAUDITED", "AUDITOR_RUNNING", "AUDITED_GO", "NEEDS_MONITOR", "NEEDS_EVIDENCE", "NEEDS_REVISION", "NEEDS_SUBAGENT_LAUNCH", "NEEDS_HUMAN_APPROVAL", "NEEDS_GPT_PLANNER", "STOP"]
+allowed_next_states: ["EXECUTION_PLANNED", "EXECUTOR_RUNNING", "EXECUTED_UNAUDITED", "REVIEWER_RUNNING", "AUDITED_GO", "NEEDS_MONITOR", "NEEDS_EVIDENCE", "NEEDS_REVISION", "NEEDS_SUBAGENT_LAUNCH", "NEEDS_HUMAN_APPROVAL", "NEEDS_GPT_PLANNER", "STOP"]
 auto_git_commit: true
 auto_git_push: true
 allow_git_commit: true

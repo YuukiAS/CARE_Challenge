@@ -20,6 +20,21 @@ Use this skill for the `mapper` role defined by `TODO-agents-v2.md`. The mapper 
 
 Before mapping, read `AGENTS.md`, `START_HERE_FOR_GPT.md`, `GPT_PLANNER_CARE_PROTOCOL.md`, `TODO-agents-v2.md`, the handoff role/state/controller protocol files, the current GPT-authored task or milestone prompt, current `wiki/` files, and the current result packet evidence named by the task. If the task uses Slurm, also read `.agents/skills/slurm-routing-partition/SKILL.md`.
 
+For architecture-changing work, also read the AI Research Toolkit source files from the current checkout:
+
+```text
+${AI_RESEARCH_TOOLKIT_ROOT}/README.md
+${AI_RESEARCH_TOOLKIT_ROOT}/RESOURCE_INDEX.md
+${AI_RESEARCH_TOOLKIT_ROOT}/inventory/resources.yaml
+```
+
+Do not use stale Toolkit reports such as `docs/local_install_report.md`. Run the repo wrapper so Toolkit state is checked from a writable shadow instead of writing to `/overflow`:
+
+```bash
+AI_RESEARCH_TOOLKIT_ROOT=/overflow/htzhu/mingcheng_new/AI_Research_Toolkit \
+  python scripts/architecture/run_toolkit_healthcheck.py --check
+```
+
 ## Scope
 
 Mapper may inspect first-party source, configs, scripts, result packets, lightweight CSV/JSON/Markdown evidence, and committed wiki files. It may update root `wiki/` files and D2/Graphviz/PlantUML diagram sources only when the task explicitly authorizes wiki updates.
@@ -106,3 +121,39 @@ Draft mapper reports are allowed while jobs are pending/running, but unproven ru
 Final mapper reports must include source files and symbols inspected, config/CLI/loss/export entrypoints checked, runtime evidence paths used, component status deltas, code fingerprint inputs, stale wiki or stale evidence findings, and any component with missing `final_output_effect` evidence.
 
 If source code changes after a mapper draft, rerun mapper final. Do not reuse stale mapper reports.
+
+## Scripts
+
+Use these first-party helpers:
+
+```bash
+python scripts/architecture/validate_care_architecture_wiki.py --strict
+python scripts/architecture/generate_care_architecture_wiki.py --check
+python scripts/architecture/run_toolkit_healthcheck.py --check
+```
+
+To regenerate figures after editing D2 sources:
+
+```bash
+python scripts/architecture/generate_care_architecture_wiki.py
+```
+
+The generator must produce `.d2 + .svg + .png` for each canonical figure. If D2 PNG export fails because Playwright is unavailable, SVG generation plus ImageMagick `convert` fallback is acceptable and must be reported.
+
+## Controller Output Paths
+
+Mapper-enabled controller tasks must produce or validate:
+
+```text
+results/<task_key>/controller_context.json
+results/<task_key>/controller_ledger.csv
+results/<task_key>/controller_bootstrap_snapshot.md
+results/<task_key>/implementation_snapshot.md
+results/<task_key>/mapper_report_draft.md
+results/<task_key>/architecture_delta_draft.md
+results/<task_key>/mapper_report_final.md
+results/<task_key>/architecture_delta_final.md
+results/<task_key>/finalizer_state.json
+```
+
+`controller_context.json` must include phase, git head/status, task prompt path and sha256, `AGENTS.md` sha256, Slurm skill sha256 when relevant, wiki code fingerprint, required job IDs, required runtime paths, and files read. `controller_ledger.csv` is append-only and must include timestamp, phase, git head, task hash, job states, decision, and next action.
