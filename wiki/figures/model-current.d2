@@ -1,0 +1,38 @@
+vars: {
+  d2-config: {
+    layout-engine: elk
+  }
+}
+
+direction: right
+
+title: "CARE current model architecture"
+
+inputs: "LGE/T2/C0\navailability" {
+  style.fill: "#eef7ff"
+}
+anchor: "nnU-Net anchor\ncontext/evidence/safety" {
+  style.fill: "#f3f4f6"
+}
+retrieval: "SRR retrieval bank\npartial + verified evidence" {
+  style.fill: "#e8f5e9"
+}
+proposal: "lesion proposal\nscar/edema soft-ROI refiner" {
+  style.fill: "#fff7e6"
+}
+arbitration: "branch arbitration\nfinal-logit correction" {
+  style.fill: "#fff7e6"
+}
+final: "final logits / labels\nM9 no-promotion diagnostic" {
+  style.fill: "#fdecec"
+}
+cine: "Cine local proxy\nnot hosted-ready" {
+  style.fill: "#f5e8ff"
+}
+
+inputs -> retrieval: "availability-aware features"
+anchor -> proposal: "anchor/context"
+retrieval -> proposal: "semantic evidence"
+proposal -> arbitration: "proposal/refiner evidence"
+arbitration -> final: "bounded correction"
+cine -> final: "local proxy evidence"

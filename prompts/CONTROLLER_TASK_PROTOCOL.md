@@ -1,8 +1,8 @@
 # Controller Task Protocol
 
-A controller task lets a Codex execution controller coordinate executor and
-auditor work for one GPT-approved task. It does not authorize Codex to become
-the strategic planner.
+A controller task lets a Codex controller coordinate executor, mapper,
+deterministic finalizer, validator, and final reviewer handoff for one
+GPT-approved task. It does not authorize Codex to become the strategic planner.
 
 For milestone chains, also apply `prompts/MILESTONE_REVIEW_PROTOCOL.md`. The
 milestone protocol is stricter than the general controller protocol: the main
@@ -17,9 +17,20 @@ Controller tasks should include:
 - `controller_mode: true`
 - `planner: "ChatGPT/GPT thread"`
 - `strategic_controller: "user-supervised GPT thread"`
-- `execution_controller: "Codex controller session"`
+- `execution_mode: "controller_supervised"`
+- `requires_execution_controller: true`
+- `controller: "Codex controller session"`
 - `executor: "Codex executor session"`
-- `auditor: "separate Codex auditor session"` or `ChatGPT reviewer`
+- `executor_slots: 1`
+- `mapper_slots: 1`
+- `mapper_required: true` or `false`
+- `architecture_impact: "none"` or `"component"` or `"system"`
+- `wiki_update_required: true` or `false`
+- `diagram_update_required: true` or `false`
+- `slurm_runtime_continuity_required: true` or `false`
+- `continuity_backend: "none"` or `"slurm_dependency"` or `"tmux_watcher"`
+- `review_mode: "independent_thread"` or `"short_goal"`
+- `reviewer: "separate_readonly"`
 - `review_required: true`
 - `route_promotion_gate`
 - `experiment_adequacy_gate`
@@ -37,6 +48,35 @@ Controller tasks should include:
 - a controller report path, normally
   `results/<task_key>/controller_report.md`
 
+## Controller Lifecycle
+
+For controller-supervised long Slurm, overnight, multi-job, or high-resume-risk
+tasks, the controller must re-ground at each major phase:
+
+```text
+BOOTSTRAP
+PRE_SUBMISSION
+MONITOR_RESUME
+FINALIZE_A
+MAPPER_FINAL
+FINALIZE_B
+```
+
+At each phase, read disk/live state rather than relying on old context or
+executor self-report. Write or update:
+
+```text
+results/<task_key>/controller_context.json
+results/<task_key>/controller_ledger.csv
+results/<task_key>/controller_bootstrap_snapshot.md
+results/<task_key>/implementation_snapshot.md
+results/<task_key>/finalizer_state.json
+```
+
+`PENDING`, `RUNNING`, `CONFIGURING`, `COMPLETING`, and `AWAITING_SACCT` are
+normal monitor states, not blockers. A scheduler block is allowed only after the
+Slurm routing skill's threshold is met.
+
 ## Subagent Fallback
 
 Do not assume every Codex runtime can open new sessions automatically.
@@ -53,12 +93,13 @@ If automatic launch is not supported, the controller must write files such as:
 
 ```text
 results/<task_key>/subagents/executor_prompt.md
-results/<task_key>/subagents/auditor_prompt.md
+results/<task_key>/subagents/mapper_prompt.md
+results/<task_key>/subagents/reviewer_prompt.md
 ```
 
 The controller then marks the state as `NEEDS_SUBAGENT_LAUNCH` or
-`NEEDS_HUMAN_APPROVAL`. It must not pretend executor/auditor separation already
-happened.
+`NEEDS_HUMAN_APPROVAL`. It must not pretend executor/mapper/reviewer separation
+already happened.
 
 ## Controller Report
 
@@ -72,11 +113,13 @@ The report must include:
 
 - controller task id
 - executor subtask list
-- auditor subtask list
+- mapper subtask list when enabled
+- reviewer handoff path
 - prompt, result, and review path for every subtask
 - session, command, and log evidence
 - claims summary
-- audited decision
+- finalizer and validator decision
+- reviewer decision if it exists
 - controller run status
 - operational completion status
 - experiment adequacy decision

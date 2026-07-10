@@ -1,0 +1,40 @@
+vars: {
+  d2-config: {
+    layout-engine: elk
+  }
+}
+
+direction: right
+
+planner: "planner\nGPT route/task author" {
+  style.fill: "#eef7ff"
+}
+controller: "controller\nlong-task continuity" {
+  style.fill: "#e8f5e9"
+}
+executor: "executor\nimplementation + jobs" {
+  style.fill: "#fff7e6"
+}
+mapper1: "mapper draft\nread-only map" {
+  style.fill: "#f5e8ff"
+}
+finalizer: "finalizer\nterminal accounting + aggregation" {
+  style.fill: "#f3f4f6"
+}
+mapper2: "mapper final\nwiki + architecture delta" {
+  style.fill: "#f5e8ff"
+}
+validator: "validator\nfail-closed checks" {
+  style.fill: "#fdecec"
+}
+reviewer: "reviewer\nindependent read-only review.md" {
+  style.fill: "#e0f2fe"
+}
+
+planner -> controller: "controller_supervised task"
+controller -> executor: "executor_slots from GPT"
+controller -> mapper1: "mapper_slots from GPT"
+executor -> finalizer: "job ids + runtime paths"
+finalizer -> mapper2: "tracked evidence"
+mapper2 -> validator: "wiki/component/fingerprint checks"
+validator -> reviewer: "committed final packet"

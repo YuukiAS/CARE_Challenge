@@ -4,11 +4,23 @@ project: "CARE_Challenge"
 status: "READY"
 task_type: "controller"
 controller_mode: true
+execution_mode: "controller_supervised"
+requires_execution_controller: true
 planner: "ChatGPT/GPT thread"
 strategic_controller: "user-supervised GPT thread"
-execution_controller: "Codex controller session"
+controller: "Codex controller session"
 executor: "separate Codex executor session/subagent"
-auditor: "separate read-only Codex auditor session or ChatGPT reviewer"
+executor_slots: 1
+mapper: "separate read-only Codex mapper session/subagent"
+mapper_slots: 1
+mapper_required: true
+architecture_impact: "component"
+wiki_update_required: true
+diagram_update_required: true
+slurm_runtime_continuity_required: false
+continuity_backend: "none"
+review_mode: "independent_thread"
+reviewer: "separate_readonly"
 risk_level: "high"
 allow_code_change: true
 allow_shell_command: true
@@ -18,7 +30,7 @@ requires_human_approval: false
 review_required: true
 mechanism_class: "segmentation | registration | cine_temporal | missing_modality | proposal_refinement | external_adapter | submission_packaging"
 target_metric: "myops_scar | myops_edema | myocardium_cinemyops | explicitly caveated local proxy"
-required_evidence: ["executor_result", "auditor_review", "controller_report", "experiment_adequacy_gate_evidence", "route_promotion_gate_evidence", "route_negative_gate_evidence", "diagnostic_publication_gate_evidence"]
+required_evidence: ["executor_result", "mapper_report_if_required", "finalizer_state_if_required", "validator_report", "reviewer_review", "controller_report", "experiment_adequacy_gate_evidence", "route_promotion_gate_evidence", "route_negative_gate_evidence", "diagnostic_publication_gate_evidence"]
 forbidden_substitutes: ["controller inventing a new route", "executor self-review", "audit bypass", "missing result directory ignored", "similar required filename accepted", "strict validator errors swallowed", "final audit without completion-check readiness", "smoke-scale training treated as full route evidence", "unauthorized fold expansion or upload"]
 promotion_gate: "All executor claims audited; CARE overlay and skill gates satisfied; no human-approval block."
 route_promotion_gate: "All executor claims audited; CARE overlay and skill gates satisfied; no human-approval block."
@@ -38,9 +50,10 @@ diagnostic_publication_scope: ["controller_report", "execution_plan", "subtask_r
 blocked_after_diagnostic_publication: ["validation_upload", "validation_packaging", "fold_expansion", "hosted_metric_claim", "label_or_evaluator_or_fold_split_change", "next_stage_training"]
 failure_escalation_policy: "Escalate inside this policy only; new scientific direction requires NEEDS_GPT_PLANNER."
 executor_subtasks: ["results/<task_key>/subagents/executor_prompt.md"]
-auditor_subtasks: ["results/<task_key>/subagents/auditor_prompt.md"]
+mapper_subtasks: ["results/<task_key>/subagents/mapper_prompt.md"]
+reviewer_prompt_path: "results/<task_key>/subagents/reviewer_prompt.md"
 controller_report_path: "results/<task_key>/controller_report.md"
-allowed_next_states: ["EXECUTION_PLANNED", "EXECUTED_UNAUDITED", "AUDITOR_RUNNING", "AUDITED_GO", "AUDITED_DIAGNOSTIC_PUBLISH", "NEEDS_EVIDENCE", "NEEDS_REVISION", "NEEDS_SUBAGENT_LAUNCH", "NEEDS_GPT_PLANNER", "STOP"]
+allowed_next_states: ["EXECUTION_PLANNED", "EXECUTOR_RUNNING", "MAPPER_DRAFT_RUNNING", "FINALIZER_RUNNING", "MAPPER_FINAL_RUNNING", "EXECUTED_UNAUDITED", "REVIEWER_RUNNING", "AUDITED_GO", "AUDITED_DIAGNOSTIC_PUBLISH", "NEEDS_EVIDENCE", "NEEDS_REVISION", "NEEDS_MONITOR", "NEEDS_SUBAGENT_LAUNCH", "NEEDS_GPT_PLANNER", "STOP"]
 auto_git_commit: false
 auto_git_push: false
 allow_git_commit: false
@@ -58,14 +71,15 @@ State the CARE objective, target metric, and authorized mechanism route. The con
 1. GPT planner writes this controller task.
 2. User starts a Codex controller session and gives it this task.
 3. The controller enforces `prompts/HANDOFF_GATE_POLICY.md` before any final audit or completion decision.
-4. The controller creates or launches a separate executor session and a separate read-only auditor session.
+4. The controller creates or launches a separate executor session and, when enabled, a separate read-only mapper session.
 5. Executor writes `result.md` and artifact paths.
-6. Auditor reads task/result/MANIFEST/artifacts and writes read-only `review.md`.
-7. Controller writes `results/<task_key>/controller_report.md` with subtask paths, session/log evidence, claim summary, audited decision, controller run status, operational completion status, experiment adequacy decision, route promotion decision, route negative decision, scientific resolution status, diagnostic publication decision, git action status, published files, blocked actions, next required action, and reasons for no route promotion or no publication.
-8. GPT strategic controller reads the controller report before choosing the next CARE direction.
+6. Finalizer performs terminal accounting, aggregation, validation, wiki finalization if required, and commit if authorized.
+7. Controller writes `results/<task_key>/controller_report.md` with subtask paths, session/log evidence, finalizer/validator status, controller run status, operational completion status, experiment adequacy decision, route promotion decision, route negative decision, scientific resolution status, diagnostic publication decision, git action status, published files, blocked actions, next required action, and reasons for no route promotion or no publication.
+8. A separate read-only reviewer reads the final committed packet and writes `review.md`.
+9. GPT strategic controller reads the controller report and review before choosing the next CARE direction.
 
 ## Subagent Fallback
-If the Codex runtime cannot automatically launch subagents or new sessions, write `results/<task_key>/subagents/executor_prompt.md` and `results/<task_key>/subagents/auditor_prompt.md`, set state to `NEEDS_SUBAGENT_LAUNCH` or `NEEDS_HUMAN_APPROVAL`, and stop. Do not pretend executor/auditor separation happened.
+If the Codex runtime cannot automatically launch subagents or new sessions, write `results/<task_key>/subagents/executor_prompt.md`, `results/<task_key>/subagents/mapper_prompt.md` when mapper is required, and `results/<task_key>/subagents/reviewer_prompt.md`, set state to `NEEDS_SUBAGENT_LAUNCH` or `NEEDS_HUMAN_APPROVAL`, and stop. Do not pretend executor/mapper/reviewer separation happened.
 
 ## CARE Gate References
 Use the Bridge Kit controller protocol for state and report structure. Use `prompts/HANDOFF_GATE_POLICY.md` for exact task graph, strict validator, completion-check-before-final-audit, report schema, and smoke-scale evidence gates. GPT planners should apply `prompts/GPT_HARD_GATE_PROMPT.md` before writing high-risk controller goals. Use the medical-imaging skill for generic mechanism completion. Use `prompts/CARE_OVERLAY_GATES.md` for CARE leaderboard, label/export, T2-edema, Cine, controller, submission, and failure-escalation constraints.

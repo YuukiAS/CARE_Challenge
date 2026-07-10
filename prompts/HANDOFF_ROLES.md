@@ -67,22 +67,31 @@ conclusion.
 The execution controller is a supervisor for one approved task, not an open-ended
 planner.
 
-## Four Roles
+## Agent-Flow v2 Roles
 
-- `planner`: the ChatGPT/GPT main thread that writes tasks. Default:
-  `ChatGPT/GPT thread`.
-- `strategic_controller`: the user-supervised GPT thread that reads results,
-  reviews, and controller reports, then decides the next high-level direction.
-  Default: `user-supervised GPT thread`.
-- `execution_controller`: a Codex controller session that coordinates execution
-  only inside a GPT-authored controller task. Default for controller tasks:
-  `Codex controller session`.
-- `executor`: a Codex executor session that performs authorized changes,
-  commands, and result writing. Default: `Codex executor session`.
-- `auditor`: a separate read-only reviewer. It may be a separate Codex auditor
-  session or ChatGPT reviewer with enough file evidence. The auditor must not
-  fix code, generate missing artifacts, or continue execution unless a new task
-  explicitly authorizes that role change.
+- `planner`: the ChatGPT/GPT main thread that writes route, task, milestone,
+  controller, executor, mapper, and reviewer contracts.
+- `controller`: a top-level Codex goal for one GPT-authored controller task. It
+  owns long-task continuity, phase grounding, subagent coordination, Slurm
+  continuity, finalizer handoff, validator execution, and operational closeout.
+- `executor`: a Codex implementation/command subagent, or an independent short
+  executor thread for direct tasks. It performs authorized changes, jobs, and
+  initial evidence writing.
+- `mapper`: a read-only controller subagent for architecture/component/evidence
+  mapping. It may update `wiki/` only when authorized by the task and must not
+  write review decisions.
+- `finalizer`: a deterministic controller-managed stage or script for terminal
+  accounting, aggregation, validation, wiki finalization, and commit. It is not
+  an LLM reviewer.
+- `validator`: a first-party script that checks packet, state-machine,
+  wiki/fingerprint, and known-bad fixtures fail closed.
+- `reviewer`: a separate read-only Codex thread or short reviewer goal that
+  starts after the final packet is committed and writes `review.md`.
+
+Historical `auditor` fields are legacy aliases for `reviewer`. New tasks must
+not create a controller-internal `auditor`; use `mapper` for internal read-only
+architecture checks and `reviewer` for final independent review.
 
 Executor self-assessment is never the final completion state. A controller
-report is also not a replacement for GPT strategic planning.
+report is also not a replacement for GPT strategic planning or independent
+review.

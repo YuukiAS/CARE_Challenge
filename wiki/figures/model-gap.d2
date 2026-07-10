@@ -1,0 +1,30 @@
+vars: {
+  d2-config: {
+    layout-engine: elk
+  }
+}
+
+direction: right
+
+title: "CARE current vs target gap"
+
+target: {
+  label: "SRR-v3 target"
+  availability: "availability-aware retrieval"
+  dictionary: "semantic bank + train/OOF prototypes"
+  proposal: "anatomy-guided proposal"
+  refiner: "pathology-specific soft ROI"
+  losses: "explicit objectives"
+  cine: "registration-aware temporal retrieval"
+}
+
+current: {
+  label: "Current audited state"
+  myops: "M9 formal candidates\nnegative vs M8 nnU-Net anchor"
+  evidence: "follow-up packet reconciled\nready/no-promotion audited"
+  gaps: "component effect and Cine temporal\nneed mapper-final closure"
+}
+
+target -> current: "gaps must be closed with runtime evidence" {
+  style.stroke-dash: 4
+}

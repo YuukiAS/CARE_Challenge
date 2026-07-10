@@ -39,12 +39,15 @@ SRR/MyoPS/Cine 路线判断必须视觉阅读 ChatGPT Project background / proje
 2. `GPT_PLANNER_CARE_PROTOCOL.md`
 3. `AGENTS.md`
 4. `README.md`
-5. `prompts/CHATGPT_RULES.md`
-6. `prompts/GPT_HARD_GATE_PROMPT.md`
-7. `prompts/MILESTONE_REVIEW_PROTOCOL.md`
-8. `prompts/THREAD_BOOTSTRAP_ROUTE_IMAGE_PROTOCOL.md`
-9. `.agents/skills/slurm-routing-partition/SKILL.md`，只要计划会提交 Slurm job
-10. 当前任务相关的 `prompts/tasks/*.md`、`prompts/shared/*.md`、`results/*/result.md`、`results/*/review.md`、`completion_check.md`、`review_request.md`、`MANIFEST.md`、`commands_run.md`
+5. `wiki/README.md`
+6. `wiki/COMPONENTS.csv`
+7. `prompts/CHATGPT_RULES.md`
+8. `prompts/GPT_HARD_GATE_PROMPT.md`
+9. `prompts/MILESTONE_REVIEW_PROTOCOL.md`
+10. `prompts/THREAD_BOOTSTRAP_ROUTE_IMAGE_PROTOCOL.md`
+11. `.agents/skills/slurm-routing-partition/SKILL.md`，只要计划会提交 Slurm job
+12. `.agents/skills/care-mapper/SKILL.md`，只要会影响架构、loss/dataflow/export、Cine temporal 路径或 controller observability
+13. 当前任务相关的 `prompts/tasks/*.md`、`prompts/shared/*.md`、`results/*/result.md`、`results/*/review.md`、`completion_check.md`、`review_request.md`、`MANIFEST.md`、`commands_run.md`
 
 如果通过 GitHub / shell 可读提交，必须查看最近提交，例如：
 
@@ -74,15 +77,42 @@ SRR/MyoPS/Cine 里程碑不能只读仓库文字。必须按 `prompts/THREAD_BOO
 - 有明确 losses/objectives、prototype/dictionary、hard-negative / negative-space、安全监督；
 - nnU-Net 或其它强分割模型只能作为 anchor / context / evidence / safety / fallback，不能把 SRR 降级成后处理。
 
-## 3. 角色边界
+## 3. Agent-flow v2 角色边界
 
-GPT 是规划者 / 战略控制者。GPT 负责路线选择、科学判断、任务拆解、反偷懒约束和审阅关口。
+新任务只使用这些角色名：`planner`、`controller`、`executor`、`mapper`、`finalizer`、`validator`、`reviewer`。
 
-Codex 是执行者。Codex 只执行 GPT 写清楚的任务；不能自我审阅，不能自行启动下一里程碑，不能自行路线晋级、validation packaging、upload、hosted metric claim、scientific stop。
+GPT 是 `planner` / 战略控制者。GPT 负责路线选择、科学判断、任务拆解、反偷懒约束、执行模式、subagent 数量和审阅关口。
 
-Reviewer / auditor 是只读审阅者 / 审计者。Reviewer 不补文件、不训练、不改代码、不继续执行，只检查证据是否支持主张，并写受控 review decision。
+`controller` 是顶层 Codex goal，只能在 GPT-authored controller task 内维持长任务连续性、调度 subagents、执行 phase grounding、Slurm continuity 和最终收尾。它不得发明新路线，不得写 `review.md`，不得启动下一 milestone。
 
-Controller 只能在 GPT 授权的 task graph 内协调执行者/审计者，不得发明新研究方向。
+`executor` 是 controller 内部 subagent，或短任务中的独立 executor thread/goal。它修改代码、运行授权命令、提交 jobs、写初始 evidence；但不拥有 overnight continuity，不自审，不决定路线晋级。
+
+`mapper` 是 controller 内部只读 subagent。它从代码、配置、入口和 runtime evidence 映射当前架构，更新 `wiki/`、component 表和图；不改模型代码，不写 `review.md`，不做科学晋级判断。
+
+`finalizer` 是 controller 管理的确定性阶段/脚本，不是 LLM subagent。它负责 terminal Slurm accounting、aggregation、validation、wiki finalization 和 commit；不能用自然语言自行解释状态，不能替代 reviewer。
+
+`validator` 是 first-party 脚本，必须 fail closed。
+
+`reviewer` 是独立只读 Codex thread 或短 reviewer goal。Reviewer 不补文件、不训练、不改代码、不继续执行，只检查证据是否支持主张，并写受控 review decision。历史 `auditor` 仅作为 `reviewer` legacy alias；新 task 不再使用内部 `auditor`。
+
+每个新 milestone / controller task 必须显式写：
+
+```yaml
+execution_mode: direct_executor | controller_supervised
+requires_execution_controller: true | false
+executor_slots: 1
+mapper_slots: 1
+mapper_required: true | false
+architecture_impact: none | component | system
+wiki_update_required: true | false
+diagram_update_required: true | false
+slurm_runtime_continuity_required: true | false
+continuity_backend: none | slurm_dependency | tmux_watcher
+review_mode: independent_thread | short_goal
+reviewer: separate_readonly
+```
+
+overnight、长 Slurm、多 job、高 resume 风险必须使用 `controller_supervised`，并且 `continuity_backend` 不能是 `none`。模型结构、loss wiring、dataflow、export、registration/temporal 路径变化必须启用 mapper。
 
 ## 4. 写里程碑的格式
 

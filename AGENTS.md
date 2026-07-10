@@ -29,6 +29,18 @@ For this temporary `/users` copy, repo-local skills under `.agents/skills/` shou
 
 Treat this `AGENTS.md` as the repo-level Codex rules source. Do not rely on `.cursor/rules/`, `.cursor/skills/`, `.cursor/plans/`, or Cursor plugins; migrate future rule changes here.
 
+## Agent-Flow v2 controller handoff
+
+For new CARE handoffs, use only these active role names: `planner`, `controller`, `executor`, `mapper`, `finalizer`, `validator`, and `reviewer`. Historical `auditor` fields are legacy aliases for the independent read-only `reviewer`; do not create a controller-internal auditor subagent in new tasks.
+
+Short, non-Slurm, low-resume-risk work may use `planner -> executor -> reviewer`. Overnight, long Slurm, multi-job, or high-resume-risk work must use `planner -> controller -> executor/mapper/finalizer/validator -> separate reviewer`.
+
+Every new CARE task or milestone must declare `execution_mode`, `requires_execution_controller`, `executor_slots`, `mapper_slots`, `mapper_required`, `architecture_impact`, `wiki_update_required`, `diagram_update_required`, `slurm_runtime_continuity_required`, `continuity_backend`, `review_mode`, and `reviewer`. Defaults are one executor and one mapper for controller-supervised work; the controller must not increase subagent counts beyond the GPT-authored task graph.
+
+The `controller` owns task continuity, phase re-grounding, Slurm monitor state, and finalizer handoff inside one GPT-authored task. The `executor` performs authorized implementation and job submission but does not own overnight continuity or self-review. The `mapper` is read-only architecture/evidence mapping and uses `.agents/skills/care-mapper/SKILL.md`. The `finalizer` is deterministic terminal accounting, aggregation, validation, wiki finalization, and commit; it is not an LLM subagent. The `reviewer` starts only after the final packet is committed and remains read-only.
+
+Root architecture/current-state knowledge lives at `wiki/README.md`; GPT, controller, mapper, and reviewer threads must consult it before architecture-affecting planning or review. If wiki fingerprint/evidence is stale, mark it stale and use current code/live evidence as source of truth.
+
 ## MONITOR_PACKET_IS_NOT_COMPLETION
 
 This rule applies to M7 follow-up2/follow-up3 and every future CARE milestone.
@@ -259,7 +271,7 @@ Default inference policy for the current nnU-Net baseline is a 5-fold ensemble (
 <!-- AI_SKILLS_COLLECTION_START -->
 # AI Skills Collection
 
-Installed: `2026-07-03T06:17:10+00:00`
+Installed: `2026-07-10T05:12:39+00:00`
 Target: `repo`
 Install mode: `domain:medical-imaging`
 Project skills: `.agents/skills/`
@@ -390,15 +402,17 @@ and explicit auditor support.
   write required outputs plus `completion_check.md`, `review_request.md`, and
   `MANIFEST.md`, then stop. Do not write `review.md`, do not approve yourself,
   and do not start the next milestone.
-- If the task requires an auditor and the current session is executor, do not
-  also audit.
-- If acting as auditor, remain read-only; do not fix code, generate missing
+- If the task requires a reviewer and the current session is executor, do not
+  also review.
+- If acting as reviewer, remain read-only; do not fix code, generate missing
   artifacts, or continue execution.
-- If acting as milestone reviewer/auditor, read only the completed result
+- If acting as milestone reviewer, read only the completed result
   directory and write `review.md`; only an exact audited-go token in that review
   permits the next milestone.
-- If acting as execution controller, coordinate executor/auditor sessions only
-  inside the GPT-authored controller task.
+- If acting as controller, coordinate executor/mapper/finalizer/validator
+  handoff only inside the GPT-authored controller task. Prepare the separate
+  reviewer handoff after the final packet is committed; do not use an internal
+  auditor for final review.
 - The execution controller must not invent new research/product directions. If a
   new direction is needed, write `NEEDS_GPT_PLANNER`.
 - Controller reports must separate `controller_run_status`,

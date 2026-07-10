@@ -1,0 +1,71 @@
+architecture_version: care-agent-flow-v2-bootstrap
+verified_at_utc: 2026-07-10T00:00:00Z
+verified_milestone: M9 follow-up evidence reconciliation
+review_token: M9_FOLLOWUP_AUDITED_READY_NO_PROMOTION_DIAGNOSTIC_ONLY
+verification_base_commit: current-local-main
+code_fingerprint: srr_propref=f7f9df91;srr_blocks=8d126023;srr_losses=dca8e5e1
+evidence_fingerprint: m9_followup_review=results/20260708_srr_v3_m9_dictionary_fidelity_repair_training/review.md
+nodes:
+  - id: inputs
+    label: LGE/T2/C0 + availability
+    branch: MyoPS
+    current_status: implemented
+    target_status: implemented
+    source_file: src/care_myocardium/models/srr_propref.py
+    symbol: SRRProposeRefineNet
+  - id: retrieval
+    label: availability-aware retrieval bank
+    branch: MyoPS
+    current_status: partial
+    target_status: implemented
+    source_file: src/care_myocardium/models/srr_blocks.py
+    symbol: SRR blocks
+  - id: proposal_refiner
+    label: lesion proposal + soft-ROI refiner
+    branch: MyoPS
+    current_status: partial
+    target_status: implemented
+    source_file: src/care_myocardium/models/srr_propref.py
+    symbol: BranchArbitrationGate
+  - id: final_logits
+    label: final logits / export
+    branch: MyoPS
+    current_status: implemented
+    target_status: implemented
+    source_file: src/care_myocardium/models/srr_propref.py
+    symbol: final logits
+  - id: cine
+    label: Cine local proxy / temporal line
+    branch: Cine
+    current_status: partial
+    target_status: implemented
+    source_file: scripts/evaluation/aggregate_srr_v3_m9_followup_reconciliation_packet.py
+    symbol: Cine aggregation
+  - id: controller
+    label: controller-supervised execution
+    branch: AgentFlow
+    current_status: partial
+    target_status: implemented
+    source_file: prompts/CONTROLLER_TASK_PROTOCOL.md
+    symbol: controller_supervised
+edges:
+  - from: inputs
+    to: retrieval
+    kind: data
+    condition: modality availability gates retrieval
+  - from: retrieval
+    to: proposal_refiner
+    kind: data
+    condition: retrieval features support proposal/refinement
+  - from: proposal_refiner
+    to: final_logits
+    kind: data
+    condition: branch arbitration affects final logits when gates open
+  - from: cine
+    to: final_logits
+    kind: evidence
+    condition: local proxy evidence only; no hosted readiness
+  - from: controller
+    to: final_logits
+    kind: evidence
+    condition: finalizer and validator collect tracked evidence before review

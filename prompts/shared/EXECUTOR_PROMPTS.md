@@ -2,6 +2,14 @@
 
 Copy exactly one section into the main Codex executor/controller session. The executor must commit locally and stop. The user manually pushes.
 
+## Agent-flow v2 executor/controller rule
+
+For new CARE work, use role names `planner`, `controller`, `executor`, `mapper`, `finalizer`, `validator`, and `reviewer`. Historical `auditor` wording in older sections means the independent read-only `reviewer`; do not create a controller-internal auditor subagent.
+
+Short work may be `execution_mode: direct_executor`. Overnight, long Slurm, multi-job, or high-resume-risk work must be `execution_mode: controller_supervised`, must use the Slurm routing skill before job submission, and must have durable continuity via `slurm_dependency` or `tmux_watcher`. A controller must obey GPT-authored `executor_slots` and `mapper_slots`; default is one executor and one mapper.
+
+If `architecture_impact` is `component` or `system`, invoke the mapper contract in `.agents/skills/care-mapper/SKILL.md` and update root `wiki/` artifacts unless the task explicitly provides a no-change fingerprint receipt. The finalizer is deterministic terminal accounting, aggregation, validation, wiki finalization, and commit; it is not a reviewer and must not write `review.md`.
+
 ## Local commit rule for every milestone
 
 At goal completion, the executor must create one local commit containing every small file needed for the separate reviewer to inspect the milestone. A milestone goal is not complete merely because files exist locally under an ignored `results/20??????_*` directory; the reviewer must be able to recover the required evidence from git after the user pushes the commit.

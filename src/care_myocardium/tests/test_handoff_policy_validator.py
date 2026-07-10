@@ -34,6 +34,77 @@ promotion_gate: "legacy route gate"
         self.assertIn("diagnostic_publication_gate", messages)
         self.assertTrue(all(item.severity == "error" for item in findings))
 
+    def test_long_slurm_direct_executor_is_rejected(self) -> None:
+        text = """---
+task_type: "controller"
+controller_mode: true
+execution_mode: "direct_executor"
+requires_execution_controller: false
+executor_slots: 1
+mapper_slots: 0
+mapper_required: false
+architecture_impact: "none"
+wiki_update_required: false
+diagram_update_required: false
+slurm_runtime_continuity_required: true
+continuity_backend: "none"
+review_mode: "independent_thread"
+reviewer: "separate_readonly"
+---
+# Overnight long Slurm task
+"""
+        findings = validator.validate_task_file(Path("prompts/tasks/overnight.md"), text, strict=True)
+        messages = "\n".join(item.message for item in findings)
+        self.assertIn("cannot use execution_mode: direct_executor", messages)
+        self.assertIn("continuity_backend", messages)
+
+    def test_architecture_impact_requires_mapper_and_wiki(self) -> None:
+        text = """---
+task_type: "controller"
+controller_mode: true
+execution_mode: "controller_supervised"
+requires_execution_controller: true
+executor_slots: 1
+mapper_slots: 0
+mapper_required: false
+architecture_impact: "component"
+wiki_update_required: false
+diagram_update_required: false
+slurm_runtime_continuity_required: false
+continuity_backend: "none"
+review_mode: "independent_thread"
+reviewer: "separate_readonly"
+---
+# Component architecture task
+"""
+        findings = validator.validate_task_file(Path("prompts/tasks/architecture.md"), text, strict=True)
+        messages = "\n".join(item.message for item in findings)
+        self.assertIn("mapper_required: true", messages)
+        self.assertIn("wiki_update_required: true", messages)
+
+    def test_auditor_subtasks_are_rejected_for_new_controller_tasks(self) -> None:
+        text = """---
+task_type: "controller"
+controller_mode: true
+execution_mode: "controller_supervised"
+requires_execution_controller: true
+executor_slots: 1
+mapper_slots: 1
+mapper_required: true
+architecture_impact: "component"
+wiki_update_required: true
+diagram_update_required: true
+slurm_runtime_continuity_required: false
+continuity_backend: "none"
+review_mode: "independent_thread"
+reviewer: "separate_readonly"
+auditor_subtasks: ["results/demo/subagents/auditor_prompt.md"]
+---
+# Controller
+"""
+        findings = validator.validate_task_file(Path("prompts/tasks/controller.md"), text, strict=True)
+        self.assertTrue(any("auditor_subtasks" in item.message for item in findings))
+
     def test_diagnostic_only_controller_report_passes_with_reviewed_packet(self) -> None:
         text = """# Controller Report
 
@@ -152,6 +223,35 @@ reason_if_no_route_promotion: evidence incomplete
 """
         findings = validator.validate_controller_report(Path("results/20260703_demo/controller_report.md"), text)
         self.assertTrue(any("next_required_action" in item.message for item in findings))
+
+    def test_complete_controller_report_rejects_monitor_state(self) -> None:
+        text = """# Controller Report
+
+controller_run_status: COMPLETE
+operational_completion_status: COMPLETE
+experiment_adequacy_decision: PARTIAL
+route_promotion_decision: NO_PROMOTION
+route_negative_decision: STOP_NOT_SUPPORTED
+scientific_resolution_status: SCIENTIFIC_UNRESOLVED
+diagnostic_publication_decision: DO_NOT_PUBLISH
+git_commit_decision: SKIP_COMMIT
+git_push_decision: SKIP_PUSH
+published_files:
+blocked_actions:
+  - validation upload remains blocked
+next_required_action: wait
+reason_if_not_published: monitor
+reason_if_no_route_promotion: PENDING_MONITOR remains
+"""
+        findings = validator.validate_controller_report(Path("results/demo/controller_report.md"), text)
+        self.assertTrue(any("unresolved monitor" in item.message for item in findings))
+
+    def test_components_csv_requires_final_output_effect_for_verified_rows(self) -> None:
+        text = """component_id,branch,role,current_status,evidence_status,target_status,source_file,symbol,entrypoint,grep_key,config_keys,inputs,outputs,losses,final_output_effect,runtime_evidence,code_fingerprint_member,last_verified_milestone,review_token,notes
+bad,MyoPS,test,implemented,verified,implemented,src/x.py,Sym,entry,grep,key,in,out,loss,,results/demo/result.md,fp,M9,TOKEN,note
+"""
+        findings = validator.validate_components_csv(Path("wiki/COMPONENTS.csv"), text)
+        self.assertTrue(any("final_output_effect" in item.message for item in findings))
 
     def test_review_cannot_support_route_negative_without_training_fields(self) -> None:
         text = """# Review

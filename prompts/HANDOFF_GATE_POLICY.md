@@ -2,6 +2,12 @@
 
 This policy defines how future CARE controller goals should be accepted or blocked. It is intentionally mechanical: a requirement is a gate only when it can be checked from exact paths, parsed fields, command exits, metrics, provenance, or an audit decision.
 
+## Agent-Flow v2 Gate
+
+New CARE controller goals must declare `execution_mode`, `requires_execution_controller`, `executor_slots`, `mapper_slots`, `mapper_required`, `architecture_impact`, `wiki_update_required`, `diagram_update_required`, `slurm_runtime_continuity_required`, `continuity_backend`, `review_mode`, and `reviewer`.
+
+Overnight, long Slurm, multi-job, or high-resume-risk tasks must use `execution_mode: controller_supervised` and a durable continuity backend. Architecture-changing tasks must enable mapper and update root `wiki/` unless they provide a machine-readable no-change fingerprint receipt. A controller must not increase executor/mapper slots beyond the GPT-authored task graph. New tasks must not use an internal `auditor`; historical `auditor` fields are legacy aliases for the final independent `reviewer`.
+
 ## Gate Principles
 
 A controller task must expose its full ordered task graph. Every required subtask must have an exact `results/<task_key>/` directory and the exact required output filenames declared by its task file. A missing required result directory is a blocking error.
@@ -34,7 +40,7 @@ Milestone executor completion and milestone review are also separate. For
 `task_type: milestone`, the executor/controller step must stop after writing
 `completion_check.md` and `review_request.md`. It must not write `review.md`,
 must not mark `*_AUDITED_GO`, and must not start the next milestone. A separate
-read-only reviewer/auditor must inspect the result directory and write
+read-only reviewer must inspect the result directory and write
 `review.md`; only the exact audited-go token in that review permits the next
 milestone.
 

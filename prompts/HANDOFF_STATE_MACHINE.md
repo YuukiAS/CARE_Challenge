@@ -9,9 +9,16 @@ when a controlled state is needed.
 - `EXECUTION_PLANNED`: an execution controller has read the task and written an
   execution plan.
 - `EXECUTOR_RUNNING`: an executor session is active.
+- `MAPPER_DRAFT_RUNNING`: a read-only mapper draft pass is active while runtime
+  evidence may still be pending.
+- `FINALIZER_RUNNING`: a deterministic finalizer is collecting terminal job
+  accounting, aggregation, validation, and tracked evidence.
+- `MAPPER_FINAL_RUNNING`: a read-only mapper final pass is reconciling code,
+  runtime evidence, component table, wiki, and diagrams.
 - `EXECUTED_UNAUDITED`: executor has written result artifacts, but no independent
   audit has accepted the claims.
-- `AUDITOR_RUNNING`: a separate auditor is reviewing evidence.
+- `REVIEWER_RUNNING`: a separate reviewer is reviewing evidence.
+- `AUDITOR_RUNNING`: legacy alias for `REVIEWER_RUNNING` in old task files.
 - `AUDITED_GO`: audit supports the claims and the route promotion gate is
   satisfied.
 - `AUDITED_DIAGNOSTIC_PUBLISH`: audit supports publishing a reviewed diagnostic
@@ -78,3 +85,9 @@ when a controlled state is needed.
   decide a new research/product direction or write the next high-level task.
 - A controller can continue only along `allowed_next_states` and only within the
   task's `failure_escalation_policy`.
+- New controller-supervised tasks must not use `auditor` as an internal child
+  role. Internal read-only architecture checking is `mapper`; final independent
+  audit is `reviewer`.
+- `PENDING`, `RUNNING`, `CONFIGURING`, `COMPLETING`, and `AWAITING_SACCT`
+  Slurm states are monitor states. They cannot be converted to `blocked` or
+  scheduler block unless the Slurm routing skill's pending threshold is met.

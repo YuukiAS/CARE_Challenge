@@ -149,6 +149,19 @@ state. Do not generate replacement review evidence inside the executor session.
 For `task_type: controller` or `controller_mode: true`:
 
 - Read the GPT-authored controller task and stay inside it.
+- For new tasks, use agent-flow v2 role names: `controller`, `executor`,
+  `mapper`, `finalizer`, `validator`, and `reviewer`. Historical `auditor`
+  fields are legacy aliases for the independent reviewer; do not create a
+  controller-internal auditor subagent.
+- If `execution_mode: controller_supervised`, obey the GPT-authored
+  `executor_slots` and `mapper_slots`. Do not add more subagents unless the
+  task explicitly grants isolated slots.
+- If the task is overnight, long Slurm, multi-job, or high-resume-risk, it must
+  have `slurm_runtime_continuity_required: true` and a durable
+  `continuity_backend` of `slurm_dependency` or `tmux_watcher`.
+- At `BOOTSTRAP`, `PRE_SUBMISSION`, `MONITOR_RESUME`, `FINALIZE_A`,
+  `MAPPER_FINAL`, and `FINALIZE_B`, re-read disk/live state and write fresh
+  controller receipts rather than relying on old context.
 - If the controller task is part of a milestone chain, the two-step milestone
   gate in `prompts/MILESTONE_REVIEW_PROTOCOL.md` overrides same-session
   controller review: the controller may coordinate the executor step but must
@@ -161,16 +174,20 @@ For `task_type: controller` or `controller_mode: true`:
   fields, training adequacy classification, and the current-bad-packet
   regression when applicable.
 - Build an execution plan.
-- Create or launch separate executor and auditor sessions when supported.
+- Create or launch separate executor and mapper sessions when supported, and
+  prepare a separate reviewer handoff for after the final packet is committed.
 - If automatic subagent launch is unavailable, write prompt files such as:
 
 ```text
 results/<task_key>/subagents/executor_prompt.md
-results/<task_key>/subagents/auditor_prompt.md
+results/<task_key>/subagents/mapper_prompt.md
+results/<task_key>/subagents/reviewer_prompt.md
 ```
 
   Then mark state `NEEDS_SUBAGENT_LAUNCH` or `NEEDS_HUMAN_APPROVAL`.
-- Collect executor result and auditor review.
+- Collect executor result, mapper reports when required, finalizer state,
+  validator results, and reviewer review only if the independent reviewer has
+  already run.
 - Apply the task's route promotion gate, diagnostic publication gate, and
   failure escalation policy.
 - Separate `controller_run_status` and `operational_completion_status` from
@@ -269,9 +286,9 @@ self-assessment is not final completion. For milestone tasks, the Codex executor
 also writes `completion_check.md` and `review_request.md`, then stops. It must
 not write `review.md` or start the next milestone.
 
-A Codex execution controller may start or generate executor/auditor subtasks only inside a GPT-authored CARE controller task. It must not switch to a new scientific route, bypass the auditor, or commit/push unless the task explicitly allows it with `allow_git_commit: true` and `allow_git_push: true`, and either the `route_promotion_gate` or `diagnostic_publication_gate` is satisfied within the authorized scope.
+A Codex controller may start or generate executor/mapper subtasks only inside a GPT-authored CARE controller task. It must not switch to a new scientific route, bypass the reviewer, or commit/push unless the task explicitly allows it with `allow_git_commit: true` and `allow_git_push: true`, and either the `route_promotion_gate` or `diagnostic_publication_gate` is satisfied within the authorized scope.
 
-If the current session is the executor, do not also act as auditor. If the task is an audit or review, stay read-only: do not fix code, produce missing artifacts, launch training, or rerun experiments unless a separate execution task explicitly authorizes that work.
+If the current session is the executor, do not also act as reviewer. If the task is a review, stay read-only: do not fix code, produce missing artifacts, launch training, or rerun experiments unless a separate execution task explicitly authorizes that work.
 
 High-risk CARE tasks require read-only review/audit before fold expansion, validation packaging, upload, or next-stage training. `STOP_*`, `REVISE_*`, `selected_variant: none`, and `*_WAITING_*` block automatic fold expansion, packaging, upload, and continuation unless the user explicitly overrides the block.
 

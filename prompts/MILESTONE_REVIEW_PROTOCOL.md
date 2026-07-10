@@ -12,7 +12,7 @@ separate read-only review.
 This is a two-step milestone gate:
 
 1. executor/controller step;
-2. independent read-only reviewer/auditor step.
+2. independent read-only reviewer step.
 
 The two steps must not be collapsed into one Codex session.
 
@@ -49,9 +49,9 @@ If `completion_check.md`, `result.md`, `commands_run.md`, or a training adequacy
 
 After the Slurm job completes, the executor must rerun the milestone aggregator or evidence collector and commit tracked lightweight evidence derived from runtime outputs before requesting review. The packet must record job id, state, exit code, runtime, log path, runtime output path, aggregation command, aggregation exit code, and updated tracked evidence files. If runtime output is missing or aggregation fails, completion must be `NEEDS_EVIDENCE`.
 
-### Independent Codex Session: Read-Only Reviewer / Auditor
+### Independent Codex Session: Read-Only Reviewer
 
-The reviewer/auditor is a separate Codex session started after the executor has committed the milestone result and the user has pushed or otherwise made it available. It may:
+The reviewer is a separate Codex session started after the executor has committed the milestone result and the user has pushed or otherwise made it available. Historical prompts may call this role `auditor`; that is a legacy alias only. It may:
 
 - read the milestone prompt;
 - read `results/<task_key>/`;
@@ -61,7 +61,7 @@ The reviewer/auditor is a separate Codex session started after the executor has 
 - write only `results/<task_key>/review.md` and, if explicitly requested, a small review manifest;
 - commit the review file with `git add -f` when the review prompt authorizes commit.
 
-The reviewer/auditor must not:
+The reviewer must not:
 
 - fix executor outputs;
 - generate missing required files;
@@ -72,10 +72,10 @@ The reviewer/auditor must not:
 - start the next milestone;
 - convert missing evidence into a pass.
 
-The reviewer/auditor must also reject monitor packets as completion. If the tracked packet still shows monitor/pending states, only submitted/pending commands, a Slurm job id without completed aggregation, `result.md` saying monitor packet, or runtime outputs not merged into tracked evidence, the reviewer must decide `NEEDS_EVIDENCE` or `NEEDS_MONITOR`, never audited-go.
+The reviewer must also reject monitor packets as completion. If the tracked packet still shows monitor/pending states, only submitted/pending commands, a Slurm job id without completed aggregation, `result.md` saying monitor packet, or runtime outputs not merged into tracked evidence, the reviewer must decide `NEEDS_EVIDENCE` or `NEEDS_MONITOR`, never audited-go.
 
-The reviewer/auditor is the only role allowed to write a milestone `review.md`.
-The reviewer/auditor may approve continuation only with the exact audited-go
+The reviewer is the only role allowed to write a milestone `review.md`.
+The reviewer may approve continuation only with the exact audited-go
 state defined by that milestone, such as `M0_AUDITED_GO`.
 
 ## Milestone Flow
@@ -173,7 +173,7 @@ unless the current milestone explicitly authorizes such repair.
 
 ## Relationship To Controller Subagents
 
-General CARE controller tasks may still generate executor and auditor prompt files or launch subagents when explicitly authorized by a GPT-authored controller task. However, for milestone chains, the final blocking milestone review must be written by an independent read-only reviewer session, not by the same main executor/controller session that produced the result.
+General CARE controller tasks may still generate executor, mapper, and reviewer handoff prompt files or launch subagents when explicitly authorized by a GPT-authored controller task. However, for milestone chains, the final blocking milestone review must be written by an independent read-only reviewer session, not by the same main executor/controller session that produced the result.
 
 Internal self-checks, subagent notes, or executor-launched audit drafts are allowed only as diagnostic aids. They do not replace the independent `review.md` required to start the next milestone.
 

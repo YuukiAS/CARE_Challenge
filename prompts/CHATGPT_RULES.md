@@ -29,6 +29,10 @@ strategic planner and the user-supervised strategic controller.
   references.
 - `prompts/MILESTONE_REVIEW_PROTOCOL.md`: two-step milestone executor/reviewer
   gate for SRR-v3 and future milestone chains.
+- `wiki/README.md`: root architecture/current-state entry for GPT planner,
+  controller, mapper, and reviewer threads.
+- `.agents/skills/care-mapper/SKILL.md`: repo-local mapper skill for
+  architecture/component/fingerprint/wiki updates.
 - `prompts/MECHANISM_GATE_TEMPLATE.md`: reusable evidence-gate pattern.
 - `prompts/tasks/<task_key>.md`: GPT-authored task entry.
 - `results/<task_key>/result.md`: executor report and evidence index.
@@ -69,11 +73,15 @@ For CARE tasks, GPT is the strategic planner and strategic controller. Codex may
 
 Every new GPT/ChatGPT planning thread must start from `START_HERE_FOR_GPT.md` and `GPT_PLANNER_CARE_PROTOCOL.md`. Before writing any new SRR/MyoPS/Cine milestone, Codex goal, handoff, or route judgment, GPT must complete `prompts/THREAD_BOOTSTRAP_ROUTE_IMAGE_PROTOCOL.md`: visually read `v2` and later SRR/MyoPS diagrams from ChatGPT Project background files / project materials, use `images/SRR-v2.png`, `images/SRR-v2.5.png`, `images/SRR-v3.png`, and later repository diagram paths only as canonical version references, state the recovered route objective, and block with `BLOCKED_PROJECT_ROUTE_DIAGRAMS_UNAVAILABLE` if the Project background diagrams cannot be accessed or interpreted.
 
+Before planning, GPT must read `wiki/README.md` and treat `wiki/COMPONENTS.csv` plus `wiki/architecture.yaml` as the current architecture observability entry. If a task changes model architecture, loss wiring, dataflow, export behavior, Cine temporal paths, or controller observability, the task must enable mapper and declare `architecture_impact`, `wiki_update_required`, and `diagram_update_required`.
+
+Use agent-flow v2 role names for new tasks: `planner`, `controller`, `executor`, `mapper`, `finalizer`, `validator`, and `reviewer`. Do not introduce an internal controller child named `auditor`; historical `auditor` fields are legacy aliases for the independent read-only `reviewer`.
+
 Before planning any milestone, Codex goal, handoff, or execution instruction that will submit a Slurm job, GPT must read and apply `.agents/skills/slurm-routing-partition/SKILL.md`. That skill must also be used before every actual `sbatch` or `srun` submission in this repo. For goal tasks, all-pending scheduler states may be marked blocked only after 12 consecutive 2-hour checks, 24 hours total, where every submitted routing partition is still pending and no job has started.
 
-When generating any CARE model, experiment, external-method, registration, temporal Cine, missing-modality, proposal/refinement, fold-expansion, validation-package, or submission-related task, decide explicitly whether it is a normal `execution` task or a `controller` task.
+When generating any CARE model, experiment, external-method, registration, temporal Cine, missing-modality, proposal/refinement, fold-expansion, validation-package, or submission-related task, decide explicitly whether it is `execution_mode: direct_executor` or `execution_mode: controller_supervised`.
 
-Normal CARE execution tasks must declare `mechanism_class`, `target_metric`, `same_split_baseline` when relevant, `required_evidence`, `forbidden_substitutes`, `promotion_gate` or `route_promotion_gate`, `experiment_adequacy_gate`, `route_negative_gate`, `scientific_completion_gate`, `failure_escalation_policy`, and `review_required: true`. Controller tasks must also declare `execution_controller`, `executor_subtasks`, `auditor_subtasks`, `controller_report_path`, `route_promotion_gate`, `diagnostic_publication_gate`, `diagnostic_publication_scope`, `blocked_after_diagnostic_publication`, `experiment_adequacy_gate`, `route_negative_gate`, `scientific_completion_gate`, `allow_git_commit`, and `allow_git_push`.
+Normal CARE execution tasks must declare `mechanism_class`, `target_metric`, `same_split_baseline` when relevant, `required_evidence`, `forbidden_substitutes`, `promotion_gate` or `route_promotion_gate`, `experiment_adequacy_gate`, `route_negative_gate`, `scientific_completion_gate`, `failure_escalation_policy`, and `review_required: true`. Controller-supervised tasks must also declare `controller_subtasks`, `executor_subtasks`, `mapper_subtasks` when mapper is enabled, `reviewer_prompt_path`, `controller_report_path`, `route_promotion_gate`, `diagnostic_publication_gate`, `diagnostic_publication_scope`, `blocked_after_diagnostic_publication`, `experiment_adequacy_gate`, `route_negative_gate`, `scientific_completion_gate`, `allow_git_commit`, and `allow_git_push`.
 
 Reference the Bridge Kit state machine for handoff states and `prompts/CARE_OVERLAY_GATES.md` plus the installed `medical-imaging-deep-learning` skill for mechanism gates. Do not copy the full skill text into each task.
 
@@ -172,10 +180,21 @@ New protocol fields:
 ```yaml
 task_type: "execution"
 controller_mode: false
+execution_mode: direct_executor
+requires_execution_controller: false
 planner: "ChatGPT/GPT thread"
 strategic_controller: "user-supervised GPT thread"
-execution_controller: "none"
-auditor: "ChatGPT reviewer"
+controller: "none"
+executor_slots: 1
+mapper_slots: 0
+mapper_required: false
+architecture_impact: none
+wiki_update_required: false
+diagram_update_required: false
+slurm_runtime_continuity_required: false
+continuity_backend: none
+review_mode: independent_thread
+reviewer: "separate_readonly"
 review_required: false
 mechanism_class: "general"
 promotion_gate: "..."
@@ -204,11 +223,12 @@ allow_git_push: false
 ```
 
 For controller tasks, set `task_type: "controller"`, `controller_mode: true`,
-`execution_controller: "Codex controller session"`, and specify a controller
-report path. Existing task files that only have `promotion_gate` are legacy
+`execution_mode: controller_supervised`, `controller: "Codex controller session"`,
+and specify a controller report path. Existing task files that only have
+`promotion_gate` or `auditor` are legacy
 compatible: treat it as a route-promotion gate, and use safe defaults of no
-diagnostic publication, no git commit, and no git push unless explicit fields
-say otherwise.
+diagnostic publication, no git commit, no git push, and `auditor` as
+independent reviewer unless explicit fields say otherwise.
 
 Existing model/training task files that lack `experiment_adequacy_gate` or
 `minimum_effective_training` are legacy compatible but conservative: they cannot
@@ -282,9 +302,9 @@ use the local controller report as the latest evidence.
 Write `docs/notes/<date>_<topic>.md` for reference analysis, meetings, design
 discussion, or research notes. Notes are not execution entries.
 
-Write durable knowledge to `docs/wiki/`, update `docs/wiki/index.md`, and append
-`docs/wiki/log.md`. Wiki pages are not execution entries; tasks may reference
-them explicitly.
+Write durable architecture/current-state knowledge to root `wiki/`. Historical
+`docs/wiki/` pages are reference material, not the canonical architecture entry.
+Wiki pages are not execution entries; tasks may reference them explicitly.
 
 ## GitHub / Remote Tooling
 

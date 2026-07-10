@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import argparse
 import ast
+import csv
 from dataclasses import dataclass
 from pathlib import Path
 import re
@@ -59,6 +60,51 @@ TRAINING_EVIDENCE_FIELDS = [
     "train_loop_seconds",
     "loss_decrease",
     "prediction_sanity",
+]
+MONITOR_STATE_RE = re.compile(
+    r"\b(NEEDS_MONITOR|PENDING_MONITOR|JOB_SUBMITTED|PENDING_PRIORITY|RUNNING|AWAITING_SACCT|CONFIGURING|COMPLETING)\b",
+    re.IGNORECASE,
+)
+LONG_TASK_RE = re.compile(
+    r"\b(overnight|long[ -]?slurm|multi[ -]?job|high[ -]?resume[ -]?risk|slurm_runtime_continuity_required\s*:\s*true)\b",
+    re.IGNORECASE,
+)
+ARCHITECTURE_IMPACT_RE = re.compile(r"architecture_impact\s*:\s*[\"']?(component|system)[\"']?", re.IGNORECASE)
+V2_FRONTMATTER_FIELDS = [
+    "execution_mode",
+    "requires_execution_controller",
+    "executor_slots",
+    "mapper_slots",
+    "mapper_required",
+    "architecture_impact",
+    "wiki_update_required",
+    "diagram_update_required",
+    "slurm_runtime_continuity_required",
+    "continuity_backend",
+    "review_mode",
+    "reviewer",
+]
+COMPONENT_REQUIRED_COLUMNS = [
+    "component_id",
+    "branch",
+    "role",
+    "current_status",
+    "evidence_status",
+    "target_status",
+    "source_file",
+    "symbol",
+    "entrypoint",
+    "grep_key",
+    "config_keys",
+    "inputs",
+    "outputs",
+    "losses",
+    "final_output_effect",
+    "runtime_evidence",
+    "code_fingerprint_member",
+    "last_verified_milestone",
+    "review_token",
+    "notes",
 ]
 
 
@@ -150,6 +196,16 @@ def is_model_training_task(frontmatter: dict[str, object], text: str) -> bool:
     )
 
 
+def is_truthy_field(frontmatter: dict[str, object], key: str) -> bool:
+    return as_bool(frontmatter.get(key))
+
+
+def is_blank_or_none(value: object) -> bool:
+    if value is None:
+        return True
+    return str(value).strip().strip("\"'").lower() in {"", "none", "null"}
+
+
 def severity(strict: bool) -> str:
     return "error" if strict else "warning"
 
@@ -159,6 +215,69 @@ def validate_task_file(path: Path, text: str, strict: bool) -> list[Finding]:
     findings: list[Finding] = []
     if not frontmatter:
         return findings
+
+    execution_mode = str(frontmatter.get("execution_mode", "")).strip("\"'")
+    continuity_backend = str(frontmatter.get("continuity_backend", "")).strip("\"'")
+
+    if is_controller_task(frontmatter, text):
+        missing_v2 = [field for field in V2_FRONTMATTER_FIELDS if field not in frontmatter]
+        if missing_v2:
+            findings.append(
+                Finding(
+                    severity(strict),
+                    path,
+                    "controller task is missing agent-flow v2 fields: "
+                    + ", ".join(missing_v2)
+                    + ".",
+                )
+            )
+
+    if LONG_TASK_RE.search(text) and execution_mode == "direct_executor":
+        findings.append(
+            Finding(
+                severity(strict),
+                path,
+                "overnight/long-Slurm/multi-job/high-resume-risk task cannot use execution_mode: direct_executor.",
+            )
+        )
+
+    if is_truthy_field(frontmatter, "slurm_runtime_continuity_required") and (
+        is_blank_or_none(continuity_backend) or continuity_backend == "none"
+    ):
+        findings.append(
+            Finding(
+                severity(strict),
+                path,
+                "slurm_runtime_continuity_required task must set continuity_backend to slurm_dependency or tmux_watcher.",
+            )
+        )
+
+    if "auditor_subtasks" in frontmatter or re.search(r"(?m)^\s*auditor_subtasks\s*:", text):
+        findings.append(
+            Finding(
+                severity(strict),
+                path,
+                "new controller tasks must not use auditor_subtasks; use mapper_subtasks and reviewer_prompt_path.",
+            )
+        )
+
+    if ARCHITECTURE_IMPACT_RE.search(text):
+        if not is_truthy_field(frontmatter, "mapper_required"):
+            findings.append(
+                Finding(
+                    severity(strict),
+                    path,
+                    "architecture_impact component/system requires mapper_required: true.",
+                )
+            )
+        if not is_truthy_field(frontmatter, "wiki_update_required"):
+            findings.append(
+                Finding(
+                    severity(strict),
+                    path,
+                    "architecture_impact component/system requires wiki_update_required: true or an explicit no-change fingerprint receipt.",
+                )
+            )
 
     if is_controller_task(frontmatter, text) and has_any_git_permission(frontmatter):
         missing = [
@@ -305,6 +424,37 @@ def validate_controller_report(path: Path, text: str) -> list[Finding]:
     if path.name != "controller_report.md":
         return findings
 
+    if field_value(text, "controller_run_status") == "COMPLETE" and MONITOR_STATE_RE.search(text):
+        findings.append(
+            Finding(
+                "error",
+                path,
+                "COMPLETE controller report contains unresolved monitor/pending state.",
+            )
+        )
+
+    if (
+        re.search(r"(?i)scheduler[ -]?block|scheduler saturation|controller_run_status\s*:\s*BLOCKED", text)
+        and MONITOR_STATE_RE.search(text)
+        and not re.search(r"12 consecutive 2-hour|24-hour|24 hours|12\s+consecutive", text, re.IGNORECASE)
+    ):
+        findings.append(
+            Finding(
+                "error",
+                path,
+                "scheduler block from pending/running states requires the Slurm skill 12 consecutive 2-hour / 24-hour threshold evidence.",
+            )
+        )
+
+    if "controller_supervised" in text and "controller_context.json" not in text:
+        findings.append(
+            Finding(
+                "error",
+                path,
+                "controller_supervised report must reference fresh controller_context.json receipts.",
+            )
+        )
+
     for field in REPORT_REQUIRED_FIELDS:
         if not re.search(rf"(?m)^{re.escape(field)}\s*:", text):
             findings.append(Finding("error", path, f"controller report missing {field}."))
@@ -399,6 +549,22 @@ def validate_review_file(path: Path, text: str) -> list[Finding]:
     if path.name != "review.md":
         return []
     findings: list[Finding] = []
+    if "AUDITED_GO" in text and MONITOR_STATE_RE.search(text):
+        findings.append(
+            Finding(
+                "error",
+                path,
+                "review cannot grant audited-go while monitor/pending states remain.",
+            )
+        )
+    if "AUDITED_GO" in text and re.search(r"(?i)long[ -]?slurm|overnight|multi[ -]?job", text) and "direct_executor" in text:
+        findings.append(
+            Finding(
+                "error",
+                path,
+                "review cannot grant audited-go to long/overnight Slurm packet executed as direct_executor.",
+            )
+        )
     route_negative_supported = (
         field_value(text, "route_negative_decision") == "STOP_SUPPORTED"
         or field_value(text, "scientific_resolution_status") == "SCIENTIFIC_STOP_SUPPORTED"
@@ -428,21 +594,57 @@ def validate_review_file(path: Path, text: str) -> list[Finding]:
     return findings
 
 
-def iter_markdown_files(paths: Sequence[Path]) -> Iterable[Path]:
+def validate_components_csv(path: Path, text: str) -> list[Finding]:
+    if path.name != "COMPONENTS.csv":
+        return []
+    findings: list[Finding] = []
+    rows = list(csv.DictReader(text.splitlines()))
+    columns = rows[0].keys() if rows else []
+    missing = [column for column in COMPONENT_REQUIRED_COLUMNS if column not in columns]
+    if missing:
+        findings.append(Finding("error", path, "COMPONENTS.csv missing columns: " + ", ".join(missing) + "."))
+        return findings
+    for index, row in enumerate(rows, start=2):
+        if row.get("evidence_status") == "verified" and not row.get("runtime_evidence", "").strip():
+            findings.append(Finding("error", path, f"row {index} is verified without runtime_evidence."))
+        if row.get("current_status") == "implemented" and not row.get("source_file", "").strip():
+            findings.append(Finding("error", path, f"row {index} is implemented without source_file."))
+        if row.get("evidence_status") == "verified" and not row.get("final_output_effect", "").strip():
+            findings.append(Finding("error", path, f"row {index} is verified without final_output_effect."))
+    return findings
+
+
+def validate_architecture_yaml(path: Path, text: str) -> list[Finding]:
+    if path.name != "architecture.yaml":
+        return []
+    findings: list[Finding] = []
+    for token in ("architecture_version:", "review_token:", "code_fingerprint:", "nodes:", "edges:"):
+        if token not in text:
+            findings.append(Finding("error", path, f"architecture.yaml missing {token}"))
+    return findings
+
+
+def iter_policy_files(paths: Sequence[Path]) -> Iterable[Path]:
     for path in paths:
         if path.is_dir():
-            yield from sorted(path.rglob("*.md"))
-        elif path.suffix == ".md":
+            for suffix in ("*.md", "*.csv", "*.yaml", "*.yml"):
+                yield from sorted(path.rglob(suffix))
+        elif path.suffix in {".md", ".csv", ".yaml", ".yml"}:
             yield path
 
 
 def validate_paths(paths: Sequence[Path], strict_tasks: bool = False) -> list[Finding]:
     findings: list[Finding] = []
-    for path in iter_markdown_files(paths):
+    for path in iter_policy_files(paths):
         text = path.read_text(encoding="utf-8")
-        findings.extend(validate_task_file(path, text, strict=strict_tasks))
-        findings.extend(validate_controller_report(path, text))
-        findings.extend(validate_review_file(path, text))
+        if path.suffix == ".md":
+            findings.extend(validate_task_file(path, text, strict=strict_tasks))
+            findings.extend(validate_controller_report(path, text))
+            findings.extend(validate_review_file(path, text))
+        elif path.name == "COMPONENTS.csv":
+            findings.extend(validate_components_csv(path, text))
+        elif path.name == "architecture.yaml":
+            findings.extend(validate_architecture_yaml(path, text))
     return findings
 
 
@@ -457,6 +659,7 @@ def default_paths(repo_root: Path) -> list[Path]:
         repo_root / "prompts" / "DIAGNOSTIC_PUBLICATION_GATE.md",
         repo_root / "prompts" / "EXPERIMENT_ADEQUACY_GATE.md",
         repo_root / "prompts" / "templates",
+        repo_root / "wiki",
         repo_root / "results" / "README.md",
     ]
 

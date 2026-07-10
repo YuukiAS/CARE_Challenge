@@ -28,6 +28,25 @@ If the images cannot be accessed or visually interpreted from ChatGPT Project ba
 
 ## Mandatory GPT Checklist Before Writing A New Goal
 
+For every new CARE milestone or controller goal, GPT must declare the agent-flow v2 execution contract:
+
+```yaml
+execution_mode: direct_executor | controller_supervised
+requires_execution_controller: true | false
+executor_slots: 1
+mapper_slots: 1
+mapper_required: true | false
+architecture_impact: none | component | system
+wiki_update_required: true | false
+diagram_update_required: true | false
+slurm_runtime_continuity_required: true | false
+continuity_backend: none | slurm_dependency | tmux_watcher
+review_mode: independent_thread | short_goal
+reviewer: separate_readonly
+```
+
+Overnight, long Slurm, multi-job, or high-resume-risk work must be `controller_supervised` and must have a durable continuity backend. Architecture/loss/dataflow/export/registration/temporal changes must enable mapper and update root `wiki/` unless explicitly classified as `architecture_impact: none` with fingerprint evidence. New tasks must not introduce a controller-internal `auditor`; use `mapper` for internal read-only architecture mapping and `reviewer` for the final independent read-only audit.
+
 For every controller task, GPT must define an explicit ordered task graph. The graph must include every required subtask key, the exact expected `results/<task_key>/` directory, and whether that subtask is blocking or optional. A blocking subtask that has no result directory must be treated as `INCOMPLETE`, not as skipped, replaced, or diagnostic.
 
 For every high-risk model/training route, GPT must include `minimum_effective_training` with concrete fields. At minimum use `min_optimizer_steps`, `min_train_loop_seconds`, `min_eval_cases`, `require_one_batch_overfit`, `require_prediction_sanity`, `require_loss_decrease`, `require_same_split_baseline`, and `require_cache_isolation`. A run that falls below this budget may be useful as smoke evidence, but it cannot support route promotion or scientific stop.
@@ -66,7 +85,7 @@ Hard-gate validators and reviewers must treat each of these as a route-definitio
 
 When giving Codex a high-risk CARE controller goal, include this sentence:
 
-`Before executing the scientific task, enforce the hard-gate policy: exact task graph, strict validator, completion-check-before-final-audit, minimum effective training, current-bad-packet regression, and SRR diagram-bootstrap evidence when the task touches SRR/MyoPS/Cine route planning. If any hard gate fails, stop with NEEDS_REVISION or NEEDS_EVIDENCE; do not continue to final audit.`
+`Before executing the scientific task, enforce the hard-gate policy: exact task graph, agent-flow v2 execution contract, strict validator, completion-check-before-final-audit, minimum effective training, current-bad-packet regression, mapper/wiki/fingerprint gates when architecture is affected, and SRR diagram-bootstrap evidence when the task touches SRR/MyoPS/Cine route planning. If any hard gate fails, stop with NEEDS_REVISION or NEEDS_EVIDENCE; do not continue to final audit.`
 
 When giving Codex a milestone executor goal, also include this sentence:
 

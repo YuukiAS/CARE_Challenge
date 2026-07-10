@@ -21,6 +21,29 @@ For any future CARE milestone, GPT/ChatGPT must write both the Codex executor pr
 
 Because direct GPT edits to the large canonical shared files can fail or corrupt context, author each new milestone first as a standalone Markdown staging file under `prompts/shared/` named `M<id>_<short_slug>.md`, for example `M8_editor_grade_leaderboard_sprint.md`. The file must contain clearly labeled executor and reviewer sections. The staged file is temporary: a later Codex maintenance step will split/merge its content into `prompts/shared/EXECUTOR_PROMPTS.md` and `prompts/shared/REVIEWER_PROMPTS.md`, then delete the standalone staging file after successful merge.
 
+## Agent-Flow v2 Handoff Model
+
+Before writing a CARE handoff, read the current architecture entry at `wiki/README.md`. Use the v2 role names from `TODO-agents-v2.md`: `planner`, `controller`, `executor`, `mapper`, `finalizer`, `validator`, and `reviewer`. New tasks must not introduce an internal `auditor` role; historical `auditor` fields are legacy aliases for the independent `reviewer`.
+
+Every new CARE milestone or controller task must explicitly declare:
+
+```yaml
+execution_mode: direct_executor | controller_supervised
+requires_execution_controller: true | false
+executor_slots: 1
+mapper_slots: 1
+mapper_required: true | false
+architecture_impact: none | component | system
+wiki_update_required: true | false
+diagram_update_required: true | false
+slurm_runtime_continuity_required: true | false
+continuity_backend: none | slurm_dependency | tmux_watcher
+review_mode: independent_thread | short_goal
+reviewer: separate_readonly
+```
+
+Use `controller_supervised` for overnight, long Slurm, multi-job, or high-resume-risk work. Default to exactly one executor and one mapper unless the GPT-authored task graph explicitly grants more isolated slots. The controller owns continuity and phase grounding; the executor performs authorized implementation/jobs; the mapper is read-only architecture/evidence mapping; the finalizer is deterministic terminal accounting/aggregation/validation; the reviewer is a separate read-only thread after the final packet is committed.
+
 ## MONITOR_PACKET_IS_NOT_COMPLETION
 
 Any GPT/ChatGPT milestone, handoff, or review instruction must enforce this rule: a monitor packet, pending Slurm job packet, watcher packet, or submitted-only job packet is not completion.
