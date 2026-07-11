@@ -41,7 +41,7 @@ planning_review_required: true
 planning_reviewer: separate_gpt_thread
 planning_review_path: prompts/tasks/20260711_srr_v3_m10_complete_mechanism_repair_planning_review.md
 planning_review_token: "PLANNING_CRITIC_READY_FOR_CODEX_MERGE"
-planning_reviewed_commit: ""
+planning_reviewed_commit: "0b67234257eb8d6fda3ecc054ccda4bcf8d2fa02"
 ---
 
 # M10 — SRR-v3 complete mechanism repair, design attribution, and registration-gated Cine
