@@ -1,6 +1,6 @@
 {
   "task_key": "20260711_srr_v3_m10_complete_mechanism_repair",
-  "final_state": "PREREQUISITE_REPAIRED_READY_FOR_WAVE1_BOOTSTRAP",
+  "final_state": "WAVE1_READY_FOR_CONTROLLER_MERGE_ACCEPTED",
   "git_commit_decision": "COMMIT_LOCAL_PACKET",
   "git_push_decision": "SKIP_PUSH",
   "precommit_head": "705ae497af2ebb391a16c99ecc812642f723b1d5",
@@ -24,7 +24,7 @@
     "results/20260711_srr_v3_m10_complete_mechanism_repair/architecture_delta_final.md",
     "results/20260711_srr_v3_m10_complete_mechanism_repair/executor_waves/README.md"
   ],
-  "manifest_sha256": "226bcb040f7ecbdf20816f76841144dbef0c87dd9907f0e735fba9a5faa9becd",
+  "manifest_sha256": "b4cf40cffbcfae055ef619839f7a73eb9f150ebd342de4c23fe277f8fafe0165",
   "job_states": {},
   "slurm_jobs_submitted": [],
   "required_job_ids": [],
@@ -38,7 +38,7 @@
     "git diff --check"
   ],
   "blocked_reason": "",
-  "resume_state": "prerequisite repair validated; ready to launch serial wave 1 only",
+  "resume_state": "wave1 accepted; ready to commit wave1 code/evidence and launch serial wave2",
   "review_md_written": false,
   "pushed": false
 }

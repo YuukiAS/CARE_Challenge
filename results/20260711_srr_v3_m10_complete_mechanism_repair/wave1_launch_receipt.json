@@ -1,0 +1,29 @@
+{
+  "task_key": "20260711_srr_v3_m10_complete_mechanism_repair",
+  "launched_at_utc": "2026-07-11T11:14:18Z",
+  "wave": 1,
+  "executor_id": "m10_shared_architecture_executor",
+  "agent_id": "019f50e6-1a68-73a3-b991-536661392cd1",
+  "agent_nickname": "Carver",
+  "executor_plan_path": "prompts/tasks/20260711_srr_v3_m10_complete_mechanism_repair_executor_plan.yaml",
+  "prompt_path": "results/20260711_srr_v3_m10_complete_mechanism_repair/subagents/m10_shared_architecture_executor_prompt.md",
+  "allowed_next_completion_tokens": [
+    "READY_FOR_CONTROLLER_MERGE",
+    "NEEDS_REVISION",
+    "NEEDS_EVIDENCE",
+    "NEEDS_MONITOR"
+  ],
+  "forbidden_actions": [
+    "write review.md",
+    "push",
+    "wave2",
+    "wave3",
+    "validation packaging",
+    "validation upload",
+    "hosted metric claim",
+    "route promotion",
+    "scientific stop",
+    "M11"
+  ],
+  "controller_note": "Controller launched only serial wave 1 after prerequisite repair. Wave 2 and wave 3 remain blocked."
+}

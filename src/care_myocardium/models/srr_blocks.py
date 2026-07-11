@@ -43,6 +43,14 @@ def dictionary_slot_config(name: str, *, use_interactions: bool = True) -> dict[
     are consumed by ``ScaleRetrieval`` and exported through slot metadata.
     """
 
+    if name == "srr_v3_m10_16slot":
+        return {
+            "shared_slots": 4,
+            "private_slots": {"LGE": 2, "T2": 2, "C0": 2},
+            "interaction_slots": {"lge_t2": 2, "lge_c0": 2, "t2_c0": 2} if use_interactions else {},
+            "interaction_pairs": [(0, 1), (0, 2), (1, 2)] if use_interactions else [],
+            "router_top_k": 2,
+        }
     if name == "dict_full_interaction":
         return {
             "shared_slots": 8,
@@ -76,6 +84,48 @@ def dictionary_slot_config(name: str, *, use_interactions: bool = True) -> dict[
             "router_top_k": 4,
         }
     raise ValueError(f"unknown dictionary_config: {name!r}")
+
+
+def slot_validity_mask(availability: torch.Tensor, slot_specs: list[dict[str, object]]) -> torch.Tensor:
+    """Return deterministic validity for shared/private/interaction slots.
+
+    Shared slots are valid only when at least one modality is present. Private
+    slots follow their modality availability. Interaction slots require every
+    listed modality.  This helper is the shared M10 source for invalid-slot
+    forward/gate tests.
+    """
+
+    availability = availability.clamp(0, 1)
+    masks = []
+    for spec in slot_specs:
+        kind = str(spec.get("kind", ""))
+        if kind == "shared":
+            masks.append((availability.sum(dim=1, keepdim=True) > 0).to(dtype=availability.dtype))
+        elif kind == "private":
+            idx = int(spec["modality_index"])
+            masks.append(availability[:, idx : idx + 1])
+        elif kind == "interaction":
+            pair_mask = torch.ones((availability.shape[0], 1), dtype=availability.dtype, device=availability.device)
+            for idx in spec["modality_indices"]:  # type: ignore[index]
+                pair_mask = pair_mask * availability[:, int(idx) : int(idx) + 1]
+            masks.append(pair_mask)
+        else:
+            raise ValueError(f"unknown slot kind in metadata: {kind!r}")
+    return torch.cat(masks, dim=1)
+
+
+def invalid_slot_diagnostics(gates: torch.Tensor, valid: torch.Tensor) -> dict[str, float]:
+    """Summarize invalid slot leakage for BxK or BxKxDHW gates."""
+
+    while valid.ndim < gates.ndim:
+        valid = valid.unsqueeze(-1)
+    invalid = (1.0 - valid.to(device=gates.device, dtype=gates.dtype)).clamp(0, 1)
+    invalid_values = gates.detach() * invalid
+    return {
+        "max_invalid_weight": float(invalid_values.max().item()) if invalid_values.numel() else 0.0,
+        "mean_invalid_weight": float(invalid_values.mean().item()) if invalid_values.numel() else 0.0,
+        "invalid_active_count": float((invalid_values > 1e-8).sum().item()),
+    }
 
 
 def _fuse_feature_list(features: list[torch.Tensor], availability: torch.Tensor, indices: tuple[int, ...] | None = None) -> torch.Tensor:
@@ -219,20 +269,7 @@ class GroupedExpertBank(nn.Module):
         return counts
 
     def availability_mask(self, availability: torch.Tensor) -> torch.Tensor:
-        masks = []
-        for spec in self.slot_specs:
-            kind = str(spec["kind"])
-            if kind == "shared":
-                masks.append(torch.ones((availability.shape[0], 1), dtype=availability.dtype, device=availability.device))
-            elif kind == "private":
-                idx = int(spec["modality_index"])
-                masks.append(availability[:, idx : idx + 1])
-            else:
-                pair_mask = torch.ones((availability.shape[0], 1), dtype=availability.dtype, device=availability.device)
-                for idx in spec["modality_indices"]:  # type: ignore[index]
-                    pair_mask = pair_mask * availability[:, int(idx) : int(idx) + 1]
-                masks.append(pair_mask)
-        return torch.cat(masks, dim=1)
+        return slot_validity_mask(availability, self.slot_specs)
 
     def forward(
         self,
@@ -549,12 +586,23 @@ def gate_diagnostics(
     out: dict[str, dict[str, object]] = {}
     valid_masks = valid_masks or {}
     for name, gate in gates.items():
-        usage = gate.detach().mean(dim=0)
-        entropy = -(gate.detach() * torch.log(gate.detach().clamp_min(eps))).sum(dim=1)
+        gate_detached = gate.detach()
+        if gate_detached.ndim == 5:
+            gate_for_usage = gate_detached.flatten(2).mean(dim=2)
+        else:
+            gate_for_usage = gate_detached
+        usage = gate_for_usage.mean(dim=0)
+        entropy = -(gate_for_usage * torch.log(gate_for_usage.clamp_min(eps))).sum(dim=1)
         valid = valid_masks.get(name)
-        active_valid = valid.detach().mean(dim=0) > 0 if valid is not None else torch.ones_like(usage, dtype=torch.bool)
+        if valid is not None:
+            valid_detached = valid.detach()
+            if valid_detached.ndim == 5:
+                valid_detached = valid_detached.flatten(2).mean(dim=2)
+            active_valid = valid_detached.mean(dim=0) > 0
+        else:
+            active_valid = torch.ones_like(usage, dtype=torch.bool)
         inactive = [int(i) for i, value in enumerate(usage) if bool(active_valid[i]) and float(value) < inactive_threshold]
-        max_weight = gate.detach().max(dim=1).values
+        max_weight = gate_for_usage.max(dim=1).values
         group_usage: dict[str, float] = {}
         for idx, spec in enumerate(metadata[name]):
             group = str(spec["group"])

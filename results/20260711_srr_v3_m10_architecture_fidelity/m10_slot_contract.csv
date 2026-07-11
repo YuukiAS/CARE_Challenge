@@ -1,0 +1,14 @@
+component,expected,observed,status,evidence
+canonical_modality_order,"[LGE,T2,C0]","[LGE,T2,C0]",PASS,configs/srr_v3_m10_complete_repair.yaml
+slots_per_scale_total,16,16,PASS,src/care_myocardium/tests/test_srr_v3_m10_fidelity.py::test_m10_dictionary_config_is_exact_16_slots
+shared_slots,4,4,PASS,src/care_myocardium/models/srr_blocks.py:dictionary_slot_config
+lge_private_slots,2,2,PASS,src/care_myocardium/models/srr_spatial_dictionary.py:M10_SLOT_SPECS
+t2_private_slots,2,2,PASS,src/care_myocardium/models/srr_spatial_dictionary.py:M10_SLOT_SPECS
+c0_private_slots,2,2,PASS,src/care_myocardium/models/srr_spatial_dictionary.py:M10_SLOT_SPECS
+lge_t2_interaction_slots,2,2,PASS,src/care_myocardium/models/srr_spatial_dictionary.py:M10_SLOT_SPECS
+lge_c0_interaction_slots,2,2,PASS,src/care_myocardium/models/srr_spatial_dictionary.py:M10_SLOT_SPECS
+t2_c0_interaction_slots,2,2,PASS,src/care_myocardium/models/srr_spatial_dictionary.py:M10_SLOT_SPECS
+invalid_slot_max_gate_weight,0.0,0.0,PASS,src/care_myocardium/tests/test_srr_v3_m10_fidelity.py::test_invalid_t2_slots_have_zero_values_gates_and_gradients
+invalid_slot_forward_value,0.0,0.0,PASS,src/care_myocardium/tests/test_srr_v3_m10_fidelity.py::test_invalid_t2_slots_have_zero_values_gates_and_gradients
+invalid_slot_gradient_sum,0.0,0.0,PASS,src/care_myocardium/tests/test_srr_v3_m10_fidelity.py::test_invalid_t2_slots_have_zero_values_gates_and_gradients
+no_t2_edema_final_probability,0.0,0.0,PASS,src/care_myocardium/tests/test_srr_v3_m10_fidelity.py::test_m10_propref_variant_wires_spatial_dictionary_and_final_probabilities

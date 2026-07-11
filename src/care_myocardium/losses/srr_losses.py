@@ -87,6 +87,8 @@ def retrieval_regularization(
     max_weight_terms = []
     metrics: dict[str, torch.Tensor] = {}
     for name, gate in gates.items():
+        if gate.ndim == 5:
+            gate = gate.flatten(2).mean(dim=2)
         entropy = -(gate * torch.log(gate.clamp_min(eps))).sum(dim=1).mean()
         usage = gate.mean(dim=0)
         target = torch.full_like(usage, 1.0 / max(1, usage.numel()))
@@ -186,6 +188,8 @@ def semantic_retrieval_regularization(
     integrative_terms = []
     metrics: dict[str, torch.Tensor] = {}
     for name, gate in gates.items():
+        if gate.ndim == 5:
+            gate = gate.flatten(2).mean(dim=2)
         specs = metadata.get(name)
         if not specs or len(specs) != gate.shape[1]:
             continue
@@ -200,6 +204,8 @@ def semantic_retrieval_regularization(
         if valid is None:
             valid_f = torch.ones_like(gate)
         else:
+            if valid.ndim == 5:
+                valid = valid.flatten(2).mean(dim=2)
             valid_f = valid.to(device=gate.device, dtype=gate.dtype)
         target = weights.view(1, -1) * valid_f
         fallback = valid_f / valid_f.sum(dim=1, keepdim=True).clamp_min(eps)
@@ -245,6 +251,104 @@ def semantic_retrieval_regularization(
     if integrative_terms:
         loss = loss + float(integrative_weight) * torch.stack(integrative_terms).mean()
     metrics["semantic_retrieval_loss"] = loss.detach() if detach_metrics else loss
+    return loss, metrics
+
+
+def _gate_voxel_mean(gate: torch.Tensor) -> torch.Tensor:
+    if gate.ndim == 2:
+        return gate
+    if gate.ndim == 5:
+        return gate.flatten(2).mean(dim=2)
+    raise ValueError(f"gate must be BxK or BxKxDHW, got {tuple(gate.shape)}")
+
+
+def pattern_sip_integrativeness_loss(
+    gates: dict[str, torch.Tensor],
+    metadata: dict[str, list[dict[str, object]]],
+    valid_masks: dict[str, torch.Tensor] | None = None,
+    *,
+    gamma_min: float = 1.35,
+    entropy_weight: float = 0.01,
+    kl_weight: float = 0.05,
+    gamma_weight: float = 0.05,
+    collapse_weight: float = 0.02,
+    eps: float = 1e-6,
+    detach_metrics: bool = True,
+) -> tuple[torch.Tensor | None, dict[str, torch.Tensor]]:
+    """Independent M10 Pattern-SIP objective.
+
+    This is deliberately not an alias for ``semantic_retrieval_regularization``:
+    it computes group usage, integrativeness ``gamma``, target-prior KL, entropy,
+    and collapse penalties directly from gate tensors.  It accepts both old
+    global BxK gates and M10 spatial BxKxDHW gates.
+    """
+
+    if not gates:
+        return None, {}
+    valid_masks = valid_masks or {}
+    gamma_terms = []
+    kl_terms = []
+    entropy_terms = []
+    collapse_terms = []
+    metrics: dict[str, torch.Tensor] = {}
+
+    for name, gate in gates.items():
+        specs = metadata.get(name)
+        if not specs:
+            continue
+        gate_use = _gate_voxel_mean(gate)
+        if gate_use.shape[1] != len(specs):
+            continue
+        valid = valid_masks.get(name)
+        if valid is None:
+            valid_use = torch.ones_like(gate_use)
+        else:
+            valid_use = _gate_voxel_mean(valid) if valid.ndim == 5 else valid
+            valid_use = valid_use.to(device=gate_use.device, dtype=gate_use.dtype)
+        gate_use = gate_use * valid_use
+        gate_use = gate_use / gate_use.sum(dim=1, keepdim=True).clamp_min(eps)
+        task = _gate_task_name(name)
+        target_values = []
+        for spec in specs:
+            group = str(spec.get("group", ""))
+            if group == "shared":
+                target_values.append(0.50)
+            elif task == "scar" and group == "lge_private":
+                target_values.append(0.35)
+            elif task == "edema" and group == "t2_private":
+                target_values.append(0.35)
+            elif str(spec.get("kind", "")) == "interaction":
+                target_values.append(0.15)
+            else:
+                target_values.append(0.05)
+        target = gate_use.new_tensor(target_values).view(1, -1) * valid_use
+        target = torch.where(target.sum(dim=1, keepdim=True) > eps, target, valid_use)
+        target = target / target.sum(dim=1, keepdim=True).clamp_min(eps)
+
+        gamma = gate_use.sum(dim=0).square().sum() / gate_use.square().sum(dim=0).clamp_min(eps).sum()
+        gamma_penalty = torch.relu(gate_use.new_tensor(float(gamma_min)) - gamma).square()
+        kl = (target * (torch.log(target.clamp_min(eps)) - torch.log(gate_use.clamp_min(eps)))).sum(dim=1).mean()
+        entropy = -(gate_use * torch.log(gate_use.clamp_min(eps))).sum(dim=1).mean()
+        max_weight = gate_use.max(dim=1).values.mean()
+        collapse = torch.relu(max_weight - 0.90).square()
+        gamma_terms.append(gamma_penalty)
+        kl_terms.append(kl)
+        entropy_terms.append(entropy)
+        collapse_terms.append(collapse)
+        metrics[f"{name}_pattern_sip_gamma"] = gamma.detach() if detach_metrics else gamma
+        metrics[f"{name}_pattern_sip_kl"] = kl.detach() if detach_metrics else kl
+        metrics[f"{name}_pattern_sip_entropy"] = entropy.detach() if detach_metrics else entropy
+        metrics[f"{name}_pattern_sip_collapse"] = collapse.detach() if detach_metrics else collapse
+
+    if not gamma_terms:
+        return None, metrics
+    loss = (
+        float(gamma_weight) * torch.stack(gamma_terms).mean()
+        + float(kl_weight) * torch.stack(kl_terms).mean()
+        + float(entropy_weight) * torch.stack(entropy_terms).mean()
+        + float(collapse_weight) * torch.stack(collapse_terms).mean()
+    )
+    metrics["pattern_sip_integrativeness_loss"] = loss.detach() if detach_metrics else loss
     return loss, metrics
 
 
@@ -326,6 +430,67 @@ def _prototype_margin_loss(outputs: dict[str, torch.Tensor], labels: torch.Tenso
     return torch.stack(terms).mean()
 
 
+def _memory_alignment_loss(outputs: dict[str, torch.Tensor], labels: torch.Tensor, availability: torch.Tensor) -> torch.Tensor:
+    explicit = outputs.get("prototype_memory_alignment_loss")
+    if isinstance(explicit, torch.Tensor):
+        return explicit
+    valid = labels != IGNORE_LABEL
+    t2_present = availability[:, 1].to(device=labels.device, dtype=torch.bool).view(-1, 1, 1, 1)
+    terms = []
+    for prefix, cls, mask in (
+        ("scar_memory", SCAR_CLASS, valid),
+        ("edema_memory", EDEMA_CLASS, valid & t2_present),
+    ):
+        pos = outputs.get(f"{prefix}_positive_similarity")
+        neg = outputs.get(f"{prefix}_negative_similarity")
+        if not isinstance(pos, torch.Tensor) or not isinstance(neg, torch.Tensor):
+            continue
+        target = (labels == cls) & mask
+        safe_neg = (labels != cls) & mask
+        if bool(target.any()):
+            terms.append(_masked_abs_mean(torch.relu(0.20 - pos[:, 0] + neg[:, 0]), target))
+        if bool(safe_neg.any()):
+            terms.append(_masked_abs_mean(torch.relu(0.20 + pos[:, 0] - neg[:, 0]), safe_neg))
+    if not terms:
+        return outputs["logits"].sum() * 0.0
+    return torch.stack(terms).mean()
+
+
+def srr_m10_loss_component_contract(
+    metrics: dict[str, torch.Tensor],
+    weights: dict[str, float] | None = None,
+) -> list[dict[str, object]]:
+    """Classify M10 losses for alias/placeholder audit tables."""
+
+    weights = weights or {}
+    rows = []
+    for name, value in metrics.items():
+        if not name.startswith("loss_") or name.endswith("_weight"):
+            continue
+        if name in {"loss_cine_temporal_consistency", "loss_cine_reference_warp_consistency"}:
+            status = "disabled_with_reason"
+            reason = "wave1_shared_m10_myoPS_only"
+        elif name in {"loss_pattern_sip_integrativeness", "loss_memory_bank_update_or_alignment"}:
+            status = "real_optimized_loss" if bool(torch.isfinite(value.detach()).item()) else "invalid"
+            reason = "independent_m10_component"
+        elif float(weights.get(name, 1.0)) == 0.0:
+            status = "disabled_with_reason"
+            reason = "zero_configured_weight"
+        else:
+            status = "real_optimized_loss"
+            reason = "active_component"
+        rows.append(
+            {
+                "loss_name": name,
+                "classification": status,
+                "reason": reason,
+                "value": float(value.detach().cpu()),
+                "weight": float(weights.get(name, 1.0)),
+            }
+        )
+    return rows
+
+
 def srr_m6_expanded_total_loss(
     outputs: dict[str, torch.Tensor],
     labels: torch.Tensor,
@@ -404,7 +569,16 @@ def srr_m6_expanded_total_loss(
     )
     if dict_loss is None:
         dict_loss = outputs["logits"].sum() * 0.0
+    psip_loss, psip_metrics = pattern_sip_integrativeness_loss(
+        outputs.get("gates", {}),
+        outputs.get("dictionary_slot_metadata", {}),
+        outputs.get("gate_valid_masks", {}),
+        detach_metrics=detach_metrics,
+    )
+    if psip_loss is None:
+        psip_loss = outputs["logits"].sum() * 0.0
     loss_proto = _prototype_margin_loss(outputs, labels, availability)
+    loss_memory = _memory_alignment_loss(outputs, labels, availability)
 
     scar_refiner_residual = outputs.get("scar_refiner_residual", outputs.get("scar_refinement_residual", outputs["logits"][:, :1] * 0.0))
     edema_refiner_residual = outputs.get("edema_refiner_residual", outputs.get("edema_refinement_residual", outputs["logits"][:, :1] * 0.0))
@@ -454,9 +628,9 @@ def srr_m6_expanded_total_loss(
         "loss_component_remote_fp": loss_remote_fp,
         "loss_no_t2_edema_safety": loss_no_t2,
         "loss_dictionary_entropy_coverage_load_balance": dict_loss,
-        "loss_pattern_sip_integrativeness": dict_loss,
+        "loss_pattern_sip_integrativeness": psip_loss,
         "loss_prototype_diversity_margin": loss_proto,
-        "loss_memory_bank_update_or_alignment": loss_proto,
+        "loss_memory_bank_update_or_alignment": loss_memory,
         "loss_refiner_final_label_effect": loss_refiner_final_label_effect,
         "loss_cine_temporal_consistency": outputs["logits"].sum() * 0.0,
         "loss_cine_reference_warp_consistency": outputs["logits"].sum() * 0.0,
@@ -471,5 +645,7 @@ def srr_m6_expanded_total_loss(
         float(component_weights["loss_edema_refiner_t2_present_roi"])
     )
     metrics.update(dict_metrics)
+    metrics.update(psip_metrics)
+    metrics["loss_component_contract_rows"] = srr_m10_loss_component_contract(metrics, component_weights)  # type: ignore[assignment]
     metrics["m6_expanded_total_loss"] = total.detach() if detach_metrics else total
     return total, metrics

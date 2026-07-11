@@ -1,0 +1,20 @@
+{
+  "task_key": "20260711_srr_v3_m10_complete_mechanism_repair",
+  "executor_id": "m10_shared_architecture_executor",
+  "status": "READY_FOR_CONTROLLER_MERGE",
+  "ordinary_slurm_training_jobs_submitted": false,
+  "validation_packaging_or_upload": false,
+  "hosted_metric_claims": false,
+  "route_promotion_claim": false,
+  "tests": {
+    "m10_wave1_fidelity": "5 passed in 58.29s",
+    "allowed_scope_regression_subset": "15 passed, 3 warnings in 2.42s",
+    "py_compile_touched_files": "exit 0",
+    "git_diff_check_allowed_scope": "exit 0"
+  },
+  "external_observation": {
+    "command": "pytest test_srr_dictionary_bank.py test_srr_losses.py test_srr_proposal_prototypes.py test_srr_runtime_prototype_bank.py",
+    "status": "2 failed, 14 passed",
+    "reason": "existing propref_loss fixture lacks args.variant in scripts/training/run_srr_propref_myops_fold0.py; outside wave1 write scope"
+  }
+}

@@ -1,0 +1,69 @@
+task_key: 20260711_srr_v3_m10_complete_mechanism_repair
+wave: 1
+scope: shared_architecture_loss_config_tests_fidelity_smoke
+canonical_modality_order:
+  - LGE
+  - T2
+  - C0
+encoder_channels: [32, 64, 128, 256]
+dictionary:
+  config_name: srr_v3_m10_16slot
+  slots_per_scale:
+    shared: 4
+    lge_private: 2
+    t2_private: 2
+    c0_private: 2
+    interaction_lge_t2: 2
+    interaction_lge_c0: 2
+    interaction_t2_c0: 2
+  total_slots_per_scale: 16
+  invalid_slot_threshold: 1.0e-8
+  deterministic_invalid_slot_zero:
+    forward_value: true
+    gate_weight: true
+    gradient: true
+    memory_update: true
+designs:
+  D0_STATIC_MATCHED_PROPREF:
+    variant: m10_d0_static_matched_propref
+    spatial_router: false
+    pattern_sip: false
+    prototype_memory: false
+  D1_SPATIAL_BR2_PROPREF:
+    variant: m10_d1_spatial_br2_propref
+    spatial_router: one_pass
+    pattern_sip: false
+    prototype_memory: false
+  D2_HIERARCHICAL_BR2_PSIP_PROPREF:
+    variant: m10_d2_hierarchical_psip_propref
+    spatial_router: two_pass_lesion_conditioned
+    pattern_sip: independent_loss
+    prototype_memory: false
+  D3_HIERARCHICAL_BR2_MEMORY_PROPREF:
+    variant: m10_d3_hierarchical_memory_propref
+    spatial_router: two_pass_lesion_conditioned
+    pattern_sip: independent_loss
+    prototype_memory: cross_fitted_ema_plus_learnable_residual
+prototype_memory:
+  shards: 4
+  positive_slots_per_pathology: 8
+  negative_slots_per_pathology: 12
+  edema_no_t2_policy: reject_as_positive_and_negative
+final_output:
+  base: SRR_PROPOSAL_REFINEMENT
+  nnunet_role: CONTEXT_TEACHER_SAFETY_CONTROL_ONLY
+  no_t2_edema_probability: exactly_zero
+loss_accounting:
+  forbid_alias_losses: true
+  pattern_sip: independent_optimized_component
+  memory_alignment: independent_optimized_component
+  disabled_wave1_components:
+    - loss_cine_temporal_consistency
+    - loss_cine_reference_warp_consistency
+wave1_boundaries:
+  ordinary_slurm_training_jobs: forbidden
+  validation_packaging: forbidden
+  validation_upload: forbidden
+  hosted_metric_claims: forbidden
+  route_promotion: forbidden
+  next_milestone: forbidden

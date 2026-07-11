@@ -21,7 +21,7 @@ The original controller attempt stopped before launching executor wave 1 because
 
 ## Safety Boundary
 
-No executor implementation, Slurm submission, training, validation packaging, upload, push, route promotion, hosted metric claim, scientific stop, M11 work, or final review occurred before the resumed bootstrap. The next authorized action is wave 1 launch only.
+Wave 1 executor returned `READY_FOR_CONTROLLER_MERGE`, and controller verification accepted the wave 1 merge. No Slurm submission, formal training, validation packaging, upload, push, route promotion, hosted metric claim, scientific stop, M11 work, or final review occurred.
 
 The file `review.md` is intentionally absent. The reviewer must be a later separate read-only thread if the user requests review of this blocked prerequisite packet.
 
@@ -55,11 +55,13 @@ published_files:
   - results/20260711_srr_v3_m10_complete_mechanism_repair/mapper_report_final.md
   - results/20260711_srr_v3_m10_complete_mechanism_repair/architecture_delta_final.md
   - results/20260711_srr_v3_m10_complete_mechanism_repair/executor_waves/README.md
+  - results/20260711_srr_v3_m10_complete_mechanism_repair/wave1_launch_receipt.json
+  - results/20260711_srr_v3_m10_complete_mechanism_repair/wave1_merge_receipt.md
 blocked_actions:
-  - wave2 before wave1 completion
+  - wave2 before wave1 commit
   - wave3 before wave2 completion and registration gate
   - validation packaging/upload/fold expansion/hosted metric claim/next-stage training
-next_required_action: launch serial wave 1 shared architecture executor only
+next_required_action: commit wave1 code/evidence and launch serial wave 2 MyoPS executor
 reason_if_not_published: not applicable
 reason_if_no_route_promotion: awaiting independent review and no M10 execution evidence exists
 ```

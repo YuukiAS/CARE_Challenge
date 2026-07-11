@@ -10,6 +10,7 @@ from src.care_myocardium.anchors.myops_decode import canonical_t2_present
 from src.care_myocardium.models.pathology_heads import AnatomyPathologyHeads
 from src.care_myocardium.models.proposal_prototypes import deterministic_axis_prototypes
 from src.care_myocardium.models.srr_blocks import gate_diagnostics
+from src.care_myocardium.models.srr_spatial_dictionary import M10TwoPassSpatialDictionary
 from src.care_myocardium.models.srr_v2_unet import FlexibleTaskDecoder, ScaleRetrieval, build_modality_encoder, encoder_profile_scale_channels
 
 
@@ -301,6 +302,64 @@ M6_VARIANT_CONFIGS: dict[str, dict[str, object]] = {
         "edema_crop_margin": 5,
         "arbitration_mode": "m9_srr_main_control_only",
         "m9_final_output_mode": "SRR_MAIN_NOT_ANCHOR_RESIDUAL",
+    },
+    "m10_d0_static_matched_propref": {
+        "default_encoder_profile": "full_4scale",
+        "dictionary_config": "srr_v3_m10_16slot",
+        "scar_negative": 12,
+        "edema_positive": 8,
+        "scar_kernel": 3,
+        "edema_kernel": 9,
+        "scar_scale": 2.0,
+        "edema_scale": 1.5,
+        "arbitration_mode": "m10_srr_proposal_refinement",
+        "m10_design": "D0_STATIC_MATCHED_PROPREF",
+        "m10_final_output_mode": "SRR_PROPOSAL_REFINEMENT",
+    },
+    "m10_d1_spatial_br2_propref": {
+        "default_encoder_profile": "full_4scale",
+        "dictionary_config": "srr_v3_m10_16slot",
+        "scar_negative": 12,
+        "edema_positive": 8,
+        "scar_kernel": 3,
+        "edema_kernel": 9,
+        "scar_scale": 2.0,
+        "edema_scale": 1.5,
+        "arbitration_mode": "m10_srr_proposal_refinement",
+        "m10_design": "D1_SPATIAL_BR2_PROPREF",
+        "m10_final_output_mode": "SRR_PROPOSAL_REFINEMENT",
+        "m10_spatial_dictionary": True,
+    },
+    "m10_d2_hierarchical_psip_propref": {
+        "default_encoder_profile": "full_4scale",
+        "dictionary_config": "srr_v3_m10_16slot",
+        "scar_negative": 12,
+        "edema_positive": 8,
+        "scar_kernel": 3,
+        "edema_kernel": 9,
+        "scar_scale": 2.0,
+        "edema_scale": 1.5,
+        "arbitration_mode": "m10_srr_proposal_refinement",
+        "m10_design": "D2_HIERARCHICAL_BR2_PSIP_PROPREF",
+        "m10_final_output_mode": "SRR_PROPOSAL_REFINEMENT",
+        "m10_spatial_dictionary": True,
+        "m10_pattern_sip": True,
+    },
+    "m10_d3_hierarchical_memory_propref": {
+        "default_encoder_profile": "full_4scale",
+        "dictionary_config": "srr_v3_m10_16slot",
+        "scar_negative": 12,
+        "edema_positive": 8,
+        "scar_kernel": 3,
+        "edema_kernel": 9,
+        "scar_scale": 2.0,
+        "edema_scale": 1.5,
+        "arbitration_mode": "m10_srr_proposal_refinement",
+        "m10_design": "D3_HIERARCHICAL_BR2_MEMORY_PROPREF",
+        "m10_final_output_mode": "SRR_PROPOSAL_REFINEMENT",
+        "m10_spatial_dictionary": True,
+        "m10_pattern_sip": True,
+        "m10_memory": True,
     },
 }
 
@@ -959,6 +1018,8 @@ class SRRProposeRefineMyoPS(nn.Module):
         self.base_channels = int(base_channels)
         self.m6_config = M6_VARIANT_CONFIGS.get(variant, {})
         self.m9_srr_main_output = str(self.m6_config.get("m9_final_output_mode", "")) == "SRR_MAIN_NOT_ANCHOR_RESIDUAL"
+        self.m10_final_output = str(self.m6_config.get("m10_final_output_mode", "")) == "SRR_PROPOSAL_REFINEMENT"
+        self.m10_design = str(self.m6_config.get("m10_design", ""))
         if self.m6_config and str(encoder_profile) in {"tiny_3scale", ""}:
             encoder_profile = str(self.m6_config["default_encoder_profile"])
         self.encoder_profile = str(encoder_profile)
@@ -1032,6 +1093,15 @@ class SRRProposeRefineMyoPS(nn.Module):
         self.baseline_gate = BaselinePreservingResidualGate(num_classes=6)
         self.segmentation_context_interface = SegmentationContextInterface()
         self.branch_arbitration = BranchArbitrationGate(mode=str(self.m6_config.get("arbitration_mode", "legacy_baseline")))
+        self.m10_spatial_dictionary = (
+            M10TwoPassSpatialDictionary(
+                self.feature_channels,
+                enable_pattern_sip=bool(self.m6_config.get("m10_pattern_sip", False)),
+                enable_memory=bool(self.m6_config.get("m10_memory", False)),
+            )
+            if bool(self.m6_config.get("m10_spatial_dictionary", False))
+            else None
+        )
 
     @staticmethod
     def _neutral_anatomy_context(anatomy_logits: torch.Tensor, availability: torch.Tensor) -> dict[str, torch.Tensor]:
@@ -1180,6 +1250,28 @@ class SRRProposeRefineMyoPS(nn.Module):
             component_features,
             anatomy_context,
         )
+        m10_spatial: dict[str, object] | None = None
+        if self.m10_spatial_dictionary is not None:
+            m10_spatial = self.m10_spatial_dictionary(
+                [features["anatomy"], features["scar"], features["edema"]],
+                availability,
+                anatomy_context=anatomy_context,
+                initial_evidence={"scar": evidence["scar_logits"], "edema": evidence["edema_logits"]},
+            )
+            features["scar"] = features["scar"] + m10_spatial["scar_retrieved"]  # type: ignore[operator]
+            features["edema"] = features["edema"] + m10_spatial["edema_retrieved"]  # type: ignore[operator]
+            spatial_gates = m10_spatial["gates"]  # type: ignore[assignment]
+            spatial_metadata = {
+                name: m10_spatial["slot_metadata"]  # type: ignore[index]
+                for name in spatial_gates  # type: ignore[union-attr]
+            }
+            spatial_valid = {
+                name: m10_spatial["valid_mask"]  # type: ignore[index]
+                for name in spatial_gates  # type: ignore[union-attr]
+            }
+            gates = {**gates, **spatial_gates}  # type: ignore[arg-type]
+            gate_metadata = {**gate_metadata, **spatial_metadata}  # type: ignore[arg-type]
+            gate_valid_masks = {**gate_valid_masks, **spatial_valid}  # type: ignore[arg-type]
         scar_anatomy_prior = anatomy_context["scar_soft_gate_logits"]
         edema_anatomy_prior = anatomy_context["edema_soft_gate_logits"]
         scar_dict = self.scar_dictionary(
@@ -1280,9 +1372,13 @@ class SRRProposeRefineMyoPS(nn.Module):
         proposal_logits = torch.cat([evidence["anatomy_logits"], edema_dict["proposal_logits"], scar_dict["proposal_logits"]], dim=1)
         refiner_logits = srr_logits
         use_arbitration = self.variant in M6_VARIANT_CONFIGS and not self.m9_srr_main_output
-        if self.m9_srr_main_output:
+        if self.m9_srr_main_output or self.m10_final_output:
             final_logits = srr_logits
-            branch_arbitration_status = "m9_srr_main_output_anchor_control_only"
+            branch_arbitration_status = (
+                "m10_srr_proposal_refinement_no_anchor_identity"
+                if self.m10_final_output
+                else "m9_srr_main_output_anchor_control_only"
+            )
         else:
             final_logits = arbitration["final_logits"] if use_arbitration else baseline_blend["final_logits"]
             branch_arbitration_status = "enabled_explicit_arbitration" if use_arbitration else "legacy_baseline_gate_only"
@@ -1291,6 +1387,12 @@ class SRRProposeRefineMyoPS(nn.Module):
         anchor_labels = baseline_blend["anchor_logits"].argmax(dim=1)
         final_delta_vs_srr = (final_labels != srr_labels).to(dtype=final_logits.dtype).flatten(1).mean(dim=1)
         final_delta_vs_anchor = (final_labels != anchor_labels).to(dtype=final_logits.dtype).flatten(1).mean(dim=1)
+        q_struct = torch.softmax(evidence["anatomy_logits"], dim=1)
+        p_scar = torch.sigmoid(scar_logits)
+        q_edema = canonical_t2_present(availability).to(device=final_logits.device, dtype=final_logits.dtype).view(-1, 1, 1, 1, 1)
+        p_edema = q_edema * (1.0 - p_scar).clamp_min(0.0) * torch.sigmoid(edema_logits)
+        residual_anatomy = (1.0 - p_scar - p_edema).clamp_min(0.0)
+        m10_final_probabilities = torch.cat([residual_anatomy * q_struct, p_edema, p_scar], dim=1)
         outputs = {
             "logits": final_logits,
             "branch_arbitration_status": branch_arbitration_status,
@@ -1306,7 +1408,15 @@ class SRRProposeRefineMyoPS(nn.Module):
             "branch_srr_confidence": arbitration["srr_confidence"],
             "srr_logits_pre_anchor": srr_logits,
             "m9_final_output_mode": "SRR_MAIN_NOT_ANCHOR_RESIDUAL" if self.m9_srr_main_output else "ANCHOR_RESIDUAL_OR_LEGACY_CONTROL",
-            "nnunet_role": "CONTEXT_TEACHER_SAFETY_CONTROL_ONLY" if self.m9_srr_main_output else "ANCHOR_RESIDUAL_CONTROL_OR_LEGACY_CONTEXT",
+            "m10_design": self.m10_design,
+            "final_output_base": "SRR_PROPOSAL_REFINEMENT" if self.m10_final_output else "ANCHOR_RESIDUAL_OR_LEGACY_CONTROL",
+            "m10_final_probabilities": m10_final_probabilities,
+            "m10_no_t2_edema_probability_max": p_edema[q_edema.expand_as(p_edema) <= 0].max() if bool((q_edema <= 0).any()) else p_edema.new_tensor(0.0),
+            "nnunet_role": (
+                "CONTEXT_TEACHER_SAFETY_CONTROL_ONLY"
+                if self.m9_srr_main_output or self.m10_final_output
+                else "ANCHOR_RESIDUAL_CONTROL_OR_LEGACY_CONTEXT"
+            ),
             "srr_main_logits": srr_logits,
             "proposal_logits": proposal_logits,
             "refiner_logits": refiner_logits,
@@ -1401,4 +1511,12 @@ class SRRProposeRefineMyoPS(nn.Module):
             "gate_valid_masks": gate_valid_masks,
             "dictionary_diagnostics": gate_diagnostics(gates, gate_metadata, gate_valid_masks),
         }
+        if m10_spatial is not None:
+            outputs["m10_spatial_dictionary_status"] = "enabled_two_pass_spatial"
+            outputs["m10_spatial_pattern_sip_status"] = m10_spatial["pattern_sip_status"]  # type: ignore[index]
+            outputs["m10_spatial_memory_status"] = m10_spatial["memory_status"]  # type: ignore[index]
+            outputs["m10_scar_initial_proposal"] = m10_spatial["scar_initial_proposal"]  # type: ignore[index]
+            outputs["m10_edema_initial_proposal"] = m10_spatial["edema_initial_proposal"]  # type: ignore[index]
+        else:
+            outputs["m10_spatial_dictionary_status"] = "disabled_for_static_or_legacy_design"
         return outputs
