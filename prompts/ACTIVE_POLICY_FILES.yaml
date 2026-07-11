@@ -1,0 +1,30 @@
+schema_version: 1
+active_rule_sources:
+  - AGENTS.md
+  - START_HERE_FOR_GPT.md
+  - GPT_PLANNER_CARE_PROTOCOL.md
+  - prompts/AGENT_FLOW_V2_PROTOCOL.md
+  - prompts/AGENT_RULES.md
+  - prompts/CHATGPT_RULES.md
+  - prompts/HANDOFF_ROLES.md
+  - prompts/HANDOFF_STATE_MACHINE.md
+  - prompts/CONTROLLER_TASK_PROTOCOL.md
+  - prompts/HANDOFF_GATE_POLICY.md
+  - prompts/GPT_HARD_GATE_PROMPT.md
+  - prompts/MILESTONE_REVIEW_PROTOCOL.md
+  - prompts/templates/
+  - .agents/skills/care-mapper/SKILL.md
+  - .agents/skills/slurm-routing-partition/SKILL.md
+schemas:
+  - prompts/schemas/agent_flow_policy.yaml
+  - prompts/schemas/milestone_staging.schema.yaml
+  - prompts/schemas/planning_review.schema.yaml
+  - prompts/schemas/executor_plan.schema.yaml
+  - prompts/schemas/controller_packet.schema.yaml
+  - prompts/schemas/runtime_review.schema.yaml
+candidate_globs:
+  - prompts/shared/M[0-9]*_*.md
+  - prompts/tasks/*executor_plan.yaml
+  - prompts/tasks/*planning_review.md
+packet_roots:
+  - results

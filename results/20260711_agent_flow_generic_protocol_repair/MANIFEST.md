@@ -1,0 +1,19 @@
+# Manifest
+
+- `result.md`
+- `controller_context.json`
+- `controller_ledger.csv`
+- `controller_bootstrap_snapshot.md`
+- `implementation_snapshot.md`
+- `finalizer_state.json`
+- `mapper_report_draft.md`
+- `mapper_report_final.md`
+- `architecture_delta_final.md`
+- `schema_consistency_report.md`
+- `legacy_hardcode_scan.md`
+- `architecture_history_report.md`
+- `validator_report.md`
+- `controller_report.md`
+- `completion_check.md`
+- `review_request.md`
+- `subagents/reviewer_prompt.md`

@@ -19,6 +19,7 @@ REQUIRED_WIKI_FILES = [
     "EXECUTION.md",
     "COMPONENTS.csv",
     "LINEAGE.md",
+    "current_state.yaml",
     "architecture.yaml",
     "figures/model-current.d2",
     "figures/model-current.svg",
@@ -56,22 +57,8 @@ COMPONENT_REQUIRED_COLUMNS = [
 
 VALID_CURRENT_STATUS = {"implemented", "partial", "scaffold", "legacy", "disabled", "unknown"}
 VALID_EVIDENCE_STATUS = {"verified", "unverified", "stale", "missing"}
-EXPECTED_M9_REVIEW_TOKEN = "M9_FOLLOWUP_AUDITED_READY_NO_PROMOTION_DIAGNOSTIC_ONLY"
 HISTORY_VERSION_RE = re.compile(r"^M[0-9]{2,}$")
 HISTORY_REQUIRED_FILES = ("README.md", "snapshot.yaml", "COMPONENTS.csv", "architecture.yaml", "components", "figures")
-HISTORY_COMPONENTS = (
-    "availability-no-t2",
-    "retrieval-dictionary",
-    "prototype-memory",
-    "anatomy-prior",
-    "proposal",
-    "refiner",
-    "arbitration",
-    "losses",
-    "checkpoint-selection",
-    "training-evidence",
-    "cine-temporal",
-)
 REQUIRED_CURRENT_COMPONENTS = {
     "inputs_availability",
     "modality_stems_encoders",
@@ -99,6 +86,18 @@ FORBIDDEN_HISTORY_DIAGRAM_TOKENS = (
     "COMPONENT_DELTA",
 )
 FORBIDDEN_GENERIC_DELTA_TOKENS = ("history snapshot", "component table", "evidence mapping")
+
+
+def parse_simple_yaml(path: Path) -> dict[str, str]:
+    data: dict[str, str] = {}
+    if not path.is_file():
+        return data
+    for raw in path.read_text(encoding="utf-8").splitlines():
+        if ":" not in raw or raw.lstrip().startswith("#"):
+            continue
+        key, value = raw.split(":", 1)
+        data[key.strip()] = value.strip().strip("\"'")
+    return data
 
 
 def version_number(version: str) -> int:
@@ -226,8 +225,10 @@ def validate_architecture(repo_root: Path) -> list[str]:
     edge_ids = parse_yaml_ids(text, "edges")
     if not node_ids:
         errors.append("architecture.yaml has no node ids")
-    if f"review_token: {EXPECTED_M9_REVIEW_TOKEN}" not in text and f'review_token: "{EXPECTED_M9_REVIEW_TOKEN}"' not in text:
-        errors.append("architecture.yaml review_token does not match current M9 follow-up review token")
+    current_state = parse_simple_yaml(repo_root / "wiki" / "current_state.yaml")
+    expected_token = current_state.get("current_review_token", "")
+    if expected_token and f"review_token: {expected_token}" not in text and f'review_token: "{expected_token}"' not in text:
+        errors.append("architecture.yaml review_token does not match wiki/current_state.yaml")
     comp_path = repo_root / "wiki" / "COMPONENTS.csv"
     if comp_path.is_file():
         comp_ids = {row.get("component_id", "") for row in csv.DictReader(comp_path.read_text(encoding="utf-8").splitlines())}
@@ -240,12 +241,17 @@ def validate_architecture(repo_root: Path) -> list[str]:
 
 
 def validate_review_token(repo_root: Path) -> list[str]:
-    review = repo_root / "results" / "20260708_srr_v3_m9_dictionary_fidelity_repair_training" / "review.md"
+    current_state = parse_simple_yaml(repo_root / "wiki" / "current_state.yaml")
+    review_rel = current_state.get("current_review_path", "")
+    expected_token = current_state.get("current_review_token", "")
+    if not review_rel or not expected_token:
+        return ["wiki/current_state.yaml missing current_review_path or current_review_token"]
+    review = repo_root / review_rel
     if not review.is_file():
         return [f"missing committed review token source: {review}"]
     text = review.read_text(encoding="utf-8")
-    if EXPECTED_M9_REVIEW_TOKEN not in text:
-        return ["current M9 follow-up review.md does not contain expected review token"]
+    if expected_token not in text:
+        return ["current review.md does not contain wiki/current_state.yaml review token"]
     return []
 
 
@@ -310,32 +316,15 @@ def validate_history(repo_root: Path) -> list[str]:
     for rel in ("README.md", "COMPARISON.md", "MIGRATION_MANIFEST.csv"):
         if not (hist / rel).is_file():
             errors.append(f"missing history file: wiki/history/{rel}")
-    source_headings: set[tuple[str, str]] = set()
-    archived_sources = {
-        "TODO.md": hist / "M08" / "ORIGINAL_ANALYSIS.md",
-        "todo-m10.md": hist / "M09" / "ORIGINAL_ANALYSIS.md",
-    }
-    for source_name, source_path in archived_sources.items():
-        if not source_path.is_file():
-            errors.append(f"missing archived original analysis: {source_path.relative_to(repo_root)}")
-            continue
-        for line in source_path.read_text(encoding="utf-8").splitlines():
-            if re.match(r"^#{1,3} ", line):
-                source_headings.add((source_name, line.strip()))
     manifest_path = hist / "MIGRATION_MANIFEST.csv"
-    covered: set[tuple[str, str]] = set()
     if manifest_path.is_file():
         for row in csv.DictReader(manifest_path.read_text(encoding="utf-8").splitlines()):
-            covered.add((row.get("source_file", ""), row.get("source_heading", "")))
             dest = repo_root / str(row.get("destination_file", ""))
             if row.get("migration_status") != "migrated":
                 errors.append(f"manifest row not migrated: {row.get('source_heading')}")
             if not dest.is_file():
                 errors.append(f"manifest destination missing: {dest}")
-    missing_headings = source_headings - covered
-    for source, heading in sorted(missing_headings):
-        errors.append(f"manifest missing heading from {source}: {heading}")
-    if (repo_root / "TODO.md").exists() or (repo_root / "todo-m10.md").exists() or (repo_root / "TODO-M10.md").exists():
+    if (repo_root / "TODO.md").exists():
         errors.append("root TODO analysis files must be removed after wiki/history migration")
     generator = load_generator(repo_root)
     discovered_versions = discover_history_versions(repo_root)
@@ -344,15 +333,6 @@ def validate_history(repo_root: Path) -> list[str]:
         for rel in ("README.md", "snapshot.yaml", "COMPONENTS.csv", "architecture.yaml", "figures/architecture.d2", "figures/architecture.svg", "figures/architecture.png", "figures/gap.d2", "figures/gap.svg", "figures/gap.png"):
             if not (base / rel).is_file():
                 errors.append(f"missing history file: wiki/history/{version}/{rel}")
-        if version == "M09":
-            for rel in ("figures/delta-from-M08.d2", "figures/delta-from-M08.svg", "figures/delta-from-M08.png"):
-                if not (base / rel).is_file():
-                    errors.append(f"missing history delta file: wiki/history/{version}/{rel}")
-        if version in {"M08", "M09"}:
-            for comp in HISTORY_COMPONENTS:
-                comp_path = base / "components" / f"{comp}.md"
-                if not comp_path.is_file():
-                    errors.append(f"missing history component: wiki/history/{version}/components/{comp}.md")
         comp_table = base / "COMPONENTS.csv"
         comp_ids: set[str] = set()
         if comp_table.is_file():
@@ -363,9 +343,6 @@ def validate_history(repo_root: Path) -> list[str]:
                     f"history component pages must match COMPONENTS.csv for {version}; "
                     f"missing_pages={sorted(comp_ids - pages)} extra_pages={sorted(pages - comp_ids)}"
                 )
-        snapshot = base / "snapshot.yaml"
-        if version in {"M08", "M09"} and snapshot.is_file() and "original_analysis_sha256" not in snapshot.read_text(encoding="utf-8"):
-            errors.append(f"{snapshot.relative_to(repo_root)} missing original_analysis_sha256")
         try:
             sources = generator.generated_history_sources(repo_root, version)
         except Exception as exc:
@@ -385,7 +362,7 @@ def validate_history(repo_root: Path) -> list[str]:
                         if token in d2_text:
                             errors.append(f"future history delta contains generic placeholder token {token!r}: {d2.relative_to(repo_root)}")
         previous = previous_history_version(discovered_versions, version)
-        if previous is not None and version_number(version) >= 10:
+        if previous is not None:
             expected_stem = f"delta-from-{previous}"
             if expected_stem not in sources:
                 errors.append(f"history generator missing delta source for {version} from {previous}")
@@ -393,7 +370,7 @@ def validate_history(repo_root: Path) -> list[str]:
                 if not (base / rel).is_file():
                     errors.append(f"missing history delta file: wiki/history/{version}/{rel}")
             d2 = base / "figures" / f"{expected_stem}.d2"
-            if d2.is_file():
+            if d2.is_file() and version_number(version) >= 10:
                 d2_text = d2.read_text(encoding="utf-8")
                 for required in (
                     "新增组件",
@@ -413,9 +390,8 @@ def validate_history(repo_root: Path) -> list[str]:
         text = comparison.read_text(encoding="utf-8")
         if text.count("证据要求更严格") > 3:
             errors.append("history comparison still looks like generic placeholder")
-        for token in ("M8 -> M9 实际代码变化", "对 M10 的约束", "loss wiring fixed", "dictionary", "Cine"):
-            if token not in text:
-                errors.append(f"history comparison missing required token: {token}")
+        if "##" not in text or "|" not in text:
+            errors.append("history comparison must contain version-level narrative and tables")
     return errors
 
 

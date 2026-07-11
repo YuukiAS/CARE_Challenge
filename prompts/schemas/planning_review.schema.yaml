@@ -1,0 +1,19 @@
+schema_version: 1
+required_fields:
+  - task_key
+  - milestone_id
+  - role
+  - reviewed_prompt_path
+  - reviewed_contract_sha256
+  - planner_draft_commit
+  - critic_decision
+  - critic_token
+  - reviewed_at
+  - files_read
+  - blocking_findings
+role: critic
+ready_decision: READY_FOR_CODEX_MERGE
+revision_decision: NEEDS_PLANNING_REVISION
+valid_tokens:
+  READY_FOR_CODEX_MERGE: PLANNING_CRITIC_READY_FOR_CODEX_MERGE
+  NEEDS_PLANNING_REVISION: PLANNING_CRITIC_NEEDS_REVISION

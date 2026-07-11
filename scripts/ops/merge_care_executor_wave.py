@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 from datetime import datetime, timezone
 from pathlib import Path
@@ -32,6 +33,15 @@ def run(cmd: list[str], cwd: Path) -> subprocess.CompletedProcess[str]:
 
 def utc_now() -> str:
     return datetime.now(timezone.utc).isoformat()
+
+
+def sha256_file(path: Path) -> str:
+    return hashlib.sha256(path.read_bytes()).hexdigest()
+
+
+def task_wave_dir(repo_root: Path, plan: dict[str, Any], wave: int) -> Path:
+    task_key = str(plan.get("task_key") or "unknown_task")
+    return repo_root / "results" / task_key / "executor_waves" / f"wave_{wave}"
 
 
 def record(cmd: list[str], cp: subprocess.CompletedProcess[str]) -> dict[str, Any]:
@@ -80,8 +90,36 @@ def read_completion_from_worktree_or_branch(repo_root: Path, entry: dict[str, An
 
 
 def completion_token(text: str) -> str:
+    try:
+        data = json.loads(text)
+    except json.JSONDecodeError:
+        data = None
+    if isinstance(data, dict):
+        for key in ("completion_token", "completion_state", "status"):
+            if data.get(key):
+                return str(data[key]).strip()
     for raw in text.splitlines():
         token = raw.strip()
+        if token.startswith("completion_token:") or token.startswith("completion_state:") or token.startswith("status:"):
+            return token.split(":", 1)[1].strip()
+        if token:
+            return token.split()[0].strip()
+    return ""
+
+
+def completion_structured_state(text: str) -> str:
+    try:
+        data = json.loads(text)
+    except json.JSONDecodeError:
+        data = None
+    if isinstance(data, dict):
+        for key in ("completion_state", "status", "monitor_state", "slurm_state"):
+            if data.get(key):
+                return str(data[key]).strip()
+    for raw in text.splitlines():
+        token = raw.strip()
+        if token.startswith(("completion_state:", "status:", "monitor_state:", "slurm_state:")):
+            return token.split(":", 1)[1].strip()
         if token:
             return token.split()[0].strip()
     return ""
@@ -137,7 +175,9 @@ def validate_executor_ready(repo_root: Path, entry: dict[str, Any]) -> tuple[boo
         return False, f"{eid}: completion token {token} does not match required token {required_token}", details
     if completion_file and not tracked_in_branch(repo_root, branch, completion_file):
         return False, f"{eid}: required packet is not tracked in branch: {completion_file}", details
-    if "NEEDS_MONITOR" in text or "RUNNING" in text or "PENDING" in text or "AWAITING_SACCT" in text:
+    structured_state = completion_structured_state(text).upper()
+    details["completion_structured_state"] = structured_state
+    if structured_state in FORBIDDEN_COMPLETION_TOKENS or any(structured_state.startswith(prefix) for prefix in FORBIDDEN_COMPLETION_TOKENS):
         return False, f"{eid}: blocking Slurm work is not terminal in completion file", details
     return True, "ready", details
 
@@ -153,6 +193,9 @@ def main(argv: list[str] | None = None) -> int:
     repo_root = Path.cwd()
     plan = load_yaml(args.plan)
     errors = validate_plan(plan)
+    status = run(["git", "status", "--short"], repo_root)
+    if status.returncode != 0 or status.stdout.strip():
+        errors.append("controller main worktree must be clean before executor wave merge")
     entries = wave_entries(plan, args.wave)
     if not entries:
         errors.append(f"wave {args.wave}: no executors")
@@ -161,12 +204,16 @@ def main(argv: list[str] | None = None) -> int:
             print(f"error: {error}", file=sys.stderr)
         return 1
 
-    receipt_path = args.receipt_path or repo_root / "results" / "executor_wave_receipts" / f"wave_{args.wave}_merge_receipt.json"
+    plan_hash = sha256_file(args.plan)
+    receipt_path = args.receipt_path or task_wave_dir(repo_root, plan, args.wave) / "merge_receipt.json"
     receipt_path.parent.mkdir(parents=True, exist_ok=True)
     receipt: dict[str, Any] = {
+        "task_key": plan.get("task_key"),
         "plan_path": str(args.plan),
+        "plan_sha256": plan_hash,
         "wave": args.wave,
         "created_at": utc_now(),
+        "baseline_commit": run(["git", "rev-parse", "HEAD"], repo_root).stdout.strip(),
         "merge_state": "INITIALIZING",
         "records": [],
         "merged_executors": [],
@@ -185,6 +232,17 @@ def main(argv: list[str] | None = None) -> int:
             receipt_path.write_text(json.dumps(receipt, indent=2, sort_keys=True) + "\n", encoding="utf-8")
             print(receipt["failure_reason"], file=sys.stderr)
             return 1
+        if not blocking and not ready:
+            receipt.setdefault("merge_details", []).append(
+                {
+                    "executor_id": eid,
+                    "merge_state": "SKIPPED_OPTIONAL_NOT_READY",
+                    "failure_reason": reason,
+                    "required_completion_token": entry.get("required_completion_token"),
+                    "merge_order": entry.get("merge_order"),
+                }
+            )
+            continue
         if args.dry_run:
             receipt["merged_executors"].append(eid)
             continue

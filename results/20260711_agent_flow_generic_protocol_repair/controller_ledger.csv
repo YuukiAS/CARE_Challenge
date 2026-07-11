@@ -1,0 +1,4 @@
+timestamp,phase,decision,next_action
+2026-07-11T00:00:00Z,bootstrap,READ_ACTIVE_PROTOCOL_AND_SKILLS,implement_generic_schema_refactor
+2026-07-11T00:20:00Z,implementation,UPDATED_PROTOCOL_VALIDATORS_AND_WIKI,run_policy_candidate_wiki_checks
+2026-07-11T00:40:00Z,packet,WRITE_CONTROLLER_PACKET,request_separate_review

@@ -1,0 +1,25 @@
+{
+  "task_key": "20260711_agent_flow_generic_protocol_repair",
+  "task_kind": "maintenance",
+  "execution_mode": "controller_supervised",
+  "baseline_commit": "fa4e50ba77743322104e7d61ae69a2382f3a89c2",
+  "scope": "handoff, planning review, runtime roles, validators, packet schema, history/wiki, executor-wave orchestration",
+  "forbidden_scope": [
+    "M10 scientific design",
+    "model code",
+    "training",
+    "ordinary Slurm training jobs",
+    "historical M8/M9 result packets",
+    "review.md",
+    "push"
+  ],
+  "schema_sources": [
+    "prompts/schemas/agent_flow_policy.yaml",
+    "prompts/schemas/milestone_staging.schema.yaml",
+    "prompts/schemas/planning_review.schema.yaml",
+    "prompts/schemas/executor_plan.schema.yaml",
+    "prompts/schemas/controller_packet.schema.yaml",
+    "prompts/schemas/runtime_review.schema.yaml"
+  ],
+  "active_policy_registry": "prompts/ACTIVE_POLICY_FILES.yaml"
+}

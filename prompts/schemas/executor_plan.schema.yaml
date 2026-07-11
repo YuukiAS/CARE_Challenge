@@ -1,0 +1,32 @@
+schema_version: 1
+valid_lanes:
+  - myops
+  - cine
+  - shared
+  - tooling
+required_executor_fields:
+  - id
+  - lane
+  - wave
+  - prompt_path
+  - result_dir
+  - runtime_output_root
+  - slurm_job_namespace
+  - lock_path
+  - log_path
+  - merge_order
+  - required_completion_file
+  - required_completion_token
+ready_tokens:
+  - READY_FOR_MERGE
+  - READY_FOR_CONTROLLER_MERGE
+  - PACKET_COMMITTED_FOR_CONTROLLER
+forbidden_completion_states:
+  - NEEDS_MONITOR
+  - NEEDS_EVIDENCE
+  - NEEDS_REVISION
+  - BLOCKED
+  - RUNNING
+  - PENDING
+  - AWAITING_SACCT
+receipt_root_template: "results/<task_key>/executor_waves/wave_<wave>"

@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 from datetime import datetime, timezone
 from pathlib import Path
@@ -35,6 +36,15 @@ def selected_wave(plan: dict[str, Any], wave: int) -> list[dict[str, Any]]:
     return [item for item in plan.get("executors", []) if int(item.get("wave", 1)) == wave]
 
 
+def sha256_file(path: Path) -> str:
+    return hashlib.sha256(path.read_bytes()).hexdigest()
+
+
+def task_wave_dir(repo_root: Path, plan: dict[str, Any], wave: int) -> Path:
+    task_key = str(plan.get("task_key") or "unknown_task")
+    return repo_root / "results" / task_key / "executor_waves" / f"wave_{wave}"
+
+
 def dependency_errors(plan: dict[str, Any], wave: int, repo_root: Path) -> list[str]:
     executors = plan.get("executors", [])
     waves = {str(item.get("id")): int(item.get("wave", 1)) for item in executors}
@@ -46,11 +56,17 @@ def dependency_errors(plan: dict[str, Any], wave: int, repo_root: Path) -> list[
                 errors.append(f"{eid}: dependency {dep} is not completed in an earlier wave")
                 continue
             dep_wave = waves.get(dep)
-            receipt_path = repo_root / "results" / "executor_wave_receipts" / f"wave_{dep_wave}_merge_receipt.json"
+            receipt_path = task_wave_dir(repo_root, plan, int(dep_wave)) / "merge_receipt.json"
             try:
                 receipt = json.loads(receipt_path.read_text(encoding="utf-8"))
             except (OSError, json.JSONDecodeError):
                 errors.append(f"{eid}: dependency {dep} has no successful merge receipt: {receipt_path}")
+                continue
+            if receipt.get("task_key") != plan.get("task_key"):
+                errors.append(f"{eid}: dependency {dep} receipt task_key mismatch: {receipt_path}")
+                continue
+            if plan.get("_plan_sha256") and receipt.get("plan_sha256") != plan.get("_plan_sha256"):
+                errors.append(f"{eid}: dependency {dep} receipt plan hash mismatch: {receipt_path}")
                 continue
             if receipt.get("merge_state") != "MERGED" or dep not in receipt.get("merged_executors", []):
                 errors.append(f"{eid}: dependency {dep} is not recorded as merged in {receipt_path}")
@@ -77,6 +93,7 @@ def main(argv: list[str] | None = None) -> int:
 
     repo_root = Path.cwd()
     plan = load_yaml(args.plan)
+    plan["_plan_sha256"] = sha256_file(args.plan)
     errors = validate_plan(plan)
     errors.extend(dependency_errors(plan, args.wave, repo_root))
     entries = selected_wave(plan, args.wave)
@@ -87,12 +104,16 @@ def main(argv: list[str] | None = None) -> int:
             print(f"error: {error}", file=sys.stderr)
         return 1
 
-    receipt_path = args.receipt_path or repo_root / "results" / "executor_wave_receipts" / f"wave_{args.wave}_launch_receipt.json"
+    plan_hash = sha256_file(args.plan)
+    receipt_path = args.receipt_path or task_wave_dir(repo_root, plan, args.wave) / "prepare_receipt.json"
     receipt_path.parent.mkdir(parents=True, exist_ok=True)
     receipt: dict[str, Any] = {
+        "task_key": plan.get("task_key"),
         "plan_path": str(args.plan),
+        "plan_sha256": plan_hash,
         "wave": args.wave,
         "created_at": utc_now(),
+        "baseline_commit": run(["git", "rev-parse", "HEAD"], repo_root).stdout.strip(),
         "subagent_launch_supported": args.allow_subagent_launch,
         "controller_action": "LAUNCH_EXECUTORS" if args.allow_subagent_launch else "NEEDS_SUBAGENT_LAUNCH",
         "executors": [],
@@ -118,8 +139,14 @@ def main(argv: list[str] | None = None) -> int:
         }
         receipt["executors"].append(executor_receipt)
         if not args.dry_run:
-            cp = run(["git", "worktree", "add", "-B", branch, str(worktree), "HEAD"], repo_root)
-            receipt["records"].append(command_record(["git", "worktree", "add", "-B", branch, str(worktree), "HEAD"], cp))
+            exists = run(["git", "rev-parse", "--verify", branch], repo_root)
+            if exists.returncode == 0:
+                cmd = ["git", "worktree", "add", str(worktree), branch]
+                cp = subprocess.CompletedProcess(cmd, 1, "", f"branch already exists; refusing to reset with -B: {branch}")
+            else:
+                cmd = ["git", "worktree", "add", "-b", branch, str(worktree), "HEAD"]
+                cp = run(cmd, repo_root)
+            receipt["records"].append(command_record(cmd, cp))
             if cp.returncode != 0:
                 receipt_path.write_text(json.dumps(receipt, indent=2, sort_keys=True) + "\n", encoding="utf-8")
                 print(cp.stderr or cp.stdout, file=sys.stderr)

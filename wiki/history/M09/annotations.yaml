@@ -1,0 +1,83 @@
+gap_nodes:
+  - id: m9_fixed
+    label: "已修/更明确\nloss wiring\nSRR-main contract"
+  - id: m9_dictionary_gap
+    label: "未闭环\ndictionary 仍偏 global\nPattern-SIP 仍 alias"
+  - id: m9_memory_gap
+    label: "未闭环\nprototype memory helper\nhard-negative replay 不完整"
+  - id: m9_refiner_gap
+    label: "未闭环\nproposal/refiner 因果证据不足"
+  - id: m9_selection_gap
+    label: "仍需加固\ncheckpoint selection\nformal decision validator"
+  - id: m9_cine_gap
+    label: "Cine 仍 local proxy\n不能救 MyoPS"
+  - id: m9_next_constraint
+    label: "后续约束\n先证明机制贡献\n不能包装 overall success"
+gap_edges:
+  - from: m9_fixed
+    to: m9_dictionary_gap
+    label: "修了 wiring，但检索贡献未证明"
+  - from: m9_dictionary_gap
+    to: m9_memory_gap
+    label: "representer 未形成病灶记忆"
+  - from: m9_memory_gap
+    to: m9_refiner_gap
+    label: "proposal/refiner 缺因果链"
+  - from: m9_refiner_gap
+    to: m9_selection_gap
+    label: "metrics 负面，选择仍需严格"
+  - from: m9_selection_gap
+    to: m9_cine_gap
+    label: "MyoPS/Cine 决策必须分离"
+  - from: m9_cine_gap
+    to: m9_next_constraint
+    label: "system redesign 前必须读 history"
+delta_nodes:
+  - id: previous_anchor
+    label: "previous\nanchor-centered residual"
+  - id: current_srr_main
+    label: "current\nSRR-main final output"
+  - id: loss_wiring_fixed
+    label: "loss wiring fixed"
+  - id: dictionary_global
+    label: "dictionary 仍 global"
+  - id: pattern_sip_alias
+    label: "Pattern-SIP 仍 alias"
+  - id: prototype_not_closed
+    label: "prototype memory 未完成闭环"
+  - id: refiner_evidence_gap
+    label: "refiner causal evidence 不足"
+  - id: checkpoint_incomplete
+    label: "checkpoint selection 仍不完整"
+  - id: cine_local_proxy
+    label: "Cine 仍为 local proxy"
+  - id: next_constraint
+    label: "后续约束\n机制贡献优先"
+delta_edges:
+  - from: previous_anchor
+    to: current_srr_main
+    label: "final-output strategy changed"
+  - from: current_srr_main
+    to: loss_wiring_fixed
+    label: "配置/目标更可审计"
+  - from: current_srr_main
+    to: dictionary_global
+    label: "主干增强后仍未局部检索"
+  - from: dictionary_global
+    to: pattern_sip_alias
+    label: "pattern 仍偏诊断命名"
+  - from: dictionary_global
+    to: prototype_not_closed
+    label: "memory 未进入闭环"
+  - from: current_srr_main
+    to: refiner_evidence_gap
+    label: "ROI 因果证据不足"
+  - from: loss_wiring_fixed
+    to: checkpoint_incomplete
+    label: "选择规则仍需 validator"
+  - from: checkpoint_incomplete
+    to: cine_local_proxy
+    label: "Cine 仍单独阻塞"
+  - from: cine_local_proxy
+    to: next_constraint
+    label: "不能包装 overall success"

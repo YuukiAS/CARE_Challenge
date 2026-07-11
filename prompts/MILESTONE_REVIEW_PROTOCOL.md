@@ -41,7 +41,7 @@ is never an audited continuation decision.
 
 ### MONITOR_PACKET_IS_NOT_COMPLETION
 
-This rule applies to M7 follow-up2/follow-up3 and all future milestones.
+This rule applies to all CARE milestones and follow-ups.
 
 A monitor packet, pending Slurm job packet, watcher packet, or submitted-only Slurm packet is not completion. The executor must not write `READY_FOR_REVIEW` or an equivalent ready state after only `sbatch` submission, `squeue` pending output, pending `sacct`, monitor watcher setup, or placeholder evidence.
 
@@ -76,7 +76,7 @@ The reviewer must also reject monitor packets as completion. If the tracked pack
 
 The reviewer is the only role allowed to write a milestone `review.md`.
 The reviewer may approve continuation only with the exact audited-go
-state defined by that milestone, such as `M0_AUDITED_GO`.
+state defined by that milestone, such as `<MILESTONE>_AUDITED_GO`.
 
 ## Milestone Flow
 
@@ -148,9 +148,9 @@ git commit -m "Add <task_key> milestone review"
 Each milestone defines its own controlled review states. Examples:
 
 ```text
-M0_AUDITED_GO
-M0_AUDITED_NEEDS_REVISION
-M0_AUDITED_NEEDS_EVIDENCE
+<MILESTONE>_AUDITED_GO
+<MILESTONE>_AUDITED_NEEDS_REVISION
+<MILESTONE>_AUDITED_NEEDS_EVIDENCE
 ```
 
 A milestone may not continue on executor self-assessment alone.
@@ -159,7 +159,7 @@ authorize continuation.
 
 ## Prerequisite Rule For Next Milestones
 
-Every milestone after M0 must check the previous blocking milestone review
+Every milestone after the initial milestone must check the previous blocking milestone review
 before doing any scientific work:
 
 ```text
@@ -203,5 +203,5 @@ This is an executor/controller session for one milestone only. Stop after writin
 Every milestone reviewer prompt should include:
 
 ```text
-This is a separate read-only reviewer/auditor session. Do not fix code, do not generate missing artifacts, do not train, and do not start the next milestone. Review only the completed result directory, write review.md with the controlled milestone decision, then force-add/commit review.md. Do not push automatically.
+This is a separate read-only reviewer session. Do not fix code, do not generate missing artifacts, do not train, and do not start the next milestone. Review only the completed result directory, write review.md with the controlled milestone decision, then force-add/commit review.md. Do not push automatically.
 ```

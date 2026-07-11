@@ -9,6 +9,10 @@ active handoff prompts.
 - `planner`: the user-supervised GPT/ChatGPT thread. It chooses the route,
   writes execution contracts, assigns role counts, defines gates, and decides
   the next high-level task after review.
+- `critic`: the separate GPT/ChatGPT planning-review thread. It reviews and
+  revises the planner's milestone draft before Codex execution when the generic
+  critic gate requires it. It does not execute code, submit jobs, write runtime
+  `review.md`, or become a controller subagent.
 - `controller`: the top-level Codex goal for one GPT-authored controller task.
   It supervises phase grounding, executor/mapper/finalizer/validator flow,
   durable Slurm continuity, and local final-packet commit. It stops before
@@ -32,10 +36,11 @@ active handoff prompts.
 
 ## Legacy Compatibility
 
-Historical `auditor` fields mean the independent read-only `reviewer`. New
-tasks must not create a controller-internal auditor, must not ask the controller
-to collect auditor review before committing the packet, and must not use
-`auditor_subtasks`.
+Historical `auditor`, `execution_controller`, and old strategic-controller
+runtime fields are legacy aliases for the independent `reviewer`, `controller`,
+and `planner` concepts respectively. New tasks must not create an internal
+auditor role, must not ask the controller to collect auditor or reviewer review
+before committing the packet, and must not use `auditor_subtasks`.
 
 ## Hard Boundaries
 

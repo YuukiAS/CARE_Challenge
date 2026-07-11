@@ -1,0 +1,77 @@
+schema_version: 1
+common_required_fields:
+  - task_key
+  - task_kind
+  - task_type
+  - controller_mode
+  - milestone_number
+  - milestone_id
+  - status
+  - risk_level
+  - route_change
+  - scientific_decision_scope
+  - execution_mode
+  - requires_execution_controller
+  - executor_slots
+  - executor_count
+  - parallel_execution_allowed
+  - executor_plan_path
+  - mapper_slots
+  - mapper_required
+  - architecture_impact
+  - wiki_update_required
+  - diagram_update_required
+  - slurm_runtime_continuity_required
+  - continuity_backend
+  - review_mode
+  - reviewer
+  - review_required
+  - allow_git_commit
+  - auto_git_commit
+  - allow_git_push
+  - auto_git_push
+  - allow_diagnostic_push
+  - route_promotion_gate
+  - experiment_adequacy_gate
+  - route_negative_gate
+  - scientific_completion_gate
+  - diagnostic_publication_gate
+  - diagnostic_publication_scope
+  - blocked_after_diagnostic_publication
+  - planning_review_required
+  - planning_reviewer
+  - planning_review_path
+  - planning_review_token
+  - planning_reviewed_commit
+direct_executor:
+  execution_mode: direct_executor
+  task_type_allowed:
+    - milestone
+    - execution
+  controller_mode: false
+  requires_execution_controller: false
+  executor_count: 1
+  executor_slots: 1
+controller_supervised:
+  execution_mode: controller_supervised
+  task_type: controller
+  controller_mode: true
+  requires_execution_controller: true
+ready_states:
+  - READY_FOR_CODEX_MERGE
+draft_states:
+  - DRAFT_FOR_PLANNING_REVIEW
+  - PLANNING_REVIEW_RUNNING
+  - NEEDS_PLANNING_REVISION
+  - BLOCKED_HANDOFF_REVIEW
+body_sections:
+  direct_executor:
+    - "## Execution Contract"
+    - "## Executor Prompt"
+    - "## Reviewer Prompt"
+  controller_supervised:
+    - "## Execution Contract"
+    - "## Controller Prompt"
+    - "## Executor Worker Contract"
+    - "## Mapper Contract"
+    - "## Reviewer Prompt"

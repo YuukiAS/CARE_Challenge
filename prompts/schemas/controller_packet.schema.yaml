@@ -1,0 +1,39 @@
+schema_version: 1
+base_required_files:
+  - result.md
+  - controller_context.json
+  - controller_ledger.csv
+  - controller_bootstrap_snapshot.md
+  - implementation_snapshot.md
+  - finalizer_state.json
+  - validator_report.md
+  - controller_report.md
+  - completion_check.md
+  - review_request.md
+  - MANIFEST.md
+  - subagents/reviewer_prompt.md
+conditional_required_files:
+  mapper_required:
+    - mapper_report_draft.md
+    - mapper_report_final.md
+    - architecture_delta_final.md
+  slurm_required:
+    - finalizer_state.json
+  accounting_continuation_triggered:
+    - accounting_continuation_receipt.json
+  multi_executor:
+    - executor_waves
+  wiki_update_required:
+    - mapper_report_final.md
+    - architecture_delta_final.md
+terminal_packet_states:
+  - PACKET_COMMITTED_FOR_REVIEW
+  - READY_FOR_LOCAL_PACKET_COMMIT
+  - READY_FOR_MAPPER_FINAL
+precommit_finalizer_fields:
+  - task_key
+  - final_state
+  - git_commit_decision
+  - precommit_head
+  - tracked_paths
+  - manifest_sha256

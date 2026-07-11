@@ -10,6 +10,10 @@ Only these role names are active for new CARE handoffs:
 
 - `planner`: the user-supervised GPT/ChatGPT thread that designs the task,
   execution mode, role graph, evidence gates, and reviewer contract.
+- `critic`: the separate GPT/ChatGPT planning-review thread. It reviews the
+  planner's staged contract before Codex execution when
+  `prompts/schemas/agent_flow_policy.yaml` requires it. It does not execute
+  code, submit jobs, join the controller runtime, or write runtime `review.md`.
 - `controller`: the top-level Codex goal for one GPT-authored controller task.
   It owns phase re-grounding, subagent coordination, Slurm continuity,
   finalizer handoff, validators, local packet commit, and stop-before-review.
@@ -26,8 +30,9 @@ Only these role names are active for new CARE handoffs:
 - `reviewer`: a separate read-only Codex thread or short goal that starts after
   the controller/executor packet is locally committed. It writes `review.md`.
 
-Historical `auditor` fields are legacy aliases for the independent `reviewer`.
-New tasks must not create a controller-internal auditor subagent.
+Historical `auditor`, `execution_controller`, and old strategic-controller
+runtime fields are legacy aliases only. New tasks must not create a
+controller-internal auditor subagent.
 
 ## Execution Modes
 
@@ -94,6 +99,12 @@ planner judgment.
 Every new CARE milestone or controller task must declare:
 
 ```yaml
+task_kind: scientific_milestone | maintenance | hotfix | audit
+milestone_number: <positive integer or null>
+milestone_id: <canonical Mxx or null>
+route_change: true | false
+scientific_decision_scope: none | mechanism_signal | promotion_candidate | stop_candidate
+planning_review_required: true | false
 execution_mode: direct_executor | controller_supervised
 requires_execution_controller: true | false
 executor_slots: 1
@@ -180,7 +191,10 @@ Monitor states (`PENDING`, `RUNNING`, `CONFIGURING`, `COMPLETING`,
 
 ## GPT Milestone Authoring
 
-Future long-task staging prompts must contain:
+Future staging prompts use the schemas under `prompts/schemas/`. A short
+milestone may be `execution_mode: direct_executor`; a long Slurm, overnight,
+multi-job, system-impact, or high-resume-risk milestone uses
+`execution_mode: controller_supervised`.
 
 All milestone staging prompts under `prompts/shared/M[0-9]*_*.md` must start on
 line 1 with real YAML frontmatter. The human-readable `## Execution Contract`
@@ -192,11 +206,15 @@ Required frontmatter:
 ```yaml
 ---
 task_key:
-task_type: controller
-controller_mode: true
-milestone:
+task_kind:
+task_type:
+controller_mode:
+milestone_number:
+milestone_id:
 status:
 risk_level:
+route_change:
+scientific_decision_scope:
 execution_mode:
 requires_execution_controller:
 executor_slots:
@@ -233,8 +251,17 @@ planning_reviewed_commit:
 ---
 ```
 
-M10, later system-level redesign, and any high-risk milestone require a
-pre-execution planning review:
+Critic is required whenever `task_kind: scientific_milestone`,
+`risk_level: high`, `architecture_impact: system`,
+`slurm_runtime_continuity_required: true`, `executor_count > 1`,
+`route_change: true`, or `scientific_decision_scope != none`. A critic-required
+staging prompt can become `READY_FOR_CODEX_MERGE` only when
+`prompts/tasks/<task_key>_planning_review.md` validates against
+`planning_review.schema.yaml` and its reviewed contract hash matches the current
+prompt.
+
+The generic critic gate requires pre-execution planning review whenever any
+schema trigger applies:
 
 ```text
 planner GPT -> separate GPT critic -> Codex merge/validator -> controller
@@ -251,10 +278,10 @@ planning_review_token: <controlled token>
 planning_reviewed_commit: <commit>
 ```
 
-Without a completed planning review token, M10/system-level staging files may
-only use `status: DRAFT_FOR_GPT_REVIEW`,
-`status: NEEDS_PLANNING_REVISION`, or `status: BLOCKED_HANDOFF_REVIEW`. They
-must not be `READY` or `READY_FOR_CODEX_MERGE`.
+Without a completed matching planning review, critic-required staging files may
+only use `status: DRAFT_FOR_PLANNING_REVIEW`,
+`status: PLANNING_REVIEW_RUNNING`, `status: NEEDS_PLANNING_REVISION`, or
+`status: BLOCKED_HANDOFF_REVIEW`. They must not be `READY_FOR_CODEX_MERGE`.
 
 ```text
 ## Execution Contract

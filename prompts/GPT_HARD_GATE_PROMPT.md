@@ -55,8 +55,8 @@ malformed frontmatter, body/frontmatter mismatches, missing `executor_plan_path`
 or a failing `scripts/ops/validate_executor_plan.py` result are hard-gate
 failures.
 
-M10, later system-level redesign, and high-risk milestones require a separate
-GPT planning critic before Codex controller execution. The required sequence is:
+Any staging prompt that triggers the generic critic gate requires a separate GPT
+planning critic before Codex execution. The required sequence is:
 
 ```text
 planner GPT -> separate GPT critic -> Codex merge/validator -> controller
@@ -73,11 +73,11 @@ planning_review_token: <controlled token>
 planning_reviewed_commit: <commit>
 ```
 
-If a M10/system-level milestone lacks a non-empty planning review token, its
-only allowed statuses are `DRAFT_FOR_GPT_REVIEW`,
-`NEEDS_PLANNING_REVISION`, or `BLOCKED_HANDOFF_REVIEW`. `READY` and
-`READY_FOR_CODEX_MERGE` are forbidden until the separate GPT planning review is
-present.
+If a critic-required staging prompt lacks a matching planning review hash/token,
+its only allowed statuses are `DRAFT_FOR_PLANNING_REVIEW`,
+`PLANNING_REVIEW_RUNNING`, `NEEDS_PLANNING_REVISION`, or
+`BLOCKED_HANDOFF_REVIEW`. `READY_FOR_CODEX_MERGE` is forbidden until the
+separate GPT planning review is present and current.
 
 Overnight, long Slurm, multi-job, or high-resume-risk work must be `controller_supervised` and must have a durable continuity backend. Architecture/loss/dataflow/export/registration/temporal changes must enable mapper and update root `wiki/` unless explicitly classified as `architecture_impact: none` with fingerprint evidence. New tasks must not introduce a controller-internal `auditor`; use `mapper` for internal read-only architecture mapping and `reviewer` for the final independent read-only audit.
 
@@ -90,14 +90,15 @@ Prompt` merges into `prompts/shared/REVIEWER_PROMPTS.md`. Executor plans stay
 as `prompts/tasks/<task_key>_executor_plan.yaml`; putting a full executor plan
 inside a shared prompt is a hard-gate failure.
 
-M10 or any later system-level redesign must list the history files read from
-`wiki/history/` before writing the milestone. Mandatory files are
-`wiki/history/COMPARISON.md`, `wiki/history/M08/README.md`,
-`wiki/history/M09/README.md`, `wiki/history/M09/COMPONENTS.csv`, and all
-`wiki/history/M09/components/*.md`. A small component-only milestone may list
-only the relevant component files, but M10 must read all component analyses.
-Missing `history_files_read` or equivalent explicit file list is a hard-gate
-failure.
+Any system-level redesign must list dynamically resolved history files read from
+`wiki/current_state.yaml` and `wiki/history/` before writing the milestone.
+Mandatory dynamic files are `wiki/history/COMPARISON.md`,
+`wiki/history/<predecessor>/README.md`,
+`wiki/history/<predecessor>/COMPONENTS.csv`, and the relevant
+`wiki/history/<predecessor>/components/*.md` files. Full system redesign must
+read all predecessor component analyses. A non-latest predecessor requires
+`history_baseline_override` and `history_baseline_override_reason`. Missing
+`history_files_read` or equivalent explicit file list is a hard-gate failure.
 
 Controller reports written before the independent reviewer must not claim reviewer approval, audited-go, route promotion, or scientific stop. They must use `route_promotion_decision: NOT_REVIEWED`, `route_negative_decision: NOT_REVIEWED`, and `scientific_resolution_status: AWAITING_REVIEW`. Any controller prompt that requires `reviewer_review` as evidence before controller commit, permits controller/reviewer push, or sets `auto_git_push` / `allow_git_push` / `allow_diagnostic_push` true is a hard-gate failure.
 
@@ -118,7 +119,7 @@ Write executor prompts for exactly one milestone. Require exact
 writing `review.md`, approving itself, or starting the next milestone. Then
 write a separate read-only reviewer prompt. The next milestone may be launched
 only when the previous milestone's `review.md` contains the exact audited-go
-token, such as `M0_AUDITED_GO`.
+token, such as `<MILESTONE>_AUDITED_GO`.
 
 ## Known Bad Packet Regression
 
@@ -147,7 +148,7 @@ When giving Codex a milestone executor goal, also include this sentence:
 
 When giving Codex a milestone reviewer goal, include this sentence:
 
-`This is a separate read-only reviewer/auditor session. Do not fix code, do not generate missing artifacts, do not train, do not package validation, do not upload, and do not start the next milestone. Write only review.md with the controlled audit decision.`
+`This is a separate read-only reviewer session. Do not fix code, do not generate missing artifacts, do not train, do not package validation, do not upload, and do not start the next milestone. Write only review.md with the controlled review decision.`
 
 ## State Mapping
 

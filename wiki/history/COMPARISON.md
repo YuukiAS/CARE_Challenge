@@ -1,5 +1,7 @@
 # M8 与 M9 组件级对比
 
+## M08 -> M09
+
 | 组件 | M8 实现状态 | M9 实现状态 | M8 -> M9 实际代码变化 | 证据变化 | 修复了什么 | 仍缺什么 | 对 M10 的约束 |
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | 可用性与 no-T2 安全 | 已有 availability/no-T2 safety，但偏安全约束 | 保留 no-T2 安全，仍需证明 edema 监督没有被当作 negative | 从 anchor-centered safety 进入 SRR-main 合同 | 证据从自然语言转向 tracked tables/review token | 防止 no-T2 edema 被误解为真实阴性 | T2-present edema gain 仍不足 | M10 必须把安全与性能分开验证 |

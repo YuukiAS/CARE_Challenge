@@ -20,7 +20,7 @@ Do not rely only on old chat summaries, memory, or natural-language recaps when 
 
 For any future CARE milestone, GPT/ChatGPT must write both the Codex executor prompt content and the independent reviewer prompt content. Do not provide only an executor prompt or only a reviewer prompt.
 
-Because direct GPT edits to the large canonical shared files can fail or corrupt context, author each new milestone first as a standalone Markdown staging file under `prompts/shared/` named `M<id>_<short_slug>.md`, for example `M8_editor_grade_leaderboard_sprint.md`. The staged file is temporary: a later Codex maintenance step will split/merge its content into `prompts/shared/EXECUTOR_PROMPTS.md` and `prompts/shared/REVIEWER_PROMPTS.md`, then delete the standalone staging file after successful merge.
+Because direct GPT edits to the large canonical shared files can fail or corrupt context, author each new milestone first as a standalone Markdown staging file under `prompts/shared/` named `M<id>_<short_slug>.md`, for example `M<id>_mechanism_repair.md`. The staged file is temporary: a later Codex maintenance step will split/merge its content into `prompts/shared/EXECUTOR_PROMPTS.md` and `prompts/shared/REVIEWER_PROMPTS.md`, then delete the standalone staging file after successful merge.
 
 Every staged milestone file matching `prompts/shared/M[0-9]*_*.md` must start on
 line 1 with real YAML frontmatter. `## Execution Contract` is a human-readable
@@ -28,9 +28,12 @@ mirror only. The validator must reject a staging file with no frontmatter, a
 frontmatter/body mismatch, a missing `executor_plan_path`, or an executor plan
 that fails `scripts/ops/validate_executor_plan.py`.
 
-M10, later system-level redesign, and any high-risk milestone also require a
-pre-execution planning review by a separate GPT thread before Codex controller
-execution:
+Any staged milestone requires a pre-execution planning review by a separate GPT
+thread when the generic critic gate is triggered. The gate is triggered by any
+of: `task_kind: scientific_milestone`, `risk_level: high`,
+`architecture_impact: system`, `slurm_runtime_continuity_required: true`,
+`executor_count > 1`, `route_change: true`, or
+`scientific_decision_scope != none`.
 
 ```text
 planner GPT -> separate GPT critic -> Codex merge/validator -> controller
@@ -40,9 +43,10 @@ This planning critic is not a controller subagent and is not the runtime
 reviewer after execution. Use frontmatter fields
 `planning_review_required: true`, `planning_reviewer: separate_gpt_thread`,
 `planning_review_path`, `planning_review_token`, and
-`planning_reviewed_commit`. Without a non-empty planning review token,
-M10/system-level staging can only be `DRAFT_FOR_GPT_REVIEW`,
-`NEEDS_PLANNING_REVISION`, or `BLOCKED_HANDOFF_REVIEW`, never `READY` or
+`planning_reviewed_commit`. Without a valid critic review whose contract hash
+matches the current staging prompt, a critic-required staging file can only be
+`DRAFT_FOR_PLANNING_REVIEW`, `PLANNING_REVIEW_RUNNING`,
+`NEEDS_PLANNING_REVISION`, or `BLOCKED_HANDOFF_REVIEW`, never
 `READY_FOR_CODEX_MERGE`.
 
 Short tasks must use this structure:
@@ -74,7 +78,7 @@ paste executor plans into the large shared prompt files.
 
 ## Agent-Flow v2 Handoff Model
 
-Before writing a CARE handoff, read `prompts/AGENT_FLOW_V2_PROTOCOL.md` and the current architecture entry at `wiki/README.md`. Use only the v2 role names from the permanent protocol: `planner`, `controller`, `executor`, `mapper`, `finalizer`, `validator`, and `reviewer`. New tasks must not introduce an internal `auditor` role; historical `auditor` fields are legacy aliases for the independent `reviewer`.
+Before writing a CARE handoff, read `prompts/AGENT_FLOW_V2_PROTOCOL.md` and the current architecture entry at `wiki/README.md`. Use only the v2 role names from the permanent protocol: `planner`, `critic`, `controller`, `executor`, `mapper`, `finalizer`, `validator`, and `reviewer`. New tasks must not introduce an internal `auditor` role; historical `auditor` fields are legacy aliases for the independent `reviewer`.
 
 Every new CARE milestone or controller task must explicitly declare:
 
@@ -100,20 +104,29 @@ Use `controller_supervised` for overnight, long Slurm, multi-job, or high-resume
 
 For architecture-affecting work, use `.agents/skills/care-mapper/SKILL.md` and the helpers in `scripts/architecture/`. A route or handoff update is not complete if `wiki/COMPONENTS.csv`, `wiki/architecture.yaml`, required figures, Toolkit healthcheck, or mapper/finalizer evidence is stale.
 
-## History Reading For M10 / System-Level Redesign
+## Dynamic History Reading For System-Level Redesign
 
-Before writing M10 or any later system-level milestone, GPT must read:
+Before writing any system-level milestone or route-level redesign, GPT must read
+the latest reviewed predecessor from `wiki/current_state.yaml` unless the task
+explicitly declares:
+
+```yaml
+history_baseline_override:
+history_baseline_override_reason:
+```
+
+Minimum dynamic history sources:
 
 - `wiki/history/COMPARISON.md`
-- `wiki/history/M08/README.md`
-- `wiki/history/M09/README.md`
-- `wiki/history/M09/COMPONENTS.csv`
-- every file matching `wiki/history/M09/components/*.md`
+- `wiki/current_state.yaml`
+- `wiki/history/<predecessor>/README.md`
+- `wiki/history/<predecessor>/COMPONENTS.csv`
+- every relevant file matching `wiki/history/<predecessor>/components/*.md`
 
-If the milestone touches only a small component subset, GPT may read M09
-README, COMPARISON, COMPONENTS, and the relevant component files. For M10 or
-system-level redesign, all M09 component files are mandatory. GPT output must
-list the exact history files read before proposing execution.
+If the milestone touches only a small component subset, GPT may read the
+predecessor README, COMPARISON, COMPONENTS, and relevant component files.
+System-level redesign must read all predecessor component files. GPT output
+must list the exact history files read before proposing execution.
 
 ## MONITOR_PACKET_IS_NOT_COMPLETION
 
@@ -123,7 +136,7 @@ If `completion_check.md` includes `NEEDS_MONITOR`, `PENDING_MONITOR`, `JOB_SUBMI
 
 After a Slurm job completes, the executor must rerun the relevant aggregator/evidence collector and commit tracked lightweight evidence containing job id, state, exit code, runtime, log path, runtime output path, aggregation command, and updated tracked evidence files. `commands_run.md` with only `sbatch submitted`, `squeue pending`, `PENDING Priority`, or pending `sacct` is not completion evidence.
 
-This applies to M7 follow-up2/follow-up3 and all future milestones.
+This applies to all CARE milestones and follow-ups.
 
 ## Slurm Job Planning Skill
 

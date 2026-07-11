@@ -6,6 +6,14 @@ agent-flow v2 lifecycle.
 
 ## Execution States
 
+- `DRAFT_FOR_PLANNING_REVIEW`: planner draft exists but has not passed the
+  separate planning critic.
+- `PLANNING_REVIEW_RUNNING`: separate GPT critic is reviewing the draft.
+- `NEEDS_PLANNING_REVISION`: critic found planning blockers.
+- `READY_FOR_CODEX_MERGE`: critic approved the staging contract for Codex
+  merge/validation and then execution.
+- `BLOCKED_HANDOFF_REVIEW`: planning review cannot complete until the user
+  supplies missing context or resolves a handoff contradiction.
 - `READY`: GPT planner has written the task.
 - `EXECUTION_PLANNED`: controller or executor has grounded the task and written
   an execution plan.

@@ -8,7 +8,7 @@
 
 本文主体尽量使用中文。以下内容保留英文原文：仓库路径、文件名、命令、枚举状态、指标名、模型名、算法名和必须机器匹配的字段名。例如 `READY_FOR_REVIEW`、`NEEDS_EVIDENCE`、`AUDITED_GO`、`Dice`、`HD95`、`nnU-Net`、`SyN`、`VoxelMorph`、`prompts/shared/EXECUTOR_PROMPTS.md` 不翻译。
 
-普通概念优先使用中文：planner 写作“规划者”，strategic controller 写作“战略控制者”，executor 写作“执行者”，reviewer 写作“审阅者”，executor prompt 写作“执行提示词”，reviewer prompt 写作“审阅提示词”，same-split baseline 写作“同一划分基线”，hard subgroup 写作“困难子组”，fail closed 写作“默认失败”，route promotion 写作“路线晋级”，monitor packet 写作“监控包”，commit 写作“提交”，claim 写作“主张”，gate 写作“门槛/关口”，artifact 写作“证据产物”。首次出现时可保留括号中的英文以便机器字段对齐。历史 `auditor` 只作为独立 `reviewer` 的 legacy alias，不再作为新 task 的活跃角色。
+普通概念优先使用中文：planner 写作“规划者”，critic 写作“规划审查者”，controller 写作“控制者”，executor 写作“执行者”，reviewer 写作“审阅者”，executor prompt 写作“执行提示词”，reviewer prompt 写作“审阅提示词”，same-split baseline 写作“同一划分基线”，hard subgroup 写作“困难子组”，fail closed 写作“默认失败”，route promotion 写作“路线晋级”，monitor packet 写作“监控包”，commit 写作“提交”，claim 写作“主张”，gate 写作“门槛/关口”，artifact 写作“证据产物”。首次出现时可保留括号中的英文以便机器字段对齐。历史 `auditor` 只作为独立 `reviewer` 的 legacy alias，不再作为新 task 的活跃角色。
 
 ## 0. 可直接复制给 GPT 的开头提示词
 
@@ -27,12 +27,15 @@ SRR/MyoPS/Cine 路线判断必须视觉阅读 ChatGPT Project background / proje
 5. 这次应写执行/审阅提示词、controller task、诊断修复，还是应该阻塞；
 6. 新文件应该写到哪里，哪些文件禁止发布或上传。
 
-每个未来里程碑必须同时包含 Codex 执行者内容和独立审阅者内容。新里程碑先写成 `prompts/shared/M<id>_<short_slug>.md`，例如 `prompts/shared/M9_myops_fold_expansion_planning.md`。短任务必须包含 `## Execution Contract`、`## Executor Prompt`、`## Reviewer Prompt`。长 Slurm / overnight / controller-supervised 任务必须包含 `## Execution Contract`、`## Controller Prompt`、`## Executor Worker Contract`、`## Mapper Contract`、`## Reviewer Prompt`，并写出 durable finalizer contract。不要让 GPT 直接改很大的 `prompts/shared/EXECUTOR_PROMPTS.md` / `prompts/shared/REVIEWER_PROMPTS.md`。后续由 Codex 把暂存文件拆分合并进这两个标准共享文件，并在合并成功后删除暂存文件。
+每个未来里程碑必须同时包含 Codex 执行者内容和独立审阅者内容。新里程碑先写成 `prompts/shared/M<id>_<short_slug>.md`，例如 `prompts/shared/M<id>_mechanism_repair.md`。短任务必须包含 `## Execution Contract`、`## Executor Prompt`、`## Reviewer Prompt`。长 Slurm / overnight / controller-supervised 任务必须包含 `## Execution Contract`、`## Controller Prompt`、`## Executor Worker Contract`、`## Mapper Contract`、`## Reviewer Prompt`，并写出 durable finalizer contract。不要让 GPT 直接改很大的 `prompts/shared/EXECUTOR_PROMPTS.md` / `prompts/shared/REVIEWER_PROMPTS.md`。后续由 Codex 把暂存文件拆分合并进这两个标准共享文件，并在合并成功后删除暂存文件。
 
 `prompts/shared/M[0-9]*_*.md` 必须第一行就是 YAML frontmatter；正文
-`## Execution Contract` 只是给人读的镜像，不能替代 frontmatter。M10、后续
-system-level redesign 或 high-risk 里程碑在进入 Codex controller 前，必须经过
-另一个 GPT thread 的规划期审查：
+`## Execution Contract` 只是给人读的镜像，不能替代 frontmatter。任何满足
+generic critic gate 的 staging 在进入 Codex 前，必须经过另一个 GPT thread
+的规划期审查。触发条件包括：`task_kind: scientific_milestone`、
+`risk_level: high`、`architecture_impact: system`、
+`slurm_runtime_continuity_required: true`、`executor_count > 1`、
+`route_change: true`、或 `scientific_decision_scope != none`。
 
 ```text
 planner GPT -> separate GPT critic -> Codex merge/validator -> controller
@@ -48,9 +51,10 @@ planning_review_token: <controlled token>
 planning_reviewed_commit: <commit>
 ```
 
-没有 `planning_review_token` 的 M10/system-level staging 只能是
-`DRAFT_FOR_GPT_REVIEW`、`NEEDS_PLANNING_REVISION` 或
-`BLOCKED_HANDOFF_REVIEW`，不能写 `READY` 或 `READY_FOR_CODEX_MERGE`。
+没有有效 critic review hash/token 的 critic-required staging 只能是
+`DRAFT_FOR_PLANNING_REVIEW`、`PLANNING_REVIEW_RUNNING`、
+`NEEDS_PLANNING_REVISION` 或 `BLOCKED_HANDOFF_REVIEW`，不能写
+`READY_FOR_CODEX_MERGE`。
 
 规划时按顶会审稿编辑标准追问：证据是否足以支持主张？是否有同一划分基线？是否覆盖困难子组？是否防止 no-T2 edema 误监督？是否有 validator 和 known-bad fixtures？是否只是 smoke / monitor / synthetic / stale evidence？是否把 nnU-Net fallback 包装成 SRR？失败可以接受，假成功不接受。
 
@@ -103,9 +107,9 @@ SRR/MyoPS/Cine 里程碑不能只读仓库文字。必须按 `prompts/THREAD_BOO
 
 ## 3. Agent-flow v2 角色边界
 
-新任务只使用这些角色名：`planner`、`controller`、`executor`、`mapper`、`finalizer`、`validator`、`reviewer`。
+新任务只使用这些角色名：`planner`、`critic`、`controller`、`executor`、`mapper`、`finalizer`、`validator`、`reviewer`。
 
-GPT 是 `planner` / 战略控制者。GPT 负责路线选择、科学判断、任务拆解、反偷懒约束、执行模式、subagent 数量和审阅关口。
+GPT planner 负责路线选择、科学判断、任务拆解、反偷懒约束、执行模式、subagent 数量和审阅关口。`critic` 是另一个独立 GPT thread，只做规划审查和修订建议，不执行代码、不提交 job、不写 runtime `review.md`。
 
 `controller` 是顶层 Codex goal，只能在 GPT-authored controller task 内维持长任务连续性、调度 executor/mapper/finalizer/validator、执行 phase grounding、Slurm continuity、本地提交最终轻量 packet，然后停止等待独立 reviewer。它不得发明新路线，不得写 `review.md`，不得收集 reviewer review 后再提交 packet，不得启动下一 milestone。
 
@@ -154,11 +158,12 @@ prompts/shared/M<id>_<short_slug>.md
 和 planning review 字段。正文 `## Execution Contract` 只能镜像这些字段；若
 frontmatter 与正文不一致，Codex validator 必须默认失败。
 
-命名规则：
+命名和机器字段规则：
 
-- `M<id>` 必须和里程碑编号一致，例如 `M9`、`M10`；
+- 机器真值是正整数 `milestone_number`；
+- `milestone_id` 使用 canonical ID，例如 `M<nn>` 或 `M<nnn>`；
 - `<short_slug>` 用小写英文、数字和下划线，表达主题；
-- 示例：`prompts/shared/M9_myops_fold_expansion_planning.md`；
+- 示例：`prompts/shared/M<id>_mechanism_repair.md`；
 - 短任务文件必须包含清楚的 `## Execution Contract`、`## Executor Prompt` 和 `## Reviewer Prompt` 三部分；
 - 长 Slurm / overnight / controller-supervised 文件必须包含 `## Execution Contract`、`## Controller Prompt`、`## Executor Worker Contract`、`## Mapper Contract` 和 `## Reviewer Prompt`，并包含 durable finalizer contract；
 - 文件必须写明后续 Codex maintenance 任务：拆分合并到 `prompts/shared/EXECUTOR_PROMPTS.md` 和 `prompts/shared/REVIEWER_PROMPTS.md`，合并后删除暂存文件。
@@ -167,17 +172,25 @@ frontmatter 与正文不一致，Codex validator 必须默认失败。
 
 合并位置必须明确：`Execution Contract`、`Controller Prompt`、`Executor Worker Contract` 和 `Mapper Contract` 合并到 `prompts/shared/EXECUTOR_PROMPTS.md`；`Reviewer Prompt` 合并到 `prompts/shared/REVIEWER_PROMPTS.md`。`executor_plan.yaml` 保留为 `prompts/tasks/<task_key>_executor_plan.yaml`，不要塞进巨大的 shared prompt。
 
-## 4.1 M10 / system-level 历史分析读取
+## 4.1 System-level 历史分析读取
 
-M10 或任何 system-level redesign 之前，GPT 必须读取并在输出中列出：
+任何 system-level redesign 之前，GPT 必须从 `wiki/current_state.yaml`
+动态解析 latest reviewed predecessor，或显式声明：
+
+```yaml
+history_baseline_override:
+history_baseline_override_reason:
+```
+
+然后读取并在输出中列出：
 
 - `wiki/history/COMPARISON.md`
-- `wiki/history/M08/README.md`
-- `wiki/history/M09/README.md`
-- `wiki/history/M09/COMPONENTS.csv`
-- `wiki/history/M09/components/*.md`
+- `wiki/current_state.yaml`
+- `wiki/history/<predecessor>/README.md`
+- `wiki/history/<predecessor>/COMPONENTS.csv`
+- `wiki/history/<predecessor>/components/*.md`
 
-如果只是修改少数组件，可以读取 M09 README、COMPARISON、COMPONENTS 和相关 component files；但 M10 这种全局重设计必须读取所有 M09 component 分析。没有列出 history files read 的 M10/system milestone 是 hard-gate failure。
+如果只是修改少数组件，可以读取 predecessor README、COMPARISON、COMPONENTS 和相关 component files；全局重设计必须读取所有 predecessor component 分析。没有列出动态 history files read 的 system-level milestone 是 hard-gate failure。
 
 ## 5. Codex 执行提示词必须包含
 

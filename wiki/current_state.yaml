@@ -1,0 +1,10 @@
+current_milestone_id: M09
+current_task_key: 20260708_srr_v3_m9_dictionary_fidelity_repair_training
+current_review_path: results/20260708_srr_v3_m9_dictionary_fidelity_repair_training/review.md
+current_review_token: M9_FOLLOWUP_AUDITED_READY_NO_PROMOTION_DIAGNOSTIC_ONLY
+reviewed_commit: fa4e50ba77743322104e7d61ae69a2382f3a89c2
+architecture_path: wiki/architecture.yaml
+component_table_path: wiki/COMPONENTS.csv
+wiki_fingerprint: srr_propref=f7f9df91;srr_blocks=8d126023;srr_losses=dca8e5e1;agent_flow=fa4e50b
+previous_milestone_id: M08
+updated_at: "2026-07-11T00:00:00Z"

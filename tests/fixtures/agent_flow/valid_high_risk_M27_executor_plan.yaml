@@ -1,0 +1,29 @@
+version: 1
+task_key: 20260711_valid_high_risk_m27
+max_parallel: 1
+parallel_execution_allowed: false
+executors:
+  - id: m27_tooling_executor
+    lane: tooling
+    wave: 1
+    depends_on: []
+    blocking: true
+    can_run_parallel: false
+    isolation_mode: separate_worktree
+    branch_name: care_m27_tooling_executor
+    worktree_path: /tmp/care_m27_tooling_executor
+    read_scope:
+      - prompts/
+      - scripts/
+    write_scope:
+      - prompts/
+      - scripts/
+    prompt_path: tests/fixtures/agent_flow/valid_high_risk_M27.md
+    result_dir: results/20260711_valid_high_risk_m27
+    runtime_output_root: results/20260711_valid_high_risk_m27/runtime
+    slurm_job_namespace: m27_tooling_executor
+    lock_path: results/20260711_valid_high_risk_m27/locks/m27_tooling_executor.lock
+    log_path: results/20260711_valid_high_risk_m27/logs/m27_tooling_executor.log
+    required_completion_file: results/20260711_valid_high_risk_m27/completion_check.md
+    required_completion_token: READY_FOR_CONTROLLER_MERGE
+    merge_order: 1

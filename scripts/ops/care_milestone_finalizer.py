@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import os
 import socket
@@ -26,6 +27,10 @@ ACCOUNTING_EXHAUSTION_BACKENDS = {"tmux_watcher", "resubmit_finalizer"}
 
 def run(cmd: str | list[str], cwd: Path, shell: bool = False) -> subprocess.CompletedProcess[str]:
     return subprocess.run(cmd, cwd=cwd, shell=shell, text=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+
+
+def sha256_path(path: Path) -> str:
+    return hashlib.sha256(path.read_bytes()).hexdigest() if path.is_file() else ""
 
 
 def pid_is_running(pid: int) -> bool:
@@ -379,7 +384,10 @@ def main(argv: list[str] | None = None) -> int:
         "mapper_final_status": "not_requested" if not args.mapper_final_command else "pending",
         "lock_path": str(lock_path),
         "git_head_before": git_head_before,
-        "git_commit_after": None,
+        "git_commit_decision": "COMMIT_LOCAL_PACKET" if args.commit else "SKIP_COMMIT",
+        "precommit_head": git_head_before,
+        "tracked_paths": args.tracked_file,
+        "manifest_sha256": sha256_path(result_dir / "MANIFEST.md"),
         "final_state": "INITIALIZING",
         "records": [],
         "stage": args.stage,
@@ -502,7 +510,7 @@ def main(argv: list[str] | None = None) -> int:
         if args.commit:
             commit_after, commit_records = maybe_commit(repo_root, args.tracked_file, args.commit_message)
             state["records"].extend(commit_records)
-            state["git_commit_after"] = commit_after
+            state["local_packet_commit"] = commit_after
             if not commit_after:
                 state["final_state"] = "NEEDS_EVIDENCE"
                 write_state(result_dir, state)

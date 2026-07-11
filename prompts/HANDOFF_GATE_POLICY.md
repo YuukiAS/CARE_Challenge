@@ -15,14 +15,16 @@ executor plan, invalid lane, missing `required_completion_file`, missing
 `required_completion_token`, or task/plan executor-count mismatch is a
 planning-stage blocker.
 
-M10/system-level/high-risk staging requires a separate GPT planning review
-before Codex controller execution. It must declare
+Staging requires a separate GPT planning review before Codex execution whenever
+the generic critic gate in `prompts/schemas/agent_flow_policy.yaml` is
+triggered. It must declare
 `planning_review_required: true`, `planning_reviewer: separate_gpt_thread`,
 `planning_review_path`, `planning_review_token`, and
 `planning_reviewed_commit`. The planning reviewer is not a controller subagent
 and not the post-execution runtime reviewer. Without the token, the staging
-status must be `DRAFT_FOR_GPT_REVIEW`, `NEEDS_PLANNING_REVISION`, or
-`BLOCKED_HANDOFF_REVIEW`, not `READY` or `READY_FOR_CODEX_MERGE`.
+status must be `DRAFT_FOR_PLANNING_REVIEW`, `PLANNING_REVIEW_RUNNING`,
+`NEEDS_PLANNING_REVISION`, or `BLOCKED_HANDOFF_REVIEW`, not
+`READY_FOR_CODEX_MERGE`.
 
 Overnight, long Slurm, multi-job, or high-resume-risk tasks must use `execution_mode: controller_supervised` and a durable continuity backend. Architecture-changing tasks must enable mapper and update root `wiki/` unless they provide a machine-readable no-change fingerprint receipt. A controller must not increase executor/mapper slots beyond the GPT-authored task graph. New tasks must not use an internal `auditor`; historical `auditor` fields are legacy aliases for the final independent `reviewer`.
 
@@ -40,7 +42,7 @@ A final review must be preceded by a completion check when the controller task l
 
 ## MONITOR_PACKET_IS_NOT_COMPLETION
 
-A monitor packet, pending Slurm job packet, watcher packet, or submitted-only Slurm packet is not a completion packet. This applies to M7 follow-up2/follow-up3 and every future milestone.
+A monitor packet, pending Slurm job packet, watcher packet, or submitted-only Slurm packet is not a completion packet. This applies to every CARE milestone and follow-up.
 
 An executor must not write milestone ready when it has only submitted a Slurm job, monitor job, watcher, or pending monitor packet. If `completion_check.md`, `result.md`, `commands_run.md`, or an adequacy table contains `NEEDS_MONITOR`, `PENDING_MONITOR`, `JOB_SUBMITTED`, `PENDING_PRIORITY`, `RUNNING`, `AWAITING_SACCT`, or an equivalent monitor/pending state, the packet is not reviewable as complete.
 

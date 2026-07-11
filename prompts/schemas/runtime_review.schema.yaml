@@ -1,0 +1,18 @@
+schema_version: 1
+required_fields:
+  - task_key
+  - reviewed_commit
+  - reviewed_packet_manifest_sha256
+  - review_decision
+  - review_token
+  - route_promotion_decision
+  - route_negative_decision
+  - scientific_resolution_status
+  - reviewed_at
+role: reviewer
+forbidden_actions:
+  - start_next_milestone
+  - fold_expand
+  - package_upload
+  - push
+  - remediate

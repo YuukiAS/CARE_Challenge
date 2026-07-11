@@ -1,0 +1,29 @@
+gap_nodes:
+  - id: m8_anchor_centered
+    label: "M8 anchor-centered residual\nnnU-Net 仍像主角"
+  - id: m8_dictionary_weak
+    label: "dictionary 有实现\n语义检索未闭环"
+  - id: m8_proposal_refiner_weak
+    label: "proposal/refiner 有路径\nlesion formation 证据弱"
+  - id: m8_loss_checkpoint_gap
+    label: "loss/checkpoint\n配置与证据不一致"
+  - id: m8_cine_proxy
+    label: "Cine 只是 local proxy"
+  - id: m8_next_constraint
+    label: "后续约束\n不能 route promotion"
+gap_edges:
+  - from: m8_anchor_centered
+    to: m8_dictionary_weak
+    label: "SRR 被 anchor 稀释"
+  - from: m8_dictionary_weak
+    to: m8_proposal_refiner_weak
+    label: "检索未证明病灶收益"
+  - from: m8_proposal_refiner_weak
+    to: m8_loss_checkpoint_gap
+    label: "ROI/logit 因果不足"
+  - from: m8_loss_checkpoint_gap
+    to: m8_cine_proxy
+    label: "formal evidence 不足"
+  - from: m8_cine_proxy
+    to: m8_next_constraint
+    label: "只能诊断，不能晋级"

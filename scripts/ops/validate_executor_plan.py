@@ -8,8 +8,50 @@ from pathlib import Path
 import sys
 from typing import Any
 
-VALID_LANES = {"myops", "cine", "shared", "tooling"}
 PATH_FIELDS = ("branch_name", "worktree_path", "result_dir", "runtime_output_root", "slurm_job_namespace", "lock_path", "log_path")
+
+
+def load_schema() -> dict[str, Any]:
+    path = Path(__file__).resolve().parents[2] / "prompts" / "schemas" / "executor_plan.schema.yaml"
+    if not path.is_file():
+        return {}
+    try:
+        import yaml  # type: ignore
+    except ImportError:
+        return {}
+    data = yaml.safe_load(path.read_text(encoding="utf-8"))
+    return data if isinstance(data, dict) else {}
+
+
+def schema_list(key: str, default: list[str]) -> list[str]:
+    value = load_schema().get(key)
+    if isinstance(value, list):
+        return [str(item) for item in value]
+    return default
+
+
+def valid_lanes() -> set[str]:
+    return set(schema_list("valid_lanes", ["myops", "cine", "shared", "tooling"]))
+
+
+def required_executor_fields() -> list[str]:
+    return schema_list(
+        "required_executor_fields",
+        [
+            "id",
+            "lane",
+            "wave",
+            "prompt_path",
+            "result_dir",
+            "runtime_output_root",
+            "slurm_job_namespace",
+            "lock_path",
+            "log_path",
+            "merge_order",
+            "required_completion_file",
+            "required_completion_token",
+        ],
+    )
 
 
 def parse_scalar(value: str) -> Any:
@@ -204,19 +246,11 @@ def validate_plan(data: dict[str, Any]) -> list[str]:
             errors.append(f"duplicate executor id: {eid}")
         ids.add(eid)
         lane = str(item.get("lane", "")).strip().lower()
-        if lane not in VALID_LANES:
-            errors.append(f"{eid}: lane must be one of {sorted(VALID_LANES)}")
+        if lane not in valid_lanes():
+            errors.append(f"{eid}: lane must be one of {sorted(valid_lanes())}")
         wave = int(item.get("wave", 1))
         by_wave.setdefault(wave, []).append(item)
-        for field in (
-            "prompt_path",
-            "result_dir",
-            "runtime_output_root",
-            "slurm_job_namespace",
-            "merge_order",
-            "required_completion_file",
-            "required_completion_token",
-        ):
+        for field in required_executor_fields():
             if not str(item.get(field, "")).strip():
                 errors.append(f"{eid}: missing {field}")
         if lane in {"myops", "cine", "shared"} and not as_list(item.get("write_scope")):
