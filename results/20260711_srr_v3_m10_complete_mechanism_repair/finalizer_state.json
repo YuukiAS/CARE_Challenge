@@ -20,11 +20,12 @@
     "results/20260711_srr_v3_m10_complete_mechanism_repair/subagents/m10_shared_architecture_executor_prompt.md",
     "results/20260711_srr_v3_m10_complete_mechanism_repair/subagents/reviewer_prompt.md",
     "results/20260711_srr_v3_m10_complete_mechanism_repair/mapper_report_draft.md",
+    "results/20260711_srr_v3_m10_complete_mechanism_repair/architecture_delta_draft.md",
     "results/20260711_srr_v3_m10_complete_mechanism_repair/mapper_report_final.md",
     "results/20260711_srr_v3_m10_complete_mechanism_repair/architecture_delta_final.md",
     "results/20260711_srr_v3_m10_complete_mechanism_repair/executor_waves/README.md"
   ],
-  "manifest_sha256": "b4cf40cffbcfae055ef619839f7a73eb9f150ebd342de4c23fe277f8fafe0165",
+  "manifest_sha256": "7ed2d43efb18e88630396089538acb63448d253af52b0619f7ebaa8cc60b317b",
   "job_states": {},
   "slurm_jobs_submitted": [],
   "required_job_ids": [],
@@ -38,7 +39,7 @@
     "git diff --check"
   ],
   "blocked_reason": "",
-  "resume_state": "wave1 accepted; ready to commit wave1 code/evidence and launch serial wave2",
+  "resume_state": "wave1 accepted and mapper draft ready; ready to launch serial wave2",
   "review_md_written": false,
   "pushed": false
 }

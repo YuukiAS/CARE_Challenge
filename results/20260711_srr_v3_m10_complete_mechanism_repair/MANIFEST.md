@@ -25,6 +25,7 @@ Packet state: `PREREQUISITE_REPAIRED_READY_FOR_WAVE1_BOOTSTRAP`
 | `wave1_merge_receipt.md` | Controller verification and merge/freeze decision for wave 1. |
 | `subagents/reviewer_prompt.md` | Reviewer handoff prompt for this blocked packet only. |
 | `mapper_report_draft.md` | Mapper draft non-run receipt. |
+| `architecture_delta_draft.md` | Draft architecture delta after wave 1 merge. |
 | `mapper_report_final.md` | Mapper final non-run receipt. |
 | `architecture_delta_final.md` | Confirms no M10 architecture delta was applied. |
 | `executor_waves/README.md` | Executor wave non-launch receipt. |
