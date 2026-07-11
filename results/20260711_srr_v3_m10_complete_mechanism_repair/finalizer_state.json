@@ -1,6 +1,6 @@
 {
   "task_key": "20260711_srr_v3_m10_complete_mechanism_repair",
-  "final_state": "WAVE1_READY_FOR_CONTROLLER_MERGE_ACCEPTED",
+  "final_state": "WAVE2_EXECUTOR_RUNNING",
   "git_commit_decision": "COMMIT_LOCAL_PACKET",
   "git_push_decision": "SKIP_PUSH",
   "precommit_head": "705ae497af2ebb391a16c99ecc812642f723b1d5",
@@ -19,6 +19,7 @@
     "results/20260711_srr_v3_m10_complete_mechanism_repair/MANIFEST.md",
     "results/20260711_srr_v3_m10_complete_mechanism_repair/subagents/m10_shared_architecture_executor_prompt.md",
     "results/20260711_srr_v3_m10_complete_mechanism_repair/subagents/m10_myops_training_executor_prompt.md",
+    "results/20260711_srr_v3_m10_complete_mechanism_repair/wave2_launch_receipt.json",
     "results/20260711_srr_v3_m10_complete_mechanism_repair/subagents/reviewer_prompt.md",
     "results/20260711_srr_v3_m10_complete_mechanism_repair/mapper_report_draft.md",
     "results/20260711_srr_v3_m10_complete_mechanism_repair/architecture_delta_draft.md",
@@ -26,7 +27,7 @@
     "results/20260711_srr_v3_m10_complete_mechanism_repair/architecture_delta_final.md",
     "results/20260711_srr_v3_m10_complete_mechanism_repair/executor_waves/README.md"
   ],
-  "manifest_sha256": "e9002b358dffe31e57c6b66ddbbcad28e7644f79dfc349fd75ddad731d0bd0b9",
+  "manifest_sha256": "66aa2b9a0b294394debb34a75dfb474e112cf723040bc06a52b4a434e57d9953",
   "job_states": {},
   "slurm_jobs_submitted": [],
   "required_job_ids": [],
@@ -40,7 +41,7 @@
     "git diff --check"
   ],
   "blocked_reason": "",
-  "resume_state": "wave1 accepted and mapper draft ready; ready to launch serial wave2",
+  "resume_state": "serial wave2 launched; waiting for m10_myops_training_executor completion receipt",
   "review_md_written": false,
   "pushed": false
 }
