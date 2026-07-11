@@ -18,6 +18,7 @@ Packet state: `M10_BLOCKED_PREREQUISITE`
 | `controller_report.md` | Controller decision report. |
 | `completion_check.md` | Completion state and gate table. |
 | `review_request.md` | Request for later separate read-only review of the blocked packet. |
+| `prerequisite_repair.md` | Later integration-layer repair note for the prerequisite blocker; not runtime completion evidence. |
 | `subagents/reviewer_prompt.md` | Reviewer handoff prompt for this blocked packet only. |
 | `mapper_report_draft.md` | Mapper draft non-run receipt. |
 | `mapper_report_final.md` | Mapper final non-run receipt. |

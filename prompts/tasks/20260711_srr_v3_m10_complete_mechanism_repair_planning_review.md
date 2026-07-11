@@ -2,8 +2,11 @@
 task_key: 20260711_srr_v3_m10_complete_mechanism_repair
 milestone_id: M10
 role: critic
-reviewed_prompt_path: prompts/shared/M10_srr_v3_complete_mechanism_repair.md
+reviewed_prompt_path: prompts/shared/EXECUTOR_PROMPTS.md#M10 executor/controller: SRR-v3 complete mechanism repair
 reviewed_contract_sha256: 677b5e42f070175986e2cbf5598eb3b2c1bc872ea85349c90f3611fe2cd8150c
+reviewed_staging_path: prompts/shared/M10_srr_v3_complete_mechanism_repair.md
+canonical_reviewer_prompt_path: prompts/shared/REVIEWER_PROMPTS.md#M10 reviewer: SRR-v3 complete mechanism repair
+canonical_contract_sha256: 5030af7d74e35a423dd7e782ed0d55dffc1c1e78335c4016bb75920c17da0e64
 planner_draft_commit: 828735482396d6d727d2294e88c89868e3118ad3
 critic_decision: READY_FOR_CODEX_MERGE
 critic_token: PLANNING_CRITIC_READY_FOR_CODEX_MERGE
@@ -28,6 +31,8 @@ Critic branch: agent/m10-planning-critic-repair
 pre-reconciliation Critic HEAD: 435abf35a4b1b85d75e58f83bcb58faa0b89efe1
 pre-reconciliation common merge-base: 925a00169649a523947e475204e68228cb8816f6
 staging: prompts/shared/M10_srr_v3_complete_mechanism_repair.md
+post-merge canonical executor section: prompts/shared/EXECUTOR_PROMPTS.md#M10 executor/controller: SRR-v3 complete mechanism repair
+post-merge canonical reviewer section: prompts/shared/REVIEWER_PROMPTS.md#M10 reviewer: SRR-v3 complete mechanism repair
 executor plan: prompts/tasks/20260711_srr_v3_m10_complete_mechanism_repair_executor_plan.yaml
 planning review: prompts/tasks/20260711_srr_v3_m10_complete_mechanism_repair_planning_review.md
 ```
@@ -101,13 +106,29 @@ No unresolved scientific conflict remains. Registration and Cine can fail at run
 
 ## Contract binding and decision
 
-The stable contract hash was recomputed using `scripts/validation/hash_milestone_contract.py`:
+The stable pre-merge staging contract hash was recomputed using `scripts/validation/hash_milestone_contract.py`:
 
 ```text
 677b5e42f070175986e2cbf5598eb3b2c1bc872ea85349c90f3611fe2cd8150c
 ```
 
-The reviewed-contract commit must contain the final staging, executor plan and this review. A subsequent metadata-only commit must set `planning_reviewed_commit` to that reviewed-contract commit, never to the metadata commit itself. The metadata field is excluded from the stable hash.
+After Codex planning integration deletes the standalone staging file, runtime controllers must validate the merged canonical prompt sections instead of hashing the deleted staging path. The post-merge canonical section hash is:
+
+```text
+5030af7d74e35a423dd7e782ed0d55dffc1c1e78335c4016bb75920c17da0e64
+```
+
+It is computed by:
+
+```bash
+python scripts/validation/hash_canonical_prompt_contract.py \
+  --executor-file prompts/shared/EXECUTOR_PROMPTS.md \
+  --executor-heading 'M10 executor/controller: SRR-v3 complete mechanism repair' \
+  --reviewer-file prompts/shared/REVIEWER_PROMPTS.md \
+  --reviewer-heading 'M10 reviewer: SRR-v3 complete mechanism repair'
+```
+
+The reviewed-contract commit must contain the final staging, executor plan and this review. A subsequent metadata-only commit must set `planning_reviewed_commit` to that reviewed-contract commit, never to the metadata commit itself. The metadata field is excluded from the stable pre-merge hash. The canonical post-merge hash is the runtime binding after staging cleanup.
 
 ```text
 critic_decision: READY_FOR_CODEX_MERGE

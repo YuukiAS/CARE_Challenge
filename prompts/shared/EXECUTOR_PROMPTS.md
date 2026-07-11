@@ -2870,7 +2870,22 @@ common_default_baseline: 925a00169649a523947e475204e68228cb8816f6
 ```
 
 Controller bootstrap must verify that the planner draft commit is an ancestor of current HEAD and that the
-planning-review hash/token matches this staging contract. Any mismatch yields `M10_BLOCKED_PREREQUISITE`.
+planning-review token and canonical post-merge contract hash match the merged shared prompt sections. After
+planning integration, the standalone staging file `prompts/shared/M10_srr_v3_complete_mechanism_repair.md` is
+expected to be deleted and must not be required at runtime. Validate the merged prompt contract with:
+
+```bash
+python scripts/validation/hash_canonical_prompt_contract.py \
+  --executor-file prompts/shared/EXECUTOR_PROMPTS.md \
+  --executor-heading 'M10 executor/controller: SRR-v3 complete mechanism repair' \
+  --reviewer-file prompts/shared/REVIEWER_PROMPTS.md \
+  --reviewer-heading 'M10 reviewer: SRR-v3 complete mechanism repair'
+```
+
+The output must match `canonical_contract_sha256` in
+`prompts/tasks/20260711_srr_v3_m10_complete_mechanism_repair_planning_review.md`. The planning review's
+`reviewed_contract_sha256` remains the historical pre-merge staging hash and is not recomputed from the deleted
+staging path. Any token, lineage, or canonical hash mismatch yields `M10_BLOCKED_PREREQUISITE`.
 
 The planner, critic, controller, mapper, finalizer, validator, and reviewer must read the active protocols and schemas,
 root `wiki/README.md`, `wiki/MODEL.md`, `wiki/COMPONENTS.csv`, `wiki/architecture.yaml`,
