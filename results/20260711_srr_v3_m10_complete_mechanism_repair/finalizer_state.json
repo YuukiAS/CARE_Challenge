@@ -18,6 +18,7 @@
     "results/20260711_srr_v3_m10_complete_mechanism_repair/review_request.md",
     "results/20260711_srr_v3_m10_complete_mechanism_repair/MANIFEST.md",
     "results/20260711_srr_v3_m10_complete_mechanism_repair/subagents/m10_shared_architecture_executor_prompt.md",
+    "results/20260711_srr_v3_m10_complete_mechanism_repair/subagents/m10_myops_training_executor_prompt.md",
     "results/20260711_srr_v3_m10_complete_mechanism_repair/subagents/reviewer_prompt.md",
     "results/20260711_srr_v3_m10_complete_mechanism_repair/mapper_report_draft.md",
     "results/20260711_srr_v3_m10_complete_mechanism_repair/architecture_delta_draft.md",
@@ -25,7 +26,7 @@
     "results/20260711_srr_v3_m10_complete_mechanism_repair/architecture_delta_final.md",
     "results/20260711_srr_v3_m10_complete_mechanism_repair/executor_waves/README.md"
   ],
-  "manifest_sha256": "7ed2d43efb18e88630396089538acb63448d253af52b0619f7ebaa8cc60b317b",
+  "manifest_sha256": "e9002b358dffe31e57c6b66ddbbcad28e7644f79dfc349fd75ddad731d0bd0b9",
   "job_states": {},
   "slurm_jobs_submitted": [],
   "required_job_ids": [],

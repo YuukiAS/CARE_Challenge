@@ -21,6 +21,7 @@ Packet state: `PREREQUISITE_REPAIRED_READY_FOR_WAVE1_BOOTSTRAP`
 | `review_request.md` | Request for later separate read-only review of the blocked packet. |
 | `prerequisite_repair.md` | Later integration-layer repair note for the prerequisite blocker; not runtime completion evidence. |
 | `subagents/m10_shared_architecture_executor_prompt.md` | Wave 1 executor handoff prompt. |
+| `subagents/m10_myops_training_executor_prompt.md` | Wave 2 executor handoff prompt. |
 | `wave1_launch_receipt.json` | Controller receipt for serial wave 1 worker launch. |
 | `wave1_merge_receipt.md` | Controller verification and merge/freeze decision for wave 1. |
 | `subagents/reviewer_prompt.md` | Reviewer handoff prompt for this blocked packet only. |
