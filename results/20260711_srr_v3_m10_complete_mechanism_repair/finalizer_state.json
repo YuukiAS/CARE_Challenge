@@ -1,0 +1,41 @@
+{
+  "task_key": "20260711_srr_v3_m10_complete_mechanism_repair",
+  "final_state": "M10_BLOCKED_PREREQUISITE",
+  "git_commit_decision": "COMMIT_LOCAL_PACKET",
+  "git_push_decision": "SKIP_PUSH",
+  "precommit_head": "06832b934e691c236f333b6b0523fda2ed7bb448",
+  "tracked_paths": [
+    "results/20260711_srr_v3_m10_complete_mechanism_repair/result.md",
+    "results/20260711_srr_v3_m10_complete_mechanism_repair/controller_context.json",
+    "results/20260711_srr_v3_m10_complete_mechanism_repair/controller_ledger.csv",
+    "results/20260711_srr_v3_m10_complete_mechanism_repair/controller_bootstrap_snapshot.md",
+    "results/20260711_srr_v3_m10_complete_mechanism_repair/implementation_snapshot.md",
+    "results/20260711_srr_v3_m10_complete_mechanism_repair/finalizer_state.json",
+    "results/20260711_srr_v3_m10_complete_mechanism_repair/validator_report.md",
+    "results/20260711_srr_v3_m10_complete_mechanism_repair/controller_report.md",
+    "results/20260711_srr_v3_m10_complete_mechanism_repair/completion_check.md",
+    "results/20260711_srr_v3_m10_complete_mechanism_repair/review_request.md",
+    "results/20260711_srr_v3_m10_complete_mechanism_repair/MANIFEST.md",
+    "results/20260711_srr_v3_m10_complete_mechanism_repair/subagents/reviewer_prompt.md",
+    "results/20260711_srr_v3_m10_complete_mechanism_repair/mapper_report_draft.md",
+    "results/20260711_srr_v3_m10_complete_mechanism_repair/mapper_report_final.md",
+    "results/20260711_srr_v3_m10_complete_mechanism_repair/architecture_delta_final.md",
+    "results/20260711_srr_v3_m10_complete_mechanism_repair/executor_waves/README.md"
+  ],
+  "manifest_sha256": "537003cd6545d0c4178bb505a92b8cbf00c9db594b4e86f2a97e0339a678dde2",
+  "job_states": {},
+  "slurm_jobs_submitted": [],
+  "required_job_ids": [],
+  "runtime_output_paths": [],
+  "aggregation_commands": [],
+  "validator_commands": [
+    "python scripts/ops/validate_executor_plan.py prompts/tasks/20260711_srr_v3_m10_complete_mechanism_repair_executor_plan.yaml",
+    "python scripts/validation/validate_handoff_policy.py --strict-tasks --warnings-as-errors",
+    "python scripts/architecture/validate_care_architecture_wiki.py --strict --history",
+    "python scripts/architecture/generate_care_architecture_wiki.py --check-all",
+    "git diff --check"
+  ],
+  "blocked_reason": "planner lineage and reviewed-contract path/hash prerequisites failed before executor launch",
+  "review_md_written": false,
+  "pushed": false
+}
