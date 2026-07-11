@@ -64,6 +64,20 @@ def read_components(path: Path) -> dict[str, dict[str, str]]:
     return {row.get("component_id", ""): row for row in rows if row.get("component_id")}
 
 
+def version_number(version: str) -> int:
+    if not HISTORY_VERSION_RE.match(version):
+        raise ValueError(f"invalid history version: {version}")
+    return int(version[1:])
+
+
+def previous_history_version(repo_root: Path, version: str) -> str | None:
+    current = version_number(version)
+    candidates = [item for item in discover_history_versions(repo_root) if version_number(item) < current]
+    if not candidates:
+        return None
+    return max(candidates, key=version_number)
+
+
 def q(value: str) -> str:
     normalized = value.replace("\\\\n", "\n").replace("\\n", "\n")
     return normalized.replace('"', '\\"').replace("\n", "\\n")
@@ -98,6 +112,103 @@ def provenance(meta: dict[str, str], arch_text: str, comp_text: str) -> str:
         f"review_token: {meta.get('review_token', 'UNKNOWN')}\\n"
         f"source_hash: {digest}"
     )
+
+
+def delta_source_hash(prev_arch: str, prev_comp: str, curr_arch: str, curr_comp: str) -> str:
+    return hashlib.sha256(
+        (prev_arch + "\n" + prev_comp + "\n---CURRENT---\n" + curr_arch + "\n" + curr_comp).encode("utf-8")
+    ).hexdigest()[:16]
+
+
+def summarize_changed_components(
+    previous_components: dict[str, dict[str, str]],
+    current_components: dict[str, dict[str, str]],
+    field: str,
+) -> list[str]:
+    changes: list[str] = []
+    for cid in sorted(set(previous_components) & set(current_components)):
+        old = previous_components[cid].get(field, "")
+        new = current_components[cid].get(field, "")
+        if old != new:
+            changes.append(f"{cid}: {old or 'empty'} -> {new or 'empty'}")
+    return changes
+
+
+def compact_items(items: list[str], empty: str) -> str:
+    if not items:
+        return empty
+    if len(items) <= 6:
+        return "\n".join(items)
+    return "\n".join(items[:6] + [f"... +{len(items) - 6} more"])
+
+
+def render_delta_from_previous(
+    repo_root: Path,
+    previous: str,
+    current: str,
+    current_meta: dict[str, str],
+    current_arch_text: str,
+    current_comp_text: str,
+) -> str:
+    prev_base = repo_root / "wiki" / "history" / previous
+    prev_arch_text = (prev_base / "architecture.yaml").read_text(encoding="utf-8")
+    prev_comp_text = (prev_base / "COMPONENTS.csv").read_text(encoding="utf-8")
+    prev_nodes, _prev_edges, prev_meta = parse_architecture(prev_arch_text)
+    curr_nodes, _curr_edges, _curr_meta = parse_architecture(current_arch_text)
+    prev_components = read_components(prev_base / "COMPONENTS.csv")
+    curr_components = read_components(repo_root / "wiki" / "history" / current / "COMPONENTS.csv")
+    prev_ids = set(prev_components)
+    curr_ids = set(curr_components)
+    prev_node_ids = {node.get("id", "") for node in prev_nodes if node.get("id")}
+    curr_node_ids = {node.get("id", "") for node in curr_nodes if node.get("id")}
+    source_changes: list[str] = []
+    for cid in sorted(prev_ids & curr_ids):
+        old = f"{prev_components[cid].get('source_file', '')}::{prev_components[cid].get('symbol', '')}"
+        new = f"{curr_components[cid].get('source_file', '')}::{curr_components[cid].get('symbol', '')}"
+        if old != new:
+            source_changes.append(f"{cid}: {old} -> {new}")
+    review_old = prev_meta.get("review_token", "UNKNOWN")
+    review_new = current_meta.get("review_token", "UNKNOWN")
+    digest = delta_source_hash(prev_arch_text, prev_comp_text, current_arch_text, current_comp_text)
+    node_labels = {
+        "source_hash": f"delta source\n{previous} + {current}\nsource_hash: {digest}",
+        "added_components": "新增组件\n" + compact_items(sorted(curr_ids - prev_ids), "none"),
+        "removed_components": "删除/disabled 组件\n" + compact_items(sorted(prev_ids - curr_ids), "none"),
+        "status_changes": "implemented/partial/scaffold 状态变化\n" + compact_items(summarize_changed_components(prev_components, curr_components, "current_status"), "none"),
+        "evidence_changes": "evidence_status 变化\n" + compact_items(summarize_changed_components(prev_components, curr_components, "evidence_status"), "none"),
+        "source_symbol_changes": "source/symbol 变化\n" + compact_items(source_changes, "none"),
+        "final_output_changes": "final_output_effect 变化\n" + compact_items(summarize_changed_components(prev_components, curr_components, "final_output_effect"), "none"),
+        "review_token_changes": f"review token 变化\n{review_old} -> {review_new}",
+        "notes_changes": "主要 notes delta\n" + compact_items(summarize_changed_components(prev_components, curr_components, "notes"), "none"),
+        "architecture_node_changes": "architecture.yaml 节点变化\nadded: "
+        + (", ".join(sorted(curr_node_ids - prev_node_ids)) or "none")
+        + "\nremoved: "
+        + (", ".join(sorted(prev_node_ids - curr_node_ids)) or "none"),
+    }
+    lines = [
+        "# Generated by scripts/architecture/generate_care_architecture_wiki.py",
+        "direction: right",
+        f'meta: "{q(f"delta_from: {previous}\\ndelta_to: {current}\\nsource_hash: {digest}")}"',
+    ]
+    for node_id, label in node_labels.items():
+        lines.append(f'{node_id}: "{q(label)}" {{')
+        lines.append("  style.stroke-dash: 4")
+        lines.append("  style.fill: \"#fff7e6\"")
+        lines.append("}")
+    for source, target, label in [
+        ("source_hash", "added_components", "component table diff"),
+        ("source_hash", "removed_components", "component table diff"),
+        ("added_components", "status_changes", "status review"),
+        ("removed_components", "status_changes", "disabled/deleted impact"),
+        ("status_changes", "evidence_changes", "evidence maturity"),
+        ("evidence_changes", "source_symbol_changes", "implementation mapping"),
+        ("source_symbol_changes", "final_output_changes", "runtime effect"),
+        ("final_output_changes", "review_token_changes", "review boundary"),
+        ("review_token_changes", "notes_changes", "planner constraints"),
+        ("source_hash", "architecture_node_changes", "architecture.yaml diff"),
+    ]:
+        lines.append(f'{source} -> {target}: "{q(label)}"')
+    return "\n".join(lines) + "\n"
 
 
 def render_model_current(nodes: list[dict[str, str]], edges: list[dict[str, str]], components: dict[str, dict[str, str]], meta_text: str) -> str:
@@ -304,6 +415,17 @@ def generated_history_sources(repo_root: Path, version: str) -> dict[str, str]:
         for source, target, label in delta_edges:
             delta.append(f'{source} -> {target}: "{q(label)}"')
         sources["delta-from-M08"] = "\n".join(delta) + "\n"
+    else:
+        previous = previous_history_version(repo_root, version)
+        if previous is not None:
+            sources[f"delta-from-{previous}"] = render_delta_from_previous(
+                repo_root,
+                previous,
+                version,
+                meta,
+                arch_text,
+                comp_text,
+            )
     return sources
 
 

@@ -25,6 +25,27 @@ def sha256(path: Path) -> str:
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
+def version_number(version: str) -> int:
+    return int(version[1:])
+
+
+def discover_history_versions(repo_root: Path) -> list[str]:
+    history_root = repo_root / "wiki" / "history"
+    if not history_root.is_dir():
+        return []
+    versions: list[str] = []
+    for path in sorted(history_root.iterdir()):
+        if path.is_dir() and HISTORY_VERSION_RE.match(path.name):
+            versions.append(path.name)
+    return versions
+
+
+def previous_history_version(repo_root: Path, version: str) -> str | None:
+    current = version_number(version)
+    candidates = [item for item in discover_history_versions(repo_root) if version_number(item) < current]
+    return max(candidates, key=version_number) if candidates else None
+
+
 def write(path: Path, text: str, dry_run: bool) -> None:
     if dry_run:
         return
@@ -56,6 +77,29 @@ def update_later_status_only(base: Path, args: argparse.Namespace) -> int:
     return 0
 
 
+def append_comparison_stub(repo_root: Path, previous: str | None, milestone: str) -> None:
+    if previous is None:
+        return
+    path = repo_root / "wiki" / "history" / "COMPARISON.md"
+    if not path.is_file():
+        return
+    marker = f"## {previous} -> {milestone} 自动比较入口"
+    text = path.read_text(encoding="utf-8")
+    if marker in text:
+        return
+    section = f"""
+
+{marker}
+
+| 比较项 | 结论入口 |
+| --- | --- |
+| component-level delta | `wiki/history/{milestone}/figures/delta-from-{previous}.png` |
+| 机器来源 | `wiki/history/{previous}/COMPONENTS.csv` + `wiki/history/{previous}/architecture.yaml` 对比 `wiki/history/{milestone}/COMPONENTS.csv` + `wiki/history/{milestone}/architecture.yaml` |
+| 需人工补充 | mapper/reviewer 可在独立审阅后补充具体科学解释；本节只记录确定性生成入口，不替代 review。 |
+"""
+    path.write_text(text.rstrip() + section + "\n", encoding="utf-8")
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--milestone", required=True)
@@ -85,9 +129,12 @@ def main(argv: list[str] | None = None) -> int:
         return 1
 
     current_commit = args.source_commit or run(["git", "rev-parse", "HEAD"], repo_root).stdout.strip()
+    previous = previous_history_version(repo_root, milestone)
     if args.dry_run:
         print(f"would create {base}")
         print("would copy COMPONENTS.csv, architecture.yaml, and generate component pages/figures")
+        if previous:
+            print(f"would generate wiki/history/{milestone}/figures/delta-from-{previous}.d2/svg/png")
         return 0
 
     (base / "components").mkdir(parents=True, exist_ok=False)
@@ -155,6 +202,7 @@ def main(argv: list[str] | None = None) -> int:
     if cp.returncode != 0:
         print(cp.stderr or cp.stdout, file=sys.stderr)
         return cp.returncode
+    append_comparison_stub(repo_root, previous, milestone)
     print(f"created history snapshot: {base}")
     return 0
 

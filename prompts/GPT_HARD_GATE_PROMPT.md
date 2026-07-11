@@ -48,6 +48,37 @@ review_mode: independent_thread | short_goal
 reviewer: separate_readonly
 ```
 
+Every milestone staging file matching `prompts/shared/M[0-9]*_*.md` must place
+the machine contract in YAML frontmatter on line 1. The body `## Execution
+Contract` section is only a human-readable mirror. Missing frontmatter,
+malformed frontmatter, body/frontmatter mismatches, missing `executor_plan_path`,
+or a failing `scripts/ops/validate_executor_plan.py` result are hard-gate
+failures.
+
+M10, later system-level redesign, and high-risk milestones require a separate
+GPT planning critic before Codex controller execution. The required sequence is:
+
+```text
+planner GPT -> separate GPT critic -> Codex merge/validator -> controller
+```
+
+This planning critic is not a controller subagent and not the independent
+post-execution reviewer. Required frontmatter:
+
+```yaml
+planning_review_required: true
+planning_reviewer: separate_gpt_thread
+planning_review_path: prompts/tasks/<task_key>_planning_review.md
+planning_review_token: <controlled token>
+planning_reviewed_commit: <commit>
+```
+
+If a M10/system-level milestone lacks a non-empty planning review token, its
+only allowed statuses are `DRAFT_FOR_GPT_REVIEW`,
+`NEEDS_PLANNING_REVISION`, or `BLOCKED_HANDOFF_REVIEW`. `READY` and
+`READY_FOR_CODEX_MERGE` are forbidden until the separate GPT planning review is
+present.
+
 Overnight, long Slurm, multi-job, or high-resume-risk work must be `controller_supervised` and must have a durable continuity backend. Architecture/loss/dataflow/export/registration/temporal changes must enable mapper and update root `wiki/` unless explicitly classified as `architecture_impact: none` with fingerprint evidence. New tasks must not introduce a controller-internal `auditor`; use `mapper` for internal read-only architecture mapping and `reviewer` for the final independent read-only audit.
 
 Long Slurm / overnight staging prompts must contain these sections exactly: `## Execution Contract`, `## Controller Prompt`, `## Executor Worker Contract`, `## Mapper Contract`, and `## Reviewer Prompt`. They must include a durable finalizer contract naming required job IDs or how they will be captured, runtime output paths, aggregator command, validator commands, lock/log paths, and local packet commit policy. Short staging prompts must contain `## Execution Contract`, `## Executor Prompt`, and `## Reviewer Prompt`.

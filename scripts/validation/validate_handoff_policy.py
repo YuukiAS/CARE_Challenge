@@ -6,6 +6,7 @@ from __future__ import annotations
 import argparse
 import ast
 import csv
+import importlib.util
 import json
 from dataclasses import dataclass
 from pathlib import Path
@@ -93,6 +94,62 @@ V2_FRONTMATTER_FIELDS = [
     "review_mode",
     "reviewer",
 ]
+MILESTONE_STAGING_REQUIRED_FIELDS = [
+    "task_key",
+    "task_type",
+    "controller_mode",
+    "milestone",
+    "status",
+    "risk_level",
+    "execution_mode",
+    "requires_execution_controller",
+    "executor_slots",
+    "executor_count",
+    "parallel_execution_allowed",
+    "executor_plan_path",
+    "mapper_slots",
+    "mapper_required",
+    "architecture_impact",
+    "wiki_update_required",
+    "diagram_update_required",
+    "slurm_runtime_continuity_required",
+    "continuity_backend",
+    "review_mode",
+    "reviewer",
+    "review_required",
+    "allow_git_commit",
+    "auto_git_commit",
+    "allow_git_push",
+    "auto_git_push",
+    "allow_diagnostic_push",
+    "route_promotion_gate",
+    "experiment_adequacy_gate",
+    "route_negative_gate",
+    "scientific_completion_gate",
+    "diagnostic_publication_gate",
+    "diagnostic_publication_scope",
+    "blocked_after_diagnostic_publication",
+    "planning_review_required",
+    "planning_reviewer",
+    "planning_review_path",
+    "planning_review_token",
+    "planning_reviewed_commit",
+]
+PLANNING_REVIEW_BLOCKED_STATUSES = {
+    "DRAFT_FOR_GPT_REVIEW",
+    "NEEDS_PLANNING_REVISION",
+    "BLOCKED_HANDOFF_REVIEW",
+}
+PLANNING_REVIEW_READY_STATUSES = {"READY", "READY_FOR_CODEX_MERGE"}
+PLAN_READY_TOKENS = {
+    "READY_FOR_MERGE",
+    "READY_FOR_CONTROLLER_MERGE",
+    "PACKET_COMMITTED_FOR_CONTROLLER",
+}
+BAD_PLANNING_REVIEWER_RE = re.compile(
+    r"\b(controller|executor|mapper|finalizer|validator|runtime|subagent|internal)\b",
+    re.IGNORECASE,
+)
 COMPONENT_REQUIRED_COLUMNS = [
     "component_id",
     "branch",
@@ -194,6 +251,42 @@ def parse_frontmatter(text: str) -> dict[str, object]:
     return values
 
 
+def is_milestone_staging_file(path: Path) -> bool:
+    return path.suffix == ".md" and path.name.startswith("M") and bool(
+        re.match(r"^M[0-9]+_.*\.md$", path.name)
+    ) and "shared" in path.parts
+
+
+def parse_body_execution_contract(text: str) -> dict[str, object]:
+    match = re.search(
+        r"(?ms)^## Execution Contract\s*^```ya?ml\s*(.*?)^```",
+        text,
+    )
+    if not match:
+        return {}
+    values: dict[str, object] = {}
+    for raw_line in match.group(1).splitlines():
+        line = raw_line.strip()
+        if not line or line.startswith("#") or ":" not in line or line.startswith("- "):
+            continue
+        key, raw_value = line.split(":", 1)
+        key = key.strip()
+        raw_value = raw_value.strip()
+        if not re.match(r"^[A-Za-z_][A-Za-z0-9_]*$", key):
+            continue
+        if not raw_value:
+            values[key] = ""
+            continue
+        lower_value = raw_value.lower()
+        if lower_value == "true":
+            values[key] = True
+        elif lower_value == "false":
+            values[key] = False
+        else:
+            values[key] = raw_value.strip("\"'")
+    return values
+
+
 def as_bool(value: object) -> bool:
     if isinstance(value, bool):
         return value
@@ -259,6 +352,22 @@ def as_int(value: object, default: int = 0) -> int:
         return default
 
 
+def normalized_scalar(value: object) -> str:
+    if isinstance(value, bool):
+        return "true" if value else "false"
+    return str(value).strip().strip("\"'")
+
+
+def load_executor_plan_validator(repo_root: Path):
+    path = repo_root / "scripts" / "ops" / "validate_executor_plan.py"
+    spec = importlib.util.spec_from_file_location("validate_executor_plan_for_handoff", path)
+    if spec is None or spec.loader is None:
+        raise RuntimeError(f"cannot load executor plan validator: {path}")
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
 def severity(strict: bool) -> str:
     return "error" if strict else "warning"
 
@@ -266,11 +375,89 @@ def severity(strict: bool) -> str:
 def validate_task_file(path: Path, text: str, strict: bool) -> list[Finding]:
     frontmatter = parse_frontmatter(text)
     findings: list[Finding] = []
+    milestone_staging = is_milestone_staging_file(path)
+    if milestone_staging and not text.startswith("---\n"):
+        return [
+            Finding(
+                "error",
+                path,
+                "milestone staging prompt must start with real YAML frontmatter; ## Execution Contract is only a human-readable mirror.",
+            )
+        ]
+    if milestone_staging and not frontmatter:
+        return [Finding("error", path, "milestone staging prompt has malformed or missing YAML frontmatter.")]
     if not frontmatter:
         return findings
 
     execution_mode = str(frontmatter.get("execution_mode", "")).strip("\"'")
     continuity_backend = str(frontmatter.get("continuity_backend", "")).strip("\"'")
+    if milestone_staging:
+        missing_staging = [field for field in MILESTONE_STAGING_REQUIRED_FIELDS if field not in frontmatter]
+        if missing_staging:
+            findings.append(
+                Finding(
+                    "error",
+                    path,
+                    "milestone staging frontmatter missing required fields: " + ", ".join(missing_staging) + ".",
+                )
+            )
+        if frontmatter.get("task_type") != "controller":
+            findings.append(Finding("error", path, "milestone staging frontmatter must declare task_type: controller."))
+        if not as_bool(frontmatter.get("controller_mode")):
+            findings.append(Finding("error", path, "milestone staging frontmatter must declare controller_mode: true."))
+        status = normalized_scalar(frontmatter.get("status")).upper()
+        milestone = normalized_scalar(frontmatter.get("milestone")).upper()
+        risk_level = normalized_scalar(frontmatter.get("risk_level")).lower()
+        architecture_impact = normalized_scalar(frontmatter.get("architecture_impact")).lower()
+        is_system_level = milestone in {"M10"} or architecture_impact == "system" or risk_level == "high"
+        if is_system_level:
+            missing_controller = [field for field in MILESTONE_STAGING_REQUIRED_FIELDS if field not in frontmatter]
+            if missing_controller:
+                findings.append(
+                    Finding(
+                        "error",
+                        path,
+                        "M10/system-level/high-risk milestone must provide complete controller frontmatter fields: "
+                        + ", ".join(missing_controller)
+                        + ".",
+                    )
+                )
+        if as_bool(frontmatter.get("planning_review_required")):
+            if normalized_scalar(frontmatter.get("planning_reviewer")) != "separate_gpt_thread":
+                findings.append(
+                    Finding(
+                        "error",
+                        path,
+                        "planning_reviewer must be separate_gpt_thread; it is not a controller runtime subagent.",
+                    )
+                )
+            if BAD_PLANNING_REVIEWER_RE.search(normalized_scalar(frontmatter.get("planning_reviewer"))):
+                findings.append(Finding("error", path, "planning reviewer cannot be a controller/executor/runtime subagent."))
+        elif is_system_level:
+            findings.append(Finding("error", path, "M10/system-level/high-risk milestone requires planning_review_required: true."))
+        if status in PLANNING_REVIEW_READY_STATUSES:
+            if is_blank_or_none(frontmatter.get("planning_review_token")):
+                findings.append(Finding("error", path, "READY milestone staging requires non-empty planning_review_token."))
+            if is_blank_or_none(frontmatter.get("planning_reviewed_commit")):
+                findings.append(Finding("error", path, "READY milestone staging requires planning_reviewed_commit."))
+        elif is_system_level and as_bool(frontmatter.get("planning_review_required")) and status not in PLANNING_REVIEW_BLOCKED_STATUSES:
+            findings.append(
+                Finding(
+                    "error",
+                    path,
+                    "M10/system-level milestone without completed planning review must use DRAFT_FOR_GPT_REVIEW, NEEDS_PLANNING_REVISION, or BLOCKED_HANDOFF_REVIEW.",
+                )
+            )
+        body_contract = parse_body_execution_contract(text)
+        for field in V2_FRONTMATTER_FIELDS:
+            if field in frontmatter and field in body_contract and normalized_scalar(frontmatter[field]) != normalized_scalar(body_contract[field]):
+                findings.append(
+                    Finding(
+                        "error",
+                        path,
+                        f"frontmatter/body Execution Contract mismatch for {field}: {frontmatter[field]!r} != {body_contract[field]!r}.",
+                    )
+                )
 
     if is_controller_task(frontmatter, text):
         missing_v2 = [field for field in V2_FRONTMATTER_FIELDS if field not in frontmatter]
@@ -884,6 +1071,69 @@ def validate_architecture_yaml(path: Path, text: str) -> list[Finding]:
     return findings
 
 
+def validate_executor_plan_file(repo_root: Path, path: Path) -> list[Finding]:
+    if not path.name.endswith("executor_plan.yaml"):
+        return []
+    findings: list[Finding] = []
+    try:
+        plan_validator = load_executor_plan_validator(repo_root)
+        data = plan_validator.load_yaml(path)
+        errors = plan_validator.validate_plan(data)
+    except Exception as exc:
+        return [Finding("error", path, f"executor plan validation failed to run: {exc}")]
+    for error in errors:
+        findings.append(Finding("error", path, f"executor plan invalid: {error}"))
+    return findings
+
+
+def validate_milestone_staging_plan(repo_root: Path, path: Path, text: str) -> list[Finding]:
+    if not is_milestone_staging_file(path):
+        return []
+    frontmatter = parse_frontmatter(text)
+    if not frontmatter:
+        return []
+    findings: list[Finding] = []
+    plan_value = normalized_scalar(frontmatter.get("executor_plan_path"))
+    if is_blank_or_none(plan_value):
+        return [Finding("error", path, "milestone staging must declare executor_plan_path in frontmatter.")]
+    plan_path = (repo_root / plan_value).resolve()
+    if not plan_path.is_file():
+        return [Finding("error", path, f"executor_plan_path does not exist: {plan_value}")]
+    try:
+        plan_validator = load_executor_plan_validator(repo_root)
+        plan_data = plan_validator.load_yaml(plan_path)
+        plan_errors = plan_validator.validate_plan(plan_data)
+    except Exception as exc:
+        return [Finding("error", path, f"executor_plan_path validation failed: {exc}")]
+    for error in plan_errors:
+        findings.append(Finding("error", path, f"executor_plan_path invalid: {error}"))
+    plan_task_key = normalized_scalar(plan_data.get("task_key"))
+    if not is_blank_or_none(plan_task_key) and plan_task_key != normalized_scalar(frontmatter.get("task_key")):
+        findings.append(Finding("error", path, "task_key differs between milestone staging frontmatter and executor plan."))
+    executors = plan_data.get("executors", [])
+    plan_count = len(executors) if isinstance(executors, list) else 0
+    if as_int(frontmatter.get("executor_count"), 0) != plan_count:
+        findings.append(
+            Finding(
+                "error",
+                path,
+                f"executor_count differs from executor plan: frontmatter={frontmatter.get('executor_count')} plan={plan_count}.",
+            )
+        )
+    max_parallel = as_int(plan_data.get("max_parallel"), 1)
+    if as_int(frontmatter.get("executor_slots"), 0) != max_parallel:
+        findings.append(
+            Finding(
+                "error",
+                path,
+                f"executor_slots differs from executor plan max_parallel: frontmatter={frontmatter.get('executor_slots')} plan={max_parallel}.",
+            )
+        )
+    if as_bool(frontmatter.get("parallel_execution_allowed")) != as_bool(plan_data.get("parallel_execution_allowed")):
+        findings.append(Finding("error", path, "parallel_execution_allowed differs between milestone staging and executor plan."))
+    return findings
+
+
 def validate_controller_packet_dir(path: Path) -> list[Finding]:
     findings: list[Finding] = []
     completion = path / "completion_check.md"
@@ -915,6 +1165,7 @@ def iter_policy_files(paths: Sequence[Path]) -> Iterable[Path]:
 
 def validate_paths(paths: Sequence[Path], strict_tasks: bool = False) -> list[Finding]:
     findings: list[Finding] = []
+    repo_root = Path.cwd()
     for path in paths:
         if path.is_dir():
             findings.extend(validate_controller_packet_dir(path))
@@ -932,11 +1183,15 @@ def validate_paths(paths: Sequence[Path], strict_tasks: bool = False) -> list[Fi
             findings.extend(validate_components_csv(path, text))
         elif path.name == "architecture.yaml":
             findings.extend(validate_architecture_yaml(path, text))
+        if path.name.endswith("executor_plan.yaml"):
+            findings.extend(validate_executor_plan_file(repo_root, path))
+        if is_milestone_staging_file(path):
+            findings.extend(validate_milestone_staging_plan(repo_root, path, text))
     return findings
 
 
 def default_paths(repo_root: Path) -> list[Path]:
-    return [
+    paths = [
         repo_root / "AGENTS.md",
         repo_root / "START_HERE_FOR_GPT.md",
         repo_root / "GPT_PLANNER_CARE_PROTOCOL.md",
@@ -953,6 +1208,12 @@ def default_paths(repo_root: Path) -> list[Path]:
         repo_root / "wiki",
         repo_root / "results" / "20260711_agent_flow_v2_pre_m10_final_repair",
     ]
+    shared = repo_root / "prompts" / "shared"
+    tasks = repo_root / "prompts" / "tasks"
+    paths.extend(sorted(shared.glob("M[0-9]*_*.md")))
+    paths.extend(sorted(tasks.glob("*executor_plan.yaml")))
+    paths.extend(sorted(tasks.glob("*planning_review.md")))
+    return paths
 
 
 def main(argv: Sequence[str] | None = None) -> int:

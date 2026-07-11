@@ -27,6 +27,7 @@ published_files:
   - results/20260711_agent_flow_v2_pre_m10_final_repair/subagents/reviewer_prompt.md
 blocked_actions:
   - no M10 design or execution
+  - current M10 staging/plan remains blocked by planning validator until frontmatter, separate GPT planning review, and executor-plan completion fields are repaired
   - no model training
   - no ordinary Slurm training job
   - no validation packaging or upload

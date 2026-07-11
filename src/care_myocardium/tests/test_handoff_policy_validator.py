@@ -16,6 +16,7 @@ ARCH_VALIDATOR_PATH = Path(__file__).resolve().parents[3] / "scripts" / "archite
 RECONCILE_PATH = Path(__file__).resolve().parents[3] / "scripts" / "architecture" / "reconcile_review_status.py"
 MERGE_PATH = Path(__file__).resolve().parents[3] / "scripts" / "ops" / "merge_care_executor_wave.py"
 CREATE_HISTORY_PATH = Path(__file__).resolve().parents[3] / "scripts" / "architecture" / "create_care_history_snapshot.py"
+GENERATOR_PATH = Path(__file__).resolve().parents[3] / "scripts" / "architecture" / "generate_care_architecture_wiki.py"
 SPEC = importlib.util.spec_from_file_location("validate_handoff_policy", VALIDATOR_PATH)
 assert SPEC is not None
 validator = importlib.util.module_from_spec(SPEC)
@@ -57,6 +58,11 @@ assert CREATE_HISTORY_SPEC is not None and CREATE_HISTORY_SPEC.loader is not Non
 create_history = importlib.util.module_from_spec(CREATE_HISTORY_SPEC)
 sys.modules["create_care_history_snapshot"] = create_history
 CREATE_HISTORY_SPEC.loader.exec_module(create_history)
+GENERATOR_SPEC = importlib.util.spec_from_file_location("generate_care_architecture_wiki", GENERATOR_PATH)
+assert GENERATOR_SPEC is not None and GENERATOR_SPEC.loader is not None
+generator = importlib.util.module_from_spec(GENERATOR_SPEC)
+sys.modules["generate_care_architecture_wiki"] = generator
+GENERATOR_SPEC.loader.exec_module(generator)
 
 
 def add_completion_contract(entry: dict[str, object], token: str = "READY_FOR_CONTROLLER_MERGE") -> dict[str, object]:
@@ -65,7 +71,109 @@ def add_completion_contract(entry: dict[str, object], token: str = "READY_FOR_CO
     return entry
 
 
+def complete_milestone_frontmatter(**overrides: object) -> str:
+    values: dict[str, object] = {
+        "task_key": "demo_m10",
+        "task_type": "controller",
+        "controller_mode": True,
+        "milestone": "M10",
+        "status": "DRAFT_FOR_GPT_REVIEW",
+        "risk_level": "high",
+        "execution_mode": "controller_supervised",
+        "requires_execution_controller": True,
+        "executor_slots": 1,
+        "executor_count": 1,
+        "parallel_execution_allowed": False,
+        "executor_plan_path": "prompts/tasks/demo_m10_executor_plan.yaml",
+        "mapper_slots": 1,
+        "mapper_required": True,
+        "architecture_impact": "system",
+        "wiki_update_required": True,
+        "diagram_update_required": True,
+        "slurm_runtime_continuity_required": True,
+        "continuity_backend": "slurm_dependency",
+        "review_mode": "independent_thread",
+        "reviewer": "separate_readonly",
+        "review_required": True,
+        "allow_git_commit": True,
+        "auto_git_commit": True,
+        "allow_git_push": False,
+        "auto_git_push": False,
+        "allow_diagnostic_push": False,
+        "route_promotion_gate": "no route promotion before review",
+        "experiment_adequacy_gate": "requires evidence",
+        "route_negative_gate": "review only",
+        "scientific_completion_gate": "review only",
+        "diagnostic_publication_gate": "local packet only",
+        "diagnostic_publication_scope": "lightweight",
+        "blocked_after_diagnostic_publication": "upload, push, M11",
+        "planning_review_required": True,
+        "planning_reviewer": "separate_gpt_thread",
+        "planning_review_path": "prompts/tasks/demo_m10_planning_review.md",
+        "planning_review_token": "",
+        "planning_reviewed_commit": "",
+    }
+    values.update(overrides)
+    lines = ["---"]
+    for key, value in values.items():
+        if isinstance(value, bool):
+            rendered = "true" if value else "false"
+        else:
+            rendered = str(value)
+        lines.append(f"{key}: {rendered}")
+    lines.append("---")
+    return "\n".join(lines) + "\n"
+
+
 class TestHandoffPolicyValidator(unittest.TestCase):
+    def test_m10_staging_without_frontmatter_fails(self) -> None:
+        text = "# M10 demo\n\n## Execution Contract\n\n```yaml\ntask_key: demo\n```\n"
+        findings = validator.validate_task_file(Path("prompts/shared/M10_demo.md"), text, strict=True)
+        self.assertTrue(any("YAML frontmatter" in item.message for item in findings))
+
+    def test_execution_contract_code_block_without_frontmatter_fails(self) -> None:
+        text = """# M10 demo
+
+## Execution Contract
+
+```yaml
+task_key: demo
+task_type: controller
+execution_mode: controller_supervised
+```
+"""
+        findings = validator.validate_task_file(Path("prompts/shared/M10_code_block_only.md"), text, strict=True)
+        self.assertTrue(any("frontmatter" in item.message for item in findings))
+
+    def test_ready_m10_without_planning_review_token_fails(self) -> None:
+        text = complete_milestone_frontmatter(status="READY") + "\n## Execution Contract\n\n```yaml\nexecution_mode: controller_supervised\n```\n"
+        findings = validator.validate_task_file(Path("prompts/shared/M10_ready.md"), text, strict=True)
+        self.assertTrue(any("planning_review_token" in item.message for item in findings))
+
+    def test_planning_reviewer_declared_as_controller_subagent_fails(self) -> None:
+        text = complete_milestone_frontmatter(planning_reviewer="controller_subagent") + "\n## Execution Contract\n\n```yaml\nexecution_mode: controller_supervised\n```\n"
+        findings = validator.validate_task_file(Path("prompts/shared/M10_bad_reviewer.md"), text, strict=True)
+        self.assertTrue(any("separate_gpt_thread" in item.message for item in findings))
+
+    def test_frontmatter_body_contract_mismatch_fails(self) -> None:
+        text = complete_milestone_frontmatter(executor_count=1) + "\n## Execution Contract\n\n```yaml\nexecutor_count: 2\nexecution_mode: controller_supervised\n```\n"
+        findings = validator.validate_task_file(Path("prompts/shared/M10_mismatch.md"), text, strict=True)
+        self.assertTrue(any("mismatch" in item.message for item in findings))
+
+    def test_milestone_executor_plan_path_missing_fails(self) -> None:
+        text = complete_milestone_frontmatter(executor_plan_path="prompts/tasks/does_not_exist_executor_plan.yaml") + "\n## Execution Contract\n\n```yaml\nexecution_mode: controller_supervised\n```\n"
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            old = Path.cwd()
+            try:
+                import os
+
+                os.chdir(root)
+                findings = validator.validate_milestone_staging_plan(root, Path("prompts/shared/M10_missing_plan.md"), text)
+            finally:
+                os.chdir(old)
+        self.assertTrue(any("executor_plan_path does not exist" in item.message for item in findings))
+
     def test_controller_git_requires_split_gates_in_strict_mode(self) -> None:
         text = """---
 task_type: "controller"
@@ -703,6 +811,62 @@ print(args.session_name)
         ]}
         self.assertTrue(any("MyoPS/Cine" in item for item in executor_plan.validate_plan(data)))
 
+    def test_executor_plan_rejects_invalid_lane(self) -> None:
+        data = {"version": 1, "max_parallel": 1, "executors": [
+            add_completion_contract({"id": "bad", "lane": "myops_cine_sequential", "wave": 1, "can_run_parallel": False, "isolation_mode": "separate_worktree", "branch_name": "b", "worktree_path": "/tmp/bad_lane", "write_scope": ["src"], "prompt_path": "p", "result_dir": "r", "runtime_output_root": "o", "slurm_job_namespace": "j", "lock_path": "l", "log_path": "log", "merge_order": 1})
+        ]}
+        self.assertTrue(any("lane must be" in item for item in executor_plan.validate_plan(data)))
+
+    def test_executor_plan_rejects_missing_completion_contract(self) -> None:
+        data = {"version": 1, "max_parallel": 1, "executors": [
+            {"id": "bad", "lane": "tooling", "wave": 1, "can_run_parallel": False, "isolation_mode": "separate_worktree", "branch_name": "b", "worktree_path": "/tmp/missing_completion", "write_scope": ["tools"], "prompt_path": "p", "result_dir": "r", "runtime_output_root": "o", "slurm_job_namespace": "j", "lock_path": "l", "log_path": "log", "merge_order": 1}
+        ]}
+        messages = "\n".join(executor_plan.validate_plan(data))
+        self.assertIn("required_completion_file", messages)
+        self.assertIn("required_completion_token", messages)
+
+    def test_task_executor_count_differs_from_plan_fails(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            plan = Path(tmp) / "plan_executor_plan.yaml"
+            plan.write_text("""version: 1
+task_key: demo_m10
+max_parallel: 1
+parallel_execution_allowed: false
+executors:
+  - id: e1
+    lane: tooling
+    wave: 1
+    depends_on: []
+    blocking: true
+    can_run_parallel: false
+    isolation_mode: separate_worktree
+    branch_name: b
+    worktree_path: /tmp/e1
+    read_scope: []
+    write_scope:
+      - tools
+    result_dir: results/e1
+    prompt_path: p
+    runtime_output_root: runtime/e1
+    slurm_job_namespace: e1
+    lock_path: locks/e1
+    log_path: logs/e1
+    required_completion_file: results/e1/completion_check.md
+    required_completion_token: READY_FOR_CONTROLLER_MERGE
+    merge_order: 1
+""", encoding="utf-8")
+            text = complete_milestone_frontmatter(executor_count=2, executor_plan_path=str(plan), status="DRAFT_FOR_GPT_REVIEW")
+            repo = Path(__file__).resolve().parents[3]
+            findings = validator.validate_milestone_staging_plan(repo, Path("prompts/shared/M10_count.md"), text)
+        self.assertTrue(any("executor_count differs" in item.message for item in findings))
+
+    def test_default_validator_discovers_m10_staging_and_plan(self) -> None:
+        repo = Path(__file__).resolve().parents[3]
+        paths = validator.default_paths(repo)
+        path_text = "\n".join(str(path.relative_to(repo)) for path in paths if path.is_relative_to(repo))
+        self.assertIn("prompts/shared/M10_srr_v3_complete_mechanism_repair.md", path_text)
+        self.assertIn("prompts/tasks/20260711_srr_v3_m10_complete_mechanism_repair_executor_plan.yaml", path_text)
+
     def test_executor_plan_rejects_duplicate_worktree_branch_merge_order_and_cycle(self) -> None:
         data = {"version": 1, "max_parallel": 2, "executors": [
             {"id": "a", "lane": "tooling", "wave": 1, "depends_on": ["b"], "can_run_parallel": False, "isolation_mode": "separate_worktree", "branch_name": "same", "worktree_path": "/tmp/same", "write_scope": ["a"], "prompt_path": "pa", "result_dir": "same_result", "runtime_output_root": "oa", "slurm_job_namespace": "same_ns", "merge_order": 1},
@@ -809,6 +973,98 @@ reviewer: "separate_readonly"
         repo = Path(__file__).resolve().parents[3]
         code = create_history.main(["--milestone", "M10", "--dry-run"])
         self.assertEqual(code, 0)
+
+    def test_m10_history_snapshot_generates_delta_from_m09(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            for version, status, evidence, review in (
+                ("M09", "partial", "unverified", "M9_TOKEN"),
+                ("M10", "implemented", "verified", "M10_TOKEN"),
+            ):
+                base = root / "wiki/history" / version
+                (base / "components").mkdir(parents=True)
+                (base / "figures").mkdir()
+                (base / "README.md").write_text(f"# {version}\n", encoding="utf-8")
+                (base / "snapshot.yaml").write_text(f"version: {version}\n", encoding="utf-8")
+                (base / "COMPONENTS.csv").write_text(
+                    "component_id,branch,role,current_status,evidence_status,target_status,source_file,symbol,entrypoint,grep_key,config_keys,inputs,outputs,losses,final_output_effect,runtime_evidence,code_fingerprint_member,last_verified_milestone,review_token,notes\n"
+                    f"retrieval_dictionary,MyoPS,检索字典,{status},{evidence},implemented,src/demo.py,Demo,entry,Demo,,in,out,loss,{'affects logits' if version == 'M10' else 'not proven'},results/demo.md,fp,{version},{review},{'local spatial router' if version == 'M10' else 'global router'}\n",
+                    encoding="utf-8",
+                )
+                (base / "architecture.yaml").write_text(
+                    f'architecture_version: "{version}"\nreview_token: "{review}"\ncode_fingerprint: "fp"\nnodes:\n  - id: retrieval_dictionary\n    label: "检索字典"\nedges:\n',
+                    encoding="utf-8",
+                )
+                (base / "components/retrieval_dictionary.md").write_text("# 检索字典\n", encoding="utf-8")
+            sources = generator.generated_history_sources(root, "M10")
+            self.assertIn("delta-from-M09", sources)
+            delta = sources["delta-from-M09"]
+            self.assertIn("implemented/partial/scaffold 状态变化", delta)
+            self.assertIn("final_output_effect 变化", delta)
+            self.assertIn("review token 变化", delta)
+            self.assertIn("source_hash:", delta)
+
+    def test_m11_history_snapshot_generates_delta_from_m10(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            for version, note in (("M09", "old"), ("M10", "middle"), ("M11", "new")):
+                base = root / "wiki/history" / version
+                (base / "components").mkdir(parents=True)
+                (base / "figures").mkdir()
+                (base / "README.md").write_text(f"# {version}\n", encoding="utf-8")
+                (base / "snapshot.yaml").write_text(f"version: {version}\n", encoding="utf-8")
+                (base / "COMPONENTS.csv").write_text(
+                    "component_id,branch,role,current_status,evidence_status,target_status,source_file,symbol,entrypoint,grep_key,config_keys,inputs,outputs,losses,final_output_effect,runtime_evidence,code_fingerprint_member,last_verified_milestone,review_token,notes\n"
+                    f"router_pattern_sip,MyoPS,router,partial,unverified,implemented,src/router.py,Router,entry,Router,,in,out,loss,effect,results/router.md,fp,{version},{version}_TOKEN,{note}\n",
+                    encoding="utf-8",
+                )
+                (base / "architecture.yaml").write_text(
+                    f'architecture_version: "{version}"\nreview_token: "{version}_TOKEN"\ncode_fingerprint: "fp"\nnodes:\n  - id: router_pattern_sip\n    label: "router"\nedges:\n',
+                    encoding="utf-8",
+                )
+                (base / "components/router_pattern_sip.md").write_text("# router\n", encoding="utf-8")
+            sources = generator.generated_history_sources(root, "M11")
+            self.assertIn("delta-from-M10", sources)
+            self.assertIn("M10", sources["delta-from-M10"])
+
+    def test_future_history_generic_placeholder_delta_fails(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            import shutil
+
+            gen_dst = root / "scripts/architecture/generate_care_architecture_wiki.py"
+            gen_dst.parent.mkdir(parents=True)
+            shutil.copy2(GENERATOR_PATH, gen_dst)
+            hist = root / "wiki/history"
+            hist.mkdir(parents=True)
+            (hist / "README.md").write_text("# History\n", encoding="utf-8")
+            (hist / "COMPARISON.md").write_text("M8 -> M9 实际代码变化\n对 M10 的约束\nloss wiring fixed\ndictionary\nCine\n", encoding="utf-8")
+            (hist / "MIGRATION_MANIFEST.csv").write_text("source_file,source_heading,destination_file,migration_status\n", encoding="utf-8")
+            for version in ("M09", "M10"):
+                base = hist / version
+                (base / "components").mkdir(parents=True)
+                (base / "figures").mkdir()
+                (base / "README.md").write_text(f"# {version}\n", encoding="utf-8")
+                (base / "snapshot.yaml").write_text(f"version: {version}\n", encoding="utf-8")
+                (base / "COMPONENTS.csv").write_text(
+                    "component_id,branch,role,current_status,evidence_status,target_status,source_file,symbol,entrypoint,grep_key,config_keys,inputs,outputs,losses,final_output_effect,runtime_evidence,code_fingerprint_member,last_verified_milestone,review_token,notes\n"
+                    f"a,MyoPS,a,partial,unverified,implemented,wiki/history/{version}/components/a.md,a,entry,a,,in,out,loss,effect,wiki/history/{version}/README.md,fp,{version},{version}_TOKEN,note\n",
+                    encoding="utf-8",
+                )
+                (base / "architecture.yaml").write_text(
+                    f'architecture_version: "{version}"\nreview_token: "{version}_TOKEN"\ncode_fingerprint: "fp"\nnodes:\n  - id: a\n    label: "a"\nedges:\n',
+                    encoding="utf-8",
+                )
+                (base / "components/a.md").write_text("# a\n", encoding="utf-8")
+                for stem in ("architecture", "gap"):
+                    (base / f"figures/{stem}.d2").write_text(generator.generated_history_sources(root, version)[stem], encoding="utf-8")
+                    (base / f"figures/{stem}.svg").write_text("<svg/>", encoding="utf-8")
+                    (base / f"figures/{stem}.png").write_bytes(b"png")
+            (hist / "M10/figures/delta-from-M09.d2").write_text('bad: "history snapshot\\ncomponent table\\nevidence mapping"\n', encoding="utf-8")
+            (hist / "M10/figures/delta-from-M09.svg").write_text("<svg/>", encoding="utf-8")
+            (hist / "M10/figures/delta-from-M09.png").write_bytes(b"png")
+            errors = arch_validator.validate_history(root)
+            self.assertTrue(any("generic placeholder" in item for item in errors), errors)
 
     def test_controller_packet_missing_controller_report_fails(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:

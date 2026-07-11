@@ -29,6 +29,29 @@ SRR/MyoPS/Cine 路线判断必须视觉阅读 ChatGPT Project background / proje
 
 每个未来里程碑必须同时包含 Codex 执行者内容和独立审阅者内容。新里程碑先写成 `prompts/shared/M<id>_<short_slug>.md`，例如 `prompts/shared/M9_myops_fold_expansion_planning.md`。短任务必须包含 `## Execution Contract`、`## Executor Prompt`、`## Reviewer Prompt`。长 Slurm / overnight / controller-supervised 任务必须包含 `## Execution Contract`、`## Controller Prompt`、`## Executor Worker Contract`、`## Mapper Contract`、`## Reviewer Prompt`，并写出 durable finalizer contract。不要让 GPT 直接改很大的 `prompts/shared/EXECUTOR_PROMPTS.md` / `prompts/shared/REVIEWER_PROMPTS.md`。后续由 Codex 把暂存文件拆分合并进这两个标准共享文件，并在合并成功后删除暂存文件。
 
+`prompts/shared/M[0-9]*_*.md` 必须第一行就是 YAML frontmatter；正文
+`## Execution Contract` 只是给人读的镜像，不能替代 frontmatter。M10、后续
+system-level redesign 或 high-risk 里程碑在进入 Codex controller 前，必须经过
+另一个 GPT thread 的规划期审查：
+
+```text
+planner GPT -> separate GPT critic -> Codex merge/validator -> controller
+```
+
+这不是 controller runtime subagent，也不是执行后的 read-only reviewer。必须写入：
+
+```yaml
+planning_review_required: true
+planning_reviewer: separate_gpt_thread
+planning_review_path: prompts/tasks/<task_key>_planning_review.md
+planning_review_token: <controlled token>
+planning_reviewed_commit: <commit>
+```
+
+没有 `planning_review_token` 的 M10/system-level staging 只能是
+`DRAFT_FOR_GPT_REVIEW`、`NEEDS_PLANNING_REVISION` 或
+`BLOCKED_HANDOFF_REVIEW`，不能写 `READY` 或 `READY_FOR_CODEX_MERGE`。
+
 规划时按顶会审稿编辑标准追问：证据是否足以支持主张？是否有同一划分基线？是否覆盖困难子组？是否防止 no-T2 edema 误监督？是否有 validator 和 known-bad fixtures？是否只是 smoke / monitor / synthetic / stale evidence？是否把 nnU-Net fallback 包装成 SRR？失败可以接受，假成功不接受。
 
 ## 1. 必读顺序
@@ -125,6 +148,11 @@ overnight、长 Slurm、多 job、高 resume 风险必须使用 `controller_supe
 ```text
 prompts/shared/M<id>_<short_slug>.md
 ```
+
+文件必须以真实 YAML frontmatter 开头，且至少包含
+`prompts/AGENT_FLOW_V2_PROTOCOL.md` 所列的 controller、review、publication
+和 planning review 字段。正文 `## Execution Contract` 只能镜像这些字段；若
+frontmatter 与正文不一致，Codex validator 必须默认失败。
 
 命名规则：
 

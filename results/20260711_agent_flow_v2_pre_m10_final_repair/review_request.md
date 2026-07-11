@@ -18,5 +18,9 @@ Reviewer scope:
 - Verify `AWAITING_SACCT_RETRY_EXHAUSTED` launches a real continuation watcher or resubmitted finalizer and records the session/job id.
 - Verify multi-executor merge checks executor worktree/branch packets, parses completion tokens, rejects monitor/incomplete tokens, and records merge details.
 - Verify watcher `log_path` receives stdout/stderr and duplicate session startup fails closed.
+- Verify M10 staging without real YAML frontmatter is rejected; `## Execution Contract` alone is not accepted.
+- Verify default handoff validation scans `prompts/shared/M*.md`, `prompts/tasks/*executor_plan.yaml`, and `prompts/tasks/*planning_review.md`.
+- Verify `READY` M10/system-level staging requires `planning_reviewer: separate_gpt_thread` and a non-empty `planning_review_token`.
+- Verify future M10/M11+ history snapshots generate non-placeholder `delta-from-Mprevious` D2/SVG/PNG from consecutive `COMPONENTS.csv` and `architecture.yaml` sources.
 
 The reviewer must not modify code, run training, launch Slurm jobs, generate missing artifacts, or push.

@@ -26,21 +26,38 @@ Live HEAD at repair start was `094dd905c368f66204d6b62e223f962813346a46`, a loca
 - Implemented actual `AWAITING_SACCT_RETRY_EXHAUSTED` continuation via namespace-local state-aware tmux watcher or resubmitted finalizer, with receipt fields for command, session/job id, log, lock, and result directory.
 - Strengthened multi-executor merge to verify completion packets from executor worktree/branch, enforce completion tokens, reject monitor/evidence/revision tokens, and record source branch head plus merged commit details.
 - Made watcher startup write real stdout/stderr to `log_path` and reject duplicate tmux sessions.
+- Added mandatory machine YAML frontmatter validation for `prompts/shared/M[0-9]*_*.md` milestone staging files. `## Execution Contract` is now only a human-readable mirror.
+- Added pre-execution planning review gates for M10/system-level/high-risk staging: `planner GPT -> separate GPT critic -> Codex merge/validator -> controller`.
+- Expanded default handoff validation to scan milestone staging files, `prompts/tasks/*executor_plan.yaml`, and planning review files, and to validate `executor_plan_path` consistency.
+- Added dynamic future-history delta generation for M10/M11 and later: `delta-from-Mprevious` is computed from both versions' `COMPONENTS.csv` and `architecture.yaml`, not from a generic placeholder.
 
 ## Verification
 
-All required lightweight checks passed:
+Required lightweight checks were run. The handoff validator now intentionally
+blocks the current unmodified M10 staging/plan until planning frontmatter,
+separate GPT planning review, and executor-plan completion fields are repaired:
 
 ```text
 python scripts/validation/validate_handoff_policy.py --strict-tasks --warnings-as-errors
+  -> exit 1, expected planning gate block:
+     prompts/shared/M10_srr_v3_complete_mechanism_repair.md lacks YAML frontmatter
+     prompts/tasks/20260711_srr_v3_m10_complete_mechanism_repair_executor_plan.yaml has invalid lane and missing required_completion_* fields
 python scripts/architecture/validate_care_architecture_wiki.py --strict --history
+  -> pass
 python scripts/architecture/generate_care_architecture_wiki.py --check-all
+  -> pass
 python scripts/ops/validate_executor_plan.py prompts/templates/EXECUTOR_PLAN_TEMPLATE.yaml
+  -> pass
 python scripts/architecture/create_care_history_snapshot.py --milestone M10 --dry-run
+  -> pass, reports future delta-from-M09 generation
 python -m unittest src.care_myocardium.tests.test_handoff_policy_validator
-python -m py_compile scripts/ops/care_milestone_finalizer.py scripts/ops/submit_care_dependency_finalizer.py scripts/ops/start_care_tmux_watcher.py scripts/ops/validate_executor_plan.py scripts/ops/prepare_care_executor_wave.py scripts/ops/merge_care_executor_wave.py scripts/architecture/create_care_history_snapshot.py scripts/architecture/reconcile_review_status.py scripts/architecture/generate_care_architecture_wiki.py scripts/architecture/validate_care_architecture_wiki.py scripts/validation/validate_handoff_policy.py
-bash -n jobs/src/care_milestone_finalizer.sh
+  -> Ran 62 tests ... OK
+python -m py_compile scripts/validation/validate_handoff_policy.py scripts/ops/validate_executor_plan.py scripts/architecture/create_care_history_snapshot.py scripts/architecture/generate_care_architecture_wiki.py scripts/architecture/validate_care_architecture_wiki.py
+  -> pass
 git diff --check
+  -> pass
 ```
 
-The unit test suite reported `Ran 49 tests ... OK`. Its printed merge-conflict and monitor-token lines are intentional known-bad tests.
+The unit test suite reported `Ran 62 tests ... OK`. Its printed merge-conflict and monitor-token lines are intentional known-bad tests.
+
+This follow-up did not modify `prompts/shared/M10_srr_v3_complete_mechanism_repair.md` or `prompts/tasks/20260711_srr_v3_m10_complete_mechanism_repair_executor_plan.yaml`, by user instruction. The new validator errors on those files are the planning review guard working as intended.

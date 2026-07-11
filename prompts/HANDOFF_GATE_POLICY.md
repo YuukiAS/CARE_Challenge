@@ -6,6 +6,24 @@ This policy defines how future CARE controller goals should be accepted or block
 
 New CARE controller goals must declare `execution_mode`, `requires_execution_controller`, `executor_slots`, `executor_count`, `parallel_execution_allowed`, `executor_plan_path`, `mapper_slots`, `mapper_required`, `architecture_impact`, `wiki_update_required`, `diagram_update_required`, `slurm_runtime_continuity_required`, `continuity_backend`, `review_mode`, and `reviewer`. `prompts/AGENT_FLOW_V2_PROTOCOL.md` is the canonical source for these fields.
 
+Milestone staging files under `prompts/shared/M[0-9]*_*.md` must use real YAML
+frontmatter on line 1. `## Execution Contract` is only a human-readable mirror.
+The handoff validator must scan these staging files, their
+`executor_plan_path`, and `prompts/tasks/*planning_review.md` by default. A
+missing frontmatter block, mismatched body/frontmatter contract, missing
+executor plan, invalid lane, missing `required_completion_file`, missing
+`required_completion_token`, or task/plan executor-count mismatch is a
+planning-stage blocker.
+
+M10/system-level/high-risk staging requires a separate GPT planning review
+before Codex controller execution. It must declare
+`planning_review_required: true`, `planning_reviewer: separate_gpt_thread`,
+`planning_review_path`, `planning_review_token`, and
+`planning_reviewed_commit`. The planning reviewer is not a controller subagent
+and not the post-execution runtime reviewer. Without the token, the staging
+status must be `DRAFT_FOR_GPT_REVIEW`, `NEEDS_PLANNING_REVISION`, or
+`BLOCKED_HANDOFF_REVIEW`, not `READY` or `READY_FOR_CODEX_MERGE`.
+
 Overnight, long Slurm, multi-job, or high-resume-risk tasks must use `execution_mode: controller_supervised` and a durable continuity backend. Architecture-changing tasks must enable mapper and update root `wiki/` unless they provide a machine-readable no-change fingerprint receipt. A controller must not increase executor/mapper slots beyond the GPT-authored task graph. New tasks must not use an internal `auditor`; historical `auditor` fields are legacy aliases for the final independent `reviewer`.
 
 Controller reports are written before independent review. They must not require `reviewer_review` as evidence before local packet commit, must not claim audited-go, and must use `route_promotion_decision: NOT_REVIEWED`, `route_negative_decision: NOT_REVIEWED`, and `scientific_resolution_status: AWAITING_REVIEW`.

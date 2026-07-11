@@ -182,6 +182,80 @@ Monitor states (`PENDING`, `RUNNING`, `CONFIGURING`, `COMPLETING`,
 
 Future long-task staging prompts must contain:
 
+All milestone staging prompts under `prompts/shared/M[0-9]*_*.md` must start on
+line 1 with real YAML frontmatter. The human-readable `## Execution Contract`
+section is only a mirror and cannot replace frontmatter. Validators must fail
+closed if frontmatter and the body contract disagree.
+
+Required frontmatter:
+
+```yaml
+---
+task_key:
+task_type: controller
+controller_mode: true
+milestone:
+status:
+risk_level:
+execution_mode:
+requires_execution_controller:
+executor_slots:
+executor_count:
+parallel_execution_allowed:
+executor_plan_path:
+mapper_slots:
+mapper_required:
+architecture_impact:
+wiki_update_required:
+diagram_update_required:
+slurm_runtime_continuity_required:
+continuity_backend:
+review_mode:
+reviewer:
+review_required:
+allow_git_commit:
+auto_git_commit:
+allow_git_push:
+auto_git_push:
+allow_diagnostic_push:
+route_promotion_gate:
+experiment_adequacy_gate:
+route_negative_gate:
+scientific_completion_gate:
+diagnostic_publication_gate:
+diagnostic_publication_scope:
+blocked_after_diagnostic_publication:
+planning_review_required:
+planning_reviewer:
+planning_review_path:
+planning_review_token:
+planning_reviewed_commit:
+---
+```
+
+M10, later system-level redesign, and any high-risk milestone require a
+pre-execution planning review:
+
+```text
+planner GPT -> separate GPT critic -> Codex merge/validator -> controller
+```
+
+This planning critic is not a controller runtime subagent and is not the
+post-execution reviewer. The frontmatter must use:
+
+```yaml
+planning_review_required: true
+planning_reviewer: separate_gpt_thread
+planning_review_path: prompts/tasks/<task_key>_planning_review.md
+planning_review_token: <controlled token>
+planning_reviewed_commit: <commit>
+```
+
+Without a completed planning review token, M10/system-level staging files may
+only use `status: DRAFT_FOR_GPT_REVIEW`,
+`status: NEEDS_PLANNING_REVISION`, or `status: BLOCKED_HANDOFF_REVIEW`. They
+must not be `READY` or `READY_FOR_CODEX_MERGE`.
+
 ```text
 ## Execution Contract
 ## Controller Prompt

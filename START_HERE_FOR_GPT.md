@@ -22,6 +22,29 @@ For any future CARE milestone, GPT/ChatGPT must write both the Codex executor pr
 
 Because direct GPT edits to the large canonical shared files can fail or corrupt context, author each new milestone first as a standalone Markdown staging file under `prompts/shared/` named `M<id>_<short_slug>.md`, for example `M8_editor_grade_leaderboard_sprint.md`. The staged file is temporary: a later Codex maintenance step will split/merge its content into `prompts/shared/EXECUTOR_PROMPTS.md` and `prompts/shared/REVIEWER_PROMPTS.md`, then delete the standalone staging file after successful merge.
 
+Every staged milestone file matching `prompts/shared/M[0-9]*_*.md` must start on
+line 1 with real YAML frontmatter. `## Execution Contract` is a human-readable
+mirror only. The validator must reject a staging file with no frontmatter, a
+frontmatter/body mismatch, a missing `executor_plan_path`, or an executor plan
+that fails `scripts/ops/validate_executor_plan.py`.
+
+M10, later system-level redesign, and any high-risk milestone also require a
+pre-execution planning review by a separate GPT thread before Codex controller
+execution:
+
+```text
+planner GPT -> separate GPT critic -> Codex merge/validator -> controller
+```
+
+This planning critic is not a controller subagent and is not the runtime
+reviewer after execution. Use frontmatter fields
+`planning_review_required: true`, `planning_reviewer: separate_gpt_thread`,
+`planning_review_path`, `planning_review_token`, and
+`planning_reviewed_commit`. Without a non-empty planning review token,
+M10/system-level staging can only be `DRAFT_FOR_GPT_REVIEW`,
+`NEEDS_PLANNING_REVISION`, or `BLOCKED_HANDOFF_REVIEW`, never `READY` or
+`READY_FOR_CODEX_MERGE`.
+
 Short tasks must use this structure:
 
 ```text

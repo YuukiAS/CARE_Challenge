@@ -98,6 +98,17 @@ FORBIDDEN_HISTORY_DIAGRAM_TOKENS = (
     "component delta",
     "COMPONENT_DELTA",
 )
+FORBIDDEN_GENERIC_DELTA_TOKENS = ("history snapshot", "component table", "evidence mapping")
+
+
+def version_number(version: str) -> int:
+    return int(version[1:])
+
+
+def previous_history_version(versions: list[str], version: str) -> str | None:
+    current = version_number(version)
+    candidates = [item for item in versions if version_number(item) < current]
+    return max(candidates, key=version_number) if candidates else None
 
 
 def discover_history_versions(repo_root: Path) -> list[str]:
@@ -327,7 +338,8 @@ def validate_history(repo_root: Path) -> list[str]:
     if (repo_root / "TODO.md").exists() or (repo_root / "todo-m10.md").exists() or (repo_root / "TODO-M10.md").exists():
         errors.append("root TODO analysis files must be removed after wiki/history migration")
     generator = load_generator(repo_root)
-    for version in discover_history_versions(repo_root):
+    discovered_versions = discover_history_versions(repo_root)
+    for version in discovered_versions:
         base = hist / version
         for rel in ("README.md", "snapshot.yaml", "COMPONENTS.csv", "architecture.yaml", "figures/architecture.d2", "figures/architecture.svg", "figures/architecture.png", "figures/gap.d2", "figures/gap.svg", "figures/gap.png"):
             if not (base / rel).is_file():
@@ -341,6 +353,16 @@ def validate_history(repo_root: Path) -> list[str]:
                 comp_path = base / "components" / f"{comp}.md"
                 if not comp_path.is_file():
                     errors.append(f"missing history component: wiki/history/{version}/components/{comp}.md")
+        comp_table = base / "COMPONENTS.csv"
+        comp_ids: set[str] = set()
+        if comp_table.is_file():
+            comp_ids = {row.get("component_id", "") for row in csv.DictReader(comp_table.read_text(encoding="utf-8").splitlines()) if row.get("component_id")}
+            pages = {path.stem for path in (base / "components").glob("*.md")} if (base / "components").is_dir() else set()
+            if comp_ids != pages:
+                errors.append(
+                    f"history component pages must match COMPONENTS.csv for {version}; "
+                    f"missing_pages={sorted(comp_ids - pages)} extra_pages={sorted(pages - comp_ids)}"
+                )
         snapshot = base / "snapshot.yaml"
         if version in {"M08", "M09"} and snapshot.is_file() and "original_analysis_sha256" not in snapshot.read_text(encoding="utf-8"):
             errors.append(f"{snapshot.relative_to(repo_root)} missing original_analysis_sha256")
@@ -356,8 +378,36 @@ def validate_history(repo_root: Path) -> list[str]:
                 if d2_text != source:
                     errors.append(f"stale history D2: {d2.relative_to(repo_root)}")
                 for token in FORBIDDEN_HISTORY_DIAGRAM_TOKENS:
-                    if token in d2_text:
+                    if token in d2_text and (not stem.startswith("delta-from-") or version_number(version) >= 10):
                         errors.append(f"history D2 contains placeholder token {token!r}: {d2.relative_to(repo_root)}")
+                if stem.startswith("delta-from-") and version_number(version) >= 10:
+                    for token in FORBIDDEN_GENERIC_DELTA_TOKENS:
+                        if token in d2_text:
+                            errors.append(f"future history delta contains generic placeholder token {token!r}: {d2.relative_to(repo_root)}")
+        previous = previous_history_version(discovered_versions, version)
+        if previous is not None and version_number(version) >= 10:
+            expected_stem = f"delta-from-{previous}"
+            if expected_stem not in sources:
+                errors.append(f"history generator missing delta source for {version} from {previous}")
+            for rel in (f"figures/{expected_stem}.d2", f"figures/{expected_stem}.svg", f"figures/{expected_stem}.png"):
+                if not (base / rel).is_file():
+                    errors.append(f"missing history delta file: wiki/history/{version}/{rel}")
+            d2 = base / "figures" / f"{expected_stem}.d2"
+            if d2.is_file():
+                d2_text = d2.read_text(encoding="utf-8")
+                for required in (
+                    "新增组件",
+                    "删除/disabled 组件",
+                    "implemented/partial/scaffold 状态变化",
+                    "evidence_status 变化",
+                    "source/symbol 变化",
+                    "final_output_effect 变化",
+                    "review token 变化",
+                    "主要 notes delta",
+                    "source_hash:",
+                ):
+                    if required not in d2_text:
+                        errors.append(f"{d2.relative_to(repo_root)} missing delta token: {required}")
     comparison = hist / "COMPARISON.md"
     if comparison.is_file():
         text = comparison.read_text(encoding="utf-8")
