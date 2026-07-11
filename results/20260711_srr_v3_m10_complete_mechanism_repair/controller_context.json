@@ -30,8 +30,24 @@
   "care_mapper_skill_sha256": "2c41516189001ec7be94d9981a69fcd5544ad5ebd244c93cdc58488f4b535d0e",
   "agents_sha256": "aac65e30bcb71848cf2c91e23b379e29b92c102544e14ed5ad71b250bfc923c9",
   "wiki_code_fingerprint": "wiki_current_state=6241fb46eb16390f128cb9647521dc93b3c6bde19b853266b3d168ed684d2da3;wiki_architecture=747da949fd7f54dddca25900fe35025882efa71356dcc8349aee82ccdd947f2c;wiki_components=a3b53f8efbf63e74defa201652c8d59f69936978f9536e4b5067094a238400c5",
-  "required_job_ids": [],
-  "required_runtime_paths": [],
+  "required_job_ids": [
+    58644072,
+    58644073,
+    58644074,
+    58644106,
+    58644107,
+    58644108,
+    58644109
+  ],
+  "required_runtime_paths": [
+    "results/20260711_srr_v3_m10_myops_d0_control/runtime/variants/m10_d0_static_matched_formal/summary.json",
+    "results/20260711_srr_v3_m10_myops_d1_spatial_br2/runtime/variants/m10_d1_spatial_br2_formal/summary.json",
+    "results/20260711_srr_v3_m10_myops_d2_hierarchical_psip/runtime/variants/m10_d2_hierarchical_psip_formal/summary.json",
+    "results/20260711_srr_v3_m10_myops_d3_full_propref/runtime/variants/m10_d3_full_memory_propref_formal/summary.json",
+    "results/20260711_srr_v3_m10_hard_negative_refresh/runtime/variants/m10_d3_hard_negative_refresh/summary.json",
+    "results/20260711_srr_v3_m10_no_nnunet_context_control/runtime/variants/m10_d3_no_nnunet_context_control/summary.json",
+    "results/20260711_srr_v3_m10_alignment_control/runtime/variants/m10_d3_pair_valid_alignment_control/summary.json"
+  ],
   "files_read": [
     "AGENTS.md",
     "START_HERE_FOR_GPT.md",
@@ -58,7 +74,7 @@
     "wiki/history/COMPARISON.md",
     "wiki/history/M09/components/*.md"
   ],
-  "next_action": "launch_wave1_shared_architecture_executor_after_local_prerequisite_commit",
+  "next_action": "NEEDS_EVIDENCE; replacement wave2 Slurm training submission requires explicit authorization after mpmath repair",
   "blocked_actions": [
     "parallel executor launch",
     "wave2 before wave1 completion",

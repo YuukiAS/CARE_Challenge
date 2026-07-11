@@ -2,7 +2,7 @@
 
 Task key: `20260711_srr_v3_m10_complete_mechanism_repair`
 
-Packet state: `NEEDS_MONITOR`
+Packet state: `NEEDS_EVIDENCE`
 
 ## Files
 
@@ -25,7 +25,8 @@ Packet state: `NEEDS_MONITOR`
 | `wave1_launch_receipt.json` | Controller receipt for serial wave 1 worker launch. |
 | `wave1_merge_receipt.md` | Controller verification and merge/freeze decision for wave 1. |
 | `wave2_launch_receipt.json` | Controller receipt for serial wave 2 worker launch. |
-| `wave2_monitor_receipt.md` | Controller receipt for wave 2 monitor state. |
+| `wave2_monitor_receipt.md` | Controller receipt for wave 2 monitor state and terminal failure update. |
+| `wave2_terminal_failure_receipt.md` | Terminal Slurm accounting, log failure cause, dependency repair, and fail-closed aggregation receipt. |
 | `executors/m10_myops_training_executor/` | Wave 2 executor monitor packet; not completion evidence. |
 | `subagents/reviewer_prompt.md` | Reviewer handoff prompt for this blocked packet only. |
 | `mapper_report_draft.md` | Mapper draft non-run receipt. |
@@ -36,4 +37,4 @@ Packet state: `NEEDS_MONITOR`
 
 ## Exclusions
 
-`review.md` is intentionally absent. Wave 2 monitor files are not completion evidence. No checkpoints, predictions, NIfTI outputs, upload zips, raw data, large logs, secrets, environment dumps, or runtime result trees are included.
+`review.md` is intentionally absent. Wave 2 terminal failure files are not completion evidence. No checkpoints, predictions, NIfTI outputs, upload zips, raw data, large logs, secrets, environment dumps, or runtime result trees are included.

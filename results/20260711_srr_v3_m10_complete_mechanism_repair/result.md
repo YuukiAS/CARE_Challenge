@@ -2,7 +2,7 @@
 
 Task key: `20260711_srr_v3_m10_complete_mechanism_repair`
 
-Controller status: `NEEDS_MONITOR`
+Controller status: `NEEDS_EVIDENCE`
 
 This controller executed only the bootstrap and hard-gate validation for the M10 section in `prompts/shared/EXECUTOR_PROMPTS.md` titled `M10 executor/controller: SRR-v3 complete mechanism repair`, using `prompts/tasks/20260711_srr_v3_m10_complete_mechanism_repair_executor_plan.yaml`.
 
@@ -36,7 +36,7 @@ Wave 2 was launched after the wave 1 acceptance and wave 2 prompt commit:
 - prompt: `results/20260711_srr_v3_m10_complete_mechanism_repair/subagents/m10_myops_training_executor_prompt.md`
 - launch receipt: `results/20260711_srr_v3_m10_complete_mechanism_repair/wave2_launch_receipt.json`
 
-The wave 2 worker returned `NEEDS_MONITOR` after submitting seven serial `htzhulab` jobs:
+The wave 2 worker initially returned `NEEDS_MONITOR` after submitting seven serial `htzhulab` jobs:
 
 | Phase | Job ID | Current state |
 | --- | ---: | --- |
@@ -48,4 +48,18 @@ The wave 2 worker returned `NEEDS_MONITOR` after submitting seven serial `htzhul
 | No-nnU-Net-context control | 58644108 | `PENDING (Dependency)` |
 | Alignment control | 58644109 | `PENDING (Dependency)` |
 
-This is a monitor packet, not M10 completion evidence. Wave 3, review, push, validation packaging/upload, hosted claims, route promotion, scientific stop, and M11 remain blocked until the wave 2 jobs finish and post-job aggregation is committed.
+Formal monitor at `2026-07-11T15:45:38Z` found that all seven jobs reached terminal `FAILED` state with exit code `1:0`:
+
+| Phase | Job ID | Terminal state | Exit code | Log |
+| --- | ---: | --- | --- | --- |
+| D0 static matched control | 58644072 | `FAILED` | `1:0` | `logs/M10D0MyoPS_58644072_20260711_110852.log` |
+| D1 spatial BR2 | 58644073 | `FAILED` | `1:0` | `logs/M10D1MyoPS_58644073_20260711_112003.log` |
+| D2 hierarchical PSIP | 58644074 | `FAILED` | `1:0` | `logs/M10D2MyoPS_58644074_20260711_112103.log` |
+| D3 full memory PropRef | 58644106 | `FAILED` | `1:0` | `logs/M10D3MyoPS_58644106_20260711_112204.log` |
+| Hard-negative refresh | 58644107 | `FAILED` | `1:0` | `logs/M10HardNeg_58644107_20260711_112305.log` |
+| No-nnU-Net-context control | 58644108 | `FAILED` | `1:0` | `logs/M10NoCtx_58644108_20260711_112406.log` |
+| Alignment control | 58644109 | `FAILED` | `1:0` | `logs/M10Align_58644109_20260711_112450.log` |
+
+The shared failure path is missing `mpmath` in `env_CARE`, reached through `sympy` during PyTorch optimizer initialization. The controller repaired the project-local dependency to `mpmath 1.3.0` and verified a minimal `torch.optim.AdamW` initialization, but no replacement Slurm training jobs were submitted in this packet.
+
+Post-job aggregation was rerun and wrote fail-closed phase evidence with `STARTUP_FAILED_NEEDS_EVIDENCE`. This is not M10 completion evidence. Wave 3, review, push, validation packaging/upload, hosted claims, route promotion, scientific stop, and M11 remain blocked until a later authorized execution produces valid wave 2 runtime summaries and aggregation evidence.

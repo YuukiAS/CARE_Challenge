@@ -4,7 +4,7 @@ Task key: `20260711_srr_v3_m10_complete_mechanism_repair`
 
 Executor: `m10_myops_training_executor`
 
-Status: `NEEDS_MONITOR`
+Status: `NEEDS_EVIDENCE`
 
 ## Dependency Gate
 
@@ -49,7 +49,19 @@ Submitted as a serial `afterany` dependency chain to preserve `max_parallel: 1`:
 | No-nnU-Net-context control | 58644108 | `afterany:58644107` | `PENDING (Dependency)` |
 | Alignment control | 58644109 | `afterany:58644108` | `PENDING (Dependency)` |
 
-Because all jobs are pending and no post-job aggregation has terminal runtime evidence, this packet is not ready for controller merge.
+Formal controller monitor later found all seven jobs terminal `FAILED` with exit code `1:0`.
+
+| Phase | Job ID | Terminal state | Exit code | Log |
+| --- | ---: | --- | --- | --- |
+| D0 static matched control | 58644072 | `FAILED` | `1:0` | `logs/M10D0MyoPS_58644072_20260711_110852.log` |
+| D1 spatial BR2 | 58644073 | `FAILED` | `1:0` | `logs/M10D1MyoPS_58644073_20260711_112003.log` |
+| D2 hierarchical PSIP | 58644074 | `FAILED` | `1:0` | `logs/M10D2MyoPS_58644074_20260711_112103.log` |
+| D3 full memory PropRef | 58644106 | `FAILED` | `1:0` | `logs/M10D3MyoPS_58644106_20260711_112204.log` |
+| Hard-negative refresh | 58644107 | `FAILED` | `1:0` | `logs/M10HardNeg_58644107_20260711_112305.log` |
+| No-nnU-Net-context control | 58644108 | `FAILED` | `1:0` | `logs/M10NoCtx_58644108_20260711_112406.log` |
+| Alignment control | 58644109 | `FAILED` | `1:0` | `logs/M10Align_58644109_20260711_112450.log` |
+
+All logs share the same startup dependency failure: `sympy` requires `mpmath`, but `mpmath` was absent from `env_CARE` during the jobs. This packet is not ready for controller merge.
 
 ## Output State
 
@@ -64,7 +76,7 @@ Monitor-mode lightweight files were generated under:
 - `results/20260711_srr_v3_m10_alignment_control/`
 - `results/20260711_srr_v3_m10_component_causal_audit/`
 
-These files record submitted job IDs and missing terminal runtime artifacts. They are monitor packets, not completion evidence.
+These files now record submitted job IDs, terminal Slurm failure states, exit codes, log paths, and missing runtime artifacts. They are fail-closed evidence-gap packets, not completion evidence.
 
 ## External Compatibility Observation
 

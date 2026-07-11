@@ -2,13 +2,13 @@
 
 Task key: `20260711_srr_v3_m10_complete_mechanism_repair`
 
-Controller state: `NEEDS_MONITOR`
+Controller state: `NEEDS_EVIDENCE`
 
 Worker agent: `019f515e-39d5-7631-b6a1-5e1b4756701d`
 
 Worker completion token: `NEEDS_MONITOR`
 
-## Slurm State
+## Original Slurm State
 
 The wave 2 worker submitted seven serial `afterany` jobs to `htzhulab`:
 
@@ -28,8 +28,21 @@ Controller verification command:
 squeue -j 58644072,58644073,58644074,58644106,58644107,58644108,58644109 -o '%i|%j|%T|%M|%D|%R|%P'
 ```
 
+## Terminal Failure Update
+
+Formal monitor at `2026-07-11T15:45:38Z` found all seven jobs terminal `FAILED` with exit code `1:0`; see `wave2_terminal_failure_receipt.md`.
+
+The shared log failure is:
+
+```text
+ModuleNotFoundError: No module named 'mpmath'
+ImportError: SymPy now depends on mpmath as an external library.
+```
+
+Fail-closed aggregation was rerun and wrote `STARTUP_FAILED_NEEDS_EVIDENCE` to the phase packets.
+
 ## Decision
 
-This is a monitor packet, not completion evidence. The controller must not launch wave 3, request independent review, package or upload validation, claim hosted metrics, claim route promotion, claim scientific stop, or start M11 until terminal job states and post-job aggregation are committed.
+This is now a terminal failure packet, not completion evidence. The controller must not launch wave 3, request independent review, package or upload validation, claim hosted metrics, claim route promotion, claim scientific stop, or start M11 until a later authorized execution produces valid wave 2 runtime evidence.
 
-Next action: monitor the listed jobs. After terminal states, rerun `scripts/evaluation/aggregate_srr_v3_m10_myops.py` for the affected phases and update lightweight evidence files before requesting review.
+Next action: explicit authorization is required for any replacement Slurm training submission. The project-local dependency was repaired, but no replacement jobs were submitted in this packet.

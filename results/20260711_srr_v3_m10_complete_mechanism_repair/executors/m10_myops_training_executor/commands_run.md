@@ -63,3 +63,19 @@ JOBID|NAME|STATE|TIME|NODES|NODELIST(REASON)|PARTITION
 | `python -m py_compile scripts/evaluation/aggregate_srr_v3_m10_myops.py` | pass |
 | `python scripts/evaluation/aggregate_srr_v3_m10_myops.py --all ...` | failed import without `PYTHONPATH=.`; no packet writes |
 | `env PYTHONPATH=. python scripts/evaluation/aggregate_srr_v3_m10_myops.py --all --job-id d0_control=58644072 --job-id d1_spatial_br2=58644073 --job-id d2_hierarchical_psip=58644074 --job-id d3_full_propref=58644106 --job-id hard_negative_refresh=58644107 --job-id no_context_control=58644108 --job-id alignment_control=58644109` | exit `2` as expected because monitor states are not completion; monitor files written |
+
+## Terminal Failure Monitor
+
+| Command | Result |
+| --- | --- |
+| `squeue -j 58644072,58644073,58644074,58644106,58644107,58644108,58644109 -o '%i\|%j\|%T\|%M\|%D\|%R\|%P'` | no active jobs returned |
+| `sacct -j 58644072,58644073,58644074,58644106,58644107,58644108,58644109 --format=JobIDRaw,JobName,State,ExitCode,Elapsed,Start,End,NodeList -P` | all seven top-level jobs `FAILED`, exit `1:0` |
+| `tail -n 120 logs/M10D0MyoPS_58644072_20260711_110852.log` and matching wave2 logs | shared failure: `ModuleNotFoundError: No module named 'mpmath'` followed by SymPy external dependency error |
+| `./envs/env_CARE/bin/python -m pip install mpmath --cache-dir /tmp/codex-pip-cache` | installed `mpmath 1.4.1`, incompatible with `sympy 1.14.0` |
+| `./envs/env_CARE/bin/python -m pip install 'mpmath<1.4,>=1.1.0' --force-reinstall --cache-dir /tmp/codex-pip-cache` | corrected to `mpmath 1.3.0` |
+| `./envs/env_CARE/bin/python -c 'import sympy, mpmath; ...'` | pass: `sympy 1.14.0`, `mpmath 1.3.0` |
+| `./envs/env_CARE/bin/python -c 'import torch; ... torch.optim.AdamW(...)'` | pass: `optimizer_ok` |
+| `./envs/env_CARE/bin/pip check` | unrelated pre-existing gap remains: `partd 1.4.2 requires locket` |
+| `env PYTHONPATH=. python scripts/evaluation/aggregate_srr_v3_m10_myops.py --all --job-id ... --job-state ... --job-exit-code ... --job-log ...` | exit `2` as expected for `STARTUP_FAILED_NEEDS_EVIDENCE`; fail-closed phase packets written |
+
+No replacement Slurm training jobs were submitted after the environment repair.

@@ -21,20 +21,22 @@ The original controller attempt stopped before launching executor wave 1 because
 
 ## Safety Boundary
 
-Wave 1 executor returned `READY_FOR_CONTROLLER_MERGE`, and controller verification accepted the wave 1 merge. Wave 2 then launched as a serial MyoPS executor and returned `NEEDS_MONITOR` after submitting seven `htzhulab` jobs. A controller live `squeue` check still shows all seven jobs pending.
+Wave 1 executor returned `READY_FOR_CONTROLLER_MERGE`, and controller verification accepted the wave 1 merge. Wave 2 then launched as a serial MyoPS executor and returned `NEEDS_MONITOR` after submitting seven `htzhulab` jobs. Formal controller monitor at `2026-07-11T15:45:38Z` found all seven jobs terminal `FAILED` with exit code `1:0`.
 
-The file `review.md` is intentionally absent. A reviewer must not start until wave 2 has terminal runtime evidence and post-job aggregation has been committed.
+The shared log failure is missing `mpmath` in `env_CARE`, reached through `sympy` during PyTorch optimizer initialization. The controller repaired the project-local dependency to `mpmath 1.3.0` and verified minimal `torch.optim.AdamW` initialization, but no replacement Slurm training jobs were submitted in this packet.
+
+The file `review.md` is intentionally absent. A reviewer must not start until a later authorized execution produces valid wave 2 runtime evidence and post-job aggregation.
 
 ## Terminal State
 
 ```text
-controller_run_status: NEEDS_MONITOR
+controller_run_status: NEEDS_EVIDENCE
 operational_completion_status: INCOMPLETE
 experiment_adequacy_decision: NOT_REVIEWED
 route_promotion_decision: NOT_REVIEWED
 route_negative_decision: NOT_REVIEWED
 scientific_resolution_status: AWAITING_REVIEW
-diagnostic_publication_decision: LOCAL_MONITOR_PACKET_COMMIT
+diagnostic_publication_decision: LOCAL_TERMINAL_FAILURE_PACKET_COMMIT
 git_commit_decision: COMMIT_LOCAL_PACKET
 git_push_decision: SKIP_PUSH
 published_files:
@@ -59,11 +61,12 @@ published_files:
   - results/20260711_srr_v3_m10_complete_mechanism_repair/wave1_merge_receipt.md
   - results/20260711_srr_v3_m10_complete_mechanism_repair/wave2_launch_receipt.json
   - results/20260711_srr_v3_m10_complete_mechanism_repair/wave2_monitor_receipt.md
+  - results/20260711_srr_v3_m10_complete_mechanism_repair/wave2_terminal_failure_receipt.md
 blocked_actions:
-  - wave3 before wave2 terminal aggregation
-  - review before wave2 terminal aggregation
+  - wave3 before successful wave2 runtime aggregation
+  - review before successful wave2 runtime aggregation
   - validation packaging/upload/fold expansion/hosted metric claim/next-stage training
-next_required_action: monitor wave2 jobs and rerun post-job aggregation after terminal states
+next_required_action: obtain explicit authorization before any replacement Slurm training submission
 reason_if_not_published: not applicable
-reason_if_no_route_promotion: wave2 jobs are pending and no terminal runtime evidence exists
+reason_if_no_route_promotion: wave2 jobs failed at startup and no valid runtime evidence exists
 ```

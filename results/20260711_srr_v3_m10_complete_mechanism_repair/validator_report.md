@@ -2,7 +2,7 @@
 
 Task key: `20260711_srr_v3_m10_complete_mechanism_repair`
 
-Run timestamp UTC: `2026-07-11T13:46:03Z`
+Run timestamp UTC: `2026-07-11T15:45:38Z`
 
 ## Commands
 
@@ -17,7 +17,11 @@ Run timestamp UTC: `2026-07-11T13:46:03Z`
 | `python -m py_compile scripts/training/run_srr_v3_m10_complete_repair.py scripts/evaluation/evaluate_srr_v3_m10_full_case.py scripts/evaluation/aggregate_srr_v3_m10_myops.py` | 0 | pass |
 | `bash -n jobs/src/run_srr_v3_m10_myops_d0_control.sh jobs/src/run_srr_v3_m10_myops_d1_spatial_br2.sh jobs/src/run_srr_v3_m10_myops_d2_hierarchical_psip.sh jobs/src/run_srr_v3_m10_myops_d3_full_propref.sh jobs/src/run_srr_v3_m10_hard_negative_refresh.sh jobs/src/run_srr_v3_m10_no_context_control.sh jobs/src/run_srr_v3_m10_alignment_control.sh` | 0 | pass |
 | `env PYTHONPATH=. pytest src/care_myocardium/tests/test_srr_v3_m10_fidelity.py` | 0 | `5 passed` |
-| `squeue -j 58644072,58644073,58644074,58644106,58644107,58644108,58644109 -o '%i\|%j\|%T\|%M\|%D\|%R\|%P'` | 0 | all seven jobs pending |
+| `squeue -j 58644072,58644073,58644074,58644106,58644107,58644108,58644109 -o '%i\|%j\|%T\|%M\|%D\|%R\|%P'` | 0 | no active jobs returned |
+| `sacct -j 58644072,58644073,58644074,58644106,58644107,58644108,58644109 --format=JobIDRaw,JobName,State,ExitCode,Elapsed,Start,End,NodeList -P` | 0 | all seven top-level jobs `FAILED`, exit `1:0` |
+| `env PYTHONPATH=. python scripts/evaluation/aggregate_srr_v3_m10_myops.py --all --job-id ... --job-state ... --job-exit-code ... --job-log ...` | 2 | expected fail-closed `STARTUP_FAILED_NEEDS_EVIDENCE` |
+| `./envs/env_CARE/bin/python -c 'import sympy, mpmath; ...'` | 0 | `sympy 1.14.0`, `mpmath 1.3.0` after local dependency repair |
+| `./envs/env_CARE/bin/python -c 'import torch; ... torch.optim.AdamW(...)'` | 0 | `optimizer_ok` after local dependency repair |
 
 ## Gate Checks
 
@@ -33,8 +37,10 @@ The repository validators pass for the current policy/wiki state and this resume
 
 The prior prerequisite blocker is repaired. This validator report is not completion evidence for M10 runtime work; it only authorizes proceeding to serial wave 1.
 
-Wave 1 has since completed and wave 2 has submitted seven serial Slurm jobs. Because the current Slurm state is pending, the active controller state is `NEEDS_MONITOR`; this remains not completion evidence and not a review request.
+Wave 1 has since completed and wave 2 submitted seven serial Slurm jobs. Formal accounting now shows all seven jobs failed with exit code `1:0`. Logs show the shared failure cause is missing `mpmath` for `sympy` during PyTorch optimizer initialization.
+
+The active controller state is `NEEDS_EVIDENCE`; this remains not completion evidence and not a review request.
 
 ## Safety Confirmation
 
-No `review.md`, validation packaging, upload, push, route promotion, hosted metric claim, scientific stop, wave 3, or M11 work occurred. The wave 2 submitted jobs are monitor state only.
+No `review.md`, validation packaging, upload, push, route promotion, hosted metric claim, scientific stop, wave 3, replacement Slurm training submission, or M11 work occurred. The wave 2 jobs are terminal failed startup evidence only.

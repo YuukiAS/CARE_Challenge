@@ -3,9 +3,12 @@
 ## Slurm
 
 - job_id: `58644074`
+- state: `FAILED`
+- exit_code: `1:0`
+- log_path: `logs/M10D2MyoPS_58644074_20260711_112103.log`
 - partition: `htzhulab`
 - job_script: `jobs/src/run_srr_v3_m10_myops_d2_hierarchical_psip.sh`
-- state_at_packet_write: `NEEDS_MONITOR`
+- state_at_packet_write: `STARTUP_FAILED_NEEDS_EVIDENCE`
 
 ## Aggregation
 

@@ -1,6 +1,6 @@
 {
   "task_key": "20260711_srr_v3_m10_complete_mechanism_repair",
-  "final_state": "NEEDS_MONITOR",
+  "final_state": "NEEDS_EVIDENCE",
   "git_commit_decision": "COMMIT_LOCAL_PACKET",
   "git_push_decision": "SKIP_PUSH",
   "precommit_head": "705ae497af2ebb391a16c99ecc812642f723b1d5",
@@ -21,6 +21,7 @@
     "results/20260711_srr_v3_m10_complete_mechanism_repair/subagents/m10_myops_training_executor_prompt.md",
     "results/20260711_srr_v3_m10_complete_mechanism_repair/wave2_launch_receipt.json",
     "results/20260711_srr_v3_m10_complete_mechanism_repair/wave2_monitor_receipt.md",
+    "results/20260711_srr_v3_m10_complete_mechanism_repair/wave2_terminal_failure_receipt.md",
     "results/20260711_srr_v3_m10_complete_mechanism_repair/executors/m10_myops_training_executor/result.md",
     "results/20260711_srr_v3_m10_complete_mechanism_repair/executors/m10_myops_training_executor/completion_check.md",
     "results/20260711_srr_v3_m10_complete_mechanism_repair/executors/m10_myops_training_executor/commands_run.md",
@@ -42,15 +43,15 @@
     "results/20260711_srr_v3_m10_complete_mechanism_repair/architecture_delta_final.md",
     "results/20260711_srr_v3_m10_complete_mechanism_repair/executor_waves/README.md"
   ],
-  "manifest_sha256": "c8150177c32d064b80ec8e4e5ad4b038c264fd6fd416441a9d29417fe100b08d",
+  "manifest_sha256": "ff7e9eb05fcc842af1ff010edbf562f7bfcf054ef779326e3899826c94971325",
   "job_states": {
-    "58644072": "PENDING(Resources)",
-    "58644073": "PENDING(Dependency)",
-    "58644074": "PENDING(Dependency)",
-    "58644106": "PENDING(Dependency)",
-    "58644107": "PENDING(Dependency)",
-    "58644108": "PENDING(Dependency)",
-    "58644109": "PENDING(Dependency)"
+    "58644072": "FAILED(1:0)",
+    "58644073": "FAILED(1:0)",
+    "58644074": "FAILED(1:0)",
+    "58644106": "FAILED(1:0)",
+    "58644107": "FAILED(1:0)",
+    "58644108": "FAILED(1:0)",
+    "58644109": "FAILED(1:0)"
   },
   "slurm_jobs_submitted": [
     58644072,
@@ -70,8 +71,18 @@
     58644108,
     58644109
   ],
-  "runtime_output_paths": [],
-  "aggregation_commands": [],
+  "runtime_output_paths": [
+    "logs/M10D0MyoPS_58644072_20260711_110852.log",
+    "logs/M10D1MyoPS_58644073_20260711_112003.log",
+    "logs/M10D2MyoPS_58644074_20260711_112103.log",
+    "logs/M10D3MyoPS_58644106_20260711_112204.log",
+    "logs/M10HardNeg_58644107_20260711_112305.log",
+    "logs/M10NoCtx_58644108_20260711_112406.log",
+    "logs/M10Align_58644109_20260711_112450.log"
+  ],
+  "aggregation_commands": [
+    "env PYTHONPATH=. python scripts/evaluation/aggregate_srr_v3_m10_myops.py --all --job-id ... --job-state ... --job-exit-code ... --job-log ..."
+  ],
   "validator_commands": [
     "python scripts/ops/validate_executor_plan.py prompts/tasks/20260711_srr_v3_m10_complete_mechanism_repair_executor_plan.yaml",
     "python scripts/validation/validate_handoff_policy.py --strict-tasks --warnings-as-errors",
@@ -81,10 +92,14 @@
     "python -m py_compile scripts/training/run_srr_v3_m10_complete_repair.py scripts/evaluation/evaluate_srr_v3_m10_full_case.py scripts/evaluation/aggregate_srr_v3_m10_myops.py",
     "bash -n jobs/src/run_srr_v3_m10_myops_d0_control.sh jobs/src/run_srr_v3_m10_myops_d1_spatial_br2.sh jobs/src/run_srr_v3_m10_myops_d2_hierarchical_psip.sh jobs/src/run_srr_v3_m10_myops_d3_full_propref.sh jobs/src/run_srr_v3_m10_hard_negative_refresh.sh jobs/src/run_srr_v3_m10_no_context_control.sh jobs/src/run_srr_v3_m10_alignment_control.sh",
     "env PYTHONPATH=. pytest src/care_myocardium/tests/test_srr_v3_m10_fidelity.py",
-    "squeue -j 58644072,58644073,58644074,58644106,58644107,58644108,58644109 -o '%i|%j|%T|%M|%D|%R|%P'"
+    "squeue -j 58644072,58644073,58644074,58644106,58644107,58644108,58644109 -o '%i|%j|%T|%M|%D|%R|%P'",
+    "sacct -j 58644072,58644073,58644074,58644106,58644107,58644108,58644109 --format=JobIDRaw,JobName,State,ExitCode,Elapsed,Start,End,NodeList -P",
+    "env PYTHONPATH=. python scripts/evaluation/aggregate_srr_v3_m10_myops.py --all --job-id ... --job-state ... --job-exit-code ... --job-log ...",
+    "./envs/env_CARE/bin/python -c 'import sympy, mpmath; ...'",
+    "./envs/env_CARE/bin/python -c 'import torch; ... torch.optim.AdamW(...)'"
   ],
-  "blocked_reason": "",
-  "resume_state": "wave2 submitted and pending; wait for terminal Slurm states and post-job aggregation",
+  "blocked_reason": "wave2 jobs failed at startup because env_CARE lacked mpmath for sympy; no valid runtime summaries were produced",
+  "resume_state": "NEEDS_EVIDENCE; dependency repaired locally to mpmath 1.3.0, but replacement Slurm training submission requires explicit authorization",
   "review_md_written": false,
   "pushed": false
 }

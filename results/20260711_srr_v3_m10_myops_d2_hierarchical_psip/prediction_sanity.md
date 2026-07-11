@@ -1,6 +1,6 @@
 # Prediction Sanity - d2_hierarchical_psip
 
-Status: `NEEDS_MONITOR`
+Status: `STARTUP_FAILED_NEEDS_EVIDENCE`
 Runtime summary: `/users/a/e/aereinh/CARE/results/20260711_srr_v3_m10_myops_d2_hierarchical_psip/runtime/variants/m10_d2_hierarchical_psip_formal/summary.json`
 Prediction dirs: `EVIDENCE_NOT_FOUND`
 

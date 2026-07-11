@@ -2,6 +2,6 @@
 
 Design: `D2_HIERARCHICAL_BR2_PSIP_PROPREF`
 Variant: `m10_d2_hierarchical_psip_propref`
-Status: `NEEDS_MONITOR`
+Status: `STARTUP_FAILED_NEEDS_EVIDENCE`
 
 This phase packet is runtime-derived when the summary exists. Missing runtime artifacts remain evidence gaps.

@@ -10,8 +10,11 @@
     "/users/a/e/aereinh/CARE/results/20260711_srr_v3_m10_myops_d3_full_propref/runtime/variants/m10_d3_full_memory_propref_formal/subgroup_metrics_checkpoint_best.csv"
   ],
   "runtime_variant_dir": "/users/a/e/aereinh/CARE/results/20260711_srr_v3_m10_myops_d3_full_propref/runtime/variants/m10_d3_full_memory_propref_formal",
+  "slurm_exit_code": "1:0",
   "slurm_job_id": "58644106",
-  "status": "NEEDS_MONITOR",
+  "slurm_log_path": "logs/M10D3MyoPS_58644106_20260711_112204.log",
+  "slurm_state": "FAILED",
+  "status": "STARTUP_FAILED_NEEDS_EVIDENCE",
   "summary_path": "/users/a/e/aereinh/CARE/results/20260711_srr_v3_m10_myops_d3_full_propref/runtime/variants/m10_d3_full_memory_propref_formal/summary.json",
   "variant": "m10_d3_hierarchical_memory_propref"
 }
