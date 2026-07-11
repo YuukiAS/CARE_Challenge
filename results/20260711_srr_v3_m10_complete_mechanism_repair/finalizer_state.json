@@ -1,6 +1,6 @@
 {
   "task_key": "20260711_srr_v3_m10_complete_mechanism_repair",
-  "final_state": "WAVE2_EXECUTOR_RUNNING",
+  "final_state": "NEEDS_MONITOR",
   "git_commit_decision": "COMMIT_LOCAL_PACKET",
   "git_push_decision": "SKIP_PUSH",
   "precommit_head": "705ae497af2ebb391a16c99ecc812642f723b1d5",
@@ -20,6 +20,21 @@
     "results/20260711_srr_v3_m10_complete_mechanism_repair/subagents/m10_shared_architecture_executor_prompt.md",
     "results/20260711_srr_v3_m10_complete_mechanism_repair/subagents/m10_myops_training_executor_prompt.md",
     "results/20260711_srr_v3_m10_complete_mechanism_repair/wave2_launch_receipt.json",
+    "results/20260711_srr_v3_m10_complete_mechanism_repair/wave2_monitor_receipt.md",
+    "results/20260711_srr_v3_m10_complete_mechanism_repair/executors/m10_myops_training_executor/result.md",
+    "results/20260711_srr_v3_m10_complete_mechanism_repair/executors/m10_myops_training_executor/completion_check.md",
+    "results/20260711_srr_v3_m10_complete_mechanism_repair/executors/m10_myops_training_executor/commands_run.md",
+    "results/20260711_srr_v3_m10_complete_mechanism_repair/executors/m10_myops_training_executor/MANIFEST.md",
+    "scripts/training/run_srr_v3_m10_complete_repair.py",
+    "scripts/evaluation/evaluate_srr_v3_m10_full_case.py",
+    "scripts/evaluation/aggregate_srr_v3_m10_myops.py",
+    "jobs/src/run_srr_v3_m10_myops_d0_control.sh",
+    "jobs/src/run_srr_v3_m10_myops_d1_spatial_br2.sh",
+    "jobs/src/run_srr_v3_m10_myops_d2_hierarchical_psip.sh",
+    "jobs/src/run_srr_v3_m10_myops_d3_full_propref.sh",
+    "jobs/src/run_srr_v3_m10_hard_negative_refresh.sh",
+    "jobs/src/run_srr_v3_m10_no_context_control.sh",
+    "jobs/src/run_srr_v3_m10_alignment_control.sh",
     "results/20260711_srr_v3_m10_complete_mechanism_repair/subagents/reviewer_prompt.md",
     "results/20260711_srr_v3_m10_complete_mechanism_repair/mapper_report_draft.md",
     "results/20260711_srr_v3_m10_complete_mechanism_repair/architecture_delta_draft.md",
@@ -27,10 +42,34 @@
     "results/20260711_srr_v3_m10_complete_mechanism_repair/architecture_delta_final.md",
     "results/20260711_srr_v3_m10_complete_mechanism_repair/executor_waves/README.md"
   ],
-  "manifest_sha256": "66aa2b9a0b294394debb34a75dfb474e112cf723040bc06a52b4a434e57d9953",
-  "job_states": {},
-  "slurm_jobs_submitted": [],
-  "required_job_ids": [],
+  "manifest_sha256": "c8150177c32d064b80ec8e4e5ad4b038c264fd6fd416441a9d29417fe100b08d",
+  "job_states": {
+    "58644072": "PENDING(Resources)",
+    "58644073": "PENDING(Dependency)",
+    "58644074": "PENDING(Dependency)",
+    "58644106": "PENDING(Dependency)",
+    "58644107": "PENDING(Dependency)",
+    "58644108": "PENDING(Dependency)",
+    "58644109": "PENDING(Dependency)"
+  },
+  "slurm_jobs_submitted": [
+    58644072,
+    58644073,
+    58644074,
+    58644106,
+    58644107,
+    58644108,
+    58644109
+  ],
+  "required_job_ids": [
+    58644072,
+    58644073,
+    58644074,
+    58644106,
+    58644107,
+    58644108,
+    58644109
+  ],
   "runtime_output_paths": [],
   "aggregation_commands": [],
   "validator_commands": [
@@ -38,10 +77,14 @@
     "python scripts/validation/validate_handoff_policy.py --strict-tasks --warnings-as-errors",
     "python scripts/architecture/validate_care_architecture_wiki.py --strict --history",
     "python scripts/architecture/generate_care_architecture_wiki.py --check-all",
-    "git diff --check"
+    "git diff --check",
+    "python -m py_compile scripts/training/run_srr_v3_m10_complete_repair.py scripts/evaluation/evaluate_srr_v3_m10_full_case.py scripts/evaluation/aggregate_srr_v3_m10_myops.py",
+    "bash -n jobs/src/run_srr_v3_m10_myops_d0_control.sh jobs/src/run_srr_v3_m10_myops_d1_spatial_br2.sh jobs/src/run_srr_v3_m10_myops_d2_hierarchical_psip.sh jobs/src/run_srr_v3_m10_myops_d3_full_propref.sh jobs/src/run_srr_v3_m10_hard_negative_refresh.sh jobs/src/run_srr_v3_m10_no_context_control.sh jobs/src/run_srr_v3_m10_alignment_control.sh",
+    "env PYTHONPATH=. pytest src/care_myocardium/tests/test_srr_v3_m10_fidelity.py",
+    "squeue -j 58644072,58644073,58644074,58644106,58644107,58644108,58644109 -o '%i|%j|%T|%M|%D|%R|%P'"
   ],
   "blocked_reason": "",
-  "resume_state": "serial wave2 launched; waiting for m10_myops_training_executor completion receipt",
+  "resume_state": "wave2 submitted and pending; wait for terminal Slurm states and post-job aggregation",
   "review_md_written": false,
   "pushed": false
 }

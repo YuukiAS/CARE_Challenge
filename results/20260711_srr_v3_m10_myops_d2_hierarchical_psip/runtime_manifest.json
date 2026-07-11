@@ -1,0 +1,17 @@
+{
+  "design": "D2_HIERARCHICAL_BR2_PSIP_PROPREF",
+  "phase": "d2_hierarchical_psip",
+  "result_dir": "/users/a/e/aereinh/CARE/results/20260711_srr_v3_m10_myops_d2_hierarchical_psip",
+  "runtime_files_checked": [
+    "/users/a/e/aereinh/CARE/results/20260711_srr_v3_m10_myops_d2_hierarchical_psip/runtime/variants/m10_d2_hierarchical_psip_formal/summary.json",
+    "/users/a/e/aereinh/CARE/results/20260711_srr_v3_m10_myops_d2_hierarchical_psip/runtime/variants/m10_d2_hierarchical_psip_formal/training_log.csv",
+    "/users/a/e/aereinh/CARE/results/20260711_srr_v3_m10_myops_d2_hierarchical_psip/runtime/variants/m10_d2_hierarchical_psip_formal/validation_events.csv",
+    "/users/a/e/aereinh/CARE/results/20260711_srr_v3_m10_myops_d2_hierarchical_psip/runtime/variants/m10_d2_hierarchical_psip_formal/component_hd_by_case_checkpoint_best.csv",
+    "/users/a/e/aereinh/CARE/results/20260711_srr_v3_m10_myops_d2_hierarchical_psip/runtime/variants/m10_d2_hierarchical_psip_formal/subgroup_metrics_checkpoint_best.csv"
+  ],
+  "runtime_variant_dir": "/users/a/e/aereinh/CARE/results/20260711_srr_v3_m10_myops_d2_hierarchical_psip/runtime/variants/m10_d2_hierarchical_psip_formal",
+  "slurm_job_id": "58644074",
+  "status": "NEEDS_MONITOR",
+  "summary_path": "/users/a/e/aereinh/CARE/results/20260711_srr_v3_m10_myops_d2_hierarchical_psip/runtime/variants/m10_d2_hierarchical_psip_formal/summary.json",
+  "variant": "m10_d2_hierarchical_psip_propref"
+}

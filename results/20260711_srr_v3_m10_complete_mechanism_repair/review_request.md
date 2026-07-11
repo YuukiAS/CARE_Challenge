@@ -1,13 +1,16 @@
-# M10 Blocked Packet Review Request
+# M10 Monitor Packet Review Boundary
 
-This packet does not request M10 scientific review yet. It records an original prerequisite stop and a later prerequisite repair.
+This packet does not request M10 scientific review yet. It records an original prerequisite stop, a later prerequisite repair, wave 1 acceptance, and wave 2 Slurm submission now in `NEEDS_MONITOR`.
 
-The controller originally found `M10_BLOCKED_PREREQUISITE` before executor wave 1. A later integration-layer repair now validates the planner lineage and canonical post-merge contract hash. The controller may proceed to wave 1 only. The reviewer must not fix code, generate missing artifacts, train, resume jobs, package/upload, push, or start M11.
+The wave 2 executor submitted seven serial `htzhulab` jobs and returned `NEEDS_MONITOR`. The latest controller `squeue` check still shows all seven jobs pending. Because submitted/pending jobs are not completion evidence, this packet is not ready for normal independent review.
 
-Expected review focus:
+Blocked actions until terminal post-job aggregation exists:
 
-- confirm the controller used the M10 section from `prompts/shared/EXECUTOR_PROMPTS.md`;
-- confirm the controller used and validated `prompts/tasks/20260711_srr_v3_m10_complete_mechanism_repair_executor_plan.yaml`;
-- confirm the planner ancestor gate is now repaired;
-- confirm the canonical post-merge contract hash matches the planning review;
-- confirm no executor wave, training, Slurm submission, validation packaging/upload, push, or `review.md` occurred.
+- write `review.md`
+- launch wave 3
+- package or upload validation
+- claim hosted metrics
+- claim route promotion or scientific stop
+- start M11
+
+The next controller action is to monitor jobs `58644072`, `58644073`, `58644074`, `58644106`, `58644107`, `58644108`, and `58644109`; after terminal states, rerun aggregation and update lightweight evidence before requesting review.

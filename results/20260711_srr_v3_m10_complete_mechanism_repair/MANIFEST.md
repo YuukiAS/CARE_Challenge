@@ -2,7 +2,7 @@
 
 Task key: `20260711_srr_v3_m10_complete_mechanism_repair`
 
-Packet state: `PREREQUISITE_REPAIRED_READY_FOR_WAVE1_BOOTSTRAP`
+Packet state: `NEEDS_MONITOR`
 
 ## Files
 
@@ -12,7 +12,7 @@ Packet state: `PREREQUISITE_REPAIRED_READY_FOR_WAVE1_BOOTSTRAP`
 | `controller_context.json` | Machine-readable bootstrap context and read receipts. |
 | `controller_ledger.csv` | Append-only controller phase ledger. |
 | `controller_bootstrap_snapshot.md` | Human-readable hard-gate snapshot. |
-| `controller_resume_bootstrap.md` | Resumed bootstrap after prerequisite repair; authorizes wave 1 only. |
+| `controller_resume_bootstrap.md` | Historical resumed bootstrap after prerequisite repair. |
 | `implementation_snapshot.md` | Confirms no implementation occurred. |
 | `finalizer_state.json` | Deterministic terminal accounting for the blocked prerequisite packet. |
 | `validator_report.md` | Validation command report. |
@@ -25,6 +25,8 @@ Packet state: `PREREQUISITE_REPAIRED_READY_FOR_WAVE1_BOOTSTRAP`
 | `wave1_launch_receipt.json` | Controller receipt for serial wave 1 worker launch. |
 | `wave1_merge_receipt.md` | Controller verification and merge/freeze decision for wave 1. |
 | `wave2_launch_receipt.json` | Controller receipt for serial wave 2 worker launch. |
+| `wave2_monitor_receipt.md` | Controller receipt for wave 2 monitor state. |
+| `executors/m10_myops_training_executor/` | Wave 2 executor monitor packet; not completion evidence. |
 | `subagents/reviewer_prompt.md` | Reviewer handoff prompt for this blocked packet only. |
 | `mapper_report_draft.md` | Mapper draft non-run receipt. |
 | `architecture_delta_draft.md` | Draft architecture delta after wave 1 merge. |
@@ -34,4 +36,4 @@ Packet state: `PREREQUISITE_REPAIRED_READY_FOR_WAVE1_BOOTSTRAP`
 
 ## Exclusions
 
-`review.md` is intentionally absent. No checkpoints, predictions, NIfTI outputs, upload zips, raw data, large logs, secrets, environment dumps, or runtime result trees are included.
+`review.md` is intentionally absent. Wave 2 monitor files are not completion evidence. No checkpoints, predictions, NIfTI outputs, upload zips, raw data, large logs, secrets, environment dumps, or runtime result trees are included.

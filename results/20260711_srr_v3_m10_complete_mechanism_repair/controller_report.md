@@ -21,20 +21,20 @@ The original controller attempt stopped before launching executor wave 1 because
 
 ## Safety Boundary
 
-Wave 1 executor returned `READY_FOR_CONTROLLER_MERGE`, and controller verification accepted the wave 1 merge. No Slurm submission, formal training, validation packaging, upload, push, route promotion, hosted metric claim, scientific stop, M11 work, or final review occurred.
+Wave 1 executor returned `READY_FOR_CONTROLLER_MERGE`, and controller verification accepted the wave 1 merge. Wave 2 then launched as a serial MyoPS executor and returned `NEEDS_MONITOR` after submitting seven `htzhulab` jobs. A controller live `squeue` check still shows all seven jobs pending.
 
-The file `review.md` is intentionally absent. The reviewer must be a later separate read-only thread if the user requests review of this blocked prerequisite packet.
+The file `review.md` is intentionally absent. A reviewer must not start until wave 2 has terminal runtime evidence and post-job aggregation has been committed.
 
 ## Terminal State
 
 ```text
-controller_run_status: IN_PROGRESS
+controller_run_status: NEEDS_MONITOR
 operational_completion_status: INCOMPLETE
 experiment_adequacy_decision: NOT_REVIEWED
 route_promotion_decision: NOT_REVIEWED
 route_negative_decision: NOT_REVIEWED
 scientific_resolution_status: AWAITING_REVIEW
-diagnostic_publication_decision: LOCAL_PACKET_COMMITTED_FOR_REVIEW
+diagnostic_publication_decision: LOCAL_MONITOR_PACKET_COMMIT
 git_commit_decision: COMMIT_LOCAL_PACKET
 git_push_decision: SKIP_PUSH
 published_files:
@@ -57,11 +57,13 @@ published_files:
   - results/20260711_srr_v3_m10_complete_mechanism_repair/executor_waves/README.md
   - results/20260711_srr_v3_m10_complete_mechanism_repair/wave1_launch_receipt.json
   - results/20260711_srr_v3_m10_complete_mechanism_repair/wave1_merge_receipt.md
+  - results/20260711_srr_v3_m10_complete_mechanism_repair/wave2_launch_receipt.json
+  - results/20260711_srr_v3_m10_complete_mechanism_repair/wave2_monitor_receipt.md
 blocked_actions:
-  - wave2 before wave1 commit
-  - wave3 before wave2 completion and registration gate
+  - wave3 before wave2 terminal aggregation
+  - review before wave2 terminal aggregation
   - validation packaging/upload/fold expansion/hosted metric claim/next-stage training
-next_required_action: commit wave1 code/evidence and launch serial wave 2 MyoPS executor
+next_required_action: monitor wave2 jobs and rerun post-job aggregation after terminal states
 reason_if_not_published: not applicable
-reason_if_no_route_promotion: awaiting independent review and no M10 execution evidence exists
+reason_if_no_route_promotion: wave2 jobs are pending and no terminal runtime evidence exists
 ```

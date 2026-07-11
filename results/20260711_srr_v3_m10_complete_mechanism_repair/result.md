@@ -2,7 +2,7 @@
 
 Task key: `20260711_srr_v3_m10_complete_mechanism_repair`
 
-Controller status: `PREREQUISITE_REPAIRED_READY_FOR_WAVE1_BOOTSTRAP`
+Controller status: `NEEDS_MONITOR`
 
 This controller executed only the bootstrap and hard-gate validation for the M10 section in `prompts/shared/EXECUTOR_PROMPTS.md` titled `M10 executor/controller: SRR-v3 complete mechanism repair`, using `prompts/tasks/20260711_srr_v3_m10_complete_mechanism_repair_executor_plan.yaml`.
 
@@ -22,4 +22,30 @@ A later integration-layer repair superseded the prerequisite blocker:
 - Runtime contract validation now uses the merged canonical prompt sections in `prompts/shared/EXECUTOR_PROMPTS.md` and `prompts/shared/REVIEWER_PROMPTS.md`.
 - `python scripts/validation/hash_canonical_prompt_contract.py ...` returns `5030af7d74e35a423dd7e782ed0d55dffc1c1e78335c4016bb75920c17da0e64`, matching `canonical_contract_sha256` in the planning review.
 
-The controller may proceed only to serial wave 1, `m10_shared_architecture_executor`. Wave 2, wave 3, review, push, validation packaging/upload, hosted claims, route promotion, scientific stop, and M11 remain blocked.
+## Wave Progress
+
+Wave 1 completed and was accepted by the controller:
+
+- `m10_shared_architecture_executor` returned `READY_FOR_CONTROLLER_MERGE`.
+- The controller committed the wave 1 code/evidence packet in `975acb7`.
+- The mapper draft was committed in `c92b178`.
+
+Wave 2 was launched after the wave 1 acceptance and wave 2 prompt commit:
+
+- worker agent: `019f515e-39d5-7631-b6a1-5e1b4756701d`
+- prompt: `results/20260711_srr_v3_m10_complete_mechanism_repair/subagents/m10_myops_training_executor_prompt.md`
+- launch receipt: `results/20260711_srr_v3_m10_complete_mechanism_repair/wave2_launch_receipt.json`
+
+The wave 2 worker returned `NEEDS_MONITOR` after submitting seven serial `htzhulab` jobs:
+
+| Phase | Job ID | Current state |
+| --- | ---: | --- |
+| D0 static matched control | 58644072 | `PENDING (Resources)` |
+| D1 spatial BR2 | 58644073 | `PENDING (Dependency)` |
+| D2 hierarchical PSIP | 58644074 | `PENDING (Dependency)` |
+| D3 full memory PropRef | 58644106 | `PENDING (Dependency)` |
+| Hard-negative refresh | 58644107 | `PENDING (Dependency)` |
+| No-nnU-Net-context control | 58644108 | `PENDING (Dependency)` |
+| Alignment control | 58644109 | `PENDING (Dependency)` |
+
+This is a monitor packet, not M10 completion evidence. Wave 3, review, push, validation packaging/upload, hosted claims, route promotion, scientific stop, and M11 remain blocked until the wave 2 jobs finish and post-job aggregation is committed.

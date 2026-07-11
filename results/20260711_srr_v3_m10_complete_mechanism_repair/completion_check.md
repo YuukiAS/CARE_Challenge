@@ -1,8 +1,8 @@
 # M10 Completion Check
 
-Completion state: `PREREQUISITE_REPAIRED_READY_FOR_WAVE1_BOOTSTRAP`
+Completion state: `NEEDS_MONITOR`
 
-This is not `PACKET_COMMITTED_FOR_REVIEW` for a completed M10 runtime milestone. It records that the prior prerequisite blocker has been repaired and that controller execution may proceed only to serial wave 1.
+This is not `PACKET_COMMITTED_FOR_REVIEW` for a completed M10 runtime milestone. It records that wave 2 submitted Slurm jobs and is awaiting terminal runtime evidence plus post-job aggregation.
 
 ## Required Gates
 
@@ -16,9 +16,14 @@ This is not `PACKET_COMMITTED_FOR_REVIEW` for a completed M10 runtime milestone.
 | Planner draft commit ancestor of HEAD | pass |
 | Canonical merged contract hash recomputed and matched | pass |
 | Historical staging hash retained as pre-merge record | pass |
+| Wave 1 executor receipt | pass: `READY_FOR_CONTROLLER_MERGE` |
+| Wave 1 controller merge | pass |
+| Wave 2 launch receipt | pass |
+| Wave 2 executor receipt | monitor: `NEEDS_MONITOR` |
+| Live Slurm status | monitor: all seven jobs pending |
 
 ## Decision
 
-The controller may launch only wave 1: `m10_shared_architecture_executor`. Wave 2 and wave 3 remain blocked until wave dependencies are satisfied.
+The controller must wait for wave 2 terminal job states and post-job aggregation before any controller merge, wave 3 launch, or review request. Submitted, pending, running, or accounting-wait states are not completion evidence.
 
 No `review.md` was written.

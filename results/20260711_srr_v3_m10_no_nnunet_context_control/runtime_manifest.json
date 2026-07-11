@@ -1,0 +1,17 @@
+{
+  "design": "D3_NO_NNUNET_CONTEXT_CONTROL",
+  "phase": "no_context_control",
+  "result_dir": "/users/a/e/aereinh/CARE/results/20260711_srr_v3_m10_no_nnunet_context_control",
+  "runtime_files_checked": [
+    "/users/a/e/aereinh/CARE/results/20260711_srr_v3_m10_no_nnunet_context_control/runtime/variants/m10_d3_no_nnunet_context_control/summary.json",
+    "/users/a/e/aereinh/CARE/results/20260711_srr_v3_m10_no_nnunet_context_control/runtime/variants/m10_d3_no_nnunet_context_control/training_log.csv",
+    "/users/a/e/aereinh/CARE/results/20260711_srr_v3_m10_no_nnunet_context_control/runtime/variants/m10_d3_no_nnunet_context_control/validation_events.csv",
+    "/users/a/e/aereinh/CARE/results/20260711_srr_v3_m10_no_nnunet_context_control/runtime/variants/m10_d3_no_nnunet_context_control/component_hd_by_case_checkpoint_best.csv",
+    "/users/a/e/aereinh/CARE/results/20260711_srr_v3_m10_no_nnunet_context_control/runtime/variants/m10_d3_no_nnunet_context_control/subgroup_metrics_checkpoint_best.csv"
+  ],
+  "runtime_variant_dir": "/users/a/e/aereinh/CARE/results/20260711_srr_v3_m10_no_nnunet_context_control/runtime/variants/m10_d3_no_nnunet_context_control",
+  "slurm_job_id": "58644108",
+  "status": "NEEDS_MONITOR",
+  "summary_path": "/users/a/e/aereinh/CARE/results/20260711_srr_v3_m10_no_nnunet_context_control/runtime/variants/m10_d3_no_nnunet_context_control/summary.json",
+  "variant": "m10_d3_hierarchical_memory_propref"
+}

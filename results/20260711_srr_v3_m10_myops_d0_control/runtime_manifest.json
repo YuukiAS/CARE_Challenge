@@ -1,0 +1,17 @@
+{
+  "design": "D0_STATIC_MATCHED_PROPREF",
+  "phase": "d0_control",
+  "result_dir": "/users/a/e/aereinh/CARE/results/20260711_srr_v3_m10_myops_d0_control",
+  "runtime_files_checked": [
+    "/users/a/e/aereinh/CARE/results/20260711_srr_v3_m10_myops_d0_control/runtime/variants/m10_d0_static_matched_formal/summary.json",
+    "/users/a/e/aereinh/CARE/results/20260711_srr_v3_m10_myops_d0_control/runtime/variants/m10_d0_static_matched_formal/training_log.csv",
+    "/users/a/e/aereinh/CARE/results/20260711_srr_v3_m10_myops_d0_control/runtime/variants/m10_d0_static_matched_formal/validation_events.csv",
+    "/users/a/e/aereinh/CARE/results/20260711_srr_v3_m10_myops_d0_control/runtime/variants/m10_d0_static_matched_formal/component_hd_by_case_checkpoint_best.csv",
+    "/users/a/e/aereinh/CARE/results/20260711_srr_v3_m10_myops_d0_control/runtime/variants/m10_d0_static_matched_formal/subgroup_metrics_checkpoint_best.csv"
+  ],
+  "runtime_variant_dir": "/users/a/e/aereinh/CARE/results/20260711_srr_v3_m10_myops_d0_control/runtime/variants/m10_d0_static_matched_formal",
+  "slurm_job_id": "58644072",
+  "status": "NEEDS_MONITOR",
+  "summary_path": "/users/a/e/aereinh/CARE/results/20260711_srr_v3_m10_myops_d0_control/runtime/variants/m10_d0_static_matched_formal/summary.json",
+  "variant": "m10_d0_static_matched_propref"
+}

@@ -1,0 +1,17 @@
+{
+  "design": "D1_SPATIAL_BR2_PROPREF",
+  "phase": "d1_spatial_br2",
+  "result_dir": "/users/a/e/aereinh/CARE/results/20260711_srr_v3_m10_myops_d1_spatial_br2",
+  "runtime_files_checked": [
+    "/users/a/e/aereinh/CARE/results/20260711_srr_v3_m10_myops_d1_spatial_br2/runtime/variants/m10_d1_spatial_br2_formal/summary.json",
+    "/users/a/e/aereinh/CARE/results/20260711_srr_v3_m10_myops_d1_spatial_br2/runtime/variants/m10_d1_spatial_br2_formal/training_log.csv",
+    "/users/a/e/aereinh/CARE/results/20260711_srr_v3_m10_myops_d1_spatial_br2/runtime/variants/m10_d1_spatial_br2_formal/validation_events.csv",
+    "/users/a/e/aereinh/CARE/results/20260711_srr_v3_m10_myops_d1_spatial_br2/runtime/variants/m10_d1_spatial_br2_formal/component_hd_by_case_checkpoint_best.csv",
+    "/users/a/e/aereinh/CARE/results/20260711_srr_v3_m10_myops_d1_spatial_br2/runtime/variants/m10_d1_spatial_br2_formal/subgroup_metrics_checkpoint_best.csv"
+  ],
+  "runtime_variant_dir": "/users/a/e/aereinh/CARE/results/20260711_srr_v3_m10_myops_d1_spatial_br2/runtime/variants/m10_d1_spatial_br2_formal",
+  "slurm_job_id": "58644073",
+  "status": "NEEDS_MONITOR",
+  "summary_path": "/users/a/e/aereinh/CARE/results/20260711_srr_v3_m10_myops_d1_spatial_br2/runtime/variants/m10_d1_spatial_br2_formal/summary.json",
+  "variant": "m10_d1_spatial_br2_propref"
+}
