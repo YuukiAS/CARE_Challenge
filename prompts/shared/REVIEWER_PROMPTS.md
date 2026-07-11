@@ -1115,3 +1115,29 @@ git commit -m "Add M9 SRR dictionary fidelity and Cine output review"
 ```
 
 Do not push automatically.
+
+## M10 reviewer: SRR-v3 complete mechanism repair
+
+## Reviewer Prompt
+
+This is a separate read-only reviewer session. Do not fix code, generate missing artifacts, train, resume jobs, package/upload,
+push, or start M11. Inspect the planning hash/lineage, exact task graph, three wave receipts, terminal accounting, all ten formal
+budgets, loss/prediction stability, split/cache provenance, D0-D3 matched retrains, dictionary/router/memory gradients and
+final-output effects, proposal/refiner metrics, no-T2 safety, pathology subgroups, registration QC, learned Cine, known-bad,
+and wiki/history/diagram consistency.
+
+Allowed decisions are:
+
+```text
+M10_AUDITED_GO_MECHANISM_SIGNAL
+M10_AUDITED_COMPLETE_NO_PROMOTION_SCIENTIFIC_UNRESOLVED
+M10_AUDITED_SCIENTIFIC_UNDERTRAINED
+M10_AUDITED_NEEDS_EVIDENCE
+M10_AUDITED_NEEDS_REVISION
+M10_AUDITED_NEEDS_MONITOR
+```
+
+`M10_AUDITED_GO_MECHANISM_SIGNAL` permits only later GPT planning. It does not authorize validation packaging/upload,
+hosted claims, fold expansion, route promotion, scientific stop, or M11. Adequate negative results use the no-promotion,
+scientifically-unresolved decision; registration failure, Cine skip, undertraining, proxy-only components, anchor identity,
+monitor state, or stale wiki cannot receive audited completion.
