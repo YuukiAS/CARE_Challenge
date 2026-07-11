@@ -1,25 +1,18 @@
-# M10：SRR-v3 完整机制修复、因果归因与 Cine 时序模型
-
-本文件是 GPT planner 为 M10 编写的独立暂存里程碑。它必须先保存在 `prompts/shared/M10_srr_v3_complete_mechanism_repair.md`。后续 Codex maintenance 步骤必须把 `Execution Contract`、`Controller Prompt`、`Executor Worker Contract` 和 `Mapper Contract` 合并到 `prompts/shared/EXECUTOR_PROMPTS.md`，把 `Reviewer Prompt` 合并到 `prompts/shared/REVIEWER_PROMPTS.md`，保留 `prompts/tasks/20260711_srr_v3_m10_complete_mechanism_repair_executor_plan.yaml`，确认合并无误后删除本暂存文件。
-
-## Execution Contract
-
-```yaml
+---
 task_key: 20260711_srr_v3_m10_complete_mechanism_repair
-task_type: milestone
-milestone: M10
-state: READY
-planner: ChatGPT/GPT thread
-controller: Codex controller session
-executor: separate Codex executor subagent
-mapper: separate read-only architecture mapper subagent
-finalizer: deterministic FINALIZER_A and FINALIZER_B
-validator: first-party fail-closed scripts
-reviewer: separate_readonly
+task_kind: scientific_milestone
+task_type: controller
+controller_mode: true
+milestone_number: 10
+milestone_id: M10
+status: DRAFT_FOR_PLANNING_REVIEW
+risk_level: high
+route_change: true
+scientific_decision_scope: mechanism_signal
 execution_mode: controller_supervised
 requires_execution_controller: true
 executor_slots: 1
-executor_count: 1
+executor_count: 3
 parallel_execution_allowed: false
 executor_plan_path: prompts/tasks/20260711_srr_v3_m10_complete_mechanism_repair_executor_plan.yaml
 mapper_slots: 1
@@ -30,31 +23,151 @@ diagram_update_required: true
 slurm_runtime_continuity_required: true
 continuity_backend: slurm_dependency
 review_mode: independent_thread
+reviewer: separate_readonly
+review_required: true
 allow_git_commit: true
 auto_git_commit: true
 allow_git_push: false
 auto_git_push: false
 allow_diagnostic_push: false
-validation_packaging_allowed: false
-validation_upload_allowed: false
-hosted_metric_claim_allowed: false
-fold_expansion_allowed: false
-route_promotion_allowed: false
-scientific_stop_allowed: false
+route_promotion_gate: independent runtime reviewer plus later GPT planner; M10 cannot promote itself
+experiment_adequacy_gate: all formal runs must satisfy per-run and aggregate real-training, validation, full-case, stability, provenance, and cache-isolation minima
+route_negative_gate: M10 cannot declare scientific stop; negative adequate evidence remains no-promotion and scientifically unresolved
+scientific_completion_gate: L1-L3 mechanism fidelity, adequate training, exact final packet, strict validators, and independent runtime review
+diagnostic_publication_gate: local lightweight reviewed packet only
+diagnostic_publication_scope:
+- md
+- csv
+- json
+blocked_after_diagnostic_publication:
+- runtime_role_push
+- validation_packaging
+- validation_upload
+- hosted_metric_claim
+- fold_expansion
+- route_promotion
+- scientific_stop
+- M11_execution
+planning_review_required: true
+planning_reviewer: separate_gpt_thread
+planning_review_path: prompts/tasks/20260711_srr_v3_m10_complete_mechanism_repair_planning_review.md
+planning_review_token: ''
+planning_reviewed_commit: ''
+---
+
+# M10：SRR-v3 完整机制修复、Dictionary 设计竞赛、MyoPS 因果归因与成熟 Cine 时序路线
+
+本文件是 `planner` GPT 写出的 **规划草案**，不是 Codex 执行授权。当前状态必须保持
+`DRAFT_FOR_PLANNING_REVIEW`。另一个独立 GPT/ChatGPT `critic` 必须先审查本文件和 executor
+plan，计算当前合同的 SHA256，并按
+`prompts/schemas/planning_review.schema.yaml` 写入
+`prompts/tasks/20260711_srr_v3_m10_complete_mechanism_repair_planning_review.md`。
+只有 critic 给出 `PLANNING_CRITIC_READY_FOR_CODEX_MERGE`，且本文件的
+`planning_review_token`、`planning_reviewed_commit` 与被审合同完全一致后，Codex
+maintenance/validator 才能把本暂存内容合并到共享提示词并启动 controller。
+
+本里程碑不授权 validation packaging、validation upload、hosted metric claim、fold expansion、
+route promotion、scientific stop 或 M11。它的目标是把 SRR-v2/v2.5/v3 图中要求的机制真正实现、
+充分训练、逐模块归因，并建立能冲击 leaderboard 的一方系统基础。**“能运行”不是成功标准；
+结构忠实、训练充分、困难子组不被掩盖、最终输出真实受机制影响，才是完成标准。**
+
+## Execution Contract
+
+```yaml
+task_key: 20260711_srr_v3_m10_complete_mechanism_repair
+task_kind: scientific_milestone
+task_type: controller
+controller_mode: true
+milestone_number: 10
+milestone_id: M10
+status: DRAFT_FOR_PLANNING_REVIEW
+risk_level: high
+route_change: true
+scientific_decision_scope: mechanism_signal
+execution_mode: controller_supervised
+requires_execution_controller: true
+executor_slots: 1
+executor_count: 3
+parallel_execution_allowed: false
+executor_plan_path: prompts/tasks/20260711_srr_v3_m10_complete_mechanism_repair_executor_plan.yaml
+mapper_slots: 1
+mapper_required: true
+architecture_impact: system
+wiki_update_required: true
+diagram_update_required: true
+slurm_runtime_continuity_required: true
+continuity_backend: slurm_dependency
+review_mode: independent_thread
+reviewer: separate_readonly
+review_required: true
+allow_git_commit: true
+auto_git_commit: true
+allow_git_push: false
+auto_git_push: false
+allow_diagnostic_push: false
+planning_review_required: true
+planning_reviewer: separate_gpt_thread
+planning_review_path: prompts/tasks/20260711_srr_v3_m10_complete_mechanism_repair_planning_review.md
+planning_review_token: ""
+planning_reviewed_commit: ""
 ```
 
-### 前置审阅关口
+### 1. 当前角色图与权限边界
 
-执行前必须确认：
+当前 agent-flow 共有八个正式角色：
+
+1. `planner`：用户监督的 GPT/ChatGPT 规划线程；本文件由它编写。它选择科学路线、确定公式、任务图、训练预算、角色数、证据门与审阅合同。
+2. `critic`：另一个独立 GPT/ChatGPT 规划审查线程；在 Codex 执行前审查本草案，不运行代码、不提交作业、不写 runtime `review.md`。
+3. `controller`：顶层 Codex continuity goal；只执行本合同，负责落盘重读、三 executor 波次、Slurm 连续性、mapper/finalizer/validator 和本地轻量 final packet。
+4. `executor`：Codex 实现/训练工作线程；本任务固定三个、串行波次，禁止 controller 自行增加、删减、合并职责或发明变体。
+5. `mapper`：controller 内部只读架构/证据映射线程；只能在授权时更新 root `wiki/`，不训练、不做科学结论。
+6. `finalizer`：确定性 `FINALIZER_A`/`FINALIZER_B` 脚本阶段，不是 LLM；完成终态核算、聚合、mapper-final handoff、validator 和单次本地轻量提交。
+7. `validator`：一方 fail-closed 脚本；发现错误必须非零退出，不能把 warning 当通过。
+8. `reviewer`：final packet 本地提交后启动的独立只读 Codex 线程；只写 `review.md`，不能修包、训练、监控或启动后续里程碑。
+
+高风险流程固定为：
+
+```text
+planner GPT
+  -> separate GPT critic
+  -> Codex merge/validator
+  -> controller
+       -> wave 1 shared-architecture executor
+       -> mapper draft
+       -> wave 2 MyoPS training/evidence executor
+       -> wave 3 Cine temporal executor
+       -> FINALIZER_A
+       -> mapper final
+       -> FINALIZER_B + local lightweight commit
+     controller stops
+  -> separate Codex reviewer
+  -> later GPT planner/user decision
+```
+
+任何角色都不得在 controller runtime 中 push。planner 草案的仓库发布不构成 scientific/runtime
+授权。
+
+### 2. 前置审阅关口与读取凭据
+
+执行前必须精确验证：
 
 ```text
 results/20260708_srr_v3_m9_dictionary_fidelity_repair_training/review.md:
 M9_FOLLOWUP_AUDITED_READY_NO_PROMOTION_DIAGNOSTIC_ONLY
 ```
 
-若精确 token 缺失、当前 HEAD 与任务读取基线不一致且未重新 grounding、工作树存在与本任务 source/write scope 冲突的未提交更改、或 Project route-diagram bootstrap 证据无法确认，立即写最小 blocked packet，状态为 `M10_BLOCKED_PREREQUISITE` 或 `M10_NEEDS_REVISION`；不得训练、不得自行改写路线。
+同时必须验证：
 
-### 路线图视觉读取凭据
+```text
+results/20260711_agent_flow_generic_protocol_repair/review.md:
+AGENT_FLOW_GENERIC_PROTOCOL_REPAIR_AUDITED_GO
+```
+
+若 token、planning critic hash、当前合同 hash、executor plan、route-diagram bootstrap、工作树隔离、
+Slurm skill、mapper skill、root wiki/current-state fingerprint 任一不匹配，只允许产生最小 blocked
+packet，状态为 `M10_BLOCKED_PREREQUISITE` 或 `M10_NEEDS_REVISION`；不得实现或训练。
+
+视觉读取凭据：
 
 ```yaml
 diagram_source: ChatGPT Project background materials
@@ -67,13 +180,37 @@ visual_read_status: READ_FROM_PROJECT_BACKGROUND
 later_project_diagrams_found: []
 ```
 
-恢复出的路线目标：MyoPS 必须以 availability-aware modality-specific encoders 和空间病灶条件检索为输入，在多尺度 shared/private/interaction representer bank 中检索解剖、scar 与 edema 证据；从真实 train/OOF 特征初始化并在线安全更新正负原型记忆；用 union/LV/RV、距离图、不确定性和心肌支撑生成 pathology-specific proposal；再由 scar 小 ROI 高精度 refiner 和 edema 大 ROI、T2 条件化 refiner 形成最终 SRR logits。nnU-Net 只允许作为 same-split baseline、detached context/teacher、uncertainty 或独立 safety comparator，不能作为 formal candidate 的最终 logits 底座。Cine 必须使用 ED/reference、非参考帧配准、帧质量/运动显著性、可学习 temporal dictionary 和时序聚合，不得继续使用 deterministic union proxy 冒充完整时序模型。
-
-### history_files_read
+从图中恢复出的不可降级目标是：
 
 ```text
+真实 availability-aware 模态处理
+ -> 多尺度 shared/private/interaction semantic representation dictionary
+ -> lesion-conditioned spatial retrieval
+ -> train/OOF + online safe prototype memory
+ -> union/LV/RV anatomy prior
+ -> scar/edema pathology-specific proposal
+ -> pathology-specific soft-ROI refinement
+ -> SRR 自身 final logits
+```
+
+`nnU-Net` 只能作为 same-split control、detached teacher/context、uncertainty 或显式 safety
+comparator，不能作为 formal candidate 的 final-logit base。Cine 次线必须从 ED/reference、成熟
+registration、非参考帧、CineMA 表示、motion/anatomy/texture dictionary 和 learned temporal
+aggregation 形成最终输出，不能继续使用 frame0 或 deterministic union proxy 冒充时序模型。
+
+### 3. history_files_read
+
+本次 system-level 设计已读取以下当前与历史材料；controller、critic、mapper、reviewer 均需按需复核：
+
+```text
+wiki/current_state.yaml
+wiki/README.md
+wiki/MODEL.md
+wiki/COMPONENTS.csv
+wiki/architecture.yaml
 wiki/history/README.md
 wiki/history/COMPARISON.md
+
 wiki/history/M08/README.md
 wiki/history/M08/ORIGINAL_ANALYSIS.md
 wiki/history/M08/snapshot.yaml
@@ -89,6 +226,7 @@ wiki/history/M08/components/losses.md
 wiki/history/M08/components/checkpoint-selection.md
 wiki/history/M08/components/cine-temporal.md
 wiki/history/M08/components/training-evidence.md
+
 wiki/history/M09/README.md
 wiki/history/M09/ORIGINAL_ANALYSIS.md
 wiki/history/M09/snapshot.yaml
@@ -104,39 +242,71 @@ wiki/history/M09/components/losses.md
 wiki/history/M09/components/checkpoint-selection.md
 wiki/history/M09/components/cine-temporal.md
 wiki/history/M09/components/training-evidence.md
+
+TODO-dictionary.md
+prompts/shared/M10_srr_v3_complete_mechanism_repair.md
+prompts/tasks/20260711_srr_v3_m10_complete_mechanism_repair_executor_plan.yaml
 ```
 
-同时已读取 `TODO-dictionary.md` 作为设计出发点；其结论不能覆盖 M9 follow-up 和当前 root wiki。最近提交检查至少覆盖 `20650aa`、`d82c647`、`9c89a9a`、`10878dc`、`9e2c84b`、`a08d7fe`、`00fa728`、`6b205e0`、`519368d`、`17d2cb0`。其中 `20650aa` 和 `d82c647` 强化了 M10 历史读取、controller continuity、mapper/wiki、FINALIZER_A/B、单 executor 计划与独立 reviewer 规则；`00fa728`/`6b205e0` 给出 M9 follow-up clean diagnostic-only token。
-
-### M8/M9 问题到 M10 责任映射
-
-M10 必须修复而不是重命名以下问题：
-
-1. M8 的 final output 是 anchor-centered bounded residual，导致 SRR 容易退化为 nnU-Net identity；M10 formal output 必须以 proposal/refiner 形成的 SRR logits 为底座。
-2. M9 去掉 anchor 底座后，主干 lesion formation 不够强；M10 必须同时增强空间检索、proposal、memory、refiner 和 full-volume calibration，不能只删除 anchor。
-3. dictionary/router 仍偏 case/global；M10 必须实现 lesion-conditioned spatial routing，并逐 case/逐位置验证 invalid-slot weight 为零。
-4. Pattern-SIP 是 alias/post-hoc summary；M10 必须实现训练时 pattern-conditioned integrativeness objective，不能复用 `dict_loss` 数值换名。
-5. prototype bank 仍偏 buffer/helper；M10 必须使用 train/OOF provenance、EMA memory 加可学习残差，并让 similarity map 进入 proposal logits。
-6. hard-negative replay 未闭环；M10 必须完成当前模型误报挖掘、安全过滤、memory refresh、继续训练和前后对比。
-7. anatomy prior 对 proposal/refiner 的帮助未量化；M10 必须有真实 on/off intervention 和 final-logit effect。
-8. refiner causal effect 文件过去只是 proxy；M10 必须在同一 checkpoint、同一病例、同一 decode 下做真实 toggle。
-9. loss key 曾出现 wiring bug、alias 和 placeholder；M10 每个 loss 必须分类为 `real_optimized_loss`、`diagnostic_metric_only` 或 `disabled_with_reason`，禁止 placeholder zero loss 被算作完成。
-10. checkpoint selection 不能再由 patch loss 主导；M10 必须在 scheduled checkpoints 上运行 metric-facing full-case evaluation，并分别执行 scar 与 edema hard gates。
-11. patch training 与 full-volume topology 不匹配；M10 必须加入大上下文或 proposal crop、定期 full-case evaluation 和仅使用 train/val 的 pathology-specific calibration。
-12. Cine 仍是 local deterministic proxy；M10 必须实现可学习 temporal dictionary/aggregation，保持 Cine 结论与 MyoPS 分开。
-
-### 关键科学原则：先完整实现，再判断组件
-
-M10 不允许在系统保真度未闭环时，根据某个组件的负 ablation 宣称它可替代、无效或应删除。组件审查必须分四层：
+最近提交检查至少覆盖：
 
 ```text
-L1 structural_fidelity: 是否按设计实现，而非名称、CSV 或 wrapper
-L2 runtime_activation: 是否有非零梯度、非平凡输出、合法 availability mask 和真实数据来源
-L3 final_output_effect: 开关该组件是否改变 intended cases 的 proposal/refiner/final logits 或 labels
-L4 scientific_contribution: 在完整系统、充分训练、同一 split 和明确 control 下是否改善目标指标
+925a001 Add agent-flow generic protocol repair review
+1300caa Generalize agent-flow policy schemas and validators
+fa4e50b Harden M10 planning handoff validation
+48353e7 Complete pre-M10 controller continuity repair
+b62580b Initialize M10 controller packet
+7c7b78e Add M10 single-executor controller plan
+e26895b Add M10 complete SRR-v3 mechanism repair milestone
+20650aa Finalize agent-flow v2 pre-M10 repair
+d82c647 Add agent-flow v2 history and parallel continuity follow-up
+10878dc Repair executable agent-flow v2 controller continuity
 ```
 
-只有 L1-L3 全部通过，才允许评估 L4。没有匹配容量的重训 control，不得使用 `replaceable` 结论。`component_contribution.csv` 的允许结论仅为：
+其中 `1300caa`/`925a001` 增加并审计了 generic schema、`critic` 角色、动态 history 与
+planning-review hash；`fa4e50b` 明确把旧 M10 草案和旧 executor plan 保留为必须失败的反例。
+本文件和新 plan 必须替换该反例，而不是绕过 validator。
+
+### 4. 当前架构问题清单：M10 必须逐项修复
+
+以下问题是代码和 M8/M9 证据共同指出的，不允许通过重命名、增加 CSV 或延长旧训练回避：
+
+1. 当前 `RetrievalRouter` 以全局池化特征、availability 和 anchor summary 输出病例级权重，不能在病灶位置形成空间选择。
+2. shared/private/interaction bank 骨架存在，但尚未证明 representer 学到 lesion-forming 表示；旧 Lite 的 `[fused,fused,fused]` 路径不得进入正式模型。
+3. 当前所谓 Pattern-SIP 与 `dict_loss`/entropy/coverage 发生 alias，主要是手写 slot family prior 和事后汇总，不是真正按 availability/style/hard subgroup 优化的 integrativeness。
+4. `ProposalDictionary` 的正式原型仍可能来自 deterministic axis buffer；`SafePrototypeMemoryBank` 类别少、像孤立 helper，没有完成 memory→similarity→proposal→refiner→final label 闭环。
+5. hard-negative 主要来自旧表或一次性统计，未完成“当前模型误报→安全过滤→memory refresh→继续训练→前后比较”。
+6. proposal 公式对 nnU-Net anchor/component context 权重过大，dictionary 可能只在 teacher 附近修补。
+7. refiner 当前更像小 crop residual，且可回退到图像中心 seed；这会产生与 anatomy/proposal 无关的伪 lesion formation。
+8. M8 anchor-residual 把 nnU-Net 变成主角；M9 改成 SRR-main 后，scar/edema 均未形成稳定 segmentation basis。M10 不能简单在两者间来回切换。
+9. anatomy prior 有 union/LV/RV/distance/uncertainty 接口，但尚未证明真实改善 proposal recall、ROI coverage 和 final logits。
+10. M9 loss wiring 修过，但 Pattern-SIP/memory 仍为 alias，Cine loss 仍是零占位；任何 alias/placeholder 都不能作为完成证据。
+11. patch-centric checkpoint 选择仍可能由 patch loss 主导；M10 必须在 scheduled checkpoints 上做完整病例、challenge-facing 指标选择。
+12. 既往 `ablation_matrix`、`refiner_causal_effect` 等文件名强于实际内容；M10 若写 causal，必须是真正同 checkpoint intervention 或匹配预算重训。
+13. Cine 当前只用 classical SyN/Demons、少量 frame pairs、CineMA frame-wise proxy 和 deterministic union；没有成熟 learned registration 与 temporal model。
+14. 当前 formal capacity 仍偏小；正式模型不能继续以 `tiny_3scale`、`base_channels=10` 作为 leaderboard 级候选。
+15. 当前实现没有把“结构完成”“运行激活”“最终输出影响”“科学增益”分层，容易再次把 wiring 缺陷误判为路线失败。
+
+### 5. 组件评估顺序：先完整实现，再谈作用
+
+每个组件必须依次通过四层审查：
+
+```text
+L1 structural_fidelity
+  按本合同实现了真实代码路径，不是名字、wrapper、静态表或零占位。
+
+L2 runtime_activation
+  使用真实数据时有合法输入、非零梯度/更新、非平凡空间输出、正确 availability 与 provenance。
+
+L3 final_output_effect
+  预先定义的 intervention 会在 intended cases 中改变 proposal/refiner/final logits 或 labels，
+  且不靠 GT-aware decode。
+
+L4 scientific_contribution
+  在完整系统、充分训练、同一 split、匹配 control 下改善 challenge-facing 指标或给出可信 trade-off。
+```
+
+只有 L1-L3 全部通过，才允许评估 L4。允许的组件结论仅为：
 
 ```text
 NECESSARY_SIGNAL
@@ -147,231 +317,831 @@ INCONCLUSIVE_NEEDS_MATCHED_RETRAIN
 INCOMPLETE_FIDELITY_BLOCKER
 ```
 
-### M10 完整架构合同
+同 checkpoint toggle 可以证明运行因果影响，不能单独证明“可替代”；除本合同明确要求的匹配重训
+control 外，不得临时增加/删除变体或宣布组件科学无效。
 
-#### 1. Availability 与编码器
+### 6. M10 正式 MyoPS 架构合同
 
-正式路径只消费实际存在的模态，禁止把缺失图像当作语义零图参与卷积。允许为张量批处理保留占位 storage，但每一层 private/interaction slot、prototype update、loss 和最终输出都必须由 availability mask 严格阻断。正式模态顺序必须单一来源定义并在 LGE/T2/C0、训练、评估和证据表中一致。
+#### 6.1 Availability、模态顺序与编码器
 
-#### 2. 多尺度空间表示库
+唯一模态顺序是：
 
-在至少三个 decoder-relevant scales 上实现：
-
-$$
-\mathcal D_\ell=\mathcal D^{\mathrm{sh}}_\ell\cup
-\mathcal D^{\mathrm{LGE}}_\ell\cup
-\mathcal D^{\mathrm{T2}}_\ell\cup
-\mathcal D^{\mathrm{C0}}_\ell\cup
-\mathcal D^{\mathrm{LGE,T2}}_\ell\cup
-\mathcal D^{\mathrm{LGE,C0}}_\ell\cup
-\mathcal D^{\mathrm{T2,C0}}_\ell.
-$$
-
-每个 representer 是有独立参数的轻量 residual convolutional adapter 或等价空间模块，private slot 只接收对应 modality-specific feature，interaction slot 只在两个输入均存在时运行。禁止 Lite 式 `[fused,fused,fused]` 复制。shared bank 负责可跨模态复用的心肌/形态表示；LGE-private 优先形成 scar 证据；T2-private 优先形成 edema 证据；C0-private 提供结构/边界支持；interaction bank 负责互补证据而不是简单拼接。
-
-#### 3. Lesion-conditioned spatial router
-
-router 输出必须是空间权重图而不是每个病例一个标量向量。对任务 $$t$$、尺度 $$\ell$$、位置 $$x$$ 和 slot $$k$$，query 至少包含局部 modality features、availability、proposal seed、$$P_{union}$$、$$P_{LV}$$、$$P_{RV}$$、心肌距离、局部不确定性、prototype similarity；使用 nnU-Net context 时必须 detached，并在证据中记录权重来源。router 输出 $$\alpha_{t,\ell,k}(x)$$ 必须在 valid slots 上归一化，invalid slot 的 max/mean weight 必须精确为零或在数值容差 $$10^{-7}$$ 内。
-
-#### 4. Pattern-conditioned SIP
-
-对 availability/center/style/hard-subgroup 组 $$g$$，记录：
-
-$$
-u_{t,k,g}=\frac{1}{|\Omega_g|}\sum_{i\in g}\sum_{x\in ROI_i}\alpha_{t,k}^{(i)}(x).
-$$
-
-共享 slot 的 integrativeness loss 约束其在多个合法组之间具有稳定复用；private/interaction slot 只在对应模态合法组中计算；同时用局部稀疏与 batch-level load-balance 防止所有位置挤到 shared slot。该 loss 必须有独立实现、独立梯度测试和独立日志，不能等于 entropy/coverage loss 或 `dict_loss` 的 alias。
-
-#### 5. 真实原型记忆与 hard-negative 闭环
-
-scar 与 edema 分别维护正原型和多类安全负原型。原型使用同一 split 的 train/OOF features 初始化，形式为：
-
-$$
-p_{t,k}=\operatorname{normalize}(p^{EMA}_{t,k}+\delta_{t,k}),
-$$
-
-其中 $$p^{EMA}_{t,k}$$ 是有 provenance/count/age 的安全 EMA memory，$$\delta_{t,k}$$ 是可训练残差。scar negative 至少覆盖 normal myocardium、blood pool、outside myocardium、LGE bright artifact、remote FP island；edema negative 只能来自 T2-present safe negatives。no-T2 myocardium 对 edema negative 的贡献必须恒为零。
-
-prototype similarity 必须进入 proposal logits，而不只是 summary。完成第一阶段训练后必须用当前模型挖掘 remote FP/component-burden FP，安全过滤后刷新 memory，再继续训练并比较 refresh 前后 proposal、final logits、Dice、HD95、remote FP 和 component count。
-
-#### 6. 解剖、proposal、refiner 与最终输出
-
-内部 anatomy decoder 必须监督 union/LV/RV，并产生距离图、uncertainty 和 scar/edema soft gate。nnU-Net 可提供 detached context/teacher，但 formal candidate 的最终输出不得使用 `anchor_logits + delta`。
-
-scar proposal 是 LGE-dominant、component-aware、小病灶高精度 proposal；edema proposal 是 T2-conditioned、大范围高召回 proposal，并在 no-T2 时从 loss、memory update、decode 和 export 四处阻断。proposal 进入 pathology-specific refiner：scar 使用紧致高分辨率 soft ROI，edema 使用更大上下文 soft ROI。ROI 是软权重，不得硬裁掉病灶外延。
-
-最终 pathology logits 必须由 proposal 与 refiner 形成：
-
-$$
-z_t^{final}=z_t^{prop}+r_t\odot\Delta z_t^{ref},\qquad t\in\{scar,edema\},
-$$
-
-而不是以 nnU-Net logits 为底座。formal output 必须记录 `final_output_base=SRR_PROPOSAL_REFINEMENT`。允许单独导出 `nnunet_safety_comparator` 供 help/harm 分析，但不能静默替代 formal candidate。
-
-#### 7. 损失合同
-
-正式总损失至少包含 anatomy、scar proposal、T2-masked edema proposal、scar refinement、T2-masked edema refinement、prototype contrast/margin、safe memory alignment、hard-negative、Pattern-SIP、invalid-slot、ROI/anatomy prior、boundary/HD surrogate、full-output segmentation 和可选 detached-teacher consistency。每个 loss 必须记录配置权重、实际传入权重、raw value、weighted value、梯度范数和影响参数组。将任一权重从 $$0$$ 改为 $$10$$ 的 known-good test 必须改变 total loss 和目标参数梯度；alias 或 zero placeholder 必须 fail closed。
-
-#### 8. checkpoint 与 calibration
-
-patch loss 仅用于训练 sanity。checkpoint selection 必须在 scheduled checkpoints 上对完整 44-case same-split fold 运行 full-case evaluation，至少覆盖 16 个 T2-present/edema-positive 病例、CenterB 7 例、CenterC 9 例以及 no-T2 病例。scar 与 edema 分开形成 Pareto gate，记录 Dice、HD95、remote FP、component count、proposal lesion-wise recall/precision、ROI GT coverage 和 final-label delta。阈值 calibration 只能使用 train/validation split，不能使用 challenge validation、GT-aware decode 或 held-out test labels。
-
-#### 9. Cine learned temporal branch
-
-在 M9 `src/care_myocardium/cine/temporal_output.py` 的基础上新增真正的 learned temporal path。流程必须为：ED/reference 与关键帧选择；非参考帧到 reference 的 physical-space registration/warping；几何与配准质量矩阵；frame-wise anatomy features/logits；frame-quality 和 motion-saliency router；可学习 temporal representer dictionary；质量门控时序聚合；最终 compact-label output。允许使用经过验证的 ANTsPy SyNOnly/Demons 作为 registration candidate，但 deterministic union 只能是 control，不能是 formal output。必须在同一 12-case safe subset 比较 frame0、M9 deterministic proxy 和 M10 learned temporal output。
-
-### 执行任务图
-
-所有节点均为 blocking，按顺序执行；任何前置节点失败，后续科学节点不得启动。
-
-1. `20260711_srr_v3_m10_architecture_fidelity`
-   - result dir: `results/20260711_srr_v3_m10_architecture_fidelity/`
-   - required: `result.md`, `architecture_fidelity_contract.md`, `component_activation.csv`, `loss_component_contract.csv`, `invalid_slot_runtime.csv`, `prototype_provenance.json`, `nnunet_role_audit.md`, `commands_run.md`, `MANIFEST.md`
-2. `20260711_srr_v3_m10_mechanism_smoke`
-   - result dir: `results/20260711_srr_v3_m10_mechanism_smoke/`
-   - required: `result.md`, `one_batch_overfit.csv`, `gradient_effect.csv`, `proposal_refiner_sanity.csv`, `no_t2_safety.csv`, `known_bad_selftest.csv`, `commands_run.md`, `MANIFEST.md`
-3. `20260711_srr_v3_m10_myops_full_train`
-   - result dir: `results/20260711_srr_v3_m10_myops_full_train/`
-   - required: `result.md`, `training_budget_ledger.csv`, `training_curves.csv`, `validation_events.csv`, `checkpoint_selection.csv`, `proposal_metrics.csv`, `same_split_help_harm.csv`, `hard_subgroup_metrics.csv`, `commands_run.md`, `MANIFEST.md`
-4. `20260711_srr_v3_m10_hard_negative_refresh`
-   - result dir: `results/20260711_srr_v3_m10_hard_negative_refresh/`
-   - required: `result.md`, `hard_negative_mining_ledger.csv`, `memory_update_ledger.csv`, `refresh_before_after.csv`, `training_budget_ledger.csv`, `commands_run.md`, `MANIFEST.md`
-5. `20260711_srr_v3_m10_no_nnunet_context_control`
-   - result dir: `results/20260711_srr_v3_m10_no_nnunet_context_control/`
-   - required: `result.md`, `training_budget_ledger.csv`, `checkpoint_selection.csv`, `same_split_help_harm.csv`, `nontrivial_signal_check.csv`, `commands_run.md`, `MANIFEST.md`
-6. `20260711_srr_v3_m10_cine_learned_temporal`
-   - result dir: `results/20260711_srr_v3_m10_cine_learned_temporal/`
-   - required: `result.md`, `cine_training_budget.csv`, `cine_case_metrics.csv`, `cine_frame0_vs_proxy_vs_learned.csv`, `cine_registration_failure_matrix.csv`, `cine_final_output_manifest.csv`, `commands_run.md`, `MANIFEST.md`
-7. `20260711_srr_v3_m10_component_causal_audit`
-   - result dir: `results/20260711_srr_v3_m10_component_causal_audit/`
-   - required: `result.md`, `component_interventions.csv`, `component_contribution.csv`, `refiner_true_toggle.csv`, `dictionary_router_interventions.csv`, `anatomy_prior_intervention.csv`, `memory_intervention.csv`, `final_label_effect.csv`, `commands_run.md`, `MANIFEST.md`
-8. `20260711_srr_v3_m10_completion_check`
-   - result dir: `results/20260711_srr_v3_m10_completion_check/`
-   - required: `decision.md`, `required_output_check.csv`, `training_adequacy_check.csv`, `stale_status_scan.csv`, `validator_report.md`, `known_bad_selftest.csv`, `MANIFEST.md`
-9. milestone/controller packet
-   - result dir: `results/20260711_srr_v3_m10_complete_mechanism_repair/`
-   - required: `result.md`, `controller_context.json`, `controller_ledger.csv`, `controller_bootstrap_snapshot.md`, `implementation_snapshot.md`, `finalizer_state.json`, `mapper_report_draft.md`, `mapper_report_final.md`, `architecture_delta_final.md`, `m10_system_summary.md`, `m10_component_contribution.csv`, `m10_myops_decision_matrix.csv`, `m10_cine_decision_matrix.csv`, `completion_check.md`, `review_request.md`, `MANIFEST.md`, `subagents/reviewer_prompt.md`
-
-### 最低有效训练与持续执行预算
-
-M10 的 controller 必须维持 durable continuity，不能在提交 job 后退出并把 monitor packet 当 completion。正式最低预算为：
-
-```yaml
-aggregate_min_train_loop_seconds: 36000
-aggregate_target_controller_supervised_runtime_hours: 10
-require_one_batch_overfit: true
-require_prediction_sanity: true
-require_loss_decrease: true
-require_same_split_baseline: true
-require_cache_isolation: true
-require_metric_facing_checkpoint_selection: true
-require_full_case_eval_cases: 44
-myops_full_train:
-  min_train_loop_seconds: 14400
-  min_optimizer_steps: 40000
-  min_validation_events: 20
-  min_full_case_checkpoint_events: 8
-  min_eval_cases: 44
-hard_negative_refresh:
-  min_train_loop_seconds: 7200
-  min_optimizer_steps: 20000
-  min_validation_events: 12
-  min_full_case_checkpoint_events: 4
-  min_eval_cases: 44
-no_nnunet_context_control:
-  min_train_loop_seconds: 7200
-  min_optimizer_steps: 20000
-  min_validation_events: 12
-  min_full_case_checkpoint_events: 4
-  min_eval_cases: 44
-cine_learned_temporal:
-  min_train_loop_seconds: 7200
-  min_optimizer_steps: 5000
-  min_validation_events: 12
-  min_eval_cases: 12
+```text
+[LGE, T2, C0]
 ```
 
-每个单一 Slurm job 的 walltime 不得超过 8 小时。建议依赖链为：MyoPS full train（约 4 小时）→ hard-negative refresh（约 2 小时）→ no-nnU-Net-context control（约 2 小时）→ Cine learned temporal（约 2 小时）→ `FINALIZER_A`。这些 job 必须顺序执行，不允许把 MyoPS 与 Cine 并行化。若实际硬件吞吐导致达到 optimizer steps 早于 wall-clock budget，仍必须满足 train-loop seconds；early stop 只能在预先定义的 plateau/OOM/divergence 条件下触发，并将该 run 分类为 `SCIENTIFIC_UNDERTRAINED`，不能补写成功。
+令：
 
-### 组件干预要求
+$$
+m=(m_{\mathrm{LGE}},m_{\mathrm{T2}},m_{\mathrm{C0}})\in\{0,1\}^3.
+$$
 
-完整系统通过 fidelity 和正式训练关口后，在同一 selected checkpoint、同一 44 cases、同一 decode 下运行：
+占位存储可以为零，但缺失模态不能借卷积 bias、normalization 或 interaction 泄漏进入语义计算。
+每个带 bias/normalization 的 block 后必须再次施加 mask：
+
+$$
+F_{q,0}=m_q S_q(x_q),\qquad
+F_{q,\ell+1}=m_q\left(E_\ell(F_{q,\ell})+A_{q,\ell}(F_{q,\ell})\right),
+$$
+
+其中 $$E_\ell$$ 是可共享 stage，$$A_{q,\ell}$$ 是模态适配器。正式候选必须使用四尺度
+`balanced_4scale` 或等价容量，通道下限为 `[24,48,96,192]`；`tiny_3scale` 只允许 mechanism
+smoke。所有正式 D0-D3 变体参数量需在共同参考的 $$\pm10\%$$ 内；若显存不足，使用 gradient
+accumulation/checkpointing，不得偷偷降成小模型。
+
+#### 6.2 多尺度 semantic representation dictionary
+
+至少在三个 decoder-relevant scales 上建立：
+
+$$
+\mathcal D_\ell=
+\mathcal D_\ell^{sh}\cup
+\mathcal D_\ell^{LGE}\cup
+\mathcal D_\ell^{T2}\cup
+\mathcal D_\ell^{C0}\cup
+\mathcal D_\ell^{LGE,T2}\cup
+\mathcal D_\ell^{LGE,C0}\cup
+\mathcal D_\ell^{T2,C0}.
+$$
+
+每尺度至少有四个 shared representers、每模态两个 private representers、每合法 pair 两个
+interaction representers。representer 必须有独立参数，建议使用 residual depthwise-separable
+`Conv3d + pointwise Conv3d + normalization + GELU/LeakyReLU` adapter；禁止把同一个 fused tensor
+复制成伪模态输入。
+
+输入规则：
+
+$$
+X^{sh}_\ell=\operatorname{concat}
+\left(
+\operatorname{mean}_{q:m_q=1}F_{q,\ell},
+\operatorname{var}_{q:m_q=1}F_{q,\ell}
+\right),
+$$
+
+$$
+X^q_\ell=F_{q,\ell},
+$$
+
+$$
+X^{a,b}_\ell=
+\psi_\ell^{a,b}\left[
+F_{a,\ell},
+F_{b,\ell},
+|F_{a,\ell}-F_{b,\ell}|,
+F_{a,\ell}\odot F_{b,\ell}
+\right].
+$$
+
+private slot 只在对应模态存在时运行；interaction slot 只在 pair 全部存在时运行。invalid slot
+forward value、gate weight、gradient 和 memory update 均必须为零，数值容差 $$10^{-7}$$。
+
+#### 6.3 四种必须分别实现和报告的 dictionary 设计
+
+所有设计共享相同 encoder、anatomy head、proposal/refiner 容量、sampler、训练时长、评估病例和
+decode 规则；Codex 不得自行改名、删减或增加第五个 formal design。
+
+```text
+D0_STATIC_MATCHED_PROPREF
+  参数量匹配 control。保留同样数量的 expert adapters，但使用预先声明的合法静态混合，
+  无内容路由、无 Pattern-SIP、无 prototype similarity；保留 conv proposal + refiner。
+  作用：排除“只是多参数/多卷积”的解释。
+
+D1_SPATIAL_BR2_PROPREF
+  使用 shared/private/interaction bank 和单尺度局部空间 router；
+  无跨尺度 feedback、无 prototype memory。
+  作用：检验 spatial BR2 retrieval 本身。
+
+D2_HIERARCHICAL_BR2_PSIP_PROPREF
+  在 D1 上加入 coarse-to-fine 两遍 router、跨尺度 proposal feedback 和真正 Pattern-SIP；
+  无 prototype memory。
+  作用：检验层级 lesion-conditioned retrieval 与 integrativeness。
+
+D3_HIERARCHICAL_BR2_MEMORY_PROPREF
+  在 D2 上加入 train/OOF + EMA + learnable-residual prototype memory、
+  safe hard-negative refresh、病种专属 proposal/refiner、条件 feature alignment。
+  这是 M10 formal candidate；nnU-Net 仍只作 detached teacher/context/control。
+```
+
+D0-D3 均必须分别输出参数量、FLOPs/patch、峰值显存、训练秒数、steps、loss 稳定性、
+proposal/refiner 指标、最终指标和困难子组。只训练 D3 或把 D0-D2 写成 inference toggle 均为
+hard failure。
+
+#### 6.4 Lesion-conditioned 两遍空间 router
+
+router 必须输出空间权重图：
+
+$$
+\alpha_{t,\ell,k}(x)\in[0,1],\qquad
+\sum_{k\in V(m)}\alpha_{t,\ell,k}(x)=1,
+$$
+
+而不是每个病例一个向量。第一遍产生 coarse routing 和 proposal seed；第二遍 query 至少包含：
+
+$$
+q_{t,\ell}(x)=\phi_{t,\ell}\left[
+F_\ell^{avail}(x),
+e(m),
+P_{t,\ell}^{(0)}(x),
+P_{union,\ell}(x),
+P_{LV,\ell}(x),
+P_{RV,\ell}(x),
+d_{myo,\ell}(x),
+U_\ell(x),
+s^+_{t,\ell}(x),
+s^-_{t,\ell}(x),
+h^{style}_\ell
+\right].
+$$
+
+$$h^{style}_\ell$$ 由当前图像特征产生；center ID 只可用于审计分组，不得作为推理输入。logit 与
+masked normalization 为：
+
+$$
+a_{t,\ell,k}(x)=w_{t,\ell,k}^{\top}q_{t,\ell}(x)+b_{t,\ell,k},
+$$
+
+$$
+\alpha_{t,\ell,k}(x)=
+\frac{v_k(m)\exp(a_{t,\ell,k}(x)/\tau)}
+{\sum_j v_j(m)\exp(a_{t,\ell,j}(x)/\tau)}.
+$$
+
+训练前 20% 使用完整 masked softmax，20%-70% 使用温度退火加 top-4，后 30% 使用 top-2
+straight-through 或等价可微稀疏门；不得一开始 hard top-k。必须记录 spatial standard deviation、
+effective slots、invalid max/mean、per-group usage、梯度与 final-logit intervention。
+
+#### 6.5 Pattern-conditioned SIP
+
+分组 $$g$$ 至少覆盖 availability pattern、train-only style cluster、scar/edema positive、
+small/large lesion、remote-FP hard group；center 只作报告维度。对 ROI 权重 $$r_i(x)$$：
+
+$$
+u_{t,\ell,k,g}=
+\frac{\sum_{i\in g}\sum_x r_i(x)\alpha_{t,\ell,k}^{(i)}(x)}
+{\sum_{i\in g}\sum_x r_i(x)+\epsilon}.
+$$
+
+使用 participation-ratio 近似软 integrativeness：
+
+$$
+\gamma_{t,\ell,k}=
+\frac{\left(\sum_{g\in G_k}u_{t,\ell,k,g}\right)^2}
+{\sum_{g\in G_k}u_{t,\ell,k,g}^2+\epsilon}.
+$$
+
+其中 $$G_k$$ 只包含 slot 合法的组。独立优化项为：
+
+$$
+\mathcal L_{\mathrm{PSIP}}=
+\lambda_{\mathrm{int}}\sum_{k\in D^{sh}}
+\left[\max(0,\gamma_{\min}-\gamma_{t,\ell,k})\right]^2
++\lambda_{\mathrm{lb}}\sum_g
+\mathrm{KL}(\bar u_{t,\ell,g}\Vert\pi_{t,\ell,g})
++\lambda_{\mathrm{sp}}\mathbb E_x H(\alpha_{t,\ell}(x))
++\lambda_{\mathrm{collapse}}\mathcal L_{\mathrm{collapse}}.
+$$
+
+$$\pi$$ 只在合法 slot 上定义，且不是所有 slot 的 uniform target。该项必须有独立函数、独立 raw
+value、独立权重、独立梯度测试；其张量值或计算图与旧 `dict_loss` 相同即 fail。Pattern-SIP
+不能只在 aggregator 中计算。
+
+#### 6.6 Cross-fitted prototype memory 与 proposal
+
+scar、edema 分别维护多原型正类和安全负类。正式初始化必须来自同一训练 split 的三折
+cross-fitted features；任何用于当前病例 proposal 的原型不得由该病例标签直接构造。形式为：
+
+$$
+p_{t,c,j}=
+\operatorname{normalize}\left(
+\operatorname{sg}(\mu^{EMA}_{t,c,j})+\delta_{t,c,j}
+\right),
+$$
+
+其中 $$\mu^{EMA}$$ 保存 source cases、count、age、assignment 和 update ledger，
+$$\delta$$ 是有正则的可学习残差。禁止 deterministic axis prototype 进入正式 run；若 OOF bank
+缺失或空，必须 fail closed。
+
+类别至少包括：
+
+```text
+scar positive:
+  core, boundary
+scar safe negative:
+  normal myocardium, blood pool, outside myocardium,
+  LGE bright artifact, remote FP island
+edema positive:
+  T2 lesion core, T2 lesion boundary
+edema safe negative:
+  T2-present normal myocardium, blood pool, outside myocardium,
+  T2 texture noise, T2-present remote FP island
+```
+
+no-T2 myocardium 对 edema negative 的 accepted count、梯度和 memory update 必须恒为零。
+
+使用平滑多原型相似度：
+
+$$
+s^+_t(x)=\tau_p\log\sum_j
+\exp\left(\frac{\cos(e_t(x),p^+_{t,j})}{\tau_p}\right),
+$$
+
+$$
+s^-_t(x)=\tau_p\log\sum_j
+\exp\left(\frac{\cos(e_t(x),p^-_{t,j})}{\tau_p}\right).
+$$
+
+proposal logit 为：
+
+$$
+z_t^{prop}(x)=
+r_t(x)
++\beta_{t,1}\left(s_t^+(x)-s_t^-(x)\right)
++\beta_{t,2}z_t^{evid}(x)
++\beta_{t,3}\operatorname{logit}A_t(x)
+-\beta_{t,4}d_{remote}(x)
+-\beta_{t,5}U_t(x)
++\beta_{t,6}C_t^{teacher}(x).
+$$
+
+$$\beta_{t,1:5}$$ 为 `softplus` 约束的可学习非负系数；teacher/context 系数
+$$0\le\beta_{t,6}\le0.15$$，teacher 张量必须 detached。每项必须单独导出贡献图统计。scar proposal
+LGE-dominant、偏 precision；edema proposal T2-conditioned、偏 recall。no-T2 时 edema proposal
+从 loss、memory、decode、export 四处阻断。
+
+#### 6.7 Anatomy、soft ROI、refiner 与 final logits
+
+anatomy decoder 输出 background、myocardium-union、LV、RV；scar/edema 标签训练 anatomy 时
+折叠进 myocardium-union。它同时输出 uncertainty 和到 union/LV/RV 的软距离支持。
+
+soft ROI：
+
+$$
+G_t(x)=
+\sigma(z_t^{prop}(x)/T_t)
+(1-U_t(x))
+\left[\epsilon+(1-\epsilon)A_t(x)\right]
+\exp(-\kappa_t d_{remote}(x)).
+$$
+
+scar 使用较紧的 myocardium-neighborhood crop 和高分辨率 refiner；edema 使用更大 dilation、
+T2 feature、boundary uncertainty 和更大感受野。crop 只是计算边界，真正作用必须是 soft gate；
+proposal 为空时只能退回 anatomy-union ROI，并记录 `ANATOMY_FALLBACK`，禁止退回图像中心 seed。
+
+最终 pathology logits：
+
+$$
+z_t^{final}(x)=z_t^{prop}(x)+G_t(x)\Delta z_t^{ref}(x),
+\qquad t\in\{scar,edema\}.
+$$
+
+最终六类 logits：
+
+$$
+z^{6}=
+[z_{bg},z_{myo},z_{LV},z_{RV},z_{edema}^{final},z_{scar}^{final}].
+$$
+
+formal output 必须记录：
+
+```text
+final_output_base: SRR_PROPOSAL_REFINEMENT
+nnunet_role: DETACHED_CONTEXT_TEACHER_CONTROL_ONLY
+```
+
+禁止 `anchor_logits + delta`、静默 fallback、用 anchor label 替换 formal output，或只在 CSV 中声称
+refiner 影响输出。允许单独导出 `nnunet_safety_comparator`，但它不参与 formal candidate decode。
+
+#### 6.8 条件 feature alignment expert
+
+D3 必须实现可审计的 LGE-reference feature alignment expert，但只能在 pair 合法时运行。它至少在
+LGE-T2 和 LGE-C0 的中低尺度预测位移并 warp feature，采用局部 NCC/feature similarity、
+anatomy consistency、smoothness 和 Jacobian-fold penalty。其输出进入 interaction dictionary，不得
+改写原始数据或标签。
+
+alignment 必须有：
+
+```text
+unaligned D3 control
+aligned D3 intervention
+pair-valid mask
+registration quality matrix
+Jacobian fold rate
+before/after scar and T2-present edema metrics
+```
+
+如果成熟 alignment 不改善 formal checkpoint，可保持 formal gate 关闭，但实现、训练和因果报告仍
+是 blocking；不能把“未使用”伪装成“已完成”。
+
+### 7. 损失、优化与训练稳定性合同
+
+总损失必须由独立实现的真实项构成：
+
+$$
+\begin{aligned}
+\mathcal L={}&
+\lambda_{ana}\mathcal L_{ana}
++\lambda_{full}\mathcal L_{full}^{6cls}
++\lambda_{sp}\mathcal L_{scar}^{prop}
++m_{T2}\lambda_{ep}\mathcal L_{edema}^{prop}\\
+&+\lambda_{sr}\mathcal L_{scar}^{ref}
++m_{T2}\lambda_{er}\mathcal L_{edema}^{ref}
++\lambda_{proto}\mathcal L_{proto}
++\lambda_{mem}\mathcal L_{memory}\\
+&+\lambda_{hn}\mathcal L_{hardneg}
++\lambda_{psip}\mathcal L_{PSIP}
++\lambda_{inv}\mathcal L_{invalid-slot}
++\lambda_{roi}\mathcal L_{ROI}\\
+&+\lambda_{bd}\mathcal L_{boundary}
++\lambda_{hd}\mathcal L_{HD-surrogate}
++\lambda_{align}\mathcal L_{align}
++\lambda_{teach}\mathcal L_{detached-teacher}.
+\end{aligned}
+$$
+
+要求：
+
+- anatomy：DiceCE，包含 union/LV/RV；
+- scar：DiceCE + precision-aware Focal-Tversky + boundary/HD surrogate；
+- edema：所有 dense/proposal/refiner/boundary 项均乘 T2-present mask，使用 recall-aware
+  Focal-Tversky；无 T2 batch 返回带合法计算图的 masked NA，而不是负类；
+- full-output：六类 DiceCE，edema channel 对 no-T2 样本屏蔽；
+- prototype：正负 margin/InfoNCE，edema negative 仅 T2-present；
+- hard-negative：当前模型 remote/component FP 的安全 margin；
+- ROI：GT coverage、outside-myocardium ratio、uncertainty calibration；
+- teacher：只约束 context/representation，不把 nnU-Net logits变成 final base。
+
+每个 loss 必须在 `loss_component_contract.csv` 标记为：
+
+```text
+real_optimized_loss
+diagnostic_metric_only
+disabled_with_reason
+```
+
+禁止 `alias_loss` 和 `placeholder_zero_loss`。known-good 测试把任一 active 权重从 $$0$$ 改为
+$$10$$ 时，total loss 和 intended parameter group 梯度必须改变；任意两个不同 loss 的 tensor identity、
+数值全程相同或 gradient target 完全相同必须由 validator 拒绝。
+
+优化固定要求：
+
+```text
+optimizer: AdamW
+mixed_precision: true
+gradient_clip_norm: 5.0
+warmup_fraction: 0.05
+scheduler: cosine_with_floor
+early_stop_before_minimum_budget: forbidden
+```
+
+训练分四阶段：
+
+```text
+A  anatomy/evidence + soft router warmup
+B  dictionary/proposal + Pattern-SIP + OOF memory
+C  refiner/full-output + boundary/HD optimization
+D  current-model hard-negative refresh + low-LR joint calibration
+```
+
+loss 稳定性最低门：
+
+- 所有 loss/gradient 必须 finite；无 NaN/Inf；
+- one-batch overfit 必须使目标 Dice 上升且总 loss 相对初始下降至少 30%；
+- formal run 最后 25% 的总 loss EMA 不得比中间 25% 高超过 10%，否则分类
+  `DIVERGED_OR_UNSTABLE`；
+- 任一 weighted component 连续三个 validation windows 占总绝对 weighted loss 超过 70%，或
+  active component 连续三个 windows 低于 0.5% 且非 masked NA，必须触发
+  `LOSS_DOMINANCE_NEEDS_REVISION`；
+- 记录每项 raw/weighted value、实际权重、gradient norm、目标参数组、EMA 与 masked denominator；
+- 不得通过 sleep、空 step、重复缓存评估、synthetic batch 或减少病例来满足训练秒数/steps。
+
+### 8. 多设计训练预算与 challenge-facing checkpoint 选择
+
+正式训练只使用授权训练 split 与 fold0 same-split 44-case full-case evaluation。challenge validation、
+held-out test、hosted metric 或 GT-aware decode 不得用于训练、阈值、选择或 calibration。
+
+aggregate 最低真实训练预算：
+
+```yaml
+aggregate_min_train_loop_seconds: 72000
+aggregate_target_controller_runtime_hours: 22
+formal_eval_cases: 44
+T2_present_edema_positive_cases_min: 16
+CenterB_cases_min: 7
+CenterC_cases_min: 9
+```
+
+每个单一 Slurm job walltime 不得超过 8 小时。训练秒数只统计真实 forward/backward/optimizer 和
+预定 validation，不含排队、sleep、文件拷贝或等待 accounting。
+
+| 运行 | 最低 train-loop 秒 | 最低 optimizer steps | validation events | full-case events | eval cases |
+|---|---:|---:|---:|---:|---:|
+| D0 static matched control | 7200 | 20000 | 12 | 4 | 44 |
+| D1 spatial BR2 | 9000 | 25000 | 15 | 5 | 44 |
+| D2 hierarchical BR2 + PSIP | 9000 | 25000 | 15 | 5 | 44 |
+| D3 full memory PropRef | 14400 | 40000 | 20 | 8 | 44 |
+| D3 hard-negative refresh | 5400 | 15000 | 10 | 4 | 44 |
+| retrained no-nnU-Net-context control | 5400 | 15000 | 10 | 4 | 44 |
+| alignment train/control | 3600 | 8000 | 8 | 3 | 44 |
+| CineMA CARE adapter | 3600 | 5000 | 8 | 3 | ≥12 |
+| learned Cine registration | 7200 | 10000 | 12 | 4 | ≥12 |
+| learned Cine temporal dictionary | 7200 | 8000 | 12 | 4 | ≥12 |
+
+达到 steps 但未达到真实 train-loop seconds，或达到 seconds 但未达到 steps，都只能标
+`SCIENTIFIC_UNDERTRAINED`。OOM、divergence 或 plateau 可终止 job，但不能补写 adequate。
+
+scheduled checkpoints 必须直接运行 full-case evaluation。patch loss 只作 sanity，不能决定 formal
+best。每个 checkpoint 先执行硬约束：
+
+```text
+no-T2 edema output == 0
+label/export semantics valid
+all 44 cases present
+T2-present/edema-positive and CenterB/CenterC rows complete
+no cache/checkpoint collision
+finite Dice/HD95/remote-FP/component metrics
+```
+
+随后建立 scar/edema Pareto frontier。联合 checkpoint 选择采用预先声明的 lexicographic 规则：
+
+1. 最大化 scar 与 T2-present edema 的最差病例组 Dice delta；
+2. 在第一项容差 $$0.002$$ 内，最大化两项 mean Dice；
+3. 在前两项容差内，最小化 scar+edema HD95；
+4. 再最小化 remote-FP ratio 与 median component count；
+5. 若没有 checkpoint 同时满足 non-catastrophic guard，选择最小 harm checkpoint并明确
+   `NO_PROMOTION_SCIENTIFIC_UNRESOLVED`，不得改阈值追分。
+
+阈值和 component decode 只能在 train/inner-validation 中校准，必须固定后再运行 44-case
+same-split evaluation。
+
+### 9. 真实 component causal audit
+
+完整 D3 通过 L1-L3 和训练充分门后，在同一 selected checkpoint、同一 44 cases、同一 decode 上
+执行：
 
 ```text
 full_system
-dictionary_static_bypass_same_checkpoint
-spatial_router_to_global_same_checkpoint
-prototype_similarity_off_same_checkpoint
-anatomy_prior_off_same_checkpoint
-scar_refiner_off_same_checkpoint
-edema_refiner_off_same_checkpoint
-both_refiners_off_same_checkpoint
-nnunet_context_off_same_checkpoint
-pre_refresh_vs_post_refresh
+static_mixture_intervention
+spatial_router_to_global
+Pattern-SIP_stateless_intervention
+prototype_similarity_off
+memory_pre_refresh_vs_post_refresh
+anatomy_prior_off
+scar_refiner_off
+edema_refiner_off
+both_refiners_off
+nnunet_context_off
+alignment_off
 ```
 
-这些是 within-checkpoint intervention，用于判断 runtime 因果影响，不自动等价于匹配容量重训后的 replaceability。只有 `no_nnunet_context_control` 是本 M10 明确要求的 retrained scientific control。任何其他组件若需做“可替代”结论，必须返回 `INCONCLUSIVE_NEEDS_MATCHED_RETRAIN`，留给后续 GPT planner，不得在 M10 临时加训练变体。
-
-### 科学判定门
-
-M10 的 operational completion 不要求模型一定赢，但要求所有实现、训练与证据合同完整。机制信号仅在以下条件下成立：
-
-- scar gate：同一 split 上 scar Dice 不低于 nnU-Net anchor，HD95 和 remote FP 不恶化，且至少一个指标严格改善；
-- edema gate：T2-present/edema-positive Dice 与 HD95 不低于 anchor，CenterB 与 CenterC 无未解释伤害，no-T2 edema prediction 恒为零；
-- proposal/refiner gate：proposal lesion-wise recall/precision、ROI coverage 和真实 refiner toggle 证明 proposal→refiner→final logits 的因果链；
-- dictionary gate：空间 router、Pattern-SIP、prototype similarity 和 invalid-slot mask 全部有独立 runtime/gradient/final-output evidence；
-- Cine gate：learned temporal output 在同一 12-case subset 相对 frame0 和 deterministic proxy 有可解释的 before/after 指标与 failure matrix。
-
-若指标为负但实现保真、训练充分、证据完整，只能写 `M10_COMPLETE_NO_PROMOTION_SCIENTIFIC_UNRESOLVED`；不得科学停止。若实现保真未通过，则写 `M10_NEEDS_REVISION`，不能把结果解释为路线无效。
-
-### 允许修改与新增的一方路径
-
-优先修改：
+每行必须记录：
 
 ```text
-src/care_myocardium/models/srr_blocks.py
-src/care_myocardium/models/srr_dictionary_memory.py
-src/care_myocardium/models/srr_propref.py
-src/care_myocardium/losses/srr_losses.py
-src/care_myocardium/cine/temporal_output.py
-scripts/training/run_srr_propref_myops_fold0.py
+component, intervention, checkpoint, case_id, subgroup,
+proposal_logit_l1_delta, refiner_logit_l1_delta, final_logit_l1_delta,
+changed_label_voxels, Dice_delta, HD95_delta, remote_fp_delta,
+component_count_delta, intended_role, L1_status, L2_status, L3_status,
+interpretation
 ```
 
-允许新增：
+另外只有以下匹配训练 control 可以用于 L4：
 
 ```text
-src/care_myocardium/models/srr_spatial_dictionary.py
-src/care_myocardium/cine/temporal_model.py
-scripts/training/run_srr_v3_m10_complete_repair.py
-scripts/training/run_cine_temporal_model_m10.py
-scripts/evaluation/aggregate_srr_v3_m10_packet.py
-scripts/evaluation/validate_srr_v3_m10_packet.py
-jobs/src/run_srr_v3_m10_myops_full.sh
-jobs/src/run_srr_v3_m10_hard_negative_refresh.sh
-jobs/src/run_srr_v3_m10_no_context_control.sh
-jobs/src/run_srr_v3_m10_cine_temporal.sh
-configs/srr_v3_m10_complete_repair.yaml
-src/care_myocardium/tests/test_srr_v3_m10_fidelity.py
+D0 vs D1 vs D2 vs D3
+D3 vs retrained no-nnU-Net-context control
+D3 before vs after bounded hard-negative refresh
 ```
 
-可以根据当前 repo 结构调整新文件名，但必须在 `implementation_snapshot.md` 中给出旧路径→实际路径映射，不能借调整路径缩减责任。禁止修改 label mapping、官方 split、CARE evaluator、challenge validation data 或 submission logic。
+组件尚未完整实现时，不得先跑负 ablation；必须返回
+`INCOMPLETE_FIDELITY_BLOCKER` 并回到 wave 1 修复，而不是继续训练掩盖缺陷。
+
+### 10. Cine：CineMA、成熟 registration 与 learned temporal dictionary
+
+Cine 是 blocking 次线，不可跳过，也不能为 MyoPS 负结果背书。
+
+#### 10.1 CineMA 完整使用
+
+必须使用当前仓库/批准缓存中许可证、来源、commit/model identifier、文件 SHA256 和 preprocessing
+可核验的 CineMA 资产。若资产或许可不可验证，状态为 `RESOURCE_BLOCKED_CINEMA_PROVENANCE`，
+不得临时 clone 未审依赖或用随机 backbone 冒充。
+
+CineMA 的正式用途不是只导出 frame0 mask，而是：
+
+- 作为每帧 anatomy feature backbone；
+- 在 CARE train 上训练 segmentation adapter，并至少解冻/低学习率适配最后两个 block 或使用明确
+  LoRA/adapter；
+- 输出每帧 LV/RV/MYO logits、feature maps 和 uncertainty；
+- 记录 frozen/trainable 参数、权重 checksum、label map、方向/spacing/time-axis QA；
+- 与随机初始化同容量 adapter 做至少一个匹配 control。
+
+#### 10.2 Learned diffeomorphic registration
+
+ED/reference frame 为 $$I_0$$。每例至少使用 ED、ES 和六个均匀/运动显著帧；有足够帧时总数至少
+8，不能只用一个 non-reference pair。registration network：
+
+$$
+v_t=R_\theta(I_0,I_t,P_0,P_t),\qquad
+\phi_t=\exp(v_t),
+$$
+
+通过 scaling-and-squaring 得到可微 diffeomorphic warp。损失：
+
+$$
+\mathcal L_{reg}=
+\lambda_{ncc}(1-\mathrm{LNCC}(I_0,W_{\phi_t}I_t))
++\lambda_{ana}\mathcal L_{Dice}(P_0,W_{\phi_t}P_t)
++\lambda_{sm}\|\nabla v_t\|_2^2
++\lambda_{inv}\|\phi_t\circ\phi_t^{-1}-Id\|_2^2
++\lambda_{jac}\operatorname{ReLU}(-\det J_{\phi_t}).
+$$
+
+ANTsPy SyNOnly 和 Demons 只作 classical controls。formal registration 必须报告所有 case/frame 的
+before/after anatomy Dice、HD95、NCC、folding voxel fraction、displacement magnitude、失败原因和
+fallback；失败 case 保留在 denominator，不能静默删除。成熟门要求在 safe subset 上多数
+non-reference pairs 的 anatomy Dice/NCC 改善，folding rate 受控，并且至少优于 frame0/no-warp control
+中的一个明确指标；否则 Cine 返回诚实 blocker。
+
+#### 10.3 Temporal representation dictionary
+
+将每帧 feature、warped anatomy、texture、displacement/Jacobian/strain proxy 和 registration quality
+送入 cue-specific bank：
+
+$$
+\mathcal D^{cine}=
+\mathcal D^{anchor}\cup
+\mathcal D^{anatomy}\cup
+\mathcal D^{texture}\cup
+\mathcal D^{motion}\cup
+\mathcal D^{quality}.
+$$
+
+$$
+R_{cine}(x)=
+\sum_{t\in T}\sum_k
+\beta_{t,k}(x)
+E_k\left[
+W_{\phi_t}F_t(x),
+W_{\phi_t}P_t(x),
+\phi_t(x),
+J_{\phi_t}(x),
+q_t
+\right],
+$$
+
+其中 $$\beta$$ 由 frame quality、phase、motion saliency、registration uncertainty 和局部 anatomy
+生成并归一化。最终输出是 learned reference-space myocardium segmentation，不是 deterministic union。
+
+Cine 总损失：
+
+$$
+\mathcal L_{cine}=
+\mathcal L_{seg}^{ED}
++\lambda_{reg}\mathcal L_{reg}
++\lambda_{temp}\mathcal L_{temporal-consistency}
++\lambda_{cycle}\mathcal L_{cycle}
++\lambda_{dict}\mathcal L_{temporal-dictionary}
++\lambda_{qual}\mathcal L_{quality-calibration}.
+$$
+
+同一不少于 12-case 的安全 subset 必须比较：
+
+```text
+frame0 CineMA/adapter control
+classical SyN/Demons warped control
+learned registration + simple averaging
+M9 deterministic temporal proxy
+M10 learned temporal dictionary final output
+```
+
+报告 `myocardium_cinemyops` 本地 proxy（myocardium Dice/HD95）、LV/RV sanity、temporal jitter、
+registration failure matrix 和 final compact-label manifest。不得声称 hosted readiness。
+
+### 11. 精确任务图和 required outputs
+
+以下所有节点均为 blocking，并按依赖顺序执行。缺任一目录或 required file，completion check 必须
+失败。
+
+1. `20260711_srr_v3_m10_architecture_fidelity`
+   - `results/20260711_srr_v3_m10_architecture_fidelity/`
+   - required: `result.md`, `architecture_fidelity_contract.md`,
+     `dictionary_design_contract.csv`, `component_activation.csv`,
+     `loss_component_contract.csv`, `invalid_slot_runtime.csv`,
+     `prototype_provenance.json`, `nnunet_role_audit.md`,
+     `commands_run.md`, `MANIFEST.md`.
+2. `20260711_srr_v3_m10_mechanism_smoke`
+   - `results/20260711_srr_v3_m10_mechanism_smoke/`
+   - required: `result.md`, `one_batch_overfit.csv`, `gradient_effect.csv`,
+     `loss_alias_selftest.csv`, `proposal_refiner_sanity.csv`,
+     `no_t2_safety.csv`, `known_bad_selftest.csv`,
+     `commands_run.md`, `MANIFEST.md`.
+3. `20260711_srr_v3_m10_myops_d0_control`
+   - required: `result.md`, `training_budget_ledger.csv`, `loss_stability.csv`,
+     `checkpoint_selection.csv`, `same_split_metrics.csv`,
+     `hard_subgroup_metrics.csv`, `commands_run.md`, `MANIFEST.md`.
+4. `20260711_srr_v3_m10_myops_d1_spatial_br2`
+   - 同 D0 required，另加 `dictionary_runtime.csv`, `spatial_router_metrics.csv`.
+5. `20260711_srr_v3_m10_myops_d2_hierarchical_psip`
+   - 同 D1 required，另加 `pattern_sip_metrics.csv`, `pattern_group_usage.csv`.
+6. `20260711_srr_v3_m10_myops_d3_full_propref`
+   - 同 D2 required，另加 `prototype_memory_ledger.csv`,
+     `proposal_metrics.csv`, `refiner_metrics.csv`, `final_output_effect.csv`.
+7. `20260711_srr_v3_m10_hard_negative_refresh`
+   - required: `result.md`, `hard_negative_mining_ledger.csv`,
+     `memory_update_ledger.csv`, `refresh_before_after.csv`,
+     `training_budget_ledger.csv`, `loss_stability.csv`,
+     `commands_run.md`, `MANIFEST.md`.
+8. `20260711_srr_v3_m10_no_nnunet_context_control`
+   - required: `result.md`, `training_budget_ledger.csv`,
+     `checkpoint_selection.csv`, `same_split_metrics.csv`,
+     `nontrivial_signal_check.csv`, `commands_run.md`, `MANIFEST.md`.
+9. `20260711_srr_v3_m10_alignment_control`
+   - required: `result.md`, `registration_quality.csv`,
+     `alignment_on_off.csv`, `jacobian_report.csv`,
+     `commands_run.md`, `MANIFEST.md`.
+10. `20260711_srr_v3_m10_component_causal_audit`
+    - required: `result.md`, `component_interventions.csv`,
+      `component_contribution.csv`, `refiner_true_toggle.csv`,
+      `dictionary_router_interventions.csv`, `anatomy_prior_intervention.csv`,
+      `memory_intervention.csv`, `final_label_effect.csv`,
+      `commands_run.md`, `MANIFEST.md`.
+11. `20260711_srr_v3_m10_cinema_adapter`
+    - required: `result.md`, `cinema_provenance.json`, `label_geometry_qa.csv`,
+      `adapter_training_budget.csv`, `framewise_anatomy_metrics.csv`,
+      `commands_run.md`, `MANIFEST.md`.
+12. `20260711_srr_v3_m10_cine_registration`
+    - required: `result.md`, `registration_training_budget.csv`,
+      `cine_registration_pair_metrics.csv`, `cine_registration_failure_matrix.csv`,
+      `jacobian_report.csv`, `commands_run.md`, `MANIFEST.md`.
+13. `20260711_srr_v3_m10_cine_learned_temporal`
+    - required: `result.md`, `cine_training_budget.csv`,
+      `cine_frame_usage.csv`, `cine_temporal_dictionary_runtime.csv`,
+      `cine_frame0_vs_controls_vs_learned.csv`,
+      `cine_case_metrics.csv`, `cine_final_output_manifest.csv`,
+      `commands_run.md`, `MANIFEST.md`.
+14. `20260711_srr_v3_m10_completion_check`
+    - required: `decision.md`, `required_output_check.csv`,
+      `training_adequacy_check.csv`, `loss_stability_check.csv`,
+      `stale_status_scan.csv`, `validator_report.md`,
+      `known_bad_selftest.csv`, `MANIFEST.md`.
+15. 主 controller packet：
+    - `results/20260711_srr_v3_m10_complete_mechanism_repair/`
+    - required: `result.md`, `controller_context.json`, `controller_ledger.csv`,
+      `controller_bootstrap_snapshot.md`, `implementation_snapshot.md`,
+      `finalizer_state.json`, `mapper_report_draft.md`,
+      `architecture_delta_draft.md`, `mapper_report_final.md`,
+      `architecture_delta_final.md`, `m10_system_summary.md`,
+      `m10_dictionary_design_comparison.csv`,
+      `m10_component_contribution.csv`, `m10_myops_decision_matrix.csv`,
+      `m10_cine_decision_matrix.csv`, `completion_check.md`,
+      `review_request.md`, `MANIFEST.md`, `subagents/reviewer_prompt.md`.
+
+最低表结构：
+
+```text
+training_budget_ledger.csv:
+variant,job_id,partition,state,exit_code,train_loop_seconds,optimizer_steps,
+validation_events,full_case_events,eval_cases,checkpoint,stop_reason,adequacy
+
+loss_stability.csv:
+variant,stage,step,component,classification,raw_value,configured_weight,
+actual_weight,weighted_value,ema_value,gradient_norm,target_parameter_group,
+masked_denominator,finite,dominance_fraction,status
+
+dictionary_runtime.csv:
+variant,case_id,subgroup,task,scale,slot_id,slot_group,valid,
+gate_mean,gate_max,gate_spatial_std,expert_output_norm,gradient_norm,
+proposal_logit_delta,final_logit_delta,status
+
+checkpoint_selection.csv:
+variant,checkpoint,eval_cases,scar_dice,scar_hd95,scar_remote_fp,
+edema_t2_positive_dice,edema_t2_positive_hd95,edema_remote_fp,
+CenterB_delta,CenterC_delta,no_t2_violation_count,pareto_status,selected,reason
+
+component_interventions.csv:
+component,intervention,checkpoint,case_id,subgroup,proposal_logit_l1_delta,
+refiner_logit_l1_delta,final_logit_l1_delta,changed_label_voxels,
+dice_delta,hd95_delta,remote_fp_delta,component_count_delta,
+L1_status,L2_status,L3_status,interpretation
+
+cine_registration_pair_metrics.csv:
+case_id,fixed_frame,moving_frame,method,before_dice,after_dice,
+before_hd95,after_hd95,before_ncc,after_ncc,folding_fraction,
+mean_displacement,quality_pass,failure_reason
+```
+
+### 12. Known-bad fixtures 和 fail-closed 要求
+
+validator 至少必须拒绝：
+
+```text
+旧无 frontmatter M10 staging
+旧 invalid-lane/missing-completion-token executor plan
+缺 planning critic hash/token 却标 READY_FOR_CODEX_MERGE
+global pooled router 冒充 spatial router
+missing-modality private/interaction slot weight 非零
+Pattern-SIP 与 dict_loss alias
+deterministic axis prototype 进入 formal run
+prototype 无 train/OOF provenance
+no-T2 myocardium 被接受为 edema negative
+memory 不影响 proposal similarity
+proposal/refiner 不改变 final logits
+proposal 空时中心 seed fallback
+formal output 仍是 anchor_logits + delta
+loss weight 0/10 不改变目标梯度
+Cine temporal/ref-warp loss 为零占位
+patch-loss-only checkpoint selection
+proxy summary 冒充 causal effect
+训练未达 seconds/steps/cases/events
+submitted/pending/monitor packet 冒充 completion
+Cine frame0-only、单 pair registration 或 deterministic union 冒充 learned temporal
+Cine registration 失败 case 被移出 denominator
+stale wiki/fingerprint/figures
+```
+
+### 13. 科学判定门
+
+M10 operational completion 不要求必然赢，但要求所有 blocking 机制、训练、证据和 Cine 路线完整。
+允许的 mechanism-signal 条件：
+
+- D1 相对 D0 显示 spatial retrieval 对 intended region 有非平凡 final-logit effect；
+- D2 相对 D1 显示 hierarchical router/Pattern-SIP 的独立信号，不发生 gate collapse；
+- D3 相对 D2 显示 prototype/memory/proposal/refiner 对 lesion-wise recall、HD95、remote FP 或
+  component burden 有可信贡献；
+- scar gate：Dice 不低于 anchor，HD95/remote FP 不恶化，且至少一个严格改善；
+- edema gate：T2-present/edema-positive Dice 和 HD95 不低于 anchor，CenterB/CenterC 无未解释
+  severe harm，no-T2 violation 为零；
+- no-context control 仍存在非平凡 lesion signal，证明 SRR 不是 nnU-Net identity；
+- Cine learned temporal 在同一 subset 相对 frame0 和至少一个 control 有可解释改善，registration
+  failure matrix 完整。
+
+若结构保真或训练充分性失败：`M10_NEEDS_REVISION` 或 `M10_NEEDS_EVIDENCE`。
+
+若实现、训练和证据完整但指标为负：
+
+```text
+M10_COMPLETE_NO_PROMOTION_SCIENTIFIC_UNRESOLVED
+```
+
+不得宣布 SRR/Cine 科学失败，不得自动回退 nnU-Net，不得启动 M11。
 
 ## Controller Prompt
 
-你是本 M10 唯一顶层 controller。先重新读取磁盘上的任务、当前 HEAD、`AGENTS.md`、agent-flow v2、Slurm routing skill、care-mapper skill、root wiki、M8/M9 history 和 M9 follow-up review token，生成 `controller_context.json`、bootstrap snapshot 与 append-only ledger。不要依赖本对话摘要。
+你是 M10 唯一顶层 Codex controller。你没有科学设计权，只能执行本合同。启动前从磁盘重新读取
+本 staging、planning critic review、executor plan、当前 HEAD、`AGENTS.md`、全部 handoff schemas、
+Slurm skill、mapper skill、root wiki、M8/M9 history 和两个前置 review token；不要依赖聊天摘要。
 
-Before executing the scientific task, enforce the hard-gate policy: exact task graph, agent-flow v2 execution contract, strict validator, completion-check-before-final-audit, minimum effective training, current-bad-packet regression, mapper/wiki/fingerprint gates when architecture is affected, and SRR diagram-bootstrap evidence when the task touches SRR/MyoPS/Cine route planning. If any hard gate fails, stop with NEEDS_REVISION or NEEDS_EVIDENCE; do not continue to final audit.
+先运行并记录：
 
-严格按 executor plan 启动一个 executor，不得自行增加 executor/mapper 数量。executor 完成 architecture implementation snapshot 后，启动 mapper draft。只有 architecture fidelity 和 mechanism smoke 两个目录均通过 strict validator，才允许提交训练依赖链。
+```text
+python scripts/validation/validate_handoff_policy.py --policy --warnings-as-errors
+python scripts/validation/validate_handoff_policy.py --candidate prompts/shared/M10_srr_v3_complete_mechanism_repair.md
+python scripts/ops/validate_executor_plan.py prompts/tasks/20260711_srr_v3_m10_complete_mechanism_repair_executor_plan.yaml
+python scripts/validation/validate_handoff_policy.py --repository-readiness --warnings-as-errors
+```
 
-Slurm 默认使用 `htzhulab`；仅在 skill 允许时使用 `a100-gpu`、`volta-gpu` fallback 或 routing race。所有镜像 job 必须隔离 runtime/log/lock；一个镜像启动后取消仍 pending 的镜像并记录。提交 MyoPS full、refresh、no-context 与 Cine 的顺序依赖链，并用 `scripts/ops/submit_care_dependency_finalizer.py` 提交 `afterany` finalizer。finalizer 必须依赖全部 job IDs，而不是只依赖最后一个可能因 upstream failure 而永远不启动的 job。
+生成 `controller_context.json`、bootstrap snapshot 和 append-only ledger。若 planning critic 的
+`reviewed_contract_sha256` 与当前 staging 不一致，立即停止。
 
-controller 在 job pending/running 期间维护 durable continuity；`PENDING`、`RUNNING`、`COMPLETING`、`AWAITING_SACCT` 都是 `NEEDS_MONITOR`。若 dependency finalizer 失败，使用 namespace-local tmux watcher fallback，记录 session/PID/command/log/lock/result dir，并让 watcher 按 `finalizer_state.json` 状态继续。不得用提交回执、pending `squeue`、monitor packet 或 watcher setup 声称完成。
+严格按 executor plan 启动三个串行 wave：
 
-`FINALIZER_A` 必须收集所有 job 的 terminal state、exit code、elapsed、log/runtime paths，确认 runtime output 存在，执行 `aggregate_srr_v3_m10_packet.py`，运行 packet validator并写 `READY_FOR_MAPPER_FINAL` 或明确 failure。随后 mapper final 更新 root wiki、component table、architecture.yaml 和全部 canonical figures。`FINALIZER_B` 再运行全部 strict validators、Toolkit healthcheck、wiki history checks、`git diff --check`，只提交当前 M10 的轻量 source/config/helper/test/wiki/result packet。
+```text
+wave 1: m10_shared_architecture_executor
+merge by controller
+mapper draft
+wave 2: m10_myops_training_executor
+merge by controller
+wave 3: m10_cine_temporal_executor
+merge by controller
+```
 
-controller report 在独立 reviewer 前必须保持：
+不得把三个 executor 合成一个，不得并行 MyoPS/Cine，不得修改 variant 数量或训练预算。每个
+executor 必须在独立 worktree/branch 内写自己的 completion file/token；只有 controller 可按
+`merge_order` 合并。任何 executor 返回 `NEEDS_REVISION`、`NEEDS_EVIDENCE`、`NEEDS_MONITOR`、
+`BLOCKED` 时，不得伪造 ready token。
+
+Slurm 默认 `htzhulab`，只按 skill 允许顺序使用 `a100-gpu`、`volta-gpu` 或隔离 routing race。
+每个 training/eval job walltime ≤8h。训练链可以由多个 jobs 构成；必须记录全部 job IDs。使用
+`scripts/ops/submit_care_dependency_finalizer.py` 提交 `afterany` finalizer，依赖 **所有**
+training/registration/temporal job IDs，而不是只依赖链末尾。若 dependency finalizer 失败，才允许
+namespace-local tmux watcher fallback，并记录 session/PID/command/log/lock/result dir。
+
+`PENDING`、`RUNNING`、`CONFIGURING`、`COMPLETING`、`AWAITING_SACCT` 都是
+`NEEDS_MONITOR`。不得把 submission receipt、watcher setup、pending `squeue` 或 monitor packet
+当 completion；scheduler block 只按连续 12 次、每次间隔 2 小时、累计 24 小时无任何 routing job
+启动的门槛判定。
+
+`FINALIZER_A` 必须：
+
+1. 收集所有 job terminal state、exit code、elapsed、log/runtime paths；
+2. 验证所有 runtime output 存在；
+3. 运行 MyoPS/Cine aggregators、completion check 和 strict packet validator；
+4. 写 `finalizer_state.json`，只有全部 terminal/aggregated 才能到 `READY_FOR_MAPPER_FINAL`。
+
+mapper final 后，`FINALIZER_B` 必须运行 strict validators、known-bad、Toolkit healthcheck、
+wiki history/current figures check、`git diff --check`，再做一次本地轻量 packet commit。禁止提交
+checkpoint、prediction、NIfTI、zip、大日志、raw data、secret/env dump。
+
+controller report 写在 reviewer 前，只能使用：
 
 ```text
 route_promotion_decision: NOT_REVIEWED
@@ -381,31 +1151,88 @@ git_push_decision: SKIP_PUSH
 next_required_action: separate reviewer writes review.md
 ```
 
-写完 controller report 后停止。不得写 `review.md`，不得启动 M11，不得 push。
+写完 controller report 后停止。不得写 `review.md`、不得启动 M11、不得 push。
 
 ## Executor Worker Contract
 
-你是 M10 executor，不是 planner、reviewer 或 controller。你必须完成上面完整任务图，不能把 TODO-dictionary 的四个标题直接变成四个浅层 variant，也不能只增加 slot 数、loss 名、CSV 或 wrapper。
+三个 executor 必须分别遵守以下固定职责。
 
-先做当前代码审计，逐 symbol 证明 M8/M9 的真实路径，然后实现完整 SRR-v3 修复。正式模型必须使用 lesion-conditioned spatial dictionary、真实 train/OOF+EMA prototype memory、proposal/refiner final base、独立 loss wiring、full-case checkpoint selection。不要从头写一个简陋 U-Net 冒充修复，不要把 nnU-Net identity 包装成 safety，不要把 deterministic prototype、旧 mined CSV、global pooled gate、proxy causal table 或 zero loss 当正式实现。
+### Wave 1：shared architecture executor
 
-在提交任何正式训练前必须完成：静态路径检查；invalid-slot unit/runtime test；loss weight/gradient test；prototype provenance 和 no-T2 safe-negative test；one-batch overfit；proposal/refiner 输出 sanity；full output 不等于 anchor identity；所有 required known-bad fixtures fail closed。若任何一项失败，写 `M10_NEEDS_REVISION` 并停止，不得用训练掩盖 wiring failure。
+只负责完整实现和 fidelity/smoke，不跑正式长训练。必须：
 
-训练时只使用授权 split、缓存和输出目录。每个 run 的 checkpoint、prediction、NIfTI 和大日志留在 ignored runtime path；tracked packet 只记录轻量 MD/CSV/JSON。scheduled checkpoint 必须真实运行 full-case evaluation，不能训练结束后只比较 `checkpoint_best`/`checkpoint_final` 两个 patch-loss checkpoint。hard-negative refresh 必须由当前 run 的错误产生，并保留 case/source/category/T2 safety ledger。
+- 逐 symbol 审计当前 `srr_blocks.py`、`srr_propref.py`、`srr_dictionary_memory.py`、
+  `srr_losses.py`；
+- 实现 D0-D3 共用的四尺度 encoder、semantic bank、两遍 spatial router、Pattern-SIP、
+  cross-fitted/EMA/learnable-residual memory、proposal/refiner final base、alignment hooks；
+- 删除正式路径的 deterministic prototype、center seed fallback、anchor-final base、alias/zero loss；
+- 写 unit tests、one-batch overfit、gradient/weight 0-vs-10、invalid-slot、no-T2、final-output-effect、
+  known-bad fixtures；
+- 只在全部 fidelity/smoke 通过时写 `READY_FOR_CONTROLLER_MERGE`。
 
-正式 component audit 只能在完整系统通过 fidelity 后运行。对每个 intervention 记录 component、toggle、intended role、checkpoint、case count、proposal logit delta、refiner logit delta、final logit delta、changed label voxels、Dice/HD95/remote-FP/component delta、subgroup 和 interpretation。若只有 within-checkpoint intervention，必须标为 `INCONCLUSIVE_NEEDS_MATCHED_RETRAIN` 而不是可替代。
+若发现公式无法在现有代码中忠实实现，不得自行简化；写
+`NEEDS_GPT_PLANNER`/`NEEDS_REVISION` 和精确 blocker。
 
-Cine 必须新增 learned temporal aggregation。若 registration 在某 case 失败，记录 failure matrix 并使用预先定义的 frame0 safety behavior；不得静默丢 case，不得把失败 case 从 denominator 移除。Cine 结果不能改变 MyoPS gate。
+### Wave 2：MyoPS training/evidence executor
 
-This is an executor/controller session for one milestone only. Stop after writing completion_check.md and review_request.md. Do not write review.md, do not approve yourself, and do not start the next milestone; a separate read-only Codex reviewer must write review.md before continuation.
+只使用 wave 1 已合并且冻结的 architecture source。不得修改 `src/care_myocardium/models/` 或
+`losses/` 来追分；若正式训练暴露 wiring bug，停止并返回 wave 1 repair，不得热补后继续。
+
+必须按 D0→D1→D2→D3→hard-negative refresh→no-context retrain→alignment control 顺序提交真实
+Slurm jobs，满足每项 seconds/steps/events/cases。每个变体使用隔离 checkpoint/prediction/cache/log/
+lock path。必须执行 scheduled full-case checkpoint selection、困难子组、proposal/refiner、loss 稳定性和
+真实 component interventions。不得用旧 checkpoint、旧 CSV、synthetic/smoke 或 inference-only toggle
+替代匹配训练。
+
+### Wave 3：Cine temporal executor
+
+必须完整使用可核验 CineMA 资产，实现 CARE adapter、learned diffeomorphic registration 和 learned
+temporal dictionary。Classical registration、frame0 和 M9 union 只作 controls。至少处理 12 个安全病例、
+每例足够 non-reference frames，失败病例保留 denominator。若外部资产/许可/几何不合格，诚实写
+resource/evidence blocker；不得 clone 随机代码、降级 single-frame 或把 deterministic union 包装成完成。
+
+所有 executor 共同行为：
+
+- 只写各自 executor plan `write_scope`；
+- 每次提交 job 前重读 Slurm skill；
+- 写完整 `commands_run.md`、MANIFEST、provenance 和 completion file；
+- 不写 runtime `review.md`，不自审，不 push，不启动下一 wave；
+- 不允许 Codex 自行制定科研计划、改变公式、缩短预算或选取更容易的病例。
+
+This is an executor/controller session for one milestone only. Stop after writing
+`completion_check.md` and `review_request.md`, force-add/commit the lightweight required result
+files, then stop. Do not push automatically. Do not write `review.md` and do not start the next
+milestone. The milestone must be reviewed by a separate read-only Codex session before continuation.
 
 ## Mapper Contract
 
-你是 controller 内部独立 mapper。使用 `.agents/skills/care-mapper/SKILL.md`。draft 阶段读取实现 snapshot、source/config/entrypoint 和已有 runtime evidence，任何未证明路径保持 `partial/unverified`。不得训练、提交 Slurm、修改模型代码或写 review。
+你是 controller 内部独立 mapper。使用 `.agents/skills/care-mapper/SKILL.md`。draft 阶段在 wave 1
+merge 后从 source/config/tests/fidelity evidence 建立架构映射；未有 runtime 证据的组件必须保持
+`partial/unverified`，不能因类或文件存在而标 verified。
 
-final 阶段在 `FINALIZER_A` 之后重新从当前 source 和聚合 evidence grounding。逐组件更新 `wiki/COMPONENTS.csv`、`wiki/architecture.yaml`、`wiki/MODEL.md`、`wiki/README.md`、`wiki/EXECUTION.md`、`wiki/LINEAGE.md` 和 model-current/model-gap/execution-flow 的 D2/SVG/PNG。每个组件必须记录 source/symbol、inputs/outputs、losses、final_output_effect、runtime evidence、fingerprint、M10 状态。不得因为文件存在而标 `implemented/verified`；只有 L1-L3 证据齐全才可 verified。
+final 阶段在全部 jobs terminal 且 `FINALIZER_A` 聚合成功后重新从当前 source 和结果 grounding。
+更新：
 
-保持 M8/M9 history immutable，只追加 lineage/比较说明，不得覆盖原始分析。运行：
+```text
+wiki/README.md
+wiki/MODEL.md
+wiki/EXECUTION.md
+wiki/COMPONENTS.csv
+wiki/LINEAGE.md
+wiki/architecture.yaml
+wiki/figures/model-current.{d2,svg,png}
+wiki/figures/model-gap.{d2,svg,png}
+wiki/figures/execution-flow.{d2,svg,png}
+wiki/history/README.md
+wiki/history/COMPARISON.md
+```
+
+M8/M9 历史不可改写。按当前动态 history 规则生成/验证 M10 snapshot 与
+`delta-from-M09.{d2,svg,png}`；若 runtime review 尚未发生，M10 snapshot 必须明确 pre-review，
+不能伪造 review token。
+
+每个组件记录 source/symbol、inputs/outputs、loss、final-output effect、runtime evidence、code
+fingerprint、L1-L4 状态。运行：
 
 ```bash
 AI_RESEARCH_TOOLKIT_ROOT=/overflow/htzhu/mingcheng_new/AI_Research_Toolkit \
@@ -415,32 +1242,42 @@ python scripts/architecture/generate_care_architecture_wiki.py --check-all
 python scripts/architecture/validate_care_architecture_wiki.py --strict --history
 ```
 
-mapper report 只描述架构与证据状态，不决定 route promotion 或 scientific stop。
+mapper 不训练、不提交 Slurm、不改模型代码、不写 `review.md`、不做 route promotion/scientific
+stop。
 
 ## Reviewer Prompt
 
-你是独立只读 M10 reviewer。必须在 controller/executor 的轻量 final packet 已本地提交后启动。你的读取范围是本 M10 staging/merged prompt、上述九个 result directories、M10 一方 source/config/helper/test、root wiki、M8/M9 history 和 M9 follow-up review。你可以运行只读 strict validators，但不得修文件、训练、恢复 job、生成 wiki、打包 validation、upload、push 或启动 M11。
-
-This is a separate read-only reviewer/auditor session. Do not fix code, do not generate missing artifacts, do not train, do not package validation, do not upload, and do not start the next milestone. Write only review.md with the controlled audit decision.
+你是 final packet 本地提交后启动的独立只读 M10 reviewer。读取本 staging/merged contract、
+planning critic review、executor plan、三个 executor completion receipts、十五个 blocking result
+directories、一方 source/config/helper/test、root wiki、M8/M9 history、前置 review tokens 和
+finalizer/controller receipts。可以运行只读 strict validators；不得修文件、训练、恢复 job、生成缺失
+wiki、打包、upload、push 或启动 M11。
 
 逐项审查：
 
-1. exact M9 prerequisite token、diagram bootstrap、history_files_read、task graph 和所有 required result dirs/files；
-2. controller/executor/mapper/finalizer/reviewer 分离，durable continuity、终态 Slurm accounting 与 post-job aggregation；
-3. aggregate train-loop seconds 是否至少 36000，每个 run 的 steps/seconds/validation/full-case eval/case count 是否达到合同；
-4. 是否真实实现 spatial router、Pattern-SIP、OOF+EMA+learnable-residual memory、hard-negative refresh、proposal/refiner final base和 learned Cine temporal；
-5. formal final logits 是否仍暗中是 nnU-Net anchor identity；
-6. no-T2 edema 是否在 supervision、memory、decode、export 全部阻断；
-7. loss 是否存在 alias/placeholder/miswired，checkpoint 是否仍由 patch loss 主导；
-8. component conclusions 是否严格区分 L1-L4，是否把 within-checkpoint toggle 错写成 replaceability；
-9. same-split 44 cases、T2-present 16 cases、CenterB/CenterC、scar-positive、edema-positive、remote FP、small/large lesion、no-T2 safety 是否齐全；
-10. Cine 是否真实使用非参考帧、registration evidence、learned aggregation、same-12-case comparison 和 failure matrix；
-11. validator 是否扫描 MD/CSV/JSON、strict nonzero、known-bad 是否覆盖 missing outputs、stale pending、fake alias loss、deterministic prototype、global-only router、anchor identity、proxy causal table、frame0/union-only Cine、monitor packet completion；
-12. wiki/source/evidence fingerprint、Toolkit healthcheck、generated figures和 local commit 是否一致。
+1. planning critic hash/token、当前 prompt hash、executor plan、三个串行 worktree/merge receipts；
+2. 所有 exact result dirs/files、终态 Slurm accounting、post-job aggregation；
+3. aggregate real train-loop seconds ≥72000，且每个 formal run 达到自身 seconds/steps/events/cases；
+4. D0-D3 是真实匹配训练设计，不是同 checkpoint 开关、改名或 CSV；
+5. router 是空间两遍路径，invalid slot 在 forward/gate/gradient/update 中严格为零；
+6. Pattern-SIP 是独立训练目标，不与旧 dict loss alias；
+7. prototype 有 cross-fitted provenance、EMA+learnable residual、safe-negative 和 refresh 闭环；
+8. proposal/refiner/anatomy/memory 真正影响 final logits，formal output 不是 nnU-Net identity；
+9. no-T2 edema 在 supervision、memory、decode、export 四处阻断；
+10. loss 无 alias/placeholder/miswire，曲线和梯度满足稳定性门；
+11. checkpoint 来自 scheduled 44-case full-case metric selection，困难子组齐全；
+12. causal 文件是真 intervention，within-checkpoint 结论没有越界称 replaceable；
+13. CineMA provenance、adapter 训练、至少 8 frames/case、learned registration、learned temporal
+    dictionary、same-subset controls 和 failure denominator 完整；
+14. validator 严格拒绝所有 known-bad；
+15. mapper/wiki/fingerprint/figures 与最终代码和 runtime evidence 一致。
 
-以下任一情况必须拒绝 audited-go：缺 result dir/file；monitor/pending 状态；训练不足；runtime output 未聚合；只改名称或 CSV；global router 冒充 spatial router；Pattern-SIP 与旧 dict loss 数值相同/同图；prototype 没 provenance 或没进入 proposal；no-T2 进入 edema negative；proposal/refiner 不改变 final logits；nnU-Net 是 formal final base；proxy 表冒充 causal ablation；patch-loss checkpoint；Cine deterministic union/frame0-only；validator 非 fail-closed；mapper/wiki stale。
+以下任一情况必须拒绝 audited-go：缺文件；monitor/pending；训练不足；运行输出未聚合；D0-D3
+未分别重训；global router；Pattern-SIP alias；deterministic/no-provenance prototype；no-T2 负样本；
+proposal/refiner 对 final 输出无影响；anchor final base；patch-loss checkpoint；proxy causal 表；
+Cine frame0/单 pair/classical-only/union-only；Cine failure case 被排除；validator 或 wiki stale。
 
-允许的 review decisions：
+允许 decision：
 
 ```text
 M10_AUDITED_GO_MECHANISM_SIGNAL
@@ -450,4 +1287,12 @@ M10_AUDITED_NEEDS_EVIDENCE
 M10_AUDITED_NEEDS_MONITOR
 ```
 
-`M10_AUDITED_GO_MECHANISM_SIGNAL` 只表示完整机制获得足够信号，允许 GPT/user 规划下一里程碑；它不授权 route promotion、fold expansion、validation packaging/upload、hosted claim 或 M11 自动执行。若完整实现和训练充分但指标仍为负，使用 `M10_AUDITED_COMPLETE_NO_PROMOTION_SCIENTIFIC_UNRESOLVED`，不得越权宣布 SRR 科学失败。
+`M10_AUDITED_GO_MECHANISM_SIGNAL` 只允许 later GPT planner 设计下一里程碑，不授权 route promotion、
+fold expansion、validation packaging/upload、hosted claim 或 M11 自动执行。完整实现和训练充分但指标
+仍负时，必须使用
+`M10_AUDITED_COMPLETE_NO_PROMOTION_SCIENTIFIC_UNRESOLVED`，不得宣布科学失败。
+
+This is a separate read-only reviewer session. Do not fix code, do not generate missing artifacts,
+do not train, and do not start the next milestone. Review only the completed result directory, write
+`review.md` with the controlled milestone decision, then force-add/commit `review.md`. Do not push
+automatically.
