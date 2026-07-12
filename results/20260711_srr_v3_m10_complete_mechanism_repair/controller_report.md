@@ -89,3 +89,11 @@ At `2026-07-12T12:53:05Z`, the controller performed the first formal two-hour pe
 | `a100-gpu` | `58701203` | `58701204`-`58701210` | preflight `PENDING (Priority)`, chain `PENDING (Dependency)` |
 
 Watcher `58701289` remains `RUNNING` and finalizer `58701290` remains `PENDING (Dependency)`. No partition has started D0 and no terminal runtime output exists. This is pending-only checkpoint `1/12`; the 24-hour scheduler saturation threshold is not met. Current state remains `NEEDS_MONITOR`, not blocked and not reviewable. The next legal pending-only checkpoint is no earlier than `2026-07-12T14:53Z`.
+
+## Retry3 Terminal Accounting
+
+At `2026-07-12T13:49:48Z`, the retry3 Slurm graph had no active queued/running jobs. `htzhulab` preflight `58701195` completed, htz D0 `58701196` started and failed after `00:00:56`, htz downstream jobs were cancelled by `afterok`, the a100 mirror was cancelled by watcher `58701289`, and finalizer `58701290` failed after propagating the unsuccessful runtime state.
+
+The D0 log `logs/M10D0MyoPS_58701196_20260712_090210.log` fails with `KeyError: 'correction_opportunity_loss'` in `scripts/training/run_srr_propref_myops_fold0.py` during metrics logging. Local finalizer aggregation replay exited `2` and wrote `wave2_partition_race_retry3_finalization.json`, which records status `NEEDS_EVIDENCE`.
+
+Current controller state is `NEEDS_EVIDENCE`. Wave 2 did not produce valid formal training evidence and Wave 3 remains blocked. No `review.md` was written and no push was performed.

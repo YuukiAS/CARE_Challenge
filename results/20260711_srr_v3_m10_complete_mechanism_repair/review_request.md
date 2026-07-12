@@ -2,7 +2,7 @@
 
 This packet does not request normal M10 scientific review. It records an authorized same-executor Wave 2 replacement submission after successful compute-node preflight.
 
-Current state: `NEEDS_MONITOR`
+Current state: `NEEDS_EVIDENCE`
 
 Formal replacement jobs submitted:
 
@@ -45,3 +45,19 @@ The active monitor jobs are watcher `58701289` and finalizer `58701290`. htz pre
 At `2026-07-12T12:53:05Z`, retry3 remained pending-only: htz preflight `58701195` and a100 preflight `58701203` were still `PENDING (Priority)`, and both formal chains remained dependency-pending. Watcher `58701289` was running and finalizer `58701290` was dependency-pending.
 
 This is checkpoint `1/12` for the 24-hour scheduler saturation threshold. It remains a monitor packet. Do not perform normal M10 review yet.
+
+## Retry3 Terminal Update
+
+The retry3 Slurm graph is no longer pending or running. It is terminal but not successful:
+
+- `58701195` htz preflight completed `0:0`.
+- `58701196` htz D0 failed `1:0` after `00:00:56`.
+- `58701197`-`58701202` were cancelled by unmet `afterok`.
+- `58701203`-`58701210` a100 mirror jobs were cancelled by the watcher after htz D0 started first.
+- `58701289` watcher completed `0:0`.
+- `58701290` finalizer failed `1:0`.
+- Local aggregation replay wrote `wave2_partition_race_retry3_finalization.json` and exited `2`.
+
+Failure cause: `logs/M10D0MyoPS_58701196_20260712_090210.log` raises `KeyError: 'correction_opportunity_loss'` while training writes metrics in `scripts/training/run_srr_propref_myops_fold0.py`.
+
+This packet still does not request normal M10 review. It is `NEEDS_EVIDENCE`; Wave 2 produced no valid formal training evidence, Wave 3 must not start, and no `review.md` should be written for this packet.

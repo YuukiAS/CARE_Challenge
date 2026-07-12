@@ -1,6 +1,6 @@
 # M10 Completion Check
 
-Completion state: `NEEDS_MONITOR`
+Completion state: `NEEDS_EVIDENCE`
 
 This packet is not complete and is not ready for independent review. It records that the original Wave 2 jobs are permanently `STARTUP_FAILED` with zero training credit, the repaired compute-node preflight succeeded, the authorized replacement Wave 2 formal jobs were submitted, and those jobs are currently pending/running/dependency-waiting under Slurm.
 
@@ -77,3 +77,24 @@ Checkpoint time: `2026-07-12T12:53:05Z`
 | post-job aggregation | pending: no winner and no terminal runtime outputs |
 
 Decision remains `NEEDS_MONITOR`, not blocked and not complete. The next legal pending-only monitor check for this retry3 race is no earlier than `2026-07-12T14:53Z`.
+
+## Retry3 Terminal Accounting Check
+
+Checkpoint time: `2026-07-12T13:49:48Z`
+
+| Gate | Status |
+| --- | --- |
+| active Slurm queue | pass: no retry3 jobs remain queued or running |
+| htz preflight | pass: `58701195 COMPLETED 0:0` |
+| htz D0 runtime | fail: `58701196 FAILED 1:0` after `00:00:56` |
+| htz downstream chain | fail-closed: `58701197`-`58701202 CANCELLED 0:0` by `afterok` |
+| a100 mirror | zero credit: `58701203`-`58701210 CANCELLED by 397557` after watcher selected htz D0 |
+| retry3 watcher | pass: `58701289 COMPLETED 0:0`, winner `htzhulab` |
+| retry3 finalizer | fail-closed: `58701290 FAILED 1:0` |
+| aggregation replay | fail-closed: `finalize_wave2_partition_race.py` exited `2` and wrote `wave2_partition_race_retry3_finalization.json` |
+| runtime failure cause | fail: D0 log raises `KeyError: 'correction_opportunity_loss'` in `scripts/training/run_srr_propref_myops_fold0.py` metrics logging |
+| effective training evidence | fail: no valid D0 runtime evidence and no completed Wave 2 chain |
+| Wave 3 | blocked: Wave 2 did not complete successfully |
+| Review | blocked: this is not a completion packet |
+
+Decision is `NEEDS_EVIDENCE`. This is terminal accounting for the retry3 Wave 2 attempt, not successful M10 completion.

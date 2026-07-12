@@ -1,0 +1,42 @@
+{
+  "chain_states": {
+    "a100-gpu": {
+      "alignment_control": "CANCELLED(0:0)",
+      "d0_control": "CANCELLED(0:0)",
+      "d1_spatial_br2": "CANCELLED(0:0)",
+      "d2_hierarchical_psip": "CANCELLED(0:0)",
+      "d3_full_propref": "CANCELLED(0:0)",
+      "hard_negative_refresh": "CANCELLED(0:0)",
+      "no_context_control": "CANCELLED(0:0)"
+    },
+    "htzhulab": {
+      "alignment_control": "CANCELLED(0:0)",
+      "d0_control": "FAILED(1:0)",
+      "d1_spatial_br2": "CANCELLED(0:0)",
+      "d2_hierarchical_psip": "CANCELLED(0:0)",
+      "d3_full_propref": "CANCELLED(0:0)",
+      "hard_negative_refresh": "CANCELLED(0:0)",
+      "no_context_control": "CANCELLED(0:0)"
+    },
+    "volta-gpu": {
+      "alignment_control": "CANCELLED(0:0)",
+      "d0_control": "CANCELLED(0:0)",
+      "d1_spatial_br2": "CANCELLED(0:0)",
+      "d2_hierarchical_psip": "CANCELLED(0:0)",
+      "d3_full_propref": "CANCELLED(0:0)",
+      "hard_negative_refresh": "CANCELLED(0:0)",
+      "no_context_control": "CANCELLED(0:0)"
+    }
+  },
+  "commands": [
+    {
+      "command": "env PYTHONPATH=. python scripts/evaluation/evaluate_srr_v3_m10_full_case.py --phase d0_control --runtime-root results/20260711_srr_v3_m10_complete_mechanism_repair/runtime/m10_myops_training_executor/partition_race_retry2/htzhulab",
+      "exit_code": 2,
+      "stderr_tail": "",
+      "stdout_tail": ""
+    }
+  ],
+  "status": "NEEDS_EVIDENCE",
+  "winner_partition": "htzhulab",
+  "winner_reason": "watcher_winner_without_complete_chain"
+}

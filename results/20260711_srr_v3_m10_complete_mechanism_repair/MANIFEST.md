@@ -2,7 +2,7 @@
 
 Task key: `20260711_srr_v3_m10_complete_mechanism_repair`
 
-Packet state: `NEEDS_MONITOR`
+Packet state: `NEEDS_EVIDENCE`
 
 ## Files
 
@@ -46,6 +46,7 @@ Packet state: `NEEDS_MONITOR`
 | `wave2_partition_race_retry3_watcher_state.json` | Local active retry3 watcher state path; it may continue changing while watcher `58701289` runs and is not completion evidence. |
 | `wave2_partition_race_retry3_volta_failure.md` | Human-readable zero-credit volta preflight failure receipt. |
 | `wave2_partition_race_retry3_monitor_20260712T125305Z.md` | First formal two-hour pending-only monitor checkpoint for retry3; not completion evidence. |
+| `wave2_partition_race_retry3_finalization.json` | Retry3 terminal aggregation replay result; fail-closed `NEEDS_EVIDENCE` after htz D0 `58701196` failed. |
 | `executors/m10_myops_training_executor/` | Wave 2 executor monitor packet; not completion evidence. |
 | `subagents/reviewer_prompt.md` | Reviewer handoff prompt for this blocked packet only. |
 | `mapper_report_draft.md` | Mapper draft non-run receipt. |
@@ -56,4 +57,4 @@ Packet state: `NEEDS_MONITOR`
 
 ## Exclusions
 
-`review.md` is intentionally absent. Wave 2 terminal failure files are not completion evidence. No checkpoints, predictions, NIfTI outputs, upload zips, raw data, large logs, secrets, environment dumps, or runtime result trees are included.
+`review.md` is intentionally absent. Wave 2 terminal failure files are not successful completion evidence. No checkpoints, predictions, NIfTI outputs, upload zips, raw data, large logs, secrets, environment dumps, or runtime result trees are included.

@@ -2,7 +2,7 @@
 
 Task key: `20260711_srr_v3_m10_complete_mechanism_repair`
 
-Controller status: `NEEDS_MONITOR`
+Controller status: `NEEDS_EVIDENCE`
 
 This controller executed only the bootstrap and hard-gate validation for the M10 section in `prompts/shared/EXECUTOR_PROMPTS.md` titled `M10 executor/controller: SRR-v3 complete mechanism repair`, using `prompts/tasks/20260711_srr_v3_m10_complete_mechanism_repair_executor_plan.yaml`.
 
@@ -96,3 +96,28 @@ Volta preflight `58701281` failed `1:0` after `00:00:47` with the known V100/PyT
 At `2026-07-12T12:53:05Z`, htz preflight `58701195` and a100 preflight `58701203` were still `PENDING (Priority)`. Their formal chains `58701196`-`58701202` and `58701204`-`58701210` were still `PENDING (Dependency)`. Watcher `58701289` was `RUNNING` and finalizer `58701290` was `PENDING (Dependency)`.
 
 This is retry3 pending-only two-hour monitor checkpoint `1/12`. It does not satisfy the 24-hour scheduler block threshold. Current status remains `NEEDS_MONITOR`, not complete and not reviewable.
+
+## Retry3 Terminal Accounting
+
+At `2026-07-12T13:49:48Z`, the active retry3 Slurm graph had no queued or running jobs. Accounting shows:
+
+| Job group | Terminal outcome |
+| --- | --- |
+| `htzhulab` preflight `58701195` | `COMPLETED 0:0` after `00:00:28` |
+| `htzhulab` D0 `58701196` | `FAILED 1:0` after `00:00:56` on `g1807htzh01` |
+| `htzhulab` downstream `58701197`-`58701202` | `CANCELLED 0:0` by unmet `afterok` dependency |
+| `a100-gpu` preflight/chain `58701203`-`58701210` | `CANCELLED by 397557` after watcher selected the htz D0 start |
+| retry3 watcher `58701289` | `COMPLETED 0:0`; selected `htzhulab` because D0 started first |
+| retry3 finalizer `58701290` | `FAILED 1:0`; propagated runtime failure/accounting failure |
+
+The `htzhulab` D0 log `logs/M10D0MyoPS_58701196_20260712_090210.log` fails inside `scripts/training/run_srr_propref_myops_fold0.py` while writing train metrics:
+
+```text
+KeyError: 'correction_opportunity_loss'
+```
+
+The controller reran the finalizer aggregation command locally. It wrote `wave2_partition_race_retry3_finalization.json` and exited `2`. The finalization result selects `htzhulab` as the watcher winner, records the htz D0 as `FAILED(1:0)`, records all downstream phases as cancelled, and fails closed because `d0_control` evaluation has no valid runtime evidence.
+
+Current controller state is `NEEDS_EVIDENCE`, not `NEEDS_MONITOR`, not complete, and not reviewable. The failed htz D0 attempt receives zero effective-training credit, the cancelled downstream/a100/volta jobs receive zero credit, and M10 Wave 2 has not satisfied the minimum-effective-training evidence gate.
+
+Allowed next state is not Wave 3. Because this runtime failure is in Wave 2 training metrics/logging code, continuing would require either a same-scope operational repair if it does not alter variants, budgets, split, formulas, result paths, executor count, or wave graph, or `NEEDS_REVISION_RETURN_TO_WAVE1` / `NEEDS_GPT_PLANNER` if the repair touches forbidden shared architecture/loss semantics or changes the scientific contract.

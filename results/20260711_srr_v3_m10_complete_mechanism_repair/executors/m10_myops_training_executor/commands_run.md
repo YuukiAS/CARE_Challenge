@@ -234,3 +234,16 @@ Update timestamp UTC: `2026-07-12T12:53:05Z`
 | `wave2_partition_race_retry3_watcher_state.json` | watcher state remains `NEEDS_MONITOR`, no winner partition |
 
 This is pending-only monitor checkpoint `1/12`; scheduler block threshold is not met. Next legal pending-only monitor check is no earlier than `2026-07-12T14:53Z`.
+
+## Retry3 Terminal Accounting
+
+Update timestamp UTC: `2026-07-12T13:49:48Z`
+
+| Command / evidence | Result |
+| --- | --- |
+| `squeue -j 58701195,...,58701210,58701289,58701290 -o '%i|%j|%T|%M|%l|%D|%C|%m|%R|%P|%Q'` | no active jobs returned |
+| `sacct -j 58701195,...,58701210,58701289,58701290 --format=JobIDRaw,JobName,State,ExitCode,Elapsed,Start,End,NodeList -P` | htz preflight `58701195 COMPLETED 0:0`; htz D0 `58701196 FAILED 1:0`; htz downstream `CANCELLED`; a100 mirror `CANCELLED by 397557`; watcher `58701289 COMPLETED`; finalizer `58701290 FAILED 1:0` |
+| `tail -n 260 logs/M10D0MyoPS_58701196_20260712_090210.log` | `KeyError: 'correction_opportunity_loss'` in `scripts/training/run_srr_propref_myops_fold0.py` while writing metrics |
+| `env PYTHONPATH=. python results/20260711_srr_v3_m10_complete_mechanism_repair/finalize_wave2_partition_race.py --submission results/20260711_srr_v3_m10_complete_mechanism_repair/wave2_partition_race_retry3_submission.json --watcher-state results/20260711_srr_v3_m10_complete_mechanism_repair/wave2_partition_race_retry3_watcher_state.json --result-path results/20260711_srr_v3_m10_complete_mechanism_repair/wave2_partition_race_retry3_finalization.json` | exit `2`; wrote fail-closed `NEEDS_EVIDENCE` finalization JSON |
+
+Current state is `NEEDS_EVIDENCE`, not `NEEDS_MONITOR`, not complete, and not reviewable. Wave 2 has zero effective formal training evidence for retry3 because D0 failed before valid runtime aggregation and all downstream/mirror jobs were cancelled.
