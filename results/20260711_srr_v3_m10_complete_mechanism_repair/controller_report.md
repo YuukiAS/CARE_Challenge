@@ -62,3 +62,19 @@ The `volta-gpu` D0 job `58701111` failed after `00:04:15` with `CUDA error: no k
 The controller added a CUDA kernel smoke to `wave2_env_preflight.sh` so future preflights must prove that a visible GPU can execute kernels. A same-scope replacement race was submitted only to `htzhulab` and `a100-gpu`: htz preflight `58701195`, htz chain `58701196`-`58701202`; a100 preflight `58701203`, a100 chain `58701204`-`58701210`; watcher `58701211`; finalizer `58701212`.
 
 Current state remains `NEEDS_MONITOR`: both new preflights are pending, watcher `58701211` is running, and finalizer `58701212` is dependency-pending.
+
+## User-Authorized Retry3 Volta Add-On
+
+The user then explicitly authorized adding `volta-gpu` back into the current M10 goal's routing race. The controller did not create a new milestone, executor, scientific design, budget, split, formula, or wave graph. It retained the active htz/a100 jobs and added a volta mirror guarded by the hardened compute-node preflight.
+
+New retry3 jobs:
+
+| Partition | Preflight | Formal chain | Current outcome |
+| --- | ---: | --- | --- |
+| `htzhulab` | `58701195` | `58701196`-`58701202` | preflight pending |
+| `a100-gpu` | `58701203` | `58701204`-`58701210` | preflight pending |
+| `volta-gpu` | `58701281` | `58701282`-`58701288` | preflight failed; formal chain cancelled by `afterok` |
+
+The volta preflight log `logs/M10W2Preflight_volta-gpu_58701281_20260712_065303.log` confirms `mpmath 1.3.0`, `sympy 1.14.0`, and `optimizer_ok`, then fails at the CUDA kernel probe because `torch 2.11.0+cu130` does not support Tesla V100 compute capability 7.0. This is zero-credit operational hardware incompatibility, not training evidence.
+
+The superseded two-partition watcher/finalizer `58701211` and `58701212` were cancelled after the retry3 watcher/finalizer were submitted. Active monitor jobs are watcher `58701289` and finalizer `58701290`. Current state remains `NEEDS_MONITOR`, not complete and not reviewable. No `review.md` was written and no push was performed.

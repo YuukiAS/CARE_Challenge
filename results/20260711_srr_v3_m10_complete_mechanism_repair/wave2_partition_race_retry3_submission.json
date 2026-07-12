@@ -1,0 +1,363 @@
+{
+  "active_effective_partitions": [
+    "htzhulab",
+    "a100-gpu"
+  ],
+  "aggregation_policy": "defer mirror aggregation; aggregate only winning partition runtime root",
+  "authorization": "user_authorized_three_partition_race_add_volta_same_m10_goal",
+  "cancel_records": [
+    {
+      "command": "scancel 58701211",
+      "exit_code": 0,
+      "partition": "spill",
+      "stage": "cancel_superseded_monitoring_job",
+      "stderr": "",
+      "stdout": ""
+    },
+    {
+      "command": "scancel 58701212",
+      "exit_code": 0,
+      "partition": "spill",
+      "stage": "cancel_superseded_monitoring_job",
+      "stderr": "",
+      "stdout": ""
+    }
+  ],
+  "cancelled_superseded_jobs": [
+    "58700815",
+    "58700821",
+    "58700822",
+    "58700826",
+    "58700827",
+    "58700828",
+    "58700832"
+  ],
+  "chains": {
+    "a100-gpu": {
+      "jobs": {
+        "alignment_control": "58701210",
+        "d0_control": "58701204",
+        "d1_spatial_br2": "58701205",
+        "d2_hierarchical_psip": "58701206",
+        "d3_full_propref": "58701207",
+        "hard_negative_refresh": "58701208",
+        "no_context_control": "58701209"
+      },
+      "log_prefixes": {
+        "alignment_control": "M10Align",
+        "d0_control": "M10D0MyoPS",
+        "d1_spatial_br2": "M10D1MyoPS",
+        "d2_hierarchical_psip": "M10D2MyoPS",
+        "d3_full_propref": "M10D3MyoPS",
+        "hard_negative_refresh": "M10HardNeg",
+        "no_context_control": "M10NoCtx"
+      },
+      "partition": "a100-gpu",
+      "preflight_job_ids": [
+        "58701203"
+      ],
+      "runtime_root": "results/20260711_srr_v3_m10_complete_mechanism_repair/runtime/m10_myops_training_executor/partition_race_retry2/a100-gpu"
+    },
+    "htzhulab": {
+      "jobs": {
+        "alignment_control": "58701202",
+        "d0_control": "58701196",
+        "d1_spatial_br2": "58701197",
+        "d2_hierarchical_psip": "58701198",
+        "d3_full_propref": "58701199",
+        "hard_negative_refresh": "58701200",
+        "no_context_control": "58701201"
+      },
+      "log_prefixes": {
+        "alignment_control": "M10Align",
+        "d0_control": "M10D0MyoPS",
+        "d1_spatial_br2": "M10D1MyoPS",
+        "d2_hierarchical_psip": "M10D2MyoPS",
+        "d3_full_propref": "M10D3MyoPS",
+        "hard_negative_refresh": "M10HardNeg",
+        "no_context_control": "M10NoCtx"
+      },
+      "partition": "htzhulab",
+      "preflight_job_ids": [
+        "58701195"
+      ],
+      "runtime_root": "results/20260711_srr_v3_m10_complete_mechanism_repair/runtime/m10_myops_training_executor/partition_race_retry2/htzhulab"
+    },
+    "volta-gpu": {
+      "hardware_compatibility_guard": "wave2_env_preflight.sh includes torch CUDA kernel probe; formal chain is afterok-gated on preflight",
+      "jobs": {
+        "alignment_control": "58701288",
+        "d0_control": "58701282",
+        "d1_spatial_br2": "58701283",
+        "d2_hierarchical_psip": "58701284",
+        "d3_full_propref": "58701285",
+        "hard_negative_refresh": "58701286",
+        "no_context_control": "58701287"
+      },
+      "log_prefixes": {
+        "alignment_control": "M10Align",
+        "d0_control": "M10D0MyoPS",
+        "d1_spatial_br2": "M10D1MyoPS",
+        "d2_hierarchical_psip": "M10D2MyoPS",
+        "d3_full_propref": "M10D3MyoPS",
+        "hard_negative_refresh": "M10HardNeg",
+        "no_context_control": "M10NoCtx"
+      },
+      "partition": "volta-gpu",
+      "preflight_job_ids": [
+        "58701281"
+      ],
+      "runtime_root": "results/20260711_srr_v3_m10_complete_mechanism_repair/runtime/m10_myops_training_executor/partition_race_retry3/volta-gpu"
+    }
+  },
+  "created_at_utc": "2026-07-12T10:52:59.247309+00:00",
+  "current_controller_status": "NEEDS_MONITOR",
+  "dependency_policy": "preflight_afterok_then_training_afterok_chain_per_partition; finalizer_afterany_all_attempts",
+  "excluded_partition": {},
+  "finalizer_job_id": "58701290",
+  "monitor_state": {
+    "a100_preflight": "58701203 PENDING Priority",
+    "htzhulab_preflight": "58701195 PENDING Priority",
+    "next_legal_pending_only_monitor_check_utc": "2026-07-12T12:53:00Z",
+    "retry3_finalizer": "58701290 PENDING Dependency",
+    "retry3_watcher": "58701289 RUNNING"
+  },
+  "old_startup_failed_jobs_zero_credit": [
+    "58644072",
+    "58644073",
+    "58644074",
+    "58644106",
+    "58644107",
+    "58644108",
+    "58644109"
+  ],
+  "previous_race_attempt_job_ids": [
+    "58701102",
+    "58701109",
+    "58701103",
+    "58701104",
+    "58701105",
+    "58701106",
+    "58701107",
+    "58701108",
+    "58701094",
+    "58701101",
+    "58701095",
+    "58701096",
+    "58701097",
+    "58701098",
+    "58701099",
+    "58701100",
+    "58701110",
+    "58701117",
+    "58701111",
+    "58701112",
+    "58701113",
+    "58701114",
+    "58701115",
+    "58701116",
+    "58701118"
+  ],
+  "previous_two_partition_race_submission": "/users/a/e/aereinh/CARE/results/20260711_srr_v3_m10_complete_mechanism_repair/wave2_partition_race_retry2_submission.json",
+  "records": [
+    {
+      "command": "sbatch --parsable --job-name=M10W2PreVolta3 --partition=volta-gpu --qos=gpu_access --gres=gpu:tesla_v100-sxm2-16gb:1 --ntasks=1 --cpus-per-task=2 --mem=8G --time=00:10:00 --export=ALL,M10_PREFLIGHT_RACE_PARTITION=volta-gpu results/20260711_srr_v3_m10_complete_mechanism_repair/wave2_env_preflight.sh",
+      "exit_code": 0,
+      "partition": "volta-gpu",
+      "stage": "preflight",
+      "stderr": "",
+      "stdout": "58701281"
+    },
+    {
+      "command": "sbatch --parsable --dependency=afterok:58701281 --partition=volta-gpu --qos=gpu_access --gres=gpu:tesla_v100-sxm2-16gb:1 --export=ALL,M10_RUNTIME_ROOT=results/20260711_srr_v3_m10_complete_mechanism_repair/runtime/m10_myops_training_executor/partition_race_retry3/volta-gpu,M10_DEFER_AGGREGATION=1,M10_RACE_PARTITION=volta-gpu jobs/src/run_srr_v3_m10_myops_d0_control.sh",
+      "dependency": "afterok:58701281",
+      "exit_code": 0,
+      "partition": "volta-gpu",
+      "stage": "d0_control",
+      "stderr": "",
+      "stdout": "58701282"
+    },
+    {
+      "command": "sbatch --parsable --dependency=afterok:58701282 --partition=volta-gpu --qos=gpu_access --gres=gpu:tesla_v100-sxm2-16gb:1 --export=ALL,M10_RUNTIME_ROOT=results/20260711_srr_v3_m10_complete_mechanism_repair/runtime/m10_myops_training_executor/partition_race_retry3/volta-gpu,M10_DEFER_AGGREGATION=1,M10_RACE_PARTITION=volta-gpu jobs/src/run_srr_v3_m10_myops_d1_spatial_br2.sh",
+      "dependency": "afterok:58701282",
+      "exit_code": 0,
+      "partition": "volta-gpu",
+      "stage": "d1_spatial_br2",
+      "stderr": "",
+      "stdout": "58701283"
+    },
+    {
+      "command": "sbatch --parsable --dependency=afterok:58701283 --partition=volta-gpu --qos=gpu_access --gres=gpu:tesla_v100-sxm2-16gb:1 --export=ALL,M10_RUNTIME_ROOT=results/20260711_srr_v3_m10_complete_mechanism_repair/runtime/m10_myops_training_executor/partition_race_retry3/volta-gpu,M10_DEFER_AGGREGATION=1,M10_RACE_PARTITION=volta-gpu jobs/src/run_srr_v3_m10_myops_d2_hierarchical_psip.sh",
+      "dependency": "afterok:58701283",
+      "exit_code": 0,
+      "partition": "volta-gpu",
+      "stage": "d2_hierarchical_psip",
+      "stderr": "",
+      "stdout": "58701284"
+    },
+    {
+      "command": "sbatch --parsable --dependency=afterok:58701284 --partition=volta-gpu --qos=gpu_access --gres=gpu:tesla_v100-sxm2-16gb:1 --export=ALL,M10_RUNTIME_ROOT=results/20260711_srr_v3_m10_complete_mechanism_repair/runtime/m10_myops_training_executor/partition_race_retry3/volta-gpu,M10_DEFER_AGGREGATION=1,M10_RACE_PARTITION=volta-gpu jobs/src/run_srr_v3_m10_myops_d3_full_propref.sh",
+      "dependency": "afterok:58701284",
+      "exit_code": 0,
+      "partition": "volta-gpu",
+      "stage": "d3_full_propref",
+      "stderr": "",
+      "stdout": "58701285"
+    },
+    {
+      "command": "sbatch --parsable --dependency=afterok:58701285 --partition=volta-gpu --qos=gpu_access --gres=gpu:tesla_v100-sxm2-16gb:1 --export=ALL,M10_RUNTIME_ROOT=results/20260711_srr_v3_m10_complete_mechanism_repair/runtime/m10_myops_training_executor/partition_race_retry3/volta-gpu,M10_DEFER_AGGREGATION=1,M10_RACE_PARTITION=volta-gpu jobs/src/run_srr_v3_m10_hard_negative_refresh.sh",
+      "dependency": "afterok:58701285",
+      "exit_code": 0,
+      "partition": "volta-gpu",
+      "stage": "hard_negative_refresh",
+      "stderr": "",
+      "stdout": "58701286"
+    },
+    {
+      "command": "sbatch --parsable --dependency=afterok:58701286 --partition=volta-gpu --qos=gpu_access --gres=gpu:tesla_v100-sxm2-16gb:1 --export=ALL,M10_RUNTIME_ROOT=results/20260711_srr_v3_m10_complete_mechanism_repair/runtime/m10_myops_training_executor/partition_race_retry3/volta-gpu,M10_DEFER_AGGREGATION=1,M10_RACE_PARTITION=volta-gpu jobs/src/run_srr_v3_m10_no_context_control.sh",
+      "dependency": "afterok:58701286",
+      "exit_code": 0,
+      "partition": "volta-gpu",
+      "stage": "no_context_control",
+      "stderr": "",
+      "stdout": "58701287"
+    },
+    {
+      "command": "sbatch --parsable --dependency=afterok:58701287 --partition=volta-gpu --qos=gpu_access --gres=gpu:tesla_v100-sxm2-16gb:1 --export=ALL,M10_RUNTIME_ROOT=results/20260711_srr_v3_m10_complete_mechanism_repair/runtime/m10_myops_training_executor/partition_race_retry3/volta-gpu,M10_DEFER_AGGREGATION=1,M10_RACE_PARTITION=volta-gpu jobs/src/run_srr_v3_m10_alignment_control.sh",
+      "dependency": "afterok:58701287",
+      "exit_code": 0,
+      "partition": "volta-gpu",
+      "stage": "alignment_control",
+      "stderr": "",
+      "stdout": "58701288"
+    },
+    {
+      "command": "sbatch --parsable --job-name=M10W2RaceWatch3 --ntasks=1 --cpus-per-task=1 --mem=1G --time=24:00:00 --output results/20260711_srr_v3_m10_complete_mechanism_repair/wave2_partition_race_retry3_watcher_%j.log --wrap 'cd /users/a/e/aereinh/CARE && env PYTHONPATH=. python results/20260711_srr_v3_m10_complete_mechanism_repair/wave2_partition_race_watcher.py --submission results/20260711_srr_v3_m10_complete_mechanism_repair/wave2_partition_race_retry3_submission.json --state-path results/20260711_srr_v3_m10_complete_mechanism_repair/wave2_partition_race_retry3_watcher_state.json --check-interval-seconds 60 --max-checks 1440'",
+      "exit_code": 0,
+      "partition": "spill",
+      "stage": "race_watcher",
+      "stderr": "",
+      "stdout": "58701289"
+    },
+    {
+      "command": "python scripts/ops/submit_care_dependency_finalizer.py --task-key 20260711_srr_v3_m10_complete_mechanism_repair --result-dir results/20260711_srr_v3_m10_complete_mechanism_repair --stage accounting --awaiting-sacct-retry-seconds 3600 --awaiting-sacct-retry-interval 30 --accounting-exhaustion-backend tmux_watcher --lock-path results/20260711_srr_v3_m10_complete_mechanism_repair/locks/wave2_partition_race_retry3_finalizer.lock --receipt-path results/20260711_srr_v3_m10_complete_mechanism_repair/wave2_partition_race_retry3_finalizer_submission.json --aggregation-command 'env PYTHONPATH=. python results/20260711_srr_v3_m10_complete_mechanism_repair/finalize_wave2_partition_race.py --submission results/20260711_srr_v3_m10_complete_mechanism_repair/wave2_partition_race_retry3_submission.json --watcher-state results/20260711_srr_v3_m10_complete_mechanism_repair/wave2_partition_race_retry3_watcher_state.json --result-path results/20260711_srr_v3_m10_complete_mechanism_repair/wave2_partition_race_retry3_finalization.json' --validator-command 'python scripts/ops/validate_executor_plan.py prompts/tasks/20260711_srr_v3_m10_complete_mechanism_repair_executor_plan.yaml' --validator-command 'python scripts/validation/validate_handoff_policy.py --strict-tasks --warnings-as-errors' --validator-command 'python scripts/architecture/validate_care_architecture_wiki.py --strict --history' --validator-command 'python scripts/architecture/generate_care_architecture_wiki.py --check-all' --validator-command 'git diff --check' --commit-message 'Finalize CARE milestone packet' --required-job-id 58644072 --required-job-id 58644073 --required-job-id 58644074 --required-job-id 58644106 --required-job-id 58644107 --required-job-id 58644108 --required-job-id 58644109 --required-job-id 58700815 --required-job-id 58700821 --required-job-id 58700822 --required-job-id 58700826 --required-job-id 58700827 --required-job-id 58700828 --required-job-id 58700832 --required-job-id 58701102 --required-job-id 58701109 --required-job-id 58701103 --required-job-id 58701104 --required-job-id 58701105 --required-job-id 58701106 --required-job-id 58701107 --required-job-id 58701108 --required-job-id 58701094 --required-job-id 58701101 --required-job-id 58701095 --required-job-id 58701096 --required-job-id 58701097 --required-job-id 58701098 --required-job-id 58701099 --required-job-id 58701100 --required-job-id 58701110 --required-job-id 58701117 --required-job-id 58701111 --required-job-id 58701112 --required-job-id 58701113 --required-job-id 58701114 --required-job-id 58701115 --required-job-id 58701116 --required-job-id 58701118 --required-job-id 58701195 --required-job-id 58701196 --required-job-id 58701197 --required-job-id 58701198 --required-job-id 58701199 --required-job-id 58701200 --required-job-id 58701201 --required-job-id 58701202 --required-job-id 58701203 --required-job-id 58701204 --required-job-id 58701205 --required-job-id 58701206 --required-job-id 58701207 --required-job-id 58701208 --required-job-id 58701209 --required-job-id 58701210 --required-job-id 58701211 --required-job-id 58701212 --required-job-id 58701281 --required-job-id 58701282 --required-job-id 58701283 --required-job-id 58701284 --required-job-id 58701285 --required-job-id 58701286 --required-job-id 58701287 --required-job-id 58701288 --required-job-id 58701289",
+      "exit_code": 0,
+      "partition": "spill",
+      "stage": "race_finalizer_submission",
+      "stderr": "",
+      "stdout": "58701290"
+    }
+  ],
+  "required_job_ids": [
+    "58644072",
+    "58644073",
+    "58644074",
+    "58644106",
+    "58644107",
+    "58644108",
+    "58644109",
+    "58700815",
+    "58700821",
+    "58700822",
+    "58700826",
+    "58700827",
+    "58700828",
+    "58700832",
+    "58701102",
+    "58701109",
+    "58701103",
+    "58701104",
+    "58701105",
+    "58701106",
+    "58701107",
+    "58701108",
+    "58701094",
+    "58701101",
+    "58701095",
+    "58701096",
+    "58701097",
+    "58701098",
+    "58701099",
+    "58701100",
+    "58701110",
+    "58701117",
+    "58701111",
+    "58701112",
+    "58701113",
+    "58701114",
+    "58701115",
+    "58701116",
+    "58701118",
+    "58701195",
+    "58701196",
+    "58701197",
+    "58701198",
+    "58701199",
+    "58701200",
+    "58701201",
+    "58701202",
+    "58701203",
+    "58701204",
+    "58701205",
+    "58701206",
+    "58701207",
+    "58701208",
+    "58701209",
+    "58701210",
+    "58701211",
+    "58701212",
+    "58701281",
+    "58701282",
+    "58701283",
+    "58701284",
+    "58701285",
+    "58701286",
+    "58701287",
+    "58701288",
+    "58701289"
+  ],
+  "script_hashes": {
+    "aggregation_entrypoint": "87dd829e9908e09cf69e512df681a8c89c5a6560eca0a0693bde23128f801be5",
+    "evaluation_entrypoint": "c418afc5ab734b506ebc4e15d5515b73edb65831b81ec7971e81d0ec02c4b615",
+    "jobs/src/run_srr_v3_m10_alignment_control.sh": "115889eb73e74356d02764c636c566b7085a82ed6bf1490ef1f2088399bd8302",
+    "jobs/src/run_srr_v3_m10_hard_negative_refresh.sh": "8e774a67c3f555edc7a063c5bd2fa471b12163698cfde90db5d80187ba541491",
+    "jobs/src/run_srr_v3_m10_myops_d0_control.sh": "d8922b484a41c50e92af4de598a93dbaec55530d49411106aa038594a634db45",
+    "jobs/src/run_srr_v3_m10_myops_d1_spatial_br2.sh": "aefde7515005e80ba8daf2fca6b6e052db9c9efa0b1c944c01b719210762740a",
+    "jobs/src/run_srr_v3_m10_myops_d2_hierarchical_psip.sh": "c3ec544e82e096abc8a4939eaa7ec344d613b5bd62c6e26ab5094efa63257384",
+    "jobs/src/run_srr_v3_m10_myops_d3_full_propref.sh": "f93d9b39ac839bf162a39d13e12533f97c9a81adadc36d7b9fb9db8a18855570",
+    "jobs/src/run_srr_v3_m10_no_context_control.sh": "cc1c5a43a0b7aef91880c5a6c22d2a98569a0acef44dfbfea2da162da765dcd7",
+    "preflight_script": "1af4bf18251093c976e0f469997d238170fc38e10fe6499502f6647e55332d03",
+    "race_finalizer": "8ea06a3b94f92b616c11d19351b18ded18d3133df86472799b4fb56fc61f41d5",
+    "race_watcher": "3804dca7868e8ffe0f63a9b085925de628cc2258dcc33d55599645998a266b4f",
+    "training_entrypoint": "cfa881fe1d843c7c646f0ef3b044a3357f65a710dda1553b9ae1c3b1e96a1661"
+  },
+  "superseded_monitoring_jobs": [
+    "58701211",
+    "58701212"
+  ],
+  "updated_at_utc": "2026-07-12T10:57:07.106367+00:00",
+  "volta_cancelled_afterok_jobs_zero_credit": [
+    "58701282",
+    "58701283",
+    "58701284",
+    "58701285",
+    "58701286",
+    "58701287",
+    "58701288"
+  ],
+  "volta_preflight_terminal": {
+    "elapsed": "00:00:47",
+    "exit_code": "1:0",
+    "failure_class": "VOLTA_GPU_UNSUPPORTED_BY_TORCH_BUILD_CUDA_KERNEL_PROBE_FAILED",
+    "job_id": "58701281",
+    "log_path": "logs/M10W2Preflight_volta-gpu_58701281_20260712_065303.log",
+    "node": "g0303",
+    "optimizer_steps_credit": 0,
+    "partition": "volta-gpu",
+    "state": "FAILED",
+    "train_loop_seconds_credit": 0,
+    "training_credit": 0
+  },
+  "volta_risk_note": "Prior V100 attempt failed torch CUDA kernel compatibility; this retry keeps Volta only behind compute-env CUDA kernel preflight.",
+  "watcher_job_id": "58701289"
+}

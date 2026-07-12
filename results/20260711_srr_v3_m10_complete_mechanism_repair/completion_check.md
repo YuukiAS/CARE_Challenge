@@ -42,7 +42,21 @@ Decision remains `NEEDS_MONITOR`, not blocked and not complete.
 | Volta D0 accounting | pass: `58701111` failed with unsupported V100 CUDA kernel execution, zero credit |
 | Preflight hardening | pass: `wave2_env_preflight.sh` now includes CUDA kernel execution probe |
 | Htz/A100 retry submission | monitor: htz preflight `58701195`, a100 preflight `58701203` pending |
-| Retry watcher | monitor: `58701211` running |
-| Retry finalizer | monitor: `58701212` dependency-pending |
+| Retry watcher | superseded: `58701211` cancelled after user authorized adding `volta-gpu` |
+| Retry finalizer | superseded: `58701212` cancelled before terminal accounting |
 
 Decision remains `NEEDS_MONITOR`.
+
+## User-Authorized Volta Add-On Check
+
+| Gate | Status |
+| --- | --- |
+| User authorization | pass: user explicitly authorized adding `volta-gpu` to the current goal's routing race |
+| Three-partition retry3 submission | pass: existing htz/a100 chains retained; added volta preflight `58701281` and afterok chain `58701282`-`58701288` |
+| Volta compute preflight | failed as designed: `58701281` failed `1:0` after CUDA kernel probe hit unsupported V100 execution |
+| Volta training credit | pass: `58701282`-`58701288` were cancelled by unmet `afterok`; training, optimizer-step, and train-loop-second credit remain zero |
+| Active effective race | monitor: htz preflight `58701195` and a100 preflight `58701203` remain pending; their D0 jobs `58701196` and `58701204` remain dependency-pending |
+| Retry3 watcher | monitor: `58701289` running and reading all three D0 jobs |
+| Retry3 finalizer | monitor: `58701290` dependency-pending with `afterany` over old, superseded, failed, cancelled, and active retry jobs |
+
+Decision remains `NEEDS_MONITOR`, not blocked and not complete. The next legal pending-only monitor check for this retry3 race is no earlier than `2026-07-12T12:53Z`.

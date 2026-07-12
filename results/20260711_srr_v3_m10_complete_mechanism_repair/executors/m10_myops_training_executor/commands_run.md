@@ -188,3 +188,37 @@ The controller added a CUDA kernel execution probe to `wave2_env_preflight.sh` a
 | `a100-gpu` | `58701203` | `58701204` | `58701205`-`58701210` | preflight pending |
 
 Watcher `58701211` is running. Finalizer `58701212` is pending with `afterany` over all old, superseded, failed, and retry jobs.
+
+## User-Authorized Retry3 Volta Add-On
+
+Update timestamp UTC: `2026-07-12T10:54:45Z`
+
+The user explicitly authorized adding `volta-gpu` to the current M10 goal's routing race. This did not change variants, formulas, budgets, split, case set, evaluation rules, checkpoint-selection rules, executor count, or wave graph.
+
+| Command / evidence | Result |
+| --- | --- |
+| `squeue`/`sacct` over retry2 jobs before add-on | htz preflight `58701195` and a100 preflight `58701203` still pending; no D0 winner had started |
+| `sbatch --parsable --job-name=M10W2PreVolta3 --partition=volta-gpu --qos=gpu_access --gres=gpu:tesla_v100-sxm2-16gb:1 ... wave2_env_preflight.sh` | `58701281` |
+| `sbatch --parsable --dependency=afterok:58701281 ... run_srr_v3_m10_myops_d0_control.sh` | `58701282` |
+| `sbatch --parsable --dependency=afterok:58701282 ... run_srr_v3_m10_myops_d1_spatial_br2.sh` | `58701283` |
+| `sbatch --parsable --dependency=afterok:58701283 ... run_srr_v3_m10_myops_d2_hierarchical_psip.sh` | `58701284` |
+| `sbatch --parsable --dependency=afterok:58701284 ... run_srr_v3_m10_myops_d3_full_propref.sh` | `58701285` |
+| `sbatch --parsable --dependency=afterok:58701285 ... run_srr_v3_m10_hard_negative_refresh.sh` | `58701286` |
+| `sbatch --parsable --dependency=afterok:58701286 ... run_srr_v3_m10_no_context_control.sh` | `58701287` |
+| `sbatch --parsable --dependency=afterok:58701287 ... run_srr_v3_m10_alignment_control.sh` | `58701288` |
+| submit retry3 watcher over `wave2_partition_race_retry3_submission.json` | `58701289` |
+| `scancel 58701211` | cancelled superseded two-partition watcher |
+| `scancel 58701212` | cancelled superseded two-partition finalizer |
+| submit retry3 finalizer with `afterany` over all old, superseded, failed, cancelled, active, and watcher jobs | `58701290` |
+| `sacct -j 58701281,58701282,58701283,58701284,58701285,58701286,58701287,58701288` | preflight `58701281 FAILED 1:0`; formal chain `58701282`-`58701288 CANCELLED` |
+| `tail logs/M10W2Preflight_volta-gpu_58701281_20260712_065303.log` | `mpmath 1.3.0`, `sympy 1.14.0`, `optimizer_ok`; failed CUDA kernel probe with unsupported V100 compute capability |
+
+Retry3 receipts:
+
+- `results/20260711_srr_v3_m10_complete_mechanism_repair/wave2_partition_race_retry3_submission.json`
+- `results/20260711_srr_v3_m10_complete_mechanism_repair/wave2_partition_race_retry3_job_ledger.csv`
+- `results/20260711_srr_v3_m10_complete_mechanism_repair/wave2_partition_race_retry3_finalizer_submission.json`
+- `results/20260711_srr_v3_m10_complete_mechanism_repair/wave2_partition_race_retry3_watcher_state.json`
+- `results/20260711_srr_v3_m10_complete_mechanism_repair/wave2_partition_race_retry3_volta_failure.md`
+
+Current state remains `NEEDS_MONITOR`: htz preflight `58701195` and a100 preflight `58701203` remain pending, watcher `58701289` is running, and finalizer `58701290` is dependency-pending. Volta retry3 receives zero training, optimizer-step, and train-loop-second credit.

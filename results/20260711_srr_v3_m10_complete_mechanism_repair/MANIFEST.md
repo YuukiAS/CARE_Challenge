@@ -40,6 +40,11 @@ Packet state: `NEEDS_MONITOR`
 | `wave2_partition_race_retry2_submission.json` | Htz/A100 retry race receipt after V100 hardware incompatibility. |
 | `wave2_partition_race_retry2_finalizer_submission.json` | New afterany finalizer receipt for the htz/A100 retry graph. |
 | `wave2_partition_race_retry2_job_ledger.csv` | Htz/A100 retry ledger with preflight IDs, dependencies, runtime roots, and credit policy. |
+| `wave2_partition_race_retry3_submission.json` | User-authorized htz/a100/volta retry receipt retaining active htz/a100 jobs and adding a preflight-gated volta mirror. |
+| `wave2_partition_race_retry3_finalizer_submission.json` | New afterany finalizer receipt for the retry3 graph. |
+| `wave2_partition_race_retry3_job_ledger.csv` | Retry3 ledger with htz/a100 pending jobs, volta failed preflight, cancelled volta afterok chain, runtime roots, and credit policy. |
+| `wave2_partition_race_retry3_watcher_state.json` | Local active retry3 watcher state path; it may continue changing while watcher `58701289` runs and is not completion evidence. |
+| `wave2_partition_race_retry3_volta_failure.md` | Human-readable zero-credit volta preflight failure receipt. |
 | `executors/m10_myops_training_executor/` | Wave 2 executor monitor packet; not completion evidence. |
 | `subagents/reviewer_prompt.md` | Reviewer handoff prompt for this blocked packet only. |
 | `mapper_report_draft.md` | Mapper draft non-run receipt. |

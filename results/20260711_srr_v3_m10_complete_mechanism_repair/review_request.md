@@ -31,3 +31,11 @@ This is still a monitor packet. Do not perform normal M10 review yet.
 `volta-gpu` was excluded after D0 `58701111` failed with unsupported V100 CUDA kernel execution. A same-scope `htzhulab`/`a100-gpu` retry race is pending under preflight jobs `58701195` and `58701203`, watcher `58701211`, and finalizer `58701212`.
 
 This remains a monitor packet. Do not perform normal M10 review yet.
+
+## Retry3 Volta Add-On Update
+
+After the user explicitly authorized adding `volta-gpu` back into this same current goal, the controller submitted a three-partition retry3 packet without changing the Wave 2 scientific contract. Existing htz/a100 jobs remain active; added volta jobs are preflight `58701281` and afterok formal chain `58701282`-`58701288`.
+
+The hardened volta preflight failed `1:0` in `00:00:47` on `g0303` because the CUDA kernel probe hit the known PyTorch/V100 incompatibility: `CUDA error: no kernel image is available for execution on the device`. The formal volta jobs were cancelled by the failed `afterok` dependency and receive zero training credit.
+
+The active monitor jobs are watcher `58701289` and finalizer `58701290`. htz preflight `58701195` and a100 preflight `58701203` remain pending; this is still `NEEDS_MONITOR`, not a normal review request.

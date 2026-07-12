@@ -82,3 +82,11 @@ After explicit user authorization, the pending single-partition replacement chai
 `volta-gpu` D0 `58701111` failed with a V100/PyTorch CUDA kernel incompatibility (`no kernel image is available for execution on the device`). This attempt is recorded as zero-credit operational hardware failure. The preflight now includes an actual CUDA kernel probe.
 
 The controller submitted a same-scope `htzhulab`/`a100-gpu` replacement race: htz preflight `58701195`, htz formal chain `58701196`-`58701202`; a100 preflight `58701203`, a100 formal chain `58701204`-`58701210`; watcher `58701211`; finalizer `58701212`. Current status remains `NEEDS_MONITOR`, not complete and not reviewable.
+
+## Retry3 Volta Add-On
+
+The user explicitly authorized adding `volta-gpu` to the current goal's routing race. This did not change executor count, scientific design, variants, formulas, budgets, split, case set, evaluation rules, checkpoint rules, or result paths.
+
+The controller added volta preflight `58701281` and formal afterok chain `58701282`-`58701288`, then replaced the two-partition watcher/finalizer with retry3 watcher `58701289` and finalizer `58701290`. The htz/a100 jobs remain pending and active.
+
+Volta preflight `58701281` failed `1:0` after `00:00:47` with the known V100/PyTorch CUDA kernel incompatibility. The dependent volta formal jobs were cancelled before training start and receive zero training, optimizer-step, and train-loop-second credit. Current status remains `NEEDS_MONITOR`, not complete and not reviewable.
