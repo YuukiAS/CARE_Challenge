@@ -2,7 +2,7 @@
 
 Task key: `20260711_srr_v3_m10_complete_mechanism_repair`
 
-Packet state: `NEEDS_EVIDENCE`
+Packet state: `NEEDS_MONITOR`
 
 ## Files
 
@@ -47,6 +47,10 @@ Packet state: `NEEDS_EVIDENCE`
 | `wave2_partition_race_retry3_volta_failure.md` | Human-readable zero-credit volta preflight failure receipt. |
 | `wave2_partition_race_retry3_monitor_20260712T125305Z.md` | First formal two-hour pending-only monitor checkpoint for retry3; not completion evidence. |
 | `wave2_partition_race_retry3_finalization.json` | Retry3 terminal aggregation replay result; fail-closed `NEEDS_EVIDENCE` after htz D0 `58701196` failed. |
+| `wave2_partition_race_retry4_submission.json` | Repaired-code retry4 formal submission receipt after htz preflight `58706079` completed `0:0`. |
+| `wave2_partition_race_retry4_finalizer_submission.json` | Retry4 afterany finalizer receipt for job `58706300`. |
+| `wave2_partition_race_retry4_job_ledger.csv` | Retry4 ledger recording old/new job IDs, repair reason, preflight command/exit code, hashes, dependencies, runtime root, and log paths. |
+| `wave2_partition_race_retry4_monitor_20260712T141110Z.md` | Current retry4 monitor checkpoint showing D0 running and downstream/finalizer dependency-pending; not completion evidence. |
 | `executors/m10_myops_training_executor/` | Wave 2 executor monitor packet; not completion evidence. |
 | `subagents/reviewer_prompt.md` | Reviewer handoff prompt for this blocked packet only. |
 | `mapper_report_draft.md` | Mapper draft non-run receipt. |

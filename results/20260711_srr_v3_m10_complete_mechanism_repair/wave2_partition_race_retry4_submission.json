@@ -1,0 +1,179 @@
+{
+  "all_attempt_job_ids_for_finalizer": [
+    "58644072",
+    "58644073",
+    "58644074",
+    "58644106",
+    "58644107",
+    "58644108",
+    "58644109",
+    "58700815",
+    "58700821",
+    "58700822",
+    "58700826",
+    "58700827",
+    "58700828",
+    "58700832",
+    "58701102",
+    "58701109",
+    "58701103",
+    "58701104",
+    "58701105",
+    "58701106",
+    "58701107",
+    "58701108",
+    "58701094",
+    "58701101",
+    "58701095",
+    "58701096",
+    "58701097",
+    "58701098",
+    "58701099",
+    "58701100",
+    "58701110",
+    "58701117",
+    "58701111",
+    "58701112",
+    "58701113",
+    "58701114",
+    "58701115",
+    "58701116",
+    "58701118",
+    "58701195",
+    "58701196",
+    "58701197",
+    "58701198",
+    "58701199",
+    "58701200",
+    "58701201",
+    "58701202",
+    "58701203",
+    "58701204",
+    "58701205",
+    "58701206",
+    "58701207",
+    "58701208",
+    "58701209",
+    "58701210",
+    "58701211",
+    "58701212",
+    "58701281",
+    "58701282",
+    "58701283",
+    "58701284",
+    "58701285",
+    "58701286",
+    "58701287",
+    "58701288",
+    "58701289",
+    "58706079",
+    "58706080",
+    "58706293",
+    "58706294",
+    "58706295",
+    "58706296",
+    "58706297",
+    "58706298",
+    "58706299"
+  ],
+  "attempt_label": "retry4_owned_wrapper_metric_compat_repair",
+  "chains": {
+    "htzhulab": {
+      "jobs": {
+        "alignment_control": "58706299",
+        "d0_control": "58706293",
+        "d1_spatial_br2": "58706294",
+        "d2_hierarchical_psip": "58706295",
+        "d3_full_propref": "58706296",
+        "hard_negative_refresh": "58706297",
+        "no_context_control": "58706298"
+      },
+      "log_prefixes": {
+        "alignment_control": "M10Align",
+        "d0_control": "M10D0MyoPS",
+        "d1_spatial_br2": "M10D1MyoPS",
+        "d2_hierarchical_psip": "M10D2MyoPS",
+        "d3_full_propref": "M10D3MyoPS",
+        "hard_negative_refresh": "M10HardNeg",
+        "no_context_control": "M10NoCtx"
+      },
+      "partition": "htzhulab",
+      "preflight_job_ids": [
+        "58706079"
+      ],
+      "runtime_root": "results/20260711_srr_v3_m10_complete_mechanism_repair/runtime/m10_myops_training_executor/partition_race_retry4/htzhulab"
+    }
+  },
+  "changed_owned_file": "scripts/training/run_srr_v3_m10_complete_repair.py",
+  "commands": [
+    {
+      "command": "sbatch --parsable --partition=htzhulab --qos=gpu_access --gres=gpu:1 --export=ALL,M10_RUNTIME_ROOT=results/20260711_srr_v3_m10_complete_mechanism_repair/runtime/m10_myops_training_executor/partition_race_retry4/htzhulab,M10_DEFER_AGGREGATION=1,CARE_ROOT=/users/a/e/aereinh/CARE jobs/src/run_srr_v3_m10_myops_d0_control.sh",
+      "exit_code": 0,
+      "phase": "d0_control",
+      "stderr": "",
+      "stdout": "58706293"
+    },
+    {
+      "command": "sbatch --parsable --partition=htzhulab --qos=gpu_access --gres=gpu:1 --export=ALL,M10_RUNTIME_ROOT=results/20260711_srr_v3_m10_complete_mechanism_repair/runtime/m10_myops_training_executor/partition_race_retry4/htzhulab,M10_DEFER_AGGREGATION=1,CARE_ROOT=/users/a/e/aereinh/CARE --dependency=afterok:58706293 jobs/src/run_srr_v3_m10_myops_d1_spatial_br2.sh",
+      "exit_code": 0,
+      "phase": "d1_spatial_br2",
+      "stderr": "",
+      "stdout": "58706294"
+    },
+    {
+      "command": "sbatch --parsable --partition=htzhulab --qos=gpu_access --gres=gpu:1 --export=ALL,M10_RUNTIME_ROOT=results/20260711_srr_v3_m10_complete_mechanism_repair/runtime/m10_myops_training_executor/partition_race_retry4/htzhulab,M10_DEFER_AGGREGATION=1,CARE_ROOT=/users/a/e/aereinh/CARE --dependency=afterok:58706294 jobs/src/run_srr_v3_m10_myops_d2_hierarchical_psip.sh",
+      "exit_code": 0,
+      "phase": "d2_hierarchical_psip",
+      "stderr": "",
+      "stdout": "58706295"
+    },
+    {
+      "command": "sbatch --parsable --partition=htzhulab --qos=gpu_access --gres=gpu:1 --export=ALL,M10_RUNTIME_ROOT=results/20260711_srr_v3_m10_complete_mechanism_repair/runtime/m10_myops_training_executor/partition_race_retry4/htzhulab,M10_DEFER_AGGREGATION=1,CARE_ROOT=/users/a/e/aereinh/CARE --dependency=afterok:58706295 jobs/src/run_srr_v3_m10_myops_d3_full_propref.sh",
+      "exit_code": 0,
+      "phase": "d3_full_propref",
+      "stderr": "",
+      "stdout": "58706296"
+    },
+    {
+      "command": "sbatch --parsable --partition=htzhulab --qos=gpu_access --gres=gpu:1 --export=ALL,M10_RUNTIME_ROOT=results/20260711_srr_v3_m10_complete_mechanism_repair/runtime/m10_myops_training_executor/partition_race_retry4/htzhulab,M10_DEFER_AGGREGATION=1,CARE_ROOT=/users/a/e/aereinh/CARE --dependency=afterok:58706296 jobs/src/run_srr_v3_m10_hard_negative_refresh.sh",
+      "exit_code": 0,
+      "phase": "hard_negative_refresh",
+      "stderr": "",
+      "stdout": "58706297"
+    },
+    {
+      "command": "sbatch --parsable --partition=htzhulab --qos=gpu_access --gres=gpu:1 --export=ALL,M10_RUNTIME_ROOT=results/20260711_srr_v3_m10_complete_mechanism_repair/runtime/m10_myops_training_executor/partition_race_retry4/htzhulab,M10_DEFER_AGGREGATION=1,CARE_ROOT=/users/a/e/aereinh/CARE --dependency=afterok:58706297 jobs/src/run_srr_v3_m10_no_context_control.sh",
+      "exit_code": 0,
+      "phase": "no_context_control",
+      "stderr": "",
+      "stdout": "58706298"
+    },
+    {
+      "command": "sbatch --parsable --partition=htzhulab --qos=gpu_access --gres=gpu:1 --export=ALL,M10_RUNTIME_ROOT=results/20260711_srr_v3_m10_complete_mechanism_repair/runtime/m10_myops_training_executor/partition_race_retry4/htzhulab,M10_DEFER_AGGREGATION=1,CARE_ROOT=/users/a/e/aereinh/CARE --dependency=afterok:58706298 jobs/src/run_srr_v3_m10_alignment_control.sh",
+      "exit_code": 0,
+      "phase": "alignment_control",
+      "stderr": "",
+      "stdout": "58706299"
+    }
+  ],
+  "created_at_utc": "2026-07-12T14:07:59.032445Z",
+  "defer_aggregation": true,
+  "dependency_policy": "training stages use afterok; finalizer uses afterany over prior attempts, preflights, and retry4 jobs",
+  "fingerprints": {
+    "code_hash": "e6d74451d4b0a22ef170e5b728b4103300d4b8dde3449a9570fa338c06b5bdd6",
+    "config_hash": "df42f9ee55a3ba6ac616a37b2455cb7bca67c5f751f0c5a31c4a18938b107a9b",
+    "executor_plan_hash": "b90ae6f870d9459b94bf145fca5b8c97e5f0c91881316cd83a82779248cc85ab",
+    "preflight_script_hash": "1af4bf18251093c976e0f469997d238170fc38e10fe6499502f6647e55332d03",
+    "split_hash": "6165caeb5b47feb0d24f20380898037b7e6cead4db1eeba398a3c5a57faf9a1b"
+  },
+  "forbidden_shared_files_changed": false,
+  "preflight_jobs": {
+    "a100-gpu": "58706080",
+    "htzhulab": "58706079"
+  },
+  "preflight_policy": "formal jobs submitted only after htzhulab preflight 58706079 completed 0:0; a100 mirror preflight 58706080 cancelled pending",
+  "repair_commit": "02172685eec4aba789f79630e48d8357a288bee1",
+  "repair_reason": "D0 retry3 failed while logging missing correction_opportunity_loss metric for M10 non-M6 propref_loss branch",
+  "scientific_contract_unchanged": true,
+  "task_key": "20260711_srr_v3_m10_complete_mechanism_repair"
+}

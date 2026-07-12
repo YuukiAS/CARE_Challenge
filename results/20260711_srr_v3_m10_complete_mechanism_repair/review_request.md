@@ -2,7 +2,7 @@
 
 This packet does not request normal M10 scientific review. It records an authorized same-executor Wave 2 replacement submission after successful compute-node preflight.
 
-Current state: `NEEDS_EVIDENCE`
+Current state: `NEEDS_MONITOR`
 
 Formal replacement jobs submitted:
 
@@ -60,4 +60,10 @@ The retry3 Slurm graph is no longer pending or running. It is terminal but not s
 
 Failure cause: `logs/M10D0MyoPS_58701196_20260712_090210.log` raises `KeyError: 'correction_opportunity_loss'` while training writes metrics in `scripts/training/run_srr_propref_myops_fold0.py`.
 
-This packet still does not request normal M10 review. It is `NEEDS_EVIDENCE`; Wave 2 produced no valid formal training evidence, Wave 3 must not start, and no `review.md` should be written for this packet.
+This retry3 packet did not request normal M10 review. It was `NEEDS_EVIDENCE`; Wave 2 had produced no valid formal training evidence, Wave 3 could not start, and no `review.md` should be written for that packet.
+
+## Retry4 Monitor Update
+
+After a same-scope owned-wrapper operational repair and successful repaired-code `htzhulab` preflight `58706079`, the controller submitted the unchanged retry4 Wave 2 formal chain: `58706293`-`58706299`. D0 `58706293` is currently `RUNNING`; the downstream jobs are dependency-pending, and finalizer `58706300` is dependency-pending with `afterany`.
+
+This packet still does not request normal M10 review. Current state is `NEEDS_MONITOR`; Wave 2 has not reached terminal aggregation, Wave 3 must not start, and no `review.md` should be written for this packet.

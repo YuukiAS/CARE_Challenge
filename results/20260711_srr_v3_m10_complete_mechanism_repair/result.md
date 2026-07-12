@@ -2,7 +2,7 @@
 
 Task key: `20260711_srr_v3_m10_complete_mechanism_repair`
 
-Controller status: `NEEDS_EVIDENCE`
+Controller status: `NEEDS_MONITOR`
 
 This controller executed only the bootstrap and hard-gate validation for the M10 section in `prompts/shared/EXECUTOR_PROMPTS.md` titled `M10 executor/controller: SRR-v3 complete mechanism repair`, using `prompts/tasks/20260711_srr_v3_m10_complete_mechanism_repair_executor_plan.yaml`.
 
@@ -138,4 +138,24 @@ Local verification passed for `py_compile`, `--list-phases`, `--phase d0_control
 
 One broader legacy test invocation, `env PYTHONPATH=. pytest src/care_myocardium/tests/test_srr_baseline_gate.py src/care_myocardium/tests/test_srr_v3_m10_fidelity.py`, reported `7 passed, 1 failed`: the failure is the known external compatibility case where `test_srr_baseline_gate.py` calls `scripts/training/run_srr_propref_myops_fold0.py` directly without `args.variant`. The M10 wave 2 prompt explicitly says that older script is not in this executor's write scope and this broader failure should be recorded as external compatibility unless it blocks owned M10 entrypoints. The M10-specific fidelity tests passed.
 
-Current controller state remains `NEEDS_EVIDENCE` until a compute-node preflight and formal Wave 2 replacement chain run successfully.
+At the repair checkpoint, controller state remained `NEEDS_EVIDENCE` until a compute-node preflight and formal Wave 2 replacement chain could run.
+
+## Retry4 Repaired-Code Formal Submission
+
+At `2026-07-12T14:11:10Z`, the controller confirmed that repaired-code compute-node preflight job `58706079` completed `0:0` on `htzhulab` after `00:00:22`. The a100 mirror preflight `58706080` was cancelled while pending after the htz preflight succeeded. `volta-gpu` was not reused because the hardened CUDA kernel preflight had already proven the current PyTorch build is incompatible with V100 execution.
+
+The controller submitted the unchanged seven-stage Wave 2 formal chain on `htzhulab` with the same executor, variants, budgets, split, case set, evaluation rules, checkpoint-selection rules, result paths, and wave graph. Training dependencies use `afterok`; the finalizer uses `afterany` over all old, superseded, failed, cancelled, preflight, and retry4 job IDs.
+
+| Phase | Job ID | Current state |
+| --- | ---: | --- |
+| D0 static matched control | `58706293` | `RUNNING` on `g1807htzh01` |
+| D1 spatial BR2 | `58706294` | `PENDING (Dependency)` |
+| D2 hierarchical PSIP | `58706295` | `PENDING (Dependency)` |
+| D3 full memory PropRef | `58706296` | `PENDING (Dependency)` |
+| Hard-negative refresh | `58706297` | `PENDING (Dependency)` |
+| No-nnU-Net-context control | `58706298` | `PENDING (Dependency)` |
+| Alignment control | `58706299` | `PENDING (Dependency)` |
+
+Retry4 finalizer job `58706300` is `PENDING (Dependency)`. Runtime artifacts have begun appearing under `results/20260711_srr_v3_m10_complete_mechanism_repair/runtime/m10_myops_training_executor/partition_race_retry4/htzhulab`, including the D0 phase contract, one-batch overfit outputs, prototype-update sanity outputs, and prototype bank summary.
+
+Current controller state is `NEEDS_MONITOR`, not complete and not reviewable. Wave 3 remains blocked until Wave 2 terminal accounting and post-job aggregation succeed. No `review.md` was written and no push was performed.

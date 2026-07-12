@@ -104,4 +104,35 @@ The controller repaired the owned M10 wrapper after identifying that the D0 fail
 
 Verification passed for M10 wrapper compile/contract/smoke and the required repository validators. A broader legacy pytest invocation retains the known direct-legacy `args.variant` failure; this is recorded as external compatibility under the Wave 2 prompt and does not block the owned M10 entrypoint repair.
 
-Next required controller action: commit this lightweight repair packet, run compute-node preflight under the repaired code, and submit the unchanged Wave 2 replacement chain only if preflight exits `0`.
+At the repair checkpoint, the next required controller action was to commit the lightweight repair packet, run compute-node preflight under the repaired code, and submit the unchanged Wave 2 replacement chain only if preflight exited `0`.
+
+## Retry4 Repaired-Code Monitor State
+
+At `2026-07-12T14:11:10Z`, the repaired-code `htzhulab` preflight `58706079` had completed `0:0`, and the pending a100 mirror preflight `58706080` had been cancelled. The controller then submitted the unchanged Wave 2 formal chain on `htzhulab`:
+
+| Phase | Job ID | State |
+| --- | ---: | --- |
+| `d0_control` | `58706293` | `RUNNING` |
+| `d1_spatial_br2` | `58706294` | `PENDING (Dependency)` |
+| `d2_hierarchical_psip` | `58706295` | `PENDING (Dependency)` |
+| `d3_full_propref` | `58706296` | `PENDING (Dependency)` |
+| `hard_negative_refresh` | `58706297` | `PENDING (Dependency)` |
+| `no_context_control` | `58706298` | `PENDING (Dependency)` |
+| `alignment_control` | `58706299` | `PENDING (Dependency)` |
+
+Retry4 finalizer `58706300` is pending with `afterany`. D0 has started on `g1807htzh01` and has already written early runtime artifacts under `results/20260711_srr_v3_m10_complete_mechanism_repair/runtime/m10_myops_training_executor/partition_race_retry4/htzhulab`.
+
+```text
+controller_run_status: NEEDS_MONITOR
+operational_completion_status: INCOMPLETE
+experiment_adequacy_decision: NOT_REVIEWED
+route_promotion_decision: NOT_REVIEWED
+route_negative_decision: NOT_REVIEWED
+scientific_resolution_status: AWAITING_REVIEW
+diagnostic_publication_decision: LOCAL_RETRY4_MONITOR_PACKET_COMMIT
+git_commit_decision: COMMIT_LOCAL_PACKET
+git_push_decision: SKIP_PUSH
+review_md_written: false
+```
+
+Next required action is to monitor `58706293` through terminal state, then let the `afterok` chain and finalizer proceed. If the full chain completes, run/inspect Wave 2 post-job aggregation and continue the original M10 state machine. If a job fails, record zero-credit terminal accounting and either perform an allowed same-scope operational repair or return the precise failure state required by the M10 contract.

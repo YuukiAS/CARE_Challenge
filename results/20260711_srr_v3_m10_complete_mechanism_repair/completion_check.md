@@ -1,6 +1,6 @@
 # M10 Completion Check
 
-Completion state: `NEEDS_EVIDENCE`
+Completion state: `NEEDS_MONITOR`
 
 This packet is not complete and is not ready for independent review. It records that the original Wave 2 jobs are permanently `STARTUP_FAILED` with zero training credit, the repaired compute-node preflight succeeded, the authorized replacement Wave 2 formal jobs were submitted, and those jobs are currently pending/running/dependency-waiting under Slurm.
 
@@ -113,4 +113,21 @@ Repair time: `2026-07-12T14:00:16Z`
 | validators | pass: executor plan, handoff policy, architecture wiki strict/history, generated wiki check, and `git diff --check` |
 | broader legacy pytest | external known failure: direct legacy `propref_loss` test lacks `args.variant`; M10-specific tests passed |
 
-Decision remains `NEEDS_EVIDENCE`. Formal replacement jobs must not be submitted until the repaired committed code passes compute-node preflight.
+At the repair checkpoint, decision remained `NEEDS_EVIDENCE`; formal replacement jobs were still gated on repaired-code compute-node preflight.
+
+## Retry4 Repaired-Code Submission Check
+
+Checkpoint time: `2026-07-12T14:11:10Z`
+
+| Gate | Status |
+| --- | --- |
+| repaired-code htz preflight | pass: `58706079 COMPLETED 0:0` after `00:00:22` |
+| a100 mirror preflight | zero credit: `58706080 CANCELLED by 397557` while pending after htz preflight succeeded |
+| formal chain submission | pass: `58706293`-`58706299` submitted unchanged on `htzhulab` |
+| dependency policy | pass: D1-D3 and controls use `afterok`; retry4 finalizer `58706300` uses `afterany` |
+| active runtime | monitor: D0 `58706293 RUNNING` on `g1807htzh01`; downstream stages dependency-pending |
+| runtime artifacts | monitor: D0 contract and early sanity/prototype files exist under the retry4 htz runtime root |
+| post-job aggregation | pending: wait for terminal Slurm accounting and finalizer aggregation |
+| review | blocked: no `review.md` until final packet after successful terminal aggregation |
+
+Decision is `NEEDS_MONITOR`, not blocked and not complete. This is not a pending-only scheduler block checkpoint because D0 has started running.
