@@ -214,3 +214,42 @@ The controller submitted a same-scope replacement chain for D1 through alignment
 Retry5 finalizer job `58714029` is pending with `afterany` over all old, superseded, failed, cancelled, preflight, D0, and retry5 replacement jobs.
 
 Current controller state is `NEEDS_MONITOR`, not complete and not reviewable. Wave 3 remains blocked until D1-through-alignment reaches terminal state, finalizer accounting runs, and Wave 2 post-job aggregation produces a successful completion receipt.
+
+## Retry5 Terminal OOM And Retry6 Resource Retry
+
+At `2026-07-12T16:47:36Z`, retry5 reached terminal accounting:
+
+| Phase | Job ID | Terminal state | Credit |
+| --- | ---: | --- | --- |
+| D0 static matched control | `58706293` | retained `COMPLETED 0:0` | valid D0 runtime evidence |
+| D1 spatial BR2 | `58714023` | `OUT_OF_MEMORY 0:125` after `00:07:50` | zero effective D1 credit |
+| D2 hierarchical PSIP | `58714024` | `CANCELLED 0:0` by unmet `afterok` | zero credit |
+| D3 full memory PropRef | `58714025` | `CANCELLED 0:0` by unmet `afterok` | zero credit |
+| Hard-negative refresh | `58714026` | `CANCELLED 0:0` by unmet `afterok` | zero credit |
+| No-nnU-Net-context control | `58714027` | `CANCELLED 0:0` by unmet `afterok` | zero credit |
+| Alignment control | `58714028` | `CANCELLED 0:0` by unmet `afterok` | zero credit |
+| Finalizer | `58714029` | `FAILED 1:0` | fail-closed accounting |
+
+Slurm memory accounting records `ReqMem=64G` and batch `MaxRSS=67107264K` for D1. The controller treats this as an operational resource-request failure, not a scientific design change. The retry5 finalization replay wrote `wave2_partition_race_retry5_finalization.json` with `status: NEEDS_EVIDENCE`, `winner_reason: no_completed_chain`, D1 `OUT_OF_MEMORY(0:125)`, and downstream jobs cancelled.
+
+The controller then submitted same-scope retry6 with only the Slurm memory request increased to `96G`. Code/config/split hashes remain unchanged:
+
+| Artifact | SHA256 |
+| --- | --- |
+| `scripts/training/run_srr_v3_m10_complete_repair.py` | `bf132c6f6c1649c2a98bbe16af3ffe7cd67f436f035431a6b3376e4917203ad3` |
+| `configs/srr_v3_m10_complete_repair.yaml` | `df42f9ee55a3ba6ac616a37b2455cb7bca67c5f751f0c5a31c4a18938b107a9b` |
+| `data/benchmarks/protocol/splits_MyoPS.json` | `6165caeb5b47feb0d24f20380898037b7e6cead4db1eeba398a3c5a57faf9a1b` |
+
+Retry6 compute-node preflight `58714615` completed `0:0` on `htzhulab` with `ReqMem=96G`. The replacement chain is:
+
+| Phase | Job ID | Current state |
+| --- | ---: | --- |
+| retained D0 | `58706293` | `COMPLETED 0:0` |
+| D1 spatial BR2 | `58714634` | `RUNNING` on `g1807htzh01` |
+| D2 hierarchical PSIP | `58714635` | `PENDING (Dependency)` |
+| D3 full memory PropRef | `58714636` | `PENDING (Dependency)` |
+| Hard-negative refresh | `58714637` | `PENDING (Dependency)` |
+| No-nnU-Net-context control | `58714638` | `PENDING (Dependency)` |
+| Alignment control | `58714639` | `PENDING (Dependency)` |
+
+Retry6 finalizer job `58714640` is pending with `afterany`. Current controller state remains `NEEDS_MONITOR`, not complete and not reviewable.

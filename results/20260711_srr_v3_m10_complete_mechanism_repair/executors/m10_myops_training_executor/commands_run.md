@@ -349,3 +349,34 @@ Retry5 receipts:
 - `results/20260711_srr_v3_m10_complete_mechanism_repair/wave2_partition_race_retry5_monitor_20260712T163737Z.md`
 
 Current state is `NEEDS_MONITOR`: D1 has started and downstream stages are dependency-pending. This is not completion evidence and not reviewable.
+
+## Retry5 Terminal OOM And Retry6 96G Replacement
+
+Update timestamp UTC: `2026-07-12T16:47:36Z`
+
+| Command / evidence | Result |
+| --- | --- |
+| `sacct -j 58714000,58706293,58714023,58714024,58714025,58714026,58714027,58714028,58714029 --format=JobIDRaw,JobName,Partition,State,ExitCode,Elapsed,Start,End,NodeList --parsable2` | D0 `58706293 COMPLETED 0:0`; preflight `58714000 COMPLETED 0:0`; D1 `58714023 OUT_OF_MEMORY 0:125`; D2-through-alignment `CANCELLED`; finalizer `58714029 FAILED 1:0` |
+| `sacct -j 58714023 --format=JobIDRaw,JobName,State,ExitCode,Elapsed,MaxRSS,MaxVMSize,ReqMem,AveRSS,NodeList --parsable2` | D1 `ReqMem=64G`; batch `MaxRSS=67107264K`; terminal state `OUT_OF_MEMORY 0:125` |
+| `env PYTHONPATH=. python results/20260711_srr_v3_m10_complete_mechanism_repair/finalize_wave2_partition_race.py --submission results/20260711_srr_v3_m10_complete_mechanism_repair/wave2_partition_race_retry5_submission.json --watcher-state results/20260711_srr_v3_m10_complete_mechanism_repair/wave2_partition_race_retry5_watcher_state.json --result-path results/20260711_srr_v3_m10_complete_mechanism_repair/wave2_partition_race_retry5_finalization.json` | exit `2`; wrote `NEEDS_EVIDENCE` with D1 `OUT_OF_MEMORY(0:125)` and no completed chain |
+| `sbatch --parsable --job-name=M10W2PreHTZ6 --partition=htzhulab --qos=gpu_access --gres=gpu:1 --mem=96G --export=ALL,M10_PREFLIGHT_RACE_PARTITION=htzhulab,CARE_ROOT=/users/a/e/aereinh/CARE results/20260711_srr_v3_m10_complete_mechanism_repair/wave2_env_preflight.sh` | `58714615`; completed `0:0` after `00:00:19` |
+| `sha256sum scripts/training/run_srr_v3_m10_complete_repair.py configs/srr_v3_m10_complete_repair.yaml data/benchmarks/protocol/splits_MyoPS.json` | code `bf132c6f6c1649c2a98bbe16af3ffe7cd67f436f035431a6b3376e4917203ad3`; config `df42f9ee55a3ba6ac616a37b2455cb7bca67c5f751f0c5a31c4a18938b107a9b`; split `6165caeb5b47feb0d24f20380898037b7e6cead4db1eeba398a3c5a57faf9a1b` |
+| `sbatch --parsable --partition=htzhulab --qos=gpu_access --gres=gpu:1 --mem=96G --export=ALL,M10_RUNTIME_ROOT=results/20260711_srr_v3_m10_complete_mechanism_repair/runtime/m10_myops_training_executor/partition_race_retry4/htzhulab,M10_DEFER_AGGREGATION=1,CARE_ROOT=/users/a/e/aereinh/CARE --dependency=afterok:58714615 jobs/src/run_srr_v3_m10_myops_d1_spatial_br2.sh` | `58714634` |
+| `sbatch --parsable --partition=htzhulab --qos=gpu_access --gres=gpu:1 --mem=96G --export=ALL,M10_RUNTIME_ROOT=results/20260711_srr_v3_m10_complete_mechanism_repair/runtime/m10_myops_training_executor/partition_race_retry4/htzhulab,M10_DEFER_AGGREGATION=1,CARE_ROOT=/users/a/e/aereinh/CARE --dependency=afterok:58714634 jobs/src/run_srr_v3_m10_myops_d2_hierarchical_psip.sh` | `58714635` |
+| `sbatch --parsable --partition=htzhulab --qos=gpu_access --gres=gpu:1 --mem=96G --export=ALL,M10_RUNTIME_ROOT=results/20260711_srr_v3_m10_complete_mechanism_repair/runtime/m10_myops_training_executor/partition_race_retry4/htzhulab,M10_DEFER_AGGREGATION=1,CARE_ROOT=/users/a/e/aereinh/CARE --dependency=afterok:58714635 jobs/src/run_srr_v3_m10_myops_d3_full_propref.sh` | `58714636` |
+| `sbatch --parsable --partition=htzhulab --qos=gpu_access --gres=gpu:1 --mem=96G --export=ALL,M10_RUNTIME_ROOT=results/20260711_srr_v3_m10_complete_mechanism_repair/runtime/m10_myops_training_executor/partition_race_retry4/htzhulab,M10_DEFER_AGGREGATION=1,CARE_ROOT=/users/a/e/aereinh/CARE --dependency=afterok:58714636 jobs/src/run_srr_v3_m10_hard_negative_refresh.sh` | `58714637` |
+| `sbatch --parsable --partition=htzhulab --qos=gpu_access --gres=gpu:1 --mem=96G --export=ALL,M10_RUNTIME_ROOT=results/20260711_srr_v3_m10_complete_mechanism_repair/runtime/m10_myops_training_executor/partition_race_retry4/htzhulab,M10_DEFER_AGGREGATION=1,CARE_ROOT=/users/a/e/aereinh/CARE --dependency=afterok:58714637 jobs/src/run_srr_v3_m10_no_context_control.sh` | `58714638` |
+| `sbatch --parsable --partition=htzhulab --qos=gpu_access --gres=gpu:1 --mem=96G --export=ALL,M10_RUNTIME_ROOT=results/20260711_srr_v3_m10_complete_mechanism_repair/runtime/m10_myops_training_executor/partition_race_retry4/htzhulab,M10_DEFER_AGGREGATION=1,CARE_ROOT=/users/a/e/aereinh/CARE --dependency=afterok:58714638 jobs/src/run_srr_v3_m10_alignment_control.sh` | `58714639` |
+| submit retry6 finalizer with `afterany` over old, superseded, failed, cancelled, preflight, retained D0, and retry6 replacement jobs | `58714640` |
+| `sacct -j 58714615,58714634,58714635,58714636,58714637,58714638,58714639,58714640 --format=JobIDRaw,JobName,Partition,State,ExitCode,Elapsed,Start,End,NodeList,ReqMem --parsable2` | preflight `58714615 COMPLETED 0:0`; D1 `58714634 RUNNING` with `ReqMem=96G`; D2-through-alignment `PENDING`; finalizer `58714640 PENDING` |
+
+Retry6 receipts:
+
+- `results/20260711_srr_v3_m10_complete_mechanism_repair/wave2_partition_race_retry5_finalization.json`
+- `results/20260711_srr_v3_m10_complete_mechanism_repair/wave2_partition_race_retry5_terminal_oom.md`
+- `results/20260711_srr_v3_m10_complete_mechanism_repair/wave2_partition_race_retry6_submission.json`
+- `results/20260711_srr_v3_m10_complete_mechanism_repair/wave2_partition_race_retry6_finalizer_submission.json`
+- `results/20260711_srr_v3_m10_complete_mechanism_repair/wave2_partition_race_retry6_job_ledger.csv`
+- `results/20260711_srr_v3_m10_complete_mechanism_repair/wave2_partition_race_retry6_monitor_20260712T164736Z.md`
+
+Current state is `NEEDS_MONITOR`: retry6 D1 has started with the 96G resource request and downstream stages are dependency-pending. This is not completion evidence and not reviewable.

@@ -2,7 +2,7 @@
   "accounting_continuation_launch": null,
   "accounting_continuation_receipt_path": null,
   "accounting_wait_seconds": 0,
-  "aggregation_command": "env PYTHONPATH=. python results/20260711_srr_v3_m10_complete_mechanism_repair/finalize_wave2_partition_race.py --submission results/20260711_srr_v3_m10_complete_mechanism_repair/wave2_partition_race_retry4_submission.json --watcher-state results/20260711_srr_v3_m10_complete_mechanism_repair/wave2_partition_race_retry4_watcher_state.json --result-path results/20260711_srr_v3_m10_complete_mechanism_repair/wave2_partition_race_retry4_finalization.json",
+  "aggregation_command": "env PYTHONPATH=. python results/20260711_srr_v3_m10_complete_mechanism_repair/finalize_wave2_partition_race.py --submission results/20260711_srr_v3_m10_complete_mechanism_repair/wave2_partition_race_retry5_submission.json --watcher-state results/20260711_srr_v3_m10_complete_mechanism_repair/wave2_partition_race_retry5_watcher_state.json --result-path results/20260711_srr_v3_m10_complete_mechanism_repair/wave2_partition_race_retry5_finalization.json",
   "aggregation_exit_code": null,
   "attempt_number": 1,
   "awaiting_sacct_attempts": [
@@ -11,7 +11,8 @@
       "states": [
         "CANCELLED",
         "COMPLETED",
-        "FAILED"
+        "FAILED",
+        "OUT_OF_MEMORY"
       ]
     }
   ],
@@ -92,7 +93,14 @@
     "58706296": "00:00:00",
     "58706297": "00:00:00",
     "58706298": "00:00:00",
-    "58706299": "00:00:00"
+    "58706299": "00:00:00",
+    "58714000": "00:00:20",
+    "58714023": "00:07:50",
+    "58714024": "00:00:00",
+    "58714025": "00:00:00",
+    "58714026": "00:00:00",
+    "58714027": "00:00:00",
+    "58714028": "00:00:00"
   },
   "exit_codes": {
     "58644072": "1:0",
@@ -169,12 +177,19 @@
     "58706296": "0:0",
     "58706297": "0:0",
     "58706298": "0:0",
-    "58706299": "0:0"
+    "58706299": "0:0",
+    "58714000": "0:0",
+    "58714023": "0:125",
+    "58714024": "0:0",
+    "58714025": "0:0",
+    "58714026": "0:0",
+    "58714027": "0:0",
+    "58714028": "0:0"
   },
-  "failure_class": "UNKNOWN_RUNTIME_FAILURE",
+  "failure_class": "OUT_OF_MEMORY_NEEDS_REVISION",
   "final_state": "RUNTIME_FAILURE",
   "git_commit_decision": "SKIP_COMMIT",
-  "git_head_before": "b854205e39ac381e24b1cd6764c21c62617cba41",
+  "git_head_before": "706a69ac8aba38c9dae672022ae4dc94fa09681a",
   "job_attempt_lineage": [
     {
       "attempt_number": 1,
@@ -700,6 +715,55 @@
       "job_id": "58706299",
       "state": "CANCELLED",
       "training_credit": "verified_completed_steps_only"
+    },
+    {
+      "attempt_number": 1,
+      "exit_code": "0:0",
+      "job_id": "58714000",
+      "state": "COMPLETED",
+      "training_credit": "verified_completed_steps_only"
+    },
+    {
+      "attempt_number": 1,
+      "exit_code": "0:125",
+      "job_id": "58714023",
+      "state": "OUT_OF_MEMORY",
+      "training_credit": "verified_completed_steps_only"
+    },
+    {
+      "attempt_number": 1,
+      "exit_code": "0:0",
+      "job_id": "58714024",
+      "state": "CANCELLED",
+      "training_credit": "verified_completed_steps_only"
+    },
+    {
+      "attempt_number": 1,
+      "exit_code": "0:0",
+      "job_id": "58714025",
+      "state": "CANCELLED",
+      "training_credit": "verified_completed_steps_only"
+    },
+    {
+      "attempt_number": 1,
+      "exit_code": "0:0",
+      "job_id": "58714026",
+      "state": "CANCELLED",
+      "training_credit": "verified_completed_steps_only"
+    },
+    {
+      "attempt_number": 1,
+      "exit_code": "0:0",
+      "job_id": "58714027",
+      "state": "CANCELLED",
+      "training_credit": "verified_completed_steps_only"
+    },
+    {
+      "attempt_number": 1,
+      "exit_code": "0:0",
+      "job_id": "58714028",
+      "state": "CANCELLED",
+      "training_credit": "verified_completed_steps_only"
     }
   ],
   "job_states": {
@@ -777,12 +841,19 @@
     "58706296": "CANCELLED",
     "58706297": "CANCELLED",
     "58706298": "CANCELLED",
-    "58706299": "CANCELLED"
+    "58706299": "CANCELLED",
+    "58714000": "COMPLETED",
+    "58714023": "OUT_OF_MEMORY",
+    "58714024": "CANCELLED",
+    "58714025": "CANCELLED",
+    "58714026": "CANCELLED",
+    "58714027": "CANCELLED",
+    "58714028": "CANCELLED"
   },
-  "lock_path": "results/20260711_srr_v3_m10_complete_mechanism_repair/locks/wave2_partition_race_retry4_finalizer.lock",
+  "lock_path": "results/20260711_srr_v3_m10_complete_mechanism_repair/locks/wave2_partition_race_retry5_finalizer.lock",
   "lock_released": true,
   "log_paths": [],
-  "manifest_sha256": "9f107e61cb17ce7efda28cf2e311cfbbb1e017cd213acbf31327b8067b856a28",
+  "manifest_sha256": "654092d9a7ffd8359cd7caa0cf24b930a9dd630d2b23810039221bde7aa9cfe9",
   "mapper_final_status": "not_requested",
   "next_retry_job_id_or_tmux_session": null,
   "nodes": {
@@ -860,9 +931,16 @@
     "58706296": "None assigned",
     "58706297": "None assigned",
     "58706298": "None assigned",
-    "58706299": "None assigned"
+    "58706299": "None assigned",
+    "58714000": "g1807htzh01",
+    "58714023": "g1807htzh01",
+    "58714024": "None assigned",
+    "58714025": "None assigned",
+    "58714026": "None assigned",
+    "58714027": "None assigned",
+    "58714028": "None assigned"
   },
-  "precommit_head": "b854205e39ac381e24b1cd6764c21c62617cba41",
+  "precommit_head": "706a69ac8aba38c9dae672022ae4dc94fa09681a",
   "records": [],
   "replacement_job_ids": [],
   "required_job_ids": [
@@ -940,15 +1018,22 @@
     "58706296",
     "58706297",
     "58706298",
-    "58706299"
+    "58706299",
+    "58714000",
+    "58714023",
+    "58714024",
+    "58714025",
+    "58714026",
+    "58714027",
+    "58714028"
   ],
   "retry_backend": "tmux_watcher",
   "retry_count": 0,
-  "retry_reason": "failed job without recognized retryable startup signature",
+  "retry_reason": "OOM requires implementation/budget revision",
   "retryable": false,
   "runtime_output_paths": [],
   "stage": "accounting",
-  "suggested_next_state": "NEEDS_EVIDENCE",
+  "suggested_next_state": "NEEDS_REVISION",
   "supersedes_job_ids": [],
   "task_key": "20260711_srr_v3_m10_complete_mechanism_repair",
   "tracked_paths": [],

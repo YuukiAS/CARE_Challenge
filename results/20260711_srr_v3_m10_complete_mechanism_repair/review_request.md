@@ -83,3 +83,11 @@ Repaired-code compute-node preflight `58714000` completed `0:0`, and retained up
 - Finalizer `58714029` is `PENDING (Dependency)` with `afterany`.
 
 Current state is `NEEDS_MONITOR`, not a normal review request. Wave 2 terminal aggregation has not completed; Wave 3 must not start, and no `review.md` should be written for this packet.
+
+## Retry6 Monitor Update
+
+Retry5 is terminal but not complete: D1 `58714023` failed as `OUT_OF_MEMORY 0:125` with `ReqMem=64G` and batch `MaxRSS=67107264K`; downstream jobs were cancelled by `afterok`; finalizer `58714029` failed fail-closed.
+
+The controller submitted same-scope retry6 with only the Slurm memory request increased to `96G`. Preflight `58714615` completed `0:0`. D1 `58714634` is currently `RUNNING`, D2-through-alignment `58714635`-`58714639` are dependency-pending, and finalizer `58714640` is dependency-pending.
+
+Current state remains `NEEDS_MONITOR`, not a normal review request. Wave 2 terminal aggregation has not completed; Wave 3 must not start, and no `review.md` should be written for this packet.

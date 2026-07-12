@@ -166,3 +166,23 @@ Checkpoint time: `2026-07-12T16:37:37Z`
 | review | blocked: no `review.md`; this is not a completion packet |
 
 Decision is `NEEDS_MONITOR`, not blocked and not complete. This is not a pending-only scheduler block because D1 has started running.
+
+## Retry5 OOM And Retry6 96G Monitor
+
+Checkpoint time: `2026-07-12T16:47:36Z`
+
+| Gate | Status |
+| --- | --- |
+| retry5 D1 terminal state | fail: `58714023 OUT_OF_MEMORY 0:125` after `00:07:50` |
+| retry5 memory evidence | fail: `ReqMem=64G`, batch `MaxRSS=67107264K` |
+| retry5 downstream stages | fail-closed: `58714024`-`58714028 CANCELLED 0:0` by unmet `afterok` |
+| retry5 finalizer | fail-closed: `58714029 FAILED 1:0` |
+| retry5 aggregation replay | fail-closed: `wave2_partition_race_retry5_finalization.json` records `NEEDS_EVIDENCE` and `OUT_OF_MEMORY(0:125)` |
+| retry6 preflight | pass: `58714615 COMPLETED 0:0` with `ReqMem=96G` |
+| retry6 D1 replacement | monitor: `58714634 RUNNING` on `g1807htzh01` with `ReqMem=96G` |
+| retry6 downstream replacements | monitor: `58714635`-`58714639 PENDING (Dependency)` |
+| retry6 finalizer | monitor: `58714640 PENDING (Dependency)` with `afterany` |
+| scientific contract | pass: code/config/split hashes unchanged; variants, budgets, split, formulas, result paths, executor count, and wave graph unchanged |
+| review | blocked: no `review.md`; this is not a completion packet |
+
+Decision is `NEEDS_MONITOR`, not blocked and not complete. This is not a pending-only scheduler block because retry6 D1 has started running.

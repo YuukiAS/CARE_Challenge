@@ -194,3 +194,35 @@ review_md_written: false
 ```
 
 Next required action is to monitor `58714023` through terminal state. If D1 succeeds, the afterok chain should continue through D2, D3, hard-negative refresh, no-context control, and alignment control, then finalizer accounting and Wave 2 post-job aggregation must be inspected before any Wave 3 handoff.
+
+## Retry5 OOM And Retry6 96G Monitor State
+
+Retry5 is terminal and unsuccessful. D1 `58714023` reached `OUT_OF_MEMORY 0:125` after `00:07:50` with `ReqMem=64G` and batch `MaxRSS=67107264K`; D2 through alignment were cancelled by unmet `afterok`, and finalizer `58714029` failed fail-closed. The local finalization replay wrote `wave2_partition_race_retry5_finalization.json` with `status: NEEDS_EVIDENCE`.
+
+Because this is a Slurm resource request failure and not a scientific/model/split change, the controller submitted retry6 with `--mem=96G` and unchanged code/config/split fingerprints. Preflight `58714615` completed `0:0`. Current retry6 state:
+
+| Phase | Job ID | State |
+| --- | ---: | --- |
+| retained `d0_control` | `58706293` | `COMPLETED 0:0` |
+| `d1_spatial_br2` | `58714634` | `RUNNING` |
+| `d2_hierarchical_psip` | `58714635` | `PENDING (Dependency)` |
+| `d3_full_propref` | `58714636` | `PENDING (Dependency)` |
+| `hard_negative_refresh` | `58714637` | `PENDING (Dependency)` |
+| `no_context_control` | `58714638` | `PENDING (Dependency)` |
+| `alignment_control` | `58714639` | `PENDING (Dependency)` |
+| retry6 finalizer | `58714640` | `PENDING (Dependency)` |
+
+```text
+controller_run_status: NEEDS_MONITOR
+operational_completion_status: INCOMPLETE
+experiment_adequacy_decision: NOT_REVIEWED
+route_promotion_decision: NOT_REVIEWED
+route_negative_decision: NOT_REVIEWED
+scientific_resolution_status: AWAITING_REVIEW
+diagnostic_publication_decision: LOCAL_RETRY6_MONITOR_PACKET_COMMIT
+git_commit_decision: COMMIT_LOCAL_PACKET
+git_push_decision: SKIP_PUSH
+review_md_written: false
+```
+
+Next required action is to monitor retry6 through terminal state, then inspect finalizer accounting and Wave 2 aggregation before any Wave 3 handoff.
