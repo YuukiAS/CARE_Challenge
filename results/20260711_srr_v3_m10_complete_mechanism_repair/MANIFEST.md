@@ -84,6 +84,7 @@ Packet state: `NEEDS_MONITOR`
 | `wave2_partition_race_retry9_monitor_20260712T191138Z.md` | Retry9 progress monitor showing D1 crossed prior OOM windows and wrote validation checkpoints 1666 and 3332; not completion evidence. |
 | `wave2_partition_race_retry9_monitor_20260712T194643Z.md` | Retry9 running monitor showing D1 still running at 01:18:54 with validation checkpoints through step 6664; not completion evidence. |
 | `wave2_partition_race_retry9_monitor_20260712T201919Z.md` | Retry9 running monitor showing D1 still running at 01:51:31 with validation checkpoints through step 8330; not completion evidence. |
+| `wave2_partition_race_retry9_monitor_20260712T210229Z.md` | Retry9 D1 monitor showing the run crossed the 9000-second D1 minimum train-loop floor and wrote validation checkpoints through step 11662; not completion evidence. |
 | `executors/m10_myops_training_executor/` | Wave 2 executor monitor packet; not completion evidence. |
 | `subagents/reviewer_prompt.md` | Reviewer handoff prompt for this blocked packet only. |
 | `mapper_report_draft.md` | Mapper draft non-run receipt. |

@@ -402,6 +402,28 @@ checkpoint_validation_step_6664.pt
 
 D2-through-alignment remain dependency-pending and finalizer `58733769` remains dependency-pending. D1 has not written final `training_log.csv`, `validation_events.csv`, `summary.json`, or post-job aggregation evidence, so the state remains `NEEDS_MONITOR`, not complete and not reviewable.
 
+## Retry9 D1 Minimum-Time Monitor
+
+At `2026-07-12T21:02:29Z`, retry9 D1 `58732391` remained `RUNNING` on `g1807htzh01` for `02:34:44` with `ReqMem=1200G`. Live memory accounting reported `MaxRSS=717908636K` and `AveRSS=717802624K`.
+
+D1's declared minimum train-loop seconds floor is `9000` seconds. The current elapsed time is `9284` seconds, so retry9 D1 has crossed the minimum-time floor. This is necessary progress but not completion evidence.
+
+D1 has now written scheduled checkpoint evidence through step 11662:
+
+```text
+checkpoint_validation_step_1666.pt
+checkpoint_validation_step_3332.pt
+checkpoint_validation_step_4998.pt
+checkpoint_validation_step_5000.pt
+checkpoint_validation_step_6664.pt
+checkpoint_validation_step_8330.pt
+checkpoint_validation_step_9996.pt
+checkpoint_validation_step_11662.pt
+checkpoint_best.pt
+```
+
+D2-through-alignment remain dependency-pending and finalizer `58733769` remains dependency-pending. D1 has not written final `training_log.csv`, `validation_events.csv`, `summary.json`, or post-job aggregation evidence, so the state remains `NEEDS_MONITOR`, not complete and not reviewable.
+
 ## Retry9 Running Monitor Through Step 8330
 
 At `2026-07-12T20:19:19Z`, retry9 D1 `58732391` remained `RUNNING` on `g1807htzh01` for `01:51:31` with `ReqMem=1200G`. Live memory accounting reported `MaxRSS=570767692K` and `AveRSS=570767692K`.
