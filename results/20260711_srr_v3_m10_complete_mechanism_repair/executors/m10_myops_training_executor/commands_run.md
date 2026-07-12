@@ -506,6 +506,22 @@ Retry9 has crossed the retry5/retry6/retry7/retry8 D1 OOM elapsed windows, but i
 
 Current state remains `NEEDS_MONITOR`, not complete and not reviewable.
 
+## Retry9 D1 Final-Checkpoint Running Monitor
+
+Update timestamp UTC: `2026-07-12T22:01:54Z`
+
+| Command / evidence | Result |
+| --- | --- |
+| `squeue -j 58732391,58732393,58732395,58732397,58732399,58732400,58733769 -o '%i|%j|%P|%q|%T|%M|%l|%R'` | D1 `58732391 RUNNING` for `03:34:05`; D2-through-alignment and finalizer dependency-pending |
+| `sacct -j 58732391,58732393,58732395,58732397,58732399,58732400,58733769 --format=JobIDRaw,JobName,Partition,QOS,State,ExitCode,Elapsed,Start,End,NodeList,ReqMem,MaxRSS --parsable2` | D1 `58732391 RUNNING 0:0`, elapsed `03:34:05`, `ReqMem=1200G`; D2-through-alignment and finalizer dependency-pending |
+| `sstat -j 58732391.batch --format=JobID,MaxRSS,AveRSS,MaxVMSize,AveVMSize -P` | `MaxRSS=889579444K`, `AveRSS=889579444K` |
+| D1 checkpoint listing | `checkpoint_final.pt` exists, with validation checkpoints through step 13328 and `checkpoint_best.pt` |
+| D1 final-log listing | `training_log.csv` and `validation_events.csv` exist; `summary.json` is absent |
+
+Retry9 D1 has written final-checkpoint/log artifacts but remains `RUNNING` and has not produced terminal accounting or post-job aggregation evidence.
+
+Current state remains `NEEDS_MONITOR`, not complete and not reviewable.
+
 ## Retry9 D1 Minimum-Time Monitor
 
 Update timestamp UTC: `2026-07-12T21:02:29Z`

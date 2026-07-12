@@ -35,6 +35,22 @@ No `review.md` was written. No push was performed. Wave 3, validation packaging/
 
 Decision remains `NEEDS_MONITOR`, not blocked and not complete.
 
+## Retry9 D1 Final-Checkpoint Running Monitor
+
+Checkpoint time: `2026-07-12T22:01:54Z`
+
+| Gate | Status |
+| --- | --- |
+| retry9 D1 live state | monitor: `58732391 RUNNING` for `03:34:05` on `g1807htzh01` |
+| retry9 D1 memory | monitor: `ReqMem=1200G`, `MaxRSS=889579444K`, `AveRSS=889579444K` |
+| checkpoint progress | monitor: `checkpoint_final.pt` exists, along with validation checkpoints through step 13328 and `checkpoint_best.pt` |
+| log progress | monitor: `training_log.csv` and `validation_events.csv` exist |
+| completion evidence | pending: no `summary.json`, terminal Slurm accounting, or aggregation evidence yet |
+| downstream stages | monitor: D2-through-alignment remain dependency-pending |
+| review | blocked: no `review.md`; this is not a completion packet |
+
+Decision remains `NEEDS_MONITOR`, not blocked and not complete.
+
 ## Retry9 D1 Minimum-Time Monitor
 
 Checkpoint time: `2026-07-12T21:02:29Z`

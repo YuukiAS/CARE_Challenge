@@ -402,6 +402,30 @@ checkpoint_validation_step_6664.pt
 
 D2-through-alignment remain dependency-pending and finalizer `58733769` remains dependency-pending. D1 has not written final `training_log.csv`, `validation_events.csv`, `summary.json`, or post-job aggregation evidence, so the state remains `NEEDS_MONITOR`, not complete and not reviewable.
 
+## Retry9 D1 Final-Checkpoint Running Monitor
+
+At `2026-07-12T22:01:54Z`, retry9 D1 `58732391` remained `RUNNING` on `g1807htzh01` for `03:34:05` with `ReqMem=1200G`. Live memory accounting reported `MaxRSS=889579444K` and `AveRSS=889579444K`.
+
+D1 has written final-checkpoint and training-log artifacts:
+
+```text
+checkpoint_validation_step_1666.pt
+checkpoint_validation_step_3332.pt
+checkpoint_validation_step_4998.pt
+checkpoint_validation_step_5000.pt
+checkpoint_validation_step_6664.pt
+checkpoint_validation_step_8330.pt
+checkpoint_validation_step_9996.pt
+checkpoint_validation_step_11662.pt
+checkpoint_validation_step_13328.pt
+checkpoint_best.pt
+checkpoint_final.pt
+training_log.csv
+validation_events.csv
+```
+
+D2-through-alignment remain dependency-pending and finalizer `58733769` remains dependency-pending. D1 has not written `summary.json`, Slurm has not reported a terminal state, and post-job aggregation has not run, so the state remains `NEEDS_MONITOR`, not complete and not reviewable.
+
 ## Retry9 D1 Minimum-Time Monitor
 
 At `2026-07-12T21:02:29Z`, retry9 D1 `58732391` remained `RUNNING` on `g1807htzh01` for `02:34:44` with `ReqMem=1200G`. Live memory accounting reported `MaxRSS=717908636K` and `AveRSS=717802624K`.
