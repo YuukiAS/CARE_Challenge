@@ -39,3 +39,9 @@ After the user explicitly authorized adding `volta-gpu` back into this same curr
 The hardened volta preflight failed `1:0` in `00:00:47` on `g0303` because the CUDA kernel probe hit the known PyTorch/V100 incompatibility: `CUDA error: no kernel image is available for execution on the device`. The formal volta jobs were cancelled by the failed `afterok` dependency and receive zero training credit.
 
 The active monitor jobs are watcher `58701289` and finalizer `58701290`. htz preflight `58701195` and a100 preflight `58701203` remain pending; this is still `NEEDS_MONITOR`, not a normal review request.
+
+## Retry3 Monitor Check 1
+
+At `2026-07-12T12:53:05Z`, retry3 remained pending-only: htz preflight `58701195` and a100 preflight `58701203` were still `PENDING (Priority)`, and both formal chains remained dependency-pending. Watcher `58701289` was running and finalizer `58701290` was dependency-pending.
+
+This is checkpoint `1/12` for the 24-hour scheduler saturation threshold. It remains a monitor packet. Do not perform normal M10 review yet.

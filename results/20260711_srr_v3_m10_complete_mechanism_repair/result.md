@@ -90,3 +90,9 @@ The user explicitly authorized adding `volta-gpu` to the current goal's routing 
 The controller added volta preflight `58701281` and formal afterok chain `58701282`-`58701288`, then replaced the two-partition watcher/finalizer with retry3 watcher `58701289` and finalizer `58701290`. The htz/a100 jobs remain pending and active.
 
 Volta preflight `58701281` failed `1:0` after `00:00:47` with the known V100/PyTorch CUDA kernel incompatibility. The dependent volta formal jobs were cancelled before training start and receive zero training, optimizer-step, and train-loop-second credit. Current status remains `NEEDS_MONITOR`, not complete and not reviewable.
+
+## Retry3 Monitor Check 1
+
+At `2026-07-12T12:53:05Z`, htz preflight `58701195` and a100 preflight `58701203` were still `PENDING (Priority)`. Their formal chains `58701196`-`58701202` and `58701204`-`58701210` were still `PENDING (Dependency)`. Watcher `58701289` was `RUNNING` and finalizer `58701290` was `PENDING (Dependency)`.
+
+This is retry3 pending-only two-hour monitor checkpoint `1/12`. It does not satisfy the 24-hour scheduler block threshold. Current status remains `NEEDS_MONITOR`, not complete and not reviewable.

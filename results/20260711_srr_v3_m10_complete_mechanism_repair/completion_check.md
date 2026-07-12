@@ -59,4 +59,21 @@ Decision remains `NEEDS_MONITOR`.
 | Retry3 watcher | monitor: `58701289` running and reading all three D0 jobs |
 | Retry3 finalizer | monitor: `58701290` dependency-pending with `afterany` over old, superseded, failed, cancelled, and active retry jobs |
 
-Decision remains `NEEDS_MONITOR`, not blocked and not complete. The next legal pending-only monitor check for this retry3 race is no earlier than `2026-07-12T12:53Z`.
+Decision remains `NEEDS_MONITOR`, not blocked and not complete.
+
+## Retry3 Two-Hour Monitor Check 1
+
+Checkpoint time: `2026-07-12T12:53:05Z`
+
+| Gate | Status |
+| --- | --- |
+| htz preflight | monitor: `58701195` remains `PENDING (Priority)` |
+| htz formal chain | monitor: `58701196`-`58701202` remain `PENDING (Dependency)` |
+| a100 preflight | monitor: `58701203` remains `PENDING (Priority)` |
+| a100 formal chain | monitor: `58701204`-`58701210` remain `PENDING (Dependency)` |
+| retry3 watcher | monitor: `58701289` running for `02:00:03` |
+| retry3 finalizer | monitor: `58701290` remains `PENDING (Dependency)` |
+| scheduler block threshold | not met: this is pending-only two-hour check `1/12` |
+| post-job aggregation | pending: no winner and no terminal runtime outputs |
+
+Decision remains `NEEDS_MONITOR`, not blocked and not complete. The next legal pending-only monitor check for this retry3 race is no earlier than `2026-07-12T14:53Z`.

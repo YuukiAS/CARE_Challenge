@@ -45,6 +45,7 @@ Packet state: `NEEDS_MONITOR`
 | `wave2_partition_race_retry3_job_ledger.csv` | Retry3 ledger with htz/a100 pending jobs, volta failed preflight, cancelled volta afterok chain, runtime roots, and credit policy. |
 | `wave2_partition_race_retry3_watcher_state.json` | Local active retry3 watcher state path; it may continue changing while watcher `58701289` runs and is not completion evidence. |
 | `wave2_partition_race_retry3_volta_failure.md` | Human-readable zero-credit volta preflight failure receipt. |
+| `wave2_partition_race_retry3_monitor_20260712T125305Z.md` | First formal two-hour pending-only monitor checkpoint for retry3; not completion evidence. |
 | `executors/m10_myops_training_executor/` | Wave 2 executor monitor packet; not completion evidence. |
 | `subagents/reviewer_prompt.md` | Reviewer handoff prompt for this blocked packet only. |
 | `mapper_report_draft.md` | Mapper draft non-run receipt. |

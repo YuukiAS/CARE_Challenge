@@ -222,3 +222,15 @@ Retry3 receipts:
 - `results/20260711_srr_v3_m10_complete_mechanism_repair/wave2_partition_race_retry3_volta_failure.md`
 
 Current state remains `NEEDS_MONITOR`: htz preflight `58701195` and a100 preflight `58701203` remain pending, watcher `58701289` is running, and finalizer `58701290` is dependency-pending. Volta retry3 receives zero training, optimizer-step, and train-loop-second credit.
+
+## Retry3 Two-Hour Monitor Check 1
+
+Update timestamp UTC: `2026-07-12T12:53:05Z`
+
+| Command / evidence | Result |
+| --- | --- |
+| `squeue -j 58701195,...,58701210,58701289,58701290 -o '%i|%j|%T|%M|%l|%D|%C|%m|%R|%P|%Q'` | htz preflight `58701195` and a100 preflight `58701203` `PENDING (Priority)`; htz/a100 formal chains `PENDING (Dependency)`; watcher `58701289` `RUNNING`; finalizer `58701290` `PENDING (Dependency)` |
+| `sacct -j 58701195,...,58701210,58701289,58701290 --format=JobIDRaw,JobName,State,ExitCode,Elapsed,Start,End,NodeList -P` | all htz/a100 preflight/formal jobs still `PENDING`; watcher `58701289` `RUNNING 0:0` for `02:00:03`; finalizer `58701290` `PENDING` |
+| `wave2_partition_race_retry3_watcher_state.json` | watcher state remains `NEEDS_MONITOR`, no winner partition |
+
+This is pending-only monitor checkpoint `1/12`; scheduler block threshold is not met. Next legal pending-only monitor check is no earlier than `2026-07-12T14:53Z`.

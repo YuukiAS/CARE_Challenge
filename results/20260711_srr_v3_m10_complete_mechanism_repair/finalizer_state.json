@@ -160,6 +160,65 @@
   ],
   "failure_class": "VOLTA_GPU_UNSUPPORTED_BY_TORCH_BUILD_ZERO_CREDIT_HTZ_A100_STILL_PENDING",
   "final_state": "NEEDS_MONITOR",
+  "formal_monitor_checkpoints": [
+    {
+      "a100_chain": {
+        "job_ids": [
+          "58701204",
+          "58701205",
+          "58701206",
+          "58701207",
+          "58701208",
+          "58701209",
+          "58701210"
+        ],
+        "reason": "Dependency",
+        "state": "PENDING"
+      },
+      "a100_preflight": {
+        "job_id": "58701203",
+        "reason": "Priority",
+        "state": "PENDING"
+      },
+      "aggregation_allowed": false,
+      "checked_at_utc": "2026-07-12T12:53:05Z",
+      "checkpoint_index": 1,
+      "finalizer": {
+        "job_id": "58701290",
+        "reason": "Dependency",
+        "state": "PENDING"
+      },
+      "htzhulab_chain": {
+        "job_ids": [
+          "58701196",
+          "58701197",
+          "58701198",
+          "58701199",
+          "58701200",
+          "58701201",
+          "58701202"
+        ],
+        "reason": "Dependency",
+        "state": "PENDING"
+      },
+      "htzhulab_preflight": {
+        "job_id": "58701195",
+        "reason": "Priority",
+        "state": "PENDING"
+      },
+      "next_legal_pending_only_monitor_check_utc": "2026-07-12T14:53:00Z",
+      "pending_only_two_hour_checks": 1,
+      "required_pending_only_two_hour_checks_for_scheduler_block": 12,
+      "scheduler_block": false,
+      "status": "NEEDS_MONITOR",
+      "watcher": {
+        "elapsed": "02:00:03",
+        "job_id": "58701289",
+        "state": "RUNNING"
+      },
+      "wave3_allowed": false
+    }
+  ],
   "git_commit_decision": "COMMIT_LOCAL_PACKET",
   "git_head_before": "6b5c3a1be1d0ebddd16ea6b3c41cb86cf893eb3d",
   "git_push_decision": "SKIP_PUSH",
@@ -504,6 +563,18 @@
   "log_paths": [],
   "manifest_sha256": "b7a93e96f18460ae1541f346279da9d7aca51cf059957adcedfb168146fbce64",
   "mapper_final_status": "not_requested",
+  "monitor_state": {
+    "active_effective_partitions": [
+      "htzhulab",
+      "a100-gpu"
+    ],
+    "next_legal_pending_only_monitor_check_utc": "2026-07-12T14:53:00Z",
+    "pending_only_two_hour_checks": 1,
+    "required_pending_only_two_hour_checks_for_scheduler_block": 12,
+    "scheduler_block": false,
+    "status": "NEEDS_MONITOR",
+    "winner_partition": ""
+  },
   "next_retry_job_id_or_tmux_session": null,
   "nodes": {
     "58644072": "g180702",
@@ -700,7 +771,9 @@
     ],
     "finalizer_job_id": "58701290",
     "ledger": "results/20260711_srr_v3_m10_complete_mechanism_repair/wave2_partition_race_retry3_job_ledger.csv",
-    "next_legal_pending_only_monitor_check_utc": "2026-07-12T12:53:00Z",
+    "next_legal_pending_only_monitor_check_utc": "2026-07-12T14:53:00Z",
+    "pending_only_two_hour_checks": 1,
+    "scheduler_block": false,
     "submission": "results/20260711_srr_v3_m10_complete_mechanism_repair/wave2_partition_race_retry3_submission.json",
     "volta_preflight_exit_code": "1:0",
     "volta_preflight_job_id": "58701281",
@@ -725,6 +798,7 @@
     "results/20260711_srr_v3_m10_complete_mechanism_repair/wave2_partition_race_retry2_job_ledger.csv"
   ],
   "training_credit_policy": "zero_for_failed_startup",
+  "updated_at_utc": "2026-07-12T12:54:50.868108+00:00",
   "validator_commands": [
     "python scripts/ops/validate_executor_plan.py prompts/tasks/20260711_srr_v3_m10_complete_mechanism_repair_executor_plan.yaml",
     "python scripts/validation/validate_handoff_policy.py --strict-tasks --warnings-as-errors",

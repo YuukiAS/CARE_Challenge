@@ -78,3 +78,14 @@ New retry3 jobs:
 The volta preflight log `logs/M10W2Preflight_volta-gpu_58701281_20260712_065303.log` confirms `mpmath 1.3.0`, `sympy 1.14.0`, and `optimizer_ok`, then fails at the CUDA kernel probe because `torch 2.11.0+cu130` does not support Tesla V100 compute capability 7.0. This is zero-credit operational hardware incompatibility, not training evidence.
 
 The superseded two-partition watcher/finalizer `58701211` and `58701212` were cancelled after the retry3 watcher/finalizer were submitted. Active monitor jobs are watcher `58701289` and finalizer `58701290`. Current state remains `NEEDS_MONITOR`, not complete and not reviewable. No `review.md` was written and no push was performed.
+
+## Retry3 Two-Hour Monitor Check 1
+
+At `2026-07-12T12:53:05Z`, the controller performed the first formal two-hour pending-only checkpoint for retry3:
+
+| Partition | Preflight | Formal chain | State |
+| --- | ---: | --- | --- |
+| `htzhulab` | `58701195` | `58701196`-`58701202` | preflight `PENDING (Priority)`, chain `PENDING (Dependency)` |
+| `a100-gpu` | `58701203` | `58701204`-`58701210` | preflight `PENDING (Priority)`, chain `PENDING (Dependency)` |
+
+Watcher `58701289` remains `RUNNING` and finalizer `58701290` remains `PENDING (Dependency)`. No partition has started D0 and no terminal runtime output exists. This is pending-only checkpoint `1/12`; the 24-hour scheduler saturation threshold is not met. Current state remains `NEEDS_MONITOR`, not blocked and not reviewable. The next legal pending-only checkpoint is no earlier than `2026-07-12T14:53Z`.

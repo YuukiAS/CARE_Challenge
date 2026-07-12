@@ -115,12 +115,76 @@
   "dependency_policy": "preflight_afterok_then_training_afterok_chain_per_partition; finalizer_afterany_all_attempts",
   "excluded_partition": {},
   "finalizer_job_id": "58701290",
+  "formal_monitor_checkpoints": [
+    {
+      "a100_chain": {
+        "job_ids": [
+          "58701204",
+          "58701205",
+          "58701206",
+          "58701207",
+          "58701208",
+          "58701209",
+          "58701210"
+        ],
+        "reason": "Dependency",
+        "state": "PENDING"
+      },
+      "a100_preflight": {
+        "job_id": "58701203",
+        "reason": "Priority",
+        "state": "PENDING"
+      },
+      "aggregation_allowed": false,
+      "checked_at_utc": "2026-07-12T12:53:05Z",
+      "checkpoint_index": 1,
+      "finalizer": {
+        "job_id": "58701290",
+        "reason": "Dependency",
+        "state": "PENDING"
+      },
+      "htzhulab_chain": {
+        "job_ids": [
+          "58701196",
+          "58701197",
+          "58701198",
+          "58701199",
+          "58701200",
+          "58701201",
+          "58701202"
+        ],
+        "reason": "Dependency",
+        "state": "PENDING"
+      },
+      "htzhulab_preflight": {
+        "job_id": "58701195",
+        "reason": "Priority",
+        "state": "PENDING"
+      },
+      "next_legal_pending_only_monitor_check_utc": "2026-07-12T14:53:00Z",
+      "pending_only_two_hour_checks": 1,
+      "required_pending_only_two_hour_checks_for_scheduler_block": 12,
+      "scheduler_block": false,
+      "status": "NEEDS_MONITOR",
+      "watcher": {
+        "elapsed": "02:00:03",
+        "job_id": "58701289",
+        "state": "RUNNING"
+      },
+      "wave3_allowed": false
+    }
+  ],
   "monitor_state": {
-    "a100_preflight": "58701203 PENDING Priority",
-    "htzhulab_preflight": "58701195 PENDING Priority",
-    "next_legal_pending_only_monitor_check_utc": "2026-07-12T12:53:00Z",
-    "retry3_finalizer": "58701290 PENDING Dependency",
-    "retry3_watcher": "58701289 RUNNING"
+    "active_effective_partitions": [
+      "htzhulab",
+      "a100-gpu"
+    ],
+    "next_legal_pending_only_monitor_check_utc": "2026-07-12T14:53:00Z",
+    "pending_only_two_hour_checks": 1,
+    "required_pending_only_two_hour_checks_for_scheduler_block": 12,
+    "scheduler_block": false,
+    "status": "NEEDS_MONITOR",
+    "winner_partition": ""
   },
   "old_startup_failed_jobs_zero_credit": [
     "58644072",
@@ -335,7 +399,7 @@
     "58701211",
     "58701212"
   ],
-  "updated_at_utc": "2026-07-12T10:57:07.106367+00:00",
+  "updated_at_utc": "2026-07-12T12:54:50.865513+00:00",
   "volta_cancelled_afterok_jobs_zero_credit": [
     "58701282",
     "58701283",
