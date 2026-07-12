@@ -384,3 +384,20 @@ This crossed every prior D1 OOM window:
 | retry9 | `58732391` | `1200G` | `RUNNING` | `00:43:51` |
 
 D1 has written `checkpoint_validation_step_1666.pt` and `checkpoint_validation_step_3332.pt`. It has not written final `training_log.csv`, `validation_events.csv`, `summary.json`, or post-job aggregation evidence, so the state remains `NEEDS_MONITOR`, not complete and not reviewable.
+
+## Retry9 Running Monitor With Additional Checkpoints
+
+At `2026-07-12T19:46:43Z`, retry9 D1 `58732391` remained `RUNNING` on `g1807htzh01` for `01:18:54` with `ReqMem=1200G`. Live memory accounting reported `MaxRSS=442276744K` and `AveRSS=442239872K`.
+
+D1 has now written additional scheduled checkpoint evidence:
+
+```text
+checkpoint_validation_step_1666.pt
+checkpoint_validation_step_3332.pt
+checkpoint_validation_step_4998.pt
+checkpoint_validation_step_5000.pt
+checkpoint_best.pt
+checkpoint_validation_step_6664.pt
+```
+
+D2-through-alignment remain dependency-pending and finalizer `58733769` remains dependency-pending. D1 has not written final `training_log.csv`, `validation_events.csv`, `summary.json`, or post-job aggregation evidence, so the state remains `NEEDS_MONITOR`, not complete and not reviewable.
