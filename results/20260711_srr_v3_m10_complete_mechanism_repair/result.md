@@ -312,3 +312,59 @@ Retry8 preflight `58720440` completed `0:0`. Current retry8 state:
 | Alignment control | `58720463` | `PENDING (Dependency)` |
 
 Retry8 finalizer job `58720464` is pending with `afterany`. Current controller state remains `NEEDS_MONITOR`, not complete and not reviewable.
+
+## Retry8 Terminal OOM And D1 Memory-Growth Diagnosis
+
+At `2026-07-12T18:21:31Z`, retry8 reached terminal accounting:
+
+| Phase | Job ID | Terminal state | Credit |
+| --- | ---: | --- | --- |
+| D0 static matched control | `58706293` | retained `COMPLETED 0:0` | valid D0 runtime evidence |
+| D1 spatial BR2 | `58720458` | `OUT_OF_MEMORY 0:125` after `00:23:41` | zero effective D1 credit |
+| D2 hierarchical PSIP | `58720459` | `CANCELLED 0:0` by unmet `afterok` | zero credit |
+| D3 full memory PropRef | `58720460` | `CANCELLED 0:0` by unmet `afterok` | zero credit |
+| Hard-negative refresh | `58720461` | `CANCELLED 0:0` by unmet `afterok` | zero credit |
+| No-nnU-Net-context control | `58720462` | `CANCELLED 0:0` by unmet `afterok` | zero credit |
+| Alignment control | `58720463` | `CANCELLED 0:0` by unmet `afterok` | zero credit |
+| Finalizer | `58720464` | `FAILED 1:0` | fail-closed accounting |
+
+Slurm memory accounting records `ReqMem=160G`, `QOS=gpu_access_patron`, and batch `MaxRSS=167770540K` for D1. The controller locally replayed retry8 finalization and wrote `wave2_partition_race_retry8_finalization.json`, recording `status: NEEDS_EVIDENCE`, `winner_reason: no_completed_chain`, D1 `OUT_OF_MEMORY(0:125)`, and downstream jobs cancelled.
+
+D1 wrote early runtime artifacts under the retained retry4 htz runtime root, including `one_batch_overfit.csv`, `one_batch_overfit.json`, `prototype_bank_summary.json`, `prototype_update_sanity.csv`, and `checkpoint_validation_step_1666.pt`. It did not write `training_log.csv`, `validation_events.csv`, `summary.json`, or final full-case completion evidence, so D1 remains zero-credit for the M10 minimum-effective-training budget.
+
+The repeated D1 OOM sequence is now:
+
+| Attempt | Job ID | ReqMem | MaxRSS | Elapsed |
+| --- | ---: | ---: | ---: | ---: |
+| retry5 | `58714023` | `64G` | `67107264K` | `00:07:50` |
+| retry6 | `58714634` | `96G` | `100661736K` | `00:12:46` |
+| retry7 | `58719835` | `128G` | `134216104K` | `00:18:06` |
+| retry8 | `58720458` | `160G` | `167770540K` | `00:23:41` |
+
+This pattern indicates a D1 memory-growth defect in the runtime path, not a startup, environment, or ordinary pending/scheduler condition. The current state is `NEEDS_EVIDENCE`, not blocked and not complete. The controller may continue only with a same-scope Wave 2 operational repair inside the owned wrapper/evaluation/job/result write scope; any required change to forbidden shared architecture/loss files or scientific design must return to the appropriate revision/planning gate. Wave 3 remains blocked.
+
+## Retry9 1200G Resource Replacement Monitor
+
+At `2026-07-12T18:29:52Z`, the controller submitted same-scope retry9 after retry8 D1 OOM. The retry9 preflight job `58728960` completed `0:0` on `htzhulab` with `ReqMem=1200G`, `QOS=gpu_access_patron`, and node `g1807htzh01`.
+
+Retry9 changes only Slurm resource routing. Code/config/split hashes remain unchanged:
+
+| Artifact | SHA256 |
+| --- | --- |
+| `scripts/training/run_srr_v3_m10_complete_repair.py` | `bf132c6f6c1649c2a98bbe16af3ffe7cd67f436f035431a6b3376e4917203ad3` |
+| `configs/srr_v3_m10_complete_repair.yaml` | `df42f9ee55a3ba6ac616a37b2455cb7bca67c5f751f0c5a31c4a18938b107a9b` |
+| `data/benchmarks/protocol/splits_MyoPS.json` | `6165caeb5b47feb0d24f20380898037b7e6cead4db1eeba398a3c5a57faf9a1b` |
+
+The replacement chain is:
+
+| Phase | Job ID | Current state |
+| --- | ---: | --- |
+| retained D0 | `58706293` | `COMPLETED 0:0` |
+| D1 spatial BR2 | `58732391` | `RUNNING` on `g1807htzh01` |
+| D2 hierarchical PSIP | `58732393` | `PENDING (Dependency)` |
+| D3 full memory PropRef | `58732395` | `PENDING (Dependency)` |
+| Hard-negative refresh | `58732397` | `PENDING (Dependency)` |
+| No-nnU-Net-context control | `58732399` | `PENDING (Dependency)` |
+| Alignment control | `58732400` | `PENDING (Dependency)` |
+
+Retry9 finalizer job `58733769` is pending with `afterany` over all old, superseded, failed, cancelled, preflight, retained D0, and retry9 replacement jobs. Current controller state is `NEEDS_MONITOR`, not complete and not reviewable. Wave 3 remains blocked.

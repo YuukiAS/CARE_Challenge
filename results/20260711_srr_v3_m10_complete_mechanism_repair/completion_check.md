@@ -227,3 +227,38 @@ Checkpoint time: `2026-07-12T17:44:44Z`
 | review | blocked: no `review.md`; this is not a completion packet |
 
 Decision is `NEEDS_MONITOR`, not blocked and not complete. This is not a pending-only scheduler block because retry8 D1 has started running.
+
+## Retry8 Terminal OOM Check
+
+Checkpoint time: `2026-07-12T18:21:31Z`
+
+| Gate | Status |
+| --- | --- |
+| retry8 D1 terminal state | fail: `58720458 OUT_OF_MEMORY 0:125` after `00:23:41` |
+| retry8 memory evidence | fail: `ReqMem=160G`, `QOS=gpu_access_patron`, batch `MaxRSS=167770540K` |
+| retry8 runtime evidence | partial only: D1 wrote `checkpoint_validation_step_1666.pt` and early sanity/prototype files, but not `training_log.csv`, `validation_events.csv`, `summary.json`, or full completion evidence |
+| retry8 downstream stages | fail-closed: `58720459`-`58720463 CANCELLED 0:0` by unmet `afterok` |
+| retry8 finalizer | fail-closed: `58720464 FAILED 1:0` |
+| retry8 aggregation replay | fail-closed: `wave2_partition_race_retry8_finalization.json` records `NEEDS_EVIDENCE`, `no_completed_chain`, and `OUT_OF_MEMORY(0:125)` |
+| D1 repeated OOM pattern | fail: `64G -> 96G -> 128G -> 160G` all OOM, with runtime extending to `00:23:41` |
+| scientific contract | unchanged: no Wave 3, no review, no push, no validation package/upload, no route claim |
+| next legal action | continue same M10 Wave 2 controller scope only if repair stays in owned wrapper/evaluation/job/result files and does not change variants, formulas, budgets, split, case set, evaluation/checkpoint rules, result paths, executor count, or wave graph |
+
+Decision is `NEEDS_EVIDENCE`, not blocked and not complete. Wave 3 remains blocked until Wave 2 D1-through-alignment has terminal successful accounting and post-job aggregation.
+
+## Retry9 1200G Monitor Check
+
+Checkpoint time: `2026-07-12T18:29:52Z`
+
+| Gate | Status |
+| --- | --- |
+| retry9 preflight | pass: `58728960 COMPLETED 0:0` with `ReqMem=1200G`, `QOS=gpu_access_patron`, node `g1807htzh01` |
+| retained upstream D0 | pass: `58706293 COMPLETED 0:0` with valid D0 runtime evidence |
+| retry9 D1 replacement | monitor: `58732391 RUNNING` on `g1807htzh01` with `ReqMem=1200G` |
+| retry9 downstream replacements | monitor: `58732393`, `58732395`, `58732397`, `58732399`, `58732400` are `PENDING (Dependency)` |
+| dependency policy | pass: D1 uses `afterok:58728960`; downstream stages use training `afterok` |
+| retry9 finalizer | monitor: `58733769 PENDING (Dependency)` with `afterany` over all old and replacement job IDs |
+| scientific contract | pass: code/config/split hashes unchanged; variants, budgets, split, formulas, result paths, executor count, and wave graph unchanged |
+| review | blocked: no `review.md`; this is not a completion packet |
+
+Decision is `NEEDS_MONITOR`, not blocked and not complete. This is not a pending-only scheduler block because retry9 D1 has started running.
