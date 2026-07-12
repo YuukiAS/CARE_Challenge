@@ -189,6 +189,34 @@ Monitor states (`PENDING`, `RUNNING`, `CONFIGURING`, `COMPLETING`,
 `AWAITING_SACCT`) map to `NEEDS_MONITOR`, not `NEEDS_EVIDENCE` and not
 `BLOCKED`. Scheduler block requires the Slurm routing skill threshold.
 
+## Operational Failure Recovery
+
+A same-task, same-executor, same-command-semantics replacement attempt after an
+operational startup or runtime defect is already authorized by the original
+task. It does not require a new planner decision and does not consume another
+executor slot.
+
+Operational retry covers environment/package defects, wrapper or import-path
+startup defects, transient node or preemption failures, runtime output path
+setup, lock setup, and command packaging errors when the repair keeps the same
+scientific variant, training budget, split, config semantics, task graph,
+executor id, and write scope. The controller must record old and replacement
+job lineage, fixed fingerprints, retry reason, and zero training credit for
+failed startup attempts.
+
+Implementation revision is allowed only inside the current executor write scope.
+If recovery requires changing frozen shared architecture, loss, config, or
+other previous-wave files, the controller must return
+`NEEDS_REVISION_RETURN_TO_PREVIOUS_WAVE`. If recovery changes formula, variant,
+budget, split, task graph, executor count, external resource permission, or
+scientific decision gates, the controller must stop with `NEEDS_GPT_PLANNER` or
+`NEEDS_HUMAN_APPROVAL` and cite the exact changed contract fields.
+
+Fail-closed completion gates mean do not claim completion without evidence.
+They do not mean stop attempting authorized task-local recovery. A controller
+must not end a goal merely because the current packet is `NEEDS_EVIDENCE`;
+it must first check for a task-local recovery path.
+
 ## GPT Milestone Authoring
 
 Future staging prompts use the schemas under `prompts/schemas/`. A short

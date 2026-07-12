@@ -3356,10 +3356,13 @@ hidden anchor identity, folding-heavy registration, and frame0-only Cine.
 
 ## Slurm continuity and finalizers
 
-`htzhulab` is default; fallbacks/routing races follow the repository Slurm skill with isolated roots, logs, and locks. Each wave
-submits an `afterany` wave finalizer over all of its job IDs and cannot return a completion token until terminal accounting and
-post-job aggregation succeed. The controller retains every job ID across waves and submits the global durable finalizer over all
-recorded jobs. `PENDING`, `RUNNING`, `CONFIGURING`, `COMPLETING`, and `AWAITING_SACCT` map to
+`htzhulab` is default; fallbacks/routing races follow the repository Slurm skill with isolated roots, logs, and locks. Each
+formal training chain must pass compute-environment preflight before the first GPU job. Training stages that require upstream
+success use `afterok`; `afterany` is reserved for accounting/finalizer jobs over all attempts. Each wave submits an `afterany`
+wave finalizer over all of its job IDs and cannot return a completion token until terminal accounting and post-job aggregation
+succeed. The controller retains every old and replacement job ID across waves and submits the global durable finalizer over all
+recorded attempts. Failed startup attempts keep zero training credit and may be retried only as same-executor, same-scope
+replacement attempts with matching code/config/split fingerprints. `PENDING`, `RUNNING`, `CONFIGURING`, `COMPLETING`, and `AWAITING_SACCT` map to
 `NEEDS_MONITOR`; scheduler saturation requires 12 checks at two-hour intervals over 24 hours.
 
 `FINALIZER_A` records terminal state, exit code, elapsed, partition, log, runtime root, checkpoint provenance, output checks,

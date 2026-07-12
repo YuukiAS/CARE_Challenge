@@ -919,6 +919,29 @@ def validate_controller_report(path: Path, text: str) -> list[Finding]:
     ):
         findings.append(Finding("error", path, "planner/mapper cannot claim follow-up completion from chat without committed evidence/review."))
 
+    if re.search(r"(?i)(obtain|request|need|required).*explicit.*(authorization|approval)|NEEDS_HUMAN_APPROVAL|NEEDS_GPT_PLANNER", text):
+        missing_auth = [
+            field
+            for field in (
+                "authorization_reason",
+                "changed_contract_fields",
+                "out_of_scope_paths_or_actions",
+                "why_operational_retry_is_insufficient",
+            )
+            if not field_nonempty(text, field)
+        ]
+        if missing_auth:
+            findings.append(
+                Finding(
+                    "error",
+                    path,
+                    "controller report asks for new authorization/planner action without required scope-change fields: "
+                    + ", ".join(missing_auth),
+                )
+            )
+        if re.search(r"(?i)same[- ]scope|operational retry|environment repair|missing package|ModuleNotFoundError", text) and not field_nonempty(text, "changed_contract_fields"):
+            findings.append(Finding("error", path, "same-scope operational retry cannot be converted to a new authorization gate."))
+
     for field in REPORT_REQUIRED_FIELDS:
         if not re.search(rf"(?m)^{re.escape(field)}\s*:", text):
             findings.append(Finding("error", path, f"controller report missing {field}."))
@@ -1124,6 +1147,23 @@ def validate_finalizer_state(path: Path, text: str) -> list[Finding]:
         findings.append(Finding("error", path, "nonterminal Slurm states must map to NEEDS_MONITOR."))
     if final_state in {"PACKET_COMMITTED_FOR_REVIEW", "READY_FOR_LOCAL_PACKET_COMMIT"} and states & {"PENDING", "RUNNING", "CONFIGURING", "COMPLETING", "AWAITING_SACCT"}:
         findings.append(Finding("error", path, "completion finalizer_state contains nonterminal Slurm state."))
+    if final_state in {"OPERATIONAL_RETRY_REQUIRED", "RUNTIME_FAILURE"} or data.get("retryable") is True:
+        retry_required = list_value(schema, "retry_finalizer_fields", [
+            "failure_class",
+            "retryable",
+            "suggested_next_state",
+            "attempt_number",
+            "supersedes_job_ids",
+            "replacement_job_ids",
+            "training_credit_policy",
+        ])
+        missing_retry = [field for field in retry_required if field not in data]
+        if missing_retry:
+            findings.append(Finding("error", path, "retry/failure finalizer_state missing fields: " + ", ".join(missing_retry)))
+    if final_state == "OPERATIONAL_RETRY_REQUIRED" and data.get("suggested_next_state") != "HAND_BACK_TO_CONTROLLER_FOR_SAME_SCOPE_RETRY":
+        findings.append(Finding("error", path, "retryable operational failure must hand back to controller for same-scope retry."))
+    if str(data.get("training_credit_policy", "")).lower() not in {"", "zero_for_failed_startup", "verified_completed_steps_only"}:
+        findings.append(Finding("error", path, "training_credit_policy must preserve failed startup attempts as zero credit."))
     return findings
 
 

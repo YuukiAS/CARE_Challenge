@@ -76,6 +76,47 @@ Rules:
 - Record job IDs, partition states, cancellation command, and watcher/log path.
 - Do not include `volta-gpu` in the race unless `htzhulab` and `a100-gpu` are unusable or the user explicitly approves it.
 
+## Preflight and Replacement Submission
+
+Every formal CARE training chain must run a compute-environment preflight before
+the first GPU job. A login-node import check is not enough. The preflight should
+use the same Python, environment activation, config, output roots, log roots,
+lock roots, and entrypoint contract as the formal job.
+
+Minimum preflight checks:
+
+- Python executable and version.
+- Critical imports needed by the training entrypoint.
+- Optimizer construction smoke check.
+- CUDA visibility when a GPU job is required.
+- Config parse and semantic contract print, such as `--print-contract`.
+- Output, log, and lock parent directory writability.
+- Code/config/split fingerprints for later retry comparison.
+
+Default dependency semantics:
+
+- A training stage that requires upstream success uses `afterok`.
+- Independent training stages use no dependency, or an explicitly plan-declared
+  dependency with `independent_of_upstream_success: true` and a reason.
+- Accounting/finalizer jobs over all attempts use `afterany`.
+
+Bounded same-scope retry is allowed for operational defects without a new
+planner decision when command semantics, code/config/split fingerprints, task
+graph, executor id, and write scope are unchanged. Recommended defaults:
+
+```yaml
+max_startup_retries: 2
+max_preemption_retries: 2
+max_unknown_retries: 0
+```
+
+Before retry, verify the command/config/code/split fingerprints. Any semantic
+change is not a retry and must go through the appropriate revision/planning
+gate. Old failed jobs remain in the ledger permanently and failed startup
+attempts receive zero optimizer-step and train-loop credit. Replacement receipts
+must record old and new job IDs, retry reason, attempt number, and fingerprint
+comparison. A single failed job is runtime evidence, not a goal block.
+
 ## Slurm Headers
 
 Default CARE/lab jobs:

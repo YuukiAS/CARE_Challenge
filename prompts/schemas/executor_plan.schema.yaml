@@ -30,3 +30,25 @@ forbidden_completion_states:
   - PENDING
   - AWAITING_SACCT
 receipt_root_template: "results/<task_key>/executor_waves/wave_<wave>"
+slurm_executor_required_fields:
+  - retry_policy
+  - slurm_dependency_policy
+  - preflight
+  - retry_ledger_path
+retry_policy_required_fields:
+  - operational_retry_allowed
+  - same_executor_attempt
+  - max_startup_retries
+  - max_preemption_retries
+  - max_unknown_retries
+  - require_same_code_hash
+  - require_same_config_hash
+  - require_same_split_hash
+  - failed_attempt_training_credit
+preflight_required_fields:
+  - required
+  - command
+  - receipt_path
+dependency_policy:
+  training_dependency: afterok
+  finalizer_dependency: afterany

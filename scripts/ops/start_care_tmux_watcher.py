@@ -25,6 +25,11 @@ CONTINUE_FINALIZER_STATES = {
     "AWAITING_SACCT_RETRY_EXHAUSTED",
     "INITIALIZING",
 }
+HAND_BACK_FINALIZER_STATES = {
+    "OPERATIONAL_RETRY_REQUIRED",
+    "STARTUP_FAILURE_RETRYABLE",
+    "PREEMPTED_RETRYABLE",
+}
 FAIL_FINALIZER_STATES = {
     "RUNTIME_FAILURE",
     "NEEDS_EVIDENCE",
@@ -65,6 +70,8 @@ def next_action_for_state(final_state: str) -> tuple[str, int | None]:
         return "STOP_SUCCESS", 0
     if final_state in CONTINUE_FINALIZER_STATES:
         return "CONTINUE_POLLING", None
+    if final_state in HAND_BACK_FINALIZER_STATES:
+        return "HAND_BACK_TO_CONTROLLER_FOR_SAME_SCOPE_RETRY", 0
     if final_state in FAIL_FINALIZER_STATES:
         return "STOP_FAILURE", 1
     return "STOP_FAILURE_UNKNOWN_STATE", 1

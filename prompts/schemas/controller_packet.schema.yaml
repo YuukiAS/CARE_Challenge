@@ -21,6 +21,10 @@ conditional_required_files:
     - finalizer_state.json
   accounting_continuation_triggered:
     - accounting_continuation_receipt.json
+  replacement_attempt:
+    - replacement_job_ledger.csv
+    - operational_retry_receipt.json
+    - preflight_receipt.json
   multi_executor:
     - executor_waves
   wiki_update_required:
@@ -37,3 +41,11 @@ precommit_finalizer_fields:
   - precommit_head
   - tracked_paths
   - manifest_sha256
+retry_finalizer_fields:
+  - failure_class
+  - retryable
+  - suggested_next_state
+  - attempt_number
+  - supersedes_job_ids
+  - replacement_job_ids
+  - training_credit_policy

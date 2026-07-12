@@ -56,6 +56,17 @@ Validators and reviewer known-bad cases must include: `completion_check.md` read
 
 Validation scripts used for completion decisions must fail closed. If errors are reported, the command must return failure unless it is explicitly invoked as a non-completion diagnostic scan. Historical tolerated findings require a named allowlist with reason, expiry, and owner.
 
+Fail-closed means "do not claim completion without evidence". It does not mean
+"stop attempting authorized task-local recovery". A controller may retry a
+same-task, same-executor operational failure after the defect is repaired when
+the retry preserves command semantics, scientific variant, budget, split,
+config meaning, task graph, executor id, and write scope.
+
+Only a machine-checkable scope change may require GPT/user approval. A report
+that requests new authorization after `NEEDS_EVIDENCE` must list
+`authorization_reason`, `changed_contract_fields`,
+`out_of_scope_paths_or_actions`, and `why_operational_retry_is_insufficient`.
+
 Trainable model evidence must be classified by adequacy. Small probes and smoke runs can support debugging, but not route promotion or scientific stop. Adequacy requires training budget, validation events, loss behavior, prediction sanity, provenance paths, cache isolation, and same-split baseline comparison.
 
 Operational completion and scientific route status are separate. A controller may finish its assigned workflow while the model route remains undertrained, unresolved, or in need of evidence.
@@ -108,6 +119,9 @@ Before any future SRR, Cine, missing-modality, registration, proposal/refinement
 7. controller report schema validation;
 8. known-bad-packet regression;
 9. `MONITOR_PACKET_IS_NOT_COMPLETION`.
+10. same-scope operational retry is not converted to a new authorization gate;
+11. training-stage Slurm dependencies that require upstream success use
+    `afterok`, while finalizer/accounting dependencies use `afterany`.
 
 If any of these gates fail, the controller must stop with `NEEDS_EVIDENCE` or `NEEDS_REVISION`. It must not continue to final review, route promotion, fold expansion, validation packaging, validation upload, or scientific stop.
 
@@ -121,3 +135,12 @@ For milestone chains, also enforce:
 
 
 Executor parallelism gate: any `executor_count > 1`, `executor_slots > 1`, or `parallel_execution_allowed: true` task must provide `executor_plan_path` and pass `scripts/ops/validate_executor_plan.py`. MyoPS and Cine remain sequential unless GPT provides explicit isolation proof.
+
+Known-bad recovery cases must fail closed: repaired dependency failure requests
+new user authorization without a scope change; `NEEDS_EVIDENCE` is treated as a
+permanent stop; failed job is classified as scheduler block; ordinary pending
+under the 24-hour threshold is scheduler block; retry is counted as a new
+executor; failed startup attempts contribute optimizer steps or train-loop
+seconds; training-to-training dependency uses `afterany` without explicit
+independent-stage justification; downstream stage starts after required upstream
+failure; finalizer uses `afterok` and therefore misses failed-job accounting.

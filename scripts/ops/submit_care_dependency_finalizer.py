@@ -1,5 +1,10 @@
 #!/usr/bin/env python3
-"""Submit a CARE dependency finalizer with Slurm afterany job dependencies."""
+"""Submit a CARE accounting/finalizer job with Slurm afterany dependencies.
+
+This helper is finalizer-only. It must not be used as a training-chain
+submission helper; use submit_care_training_chain.py for training stages that
+require afterok dependencies.
+"""
 
 from __future__ import annotations
 
@@ -34,6 +39,8 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--task-key", required=True)
     parser.add_argument("--result-dir", required=True, type=Path)
     parser.add_argument("--required-job-id", action="append", required=True)
+    parser.add_argument("--effective-training-job-id", action="append", default=[])
+    parser.add_argument("--failed-attempt-job-id", action="append", default=[])
     parser.add_argument("--runtime-output-path", action="append", default=[])
     parser.add_argument("--log-path", action="append", default=[])
     parser.add_argument("--aggregation-command", default="")
@@ -109,9 +116,14 @@ def main(argv: list[str] | None = None) -> int:
 
     receipt = {
         "task_key": args.task_key,
+        "finalizer_only": True,
         "result_dir": str(result_dir),
         "required_job_ids": args.required_job_id,
+        "all_attempt_job_ids": args.required_job_id,
+        "effective_training_job_ids": args.effective_training_job_id,
+        "failed_attempt_job_ids": args.failed_attempt_job_id,
         "dependency": dependency,
+        "dependency_type": "afterany",
         "command": " ".join(quote_items(command)),
         "log_path": str(log_path),
         "lock_path": str(lock_path),

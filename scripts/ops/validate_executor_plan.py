@@ -54,6 +54,31 @@ def required_executor_fields() -> list[str]:
     )
 
 
+def slurm_executor_required_fields() -> list[str]:
+    return schema_list("slurm_executor_required_fields", ["retry_policy", "slurm_dependency_policy", "preflight", "retry_ledger_path"])
+
+
+def retry_policy_required_fields() -> list[str]:
+    return schema_list(
+        "retry_policy_required_fields",
+        [
+            "operational_retry_allowed",
+            "same_executor_attempt",
+            "max_startup_retries",
+            "max_preemption_retries",
+            "max_unknown_retries",
+            "require_same_code_hash",
+            "require_same_config_hash",
+            "require_same_split_hash",
+            "failed_attempt_training_credit",
+        ],
+    )
+
+
+def preflight_required_fields() -> list[str]:
+    return schema_list("preflight_required_fields", ["required", "command", "receipt_path"])
+
+
 def parse_scalar(value: str) -> Any:
     value = value.strip()
     if value in ("", "null", "None"):
@@ -132,16 +157,23 @@ def load_executor_plan_without_pyyaml(text: str) -> dict[str, Any]:
                     entry[field] = parse_scalar(field_value)
                     continue
                 values: list[str] = []
+                mapping: dict[str, Any] = {}
                 while idx < len(lines):
-                    list_line = lines[idx]
-                    if not list_line.strip() or list_line.lstrip().startswith("#"):
+                    nested_line = lines[idx]
+                    if not nested_line.strip() or nested_line.lstrip().startswith("#"):
                         idx += 1
                         continue
-                    if not list_line.startswith("      - "):
-                        break
-                    values.append(str(parse_scalar(list_line[8:])))
-                    idx += 1
-                entry[field] = values
+                    if nested_line.startswith("      - "):
+                        values.append(str(parse_scalar(nested_line[8:])))
+                        idx += 1
+                        continue
+                    if nested_line.startswith("      ") and ":" in nested_line:
+                        nested_key, nested_value = nested_line[6:].split(":", 1)
+                        mapping[nested_key.strip()] = parse_scalar(nested_value)
+                        idx += 1
+                        continue
+                    break
+                entry[field] = mapping if mapping else values
             executors.append(entry)
         data[key] = executors
     return data
@@ -174,12 +206,76 @@ def normalized_path(value: Any) -> str:
     return str(Path(text).expanduser())
 
 
+def as_mapping(value: Any) -> dict[str, Any]:
+    return value if isinstance(value, dict) else {}
+
+
 def path_overlap(left: str, right: str) -> bool:
     if not left or not right:
         return False
     lp = Path(normalized_path(left))
     rp = Path(normalized_path(right))
     return lp == rp or lp in rp.parents or rp in lp.parents
+
+
+def is_slurm_executor(item: dict[str, Any]) -> bool:
+    return bool(item.get("slurm_dependency_chain")) or bool(item.get("finalizer_dependency_policy")) or bool(item.get("slurm_required"))
+
+
+def validate_slurm_retry_contract(item: dict[str, Any]) -> list[str]:
+    errors: list[str] = []
+    eid = str(item.get("id"))
+    if not is_slurm_executor(item):
+        return errors
+
+    for field in slurm_executor_required_fields():
+        if field not in item or item.get(field) in (None, "", []):
+            errors.append(f"{eid}: Slurm executor missing {field}")
+
+    retry = as_mapping(item.get("retry_policy"))
+    for field in retry_policy_required_fields():
+        if field not in retry:
+            errors.append(f"{eid}: retry_policy missing {field}")
+    for field in ("operational_retry_allowed", "same_executor_attempt", "require_same_code_hash", "require_same_config_hash", "require_same_split_hash"):
+        if retry.get(field) is not True:
+            errors.append(f"{eid}: retry_policy.{field} must be true")
+    for field in ("max_startup_retries", "max_preemption_retries", "max_unknown_retries"):
+        try:
+            value = int(retry.get(field, -1))
+        except (TypeError, ValueError):
+            errors.append(f"{eid}: retry_policy.{field} must be an integer")
+            continue
+        if value < 0:
+            errors.append(f"{eid}: retry_policy.{field} must be non-negative")
+        if value > 5:
+            errors.append(f"{eid}: retry_policy.{field} must be bounded <= 5")
+    if str(retry.get("failed_attempt_training_credit", "")).lower() != "zero":
+        errors.append(f"{eid}: retry_policy.failed_attempt_training_credit must be zero")
+
+    dependency = as_mapping(item.get("slurm_dependency_policy"))
+    if dependency.get("training_dependency") != "afterok":
+        if dependency.get("training_dependency") == "afterany" and item.get("independent_of_upstream_success") is True and item.get("independent_dependency_reason"):
+            pass
+        else:
+            errors.append(f"{eid}: slurm_dependency_policy.training_dependency must be afterok unless explicitly independent")
+    if dependency.get("finalizer_dependency") != "afterany":
+        errors.append(f"{eid}: slurm_dependency_policy.finalizer_dependency must be afterany")
+
+    preflight = as_mapping(item.get("preflight"))
+    for field in preflight_required_fields():
+        if field not in preflight or preflight.get(field) in (None, ""):
+            errors.append(f"{eid}: preflight missing {field}")
+    if preflight.get("required") is not True:
+        errors.append(f"{eid}: preflight.required must be true")
+
+    result_dir = normalized_path(item.get("result_dir"))
+    receipt_path = normalized_path(preflight.get("receipt_path"))
+    retry_ledger_path = normalized_path(item.get("retry_ledger_path"))
+    if result_dir and receipt_path and not path_overlap(result_dir, receipt_path):
+        errors.append(f"{eid}: preflight receipt_path must be inside result_dir")
+    if result_dir and retry_ledger_path and not path_overlap(result_dir, retry_ledger_path):
+        errors.append(f"{eid}: retry_ledger_path must be inside result_dir")
+    return errors
 
 
 def scopes_overlap(left: list[str], right: list[str]) -> bool:
@@ -277,6 +373,7 @@ def validate_plan(data: dict[str, Any]) -> list[str]:
         if str(item.get("isolation_mode", "")) == "separate_worktree":
             if not str(item.get("branch_name", "")).strip() or not str(item.get("worktree_path", "")).strip():
                 errors.append(f"{eid}: separate_worktree requires branch_name and worktree_path")
+        errors.extend(validate_slurm_retry_contract(item))
     cycle = find_cycle(build_dependency_graph([item for item in executors if isinstance(item, dict)]))
     if cycle:
         errors.append("dependency cycle: " + " -> ".join(cycle))

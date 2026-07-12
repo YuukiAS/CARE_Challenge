@@ -18,6 +18,8 @@ agent-flow v2 lifecycle.
 - `EXECUTION_PLANNED`: controller or executor has grounded the task and written
   an execution plan.
 - `EXECUTOR_RUNNING`: executor worker is active.
+- `OPERATIONAL_RETRY_RUNNING`: the same executor is retrying the same
+  task-local command semantics after an operational defect was repaired.
 - `MAPPER_DRAFT_RUNNING`: mapper draft pass is active.
 - `FINALIZER_RUNNING`: deterministic finalizer is collecting terminal job
   accounting, aggregation, validators, and tracked evidence.
@@ -44,6 +46,52 @@ agent-flow v2 lifecycle.
   launch required separate sessions.
 - `NEEDS_GPT_PLANNER`: next action requires strategic GPT/user judgment.
 - `STOP`: do not continue this task.
+
+## Block Taxonomy
+
+New controller reports must not use a bare `BLOCKED` without a controlled
+reason. Use one of:
+
+- `BLOCKED_PREREQUISITE`: an explicit prerequisite token, file, hash, or
+  ancestor gate is missing.
+- `BLOCKED_EXTERNAL_RESOURCE`: external data, license, service, or cluster
+  resource is unavailable outside the task's control.
+- `BLOCKED_PERMISSION`: a required action is outside the current human-approved
+  permission boundary.
+- `BLOCKED_SCHEDULER_SATURATION`: every submitted routing partition remained
+  pending for the Slurm skill's 12 consecutive 2-hour checks.
+- `BLOCKED_UNRESOLVED_WORKTREE_CONFLICT`: local git/worktree state prevents
+  safe continuation.
+- `NEEDS_REVISION_RETURN_TO_PREVIOUS_WAVE`: recovery requires changing frozen
+  shared files owned by an earlier executor wave.
+- `NEEDS_GPT_PLANNER`: recovery would change scientific design, budget, split,
+  task graph, executor count, external resource contract, or route decision.
+
+The following are not blockers by themselves: old jobs failed, the current
+packet is `NEEDS_EVIDENCE`, replacement job IDs are needed, an aggregator must
+be rerun, a branch is not pushed, ordinary pending is below the scheduler
+threshold, or same-scope environment repair completed.
+
+## Operational Recovery Transitions
+
+`NEEDS_EVIDENCE` is a packet/evidence outcome. It does not automatically revoke
+the original execution authorization.
+
+When a failed job is caused by an operational defect and the repair stays inside
+the same task, executor, command semantics, variant, budget, split, config
+meaning, and write scope, the controller may resume the same executor as:
+
+```text
+RUNTIME_FAILURE / NEEDS_EVIDENCE
+  -> operational defect repaired
+  -> OPERATIONAL_RETRY_RUNNING
+  -> EXECUTOR_RUNNING / NEEDS_MONITOR
+```
+
+The replacement attempt is the same executor's new attempt. It does not increase
+`executor_count` and does not require a new planner or human approval. Only a
+machine-checkable scope or permission change may move the task to
+`NEEDS_GPT_PLANNER` or `NEEDS_HUMAN_APPROVAL`.
 
 ## Scientific States
 
@@ -79,6 +127,8 @@ a controller decision.
 - Completed jobs with missing runtime outputs or failed aggregation map to
   `NEEDS_EVIDENCE`.
 - Failed jobs map to runtime failure evidence, not scheduler block.
+- Retryable startup, wrapper, node, preemption, path, lock, or import failures
+  map to operational recovery first, not permanent block.
 - `AWAITING_SACCT` in a dependency finalizer must retry within the finalizer
   before returning `AWAITING_SACCT_RETRY_EXHAUSTED`.
 - Parallel executor waves require a validated executor plan. Overlapping write

@@ -132,6 +132,37 @@ threshold evidence.
 finalizer must record retry fields and the watcher/finalizer backend that will
 continue accounting.
 
+## Operational Recovery Decision Table
+
+The controller must classify terminal or failed runtime states before asking
+for new authorization:
+
+| Situation | Controller action |
+| --- | --- |
+| job pending/running/accounting | `NEEDS_MONITOR`, continue continuity |
+| startup failure, repair remains inside executor scope | same executor replacement attempt |
+| preemption/node failure, same config can resume or replace | same executor resume/replacement attempt |
+| terminal success but output missing | rerun collector/aggregator; only then `NEEDS_EVIDENCE` if still missing |
+| current executor wrapper/helper must change inside allowed write scope | task-local revision, preflight, then retry |
+| frozen shared architecture/loss/config must change | `NEEDS_REVISION_RETURN_TO_PREVIOUS_WAVE` |
+| scientific formula, variant, budget, split, graph, executor count, or decision gate changes | `NEEDS_GPT_PLANNER` |
+| external permission/data/license cannot be solved | controlled external or permission blocker |
+
+A controller report that asks for explicit human or planner authorization must
+cite the exact contract field that requires it. If no field changes and the
+repair is same-scope operational recovery, the controller must not invent an
+approval gate.
+
+If `next_required_action` asks to obtain explicit authorization, the report must
+also include:
+
+```text
+authorization_reason:
+changed_contract_fields:
+out_of_scope_paths_or_actions:
+why_operational_retry_is_insufficient:
+```
+
 ## Controller Report
 
 `controller_report.md` is written before independent review. It must not claim

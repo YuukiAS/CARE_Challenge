@@ -152,6 +152,24 @@ executors:
       - no_nnunet_context
       - alignment_control
     finalizer_dependency_policy: afterany_all_wave_job_ids_and_global_all_job_ids
+    slurm_dependency_policy:
+      training_dependency: afterok
+      finalizer_dependency: afterany
+    retry_policy:
+      operational_retry_allowed: true
+      same_executor_attempt: true
+      max_startup_retries: 2
+      max_preemption_retries: 2
+      max_unknown_retries: 0
+      require_same_code_hash: true
+      require_same_config_hash: true
+      require_same_split_hash: true
+      failed_attempt_training_credit: zero
+    preflight:
+      required: true
+      command: python scripts/ops/run_care_training_preflight.py --python ./envs/env_CARE/bin/python --entrypoint scripts/training/run_srr_v3_m10_complete_repair.py --config configs/srr_v3_m10_complete_repair.yaml --result-dir results/20260711_srr_v3_m10_complete_mechanism_repair/executors/m10_myops_training_executor --log-dir results/20260711_srr_v3_m10_complete_mechanism_repair/logs --lock-path results/20260711_srr_v3_m10_complete_mechanism_repair/locks/m10_myops_training_executor.lock --import torch --import sympy --import mpmath --optimizer-smoke-command adamw --contract-command "scripts/training/run_srr_v3_m10_complete_repair.py --print-contract" --receipt-path results/20260711_srr_v3_m10_complete_mechanism_repair/executors/m10_myops_training_executor/preflight_receipt.json
+      receipt_path: results/20260711_srr_v3_m10_complete_mechanism_repair/executors/m10_myops_training_executor/preflight_receipt.json
+    retry_ledger_path: results/20260711_srr_v3_m10_complete_mechanism_repair/executors/m10_myops_training_executor/replacement_job_ledger.csv
     prompt_path: results/20260711_srr_v3_m10_complete_mechanism_repair/subagents/m10_myops_training_executor_prompt.md
     result_dir: results/20260711_srr_v3_m10_complete_mechanism_repair/executors/m10_myops_training_executor
     runtime_output_root: results/20260711_srr_v3_m10_complete_mechanism_repair/runtime/m10_myops_training_executor
@@ -238,6 +256,24 @@ executors:
       - registration_gate
       - cine_temporal
     finalizer_dependency_policy: afterany_all_wave_job_ids_and_global_all_job_ids
+    slurm_dependency_policy:
+      training_dependency: afterok
+      finalizer_dependency: afterany
+    retry_policy:
+      operational_retry_allowed: true
+      same_executor_attempt: true
+      max_startup_retries: 2
+      max_preemption_retries: 2
+      max_unknown_retries: 0
+      require_same_code_hash: true
+      require_same_config_hash: true
+      require_same_split_hash: true
+      failed_attempt_training_credit: zero
+    preflight:
+      required: true
+      command: python scripts/ops/run_care_training_preflight.py --python ./envs/env_CARE/bin/python --entrypoint scripts/training/run_cine_temporal_model_m10.py --config configs/srr_v3_m10_complete_repair.yaml --result-dir results/20260711_srr_v3_m10_complete_mechanism_repair/executors/m10_cine_temporal_executor --log-dir results/20260711_srr_v3_m10_complete_mechanism_repair/logs --lock-path results/20260711_srr_v3_m10_complete_mechanism_repair/locks/m10_cine_temporal_executor.lock --import torch --import sympy --import mpmath --optimizer-smoke-command adamw --contract-command "scripts/training/run_cine_temporal_model_m10.py --print-contract" --receipt-path results/20260711_srr_v3_m10_complete_mechanism_repair/executors/m10_cine_temporal_executor/preflight_receipt.json
+      receipt_path: results/20260711_srr_v3_m10_complete_mechanism_repair/executors/m10_cine_temporal_executor/preflight_receipt.json
+    retry_ledger_path: results/20260711_srr_v3_m10_complete_mechanism_repair/executors/m10_cine_temporal_executor/replacement_job_ledger.csv
     prompt_path: results/20260711_srr_v3_m10_complete_mechanism_repair/subagents/m10_cine_temporal_executor_prompt.md
     result_dir: results/20260711_srr_v3_m10_complete_mechanism_repair/executors/m10_cine_temporal_executor
     runtime_output_root: results/20260711_srr_v3_m10_complete_mechanism_repair/runtime/m10_cine_temporal_executor

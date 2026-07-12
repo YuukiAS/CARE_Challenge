@@ -23,6 +23,7 @@ FAILED_STATES = {"FAILED", "CANCELLED", "TIMEOUT", "NODE_FAIL", "OUT_OF_MEMORY",
 TERMINAL_STATES = SUCCESS_STATES | FAILED_STATES
 DEFAULT_ACCOUNTING_RETRY_SECONDS = 3600
 ACCOUNTING_EXHAUSTION_BACKENDS = {"tmux_watcher", "resubmit_finalizer"}
+RETRYABLE_FAILURE_CLASSES = {"STARTUP_ENVIRONMENT_FAILURE", "STARTUP_WRAPPER_FAILURE", "PREEMPTED_RETRYABLE", "NODE_FAILURE_RETRYABLE"}
 
 
 def run(cmd: str | list[str], cwd: Path, shell: bool = False) -> subprocess.CompletedProcess[str]:
@@ -314,6 +315,33 @@ def final_state_from_jobs(jobs: dict[str, dict[str, str]], pending_checks: int) 
     return "NEEDS_EVIDENCE"
 
 
+def read_text_tail(path: Path, limit: int = 12000) -> str:
+    try:
+        return path.read_text(encoding="utf-8", errors="replace")[-limit:]
+    except OSError:
+        return ""
+
+
+def classify_runtime_failure(jobs: dict[str, dict[str, str]], log_paths: list[str], repo_root: Path, override: str = "") -> tuple[str, bool, str]:
+    if override:
+        return override, override in RETRYABLE_FAILURE_CLASSES, "explicit finalizer failure class override"
+    states = {job.get("state", "UNKNOWN").upper() for job in jobs.values()}
+    logs = "\n".join(read_text_tail(repo_root / path) for path in log_paths)
+    if "ModuleNotFoundError" in logs or "No module named" in logs:
+        return "STARTUP_ENVIRONMENT_FAILURE", True, "missing import/module in job log"
+    if "command not found" in logs or "No such file or directory" in logs:
+        return "STARTUP_WRAPPER_FAILURE", True, "wrapper or command startup failure in job log"
+    if "PREEMPTED" in states:
+        return "PREEMPTED_RETRYABLE", True, "Slurm preemption is retryable with matching fingerprints"
+    if states & {"NODE_FAIL", "BOOT_FAIL"}:
+        return "NODE_FAILURE_RETRYABLE", True, "node or boot failure is retryable with matching fingerprints"
+    if "OUT_OF_MEMORY" in states:
+        return "OUT_OF_MEMORY_NEEDS_REVISION", False, "OOM requires implementation/budget revision"
+    if "FAILED" in states:
+        return "UNKNOWN_RUNTIME_FAILURE", False, "failed job without recognized retryable startup signature"
+    return "MODEL_OR_DATA_FAILURE_NEEDS_REVISION", False, "terminal runtime failure requires task-local revision"
+
+
 def wait_for_accounting(
     job_ids: list[str],
     repo_root: Path,
@@ -363,6 +391,11 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--commit", action="store_true")
     parser.add_argument("--commit-message", default="Finalize CARE milestone packet")
     parser.add_argument("--tracked-file", action="append", default=[])
+    parser.add_argument("--failure-class", default="")
+    parser.add_argument("--attempt-number", type=int, default=1)
+    parser.add_argument("--supersedes-job-id", action="append", default=[])
+    parser.add_argument("--replacement-job-id", action="append", default=[])
+    parser.add_argument("--training-credit-policy", default="zero_for_failed_startup")
     args = parser.parse_args(argv)
 
     repo_root = Path.cwd()
@@ -401,6 +434,14 @@ def main(argv: list[str] | None = None) -> int:
         "accounting_wait_seconds": 0,
         "accounting_continuation_receipt_path": None,
         "accounting_continuation_launch": None,
+        "failure_class": None,
+        "retry_reason": None,
+        "suggested_next_state": None,
+        "attempt_number": args.attempt_number,
+        "supersedes_job_ids": args.supersedes_job_id,
+        "replacement_job_ids": args.replacement_job_id,
+        "job_attempt_lineage": [],
+        "training_credit_policy": args.training_credit_policy,
         "lock_released": False,
     }
 
@@ -447,7 +488,27 @@ def main(argv: list[str] | None = None) -> int:
             write_state(result_dir, state)
             return 0
         if job_state == "RUNTIME_FAILURE":
+            failure_class, retryable, retry_reason = classify_runtime_failure(jobs, args.log_path, repo_root, args.failure_class)
+            state["failure_class"] = failure_class
+            state["retryable"] = retryable
+            state["retry_reason"] = retry_reason
+            state["job_attempt_lineage"] = [
+                {
+                    "attempt_number": args.attempt_number,
+                    "job_id": jid,
+                    "state": job.get("state"),
+                    "exit_code": job.get("exit_code", job.get("ExitCode", "UNKNOWN")),
+                    "training_credit": "zero" if failure_class.startswith("STARTUP_") else "verified_completed_steps_only",
+                }
+                for jid, job in jobs.items()
+            ]
+            if retryable:
+                state["final_state"] = "OPERATIONAL_RETRY_REQUIRED"
+                state["suggested_next_state"] = "HAND_BACK_TO_CONTROLLER_FOR_SAME_SCOPE_RETRY"
+                write_state(result_dir, state)
+                return 0
             state["final_state"] = "RUNTIME_FAILURE"
+            state["suggested_next_state"] = "NEEDS_REVISION" if failure_class.endswith("NEEDS_REVISION") else "NEEDS_EVIDENCE"
             write_state(result_dir, state)
             return 1
 
