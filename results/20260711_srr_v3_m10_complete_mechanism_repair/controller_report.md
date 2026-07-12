@@ -25,7 +25,7 @@ Wave 1 executor returned `READY_FOR_CONTROLLER_MERGE`, and controller verificati
 
 The shared log failure is missing `mpmath` in `env_CARE`, reached through `sympy` during PyTorch optimizer initialization. The controller repaired the project-local dependency to `mpmath 1.3.0` and verified minimal `torch.optim.AdamW` initialization.
 
-The user later authorized the same `m10_myops_training_executor` to run a replacement Wave 2 attempt without changing executor count, milestone, variants, budgets, split, or scientific design. The controller submitted compute-node preflight job `58682781` to `htzhulab`, then superseded it before formal training submission after the current Slurm skill required enhanced CUDA/config/writability/fingerprint checks. The active enhanced compute-node preflight job is `58683497`, pending on `htzhulab`. Formal monitor at `2026-07-12T04:17:34Z` found it still `PENDING` for `(Priority)` with no assigned node and no start time. This is pending-only monitor evidence, not scheduler saturation or a controller block. Formal replacement training jobs have not been submitted yet because the active enhanced preflight is still pending.
+The user later authorized the same `m10_myops_training_executor` to run a replacement Wave 2 attempt without changing executor count, milestone, variants, budgets, split, or scientific design. The controller submitted compute-node preflight job `58682781` to `htzhulab`, then superseded it before formal training submission after the current Slurm skill required enhanced CUDA/config/writability/fingerprint checks. The active enhanced compute-node preflight job is `58683497`, pending on `htzhulab`. Formal monitors at `2026-07-12T04:17:34Z` and `2026-07-12T06:18:01Z` found it still `PENDING` for `(Priority)` with no assigned node and no start time. This is pending-only monitor evidence, not scheduler saturation or a controller block. Formal replacement training jobs have not been submitted yet because the active enhanced preflight is still pending.
 
 The file `review.md` is intentionally absent. A reviewer must not start until a later authorized execution produces valid wave 2 runtime evidence and post-job aggregation.
 
@@ -72,7 +72,7 @@ blocked_actions:
   - wave3 before successful wave2 runtime aggregation
   - review before successful wave2 runtime aggregation
   - validation packaging/upload/fold expansion/hosted metric claim/next-stage training
-next_required_action: wait until at least 2026-07-12T06:17:34Z for the next pending-only monitor check, or earlier only if external scheduler notification shows job 58683497 changed state; submit replacement Wave2 afterok chain only if active enhanced preflight exits 0
+next_required_action: wait until at least 2026-07-12T08:18:01Z for the next pending-only monitor check, or earlier only if external scheduler notification shows job 58683497 changed state; submit replacement Wave2 afterok chain only if active enhanced preflight exits 0
 reason_if_not_published: not applicable
 reason_if_no_route_promotion: replacement Wave2 preflight is pending and no valid runtime evidence exists
 ```

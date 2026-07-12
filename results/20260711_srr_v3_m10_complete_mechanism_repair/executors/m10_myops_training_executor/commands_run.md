@@ -104,6 +104,9 @@ No replacement Slurm training jobs were submitted after the environment repair.
 | `python scripts/architecture/validate_care_architecture_wiki.py --strict --history` | pass |
 | `python scripts/architecture/generate_care_architecture_wiki.py --check-all` | pass |
 | `git diff --check` | pass |
+| `date -u '+%Y-%m-%dT%H:%M:%SZ'` | `2026-07-12T06:18:01Z`; second legal 2-hour monitor check after active enhanced preflight submission |
+| `squeue -j 58683497 -o '%i\|%j\|%T\|%M\|%D\|%R\|%P'` | `58683497|M10W2Preflight|PENDING|0:00|1|(Priority)|htzhulab` |
+| `sacct -j 58683497 --format=JobIDRaw,JobName,State,ExitCode,Elapsed,Start,End,NodeList -P` | `PENDING`, exit `0:0`, elapsed `00:00:00`, start/end `Unknown`, no node assigned |
 
 Formal replacement Slurm training jobs were not submitted because the active enhanced compute-node preflight `58683497` has not exited `0` yet. Prior preflight `58682781` is superseded and is not used as the formal gate.
 
