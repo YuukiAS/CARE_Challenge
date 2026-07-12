@@ -56,6 +56,24 @@ After enhanced preflight submission:
 
 The earlier root `TODO.md` validator blocker is cleared in the current working tree. This remains a monitor packet, not completed M10 runtime evidence.
 
+## Replacement Submission Validation
+
+After the authorized three-partition preflight race and replacement submission:
+
+| Command | Exit | Result |
+| --- | ---: | --- |
+| `python -m json.tool results/20260711_srr_v3_m10_complete_mechanism_repair/finalizer_state.json` | 0 | pass |
+| `python scripts/ops/validate_executor_plan.py prompts/tasks/20260711_srr_v3_m10_complete_mechanism_repair_executor_plan.yaml` | 0 | `executor plan validation passed` |
+| `python scripts/validation/validate_handoff_policy.py --strict-tasks --warnings-as-errors` | 0 | `handoff policy validation passed` |
+| `python scripts/architecture/validate_care_architecture_wiki.py --strict --history` | 0 | `care architecture wiki validation passed` |
+| `python scripts/architecture/generate_care_architecture_wiki.py --check-all` | 0 | `care architecture wiki diagrams ok` |
+| `git diff --check` | 0 | pass |
+| `bash -n results/.../wave2_env_preflight.sh jobs/src/run_srr_v3_m10_*.sh jobs/src/care_milestone_finalizer.sh` | 0 | pass |
+| `squeue -j 58700815,58700821,58700822,58700826,58700827,58700828,58700832,58700842 ...` | 0 | D0 `PENDING (Resources)`, downstream jobs `PENDING (Dependency)`, finalizer `PENDING (Dependency)` |
+| `sacct -j 58700815,58700821,58700822,58700826,58700827,58700828,58700832,58700842 ...` | 0 | all replacement/finalizer jobs currently `PENDING`, exit `0:0` |
+
+This remains a monitor packet, not completed M10 runtime evidence.
+
 ## Safety Confirmation
 
-No `review.md`, validation packaging, upload, route promotion, hosted metric claim, scientific stop, wave 3, replacement Slurm training submission, or M11 work occurred. The original wave 2 jobs are terminal failed startup evidence only; the replacement preflight is monitor state only.
+No `review.md`, validation packaging, upload, route promotion, hosted metric claim, scientific stop, wave 3, push, or M11 work occurred. Replacement Wave 2 jobs were submitted only after compute-node preflight job `58700751` completed `0:0`; the current state is `NEEDS_MONITOR`.

@@ -29,7 +29,8 @@ Packet state: `NEEDS_MONITOR`
 | `wave2_terminal_failure_receipt.md` | Terminal Slurm accounting, log failure cause, dependency repair, and fail-closed aggregation receipt. |
 | `wave2_startup_failed_jobs.csv` | Permanent zero-credit accounting for original startup-failed Wave 2 jobs. |
 | `wave2_env_preflight.sh` | Slurm compute-node environment preflight wrapper for the authorized replacement attempt. |
-| `wave2_replacement_preflight_receipt.md` | Replacement authorization, hashes, preflight command, and pending preflight job receipt. |
+| `wave2_replacement_preflight_receipt.md` | Replacement authorization, hashes, preflight command, and preflight/submission receipt. |
+| `wave2_replacement_job_ledger.csv` | Replacement job ledger with old/new job IDs, preflight evidence, hashes, dependencies, partition, runtime root, and log path. |
 | `executors/m10_myops_training_executor/` | Wave 2 executor monitor packet; not completion evidence. |
 | `subagents/reviewer_prompt.md` | Reviewer handoff prompt for this blocked packet only. |
 | `mapper_report_draft.md` | Mapper draft non-run receipt. |

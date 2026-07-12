@@ -146,3 +146,43 @@ Wait for terminal accounting for active enhanced preflight job `58683497`. If
 and only if it exits `0`, submit the seven Wave 2 formal replacement jobs with
 training-to-training `afterok` dependencies. The Wave 2 finalizer must use
 `afterany` over every old and replacement job ID.
+
+
+## Three-Partition Preflight Race And Replacement Submission
+
+Update timestamp UTC: `2026-07-12T10:16:12Z`
+
+The user explicitly authorized a three-partition preflight race across `htzhulab`, `a100-gpu`, and `volta-gpu`. The controller cancelled still-pending mirrors as soon as a candidate started, per AGENTS/slurm-routing policy.
+
+Race outcome:
+
+| Job ID | Partition | State | Notes |
+| ---: | --- | --- | --- |
+| `58682781` | `htzhulab` | `CANCELLED_SUPERSEDED` | earlier weaker preflight, not a formal gate |
+| `58683497` | `htzhulab` | `CANCELLED_RACE_MIRROR` | cancelled after a mirror started |
+| `58700697` | `a100-gpu` | `CANCELLED_RACE_MIRROR` | cancelled after a mirror started |
+| `58700698` | `volta-gpu` | `FAILED 127:0` | stale wrapper failed before early logging |
+| `58700726` | `volta-gpu` | `FAILED 127:0` | diagnosed stale relative `env_CARE/bin/python` path |
+| `58700727` | `a100-gpu` | `CANCELLED_STALE_WRAPPER` | cancelled before start after wrapper path fix |
+| `58700728` | `htzhulab` | `CANCELLED_STALE_WRAPPER` | cancelled before start after wrapper path fix |
+| `58700749` | `a100-gpu` | `CANCELLED_RACE_MIRROR` | fixed mirror cancelled after `58700751` started |
+| `58700750` | `htzhulab` | `CANCELLED_RACE_MIRROR` | fixed mirror cancelled after `58700751` started |
+| `58700751` | `volta-gpu` | `COMPLETED 0:0` | successful enhanced compute-node preflight; log `logs/M10W2Preflight_volta-gpu_58700751_20260712_060557.log` |
+
+Successful preflight evidence includes `mpmath 1.3.0`, `sympy 1.14.0`, `optimizer_ok`, CUDA visibility, config parse, writable output/log/lock/runtime roots, code/config/split fingerprints, phase listing, and per-phase print-contract output.
+
+After preflight exit code `0`, the controller submitted the original seven Wave 2 formal replacement jobs as a serial `afterok` chain without changing variants, formulas, budgets, split, case set, evaluation rules, checkpoint-selection rules, result paths, executor count, or wave graph.
+
+| Phase | Old job | Replacement job | Dependency | Partition |
+| --- | ---: | ---: | --- | --- |
+| d0_control | `58644072` | `58700815` | `none after preflight` | `htzhulab` |
+| d1_spatial_br2 | `58644073` | `58700821` | `afterok:58700815` | `htzhulab` |
+| d2_hierarchical_psip | `58644074` | `58700822` | `afterok:58700821` | `htzhulab` |
+| d3_full_propref | `58644106` | `58700826` | `afterok:58700822` | `htzhulab` |
+| hard_negative_refresh | `58644107` | `58700827` | `afterok:58700826` | `htzhulab` |
+| no_context_control | `58644108` | `58700828` | `afterok:58700827` | `htzhulab` |
+| alignment_control | `58644109` | `58700832` | `afterok:58700828` | `htzhulab` |
+
+Wave 2 accounting finalizer job: `58700842` with `afterany` over every old and replacement job ID.
+
+Current state remains `NEEDS_MONITOR`: D0 is pending on `htzhulab` resources, downstream jobs are dependency-pending, and finalizer is dependency-pending. This is not completion evidence and not reviewable.

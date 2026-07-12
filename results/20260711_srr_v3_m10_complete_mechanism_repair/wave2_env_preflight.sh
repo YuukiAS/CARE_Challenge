@@ -13,19 +13,23 @@ set -euo pipefail
 
 CARE_ROOT="${CARE_ROOT:-/users/a/e/aereinh/CARE}"
 cd "${CARE_ROOT}"
-source "${CARE_ROOT}/.care-codex-env.sh"
-source "${CARE_ROOT}/env_nnunet.sh"
-export PATH=/users/a/e/aereinh/codex-runtime/bin:${CARE_ROOT}/envs/env_CARE/bin:${PATH}
 mkdir -p logs
 TS="$(date +%Y%m%d_%H%M%S)"
-LOG_FILE="${LOG_FILE:-${CARE_ROOT}/logs/M10W2Preflight_${SLURM_JOB_ID:-local}_${TS}.log}"
+RACE_PARTITION="${M10_PREFLIGHT_RACE_PARTITION:-${SLURM_JOB_PARTITION:-unknown}}"
+LOG_FILE="${LOG_FILE:-${CARE_ROOT}/logs/M10W2Preflight_${RACE_PARTITION}_${SLURM_JOB_ID:-local}_${TS}.log}"
 exec > >(tee -a "${LOG_FILE}") 2>&1
 
 echo "CARE_ROOT=${CARE_ROOT}"
 echo "LOG_FILE=${LOG_FILE}"
+echo "SLURM_JOB_ID=${SLURM_JOB_ID:-local}"
+echo "SLURM_JOB_PARTITION=${SLURM_JOB_PARTITION:-unknown}"
 echo "PYTHON=${CARE_ROOT}/envs/env_CARE/bin/python"
 
-env_CARE/bin/python - <<'PY'
+source "${CARE_ROOT}/.care-codex-env.sh"
+source "${CARE_ROOT}/env_nnunet.sh"
+export PATH=/users/a/e/aereinh/codex-runtime/bin:${CARE_ROOT}/envs/env_CARE/bin:${PATH}
+
+"${CARE_ROOT}/envs/env_CARE/bin/python" - <<'PY'
 import mpmath
 import sympy
 import torch

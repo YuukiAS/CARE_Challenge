@@ -2,33 +2,22 @@
 
 Completion state: `NEEDS_MONITOR`
 
-This is not `PACKET_COMMITTED_FOR_REVIEW` for a completed M10 runtime milestone. It records that original Wave 2 reached terminal Slurm accounting, all seven jobs failed before producing formal runtime summaries, and a same-executor enhanced replacement preflight is now pending.
+This packet is not complete and is not ready for independent review. It records that the original Wave 2 jobs are permanently `STARTUP_FAILED` with zero training credit, the repaired compute-node preflight succeeded, the authorized replacement Wave 2 formal jobs were submitted, and those jobs are currently pending/running/dependency-waiting under Slurm.
 
 ## Required Gates
 
 | Gate | Status |
 | --- | --- |
-| M10 section in `prompts/shared/EXECUTOR_PROMPTS.md` | pass |
-| Strict executor plan path used | pass |
-| `scripts/ops/validate_executor_plan.py` | pass |
-| M9 audited predecessor token | pass |
-| agent-flow generic repair audited predecessor token | pass |
-| Planner draft commit ancestor of HEAD | pass |
-| Canonical merged contract hash recomputed and matched | pass |
-| Historical staging hash retained as pre-merge record | pass |
-| Wave 1 executor receipt | pass: `READY_FOR_CONTROLLER_MERGE` |
-| Wave 1 controller merge | pass |
-| Wave 2 launch receipt | pass |
-| Wave 2 executor receipt | terminal failure: `NEEDS_EVIDENCE` |
-| Live Slurm status | terminal: all seven jobs `FAILED`, exit `1:0` |
-| Post-job aggregation | fail-closed: `STARTUP_FAILED_NEEDS_EVIDENCE` phase packets |
-| Old job credit accounting | pass: old jobs recorded as `STARTUP_FAILED`, zero credit |
-| Replacement preflight | monitor: active enhanced job `58683497` pending on `htzhulab`; prior weaker preflight `58682781` superseded and not used as formal gate |
+| Old failed job accounting | pass: seven old jobs recorded as `STARTUP_FAILED`, zero credit |
+| Replacement preflight | pass: job `58700751` completed `0:0` on `volta-gpu` |
+| Replacement formal jobs | monitor: jobs `58700815`, `58700821`, `58700822`, `58700826`, `58700827`, `58700828`, `58700832` submitted |
+| Training dependency policy | pass: training-to-training dependencies use `afterok` |
+| Wave 2 finalizer dependency | pass: finalizer job `58700842` uses `afterany` over all old and replacement jobs |
+| Post-job aggregation | pending: wait for terminal runtime outputs |
+| Review | blocked: no `review.md` until final packet after aggregation |
 
 ## Decision
 
-Wave 2 terminal job states and post-job aggregation now exist, but they prove startup failure rather than training adequacy. The shared failure cause is missing `mpmath` in `env_CARE`, reached through `sympy` during PyTorch optimizer initialization. The project-local environment was repaired afterward (`mpmath 1.3.0` installed and a minimal `torch.optim.AdamW` check passed), but resubmitting training jobs was not performed in this packet.
+Current controller state is `NEEDS_MONITOR`, not blocked and not complete. D0 is pending on `htzhulab` resources, downstream jobs are dependency-pending, and the Wave 2 finalizer is dependency-pending.
 
-The controller must not perform controller merge, wave 3 launch, or review request until replacement preflight succeeds, replacement jobs complete, and valid Wave 2 runtime summaries and aggregation evidence are committed.
-
-No `review.md` was written.
+No `review.md` was written. No push was performed. Wave 3, validation packaging/upload, hosted metric claims, route promotion, route-negative conclusion, and M11 remain blocked until Wave 2 terminal accounting and aggregation succeed.
