@@ -206,3 +206,24 @@ Checkpoint time: `2026-07-12T17:10:37Z`
 | review | blocked: no `review.md`; this is not a completion packet |
 
 Decision is `NEEDS_MONITOR`, not blocked and not complete. This is not a pending-only scheduler block because retry7 D1 has started running.
+
+## Retry7 OOM And Retry8 160G Monitor
+
+Checkpoint time: `2026-07-12T17:44:44Z`
+
+| Gate | Status |
+| --- | --- |
+| retry7 D1 terminal state | fail: `58719835 OUT_OF_MEMORY 0:125` after `00:18:06` |
+| retry7 memory evidence | fail: `ReqMem=128G`, batch `MaxRSS=134216104K` |
+| retry7 downstream stages | fail-closed: `58719836`-`58719840 CANCELLED 0:0` by unmet `afterok` |
+| retry7 finalizer | fail-closed: `58719841 FAILED 1:0` |
+| retry7 aggregation replay | fail-closed: `wave2_partition_race_retry7_finalization.json` records `NEEDS_EVIDENCE` and `OUT_OF_MEMORY(0:125)` |
+| 160G gpu_access preflight | rejected: `QOSMaxMemoryPerJob`; `gpu_access` limit is `mem=128G` |
+| retry8 QoS basis | pass: user association allows `gpu_access_patron`; used only for resource request, not scientific change |
+| retry8 preflight | pass: `58720440 COMPLETED 0:0` with `ReqMem=160G`, `QOS=gpu_access_patron` |
+| retry8 D1 replacement | monitor: `58720458 RUNNING` on `g1807htzh01` with `ReqMem=160G` |
+| retry8 downstream replacements | monitor: `58720459`-`58720463 PENDING (Dependency)` |
+| retry8 finalizer | monitor: `58720464 PENDING (Dependency)` with `afterany` |
+| review | blocked: no `review.md`; this is not a completion packet |
+
+Decision is `NEEDS_MONITOR`, not blocked and not complete. This is not a pending-only scheduler block because retry8 D1 has started running.

@@ -413,3 +413,36 @@ Retry7 receipts:
 - `results/20260711_srr_v3_m10_complete_mechanism_repair/wave2_partition_race_retry7_monitor_20260712T171037Z.md`
 
 Current state is `NEEDS_MONITOR`: retry7 D1 has started with the 128G resource request and downstream stages are dependency-pending. This is not completion evidence and not reviewable.
+
+## Retry7 Terminal OOM And Retry8 160G Patron-QOS Replacement
+
+Update timestamp UTC: `2026-07-12T17:44:44Z`
+
+| Command / evidence | Result |
+| --- | --- |
+| `sacct -j 58719835,58719836,58719837,58719838,58719839,58719840,58719841 --format=JobIDRaw,JobName,Partition,State,ExitCode,Elapsed,Start,End,NodeList,ReqMem,MaxRSS --parsable2` | D1 `58719835 OUT_OF_MEMORY 0:125`; D2-through-alignment `CANCELLED`; finalizer `58719841 FAILED 1:0` |
+| `sacct` memory fields for `58719835.batch` | `ReqMem=128G`; `MaxRSS=134216104K`; elapsed `00:18:06` |
+| `env PYTHONPATH=. python results/20260711_srr_v3_m10_complete_mechanism_repair/finalize_wave2_partition_race.py --submission results/20260711_srr_v3_m10_complete_mechanism_repair/wave2_partition_race_retry7_submission.json --watcher-state results/20260711_srr_v3_m10_complete_mechanism_repair/wave2_partition_race_retry7_watcher_state.json --result-path results/20260711_srr_v3_m10_complete_mechanism_repair/wave2_partition_race_retry7_finalization.json` | exit `2`; wrote `NEEDS_EVIDENCE` with D1 `OUT_OF_MEMORY(0:125)` and no completed chain |
+| `sbatch ... --qos=gpu_access --mem=160G ... wave2_env_preflight.sh` | rejected by Slurm: `QOSMaxMemoryPerJob`; `gpu_access` has `MaxTRESPerJob mem=128G` |
+| `sacctmgr show assoc user=$USER format=User,Account,Partition,QOS,DefaultQOS,MaxTRESPerJob -P` | user association allows `gpu_access,gpu_access_patron,normal` |
+| `sbatch --parsable --job-name=M10W2PreHTZ8 --partition=htzhulab --qos=gpu_access_patron --gres=gpu:1 --mem=160G --export=ALL,M10_PREFLIGHT_RACE_PARTITION=htzhulab,CARE_ROOT=/users/a/e/aereinh/CARE results/20260711_srr_v3_m10_complete_mechanism_repair/wave2_env_preflight.sh` | `58720440`; completed `0:0` after `00:00:21` |
+| `sha256sum scripts/training/run_srr_v3_m10_complete_repair.py configs/srr_v3_m10_complete_repair.yaml data/benchmarks/protocol/splits_MyoPS.json` | code `bf132c6f6c1649c2a98bbe16af3ffe7cd67f436f035431a6b3376e4917203ad3`; config `df42f9ee55a3ba6ac616a37b2455cb7bca67c5f751f0c5a31c4a18938b107a9b`; split `6165caeb5b47feb0d24f20380898037b7e6cead4db1eeba398a3c5a57faf9a1b` |
+| `sbatch --parsable --partition=htzhulab --qos=gpu_access_patron --gres=gpu:1 --mem=160G --export=ALL,M10_RUNTIME_ROOT=results/20260711_srr_v3_m10_complete_mechanism_repair/runtime/m10_myops_training_executor/partition_race_retry4/htzhulab,M10_DEFER_AGGREGATION=1,CARE_ROOT=/users/a/e/aereinh/CARE --dependency=afterok:58720440 jobs/src/run_srr_v3_m10_myops_d1_spatial_br2.sh` | `58720458` |
+| `sbatch --parsable --partition=htzhulab --qos=gpu_access_patron --gres=gpu:1 --mem=160G --export=ALL,M10_RUNTIME_ROOT=results/20260711_srr_v3_m10_complete_mechanism_repair/runtime/m10_myops_training_executor/partition_race_retry4/htzhulab,M10_DEFER_AGGREGATION=1,CARE_ROOT=/users/a/e/aereinh/CARE --dependency=afterok:58720458 jobs/src/run_srr_v3_m10_myops_d2_hierarchical_psip.sh` | `58720459` |
+| `sbatch --parsable --partition=htzhulab --qos=gpu_access_patron --gres=gpu:1 --mem=160G --export=ALL,M10_RUNTIME_ROOT=results/20260711_srr_v3_m10_complete_mechanism_repair/runtime/m10_myops_training_executor/partition_race_retry4/htzhulab,M10_DEFER_AGGREGATION=1,CARE_ROOT=/users/a/e/aereinh/CARE --dependency=afterok:58720459 jobs/src/run_srr_v3_m10_myops_d3_full_propref.sh` | `58720460` |
+| `sbatch --parsable --partition=htzhulab --qos=gpu_access_patron --gres=gpu:1 --mem=160G --export=ALL,M10_RUNTIME_ROOT=results/20260711_srr_v3_m10_complete_mechanism_repair/runtime/m10_myops_training_executor/partition_race_retry4/htzhulab,M10_DEFER_AGGREGATION=1,CARE_ROOT=/users/a/e/aereinh/CARE --dependency=afterok:58720460 jobs/src/run_srr_v3_m10_hard_negative_refresh.sh` | `58720461` |
+| `sbatch --parsable --partition=htzhulab --qos=gpu_access_patron --gres=gpu:1 --mem=160G --export=ALL,M10_RUNTIME_ROOT=results/20260711_srr_v3_m10_complete_mechanism_repair/runtime/m10_myops_training_executor/partition_race_retry4/htzhulab,M10_DEFER_AGGREGATION=1,CARE_ROOT=/users/a/e/aereinh/CARE --dependency=afterok:58720461 jobs/src/run_srr_v3_m10_no_context_control.sh` | `58720462` |
+| `sbatch --parsable --partition=htzhulab --qos=gpu_access_patron --gres=gpu:1 --mem=160G --export=ALL,M10_RUNTIME_ROOT=results/20260711_srr_v3_m10_complete_mechanism_repair/runtime/m10_myops_training_executor/partition_race_retry4/htzhulab,M10_DEFER_AGGREGATION=1,CARE_ROOT=/users/a/e/aereinh/CARE --dependency=afterok:58720462 jobs/src/run_srr_v3_m10_alignment_control.sh` | `58720463` |
+| submit retry8 finalizer with `afterany` over old, superseded, failed, cancelled, preflight, retained D0, and retry8 replacement jobs | `58720464` |
+| `sacct -j 58720440,58720458,58720459,58720460,58720461,58720462,58720463,58720464 --format=JobIDRaw,JobName,Partition,QOS,State,ExitCode,Elapsed,Start,End,NodeList,ReqMem --parsable2` | preflight `58720440 COMPLETED 0:0`; D1 `58720458 RUNNING` with `ReqMem=160G`, `QOS=gpu_access_patron`; D2-through-alignment `PENDING`; finalizer `58720464 PENDING` |
+
+Retry8 receipts:
+
+- `results/20260711_srr_v3_m10_complete_mechanism_repair/wave2_partition_race_retry7_finalization.json`
+- `results/20260711_srr_v3_m10_complete_mechanism_repair/wave2_partition_race_retry7_terminal_oom.md`
+- `results/20260711_srr_v3_m10_complete_mechanism_repair/wave2_partition_race_retry8_submission.json`
+- `results/20260711_srr_v3_m10_complete_mechanism_repair/wave2_partition_race_retry8_finalizer_submission.json`
+- `results/20260711_srr_v3_m10_complete_mechanism_repair/wave2_partition_race_retry8_job_ledger.csv`
+- `results/20260711_srr_v3_m10_complete_mechanism_repair/wave2_partition_race_retry8_monitor_20260712T174444Z.md`
+
+Current state is `NEEDS_MONITOR`: retry8 D1 has started with the 160G `gpu_access_patron` resource request and downstream stages are dependency-pending. This is not completion evidence and not reviewable.

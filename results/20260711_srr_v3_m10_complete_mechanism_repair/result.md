@@ -292,3 +292,23 @@ Retry7 compute-node preflight `58719811` completed `0:0` on `htzhulab` with `Req
 | Alignment control | `58719840` | `PENDING (Dependency)` |
 
 Retry7 finalizer job `58719841` is pending with `afterany`. Its `aggregation_command` is recorded as a single string to avoid the retry6 finalizer argument-format failure. Current controller state remains `NEEDS_MONITOR`, not complete and not reviewable.
+
+## Retry7 Terminal OOM And Retry8 Patron-QOS Resource Retry
+
+At `2026-07-12T17:44:44Z`, retry7 reached terminal accounting: D1 `58719835` failed as `OUT_OF_MEMORY 0:125` after `00:18:06` with `ReqMem=128G` and batch `MaxRSS=134216104K`; D2-through-alignment `58719836`-`58719840` were cancelled by unmet `afterok`; finalizer `58719841` failed fail-closed. The controller replayed retry7 finalization and wrote `wave2_partition_race_retry7_finalization.json` with `status: NEEDS_EVIDENCE`, `winner_reason: no_completed_chain`, and D1 `OUT_OF_MEMORY(0:125)`.
+
+A direct 160G retry under `gpu_access` was rejected by Slurm with `QOSMaxMemoryPerJob`; `sacctmgr` showed `gpu_access` has `MaxTRESPerJob mem=128G`, while the user's allowed QoS list includes `gpu_access_patron`. The controller therefore submitted same-scope retry8 with `--qos=gpu_access_patron --mem=160G`. This changes only Slurm resource routing, not code/config/split/variants/budgets/formulas/result paths/executor count/wave graph.
+
+Retry8 preflight `58720440` completed `0:0`. Current retry8 state:
+
+| Phase | Job ID | Current state |
+| --- | ---: | --- |
+| retained D0 | `58706293` | `COMPLETED 0:0` |
+| D1 spatial BR2 | `58720458` | `RUNNING` on `g1807htzh01` |
+| D2 hierarchical PSIP | `58720459` | `PENDING (Dependency)` |
+| D3 full memory PropRef | `58720460` | `PENDING (Dependency)` |
+| Hard-negative refresh | `58720461` | `PENDING (Dependency)` |
+| No-nnU-Net-context control | `58720462` | `PENDING (Dependency)` |
+| Alignment control | `58720463` | `PENDING (Dependency)` |
+
+Retry8 finalizer job `58720464` is pending with `afterany`. Current controller state remains `NEEDS_MONITOR`, not complete and not reviewable.

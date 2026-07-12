@@ -258,3 +258,35 @@ review_md_written: false
 ```
 
 Next required action is to monitor retry7 through terminal state, then inspect finalizer accounting and Wave 2 aggregation before any Wave 3 handoff.
+
+## Retry7 OOM And Retry8 160G Monitor State
+
+Retry7 is terminal and unsuccessful. D1 `58719835` reached `OUT_OF_MEMORY 0:125` after `00:18:06` with `ReqMem=128G` and batch `MaxRSS=134216104K`; D2 through alignment were cancelled by unmet `afterok`; finalizer `58719841` failed fail-closed. The controller replayed retry7 finalization locally and wrote `wave2_partition_race_retry7_finalization.json` with `status: NEEDS_EVIDENCE`.
+
+The first 160G preflight attempt under `gpu_access` was rejected by Slurm because that QoS has `MaxTRESPerJob mem=128G`. The controller verified that the user association allows `gpu_access_patron` and submitted retry8 with `--qos=gpu_access_patron --mem=160G`. Current retry8 state:
+
+| Phase | Job ID | State |
+| --- | ---: | --- |
+| retained `d0_control` | `58706293` | `COMPLETED 0:0` |
+| `d1_spatial_br2` | `58720458` | `RUNNING` |
+| `d2_hierarchical_psip` | `58720459` | `PENDING (Dependency)` |
+| `d3_full_propref` | `58720460` | `PENDING (Dependency)` |
+| `hard_negative_refresh` | `58720461` | `PENDING (Dependency)` |
+| `no_context_control` | `58720462` | `PENDING (Dependency)` |
+| `alignment_control` | `58720463` | `PENDING (Dependency)` |
+| retry8 finalizer | `58720464` | `PENDING (Dependency)` |
+
+```text
+controller_run_status: NEEDS_MONITOR
+operational_completion_status: INCOMPLETE
+experiment_adequacy_decision: NOT_REVIEWED
+route_promotion_decision: NOT_REVIEWED
+route_negative_decision: NOT_REVIEWED
+scientific_resolution_status: AWAITING_REVIEW
+diagnostic_publication_decision: LOCAL_RETRY8_MONITOR_PACKET_COMMIT
+git_commit_decision: COMMIT_LOCAL_PACKET
+git_push_decision: SKIP_PUSH
+review_md_written: false
+```
+
+Next required action is to monitor retry8 through terminal state, then inspect finalizer accounting and Wave 2 aggregation before any Wave 3 handoff.

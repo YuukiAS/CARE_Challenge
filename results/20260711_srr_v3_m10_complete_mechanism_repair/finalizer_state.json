@@ -2,7 +2,7 @@
   "accounting_continuation_launch": null,
   "accounting_continuation_receipt_path": null,
   "accounting_wait_seconds": 0,
-  "aggregation_command": "env PYTHONPATH=. python results/20260711_srr_v3_m10_complete_mechanism_repair/finalize_wave2_partition_race.py --submission results/20260711_srr_v3_m10_complete_mechanism_repair/wave2_partition_race_retry5_submission.json --watcher-state results/20260711_srr_v3_m10_complete_mechanism_repair/wave2_partition_race_retry5_watcher_state.json --result-path results/20260711_srr_v3_m10_complete_mechanism_repair/wave2_partition_race_retry5_finalization.json",
+  "aggregation_command": "env PYTHONPATH=. python results/20260711_srr_v3_m10_complete_mechanism_repair/finalize_wave2_partition_race.py --submission results/20260711_srr_v3_m10_complete_mechanism_repair/wave2_partition_race_retry7_submission.json --watcher-state results/20260711_srr_v3_m10_complete_mechanism_repair/wave2_partition_race_retry7_watcher_state.json --result-path results/20260711_srr_v3_m10_complete_mechanism_repair/wave2_partition_race_retry7_finalization.json",
   "aggregation_exit_code": null,
   "attempt_number": 1,
   "awaiting_sacct_attempts": [
@@ -100,7 +100,23 @@
     "58714025": "00:00:00",
     "58714026": "00:00:00",
     "58714027": "00:00:00",
-    "58714028": "00:00:00"
+    "58714028": "00:00:00",
+    "58714029": "00:00:03",
+    "58714615": "00:00:19",
+    "58714634": "00:12:46",
+    "58714635": "00:00:00",
+    "58714636": "00:00:00",
+    "58714637": "00:00:00",
+    "58714638": "00:00:00",
+    "58714639": "00:00:00",
+    "58714640": "00:00:02",
+    "58719811": "00:00:20",
+    "58719835": "00:18:06",
+    "58719836": "00:00:00",
+    "58719837": "00:00:00",
+    "58719838": "00:00:00",
+    "58719839": "00:00:00",
+    "58719840": "00:00:00"
   },
   "exit_codes": {
     "58644072": "1:0",
@@ -184,12 +200,28 @@
     "58714025": "0:0",
     "58714026": "0:0",
     "58714027": "0:0",
-    "58714028": "0:0"
+    "58714028": "0:0",
+    "58714029": "1:0",
+    "58714615": "0:0",
+    "58714634": "0:125",
+    "58714635": "0:0",
+    "58714636": "0:0",
+    "58714637": "0:0",
+    "58714638": "0:0",
+    "58714639": "0:0",
+    "58714640": "2:0",
+    "58719811": "0:0",
+    "58719835": "0:125",
+    "58719836": "0:0",
+    "58719837": "0:0",
+    "58719838": "0:0",
+    "58719839": "0:0",
+    "58719840": "0:0"
   },
   "failure_class": "OUT_OF_MEMORY_NEEDS_REVISION",
   "final_state": "RUNTIME_FAILURE",
   "git_commit_decision": "SKIP_COMMIT",
-  "git_head_before": "706a69ac8aba38c9dae672022ae4dc94fa09681a",
+  "git_head_before": "4ff10810f2e2283827b4f8a11735504afa7a9252",
   "job_attempt_lineage": [
     {
       "attempt_number": 1,
@@ -764,6 +796,118 @@
       "job_id": "58714028",
       "state": "CANCELLED",
       "training_credit": "verified_completed_steps_only"
+    },
+    {
+      "attempt_number": 1,
+      "exit_code": "1:0",
+      "job_id": "58714029",
+      "state": "FAILED",
+      "training_credit": "verified_completed_steps_only"
+    },
+    {
+      "attempt_number": 1,
+      "exit_code": "0:0",
+      "job_id": "58714615",
+      "state": "COMPLETED",
+      "training_credit": "verified_completed_steps_only"
+    },
+    {
+      "attempt_number": 1,
+      "exit_code": "0:125",
+      "job_id": "58714634",
+      "state": "OUT_OF_MEMORY",
+      "training_credit": "verified_completed_steps_only"
+    },
+    {
+      "attempt_number": 1,
+      "exit_code": "0:0",
+      "job_id": "58714635",
+      "state": "CANCELLED",
+      "training_credit": "verified_completed_steps_only"
+    },
+    {
+      "attempt_number": 1,
+      "exit_code": "0:0",
+      "job_id": "58714636",
+      "state": "CANCELLED",
+      "training_credit": "verified_completed_steps_only"
+    },
+    {
+      "attempt_number": 1,
+      "exit_code": "0:0",
+      "job_id": "58714637",
+      "state": "CANCELLED",
+      "training_credit": "verified_completed_steps_only"
+    },
+    {
+      "attempt_number": 1,
+      "exit_code": "0:0",
+      "job_id": "58714638",
+      "state": "CANCELLED",
+      "training_credit": "verified_completed_steps_only"
+    },
+    {
+      "attempt_number": 1,
+      "exit_code": "0:0",
+      "job_id": "58714639",
+      "state": "CANCELLED",
+      "training_credit": "verified_completed_steps_only"
+    },
+    {
+      "attempt_number": 1,
+      "exit_code": "2:0",
+      "job_id": "58714640",
+      "state": "FAILED",
+      "training_credit": "verified_completed_steps_only"
+    },
+    {
+      "attempt_number": 1,
+      "exit_code": "0:0",
+      "job_id": "58719811",
+      "state": "COMPLETED",
+      "training_credit": "verified_completed_steps_only"
+    },
+    {
+      "attempt_number": 1,
+      "exit_code": "0:125",
+      "job_id": "58719835",
+      "state": "OUT_OF_MEMORY",
+      "training_credit": "verified_completed_steps_only"
+    },
+    {
+      "attempt_number": 1,
+      "exit_code": "0:0",
+      "job_id": "58719836",
+      "state": "CANCELLED",
+      "training_credit": "verified_completed_steps_only"
+    },
+    {
+      "attempt_number": 1,
+      "exit_code": "0:0",
+      "job_id": "58719837",
+      "state": "CANCELLED",
+      "training_credit": "verified_completed_steps_only"
+    },
+    {
+      "attempt_number": 1,
+      "exit_code": "0:0",
+      "job_id": "58719838",
+      "state": "CANCELLED",
+      "training_credit": "verified_completed_steps_only"
+    },
+    {
+      "attempt_number": 1,
+      "exit_code": "0:0",
+      "job_id": "58719839",
+      "state": "CANCELLED",
+      "training_credit": "verified_completed_steps_only"
+    },
+    {
+      "attempt_number": 1,
+      "exit_code": "0:0",
+      "job_id": "58719840",
+      "state": "CANCELLED",
+      "training_credit": "verified_completed_steps_only"
     }
   ],
   "job_states": {
@@ -848,12 +992,28 @@
     "58714025": "CANCELLED",
     "58714026": "CANCELLED",
     "58714027": "CANCELLED",
-    "58714028": "CANCELLED"
+    "58714028": "CANCELLED",
+    "58714029": "FAILED",
+    "58714615": "COMPLETED",
+    "58714634": "OUT_OF_MEMORY",
+    "58714635": "CANCELLED",
+    "58714636": "CANCELLED",
+    "58714637": "CANCELLED",
+    "58714638": "CANCELLED",
+    "58714639": "CANCELLED",
+    "58714640": "FAILED",
+    "58719811": "COMPLETED",
+    "58719835": "OUT_OF_MEMORY",
+    "58719836": "CANCELLED",
+    "58719837": "CANCELLED",
+    "58719838": "CANCELLED",
+    "58719839": "CANCELLED",
+    "58719840": "CANCELLED"
   },
-  "lock_path": "results/20260711_srr_v3_m10_complete_mechanism_repair/locks/wave2_partition_race_retry5_finalizer.lock",
+  "lock_path": "results/20260711_srr_v3_m10_complete_mechanism_repair/locks/wave2_partition_race_retry7_finalizer.lock",
   "lock_released": true,
   "log_paths": [],
-  "manifest_sha256": "654092d9a7ffd8359cd7caa0cf24b930a9dd630d2b23810039221bde7aa9cfe9",
+  "manifest_sha256": "a57546f0f7eccb2d203b3569be1f3591355fdce6fbc972790a935372e7fde549",
   "mapper_final_status": "not_requested",
   "next_retry_job_id_or_tmux_session": null,
   "nodes": {
@@ -938,9 +1098,25 @@
     "58714025": "None assigned",
     "58714026": "None assigned",
     "58714027": "None assigned",
-    "58714028": "None assigned"
+    "58714028": "None assigned",
+    "58714029": "c0306",
+    "58714615": "g1807htzh01",
+    "58714634": "g1807htzh01",
+    "58714635": "None assigned",
+    "58714636": "None assigned",
+    "58714637": "None assigned",
+    "58714638": "None assigned",
+    "58714639": "None assigned",
+    "58714640": "c151610",
+    "58719811": "g1807htzh01",
+    "58719835": "g1807htzh01",
+    "58719836": "None assigned",
+    "58719837": "None assigned",
+    "58719838": "None assigned",
+    "58719839": "None assigned",
+    "58719840": "None assigned"
   },
-  "precommit_head": "706a69ac8aba38c9dae672022ae4dc94fa09681a",
+  "precommit_head": "4ff10810f2e2283827b4f8a11735504afa7a9252",
   "records": [],
   "replacement_job_ids": [],
   "required_job_ids": [
@@ -1025,7 +1201,23 @@
     "58714025",
     "58714026",
     "58714027",
-    "58714028"
+    "58714028",
+    "58714029",
+    "58714615",
+    "58714634",
+    "58714635",
+    "58714636",
+    "58714637",
+    "58714638",
+    "58714639",
+    "58714640",
+    "58719811",
+    "58719835",
+    "58719836",
+    "58719837",
+    "58719838",
+    "58719839",
+    "58719840"
   ],
   "retry_backend": "tmux_watcher",
   "retry_count": 0,

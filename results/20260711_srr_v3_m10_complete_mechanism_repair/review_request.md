@@ -92,6 +92,14 @@ The controller submitted same-scope retry6 with only the Slurm memory request in
 
 Current state remains `NEEDS_MONITOR`, not a normal review request. Wave 2 terminal aggregation has not completed; Wave 3 must not start, and no `review.md` should be written for this packet.
 
+## Retry8 Monitor Update
+
+Retry7 is terminal but not complete: D1 `58719835` failed as `OUT_OF_MEMORY 0:125` with `ReqMem=128G` and batch `MaxRSS=134216104K`; downstream jobs were cancelled by `afterok`; finalizer `58719841` failed fail-closed. Local replay wrote `wave2_partition_race_retry7_finalization.json` with `NEEDS_EVIDENCE`.
+
+The controller submitted same-scope retry8 with `--qos=gpu_access_patron --mem=160G` after `gpu_access` rejected 160G via `QOSMaxMemoryPerJob`. Preflight `58720440` completed `0:0`. D1 `58720458` is currently `RUNNING`, D2-through-alignment `58720459`-`58720463` are dependency-pending, and finalizer `58720464` is dependency-pending.
+
+Current state remains `NEEDS_MONITOR`, not a normal review request. Wave 2 terminal aggregation has not completed; Wave 3 must not start, and no `review.md` should be written for this packet.
+
 ## Retry7 Monitor Update
 
 Retry6 is terminal but not complete: D1 `58714634` failed as `OUT_OF_MEMORY 0:125` with `ReqMem=96G` and batch `MaxRSS=100661736K`; downstream jobs were cancelled by `afterok`; finalizer `58714640` failed from an aggregation-command argument-format issue. Local replay wrote `wave2_partition_race_retry6_finalization.json` with `NEEDS_EVIDENCE`.

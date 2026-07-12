@@ -69,6 +69,12 @@ Packet state: `NEEDS_MONITOR`
 | `wave2_partition_race_retry7_finalizer_submission.json` | Retry7 afterany finalizer receipt for job `58719841` with corrected aggregation-command string. |
 | `wave2_partition_race_retry7_job_ledger.csv` | Retry7 ledger recording old/new job IDs, OOM resource retry reason, preflight command/exit code, hashes, dependencies, runtime root, log paths, and `mem=128G`. |
 | `wave2_partition_race_retry7_monitor_20260712T171037Z.md` | Current retry7 monitor checkpoint showing D1 running at 128G and downstream/finalizer dependency-pending; not completion evidence. |
+| `wave2_partition_race_retry7_finalization.json` | Retry7 terminal aggregation replay; fail-closed `NEEDS_EVIDENCE` because D1 reached `OUT_OF_MEMORY(0:125)` and no full chain completed. |
+| `wave2_partition_race_retry7_terminal_oom.md` | Retry7 terminal accounting receipt: D1 OOM at 128G, downstream cancelled, zero effective D1-through-alignment credit. |
+| `wave2_partition_race_retry8_submission.json` | Retry8 D1-through-alignment replacement submission receipt after 160G `gpu_access_patron` preflight and retained D0 verification. |
+| `wave2_partition_race_retry8_finalizer_submission.json` | Retry8 afterany finalizer receipt for job `58720464`. |
+| `wave2_partition_race_retry8_job_ledger.csv` | Retry8 ledger recording old/new job IDs, OOM resource retry reason, preflight command/exit code, hashes, dependencies, runtime root, log paths, `qos=gpu_access_patron`, and `mem=160G`. |
+| `wave2_partition_race_retry8_monitor_20260712T174444Z.md` | Current retry8 monitor checkpoint showing D1 running at 160G and downstream/finalizer dependency-pending; not completion evidence. |
 | `executors/m10_myops_training_executor/` | Wave 2 executor monitor packet; not completion evidence. |
 | `subagents/reviewer_prompt.md` | Reviewer handoff prompt for this blocked packet only. |
 | `mapper_report_draft.md` | Mapper draft non-run receipt. |
