@@ -81,3 +81,5 @@ No `review.md`, validation packaging, upload, route promotion, hosted metric cla
 ## Latest Validation Context
 
 After explicit user authorization, Wave 2 formal routing was changed from a pending single-partition replacement chain to a three-partition race with isolated runtime roots and deferred mirror aggregation. `volta-gpu` won after preflight `58701110` completed `0:0`; D0 `58701111` is running; watcher `58701118` cancelled pending `htzhulab`/`a100-gpu` mirrors. Current state remains `NEEDS_MONITOR`.
+
+`volta-gpu` D0 later failed with unsupported V100 CUDA kernel execution. The controller hardened preflight with a CUDA kernel probe and submitted a same-scope `htzhulab`/`a100-gpu` retry race. Current state remains `NEEDS_MONITOR`.

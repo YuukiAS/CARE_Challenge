@@ -37,6 +37,9 @@ Packet state: `NEEDS_MONITOR`
 | `wave2_partition_race_job_ledger.csv` | Per-partition race ledger with superseded jobs, preflight IDs, dependencies, runtime roots, and credit policy. |
 | `wave2_partition_race_watcher.py` | Result-scope watcher used to cancel pending loser mirrors after a D0 winner starts. |
 | `finalize_wave2_partition_race.py` | Result-scope aggregation helper that will aggregate only the winning partition runtime root. |
+| `wave2_partition_race_retry2_submission.json` | Htz/A100 retry race receipt after V100 hardware incompatibility. |
+| `wave2_partition_race_retry2_finalizer_submission.json` | New afterany finalizer receipt for the htz/A100 retry graph. |
+| `wave2_partition_race_retry2_job_ledger.csv` | Htz/A100 retry ledger with preflight IDs, dependencies, runtime roots, and credit policy. |
 | `executors/m10_myops_training_executor/` | Wave 2 executor monitor packet; not completion evidence. |
 | `subagents/reviewer_prompt.md` | Reviewer handoff prompt for this blocked packet only. |
 | `mapper_report_draft.md` | Mapper draft non-run receipt. |

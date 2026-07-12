@@ -76,3 +76,9 @@ At `2026-07-12T10:16:12Z`, the controller submitted the authorized same-executor
 After explicit user authorization, the pending single-partition replacement chain and finalizer were superseded for a formal `htzhulab` / `a100-gpu` / `volta-gpu` race with isolated runtime roots and deferred aggregation. Superseded jobs `58700815`, `58700821`, `58700822`, `58700826`, `58700827`, `58700828`, `58700832`, and finalizer `58700842` were cancelled before training start and receive zero training credit.
 
 `volta-gpu` won the race: preflight `58701110` completed `0:0`, D0 `58701111` is running, and watcher `58701118` cancelled the still-pending `htzhulab` and `a100-gpu` mirrors. The active finalizer is `58701119`. Current controller status remains `NEEDS_MONITOR`; Wave 2 is not complete and is not ready for review.
+
+## Hardware Compatibility Retry Update
+
+`volta-gpu` D0 `58701111` failed with a V100/PyTorch CUDA kernel incompatibility (`no kernel image is available for execution on the device`). This attempt is recorded as zero-credit operational hardware failure. The preflight now includes an actual CUDA kernel probe.
+
+The controller submitted a same-scope `htzhulab`/`a100-gpu` replacement race: htz preflight `58701195`, htz formal chain `58701196`-`58701202`; a100 preflight `58701203`, a100 formal chain `58701204`-`58701210`; watcher `58701211`; finalizer `58701212`. Current status remains `NEEDS_MONITOR`, not complete and not reviewable.

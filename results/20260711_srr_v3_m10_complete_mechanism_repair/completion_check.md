@@ -34,3 +34,15 @@ No `review.md` was written. No push was performed. Wave 3, validation packaging/
 | Race finalizer | monitor: job `58701119` waits with `afterany` |
 
 Decision remains `NEEDS_MONITOR`, not blocked and not complete.
+
+## Htz/A100 Retry Check
+
+| Gate | Status |
+| --- | --- |
+| Volta D0 accounting | pass: `58701111` failed with unsupported V100 CUDA kernel execution, zero credit |
+| Preflight hardening | pass: `wave2_env_preflight.sh` now includes CUDA kernel execution probe |
+| Htz/A100 retry submission | monitor: htz preflight `58701195`, a100 preflight `58701203` pending |
+| Retry watcher | monitor: `58701211` running |
+| Retry finalizer | monitor: `58701212` dependency-pending |
+
+Decision remains `NEEDS_MONITOR`.

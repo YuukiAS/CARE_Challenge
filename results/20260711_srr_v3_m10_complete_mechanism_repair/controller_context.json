@@ -52,7 +52,16 @@
     "watcher_job_id": "58701118",
     "winner_partition": "volta-gpu"
   },
-  "next_action": "NEEDS_MONITOR; volta-gpu partition-race winner is running Wave 2 D0 job 58701111 after preflight 58701110 completed 0:0; watcher 58701118 cancelled htz/a100 mirrors; finalizer 58701119 waits afterany.",
+  "latest_wave2_race_retry2": {
+    "a100_preflight_job_id": "58701203",
+    "excluded_partition": "volta-gpu",
+    "excluded_reason": "PyTorch build cannot execute kernels on V100 CC 7.0",
+    "finalizer_job_id": "58701212",
+    "htzhulab_preflight_job_id": "58701195",
+    "state": "NEEDS_MONITOR",
+    "watcher_job_id": "58701211"
+  },
+  "next_action": "NEEDS_MONITOR; volta D0 58701111 failed due V100 CUDA kernel incompatibility and is zero-credit; same-scope htz/a100 retry race is pending with preflights 58701195 and 58701203, watcher 58701211 running, finalizer 58701212 pending.",
   "phase": "controller_resumed_bootstrap_after_prerequisite_repair",
   "planner_draft_commit": "828735482396d6d727d2294e88c89868e3118ad3",
   "planner_draft_commit_exists": true,

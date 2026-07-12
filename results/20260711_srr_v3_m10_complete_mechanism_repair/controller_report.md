@@ -54,3 +54,11 @@ The controller submitted isolated runtime-root mirrors to `htzhulab`, `a100-gpu`
 Race outcome: `volta-gpu` won. Preflight job `58701110` completed `0:0`; D0 job `58701111` is `RUNNING` on `volta-gpu`; downstream jobs `58701112` through `58701117` are dependency-pending. Watcher job `58701118` completed `0:0` after cancelling all still-pending `htzhulab` and `a100-gpu` mirrors. New Wave 2 finalizer job `58701119` waits with `afterany` over old failed jobs, superseded jobs, all race jobs, and the watcher.
 
 Current state remains `NEEDS_MONITOR`, not complete and not reviewable. No `review.md` was written and no push was performed.
+
+## Volta Hardware Failure And Htz/A100 Retry
+
+The `volta-gpu` D0 job `58701111` failed after `00:04:15` with `CUDA error: no kernel image is available for execution on the device`; the log shows the installed PyTorch build does not support Tesla V100 compute capability 7.0. This is an operational hardware compatibility failure, not M10 training evidence. Jobs `58701111` through `58701117` receive zero effective-training credit.
+
+The controller added a CUDA kernel smoke to `wave2_env_preflight.sh` so future preflights must prove that a visible GPU can execute kernels. A same-scope replacement race was submitted only to `htzhulab` and `a100-gpu`: htz preflight `58701195`, htz chain `58701196`-`58701202`; a100 preflight `58701203`, a100 chain `58701204`-`58701210`; watcher `58701211`; finalizer `58701212`.
+
+Current state remains `NEEDS_MONITOR`: both new preflights are pending, watcher `58701211` is running, and finalizer `58701212` is dependency-pending.

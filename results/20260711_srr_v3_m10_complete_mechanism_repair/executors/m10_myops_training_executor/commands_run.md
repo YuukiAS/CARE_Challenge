@@ -173,3 +173,18 @@ The user explicitly authorized a formal three-partition race across `htzhulab`, 
 New race jobs are recorded in `wave2_partition_race_submission.json` and `wave2_partition_race_job_ledger.csv`. `volta-gpu` preflight `58701110` completed `0:0`; D0 `58701111` is running; watcher `58701118` completed after cancelling pending `htzhulab` and `a100-gpu` mirrors. New finalizer `58701119` is pending with `afterany`.
 
 Mirror jobs use isolated `M10_RUNTIME_ROOT` values and `M10_DEFER_AGGREGATION=1`; final aggregation will use only the winning partition runtime root.
+
+## Hardware Compatibility Retry
+
+Update timestamp UTC: `2026-07-12T10:42:56Z`
+
+`volta-gpu` D0 job `58701111` failed with `CUDA error: no kernel image is available for execution on the device`, caused by the current PyTorch build not supporting V100 compute capability 7.0. This is recorded as zero-credit operational hardware incompatibility.
+
+The controller added a CUDA kernel execution probe to `wave2_env_preflight.sh` and submitted a same-scope `htzhulab`/`a100-gpu` retry race:
+
+| Partition | Preflight | D0 | Downstream chain | State |
+| --- | ---: | ---: | --- | --- |
+| `htzhulab` | `58701195` | `58701196` | `58701197`-`58701202` | preflight pending |
+| `a100-gpu` | `58701203` | `58701204` | `58701205`-`58701210` | preflight pending |
+
+Watcher `58701211` is running. Finalizer `58701212` is pending with `afterany` over all old, superseded, failed, and retry jobs.

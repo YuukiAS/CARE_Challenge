@@ -71,6 +71,11 @@ print("cuda_device_count", torch.cuda.device_count())
 if not torch.cuda.is_available():
     raise SystemExit("cuda_not_available")
 print("cuda_device_0", torch.cuda.get_device_name(0))
+probe = torch.ones(1, device="cuda") * 2
+torch.cuda.synchronize()
+if float(probe.cpu().item()) != 2.0:
+    raise SystemExit("cuda_kernel_probe_failed")
+print("cuda_kernel_probe_ok")
 
 config_path = repo / "configs/srr_v3_m10_complete_repair.yaml"
 config = yaml.safe_load(config_path.read_text(encoding="utf-8"))

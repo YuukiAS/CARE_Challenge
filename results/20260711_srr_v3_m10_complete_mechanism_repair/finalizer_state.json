@@ -1,553 +1,122 @@
 {
-  "active_preflight_monitor_checks": [
+  "accounting_continuation_launch": null,
+  "accounting_continuation_receipt_path": null,
+  "accounting_wait_seconds": 0,
+  "aggregation_command": "env PYTHONPATH=. python results/20260711_srr_v3_m10_complete_mechanism_repair/finalize_wave2_partition_race.py --submission results/20260711_srr_v3_m10_complete_mechanism_repair/wave2_partition_race_submission.json --watcher-state results/20260711_srr_v3_m10_complete_mechanism_repair/wave2_partition_race_watcher_state.json --result-path results/20260711_srr_v3_m10_complete_mechanism_repair/wave2_partition_race_finalization.json",
+  "aggregation_exit_code": null,
+  "attempt_number": 1,
+  "awaiting_sacct_attempts": [
     {
-      "checked_at_utc": "2026-07-12T04:17:34Z",
-      "elapsed": "00:00:00",
-      "end": "Unknown",
-      "job_id": 58683497,
-      "monitor_check_index_after_submission": 1,
-      "next_legal_pending_monitor_check_utc": "2026-07-12T06:17:34Z",
-      "node_list": "None assigned",
-      "partition": "htzhulab",
-      "sacct_exit_code": "0:0",
-      "sacct_state": "PENDING",
-      "scheduler_block": false,
-      "squeue_reason": "Priority",
-      "squeue_state": "PENDING",
-      "start": "Unknown"
-    },
-    {
-      "checked_at_utc": "2026-07-12T06:18:01Z",
-      "elapsed": "00:00:00",
-      "end": "Unknown",
-      "job_id": 58683497,
-      "monitor_check_index_after_submission": 2,
-      "next_legal_pending_monitor_check_utc": "2026-07-12T08:18:01Z",
-      "node_list": "None assigned",
-      "partition": "htzhulab",
-      "sacct_exit_code": "0:0",
-      "sacct_state": "PENDING",
-      "scheduler_block": false,
-      "squeue_reason": "Priority",
-      "squeue_state": "PENDING",
-      "start": "Unknown"
-    },
-    {
-      "checked_at_utc": "2026-07-12T08:18:34Z",
-      "elapsed": "00:00:00",
-      "end": "Unknown",
-      "job_id": 58683497,
-      "monitor_check_index_after_submission": 3,
-      "next_legal_pending_monitor_check_utc": "2026-07-12T10:18:34Z",
-      "node_list": "None assigned",
-      "partition": "htzhulab",
-      "sacct_exit_code": "0:0",
-      "sacct_state": "PENDING",
-      "scheduler_block": false,
-      "squeue_reason": "Priority",
-      "squeue_state": "PENDING",
-      "start": "Unknown"
+      "poll": 0,
+      "states": [
+        "CANCELLED",
+        "COMPLETED",
+        "FAILED"
+      ]
     }
   ],
-  "active_replacement_preflight_job_id": null,
-  "aggregation_commands": [
-    "env PYTHONPATH=. python scripts/evaluation/aggregate_srr_v3_m10_myops.py --all --job-id d0_control=58700815 --job-id d1_spatial_br2=58700821 --job-id d2_hierarchical_psip=58700822 --job-id d3_full_propref=58700826 --job-id hard_negative_refresh=58700827 --job-id no_context_control=58700828 --job-id alignment_control=58700832"
-  ],
-  "blocked_reason": "",
-  "dependency_finalizer_submission_path": "results/20260711_srr_v3_m10_complete_mechanism_repair/wave2_partition_race_finalizer_submission.json",
+  "awaiting_sacct_retry_interval": 30,
+  "awaiting_sacct_retry_seconds": 3600,
+  "dependency_finalizer_submission_path": "results/20260711_srr_v3_m10_complete_mechanism_repair/wave2_partition_race_retry2_finalizer_submission.json",
   "effective_training_job_ids": [
-    58701117,
-    58701111,
-    58701112,
-    58701113,
-    58701114,
-    58701115,
-    58701116
+    58701210,
+    58701204,
+    58701205,
+    58701206,
+    58701207,
+    58701208,
+    58701209,
+    58701202,
+    58701196,
+    58701197,
+    58701198,
+    58701199,
+    58701200,
+    58701201
   ],
+  "elapsed": {
+    "58644072": "00:11:04",
+    "58644073": "00:00:43",
+    "58644074": "00:00:42",
+    "58644106": "00:00:42",
+    "58644107": "00:00:43",
+    "58644108": "00:00:43",
+    "58644109": "00:00:42",
+    "58700815": "00:00:00",
+    "58700821": "00:00:00",
+    "58700822": "00:00:00",
+    "58700826": "00:00:00",
+    "58700827": "00:00:00",
+    "58700828": "00:00:00",
+    "58700832": "00:00:00",
+    "58701094": "00:00:00",
+    "58701095": "00:00:00",
+    "58701096": "00:00:00",
+    "58701097": "00:00:00",
+    "58701098": "00:00:00",
+    "58701099": "00:00:00",
+    "58701100": "00:00:00",
+    "58701101": "00:00:00",
+    "58701102": "00:00:00",
+    "58701103": "00:00:00",
+    "58701104": "00:00:00",
+    "58701105": "00:00:00",
+    "58701106": "00:00:00",
+    "58701107": "00:00:00",
+    "58701108": "00:00:00",
+    "58701109": "00:00:00",
+    "58701110": "00:00:35",
+    "58701111": "00:04:15",
+    "58701112": "00:00:00",
+    "58701113": "00:00:00",
+    "58701114": "00:00:00",
+    "58701115": "00:00:00",
+    "58701116": "00:00:00",
+    "58701117": "00:00:00",
+    "58701118": "00:01:02"
+  },
+  "exit_codes": {
+    "58644072": "1:0",
+    "58644073": "1:0",
+    "58644074": "1:0",
+    "58644106": "1:0",
+    "58644107": "1:0",
+    "58644108": "1:0",
+    "58644109": "1:0",
+    "58700815": "0:0",
+    "58700821": "0:0",
+    "58700822": "0:0",
+    "58700826": "0:0",
+    "58700827": "0:0",
+    "58700828": "0:0",
+    "58700832": "0:0",
+    "58701094": "0:0",
+    "58701095": "0:0",
+    "58701096": "0:0",
+    "58701097": "0:0",
+    "58701098": "0:0",
+    "58701099": "0:0",
+    "58701100": "0:0",
+    "58701101": "0:0",
+    "58701102": "0:0",
+    "58701103": "0:0",
+    "58701104": "0:0",
+    "58701105": "0:0",
+    "58701106": "0:0",
+    "58701107": "0:0",
+    "58701108": "0:0",
+    "58701109": "0:0",
+    "58701110": "0:0",
+    "58701111": "1:0",
+    "58701112": "0:0",
+    "58701113": "0:0",
+    "58701114": "0:0",
+    "58701115": "0:0",
+    "58701116": "0:0",
+    "58701117": "0:0",
+    "58701118": "0:0"
+  },
   "failed_attempt_job_ids": [
-    58644072,
-    58644073,
-    58644074,
-    58644106,
-    58644107,
-    58644108,
-    58644109,
-    58700815,
-    58700821,
-    58700822,
-    58700826,
-    58700827,
-    58700828,
-    58700832,
-    58701102,
-    58701109,
-    58701103,
-    58701104,
-    58701105,
-    58701106,
-    58701107,
-    58701108,
-    58701094,
-    58701101,
-    58701095,
-    58701096,
-    58701097,
-    58701098,
-    58701099,
-    58701100
-  ],
-  "final_state": "NEEDS_MONITOR",
-  "git_commit_decision": "COMMIT_LOCAL_PACKET",
-  "git_push_decision": "SKIP_PUSH",
-  "job_states": {
-    "58644072": "STARTUP_FAILED(1:0)",
-    "58644073": "STARTUP_FAILED(1:0)",
-    "58644074": "STARTUP_FAILED(1:0)",
-    "58644106": "STARTUP_FAILED(1:0)",
-    "58644107": "STARTUP_FAILED(1:0)",
-    "58644108": "STARTUP_FAILED(1:0)",
-    "58644109": "STARTUP_FAILED(1:0)",
-    "58682781": "CANCELLED_SUPERSEDED",
-    "58683497": "CANCELLED_RACE_MIRROR",
-    "58700697": "CANCELLED_RACE_MIRROR",
-    "58700698": "FAILED(127:0)",
-    "58700726": "FAILED(127:0)",
-    "58700727": "CANCELLED_STALE_WRAPPER",
-    "58700728": "CANCELLED_STALE_WRAPPER",
-    "58700749": "CANCELLED_RACE_MIRROR",
-    "58700750": "CANCELLED_RACE_MIRROR",
-    "58700751": "COMPLETED(0:0)",
-    "58700815": "CANCELLED_RACE_SUPERSEDED(0:0)",
-    "58700821": "CANCELLED_RACE_SUPERSEDED(0:0)",
-    "58700822": "CANCELLED_RACE_SUPERSEDED(0:0)",
-    "58700826": "CANCELLED_RACE_SUPERSEDED(0:0)",
-    "58700827": "CANCELLED_RACE_SUPERSEDED(0:0)",
-    "58700828": "CANCELLED_RACE_SUPERSEDED(0:0)",
-    "58700832": "CANCELLED_RACE_SUPERSEDED(0:0)",
-    "58700842": "CANCELLED_RACE_SUPERSEDED(0:0)",
-    "58701094": "CANCELLED_RACE_MIRROR(0:0)",
-    "58701095": "CANCELLED_RACE_MIRROR(0:0)",
-    "58701096": "CANCELLED_RACE_MIRROR(0:0)",
-    "58701097": "CANCELLED_RACE_MIRROR(0:0)",
-    "58701098": "CANCELLED_RACE_MIRROR(0:0)",
-    "58701099": "CANCELLED_RACE_MIRROR(0:0)",
-    "58701100": "CANCELLED_RACE_MIRROR(0:0)",
-    "58701101": "CANCELLED_RACE_MIRROR(0:0)",
-    "58701102": "CANCELLED_RACE_MIRROR(0:0)",
-    "58701103": "CANCELLED_RACE_MIRROR(0:0)",
-    "58701104": "CANCELLED_RACE_MIRROR(0:0)",
-    "58701105": "CANCELLED_RACE_MIRROR(0:0)",
-    "58701106": "CANCELLED_RACE_MIRROR(0:0)",
-    "58701107": "CANCELLED_RACE_MIRROR(0:0)",
-    "58701108": "CANCELLED_RACE_MIRROR(0:0)",
-    "58701109": "CANCELLED_RACE_MIRROR(0:0)",
-    "58701110": "COMPLETED(0:0)",
-    "58701111": "RUNNING",
-    "58701112": "PENDING(Dependency)",
-    "58701113": "PENDING(Dependency)",
-    "58701114": "PENDING(Dependency)",
-    "58701115": "PENDING(Dependency)",
-    "58701116": "PENDING(Dependency)",
-    "58701117": "PENDING(Dependency)",
-    "58701118": "COMPLETED(0:0)",
-    "58701119": "PENDING(Dependency afterany)"
-  },
-  "manifest_sha256": "df78cb2c950c8c13bbdea7171433e3f4dcba16cca1bdda51711d976321e75556",
-  "precommit_head": "705ae497af2ebb391a16c99ecc812642f723b1d5",
-  "preflight_race_events": [
-    {
-      "job_id": 58682781,
-      "partition": "htzhulab",
-      "reason": "weaker preflight superseded before formal gate",
-      "state": "CANCELLED_SUPERSEDED"
-    },
-    {
-      "job_id": 58683497,
-      "partition": "htzhulab",
-      "reason": "volta mirror started first",
-      "state": "CANCELLED_RACE_MIRROR"
-    },
-    {
-      "job_id": 58700697,
-      "partition": "a100-gpu",
-      "reason": "volta mirror started first",
-      "state": "CANCELLED_RACE_MIRROR"
-    },
-    {
-      "exit_code": "127:0",
-      "job_id": 58700698,
-      "partition": "volta-gpu",
-      "reason": "wrapper logged too late; startup failed before evidence",
-      "state": "FAILED"
-    },
-    {
-      "exit_code": "127:0",
-      "job_id": 58700726,
-      "partition": "volta-gpu",
-      "reason": "stale wrapper used env_CARE/bin/python relative path",
-      "state": "FAILED"
-    },
-    {
-      "job_id": 58700727,
-      "partition": "a100-gpu",
-      "reason": "pending mirror submitted before path fix",
-      "state": "CANCELLED_STALE_WRAPPER"
-    },
-    {
-      "job_id": 58700728,
-      "partition": "htzhulab",
-      "reason": "pending mirror submitted before path fix",
-      "state": "CANCELLED_STALE_WRAPPER"
-    },
-    {
-      "job_id": 58700749,
-      "partition": "a100-gpu",
-      "reason": "fixed volta mirror started first",
-      "state": "CANCELLED_RACE_MIRROR"
-    },
-    {
-      "job_id": 58700750,
-      "partition": "htzhulab",
-      "reason": "fixed volta mirror started first",
-      "state": "CANCELLED_RACE_MIRROR"
-    },
-    {
-      "elapsed": "00:02:45",
-      "exit_code": "0:0",
-      "job_id": 58700751,
-      "log_path": "logs/M10W2Preflight_volta-gpu_58700751_20260712_060557.log",
-      "partition": "volta-gpu",
-      "state": "COMPLETED"
-    }
-  ],
-  "pushed": false,
-  "replacement_job_ids": [
-    58701102,
-    58701109,
-    58701103,
-    58701104,
-    58701105,
-    58701106,
-    58701107,
-    58701108,
-    58701094,
-    58701101,
-    58701095,
-    58701096,
-    58701097,
-    58701098,
-    58701099,
-    58701100,
-    58701110,
-    58701117,
-    58701111,
-    58701112,
-    58701113,
-    58701114,
-    58701115,
-    58701116
-  ],
-  "replacement_partition_race": {
-    "aggregation_policy": "defer mirror aggregation; aggregate only winning partition runtime root",
-    "authorized_partitions": [
-      "htzhulab",
-      "a100-gpu",
-      "volta-gpu"
-    ],
-    "chains": {
-      "a100-gpu": {
-        "jobs": {
-          "alignment_control": "58701109",
-          "d0_control": "58701103",
-          "d1_spatial_br2": "58701104",
-          "d2_hierarchical_psip": "58701105",
-          "d3_full_propref": "58701106",
-          "hard_negative_refresh": "58701107",
-          "no_context_control": "58701108"
-        },
-        "log_prefixes": {
-          "alignment_control": "M10Align",
-          "d0_control": "M10D0MyoPS",
-          "d1_spatial_br2": "M10D1MyoPS",
-          "d2_hierarchical_psip": "M10D2MyoPS",
-          "d3_full_propref": "M10D3MyoPS",
-          "hard_negative_refresh": "M10HardNeg",
-          "no_context_control": "M10NoCtx"
-        },
-        "partition": "a100-gpu",
-        "preflight_job_ids": [
-          "58701102"
-        ],
-        "runtime_root": "results/20260711_srr_v3_m10_complete_mechanism_repair/runtime/m10_myops_training_executor/partition_race/a100-gpu"
-      },
-      "htzhulab": {
-        "jobs": {
-          "alignment_control": "58701101",
-          "d0_control": "58701095",
-          "d1_spatial_br2": "58701096",
-          "d2_hierarchical_psip": "58701097",
-          "d3_full_propref": "58701098",
-          "hard_negative_refresh": "58701099",
-          "no_context_control": "58701100"
-        },
-        "log_prefixes": {
-          "alignment_control": "M10Align",
-          "d0_control": "M10D0MyoPS",
-          "d1_spatial_br2": "M10D1MyoPS",
-          "d2_hierarchical_psip": "M10D2MyoPS",
-          "d3_full_propref": "M10D3MyoPS",
-          "hard_negative_refresh": "M10HardNeg",
-          "no_context_control": "M10NoCtx"
-        },
-        "partition": "htzhulab",
-        "preflight_job_ids": [
-          "58701094"
-        ],
-        "runtime_root": "results/20260711_srr_v3_m10_complete_mechanism_repair/runtime/m10_myops_training_executor/partition_race/htzhulab"
-      },
-      "volta-gpu": {
-        "jobs": {
-          "alignment_control": "58701117",
-          "d0_control": "58701111",
-          "d1_spatial_br2": "58701112",
-          "d2_hierarchical_psip": "58701113",
-          "d3_full_propref": "58701114",
-          "hard_negative_refresh": "58701115",
-          "no_context_control": "58701116"
-        },
-        "log_prefixes": {
-          "alignment_control": "M10Align",
-          "d0_control": "M10D0MyoPS",
-          "d1_spatial_br2": "M10D1MyoPS",
-          "d2_hierarchical_psip": "M10D2MyoPS",
-          "d3_full_propref": "M10D3MyoPS",
-          "hard_negative_refresh": "M10HardNeg",
-          "no_context_control": "M10NoCtx"
-        },
-        "partition": "volta-gpu",
-        "preflight_job_ids": [
-          "58701110"
-        ],
-        "runtime_root": "results/20260711_srr_v3_m10_complete_mechanism_repair/runtime/m10_myops_training_executor/partition_race/volta-gpu"
-      }
-    },
-    "deferred_mirror_aggregation": true,
-    "finalizer_job_id": "58701119",
-    "finalizer_submission_path": "results/20260711_srr_v3_m10_complete_mechanism_repair/wave2_partition_race_finalizer_submission.json",
-    "mirror_cancel_records": [
-      {
-        "cancel_exit_code": 0,
-        "cancel_stderr": "",
-        "cancel_stdout": "",
-        "job_id": "58701102",
-        "state_before_cancel": {
-          "job_id": "58701102",
-          "partition": "a100-gpu",
-          "reason": "(Priority)",
-          "state": "PENDING"
-        }
-      },
-      {
-        "cancel_exit_code": 0,
-        "cancel_stderr": "",
-        "cancel_stdout": "",
-        "job_id": "58701109",
-        "state_before_cancel": {
-          "job_id": "58701109",
-          "partition": "a100-gpu",
-          "reason": "(Dependency)",
-          "state": "PENDING"
-        }
-      },
-      {
-        "cancel_exit_code": 0,
-        "cancel_stderr": "",
-        "cancel_stdout": "",
-        "job_id": "58701103",
-        "state_before_cancel": {
-          "job_id": "58701103",
-          "partition": "a100-gpu",
-          "reason": "(Dependency)",
-          "state": "PENDING"
-        }
-      },
-      {
-        "cancel_exit_code": 0,
-        "cancel_stderr": "",
-        "cancel_stdout": "",
-        "job_id": "58701104",
-        "state_before_cancel": {
-          "job_id": "58701104",
-          "partition": "a100-gpu",
-          "reason": "(Dependency)",
-          "state": "PENDING"
-        }
-      },
-      {
-        "cancel_exit_code": 0,
-        "cancel_stderr": "",
-        "cancel_stdout": "",
-        "job_id": "58701105",
-        "state_before_cancel": {
-          "job_id": "58701105",
-          "partition": "a100-gpu",
-          "reason": "(Dependency)",
-          "state": "PENDING"
-        }
-      },
-      {
-        "cancel_exit_code": 0,
-        "cancel_stderr": "",
-        "cancel_stdout": "",
-        "job_id": "58701106",
-        "state_before_cancel": {
-          "job_id": "58701106",
-          "partition": "a100-gpu",
-          "reason": "(Dependency)",
-          "state": "PENDING"
-        }
-      },
-      {
-        "cancel_exit_code": 0,
-        "cancel_stderr": "",
-        "cancel_stdout": "",
-        "job_id": "58701107",
-        "state_before_cancel": {
-          "job_id": "58701107",
-          "partition": "a100-gpu",
-          "reason": "(Dependency)",
-          "state": "PENDING"
-        }
-      },
-      {
-        "cancel_exit_code": 0,
-        "cancel_stderr": "",
-        "cancel_stdout": "",
-        "job_id": "58701108",
-        "state_before_cancel": {
-          "job_id": "58701108",
-          "partition": "a100-gpu",
-          "reason": "(Dependency)",
-          "state": "PENDING"
-        }
-      },
-      {
-        "cancel_exit_code": 0,
-        "cancel_stderr": "",
-        "cancel_stdout": "",
-        "job_id": "58701094",
-        "state_before_cancel": {
-          "job_id": "58701094",
-          "partition": "htzhulab",
-          "reason": "(Priority)",
-          "state": "PENDING"
-        }
-      },
-      {
-        "cancel_exit_code": 0,
-        "cancel_stderr": "",
-        "cancel_stdout": "",
-        "job_id": "58701101",
-        "state_before_cancel": {
-          "job_id": "58701101",
-          "partition": "htzhulab",
-          "reason": "(Dependency)",
-          "state": "PENDING"
-        }
-      },
-      {
-        "cancel_exit_code": 0,
-        "cancel_stderr": "",
-        "cancel_stdout": "",
-        "job_id": "58701095",
-        "state_before_cancel": {
-          "job_id": "58701095",
-          "partition": "htzhulab",
-          "reason": "(Dependency)",
-          "state": "PENDING"
-        }
-      },
-      {
-        "cancel_exit_code": 0,
-        "cancel_stderr": "",
-        "cancel_stdout": "",
-        "job_id": "58701096",
-        "state_before_cancel": {
-          "job_id": "58701096",
-          "partition": "htzhulab",
-          "reason": "(Dependency)",
-          "state": "PENDING"
-        }
-      },
-      {
-        "cancel_exit_code": 0,
-        "cancel_stderr": "",
-        "cancel_stdout": "",
-        "job_id": "58701097",
-        "state_before_cancel": {
-          "job_id": "58701097",
-          "partition": "htzhulab",
-          "reason": "(Dependency)",
-          "state": "PENDING"
-        }
-      },
-      {
-        "cancel_exit_code": 0,
-        "cancel_stderr": "",
-        "cancel_stdout": "",
-        "job_id": "58701098",
-        "state_before_cancel": {
-          "job_id": "58701098",
-          "partition": "htzhulab",
-          "reason": "(Dependency)",
-          "state": "PENDING"
-        }
-      },
-      {
-        "cancel_exit_code": 0,
-        "cancel_stderr": "",
-        "cancel_stdout": "",
-        "job_id": "58701099",
-        "state_before_cancel": {
-          "job_id": "58701099",
-          "partition": "htzhulab",
-          "reason": "(Dependency)",
-          "state": "PENDING"
-        }
-      },
-      {
-        "cancel_exit_code": 0,
-        "cancel_stderr": "",
-        "cancel_stdout": "",
-        "job_id": "58701100",
-        "state_before_cancel": {
-          "job_id": "58701100",
-          "partition": "htzhulab",
-          "reason": "(Dependency)",
-          "state": "PENDING"
-        }
-      }
-    ],
-    "submission_path": "results/20260711_srr_v3_m10_complete_mechanism_repair/wave2_partition_race_submission.json",
-    "watcher_job_id": "58701118",
-    "watcher_state_path": "results/20260711_srr_v3_m10_complete_mechanism_repair/wave2_partition_race_watcher_state.json",
-    "winner_partition": "volta-gpu",
-    "winner_reason": "first_d0_running",
-    "winner_runtime_root": "results/20260711_srr_v3_m10_complete_mechanism_repair/runtime/m10_myops_training_executor/partition_race/volta-gpu"
-  },
-  "replacement_preflight_job_ids": [
-    58682781,
-    58683497,
-    58700697,
-    58700698,
-    58700726,
-    58700727,
-    58700728,
-    58700749,
-    58700750,
-    58700751
-  ],
-  "required_job_ids": [
     58644072,
     58644073,
     58644074,
@@ -588,27 +157,482 @@
     58701116,
     58701118
   ],
-  "resume_state": "NEEDS_MONITOR; user-authorized three-partition Wave 2 formal race selected volta-gpu. Preflight 58701110 completed 0:0, D0 job 58701111 is RUNNING on volta-gpu, htz/a100 mirror chains were cancelled by watcher 58701118, and finalizer 58701119 waits afterany over old, superseded, race, and watcher jobs. No review, push, Wave3, M11, packaging, or upload authorized.",
-  "review_md_written": false,
-  "runtime_output_paths": [
-    "logs/M10D0MyoPS_58644072_20260711_110852.log",
-    "logs/M10D1MyoPS_58644073_20260711_112003.log",
-    "logs/M10D2MyoPS_58644074_20260711_112103.log",
-    "logs/M10D3MyoPS_58644106_20260711_112204.log",
-    "logs/M10HardNeg_58644107_20260711_112305.log",
-    "logs/M10NoCtx_58644108_20260711_112406.log",
-    "logs/M10Align_58644109_20260711_112450.log",
-    "logs/M10D0MyoPS_58700815_<timestamp>.log",
-    "logs/M10D1MyoPS_58700821_<timestamp>.log",
-    "logs/M10D2MyoPS_58700822_<timestamp>.log",
-    "logs/M10D3MyoPS_58700826_<timestamp>.log",
-    "logs/M10HardNeg_58700827_<timestamp>.log",
-    "logs/M10NoCtx_58700828_<timestamp>.log",
-    "logs/M10Align_58700832_<timestamp>.log",
-    "logs/M10W2Preflight_volta-gpu_58700751_20260712_060557.log",
-    "results/20260711_srr_v3_m10_complete_mechanism_repair/care_milestone_finalizer_%j.log"
+  "failure_class": "VOLTA_GPU_UNSUPPORTED_BY_TORCH_BUILD_RETRIED_ON_HTZ_A100",
+  "final_state": "NEEDS_MONITOR",
+  "git_commit_decision": "COMMIT_LOCAL_PACKET",
+  "git_head_before": "6b5c3a1be1d0ebddd16ea6b3c41cb86cf893eb3d",
+  "git_push_decision": "SKIP_PUSH",
+  "job_attempt_lineage": [
+    {
+      "attempt_number": 1,
+      "exit_code": "1:0",
+      "job_id": "58644072",
+      "state": "FAILED",
+      "training_credit": "verified_completed_steps_only"
+    },
+    {
+      "attempt_number": 1,
+      "exit_code": "1:0",
+      "job_id": "58644073",
+      "state": "FAILED",
+      "training_credit": "verified_completed_steps_only"
+    },
+    {
+      "attempt_number": 1,
+      "exit_code": "1:0",
+      "job_id": "58644074",
+      "state": "FAILED",
+      "training_credit": "verified_completed_steps_only"
+    },
+    {
+      "attempt_number": 1,
+      "exit_code": "1:0",
+      "job_id": "58644106",
+      "state": "FAILED",
+      "training_credit": "verified_completed_steps_only"
+    },
+    {
+      "attempt_number": 1,
+      "exit_code": "1:0",
+      "job_id": "58644107",
+      "state": "FAILED",
+      "training_credit": "verified_completed_steps_only"
+    },
+    {
+      "attempt_number": 1,
+      "exit_code": "1:0",
+      "job_id": "58644108",
+      "state": "FAILED",
+      "training_credit": "verified_completed_steps_only"
+    },
+    {
+      "attempt_number": 1,
+      "exit_code": "1:0",
+      "job_id": "58644109",
+      "state": "FAILED",
+      "training_credit": "verified_completed_steps_only"
+    },
+    {
+      "attempt_number": 1,
+      "exit_code": "0:0",
+      "job_id": "58700815",
+      "state": "CANCELLED",
+      "training_credit": "verified_completed_steps_only"
+    },
+    {
+      "attempt_number": 1,
+      "exit_code": "0:0",
+      "job_id": "58700821",
+      "state": "CANCELLED",
+      "training_credit": "verified_completed_steps_only"
+    },
+    {
+      "attempt_number": 1,
+      "exit_code": "0:0",
+      "job_id": "58700822",
+      "state": "CANCELLED",
+      "training_credit": "verified_completed_steps_only"
+    },
+    {
+      "attempt_number": 1,
+      "exit_code": "0:0",
+      "job_id": "58700826",
+      "state": "CANCELLED",
+      "training_credit": "verified_completed_steps_only"
+    },
+    {
+      "attempt_number": 1,
+      "exit_code": "0:0",
+      "job_id": "58700827",
+      "state": "CANCELLED",
+      "training_credit": "verified_completed_steps_only"
+    },
+    {
+      "attempt_number": 1,
+      "exit_code": "0:0",
+      "job_id": "58700828",
+      "state": "CANCELLED",
+      "training_credit": "verified_completed_steps_only"
+    },
+    {
+      "attempt_number": 1,
+      "exit_code": "0:0",
+      "job_id": "58700832",
+      "state": "CANCELLED",
+      "training_credit": "verified_completed_steps_only"
+    },
+    {
+      "attempt_number": 1,
+      "exit_code": "0:0",
+      "job_id": "58701094",
+      "state": "CANCELLED",
+      "training_credit": "verified_completed_steps_only"
+    },
+    {
+      "attempt_number": 1,
+      "exit_code": "0:0",
+      "job_id": "58701095",
+      "state": "CANCELLED",
+      "training_credit": "verified_completed_steps_only"
+    },
+    {
+      "attempt_number": 1,
+      "exit_code": "0:0",
+      "job_id": "58701096",
+      "state": "CANCELLED",
+      "training_credit": "verified_completed_steps_only"
+    },
+    {
+      "attempt_number": 1,
+      "exit_code": "0:0",
+      "job_id": "58701097",
+      "state": "CANCELLED",
+      "training_credit": "verified_completed_steps_only"
+    },
+    {
+      "attempt_number": 1,
+      "exit_code": "0:0",
+      "job_id": "58701098",
+      "state": "CANCELLED",
+      "training_credit": "verified_completed_steps_only"
+    },
+    {
+      "attempt_number": 1,
+      "exit_code": "0:0",
+      "job_id": "58701099",
+      "state": "CANCELLED",
+      "training_credit": "verified_completed_steps_only"
+    },
+    {
+      "attempt_number": 1,
+      "exit_code": "0:0",
+      "job_id": "58701100",
+      "state": "CANCELLED",
+      "training_credit": "verified_completed_steps_only"
+    },
+    {
+      "attempt_number": 1,
+      "exit_code": "0:0",
+      "job_id": "58701101",
+      "state": "CANCELLED",
+      "training_credit": "verified_completed_steps_only"
+    },
+    {
+      "attempt_number": 1,
+      "exit_code": "0:0",
+      "job_id": "58701102",
+      "state": "CANCELLED",
+      "training_credit": "verified_completed_steps_only"
+    },
+    {
+      "attempt_number": 1,
+      "exit_code": "0:0",
+      "job_id": "58701103",
+      "state": "CANCELLED",
+      "training_credit": "verified_completed_steps_only"
+    },
+    {
+      "attempt_number": 1,
+      "exit_code": "0:0",
+      "job_id": "58701104",
+      "state": "CANCELLED",
+      "training_credit": "verified_completed_steps_only"
+    },
+    {
+      "attempt_number": 1,
+      "exit_code": "0:0",
+      "job_id": "58701105",
+      "state": "CANCELLED",
+      "training_credit": "verified_completed_steps_only"
+    },
+    {
+      "attempt_number": 1,
+      "exit_code": "0:0",
+      "job_id": "58701106",
+      "state": "CANCELLED",
+      "training_credit": "verified_completed_steps_only"
+    },
+    {
+      "attempt_number": 1,
+      "exit_code": "0:0",
+      "job_id": "58701107",
+      "state": "CANCELLED",
+      "training_credit": "verified_completed_steps_only"
+    },
+    {
+      "attempt_number": 1,
+      "exit_code": "0:0",
+      "job_id": "58701108",
+      "state": "CANCELLED",
+      "training_credit": "verified_completed_steps_only"
+    },
+    {
+      "attempt_number": 1,
+      "exit_code": "0:0",
+      "job_id": "58701109",
+      "state": "CANCELLED",
+      "training_credit": "verified_completed_steps_only"
+    },
+    {
+      "attempt_number": 1,
+      "exit_code": "0:0",
+      "job_id": "58701110",
+      "state": "COMPLETED",
+      "training_credit": "verified_completed_steps_only"
+    },
+    {
+      "attempt_number": 1,
+      "exit_code": "1:0",
+      "job_id": "58701111",
+      "state": "FAILED",
+      "training_credit": "verified_completed_steps_only"
+    },
+    {
+      "attempt_number": 1,
+      "exit_code": "0:0",
+      "job_id": "58701112",
+      "state": "CANCELLED",
+      "training_credit": "verified_completed_steps_only"
+    },
+    {
+      "attempt_number": 1,
+      "exit_code": "0:0",
+      "job_id": "58701113",
+      "state": "CANCELLED",
+      "training_credit": "verified_completed_steps_only"
+    },
+    {
+      "attempt_number": 1,
+      "exit_code": "0:0",
+      "job_id": "58701114",
+      "state": "CANCELLED",
+      "training_credit": "verified_completed_steps_only"
+    },
+    {
+      "attempt_number": 1,
+      "exit_code": "0:0",
+      "job_id": "58701115",
+      "state": "CANCELLED",
+      "training_credit": "verified_completed_steps_only"
+    },
+    {
+      "attempt_number": 1,
+      "exit_code": "0:0",
+      "job_id": "58701116",
+      "state": "CANCELLED",
+      "training_credit": "verified_completed_steps_only"
+    },
+    {
+      "attempt_number": 1,
+      "exit_code": "0:0",
+      "job_id": "58701117",
+      "state": "CANCELLED",
+      "training_credit": "verified_completed_steps_only"
+    },
+    {
+      "attempt_number": 1,
+      "exit_code": "0:0",
+      "job_id": "58701118",
+      "state": "COMPLETED",
+      "training_credit": "verified_completed_steps_only"
+    }
   ],
-  "slurm_jobs_submitted": [
+  "job_states": {
+    "58644072": "FAILED",
+    "58644073": "FAILED",
+    "58644074": "FAILED",
+    "58644106": "FAILED",
+    "58644107": "FAILED",
+    "58644108": "FAILED",
+    "58644109": "FAILED",
+    "58700815": "CANCELLED",
+    "58700821": "CANCELLED",
+    "58700822": "CANCELLED",
+    "58700826": "CANCELLED",
+    "58700827": "CANCELLED",
+    "58700828": "CANCELLED",
+    "58700832": "CANCELLED",
+    "58701094": "CANCELLED",
+    "58701095": "CANCELLED",
+    "58701096": "CANCELLED",
+    "58701097": "CANCELLED",
+    "58701098": "CANCELLED",
+    "58701099": "CANCELLED",
+    "58701100": "CANCELLED",
+    "58701101": "CANCELLED",
+    "58701102": "CANCELLED",
+    "58701103": "CANCELLED",
+    "58701104": "CANCELLED",
+    "58701105": "CANCELLED",
+    "58701106": "CANCELLED",
+    "58701107": "CANCELLED",
+    "58701108": "CANCELLED",
+    "58701109": "CANCELLED",
+    "58701110": "COMPLETED(0:0)",
+    "58701111": "FAILED_HARDWARE_UNSUPPORTED(1:0)",
+    "58701112": "CANCELLED_AFTER_D0_FAILURE(0:0)",
+    "58701113": "CANCELLED_AFTER_D0_FAILURE(0:0)",
+    "58701114": "CANCELLED_AFTER_D0_FAILURE(0:0)",
+    "58701115": "CANCELLED_AFTER_D0_FAILURE(0:0)",
+    "58701116": "CANCELLED_AFTER_D0_FAILURE(0:0)",
+    "58701117": "CANCELLED_AFTER_D0_FAILURE(0:0)",
+    "58701118": "COMPLETED",
+    "58701119": "FAILED_AFTER_RUNTIME_FAILURE_ACCOUNTING(1:0)",
+    "58701195": "PENDING(None)",
+    "58701196": "PENDING(Dependency)",
+    "58701197": "PENDING(Dependency)",
+    "58701198": "PENDING(Dependency)",
+    "58701199": "PENDING(Dependency)",
+    "58701200": "PENDING(Dependency)",
+    "58701201": "PENDING(Dependency)",
+    "58701202": "PENDING(Dependency)",
+    "58701203": "PENDING(None)",
+    "58701204": "PENDING(Dependency)",
+    "58701205": "PENDING(Dependency)",
+    "58701206": "PENDING(Dependency)",
+    "58701207": "PENDING(Dependency)",
+    "58701208": "PENDING(Dependency)",
+    "58701209": "PENDING(Dependency)",
+    "58701210": "PENDING(Dependency)",
+    "58701211": "RUNNING",
+    "58701212": "PENDING(Dependency afterany)"
+  },
+  "lock_path": "results/20260711_srr_v3_m10_complete_mechanism_repair/locks/wave2_partition_race_finalizer.lock",
+  "lock_released": true,
+  "log_paths": [],
+  "manifest_sha256": "b7a93e96f18460ae1541f346279da9d7aca51cf059957adcedfb168146fbce64",
+  "mapper_final_status": "not_requested",
+  "next_retry_job_id_or_tmux_session": null,
+  "nodes": {
+    "58644072": "g180702",
+    "58644073": "g180702",
+    "58644074": "g180702",
+    "58644106": "g180702",
+    "58644107": "g180702",
+    "58644108": "g180702",
+    "58644109": "g180702",
+    "58700815": "None assigned",
+    "58700821": "None assigned",
+    "58700822": "None assigned",
+    "58700826": "None assigned",
+    "58700827": "None assigned",
+    "58700828": "None assigned",
+    "58700832": "None assigned",
+    "58701094": "None assigned",
+    "58701095": "None assigned",
+    "58701096": "None assigned",
+    "58701097": "None assigned",
+    "58701098": "None assigned",
+    "58701099": "None assigned",
+    "58701100": "None assigned",
+    "58701101": "None assigned",
+    "58701102": "None assigned",
+    "58701103": "None assigned",
+    "58701104": "None assigned",
+    "58701105": "None assigned",
+    "58701106": "None assigned",
+    "58701107": "None assigned",
+    "58701108": "None assigned",
+    "58701109": "None assigned",
+    "58701110": "g0308",
+    "58701111": "g0309",
+    "58701112": "None assigned",
+    "58701113": "None assigned",
+    "58701114": "None assigned",
+    "58701115": "None assigned",
+    "58701116": "None assigned",
+    "58701117": "None assigned",
+    "58701118": "c0408"
+  },
+  "precommit_head": "6b5c3a1be1d0ebddd16ea6b3c41cb86cf893eb3d",
+  "records": [],
+  "replacement_job_ids": [
+    58701203,
+    58701210,
+    58701204,
+    58701205,
+    58701206,
+    58701207,
+    58701208,
+    58701209,
+    58701195,
+    58701202,
+    58701196,
+    58701197,
+    58701198,
+    58701199,
+    58701200,
+    58701201
+  ],
+  "replacement_partition_race_retry2": {
+    "aggregation_policy": "defer mirror aggregation; aggregate only winning partition runtime root",
+    "authorized_partitions": [
+      "htzhulab",
+      "a100-gpu"
+    ],
+    "chains": {
+      "a100-gpu": {
+        "jobs": {
+          "alignment_control": "58701210",
+          "d0_control": "58701204",
+          "d1_spatial_br2": "58701205",
+          "d2_hierarchical_psip": "58701206",
+          "d3_full_propref": "58701207",
+          "hard_negative_refresh": "58701208",
+          "no_context_control": "58701209"
+        },
+        "log_prefixes": {
+          "alignment_control": "M10Align",
+          "d0_control": "M10D0MyoPS",
+          "d1_spatial_br2": "M10D1MyoPS",
+          "d2_hierarchical_psip": "M10D2MyoPS",
+          "d3_full_propref": "M10D3MyoPS",
+          "hard_negative_refresh": "M10HardNeg",
+          "no_context_control": "M10NoCtx"
+        },
+        "partition": "a100-gpu",
+        "preflight_job_ids": [
+          "58701203"
+        ],
+        "runtime_root": "results/20260711_srr_v3_m10_complete_mechanism_repair/runtime/m10_myops_training_executor/partition_race_retry2/a100-gpu"
+      },
+      "htzhulab": {
+        "jobs": {
+          "alignment_control": "58701202",
+          "d0_control": "58701196",
+          "d1_spatial_br2": "58701197",
+          "d2_hierarchical_psip": "58701198",
+          "d3_full_propref": "58701199",
+          "hard_negative_refresh": "58701200",
+          "no_context_control": "58701201"
+        },
+        "log_prefixes": {
+          "alignment_control": "M10Align",
+          "d0_control": "M10D0MyoPS",
+          "d1_spatial_br2": "M10D1MyoPS",
+          "d2_hierarchical_psip": "M10D2MyoPS",
+          "d3_full_propref": "M10D3MyoPS",
+          "hard_negative_refresh": "M10HardNeg",
+          "no_context_control": "M10NoCtx"
+        },
+        "partition": "htzhulab",
+        "preflight_job_ids": [
+          "58701195"
+        ],
+        "runtime_root": "results/20260711_srr_v3_m10_complete_mechanism_repair/runtime/m10_myops_training_executor/partition_race_retry2/htzhulab"
+      }
+    },
+    "excluded_partition": "volta-gpu",
+    "excluded_reason": "torch build does not support V100 compute capability 7.0; D0 job 58701111 failed with no kernel image available",
+    "finalizer_job_id": "58701212",
+    "finalizer_submission_path": "results/20260711_srr_v3_m10_complete_mechanism_repair/wave2_partition_race_retry2_finalizer_submission.json",
+    "preflight_cuda_kernel_probe_required": true,
+    "reason": "same_scope_hardware_compatibility_retry_after_volta_cuda_kernel_failure",
+    "submission_path": "results/20260711_srr_v3_m10_complete_mechanism_repair/wave2_partition_race_retry2_submission.json",
+    "watcher_job_id": "58701211",
+    "watcher_state_path": "results/20260711_srr_v3_m10_complete_mechanism_repair/wave2_partition_race_retry2_watcher_state.json"
+  },
+  "required_job_ids": [
     58644072,
     58644073,
     58644074,
@@ -622,75 +646,75 @@
     58700826,
     58700827,
     58700828,
-    58700832
+    58700832,
+    58701102,
+    58701109,
+    58701103,
+    58701104,
+    58701105,
+    58701106,
+    58701107,
+    58701108,
+    58701094,
+    58701101,
+    58701095,
+    58701096,
+    58701097,
+    58701098,
+    58701099,
+    58701100,
+    58701110,
+    58701117,
+    58701111,
+    58701112,
+    58701113,
+    58701114,
+    58701115,
+    58701116,
+    58701118,
+    58701203,
+    58701210,
+    58701204,
+    58701205,
+    58701206,
+    58701207,
+    58701208,
+    58701209,
+    58701195,
+    58701202,
+    58701196,
+    58701197,
+    58701198,
+    58701199,
+    58701200,
+    58701201,
+    58701211
   ],
-  "successful_replacement_preflight_job_id": 58701110,
+  "resume_state": "NEEDS_MONITOR; volta race attempt failed on D0 job 58701111 because the installed PyTorch build cannot execute kernels on V100 compute capability 7.0. This is recorded as zero-credit hardware compatibility failure. A same-scope htz/a100 retry race is submitted with CUDA kernel preflight: htz preflight 58701195 pending, a100 preflight 58701203 pending, watcher 58701211 running, finalizer 58701212 pending afterany. No review, push, Wave3, M11, packaging, or upload authorized.",
+  "retry_backend": "tmux_watcher",
+  "retry_count": 0,
+  "retry_reason": "failed job without recognized retryable startup signature",
+  "retryable": true,
+  "runtime_output_paths": [],
+  "stage": "accounting",
+  "successful_replacement_preflight_job_id": null,
+  "suggested_next_state": "NEEDS_MONITOR",
+  "supersedes_job_ids": [],
   "task_key": "20260711_srr_v3_m10_complete_mechanism_repair",
   "tracked_paths": [
-    "results/20260711_srr_v3_m10_complete_mechanism_repair/result.md",
-    "results/20260711_srr_v3_m10_complete_mechanism_repair/controller_context.json",
-    "results/20260711_srr_v3_m10_complete_mechanism_repair/controller_ledger.csv",
-    "results/20260711_srr_v3_m10_complete_mechanism_repair/controller_bootstrap_snapshot.md",
-    "results/20260711_srr_v3_m10_complete_mechanism_repair/controller_resume_bootstrap.md",
-    "results/20260711_srr_v3_m10_complete_mechanism_repair/implementation_snapshot.md",
-    "results/20260711_srr_v3_m10_complete_mechanism_repair/finalizer_state.json",
-    "results/20260711_srr_v3_m10_complete_mechanism_repair/validator_report.md",
-    "results/20260711_srr_v3_m10_complete_mechanism_repair/controller_report.md",
-    "results/20260711_srr_v3_m10_complete_mechanism_repair/completion_check.md",
-    "results/20260711_srr_v3_m10_complete_mechanism_repair/review_request.md",
-    "results/20260711_srr_v3_m10_complete_mechanism_repair/MANIFEST.md",
-    "results/20260711_srr_v3_m10_complete_mechanism_repair/subagents/m10_shared_architecture_executor_prompt.md",
-    "results/20260711_srr_v3_m10_complete_mechanism_repair/subagents/m10_myops_training_executor_prompt.md",
-    "results/20260711_srr_v3_m10_complete_mechanism_repair/wave2_launch_receipt.json",
-    "results/20260711_srr_v3_m10_complete_mechanism_repair/wave2_monitor_receipt.md",
-    "results/20260711_srr_v3_m10_complete_mechanism_repair/wave2_terminal_failure_receipt.md",
-    "results/20260711_srr_v3_m10_complete_mechanism_repair/wave2_startup_failed_jobs.csv",
     "results/20260711_srr_v3_m10_complete_mechanism_repair/wave2_env_preflight.sh",
-    "results/20260711_srr_v3_m10_complete_mechanism_repair/wave2_replacement_preflight_receipt.md",
-    "results/20260711_srr_v3_m10_complete_mechanism_repair/executors/m10_myops_training_executor/result.md",
-    "results/20260711_srr_v3_m10_complete_mechanism_repair/executors/m10_myops_training_executor/completion_check.md",
-    "results/20260711_srr_v3_m10_complete_mechanism_repair/executors/m10_myops_training_executor/commands_run.md",
-    "results/20260711_srr_v3_m10_complete_mechanism_repair/executors/m10_myops_training_executor/MANIFEST.md",
-    "scripts/training/run_srr_v3_m10_complete_repair.py",
-    "scripts/evaluation/evaluate_srr_v3_m10_full_case.py",
-    "scripts/evaluation/aggregate_srr_v3_m10_myops.py",
-    "jobs/src/run_srr_v3_m10_myops_d0_control.sh",
-    "jobs/src/run_srr_v3_m10_myops_d1_spatial_br2.sh",
-    "jobs/src/run_srr_v3_m10_myops_d2_hierarchical_psip.sh",
-    "jobs/src/run_srr_v3_m10_myops_d3_full_propref.sh",
-    "jobs/src/run_srr_v3_m10_hard_negative_refresh.sh",
-    "jobs/src/run_srr_v3_m10_no_context_control.sh",
-    "jobs/src/run_srr_v3_m10_alignment_control.sh",
-    "results/20260711_srr_v3_m10_complete_mechanism_repair/subagents/reviewer_prompt.md",
-    "results/20260711_srr_v3_m10_complete_mechanism_repair/mapper_report_draft.md",
-    "results/20260711_srr_v3_m10_complete_mechanism_repair/architecture_delta_draft.md",
-    "results/20260711_srr_v3_m10_complete_mechanism_repair/mapper_report_final.md",
-    "results/20260711_srr_v3_m10_complete_mechanism_repair/architecture_delta_final.md",
-    "results/20260711_srr_v3_m10_complete_mechanism_repair/executor_waves/README.md",
-    "results/20260711_srr_v3_m10_complete_mechanism_repair/wave2_replacement_job_ledger.csv",
-    "results/20260711_srr_v3_m10_complete_mechanism_repair/wave2_dependency_finalizer_submission.json",
-    "results/20260711_srr_v3_m10_complete_mechanism_repair/wave2_partition_race_submission.json",
-    "results/20260711_srr_v3_m10_complete_mechanism_repair/wave2_partition_race_watcher_state.json",
-    "results/20260711_srr_v3_m10_complete_mechanism_repair/wave2_partition_race_finalizer_submission.json",
-    "results/20260711_srr_v3_m10_complete_mechanism_repair/wave2_partition_race_job_ledger.csv",
-    "results/20260711_srr_v3_m10_complete_mechanism_repair/wave2_partition_race_watcher.py",
-    "results/20260711_srr_v3_m10_complete_mechanism_repair/finalize_wave2_partition_race.py"
+    "results/20260711_srr_v3_m10_complete_mechanism_repair/wave2_partition_race_retry2_submission.json",
+    "results/20260711_srr_v3_m10_complete_mechanism_repair/wave2_partition_race_retry2_finalizer_submission.json",
+    "results/20260711_srr_v3_m10_complete_mechanism_repair/wave2_partition_race_retry2_job_ledger.csv"
   ],
-  "training_credit_policy": "verified_completed_steps_only",
+  "training_credit_policy": "zero_for_failed_startup",
   "validator_commands": [
     "python scripts/ops/validate_executor_plan.py prompts/tasks/20260711_srr_v3_m10_complete_mechanism_repair_executor_plan.yaml",
     "python scripts/validation/validate_handoff_policy.py --strict-tasks --warnings-as-errors",
     "python scripts/architecture/validate_care_architecture_wiki.py --strict --history",
     "python scripts/architecture/generate_care_architecture_wiki.py --check-all",
-    "git diff --check",
-    "python -m py_compile scripts/training/run_srr_v3_m10_complete_repair.py scripts/evaluation/evaluate_srr_v3_m10_full_case.py scripts/evaluation/aggregate_srr_v3_m10_myops.py",
-    "bash -n jobs/src/run_srr_v3_m10_myops_d0_control.sh jobs/src/run_srr_v3_m10_myops_d1_spatial_br2.sh jobs/src/run_srr_v3_m10_myops_d2_hierarchical_psip.sh jobs/src/run_srr_v3_m10_myops_d3_full_propref.sh jobs/src/run_srr_v3_m10_hard_negative_refresh.sh jobs/src/run_srr_v3_m10_no_context_control.sh jobs/src/run_srr_v3_m10_alignment_control.sh",
-    "env PYTHONPATH=. pytest src/care_myocardium/tests/test_srr_v3_m10_fidelity.py",
-    "squeue -j 58644072,58644073,58644074,58644106,58644107,58644108,58644109 -o '%i|%j|%T|%M|%D|%R|%P'",
-    "sacct -j 58644072,58644073,58644074,58644106,58644107,58644108,58644109 --format=JobIDRaw,JobName,State,ExitCode,Elapsed,Start,End,NodeList -P",
-    "env PYTHONPATH=. python scripts/evaluation/aggregate_srr_v3_m10_myops.py --all --job-id ... --job-state ... --job-exit-code ... --job-log ...",
-    "./envs/env_CARE/bin/python -c 'import sympy, mpmath; ...'",
-    "./envs/env_CARE/bin/python -c 'import torch; ... torch.optim.AdamW(...)'"
+    "git diff --check"
   ],
-  "wave2_finalizer_job_id": 58701119
+  "validator_exit_codes": [],
+  "wave2_finalizer_job_id": 58701212
 }
