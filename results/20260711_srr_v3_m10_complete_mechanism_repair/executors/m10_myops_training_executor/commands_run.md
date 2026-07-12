@@ -506,6 +506,19 @@ Retry9 has crossed the retry5/retry6/retry7/retry8 D1 OOM elapsed windows, but i
 
 Current state remains `NEEDS_MONITOR`, not complete and not reviewable.
 
+## Retry10 D1 First-Checkpoint Monitor
+
+Update timestamp UTC: `2026-07-12T23:40:10Z`
+
+| Command / evidence | Result |
+| --- | --- |
+| `squeue -j 58743282,58743287,58743290,58743292,58743294,58743295,58743452 -o '%i|%j|%P|%q|%T|%M|%l|%R'` | D1 `58743282 RUNNING` for `00:37:45`; D2-through-alignment and finalizer dependency-pending |
+| `sacct -j 58743253,58743282,58743287,58743290,58743292,58743294,58743295,58743452 --format=JobIDRaw,JobName,State,ExitCode,Elapsed,Start,End,NodeList,ReqMem,MaxRSS --parsable2` | preflight `58743253 COMPLETED 0:0`; D1 `58743282 RUNNING 0:0`, elapsed `00:37:44`, `ReqMem=1200G`; downstream/finalizer dependency-pending |
+| `sstat -j 58743282.batch --format=JobID,MaxRSS,AveRSS,MaxVMSize,AveVMSize -P` | `MaxRSS=248631016K`, `AveRSS=248631016K` |
+| D1 checkpoint listing | `checkpoint_validation_step_1666.pt` and `checkpoint_validation_step_3332.pt` exist |
+
+Current state remains `NEEDS_MONITOR`, not complete and not reviewable.
+
 ## Retry9 Undertraining and Retry10 Submission
 
 Update timestamp UTC: `2026-07-12T23:02:30Z`
