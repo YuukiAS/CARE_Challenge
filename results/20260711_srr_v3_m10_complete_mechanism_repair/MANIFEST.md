@@ -81,6 +81,7 @@ Packet state: `NEEDS_MONITOR`
 | `wave2_partition_race_retry9_finalizer_submission.json` | Retry9 afterany finalizer receipt for job `58733769`. |
 | `wave2_partition_race_retry9_job_ledger.csv` | Retry9 ledger recording old/new job IDs, OOM resource retry reason, preflight command/exit code, hashes, dependencies, runtime root, log paths, `qos=gpu_access_patron`, and `mem=1200G`. |
 | `wave2_partition_race_retry9_monitor_20260712T182952Z.md` | Current retry9 monitor checkpoint showing D1 running at 1200G and downstream/finalizer dependency-pending; not completion evidence. |
+| `wave2_partition_race_retry9_monitor_20260712T191138Z.md` | Retry9 progress monitor showing D1 crossed prior OOM windows and wrote validation checkpoints 1666 and 3332; not completion evidence. |
 | `executors/m10_myops_training_executor/` | Wave 2 executor monitor packet; not completion evidence. |
 | `subagents/reviewer_prompt.md` | Reviewer handoff prompt for this blocked packet only. |
 | `mapper_report_draft.md` | Mapper draft non-run receipt. |

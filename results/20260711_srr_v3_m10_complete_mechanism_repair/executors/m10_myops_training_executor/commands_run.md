@@ -490,3 +490,18 @@ Retry9 receipts:
 - `results/20260711_srr_v3_m10_complete_mechanism_repair/wave2_partition_race_retry9_monitor_20260712T182952Z.md`
 
 Current state is `NEEDS_MONITOR`: retry9 D1 has started with the 1200G `gpu_access_patron` resource request and downstream stages are dependency-pending. This is not completion evidence and not reviewable.
+
+## Retry9 Progress Past Prior OOM Windows
+
+Update timestamp UTC: `2026-07-12T19:11:38Z`
+
+| Command / evidence | Result |
+| --- | --- |
+| `squeue -j 58732391,58732393,58732395,58732397,58732399,58732400,58733769 -o '%i|%j|%P|%q|%T|%M|%l|%R'` | D1 `58732391 RUNNING` for `00:43:49`; D2-through-alignment and finalizer dependency-pending |
+| `sacct -j 58732391,58732393,58732395,58732397,58732399,58732400,58733769 --format=JobIDRaw,JobName,Partition,QOS,State,ExitCode,Elapsed,Start,End,NodeList,ReqMem,MaxRSS --parsable2` | D1 `58732391 RUNNING 0:0`, elapsed `00:43:51`, `ReqMem=1200G`; D2-through-alignment and finalizer dependency-pending |
+| `sstat -j 58732391.batch --format=JobID,MaxRSS,AveRSS,MaxVMSize,AveVMSize -P` | `MaxRSS=280730920K`, `AveRSS=280694048K` |
+| D1 checkpoint listing | `checkpoint_validation_step_1666.pt` and `checkpoint_validation_step_3332.pt` exist |
+
+Retry9 has crossed the retry5/retry6/retry7/retry8 D1 OOM elapsed windows, but it is still running and has not produced final D1 completion or aggregation evidence.
+
+Current state remains `NEEDS_MONITOR`, not complete and not reviewable.

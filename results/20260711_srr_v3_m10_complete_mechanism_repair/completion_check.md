@@ -262,3 +262,19 @@ Checkpoint time: `2026-07-12T18:29:52Z`
 | review | blocked: no `review.md`; this is not a completion packet |
 
 Decision is `NEEDS_MONITOR`, not blocked and not complete. This is not a pending-only scheduler block because retry9 D1 has started running.
+
+## Retry9 Progress Monitor Past Prior OOM Window
+
+Checkpoint time: `2026-07-12T19:11:38Z`
+
+| Gate | Status |
+| --- | --- |
+| retry9 D1 live state | monitor: `58732391 RUNNING` for `00:43:51` on `g1807htzh01` |
+| retry9 D1 memory | monitor: `ReqMem=1200G`, `MaxRSS=280730920K`, `AveRSS=280694048K` |
+| prior OOM windows | pass for runtime progress: retry9 has exceeded retry5/retry6/retry7/retry8 D1 OOM elapsed times |
+| scheduled validation progress | monitor: `checkpoint_validation_step_1666.pt` and `checkpoint_validation_step_3332.pt` exist |
+| completion evidence | pending: no final `training_log.csv`, `validation_events.csv`, `summary.json`, or aggregation evidence yet |
+| downstream stages | monitor: D2-through-alignment remain dependency-pending |
+| review | blocked: no `review.md`; this is not a completion packet |
+
+Decision remains `NEEDS_MONITOR`, not blocked and not complete.

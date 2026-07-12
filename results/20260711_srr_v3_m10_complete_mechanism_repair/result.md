@@ -368,3 +368,19 @@ The replacement chain is:
 | Alignment control | `58732400` | `PENDING (Dependency)` |
 
 Retry9 finalizer job `58733769` is pending with `afterany` over all old, superseded, failed, cancelled, preflight, retained D0, and retry9 replacement jobs. Current controller state is `NEEDS_MONITOR`, not complete and not reviewable. Wave 3 remains blocked.
+
+## Retry9 Progress Monitor Past Prior OOM Window
+
+At `2026-07-12T19:11:38Z`, retry9 D1 `58732391` remained `RUNNING` on `g1807htzh01` for `00:43:51` with `ReqMem=1200G`. Live memory accounting reported `MaxRSS=280730920K` and `AveRSS=280694048K`.
+
+This crossed every prior D1 OOM window:
+
+| Attempt | Job ID | ReqMem | Outcome | Elapsed |
+| --- | ---: | ---: | --- | ---: |
+| retry5 | `58714023` | `64G` | `OUT_OF_MEMORY` | `00:07:50` |
+| retry6 | `58714634` | `96G` | `OUT_OF_MEMORY` | `00:12:46` |
+| retry7 | `58719835` | `128G` | `OUT_OF_MEMORY` | `00:18:06` |
+| retry8 | `58720458` | `160G` | `OUT_OF_MEMORY` | `00:23:41` |
+| retry9 | `58732391` | `1200G` | `RUNNING` | `00:43:51` |
+
+D1 has written `checkpoint_validation_step_1666.pt` and `checkpoint_validation_step_3332.pt`. It has not written final `training_log.csv`, `validation_events.csv`, `summary.json`, or post-job aggregation evidence, so the state remains `NEEDS_MONITOR`, not complete and not reviewable.
