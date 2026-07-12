@@ -90,5 +90,21 @@ No replacement Slurm training jobs were submitted after the environment repair.
 | `sbatch --parsable results/20260711_srr_v3_m10_complete_mechanism_repair/wave2_env_preflight.sh` | `58682781` |
 | `squeue -j 58682781 -o '%i\|%j\|%T\|%M\|%D\|%R\|%P'` | `58682781|M10W2Preflight|PENDING|0:00|1|(Priority)|htzhulab` |
 | `sacct -j 58682781 --format=JobIDRaw,JobName,State,ExitCode,Elapsed,Start,End,NodeList -P` | `PENDING`, exit `0:0`, no node assigned |
+| `bash -n results/20260711_srr_v3_m10_complete_mechanism_repair/wave2_env_preflight.sh` | pass after enhanced CUDA/config/writability/fingerprint checks were added |
+| `sha256sum results/20260711_srr_v3_m10_complete_mechanism_repair/wave2_env_preflight.sh` | `dcc3f5348b187bd40d3ad80b416883e7cdf5967fce78c8967738ba065d637632` |
+| `sbatch --parsable results/20260711_srr_v3_m10_complete_mechanism_repair/wave2_env_preflight.sh` | `58683497`; active enhanced preflight gate |
+| `squeue -j 58683497 -o '%i\|%j\|%T\|%M\|%D\|%R\|%P'` | `58683497|M10W2Preflight|PENDING|0:00|1|(Priority)|htzhulab` |
+| `sacct -j 58683497 --format=JobIDRaw,JobName,State,ExitCode,Elapsed,Start,End,NodeList -P` | `PENDING`, exit `0:0`, no node assigned |
 
-Formal replacement Slurm training jobs were not submitted because the compute-node preflight has not exited `0` yet.
+Formal replacement Slurm training jobs were not submitted because the active enhanced compute-node preflight `58683497` has not exited `0` yet. Prior preflight `58682781` is superseded and is not used as the formal gate.
+
+## Validation After Enhanced Preflight
+
+| Command | Result |
+| --- | --- |
+| `python scripts/ops/validate_executor_plan.py prompts/tasks/20260711_srr_v3_m10_complete_mechanism_repair_executor_plan.yaml` | pass |
+| `python scripts/validation/validate_handoff_policy.py --strict-tasks --warnings-as-errors` | pass |
+| `python scripts/architecture/validate_care_architecture_wiki.py --strict --history` | failed before root `TODO.md` removal; rerun passed after root `TODO.md` removal from the working tree |
+| `python scripts/architecture/generate_care_architecture_wiki.py --check-all` | pass |
+| `bash -n results/20260711_srr_v3_m10_complete_mechanism_repair/wave2_env_preflight.sh jobs/src/run_srr_v3_m10_myops_d0_control.sh ... jobs/src/care_milestone_finalizer.sh` | pass |
+| `git diff --check` | pass |

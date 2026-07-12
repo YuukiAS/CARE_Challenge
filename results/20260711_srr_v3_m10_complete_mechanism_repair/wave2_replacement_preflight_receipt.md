@@ -4,7 +4,7 @@ Task key: `20260711_srr_v3_m10_complete_mechanism_repair`
 
 Controller state: `NEEDS_MONITOR`
 
-Timestamp UTC: `2026-07-12T02:04:11Z`
+Timestamp UTC: `2026-07-12T02:16:58Z`
 
 ## Authorization Boundary
 
@@ -42,7 +42,13 @@ source "${CARE_ROOT}/env_nnunet.sh"
 export PATH=/users/a/e/aereinh/codex-runtime/bin:${CARE_ROOT}/envs/env_CARE/bin:${PATH}
 ```
 
-Preflight command inside the Slurm job:
+The active preflight wrapper is now an enhanced superset required by the current
+Slurm skill. It keeps the user-required optimizer/import block exactly and adds
+CUDA visibility, config parse, phase contract print, output/log/lock
+writability, and code/config/split fingerprints. No formal training command,
+variant definition, budget, split, or result root was changed.
+
+User-required preflight command inside the Slurm job:
 
 ```bash
 env_CARE/bin/python - <<'PY'
@@ -59,21 +65,27 @@ print("optimizer_ok")
 PY
 ```
 
-Submission command:
+Current active preflight submission command:
 
 ```text
 sbatch --parsable results/20260711_srr_v3_m10_complete_mechanism_repair/wave2_env_preflight.sh
 ```
 
-Preflight job ID: `58682781`
+Active preflight job ID: `58683497`
 
-Current preflight state at submission check:
+Current active preflight state at submission check:
 
 ```text
-58682781|M10W2Preflight|PENDING|0:00|1|(Priority)|htzhulab
+58683497|M10W2Preflight|PENDING|0:00|1|(Priority)|htzhulab
 ```
 
-Formal replacement jobs were not submitted yet because the preflight has not returned exit code `0`.
+Prior preflight job `58682781` used the same environment initialization and the
+user-required import/optimizer block, but it was superseded before formal job
+submission because the current Slurm skill requires the enhanced preflight
+checks listed above. It is not a formal replacement-job gate.
+
+Formal replacement jobs were not submitted yet because the active enhanced
+preflight has not returned exit code `0`.
 
 ## Hashes
 
@@ -84,11 +96,14 @@ Formal replacement jobs were not submitted yet because the preflight has not ret
 | `scripts/evaluation/aggregate_srr_v3_m10_myops.py` | `87dd829e9908e09cf69e512df681a8c89c5a6560eca0a0693bde23128f801be5` |
 | `configs/srr_v3_m10_complete_repair.yaml` | `df42f9ee55a3ba6ac616a37b2455cb7bca67c5f751f0c5a31c4a18938b107a9b` |
 | `prompts/tasks/20260711_srr_v3_m10_complete_mechanism_repair_executor_plan.yaml` | `e11f985c2e58ab291c5197ea3843f7c20d944d4d6b288d6242fe8375e432d31c` |
-| `wave2_env_preflight.sh` | `6c3971fe7201366df75fdd3618255a2c0fc649a8a4f102597a959fe0bab5a643` |
+| `wave2_env_preflight.sh` | `dcc3f5348b187bd40d3ad80b416883e7cdf5967fce78c8967738ba065d637632` |
 | fold0 split payload | `483dfcd0736d00a87adc24b3a9a22de0a0ec3a8980f8f2ee068430672bcf7f96` |
 
 Fold0 split counts: 176 train cases, 44 validation cases.
 
 ## Next Action
 
-Wait for terminal preflight accounting. If and only if preflight exits `0`, submit the seven Wave 2 formal replacement jobs with training-to-training `afterok` dependencies. The Wave 2 finalizer must use `afterany` over every old and replacement job ID.
+Wait for terminal accounting for active enhanced preflight job `58683497`. If
+and only if it exits `0`, submit the seven Wave 2 formal replacement jobs with
+training-to-training `afterok` dependencies. The Wave 2 finalizer must use
+`afterany` over every old and replacement job ID.

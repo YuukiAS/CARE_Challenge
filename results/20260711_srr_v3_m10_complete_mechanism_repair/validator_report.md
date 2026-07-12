@@ -39,7 +39,22 @@ The prior prerequisite blocker is repaired. This validator report is not complet
 
 Wave 1 has since completed and wave 2 submitted seven serial Slurm jobs. Formal accounting now shows all seven jobs failed with exit code `1:0`. Logs show the shared failure cause is missing `mpmath` for `sympy` during PyTorch optimizer initialization.
 
-The active controller state is `NEEDS_MONITOR`; replacement Wave 2 compute-node preflight job `58682781` is pending. This remains not completion evidence and not a review request.
+The active controller state is `NEEDS_MONITOR`; replacement Wave 2 enhanced compute-node preflight job `58683497` is pending. Prior preflight job `58682781` was superseded before formal submission because the current Slurm skill requires CUDA/config/writability/fingerprint checks. This remains not completion evidence and not a review request.
+
+## Latest Validation
+
+After enhanced preflight submission:
+
+| Command | Exit | Result |
+| --- | ---: | --- |
+| `python scripts/ops/validate_executor_plan.py prompts/tasks/20260711_srr_v3_m10_complete_mechanism_repair_executor_plan.yaml` | 0 | pass |
+| `python scripts/validation/validate_handoff_policy.py --strict-tasks --warnings-as-errors` | 0 | pass |
+| `python scripts/architecture/validate_care_architecture_wiki.py --strict --history` | 0 | pass after root `TODO.md` removal from the working tree |
+| `python scripts/architecture/generate_care_architecture_wiki.py --check-all` | 0 | pass |
+| `bash -n ...wave2_env_preflight.sh ...care_milestone_finalizer.sh` | 0 | pass |
+| `git diff --check` | 0 | pass |
+
+The earlier root `TODO.md` validator blocker is cleared in the current working tree. This remains a monitor packet, not completed M10 runtime evidence.
 
 ## Safety Confirmation
 

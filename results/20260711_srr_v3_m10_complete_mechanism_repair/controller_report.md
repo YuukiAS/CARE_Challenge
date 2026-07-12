@@ -25,7 +25,7 @@ Wave 1 executor returned `READY_FOR_CONTROLLER_MERGE`, and controller verificati
 
 The shared log failure is missing `mpmath` in `env_CARE`, reached through `sympy` during PyTorch optimizer initialization. The controller repaired the project-local dependency to `mpmath 1.3.0` and verified minimal `torch.optim.AdamW` initialization.
 
-The user later authorized the same `m10_myops_training_executor` to run a replacement Wave 2 attempt without changing executor count, milestone, variants, budgets, split, or scientific design. The controller submitted compute-node preflight job `58682781` to `htzhulab`. Formal replacement training jobs have not been submitted yet because the preflight is still pending.
+The user later authorized the same `m10_myops_training_executor` to run a replacement Wave 2 attempt without changing executor count, milestone, variants, budgets, split, or scientific design. The controller submitted compute-node preflight job `58682781` to `htzhulab`, then superseded it before formal training submission after the current Slurm skill required enhanced CUDA/config/writability/fingerprint checks. The active enhanced compute-node preflight job is `58683497`, pending on `htzhulab`. Formal replacement training jobs have not been submitted yet because the active enhanced preflight is still pending.
 
 The file `review.md` is intentionally absent. A reviewer must not start until a later authorized execution produces valid wave 2 runtime evidence and post-job aggregation.
 
@@ -72,7 +72,7 @@ blocked_actions:
   - wave3 before successful wave2 runtime aggregation
   - review before successful wave2 runtime aggregation
   - validation packaging/upload/fold expansion/hosted metric claim/next-stage training
-next_required_action: wait for preflight job 58682781 terminal accounting; submit replacement Wave2 afterok chain only if exit 0
+next_required_action: wait for active enhanced preflight job 58683497 terminal accounting; submit replacement Wave2 afterok chain only if exit 0
 reason_if_not_published: not applicable
 reason_if_no_route_promotion: replacement Wave2 preflight is pending and no valid runtime evidence exists
 ```

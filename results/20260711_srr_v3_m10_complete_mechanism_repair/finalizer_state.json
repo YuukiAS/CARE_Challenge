@@ -55,8 +55,10 @@
     "58644107": "FAILED(1:0)",
     "58644108": "FAILED(1:0)",
     "58644109": "FAILED(1:0)",
-    "58682781": "PENDING(Priority)"
+    "58682781": "SUPERSEDED_NOT_FORMAL_GATE",
+    "58683497": "PENDING(Priority)"
   },
+  "active_replacement_preflight_job_id": 58683497,
   "slurm_jobs_submitted": [
     58644072,
     58644073,
@@ -67,7 +69,8 @@
     58644109
   ],
   "replacement_preflight_job_ids": [
-    58682781
+    58682781,
+    58683497
   ],
   "required_job_ids": [
     58644072,
@@ -106,7 +109,7 @@
     "./envs/env_CARE/bin/python -c 'import torch; ... torch.optim.AdamW(...)'"
   ],
   "blocked_reason": "",
-  "resume_state": "NEEDS_MONITOR; compute-node preflight job 58682781 is pending before authorized replacement Wave 2 submission",
+  "resume_state": "NEEDS_MONITOR; active enhanced compute-node preflight job 58683497 is pending before authorized replacement Wave 2 submission; preflight 58682781 is superseded and not a formal gate",
   "review_md_written": false,
   "pushed": false
 }
