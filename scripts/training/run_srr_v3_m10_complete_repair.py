@@ -24,6 +24,19 @@ if str(REPO_ROOT) not in sys.path:
 from scripts.training import run_srr_propref_myops_fold0 as legacy  # noqa: E402
 
 
+_LEGACY_PROPREF_LOSS = legacy.propref_loss
+
+
+def _m10_propref_loss_with_compat_metrics(*args, **kwargs):
+    total, metrics = _LEGACY_PROPREF_LOSS(*args, **kwargs)
+    zero = total.detach() * 0.0
+    metrics.setdefault("correction_opportunity_loss", zero)
+    return total, metrics
+
+
+legacy.propref_loss = _m10_propref_loss_with_compat_metrics
+
+
 @dataclass(frozen=True)
 class PhaseSpec:
     phase: str

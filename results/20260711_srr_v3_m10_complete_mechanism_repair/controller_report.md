@@ -97,3 +97,11 @@ At `2026-07-12T13:49:48Z`, the retry3 Slurm graph had no active queued/running j
 The D0 log `logs/M10D0MyoPS_58701196_20260712_090210.log` fails with `KeyError: 'correction_opportunity_loss'` in `scripts/training/run_srr_propref_myops_fold0.py` during metrics logging. Local finalizer aggregation replay exited `2` and wrote `wave2_partition_race_retry3_finalization.json`, which records status `NEEDS_EVIDENCE`.
 
 Current controller state is `NEEDS_EVIDENCE`. Wave 2 did not produce valid formal training evidence and Wave 3 remains blocked. No `review.md` was written and no push was performed.
+
+## Wave 2 Operational Repair
+
+The controller repaired the owned M10 wrapper after identifying that the D0 failure was a log-metric compatibility gap, not a shared architecture/loss defect. `scripts/training/run_srr_v3_m10_complete_repair.py` now wraps the imported legacy `propref_loss` and supplies missing `correction_opportunity_loss` as a zero tensor for M10 variants. This avoids editing the forbidden legacy script and does not alter optimized losses or scientific design.
+
+Verification passed for M10 wrapper compile/contract/smoke and the required repository validators. A broader legacy pytest invocation retains the known direct-legacy `args.variant` failure; this is recorded as external compatibility under the Wave 2 prompt and does not block the owned M10 entrypoint repair.
+
+Next required controller action: commit this lightweight repair packet, run compute-node preflight under the repaired code, and submit the unchanged Wave 2 replacement chain only if preflight exits `0`.

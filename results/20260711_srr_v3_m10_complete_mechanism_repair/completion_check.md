@@ -98,3 +98,19 @@ Checkpoint time: `2026-07-12T13:49:48Z`
 | Review | blocked: this is not a completion packet |
 
 Decision is `NEEDS_EVIDENCE`. This is terminal accounting for the retry3 Wave 2 attempt, not successful M10 completion.
+
+## Owned-Wrapper Operational Repair Check
+
+Repair time: `2026-07-12T14:00:16Z`
+
+| Gate | Status |
+| --- | --- |
+| write scope | pass: only `scripts/training/run_srr_v3_m10_complete_repair.py` was changed |
+| forbidden shared files | pass: no edits to `src/care_myocardium/models/`, `src/care_myocardium/losses/`, legacy `run_srr_propref_myops_fold0.py`, prompts, wiki, or `review.md` |
+| scientific contract | pass: no change to variants, budgets, split, formulas, result paths, executor count, or wave graph |
+| targeted metric compatibility | pass: M10 `propref_loss` smoke returns finite loss and `correction_opportunity_loss=0.0` |
+| M10 entrypoint contracts | pass: `--list-phases` and `--phase d0_control --print-contract` |
+| validators | pass: executor plan, handoff policy, architecture wiki strict/history, generated wiki check, and `git diff --check` |
+| broader legacy pytest | external known failure: direct legacy `propref_loss` test lacks `args.variant`; M10-specific tests passed |
+
+Decision remains `NEEDS_EVIDENCE`. Formal replacement jobs must not be submitted until the repaired committed code passes compute-node preflight.

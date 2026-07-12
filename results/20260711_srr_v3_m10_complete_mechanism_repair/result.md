@@ -121,3 +121,21 @@ The controller reran the finalizer aggregation command locally. It wrote `wave2_
 Current controller state is `NEEDS_EVIDENCE`, not `NEEDS_MONITOR`, not complete, and not reviewable. The failed htz D0 attempt receives zero effective-training credit, the cancelled downstream/a100/volta jobs receive zero credit, and M10 Wave 2 has not satisfied the minimum-effective-training evidence gate.
 
 Allowed next state is not Wave 3. Because this runtime failure is in Wave 2 training metrics/logging code, continuing would require either a same-scope operational repair if it does not alter variants, budgets, split, formulas, result paths, executor count, or wave graph, or `NEEDS_REVISION_RETURN_TO_WAVE1` / `NEEDS_GPT_PLANNER` if the repair touches forbidden shared architecture/loss semantics or changes the scientific contract.
+
+## Wave 2 Owned-Wrapper Operational Repair
+
+At `2026-07-12T14:00:16Z`, the controller applied a same-scope Wave 2 operational repair in the owned M10 wrapper `scripts/training/run_srr_v3_m10_complete_repair.py`. The repair wraps the imported legacy `propref_loss` and only supplies a missing log metric key, `correction_opportunity_loss`, as a zero tensor when the M10 non-M6 loss branch omits it. It does not change the optimized loss, model formulas, variants, budgets, split, result paths, executor count, or wave graph, and it does not edit the forbidden legacy training script, shared model code, or shared loss code.
+
+Repair fingerprints:
+
+| Artifact | SHA256 |
+| --- | --- |
+| `scripts/training/run_srr_v3_m10_complete_repair.py` | `e6d74451d4b0a22ef170e5b728b4103300d4b8dde3449a9570fa338c06b5bdd6` |
+| `configs/srr_v3_m10_complete_repair.yaml` | `df42f9ee55a3ba6ac616a37b2455cb7bca67c5f751f0c5a31c4a18938b107a9b` |
+| `data/benchmarks/protocol/splits_MyoPS.json` | `6165caeb5b47feb0d24f20380898037b7e6cead4db1eeba398a3c5a57faf9a1b` |
+
+Local verification passed for `py_compile`, `--list-phases`, `--phase d0_control --print-contract`, targeted M10 `propref_loss` metric compatibility, executor-plan validation, handoff-policy validation, architecture wiki validation, architecture wiki generation check, and `git diff --check`.
+
+One broader legacy test invocation, `env PYTHONPATH=. pytest src/care_myocardium/tests/test_srr_baseline_gate.py src/care_myocardium/tests/test_srr_v3_m10_fidelity.py`, reported `7 passed, 1 failed`: the failure is the known external compatibility case where `test_srr_baseline_gate.py` calls `scripts/training/run_srr_propref_myops_fold0.py` directly without `args.variant`. The M10 wave 2 prompt explicitly says that older script is not in this executor's write scope and this broader failure should be recorded as external compatibility unless it blocks owned M10 entrypoints. The M10-specific fidelity tests passed.
+
+Current controller state remains `NEEDS_EVIDENCE` until a compute-node preflight and formal Wave 2 replacement chain run successfully.

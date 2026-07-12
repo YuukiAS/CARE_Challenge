@@ -247,3 +247,25 @@ Update timestamp UTC: `2026-07-12T13:49:48Z`
 | `env PYTHONPATH=. python results/20260711_srr_v3_m10_complete_mechanism_repair/finalize_wave2_partition_race.py --submission results/20260711_srr_v3_m10_complete_mechanism_repair/wave2_partition_race_retry3_submission.json --watcher-state results/20260711_srr_v3_m10_complete_mechanism_repair/wave2_partition_race_retry3_watcher_state.json --result-path results/20260711_srr_v3_m10_complete_mechanism_repair/wave2_partition_race_retry3_finalization.json` | exit `2`; wrote fail-closed `NEEDS_EVIDENCE` finalization JSON |
 
 Current state is `NEEDS_EVIDENCE`, not `NEEDS_MONITOR`, not complete, and not reviewable. Wave 2 has zero effective formal training evidence for retry3 because D0 failed before valid runtime aggregation and all downstream/mirror jobs were cancelled.
+
+## Owned-Wrapper Operational Repair
+
+Update timestamp UTC: `2026-07-12T14:00:16Z`
+
+| Command / evidence | Result |
+| --- | --- |
+| edit `scripts/training/run_srr_v3_m10_complete_repair.py` | wrapped legacy `propref_loss` to supply missing `correction_opportunity_loss` metric key for M10 variants |
+| `python -m py_compile scripts/training/run_srr_v3_m10_complete_repair.py` | pass |
+| `python scripts/training/run_srr_v3_m10_complete_repair.py --list-phases` | pass |
+| `python scripts/training/run_srr_v3_m10_complete_repair.py --phase d0_control --print-contract` | pass |
+| targeted `env PYTHONPATH=. python - <<'PY' ... legacy.propref_loss(...) ... PY` | pass: `m10_propref_loss_metric_compat_ok 0.0` |
+| `python -m py_compile scripts/training/run_srr_v3_m10_complete_repair.py scripts/evaluation/evaluate_srr_v3_m10_full_case.py scripts/evaluation/aggregate_srr_v3_m10_myops.py` | pass |
+| `env PYTHONPATH=. pytest src/care_myocardium/tests/test_srr_baseline_gate.py src/care_myocardium/tests/test_srr_v3_m10_fidelity.py` | `7 passed, 1 failed`; failure is the known direct legacy `args.variant` compatibility case outside Wave 2 write scope; M10 fidelity tests passed |
+| `python scripts/ops/validate_executor_plan.py prompts/tasks/20260711_srr_v3_m10_complete_mechanism_repair_executor_plan.yaml` | pass |
+| `python scripts/validation/validate_handoff_policy.py --strict-tasks --warnings-as-errors` | pass |
+| `python scripts/architecture/validate_care_architecture_wiki.py --strict --history` | pass |
+| `python scripts/architecture/generate_care_architecture_wiki.py --check-all` | pass |
+| `git diff --check` | pass |
+| `sha256sum scripts/training/run_srr_v3_m10_complete_repair.py configs/srr_v3_m10_complete_repair.yaml data/benchmarks/protocol/splits_MyoPS.json` | code `e6d74451d4b0a22ef170e5b728b4103300d4b8dde3449a9570fa338c06b5bdd6`; config `df42f9ee55a3ba6ac616a37b2455cb7bca67c5f751f0c5a31c4a18938b107a9b`; split `6165caeb5b47feb0d24f20380898037b7e6cead4db1eeba398a3c5a57faf9a1b` |
+
+Current state remains `NEEDS_EVIDENCE` pending repaired-code compute preflight and formal replacement submission.
