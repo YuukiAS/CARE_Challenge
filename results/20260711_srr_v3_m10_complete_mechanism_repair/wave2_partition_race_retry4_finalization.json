@@ -1,0 +1,17 @@
+{
+  "chain_states": {
+    "htzhulab": {
+      "alignment_control": "CANCELLED(0:0)",
+      "d0_control": "COMPLETED(0:0)",
+      "d1_spatial_br2": "FAILED(1:0)",
+      "d2_hierarchical_psip": "CANCELLED(0:0)",
+      "d3_full_propref": "CANCELLED(0:0)",
+      "hard_negative_refresh": "CANCELLED(0:0)",
+      "no_context_control": "CANCELLED(0:0)"
+    }
+  },
+  "commands": [],
+  "status": "NEEDS_EVIDENCE",
+  "winner_partition": "",
+  "winner_reason": "no_completed_chain"
+}

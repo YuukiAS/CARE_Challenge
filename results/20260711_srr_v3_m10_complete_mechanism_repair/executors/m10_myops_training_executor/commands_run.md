@@ -299,3 +299,26 @@ Retry4 receipts:
 - `results/20260711_srr_v3_m10_complete_mechanism_repair/wave2_partition_race_retry4_monitor_20260712T141110Z.md`
 
 Current state is `NEEDS_MONITOR`: D0 has started and downstream jobs are dependency-pending. This is not completion evidence and not reviewable.
+
+## Retry4 Terminal D1 Failure And Logging Repair
+
+Update timestamp UTC: `2026-07-12T16:24:12Z`
+
+| Command / evidence | Result |
+| --- | --- |
+| `squeue -j 58706293,58706294,58706295,58706296,58706297,58706298,58706299,58706300 -o '%i|%P|%j|%T|%M|%L|%R'` | no active retry4 jobs returned |
+| `sacct -j 58706293,58706294,58706295,58706296,58706297,58706298,58706299,58706300 --format=JobID,JobName%28,Partition,State,ExitCode,Elapsed,Start,End,NodeList%24 -P` | D0 `58706293 COMPLETED 0:0`; D1 `58706294 FAILED 1:0`; D2-through-alignment cancelled; finalizer `58706300 FAILED 1:0` |
+| `tail -n 260 logs/M10D1MyoPS_58706294_*.log` | `TypeError: float() argument must be a string or a real number, not 'list'` in `record_gate_usage` |
+| `python -m json.tool .../m10_d0_static_matched_formal/summary.json` | D0 evidence: `actual_optimizer_steps=36746`, `elapsed_seconds=7200.021336678998`, `eval_cases=44` |
+| `env PYTHONPATH=. python results/20260711_srr_v3_m10_complete_mechanism_repair/finalize_wave2_partition_race.py --submission results/20260711_srr_v3_m10_complete_mechanism_repair/wave2_partition_race_retry4_submission.json --watcher-state results/20260711_srr_v3_m10_complete_mechanism_repair/wave2_partition_race_retry4_watcher_state.json --result-path results/20260711_srr_v3_m10_complete_mechanism_repair/wave2_partition_race_retry4_finalization.json` | exit `2`; wrote fail-closed `NEEDS_EVIDENCE` finalization JSON with `winner_reason: no_completed_chain` |
+| edit `scripts/training/run_srr_v3_m10_complete_repair.py` | monkeypatch imported `legacy.record_gate_usage` to flatten nested/list gate usage into scalar CSV rows |
+| `python -m py_compile scripts/training/run_srr_v3_m10_complete_repair.py` | pass |
+| `python scripts/training/run_srr_v3_m10_complete_repair.py --phase d1_spatial_br2 --print-contract` | pass |
+| targeted `env PYTHONPATH=. python - <<'PY' ... nested gate usage ... PY` | pass: `nested_gate_usage_compat_ok 6 0.0 1.2` |
+| `python scripts/ops/validate_executor_plan.py prompts/tasks/20260711_srr_v3_m10_complete_mechanism_repair_executor_plan.yaml` | pass |
+| `python scripts/validation/validate_handoff_policy.py --strict-tasks --warnings-as-errors` | pass |
+| `python scripts/architecture/validate_care_architecture_wiki.py --strict --history` | pass |
+| `python scripts/architecture/generate_care_architecture_wiki.py --check-all` | pass |
+| `sha256sum scripts/training/run_srr_v3_m10_complete_repair.py configs/srr_v3_m10_complete_repair.yaml data/benchmarks/protocol/splits_MyoPS.json` | code `bf132c6f6c1649c2a98bbe16af3ffe7cd67f436f035431a6b3376e4917203ad3`; config `df42f9ee55a3ba6ac616a37b2455cb7bca67c5f751f0c5a31c4a18938b107a9b`; split `6165caeb5b47feb0d24f20380898037b7e6cead4db1eeba398a3c5a57faf9a1b` |
+
+Current state is `NEEDS_EVIDENCE`: D0 completed successfully and should be retained as valid upstream evidence, but D1 failed from an operational logging compatibility defect and downstream jobs did not run. The next allowed action is repaired-code compute-node preflight, followed by a D1-through-alignment replacement chain only if preflight exits `0`.

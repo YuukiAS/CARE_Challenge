@@ -1,6 +1,6 @@
 # M10 Completion Check
 
-Completion state: `NEEDS_MONITOR`
+Completion state: `NEEDS_EVIDENCE`
 
 This packet is not complete and is not ready for independent review. It records that the original Wave 2 jobs are permanently `STARTUP_FAILED` with zero training credit, the repaired compute-node preflight succeeded, the authorized replacement Wave 2 formal jobs were submitted, and those jobs are currently pending/running/dependency-waiting under Slurm.
 
@@ -131,3 +131,21 @@ Checkpoint time: `2026-07-12T14:11:10Z`
 | review | blocked: no `review.md` until final packet after successful terminal aggregation |
 
 Decision is `NEEDS_MONITOR`, not blocked and not complete. This is not a pending-only scheduler block checkpoint because D0 has started running.
+
+## Retry4 Terminal D1 Failure Check
+
+Checkpoint time: `2026-07-12T16:24:12Z`
+
+| Gate | Status |
+| --- | --- |
+| D0 terminal state | pass: `58706293 COMPLETED 0:0` after `02:09:10` |
+| D0 minimum budget | pass: `summary.json` records `actual_optimizer_steps=36746`, `elapsed_seconds=7200.021336678998`, `eval_cases=44` |
+| D1 terminal state | fail: `58706294 FAILED 1:0` after `00:00:58` |
+| D1 failure cause | operational logging failure: nested/list gate usage reached legacy scalar `float(value)` |
+| downstream stages | fail-closed: `58706295`-`58706299 CANCELLED` by unmet `afterok` |
+| finalizer | fail-closed: `58706300 FAILED 1:0` |
+| repair scope | pass: only owned M10 wrapper changed; no shared model/loss/wiki/prompt/review edits |
+| local repair smoke | pass: nested gate usage compatibility produces scalar rows |
+| review | blocked: no `review.md`; packet is not complete |
+
+Decision is `NEEDS_EVIDENCE`. D0 evidence is retained, but Wave 2 is not complete because D1 failed and downstream formal phases did not run.

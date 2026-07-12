@@ -34,7 +34,52 @@ def _m10_propref_loss_with_compat_metrics(*args, **kwargs):
     return total, metrics
 
 
+def _flatten_gate_values(value, prefix: tuple[int, ...] = ()):
+    if isinstance(value, (list, tuple)):
+        for idx, item in enumerate(value):
+            yield from _flatten_gate_values(item, prefix + (idx,))
+        return
+    yield prefix, float(value)
+
+
+def _m10_record_gate_usage_with_nested_gate_support(rows: list[dict[str, object]], variant: str, step: int, keys: list[str], outputs: dict[str, object]) -> None:
+    gates = outputs.get("gates", {})
+    if not gates:
+        rows.append({"variant": variant, "step": step, "task": "control_no_retrieval", "expert_index": "NA", "mean_weight": "NA", "batch_cases": ",".join(keys)})
+        return
+    metadata = outputs.get("dictionary_slot_metadata", {}) if isinstance(outputs.get("dictionary_slot_metadata", {}), dict) else {}
+    valid_masks = outputs.get("gate_valid_masks", {}) if isinstance(outputs.get("gate_valid_masks", {}), dict) else {}
+    for task, gate in gates.items():
+        usage = gate.detach().mean(dim=0).cpu().tolist()
+        specs = metadata.get(task, []) if isinstance(metadata, dict) else []
+        valid = valid_masks.get(task) if isinstance(valid_masks, dict) else None
+        valid_usage = valid.detach().mean(dim=0).cpu().tolist() if hasattr(valid, "detach") else []
+        valid_by_index = {".".join(str(v) for v in index): value for index, value in _flatten_gate_values(valid_usage)} if valid_usage else {}
+        task_prefix = str(task).split("_", 1)[0]
+        for index, value in _flatten_gate_values(usage):
+            expert_index = ".".join(str(v) for v in index) if index else "0"
+            top_index = index[0] if index else 0
+            spec = specs[top_index] if top_index < len(specs) else {}
+            rows.append(
+                {
+                    "variant": variant,
+                    "step": step,
+                    "task": task,
+                    "semantic_task": task_prefix,
+                    "expert_index": expert_index,
+                    "slot_group": spec.get("group", "unknown") if isinstance(spec, dict) else "unknown",
+                    "slot_kind": spec.get("kind", "unknown") if isinstance(spec, dict) else "unknown",
+                    "slot_modality": spec.get("modality", "") if isinstance(spec, dict) else "",
+                    "slot_modalities": ";".join(str(v) for v in spec.get("modalities", ())) if isinstance(spec, dict) else "",
+                    "valid_fraction": valid_by_index.get(expert_index, "NA"),
+                    "mean_weight": value,
+                    "batch_cases": ",".join(keys),
+                }
+            )
+
+
 legacy.propref_loss = _m10_propref_loss_with_compat_metrics
+legacy.record_gate_usage = _m10_record_gate_usage_with_nested_gate_support
 
 
 @dataclass(frozen=True)

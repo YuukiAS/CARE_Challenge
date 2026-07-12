@@ -2,7 +2,7 @@
 
 This packet does not request normal M10 scientific review. It records an authorized same-executor Wave 2 replacement submission after successful compute-node preflight.
 
-Current state: `NEEDS_MONITOR`
+Current state: `NEEDS_EVIDENCE`
 
 Formal replacement jobs submitted:
 
@@ -67,3 +67,9 @@ This retry3 packet did not request normal M10 review. It was `NEEDS_EVIDENCE`; W
 After a same-scope owned-wrapper operational repair and successful repaired-code `htzhulab` preflight `58706079`, the controller submitted the unchanged retry4 Wave 2 formal chain: `58706293`-`58706299`. D0 `58706293` is currently `RUNNING`; the downstream jobs are dependency-pending, and finalizer `58706300` is dependency-pending with `afterany`.
 
 This packet still does not request normal M10 review. Current state is `NEEDS_MONITOR`; Wave 2 has not reached terminal aggregation, Wave 3 must not start, and no `review.md` should be written for this packet.
+
+## Retry4 Terminal Update
+
+Retry4 is terminal but not complete. D0 `58706293` completed and produced formal D0 evidence. D1 `58706294` failed with a nested gate-usage logging error, D2-through-alignment were cancelled by `afterok`, and finalizer `58706300` failed fail-closed.
+
+The controller applied a same-scope owned-wrapper logging repair and has not requested normal review. Current state is `NEEDS_EVIDENCE` pending repaired-code compute-node preflight and D1-through-alignment replacement submission. Wave 3 must not start, and no `review.md` should be written for this packet.

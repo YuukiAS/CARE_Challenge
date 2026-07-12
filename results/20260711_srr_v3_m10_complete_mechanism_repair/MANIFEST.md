@@ -2,7 +2,7 @@
 
 Task key: `20260711_srr_v3_m10_complete_mechanism_repair`
 
-Packet state: `NEEDS_MONITOR`
+Packet state: `NEEDS_EVIDENCE`
 
 ## Files
 
@@ -51,6 +51,8 @@ Packet state: `NEEDS_MONITOR`
 | `wave2_partition_race_retry4_finalizer_submission.json` | Retry4 afterany finalizer receipt for job `58706300`. |
 | `wave2_partition_race_retry4_job_ledger.csv` | Retry4 ledger recording old/new job IDs, repair reason, preflight command/exit code, hashes, dependencies, runtime root, and log paths. |
 | `wave2_partition_race_retry4_monitor_20260712T141110Z.md` | Current retry4 monitor checkpoint showing D0 running and downstream/finalizer dependency-pending; not completion evidence. |
+| `wave2_partition_race_retry4_finalization.json` | Local retry4 finalization replay; fail-closed `NEEDS_EVIDENCE` because D1 failed and no full chain completed. |
+| `wave2_partition_race_retry4_terminal_d1_failure.md` | Retry4 terminal accounting: D0 completed, D1 logging failed, downstream cancelled, finalizer failed, and wrapper repair recorded. |
 | `executors/m10_myops_training_executor/` | Wave 2 executor monitor packet; not completion evidence. |
 | `subagents/reviewer_prompt.md` | Reviewer handoff prompt for this blocked packet only. |
 | `mapper_report_draft.md` | Mapper draft non-run receipt. |

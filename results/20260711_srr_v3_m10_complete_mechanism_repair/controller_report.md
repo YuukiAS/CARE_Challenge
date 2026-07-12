@@ -136,3 +136,30 @@ review_md_written: false
 ```
 
 Next required action is to monitor `58706293` through terminal state, then let the `afterok` chain and finalizer proceed. If the full chain completes, run/inspect Wave 2 post-job aggregation and continue the original M10 state machine. If a job fails, record zero-credit terminal accounting and either perform an allowed same-scope operational repair or return the precise failure state required by the M10 contract.
+
+## Retry4 Terminal State And Owned-Wrapper Repair
+
+At `2026-07-12T16:24:12Z`, retry4 reached terminal accounting. D0 `58706293` completed successfully and produced formal D0 runtime evidence. D1 `58706294` failed after `00:00:58`; D2 through alignment were cancelled by unmet `afterok`; finalizer `58706300` failed fail-closed.
+
+The D1 failure was a retrieval-usage logging compatibility defect:
+
+```text
+TypeError: float() argument must be a string or a real number, not 'list'
+```
+
+The controller repaired only `scripts/training/run_srr_v3_m10_complete_repair.py`, adding an M10 wrapper monkeypatch for `legacy.record_gate_usage` that flattens nested/list gate weights into scalar CSV rows. This is an operational logging repair. It does not alter training semantics, losses, model formulas, data split, budgets, result paths, executor count, or wave graph.
+
+```text
+controller_run_status: NEEDS_EVIDENCE
+operational_completion_status: INCOMPLETE
+experiment_adequacy_decision: NOT_REVIEWED
+route_promotion_decision: NOT_REVIEWED
+route_negative_decision: NOT_REVIEWED
+scientific_resolution_status: AWAITING_REVIEW
+diagnostic_publication_decision: LOCAL_RETRY4_TERMINAL_REPAIR_PACKET_COMMIT
+git_commit_decision: COMMIT_LOCAL_PACKET
+git_push_decision: SKIP_PUSH
+review_md_written: false
+```
+
+Next required action is repaired-code compute-node preflight. Only if that preflight exits `0` may the controller submit the D1-through-alignment replacement chain using afterok dependencies, retaining D0 `58706293` as the successful upstream phase.

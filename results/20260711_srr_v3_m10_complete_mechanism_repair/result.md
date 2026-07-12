@@ -2,7 +2,7 @@
 
 Task key: `20260711_srr_v3_m10_complete_mechanism_repair`
 
-Controller status: `NEEDS_MONITOR`
+Controller status: `NEEDS_EVIDENCE`
 
 This controller executed only the bootstrap and hard-gate validation for the M10 section in `prompts/shared/EXECUTOR_PROMPTS.md` titled `M10 executor/controller: SRR-v3 complete mechanism repair`, using `prompts/tasks/20260711_srr_v3_m10_complete_mechanism_repair_executor_plan.yaml`.
 
@@ -159,3 +159,38 @@ The controller submitted the unchanged seven-stage Wave 2 formal chain on `htzhu
 Retry4 finalizer job `58706300` is `PENDING (Dependency)`. Runtime artifacts have begun appearing under `results/20260711_srr_v3_m10_complete_mechanism_repair/runtime/m10_myops_training_executor/partition_race_retry4/htzhulab`, including the D0 phase contract, one-batch overfit outputs, prototype-update sanity outputs, and prototype bank summary.
 
 Current controller state is `NEEDS_MONITOR`, not complete and not reviewable. Wave 3 remains blocked until Wave 2 terminal accounting and post-job aggregation succeed. No `review.md` was written and no push was performed.
+
+## Retry4 Terminal Accounting And D1 Logging Repair
+
+At `2026-07-12T16:24:12Z`, the retry4 Slurm graph was terminal:
+
+| Phase | Job ID | Terminal state | Credit |
+| --- | ---: | --- | --- |
+| D0 static matched control | `58706293` | `COMPLETED 0:0` after `02:09:10` | valid D0 runtime evidence |
+| D1 spatial BR2 | `58706294` | `FAILED 1:0` after `00:00:58` | zero effective D1 credit |
+| D2 hierarchical PSIP | `58706295` | `CANCELLED` by unmet `afterok` | zero credit |
+| D3 full memory PropRef | `58706296` | `CANCELLED` by unmet `afterok` | zero credit |
+| Hard-negative refresh | `58706297` | `CANCELLED` by unmet `afterok` | zero credit |
+| No-nnU-Net-context control | `58706298` | `CANCELLED` by unmet `afterok` | zero credit |
+| Alignment control | `58706299` | `CANCELLED` by unmet `afterok` | zero credit |
+| Finalizer | `58706300` | `FAILED 1:0` | fail-closed accounting |
+
+D0 wrote formal runtime evidence under the retry4 htz runtime root, including `summary.json`, `training_log.csv`, `validation_events.csv`, `checkpoint_final.pt`, `checkpoint_best.pt`, retrieval usage, gradient sanity, prediction sanity, and full-case predictions/metrics for checkpoint-best and checkpoint-final.
+
+D1 failed after one-batch sanity passed. The D1 log `logs/M10D1MyoPS_58706294_20260712_121728.log` shows:
+
+```text
+TypeError: float() argument must be a string or a real number, not 'list'
+```
+
+The failure occurs in retrieval-usage logging when the legacy `record_gate_usage` function receives nested/list gate weights from the M10 spatial router. The controller applied a same-scope operational repair in `scripts/training/run_srr_v3_m10_complete_repair.py`, monkeypatching only the wrapper's imported `legacy.record_gate_usage` so nested gate usage is flattened into scalar CSV rows. This does not change model formulas, loss values, variants, budgets, split, result paths, executor count, or wave graph, and it does not edit forbidden shared model/loss files or legacy training scripts.
+
+Repair fingerprints:
+
+| Artifact | SHA256 |
+| --- | --- |
+| `scripts/training/run_srr_v3_m10_complete_repair.py` | `bf132c6f6c1649c2a98bbe16af3ffe7cd67f436f035431a6b3376e4917203ad3` |
+| `configs/srr_v3_m10_complete_repair.yaml` | `df42f9ee55a3ba6ac616a37b2455cb7bca67c5f751f0c5a31c4a18938b107a9b` |
+| `data/benchmarks/protocol/splits_MyoPS.json` | `6165caeb5b47feb0d24f20380898037b7e6cead4db1eeba398a3c5a57faf9a1b` |
+
+Local verification passed for py-compile, D1 print-contract, nested gate-usage compatibility smoke, executor-plan validation, handoff-policy validation, architecture wiki strict/history validation, and generated wiki check. Current controller state is `NEEDS_EVIDENCE` pending repaired-code compute-node preflight and a D1-through-alignment replacement chain. Wave 3 remains blocked.

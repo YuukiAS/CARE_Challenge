@@ -2,9 +2,8 @@
   "accounting_continuation_launch": null,
   "accounting_continuation_receipt_path": null,
   "accounting_wait_seconds": 0,
-  "aggregation_command": "env PYTHONPATH=. python results/20260711_srr_v3_m10_complete_mechanism_repair/finalize_wave2_partition_race.py --submission results/20260711_srr_v3_m10_complete_mechanism_repair/wave2_partition_race_retry3_submission.json --watcher-state results/20260711_srr_v3_m10_complete_mechanism_repair/wave2_partition_race_retry3_watcher_state.json --result-path results/20260711_srr_v3_m10_complete_mechanism_repair/wave2_partition_race_retry3_finalization.json",
-  "aggregation_exit_code": 2,
-  "aggregation_result_path": "results/20260711_srr_v3_m10_complete_mechanism_repair/wave2_partition_race_retry3_finalization.json",
+  "aggregation_command": "env PYTHONPATH=. python results/20260711_srr_v3_m10_complete_mechanism_repair/finalize_wave2_partition_race.py --submission results/20260711_srr_v3_m10_complete_mechanism_repair/wave2_partition_race_retry4_submission.json --watcher-state results/20260711_srr_v3_m10_complete_mechanism_repair/wave2_partition_race_retry4_watcher_state.json --result-path results/20260711_srr_v3_m10_complete_mechanism_repair/wave2_partition_race_retry4_finalization.json",
+  "aggregation_exit_code": null,
   "attempt_number": 1,
   "awaiting_sacct_attempts": [
     {
@@ -84,7 +83,16 @@
     "58701286": "00:00:00",
     "58701287": "00:00:00",
     "58701288": "00:00:00",
-    "58701289": "02:09:14"
+    "58701289": "02:09:14",
+    "58706079": "00:00:22",
+    "58706080": "00:00:00",
+    "58706293": "02:09:10",
+    "58706294": "00:00:58",
+    "58706295": "00:00:00",
+    "58706296": "00:00:00",
+    "58706297": "00:00:00",
+    "58706298": "00:00:00",
+    "58706299": "00:00:00"
   },
   "exit_codes": {
     "58644072": "1:0",
@@ -152,14 +160,21 @@
     "58701286": "0:0",
     "58701287": "0:0",
     "58701288": "0:0",
-    "58701289": "0:0"
+    "58701289": "0:0",
+    "58706079": "0:0",
+    "58706080": "0:0",
+    "58706293": "0:0",
+    "58706294": "1:0",
+    "58706295": "0:0",
+    "58706296": "0:0",
+    "58706297": "0:0",
+    "58706298": "0:0",
+    "58706299": "0:0"
   },
-  "current_controller_status": "NEEDS_EVIDENCE",
-  "failure_class": "M10_WAVE2_D0_METRICS_KEYERROR_ZERO_EFFECTIVE_TRAINING",
+  "failure_class": "UNKNOWN_RUNTIME_FAILURE",
   "final_state": "RUNTIME_FAILURE",
-  "git_commit_decision": "COMMIT_LOCAL_PACKET",
-  "git_head_before": "fffbe72cdd1ebd65b6ed45d3d2d8e3bc85450a4e",
-  "git_push_decision": "SKIP_PUSH",
+  "git_commit_decision": "SKIP_COMMIT",
+  "git_head_before": "b854205e39ac381e24b1cd6764c21c62617cba41",
   "job_attempt_lineage": [
     {
       "attempt_number": 1,
@@ -622,6 +637,69 @@
       "job_id": "58701289",
       "state": "COMPLETED",
       "training_credit": "verified_completed_steps_only"
+    },
+    {
+      "attempt_number": 1,
+      "exit_code": "0:0",
+      "job_id": "58706079",
+      "state": "COMPLETED",
+      "training_credit": "verified_completed_steps_only"
+    },
+    {
+      "attempt_number": 1,
+      "exit_code": "0:0",
+      "job_id": "58706080",
+      "state": "CANCELLED",
+      "training_credit": "verified_completed_steps_only"
+    },
+    {
+      "attempt_number": 1,
+      "exit_code": "0:0",
+      "job_id": "58706293",
+      "state": "COMPLETED",
+      "training_credit": "verified_completed_steps_only"
+    },
+    {
+      "attempt_number": 1,
+      "exit_code": "1:0",
+      "job_id": "58706294",
+      "state": "FAILED",
+      "training_credit": "verified_completed_steps_only"
+    },
+    {
+      "attempt_number": 1,
+      "exit_code": "0:0",
+      "job_id": "58706295",
+      "state": "CANCELLED",
+      "training_credit": "verified_completed_steps_only"
+    },
+    {
+      "attempt_number": 1,
+      "exit_code": "0:0",
+      "job_id": "58706296",
+      "state": "CANCELLED",
+      "training_credit": "verified_completed_steps_only"
+    },
+    {
+      "attempt_number": 1,
+      "exit_code": "0:0",
+      "job_id": "58706297",
+      "state": "CANCELLED",
+      "training_credit": "verified_completed_steps_only"
+    },
+    {
+      "attempt_number": 1,
+      "exit_code": "0:0",
+      "job_id": "58706298",
+      "state": "CANCELLED",
+      "training_credit": "verified_completed_steps_only"
+    },
+    {
+      "attempt_number": 1,
+      "exit_code": "0:0",
+      "job_id": "58706299",
+      "state": "CANCELLED",
+      "training_credit": "verified_completed_steps_only"
     }
   ],
   "job_states": {
@@ -690,12 +768,21 @@
     "58701286": "CANCELLED",
     "58701287": "CANCELLED",
     "58701288": "CANCELLED",
-    "58701289": "COMPLETED"
+    "58701289": "COMPLETED",
+    "58706079": "COMPLETED",
+    "58706080": "CANCELLED",
+    "58706293": "COMPLETED",
+    "58706294": "FAILED",
+    "58706295": "CANCELLED",
+    "58706296": "CANCELLED",
+    "58706297": "CANCELLED",
+    "58706298": "CANCELLED",
+    "58706299": "CANCELLED"
   },
-  "lock_path": "results/20260711_srr_v3_m10_complete_mechanism_repair/locks/wave2_partition_race_retry3_finalizer.lock",
+  "lock_path": "results/20260711_srr_v3_m10_complete_mechanism_repair/locks/wave2_partition_race_retry4_finalizer.lock",
   "lock_released": true,
   "log_paths": [],
-  "manifest_sha256": "258a13f5ab299352093bb714ec550efdc0538a084f12f18f9899818ea219418d",
+  "manifest_sha256": "9f107e61cb17ce7efda28cf2e311cfbbb1e017cd213acbf31327b8067b856a28",
   "mapper_final_status": "not_requested",
   "next_retry_job_id_or_tmux_session": null,
   "nodes": {
@@ -764,9 +851,18 @@
     "58701286": "None assigned",
     "58701287": "None assigned",
     "58701288": "None assigned",
-    "58701289": "c151408"
+    "58701289": "c151408",
+    "58706079": "g1807htzh01",
+    "58706080": "None assigned",
+    "58706293": "g1807htzh01",
+    "58706294": "g1807htzh01",
+    "58706295": "None assigned",
+    "58706296": "None assigned",
+    "58706297": "None assigned",
+    "58706298": "None assigned",
+    "58706299": "None assigned"
   },
-  "precommit_head": "fffbe72cdd1ebd65b6ed45d3d2d8e3bc85450a4e",
+  "precommit_head": "b854205e39ac381e24b1cd6764c21c62617cba41",
   "records": [],
   "replacement_job_ids": [],
   "required_job_ids": [
@@ -835,27 +931,27 @@
     "58701286",
     "58701287",
     "58701288",
-    "58701289"
+    "58701289",
+    "58706079",
+    "58706080",
+    "58706293",
+    "58706294",
+    "58706295",
+    "58706296",
+    "58706297",
+    "58706298",
+    "58706299"
   ],
   "retry_backend": "tmux_watcher",
   "retry_count": 0,
-  "retry_reason": "htzhulab D0 job 58701196 failed during training metrics logging with KeyError correction_opportunity_loss; final aggregation could not find valid D0 runtime evidence",
+  "retry_reason": "failed job without recognized retryable startup signature",
   "retryable": false,
   "runtime_output_paths": [],
   "stage": "accounting",
   "suggested_next_state": "NEEDS_EVIDENCE",
   "supersedes_job_ids": [],
   "task_key": "20260711_srr_v3_m10_complete_mechanism_repair",
-  "tracked_paths": [
-    "results/20260711_srr_v3_m10_complete_mechanism_repair/finalizer_state.json",
-    "results/20260711_srr_v3_m10_complete_mechanism_repair/wave2_partition_race_retry3_finalization.json",
-    "results/20260711_srr_v3_m10_complete_mechanism_repair/result.md",
-    "results/20260711_srr_v3_m10_complete_mechanism_repair/completion_check.md",
-    "results/20260711_srr_v3_m10_complete_mechanism_repair/controller_report.md",
-    "results/20260711_srr_v3_m10_complete_mechanism_repair/review_request.md",
-    "results/20260711_srr_v3_m10_complete_mechanism_repair/MANIFEST.md",
-    "results/20260711_srr_v3_m10_complete_mechanism_repair/executors/m10_myops_training_executor/commands_run.md"
-  ],
+  "tracked_paths": [],
   "training_credit_policy": "zero_for_failed_startup",
   "validator_commands": [
     "python scripts/ops/validate_executor_plan.py prompts/tasks/20260711_srr_v3_m10_complete_mechanism_repair_executor_plan.yaml",
