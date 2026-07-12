@@ -21,3 +21,16 @@ This packet is not complete and is not ready for independent review. It records 
 Current controller state is `NEEDS_MONITOR`, not blocked and not complete. D0 is pending on `htzhulab` resources, downstream jobs are dependency-pending, and the Wave 2 finalizer is dependency-pending.
 
 No `review.md` was written. No push was performed. Wave 3, validation packaging/upload, hosted metric claims, route promotion, route-negative conclusion, and M11 remain blocked until Wave 2 terminal accounting and aggregation succeed.
+
+## Three-Partition Race Check
+
+| Gate | Status |
+| --- | --- |
+| Superseded pending htz chain | pass: jobs `58700815`, `58700821`, `58700822`, `58700826`, `58700827`, `58700828`, `58700832` cancelled before training start, zero credit |
+| Formal race isolation | pass: `M10_RUNTIME_ROOT` is partition-specific and job aggregation is deferred in mirror jobs |
+| Race preflight | pass for winner: `58701110` completed `0:0` on `volta-gpu` |
+| Race winner | monitor: `volta-gpu`, D0 job `58701111` is `RUNNING` |
+| Loser mirrors | pass: watcher `58701118` cancelled pending `htzhulab` and `a100-gpu` chains |
+| Race finalizer | monitor: job `58701119` waits with `afterany` |
+
+Decision remains `NEEDS_MONITOR`, not blocked and not complete.

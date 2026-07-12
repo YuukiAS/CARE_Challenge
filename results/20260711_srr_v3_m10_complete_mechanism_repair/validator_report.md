@@ -77,3 +77,7 @@ This remains a monitor packet, not completed M10 runtime evidence.
 ## Safety Confirmation
 
 No `review.md`, validation packaging, upload, route promotion, hosted metric claim, scientific stop, wave 3, push, or M11 work occurred. Replacement Wave 2 jobs were submitted only after compute-node preflight job `58700751` completed `0:0`; the current state is `NEEDS_MONITOR`.
+
+## Latest Validation Context
+
+After explicit user authorization, Wave 2 formal routing was changed from a pending single-partition replacement chain to a three-partition race with isolated runtime roots and deferred mirror aggregation. `volta-gpu` won after preflight `58701110` completed `0:0`; D0 `58701111` is running; watcher `58701118` cancelled pending `htzhulab`/`a100-gpu` mirrors. Current state remains `NEEDS_MONITOR`.

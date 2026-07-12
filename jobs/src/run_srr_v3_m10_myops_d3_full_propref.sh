@@ -21,6 +21,17 @@ TS="$(date +%Y%m%d_%H%M%S)"
 LOG_FILE="${LOG_FILE:-${CARE_ROOT}/logs/M10D3MyoPS_${SLURM_JOB_ID:-local}_${TS}.log}"
 exec > >(tee -a "${LOG_FILE}") 2>&1
 
-"${CARE_ROOT}/envs/env_CARE/bin/python" scripts/training/run_srr_v3_m10_complete_repair.py --phase d3_full_propref
-"${CARE_ROOT}/envs/env_CARE/bin/python" scripts/evaluation/evaluate_srr_v3_m10_full_case.py --phase d3_full_propref
-"${CARE_ROOT}/envs/env_CARE/bin/python" scripts/evaluation/aggregate_srr_v3_m10_myops.py --phase d3_full_propref
+TRAIN_ARGS=(--phase d3_full_propref)
+EVAL_ARGS=(--phase d3_full_propref)
+AGG_ARGS=(--phase d3_full_propref)
+if [ -n "${M10_RUNTIME_ROOT:-}" ]; then
+  TRAIN_ARGS+=(--out-root "${M10_RUNTIME_ROOT}" --contract-output-dir "${M10_RUNTIME_ROOT}/contracts")
+  EVAL_ARGS+=(--runtime-root "${M10_RUNTIME_ROOT}")
+  AGG_ARGS+=(--runtime-root "${M10_RUNTIME_ROOT}")
+fi
+
+"${CARE_ROOT}/envs/env_CARE/bin/python" scripts/training/run_srr_v3_m10_complete_repair.py "${TRAIN_ARGS[@]}"
+if [ "${M10_DEFER_AGGREGATION:-0}" != "1" ]; then
+  "${CARE_ROOT}/envs/env_CARE/bin/python" scripts/evaluation/evaluate_srr_v3_m10_full_case.py "${EVAL_ARGS[@]}"
+  "${CARE_ROOT}/envs/env_CARE/bin/python" scripts/evaluation/aggregate_srr_v3_m10_myops.py "${AGG_ARGS[@]}"
+fi

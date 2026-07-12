@@ -19,3 +19,9 @@ Formal replacement jobs submitted:
 Finalizer job `58700842` is pending with `afterany` over all old and replacement jobs.
 
 Blocked actions until terminal post-job aggregation exists: write `review.md`, launch Wave 3, package/upload validation, claim hosted metrics, claim route promotion or scientific stop, or start M11.
+
+## Latest Monitor Update
+
+The single-partition replacement chain was superseded by an explicitly user-authorized three-partition race. `volta-gpu` won: preflight `58701110` completed `0:0`, D0 `58701111` is running, watcher `58701118` cancelled `htzhulab` and `a100-gpu` pending mirrors, and finalizer `58701119` is pending on `afterany`.
+
+This is still a monitor packet. Do not perform normal M10 review yet.

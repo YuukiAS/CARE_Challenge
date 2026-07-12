@@ -70,3 +70,9 @@ Wave 3, review, push, validation packaging/upload, hosted claims, route promotio
 ## Latest Wave 2 Replacement Submission Update
 
 At `2026-07-12T10:16:12Z`, the controller submitted the authorized same-executor Wave 2 replacement chain after successful compute-node preflight job `58700751` completed `0:0`. Replacement jobs are `58700815`, `58700821`, `58700822`, `58700826`, `58700827`, `58700828`, and `58700832`; the Wave 2 accounting finalizer is `58700842` with `afterany` over all old and replacement jobs. Current status is `NEEDS_MONITOR`, not complete and not reviewable.
+
+## Three-Partition Formal Race Update
+
+After explicit user authorization, the pending single-partition replacement chain and finalizer were superseded for a formal `htzhulab` / `a100-gpu` / `volta-gpu` race with isolated runtime roots and deferred aggregation. Superseded jobs `58700815`, `58700821`, `58700822`, `58700826`, `58700827`, `58700828`, `58700832`, and finalizer `58700842` were cancelled before training start and receive zero training credit.
+
+`volta-gpu` won the race: preflight `58701110` completed `0:0`, D0 `58701111` is running, and watcher `58701118` cancelled the still-pending `htzhulab` and `a100-gpu` mirrors. The active finalizer is `58701119`. Current controller status remains `NEEDS_MONITOR`; Wave 2 is not complete and is not ready for review.

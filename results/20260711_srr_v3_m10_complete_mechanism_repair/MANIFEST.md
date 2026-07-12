@@ -31,6 +31,12 @@ Packet state: `NEEDS_MONITOR`
 | `wave2_env_preflight.sh` | Slurm compute-node environment preflight wrapper for the authorized replacement attempt. |
 | `wave2_replacement_preflight_receipt.md` | Replacement authorization, hashes, preflight command, and preflight/submission receipt. |
 | `wave2_replacement_job_ledger.csv` | Replacement job ledger with old/new job IDs, preflight evidence, hashes, dependencies, partition, runtime root, and log path. |
+| `wave2_partition_race_submission.json` | Three-partition formal race submission receipt and job graph. |
+| `wave2_partition_race_watcher_state.json` | Watcher evidence selecting `volta-gpu` and cancelling pending mirrors. |
+| `wave2_partition_race_finalizer_submission.json` | New afterany finalizer receipt for the race graph. |
+| `wave2_partition_race_job_ledger.csv` | Per-partition race ledger with superseded jobs, preflight IDs, dependencies, runtime roots, and credit policy. |
+| `wave2_partition_race_watcher.py` | Result-scope watcher used to cancel pending loser mirrors after a D0 winner starts. |
+| `finalize_wave2_partition_race.py` | Result-scope aggregation helper that will aggregate only the winning partition runtime root. |
 | `executors/m10_myops_training_executor/` | Wave 2 executor monitor packet; not completion evidence. |
 | `subagents/reviewer_prompt.md` | Reviewer handoff prompt for this blocked packet only. |
 | `mapper_report_draft.md` | Mapper draft non-run receipt. |

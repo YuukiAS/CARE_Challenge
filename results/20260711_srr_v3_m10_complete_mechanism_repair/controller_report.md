@@ -44,3 +44,13 @@ review_md_written: false
 Blocked actions: Wave 3, review, push, validation packaging/upload, hosted claims, route promotion, scientific stop, and M11.
 
 Next required action: monitor replacement jobs until terminal accounting, then run Wave 2 post-job aggregation and continue the original M10 state machine only if evidence gates pass.
+
+## Latest Three-Partition Formal Race
+
+After the user explicitly authorized adding `volta-gpu` to the formal routing race, the controller cancelled the superseded pending `htzhulab` replacement chain `58700815`, `58700821`, `58700822`, `58700826`, `58700827`, `58700828`, `58700832` and old finalizer `58700842`. These jobs had not started and remain zero-credit superseded attempts.
+
+The controller submitted isolated runtime-root mirrors to `htzhulab`, `a100-gpu`, and `volta-gpu`, each with its own compute-node preflight followed by the unchanged seven-stage Wave 2 `afterok` training chain. Mirror jobs run with `M10_DEFER_AGGREGATION=1`; only the winning partition runtime is aggregated into the formal result paths.
+
+Race outcome: `volta-gpu` won. Preflight job `58701110` completed `0:0`; D0 job `58701111` is `RUNNING` on `volta-gpu`; downstream jobs `58701112` through `58701117` are dependency-pending. Watcher job `58701118` completed `0:0` after cancelling all still-pending `htzhulab` and `a100-gpu` mirrors. New Wave 2 finalizer job `58701119` waits with `afterany` over old failed jobs, superseded jobs, all race jobs, and the watcher.
+
+Current state remains `NEEDS_MONITOR`, not complete and not reviewable. No `review.md` was written and no push was performed.

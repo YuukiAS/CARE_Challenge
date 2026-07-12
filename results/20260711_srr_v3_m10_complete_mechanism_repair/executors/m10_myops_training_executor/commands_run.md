@@ -163,3 +163,13 @@ After preflight exit code `0`, the controller submitted the original seven Wave 
 Wave 2 accounting finalizer job: `58700842` with `afterany` over every old and replacement job ID.
 
 Current state remains `NEEDS_MONITOR`: D0 is pending on `htzhulab` resources, downstream jobs are dependency-pending, and finalizer is dependency-pending. This is not completion evidence and not reviewable.
+
+## Three-Partition Formal Race
+
+Update timestamp UTC: `2026-07-12T10:36:43Z`
+
+The user explicitly authorized a formal three-partition race across `htzhulab`, `a100-gpu`, and `volta-gpu`. The controller cancelled superseded pending jobs `58700815`, `58700821`, `58700822`, `58700826`, `58700827`, `58700828`, `58700832`, plus finalizer `58700842`.
+
+New race jobs are recorded in `wave2_partition_race_submission.json` and `wave2_partition_race_job_ledger.csv`. `volta-gpu` preflight `58701110` completed `0:0`; D0 `58701111` is running; watcher `58701118` completed after cancelling pending `htzhulab` and `a100-gpu` mirrors. New finalizer `58701119` is pending with `afterany`.
+
+Mirror jobs use isolated `M10_RUNTIME_ROOT` values and `M10_DEFER_AGGREGATION=1`; final aggregation will use only the winning partition runtime root.

@@ -238,8 +238,10 @@ def make_legacy_args(args: argparse.Namespace, spec: PhaseSpec) -> SimpleNamespa
     )
 
 
-def write_phase_contract(spec: PhaseSpec, legacy_args: SimpleNamespace) -> None:
-    result_dir = REPO_ROOT / spec.result_dir
+def write_phase_contract(spec: PhaseSpec, legacy_args: SimpleNamespace, contract_output_dir: str = "") -> None:
+    result_dir = Path(contract_output_dir) if contract_output_dir else REPO_ROOT / spec.result_dir
+    if not result_dir.is_absolute():
+        result_dir = REPO_ROOT / result_dir
     result_dir.mkdir(parents=True, exist_ok=True)
     contract = {
         "task_key": "20260711_srr_v3_m10_complete_mechanism_repair",
@@ -261,7 +263,8 @@ def write_phase_contract(spec: PhaseSpec, legacy_args: SimpleNamespace) -> None:
         "legacy_script_edit_policy": "read_or_import_only_not_modified_by_wave2",
         "status": "TRAINING_ENTRYPOINT_STARTED",
     }
-    (result_dir / "m10_phase_contract.json").write_text(json.dumps(contract, indent=2, sort_keys=True), encoding="utf-8")
+    target_name = f"{spec.phase}_m10_phase_contract.json" if contract_output_dir else "m10_phase_contract.json"
+    (result_dir / target_name).write_text(json.dumps(contract, indent=2, sort_keys=True), encoding="utf-8")
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -281,6 +284,7 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--min-train-loop-seconds", type=float)
     parser.add_argument("--val-every", type=_positive_int)
     parser.add_argument("--out-root", default="")
+    parser.add_argument("--contract-output-dir", default="")
     parser.add_argument("--run-label", default="")
     parser.add_argument("--nnunet-anchor-root", default=str(legacy.DEFAULT_NNUNET_ANCHOR_ROOT))
     parser.add_argument("--lr", type=float, default=3e-4)
@@ -344,7 +348,7 @@ def main() -> None:
     if args.print_contract:
         print(json.dumps({"phase": asdict(spec), "legacy_args": vars(legacy_args)}, indent=2, sort_keys=True))
         return
-    write_phase_contract(spec, legacy_args)
+    write_phase_contract(spec, legacy_args, args.contract_output_dir)
     legacy.train_variant(legacy_args)  # type: ignore[arg-type]
 
 

@@ -1,0 +1,251 @@
+{
+  "cancel_records": [
+    {
+      "cancel_exit_code": 0,
+      "cancel_stderr": "",
+      "cancel_stdout": "",
+      "job_id": "58701102",
+      "state_before_cancel": {
+        "job_id": "58701102",
+        "partition": "a100-gpu",
+        "reason": "(Priority)",
+        "state": "PENDING"
+      }
+    },
+    {
+      "cancel_exit_code": 0,
+      "cancel_stderr": "",
+      "cancel_stdout": "",
+      "job_id": "58701109",
+      "state_before_cancel": {
+        "job_id": "58701109",
+        "partition": "a100-gpu",
+        "reason": "(Dependency)",
+        "state": "PENDING"
+      }
+    },
+    {
+      "cancel_exit_code": 0,
+      "cancel_stderr": "",
+      "cancel_stdout": "",
+      "job_id": "58701103",
+      "state_before_cancel": {
+        "job_id": "58701103",
+        "partition": "a100-gpu",
+        "reason": "(Dependency)",
+        "state": "PENDING"
+      }
+    },
+    {
+      "cancel_exit_code": 0,
+      "cancel_stderr": "",
+      "cancel_stdout": "",
+      "job_id": "58701104",
+      "state_before_cancel": {
+        "job_id": "58701104",
+        "partition": "a100-gpu",
+        "reason": "(Dependency)",
+        "state": "PENDING"
+      }
+    },
+    {
+      "cancel_exit_code": 0,
+      "cancel_stderr": "",
+      "cancel_stdout": "",
+      "job_id": "58701105",
+      "state_before_cancel": {
+        "job_id": "58701105",
+        "partition": "a100-gpu",
+        "reason": "(Dependency)",
+        "state": "PENDING"
+      }
+    },
+    {
+      "cancel_exit_code": 0,
+      "cancel_stderr": "",
+      "cancel_stdout": "",
+      "job_id": "58701106",
+      "state_before_cancel": {
+        "job_id": "58701106",
+        "partition": "a100-gpu",
+        "reason": "(Dependency)",
+        "state": "PENDING"
+      }
+    },
+    {
+      "cancel_exit_code": 0,
+      "cancel_stderr": "",
+      "cancel_stdout": "",
+      "job_id": "58701107",
+      "state_before_cancel": {
+        "job_id": "58701107",
+        "partition": "a100-gpu",
+        "reason": "(Dependency)",
+        "state": "PENDING"
+      }
+    },
+    {
+      "cancel_exit_code": 0,
+      "cancel_stderr": "",
+      "cancel_stdout": "",
+      "job_id": "58701108",
+      "state_before_cancel": {
+        "job_id": "58701108",
+        "partition": "a100-gpu",
+        "reason": "(Dependency)",
+        "state": "PENDING"
+      }
+    },
+    {
+      "cancel_exit_code": 0,
+      "cancel_stderr": "",
+      "cancel_stdout": "",
+      "job_id": "58701094",
+      "state_before_cancel": {
+        "job_id": "58701094",
+        "partition": "htzhulab",
+        "reason": "(Priority)",
+        "state": "PENDING"
+      }
+    },
+    {
+      "cancel_exit_code": 0,
+      "cancel_stderr": "",
+      "cancel_stdout": "",
+      "job_id": "58701101",
+      "state_before_cancel": {
+        "job_id": "58701101",
+        "partition": "htzhulab",
+        "reason": "(Dependency)",
+        "state": "PENDING"
+      }
+    },
+    {
+      "cancel_exit_code": 0,
+      "cancel_stderr": "",
+      "cancel_stdout": "",
+      "job_id": "58701095",
+      "state_before_cancel": {
+        "job_id": "58701095",
+        "partition": "htzhulab",
+        "reason": "(Dependency)",
+        "state": "PENDING"
+      }
+    },
+    {
+      "cancel_exit_code": 0,
+      "cancel_stderr": "",
+      "cancel_stdout": "",
+      "job_id": "58701096",
+      "state_before_cancel": {
+        "job_id": "58701096",
+        "partition": "htzhulab",
+        "reason": "(Dependency)",
+        "state": "PENDING"
+      }
+    },
+    {
+      "cancel_exit_code": 0,
+      "cancel_stderr": "",
+      "cancel_stdout": "",
+      "job_id": "58701097",
+      "state_before_cancel": {
+        "job_id": "58701097",
+        "partition": "htzhulab",
+        "reason": "(Dependency)",
+        "state": "PENDING"
+      }
+    },
+    {
+      "cancel_exit_code": 0,
+      "cancel_stderr": "",
+      "cancel_stdout": "",
+      "job_id": "58701098",
+      "state_before_cancel": {
+        "job_id": "58701098",
+        "partition": "htzhulab",
+        "reason": "(Dependency)",
+        "state": "PENDING"
+      }
+    },
+    {
+      "cancel_exit_code": 0,
+      "cancel_stderr": "",
+      "cancel_stdout": "",
+      "job_id": "58701099",
+      "state_before_cancel": {
+        "job_id": "58701099",
+        "partition": "htzhulab",
+        "reason": "(Dependency)",
+        "state": "PENDING"
+      }
+    },
+    {
+      "cancel_exit_code": 0,
+      "cancel_stderr": "",
+      "cancel_stdout": "",
+      "job_id": "58701100",
+      "state_before_cancel": {
+        "job_id": "58701100",
+        "partition": "htzhulab",
+        "reason": "(Dependency)",
+        "state": "PENDING"
+      }
+    }
+  ],
+  "checks": [
+    {
+      "check_index": 1,
+      "checked_at_utc": "2026-07-12T10:34:47.423622+00:00",
+      "d0_states": {
+        "a100-gpu": {
+          "job_id": "58701103",
+          "partition": "a100-gpu",
+          "reason": "(Dependency)",
+          "state": "PENDING"
+        },
+        "htzhulab": {
+          "job_id": "58701095",
+          "partition": "htzhulab",
+          "reason": "(Dependency)",
+          "state": "PENDING"
+        },
+        "volta-gpu": {
+          "job_id": "58701111",
+          "partition": "volta-gpu",
+          "reason": "(Dependency)",
+          "state": "PENDING"
+        }
+      }
+    },
+    {
+      "check_index": 2,
+      "checked_at_utc": "2026-07-12T10:35:47.525562+00:00",
+      "d0_states": {
+        "a100-gpu": {
+          "job_id": "58701103",
+          "partition": "a100-gpu",
+          "reason": "(Dependency)",
+          "state": "PENDING"
+        },
+        "htzhulab": {
+          "job_id": "58701095",
+          "partition": "htzhulab",
+          "reason": "(Dependency)",
+          "state": "PENDING"
+        },
+        "volta-gpu": {
+          "job_id": "58701111",
+          "partition": "volta-gpu",
+          "reason": "g0309",
+          "state": "RUNNING"
+        }
+      }
+    }
+  ],
+  "final_state": "WINNER_SELECTED",
+  "started_at_utc": "2026-07-12T10:34:47.420410+00:00",
+  "submission": "results/20260711_srr_v3_m10_complete_mechanism_repair/wave2_partition_race_submission.json",
+  "winner_partition": "volta-gpu",
+  "winner_reason": "first_d0_running"
+}
