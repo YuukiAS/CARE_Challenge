@@ -2,7 +2,7 @@
   "accounting_continuation_launch": null,
   "accounting_continuation_receipt_path": null,
   "accounting_wait_seconds": 0,
-  "aggregation_command": "env PYTHONPATH=. python results/20260711_srr_v3_m10_complete_mechanism_repair/finalize_wave2_partition_race.py --submission results/20260711_srr_v3_m10_complete_mechanism_repair/wave2_partition_race_retry8_submission.json --watcher-state results/20260711_srr_v3_m10_complete_mechanism_repair/wave2_partition_race_retry8_watcher_state.json --result-path results/20260711_srr_v3_m10_complete_mechanism_repair/wave2_partition_race_retry8_finalization.json",
+  "aggregation_command": "env PYTHONPATH=. python results/20260711_srr_v3_m10_complete_mechanism_repair/finalize_wave2_partition_race.py --submission results/20260711_srr_v3_m10_complete_mechanism_repair/wave2_partition_race_retry9_submission.json --watcher-state results/20260711_srr_v3_m10_complete_mechanism_repair/wave2_partition_race_retry9_watcher_state.json --result-path results/20260711_srr_v3_m10_complete_mechanism_repair/wave2_partition_race_retry9_finalization.json",
   "aggregation_exit_code": null,
   "attempt_number": 1,
   "awaiting_sacct_attempts": [
@@ -124,7 +124,15 @@
     "58720460": "00:00:00",
     "58720461": "00:00:00",
     "58720462": "00:00:00",
-    "58720463": "00:00:00"
+    "58720463": "00:00:00",
+    "58720464": "00:00:03",
+    "58728960": "00:00:19",
+    "58732391": "03:58:54",
+    "58732393": "00:24:14",
+    "58732395": "00:00:00",
+    "58732397": "00:00:00",
+    "58732399": "00:00:00",
+    "58732400": "00:00:00"
   },
   "exit_codes": {
     "58644072": "1:0",
@@ -232,12 +240,20 @@
     "58720460": "0:0",
     "58720461": "0:0",
     "58720462": "0:0",
-    "58720463": "0:0"
+    "58720463": "0:0",
+    "58720464": "1:0",
+    "58728960": "0:0",
+    "58732391": "0:0",
+    "58732393": "0:0",
+    "58732395": "0:0",
+    "58732397": "0:0",
+    "58732399": "0:0",
+    "58732400": "0:0"
   },
   "failure_class": "OUT_OF_MEMORY_NEEDS_REVISION",
   "final_state": "RUNTIME_FAILURE",
   "git_commit_decision": "SKIP_COMMIT",
-  "git_head_before": "24a0e9beab197b90b26bd9d754c0a3bc986ab471",
+  "git_head_before": "dd7dd0ec8299718cba148be617cde91c55fa4dab",
   "job_attempt_lineage": [
     {
       "attempt_number": 1,
@@ -980,6 +996,62 @@
       "job_id": "58720463",
       "state": "CANCELLED",
       "training_credit": "verified_completed_steps_only"
+    },
+    {
+      "attempt_number": 1,
+      "exit_code": "1:0",
+      "job_id": "58720464",
+      "state": "FAILED",
+      "training_credit": "verified_completed_steps_only"
+    },
+    {
+      "attempt_number": 1,
+      "exit_code": "0:0",
+      "job_id": "58728960",
+      "state": "COMPLETED",
+      "training_credit": "verified_completed_steps_only"
+    },
+    {
+      "attempt_number": 1,
+      "exit_code": "0:0",
+      "job_id": "58732391",
+      "state": "COMPLETED",
+      "training_credit": "verified_completed_steps_only"
+    },
+    {
+      "attempt_number": 1,
+      "exit_code": "0:0",
+      "job_id": "58732393",
+      "state": "CANCELLED",
+      "training_credit": "verified_completed_steps_only"
+    },
+    {
+      "attempt_number": 1,
+      "exit_code": "0:0",
+      "job_id": "58732395",
+      "state": "CANCELLED",
+      "training_credit": "verified_completed_steps_only"
+    },
+    {
+      "attempt_number": 1,
+      "exit_code": "0:0",
+      "job_id": "58732397",
+      "state": "CANCELLED",
+      "training_credit": "verified_completed_steps_only"
+    },
+    {
+      "attempt_number": 1,
+      "exit_code": "0:0",
+      "job_id": "58732399",
+      "state": "CANCELLED",
+      "training_credit": "verified_completed_steps_only"
+    },
+    {
+      "attempt_number": 1,
+      "exit_code": "0:0",
+      "job_id": "58732400",
+      "state": "CANCELLED",
+      "training_credit": "verified_completed_steps_only"
     }
   ],
   "job_states": {
@@ -1088,12 +1160,20 @@
     "58720460": "CANCELLED",
     "58720461": "CANCELLED",
     "58720462": "CANCELLED",
-    "58720463": "CANCELLED"
+    "58720463": "CANCELLED",
+    "58720464": "FAILED",
+    "58728960": "COMPLETED",
+    "58732391": "COMPLETED",
+    "58732393": "CANCELLED",
+    "58732395": "CANCELLED",
+    "58732397": "CANCELLED",
+    "58732399": "CANCELLED",
+    "58732400": "CANCELLED"
   },
-  "lock_path": "results/20260711_srr_v3_m10_complete_mechanism_repair/locks/wave2_partition_race_retry8_finalizer.lock",
+  "lock_path": "results/20260711_srr_v3_m10_complete_mechanism_repair/locks/wave2_partition_race_retry9_finalizer.lock",
   "lock_released": true,
   "log_paths": [],
-  "manifest_sha256": "d34888e9a4358f42db6a34313f5d8f3ffcf73422c9c5e1b41871d660b7e5e962",
+  "manifest_sha256": "f3d8a3032d28ee1c3a4a2c3d37fd2b88bea94c18774017fa74db536ae66ff13f",
   "mapper_final_status": "not_requested",
   "next_retry_job_id_or_tmux_session": null,
   "nodes": {
@@ -1202,9 +1282,17 @@
     "58720460": "None assigned",
     "58720461": "None assigned",
     "58720462": "None assigned",
-    "58720463": "None assigned"
+    "58720463": "None assigned",
+    "58720464": "c0306",
+    "58728960": "g1807htzh01",
+    "58732391": "g1807htzh01",
+    "58732393": "g1807htzh01",
+    "58732395": "None assigned",
+    "58732397": "None assigned",
+    "58732399": "None assigned",
+    "58732400": "None assigned"
   },
-  "precommit_head": "24a0e9beab197b90b26bd9d754c0a3bc986ab471",
+  "precommit_head": "dd7dd0ec8299718cba148be617cde91c55fa4dab",
   "records": [],
   "replacement_job_ids": [],
   "required_job_ids": [
@@ -1313,7 +1401,15 @@
     "58720460",
     "58720461",
     "58720462",
-    "58720463"
+    "58720463",
+    "58720464",
+    "58728960",
+    "58732391",
+    "58732393",
+    "58732395",
+    "58732397",
+    "58732399",
+    "58732400"
   ],
   "retry_backend": "tmux_watcher",
   "retry_count": 0,

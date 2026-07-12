@@ -426,6 +426,36 @@ validation_events.csv
 
 D2-through-alignment remain dependency-pending and finalizer `58733769` remains dependency-pending. D1 has not written `summary.json`, Slurm has not reported a terminal state, and post-job aggregation has not run, so the state remains `NEEDS_MONITOR`, not complete and not reviewable.
 
+## Retry9 Undertraining and Retry10 Replacement
+
+Retry9 D1 `58732391` reached Slurm `COMPLETED 0:0`, but the runtime summary shows it did not satisfy the blocking D1 training floor:
+
+| Field | Observed | Required |
+| --- | ---: | ---: |
+| optimizer steps | `13600` | `25000` |
+| train-loop seconds | `10805.073559065` | `9000` |
+| validation events | `9` | `15` |
+| eval cases | `44` | `44` |
+
+The stop reason was `max_runtime_seconds`, with `max_runtime_seconds=10800.0`. This makes retry9 D1 `SCIENTIFIC_UNDERTRAINED` for M10 minimum-effective training and blocks downstream credit. The controller cancelled retry9 D2-through-alignment jobs `58732393`, `58732395`, `58732397`, `58732399`, and `58732400`. Retry9 finalizer `58733769` reached `FAILED 1:0` after writing fail-closed `finalizer_state.json`.
+
+The controller applied a same-scope operational repair in the owned Wave 2 entrypoint `scripts/training/run_srr_v3_m10_complete_repair.py`: default `max_runtime_seconds` is now `28500.0`, still within the 8-hour Slurm walltime, so the original `max_steps` and validation minima can control formal completion. This does not change variants, model formulas, training budgets, split, case set, evaluation rules, checkpoint-selection rules, result paths, executor count, or wave graph.
+
+Retry10 compute preflight `58743253` completed `0:0`, then the controller submitted the D1-through-alignment replacement chain:
+
+| Phase | Retry10 job | Dependency | State at submission monitor |
+| --- | ---: | --- | --- |
+| D0 static matched control | `58706293` | retained | `COMPLETED 0:0` |
+| D1 spatial BR2 | `58743282` | `afterok:58743253` | `RUNNING` |
+| D2 hierarchical PSIP | `58743287` | `afterok:58743282` | `PENDING (Dependency)` |
+| D3 full memory PropRef | `58743290` | `afterok:58743287` | `PENDING (Dependency)` |
+| Hard-negative refresh | `58743292` | `afterok:58743290` | `PENDING (Dependency)` |
+| No-nnU-Net-context control | `58743294` | `afterok:58743292` | `PENDING (Dependency)` |
+| Alignment control | `58743295` | `afterok:58743294` | `PENDING (Dependency)` |
+| Finalizer | `58743452` | `afterany` over all old and retry10 jobs | `PENDING (Dependency)` |
+
+Current state is `NEEDS_MONITOR`, not complete and not reviewable. Wave 3 remains blocked.
+
 ## Retry9 D1 Minimum-Time Monitor
 
 At `2026-07-12T21:02:29Z`, retry9 D1 `58732391` remained `RUNNING` on `g1807htzh01` for `02:34:44` with `ReqMem=1200G`. Live memory accounting reported `MaxRSS=717908636K` and `AveRSS=717802624K`.

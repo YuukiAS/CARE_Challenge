@@ -215,7 +215,7 @@ def phase_runtime_root(spec: PhaseSpec) -> Path:
 def make_legacy_args(args: argparse.Namespace, spec: PhaseSpec) -> SimpleNamespace:
     max_steps = args.max_steps or spec.min_steps
     min_seconds = args.min_train_loop_seconds or spec.min_train_loop_seconds
-    max_runtime = args.max_runtime_seconds or min(28500.0, float(min_seconds + 1800))
+    max_runtime = args.max_runtime_seconds or 28500.0
     if max_runtime > 28800:
         raise ValueError("M10 wave 2 jobs must request <=8h runtime budget")
     val_every = args.val_every or max(1, max_steps // spec.min_validation_events)

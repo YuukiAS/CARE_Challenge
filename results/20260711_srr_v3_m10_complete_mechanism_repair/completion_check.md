@@ -35,6 +35,24 @@ No `review.md` was written. No push was performed. Wave 3, validation packaging/
 
 Decision remains `NEEDS_MONITOR`, not blocked and not complete.
 
+## Retry10 Submission After Retry9 Undertraining
+
+Checkpoint time: `2026-07-12T23:02:30Z`
+
+| Gate | Status |
+| --- | --- |
+| retry9 D1 terminal | fail-closed: Slurm `COMPLETED 0:0`, but `13600/25000` optimizer steps and `9/15` validation events |
+| retry9 D1 credit | zero for M10 minimum-effective D1 completion because `stop_reason=max_runtime_seconds` caused `SCIENTIFIC_UNDERTRAINED` |
+| invalid downstream retry9 jobs | cancelled: `58732393`, `58732395`, `58732397`, `58732399`, `58732400` |
+| retry9 finalizer | terminal: `58733769 FAILED 1:0`, `finalizer_state.json` written fail-closed |
+| same-scope repair | pass: owned Wave 2 entrypoint default runtime cap changed to `28500.0` seconds within 8h Slurm walltime; variants/formulas/budgets/split/cases/evaluation/result paths/executor count/wave graph unchanged |
+| retry10 preflight | pass: `58743253 COMPLETED 0:0` |
+| retry10 D1 | monitor: `58743282 RUNNING` |
+| retry10 downstream | monitor: D2-through-alignment and finalizer dependency-pending |
+| review | blocked: no `review.md`; this is not a completion packet |
+
+Decision remains `NEEDS_MONITOR`, not blocked and not complete.
+
 ## Retry9 D1 Final-Checkpoint Running Monitor
 
 Checkpoint time: `2026-07-12T22:01:54Z`

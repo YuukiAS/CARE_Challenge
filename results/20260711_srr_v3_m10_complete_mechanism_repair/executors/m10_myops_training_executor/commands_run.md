@@ -506,6 +506,29 @@ Retry9 has crossed the retry5/retry6/retry7/retry8 D1 OOM elapsed windows, but i
 
 Current state remains `NEEDS_MONITOR`, not complete and not reviewable.
 
+## Retry9 Undertraining and Retry10 Submission
+
+Update timestamp UTC: `2026-07-12T23:02:30Z`
+
+| Command / evidence | Result |
+| --- | --- |
+| `sacct -j 58732391,58732393,58732395,58732397,58732399,58732400,58733769 --format=JobIDRaw,JobName,Partition,QOS,State,ExitCode,Elapsed,Start,End,NodeList,ReqMem,MaxRSS --parsable2` | D1 `58732391 COMPLETED 0:0`; D2 `58732393 CANCELLED`; D3-through-alignment cancelled; finalizer `58733769 FAILED 1:0` |
+| D1 summary inspection | `actual_optimizer_steps=13600`, `max_steps=25000`, `validation_event_count=9`, `min_validation_events=15`, `stop_reason=max_runtime_seconds` |
+| `scancel 58732393 58732395 58732397 58732399 58732400` | cancelled invalid downstream retry9 jobs after D1 undertraining was detected |
+| `python -m py_compile scripts/training/run_srr_v3_m10_complete_repair.py` | exit `0` after runtime-cap repair |
+| `./envs/env_CARE/bin/python scripts/training/run_srr_v3_m10_complete_repair.py --phase d1_spatial_br2 --print-contract` | D1 contract now reports `max_runtime_seconds=28500.0`, `max_steps=25000`, `min_train_loop_seconds_for_plateau=9000.0`, `val_every=1666` |
+| `sbatch --parsable --job-name=M10W2PreHTZ10 --partition=htzhulab --qos=gpu_access_patron --gres=gpu:1 --mem=1200G ... wave2_env_preflight.sh` | `58743253`; preflight later `COMPLETED 0:0` |
+| retry10 D1 submission | `58743282`, dependency `afterok:58743253` |
+| retry10 D2 submission | `58743287`, dependency `afterok:58743282` |
+| retry10 D3 submission | `58743290`, dependency `afterok:58743287` |
+| retry10 hard-negative submission | `58743292`, dependency `afterok:58743290` |
+| retry10 no-context submission | `58743294`, dependency `afterok:58743292` |
+| retry10 alignment submission | `58743295`, dependency `afterok:58743294` |
+| retry10 finalizer submission | `58743452`, dependency `afterany` over all old and retry10 job IDs |
+| retry10 live state | D1 `58743282 RUNNING`; D2-through-alignment and finalizer dependency-pending |
+
+Current state remains `NEEDS_MONITOR`, not complete and not reviewable.
+
 ## Retry9 D1 Final-Checkpoint Running Monitor
 
 Update timestamp UTC: `2026-07-12T22:01:54Z`

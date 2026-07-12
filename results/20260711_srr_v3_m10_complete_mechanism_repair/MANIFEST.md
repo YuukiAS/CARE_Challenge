@@ -86,6 +86,10 @@ Packet state: `NEEDS_MONITOR`
 | `wave2_partition_race_retry9_monitor_20260712T201919Z.md` | Retry9 running monitor showing D1 still running at 01:51:31 with validation checkpoints through step 8330; not completion evidence. |
 | `wave2_partition_race_retry9_monitor_20260712T210229Z.md` | Retry9 D1 monitor showing the run crossed the 9000-second D1 minimum train-loop floor and wrote validation checkpoints through step 11662; not completion evidence. |
 | `wave2_partition_race_retry9_monitor_20260712T220154Z.md` | Retry9 D1 monitor showing final checkpoint and training logs exist while Slurm still reports D1 running; not completion evidence. |
+| `wave2_partition_race_retry10_submission_monitor.md` | Retry9 undertrained terminal accounting, same-scope runtime-cap repair, retry10 preflight/submission monitor; not completion evidence. |
+| `wave2_partition_race_retry10_submission.json` | Retry10 submission receipt with D0 retained and D1-through-alignment replacement job IDs. |
+| `wave2_partition_race_retry10_job_ledger.csv` | Retry10 ledger recording old/new job IDs, undertraining retry reason, preflight, hashes, dependencies, runtime root, and log paths. |
+| `wave2_partition_race_retry10_finalizer_submission.json` | Retry10 afterany finalizer receipt for job `58743452`. |
 | `executors/m10_myops_training_executor/` | Wave 2 executor monitor packet; not completion evidence. |
 | `subagents/reviewer_prompt.md` | Reviewer handoff prompt for this blocked packet only. |
 | `mapper_report_draft.md` | Mapper draft non-run receipt. |
