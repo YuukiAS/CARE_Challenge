@@ -73,3 +73,13 @@ This packet still does not request normal M10 review. Current state is `NEEDS_MO
 Retry4 is terminal but not complete. D0 `58706293` completed and produced formal D0 evidence. D1 `58706294` failed with a nested gate-usage logging error, D2-through-alignment were cancelled by `afterok`, and finalizer `58706300` failed fail-closed.
 
 The controller applied a same-scope owned-wrapper logging repair and has not requested normal review. Current state is `NEEDS_EVIDENCE` pending repaired-code compute-node preflight and D1-through-alignment replacement submission. Wave 3 must not start, and no `review.md` should be written for this packet.
+
+## Retry5 Monitor Update
+
+Repaired-code compute-node preflight `58714000` completed `0:0`, and retained upstream D0 `58706293` was verified as `COMPLETED 0:0`. The controller submitted the D1-through-alignment replacement chain:
+
+- D1 `58714023` is currently `RUNNING`.
+- D2-D3 and controls `58714024`-`58714028` are `PENDING (Dependency)`.
+- Finalizer `58714029` is `PENDING (Dependency)` with `afterany`.
+
+Current state is `NEEDS_MONITOR`, not a normal review request. Wave 2 terminal aggregation has not completed; Wave 3 must not start, and no `review.md` should be written for this packet.

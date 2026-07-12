@@ -163,3 +163,34 @@ review_md_written: false
 ```
 
 Next required action is repaired-code compute-node preflight. Only if that preflight exits `0` may the controller submit the D1-through-alignment replacement chain using afterok dependencies, retaining D0 `58706293` as the successful upstream phase.
+
+## Retry5 D1-Through-Alignment Monitor State
+
+At `2026-07-12T16:37:37Z`, repaired-code compute-node preflight job `58714000` had completed `0:0`, and D0 `58706293` was machine-verified as the retained successful upstream phase. The controller submitted only the D1-through-alignment replacement chain under the same `m10_myops_training_executor` and the same Wave 2 scientific contract.
+
+| Phase | Job ID | State |
+| --- | ---: | --- |
+| retained `d0_control` | `58706293` | `COMPLETED 0:0` |
+| `d1_spatial_br2` | `58714023` | `RUNNING` |
+| `d2_hierarchical_psip` | `58714024` | `PENDING (Dependency)` |
+| `d3_full_propref` | `58714025` | `PENDING (Dependency)` |
+| `hard_negative_refresh` | `58714026` | `PENDING (Dependency)` |
+| `no_context_control` | `58714027` | `PENDING (Dependency)` |
+| `alignment_control` | `58714028` | `PENDING (Dependency)` |
+
+Retry5 finalizer `58714029` is pending with `afterany`. The current state is:
+
+```text
+controller_run_status: NEEDS_MONITOR
+operational_completion_status: INCOMPLETE
+experiment_adequacy_decision: NOT_REVIEWED
+route_promotion_decision: NOT_REVIEWED
+route_negative_decision: NOT_REVIEWED
+scientific_resolution_status: AWAITING_REVIEW
+diagnostic_publication_decision: LOCAL_RETRY5_MONITOR_PACKET_COMMIT
+git_commit_decision: COMMIT_LOCAL_PACKET
+git_push_decision: SKIP_PUSH
+review_md_written: false
+```
+
+Next required action is to monitor `58714023` through terminal state. If D1 succeeds, the afterok chain should continue through D2, D3, hard-negative refresh, no-context control, and alignment control, then finalizer accounting and Wave 2 post-job aggregation must be inspected before any Wave 3 handoff.

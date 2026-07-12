@@ -322,3 +322,30 @@ Update timestamp UTC: `2026-07-12T16:24:12Z`
 | `sha256sum scripts/training/run_srr_v3_m10_complete_repair.py configs/srr_v3_m10_complete_repair.yaml data/benchmarks/protocol/splits_MyoPS.json` | code `bf132c6f6c1649c2a98bbe16af3ffe7cd67f436f035431a6b3376e4917203ad3`; config `df42f9ee55a3ba6ac616a37b2455cb7bca67c5f751f0c5a31c4a18938b107a9b`; split `6165caeb5b47feb0d24f20380898037b7e6cead4db1eeba398a3c5a57faf9a1b` |
 
 Current state is `NEEDS_EVIDENCE`: D0 completed successfully and should be retained as valid upstream evidence, but D1 failed from an operational logging compatibility defect and downstream jobs did not run. The next allowed action is repaired-code compute-node preflight, followed by a D1-through-alignment replacement chain only if preflight exits `0`.
+
+## Retry5 Repaired-Code Preflight And D1-Through-Alignment Replacement
+
+Update timestamp UTC: `2026-07-12T16:37:37Z`
+
+| Command / evidence | Result |
+| --- | --- |
+| `sbatch --parsable --job-name=M10W2PreHTZ5 --partition=htzhulab --qos=gpu_access --gres=gpu:1 --export=ALL,M10_PREFLIGHT_RACE_PARTITION=htzhulab,CARE_ROOT=/users/a/e/aereinh/CARE results/20260711_srr_v3_m10_complete_mechanism_repair/wave2_env_preflight.sh` | `58714000`; completed `0:0` after `00:00:20` |
+| `sacct -j 58706293 --format=JobIDRaw,State,ExitCode --parsable2 --noheader` | upstream D0 `58706293 COMPLETED 0:0` verified before D1 replacement submission |
+| `sbatch --parsable --partition=htzhulab --qos=gpu_access --gres=gpu:1 --export=ALL,M10_RUNTIME_ROOT=results/20260711_srr_v3_m10_complete_mechanism_repair/runtime/m10_myops_training_executor/partition_race_retry4/htzhulab,M10_DEFER_AGGREGATION=1,CARE_ROOT=/users/a/e/aereinh/CARE --dependency=afterok:58714000 jobs/src/run_srr_v3_m10_myops_d1_spatial_br2.sh` | `58714023` |
+| `sbatch --parsable --partition=htzhulab --qos=gpu_access --gres=gpu:1 --export=ALL,M10_RUNTIME_ROOT=results/20260711_srr_v3_m10_complete_mechanism_repair/runtime/m10_myops_training_executor/partition_race_retry4/htzhulab,M10_DEFER_AGGREGATION=1,CARE_ROOT=/users/a/e/aereinh/CARE --dependency=afterok:58714023 jobs/src/run_srr_v3_m10_myops_d2_hierarchical_psip.sh` | `58714024` |
+| `sbatch --parsable --partition=htzhulab --qos=gpu_access --gres=gpu:1 --export=ALL,M10_RUNTIME_ROOT=results/20260711_srr_v3_m10_complete_mechanism_repair/runtime/m10_myops_training_executor/partition_race_retry4/htzhulab,M10_DEFER_AGGREGATION=1,CARE_ROOT=/users/a/e/aereinh/CARE --dependency=afterok:58714024 jobs/src/run_srr_v3_m10_myops_d3_full_propref.sh` | `58714025` |
+| `sbatch --parsable --partition=htzhulab --qos=gpu_access --gres=gpu:1 --export=ALL,M10_RUNTIME_ROOT=results/20260711_srr_v3_m10_complete_mechanism_repair/runtime/m10_myops_training_executor/partition_race_retry4/htzhulab,M10_DEFER_AGGREGATION=1,CARE_ROOT=/users/a/e/aereinh/CARE --dependency=afterok:58714025 jobs/src/run_srr_v3_m10_hard_negative_refresh.sh` | `58714026` |
+| `sbatch --parsable --partition=htzhulab --qos=gpu_access --gres=gpu:1 --export=ALL,M10_RUNTIME_ROOT=results/20260711_srr_v3_m10_complete_mechanism_repair/runtime/m10_myops_training_executor/partition_race_retry4/htzhulab,M10_DEFER_AGGREGATION=1,CARE_ROOT=/users/a/e/aereinh/CARE --dependency=afterok:58714026 jobs/src/run_srr_v3_m10_no_context_control.sh` | `58714027` |
+| `sbatch --parsable --partition=htzhulab --qos=gpu_access --gres=gpu:1 --export=ALL,M10_RUNTIME_ROOT=results/20260711_srr_v3_m10_complete_mechanism_repair/runtime/m10_myops_training_executor/partition_race_retry4/htzhulab,M10_DEFER_AGGREGATION=1,CARE_ROOT=/users/a/e/aereinh/CARE --dependency=afterok:58714027 jobs/src/run_srr_v3_m10_alignment_control.sh` | `58714028` |
+| submit retry5 finalizer with `afterany` over old, superseded, failed, cancelled, preflight, retained D0, and retry5 replacement jobs | `58714029` |
+| `sacct -j 58714023,58714024,58714025,58714026,58714027,58714028 --format=JobIDRaw,JobName,Partition,State,ExitCode,Elapsed,Start,End,NodeList --parsable2` | D1 `58714023 RUNNING` on `g1807htzh01`; D2-through-alignment `PENDING` |
+| `squeue -j 58714029 -o '%i|%j|%P|%T|%M|%l|%R'` | finalizer `58714029 PENDING (Dependency)` |
+
+Retry5 receipts:
+
+- `results/20260711_srr_v3_m10_complete_mechanism_repair/wave2_partition_race_retry5_submission.json`
+- `results/20260711_srr_v3_m10_complete_mechanism_repair/wave2_partition_race_retry5_finalizer_submission.json`
+- `results/20260711_srr_v3_m10_complete_mechanism_repair/wave2_partition_race_retry5_job_ledger.csv`
+- `results/20260711_srr_v3_m10_complete_mechanism_repair/wave2_partition_race_retry5_monitor_20260712T163737Z.md`
+
+Current state is `NEEDS_MONITOR`: D1 has started and downstream stages are dependency-pending. This is not completion evidence and not reviewable.

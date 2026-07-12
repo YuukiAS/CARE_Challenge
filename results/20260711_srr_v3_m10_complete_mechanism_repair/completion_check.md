@@ -1,6 +1,6 @@
 # M10 Completion Check
 
-Completion state: `NEEDS_EVIDENCE`
+Completion state: `NEEDS_MONITOR`
 
 This packet is not complete and is not ready for independent review. It records that the original Wave 2 jobs are permanently `STARTUP_FAILED` with zero training credit, the repaired compute-node preflight succeeded, the authorized replacement Wave 2 formal jobs were submitted, and those jobs are currently pending/running/dependency-waiting under Slurm.
 
@@ -149,3 +149,20 @@ Checkpoint time: `2026-07-12T16:24:12Z`
 | review | blocked: no `review.md`; packet is not complete |
 
 Decision is `NEEDS_EVIDENCE`. D0 evidence is retained, but Wave 2 is not complete because D1 failed and downstream formal phases did not run.
+
+## Retry5 D1-Through-Alignment Replacement Monitor
+
+Checkpoint time: `2026-07-12T16:37:37Z`
+
+| Gate | Status |
+| --- | --- |
+| repaired-code compute-node preflight | pass: `58714000 COMPLETED 0:0` on `htzhulab` |
+| retained upstream D0 | pass: `58706293 COMPLETED 0:0` with valid D0 runtime evidence |
+| D1 replacement | monitor: `58714023 RUNNING` on `g1807htzh01` |
+| downstream replacements | monitor: `58714024`-`58714028 PENDING (Dependency)` |
+| dependency policy | pass: D1 uses `afterok:58714000` after machine-verified D0 success; downstream stages use `afterok` |
+| finalizer | monitor: `58714029 PENDING (Dependency)` with `afterany` |
+| post-job aggregation | pending: wait for terminal D1-through-alignment runtime outputs |
+| review | blocked: no `review.md`; this is not a completion packet |
+
+Decision is `NEEDS_MONITOR`, not blocked and not complete. This is not a pending-only scheduler block because D1 has started running.

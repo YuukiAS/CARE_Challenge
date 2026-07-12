@@ -2,7 +2,7 @@
 
 Task key: `20260711_srr_v3_m10_complete_mechanism_repair`
 
-Controller status: `NEEDS_EVIDENCE`
+Controller status: `NEEDS_MONITOR`
 
 This controller executed only the bootstrap and hard-gate validation for the M10 section in `prompts/shared/EXECUTOR_PROMPTS.md` titled `M10 executor/controller: SRR-v3 complete mechanism repair`, using `prompts/tasks/20260711_srr_v3_m10_complete_mechanism_repair_executor_plan.yaml`.
 
@@ -194,3 +194,23 @@ Repair fingerprints:
 | `data/benchmarks/protocol/splits_MyoPS.json` | `6165caeb5b47feb0d24f20380898037b7e6cead4db1eeba398a3c5a57faf9a1b` |
 
 Local verification passed for py-compile, D1 print-contract, nested gate-usage compatibility smoke, executor-plan validation, handoff-policy validation, architecture wiki strict/history validation, and generated wiki check. Current controller state is `NEEDS_EVIDENCE` pending repaired-code compute-node preflight and a D1-through-alignment replacement chain. Wave 3 remains blocked.
+
+## Retry5 D1-Through-Alignment Replacement Monitor
+
+At `2026-07-12T16:37:37Z`, the controller confirmed repaired-code compute-node preflight job `58714000` completed `0:0` on `htzhulab` after `00:00:20`. Upstream D0 job `58706293` remains the valid completed D0 evidence from retry4: `COMPLETED 0:0` after `02:09:10`, with `summary.json` recording `actual_optimizer_steps=36746`, `elapsed_seconds=7200.021336678998`, and `eval_cases=44`.
+
+The controller submitted a same-scope replacement chain for D1 through alignment only. This retains the same executor, variants, budgets, split, case set, evaluation rules, checkpoint-selection rules, runtime root, and Wave 2 graph. The D1 Slurm dependency is `afterok:58714000` because D0 success was machine-verified before submission; downstream stages use `afterok`.
+
+| Phase | Old job | Replacement job | Current state |
+| --- | ---: | ---: | --- |
+| D0 static matched control | `58706293` | retained | `COMPLETED 0:0` |
+| D1 spatial BR2 | `58706294` | `58714023` | `RUNNING` on `g1807htzh01` |
+| D2 hierarchical PSIP | `58706295` | `58714024` | `PENDING (Dependency)` |
+| D3 full memory PropRef | `58706296` | `58714025` | `PENDING (Dependency)` |
+| Hard-negative refresh | `58706297` | `58714026` | `PENDING (Dependency)` |
+| No-nnU-Net-context control | `58706298` | `58714027` | `PENDING (Dependency)` |
+| Alignment control | `58706299` | `58714028` | `PENDING (Dependency)` |
+
+Retry5 finalizer job `58714029` is pending with `afterany` over all old, superseded, failed, cancelled, preflight, D0, and retry5 replacement jobs.
+
+Current controller state is `NEEDS_MONITOR`, not complete and not reviewable. Wave 3 remains blocked until D1-through-alignment reaches terminal state, finalizer accounting runs, and Wave 2 post-job aggregation produces a successful completion receipt.
