@@ -2,7 +2,7 @@
 
 Task key: `20260711_srr_v3_m10_complete_mechanism_repair`
 
-Controller status: `NEEDS_EVIDENCE`
+Controller status: `NEEDS_MONITOR`
 
 This controller executed only the bootstrap and hard-gate validation for the M10 section in `prompts/shared/EXECUTOR_PROMPTS.md` titled `M10 executor/controller: SRR-v3 complete mechanism repair`, using `prompts/tasks/20260711_srr_v3_m10_complete_mechanism_repair_executor_plan.yaml`.
 
@@ -62,4 +62,8 @@ Formal monitor at `2026-07-11T15:45:38Z` found that all seven jobs reached termi
 
 The shared failure path is missing `mpmath` in `env_CARE`, reached through `sympy` during PyTorch optimizer initialization. The controller repaired the project-local dependency to `mpmath 1.3.0` and verified a minimal `torch.optim.AdamW` initialization, but no replacement Slurm training jobs were submitted in this packet.
 
-Post-job aggregation was rerun and wrote fail-closed phase evidence with `STARTUP_FAILED_NEEDS_EVIDENCE`. This is not M10 completion evidence. Wave 3, review, push, validation packaging/upload, hosted claims, route promotion, scientific stop, and M11 remain blocked until a later authorized execution produces valid wave 2 runtime summaries and aggregation evidence.
+Post-job aggregation was rerun and wrote fail-closed phase evidence with `STARTUP_FAILED_NEEDS_EVIDENCE`. This is not M10 completion evidence.
+
+The user later explicitly authorized a same-executor Wave 2 replacement attempt after the `mpmath` repair. The old jobs are permanently recorded in `wave2_startup_failed_jobs.csv` with zero training, optimizer-step, and train-loop-second credit. A compute-node preflight job, `58682781`, was submitted to `htzhulab` using the same environment initialization as the formal Wave 2 wrappers. Formal replacement jobs have not been submitted yet because the preflight is still pending.
+
+Wave 3, review, push, validation packaging/upload, hosted claims, route promotion, scientific stop, and M11 remain blocked until replacement Wave 2 preflight succeeds, replacement Wave 2 jobs complete, and post-job aggregation is committed.

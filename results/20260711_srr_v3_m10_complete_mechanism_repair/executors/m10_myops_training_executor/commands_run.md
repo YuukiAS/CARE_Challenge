@@ -79,3 +79,16 @@ JOBID|NAME|STATE|TIME|NODES|NODELIST(REASON)|PARTITION
 | `env PYTHONPATH=. python scripts/evaluation/aggregate_srr_v3_m10_myops.py --all --job-id ... --job-state ... --job-exit-code ... --job-log ...` | exit `2` as expected for `STARTUP_FAILED_NEEDS_EVIDENCE`; fail-closed phase packets written |
 
 No replacement Slurm training jobs were submitted after the environment repair.
+
+## Replacement Preflight
+
+| Command | Result |
+| --- | --- |
+| `bash -n results/20260711_srr_v3_m10_complete_mechanism_repair/wave2_env_preflight.sh` | pass |
+| `python scripts/ops/validate_executor_plan.py prompts/tasks/20260711_srr_v3_m10_complete_mechanism_repair_executor_plan.yaml` | pass |
+| `python -m py_compile scripts/training/run_srr_v3_m10_complete_repair.py scripts/evaluation/evaluate_srr_v3_m10_full_case.py scripts/evaluation/aggregate_srr_v3_m10_myops.py` | pass |
+| `sbatch --parsable results/20260711_srr_v3_m10_complete_mechanism_repair/wave2_env_preflight.sh` | `58682781` |
+| `squeue -j 58682781 -o '%i\|%j\|%T\|%M\|%D\|%R\|%P'` | `58682781|M10W2Preflight|PENDING|0:00|1|(Priority)|htzhulab` |
+| `sacct -j 58682781 --format=JobIDRaw,JobName,State,ExitCode,Elapsed,Start,End,NodeList -P` | `PENDING`, exit `0:0`, no node assigned |
+
+Formal replacement Slurm training jobs were not submitted because the compute-node preflight has not exited `0` yet.

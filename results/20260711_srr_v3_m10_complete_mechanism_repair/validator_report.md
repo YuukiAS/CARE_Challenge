@@ -39,8 +39,8 @@ The prior prerequisite blocker is repaired. This validator report is not complet
 
 Wave 1 has since completed and wave 2 submitted seven serial Slurm jobs. Formal accounting now shows all seven jobs failed with exit code `1:0`. Logs show the shared failure cause is missing `mpmath` for `sympy` during PyTorch optimizer initialization.
 
-The active controller state is `NEEDS_EVIDENCE`; this remains not completion evidence and not a review request.
+The active controller state is `NEEDS_MONITOR`; replacement Wave 2 compute-node preflight job `58682781` is pending. This remains not completion evidence and not a review request.
 
 ## Safety Confirmation
 
-No `review.md`, validation packaging, upload, push, route promotion, hosted metric claim, scientific stop, wave 3, replacement Slurm training submission, or M11 work occurred. The wave 2 jobs are terminal failed startup evidence only.
+No `review.md`, validation packaging, upload, route promotion, hosted metric claim, scientific stop, wave 3, replacement Slurm training submission, or M11 work occurred. The original wave 2 jobs are terminal failed startup evidence only; the replacement preflight is monitor state only.

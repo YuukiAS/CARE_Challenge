@@ -1,0 +1,8 @@
+phase,old_job_id,state,exit_code,replacement_reason,training_credit,optimizer_steps_credit,train_loop_seconds_credit,log_path
+d0_control,58644072,STARTUP_FAILED,1:0,env_CARE_missing_mpmath_for_sympy,0,0,0,logs/M10D0MyoPS_58644072_20260711_110852.log
+d1_spatial_br2,58644073,STARTUP_FAILED,1:0,env_CARE_missing_mpmath_for_sympy,0,0,0,logs/M10D1MyoPS_58644073_20260711_112003.log
+d2_hierarchical_psip,58644074,STARTUP_FAILED,1:0,env_CARE_missing_mpmath_for_sympy,0,0,0,logs/M10D2MyoPS_58644074_20260711_112103.log
+d3_full_propref,58644106,STARTUP_FAILED,1:0,env_CARE_missing_mpmath_for_sympy,0,0,0,logs/M10D3MyoPS_58644106_20260711_112204.log
+hard_negative_refresh,58644107,STARTUP_FAILED,1:0,env_CARE_missing_mpmath_for_sympy,0,0,0,logs/M10HardNeg_58644107_20260711_112305.log
+no_context_control,58644108,STARTUP_FAILED,1:0,env_CARE_missing_mpmath_for_sympy,0,0,0,logs/M10NoCtx_58644108_20260711_112406.log
+alignment_control,58644109,STARTUP_FAILED,1:0,env_CARE_missing_mpmath_for_sympy,0,0,0,logs/M10Align_58644109_20260711_112450.log

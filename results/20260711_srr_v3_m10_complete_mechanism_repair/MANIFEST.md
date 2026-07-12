@@ -2,7 +2,7 @@
 
 Task key: `20260711_srr_v3_m10_complete_mechanism_repair`
 
-Packet state: `NEEDS_EVIDENCE`
+Packet state: `NEEDS_MONITOR`
 
 ## Files
 
@@ -27,6 +27,9 @@ Packet state: `NEEDS_EVIDENCE`
 | `wave2_launch_receipt.json` | Controller receipt for serial wave 2 worker launch. |
 | `wave2_monitor_receipt.md` | Controller receipt for wave 2 monitor state and terminal failure update. |
 | `wave2_terminal_failure_receipt.md` | Terminal Slurm accounting, log failure cause, dependency repair, and fail-closed aggregation receipt. |
+| `wave2_startup_failed_jobs.csv` | Permanent zero-credit accounting for original startup-failed Wave 2 jobs. |
+| `wave2_env_preflight.sh` | Slurm compute-node environment preflight wrapper for the authorized replacement attempt. |
+| `wave2_replacement_preflight_receipt.md` | Replacement authorization, hashes, preflight command, and pending preflight job receipt. |
 | `executors/m10_myops_training_executor/` | Wave 2 executor monitor packet; not completion evidence. |
 | `subagents/reviewer_prompt.md` | Reviewer handoff prompt for this blocked packet only. |
 | `mapper_report_draft.md` | Mapper draft non-run receipt. |

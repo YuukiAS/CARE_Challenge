@@ -1,6 +1,6 @@
 # M10 Terminal Failure Packet Review Boundary
 
-This packet does not request M10 scientific review yet. It records an original prerequisite stop, a later prerequisite repair, wave 1 acceptance, and wave 2 Slurm terminal failure now in `NEEDS_EVIDENCE`.
+This packet does not request M10 scientific review yet. It records an original prerequisite stop, a later prerequisite repair, wave 1 acceptance, original wave 2 Slurm terminal failure, and an authorized replacement Wave 2 compute-node preflight now in `NEEDS_MONITOR`.
 
 The wave 2 executor submitted seven serial `htzhulab` jobs. Formal monitor at `2026-07-11T15:45:38Z` found all seven jobs terminal `FAILED` with exit code `1:0`. Logs show the shared failure cause is missing `mpmath` for `sympy` during PyTorch optimizer initialization.
 
@@ -15,4 +15,4 @@ Blocked actions until terminal post-job aggregation exists:
 - claim route promotion or scientific stop
 - start M11
 
-The next action requires explicit authorization for another execution attempt. The project-local dependency has been repaired to `mpmath 1.3.0`, but no replacement Slurm training jobs were submitted by this controller packet.
+The next action is to wait for preflight job `58682781` terminal accounting. Only if it exits `0` may the controller submit the formal replacement Wave 2 jobs with training-to-training `afterok` dependencies. No replacement Slurm training jobs were submitted by this packet.

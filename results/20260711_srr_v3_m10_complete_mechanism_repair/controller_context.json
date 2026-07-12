@@ -74,7 +74,7 @@
     "wiki/history/COMPARISON.md",
     "wiki/history/M09/components/*.md"
   ],
-  "next_action": "NEEDS_EVIDENCE; replacement wave2 Slurm training submission requires explicit authorization after mpmath repair",
+  "next_action": "NEEDS_MONITOR; wait for compute-node preflight job 58682781, then submit replacement Wave2 afterok chain only if preflight exits 0",
   "blocked_actions": [
     "parallel executor launch",
     "wave2 before wave1 completion",

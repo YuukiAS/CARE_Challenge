@@ -23,20 +23,22 @@ The original controller attempt stopped before launching executor wave 1 because
 
 Wave 1 executor returned `READY_FOR_CONTROLLER_MERGE`, and controller verification accepted the wave 1 merge. Wave 2 then launched as a serial MyoPS executor and returned `NEEDS_MONITOR` after submitting seven `htzhulab` jobs. Formal controller monitor at `2026-07-11T15:45:38Z` found all seven jobs terminal `FAILED` with exit code `1:0`.
 
-The shared log failure is missing `mpmath` in `env_CARE`, reached through `sympy` during PyTorch optimizer initialization. The controller repaired the project-local dependency to `mpmath 1.3.0` and verified minimal `torch.optim.AdamW` initialization, but no replacement Slurm training jobs were submitted in this packet.
+The shared log failure is missing `mpmath` in `env_CARE`, reached through `sympy` during PyTorch optimizer initialization. The controller repaired the project-local dependency to `mpmath 1.3.0` and verified minimal `torch.optim.AdamW` initialization.
+
+The user later authorized the same `m10_myops_training_executor` to run a replacement Wave 2 attempt without changing executor count, milestone, variants, budgets, split, or scientific design. The controller submitted compute-node preflight job `58682781` to `htzhulab`. Formal replacement training jobs have not been submitted yet because the preflight is still pending.
 
 The file `review.md` is intentionally absent. A reviewer must not start until a later authorized execution produces valid wave 2 runtime evidence and post-job aggregation.
 
 ## Terminal State
 
 ```text
-controller_run_status: NEEDS_EVIDENCE
+controller_run_status: NEEDS_MONITOR
 operational_completion_status: INCOMPLETE
 experiment_adequacy_decision: NOT_REVIEWED
 route_promotion_decision: NOT_REVIEWED
 route_negative_decision: NOT_REVIEWED
 scientific_resolution_status: AWAITING_REVIEW
-diagnostic_publication_decision: LOCAL_TERMINAL_FAILURE_PACKET_COMMIT
+diagnostic_publication_decision: LOCAL_REPLACEMENT_PREFLIGHT_MONITOR_PACKET_COMMIT
 git_commit_decision: COMMIT_LOCAL_PACKET
 git_push_decision: SKIP_PUSH
 published_files:
@@ -62,11 +64,15 @@ published_files:
   - results/20260711_srr_v3_m10_complete_mechanism_repair/wave2_launch_receipt.json
   - results/20260711_srr_v3_m10_complete_mechanism_repair/wave2_monitor_receipt.md
   - results/20260711_srr_v3_m10_complete_mechanism_repair/wave2_terminal_failure_receipt.md
+  - results/20260711_srr_v3_m10_complete_mechanism_repair/wave2_startup_failed_jobs.csv
+  - results/20260711_srr_v3_m10_complete_mechanism_repair/wave2_env_preflight.sh
+  - results/20260711_srr_v3_m10_complete_mechanism_repair/wave2_replacement_preflight_receipt.md
 blocked_actions:
+  - formal replacement jobs before preflight exit 0
   - wave3 before successful wave2 runtime aggregation
   - review before successful wave2 runtime aggregation
   - validation packaging/upload/fold expansion/hosted metric claim/next-stage training
-next_required_action: obtain explicit authorization before any replacement Slurm training submission
+next_required_action: wait for preflight job 58682781 terminal accounting; submit replacement Wave2 afterok chain only if exit 0
 reason_if_not_published: not applicable
-reason_if_no_route_promotion: wave2 jobs failed at startup and no valid runtime evidence exists
+reason_if_no_route_promotion: replacement Wave2 preflight is pending and no valid runtime evidence exists
 ```

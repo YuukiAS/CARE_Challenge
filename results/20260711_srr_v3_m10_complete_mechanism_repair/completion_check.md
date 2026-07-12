@@ -1,8 +1,8 @@
 # M10 Completion Check
 
-Completion state: `NEEDS_EVIDENCE`
+Completion state: `NEEDS_MONITOR`
 
-This is not `PACKET_COMMITTED_FOR_REVIEW` for a completed M10 runtime milestone. It records that wave 2 reached terminal Slurm accounting, but all seven jobs failed before producing formal runtime summaries or training evidence.
+This is not `PACKET_COMMITTED_FOR_REVIEW` for a completed M10 runtime milestone. It records that original Wave 2 reached terminal Slurm accounting, all seven jobs failed before producing formal runtime summaries, and a same-executor replacement preflight is now pending.
 
 ## Required Gates
 
@@ -22,11 +22,13 @@ This is not `PACKET_COMMITTED_FOR_REVIEW` for a completed M10 runtime milestone.
 | Wave 2 executor receipt | terminal failure: `NEEDS_EVIDENCE` |
 | Live Slurm status | terminal: all seven jobs `FAILED`, exit `1:0` |
 | Post-job aggregation | fail-closed: `STARTUP_FAILED_NEEDS_EVIDENCE` phase packets |
+| Old job credit accounting | pass: old jobs recorded as `STARTUP_FAILED`, zero credit |
+| Replacement preflight | monitor: job `58682781` pending on `htzhulab` |
 
 ## Decision
 
 Wave 2 terminal job states and post-job aggregation now exist, but they prove startup failure rather than training adequacy. The shared failure cause is missing `mpmath` in `env_CARE`, reached through `sympy` during PyTorch optimizer initialization. The project-local environment was repaired afterward (`mpmath 1.3.0` installed and a minimal `torch.optim.AdamW` check passed), but resubmitting training jobs was not performed in this packet.
 
-The controller must not perform controller merge, wave 3 launch, or review request until a later authorized execution produces valid wave 2 runtime summaries and aggregation evidence.
+The controller must not perform controller merge, wave 3 launch, or review request until replacement preflight succeeds, replacement jobs complete, and valid Wave 2 runtime summaries and aggregation evidence are committed.
 
 No `review.md` was written.
