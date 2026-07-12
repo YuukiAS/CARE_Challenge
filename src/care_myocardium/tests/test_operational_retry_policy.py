@@ -24,6 +24,7 @@ validator = load_module("validate_handoff_policy_retry_tests", REPO / "scripts/v
 executor_plan = load_module("validate_executor_plan_retry_tests", REPO / "scripts/ops/validate_executor_plan.py")
 finalizer = load_module("care_milestone_finalizer_retry_tests", REPO / "scripts/ops/care_milestone_finalizer.py")
 watcher = load_module("start_care_tmux_watcher_retry_tests", REPO / "scripts/ops/start_care_tmux_watcher.py")
+training_chain = load_module("submit_care_training_chain_retry_tests", REPO / "scripts/ops/submit_care_training_chain.py")
 
 
 def slurm_entry(**overrides: object) -> dict[str, object]:
@@ -162,6 +163,30 @@ reason_if_no_route_promotion: no execution
             receipt = json.loads((result / "tmux_watcher_receipt.json").read_text(encoding="utf-8"))
             self.assertEqual(code, 0)
             self.assertEqual(receipt["watcher_final_status"], "HAND_BACK_TO_CONTROLLER_FOR_SAME_SCOPE_RETRY")
+
+    def test_training_chain_yaml_fallback_supports_clean_dry_run(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            manifest = root / "chain.yaml"
+            manifest.write_text(
+                """executor_id: m10_myops_training_executor
+attempt_number: 2
+scope_changed: false
+stages:
+  - id: D0
+    script: jobs/src/d0.sh
+  - id: D1
+    script: jobs/src/d1.sh
+    requires_success_of: [D0]
+""",
+                encoding="utf-8",
+            )
+            data = training_chain.load_yaml_fallback(manifest)
+            self.assertEqual(data["executor_id"], "m10_myops_training_executor")
+            self.assertEqual(data["attempt_number"], "2")
+            self.assertFalse(data["scope_changed"])
+            self.assertEqual(data["stages"][1]["requires_success_of"], ["D0"])
+            self.assertEqual(training_chain.validate_manifest(data), [])
 
 
 if __name__ == "__main__":

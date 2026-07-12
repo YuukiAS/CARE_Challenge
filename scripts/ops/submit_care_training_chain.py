@@ -19,10 +19,50 @@ def load_yaml(path: Path) -> dict[str, Any]:
     try:
         import yaml  # type: ignore
     except ImportError as exc:  # pragma: no cover
-        raise RuntimeError("PyYAML is required for training chain manifests") from exc
-    data = yaml.safe_load(path.read_text(encoding="utf-8"))
+        data = load_yaml_fallback(path)
+    else:
+        data = yaml.safe_load(path.read_text(encoding="utf-8"))
     if not isinstance(data, dict):
         raise ValueError("training chain manifest must be a mapping")
+    return data
+
+
+def scalar_value(value: str) -> Any:
+    value = value.strip()
+    if value in {"true", "false"}:
+        return value == "true"
+    if value in {"[]", "[ ]"}:
+        return []
+    if value.startswith("[") and value.endswith("]"):
+        inner = value[1:-1].strip()
+        return [item.strip().strip("'\"") for item in inner.split(",") if item.strip()]
+    return value.strip("'\"")
+
+
+def load_yaml_fallback(path: Path) -> dict[str, Any]:
+    data: dict[str, Any] = {}
+    stages: list[dict[str, Any]] = []
+    current_stage: dict[str, Any] | None = None
+    for raw in path.read_text(encoding="utf-8").splitlines():
+        if not raw.strip() or raw.lstrip().startswith("#"):
+            continue
+        stripped = raw.strip()
+        if stripped == "stages:":
+            data["stages"] = stages
+            continue
+        if stripped.startswith("- "):
+            current_stage = {}
+            stages.append(current_stage)
+            stripped = stripped[2:].strip()
+            if stripped:
+                key, _, value = stripped.partition(":")
+                current_stage[key.strip()] = scalar_value(value)
+            continue
+        key, sep, value = stripped.partition(":")
+        if not sep:
+            continue
+        target = current_stage if raw.startswith("    ") and current_stage is not None else data
+        target[key.strip()] = scalar_value(value)
     return data
 
 
