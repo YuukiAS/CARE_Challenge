@@ -506,6 +506,21 @@ Retry9 has crossed the retry5/retry6/retry7/retry8 D1 OOM elapsed windows, but i
 
 Current state remains `NEEDS_MONITOR`, not complete and not reviewable.
 
+## Retry9 Running Monitor Through Step 8330
+
+Update timestamp UTC: `2026-07-12T20:19:19Z`
+
+| Command / evidence | Result |
+| --- | --- |
+| `squeue -j 58732391,58732393,58732395,58732397,58732399,58732400,58733769 -o '%i|%j|%P|%q|%T|%M|%l|%R'` | D1 `58732391 RUNNING` for `01:51:31`; D2-through-alignment and finalizer dependency-pending |
+| `sacct -j 58732391,58732393,58732395,58732397,58732399,58732400,58733769 --format=JobIDRaw,JobName,Partition,QOS,State,ExitCode,Elapsed,Start,End,NodeList,ReqMem,MaxRSS --parsable2` | D1 `58732391 RUNNING 0:0`, elapsed `01:51:31`, `ReqMem=1200G`; D2-through-alignment and finalizer dependency-pending |
+| `sstat -j 58732391.batch --format=JobID,MaxRSS,AveRSS,MaxVMSize,AveVMSize -P` | `MaxRSS=570767692K`, `AveRSS=570767692K` |
+| D1 checkpoint listing | checkpoints exist through `checkpoint_validation_step_8330.pt`, plus updated `checkpoint_best.pt` |
+
+Retry9 remains running and has not produced final D1 completion or aggregation evidence.
+
+Current state remains `NEEDS_MONITOR`, not complete and not reviewable.
+
 ## Retry9 Running Monitor With Additional Checkpoints
 
 Update timestamp UTC: `2026-07-12T19:46:43Z`

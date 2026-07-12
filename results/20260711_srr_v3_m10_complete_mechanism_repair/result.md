@@ -401,3 +401,21 @@ checkpoint_validation_step_6664.pt
 ```
 
 D2-through-alignment remain dependency-pending and finalizer `58733769` remains dependency-pending. D1 has not written final `training_log.csv`, `validation_events.csv`, `summary.json`, or post-job aggregation evidence, so the state remains `NEEDS_MONITOR`, not complete and not reviewable.
+
+## Retry9 Running Monitor Through Step 8330
+
+At `2026-07-12T20:19:19Z`, retry9 D1 `58732391` remained `RUNNING` on `g1807htzh01` for `01:51:31` with `ReqMem=1200G`. Live memory accounting reported `MaxRSS=570767692K` and `AveRSS=570767692K`.
+
+D1 has now written scheduled checkpoint evidence through step 8330:
+
+```text
+checkpoint_validation_step_1666.pt
+checkpoint_validation_step_3332.pt
+checkpoint_validation_step_4998.pt
+checkpoint_validation_step_5000.pt
+checkpoint_validation_step_6664.pt
+checkpoint_validation_step_8330.pt
+checkpoint_best.pt
+```
+
+D2-through-alignment remain dependency-pending and finalizer `58733769` remains dependency-pending. D1 has not written final `training_log.csv`, `validation_events.csv`, `summary.json`, or post-job aggregation evidence, so the state remains `NEEDS_MONITOR`, not complete and not reviewable.
