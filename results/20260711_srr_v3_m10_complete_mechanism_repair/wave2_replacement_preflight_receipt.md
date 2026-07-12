@@ -79,6 +79,19 @@ Current active preflight state at submission check:
 58683497|M10W2Preflight|PENDING|0:00|1|(Priority)|htzhulab
 ```
 
+Formal monitor check at `2026-07-12T04:17:34Z`:
+
+```text
+squeue: 58683497|M10W2Preflight|PENDING|0:00|1|(Priority)|htzhulab
+sacct:  58683497|M10W2Preflight|PENDING|0:0|00:00:00|Unknown|Unknown|None assigned
+```
+
+This is pending-only monitor evidence, not a scheduler block. It is the first
+2-hour monitor check after active enhanced preflight submission. No submitted
+routing partition has started, and the next legal pending-only monitor check is
+`2026-07-12T06:17:34Z` unless the scheduler state changes through an external
+notification before then.
+
 Prior preflight job `58682781` used the same environment initialization and the
 user-required import/optimizer block, but it was superseded before formal job
 submission because the current Slurm skill requires the enhanced preflight
