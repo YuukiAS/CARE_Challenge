@@ -91,3 +91,11 @@ Retry5 is terminal but not complete: D1 `58714023` failed as `OUT_OF_MEMORY 0:12
 The controller submitted same-scope retry6 with only the Slurm memory request increased to `96G`. Preflight `58714615` completed `0:0`. D1 `58714634` is currently `RUNNING`, D2-through-alignment `58714635`-`58714639` are dependency-pending, and finalizer `58714640` is dependency-pending.
 
 Current state remains `NEEDS_MONITOR`, not a normal review request. Wave 2 terminal aggregation has not completed; Wave 3 must not start, and no `review.md` should be written for this packet.
+
+## Retry7 Monitor Update
+
+Retry6 is terminal but not complete: D1 `58714634` failed as `OUT_OF_MEMORY 0:125` with `ReqMem=96G` and batch `MaxRSS=100661736K`; downstream jobs were cancelled by `afterok`; finalizer `58714640` failed from an aggregation-command argument-format issue. Local replay wrote `wave2_partition_race_retry6_finalization.json` with `NEEDS_EVIDENCE`.
+
+The controller submitted same-scope retry7 with only the Slurm memory request increased to `128G`. Preflight `58719811` completed `0:0`. D1 `58719835` is currently `RUNNING`, D2-through-alignment `58719836`-`58719840` are dependency-pending, and finalizer `58719841` is dependency-pending.
+
+Current state remains `NEEDS_MONITOR`, not a normal review request. Wave 2 terminal aggregation has not completed; Wave 3 must not start, and no `review.md` should be written for this packet.

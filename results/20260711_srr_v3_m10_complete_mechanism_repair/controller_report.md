@@ -226,3 +226,35 @@ review_md_written: false
 ```
 
 Next required action is to monitor retry6 through terminal state, then inspect finalizer accounting and Wave 2 aggregation before any Wave 3 handoff.
+
+## Retry6 OOM And Retry7 128G Monitor State
+
+Retry6 is terminal and unsuccessful. D1 `58714634` reached `OUT_OF_MEMORY 0:125` after `00:12:46` with `ReqMem=96G` and batch `MaxRSS=100661736K`; D2 through alignment were cancelled by unmet `afterok`. Finalizer `58714640` failed with exit `2:0` because the controller submitted `--aggregation-command` as split argv. The controller replayed retry6 finalization locally with Slurm accounting and wrote `wave2_partition_race_retry6_finalization.json` with `status: NEEDS_EVIDENCE`.
+
+Because this remains a Slurm resource request failure and not a scientific/model/split change, the controller submitted retry7 with `--mem=128G` and unchanged code/config/split fingerprints. Preflight `58719811` completed `0:0`. Current retry7 state:
+
+| Phase | Job ID | State |
+| --- | ---: | --- |
+| retained `d0_control` | `58706293` | `COMPLETED 0:0` |
+| `d1_spatial_br2` | `58719835` | `RUNNING` |
+| `d2_hierarchical_psip` | `58719836` | `PENDING (Dependency)` |
+| `d3_full_propref` | `58719837` | `PENDING (Dependency)` |
+| `hard_negative_refresh` | `58719838` | `PENDING (Dependency)` |
+| `no_context_control` | `58719839` | `PENDING (Dependency)` |
+| `alignment_control` | `58719840` | `PENDING (Dependency)` |
+| retry7 finalizer | `58719841` | `PENDING (Dependency)` |
+
+```text
+controller_run_status: NEEDS_MONITOR
+operational_completion_status: INCOMPLETE
+experiment_adequacy_decision: NOT_REVIEWED
+route_promotion_decision: NOT_REVIEWED
+route_negative_decision: NOT_REVIEWED
+scientific_resolution_status: AWAITING_REVIEW
+diagnostic_publication_decision: LOCAL_RETRY7_MONITOR_PACKET_COMMIT
+git_commit_decision: COMMIT_LOCAL_PACKET
+git_push_decision: SKIP_PUSH
+review_md_written: false
+```
+
+Next required action is to monitor retry7 through terminal state, then inspect finalizer accounting and Wave 2 aggregation before any Wave 3 handoff.

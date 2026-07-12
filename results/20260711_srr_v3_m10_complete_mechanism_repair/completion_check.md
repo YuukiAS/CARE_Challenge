@@ -186,3 +186,23 @@ Checkpoint time: `2026-07-12T16:47:36Z`
 | review | blocked: no `review.md`; this is not a completion packet |
 
 Decision is `NEEDS_MONITOR`, not blocked and not complete. This is not a pending-only scheduler block because retry6 D1 has started running.
+
+## Retry6 OOM And Retry7 128G Monitor
+
+Checkpoint time: `2026-07-12T17:10:37Z`
+
+| Gate | Status |
+| --- | --- |
+| retry6 D1 terminal state | fail: `58714634 OUT_OF_MEMORY 0:125` after `00:12:46` |
+| retry6 memory evidence | fail: `ReqMem=96G`, batch `MaxRSS=100661736K` |
+| retry6 downstream stages | fail-closed: `58714635`-`58714639 CANCELLED 0:0` by unmet `afterok` |
+| retry6 finalizer | fail: `58714640 FAILED 2:0` because `--aggregation-command` was split into multiple argv |
+| retry6 aggregation replay | fail-closed: `wave2_partition_race_retry6_finalization.json` records `NEEDS_EVIDENCE` and `OUT_OF_MEMORY(0:125)` |
+| retry7 preflight | pass: `58719811 COMPLETED 0:0` with `ReqMem=128G` |
+| retry7 D1 replacement | monitor: `58719835 RUNNING` on `g1807htzh01` with `ReqMem=128G` |
+| retry7 downstream replacements | monitor: `58719836`-`58719840 PENDING (Dependency)` |
+| retry7 finalizer | monitor: `58719841 PENDING (Dependency)` with `afterany` and corrected aggregation-command string |
+| scientific contract | pass: code/config/split hashes unchanged; variants, budgets, split, formulas, result paths, executor count, and wave graph unchanged |
+| review | blocked: no `review.md`; this is not a completion packet |
+
+Decision is `NEEDS_MONITOR`, not blocked and not complete. This is not a pending-only scheduler block because retry7 D1 has started running.
