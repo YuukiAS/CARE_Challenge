@@ -104,6 +104,22 @@
       "monitor_check_index_after_submission": 2,
       "scheduler_block": false,
       "next_legal_pending_monitor_check_utc": "2026-07-12T08:18:01Z"
+    },
+    {
+      "checked_at_utc": "2026-07-12T08:18:34Z",
+      "job_id": 58683497,
+      "squeue_state": "PENDING",
+      "squeue_reason": "Priority",
+      "sacct_state": "PENDING",
+      "sacct_exit_code": "0:0",
+      "elapsed": "00:00:00",
+      "start": "Unknown",
+      "end": "Unknown",
+      "node_list": "None assigned",
+      "partition": "htzhulab",
+      "monitor_check_index_after_submission": 3,
+      "scheduler_block": false,
+      "next_legal_pending_monitor_check_utc": "2026-07-12T10:18:34Z"
     }
   ],
   "required_job_ids": [
@@ -143,7 +159,7 @@
     "./envs/env_CARE/bin/python -c 'import torch; ... torch.optim.AdamW(...)'"
   ],
   "blocked_reason": "",
-  "resume_state": "NEEDS_MONITOR; active enhanced compute-node preflight job 58683497 remained pending at 2026-07-12T06:18:01Z before authorized replacement Wave 2 submission; two consecutive 2-hour pending-only monitor checks have been recorded; next pending-only monitor check is 2026-07-12T08:18:01Z; preflight 58682781 is superseded and not a formal gate",
+  "resume_state": "NEEDS_MONITOR; active enhanced compute-node preflight job 58683497 remained pending at 2026-07-12T08:18:34Z before authorized replacement Wave 2 submission; three consecutive 2-hour pending-only monitor checks have been recorded; next pending-only monitor check is 2026-07-12T10:18:34Z; preflight 58682781 is superseded and not a formal gate",
   "review_md_written": false,
   "pushed": false
 }
