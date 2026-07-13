@@ -506,6 +506,20 @@ Retry9 has crossed the retry5/retry6/retry7/retry8 D1 OOM elapsed windows, but i
 
 Current state remains `NEEDS_MONITOR`, not complete and not reviewable.
 
+## Retry11 D3 Completion / Hard-Negative Running Monitor
+
+Update timestamp UTC: `2026-07-13T15:27:46Z`
+
+| Command / evidence | Result |
+| --- | --- |
+| `squeue -j 58775065,58775066,58775067,58775068,58775069,58775070,58775071 -o '%i\|%j\|%P\|%T\|%M\|%D\|%R'` | hard-negative refresh `58775068 RUNNING` for `00:10:30` on `g1807htzh01`; no-context, alignment, and finalizer dependency-pending |
+| `sacct -j 58775065,58775066,58775067,58775068,58775069,58775070,58775071 --format=JobID,JobName%24,Partition,State,ExitCode,Elapsed,Start,End,NodeList%24,MaxRSS -P` | D3 `58775067 COMPLETED 0:0`, elapsed `04:05:39`, `MaxRSS=21604968K`; hard-negative refresh `58775068 RUNNING 0:0`; downstream/finalizer dependency-pending |
+| D3 summary inspection | `actual_optimizer_steps=50820`, `train_loop_seconds=14400.138177286019`, `validation_event_count=26`, `eval_cases=44`, `stop_reason=max_steps_min_train_loop_seconds_satisfied` |
+| D3 repaired logging size check | `retrieval_usage.csv` is `18444638` bytes and `138449` lines including header |
+| hard-negative refresh early runtime listing | one-batch overfit, prototype bank, and prototype update files exist; no final hard-negative `training_log.csv`, `validation_events.csv`, or `summary.json` yet |
+
+Current state remains `NEEDS_MONITOR`, not complete and not reviewable.
+
 ## Retry11 D3 Time-Floor Monitor
 
 Update timestamp UTC: `2026-07-13T15:16:07Z`
