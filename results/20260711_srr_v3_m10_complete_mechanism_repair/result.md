@@ -456,6 +456,68 @@ Retry10 compute preflight `58743253` completed `0:0`, then the controller submit
 
 Current state is `NEEDS_MONITOR`, not complete and not reviewable. Wave 3 remains blocked.
 
+## Retry10 Terminal OOM
+
+At terminal accounting, retry10 D1 `58743282` reached `OUT_OF_MEMORY` with exit code `0:125` after `06:09:20` on `g1807htzh01`. The retained D0 job `58706293` remains valid upstream evidence, but retry10 D1 receives zero D1 minimum-effective-training credit and D2-through-alignment did not run because their required `afterok` dependency was not satisfied.
+
+The Wave 2 finalizer job `58743452` wrote `finalizer_state.json` and `care_milestone_finalizer_58743452.log`. Its terminal classification is:
+
+```text
+final_state=RUNTIME_FAILURE
+failure_class=OUT_OF_MEMORY_NEEDS_REVISION
+suggested_next_state=NEEDS_REVISION
+retryable=false
+aggregation_exit_code=None
+```
+
+D1 retry10 wrote checkpoints through step 21658:
+
+```text
+checkpoint_validation_step_1666.pt
+checkpoint_validation_step_3332.pt
+checkpoint_validation_step_4998.pt
+checkpoint_validation_step_5000.pt
+checkpoint_validation_step_6664.pt
+checkpoint_validation_step_8330.pt
+checkpoint_validation_step_9996.pt
+checkpoint_validation_step_11662.pt
+checkpoint_validation_step_13328.pt
+checkpoint_validation_step_14994.pt
+checkpoint_validation_step_15000.pt
+checkpoint_validation_step_16660.pt
+checkpoint_validation_step_18326.pt
+checkpoint_validation_step_19992.pt
+checkpoint_validation_step_21658.pt
+checkpoint_best.pt
+```
+
+D1 did not write final `training_log.csv`, `validation_events.csv`, `summary.json`, or `runtime_manifest.json`, and it did not reach the D1 optimizer-step floor of `25000`. Current controller state is `NEEDS_REVISION`, not `NEEDS_MONITOR`, not complete, and not reviewable. Wave 3 remains blocked. No `review.md` was written and no push was performed.
+
+## Retry10 D1 Step18326 Monitor
+
+At `2026-07-13T03:44:53Z`, retry10 D1 `58743282` was `RUNNING` on `g1807htzh01` for `04:42:57` with `ReqMem=1200G`. Live memory accounting reported `MaxRSS=1070713496K` and `AveRSS=1070713496K`.
+
+D1 retry10 has written validation checkpoints through step 18326:
+
+```text
+checkpoint_validation_step_1666.pt
+checkpoint_validation_step_3332.pt
+checkpoint_validation_step_4998.pt
+checkpoint_validation_step_5000.pt
+checkpoint_validation_step_6664.pt
+checkpoint_validation_step_8330.pt
+checkpoint_validation_step_9996.pt
+checkpoint_validation_step_11662.pt
+checkpoint_validation_step_13328.pt
+checkpoint_validation_step_14994.pt
+checkpoint_validation_step_15000.pt
+checkpoint_validation_step_16660.pt
+checkpoint_validation_step_18326.pt
+checkpoint_best.pt
+```
+
+D2-through-alignment remain dependency-pending and finalizer `58743452` remains dependency-pending. D1 has not written final `training_log.csv`, `validation_events.csv`, `summary.json`, `runtime_manifest.json`, or post-job aggregation evidence, so the state remains `NEEDS_MONITOR`, not complete and not reviewable.
+
 ## Retry10 D1 Step16660 Monitor
 
 At `2026-07-13T03:05:23Z`, retry10 D1 `58743282` was `RUNNING` on `g1807htzh01` for `04:03:38` with `ReqMem=1200G`. Live memory accounting reported `MaxRSS=971164048K` and `AveRSS=970805196K`.

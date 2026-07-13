@@ -1,24 +1,24 @@
 # M10 Completion Check
 
-Completion state: `NEEDS_MONITOR`
+Completion state: `NEEDS_REVISION`
 
-This packet is not complete and is not ready for independent review. It records that the original Wave 2 jobs are permanently `STARTUP_FAILED` with zero training credit, the repaired compute-node preflight succeeded, the authorized replacement Wave 2 formal jobs were submitted, and those jobs are currently pending/running/dependency-waiting under Slurm.
+This packet is not complete and is not ready for independent review. It records that the original Wave 2 jobs are permanently `STARTUP_FAILED` with zero training credit, D0 has one retained valid upstream run, retry10 D1 reached terminal `OUT_OF_MEMORY(0:125)` after writing checkpoints through step 21658, and D2-through-alignment did not run because their required `afterok` dependency failed.
 
 ## Required Gates
 
 | Gate | Status |
 | --- | --- |
 | Old failed job accounting | pass: seven old jobs recorded as `STARTUP_FAILED`, zero credit |
-| Replacement preflight | pass: job `58700751` completed `0:0` on `volta-gpu` |
-| Replacement formal jobs | monitor: jobs `58700815`, `58700821`, `58700822`, `58700826`, `58700827`, `58700828`, `58700832` submitted |
+| Replacement preflight | pass: retry10 job `58743253` completed `0:0` on `htzhulab` |
+| Replacement formal jobs | fail: retry10 D1 `58743282` reached `OUT_OF_MEMORY(0:125)` after `06:09:20`; D2-through-alignment did not run |
 | Training dependency policy | pass: training-to-training dependencies use `afterok` |
-| Wave 2 finalizer dependency | pass: finalizer job `58700842` uses `afterany` over all old and replacement jobs |
-| Post-job aggregation | pending: wait for terminal runtime outputs |
+| Wave 2 finalizer dependency | pass: finalizer job `58743452` used `afterany` over old and retry10 jobs |
+| Post-job aggregation | fail: finalizer wrote terminal accounting with `final_state=RUNTIME_FAILURE`, `failure_class=OUT_OF_MEMORY_NEEDS_REVISION`, `suggested_next_state=NEEDS_REVISION`, and `aggregation_exit_code=None` |
 | Review | blocked: no `review.md` until final packet after aggregation |
 
 ## Decision
 
-Current controller state is `NEEDS_MONITOR`, not blocked and not complete. D0 is pending on `htzhulab` resources, downstream jobs are dependency-pending, and the Wave 2 finalizer is dependency-pending.
+Current controller state is `NEEDS_REVISION`, not blocked and not complete. Retry10 D1 is terminal unsuccessful; D2-through-alignment did not run; Wave 2 did not satisfy minimum-effective-training or post-job aggregation gates.
 
 No `review.md` was written. No push was performed. Wave 3, validation packaging/upload, hosted metric claims, route promotion, route-negative conclusion, and M11 remain blocked until Wave 2 terminal accounting and aggregation succeed.
 
@@ -32,6 +32,36 @@ No `review.md` was written. No push was performed. Wave 3, validation packaging/
 | Race winner | monitor: `volta-gpu`, D0 job `58701111` is `RUNNING` |
 | Loser mirrors | pass: watcher `58701118` cancelled pending `htzhulab` and `a100-gpu` chains |
 | Race finalizer | monitor: job `58701119` waits with `afterany` |
+
+Decision remains `NEEDS_MONITOR`, not blocked and not complete.
+
+## Retry10 Terminal OOM
+
+Checkpoint time: `2026-07-13T05:42:43Z`
+
+| Gate | Status |
+| --- | --- |
+| retry10 D1 terminal state | fail: `58743282 OUT_OF_MEMORY`, exit `0:125`, elapsed `06:09:20`, node `g1807htzh01` |
+| retry10 finalizer accounting | fail-closed: `final_state=RUNTIME_FAILURE`, `failure_class=OUT_OF_MEMORY_NEEDS_REVISION`, `suggested_next_state=NEEDS_REVISION`, `retryable=false` |
+| scheduled validation progress | partial: checkpoints exist through `checkpoint_validation_step_21658.pt`, plus `checkpoint_best.pt` |
+| completion evidence | missing: no final `training_log.csv`, `validation_events.csv`, `summary.json`, or `runtime_manifest.json` for retry10 D1 |
+| downstream stages | fail: D2-through-alignment did not run because D1 failed its required `afterok` dependency |
+| review | blocked: no `review.md`; this is not a completion packet |
+
+Decision is `NEEDS_REVISION`, not blocked and not complete. Wave 3 remains blocked.
+
+## Retry10 D1 Step18326 Monitor
+
+Checkpoint time: `2026-07-13T03:44:53Z`
+
+| Gate | Status |
+| --- | --- |
+| retry10 D1 live state | monitor: `58743282 RUNNING` for `04:42:57` on `g1807htzh01` |
+| retry10 D1 memory | monitor: `ReqMem=1200G`, `MaxRSS=1070713496K`, `AveRSS=1070713496K` |
+| scheduled validation progress | monitor: checkpoints exist through `checkpoint_validation_step_18326.pt`, plus `checkpoint_best.pt` |
+| completion evidence | pending: no final `training_log.csv`, `validation_events.csv`, `summary.json`, `runtime_manifest.json`, or aggregation evidence yet |
+| downstream stages | monitor: D2-through-alignment remain dependency-pending |
+| review | blocked: no `review.md`; this is not a completion packet |
 
 Decision remains `NEEDS_MONITOR`, not blocked and not complete.
 

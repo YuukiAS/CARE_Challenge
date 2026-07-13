@@ -96,6 +96,10 @@ Packet state: `NEEDS_MONITOR`
 | `wave2_partition_race_retry10_monitor_20260713T015839Z.md` | Retry10 D1 monitor showing D1 running with validation checkpoints through step 13328; not completion evidence. |
 | `wave2_partition_race_retry10_monitor_20260713T023314Z.md` | Retry10 D1 monitor showing D1 running with validation checkpoints through step 15000; not completion evidence. |
 | `wave2_partition_race_retry10_monitor_20260713T030523Z.md` | Retry10 D1 monitor showing D1 running with validation checkpoints through step 16660; not completion evidence. |
+| `wave2_partition_race_retry10_monitor_20260713T034453Z.md` | Retry10 D1 monitor showing D1 running with validation checkpoints through step 18326; not completion evidence. |
+| `wave2_partition_race_retry10_terminal_oom.md` | Retry10 terminal accounting packet: D1 `58743282` reached `OUT_OF_MEMORY(0:125)` after `06:09:20`, D2-through-alignment did not run, and controller state is `NEEDS_REVISION`. |
+| `finalizer_state.json` | Retry10 finalizer terminal accounting with `final_state=RUNTIME_FAILURE`, `failure_class=OUT_OF_MEMORY_NEEDS_REVISION`, `suggested_next_state=NEEDS_REVISION`, and `retryable=false`. |
+| `care_milestone_finalizer_58743452.log` | Retry10 finalizer log for Slurm job `58743452`. |
 | `executors/m10_myops_training_executor/` | Wave 2 executor monitor packet; not completion evidence. |
 | `subagents/reviewer_prompt.md` | Reviewer handoff prompt for this blocked packet only. |
 | `mapper_report_draft.md` | Mapper draft non-run receipt. |

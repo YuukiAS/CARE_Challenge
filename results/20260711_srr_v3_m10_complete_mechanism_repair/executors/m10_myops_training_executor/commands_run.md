@@ -521,6 +521,35 @@ Retry10 D1 has crossed the declared D1 minimum train-loop seconds floor of `9000
 
 Current state remains `NEEDS_MONITOR`, not complete and not reviewable.
 
+## Retry10 Terminal OOM
+
+Update timestamp UTC: `2026-07-13T05:42:43Z`
+
+| Command / evidence | Result |
+| --- | --- |
+| `finalizer_state.json` | retry10 D1 `58743282` exit `0:125`, elapsed `06:09:20`, node `g1807htzh01`; finalizer classification `final_state=RUNTIME_FAILURE`, `failure_class=OUT_OF_MEMORY_NEEDS_REVISION`, `suggested_next_state=NEEDS_REVISION`, `retryable=false` |
+| `care_milestone_finalizer_58743452.log` | finalizer job `58743452` started with `CARE_ROOT=/users/a/e/aereinh/CARE` and log path `logs/CareFinalizer_58743452_20260713_011200.log` |
+| D1 checkpoint listing | checkpoints exist through `checkpoint_validation_step_21658.pt`, plus `checkpoint_best.pt` |
+| D1 runtime outputs | no final `training_log.csv`, `validation_events.csv`, `summary.json`, or `runtime_manifest.json` for retry10 D1 |
+| Downstream accounting | D2-through-alignment jobs `58743287`, `58743290`, `58743292`, `58743294`, and `58743295` did not run, elapsed `00:00:00`, no node assigned |
+
+Retry10 D1 is terminal unsuccessful. Current state is `NEEDS_REVISION`, not `NEEDS_MONITOR`, not complete, and not reviewable. Wave 3 remains blocked.
+
+## Retry10 D1 Step18326 Monitor
+
+Update timestamp UTC: `2026-07-13T03:44:53Z`
+
+| Command / evidence | Result |
+| --- | --- |
+| `squeue -j 58743282,58743287,58743290,58743292,58743294,58743295,58743452 -o '%i|%j|%P|%q|%T|%M|%l|%R'` | D1 `58743282 RUNNING` for `04:42:31`; D2-through-alignment and finalizer dependency-pending |
+| `sacct -j 58743253,58743282,58743287,58743290,58743292,58743294,58743295,58743452 --format=JobIDRaw,JobName,State,ExitCode,Elapsed,Start,End,NodeList,ReqMem,MaxRSS --parsable2` | D1 `58743282 RUNNING 0:0`, elapsed `04:42:57`, `ReqMem=1200G`; downstream/finalizer dependency-pending |
+| `sstat -j 58743282.batch --format=JobID,MaxRSS,AveRSS,MaxVMSize,AveVMSize -P` | `MaxRSS=1070713496K`, `AveRSS=1070713496K` |
+| D1 checkpoint listing | checkpoints exist through `checkpoint_validation_step_18326.pt`, plus `checkpoint_best.pt` |
+
+Retry10 D1 remains running and has not produced final `training_log.csv`, `validation_events.csv`, `summary.json`, `runtime_manifest.json`, or aggregation evidence.
+
+Current state remains `NEEDS_MONITOR`, not complete and not reviewable.
+
 ## Retry10 D1 Step16660 Monitor
 
 Update timestamp UTC: `2026-07-13T03:05:23Z`
