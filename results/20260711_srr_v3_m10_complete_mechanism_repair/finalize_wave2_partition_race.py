@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import argparse
+import csv
 import json
 from pathlib import Path
 import shlex
@@ -45,6 +46,35 @@ def command_record(cmd: list[str], cp: subprocess.CompletedProcess[str]) -> dict
         "exit_code": cp.returncode,
         "stdout_tail": cp.stdout[-4000:],
         "stderr_tail": cp.stderr[-4000:],
+    }
+
+
+def retained_d0_metadata(submission_path: Path, cwd: Path) -> dict[str, str]:
+    ledger_path = submission_path.with_name(submission_path.name.replace("_submission.json", "_job_ledger.csv"))
+    d0_job_id = ""
+    if ledger_path.is_file():
+        with ledger_path.open(newline="", encoding="utf-8") as handle:
+            for row in csv.DictReader(handle):
+                d0_job_id = str(row.get("upstream_d0_job_id") or "").strip()
+                if d0_job_id:
+                    break
+    candidates = sorted(
+        (
+            cwd / "results/20260711_srr_v3_m10_complete_mechanism_repair/runtime/m10_myops_training_executor"
+        ).glob("partition_race_retry*/htzhulab/variants/m10_d0_static_matched_formal/summary.json"),
+        key=lambda path: path.stat().st_mtime,
+        reverse=True,
+    )
+    runtime_root = ""
+    summary_path = ""
+    if candidates:
+        summary_path = str(candidates[0])
+        runtime_root = str(candidates[0].parents[2])
+    return {
+        "job_id": d0_job_id,
+        "runtime_root": runtime_root,
+        "summary_path": summary_path,
+        "source": str(ledger_path),
     }
 
 
@@ -90,6 +120,19 @@ def main() -> int:
 
     chain = submission["chains"][winner]
     runtime_root = chain["runtime_root"]
+    d0_meta = retained_d0_metadata(args.submission, cwd)
+    result["retained_upstream_d0"] = d0_meta
+    if not d0_meta.get("runtime_root") or not d0_meta.get("job_id"):
+        result["status"] = "NEEDS_EVIDENCE"
+        result["error"] = "retained upstream D0 runtime root or job id not found"
+        args.result_path.write_text(json.dumps(result, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+        return 2
+
+    phase_runtime_roots = {phase: runtime_root for phase in PHASES}
+    phase_runtime_roots["d0_control"] = d0_meta["runtime_root"]
+    phase_job_ids = {phase: str(job_id) for phase, job_id in chain["jobs"].items()}
+    phase_job_ids["d0_control"] = d0_meta["job_id"]
+
     for phase in PHASES:
         cmd = [
             "env",
@@ -99,7 +142,7 @@ def main() -> int:
             "--phase",
             phase,
             "--runtime-root",
-            runtime_root,
+            phase_runtime_roots[phase],
         ]
         cp = run(cmd, cwd)
         result["commands"].append(command_record(cmd, cp))
@@ -107,16 +150,43 @@ def main() -> int:
             args.result_path.write_text(json.dumps(result, indent=2, sort_keys=True) + "\n", encoding="utf-8")
             return cp.returncode
 
-    agg_cmd = ["env", "PYTHONPATH=.", "python", "scripts/evaluation/aggregate_srr_v3_m10_myops.py", "--all", "--runtime-root", runtime_root]
     for phase in PHASES:
-        job_id = str(chain["jobs"][phase])
+        job_id = str(phase_job_ids[phase])
         state = sacct(job_id, cwd)
-        agg_cmd.extend(["--job-id", f"{phase}={job_id}"])
-        agg_cmd.extend(["--job-state", f"{phase}={state['state']}"])
-        agg_cmd.extend(["--job-exit-code", f"{phase}={state['exit_code']}"])
-        agg_cmd.extend(["--job-log", f"{phase}=logs/{chain['log_prefixes'][phase]}_{job_id}_<timestamp>.log"])
-    cp = run(agg_cmd, cwd)
-    result["commands"].append(command_record(agg_cmd, cp))
+        agg_cmd = [
+            "env",
+            "PYTHONPATH=.",
+            "python",
+            "scripts/evaluation/aggregate_srr_v3_m10_myops.py",
+            "--phase",
+            phase,
+            "--runtime-root",
+            phase_runtime_roots[phase],
+            "--job-id",
+            f"{phase}={job_id}",
+            "--job-state",
+            f"{phase}={state['state']}",
+            "--job-exit-code",
+            f"{phase}={state['exit_code']}",
+            "--job-log",
+            f"{phase}=logs/{chain['log_prefixes'][phase]}_{job_id}_<timestamp>.log",
+        ]
+        cp = run(agg_cmd, cwd)
+        result["commands"].append(command_record(agg_cmd, cp))
+        if cp.returncode != 0:
+            args.result_path.write_text(json.dumps(result, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+            return cp.returncode
+
+    component_cmd = [
+        "env",
+        "PYTHONPATH=.",
+        "python",
+        "-c",
+        "from scripts.evaluation.aggregate_srr_v3_m10_myops import PHASES, aggregate_component_audit; "
+        "raise SystemExit(0 if aggregate_component_audit(list(PHASES.values())) == 'TERMINAL_RUNTIME_EVIDENCE' else 2)",
+    ]
+    cp = run(component_cmd, cwd)
+    result["commands"].append(command_record(component_cmd, cp))
     result["status"] = "TERMINAL_RUNTIME_EVIDENCE" if cp.returncode == 0 else "NEEDS_EVIDENCE"
     args.result_path.write_text(json.dumps(result, indent=2, sort_keys=True) + "\n", encoding="utf-8")
     return cp.returncode

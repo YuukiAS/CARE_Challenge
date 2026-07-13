@@ -4,90 +4,78 @@ Task key: `20260711_srr_v3_m10_complete_mechanism_repair`
 
 Executor: `m10_myops_training_executor`
 
-Status: `NEEDS_MONITOR`
+Status: `READY_FOR_CONTROLLER_MERGE`
 
-## Current Retry11 State
+## Scope Boundary
 
-As of `2026-07-13T16:59:11Z`, retry11 D1 `58775065` is `COMPLETED 0:0` on `htzhulab` after `02:35:16`; retry11 D2 `58775066` is `COMPLETED 0:0` on `htzhulab` after `02:34:22`; retry11 D3 `58775067` is `COMPLETED 0:0` on `htzhulab` after `04:05:39`; retry11 hard-negative refresh `58775068` is `COMPLETED 0:0` on `htzhulab` after `01:39:59`; retry11 no-context control `58775069` is `RUNNING` on `htzhulab`; retry11 alignment job `58775070` is dependency-pending via `afterok`; retry11 finalizer `58775071` is dependency-pending via `afterany`.
+This is the same active M10 goal and the same `m10_myops_training_executor`. No new milestone, executor, scientific design, variant definition, model formula, split, case set, budget, evaluation rule, checkpoint-selection rule, result path, executor count, or wave graph was introduced.
 
-Retry11 follows a same-scope owned-wrapper repair for the retry10 D1 memory-growth failure. The repair only changes gate-usage evidence logging in `scripts/training/run_srr_v3_m10_complete_repair.py`, summarizing spatial gate tensors to per-slot means before writing `retrieval_usage.csv`. It does not change variants, formulas, budgets, split, case set, evaluation rules, checkpoint-selection rules, result paths, executor count, or wave graph.
+No `review.md` was written. No push, validation packaging, validation upload, hosted metric claim, route promotion, route-negative conclusion, scientific stop, Wave 3 execution, or M11 action is claimed here.
 
-Preflight accounting: htzhulab `58775059 COMPLETED 0:0`; a100 `58775057 CANCELLED` while pending and unused; volta `58775058 FAILED 1:0` because the current PyTorch CUDA build cannot execute kernels on V100. No formal a100 or volta training job was submitted.
+## Terminal Accounting
 
-D1 completion evidence: `actual_optimizer_steps=31778`, `train_loop_seconds=9000.150148481014`, `validation_event_count=19`, `eval_cases=44`, `stop_reason=max_steps_min_train_loop_seconds_satisfied`, and one-batch overfit `PASS`. The repaired D1 `retrieval_usage.csv` is `10820647` bytes and `86497` lines including header, not the retry10-scale `156G` expansion. D2 completion evidence: `actual_optimizer_steps=31810`, `train_loop_seconds=9000.034213767038`, `validation_event_count=19`, `eval_cases=44`, `stop_reason=max_steps_min_train_loop_seconds_satisfied`, and one-batch overfit `PASS`. D3 completion evidence: `actual_optimizer_steps=50820`, `train_loop_seconds=14400.138177286019`, `validation_event_count=26`, `eval_cases=44`, `stop_reason=max_steps_min_train_loop_seconds_satisfied`, and one-batch overfit `PASS`. Hard-negative completion evidence: `actual_optimizer_steps=20000`, `train_loop_seconds=5684.537394266925`, `validation_event_count=10`, `eval_cases=44`, `stop_reason=max_steps_min_train_loop_seconds_satisfied`, and one-batch overfit `PASS`. No-context control has only early sanity files at this checkpoint and has not yet produced final runtime outputs.
+The original Wave 2 jobs remain permanently recorded as `STARTUP_FAILED` with zero training credit, zero optimizer-step credit, and zero train-loop-second credit:
 
-## Dependency Gate
+```text
+58644072
+58644073
+58644074
+58644106
+58644107
+58644108
+58644109
+```
 
-Wave 1 dependency passed before wave 2 work:
+The effective Wave 2 formal evidence consists of retained D0 job `58706293` plus retry11 jobs `58775065` through `58775070`.
 
-- `results/20260711_srr_v3_m10_complete_mechanism_repair/executors/m10_shared_architecture_executor/completion_check.md` contains `READY_FOR_CONTROLLER_MERGE`.
-- `results/20260711_srr_v3_m10_complete_mechanism_repair/wave1_merge_receipt.md` accepts wave 1 with `WAVE1_READY_FOR_CONTROLLER_MERGE_ACCEPTED`.
+| Phase | Job ID | State | Optimizer steps | Train-loop seconds | Status |
+| --- | ---: | --- | ---: | ---: | --- |
+| D0 static matched control | `58706293` | `COMPLETED 0:0` | `36746` | `7200.021336678998` | `TERMINAL_RUNTIME_EVIDENCE` |
+| D1 spatial BR2 | `58775065` | `COMPLETED 0:0` | `31778` | `9000.150148481014` | `TERMINAL_RUNTIME_EVIDENCE` |
+| D2 hierarchical PSIP | `58775066` | `COMPLETED 0:0` | `31810` | `9000.034213767038` | `TERMINAL_RUNTIME_EVIDENCE` |
+| D3 full memory PropRef | `58775067` | `COMPLETED 0:0` | `50820` | `14400.138177286019` | `TERMINAL_RUNTIME_EVIDENCE` |
+| Hard-negative refresh | `58775068` | `COMPLETED 0:0` | `20000` | `5684.537394266925` | `TERMINAL_RUNTIME_EVIDENCE` |
+| No-nnU-Net-context control | `58775069` | `COMPLETED 0:0` | `20000` | `5488.0439176289365` | `TERMINAL_RUNTIME_EVIDENCE` |
+| Pair-valid alignment control | `58775070` | `COMPLETED 0:0` | `12501` | `3600.2238130120095` | `TERMINAL_RUNTIME_EVIDENCE` |
 
-Wave 1 shared architecture remains frozen. No shared model, loss, Cine, wiki, prompt, review, validation packaging, upload, hosted metric, route-promotion, scientific-stop, M11, commit, or push action was performed.
+## Aggregation Evidence
 
-## Implemented Entry Points
+Wave 2 finalizer job `58775071` correctly ran after all old and replacement jobs, but the generic finalizer initially marked `RUNTIME_FAILURE` because it treated superseded historical `OUT_OF_MEMORY`/`CANCELLED` attempts as current formal failures. The controller corrected terminal accounting in the same finalizer scope by rerunning accounting over the current effective formal chain while recording the superseded job IDs in `finalizer_state.json`.
 
-Created M10-owned wave 2 entrypoints:
+The successful aggregation evidence is:
 
-- `scripts/training/run_srr_v3_m10_complete_repair.py`
-- `scripts/evaluation/evaluate_srr_v3_m10_full_case.py`
-- `scripts/evaluation/aggregate_srr_v3_m10_myops.py`
+```text
+results/20260711_srr_v3_m10_complete_mechanism_repair/finalizer_state.json
+results/20260711_srr_v3_m10_complete_mechanism_repair/wave2_partition_race_retry11_finalization.json
+results/20260711_srr_v3_m10_myops_d0_control/runtime_manifest.json
+results/20260711_srr_v3_m10_myops_d1_spatial_br2/runtime_manifest.json
+results/20260711_srr_v3_m10_myops_d2_hierarchical_psip/runtime_manifest.json
+results/20260711_srr_v3_m10_myops_d3_full_propref/runtime_manifest.json
+results/20260711_srr_v3_m10_hard_negative_refresh/runtime_manifest.json
+results/20260711_srr_v3_m10_no_nnunet_context_control/runtime_manifest.json
+results/20260711_srr_v3_m10_alignment_control/runtime_manifest.json
+results/20260711_srr_v3_m10_component_causal_audit/runtime_manifest.json
+```
 
-Created seven `htzhulab` Slurm wrappers with `--time=08:00:00`, `--partition=htzhulab`, and `--qos=gpu_access`:
+`finalizer_state.json` records `final_state: READY_FOR_MAPPER_FINAL` and `aggregation_exit_code: 0`. `wave2_partition_race_retry11_finalization.json` records `status: TERMINAL_RUNTIME_EVIDENCE`.
 
-- `jobs/src/run_srr_v3_m10_myops_d0_control.sh`
-- `jobs/src/run_srr_v3_m10_myops_d1_spatial_br2.sh`
-- `jobs/src/run_srr_v3_m10_myops_d2_hierarchical_psip.sh`
-- `jobs/src/run_srr_v3_m10_myops_d3_full_propref.sh`
-- `jobs/src/run_srr_v3_m10_hard_negative_refresh.sh`
-- `jobs/src/run_srr_v3_m10_no_context_control.sh`
-- `jobs/src/run_srr_v3_m10_alignment_control.sh`
+## Result Directories
 
-The training wrapper imports the legacy fold0 training function with a constructed M10 namespace because the legacy CLI does not accept M10 variant names. The legacy script was not edited.
+The phase result directories have been regenerated from runtime outputs:
 
-## Submitted Jobs
+```text
+results/20260711_srr_v3_m10_myops_d0_control/
+results/20260711_srr_v3_m10_myops_d1_spatial_br2/
+results/20260711_srr_v3_m10_myops_d2_hierarchical_psip/
+results/20260711_srr_v3_m10_myops_d3_full_propref/
+results/20260711_srr_v3_m10_hard_negative_refresh/
+results/20260711_srr_v3_m10_no_nnunet_context_control/
+results/20260711_srr_v3_m10_alignment_control/
+results/20260711_srr_v3_m10_component_causal_audit/
+```
 
-Submitted as a serial `afterany` dependency chain to preserve `max_parallel: 1`:
+Each formal phase reports `TERMINAL_RUNTIME_EVIDENCE`; component causal audit also reports `TERMINAL_RUNTIME_EVIDENCE`.
 
-| Phase | Job ID | Dependency | State at packet write |
-| --- | ---: | --- | --- |
-| D0 static matched control | 58644072 | none | `PENDING (Resources)` |
-| D1 spatial BR2 | 58644073 | `afterany:58644072` | `PENDING (Dependency)` |
-| D2 hierarchical PSIP | 58644074 | `afterany:58644073` | `PENDING (Dependency)` |
-| D3 full memory PropRef | 58644106 | `afterany:58644074` | `PENDING (Dependency)` |
-| Hard-negative refresh | 58644107 | `afterany:58644106` | `PENDING (Dependency)` |
-| No-nnU-Net-context control | 58644108 | `afterany:58644107` | `PENDING (Dependency)` |
-| Alignment control | 58644109 | `afterany:58644108` | `PENDING (Dependency)` |
+## Next State
 
-Formal controller monitor later found all seven jobs terminal `FAILED` with exit code `1:0`.
-
-| Phase | Job ID | Terminal state | Exit code | Log |
-| --- | ---: | --- | --- | --- |
-| D0 static matched control | 58644072 | `FAILED` | `1:0` | `logs/M10D0MyoPS_58644072_20260711_110852.log` |
-| D1 spatial BR2 | 58644073 | `FAILED` | `1:0` | `logs/M10D1MyoPS_58644073_20260711_112003.log` |
-| D2 hierarchical PSIP | 58644074 | `FAILED` | `1:0` | `logs/M10D2MyoPS_58644074_20260711_112103.log` |
-| D3 full memory PropRef | 58644106 | `FAILED` | `1:0` | `logs/M10D3MyoPS_58644106_20260711_112204.log` |
-| Hard-negative refresh | 58644107 | `FAILED` | `1:0` | `logs/M10HardNeg_58644107_20260711_112305.log` |
-| No-nnU-Net-context control | 58644108 | `FAILED` | `1:0` | `logs/M10NoCtx_58644108_20260711_112406.log` |
-| Alignment control | 58644109 | `FAILED` | `1:0` | `logs/M10Align_58644109_20260711_112450.log` |
-
-All logs share the same startup dependency failure: `sympy` requires `mpmath`, but `mpmath` was absent from `env_CARE` during the jobs. This packet is not ready for controller merge.
-
-## Output State
-
-Monitor-mode lightweight files were generated under:
-
-- `results/20260711_srr_v3_m10_myops_d0_control/`
-- `results/20260711_srr_v3_m10_myops_d1_spatial_br2/`
-- `results/20260711_srr_v3_m10_myops_d2_hierarchical_psip/`
-- `results/20260711_srr_v3_m10_myops_d3_full_propref/`
-- `results/20260711_srr_v3_m10_hard_negative_refresh/`
-- `results/20260711_srr_v3_m10_no_nnunet_context_control/`
-- `results/20260711_srr_v3_m10_alignment_control/`
-- `results/20260711_srr_v3_m10_component_causal_audit/`
-
-These files now record submitted job IDs, terminal Slurm failure states, exit codes, log paths, and missing runtime artifacts. They are fail-closed evidence-gap packets, not completion evidence.
-
-## External Compatibility Observation
-
-The carried-forward compatibility issue in `scripts/training/run_srr_propref_myops_fold0.py` remains outside this executor's write scope per the user boundary. This wave 2 implementation did not edit that file. If an M10-owned job later fails specifically because the imported legacy function cannot run M10 variants, the controller should treat that as `NEEDS_REVISION` or `NEEDS_REVISION_RETURN_TO_WAVE1` depending on whether the blocker is wrapper-side or frozen shared architecture/loss wiring.
+Wave 2 is ready for controller merge. Wave 3 may begin only after the controller records the Wave 2 merge receipt and re-grounds the original `m10_cine_temporal_executor` contract.

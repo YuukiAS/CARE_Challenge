@@ -2,15 +2,15 @@
 
 ## Slurm
 
-- job_id: `58644107`
-- state: `FAILED`
-- exit_code: `1:0`
-- log_path: `logs/M10HardNeg_58644107_20260711_112305.log`
+- job_id: `58775068`
+- state: `COMPLETED`
+- exit_code: `0:0`
+- log_path: `logs/M10HardNeg_58775068_<timestamp>.log`
 - partition: `htzhulab`
 - job_script: `jobs/src/run_srr_v3_m10_hard_negative_refresh.sh`
-- state_at_packet_write: `STARTUP_FAILED_NEEDS_EVIDENCE`
+- state_at_packet_write: `TERMINAL_RUNTIME_EVIDENCE`
 
 ## Aggregation
 
 - command: `python scripts/evaluation/aggregate_srr_v3_m10_myops.py --phase hard_negative_refresh`
-- runtime_summary_checked: `/users/a/e/aereinh/CARE/results/20260711_srr_v3_m10_hard_negative_refresh/runtime/variants/m10_d3_hard_negative_refresh/summary.json`
+- runtime_summary_checked: `/users/a/e/aereinh/CARE/results/20260711_srr_v3_m10_complete_mechanism_repair/runtime/m10_myops_training_executor/partition_race_retry11/htzhulab/variants/m10_d3_hard_negative_refresh/summary.json`

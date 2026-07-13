@@ -1,0 +1,20 @@
+{
+  "design": "D3_PAIR_VALID_ALIGNMENT_CONTROL",
+  "executor_id": "m10_myops_training_executor",
+  "legacy_script_edit_policy": "read_or_import_only_not_modified_by_wave2",
+  "legacy_training_script": "scripts/training/run_srr_propref_myops_fold0.py",
+  "minimums": {
+    "eval_cases": 44,
+    "full_case_events": 3,
+    "optimizer_steps": 10000,
+    "train_loop_seconds": 3600,
+    "validation_events": 8
+  },
+  "phase": "alignment_control",
+  "result_dir": "results/20260711_srr_v3_m10_alignment_control",
+  "run_label": "m10_d3_pair_valid_alignment_control",
+  "runtime_root": "/users/a/e/aereinh/CARE/results/20260711_srr_v3_m10_alignment_control/runtime",
+  "status": "TRAINING_ENTRYPOINT_STARTED",
+  "task_key": "20260711_srr_v3_m10_complete_mechanism_repair",
+  "variant": "m10_d3_hierarchical_memory_propref"
+}

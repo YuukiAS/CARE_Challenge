@@ -1,0 +1,113 @@
+{
+  "chain_states": {
+    "htzhulab": {
+      "alignment_control": "COMPLETED(0:0)",
+      "d1_spatial_br2": "COMPLETED(0:0)",
+      "d2_hierarchical_psip": "COMPLETED(0:0)",
+      "d3_full_propref": "COMPLETED(0:0)",
+      "hard_negative_refresh": "COMPLETED(0:0)",
+      "no_context_control": "COMPLETED(0:0)"
+    }
+  },
+  "commands": [
+    {
+      "command": "env PYTHONPATH=. python scripts/evaluation/evaluate_srr_v3_m10_full_case.py --phase d0_control --runtime-root /users/a/e/aereinh/CARE/results/20260711_srr_v3_m10_complete_mechanism_repair/runtime/m10_myops_training_executor/partition_race_retry4/htzhulab",
+      "exit_code": 0,
+      "stderr_tail": "",
+      "stdout_tail": ""
+    },
+    {
+      "command": "env PYTHONPATH=. python scripts/evaluation/evaluate_srr_v3_m10_full_case.py --phase d1_spatial_br2 --runtime-root results/20260711_srr_v3_m10_complete_mechanism_repair/runtime/m10_myops_training_executor/partition_race_retry11/htzhulab",
+      "exit_code": 0,
+      "stderr_tail": "",
+      "stdout_tail": ""
+    },
+    {
+      "command": "env PYTHONPATH=. python scripts/evaluation/evaluate_srr_v3_m10_full_case.py --phase d2_hierarchical_psip --runtime-root results/20260711_srr_v3_m10_complete_mechanism_repair/runtime/m10_myops_training_executor/partition_race_retry11/htzhulab",
+      "exit_code": 0,
+      "stderr_tail": "",
+      "stdout_tail": ""
+    },
+    {
+      "command": "env PYTHONPATH=. python scripts/evaluation/evaluate_srr_v3_m10_full_case.py --phase d3_full_propref --runtime-root results/20260711_srr_v3_m10_complete_mechanism_repair/runtime/m10_myops_training_executor/partition_race_retry11/htzhulab",
+      "exit_code": 0,
+      "stderr_tail": "",
+      "stdout_tail": ""
+    },
+    {
+      "command": "env PYTHONPATH=. python scripts/evaluation/evaluate_srr_v3_m10_full_case.py --phase hard_negative_refresh --runtime-root results/20260711_srr_v3_m10_complete_mechanism_repair/runtime/m10_myops_training_executor/partition_race_retry11/htzhulab",
+      "exit_code": 0,
+      "stderr_tail": "",
+      "stdout_tail": ""
+    },
+    {
+      "command": "env PYTHONPATH=. python scripts/evaluation/evaluate_srr_v3_m10_full_case.py --phase no_context_control --runtime-root results/20260711_srr_v3_m10_complete_mechanism_repair/runtime/m10_myops_training_executor/partition_race_retry11/htzhulab",
+      "exit_code": 0,
+      "stderr_tail": "",
+      "stdout_tail": ""
+    },
+    {
+      "command": "env PYTHONPATH=. python scripts/evaluation/evaluate_srr_v3_m10_full_case.py --phase alignment_control --runtime-root results/20260711_srr_v3_m10_complete_mechanism_repair/runtime/m10_myops_training_executor/partition_race_retry11/htzhulab",
+      "exit_code": 0,
+      "stderr_tail": "",
+      "stdout_tail": ""
+    },
+    {
+      "command": "env PYTHONPATH=. python scripts/evaluation/aggregate_srr_v3_m10_myops.py --phase d0_control --runtime-root /users/a/e/aereinh/CARE/results/20260711_srr_v3_m10_complete_mechanism_repair/runtime/m10_myops_training_executor/partition_race_retry4/htzhulab --job-id d0_control=58706293 --job-state d0_control=COMPLETED --job-exit-code d0_control=0:0 --job-log 'd0_control=logs/M10D0MyoPS_58706293_<timestamp>.log'",
+      "exit_code": 0,
+      "stderr_tail": "",
+      "stdout_tail": ""
+    },
+    {
+      "command": "env PYTHONPATH=. python scripts/evaluation/aggregate_srr_v3_m10_myops.py --phase d1_spatial_br2 --runtime-root results/20260711_srr_v3_m10_complete_mechanism_repair/runtime/m10_myops_training_executor/partition_race_retry11/htzhulab --job-id d1_spatial_br2=58775065 --job-state d1_spatial_br2=COMPLETED --job-exit-code d1_spatial_br2=0:0 --job-log 'd1_spatial_br2=logs/M10D1MyoPS_58775065_<timestamp>.log'",
+      "exit_code": 0,
+      "stderr_tail": "",
+      "stdout_tail": ""
+    },
+    {
+      "command": "env PYTHONPATH=. python scripts/evaluation/aggregate_srr_v3_m10_myops.py --phase d2_hierarchical_psip --runtime-root results/20260711_srr_v3_m10_complete_mechanism_repair/runtime/m10_myops_training_executor/partition_race_retry11/htzhulab --job-id d2_hierarchical_psip=58775066 --job-state d2_hierarchical_psip=COMPLETED --job-exit-code d2_hierarchical_psip=0:0 --job-log 'd2_hierarchical_psip=logs/M10D2MyoPS_58775066_<timestamp>.log'",
+      "exit_code": 0,
+      "stderr_tail": "",
+      "stdout_tail": ""
+    },
+    {
+      "command": "env PYTHONPATH=. python scripts/evaluation/aggregate_srr_v3_m10_myops.py --phase d3_full_propref --runtime-root results/20260711_srr_v3_m10_complete_mechanism_repair/runtime/m10_myops_training_executor/partition_race_retry11/htzhulab --job-id d3_full_propref=58775067 --job-state d3_full_propref=COMPLETED --job-exit-code d3_full_propref=0:0 --job-log 'd3_full_propref=logs/M10D3MyoPS_58775067_<timestamp>.log'",
+      "exit_code": 0,
+      "stderr_tail": "",
+      "stdout_tail": ""
+    },
+    {
+      "command": "env PYTHONPATH=. python scripts/evaluation/aggregate_srr_v3_m10_myops.py --phase hard_negative_refresh --runtime-root results/20260711_srr_v3_m10_complete_mechanism_repair/runtime/m10_myops_training_executor/partition_race_retry11/htzhulab --job-id hard_negative_refresh=58775068 --job-state hard_negative_refresh=COMPLETED --job-exit-code hard_negative_refresh=0:0 --job-log 'hard_negative_refresh=logs/M10HardNeg_58775068_<timestamp>.log'",
+      "exit_code": 0,
+      "stderr_tail": "",
+      "stdout_tail": ""
+    },
+    {
+      "command": "env PYTHONPATH=. python scripts/evaluation/aggregate_srr_v3_m10_myops.py --phase no_context_control --runtime-root results/20260711_srr_v3_m10_complete_mechanism_repair/runtime/m10_myops_training_executor/partition_race_retry11/htzhulab --job-id no_context_control=58775069 --job-state no_context_control=COMPLETED --job-exit-code no_context_control=0:0 --job-log 'no_context_control=logs/M10NoCtx_58775069_<timestamp>.log'",
+      "exit_code": 0,
+      "stderr_tail": "",
+      "stdout_tail": ""
+    },
+    {
+      "command": "env PYTHONPATH=. python scripts/evaluation/aggregate_srr_v3_m10_myops.py --phase alignment_control --runtime-root results/20260711_srr_v3_m10_complete_mechanism_repair/runtime/m10_myops_training_executor/partition_race_retry11/htzhulab --job-id alignment_control=58775070 --job-state alignment_control=COMPLETED --job-exit-code alignment_control=0:0 --job-log 'alignment_control=logs/M10Align_58775070_<timestamp>.log'",
+      "exit_code": 0,
+      "stderr_tail": "",
+      "stdout_tail": ""
+    },
+    {
+      "command": "env PYTHONPATH=. python -c 'from scripts.evaluation.aggregate_srr_v3_m10_myops import PHASES, aggregate_component_audit; raise SystemExit(0 if aggregate_component_audit(list(PHASES.values())) == '\"'\"'TERMINAL_RUNTIME_EVIDENCE'\"'\"' else 2)'",
+      "exit_code": 0,
+      "stderr_tail": "",
+      "stdout_tail": ""
+    }
+  ],
+  "retained_upstream_d0": {
+    "job_id": "58706293",
+    "runtime_root": "/users/a/e/aereinh/CARE/results/20260711_srr_v3_m10_complete_mechanism_repair/runtime/m10_myops_training_executor/partition_race_retry4/htzhulab",
+    "source": "results/20260711_srr_v3_m10_complete_mechanism_repair/wave2_partition_race_retry11_job_ledger.csv",
+    "summary_path": "/users/a/e/aereinh/CARE/results/20260711_srr_v3_m10_complete_mechanism_repair/runtime/m10_myops_training_executor/partition_race_retry4/htzhulab/variants/m10_d0_static_matched_formal/summary.json"
+  },
+  "status": "TERMINAL_RUNTIME_EVIDENCE",
+  "winner_partition": "htzhulab",
+  "winner_reason": "watcher_winner_completed"
+}

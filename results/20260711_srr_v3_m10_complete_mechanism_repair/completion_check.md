@@ -1,6 +1,23 @@
 # M10 Completion Check
 
-Completion state: `NEEDS_MONITOR`
+Completion state: `WAVE2_READY_FOR_CONTROLLER_MERGE__MILESTONE_INCOMPLETE`
+
+Current top-level status as of the Wave 2 retry11 finalizer repair:
+
+| Gate | Status |
+| --- | --- |
+| Wave 1 | complete and merged |
+| Wave 2 | complete and merged for controller purposes |
+| Wave 2 finalizer accounting | pass: `finalizer_state.json` records `READY_FOR_MAPPER_FINAL`, aggregation exit code `0` |
+| Wave 2 post-job aggregation | pass: `wave2_partition_race_retry11_finalization.json` records `TERMINAL_RUNTIME_EVIDENCE` |
+| Wave 3 | pending; may start only under the original `m10_cine_temporal_executor` contract |
+| Independent review | not started; no `review.md` exists |
+
+This packet is still not a final M10 review packet. Wave 3, mapper final, final milestone packet, and independent read-only review remain ahead in the original state machine.
+
+## Superseded Historical Monitor State
+
+The older monitor text below is retained as provenance for the replacement attempts. It is superseded by `wave2_merge_receipt.md` for Wave 2 readiness.
 
 This packet is not complete and is not ready for independent review. It records that the original Wave 2 jobs are permanently `STARTUP_FAILED` with zero training credit, D0 has one retained valid upstream run, retry10 D1 reached terminal `OUT_OF_MEMORY(0:125)` after writing checkpoints through step 21658, and retry11 is now running as the same-executor Wave 2 replacement after a same-scope gate-usage evidence logging repair.
 

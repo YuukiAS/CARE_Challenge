@@ -1,0 +1,13 @@
+{
+  "copied_files": [
+    "/users/a/e/aereinh/CARE/results/20260711_srr_v3_m10_alignment_control/case_metrics.csv",
+    "/users/a/e/aereinh/CARE/results/20260711_srr_v3_m10_alignment_control/hard_subgroup_metrics.csv",
+    "/users/a/e/aereinh/CARE/results/20260711_srr_v3_m10_alignment_control/prediction_sanity_cases.csv"
+  ],
+  "phase": "alignment_control",
+  "result_dir": "/users/a/e/aereinh/CARE/results/20260711_srr_v3_m10_alignment_control",
+  "runtime_root": "/users/a/e/aereinh/CARE/results/20260711_srr_v3_m10_complete_mechanism_repair/runtime/m10_myops_training_executor/partition_race_retry11/htzhulab",
+  "status": "RUNTIME_EVIDENCE_COPIED",
+  "summary_path": "/users/a/e/aereinh/CARE/results/20260711_srr_v3_m10_complete_mechanism_repair/runtime/m10_myops_training_executor/partition_race_retry11/htzhulab/variants/m10_d3_pair_valid_alignment_control/summary.json",
+  "variant_dir": "/users/a/e/aereinh/CARE/results/20260711_srr_v3_m10_complete_mechanism_repair/runtime/m10_myops_training_executor/partition_race_retry11/htzhulab/variants/m10_d3_pair_valid_alignment_control"
+}

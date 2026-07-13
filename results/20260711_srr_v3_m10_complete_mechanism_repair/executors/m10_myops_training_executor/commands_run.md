@@ -124,6 +124,29 @@ Formal replacement Slurm training jobs were not submitted because the active enh
 | `bash -n results/20260711_srr_v3_m10_complete_mechanism_repair/wave2_env_preflight.sh jobs/src/run_srr_v3_m10_myops_d0_control.sh ... jobs/src/care_milestone_finalizer.sh` | pass |
 | `git diff --check` | pass |
 
+## Retry11 Terminal Accounting And Aggregation
+
+| Command | Result |
+| --- | --- |
+| `sacct -j 58775070,58775071 --format=JobID,JobName%30,Partition,State,ExitCode,Elapsed,Start,End,NodeList%30 -P` | alignment `58775070 COMPLETED 0:0`; Slurm finalizer `58775071 FAILED 1:0` |
+| inspect `results/20260711_srr_v3_m10_complete_mechanism_repair/finalizer_state.json` | generic finalizer had marked `RUNTIME_FAILURE` because superseded historical `OUT_OF_MEMORY`/`CANCELLED` attempts were included as current required jobs |
+| `env PYTHONPATH=. python results/20260711_srr_v3_m10_complete_mechanism_repair/finalize_wave2_partition_race.py --submission results/20260711_srr_v3_m10_complete_mechanism_repair/wave2_partition_race_retry11_submission.json --watcher-state results/20260711_srr_v3_m10_complete_mechanism_repair/wave2_partition_race_retry11_watcher_state.json --result-path results/20260711_srr_v3_m10_complete_mechanism_repair/wave2_partition_race_retry11_finalization.json` | first replay exited `2` because retained D0 lives under retry4 runtime root, not retry11 runtime root |
+| edit `results/20260711_srr_v3_m10_complete_mechanism_repair/finalize_wave2_partition_race.py` | fixed phase-specific runtime roots: retained D0 uses retry4 root and retry11 phases use retry11 root |
+| rerun `env PYTHONPATH=. python results/20260711_srr_v3_m10_complete_mechanism_repair/finalize_wave2_partition_race.py ...` | exit `0`; wrote `TERMINAL_RUNTIME_EVIDENCE` finalization JSON |
+| `python scripts/ops/care_milestone_finalizer.py --task-key 20260711_srr_v3_m10_complete_mechanism_repair --result-dir results/20260711_srr_v3_m10_complete_mechanism_repair --stage accounting ...` over effective formal jobs `58706293,58775065,58775066,58775067,58775068,58775069,58775070` | exit `0`; wrote `finalizer_state.json` with `READY_FOR_MAPPER_FINAL` and aggregation exit code `0` |
+
+Current effective phase ledgers:
+
+| Phase | Job ID | State | Status |
+| --- | ---: | --- | --- |
+| D0 static matched | `58706293` | `COMPLETED 0:0` | `TERMINAL_RUNTIME_EVIDENCE` |
+| D1 spatial BR2 | `58775065` | `COMPLETED 0:0` | `TERMINAL_RUNTIME_EVIDENCE` |
+| D2 hierarchical PSIP | `58775066` | `COMPLETED 0:0` | `TERMINAL_RUNTIME_EVIDENCE` |
+| D3 full memory PropRef | `58775067` | `COMPLETED 0:0` | `TERMINAL_RUNTIME_EVIDENCE` |
+| Hard-negative refresh | `58775068` | `COMPLETED 0:0` | `TERMINAL_RUNTIME_EVIDENCE` |
+| No-nnU-Net-context | `58775069` | `COMPLETED 0:0` | `TERMINAL_RUNTIME_EVIDENCE` |
+| Pair-valid alignment | `58775070` | `COMPLETED 0:0` | `TERMINAL_RUNTIME_EVIDENCE` |
+
 
 ## Three-Partition Preflight Race And Replacement Submission
 

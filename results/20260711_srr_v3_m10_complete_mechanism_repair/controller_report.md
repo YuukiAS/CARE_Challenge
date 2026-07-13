@@ -2,6 +2,41 @@
 
 Task key: `20260711_srr_v3_m10_complete_mechanism_repair`
 
+## Current Controller State
+
+The controller has completed and merged Wave 2 for controller purposes. Wave 2 terminal accounting now records the current effective formal chain as completed:
+
+```text
+58706293
+58775065
+58775066
+58775067
+58775068
+58775069
+58775070
+```
+
+`finalizer_state.json` records `final_state: READY_FOR_MAPPER_FINAL` and `aggregation_exit_code: 0`. `wave2_partition_race_retry11_finalization.json` records `status: TERMINAL_RUNTIME_EVIDENCE`. `wave2_merge_receipt.md` records `WAVE2_READY_FOR_CONTROLLER_MERGE_ACCEPTED`.
+
+The milestone is not complete. The next controller action is to re-ground and start Wave 3 under the original `m10_cine_temporal_executor` contract. Review, push, validation packaging/upload, hosted metric claims, route promotion, route-negative conclusion, scientific stop, and M11 remain blocked.
+
+Current pre-review decisions:
+
+```text
+controller_run_status: WAVE2_MERGED_WAVE3_PENDING
+operational_completion_status: INCOMPLETE
+experiment_adequacy_decision: NOT_REVIEWED
+route_promotion_decision: NOT_REVIEWED
+route_negative_decision: NOT_REVIEWED
+scientific_resolution_status: AWAITING_REVIEW
+git_push_decision: SKIP_PUSH
+review_md_written: false
+```
+
+## Superseded Historical Log
+
+The sections below are retained as chronological provenance for prior monitor/retry states and may contain superseded `NEEDS_MONITOR` snapshots.
+
 ## Controller Result
 
 The controller is continuing the same active M10 goal and the same `m10_myops_training_executor`. This is not a new milestone, not a new executor, not follow-up planning, and not Wave 3.

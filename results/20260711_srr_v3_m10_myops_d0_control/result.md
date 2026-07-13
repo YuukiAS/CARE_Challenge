@@ -2,6 +2,6 @@
 
 Design: `D0_STATIC_MATCHED_PROPREF`
 Variant: `m10_d0_static_matched_propref`
-Status: `STARTUP_FAILED_NEEDS_EVIDENCE`
+Status: `TERMINAL_RUNTIME_EVIDENCE`
 
 This phase packet is runtime-derived when the summary exists. Missing runtime artifacts remain evidence gaps.

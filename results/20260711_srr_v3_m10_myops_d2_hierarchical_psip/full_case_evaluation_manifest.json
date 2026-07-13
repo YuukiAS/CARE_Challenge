@@ -1,0 +1,13 @@
+{
+  "copied_files": [
+    "/users/a/e/aereinh/CARE/results/20260711_srr_v3_m10_myops_d2_hierarchical_psip/case_metrics.csv",
+    "/users/a/e/aereinh/CARE/results/20260711_srr_v3_m10_myops_d2_hierarchical_psip/hard_subgroup_metrics.csv",
+    "/users/a/e/aereinh/CARE/results/20260711_srr_v3_m10_myops_d2_hierarchical_psip/prediction_sanity_cases.csv"
+  ],
+  "phase": "d2_hierarchical_psip",
+  "result_dir": "/users/a/e/aereinh/CARE/results/20260711_srr_v3_m10_myops_d2_hierarchical_psip",
+  "runtime_root": "/users/a/e/aereinh/CARE/results/20260711_srr_v3_m10_complete_mechanism_repair/runtime/m10_myops_training_executor/partition_race_retry11/htzhulab",
+  "status": "RUNTIME_EVIDENCE_COPIED",
+  "summary_path": "/users/a/e/aereinh/CARE/results/20260711_srr_v3_m10_complete_mechanism_repair/runtime/m10_myops_training_executor/partition_race_retry11/htzhulab/variants/m10_d2_hierarchical_psip_formal/summary.json",
+  "variant_dir": "/users/a/e/aereinh/CARE/results/20260711_srr_v3_m10_complete_mechanism_repair/runtime/m10_myops_training_executor/partition_race_retry11/htzhulab/variants/m10_d2_hierarchical_psip_formal"
+}

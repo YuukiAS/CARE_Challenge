@@ -2,6 +2,6 @@
 
 Design: `D3_HIERARCHICAL_BR2_MEMORY_PROPREF`
 Variant: `m10_d3_hierarchical_memory_propref`
-Status: `STARTUP_FAILED_NEEDS_EVIDENCE`
+Status: `TERMINAL_RUNTIME_EVIDENCE`
 
 This phase packet is runtime-derived when the summary exists. Missing runtime artifacts remain evidence gaps.
