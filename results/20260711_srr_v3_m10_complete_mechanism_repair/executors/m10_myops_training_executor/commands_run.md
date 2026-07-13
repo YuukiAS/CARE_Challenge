@@ -506,6 +506,21 @@ Retry9 has crossed the retry5/retry6/retry7/retry8 D1 OOM elapsed windows, but i
 
 Current state remains `NEEDS_MONITOR`, not complete and not reviewable.
 
+## Retry10 D1 Time-Floor Monitor
+
+Update timestamp UTC: `2026-07-13T01:36:59Z`
+
+| Command / evidence | Result |
+| --- | --- |
+| `squeue -j 58743282,58743287,58743290,58743292,58743294,58743295,58743452 -o '%i|%j|%P|%q|%T|%M|%l|%R'` | D1 `58743282 RUNNING` for `02:34:40`; D2-through-alignment and finalizer dependency-pending |
+| `sacct -j 58743253,58743282,58743287,58743290,58743292,58743294,58743295,58743452 --format=JobIDRaw,JobName,State,ExitCode,Elapsed,Start,End,NodeList,ReqMem,MaxRSS --parsable2` | D1 `58743282 RUNNING 0:0`, elapsed `02:34:35`, `ReqMem=1200G`; downstream/finalizer dependency-pending |
+| `sstat -j 58743282.batch --format=JobID,MaxRSS,AveRSS,MaxVMSize,AveVMSize -P` | `MaxRSS=722601808K`, `AveRSS=722601808K` |
+| D1 checkpoint listing | checkpoints exist through `checkpoint_validation_step_11662.pt`, plus `checkpoint_best.pt` |
+
+Retry10 D1 has crossed the declared D1 minimum train-loop seconds floor of `9000` seconds, but it is still running and has not produced final D1 completion or aggregation evidence.
+
+Current state remains `NEEDS_MONITOR`, not complete and not reviewable.
+
 ## Retry10 D1 Step6664 Monitor
 
 Update timestamp UTC: `2026-07-13T00:28:02Z`

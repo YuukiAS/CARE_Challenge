@@ -92,6 +92,7 @@ Packet state: `NEEDS_MONITOR`
 | `wave2_partition_race_retry10_finalizer_submission.json` | Retry10 afterany finalizer receipt for job `58743452`. |
 | `wave2_partition_race_retry10_monitor_20260712T234010Z.md` | Retry10 D1 first-checkpoint monitor showing D1 running with validation checkpoints 1666 and 3332; not completion evidence. |
 | `wave2_partition_race_retry10_monitor_20260713T002802Z.md` | Retry10 D1 monitor showing D1 running with validation checkpoints through step 6664; not completion evidence. |
+| `wave2_partition_race_retry10_monitor_20260713T013659Z.md` | Retry10 D1 monitor showing D1 crossed the 9000-second D1 minimum-time floor and wrote checkpoints through step 11662; not completion evidence. |
 | `executors/m10_myops_training_executor/` | Wave 2 executor monitor packet; not completion evidence. |
 | `subagents/reviewer_prompt.md` | Reviewer handoff prompt for this blocked packet only. |
 | `mapper_report_draft.md` | Mapper draft non-run receipt. |
