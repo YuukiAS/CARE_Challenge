@@ -41,6 +41,24 @@ Checkpoint time: `2026-07-13T08:42:03Z`
 
 Decision remains `NEEDS_MONITOR`, not blocked and not complete.
 
+## Retry11 D2 Step25000 Monitor
+
+Checkpoint time: `2026-07-13T10:41:23Z`
+
+| Gate | Status |
+| --- | --- |
+| retry11 D2 live state | monitor: `58775066 RUNNING` for `02:05:09` on `g1807htzh01` |
+| retry11 D2 memory | monitor: `MaxRSS=18913780K`, `AveRSS=18385052K` |
+| scheduled validation progress | monitor: checkpoints exist through `checkpoint_validation_step_25000.pt`, plus `checkpoint_best.pt` |
+| D2 step floor | pass for step progress: checkpoint `25000` exists |
+| D2 minimum train-loop seconds | pending: elapsed `02:05:09` is below the D2 floor of `9000` seconds |
+| D2 runtime size | monitor: variant directory is approximately `7.8G` |
+| final runtime outputs | pending: no final D2 `training_log.csv`, `validation_events.csv`, or `summary.json` yet |
+| downstream stages | monitor: D3-through-alignment remain dependency-pending |
+| review | blocked: no `review.md`; this is not a completion packet |
+
+Decision remains `NEEDS_MONITOR`, not blocked and not complete.
+
 ## Retry11 D2 Step18326 Monitor
 
 Checkpoint time: `2026-07-13T10:09:09Z`
