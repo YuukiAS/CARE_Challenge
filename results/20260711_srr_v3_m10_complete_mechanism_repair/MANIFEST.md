@@ -121,6 +121,7 @@ Packet state: `NEEDS_MONITOR`
 | `wave2_partition_race_retry11_monitor_20260713T132116Z.md` | Retry11 D3 Step27000 monitor showing D3 `58775067` running after crossing the D3 step floor while still below the 9000-second floor; not completion evidence. |
 | `wave2_partition_race_retry11_monitor_20260713T134342Z.md` | Retry11 D3 Step30675 monitor showing D3 `58775067` still running with validation checkpoints through `30675`; not completion evidence. |
 | `wave2_partition_race_retry11_monitor_20260713T135615Z.md` | Retry11 D3 Step32720 monitor showing D3 `58775067` still running with validation checkpoints through `32720`; not completion evidence. |
+| `wave2_partition_race_retry11_monitor_20260713T142435Z.md` | Retry11 D3 Step40500 monitor showing D3 `58775067` still running with validation checkpoints through `40500`; not completion evidence. |
 | `finalizer_state.json` | Retry10 finalizer terminal accounting with `final_state=RUNTIME_FAILURE`, `failure_class=OUT_OF_MEMORY_NEEDS_REVISION`, `suggested_next_state=NEEDS_REVISION`, and `retryable=false`. |
 | `care_milestone_finalizer_58743452.log` | Retry10 finalizer log for Slurm job `58743452`. |
 | `executors/m10_myops_training_executor/` | Wave 2 executor monitor packet; not completion evidence. |
