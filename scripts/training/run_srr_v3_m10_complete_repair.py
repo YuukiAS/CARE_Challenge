@@ -42,6 +42,44 @@ def _flatten_gate_values(value, prefix: tuple[int, ...] = ()):
     yield prefix, float(value)
 
 
+def _mean_nested_numeric(value) -> float:
+    if isinstance(value, (list, tuple)):
+        flattened = [_mean_nested_numeric(item) for item in value]
+        return sum(flattened) / max(1, len(flattened))
+    return float(value)
+
+
+def _slot_mean_values(value) -> list[tuple[str, float]]:
+    if hasattr(value, "detach"):
+        tensor = value.detach().float().cpu()
+        if tensor.numel() == 0:
+            return []
+        if tensor.ndim == 0:
+            return [("0", float(tensor.item()))]
+        if tensor.ndim == 1:
+            summary = tensor
+        else:
+            summary = tensor.mean(dim=0)
+            if summary.ndim > 1:
+                summary = summary.reshape(summary.shape[0], -1).mean(dim=1)
+        return [(str(idx), float(item)) for idx, item in enumerate(summary.reshape(-1).tolist())]
+    if isinstance(value, (list, tuple)):
+        return [(str(idx), _mean_nested_numeric(item)) for idx, item in enumerate(value)]
+    return [("0", float(value))]
+
+
+def _iter_gate_leaves(value, prefix: tuple[object, ...] = ()):
+    if isinstance(value, dict):
+        for key, item in value.items():
+            yield from _iter_gate_leaves(item, prefix + (key,))
+        return
+    if isinstance(value, (list, tuple)) and value and all(hasattr(item, "detach") for item in value):
+        for idx, item in enumerate(value):
+            yield from _iter_gate_leaves(item, prefix + (idx,))
+        return
+    yield prefix, value
+
+
 def _m10_record_gate_usage_with_nested_gate_support(rows: list[dict[str, object]], variant: str, step: int, keys: list[str], outputs: dict[str, object]) -> None:
     gates = outputs.get("gates", {})
     if not gates:
@@ -50,32 +88,35 @@ def _m10_record_gate_usage_with_nested_gate_support(rows: list[dict[str, object]
     metadata = outputs.get("dictionary_slot_metadata", {}) if isinstance(outputs.get("dictionary_slot_metadata", {}), dict) else {}
     valid_masks = outputs.get("gate_valid_masks", {}) if isinstance(outputs.get("gate_valid_masks", {}), dict) else {}
     for task, gate in gates.items():
-        usage = gate.detach().mean(dim=0).cpu().tolist()
         specs = metadata.get(task, []) if isinstance(metadata, dict) else []
         valid = valid_masks.get(task) if isinstance(valid_masks, dict) else None
-        valid_usage = valid.detach().mean(dim=0).cpu().tolist() if hasattr(valid, "detach") else []
-        valid_by_index = {".".join(str(v) for v in index): value for index, value in _flatten_gate_values(valid_usage)} if valid_usage else {}
+        valid_by_index = dict(_slot_mean_values(valid)) if valid is not None else {}
         task_prefix = str(task).split("_", 1)[0]
-        for index, value in _flatten_gate_values(usage):
-            expert_index = ".".join(str(v) for v in index) if index else "0"
-            top_index = index[0] if index else 0
-            spec = specs[top_index] if top_index < len(specs) else {}
-            rows.append(
-                {
-                    "variant": variant,
-                    "step": step,
-                    "task": task,
-                    "semantic_task": task_prefix,
-                    "expert_index": expert_index,
-                    "slot_group": spec.get("group", "unknown") if isinstance(spec, dict) else "unknown",
-                    "slot_kind": spec.get("kind", "unknown") if isinstance(spec, dict) else "unknown",
-                    "slot_modality": spec.get("modality", "") if isinstance(spec, dict) else "",
-                    "slot_modalities": ";".join(str(v) for v in spec.get("modalities", ())) if isinstance(spec, dict) else "",
-                    "valid_fraction": valid_by_index.get(expert_index, "NA"),
-                    "mean_weight": value,
-                    "batch_cases": ",".join(keys),
-                }
-            )
+        for leaf_prefix, leaf in _iter_gate_leaves(gate):
+            leaf_name = ".".join(str(item) for item in leaf_prefix)
+            for expert_index, value in _slot_mean_values(leaf):
+                full_expert_index = f"{leaf_name}.{expert_index}" if leaf_name else expert_index
+                try:
+                    top_index = int(expert_index.split(".", 1)[0])
+                except ValueError:
+                    top_index = 0
+                spec = specs[top_index] if top_index < len(specs) else {}
+                rows.append(
+                    {
+                        "variant": variant,
+                        "step": step,
+                        "task": task,
+                        "semantic_task": task_prefix,
+                        "expert_index": full_expert_index,
+                        "slot_group": spec.get("group", "unknown") if isinstance(spec, dict) else "unknown",
+                        "slot_kind": spec.get("kind", "unknown") if isinstance(spec, dict) else "unknown",
+                        "slot_modality": spec.get("modality", "") if isinstance(spec, dict) else "",
+                        "slot_modalities": ";".join(str(v) for v in spec.get("modalities", ())) if isinstance(spec, dict) else "",
+                        "valid_fraction": valid_by_index.get(expert_index, "NA"),
+                        "mean_weight": value,
+                        "batch_cases": ",".join(keys),
+                    }
+                )
 
 
 legacy.propref_loss = _m10_propref_loss_with_compat_metrics

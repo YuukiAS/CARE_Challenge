@@ -1,26 +1,46 @@
 # M10 Completion Check
 
-Completion state: `NEEDS_EVIDENCE`
+Completion state: `NEEDS_MONITOR`
 
-This packet is not complete and is not ready for independent review. It records that the original Wave 2 jobs are permanently `STARTUP_FAILED` with zero training credit, D0 has one retained valid upstream run, retry10 D1 reached terminal `OUT_OF_MEMORY(0:125)` after writing checkpoints through step 21658, and D2-through-alignment did not run because their required `afterok` dependency failed.
+This packet is not complete and is not ready for independent review. It records that the original Wave 2 jobs are permanently `STARTUP_FAILED` with zero training credit, D0 has one retained valid upstream run, retry10 D1 reached terminal `OUT_OF_MEMORY(0:125)` after writing checkpoints through step 21658, and retry11 is now running as the same-executor Wave 2 replacement after a same-scope gate-usage evidence logging repair.
 
 ## Required Gates
 
 | Gate | Status |
 | --- | --- |
 | Old failed job accounting | pass: seven old jobs recorded as `STARTUP_FAILED`, zero credit |
-| Replacement preflight | pass: retry10 job `58743253` completed `0:0` on `htzhulab` |
-| Replacement formal jobs | fail: retry10 D1 `58743282` reached `OUT_OF_MEMORY(0:125)` after `06:09:20`; D2-through-alignment did not run |
+| Replacement preflight | pass: retry11 htzhulab job `58775059` completed `0:0`; a100 preflight `58775057` was cancelled unused while pending; volta preflight `58775058` failed because the current PyTorch build cannot execute CUDA kernels on V100 |
+| Replacement formal jobs | monitor: retry11 D1 `58775065` is `RUNNING`; D2-through-alignment `58775066`-`58775070` are dependency-pending |
 | Training dependency policy | pass: training-to-training dependencies use `afterok` |
-| Wave 2 finalizer dependency | pass: finalizer job `58743452` used `afterany` over old and retry10 jobs |
-| Post-job aggregation | fail: finalizer wrote terminal accounting with `final_state=RUNTIME_FAILURE`, `failure_class=OUT_OF_MEMORY_NEEDS_REVISION`, `suggested_next_state=NEEDS_REVISION`, and `aggregation_exit_code=None`; retry10 lacks final runtime outputs |
+| Wave 2 finalizer dependency | pass: retry11 finalizer job `58775071` uses `afterany` over old and replacement job IDs |
+| Post-job aggregation | pending: wait for retry11 terminal accounting and post-job aggregation |
 | Review | blocked: no `review.md` until final packet after aggregation |
 
 ## Decision
 
-Current controller state is `NEEDS_EVIDENCE`, not blocked and not complete. Retry10 D1 is terminal unsuccessful; D2-through-alignment did not run; Wave 2 did not satisfy minimum-effective-training or post-job aggregation gates. The finalizer classifies another retry as requiring revision first.
+Current controller state is `NEEDS_MONITOR`, not blocked and not complete. Retry10 D1 is terminal unsuccessful with zero D1-through-alignment credit. Retry11 D1 has started after a same-scope owned-wrapper repair that reduces `retrieval_usage.csv` from spatial voxel expansion to per-slot mean evidence logging; variants, formulas, budgets, split, case set, evaluation rules, checkpoint-selection rules, executor count, and wave graph are unchanged.
 
 No `review.md` was written. No push was performed. Wave 3, validation packaging/upload, hosted metric claims, route promotion, route-negative conclusion, and M11 remain blocked until Wave 2 terminal accounting and aggregation succeed.
+
+## Retry11 Gate-Usage Logging Repair And Submission
+
+Checkpoint time: `2026-07-13T06:02:30Z`
+
+| Gate | Status |
+| --- | --- |
+| retry10 root cause evidence | fail: D1 `retrieval_usage.csv` reached `156G` and retry10 D1 RSS grew from `887014088K` at step 15000 to `1070713496K` at step 18326 before `OUT_OF_MEMORY(0:125)` |
+| repair scope | pass: changed only `scripts/training/run_srr_v3_m10_complete_repair.py` gate-usage evidence logging to summarize each slot over batch/spatial dimensions; training forward/loss/optimizer/budgets/split/checkpoint rules unchanged |
+| local validation | pass: `py_compile` passed and spatial-gate smoke reduced a `2x16x4x5x6` gate to `16` usage rows |
+| htzhulab preflight | pass: `58775059 COMPLETED 0:0` on `g1807htzh01` |
+| a100 preflight | cancelled: `58775057 CANCELLED` while pending; no formal a100 job submitted because preflight did not complete `0:0` |
+| volta preflight | fail: `58775058 FAILED 1:0`, CUDA kernel probe reports no kernel image for V100 with current PyTorch build |
+| retry11 D1 | monitor: `58775065 RUNNING` on `htzhulab` |
+| retry11 downstream | monitor: `58775066`-`58775070` dependency-pending via `afterok` |
+| retry11 finalizer | monitor: `58775071 PENDING (Dependency)` via `afterany` over old and retry11 job IDs |
+| runtime root | `results/20260711_srr_v3_m10_complete_mechanism_repair/runtime/m10_myops_training_executor/partition_race_retry11/htzhulab` |
+| code hash | `c1d8124dd0e3d0407cfa0fca1e6ea310121e00a4ece290c4b0dc19cf638dd1a3` |
+
+Decision is `NEEDS_MONITOR`, not complete and not reviewable. This is not a scheduler block because retry11 D1 has started running.
 
 ## Three-Partition Race Check
 

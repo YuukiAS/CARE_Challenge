@@ -1,0 +1,11 @@
+{
+  "a100_preflight_job_id": "58775057",
+  "a100_preflight_state": "CANCELLED pending preflight; not used for formal jobs",
+  "attempt": "retry11",
+  "htzhulab_preflight_job_id": "58775059",
+  "htzhulab_preflight_state": "COMPLETED 0:0",
+  "volta_preflight_job_id": "58775058",
+  "volta_preflight_state": "FAILED 1:0 cuda_no_kernel_image_for_v100",
+  "winner_partition": "htzhulab",
+  "winner_reason": "only partition with compute preflight exit 0 before formal submission"
+}

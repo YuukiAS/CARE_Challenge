@@ -6,6 +6,14 @@ Controller status: `NEEDS_MONITOR`
 
 This controller executed only the bootstrap and hard-gate validation for the M10 section in `prompts/shared/EXECUTOR_PROMPTS.md` titled `M10 executor/controller: SRR-v3 complete mechanism repair`, using `prompts/tasks/20260711_srr_v3_m10_complete_mechanism_repair_executor_plan.yaml`.
 
+## Current Wave 2 State
+
+As of `2026-07-13T06:02:30Z`, retry11 D1 `58775065` is running on `htzhulab`; retry11 D2-through-alignment `58775066`-`58775070` are dependency-pending via `afterok`; finalizer `58775071` is dependency-pending via `afterany`. This is `NEEDS_MONITOR`, not completion evidence and not reviewable.
+
+Retry11 follows a same-scope owned-wrapper repair after retry10 D1 reached `OUT_OF_MEMORY(0:125)`. The repair changes only `scripts/training/run_srr_v3_m10_complete_repair.py` gate-usage evidence logging: spatial gate tensors are summarized to per-slot means instead of voxel-expanded `retrieval_usage.csv` rows. Variants, formulas, budgets, split, case set, evaluation rules, checkpoint-selection rules, result paths, executor count, and wave graph are unchanged.
+
+Preflight accounting: htzhulab preflight `58775059` completed `0:0`; a100 preflight `58775057` was cancelled unused while pending; volta preflight `58775058` failed because the current PyTorch build cannot execute CUDA kernels on V100. No formal a100 or volta training job was submitted.
+
 The original executor plan validator passed, but M10 did not enter executor phase because the M10 contract's own prerequisite gate failed:
 
 - `git merge-base --is-ancestor 828735482396d6d727d2294e88c89868e3118ad3 HEAD` returned exit code `1`.

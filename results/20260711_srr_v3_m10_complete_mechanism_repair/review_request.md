@@ -2,7 +2,24 @@
 
 This packet does not request normal M10 scientific review. It records an authorized same-executor Wave 2 replacement submission after successful compute-node preflight.
 
-Current state: `NEEDS_EVIDENCE`
+Current state: `NEEDS_MONITOR`
+
+## Current Retry11 Monitor Update
+
+As of `2026-07-13T06:02:30Z`, retry11 is the active same-executor Wave 2 replacement after an owned-wrapper gate-usage evidence logging repair. Htzhulab preflight `58775059` completed `0:0`; a100 preflight `58775057` was cancelled unused while pending; volta preflight `58775058` failed `1:0` because the current PyTorch CUDA build cannot execute kernels on V100.
+
+Formal retry11 jobs are:
+
+| Phase | Replacement job | State at submission check |
+| --- | ---: | --- |
+| D1 spatial BR2 | `58775065` | `RUNNING` |
+| D2 hierarchical PSIP | `58775066` | `PENDING (Dependency)` |
+| D3 full memory PropRef | `58775067` | `PENDING (Dependency)` |
+| Hard-negative refresh | `58775068` | `PENDING (Dependency)` |
+| No-nnU-Net-context control | `58775069` | `PENDING (Dependency)` |
+| Alignment control | `58775070` | `PENDING (Dependency)` |
+
+Finalizer job `58775071` is pending with `afterany` over old and retry11 job IDs. This is still a monitor packet. Do not perform normal M10 review yet.
 
 Formal replacement jobs submitted:
 

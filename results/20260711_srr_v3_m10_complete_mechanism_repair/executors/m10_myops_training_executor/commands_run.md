@@ -506,6 +506,29 @@ Retry9 has crossed the retry5/retry6/retry7/retry8 D1 OOM elapsed windows, but i
 
 Current state remains `NEEDS_MONITOR`, not complete and not reviewable.
 
+## Retry11 Gate-Usage Logging Repair And Submission
+
+Update timestamp UTC: `2026-07-13T06:02:30Z`
+
+| Command / evidence | Result |
+| --- | --- |
+| D1 artifact size inspection | `retrieval_usage.csv` in the D1 runtime root is `156G`, while `training_log.csv` is `410K`; retry10 RSS grew to `1070713496K` before OOM |
+| `./envs/env_CARE/bin/python -m py_compile scripts/training/run_srr_v3_m10_complete_repair.py` | exit `0` after gate-usage evidence logging repair |
+| spatial gate smoke | exit `0`; a `2x16x4x5x6` gate records `16` slot rows instead of voxel-expanded rows |
+| `sbatch --parsable --job-name=M10W2PreHTZ11 --partition=htzhulab --qos=gpu_access_patron --gres=gpu:1 --mem=1200G ... wave2_env_preflight.sh` | preflight `58775059`, later `COMPLETED 0:0` |
+| `sbatch --parsable --job-name=M10W2PreA10011 --partition=a100-gpu --qos=gpu_access ... wave2_env_preflight.sh` | preflight `58775057`, cancelled unused while still pending |
+| `sbatch --parsable --job-name=M10W2PreVOLT11 --partition=volta-gpu --qos=gpu_access ... wave2_env_preflight.sh` | preflight `58775058`, failed `1:0` because current PyTorch CUDA build cannot run kernels on V100 |
+| retry11 D1 submission | `58775065`, dependency `afterok:58775059`, runtime root `partition_race_retry11/htzhulab` |
+| retry11 D2 submission | `58775066`, dependency `afterok:58775065` |
+| retry11 D3 submission | `58775067`, dependency `afterok:58775066` |
+| retry11 hard-negative submission | `58775068`, dependency `afterok:58775067` |
+| retry11 no-context submission | `58775069`, dependency `afterok:58775068` |
+| retry11 alignment submission | `58775070`, dependency `afterok:58775069` |
+| retry11 finalizer submission | `58775071`, dependency `afterany` over old and retry11 job IDs |
+| `squeue -j 58775065,58775066,58775067,58775068,58775069,58775070,58775071 ...` | D1 `58775065 RUNNING`; D2-through-alignment and finalizer dependency-pending |
+
+Current state is `NEEDS_MONITOR`, not complete and not reviewable. Retry10 remains terminal unsuccessful with zero D1-through-alignment credit; retry11 is the same-executor Wave 2 replacement after an owned-wrapper evidence logging repair.
+
 ## Retry10 D1 Time-Floor Monitor
 
 Update timestamp UTC: `2026-07-13T01:36:59Z`

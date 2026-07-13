@@ -4,7 +4,15 @@ Task key: `20260711_srr_v3_m10_complete_mechanism_repair`
 
 Executor: `m10_myops_training_executor`
 
-Status: `NEEDS_EVIDENCE`
+Status: `NEEDS_MONITOR`
+
+## Current Retry11 State
+
+As of `2026-07-13T06:02:30Z`, retry11 D1 `58775065` is `RUNNING` on `htzhulab`; retry11 D2-through-alignment jobs `58775066`-`58775070` are dependency-pending via `afterok`; retry11 finalizer `58775071` is dependency-pending via `afterany`.
+
+Retry11 follows a same-scope owned-wrapper repair for the retry10 D1 memory-growth failure. The repair only changes gate-usage evidence logging in `scripts/training/run_srr_v3_m10_complete_repair.py`, summarizing spatial gate tensors to per-slot means before writing `retrieval_usage.csv`. It does not change variants, formulas, budgets, split, case set, evaluation rules, checkpoint-selection rules, result paths, executor count, or wave graph.
+
+Preflight accounting: htzhulab `58775059 COMPLETED 0:0`; a100 `58775057 CANCELLED` while pending and unused; volta `58775058 FAILED 1:0` because the current PyTorch CUDA build cannot execute kernels on V100. No formal a100 or volta training job was submitted.
 
 ## Dependency Gate
 

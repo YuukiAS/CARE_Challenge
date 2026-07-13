@@ -98,6 +98,11 @@ Packet state: `NEEDS_MONITOR`
 | `wave2_partition_race_retry10_monitor_20260713T030523Z.md` | Retry10 D1 monitor showing D1 running with validation checkpoints through step 16660; not completion evidence. |
 | `wave2_partition_race_retry10_monitor_20260713T034453Z.md` | Retry10 D1 monitor showing D1 running with validation checkpoints through step 18326; not completion evidence. |
 | `wave2_partition_race_retry10_terminal_oom.md` | Retry10 terminal accounting packet: D1 `58743282` reached `OUT_OF_MEMORY(0:125)` after `06:09:20`, D2-through-alignment did not run, and controller state is `NEEDS_EVIDENCE`; finalizer classifies further retry as requiring revision first. |
+| `wave2_partition_race_retry11_submission.json` | Retry11 htzhulab replacement submission receipt after gate-usage evidence logging repair and compute preflight `58775059`. |
+| `wave2_partition_race_retry11_watcher_state.json` | Retry11 routing decision: htzhulab was the only partition with preflight exit `0` before formal submission; a100 was cancelled pending and volta failed V100 CUDA kernel probe. |
+| `wave2_partition_race_retry11_job_ledger.csv` | Retry11 ledger recording old/new job IDs, repair reason, preflight command/exit code, hashes, dependencies, runtime root, and log paths. |
+| `wave2_partition_race_retry11_finalizer_submission.json` | Retry11 afterany finalizer receipt for job `58775071`. |
+| `wave2_partition_race_retry11_monitor_20260713T060230Z.md` | Retry11 monitor packet showing D1 `58775065` running and downstream stages dependency-pending; not completion evidence. |
 | `finalizer_state.json` | Retry10 finalizer terminal accounting with `final_state=RUNTIME_FAILURE`, `failure_class=OUT_OF_MEMORY_NEEDS_REVISION`, `suggested_next_state=NEEDS_REVISION`, and `retryable=false`. |
 | `care_milestone_finalizer_58743452.log` | Retry10 finalizer log for Slurm job `58743452`. |
 | `executors/m10_myops_training_executor/` | Wave 2 executor monitor packet; not completion evidence. |
