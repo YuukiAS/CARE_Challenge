@@ -8,13 +8,13 @@ Status: `NEEDS_MONITOR`
 
 ## Current Retry11 State
 
-As of `2026-07-13T08:42:03Z`, retry11 D1 `58775065` is `COMPLETED 0:0` on `htzhulab` after `02:35:16`; retry11 D2 `58775066` is `RUNNING` on `htzhulab`; retry11 D3-through-alignment jobs `58775067`-`58775070` are dependency-pending via `afterok`; retry11 finalizer `58775071` is dependency-pending via `afterany`.
+As of `2026-07-13T11:15:19Z`, retry11 D1 `58775065` is `COMPLETED 0:0` on `htzhulab` after `02:35:16`; retry11 D2 `58775066` is `COMPLETED 0:0` on `htzhulab` after `02:34:22`; retry11 D3 `58775067` is `RUNNING` on `htzhulab`; retry11 hard-negative through alignment jobs `58775068`-`58775070` are dependency-pending via `afterok`; retry11 finalizer `58775071` is dependency-pending via `afterany`.
 
 Retry11 follows a same-scope owned-wrapper repair for the retry10 D1 memory-growth failure. The repair only changes gate-usage evidence logging in `scripts/training/run_srr_v3_m10_complete_repair.py`, summarizing spatial gate tensors to per-slot means before writing `retrieval_usage.csv`. It does not change variants, formulas, budgets, split, case set, evaluation rules, checkpoint-selection rules, result paths, executor count, or wave graph.
 
 Preflight accounting: htzhulab `58775059 COMPLETED 0:0`; a100 `58775057 CANCELLED` while pending and unused; volta `58775058 FAILED 1:0` because the current PyTorch CUDA build cannot execute kernels on V100. No formal a100 or volta training job was submitted.
 
-D1 completion evidence: `actual_optimizer_steps=31778`, `train_loop_seconds=9000.150148481014`, `validation_event_count=19`, `eval_cases=44`, `stop_reason=max_steps_min_train_loop_seconds_satisfied`, and one-batch overfit `PASS`. The repaired `retrieval_usage.csv` is `10820647` bytes and `86497` lines including header, not the retry10-scale `156G` expansion. D2 has only early sanity files at this checkpoint and has not yet produced final runtime outputs.
+D1 completion evidence: `actual_optimizer_steps=31778`, `train_loop_seconds=9000.150148481014`, `validation_event_count=19`, `eval_cases=44`, `stop_reason=max_steps_min_train_loop_seconds_satisfied`, and one-batch overfit `PASS`. The repaired D1 `retrieval_usage.csv` is `10820647` bytes and `86497` lines including header, not the retry10-scale `156G` expansion. D2 completion evidence: `actual_optimizer_steps=31810`, `train_loop_seconds=9000.034213767038`, `validation_event_count=19`, `eval_cases=44`, `stop_reason=max_steps_min_train_loop_seconds_satisfied`, and one-batch overfit `PASS`. D3 has only early sanity files at this checkpoint and has not yet produced final runtime outputs.
 
 ## Dependency Gate
 

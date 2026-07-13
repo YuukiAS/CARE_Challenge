@@ -18,9 +18,28 @@ This packet is not complete and is not ready for independent review. It records 
 
 ## Decision
 
-Current controller state is `NEEDS_MONITOR`, not blocked and not complete. Retry10 D1 is terminal unsuccessful with zero D1-through-alignment credit. Retry11 D1 completed successfully after a same-scope owned-wrapper repair that reduces `retrieval_usage.csv` from spatial voxel expansion to per-slot mean evidence logging; retry11 D2 is now running. Variants, formulas, budgets, split, case set, evaluation rules, checkpoint-selection rules, executor count, and wave graph are unchanged.
+Current controller state is `NEEDS_MONITOR`, not blocked and not complete. Retry10 D1 is terminal unsuccessful with zero D1-through-alignment credit. Retry11 D1 and D2 completed successfully after a same-scope owned-wrapper repair that reduces `retrieval_usage.csv` from spatial voxel expansion to per-slot mean evidence logging; retry11 D3 is now running. Variants, formulas, budgets, split, case set, evaluation rules, checkpoint-selection rules, executor count, and wave graph are unchanged.
 
 No `review.md` was written. No push was performed. Wave 3, validation packaging/upload, hosted metric claims, route promotion, route-negative conclusion, and M11 remain blocked until Wave 2 terminal accounting and aggregation succeed.
+
+## Retry11 D2 Completion / D3 Running Monitor
+
+Checkpoint time: `2026-07-13T11:15:19Z`
+
+| Gate | Status |
+| --- | --- |
+| retry11 D2 terminal state | pass: `58775066 COMPLETED`, exit `0:0`, elapsed `02:34:22`, node `g1807htzh01` |
+| retry11 D2 training budget | pass: `actual_optimizer_steps=31810`, `train_loop_seconds=9000.034213767038`, `validation_event_count=19`, `eval_cases=44` |
+| retry11 D2 stop reason | pass: `max_steps_min_train_loop_seconds_satisfied` |
+| retry11 D2 learning sanity | pass: `first_train_loss=4.220096588134766`, `last_train_loss=0.8512778878211975`, `loss_decrease=3.368818700313568`, one-batch overfit `PASS` |
+| retry11 D2 logging repair | pass: `retrieval_usage.csv` is `11374754` bytes and `86769` lines including header |
+| retry11 D3 live state | monitor: `58775067 RUNNING`, started `2026-07-13T07:11:32` on `g1807htzh01` |
+| retry11 D3 memory | monitor: `MaxRSS=10929272K`, `AveRSS=10904836K` |
+| retry11 D3 early sanity files | monitor: one-batch overfit, prototype bank, and prototype update files exist; no final D3 summary yet |
+| downstream stages | monitor: hard-negative, no-context, and alignment remain dependency-pending |
+| review | blocked: no `review.md`; this is not a completion packet |
+
+Decision remains `NEEDS_MONITOR`, not blocked and not complete.
 
 ## Retry11 D1 Completion / D2 Running Monitor
 

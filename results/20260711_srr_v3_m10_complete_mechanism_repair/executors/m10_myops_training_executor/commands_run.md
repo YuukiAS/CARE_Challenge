@@ -506,6 +506,20 @@ Retry9 has crossed the retry5/retry6/retry7/retry8 D1 OOM elapsed windows, but i
 
 Current state remains `NEEDS_MONITOR`, not complete and not reviewable.
 
+## Retry11 D2 Completion / D3 Running Monitor
+
+Update timestamp UTC: `2026-07-13T11:15:19Z`
+
+| Command / evidence | Result |
+| --- | --- |
+| `squeue -j 58775065,58775066,58775067,58775068,58775069,58775070,58775071 -o '%i\|%j\|%P\|%T\|%M\|%D\|%R'` | D3 `58775067 RUNNING` for `00:03:51` on `g1807htzh01`; hard-negative, no-context, alignment, and finalizer dependency-pending |
+| `sacct -j 58775065,58775066,58775067,58775068,58775069,58775070,58775071 --format=JobID,JobName%24,Partition,State,ExitCode,Elapsed,Start,End,NodeList%24,MaxRSS -P` | D2 `58775066 COMPLETED 0:0`, elapsed `02:34:22`, `MaxRSS=19056952K`; D3 `58775067 RUNNING 0:0`; downstream/finalizer dependency-pending |
+| D2 summary inspection | `actual_optimizer_steps=31810`, `train_loop_seconds=9000.034213767038`, `validation_event_count=19`, `eval_cases=44`, `stop_reason=max_steps_min_train_loop_seconds_satisfied` |
+| D2 repaired logging size check | `retrieval_usage.csv` is `11374754` bytes and `86769` lines including header |
+| D3 early runtime listing | one-batch overfit, prototype bank, and prototype update files exist; no final D3 `training_log.csv`, `validation_events.csv`, or `summary.json` yet |
+
+Current state remains `NEEDS_MONITOR`, not complete and not reviewable.
+
 ## Retry11 D2 Step25000 Monitor
 
 Update timestamp UTC: `2026-07-13T10:41:23Z`
