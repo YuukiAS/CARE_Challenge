@@ -10,7 +10,7 @@ This packet is not complete and is not ready for independent review. It records 
 | --- | --- |
 | Old failed job accounting | pass: seven old jobs recorded as `STARTUP_FAILED`, zero credit |
 | Replacement preflight | pass: retry11 htzhulab job `58775059` completed `0:0`; a100 preflight `58775057` was cancelled unused while pending; volta preflight `58775058` failed because the current PyTorch build cannot execute CUDA kernels on V100 |
-| Replacement formal jobs | monitor: retry11 D1 `58775065` completed `0:0`; D2 `58775066` is `RUNNING`; D3-through-alignment `58775067`-`58775070` are dependency-pending |
+| Replacement formal jobs | monitor: retry11 D1 `58775065` and D2 `58775066` completed `0:0`; D3 `58775067` is `RUNNING`; hard-negative through alignment `58775068`-`58775070` are dependency-pending |
 | Training dependency policy | pass: training-to-training dependencies use `afterok` |
 | Wave 2 finalizer dependency | pass: retry11 finalizer job `58775071` uses `afterany` over old and replacement job IDs |
 | Post-job aggregation | pending: wait for retry11 terminal accounting and post-job aggregation |
@@ -21,6 +21,22 @@ This packet is not complete and is not ready for independent review. It records 
 Current controller state is `NEEDS_MONITOR`, not blocked and not complete. Retry10 D1 is terminal unsuccessful with zero D1-through-alignment credit. Retry11 D1 and D2 completed successfully after a same-scope owned-wrapper repair that reduces `retrieval_usage.csv` from spatial voxel expansion to per-slot mean evidence logging; retry11 D3 is now running. Variants, formulas, budgets, split, case set, evaluation rules, checkpoint-selection rules, executor count, and wave graph are unchanged.
 
 No `review.md` was written. No push was performed. Wave 3, validation packaging/upload, hosted metric claims, route promotion, route-negative conclusion, and M11 remain blocked until Wave 2 terminal accounting and aggregation succeed.
+
+## Retry11 D3 Step6135 Monitor
+
+Checkpoint time: `2026-07-13T11:48:15Z`
+
+| Gate | Status |
+| --- | --- |
+| retry11 D3 live state | monitor: `58775067 RUNNING` for `00:36:48` on `g1807htzh01` |
+| retry11 D3 memory | monitor: `MaxRSS=12300164K`, `AveRSS=12224636K` |
+| scheduled validation progress | monitor: checkpoints exist through `checkpoint_validation_step_6135.pt` |
+| D3 runtime size | monitor: variant directory is approximately `1.2G` |
+| final runtime outputs | pending: no final D3 `training_log.csv`, `validation_events.csv`, or `summary.json` yet |
+| downstream stages | monitor: hard-negative, no-context, and alignment remain dependency-pending |
+| review | blocked: no `review.md`; this is not a completion packet |
+
+Decision remains `NEEDS_MONITOR`, not blocked and not complete.
 
 ## Retry11 D2 Completion / D3 Running Monitor
 
