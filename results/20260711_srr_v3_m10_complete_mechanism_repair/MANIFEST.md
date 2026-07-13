@@ -107,6 +107,7 @@ Packet state: `NEEDS_MONITOR`
 | `wave2_partition_race_retry11_monitor_20260713T062448Z.md` | Retry11 Step3332 monitor showing D1 `58775065` running with checkpoints through `3332` and low RSS; not completion evidence. |
 | `wave2_partition_race_retry11_monitor_20260713T063712Z.md` | Retry11 Step6664 monitor showing D1 `58775065` running with checkpoints through `6664`, `checkpoint_best.pt`, and low RSS; not completion evidence. |
 | `wave2_partition_race_retry11_monitor_20260713T064940Z.md` | Retry11 Step8330 monitor showing D1 `58775065` running with checkpoints through `8330` and low RSS; not completion evidence. |
+| `wave2_partition_race_retry11_monitor_20260713T071155Z.md` | Retry11 Step13328 monitor showing D1 `58775065` running with checkpoints through `13328` and low RSS; not completion evidence. |
 | `finalizer_state.json` | Retry10 finalizer terminal accounting with `final_state=RUNTIME_FAILURE`, `failure_class=OUT_OF_MEMORY_NEEDS_REVISION`, `suggested_next_state=NEEDS_REVISION`, and `retryable=false`. |
 | `care_milestone_finalizer_58743452.log` | Retry10 finalizer log for Slurm job `58743452`. |
 | `executors/m10_myops_training_executor/` | Wave 2 executor monitor packet; not completion evidence. |
