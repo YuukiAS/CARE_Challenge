@@ -22,6 +22,21 @@ Current controller state is `NEEDS_MONITOR`, not blocked and not complete. Retry
 
 No `review.md` was written. No push was performed. Wave 3, validation packaging/upload, hosted metric claims, route promotion, route-negative conclusion, and M11 remain blocked until Wave 2 terminal accounting and aggregation succeed.
 
+## Retry11 D3 Time-Floor Monitor
+
+Checkpoint time: `2026-07-13T15:16:07Z`
+
+| Gate | Status |
+| --- | --- |
+| retry11 D3 live state | monitor: `58775067 RUNNING` for `04:04:45` on `g1807htzh01` |
+| D3 minimum train-loop seconds | pass by Slurm elapsed: D3 has crossed the `14400` second floor |
+| checkpoint_best evaluation outputs | monitor: component HD, crop bounds, prediction sanity, proposal PR sweep, ROI coverage, and subgroup metrics CSVs exist for `checkpoint_best` |
+| final runtime outputs | pending: no final D3 `training_log.csv`, `validation_events.csv`, or `summary.json` yet |
+| downstream stages | monitor: hard-negative, no-context, and alignment remain dependency-pending |
+| review | blocked: no `review.md`; this is not a completion packet |
+
+Decision remains `NEEDS_MONITOR`, not blocked and not complete.
+
 ## Retry11 D3 Step45000 Monitor
 
 Checkpoint time: `2026-07-13T14:52:50Z`
