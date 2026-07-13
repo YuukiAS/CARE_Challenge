@@ -10,7 +10,7 @@ This packet is not complete and is not ready for independent review. It records 
 | --- | --- |
 | Old failed job accounting | pass: seven old jobs recorded as `STARTUP_FAILED`, zero credit |
 | Replacement preflight | pass: retry11 htzhulab job `58775059` completed `0:0`; a100 preflight `58775057` was cancelled unused while pending; volta preflight `58775058` failed because the current PyTorch build cannot execute CUDA kernels on V100 |
-| Replacement formal jobs | monitor: retry11 D1 `58775065` is `RUNNING`; D2-through-alignment `58775066`-`58775070` are dependency-pending |
+| Replacement formal jobs | monitor: retry11 D1 `58775065` completed `0:0`; D2 `58775066` is `RUNNING`; D3-through-alignment `58775067`-`58775070` are dependency-pending |
 | Training dependency policy | pass: training-to-training dependencies use `afterok` |
 | Wave 2 finalizer dependency | pass: retry11 finalizer job `58775071` uses `afterany` over old and replacement job IDs |
 | Post-job aggregation | pending: wait for retry11 terminal accounting and post-job aggregation |
@@ -18,9 +18,28 @@ This packet is not complete and is not ready for independent review. It records 
 
 ## Decision
 
-Current controller state is `NEEDS_MONITOR`, not blocked and not complete. Retry10 D1 is terminal unsuccessful with zero D1-through-alignment credit. Retry11 D1 has started after a same-scope owned-wrapper repair that reduces `retrieval_usage.csv` from spatial voxel expansion to per-slot mean evidence logging; variants, formulas, budgets, split, case set, evaluation rules, checkpoint-selection rules, executor count, and wave graph are unchanged.
+Current controller state is `NEEDS_MONITOR`, not blocked and not complete. Retry10 D1 is terminal unsuccessful with zero D1-through-alignment credit. Retry11 D1 completed successfully after a same-scope owned-wrapper repair that reduces `retrieval_usage.csv` from spatial voxel expansion to per-slot mean evidence logging; retry11 D2 is now running. Variants, formulas, budgets, split, case set, evaluation rules, checkpoint-selection rules, executor count, and wave graph are unchanged.
 
 No `review.md` was written. No push was performed. Wave 3, validation packaging/upload, hosted metric claims, route promotion, route-negative conclusion, and M11 remain blocked until Wave 2 terminal accounting and aggregation succeed.
+
+## Retry11 D1 Completion / D2 Running Monitor
+
+Checkpoint time: `2026-07-13T08:42:03Z`
+
+| Gate | Status |
+| --- | --- |
+| retry11 D1 terminal state | pass: `58775065 COMPLETED`, exit `0:0`, elapsed `02:35:16`, node `g1807htzh01` |
+| retry11 D1 training budget | pass: `actual_optimizer_steps=31778`, `train_loop_seconds=9000.150148481014`, `validation_event_count=19`, `eval_cases=44` |
+| retry11 D1 stop reason | pass: `max_steps_min_train_loop_seconds_satisfied` |
+| retry11 D1 learning sanity | pass: `first_train_loss=4.220096588134766`, `last_train_loss=0.7205723524093628`, `loss_decrease=3.499524235725403`, one-batch overfit `PASS` |
+| retry11 D1 logging repair | pass: `retrieval_usage.csv` is `10820647` bytes and `86497` lines including header; no retry10-scale `156G` expansion |
+| retry11 D2 live state | monitor: `58775066 RUNNING`, started `2026-07-13T04:37:07` on `g1807htzh01` |
+| retry11 D2 memory | monitor: `MaxRSS=11024568K`, `AveRSS=10926244K` |
+| retry11 D2 early sanity files | monitor: one-batch overfit, prototype bank, and prototype update files exist; no final D2 summary yet |
+| downstream stages | monitor: D3-through-alignment remain dependency-pending |
+| review | blocked: no `review.md`; this is not a completion packet |
+
+Decision remains `NEEDS_MONITOR`, not blocked and not complete.
 
 ## Retry11 Gate-Usage Logging Repair And Submission
 

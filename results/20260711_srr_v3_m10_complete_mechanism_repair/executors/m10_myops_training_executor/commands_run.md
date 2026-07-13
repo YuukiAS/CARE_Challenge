@@ -711,6 +711,21 @@ Retry10 D1 remains running and has not produced final `training_log.csv`, `valid
 
 Current state remains `NEEDS_MONITOR`, not complete and not reviewable.
 
+## Retry11 D1 Completion / D2 Running Monitor
+
+Update timestamp UTC: `2026-07-13T08:42:03Z`
+
+| Command / evidence | Result |
+| --- | --- |
+| `squeue -j 58775065,58775066,58775067,58775068,58775069,58775070,58775071 -o '%i\|%j\|%P\|%T\|%M\|%D\|%R'` | D1 absent from queue after completion; D2 `58775066 RUNNING` for `00:04:42` on `g1807htzh01`; D3-through-alignment dependency-pending; finalizer dependency-pending |
+| `sacct -j 58775065,58775066,58775067,58775068,58775069,58775070,58775071 --format=JobID,JobName%24,Partition,State,ExitCode,Elapsed,Start,End,NodeList%24 -P` | D1 `58775065 COMPLETED 0:0`, elapsed `02:35:16`; D2 `58775066 RUNNING 0:0`, started `2026-07-13T04:37:07`; downstream/finalizer dependency-pending |
+| `sstat -j 58775066.batch --format=JobID,MaxRSS,AveRSS,MaxVMSize,AveVMSize -P` | `MaxRSS=11024568K`, `AveRSS=10926244K` |
+| D1 summary inspection | `actual_optimizer_steps=31778`, `train_loop_seconds=9000.150148481014`, `validation_event_count=19`, `eval_cases=44`, `stop_reason=max_steps_min_train_loop_seconds_satisfied` |
+| D1 repaired logging size check | `retrieval_usage.csv` is `10820647` bytes and `86497` lines including header; no retry10-scale `156G` expansion |
+| D2 early runtime listing | one-batch overfit, prototype bank, and prototype update files exist; no final D2 `training_log.csv`, `validation_events.csv`, or `summary.json` yet |
+
+Current state remains `NEEDS_MONITOR`, not complete and not reviewable.
+
 ## Retry10 D1 Step6664 Monitor
 
 Update timestamp UTC: `2026-07-13T00:28:02Z`
