@@ -506,6 +506,21 @@ Retry9 has crossed the retry5/retry6/retry7/retry8 D1 OOM elapsed windows, but i
 
 Current state remains `NEEDS_MONITOR`, not complete and not reviewable.
 
+## Retry11 D2 Step18326 Monitor
+
+Update timestamp UTC: `2026-07-13T10:09:09Z`
+
+| Command / evidence | Result |
+| --- | --- |
+| `squeue -j 58775065,58775066,58775067,58775068,58775069,58775070,58775071 -o '%i\|%j\|%P\|%T\|%M\|%D\|%R'` | D2 `58775066 RUNNING` for `01:32:31` on `g1807htzh01`; D3-through-alignment and finalizer dependency-pending |
+| `sacct -j 58775065,58775066,58775067,58775068,58775069,58775070,58775071 --format=JobID,JobName%24,Partition,State,ExitCode,Elapsed,Start,End,NodeList%24,MaxRSS -P` | D1 `58775065 COMPLETED 0:0`; D2 `58775066 RUNNING 0:0`, elapsed `01:32:30`; downstream/finalizer dependency-pending |
+| `sstat -j 58775066.batch --format=JobID,MaxRSS,AveRSS,MaxVMSize,AveVMSize -P` | `MaxRSS=16537208K`, `AveRSS=16200292K` |
+| D2 checkpoint listing | checkpoints exist through `checkpoint_validation_step_18326.pt`, plus `checkpoint_best.pt` |
+| D2 runtime size | variant directory is approximately `5.5G` |
+| D2 final-output listing | no final D2 `training_log.csv`, `validation_events.csv`, or `summary.json` yet |
+
+Current state remains `NEEDS_MONITOR`, not complete and not reviewable.
+
 ## Retry11 D2 Step11662 Monitor
 
 Update timestamp UTC: `2026-07-13T09:37:01Z`
