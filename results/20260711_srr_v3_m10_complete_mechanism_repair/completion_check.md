@@ -10,7 +10,7 @@ This packet is not complete and is not ready for independent review. It records 
 | --- | --- |
 | Old failed job accounting | pass: seven old jobs recorded as `STARTUP_FAILED`, zero credit |
 | Replacement preflight | pass: retry11 htzhulab job `58775059` completed `0:0`; a100 preflight `58775057` was cancelled unused while pending; volta preflight `58775058` failed because the current PyTorch build cannot execute CUDA kernels on V100 |
-| Replacement formal jobs | monitor: retry11 D1 `58775065`, D2 `58775066`, and D3 `58775067` completed `0:0`; hard-negative refresh `58775068` is `RUNNING`; no-context and alignment are dependency-pending |
+| Replacement formal jobs | monitor: retry11 D1 `58775065`, D2 `58775066`, D3 `58775067`, and hard-negative refresh `58775068` completed `0:0`; no-context control `58775069` is `RUNNING`; alignment is dependency-pending |
 | Training dependency policy | pass: training-to-training dependencies use `afterok` |
 | Wave 2 finalizer dependency | pass: retry11 finalizer job `58775071` uses `afterany` over old and replacement job IDs |
 | Post-job aggregation | pending: wait for retry11 terminal accounting and post-job aggregation |
@@ -18,9 +18,28 @@ This packet is not complete and is not ready for independent review. It records 
 
 ## Decision
 
-Current controller state is `NEEDS_MONITOR`, not blocked and not complete. Retry10 D1 is terminal unsuccessful with zero D1-through-alignment credit. Retry11 D1, D2, and D3 completed successfully after a same-scope owned-wrapper repair that reduces `retrieval_usage.csv` from spatial voxel expansion to per-slot mean evidence logging; retry11 hard-negative refresh is now running. Variants, formulas, budgets, split, case set, evaluation rules, checkpoint-selection rules, executor count, and wave graph are unchanged.
+Current controller state is `NEEDS_MONITOR`, not blocked and not complete. Retry10 D1 is terminal unsuccessful with zero D1-through-alignment credit. Retry11 D1, D2, D3, and hard-negative refresh completed successfully after a same-scope owned-wrapper repair that reduces `retrieval_usage.csv` from spatial voxel expansion to per-slot mean evidence logging; retry11 no-context control is now running. Variants, formulas, budgets, split, case set, evaluation rules, checkpoint-selection rules, executor count, and wave graph are unchanged.
 
 No `review.md` was written. No push was performed. Wave 3, validation packaging/upload, hosted metric claims, route promotion, route-negative conclusion, and M11 remain blocked until Wave 2 terminal accounting and aggregation succeed.
+
+## Retry11 Hard-Negative Completion / No-Context Running Monitor
+
+Checkpoint time: `2026-07-13T16:59:11Z`
+
+| Gate | Status |
+| --- | --- |
+| hard-negative terminal state | pass: `58775068 COMPLETED`, exit `0:0`, elapsed `01:39:59`, node `g1807htzh01` |
+| hard-negative training budget | pass: `actual_optimizer_steps=20000`, `train_loop_seconds=5684.537394266925`, `validation_event_count=10`, `eval_cases=44` |
+| hard-negative stop reason | pass: `max_steps_min_train_loop_seconds_satisfied` |
+| hard-negative learning sanity | pass: `first_train_loss=4.220096588134766`, `last_train_loss=0.4855440557003021`, `loss_decrease=3.7345525324344635`, one-batch overfit `PASS` |
+| hard-negative logging repair | pass: `retrieval_usage.csv` is `6980066` bytes and `54673` lines including header |
+| no-context live state | monitor: `58775069 RUNNING`, started `2026-07-13T12:57:25` on `g1807htzh01` |
+| no-context memory | monitor: `MaxRSS=10817848K`, `AveRSS=10634252K` |
+| no-context early sanity files | monitor: one-batch overfit, prototype bank, and prototype update files exist; no final no-context summary yet |
+| downstream stages | monitor: alignment remains dependency-pending |
+| review | blocked: no `review.md`; this is not a completion packet |
+
+Decision remains `NEEDS_MONITOR`, not blocked and not complete.
 
 ## Retry11 Hard-Negative Step12000 Monitor
 

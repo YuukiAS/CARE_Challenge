@@ -506,6 +506,20 @@ Retry9 has crossed the retry5/retry6/retry7/retry8 D1 OOM elapsed windows, but i
 
 Current state remains `NEEDS_MONITOR`, not complete and not reviewable.
 
+## Retry11 Hard-Negative Completion / No-Context Running Monitor
+
+Update timestamp UTC: `2026-07-13T16:59:11Z`
+
+| Command / evidence | Result |
+| --- | --- |
+| `squeue -j 58775068,58775069,58775070,58775071 -o '%i\|%j\|%P\|%T\|%M\|%D\|%R'` | no-context control `58775069 RUNNING` for `00:01:51` on `g1807htzh01`; alignment and finalizer dependency-pending |
+| `sacct -j 58775068,58775069,58775070,58775071 --format=JobID,JobName%24,Partition,State,ExitCode,Elapsed,Start,End,NodeList%24,MaxRSS -P` | hard-negative refresh `58775068 COMPLETED 0:0`, elapsed `01:39:59`, `MaxRSS=15746852K`; no-context control `58775069 RUNNING 0:0`; downstream/finalizer dependency-pending |
+| hard-negative summary inspection | `actual_optimizer_steps=20000`, `train_loop_seconds=5684.537394266925`, `validation_event_count=10`, `eval_cases=44`, `stop_reason=max_steps_min_train_loop_seconds_satisfied` |
+| hard-negative repaired logging size check | `retrieval_usage.csv` is `6980066` bytes and `54673` lines including header |
+| no-context early runtime listing | one-batch overfit, prototype bank, and prototype update files exist; no final no-context `training_log.csv`, `validation_events.csv`, or `summary.json` yet |
+
+Current state remains `NEEDS_MONITOR`, not complete and not reviewable.
+
 ## Retry11 Hard-Negative Step12000 Monitor
 
 Update timestamp UTC: `2026-07-13T16:21:25Z`
