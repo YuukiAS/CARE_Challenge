@@ -506,6 +506,20 @@ Retry9 has crossed the retry5/retry6/retry7/retry8 D1 OOM elapsed windows, but i
 
 Current state remains `NEEDS_MONITOR`, not complete and not reviewable.
 
+## Retry11 D3 Step30675 Monitor
+
+Update timestamp UTC: `2026-07-13T13:43:42Z`
+
+| Command / evidence | Result |
+| --- | --- |
+| `squeue -j 58775065,58775066,58775067,58775068,58775069,58775070,58775071 -o '%i\|%j\|%P\|%T\|%M\|%D\|%R'` | D3 `58775067 RUNNING` for `02:32:20` on `g1807htzh01`; hard-negative, no-context, alignment, and finalizer dependency-pending |
+| `sacct -j 58775065,58775066,58775067,58775068,58775069,58775070,58775071 --format=JobID,JobName%24,Partition,State,ExitCode,Elapsed,Start,End,NodeList%24,MaxRSS -P` | D1 and D2 completed `0:0`; D3 `58775067 RUNNING 0:0`, elapsed `02:32:20`; downstream/finalizer dependency-pending |
+| `sstat -j 58775067.batch --format=JobID,MaxRSS,AveRSS,MaxVMSize,AveVMSize -P` | `MaxRSS=17822544K`, `AveRSS=17731928K` |
+| D3 checkpoint listing | checkpoints exist through `checkpoint_validation_step_30675.pt`, plus `checkpoint_best.pt` |
+| D3 final-output listing | no final D3 `training_log.csv`, `validation_events.csv`, or `summary.json` yet |
+
+Current state remains `NEEDS_MONITOR`, not complete and not reviewable.
+
 ## Retry11 D3 Step27000 Monitor
 
 Update timestamp UTC: `2026-07-13T13:21:16Z`
