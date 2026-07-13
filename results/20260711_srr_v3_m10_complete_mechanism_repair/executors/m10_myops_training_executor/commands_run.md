@@ -506,6 +506,21 @@ Retry9 has crossed the retry5/retry6/retry7/retry8 D1 OOM elapsed windows, but i
 
 Current state remains `NEEDS_MONITOR`, not complete and not reviewable.
 
+## Retry11 Hard-Negative Step12000 Monitor
+
+Update timestamp UTC: `2026-07-13T16:21:25Z`
+
+| Command / evidence | Result |
+| --- | --- |
+| `squeue -j 58775068,58775069,58775070,58775071 -o '%i\|%j\|%P\|%T\|%M\|%D\|%R'` | hard-negative refresh `58775068 RUNNING` for `01:04:07` on `g1807htzh01`; no-context, alignment, and finalizer dependency-pending |
+| `sacct -j 58775068,58775069,58775070,58775071 --format=JobID,JobName%24,Partition,State,ExitCode,Elapsed,Start,End,NodeList%24,MaxRSS -P` | hard-negative refresh `58775068 RUNNING 0:0`, elapsed `01:04:07`; downstream/finalizer dependency-pending |
+| `sstat -j 58775068.batch --format=JobID,MaxRSS,AveRSS,MaxVMSize,AveVMSize -P` | `MaxRSS=13780820K`, `AveRSS=13645008K` |
+| hard-negative checkpoint listing | checkpoints exist through `checkpoint_validation_step_12000.pt`, plus `checkpoint_best.pt` |
+| hard-negative runtime size | variant directory is approximately `2.8G` |
+| hard-negative final-output listing | no final hard-negative `training_log.csv`, `validation_events.csv`, or `summary.json` yet |
+
+Current state remains `NEEDS_MONITOR`, not complete and not reviewable.
+
 ## Retry11 D3 Completion / Hard-Negative Running Monitor
 
 Update timestamp UTC: `2026-07-13T15:27:46Z`

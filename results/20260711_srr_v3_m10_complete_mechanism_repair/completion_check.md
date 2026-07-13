@@ -22,6 +22,22 @@ Current controller state is `NEEDS_MONITOR`, not blocked and not complete. Retry
 
 No `review.md` was written. No push was performed. Wave 3, validation packaging/upload, hosted metric claims, route promotion, route-negative conclusion, and M11 remain blocked until Wave 2 terminal accounting and aggregation succeed.
 
+## Retry11 Hard-Negative Step12000 Monitor
+
+Checkpoint time: `2026-07-13T16:21:25Z`
+
+| Gate | Status |
+| --- | --- |
+| hard-negative live state | monitor: `58775068 RUNNING` for `01:04:07` on `g1807htzh01` |
+| hard-negative memory | monitor: `MaxRSS=13780820K`, `AveRSS=13645008K` |
+| scheduled validation progress | monitor: checkpoints exist through `checkpoint_validation_step_12000.pt`, plus `checkpoint_best.pt` |
+| hard-negative runtime size | monitor: variant directory is approximately `2.8G` |
+| final runtime outputs | pending: no final hard-negative `training_log.csv`, `validation_events.csv`, or `summary.json` yet |
+| downstream stages | monitor: no-context and alignment remain dependency-pending |
+| review | blocked: no `review.md`; this is not a completion packet |
+
+Decision remains `NEEDS_MONITOR`, not blocked and not complete.
+
 ## Retry11 D3 Completion / Hard-Negative Running Monitor
 
 Checkpoint time: `2026-07-13T15:27:46Z`
