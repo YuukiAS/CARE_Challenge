@@ -456,6 +456,30 @@ Retry10 compute preflight `58743253` completed `0:0`, then the controller submit
 
 Current state is `NEEDS_MONITOR`, not complete and not reviewable. Wave 3 remains blocked.
 
+## Retry10 D1 Step16660 Monitor
+
+At `2026-07-13T03:05:23Z`, retry10 D1 `58743282` was `RUNNING` on `g1807htzh01` for `04:03:38` with `ReqMem=1200G`. Live memory accounting reported `MaxRSS=971164048K` and `AveRSS=970805196K`.
+
+D1 retry10 has written validation checkpoints through step 16660:
+
+```text
+checkpoint_validation_step_1666.pt
+checkpoint_validation_step_3332.pt
+checkpoint_validation_step_4998.pt
+checkpoint_validation_step_5000.pt
+checkpoint_validation_step_6664.pt
+checkpoint_validation_step_8330.pt
+checkpoint_validation_step_9996.pt
+checkpoint_validation_step_11662.pt
+checkpoint_validation_step_13328.pt
+checkpoint_validation_step_14994.pt
+checkpoint_validation_step_15000.pt
+checkpoint_validation_step_16660.pt
+checkpoint_best.pt
+```
+
+D2-through-alignment remain dependency-pending and finalizer `58743452` remains dependency-pending. D1 has not written final `training_log.csv`, `validation_events.csv`, `summary.json`, `runtime_manifest.json`, or post-job aggregation evidence, so the state remains `NEEDS_MONITOR`, not complete and not reviewable.
+
 ## Retry10 D1 Step15000 Monitor
 
 At `2026-07-13T02:33:14Z`, retry10 D1 `58743282` was `RUNNING` on `g1807htzh01` for `03:30:54` with `ReqMem=1200G`. Live memory accounting reported `MaxRSS=887014088K` and `AveRSS=887014088K`.

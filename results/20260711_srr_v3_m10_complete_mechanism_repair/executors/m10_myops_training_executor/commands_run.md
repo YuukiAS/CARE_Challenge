@@ -521,6 +521,21 @@ Retry10 D1 has crossed the declared D1 minimum train-loop seconds floor of `9000
 
 Current state remains `NEEDS_MONITOR`, not complete and not reviewable.
 
+## Retry10 D1 Step16660 Monitor
+
+Update timestamp UTC: `2026-07-13T03:05:23Z`
+
+| Command / evidence | Result |
+| --- | --- |
+| `squeue -j 58743282,58743287,58743290,58743292,58743294,58743295,58743452 -o '%i|%j|%P|%q|%T|%M|%l|%R'` | D1 `58743282 RUNNING` for `04:03:09`; D2-through-alignment and finalizer dependency-pending |
+| `sacct -j 58743253,58743282,58743287,58743290,58743292,58743294,58743295,58743452 --format=JobIDRaw,JobName,State,ExitCode,Elapsed,Start,End,NodeList,ReqMem,MaxRSS --parsable2` | D1 `58743282 RUNNING 0:0`, elapsed `04:03:38`, `ReqMem=1200G`; downstream/finalizer dependency-pending |
+| `sstat -j 58743282.batch --format=JobID,MaxRSS,AveRSS,MaxVMSize,AveVMSize -P` | `MaxRSS=971164048K`, `AveRSS=970805196K` |
+| D1 checkpoint listing | checkpoints exist through `checkpoint_validation_step_16660.pt`, plus `checkpoint_best.pt` |
+
+Retry10 D1 remains running and has not produced final `training_log.csv`, `validation_events.csv`, `summary.json`, `runtime_manifest.json`, or aggregation evidence.
+
+Current state remains `NEEDS_MONITOR`, not complete and not reviewable.
+
 ## Retry10 D1 Step15000 Monitor
 
 Update timestamp UTC: `2026-07-13T02:33:14Z`
