@@ -1,0 +1,73 @@
+{
+  "task_key": "20260711_srr_v3_m10_complete_mechanism_repair",
+  "executor": "m10_cine_temporal_executor",
+  "status": "NEEDS_MONITOR",
+  "submission_type": "wave3_formal_afterok_chain",
+  "preflight": {
+    "failed_job_id": "58847455",
+    "failed_reason": "contract_command_permission_denied_exit_126",
+    "passed_job_id": "58847879",
+    "passed_exit_code": "0:0",
+    "receipt_path": "results/20260711_srr_v3_m10_complete_mechanism_repair/executors/m10_cine_temporal_executor/preflight_receipt.json",
+    "contract_command": "scripts/training/run_cine_temporal_model_m10.py --print-contract",
+    "contract_exit_code": 0,
+    "cuda_visible": true,
+    "optimizer_smoke": "PASS"
+  },
+  "code": {
+    "head": "d7bf09214b7b2092ea0ff6a9712d78a08f00b786",
+    "code_hash": "9b7e8717fbe8ea3d1e1f133c2626906dced3aacaf64780efb3c12a1426ca01e2",
+    "config_hash": "df42f9ee55a3ba6ac616a37b2455cb7bca67c5f751f0c5a31c4a18938b107a9b",
+    "split_hash": ""
+  },
+  "jobs": [
+    {
+      "phase": "cinema_adapter",
+      "job_id": "58848099",
+      "partition": "htzhulab",
+      "dependency_type": "none",
+      "script": "jobs/src/run_srr_v3_m10_cinema_adapter.sh",
+      "runtime_root": "results/20260711_srr_v3_m10_complete_mechanism_repair/runtime/m10_cine_temporal_executor",
+      "log_path": "logs/M10CineMA_${SLURM_JOB_ID}_${timestamp}.log"
+    },
+    {
+      "phase": "cine_registration",
+      "job_id": "58848203",
+      "partition": "htzhulab",
+      "dependency_type": "afterok",
+      "dependency": "58848099",
+      "script": "jobs/src/run_srr_v3_m10_cine_registration.sh",
+      "runtime_root": "results/20260711_srr_v3_m10_complete_mechanism_repair/runtime/m10_cine_temporal_executor",
+      "log_path": "logs/M10CineReg_${SLURM_JOB_ID}_${timestamp}.log"
+    },
+    {
+      "phase": "cine_temporal",
+      "job_id": "58848205",
+      "partition": "htzhulab",
+      "dependency_type": "afterok",
+      "dependency": "58848203",
+      "script": "jobs/src/run_srr_v3_m10_cine_temporal.sh",
+      "runtime_root": "results/20260711_srr_v3_m10_complete_mechanism_repair/runtime/m10_cine_temporal_executor",
+      "log_path": "logs/M10CineTemp_${SLURM_JOB_ID}_${timestamp}.log"
+    },
+    {
+      "phase": "wave3_afterany_finalizer",
+      "job_id": "58848313",
+      "partition": "htzhulab",
+      "dependency_type": "afterany",
+      "dependency": "58848099:58848203:58848205",
+      "script": "scripts/evaluation/evaluate_cine_m10_temporal.py",
+      "runtime_root": "results/20260711_srr_v3_m10_complete_mechanism_repair/runtime/m10_cine_temporal_executor",
+      "log_path": "logs/M10CineFin_${SLURM_JOB_ID}_${timestamp}.log"
+    }
+  ],
+  "policy": {
+    "training_dependency": "afterok",
+    "finalizer_dependency": "afterany",
+    "registration_gate_blocks_temporal": true,
+    "review_md_written": false,
+    "pushed": false,
+    "validation_packaging_or_upload": false,
+    "m11_started": false
+  }
+}

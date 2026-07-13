@@ -1,0 +1,55 @@
+{
+  "checked_at_utc": "2026-07-13T20:18:51.135983+00:00",
+  "code_hash": "9b7e8717fbe8ea3d1e1f133c2626906dced3aacaf64780efb3c12a1426ca01e2",
+  "config": "configs/srr_v3_m10_complete_repair.yaml",
+  "config_hash": "df42f9ee55a3ba6ac616a37b2455cb7bca67c5f751f0c5a31c4a18938b107a9b",
+  "contract_command": "scripts/training/run_cine_temporal_model_m10.py --print-contract",
+  "contract_exit_code": 0,
+  "contract_stderr_tail": "",
+  "contract_stdout_tail": "{\n  \"design\": \"registration-gated learned temporal dictionary\",\n  \"minimums\": {\n    \"eval_cases\": 12,\n    \"full_case_events\": 4,\n    \"optimizer_steps\": 20000,\n    \"train_loop_seconds\": 7200,\n    \"validation_events\": 10\n  },\n  \"phase\": \"cine_temporal\",\n  \"registration_gate_required\": true,\n  \"result_dir\": \"results/20260711_srr_v3_m10_cine_learned_temporal\",\n  \"runtime_label\": \"m10_cine_learned_temporal\",\n  \"temporal_slot_count\": 8\n}\n",
+  "cuda_visible": true,
+  "entrypoint": "scripts/training/run_cine_temporal_model_m10.py",
+  "entrypoint_hash": "9b7e8717fbe8ea3d1e1f133c2626906dced3aacaf64780efb3c12a1426ca01e2",
+  "exit_code": 0,
+  "imports": {
+    "mpmath": {
+      "exit_code": 0,
+      "module": "mpmath",
+      "stderr_tail": ""
+    },
+    "sympy": {
+      "exit_code": 0,
+      "module": "sympy",
+      "stderr_tail": ""
+    },
+    "torch": {
+      "exit_code": 0,
+      "module": "torch",
+      "stderr_tail": ""
+    }
+  },
+  "optimizer_smoke": {
+    "exit_code": 0,
+    "mode": "adamw",
+    "stderr_tail": "",
+    "stdout_tail": "PASS\n"
+  },
+  "path_writability": {
+    "lock_parent": {
+      "path": "results/20260711_srr_v3_m10_complete_mechanism_repair/locks",
+      "writable": true
+    },
+    "log_dir": {
+      "path": "results/20260711_srr_v3_m10_complete_mechanism_repair/logs",
+      "writable": true
+    },
+    "result_dir": {
+      "path": "results/20260711_srr_v3_m10_complete_mechanism_repair/executors/m10_cine_temporal_executor",
+      "writable": true
+    }
+  },
+  "python": "envs/env_CARE/bin/python",
+  "python_exists": true,
+  "python_version": "Python 3.12.13",
+  "split_hash": ""
+}

@@ -1,8 +1,8 @@
 # M10 Completion Check
 
-Completion state: `WAVE2_READY_FOR_CONTROLLER_MERGE__MILESTONE_INCOMPLETE`
+Completion state: `WAVE3_CINE_FORMAL_CHAIN_SUBMITTED__NEEDS_MONITOR`
 
-Current top-level status as of the Wave 2 retry11 finalizer repair:
+Current top-level status after Wave 3 Cine formal submission:
 
 | Gate | Status |
 | --- | --- |
@@ -10,10 +10,25 @@ Current top-level status as of the Wave 2 retry11 finalizer repair:
 | Wave 2 | complete and merged for controller purposes |
 | Wave 2 finalizer accounting | pass: `finalizer_state.json` records `READY_FOR_MAPPER_FINAL`, aggregation exit code `0` |
 | Wave 2 post-job aggregation | pass: `wave2_partition_race_retry11_finalization.json` records `TERMINAL_RUNTIME_EVIDENCE` |
-| Wave 3 | pending; may start only under the original `m10_cine_temporal_executor` contract |
+| Wave 3 compute preflight | pass: job `58847879 COMPLETED 0:0`; prior failed preflight `58847455` was a permission-bit startup issue and has zero training credit |
+| Wave 3 formal chain | monitor: adapter `58848099` running; registration `58848203` waits `afterok:58848099`; temporal `58848205` waits `afterok:58848203`; finalizer `58848313` waits `afterany:58848099:58848203:58848205` |
+| Wave 3 submission receipt | pass: `wave3_cine_submission_receipt.json` records job IDs, dependency types, runtime root, log paths, code/config hashes, and no-push/no-review boundary |
 | Independent review | not started; no `review.md` exists |
 
-This packet is still not a final M10 review packet. Wave 3, mapper final, final milestone packet, and independent read-only review remain ahead in the original state machine.
+This packet is still not a final M10 review packet. Wave 3 terminal accounting/post-job aggregation, mapper final, final milestone packet, and independent read-only review remain ahead in the original state machine.
+
+## Wave 3 Cine Submission Monitor
+
+Checkpoint time: `2026-07-13T20:20Z`
+
+| Phase | Job | Dependency | State at submission monitor |
+| --- | ---: | --- | --- |
+| CineMA CARE adapter | `58848099` | none | `RUNNING` on `htzhulab` node `g180702` |
+| learned Cine registration | `58848203` | `afterok:58848099` | `PENDING (Dependency)` |
+| learned temporal dictionary | `58848205` | `afterok:58848203` | `PENDING (Dependency)` |
+| Wave 3 afterany finalizer | `58848313` | `afterany:58848099:58848203:58848205` | `PENDING (Dependency)` |
+
+Decision remains `NEEDS_MONITOR`, not blocked and not complete. No `review.md` was written. No push was performed. Validation packaging/upload, hosted metric claims, route promotion, route-negative conclusion, scientific stop, mapper final, finalizer-B packet commit, and M11 remain blocked.
 
 ## Superseded Historical Monitor State
 

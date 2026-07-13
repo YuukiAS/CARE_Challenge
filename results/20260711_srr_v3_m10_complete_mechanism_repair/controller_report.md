@@ -4,7 +4,7 @@ Task key: `20260711_srr_v3_m10_complete_mechanism_repair`
 
 ## Current Controller State
 
-The controller has completed and merged Wave 2 for controller purposes. Wave 2 terminal accounting now records the current effective formal chain as completed:
+The controller has completed and merged Wave 2 for controller purposes. Wave 2 terminal accounting records the current effective formal chain as completed:
 
 ```text
 58706293
@@ -18,12 +18,14 @@ The controller has completed and merged Wave 2 for controller purposes. Wave 2 t
 
 `finalizer_state.json` records `final_state: READY_FOR_MAPPER_FINAL` and `aggregation_exit_code: 0`. `wave2_partition_race_retry11_finalization.json` records `status: TERMINAL_RUNTIME_EVIDENCE`. `wave2_merge_receipt.md` records `WAVE2_READY_FOR_CONTROLLER_MERGE_ACCEPTED`.
 
-The milestone is not complete. The next controller action is to re-ground and start Wave 3 under the original `m10_cine_temporal_executor` contract. Review, push, validation packaging/upload, hosted metric claims, route promotion, route-negative conclusion, scientific stop, and M11 remain blocked.
+Wave 3 has now started under the original `m10_cine_temporal_executor` contract. Compute preflight job `58847879` completed `0:0` after a prior zero-credit permission-bit preflight failure `58847455`. Formal jobs were submitted as the required serial dependency chain: CineMA adapter `58848099`, learned registration `58848203` with `afterok:58848099`, temporal dictionary `58848205` with `afterok:58848203`, and afterany finalizer `58848313` over all three formal job IDs.
+
+The milestone is not complete. The next controller action is to monitor Wave 3 until terminal accounting, rerun post-job aggregation, and proceed to mapper final only if evidence gates pass. Review, push, validation packaging/upload, hosted metric claims, route promotion, route-negative conclusion, scientific stop, and M11 remain blocked.
 
 Current pre-review decisions:
 
 ```text
-controller_run_status: WAVE2_MERGED_WAVE3_PENDING
+controller_run_status: WAVE3_CINE_FORMAL_CHAIN_SUBMITTED_NEEDS_MONITOR
 operational_completion_status: INCOMPLETE
 experiment_adequacy_decision: NOT_REVIEWED
 route_promotion_decision: NOT_REVIEWED
