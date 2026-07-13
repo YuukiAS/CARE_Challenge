@@ -103,6 +103,7 @@ Packet state: `NEEDS_MONITOR`
 | `wave2_partition_race_retry11_job_ledger.csv` | Retry11 ledger recording old/new job IDs, repair reason, preflight command/exit code, hashes, dependencies, runtime root, and log paths. |
 | `wave2_partition_race_retry11_finalizer_submission.json` | Retry11 afterany finalizer receipt for job `58775071`. |
 | `wave2_partition_race_retry11_monitor_20260713T060230Z.md` | Retry11 monitor packet showing D1 `58775065` running and downstream stages dependency-pending; not completion evidence. |
+| `wave2_partition_race_retry11_monitor_20260713T061121Z.md` | Retry11 first-checkpoint monitor showing D1 `58775065` running, checkpoint `1666`, one-batch overfit pass, and low early RSS; not completion evidence. |
 | `finalizer_state.json` | Retry10 finalizer terminal accounting with `final_state=RUNTIME_FAILURE`, `failure_class=OUT_OF_MEMORY_NEEDS_REVISION`, `suggested_next_state=NEEDS_REVISION`, and `retryable=false`. |
 | `care_milestone_finalizer_58743452.log` | Retry10 finalizer log for Slurm job `58743452`. |
 | `executors/m10_myops_training_executor/` | Wave 2 executor monitor packet; not completion evidence. |

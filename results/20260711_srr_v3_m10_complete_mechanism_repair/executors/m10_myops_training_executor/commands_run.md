@@ -529,6 +529,20 @@ Update timestamp UTC: `2026-07-13T06:02:30Z`
 
 Current state is `NEEDS_MONITOR`, not complete and not reviewable. Retry10 remains terminal unsuccessful with zero D1-through-alignment credit; retry11 is the same-executor Wave 2 replacement after an owned-wrapper evidence logging repair.
 
+## Retry11 D1 First-Checkpoint Monitor
+
+Update timestamp UTC: `2026-07-13T06:11:21Z`
+
+| Command / evidence | Result |
+| --- | --- |
+| `squeue -j 58775065,58775066,58775067,58775068,58775069,58775070,58775071 ...` | D1 `58775065 RUNNING` for `00:10:15`; D2-through-alignment and finalizer dependency-pending |
+| `sstat -j 58775065.batch --format=JobID,MaxRSS,AveRSS,MaxVMSize,AveVMSize -P` | `MaxRSS=11567708K`, `AveRSS=11472176K` |
+| D1 checkpoint listing | `checkpoint_validation_step_1666.pt` exists |
+| D1 one-batch overfit | `status=PASS`, loss `6.7180705070495605 -> 1.3329921960830688` |
+| D1 runtime size | approximately `399M`; no retry10-scale evidence-file growth observed at this checkpoint |
+
+Current state remains `NEEDS_MONITOR`, not complete and not reviewable.
+
 ## Retry10 D1 Time-Floor Monitor
 
 Update timestamp UTC: `2026-07-13T01:36:59Z`

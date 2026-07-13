@@ -42,6 +42,22 @@ Checkpoint time: `2026-07-13T06:02:30Z`
 
 Decision is `NEEDS_MONITOR`, not complete and not reviewable. This is not a scheduler block because retry11 D1 has started running.
 
+## Retry11 D1 First-Checkpoint Monitor
+
+Checkpoint time: `2026-07-13T06:11:21Z`
+
+| Gate | Status |
+| --- | --- |
+| retry11 D1 live state | monitor: `58775065 RUNNING` for `00:10:15` on `g1807htzh01` |
+| retry11 D1 memory | monitor: `MaxRSS=11567708K`, `AveRSS=11472176K` |
+| scheduled validation progress | monitor: `checkpoint_validation_step_1666.pt` exists |
+| one-batch overfit | pass: `status=PASS`, loss `6.7180705070495605 -> 1.3329921960830688` |
+| runtime size | monitor: D1 variant directory approximately `399M`; no retry10-scale `retrieval_usage.csv` expansion observed at this checkpoint |
+| downstream stages | monitor: D2-through-alignment remain dependency-pending |
+| review | blocked: no `review.md`; this is not a completion packet |
+
+Decision remains `NEEDS_MONITOR`, not blocked and not complete.
+
 ## Three-Partition Race Check
 
 | Gate | Status |
