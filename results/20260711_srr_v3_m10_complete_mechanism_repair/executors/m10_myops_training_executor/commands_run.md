@@ -533,7 +533,7 @@ Update timestamp UTC: `2026-07-13T05:42:43Z`
 | D1 runtime outputs | no final `training_log.csv`, `validation_events.csv`, `summary.json`, or `runtime_manifest.json` for retry10 D1 |
 | Downstream accounting | D2-through-alignment jobs `58743287`, `58743290`, `58743292`, `58743294`, and `58743295` did not run, elapsed `00:00:00`, no node assigned |
 
-Retry10 D1 is terminal unsuccessful. Current state is `NEEDS_REVISION`, not `NEEDS_MONITOR`, not complete, and not reviewable. Wave 3 remains blocked.
+Retry10 D1 is terminal unsuccessful. Current state is `NEEDS_EVIDENCE`, not `NEEDS_MONITOR`, not complete, and not reviewable, because final runtime outputs and successful post-job aggregation evidence are missing. The finalizer classifies any further retry as requiring revision first. Wave 3 remains blocked.
 
 ## Retry10 D1 Step18326 Monitor
 

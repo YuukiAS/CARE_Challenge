@@ -491,7 +491,7 @@ checkpoint_validation_step_21658.pt
 checkpoint_best.pt
 ```
 
-D1 did not write final `training_log.csv`, `validation_events.csv`, `summary.json`, or `runtime_manifest.json`, and it did not reach the D1 optimizer-step floor of `25000`. Current controller state is `NEEDS_REVISION`, not `NEEDS_MONITOR`, not complete, and not reviewable. Wave 3 remains blocked. No `review.md` was written and no push was performed.
+D1 did not write final `training_log.csv`, `validation_events.csv`, `summary.json`, or `runtime_manifest.json`, and it did not reach the D1 optimizer-step floor of `25000`. Current controller state is `NEEDS_EVIDENCE`, not `NEEDS_MONITOR`, not complete, and not reviewable. The finalizer classifies any further retry as requiring revision first (`OUT_OF_MEMORY_NEEDS_REVISION`, `suggested_next_state=NEEDS_REVISION`, `retryable=false`). Wave 3 remains blocked. No `review.md` was written and no push was performed.
 
 ## Retry10 D1 Step18326 Monitor
 

@@ -1,6 +1,6 @@
 # M10 Wave 2 Retry10 Terminal OOM
 
-State: `NEEDS_REVISION`
+State: `NEEDS_EVIDENCE`
 
 This is terminal accounting for retry10. It is not M10 completion evidence and is not ready for independent review.
 
@@ -55,6 +55,8 @@ Retry10 D1 did not write final `training_log.csv`, `validation_events.csv`, `sum
 
 ## Decision
 
-Wave 2 retry10 is terminal and unsuccessful. The controller state is `NEEDS_REVISION`, not `NEEDS_MONITOR`, not complete, and not reviewable. Wave 3, validation packaging/upload, hosted metric claims, route promotion, route-negative conclusion, and M11 remain blocked.
+Wave 2 retry10 is terminal and unsuccessful. The controller state is `NEEDS_EVIDENCE`, not `NEEDS_MONITOR`, not complete, and not reviewable, because retry10 D1 terminated before final runtime outputs and post-job aggregation evidence were produced. The finalizer classifies any further retry as requiring revision first: `failure_class=OUT_OF_MEMORY_NEEDS_REVISION`, `suggested_next_state=NEEDS_REVISION`, `retryable=false`.
+
+Wave 3, validation packaging/upload, hosted metric claims, route promotion, route-negative conclusion, and M11 remain blocked.
 
 No `review.md` was written and no push was performed.

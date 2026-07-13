@@ -1,6 +1,6 @@
 # M10 Completion Check
 
-Completion state: `NEEDS_REVISION`
+Completion state: `NEEDS_EVIDENCE`
 
 This packet is not complete and is not ready for independent review. It records that the original Wave 2 jobs are permanently `STARTUP_FAILED` with zero training credit, D0 has one retained valid upstream run, retry10 D1 reached terminal `OUT_OF_MEMORY(0:125)` after writing checkpoints through step 21658, and D2-through-alignment did not run because their required `afterok` dependency failed.
 
@@ -13,12 +13,12 @@ This packet is not complete and is not ready for independent review. It records 
 | Replacement formal jobs | fail: retry10 D1 `58743282` reached `OUT_OF_MEMORY(0:125)` after `06:09:20`; D2-through-alignment did not run |
 | Training dependency policy | pass: training-to-training dependencies use `afterok` |
 | Wave 2 finalizer dependency | pass: finalizer job `58743452` used `afterany` over old and retry10 jobs |
-| Post-job aggregation | fail: finalizer wrote terminal accounting with `final_state=RUNTIME_FAILURE`, `failure_class=OUT_OF_MEMORY_NEEDS_REVISION`, `suggested_next_state=NEEDS_REVISION`, and `aggregation_exit_code=None` |
+| Post-job aggregation | fail: finalizer wrote terminal accounting with `final_state=RUNTIME_FAILURE`, `failure_class=OUT_OF_MEMORY_NEEDS_REVISION`, `suggested_next_state=NEEDS_REVISION`, and `aggregation_exit_code=None`; retry10 lacks final runtime outputs |
 | Review | blocked: no `review.md` until final packet after aggregation |
 
 ## Decision
 
-Current controller state is `NEEDS_REVISION`, not blocked and not complete. Retry10 D1 is terminal unsuccessful; D2-through-alignment did not run; Wave 2 did not satisfy minimum-effective-training or post-job aggregation gates.
+Current controller state is `NEEDS_EVIDENCE`, not blocked and not complete. Retry10 D1 is terminal unsuccessful; D2-through-alignment did not run; Wave 2 did not satisfy minimum-effective-training or post-job aggregation gates. The finalizer classifies another retry as requiring revision first.
 
 No `review.md` was written. No push was performed. Wave 3, validation packaging/upload, hosted metric claims, route promotion, route-negative conclusion, and M11 remain blocked until Wave 2 terminal accounting and aggregation succeed.
 
@@ -48,7 +48,7 @@ Checkpoint time: `2026-07-13T05:42:43Z`
 | downstream stages | fail: D2-through-alignment did not run because D1 failed its required `afterok` dependency |
 | review | blocked: no `review.md`; this is not a completion packet |
 
-Decision is `NEEDS_REVISION`, not blocked and not complete. Wave 3 remains blocked.
+Decision is `NEEDS_EVIDENCE`, not blocked and not complete. Retry10 terminal accounting exists, but final runtime outputs and successful post-job aggregation evidence are missing. Wave 3 remains blocked.
 
 ## Retry10 D1 Step18326 Monitor
 
