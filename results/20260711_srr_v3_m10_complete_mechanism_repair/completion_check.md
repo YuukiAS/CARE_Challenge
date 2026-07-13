@@ -58,6 +58,21 @@ Checkpoint time: `2026-07-13T06:11:21Z`
 
 Decision remains `NEEDS_MONITOR`, not blocked and not complete.
 
+## Retry11 D1 Step6664 Monitor
+
+Checkpoint time: `2026-07-13T06:37:12Z`
+
+| Gate | Status |
+| --- | --- |
+| retry11 D1 live state | monitor: `58775065 RUNNING` for `00:35:26` on `g1807htzh01` |
+| retry11 D1 memory | monitor: `MaxRSS=13418336K`, `AveRSS=13284064K` |
+| scheduled validation progress | monitor: checkpoints exist through `checkpoint_validation_step_6664.pt`, plus `checkpoint_best.pt` |
+| prior OOM window | pass for runtime progress: retry11 has exceeded retry5's `00:07:50` OOM elapsed window with low RSS |
+| downstream stages | monitor: D2-through-alignment remain dependency-pending |
+| review | blocked: no `review.md`; this is not a completion packet |
+
+Decision remains `NEEDS_MONITOR`, not blocked and not complete.
+
 ## Retry11 D1 Step3332 Monitor
 
 Checkpoint time: `2026-07-13T06:24:48Z`
