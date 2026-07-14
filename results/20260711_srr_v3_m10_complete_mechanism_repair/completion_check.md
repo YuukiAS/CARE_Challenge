@@ -1,8 +1,8 @@
 # M10 Completion Check
 
-Completion state: `WAVE3_CINE_FORMAL_CHAIN_SUBMITTED__NEEDS_MONITOR`
+Completion state: `WAVE3_REGISTRATION_GATE_FAILED__NEEDS_EVIDENCE`
 
-Current top-level status after Wave 3 Cine formal submission:
+Current top-level status after Wave 3 terminal accounting:
 
 | Gate | Status |
 | --- | --- |
@@ -11,11 +11,15 @@ Current top-level status after Wave 3 Cine formal submission:
 | Wave 2 finalizer accounting | pass: `finalizer_state.json` records `READY_FOR_MAPPER_FINAL`, aggregation exit code `0` |
 | Wave 2 post-job aggregation | pass: `wave2_partition_race_retry11_finalization.json` records `TERMINAL_RUNTIME_EVIDENCE` |
 | Wave 3 compute preflight | pass: job `58847879 COMPLETED 0:0`; prior failed preflight `58847455` was a permission-bit startup issue and has zero training credit |
-| Wave 3 formal chain | monitor: adapter `58848099` running; registration `58848203` waits `afterok:58848099`; temporal `58848205` waits `afterok:58848203`; finalizer `58848313` waits `afterany:58848099:58848203:58848205` |
-| Wave 3 submission receipt | pass: `wave3_cine_submission_receipt.json` records job IDs, dependency types, runtime root, log paths, code/config hashes, and no-push/no-review boundary |
+| Wave 3 adapter | pass: `58848099 COMPLETED 0:0`; `18495` optimizer steps, `3602.2924587709713` train-loop seconds, `14` validation events, `12` eval cases |
+| Wave 3 registration | fail-closed evidence: `58848203 FAILED 2:0` after adequate training; `25000` steps, `9243.858623155043` seconds, `10` validation events, `36` eval cases; registration gate did not pass |
+| Wave 3 registration gate | failed: median Dice gain `0.07205496353985413`, LNCC improved pair rate `1.0`, folding proxy `0.0`, but case non-worse rate `0.8888888888888888` is below the contract threshold `0.90` |
+| Wave 3 temporal | blocked by contract: `58848205 CANCELLED` by `afterok` dependency because registration gate failed; no temporal training credit |
+| Wave 3 afterany finalizer | pass: `58848313 COMPLETED 0:0`; terminal accounting available |
+| Wave 3 post-job aggregation | pass: adapter, registration, and temporal lightweight packets updated from runtime/accounting evidence |
 | Independent review | not started; no `review.md` exists |
 
-This packet is still not a final M10 review packet. Wave 3 terminal accounting/post-job aggregation, mapper final, final milestone packet, and independent read-only review remain ahead in the original state machine.
+This packet is not a final M10 review packet and is not ready for normal review. Wave 3 is fail-closed at the registration gate; learned temporal training did not run and must not be represented as complete.
 
 ## Wave 3 Cine Submission Monitor
 
@@ -29,6 +33,35 @@ Checkpoint time: `2026-07-13T20:20Z`
 | Wave 3 afterany finalizer | `58848313` | `afterany:58848099:58848203:58848205` | `PENDING (Dependency)` |
 
 Decision remains `NEEDS_MONITOR`, not blocked and not complete. No `review.md` was written. No push was performed. Validation packaging/upload, hosted metric claims, route promotion, route-negative conclusion, scientific stop, mapper final, finalizer-B packet commit, and M11 remain blocked.
+
+## Wave 3 Terminal Accounting / Registration Gate Failure
+
+Checkpoint time: `2026-07-13T19:55Z`
+
+| Phase | Job | Terminal state | Evidence status |
+| --- | ---: | --- | --- |
+| CineMA CARE adapter | `58848099` | `COMPLETED 0:0` | `TERMINAL_RUNTIME_EVIDENCE` |
+| learned Cine registration | `58848203` | `FAILED 2:0` | `REGISTRATION_GATE_FAILED_BLOCKS_TEMPORAL` |
+| learned temporal dictionary | `58848205` | `CANCELLED 0:0` | `DEPENDENCY_CANCELLED_BY_REGISTRATION_GATE` |
+| Wave 3 afterany finalizer | `58848313` | `COMPLETED 0:0` | terminal accounting collected |
+
+Registration gate evidence:
+
+```text
+case_count: 36
+pair_count: 72
+median_warped_anatomy_dice_gain: 0.07205496353985413
+case_non_worse_rate: 0.8888888888888888
+lncc_improved_pair_rate: 1.0
+max_negative_jacobian_fraction_proxy: 0.0
+median_negative_jacobian_fraction_proxy: 0.0
+max_p99_displacement_vox: 0.2037481665611267
+median_inverse_consistency_error_vox_proxy: 0.008032826706767082
+```
+
+Contract failure reason: `case_non_worse_rate` is below the required `>=0.90` threshold. Per M10 contract, persistent registration gate failure blocks learned temporal training; frame0 fallback cannot satisfy M10.
+
+Decision: `NEEDS_EVIDENCE`. This is not blocked, not review-ready, and not complete. No `review.md` was written. No push was performed.
 
 ## Superseded Historical Monitor State
 

@@ -1,0 +1,20 @@
+{
+  "design": "CineMA CARE adapter",
+  "partition": "htzhulab",
+  "phase": "cinema_adapter",
+  "runtime_files_checked": [
+    "/users/a/e/aereinh/CARE/results/20260711_srr_v3_m10_complete_mechanism_repair/runtime/m10_cine_temporal_executor/variants/m10_cinema_adapter/summary.json",
+    "/users/a/e/aereinh/CARE/results/20260711_srr_v3_m10_complete_mechanism_repair/runtime/m10_cine_temporal_executor/variants/m10_cinema_adapter/training_log.csv",
+    "/users/a/e/aereinh/CARE/results/20260711_srr_v3_m10_complete_mechanism_repair/runtime/m10_cine_temporal_executor/variants/m10_cinema_adapter/validation_events.csv",
+    "/users/a/e/aereinh/CARE/results/20260711_srr_v3_m10_complete_mechanism_repair/runtime/m10_cine_temporal_executor/variants/m10_cinema_adapter/component_hd_by_case_checkpoint_best.csv",
+    "/users/a/e/aereinh/CARE/results/20260711_srr_v3_m10_complete_mechanism_repair/runtime/m10_cine_temporal_executor/variants/m10_cinema_adapter/subgroup_metrics_checkpoint_best.csv",
+    "/users/a/e/aereinh/CARE/results/20260711_srr_v3_m10_complete_mechanism_repair/runtime/m10_cine_temporal_executor/variants/m10_cinema_adapter/asset_provenance.json"
+  ],
+  "runtime_variant_dir": "/users/a/e/aereinh/CARE/results/20260711_srr_v3_m10_complete_mechanism_repair/runtime/m10_cine_temporal_executor/variants/m10_cinema_adapter",
+  "slurm_exit_code": "0:0",
+  "slurm_job_id": "58848099",
+  "slurm_log_path": "logs/M10CineMA_58848099_20260713_162011.log",
+  "slurm_state": "COMPLETED",
+  "status": "TERMINAL_RUNTIME_EVIDENCE",
+  "summary_path": "/users/a/e/aereinh/CARE/results/20260711_srr_v3_m10_complete_mechanism_repair/runtime/m10_cine_temporal_executor/variants/m10_cinema_adapter/summary.json"
+}

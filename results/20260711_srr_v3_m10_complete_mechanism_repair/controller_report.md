@@ -18,14 +18,16 @@ The controller has completed and merged Wave 2 for controller purposes. Wave 2 t
 
 `finalizer_state.json` records `final_state: READY_FOR_MAPPER_FINAL` and `aggregation_exit_code: 0`. `wave2_partition_race_retry11_finalization.json` records `status: TERMINAL_RUNTIME_EVIDENCE`. `wave2_merge_receipt.md` records `WAVE2_READY_FOR_CONTROLLER_MERGE_ACCEPTED`.
 
-Wave 3 has now started under the original `m10_cine_temporal_executor` contract. Compute preflight job `58847879` completed `0:0` after a prior zero-credit permission-bit preflight failure `58847455`. Formal jobs were submitted as the required serial dependency chain: CineMA adapter `58848099`, learned registration `58848203` with `afterok:58848099`, temporal dictionary `58848205` with `afterok:58848203`, and afterany finalizer `58848313` over all three formal job IDs.
+Wave 3 ran under the original `m10_cine_temporal_executor` contract. Compute preflight job `58847879` completed `0:0` after a prior zero-credit permission-bit preflight failure `58847455`. Formal jobs were submitted as the required serial dependency chain: CineMA adapter `58848099`, learned registration `58848203` with `afterok:58848099`, temporal dictionary `58848205` with `afterok:58848203`, and afterany finalizer `58848313` over all three formal job IDs.
 
-The milestone is not complete. The next controller action is to monitor Wave 3 until terminal accounting, rerun post-job aggregation, and proceed to mapper final only if evidence gates pass. Review, push, validation packaging/upload, hosted metric claims, route promotion, route-negative conclusion, scientific stop, and M11 remain blocked.
+Wave 3 reached a fail-closed registration gate state. Adapter job `58848099` completed with `TERMINAL_RUNTIME_EVIDENCE`. Registration job `58848203` completed adequate training but exited `2:0` because the registration gate did not pass. The gate miss is specific: `case_non_worse_rate=0.8888888888888888`, below the required `>=0.90`, although median Dice gain, LNCC improvement, folding proxy, displacement, inverse-consistency, case count, and pair count evidence were present. Temporal job `58848205` was correctly cancelled by `afterok` dependency and receives zero temporal-training credit. Finalizer job `58848313` completed `0:0`.
+
+The milestone is not complete. The next controller action is to commit the lightweight Wave 3 fail-closed evidence packet and stop before independent review/planner judgment. Review, push, validation packaging/upload, hosted metric claims, route promotion, route-negative conclusion, scientific stop, mapper final, finalizer-B, and M11 remain blocked.
 
 Current pre-review decisions:
 
 ```text
-controller_run_status: WAVE3_CINE_FORMAL_CHAIN_SUBMITTED_NEEDS_MONITOR
+controller_run_status: WAVE3_REGISTRATION_GATE_FAILED_NEEDS_EVIDENCE
 operational_completion_status: INCOMPLETE
 experiment_adequacy_decision: NOT_REVIEWED
 route_promotion_decision: NOT_REVIEWED

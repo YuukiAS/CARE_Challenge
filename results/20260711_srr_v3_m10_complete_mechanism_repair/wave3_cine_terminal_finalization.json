@@ -1,0 +1,73 @@
+{
+  "task_key": "20260711_srr_v3_m10_complete_mechanism_repair",
+  "executor": "m10_cine_temporal_executor",
+  "status": "NEEDS_EVIDENCE",
+  "finalization_type": "wave3_registration_gate_failed",
+  "jobs": [
+    {
+      "phase": "cinema_adapter",
+      "job_id": "58848099",
+      "state": "COMPLETED",
+      "exit_code": "0:0",
+      "elapsed": "01:00:08",
+      "partition": "htzhulab",
+      "runtime_summary": "results/20260711_srr_v3_m10_complete_mechanism_repair/runtime/m10_cine_temporal_executor/variants/m10_cinema_adapter/summary.json",
+      "result_dir": "results/20260711_srr_v3_m10_cinema_adapter",
+      "evidence_status": "TERMINAL_RUNTIME_EVIDENCE"
+    },
+    {
+      "phase": "cine_registration",
+      "job_id": "58848203",
+      "state": "FAILED",
+      "exit_code": "2:0",
+      "elapsed": "02:34:12",
+      "partition": "htzhulab",
+      "runtime_summary": "results/20260711_srr_v3_m10_complete_mechanism_repair/runtime/m10_cine_temporal_executor/variants/m10_cine_registration/summary.json",
+      "registration_gate": "results/20260711_srr_v3_m10_complete_mechanism_repair/runtime/m10_cine_temporal_executor/variants/m10_cine_registration/registration_gate.json",
+      "result_dir": "results/20260711_srr_v3_m10_cine_registration",
+      "evidence_status": "REGISTRATION_GATE_FAILED_BLOCKS_TEMPORAL"
+    },
+    {
+      "phase": "cine_temporal",
+      "job_id": "58848205",
+      "state": "CANCELLED",
+      "exit_code": "0:0",
+      "elapsed": "00:00:00",
+      "partition": "htzhulab",
+      "runtime_summary": "EVIDENCE_NOT_FOUND_DEPENDENCY_CANCELLED",
+      "result_dir": "results/20260711_srr_v3_m10_cine_learned_temporal",
+      "evidence_status": "DEPENDENCY_CANCELLED_BY_REGISTRATION_GATE",
+      "training_credit": 0
+    },
+    {
+      "phase": "wave3_afterany_finalizer",
+      "job_id": "58848313",
+      "state": "COMPLETED",
+      "exit_code": "0:0",
+      "elapsed": "00:00:01",
+      "partition": "htzhulab"
+    }
+  ],
+  "registration_gate": {
+    "case_count": 36,
+    "pair_count": 72,
+    "median_warped_anatomy_dice_gain": 0.07205496353985413,
+    "case_non_worse_rate": 0.8888888888888888,
+    "required_case_non_worse_rate": 0.9,
+    "lncc_improved_pair_rate": 1.0,
+    "max_negative_jacobian_fraction_proxy": 0.0,
+    "median_negative_jacobian_fraction_proxy": 0.0,
+    "max_p99_displacement_vox": 0.2037481665611267,
+    "median_inverse_consistency_error_vox_proxy": 0.008032826706767082,
+    "registration_gate_passed": false,
+    "failure_reason": "case_non_worse_rate_below_required_threshold"
+  },
+  "policy": {
+    "temporal_training_blocked_by_registration_gate": true,
+    "frame0_fallback_used": false,
+    "review_md_written": false,
+    "pushed": false,
+    "validation_packaging_or_upload": false,
+    "m11_started": false
+  }
+}

@@ -115,8 +115,19 @@ def summarize_loss(rows: list[dict[str, str]]) -> dict[str, object]:
     }
 
 
-def phase_status(phase: CinePhase, summary: dict[str, object], validation_rows: list[dict[str, str]], job_id: str) -> str:
+def phase_status(
+    phase: CinePhase,
+    summary: dict[str, object],
+    validation_rows: list[dict[str, str]],
+    job_id: str,
+    job_state: str = "",
+) -> str:
     if not summary:
+        normalized_state = job_state.upper()
+        if "CANCELLED" in normalized_state and phase.phase == "cine_temporal":
+            return "DEPENDENCY_CANCELLED_BY_REGISTRATION_GATE"
+        if any(token in normalized_state for token in ("FAILED", "TIMEOUT", "OUT_OF_MEMORY", "NODE_FAIL", "CANCELLED")):
+            return "TERMINAL_NO_RUNTIME_OUTPUT_NEEDS_EVIDENCE"
         return "NEEDS_MONITOR" if job_id else "EVIDENCE_NOT_FOUND"
     if summary.get("status") == "REGISTRATION_GATE_FAILED_BLOCKS_TEMPORAL":
         return "REGISTRATION_GATE_FAILED_BLOCKS_TEMPORAL"
@@ -147,7 +158,7 @@ def aggregate_phase(
     summary = read_json(summary_path)
     train_rows = read_csv(rdir / "training_log.csv")
     validation_rows = read_csv(rdir / "validation_events.csv")
-    status = phase_status(phase, summary, validation_rows, job_id)
+    status = phase_status(phase, summary, validation_rows, job_id, job_state=job_state)
     write_csv(
         result_dir / "training_budget_ledger.csv",
         [

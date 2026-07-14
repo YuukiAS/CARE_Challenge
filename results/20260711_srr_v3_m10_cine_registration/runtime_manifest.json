@@ -1,0 +1,20 @@
+{
+  "design": "learned diffeomorphic Cine registration",
+  "partition": "htzhulab",
+  "phase": "cine_registration",
+  "runtime_files_checked": [
+    "/users/a/e/aereinh/CARE/results/20260711_srr_v3_m10_complete_mechanism_repair/runtime/m10_cine_temporal_executor/variants/m10_cine_registration/summary.json",
+    "/users/a/e/aereinh/CARE/results/20260711_srr_v3_m10_complete_mechanism_repair/runtime/m10_cine_temporal_executor/variants/m10_cine_registration/training_log.csv",
+    "/users/a/e/aereinh/CARE/results/20260711_srr_v3_m10_complete_mechanism_repair/runtime/m10_cine_temporal_executor/variants/m10_cine_registration/validation_events.csv",
+    "/users/a/e/aereinh/CARE/results/20260711_srr_v3_m10_complete_mechanism_repair/runtime/m10_cine_temporal_executor/variants/m10_cine_registration/component_hd_by_case_checkpoint_best.csv",
+    "/users/a/e/aereinh/CARE/results/20260711_srr_v3_m10_complete_mechanism_repair/runtime/m10_cine_temporal_executor/variants/m10_cine_registration/subgroup_metrics_checkpoint_best.csv",
+    "/users/a/e/aereinh/CARE/results/20260711_srr_v3_m10_complete_mechanism_repair/runtime/m10_cine_temporal_executor/variants/m10_cine_registration/registration_gate.json"
+  ],
+  "runtime_variant_dir": "/users/a/e/aereinh/CARE/results/20260711_srr_v3_m10_complete_mechanism_repair/runtime/m10_cine_temporal_executor/variants/m10_cine_registration",
+  "slurm_exit_code": "2:0",
+  "slurm_job_id": "58848203",
+  "slurm_log_path": "logs/M10CineReg_58848203_20260713_172035.log",
+  "slurm_state": "FAILED",
+  "status": "REGISTRATION_GATE_FAILED_BLOCKS_TEMPORAL",
+  "summary_path": "/users/a/e/aereinh/CARE/results/20260711_srr_v3_m10_complete_mechanism_repair/runtime/m10_cine_temporal_executor/variants/m10_cine_registration/summary.json"
+}

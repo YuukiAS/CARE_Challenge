@@ -1,0 +1,19 @@
+{
+  "design": "registration-gated learned temporal dictionary",
+  "partition": "htzhulab",
+  "phase": "cine_temporal",
+  "runtime_files_checked": [
+    "/users/a/e/aereinh/CARE/results/20260711_srr_v3_m10_complete_mechanism_repair/runtime/m10_cine_temporal_executor/variants/m10_cine_learned_temporal/summary.json",
+    "/users/a/e/aereinh/CARE/results/20260711_srr_v3_m10_complete_mechanism_repair/runtime/m10_cine_temporal_executor/variants/m10_cine_learned_temporal/training_log.csv",
+    "/users/a/e/aereinh/CARE/results/20260711_srr_v3_m10_complete_mechanism_repair/runtime/m10_cine_temporal_executor/variants/m10_cine_learned_temporal/validation_events.csv",
+    "/users/a/e/aereinh/CARE/results/20260711_srr_v3_m10_complete_mechanism_repair/runtime/m10_cine_temporal_executor/variants/m10_cine_learned_temporal/component_hd_by_case_checkpoint_best.csv",
+    "/users/a/e/aereinh/CARE/results/20260711_srr_v3_m10_complete_mechanism_repair/runtime/m10_cine_temporal_executor/variants/m10_cine_learned_temporal/subgroup_metrics_checkpoint_best.csv"
+  ],
+  "runtime_variant_dir": "/users/a/e/aereinh/CARE/results/20260711_srr_v3_m10_complete_mechanism_repair/runtime/m10_cine_temporal_executor/variants/m10_cine_learned_temporal",
+  "slurm_exit_code": "0:0",
+  "slurm_job_id": "58848205",
+  "slurm_log_path": "EVIDENCE_NOT_FOUND_DEPENDENCY_CANCELLED",
+  "slurm_state": "CANCELLED",
+  "status": "DEPENDENCY_CANCELLED_BY_REGISTRATION_GATE",
+  "summary_path": "/users/a/e/aereinh/CARE/results/20260711_srr_v3_m10_complete_mechanism_repair/runtime/m10_cine_temporal_executor/variants/m10_cine_learned_temporal/summary.json"
+}
