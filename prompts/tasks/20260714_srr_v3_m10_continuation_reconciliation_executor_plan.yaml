@@ -1,0 +1,377 @@
+plan_version: 2
+task_key: 20260714_srr_v3_m10_continuation_reconciliation
+milestone_id: M10
+planner_branch: agent/m10-followup-planner-draft
+planner_head: ce8e33d1f0c5a95c2e9d5a0c6b862dad8218cba1
+execution_mode: controller_supervised
+executor_count: 3
+executor_slots: 1
+max_parallel: 1
+parallel_execution_allowed: false
+merge_strategy: controller_serial_merge_in_merge_order
+wave_order: [1, 2, 3]
+old_reviewed_canonical_hash: 5030af7d74e35a423dd7e782ed0d55dffc1c1e78335c4016bb75920c17da0e64
+observed_parent_canonical_hash: 955f6ab31e523123ba339e5b1732b78b304f099b9ce92bc896dfbb1e5d76653f
+operational_contract_increment_commit: c53fa06
+historical_packets_immutable: true
+
+executors:
+  - id: m10_followup_wave2_reconciliation_executor
+    lane: myops
+    wave: 1
+    can_run_parallel: false
+    depends_on: []
+    prompt_path: prompts/shared/M10_srr_v3_continuation_reconciliation.md
+    isolation_mode: separate_worktree
+    branch_name: agent/m10-followup-wave2-reconciliation
+    worktree_path: /users/a/e/aereinh/worktrees/m10_followup_wave2_reconciliation
+    result_dir: results/20260714_srr_v3_m10_followup_wave2_reconciliation
+    runtime_output_root: results/20260714_srr_v3_m10_followup_wave2_reconciliation/runtime
+    slurm_job_namespace: m10fu_w2_eval
+    lock_path: results/20260714_srr_v3_m10_followup_wave2_reconciliation/locks/controller.lock
+    log_path: results/20260714_srr_v3_m10_followup_wave2_reconciliation/worker_logs
+    merge_order: 1
+    required_completion_file: results/20260714_srr_v3_m10_followup_wave2_reconciliation/executor_completion.md
+    required_completion_token: M10_FOLLOWUP_WAVE2_RECONCILIATION_READY_FOR_CONTROLLER_MERGE
+    completion_states:
+      - M10_FOLLOWUP_WAVE2_RECONCILIATION_READY_FOR_CONTROLLER_MERGE
+      - M10_FOLLOWUP_WAVE2_RECONCILIATION_NEEDS_MONITOR
+      - M10_FOLLOWUP_WAVE2_RECONCILIATION_NEEDS_EVIDENCE
+      - M10_FOLLOWUP_WAVE2_RECONCILIATION_NEEDS_REVISION
+    read_scope:
+      - prompts/shared/EXECUTOR_PROMPTS.md
+      - prompts/shared/REVIEWER_PROMPTS.md
+      - prompts/tasks/20260711_srr_v3_m10_complete_mechanism_repair_planning_review.md
+      - prompts/tasks/20260714_srr_v3_m10_continuation_reconciliation_planning_review.md
+      - results/20260711_srr_v3_m10_complete_mechanism_repair
+      - results/20260711_srr_v3_m10_myops_d0_control
+      - results/20260711_srr_v3_m10_myops_d1_spatial_br2
+      - results/20260711_srr_v3_m10_myops_d2_hierarchical_psip
+      - results/20260711_srr_v3_m10_myops_d3_full_propref
+      - results/20260711_srr_v3_m10_hard_negative_refresh
+      - results/20260711_srr_v3_m10_no_nnunet_context_control
+      - results/20260711_srr_v3_m10_alignment_control
+      - results/20260711_srr_v3_m10_component_causal_audit
+      - scripts/evaluation
+      - scripts/validation
+    write_scope:
+      - scripts/evaluation/evaluate_srr_v3_m10_followup_all_checkpoints.py
+      - scripts/evaluation/run_srr_v3_m10_followup_interventions.py
+      - scripts/evaluation/aggregate_srr_v3_m10_followup_wave2.py
+      - scripts/evaluation/validate_srr_v3_m10_followup_wave2.py
+      - results/20260714_srr_v3_m10_followup_wave2_reconciliation
+    shared_files_forbidden:
+      - src/care_myocardium
+      - configs
+      - jobs
+      - scripts/training
+      - results/20260711_srr_v3_m10_complete_mechanism_repair
+      - results/20260711_srr_v3_m10_myops_d0_control
+      - results/20260711_srr_v3_m10_myops_d1_spatial_br2
+      - results/20260711_srr_v3_m10_myops_d2_hierarchical_psip
+      - results/20260711_srr_v3_m10_myops_d3_full_propref
+      - results/20260711_srr_v3_m10_hard_negative_refresh
+      - results/20260711_srr_v3_m10_no_nnunet_context_control
+      - results/20260711_srr_v3_m10_alignment_control
+      - results/20260711_srr_v3_m10_component_causal_audit
+      - wiki
+    phases:
+      - inherited_lineage_and_fingerprint_audit
+      - inherited_budget_and_terminal_accounting_validation
+      - full_scheduled_checkpoint_inventory
+      - all_checkpoint_44_case_challenge_facing_evaluation
+      - d2_selected_checkpoint_final_output_interventions
+      - d3_selected_checkpoint_final_output_interventions
+      - pathology_and_hard_subgroup_help_harm
+      - strict_validator_and_known_bad_fixtures
+      - post_job_aggregation
+    required_outputs:
+      - result.md
+      - inherited_wave2_fingerprint_audit.json
+      - inherited_wave2_budget_ledger.csv
+      - checkpoint_inventory.csv
+      - all_checkpoint_challenge_metrics.csv
+      - checkpoint_eligibility.csv
+      - selected_checkpoints.json
+      - d2_component_interventions.csv
+      - d3_component_interventions.csv
+      - component_state_classification.csv
+      - hard_subgroup_help_harm.csv
+      - validator_report.md
+      - validator_selftest_report.md
+      - commands_run.md
+      - runtime_manifest.json
+      - executor_completion.md
+      - MANIFEST.md
+    checkpoint_selection_contract:
+      formal_selector: challenge_facing_score
+      forbidden_selectors: [legacy_val_patch_loss, training_loss, patch_loss, filename_best, latest_checkpoint]
+      evaluate_every_recoverable_scheduled_checkpoint: true
+      reload_each_checkpoint_before_evaluation: true
+      eval_case_count: 44
+      tie_breakers: [lower_worst_case_hd95, earlier_step]
+      require_frozen_calibration: true
+    intervention_contract:
+      checkpoints: [selected_D2, selected_D3]
+      same_case_same_checkpoint: true
+      require_real_final_output_path: true
+      reject_placeholder_rows: true
+      required_metrics: [call_count, gradient_status, activation_variance, proposal_logit_delta, refiner_logit_delta, final_logit_delta, changed_voxels, changed_components, dice_delta, hd95_delta, remote_fp_delta, per_case_help_harm]
+    slurm_required: true
+    slurm_dependency_chain:
+      - fingerprint_and_checkpoint_inventory
+      - all_checkpoint_evaluation
+      - d2_d3_interventions
+      - aggregation
+    slurm_dependency_policy:
+      training_dependency: afterok
+      finalizer_dependency: afterany
+    finalizer_dependency_policy: afterany_all_attempts
+    preflight:
+      required: true
+      command: python scripts/evaluation/evaluate_srr_v3_m10_followup_all_checkpoints.py --print-contract
+      receipt_path: results/20260714_srr_v3_m10_followup_wave2_reconciliation/preflight_receipt.json
+    retry_policy:
+      operational_retry_allowed: true
+      same_executor_attempt: true
+      max_startup_retries: 2
+      max_preemption_retries: 2
+      max_unknown_retries: 0
+      require_same_code_hash: true
+      require_same_config_hash: true
+      require_same_split_hash: true
+      failed_attempt_training_credit: zero
+    retry_ledger_path: results/20260714_srr_v3_m10_followup_wave2_reconciliation/retry_ledger.csv
+
+  - id: m10_followup_cine_fidelity_executor
+    lane: cine
+    wave: 2
+    can_run_parallel: false
+    depends_on:
+      - m10_followup_wave2_reconciliation_executor
+    prompt_path: prompts/shared/M10_srr_v3_continuation_reconciliation.md
+    isolation_mode: separate_worktree
+    branch_name: agent/m10-followup-cine-fidelity
+    worktree_path: /users/a/e/aereinh/worktrees/m10_followup_cine_fidelity
+    result_dir: results/20260714_srr_v3_m10_followup_cine_fidelity
+    runtime_output_root: results/20260714_srr_v3_m10_followup_cine_fidelity/runtime_smoke
+    slurm_job_namespace: m10fu_cine_code
+    lock_path: results/20260714_srr_v3_m10_followup_cine_fidelity/locks/controller.lock
+    log_path: results/20260714_srr_v3_m10_followup_cine_fidelity/worker_logs
+    merge_order: 2
+    required_completion_file: results/20260714_srr_v3_m10_followup_cine_fidelity/executor_completion.md
+    required_completion_token: M10_FOLLOWUP_CINE_FIDELITY_READY_FOR_CONTROLLER_MERGE
+    completion_states:
+      - M10_FOLLOWUP_CINE_FIDELITY_READY_FOR_CONTROLLER_MERGE
+      - M10_FOLLOWUP_CINE_FIDELITY_NEEDS_EVIDENCE
+      - M10_FOLLOWUP_CINE_FIDELITY_NEEDS_REVISION
+    read_scope:
+      - prompts/shared/EXECUTOR_PROMPTS.md
+      - prompts/tasks/20260714_srr_v3_m10_continuation_reconciliation_planning_review.md
+      - src/care_myocardium/cine
+      - scripts/training/run_cinema_adapter_m10.py
+      - scripts/training/run_cine_registration_m10.py
+      - results/20260711_srr_v3_m10_cinema_adapter
+      - results/20260711_srr_v3_m10_cine_registration
+      - results/20260711_srr_v3_m10_cine_learned_temporal
+    write_scope:
+      - src/care_myocardium/cine/followup
+      - src/care_myocardium/tests/test_m10_followup_cine_fidelity.py
+      - scripts/training/run_cinema_adapter_m10_followup.py
+      - scripts/training/run_cine_registration_m10_followup.py
+      - scripts/training/run_cine_temporal_m10_followup.py
+      - scripts/evaluation/aggregate_cine_m10_followup.py
+      - scripts/evaluation/validate_cine_m10_followup.py
+      - configs/srr_v3_m10_followup_cine.yaml
+      - jobs/src/run_srr_v3_m10_followup_cine_adapter.sh
+      - jobs/src/run_srr_v3_m10_followup_cine_random_init.sh
+      - jobs/src/run_srr_v3_m10_followup_cine_registration.sh
+      - jobs/src/run_srr_v3_m10_followup_cine_temporal.sh
+      - results/20260714_srr_v3_m10_followup_cine_fidelity
+    shared_files_forbidden:
+      - src/care_myocardium/models
+      - src/care_myocardium/losses
+      - scripts/training/run_srr_v3_m10_complete_repair.py
+      - scripts/evaluation/evaluate_srr_v3_m10_full_case.py
+      - configs/srr_v3_m10_complete_repair.yaml
+      - results/20260711_srr_v3_m10_complete_mechanism_repair
+      - results/20260711_srr_v3_m10_myops_d0_control
+      - results/20260711_srr_v3_m10_myops_d1_spatial_br2
+      - results/20260711_srr_v3_m10_myops_d2_hierarchical_psip
+      - results/20260711_srr_v3_m10_myops_d3_full_propref
+      - wiki
+    phases:
+      - cinema_asset_provenance_and_weight_hash
+      - multiclass_logits_features_uncertainty_adapter
+      - capacity_matched_random_initialization_control
+      - all_checkpoint_adapter_control_selection_and_reload
+      - symmetric_stationary_velocity_model
+      - seven_step_scaling_and_squaring_and_unit_conversion
+      - complete_registration_loss_and_true_qc
+      - real_ants_syn_control
+      - case_level_gate_and_selected_checkpoint_reload
+      - exact_eight_slot_temporal_dictionary
+      - final_output_effect_controls
+      - fail_closed_known_bad_tests
+      - freeze_hash_receipt
+    required_outputs:
+      - result.md
+      - cine_fidelity_gap_closure.csv
+      - cinema_provenance_contract.json
+      - cinema_adapter_control_contract.json
+      - registration_math_contract.md
+      - syn_control_contract.md
+      - temporal_dictionary_contract.md
+      - unit_test_report.md
+      - known_bad_selftest_report.md
+      - freeze_receipt.json
+      - commands_run.md
+      - executor_completion.md
+      - MANIFEST.md
+    implementation_verification:
+      command: env PYTHONPATH=. pytest -q src/care_myocardium/tests/test_m10_followup_cine_fidelity.py
+      strict: true
+      formal_slurm_submission_allowed: false
+    freeze_receipt_path: results/20260714_srr_v3_m10_followup_cine_fidelity/freeze_receipt.json
+
+  - id: m10_followup_cine_runtime_executor
+    lane: cine
+    wave: 3
+    can_run_parallel: false
+    depends_on:
+      - m10_followup_cine_fidelity_executor
+    prompt_path: prompts/shared/M10_srr_v3_continuation_reconciliation.md
+    isolation_mode: separate_worktree
+    branch_name: agent/m10-followup-cine-runtime
+    worktree_path: /users/a/e/aereinh/worktrees/m10_followup_cine_runtime
+    result_dir: results/20260714_srr_v3_m10_followup_cine_runtime
+    runtime_output_root: results/20260714_srr_v3_m10_followup_cine_runtime/runtime
+    slurm_job_namespace: m10fu_cine_runtime
+    lock_path: results/20260714_srr_v3_m10_followup_cine_runtime/locks/controller.lock
+    log_path: results/20260714_srr_v3_m10_followup_cine_runtime/worker_logs
+    merge_order: 3
+    required_completion_file: results/20260714_srr_v3_m10_followup_cine_runtime/executor_completion.md
+    required_completion_token: M10_FOLLOWUP_CINE_RUNTIME_READY_FOR_CONTROLLER_MERGE_OR_NEGATIVE_REVIEW
+    completion_states:
+      - M10_FOLLOWUP_CINE_RUNTIME_READY_FOR_CONTROLLER_MERGE
+      - M10_FOLLOWUP_CINE_RUNTIME_READY_FOR_REVIEW_CINE_REGISTRATION_NEGATIVE
+      - M10_FOLLOWUP_CINE_RUNTIME_NEEDS_MONITOR
+      - M10_FOLLOWUP_CINE_RUNTIME_NEEDS_EVIDENCE
+      - M10_FOLLOWUP_CINE_RUNTIME_NEEDS_REVISION_RETURN_TO_CINE_FIDELITY_WAVE
+      - M10_FOLLOWUP_CINE_RUNTIME_RESOURCE_BLOCKED
+    read_scope:
+      - prompts/shared/EXECUTOR_PROMPTS.md
+      - prompts/shared/REVIEWER_PROMPTS.md
+      - prompts/tasks/20260714_srr_v3_m10_continuation_reconciliation_planning_review.md
+      - results/20260714_srr_v3_m10_followup_cine_fidelity
+      - src/care_myocardium/cine/followup
+      - scripts/training/run_cinema_adapter_m10_followup.py
+      - scripts/training/run_cine_registration_m10_followup.py
+      - scripts/training/run_cine_temporal_m10_followup.py
+      - scripts/evaluation/aggregate_cine_m10_followup.py
+      - scripts/evaluation/validate_cine_m10_followup.py
+      - configs/srr_v3_m10_followup_cine.yaml
+      - jobs/src/run_srr_v3_m10_followup_cine_adapter.sh
+      - jobs/src/run_srr_v3_m10_followup_cine_random_init.sh
+      - jobs/src/run_srr_v3_m10_followup_cine_registration.sh
+      - jobs/src/run_srr_v3_m10_followup_cine_temporal.sh
+    write_scope:
+      - results/20260714_srr_v3_m10_followup_cine_runtime
+    shared_files_forbidden:
+      - src/care_myocardium
+      - scripts
+      - configs
+      - jobs
+      - results/20260711_srr_v3_m10_complete_mechanism_repair
+      - results/20260711_srr_v3_m10_cinema_adapter
+      - results/20260711_srr_v3_m10_cine_registration
+      - results/20260711_srr_v3_m10_cine_learned_temporal
+      - wiki
+    phases:
+      - frozen_hash_receipt_validation
+      - compute_environment_preflight
+      - cinema_pretrained_adapter_formal_training
+      - capacity_matched_random_init_formal_training
+      - all_checkpoint_adapter_control_selection_and_reload
+      - selected_source_receipt
+      - learned_registration_formal_training
+      - all_checkpoint_registration_selection_and_reload
+      - real_ants_syn_control
+      - case_level_registration_gate
+      - conditional_temporal_dictionary_formal_training
+      - same_subset_temporal_controls
+      - terminal_aggregation_and_strict_validation
+    required_outputs:
+      - result.md
+      - frozen_hash_validation.json
+      - cinema_training_budget_ledger.csv
+      - cinema_random_init_budget_ledger.csv
+      - cinema_all_checkpoint_metrics.csv
+      - cinema_selected_source.json
+      - cinema_pretrained_vs_random_init.csv
+      - registration_training_budget_ledger.csv
+      - registration_all_checkpoint_metrics.csv
+      - registration_selected_checkpoint.json
+      - registration_case_frame_metrics.csv
+      - real_syn_control.csv
+      - registration_gate.json
+      - temporal_training_budget_ledger.csv
+      - temporal_case_metrics.csv
+      - temporal_control_help_harm.csv
+      - negative_registration_closure.md
+      - validator_report.md
+      - validator_selftest_report.md
+      - finalizer_state.json
+      - commands_run.md
+      - executor_completion.md
+      - MANIFEST.md
+    adapter_control_contract:
+      identical_cases_frames_budget_optimizer_augmentation: true
+      evaluate_every_scheduled_checkpoint: true
+      reload_selected_checkpoint: true
+      allowed_pretrained_contribution_states: [CINEMA_PRETRAINED_BENEFIT, CINEMA_RANDOM_INIT_NONINFERIOR, CINEMA_COMPARISON_UNDERTRAINED]
+      undertrained_blocks_registration: true
+      selected_source_only_feeds_downstream: true
+    registration_contract:
+      symmetric_velocity: true
+      scaling_and_squaring_steps: 7
+      complete_loss_required: true
+      true_jacobian_and_inverse_composition: true
+      real_ants_syn_required: true
+      case_level_gate: true
+      evaluate_every_scheduled_checkpoint: true
+      reload_selected_checkpoint: true
+      thresholds_unchanged: true
+    negative_registration_closure:
+      allowed_only_after_adequate_faithful_selected_checkpoint_test: true
+      temporal_training_credit: zero
+      completion_state: READY_FOR_REVIEW_CINE_REGISTRATION_NEGATIVE
+      independent_runtime_review_required: true
+    slurm_required: true
+    slurm_dependency_chain:
+      - cinema_pretrained_adapter
+      - cinema_random_init_control
+      - adapter_control_selection
+      - learned_registration
+      - real_syn_and_registration_gate
+      - conditional_temporal_training
+      - aggregation
+    slurm_dependency_policy:
+      training_dependency: afterok
+      finalizer_dependency: afterany
+    finalizer_dependency_policy: afterany_all_attempts
+    preflight:
+      required: true
+      command: python scripts/training/run_cine_registration_m10_followup.py --print-contract
+      receipt_path: results/20260714_srr_v3_m10_followup_cine_runtime/preflight_receipt.json
+    retry_policy:
+      operational_retry_allowed: true
+      same_executor_attempt: true
+      max_startup_retries: 2
+      max_preemption_retries: 2
+      max_unknown_retries: 0
+      require_same_code_hash: true
+      require_same_config_hash: true
+      require_same_split_hash: true
+      failed_attempt_training_credit: zero
+    retry_ledger_path: results/20260714_srr_v3_m10_followup_cine_runtime/retry_ledger.csv

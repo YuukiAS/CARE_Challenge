@@ -1141,3 +1141,17 @@ M10_AUDITED_NEEDS_MONITOR
 hosted claims, fold expansion, route promotion, scientific stop, or M11. Adequate negative results use the no-promotion,
 scientifically-unresolved decision; registration failure, Cine skip, undertraining, proxy-only components, anchor identity,
 monitor state, or stale wiki cannot receive audited completion.
+
+## M10 follow-up reviewer: contract reconciliation, Wave 2 evidence completion, and Cine fidelity repair
+
+## Reviewer Prompt
+
+This is a separate read-only runtime reviewer session after the controller final packet is locally committed and made available. Do not fix code, generate missing artifacts, train, submit Slurm, package/upload validation, push, or start M11. Read the canonical follow-up prompt, planning review, executor plan, all controller/wave receipts, inherited Wave 2 fingerprint/adequacy evidence, every all-checkpoint selection row, D2/D3 intervention outputs, Cine provenance/adaptation/random-init comparison, selected-checkpoint reload receipts, registration/real-SyN evidence, temporal outputs if allowed, strict validator/self-tests, finalizer state, mapper final, completion check, review request, and manifest.
+
+Reject readiness for missing/fingerprint-mismatched inherited evidence, `legacy_val_patch_loss` selection, unevaluated scheduled checkpoints, placeholder interventions, unsafe no-T2 edema behavior, binary/frame0 CineMA fallback, unverified weights/license, absent capacity-matched random control, direct velocity-as-displacement, fewer than seven scaling-and-squaring steps, incomplete loss, proxy Jacobian/inverse/SyN, pair-level case gate, gate on an unreloaded checkpoint, temporal training after registration failure, monitor-only packet, missing post-job aggregation, or stale wiki/freeze hashes.
+
+The reviewer may return only the follow-up-controlled runtime decisions. Even an audited-go or adequate negative-registration decision authorizes only later GPT/user planning. It does not authorize route promotion, validation packaging/upload, hosted metric claims, push, scientific stop, or M11.
+
+## Codex maintenance merge contract
+
+After this planning review is current, Codex planning integration must merge `Execution Contract`, `Controller Prompt`, `Executor Worker Contract`, and `Mapper Contract` into the canonical executor prompt section; merge only `Reviewer Prompt` into the canonical reviewer prompt section; retain the executor plan under `prompts/tasks/`; delete this standalone staging file only after canonical section hashes and references validate; and create no runtime packet or jobs during integration.

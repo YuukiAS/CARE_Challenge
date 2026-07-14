@@ -3407,3 +3407,253 @@ write completion receipts, and never merge themselves, self-review, push, or red
 The mapper uses `.agents/skills/care-mapper/SKILL.md`, reads first-party source/config/entrypoints and lightweight evidence,
 and does not inspect raw data, checkpoints, NIfTI, large logs, secrets, or upload packages. It does not modify model code or write
 `review.md`. Any source/evidence/wiki fingerprint mismatch is stale and blocks `FINALIZER_B`.
+
+## M10 follow-up executor/controller: contract reconciliation, Wave 2 evidence completion, and Cine fidelity repair
+
+## Execution Contract
+
+The machine-readable contract above is authoritative. The exact mirror is:
+
+```yaml
+task_key: 20260714_srr_v3_m10_continuation_reconciliation
+task_kind: scientific_milestone
+task_type: controller
+controller_mode: true
+milestone_number: 10
+milestone_id: M10
+status: READY_FOR_CODEX_MERGE
+risk_level: high
+route_change: false
+scientific_decision_scope: mechanism_signal
+execution_mode: controller_supervised
+requires_execution_controller: true
+executor_slots: 1
+executor_count: 3
+parallel_execution_allowed: false
+executor_plan_path: prompts/tasks/20260714_srr_v3_m10_continuation_reconciliation_executor_plan.yaml
+mapper_slots: 1
+mapper_required: true
+architecture_impact: system
+wiki_update_required: true
+diagram_update_required: true
+slurm_runtime_continuity_required: true
+continuity_backend: slurm_dependency
+review_mode: independent_thread
+reviewer: separate_readonly
+review_required: true
+allow_git_commit: true
+auto_git_commit: true
+allow_git_push: false
+auto_git_push: false
+allow_diagnostic_push: false
+route_promotion_gate: independent_runtime_reviewer_and_later_gpt_user_decision_only
+experiment_adequacy_gate: inherited_wave2_fingerprint_and_budget_validation_plus_new_cine_minimum_effective_training
+route_negative_gate: adequate_matched_final_output_interventions_or_faithful_registration_negative_packet_only
+scientific_completion_gate: independent_runtime_review_required
+diagnostic_publication_gate: reviewed_lightweight_packet_only
+diagnostic_publication_scope: md_csv_json_only
+blocked_after_diagnostic_publication: validation_upload_route_promotion_scientific_stop_m11
+planning_review_required: true
+planning_reviewer: separate_gpt_thread
+planning_review_path: prompts/tasks/20260714_srr_v3_m10_continuation_reconciliation_planning_review.md
+planning_review_token: PLANNING_CRITIC_READY_FOR_CODEX_MERGE
+planning_reviewed_commit: 4cce847edc0658df611da26a4b9070025f1ba170
+```
+
+This is a bounded continuation of M10. It is not M11, not a route promotion, not a validation-package task, and not permission to rewrite historical M10 review evidence. The controller may create one local lightweight final packet commit and must stop before independent runtime review. No runtime role may push.
+
+The route objective recovered from SRR-v2, SRR-v2.5, and SRR-v3 remains: availability-aware modality-specific handling; a real shared/private/interaction semantic retrieval bank and train/OOF prototype memory; anatomy-guided scar/edema proposal; pathology-specific soft-ROI refinement; safe no-T2 edema supervision; and a final output causally owned by SRR. nnU-Net is anchor/context/evidence/safety only. Cine remains registration-aware anatomy-first temporal retrieval.
+## Controller Prompt
+
+You are the Codex controller for exactly one M10 follow-up. Before any scientific work, enforce the current hard-gate policy, executor-plan validation, Planner/Critic lineage, stable staging hash, exact task graph, source/config/split fingerprints, minimum-effective-training rules, monitor-packet prohibition, mapper/wiki gates, and route-diagram bootstrap evidence. If a required gate fails, write a fail-closed lightweight packet and stop. Do not reinterpret a missing artifact as a negative result.
+
+### 1. Contract-hash reconciliation
+
+Treat the historical hashes as immutable provenance:
+
+```text
+old reviewed canonical hash: 5030af7d74e35a423dd7e782ed0d55dffc1c1e78335c4016bb75920c17da0e64
+current parent canonical hash: 955f6ab31e523123ba339e5b1732b78b304f099b9ce92bc896dfbb1e5d76653f
+operational repair commit: c53fa06
+```
+
+`c53fa06` added compute preflight, bounded fingerprint-preserving retry, `afterok` training dependencies, `afterany` accounting/finalizer dependencies, old/replacement job retention, and zero-credit failed starts. These are legitimate execution-contract additions but were not bound by the old planning review. Do not edit the old review hash and do not roll back the repair. Codex planning integration must create a new canonical M10 follow-up section and bind it to this staging hash and planning review.
+
+### 2. Three serial executors and freeze boundaries
+
+Launch exactly the three executors declared in the plan, with `executor_slots: 1` and `max_parallel: 1`:
+
+```text
+Wave F1  m10_followup_wave2_reconciliation_executor
+Wave F2  m10_followup_cine_fidelity_executor
+Wave F3  m10_followup_cine_runtime_executor
+```
+
+F1 may read and evaluate inherited MyoPS runtime outputs but may not train or modify MyoPS/Cine implementation. F2 may modify only new Cine follow-up implementation, tests, configs, entrypoints, and jobs; it may not train formally or alter MyoPS. After F2 merge, the controller writes a freeze receipt containing exact source/config/test/entrypoint/job hashes. F3 must validate that receipt before preflight and may submit/monitor/aggregate only; it cannot modify implementation. Any required implementation change returns `NEEDS_REVISION_RETURN_TO_CINE_FIDELITY_WAVE` rather than being hot-patched in F3.
+
+### 3. Wave F1: inherit training, not invalid decisions
+
+The existing Wave 2 MyoPS formal runs are inherited only after a machine-readable fingerprint audit confirms exact agreement of code, config, split, case IDs, label map, preprocessing, decode, checkpoint inventory, runtime summary, terminal Slurm accounting, and declared minimum-effective-training fields. The expected inherited phases are D0, D1, D2, D3, hard-negative refresh, no-context control, and alignment control. If a fingerprint or required runtime artifact differs, mark only the affected phase `INHERITANCE_BLOCKED`; do not silently retrain. New training requires a later explicit planning decision.
+
+The inherited optimizer-step, train-loop-second, validation-event, and 44-case budgets may receive credit only from terminal aggregated evidence. Failed startup, OOM, superseded, cancelled, monitor-only, or reset-counter attempts receive zero credit.
+
+#### Challenge-facing all-checkpoint selection
+
+`legacy_val_patch_loss`, training loss, patch loss, checkpoint filename, or prior `checkpoint_best` designation is forbidden as the formal selector. Enumerate every recoverable scheduled checkpoint, including scheduled validation saves, prior best, and final checkpoints. Reload each checkpoint and run the same 44-case challenge-facing evaluation with exact split/preprocessing/label/decode/metric hashes and the original eligibility gates.
+
+For pathology `t`:
+
+```text
+g_t = Dice_t - Dice_anchor,t
+      - 0.01 clip((HD95_t - HD95_anchor,t)/10mm, -5, 5)
+      - 0.02 clip((remoteFP_t - remoteFP_anchor,t)/(remoteFP_anchor,t + 1), -2, 2)
+S_checkpoint = min(g_scar, g_edema) + 0.25(g_scar + g_edema)
+```
+
+Select the maximum eligible score, then lower worst-case HD95, then earlier step. Eligibility requires finite metrics, exact case set and hashes, no-T2 edema maximum probability `<=1e-6`, nonempty positive-case prediction on at least 80%, and prediction-volume ratio `[0.05,20]` on at least 95%. Threshold/component calibration must be train/inner-validation only and frozen before the 44-case evaluation. Publish every evaluated checkpoint and a reason for every exclusion.
+
+#### D2 and D3 true final-output interventions
+
+At the separately selected D2 and D3 checkpoints, run same-case, same-checkpoint interventions without retraining:
+
+```text
+static_mixture
+dictionary_uniform_valid
+top_pathology_slots_zeroed
+spatial_router_to_global
+PSIP_stateless
+prototype_memory_off
+anatomy_prior_flat
+proposal_only
+scar_refiner_off
+edema_refiner_off
+both_refiners_off
+uncertainty_flat
+nnunet_context_off
+alignment_off
+swapped_positive_negative_known_bad
+```
+
+Every intervention must execute the real inference path and report per component and pathology: call count, gradient-bearing status from the inherited training evidence, activation variance, proposal-logit delta, refiner-logit delta, final-logit delta, changed voxels, changed components, Dice, HD95, remote-FP, and per-case help/harm. Placeholders such as `SEE_RUNTIME_TABLES`, claim-only CSVs, or diagnostic tensors disconnected from final output are blockers.
+
+Classify each component exactly once as:
+
+```text
+NOT_CALLED
+CALLED_NO_GRADIENT
+GRADIENT_NO_OUTPUT_EFFECT
+OUTPUT_EFFECT_NO_BENEFIT
+OUTPUT_EFFECT_WITH_BENEFIT
+UNDERTRAINED
+PIPELINE_BUG
+MECHANISM_NO_SIGNAL_AFTER_ADEQUATE_MATCHED_TEST
+```
+
+The final state requires adequate inherited training, a matched control where required, a clean pipeline, and a true final-output intervention. It cannot be inferred from a zero delta caused by a bug or a missing call.
+
+### 4. Wave F2: repair Cine implementation fidelity before any new formal run
+
+The old CineMA adapter and registration outputs are implementation-fidelity failures, not adequate scientific negative evidence. F2 must replace them with first-party follow-up paths while retaining historical packets unchanged.
+
+#### CineMA provenance, adaptation, and control
+
+The adapter must record the external asset source URL/repository, model identifier, source commit/tag, license, weight filename and SHA256, architecture identifier, preprocessing, label map, orientation, spacing, time-axis convention, and every CARE case/frame used. Unverifiable license or weight identity is a blocker.
+
+CineMA must supply per-frame multiclass anatomy logits or probabilities, nontrivial intermediate features, and calibrated uncertainty. A binary foreground mask is not a valid substitute. Adapt the final two blocks, an explicit LoRA path, or an equivalently declared trainable adapter while retaining a verified pretrained path. Train a capacity-matched random-initialization control with identical architecture, trainable parameter count tolerance, cases, frame schedule, augmentation, optimizer, steps, seconds, validation events, and selection rule.
+
+Evaluate all scheduled adapter/control checkpoints on the same held-out cases. Select each checkpoint by a predeclared anatomy-facing score using myocardium/LV/RV Dice, HD95, topology failure, temporal consistency, and uncertainty calibration; reload the selected checkpoint before final evidence export. The comparison must publish `adapted_minus_random_init` per case and class, and classify the pretrained contribution as `CINEMA_PRETRAINED_BENEFIT`, `CINEMA_RANDOM_INIT_NONINFERIOR`, or `CINEMA_COMPARISON_UNDERTRAINED`. Either adequately trained outcome may continue to registration, but only the selected source may feed registration/temporal execution and no CineMA benefit may be claimed when random initialization is noninferior.
+
+Missing non-reference predictions must be a recorded frame failure. Falling back to frame0, binarizing the prior, or training an unrelated small CNN without verified CineMA features/logits is forbidden.
+
+#### Learned diffeomorphic registration
+
+Input is `B×T×1×H×W×D`; ED is the reference and ES is the minimum selected-checkpoint LV volume. Select `max(8,ceil(4T/6))` frames including ED, ES, uniformly spaced frames, and motion-salient frames. A 3D U-Net with channels `[16,32,64,128]` predicts both directions of a stationary velocity field. Convert normalized-grid and voxel/physical units explicitly. Seven scaling-and-squaring steps must produce `phi_0<-t` and `phi_t<-0`; direct velocity-as-displacement is forbidden.
+
+Use the complete objective:
+
+```text
+L_reg = 1.00 [1 - LNCC_9x9x9(I0, W(It, phi_0<-t))]
+      + 1.00 DiceLoss(Q0, W(Qt, phi_0<-t))
+      + 0.05 ||grad v||^2
+      + 0.10 mean(relu(-det J(phi))^2)
+      + 0.10 ||phi_0<-t o phi_t<-0 - Id||_1
+```
+
+The anatomy term must use the selected adapter/control checkpoint and the registered multiclass probabilities. Compute true Jacobian determinants, physical displacement, inverse-consistency composition error, overlap, HD95, LNCC, and runtime. Proxy folding, displacement magnitude as inverse consistency, or pair-level quantities relabeled as case-level are forbidden.
+
+Run a real paired ANTs SyN control with command, version, parameters, transform files, runtime, failures, and same-case/frame metrics. A synthetic `after=max(before,learned-constant)` proxy is forbidden.
+
+Every scheduled registration checkpoint must be evaluated on at least 12 held-out cases and 60 non-reference pairs. Select by the predeclared registration score among checkpoints satisfying all safety conditions, reload that selected checkpoint, and only then apply the unchanged gate:
+
+```text
+median warped-anatomy Dice gain >= 0.03
+>= 90% cases non-worse in mean anatomy Dice
+LNCC improves on >= 75% pairs
+negative-Jacobian fraction <= 0.5% for every case and <= 0.1% median
+99th-percentile displacement <= 35 mm and inside the FOV
+median inverse-consistency error <= 2 voxels
+learned registration noninferior to SyN within 0.01 Dice with no folding violation
+and either >= 25% lower runtime or fewer failures
+```
+
+Case non-worse is computed after aggregating all valid frames per case; the denominator contains every eligible case, including failures. Every case/frame row includes failure reason and remains in denominators according to the declared failure policy.
+
+#### Temporal path
+
+Only a passed, selected, reloaded registration checkpoint may launch temporal training. Warp selected-source CineMA features, multiclass anatomy, texture, velocity, Jacobian, residual, and registration uncertainty into ED space. Use exactly eight temporal slots: ED anatomy anchor, early/late systolic contraction, early/late diastolic relaxation, motion magnitude, registered texture residual, and registration-uncertainty safety. Fewer than four valid non-reference frames is a registration failure, not frame0 completion.
+
+The temporal dictionary must change final logits/labels and be compared on the same subset with frame0 matched backbone, unregistered mean, registered mean, deterministic union, M9 proxy, and no-temporal-dictionary controls. Report myocardium Dice/HD95, temporal jitter, topology failure, changed voxels/components, and per-case help/harm.
+
+### 5. Faithful registration-negative closure
+
+If and only if the selected registration checkpoint satisfies all minimum-effective-training, provenance, checkpoint-reload, real-SyN, denominator, metric, and strict-validator requirements but still fails the unchanged gate, do not train the temporal dictionary. Create a terminal packet with:
+
+```text
+completion_state: READY_FOR_REVIEW_CINE_REGISTRATION_NEGATIVE
+route_promotion_decision: NOT_REVIEWED
+route_negative_decision: NOT_REVIEWED
+scientific_resolution_status: AWAITING_REVIEW
+```
+
+This is an operationally reviewable M10 negative-registration closure, not route stop or promotion. It must include the selected checkpoint, all failed gate fields, per-case/frame evidence, real SyN comparison, adequacy receipts, and zero temporal-training credit. The independent runtime reviewer decides whether the negative evidence is adequate. Implementation failure, undertraining, proxy metrics, missing SyN, or stale/fingerprint-mismatched evidence must instead return `NEEDS_REVISION` or `NEEDS_EVIDENCE`.
+
+### 6. Durable continuity, outputs, and stop boundary
+
+Training-to-training dependencies use `afterok`. Accounting/finalizer dependencies over all old and replacement attempts use `afterany`. Every formal chain requires compute-node preflight with Python/import/optimizer/CUDA/config/contract/writability/code-config-split fingerprints. Bounded same-scope retries preserve scientific semantics and retain all old/replacement job IDs; failed starts receive zero training credit.
+
+The global finalizer must capture all Wave F1 evaluation jobs and Wave F3 formal jobs, run terminal accounting and post-job aggregation, then invoke mapper final, strict packet/handoff/wiki/history/figure validators, known-bad fixtures, and `git diff --check`. Required controller outputs include:
+
+This is the durable finalizer contract: the controller/global finalizer must capture all old and replacement job IDs, runtime output paths, aggregator commands, validator commands, lock paths, log paths, retry ledger paths, terminal accounting, post-job aggregation receipts, and the exactly one local lightweight packet commit policy from the executor plan and runtime receipts.
+
+```text
+controller_context.json
+controller_ledger.csv
+controller_bootstrap_snapshot.md
+implementation_snapshot.md
+finalizer_state.json
+mapper_report_draft.md
+architecture_delta_draft.md
+mapper_report_final.md
+architecture_delta_final.md
+result.md
+completion_check.md
+review_request.md
+MANIFEST.md
+controller_report.md
+```
+
+The controller may create exactly one local lightweight final packet commit. It must not write `review.md`, push, package/upload validation, claim hosted metrics, promote or stop a route, start M11, or modify historical M08/M09/M10 evidence.
+## Executor Worker Contract
+
+All executors must read `AGENTS.md`, the current canonical M10 follow-up prompt, this executor plan, the planning review, the Slurm skill when relevant, and the exact evidence/code paths declared for their wave. Executors remain within their `read_scope`/`write_scope`, use isolated branches/worktrees/result/runtime/log/lock paths, write the required completion receipt, and never merge their own branch.
+
+F1 performs only fingerprint validation, inherited runtime evaluation, all-checkpoint challenge-facing selection, D2/D3 interventions, subgroup/help-harm aggregation, and strict validator fixtures. It must not train or edit implementation.
+
+F2 performs only first-party Cine implementation, tests, configs, entrypoints, jobs, deterministic print-contracts, and freeze-receipt preparation. It must prove with tests that direct velocity-as-displacement, binary/frame0 fallback, proxy SyN, pair-as-case rate, no selected-checkpoint reload, missing random-init control, and temporal output without passed registration all fail closed. It must not submit formal training.
+
+F3 validates the F2 freeze receipt, runs compute preflight, trains/evaluates the adapted and random-initialized controls, selects and reloads the source checkpoint, trains/evaluates registration, runs real SyN, applies the case-level gate, and conditionally trains/evaluates the temporal dictionary. It writes only new follow-up runtime/evidence paths and may not alter code/config/jobs.
+
+Allowed executor completion tokens are those declared in the plan. `READY_FOR_CONTROLLER_MERGE` means only the controller may merge that wave; it is not scientific approval. Pending/running/accounting states are `NEEDS_MONITOR`, never completion.
+## Mapper Contract
+
+Use `.agents/skills/care-mapper/SKILL.md`. For system-level planning and mapping, dynamically resolve the predecessor baseline from `wiki/current_state.yaml` and `wiki/history/`, then read `wiki/history/COMPARISON.md`, the predecessor README/COMPONENTS files, and the relevant predecessor component files such as `wiki/history/<predecessor>/components/*.md` before writing mapper outputs. After F2 merge, create a draft mapping of the new Cine implementation and mark runtime evidence unverified. After F3 terminal aggregation, rerun mapper final against the frozen hashes and current evidence. Update root `wiki/README.md`, `wiki/MODEL.md`, `wiki/EXECUTION.md`, `wiki/COMPONENTS.csv`, `wiki/LINEAGE.md`, `wiki/architecture.yaml`, and generated current/gap/execution figures. Add a `wiki/history/M10/` candidate snapshot marked `candidate_unreviewed` and `review_token: NOT_REVIEWED`; do not change `wiki/current_state.yaml` from M09 before independent runtime review and a later reconciliation task. Do not modify model code, inspect heavy runtime artifacts, write `review.md`, or make promotion/negative-route decisions.
