@@ -1,111 +1,87 @@
 {
-  "accounting_continuation_launch": null,
-  "accounting_continuation_receipt_path": null,
-  "accounting_wait_seconds": 0,
-  "aggregation_command": "env PYTHONPATH=. python results/20260711_srr_v3_m10_complete_mechanism_repair/finalize_wave2_partition_race.py --submission results/20260711_srr_v3_m10_complete_mechanism_repair/wave2_partition_race_retry11_submission.json --watcher-state results/20260711_srr_v3_m10_complete_mechanism_repair/wave2_partition_race_retry11_watcher_state.json --result-path results/20260711_srr_v3_m10_complete_mechanism_repair/wave2_partition_race_retry11_finalization.json",
-  "aggregation_exit_code": 0,
-  "attempt_number": 1,
-  "awaiting_sacct_attempts": [
-    {
-      "poll": 0,
-      "states": [
-        "COMPLETED"
-      ]
-    }
+  "task_key": "20260711_srr_v3_m10_complete_mechanism_repair",
+  "stage": "wave3_terminal_accounting",
+  "final_state": "WAVE3_REGISTRATION_GATE_FAILED_NEEDS_EVIDENCE",
+  "failure_class": "REGISTRATION_GATE_FAILED_BLOCKS_TEMPORAL",
+  "retryable": false,
+  "retry_reason": null,
+  "suggested_next_state": "NEEDS_EVIDENCE",
+  "review_md_written": false,
+  "git_push_decision": "SKIP_PUSH",
+  "validation_packaging_or_upload": false,
+  "m11_started": false,
+  "required_job_ids": [
+    "58848099",
+    "58848203",
+    "58848205",
+    "58848313"
   ],
-  "awaiting_sacct_retry_interval": 30,
-  "awaiting_sacct_retry_seconds": 3600,
-  "elapsed": {
-    "58706293": "02:09:10",
-    "58775065": "02:35:16",
-    "58775066": "02:34:22",
-    "58775067": "04:05:39",
-    "58775068": "01:39:59",
-    "58775069": "01:36:44",
-    "58775070": "01:04:44"
+  "job_states": {
+    "58848099": "COMPLETED",
+    "58848203": "FAILED",
+    "58848205": "CANCELLED",
+    "58848313": "COMPLETED"
   },
   "exit_codes": {
-    "58706293": "0:0",
-    "58775065": "0:0",
-    "58775066": "0:0",
-    "58775067": "0:0",
-    "58775068": "0:0",
-    "58775069": "0:0",
-    "58775070": "0:0"
+    "58848099": "0:0",
+    "58848203": "2:0",
+    "58848205": "0:0",
+    "58848313": "0:0"
   },
-  "failure_class": null,
-  "final_state": "READY_FOR_MAPPER_FINAL",
-  "git_commit_decision": "SKIP_COMMIT",
-  "git_head_before": "02b9c6c19766e7e067801f2d2bad4f08479f0ae4",
-  "job_attempt_lineage": [],
-  "job_states": {
-    "58706293": "COMPLETED",
-    "58775065": "COMPLETED",
-    "58775066": "COMPLETED",
-    "58775067": "COMPLETED",
-    "58775068": "COMPLETED",
-    "58775069": "COMPLETED",
-    "58775070": "COMPLETED"
+  "elapsed": {
+    "58848099": "01:00:08",
+    "58848203": "02:34:12",
+    "58848205": "00:00:00",
+    "58848313": "00:00:01"
   },
-  "lock_path": "results/20260711_srr_v3_m10_complete_mechanism_repair/locks/wave2_partition_race_retry11_local_finalizer.lock",
-  "lock_released": true,
-  "log_paths": [],
-  "manifest_sha256": "8468b032bef173da22f2e0d7a91ef842c7c001153f13c9445a6bee393611dbb6",
-  "mapper_final_status": "not_requested",
-  "next_retry_job_id_or_tmux_session": null,
-  "nodes": {
-    "58706293": "g1807htzh01",
-    "58775065": "g1807htzh01",
-    "58775066": "g1807htzh01",
-    "58775067": "g1807htzh01",
-    "58775068": "g1807htzh01",
-    "58775069": "g1807htzh01",
-    "58775070": "g1807htzh01"
+  "partitions": {
+    "58848099": "htzhulab",
+    "58848203": "htzhulab",
+    "58848205": "htzhulab",
+    "58848313": "htzhulab"
   },
-  "precommit_head": "02b9c6c19766e7e067801f2d2bad4f08479f0ae4",
-  "records": [
-    {
-      "command": "env PYTHONPATH=. python results/20260711_srr_v3_m10_complete_mechanism_repair/finalize_wave2_partition_race.py --submission results/20260711_srr_v3_m10_complete_mechanism_repair/wave2_partition_race_retry11_submission.json --watcher-state results/20260711_srr_v3_m10_complete_mechanism_repair/wave2_partition_race_retry11_watcher_state.json --result-path results/20260711_srr_v3_m10_complete_mechanism_repair/wave2_partition_race_retry11_finalization.json",
-      "exit_code": 0,
-      "stderr_tail": "",
-      "stdout_tail": ""
-    }
+  "runtime_output_paths": [
+    "results/20260711_srr_v3_m10_complete_mechanism_repair/runtime/m10_cine_temporal_executor/variants/m10_cinema_adapter/summary.json",
+    "results/20260711_srr_v3_m10_complete_mechanism_repair/runtime/m10_cine_temporal_executor/variants/m10_cine_registration/summary.json",
+    "results/20260711_srr_v3_m10_complete_mechanism_repair/runtime/m10_cine_temporal_executor/variants/m10_cine_registration/registration_gate.json"
   ],
-  "replacement_job_ids": [],
-  "required_job_ids": [
-    "58706293",
-    "58775065",
-    "58775066",
-    "58775067",
-    "58775068",
-    "58775069",
-    "58775070"
+  "tracked_paths": [
+    "results/20260711_srr_v3_m10_cinema_adapter/result.md",
+    "results/20260711_srr_v3_m10_cinema_adapter/training_budget_ledger.csv",
+    "results/20260711_srr_v3_m10_cinema_adapter/runtime_manifest.json",
+    "results/20260711_srr_v3_m10_cine_registration/result.md",
+    "results/20260711_srr_v3_m10_cine_registration/training_budget_ledger.csv",
+    "results/20260711_srr_v3_m10_cine_registration/runtime_manifest.json",
+    "results/20260711_srr_v3_m10_cine_learned_temporal/result.md",
+    "results/20260711_srr_v3_m10_cine_learned_temporal/training_budget_ledger.csv",
+    "results/20260711_srr_v3_m10_cine_learned_temporal/runtime_manifest.json",
+    "results/20260711_srr_v3_m10_complete_mechanism_repair/wave3_cine_terminal_finalization.json",
+    "results/20260711_srr_v3_m10_complete_mechanism_repair/completion_check.md",
+    "results/20260711_srr_v3_m10_complete_mechanism_repair/controller_report.md",
+    "results/20260711_srr_v3_m10_complete_mechanism_repair/result.md",
+    "results/20260711_srr_v3_m10_complete_mechanism_repair/review_request.md",
+    "results/20260711_srr_v3_m10_complete_mechanism_repair/MANIFEST.md"
   ],
-  "retry_backend": "tmux_watcher",
-  "retry_count": 0,
-  "retry_reason": null,
-  "retryable": false,
-  "runtime_output_paths": [],
-  "stage": "accounting",
-  "suggested_next_state": null,
-  "supersedes_job_ids": [
-    "58644072",
-    "58644073",
-    "58644074",
-    "58644106",
-    "58644107",
-    "58644108",
-    "58644109",
-    "58743282",
-    "58743287",
-    "58743290",
-    "58743292",
-    "58743294",
-    "58743295"
-  ],
-  "task_key": "20260711_srr_v3_m10_complete_mechanism_repair",
-  "tracked_paths": [],
-  "training_credit_policy": "zero_for_failed_startup",
-  "validator_commands": [],
-  "validator_exit_codes": []
+  "aggregation_command": "python scripts/evaluation/aggregate_cine_m10_packet.py --phase <cinema_adapter|cine_registration|cine_temporal> ...",
+  "aggregation_exit_code": 0,
+  "registration_gate": {
+    "case_count": 36,
+    "pair_count": 72,
+    "median_warped_anatomy_dice_gain": 0.07205496353985413,
+    "case_non_worse_rate": 0.8888888888888888,
+    "required_case_non_worse_rate": 0.9,
+    "lncc_improved_pair_rate": 1.0,
+    "max_negative_jacobian_fraction_proxy": 0.0,
+    "median_negative_jacobian_fraction_proxy": 0.0,
+    "max_p99_displacement_vox": 0.2037481665611267,
+    "median_inverse_consistency_error_vox_proxy": 0.008032826706767082,
+    "registration_gate_passed": false,
+    "failure_reason": "case_non_worse_rate_below_required_threshold"
+  },
+  "policy": {
+    "temporal_training_blocked_by_registration_gate": true,
+    "frame0_fallback_used": false,
+    "mapper_final_allowed": false,
+    "finalizer_b_ready_packet_allowed": false
+  }
 }

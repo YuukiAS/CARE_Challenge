@@ -2,7 +2,25 @@
 
 Task key: `20260711_srr_v3_m10_complete_mechanism_repair`
 
-Packet state: `NEEDS_MONITOR`
+Packet state: `WAVE3_REGISTRATION_GATE_FAILED__NEEDS_EVIDENCE`
+
+## Current Packet State
+
+Wave 3 terminal accounting supersedes older monitor text in this manifest. The current controller packet is fail-closed:
+
+| Evidence | Path |
+| --- | --- |
+| top-level completion state | `completion_check.md` |
+| controller report | `controller_report.md` |
+| global finalizer state | `finalizer_state.json` |
+| Wave 3 terminal accounting | `wave3_cine_terminal_finalization.json` |
+| CineMA adapter phase packet | `../20260711_srr_v3_m10_cinema_adapter/` |
+| learned registration phase packet | `../20260711_srr_v3_m10_cine_registration/` |
+| temporal dependency-cancelled phase packet | `../20260711_srr_v3_m10_cine_learned_temporal/` |
+| Cine executor packet | `executors/m10_cine_temporal_executor/` |
+
+Current state is not review-ready completion. `review.md` is intentionally absent, no push was performed, and no runtime
+tree/checkpoint/log/NIfTI/upload artifact is part of the lightweight packet.
 
 ## Files
 
@@ -14,11 +32,11 @@ Packet state: `NEEDS_MONITOR`
 | `controller_bootstrap_snapshot.md` | Human-readable hard-gate snapshot. |
 | `controller_resume_bootstrap.md` | Historical resumed bootstrap after prerequisite repair. |
 | `implementation_snapshot.md` | Confirms no implementation occurred. |
-| `finalizer_state.json` | Deterministic terminal accounting for the blocked prerequisite packet. |
+| `finalizer_state.json` | Current global terminal accounting; fail-closed at Wave 3 registration gate. |
 | `validator_report.md` | Validation command report. |
 | `controller_report.md` | Controller decision report. |
 | `completion_check.md` | Completion state and gate table. |
-| `review_request.md` | Request for later separate read-only review of the blocked packet. |
+| `review_request.md` | Boundary notice for later separate read-only review/planner judgment of the fail-closed packet. |
 | `prerequisite_repair.md` | Later integration-layer repair note for the prerequisite blocker; not runtime completion evidence. |
 | `subagents/m10_shared_architecture_executor_prompt.md` | Wave 1 executor handoff prompt. |
 | `subagents/m10_myops_training_executor_prompt.md` | Wave 2 executor handoff prompt. |
@@ -127,7 +145,7 @@ Packet state: `NEEDS_MONITOR`
 | `wave2_partition_race_retry11_monitor_20260713T152746Z.md` | Retry11 monitor showing D3 `58775067` completed successfully and hard-negative refresh `58775068` running; not completion evidence. |
 | `wave2_partition_race_retry11_monitor_20260713T162125Z.md` | Retry11 hard-negative Step12000 monitor showing `58775068` running with validation checkpoints through `12000`; not completion evidence. |
 | `wave2_partition_race_retry11_monitor_20260713T165911Z.md` | Retry11 monitor showing hard-negative refresh `58775068` completed successfully and no-context control `58775069` running; not completion evidence. |
-| `finalizer_state.json` | Retry10 finalizer terminal accounting with `final_state=RUNTIME_FAILURE`, `failure_class=OUT_OF_MEMORY_NEEDS_REVISION`, `suggested_next_state=NEEDS_REVISION`, and `retryable=false`. |
+| `finalizer_state.json` | Current global terminal accounting with `final_state=WAVE3_REGISTRATION_GATE_FAILED_NEEDS_EVIDENCE`; older Wave 2 accounting is preserved in retry-specific finalization files. |
 | `care_milestone_finalizer_58743452.log` | Retry10 finalizer log for Slurm job `58743452`. |
 | `executors/m10_myops_training_executor/` | Wave 2 executor monitor packet; not completion evidence. |
 | `subagents/reviewer_prompt.md` | Reviewer handoff prompt for this blocked packet only. |
@@ -139,4 +157,4 @@ Packet state: `NEEDS_MONITOR`
 
 ## Exclusions
 
-`review.md` is intentionally absent. Wave 2 terminal failure files are not successful completion evidence. No checkpoints, predictions, NIfTI outputs, upload zips, raw data, large logs, secrets, environment dumps, or runtime result trees are included.
+`review.md` is intentionally absent. Wave 3 registration-gate failure is not successful M10 completion evidence. No checkpoints, predictions, NIfTI outputs, upload zips, raw data, large logs, secrets, environment dumps, or runtime result trees are included.

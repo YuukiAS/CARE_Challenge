@@ -1,25 +1,32 @@
-# M10 Monitor Packet Review Boundary
+# M10 Fail-Closed Packet Review Boundary
 
-This packet does not request normal M10 scientific review. It records an authorized same-executor Wave 2 replacement submission after successful compute-node preflight.
+This packet does not request normal M10 scientific review. It records terminal Wave 3 evidence for the active
+M10 controller goal and marks the milestone fail-closed at the registration gate.
 
-Current state: `NEEDS_MONITOR`
+Current state: `WAVE3_REGISTRATION_GATE_FAILED__NEEDS_EVIDENCE`
 
-## Current Retry11 Monitor Update
+## Current Wave 3 Terminal State
 
-As of `2026-07-13T06:02:30Z`, retry11 is the active same-executor Wave 2 replacement after an owned-wrapper gate-usage evidence logging repair. Htzhulab preflight `58775059` completed `0:0`; a100 preflight `58775057` was cancelled unused while pending; volta preflight `58775058` failed `1:0` because the current PyTorch CUDA build cannot execute kernels on V100.
+| Phase | Job | State | Evidence |
+| --- | ---: | --- | --- |
+| CineMA CARE adapter | `58848099` | `COMPLETED 0:0` | adapter runtime evidence exists |
+| learned Cine registration | `58848203` | `FAILED 2:0` | adequate training completed; registration gate failed |
+| learned temporal dictionary | `58848205` | `CANCELLED 0:0` | cancelled by unmet `afterok`; zero temporal training credit |
+| Wave 3 afterany finalizer | `58848313` | `COMPLETED 0:0` | terminal accounting collected |
 
-Formal retry11 jobs are:
+Registration failed only one required gate:
 
-| Phase | Replacement job | State at submission check |
-| --- | ---: | --- |
-| D1 spatial BR2 | `58775065` | `RUNNING` |
-| D2 hierarchical PSIP | `58775066` | `PENDING (Dependency)` |
-| D3 full memory PropRef | `58775067` | `PENDING (Dependency)` |
-| Hard-negative refresh | `58775068` | `PENDING (Dependency)` |
-| No-nnU-Net-context control | `58775069` | `PENDING (Dependency)` |
-| Alignment control | `58775070` | `PENDING (Dependency)` |
+```text
+case_non_worse_rate=0.8888888888888888 < required 0.90
+```
 
-Finalizer job `58775071` is pending with `afterany` over old and retry11 job IDs. This is still a monitor packet. Do not perform normal M10 review yet.
+The M10 contract states that persistent registration gate failure blocks learned temporal training and that frame0 fallback
+cannot satisfy M10. This packet is not normal review-ready completion; it is a fail-closed evidence packet for later independent
+review/planner judgment.
+
+No `review.md` was written. No push was performed. Do not start M11 from this packet.
+
+## Superseded Historical Monitor Updates
 
 Formal replacement jobs submitted:
 

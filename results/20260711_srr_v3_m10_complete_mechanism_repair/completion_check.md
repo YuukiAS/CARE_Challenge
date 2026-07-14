@@ -8,7 +8,7 @@ Current top-level status after Wave 3 terminal accounting:
 | --- | --- |
 | Wave 1 | complete and merged |
 | Wave 2 | complete and merged for controller purposes |
-| Wave 2 finalizer accounting | pass: `finalizer_state.json` records `READY_FOR_MAPPER_FINAL`, aggregation exit code `0` |
+| Wave 2 finalizer accounting | pass: `wave2_partition_race_retry11_finalization.json` records `TERMINAL_RUNTIME_EVIDENCE`, aggregation exit code `0` |
 | Wave 2 post-job aggregation | pass: `wave2_partition_race_retry11_finalization.json` records `TERMINAL_RUNTIME_EVIDENCE` |
 | Wave 3 compute preflight | pass: job `58847879 COMPLETED 0:0`; prior failed preflight `58847455` was a permission-bit startup issue and has zero training credit |
 | Wave 3 adapter | pass: `58848099 COMPLETED 0:0`; `18495` optimizer steps, `3602.2924587709713` train-loop seconds, `14` validation events, `12` eval cases |

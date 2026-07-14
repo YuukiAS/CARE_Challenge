@@ -2,7 +2,42 @@
 
 Task key: `20260711_srr_v3_m10_complete_mechanism_repair`
 
-Controller status: `NEEDS_MONITOR`
+Controller status: `WAVE3_REGISTRATION_GATE_FAILED__NEEDS_EVIDENCE`
+
+## Current Superseding State
+
+Wave 1 and Wave 2 have terminal controller evidence. Wave 3 was executed under the original
+`m10_cine_temporal_executor` contract and is terminal:
+
+| Phase | Job | State | Evidence |
+| --- | ---: | --- | --- |
+| CineMA CARE adapter | `58848099` | `COMPLETED 0:0` | `TERMINAL_RUNTIME_EVIDENCE` |
+| learned Cine registration | `58848203` | `FAILED 2:0` | adequate training completed, registration gate failed |
+| learned temporal dictionary | `58848205` | `CANCELLED 0:0` | dependency-cancelled by failed registration gate; zero temporal training credit |
+| Wave 3 afterany finalizer | `58848313` | `COMPLETED 0:0` | terminal accounting collected |
+
+Registration gate failure is specific and machine-readable:
+
+```text
+case_count: 36
+pair_count: 72
+median_warped_anatomy_dice_gain: 0.07205496353985413
+case_non_worse_rate: 0.8888888888888888
+required_case_non_worse_rate: 0.90
+lncc_improved_pair_rate: 1.0
+max_negative_jacobian_fraction_proxy: 0.0
+median_negative_jacobian_fraction_proxy: 0.0
+max_p99_displacement_vox: 0.2037481665611267
+median_inverse_consistency_error_vox_proxy: 0.008032826706767082
+```
+
+Per the M10 contract, persistent registration gate failure blocks learned temporal training and frame0 fallback cannot satisfy M10.
+This packet is therefore `NEEDS_EVIDENCE`, not `NEEDS_MONITOR`, not review-ready completion, and not a route decision.
+
+No `review.md` was written. No push was performed. Validation packaging/upload, hosted metric claims, route promotion,
+route-negative conclusion, scientific stop, mapper final, finalizer-B ready packet, and M11 remain blocked.
+
+## Superseded Historical State
 
 This controller executed only the bootstrap and hard-gate validation for the M10 section in `prompts/shared/EXECUTOR_PROMPTS.md` titled `M10 executor/controller: SRR-v3 complete mechanism repair`, using `prompts/tasks/20260711_srr_v3_m10_complete_mechanism_repair_executor_plan.yaml`.
 
