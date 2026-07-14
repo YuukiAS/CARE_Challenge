@@ -3,7 +3,20 @@
 This packet does not request normal M10 scientific review. It records terminal Wave 3 evidence for the active
 M10 controller goal and marks the milestone fail-closed at the registration gate.
 
-Current state: `WAVE3_REGISTRATION_GATE_FAILED__NEEDS_EVIDENCE`
+Current state: `M10_BLOCKED_PREREQUISITE_CONTRACT_HASH_DRIFT__WAVE3_REGISTRATION_GATE_FAILED`
+
+## Current Contract Hash Gate
+
+Do not perform normal M10 scientific review from this packet. A controller audit found that the current merged M10 canonical
+prompt contract hash no longer matches the planning review:
+
+```text
+planning review canonical hash: 5030af7d74e35a423dd7e782ed0d55dffc1c1e78335c4016bb75920c17da0e64
+current canonical hash:         955f6ab31e523123ba339e5b1732b78b304f099b9ce92bc896dfbb1e5d76653f
+```
+
+The drift is from `c53fa06`, which changed the M10 Slurm continuity/finalizer terms. Planner/critic reconciliation is required
+before this packet can be considered under the M10 hard gate.
 
 ## Current Wave 3 Terminal State
 

@@ -1,8 +1,14 @@
 # M10 Completion Check
 
-Completion state: `WAVE3_REGISTRATION_GATE_FAILED__NEEDS_EVIDENCE`
+Completion state: `M10_BLOCKED_PREREQUISITE_CONTRACT_HASH_DRIFT__WAVE3_REGISTRATION_GATE_FAILED`
 
 Current top-level status after Wave 3 terminal accounting:
+
+| Gate | Status |
+| --- | --- |
+| Canonical M10 contract hash | fail: planning review expects `5030af7d74e35a423dd7e782ed0d55dffc1c1e78335c4016bb75920c17da0e64`; current `hash_canonical_prompt_contract.py` returns `955f6ab31e523123ba339e5b1732b78b304f099b9ce92bc896dfbb1e5d76653f` |
+| Drift source | `c53fa06` changed the M10 `Slurm continuity and finalizers` section after planning review |
+| Hash-gate consequence | `M10_BLOCKED_PREREQUISITE`; controller must not self-update the planning review hash or continue execution |
 
 | Gate | Status |
 | --- | --- |

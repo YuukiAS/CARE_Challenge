@@ -4,6 +4,20 @@ Task key: `20260711_srr_v3_m10_complete_mechanism_repair`
 
 ## Current Controller State
 
+Post-commit controller audit found a prerequisite contract-hash drift:
+
+```text
+planning_review canonical_contract_sha256: 5030af7d74e35a423dd7e782ed0d55dffc1c1e78335c4016bb75920c17da0e64
+current canonical_contract_sha256:         955f6ab31e523123ba339e5b1732b78b304f099b9ce92bc896dfbb1e5d76653f
+changed file: prompts/shared/EXECUTOR_PROMPTS.md
+changed section: M10 Slurm continuity and finalizers
+drift commit: c53fa06 Repair Slurm operational retry controller policy
+```
+
+This is a hard-gate mismatch under the M10 prompt. The controller must not self-rewrite the planning review hash, reinterpret
+the contract, continue M10 execution, start review, push, or start M11. The current packet therefore records both the
+post-execution Wave3 registration gate failure and the discovered prerequisite hash drift.
+
 The controller has completed and merged Wave 2 for controller purposes. Wave 2 terminal accounting records the current effective formal chain as completed:
 
 ```text
@@ -27,7 +41,7 @@ The milestone is not complete. The controller has committed the lightweight Wave
 Current pre-review decisions:
 
 ```text
-controller_run_status: WAVE3_REGISTRATION_GATE_FAILED_NEEDS_EVIDENCE
+controller_run_status: M10_BLOCKED_PREREQUISITE_CONTRACT_HASH_DRIFT_AND_WAVE3_REGISTRATION_GATE_FAILED
 operational_completion_status: INCOMPLETE
 experiment_adequacy_decision: NOT_REVIEWED
 route_promotion_decision: NOT_REVIEWED

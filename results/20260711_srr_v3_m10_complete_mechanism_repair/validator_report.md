@@ -4,6 +4,22 @@ Task key: `20260711_srr_v3_m10_complete_mechanism_repair`
 
 Run timestamp UTC: `2026-07-11T15:45:38Z`
 
+## Current Validation / Hard-Gate Audit
+
+Run timestamp UTC: `2026-07-14T00:16:15Z`
+
+| Command | Exit | Result |
+| --- | ---: | --- |
+| `python scripts/validation/hash_canonical_prompt_contract.py --executor-file prompts/shared/EXECUTOR_PROMPTS.md --executor-heading 'M10 executor/controller: SRR-v3 complete mechanism repair' --reviewer-file prompts/shared/REVIEWER_PROMPTS.md --reviewer-heading 'M10 reviewer: SRR-v3 complete mechanism repair'` | 0 | `955f6ab31e523123ba339e5b1732b78b304f099b9ce92bc896dfbb1e5d76653f` |
+| compare against `prompts/tasks/20260711_srr_v3_m10_complete_mechanism_repair_planning_review.md` `canonical_contract_sha256` | 1 | expected `5030af7d74e35a423dd7e782ed0d55dffc1c1e78335c4016bb75920c17da0e64`; mismatch |
+| `git diff 35b4f6b..HEAD -- prompts/shared/EXECUTOR_PROMPTS.md` | 0 | drift localized to M10 `Slurm continuity and finalizers`; commit `c53fa06` added preflight, retry, `afterok`/`afterany`, old/replacement job retention, zero-credit startup policy |
+| `squeue -j 58848099,58848203,58848205,58848313 -h -o '%i\|%j\|%T\|%M\|%R'` | 0 | no active queued/running Wave3 jobs |
+| `sacct -j 58848099,58848203,58848205,58848313 --format=JobID,JobName%18,Partition,State,ExitCode,Elapsed,NodeList -P` | 0 | adapter `COMPLETED`, registration `FAILED 2:0`, temporal `CANCELLED`, finalizer `COMPLETED` |
+
+Interpretation: the current controller packet is not normal M10 completion. The Wave3 runtime evidence is terminal and
+fail-closed, and the canonical prompt contract hash no longer matches the planning review. Per the M10 prompt, this is
+`M10_BLOCKED_PREREQUISITE`; the controller must not self-update the planning review hash or continue M10 execution.
+
 ## Commands
 
 | Command | Exit | Result |

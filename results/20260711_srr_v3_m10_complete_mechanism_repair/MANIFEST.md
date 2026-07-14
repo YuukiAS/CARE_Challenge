@@ -2,16 +2,19 @@
 
 Task key: `20260711_srr_v3_m10_complete_mechanism_repair`
 
-Packet state: `WAVE3_REGISTRATION_GATE_FAILED__NEEDS_EVIDENCE`
+Packet state: `M10_BLOCKED_PREREQUISITE_CONTRACT_HASH_DRIFT__WAVE3_REGISTRATION_GATE_FAILED`
 
 ## Current Packet State
 
-Wave 3 terminal accounting supersedes older monitor text in this manifest. The current controller packet is fail-closed:
+Wave 3 terminal accounting supersedes older monitor text in this manifest. A later controller audit also found that the
+current canonical M10 prompt hash differs from the planning review hash, so the current controller packet is prerequisite-blocked
+and fail-closed:
 
 | Evidence | Path |
 | --- | --- |
 | top-level completion state | `completion_check.md` |
 | controller report | `controller_report.md` |
+| contract hash drift audit | `validator_report.md`, `controller_context.json`, `controller_ledger.csv` |
 | global finalizer state | `finalizer_state.json` |
 | Wave 3 terminal accounting | `wave3_cine_terminal_finalization.json` |
 | CineMA adapter phase packet | `../20260711_srr_v3_m10_cinema_adapter/` |

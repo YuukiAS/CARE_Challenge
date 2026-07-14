@@ -2,12 +2,24 @@
 
 Task key: `20260711_srr_v3_m10_complete_mechanism_repair`
 
-Controller status: `WAVE3_REGISTRATION_GATE_FAILED__NEEDS_EVIDENCE`
+Controller status: `M10_BLOCKED_PREREQUISITE_CONTRACT_HASH_DRIFT__WAVE3_REGISTRATION_GATE_FAILED`
 
 ## Current Superseding State
 
 Wave 1 and Wave 2 have terminal controller evidence. Wave 3 was executed under the original
 `m10_cine_temporal_executor` contract and is terminal:
+
+Post-commit controller audit found an additional hard-gate prerequisite mismatch:
+
+```text
+planning_review canonical_contract_sha256: 5030af7d74e35a423dd7e782ed0d55dffc1c1e78335c4016bb75920c17da0e64
+current canonical_contract_sha256:         955f6ab31e523123ba339e5b1732b78b304f099b9ce92bc896dfbb1e5d76653f
+drift source: prompts/shared/EXECUTOR_PROMPTS.md Slurm continuity and finalizers section changed in c53fa06
+```
+
+The changed text added formal compute preflight, `afterok`/`afterany` retry semantics, old/replacement job retention,
+zero-credit failed startup attempts, and same-scope fingerprinted replacement attempts. These are execution-relevant M10
+contract terms. The M10 prompt states that any canonical hash mismatch yields `M10_BLOCKED_PREREQUISITE`.
 
 | Phase | Job | State | Evidence |
 | --- | ---: | --- | --- |
@@ -32,10 +44,13 @@ median_inverse_consistency_error_vox_proxy: 0.008032826706767082
 ```
 
 Per the M10 contract, persistent registration gate failure blocks learned temporal training and frame0 fallback cannot satisfy M10.
-This packet is therefore `NEEDS_EVIDENCE`, not `NEEDS_MONITOR`, not review-ready completion, and not a route decision.
+This packet is therefore a prerequisite-blocked and Wave3-fail-closed packet, not `NEEDS_MONITOR`, not review-ready
+completion, and not a route decision.
 
 No `review.md` was written. No push was performed. Validation packaging/upload, hosted metric claims, route promotion,
-route-negative conclusion, scientific stop, mapper final, finalizer-B ready packet, and M11 remain blocked.
+route-negative conclusion, scientific stop, mapper final, finalizer-B ready packet, and M11 remain blocked. The next action
+requires planner/critic reconciliation of the canonical M10 contract hash before any further M10 execution can be represented
+as valid under the stated hard gate.
 
 ## Superseded Historical State
 
@@ -55,7 +70,7 @@ The original executor plan validator passed, but M10 did not enter executor phas
 - `prompts/shared/M10_srr_v3_complete_mechanism_repair.md`, the path recorded by the planning review and hash contract, is absent from current `HEAD`.
 - `python scripts/validation/hash_milestone_contract.py prompts/shared/M10_srr_v3_complete_mechanism_repair.md` failed because that file is missing.
 
-The standalone M10 staging file was added in `e26895b` and deleted in `06832b9` during integration into `prompts/shared/EXECUTOR_PROMPTS.md` and `prompts/shared/REVIEWER_PROMPTS.md`. That merge/delete flow is consistent with the staging-file cleanup policy, but the current M10 planning review still binds to the deleted standalone path and the current HEAD does not satisfy the planner-ancestor gate. The M10 prompt states that any such mismatch yields `M10_BLOCKED_PREREQUISITE`.
+The standalone M10 staging file was added in `e26895b` and deleted in `06832b9` during integration into `prompts/shared/EXECUTOR_PROMPTS.md` and `prompts/shared/REVIEWER_PROMPTS.md`. At that superseded checkpoint, the merge/delete flow was consistent with the staging-file cleanup policy, but the M10 planning review still bound to the deleted standalone path and that checkpoint's HEAD did not satisfy the planner-ancestor gate. The M10 prompt states that any such mismatch yields `M10_BLOCKED_PREREQUISITE`.
 
 ## Resumed Prerequisite Repair
 
