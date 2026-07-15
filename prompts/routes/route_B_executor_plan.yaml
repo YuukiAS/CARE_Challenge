@@ -32,6 +32,73 @@ continuity_backend: slurm_dependency
 review_mode: independent_thread
 reviewer: separate_readonly
 
+max_parallel: 1
+executors:
+  - id: route_B_executor_1
+    lane: shared
+    wave: 1
+    prompt_path: prompts/routes/route_B.md
+    result_dir: results/route_B
+    runtime_output_root: results/route_B/runtime/executor_1
+    slurm_job_namespace: route_B_executor_1
+    lock_path: results/route_B/locks/executor_1.lock
+    log_path: logs/route_B/executor_1
+    merge_order: 1
+    required_completion_file: results/route_B/completion_check.md
+    required_completion_token: ROUTE_B_READY_FOR_REVIEW
+    isolation_mode: separate_worktree
+    branch_name: route_B
+    worktree_path: /users/a/e/aereinh/CARE_worktrees/route_B
+    can_run_parallel: false
+    depends_on: []
+    write_scope:
+      - src/care_myocardium/srr_v3/**
+      - src/care_myocardium/route_B/**
+      - scripts/route_B/**
+      - scripts/diagnostics/route_B/**
+      - scripts/training/route_B/**
+      - scripts/validation/route_B/**
+      - tests/route_B/**
+      - configs/route_B/**
+      - jobs/route_B/**
+      - results/route_B/**
+      - logs/route_B/**
+    shared_files_forbidden:
+      - prompts/shared/**
+      - src/care_myocardium/route_A/**
+      - src/care_myocardium/route_C/**
+      - scripts/route_A/**
+      - scripts/route_C/**
+      - tests/route_A/**
+      - tests/route_C/**
+      - configs/route_A/**
+      - configs/route_C/**
+      - jobs/route_A/**
+      - jobs/route_C/**
+      - results/route_A/**
+      - results/route_C/**
+      - logs/route_A/**
+      - logs/route_C/**
+    slurm_required: true
+    retry_policy:
+      operational_retry_allowed: true
+      same_executor_attempt: true
+      max_startup_retries: 2
+      max_preemption_retries: 2
+      max_unknown_retries: 0
+      require_same_code_hash: true
+      require_same_config_hash: true
+      require_same_split_hash: true
+      failed_attempt_training_credit: zero
+    slurm_dependency_policy:
+      training_dependency: afterok
+      finalizer_dependency: afterany
+    preflight:
+      required: true
+      command: python scripts/route_B/run_preflight.py --strict --print-contract
+      receipt_path: results/route_B/preflight_receipt.json
+    retry_ledger_path: results/route_B/retry_ledger.csv
+
 git_policy:
   controller_auto_commit: true
   controller_allow_push: false
