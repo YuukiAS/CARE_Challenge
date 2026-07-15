@@ -1,9 +1,39 @@
-# CARE Benchmark Runbook
+# CARE 工作入口
 
-## Active 10-Day Route Portfolio
+## 当前 10 天三路线组合计划
 
-See [routes/README.md](routes/README.md) for Route A, Route B, Route C,
-worktrees, tmux sessions, compute routing, daily gates, and integration rules.
+当前工作以 `/users/a/e/aereinh/CARE` 为唯一活动 CARE 根目录。Route A、Route B、Route C 的分支、worktree、tmux、partition routing、每日 gate 和最终汇总规则见：
+
+[routes/README.md](routes/README.md)
+
+不要从本仓库写入 `/overflow/htzhu/CARE`。旧文档、旧 job 和历史计划里可能仍出现 `/overflow/htzhu/CARE`，它们是迁移前路径或历史记录；新任务必须优先使用 `/users/a/e/aereinh/CARE` 以及各 route worktree。
+
+## 当前 tmux 与 route worktree
+
+核心 session：
+
+```text
+care_portfolio
+care_route_A_controller
+care_route_B_controller
+care_route_C_controller
+```
+
+Reviewer session 只在对应 route 产生 committed packet 后创建：
+
+```text
+care_route_A_reviewer
+care_route_B_reviewer
+care_route_C_reviewer
+```
+
+检查当前 route 状态：
+
+```bash
+bash scripts/ops/route_status.sh
+```
+
+## 历史英文 Runbook
 
 ## GPT / ChatGPT Route Bootstrap
 
