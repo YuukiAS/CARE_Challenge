@@ -1,0 +1,306 @@
+route_id: route_B
+route_label: full_srr_v3_architecture_implementation
+status: PLANNER_DRAFT_FOR_CRITIC
+not_a_milestone: true
+branch: route_B
+base_commit_before_planning: dfea8e1bb22de1bbcf3ff062359f1dd086f56c38
+worktree: /users/a/e/aereinh/CARE_worktrees/route_B
+controller_tmux: care_route_B_controller
+reviewer_tmux: care_route_B_reviewer
+
+execution_mode: controller_supervised
+requires_execution_controller: true
+executor_slots: 1
+executor_count: 1
+parallel_execution_allowed: false
+mapper_slots: 1
+mapper_required: true
+architecture_impact: system
+wiki_update_required: false
+diagram_update_required: false
+slurm_runtime_continuity_required: true
+continuity_backend: slurm_dependency
+review_mode: independent_thread
+reviewer: separate_readonly
+
+git_policy:
+  controller_auto_commit: true
+  controller_allow_push: false
+  reviewer_allow_push: false
+  planner_pushed_this_draft: true
+  prompts_shared_modified_by_planner: false
+  forbidden_controller_push: true
+
+namespaces:
+  result_root: results/route_B
+  runtime_root: results/route_B/runtime
+  log_root: logs/route_B
+  lock_root: results/route_B/locks
+  job_root: jobs/route_B
+
+write_scopes:
+  allowed:
+    - src/care_myocardium/srr_v3/**
+    - src/care_myocardium/route_B/**
+    - scripts/route_B/**
+    - scripts/diagnostics/route_B/**
+    - scripts/training/route_B/**
+    - scripts/validation/route_B/**
+    - tests/route_B/**
+    - configs/route_B/**
+    - jobs/route_B/**
+    - results/route_B/**
+    - logs/route_B/**
+  forbidden:
+    - prompts/shared/**
+    - results/route_A/**
+    - results/route_C/**
+    - logs/route_A/**
+    - logs/route_C/**
+    - routes/route_A/**
+    - routes/route_C/**
+    - wiki/current_state.yaml
+    - wiki/history/**
+    - results/submissions/**
+    - data/**
+    - '**/*.nii'
+    - '**/*.nii.gz'
+    - '**/*.pth'
+    - '**/*.pt'
+    - '**/*.ckpt'
+    - '**/*CARE-Myocardium-OrganAgent.zip'
+
+read_only_inputs:
+  required_policy:
+    - AGENTS.md
+    - START_HERE_FOR_GPT.md
+    - GPT_PLANNER_CARE_PROTOCOL.md
+    - prompts/AGENT_FLOW_V2_PROTOCOL.md
+    - prompts/HANDOFF_GATE_POLICY.md
+    - prompts/GPT_HARD_GATE_PROMPT.md
+    - prompts/MILESTONE_REVIEW_PROTOCOL.md
+    - prompts/THREAD_BOOTSTRAP_ROUTE_IMAGE_PROTOCOL.md
+    - routes/README.md
+    - prompts/routes/README.md
+    - prompts/routes/route_B.md
+    - prompts/routes/route_B_executor_plan.yaml
+    - configs/routes/partition_routing.yaml
+    - docs/route_watchboard.md
+    - wiki/README.md
+  architecture_context:
+    - existing SRR-v3 source paths
+    - existing nnU-Net anchor outputs/logits/checkpoints as context and safety only
+    - CineMA/registration/temporal code paths if present
+    - prior M9/M10 diagnostic packets as non-completion context only
+
+slurm_permissions:
+  allowed_after_implementation_gate: true
+  zero_credit_preflight_before_gate: true
+  formal_training_before_gate: false
+  validation_upload: false
+  package_upload: false
+  max_initial_job_hours: 8
+  monitor_packet_is_completion: false
+  allowed_partitions:
+    htzhulab:
+      partition: htzhulab
+      qos: gpu_access
+      gres: gpu:1
+      priority: 1
+      route_B_use: primary
+    a100:
+      partition: a100-gpu
+      qos: gpu_access
+      gres: gpu:nvidia_a100-pcie-40gb:1
+      priority: 2
+      route_B_use: fallback_or_distinct_ready_job
+    v100:
+      partition: volta-gpu
+      qos: gpu_access
+      gres: gpu:tesla_v100-sxm2-16gb:1
+      priority: 3
+      route_B_use: conditional_only_after_memory_semantics_compatibility_receipt
+  race_policy:
+    prefer_distinct_work_over_duplicate_race: true
+    race_only_for_single_critical_pending_job: true
+    isolated_attempt_outputs_required: true
+    atomic_winner_lock_required: true
+    loser_receipt_required: true
+    cancel_pending_losers: true
+    identical_scientific_semantics_required: true
+
+implementation_before_training_gate:
+  required: true
+  formal_training_allowed_before_gate: false
+  ordered_chain:
+    - code_completion
+    - real_case_forward
+    - finite_nonzero_losses
+    - gradients_to_target_modules
+    - intervention_changes_final_logits_or_labels
+    - checkpoint_save_reload_consistency
+    - export_layout_qa
+    - implementation_freeze
+  myops_checks:
+    - modality_specific_stems_real
+    - availability_router_reads_mask_and_pooled_image_features
+    - shared_private_interaction_dictionaries_real_or_critic_approved_disabled_state
+    - prototype_bank_has_real_train_or_oof_provenance
+    - anatomy_decoder_outputs_union_lv_rv_context
+    - scar_proposal_real_and_lge_dominant
+    - edema_proposal_real_and_t2_conditioned
+    - soft_roi_generator_uses_proposal_anatomy_distance_uncertainty_nnunet_context
+    - scar_refiner_real
+    - edema_refiner_real
+    - bounded_nnunet_residual_correction_real
+    - full_loss_terms_finite_or_explicitly_disabled_by_critic_revision
+    - no_t2_edema_loss_masked_or_zero
+    - save_reload_consistency_recorded
+    - output_label_export_verified
+  cine_checks:
+    - real_multiframe_input_consumed
+    - cinemA_or_anatomy_source_real_with_provenance
+    - anatomy_logits_features_uncertainty_real
+    - ed_reference_and_keyframes_recorded
+    - registration_interface_produces_traceable_warp
+    - learned_registration_math_real_if_used
+    - ants_or_syn_control_present_or_honest_blocker
+    - temporal_dictionary_consumes_registered_evidence
+    - temporal_aggregation_refiner_changes_final_output_or_honest_blocker
+    - checkpoint_resume_export_verified
+  failure_state: ROUTE_B_IMPLEMENTATION_NEEDS_REVISION
+
+phases:
+  - id: B0
+    name: critic_review_wait
+    controller_may_start: false
+    entry_condition: planner_files_present
+    exit_condition: ROUTE_B_PLANNING_READY_FOR_CONTROLLER in critic output
+  - id: B1
+    name: architecture_gap_inventory
+    slurm_allowed: false
+    outputs:
+      - results/route_B/implementation_gap_inventory.md
+      - results/route_B/architecture_component_trace.csv
+  - id: B2
+    name: full_architecture_implementation
+    slurm_allowed: false
+    outputs:
+      - route_B source/helper/test changes inside allowed scopes
+      - results/route_B/implementation_snapshot.md
+  - id: B3
+    name: real_forward_loss_gradient_intervention_gate
+    slurm_allowed: zero_credit_preflight_only
+    required_outputs:
+      - results/route_B/implementation_gate.md
+      - results/route_B/implementation_gate.json
+      - results/route_B/gradient_and_intervention_report.csv
+    blocks_training_if_failed: true
+  - id: B4
+    name: save_reload_export_freeze
+    slurm_allowed: false
+    required_outputs:
+      - results/route_B/save_reload_export_report.json
+      - results/route_B/implementation_freeze_receipt.json
+    blocks_training_if_failed: true
+  - id: B5
+    name: first_bounded_train_eval_after_freeze
+    slurm_allowed: true
+    max_job_hours: 8
+    required_outputs_if_run:
+      - results/route_B/training_adequacy.csv
+      - results/route_B/metrics_summary.csv
+      - results/route_B/case_safety_matrix.csv
+      - results/route_B/cine_registration_temporal_report.csv
+  - id: B6
+    name: finalizer_packet
+    slurm_allowed: accounting_only
+    required_outputs:
+      - results/route_B/result.md
+      - results/route_B/commands_run.md
+      - results/route_B/controller_report.md
+      - results/route_B/completion_check.md
+      - results/route_B/review_request.md
+      - results/route_B/MANIFEST.md
+
+result_packet_contract:
+  required_files:
+    - results/route_B/result.md
+    - results/route_B/implementation_gap_inventory.md
+    - results/route_B/architecture_component_trace.csv
+    - results/route_B/implementation_gate.md
+    - results/route_B/implementation_gate.json
+    - results/route_B/gradient_and_intervention_report.csv
+    - results/route_B/save_reload_export_report.json
+    - results/route_B/cine_registration_temporal_report.csv
+    - results/route_B/commands_run.md
+    - results/route_B/controller_report.md
+    - results/route_B/completion_check.md
+    - results/route_B/review_request.md
+    - results/route_B/MANIFEST.md
+  conditional_files:
+    - results/route_B/training_adequacy.csv
+    - results/route_B/metrics_summary.csv
+    - results/route_B/case_safety_matrix.csv
+    - results/route_B/implementation_freeze_receipt.json
+  forbidden_packet_contents:
+    - checkpoints
+    - NIfTI_predictions
+    - raw_data
+    - upload_zip
+    - large_logs
+    - secrets
+
+validator_requirements:
+  strict_mode: true
+  fail_closed: true
+  known_bad_cases:
+    - missing_required_srr_v3_module
+    - placeholder_mock_dataclass_or_config_only_module
+    - dictionary_or_prototype_without_real_provenance
+    - proposal_refiner_or_residual_no_final_output_effect
+    - old_wrapper_bypass
+    - forward_without_availability_router
+    - no_t2_edema_negative_training
+    - cine_frame0_only_or_descriptor_only
+    - proxy_registration_claimed_real
+    - formal_training_before_gate
+    - pending_slurm_or_monitor_packet_as_completion
+    - validation_upload_or_route_promotion_claim
+
+stop_continue_criteria:
+  continue_requires:
+    - implementation_gate_passed
+    - implementation_freeze_receipt_present
+    - same_split_baseline_available_before_candidate_claim
+    - train_eval_only_after_freeze
+    - cine_temporal_path_real_or_honest_blocker
+  stop_requires_any:
+    - any_required_module_placeholder_or_noop
+    - intervention_does_not_change_final_logits_or_labels
+    - gradients_missing_to_target_modules
+    - save_reload_inconsistent
+    - cine_temporal_evidence_fake_or_frame0_only
+    - route_B_undertrained_but_claims_route_promotion
+
+allowed_tokens:
+  critic_can_issue:
+    - ROUTE_B_PLANNING_READY_FOR_CONTROLLER
+  controller_self_assessment:
+    - ROUTE_B_READY_FOR_REVIEW
+    - ROUTE_B_NEEDS_EVIDENCE
+    - ROUTE_B_NEEDS_REVISION
+    - ROUTE_B_NEEDS_MONITOR
+    - ROUTE_B_IMPLEMENTATION_NEEDS_REVISION
+    - ROUTE_B_SCIENTIFIC_UNDERTRAINED
+  reviewer_can_issue:
+    - ROUTE_B_REVIEW_PACKET_ACCEPTED_FOR_PORTFOLIO_COMPARISON
+    - ROUTE_B_REVIEW_NEEDS_EVIDENCE
+    - ROUTE_B_REVIEW_NEEDS_REVISION
+    - ROUTE_B_REVIEW_NEEDS_MONITOR
+forbidden_tokens:
+  - ROUTE_PROMOTED
+  - VALIDATION_UPLOAD_APPROVED
+  - HOSTED_METRIC_CLAIM
+  - M11_AUTHORIZED
+  - FINAL_SCIENTIFIC_CONCLUSION
