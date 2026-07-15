@@ -1,95 +1,220 @@
-<?xml version="1.0" encoding="utf-8"?><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" data-d2-version="v0.7.1" preserveAspectRatio="xMinYMin meet" viewBox="0 0 5550 316"><svg class="d2-1045210041 d2-svg" width="5550" height="316" viewBox="-101 -101 5550 316"><rect x="-101.000000" y="-101.000000" width="5550.000000" height="316.000000" rx="0.000000" fill="#FFFFFF" class=" fill-N7" stroke-width="0" /><style type="text/css"><![CDATA[
-.d2-1045210041 .text-bold {
-	font-family: "d2-1045210041-font-bold";
-}
-@font-face {
-	font-family: d2-1045210041-font-bold;
-	src: url("data:application/font-woff;base64,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");
-}]]></style><style type="text/css"><![CDATA[.shape {
-  shape-rendering: geometricPrecision;
-  stroke-linejoin: round;
-}
-.connection {
-  stroke-linecap: round;
-  stroke-linejoin: round;
-}
-.blend {
-  mix-blend-mode: multiply;
-  opacity: 0.5;
-}
-
-		.d2-1045210041 .fill-N1{fill:#0A0F25;}
-		.d2-1045210041 .fill-N2{fill:#676C7E;}
-		.d2-1045210041 .fill-N3{fill:#9499AB;}
-		.d2-1045210041 .fill-N4{fill:#CFD2DD;}
-		.d2-1045210041 .fill-N5{fill:#DEE1EB;}
-		.d2-1045210041 .fill-N6{fill:#EEF1F8;}
-		.d2-1045210041 .fill-N7{fill:#FFFFFF;}
-		.d2-1045210041 .fill-B1{fill:#0D32B2;}
-		.d2-1045210041 .fill-B2{fill:#0D32B2;}
-		.d2-1045210041 .fill-B3{fill:#E3E9FD;}
-		.d2-1045210041 .fill-B4{fill:#E3E9FD;}
-		.d2-1045210041 .fill-B5{fill:#EDF0FD;}
-		.d2-1045210041 .fill-B6{fill:#F7F8FE;}
-		.d2-1045210041 .fill-AA2{fill:#4A6FF3;}
-		.d2-1045210041 .fill-AA4{fill:#EDF0FD;}
-		.d2-1045210041 .fill-AA5{fill:#F7F8FE;}
-		.d2-1045210041 .fill-AB4{fill:#EDF0FD;}
-		.d2-1045210041 .fill-AB5{fill:#F7F8FE;}
-		.d2-1045210041 .stroke-N1{stroke:#0A0F25;}
-		.d2-1045210041 .stroke-N2{stroke:#676C7E;}
-		.d2-1045210041 .stroke-N3{stroke:#9499AB;}
-		.d2-1045210041 .stroke-N4{stroke:#CFD2DD;}
-		.d2-1045210041 .stroke-N5{stroke:#DEE1EB;}
-		.d2-1045210041 .stroke-N6{stroke:#EEF1F8;}
-		.d2-1045210041 .stroke-N7{stroke:#FFFFFF;}
-		.d2-1045210041 .stroke-B1{stroke:#0D32B2;}
-		.d2-1045210041 .stroke-B2{stroke:#0D32B2;}
-		.d2-1045210041 .stroke-B3{stroke:#E3E9FD;}
-		.d2-1045210041 .stroke-B4{stroke:#E3E9FD;}
-		.d2-1045210041 .stroke-B5{stroke:#EDF0FD;}
-		.d2-1045210041 .stroke-B6{stroke:#F7F8FE;}
-		.d2-1045210041 .stroke-AA2{stroke:#4A6FF3;}
-		.d2-1045210041 .stroke-AA4{stroke:#EDF0FD;}
-		.d2-1045210041 .stroke-AA5{stroke:#F7F8FE;}
-		.d2-1045210041 .stroke-AB4{stroke:#EDF0FD;}
-		.d2-1045210041 .stroke-AB5{stroke:#F7F8FE;}
-		.d2-1045210041 .background-color-N1{background-color:#0A0F25;}
-		.d2-1045210041 .background-color-N2{background-color:#676C7E;}
-		.d2-1045210041 .background-color-N3{background-color:#9499AB;}
-		.d2-1045210041 .background-color-N4{background-color:#CFD2DD;}
-		.d2-1045210041 .background-color-N5{background-color:#DEE1EB;}
-		.d2-1045210041 .background-color-N6{background-color:#EEF1F8;}
-		.d2-1045210041 .background-color-N7{background-color:#FFFFFF;}
-		.d2-1045210041 .background-color-B1{background-color:#0D32B2;}
-		.d2-1045210041 .background-color-B2{background-color:#0D32B2;}
-		.d2-1045210041 .background-color-B3{background-color:#E3E9FD;}
-		.d2-1045210041 .background-color-B4{background-color:#E3E9FD;}
-		.d2-1045210041 .background-color-B5{background-color:#EDF0FD;}
-		.d2-1045210041 .background-color-B6{background-color:#F7F8FE;}
-		.d2-1045210041 .background-color-AA2{background-color:#4A6FF3;}
-		.d2-1045210041 .background-color-AA4{background-color:#EDF0FD;}
-		.d2-1045210041 .background-color-AA5{background-color:#F7F8FE;}
-		.d2-1045210041 .background-color-AB4{background-color:#EDF0FD;}
-		.d2-1045210041 .background-color-AB5{background-color:#F7F8FE;}
-		.d2-1045210041 .color-N1{color:#0A0F25;}
-		.d2-1045210041 .color-N2{color:#676C7E;}
-		.d2-1045210041 .color-N3{color:#9499AB;}
-		.d2-1045210041 .color-N4{color:#CFD2DD;}
-		.d2-1045210041 .color-N5{color:#DEE1EB;}
-		.d2-1045210041 .color-N6{color:#EEF1F8;}
-		.d2-1045210041 .color-N7{color:#FFFFFF;}
-		.d2-1045210041 .color-B1{color:#0D32B2;}
-		.d2-1045210041 .color-B2{color:#0D32B2;}
-		.d2-1045210041 .color-B3{color:#E3E9FD;}
-		.d2-1045210041 .color-B4{color:#E3E9FD;}
-		.d2-1045210041 .color-B5{color:#EDF0FD;}
-		.d2-1045210041 .color-B6{color:#F7F8FE;}
-		.d2-1045210041 .color-AA2{color:#4A6FF3;}
-		.d2-1045210041 .color-AA4{color:#EDF0FD;}
-		.d2-1045210041 .color-AA5{color:#F7F8FE;}
-		.d2-1045210041 .color-AB4{color:#EDF0FD;}
-		.d2-1045210041 .color-AB5{color:#F7F8FE;}.appendix text.text{fill:#0A0F25}.md{--color-fg-default:#0A0F25;--color-fg-muted:#676C7E;--color-fg-subtle:#9499AB;--color-canvas-default:#FFFFFF;--color-canvas-subtle:#EEF1F8;--color-border-default:#0D32B2;--color-border-muted:#0D32B2;--color-neutral-muted:#EEF1F8;--color-accent-fg:#0D32B2;--color-accent-emphasis:#0D32B2;--color-attention-subtle:#676C7E;--color-danger-fg:red;}.sketch-overlay-B1{fill:url(#streaks-darker-d2-1045210041);mix-blend-mode:lighten}.sketch-overlay-B2{fill:url(#streaks-darker-d2-1045210041);mix-blend-mode:lighten}.sketch-overlay-B3{fill:url(#streaks-bright-d2-1045210041);mix-blend-mode:darken}.sketch-overlay-B4{fill:url(#streaks-bright-d2-1045210041);mix-blend-mode:darken}.sketch-overlay-B5{fill:url(#streaks-bright-d2-1045210041);mix-blend-mode:darken}.sketch-overlay-B6{fill:url(#streaks-bright-d2-1045210041);mix-blend-mode:darken}.sketch-overlay-AA2{fill:url(#streaks-dark-d2-1045210041);mix-blend-mode:overlay}.sketch-overlay-AA4{fill:url(#streaks-bright-d2-1045210041);mix-blend-mode:darken}.sketch-overlay-AA5{fill:url(#streaks-bright-d2-1045210041);mix-blend-mode:darken}.sketch-overlay-AB4{fill:url(#streaks-bright-d2-1045210041);mix-blend-mode:darken}.sketch-overlay-AB5{fill:url(#streaks-bright-d2-1045210041);mix-blend-mode:darken}.sketch-overlay-N1{fill:url(#streaks-darker-d2-1045210041);mix-blend-mode:lighten}.sketch-overlay-N2{fill:url(#streaks-dark-d2-1045210041);mix-blend-mode:overlay}.sketch-overlay-N3{fill:url(#streaks-normal-d2-1045210041);mix-blend-mode:color-burn}.sketch-overlay-N4{fill:url(#streaks-normal-d2-1045210041);mix-blend-mode:color-burn}.sketch-overlay-N5{fill:url(#streaks-bright-d2-1045210041);mix-blend-mode:darken}.sketch-overlay-N6{fill:url(#streaks-bright-d2-1045210041);mix-blend-mode:darken}.sketch-overlay-N7{fill:url(#streaks-bright-d2-1045210041);mix-blend-mode:darken}.light-code{display: block}.dark-code{display: none}]]></style><g class="bWV0YQ=="><g class="shape" ><rect x="0.000000" y="8.000000" width="653.000000" height="98.000000" stroke="#0D32B2" fill="#F7F8FE" class=" stroke-B1 fill-B6" style="stroke-width:2;" /></g><text x="326.500000" y="46.500000" fill="#0A0F25" class="text-bold fill-N1" style="text-anchor:middle;font-size:16px"><tspan x="326.500000" dy="0.000000">generated_from: architecture.yaml + COMPONENTS.csv</tspan><tspan x="326.500000" dy="17.666667">review_token: M9_FOLLOWUP_AUDITED_READY_NO_PROMOTION_DIAGNOSTIC_ONLY</tspan><tspan x="326.500000" dy="17.666667">source_hash: 6e5c2a204690e2f5</tspan></text></g><g class="aW5wdXRzX2F2YWlsYWJpbGl0eQ=="><g class="shape" ><rect x="713.000000" y="0.000000" width="230.000000" height="114.000000" stroke="#0D32B2" fill="#e8f5e9" class=" stroke-B1" style="stroke-width:2;" /></g><text x="828.000000" y="38.500000" fill="#0A0F25" class="text-bold fill-N1" style="text-anchor:middle;font-size:16px"><tspan x="828.000000" dy="0.000000">输入与 availability mask</tspan><tspan x="828.000000" dy="17.250000">当前: implemented</tspan><tspan x="828.000000" dy="17.250000">目标: implemented</tspan><tspan x="828.000000" dy="17.250000">证据: verified</tspan></text></g><g class="bW9kYWxpdHlfc3RlbXNfZW5jb2RlcnM="><g class="shape" ><rect x="1003.000000" y="0.000000" width="201.000000" height="114.000000" stroke="#0D32B2" fill="#e8f5e9" class=" stroke-B1" style="stroke-width:2;" /></g><text x="1103.500000" y="38.500000" fill="#0A0F25" class="text-bold fill-N1" style="text-anchor:middle;font-size:16px"><tspan x="1103.500000" dy="0.000000">模态 stems/encoders</tspan><tspan x="1103.500000" dy="17.250000">当前: implemented</tspan><tspan x="1103.500000" dy="17.250000">目标: implemented</tspan><tspan x="1103.500000" dy="17.250000">证据: verified</tspan></text></g><g class="cmV0cmlldmFsX2RpY3Rpb25hcnk="><g class="shape" ><rect x="1264.000000" y="0.000000" width="244.000000" height="114.000000" stroke="#0D32B2" fill="#fff7e6" class=" stroke-B2" style="stroke-width:2;stroke-dasharray:10.000000,9.865639;" /></g><text x="1386.000000" y="38.500000" fill="#0A0F25" class="text-bold fill-N1" style="text-anchor:middle;font-size:16px"><tspan x="1386.000000" dy="0.000000">检索 dictionary 与表示槽</tspan><tspan x="1386.000000" dy="17.250000">当前: partial</tspan><tspan x="1386.000000" dy="17.250000">目标: implemented</tspan><tspan x="1386.000000" dy="17.250000">证据: verified</tspan></text></g><g class="cm91dGVyX3BhdHRlcm5fc2lw"><g class="shape" ><rect x="1568.000000" y="0.000000" width="227.000000" height="114.000000" stroke="#0D32B2" fill="#fff7e6" class=" stroke-B2" style="stroke-width:2;stroke-dasharray:10.000000,9.865639;" /></g><text x="1681.500000" y="38.500000" fill="#0A0F25" class="text-bold fill-N1" style="text-anchor:middle;font-size:16px"><tspan x="1681.500000" dy="0.000000">router / Pattern-SIP 状态</tspan><tspan x="1681.500000" dy="17.250000">当前: partial</tspan><tspan x="1681.500000" dy="17.250000">目标: implemented</tspan><tspan x="1681.500000" dy="17.250000">证据: verified</tspan></text></g><g class="cHJvdG90eXBlX21lbW9yeQ=="><g class="shape" ><rect x="1855.000000" y="0.000000" width="305.000000" height="114.000000" stroke="#0D32B2" fill="#fff7e6" class=" stroke-B2" style="stroke-width:2;stroke-dasharray:10.000000,9.865639;" /></g><text x="2007.500000" y="38.500000" fill="#0A0F25" class="text-bold fill-N1" style="text-anchor:middle;font-size:16px"><tspan x="2007.500000" dy="0.000000">prototype memory 与 hard-negative</tspan><tspan x="2007.500000" dy="17.250000">当前: partial</tspan><tspan x="2007.500000" dy="17.250000">目标: implemented</tspan><tspan x="2007.500000" dy="17.250000">证据: verified</tspan></text></g><g class="YW5hdG9teV9wcmlvcg=="><g class="shape" ><rect x="2220.000000" y="0.000000" width="188.000000" height="114.000000" stroke="#0D32B2" fill="#fff7e6" class=" stroke-B2" style="stroke-width:2;stroke-dasharray:10.000000,9.865639;" /></g><text x="2314.000000" y="38.500000" fill="#0A0F25" class="text-bold fill-N1" style="text-anchor:middle;font-size:16px"><tspan x="2314.000000" dy="0.000000">解剖先验</tspan><tspan x="2314.000000" dy="17.250000">当前: partial</tspan><tspan x="2314.000000" dy="17.250000">目标: implemented</tspan><tspan x="2314.000000" dy="17.250000">证据: verified</tspan></text></g><g class="c2Nhcl9wcm9wb3NhbA=="><g class="shape" ><rect x="2468.000000" y="0.000000" width="188.000000" height="114.000000" stroke="#0D32B2" fill="#fff7e6" class=" stroke-B2" style="stroke-width:2;stroke-dasharray:10.000000,9.865639;" /></g><text x="2562.000000" y="38.500000" fill="#0A0F25" class="text-bold fill-N1" style="text-anchor:middle;font-size:16px"><tspan x="2562.000000" dy="0.000000">scar proposal</tspan><tspan x="2562.000000" dy="17.250000">当前: partial</tspan><tspan x="2562.000000" dy="17.250000">目标: implemented</tspan><tspan x="2562.000000" dy="17.250000">证据: verified</tspan></text></g><g class="ZWRlbWFfcHJvcG9zYWw="><g class="shape" ><rect x="2716.000000" y="0.000000" width="188.000000" height="114.000000" stroke="#0D32B2" fill="#fff7e6" class=" stroke-B2" style="stroke-width:2;stroke-dasharray:10.000000,9.865639;" /></g><text x="2810.000000" y="38.500000" fill="#0A0F25" class="text-bold fill-N1" style="text-anchor:middle;font-size:16px"><tspan x="2810.000000" dy="0.000000">edema proposal</tspan><tspan x="2810.000000" dy="17.250000">当前: partial</tspan><tspan x="2810.000000" dy="17.250000">目标: implemented</tspan><tspan x="2810.000000" dy="17.250000">证据: verified</tspan></text></g><g class="c2Nhcl9yZWZpbmVy"><g class="shape" ><rect x="2964.000000" y="0.000000" width="189.000000" height="114.000000" stroke="#0D32B2" fill="#fff7e6" class=" stroke-B2" style="stroke-width:2;stroke-dasharray:10.000000,9.865639;" /></g><text x="3058.500000" y="38.500000" fill="#0A0F25" class="text-bold fill-N1" style="text-anchor:middle;font-size:16px"><tspan x="3058.500000" dy="0.000000">scar soft-ROI refiner</tspan><tspan x="3058.500000" dy="17.250000">当前: partial</tspan><tspan x="3058.500000" dy="17.250000">目标: implemented</tspan><tspan x="3058.500000" dy="17.250000">证据: verified</tspan></text></g><g class="ZWRlbWFfcmVmaW5lcg=="><g class="shape" ><rect x="3213.000000" y="0.000000" width="207.000000" height="114.000000" stroke="#0D32B2" fill="#fff7e6" class=" stroke-B2" style="stroke-width:2;stroke-dasharray:10.000000,9.865639;" /></g><text x="3316.500000" y="38.500000" fill="#0A0F25" class="text-bold fill-N1" style="text-anchor:middle;font-size:16px"><tspan x="3316.500000" dy="0.000000">edema soft-ROI refiner</tspan><tspan x="3316.500000" dy="17.250000">当前: partial</tspan><tspan x="3316.500000" dy="17.250000">目标: implemented</tspan><tspan x="3316.500000" dy="17.250000">证据: verified</tspan></text></g><g class="bm9fdDJfc2FmZXR5"><g class="shape" ><rect x="3480.000000" y="0.000000" width="199.000000" height="114.000000" stroke="#0D32B2" fill="#e8f5e9" class=" stroke-B1" style="stroke-width:2;" /></g><text x="3579.500000" y="38.500000" fill="#0A0F25" class="text-bold fill-N1" style="text-anchor:middle;font-size:16px"><tspan x="3579.500000" dy="0.000000">no-T2 edema 安全门</tspan><tspan x="3579.500000" dy="17.250000">当前: implemented</tspan><tspan x="3579.500000" dy="17.250000">目标: implemented</tspan><tspan x="3579.500000" dy="17.250000">证据: verified</tspan></text></g><g class="YXJiaXRyYXRpb25fZmluYWxfb3V0cHV0"><g class="shape" ><rect x="3739.000000" y="0.000000" width="234.000000" height="114.000000" stroke="#0D32B2" fill="#fff7e6" class=" stroke-B2" style="stroke-width:2;stroke-dasharray:10.000000,9.865639;" /></g><text x="3856.000000" y="38.500000" fill="#0A0F25" class="text-bold fill-N1" style="text-anchor:middle;font-size:16px"><tspan x="3856.000000" dy="0.000000">arbitration 与 final output</tspan><tspan x="3856.000000" dy="17.250000">当前: partial</tspan><tspan x="3856.000000" dy="17.250000">目标: implemented</tspan><tspan x="3856.000000" dy="17.250000">证据: verified</tspan></text></g><g class="bG9zc2Vz"><g class="shape" ><rect x="4033.000000" y="0.000000" width="188.000000" height="114.000000" stroke="#0D32B2" fill="#e8f5e9" class=" stroke-B1" style="stroke-width:2;" /></g><text x="4127.000000" y="38.500000" fill="#0A0F25" class="text-bold fill-N1" style="text-anchor:middle;font-size:16px"><tspan x="4127.000000" dy="0.000000">loss 与优化目标</tspan><tspan x="4127.000000" dy="17.250000">当前: implemented</tspan><tspan x="4127.000000" dy="17.250000">目标: implemented</tspan><tspan x="4127.000000" dy="17.250000">证据: verified</tspan></text></g><g class="Y2hlY2twb2ludF9zZWxlY3Rpb24="><g class="shape" ><rect x="4281.000000" y="0.000000" width="188.000000" height="114.000000" stroke="#0D32B2" fill="#fff7e6" class=" stroke-B2" style="stroke-width:2;stroke-dasharray:10.000000,9.865639;" /></g><text x="4375.000000" y="38.500000" fill="#0A0F25" class="text-bold fill-N1" style="text-anchor:middle;font-size:16px"><tspan x="4375.000000" dy="0.000000">checkpoint 选择</tspan><tspan x="4375.000000" dy="17.250000">当前: partial</tspan><tspan x="4375.000000" dy="17.250000">目标: implemented</tspan><tspan x="4375.000000" dy="17.250000">证据: verified</tspan></text></g><g class="Y2luZV90ZW1wb3JhbA=="><g class="shape" ><rect x="4529.000000" y="0.000000" width="188.000000" height="114.000000" stroke="#0D32B2" fill="#fff7e6" class=" stroke-B2" style="stroke-width:2;stroke-dasharray:10.000000,9.865639;" /></g><text x="4623.000000" y="38.500000" fill="#0A0F25" class="text-bold fill-N1" style="text-anchor:middle;font-size:16px"><tspan x="4623.000000" dy="0.000000">Cine temporal 次线</tspan><tspan x="4623.000000" dy="17.250000">当前: partial</tspan><tspan x="4623.000000" dy="17.250000">目标: implemented</tspan><tspan x="4623.000000" dy="17.250000">证据: unverified</tspan></text></g><g class="Y29udHJvbGxlcl9jb250aW51aXR5"><g class="shape" ><rect x="4777.000000" y="0.000000" width="278.000000" height="114.000000" stroke="#0D32B2" fill="#fff7e6" class=" stroke-B2" style="stroke-width:2;stroke-dasharray:10.000000,9.865639;" /></g><text x="4916.000000" y="38.500000" fill="#0A0F25" class="text-bold fill-N1" style="text-anchor:middle;font-size:16px"><tspan x="4916.000000" dy="0.000000">controller continuity 与 finalizer</tspan><tspan x="4916.000000" dy="17.250000">当前: partial</tspan><tspan x="4916.000000" dy="17.250000">目标: implemented</tspan><tspan x="4916.000000" dy="17.250000">证据: unverified</tspan></text></g><g class="bWFwcGVyX3dpa2lfb2JzZXJ2YWJpbGl0eQ=="><g class="shape" ><rect x="5115.000000" y="0.000000" width="233.000000" height="114.000000" stroke="#0D32B2" fill="#fff7e6" class=" stroke-B2" style="stroke-width:2;stroke-dasharray:10.000000,9.865639;" /></g><text x="5231.500000" y="38.500000" fill="#0A0F25" class="text-bold fill-N1" style="text-anchor:middle;font-size:16px"><tspan x="5231.500000" dy="0.000000">mapper/wiki observability</tspan><tspan x="5231.500000" dy="17.250000">当前: partial</tspan><tspan x="5231.500000" dy="17.250000">目标: implemented</tspan><tspan x="5231.500000" dy="17.250000">证据: unverified</tspan></text></g><mask id="d2-1045210041" maskUnits="userSpaceOnUse" x="-101" y="-101" width="5550" height="316">
-<rect x="-101" y="-101" width="5550" height="316" fill="white"></rect>
-
-</mask></svg></svg>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Generated by graphviz version 2.44.0 (0)
+ -->
+<!-- Title: G Pages: 1 -->
+<svg width="322pt" height="1600pt"
+ viewBox="0.00 0.00 322.00 1600.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 1596)">
+<title>G</title>
+<polygon fill="white" stroke="transparent" points="-4,4 -4,-1596 318,-1596 318,4 -4,4"/>
+<!-- inputs_availability -->
+<g id="node1" class="node">
+<title>inputs_availability</title>
+<path fill="#fff7e6" stroke="#6b7280" d="M205.5,-52C205.5,-52 108.5,-52 108.5,-52 102.5,-52 96.5,-46 96.5,-40 96.5,-40 96.5,-12 96.5,-12 96.5,-6 102.5,0 108.5,0 108.5,0 205.5,0 205.5,0 211.5,0 217.5,-6 217.5,-12 217.5,-12 217.5,-40 217.5,-40 217.5,-46 211.5,-52 205.5,-52"/>
+<text text-anchor="middle" x="157" y="-40" font-family="Helvetica" font-size="10.00">输入与 availability mask</text>
+<text text-anchor="middle" x="157" y="-29" font-family="Helvetica" font-size="10.00">当前: implemented</text>
+<text text-anchor="middle" x="157" y="-18" font-family="Helvetica" font-size="10.00">目标: implemented</text>
+<text text-anchor="middle" x="157" y="-7" font-family="Helvetica" font-size="10.00">证据: verified</text>
+</g>
+<!-- modality_stems_encoders -->
+<g id="node2" class="node">
+<title>modality_stems_encoders</title>
+<path fill="#fff7e6" stroke="#6b7280" d="M200,-122C200,-122 114,-122 114,-122 108,-122 102,-116 102,-110 102,-110 102,-82 102,-82 102,-76 108,-70 114,-70 114,-70 200,-70 200,-70 206,-70 212,-76 212,-82 212,-82 212,-110 212,-110 212,-116 206,-122 200,-122"/>
+<text text-anchor="middle" x="157" y="-110" font-family="Helvetica" font-size="10.00">模态 stems/encoders</text>
+<text text-anchor="middle" x="157" y="-99" font-family="Helvetica" font-size="10.00">当前: implemented</text>
+<text text-anchor="middle" x="157" y="-88" font-family="Helvetica" font-size="10.00">目标: implemented</text>
+<text text-anchor="middle" x="157" y="-77" font-family="Helvetica" font-size="10.00">证据: verified</text>
+</g>
+<!-- retrieval_dictionary -->
+<g id="node3" class="node">
+<title>retrieval_dictionary</title>
+<path fill="#fff7e6" stroke="#6b7280" d="M207,-192C207,-192 107,-192 107,-192 101,-192 95,-186 95,-180 95,-180 95,-152 95,-152 95,-146 101,-140 107,-140 107,-140 207,-140 207,-140 213,-140 219,-146 219,-152 219,-152 219,-180 219,-180 219,-186 213,-192 207,-192"/>
+<text text-anchor="middle" x="157" y="-180" font-family="Helvetica" font-size="10.00">检索 dictionary 与表示槽</text>
+<text text-anchor="middle" x="157" y="-169" font-family="Helvetica" font-size="10.00">当前: partial</text>
+<text text-anchor="middle" x="157" y="-158" font-family="Helvetica" font-size="10.00">目标: implemented</text>
+<text text-anchor="middle" x="157" y="-147" font-family="Helvetica" font-size="10.00">证据: verified</text>
+</g>
+<!-- router_pattern_sip -->
+<g id="node4" class="node">
+<title>router_pattern_sip</title>
+<path fill="#fff7e6" stroke="#6b7280" d="M207.5,-262C207.5,-262 106.5,-262 106.5,-262 100.5,-262 94.5,-256 94.5,-250 94.5,-250 94.5,-222 94.5,-222 94.5,-216 100.5,-210 106.5,-210 106.5,-210 207.5,-210 207.5,-210 213.5,-210 219.5,-216 219.5,-222 219.5,-222 219.5,-250 219.5,-250 219.5,-256 213.5,-262 207.5,-262"/>
+<text text-anchor="middle" x="157" y="-250" font-family="Helvetica" font-size="10.00">router / Pattern&#45;SIP 状态</text>
+<text text-anchor="middle" x="157" y="-239" font-family="Helvetica" font-size="10.00">当前: partial</text>
+<text text-anchor="middle" x="157" y="-228" font-family="Helvetica" font-size="10.00">目标: implemented</text>
+<text text-anchor="middle" x="157" y="-217" font-family="Helvetica" font-size="10.00">证据: verified</text>
+</g>
+<!-- prototype_memory -->
+<g id="node5" class="node">
+<title>prototype_memory</title>
+<path fill="#fff7e6" stroke="#6b7280" d="M230,-332C230,-332 84,-332 84,-332 78,-332 72,-326 72,-320 72,-320 72,-292 72,-292 72,-286 78,-280 84,-280 84,-280 230,-280 230,-280 236,-280 242,-286 242,-292 242,-292 242,-320 242,-320 242,-326 236,-332 230,-332"/>
+<text text-anchor="middle" x="157" y="-320" font-family="Helvetica" font-size="10.00">prototype memory 与 hard&#45;negative</text>
+<text text-anchor="middle" x="157" y="-309" font-family="Helvetica" font-size="10.00">当前: partial</text>
+<text text-anchor="middle" x="157" y="-298" font-family="Helvetica" font-size="10.00">目标: implemented</text>
+<text text-anchor="middle" x="157" y="-287" font-family="Helvetica" font-size="10.00">证据: verified</text>
+</g>
+<!-- anatomy_prior -->
+<g id="node6" class="node">
+<title>anatomy_prior</title>
+<path fill="#fff7e6" stroke="#6b7280" d="M194,-402C194,-402 120,-402 120,-402 114,-402 108,-396 108,-390 108,-390 108,-362 108,-362 108,-356 114,-350 120,-350 120,-350 194,-350 194,-350 200,-350 206,-356 206,-362 206,-362 206,-390 206,-390 206,-396 200,-402 194,-402"/>
+<text text-anchor="middle" x="157" y="-390" font-family="Helvetica" font-size="10.00">解剖先验</text>
+<text text-anchor="middle" x="157" y="-379" font-family="Helvetica" font-size="10.00">当前: partial</text>
+<text text-anchor="middle" x="157" y="-368" font-family="Helvetica" font-size="10.00">目标: implemented</text>
+<text text-anchor="middle" x="157" y="-357" font-family="Helvetica" font-size="10.00">证据: verified</text>
+</g>
+<!-- scar_proposal -->
+<g id="node7" class="node">
+<title>scar_proposal</title>
+<path fill="#fff7e6" stroke="#6b7280" d="M194,-472C194,-472 120,-472 120,-472 114,-472 108,-466 108,-460 108,-460 108,-432 108,-432 108,-426 114,-420 120,-420 120,-420 194,-420 194,-420 200,-420 206,-426 206,-432 206,-432 206,-460 206,-460 206,-466 200,-472 194,-472"/>
+<text text-anchor="middle" x="157" y="-460" font-family="Helvetica" font-size="10.00">scar proposal</text>
+<text text-anchor="middle" x="157" y="-449" font-family="Helvetica" font-size="10.00">当前: partial</text>
+<text text-anchor="middle" x="157" y="-438" font-family="Helvetica" font-size="10.00">目标: implemented</text>
+<text text-anchor="middle" x="157" y="-427" font-family="Helvetica" font-size="10.00">证据: verified</text>
+</g>
+<!-- edema_proposal -->
+<g id="node8" class="node">
+<title>edema_proposal</title>
+<path fill="#fff7e6" stroke="#6b7280" d="M194,-542C194,-542 120,-542 120,-542 114,-542 108,-536 108,-530 108,-530 108,-502 108,-502 108,-496 114,-490 120,-490 120,-490 194,-490 194,-490 200,-490 206,-496 206,-502 206,-502 206,-530 206,-530 206,-536 200,-542 194,-542"/>
+<text text-anchor="middle" x="157" y="-530" font-family="Helvetica" font-size="10.00">edema proposal</text>
+<text text-anchor="middle" x="157" y="-519" font-family="Helvetica" font-size="10.00">当前: partial</text>
+<text text-anchor="middle" x="157" y="-508" font-family="Helvetica" font-size="10.00">目标: implemented</text>
+<text text-anchor="middle" x="157" y="-497" font-family="Helvetica" font-size="10.00">证据: verified</text>
+</g>
+<!-- scar_refiner -->
+<g id="node9" class="node">
+<title>scar_refiner</title>
+<path fill="#fff7e6" stroke="#6b7280" d="M197,-612C197,-612 117,-612 117,-612 111,-612 105,-606 105,-600 105,-600 105,-572 105,-572 105,-566 111,-560 117,-560 117,-560 197,-560 197,-560 203,-560 209,-566 209,-572 209,-572 209,-600 209,-600 209,-606 203,-612 197,-612"/>
+<text text-anchor="middle" x="157" y="-600" font-family="Helvetica" font-size="10.00">scar soft&#45;ROI refiner</text>
+<text text-anchor="middle" x="157" y="-589" font-family="Helvetica" font-size="10.00">当前: partial</text>
+<text text-anchor="middle" x="157" y="-578" font-family="Helvetica" font-size="10.00">目标: implemented</text>
+<text text-anchor="middle" x="157" y="-567" font-family="Helvetica" font-size="10.00">证据: verified</text>
+</g>
+<!-- edema_refiner -->
+<g id="node10" class="node">
+<title>edema_refiner</title>
+<path fill="#fff7e6" stroke="#6b7280" d="M202.5,-682C202.5,-682 111.5,-682 111.5,-682 105.5,-682 99.5,-676 99.5,-670 99.5,-670 99.5,-642 99.5,-642 99.5,-636 105.5,-630 111.5,-630 111.5,-630 202.5,-630 202.5,-630 208.5,-630 214.5,-636 214.5,-642 214.5,-642 214.5,-670 214.5,-670 214.5,-676 208.5,-682 202.5,-682"/>
+<text text-anchor="middle" x="157" y="-670" font-family="Helvetica" font-size="10.00">edema soft&#45;ROI refiner</text>
+<text text-anchor="middle" x="157" y="-659" font-family="Helvetica" font-size="10.00">当前: partial</text>
+<text text-anchor="middle" x="157" y="-648" font-family="Helvetica" font-size="10.00">目标: implemented</text>
+<text text-anchor="middle" x="157" y="-637" font-family="Helvetica" font-size="10.00">证据: verified</text>
+</g>
+<!-- no_t2_safety -->
+<g id="node11" class="node">
+<title>no_t2_safety</title>
+<path fill="#fff7e6" stroke="#6b7280" d="M197.5,-752C197.5,-752 116.5,-752 116.5,-752 110.5,-752 104.5,-746 104.5,-740 104.5,-740 104.5,-712 104.5,-712 104.5,-706 110.5,-700 116.5,-700 116.5,-700 197.5,-700 197.5,-700 203.5,-700 209.5,-706 209.5,-712 209.5,-712 209.5,-740 209.5,-740 209.5,-746 203.5,-752 197.5,-752"/>
+<text text-anchor="middle" x="157" y="-740" font-family="Helvetica" font-size="10.00">no&#45;T2 edema 安全门</text>
+<text text-anchor="middle" x="157" y="-729" font-family="Helvetica" font-size="10.00">当前: implemented</text>
+<text text-anchor="middle" x="157" y="-718" font-family="Helvetica" font-size="10.00">目标: implemented</text>
+<text text-anchor="middle" x="157" y="-707" font-family="Helvetica" font-size="10.00">证据: verified</text>
+</g>
+<!-- arbitration_final_output -->
+<g id="node12" class="node">
+<title>arbitration_final_output</title>
+<path fill="#fff7e6" stroke="#6b7280" d="M207,-822C207,-822 107,-822 107,-822 101,-822 95,-816 95,-810 95,-810 95,-782 95,-782 95,-776 101,-770 107,-770 107,-770 207,-770 207,-770 213,-770 219,-776 219,-782 219,-782 219,-810 219,-810 219,-816 213,-822 207,-822"/>
+<text text-anchor="middle" x="157" y="-810" font-family="Helvetica" font-size="10.00">arbitration 与 final output</text>
+<text text-anchor="middle" x="157" y="-799" font-family="Helvetica" font-size="10.00">当前: partial</text>
+<text text-anchor="middle" x="157" y="-788" font-family="Helvetica" font-size="10.00">目标: implemented</text>
+<text text-anchor="middle" x="157" y="-777" font-family="Helvetica" font-size="10.00">证据: verified</text>
+</g>
+<!-- losses -->
+<g id="node13" class="node">
+<title>losses</title>
+<path fill="#fff7e6" stroke="#6b7280" d="M194,-892C194,-892 120,-892 120,-892 114,-892 108,-886 108,-880 108,-880 108,-852 108,-852 108,-846 114,-840 120,-840 120,-840 194,-840 194,-840 200,-840 206,-846 206,-852 206,-852 206,-880 206,-880 206,-886 200,-892 194,-892"/>
+<text text-anchor="middle" x="157" y="-880" font-family="Helvetica" font-size="10.00">loss 与优化目标</text>
+<text text-anchor="middle" x="157" y="-869" font-family="Helvetica" font-size="10.00">当前: implemented</text>
+<text text-anchor="middle" x="157" y="-858" font-family="Helvetica" font-size="10.00">目标: implemented</text>
+<text text-anchor="middle" x="157" y="-847" font-family="Helvetica" font-size="10.00">证据: verified</text>
+</g>
+<!-- checkpoint_selection -->
+<g id="node14" class="node">
+<title>checkpoint_selection</title>
+<path fill="#fff7e6" stroke="#6b7280" d="M194,-962C194,-962 120,-962 120,-962 114,-962 108,-956 108,-950 108,-950 108,-922 108,-922 108,-916 114,-910 120,-910 120,-910 194,-910 194,-910 200,-910 206,-916 206,-922 206,-922 206,-950 206,-950 206,-956 200,-962 194,-962"/>
+<text text-anchor="middle" x="157" y="-950" font-family="Helvetica" font-size="10.00">checkpoint 选择</text>
+<text text-anchor="middle" x="157" y="-939" font-family="Helvetica" font-size="10.00">当前: partial</text>
+<text text-anchor="middle" x="157" y="-928" font-family="Helvetica" font-size="10.00">目标: implemented</text>
+<text text-anchor="middle" x="157" y="-917" font-family="Helvetica" font-size="10.00">证据: verified</text>
+</g>
+<!-- cine_temporal -->
+<g id="node15" class="node">
+<title>cine_temporal</title>
+<path fill="#fff7e6" stroke="#6b7280" d="M195,-1032C195,-1032 119,-1032 119,-1032 113,-1032 107,-1026 107,-1020 107,-1020 107,-992 107,-992 107,-986 113,-980 119,-980 119,-980 195,-980 195,-980 201,-980 207,-986 207,-992 207,-992 207,-1020 207,-1020 207,-1026 201,-1032 195,-1032"/>
+<text text-anchor="middle" x="157" y="-1020" font-family="Helvetica" font-size="10.00">Cine temporal 次线</text>
+<text text-anchor="middle" x="157" y="-1009" font-family="Helvetica" font-size="10.00">当前: partial</text>
+<text text-anchor="middle" x="157" y="-998" font-family="Helvetica" font-size="10.00">目标: implemented</text>
+<text text-anchor="middle" x="157" y="-987" font-family="Helvetica" font-size="10.00">证据: unverified</text>
+</g>
+<!-- controller_continuity -->
+<g id="node16" class="node">
+<title>controller_continuity</title>
+<path fill="#fff7e6" stroke="#6b7280" d="M220,-1102C220,-1102 94,-1102 94,-1102 88,-1102 82,-1096 82,-1090 82,-1090 82,-1062 82,-1062 82,-1056 88,-1050 94,-1050 94,-1050 220,-1050 220,-1050 226,-1050 232,-1056 232,-1062 232,-1062 232,-1090 232,-1090 232,-1096 226,-1102 220,-1102"/>
+<text text-anchor="middle" x="157" y="-1090" font-family="Helvetica" font-size="10.00">controller continuity 与 finalizer</text>
+<text text-anchor="middle" x="157" y="-1079" font-family="Helvetica" font-size="10.00">当前: partial</text>
+<text text-anchor="middle" x="157" y="-1068" font-family="Helvetica" font-size="10.00">目标: implemented</text>
+<text text-anchor="middle" x="157" y="-1057" font-family="Helvetica" font-size="10.00">证据: unverified</text>
+</g>
+<!-- mapper_wiki_observability -->
+<g id="node17" class="node">
+<title>mapper_wiki_observability</title>
+<path fill="#fff7e6" stroke="#6b7280" d="M208.5,-1172C208.5,-1172 105.5,-1172 105.5,-1172 99.5,-1172 93.5,-1166 93.5,-1160 93.5,-1160 93.5,-1132 93.5,-1132 93.5,-1126 99.5,-1120 105.5,-1120 105.5,-1120 208.5,-1120 208.5,-1120 214.5,-1120 220.5,-1126 220.5,-1132 220.5,-1132 220.5,-1160 220.5,-1160 220.5,-1166 214.5,-1172 208.5,-1172"/>
+<text text-anchor="middle" x="157" y="-1160" font-family="Helvetica" font-size="10.00">mapper/wiki observability</text>
+<text text-anchor="middle" x="157" y="-1149" font-family="Helvetica" font-size="10.00">当前: partial</text>
+<text text-anchor="middle" x="157" y="-1138" font-family="Helvetica" font-size="10.00">目标: implemented</text>
+<text text-anchor="middle" x="157" y="-1127" font-family="Helvetica" font-size="10.00">证据: unverified</text>
+</g>
+<!-- m10_followup_wave2_reconciliation -->
+<g id="node18" class="node">
+<title>m10_followup_wave2_reconciliation</title>
+<path fill="#fff7e6" stroke="#6b7280" d="M280.5,-1242C280.5,-1242 33.5,-1242 33.5,-1242 27.5,-1242 21.5,-1236 21.5,-1230 21.5,-1230 21.5,-1202 21.5,-1202 21.5,-1196 27.5,-1190 33.5,-1190 33.5,-1190 280.5,-1190 280.5,-1190 286.5,-1190 292.5,-1196 292.5,-1202 292.5,-1202 292.5,-1230 292.5,-1230 292.5,-1236 286.5,-1242 280.5,-1242"/>
+<text text-anchor="middle" x="157" y="-1230" font-family="Helvetica" font-size="10.00">M10 inherited Wave2 checkpoint/intervention reconciliation</text>
+<text text-anchor="middle" x="157" y="-1219" font-family="Helvetica" font-size="10.00">当前: partial</text>
+<text text-anchor="middle" x="157" y="-1208" font-family="Helvetica" font-size="10.00">目标: implemented</text>
+<text text-anchor="middle" x="157" y="-1197" font-family="Helvetica" font-size="10.00">证据: verified</text>
+</g>
+<!-- cine_followup_fidelity_contracts -->
+<g id="node19" class="node">
+<title>cine_followup_fidelity_contracts</title>
+<path fill="#fff7e6" stroke="#6b7280" d="M278,-1312C278,-1312 36,-1312 36,-1312 30,-1312 24,-1306 24,-1300 24,-1300 24,-1272 24,-1272 24,-1266 30,-1260 36,-1260 36,-1260 278,-1260 278,-1260 284,-1260 290,-1266 290,-1272 290,-1272 290,-1300 290,-1300 290,-1306 284,-1312 278,-1312"/>
+<text text-anchor="middle" x="157" y="-1300" font-family="Helvetica" font-size="10.00">CineMA/registration/temporal fail&#45;closed fidelity contracts</text>
+<text text-anchor="middle" x="157" y="-1289" font-family="Helvetica" font-size="10.00">当前: implemented</text>
+<text text-anchor="middle" x="157" y="-1278" font-family="Helvetica" font-size="10.00">目标: implemented</text>
+<text text-anchor="middle" x="157" y="-1267" font-family="Helvetica" font-size="10.00">证据: verified</text>
+</g>
+<!-- cine_followup_adapter_control -->
+<g id="node20" class="node">
+<title>cine_followup_adapter_control</title>
+<path fill="#fff7e6" stroke="#6b7280" d="M302,-1382C302,-1382 12,-1382 12,-1382 6,-1382 0,-1376 0,-1370 0,-1370 0,-1342 0,-1342 0,-1336 6,-1330 12,-1330 12,-1330 302,-1330 302,-1330 308,-1330 314,-1336 314,-1342 314,-1342 314,-1370 314,-1370 314,-1376 308,-1382 302,-1382"/>
+<text text-anchor="middle" x="157" y="-1370" font-family="Helvetica" font-size="10.00">CineMA adapted model versus capacity&#45;matched random&#45;init control</text>
+<text text-anchor="middle" x="157" y="-1359" font-family="Helvetica" font-size="10.00">当前: partial</text>
+<text text-anchor="middle" x="157" y="-1348" font-family="Helvetica" font-size="10.00">目标: implemented</text>
+<text text-anchor="middle" x="157" y="-1337" font-family="Helvetica" font-size="10.00">证据: unverified</text>
+</g>
+<!-- cine_followup_registration -->
+<g id="node21" class="node">
+<title>cine_followup_registration</title>
+<path fill="#fff7e6" stroke="#6b7280" d="M279.5,-1452C279.5,-1452 34.5,-1452 34.5,-1452 28.5,-1452 22.5,-1446 22.5,-1440 22.5,-1440 22.5,-1412 22.5,-1412 22.5,-1406 28.5,-1400 34.5,-1400 34.5,-1400 279.5,-1400 279.5,-1400 285.5,-1400 291.5,-1406 291.5,-1412 291.5,-1412 291.5,-1440 291.5,-1440 291.5,-1446 285.5,-1452 279.5,-1452"/>
+<text text-anchor="middle" x="157" y="-1440" font-family="Helvetica" font-size="10.00">learned registration plus gate and SyN control requirement</text>
+<text text-anchor="middle" x="157" y="-1429" font-family="Helvetica" font-size="10.00">当前: partial</text>
+<text text-anchor="middle" x="157" y="-1418" font-family="Helvetica" font-size="10.00">目标: implemented</text>
+<text text-anchor="middle" x="157" y="-1407" font-family="Helvetica" font-size="10.00">证据: unverified</text>
+</g>
+<!-- cine_followup_temporal_dictionary -->
+<g id="node22" class="node">
+<title>cine_followup_temporal_dictionary</title>
+<path fill="#fff7e6" stroke="#6b7280" d="M274.5,-1522C274.5,-1522 39.5,-1522 39.5,-1522 33.5,-1522 27.5,-1516 27.5,-1510 27.5,-1510 27.5,-1482 27.5,-1482 27.5,-1476 33.5,-1470 39.5,-1470 39.5,-1470 274.5,-1470 274.5,-1470 280.5,-1470 286.5,-1476 286.5,-1482 286.5,-1482 286.5,-1510 286.5,-1510 286.5,-1516 280.5,-1522 274.5,-1522"/>
+<text text-anchor="middle" x="157" y="-1510" font-family="Helvetica" font-size="10.00">learned temporal dictionary/model after registration gate</text>
+<text text-anchor="middle" x="157" y="-1499" font-family="Helvetica" font-size="10.00">当前: partial</text>
+<text text-anchor="middle" x="157" y="-1488" font-family="Helvetica" font-size="10.00">目标: implemented</text>
+<text text-anchor="middle" x="157" y="-1477" font-family="Helvetica" font-size="10.00">证据: missing</text>
+</g>
+<!-- m10_followup_controller_finalizer -->
+<g id="node23" class="node">
+<title>m10_followup_controller_finalizer</title>
+<path fill="#fff7e6" stroke="#6b7280" d="M294.5,-1592C294.5,-1592 19.5,-1592 19.5,-1592 13.5,-1592 7.5,-1586 7.5,-1580 7.5,-1580 7.5,-1552 7.5,-1552 7.5,-1546 13.5,-1540 19.5,-1540 19.5,-1540 294.5,-1540 294.5,-1540 300.5,-1540 306.5,-1546 306.5,-1552 306.5,-1552 306.5,-1580 306.5,-1580 306.5,-1586 300.5,-1592 294.5,-1592"/>
+<text text-anchor="middle" x="157" y="-1580" font-family="Helvetica" font-size="10.00">M10 follow&#45;up controller finalizer and packet publication boundary</text>
+<text text-anchor="middle" x="157" y="-1569" font-family="Helvetica" font-size="10.00">当前: partial</text>
+<text text-anchor="middle" x="157" y="-1558" font-family="Helvetica" font-size="10.00">目标: implemented</text>
+<text text-anchor="middle" x="157" y="-1547" font-family="Helvetica" font-size="10.00">证据: unverified</text>
+</g>
+</g>
+</svg>

@@ -1,0 +1,28 @@
+{
+  "adapter_present": true,
+  "completion": "M10_FOLLOWUP_CINE_RUNTIME_NEEDS_REVISION_RETURN_TO_CINE_FIDELITY_WAVE",
+  "revision_reason": "F3 temporal timeout exposed frozen temporal job/entrypoint behavior that cannot be corrected inside F3 write scope; return to Cine fidelity wave.",
+  "finalizer_job_id": "58997394",
+  "random_init_present": true,
+  "registration_present": true,
+  "temporal_attempts": [
+    {
+      "elapsed": "00:00:07",
+      "exit_code": "1:0",
+      "job_id": "58932628",
+      "reason": "runtime_root_missing_upstream_summaries",
+      "state": "FAILED",
+      "training_credit": 0
+    },
+    {
+      "checkpoint_best_step": 6000,
+      "elapsed": "08:00:20",
+      "exit_code": "0:0",
+      "job_id": "58997393",
+      "reason": "timeout_before_terminal_summary_or_final_checkpoint",
+      "state": "TIMEOUT",
+      "training_credit": 0
+    }
+  ],
+  "temporal_present": false
+}

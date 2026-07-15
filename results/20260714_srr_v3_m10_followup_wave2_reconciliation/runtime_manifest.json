@@ -1,0 +1,9 @@
+{
+  "inventory_count": 125,
+  "metrics_rows": 500,
+  "new_evaluations": 11,
+  "output_dir": "/users/a/e/aereinh/CARE/results/20260714_srr_v3_m10_followup_wave2_reconciliation",
+  "output_runtime_root": "/users/a/e/aereinh/CARE/results/20260714_srr_v3_m10_followup_wave2_reconciliation/runtime",
+  "status": "RUNTIME_EVALUATION_PARTIAL",
+  "task_key": "20260714_srr_v3_m10_followup_wave2_reconciliation"
+}

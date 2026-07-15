@@ -27,3 +27,8 @@ M9 follow-up 的证据已经完成一致性修复并通过独立 review，但结
 | `cine_temporal` | partial/unverified | Cine 必做但不能救 MyoPS；仍无 hosted readiness。 | `scripts/evaluation/aggregate_srr_v3_m9_dictionary_fidelity_packet.py` / `Cine` | `results/20260708_srr_v3_m9_dictionary_fidelity_repair_training/review.md` | 从 local proxy 走向成熟 temporal evidence，不能替代 MyoPS |
 | `controller_continuity` | partial/unverified | 需要真实 controller runtime evidence 后才能 verified。 | `prompts/CONTROLLER_TASK_PROTOCOL.md` / `controller_supervised` | `wiki/EXECUTION.md` | 保持只做 operational observability，不做科学判断 |
 | `mapper_wiki_observability` | partial/unverified | mapper final 在 reviewer 前运行；review token 由 post-review reconciliation 更新。 | `.agents/skills/care-mapper/SKILL.md` / `care-mapper` | `wiki/README.md` | 保持只做 operational observability，不做科学判断 |
+
+
+## M10 follow-up candidate mapping
+
+M10 follow-up adds tracked candidate evidence for inherited MyoPS checkpoint selection/interventions and first-party Cine fidelity contracts. The new Cine runtime remains incomplete: adapter/control and registration jobs completed, but `real_syn_control.csv` is still `NEEDS_EVIDENCE_REAL_SYN_NOT_RUN_BY_CURRENT_ENTRYPOINT`, and the temporal dictionary replacement timed out before writing terminal outputs. The candidate rows in `COMPONENTS.csv` are marked `NOT_REVIEWED`; they do not update `wiki/current_state.yaml`.

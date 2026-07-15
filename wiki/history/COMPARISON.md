@@ -17,3 +17,13 @@
 | Cine temporal 分支 | CineMA/registration 只是 local proxy | M9 Cine 有进步但仍 local proxy | Cine 仍未成为 hosted-ready 路线 | local evidence 更清楚 | 明确 Cine 必做但不能救 MyoPS | temporal dictionary/hosted metric 缺口 | M10 不能用 Cine proxy 包装 overall success |
 
 ![M09 delta](M09/figures/delta-from-M08.png)
+
+
+## M09 -> M10 candidate
+
+| 组件 | M09 状态 | M10 candidate 状态 | 证据变化 | 仍缺什么 | review boundary |
+| --- | --- | --- | --- | --- | --- |
+| MyoPS checkpoint/intervention evidence | M9 no-promotion diagnostic-only | M10 F1 inherited Wave2 reconciliation locally complete | all-checkpoint 44-case evaluation and D2/D3 intervention packet added | independent M10 runtime review | `NOT_REVIEWED` |
+| Cine fidelity contracts | M9 Cine local proxy | F2 first-party fail-closed contracts and tests added | proxy SyN, pair-as-case, frame0 fallback, temporal-without-registration cases fail closed | formal runtime evidence remains incomplete | `NOT_REVIEWED` |
+| Cine temporal runtime | partial/unverified | `NEEDS_EVIDENCE` | adapter/control/registration terminal accounting recorded | real SyN strict aggregation and temporal terminal outputs missing | `NOT_REVIEWED` |
+| Controller/finalizer observability | partial/unverified | M10 controller packet records terminal accounting and no-push boundary | durable ledger and finalizer state added | independent reviewer has not run | `NOT_REVIEWED` |

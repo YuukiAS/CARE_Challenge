@@ -35,3 +35,8 @@ code_fingerprint: `srr_propref=f7f9df91;srr_blocks=8d126023;srr_losses=dca8e5e1;
 - [architecture.yaml](architecture.yaml)
 - [history/README.md](history/README.md)
 - [writing_skill_receipt.json](writing_skill_receipt.json)
+
+
+## M10 candidate snapshot
+
+M10 follow-up has a local controller packet at `results/20260714_srr_v3_m10_continuation_reconciliation/`. It is a `candidate_unreviewed` operational packet, not a new current reviewed milestone. F1 MyoPS reconciliation and F2 Cine fidelity passed their local validators, but F3 Cine temporal runtime is `NEEDS_EVIDENCE` after job `58997393` timed out before terminal temporal outputs. `wiki/current_state.yaml` therefore remains on M09 until independent runtime review and a later reconciliation task.

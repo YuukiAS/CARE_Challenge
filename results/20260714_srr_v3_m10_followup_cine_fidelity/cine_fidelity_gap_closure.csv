@@ -1,0 +1,7 @@
+area,required,status
+CineMA provenance,source/license/weight_sha256/case_frame provenance,PASS
+Adapter/control,multiclass logits/features/uncertainty plus random-init control and reload,PASS
+Registration math,"SVF, seven-step scaling/squaring, bidirectional transforms, true QC",PASS
+SyN control,"real ANTs/SyN, not proxy",PASS
+Temporal gate,registration-gated eight-slot temporal dictionary,PASS
+Formal training,not allowed in F2,PASS_NOT_RUN

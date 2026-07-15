@@ -1,0 +1,92 @@
+gap_nodes:
+- id: temporal_missing
+  label: 'Temporal evidence missing
+
+    58997393 TIMEOUT
+
+    step 6000 / 20000'
+- id: real_syn_missing
+  label: 'Real SyN strict evidence missing
+
+    real_syn_control.csv NEEDS_EVIDENCE'
+- id: review_pending
+  label: 'Independent runtime review pending
+
+    review_token NOT_REVIEWED'
+gap_edges:
+- from: real_syn_missing
+  to: temporal_missing
+  label: strict Cine evidence incomplete
+- from: temporal_missing
+  to: review_pending
+  label: packet remains NEEDS_EVIDENCE
+delta_nodes:
+- id: source_hash
+  label: 'M09 -> M10 candidate
+
+    source_hash: explicit_m10_candidate_delta'
+- id: added_components
+  label: '新增组件
+
+    M10 F1 reconciliation
+
+    Cine fidelity contracts
+
+    Cine runtime evidence rows'
+- id: removed_components
+  label: '删除/disabled 组件
+
+    none from current root wiki
+
+    M09 historical IDs remain immutable'
+- id: status_changes
+  label: 'implemented/partial/scaffold 状态变化
+
+    F2 contracts implemented
+
+    F3 temporal partial/missing'
+- id: evidence_changes
+  label: 'evidence_status 变化
+
+    F1 verified
+
+    F2 verified
+
+    F3 temporal missing'
+- id: source_symbol_changes
+  label: 'source/symbol 变化
+
+    new first-party Cine follow-up contracts and entrypoints'
+- id: final_output_changes
+  label: 'final_output_effect 变化
+
+    Temporal output missing after timeout
+
+    No route promotion'
+- id: review_token_changes
+  label: 'review token 变化
+
+    M09 reviewed token -> NOT_REVIEWED'
+- id: notes_changes
+  label: '主要 notes delta
+
+    M10 remains candidate_unreviewed NEEDS_EVIDENCE'
+delta_edges:
+- from: source_hash
+  to: added_components
+  label: M10 candidate evidence
+- from: added_components
+  to: status_changes
+  label: candidate status
+- from: status_changes
+  to: evidence_changes
+  label: evidence maturity
+- from: evidence_changes
+  to: final_output_changes
+  label: runtime effect
+- from: final_output_changes
+  to: review_token_changes
+  label: review boundary
+- from: review_token_changes
+  to: notes_changes
+  label: planner/reviewer next step

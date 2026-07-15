@@ -1,0 +1,60 @@
+{
+  "files": [
+    {
+      "path": "/users/a/e/aereinh/CARE/configs/srr_v3_m10_followup_cine.yaml",
+      "sha256": "21618dcaead866ff86d6a8fc70ea3d6d8d42d4c2671b663072beabfb61639b16"
+    },
+    {
+      "path": "/users/a/e/aereinh/CARE/jobs/src/run_srr_v3_m10_followup_cine_adapter.sh",
+      "sha256": "b3c7bba9dc42519dc909138d45eec0e8b1594ee99b1db11ec136e6081f0512cb"
+    },
+    {
+      "path": "/users/a/e/aereinh/CARE/jobs/src/run_srr_v3_m10_followup_cine_random_init.sh",
+      "sha256": "43064f35c29a7c8997224e7e99bed9ab02e80b51fecd729073b90961623d608f"
+    },
+    {
+      "path": "/users/a/e/aereinh/CARE/jobs/src/run_srr_v3_m10_followup_cine_registration.sh",
+      "sha256": "3cb546279f77e4d3ac4672236b6037129c2fdc8a69cafe4bda1486ea479d9bed"
+    },
+    {
+      "path": "/users/a/e/aereinh/CARE/jobs/src/run_srr_v3_m10_followup_cine_temporal.sh",
+      "sha256": "99bf655c5b1c3d88b2fa8c2015753b396275b0a16cadf6b45cb81b9e8d4e16e7"
+    },
+    {
+      "path": "/users/a/e/aereinh/CARE/scripts/evaluation/aggregate_cine_m10_followup.py",
+      "sha256": "90ee5784cdacd9c4709f1b9eb19295803147ec0315ffa20abe1a3ca89a499555"
+    },
+    {
+      "path": "/users/a/e/aereinh/CARE/scripts/evaluation/validate_cine_m10_followup.py",
+      "sha256": "1f6cd4bf176c6775a7dfd0412824a829e93a5b2fea744d3e9ddcf95f9d6c5a11"
+    },
+    {
+      "path": "/users/a/e/aereinh/CARE/scripts/training/run_cine_registration_m10_followup.py",
+      "sha256": "609fc9e90970001f50872751aec608f33a88bb91912565e00f1b6fb69fc61a4b"
+    },
+    {
+      "path": "/users/a/e/aereinh/CARE/scripts/training/run_cine_temporal_m10_followup.py",
+      "sha256": "885555d782ff12df5d3741301a246cbe4216dc90d6080ea752a533fbba0c92cd"
+    },
+    {
+      "path": "/users/a/e/aereinh/CARE/scripts/training/run_cinema_adapter_m10_followup.py",
+      "sha256": "ffe66c4ca2f24e083ec71529db854a8bffd0a13d15afefdb0592750664043db8"
+    },
+    {
+      "path": "/users/a/e/aereinh/CARE/src/care_myocardium/cine/followup/__init__.py",
+      "sha256": "706e265a53d6cb1f669853a63ce3dc4e1e367cb2c88e8f01b1ca3c47d3311750"
+    },
+    {
+      "path": "/users/a/e/aereinh/CARE/src/care_myocardium/cine/followup/contracts.py",
+      "sha256": "a20ae4903699092786efeb1c14d779ef90146d6d3dd7be37413239f22d66c8da"
+    },
+    {
+      "path": "/users/a/e/aereinh/CARE/src/care_myocardium/tests/test_m10_followup_cine_fidelity.py",
+      "sha256": "cc457c117f4aab590212eb833b7632708680004d6b76f8d27a0e4a7437d920b1"
+    }
+  ],
+  "freeze_hash": "6439a7da9710cf41566ce2ab8a931f837dc1fa7915003b9ecdfede1066741e68",
+  "status": "FROZEN_FOR_WAVE_F3",
+  "task_key": "20260714_srr_v3_m10_followup_cine_fidelity",
+  "unit_test_exit_code": 0
+}

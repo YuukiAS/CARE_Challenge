@@ -1,0 +1,14 @@
+{
+  "rows": [
+    {
+      "artifact": "old_wave2_finalization",
+      "path": "/users/a/e/aereinh/CARE/results/20260711_srr_v3_m10_complete_mechanism_repair/wave2_partition_race_retry11_finalization.json",
+      "status": "PRESENT"
+    },
+    {
+      "artifact": "checkpoint_inventory",
+      "path": "/users/a/e/aereinh/CARE/results/20260714_srr_v3_m10_followup_wave2_reconciliation/checkpoint_inventory.csv",
+      "status": "PRESENT"
+    }
+  ]
+}

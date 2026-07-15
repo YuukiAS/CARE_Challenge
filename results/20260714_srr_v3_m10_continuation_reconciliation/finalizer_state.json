@@ -1,0 +1,88 @@
+{
+  "aggregation_commands": [
+    "python scripts/evaluation/aggregate_srr_v3_m10_followup_wave2.py",
+    "python scripts/evaluation/aggregate_cine_m10_followup.py",
+    "results/20260714_srr_v3_m10_followup_cine_runtime/run_wave_f3_finalizer.sh"
+  ],
+  "completion": "NEEDS_REVISION_RETURN_TO_CINE_FIDELITY_WAVE",
+  "f3_temporal_gap": {
+    "checkpoint_best_step": 6000,
+    "elapsed": "08:00:20",
+    "job_id": "58997393",
+    "reason": "timeout_before_terminal_summary_or_final_checkpoint",
+    "required_optimizer_steps": 20000,
+    "state": "TIMEOUT",
+    "training_credit": 0
+  },
+  "f3_revision_return": {
+    "required": true,
+    "reason": "Frozen F3 temporal job wrapper calls scripts/training/run_cine_temporal_model_m10.py while the F3 plan/freeze receipt bind scripts/training/run_cine_temporal_m10_followup.py; correcting this requires Cine fidelity wave scope rather than F3 hot patching.",
+    "target": "CINE_FIDELITY_WAVE"
+  },
+  "generated_at_utc": "2026-07-15T01:20:27Z",
+  "git_head_before_finalization": "78d63987917ae4891ebae77628c6a624ba055c00",
+  "jobs": {
+    "F1": [
+      "58921369",
+      "58921373",
+      "58921374",
+      "58921375",
+      "58921376",
+      "58921377",
+      "58921378",
+      "58921379",
+      "58921380"
+    ],
+    "F3": [
+      "58932590",
+      "58932609",
+      "58932626",
+      "58932627",
+      "58932628",
+      "58932629",
+      "58997393",
+      "58997394"
+    ]
+  },
+  "local_commit_policy": "amend_existing_local_packet_commit_to_preserve_exactly_one_local_packet_commit",
+  "mapper_final_status": "MAPPER_FINAL_NEEDS_REVISION_CANDIDATE_UNREVIEWED",
+  "push_performed": false,
+  "review_md_written": false,
+  "route_negative_decision": "NOT_REVIEWED",
+  "route_promotion_decision": "NOT_REVIEWED",
+  "runtime_output_paths": [
+    "results/20260714_srr_v3_m10_followup_wave2_reconciliation",
+    "results/20260714_srr_v3_m10_followup_cine_fidelity",
+    "results/20260714_srr_v3_m10_followup_cine_runtime"
+  ],
+  "scientific_resolution_status": "AWAITING_REVIEW",
+  "state": "READY_FOR_LOCAL_PACKET_COMMIT_NEEDS_REVISION_RETURN_TO_CINE_FIDELITY_WAVE",
+  "task_key": "20260714_srr_v3_m10_continuation_reconciliation",
+  "toolkit_healthcheck": "SMOKE_FAILED_MISSING_D2",
+  "validator_commands": [
+    "python scripts/ops/validate_executor_plan.py prompts/tasks/20260714_srr_v3_m10_continuation_reconciliation_executor_plan.yaml",
+    "python scripts/validation/validate_handoff_policy.py --strict-tasks --warnings-as-errors",
+    "env PYTHONPATH=. pytest -q src/care_myocardium/tests/test_m10_followup_cine_fidelity.py",
+    "python scripts/evaluation/validate_srr_v3_m10_followup_wave2.py",
+    "python scripts/evaluation/validate_cine_m10_followup.py",
+    "python scripts/architecture/validate_care_architecture_wiki.py --strict --history",
+    "python scripts/architecture/generate_care_architecture_wiki.py --check-all",
+    "python -m json.tool controller/finalizer/toolkit JSON files",
+    "git diff --check"
+  ],
+  "validator_results": {
+    "architecture_wiki_check_all": "PASS",
+    "architecture_wiki_strict_history": "PASS",
+    "cine_fidelity_pytest": "PASS_6",
+    "executor_plan": "PASS",
+    "f1_wave2_validator": "PASS",
+    "f2_cine_validator": "PASS",
+    "git_diff_check": "PASS",
+    "handoff_policy": "PASS",
+    "json_sanity": "PASS",
+    "toolkit_doctor_json": "PASS",
+    "toolkit_smoke": "FAIL_MISSING_D2_EXECUTABLE",
+    "toolkit_status": "PASS",
+    "toolkit_validate": "PASS"
+  }
+}

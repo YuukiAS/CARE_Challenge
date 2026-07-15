@@ -1,0 +1,13 @@
+{
+  "ants_syn_control": "PAIRED_CONTROL_RECORDED_AS_SYN_NONINFERIORITY_PROXY",
+  "case_count": 36,
+  "case_non_worse_rate": 0.9166666666666666,
+  "lncc_improved_pair_rate": 1.0,
+  "max_negative_jacobian_fraction_proxy": 0.0,
+  "max_p99_displacement_vox": 0.21169133484363556,
+  "median_inverse_consistency_error_vox_proxy": 0.007197801489382982,
+  "median_negative_jacobian_fraction_proxy": 0.0,
+  "median_warped_anatomy_dice_gain": 0.07275364200345769,
+  "pair_count": 72,
+  "registration_gate_passed": true
+}

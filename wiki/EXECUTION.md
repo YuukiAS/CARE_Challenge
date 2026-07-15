@@ -39,3 +39,8 @@ planner -> controller
 ## Slurm 状态
 
 `PENDING`、`RUNNING`、`CONFIGURING`、`COMPLETING`、`AWAITING_SACCT` 是 monitor state，不是 completion，也不是 scheduler block。`AWAITING_SACCT` 由 finalizer bounded retry；超时写 `AWAITING_SACCT_RETRY_EXHAUSTED`。scheduler block 需要 Slurm skill 的 12 次、每 2 小时、总 24 小时 all-pending evidence。
+
+
+## M10 follow-up controller status
+
+The M10 follow-up controller executed three serial waves under `executor_slots=1`. F1 and F2 reached controller-accepted local completion. F3 reached terminal accounting but returned `M10_FOLLOWUP_CINE_RUNTIME_NEEDS_EVIDENCE` because temporal job `58997393` timed out with no `summary.json`, runtime CSVs, or final checkpoint. This is a completed terminal-accounting state, not scheduler saturation and not an audited scientific decision.

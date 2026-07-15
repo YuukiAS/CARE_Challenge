@@ -1,0 +1,18 @@
+{
+  "binarizes_prior": false,
+  "capacity_tolerance": 0.0,
+  "eval_case_count": 12,
+  "fallback_to_frame0": false,
+  "feature_channels": 16,
+  "missing_non_reference_policy": "record_frame_failure",
+  "prior_channels": 4,
+  "random_init_control_present": true,
+  "random_init_parameter_count": 1024,
+  "scheduled_checkpoints": 10,
+  "selected_checkpoint_name": "WAVE3_REQUIRED",
+  "selected_checkpoint_reloaded": true,
+  "trainable_adapter": "final_two_blocks",
+  "trainable_parameter_count": 1024,
+  "uncertainty_channels": 1,
+  "uses_verified_pretrained_path": true
+}

@@ -7,3 +7,5 @@
 | Agent-flow v2 continuity repair | `10878dc` and follow-up | `care-agent-flow-v2-complete` | `wiki+validator+skills+toolkit-healthcheck` | 增加 durable finalizer、并行 executor plan gate、中文 wiki 和 history generator。 | protocol-only | `wiki/writing_skill_receipt.json` |
 
 后续 mapper-final 更新必须追加新行，记录 architecture version、code fingerprint、component status delta、review token 和 evidence path。历史版本默认不可静默改写；纠错使用 `ERRATA.md` 或 `later_status_update`。
+
+| M10 follow-up candidate packet | M09 current state | `care-agent-flow-v2-m10-candidate-unreviewed` | `m10_candidate=78d6398` | Added unreviewed F1/F2/F3 evidence mapping; F3 temporal remains NEEDS_EVIDENCE after timeout. | `NOT_REVIEWED` | `results/20260714_srr_v3_m10_continuation_reconciliation/result.md` |

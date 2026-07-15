@@ -1,0 +1,10 @@
+{
+  "cuda_available": true,
+  "freeze_hash": "6439a7da9710cf41566ce2ab8a931f837dc1fa7915003b9ecdfede1066741e68",
+  "job_id": "58932590",
+  "log_file": "",
+  "optimizer_ok": true,
+  "python": "/users/a/e/aereinh/CARE/envs/env_CARE/bin/python",
+  "status": "PASS",
+  "torch": "2.11.0+cu130"
+}

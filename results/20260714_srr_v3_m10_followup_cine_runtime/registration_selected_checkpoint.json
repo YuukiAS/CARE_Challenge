@@ -1,0 +1,24 @@
+{
+  "status": "TERMINAL_RUNTIME_EVIDENCE",
+  "summary": {
+    "actual_optimizer_steps": 25000,
+    "best_step": 7500,
+    "checkpoint_best": "results/20260714_srr_v3_m10_followup_cine_runtime/runtime/cine_registration/variants/m10_cine_registration/checkpoints/checkpoint_best.pt",
+    "checkpoint_final": "results/20260714_srr_v3_m10_followup_cine_runtime/runtime/cine_registration/variants/m10_cine_registration/checkpoints/checkpoint_final.pt",
+    "checkpoint_selection_mode": "median_warped_anatomy_dice_gain",
+    "checkpoint_selection_status": "M10_REGISTRATION_GATE_SELECTION",
+    "design": "learned diffeomorphic Cine registration",
+    "eval_cases": 36,
+    "phase": "cine_registration",
+    "prediction_dirs": "results/20260714_srr_v3_m10_followup_cine_runtime/runtime/cine_registration/variants/m10_cine_registration/lowres_registration_qc",
+    "registration_gate_passed": true,
+    "registration_gate_path": "results/20260714_srr_v3_m10_followup_cine_runtime/runtime/cine_registration/variants/m10_cine_registration/registration_gate.json",
+    "required_optimizer_steps": 25000,
+    "required_train_loop_seconds": 7200,
+    "required_validation_events": 10,
+    "status": "TERMINAL_RUNTIME_EVIDENCE",
+    "stop_reason": "max_steps_min_train_loop_seconds_satisfied",
+    "train_loop_seconds": 9234.71562547586,
+    "validation_event_count": 10
+  }
+}

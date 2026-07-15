@@ -1,0 +1,41 @@
+{
+  "phases": {
+    "alignment_control": {
+      "checkpoint_name": "checkpoint_validation_step_10000",
+      "score": 0.582822249269375,
+      "status": "SELECTED_PRELIMINARY"
+    },
+    "d0_control": {
+      "checkpoint_name": "checkpoint_validation_step_16660",
+      "score": 0.5155751164311938,
+      "status": "SELECTED_PRELIMINARY"
+    },
+    "d1_spatial_br2": {
+      "checkpoint_name": "checkpoint_validation_step_22500",
+      "score": 0.5695507511167257,
+      "status": "SELECTED_PRELIMINARY"
+    },
+    "d2_hierarchical_psip": {
+      "checkpoint_name": "checkpoint_validation_step_24990",
+      "score": 0.5967142762036879,
+      "status": "SELECTED_PRELIMINARY"
+    },
+    "d3_full_propref": {
+      "checkpoint_name": "checkpoint_validation_step_40900",
+      "score": 0.6117050522431792,
+      "status": "SELECTED_PRELIMINARY"
+    },
+    "hard_negative_refresh": {
+      "checkpoint_name": "checkpoint_validation_step_20000",
+      "score": 0.5549288552183833,
+      "status": "SELECTED_PRELIMINARY"
+    },
+    "no_context_control": {
+      "checkpoint_name": "checkpoint_validation_step_20000",
+      "score": 0.4517422854804037,
+      "status": "SELECTED_PRELIMINARY"
+    }
+  },
+  "selector": "challenge_facing_score",
+  "status": "SELECTED_PRELIMINARY_PENDING_VALIDATOR"
+}

@@ -1,120 +1,326 @@
-<?xml version="1.0" encoding="utf-8"?><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" data-d2-version="v0.7.1" preserveAspectRatio="xMinYMin meet" viewBox="0 0 4626 951"><svg class="d2-2573774786 d2-svg" width="4626" height="951" viewBox="-101 -101 4626 951"><rect x="-101.000000" y="-101.000000" width="4626.000000" height="951.000000" rx="0.000000" fill="#FFFFFF" class=" fill-N7" stroke-width="0" /><style type="text/css"><![CDATA[
-.d2-2573774786 .text-bold {
-	font-family: "d2-2573774786-font-bold";
-}
-@font-face {
-	font-family: d2-2573774786-font-bold;
-	src: url("data:application/font-woff;base64,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");
-}
-.d2-2573774786 .text-italic {
-	font-family: "d2-2573774786-font-italic";
-}
-@font-face {
-	font-family: d2-2573774786-font-italic;
-	src: url("data:application/font-woff;base64,d09GRgABAAAAABPQAAoAAAAAHiwAARhRAAAAAAAAAAAAAAAAAAAAAAAAAABPUy8yAAAA9AAAAGAAAABgW1SVeGNtYXAAAAFUAAAA1QAAATwHIwjTZ2x5ZgAAAiwAAAySAAARtJ2GMjFoZWFkAAAOwAAAADYAAAA2G7Ur2mhoZWEAAA74AAAAJAAAACQLeAjeaG10eAAADxwAAADTAAAA6GnrBpJsb2NhAAAP8AAAAHYAAAB2hyKC4G1heHAAABBoAAAAIAAAACAAUgD2bmFtZQAAEIgAAAMmAAAIMgntVzNwb3N0AAATsAAAACAAAAAg/8YAMgADAeEBkAAFAAACigJY//EASwKKAlgARAFeADIBIwAAAgsFAwMEAwkCBCAAAHcAAAADAAAAAAAAAABBREJPAAEAIP//Au7/BgAAA9gBESAAAZMAAAAAAeYClAAAACAAA3icjM65LmwBHIDx37lz7p27nGvf17EvMxgMQicKmUQhEhGVKEUjSm+FzhK8hN5b2JK/ZDJRqHz1V/yQyEmQSZMySgpSmYKiGbPmlC1YtmrNuk1V23bt2XfgyImzCL7clfq9oWrLTv0+dOw0Ip5k8lL5eI+3eI3neImHuI+7uI2buI6reIzLuIjzmuv7JVZUatbSp2Xeoh9yUj/9kvfbH3/9k/mvQaMmzVq0WtKmXYdOXbr16NWn34BBBUOGjRg1ZtyESVOmFfkAAAD//wEAAP//lRw03AAAAHicfFd9bBvneX+f9048iaI+yCOPIi2JIu94lKgjJd2RPFEUSUmUKEoi9WnJiq1vf0W24yh2FSez3TTx1jnZ4jGB0WBBsGRLNnQI1gZON6xAkmJNt2jJXGxDunVrE2BJqrTxuiSCFrRFdDfckZIoY9s/hwPf4/Pxe37P73kfVIY4hPB5fBMRqALVIAuyISTRboKQZJm1E5LPx1KU7KNpinsMNh57lkwd/VnzC78WXOTgo38+8p9LL+ObO+fga/OPPKIcu37y5JE7dxQ//MsdhBDC6jsIwY9wHlUgM0I0Jfl43scaDAASzfpY6sOuN42kkSSdkvIPcOJodsLy81V4eG0tdKYzelqZwPmdtdu3EQIUVbdxAD+HXAiVeXg+HEpgSWTsFM+znmpsszKMJEZku8EAnpF7I+1Hr2Y7J+oidITvWuzjPMOx5lQTy82bUg+N5m5eGpT9LU2++ImHumPz4aZDoiugxYpYhHBEj5XWEJBExmY1GFifJEYi4RDPsuy133r8yenn75+Zmb6SOn08gvO/+/Cl75zsOfyN5flVLV/QbdTiPKrUMaTclESxlJtir8GZKuVD/+fVn0rAV+N874/6vugr+b6i5Hui+HXg86rPunG+96M+5V93MYjh55BHx+D/gEBmZYkwGEB48Gr7sUcnYhMOmZabEysDHJtNclHae73qh1FuwfTUQ6M3L6X3gOhaiNTV/mWP8lGjdzcPtI3ziNCRINhro9e0YuyewdM4j8oKZ1p2ow+CtQrnd27t5vQaziOHfk7bJVmzQEciMksRLKHVnyLYa/NRhky/OX9tJFvhNJFjfyPEGdJQXT6M88ofXb8OKztrcEE40/q08hLMPS2sCsqNou1TOF+sEG2XIhHd+p7V0W/4SUO1cWDkWu5mK2moMaZxXpl7vOM+CeZ21uDFJ6UzovK8Xu9udRsv4OdQLWoqRZSxWauxT0xgreYFZMF1fj04s54ePhkKznwlFT6S8AyPas8h0zNXRvLrA/2Xp0aeWh9Ida+sR5fXYyvrXUsP7nEqoPPBWsoplqAlcZdU3527MPzo4dVQ7+LJM9nMSZwfnhk/3aH8CgbHx6IS2rPjw3lUhZh9OxTNEgcsfWfugfNTF6fOXZD7jy+cGMks4Xx66th5s/IhMMonMD2ZjrQVeGpSt0HBzyE/QnYP75N18oRDvM+nNVcksscsg8FmZex2Ro/749Rac7RhWu6eCHiz/lh4LhZbckmOdNAbbujgsm2h2ClTV1drq9jfyYlM0Dkki5NiqDnY2OJqP8S3MYH6QbnrWAgBmkcIh3EeUVo2rOymWOLP1t+ogneqvreOc6nUzquFOMfUbb3eTLFCerW1kDSu0zrTG0+cNZDDoyMVPQOdR20T2cn6x0yrp2xtDlhTHg940rm5s/C0cvbGw5q9RYQIAeeRu8Bdg4EqMIhmrLbCG7BEKCLrbFqsGDcSBEna25mXBiuAtLZab+SUreMUBrLabX4V55VnQufC4XMhWFWeCZ2NRM6GYHVnDZ7ixny+rE+5X89hCiHciPOoRvNJSHaG0WkrS0D8nnR2PFBRU0HYhborU8p/hQBB/nVugPcOcq8pa6pee5+6Db+CLWTVWGDf73xJlghWi9Sn9f2eDLzakxWGFyRf3EzSieVkOcnOWvgxTrCJ9Vwq7OowHZtOPzwnNbvjijPjbesJtv0b7/EPzYvJeIFrLnUbPsMbyKZNBo0dLMXSEqUhpfOupDsMFMUwn/jiZsKavJHzMZg7HNDdh7lUuLG9xTPBBq2SqdkdxxtvLDW0Hp3RXPf4h+alRNzv/Zj3IEBedRtuwRaqP5DdPvuKyv7jsRNCbjksdDMBmm9on4lEu5oijMeZM52a77843eZxtNtt/WupvrTTLFq9aBc77CvJZR+7/x+8LgtRy+fyRfRGvXej52tafGOn8274sJ7L92ALOZG31J/erW7D3pQiJH2kaBl+NLMaGJlrl3sbTWXKDyqaUv6GqL2xYeIPVUxYWtjwgunM8sDapBAcF+ul6uS412GWbC7wVtZV1Xe4phGgVoTgSfwusuu9lMSl3UvpA6V1OlnZW1szGnf6LYeMh8zulnLziun4NHwzWjYxPFVVKVNGsXUqocxqmIHKwRZsIRcKlqqDLBsM7EH2GQzEAfRe7phhufqB5sRwtYM/3BYfbx2a6+ATZoJOnqIvRtkJTyvTUc/2So1tP+UbwnZPtudeXpiZTn3lHlHjI7F4Ctyt/n/kPS3p2fZYrKABLoTgx3ijOE/2eUjpQyUc0tIkXDdy7bVky6SQCJcnst0kmanPBAfwxp0429bb6eKUt0Gw1lWN+IPKN1VVs4l+g29hHnUihAwomtn39Uu8gUwFfdD80ayPolw3ckv417PfXx+dX3PiDaUB4B3lZ7+8cBkBEtRt9Bu8gSwaWuFQQZZs1mKp7+s1XM5dBTATBgqMjClpduCzO09RFYQFcIwk9/ziT2BL02PNZyFFezFRw4FMS5NeTlIkP8V3dZS1zXrjEZJM5OIkOWjLCAMaBmkm0zoAm0Nch9wsSL2d5kZrKQ77b/s4wxaqK43hbpg1jy2TwQMo6x7uBnmv/+AnsIVqUENpPxREpHCtKjT5u2MLwvCCOLYojCz4AxNSRNQepnuPDVycDhaePX1r/X2DqbX+vrR+t/xCleAz2Cr0NlUScTVmddWi6AM6ZXwiaSC800G9xUW+m8YW15+W6tRt/GqPK1BscNe9zwMUhYr/ude9z48rsIVqSzCyU/wuNpVkQzbgsB2qdXJZVxw254V4RX95MqbcRqB+qW7DVdhCvrtn7t0jV5u4hYH7Yse8o93ew/vjLZ3BqDAkBIfrg7Tk5jsiTYlQ+6Qp1My7moOs0+dyJlpae71cY7PVGXA18hZPtxDo92oxd6vbMIvP7elrRNZUQtKVoURfv9sTIiE6WJnleg9dNl2NEvWeamelubbNlAzUOKvAEi37+tcTyicWS2OjsUymajTbneo2fAqbWm/a9+dzkf10UWJf3mNmpmFQGMhqQ6n5sKlPNrtoiCjv0g6NMjCrOIdZqYBzDCH4D9hEVQhpXVgcmbQEjw1mOdJAkmaO/oOcsgObysfsCMsNceBQnIX/phHCb8GmPuNL/7v/RrBEYQ+hiFU2WwsAZM2h2q+NmLE22Z21j2TeW6zWf22oeRA2lQ88/R5PvwcaS96cYGQzHJdhlS8QqO8iBP9cwIGlfSUznrKzxZ2HooR/PzbqL6+myJqmmumpjeNjQrnZSNZ66AXAH51jfDZri+3cf39+gQkyjGC/iBCo31fb4EPYRE6EKJ0zuhAfQKQaG4xN1Q6LxdvrsExl+bJygjR7Lb+fVT5wxDL/RFHRirjIwsfKp+4cy2Y9YN75vC0n6FipXyAE34JNbf9gZdAuYiBRxnJIvVcF8XLldcUkwJVEQPmdRKGf/eo2/BA/gcwauvb9Tex/uTRviINe/9BSWExzLUOLHb5UqEEI6k9T5/HEPX98ZbDreOLoC5fT8f4Hrvenjgw8cL2/70gxph/gJ7ScWTlBFBvYt9fclJsyli/dWGiTwk29Hp9wpH1y1j95ZQqspuDE5ZV7gkK329XOt9zTH15YWsv0aXFrZL2Nv4qM2j3czcpuGSRColivJEcKtz0YybDKLypg4fD4lGlKUf+WN1go0tpsfSUEzypricTrDb3u+lBdgWNI0zX8VW1z2O/lyG6otJtiqV3xNrzWu9AgMr2d/oyQDLmEJvc4tFb9ImT2OzKLqfOmZKDFHfLnpER3rdkJgb7Xyk3TU9n74zrekroNd/ATqAYJCMnWUi8Gq/3AJqwJ6b7TyzGR72Yl0THGwWpkvDUwfl9PeMAa8nSLR5LV7sPuwWl58e2B6bbhZrnX01Zp/6BzObny4qW+jqaWrtTlwzw3O5o406PFUKtuw1u7MdAFvYiEitJN77Iysns90EPQC/VkSKwbZyEmeru52tCANdSUEGeSVe4pd3paXojJY1pU8BcF/yYtFsXV7tbcT3rZ2dHkao+8klx+6VJfAXO7uo2uo3Pabl3QmkKqacbhq2fqvKZ6xik0MA4Bqar+7Qa8h31IRD3wADIgsbi7vg9GcGh7rdacrOknVe8X7xnqT9XfhlfUv9LOKNlNcZXw98Yrov4/9a/VJfgT/Hf6GUiQgVudSu4F4tSXzxZia0en4W3s12KTw2xYCks2ycba3v/Wt7u//crpt6Jvvhl9qzg/0G3Y3N2rXcu5FdjUhQvQIB5Bt/AtzQZdkt9DdCNrtzaweMTOONx1jKPpfwAAAP//AQAA//+YjrveAAAAAQAAAAEYUWEcIktfDzz1AAED6AAAAADYXaDMAAAAAN1mLzf+vf7dCB0DyQACAAMAAgAAAAAAAAABAAAD2P7vAAAIQP69/bwIHQPoAML/0QAAAAAAAAAAAAAAOnicHI6xK8RhHIefz+dG5MpwWN7h6+5XzqAsLrdiURTZZFVWi3/D6H8wWYyHRYnJom54ZbZIR7ru1c/w9IzP4zOWeABNyqM79LxH6JvQK+EdeowJPRO+JXxK+Jy+O4S7hH6Z1oQjn7DrL471xL4XqDxP0jVtt6j0RluLdD2HPEXig6QhiR9WGonkGZIbVG6VkQ5JuihjbdJ3k3UN2PA9W7oqLxqUO12WkTLLyv+eVQZl1pRp8kmrRvXXexnqoNwos1r3gO0/AAAA//8BAAD//2qbObUAAAAALgAuAFIAhACmAL4A1AEKARgBKAFWAXwBrgHSAfoCOgJOAnYCsALQAwgDQANuA6YD4AQIBFAEegSGBKAEwgUEBS4FXAWWBbQF8AYeBkoGaAaiBs4G/gcWB0gHcgeaB84IEAhUCGoIdgiECJIIogi2CMQI2gAAAAEAAAA6AIwADABmAAcAAQAAAAAAAAAAAAAAAAAEAAN4nJyU204bVxSGPwfbbXq6qFBEbtC+TKVkTKMQJeHKlKCMinDqcXqQqkqDPT6I8czIM5iSJ+h136Jvkas+Rp+i6nW1fy+DHUVBIAT8e/Y6/Gutf21gk//YoFa/C/zdnBuusd382fAdvmgeGd5gv/mZ4ToPG/8YbjBovDXc5EGja/gT3tX/NPwpT+q/Gb7LVv3Q8Oc8rm8a/nLD8a/hr3jCuwWuwTP+MFxji8LwHTb51fAG97CYtTr32DHc4Gu2DTfZBnpMqEiZkDHCMWTCiDNmJJREJMyYMCRhgCOkTUqlrxmxkGP0wa8xERUzYkUcU+FIiUiJKRlbxLfyynmtjEOdZnbXpmJMzIk8TonJcOSMyMlIOFWcioqCF7RoUdIX34KKkoCSCSkBOTNGtOhwyBE9xkwocRwqkmcWkTOk4pxY+Z1Z+M70ScgojdUZGQPxdOKXyDvkCEeHQrarkY/WIjzE8aO8Pbdctt8S6NetMFvPu2QTM1c/U3Ul1c25JjjWrc/b5gfhihe4W/Vnncn1PRrof6XIJ5xp/gNNKhOTDOe2aBNJQZG7j2Nf55BIHfmJkB6v6PCGns5tunRpc0yPkJfy7dDF8R0djjmQRyi8uDuUYo75Bcf3hLLxsRPrz2JiCb9TmLpLcZypjimFeu6ZB6o1UYU3n7DfoXxNHaV8+tojb+k0v0x7FjMyVRRiOFUvl9oorX8DU8RUtfjZXt37bZjb7i23+IJcO+zVuuDkJ7dgdN1Ug/c0c66fgJgBOSey6JMzpUXFhXi/JuaMFMeBuvdKW1LRvvTxeS6kkoSpGIRkijOj0N/YdBMZ9/6a7p29JQP5e6anl1XdJotTr65m9EbdW95F1uVkZQItm2q+oqa+uGam/UQ7tco/km+p1y3nEaHiLnb7Q6/ADs/ZZY+xsvR1M7+886+Et9hTB05JZDWUpn0NjwnYJeApu+zynKfv9XLJxhkft8ZnNX+bA/bpsHdtNQvbDvu8XIv28cx/ie2O6nE8ujw9u/U0H9xAtd9o367eza4m56cxt2hX23FMzNRzcVurNbn7BP8DAAD//wEAAP//cqFRQAAAAAMAAP/1AAD/zgAyAAAAAAAAAAAAAAAAAAAAAAAAAAA=");
-}]]></style><style type="text/css"><![CDATA[.shape {
-  shape-rendering: geometricPrecision;
-  stroke-linejoin: round;
-}
-.connection {
-  stroke-linecap: round;
-  stroke-linejoin: round;
-}
-.blend {
-  mix-blend-mode: multiply;
-  opacity: 0.5;
-}
-
-		.d2-2573774786 .fill-N1{fill:#0A0F25;}
-		.d2-2573774786 .fill-N2{fill:#676C7E;}
-		.d2-2573774786 .fill-N3{fill:#9499AB;}
-		.d2-2573774786 .fill-N4{fill:#CFD2DD;}
-		.d2-2573774786 .fill-N5{fill:#DEE1EB;}
-		.d2-2573774786 .fill-N6{fill:#EEF1F8;}
-		.d2-2573774786 .fill-N7{fill:#FFFFFF;}
-		.d2-2573774786 .fill-B1{fill:#0D32B2;}
-		.d2-2573774786 .fill-B2{fill:#0D32B2;}
-		.d2-2573774786 .fill-B3{fill:#E3E9FD;}
-		.d2-2573774786 .fill-B4{fill:#E3E9FD;}
-		.d2-2573774786 .fill-B5{fill:#EDF0FD;}
-		.d2-2573774786 .fill-B6{fill:#F7F8FE;}
-		.d2-2573774786 .fill-AA2{fill:#4A6FF3;}
-		.d2-2573774786 .fill-AA4{fill:#EDF0FD;}
-		.d2-2573774786 .fill-AA5{fill:#F7F8FE;}
-		.d2-2573774786 .fill-AB4{fill:#EDF0FD;}
-		.d2-2573774786 .fill-AB5{fill:#F7F8FE;}
-		.d2-2573774786 .stroke-N1{stroke:#0A0F25;}
-		.d2-2573774786 .stroke-N2{stroke:#676C7E;}
-		.d2-2573774786 .stroke-N3{stroke:#9499AB;}
-		.d2-2573774786 .stroke-N4{stroke:#CFD2DD;}
-		.d2-2573774786 .stroke-N5{stroke:#DEE1EB;}
-		.d2-2573774786 .stroke-N6{stroke:#EEF1F8;}
-		.d2-2573774786 .stroke-N7{stroke:#FFFFFF;}
-		.d2-2573774786 .stroke-B1{stroke:#0D32B2;}
-		.d2-2573774786 .stroke-B2{stroke:#0D32B2;}
-		.d2-2573774786 .stroke-B3{stroke:#E3E9FD;}
-		.d2-2573774786 .stroke-B4{stroke:#E3E9FD;}
-		.d2-2573774786 .stroke-B5{stroke:#EDF0FD;}
-		.d2-2573774786 .stroke-B6{stroke:#F7F8FE;}
-		.d2-2573774786 .stroke-AA2{stroke:#4A6FF3;}
-		.d2-2573774786 .stroke-AA4{stroke:#EDF0FD;}
-		.d2-2573774786 .stroke-AA5{stroke:#F7F8FE;}
-		.d2-2573774786 .stroke-AB4{stroke:#EDF0FD;}
-		.d2-2573774786 .stroke-AB5{stroke:#F7F8FE;}
-		.d2-2573774786 .background-color-N1{background-color:#0A0F25;}
-		.d2-2573774786 .background-color-N2{background-color:#676C7E;}
-		.d2-2573774786 .background-color-N3{background-color:#9499AB;}
-		.d2-2573774786 .background-color-N4{background-color:#CFD2DD;}
-		.d2-2573774786 .background-color-N5{background-color:#DEE1EB;}
-		.d2-2573774786 .background-color-N6{background-color:#EEF1F8;}
-		.d2-2573774786 .background-color-N7{background-color:#FFFFFF;}
-		.d2-2573774786 .background-color-B1{background-color:#0D32B2;}
-		.d2-2573774786 .background-color-B2{background-color:#0D32B2;}
-		.d2-2573774786 .background-color-B3{background-color:#E3E9FD;}
-		.d2-2573774786 .background-color-B4{background-color:#E3E9FD;}
-		.d2-2573774786 .background-color-B5{background-color:#EDF0FD;}
-		.d2-2573774786 .background-color-B6{background-color:#F7F8FE;}
-		.d2-2573774786 .background-color-AA2{background-color:#4A6FF3;}
-		.d2-2573774786 .background-color-AA4{background-color:#EDF0FD;}
-		.d2-2573774786 .background-color-AA5{background-color:#F7F8FE;}
-		.d2-2573774786 .background-color-AB4{background-color:#EDF0FD;}
-		.d2-2573774786 .background-color-AB5{background-color:#F7F8FE;}
-		.d2-2573774786 .color-N1{color:#0A0F25;}
-		.d2-2573774786 .color-N2{color:#676C7E;}
-		.d2-2573774786 .color-N3{color:#9499AB;}
-		.d2-2573774786 .color-N4{color:#CFD2DD;}
-		.d2-2573774786 .color-N5{color:#DEE1EB;}
-		.d2-2573774786 .color-N6{color:#EEF1F8;}
-		.d2-2573774786 .color-N7{color:#FFFFFF;}
-		.d2-2573774786 .color-B1{color:#0D32B2;}
-		.d2-2573774786 .color-B2{color:#0D32B2;}
-		.d2-2573774786 .color-B3{color:#E3E9FD;}
-		.d2-2573774786 .color-B4{color:#E3E9FD;}
-		.d2-2573774786 .color-B5{color:#EDF0FD;}
-		.d2-2573774786 .color-B6{color:#F7F8FE;}
-		.d2-2573774786 .color-AA2{color:#4A6FF3;}
-		.d2-2573774786 .color-AA4{color:#EDF0FD;}
-		.d2-2573774786 .color-AA5{color:#F7F8FE;}
-		.d2-2573774786 .color-AB4{color:#EDF0FD;}
-		.d2-2573774786 .color-AB5{color:#F7F8FE;}.appendix text.text{fill:#0A0F25}.md{--color-fg-default:#0A0F25;--color-fg-muted:#676C7E;--color-fg-subtle:#9499AB;--color-canvas-default:#FFFFFF;--color-canvas-subtle:#EEF1F8;--color-border-default:#0D32B2;--color-border-muted:#0D32B2;--color-neutral-muted:#EEF1F8;--color-accent-fg:#0D32B2;--color-accent-emphasis:#0D32B2;--color-attention-subtle:#676C7E;--color-danger-fg:red;}.sketch-overlay-B1{fill:url(#streaks-darker-d2-2573774786);mix-blend-mode:lighten}.sketch-overlay-B2{fill:url(#streaks-darker-d2-2573774786);mix-blend-mode:lighten}.sketch-overlay-B3{fill:url(#streaks-bright-d2-2573774786);mix-blend-mode:darken}.sketch-overlay-B4{fill:url(#streaks-bright-d2-2573774786);mix-blend-mode:darken}.sketch-overlay-B5{fill:url(#streaks-bright-d2-2573774786);mix-blend-mode:darken}.sketch-overlay-B6{fill:url(#streaks-bright-d2-2573774786);mix-blend-mode:darken}.sketch-overlay-AA2{fill:url(#streaks-dark-d2-2573774786);mix-blend-mode:overlay}.sketch-overlay-AA4{fill:url(#streaks-bright-d2-2573774786);mix-blend-mode:darken}.sketch-overlay-AA5{fill:url(#streaks-bright-d2-2573774786);mix-blend-mode:darken}.sketch-overlay-AB4{fill:url(#streaks-bright-d2-2573774786);mix-blend-mode:darken}.sketch-overlay-AB5{fill:url(#streaks-bright-d2-2573774786);mix-blend-mode:darken}.sketch-overlay-N1{fill:url(#streaks-darker-d2-2573774786);mix-blend-mode:lighten}.sketch-overlay-N2{fill:url(#streaks-dark-d2-2573774786);mix-blend-mode:overlay}.sketch-overlay-N3{fill:url(#streaks-normal-d2-2573774786);mix-blend-mode:color-burn}.sketch-overlay-N4{fill:url(#streaks-normal-d2-2573774786);mix-blend-mode:color-burn}.sketch-overlay-N5{fill:url(#streaks-bright-d2-2573774786);mix-blend-mode:darken}.sketch-overlay-N6{fill:url(#streaks-bright-d2-2573774786);mix-blend-mode:darken}.sketch-overlay-N7{fill:url(#streaks-bright-d2-2573774786);mix-blend-mode:darken}.light-code{display: block}.dark-code{display: none}]]></style><g class="bWV0YQ=="><g class="shape" ><rect x="0.000000" y="0.000000" width="653.000000" height="98.000000" stroke="#0D32B2" fill="#F7F8FE" class=" stroke-B1 fill-B6" style="stroke-width:2;" /></g><text x="326.500000" y="38.500000" fill="#0A0F25" class="text-bold fill-N1" style="text-anchor:middle;font-size:16px"><tspan x="326.500000" dy="0.000000">generated_from: architecture.yaml + COMPONENTS.csv</tspan><tspan x="326.500000" dy="17.666667">review_token: M9_FOLLOWUP_AUDITED_READY_NO_PROMOTION_DIAGNOSTIC_ONLY</tspan><tspan x="326.500000" dy="17.666667">source_hash: 6e5c2a204690e2f5</tspan></text></g><g class="aW5wdXRzX2F2YWlsYWJpbGl0eQ=="><g class="shape" ><rect x="212.000000" y="158.000000" width="230.000000" height="66.000000" stroke="#0D32B2" fill="#e8f5e9" class=" stroke-B1" style="stroke-width:2;" /></g><text x="327.000000" y="196.500000" fill="#0A0F25" class="text-bold fill-N1" style="text-anchor:middle;font-size:16px">输入与 availability mask</text></g><g class="bW9kYWxpdHlfc3RlbXNfZW5jb2RlcnM="><g class="shape" ><rect x="1001.000000" y="158.000000" width="201.000000" height="66.000000" stroke="#0D32B2" fill="#e8f5e9" class=" stroke-B1" style="stroke-width:2;" /></g><text x="1101.500000" y="196.500000" fill="#0A0F25" class="text-bold fill-N1" style="text-anchor:middle;font-size:16px">模态 stems/encoders</text></g><g class="cmV0cmlldmFsX2RpY3Rpb25hcnk="><g class="shape" ><rect x="1473.000000" y="158.000000" width="244.000000" height="66.000000" stroke="#0D32B2" fill="#fff7e6" class=" stroke-B2" style="stroke-width:2;stroke-dasharray:10.000000,9.865639;" /></g><text x="1595.000000" y="196.500000" fill="#0A0F25" class="text-bold fill-N1" style="text-anchor:middle;font-size:16px">检索 dictionary 与表示槽</text></g><g class="cm91dGVyX3BhdHRlcm5fc2lw"><g class="shape" ><rect x="2026.000000" y="158.000000" width="227.000000" height="66.000000" stroke="#0D32B2" fill="#fff7e6" class=" stroke-B2" style="stroke-width:2;stroke-dasharray:10.000000,9.865639;" /></g><text x="2139.500000" y="196.500000" fill="#0A0F25" class="text-bold fill-N1" style="text-anchor:middle;font-size:16px">router / Pattern-SIP 状态</text></g><g class="cHJvdG90eXBlX21lbW9yeQ=="><g class="shape" ><rect x="1987.000000" y="284.000000" width="305.000000" height="66.000000" stroke="#0D32B2" fill="#fff7e6" class=" stroke-B2" style="stroke-width:2;stroke-dasharray:10.000000,9.865639;" /></g><text x="2139.500000" y="322.500000" fill="#0A0F25" class="text-bold fill-N1" style="text-anchor:middle;font-size:16px">prototype memory 与 hard-negative</text></g><g class="YW5hdG9teV9wcmlvcg=="><g class="shape" ><rect x="2078.000000" y="410.000000" width="124.000000" height="66.000000" stroke="#0D32B2" fill="#fff7e6" class=" stroke-B2" style="stroke-width:2;stroke-dasharray:10.000000,9.865639;" /></g><text x="2140.000000" y="448.500000" fill="#0A0F25" class="text-bold fill-N1" style="text-anchor:middle;font-size:16px">解剖先验</text></g><g class="c2Nhcl9wcm9wb3NhbA=="><g class="shape" ><rect x="2676.000000" y="180.000000" width="141.000000" height="66.000000" stroke="#0D32B2" fill="#fff7e6" class=" stroke-B2" style="stroke-width:2;stroke-dasharray:10.000000,9.865639;" /></g><text x="2746.500000" y="218.500000" fill="#0A0F25" class="text-bold fill-N1" style="text-anchor:middle;font-size:16px">scar proposal</text></g><g class="ZWRlbWFfcHJvcG9zYWw="><g class="shape" ><rect x="2666.000000" y="431.000000" width="160.000000" height="66.000000" stroke="#0D32B2" fill="#fff7e6" class=" stroke-B2" style="stroke-width:2;stroke-dasharray:10.000000,9.865639;" /></g><text x="2746.000000" y="469.500000" fill="#0A0F25" class="text-bold fill-N1" style="text-anchor:middle;font-size:16px">edema proposal</text></g><g class="c2Nhcl9yZWZpbmVy"><g class="shape" ><rect x="3173.000000" y="180.000000" width="189.000000" height="66.000000" stroke="#0D32B2" fill="#fff7e6" class=" stroke-B2" style="stroke-width:2;stroke-dasharray:10.000000,9.865639;" /></g><text x="3267.500000" y="218.500000" fill="#0A0F25" class="text-bold fill-N1" style="text-anchor:middle;font-size:16px">scar soft-ROI refiner</text></g><g class="ZWRlbWFfcmVmaW5lcg=="><g class="shape" ><rect x="3164.000000" y="431.000000" width="207.000000" height="66.000000" stroke="#0D32B2" fill="#fff7e6" class=" stroke-B2" style="stroke-width:2;stroke-dasharray:10.000000,9.865639;" /></g><text x="3267.500000" y="469.500000" fill="#0A0F25" class="text-bold fill-N1" style="text-anchor:middle;font-size:16px">edema soft-ROI refiner</text></g><g class="bm9fdDJfc2FmZXR5"><g class="shape" ><rect x="3682.000000" y="431.000000" width="199.000000" height="66.000000" stroke="#0D32B2" fill="#e8f5e9" class=" stroke-B1" style="stroke-width:2;" /></g><text x="3781.500000" y="469.500000" fill="#0A0F25" class="text-bold fill-N1" style="text-anchor:middle;font-size:16px">no-T2 edema 安全门</text></g><g class="YXJiaXRyYXRpb25fZmluYWxfb3V0cHV0"><g class="shape" ><rect x="4190.000000" y="451.000000" width="234.000000" height="66.000000" stroke="#0D32B2" fill="#fff7e6" class=" stroke-B2" style="stroke-width:2;stroke-dasharray:10.000000,9.865639;" /></g><text x="4307.000000" y="489.500000" fill="#0A0F25" class="text-bold fill-N1" style="text-anchor:middle;font-size:16px">arbitration 与 final output</text></g><g class="bG9zc2Vz"><g class="shape" ><rect x="1014.000000" y="284.000000" width="175.000000" height="66.000000" stroke="#0D32B2" fill="#e8f5e9" class=" stroke-B1" style="stroke-width:2;" /></g><text x="1101.500000" y="322.500000" fill="#0A0F25" class="text-bold fill-N1" style="text-anchor:middle;font-size:16px">loss 与优化目标</text></g><g class="Y2hlY2twb2ludF9zZWxlY3Rpb24="><g class="shape" ><rect x="3698.000000" y="640.000000" width="167.000000" height="66.000000" stroke="#0D32B2" fill="#fff7e6" class=" stroke-B2" style="stroke-width:2;stroke-dasharray:10.000000,9.865639;" /></g><text x="3781.500000" y="678.500000" fill="#0A0F25" class="text-bold fill-N1" style="text-anchor:middle;font-size:16px">checkpoint 选择</text></g><g class="Y2luZV90ZW1wb3JhbA=="><g class="shape" ><rect x="3174.000000" y="557.000000" width="188.000000" height="66.000000" stroke="#0D32B2" fill="#fff7e6" class=" stroke-B2" style="stroke-width:2;stroke-dasharray:10.000000,9.865639;" /></g><text x="3268.000000" y="595.500000" fill="#0A0F25" class="text-bold fill-N1" style="text-anchor:middle;font-size:16px">Cine temporal 次线</text></g><g class="Y29udHJvbGxlcl9jb250aW51aXR5"><g class="shape" ><rect x="2607.000000" y="683.000000" width="278.000000" height="66.000000" stroke="#0D32B2" fill="#fff7e6" class=" stroke-B2" style="stroke-width:2;stroke-dasharray:10.000000,9.865639;" /></g><text x="2746.000000" y="721.500000" fill="#0A0F25" class="text-bold fill-N1" style="text-anchor:middle;font-size:16px">controller continuity 与 finalizer</text></g><g class="bWFwcGVyX3dpa2lfb2JzZXJ2YWJpbGl0eQ=="><g class="shape" ><rect x="3151.000000" y="683.000000" width="233.000000" height="66.000000" stroke="#0D32B2" fill="#fff7e6" class=" stroke-B2" style="stroke-width:2;stroke-dasharray:10.000000,9.865639;" /></g><text x="3267.500000" y="721.500000" fill="#0A0F25" class="text-bold fill-N1" style="text-anchor:middle;font-size:16px">mapper/wiki observability</text></g><g class="KGlucHV0c19hdmFpbGFiaWxpdHkgLSZndDsgbW9kYWxpdHlfc3RlbXNfZW5jb2RlcnMpWzBd"><marker id="mk-d2-2573774786-3488378134" markerWidth="10.000000" markerHeight="12.000000" refX="7.000000" refY="6.000000" viewBox="0.000000 0.000000 10.000000 12.000000" orient="auto" markerUnits="userSpaceOnUse"> <polygon points="0.000000,0.000000 10.000000,6.000000 0.000000,12.000000" fill="#0D32B2" class="connection fill-B1" stroke-width="2" /> </marker><path d="M 444.500000 191.000000 C 750.099976 191.000000 861.799988 191.000000 997.000000 191.000000" stroke="#0D32B2" fill="none" class="connection stroke-B1" style="stroke-width:2;" marker-end="url(#mk-d2-2573774786-3488378134)" mask="url(#d2-2573774786)" /><text x="722.000000" y="197.000000" fill="#676C7E" class="text-italic fill-N2" style="text-anchor:middle;font-size:16px">availability 控制输入</text></g><g class="KG1vZGFsaXR5X3N0ZW1zX2VuY29kZXJzIC0mZ3Q7IHJldHJpZXZhbF9kaWN0aW9uYXJ5KVswXQ=="><path d="M 1203.500000 191.000000 C 1310.300049 191.000000 1364.699951 191.000000 1469.500000 191.000000" stroke="#0D32B2" fill="none" class="connection stroke-B1" style="stroke-width:2;" marker-end="url(#mk-d2-2573774786-3488378134)" mask="url(#d2-2573774786)" /><text x="1337.500000" y="197.000000" fill="#676C7E" class="text-italic fill-N2" style="text-anchor:middle;font-size:16px">模态特征</text></g><g class="KHJldHJpZXZhbF9kaWN0aW9uYXJ5IC0mZ3Q7IHJvdXRlcl9wYXR0ZXJuX3NpcClbMF0="><path d="M 1719.000000 191.000000 C 1825.000000 191.000000 1886.800049 191.000000 2022.000000 191.000000" stroke="#0D32B2" fill="none" class="connection stroke-B1" style="stroke-width:2;" marker-end="url(#mk-d2-2573774786-3488378134)" mask="url(#d2-2573774786)" /><text x="1872.000000" y="197.000000" fill="#676C7E" class="text-italic fill-N2" style="text-anchor:middle;font-size:16px">slot routing</text></g><g class="KHJvdXRlcl9wYXR0ZXJuX3NpcCAtJmd0OyBzY2FyX3Byb3Bvc2FsKVswXQ=="><path d="M 2254.500000 191.000000 C 2410.100098 191.000000 2494.699951 194.352997 2671.510965 207.472027" stroke="#0D32B2" fill="none" class="connection stroke-B1" style="stroke-width:2;" marker-end="url(#mk-d2-2573774786-3488378134)" mask="url(#d2-2573774786)" /><text x="2464.000000" y="199.000000" fill="#676C7E" class="text-italic fill-N2" style="text-anchor:middle;font-size:16px">scar evidence</text></g><g class="KHJvdXRlcl9wYXR0ZXJuX3NpcCAtJmd0OyBlZGVtYV9wcm9wb3NhbClbMF0="><path d="M 2190.155267 224.622537 C 2397.300049 365.100006 2492.899902 409.700012 2662.586952 445.670507" stroke="#0D32B2" fill="none" class="connection stroke-B1" style="stroke-width:2;" marker-end="url(#mk-d2-2573774786-3488378134)" mask="url(#d2-2573774786)" /><text x="2411.500000" y="377.000000" fill="#676C7E" class="text-italic fill-N2" style="text-anchor:middle;font-size:16px">edema evidence</text></g><g class="KHByb3RvdHlwZV9tZW1vcnkgLSZndDsgc2Nhcl9wcm9wb3NhbClbMF0="><path d="M 2293.482565 296.736494 C 2417.899902 280.200012 2494.699951 266.394989 2671.587347 228.810356" stroke="#0D32B2" fill="none" class="connection stroke-B1" style="stroke-width:2;" marker-end="url(#mk-d2-2573774786-3488378134)" mask="url(#d2-2573774786)" /><text x="2484.500000" y="274.000000" fill="#676C7E" class="text-italic fill-N2" style="text-anchor:middle;font-size:16px">prototype support</text></g><g class="KHByb3RvdHlwZV9tZW1vcnkgLSZndDsgZWRlbWFfcHJvcG9zYWwpWzBd"><path d="M 2202.261169 350.947778 C 2399.699951 457.200012 2492.899902 481.000000 2662.509522 469.275839" stroke="#0D32B2" fill="none" class="connection stroke-B1" style="stroke-width:2;" marker-end="url(#mk-d2-2573774786-3488378134)" mask="url(#d2-2573774786)" /><text x="2421.500000" y="468.000000" fill="#676C7E" class="text-italic fill-N2" style="text-anchor:middle;font-size:16px">prototype support</text></g><g class="KGFuYXRvbXlfcHJpb3IgLSZndDsgc2Nhcl9wcm9wb3NhbClbMF0="><path d="M 2204.430642 425.777855 C 2400.100098 372.859985 2495.300049 336.700012 2674.919170 247.282597" stroke="#0D32B2" fill="none" class="connection stroke-B1" style="stroke-width:2;" marker-end="url(#mk-d2-2573774786-3488378134)" mask="url(#d2-2573774786)" /><text x="2448.000000" y="360.000000" fill="#676C7E" class="text-italic fill-N2" style="text-anchor:middle;font-size:16px">ROI prior</text></g><g class="KGFuYXRvbXlfcHJpb3IgLSZndDsgZWRlbWFfcHJvcG9zYWwpWzBd"><path d="M 2204.357989 468.340193 C 2400.100098 546.320007 2492.899902 551.000000 2662.719435 492.306646" stroke="#0D32B2" fill="none" class="connection stroke-B1" style="stroke-width:2;" marker-end="url(#mk-d2-2573774786-3488378134)" mask="url(#d2-2573774786)" /><text x="2432.000000" y="553.000000" fill="#676C7E" class="text-italic fill-N2" style="text-anchor:middle;font-size:16px">ROI prior</text></g><g class="KHNjYXJfcHJvcG9zYWwgLSZndDsgc2Nhcl9yZWZpbmVyKVswXQ=="><path d="M 2819.500000 213.000000 C 2977.899902 213.000000 3049.000000 213.000000 3169.000000 213.000000" stroke="#0D32B2" fill="none" class="connection stroke-B1" style="stroke-width:2;" marker-end="url(#mk-d2-2573774786-3488378134)" mask="url(#d2-2573774786)" /><text x="2995.500000" y="219.000000" fill="#676C7E" class="text-italic fill-N2" style="text-anchor:middle;font-size:16px">scar ROI</text></g><g class="KGVkZW1hX3Byb3Bvc2FsIC0mZ3Q7IGVkZW1hX3JlZmluZXIpWzBd"><path d="M 2828.000000 463.500000 C 2979.600098 463.500000 3047.199951 463.500000 3160.000000 463.500000" stroke="#0D32B2" fill="none" class="connection stroke-B1" style="stroke-width:2;" marker-end="url(#mk-d2-2573774786-3488378134)" mask="url(#d2-2573774786)" /><text x="2995.000000" y="469.000000" fill="#676C7E" class="text-italic fill-N2" style="text-anchor:middle;font-size:16px">edema ROI</text></g><g class="KGVkZW1hX3JlZmluZXIgLSZndDsgbm9fdDJfc2FmZXR5KVswXQ=="><path d="M 3373.000000 463.500000 C 3500.600098 463.500000 3562.800049 463.500000 3678.000000 463.500000" stroke="#0D32B2" fill="none" class="connection stroke-B1" style="stroke-width:2;" marker-end="url(#mk-d2-2573774786-3488378134)" mask="url(#d2-2573774786)" /><text x="3526.500000" y="469.000000" fill="#676C7E" class="text-italic fill-N2" style="text-anchor:middle;font-size:16px">T2 gate</text></g><g class="KHNjYXJfcmVmaW5lciAtJmd0OyBhcmJpdHJhdGlvbl9maW5hbF9vdXRwdXQpWzBd"><path d="M 3364.000000 213.000000 C 3498.800049 213.000000 3582.699951 213.000000 3657.250000 213.000000 C 3731.800049 213.000000 4083.100098 260.600006 4270.671574 448.171572" stroke="#0D32B2" fill="none" class="connection stroke-B1" style="stroke-width:2;" marker-end="url(#mk-d2-2573774786-3488378134)" mask="url(#d2-2573774786)" /><text x="3857.500000" y="236.000000" fill="#676C7E" class="text-italic fill-N2" style="text-anchor:middle;font-size:16px">scar delta</text></g><g class="KG5vX3QyX3NhZmV0eSAtJmd0OyBhcmJpdHJhdGlvbl9maW5hbF9vdXRwdXQpWzBd"><path d="M 3882.500000 463.500000 C 4004.500000 463.500000 4066.500000 465.899994 4186.511934 475.191246" stroke="#0D32B2" fill="none" class="connection stroke-B1" style="stroke-width:2;" marker-end="url(#mk-d2-2573774786-3488378134)" mask="url(#d2-2573774786)" /><text x="4035.500000" y="470.000000" fill="#676C7E" class="text-italic fill-N2" style="text-anchor:middle;font-size:16px">safe edema delta</text></g><g class="KGxvc3NlcyAtJmd0OyByZXRyaWV2YWxfZGljdGlvbmFyeSlbMF0="><path d="M 1190.500000 317.000000 C 1307.699951 317.000000 1375.500000 298.399994 1523.907292 225.758536" stroke="#0D32B2" fill="none" class="connection stroke-B1" style="stroke-width:2;" marker-end="url(#mk-d2-2573774786-3488378134)" mask="url(#d2-2573774786)" /><text x="1365.500000" y="307.000000" fill="#676C7E" class="text-italic fill-N2" style="text-anchor:middle;font-size:16px">优化目标</text></g><g class="KGNoZWNrcG9pbnRfc2VsZWN0aW9uIC0mZ3Q7IGFyYml0cmF0aW9uX2ZpbmFsX291dHB1dClbMF0="><path d="M 3866.500000 673.000000 C 4001.300049 673.000000 4080.300049 641.799988 4256.217575 519.285975" stroke="#0D32B2" fill="none" class="connection stroke-B1" style="stroke-width:2;" marker-end="url(#mk-d2-2573774786-3488378134)" mask="url(#d2-2573774786)" /><text x="4078.500000" y="648.000000" fill="#676C7E" class="text-italic fill-N2" style="text-anchor:middle;font-size:16px">formal decision</text></g><g class="KGNpbmVfdGVtcG9yYWwgLSZndDsgY2hlY2twb2ludF9zZWxlY3Rpb24pWzBd"><path d="M 3364.500000 589.500000 C 3498.899902 589.500000 3566.000000 600.500000 3694.205267 643.235089" stroke="#0D32B2" fill="none" class="connection stroke-B1" style="stroke-width:2;" marker-end="url(#mk-d2-2573774786-3488378134)" mask="url(#d2-2573774786)" /><text x="3534.000000" y="601.000000" fill="#676C7E" class="text-italic fill-N2" style="text-anchor:middle;font-size:16px">local proxy only</text></g><g class="KGNvbnRyb2xsZXJfY29udGludWl0eSAtJmd0OyBtYXBwZXJfd2lraV9vYnNlcnZhYmlsaXR5KVswXQ=="><path d="M 2887.000000 715.500000 C 2991.399902 715.500000 3044.600098 715.500000 3147.000000 715.500000" stroke="#0D32B2" fill="none" class="connection stroke-B1" style="stroke-width:2;" marker-end="url(#mk-d2-2573774786-3488378134)" mask="url(#d2-2573774786)" /><text x="3018.500000" y="721.000000" fill="#676C7E" class="text-italic fill-N2" style="text-anchor:middle;font-size:16px">receipts</text></g><g class="KG1hcHBlcl93aWtpX29ic2VydmFiaWxpdHkgLSZndDsgY2hlY2twb2ludF9zZWxlY3Rpb24pWzBd"><path d="M 3386.000000 715.500000 C 3503.199951 715.500000 3566.000000 709.900024 3694.056379 688.169221" stroke="#0D32B2" fill="none" class="connection stroke-B1" style="stroke-width:2;" marker-end="url(#mk-d2-2573774786-3488378134)" mask="url(#d2-2573774786)" /><text x="3542.000000" y="718.000000" fill="#676C7E" class="text-italic fill-N2" style="text-anchor:middle;font-size:16px">observability</text></g><mask id="d2-2573774786" maskUnits="userSpaceOnUse" x="-101" y="-101" width="4626" height="951">
-<rect x="-101" y="-101" width="4626" height="951" fill="white"></rect>
-<rect x="643.000000" y="181.000000" width="158" height="21" fill="black"></rect>
-<rect x="1297.000000" y="181.000000" width="81" height="21" fill="black"></rect>
-<rect x="1832.000000" y="181.000000" width="80" height="21" fill="black"></rect>
-<rect x="2417.000000" y="183.000000" width="94" height="21" fill="black"></rect>
-<rect x="2356.000000" y="361.000000" width="111" height="21" fill="black"></rect>
-<rect x="2422.000000" y="258.000000" width="125" height="21" fill="black"></rect>
-<rect x="2359.000000" y="452.000000" width="125" height="21" fill="black"></rect>
-<rect x="2416.000000" y="344.000000" width="64" height="21" fill="black"></rect>
-<rect x="2400.000000" y="537.000000" width="64" height="21" fill="black"></rect>
-<rect x="2966.000000" y="203.000000" width="59" height="21" fill="black"></rect>
-<rect x="2957.000000" y="453.000000" width="76" height="21" fill="black"></rect>
-<rect x="3500.000000" y="453.000000" width="53" height="21" fill="black"></rect>
-<rect x="3822.000000" y="220.000000" width="71" height="21" fill="black"></rect>
-<rect x="3976.000000" y="454.000000" width="119" height="21" fill="black"></rect>
-<rect x="1325.000000" y="291.000000" width="81" height="21" fill="black"></rect>
-<rect x="4026.000000" y="632.000000" width="105" height="21" fill="black"></rect>
-<rect x="3480.000000" y="585.000000" width="108" height="21" fill="black"></rect>
-<rect x="2990.000000" y="705.000000" width="57" height="21" fill="black"></rect>
-<rect x="3497.000000" y="702.000000" width="90" height="21" fill="black"></rect>
-</mask></svg></svg>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Generated by graphviz version 2.44.0 (0)
+ -->
+<!-- Title: G Pages: 1 -->
+<svg width="3017pt" height="316pt"
+ viewBox="0.00 0.00 3017.00 316.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 312)">
+<title>G</title>
+<polygon fill="white" stroke="transparent" points="-4,4 -4,-312 3013,-312 3013,4 -4,4"/>
+<!-- inputs_availability -->
+<g id="node1" class="node">
+<title>inputs_availability</title>
+<path fill="#fff7e6" stroke="#6b7280" d="M109,-192C109,-192 12,-192 12,-192 6,-192 0,-186 0,-180 0,-180 0,-168 0,-168 0,-162 6,-156 12,-156 12,-156 109,-156 109,-156 115,-156 121,-162 121,-168 121,-168 121,-180 121,-180 121,-186 115,-192 109,-192"/>
+<text text-anchor="middle" x="60.5" y="-171.5" font-family="Helvetica" font-size="10.00">输入与 availability mask</text>
+</g>
+<!-- modality_stems_encoders -->
+<g id="node2" class="node">
+<title>modality_stems_encoders</title>
+<path fill="#fff7e6" stroke="#6b7280" d="M415,-192C415,-192 329,-192 329,-192 323,-192 317,-186 317,-180 317,-180 317,-168 317,-168 317,-162 323,-156 329,-156 329,-156 415,-156 415,-156 421,-156 427,-162 427,-168 427,-168 427,-180 427,-180 427,-186 421,-192 415,-192"/>
+<text text-anchor="middle" x="372" y="-171.5" font-family="Helvetica" font-size="10.00">模态 stems/encoders</text>
+</g>
+<!-- inputs_availability&#45;&gt;modality_stems_encoders -->
+<g id="edge1" class="edge">
+<title>inputs_availability&#45;&gt;modality_stems_encoders</title>
+<path fill="none" stroke="#6b7280" d="M121.17,-174C174.39,-174 252.11,-174 306.69,-174"/>
+<polygon fill="#6b7280" stroke="#6b7280" points="306.95,-177.5 316.95,-174 306.95,-170.5 306.95,-177.5"/>
+<text text-anchor="middle" x="180" y="-176.8" font-family="Helvetica" font-size="9.00">availability 控制输入</text>
+</g>
+<!-- retrieval_dictionary -->
+<g id="node3" class="node">
+<title>retrieval_dictionary</title>
+<path fill="#fff7e6" stroke="#6b7280" d="M922,-196C922,-196 822,-196 822,-196 816,-196 810,-190 810,-184 810,-184 810,-172 810,-172 810,-166 816,-160 822,-160 822,-160 922,-160 922,-160 928,-160 934,-166 934,-172 934,-172 934,-184 934,-184 934,-190 928,-196 922,-196"/>
+<text text-anchor="middle" x="872" y="-175.5" font-family="Helvetica" font-size="10.00">检索 dictionary 与表示槽</text>
+</g>
+<!-- modality_stems_encoders&#45;&gt;retrieval_dictionary -->
+<g id="edge2" class="edge">
+<title>modality_stems_encoders&#45;&gt;retrieval_dictionary</title>
+<path fill="none" stroke="#6b7280" d="M427.24,-174.44C517.66,-175.16 699.18,-176.62 799.78,-177.43"/>
+<polygon fill="#6b7280" stroke="#6b7280" points="799.82,-180.93 809.85,-177.51 799.88,-173.93 799.82,-180.93"/>
+<text text-anchor="middle" x="610" y="-178.8" font-family="Helvetica" font-size="9.00">模态特征</text>
+</g>
+<!-- router_pattern_sip -->
+<g id="node4" class="node">
+<title>router_pattern_sip</title>
+<path fill="#fff7e6" stroke="#6b7280" d="M1388,-196C1388,-196 1287,-196 1287,-196 1281,-196 1275,-190 1275,-184 1275,-184 1275,-172 1275,-172 1275,-166 1281,-160 1287,-160 1287,-160 1388,-160 1388,-160 1394,-160 1400,-166 1400,-172 1400,-172 1400,-184 1400,-184 1400,-190 1394,-196 1388,-196"/>
+<text text-anchor="middle" x="1337.5" y="-175.5" font-family="Helvetica" font-size="10.00">router / Pattern&#45;SIP 状态</text>
+</g>
+<!-- retrieval_dictionary&#45;&gt;router_pattern_sip -->
+<g id="edge3" class="edge">
+<title>retrieval_dictionary&#45;&gt;router_pattern_sip</title>
+<path fill="none" stroke="#6b7280" d="M934.07,-178C1019.4,-178 1174,-178 1264.73,-178"/>
+<polygon fill="#6b7280" stroke="#6b7280" points="1264.92,-181.5 1274.92,-178 1264.92,-174.5 1264.92,-181.5"/>
+<text text-anchor="middle" x="1116" y="-180.8" font-family="Helvetica" font-size="9.00">slot routing</text>
+</g>
+<!-- scar_proposal -->
+<g id="node7" class="node">
+<title>scar_proposal</title>
+<path fill="#fff7e6" stroke="#6b7280" d="M1849,-263C1849,-263 1798,-263 1798,-263 1792,-263 1786,-257 1786,-251 1786,-251 1786,-239 1786,-239 1786,-233 1792,-227 1798,-227 1798,-227 1849,-227 1849,-227 1855,-227 1861,-233 1861,-239 1861,-239 1861,-251 1861,-251 1861,-257 1855,-263 1849,-263"/>
+<text text-anchor="middle" x="1823.5" y="-242.5" font-family="Helvetica" font-size="10.00">scar proposal</text>
+</g>
+<!-- router_pattern_sip&#45;&gt;scar_proposal -->
+<g id="edge4" class="edge">
+<title>router_pattern_sip&#45;&gt;scar_proposal</title>
+<path fill="none" stroke="#6b7280" d="M1400.29,-186.55C1498.59,-200.16 1688.41,-226.44 1776.06,-238.57"/>
+<polygon fill="#6b7280" stroke="#6b7280" points="1775.6,-242.04 1785.98,-239.94 1776.56,-235.11 1775.6,-242.04"/>
+<text text-anchor="middle" x="1573" y="-223.8" font-family="Helvetica" font-size="9.00">scar evidence</text>
+</g>
+<!-- edema_proposal -->
+<g id="node8" class="node">
+<title>edema_proposal</title>
+<path fill="#fff7e6" stroke="#6b7280" d="M1854.5,-198C1854.5,-198 1792.5,-198 1792.5,-198 1786.5,-198 1780.5,-192 1780.5,-186 1780.5,-186 1780.5,-174 1780.5,-174 1780.5,-168 1786.5,-162 1792.5,-162 1792.5,-162 1854.5,-162 1854.5,-162 1860.5,-162 1866.5,-168 1866.5,-174 1866.5,-174 1866.5,-186 1866.5,-186 1866.5,-192 1860.5,-198 1854.5,-198"/>
+<text text-anchor="middle" x="1823.5" y="-177.5" font-family="Helvetica" font-size="10.00">edema proposal</text>
+</g>
+<!-- router_pattern_sip&#45;&gt;edema_proposal -->
+<g id="edge5" class="edge">
+<title>router_pattern_sip&#45;&gt;edema_proposal</title>
+<path fill="none" stroke="#6b7280" d="M1400.01,-162.98C1427.38,-157.04 1460.11,-150.93 1490,-148 1563.43,-140.8 1582.9,-138.04 1656,-148 1664.23,-149.12 1665.91,-151.14 1674,-153 1705.73,-160.28 1741.64,-166.85 1770.2,-171.69"/>
+<polygon fill="#6b7280" stroke="#6b7280" points="1769.93,-175.19 1780.37,-173.39 1771.08,-168.29 1769.93,-175.19"/>
+<text text-anchor="middle" x="1573" y="-150.8" font-family="Helvetica" font-size="9.00">edema evidence</text>
+</g>
+<!-- prototype_memory -->
+<g id="node5" class="node">
+<title>prototype_memory</title>
+<path fill="#fff7e6" stroke="#6b7280" d="M1410.5,-253C1410.5,-253 1264.5,-253 1264.5,-253 1258.5,-253 1252.5,-247 1252.5,-241 1252.5,-241 1252.5,-229 1252.5,-229 1252.5,-223 1258.5,-217 1264.5,-217 1264.5,-217 1410.5,-217 1410.5,-217 1416.5,-217 1422.5,-223 1422.5,-229 1422.5,-229 1422.5,-241 1422.5,-241 1422.5,-247 1416.5,-253 1410.5,-253"/>
+<text text-anchor="middle" x="1337.5" y="-232.5" font-family="Helvetica" font-size="10.00">prototype memory 与 hard&#45;negative</text>
+</g>
+<!-- prototype_memory&#45;&gt;scar_proposal -->
+<g id="edge6" class="edge">
+<title>prototype_memory&#45;&gt;scar_proposal</title>
+<path fill="none" stroke="#6b7280" d="M1422.53,-236.74C1524.73,-238.85 1693.69,-242.34 1775.38,-244.03"/>
+<polygon fill="#6b7280" stroke="#6b7280" points="1775.78,-247.54 1785.85,-244.24 1775.92,-240.54 1775.78,-247.54"/>
+<text text-anchor="middle" x="1573" y="-243.8" font-family="Helvetica" font-size="9.00">prototype support</text>
+</g>
+<!-- prototype_memory&#45;&gt;edema_proposal -->
+<g id="edge7" class="edge">
+<title>prototype_memory&#45;&gt;edema_proposal</title>
+<path fill="none" stroke="#6b7280" d="M1422.6,-225.55C1439.86,-221.08 1457.24,-214.55 1472,-205 1483.2,-197.76 1478.08,-186.98 1490,-181 1537.62,-157.1 1689.46,-167.15 1770.45,-174.61"/>
+<polygon fill="#6b7280" stroke="#6b7280" points="1770.16,-178.1 1780.44,-175.55 1770.81,-171.13 1770.16,-178.1"/>
+<text text-anchor="middle" x="1573" y="-183.8" font-family="Helvetica" font-size="9.00">prototype support</text>
+</g>
+<!-- anatomy_prior -->
+<g id="node6" class="node">
+<title>anatomy_prior</title>
+<path fill="#fff7e6" stroke="#6b7280" d="M1353.5,-308C1353.5,-308 1321.5,-308 1321.5,-308 1315.5,-308 1309.5,-302 1309.5,-296 1309.5,-296 1309.5,-284 1309.5,-284 1309.5,-278 1315.5,-272 1321.5,-272 1321.5,-272 1353.5,-272 1353.5,-272 1359.5,-272 1365.5,-278 1365.5,-284 1365.5,-284 1365.5,-296 1365.5,-296 1365.5,-302 1359.5,-308 1353.5,-308"/>
+<text text-anchor="middle" x="1337.5" y="-287.5" font-family="Helvetica" font-size="10.00">解剖先验</text>
+</g>
+<!-- anatomy_prior&#45;&gt;scar_proposal -->
+<g id="edge8" class="edge">
+<title>anatomy_prior&#45;&gt;scar_proposal</title>
+<path fill="none" stroke="#6b7280" d="M1365.84,-292.41C1421,-296.74 1549.45,-304.15 1656,-290 1697.29,-284.52 1742.87,-271.71 1775.89,-261.15"/>
+<polygon fill="#6b7280" stroke="#6b7280" points="1777.28,-264.38 1785.71,-257.96 1775.12,-257.72 1777.28,-264.38"/>
+<text text-anchor="middle" x="1573" y="-300.8" font-family="Helvetica" font-size="9.00">ROI prior</text>
+</g>
+<!-- anatomy_prior&#45;&gt;edema_proposal -->
+<g id="edge9" class="edge">
+<title>anatomy_prior&#45;&gt;edema_proposal</title>
+<path fill="none" stroke="#6b7280" d="M1365.75,-287.72C1440.52,-281.35 1644.17,-263.34 1656,-255 1670.95,-244.47 1659.83,-229.56 1674,-218 1701.05,-195.93 1739.37,-186.5 1770.3,-182.56"/>
+<polygon fill="#6b7280" stroke="#6b7280" points="1770.94,-186.01 1780.48,-181.42 1770.16,-179.05 1770.94,-186.01"/>
+<text text-anchor="middle" x="1573" y="-278.8" font-family="Helvetica" font-size="9.00">ROI prior</text>
+</g>
+<!-- scar_refiner -->
+<g id="node9" class="node">
+<title>scar_refiner</title>
+<path fill="#fff7e6" stroke="#6b7280" d="M2617,-256C2617,-256 2537,-256 2537,-256 2531,-256 2525,-250 2525,-244 2525,-244 2525,-232 2525,-232 2525,-226 2531,-220 2537,-220 2537,-220 2617,-220 2617,-220 2623,-220 2629,-226 2629,-232 2629,-232 2629,-244 2629,-244 2629,-250 2623,-256 2617,-256"/>
+<text text-anchor="middle" x="2577" y="-235.5" font-family="Helvetica" font-size="10.00">scar soft&#45;ROI refiner</text>
+</g>
+<!-- scar_proposal&#45;&gt;scar_refiner -->
+<g id="edge10" class="edge">
+<title>scar_proposal&#45;&gt;scar_refiner</title>
+<path fill="none" stroke="#6b7280" d="M1861,-244.66C1980.99,-243.54 2364.13,-239.97 2514.55,-238.57"/>
+<polygon fill="#6b7280" stroke="#6b7280" points="2515.01,-242.07 2524.97,-238.48 2514.94,-235.07 2515.01,-242.07"/>
+<text text-anchor="middle" x="2091.5" y="-245.8" font-family="Helvetica" font-size="9.00">scar ROI</text>
+</g>
+<!-- edema_refiner -->
+<g id="node10" class="node">
+<title>edema_refiner</title>
+<path fill="#fff7e6" stroke="#6b7280" d="M2391,-198C2391,-198 2300,-198 2300,-198 2294,-198 2288,-192 2288,-186 2288,-186 2288,-174 2288,-174 2288,-168 2294,-162 2300,-162 2300,-162 2391,-162 2391,-162 2397,-162 2403,-168 2403,-174 2403,-174 2403,-186 2403,-186 2403,-192 2397,-198 2391,-198"/>
+<text text-anchor="middle" x="2345.5" y="-177.5" font-family="Helvetica" font-size="10.00">edema soft&#45;ROI refiner</text>
+</g>
+<!-- edema_proposal&#45;&gt;edema_refiner -->
+<g id="edge11" class="edge">
+<title>edema_proposal&#45;&gt;edema_refiner</title>
+<path fill="none" stroke="#6b7280" d="M1866.61,-180C1956.67,-180 2168.63,-180 2277.45,-180"/>
+<polygon fill="#6b7280" stroke="#6b7280" points="2277.65,-183.5 2287.65,-180 2277.65,-176.5 2277.65,-183.5"/>
+<text text-anchor="middle" x="2091.5" y="-182.8" font-family="Helvetica" font-size="9.00">edema ROI</text>
+</g>
+<!-- arbitration_final_output -->
+<g id="node12" class="node">
+<title>arbitration_final_output</title>
+<path fill="#fff7e6" stroke="#6b7280" d="M2997,-198C2997,-198 2897,-198 2897,-198 2891,-198 2885,-192 2885,-186 2885,-186 2885,-174 2885,-174 2885,-168 2891,-162 2897,-162 2897,-162 2997,-162 2997,-162 3003,-162 3009,-168 3009,-174 3009,-174 3009,-186 3009,-186 3009,-192 3003,-198 2997,-198"/>
+<text text-anchor="middle" x="2947" y="-177.5" font-family="Helvetica" font-size="10.00">arbitration 与 final output</text>
+</g>
+<!-- scar_refiner&#45;&gt;arbitration_final_output -->
+<g id="edge13" class="edge">
+<title>scar_refiner&#45;&gt;arbitration_final_output</title>
+<path fill="none" stroke="#6b7280" d="M2629.22,-230.59C2687.03,-222.13 2783.87,-207.69 2867,-194 2869.53,-193.58 2872.1,-193.16 2874.69,-192.72"/>
+<polygon fill="#6b7280" stroke="#6b7280" points="2875.51,-196.13 2884.78,-191 2874.34,-189.23 2875.51,-196.13"/>
+<text text-anchor="middle" x="2725.5" y="-225.8" font-family="Helvetica" font-size="9.00">scar delta</text>
+</g>
+<!-- no_t2_safety -->
+<g id="node11" class="node">
+<title>no_t2_safety</title>
+<path fill="#fff7e6" stroke="#6b7280" d="M2766,-198C2766,-198 2685,-198 2685,-198 2679,-198 2673,-192 2673,-186 2673,-186 2673,-174 2673,-174 2673,-168 2679,-162 2685,-162 2685,-162 2766,-162 2766,-162 2772,-162 2778,-168 2778,-174 2778,-174 2778,-186 2778,-186 2778,-192 2772,-198 2766,-198"/>
+<text text-anchor="middle" x="2725.5" y="-177.5" font-family="Helvetica" font-size="10.00">no&#45;T2 edema 安全门</text>
+</g>
+<!-- edema_refiner&#45;&gt;no_t2_safety -->
+<g id="edge12" class="edge">
+<title>edema_refiner&#45;&gt;no_t2_safety</title>
+<path fill="none" stroke="#6b7280" d="M2403.09,-180C2472.78,-180 2590.73,-180 2662.72,-180"/>
+<polygon fill="#6b7280" stroke="#6b7280" points="2662.99,-183.5 2672.99,-180 2662.99,-176.5 2662.99,-183.5"/>
+<text text-anchor="middle" x="2577" y="-182.8" font-family="Helvetica" font-size="9.00">T2 gate</text>
+</g>
+<!-- no_t2_safety&#45;&gt;arbitration_final_output -->
+<g id="edge14" class="edge">
+<title>no_t2_safety&#45;&gt;arbitration_final_output</title>
+<path fill="none" stroke="#6b7280" d="M2778.24,-180C2807.06,-180 2843.37,-180 2874.83,-180"/>
+<polygon fill="#6b7280" stroke="#6b7280" points="2874.86,-183.5 2884.86,-180 2874.86,-176.5 2874.86,-183.5"/>
+<text text-anchor="middle" x="2831.5" y="-182.8" font-family="Helvetica" font-size="9.00">safe edema delta</text>
+</g>
+<!-- losses -->
+<g id="node13" class="node">
+<title>losses</title>
+<path fill="#fff7e6" stroke="#6b7280" d="M403,-246C403,-246 341,-246 341,-246 335,-246 329,-240 329,-234 329,-234 329,-222 329,-222 329,-216 335,-210 341,-210 341,-210 403,-210 403,-210 409,-210 415,-216 415,-222 415,-222 415,-234 415,-234 415,-240 409,-246 403,-246"/>
+<text text-anchor="middle" x="372" y="-225.5" font-family="Helvetica" font-size="10.00">loss 与优化目标</text>
+</g>
+<!-- losses&#45;&gt;retrieval_dictionary -->
+<g id="edge15" class="edge">
+<title>losses&#45;&gt;retrieval_dictionary</title>
+<path fill="none" stroke="#6b7280" d="M415.03,-223.78C500.25,-215.22 694.2,-195.75 799.6,-185.17"/>
+<polygon fill="#6b7280" stroke="#6b7280" points="800.23,-188.62 809.83,-184.14 799.53,-181.66 800.23,-188.62"/>
+<text text-anchor="middle" x="610" y="-213.8" font-family="Helvetica" font-size="9.00">优化目标</text>
+</g>
+<!-- checkpoint_selection -->
+<g id="node14" class="node">
+<title>checkpoint_selection</title>
+<path fill="#fff7e6" stroke="#6b7280" d="M2756.5,-115C2756.5,-115 2694.5,-115 2694.5,-115 2688.5,-115 2682.5,-109 2682.5,-103 2682.5,-103 2682.5,-91 2682.5,-91 2682.5,-85 2688.5,-79 2694.5,-79 2694.5,-79 2756.5,-79 2756.5,-79 2762.5,-79 2768.5,-85 2768.5,-91 2768.5,-91 2768.5,-103 2768.5,-103 2768.5,-109 2762.5,-115 2756.5,-115"/>
+<text text-anchor="middle" x="2725.5" y="-94.5" font-family="Helvetica" font-size="10.00">checkpoint 选择</text>
+</g>
+<!-- checkpoint_selection&#45;&gt;arbitration_final_output -->
+<g id="edge16" class="edge">
+<title>checkpoint_selection&#45;&gt;arbitration_final_output</title>
+<path fill="none" stroke="#6b7280" d="M2768.56,-112.91C2802.62,-125.78 2850.93,-144.05 2888.55,-158.28"/>
+<polygon fill="#6b7280" stroke="#6b7280" points="2887.77,-161.72 2898.36,-161.99 2890.24,-155.18 2887.77,-161.72"/>
+<text text-anchor="middle" x="2831.5" y="-150.8" font-family="Helvetica" font-size="9.00">formal decision</text>
+</g>
+<!-- cine_temporal -->
+<g id="node15" class="node">
+<title>cine_temporal</title>
+<path fill="#fff7e6" stroke="#6b7280" d="M2383.5,-144C2383.5,-144 2307.5,-144 2307.5,-144 2301.5,-144 2295.5,-138 2295.5,-132 2295.5,-132 2295.5,-120 2295.5,-120 2295.5,-114 2301.5,-108 2307.5,-108 2307.5,-108 2383.5,-108 2383.5,-108 2389.5,-108 2395.5,-114 2395.5,-120 2395.5,-120 2395.5,-132 2395.5,-132 2395.5,-138 2389.5,-144 2383.5,-144"/>
+<text text-anchor="middle" x="2345.5" y="-123.5" font-family="Helvetica" font-size="10.00">Cine temporal 次线</text>
+</g>
+<!-- cine_temporal&#45;&gt;checkpoint_selection -->
+<g id="edge17" class="edge">
+<title>cine_temporal&#45;&gt;checkpoint_selection</title>
+<path fill="none" stroke="#6b7280" d="M2395.53,-122.24C2466.83,-116.77 2598.61,-106.66 2671.88,-101.04"/>
+<polygon fill="#6b7280" stroke="#6b7280" points="2672.55,-104.5 2682.25,-100.24 2672.01,-97.52 2672.55,-104.5"/>
+<text text-anchor="middle" x="2577" y="-117.8" font-family="Helvetica" font-size="9.00">local proxy only</text>
+</g>
+<!-- controller_continuity -->
+<g id="node16" class="node">
+<title>controller_continuity</title>
+<path fill="#fff7e6" stroke="#6b7280" d="M1886.5,-90C1886.5,-90 1760.5,-90 1760.5,-90 1754.5,-90 1748.5,-84 1748.5,-78 1748.5,-78 1748.5,-66 1748.5,-66 1748.5,-60 1754.5,-54 1760.5,-54 1760.5,-54 1886.5,-54 1886.5,-54 1892.5,-54 1898.5,-60 1898.5,-66 1898.5,-66 1898.5,-78 1898.5,-78 1898.5,-84 1892.5,-90 1886.5,-90"/>
+<text text-anchor="middle" x="1823.5" y="-69.5" font-family="Helvetica" font-size="10.00">controller continuity 与 finalizer</text>
+</g>
+<!-- mapper_wiki_observability -->
+<g id="node17" class="node">
+<title>mapper_wiki_observability</title>
+<path fill="#fff7e6" stroke="#6b7280" d="M2397,-90C2397,-90 2294,-90 2294,-90 2288,-90 2282,-84 2282,-78 2282,-78 2282,-66 2282,-66 2282,-60 2288,-54 2294,-54 2294,-54 2397,-54 2397,-54 2403,-54 2409,-60 2409,-66 2409,-66 2409,-78 2409,-78 2409,-84 2403,-90 2397,-90"/>
+<text text-anchor="middle" x="2345.5" y="-69.5" font-family="Helvetica" font-size="10.00">mapper/wiki observability</text>
+</g>
+<!-- controller_continuity&#45;&gt;mapper_wiki_observability -->
+<g id="edge18" class="edge">
+<title>controller_continuity&#45;&gt;mapper_wiki_observability</title>
+<path fill="none" stroke="#6b7280" d="M1898.73,-72C1998.06,-72 2173.11,-72 2271.7,-72"/>
+<polygon fill="#6b7280" stroke="#6b7280" points="2271.88,-75.5 2281.88,-72 2271.88,-68.5 2271.88,-75.5"/>
+<text text-anchor="middle" x="2091.5" y="-74.8" font-family="Helvetica" font-size="9.00">receipts</text>
+</g>
+<!-- mapper_wiki_observability&#45;&gt;checkpoint_selection -->
+<g id="edge19" class="edge">
+<title>mapper_wiki_observability&#45;&gt;checkpoint_selection</title>
+<path fill="none" stroke="#6b7280" d="M2409.04,-71.76C2471.5,-72.15 2570.18,-74.47 2655,-84 2660.57,-84.63 2666.35,-85.44 2672.11,-86.36"/>
+<polygon fill="#6b7280" stroke="#6b7280" points="2671.94,-89.88 2682.38,-88.1 2673.11,-82.98 2671.94,-89.88"/>
+<text text-anchor="middle" x="2577" y="-86.8" font-family="Helvetica" font-size="9.00">observability</text>
+</g>
+<!-- m10_followup_wave2_reconciliation -->
+<g id="node18" class="node">
+<title>m10_followup_wave2_reconciliation</title>
+<path fill="#fff7e6" stroke="#6b7280" d="M2469,-36C2469,-36 2222,-36 2222,-36 2216,-36 2210,-30 2210,-24 2210,-24 2210,-12 2210,-12 2210,-6 2216,0 2222,0 2222,0 2469,0 2469,0 2475,0 2481,-6 2481,-12 2481,-12 2481,-24 2481,-24 2481,-30 2475,-36 2469,-36"/>
+<text text-anchor="middle" x="2345.5" y="-15.5" font-family="Helvetica" font-size="10.00">M10 inherited Wave2 checkpoint/intervention reconciliation</text>
+</g>
+<!-- m10_followup_wave2_reconciliation&#45;&gt;checkpoint_selection -->
+<g id="edge20" class="edge">
+<title>m10_followup_wave2_reconciliation&#45;&gt;checkpoint_selection</title>
+<path fill="none" stroke="#6b7280" d="M2481.29,-25.94C2536.15,-31.84 2599.57,-42.11 2655,-60 2665.86,-63.5 2677.02,-68.66 2687.14,-74.01"/>
+<polygon fill="#6b7280" stroke="#6b7280" points="2685.65,-77.18 2696.1,-78.94 2689.02,-71.05 2685.65,-77.18"/>
+<text text-anchor="middle" x="2577" y="-62.8" font-family="Helvetica" font-size="9.00">M10 all&#45;checkpoint selection evidence</text>
+</g>
+<!-- cine_followup_fidelity_contracts -->
+<g id="node19" class="node">
+<title>cine_followup_fidelity_contracts</title>
+<path fill="#fff7e6" stroke="#6b7280" d="M493,-132C493,-132 251,-132 251,-132 245,-132 239,-126 239,-120 239,-120 239,-108 239,-108 239,-102 245,-96 251,-96 251,-96 493,-96 493,-96 499,-96 505,-102 505,-108 505,-108 505,-120 505,-120 505,-126 499,-132 493,-132"/>
+<text text-anchor="middle" x="372" y="-111.5" font-family="Helvetica" font-size="10.00">CineMA/registration/temporal fail&#45;closed fidelity contracts</text>
+</g>
+<!-- cine_followup_adapter_control -->
+<g id="node20" class="node">
+<title>cine_followup_adapter_control</title>
+<path fill="#fff7e6" stroke="#6b7280" d="M1017,-132C1017,-132 727,-132 727,-132 721,-132 715,-126 715,-120 715,-120 715,-108 715,-108 715,-102 721,-96 727,-96 727,-96 1017,-96 1017,-96 1023,-96 1029,-102 1029,-108 1029,-108 1029,-120 1029,-120 1029,-126 1023,-132 1017,-132"/>
+<text text-anchor="middle" x="872" y="-111.5" font-family="Helvetica" font-size="10.00">CineMA adapted model versus capacity&#45;matched random&#45;init control</text>
+</g>
+<!-- cine_followup_fidelity_contracts&#45;&gt;cine_followup_adapter_control -->
+<g id="edge21" class="edge">
+<title>cine_followup_fidelity_contracts&#45;&gt;cine_followup_adapter_control</title>
+<path fill="none" stroke="#6b7280" d="M505.15,-114C566.28,-114 639.56,-114 704.43,-114"/>
+<polygon fill="#6b7280" stroke="#6b7280" points="704.77,-117.5 714.77,-114 704.77,-110.5 704.77,-117.5"/>
+<text text-anchor="middle" x="610" y="-116.8" font-family="Helvetica" font-size="9.00">F2 freeze contracts gate F3 adapter/control</text>
+</g>
+<!-- cine_followup_registration -->
+<g id="node21" class="node">
+<title>cine_followup_registration</title>
+<path fill="#fff7e6" stroke="#6b7280" d="M1460,-132C1460,-132 1215,-132 1215,-132 1209,-132 1203,-126 1203,-120 1203,-120 1203,-108 1203,-108 1203,-102 1209,-96 1215,-96 1215,-96 1460,-96 1460,-96 1466,-96 1472,-102 1472,-108 1472,-108 1472,-120 1472,-120 1472,-126 1466,-132 1460,-132"/>
+<text text-anchor="middle" x="1337.5" y="-111.5" font-family="Helvetica" font-size="10.00">learned registration plus gate and SyN control requirement</text>
+</g>
+<!-- cine_followup_adapter_control&#45;&gt;cine_followup_registration -->
+<g id="edge22" class="edge">
+<title>cine_followup_adapter_control&#45;&gt;cine_followup_registration</title>
+<path fill="none" stroke="#6b7280" d="M1029.27,-114C1082.12,-114 1140.85,-114 1192.69,-114"/>
+<polygon fill="#6b7280" stroke="#6b7280" points="1192.96,-117.5 1202.96,-114 1192.96,-110.5 1192.96,-117.5"/>
+<text text-anchor="middle" x="1116" y="-116.8" font-family="Helvetica" font-size="9.00">selected source feeds registration</text>
+</g>
+<!-- cine_followup_temporal_dictionary -->
+<g id="node22" class="node">
+<title>cine_followup_temporal_dictionary</title>
+<path fill="#fff7e6" stroke="#6b7280" d="M1941,-144C1941,-144 1706,-144 1706,-144 1700,-144 1694,-138 1694,-132 1694,-132 1694,-120 1694,-120 1694,-114 1700,-108 1706,-108 1706,-108 1941,-108 1941,-108 1947,-108 1953,-114 1953,-120 1953,-120 1953,-132 1953,-132 1953,-138 1947,-144 1941,-144"/>
+<text text-anchor="middle" x="1823.5" y="-123.5" font-family="Helvetica" font-size="10.00">learned temporal dictionary/model after registration gate</text>
+</g>
+<!-- cine_followup_registration&#45;&gt;cine_followup_temporal_dictionary -->
+<g id="edge23" class="edge">
+<title>cine_followup_registration&#45;&gt;cine_followup_temporal_dictionary</title>
+<path fill="none" stroke="#6b7280" d="M1472.04,-117.31C1537.91,-118.94 1617.3,-120.91 1683.85,-122.56"/>
+<polygon fill="#6b7280" stroke="#6b7280" points="1683.91,-126.06 1693.99,-122.81 1684.08,-119.07 1683.91,-126.06"/>
+<text text-anchor="middle" x="1573" y="-124.8" font-family="Helvetica" font-size="9.00">registration gate allows temporal attempt</text>
+</g>
+<!-- cine_followup_temporal_dictionary&#45;&gt;cine_temporal -->
+<g id="edge24" class="edge">
+<title>cine_followup_temporal_dictionary&#45;&gt;cine_temporal</title>
+<path fill="none" stroke="#6b7280" d="M1953.04,-126C2058.96,-126 2204.39,-126 2284.85,-126"/>
+<polygon fill="#6b7280" stroke="#6b7280" points="2285.29,-129.5 2295.29,-126 2285.29,-122.5 2285.29,-129.5"/>
+<text text-anchor="middle" x="2091.5" y="-128.8" font-family="Helvetica" font-size="9.00">temporal evidence missing keeps Cine unverified</text>
+</g>
+<!-- m10_followup_controller_finalizer -->
+<g id="node23" class="node">
+<title>m10_followup_controller_finalizer</title>
+<path fill="#fff7e6" stroke="#6b7280" d="M1961,-36C1961,-36 1686,-36 1686,-36 1680,-36 1674,-30 1674,-24 1674,-24 1674,-12 1674,-12 1674,-6 1680,0 1686,0 1686,0 1961,0 1961,0 1967,0 1973,-6 1973,-12 1973,-12 1973,-24 1973,-24 1973,-30 1967,-36 1961,-36"/>
+<text text-anchor="middle" x="1823.5" y="-15.5" font-family="Helvetica" font-size="10.00">M10 follow&#45;up controller finalizer and packet publication boundary</text>
+</g>
+<!-- m10_followup_controller_finalizer&#45;&gt;mapper_wiki_observability -->
+<g id="edge25" class="edge">
+<title>m10_followup_controller_finalizer&#45;&gt;mapper_wiki_observability</title>
+<path fill="none" stroke="#6b7280" d="M1973.16,-33.44C2070.97,-43.6 2194.7,-56.44 2271.73,-64.44"/>
+<polygon fill="#6b7280" stroke="#6b7280" points="2271.51,-67.94 2281.82,-65.49 2272.24,-60.98 2271.51,-67.94"/>
+<text text-anchor="middle" x="2091.5" y="-59.8" font-family="Helvetica" font-size="9.00">controller packet and mapper final receipts</text>
+</g>
+</g>
+</svg>
