@@ -3,15 +3,18 @@ route_id: route_B
 route_name: "Route B — full SRR-v3 architecture implementation"
 branch: route_B
 worktree: /users/a/e/aereinh/CARE_worktrees/route_B
-status: PLANNER_DRAFT_FOR_CRITIC
+status: CRITIC_REVISED_READY_FOR_CONTROLLER
 not_a_milestone: true
 planner_base_commit: dfea8e1bb22de1bbcf3ff062359f1dd086f56c38
+critic_reviewed_planner_commit: 7303ef937793e47f5bac562e3c2c796654acc7fa
+critic_decision: APPROVE_AFTER_REVISION
+critic_token: ROUTE_B_PLANNING_READY_FOR_CONTROLLER
 diagram_source: "ChatGPT Project background materials / current conversation visual channel"
 diagram_versions_read:
   - SRR-v2
   - SRR-v2.5
   - SRR-v3
-visual_read_status: READ_FROM_PROJECT_BACKGROUND_OR_CURRENT_CONVERSATION_UPLOAD
+visual_read_status: READ_FROM_CURRENT_PROJECT_BACKGROUND
 canonical_repo_paths:
   - images/SRR-v2.png
   - images/SRR-v2.5.png
@@ -23,44 +26,67 @@ allowed_critic_token: ROUTE_B_PLANNING_READY_FOR_CONTROLLER
 forbidden_tokens:
   - ROUTE_PROMOTED
   - VALIDATION_UPLOAD_APPROVED
+  - HOSTED_METRIC_CLAIM
   - M11_AUTHORIZED
   - FINAL_SCIENTIFIC_CONCLUSION
+  - CROSS_ROUTE_MERGE_APPROVED
 ---
 
 # Route B planning contract
 
-Route B is not a milestone. It is the isolated route for implementing and validating the complete SRR-v3 architecture before any formal training. It must prove the diagram modules exist as executable code paths that affect final logits/labels, not just as configs, wrappers, tables, or diagrams.
+Route B is not a milestone. It is the isolated medium-work route for turning the complete SRR-v3 MyoPS and Cine design into executable, auditable code before formal training. The route cannot pass by creating interfaces, configs, tables, wrappers, mocks, or conceptual modules that do not causally affect final outputs.
 
-## Recovered SRR objective from visual diagrams
+## Independently recovered SRR-v3 objective
 
-The SRR v2/v2.5/v3 diagrams show a full segmentation-native selective retrieval framework. It starts from LGE/C0/T2 with explicit availability, uses modality-specific stems and availability-aware routers, retrieves from shared, modality-private and optional interaction dictionaries with real prototype groups, generates anatomy-guided scar/edema proposals from union/LV/RV/anatomy-distance/uncertainty/context, refines scar and edema through pathology-specific soft-ROI refiners, and in v3 preserves a strong nnU-Net anchor through bounded residual correction. Cine is a registration-aware anatomy-first temporal retrieval branch that must consume ED/reference, key frames, registration/warping, anatomy/features/uncertainty and temporal aggregation.
+The v2 diagram establishes availability-aware selective retrieval from LGE, C0/bSSFP and T2, followed by anatomy-guided lesion proposal and pathology-specific soft-ROI refinement. v2.5 makes scar and edema proposal paths explicitly separate: scar is LGE-dominant and high precision; edema is T2-conditioned and broader context. v3 adds a semantic multi-slot representation bank with real train/OOF prototype groups, nnU-Net probabilities/logits, components, uncertainty and anatomy context, and a baseline-preserving bounded residual correction. Cine remains a registration-aware anatomy-first temporal path: ED/reference and selected key frames are warped into a reference space, routed through a temporal representation dictionary, and aggregated with frame-wise anatomy evidence. It is not a single-frame or topology-only side path.
 
-## Route objective
-
-Route B must convert SRR-v3 from architecture diagram into a complete, auditable implementation. Its first success criterion is not leaderboard score; it is implementation fidelity:
+The required causal chain is:
 
 ```text
-code completion -> real case forward -> finite nonzero losses -> gradients to target modules -> intervention changes final logits/labels -> save/reload consistency -> export/layout QA -> implementation freeze -> only then formal training
+observed modalities + availability
+-> modality-specific stems and multi-scale encoder
+-> availability-and-image-aware routing
+-> shared/private/optional-interaction semantic retrieval
+-> anatomy + scar/edema proposals
+-> pathology-specific soft-ROI refiners
+-> bounded nnU-Net-anchored residual correction
+-> official-label output
 ```
 
-Route B must not start formal training until this chain passes.
+## Route objective and implementation-first hard gate
 
-## Branch, worktree, namespaces
+The first success criterion is implementation fidelity, not leaderboard score:
+
+```text
+code completion
+-> real-case forward
+-> finite nonzero losses
+-> gradients to every required trainable module
+-> controlled interventions change final logits/labels
+-> checkpoint save/reload/resume consistency
+-> official-label/export QA
+-> implementation freeze
+-> only then formal training/evaluation
+```
+
+Formal training is forbidden until the complete MyoPS and Cine implementation gate passes. A Cine blocker may be reported honestly, but it is a failing implementation state and cannot be used to let MyoPS training bypass the complete Route B gate.
+
+## Portfolio position and isolation
+
+Route B implements the complete architecture. It is larger than Route A, which is the quickest compressed non-pure-nnU-Net candidate, and smaller in evidence-reconciliation scope than Route C, which inherits M10 follow-up2 replay and Cine fidelity accounting. Route B must not absorb Route C's historical-evidence burden or degrade to Route A's compressed architecture.
 
 | item | value |
 | --- | --- |
 | branch | `route_B` |
 | worktree | `/users/a/e/aereinh/CARE_worktrees/route_B` |
 | controller tmux | `care_route_B_controller` |
-| reviewer tmux | `care_route_B_reviewer` only after controller packet commit |
+| reviewer tmux | `care_route_B_reviewer`, created only after packet commit |
 | result root | `results/route_B/` |
 | runtime root | `results/route_B/runtime/` |
 | log root | `logs/route_B/` |
 | lock root | `results/route_B/locks/` |
 
-## Exact write scopes for the future controller
-
-Allowed branch-local write scopes:
+Allowed branch-local source and lightweight-evidence writes:
 
 - `src/care_myocardium/srr_v3/**`
 - `src/care_myocardium/route_B/**`
@@ -74,157 +100,177 @@ Allowed branch-local write scopes:
 - `results/route_B/**`
 - `logs/route_B/**`
 
-Forbidden writes:
+Runtime-only checkpoints, prediction volumes, transform fields and caches may be written only below `results/route_B/runtime/**`. They must remain untracked and must never enter the lightweight packet or Git commit. This runtime allowance is necessary for real save/reload/export testing and formal train/eval; it does not authorize publication of heavy artifacts.
 
-- `prompts/shared/**` unless a later portfolio-level instruction explicitly authorizes canonical prompt merge;
-- `results/route_A/**`, `results/route_C/**`, `logs/route_A/**`, `logs/route_C/**`, `routes/route_A/**`, `routes/route_C/**`;
-- root `wiki/current_state.yaml` and `wiki/history/**` before final portfolio reconciliation;
-- validation upload package directories, hosted submission zips, raw data, checkpoints, NIfTI predictions, large logs, secrets.
+Forbidden writes and actions:
 
-A Route B mapper may write route-local architecture receipts inside `results/route_B/`; it must not rewrite root current state before independent review and portfolio reconciliation.
+- `prompts/shared/**` without later portfolio-level authorization;
+- Route A/C source, result, runtime, log or lock namespaces;
+- root `wiki/current_state.yaml` or `wiki/history/**` before portfolio reconciliation;
+- `results/submissions/**`, validation packages or uploads;
+- raw data modification, secrets, environment dumps, heavy logs, checkpoints or NIfTI files in Git;
+- route promotion, M11, final scientific conclusion or cross-route merge.
+
+Because portfolio policy defers root wiki mutation, the mapper must instead produce route-local architecture receipts and fingerprints under `results/route_B/`. Final root-wiki reconciliation remains a later portfolio action.
 
 ## MyoPS architecture contract
 
-Route B must plan and implement all of these MyoPS modules as real code paths:
+All required modules must be real code paths:
 
-1. modality-specific stems for LGE, C0/bSSFP, and T2;
-2. availability-aware router that reads both the availability mask and image-derived pooled features;
-3. multi-scale shared dictionary `D_sh`;
-4. LGE-private, C0-private and T2-private dictionaries;
-5. optional interaction dictionary, guarded by an implementation flag and tested as on/off intervention;
-6. real prototype memory or OOF prototype bank with scar-positive, scar-safe-negative, edema-positive and edema-safe-negative definitions;
-7. anatomy decoder producing union, LV and RV/anatomy-context maps;
-8. scar proposal decoder, LGE-dominant and high-precision;
-9. edema proposal decoder, T2-conditioned and broader-context;
-10. soft-ROI generator with anatomy prior, distance, uncertainty and nnU-Net confidence/context;
-11. scar soft-ROI refiner;
-12. edema soft-ROI refiner;
-13. bounded nnU-Net residual correction with help/harm gate and anchor fallback;
-14. final label/export path with compact-to-raw CARE semantics checked;
-15. save/reload/resume/export support.
+1. LGE, C0/bSSFP and T2 modality-specific stems;
+2. multi-scale encoder;
+3. router reading both availability and pooled image-derived features;
+4. shared dictionary at every declared scale;
+5. LGE-private, C0-private and T2-private dictionaries;
+6. optional interaction dictionary with tested on/off intervention;
+7. real train/OOF prototype bank with scar-positive, scar-safe-negative, edema-positive and T2-present edema-safe-negative groups;
+8. anatomy decoder producing union, LV, RV and anatomy-context evidence;
+9. LGE-dominant scar proposal decoder;
+10. T2-conditioned, broader-context edema proposal decoder;
+11. soft-ROI generator using proposal, anatomy, distance, uncertainty and nnU-Net context;
+12. small-ROI high-resolution scar refiner;
+13. large-ROI context-preserving edema refiner;
+14. pathology-specific bounded residual correction around the nnU-Net anchor;
+15. final compact-to-raw CARE label/export path;
+16. checkpoint save/reload/resume/export support.
 
-The full loss plan must include anatomy, scar proposal, edema proposal, scar refinement, edema refinement, residual/gate, negative-space/hard-negative, dictionary/prototype regularization, prior/ROI regularization, and optional alignment loss. The executor may stage losses progressively, but formal training cannot start until every required loss is either implemented and gradient-tested or explicitly disabled by a Critic-approved revision.
+Prototype provenance must be case- and fold-safe. A case cannot retrieve a prototype computed from its own ground truth or prediction, and validation/test data cannot update the bank. Edema safe negatives inside myocardium are legal only for T2-present cases with valid edema supervision; no-T2 myocardium cannot become edema negative.
+
+The v3 residual contract is explicit:
+
+```text
+z_final = z_nnunet + g_scar * delta_z_scar + g_edema * delta_z_edema
+```
+
+`g_scar` and `g_edema` are element-wise gates in `[0,1]`; residual maps are bounded by declared limits. Closed gates must reproduce the nnU-Net anchor within a declared numerical tolerance. Open-gate interventions must change final logits or labels on real cases. The gate must use uncertainty/error-prone context and include a help/harm receipt; a generic unconstrained residual head or identity wrapper is invalid.
+
+The loss family must include anatomy, scar proposal, edema proposal, scar refinement, edema refinement, residual/gate, negative-space/hard-negative, dictionary/prototype, prior/ROI and optional alignment terms. Only diagram-marked optional modules—interaction dictionary and alignment—may be disabled without changing Route B's identity. Any required term cannot be silently disabled by the controller.
 
 ## Cine architecture contract
 
-Route B must plan and implement a real Cine route, not just topology postprocessing. Required modules:
+Route B must implement Cine rather than defer it:
 
-1. real CineMA or approved anatomy source loader with provenance, weights/license record, and random-init control if pretrained is used;
-2. frame-wise anatomy logits, features and uncertainty;
-3. ED/reference detection and selected key-frame policy;
-4. registration interface with actual warp outputs;
-5. if learned registration is used: symmetric velocity, scaling-and-squaring, Jacobian, inverse consistency and registration losses must be real, not proxy-only;
-6. ANTs/SyN or comparable classical registration control when learned registration is not ready;
+1. a real CineMA or approved anatomy-source loader with provenance, license and weight/init receipt;
+2. frame-wise multiclass anatomy logits, features and uncertainty;
+3. ED/reference determination and deterministic key-frame policy;
+4. registration interface producing actual transforms and warped evidence;
+5. if learned registration is used, real symmetric velocity, scaling-and-squaring, Jacobian, inverse-consistency and registration losses;
+6. a real ANTs/SyN or comparable classical registration control;
 7. temporal representation dictionary with frame-quality or motion-saliency routing;
-8. temporal aggregation/refiner that consumes registered anatomy/features/motion/uncertainty;
+8. temporal aggregation/refiner consuming registered anatomy, features, motion and uncertainty;
 9. checkpoint/resume/export/layout QA.
 
-Cine readiness requires a multi-case before/after matrix showing temporal module enabled vs disabled and registration evidence. Frame0-only, descriptor-only, topology/LCC-only, untrained VoxelMorph, or optical-flow-only proxy without registration evidence must fail.
+The implementation gate must use at least three real cine cases and at least three non-reference frames per case. Temporal on/off intervention must alter final output on the tested cases. Frame0-only, descriptor-only, topology/LCC-only, optical-flow-only proxy, untrained VoxelMorph, mock transforms, or an “honest blocker” labeled as pass are invalid. A genuine blocker is reported as `ROUTE_B_IMPLEMENTATION_NEEDS_REVISION` or `ROUTE_B_NEEDS_EVIDENCE` and blocks formal training.
 
-## Implementation-before-training gate
+## Implementation-before-training checks
 
-Formal training is forbidden until the following pass on real cases.
+### MyoPS
 
-### MyoPS checks
+- Real forward for LGE-only, LGE+C0 and LGE+C0+T2.
+- Perturbing the tensor for an unavailable modality while keeping its availability bit off leaves outputs invariant within tolerance and produces no gradient through that unavailable input.
+- Changing availability or an actually observed modality changes routing/output where expected.
+- Every required module appears in an architecture trace with code path, tensor shape, parameter count, provenance and final-output dependency.
+- Losses are finite, nonconstant and nonzero where expected; gradients reach stems, router, dictionaries/prototypes, anatomy, proposals, refiners and gates.
+- No-T2 edema proposal/refinement losses are exactly masked according to contract.
+- Major-module on/off interventions alter final logits/labels.
+- Closed residual gates reproduce the anchor; open gates produce bounded changes and record help/harm.
+- Save/reload and resume preserve output/state within tolerance.
+- Export maps compact labels to official CARE values and records voxel/hash checks.
 
-- LGE-only, LGE+C0 and LGE+C0+T2 real forward paths;
-- missing modality tensors are absent/masked and do not enter as real observed images;
-- router reads availability plus pooled image features;
-- each dictionary/prototype group has a real source, initialization, and train/OOF provenance;
-- anatomy, proposal, soft-ROI, refiner and residual modules are all in the forward path;
-- disabling each major module changes final logits/labels or a documented route-specific output;
-- losses are finite, nonconstant and nonzero where expected;
-- gradients reach stems, router, dictionary/prototypes, anatomy, proposals, refiners and residual gate;
-- no-T2 edema loss is zero/masked for no-T2 samples;
-- save/reload output consistency passes;
-- export maps to official labels and records voxel/hash comparisons.
+### Cine
 
-### Cine checks
+- Real multi-frame input and frame ordering are consumed.
+- Real anatomy logits/features/uncertainty are loaded or computed.
+- Registration produces traceable warp statistics and transformed evidence.
+- Temporal dictionary/refiner consumes registered evidence rather than filenames or descriptors.
+- Temporal enabled/disabled and registered/unregistered interventions alter final outputs on the required multi-case set.
+- Resume does not reset temporal state.
+- Export maps to the official layout.
 
-- real multi-frame input consumed;
-- real anatomy logits/features/uncertainty loaded/computed;
-- registration or fixed/SyN warp produces traceable transform files/statistics;
-- temporal dictionary/refiner consumes registered anatomy/features/motion/uncertainty;
-- temporal module on/off changes final output on more than one case or writes honest blocker;
-- resume does not reset temporal state;
-- output maps to official submission layout.
+### Freeze
 
-### Implementation freeze
+After all checks pass, record code/config/data-split/case-list/label/preprocess/decode/export hashes. Any architecture, loss or routing semantic change invalidates the freeze and requires the full gate to rerun.
 
-After the implementation gate passes, freeze code/config hashes for the first formal train/eval wave. Any architecture or loss formula change after freeze requires a new implementation-gate run and Critic-visible revision.
+## First bounded train/eval after freeze
 
-## Training/evaluation gate after implementation passes
+The first formal wave is limited to eight hours per job. Minimum effective training evidence is machine-readable and requires at least:
 
-Route B training is allowed only after implementation freeze. First training wave must be bounded and attributable:
+- `min_optimizer_steps: 500`;
+- `min_train_loop_seconds: 1800`;
+- `min_validation_events: 2`;
+- `min_eval_cases: 10` for MyoPS and `min_cine_eval_cases: 5` for Cine;
+- one-batch overfit, prediction sanity, loss decrease, cache isolation and same-split nnU-Net/Cine baseline checks.
 
-- job budget <= 8 hours unless later Critic/controller packet authorizes a specific longer run;
-- report optimizer steps, train-loop seconds, validation events, prediction sanity, loss behavior and cache isolation;
-- same-split nnU-Net anchor comparison is required;
-- report modality groups, T2-present/GT-positive edema, no-T2 empty-GT safety, CenterB/CenterC where available, scar-positive cases, remote-FP/component/HD95 and volume-ratio guardrails;
-- do not use smoke-scale or undertrained evidence for route promotion or final scientific stop.
+Falling below these thresholds is smoke or undertrained evidence. It may support debugging but cannot support portfolio acceptance, route promotion or scientific stop. Reports must include modality groups, T2-present/GT-positive edema, no-T2 safety, CenterB/CenterC where available, scar-positive cases, remote false positives, components, HD95 and volume-ratio guardrails.
 
-## Slurm and partition plan
+## Slurm routing
 
-Use `htzhulab` first, `a100-gpu` second, and `volta-gpu` only when V100 compatibility is explicitly declared without changing science semantics. Multiple independent ready jobs should use different partitions rather than duplicate races. A three-way race is allowed only for a single critical pending job with identical scientific semantics, isolated attempts, shared atomic winner lock, loser receipts, and cancellation of pending losers.
+Use `htzhulab` first, `a100-gpu` second and `volta-gpu` third. V100 use requires an explicit 16-GB compatibility receipt without scientific-semantic changes. Prefer distinct ready work on different partitions. A duplicate race is allowed only for one critical pending logical run with identical hashes/semantics, isolated attempts, one atomic winner lock, loser receipts and pending-loser cancellation.
 
-Pending/running/monitor/`AWAITING_SACCT` states are not completion. The controller/finalizer must rerun aggregation after job completion and commit tracked lightweight evidence.
+Pending, running, watcher, monitor or `AWAITING_SACCT` states are not completion. Final aggregation must occur after terminal accounting and must merge runtime evidence into tracked lightweight files.
 
-## Expected result packet
+## Required validators and known-bad fixtures
 
-The Route B controller must produce a lightweight packet under `results/route_B/` with at least:
+The controller must implement and run:
 
-- `result.md`
-- `implementation_gap_inventory.md`
-- `architecture_component_trace.csv`
-- `implementation_gate.md`
-- `implementation_gate.json`
-- `gradient_and_intervention_report.csv`
-- `save_reload_export_report.json`
-- `cine_registration_temporal_report.csv`
-- `commands_run.md`
-- `controller_report.md`
-- `completion_check.md`
-- `review_request.md`
-- `MANIFEST.md`
+- `scripts/validation/route_B/validate_route_b_implementation.py`;
+- `scripts/validation/route_B/validate_route_b_packet.py`;
+- `tests/route_B/known_bad/` fixtures covering semantic bypasses;
+- the repository executor-plan, controller-packet and route-isolation validators applicable to this task.
 
-Training/eval files such as `metrics_summary.csv`, `case_safety_matrix.csv`, and `training_adequacy.csv` are required only if formal train/eval actually runs after implementation freeze. Missing train/eval is acceptable only as `SCIENTIFIC_UNDERTRAINED` or `NEEDS_EVIDENCE`, not as completion of the scientific route.
+Strict mode is mandatory. The validators must fail at least these cases:
 
-## Validator known-bad cases
-
-Route B validators must fail closed on:
-
-- any required SRR-v3 module represented only by placeholder, mock, dataclass, static config, CSV-only diagnostic, fake URL/hash, or no-op wrapper;
-- old nnU-Net or old Cine wrapper bypass of final outputs;
-- forward pass without availability-aware routing;
-- dictionary/prototype groups with no real train/OOF provenance;
-- proposal/refiner/residual modules that do not affect final logits/labels;
+- placeholder/mock/dataclass/config/CSV-only module;
+- old nnU-Net or Cine wrapper bypass;
+- unavailable-modality perturbation affects output while availability is off;
+- router ignores pooled image features or availability;
+- prototype has self-case, fold or validation leakage;
 - no-T2 edema negative supervision;
-- Cine frame0-only, descriptor-only, topology-only, proxy registration, untrained VoxelMorph, or temporal module not consuming registered evidence;
-- formal training before implementation gate and save/reload/intervention checks;
-- pending Slurm/monitor packet as completion;
-- validation upload, route promotion, final scientific conclusion, M11, or cross-route merge.
+- proposal/refiner/gate has no final-output effect;
+- residual closed gate is not anchor identity or residual is unbounded;
+- Cine frame0/descriptor/topology/proxy-registration path;
+- temporal module does not consume registered tensors;
+- formal training predates freeze receipt;
+- known pending/monitor packets claim completion;
+- missing controller lifecycle receipts;
+- heavy runtime artifacts are staged for Git;
+- upload, promotion, M11 or cross-route merge claim.
 
-## Reviewer checklist
+## Result packet and controller lifecycle
 
-The Route B reviewer must be independent and read-only. It must check:
+The lightweight packet under `results/route_B/` must contain:
 
-- each SRR-v3 diagram module is mapped to code path, runtime evidence, and unresolved gap;
-- implementation gate ran before formal training;
-- on/off interventions alter final logits/labels;
-- gradients reach target modules;
-- save/reload/export are consistent;
-- Cine has real registration/temporal evidence or honest blocker;
-- `training_adequacy.csv` does not promote smoke-scale evidence;
-- controller stopped before route promotion/upload/M11.
+- `controller_context.json`, `controller_ledger.csv`, `controller_bootstrap_snapshot.md`;
+- `implementation_gap_inventory.md`, `implementation_snapshot.md`;
+- `architecture_component_trace.csv`, `architecture_delta_final.md`;
+- `mapper_report_draft.md`, `mapper_report_final.md`;
+- `implementation_gate.md`, `implementation_gate.json`;
+- `gradient_and_intervention_report.csv`;
+- `save_reload_export_report.json`, `implementation_freeze_receipt.json`;
+- `cine_registration_temporal_report.csv`;
+- `finalizer_state.json`, validator reports;
+- `result.md`, `commands_run.md`, `controller_report.md`;
+- `completion_check.md`, `review_request.md`, `MANIFEST.md`.
 
-## Stop/continue criteria
+Training/eval files are required only if the post-freeze wave runs: `training_adequacy.csv`, `metrics_summary.csv`, `case_safety_matrix.csv`. Missing formal training must be classified as undertrained/evidence-incomplete, never as scientific completion.
 
-Continue after implementation gate only if full SRR-v3 modules are real and first evidence is adequate. Stop with `NEEDS_REVISION` if architecture is incomplete or modules are mock/no-op. Stop with `SCIENTIFIC_UNDERTRAINED` if implementation is real but training evidence is too small. Stop with `NEEDS_EVIDENCE` if required runtime artifacts are missing.
+`completion_check.md` must contain exactly one controller completion token from the allowed set. Only `ROUTE_B_READY_FOR_REVIEW` permits the independent reviewer to start; it does not imply scientific acceptance.
 
-## Finalizer behavior
+## Reviewer contract
 
-Finalizer must perform terminal Slurm accounting, aggregation, strict validators, architecture trace validation, `git diff --check`, packet manifest, local lightweight commit, and then stop. It must not write `review.md`, push, upload validation, start Route A/C, start M11, or claim route promotion.
+The reviewer is a separate read-only session pinned to the committed packet. It must independently rerun strict validators and inspect architecture-to-code/tensor/output mappings, implementation ordering, intervention effects, gradient reachability, anchor identity, save/reload/export, Cine registration/temporal fidelity, training adequacy and monitor-state absence. It must not fix files, train, package, upload, promote, start M11 or merge routes.
 
-## Prompt/shared policy
+The reviewer may issue only:
 
-This planner draft intentionally does not modify `prompts/shared/`. Route B must keep shared prompts unchanged unless a later portfolio-level instruction explicitly requests canonical prompt integration.
+- `ROUTE_B_REVIEW_PACKET_ACCEPTED_FOR_PORTFOLIO_COMPARISON`;
+- `ROUTE_B_REVIEW_NEEDS_EVIDENCE`;
+- `ROUTE_B_REVIEW_NEEDS_REVISION`;
+- `ROUTE_B_REVIEW_NEEDS_MONITOR`.
+
+## Stop, finalizer and authorization boundary
+
+Stop with `ROUTE_B_IMPLEMENTATION_NEEDS_REVISION` when any required module is missing/no-op, Cine is incomplete, gradients/interventions fail, or save/reload/export is inconsistent. Use `ROUTE_B_SCIENTIFIC_UNDERTRAINED` when implementation is real but training is inadequate. Use `ROUTE_B_NEEDS_EVIDENCE` for missing artifacts and `ROUTE_B_NEEDS_MONITOR` for nonterminal jobs.
+
+The finalizer performs terminal accounting, aggregation, mapper-final handoff, strict validation, `git diff --check`, manifest generation and one local lightweight commit. It must not write runtime `review.md`, push, upload validation, claim hosted metrics, promote the route, start M11 or merge another route.
+
+The token `ROUTE_B_PLANNING_READY_FOR_CONTROLLER` authorizes only a later Route B controller start. It does not authorize validation upload, route promotion, final scientific conclusion, M11, package submission or cross-route merge.
