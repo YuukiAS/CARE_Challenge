@@ -36,6 +36,7 @@ external_supervisors/
 code/Inspect/
 jobs/autopilot/
 results/autopilot/
+results/watchboard/
 scripts/autopilot/
 CARE-Vibe-Research.code-workspace
 CURRENT_RESEARCH_BRIEF.md
