@@ -1,0 +1,37 @@
+partitions:
+  htzhulab:
+    partition: htzhulab
+    qos: gpu_access
+    gres: gpu:1
+    priority: 1
+
+  a100:
+    partition: a100-gpu
+    qos: gpu_access
+    gres: gpu:nvidia_a100-pcie-40gb:1
+    priority: 2
+
+  v100:
+    partition: volta-gpu
+    qos: gpu_access
+    gres: gpu:tesla_v100-sxm2-16gb:1
+    priority: 3
+
+race_policy:
+  user_approved_partitions:
+    - htzhulab
+    - a100
+    - v100
+
+  prefer_distinct_work_over_duplicate_race: true
+  race_when_critical_job_pending: true
+  atomic_winner_lock_required: true
+  isolated_attempt_output_required: true
+  cancel_pending_losers: true
+  identical_scientific_semantics_required: true
+  v100_compatibility_must_be_declared: true
+
+route_priority:
+  - route_A
+  - route_B
+  - route_C
