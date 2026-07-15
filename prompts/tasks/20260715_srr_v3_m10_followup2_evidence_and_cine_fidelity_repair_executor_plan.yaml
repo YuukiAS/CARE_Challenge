@@ -1,0 +1,515 @@
+plan_version: 3
+task_key: 20260715_srr_v3_m10_followup2_evidence_and_cine_fidelity_repair
+milestone_id: M10
+planner_branch: agent/m10-followup2-planner-draft
+planner_head: 27def0c22a07c530bd81f2ce9bcd375ad48541e7
+continuation_of_task_key: 20260714_srr_v3_m10_continuation_reconciliation
+required_parent_review_path: results/20260714_srr_v3_m10_continuation_reconciliation/review.md
+required_parent_review_token: M10_FOLLOWUP_AUDITED_NEEDS_REVISION_RETURN_TO_CINE_FIDELITY_WAVE
+execution_mode: controller_supervised
+executor_count: 3
+executor_slots: 1
+max_parallel: 1
+parallel_execution_allowed: false
+merge_owner: controller
+merge_strategy: controller_serial_merge_after_semantic_evidence_recheck
+execution_order: R1_then_R2_then_controller_freeze_then_R3
+historical_packets_immutable: true
+route_change: false
+myops_retraining_allowed: false
+registration_threshold_change_allowed: false
+diagram_bootstrap:
+  diagram_source: ChatGPT Project background materials
+  diagram_versions_read: [SRR-v2, SRR-v2.5, SRR-v3]
+  visual_read_status: READ_FROM_PROJECT_BACKGROUND
+history_files_read:
+  - wiki/current_state.yaml
+  - wiki/history/COMPARISON.md
+  - wiki/history/M09/README.md
+  - wiki/history/M10/README.md
+new_planning_hash_reason: parent review permits M10 fidelity return, but newly identified F1/F2 contract violations and cumulative runtime design require a new follow-up2 canonical hash
+controller_required_outputs:
+  - controller_context.json
+  - controller_ledger.csv
+  - controller_bootstrap_snapshot.md
+  - implementation_snapshot.md
+  - freeze_receipt.json
+  - mapper_report_draft.md
+  - architecture_delta_draft.md
+  - finalizer_state.json
+  - mapper_report_final.md
+  - architecture_delta_final.md
+  - result.md
+  - completion_check.md
+  - review_request.md
+  - MANIFEST.md
+  - controller_report.md
+controller_acceptance_gate:
+  completion_token_is_advisory: true
+  file_existence_or_validator_exit_zero_is_not_completion: true
+  required_rechecks:
+    - recompute one checkpoint score and one full eligibility row
+    - recompute one D2 and one D3 intervention delta from raw manifests
+    - resolve every wrapper argv and compare with frozen entrypoint/mode
+    - independently generate merged-commit transitive freeze
+    - validate cumulative counters for resets, overlap, gaps and duplicate event IDs
+  conflict_policy: evidence_overrides_token_and_wave_is_not_merged
+controller_freeze:
+  producer: controller_after_R2_merge
+  candidate_input: results/20260715_srr_v3_m10_followup2_cine_fidelity/freeze_candidate_manifest.json
+  output_path: results/20260715_srr_v3_m10_followup2_evidence_and_cine_fidelity_repair/freeze_receipt.json
+  bind:
+    - merged commit SHA
+    - all source/config/test/entrypoint/wrapper/aggregator/validator hashes
+    - transitive first-party import graph
+    - CineMA weight path/SHA256
+    - environment fingerprint and ANTs executable/version
+    - resolved argv templates and R2 real-smoke receipt hashes
+  R2_may_write_final_freeze: false
+  R3_recompute_required: true
+
+executors:
+  - id: m10_followup2_wave2_evidence_executor
+    lane: myops
+    wave: 1
+    depends_on: []
+    blocking: true
+    can_run_parallel: false
+    isolation_mode: separate_worktree
+    branch_name: codex/20260715_m10_followup2/wave2_evidence
+    worktree_path: /users/a/e/aereinh/.tmp/codex-CARE/worktrees/20260715_m10_followup2/wave2_evidence
+    prompt_path: prompts/shared/EXECUTOR_PROMPTS.md
+    prompt_heading: 'M10 follow-up2 executor/controller: Wave 2 evidence repair and full Cine fidelity re-execution'
+    read_scope:
+      - AGENTS.md
+      - prompts/
+      - wiki/
+      - src/care_myocardium/models/
+      - src/care_myocardium/losses/
+      - scripts/training/run_srr_v3_m10_complete_repair.py
+      - scripts/evaluation/evaluate_srr_v3_m10_full_case.py
+      - scripts/evaluation/evaluate_srr_v3_m10_followup_all_checkpoints.py
+      - scripts/evaluation/run_srr_v3_m10_followup_interventions.py
+      - configs/srr_v3_m10_complete_repair.yaml
+      - data/benchmarks/protocol/splits_MyoPS.json
+      - results/20260711_srr_v3_m10_complete_mechanism_repair/
+      - results/20260714_srr_v3_m10_followup_wave2_reconciliation/
+      - results/20260714_srr_v3_m10_continuation_reconciliation/review.md
+    write_scope:
+      - scripts/evaluation/evaluate_srr_v3_m10_followup2_all_checkpoints.py
+      - scripts/evaluation/run_srr_v3_m10_followup2_interventions.py
+      - scripts/evaluation/aggregate_srr_v3_m10_followup2_wave2.py
+      - scripts/evaluation/validate_srr_v3_m10_followup2_wave2.py
+      - jobs/src/run_srr_v3_m10_followup2_checkpoint_replay.sh
+      - jobs/src/run_srr_v3_m10_followup2_interventions.sh
+      - results/20260715_srr_v3_m10_followup2_wave2_evidence_repair/
+      - results/20260715_srr_v3_m10_followup2_evidence_and_cine_fidelity_repair/executors/m10_followup2_wave2_evidence_executor/
+    shared_files_forbidden:
+      - src/care_myocardium/models/
+      - src/care_myocardium/losses/
+      - scripts/training/
+      - configs/
+      - data/benchmarks/protocol/
+      - results/20260711_srr_v3_m10_complete_mechanism_repair/
+      - results/20260714_srr_v3_m10_followup_wave2_reconciliation/
+      - wiki/
+      - prompts/shared/
+    phase_order:
+      - inherited_fingerprint_anchor_and_checkpoint_inventory
+      - calibration_freeze
+      - fresh_44_case_replay_every_recoverable_checkpoint
+      - exact_anchor_relative_selection
+      - clean_process_selected_reload_repeat
+      - D2_D3_deterministic_baselines_and_real_interventions
+      - strict_semantic_validation
+    required_outputs:
+      - result.md
+      - inherited_runtime_fingerprint_ledger.csv
+      - checkpoint_inventory.csv
+      - calibration_freeze_receipt.json
+      - checkpoint_replay_ledger.csv
+      - checkpoint_replay_receipts.jsonl
+      - checkpoint_raw_output_manifest.csv
+      - all_checkpoint_case_metrics.csv
+      - all_checkpoint_subgroup_metrics.csv
+      - checkpoint_eligibility.csv
+      - checkpoint_selector_recalculation.csv
+      - selected_checkpoints.json
+      - selected_checkpoint_reload_receipts.json
+      - d2_baseline_determinism_receipt.json
+      - d3_baseline_determinism_receipt.json
+      - d2_component_interventions.csv
+      - d3_component_interventions.csv
+      - d2_intervention_output_manifest.csv
+      - d3_intervention_output_manifest.csv
+      - component_state_classification.csv
+      - hard_subgroup_help_harm.csv
+      - no_t2_safety_report.csv
+      - validator_report.md
+      - validator_report.csv
+      - known_bad_selftest_report.md
+      - commands_run.md
+      - runtime_manifest.json
+      - executor_completion.md
+      - MANIFEST.md
+    fresh_replay_contract:
+      formal_flag_required: --evaluate --force
+      inventory_only_success_default_forbidden: true
+      historical_candidate_metric_copy_symlink_hardlink_or_selector_credit_forbidden: true
+      immutable_nnunet_anchor_allowed_only_with_path_and_sha256: true
+      evaluate_every_recoverable_checkpoint: true
+      reload_each_checkpoint: true
+      exact_eval_cases: 44
+      output_under_new_runtime_root: true
+      per_checkpoint_receipt_requires:
+        - evaluation_source=fresh_checkpoint_reload
+        - job/attempt/argv/start/end/exit
+        - checkpoint path/SHA256/loaded-state SHA256/step
+        - code/config/split/cases/label/preprocess/decode/metric/calibration hashes
+        - exact case IDs and inference call count
+        - raw-output manifest SHA256 and case-metrics SHA256
+      selector: anchor-relative Dice/HD95/remoteFP formula from staging
+      eligibility: exact hashes, no-T2 probability, positive nonempty, volume ratio and pre-evaluation calibration freeze
+      selected_checkpoint_clean_process_repeat: true
+      tie_breakers: [lower_worst_case_hd95, earlier_step]
+    intervention_contract:
+      checkpoints: [selected_D2, selected_D3]
+      baseline_repeat_count: 2
+      same_checkpoint_cases_decode_and_calibration: true
+      interventions:
+        - static_mixture
+        - dictionary_uniform_valid
+        - top_pathology_slots_zeroed
+        - spatial_router_to_global
+        - PSIP_stateless
+        - prototype_memory_off
+        - anatomy_prior_flat
+        - proposal_only
+        - scar_refiner_off
+        - edema_refiner_off
+        - both_refiners_off
+        - uncertainty_flat
+        - nnunet_context_off
+        - alignment_off
+        - swapped_positive_negative_known_bad
+        - no_op_control
+      require_real_graph_node_and_final_output_manifests: true
+      no_op_must_preserve_output: true
+      known_bad_must_change_output_or_classify_PIPELINE_BUG: true
+      surrogate_stub_posthoc_csv_or_disconnected_tensor_forbidden: true
+      unavailable_real_hook_state: NEEDS_REVISION
+    validator_contract:
+      strict_nonzero_on_error: true
+      reject:
+        - copied/reused historical candidate metrics or missing formal replay flag
+        - placeholder/preliminary/stale status
+        - missing replay/raw-output/reload receipts
+        - incomplete selector/eligibility/calibration fields
+        - missing baseline/intervention manifests
+        - ineffective known-bad or non-invariant no-op
+        - completion token conflicting with evidence
+    slurm_required: true
+    slurm_dependency_chain: [checkpoint_replay_batches, selected_reload, D2_interventions, D3_interventions, aggregation]
+    slurm_dependency_policy: {training_dependency: afterok, finalizer_dependency: afterany}
+    finalizer_dependency_policy: afterany_all_attempts
+    preflight:
+      required: true
+      command: python scripts/evaluation/evaluate_srr_v3_m10_followup2_all_checkpoints.py --print-contract
+      formal_command_template: python scripts/evaluation/evaluate_srr_v3_m10_followup2_all_checkpoints.py --evaluate --force --phase <phase> --checkpoint <checkpoint>
+      receipt_path: results/20260715_srr_v3_m10_followup2_wave2_evidence_repair/preflight_receipt.json
+    retry_policy:
+      operational_retry_allowed: true
+      same_executor_attempt: true
+      max_startup_retries: 2
+      max_preemption_retries: 2
+      max_unknown_retries: 0
+      require_same_code_hash: true
+      require_same_config_hash: true
+      require_same_split_hash: true
+      failed_attempt_training_credit: zero
+    retry_ledger_path: results/20260715_srr_v3_m10_followup2_wave2_evidence_repair/retry_ledger.csv
+    result_dir: results/20260715_srr_v3_m10_followup2_wave2_evidence_repair
+    runtime_output_root: results/20260715_srr_v3_m10_followup2_wave2_evidence_repair/runtime
+    slurm_job_namespace: m10fu2_wave2_evidence
+    lock_path: results/20260715_srr_v3_m10_followup2_wave2_evidence_repair/locks/controller.lock
+    log_path: results/20260715_srr_v3_m10_followup2_wave2_evidence_repair/worker_logs
+    merge_order: 1
+    required_completion_file: results/20260715_srr_v3_m10_followup2_wave2_evidence_repair/executor_completion.md
+    required_completion_token: M10_FOLLOWUP2_WAVE2_EVIDENCE_READY_FOR_CONTROLLER_MERGE
+
+  - id: m10_followup2_cine_fidelity_executor
+    lane: cine
+    wave: 2
+    depends_on: [m10_followup2_wave2_evidence_executor]
+    blocking: true
+    can_run_parallel: false
+    isolation_mode: separate_worktree
+    branch_name: codex/20260715_m10_followup2/cine_fidelity
+    worktree_path: /users/a/e/aereinh/.tmp/codex-CARE/worktrees/20260715_m10_followup2/cine_fidelity
+    prompt_path: prompts/shared/EXECUTOR_PROMPTS.md
+    prompt_heading: 'M10 follow-up2 executor/controller: Wave 2 evidence repair and full Cine fidelity re-execution'
+    read_scope:
+      - AGENTS.md
+      - prompts/
+      - wiki/
+      - src/care_myocardium/cine/
+      - scripts/training/run_cinema_adapter_m10.py
+      - scripts/training/run_cine_registration_m10.py
+      - scripts/training/run_cine_temporal_model_m10.py
+      - results/20260714_srr_v3_m10_followup_cine_fidelity/
+      - results/20260714_srr_v3_m10_followup_cine_runtime/
+      - results/20260714_srr_v3_m10_continuation_reconciliation/review.md
+    write_scope:
+      - src/care_myocardium/cine/followup2/
+      - src/care_myocardium/tests/test_m10_followup2_cine_fidelity.py
+      - scripts/training/run_cinema_adapter_m10_followup2.py
+      - scripts/training/run_cine_registration_m10_followup2.py
+      - scripts/training/run_cine_temporal_m10_followup2.py
+      - scripts/evaluation/run_cine_m10_followup2_real_smoke.py
+      - scripts/evaluation/aggregate_cine_m10_followup2.py
+      - scripts/evaluation/validate_cine_m10_followup2.py
+      - configs/srr_v3_m10_followup2_cine.yaml
+      - jobs/src/run_srr_v3_m10_followup2_cine_adapter.sh
+      - jobs/src/run_srr_v3_m10_followup2_cine_random_init.sh
+      - jobs/src/run_srr_v3_m10_followup2_cine_registration.sh
+      - jobs/src/run_srr_v3_m10_followup2_cine_syn_control.sh
+      - jobs/src/run_srr_v3_m10_followup2_cine_temporal_chunk.sh
+      - results/20260715_srr_v3_m10_followup2_cine_fidelity/
+      - results/20260715_srr_v3_m10_followup2_evidence_and_cine_fidelity_repair/executors/m10_followup2_cine_fidelity_executor/
+    shared_files_forbidden:
+      - src/care_myocardium/models/
+      - src/care_myocardium/losses/
+      - scripts/training/run_srr_v3_m10_complete_repair.py
+      - data/benchmarks/protocol/
+      - results/20260711_srr_v3_m10_complete_mechanism_repair/
+      - results/20260714_srr_v3_m10_followup_cine_fidelity/
+      - results/20260714_srr_v3_m10_followup_cine_runtime/
+      - wiki/
+      - prompts/shared/
+    phase_order:
+      - actual_CineMA_asset_and_real_CARE_frame_smoke
+      - distinct_pretrained_random_formal_entrypoints
+      - faithful_registration_and_real_pair_ANTs_smoke
+      - exact_registered_eight_slot_temporal_smoke
+      - atomic_resume_and_counter_implementation
+      - source_AST_runtime_known_bad_tests
+      - corrected_wrappers_and_freeze_candidate
+    required_outputs:
+      - result.md
+      - current_gap_closure.csv
+      - cinema_provenance.json
+      - legacy_dependency_audit.json
+      - adapter_random_init_equivalence_contract.json
+      - adapter_real_smoke_receipt.json
+      - adapter_parameter_checksum_audit.csv
+      - registration_real_pair_smoke_receipt.json
+      - registration_integration_trace.csv
+      - ants_real_pair_smoke_receipt.json
+      - temporal_registered_dataflow_smoke_receipt.json
+      - wrapper_entrypoint_audit.csv
+      - wrapper_resolved_commands.json
+      - resume_contract.json
+      - unit_test_report.md
+      - known_bad_selftest_report.md
+      - freeze_candidate_manifest.json
+      - commands_run.md
+      - executor_completion.md
+      - MANIFEST.md
+    formal_entrypoints:
+      adapter: scripts/training/run_cinema_adapter_m10_followup2.py
+      registration: scripts/training/run_cine_registration_m10_followup2.py
+      temporal: scripts/training/run_cine_temporal_m10_followup2.py
+    legacy_dependency_policy:
+      old_trainer_import_or_delegation_forbidden: true
+      audited_data_io_primitive_reuse_requires_symbol_allowlist_and_sha256: true
+    real_smoke_contract:
+      formal_training_credit: zero
+      mock_dataclass_or_contract_only_ready_forbidden: true
+      adapter: actual weight + real CARE frame + multiclass logits/features/uncertainty + parameter checksum/one-step audit
+      registration: real pair + both directions + exactly 7 integration steps + true Jacobian/composition + real ANTs transform
+      temporal: consumes real registered artifacts and changes final logits versus no-temporal control
+      missing_external_asset_state: BLOCKED_EXTERNAL_RESOURCE_or_NEEDS_EVIDENCE
+    implementation_verification:
+      commands:
+        - env PYTHONPATH=. pytest -q src/care_myocardium/tests/test_m10_followup2_cine_fidelity.py
+        - python scripts/evaluation/run_cine_m10_followup2_real_smoke.py --all --strict
+        - python scripts/evaluation/validate_cine_m10_followup2.py --implementation --strict
+        - python scripts/evaluation/validate_cine_m10_followup2.py --known-bad-selftest --strict
+      formal_slurm_submission_allowed: false
+      real_smoke_required_for_ready: true
+    freeze_candidate_manifest_path: results/20260715_srr_v3_m10_followup2_cine_fidelity/freeze_candidate_manifest.json
+    R2_final_freeze_forbidden: true
+    result_dir: results/20260715_srr_v3_m10_followup2_cine_fidelity
+    runtime_output_root: results/20260715_srr_v3_m10_followup2_cine_fidelity/runtime_smoke
+    slurm_job_namespace: m10fu2_cine_code
+    lock_path: results/20260715_srr_v3_m10_followup2_cine_fidelity/locks/controller.lock
+    log_path: results/20260715_srr_v3_m10_followup2_cine_fidelity/worker_logs
+    merge_order: 2
+    required_completion_file: results/20260715_srr_v3_m10_followup2_cine_fidelity/executor_completion.md
+    required_completion_token: M10_FOLLOWUP2_CINE_FIDELITY_READY_FOR_CONTROLLER_MERGE
+
+  - id: m10_followup2_cine_runtime_executor
+    lane: cine
+    wave: 3
+    depends_on: [m10_followup2_cine_fidelity_executor]
+    blocking: true
+    can_run_parallel: false
+    isolation_mode: separate_worktree
+    branch_name: codex/20260715_m10_followup2/cine_runtime
+    worktree_path: /users/a/e/aereinh/.tmp/codex-CARE/worktrees/20260715_m10_followup2/cine_runtime
+    prompt_path: prompts/shared/EXECUTOR_PROMPTS.md
+    prompt_heading: 'M10 follow-up2 executor/controller: Wave 2 evidence repair and full Cine fidelity re-execution'
+    read_scope:
+      - AGENTS.md
+      - prompts/shared/EXECUTOR_PROMPTS.md
+      - prompts/shared/REVIEWER_PROMPTS.md
+      - prompts/tasks/20260715_srr_v3_m10_followup2_evidence_and_cine_fidelity_repair_planning_review.md
+      - results/20260715_srr_v3_m10_followup2_cine_fidelity/
+      - results/20260715_srr_v3_m10_followup2_evidence_and_cine_fidelity_repair/freeze_receipt.json
+      - src/care_myocardium/cine/followup2/
+      - scripts/ops/run_care_training_preflight.py
+      - scripts/training/run_cinema_adapter_m10_followup2.py
+      - scripts/training/run_cine_registration_m10_followup2.py
+      - scripts/training/run_cine_temporal_m10_followup2.py
+      - scripts/evaluation/aggregate_cine_m10_followup2.py
+      - scripts/evaluation/validate_cine_m10_followup2.py
+      - configs/srr_v3_m10_followup2_cine.yaml
+      - jobs/src/run_srr_v3_m10_followup2_cine_adapter.sh
+      - jobs/src/run_srr_v3_m10_followup2_cine_random_init.sh
+      - jobs/src/run_srr_v3_m10_followup2_cine_registration.sh
+      - jobs/src/run_srr_v3_m10_followup2_cine_syn_control.sh
+      - jobs/src/run_srr_v3_m10_followup2_cine_temporal_chunk.sh
+    write_scope:
+      - results/20260715_srr_v3_m10_followup2_cine_runtime/
+      - results/20260715_srr_v3_m10_followup2_evidence_and_cine_fidelity_repair/executors/m10_followup2_cine_runtime_executor/
+    shared_files_forbidden: [src/, scripts/, configs/, jobs/, data/, wiki/, prompts/]
+    phase_order:
+      - recompute_controller_freeze
+      - phase_specific_preflight_matrix
+      - pretrained_and_random_adapter_training
+      - all_checkpoint_adapter_selection_and_clean_reload
+      - registration_and_real_SyN
+      - all_checkpoint_registration_selection_clean_reload_and_gate
+      - conditional_temporal_cumulative_chunks
+      - controls_aggregation_and_strict_validation
+    required_outputs:
+      - result.md
+      - frozen_hash_validation.json
+      - phase_preflight_matrix.csv
+      - terminal_accounting.csv
+      - adapter_training_budget_ledger.csv
+      - random_init_training_budget_ledger.csv
+      - adapter_all_checkpoint_metrics.csv
+      - adapter_selected_source.json
+      - adapter_selected_checkpoint_reload_receipt.json
+      - adapter_pretrained_vs_random_init.csv
+      - registration_training_budget_ledger.csv
+      - registration_all_checkpoint_metrics.csv
+      - registration_selected_checkpoint.json
+      - registration_selected_checkpoint_reload_receipt.json
+      - registration_case_frame_metrics.csv
+      - real_syn_control.csv
+      - registration_gate.json
+      - negative_registration_closure.md
+      - temporal_throughput_guard.json
+      - temporal_chunk_schedule.json
+      - temporal_chunk_ledger.csv
+      - temporal_resume_ledger.csv
+      - temporal_training_budget_ledger.csv
+      - temporal_case_metrics.csv
+      - temporal_slot_usage.csv
+      - temporal_control_help_harm.csv
+      - temporal_selected_checkpoint.json
+      - temporal_selected_checkpoint_reload_receipt.json
+      - validator_report.md
+      - validator_report.csv
+      - known_bad_selftest_report.md
+      - commands_run.md
+      - finalizer_state.json
+      - executor_completion.md
+      - MANIFEST.md
+    minimum_effective_training:
+      adapter_pretrained: {min_optimizer_steps: 10000, min_train_loop_seconds: 3600, min_validation_events: 8, min_full_case_events: 3, min_eval_cases: 12}
+      adapter_random: {min_optimizer_steps: 10000, min_train_loop_seconds: 3600, min_validation_events: 8, min_full_case_events: 3, min_eval_cases: 12}
+      registration: {min_optimizer_steps: 25000, min_train_loop_seconds: 7200, min_validation_events: 10, min_full_case_events: 4, min_eval_cases: 12, min_valid_pairs: 60}
+      temporal: {min_optimizer_steps: 20000, min_train_loop_seconds: 7200, min_validation_events: 10, min_full_case_events: 4, min_eval_cases: 12}
+      all_phases_require: [one_batch_or_pair_overfit, prediction_sanity, loss_decrease, same_split_baseline_or_control, cache_and_output_isolation]
+      undertrained_blocks_downstream: true
+    adapter_control_contract:
+      initialization_modes: [pretrained, random]
+      mutually_exclusive_machine_field_required: true
+      matched_architecture_data_augmentation_optimizer_seed_budget_and_selector: true
+      evaluate_every_checkpoint_and_clean_reload_selected: true
+      comparison_undertrained_blocks_registration: true
+      selected_source_only_feeds_downstream: true
+    registration_contract:
+      symmetric_velocity: true
+      scaling_and_squaring_steps: 7
+      complete_loss_true_QC_real_SyN_case_gate_required: true
+      evaluate_every_checkpoint_and_clean_reload_selected: true
+      thresholds_unchanged: true
+    preflight:
+      required: true
+      command: python scripts/evaluation/validate_cine_m10_followup2.py --run-preflight-matrix --strict
+      receipt_path: results/20260715_srr_v3_m10_followup2_cine_runtime/phase_preflight_matrix.csv
+      phases:
+        - adapter_pretrained_real_data
+        - adapter_random_real_data
+        - adapter_selector_reload
+        - registration_selected_source_real_pair
+        - ANTs_version_and_real_pair
+        - registration_selector_reload_gate
+        - temporal_selected_upstream_real_batch_resume
+        - temporal_same_subset_controls
+      same_environment_config_paths_and_resolved_argv_as_formal_jobs: true
+      failure_credit: zero
+    conditional_submission_policy:
+      adapter_undertrained: do_not_submit_registration
+      registration_gate_pass: submit_temporal_chunks
+      faithful_adequate_registration_gate_fail: do_not_submit_temporal_and_build_negative_packet
+      implementation_or_adequacy_failure: NEEDS_REVISION_or_NEEDS_EVIDENCE
+      temporal_jobs_must_not_be_presubmitted_before_gate_parse: true
+    temporal_resume_contract:
+      scientific_total_steps: 20000
+      default_cumulative_targets: [4000, 8000, 12000, 16000, 20000]
+      throughput_guard_max_estimated_chunk_hours: 6.5
+      may_reduce_next_chunk_target_without_changing_total_or_hash: true
+      may_increase_chunk_target: false
+      checkpoint_cadence_steps_max: 500
+      signal_checkpoint_required: [SIGUSR1, SIGTERM]
+      chunk_dependency: afterok
+      chunk_walltime_max: 08:00:00
+      resume_only_from_last_credited_completed_checkpoint: true
+      failed_timeout_preempted_old6000_or_partial_credit: zero
+      cumulative_fields: [global_step, cumulative_train_seconds, unique_validation_ids, unique_full_case_ids, case_ids, RNG, optimizer, scheduler, checkpoint_SHA, parent_SHA, attempt_lineage]
+      validator_rejects: [counter_reset, double_count, gap, overlap, duplicate_event_id, fabricated_seconds, missing_parent_SHA]
+      final_summary_minima: {optimizer_steps: 20000, train_loop_seconds: 7200, validation_events: 10, full_case_events: 4, eval_cases: 12}
+      clean_reload_selected_checkpoint_before_final_evidence: true
+    negative_registration_closure:
+      allowed_only_after_faithful_adequate_selected_reload_real_SyN_full_denominator_and_strict_validation: true
+      temporal_credit: zero
+      completion_state: READY_FOR_REVIEW_CINE_REGISTRATION_NEGATIVE
+      not_route_stop_or_promotion: true
+    slurm_required: true
+    slurm_dependency_chain: [preflight_matrix, adapters, adapter_selection, registration, real_SyN, registration_gate, conditional_temporal_chunks, controls, aggregation]
+    slurm_dependency_policy: {training_dependency: afterok, finalizer_dependency: afterany}
+    finalizer_dependency_policy: afterany_all_old_and_replacement_attempts
+    retry_policy:
+      operational_retry_allowed: true
+      same_executor_attempt: true
+      max_startup_retries: 2
+      max_preemption_retries: 2
+      max_unknown_retries: 0
+      require_same_code_hash: true
+      require_same_config_hash: true
+      require_same_split_hash: true
+      failed_attempt_training_credit: zero
+    retry_ledger_path: results/20260715_srr_v3_m10_followup2_cine_runtime/retry_ledger.csv
+    result_dir: results/20260715_srr_v3_m10_followup2_cine_runtime
+    runtime_output_root: results/20260715_srr_v3_m10_followup2_cine_runtime/runtime
+    slurm_job_namespace: m10fu2_cine_runtime
+    lock_path: results/20260715_srr_v3_m10_followup2_cine_runtime/locks/controller.lock
+    log_path: results/20260715_srr_v3_m10_followup2_cine_runtime/worker_logs
+    merge_order: 3
+    required_completion_file: results/20260715_srr_v3_m10_followup2_cine_runtime/executor_completion.md
+    required_completion_token: M10_FOLLOWUP2_CINE_RUNTIME_READY_FOR_CONTROLLER_MERGE_OR_NEGATIVE_REVIEW

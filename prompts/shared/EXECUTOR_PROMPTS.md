@@ -3657,3 +3657,368 @@ Allowed executor completion tokens are those declared in the plan. `READY_FOR_CO
 ## Mapper Contract
 
 Use `.agents/skills/care-mapper/SKILL.md`. For system-level planning and mapping, dynamically resolve the predecessor baseline from `wiki/current_state.yaml` and `wiki/history/`, then read `wiki/history/COMPARISON.md`, the predecessor README/COMPONENTS files, and the relevant predecessor component files such as `wiki/history/<predecessor>/components/*.md` before writing mapper outputs. After F2 merge, create a draft mapping of the new Cine implementation and mark runtime evidence unverified. After F3 terminal aggregation, rerun mapper final against the frozen hashes and current evidence. Update root `wiki/README.md`, `wiki/MODEL.md`, `wiki/EXECUTION.md`, `wiki/COMPONENTS.csv`, `wiki/LINEAGE.md`, `wiki/architecture.yaml`, and generated current/gap/execution figures. Add a `wiki/history/M10/` candidate snapshot marked `candidate_unreviewed` and `review_token: NOT_REVIEWED`; do not change `wiki/current_state.yaml` from M09 before independent runtime review and a later reconciliation task. Do not modify model code, inspect heavy runtime artifacts, write `review.md`, or make promotion/negative-route decisions.
+
+## M10 follow-up2 executor/controller: Wave 2 evidence repair and full Cine fidelity re-execution
+
+## Execution Contract
+
+```yaml
+task_key: 20260715_srr_v3_m10_followup2_evidence_and_cine_fidelity_repair
+milestone_id: M10
+execution_mode: controller_supervised
+executor_count: 3
+executor_slots: 1
+max_parallel: 1
+execution_order: R1_wave2_evidence_then_R2_cine_fidelity_then_R3_frozen_cine_runtime
+route_change: false
+myops_retraining_allowed: false
+registration_threshold_change_allowed: false
+runtime_review_required: true
+allow_git_push: false
+diagnostic_publication_scope: ["md", "csv", "json"]
+blocked_after_diagnostic_publication: ["validation_packaging", "validation_upload", "hosted_metric_claim", "fold_expansion", "route_promotion", "scientific_stop", "M11_execution"]
+```
+
+历史包保持不可变：
+
+```text
+results/20260711_srr_v3_m10_complete_mechanism_repair/
+results/20260714_srr_v3_m10_continuation_reconciliation/
+results/20260714_srr_v3_m10_followup_wave2_reconciliation/
+results/20260714_srr_v3_m10_followup_cine_fidelity/
+results/20260714_srr_v3_m10_followup_cine_runtime/
+```
+
+本任务只在新的 `20260715_*` 路径写代码或证据。旧任务、旧 job ID、旧失败/超时、旧 copied metrics 和旧 reviewer 决定必须保留为 lineage，但旧 F1/F2/F3 不获得 follow-up2 正式信用。
+## Controller Prompt
+
+你是 CARE Codex controller。先读取 `AGENTS.md`、本 canonical follow-up2 section、planning review、executor plan、Planner audit、parent review、Slurm skill 和 mapper skill。验证 parent review 精确包含：
+
+```text
+M10_FOLLOWUP_AUDITED_NEEDS_REVISION_RETURN_TO_CINE_FIDELITY_WAVE
+```
+
+严格按 R1→R2→R3 串行运行，`executor_slots=1`，不得增加 executor，不得把 MyoPS 与 Cine 并行，不得让 R3 修改冻结实现。Controller 是唯一 merge owner。
+
+不得只凭 executor completion token、文件存在或 validator exit code接受波次。每次 merge 前，controller 必须打开并解析原始 receipt/ledger，复算至少一个 checkpoint score、一个 eligibility row、一个 intervention delta、wrapper resolved argv、freeze transitive hash 和累计训练计数。若 token 与证据冲突，忽略 token并返回 `NEEDS_EVIDENCE` 或 `NEEDS_REVISION`。
+
+### R1：Wave 2 evidence repair
+
+R1 只做 inherited checkpoint 指纹核验、fresh replay、真实干预、聚合和 validator；不训练，不修改 MyoPS model/loss/config/split。
+
+#### Fresh all-checkpoint replay
+
+对每个 recoverable scheduled checkpoint，必须在新 `20260715` runtime 下重新加载并对相同 44 cases 执行 full-case inference。Formal evaluator 不得存在 inventory-only 成功默认：正式命令必须显式带 `--evaluate --force` 或等价强制字段；缺少该字段必须非零退出。
+
+禁止：
+
+- 将旧 candidate metrics、predictions、logits、probabilities 复制、软链或硬链到新 evidence；
+- 根据旧 CSV 重写一份新 CSV 后声称 replay；
+- 用旧 `checkpoint_best/final` 名称、旧 selector 或旧 metrics present 状态跳过执行；
+- 对 recoverable checkpoint 标记 skipped/partial 后仍完成 R1。
+
+旧 nnU-Net anchor metrics 可作为 immutable anchor，但必须记录来源路径和 SHA256；旧 SRR candidate metrics 只能用于 lineage comparison，不能进入 selector。
+
+每个 checkpoint 必须生成独立 fresh-replay receipt，至少包含：
+
+```text
+evaluation_source=fresh_checkpoint_reload
+Slurm job id / attempt / argv / start / end / exit
+checkpoint path / checkpoint SHA256 / state-dict-loaded SHA256 / step
+code / config / split / exact-case-list / label / preprocess / decode / metric / calibration hashes
+44 exact case ids and inference call count
+new runtime output root
+per-case raw prediction/probability-or-logit manifest SHA256
+case-metric CSV SHA256
+no historical candidate-metric source path
+```
+
+每个输出文件必须位于新 runtime root；tracked packet只提交轻量 manifest/CSV/JSON，不提交大型预测。完成 selector 后，在一个干净进程中重新加载 selected checkpoint并重复 44-case evaluation；`selected_checkpoint_reload_receipt.json` 必须证明 checkpoint SHA、raw-output manifest 和指标在声明容差内一致。
+
+正式 score 固定为：
+
+```text
+g_t = Dice_t - Dice_anchor,t
+      - 0.01 clip((HD95_t - HD95_anchor,t)/10mm, -5, 5)
+      - 0.02 clip((remoteFP_t - remoteFP_anchor,t)/(remoteFP_anchor,t + 1), -2, 2)
+S_checkpoint = min(g_scar, g_edema) + 0.25(g_scar + g_edema)
+```
+
+Eligibility 固定要求：有限指标；exact 44 cases 与全部 hashes；no-T2 edema maximum probability `<=1e-6`；positive-case nonempty `>=80%`；prediction-volume ratio `[0.05,20]` 覆盖 `>=95%`；阈值和 component calibration 在 44-case replay 前冻结并有 `calibration_freeze_receipt.json`。Tie-breaker 固定为 lower worst-case HD95，再 earlier step。
+
+#### D2/D3 real final-output interventions
+
+在各自正式 selected/reloaded checkpoint、相同 44 cases、相同 decode/calibration 下执行：
+
+```text
+static_mixture
+dictionary_uniform_valid
+top_pathology_slots_zeroed
+spatial_router_to_global
+PSIP_stateless
+prototype_memory_off
+anatomy_prior_flat
+proposal_only
+scar_refiner_off
+edema_refiner_off
+both_refiners_off
+uncertainty_flat
+nnunet_context_off
+alignment_off
+swapped_positive_negative_known_bad
+no_op_control
+```
+
+必须先执行两次 clean baseline inference，证明 deterministic output hash 或数值容差。随后每个 intervention 必须在真实 model graph 的已命名节点上生效，输出：
+
+```text
+checkpoint SHA and exact case list
+intervention implementation/hook identifier
+call count and activation variance
+inherited gradient-bearing evidence
+baseline and intervention proposal/refiner/final-logit manifests
+baseline and intervention final-label manifests
+changed voxels/components
+Dice/HD95/remote-FP delta
+per-case help/harm
+```
+
+`no_op_control` 必须保持输出不变；`swapped_positive_negative_known_bad` 必须产生可检测的 final-output effect，否则该路径为 `PIPELINE_BUG`，不能判定机制无信号。零 delta 只有在调用、hook、activation 和 wiring 全部验证后才可进入 controlled classification。
+
+允许 R1 编写 evaluation-only hook/adapter 以操作现有真实 tensor/module，但禁止 surrogate network、stub logits、事后改 CSV、声明式 dataclass 或与 final output 断开的 diagnostic tensor。如果现有 MyoPS graph 无法在不改 forbidden model/loss source 的情况下执行某项真实干预，R1 必须返回 `NEEDS_REVISION`; 不得用 monkeypatch approximation 冒充完成。
+
+R1 validator 必须扫描源码与 evidence，拒绝 `NEEDS_EVIDENCE`、`SEE_RUNTIME_TABLES`、`SELECTED_PRELIMINARY`、copied/reused candidate metrics、缺失 fresh receipt、缺失 raw-output manifest、未执行 intervention、known-bad 无效或 token/evidence 冲突。Known-bad self-test 必须证明这些包均非零退出。
+
+R1 输出：
+
+```text
+results/20260715_srr_v3_m10_followup2_wave2_evidence_repair/
+```
+
+### R2：Cine fidelity implementation repair
+
+R2 只实现 first-party code、tests、config、formal entrypoints、job wrappers、aggregator/validator 和 freeze candidate；不得提交 formal training。真实一病例/一对帧/一步 optimizer smoke 仅验证实现，训练信用为零。
+
+所有正式 entrypoint 统一为新文件，禁止 staging/plan 名称分叉：
+
+```text
+scripts/training/run_cinema_adapter_m10_followup2.py
+scripts/training/run_cine_registration_m10_followup2.py
+scripts/training/run_cine_temporal_m10_followup2.py
+```
+
+不得把旧 `run_cinema_adapter_m10.py`、`run_cine_registration_m10.py`、`run_cine_temporal_model_m10.py` 作为 trainer import 或 runtime delegate。若仅复用经过审计的 data-I/O primitive，必须在 `legacy_dependency_audit.json` 中逐 symbol allowlist、记录 SHA256，并证明不包含旧 model/loss/selector/proxy logic。
+
+#### CineMA adapter/control
+
+必须从实际 weight file 运行时生成 provenance：repository、source commit/tag、license、weight filename、实际文件 SHA256、architecture、preprocessing、label map、orientation、spacing、time convention 和 CARE case/frame list。占位 URL、伪造 64 位字符串、只验证 dataclass 均为 blocker。
+
+Pretrained 与 random-init 必须使用互斥 `--initialization pretrained|random`，同一架构、trainable parameter count 容差、cases、frames、augmentation、optimizer、seed schedule、预算、validation cadence 和 selector。R2 real smoke 必须：
+
+- 在真实 CARE frame 上实际加载 CineMA weight；
+- 产生 multiclass logits/probabilities、非平凡 intermediate features 与 uncertainty 的 shape/variance/checksum；
+- 证明 pretrained initial parameter checksum 与 random-init 不同；
+- 执行一步 optimizer，证明只改变允许训练参数且 frozen 参数 checksum 不变；
+- 对非参考帧缺失 fail/mark invalid，禁止 frame0 fallback 和 binary prior。
+
+若实际 weight、license、真实 CARE frame 或依赖不可验证，R2 不得写 ready token，必须返回 `BLOCKED_EXTERNAL_RESOURCE` 或 `NEEDS_EVIDENCE`。
+
+#### Registration
+
+实现双向 stationary velocity、显式 normalized-grid/voxel/mm conversion 和恰好七步 scaling-and-squaring。完整 loss 固定为 LNCC 1.00 + multiclass anatomy Dice 1.00 + smoothness 0.05 + true negative-Jacobian penalty 0.10 + inverse-consistency composition 0.10。
+
+R2 real-pair smoke 必须在一个真实 held-out Cine pair 上执行 forward/inverse integration，记录七步 trace、true Jacobian、physical displacement、composition error、warped multiclass anatomy 和 finite/nontrivial checks；zero velocity identity test也必须通过。不得用 direct velocity displacement、gradient proxy、magnitude-as-cycle 或 pair-as-case。
+
+必须发现真实 ANTs executable，记录版本和 resolved command，并至少完成一个真实 pair smoke及 transform files/metrics/runtime/failure receipt。若 ANTs 不可用，R2 不得用 proxy或自报完成。
+
+#### Temporal
+
+必须消费 selected-source adapter 和 selected-registration 格式的真实 registered features、multiclass anatomy、velocity、Jacobian、texture residual 和 uncertainty，构造 exactly eight slots。R2 real smoke 必须读取 R2 生成的真实 adapter/registration smoke artifacts，并证明 temporal dictionary 相对 `no_temporal_dictionary` 改变 final logits，且至少在已声明 threshold 下改变 labels或明确记录非零 logit effect；不得使用 frame-index motion、未注册图像均值或旧 temporal delegate冒充。
+
+实现 atomic checkpoint/resume、全局累计 counters、progress receipt、信号保存和分段 CLI。每个 chunk必须支持明确的 `--resume-from`、`--cumulative-target-step` 与 `--attempt-id`。
+
+#### Implementation tests and freeze boundary
+
+Tests 必须结合 source/AST、真实 smoke和known-bad fixtures；mock/synthetic unit test只能补充，不能单独支持 ready。至少拒绝：
+
+```text
+old trainer import/delegation
+wrapper resolved argv 指向旧 entrypoint
+adapter/random initialization 相同
+contract-only script 冒充 trainer
+fake/unreadable weight provenance
+binary prior 或 frame0 fallback
+direct velocity displacement / missing 7-step integration
+proxy SyN / pair-as-case
+selected checkpoint未 clean reload
+temporal 不读取 registered artifacts
+temporal final output无效
+resume counter reset/double count/gap
+旧 timeout 6000-step evidence获得信用
+```
+
+R2 executor 只能写 `freeze_candidate_manifest.json`，不能自行写最终 `FROZEN_FOR_R3` receipt。Candidate manifest需列出所有 source/config/tests/entrypoints/wrappers/aggregators/validators、transitive first-party imports、external weight SHA、environment lock、ANTs version、resolved argv templates及 test/smoke receipt hashes。
+
+R2 输出：
+
+```text
+results/20260715_srr_v3_m10_followup2_cine_fidelity/
+```
+
+R2 merge 后，由 controller 在 merged worktree 独立复算并写：
+
+```text
+results/20260715_srr_v3_m10_followup2_evidence_and_cine_fidelity_repair/freeze_receipt.json
+```
+
+Final freeze 必须绑定 merged commit SHA、candidate manifest SHA、全部传递依赖和真实 resolved commands。R3 在任何 preflight/job 前再次复算；手写 status 或只验证 hash 长度无效。
+
+### R3：Frozen Cine runtime
+
+R3 只能验证 final freeze、运行 phase-specific preflight、提交/监控/聚合；禁止修改 `src/`、`scripts/`、`configs/`、`jobs/`。任何实现或 wrapper 问题必须返回 R2，禁止 hot patch。
+
+旧 F3 adapter、random-init、registration、SyN proxy、temporal 全部零信用。R3 从 frozen follow-up2 entrypoints完整重跑：
+
+```text
+pretrained adapter
+matched random-init control
+all-checkpoint adapter comparison, clean selected reload, selected source
+learned registration
+real ANTs SyN
+all-checkpoint registration comparison, clean selected reload, unchanged gate
+conditional temporal cumulative chain and controls
+```
+
+Formal minimum-effective-training 不得降低：
+
+```text
+adapter pretrained: 10000 optimizer steps, 3600 train-loop seconds, 8 validations,
+                    3 full-case events, 12 eval cases
+adapter random:     identical minima and matched protocol
+registration:       25000 optimizer steps, 7200 train-loop seconds, 10 validations,
+                    4 full-case events, 12 eval cases and >=60 valid pairs
+temporal:           20000 optimizer steps, 7200 train-loop seconds, 10 validations,
+                    4 full-case events, 12 eval cases
+```
+
+每个 trainable phase还必须有 one-batch/pair overfit、prediction sanity、loss decrease、same-split baseline/control 和 cache/output isolation receipt。Undertrained phase不得启动依赖下游。
+
+R3 preflight 不是单一 adapter `--print-contract`。必须按 frozen hash 逐phase执行矩阵：
+
+```text
+pretrained adapter
+random-init adapter
+adapter all-checkpoint selector/reloader
+learned registration
+real ANTs SyN
+registration selector/reloader/gate
+temporal resume chunk
+temporal controls
+```
+
+每个 preflight使用与正式 job相同 Python、environment、config、result/log/lock root和 resolved argv。Temporal preflight还必须实际打开 selected adapter checkpoint、selected registration checkpoint、registration gate和一个真实 frame batch，验证注册后输入存在、gate已通过且输出可写。任何 preflight失败均零信用，不能提交对应 formal stage。
+
+Adapter两支均充分训练后才运行比较；`CINEMA_COMPARISON_UNDERTRAINED` 阻塞 registration。只有 clean-reloaded selected source 可供 registration。Registration和 real SyN充分完成后，controller读取 `registration_gate.json`：gate pass才提交 temporal；faithful adequate gate fail则不预提交 temporal，而进入 registration-negative finalization。Temporal job不得仅依赖一个返回 0 的“gate script”而绕过 gate字段。
+
+#### Temporal cumulative resume
+
+默认累计 targets为：
+
+```text
+4000 -> 8000 -> 12000 -> 16000 -> 20000
+```
+
+4000-step chunk只在 launch-time throughput guard 预计该 chunk `<=6.5h` 时使用；否则controller可在不改变总 scientific minima、code/config/hash的前提下缩小下一 chunk target并记录 revised schedule。不得增大到预计接近/超过 8h。
+
+每个 chunk：
+
+- 独立 `afterok` job，walltime `<=8h`；
+- 从上一 credited completed checkpoint恢复；
+- 每 `<=500` steps atomic save，并响应 `SIGUSR1/TERM` 写 partial receipt；
+- 记录 global optimizer step、累计 train-loop seconds、唯一 validation event IDs、case IDs、RNG/optimizer/scheduler state、checkpoint SHA、parent checkpoint SHA、attempt lineage；
+- TIMEOUT/FAILED/PREEMPTED attempt永久零信用；replacement只从最后 credited completed checkpoint恢复；
+- 旧 follow-up 的 6000-step checkpoint和新失败 partial均不得计入正式累计；
+- validator拒绝 counter reset、double counting、step gap/overlap、重复 validation ID、伪造累计 seconds或 missing parent hash。
+
+只有累计达到 `20000/7200/10 validations/4 full-case events/12 cases`，clean reload selected temporal checkpoint并完成 same-subset controls后，才能写 final `summary.json`。Finalizer覆盖所有 old/replacement attempts并使用 `afterany`。
+
+Registration忠实、充分训练、真实 SyN、完整 denominator和strict validator均通过但 unchanged gate失败时，可写 reviewable registration-negative packet；这不是 route stop/promotion。否则缺实现、欠训练、proxy、missing SyN或 stale evidence只能 `NEEDS_REVISION`/`NEEDS_EVIDENCE`。
+
+R3 输出：
+
+```text
+results/20260715_srr_v3_m10_followup2_cine_runtime/
+```
+
+### Controller finalization and stop boundary
+
+Controller 必须产生：
+
+```text
+controller_context.json
+controller_ledger.csv
+controller_bootstrap_snapshot.md
+implementation_snapshot.md
+freeze_receipt.json
+mapper_report_draft.md
+architecture_delta_draft.md
+finalizer_state.json
+mapper_report_final.md
+architecture_delta_final.md
+result.md
+completion_check.md
+review_request.md
+MANIFEST.md
+controller_report.md
+```
+
+`FINALIZER_A` 对全部 job attempts做 terminal accounting、runtime-output检查和aggregation；`FINALIZER_B` 运行 R1/R2/R3 semantic validators、known-bad fixtures、handoff/packet/wiki/history/figure validators、Toolkit check和 `git diff --check`，然后只做一次本地轻量 packet commit。不得写 `review.md`，不得 push，必须停止等待独立 reviewer。
+
+#### Durable finalizer contract
+
+本任务的 durable finalizer backend 固定为 `slurm_dependency`。Controller 必须使用 `scripts/ops/submit_care_dependency_finalizer.py` 提交 `jobs/src/care_milestone_finalizer.sh`，并以 `afterany` 覆盖 R1 与 R3 的全部原始、失败、超时、取消、抢占和 replacement job IDs；R2 不提交 formal training，其真实 smoke receipt由 R2 merge gate直接检查。所有 job ID、attempt、partition、state、exit code、runtime、log path、runtime root和replacement lineage必须追加到顶层 `controller_ledger.csv` 与各 wave retry ledger。若 finalizer 提交后又产生 replacement attempt，旧 finalizer标为 superseded，controller必须重新提交覆盖全部旧/新 job IDs的 finalizer，不能让遗漏 attempt 的旧 finalizer成为完成信号。
+
+Durable paths固定为：
+
+```text
+controller result root: results/20260715_srr_v3_m10_followup2_evidence_and_cine_fidelity_repair/
+finalizer state:       results/20260715_srr_v3_m10_followup2_evidence_and_cine_fidelity_repair/finalizer_state.json
+controller lock:       results/20260715_srr_v3_m10_followup2_evidence_and_cine_fidelity_repair/locks/controller.lock
+controller logs:       results/20260715_srr_v3_m10_followup2_evidence_and_cine_fidelity_repair/worker_logs/
+R1 runtime root:       results/20260715_srr_v3_m10_followup2_wave2_evidence_repair/runtime/
+R3 runtime root:       results/20260715_srr_v3_m10_followup2_cine_runtime/runtime/
+```
+
+`FINALIZER_A` 必须在 terminal accounting 完成后执行并记录下列 aggregation commands及exit codes：
+
+```text
+python scripts/evaluation/aggregate_srr_v3_m10_followup2_wave2.py --result-dir results/20260715_srr_v3_m10_followup2_wave2_evidence_repair --strict
+python scripts/evaluation/aggregate_cine_m10_followup2.py --result-dir results/20260715_srr_v3_m10_followup2_cine_runtime --strict
+```
+
+任一 job仍为 pending/running/awaiting accounting、runtime output缺失、aggregation非零、required receipt缺失时，`finalizer_state.json` 只能写 `NEEDS_MONITOR`、`NEEDS_EVIDENCE` 或 `NEEDS_REVISION`，不能进入 mapper final或本地 commit。
+
+`FINALIZER_B` 只能在 `READY_FOR_MAPPER_FINAL` 后运行并记录下列 validator commands及exit codes：
+
+```text
+python scripts/evaluation/validate_srr_v3_m10_followup2_wave2.py --strict
+python scripts/evaluation/validate_cine_m10_followup2.py --runtime --strict
+python scripts/ops/validate_executor_plan.py prompts/tasks/20260715_srr_v3_m10_followup2_evidence_and_cine_fidelity_repair_executor_plan.yaml
+python scripts/validation/validate_handoff_policy.py --warnings-as-errors
+python scripts/architecture/validate_care_architecture_wiki.py --strict
+python scripts/architecture/generate_care_architecture_wiki.py --check-all
+python scripts/architecture/run_toolkit_healthcheck.py --check
+git diff --check
+```
+
+只有所有命令为零、mapper final已基于冻结 hash重跑、且轻量发布清单仅包含 `diagnostic_publication_scope: [md, csv, json]` 时，`FINALIZER_B` 才能创建一次本地 packet commit。`blocked_after_diagnostic_publication` 中的 validation packaging/upload、hosted claim、fold expansion、route promotion、scientific stop和 M11仍全部禁止；finalizer、controller和executor均不得 push或写 `review.md`。
+## Executor Worker Contract
+
+三 executor串行、独立 worktree、明确 write scope。R1不训练/不改 MyoPS；R2不 formal train；R3不改代码。Executor不得自合并、写 `review.md`、push、修改 `wiki/current_state.yaml`、上传 validation、做 hosted claim、route promotion、scientific stop或M11。
+
+Completion token只是 controller merge候选，不是科学通过。Token与 parsed evidence冲突时证据优先，controller必须拒绝 merge。
+## Mapper Contract
+
+Mapper在 R2 merge 后根据 merged source和 controller-generated freeze做 draft；在 R3 terminal aggregation后根据 frozen hashes和轻量 runtime evidence做 final。更新 root wiki、M10 candidate history和图，但 `wiki/current_state.yaml` 保持 M09，M10 history保持 `candidate_unreviewed`/`NOT_REVIEWED`，直到独立 runtime reviewer及后续 GPT/user决定。
+
+Mapper必须把每个 Cine component标成 `implemented/partial/scaffold/legacy/disabled/unknown` 与 `verified/unverified/stale/missing`。文件存在、contract JSON或tensor输出不能单独成为 verified；必须证明实际 formal entrypoint、runtime路径和final-output effect。

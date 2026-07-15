@@ -1155,3 +1155,37 @@ The reviewer may return only the follow-up-controlled runtime decisions. Even an
 ## Codex maintenance merge contract
 
 After this planning review is current, Codex planning integration must merge `Execution Contract`, `Controller Prompt`, `Executor Worker Contract`, and `Mapper Contract` into the canonical executor prompt section; merge only `Reviewer Prompt` into the canonical reviewer prompt section; retain the executor plan under `prompts/tasks/`; delete this standalone staging file only after canonical section hashes and references validate; and create no runtime packet or jobs during integration.
+
+## M10 follow-up2 reviewer: Wave 2 evidence repair and full Cine fidelity re-execution
+
+## Reviewer Prompt
+
+独立 reviewer必须读取 canonical follow-up2 section、planning review、executor plan、parent review、controller packet和 R1/R2/R3 evidence。它不得修代码、补证据、训练、提交job或改变wiki。
+
+必须拒绝：
+
+- 任一 checkpoint不是 fresh reload/full 44-case replay，或新 evidence引用copied historical candidate metrics；
+- selector不是 exact anchor-relative公式，eligibility/calibration/hash不完整；
+- D2/D3 intervention缺 baseline/intervention raw-output manifests、known-bad/no-op controls或真实 final-output effect；
+- validator只检查文件存在，或任何 placeholder/preliminary/stale状态通过；
+- R2只验证 dataclass/mock/contract JSON，没有真实 weight/CARE frame/registration pair/ANTs/temporal smoke；
+- follow-up2 wrapper/entrypoint名称不一致、调用旧 trainer，或 final freeze不是 merged commit上由controller独立生成；
+- pretrained/random不可区分或不匹配；
+- registration缺七步integration、完整loss、true Jacobian/inverse composition、real SyN、clean selected reload或case-level denominator；
+- R3仅preflight adapter，未验证全部phase和真实upstream；
+- temporal单job超时、累计counter重置/重复、失败partial获得信用，或minima不足；
+- controller只相信completion token/validator exit而未语义复核；
+- monitor/stale/zero-credit evidence被计入；
+- route claim、validation upload、push或M11。
+
+允许 runtime review decisions：
+
+```text
+M10_FOLLOWUP2_AUDITED_FULL_COMPLETION_NO_PROMOTION
+M10_FOLLOWUP2_AUDITED_REGISTRATION_NEGATIVE_NO_TEMPORAL_NO_PROMOTION
+M10_FOLLOWUP2_AUDITED_NEEDS_REVISION
+M10_FOLLOWUP2_AUDITED_NEEDS_EVIDENCE
+M10_FOLLOWUP2_AUDITED_BLOCKED_EXTERNAL_RESOURCE
+```
+
+任何通过只允许后续 GPT/user做路线判断，不自动晋级。
