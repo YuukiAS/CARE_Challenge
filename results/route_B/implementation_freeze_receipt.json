@@ -1,0 +1,6 @@
+{
+  "code_config_data_hashes": {},
+  "formal_training_allowed": false,
+  "reason": "Implementation gate failed before freeze.",
+  "status": "NOT_FROZEN"
+}

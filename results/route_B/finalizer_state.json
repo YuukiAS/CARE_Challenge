@@ -1,0 +1,19 @@
+{
+  "completion": "ROUTE_B_IMPLEMENTATION_NEEDS_REVISION",
+  "generated_at_utc": "2026-07-15T09:33:13.237454+00:00",
+  "mapper_final_status": "ROUTE_B_IMPLEMENTATION_NEEDS_REVISION",
+  "post_completion_aggregation_required": false,
+  "push_performed": false,
+  "review_md_written": false,
+  "route_negative_decision": "NOT_REVIEWED",
+  "route_promotion_decision": "NOT_REVIEWED",
+  "scientific_resolution_status": "AWAITING_REVIEW",
+  "slurm_jobs": [],
+  "state": "READY_FOR_LOCAL_PACKET_COMMIT_NEEDS_REVISION",
+  "task": "RouteB-Controller",
+  "terminal_accounting_required": false,
+  "validator_reports": [
+    "results/route_B/validator_implementation_report.json",
+    "results/route_B/validator_packet_report.json"
+  ]
+}

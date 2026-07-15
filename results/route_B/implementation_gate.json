@@ -1,0 +1,36 @@
+{
+  "cine": {
+    "cine_anatomy_source": false,
+    "cine_frame_policy": false,
+    "cine_registration": false,
+    "cine_syn_control": false,
+    "cine_temporal_dictionary": false,
+    "cine_temporal_refiner": false
+  },
+  "formal_training_allowed": false,
+  "formal_training_submitted": false,
+  "gate_passed": false,
+  "monitor_state": false,
+  "myops": {
+    "myops_anatomy_decoder": false,
+    "myops_availability_router": false,
+    "myops_bounded_residual": false,
+    "myops_edema_proposal": false,
+    "myops_edema_refiner": false,
+    "myops_export": false,
+    "myops_modality_stems": false,
+    "myops_multiscale_encoder": false,
+    "myops_prototype_bank": false,
+    "myops_scar_proposal": false,
+    "myops_scar_refiner": false,
+    "myops_semantic_retrieval": false,
+    "myops_soft_roi": false
+  },
+  "reason": "Route B-owned implementation paths and runtime gate evidence are missing; inherited partial code cannot satisfy complete MyoPS+Cine implementation gate.",
+  "shared": {
+    "checkpoint_resume_export": false
+  },
+  "status": "ROUTE_B_IMPLEMENTATION_NEEDS_REVISION",
+  "submitted_only_state": false,
+  "success_token": "ROUTE_B_IMPLEMENTATION_GATE_PASSED"
+}
