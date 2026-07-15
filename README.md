@@ -6,6 +6,10 @@
 
 [routes/README.md](routes/README.md)
 
+给 GPT / Codex 各角色复制提示词，从根目录快捷入口开始：
+
+[ROUTE_PROMPTS.md](ROUTE_PROMPTS.md)
+
 不要从本仓库写入 `/overflow/htzhu/CARE`。旧文档、旧 job 和历史计划里可能仍出现 `/overflow/htzhu/CARE`，它们是迁移前路径或历史记录；新任务必须优先使用 `/users/a/e/aereinh/CARE` 以及各 route worktree。
 
 ## 当前 tmux 与 route worktree

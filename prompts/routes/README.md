@@ -7,16 +7,22 @@
 1. GPT 项目设置使用：
 
 ```text
-prompts/routes/GPT_PROJECT_INSTRUCTIONS_ROUTE_PORTFOLIO.md
+prompts/routes/gpt_project_instructions_route_portfolio.md
 ```
 
 2. 让 GPT 规划 Route A、Route B、Route C 时使用：
 
 ```text
-prompts/routes/ROUTE_PORTFOLIO_PLANNER_PROMPT.md
+prompts/routes/route_portfolio_planner_prompt.md
 ```
 
-3. GPT Planner 输出不要默认写 `prompts/shared/`。三条路线的规划文件默认写入：
+3. 从 Notion 或 GPT 项目里复制角色提示词时使用：
+
+```text
+prompts/routes/notion_route_prompt_copy_blocks.md
+```
+
+4. GPT Planner 输出不要默认写 `prompts/shared/`。三条路线的规划文件默认写入：
 
 ```text
 prompts/routes/route_A.md
@@ -44,7 +50,7 @@ Notion `CARE Challenge > Prompts` 页面里的旧代码块可以继续保留作�
 Planner、Critic、Planning integrator 代码块第一行：
 
 ```text
-本轮任务：CARE Myocardium 三路线并行 route portfolio（route_A / route_B / route_C，2026-07-15 至 2026-07-27）；本页正文只作角色模板，本轮以仓库 prompts/routes/README.md 与 prompts/routes/ROUTE_PORTFOLIO_PLANNER_PROMPT.md 为准。
+本轮任务：CARE Myocardium 三路线并行 route portfolio（route_A / route_B / route_C，2026-07-15 至 2026-07-27）；本页正文只作角色模板，本轮以仓库 prompts/routes/README.md 与 prompts/routes/route_portfolio_planner_prompt.md 为准。
 ```
 
 Controller 代码块第一行：
@@ -61,7 +67,7 @@ Reviewer 代码块第一行：
 
 ## 当前流程
 
-1. GPT Planner 先读仓库、Project 背景 SRR 图和 `prompts/routes/ROUTE_PORTFOLIO_PLANNER_PROMPT.md`。
+1. GPT Planner 先读仓库、Project 背景 SRR 图和 `prompts/routes/route_portfolio_planner_prompt.md`。
 2. GPT Planner 分别向 `route_A`、`route_B`、`route_C` 推送规划合同、executor plan、critic request 和 planner audit。
 3. 每条 route 各有一个独立 Critic。Critic 通过后，该 route 的 Controller 才能启动。
 4. Controller 在对应 route worktree 中执行；不能跨 route 写文件。
