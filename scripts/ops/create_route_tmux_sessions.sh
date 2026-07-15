@@ -14,7 +14,7 @@ create_session() {
   fi
   tmux new-session -d -s "${name}" -c "${cwd}"
   tmux send-keys -t "${name}" "source /users/a/e/aereinh/CARE/.care-codex-env.sh" C-m
-  tmux send-keys -t "${name}" "source \"\$(pwd)/env_nnunet.sh\"" C-m
+  tmux send-keys -t "${name}" "source /users/a/e/aereinh/CARE/env_nnunet.sh" C-m
   tmux send-keys -t "${name}" "export CARE_ROOT=\"\$(git rev-parse --show-toplevel)\"" C-m
   tmux send-keys -t "${name}" "export CODEX_REPO_ROOT=\"\$CARE_ROOT\"" C-m
   tmux send-keys -t "${name}" "export nnUNet_raw=\"\$CARE_ROOT/data/nnUNet/nnUNet_raw\"" C-m
