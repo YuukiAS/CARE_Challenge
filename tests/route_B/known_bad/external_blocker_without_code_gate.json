@@ -1,0 +1,8 @@
+{
+  "completion_token": "ROUTE_B_NEEDS_EVIDENCE",
+  "missing_component_count": 0,
+  "formal_training_before_gate": false,
+  "monitor_packet_claims_completion": false,
+  "external_blocker_claimed": true,
+  "code_gate_passed": false
+}

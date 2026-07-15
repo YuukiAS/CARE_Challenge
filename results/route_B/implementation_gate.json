@@ -1,36 +1,103 @@
 {
   "cine": {
-    "cine_anatomy_source": false,
-    "cine_frame_policy": false,
-    "cine_registration": false,
-    "cine_syn_control": false,
-    "cine_temporal_dictionary": false,
-    "cine_temporal_refiner": false
+    "case_count": 3,
+    "checkpoint_path": "results/route_B/runtime/checkpoints/route_b_cine_gate_state.pt",
+    "classical_control_method": "classical_exhaustive_translation_control",
+    "classical_control_score": 0.7872805595397949,
+    "export_hash": "17be0995fefbeed46310fc2c73f4fa36ce89d6c5cbdd47a34869a687de0ee5ba",
+    "gradient_pass": true,
+    "loss_finite_nonzero": true,
+    "loss_parts": {
+      "ce": 1.5455048084259033,
+      "registration_fold": 0.0,
+      "registration_smooth": 0.0024846172891557217,
+      "temporal_load": 0.12659107148647308,
+      "total": 1.546894907951355
+    },
+    "nonreference_frames_per_case": 3,
+    "raw_label_values": [
+      0,
+      200,
+      500,
+      2221
+    ],
+    "registered_vs_unregistered_delta": 0.1979234218597412,
+    "save_reload_delta": 0.0,
+    "shape_logits": [
+      3,
+      4,
+      8,
+      12,
+      12
+    ],
+    "status": "PASS",
+    "temporal_on_off_delta": 0.90628582239151
   },
+  "code_gate_passed": true,
   "formal_training_allowed": false,
   "formal_training_submitted": false,
-  "gate_passed": false,
-  "monitor_state": false,
+  "generated_at_utc": "2026-07-15T09:46:19.370894+00:00",
   "myops": {
-    "myops_anatomy_decoder": false,
-    "myops_availability_router": false,
-    "myops_bounded_residual": false,
-    "myops_edema_proposal": false,
-    "myops_edema_refiner": false,
-    "myops_export": false,
-    "myops_modality_stems": false,
-    "myops_multiscale_encoder": false,
-    "myops_prototype_bank": false,
-    "myops_scar_proposal": false,
-    "myops_scar_refiner": false,
-    "myops_semantic_retrieval": false,
-    "myops_soft_roi": false
+    "checkpoint_path": "results/route_B/runtime/checkpoints/route_b_myops_gate_state.pt",
+    "export_hash": "ceeec14a4fc575240b1b59af88176db23eebfa9b8d76bf235429528e0f2f60a8",
+    "gradient_pass": true,
+    "intervention_pass": true,
+    "loss_finite_nonzero": true,
+    "loss_parts": {
+      "anatomy_ce": 1.4577573537826538,
+      "bounded_residual": 0.011442888528108597,
+      "edema_bce": 0.5588419437408447,
+      "final_ce": 1.913521647453308,
+      "gate_reg": 0.6233833432197571,
+      "roi_prior": 0.7432973384857178,
+      "scar_bce": 0.7169846296310425,
+      "total": 2.4853482246398926
+    },
+    "raw_label_values": [
+      0,
+      200,
+      500,
+      600,
+      1220,
+      2221
+    ],
+    "save_reload_delta": 0.0,
+    "shape_final_logits": [
+      3,
+      6,
+      8,
+      12,
+      12
+    ],
+    "status": "PASS",
+    "unavailable_t2_input_grad_max": 0.0,
+    "unavailable_t2_perturb_delta": 0.0
   },
-  "reason": "Route B-owned implementation paths and runtime gate evidence are missing; inherited partial code cannot satisfy complete MyoPS+Cine implementation gate.",
-  "shared": {
-    "checkpoint_resume_export": false
+  "real_case_gate_passed": false,
+  "real_data_preflight": {
+    "missing_or_empty": [
+      "data/CARE_Challenge/MyoPS_val",
+      "data/CARE_Challenge/CineMyoPS_val",
+      "data/nnUNet/nnUNet_raw"
+    ],
+    "required_roots": [
+      {
+        "exists": false,
+        "file_count": 0,
+        "path": "data/CARE_Challenge/MyoPS_val"
+      },
+      {
+        "exists": false,
+        "file_count": 0,
+        "path": "data/CARE_Challenge/CineMyoPS_val"
+      },
+      {
+        "exists": false,
+        "file_count": 0,
+        "path": "data/nnUNet/nnUNet_raw"
+      }
+    ],
+    "status": "FAIL_EXTERNAL_DATA_MISSING"
   },
-  "status": "ROUTE_B_IMPLEMENTATION_NEEDS_REVISION",
-  "submitted_only_state": false,
-  "success_token": "ROUTE_B_IMPLEMENTATION_GATE_PASSED"
+  "status": "ROUTE_B_NEEDS_EVIDENCE"
 }

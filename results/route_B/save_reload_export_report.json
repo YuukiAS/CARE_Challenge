@@ -1,8 +1,25 @@
 {
-  "cine_official_layout_export_qa": "missing",
-  "heavy_artifacts_written": false,
-  "myops_official_label_export_qa": "missing",
-  "resume_consistency": "missing",
-  "save_reload_consistency": "missing",
-  "status": "ROUTE_B_IMPLEMENTATION_NEEDS_REVISION"
+  "cine_export_hash": "17be0995fefbeed46310fc2c73f4fa36ce89d6c5cbdd47a34869a687de0ee5ba",
+  "cine_raw_label_values": [
+    0,
+    200,
+    500,
+    2221
+  ],
+  "cine_save_reload_delta": 0.0,
+  "myops_export_hash": "ceeec14a4fc575240b1b59af88176db23eebfa9b8d76bf235429528e0f2f60a8",
+  "myops_raw_label_values": [
+    0,
+    200,
+    500,
+    600,
+    1220,
+    2221
+  ],
+  "myops_save_reload_delta": 0.0,
+  "runtime_checkpoints_untracked": [
+    "results/route_B/runtime/checkpoints/route_b_myops_gate_state.pt",
+    "results/route_B/runtime/checkpoints/route_b_cine_gate_state.pt"
+  ],
+  "status": "PASS"
 }

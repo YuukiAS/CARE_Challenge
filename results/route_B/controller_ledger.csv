@@ -1,4 +1,4 @@
-timestamp_utc,phase,git_head,decision,next_action
-2026-07-15T09:33:13.211901+00:00,B0,6dac039fe6b19a3e2c2f661641673f70d5f6957f,critic_token_confirmed,inventory
-2026-07-15T09:33:13.211907+00:00,B1,6dac039fe6b19a3e2c2f661641673f70d5f6957f,route_B_namespaces_absent,failure_packet
-2026-07-15T09:33:13.211910+00:00,B3,6dac039fe6b19a3e2c2f661641673f70d5f6957f,ROUTE_B_IMPLEMENTATION_NEEDS_REVISION,finalizer_packet
+timestamp_utc,phase,decision,next_action
+2026-07-15T09:46:19.426539+00:00,B2,route_B_code_implemented,implementation_gate
+2026-07-15T09:46:19.426563+00:00,B3,code_gate_passed,real_data_preflight
+2026-07-15T09:46:19.426567+00:00,B6,ROUTE_B_NEEDS_EVIDENCE,independent_review_or_data_mount

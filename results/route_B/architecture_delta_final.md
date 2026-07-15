@@ -1,7 +1,5 @@
-# Route B Architecture Delta Final
+# Route B Architecture Delta Final Continuation
 
-Status: `ROUTE_B_IMPLEMENTATION_NEEDS_REVISION`
+Status: `ROUTE_B_NEEDS_EVIDENCE`
 
-No root wiki update was performed. No route promotion, hosted metric claim, validation upload, M11 authorization, or cross-route merge is made.
-
-Route-local delta: new controller packet, preflight, validators, and known-bad fixtures document that the complete SRR-v3 MyoPS+Cine implementation gate is not satisfied in this worktree.
+New route-local code implements the SRR-v3 MyoPS and Cine architecture paths under `src/care_myocardium/route_B/`. No root wiki files were modified. No training, upload, route promotion, M11, or cross-route merge was performed.

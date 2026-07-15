@@ -1,4 +1,4 @@
-# Route B Manifest
+# Route B Manifest Continuation
 
 - `results/route_B/architecture_component_trace.csv`
 - `results/route_B/architecture_delta_final.md`

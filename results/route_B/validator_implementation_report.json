@@ -1,10 +1,9 @@
 {
+  "code_gate_passed": true,
   "errors": [],
-  "gate_passed": false,
-  "missing_component_count": 20,
-  "status": "PASS_FAILURE_STATE_CONSISTENT",
-  "token": "ROUTE_B_IMPLEMENTATION_NEEDS_REVISION",
-  "warnings": [
-    "missing_or_unverified_components:20"
-  ]
+  "legacy_missing_component_count": 0,
+  "real_case_gate_passed": false,
+  "status": "PASS",
+  "token": "ROUTE_B_NEEDS_EVIDENCE",
+  "warnings": []
 }

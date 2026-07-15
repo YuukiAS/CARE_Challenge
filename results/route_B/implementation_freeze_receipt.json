@@ -1,6 +1,10 @@
 {
-  "code_config_data_hashes": {},
+  "blocked_reason": "required CARE data roots are missing from this route_B worktree",
+  "code_hashes": {
+    "scripts/route_B/run_implementation_gate.py": "f7c72fd9e12384ee1f80e4e4474aa7cb734541f588519739e6c1ae34dc6fa8ce",
+    "src/care_myocardium/route_B/cine.py": "f4f6f716f5977efd8b1a43e12d85af1db852350bc3effd111c7863567ac90428",
+    "src/care_myocardium/route_B/myops.py": "6dc32d545ca86b6f3482115f2d35c34b6773847f274f5325967776dc8af73377"
+  },
   "formal_training_allowed": false,
-  "reason": "Implementation gate failed before freeze.",
-  "status": "NOT_FROZEN"
+  "status": "FROZEN_FOR_REAL_DATA_GATE"
 }
