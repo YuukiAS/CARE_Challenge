@@ -1,108 +1,75 @@
 ---
 route_id: route_B
 branch: route_B
-status: PLANNER_REQUESTS_INDEPENDENT_CRITIC
+status: CRITIC_REVIEW_COMPLETED_AFTER_REVISION
 not_a_milestone: true
 contract_path: prompts/routes/route_B.md
 executor_plan_path: prompts/routes/route_B_executor_plan.yaml
 planner_audit_path: prompts/routes/route_B_planner_audit.md
-critic_allowed_token: ROUTE_B_PLANNING_READY_FOR_CONTROLLER
+critic_reviewed_planner_commit: 7303ef937793e47f5bac562e3c2c796654acc7fa
+critic_decision: APPROVE_AFTER_REVISION
+critic_token: ROUTE_B_PLANNING_READY_FOR_CONTROLLER
+critic_visual_read_status: READ_FROM_CURRENT_PROJECT_BACKGROUND
 critic_must_not_execute: true
 ---
 
-# Route B independent Critic request
+# Route B independent Critic request and disposition
 
-You are the independent GPT Critic for `route_B`. This is a planning review only. Do not execute code, do not train, do not submit Slurm, do not write runtime `review.md`, do not package or upload validation, do not start a controller, and do not start M11.
+This file records both the Planner's request and the completed independent planning review. The Critic did not execute code, train, submit Slurm, write runtime `review.md`, package/upload validation, start a controller, start M11 or merge routes.
 
-Route B is not a milestone. Reject or revise any wording that calls Route A or Route B a milestone.
+## Required review basis
 
-## Required files to read
+The Critic synchronized the current remote refs through the connected GitHub source, read the governing repository files and the four Route B Planner artifacts, compared Route B with the Route A/C namespace plans, and independently visually read SRR-v2, SRR-v2.5 and SRR-v3 from current Project visual materials rather than accepting the Planner summary.
 
-Read the latest `route_B` branch:
+The independent diagram interpretation is:
 
-- `AGENTS.md`
-- `START_HERE_FOR_GPT.md`
-- `GPT_PLANNER_CARE_PROTOCOL.md`
-- `prompts/AGENT_FLOW_V2_PROTOCOL.md`
-- `prompts/HANDOFF_GATE_POLICY.md`
-- `prompts/GPT_HARD_GATE_PROMPT.md`
-- `prompts/MILESTONE_REVIEW_PROTOCOL.md`
-- `prompts/THREAD_BOOTSTRAP_ROUTE_IMAGE_PROTOCOL.md`
-- `routes/README.md`
-- `routes/route_B/README.md`
-- `prompts/routes/README.md`
-- `prompts/routes/route_portfolio_planner_prompt.md`
-- `configs/routes/partition_routing.yaml`
-- `docs/route_watchboard.md`
-- `wiki/README.md`
-- `prompts/routes/route_B.md`
-- `prompts/routes/route_B_executor_plan.yaml`
-- `prompts/routes/route_B_planner_audit.md`
+- v2: availability-aware modality-specific evidence retrieval, anatomy-guided lesion proposal and pathology-specific soft-ROI refinement;
+- v2.5: explicitly separate scar and edema proposal decoders and refinement geometries;
+- v3: semantic multi-slot train/OOF prototypes, nnU-Net logits/components/uncertainty/anatomy context and bounded per-pathology residual correction preserving the anchor;
+- Cine: ED/key-frame reference-space registration, temporal representation retrieval and frame-wise anatomy aggregation, not a single-frame or topology-only wrapper.
 
-You must independently visually read SRR v2/v2.5/v3 diagrams from project-background/current visual materials. Do not rely on the Planner summary.
+## Critic findings before revision
 
-## Critic scope
+The Planner draft had the correct overall route identity and partition order, but it was not yet sufficiently fail-closed. The following defects required direct revision:
 
-Check whether Route B truly implements complete SRR-v3 architecture before formal training:
+1. filesystem write scope forbade all checkpoint/NIfTI files while the same contract required real save/reload, transform and export tests;
+2. minimum effective training lacked the concrete machine-readable thresholds required by the hard-gate protocol;
+3. controller-supervised lifecycle receipts and exact validator paths/known-bad fixture root were incomplete;
+4. the bounded residual contract did not require closed-gate anchor identity, bounded residual magnitude and per-pathology help/harm evidence;
+5. prototype provenance did not explicitly block self-case/fold/validation leakage and unsafe no-T2 edema negatives;
+6. Cine could reach a nominal continuation state via an “honest blocker,” which is incompatible with Route B's complete-architecture role;
+7. unavailable-modality semantics lacked perturbation-invariance and no-gradient checks;
+8. route-local mapper receipts were not explicit enough to reconcile system impact with the portfolio prohibition on root wiki mutation.
 
-- modality-specific stems;
-- availability-aware router reading mask and pooled image features;
-- shared/private/interaction dictionaries;
-- prototype memory or OOF prototype bank with positive/negative/safe-negative definitions;
-- anatomy decoder;
-- scar and edema proposal decoders;
-- soft ROI generator;
-- scar and edema refiners;
-- bounded nnU-Net residual correction;
-- full loss family;
-- save/reload/export;
-- real CineMA or anatomy source, ED/key frames, registration, temporal dictionary and aggregation/refiner.
+## Applied revision requirements
 
-## Required fail-closed checks
+The revised contract and executor plan now require:
 
-Return `NEEDS_PLANNING_REVISION` unless all of these hold:
-
-1. The contract and YAML executor plan agree on route_B branch, worktree, result/runtime/log/lock namespaces, write scopes and forbidden scopes.
-2. `implementation-before-training gate` blocks formal training until forward, losses, gradients, intervention, save/reload and export checks pass.
-3. Each SRR-v3 diagram module has a required code/evidence mapping or an explicit Critic-reviewed disabled state.
-4. Placeholders, mocks, dataclass-only components, fake URLs/hashes, config-only modules, CSV-only diagnostics and no-op wrappers are forbidden.
-5. Old nnU-Net or old Cine wrapper bypass cannot satisfy final-output evidence.
-6. No-T2 edema safety is explicit.
-7. Cine cannot pass as frame0-only, descriptor-only, topology-only, proxy registration, untrained VoxelMorph, or temporal output that does not consume registered evidence.
-8. Training adequacy distinguishes implementation smoke from scientific evidence.
-9. `prompts/shared/**`, Route A/C namespaces, validation upload, route promotion, final scientific conclusion and M11 are forbidden.
-10. The reviewer is independent and read-only.
-
-## Revision authority
-
-If issues are found, revise only Route B planning files on `route_B`:
-
-- `prompts/routes/route_B.md`
-- `prompts/routes/route_B_executor_plan.yaml`
-- `prompts/routes/route_B_critic_request.md`
-- `prompts/routes/route_B_planner_audit.md` if an erratum is needed
-
-Do not edit implementation code, shared prompts, route_A, route_C, result packets, runtime outputs, validation packages, or root wiki current state.
+- runtime-only heavy artifacts under `results/route_B/runtime/**`, with Git/index publication forbidden;
+- exact implementation and packet validators plus `tests/route_B/known_bad/`;
+- complete Agent-Flow controller/mapper/finalizer receipts;
+- concrete bounded first-wave adequacy thresholds;
+- exact baseline-preserving residual identity/bounds/intervention tests;
+- case/fold-safe OOF prototype provenance and T2-present edema-safe-negative rules;
+- unavailable-modality perturbation invariance and gradient exclusion;
+- at least three Cine cases and three non-reference frames per case, real registration control and temporal on/off effects;
+- a Cine blocker classified as revision/evidence failure, never as an implementation pass;
+- route-local architecture mapping with root wiki deferred to portfolio reconciliation.
 
 ## Passing decision
 
-If the plan is acceptable, write a concise Critic decision and use exactly:
+`critic_decision: APPROVE_AFTER_REVISION`
 
-```text
-ROUTE_B_PLANNING_READY_FOR_CONTROLLER
-```
+`critic_token: ROUTE_B_PLANNING_READY_FOR_CONTROLLER`
 
-This token authorizes only a later Route B controller start. It does not authorize validation upload, route promotion, final scientific conclusion, M11, cross-route merge, or package submission.
+This token authorizes only a later Route B controller start. It does not authorize validation upload, route promotion, hosted metric claims, final scientific conclusions, M11, package submission or cross-route merge.
 
-## Required Critic report fields
+## Required report fields
 
-- `critic_decision:`
-- `critic_token:` if passing
-- `contract_path:`
-- `executor_plan_path:`
-- `planner_audit_path:`
-- `branch:`
-- `commit_sha:`
-- `visual_read_status:`
-- `prompts_shared_modified:`
-- `remaining_risks:`
+- `contract_path: prompts/routes/route_B.md`
+- `executor_plan_path: prompts/routes/route_B_executor_plan.yaml`
+- `planner_audit_path: prompts/routes/route_B_planner_audit.md`
+- `branch: route_B`
+- `visual_read_status: READ_FROM_CURRENT_PROJECT_BACKGROUND`
+- `prompts_shared_modified: false`
+- `remaining_risks:` implementation complexity, schedule pressure, possible GPU-memory incompatibility on V100, uncertain Cine registration robustness, prototype collapse and insufficient post-freeze training evidence. These are execution/scientific risks, not planning blockers after the revisions above.
