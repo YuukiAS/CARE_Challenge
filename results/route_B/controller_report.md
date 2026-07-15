@@ -1,8 +1,8 @@
 # Route B Controller Report Continuation
 
-controller_run_status: INCOMPLETE_EXTERNAL_BLOCKER
-operational_completion_status: ROUTE_B_NEEDS_EVIDENCE
-experiment_adequacy_decision: FORMAL_TRAINING_NOT_STARTED_REAL_DATA_PREFLIGHT_FAILED
+controller_run_status: POST_FREEZE_BOUNDED_TRAIN_EVAL_UNDERTRAINED
+operational_completion_status: ROUTE_B_SCIENTIFIC_UNDERTRAINED
+experiment_adequacy_decision: SCIENTIFIC_UNDERTRAINED
 route_promotion_decision: NOT_REVIEWED
 route_negative_decision: NOT_REVIEWED
 scientific_resolution_status: AWAITING_REVIEW
@@ -12,9 +12,13 @@ git_push_decision: SKIP_PUSH
 
 ## Summary
 
-The controller continued from commit `1ea6bba` without reverting it. It implemented route_B-local MyoPS and Cine code paths and ran the implementation gate. The code-level gate passed for forward, losses, gradients, interventions, save/reload, and export QA. The real-case gate is blocked because required CARE data roots do not exist in this worktree.
+The controller continued from the prior diagnostic packet without reverting it. The Route B implementation gate passed with real MyoPS and Cine cases, and the post-freeze bounded train/eval entrypoint ran on real data. The run is explicitly undertrained: optimizer steps, train-loop seconds, or other minimum adequacy thresholds are insufficient for route promotion or scientific conclusions.
 
-No Slurm training job was submitted, so there is no pending/running/submitted-only packet being treated as completion.
+No pending/running/submitted-only Slurm state is being treated as completion.
 
-next_required_action: make required CARE data roots available in the route_B worktree, then rerun `python scripts/route_B/run_implementation_gate.py --strict`.
-reason_if_no_route_promotion: implementation real-case gate is blocked by missing external data and independent review has not run.
+bounded_train_eval_summary: `results/route_B/bounded_train_eval_summary.json`
+optimizer_steps: `12`
+train_loop_seconds: `1.145`
+validation_events: `2`
+myops_eval_cases: `10`
+cine_eval_cases: `5`

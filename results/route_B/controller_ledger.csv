@@ -1,4 +1,4 @@
 timestamp_utc,phase,decision,next_action
-2026-07-15T09:46:19.426539+00:00,B2,route_B_code_implemented,implementation_gate
-2026-07-15T09:46:19.426563+00:00,B3,code_gate_passed,real_data_preflight
-2026-07-15T09:46:19.426567+00:00,B6,ROUTE_B_NEEDS_EVIDENCE,independent_review_or_data_mount
+2026-07-15T09:59:31.381510+00:00,B3,implementation_gate_passed,B5_bounded_train_eval
+2026-07-15T09:59:31.381528+00:00,B5,ROUTE_B_SCIENTIFIC_UNDERTRAINED,B6_finalizer_packet
+2026-07-15T09:59:31.381531+00:00,B6,ROUTE_B_SCIENTIFIC_UNDERTRAINED,independent_readonly_review

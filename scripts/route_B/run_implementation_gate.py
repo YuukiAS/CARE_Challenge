@@ -15,6 +15,7 @@ from pathlib import Path
 from typing import Any
 
 import torch
+import torch.nn.functional as F
 
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
@@ -37,7 +38,8 @@ from src.care_myocardium.route_B.cine import classical_tensor_registration_contr
 RESULT_ROOT = REPO_ROOT / "results" / "route_B"
 RUNTIME_ROOT = RESULT_ROOT / "runtime"
 TOKEN_BLOCKED = "ROUTE_B_NEEDS_EVIDENCE"
-TOKEN_PASSED = "ROUTE_B_IMPLEMENTATION_GATE_PASSED"
+TOKEN_GATE_PASSED_UNDERTRAINED = "ROUTE_B_SCIENTIFIC_UNDERTRAINED"
+TOKEN_REVISION = "ROUTE_B_IMPLEMENTATION_NEEDS_REVISION"
 
 
 def now() -> str:
@@ -110,6 +112,116 @@ def make_myops_batch() -> tuple[torch.Tensor, torch.Tensor, torch.Tensor, torch.
     anchor[:, 4] += (labels == 4).float() * 0.8
     anchor[:, 5] += (labels == 5).float() * 0.8
     return x, availability, anchor, labels
+
+
+def _read_nifti(path: Path) -> torch.Tensor:
+    import SimpleITK as sitk
+
+    array = sitk.GetArrayFromImage(sitk.ReadImage(str(path)))
+    return torch.as_tensor(array.copy())
+
+
+def _resize_image(volume: torch.Tensor, size: tuple[int, int, int] = (8, 12, 12)) -> torch.Tensor:
+    vol = volume.float()
+    vol = (vol - vol.mean()) / vol.std().clamp_min(1e-6)
+    return F.interpolate(vol.view(1, 1, *vol.shape[-3:]), size=size, mode="trilinear", align_corners=False)[0, 0]
+
+
+def _resize_label(volume: torch.Tensor, size: tuple[int, int, int] = (8, 12, 12)) -> torch.Tensor:
+    return F.interpolate(volume.float().view(1, 1, *volume.shape[-3:]), size=size, mode="nearest")[0, 0].long()
+
+
+def _myops_compact(raw_or_compact: torch.Tensor) -> torch.Tensor:
+    out = torch.zeros_like(raw_or_compact, dtype=torch.long)
+    mapping = {0: 0, 1: 1, 2: 2, 3: 3, 4: 4, 5: 5, 200: 1, 500: 2, 600: 3, 1220: 4, 2221: 5}
+    for src, dst in mapping.items():
+        out[raw_or_compact == src] = dst
+    return out
+
+
+def _cine_compact(raw_or_compact: torch.Tensor) -> torch.Tensor:
+    out = torch.zeros_like(raw_or_compact, dtype=torch.long)
+    mapping = {0: 0, 1: 1, 2: 2, 3: 3, 200: 1, 500: 2, 2221: 3}
+    for src, dst in mapping.items():
+        out[raw_or_compact == src] = dst
+    return out
+
+
+def _anchor_from_compact(labels: torch.Tensor, classes: int) -> torch.Tensor:
+    return F.one_hot(labels.long().clamp(0, classes - 1), num_classes=classes).permute(0, 4, 1, 2, 3).float() * 3.0 - 1.5
+
+
+def discover_data_root() -> Path | None:
+    candidates = [
+        REPO_ROOT / "data",
+        Path("/users/a/e/aereinh/CARE/data"),
+    ]
+    for root in candidates:
+        if (root / "nnUNet" / "nnUNet_raw" / "Dataset501_CAREMyoPS").exists() and (root / "CARE_Challenge" / "CineMyoPS_train").exists():
+            return root
+    return None
+
+
+def load_real_myops_batch(data_root: Path, limit: int = 3) -> tuple[torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor, list[str], list[str]]:
+    raw = data_root / "nnUNet" / "nnUNet_raw" / "Dataset501_CAREMyoPS"
+    pred_root = (
+        Path("/users/a/e/aereinh/CARE/results/submissions/care_myocardium_validation/workspaces")
+        / "nnUNet_MyoPS+nnUNet_CineMyoPS_5fold_baseline_round8_20260519_084057"
+        / "predictions"
+        / "MyoPS"
+        / "nnUNet"
+        / "ensemble"
+    )
+    cases: list[str] = []
+    for label_path in sorted((raw / "labelsTr").glob("Case*.nii.gz")):
+        case = label_path.stem
+        if case.endswith(".nii"):
+            case = case[:-4]
+        images = [raw / "imagesTr" / f"{case}_{idx:04d}.nii.gz" for idx in range(3)]
+        pred = pred_root / f"{case}.nii.gz"
+        if all(path.exists() for path in images) and pred.exists():
+            cases.append(case)
+        if len(cases) >= limit:
+            break
+    if len(cases) < limit:
+        raise FileNotFoundError(f"Need at least {limit} MyoPS cases with 3 modalities, labels, and nnU-Net prediction anchors")
+    xs, ys, anchors = [], [], []
+    anchor_sources = []
+    for case in cases:
+        channels = [_resize_image(_read_nifti(raw / "imagesTr" / f"{case}_{idx:04d}.nii.gz")) for idx in range(3)]
+        label = _myops_compact(_resize_label(_read_nifti(raw / "labelsTr" / f"{case}.nii.gz")))
+        pred = _myops_compact(_resize_label(_read_nifti(pred_root / f"{case}.nii.gz")))
+        xs.append(torch.stack(channels))
+        ys.append(label)
+        anchors.append(pred)
+        anchor_sources.append(str((pred_root / f"{case}.nii.gz").relative_to(Path("/users/a/e/aereinh/CARE"))))
+    return torch.stack(xs), torch.ones(len(cases), 3), _anchor_from_compact(torch.stack(anchors), 6), torch.stack(ys), cases, anchor_sources
+
+
+def load_real_cine_batch(data_root: Path, limit: int = 3) -> tuple[torch.Tensor, torch.Tensor, list[str]]:
+    cine_root = data_root / "CARE_Challenge" / "CineMyoPS_train" / "center_alpha"
+    cases = []
+    for cine_path in sorted(cine_root.glob("Case*_Cine.nii.gz")):
+        case = cine_path.name.replace("_Cine.nii.gz", "")
+        if (cine_root / f"{case}_gd.nii.gz").exists():
+            cases.append(case)
+        if len(cases) >= limit:
+            break
+    if len(cases) < limit:
+        raise FileNotFoundError(f"Need at least {limit} Cine cases with Cine and gd files")
+    frame_tensors = []
+    targets = []
+    for case in cases:
+        cine = _read_nifti(cine_root / f"{case}_Cine.nii.gz").float()
+        if cine.ndim != 4:
+            raise ValueError(f"expected 4D Cine image for {case}, got {tuple(cine.shape)}")
+        # SimpleITK returns t,z,y,x for these files.
+        frame_indices = [0, max(cine.shape[0] // 3, 1), max(2 * cine.shape[0] // 3, 2), cine.shape[0] - 1]
+        frames = [_resize_image(cine[idx]) for idx in frame_indices]
+        target = _cine_compact(_resize_label(_read_nifti(cine_root / f"{case}_gd.nii.gz")))
+        frame_tensors.append(torch.stack(frames).unsqueeze(1))
+        targets.append(target)
+    return torch.stack(frame_tensors), torch.stack(targets), cases
 
 
 def run_myops_gate() -> tuple[dict[str, Any], list[dict[str, Any]]]:
@@ -276,16 +388,122 @@ def run_cine_gate() -> tuple[dict[str, Any], list[dict[str, Any]]]:
 
 
 def real_data_preflight() -> dict[str, Any]:
-    required_roots = [
-        REPO_ROOT / "data" / "CARE_Challenge" / "MyoPS_val",
-        REPO_ROOT / "data" / "CARE_Challenge" / "CineMyoPS_val",
-        REPO_ROOT / "data" / "nnUNet" / "nnUNet_raw",
-    ]
+    data_root = discover_data_root()
+    if data_root is None:
+        required_roots = [
+            REPO_ROOT / "data" / "CARE_Challenge" / "MyoPS_val",
+            REPO_ROOT / "data" / "CARE_Challenge" / "CineMyoPS_val",
+            REPO_ROOT / "data" / "nnUNet" / "nnUNet_raw",
+            Path("/users/a/e/aereinh/CARE/data") / "CARE_Challenge" / "CineMyoPS_train",
+            Path("/users/a/e/aereinh/CARE/data") / "nnUNet" / "nnUNet_raw" / "Dataset501_CAREMyoPS",
+        ]
+    else:
+        required_roots = [
+            data_root / "CARE_Challenge" / "MyoPS_val",
+            data_root / "CARE_Challenge" / "CineMyoPS_val",
+            data_root / "CARE_Challenge" / "CineMyoPS_train",
+            data_root / "nnUNet" / "nnUNet_raw" / "Dataset501_CAREMyoPS",
+        ]
     rows = []
     for root in required_roots:
-        rows.append({"path": str(root.relative_to(REPO_ROOT)), "exists": root.exists(), "file_count": sum(1 for _ in root.rglob("*")) if root.exists() else 0})
+        try:
+            display = str(root.relative_to(REPO_ROOT))
+        except ValueError:
+            display = str(root)
+        rows.append({"path": display, "exists": root.exists(), "file_count": sum(1 for _ in root.rglob("*")) if root.exists() else 0})
     missing = [row["path"] for row in rows if not row["exists"] or row["file_count"] == 0]
-    return {"status": "PASS" if not missing else "FAIL_EXTERNAL_DATA_MISSING", "required_roots": rows, "missing_or_empty": missing}
+    return {
+        "status": "PASS" if data_root is not None and not missing else "FAIL_EXTERNAL_DATA_MISSING",
+        "data_root": str(data_root) if data_root is not None else None,
+        "required_roots": rows,
+        "missing_or_empty": missing,
+    }
+
+
+def run_real_case_gate(data_root: Path) -> tuple[dict[str, Any], list[dict[str, Any]]]:
+    torch.manual_seed(23)
+    myops_x, myops_avail, myops_anchor, myops_labels, myops_cases, anchor_sources = load_real_myops_batch(data_root)
+    myops_model = RouteBMyoPSModel()
+    myops_model.train()
+    myops_out = myops_model(myops_x, myops_avail, myops_anchor, case_ids=myops_cases, fold=0)
+    myops_loss, myops_parts = route_b_myops_loss(myops_out, myops_labels, myops_avail)
+    myops_model.zero_grad(set_to_none=True)
+    myops_loss.backward()
+    myops_grad = grad_norm(myops_model)
+    myops_model.eval()
+    with torch.no_grad():
+        myops_perturbed = myops_x.clone()
+        myops_perturbed[:, 0] += 0.25 * myops_x[:, 0].std().clamp_min(1e-6)
+        myops_changed = myops_model(myops_perturbed, myops_avail, myops_anchor)
+        myops_delta = max_abs(myops_out["final_logits"], myops_changed["final_logits"])
+        myops_raw = compact_myops_to_raw(torch.argmax(myops_out["final_logits"], dim=1))
+
+    cine_frames, cine_target, cine_cases = load_real_cine_batch(data_root)
+    cine_model = RouteBCineModel()
+    cine_model.train()
+    cine_out = cine_model(cine_frames)
+    cine_loss, cine_parts = route_b_cine_loss(cine_out, cine_target)
+    cine_model.zero_grad(set_to_none=True)
+    cine_loss.backward()
+    cine_grad = grad_norm(cine_model)
+    cine_model.eval()
+    with torch.no_grad():
+        cine_base = cine_model(cine_frames)
+        cine_no_temporal = cine_model(cine_frames, disable_temporal=True)
+        cine_no_registration = cine_model(cine_frames, use_registered=False)
+        cine_temporal_delta = max_abs(cine_base["logits"], cine_no_temporal["logits"])
+        cine_registration_delta = max_abs(cine_base["logits"], cine_no_registration["logits"])
+        cine_raw = compact_cine_to_raw(torch.argmax(cine_base["logits"], dim=1))
+
+    checks = {
+        "myops_real_loss_finite_nonzero": finite_nonzero(myops_loss),
+        "myops_real_gradient_nonzero": myops_grad > 0,
+        "myops_real_input_intervention_changes_output": myops_delta > 1e-6,
+        "cine_real_loss_finite_nonzero": finite_nonzero(cine_loss),
+        "cine_real_gradient_nonzero": cine_grad > 0,
+        "cine_real_temporal_intervention_changes_output": cine_temporal_delta > 1e-6,
+        "cine_real_registration_intervention_changes_output": cine_registration_delta > 1e-6,
+        "cine_three_cases": len(cine_cases) >= 3,
+        "cine_three_nonreference_frames": int(cine_frames.shape[1] - 1) >= 3,
+    }
+    report = {
+        "status": "PASS" if all(checks.values()) else "FAIL",
+        "data_root": str(data_root),
+        "myops_cases": myops_cases,
+        "myops_anchor_sources": anchor_sources,
+        "myops_loss_parts": myops_parts,
+        "myops_grad_norm": myops_grad,
+        "myops_input_intervention_delta": myops_delta,
+        "myops_raw_label_values": sorted(int(v) for v in torch.unique(myops_raw).tolist()),
+        "myops_export_hash": tensor_hash(myops_raw),
+        "cine_cases": cine_cases,
+        "cine_frame_count": int(cine_frames.shape[1]),
+        "cine_nonreference_frames_per_case": int(cine_frames.shape[1] - 1),
+        "cine_loss_parts": cine_parts,
+        "cine_grad_norm": cine_grad,
+        "cine_temporal_on_off_delta": cine_temporal_delta,
+        "cine_registered_vs_unregistered_delta": cine_registration_delta,
+        "cine_raw_label_values": sorted(int(v) for v in torch.unique(cine_raw).tolist()),
+        "cine_export_hash": tensor_hash(cine_raw),
+        "checks": checks,
+    }
+    rows = [
+        {
+            "area": "myops_real_case_forward_loss",
+            "gradient_reaches_required_module": myops_grad > 0,
+            "grad_norm": myops_grad,
+            "intervention_changes_final_logits_or_labels": myops_delta > 1e-6,
+            "evidence_path": "results/route_B/implementation_gate.json",
+        },
+        {
+            "area": "cine_real_case_temporal_registered_forward_loss",
+            "gradient_reaches_required_module": cine_grad > 0,
+            "grad_norm": cine_grad,
+            "intervention_changes_final_logits_or_labels": cine_temporal_delta > 1e-6 and cine_registration_delta > 1e-6,
+            "evidence_path": "results/route_B/implementation_gate.json",
+        },
+    ]
+    return report, rows
 
 
 def build_component_trace(code_gate_passed: bool, real_preflight: dict[str, Any]) -> list[dict[str, Any]]:
@@ -303,7 +521,7 @@ def build_component_trace(code_gate_passed: bool, real_preflight: dict[str, Any]
             "component_id": cid,
             "branch": branch,
             "implementation_status": "implemented" if code_gate_passed else "partial",
-            "evidence_status": "synthetic_gate_verified_real_data_missing" if real_preflight["status"] != "PASS" else "verified",
+            "evidence_status": "synthetic_and_real_case_verified" if real_preflight["status"] == "PASS" else "synthetic_gate_verified_real_data_missing",
             "source_file": source,
             "symbol": symbol,
             "final_output_effect": "verified_by_gradient_and_intervention_report" if code_gate_passed else "missing",
@@ -315,8 +533,8 @@ def build_component_trace(code_gate_passed: bool, real_preflight: dict[str, Any]
 
 def write_packet(gate: dict[str, Any], grad_rows: list[dict[str, Any]], args: argparse.Namespace) -> None:
     code_passed = bool(gate["code_gate_passed"])
-    real_passed = gate["real_data_preflight"]["status"] == "PASS"
-    token = TOKEN_PASSED if code_passed and real_passed else TOKEN_BLOCKED
+    real_passed = bool(gate["real_case_gate_passed"])
+    token = TOKEN_GATE_PASSED_UNDERTRAINED if code_passed and real_passed else TOKEN_BLOCKED if code_passed else TOKEN_REVISION
     RESULT_ROOT.mkdir(parents=True, exist_ok=True)
     write_json(RESULT_ROOT / "implementation_gate.json", gate)
     write_csv(RESULT_ROOT / "gradient_and_intervention_report.csv", grad_rows)
@@ -325,7 +543,7 @@ def write_packet(gate: dict[str, Any], grad_rows: list[dict[str, Any]], args: ar
     write_csv(
         RESULT_ROOT / "cine_registration_temporal_report.csv",
         [
-            {"check": "three_real_cases_three_nonreference_frames", "status": cine["case_count"] >= 3 and cine["nonreference_frames_per_case"] >= 3, "evidence": "synthetic_fixture;real_data_preflight_required"},
+            {"check": "three_real_cases_three_nonreference_frames", "status": gate.get("real_case", {}).get("checks", {}).get("cine_three_cases", False) and gate.get("real_case", {}).get("checks", {}).get("cine_three_nonreference_frames", False), "evidence": "results/route_B/implementation_gate.json"},
             {"check": "classical_registration_control", "status": cine["classical_control_method"], "evidence": "src/care_myocardium/route_B/cine.py"},
             {"check": "temporal_on_off_changes_output", "status": cine["temporal_on_off_delta"] > 1e-6, "evidence": "results/route_B/implementation_gate.json"},
             {"check": "registered_vs_unregistered_changes_output", "status": cine["registered_vs_unregistered_delta"] > 1e-6, "evidence": "results/route_B/implementation_gate.json"},
@@ -345,14 +563,14 @@ def write_packet(gate: dict[str, Any], grad_rows: list[dict[str, Any]], args: ar
         },
     )
     freeze = {
-        "status": "FROZEN_FOR_REAL_DATA_GATE" if code_passed else "NOT_FROZEN",
+        "status": "IMPLEMENTATION_FROZEN_TRAINING_UNLOCKED" if code_passed and real_passed else "FROZEN_FOR_REAL_DATA_GATE" if code_passed else "NOT_FROZEN",
         "formal_training_allowed": code_passed and real_passed,
         "code_hashes": {
             "src/care_myocardium/route_B/myops.py": sha256(REPO_ROOT / "src/care_myocardium/route_B/myops.py"),
             "src/care_myocardium/route_B/cine.py": sha256(REPO_ROOT / "src/care_myocardium/route_B/cine.py"),
             "scripts/route_B/run_implementation_gate.py": sha256(REPO_ROOT / "scripts/route_B/run_implementation_gate.py"),
         },
-        "blocked_reason": None if real_passed else "required CARE data roots are missing from this route_B worktree",
+        "blocked_reason": None if real_passed else "required CARE data roots are unavailable to the Route B gate",
     }
     write_json(RESULT_ROOT / "implementation_freeze_receipt.json", freeze)
     write(
@@ -363,9 +581,9 @@ Completion token: `{token}`
 
 Code gate passed: `{str(code_passed).lower()}`
 
-Real data preflight passed: `{str(real_passed).lower()}`
+Real case gate passed: `{str(real_passed).lower()}`
 
-The Route B MyoPS and Cine modules now execute real differentiable forward paths with finite nonzero losses, gradients, interventions, save/reload checks, and compact-to-raw export QA. Formal training remains blocked because required CARE data roots are missing from this worktree, so the real-case implementation gate cannot be completed.
+The Route B MyoPS and Cine modules execute real differentiable SRR-v3 forward paths with finite nonzero losses, gradients, interventions, save/reload checks, and compact-to-raw export QA. `ROUTE_B_SCIENTIFIC_UNDERTRAINED` means the implementation-before-training gate passed and formal training is allowed, but bounded train/eval evidence has not yet met the minimum scientific adequacy thresholds.
 """,
     )
     write(
@@ -385,21 +603,21 @@ Gate evidence:
 - MyoPS code gate: `{gate['myops']['status']}`
 - Cine code gate: `{gate['cine']['status']}`
 - real data preflight: `{gate['real_data_preflight']['status']}`
+- real case gate: `{gate.get('real_case', {}).get('status', 'NOT_RUN')}`
 """,
     )
-    blocker = gate["real_data_preflight"]["missing_or_empty"]
+    blocker = gate["real_data_preflight"].get("missing_or_empty", [])
     write(
         RESULT_ROOT / "implementation_gap_inventory.md",
         "# Route B External Blocker Inventory\n\n"
-        "The previous namespace/code/evidence gaps have been converted into implemented route_B code and executable gate checks. Remaining blocker is external data availability for real-case gate execution.\n\n"
-        + "\n".join(f"- missing_or_empty: `{path}`" for path in blocker)
-        + "\n",
+        "The previous namespace/code/evidence gaps have been converted into implemented route_B code and executable gate checks. If listed below, the remaining blocker is external data availability for real-case gate execution. If the list is empty, no implementation blocker remains and the route is undertrained until bounded train/eval evidence is aggregated.\n\n"
+        + ("\n".join(f"- missing_or_empty: `{path}`" for path in blocker) + "\n" if blocker else "No external implementation blocker remains.\n"),
     )
     mapper = f"""Route-local mapper status: `{token}`.
 
 Route B source paths now exist and are mapped to gate evidence. Root wiki mutation remains deferred by route portfolio policy.
 
-The implementation code gate is verified by `results/route_B/implementation_gate.json`; real-case validation remains blocked by missing data roots listed in `implementation_gap_inventory.md`.
+The implementation code gate and real-case gate are verified by `results/route_B/implementation_gate.json` when `real_case_gate_passed` is true. If false, the data-root blocker is listed in `implementation_gap_inventory.md`.
 """
     write(RESULT_ROOT / "mapper_report_draft.md", "# Route B Mapper Report Draft Continuation\n\n" + mapper)
     write(RESULT_ROOT / "mapper_report_final.md", "# Route B Mapper Report Final Continuation\n\n" + mapper)
@@ -416,7 +634,7 @@ New route-local code implements the SRR-v3 MyoPS and Cine architecture paths und
         RESULT_ROOT / "finalizer_state.json",
         {
             "task": "RouteB-Controller",
-            "state": "READY_FOR_LOCAL_PACKET_COMMIT_EXTERNAL_BLOCKER" if token == TOKEN_BLOCKED else "READY_FOR_LOCAL_PACKET_COMMIT_IMPLEMENTATION_GATE_PASSED",
+            "state": "READY_FOR_LOCAL_PACKET_COMMIT_EXTERNAL_BLOCKER" if token == TOKEN_BLOCKED else "READY_FOR_LOCAL_PACKET_COMMIT_IMPLEMENTATION_GATE_PASSED_UNDERTRAINED",
             "completion": token,
             "generated_at_utc": now(),
             "formal_training_submitted": False,
@@ -434,7 +652,7 @@ New route-local code implements the SRR-v3 MyoPS and Cine architecture paths und
 
 Completion token: `{token}`
 
-This supersedes the earlier namespace-missing diagnostic packet. Route B code paths and executable gate checks have been implemented. Formal training was not submitted. The remaining blocker is that required CARE data roots are absent in this worktree, so the real-case implementation gate cannot be completed here.
+This supersedes the earlier namespace-missing diagnostic packet. Route B code paths and executable gate checks have been implemented. Formal training was not submitted by this gate command. If the token is `ROUTE_B_SCIENTIFIC_UNDERTRAINED`, the implementation gate passed and the next required step is bounded train/eval aggregation.
 
 Forbidden and not performed: `review.md`, push, validation packaging/upload, hosted metric claim, route promotion, scientific stop, M11, cross-route merge.
 """,
@@ -443,9 +661,9 @@ Forbidden and not performed: `review.md`, push, validation packaging/upload, hos
         RESULT_ROOT / "controller_report.md",
         f"""# Route B Controller Report Continuation
 
-controller_run_status: INCOMPLETE_EXTERNAL_BLOCKER
+controller_run_status: IMPLEMENTATION_GATE_PASSED_UNDERTRAINED
 operational_completion_status: {token}
-experiment_adequacy_decision: FORMAL_TRAINING_NOT_STARTED_REAL_DATA_PREFLIGHT_FAILED
+experiment_adequacy_decision: FORMAL_TRAINING_NOT_YET_AGGREGATED_AFTER_GATE
 route_promotion_decision: NOT_REVIEWED
 route_negative_decision: NOT_REVIEWED
 scientific_resolution_status: AWAITING_REVIEW
@@ -455,12 +673,12 @@ git_push_decision: SKIP_PUSH
 
 ## Summary
 
-The controller continued from commit `1ea6bba` without reverting it. It implemented route_B-local MyoPS and Cine code paths and ran the implementation gate. The code-level gate passed for forward, losses, gradients, interventions, save/reload, and export QA. The real-case gate is blocked because required CARE data roots do not exist in this worktree.
+The controller continued from commit `1ea6bba` without reverting it. It implemented route_B-local MyoPS and Cine code paths and ran the implementation gate. The code-level gate passed for forward, losses, gradients, interventions, save/reload, and export QA. The real-case gate used read-only CARE data when available and blocks training only if that preflight fails.
 
-No Slurm training job was submitted, so there is no pending/running/submitted-only packet being treated as completion.
+No Slurm training job was submitted by the gate command, so there is no pending/running/submitted-only packet being treated as completion.
 
-next_required_action: make required CARE data roots available in the route_B worktree, then rerun `python scripts/route_B/run_implementation_gate.py --strict`.
-reason_if_no_route_promotion: implementation real-case gate is blocked by missing external data and independent review has not run.
+next_required_action: run bounded train/eval after freeze, then aggregate `training_adequacy.csv`, `metrics_summary.csv`, and `case_safety_matrix.csv`.
+reason_if_no_route_promotion: bounded train/eval adequacy and independent review have not run.
 """,
     )
     write(
@@ -469,7 +687,7 @@ reason_if_no_route_promotion: implementation real-case gate is blocked by missin
 
 Final controller token: `{token}`
 
-This is a superseding continuation packet. It is not a namespace-missing diagnostic. Route B implementation code exists and its executable code gate passed. Formal training remains blocked by missing real CARE data roots.
+This is a superseding continuation packet. It is not a namespace-missing diagnostic. Route B implementation code exists and its executable implementation gate status is recorded in `implementation_gate.json`.
 """,
     )
     write(
@@ -486,7 +704,7 @@ This is a superseding continuation packet. It is not a namespace-missing diagnos
         "- `python scripts/validation/route_B/validate_route_b_packet.py --strict --write-report results/route_B/validator_packet_report.json`\n"
         "- `pytest -q tests/route_B src/care_myocardium/tests/test_route_b_implementation.py`\n"
         "- `git diff --check`\n\n"
-        "No `sbatch`, `srun`, validation upload, push, or M11 command was run.\n",
+        "No validation upload, push, or M11 command was run by this gate command.\n",
     )
     context = {
         "task": "RouteB-Controller-continuation",
@@ -511,7 +729,7 @@ This is a superseding continuation packet. It is not a namespace-missing diagnos
         [
             {"timestamp_utc": now(), "phase": "B2", "decision": "route_B_code_implemented", "next_action": "implementation_gate"},
             {"timestamp_utc": now(), "phase": "B3", "decision": "code_gate_passed", "next_action": "real_data_preflight"},
-            {"timestamp_utc": now(), "phase": "B6", "decision": token, "next_action": "independent_review_or_data_mount"},
+            {"timestamp_utc": now(), "phase": "B6", "decision": token, "next_action": "bounded_train_eval_or_independent_review"},
         ],
     )
     write(
@@ -532,20 +750,27 @@ def main() -> int:
     myops, myops_rows = run_myops_gate()
     cine, cine_rows = run_cine_gate()
     real_preflight = real_data_preflight()
+    real_case: dict[str, Any] = {"status": "NOT_RUN", "reason": "real data preflight failed"}
+    real_rows: list[dict[str, Any]] = []
+    if real_preflight["status"] == "PASS" and real_preflight.get("data_root"):
+        real_case, real_rows = run_real_case_gate(Path(str(real_preflight["data_root"])))
+    code_gate_passed = myops["status"] == "PASS" and cine["status"] == "PASS"
+    real_case_gate_passed = code_gate_passed and real_preflight["status"] == "PASS" and real_case["status"] == "PASS"
     gate = {
         "generated_at_utc": now(),
-        "status": TOKEN_PASSED if myops["status"] == "PASS" and cine["status"] == "PASS" and real_preflight["status"] == "PASS" else TOKEN_BLOCKED,
-        "code_gate_passed": myops["status"] == "PASS" and cine["status"] == "PASS",
-        "real_case_gate_passed": real_preflight["status"] == "PASS",
-        "formal_training_allowed": myops["status"] == "PASS" and cine["status"] == "PASS" and real_preflight["status"] == "PASS",
+        "status": TOKEN_GATE_PASSED_UNDERTRAINED if real_case_gate_passed else TOKEN_BLOCKED if code_gate_passed else TOKEN_REVISION,
+        "code_gate_passed": code_gate_passed,
+        "real_case_gate_passed": real_case_gate_passed,
+        "formal_training_allowed": real_case_gate_passed,
         "formal_training_submitted": False,
         "myops": myops,
         "cine": cine,
         "real_data_preflight": real_preflight,
+        "real_case": real_case,
     }
-    write_packet(gate, myops_rows + cine_rows, args)
+    write_packet(gate, myops_rows + cine_rows + real_rows, args)
     print(json.dumps(gate, indent=2, sort_keys=True))
-    if args.strict and not gate["code_gate_passed"]:
+    if args.strict and not gate["real_case_gate_passed"]:
         return 1
     return 0
 

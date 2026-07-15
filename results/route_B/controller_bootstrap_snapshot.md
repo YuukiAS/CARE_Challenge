@@ -1,6 +1,6 @@
 # Route B Controller Bootstrap Snapshot Continuation
 
-- supersedes_commit: `1ea6bba`
-- current_token: `ROUTE_B_NEEDS_EVIDENCE`
+- current_token: `ROUTE_B_SCIENTIFIC_UNDERTRAINED`
+- bounded_train_eval_run: `true`
 - formal_training_submitted: `false`
 - review_md_written: `false`

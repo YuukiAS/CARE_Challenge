@@ -18,3 +18,5 @@ cine_temporal_dictionary,True,0.1877921095150817,,results/route_B/implementation
 cine_temporal_refiner,True,6.469905067140571,,results/route_B/implementation_gate.json
 cine_temporal_on_off,,,True,results/route_B/implementation_gate.json
 cine_registered_vs_unregistered,,,True,results/route_B/implementation_gate.json
+myops_real_case_forward_loss,True,8.09287936357715,True,results/route_B/implementation_gate.json
+cine_real_case_temporal_registered_forward_loss,True,10.906720226163284,True,results/route_B/implementation_gate.json

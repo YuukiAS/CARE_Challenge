@@ -1,5 +1,5 @@
 # Route B Controller Result Continuation
 
-Final controller token: `ROUTE_B_NEEDS_EVIDENCE`
+Final controller token: `ROUTE_B_SCIENTIFIC_UNDERTRAINED`
 
-This is a superseding continuation packet. It is not a namespace-missing diagnostic. Route B implementation code exists and its executable code gate passed. Formal training remains blocked by missing real CARE data roots.
+This superseding packet contains a real implementation gate pass and a post-freeze bounded train/eval aggregation. It is not review-ready for scientific acceptance; it is undertrained evidence with the required lightweight tables present.

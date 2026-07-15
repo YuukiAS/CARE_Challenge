@@ -1,17 +1,10 @@
 {
-  "files_read": [
-    "prompts/routes/route_B.md",
-    "prompts/routes/route_B_executor_plan.yaml",
-    ".agents/skills/slurm-routing-partition/SKILL.md",
-    ".agents/skills/codex-workflow-protocol/SKILL.md",
-    ".agents/skills/care-mapper/SKILL.md"
-  ],
+  "bounded_train_eval_run": true,
   "formal_training_submitted": false,
-  "generated_at_utc": "2026-07-15T09:46:19.416027+00:00",
-  "git_head_before_continuation": "1ea6bbafd75fa182608cb84f39d8bd91b311a0c5",
+  "generated_at_utc": "2026-07-15T09:59:31.371512+00:00",
+  "git_head_before_continuation": "9b228c744fbbace284a23466ace5b9cfc94b6733",
   "route_id": "route_B",
   "slurm_jobs_submitted": [],
-  "status": "ROUTE_B_NEEDS_EVIDENCE",
-  "supersedes_commit": "1ea6bba",
+  "status": "ROUTE_B_SCIENTIFIC_UNDERTRAINED",
   "task": "RouteB-Controller-continuation"
 }

@@ -1,6 +1,6 @@
 # Route B Implementation Snapshot Continuation
 
-Status: `ROUTE_B_NEEDS_EVIDENCE`
+Status: `ROUTE_B_SCIENTIFIC_UNDERTRAINED`
 
 Implemented code paths:
 
@@ -12,4 +12,5 @@ Gate evidence:
 
 - MyoPS code gate: `PASS`
 - Cine code gate: `PASS`
-- real data preflight: `FAIL_EXTERNAL_DATA_MISSING`
+- real data preflight: `PASS`
+- real case gate: `PASS`

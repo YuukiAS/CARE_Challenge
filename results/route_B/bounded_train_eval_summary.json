@@ -1,0 +1,13 @@
+{
+  "adequacy_passed": false,
+  "cine_eval_cases": 5,
+  "first_loss": 2.432159662246704,
+  "generated_at_utc": "2026-07-15T09:59:31.335761+00:00",
+  "last_loss": 1.2517919540405273,
+  "myops_eval_cases": 10,
+  "optimizer_steps": 12,
+  "runtime_root": "results/route_B/runtime/bounded_train_eval",
+  "status": "ROUTE_B_SCIENTIFIC_UNDERTRAINED",
+  "train_loop_seconds": 1.1450198969687335,
+  "validation_events": 2
+}

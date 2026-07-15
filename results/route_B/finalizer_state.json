@@ -1,13 +1,14 @@
 {
-  "completion": "ROUTE_B_NEEDS_EVIDENCE",
+  "bounded_train_eval_run": true,
+  "completion": "ROUTE_B_SCIENTIFIC_UNDERTRAINED",
   "formal_training_submitted": false,
-  "generated_at_utc": "2026-07-15T09:46:19.400273+00:00",
+  "generated_at_utc": "2026-07-15T09:59:31.363713+00:00",
   "push_performed": false,
   "review_md_written": false,
   "route_negative_decision": "NOT_REVIEWED",
   "route_promotion_decision": "NOT_REVIEWED",
   "scientific_resolution_status": "AWAITING_REVIEW",
   "slurm_jobs": [],
-  "state": "READY_FOR_LOCAL_PACKET_COMMIT_EXTERNAL_BLOCKER",
+  "state": "READY_FOR_LOCAL_PACKET_COMMIT_SCIENTIFIC_UNDERTRAINED",
   "task": "RouteB-Controller"
 }

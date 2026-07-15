@@ -2,8 +2,8 @@
   "code_gate_passed": true,
   "errors": [],
   "legacy_missing_component_count": 0,
-  "real_case_gate_passed": false,
+  "real_case_gate_passed": true,
   "status": "PASS",
-  "token": "ROUTE_B_NEEDS_EVIDENCE",
+  "token": "ROUTE_B_SCIENTIFIC_UNDERTRAINED",
   "warnings": []
 }

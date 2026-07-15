@@ -1,0 +1,5 @@
+task,metric,value,case_count,status
+MyoPS,myops_scar_compact5_dice,0.0,10,UNDERTRAINED
+MyoPS,myops_edema_compact4_dice,nan,10,UNDERTRAINED
+CineMyoPS,class_1_myocardium_proxy_dice,0.0,5,UNDERTRAINED
+CineMyoPS,class_3_scar_sanity_dice,0.0,5,UNDERTRAINED
