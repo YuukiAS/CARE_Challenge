@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Build a read-only CARE route watchboard.
+"""Build a read-only CARE SRR route watchboard.
 
 The watchboard is intentionally observational: it reads route metadata, git,
 tmux, Slurm, and result packet files, then writes a static HTML dashboard.
@@ -30,19 +30,19 @@ ROUTE_LABELS = {
 }
 ROUTE_ARCHITECTURE_HINTS = {
     "route_A": [
-        "Fastest path to a new submission candidate.",
-        "Expected to stay narrow: route contract, implementation gap list, validation gate, then only a bounded candidate path.",
-        "Concrete implementation architecture is pending the route contract / gap inventory.",
+        "最快形成非纯 nnU-Net submission candidate 的压缩 SRR 路线。",
+        "当前应先完成 route 合同、implementation gap list 和 validation gate。",
+        "具体实现架构等待 Route A 合同和缺口清单落地后再收敛。",
     ],
     "route_B": [
-        "Complete architecture implementation path.",
-        "Expected to expose the full model/loss/dataflow gap list before formal training.",
-        "Concrete component wiring should be promoted here after the route contract is written.",
+        "完整 SRR-v3 架构实现路线。",
+        "正式训练前必须暴露 model/loss/dataflow 的完整缺口清单。",
+        "具体 component wiring 应在 Route B 合同写入后由这里展示。",
     ],
     "route_C": [
-        "Continuation of M10 evidence and Cine fidelity work.",
-        "Expected to reuse inherited M10 assets and focus on evidence continuity / Cine temporal fidelity.",
-        "Concrete runtime architecture should be derived from M10 packets once Route C publishes its inventory.",
+        "继承 M10 evidence 与 Cine fidelity 的完整证据路线。",
+        "重点是 M10 资产复用、证据连续性和 Cine temporal fidelity。",
+        "具体 runtime architecture 应在 Route C 发布继承清单后从 M10 packet 派生。",
     ],
 }
 STATUS_KEYWORDS = (
@@ -59,7 +59,51 @@ STATUS_KEYWORDS = (
     "FAIL",
     "BLOCKED",
     "NOT_REVIEWED",
+    "ROUTE_A_NEEDS_MONITOR",
+    "ROUTE_B_SCIENTIFIC_UNDERTRAINED",
+    "ROUTE_C_NEEDS_REVISION",
+    "SCIENTIFIC_UNDERTRAINED",
+    "NEEDS_REVISION",
+    "TERMINAL_NON_READY_PACKET",
 )
+INCOMPLETE_KEYWORDS = (
+    "NEEDS_MONITOR",
+    "PENDING_MONITOR",
+    "JOB_SUBMITTED",
+    "PENDING_PRIORITY",
+    "RUNNING",
+    "AWAITING_SACCT",
+)
+REVIEW_PENDING_KEYWORDS = ("AWAITING_REVIEW", "NOT_REVIEWED")
+FAILURE_KEYWORDS = ("NEEDS_EVIDENCE", "FAIL", "BLOCKED")
+REVISION_KEYWORDS = ("NEEDS_REVISION", "ROUTE_C_NEEDS_REVISION")
+UNDERTRAINED_KEYWORDS = ("SCIENTIFIC_UNDERTRAINED", "ROUTE_B_SCIENTIFIC_UNDERTRAINED")
+PASS_KEYWORDS = ("PASS", "COMPLETE")
+ACTIVE_SLURM_STATES = {
+    "CONFIGURING",
+    "COMPLETING",
+    "PENDING",
+    "REQUEUED",
+    "RESIZING",
+    "RUNNING",
+    "SUSPENDED",
+}
+SLURM_PENDING_STATES = {"PENDING", "CONFIGURING", "REQUEUED", "RESIZING"}
+SLURM_RUNNING_STATES = {"RUNNING", "COMPLETING", "SUSPENDED"}
+ROUTE_JOB_HINTS = {
+    "route_A": ("route_A", "RouteA", "route-a", "care_route_A", "Route A"),
+    "route_B": ("route_B", "RouteB", "route-b", "care_route_B", "Route B"),
+    "route_C": ("route_C", "RouteC", "route-c", "care_route_C", "Route C"),
+}
+PACKET_LABELS_ZH = {
+    "result": "结果包",
+    "controller_report": "Controller 报告",
+    "manifest": "清单",
+    "review": "独立审查",
+    "completion_check": "完成检查",
+    "review_request": "审查请求",
+}
+CARE_PARTITION_ORDER = ("htzhulab", "a100-gpu", "volta-gpu")
 FORBIDDEN_ACTIONS = (
     "scancel",
     "sbatch",
@@ -133,9 +177,170 @@ def first_heading(text: str) -> str:
 def extract_status_keywords(text: str) -> list[str]:
     found: list[str] = []
     for keyword in STATUS_KEYWORDS:
-        if keyword in text and keyword not in found:
+        pattern = rf"(?<![A-Z0-9_]){re.escape(keyword)}(?![A-Z0-9_])"
+        if re.search(pattern, text) and keyword not in found:
             found.append(keyword)
     return found
+
+
+def extract_slurm_job_ids(text: str) -> list[str]:
+    """Extract likely Slurm job IDs from lightweight packet text."""
+    ids: set[str] = set()
+    direct_patterns = [
+        r"(?i)\b(?:job(?:\s*id)?|job_id|jobid|slurm[_ -]?job|sbatch(?:\s+submitted)?)\D{0,30}(\d+(?:[_\.]\d+)?)",
+        r"\b(\d{5,}(?:_\d+)?)\|[^\n|]*(?:COMPLETED|FAILED|CANCELLED|PENDING|RUNNING|TIMEOUT)",
+    ]
+    for pattern in direct_patterns:
+        for match in re.finditer(pattern, text):
+            ids.add(match.group(1))
+    return sorted(ids, key=job_sort_key)
+
+
+def job_sort_key(job_id: str) -> tuple[int, str]:
+    match = re.match(r"(\d+)", job_id)
+    return (int(match.group(1)) if match else 0, job_id)
+
+
+def normalize_job_id(job_id: str) -> str:
+    return job_id.split(".", 1)[0]
+
+
+def compact_job(job: dict[str, str]) -> dict[str, str]:
+    keys = ("id", "partition", "name", "state", "time", "reason", "exit_code", "elapsed", "start", "end", "source")
+    return {key: job.get(key, "") for key in keys if job.get(key, "")}
+
+
+def route_name_matches(route: str, name: str) -> bool:
+    lowered = name.lower()
+    return any(hint.lower() in lowered for hint in ROUTE_JOB_HINTS[route])
+
+
+def job_matches_route(job: dict[str, str], route: dict[str, Any]) -> bool:
+    job_id = normalize_job_id(job.get("id", ""))
+    route_ids = {normalize_job_id(value) for value in route.get("slurm_job_ids", [])}
+    return bool(job_id and job_id in route_ids) or route_name_matches(route["id"], job.get("name", ""))
+
+
+def evidence_summary_zh(packet_files: dict[str, Path], latest_packet: Path | None) -> str:
+    existing = [PACKET_LABELS_ZH[name] for name, path in packet_files.items() if path.exists()]
+    if not existing:
+        return "尚未发现 route 结果包；当前只能展示 route README 和运行环境。"
+    latest = latest_packet.name if latest_packet else "未知文件"
+    return f"已发现 {len(existing)} 类轻量证据：{'、'.join(existing)}；最新证据为 {latest}。"
+
+
+def reviewability_from_state(display_state: str, blockers: list[str]) -> dict[str, Any]:
+    if blockers:
+        return {
+            "can_review_complete": False,
+            "label_zh": "不可作为完成包审查",
+            "reason_zh": "存在未完成运行态或缺失聚合证据。",
+        }
+    if display_state == "待独立审查":
+        return {
+            "can_review_complete": True,
+            "label_zh": "可进入独立审查",
+            "reason_zh": "已有审查请求且未发现 pending/monitor 阻断 token。",
+        }
+    if display_state == "审查通过":
+        return {
+            "can_review_complete": True,
+            "label_zh": "已审查通过",
+            "reason_zh": "存在 review 证据且未发现未完成阻断 token。",
+        }
+    return {
+        "can_review_complete": False,
+        "label_zh": "尚不可审查为完成",
+        "reason_zh": "route 合同、运行证据或独立审查尚未形成完成闭环。",
+    }
+
+
+def annotate_route_runtime(
+    route: dict[str, Any],
+    tmux: dict[str, bool],
+    jobs: list[dict[str, str]],
+    recent_jobs: list[dict[str, str]],
+    controller_activity: dict[str, Any] | None = None,
+) -> None:
+    matched_jobs = [job for job in jobs + recent_jobs if job_matches_route(job, route)]
+    seen: set[tuple[str, str]] = set()
+    deduped_jobs: list[dict[str, str]] = []
+    for job in matched_jobs:
+        key = (job.get("id", ""), job.get("source", ""))
+        if key in seen:
+            continue
+        seen.add(key)
+        deduped_jobs.append(job)
+
+    route_ids = {normalize_job_id(value) for value in route.get("slurm_job_ids", [])}
+    route_ids.update(normalize_job_id(job.get("id", "")) for job in deduped_jobs if job.get("id"))
+    route["slurm_job_ids"] = sorted((value for value in route_ids if value), key=job_sort_key)
+    route["recent_slurm_jobs"] = [compact_job(job) for job in deduped_jobs[:12]]
+
+    blockers: list[str] = []
+    for keyword in route["status_keywords"]:
+        if keyword in INCOMPLETE_KEYWORDS:
+            blockers.append(f"packet 包含 {keyword}，不能作为完成证据")
+
+    current_states = {job.get("state", "").split()[0] for job in deduped_jobs if job.get("source") == "squeue"}
+    recent_terminal_states = {job.get("state", "").split()[0] for job in deduped_jobs if job.get("source") == "sacct"}
+    active_states = current_states & ACTIVE_SLURM_STATES
+    monitor_keyword_present = any(keyword in route["status_keywords"] for keyword in INCOMPLETE_KEYWORDS)
+    completed_after_monitor = bool(monitor_keyword_present and "COMPLETED" in recent_terminal_states and not active_states)
+    if current_states & SLURM_PENDING_STATES:
+        blockers.append("Slurm 当前仍有排队作业")
+    if current_states & SLURM_RUNNING_STATES:
+        blockers.append("Slurm 当前仍有运行中作业")
+    if completed_after_monitor:
+        blockers.append("Slurm job 已完成，但 packet 仍是 monitor 状态；需要完成后聚合/提交")
+
+    keywords = set(route["status_keywords"])
+    if blockers:
+        if completed_after_monitor:
+            display_state = "需补证据"
+        elif "NEEDS_MONITOR" in keywords or "PENDING_MONITOR" in keywords:
+            display_state = "等待监控"
+        elif "AWAITING_SACCT" in keywords:
+            display_state = "等待 sacct"
+        elif current_states & SLURM_RUNNING_STATES or "RUNNING" in keywords:
+            display_state = "Slurm 运行中"
+        elif current_states & SLURM_PENDING_STATES or "JOB_SUBMITTED" in keywords or "PENDING_PRIORITY" in keywords:
+            display_state = "Slurm 排队中"
+        else:
+            display_state = "未完成"
+    elif keywords & set(UNDERTRAINED_KEYWORDS):
+        display_state = "训练不足"
+    elif keywords & set(REVISION_KEYWORDS):
+        display_state = "需修订"
+    elif keywords & set(FAILURE_KEYWORDS):
+        display_state = "审查未通过" if route["packet_files"].get("review") else "需补证据"
+    elif route["packet_files"].get("review") and keywords & set(PASS_KEYWORDS):
+        display_state = "审查通过"
+    elif route["packet_files"].get("review_request") or keywords & set(REVIEW_PENDING_KEYWORDS):
+        display_state = "待独立审查"
+    elif tmux.get(route["controller_tmux"]):
+        if controller_activity and controller_activity.get("state") == "completed_or_idle":
+            display_state = "Controller 已结束"
+        else:
+            display_state = "Controller 运行中"
+    elif str(route.get("current_status", "")).lower() == "setup only":
+        display_state = "仅环境搭建"
+    elif not route.get("result_root_exists"):
+        display_state = "等待合同"
+    else:
+        display_state = "等待合同"
+
+    route["display_state_zh"] = display_state
+    if display_state in {"训练不足", "需修订", "Controller 已结束"}:
+        route["reviewability"] = {
+            "can_review_complete": False,
+            "label_zh": "终态非 ready",
+            "reason_zh": "controller 已停止或 packet 给出非 ready 终态，需要 reviewer/GPT 决策或修订。",
+        }
+    else:
+        route["reviewability"] = reviewability_from_state(display_state, blockers)
+    route["completion_blockers"] = blockers
+    route["controller_activity"] = controller_activity or {}
 
 
 def latest_existing(paths: list[Path]) -> Path | None:
@@ -145,12 +350,43 @@ def latest_existing(paths: list[Path]) -> Path | None:
     return max(existing, key=lambda path: path.stat().st_mtime)
 
 
+def route_scoped_path(root: Path, worktree: Path, value: str, default: str) -> tuple[Path, str]:
+    raw = value or default
+    candidate = Path(raw)
+    if candidate.is_absolute():
+        return candidate, "absolute"
+    worktree_candidate = worktree / candidate
+    root_candidate = root / candidate
+    if worktree_candidate.exists() or worktree.exists():
+        return worktree_candidate, "worktree"
+    return root_candidate, "main"
+
+
+def controller_activity_from_pane(root: Path, session: str) -> dict[str, Any]:
+    captured = run_cmd(["tmux", "capture-pane", "-pt", f"{session}:0.0", "-S", "-80"], root, timeout=3)
+    text = captured["stdout"] if captured["ok"] else ""
+    complete_markers = (
+        "Goal achieved",
+        "Goal 已标记完成",
+        "Goal 已标记 complete",
+        "Active goal 已标记完成",
+        "已完成",
+    )
+    prompt_markers = ("› Implement", "› Explain", "gpt-5.5", "Context")
+    return {
+        "ok": captured["ok"],
+        "state": "completed_or_idle" if any(marker in text for marker in complete_markers) else "active_or_unknown",
+        "has_prompt": any(marker in text for marker in prompt_markers),
+        "tail": "\n".join(text.splitlines()[-12:]),
+    }
+
+
 def collect_route(root: Path, worktree_root: Path, route: str) -> dict[str, Any]:
     route_readme = root / "routes" / route / "README.md"
     readme_text = read_text(route_readme)
     fields = parse_markdown_field_table(readme_text)
     worktree = Path(fields.get("worktree") or worktree_root / route)
-    result_root = root / fields.get("result root", f"results/{route}")
+    result_root, result_root_source = route_scoped_path(root, worktree, fields.get("result root", ""), f"results/{route}")
 
     branch = fields.get("branch", route)
     git_sha = run_cmd(["git", "rev-parse", branch], root)
@@ -190,6 +426,9 @@ def collect_route(root: Path, worktree_root: Path, route: str) -> dict[str, Any]
     if not architecture_lines:
         architecture_lines = ROUTE_ARCHITECTURE_HINTS[route]
 
+    status_keywords = extract_status_keywords(combined_packet_text)
+    slurm_job_ids = extract_slurm_job_ids(combined_packet_text)
+
     return {
         "id": route,
         "label": ROUTE_LABELS[route],
@@ -205,6 +444,7 @@ def collect_route(root: Path, worktree_root: Path, route: str) -> dict[str, Any]
         "controller_tmux": fields.get("controller tmux", f"care_{route}_controller"),
         "reviewer_tmux": fields.get("reviewer tmux", f"care_{route}_reviewer"),
         "result_root": str(result_root),
+        "result_root_source": result_root_source,
         "result_root_exists": result_root.exists(),
         "runtime_root": fields.get("runtime root", f"results/{route}/runtime/"),
         "log_root": fields.get("log root", f"logs/{route}/"),
@@ -214,7 +454,13 @@ def collect_route(root: Path, worktree_root: Path, route: str) -> dict[str, Any]
         "packet_files": {name: path.exists() for name, path in packet_files.items()},
         "latest_packet": str(latest_packet) if latest_packet else "",
         "latest_packet_mtime": dt.datetime.fromtimestamp(latest_packet.stat().st_mtime).isoformat(timespec="seconds") if latest_packet else "",
-        "status_keywords": extract_status_keywords(combined_packet_text),
+        "status_keywords": status_keywords,
+        "display_state_zh": "待判定",
+        "reviewability": {},
+        "completion_blockers": [],
+        "slurm_job_ids": slurm_job_ids,
+        "recent_slurm_jobs": [],
+        "evidence_summary_zh": evidence_summary_zh(packet_files, latest_packet),
         "architecture_source": str(architecture_file) if architecture_file else "route default",
         "architecture_lines": architecture_lines,
     }
@@ -243,22 +489,28 @@ def parse_squeue(stdout: str) -> list[dict[str, str]]:
                 "state": parts[4],
                 "time": parts[5],
                 "reason": parts[6],
-                "is_route_job": any(route in parts[3] for route in ROUTES),
+                "is_route_job": any(route_name_matches(route, parts[3]) for route in ROUTES),
                 "is_general": parts[2] == "general",
+                "source": "squeue",
             }
         )
     return jobs
+
+
+def normalize_partition_name(name: str) -> str:
+    return name.rstrip("*")
 
 
 def parse_sinfo(stdout: str) -> list[dict[str, str]]:
     rows: list[dict[str, str]] = []
     for line in stdout.splitlines():
         parts = line.split("|")
-        if len(parts) < 6:
+        if len(parts) < 6 or parts[0] == "PARTITION":
             continue
         rows.append(
             {
                 "partition": parts[0],
+                "partition_key": normalize_partition_name(parts[0]),
                 "availability": parts[1],
                 "time_limit": parts[2],
                 "nodes": parts[3],
@@ -269,6 +521,91 @@ def parse_sinfo(stdout: str) -> list[dict[str, str]]:
     return rows
 
 
+def dedupe_slurm_jobs(jobs: list[dict[str, str]]) -> list[dict[str, str]]:
+    deduped: list[dict[str, str]] = []
+    seen: set[tuple[str, str, str, str]] = set()
+    for job in jobs:
+        key = (job.get("id", ""), job.get("partition", ""), job.get("name", ""), job.get("source", ""))
+        if key in seen:
+            continue
+        seen.add(key)
+        deduped.append(job)
+    return deduped
+
+
+def dedupe_sinfo_rows(rows: list[dict[str, str]]) -> list[dict[str, str]]:
+    deduped: list[dict[str, str]] = []
+    seen: set[tuple[str, str, str, str, str, str]] = set()
+    for row in rows:
+        key = (
+            row.get("partition_key", ""),
+            row.get("availability", ""),
+            row.get("time_limit", ""),
+            row.get("nodes", ""),
+            row.get("state", ""),
+            row.get("gres", ""),
+        )
+        if key in seen:
+            continue
+        seen.add(key)
+        deduped.append(row)
+    return deduped
+
+
+def care_partition_summary(rows: list[dict[str, str]]) -> list[dict[str, str]]:
+    by_partition: dict[str, list[dict[str, str]]] = {name: [] for name in CARE_PARTITION_ORDER}
+    for row in rows:
+        key = row.get("partition_key") or normalize_partition_name(row["partition"])
+        if key in by_partition:
+            by_partition[key].append(row)
+
+    summary: list[dict[str, str]] = []
+    for partition in CARE_PARTITION_ORDER:
+        matches = by_partition[partition]
+        if not matches:
+            summary.append(
+                {
+                    "partition": partition,
+                    "partition_key": partition,
+                    "availability": "不可见",
+                    "time_limit": "unknown",
+                    "nodes": "0",
+                    "state": "NO_SINFO_ROW",
+                    "gres": "未在当前 sinfo 输出中出现",
+                }
+            )
+            continue
+        for row in matches:
+            summary.append(row)
+    return summary
+
+
+def parse_sacct(stdout: str) -> list[dict[str, str]]:
+    jobs: list[dict[str, str]] = []
+    for line in stdout.splitlines():
+        parts = line.split("|")
+        if len(parts) < 8:
+            continue
+        job_id, name, partition, state, exit_code, elapsed, start, end = parts[:8]
+        normalized_state = state.split()[0] if state else ""
+        jobs.append(
+            {
+                "id": job_id,
+                "partition": partition,
+                "name": name,
+                "state": normalized_state,
+                "exit_code": exit_code,
+                "elapsed": elapsed,
+                "start": start,
+                "end": end,
+                "is_route_job": any(route_name_matches(route, name) for route in ROUTES),
+                "is_general": partition == "general",
+                "source": "sacct",
+            }
+        )
+    return jobs
+
+
 def collect_status(root: Path, worktree_root: Path, user: str) -> dict[str, Any]:
     routes = [collect_route(root, worktree_root, route) for route in ROUTES]
     sessions = ["care_portfolio"]
@@ -276,33 +613,75 @@ def collect_status(root: Path, worktree_root: Path, user: str) -> dict[str, Any]
         sessions.append(route["controller_tmux"])
         sessions.append(route["reviewer_tmux"])
     tmux = collect_tmux(root, sessions)
+    controller_activities = {
+        route["id"]: controller_activity_from_pane(root, route["controller_tmux"])
+        for route in routes
+        if tmux.get(route["controller_tmux"], False)
+    }
 
     squeue = run_cmd(["squeue", "-h", "-u", user, "-o", "%i|%u|%P|%j|%T|%M|%R"], root)
     sinfo = run_cmd(["sinfo", "-o", "%P|%a|%l|%D|%t|%G"], root)
+    partition_squeues = {
+        partition: run_cmd(["squeue", "-h", "-u", user, "-p", partition, "-o", "%i|%u|%P|%j|%T|%M|%R"], root)
+        for partition in CARE_PARTITION_ORDER
+    }
+    partition_sinfos = {
+        partition: run_cmd(["sinfo", "-p", partition, "-o", "%P|%a|%l|%D|%t|%G"], root)
+        for partition in CARE_PARTITION_ORDER
+    }
+    sacct_start = (dt.date.today() - dt.timedelta(days=14)).isoformat()
+    sacct = run_cmd(
+        [
+            "sacct",
+            "-n",
+            "-P",
+            "-S",
+            sacct_start,
+            "-u",
+            user,
+            "--format",
+            "JobIDRaw,JobName,Partition,State,ExitCode,Elapsed,Start,End",
+        ],
+        root,
+    )
     git_main = run_cmd(["git", "rev-parse", "main"], root)
     git_origin_main = run_cmd(["git", "rev-parse", "origin/main"], root)
     git_current = run_cmd(["git", "branch", "--show-current"], root)
 
     jobs = parse_squeue(squeue["stdout"]) if squeue["ok"] else []
-    partitions = parse_sinfo(sinfo["stdout"]) if sinfo["ok"] else []
-    partitions = [
-        row
-        for row in partitions
-        if any(name in row["partition"] for name in ("htzhulab", "a100-gpu", "volta-gpu", "general"))
-    ]
+    for result in partition_squeues.values():
+        if result["ok"]:
+            jobs.extend(parse_squeue(result["stdout"]))
+    jobs = dedupe_slurm_jobs(jobs)
+    recent_jobs = parse_sacct(sacct["stdout"]) if sacct["ok"] else []
+    sinfo_rows = parse_sinfo(sinfo["stdout"]) if sinfo["ok"] else []
+    for result in partition_sinfos.values():
+        if result["ok"]:
+            sinfo_rows.extend(parse_sinfo(result["stdout"]))
+    sinfo_rows = dedupe_sinfo_rows(sinfo_rows)
+    partitions = care_partition_summary(sinfo_rows)
 
-    route_jobs = [job for job in jobs if job["is_route_job"]]
+    for route in routes:
+        annotate_route_runtime(route, tmux, jobs, recent_jobs, controller_activities.get(route["id"]))
+
+    route_jobs = [job for job in jobs if job["is_route_job"] or any(job_matches_route(job, route) for route in routes)]
     general_jobs = [job for job in jobs if job["partition"] == "general"]
     warnings = []
     if general_jobs:
-        warnings.append("general partition jobs are visible and treated as connection/runtime jobs; watchboard is read-only.")
+        warnings.append("general partition 作业只读展示；不要从 watchboard 取消或修改它们。")
+    if not sacct["ok"]:
+        warnings.append("sacct 最近作业查询不可用；看板仍显示 squeue 当前态和已落盘证据。")
+    if not partition_sinfos["htzhulab"]["ok"]:
+        warnings.append("htzhulab 分区专项 sinfo 查询不可用；分区摘要可能缺少 lab GPU 当前态。")
     for route in routes:
         if not route["result_root_exists"]:
-            warnings.append(f"{route['label']} result root is missing.")
+            warnings.append(f"{route['label']} 尚无 result root，当前仍处于合同/环境阶段。")
         if not tmux.get(route["controller_tmux"], False):
-            warnings.append(f"{route['label']} controller tmux is missing.")
+            warnings.append(f"{route['label']} controller tmux 未启动或不可见。")
         if route["dirty_count"]:
-            warnings.append(f"{route['label']} worktree has {route['dirty_count']} dirty entries.")
+            warnings.append(f"{route['label']} worktree 有 {route['dirty_count']} 个未提交变更。")
+        for blocker in route["completion_blockers"]:
+            warnings.append(f"{route['label']} 未完成阻断：{blocker}")
 
     return {
         "generated_at": dt.datetime.now().isoformat(timespec="seconds"),
@@ -316,7 +695,9 @@ def collect_status(root: Path, worktree_root: Path, user: str) -> dict[str, Any]
         },
         "routes": routes,
         "tmux": tmux,
+        "controller_activities": controller_activities,
         "jobs": jobs,
+        "recent_jobs": recent_jobs,
         "route_jobs": route_jobs,
         "general_jobs": general_jobs,
         "partitions": partitions,
@@ -329,17 +710,35 @@ def collect_status(root: Path, worktree_root: Path, user: str) -> dict[str, Any]
         "command_health": {
             "squeue": {"ok": squeue["ok"], "stderr": squeue["stderr"]},
             "sinfo": {"ok": sinfo["ok"], "stderr": sinfo["stderr"]},
+            "squeue_partitions": {
+                partition: {"ok": result["ok"], "stderr": result["stderr"]}
+                for partition, result in partition_squeues.items()
+            },
+            "sinfo_partitions": {
+                partition: {"ok": result["ok"], "stderr": result["stderr"]}
+                for partition, result in partition_sinfos.items()
+            },
+            "sacct": {"ok": sacct["ok"], "stderr": sacct["stderr"]},
         },
     }
 
 
 def status_class(route: dict[str, Any], tmux: dict[str, bool]) -> str:
-    if "NEEDS_EVIDENCE" in route["status_keywords"] or "FAIL" in route["status_keywords"]:
+    state = route.get("display_state_zh", "")
+    if state in {"Controller 运行中", "Slurm 运行中", "Slurm 排队中"}:
+        return "active"
+    if route.get("completion_blockers") or state in {"需补证据", "等待监控", "等待 sacct", "未完成"}:
         return "risk"
-    if "AWAITING_REVIEW" in route["status_keywords"] or route["packet_files"].get("review_request"):
+    if state in {"训练不足"}:
+        return "undertrained"
+    if state in {"需修订", "审查未通过"}:
+        return "revision"
+    if state in {"Controller 已结束"}:
+        return "ended"
+    if state in {"待独立审查", "审查通过"}:
         return "review"
     if tmux.get(route["controller_tmux"]):
-        return "active"
+        return "ended"
     return "idle"
 
 
@@ -352,17 +751,24 @@ def soft_wrap_token(value: str) -> str:
     return escaped.replace("/", "/<wbr>").replace("-", "-<wbr>").replace("_", "_<wbr>")
 
 
-def render_html(data: dict[str, Any]) -> str:
+def render_html(data: dict[str, Any], refresh_seconds: int = 60) -> str:
     route_cards = []
     tmux = data["tmux"]
     for route in data["routes"]:
         cls = status_class(route, tmux)
         packet_badges = "".join(
-            render_badge(name.replace("_", " "), "badge ok" if exists else "badge muted")
+            render_badge(PACKET_LABELS_ZH.get(name, name), "badge ok" if exists else "badge muted")
             for name, exists in route["packet_files"].items()
         )
-        keyword_badges = "".join(render_badge(keyword, "badge warn") for keyword in route["status_keywords"]) or render_badge("NO_PACKET_STATUS", "badge muted")
+        keyword_badges = "".join(render_badge(keyword, "badge warn") for keyword in route["status_keywords"]) or render_badge("暂无 packet 状态", "badge muted")
+        blocker_badges = "".join(render_badge(blocker, "badge danger") for blocker in route["completion_blockers"]) or render_badge(route["reviewability"].get("label_zh", "尚不可审查为完成"), "badge muted")
         architecture_items = "".join(f"<li>{html.escape(line)}</li>" for line in route["architecture_lines"])
+        recent_job_rows = "".join(
+            f"<tr><td>{html.escape(job.get('id', ''))}</td><td>{html.escape(job.get('source', ''))}</td><td>{html.escape(job.get('partition', ''))}</td><td>{html.escape(job.get('name', ''))}</td><td>{html.escape(job.get('state', ''))}</td><td>{html.escape(job.get('exit_code', job.get('reason', '')))}</td></tr>"
+            for job in route["recent_slurm_jobs"]
+        )
+        if not recent_job_rows:
+            recent_job_rows = '<tr><td colspan="6">未发现该 route 的 Slurm job。</td></tr>'
         route_cards.append(
             f"""
             <article class="route-card {cls}">
@@ -372,24 +778,34 @@ def render_html(data: dict[str, Any]) -> str:
                   <h2>{html.escape(route['label'])}</h2>
                   <p class="purpose">{html.escape(route['purpose'])}</p>
                 </div>
-                <span class="state-pill">{html.escape(cls.upper())}</span>
+                <span class="state-pill">{html.escape(route['display_state_zh'])}</span>
               </div>
               <div class="metric-row">
-                <div><span>Next gate</span><strong>{html.escape(route['next_gate'])}</strong></div>
-                <div><span>Controller</span><strong>{'present' if tmux.get(route['controller_tmux']) else 'missing'}</strong></div>
-                <div><span>Reviewer</span><strong>{'present' if tmux.get(route['reviewer_tmux']) else 'missing'}</strong></div>
-                <div><span>Dirty</span><strong>{route['dirty_count'] if route['dirty_count'] is not None else 'n/a'}</strong></div>
+                <div><span>下一个 gate</span><strong>{html.escape(route['next_gate'])}</strong></div>
+                <div><span>Controller</span><strong>{'可见' if tmux.get(route['controller_tmux']) else '未启动/不可见'}</strong></div>
+                <div><span>Reviewer</span><strong>{'可见' if tmux.get(route['reviewer_tmux']) else '未启动/不可见'}</strong></div>
+                <div><span>Worktree 变更</span><strong>{route['dirty_count'] if route['dirty_count'] is not None else 'n/a'}</strong></div>
               </div>
               <section class="route-section">
-                <h3>Implementation Architecture</h3>
+                <h3>SRR 架构/合同状态</h3>
                 <ul class="architecture-list">{architecture_items}</ul>
-                <p class="source">source: {html.escape(route['architecture_source'])}</p>
+                <p class="source">来源：{html.escape(route['architecture_source'])}</p>
               </section>
               <section class="route-section">
-                <h3>Progress Evidence</h3>
+                <h3>证据与可审查性</h3>
+                <p class="evidence-summary">{html.escape(route['evidence_summary_zh'])}</p>
                 <div class="badge-row">{packet_badges}</div>
                 <div class="badge-row">{keyword_badges}</div>
-                <p class="path">{html.escape(route['result_root'])}</p>
+                <div class="badge-row">{blocker_badges}</div>
+                <p class="path">{html.escape(route['result_root'])} ({html.escape(route.get('result_root_source', ''))})</p>
+              </section>
+              <section class="route-section">
+                <h3>Slurm 关联作业</h3>
+                <p class="source">Job IDs: {html.escape(', '.join(route['slurm_job_ids']) or '未发现')}</p>
+                <table class="route-jobs-table">
+                  <thead><tr><th>ID</th><th>来源</th><th>Partition</th><th>Name</th><th>State</th><th>Exit/Reason</th></tr></thead>
+                  <tbody>{recent_job_rows}</tbody>
+                </table>
               </section>
             </article>
             """
@@ -403,6 +819,7 @@ def render_html(data: dict[str, Any]) -> str:
         rows = []
         for job in jobs_by_partition[partition]:
             danger = " danger" if job["is_general"] else ""
+            readonly_note = "只读展示" if job["is_general"] else ""
             rows.append(
                 f"""
                 <tr class="{danger}">
@@ -412,6 +829,7 @@ def render_html(data: dict[str, Any]) -> str:
                   <td>{html.escape(job['state'])}</td>
                   <td>{html.escape(job['time'])}</td>
                   <td>{html.escape(job['reason'])}</td>
+                  <td>{readonly_note}</td>
                 </tr>
                 """
             )
@@ -420,24 +838,24 @@ def render_html(data: dict[str, Any]) -> str:
             <section class="panel">
               <div class="panel-head">
                 <h2>{html.escape(partition)}</h2>
-                <span>{len(rows)} job(s)</span>
+                <span>{len(rows)} 个作业</span>
               </div>
               <table>
-                <thead><tr><th>ID</th><th>Partition</th><th>Name</th><th>State</th><th>Time</th><th>Node / Reason</th></tr></thead>
+                <thead><tr><th>ID</th><th>Partition</th><th>Name</th><th>State</th><th>Time</th><th>Node/Reason</th><th>备注</th></tr></thead>
                 <tbody>{''.join(rows)}</tbody>
               </table>
             </section>
             """
         )
     if not job_sections:
-        job_sections.append('<section class="panel empty">No jobs visible for this user.</section>')
+        job_sections.append('<section class="panel empty">当前用户没有可见 Slurm 作业。</section>')
 
     partition_rows = []
     for row in data["partitions"]:
         partition_rows.append(
             f"<tr><td>{html.escape(row['partition'])}</td><td>{html.escape(row['availability'])}</td><td>{html.escape(row['time_limit'])}</td><td>{html.escape(row['nodes'])}</td><td>{html.escape(row['state'])}</td><td>{html.escape(row['gres'])}</td></tr>"
         )
-    warnings = "".join(f"<li>{html.escape(item)}</li>" for item in data["warnings"]) or "<li>No current watchboard warnings.</li>"
+    warnings = "".join(f"<li>{html.escape(item)}</li>" for item in data["warnings"]) or "<li>当前没有 watchboard 警告。</li>"
 
     total_routes = len(data["routes"])
     active_routes = sum(1 for route in data["routes"] if tmux.get(route["controller_tmux"]))
@@ -445,42 +863,42 @@ def render_html(data: dict[str, Any]) -> str:
     general_jobs = len(data["general_jobs"])
 
     return f"""<!doctype html>
-<html lang="en">
+<html lang="zh-CN">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta http-equiv="refresh" content="60">
-  <title>CARE Route Watchboard</title>
+  <meta http-equiv="refresh" content="{int(refresh_seconds)}">
+  <title>SRR 三路线动态看板</title>
   <style>{CSS}</style>
 </head>
 <body>
   <header class="topbar">
     <div>
-      <p class="eyeline">CARE Benchmark Portfolio</p>
-      <h1>Route Watchboard</h1>
-      <p class="subhead">Read-only CARE route progress, architecture, Slurm, and review evidence.</p>
+      <p class="eyeline">CARE SRR Route A+B+C</p>
+      <h1>SRR 三路线动态看板</h1>
+      <p class="subhead">只读汇总 Route A/B/C 的合同状态、轻量证据、tmux、Slurm 当前态和最近作业。看板不提交、不取消、不上传、不合并，也不产生科学结论。</p>
     </div>
     <div class="top-actions">
-      <span class="readonly">READ ONLY</span>
-      <span class="timestamp">Updated {html.escape(data['generated_at'])}</span>
+      <span class="readonly">只读</span>
+      <span class="timestamp">更新于 {html.escape(data['generated_at'])}</span>
     </div>
   </header>
 
   <main>
     <section class="summary-grid">
-      <div class="summary-card"><span>Routes with controllers</span><strong>{active_routes}/{total_routes}</strong><small>tmux controller sessions</small></div>
-      <div class="summary-card"><span>Route Slurm jobs</span><strong>{route_jobs}</strong><small>name contains route_A/B/C</small></div>
-      <div class="summary-card guard"><span>General jobs</span><strong>{general_jobs}</strong><small>display only; never mutate</small></div>
-      <div class="summary-card"><span>Branch</span><strong>{soft_wrap_token(data['git']['current_branch'])}</strong><small>{html.escape(data['care_root'])}</small></div>
+      <div class="summary-card"><span>Controller 可见路线</span><strong>{active_routes}/{total_routes}</strong><small>tmux controller sessions</small></div>
+      <div class="summary-card"><span>Route Slurm 当前作业</span><strong>{route_jobs}</strong><small>按 job name 或 packet job id 关联</small></div>
+      <div class="summary-card guard"><span>General 作业</span><strong>{general_jobs}</strong><small>只读展示，禁止操作</small></div>
+      <div class="summary-card"><span>当前分支</span><strong>{soft_wrap_token(data['git']['current_branch'])}</strong><small>{html.escape(data['care_root'])}</small></div>
     </section>
 
     <section class="flow">
       <div class="flow-line"></div>
-      <div class="flow-step done"><span>1</span><strong>Route Setup</strong><small>branches, worktrees, tmux</small></div>
-      <div class="flow-step active"><span>2</span><strong>Contract / Gap List</strong><small>route architecture becomes concrete</small></div>
-      <div class="flow-step"><span>3</span><strong>Implementation Gate</strong><small>no formal training before pass</small></div>
-      <div class="flow-step"><span>4</span><strong>Runtime Evidence</strong><small>Slurm plus aggregation packet</small></div>
-      <div class="flow-step"><span>5</span><strong>Independent Review</strong><small>reviewer worktree only after packet</small></div>
+      <div class="flow-step done"><span>1</span><strong>环境搭建</strong><small>branches / worktrees / tmux</small></div>
+      <div class="flow-step active"><span>2</span><strong>合同与缺口</strong><small>route contract / gap list</small></div>
+      <div class="flow-step"><span>3</span><strong>实现验收</strong><small>implementation gate 先于训练</small></div>
+      <div class="flow-step"><span>4</span><strong>运行证据</strong><small>Slurm 完成后必须聚合</small></div>
+      <div class="flow-step"><span>5</span><strong>独立审查</strong><small>reviewer 只读审查 packet</small></div>
     </section>
 
     <section class="routes-grid">
@@ -489,21 +907,21 @@ def render_html(data: dict[str, Any]) -> str:
 
     <section class="two-col">
       <section class="panel warnings">
-        <div class="panel-head"><h2>Risks And Guardrails</h2><span>{len(data['warnings'])}</span></div>
+        <div class="panel-head"><h2>风险与护栏</h2><span>{len(data['warnings'])}</span></div>
         <ul>{warnings}</ul>
-        <p class="guardrail">Forbidden actions in this interface: {html.escape(', '.join(data['guardrails']['forbidden_actions']))}.</p>
+        <p class="guardrail">此界面禁用动作：{html.escape(', '.join(data['guardrails']['forbidden_actions']))}。</p>
       </section>
       <section class="panel">
-        <div class="panel-head"><h2>Partition Summary</h2><span>live-ish</span></div>
+        <div class="panel-head"><h2>分区摘要</h2><span>CARE GPU 分区</span></div>
         <table>
           <thead><tr><th>Partition</th><th>Avail</th><th>Limit</th><th>Nodes</th><th>State</th><th>GRES</th></tr></thead>
-          <tbody>{''.join(partition_rows) if partition_rows else '<tr><td colspan="6">No partition data available.</td></tr>'}</tbody>
+          <tbody>{''.join(partition_rows) if partition_rows else '<tr><td colspan="6">没有可用分区数据。</td></tr>'}</tbody>
         </table>
       </section>
     </section>
 
     <section class="jobs">
-      <h2>Slurm Jobs For {html.escape(data['user'])}</h2>
+      <h2>{html.escape(data['user'])} 的 Slurm 当前作业</h2>
       {''.join(job_sections)}
     </section>
   </main>
@@ -526,6 +944,9 @@ CSS = """
   --active: #e8f4fd;
   --risk: #fff4e8;
   --danger: #fff0f0;
+  --revision: #fff1f2;
+  --undertrained: #fff7d6;
+  --ended: #f1f5f9;
   --ok: #eaf8ef;
   --shadow: 0 18px 45px rgba(17, 24, 39, 0.08);
 }
@@ -692,9 +1113,13 @@ main {
   padding: 20px;
   box-shadow: var(--shadow);
 }
-.route-card.active { border-top-color: var(--accent); }
-.route-card.review { border-top-color: #8b5cf6; }
+.route-card.active { border-top-color: var(--accent); background: #fff; }
+.route-card.review { border-top-color: #8b5cf6; background: #f5f3ff; }
 .route-card.risk { border-top-color: #f97316; background: var(--risk); }
+.route-card.undertrained { border-top-color: #ca8a04; background: var(--undertrained); }
+.route-card.revision { border-top-color: #e11d48; background: var(--revision); }
+.route-card.ended { border-top-color: #64748b; background: var(--ended); }
+.route-card.idle { border-top-color: #94a3b8; background: var(--ended); }
 .route-head {
   display: flex;
   justify-content: space-between;
@@ -736,6 +1161,7 @@ main {
 .route-section {
   padding-top: 16px;
   border-top: 1px solid var(--line);
+  overflow-x: auto;
 }
 .route-section h3 {
   margin-bottom: 10px;
@@ -771,6 +1197,19 @@ main {
 .badge.muted {
   background: #eef0f3;
   color: var(--soft);
+}
+.badge.danger {
+  background: #fee2e2;
+  color: #991b1b;
+}
+.evidence-summary {
+  color: #374151;
+  line-height: 1.5;
+  font-size: 14px;
+}
+.route-jobs-table {
+  min-width: 520px;
+  font-size: 12px;
 }
 .two-col {
   display: grid;
@@ -894,21 +1333,51 @@ tr.danger td {
 """
 
 
-def write_outputs(data: dict[str, Any], output_dir: Path) -> None:
+def write_outputs(data: dict[str, Any], output_dir: Path, refresh_seconds: int = 60) -> None:
     output_dir.mkdir(parents=True, exist_ok=True)
     (output_dir / "status.json").write_text(json.dumps(data, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
-    (output_dir / "index.html").write_text(render_html(data), encoding="utf-8")
+    (output_dir / "index.html").write_text(render_html(data, refresh_seconds=refresh_seconds), encoding="utf-8")
 
 
-def serve_output(output_dir: Path, host: str, port: int) -> None:
-    class QuietHandler(SimpleHTTPRequestHandler):
+def serve_output(
+    root: Path,
+    worktree_root: Path,
+    user: str,
+    output_dir: Path,
+    host: str,
+    port: int,
+    refresh_seconds: int = 60,
+) -> None:
+    class DynamicWatchboardHandler(SimpleHTTPRequestHandler):
+        last_refresh = 0.0
+
         def __init__(self, *args: Any, **kwargs: Any) -> None:
             super().__init__(*args, directory=str(output_dir), **kwargs)
+
+        def maybe_refresh(self) -> None:
+            now = dt.datetime.now().timestamp()
+            if now - self.__class__.last_refresh < max(1, refresh_seconds):
+                return
+            try:
+                data = collect_status(root, worktree_root, user)
+                write_outputs(data, output_dir, refresh_seconds=refresh_seconds)
+                self.__class__.last_refresh = now
+            except Exception as exc:  # pragma: no cover - defensive server logging
+                sys.stderr.write(f"watchboard: dynamic refresh failed: {exc}\n")
+
+        def do_GET(self) -> None:  # noqa: N802
+            requested = self.path.split("?", 1)[0]
+            if requested in {"/", "/index.html", "/status.json"}:
+                self.maybe_refresh()
+            super().do_GET()
 
         def log_message(self, format: str, *args: Any) -> None:  # noqa: A002
             sys.stderr.write("watchboard: " + format % args + "\n")
 
-    with socketserver.TCPServer((host, port), QuietHandler) as httpd:
+    class ReusableTCPServer(socketserver.TCPServer):
+        allow_reuse_address = True
+
+    with ReusableTCPServer((host, port), DynamicWatchboardHandler) as httpd:
         print(f"http://{host}:{port}/index.html")
         httpd.serve_forever()
 
@@ -922,6 +1391,7 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--serve", action="store_true", help="serve the generated watchboard after writing it")
     parser.add_argument("--host", default="127.0.0.1")
     parser.add_argument("--port", type=int, default=8765)
+    parser.add_argument("--refresh-seconds", type=int, default=60, help="HTML meta refresh interval in seconds")
     args = parser.parse_args(argv)
 
     root = Path(args.care_root).resolve()
@@ -932,10 +1402,10 @@ def main(argv: list[str] | None = None) -> int:
         return 2
 
     data = collect_status(root, worktree_root, args.user)
-    write_outputs(data, output_dir)
+    write_outputs(data, output_dir, refresh_seconds=args.refresh_seconds)
     print(output_dir / "index.html")
     if args.serve:
-        serve_output(output_dir, args.host, args.port)
+        serve_output(root, worktree_root, args.user, output_dir, args.host, args.port, refresh_seconds=args.refresh_seconds)
     return 0
 
 

@@ -10,6 +10,34 @@ For future CARE milestones, GPT/ChatGPT must author both executor and reviewer c
 
 Temporary rule for the `/users/a/e/aereinh/CARE` development copy only: while working from this migrated copy, treat `/users/a/e/aereinh/CARE` as the active CARE root. Do not write to `/overflow/htzhu/CARE` or other `/overflow` workspace paths from this copy. Reading `/overflow` is allowed only when needed for comparison, recovery, or historical reference; any `/overflow` write requires explicit human approval.
 
+### Codex managed sandbox startup workaround
+
+This workaround applies to the main CARE worktree and to all active route worktrees:
+
+```text
+/users/a/e/aereinh/CARE
+/users/a/e/aereinh/CARE_worktrees/route_A
+/users/a/e/aereinh/CARE_worktrees/route_B
+/users/a/e/aereinh/CARE_worktrees/route_C
+```
+
+Some Codex desktop threads in this migrated `/users` copy may fail before starting any ordinary sandboxed process. The symptom is that even `pwd`, `true`, or `ls` in one of the valid CARE roots returns `Io(Os { code: 2, kind: NotFound, message: "No such file or directory" })`. Do not interpret this as a missing repository, broken SSH session, or invalid worktree.
+
+If that happens, immediately retry the environment probe with `sandbox_permissions: "require_escalated"`, using the intended worktree as `workdir`, and record the reason as: sandboxed shell cannot start even read-only processes in the declared CARE worktree. Minimum probe:
+
+```bash
+pwd
+ls
+git rev-parse --show-toplevel
+git branch --show-current
+./envs/env_CARE/bin/python --version || python --version
+rg --version
+```
+
+If the escalated probe succeeds, continue the thread using `require_escalated` for local shell commands that need process startup, including read-only inspection, tests, git index/commit operations, Slurm queries, `squeue`/`sacct`, tunnel/watchboard checks, and route-controller diagnostics. Keep all writes inside the active `/users` worktree or approved `/tmp`/runtime paths. Do not write to `/overflow` from this workaround.
+
+If `apply_patch` cannot read or edit CARE files because of the same sandbox startup/mount issue, use a tightly scoped escalated workspace-local Python edit only for the exact target file(s), and state why before editing. Never use the workaround to bypass route isolation: a Route A/B/C controller must still write only its own worktree, result namespace, runtime namespace, logs, and locks.
+
 For Codex sessions in this temporary `/users` copy, keep runtime state, cache, and temporary files under `/users`. The only shared file that may need preservation during auth migration is Codex login auth; active config, plugins, rules, skills, memories, SQLite state, logs, cache, and temp paths must not depend on `/nas` home-directory symlinks. Use:
 
 ```bash
