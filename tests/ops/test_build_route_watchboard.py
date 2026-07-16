@@ -67,6 +67,48 @@ def test_extract_status_keywords_and_slurm_job_ids():
     assert watchboard.extract_slurm_job_ids(text) == ["57617442"]
 
 
+def test_parse_current_handoff_tracks_round_and_route_critic(tmp_path):
+    root = tmp_path / "CARE"
+    planner = root / "prompts" / "routes" / "handoffs" / "portfolio_round02_planner_handoff_20260716.md"
+    critic = root / "prompts" / "routes" / "handoffs" / "route_A_round02_critic_handoff_20260716.md"
+    critic.parent.mkdir(parents=True)
+    planner.write_text("planner", encoding="utf-8")
+    critic.write_text("critic", encoding="utf-8")
+    current_text = """# Current\n\n```text\nround_id: round02\ndate: 2026-07-16\n```\n\nThe single portfolio GPT planner should read:\n\n```text\nprompts/routes/handoffs/portfolio_round02_planner_handoff_20260716.md\n```\n\nroute_A critic current prompt:\nprompts/routes/handoffs/route_A_round02_critic_handoff_20260716.md\n\nroute_B critic current prompt:\nNO_CURRENT_CRITIC_HANDOFF\n\nroute_C critic current prompt:\nNO_CURRENT_CRITIC_HANDOFF\n"""
+
+    parsed = watchboard.parse_current_handoff(current_text, root)
+
+    assert parsed["round_id"] == "round02"
+    assert parsed["date"] == "2026-07-16"
+    assert parsed["planner_prompt"]["exists"] is True
+    assert parsed["critics"]["route_A"]["active"] is True
+    assert parsed["critics"]["route_A"]["exists"] is True
+    assert parsed["critics"]["route_B"]["active"] is False
+
+
+def test_handoff_worker_annotation_prefers_published_route_critic(tmp_path):
+    root = tmp_path / "CARE"
+    critic = root / "prompts" / "routes" / "handoffs" / "route_A_round03_critic_handoff_20260716.md"
+    critic.parent.mkdir(parents=True)
+    critic.write_text("critic", encoding="utf-8")
+    handoff = {
+        "round_id": "round03",
+        "critics": {
+            "route_A": watchboard.relative_repo_path(root, "prompts/routes/handoffs/route_A_round03_critic_handoff_20260716.md"),
+            "route_B": watchboard.relative_repo_path(root, "NO_CURRENT_CRITIC_HANDOFF"),
+            "route_C": watchboard.relative_repo_path(root, "NO_CURRENT_CRITIC_HANDOFF"),
+        },
+    }
+    route = route_fixture(display_state_zh="需修订")
+
+    watchboard.annotate_handoff_workers(route, handoff)
+
+    assert route["round_id"] == "round03"
+    assert route["critic_handoff_state_zh"] == "已发布"
+    assert route["current_worker_zh"] == "GPT Critic (Route A)"
+    assert "GPT Planner" in route["next_worker_zh"]
+
+
 def test_pending_packet_blocks_completion_review():
     route = route_fixture(status_keywords=["JOB_SUBMITTED"], slurm_job_ids=["12345"])
     jobs = [
@@ -301,6 +343,15 @@ def test_collect_status_degrades_when_slurm_commands_fail(monkeypatch):
 
     assert status["command_health"]["sacct"]["ok"] is False
     assert any("sacct 最近作业查询不可用" in warning for warning in status["warnings"])
+
+
+def test_route_a_review_needs_revision_token_sets_revision_state():
+    route = route_fixture(status_keywords=["ROUTE_A_REVIEW_NEEDS_REVISION"], packet_files={**route_fixture()["packet_files"], "review": True})
+
+    watchboard.annotate_route_runtime(route, {"care_route_A_controller": False}, [], [])
+
+    assert route["display_state_zh"] == "需修订"
+    assert watchboard.status_class(route, {}) == "revision"
 
 
 def test_status_class_colors_non_ready_states():
