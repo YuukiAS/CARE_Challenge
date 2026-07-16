@@ -124,20 +124,20 @@ TMUX_SESSION_PLAN = (
     {
         "session": "care_route_B",
         "label_zh": "Route B 常驻工作台",
-        "purpose_zh": "Route B controller",
+        "purpose_zh": "controller、continue、executor、reviewer 分窗隔离",
         "route": "route_B",
         "controller_window": "RouteB-Controller",
-        "reviewer_window": "",
-        "expected_windows": ("RouteB-Controller",),
+        "reviewer_window": "RouteB-Reviewer",
+        "expected_windows": ("RouteB-Controller", "RouteB-Continue", "RouteB-Exec", "RouteB-Reviewer"),
     },
     {
         "session": "care_route_C",
         "label_zh": "Route C 常驻工作台",
-        "purpose_zh": "Route C controller",
+        "purpose_zh": "controller、continue、executor、reviewer 分窗隔离",
         "route": "route_C",
         "controller_window": "RouteC-Controller",
-        "reviewer_window": "",
-        "expected_windows": ("RouteC-Controller",),
+        "reviewer_window": "RouteC-Reviewer",
+        "expected_windows": ("RouteC-Controller", "RouteC-Continue", "RouteC-Exec", "RouteC-Reviewer"),
     },
 )
 ROUTE_TMUX_PLAN = {spec["route"]: spec for spec in TMUX_SESSION_PLAN if spec.get("route")}

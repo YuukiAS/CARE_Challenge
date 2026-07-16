@@ -391,6 +391,11 @@ def test_tmux_topology_tracks_expected_route_windows(monkeypatch):
     assert route_a["window_status"]["RouteA-Reviewer"] is False
     assert route_a["panes"][0]["command"] == "node"
 
+    route_b = next(item for item in topology if item["session"] == "care_route_B")
+    route_c = next(item for item in topology if item["session"] == "care_route_C")
+    assert set(route_b["window_status"]) == {"RouteB-Controller", "RouteB-Continue", "RouteB-Exec", "RouteB-Reviewer"}
+    assert set(route_c["window_status"]) == {"RouteC-Controller", "RouteC-Continue", "RouteC-Exec", "RouteC-Reviewer"}
+
 
 def test_collect_status_degrades_when_slurm_commands_fail(monkeypatch):
     def fake_collect_route(root, worktree_root, route):
