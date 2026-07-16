@@ -318,20 +318,20 @@ def collect_handoff_status(root: Path) -> dict[str, Any]:
             "date": "",
             "planner_prompt": {"path": "", "exists": False, "active": False, "absolute_path": ""},
             "critics": {route: relative_repo_path(root, "NO_CURRENT_CRITIC_HANDOFF") for route in ROUTES},
-            "current_worker_zh": "等待 GPT 发布 CURRENT.md",
-            "next_worker_zh": "GPT Planner",
+            "current_worker_zh": "等待发布当前轮次入口",
+            "next_worker_zh": "规划者补齐 CURRENT.md",
         }
     parsed = parse_current_handoff(text, root)
     active_critics = [ROUTE_LABELS[route] for route, entry in parsed["critics"].items() if entry.get("active")]
     if active_critics:
-        current_worker = "GPT Critic: " + "、".join(active_critics)
-        next_worker = "GPT Planner 汇总 critic 结论并指派下一步"
+        current_worker = "、".join(f"{label} Critic 正在判断" for label in active_critics)
+        next_worker = "规划者汇总 Critic 结论后决定下一步"
     elif parsed["planner_prompt"].get("active"):
-        current_worker = "GPT Planner"
-        next_worker = "按 planner 决策发布 route critic 或交给 Codex route session"
+        current_worker = "规划者正在处理"
+        next_worker = "按规划者结论交给 Critic、Controller 或 Reviewer"
     else:
-        current_worker = "等待 GPT 发布 planner handoff"
-        next_worker = "GPT Planner"
+        current_worker = "等待发布规划者入口"
+        next_worker = "规划者补齐当前轮次提示词"
     return {
         "current_path": str(current_path),
         "current_exists": True,
@@ -341,31 +341,59 @@ def collect_handoff_status(root: Path) -> dict[str, Any]:
     }
 
 
+def result_label_zh(route: dict[str, Any]) -> str:
+    state = route.get("display_state_zh") or "待判定"
+    if route.get("completion_blockers"):
+        return "未完成"
+    return state
+
+
 def annotate_handoff_workers(route: dict[str, Any], handoff: dict[str, Any]) -> None:
     critic = handoff.get("critics", {}).get(route["id"], relative_repo_path(Path("/"), "NO_CURRENT_CRITIC_HANDOFF"))
     route["round_id"] = handoff.get("round_id", "unknown")
     route["critic_handoff"] = critic
-    route["critic_handoff_state_zh"] = "已发布" if critic.get("active") else "未发布"
+    if critic.get("active") and critic.get("exists"):
+        critic_state = "已发布"
+    elif critic.get("active"):
+        critic_state = "文件缺失"
+    else:
+        critic_state = "未发布"
+    route["critic_handoff_state_zh"] = critic_state
 
     display_state = route.get("display_state_zh", "")
-    if critic.get("active"):
-        route["current_worker_zh"] = f"GPT Critic ({route['label']})"
-        route["next_worker_zh"] = "GPT Planner 汇总 critic 结论；必要时交给 Codex controller 修订"
-    elif display_state in {"Controller 运行中", "Slurm 运行中", "Slurm 排队中", "等待监控", "等待 sacct"}:
-        route["current_worker_zh"] = "Codex Controller / Slurm monitor"
-        route["next_worker_zh"] = "Codex Reviewer 在 committed packet 后只读审查"
-    elif display_state == "待独立审查":
-        route["current_worker_zh"] = "Codex Reviewer"
-        route["next_worker_zh"] = "GPT Planner 读取 review 后做 portfolio 决策"
-    elif display_state in {"需修订", "审查未通过", "训练不足", "Controller 已结束"}:
-        route["current_worker_zh"] = "GPT Planner"
-        route["next_worker_zh"] = f"发布 {route['label']} critic handoff 或交回 Codex controller"
-    elif display_state == "审查通过":
-        route["current_worker_zh"] = "GPT Planner"
-        route["next_worker_zh"] = "portfolio reconciliation / route-level decision"
+    result_state = result_label_zh(route)
+    has_result_packet = bool(route.get("packet_files", {}).get("result") or route.get("packet_files", {}).get("controller_report"))
+    has_review = bool(route.get("packet_files", {}).get("review"))
+
+    if display_state in {"Slurm 运行中", "Slurm 排队中", "等待监控", "等待 sacct", "未完成"}:
+        route["current_worker_zh"] = "Controller 正在执行"
+        route["work_summary_zh"] = f"Controller 尚未形成可审查结果，当前状态：{result_state}。"
+        route["next_action_zh"] = "等待 Slurm 完成并提交完成后聚合证据。"
+    elif not has_result_packet:
+        route["current_worker_zh"] = "等待任务启动"
+        route["work_summary_zh"] = "尚未形成结果包。"
+        route["next_action_zh"] = "等待规划者或 Controller 发布任务。"
+    elif not has_review:
+        route["current_worker_zh"] = "需要 Reviewer"
+        route["work_summary_zh"] = f"Controller 已执行完毕，结果：{result_state}。"
+        route["next_action_zh"] = f"需要 {route['label']} Reviewer 只读审查结果包。"
+    elif critic.get("active"):
+        route["current_worker_zh"] = f"{route['label']} Critic 正在判断"
+        route["work_summary_zh"] = f"Reviewer 已完成，结论：{result_state}。"
+        if critic.get("exists"):
+            route["next_action_zh"] = "规划者汇总 Critic 结论后决定是否交回 Controller。"
+        else:
+            route["next_action_zh"] = "Critic 提示词文件缺失，需先修正 CURRENT.md 指向。"
+    elif has_review:
+        route["current_worker_zh"] = "等待规划者"
+        route["work_summary_zh"] = f"Reviewer 已完成，结论：{result_state}。"
+        route["next_action_zh"] = "等待规划者汇总审查结论并决定下一步。"
     else:
-        route["current_worker_zh"] = "GPT Planner"
-        route["next_worker_zh"] = "发布 route contract、critic handoff 或 controller 任务"
+        route["current_worker_zh"] = "等待规划者"
+        route["work_summary_zh"] = f"当前结果：{result_state}。"
+        route["next_action_zh"] = "等待规划者决定下一步。"
+
+    route["next_worker_zh"] = route["next_action_zh"]
 
 
 def reviewability_from_state(display_state: str, blockers: list[str]) -> dict[str, Any]:
@@ -905,10 +933,10 @@ def collect_status(root: Path, worktree_root: Path, user: str) -> dict[str, Any]
         warnings.append("CURRENT.md 不存在或不可读；GPT round/worker 状态无法自动判定。")
     planner_entry = handoff.get("planner_prompt", {})
     if planner_entry.get("active") and not planner_entry.get("exists"):
-        warnings.append(f"Planner handoff 指向的文件不存在：{planner_entry.get('path', '')}。")
+        warnings.append(f"规划者提示词指向的文件不存在：{planner_entry.get('path', '')}。")
     for route_id, critic_entry in handoff.get("critics", {}).items():
         if critic_entry.get("active") and not critic_entry.get("exists"):
-            warnings.append(f"{ROUTE_LABELS.get(route_id, route_id)} critic handoff 指向的文件不存在：{critic_entry.get('path', '')}。")
+            warnings.append(f"{ROUTE_LABELS.get(route_id, route_id)} Critic 提示词指向的文件不存在：{critic_entry.get('path', '')}。")
     for route in routes:
         if not route["result_root_exists"]:
             warnings.append(f"{route['label']} 尚无 result root，当前仍处于合同/环境阶段。")
@@ -1068,15 +1096,19 @@ def render_html(data: dict[str, Any], refresh_seconds: int = 60) -> str:
                 </div>
                 <span class="state-pill">{html.escape(route['display_state_zh'])}</span>
               </div>
-              <div class="metric-row">
-                <div><span>当前 round</span><strong>{html.escape(route.get('round_id', 'unknown'))}</strong></div>
-                <div><span>当前 worker</span><strong>{html.escape(route.get('current_worker_zh', '未判定'))}</strong></div>
-                <div><span>下一轮 worker</span><strong>{html.escape(route.get('next_worker_zh', '未判定'))}</strong></div>
-                <div><span>Critic handoff</span><strong>{html.escape(route.get('critic_handoff_state_zh', '未知'))}: {soft_wrap_token(route.get('critic_handoff', {}).get('path', ''))}</strong></div>
-                <div><span>下一个 gate</span><strong>{html.escape(route['next_gate'])}</strong></div>
-                <div><span>tmux session</span><strong>{html.escape(route['tmux_session'])}: {tmux_presence_label(tmux.get(route['tmux_session'], False))}</strong></div>
+              <div class="round-strip">
+                <span>{html.escape(route.get('round_id', 'unknown')).replace('round', '第 ')} 轮</span>
+                <strong>当前：{html.escape(route.get('current_worker_zh', '未判定'))}</strong>
+              </div>
+              <div class="status-sentence">
+                <p>{html.escape(route.get('work_summary_zh', '当前状态尚未判定。'))}</p>
+                <p>{html.escape(route.get('next_action_zh', '等待下一步指派。'))}</p>
+              </div>
+              <div class="metric-row compact-metrics">
+                <div><span>下一个关口</span><strong>{html.escape(route['next_gate'])}</strong></div>
+                <div><span>tmux</span><strong>{html.escape(route['tmux_session'])}: {tmux_presence_label(tmux.get(route['tmux_session'], False))}</strong></div>
                 <div><span>Controller 窗口</span><strong>{html.escape(route['controller_tmux_window'] or '未配置')}: {tmux_presence_label(route.get('tmux_window_status', {}).get(route['controller_tmux_window'], False)) if route['controller_tmux_window'] else '未配置'}</strong></div>
-                <div><span>Worktree 变更</span><strong>{route['dirty_count'] if route['dirty_count'] is not None else 'n/a'}</strong></div>
+                <div><span>工作树变更</span><strong>{route['dirty_count'] if route['dirty_count'] is not None else 'n/a'}</strong></div>
               </div>
               <div class="route-section compact-section">
                 <h3>tmux 窗口</h3>
@@ -1097,9 +1129,9 @@ def render_html(data: dict[str, Any], refresh_seconds: int = 60) -> str:
               </section>
               <section class="route-section">
                 <h3>Slurm 关联作业</h3>
-                <p class="source">Job IDs: {html.escape(', '.join(route['slurm_job_ids']) or '未发现')}</p>
+                <p class="source">作业 ID：{html.escape(', '.join(route['slurm_job_ids']) or '未发现')}</p>
                 <table class="route-jobs-table">
-                  <thead><tr><th>ID</th><th>来源</th><th>Partition</th><th>Name</th><th>State</th><th>Exit/Reason</th></tr></thead>
+                  <thead><tr><th>ID</th><th>来源</th><th>分区</th><th>名称</th><th>状态</th><th>退出码/原因</th></tr></thead>
                   <tbody>{recent_job_rows}</tbody>
                 </table>
               </section>
@@ -1137,7 +1169,7 @@ def render_html(data: dict[str, Any], refresh_seconds: int = 60) -> str:
                 <span>{len(rows)} 个作业</span>
               </div>
               <table>
-                <thead><tr><th>ID</th><th>Partition</th><th>Name</th><th>State</th><th>Time</th><th>Node/Reason</th><th>备注</th></tr></thead>
+                <thead><tr><th>ID</th><th>分区</th><th>名称</th><th>状态</th><th>时间</th><th>节点/原因</th><th>备注</th></tr></thead>
                 <tbody>{''.join(rows)}</tbody>
               </table>
             </section>
@@ -1160,28 +1192,6 @@ def render_html(data: dict[str, Any], refresh_seconds: int = 60) -> str:
     general_jobs = len(data["general_jobs"])
     tmux_topology_html = render_tmux_topology(data)
     handoff = data.get("handoff", {})
-    planner_prompt = handoff.get("planner_prompt", {})
-    active_critic_count = sum(1 for entry in handoff.get("critics", {}).values() if entry.get("active"))
-    critic_rows = "".join(
-        f"<tr><td>{html.escape(ROUTE_LABELS.get(route, route))}</td><td>{html.escape('已发布' if entry.get('active') else '未发布')}</td><td>{soft_wrap_token(entry.get('path', ''))}</td><td>{html.escape('存在' if entry.get('exists') else '缺失/无')}</td></tr>"
-        for route, entry in handoff.get("critics", {}).items()
-    ) or '<tr><td colspan="4">没有 critic handoff 数据。</td></tr>'
-    handoff_panel_html = f"""
-    <section class="panel round-panel">
-      <div class="panel-head"><h2>当前 round 与 GPT handoff</h2><span>{html.escape(handoff.get('round_id', 'unknown'))}</span></div>
-      <div class="round-grid">
-        <div><span>当前 worker</span><strong>{html.escape(handoff.get('current_worker_zh', '未判定'))}</strong></div>
-        <div><span>下一轮 worker</span><strong>{html.escape(handoff.get('next_worker_zh', '未判定'))}</strong></div>
-        <div><span>Planner prompt</span><strong>{soft_wrap_token(planner_prompt.get('path', ''))}</strong><small>{html.escape('存在' if planner_prompt.get('exists') else '缺失')}</small></div>
-        <div><span>Active critic prompts</span><strong>{active_critic_count}</strong><small>{html.escape(handoff.get('date', ''))}</small></div>
-      </div>
-      <table class="handoff-table">
-        <thead><tr><th>Route</th><th>Critic handoff</th><th>Prompt path</th><th>文件状态</th></tr></thead>
-        <tbody>{critic_rows}</tbody>
-      </table>
-      <p class="source">稳定入口：{html.escape(handoff.get('current_path', ''))}</p>
-    </section>
-    """
 
     return f"""<!doctype html>
 <html lang="zh-CN">
@@ -1207,23 +1217,19 @@ def render_html(data: dict[str, Any], refresh_seconds: int = 60) -> str:
 
   <main>
     <section class="summary-grid">
-      <div class="summary-card"><span>当前 round</span><strong>{html.escape(handoff.get('round_id', 'unknown'))}</strong><small>由 CURRENT.md 自动读取</small></div>
-      <div class="summary-card"><span>当前 GPT worker</span><strong>{html.escape(handoff.get('current_worker_zh', '未判定'))}</strong><small>planner/critic prompt 驱动</small></div>
-      <div class="summary-card"><span>Route tmux 可见</span><strong>{active_routes}/{total_routes}</strong><small>care_route_A/B/C sessions</small></div>
-      <div class="summary-card"><span>Route Slurm 当前作业</span><strong>{route_jobs}</strong><small>按 job name 或 packet job id 关联</small></div>
-      <div class="summary-card guard"><span>General 作业</span><strong>{general_jobs}</strong><small>只读展示，禁止操作</small></div>
-      <div class="summary-card"><span>常驻 tmux</span><strong>{present_tmux_sessions}/4</strong><small>care_watchboard + 3 route sessions</small></div>
+      <div class="summary-card"><span>当前轮次</span><strong>{html.escape(handoff.get('round_id', 'unknown'))}</strong><small>由 CURRENT.md 自动读取</small></div>
+      <div class="summary-card"><span>路线工作台</span><strong>{active_routes}/{total_routes}</strong><small>Route A/B/C tmux 可见</small></div>
+      <div class="summary-card"><span>路线 Slurm 作业</span><strong>{route_jobs}</strong><small>按 job 名称或证据包关联</small></div>
+      <div class="summary-card"><span>常驻 tmux</span><strong>{present_tmux_sessions}/4</strong><small>watchboard + 3 条路线</small></div>
     </section>
-
-    {handoff_panel_html}
 
     <section class="flow">
       <div class="flow-line"></div>
-      <div class="flow-step done"><span>1</span><strong>环境搭建</strong><small>branches / worktrees / tmux</small></div>
-      <div class="flow-step active"><span>2</span><strong>合同与缺口</strong><small>route contract / gap list</small></div>
-      <div class="flow-step"><span>3</span><strong>实现验收</strong><small>implementation gate 先于训练</small></div>
+      <div class="flow-step done"><span>1</span><strong>环境搭建</strong><small>分支 / 工作树 / tmux</small></div>
+      <div class="flow-step active"><span>2</span><strong>合同与缺口</strong><small>路线合同 / 缺口清单</small></div>
+      <div class="flow-step"><span>3</span><strong>实现验收</strong><small>实现关口先于训练</small></div>
       <div class="flow-step"><span>4</span><strong>运行证据</strong><small>Slurm 完成后必须聚合</small></div>
-      <div class="flow-step"><span>5</span><strong>独立审查</strong><small>reviewer 只读审查 packet</small></div>
+      <div class="flow-step"><span>5</span><strong>独立审查</strong><small>Reviewer 只读审查结果包</small></div>
     </section>
 
     <section class="routes-grid">
@@ -1241,7 +1247,7 @@ def render_html(data: dict[str, Any], refresh_seconds: int = 60) -> str:
       <section class="panel">
         <div class="panel-head"><h2>分区摘要</h2><span>CARE GPU 分区</span></div>
         <table>
-          <thead><tr><th>Partition</th><th>Avail</th><th>Limit</th><th>Nodes</th><th>State</th><th>GRES</th></tr></thead>
+          <thead><tr><th>分区</th><th>可用</th><th>时限</th><th>节点</th><th>状态</th><th>GRES</th></tr></thead>
           <tbody>{''.join(partition_rows) if partition_rows else '<tr><td colspan="6">没有可用分区数据。</td></tr>'}</tbody>
         </table>
       </section>
@@ -1381,41 +1387,42 @@ main {
 .summary-card.guard {
   background: var(--danger);
 }
-.round-panel {
-  margin: 16px 0 24px;
-}
-.round-grid {
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+.round-strip {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   gap: 12px;
-  margin-bottom: 14px;
-}
-.round-grid div {
-  min-width: 0;
+  margin: 16px 0 10px;
   padding: 12px;
-  background: var(--panel);
+  background: var(--active);
+  border: 1px solid #cfe7fb;
   border-radius: 8px;
 }
-.round-grid span {
-  display: block;
-  color: var(--muted);
+.round-strip span {
+  color: var(--accent-dark);
   font-size: 12px;
-  font-weight: 700;
+  font-weight: 800;
 }
-.round-grid strong {
-  display: block;
-  margin-top: 7px;
+.round-strip strong {
+  color: #0f3554;
   font-size: 15px;
-  line-height: 1.25;
+  line-height: 1.3;
   overflow-wrap: anywhere;
 }
-.round-grid small {
-  display: block;
-  margin-top: 4px;
-  color: var(--soft);
+.status-sentence {
+  display: grid;
+  gap: 8px;
+  margin: 0 0 16px;
+  padding: 12px;
+  background: #fbfcfd;
+  border: 1px solid var(--line);
+  border-radius: 8px;
 }
-.handoff-table {
-  min-width: 820px;
+.status-sentence p {
+  margin: 0;
+  color: #374151;
+  font-size: 14px;
+  line-height: 1.45;
 }
 .flow {
   position: relative;
@@ -1681,7 +1688,7 @@ tr.tmux-present td {
   color: var(--muted);
 }
 @media (max-width: 1100px) {
-  .summary-grid, .routes-grid, .two-col, .round-grid {
+  .summary-grid, .routes-grid, .two-col {
     grid-template-columns: 1fr;
   }
   .flow {

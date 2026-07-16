@@ -28,8 +28,20 @@ def route_fixture(**overrides):
         "recent_slurm_jobs": [],
         "controller_tmux": "care_route_A_controller",
         "reviewer_tmux": "care_route_A_reviewer",
+        "tmux_session": "care_route_A",
+        "controller_tmux_window": "RouteA-Controller",
+        "tmux_window_status": {"RouteA-Controller": False},
         "dirty_count": 0,
         "current_status": "setup only",
+        "next_gate": "unknown",
+        "purpose": "test route",
+        "architecture_lines": ["test architecture"],
+        "architecture_source": "test",
+        "evidence_summary_zh": "测试证据。",
+        "result_root": "results/route_A",
+        "result_root_source": "test",
+        "reviewability": {"label_zh": "尚不可审查为完成", "can_review_complete": False},
+        "completion_blockers": [],
         "result_root_exists": False,
     }
     route.update(overrides)
@@ -86,27 +98,87 @@ def test_parse_current_handoff_tracks_round_and_route_critic(tmp_path):
     assert parsed["critics"]["route_B"]["active"] is False
 
 
+def handoff_fixture(root, **critic_overrides):
+    critics = {
+        "route_A": watchboard.relative_repo_path(root, "NO_CURRENT_CRITIC_HANDOFF"),
+        "route_B": watchboard.relative_repo_path(root, "NO_CURRENT_CRITIC_HANDOFF"),
+        "route_C": watchboard.relative_repo_path(root, "NO_CURRENT_CRITIC_HANDOFF"),
+    }
+    critics.update(critic_overrides)
+    return {"round_id": "round03", "critics": critics}
+
+
+def test_controller_packet_without_review_needs_reviewer(tmp_path):
+    root = tmp_path / "CARE"
+    route = route_fixture(
+        display_state_zh="训练不足",
+        packet_files={**route_fixture()["packet_files"], "result": True, "controller_report": True, "review": False},
+    )
+
+    watchboard.annotate_handoff_workers(route, handoff_fixture(root))
+
+    assert route["round_id"] == "round03"
+    assert route["current_worker_zh"] == "需要 Reviewer"
+    assert route["work_summary_zh"] == "Controller 已执行完毕，结果：训练不足。"
+    assert route["next_action_zh"] == "需要 Route A Reviewer 只读审查结果包。"
+
+
 def test_handoff_worker_annotation_prefers_published_route_critic(tmp_path):
     root = tmp_path / "CARE"
     critic = root / "prompts" / "routes" / "handoffs" / "route_A_round03_critic_handoff_20260716.md"
     critic.parent.mkdir(parents=True)
     critic.write_text("critic", encoding="utf-8")
-    handoff = {
-        "round_id": "round03",
-        "critics": {
-            "route_A": watchboard.relative_repo_path(root, "prompts/routes/handoffs/route_A_round03_critic_handoff_20260716.md"),
-            "route_B": watchboard.relative_repo_path(root, "NO_CURRENT_CRITIC_HANDOFF"),
-            "route_C": watchboard.relative_repo_path(root, "NO_CURRENT_CRITIC_HANDOFF"),
-        },
-    }
-    route = route_fixture(display_state_zh="需修订")
+    route = route_fixture(
+        display_state_zh="需修订",
+        packet_files={**route_fixture()["packet_files"], "result": True, "controller_report": True, "review": True},
+    )
 
-    watchboard.annotate_handoff_workers(route, handoff)
+    watchboard.annotate_handoff_workers(
+        route,
+        handoff_fixture(root, route_A=watchboard.relative_repo_path(root, "prompts/routes/handoffs/route_A_round03_critic_handoff_20260716.md")),
+    )
 
     assert route["round_id"] == "round03"
     assert route["critic_handoff_state_zh"] == "已发布"
-    assert route["current_worker_zh"] == "GPT Critic (Route A)"
-    assert "GPT Planner" in route["next_worker_zh"]
+    assert route["current_worker_zh"] == "Route A Critic 正在判断"
+    assert route["work_summary_zh"] == "Reviewer 已完成，结论：需修订。"
+    assert route["next_action_zh"] == "规划者汇总 Critic 结论后决定是否交回 Controller。"
+
+
+def test_missing_critic_prompt_is_warning_state_without_main_table(tmp_path):
+    root = tmp_path / "CARE"
+    route = route_fixture(
+        display_state_zh="需修订",
+        packet_files={**route_fixture()["packet_files"], "result": True, "controller_report": True, "review": True},
+    )
+    handoff = handoff_fixture(
+        root,
+        route_A=watchboard.relative_repo_path(root, "prompts/routes/handoffs/missing_route_A_critic.md"),
+    )
+
+    watchboard.annotate_handoff_workers(route, handoff)
+    html = watchboard.render_html(
+        {
+            "generated_at": "2026-07-16T12:00:00",
+            "tmux": {"care_route_A_controller": False, "care_route_A": False},
+            "routes": [route],
+            "jobs": [],
+            "route_jobs": [],
+            "general_jobs": [],
+            "partitions": [],
+            "warnings": [],
+            "guardrails": {"forbidden_actions": []},
+            "tmux_topology": [],
+            "handoff": handoff,
+            "user": "aereinh",
+        }
+    )
+
+    assert route["critic_handoff_state_zh"] == "文件缺失"
+    assert route["next_action_zh"] == "Critic 提示词文件缺失，需先修正 CURRENT.md 指向。"
+    assert "当前 round 与 GPT handoff" not in html
+    assert "Prompt path" not in html
+    assert "missing_route_A_critic.md" not in html
 
 
 def test_pending_packet_blocks_completion_review():
