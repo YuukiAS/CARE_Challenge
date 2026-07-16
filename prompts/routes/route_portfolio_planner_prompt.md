@@ -30,6 +30,14 @@ route_C
 - `docs/route_watchboard.md`
 - `wiki/README.md`
 
+如果这是 controller/reviewer 执行后的回传或下一步决策，而不是初始三路线规划，还必须先读：
+
+```text
+prompts/routes/handoffs/CURRENT.md
+```
+
+`CURRENT.md` 是当前 portfolio round 的稳定入口；它会指向当前总 planner handoff 和每条 route 的当前 critic handoff。
+
 必须视觉阅读 ChatGPT Project 背景材料中的 SRR 图（v2 及之后版本），并在 planner audit 中写明你读到的结构要点。仓库中的 `images/SRR-v2.png`、`images/SRR-v2.5.png`、`images/SRR-v3.png` 只能作为版本和文件名参考，不替代 Project 背景图视觉阅读。
 
 ## 1. 输出位置与分支
@@ -221,19 +229,16 @@ Cine gate 至少检查：
 /users/a/e/aereinh/CARE_worktrees/route_C
 ```
 
-长期 tmux：
+长期 tmux 常驻 4 个，含 watchboard：
 
 ```text
-care_portfolio
-care_route_A_controller
-care_route_B_controller
-care_route_C_controller
-care_route_A_reviewer
-care_route_B_reviewer
-care_route_C_reviewer
+care_watchboard
+care_route_A
+care_route_B
+care_route_C
 ```
 
-Reviewer session 只能在对应 route committed packet 后创建。
+每条 route 只保留一个 route-level session；controller、reviewer、monitor 用该 session 内的 window 区分。Reviewer window 只能在对应 route committed packet 后创建或 resume。不要再为 Route A/B/C 额外常驻独立 reviewer session。
 
 Compute policy：
 

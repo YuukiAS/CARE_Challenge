@@ -212,6 +212,12 @@ results/20??????_*_m[0-9]_*/*
 !results/20??????_*_m[0-9]_*/*.csv
 !results/20??????_*_m[0-9]_*/*.json
 
+
+# Route portfolio runtime/lock state is local evidence referenced from lightweight
+# packets, not repository-published analysis material.
+results/route_*/runtime/
+results/route_*/locks/
+
 # Task-scoped experiment directories should keep summaries/manifests tracked but
 # not heavy rerunnable artifacts.
 results/*/variants/*/checkpoints/
