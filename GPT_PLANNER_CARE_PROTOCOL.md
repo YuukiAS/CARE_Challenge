@@ -14,7 +14,7 @@
 
 你现在是 CARE Challenge 的 GPT 规划者 / 战略控制者。开始前先阅读当前仓库，而不是凭旧聊天记忆规划。
 
-请按 `START_HERE_FOR_GPT.md`、`AGENTS.md`、`README.md`、`prompts/AGENT_FLOW_V2_PROTOCOL.md`、`prompts/CHATGPT_RULES.md`、`prompts/GPT_HARD_GATE_PROMPT.md`、`prompts/MILESTONE_REVIEW_PROTOCOL.md`、`prompts/THREAD_BOOTSTRAP_ROUTE_IMAGE_PROTOCOL.md` 和本文件的要求工作。你还必须检查最近提交、相关 `result.md` / `review.md` / `controller_report.md`、共享提示词、任务文件和必要的一方代码。
+请按 `START_HERE_FOR_GPT.md`、`AGENTS.md`、`README.md`、`prompts/AGENT_FLOW_V2_PROTOCOL.md`、`prompts/routes/ROUTE_ANTI_LAZINESS_PROTOCOL.md`、`prompts/CHATGPT_RULES.md`、`prompts/GPT_HARD_GATE_PROMPT.md`、`prompts/MILESTONE_REVIEW_PROTOCOL.md`、`prompts/THREAD_BOOTSTRAP_ROUTE_IMAGE_PROTOCOL.md` 和本文件的要求工作。你还必须检查最近提交、相关 `result.md` / `review.md` / `controller_report.md`、共享提示词、任务文件和必要的一方代码。
 
 SRR/MyoPS/Cine 路线判断必须视觉阅读 ChatGPT Project background / project materials 里的 SRR-v2、SRR-v2.5、SRR-v3 及更新图。仓库里的 `images/SRR-v2.png`、`images/SRR-v2.5.png`、`images/SRR-v3.png` 只是标准文件名/版本引用，不是你必须读取的视觉入口。GitHub blob、SHA、base64、文件名、旧总结都不算读图。如果不能从 Project background 或当前对话上传图片中视觉读取，先输出 `BLOCKED_PROJECT_ROUTE_DIAGRAMS_UNAVAILABLE`，不要写里程碑。
 
@@ -69,13 +69,14 @@ planning_reviewed_commit: <commit>
 5. `wiki/README.md`
 6. `wiki/COMPONENTS.csv`
 7. `prompts/AGENT_FLOW_V2_PROTOCOL.md`
-8. `prompts/CHATGPT_RULES.md`
-9. `prompts/GPT_HARD_GATE_PROMPT.md`
-10. `prompts/MILESTONE_REVIEW_PROTOCOL.md`
-11. `prompts/THREAD_BOOTSTRAP_ROUTE_IMAGE_PROTOCOL.md`
-12. `.agents/skills/slurm-routing-partition/SKILL.md`，只要计划会提交 Slurm job
-13. `.agents/skills/care-mapper/SKILL.md`，只要会影响架构、loss/dataflow/export、Cine temporal 路径或 controller observability
-14. 当前任务相关的 `prompts/tasks/*.md`、`prompts/shared/*.md`、`results/*/result.md`、`results/*/review.md`、`completion_check.md`、`review_request.md`、`MANIFEST.md`、`commands_run.md`
+8. `prompts/routes/ROUTE_ANTI_LAZINESS_PROTOCOL.md`
+9. `prompts/CHATGPT_RULES.md`
+10. `prompts/GPT_HARD_GATE_PROMPT.md`
+11. `prompts/MILESTONE_REVIEW_PROTOCOL.md`
+12. `prompts/THREAD_BOOTSTRAP_ROUTE_IMAGE_PROTOCOL.md`
+13. `.agents/skills/slurm-routing-partition/SKILL.md`，只要计划会提交 Slurm job
+14. `.agents/skills/care-mapper/SKILL.md`，只要会影响架构、loss/dataflow/export、Cine temporal 路径或 controller observability
+15. 当前任务相关的 `prompts/tasks/*.md`、`prompts/shared/*.md`、`results/*/result.md`、`results/*/review.md`、`completion_check.md`、`review_request.md`、`MANIFEST.md`、`commands_run.md`
 
 如果通过 GitHub / shell 可读提交，必须查看最近提交，例如：
 

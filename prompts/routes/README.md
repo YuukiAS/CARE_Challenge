@@ -10,7 +10,7 @@
 prompts/routes/gpt_project_instructions_route_portfolio.md
 ```
 
-如果 ChatGPT Project UI 中的实际项目提示词和该文件不同，以 UI 当前设置为准；但后续 round 的 planner/critic handoff 入口必须固定到第 4 项的 `CURRENT.md`。
+如果 ChatGPT Project UI 中的实际项目提示词和该文件不同，以 UI 当前设置为准；但后续 round 的 planner/critic handoff 入口必须固定到第 5 项的 `CURRENT.md`。
 
 2. 让 GPT 规划 Route A、Route B、Route C 时使用：
 
@@ -18,13 +18,19 @@ prompts/routes/gpt_project_instructions_route_portfolio.md
 prompts/routes/route_portfolio_planner_prompt.md
 ```
 
-3. 从 Notion 或 GPT 项目里复制角色提示词时使用：
+3. 所有三路线角色都必须先读反偷懒协议：
+
+```text
+prompts/routes/ROUTE_ANTI_LAZINESS_PROTOCOL.md
+```
+
+4. 从 Notion 或 GPT 项目里复制角色提示词时使用：
 
 ```text
 prompts/routes/notion_route_prompt_copy_blocks.md
 ```
 
-4. controller/reviewer 执行后，给总 GPT Planner 或单路线 Critic 的当前轮次入口固定为：
+5. controller/reviewer 执行后，给总 GPT Planner 或单路线 Critic 的当前轮次入口固定为：
 
 ```text
 prompts/routes/handoffs/CURRENT.md
@@ -36,7 +42,7 @@ prompts/routes/handoffs/CURRENT.md
 prompts/routes/handoffs/README.md
 ```
 
-5. GPT Planner 输出不要默认写 `prompts/shared/`。三条路线的规划文件默认写入：
+6. GPT Planner 输出不要默认写 `prompts/shared/`。三条路线的规划文件默认写入：
 
 ```text
 prompts/routes/route_A.md
@@ -81,12 +87,12 @@ Reviewer 代码块第一行：
 
 ## 当前流程
 
-1. 初始三路线规划时，GPT Planner 先读仓库、Project 背景 SRR 图和 `prompts/routes/route_portfolio_planner_prompt.md`。
+1. 初始三路线规划时，GPT Planner 先读仓库、Project 背景 SRR 图、`prompts/routes/ROUTE_ANTI_LAZINESS_PROTOCOL.md` 和 `prompts/routes/route_portfolio_planner_prompt.md`。
 2. 执行后回传或下一步决策时，GPT Planner 和 Critic 都先读 `prompts/routes/handoffs/CURRENT.md`，不要猜最新文件名。
 3. GPT Planner 是一个 thread，统一负责 Route A、Route B、Route C 的 portfolio round。
 4. Critic 是三个独立 thread；每个 Critic 只读取 `CURRENT.md` 中自己 route 的当前 critic prompt。如果该 route 是 `NO_CURRENT_CRITIC_HANDOFF`，Critic 停止。
 5. GPT Planner 分别向 `route_A`、`route_B`、`route_C` 推送规划合同、executor plan、critic request 和 planner audit。
 6. 每条 route 各有一个独立 Critic。Critic 通过后，该 route 的 Controller 才能启动。
 7. Controller 在对应 route worktree 中执行；不能跨 route 写文件。
-8. Reviewer 只在对应 route controller packet 提交后启动，且只读审阅。
+8. Reviewer 只在对应 route controller packet 提交后启动，且只读审阅；审阅前必须检查 `ROUTE_ANTI_LAZINESS_PROTOCOL.md` 中的 Slurm、短 smoke、validator、receipt 自洽规则。
 9. 最终选择和合并由后续 portfolio reconciliation 完成，不由任一单独 route controller 决定。

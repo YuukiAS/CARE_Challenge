@@ -19,6 +19,7 @@ route_C
 - `START_HERE_FOR_GPT.md`
 - `GPT_PLANNER_CARE_PROTOCOL.md`
 - `prompts/AGENT_FLOW_V2_PROTOCOL.md`
+- `prompts/routes/ROUTE_ANTI_LAZINESS_PROTOCOL.md`
 - `prompts/HANDOFF_GATE_POLICY.md`
 - `prompts/GPT_HARD_GATE_PROMPT.md`
 - `prompts/MILESTONE_REVIEW_PROTOCOL.md`（如存在）
@@ -85,7 +86,7 @@ prompts/routes/portfolio_reconciliation_plan.md
 
 目标不是再提交一版普通 nnU-Net。仓库已有 nnU-Net validation 结果，重新包装 nnU-Net 没有意义。三条 route 的共同目标是尽快产出至少一条非纯 nnU-Net、有充分本地证据、有真实代码实现、有可审查 packet 的 MyoPS + Cine 候选。
 
-同时必须防止过去 M10 / follow-up / follow-up2 中反复出现的偷懒：
+同时必须读取并执行 `prompts/routes/ROUTE_ANTI_LAZINESS_PROTOCOL.md`，防止过去 M10 / follow-up / follow-up2 以及本轮 Route A/B 暴露出的偷懒：
 
 - 用 `NEEDS_EVIDENCE` 表格冒充 intervention。
 - 不带 `--evaluate --force` 却声称 checkpoint fresh replay。
@@ -97,6 +98,9 @@ prompts/routes/portfolio_reconciliation_plan.md
 - temporal 没有真实消费 registered anatomy/features/motion/uncertainty。
 - validator 只检查文件存在，不检查语义真实性。
 - controller 只相信 completion token，不复核 evidence。
+- 用 allowed non-ready token 提前结束本应继续执行的 Slurm/monitor/aggregation 阶段。
+- 用 12-step / one-batch / local smoke 冒充合同要求的 first bounded train/eval。
+- terminal packet 留下互相矛盾的旧 receipt、mapper report 或 controller context。
 
 ## 3. 三条 Route 的边界
 

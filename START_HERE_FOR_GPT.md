@@ -12,9 +12,12 @@ This is the root entrypoint for any new GPT/ChatGPT planning thread reading this
 6. `prompts/GPT_HARD_GATE_PROMPT.md`
 7. `prompts/MILESTONE_REVIEW_PROTOCOL.md`
 8. `prompts/AGENT_FLOW_V2_PROTOCOL.md`
-9. `prompts/THREAD_BOOTSTRAP_ROUTE_IMAGE_PROTOCOL.md`
+9. `prompts/routes/ROUTE_ANTI_LAZINESS_PROTOCOL.md`
+10. `prompts/THREAD_BOOTSTRAP_ROUTE_IMAGE_PROTOCOL.md`
 
 Do not rely only on old chat summaries, memory, or natural-language recaps when planning SRR/MyoPS/Cine routes.
+
+For Route A/B/C work, every planner, critic, controller, and reviewer must apply `prompts/routes/ROUTE_ANTI_LAZINESS_PROTOCOL.md` before accepting a non-ready token, short smoke run, monitor packet, or validator pass as a stopping point.
 
 ## Future Milestone Prompt Authoring
 

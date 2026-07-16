@@ -2,7 +2,7 @@
 
 ## GPT / ChatGPT route bootstrap
 
-New GPT/ChatGPT planning threads must read `START_HERE_FOR_GPT.md`, `GPT_PLANNER_CARE_PROTOCOL.md`, and `prompts/AGENT_FLOW_V2_PROTOCOL.md` before writing CARE milestones, Codex goals, handoffs, or route judgments. For any SRR/MyoPS/Cine route planning, they must execute `prompts/THREAD_BOOTSTRAP_ROUTE_IMAGE_PROTOCOL.md`, visually read the SRR diagrams at `v2` and later from ChatGPT Project background files / project materials, and block without generating a milestone if those project-background diagrams cannot be accessed or interpreted. Repository paths such as `images/SRR-v2.png`, `images/SRR-v2.5.png`, and `images/SRR-v3.png` remain canonical filenames and version references, not the required GPT visual-reading entrypoint.
+New GPT/ChatGPT planning threads must read `START_HERE_FOR_GPT.md`, `GPT_PLANNER_CARE_PROTOCOL.md`, `prompts/AGENT_FLOW_V2_PROTOCOL.md`, and `prompts/routes/ROUTE_ANTI_LAZINESS_PROTOCOL.md` before writing CARE milestones, Codex goals, handoffs, or route judgments. For any SRR/MyoPS/Cine route planning, they must execute `prompts/THREAD_BOOTSTRAP_ROUTE_IMAGE_PROTOCOL.md`, visually read the SRR diagrams at `v2` and later from ChatGPT Project background files / project materials, and block without generating a milestone if those project-background diagrams cannot be accessed or interpreted. Repository paths such as `images/SRR-v2.png`, `images/SRR-v2.5.png`, and `images/SRR-v3.png` remain canonical filenames and version references, not the required GPT visual-reading entrypoint.
 
 For future CARE milestones, GPT/ChatGPT must author both executor and reviewer content before asking Codex to implement the milestone. To avoid oversized direct edits to `prompts/shared/EXECUTOR_PROMPTS.md` and `prompts/shared/REVIEWER_PROMPTS.md`, GPT must place the new milestone prompt as a standalone Markdown staging file under `prompts/shared/` named `M<id>_<short_slug>.md`, for example `M<id>_mechanism_repair.md`. That staging file must clearly separate executor and reviewer sections. A later Codex maintenance step will split/merge those sections into the canonical shared prompt files and delete the standalone staging file after merge.
 
@@ -72,6 +72,8 @@ Controller reports are generated before independent review. Before reviewer exec
 Executor parallelism gate: any `executor_count > 1`, `executor_slots > 1`, or `parallel_execution_allowed: true` task must provide `executor_plan_path` and pass `scripts/ops/validate_executor_plan.py`. MyoPS and Cine remain sequential unless GPT provides explicit isolation proof.
 
 Root architecture/current-state knowledge lives at `wiki/README.md`; GPT, controller, mapper, and reviewer threads must consult it before architecture-affecting planning or review. If wiki fingerprint/evidence is stale, mark it stale and use current code/live evidence as source of truth.
+
+For Route A/B/C work, planner, critic, controller, finalizer, validator, and reviewer threads must also read `prompts/routes/ROUTE_ANTI_LAZINESS_PROTOCOL.md`. Non-ready tokens such as `SCIENTIFIC_UNDERTRAINED`, `NEEDS_EVIDENCE`, and `NEEDS_MONITOR` must not be used to stop early when the route contract still requires Slurm execution, monitoring, post-completion aggregation, or packet consistency repair.
 
 ## MONITOR_PACKET_IS_NOT_COMPLETION
 
