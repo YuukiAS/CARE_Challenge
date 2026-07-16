@@ -53,6 +53,27 @@ AWAITING_SACCT
 
 如果作业已经结束但没有后续聚合证据，看板应显示“需补证据”或“不可作为完成包审查”。Controller 报告只能作为运行态或待审查证据，不能替代独立 reviewer，也不能给出最终科学结论。
 
+## tmux 拓扑
+
+看板按当前常驻 tmux 约定展示运行拓扑：
+
+```text
+care_watchboard
+  bash
+  watchboard-tunnel / cloudflared
+care_route_A
+  RouteA-Controller
+  RouteA-Continue
+  RouteA-Exec
+  RouteA-Reviewer
+care_route_B
+  RouteB-Controller
+care_route_C
+  RouteC-Controller
+```
+
+Route 卡片中的 controller 状态来自对应 route session 的 controller 窗口，例如 `care_route_A:RouteA-Controller.0`。旧 route README 里的 `controller tmux` / `reviewer tmux` 字段只作为 legacy 信息保留，不再覆盖当前 `care_route_A/B/C` session 布局。看板会显示 session 是否可见、预期窗口是否存在、实际窗口命令和 pane 命令；缺失窗口只作为风险提示，不触发任何 tmux 操作。
+
 ## Slurm 数据
 
 看板只读调用：

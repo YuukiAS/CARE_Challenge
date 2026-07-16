@@ -104,6 +104,42 @@ PACKET_LABELS_ZH = {
     "review_request": "审查请求",
 }
 CARE_PARTITION_ORDER = ("htzhulab", "a100-gpu", "volta-gpu")
+TMUX_SESSION_PLAN = (
+    {
+        "session": "care_watchboard",
+        "label_zh": "Watchboard 服务",
+        "purpose_zh": "本地 shell、动态看板服务与 cloudflared tunnel",
+        "expected_windows": ("bash", "watchboard-tunnel"),
+    },
+    {
+        "session": "care_route_A",
+        "label_zh": "Route A 常驻工作台",
+        "purpose_zh": "controller、continue、executor、reviewer 分窗隔离",
+        "route": "route_A",
+        "controller_window": "RouteA-Controller",
+        "reviewer_window": "RouteA-Reviewer",
+        "expected_windows": ("RouteA-Controller", "RouteA-Continue", "RouteA-Exec", "RouteA-Reviewer"),
+    },
+    {
+        "session": "care_route_B",
+        "label_zh": "Route B 常驻工作台",
+        "purpose_zh": "Route B controller",
+        "route": "route_B",
+        "controller_window": "RouteB-Controller",
+        "reviewer_window": "",
+        "expected_windows": ("RouteB-Controller",),
+    },
+    {
+        "session": "care_route_C",
+        "label_zh": "Route C 常驻工作台",
+        "purpose_zh": "Route C controller",
+        "route": "route_C",
+        "controller_window": "RouteC-Controller",
+        "reviewer_window": "",
+        "expected_windows": ("RouteC-Controller",),
+    },
+)
+ROUTE_TMUX_PLAN = {spec["route"]: spec for spec in TMUX_SESSION_PLAN if spec.get("route")}
 FORBIDDEN_ACTIONS = (
     "scancel",
     "sbatch",
@@ -362,8 +398,9 @@ def route_scoped_path(root: Path, worktree: Path, value: str, default: str) -> t
     return root_candidate, "main"
 
 
-def controller_activity_from_pane(root: Path, session: str) -> dict[str, Any]:
-    captured = run_cmd(["tmux", "capture-pane", "-pt", f"{session}:0.0", "-S", "-80"], root, timeout=3)
+def controller_activity_from_pane(root: Path, target: str) -> dict[str, Any]:
+    pane_target = target if ":" in target else f"{target}:0.0"
+    captured = run_cmd(["tmux", "capture-pane", "-pt", pane_target, "-S", "-80"], root, timeout=3)
     text = captured["stdout"] if captured["ok"] else ""
     complete_markers = (
         "Goal achieved",
@@ -429,6 +466,13 @@ def collect_route(root: Path, worktree_root: Path, route: str) -> dict[str, Any]
     status_keywords = extract_status_keywords(combined_packet_text)
     slurm_job_ids = extract_slurm_job_ids(combined_packet_text)
 
+    tmux_plan = ROUTE_TMUX_PLAN[route]
+    tmux_session = fields.get("tmux session", tmux_plan["session"])
+    controller_window = fields.get("controller window", tmux_plan.get("controller_window", ""))
+    reviewer_window = fields.get("reviewer window", tmux_plan.get("reviewer_window", ""))
+    legacy_controller_tmux = fields.get("controller tmux", "")
+    legacy_reviewer_tmux = fields.get("reviewer tmux", "")
+
     return {
         "id": route,
         "label": ROUTE_LABELS[route],
@@ -441,8 +485,17 @@ def collect_route(root: Path, worktree_root: Path, route: str) -> dict[str, Any]
         "worktree_exists": worktree.exists(),
         "worktree_branch": worktree_branch["stdout"] if worktree_branch["ok"] else "",
         "dirty_count": len([line for line in worktree_dirty["stdout"].splitlines() if line.strip()]) if worktree_dirty["ok"] else None,
-        "controller_tmux": fields.get("controller tmux", f"care_{route}_controller"),
-        "reviewer_tmux": fields.get("reviewer tmux", f"care_{route}_reviewer"),
+        "tmux_session": tmux_session,
+        "expected_tmux_windows": list(tmux_plan["expected_windows"]),
+        "controller_tmux_window": controller_window,
+        "reviewer_tmux_window": reviewer_window,
+        "controller_tmux": tmux_session,
+        "reviewer_tmux": tmux_session if reviewer_window else "",
+        "legacy_controller_tmux": legacy_controller_tmux,
+        "legacy_reviewer_tmux": legacy_reviewer_tmux,
+        "controller_tmux_target": f"{tmux_session}:{controller_window}.0" if controller_window else tmux_session,
+        "reviewer_tmux_target": f"{tmux_session}:{reviewer_window}.0" if reviewer_window else "",
+        "tmux_window_status": {},
         "result_root": str(result_root),
         "result_root_source": result_root_source,
         "result_root_exists": result_root.exists(),
@@ -469,9 +522,75 @@ def collect_route(root: Path, worktree_root: Path, route: str) -> dict[str, Any]
 def collect_tmux(root: Path, sessions: list[str]) -> dict[str, bool]:
     status: dict[str, bool] = {}
     for session in sessions:
+        if not session:
+            continue
         check = run_cmd(["tmux", "has-session", "-t", session], root, timeout=3)
         status[session] = check["ok"]
     return status
+
+
+def parse_tmux_windows(stdout: str) -> list[dict[str, str]]:
+    windows: list[dict[str, str]] = []
+    for line in stdout.splitlines():
+        parts = line.split("|", 2)
+        if len(parts) < 3:
+            continue
+        windows.append({"index": parts[0], "name": parts[1], "command": parts[2]})
+    return windows
+
+
+def parse_tmux_panes(stdout: str, session: str) -> list[dict[str, str]]:
+    panes: list[dict[str, str]] = []
+    for line in stdout.splitlines():
+        parts = line.split("|", 4)
+        if len(parts) < 5 or parts[0] != session:
+            continue
+        panes.append(
+            {
+                "window": parts[1],
+                "pane": parts[2],
+                "title": parts[3],
+                "command": parts[4],
+            }
+        )
+    return panes
+
+
+def collect_tmux_topology(root: Path, tmux: dict[str, bool]) -> list[dict[str, Any]]:
+    topology: list[dict[str, Any]] = []
+    all_panes = run_cmd(
+        ["tmux", "list-panes", "-a", "-F", "#{session_name}|#{window_name}|#{pane_index}|#{pane_title}|#{pane_current_command}"],
+        root,
+        timeout=3,
+    )
+    for spec in TMUX_SESSION_PLAN:
+        session = spec["session"]
+        present = tmux.get(session, False)
+        windows_result = run_cmd(["tmux", "list-windows", "-t", session, "-F", "#{window_index}|#{window_name}|#{pane_current_command}"], root, timeout=3) if present else {"ok": False, "stdout": ""}
+        windows = parse_tmux_windows(windows_result["stdout"]) if windows_result["ok"] else []
+        live_names = {window["name"] for window in windows}
+        expected = list(spec["expected_windows"])
+        topology.append(
+            {
+                "session": session,
+                "label_zh": spec["label_zh"],
+                "purpose_zh": spec["purpose_zh"],
+                "route": spec.get("route", ""),
+                "present": present,
+                "expected_windows": expected,
+                "window_status": {name: name in live_names for name in expected},
+                "live_windows": windows,
+                "panes": parse_tmux_panes(all_panes["stdout"], session) if all_panes["ok"] and present else [],
+            }
+        )
+    return topology
+
+
+def annotate_route_tmux(route: dict[str, Any], topology_by_session: dict[str, dict[str, Any]]) -> None:
+    session_info = topology_by_session.get(route.get("tmux_session", ""), {})
+    route["tmux_window_status"] = session_info.get("window_status", {})
+    route["tmux_live_windows"] = session_info.get("live_windows", [])
+    route["tmux_panes"] = session_info.get("panes", [])
 
 
 def parse_squeue(stdout: str) -> list[dict[str, str]]:
@@ -608,15 +727,19 @@ def parse_sacct(stdout: str) -> list[dict[str, str]]:
 
 def collect_status(root: Path, worktree_root: Path, user: str) -> dict[str, Any]:
     routes = [collect_route(root, worktree_root, route) for route in ROUTES]
-    sessions = ["care_portfolio"]
+    sessions = [spec["session"] for spec in TMUX_SESSION_PLAN]
     for route in routes:
         sessions.append(route["controller_tmux"])
         sessions.append(route["reviewer_tmux"])
-    tmux = collect_tmux(root, sessions)
+    tmux = collect_tmux(root, sorted({session for session in sessions if session}))
+    tmux_topology = collect_tmux_topology(root, tmux)
+    topology_by_session = {item["session"]: item for item in tmux_topology}
+    for route in routes:
+        annotate_route_tmux(route, topology_by_session)
     controller_activities = {
-        route["id"]: controller_activity_from_pane(root, route["controller_tmux"])
+        route["id"]: controller_activity_from_pane(root, route["controller_tmux_target"])
         for route in routes
-        if tmux.get(route["controller_tmux"], False)
+        if tmux.get(route["controller_tmux"], False) and route.get("controller_tmux_target")
     }
 
     squeue = run_cmd(["squeue", "-h", "-u", user, "-o", "%i|%u|%P|%j|%T|%M|%R"], root)
@@ -677,7 +800,10 @@ def collect_status(root: Path, worktree_root: Path, user: str) -> dict[str, Any]
         if not route["result_root_exists"]:
             warnings.append(f"{route['label']} 尚无 result root，当前仍处于合同/环境阶段。")
         if not tmux.get(route["controller_tmux"], False):
-            warnings.append(f"{route['label']} controller tmux 未启动或不可见。")
+            warnings.append(f"{route['label']} tmux session {route['controller_tmux']} 未启动或不可见。")
+        missing_windows = [name for name, present in route.get("tmux_window_status", {}).items() if not present]
+        if missing_windows:
+            warnings.append(f"{route['label']} tmux 缺少窗口：{', '.join(missing_windows)}。")
         if route["dirty_count"]:
             warnings.append(f"{route['label']} worktree 有 {route['dirty_count']} 个未提交变更。")
         for blocker in route["completion_blockers"]:
@@ -695,6 +821,7 @@ def collect_status(root: Path, worktree_root: Path, user: str) -> dict[str, Any]
         },
         "routes": routes,
         "tmux": tmux,
+        "tmux_topology": tmux_topology,
         "controller_activities": controller_activities,
         "jobs": jobs,
         "recent_jobs": recent_jobs,
@@ -751,6 +878,53 @@ def soft_wrap_token(value: str) -> str:
     return escaped.replace("/", "/<wbr>").replace("-", "-<wbr>").replace("_", "_<wbr>")
 
 
+def window_badges(window_status: dict[str, bool]) -> str:
+    if not window_status:
+        return render_badge("未配置窗口", "badge muted")
+    return "".join(
+        render_badge(name, "badge ok" if present else "badge danger")
+        for name, present in window_status.items()
+    )
+
+
+def tmux_presence_label(present: bool) -> str:
+    return "可见" if present else "未启动/不可见"
+
+
+def render_tmux_topology(data: dict[str, Any]) -> str:
+    rows = []
+    for item in data.get("tmux_topology", []):
+        live = item.get("live_windows", [])
+        live_text = ", ".join(f"{window.get('name', '')}/{window.get('command', '')}" for window in live) or "无"
+        pane_text = ", ".join(
+            f"{pane.get('window', '')}:{pane.get('pane', '')}/{pane.get('command', '')}"
+            for pane in item.get("panes", [])
+        ) or "无"
+        row_class = "tmux-present" if item.get("present") else "tmux-missing"
+        rows.append(
+            f"""
+            <tr class="{row_class}">
+              <td><strong>{html.escape(item.get('session', ''))}</strong><br><span>{html.escape(item.get('label_zh', ''))}</span></td>
+              <td>{html.escape(item.get('purpose_zh', ''))}</td>
+              <td><div class="badge-row compact">{window_badges(item.get('window_status', {}))}</div></td>
+              <td>{html.escape(tmux_presence_label(item.get('present', False)))}</td>
+              <td>{html.escape(live_text)}</td>
+              <td>{html.escape(pane_text)}</td>
+            </tr>
+            """
+        )
+    body = "".join(rows) if rows else '<tr><td colspan="6">没有 tmux 拓扑数据。</td></tr>'
+    return f"""
+    <section class="panel tmux-topology">
+      <div class="panel-head"><h2>tmux 常驻拓扑</h2><span>4 个常驻 session</span></div>
+      <table>
+        <thead><tr><th>Session</th><th>用途</th><th>预期窗口</th><th>状态</th><th>实际窗口/命令</th><th>Pane/命令</th></tr></thead>
+        <tbody>{body}</tbody>
+      </table>
+    </section>
+    """
+
+
 def render_html(data: dict[str, Any], refresh_seconds: int = 60) -> str:
     route_cards = []
     tmux = data["tmux"]
@@ -782,9 +956,13 @@ def render_html(data: dict[str, Any], refresh_seconds: int = 60) -> str:
               </div>
               <div class="metric-row">
                 <div><span>下一个 gate</span><strong>{html.escape(route['next_gate'])}</strong></div>
-                <div><span>Controller</span><strong>{'可见' if tmux.get(route['controller_tmux']) else '未启动/不可见'}</strong></div>
-                <div><span>Reviewer</span><strong>{'可见' if tmux.get(route['reviewer_tmux']) else '未启动/不可见'}</strong></div>
+                <div><span>tmux session</span><strong>{html.escape(route['tmux_session'])}: {tmux_presence_label(tmux.get(route['tmux_session'], False))}</strong></div>
+                <div><span>Controller 窗口</span><strong>{html.escape(route['controller_tmux_window'] or '未配置')}: {tmux_presence_label(route.get('tmux_window_status', {}).get(route['controller_tmux_window'], False)) if route['controller_tmux_window'] else '未配置'}</strong></div>
                 <div><span>Worktree 变更</span><strong>{route['dirty_count'] if route['dirty_count'] is not None else 'n/a'}</strong></div>
+              </div>
+              <div class="route-section compact-section">
+                <h3>tmux 窗口</h3>
+                <div class="badge-row compact">{window_badges(route.get('tmux_window_status', {}))}</div>
               </div>
               <section class="route-section">
                 <h3>SRR 架构/合同状态</h3>
@@ -858,9 +1036,11 @@ def render_html(data: dict[str, Any], refresh_seconds: int = 60) -> str:
     warnings = "".join(f"<li>{html.escape(item)}</li>" for item in data["warnings"]) or "<li>当前没有 watchboard 警告。</li>"
 
     total_routes = len(data["routes"])
-    active_routes = sum(1 for route in data["routes"] if tmux.get(route["controller_tmux"]))
+    active_routes = sum(1 for route in data["routes"] if tmux.get(route["tmux_session"]))
+    present_tmux_sessions = sum(1 for item in data.get("tmux_topology", []) if item.get("present"))
     route_jobs = len(data["route_jobs"])
     general_jobs = len(data["general_jobs"])
+    tmux_topology_html = render_tmux_topology(data)
 
     return f"""<!doctype html>
 <html lang="zh-CN">
@@ -886,10 +1066,10 @@ def render_html(data: dict[str, Any], refresh_seconds: int = 60) -> str:
 
   <main>
     <section class="summary-grid">
-      <div class="summary-card"><span>Controller 可见路线</span><strong>{active_routes}/{total_routes}</strong><small>tmux controller sessions</small></div>
+      <div class="summary-card"><span>Route tmux 可见</span><strong>{active_routes}/{total_routes}</strong><small>care_route_A/B/C sessions</small></div>
       <div class="summary-card"><span>Route Slurm 当前作业</span><strong>{route_jobs}</strong><small>按 job name 或 packet job id 关联</small></div>
       <div class="summary-card guard"><span>General 作业</span><strong>{general_jobs}</strong><small>只读展示，禁止操作</small></div>
-      <div class="summary-card"><span>当前分支</span><strong>{soft_wrap_token(data['git']['current_branch'])}</strong><small>{html.escape(data['care_root'])}</small></div>
+      <div class="summary-card"><span>常驻 tmux</span><strong>{present_tmux_sessions}/4</strong><small>care_watchboard + 3 route sessions</small></div>
     </section>
 
     <section class="flow">
@@ -904,6 +1084,8 @@ def render_html(data: dict[str, Any], refresh_seconds: int = 60) -> str:
     <section class="routes-grid">
       {''.join(route_cards)}
     </section>
+
+    {tmux_topology_html}
 
     <section class="two-col">
       <section class="panel warnings">
@@ -1163,6 +1345,9 @@ main {
   border-top: 1px solid var(--line);
   overflow-x: auto;
 }
+.compact-section {
+  padding-top: 12px;
+}
 .route-section h3 {
   margin-bottom: 10px;
   font-size: 15px;
@@ -1185,6 +1370,15 @@ main {
   flex-wrap: wrap;
   gap: 7px;
   margin-bottom: 9px;
+}
+.badge-row.compact {
+  gap: 6px;
+  margin-bottom: 0;
+}
+.badge-row.compact .badge {
+  min-height: 24px;
+  padding: 4px 8px;
+  font-size: 11px;
 }
 .badge.ok {
   background: var(--ok);
@@ -1275,6 +1469,25 @@ td {
 }
 tr.danger td {
   background: var(--danger);
+}
+.tmux-topology {
+  margin: 24px 0;
+}
+.tmux-topology table {
+  min-width: 980px;
+}
+.tmux-topology td {
+  vertical-align: top;
+}
+.tmux-topology td span {
+  color: var(--muted);
+  font-size: 12px;
+}
+tr.tmux-missing td {
+  background: var(--danger);
+}
+tr.tmux-present td {
+  background: #fbfcfd;
 }
 .jobs {
   margin-top: 16px;
