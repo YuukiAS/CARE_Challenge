@@ -6,7 +6,7 @@ status: CURRENT_CRITIC_HANDOFF_READY
 planner_main_base_commit: 3f0e78706653da2eeeb3453ed992628a7c0eee70
 planner_plan_path: prompts/routes/portfolio_round02_planner_plan_20260717.md
 route_branch: route_C
-route_planner_commit: a68b7413775e00b96634219ee9453ba47e73d4e0
+route_planner_commit: fbf02a5883b0f08c0f2d9268a68dc486ae956d8e
 contract_path: prompts/routes/route_C.md
 contract_blob_sha: cc91ceba82dc6056d75ea904107ac8ba22e93186
 executor_plan_path: prompts/routes/route_C_executor_plan.yaml
@@ -26,7 +26,7 @@ final_scientific_decision_authorized: false
 
 # route_C Round02 Critic Handoff
 
-This is a planning-only, route-specific Critic assignment. Read the current remote `main` policies and this handoff, then read the contract and executor plan from `route_C` at exactly `a68b7413775e00b96634219ee9453ba47e73d4e0`. Re-fetch both files and require the blob SHAs in the frontmatter. A changed branch head, contract blob, or plan blob makes this handoff stale; stop with `ROUTE_C_ROUND02_PLANNING_NEEDS_REVISION` rather than reviewing another revision under this token.
+This is a planning-only, route-specific Critic assignment. Read the current remote `main` policies and this handoff, then read the contract and executor plan from `route_C` at exactly `fbf02a5883b0f08c0f2d9268a68dc486ae956d8e`. Re-fetch both files and require the blob SHAs in the frontmatter. A changed branch head, contract blob, or plan blob makes this handoff stale; stop with `ROUTE_C_ROUND02_PLANNING_NEEDS_REVISION` rather than reviewing another revision under this token.
 
 The prior runtime review decision was `ROUTE_C_REVIEW_NEEDS_REVISION_CONFIRMED`. The Planner's new controller-forward hypothesis is: complete M10/follow-up/follow-up2 inheritance: fingerprint recovery, fresh all-checkpoint replay, faithful graph interventions, real CineMA adapter/random control, diffeomorphic registration plus SyN, and registration-gated cumulative temporal runtime.
 
