@@ -102,6 +102,11 @@ prompts/routes/portfolio_reconciliation_plan.md
 - 用 allowed non-ready token 提前结束本应继续执行的 Slurm/monitor/aggregation 阶段。
 - 用 12-step / one-batch / local smoke 冒充合同要求的 first bounded train/eval。
 - terminal packet 留下互相矛盾的旧 receipt、mapper report 或 controller context。
+- 把关键设计留给 Codex/controller 自行决定，例如模型结构、训练预算、输入输出路径、Slurm 策略、validator 语义、known-bad、终止条件或 reviewer 通过标准。
+
+Planner 必须把每条 route 的执行细节写到 controller 可以直接照做的程度。`TBD`、`optional`、`as appropriate`、`if needed`、`choose best`、`Codex decide`、`controller decide`、`implement robustly` 等模糊授权默认不合格；如果确实存在条件分支，必须写清触发条件、默认选择、允许范围、证据要求、失败处理和 reviewer 判断标准。
+
+Planner 还必须显式应用 `ROUTE_HARD_REQUIREMENTS_MATRIX.md` 中从 M9/M10 继承的硬门：机制闭环和证据命名必须真实，旧 runtime 继承必须先做 fingerprint audit，合同/critic handoff/executor plan 必须机器可解析并绑定 hash 或 reviewed commit，Cine/registration negative 必须来自 faithful runtime 而不是 proxy，durable finalizer、no runtime push 和 independent reviewer boundary 必须写入每条 route 的执行图。
 
 ## 3. 三条 Route 的边界
 

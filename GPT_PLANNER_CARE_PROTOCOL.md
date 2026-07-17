@@ -88,6 +88,10 @@ git show --stat --oneline HEAD
 
 如果不能运行 shell，也要通过 GitHub 提交历史检查最近 5-10 个提交，并在规划前说明哪些提交改了协议、提示词、结果证据或路线门槛。
 
+任何 CARE route plan、critic handoff 或 executor plan 都不得把关键设计留给 Codex/controller 自行决定。规划者必须明确模型结构、训练/eval 预算、输入输出路径、Slurm 策略、validator 语义、known-bad、终止条件、completion token 和 reviewer pass/fail；审查者必须把 `TBD`、`optional`、`as appropriate`、`if needed`、`choose best`、`Codex decide`、`controller decide` 等空白授权视为 hard-gate failure，除非同一节写清触发条件、默认选择、允许范围、证据要求、失败分支和审阅判断。
+
+规划者和审查者还必须应用 `prompts/routes/ROUTE_HARD_REQUIREMENTS_MATRIX.md` 中从 M9/M10 继承的硬门：机制闭环证据命名、旧 runtime 继承前的 fingerprint audit、机器可解析合同和 hash/commit 绑定、faithful Cine/registration negative 边界、durable finalizer、runtime no-push、独立 reviewer 后置边界。
+
 ## 2. 图片读取规则
 
 SRR/MyoPS/Cine 里程碑不能只读仓库文字。必须按 `prompts/THREAD_BOOTSTRAP_ROUTE_IMAGE_PROTOCOL.md` 从 ChatGPT Project background / project materials 或当前对话上传图片中视觉读取：
