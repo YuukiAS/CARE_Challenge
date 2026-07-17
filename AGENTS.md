@@ -75,6 +75,8 @@ Root architecture/current-state knowledge lives at `wiki/README.md`; GPT, contro
 
 For Route A/B/C work, planner, critic, controller, finalizer, validator, and reviewer threads must also read `prompts/routes/ROUTE_ANTI_LAZINESS_PROTOCOL.md`. Non-ready tokens such as `SCIENTIFIC_UNDERTRAINED`, `NEEDS_EVIDENCE`, and `NEEDS_MONITOR` must not be used to stop early when the route contract still requires Slurm execution, monitoring, post-completion aggregation, or packet consistency repair.
 
+All Route A/B/C controller work must run as a Codex goal or explicit goal resume, not as a one-off interactive continuation. If a controller submits or inherits Slurm work, the goal must remain responsible through terminal accounting, same-scope operational retry when allowed, post-completion aggregation, local lightweight packet update, and reviewer handoff. A controller must not exit at `NEEDS_MONITOR`, submitted-only, pending, running, or awaiting-accounting state unless a durable watcher/finalizer is already running and recorded in the packet.
+
 ## MONITOR_PACKET_IS_NOT_COMPLETION
 
 This rule applies to every CARE milestone and follow-up.

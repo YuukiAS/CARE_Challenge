@@ -44,6 +44,10 @@ Route B controller 完成了 implementation gate，真实 MyoPS/Cine forward、�
 
 Route B 的教训：allowed non-ready token 不能成为提前停止的借口。若合同要求 Slurm/500-step/1800-second first bounded wave，controller 不能用 12-step 本地 smoke 代替，除非明确记录阻塞原因并返回需要继续执行或需要 monitor。
 
+Route B 后续又暴露了一个启动级错误：正式 Slurm wrapper 使用裸 `python`，在计算节点解析为 `/usr/bin/python`，导致 `ModuleNotFoundError: No module named 'torch'`，作业 `59317810` 4 秒失败且训练 credit 为 0。所有 Slurm controller 必须在 wrapper 中显式使用通过 preflight 的同一 Python/env，启动日志必须打印 `python_executable`、关键 import 和 CUDA 可见性；裸 `python` 不得进入正式 Slurm wrapper。
+
+另一个流程错误是 controller 不能只靠一次交互 continuation 提交 job 后退出。所有 Route A/B/C controller 必须用 Codex goal 或 goal resume 运行；如果 job 进入 `NEEDS_MONITOR`，controller goal 必须保持对终态 accounting、允许的同 scope retry、post-completion aggregation 和 reviewer handoff 的责任，除非已启动并记录 durable watcher/finalizer。
+
 ## 所有角色的强制规则
 
 ### 规划者
