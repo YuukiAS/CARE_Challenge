@@ -1,2 +1,2 @@
 criterion,observed,required,pass
-adequacy_recovery_slurm_race,PENDING,terminal completed job with train_loop_seconds >= 1800,False
+adequacy_recovery_slurm_race,RUNNING winner 59364846; losers cancelled,terminal completed job with train_loop_seconds >= 1800,False

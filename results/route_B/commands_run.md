@@ -41,3 +41,9 @@ Current formal result: `ROUTE_B_SCIENTIFIC_UNDERTRAINED`, ready for read-only re
 - `sbatch --export=ALL,ROUTE_B_STEPS=25000,ROUTE_B_RACE_LOCK_NAME=bounded_train_eval_25000_adequacy_winner.lock jobs/route_B/run_bounded_train_eval.sh` -> `59364846`
 - `sbatch --partition=a100-gpu --gres=gpu:nvidia_a100-pcie-40gb:1 --qos=gpu_access --export=ALL,ROUTE_B_STEPS=25000,ROUTE_B_RACE_LOCK_NAME=bounded_train_eval_25000_adequacy_winner.lock jobs/route_B/run_bounded_train_eval.sh` -> `59364845`
 - `sbatch --partition=volta-gpu --gres=gpu:tesla_v100-sxm2-16gb:1 --qos=gpu_access --export=ALL,ROUTE_B_STEPS=25000,ROUTE_B_RACE_LOCK_NAME=bounded_train_eval_25000_adequacy_winner.lock jobs/route_B/run_bounded_train_eval.sh` -> `59364847`
+
+## Adequacy Recovery Runtime Update (2026-07-17T02:44:37Z)
+
+- `squeue -j 59364846 -o '%i|%T|%M|%l|%R|%P'` -> `RUNNING` on `htzhulab`.
+- `sacct -j 59364845,59364846,59364847 --format JobIDRaw,JobName%30,Partition,State,ExitCode,Elapsed,Start,End,NodeList -P` -> winner `59364846` running; losers `59364845`, `59364847` cancelled.
+- RouteB-Continue tmux watcher is active: `logs/route_B/controller_goal_monitor_adequacy_25000.log`.

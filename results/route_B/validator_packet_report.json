@@ -5,5 +5,7 @@
   "errors": [],
   "missing_required_files": [],
   "status": "PASS",
-  "warnings": []
+  "warnings": [
+    "monitor_language_present"
+  ]
 }

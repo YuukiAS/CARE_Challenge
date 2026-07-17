@@ -1,4 +1,4 @@
 timestamp_utc,phase,job_id,partition,state,decision,next_action
-2026-07-17T02:36:47Z,B5_adequacy_race,59364846,htzhulab,PENDING,submitted 25000-step adequacy recovery race leg,wait for winner then cancel pending losers
-2026-07-17T02:36:47Z,B5_adequacy_race,59364845,a100-gpu,PENDING,submitted 25000-step adequacy recovery race leg,wait for winner then cancel pending losers
-2026-07-17T02:36:47Z,B5_adequacy_race,59364847,volta-gpu,PENDING,submitted 25000-step adequacy recovery race leg,wait for winner then cancel pending losers
+2026-07-17T02:44:37Z,B5_adequacy_race,59364846,htzhulab,RUNNING,25000-step adequacy recovery race winner,monitor until terminal accounting and aggregate
+2026-07-17T02:44:37Z,B5_adequacy_race,59364845,a100-gpu,CANCELLED,pending loser cancelled after winner started,none
+2026-07-17T02:44:37Z,B5_adequacy_race,59364847,volta-gpu,CANCELLED,pending loser cancelled after winner started,none

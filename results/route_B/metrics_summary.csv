@@ -1,2 +1,2 @@
 task,metric,value,case_count,status
-RouteB,adequacy_recovery,,,NEEDS_MONITOR
+RouteB,adequacy_recovery,,,RUNNING_NEEDS_MONITOR
