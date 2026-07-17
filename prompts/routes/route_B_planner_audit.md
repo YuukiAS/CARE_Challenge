@@ -1,98 +1,42 @@
 ---
 route_id: route_B
-branch: route_B
-status: CRITIC_REVISED_PLANNING_READY_FOR_CONTROLLER
-not_a_milestone: true
-planner_base_commit: dfea8e1bb22de1bbcf3ff062359f1dd086f56c38
-critic_reviewed_planner_commit: 7303ef937793e47f5bac562e3c2c796654acc7fa
+portfolio_round: round02
+role: planner
+status: DRAFT_FOR_ROUND02_CRITIC_REVIEW
+planner_main_base_commit: 3f0e78706653da2eeeb3453ed992628a7c0eee70
+prior_controller_packet_commit: 0200e86f7a95ff9753f9c425419052e878d342f4
+prior_reviewer_commit: cde0e0b658893b327aa5fb3129d37a99f1cf7c47
+prior_review_decision: ROUTE_B_REVIEW_NEEDS_REVISION
+diagram_versions_read: [SRR-v2, SRR-v2.5, SRR-v3]
+visual_read_status: READ_FROM_PROJECT_BACKGROUND_CURRENT_CONVERSATION
 contract_path: prompts/routes/route_B.md
 executor_plan_path: prompts/routes/route_B_executor_plan.yaml
 critic_request_path: prompts/routes/route_B_critic_request.md
-critic_decision: APPROVE_AFTER_REVISION
-critic_token: ROUTE_B_PLANNING_READY_FOR_CONTROLLER
 prompts_shared_modified: false
 ---
 
-# Route B Planner and Critic audit
+# Route B Round02 Planner audit
 
-## Remote synchronization
+## Evidence judgment
 
-The Planner started from common setup commit `dfea8e1bb22de1bbcf3ff062359f1dd086f56c38`. At Critic review, remote `route_A`, `route_B` and `route_C` were each four planning commits ahead of that same `main` baseline and zero commits behind. The route diffs contained only their corresponding four planning artifacts. Shell `git fetch` was unavailable in the current runtime because DNS could not resolve GitHub; the connected GitHub source was therefore used to read the current remote refs and files directly. No stale local checkout was used.
+The prior Route B packet proved that a non-placeholder full-route implementation can run and train. The winner job completed with `25000` steps, `1908.338` train-loop seconds, two validation events, ten MyoPS cases, and five Cine cases. The evidence does not support leaderboard readiness: edema was not evaluated on positive ground truth, the Cine source was not CineMA, the packet validator missed adequacy/accounting/aggregation semantics, known-bad coverage was incomplete, and a stale undertrained token remained.
 
-Recent main context included route workspace setup, route-local docs, tmux/environment clarification, route watchboard addition/merge, portfolio Planner prompts, route handoff documentation, partial M10 follow-up2 evidence preservation and prompt-copy organization. These commits establish that Route B must be isolated, implementation-first and independent of old submitted/pending M10 packets.
+The Round02 plan therefore keeps all full SRR-v3 modules and changes two material semantics: pathology-balanced MyoPS training/evaluation and a real frozen CineMA source plus matched frozen-random representation control. A new bounded train/eval is justified; rerunning the old protocol is not.
 
-## Repository files read
+## Visual interpretation
 
-- `AGENTS.md`
-- `START_HERE_FOR_GPT.md`
-- `GPT_PLANNER_CARE_PROTOCOL.md`
-- `prompts/AGENT_FLOW_V2_PROTOCOL.md`
-- `prompts/HANDOFF_GATE_POLICY.md`
-- `prompts/GPT_HARD_GATE_PROMPT.md`
-- `prompts/THREAD_BOOTSTRAP_ROUTE_IMAGE_PROTOCOL.md`
-- `routes/README.md`
-- `prompts/routes/README.md`
-- `prompts/routes/route_portfolio_planner_prompt.md`
-- `configs/routes/partition_routing.yaml`
-- `docs/route_watchboard.md`
-- `wiki/README.md`
-- Route B's four Planner artifacts
-- Route A/C executor-plan namespace sections for isolation comparison
+The visually read v2/v2.5/v3 diagrams require availability-aware modality-specific stems, full shared/private/interaction retrieval, train/OOF prototypes, anatomy-guided proposals, separate scar/edema soft ROIs and refiners, bounded anchor correction, and a Cine ED/key-frame registered temporal path. The plan fixes sixteen slots per scale, real Pattern-SIP, OOF memory, exact final-output interventions, and real CineMA logits/features/uncertainty.
 
-## Independent SRR visual read
+## CineMA decision
 
-Visual source: current ChatGPT Project background/current-conversation visual channel.
+Route B uses CineMA now as a frozen, verified evidence source. It trains identical downstream projections/temporal heads for pretrained and deterministic random sources. The route does not claim end-to-end CineMA adaptation. The random control is evidence only; final downstream output still uses the clean-reloaded pretrained source. Binary masks and frame0 fallback are rejected.
 
-Versions: `SRR-v2`, `SRR-v2.5`, `SRR-v3`.
+## Files read
 
-Recovered evolution:
+All required main policies and handoffs; Slurm and mapper skills; Route B contract/plan/result/controller/completion/review; implementation gate, training adequacy, metrics summary, case safety matrix, Cine registration/temporal report, finalizer/controller/validator receipts; CineMA provenance contract, pilot note, adapter source, source URL, license, revisions, and SHA.
 
-1. v2 defines availability-aware selective retrieval from observed LGE/C0/T2, anatomy-guided proposals and scar/edema soft-ROI refinement.
-2. v2.5 makes scar and edema proposal decoders and refinement scales explicitly separate.
-3. v3 adds semantically constrained multi-slot train/OOF prototypes, nnU-Net logits/components/uncertainty/anatomy context and per-pathology bounded residual correction whose closed gates preserve the anchor.
-4. Cine is an ED/key-frame, reference-space registration and temporal-retrieval path with frame-wise anatomy prior and aggregation; it cannot be replaced by frame0, descriptors, LCC or proxy motion.
+## Persistent hard gates
 
-## Planning boundary
+Mechanism evidence names require real on/off final-output effects. Runtime inheritance is permitted only after full fingerprints. The contract, plan, and critic review are hash-bound. Cine and registration negatives require faithful adequate runtime. The finalizer is durable, uses afterany, never pushes, and precedes an independent reviewer. Root current state remains unchanged.
 
-No code was executed, no model was trained, no Slurm job was submitted, no runtime `review.md` was written, no validation package/upload was performed, no route was promoted, no M11 was started and no cross-route merge occurred. `prompts/shared/` remains unchanged.
-
-## Critic review delta
-
-The Critic reviewed Planner commit `7303ef937793e47f5bac562e3c2c796654acc7fa` and found the route scientifically positioned correctly but mechanically incomplete. The following deltas were applied:
-
-| finding | revision |
-| --- | --- |
-| heavy artifact write ban contradicted save/reload/export | allowed untracked runtime artifacts only under Route B runtime; Git publication remains forbidden |
-| no concrete effective-training thresholds | added optimizer-step, train-time, validation-event and case-count minima plus overfit/sanity/loss/cache/baseline gates |
-| incomplete controller lifecycle receipts | added context, ledger, bootstrap, mapper draft/final, architecture delta and finalizer state requirements |
-| residual correction underspecified | added exact per-pathology gated equation, closed-gate anchor identity, bounded delta and help/harm checks |
-| prototype leakage/safe-negative rules incomplete | added self-case/fold/validation leakage prohibition and T2-present edema-safe-negative rule |
-| Cine honest blocker could be treated as continuation | changed blocker to implementation failure; complete Cine gate is required before formal training |
-| missing-modality semantics weakly testable | added unavailable-tensor perturbation invariance and no-gradient tests |
-| validator requirements were generic | added exact validator paths, report paths and known-bad fixture root |
-| system mapper/root wiki tension | required route-local mapping/fingerprints while deferring root wiki to portfolio reconciliation |
-
-## Ten requested Critic checks
-
-1. Portfolio position: pass after revision; Route B remains the complete architecture route between compressed Route A and evidence-heavy Route C.
-2. SRR-v3 fidelity: pass after revision; every required diagram module has a causal implementation/evidence gate.
-3. MyoPS and Cine coverage: pass after revision; Cine cannot be skipped or passed through a blocker.
-4. Implementation-before-training: pass; the full MyoPS+Cine gate and freeze precede formal training.
-5. Anti-placeholder/bypass: pass; exact semantic known-bad cases are required.
-6. Monitor packet: pass; pending/submitted/watcher/accounting states cannot be completion.
-7. Namespace isolation: pass; branch/worktree/result/runtime/log/lock paths are route-specific, and heavy runtime artifacts are untracked.
-8. Slurm routing: pass; `htzhulab -> a100-gpu -> volta-gpu` with correct QOS/GRES and explicit V100 compatibility.
-9. Terminology: pass; Route B is explicitly not a milestone.
-10. Validator/reviewer independence: pass after revision; exact strict validators, lifecycle receipts, known-bad fixtures and pinned read-only reviewer are required.
-
-## Critic disposition
-
-`critic_decision: APPROVE_AFTER_REVISION`
-
-`critic_token: ROUTE_B_PLANNING_READY_FOR_CONTROLLER`
-
-The token authorizes only the later Route B controller start. It does not authorize validation upload, route promotion, hosted metric claims, final scientific conclusions, M11, package submission or cross-route merge.
-
-## Remaining risks
-
-The full architecture remains expensive to implement under the competition schedule. Cine registration may fail on some cases; prototype banks may collapse or leak if validators are poorly implemented; V100 may be incompatible without changing semantics; and an eight-hour first wave may remain scientifically undertrained. The revised plan forces these outcomes to be reported as revision, evidence, monitor or undertraining states rather than false completion.
+No upload, promotion, M11, hosted claim, cross-route merge, or final scientific decision is authorized.
