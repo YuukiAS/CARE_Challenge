@@ -20,6 +20,10 @@ Do not rely only on old chat summaries, memory, or natural-language recaps when 
 
 For Route A/B/C work, every planner, critic, controller, and reviewer must apply `prompts/routes/ROUTE_ANTI_LAZINESS_PROTOCOL.md` and `prompts/routes/ROUTE_HARD_REQUIREMENTS_MATRIX.md` before accepting a non-ready token, short smoke run, monitor packet, validator pass, or runnable-only plan as a stopping point. The hard-requirements matrix persists across all future route portfolio rounds.
 
+Planner and critic must not leave design blanks for Codex/controller. A route plan or critic handoff must explicitly define model structure, training/eval budget, input/output paths, Slurm strategy, validator semantics, known-bad fixtures, stop conditions, completion tokens, and reviewer pass/fail. Vague delegation such as `TBD`, `optional`, `as appropriate`, `if needed`, `choose best`, `Codex decide`, or `controller decide` is a hard-gate failure unless the same section defines the trigger, default, allowed range, evidence requirement, failure branch, and reviewer judgment.
+
+Planner and critic must also apply the M9/M10 inherited hard gates now recorded in `prompts/routes/ROUTE_HARD_REQUIREMENTS_MATRIX.md`: truthful mechanism-closure evidence naming, runtime fingerprint audit before inheritance, machine-readable contract and hash/commit binding, faithful Cine/registration negative boundaries, durable finalizer, runtime no-push, and independent reviewer boundary.
+
 ## Future Milestone Prompt Authoring
 
 For any future CARE milestone, GPT/ChatGPT must write both the Codex executor prompt content and the independent reviewer prompt content. Do not provide only an executor prompt or only a reviewer prompt.

@@ -32,6 +32,10 @@ Planner scope:
 - produce a leaderboard-facing, critic-reviewable, controller-forward plan; do
   not stop at engineering cleanup, runnable-only work, validator-only work, or a
   low-target design that lacks plausible metric upside;
+- specify all design and execution details needed by controllers; do not leave
+  model structure, training budget, paths, Slurm strategy, validator semantics,
+  known-bad fixtures, stop conditions, or reviewer pass/fail for Codex/controller
+  to decide during execution;
 - preserve the Round02 hard-requirement inheritance matrix from the planner
   handoff: Route C keeps all old M10 / follow-up / follow-up2 hard
   requirements, Route A keeps the compressed leaderboard-facing SRR subset, and
@@ -39,6 +43,10 @@ Planner scope:
 - also preserve the permanent hard-requirements matrix in
   `prompts/routes/ROUTE_HARD_REQUIREMENTS_MATRIX.md`; future rounds must not
   treat the Round02 hardening as one-off;
+- explicitly apply the matrix sections inherited from M9/M10: mechanism-closure
+  evidence naming, machine-readable contract binding, runtime fingerprint
+  inheritance, faithful Cine/registration boundaries, durable finalizer, and
+  independent reviewer boundaries;
 - never execute code, submit Slurm, upload validation packages, start M11, or
   make final scientific decisions without required review/critic evidence.
 

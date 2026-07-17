@@ -50,6 +50,10 @@ route_C:
 
 Route A/B 不是 milestone。Route C 必须持续继承全部旧 M10 / follow-up / follow-up2 强要求；Route A 必须是压缩但真实的 leaderboard-facing SRR candidate；Route B 必须保持完整 SRR-v3，不得降级成 Route A。所有未来 round 都必须继续遵守 `ROUTE_HARD_REQUIREMENTS_MATRIX.md`，不得把 Round02 hardening 当成一次性要求。所有 route 必须包含 implementation-before-training gate，禁止 placeholder、mock-only、旧 wrapper bypass、pending Slurm 冒充完成、未验收先训练、validation upload、route promotion、M11 或最终科学结论。
 
+必须把每条 route 的计划写到 Codex controller 可以直接照做的程度。不得把模型结构、训练预算、输入输出路径、Slurm 策略、validator 语义、known-bad、终止条件或 reviewer 通过标准留给 Codex/controller 自行决定。`TBD`、`optional`、`as appropriate`、`if needed`、`choose best`、`Codex decide`、`controller decide`、`implement robustly` 等模糊授权默认不合格；如确有条件分支，必须写清触发条件、默认选择、允许范围、证据要求、失败处理和 reviewer 判断标准。
+
+必须显式应用 `ROUTE_HARD_REQUIREMENTS_MATRIX.md` 中从 M9/M10 继承的硬门：真实机制闭环和证据命名、旧 runtime fingerprint audit、机器可解析合同和 hash/commit 绑定、Cine/registration faithful negative 边界、durable finalizer、runtime no-push、独立 reviewer 后置边界。
+
 完成后只报告每条 route 的 branch、commit SHA、contract path、executor plan path、critic request path，以及是否修改 prompts/shared/。最后明确：本轮仅完成 GPT planner draft，下一步交给独立 GPT critic。
 ```
 
@@ -100,6 +104,8 @@ Route A/B 不是 milestone。Route C 必须持续继承全部旧 M10 / follow-up
 - 是否清楚 Cine 也必须执行。
 - 是否防止旧 M10 follow-up/follow-up2 中出现过的偷懒点。
 - 是否满足 `ROUTE_HARD_REQUIREMENTS_MATRIX.md` 中该 route 持续继承的 leaderboard-facing 强要求，而不是只做 runnable engineering。
+- 是否把模型结构、训练预算、输入输出路径、Slurm 策略、validator 语义、known-bad、终止条件和 reviewer 通过标准写清楚；若存在 `TBD`、`optional`、`as appropriate`、`if needed`、`choose best`、`Codex decide` 或 `controller decide` 等空白授权，必须打回。
+- 是否显式应用 M9/M10 继承硬门：机制闭环证据命名、旧 runtime fingerprint audit、机器可解析合同/hash 绑定、faithful Cine/registration negative 边界、durable finalizer、runtime no-push 和 independent reviewer boundary。
 
 发现问题时，直接在对应 route 分支修订 route contract 和 executor plan，并记录 delta。审查通过时使用对应 token：
 

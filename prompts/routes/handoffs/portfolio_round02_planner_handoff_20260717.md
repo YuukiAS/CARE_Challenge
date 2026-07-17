@@ -325,6 +325,15 @@ Write a Round02 plan with all of the following:
 - exact controller task graph, concrete controller objectives, required files,
   validators, known-bad fixtures, finalizer behavior, and reviewer pass
   requirement for each route;
+- no delegated design blanks: all model-structure choices, training/eval
+  budgets, input/output paths, Slurm partition/race policy, validator semantics,
+  known-bad fixtures, completion tokens, failure branches, and reviewer pass/fail
+  criteria must be explicit;
+- explicit application of the M9/M10 inherited hard gates from
+  `prompts/routes/ROUTE_HARD_REQUIREMENTS_MATRIX.md`: truthful evidence naming,
+  real mechanism closure, machine-readable contract/hash binding, fingerprint
+  checks before inheriting old runtime, faithful Cine/registration interpretation,
+  durable finalizer, no runtime push, and independent reviewer boundary;
 - minimum effective training or evidence classification for each route;
 - Slurm preflight, partition/race policy, Python/torch/CUDA environment proof,
   and `afterok`/`afterany` dependency policy for any planned Slurm work;
@@ -339,6 +348,12 @@ planner/critic" work. Every route needs a controller-forward path in Round02.
 The plan must also not be runnable-only, engineering-only, proxy-only,
 validator-only, or nnU-Net-only. A route task that only repairs files must name
 the reviewer acceptance it unlocks and the next bounded metric-facing step.
+The plan must not use `TBD`, `optional`, `as appropriate`, `if needed`,
+`choose best`, `Codex decide`, `controller decide`, or equivalent vague
+delegation for any scientific, training, Slurm, validation, evidence, or review
+decision. Conditional branches are allowed only when they define the trigger,
+default choice, allowed range, evidence requirement, failure handling, and
+reviewer judgment.
 
 Planner must request route-specific critic handoffs named:
 
@@ -371,5 +386,11 @@ must reject a planner output that:
   semantic bypasses;
 - fails to generate a route-specific controller-forward task graph and
   reviewer pass requirement;
+- leaves model structure, training budget, input/output paths, Slurm strategy,
+  validator semantics, known-bad fixtures, completion tokens, stop conditions,
+  or reviewer pass/fail for Codex/controller to decide during execution;
+- omits the M9/M10 inherited hard gates: mechanism-closure evidence naming,
+  contract/hash binding, runtime fingerprint inheritance, faithful Cine/
+  registration negative boundaries, durable finalizer, or reviewer independence;
 - weakens Route C by omitting old M10/follow-up2 source reading or dropping any
   inherited Route C hard requirement without explicit user approval.
