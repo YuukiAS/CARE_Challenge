@@ -1,276 +1,156 @@
 ---
 route_id: route_B
-route_name: "Route B — full SRR-v3 architecture implementation"
+portfolio_round: round02
+task_key: route_B_round02_full_srr_v3_cinema_metric_repair
+route_name: "Route B — full SRR-v3 with real CineMA evidence and metric-facing retraining"
 branch: route_B
 worktree: /users/a/e/aereinh/CARE_worktrees/route_B
-status: CRITIC_REVISED_READY_FOR_CONTROLLER
+status: DRAFT_FOR_ROUND02_CRITIC_REVIEW
 not_a_milestone: true
-planner_base_commit: dfea8e1bb22de1bbcf3ff062359f1dd086f56c38
-critic_reviewed_planner_commit: 7303ef937793e47f5bac562e3c2c796654acc7fa
-critic_decision: APPROVE_AFTER_REVISION
-critic_token: ROUTE_B_PLANNING_READY_FOR_CONTROLLER
-diagram_source: "ChatGPT Project background materials / current conversation visual channel"
-diagram_versions_read:
-  - SRR-v2
-  - SRR-v2.5
-  - SRR-v3
-visual_read_status: READ_FROM_CURRENT_PROJECT_BACKGROUND
-canonical_repo_paths:
-  - images/SRR-v2.png
-  - images/SRR-v2.5.png
-  - images/SRR-v3.png
-critic_required: true
-critic_request_path: prompts/routes/route_B_critic_request.md
+planner_main_base_commit: 3f0e78706653da2eeeb3453ed992628a7c0eee70
+prior_controller_packet_commit: 0200e86f7a95ff9753f9c425419052e878d342f4
+prior_reviewer_commit: cde0e0b658893b327aa5fb3129d37a99f1cf7c47
+prior_review_decision: ROUTE_B_REVIEW_NEEDS_REVISION
+diagram_versions_read: [SRR-v2, SRR-v2.5, SRR-v3]
+visual_read_status: READ_FROM_PROJECT_BACKGROUND_CURRENT_CONVERSATION
 executor_plan_path: prompts/routes/route_B_executor_plan.yaml
-allowed_critic_token: ROUTE_B_PLANNING_READY_FOR_CONTROLLER
-forbidden_tokens:
-  - ROUTE_PROMOTED
-  - VALIDATION_UPLOAD_APPROVED
-  - HOSTED_METRIC_CLAIM
-  - M11_AUTHORIZED
-  - FINAL_SCIENTIFIC_CONCLUSION
-  - CROSS_ROUTE_MERGE_APPROVED
+critic_request_path: prompts/routes/route_B_critic_request.md
+planner_audit_path: prompts/routes/route_B_planner_audit.md
+current_round_critic_required: true
+current_round_critic_token: ""
+controller_start_authorized: false
+route_promotion_authorized: false
+validation_upload_authorized: false
+m11_authorized: false
+cross_route_merge_authorized: false
+hosted_metric_claim_authorized: false
+final_scientific_decision_authorized: false
 ---
 
-# Route B planning contract
+# Route B Round02 controller contract
 
-Route B is not a milestone. It is the isolated medium-work route for turning the complete SRR-v3 MyoPS and Cine design into executable, auditable code before formal training. The route cannot pass by creating interfaces, configs, tables, wrappers, mocks, or conceptual modules that do not causally affect final outputs.
+## 1. Round02 decision and prior evidence
 
-## Independently recovered SRR-v3 objective
+The prior Route B implementation and bounded train/eval are credible: the winning Slurm job completed, `25000` optimizer steps and `1908.338` train-loop seconds were recorded, and real MyoPS/Cine forward, gradients, intervention, save/reload, and export QA were present. The packet is not reviewer-accepted because the packet validator and known-bad tests do not cover the full semantic contract, `validator_implementation_report.json` retained a stale undertrained token, and the evaluated ten MyoPS cases contained no positive edema ground truth. The Cine branch used a real classical transform and real multiframe output effects, but it did not bind real CineMA weights, logits, intermediate features, or uncertainty.
 
-The v2 diagram establishes availability-aware selective retrieval from LGE, C0/bSSFP and T2, followed by anatomy-guided lesion proposal and pathology-specific soft-ROI refinement. v2.5 makes scar and edema proposal paths explicitly separate: scar is LGE-dominant and high precision; edema is T2-conditioned and broader context. v3 adds a semantic multi-slot representation bank with real train/OOF prototype groups, nnU-Net probabilities/logits, components, uncertainty and anatomy context, and a baseline-preserving bounded residual correction. Cine remains a registration-aware anatomy-first temporal path: ED/reference and selected key frames are warped into a reference space, routed through a temporal representation dictionary, and aggregated with frame-wise anatomy evidence. It is not a single-frame or topology-only side path.
+Round02 keeps Route B as the complete SRR-v3 route. The changed training semantics are: exact full SRR-v3 structure, T2-positive-balanced metric-facing evaluation, and a real CineMA feature/logit/uncertainty source with a matched random-initialization representation control. These changes justify one new bounded MyoPS run and two matched Cine runs. Blind repetition of the prior run is forbidden.
 
-The required causal chain is:
+## 2. Diagram-derived route objective
 
-```text
-observed modalities + availability
--> modality-specific stems and multi-scale encoder
--> availability-and-image-aware routing
--> shared/private/optional-interaction semantic retrieval
--> anatomy + scar/edema proposals
--> pathology-specific soft-ROI refiners
--> bounded nnU-Net-anchored residual correction
--> official-label output
-```
+Route B must implement the full causal chain:
 
-## Route objective and implementation-first hard gate
+`modality stems -> availability/spatial router -> shared/private/interaction dictionary -> train/OOF prototype memory -> anatomy decoder -> scar/edema proposals -> pathology-specific soft ROI -> scar/edema refiners -> bounded residual correction -> final output`.
 
-The first success criterion is implementation fidelity, not leaderboard score:
+Cine must implement:
 
-```text
-code completion
--> real-case forward
--> finite nonzero losses
--> gradients to every required trainable module
--> controlled interventions change final logits/labels
--> checkpoint save/reload/resume consistency
--> official-label/export QA
--> implementation freeze
--> only then formal training/evaluation
-```
+`real CineMA multiclass logits/features/uncertainty -> ED/key-frame registration -> registered evidence -> temporal dictionary -> temporal refiner -> final myocardium output`.
 
-Formal training is forbidden until the complete MyoPS and Cine implementation gate passes. A Cine blocker may be reported honestly, but it is a failing implementation state and cannot be used to let MyoPS training bypass the complete Route B gate.
+nnU-Net is baseline, context, teacher, and bounded safety anchor. It cannot replace retrieval, proposals, refiners, or temporal evidence.
 
-## Portfolio position and isolation
+## 3. Exact MyoPS architecture
 
-Route B implements the complete architecture. It is larger than Route A, which is the quickest compressed non-pure-nnU-Net candidate, and smaller in evidence-reconciliation scope than Route C, which inherits M10 follow-up2 replay and Cine fidelity accounting. Route B must not absorb Route C's historical-evidence burden or degrade to Route A's compressed architecture.
+1. Input and availability order: `[LGE, T2, C0]`.
+2. Three modality stems and four encoder scales with channels `[32,64,128,256]`.
+3. At each scale, exactly sixteen residual experts: four shared, two LGE-private, two T2-private, two C0-private, and two for each pairwise interaction `(LGE,T2)`, `(LGE,C0)`, `(T2,C0)`.
+4. Separate anatomy, scar, and edema two-pass spatial routers. Pass one uses local modality features, availability, anatomy distance, anchor uncertainty, and component/remote-FP flags. Pass two additionally consumes proposal logits. The gate is entmax-1.5; the first 20% of training is soft, the next 30% keeps top four, and the final 50% keeps top two. Invalid slots must have max absolute weight no greater than `1e-8` per batch/task/slot.
+5. Pattern-SIP is a real loss over availability group, style cluster, and hard subgroup usage. Target expert mass is `0.50` shared, `0.35` private, and `0.15` interaction. It has an independent tensor, function, and gradient test and is not an alias of dictionary loss.
+6. Four deterministic train-only OOF shards. Each pathology has eight positive and twelve negative prototype slots. Memory uses EMA plus a bounded trainable residual and a FIFO provenance ledger. Edema negatives are drawn only from T2-present safe regions; no-T2 myocardium never enters edema positive or negative memory.
+7. Anatomy decoder outputs background, myocardium-union, LV, and RV. Scar proposal is LGE-dominant with remote-FP negative memory. Edema proposal is T2-conditioned. Scar soft ROI has two-voxel dilation; edema soft ROI has five-voxel dilation. The refiners are separate modules.
+8. With anchor logits `z_anchor`, full SRR logits `z_srr`, and pathology-specific bounded deltas, the final output is:
 
-| item | value |
-| --- | --- |
-| branch | `route_B` |
-| worktree | `/users/a/e/aereinh/CARE_worktrees/route_B` |
-| controller tmux | `care_route_B_controller` |
-| reviewer tmux | `care_route_B_reviewer`, created only after packet commit |
-| result root | `results/route_B/` |
-| runtime root | `results/route_B/runtime/` |
-| log root | `logs/route_B/` |
-| lock root | `results/route_B/locks/` |
+   `z_final = z_anchor + g_scar*4*tanh(delta_scar) + g_edema*4*tanh(delta_edema)`.
 
-Allowed branch-local source and lightweight-evidence writes:
+   The correction is zero outside the corresponding soft ROI. The gate consumes route confidence, anchor entropy, anatomy support, component flags, and availability. The implementation must expose on/off interventions for retrieval, memory, proposal, each refiner, gate, and final correction.
+9. No-T2 behavior is four-way blocked: no edema supervised loss, no edema memory update, zero edema proposal/refiner correction, and final Route B edema delta exactly zero.
 
-- `src/care_myocardium/srr_v3/**`
-- `src/care_myocardium/route_B/**`
-- `scripts/route_B/**`
-- `scripts/diagnostics/route_B/**`
-- `scripts/training/route_B/**`
-- `scripts/validation/route_B/**`
-- `tests/route_B/**`
-- `configs/route_B/**`
-- `jobs/route_B/**`
-- `results/route_B/**`
-- `logs/route_B/**`
+## 4. Exact CineMA and temporal architecture
 
-Runtime-only checkpoints, prediction volumes, transform fields and caches may be written only below `results/route_B/runtime/**`. They must remain untracked and must never enter the lightweight packet or Git commit. This runtime allowance is necessary for real save/reload/export testing and formal train/eval; it does not authorize publication of heavy artifacts.
+Route B does not fine-tune the CineMA backbone in Round02. This is a deliberate fixed-source experiment, not a future-work deferral. The complete Cine branch must consume real CineMA evidence now.
 
-Forbidden writes and actions:
+CineMA provenance:
 
-- `prompts/shared/**` without later portfolio-level authorization;
-- Route A/C source, result, runtime, log or lock namespaces;
-- root `wiki/current_state.yaml` or `wiki/history/**` before portfolio reconciliation;
-- `results/submissions/**`, validation packages or uploads;
-- raw data modification, secrets, environment dumps, heavy logs, checkpoints or NIfTI files in Git;
-- route promotion, M11, final scientific conclusion or cross-route merge.
+- code commit `c10daa1d93f0ea28d8b9ad9206b0f673d25805c1`;
+- Hugging Face revision `b1251ee50423bceeca84c080782fc3bc7756dea6`;
+- MIT license;
+- source `https://huggingface.co/mathpluscode/CineMA/resolve/main/finetuned/segmentation/acdc_sax/acdc_sax_0.safetensors`;
+- SHA256 `c7a60195e6c0aa920b0d0d8221d2ea7a75b6a5ea570763c3bf4924398f5ae85f`;
+- route-local untracked path `/users/a/e/aereinh/CARE_worktrees/route_B/results/route_B/runtime/external_assets/CineMA/acdc_sax/acdc_sax_0.safetensors`.
 
-Because portfolio policy defers root wiki mutation, the mapper must instead produce route-local architecture receipts and fingerprints under `results/route_B/`. Final root-wiki reconciliation remains a later portfolio action.
+The source emits four-class anatomy logits, a sixteen-channel last-decoder feature map, and normalized entropy. The pretrained source is frozen. A matched control instantiates the same `ConvUNetR` architecture from deterministic random seed `26071722`, also frozen. Both feed identically initialized/trainable `1x1` feature projections, registration inputs, eight-slot temporal dictionaries, and temporal refiners. Trainable parameter counts must match exactly.
 
-## MyoPS architecture contract
+Frames are ED/frame `0` plus eight evenly spaced non-reference frames across the first `4/6` of the cardiac cycle. Registration is ANTsPy `SyNOnly` to ED. Each case requires at least four passed non-reference frames. The temporal dictionary has exactly eight slots: ED anatomy anchor, early/late systolic contraction, early/late diastolic relaxation, motion magnitude, registered texture residual, and registration-uncertainty safety.
 
-All required modules must be real code paths:
+The temporal head consumes registered CineMA features and logits, ED features/logits, transform displacement, Jacobian determinant, intensity residual, and uncertainty. It uses a thirty-two-channel projection, masked slot retrieval, two residual convolution blocks, and a four-class output. It must alter final logits and labels on real cases. Binary priors, frame0 fallback, union-only aggregation, descriptor-only retrieval, and topology-only completion are forbidden.
 
-1. LGE, C0/bSSFP and T2 modality-specific stems;
-2. multi-scale encoder;
-3. router reading both availability and pooled image-derived features;
-4. shared dictionary at every declared scale;
-5. LGE-private, C0-private and T2-private dictionaries;
-6. optional interaction dictionary with tested on/off intervention;
-7. real train/OOF prototype bank with scar-positive, scar-safe-negative, edema-positive and T2-present edema-safe-negative groups;
-8. anatomy decoder producing union, LV, RV and anatomy-context evidence;
-9. LGE-dominant scar proposal decoder;
-10. T2-conditioned, broader-context edema proposal decoder;
-11. soft-ROI generator using proposal, anatomy, distance, uncertainty and nnU-Net context;
-12. small-ROI high-resolution scar refiner;
-13. large-ROI context-preserving edema refiner;
-14. pathology-specific bounded residual correction around the nnU-Net anchor;
-15. final compact-to-raw CARE label/export path;
-16. checkpoint save/reload/resume/export support.
+The matched pretrained/random runs use the same cases, frames, preprocessing, augmentation, optimizer, number of trainable parameters, budget, validation cadence, checkpoint schedule, and selection rule. The only difference is CineMA source initialization. The pretrained benefit classification is evidence, not an assumption.
 
-Prototype provenance must be case- and fold-safe. A case cannot retrieve a prototype computed from its own ground truth or prediction, and validation/test data cannot update the bank. Edema safe negatives inside myocardium are legal only for T2-present cases with valid edema supervision; no-T2 myocardium cannot become edema negative.
+## 5. Fixed data, baseline, and split contracts
 
-The v3 residual contract is explicit:
+Shared read-only root: `/users/a/e/aereinh/CARE`.
 
-```text
-z_final = z_nnunet + g_scar * delta_z_scar + g_edema * delta_z_edema
-```
+MyoPS primary evaluation is the exact prior 44-case fold-0 case list, frozen by SHA256. The T2-positive edema manifest is every fold-0 case with T2 present and positive edema ground truth, sorted by case ID. It must contain at least eight cases. Training uses deterministic pathology-balanced sampling: half of batches are drawn from T2-present edema-positive cases, one quarter from scar-positive cases, and one quarter from the remaining cases. This sampling changes training semantics and must be included in the fingerprint.
 
-`g_scar` and `g_edema` are element-wise gates in `[0,1]`; residual maps are bounded by declared limits. Closed gates must reproduce the nnU-Net anchor within a declared numerical tolerance. Open-gate interventions must change final logits or labels on real cases. The gate must use uncertainty/error-prone context and include a help/harm receipt; a generic unconstrained residual head or identity wrapper is invalid.
+Cine uses twelve labeled training cases, six per center after sorted case-ID selection, with 4D image and reference label paths under the shared data root. The same twelve cases and frames are used for pretrained and random controls.
 
-The loss family must include anatomy, scar proposal, edema proposal, scar refinement, edema refinement, residual/gate, negative-space/hard-negative, dictionary/prototype, prior/ROI and optional alignment terms. Only diagram-marked optional modules—interaction dictionary and alignment—may be disabled without changing Route B's identity. Any required term cannot be silently disabled by the controller.
+The immutable nnU-Net baseline root is:
+`/users/a/e/aereinh/CARE/results/submissions/care_myocardium_validation/workspaces/nnUNet_MyoPS+nnUNet_CineMyoPS_5fold_baseline_round8_20260519_084057/predictions`.
 
-## Cine architecture contract
+## 6. Ordered controller task graph
 
-Route B must implement Cine rather than defer it:
+1. `B0_BIND_AND_REVIEW_REPAIR`: bind current main policies, exact route task/plan hashes, prior packet/evidence hashes, data/split/baseline manifests, and external asset provenance.
+2. `B1_STRICT_VALIDATOR_REPAIR`: expand packet validator, implementation validator, and executable known-bad fixtures; remove the stale undertrained token only when current evidence supports the replacement state.
+3. `B2_FULL_ARCHITECTURE_RECONCILIATION`: map current implementation against the exact sixteen-slot/OOF/Pattern-SIP/proposal/refiner/bounded-correction contract; implement missing pieces and the real CineMA source/control path.
+4. `B3_IMPLEMENTATION_GATE`: real LGE-only, LGE+C0, complete-trimodal, and no-T2 forward/gradient/intervention tests; real CineMA load; real pretrained/random feature difference; real SyN; temporal input consumption; save/reload/export; no old-wrapper bypass.
+5. `B4_MYOPS_FULL_BOUNDED_TRAIN_EVAL`: one full-architecture bounded run with the new pathology-balanced sampling and frozen 44-case/T2-positive evaluation.
+6. `B5_CINE_PRETRAINED_MATCHED_RUN`: one frozen-pretrained CineMA temporal run.
+7. `B6_CINE_RANDOM_MATCHED_RUN`: one frozen-random CineMA temporal run with exactly the same contract as B5.
+8. `B7_SELECTED_CHECKPOINT_RELOAD_AND_INTERVENTIONS`: enumerate all scheduled checkpoints from B4/B5/B6, apply the exact selection rules, clean-reload the selected checkpoints, and perform final-output interventions.
+9. `B8_FINALIZER_A`: `afterany` accounting and aggregation over every attempt.
+10. `B9_MAPPER_FINAL_AND_FINALIZER_B`: route-local architecture/fingerprint finalization, strict validators, known-bad self-tests, `git diff --check`, one local lightweight commit, and controller stop.
+11. `B10_INDEPENDENT_REVIEWER_HANDOFF`: create the separate read-only reviewer request.
 
-1. a real CineMA or approved anatomy-source loader with provenance, license and weight/init receipt;
-2. frame-wise multiclass anatomy logits, features and uncertainty;
-3. ED/reference determination and deterministic key-frame policy;
-4. registration interface producing actual transforms and warped evidence;
-5. if learned registration is used, real symmetric velocity, scaling-and-squaring, Jacobian, inverse-consistency and registration losses;
-6. a real ANTs/SyN or comparable classical registration control;
-7. temporal representation dictionary with frame-quality or motion-saliency routing;
-8. temporal aggregation/refiner consuming registered anatomy, features, motion and uncertainty;
-9. checkpoint/resume/export/layout QA.
+## 7. Training budgets and optimizers
 
-The implementation gate must use at least three real cine cases and at least three non-reference frames per case. Temporal on/off intervention must alter final output on the tested cases. Frame0-only, descriptor-only, topology/LCC-only, optical-flow-only proxy, untrained VoxelMorph, mock transforms, or an “honest blocker” labeled as pass are invalid. A genuine blocker is reported as `ROUTE_B_IMPLEMENTATION_NEEDS_REVISION` or `ROUTE_B_NEEDS_EVIDENCE` and blocks formal training.
+MyoPS: AdamW, learning rate `1e-4`, weight decay `1e-4`, batch size `1`, gradient clip `5.0`, seed `26071721`. It must reach `25000` optimizer steps and `3600` train-loop seconds, four validation events, all 44 primary cases, at least eight T2-positive edema-positive cases, one-batch overfit, finite/nonzero mechanism losses, loss decrease, prediction sanity, same-split baseline, and cache isolation.
 
-## Implementation-before-training checks
+Each Cine control: AdamW on only projection/temporal parameters, learning rate `2e-4`, weight decay `1e-4`, batch size `1` case, gradient clip `5.0`. Pretrained seed is `26071722`; random source initialization seed is also `26071722`, while data-order seed is `26071723` for both. Each reaches `8000` steps and `3600` seconds, four validation events, twelve cases, ED plus eight non-reference frames, one-batch overfit of trainable heads, loss decrease, prediction sanity, same-case frame0 control, and isolated cache/checkpoint roots.
 
-### MyoPS
+Scheduled checkpoints are steps `2000, 4000, 6000, 8000` for Cine and `5000, 10000, 15000, 20000, 25000` for MyoPS. A selected checkpoint is not privileged until clean reload reproduces logits within `1e-5`.
 
-- Real forward for LGE-only, LGE+C0 and LGE+C0+T2.
-- Perturbing the tensor for an unavailable modality while keeping its availability bit off leaves outputs invariant within tolerance and produces no gradient through that unavailable input.
-- Changing availability or an actually observed modality changes routing/output where expected.
-- Every required module appears in an architecture trace with code path, tensor shape, parameter count, provenance and final-output dependency.
-- Losses are finite, nonconstant and nonzero where expected; gradients reach stems, router, dictionaries/prototypes, anatomy, proposals, refiners and gates.
-- No-T2 edema proposal/refinement losses are exactly masked according to contract.
-- Major-module on/off interventions alter final logits/labels.
-- Closed residual gates reproduce the anchor; open gates produce bounded changes and record help/harm.
-- Save/reload and resume preserve output/state within tolerance.
-- Export maps compact labels to official CARE values and records voxel/hash checks.
+## 8. Selection rules and metric gates
 
-### Cine
+MyoPS checkpoint eligibility requires: complete case manifests and hashes; no-T2 Route B edema delta exactly zero; nonempty prediction rate at least `0.80` on positive cases; pathology volume ratio in `[0.25,4.0]`; no NaN/Inf; all implementation and packet validators passing.
 
-- Real multi-frame input and frame ordering are consumed.
-- Real anatomy logits/features/uncertainty are loaded or computed.
-- Registration produces traceable warp statistics and transformed evidence.
-- Temporal dictionary/refiner consumes registered evidence rather than filenames or descriptors.
-- Temporal enabled/disabled and registered/unregistered interventions alter final outputs on the required multi-case set.
-- Resume does not reset temporal state.
-- Export maps to the official layout.
+Eligible checkpoints are ordered lexicographically by: maximize the smaller of scar Dice delta and T2-positive edema Dice delta; minimize positive HD95 deltas; minimize remote-FP delta; minimize component-count delta; select the earlier step on an exact tie.
 
-### Freeze
+Cine source/checkpoint ordering is exact:
 
-After all checks pass, record code/config/data-split/case-list/label/preprocess/decode/export hashes. Any architecture, loss or routing semantic change invalidates the freeze and requires the full gate to rerun.
+1. For each source, select the checkpoint with highest mean myocardium Dice; ties within `0.001` use lower mean HD95, then earlier step.
+2. Classify `PRETRAINED_BENEFIT` only when pretrained mean Dice exceeds random by at least `0.01` and pretrained HD95 is no worse by more than `1.0 mm`.
+3. Classify `RANDOM_NONINFERIOR` when absolute Dice difference is at most `0.005` and random HD95 is no worse.
+4. Otherwise classify `CINEMA_CONTROL_UNRESOLVED`; Route B cannot be candidate-ready.
+5. Downstream Route B outputs always use the clean-reloaded pretrained checkpoint. Random control never silently replaces CineMA and cannot erase the required pretrained evidence path.
 
-## First bounded train/eval after freeze
+Route-level metric gates:
 
-The first formal wave is limited to eight hours per job. Minimum effective training evidence is machine-readable and requires at least:
+- scar: Dice delta at least `+0.01` or HD95 delta at most `-1.0 mm`, with remote-FP non-increase and severe-harm fraction no greater than `0.20`;
+- edema: T2-positive Dice delta at least `+0.02` or HD95 delta at most `-1.0 mm`, with exact no-T2 zero delta;
+- Cine: pretrained temporal Dice delta versus frame0 at least `+0.01`, HD95 no worse by more than `1.0 mm`, and temporal on/off changes labels on at least eight of twelve cases.
 
-- `min_optimizer_steps: 500`;
-- `min_train_loop_seconds: 1800`;
-- `min_validation_events: 2`;
-- `min_eval_cases: 10` for MyoPS and `min_cine_eval_cases: 5` for Cine;
-- one-batch overfit, prediction sanity, loss decrease, cache isolation and same-split nnU-Net/Cine baseline checks.
+A reviewer may accept an adequate negative packet, but candidate-ready requires all safety gates, full mechanism closure, and at least two positive metric gates while the third is non-worse.
 
-Falling below these thresholds is smoke or undertrained evidence. It may support debugging but cannot support portfolio acceptance, route promotion or scientific stop. Reports must include modality groups, T2-present/GT-positive edema, no-T2 safety, CenterB/CenterC where available, scar-positive cases, remote false positives, components, HD95 and volume-ratio guardrails.
+## 9. Slurm contract
 
-## Slurm routing
+Formal wrappers use `/users/a/e/aereinh/CARE/envs/env_CARE/bin/python` or an exactly fingerprinted route-local equivalent. No bare `python`.
 
-Use `htzhulab` first, `a100-gpu` second and `volta-gpu` third. V100 use requires an explicit 16-GB compatibility receipt without scientific-semantic changes. Prefer distinct ready work on different partitions. A duplicate race is allowed only for one critical pending logical run with identical hashes/semantics, isolated attempts, one atomic winner lock, loser receipts and pending-loser cancellation.
+B4 runs on `htzhulab`. B5 runs after B4 is terminal; B6 runs after B5 is terminal. Default walltime is six hours per job. After two two-hour pending checks, an identical `a100-gpu` mirror may be submitted with isolated output and an atomic winner lock. `volta-gpu` is not used. Training-to-training chains use `afterok` only when the downstream phase requires successful upstream artifacts; the global finalizer uses `afterany` over every attempt. Scheduler block requires 24 hours of all submitted routes remaining pending.
 
-Pending, running, watcher, monitor or `AWAITING_SACCT` states are not completion. Final aggregation must occur after terminal accounting and must merge runtime evidence into tracked lightweight files.
+## 10. Write scopes, packet, validators, and reviewer
 
-## Required validators and known-bad fixtures
+Allowed writes: `src/care_myocardium/route_B/**`, the exact full SRR-v3 first-party files named in the implementation snapshot, `scripts/route_B/**`, `scripts/training/route_B/**`, `scripts/validation/route_B/**`, `tests/route_B/**`, `configs/route_B/**`, `jobs/route_B/**`, `results/route_B/**`, and `logs/route_B/**`. Any shared first-party file edit must be declared before editing in `implementation_snapshot.md`, remain on `route_B`, and be included in mapper/fingerprint receipts. Route A/C, root current state, submissions, raw data, and shared prompts are forbidden writes.
 
-The controller must implement and run:
+Required packet files include all Agent-Flow v2 controller receipts plus: `full_architecture_inventory.json`, `invalid_slot_runtime.csv`, `pattern_sip_runtime.csv`, `prototype_memory_provenance.csv`, `mechanism_intervention_matrix.csv`, `cinema_provenance.json`, `cinema_pretrained_random_control.csv`, `cine_registration_temporal_report.csv`, `training_adequacy.csv`, `metrics_summary.csv`, `case_safety_matrix.csv`, `help_harm_matrix.csv`, `same_split_baseline_receipt.json`, `label_cache_audit.json`, route-local mapper/fingerprint files, finalizer state, strict validator reports, commands, result/controller/completion/review request, and manifest.
 
-- `scripts/validation/route_B/validate_route_b_implementation.py`;
-- `scripts/validation/route_B/validate_route_b_packet.py`;
-- `tests/route_B/known_bad/` fixtures covering semantic bypasses;
-- the repository executor-plan, controller-packet and route-isolation validators applicable to this task.
+Strict validators must parse adequacy thresholds, Slurm terminal accounting, aggregation, controller/finalizer consistency, all mechanism outputs, hashes, and authority fields. Known-bad fixtures must fail for config/mock/CSV-only modules, old-wrapper bypass, invalid slot gradients, router input bypass, prototype leakage, no-T2 edema negative, no-effect proposal/refiner/gate, unbounded correction, fake/frame0 CineMA, unmatched random control, temporal not consuming registered evidence, undertrained ready, submitted-only packet, stale token, heavy artifacts, push/review, or forbidden authority.
 
-Strict mode is mandatory. The validators must fail at least these cases:
-
-- placeholder/mock/dataclass/config/CSV-only module;
-- old nnU-Net or Cine wrapper bypass;
-- unavailable-modality perturbation affects output while availability is off;
-- router ignores pooled image features or availability;
-- prototype has self-case, fold or validation leakage;
-- no-T2 edema negative supervision;
-- proposal/refiner/gate has no final-output effect;
-- residual closed gate is not anchor identity or residual is unbounded;
-- Cine frame0/descriptor/topology/proxy-registration path;
-- temporal module does not consume registered tensors;
-- formal training predates freeze receipt;
-- known pending/monitor packets claim completion;
-- missing controller lifecycle receipts;
-- heavy runtime artifacts are staged for Git;
-- upload, promotion, M11 or cross-route merge claim.
-
-## Result packet and controller lifecycle
-
-The lightweight packet under `results/route_B/` must contain:
-
-- `controller_context.json`, `controller_ledger.csv`, `controller_bootstrap_snapshot.md`;
-- `implementation_gap_inventory.md`, `implementation_snapshot.md`;
-- `architecture_component_trace.csv`, `architecture_delta_final.md`;
-- `mapper_report_draft.md`, `mapper_report_final.md`;
-- `implementation_gate.md`, `implementation_gate.json`;
-- `gradient_and_intervention_report.csv`;
-- `save_reload_export_report.json`, `implementation_freeze_receipt.json`;
-- `cine_registration_temporal_report.csv`;
-- `finalizer_state.json`, validator reports;
-- `result.md`, `commands_run.md`, `controller_report.md`;
-- `completion_check.md`, `review_request.md`, `MANIFEST.md`.
-
-Training/eval files are required only if the post-freeze wave runs: `training_adequacy.csv`, `metrics_summary.csv`, `case_safety_matrix.csv`. Missing formal training must be classified as undertrained/evidence-incomplete, never as scientific completion.
-
-`completion_check.md` must contain exactly one controller completion token from the allowed set. Only `ROUTE_B_READY_FOR_REVIEW` permits the independent reviewer to start; it does not imply scientific acceptance.
-
-## Reviewer contract
-
-The reviewer is a separate read-only session pinned to the committed packet. It must independently rerun strict validators and inspect architecture-to-code/tensor/output mappings, implementation ordering, intervention effects, gradient reachability, anchor identity, save/reload/export, Cine registration/temporal fidelity, training adequacy and monitor-state absence. It must not fix files, train, package, upload, promote, start M11 or merge routes.
-
-The reviewer may issue only:
-
-- `ROUTE_B_REVIEW_PACKET_ACCEPTED_FOR_PORTFOLIO_COMPARISON`;
-- `ROUTE_B_REVIEW_NEEDS_EVIDENCE`;
-- `ROUTE_B_REVIEW_NEEDS_REVISION`;
-- `ROUTE_B_REVIEW_NEEDS_MONITOR`.
-
-## Stop, finalizer and authorization boundary
-
-Stop with `ROUTE_B_IMPLEMENTATION_NEEDS_REVISION` when any required module is missing/no-op, Cine is incomplete, gradients/interventions fail, or save/reload/export is inconsistent. Use `ROUTE_B_SCIENTIFIC_UNDERTRAINED` when implementation is real but training is inadequate. Use `ROUTE_B_NEEDS_EVIDENCE` for missing artifacts and `ROUTE_B_NEEDS_MONITOR` for nonterminal jobs.
-
-The finalizer performs terminal accounting, aggregation, mapper-final handoff, strict validation, `git diff --check`, manifest generation and one local lightweight commit. It must not write runtime `review.md`, push, upload validation, claim hosted metrics, promote the route, start M11 or merge another route.
-
-The token `ROUTE_B_PLANNING_READY_FOR_CONTROLLER` authorizes only a later Route B controller start. It does not authorize validation upload, route promotion, final scientific conclusion, M11, package submission or cross-route merge.
+The durable finalizer performs terminal accounting, aggregation, mapper final, strict validation, and one local lightweight commit. It does not push or write `review.md`. The independent reviewer is read-only and post-commit. Reviewer acceptance authorizes only later portfolio comparison.
