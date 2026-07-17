@@ -830,6 +830,42 @@ def care_partition_summary(rows: list[dict[str, str]]) -> list[dict[str, str]]:
     return summary
 
 
+def slurm_job_group_key(job: dict[str, str]) -> tuple[int, int, str, str]:
+    partition = job.get("partition", "")
+    if partition == "general":
+        group_order = 0
+    elif partition in CARE_PARTITION_ORDER:
+        group_order = 1
+    else:
+        group_order = 2
+    try:
+        partition_order = CARE_PARTITION_ORDER.index(partition)
+    except ValueError:
+        partition_order = len(CARE_PARTITION_ORDER)
+    return (group_order, partition_order, partition, job.get("id", ""))
+
+
+def slurm_job_display_groups(jobs: list[dict[str, str]]) -> list[dict[str, Any]]:
+    general_jobs = sorted([job for job in jobs if job.get("partition") == "general"], key=slurm_job_group_key)
+    care_gpu_jobs = sorted([job for job in jobs if job.get("partition") in CARE_PARTITION_ORDER], key=slurm_job_group_key)
+    other_jobs_by_partition: dict[str, list[dict[str, str]]] = {}
+    for job in jobs:
+        partition = job.get("partition", "")
+        if partition == "general" or partition in CARE_PARTITION_ORDER:
+            continue
+        other_jobs_by_partition.setdefault(partition, []).append(job)
+
+    groups: list[dict[str, Any]] = []
+    if general_jobs:
+        groups.append({"title": "general", "subtitle": f"{len(general_jobs)} 个作业", "jobs": general_jobs})
+    if care_gpu_jobs:
+        groups.append({"title": "CARE GPU 分区", "subtitle": "htzhulab > a100-gpu > volta-gpu", "jobs": care_gpu_jobs})
+    for partition in sorted(other_jobs_by_partition):
+        grouped_jobs = sorted(other_jobs_by_partition[partition], key=slurm_job_group_key)
+        groups.append({"title": partition, "subtitle": f"{len(grouped_jobs)} 个作业", "jobs": grouped_jobs})
+    return groups
+
+
 def parse_sacct(stdout: str) -> list[dict[str, str]]:
     jobs: list[dict[str, str]] = []
     for line in stdout.splitlines():
@@ -1139,13 +1175,10 @@ def render_html(data: dict[str, Any], refresh_seconds: int = 60) -> str:
             """
         )
 
-    jobs_by_partition: dict[str, list[dict[str, str]]] = {}
-    for job in data["jobs"]:
-        jobs_by_partition.setdefault(job["partition"], []).append(job)
     job_sections = []
-    for partition in sorted(jobs_by_partition):
+    for group in slurm_job_display_groups(data["jobs"]):
         rows = []
-        for job in jobs_by_partition[partition]:
+        for job in group["jobs"]:
             danger = " danger" if job["is_general"] else ""
             readonly_note = "只读展示" if job["is_general"] else ""
             rows.append(
@@ -1165,8 +1198,8 @@ def render_html(data: dict[str, Any], refresh_seconds: int = 60) -> str:
             f"""
             <section class="panel">
               <div class="panel-head">
-                <h2>{html.escape(partition)}</h2>
-                <span>{len(rows)} 个作业</span>
+                <h2>{html.escape(group['title'])}</h2>
+                <span>{html.escape(group['subtitle'])}</span>
               </div>
               <table>
                 <thead><tr><th>ID</th><th>分区</th><th>名称</th><th>状态</th><th>时间</th><th>节点/原因</th><th>备注</th></tr></thead>

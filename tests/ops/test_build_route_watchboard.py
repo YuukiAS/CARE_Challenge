@@ -274,6 +274,21 @@ def test_care_partition_summary_excludes_general_and_keeps_htzhulab():
     assert all("general" not in row["partition"] for row in summary)
 
 
+def test_slurm_job_display_groups_puts_care_gpu_under_general_in_policy_order():
+    jobs = [
+        {"id": "3", "partition": "volta-gpu", "name": "v", "is_general": False},
+        {"id": "1", "partition": "general", "name": "shell", "is_general": True},
+        {"id": "4", "partition": "debug", "name": "d", "is_general": False},
+        {"id": "2", "partition": "a100-gpu", "name": "a", "is_general": False},
+        {"id": "5", "partition": "htzhulab", "name": "h", "is_general": False},
+    ]
+
+    groups = watchboard.slurm_job_display_groups(jobs)
+
+    assert [group["title"] for group in groups] == ["general", "CARE GPU 分区", "debug"]
+    assert [job["partition"] for job in groups[1]["jobs"]] == ["htzhulab", "a100-gpu", "volta-gpu"]
+
+
 def test_collect_status_uses_partition_specific_squeue_when_global_empty(monkeypatch):
     def fake_collect_route(root, worktree_root, route):
         return route_fixture(id=route, label=watchboard.ROUTE_LABELS[route], controller_tmux=f"care_{route}_controller")
