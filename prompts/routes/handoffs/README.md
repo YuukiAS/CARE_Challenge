@@ -25,6 +25,16 @@ and the current route-specific critic prompt for each route. If a route critic
 entry is `NO_CURRENT_CRITIC_HANDOFF`, that critic thread must stop and report
 that no current prompt has been issued for its route.
 
+The current round handoff is not only a status index. It is also the active
+requirements entry for the route portfolio round. Planner and critic threads
+must read `CURRENT.md`, then the current round handoff, then the route-branch
+contracts, packets, and reviews named by that handoff.
+
+Every round handoff must state how old milestone or route-specific hard
+requirements carry forward into Route A, Route B, and Route C. Do not silently
+drop M10 / follow-up / follow-up2 gates when translating the old single-route
+workflow into the three-route portfolio.
+
 ## Round Semantics
 
 `roundNN` replaces the older milestone-as-round convention for this route

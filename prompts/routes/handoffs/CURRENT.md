@@ -29,6 +29,13 @@ Planner scope:
 - decide whether any route-specific critic handoff should run;
 - produce controller-forward work for every route in Round02; a status-only or
   read-only-audit-only round is not acceptable;
+- produce a leaderboard-facing, critic-reviewable, controller-forward plan; do
+  not stop at engineering cleanup, runnable-only work, validator-only work, or a
+  low-target design that lacks plausible metric upside;
+- preserve the Round02 hard-requirement inheritance matrix from the planner
+  handoff: Route C keeps all old M10 / follow-up / follow-up2 hard
+  requirements, Route A keeps the compressed leaderboard-facing SRR subset, and
+  Route B keeps the complete SRR-v3 implementation/training subset;
 - never execute code, submit Slurm, upload validation packages, start M11, or
   make final scientific decisions without required review/critic evidence.
 
@@ -49,6 +56,10 @@ NO_CURRENT_CRITIC_HANDOFF
 
 If a route critic sees `NO_CURRENT_CRITIC_HANDOFF`, it must stop and report that
 the planner has not issued a current critic prompt for that route.
+
+Round02 planner must prepare a new route-specific critic handoff or explicit
+critic-ready request for Route A, Route B, and Route C. Until `CURRENT.md` points
+to one of those handoffs, each route critic remains stopped.
 
 ## Round Semantics
 
