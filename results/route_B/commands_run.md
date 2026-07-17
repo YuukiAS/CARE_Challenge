@@ -1,20 +1,32 @@
 # Route B Commands Run Continuation
 
-- `sacct -j 59317810 --format JobIDRaw,JobName%40,Partition,State,ExitCode,Elapsed,Start,End,NodeList -P`
-- `sed -n '1,260p' logs/route_B/RouteBTrainEval_59317810_20260716_133719.log`
+- `python scripts/route_B/run_implementation_gate.py --strict`
+- `python scripts/training/route_B/run_bounded_train_eval.py --steps 500 --myops-eval-cases 10 --cine-eval-cases 5`
+- `python scripts/validation/route_B/validate_route_b_implementation.py --strict --write-report results/route_B/validator_implementation_report.json`
+- `python scripts/validation/route_B/validate_route_b_packet.py --strict --write-report results/route_B/validator_packet_report.json`
+- `pytest -q tests/route_B src/care_myocardium/tests/test_route_b_implementation.py`
+- `git diff --check`
+
+No validation upload, push, M11, or review command was run.
+## Three-Way Race Recovery (2026-07-17T02:13:09Z)
+
 - `bash -n jobs/route_B/run_bounded_train_eval.sh`
-- `/users/a/e/aereinh/CARE/envs/env_CARE/bin/python - <<'PY' ... import torch ... PY`
 - `sbatch --test-only --export=ALL,ROUTE_B_STEPS=500 jobs/route_B/run_bounded_train_eval.sh`
 - `sbatch --test-only --partition=a100-gpu --gres=gpu:nvidia_a100-pcie-40gb:1 --qos=gpu_access --export=ALL,ROUTE_B_STEPS=500 jobs/route_B/run_bounded_train_eval.sh`
 - `sbatch --test-only --partition=volta-gpu --gres=gpu:tesla_v100-sxm2-16gb:1 --qos=gpu_access --export=ALL,ROUTE_B_STEPS=500 jobs/route_B/run_bounded_train_eval.sh`
-- `sbatch --partition=volta-gpu --gres=gpu:tesla_v100-sxm2-16gb:1 --qos=gpu_access --export=ALL,ROUTE_B_STEPS=500 jobs/route_B/run_bounded_train_eval.sh`
-- `squeue -j 59363006 -o '%i|%j|%P|%T|%M|%R|%b|%C|%m'`
-- `scontrol show job 59363006`
+- `scancel 59363006`
+- `sbatch --export=ALL,ROUTE_B_STEPS=500 jobs/route_B/run_bounded_train_eval.sh` -> `59363146` (`htzhulab`)
+- `sbatch --partition=volta-gpu --gres=gpu:tesla_v100-sxm2-16gb:1 --qos=gpu_access --export=ALL,ROUTE_B_STEPS=500 jobs/route_B/run_bounded_train_eval.sh` -> `59363147` (`volta-gpu`)
+- `sbatch --partition=a100-gpu --gres=gpu:nvidia_a100-pcie-40gb:1 --qos=gpu_access --export=ALL,ROUTE_B_STEPS=500 jobs/route_B/run_bounded_train_eval.sh` -> `59363148` (`a100-gpu`)
+- `scancel 59363147 59363148` after `59363146` started running
+- `sacct -j 59363006,59363146,59363147,59363148 --format JobIDRaw,JobName%30,Partition,State,ExitCode,Elapsed,Start,End,NodeList -P`
 
-Current formal replacement job state: `PENDING` on `volta-gpu` for `Priority`.
+Current formal winner job state: `RUNNING` on `htzhulab` as `59363146`. Post-completion aggregation has not run.
 
-Post-completion aggregation has not run. The required future aggregation command is the Slurm wrapper command `python scripts/training/route_B/run_bounded_train_eval.py --steps 500 --myops-eval-cases 10 --cine-eval-cases 5`, which writes the lightweight evidence after the training loop completes.
+## Terminal Aggregation Recovery (2026-07-17T02:16:43Z)
 
-No validation upload, push, M11, cross-route merge, or review command was run.
+- `sacct -j 59363146 --format JobIDRaw,JobName%30,Partition,State,ExitCode,Elapsed,Start,End,NodeList -P` -> `COMPLETED`, `ExitCode=0:0`, elapsed `00:02:37`.
+- Restored post-completion lightweight evidence from `results/route_B/runtime/bounded_train_eval/route_b_undertrained_state.pt` and `logs/route_B/RouteBTrainEval_59363146_20260716_221019.log` without retraining.
+- Updated `bounded_train_eval_summary.json`, `training_adequacy.csv`, `metrics_summary.csv`, and `case_safety_matrix.csv`.
 
-Controller goal monitor: `logs/route_B/controller_goal_monitor_59363006.log`.
+Current formal result: `ROUTE_B_SCIENTIFIC_UNDERTRAINED`, ready for read-only reviewer judgment.

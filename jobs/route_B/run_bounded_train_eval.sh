@@ -46,4 +46,26 @@ except Exception as exc:
     print(f"torch_import_error={type(exc).__name__}: {exc}")
     raise
 PYINFO
+
+RACE_LOCK_ROOT="${CARE_ROOT}/results/route_B/locks"
+RACE_LOCK_DIR="${RACE_LOCK_ROOT}/bounded_train_eval_winner.lock"
+mkdir -p "${RACE_LOCK_ROOT}"
+if mkdir "${RACE_LOCK_DIR}" 2>/dev/null; then
+  echo "race_status=RACE_WINNER"
+  {
+    echo "winner_job_id=${SLURM_JOB_ID:-local}"
+    echo "winner_partition=${SLURM_JOB_PARTITION:-unknown}"
+    echo "winner_host=$(hostname)"
+    echo "winner_started_at=$(date -Is)"
+    echo "winner_log=${LOG_FILE}"
+  } > "${RACE_LOCK_DIR}/winner.txt"
+else
+  echo "race_status=RACE_LOST"
+  echo "winner_lock=${RACE_LOCK_DIR}"
+  if [[ -f "${RACE_LOCK_DIR}/winner.txt" ]]; then
+    cat "${RACE_LOCK_DIR}/winner.txt"
+  fi
+  exit 0
+fi
+
 "${CARE_PYTHON}" -u scripts/training/route_B/run_bounded_train_eval.py --steps "${ROUTE_B_STEPS:-500}" --myops-eval-cases 10 --cine-eval-cases 5

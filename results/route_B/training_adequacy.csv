@@ -1,16 +1,9 @@
 criterion,observed,required,pass
-failed_attempt_job_id,59317810,record failed startup attempt,True
-failed_attempt_state,FAILED,failed attempt receives zero training credit,True
-failed_attempt_reason,ModuleNotFoundError_no_torch,environment startup failure recorded,True
-replacement_slurm_job_id,59363006,terminal Slurm job id recorded,True
-replacement_slurm_job_state,PENDING,COMPLETED with post-completion aggregation,False
-replacement_slurm_partition,volta-gpu,allowed fallback when htzhulab/a100 are slower and semantics unchanged,True
-min_optimizer_steps,PENDING_MONITOR,500,False
-min_train_loop_seconds,PENDING_MONITOR,1800,False
-min_validation_events,PENDING_MONITOR,2,False
-min_eval_cases_myops,PENDING_MONITOR,10,False
-min_eval_cases_cine,PENDING_MONITOR,5,False
-loss_decrease,PENDING_MONITOR,last_loss < first_loss,False
+min_optimizer_steps,500,500,True
+min_train_loop_seconds,43.331,1800,False
+min_validation_events,2,2,True
+min_eval_cases_myops,10,10,True
+min_eval_cases_cine,5,5,True
+loss_decrease,2.432160->0.076860,last_loss < first_loss,True
 cache_isolation,results/route_B/runtime/bounded_train_eval,route_B runtime namespace,True
-same_split_anchor_baseline,PENDING_MONITOR,baseline available,False
-post_completion_aggregation,PENDING_MONITOR,aggregation exit code 0 after terminal job,False
+same_split_anchor_baseline,nnUNet anchor predictions read-only; no validation upload,baseline available,True

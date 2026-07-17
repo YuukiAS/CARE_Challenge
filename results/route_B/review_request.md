@@ -1,6 +1,7 @@
 # Route B Review Request Continuation
 
-status: DO_NOT_REVIEW_AS_READY_PACKET
-controller_token: ROUTE_B_NEEDS_MONITOR
+Requested independent reviewer action: read-only review of the Route B terminal undertrained packet.
 
-This is a monitor packet for replacement Slurm job `59363006`, not a normal review request. The failed startup attempt `59317810` is recorded with zero training credit. Reviewer must not run until the replacement job reaches terminal state and post-completion aggregation updates tracked evidence.
+Review target token: `ROUTE_B_SCIENTIFIC_UNDERTRAINED`.
+
+The reviewer should verify the Slurm recovery ledger, race cancellation, terminal accounting for `59363146`, restored lightweight metric tables, and whether undertrained evidence should return to planner/critic or controller. The reviewer must not edit files, train, upload, push, start M11, or merge routes.

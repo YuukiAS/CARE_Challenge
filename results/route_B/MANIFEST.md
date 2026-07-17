@@ -1,5 +1,11 @@
 # Route B Manifest Continuation
 
+- generated_at_utc: `2026-07-17T02:16:43Z`
+- token: `ROUTE_B_SCIENTIFIC_UNDERTRAINED`
+- review_ready: `true`
+- winner_job: `59363146`
+
+## Packet Files
 - `results/route_B/architecture_component_trace.csv`
 - `results/route_B/architecture_delta_final.md`
 - `results/route_B/bounded_train_eval_summary.json`

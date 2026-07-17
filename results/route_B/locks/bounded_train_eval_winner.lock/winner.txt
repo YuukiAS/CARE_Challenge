@@ -1,0 +1,5 @@
+winner_job_id=59363146
+winner_partition=htzhulab
+winner_host=g180702.ll.unc.edu
+winner_started_at=2026-07-16T22:11:35-04:00
+winner_log=/users/a/e/aereinh/CARE_worktrees/route_B/logs/route_B/RouteBTrainEval_59363146_20260716_221019.log

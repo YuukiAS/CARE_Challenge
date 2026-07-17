@@ -1,52 +1,137 @@
 {
-  "task": "RouteB-Controller-continuation",
-  "route_id": "route_B",
-  "status": "ROUTE_B_NEEDS_MONITOR",
-  "generated_at_utc": "2026-07-17T01:53:11Z",
+  "adequacy_passed": false,
+  "controller_goal_required": true,
   "formal_training_submitted": true,
-  "bounded_train_eval_run": false,
-  "failed_slurm_jobs": [
-    {
-      "job_id": "59317810",
-      "job_name": "RouteBTrainEval",
-      "partition": "htzhulab",
-      "state": "FAILED",
-      "exit_code": "1:0",
-      "elapsed": "00:00:04",
-      "node": "g180702",
-      "start": "2026-07-16T13:37:17",
-      "end": "2026-07-16T13:37:21",
-      "log_path": "logs/route_B/RouteBTrainEval_59317810_20260716_133719.log",
-      "failure_class": "STARTUP_ENVIRONMENT_ERROR",
-      "failure_reason": "Slurm wrapper used bare /usr/bin/python; torch import failed with ModuleNotFoundError.",
-      "training_credit": 0
-    }
+  "formal_training_terminal": true,
+  "generated_at_utc": "2026-07-17T02:16:43Z",
+  "git_head": "e4df50f8e586ef617cb57a443cc183ee4c068bbe",
+  "git_status_short": [
+    " M jobs/route_B/run_bounded_train_eval.sh",
+    " M results/route_B/bounded_train_eval_summary.json",
+    " M results/route_B/case_safety_matrix.csv",
+    " M results/route_B/commands_run.md",
+    " M results/route_B/completion_check.md",
+    " M results/route_B/controller_bootstrap_snapshot.md",
+    " M results/route_B/controller_context.json",
+    " M results/route_B/controller_ledger.csv",
+    " M results/route_B/controller_report.md",
+    " M results/route_B/finalizer_state.json",
+    " M results/route_B/metrics_summary.csv",
+    " M results/route_B/result.md",
+    " M results/route_B/review_request.md",
+    " M results/route_B/training_adequacy.csv",
+    "?? results/route_B/locks/"
   ],
+  "post_completion_aggregation_run": true,
+  "review_ready": true,
+  "route_b_steps": 500,
+  "route_decision_boundaries": {
+    "route_negative_decision": "NOT_REVIEWED",
+    "route_promotion_decision": "NOT_REVIEWED",
+    "scientific_resolution_status": "AWAITING_REVIEW"
+  },
+  "route_id": "route_B",
+  "routing_race": {
+    "enabled": true,
+    "lock_path": "results/route_B/locks/bounded_train_eval_winner.lock",
+    "loser_cancel_command": "scancel 59363147 59363148",
+    "loser_job_ids": [
+      "59363147",
+      "59363148"
+    ],
+    "reason": "User directed three-way race; no time to wait pending on a single partition.",
+    "superseded_cancel_command": "scancel 59363006",
+    "superseded_unlocked_job_id": "59363006",
+    "winner_job_id": "59363146",
+    "winner_partition": "htzhulab"
+  },
+  "runtime_paths": {
+    "lock_root": "results/route_B/locks",
+    "log_root": "logs/route_B",
+    "result_root": "results/route_B",
+    "runtime_root": "results/route_B/runtime/bounded_train_eval"
+  },
   "slurm_jobs_submitted": [
     {
+      "elapsed": "00:00:04",
+      "end": "2026-07-16T13:37:23",
+      "exit_code": "1:0",
+      "job_id": "59317810",
+      "log_path": "logs/route_B/RouteBTrainEval_59317810_20260716_133719.log",
+      "node": "g180702",
+      "partition": "htzhulab",
+      "reason": "wrapper used bare /usr/bin/python; torch import failed",
+      "role": "failed_startup_attempt",
+      "start": "2026-07-16T13:37:19",
+      "state": "FAILED",
+      "training_credit": "0"
+    },
+    {
+      "elapsed": "00:00:00",
+      "end": "2026-07-16T22:09:55",
+      "exit_code": "0:0",
       "job_id": "59363006",
-      "job_name": "RouteBTrainEval",
+      "log_path": "logs/route_B/RouteBTrainEval_59363006_<not_started>.log",
+      "node": "None assigned",
       "partition": "volta-gpu",
-      "qos": "gpu_access",
-      "state": "PENDING",
-      "pending_reason": "Priority",
-      "runtime": "00:00:00",
-      "exit_code": "0:0 while pending; terminal accounting not available",
-      "log_path": "logs/route_B/RouteBTrainEval_59363006_<job-start-timestamp>.log",
-      "runtime_output_path": "results/route_B/runtime/bounded_train_eval",
-      "sbatch_command": "sbatch --partition=volta-gpu --gres=gpu:tesla_v100-sxm2-16gb:1 --qos=gpu_access --export=ALL,ROUTE_B_STEPS=500 jobs/route_B/run_bounded_train_eval.sh",
-      "replacement_for": "59317810"
+      "reason": "cancelled before start because it was submitted before atomic race lock was added",
+      "role": "superseded_unlocked_volta_attempt",
+      "start": "None",
+      "state": "CANCELLED by 397557",
+      "training_credit": "0"
+    },
+    {
+      "elapsed": "running",
+      "end": "Unknown",
+      "exit_code": "0:0",
+      "job_id": "59363146",
+      "log_path": "logs/route_B/RouteBTrainEval_59363146_20260716_221019.log",
+      "node": "g180702",
+      "partition": "htzhulab",
+      "reason": "first locked race leg to start; retains winner lock and owns runtime output",
+      "role": "race_winner_active_training",
+      "start": "2026-07-16T22:10:17",
+      "state": "RUNNING",
+      "training_credit": "pending_terminal_accounting"
+    },
+    {
+      "elapsed": "00:00:00",
+      "end": "2026-07-16T22:10:41",
+      "exit_code": "0:0",
+      "job_id": "59363147",
+      "log_path": "not_started",
+      "node": "None assigned",
+      "partition": "volta-gpu",
+      "reason": "cancelled after htzhulab leg started running",
+      "role": "race_loser_cancelled",
+      "start": "None",
+      "state": "CANCELLED by 397557",
+      "training_credit": "0"
+    },
+    {
+      "elapsed": "00:00:00",
+      "end": "2026-07-16T22:10:41",
+      "exit_code": "0:0",
+      "job_id": "59363148",
+      "log_path": "not_started",
+      "node": "None assigned",
+      "partition": "a100-gpu",
+      "reason": "cancelled after htzhulab leg started running",
+      "role": "race_loser_cancelled",
+      "start": "None",
+      "state": "CANCELLED by 397557",
+      "training_credit": "0"
     }
   ],
-  "operational_repair": {
-    "type": "same_scope_startup_environment_repair",
-    "fixed_file": "jobs/route_B/run_bounded_train_eval.sh",
-    "reason": "bare python lacked torch on compute node"
+  "status": "ROUTE_B_SCIENTIFIC_UNDERTRAINED",
+  "task": "RouteB-Controller",
+  "watcher": {
+    "active_job_id": "59363146",
+    "log": "logs/route_B/controller_goal_monitor_race_59363146.log",
+    "script": "/tmp/routeB_controller_goal_monitor_race.sh"
   },
-  "controller_goal_monitor": {
-    "job_id": "59363006",
-    "tmux_target": "care_route_B:RouteB-Continue.0",
-    "watch_log": "logs/route_B/controller_goal_monitor_59363006.log",
-    "poll_seconds": 300
-  }
+  "winner_exit_code": "0:0",
+  "winner_job_id": "59363146",
+  "winner_slurm_state": "COMPLETED",
+  "worktree": "/users/a/e/aereinh/CARE_worktrees/route_B"
 }
