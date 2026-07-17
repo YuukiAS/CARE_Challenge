@@ -30,9 +30,9 @@ prompts/routes/portfolio_round02_planner_plan_20260717.md
 Bound route planner commits:
 
 ```text
-route_A: 94240ffb5e91953b0ade81137ce5042568ddd28f
-route_B: cae72e41b08cbf2a7e2b0d137b62eed13fab66c7
-route_C: a68b7413775e00b96634219ee9453ba47e73d4e0
+route_A: bb522e1b2be7ce671db0026a4b94cc1d18937780
+route_B: 77fbde2e1936d19c9f0d6dc711ea37b4ae077eac
+route_C: fbf02a5883b0f08c0f2d9268a68dc486ae956d8e
 ```
 
 Round02 has produced controller-forward work for all three routes. It remains leaderboard-facing and preserves `prompts/routes/ROUTE_HARD_REQUIREMENTS_MATRIX.md`, the M9/M10 inherited gates, strict validators/known-bad fixtures, durable finalizers, runtime no-push, and independent reviewer boundaries.
@@ -103,7 +103,7 @@ Route A:
 - prior controller packet commit: `b8f05521500971953a2fc9f286de8520f1ea5b4f`
 - prior reviewer commit: `05a6102073c8bb200fd4c84d6d0dff64e5a75f78`
 - prior reviewer decision: `ROUTE_A_REVIEW_NEEDS_REVISION`
-- Round02 planner commit: `94240ffb5e91953b0ade81137ce5042568ddd28f`
+- Round02 planner commit: `bb522e1b2be7ce671db0026a4b94cc1d18937780`
 - next actor: Route A Critic; controller remains blocked until the current ready token.
 
 Route B:
@@ -111,7 +111,7 @@ Route B:
 - prior controller packet commit: `0200e86f7a95ff9753f9c425419052e878d342f4`
 - prior reviewer commit: `cde0e0b658893b327aa5fb3129d37a99f1cf7c47`
 - prior reviewer decision: `ROUTE_B_REVIEW_NEEDS_REVISION`
-- Round02 planner commit: `cae72e41b08cbf2a7e2b0d137b62eed13fab66c7`
+- Round02 planner commit: `77fbde2e1936d19c9f0d6dc711ea37b4ae077eac`
 - next actor: Route B Critic; controller remains blocked until the current ready token.
 
 Route C:
@@ -119,7 +119,7 @@ Route C:
 - prior controller packet commit: `789ee4d`
 - prior reviewer commit: `7b6c2d36bceefc5eb0f64f4977fd43f4194cc7b4`
 - prior reviewer decision: `ROUTE_C_REVIEW_NEEDS_REVISION_CONFIRMED`
-- Round02 planner commit: `a68b7413775e00b96634219ee9453ba47e73d4e0`
+- Round02 planner commit: `fbf02a5883b0f08c0f2d9268a68dc486ae956d8e`
 - next actor: Route C Critic; controller remains blocked until the current ready token.
 
 ## Authority Boundary
