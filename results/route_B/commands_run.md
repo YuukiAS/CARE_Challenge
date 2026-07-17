@@ -30,3 +30,14 @@ Current formal winner job state: `RUNNING` on `htzhulab` as `59363146`. Post-com
 - Updated `bounded_train_eval_summary.json`, `training_adequacy.csv`, `metrics_summary.csv`, and `case_safety_matrix.csv`.
 
 Current formal result: `ROUTE_B_SCIENTIFIC_UNDERTRAINED`, ready for read-only reviewer judgment.
+
+## Adequacy Recovery Submission (2026-07-17T02:36:47Z)
+
+- `bash -n jobs/route_B/run_bounded_train_eval.sh`
+- `python -m py_compile scripts/training/route_B/run_bounded_train_eval.py`
+- `sbatch --test-only --export=ALL,ROUTE_B_STEPS=25000,ROUTE_B_RACE_LOCK_NAME=bounded_train_eval_25000_adequacy_winner.lock jobs/route_B/run_bounded_train_eval.sh`
+- `sbatch --test-only --partition=a100-gpu --gres=gpu:nvidia_a100-pcie-40gb:1 --qos=gpu_access --export=ALL,ROUTE_B_STEPS=25000,ROUTE_B_RACE_LOCK_NAME=bounded_train_eval_25000_adequacy_winner.lock jobs/route_B/run_bounded_train_eval.sh`
+- `sbatch --test-only --partition=volta-gpu --gres=gpu:tesla_v100-sxm2-16gb:1 --qos=gpu_access --export=ALL,ROUTE_B_STEPS=25000,ROUTE_B_RACE_LOCK_NAME=bounded_train_eval_25000_adequacy_winner.lock jobs/route_B/run_bounded_train_eval.sh`
+- `sbatch --export=ALL,ROUTE_B_STEPS=25000,ROUTE_B_RACE_LOCK_NAME=bounded_train_eval_25000_adequacy_winner.lock jobs/route_B/run_bounded_train_eval.sh` -> `59364846`
+- `sbatch --partition=a100-gpu --gres=gpu:nvidia_a100-pcie-40gb:1 --qos=gpu_access --export=ALL,ROUTE_B_STEPS=25000,ROUTE_B_RACE_LOCK_NAME=bounded_train_eval_25000_adequacy_winner.lock jobs/route_B/run_bounded_train_eval.sh` -> `59364845`
+- `sbatch --partition=volta-gpu --gres=gpu:tesla_v100-sxm2-16gb:1 --qos=gpu_access --export=ALL,ROUTE_B_STEPS=25000,ROUTE_B_RACE_LOCK_NAME=bounded_train_eval_25000_adequacy_winner.lock jobs/route_B/run_bounded_train_eval.sh` -> `59364847`

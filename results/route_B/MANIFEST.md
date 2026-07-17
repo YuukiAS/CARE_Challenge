@@ -1,9 +1,9 @@
-# Route B Manifest Continuation
+# Route B Manifest Adequacy Recovery
 
-- generated_at_utc: `2026-07-17T02:16:43Z`
-- token: `ROUTE_B_SCIENTIFIC_UNDERTRAINED`
-- review_ready: `true`
-- winner_job: `59363146`
+- generated_at_utc: `2026-07-17T02:36:47Z`
+- token: `ROUTE_B_NEEDS_MONITOR`
+- review_ready: `false`
+- route_b_steps: `25000`
 
 ## Packet Files
 - `results/route_B/architecture_component_trace.csv`

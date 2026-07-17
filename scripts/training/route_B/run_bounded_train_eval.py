@@ -41,6 +41,7 @@ from src.care_myocardium.route_B import (  # noqa: E402
 RESULT_ROOT = REPO_ROOT / "results" / "route_B"
 RUNTIME_ROOT = RESULT_ROOT / "runtime" / "bounded_train_eval"
 TOKEN_UNDERTRAINED = "ROUTE_B_SCIENTIFIC_UNDERTRAINED"
+TOKEN_READY = "ROUTE_B_READY_FOR_REVIEW"
 
 
 def git(args: list[str]) -> str:
@@ -120,13 +121,26 @@ def eval_cine(model: RouteBCineModel, batch: tuple[torch.Tensor, torch.Tensor, l
 
 
 def append_packet(args: argparse.Namespace, summary: dict[str, Any]) -> None:
+    token = str(summary["status"])
+    adequacy_passed = bool(summary["adequacy_passed"])
+    adequacy_text = (
+        "The implementation-before-training gate passed on synthetic and real cases, then a post-freeze bounded train/eval command ran and aggregated lightweight evidence. The adequacy gate passed, so this packet is ready for independent read-only review."
+        if adequacy_passed
+        else "The implementation-before-training gate passed on synthetic and real cases, then a post-freeze bounded train/eval command ran and aggregated lightweight evidence. This remains undertrained because the run did not meet all Route B minimum effective training thresholds."
+    )
+    run_status = (
+        "POST_FREEZE_BOUNDED_TRAIN_EVAL_READY_FOR_REVIEW"
+        if adequacy_passed
+        else "POST_FREEZE_BOUNDED_TRAIN_EVAL_UNDERTRAINED"
+    )
+    experiment_decision = "READY_FOR_REVIEW" if adequacy_passed else "SCIENTIFIC_UNDERTRAINED"
     write(
         RESULT_ROOT / "completion_check.md",
         f"""# Route B Completion Check Continuation
 
-Completion token: `{TOKEN_UNDERTRAINED}`
+Completion token: `{token}`
 
-The implementation-before-training gate passed on synthetic and real cases, then a post-freeze bounded train/eval command ran and aggregated lightweight evidence. This remains undertrained because the first run did not meet all Route B minimum effective training thresholds.
+{adequacy_text}
 
 Forbidden and not performed: `review.md`, push, validation packaging/upload, hosted metric claim, route promotion, scientific stop, M11, cross-route merge.
 """,
@@ -135,9 +149,9 @@ Forbidden and not performed: `review.md`, push, validation packaging/upload, hos
         RESULT_ROOT / "controller_report.md",
         f"""# Route B Controller Report Continuation
 
-controller_run_status: POST_FREEZE_BOUNDED_TRAIN_EVAL_UNDERTRAINED
-operational_completion_status: {TOKEN_UNDERTRAINED}
-experiment_adequacy_decision: SCIENTIFIC_UNDERTRAINED
+controller_run_status: {run_status}
+operational_completion_status: {token}
+experiment_adequacy_decision: {experiment_decision}
 route_promotion_decision: NOT_REVIEWED
 route_negative_decision: NOT_REVIEWED
 scientific_resolution_status: AWAITING_REVIEW
@@ -147,7 +161,7 @@ git_push_decision: SKIP_PUSH
 
 ## Summary
 
-The controller continued from the prior diagnostic packet without reverting it. The Route B implementation gate passed with real MyoPS and Cine cases, and the post-freeze bounded train/eval entrypoint ran on real data. The run is explicitly undertrained: optimizer steps, train-loop seconds, or other minimum adequacy thresholds are insufficient for route promotion or scientific conclusions.
+The controller continued from the prior diagnostic packet without reverting it. The Route B implementation gate passed with real MyoPS and Cine cases, and the post-freeze bounded train/eval entrypoint ran on real data. Adequacy passed: `{adequacy_passed}`.
 
 No pending/running/submitted-only Slurm state is being treated as completion.
 
@@ -163,17 +177,17 @@ cine_eval_cases: `{summary['cine_eval_cases']}`
         RESULT_ROOT / "result.md",
         f"""# Route B Controller Result Continuation
 
-Final controller token: `{TOKEN_UNDERTRAINED}`
+Final controller token: `{token}`
 
-This superseding packet contains a real implementation gate pass and a post-freeze bounded train/eval aggregation. It is not review-ready for scientific acceptance; it is undertrained evidence with the required lightweight tables present.
+This superseding packet contains a real implementation gate pass and a post-freeze bounded train/eval aggregation. Adequacy passed: `{adequacy_passed}`. This does not authorize route promotion; it is the packet for independent read-only reviewer judgment.
 """,
     )
     write_json(
         RESULT_ROOT / "finalizer_state.json",
         {
             "task": "RouteB-Controller",
-            "state": "READY_FOR_LOCAL_PACKET_COMMIT_SCIENTIFIC_UNDERTRAINED",
-            "completion": TOKEN_UNDERTRAINED,
+            "state": "READY_FOR_LOCAL_PACKET_COMMIT_READY_FOR_REVIEW" if adequacy_passed else "READY_FOR_LOCAL_PACKET_COMMIT_SCIENTIFIC_UNDERTRAINED",
+            "completion": token,
             "generated_at_utc": now(),
             "bounded_train_eval_run": True,
             "formal_training_submitted": False,
@@ -205,7 +219,7 @@ This superseding packet contains a real implementation gate pass and a post-free
     context = {
         "task": "RouteB-Controller-continuation",
         "route_id": "route_B",
-        "status": TOKEN_UNDERTRAINED,
+        "status": token,
         "generated_at_utc": now(),
         "git_head_before_continuation": git(["rev-parse", "HEAD"]),
         "formal_training_submitted": False,
@@ -217,14 +231,14 @@ This superseding packet contains a real implementation gate pass and a post-free
         RESULT_ROOT / "controller_ledger.csv",
         [
             {"timestamp_utc": now(), "phase": "B3", "decision": "implementation_gate_passed", "next_action": "B5_bounded_train_eval"},
-            {"timestamp_utc": now(), "phase": "B5", "decision": TOKEN_UNDERTRAINED, "next_action": "B6_finalizer_packet"},
-            {"timestamp_utc": now(), "phase": "B6", "decision": TOKEN_UNDERTRAINED, "next_action": "independent_readonly_review"},
+            {"timestamp_utc": now(), "phase": "B5", "decision": token, "next_action": "B6_finalizer_packet"},
+            {"timestamp_utc": now(), "phase": "B6", "decision": token, "next_action": "independent_readonly_review"},
         ],
     )
     write(
         RESULT_ROOT / "controller_bootstrap_snapshot.md",
         "# Route B Controller Bootstrap Snapshot Continuation\n\n"
-        f"- current_token: `{TOKEN_UNDERTRAINED}`\n- bounded_train_eval_run: `true`\n- formal_training_submitted: `false`\n- review_md_written: `false`\n",
+        f"- current_token: `{token}`\n- bounded_train_eval_run: `true`\n- formal_training_submitted: `false`\n- adequacy_passed: `{adequacy_passed}`\n- review_md_written: `false`\n",
     )
     files = sorted(p for p in RESULT_ROOT.iterdir() if p.is_file())
     write(RESULT_ROOT / "MANIFEST.md", "# Route B Manifest Continuation\n\n" + "\n".join(f"- `{p.relative_to(REPO_ROOT)}`" for p in files if p.name != "MANIFEST.md") + "\n")
@@ -295,8 +309,9 @@ def main() -> int:
         {"criterion": "cache_isolation", "observed": "results/route_B/runtime/bounded_train_eval", "required": "route_B runtime namespace", "pass": True},
         {"criterion": "same_split_anchor_baseline", "observed": "nnUNet anchor predictions read-only; no validation upload", "required": "baseline available", "pass": True},
     ]
+    adequacy_passed = all(bool(row["pass"]) for row in adequacy)
     summary = {
-        "status": TOKEN_UNDERTRAINED,
+        "status": TOKEN_READY if adequacy_passed else TOKEN_UNDERTRAINED,
         "generated_at_utc": datetime.now(timezone.utc).isoformat(),
         "optimizer_steps": args.steps,
         "train_loop_seconds": train_loop_seconds,
@@ -305,7 +320,7 @@ def main() -> int:
         "last_loss": last_loss,
         "myops_eval_cases": args.myops_eval_cases,
         "cine_eval_cases": args.cine_eval_cases,
-        "adequacy_passed": all(bool(row["pass"]) for row in adequacy),
+        "adequacy_passed": adequacy_passed,
         "runtime_root": str(RUNTIME_ROOT.relative_to(REPO_ROOT)),
     }
     write_csv(RESULT_ROOT / "training_adequacy.csv", adequacy)

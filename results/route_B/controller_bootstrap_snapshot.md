@@ -1,13 +1,8 @@
-# Route B Controller Bootstrap Snapshot Continuation
+# Route B Controller Bootstrap Snapshot Adequacy Recovery
 
-- current_token: `ROUTE_B_SCIENTIFIC_UNDERTRAINED`
-- first_formal_attempt: `59317810` (`FAILED`, zero training credit)
-- cancelled_unlocked_replacement: `59363006`
-- routing_race_enabled: `true`
-- race_lock_path: `results/route_B/locks/bounded_train_eval_winner.lock`
-- race_winner_job: `59363146` (`htzhulab`, `COMPLETED`, `ExitCode=0:0`)
-- race_loser_jobs_cancelled: `59363147`, `59363148`
-- bounded_train_eval_run: `true`
-- post_completion_aggregation_run: `true`
-- adequacy_passed: `false`
+- current_token: `ROUTE_B_NEEDS_MONITOR`
+- reason: previous `500` step packet was `ROUTE_B_SCIENTIFIC_UNDERTRAINED`, not a reviewer-ready endpoint.
+- route_b_steps: `25000`
+- race_jobs: `59364846`, `59364845`, `59364847`
+- post_completion_aggregation_run: `false`
 - review_md_written: `false`

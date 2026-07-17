@@ -1,6 +1,4 @@
 timestamp_utc,phase,job_id,partition,state,decision,next_action
-2026-07-17T02:16:43Z,B5,59317810,htzhulab,FAILED,startup failure: bare python without torch,repair wrapper
-2026-07-17T02:16:43Z,B5_retry,59363006,volta-gpu,CANCELLED,superseded because submitted before race lock,submit locked three-way race
-2026-07-17T02:16:43Z,B5_race,59363146,htzhulab,COMPLETED,race winner completed undertrained train/eval,readonly reviewer
-2026-07-17T02:16:43Z,B5_race,59363147,volta-gpu,CANCELLED,pending loser cancelled,none
-2026-07-17T02:16:43Z,B5_race,59363148,a100-gpu,CANCELLED,pending loser cancelled,none
+2026-07-17T02:36:47Z,B5_adequacy_race,59364846,htzhulab,PENDING,submitted 25000-step adequacy recovery race leg,wait for winner then cancel pending losers
+2026-07-17T02:36:47Z,B5_adequacy_race,59364845,a100-gpu,PENDING,submitted 25000-step adequacy recovery race leg,wait for winner then cancel pending losers
+2026-07-17T02:36:47Z,B5_adequacy_race,59364847,volta-gpu,PENDING,submitted 25000-step adequacy recovery race leg,wait for winner then cancel pending losers

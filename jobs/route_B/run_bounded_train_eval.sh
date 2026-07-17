@@ -48,7 +48,8 @@ except Exception as exc:
 PYINFO
 
 RACE_LOCK_ROOT="${CARE_ROOT}/results/route_B/locks"
-RACE_LOCK_DIR="${RACE_LOCK_ROOT}/bounded_train_eval_winner.lock"
+RACE_LOCK_NAME="${ROUTE_B_RACE_LOCK_NAME:-bounded_train_eval_${ROUTE_B_STEPS:-500}_winner.lock}"
+RACE_LOCK_DIR="${RACE_LOCK_ROOT}/${RACE_LOCK_NAME}"
 mkdir -p "${RACE_LOCK_ROOT}"
 if mkdir "${RACE_LOCK_DIR}" 2>/dev/null; then
   echo "race_status=RACE_WINNER"
