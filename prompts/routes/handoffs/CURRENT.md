@@ -36,6 +36,9 @@ Planner scope:
   handoff: Route C keeps all old M10 / follow-up / follow-up2 hard
   requirements, Route A keeps the compressed leaderboard-facing SRR subset, and
   Route B keeps the complete SRR-v3 implementation/training subset;
+- also preserve the permanent hard-requirements matrix in
+  `prompts/routes/ROUTE_HARD_REQUIREMENTS_MATRIX.md`; future rounds must not
+  treat the Round02 hardening as one-off;
 - never execute code, submit Slurm, upload validation packages, start M11, or
   make final scientific decisions without required review/critic evidence.
 

@@ -22,6 +22,7 @@ prompts/routes/route_portfolio_planner_prompt.md
 
 ```text
 prompts/routes/ROUTE_ANTI_LAZINESS_PROTOCOL.md
+prompts/routes/ROUTE_HARD_REQUIREMENTS_MATRIX.md
 ```
 
 4. 从 Notion 或 GPT 项目里复制角色提示词时使用：
@@ -87,12 +88,12 @@ Reviewer 代码块第一行：
 
 ## 当前流程
 
-1. 初始三路线规划时，GPT Planner 先读仓库、Project 背景 SRR 图、`prompts/routes/ROUTE_ANTI_LAZINESS_PROTOCOL.md` 和 `prompts/routes/route_portfolio_planner_prompt.md`。
+1. 初始三路线规划时，GPT Planner 先读仓库、Project 背景 SRR 图、`prompts/routes/ROUTE_ANTI_LAZINESS_PROTOCOL.md`、`prompts/routes/ROUTE_HARD_REQUIREMENTS_MATRIX.md` 和 `prompts/routes/route_portfolio_planner_prompt.md`。
 2. 执行后回传或下一步决策时，GPT Planner 和 Critic 都先读 `prompts/routes/handoffs/CURRENT.md`，不要猜最新文件名。
 3. GPT Planner 是一个 thread，统一负责 Route A、Route B、Route C 的 portfolio round。
 4. Critic 是三个独立 thread；每个 Critic 只读取 `CURRENT.md` 中自己 route 的当前 critic prompt。如果该 route 是 `NO_CURRENT_CRITIC_HANDOFF`，Critic 停止。
 5. GPT Planner 分别向 `route_A`、`route_B`、`route_C` 推送规划合同、executor plan、critic request 和 planner audit。
 6. 每条 route 各有一个独立 Critic。Critic 通过后，该 route 的 Controller 才能启动。
 7. Controller 在对应 route worktree 中执行；不能跨 route 写文件。
-8. Reviewer 只在对应 route controller packet 提交后启动，且只读审阅；审阅前必须检查 `ROUTE_ANTI_LAZINESS_PROTOCOL.md` 中的 Slurm、短 smoke、validator、receipt 自洽规则。
+8. Reviewer 只在对应 route controller packet 提交后启动，且只读审阅；审阅前必须检查 `ROUTE_ANTI_LAZINESS_PROTOCOL.md` 中的 Slurm、短 smoke、validator、receipt 自洽规则，以及 `ROUTE_HARD_REQUIREMENTS_MATRIX.md` 中对应 route 的持续强要求。
 9. 最终选择和合并由后续 portfolio reconciliation 完成，不由任一单独 route controller 决定。

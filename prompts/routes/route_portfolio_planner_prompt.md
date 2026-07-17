@@ -20,6 +20,7 @@ route_C
 - `GPT_PLANNER_CARE_PROTOCOL.md`
 - `prompts/AGENT_FLOW_V2_PROTOCOL.md`
 - `prompts/routes/ROUTE_ANTI_LAZINESS_PROTOCOL.md`
+- `prompts/routes/ROUTE_HARD_REQUIREMENTS_MATRIX.md`
 - `prompts/HANDOFF_GATE_POLICY.md`
 - `prompts/GPT_HARD_GATE_PROMPT.md`
 - `prompts/MILESTONE_REVIEW_PROTOCOL.md`（如存在）
@@ -86,7 +87,7 @@ prompts/routes/portfolio_reconciliation_plan.md
 
 目标不是再提交一版普通 nnU-Net。仓库已有 nnU-Net validation 结果，重新包装 nnU-Net 没有意义。三条 route 的共同目标是尽快产出至少一条非纯 nnU-Net、有充分本地证据、有真实代码实现、有可审查 packet 的 MyoPS + Cine 候选。
 
-同时必须读取并执行 `prompts/routes/ROUTE_ANTI_LAZINESS_PROTOCOL.md`，防止过去 M10 / follow-up / follow-up2 以及本轮 Route A/B 暴露出的偷懒：
+同时必须读取并执行 `prompts/routes/ROUTE_ANTI_LAZINESS_PROTOCOL.md` 和 `prompts/routes/ROUTE_HARD_REQUIREMENTS_MATRIX.md`，防止过去 M10 / follow-up / follow-up2 以及本轮 Route A/B 暴露出的偷懒，并确保三条 route 的强要求在后续 round 持续生效：
 
 - 用 `NEEDS_EVIDENCE` 表格冒充 intervention。
 - 不带 `--evaluate --force` 却声称 checkpoint fresh replay。

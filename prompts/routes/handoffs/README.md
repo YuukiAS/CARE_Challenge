@@ -30,6 +30,12 @@ requirements entry for the route portfolio round. Planner and critic threads
 must read `CURRENT.md`, then the current round handoff, then the route-branch
 contracts, packets, and reviews named by that handoff.
 
+Every round also inherits the permanent requirements in:
+
+```text
+prompts/routes/ROUTE_HARD_REQUIREMENTS_MATRIX.md
+```
+
 Every round handoff must state how old milestone or route-specific hard
 requirements carry forward into Route A, Route B, and Route C. Do not silently
 drop M10 / follow-up / follow-up2 gates when translating the old single-route

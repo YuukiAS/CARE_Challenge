@@ -34,6 +34,7 @@ prompts/GPT_HARD_GATE_PROMPT.md
 prompts/routes/README.md
 prompts/routes/route_portfolio_planner_prompt.md
 prompts/routes/ROUTE_ANTI_LAZINESS_PROTOCOL.md
+prompts/routes/ROUTE_HARD_REQUIREMENTS_MATRIX.md
 prompts/routes/handoffs/CURRENT.md
 prompts/routes/handoffs/portfolio_round02_planner_handoff_20260717.md
 prompts/MILESTONE_REVIEW_PROTOCOL.md
@@ -90,6 +91,16 @@ SRR diagrams at v2 and later. Repository image paths are version references only
 The planner must carry forward prior anti-laziness and scientific-design
 requirements. Do not drop an old requirement merely because this portfolio loop
 no longer uses the single-route milestone numbering.
+
+The permanent source of truth for these requirements is:
+
+```text
+prompts/routes/ROUTE_HARD_REQUIREMENTS_MATRIX.md
+```
+
+The matrix below is the Round02 application of that permanent file. Future
+rounds must keep using the permanent matrix, even if they do not copy this
+section verbatim.
 
 ### Shared requirements for Route A, Route B, and Route C
 

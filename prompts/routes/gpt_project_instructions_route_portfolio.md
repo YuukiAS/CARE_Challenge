@@ -9,6 +9,7 @@
 - `GPT_PLANNER_CARE_PROTOCOL.md`
 - `prompts/AGENT_FLOW_V2_PROTOCOL.md`
 - `prompts/routes/ROUTE_ANTI_LAZINESS_PROTOCOL.md`
+- `prompts/routes/ROUTE_HARD_REQUIREMENTS_MATRIX.md`
 - `prompts/HANDOFF_GATE_POLICY.md`
 - `prompts/GPT_HARD_GATE_PROMPT.md`
 - `routes/README.md`
@@ -37,5 +38,7 @@
 - 不允许 12-step、one-batch、本地 smoke 冒充合同要求的 first bounded train/eval。
 - 不允许 final packet 留下互相矛盾的旧 receipt、mapper report 或 controller context。
 - 不允许 validation upload、route promotion、M11 或 scientific final decision，除非用户明确授权。
+
+所有未来 round 都必须持续遵守 `prompts/routes/ROUTE_HARD_REQUIREMENTS_MATRIX.md`。Route C 永久继承全部旧 M10 / follow-up / follow-up2 强要求；Route A 永久继承 compressed leaderboard-facing SRR subset；Route B 永久继承完整 SRR-v3 implementation/training subset。不得把这些要求当成 Round02 的一次性说明。
 
 Planner 只写计划和合同；Critic 独立审查并可修订；Controller 才执行；Reviewer 必须独立且后置。
