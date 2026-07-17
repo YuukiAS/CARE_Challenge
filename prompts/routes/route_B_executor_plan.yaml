@@ -1,4 +1,4 @@
-plan_version: 6
+plan_version: 7
 route_id: route_B
 portfolio_round: round03
 date: 2026-07-18
@@ -35,21 +35,24 @@ v100_user_approved: true
 three_way_race_user_approved: true
 prefer_distinct_work_over_duplicate_race: true
 race_when_single_critical_job_pending: true
+partition_static_validator_contract: every Slurm executor declares all three partitions, per-partition preflight commands and receipts, scientific-hash equality, isolated roots, atomic lock, loser zero credit, cancellation ledger and finalizer coverage
 forbidden_authority_tokens: [ROUTE_PROMOTED, VALIDATION_UPLOAD_APPROVED, M11_AUTHORIZED, HOSTED_METRIC_CLAIMED, FINAL_SCIENTIFIC_CONCLUSION, CROSS_ROUTE_MERGED]
-read_only_sources:
-  - src/care_myocardium/anchors/myops_decode.py
-  - src/care_myocardium/models/srr_propref.py
-  - src/care_myocardium/models/pathology_heads.py
-  - src/care_myocardium/models/proposal_prototypes.py
-  - src/care_myocardium/models/srr_dictionary_memory.py
-  - src/care_myocardium/losses/srr_losses.py
-  - src/care_myocardium/refiner/soft_roi.py
-  - src/care_myocardium/cine/cinema_adapter.py
-  - src/care_myocardium/cine/registration_model.py
-  - src/care_myocardium/cine/temporal_model.py
-  - src/care_myocardium/cine/temporal_dictionary.py
+read_only_sources: [src/care_myocardium/anchors/myops_decode.py, src/care_myocardium/models/srr_propref.py, src/care_myocardium/models/pathology_heads.py, src/care_myocardium/models/proposal_prototypes.py, src/care_myocardium/models/srr_dictionary_memory.py, src/care_myocardium/losses/srr_losses.py, src/care_myocardium/refiner/soft_roi.py, src/care_myocardium/cine/cinema_adapter.py, src/care_myocardium/cine/registration_model.py, src/care_myocardium/cine/temporal_model.py, src/care_myocardium/cine/temporal_dictionary.py]
 shared_source_edits_allowed: false
 shared_source_discovery_action: ROUTE_B_ROUND03_NEEDS_PLANNER_SCOPE_REVISION
+common_retry: &common_retry
+  operational_retry_allowed: true
+  same_executor_attempt: true
+  max_startup_retries: 2
+  max_preemption_retries: 2
+  max_unknown_retries: 1
+  require_same_code_hash: true
+  require_same_config_hash: true
+  require_same_split_hash: true
+  failed_attempt_training_credit: zero
+common_dependency: &common_dependency
+  training_dependency: afterok
+  finalizer_dependency: afterany
 executors:
   - id: B0_BIND_PROBE_MANIFEST_VALIDATOR
     lane: tooling
@@ -69,12 +72,17 @@ executors:
     can_run_parallel: false
     blocking: true
     slurm_required: false
+    exact_inputs: [prompts/routes/route_B.md, current main source blobs, frozen route evidence]
     exact_command: /users/a/e/aereinh/CARE/envs/env_CARE/bin/python scripts/route_B_round03/build_round03_assets.py --contract prompts/routes/route_B.md --out results/route_B/round03/executors/B0
     write_scope: [configs/route_B_round03, scripts/route_B_round03, scripts/validation/route_B_round03, tests/route_B_round03, results/route_B/round03/executors/B0]
     required_outputs: [source_probe.json, manifest_freeze_receipt.json, sampler_contract.json, validator_fixture_index.json, partition_static_matrix.json, completion.json]
+    validator: /users/a/e/aereinh/CARE/envs/env_CARE/bin/python scripts/validation/route_B_round03/validate_B0.py --strict results/route_B/round03/executors/B0
     entry_gate: exact Round03 Critic ready token and clean bound route head
-    success_condition: canonical order, source symbols, four deterministic manifests, executable fixture index, partition matrix, and hashes are complete
+    success_condition: canonical order source symbols four deterministic manifests executable fixtures partition matrix and hashes are complete
     non_ready_tokens: [ROUTE_B_ROUND03_B0_SOURCE_PROBE_FAILED, ROUTE_B_ROUND03_B0_MANIFEST_INADEQUATE, ROUTE_B_ROUND03_B0_VALIDATOR_DESIGN_INCOMPLETE]
+    retry_monitor_rule: no automatic retry; correct only within reviewed B0 write scope and rerun validator
+    failure_fallback: return to Planner when a required shared source or external API is unresolved
+    reviewer_input: results/route_B/round03/executors/B0
     next_state: B1_IMPLEMENT_FULL_SRR_V3
   - id: B1_IMPLEMENT_FULL_SRR_V3
     lane: shared
@@ -94,13 +102,18 @@ executors:
     can_run_parallel: false
     blocking: true
     slurm_required: false
+    exact_inputs: [B0 merge receipt, frozen manifests, Route B contract]
     exact_command: /users/a/e/aereinh/CARE/envs/env_CARE/bin/python -m pytest tests/route_B_round03/test_static_contract.py tests/route_B_round03/test_known_bad_static.py -q
     write_scope: [src/care_myocardium/route_B_round03, scripts/route_B_round03, scripts/training/route_B_round03, scripts/validation/route_B_round03, tests/route_B_round03, configs/route_B_round03, jobs/route_B_round03, results/route_B/round03/executors/B1]
     shared_files_forbidden: [src/care_myocardium/models, src/care_myocardium/cine, src/care_myocardium/anchors, src/care_myocardium/losses, src/care_myocardium/refiner]
     required_outputs: [implementation_snapshot.md, symbol_inventory.json, tensor_contract.json, loss_contract.json, static_test_report.json, completion.json]
+    validator: /users/a/e/aereinh/CARE/envs/env_CARE/bin/python -m pytest tests/route_B_round03/test_static_contract.py tests/route_B_round03/test_known_bad_static.py -q
     entry_gate: B0 merge receipt and all manifest hashes frozen
-    success_condition: exact route-local four-scale model, OOF bank, proposal/refiners, CineMA adapter, SVF and temporal interfaces exist and static tests pass
+    success_condition: exact route-local four-scale model OOF bank proposal refiners CineMA adapter SVF and temporal interfaces exist and static tests pass
     non_ready_tokens: [ROUTE_B_ROUND03_B1_IMPLEMENTATION_INCOMPLETE, ROUTE_B_ROUND03_B1_SHARED_SCOPE_REQUIRED, ROUTE_B_ROUND03_B1_STATIC_TEST_FAILED]
+    retry_monitor_rule: same reviewed implementation scope only; no science change
+    failure_fallback: required shared-source edit returns to Planner and new Critic binding
+    reviewer_input: results/route_B/round03/executors/B1
     next_state: B2_IMPLEMENTATION_GATE
   - id: B2_IMPLEMENTATION_GATE
     lane: tooling
@@ -120,44 +133,27 @@ executors:
     can_run_parallel: false
     blocking: true
     slurm_required: true
+    exact_inputs: [B1 merge receipt, configs/route_B_round03/formal.yaml, real MyoPS and Cine smoke manifests]
     exact_command: /users/a/e/aereinh/CARE/envs/env_CARE/bin/python scripts/route_B_round03/run_implementation_gate.py --config configs/route_B_round03/formal.yaml --strict --out results/route_B/round03/executors/B2
     write_scope: [results/route_B/round03/executors/B2, results/route_B/runtime/round03/B2]
     required_outputs: [implementation_gate.json, gradient_intervention_report.csv, save_reload_report.json, cinema_real_frame_smoke.json, registration_temporal_smoke.json, known_bad_selftest_report.md, completion.json]
-    retry_policy:
-      operational_retry_allowed: true
-      same_executor_attempt: true
-      max_startup_retries: 2
-      max_preemption_retries: 1
-      max_unknown_retries: 1
-      require_same_code_hash: true
-      require_same_config_hash: true
-      require_same_split_hash: true
-      failed_attempt_training_credit: zero
-    slurm_dependency_policy:
-      training_dependency: afterok
-      finalizer_dependency: afterany
-    preflight:
-      required: true
-      command: /users/a/e/aereinh/CARE/envs/env_CARE/bin/python scripts/route_B_round03/preflight.py --executor B2 --config configs/route_B_round03/formal.yaml
-      receipt_path: results/route_B/round03/executors/B2/preflight.json
+    validator: /users/a/e/aereinh/CARE/envs/env_CARE/bin/python scripts/validation/route_B_round03/validate_implementation_gate.py --strict results/route_B/round03/executors/B2
+    retry_policy: *common_retry
+    slurm_dependency_policy: *common_dependency
+    preflight: {required: true, command: /users/a/e/aereinh/CARE/envs/env_CARE/bin/python scripts/route_B_round03/preflight.py --executor B2 --partition '${SLURM_JOB_PARTITION}' --config configs/route_B_round03/formal.yaml, receipt_path: results/route_B/round03/executors/B2/preflight.json}
     retry_ledger_path: results/route_B/round03/executors/B2/retry_ledger.json
     partition_compatibility:
-      htzhulab: {compatible: true, reason: exact lightweight forward_backward_gate, preflight_receipt: results/route_B/round03/executors/B2/preflight_htzhulab.json}
-      a100-gpu: {compatible: true, reason: exact lightweight forward_backward_gate, preflight_receipt: results/route_B/round03/executors/B2/preflight_a100.json}
-      volta-gpu: {compatible: true, reason: exact lightweight batch1 gate must remain below 14.5GiB, preflight_receipt: results/route_B/round03/executors/B2/preflight_volta.json}
-    routing_policy:
-      preferred_partition: volta-gpu
-      independent_work_assignment: implementation gate while B/C independent work uses other partitions
-      race_eligible: false
-      race_partitions: []
-      logical_run_id: route_B_round03_B2_gate
-      shared_winner_lock: results/route_B/runtime/round03/B2/race/winner.lock
-      attempt_output_template: results/route_B/runtime/round03/B2/attempt_{partition}_{attempt}
-      loser_receipt_template: results/route_B/round03/executors/B2/race_lost_{partition}_{attempt}.json
-      cancellation_ledger: results/route_B/round03/executors/B2/cancellation_ledger.json
-    entry_gate: B1 merge receipt, exact manifests, static tests, official asset checksum contract
-    success_condition: real data forwards, gradients, on/off effects, no-T2 exact zero, OOF nonleakage, official CineMA frame, seven-step integration, temporal input consumption, save/reload and all known-bad pass
+      htzhulab: {compatible: true, reason: exact lightweight forward backward gate, preflight_command: /users/a/e/aereinh/CARE/envs/env_CARE/bin/python scripts/route_B_round03/preflight.py --executor B2 --partition htzhulab --config configs/route_B_round03/formal.yaml, preflight_receipt: results/route_B/round03/executors/B2/preflight_htzhulab.json}
+      a100-gpu: {compatible: true, reason: exact lightweight forward backward gate, preflight_command: /users/a/e/aereinh/CARE/envs/env_CARE/bin/python scripts/route_B_round03/preflight.py --executor B2 --partition a100-gpu --config configs/route_B_round03/formal.yaml, preflight_receipt: results/route_B/round03/executors/B2/preflight_a100.json}
+      volta-gpu: {compatible: true, reason: exact batch-one gate must remain below 14.5 GiB, preflight_command: /users/a/e/aereinh/CARE/envs/env_CARE/bin/python scripts/route_B_round03/preflight.py --executor B2 --partition volta-gpu --config configs/route_B_round03/formal.yaml, preflight_receipt: results/route_B/round03/executors/B2/preflight_volta.json}
+    routing_policy: &B2_routing {preferred_partition: volta-gpu, independent_work_assignment: implementation gate on V100 while other partitions keep independent route work, race_eligible: false, race_partitions: [], logical_run_id: route_B_round03_B2_gate, shared_winner_lock: results/route_B/runtime/round03/B2/race/winner.lock, attempt_output_template: results/route_B/runtime/round03/B2/attempt_{partition}_{attempt}, loser_receipt_template: results/route_B/round03/executors/B2/race_lost_{partition}_{attempt}.json, cancellation_ledger: results/route_B/round03/executors/B2/cancellation_ledger.json}
+    routing_race_policy: *B2_routing
+    entry_gate: B1 merge receipt exact manifests static tests and official asset checksum contract
+    success_condition: real forwards gradients interventions no-T2 zero OOF isolation official CineMA seven-step SVF temporal consumption save-reload and known-bad all pass
     non_ready_tokens: [ROUTE_B_ROUND03_B2_IMPLEMENTATION_NEEDS_REVISION, ROUTE_B_ROUND03_B2_EXTERNAL_RESOURCE_BLOCKER, ROUTE_B_ROUND03_B2_V100_PREFLIGHT_FAILED_WITH_HTZHU_A100_CONTINUATION]
+    retry_monitor_rule: two same-hash startup retries and one preemption or unknown retry; terminal accounting before merge
+    failure_fallback: implementation defect returns B1; external asset blocker records exact unblock path
+    reviewer_input: results/route_B/round03/executors/B2
     next_state: B3_MYOPS_EVIDENCE_WARMUP
   - id: B3_MYOPS_EVIDENCE_WARMUP
     lane: myops
@@ -177,42 +173,27 @@ executors:
     can_run_parallel: false
     blocking: true
     slurm_required: true
+    exact_inputs: [B2 gate receipt, formal config, frozen sampler and manifests]
     exact_command: /users/a/e/aereinh/CARE/envs/env_CARE/bin/python scripts/training/route_B_round03/train_myops.py --stage evidence_warmup --steps 6000 --config configs/route_B_round03/formal.yaml --out results/route_B/runtime/round03/B3
     write_scope: [results/route_B/round03/executors/B3, results/route_B/runtime/round03/B3]
     required_outputs: [training_summary.json, checkpoints.csv, validation_metrics.csv, router_gradient_receipt.csv, style_cluster_freeze.json, stage_gate.json, completion.json]
-    retry_policy:
-      operational_retry_allowed: true
-      same_executor_attempt: true
-      max_startup_retries: 2
-      max_preemption_retries: 2
-      max_unknown_retries: 1
-      require_same_code_hash: true
-      require_same_config_hash: true
-      require_same_split_hash: true
-      failed_attempt_training_credit: zero
-    slurm_dependency_policy: {training_dependency: afterok, finalizer_dependency: afterany}
-    preflight:
-      required: true
-      command: /users/a/e/aereinh/CARE/envs/env_CARE/bin/python scripts/route_B_round03/preflight.py --executor B3 --config configs/route_B_round03/formal.yaml
-      receipt_path: results/route_B/round03/executors/B3/preflight.json
+    validator: /users/a/e/aereinh/CARE/envs/env_CARE/bin/python scripts/validation/route_B_round03/validate_stage.py --stage evidence_warmup --strict results/route_B/round03/executors/B3
+    retry_policy: *common_retry
+    slurm_dependency_policy: *common_dependency
+    preflight: {required: true, command: /users/a/e/aereinh/CARE/envs/env_CARE/bin/python scripts/route_B_round03/preflight.py --executor B3 --partition '${SLURM_JOB_PARTITION}' --config configs/route_B_round03/formal.yaml, receipt_path: results/route_B/round03/executors/B3/preflight.json}
     retry_ledger_path: results/route_B/round03/executors/B3/retry_ledger.json
     partition_compatibility:
-      htzhulab: {compatible: true, reason: exact full_model_batch1_accum2, preflight_receipt: results/route_B/round03/executors/B3/preflight_htzhulab.json}
-      a100-gpu: {compatible: true, reason: exact full_model_batch1_accum2, preflight_receipt: results/route_B/round03/executors/B3/preflight_a100.json}
-      volta-gpu: {compatible: false, reason: 16GB compatibility is unproven and semantic downscaling is forbidden, alternative_work: Route_C_R1_replay_or_CineMA_extraction}
-    routing_policy:
-      preferred_partition: htzhulab
-      independent_work_assignment: full MyoPS stage while volta runs Route C replay and a100 runs independent Cine/eval when ready
-      race_eligible: true
-      race_partitions: [htzhulab, a100-gpu]
-      logical_run_id: route_B_round03_B3_evidence_warmup
-      shared_winner_lock: results/route_B/runtime/round03/B3/race/winner.lock
-      attempt_output_template: results/route_B/runtime/round03/B3/attempt_{partition}_{attempt}
-      loser_receipt_template: results/route_B/round03/executors/B3/race_lost_{partition}_{attempt}.json
-      cancellation_ledger: results/route_B/round03/executors/B3/cancellation_ledger.json
-    entry_gate: B2 implementation gate passed and exact-config compute preflight passed
-    success_condition: 6000 steps, 1800 seconds, three validations, finite loss, one-batch overfit, anatomy and router gradient gates, frozen style clusters
+      htzhulab: {compatible: true, reason: exact full model batch1 accumulation2, preflight_command: /users/a/e/aereinh/CARE/envs/env_CARE/bin/python scripts/route_B_round03/preflight.py --executor B3 --partition htzhulab --config configs/route_B_round03/formal.yaml, preflight_receipt: results/route_B/round03/executors/B3/preflight_htzhulab.json}
+      a100-gpu: {compatible: true, reason: exact full model batch1 accumulation2, preflight_command: /users/a/e/aereinh/CARE/envs/env_CARE/bin/python scripts/route_B_round03/preflight.py --executor B3 --partition a100-gpu --config configs/route_B_round03/formal.yaml, preflight_receipt: results/route_B/round03/executors/B3/preflight_a100.json}
+      volta-gpu: {compatible: false, reason: exact 16 GB full-model compatibility is unproven and semantic downscaling is forbidden, preflight_command: /users/a/e/aereinh/CARE/envs/env_CARE/bin/python scripts/route_B_round03/preflight.py --executor B3 --partition volta-gpu --config configs/route_B_round03/formal.yaml, preflight_receipt: results/route_B/round03/executors/B3/preflight_volta.json, alternative_work: Route C R1 replay or official CineMA extraction}
+    routing_policy: &B3_routing {preferred_partition: htzhulab, independent_work_assignment: full MyoPS stage while V100 runs Route C replay and A100 runs independent Cine or evaluation work, race_eligible: true, race_partitions: [htzhulab, a100-gpu], logical_run_id: route_B_round03_B3_evidence_warmup, shared_winner_lock: results/route_B/runtime/round03/B3/race/winner.lock, attempt_output_template: results/route_B/runtime/round03/B3/attempt_{partition}_{attempt}, loser_receipt_template: results/route_B/round03/executors/B3/race_lost_{partition}_{attempt}.json, cancellation_ledger: results/route_B/round03/executors/B3/cancellation_ledger.json}
+    routing_race_policy: *B3_routing
+    entry_gate: B2 implementation gate and exact-config compute preflight pass
+    success_condition: 6000 steps 1800 seconds three validations finite loss one-batch overfit anatomy and router gradient gates and frozen style clusters
     non_ready_tokens: [ROUTE_B_ROUND03_B3_NEEDS_MONITOR, ROUTE_B_ROUND03_B3_AWAITING_SACCT, ROUTE_B_ROUND03_B3_OPERATIONAL_RETRY, ROUTE_B_ROUND03_B3_SCIENTIFIC_GATE_FAILED]
+    retry_monitor_rule: monitor to terminal; operational retry preserves all scientific hashes; scientific gate failure does not advance
+    failure_fallback: terminal scientific failure is evidence for review and cannot trigger Controller redesign
+    reviewer_input: results/route_B/round03/executors/B3
     next_state: B4_MYOPS_PROPOSAL
   - id: B4_MYOPS_PROPOSAL
     lane: myops
@@ -232,21 +213,27 @@ executors:
     can_run_parallel: false
     blocking: true
     slurm_required: true
+    exact_inputs: [selected B3 checkpoint, frozen OOF fit inputs, formal config]
     exact_command: /users/a/e/aereinh/CARE/envs/env_CARE/bin/python scripts/training/route_B_round03/train_myops.py --stage proposal --steps 8000 --parent results/route_B/runtime/round03/B3/selected.pt --config configs/route_B_round03/formal.yaml --out results/route_B/runtime/round03/B4
     write_scope: [results/route_B/round03/executors/B4, results/route_B/runtime/round03/B4]
     required_outputs: [training_summary.json, oof_bank_receipt.json, proposal_metrics.csv, hard_negative_queue_receipt.json, stage_gate.json, completion.json]
-    retry_policy: {operational_retry_allowed: true, same_executor_attempt: true, max_startup_retries: 2, max_preemption_retries: 2, max_unknown_retries: 1, require_same_code_hash: true, require_same_config_hash: true, require_same_split_hash: true, failed_attempt_training_credit: zero}
-    slurm_dependency_policy: {training_dependency: afterok, finalizer_dependency: afterany}
-    preflight: {required: true, command: /users/a/e/aereinh/CARE/envs/env_CARE/bin/python scripts/route_B_round03/preflight.py --executor B4 --config configs/route_B_round03/formal.yaml, receipt_path: results/route_B/round03/executors/B4/preflight.json}
+    validator: /users/a/e/aereinh/CARE/envs/env_CARE/bin/python scripts/validation/route_B_round03/validate_stage.py --stage proposal --strict results/route_B/round03/executors/B4
+    retry_policy: *common_retry
+    slurm_dependency_policy: *common_dependency
+    preflight: {required: true, command: /users/a/e/aereinh/CARE/envs/env_CARE/bin/python scripts/route_B_round03/preflight.py --executor B4 --partition '${SLURM_JOB_PARTITION}' --config configs/route_B_round03/formal.yaml, receipt_path: results/route_B/round03/executors/B4/preflight.json}
     retry_ledger_path: results/route_B/round03/executors/B4/retry_ledger.json
     partition_compatibility:
-      htzhulab: {compatible: true, reason: exact full_model_proposal_config, preflight_receipt: results/route_B/round03/executors/B4/preflight_htzhulab.json}
-      a100-gpu: {compatible: true, reason: exact full_model_proposal_config, preflight_receipt: results/route_B/round03/executors/B4/preflight_a100.json}
-      volta-gpu: {compatible: false, reason: exact 16GB full model compatibility not proven, alternative_work: official_CineMA_extraction_or_Route_C_replay}
-    routing_policy: {preferred_partition: a100-gpu, independent_work_assignment: proposal stage while other ready route work occupies htzhulab and volta, race_eligible: true, race_partitions: [htzhulab, a100-gpu], logical_run_id: route_B_round03_B4_proposal, shared_winner_lock: results/route_B/runtime/round03/B4/race/winner.lock, attempt_output_template: results/route_B/runtime/round03/B4/attempt_{partition}_{attempt}, loser_receipt_template: results/route_B/round03/executors/B4/race_lost_{partition}_{attempt}.json, cancellation_ledger: results/route_B/round03/executors/B4/cancellation_ledger.json}
-    entry_gate: B3 stage gate and clean-reloaded selected warmup checkpoint with OOF fit input
-    success_condition: 8000 steps, 2400 seconds, four validations, scar recall at least .85, T2-positive edema recall at least .90, OOF provenance and safe-negative gates
+      htzhulab: {compatible: true, reason: exact proposal config, preflight_command: /users/a/e/aereinh/CARE/envs/env_CARE/bin/python scripts/route_B_round03/preflight.py --executor B4 --partition htzhulab --config configs/route_B_round03/formal.yaml, preflight_receipt: results/route_B/round03/executors/B4/preflight_htzhulab.json}
+      a100-gpu: {compatible: true, reason: exact proposal config, preflight_command: /users/a/e/aereinh/CARE/envs/env_CARE/bin/python scripts/route_B_round03/preflight.py --executor B4 --partition a100-gpu --config configs/route_B_round03/formal.yaml, preflight_receipt: results/route_B/round03/executors/B4/preflight_a100.json}
+      volta-gpu: {compatible: false, reason: unchanged full model compatibility is unproven, preflight_command: /users/a/e/aereinh/CARE/envs/env_CARE/bin/python scripts/route_B_round03/preflight.py --executor B4 --partition volta-gpu --config configs/route_B_round03/formal.yaml, preflight_receipt: results/route_B/round03/executors/B4/preflight_volta.json, alternative_work: official CineMA extraction or Route C replay}
+    routing_policy: &B4_routing {preferred_partition: a100-gpu, independent_work_assignment: proposal stage while V100 and htzhulab perform independent ready work, race_eligible: true, race_partitions: [htzhulab, a100-gpu], logical_run_id: route_B_round03_B4_proposal, shared_winner_lock: results/route_B/runtime/round03/B4/race/winner.lock, attempt_output_template: results/route_B/runtime/round03/B4/attempt_{partition}_{attempt}, loser_receipt_template: results/route_B/round03/executors/B4/race_lost_{partition}_{attempt}.json, cancellation_ledger: results/route_B/round03/executors/B4/cancellation_ledger.json}
+    routing_race_policy: *B4_routing
+    entry_gate: B3 stage gate and clean selected checkpoint
+    success_condition: 8000 steps 2400 seconds four validations scar recall at least .85 edema recall at least .90 OOF provenance and safe-negative gates
     non_ready_tokens: [ROUTE_B_ROUND03_B4_NEEDS_MONITOR, ROUTE_B_ROUND03_B4_AWAITING_SACCT, ROUTE_B_ROUND03_B4_OOF_BANK_INVALID, ROUTE_B_ROUND03_B4_PROPOSAL_GATE_FAILED]
+    retry_monitor_rule: same-hash retries only; OOF or scientific gate failure cannot advance
+    failure_fallback: no-prototype control remains diagnostic and formal Route B stops before B5 when OOF is invalid
+    reviewer_input: results/route_B/round03/executors/B4
     next_state: B5_MYOPS_REFINER
   - id: B5_MYOPS_REFINER
     lane: myops
@@ -266,21 +253,27 @@ executors:
     can_run_parallel: false
     blocking: true
     slurm_required: true
+    exact_inputs: [selected B4 checkpoint, frozen OOF bank, formal config]
     exact_command: /users/a/e/aereinh/CARE/envs/env_CARE/bin/python scripts/training/route_B_round03/train_myops.py --stage refiner --steps 10000 --parent results/route_B/runtime/round03/B4/selected.pt --config configs/route_B_round03/formal.yaml --out results/route_B/runtime/round03/B5
     write_scope: [results/route_B/round03/executors/B5, results/route_B/runtime/round03/B5]
     required_outputs: [training_summary.json, roi_case_receipts.csv, refiner_metrics.csv, help_harm_intermediate.csv, stage_gate.json, completion.json]
-    retry_policy: {operational_retry_allowed: true, same_executor_attempt: true, max_startup_retries: 2, max_preemption_retries: 2, max_unknown_retries: 1, require_same_code_hash: true, require_same_config_hash: true, require_same_split_hash: true, failed_attempt_training_credit: zero}
-    slurm_dependency_policy: {training_dependency: afterok, finalizer_dependency: afterany}
-    preflight: {required: true, command: /users/a/e/aereinh/CARE/envs/env_CARE/bin/python scripts/route_B_round03/preflight.py --executor B5 --config configs/route_B_round03/formal.yaml, receipt_path: results/route_B/round03/executors/B5/preflight.json}
+    validator: /users/a/e/aereinh/CARE/envs/env_CARE/bin/python scripts/validation/route_B_round03/validate_stage.py --stage refiner --strict results/route_B/round03/executors/B5
+    retry_policy: *common_retry
+    slurm_dependency_policy: *common_dependency
+    preflight: {required: true, command: /users/a/e/aereinh/CARE/envs/env_CARE/bin/python scripts/route_B_round03/preflight.py --executor B5 --partition '${SLURM_JOB_PARTITION}' --config configs/route_B_round03/formal.yaml, receipt_path: results/route_B/round03/executors/B5/preflight.json}
     retry_ledger_path: results/route_B/round03/executors/B5/retry_ledger.json
     partition_compatibility:
-      htzhulab: {compatible: true, reason: exact full_model_refiner_config, preflight_receipt: results/route_B/round03/executors/B5/preflight_htzhulab.json}
-      a100-gpu: {compatible: true, reason: exact full_model_refiner_config, preflight_receipt: results/route_B/round03/executors/B5/preflight_a100.json}
-      volta-gpu: {compatible: false, reason: exact 16GB full model compatibility not proven, alternative_work: Route_C_R1_or_Cine_evaluation}
-    routing_policy: {preferred_partition: htzhulab, independent_work_assignment: refiner stage while a100 and volta service independent active work, race_eligible: true, race_partitions: [htzhulab, a100-gpu], logical_run_id: route_B_round03_B5_refiner, shared_winner_lock: results/route_B/runtime/round03/B5/race/winner.lock, attempt_output_template: results/route_B/runtime/round03/B5/attempt_{partition}_{attempt}, loser_receipt_template: results/route_B/round03/executors/B5/race_lost_{partition}_{attempt}.json, cancellation_ledger: results/route_B/round03/executors/B5/cancellation_ledger.json}
-    entry_gate: B4 proposal gate and clean-reloaded selected proposal checkpoint
-    success_condition: 10000 steps, 3000 seconds, five validations, positive proposal-to-final retention, changed components, remote-FP guard and no-T2 exact zero
+      htzhulab: {compatible: true, reason: exact refiner config, preflight_command: /users/a/e/aereinh/CARE/envs/env_CARE/bin/python scripts/route_B_round03/preflight.py --executor B5 --partition htzhulab --config configs/route_B_round03/formal.yaml, preflight_receipt: results/route_B/round03/executors/B5/preflight_htzhulab.json}
+      a100-gpu: {compatible: true, reason: exact refiner config, preflight_command: /users/a/e/aereinh/CARE/envs/env_CARE/bin/python scripts/route_B_round03/preflight.py --executor B5 --partition a100-gpu --config configs/route_B_round03/formal.yaml, preflight_receipt: results/route_B/round03/executors/B5/preflight_a100.json}
+      volta-gpu: {compatible: false, reason: unchanged full model compatibility is unproven, preflight_command: /users/a/e/aereinh/CARE/envs/env_CARE/bin/python scripts/route_B_round03/preflight.py --executor B5 --partition volta-gpu --config configs/route_B_round03/formal.yaml, preflight_receipt: results/route_B/round03/executors/B5/preflight_volta.json, alternative_work: Route C replay or Cine evaluation}
+    routing_policy: &B5_routing {preferred_partition: htzhulab, independent_work_assignment: refiner stage while A100 and V100 service independent ready work, race_eligible: true, race_partitions: [htzhulab, a100-gpu], logical_run_id: route_B_round03_B5_refiner, shared_winner_lock: results/route_B/runtime/round03/B5/race/winner.lock, attempt_output_template: results/route_B/runtime/round03/B5/attempt_{partition}_{attempt}, loser_receipt_template: results/route_B/round03/executors/B5/race_lost_{partition}_{attempt}.json, cancellation_ledger: results/route_B/round03/executors/B5/cancellation_ledger.json}
+    routing_race_policy: *B5_routing
+    entry_gate: B4 proposal gate and clean selected checkpoint
+    success_condition: 10000 steps 3000 seconds five validations positive proposal retention changed components remote-FP guard and no-T2 exact zero
     non_ready_tokens: [ROUTE_B_ROUND03_B5_NEEDS_MONITOR, ROUTE_B_ROUND03_B5_AWAITING_SACCT, ROUTE_B_ROUND03_B5_REFINER_GATE_FAILED]
+    retry_monitor_rule: same-hash retries only; terminal scientific gate failure cannot be hot-patched
+    failure_fallback: adequate failed refiner gate becomes review evidence and blocks B6
+    reviewer_input: results/route_B/round03/executors/B5
     next_state: B6_MYOPS_JOINT_AND_SELECTOR
   - id: B6_MYOPS_JOINT_AND_SELECTOR
     lane: myops
@@ -300,21 +293,27 @@ executors:
     can_run_parallel: false
     blocking: true
     slurm_required: true
+    exact_inputs: [selected B5 checkpoint, all stage checkpoints, frozen 44-case manifest and selector]
     exact_command: /users/a/e/aereinh/CARE/envs/env_CARE/bin/python scripts/training/route_B_round03/train_myops.py --stage joint --steps 8000 --parent results/route_B/runtime/round03/B5/selected.pt --config configs/route_B_round03/formal.yaml --out results/route_B/runtime/round03/B6 && /users/a/e/aereinh/CARE/envs/env_CARE/bin/python scripts/route_B_round03/select_myops_checkpoint.py --force --all-stages --out results/route_B/round03/executors/B6
     write_scope: [results/route_B/round03/executors/B6, results/route_B/runtime/round03/B6]
     required_outputs: [training_summary.json, all_checkpoint_metrics.csv, eligibility.csv, selected_checkpoint.json, selected_reload.json, intervention_report.csv, case_safety_matrix.csv, help_harm_matrix.csv, completion.json]
-    retry_policy: {operational_retry_allowed: true, same_executor_attempt: true, max_startup_retries: 2, max_preemption_retries: 2, max_unknown_retries: 1, require_same_code_hash: true, require_same_config_hash: true, require_same_split_hash: true, failed_attempt_training_credit: zero}
-    slurm_dependency_policy: {training_dependency: afterok, finalizer_dependency: afterany}
-    preflight: {required: true, command: /users/a/e/aereinh/CARE/envs/env_CARE/bin/python scripts/route_B_round03/preflight.py --executor B6 --config configs/route_B_round03/formal.yaml, receipt_path: results/route_B/round03/executors/B6/preflight.json}
+    validator: /users/a/e/aereinh/CARE/envs/env_CARE/bin/python scripts/validation/route_B_round03/validate_myops_evidence.py --strict results/route_B/round03/executors/B6
+    retry_policy: *common_retry
+    slurm_dependency_policy: *common_dependency
+    preflight: {required: true, command: /users/a/e/aereinh/CARE/envs/env_CARE/bin/python scripts/route_B_round03/preflight.py --executor B6 --partition '${SLURM_JOB_PARTITION}' --config configs/route_B_round03/formal.yaml, receipt_path: results/route_B/round03/executors/B6/preflight.json}
     retry_ledger_path: results/route_B/round03/executors/B6/retry_ledger.json
     partition_compatibility:
-      htzhulab: {compatible: true, reason: exact joint_config, preflight_receipt: results/route_B/round03/executors/B6/preflight_htzhulab.json}
-      a100-gpu: {compatible: true, reason: exact joint_config, preflight_receipt: results/route_B/round03/executors/B6/preflight_a100.json}
-      volta-gpu: {compatible: false, reason: exact 16GB joint training compatibility not proven, alternative_work: lesion_evaluation_selected_reload_or_Route_C_replay}
-    routing_policy: {preferred_partition: a100-gpu, independent_work_assignment: joint stage with volta assigned evaluation and htzhulab available for other ready route work, race_eligible: true, race_partitions: [htzhulab, a100-gpu], logical_run_id: route_B_round03_B6_joint, shared_winner_lock: results/route_B/runtime/round03/B6/race/winner.lock, attempt_output_template: results/route_B/runtime/round03/B6/attempt_{partition}_{attempt}, loser_receipt_template: results/route_B/round03/executors/B6/race_lost_{partition}_{attempt}.json, cancellation_ledger: results/route_B/round03/executors/B6/cancellation_ledger.json}
-    entry_gate: B5 refiner gate and clean-reloaded selected checkpoint
-    success_condition: 8000 stage steps, 32000 cumulative steps, 9600 cumulative seconds, 16 validations, fresh 44-case selector, clean reload and real final-output interventions
+      htzhulab: {compatible: true, reason: exact joint config, preflight_command: /users/a/e/aereinh/CARE/envs/env_CARE/bin/python scripts/route_B_round03/preflight.py --executor B6 --partition htzhulab --config configs/route_B_round03/formal.yaml, preflight_receipt: results/route_B/round03/executors/B6/preflight_htzhulab.json}
+      a100-gpu: {compatible: true, reason: exact joint config, preflight_command: /users/a/e/aereinh/CARE/envs/env_CARE/bin/python scripts/route_B_round03/preflight.py --executor B6 --partition a100-gpu --config configs/route_B_round03/formal.yaml, preflight_receipt: results/route_B/round03/executors/B6/preflight_a100.json}
+      volta-gpu: {compatible: false, reason: unchanged joint training memory compatibility is unproven, preflight_command: /users/a/e/aereinh/CARE/envs/env_CARE/bin/python scripts/route_B_round03/preflight.py --executor B6 --partition volta-gpu --config configs/route_B_round03/formal.yaml, preflight_receipt: results/route_B/round03/executors/B6/preflight_volta.json, alternative_work: lesion evaluation selected reload or Route C replay}
+    routing_policy: &B6_routing {preferred_partition: a100-gpu, independent_work_assignment: joint stage while V100 evaluates checkpoints and htzhulab retains other ready work, race_eligible: true, race_partitions: [htzhulab, a100-gpu], logical_run_id: route_B_round03_B6_joint, shared_winner_lock: results/route_B/runtime/round03/B6/race/winner.lock, attempt_output_template: results/route_B/runtime/round03/B6/attempt_{partition}_{attempt}, loser_receipt_template: results/route_B/round03/executors/B6/race_lost_{partition}_{attempt}.json, cancellation_ledger: results/route_B/round03/executors/B6/cancellation_ledger.json}
+    routing_race_policy: *B6_routing
+    entry_gate: B5 refiner gate and clean selected checkpoint
+    success_condition: 8000 stage steps 32000 cumulative steps 9600 cumulative seconds 16 validations fresh 44-case selector clean reload and final-output interventions
     non_ready_tokens: [ROUTE_B_ROUND03_B6_NEEDS_MONITOR, ROUTE_B_ROUND03_B6_AWAITING_SACCT, ROUTE_B_ROUND03_B6_UNDERTRAINED, ROUTE_B_ROUND03_B6_NEEDS_EVIDENCE, ROUTE_B_ROUND03_B6_ADEQUATE_NEGATIVE]
+    retry_monitor_rule: same-hash operational retries; all checkpoint evaluation is fresh and terminal before classification
+    failure_fallback: faithful adequate non-candidate MyoPS evidence remains adequate-negative evidence and proceeds only to complete independent Cine evidence
+    reviewer_input: results/route_B/round03/executors/B6
     next_state: B7_CINEMA_MATCHED_CONTROL
   - id: B7_CINEMA_MATCHED_CONTROL
     lane: cine
@@ -334,21 +333,27 @@ executors:
     can_run_parallel: false
     blocking: true
     slurm_required: true
+    exact_inputs: [pinned official CineMA assets, 12-case Cine manifest, common downstream initialization]
     exact_command: /users/a/e/aereinh/CARE/envs/env_CARE/bin/python scripts/training/route_B_round03/train_cinema_control.py --sources pretrained random --steps 8000 --config configs/route_B_round03/cine.yaml --out results/route_B/runtime/round03/B7
     write_scope: [results/route_B/round03/executors/B7, results/route_B/runtime/round03/B7]
     required_outputs: [cinema_provenance.json, downstream_initialization_receipt.json, parameter_match.csv, pretrained_training.json, random_training.json, source_checkpoint_selection.csv, selected_reload.json, control_classification.json, completion.json]
-    retry_policy: {operational_retry_allowed: true, same_executor_attempt: true, max_startup_retries: 2, max_preemption_retries: 2, max_unknown_retries: 1, require_same_code_hash: true, require_same_config_hash: true, require_same_split_hash: true, failed_attempt_training_credit: zero}
-    slurm_dependency_policy: {training_dependency: afterok, finalizer_dependency: afterany}
-    preflight: {required: true, command: /users/a/e/aereinh/CARE/envs/env_CARE/bin/python scripts/route_B_round03/preflight.py --executor B7 --config configs/route_B_round03/cine.yaml, receipt_path: results/route_B/round03/executors/B7/preflight.json}
+    validator: /users/a/e/aereinh/CARE/envs/env_CARE/bin/python scripts/validation/route_B_round03/validate_cinema_control.py --strict results/route_B/round03/executors/B7
+    retry_policy: *common_retry
+    slurm_dependency_policy: *common_dependency
+    preflight: {required: true, command: /users/a/e/aereinh/CARE/envs/env_CARE/bin/python scripts/route_B_round03/preflight.py --executor B7 --partition '${SLURM_JOB_PARTITION}' --config configs/route_B_round03/cine.yaml, receipt_path: results/route_B/round03/executors/B7/preflight.json}
     retry_ledger_path: results/route_B/round03/executors/B7/retry_ledger.json
     partition_compatibility:
-      htzhulab: {compatible: true, reason: exact frozen_CineMA_batch1, preflight_receipt: results/route_B/round03/executors/B7/preflight_htzhulab.json}
-      a100-gpu: {compatible: true, reason: exact frozen_CineMA_batch1, preflight_receipt: results/route_B/round03/executors/B7/preflight_a100.json}
-      volta-gpu: {compatible: true, reason: exact frozen_source_batch1_must_peak_below_14.5GiB, preflight_receipt: results/route_B/round03/executors/B7/preflight_volta.json}
-    routing_policy: {preferred_partition: volta-gpu, independent_work_assignment: pretrained on volta and matched random on a100 only after common-init equality; htzhulab remains for independent route work, race_eligible: true, race_partitions: [htzhulab, a100-gpu, volta-gpu], logical_run_id: route_B_round03_B7_{source}, shared_winner_lock: results/route_B/runtime/round03/B7/race/{source}_winner.lock, attempt_output_template: results/route_B/runtime/round03/B7/{source}/attempt_{partition}_{attempt}, loser_receipt_template: results/route_B/round03/executors/B7/race_lost_{source}_{partition}_{attempt}.json, cancellation_ledger: results/route_B/round03/executors/B7/cancellation_ledger.json}
-    entry_gate: verified official code/weight/license, twelve-case manifest, common downstream initialization SHA, exact-config preflights
-    success_condition: both 8000-step matched runs terminal, all parameter/control equality checks, source selections and clean reload complete
+      htzhulab: {compatible: true, reason: exact frozen CineMA batch-one config, preflight_command: /users/a/e/aereinh/CARE/envs/env_CARE/bin/python scripts/route_B_round03/preflight.py --executor B7 --partition htzhulab --config configs/route_B_round03/cine.yaml, preflight_receipt: results/route_B/round03/executors/B7/preflight_htzhulab.json}
+      a100-gpu: {compatible: true, reason: exact frozen CineMA batch-one config, preflight_command: /users/a/e/aereinh/CARE/envs/env_CARE/bin/python scripts/route_B_round03/preflight.py --executor B7 --partition a100-gpu --config configs/route_B_round03/cine.yaml, preflight_receipt: results/route_B/round03/executors/B7/preflight_a100.json}
+      volta-gpu: {compatible: true, reason: exact source batch-one config must remain below 14.5 GiB, preflight_command: /users/a/e/aereinh/CARE/envs/env_CARE/bin/python scripts/route_B_round03/preflight.py --executor B7 --partition volta-gpu --config configs/route_B_round03/cine.yaml, preflight_receipt: results/route_B/round03/executors/B7/preflight_volta.json}
+    routing_policy: &B7_routing {preferred_partition: volta-gpu, independent_work_assignment: pretrained and random lanes occupy distinct compatible partitions after common-init equality; remaining partition runs other ready work, race_eligible: true, race_partitions: [htzhulab, a100-gpu, volta-gpu], logical_run_id: route_B_round03_B7_{source}, shared_winner_lock: results/route_B/runtime/round03/B7/race/{source}_winner.lock, attempt_output_template: results/route_B/runtime/round03/B7/{source}/attempt_{partition}_{attempt}, loser_receipt_template: results/route_B/round03/executors/B7/race_lost_{source}_{partition}_{attempt}.json, cancellation_ledger: results/route_B/round03/executors/B7/cancellation_ledger.json}
+    routing_race_policy: *B7_routing
+    entry_gate: verified official assets 12-case manifest common-init SHA and exact preflights
+    success_condition: both 8000-step matched runs terminal with parameter equality source selection classification and clean reload
     non_ready_tokens: [ROUTE_B_ROUND03_B7_EXTERNAL_RESOURCE_BLOCKER, ROUTE_B_ROUND03_B7_NEEDS_MONITOR, ROUTE_B_ROUND03_B7_AWAITING_SACCT, ROUTE_B_ROUND03_B7_CINEMA_CONTROL_UNRESOLVED, ROUTE_B_ROUND03_B7_UNDERTRAINED]
+    retry_monitor_rule: lanes retain exact equality fields and same-hash retry lineage; no source claim before both terminal
+    failure_fallback: unresolved control is explicit evidence and forbids pretraining-benefit claim
+    reviewer_input: results/route_B/round03/executors/B7
     next_state: B8_REGISTRATION_AND_SYN
   - id: B8_REGISTRATION_AND_SYN
     lane: cine
@@ -368,21 +373,27 @@ executors:
     can_run_parallel: false
     blocking: true
     slurm_required: true
+    exact_inputs: [clean selected pretrained source, 60-pair manifest, registration config]
     exact_command: /users/a/e/aereinh/CARE/envs/env_CARE/bin/python scripts/training/route_B_round03/train_registration.py --steps 25000 --source results/route_B/runtime/round03/B7/pretrained/selected.pt --config configs/route_B_round03/registration.yaml --out results/route_B/runtime/round03/B8
     write_scope: [results/route_B/round03/executors/B8, results/route_B/runtime/round03/B8]
     required_outputs: [training_summary.json, checkpoint_selection.csv, selected_reload.json, pair_receipts.csv, case_gate.csv, full_manifest_gate.json, real_syn_control.csv, learned_vs_syn.csv, completion.json]
-    retry_policy: {operational_retry_allowed: true, same_executor_attempt: true, max_startup_retries: 2, max_preemption_retries: 2, max_unknown_retries: 1, require_same_code_hash: true, require_same_config_hash: true, require_same_split_hash: true, failed_attempt_training_credit: zero}
-    slurm_dependency_policy: {training_dependency: afterok, finalizer_dependency: afterany}
-    preflight: {required: true, command: /users/a/e/aereinh/CARE/envs/env_CARE/bin/python scripts/route_B_round03/preflight.py --executor B8 --config configs/route_B_round03/registration.yaml, receipt_path: results/route_B/round03/executors/B8/preflight.json}
+    validator: /users/a/e/aereinh/CARE/envs/env_CARE/bin/python scripts/validation/route_B_round03/validate_registration.py --strict results/route_B/round03/executors/B8
+    retry_policy: *common_retry
+    slurm_dependency_policy: *common_dependency
+    preflight: {required: true, command: /users/a/e/aereinh/CARE/envs/env_CARE/bin/python scripts/route_B_round03/preflight.py --executor B8 --partition '${SLURM_JOB_PARTITION}' --config configs/route_B_round03/registration.yaml, receipt_path: results/route_B/round03/executors/B8/preflight.json}
     retry_ledger_path: results/route_B/round03/executors/B8/retry_ledger.json
     partition_compatibility:
-      htzhulab: {compatible: true, reason: exact pair_batch1_SVF, preflight_receipt: results/route_B/round03/executors/B8/preflight_htzhulab.json}
-      a100-gpu: {compatible: true, reason: exact pair_batch1_SVF, preflight_receipt: results/route_B/round03/executors/B8/preflight_a100.json}
-      volta-gpu: {compatible: true, reason: exact pair_batch1_SVF_and_SyN_eval_must_peak_below_14.5GiB, preflight_receipt: results/route_B/round03/executors/B8/preflight_volta.json}
-    routing_policy: {preferred_partition: htzhulab, independent_work_assignment: learned registration on htzhulab, real SyN/evaluation on volta, other ready work on a100, race_eligible: true, race_partitions: [htzhulab, a100-gpu, volta-gpu], logical_run_id: route_B_round03_B8_registration, shared_winner_lock: results/route_B/runtime/round03/B8/race/winner.lock, attempt_output_template: results/route_B/runtime/round03/B8/attempt_{partition}_{attempt}, loser_receipt_template: results/route_B/round03/executors/B8/race_lost_{partition}_{attempt}.json, cancellation_ledger: results/route_B/round03/executors/B8/cancellation_ledger.json}
-    entry_gate: clean-reloaded selected pretrained CineMA source and at least sixty real pairs
-    success_condition: 25000 steps, 7200 seconds, ten validations, four full-case events, selected reload, pair/case/full denominators, true Jacobian/inverse, and real SyN
+      htzhulab: {compatible: true, reason: exact pair batch-one SVF config, preflight_command: /users/a/e/aereinh/CARE/envs/env_CARE/bin/python scripts/route_B_round03/preflight.py --executor B8 --partition htzhulab --config configs/route_B_round03/registration.yaml, preflight_receipt: results/route_B/round03/executors/B8/preflight_htzhulab.json}
+      a100-gpu: {compatible: true, reason: exact pair batch-one SVF config, preflight_command: /users/a/e/aereinh/CARE/envs/env_CARE/bin/python scripts/route_B_round03/preflight.py --executor B8 --partition a100-gpu --config configs/route_B_round03/registration.yaml, preflight_receipt: results/route_B/round03/executors/B8/preflight_a100.json}
+      volta-gpu: {compatible: true, reason: exact pair batch-one SVF and SyN evaluation must remain below 14.5 GiB, preflight_command: /users/a/e/aereinh/CARE/envs/env_CARE/bin/python scripts/route_B_round03/preflight.py --executor B8 --partition volta-gpu --config configs/route_B_round03/registration.yaml, preflight_receipt: results/route_B/round03/executors/B8/preflight_volta.json}
+    routing_policy: &B8_routing {preferred_partition: htzhulab, independent_work_assignment: learned registration on htzhulab SyN and evaluation on V100 other ready work on A100, race_eligible: true, race_partitions: [htzhulab, a100-gpu, volta-gpu], logical_run_id: route_B_round03_B8_registration, shared_winner_lock: results/route_B/runtime/round03/B8/race/winner.lock, attempt_output_template: results/route_B/runtime/round03/B8/attempt_{partition}_{attempt}, loser_receipt_template: results/route_B/round03/executors/B8/race_lost_{partition}_{attempt}.json, cancellation_ledger: results/route_B/round03/executors/B8/cancellation_ledger.json}
+    routing_race_policy: *B8_routing
+    entry_gate: clean selected pretrained source and at least 60 real pairs
+    success_condition: 25000 steps 7200 seconds ten validations four full-case events selected reload complete pair case full denominators true Jacobian inverse and real SyN
     non_ready_tokens: [ROUTE_B_ROUND03_B8_NEEDS_MONITOR, ROUTE_B_ROUND03_B8_AWAITING_SACCT, ROUTE_B_ROUND03_B8_REGISTRATION_ADEQUATE_NEGATIVE, ROUTE_B_ROUND03_B8_REGISTRATION_NEEDS_REVISION]
+    retry_monitor_rule: same-hash retry lineage with complete pair and attempt accounting
+    failure_fallback: faithful adequate registration negative blocks temporal and remains reviewable; implementation failure returns B1
+    reviewer_input: results/route_B/round03/executors/B8
     next_state: B9_TEMPORAL_AND_CINE_EVIDENCE
   - id: B9_TEMPORAL_AND_CINE_EVIDENCE
     lane: cine
@@ -402,21 +413,27 @@ executors:
     can_run_parallel: false
     blocking: true
     slurm_required: true
+    exact_inputs: [clean selected registration, selected pretrained source, temporal config]
     exact_command: /users/a/e/aereinh/CARE/envs/env_CARE/bin/python scripts/training/route_B_round03/train_temporal.py --targets 4000 8000 12000 16000 20000 --registration results/route_B/runtime/round03/B8/selected.pt --config configs/route_B_round03/temporal.yaml --out results/route_B/runtime/round03/B9
     write_scope: [results/route_B/round03/executors/B9, results/route_B/runtime/round03/B9]
     required_outputs: [resume_ledger.csv, training_summary.json, checkpoint_selection.csv, selected_reload.json, temporal_controls.csv, final_output_interventions.csv, cine_case_metrics.csv, cine_help_harm.csv, completion.json]
-    retry_policy: {operational_retry_allowed: true, same_executor_attempt: true, max_startup_retries: 2, max_preemption_retries: 2, max_unknown_retries: 1, require_same_code_hash: true, require_same_config_hash: true, require_same_split_hash: true, failed_attempt_training_credit: zero}
-    slurm_dependency_policy: {training_dependency: afterok, finalizer_dependency: afterany}
-    preflight: {required: true, command: /users/a/e/aereinh/CARE/envs/env_CARE/bin/python scripts/route_B_round03/preflight.py --executor B9 --config configs/route_B_round03/temporal.yaml, receipt_path: results/route_B/round03/executors/B9/preflight.json}
+    validator: /users/a/e/aereinh/CARE/envs/env_CARE/bin/python scripts/validation/route_B_round03/validate_temporal.py --strict results/route_B/round03/executors/B9
+    retry_policy: *common_retry
+    slurm_dependency_policy: *common_dependency
+    preflight: {required: true, command: /users/a/e/aereinh/CARE/envs/env_CARE/bin/python scripts/route_B_round03/preflight.py --executor B9 --partition '${SLURM_JOB_PARTITION}' --config configs/route_B_round03/temporal.yaml, receipt_path: results/route_B/round03/executors/B9/preflight.json}
     retry_ledger_path: results/route_B/round03/executors/B9/retry_ledger.json
     partition_compatibility:
-      htzhulab: {compatible: true, reason: exact streaming_case_batch1_temporal, preflight_receipt: results/route_B/round03/executors/B9/preflight_htzhulab.json}
-      a100-gpu: {compatible: true, reason: exact streaming_case_batch1_temporal, preflight_receipt: results/route_B/round03/executors/B9/preflight_a100.json}
-      volta-gpu: {compatible: false, reason: full registered sequence training exact-memory compatibility is unproven, alternative_work: temporal_checkpoint_eval_selected_reload_and_validator_gpu_tests}
-    routing_policy: {preferred_partition: a100-gpu, independent_work_assignment: temporal training on a100 or htzhulab; volta performs independent checkpoint evaluation and selected reload, race_eligible: true, race_partitions: [htzhulab, a100-gpu], logical_run_id: route_B_round03_B9_temporal, shared_winner_lock: results/route_B/runtime/round03/B9/race/winner.lock, attempt_output_template: results/route_B/runtime/round03/B9/attempt_{partition}_{attempt}, loser_receipt_template: results/route_B/round03/executors/B9/race_lost_{partition}_{attempt}.json, cancellation_ledger: results/route_B/round03/executors/B9/cancellation_ledger.json}
-    entry_gate: B8 selected registration clean reload passes case-level aggregate gate
-    success_condition: 20000 credited steps, 7200 seconds, ten validations, four full-case events, parent-hash continuity, selected reload and all temporal controls/interventions
+      htzhulab: {compatible: true, reason: exact streaming case batch-one temporal config, preflight_command: /users/a/e/aereinh/CARE/envs/env_CARE/bin/python scripts/route_B_round03/preflight.py --executor B9 --partition htzhulab --config configs/route_B_round03/temporal.yaml, preflight_receipt: results/route_B/round03/executors/B9/preflight_htzhulab.json}
+      a100-gpu: {compatible: true, reason: exact streaming case batch-one temporal config, preflight_command: /users/a/e/aereinh/CARE/envs/env_CARE/bin/python scripts/route_B_round03/preflight.py --executor B9 --partition a100-gpu --config configs/route_B_round03/temporal.yaml, preflight_receipt: results/route_B/round03/executors/B9/preflight_a100.json}
+      volta-gpu: {compatible: false, reason: full registered-sequence training exact-memory compatibility is unproven, preflight_command: /users/a/e/aereinh/CARE/envs/env_CARE/bin/python scripts/route_B_round03/preflight.py --executor B9 --partition volta-gpu --config configs/route_B_round03/temporal.yaml, preflight_receipt: results/route_B/round03/executors/B9/preflight_volta.json, alternative_work: temporal checkpoint evaluation selected reload and validator GPU tests}
+    routing_policy: &B9_routing {preferred_partition: a100-gpu, independent_work_assignment: temporal training on A100 or htzhulab while V100 evaluates checkpoints and reloads, race_eligible: true, race_partitions: [htzhulab, a100-gpu], logical_run_id: route_B_round03_B9_temporal, shared_winner_lock: results/route_B/runtime/round03/B9/race/winner.lock, attempt_output_template: results/route_B/runtime/round03/B9/attempt_{partition}_{attempt}, loser_receipt_template: results/route_B/round03/executors/B9/race_lost_{partition}_{attempt}.json, cancellation_ledger: results/route_B/round03/executors/B9/cancellation_ledger.json}
+    routing_race_policy: *B9_routing
+    entry_gate: selected registration clean reload passes case-level aggregate gate
+    success_condition: 20000 credited steps 7200 seconds ten validations four full-case events parent continuity selected reload controls and final-output interventions
     non_ready_tokens: [ROUTE_B_ROUND03_B9_NEEDS_MONITOR, ROUTE_B_ROUND03_B9_AWAITING_SACCT, ROUTE_B_ROUND03_B9_UNDERTRAINED, ROUTE_B_ROUND03_B9_NEEDS_EVIDENCE, ROUTE_B_ROUND03_B9_ADEQUATE_NEGATIVE]
+    retry_monitor_rule: cumulative resume with zero credit to partial attempts and exact parent hashes
+    failure_fallback: faithful adequate Cine negative remains review evidence; implementation or continuity defect returns B1
+    reviewer_input: results/route_B/round03/executors/B9
     next_state: B10_FINALIZE_VALIDATE_REVIEW_REQUEST
   - id: B10_FINALIZE_VALIDATE_REVIEW_REQUEST
     lane: tooling
@@ -436,41 +453,33 @@ executors:
     can_run_parallel: false
     blocking: true
     slurm_required: true
+    exact_inputs: [all executor merge receipts, every scheduler attempt ID, all mapped result files]
     exact_command: /users/a/e/aereinh/CARE/envs/env_CARE/bin/python scripts/ops/submit_care_dependency_finalizer.py --task-key route_B_round03_full_srr_v3 --result-dir results/route_B --stage all --aggregation-command '/users/a/e/aereinh/CARE/envs/env_CARE/bin/python scripts/route_B_round03/aggregate_packet.py --strict' --validator-command '/users/a/e/aereinh/CARE/envs/env_CARE/bin/python scripts/validation/route_B_round03/validate_packet.py --strict' --mapper-final-command '/users/a/e/aereinh/CARE/envs/env_CARE/bin/python scripts/architecture/care_mapper.py --route route_B --final'
     write_scope: [results/route_B/round03/executors/B10, results/route_B]
     required_outputs: [finalizer_state.json, routing_ledger.csv, training_adequacy.csv, metrics_summary.csv, case_safety_matrix.csv, help_harm_matrix.csv, mapper_report_final.md, route_local_architecture_fingerprint.json, validator_packet_report.json, known_bad_selftest_report.md, heavy_artifact_scan.json, result.md, controller_report.md, completion_check.md, review_request.md, MANIFEST.md]
-    retry_policy: {operational_retry_allowed: true, same_executor_attempt: true, max_startup_retries: 2, max_preemption_retries: 1, max_unknown_retries: 1, require_same_code_hash: true, require_same_config_hash: true, require_same_split_hash: true, failed_attempt_training_credit: zero}
-    slurm_dependency_policy: {training_dependency: afterok, finalizer_dependency: afterany}
-    preflight: {required: true, command: /users/a/e/aereinh/CARE/envs/env_CARE/bin/python scripts/route_B_round03/preflight.py --executor B10 --config configs/route_B_round03/formal.yaml, receipt_path: results/route_B/round03/executors/B10/preflight.json}
+    validator: /users/a/e/aereinh/CARE/envs/env_CARE/bin/python scripts/validation/route_B_round03/validate_packet.py --strict
+    retry_policy: *common_retry
+    slurm_dependency_policy: *common_dependency
+    preflight: {required: true, command: /users/a/e/aereinh/CARE/envs/env_CARE/bin/python scripts/route_B_round03/preflight.py --executor B10 --partition '${SLURM_JOB_PARTITION}' --config configs/route_B_round03/formal.yaml, receipt_path: results/route_B/round03/executors/B10/preflight.json}
     retry_ledger_path: results/route_B/round03/executors/B10/retry_ledger.json
     partition_compatibility:
-      htzhulab: {compatible: true, reason: accounting_and_validation, preflight_receipt: results/route_B/round03/executors/B10/preflight_htzhulab.json}
-      a100-gpu: {compatible: true, reason: accounting_and_validation, preflight_receipt: results/route_B/round03/executors/B10/preflight_a100.json}
-      volta-gpu: {compatible: true, reason: lightweight_GPU_validator_and_reload_checks, preflight_receipt: results/route_B/round03/executors/B10/preflight_volta.json}
-    routing_policy: {preferred_partition: htzhulab, independent_work_assignment: finalizer covers every winner loser cancelled and retry attempt; no duplicate scientific work, race_eligible: false, race_partitions: [], logical_run_id: route_B_round03_B10_finalizer, shared_winner_lock: results/route_B/runtime/round03/B10/finalizer.lock, attempt_output_template: results/route_B/runtime/round03/B10/attempt_{partition}_{attempt}, loser_receipt_template: results/route_B/round03/executors/B10/race_lost_{partition}_{attempt}.json, cancellation_ledger: results/route_B/round03/executors/B10/cancellation_ledger.json}
-    entry_gate: all prior logical jobs terminal; every attempt job ID and state present; no monitor-only packet
-    success_condition: afterany accounting, aggregation, mapper, strict validators, known-bad, heavy-artifact scan, git diff check, lightweight local commit and reviewer request complete
+      htzhulab: {compatible: true, reason: accounting aggregation and validation, preflight_command: /users/a/e/aereinh/CARE/envs/env_CARE/bin/python scripts/route_B_round03/preflight.py --executor B10 --partition htzhulab --config configs/route_B_round03/formal.yaml, preflight_receipt: results/route_B/round03/executors/B10/preflight_htzhulab.json}
+      a100-gpu: {compatible: true, reason: accounting aggregation and validation, preflight_command: /users/a/e/aereinh/CARE/envs/env_CARE/bin/python scripts/route_B_round03/preflight.py --executor B10 --partition a100-gpu --config configs/route_B_round03/formal.yaml, preflight_receipt: results/route_B/round03/executors/B10/preflight_a100.json}
+      volta-gpu: {compatible: true, reason: lightweight GPU validator and reload checks, preflight_command: /users/a/e/aereinh/CARE/envs/env_CARE/bin/python scripts/route_B_round03/preflight.py --executor B10 --partition volta-gpu --config configs/route_B_round03/formal.yaml, preflight_receipt: results/route_B/round03/executors/B10/preflight_volta.json}
+    routing_policy: &B10_routing {preferred_partition: htzhulab, independent_work_assignment: one finalizer covers all attempts and performs no duplicate science, race_eligible: false, race_partitions: [], logical_run_id: route_B_round03_B10_finalizer, shared_winner_lock: results/route_B/runtime/round03/B10/finalizer.lock, attempt_output_template: results/route_B/runtime/round03/B10/attempt_{partition}_{attempt}, loser_receipt_template: results/route_B/round03/executors/B10/race_lost_{partition}_{attempt}.json, cancellation_ledger: results/route_B/round03/executors/B10/cancellation_ledger.json}
+    routing_race_policy: *B10_routing
+    entry_gate: all prior logical jobs terminal and every attempt present
+    success_condition: afterany accounting aggregation mapper strict validators known-bad heavy-artifact scan git-diff check lightweight commit and reviewer request complete
     non_ready_tokens: [ROUTE_B_ROUND03_B10_NEEDS_MONITOR, ROUTE_B_ROUND03_B10_AWAITING_SACCT, ROUTE_B_ROUND03_B10_VALIDATOR_FAILED, ROUTE_B_ROUND03_B10_PACKET_INCONSISTENT]
+    retry_monitor_rule: finalizer retries accounting only and never reruns science
+    failure_fallback: nonterminal accounting remains needs-monitor; semantic validator failure returns revision
+    reviewer_input: results/route_B
     next_state: independent_read_only_reviewer
-reviewer_tokens:
-  - ROUTE_B_ROUND03_REVIEW_CANDIDATE_READY
-  - ROUTE_B_ROUND03_REVIEW_ADEQUATE_NEGATIVE
-  - ROUTE_B_ROUND03_REVIEW_EXTERNAL_RESOURCE_BLOCKER
-  - ROUTE_B_ROUND03_REVIEW_UNDERTRAINED
-  - ROUTE_B_ROUND03_REVIEW_NEEDS_MONITOR
-  - ROUTE_B_ROUND03_REVIEW_NEEDS_EVIDENCE
-  - ROUTE_B_ROUND03_REVIEW_NEEDS_REVISION
+reviewer_tokens: [ROUTE_B_ROUND03_REVIEW_CANDIDATE_READY, ROUTE_B_ROUND03_REVIEW_ADEQUATE_NEGATIVE, ROUTE_B_ROUND03_REVIEW_EXTERNAL_RESOURCE_BLOCKER, ROUTE_B_ROUND03_REVIEW_UNDERTRAINED, ROUTE_B_ROUND03_REVIEW_NEEDS_MONITOR, ROUTE_B_ROUND03_REVIEW_NEEDS_EVIDENCE, ROUTE_B_ROUND03_REVIEW_NEEDS_REVISION]
 validator_status:
   remote_static_schema_review: PASS
   executable_plan_validation: NOT_RUN_USER_PROHIBITED_SHELL
   partition_race_static_review: PASS
   git_diff_check: NOT_RUN_USER_PROHIBITED_SHELL
   critic_ready_rule: Critic cannot emit READY until executable plan and partition validators exit zero on the bound commit
-authority_boundary:
-  controller_authorized_now: false
-  validation_upload_authorized: false
-  route_promotion_authorized: false
-  m11_authorized: false
-  cross_route_merge_authorized: false
-  hosted_metric_claim_authorized: false
-  final_scientific_decision_authorized: false
+authority_boundary: {controller_authorized_now: false, validation_upload_authorized: false, route_promotion_authorized: false, m11_authorized: false, cross_route_merge_authorized: false, hosted_metric_claim_authorized: false, final_scientific_decision_authorized: false}
