@@ -61,8 +61,19 @@ STATUS_KEYWORDS = (
     "NOT_REVIEWED",
     "ROUTE_A_NEEDS_MONITOR",
     "ROUTE_A_REVIEW_NEEDS_REVISION",
+    "ROUTE_A_REVIEW_NEEDS_EVIDENCE",
+    "ROUTE_A_REVIEW_NEEDS_MONITOR",
+    "ROUTE_A_REVIEW_PASS",
+    "ROUTE_B_REVIEW_NEEDS_REVISION",
+    "ROUTE_B_REVIEW_NEEDS_EVIDENCE",
+    "ROUTE_B_REVIEW_NEEDS_MONITOR",
+    "ROUTE_B_REVIEW_PASS",
     "ROUTE_B_SCIENTIFIC_UNDERTRAINED",
     "ROUTE_C_NEEDS_REVISION",
+    "ROUTE_C_REVIEW_NEEDS_REVISION",
+    "ROUTE_C_REVIEW_NEEDS_EVIDENCE",
+    "ROUTE_C_REVIEW_NEEDS_MONITOR",
+    "ROUTE_C_REVIEW_PASS",
     "SCIENTIFIC_UNDERTRAINED",
     "NEEDS_REVISION",
     "TERMINAL_NON_READY_PACKET",
@@ -80,6 +91,26 @@ FAILURE_KEYWORDS = ("NEEDS_EVIDENCE", "FAIL", "BLOCKED")
 REVISION_KEYWORDS = ("NEEDS_REVISION", "ROUTE_A_REVIEW_NEEDS_REVISION", "ROUTE_C_NEEDS_REVISION")
 UNDERTRAINED_KEYWORDS = ("SCIENTIFIC_UNDERTRAINED", "ROUTE_B_SCIENTIFIC_UNDERTRAINED")
 PASS_KEYWORDS = ("PASS", "COMPLETE")
+REVIEW_REVISION_KEYWORDS = (
+    "ROUTE_A_REVIEW_NEEDS_REVISION",
+    "ROUTE_B_REVIEW_NEEDS_REVISION",
+    "ROUTE_C_REVIEW_NEEDS_REVISION",
+)
+REVIEW_EVIDENCE_KEYWORDS = (
+    "ROUTE_A_REVIEW_NEEDS_EVIDENCE",
+    "ROUTE_B_REVIEW_NEEDS_EVIDENCE",
+    "ROUTE_C_REVIEW_NEEDS_EVIDENCE",
+)
+REVIEW_MONITOR_KEYWORDS = (
+    "ROUTE_A_REVIEW_NEEDS_MONITOR",
+    "ROUTE_B_REVIEW_NEEDS_MONITOR",
+    "ROUTE_C_REVIEW_NEEDS_MONITOR",
+)
+REVIEW_PASS_KEYWORDS = (
+    "ROUTE_A_REVIEW_PASS",
+    "ROUTE_B_REVIEW_PASS",
+    "ROUTE_C_REVIEW_PASS",
+)
 ACTIVE_SLURM_STATES = {
     "CONFIGURING",
     "COMPLETING",
@@ -462,7 +493,21 @@ def annotate_route_runtime(
         blockers.append("Slurm job 已完成，但 packet 仍是 monitor 状态；需要完成后聚合/提交")
 
     keywords = set(route["status_keywords"])
-    if blockers:
+    has_review = bool(route["packet_files"].get("review"))
+    review_revision = bool(keywords & set(REVIEW_REVISION_KEYWORDS))
+    review_evidence = bool(keywords & set(REVIEW_EVIDENCE_KEYWORDS))
+    review_monitor = bool(keywords & set(REVIEW_MONITOR_KEYWORDS))
+    review_pass = bool(keywords & set(REVIEW_PASS_KEYWORDS))
+
+    if has_review and review_revision:
+        display_state = "需修订"
+    elif has_review and review_evidence:
+        display_state = "审查未通过"
+    elif has_review and review_monitor:
+        display_state = "等待监控"
+    elif has_review and review_pass:
+        display_state = "审查通过"
+    elif blockers:
         if completed_after_monitor:
             display_state = "需补证据"
         elif "NEEDS_MONITOR" in keywords or "PENDING_MONITOR" in keywords:
@@ -481,7 +526,7 @@ def annotate_route_runtime(
         display_state = "需修订"
     elif keywords & set(FAILURE_KEYWORDS):
         display_state = "审查未通过" if route["packet_files"].get("review") else "需补证据"
-    elif route["packet_files"].get("review") and keywords & set(PASS_KEYWORDS):
+    elif has_review and keywords & set(PASS_KEYWORDS):
         display_state = "审查通过"
     elif route["packet_files"].get("review_request") or keywords & set(REVIEW_PENDING_KEYWORDS):
         display_state = "待独立审查"

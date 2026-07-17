@@ -446,6 +446,20 @@ def test_route_a_review_needs_revision_token_sets_revision_state():
     assert watchboard.status_class(route, {}) == "revision"
 
 
+def test_review_decision_overrides_stale_controller_undertrained_token():
+    route = route_fixture(
+        id="route_B",
+        label="Route B",
+        status_keywords=["ROUTE_B_SCIENTIFIC_UNDERTRAINED", "ROUTE_B_REVIEW_NEEDS_REVISION"],
+        packet_files={**route_fixture()["packet_files"], "review": True},
+    )
+
+    watchboard.annotate_route_runtime(route, {"care_route_B_controller": False}, [], [])
+
+    assert route["display_state_zh"] == "需修订"
+    assert watchboard.status_class(route, {}) == "revision"
+
+
 def test_status_class_colors_non_ready_states():
     route = route_fixture(display_state_zh="训练不足")
     assert watchboard.status_class(route, {}) == "undertrained"
