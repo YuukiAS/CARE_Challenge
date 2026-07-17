@@ -1,127 +1,189 @@
 # CARE Route Portfolio Current Round
 
-This is the stable entrypoint for GPT planner and route-specific critic threads. Read this file first when working on the active CARE route portfolio round.
+This is the stable entrypoint for the active CARE route portfolio round. Read this file first, then read only the handoff named for the current role and route.
 
 ## Active Round
 
 ```text
-round_id: round02
-date: 2026-07-17
+round_id: round03
+date: 2026-07-18
 planner_thread_model: one GPT planner thread owns Route A, Route B, and Route C
-critic_thread_model: one separate critic thread per route
+critic_thread_model: one separate critic thread for each active route
 milestone_model: retired for this route portfolio loop
-route_round_model: portfolio round with route-specific critic handoffs
+route_round_model: portfolio planning round with route-specific critic handoffs
+remote_evidence_only_for_planner_publication: true
+local_worktree_state: NOT_INSPECTED_BY_USER_INSTRUCTION
 ```
+
+Round03 is not a scientific milestone, route promotion, validation authorization, M11 authorization, cross-route merge, hosted-metric claim, or final scientific decision.
 
 ## Planner Entry
 
-The Round02 planning prompt remains:
+The current Planner prompt is:
 
 ```text
-prompts/routes/handoffs/portfolio_round02_planner_handoff_20260717.md
+prompts/routes/handoffs/portfolio_round03_planner_prompt_20260717.md
 ```
 
-The committed Planner output is:
+The committed Planner handoff and plan are:
 
 ```text
-prompts/routes/portfolio_round02_planner_plan_20260717.md
+prompts/routes/handoffs/portfolio_round03_planner_handoff_20260718.md
+prompts/routes/portfolio_round03_planner_plan_20260718.md
 ```
 
-Bound route planner commits:
+Portfolio state:
 
 ```text
-route_A: bb522e1b2be7ce671db0026a4b94cc1d18937780
-route_B: 77fbde2e1936d19c9f0d6dc711ea37b4ae077eac
-route_C: fbf02a5883b0f08c0f2d9268a68dc486ae956d8e
+Route A: DEFERRED_FALLBACK_NOT_ACTIVE
+Route B: ACTIVE_FULL_SRR_V3
+Route C: ACTIVE_M10_FORENSIC_EVIDENCE_AND_CINE_FIDELITY
+current_controller_authorizations: 0
 ```
 
-Round02 has produced controller-forward work for all three routes. It remains leaderboard-facing and preserves `prompts/routes/ROUTE_HARD_REQUIREMENTS_MATRIX.md`, the M9/M10 inherited gates, strict validators/known-bad fixtures, durable finalizers, runtime no-push, and independent reviewer boundaries.
+## Bound Route Planner Revisions
 
-No controller is authorized merely by this Planner publication. Each route requires its current Critic ready token first.
+### Route A
+
+```text
+route head: a91ba0eef8dff4600e16331aea99d043e1f4339b
+contract blob: 370c25de0e35dbd5c854bbdfb81589ee8c0a4368
+executor-plan blob: c681d761cfa145d68ba906f5eb33607843af8b80
+critic-request blob: 227c8f69f69e2b07b72f5df5f3323b2f03136bd1
+planner-audit blob: 61d8cb48fab3728d1330975fb1bc2178446313f9
+```
+
+Route A is a dormant fallback. It has no current Round03 Critic and no Controller/Slurm authority. It may be reactivated only by explicit user authorization or a later Portfolio Planner decision after a documented Route B pre-training implementation blocker.
+
+### Route B
+
+```text
+route head: 4c2f2ec146f5cc7a026cf4d5369c79b863f88ad2
+contract blob: 2d82b8bb5d05e521adb87281a663fd7fe38582c6
+executor-plan blob: e95757507c1025ae9e7538f64c4143ead899d05f
+critic-request blob: e9917375f549368a99348a91ca4dd0d1aa9a8932
+planner-audit blob: e0f0cca68bd27db0b452a5f35270d57afd8fbf54
+```
+
+### Route C
+
+```text
+route head: e9966da52b65367a248dbcc746879fcac2422961
+contract blob: 0f04a06dce5ebaaaa0e0f84ce317b88123fd1a26
+executor-plan blob: 7e3bd792bf15d1778a227df6e5216d4b440c868d
+evidence-mapping blob: 2b5a068ee807c5f622dcd5b1732fdc05e144b960
+critic-request blob: 314a479e98d2af888cfd945092ab6aef09860a83
+planner-audit blob: 623216e8f1b1ecc64f3d6fb8d17b9f1f8711e595
+```
+
+A later change to a route head or any bound blob makes that route's Critic handoff stale and requires a new Planner binding.
 
 ## Critic Entries
 
-Each critic thread reads only its route's current handoff:
+Each Critic thread reads only its route's current prompt.
 
 ```text
 route_A critic current prompt:
-prompts/routes/handoffs/route_A_round02_critic_handoff_20260717.md
+NO_CURRENT_CRITIC_HANDOFF
 
 route_B critic current prompt:
-prompts/routes/handoffs/route_B_round02_critic_handoff_20260717.md
+prompts/routes/handoffs/route_B_round03_critic_handoff_20260718.md
 
 route_C critic current prompt:
-prompts/routes/handoffs/route_C_round02_critic_handoff_20260717.md
+prompts/routes/handoffs/route_C_round03_critic_handoff_20260718.md
 ```
 
-The Critic must bind the exact route planner commit and contract/executor-plan blob SHAs listed in its handoff. A changed route head or file hash makes that handoff stale and requires a new Planner handoff.
+Route A Critic must stop and report that no current Critic prompt exists. It must not reuse the Round02 prompt or issue a Round03 ready token.
 
-Allowed planning-ready tokens are:
+Route B and Route C Critics must independently re-fetch their exact route heads/blobs, visually read SRR-v2/v2.5/v3 from the Project image channel, read current main governance and route-local evidence, and run the required plan/partition/git-diff checks before any ready token.
+
+Allowed Route B planning tokens:
 
 ```text
-ROUTE_A_ROUND02_PLANNING_READY_FOR_CONTROLLER
-ROUTE_B_ROUND02_PLANNING_READY_FOR_CONTROLLER
-ROUTE_C_ROUND02_PLANNING_READY_FOR_CONTROLLER
+ROUTE_B_ROUND03_PLANNING_READY_FOR_CONTROLLER
+ROUTE_B_ROUND03_PLANNING_NEEDS_REVISION
 ```
 
-These tokens authorize only the corresponding route controller to start. They do not authorize validation packaging/upload, route promotion, M11, cross-route merge, hosted metric claims, or a final scientific decision.
-
-## Round Semantics
-
-`roundNN` replaces the old milestone-as-round convention for the route portfolio. It is not a scientific milestone number and does not imply route promotion.
-
-A new round starts when at least one of these happens:
-
-- a route controller commits a new packet;
-- a route reviewer commits a new review;
-- the portfolio planner makes a new route-level decision;
-- a planner decision requires one or more route-specific critic passes;
-- Route A/B/C need to be compared after fresh evidence.
-
-All files derived from the same planner decision should share the same `roundNN`.
-
-## Naming
-
-Portfolio planner handoff:
+Allowed Route C planning tokens:
 
 ```text
-portfolio_roundNN_planner_handoff_YYYYMMDD.md
+ROUTE_C_ROUND03_PLANNING_READY_FOR_CONTROLLER
+ROUTE_C_ROUND03_PLANNING_NEEDS_REVISION
 ```
 
-Route critic handoffs:
+These tokens authorize only the corresponding route Controller to start on the exact reviewed revision. They do not authorize validation packaging/upload, route promotion, M11, cross-route merge, hosted metric claims, or a final scientific decision.
+
+## Planner Validation Boundary
+
+The Round03 Planner publication was produced under an explicit remote-only instruction. No shell/server command was run. The recorded state is:
 
 ```text
-route_A_roundNN_critic_handoff_YYYYMMDD.md
-route_B_roundNN_critic_handoff_YYYYMMDD.md
-route_C_roundNN_critic_handoff_YYYYMMDD.md
+Route A executor-plan validator: NOT_RUN_USER_PROHIBITED_SHELL
+Route B executor-plan validator: NOT_RUN_USER_PROHIBITED_SHELL
+Route C executor-plan validator: NOT_RUN_USER_PROHIBITED_SHELL
+Route B partition/race validator: NOT_RUN_USER_PROHIBITED_SHELL
+Route C partition/race/evidence-mapping validator: NOT_RUN_USER_PROHIBITED_SHELL
+git diff --check: NOT_RUN_USER_PROHIBITED_SHELL
+remote static schema review: PASS
 ```
 
-## Current Route States Before Round02 Controller Work
+A Route B/C Critic cannot emit a ready token until required executable checks return zero on the exact bound route commit.
 
-Route A:
+## Three-Partition Portfolio Policy
 
-- prior controller packet commit: `b8f05521500971953a2fc9f286de8520f1ea5b4f`
-- prior reviewer commit: `05a6102073c8bb200fd4c84d6d0dff64e5a75f78`
-- prior reviewer decision: `ROUTE_A_REVIEW_NEEDS_REVISION`
-- Round02 planner commit: `bb522e1b2be7ce671db0026a4b94cc1d18937780`
-- next actor: Route A Critic; controller remains blocked until the current ready token.
+Round03 plans all of:
 
-Route B:
+```text
+htzhulab
+a100-gpu
+volta-gpu
+```
 
-- prior controller packet commit: `0200e86f7a95ff9753f9c425419052e878d342f4`
-- prior reviewer commit: `cde0e0b658893b327aa5fb3129d37a99f1cf7c47`
-- prior reviewer decision: `ROUTE_B_REVIEW_NEEDS_REVISION`
-- Round02 planner commit: `77fbde2e1936d19c9f0d6dc711ea37b4ae077eac`
-- next actor: Route B Critic; controller remains blocked until the current ready token.
+The user has approved V100 use, V100 race, and three-way race. Distinct ready work has priority over duplicate routing. A single critical compatible job may race immediately. Exact scientific configuration, isolated attempt roots, atomic winner lock, loser zero credit, pending-loser cancellation, retry lineage, and all-attempt finalizer coverage are mandatory. V100 semantic downscaling is forbidden; incompatible heavy work is reassigned to compatible replay, extraction, evaluation, registration-control, reload, or validator tasks.
 
-Route C:
+## Round03 Decision Checkpoints
 
-- prior controller packet commit: `789ee4d`
-- prior reviewer commit: `7b6c2d36bceefc5eb0f64f4977fd43f4194cc7b4`
-- prior reviewer decision: `ROUTE_C_REVIEW_NEEDS_REVISION_CONFIRMED`
-- Round02 planner commit: `fbf02a5883b0f08c0f2d9268a68dc486ae956d8e`
-- next actor: Route C Critic; controller remains blocked until the current ready token.
+```text
+2026-07-20:
+- Route B implementation/manifest/validator/preflight gate terminal.
+- Route C fingerprint/evidence-map and exact recovery decision terminal.
+
+2026-07-21:
+- Route B evidence-warmup/proposal gate.
+- Route C fresh replay majority, immutable-anchor selector receipts, and real intervention path.
+
+2026-07-22:
+- Route B first formal MyoPS evidence and official CineMA/control evidence.
+- Route C R1 terminal evidence or exact blocker and R2 real Cine fidelity freeze candidate.
+
+2026-07-23:
+- evidence-directed same-scope repair only.
+
+2026-07-24:
+- no new scientific design or loss.
+
+2026-07-25:
+- route-local packets, independent reviews, Portfolio reconciliation input.
+
+2026-07-26:
+- runtime/review/Docker/packaging/paper/submission QA only.
+
+2026-07-27:
+- final submission; no new experiment.
+```
+
+Route B and Route C do not wait for one another. Their Critic threads may run in parallel; each Controller may start independently only after its own exact ready token.
 
 ## Authority Boundary
 
-Round02 planning does not execute code, submit Slurm, package or upload validation data, promote a route, start M11, merge routes, claim hosted metrics, or make a final scientific decision.
+```text
+controller_authorized_now: 0
+validation_upload_authorized: false
+route_promotion_authorized: false
+m11_authorized: false
+cross_route_merge_authorized: false
+hosted_metric_claim_authorized: false
+final_scientific_decision_authorized: false
+```
+
+Planner publication, commit, or push is not Critic passage. Round03 planning does not execute code, train models, submit or monitor Slurm, write runtime `review.md`, package/upload validation, promote a route, start M11, merge routes, claim hosted metrics, or make a final scientific decision.
