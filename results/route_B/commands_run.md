@@ -29,7 +29,7 @@ Current formal winner job state: `RUNNING` on `htzhulab` as `59363146`. Post-com
 - Restored post-completion lightweight evidence from `results/route_B/runtime/bounded_train_eval/route_b_undertrained_state.pt` and `logs/route_B/RouteBTrainEval_59363146_20260716_221019.log` without retraining.
 - Updated `bounded_train_eval_summary.json`, `training_adequacy.csv`, `metrics_summary.csv`, and `case_safety_matrix.csv`.
 
-Current formal result: `ROUTE_B_SCIENTIFIC_UNDERTRAINED`, ready for read-only reviewer judgment.
+Superseded formal result: scientifically undertrained; controller continued with 25000-step adequacy recovery instead of handing it to reviewer.
 
 ## Adequacy Recovery Submission (2026-07-17T02:36:47Z)
 

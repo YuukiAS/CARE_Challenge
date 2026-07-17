@@ -9,7 +9,7 @@
   "generated_at_utc": "2026-07-17T02:44:37Z",
   "git_head_before_adequacy_recovery": "30b46b7fffc53f28afb80872c4bf09195ff1b563",
   "post_completion_aggregation_run": false,
-  "reason": "Previous terminal packet was ROUTE_B_SCIENTIFIC_UNDERTRAINED because 500 steps ran only 43.331 seconds. Controller is continuing instead of handing an undertrained packet to reviewer.",
+  "reason": "Previous terminal packet was scientifically undertrained because 500 steps ran only 43.331 seconds. Controller is continuing instead of handing that insufficient packet to reviewer.",
   "review_ready": false,
   "route_decision_boundaries": {
     "route_negative_decision": "NOT_REVIEWED",

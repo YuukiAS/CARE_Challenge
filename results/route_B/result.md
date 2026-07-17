@@ -2,7 +2,7 @@
 
 Final controller token: `ROUTE_B_NEEDS_MONITOR`
 
-The prior terminal packet `ROUTE_B_SCIENTIFIC_UNDERTRAINED` is not an acceptable handoff endpoint because the 500-step run completed only `43.331` train-loop seconds against the required `1800` seconds. The controller is continuing under a goal.
+The prior terminal packet was scientifically undertrained and is not an acceptable handoff endpoint because the 500-step run completed only `43.331` train-loop seconds against the required `1800` seconds. The controller is continuing under a goal.
 
 A sufficient bounded train/eval race was submitted with `ROUTE_B_STEPS=25000`, estimated from the previous runtime to exceed the 1800-second adequacy threshold. The race lock is `results/route_B/locks/bounded_train_eval_25000_adequacy_winner.lock`.
 
