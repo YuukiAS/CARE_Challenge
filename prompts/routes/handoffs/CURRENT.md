@@ -6,8 +6,8 @@ Read this file first when working on the active CARE route portfolio round.
 ## Active Round
 
 ```text
-round_id: round01
-date: 2026-07-16
+round_id: round02
+date: 2026-07-17
 planner_thread_model: one GPT planner thread owns Route A, Route B, and Route C
 critic_thread_model: one separate critic thread per route
 milestone_model: retired for this route portfolio loop
@@ -19,7 +19,7 @@ route_round_model: portfolio round with route-specific critic handoffs
 The single portfolio GPT planner should read:
 
 ```text
-prompts/routes/handoffs/portfolio_round01_planner_handoff_20260716.md
+prompts/routes/handoffs/portfolio_round02_planner_handoff_20260717.md
 ```
 
 Planner scope:
@@ -27,6 +27,8 @@ Planner scope:
 - reason across Route A, Route B, and Route C together;
 - decide the next portfolio move;
 - decide whether any route-specific critic handoff should run;
+- produce controller-forward work for every route in Round02; a status-only or
+  read-only-audit-only round is not acceptable;
 - never execute code, submit Slurm, upload validation packages, start M11, or
   make final scientific decisions without required review/critic evidence.
 
@@ -36,7 +38,7 @@ Each critic thread must read only its own route's current critic handoff.
 
 ```text
 route_A critic current prompt:
-prompts/routes/handoffs/route_A_round01_critic_handoff_20260716.md
+NO_CURRENT_CRITIC_HANDOFF
 
 route_B critic current prompt:
 NO_CURRENT_CRITIC_HANDOFF
@@ -92,8 +94,18 @@ Route A:
 
 Route B:
 
-- no Round 01 controller/reviewer packet included in this current handoff.
+- controller packet commit: `0200e86f7a95ff9753f9c425419052e878d342f4`
+- reviewer commit: `cde0e0b658893b327aa5fb3129d37a99f1cf7c47`
+- reviewer decision: `ROUTE_B_REVIEW_NEEDS_REVISION`
+- planner-facing state: bounded train/eval evidence is credible and adequacy
+  passed, but validator/known-bad coverage and stale token reporting require
+  revision before reviewer acceptance.
 
 Route C:
 
-- no Round 01 controller/reviewer packet included in this current handoff.
+- controller packet commit: `789ee4d`
+- reviewer commit: `7b6c2d36bceefc5eb0f64f4977fd43f4194cc7b4`
+- reviewer decision: `ROUTE_C_REVIEW_NEEDS_REVISION_CONFIRMED`
+- planner-facing state: non-ready controller packet is supported; MyoPS
+  residual-gate disconnection and Cine evidence inputs must be repaired before
+  formal runtime or route comparison.
