@@ -1,3 +1,5 @@
-# Route B Review Request
+# Route B Review Request Continuation
 
-Review is not requested yet. Route B adequacy recovery is running under controller goal.
+Requested independent reviewer action: read-only review of the superseding Route B continuation packet and route_B-local source/tests.
+
+The reviewer should verify the real implementation gate and undertrained post-freeze train/eval evidence. The reviewer must not fix files, train, upload, push, start M11, or merge routes.

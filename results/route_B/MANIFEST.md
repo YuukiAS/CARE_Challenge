@@ -1,12 +1,5 @@
-# Route B Manifest Adequacy Recovery
+# Route B Manifest Continuation
 
-- generated_at_utc: `2026-07-17T02:44:37Z`
-- token: `ROUTE_B_NEEDS_MONITOR`
-- review_ready: `false`
-- route_b_steps: `25000`
-- active_winner_job: `59364846`
-
-## Packet Files
 - `results/route_B/architecture_component_trace.csv`
 - `results/route_B/architecture_delta_final.md`
 - `results/route_B/bounded_train_eval_summary.json`

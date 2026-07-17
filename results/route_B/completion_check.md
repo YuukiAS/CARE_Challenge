@@ -1,9 +1,7 @@
-# Route B Completion Check Adequacy Recovery
+# Route B Completion Check Continuation
 
-Completion token: `ROUTE_B_NEEDS_MONITOR`
+Completion token: `ROUTE_B_READY_FOR_REVIEW`
 
-Route B is currently running an adequacy recovery. A three-way Slurm race was submitted with `ROUTE_B_STEPS=25000` and independent race lock `bounded_train_eval_25000_adequacy_winner.lock`. Winner `59364846` is `RUNNING` on `htzhulab`; loser jobs `59364845` and `59364847` are cancelled.
-
-This is not completion, not review-ready, and not a scientific conclusion. Running Slurm state must not be handed to reviewer.
+The implementation-before-training gate passed on synthetic and real cases, then a post-freeze bounded train/eval command ran and aggregated lightweight evidence. The adequacy gate passed, so this packet is ready for independent read-only review.
 
 Forbidden and not performed: `review.md`, push, validation packaging/upload, hosted metric claim, route promotion, scientific stop, M11, cross-route merge.

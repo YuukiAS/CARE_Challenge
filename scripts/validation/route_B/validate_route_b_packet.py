@@ -80,7 +80,9 @@ def evaluate(result_root: Path = RESULT_ROOT) -> dict[str, object]:
         errors.append("review_md_written_by_controller")
     if "ROUTE_B_READY_FOR_REVIEW" in allowed_present:
         gate = json.loads((result_root / "implementation_gate.json").read_text(encoding="utf-8"))
-        if gate.get("gate_passed") is not True:
+        current_gate_passed = gate.get("code_gate_passed") is True and gate.get("real_case_gate_passed") is True
+        legacy_gate_passed = gate.get("gate_passed") is True
+        if not (current_gate_passed or legacy_gate_passed):
             errors.append("ready_for_review_without_gate_passed")
     if any(term in completion for term in ("JOB_SUBMITTED", "PENDING_MONITOR", "RUNNING", "AWAITING_SACCT")):
         if "ROUTE_B_READY_FOR_REVIEW" in allowed_present:

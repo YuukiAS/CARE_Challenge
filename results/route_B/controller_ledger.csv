@@ -1,4 +1,4 @@
-timestamp_utc,phase,job_id,partition,state,decision,next_action
-2026-07-17T02:44:37Z,B5_adequacy_race,59364846,htzhulab,RUNNING,25000-step adequacy recovery race winner,monitor until terminal accounting and aggregate
-2026-07-17T02:44:37Z,B5_adequacy_race,59364845,a100-gpu,CANCELLED,pending loser cancelled after winner started,none
-2026-07-17T02:44:37Z,B5_adequacy_race,59364847,volta-gpu,CANCELLED,pending loser cancelled after winner started,none
+timestamp_utc,phase,decision,next_action
+2026-07-17T03:07:49.715976+00:00,B3,implementation_gate_passed,B5_bounded_train_eval
+2026-07-17T03:07:49.715981+00:00,B5,ROUTE_B_READY_FOR_REVIEW,B6_finalizer_packet
+2026-07-17T03:07:49.715983+00:00,B6,ROUTE_B_READY_FOR_REVIEW,independent_readonly_review
