@@ -5,9 +5,9 @@ status: PLANNER_PLAN_COMMITTED_FOR_ROUTE_CRITIC_REVIEW
 main_base_commit: 3f0e78706653da2eeeb3453ed992628a7c0eee70
 diagram_versions_read: [SRR-v2, SRR-v2.5, SRR-v3]
 visual_read_status: READ_FROM_PROJECT_BACKGROUND_CURRENT_CONVERSATION
-route_A_planner_commit: 94240ffb5e91953b0ade81137ce5042568ddd28f
-route_B_planner_commit: cae72e41b08cbf2a7e2b0d137b62eed13fab66c7
-route_C_planner_commit: a68b7413775e00b96634219ee9453ba47e73d4e0
+route_A_planner_commit: bb522e1b2be7ce671db0026a4b94cc1d18937780
+route_B_planner_commit: 77fbde2e1936d19c9f0d6dc711ea37b4ae077eac
+route_C_planner_commit: fbf02a5883b0f08c0f2d9268a68dc486ae956d8e
 route_A_critic_handoff: prompts/routes/handoffs/route_A_round02_critic_handoff_20260717.md
 route_B_critic_handoff: prompts/routes/handoffs/route_B_round02_critic_handoff_20260717.md
 route_C_critic_handoff: prompts/routes/handoffs/route_C_round02_critic_handoff_20260717.md
@@ -34,9 +34,9 @@ Every route targets `myops_scar`, `myops_edema`, and `myocardium_cinemyops`. Sam
 
 | Route | Bound branch commit | Contract | Executor plan | Core Round02 intervention |
 | --- | --- | --- | --- | --- |
-| A | `94240ffb5e91953b0ade81137ce5042568ddd28f` | `prompts/routes/route_A.md` | `prompts/routes/route_A_executor_plan.yaml` | Replace the zero-effect compressed path with a two-scale live-evidence SRR and supervised bounded pathology gates; add frozen real CineMA + SyN + temporal refiner. |
-| B | `cae72e41b08cbf2a7e2b0d137b62eed13fab66c7` | `prompts/routes/route_B.md` | `prompts/routes/route_B_executor_plan.yaml` | Preserve the full four-scale/16-slot SRR-v3 causal chain, add T2-positive-balanced evaluation, and run real frozen CineMA against a matched frozen random source. |
-| C | `a68b7413775e00b96634219ee9453ba47e73d4e0` | `prompts/routes/route_C.md` | `prompts/routes/route_C_executor_plan.yaml` | Preserve all M10 requirements; repair off-path residual evidence naming, complete fresh all-checkpoint replay, and execute full CineMA adapter/random-control/registration/SyN/temporal runtime. |
+| A | `bb522e1b2be7ce671db0026a4b94cc1d18937780` | `prompts/routes/route_A.md` | `prompts/routes/route_A_executor_plan.yaml` | Replace the zero-effect compressed path with a two-scale live-evidence SRR and supervised bounded pathology gates; add frozen real CineMA + SyN + temporal refiner. |
+| B | `77fbde2e1936d19c9f0d6dc711ea37b4ae077eac` | `prompts/routes/route_B.md` | `prompts/routes/route_B_executor_plan.yaml` | Preserve the full four-scale/16-slot SRR-v3 causal chain, add T2-positive-balanced evaluation, and run real frozen CineMA against a matched frozen random source. |
+| C | `fbf02a5883b0f08c0f2d9268a68dc486ae956d8e` | `prompts/routes/route_C.md` | `prompts/routes/route_C_executor_plan.yaml` | Preserve all M10 requirements; repair off-path residual evidence naming, complete fresh all-checkpoint replay, and execute full CineMA adapter/random-control/registration/SyN/temporal runtime. |
 
 A controller may start only after the corresponding current Round02 critic writes the route-specific planning review, binds the exact branch commit and contract/plan blobs, and emits the exact ready token. A prior Round01 planning token is stale and grants no authority.
 
