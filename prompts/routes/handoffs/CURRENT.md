@@ -1,7 +1,6 @@
 # CARE Route Portfolio Current Round
 
-This is the stable entrypoint for GPT planner and route-specific critic threads.
-Read this file first when working on the active CARE route portfolio round.
+This is the stable entrypoint for GPT planner and route-specific critic threads. Read this file first when working on the active CARE route portfolio round.
 
 ## Active Round
 
@@ -16,66 +15,60 @@ route_round_model: portfolio round with route-specific critic handoffs
 
 ## Planner Entry
 
-The single portfolio GPT planner should read:
+The Round02 planning prompt remains:
 
 ```text
 prompts/routes/handoffs/portfolio_round02_planner_handoff_20260717.md
 ```
 
-Planner scope:
+The committed Planner output is:
 
-- reason across Route A, Route B, and Route C together;
-- decide the next portfolio move;
-- decide whether any route-specific critic handoff should run;
-- produce controller-forward work for every route in Round02; a status-only or
-  read-only-audit-only round is not acceptable;
-- produce a leaderboard-facing, critic-reviewable, controller-forward plan; do
-  not stop at engineering cleanup, runnable-only work, validator-only work, or a
-  low-target design that lacks plausible metric upside;
-- specify all design and execution details needed by controllers; do not leave
-  model structure, training budget, paths, Slurm strategy, validator semantics,
-  known-bad fixtures, stop conditions, or reviewer pass/fail for Codex/controller
-  to decide during execution;
-- preserve the Round02 hard-requirement inheritance matrix from the planner
-  handoff: Route C keeps all old M10 / follow-up / follow-up2 hard
-  requirements, Route A keeps the compressed leaderboard-facing SRR subset, and
-  Route B keeps the complete SRR-v3 implementation/training subset;
-- also preserve the permanent hard-requirements matrix in
-  `prompts/routes/ROUTE_HARD_REQUIREMENTS_MATRIX.md`; future rounds must not
-  treat the Round02 hardening as one-off;
-- explicitly apply the matrix sections inherited from M9/M10: mechanism-closure
-  evidence naming, machine-readable contract binding, runtime fingerprint
-  inheritance, faithful Cine/registration boundaries, durable finalizer, and
-  independent reviewer boundaries;
-- never execute code, submit Slurm, upload validation packages, start M11, or
-  make final scientific decisions without required review/critic evidence.
+```text
+prompts/routes/portfolio_round02_planner_plan_20260717.md
+```
+
+Bound route planner commits:
+
+```text
+route_A: 94240ffb5e91953b0ade81137ce5042568ddd28f
+route_B: cae72e41b08cbf2a7e2b0d137b62eed13fab66c7
+route_C: a68b7413775e00b96634219ee9453ba47e73d4e0
+```
+
+Round02 has produced controller-forward work for all three routes. It remains leaderboard-facing and preserves `prompts/routes/ROUTE_HARD_REQUIREMENTS_MATRIX.md`, the M9/M10 inherited gates, strict validators/known-bad fixtures, durable finalizers, runtime no-push, and independent reviewer boundaries.
+
+No controller is authorized merely by this Planner publication. Each route requires its current Critic ready token first.
 
 ## Critic Entries
 
-Each critic thread must read only its own route's current critic handoff.
+Each critic thread reads only its route's current handoff:
 
 ```text
 route_A critic current prompt:
-NO_CURRENT_CRITIC_HANDOFF
+prompts/routes/handoffs/route_A_round02_critic_handoff_20260717.md
 
 route_B critic current prompt:
-NO_CURRENT_CRITIC_HANDOFF
+prompts/routes/handoffs/route_B_round02_critic_handoff_20260717.md
 
 route_C critic current prompt:
-NO_CURRENT_CRITIC_HANDOFF
+prompts/routes/handoffs/route_C_round02_critic_handoff_20260717.md
 ```
 
-If a route critic sees `NO_CURRENT_CRITIC_HANDOFF`, it must stop and report that
-the planner has not issued a current critic prompt for that route.
+The Critic must bind the exact route planner commit and contract/executor-plan blob SHAs listed in its handoff. A changed route head or file hash makes that handoff stale and requires a new Planner handoff.
 
-Round02 planner must prepare a new route-specific critic handoff or explicit
-critic-ready request for Route A, Route B, and Route C. Until `CURRENT.md` points
-to one of those handoffs, each route critic remains stopped.
+Allowed planning-ready tokens are:
+
+```text
+ROUTE_A_ROUND02_PLANNING_READY_FOR_CONTROLLER
+ROUTE_B_ROUND02_PLANNING_READY_FOR_CONTROLLER
+ROUTE_C_ROUND02_PLANNING_READY_FOR_CONTROLLER
+```
+
+These tokens authorize only the corresponding route controller to start. They do not authorize validation packaging/upload, route promotion, M11, cross-route merge, hosted metric claims, or a final scientific decision.
 
 ## Round Semantics
 
-`roundNN` replaces the old milestone-as-round convention for the route portfolio.
-It is not a scientific milestone number and does not imply route promotion.
+`roundNN` replaces the old milestone-as-round convention for the route portfolio. It is not a scientific milestone number and does not imply route promotion.
 
 A new round starts when at least one of these happens:
 
@@ -85,8 +78,7 @@ A new round starts when at least one of these happens:
 - a planner decision requires one or more route-specific critic passes;
 - Route A/B/C need to be compared after fresh evidence.
 
-All files derived from the same planner decision should share the same
-`roundNN`.
+All files derived from the same planner decision should share the same `roundNN`.
 
 ## Naming
 
@@ -104,30 +96,32 @@ route_B_roundNN_critic_handoff_YYYYMMDD.md
 route_C_roundNN_critic_handoff_YYYYMMDD.md
 ```
 
-## Current Route States
+## Current Route States Before Round02 Controller Work
 
 Route A:
 
-- controller packet commit: `b8f05521500971953a2fc9f286de8520f1ea5b4f`
-- reviewer commit: `05a6102073c8bb200fd4c84d6d0dff64e5a75f78`
-- reviewer decision: `ROUTE_A_REVIEW_NEEDS_REVISION`
-- planner-facing state: credible terminal negative evidence, but packet not
-  review-accepted because revision is required.
+- prior controller packet commit: `b8f05521500971953a2fc9f286de8520f1ea5b4f`
+- prior reviewer commit: `05a6102073c8bb200fd4c84d6d0dff64e5a75f78`
+- prior reviewer decision: `ROUTE_A_REVIEW_NEEDS_REVISION`
+- Round02 planner commit: `94240ffb5e91953b0ade81137ce5042568ddd28f`
+- next actor: Route A Critic; controller remains blocked until the current ready token.
 
 Route B:
 
-- controller packet commit: `0200e86f7a95ff9753f9c425419052e878d342f4`
-- reviewer commit: `cde0e0b658893b327aa5fb3129d37a99f1cf7c47`
-- reviewer decision: `ROUTE_B_REVIEW_NEEDS_REVISION`
-- planner-facing state: bounded train/eval evidence is credible and adequacy
-  passed, but validator/known-bad coverage and stale token reporting require
-  revision before reviewer acceptance.
+- prior controller packet commit: `0200e86f7a95ff9753f9c425419052e878d342f4`
+- prior reviewer commit: `cde0e0b658893b327aa5fb3129d37a99f1cf7c47`
+- prior reviewer decision: `ROUTE_B_REVIEW_NEEDS_REVISION`
+- Round02 planner commit: `cae72e41b08cbf2a7e2b0d137b62eed13fab66c7`
+- next actor: Route B Critic; controller remains blocked until the current ready token.
 
 Route C:
 
-- controller packet commit: `789ee4d`
-- reviewer commit: `7b6c2d36bceefc5eb0f64f4977fd43f4194cc7b4`
-- reviewer decision: `ROUTE_C_REVIEW_NEEDS_REVISION_CONFIRMED`
-- planner-facing state: non-ready controller packet is supported; MyoPS
-  residual-gate disconnection and Cine evidence inputs must be repaired before
-  formal runtime or route comparison.
+- prior controller packet commit: `789ee4d`
+- prior reviewer commit: `7b6c2d36bceefc5eb0f64f4977fd43f4194cc7b4`
+- prior reviewer decision: `ROUTE_C_REVIEW_NEEDS_REVISION_CONFIRMED`
+- Round02 planner commit: `a68b7413775e00b96634219ee9453ba47e73d4e0`
+- next actor: Route C Critic; controller remains blocked until the current ready token.
+
+## Authority Boundary
+
+Round02 planning does not execute code, submit Slurm, package or upload validation data, promote a route, start M11, merge routes, claim hosted metrics, or make a final scientific decision.
