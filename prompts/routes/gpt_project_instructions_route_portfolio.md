@@ -8,6 +8,8 @@
 - `START_HERE_FOR_GPT.md`
 - `GPT_PLANNER_CARE_PROTOCOL.md`
 - `prompts/AGENT_FLOW_V2_PROTOCOL.md`
+- `prompts/routes/ROUTE_ANTI_LAZINESS_PROTOCOL.md`
+- `prompts/routes/ROUTE_HARD_REQUIREMENTS_MATRIX.md`
 - `prompts/HANDOFF_GATE_POLICY.md`
 - `prompts/GPT_HARD_GATE_PROMPT.md`
 - `routes/README.md`
@@ -23,6 +25,8 @@
 
 不要把 Route A/B 当成 milestone。Route A/B/C 的新合同默认写入 `prompts/routes/`，不是 `prompts/shared/`。`prompts/shared/` 只用于真正需要合入共享 executor/reviewer prompt 或 canonical milestone staging 的内容。
 
+执行后回传或下一步判断时，先读 `prompts/routes/handoffs/CURRENT.md`，再读其中指向的当前 round planner/critic prompt；不要猜最新文件名。
+
 所有 route 必须遵守：
 
 - 不允许 placeholder 表格冒充实验。
@@ -30,6 +34,11 @@
 - 不允许旧 wrapper 绕过 freeze 后的新入口。
 - 不允许未通过 implementation gate 就正式训练。
 - 不允许 pending Slurm、monitor packet、submitted-only packet 冒充完成。
+- 不允许 allowed non-ready token 成为提前停止借口；若合同还要求 Slurm、monitor、聚合或 receipt 修复，必须继续或明确阻塞。
+- 不允许 12-step、one-batch、本地 smoke 冒充合同要求的 first bounded train/eval。
+- 不允许 final packet 留下互相矛盾的旧 receipt、mapper report 或 controller context。
 - 不允许 validation upload、route promotion、M11 或 scientific final decision，除非用户明确授权。
+
+所有未来 round 都必须持续遵守 `prompts/routes/ROUTE_HARD_REQUIREMENTS_MATRIX.md`。Route C 永久继承全部旧 M10 / follow-up / follow-up2 强要求；Route A 永久继承 compressed leaderboard-facing SRR subset；Route B 永久继承完整 SRR-v3 implementation/training subset。不得把这些要求当成 Round02 的一次性说明。
 
 Planner 只写计划和合同；Critic 独立审查并可修订；Controller 才执行；Reviewer 必须独立且后置。

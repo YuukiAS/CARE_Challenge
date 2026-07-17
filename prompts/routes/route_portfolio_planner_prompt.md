@@ -19,6 +19,8 @@ route_C
 - `START_HERE_FOR_GPT.md`
 - `GPT_PLANNER_CARE_PROTOCOL.md`
 - `prompts/AGENT_FLOW_V2_PROTOCOL.md`
+- `prompts/routes/ROUTE_ANTI_LAZINESS_PROTOCOL.md`
+- `prompts/routes/ROUTE_HARD_REQUIREMENTS_MATRIX.md`
 - `prompts/HANDOFF_GATE_POLICY.md`
 - `prompts/GPT_HARD_GATE_PROMPT.md`
 - `prompts/MILESTONE_REVIEW_PROTOCOL.md`（如存在）
@@ -29,6 +31,14 @@ route_C
 - `configs/routes/partition_routing.yaml`
 - `docs/route_watchboard.md`
 - `wiki/README.md`
+
+如果这是 controller/reviewer 执行后的回传或下一步决策，而不是初始三路线规划，还必须先读：
+
+```text
+prompts/routes/handoffs/CURRENT.md
+```
+
+`CURRENT.md` 是当前 portfolio round 的稳定入口；它会指向当前总 planner handoff 和每条 route 的当前 critic handoff。
 
 必须视觉阅读 ChatGPT Project 背景材料中的 SRR 图（v2 及之后版本），并在 planner audit 中写明你读到的结构要点。仓库中的 `images/SRR-v2.png`、`images/SRR-v2.5.png`、`images/SRR-v3.png` 只能作为版本和文件名参考，不替代 Project 背景图视觉阅读。
 
@@ -77,7 +87,7 @@ prompts/routes/portfolio_reconciliation_plan.md
 
 目标不是再提交一版普通 nnU-Net。仓库已有 nnU-Net validation 结果，重新包装 nnU-Net 没有意义。三条 route 的共同目标是尽快产出至少一条非纯 nnU-Net、有充分本地证据、有真实代码实现、有可审查 packet 的 MyoPS + Cine 候选。
 
-同时必须防止过去 M10 / follow-up / follow-up2 中反复出现的偷懒：
+同时必须读取并执行 `prompts/routes/ROUTE_ANTI_LAZINESS_PROTOCOL.md` 和 `prompts/routes/ROUTE_HARD_REQUIREMENTS_MATRIX.md`，防止过去 M10 / follow-up / follow-up2 以及本轮 Route A/B 暴露出的偷懒，并确保三条 route 的强要求在后续 round 持续生效：
 
 - 用 `NEEDS_EVIDENCE` 表格冒充 intervention。
 - 不带 `--evaluate --force` 却声称 checkpoint fresh replay。
@@ -89,6 +99,9 @@ prompts/routes/portfolio_reconciliation_plan.md
 - temporal 没有真实消费 registered anatomy/features/motion/uncertainty。
 - validator 只检查文件存在，不检查语义真实性。
 - controller 只相信 completion token，不复核 evidence。
+- 用 allowed non-ready token 提前结束本应继续执行的 Slurm/monitor/aggregation 阶段。
+- 用 12-step / one-batch / local smoke 冒充合同要求的 first bounded train/eval。
+- terminal packet 留下互相矛盾的旧 receipt、mapper report 或 controller context。
 
 ## 3. 三条 Route 的边界
 
@@ -221,19 +234,16 @@ Cine gate 至少检查：
 /users/a/e/aereinh/CARE_worktrees/route_C
 ```
 
-长期 tmux：
+长期 tmux 常驻 4 个，含 watchboard：
 
 ```text
-care_portfolio
-care_route_A_controller
-care_route_B_controller
-care_route_C_controller
-care_route_A_reviewer
-care_route_B_reviewer
-care_route_C_reviewer
+care_watchboard
+care_route_A
+care_route_B
+care_route_C
 ```
 
-Reviewer session 只能在对应 route committed packet 后创建。
+每条 route 只保留一个 route-level session；controller、reviewer、monitor 用该 session 内的 window 区分。Reviewer window 只能在对应 route committed packet 后创建或 resume。不要再为 Route A/B/C 额外常驻独立 reviewer session。
 
 Compute policy：
 

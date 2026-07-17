@@ -17,6 +17,8 @@
 - prompts/AGENT_FLOW_V2_PROTOCOL.md
 - prompts/HANDOFF_GATE_POLICY.md
 - prompts/GPT_HARD_GATE_PROMPT.md
+- prompts/routes/ROUTE_ANTI_LAZINESS_PROTOCOL.md
+- prompts/routes/ROUTE_HARD_REQUIREMENTS_MATRIX.md
 - routes/README.md
 - prompts/routes/README.md
 - prompts/routes/route_portfolio_planner_prompt.md
@@ -46,7 +48,7 @@ route_C:
 - prompts/routes/route_C_critic_request.md
 - prompts/routes/route_C_planner_audit.md
 
-Route A/B 不是 milestone。Route C 可继承 M10 follow-up2 evidence/fidelity 要求，但也必须使用 route_C 命名和隔离输出。所有 route 必须包含 implementation-before-training gate，禁止 placeholder、mock-only、旧 wrapper bypass、pending Slurm 冒充完成、未验收先训练、validation upload、route promotion、M11 或最终科学结论。
+Route A/B 不是 milestone。Route C 必须持续继承全部旧 M10 / follow-up / follow-up2 强要求；Route A 必须是压缩但真实的 leaderboard-facing SRR candidate；Route B 必须保持完整 SRR-v3，不得降级成 Route A。所有未来 round 都必须继续遵守 `ROUTE_HARD_REQUIREMENTS_MATRIX.md`，不得把 Round02 hardening 当成一次性要求。所有 route 必须包含 implementation-before-training gate，禁止 placeholder、mock-only、旧 wrapper bypass、pending Slurm 冒充完成、未验收先训练、validation upload、route promotion、M11 或最终科学结论。
 
 完成后只报告每条 route 的 branch、commit SHA、contract path、executor plan path、critic request path，以及是否修改 prompts/shared/。最后明确：本轮仅完成 GPT planner draft，下一步交给独立 GPT critic。
 ```
@@ -73,6 +75,8 @@ Route A/B 不是 milestone。Route C 可继承 M10 follow-up2 evidence/fidelity 
 - prompts/AGENT_FLOW_V2_PROTOCOL.md
 - prompts/HANDOFF_GATE_POLICY.md
 - prompts/GPT_HARD_GATE_PROMPT.md
+- prompts/routes/ROUTE_ANTI_LAZINESS_PROTOCOL.md
+- prompts/routes/ROUTE_HARD_REQUIREMENTS_MATRIX.md
 - routes/README.md
 - prompts/routes/README.md
 - prompts/routes/route_portfolio_planner_prompt.md
@@ -95,6 +99,7 @@ Route A/B 不是 milestone。Route C 可继承 M10 follow-up2 evidence/fidelity 
 - 是否把 Route A/B 错称为 milestone。
 - 是否清楚 Cine 也必须执行。
 - 是否防止旧 M10 follow-up/follow-up2 中出现过的偷懒点。
+- 是否满足 `ROUTE_HARD_REQUIREMENTS_MATRIX.md` 中该 route 持续继承的 leaderboard-facing 强要求，而不是只做 runnable engineering。
 
 发现问题时，直接在对应 route 分支修订 route contract 和 executor plan，并记录 delta。审查通过时使用对应 token：
 
@@ -148,6 +153,8 @@ Route A/B 不是 milestone。Route C 可继承 M10 follow-up2 evidence/fidelity 
 - AGENTS.md
 - .agents/skills/slurm-routing-partition/SKILL.md
 - prompts/routes/README.md
+- prompts/routes/ROUTE_ANTI_LAZINESS_PROTOCOL.md
+- prompts/routes/ROUTE_HARD_REQUIREMENTS_MATRIX.md
 - prompts/routes/route_X.md
 - prompts/routes/route_X_executor_plan.yaml
 - 对应 Critic review / planning ready token
@@ -172,6 +179,8 @@ Controller 不写 review.md，不 push，不上传 validation，不启动其他 
 
 - AGENTS.md
 - prompts/routes/README.md
+- prompts/routes/ROUTE_ANTI_LAZINESS_PROTOCOL.md
+- prompts/routes/ROUTE_HARD_REQUIREMENTS_MATRIX.md
 - prompts/routes/route_X.md
 - prompts/routes/route_X_executor_plan.yaml
 - 该 route 的 controller packet / result.md / MANIFEST.md / commands_run.md / validator outputs
