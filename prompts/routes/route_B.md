@@ -1,156 +1,379 @@
 ---
 route_id: route_B
-portfolio_round: round02
-task_key: route_B_round02_full_srr_v3_cinema_metric_repair
-route_name: "Route B — full SRR-v3 with real CineMA evidence and metric-facing retraining"
+portfolio_round: round03
+date: 2026-07-18
+task_key: route_B_round03_full_srr_v3
+route_name: "Route B — active full SRR-v3 construction and evidence"
 branch: route_B
-worktree: /users/a/e/aereinh/CARE_worktrees/route_B
-status: DRAFT_FOR_ROUND02_CRITIC_REVIEW
+remote_route_base_commit: f01427e72134d5e5be1bfd51b93bdefdd5f3126c
+planner_main_base_commit: 6ed0a3bac82aa0ee8cb44250da0c2648965c6b42
+status: DRAFT_FOR_ROUND03_CRITIC_REVIEW
+portfolio_status: ACTIVE_FULL_SRR_V3
 not_a_milestone: true
-planner_main_base_commit: 3f0e78706653da2eeeb3453ed992628a7c0eee70
-prior_controller_packet_commit: 0200e86f7a95ff9753f9c425419052e878d342f4
-prior_reviewer_commit: cde0e0b658893b327aa5fb3129d37a99f1cf7c47
-prior_review_decision: ROUTE_B_REVIEW_NEEDS_REVISION
-diagram_versions_read: [SRR-v2, SRR-v2.5, SRR-v3]
-visual_read_status: READ_FROM_PROJECT_BACKGROUND_CURRENT_CONVERSATION
+current_round_critic_required: true
+controller_start_authorized: false
+required_planning_ready_token: ROUTE_B_ROUND03_PLANNING_READY_FOR_CONTROLLER
 executor_plan_path: prompts/routes/route_B_executor_plan.yaml
 critic_request_path: prompts/routes/route_B_critic_request.md
 planner_audit_path: prompts/routes/route_B_planner_audit.md
-current_round_critic_required: true
-current_round_critic_token: ""
-controller_start_authorized: false
-route_promotion_authorized: false
+diagram_versions_read: [SRR-v2, SRR-v2.5, SRR-v3]
+visual_read_status: READ_FROM_PROJECT_BACKGROUND_CURRENT_CONVERSATION
 validation_upload_authorized: false
+route_promotion_authorized: false
 m11_authorized: false
 cross_route_merge_authorized: false
 hosted_metric_claim_authorized: false
 final_scientific_decision_authorized: false
 ---
 
-# Route B Round02 controller contract
+# Route B Round03 full SRR-v3 controller contract
 
-## 1. Round02 decision and prior evidence
+## 1. Scope and prior-evidence judgment
 
-The prior Route B implementation and bounded train/eval are credible: the winning Slurm job completed, `25000` optimizer steps and `1908.338` train-loop seconds were recorded, and real MyoPS/Cine forward, gradients, intervention, save/reload, and export QA were present. The packet is not reviewer-accepted because the packet validator and known-bad tests do not cover the full semantic contract, `validator_implementation_report.json` retained a stale undertrained token, and the evaluated ten MyoPS cases contained no positive edema ground truth. The Cine branch used a real classical transform and real multiframe output effects, but it did not bind real CineMA weights, logits, intermediate features, or uncertainty.
+Route B is the only Round03 route allowed to construct a new full model. It answers:
 
-Round02 keeps Route B as the complete SRR-v3 route. The changed training semantics are: exact full SRR-v3 structure, T2-positive-balanced metric-facing evaluation, and a real CineMA feature/logit/uncertainty source with a matched random-initialization representation control. These changes justify one new bounded MyoPS run and two matched Cine runs. Blind repetition of the prior run is forbidden.
+> Can a faithful, final-path SRR-v3 produce a new CARE candidate after implementation gating, staged MyoPS training, official CineMA/registration/temporal training, and fresh lesion-centric evaluation?
 
-## 2. Diagram-derived route objective
+The previous Route B packet is operational background, not Round03 scientific credit. Its race/accounting completed and its bounded run reached 25,000 optimizer steps, but evaluation covered only ten MyoPS cases, all with zero edema ground truth, and five Cine cases through a local proxy. Its implementation was two-scale, used the legacy order `[LGE,C0,T2]`, used a small internal Cine adapter, approximate registration, and weak semantic validators. Round03 changes the architecture, data sampling, positive-case coverage, official Cine source, registration, temporal interface, selector, and validators; blind reuse of that packet is forbidden.
 
-Route B must implement the full causal chain:
+## 2. Visual route and source-probe result
 
-`modality stems -> availability/spatial router -> shared/private/interaction dictionary -> train/OOF prototype memory -> anatomy decoder -> scar/edema proposals -> pathology-specific soft ROI -> scar/edema refiners -> bounded residual correction -> final output`.
+The Project-background diagrams were read independently.
 
-Cine must implement:
+- v2 defines availability-aware modality-specific evidence, selective shared/private retrieval, anatomy-guided scar/edema proposal, pathology-specific refinement, and reference-space Cine temporal evidence.
+- v2.5 makes scar and edema proposal/refinement geometries separate.
+- v3 adds nnU-Net logits/probabilities/hard components/uncertainty as anchor and context, train/OOF prototypes, and bounded final correction.
 
-`real CineMA multiclass logits/features/uncertainty -> ED/key-frame registration -> registered evidence -> temporal dictionary -> temporal refiner -> final myocardium output`.
+Evidence-selection modules are stems, routers, expert banks, and prototypes. Lesion-formation modules are the anatomy-guided proposals, soft ROIs, scar/edema refiners, and bounded final composition. M9 proved that a dictionary can be nonidentity yet harmful: selecting different evidence does not by itself control lesion recall, remote false positives, component burden, or HD95.
 
-nnU-Net is baseline, context, teacher, and bounded safety anchor. It cannot replace retrieval, proposals, refiners, or temporal evidence.
+The targeted code probe freezes these facts:
 
-## 3. Exact MyoPS architecture
+1. Main first-party canonical modality and availability order is `[LGE,T2,C0]` in `src/care_myocardium/anchors/myops_decode.py`.
+2. The old Route B implementation used `[LGE,C0,T2]`; it is incompatible and cannot be a formal Round03 wrapper.
+3. `srr_propref.py` still permits deterministic bootstrap prototypes, `srr_dictionary_memory.py` contains EMA/helper memory, `cinema_adapter.py` is a small convolutional control, `registration_model.py` directly warps with `0.25*tanh(v)`, and `temporal_model.py` accepts an abstract `temporal_z`. Each is a named Round03 known-bad path.
+4. Pinned CineMA source defines `cinema.segmentation.convunetr.ConvUNetR`, `decoder_dict["sax"]`, and `pred_head_dict["sax"]`. The ACDC configuration uses spacing `[1.0,1.0,10.0]`, patch size `[192,192,16]`, output classes `0=background, 1=RV, 2=MYO, 3=LV`, and a 32-channel final decoder tensor before the prediction head.
 
-1. Input and availability order: `[LGE, T2, C0]`.
-2. Three modality stems and four encoder scales with channels `[32,64,128,256]`.
-3. At each scale, exactly sixteen residual experts: four shared, two LGE-private, two T2-private, two C0-private, and two for each pairwise interaction `(LGE,T2)`, `(LGE,C0)`, `(T2,C0)`.
-4. Separate anatomy, scar, and edema two-pass spatial routers. Pass one uses local modality features, availability, anatomy distance, anchor uncertainty, and component/remote-FP flags. Pass two additionally consumes proposal logits. The gate is entmax-1.5; the first 20% of training is soft, the next 30% keeps top four, and the final 50% keeps top two. Invalid slots must have max absolute weight no greater than `1e-8` per batch/task/slot.
-5. Pattern-SIP is a real loss over availability group, style cluster, and hard subgroup usage. Target expert mass is `0.50` shared, `0.35` private, and `0.15` interaction. It has an independent tensor, function, and gradient test and is not an alias of dictionary loss.
-6. Four deterministic train-only OOF shards. Each pathology has eight positive and twelve negative prototype slots. Memory uses EMA plus a bounded trainable residual and a FIFO provenance ledger. Edema negatives are drawn only from T2-present safe regions; no-T2 myocardium never enters edema positive or negative memory.
-7. Anatomy decoder outputs background, myocardium-union, LV, and RV. Scar proposal is LGE-dominant with remote-FP negative memory. Edema proposal is T2-conditioned. Scar soft ROI has two-voxel dilation; edema soft ROI has five-voxel dilation. The refiners are separate modules.
-8. With anchor logits `z_anchor`, full SRR logits `z_srr`, and pathology-specific bounded deltas, the final output is:
+All new implementation is route-local under `src/care_myocardium/route_B_round03/**`. Shared first-party source edits are prohibited. Discovery of a necessary shared edit returns `ROUTE_B_ROUND03_NEEDS_PLANNER_SCOPE_REVISION`; the Controller cannot enlarge scope.
 
-   `z_final = z_anchor + g_scar*4*tanh(delta_scar) + g_edema*4*tanh(delta_edema)`.
+## 3. Data, order, manifests, and sampling
 
-   The correction is zero outside the corresponding soft ROI. The gate consumes route confidence, anchor entropy, anatomy support, component flags, and availability. The implementation must expose on/off interventions for retrieval, memory, proposal, each refiner, gate, and final correction.
-9. No-T2 behavior is four-way blocked: no edema supervised loss, no edema memory update, zero edema proposal/refiner correction, and final Route B edema delta exactly zero.
+### 3.1 Canonical order and migration
 
-## 4. Exact CineMA and temporal architecture
+All tensors, configs, manifests, logs, and checkpoints use `[LGE,T2,C0]`. Input shape is `[B,3,Z,H,W]`; availability is `[B,3]` in the same order. A missing modality is multiplied out before and after its stem and has zero private/interaction routing weight.
 
-Route B does not fine-tune the CineMA backbone in Round02. This is a deliberate fixed-source experiment, not a future-work deferral. The complete Cine branch must consume real CineMA evidence now.
+The old Route B checkpoint is classified `NONLOADABLE_ARCHITECTURE_AND_MODALITY_ORDER_MISMATCH`; the new four-scale model does not load it. The nnU-Net anchor remains read-only. A wrong-order known-bad fixture permutes T2/C0 and must fail the input fingerprint and semantic test.
 
-CineMA provenance:
+### 3.2 Deterministic manifests
 
-- code commit `c10daa1d93f0ea28d8b9ad9206b0f673d25805c1`;
-- Hugging Face revision `b1251ee50423bceeca84c080782fc3bc7756dea6`;
-- MIT license;
-- source `https://huggingface.co/mathpluscode/CineMA/resolve/main/finetuned/segmentation/acdc_sax/acdc_sax_0.safetensors`;
-- SHA256 `c7a60195e6c0aa920b0d0d8221d2ea7a75b6a5ea570763c3bf4924398f5ae85f`;
-- route-local untracked path `/users/a/e/aereinh/CARE_worktrees/route_B/results/route_B/runtime/external_assets/CineMA/acdc_sax/acdc_sax_0.safetensors`.
+B0 creates and freezes these exact tracked manifests and SHA256 receipts before B1:
 
-The source emits four-class anatomy logits, a sixteen-channel last-decoder feature map, and normalized entropy. The pretrained source is frozen. A matched control instantiates the same `ConvUNetR` architecture from deterministic random seed `26071722`, also frozen. Both feed identically initialized/trainable `1x1` feature projections, registration inputs, eight-slot temporal dictionaries, and temporal refiners. Trainable parameter counts must match exactly.
+```text
+configs/route_B_round03/manifests/myops_fold0_primary_44.json
+configs/route_B_round03/manifests/myops_t2_edema_positive.json
+configs/route_B_round03/manifests/myops_sampler_strata.json
+configs/route_B_round03/manifests/cine_train12.json
+results/route_B/round03/manifest_freeze_receipt.json
+```
 
-Frames are ED/frame `0` plus eight evenly spaced non-reference frames across the first `4/6` of the cardiac cycle. Registration is ANTsPy `SyNOnly` to ED. Each case requires at least four passed non-reference frames. The temporal dictionary has exactly eight slots: ED anatomy anchor, early/late systolic contraction, early/late diastolic relaxation, motion magnitude, registered texture residual, and registration-uncertainty safety.
+The generation command is fixed in the B0 executor prompt. `myops_fold0_primary_44.json` is the exact prior 44-case fold-0 list. The edema-positive manifest contains every primary case with T2 present and positive edema ground truth, sorted by case ID; fewer than eight makes formal MyoPS training ineligible. The primary evaluation must include scar-positive, T2-positive edema-positive, no-T2, CenterB, and CenterC rows.
 
-The temporal head consumes registered CineMA features and logits, ED features/logits, transform displacement, Jacobian determinant, intensity residual, and uncertainty. It uses a thirty-two-channel projection, masked slot retrieval, two residual convolution blocks, and a four-class output. It must alter final logits and labels on real cases. Binary priors, frame0 fallback, union-only aggregation, descriptor-only retrieval, and topology-only completion are forbidden.
+The twelve-case Cine manifest contains six sorted case IDs from each of the two available training centers, real 4D image paths, reference-label paths, frame count, affine/header hash, and center. Fewer than twelve cases or fewer than four non-reference frames on a credited case blocks formal Cine work.
 
-The matched pretrained/random runs use the same cases, frames, preprocessing, augmentation, optimizer, number of trainable parameters, budget, validation cadence, checkpoint schedule, and selection rule. The only difference is CineMA source initialization. The pretrained benefit classification is evidence, not an assumption.
+Hash values are deterministic B0 outputs, not Planner guesses. Until the freeze receipt contains all four SHA256 values, B1 and every formal job are blocked.
 
-## 5. Fixed data, baseline, and split contracts
+### 3.3 Disjoint pathology-balanced sampler
 
-Shared read-only root: `/users/a/e/aereinh/CARE`.
+Strata are disjoint by precedence:
 
-MyoPS primary evaluation is the exact prior 44-case fold-0 case list, frozen by SHA256. The T2-positive edema manifest is every fold-0 case with T2 present and positive edema ground truth, sorted by case ID. It must contain at least eight cases. Training uses deterministic pathology-balanced sampling: half of batches are drawn from T2-present edema-positive cases, one quarter from scar-positive cases, and one quarter from the remaining cases. This sampling changes training semantics and must be included in the fingerprint.
+1. `E`: T2-present edema-positive cases;
+2. `S`: scar-positive cases not already in `E`;
+3. `R`: all remaining train cases.
 
-Cine uses twelve labeled training cases, six per center after sorted case-ID selection, with 4D image and reference label paths under the shared data root. The same twelve cases and frames are used for pretrained and random controls.
+Every four optimizer steps draw `E,E,S,R`. Sampling is with replacement inside each stratum using a sorted case list and Philox seed `26071821`; epoch boundaries do not change the 2:1:1 ratio. Empty `E`, fewer than eight evaluation-positive edema cases, missing CenterB/CenterC coverage, or a runtime count receipt inconsistent with the ratio blocks stage entry.
 
-The immutable nnU-Net baseline root is:
-`/users/a/e/aereinh/CARE/results/submissions/care_myocardium_validation/workspaces/nnUNet_MyoPS+nnUNet_CineMyoPS_5fold_baseline_round8_20260519_084057/predictions`.
+## 4. Four-scale SRR-v3 architecture
 
-## 6. Ordered controller task graph
+### 4.1 Stems, scales, and experts
 
-1. `B0_BIND_AND_REVIEW_REPAIR`: bind current main policies, exact route task/plan hashes, prior packet/evidence hashes, data/split/baseline manifests, and external asset provenance.
-2. `B1_STRICT_VALIDATOR_REPAIR`: expand packet validator, implementation validator, and executable known-bad fixtures; remove the stale undertrained token only when current evidence supports the replacement state.
-3. `B2_FULL_ARCHITECTURE_RECONCILIATION`: map current implementation against the exact sixteen-slot/OOF/Pattern-SIP/proposal/refiner/bounded-correction contract; implement missing pieces and the real CineMA source/control path.
-4. `B3_IMPLEMENTATION_GATE`: real LGE-only, LGE+C0, complete-trimodal, and no-T2 forward/gradient/intervention tests; real CineMA load; real pretrained/random feature difference; real SyN; temporal input consumption; save/reload/export; no old-wrapper bypass.
-5. `B4_MYOPS_FULL_BOUNDED_TRAIN_EVAL`: one full-architecture bounded run with the new pathology-balanced sampling and frozen 44-case/T2-positive evaluation.
-6. `B5_CINE_PRETRAINED_MATCHED_RUN`: one frozen-pretrained CineMA temporal run.
-7. `B6_CINE_RANDOM_MATCHED_RUN`: one frozen-random CineMA temporal run with exactly the same contract as B5.
-8. `B7_SELECTED_CHECKPOINT_RELOAD_AND_INTERVENTIONS`: enumerate all scheduled checkpoints from B4/B5/B6, apply the exact selection rules, clean-reload the selected checkpoints, and perform final-output interventions.
-9. `B8_FINALIZER_A`: `afterany` accounting and aggregation over every attempt.
-10. `B9_MAPPER_FINAL_AND_FINALIZER_B`: route-local architecture/fingerprint finalization, strict validators, known-bad self-tests, `git diff --check`, one local lightweight commit, and controller stop.
-11. `B10_INDEPENDENT_REVIEWER_HANDOFF`: create the separate read-only reviewer request.
+Channels are exactly `[32,64,128,256]`. Each modality has an independent stem and encoder path. At every scale there are sixteen experts:
 
-## 7. Training budgets and optimizers
+```text
+4 shared
+2 LGE-private
+2 T2-private
+2 C0-private
+2 LGE-T2 interaction
+2 LGE-C0 interaction
+2 T2-C0 interaction
+```
 
-MyoPS: AdamW, learning rate `1e-4`, weight decay `1e-4`, batch size `1`, gradient clip `5.0`, seed `26071721`. It must reach `25000` optimizer steps and `3600` train-loop seconds, four validation events, all 44 primary cases, at least eight T2-positive edema-positive cases, one-batch overfit, finite/nonzero mechanism losses, loss decrease, prediction sanity, same-split baseline, and cache isolation.
+Each expert is:
 
-Each Cine control: AdamW on only projection/temporal parameters, learning rate `2e-4`, weight decay `1e-4`, batch size `1` case, gradient clip `5.0`. Pretrained seed is `26071722`; random source initialization seed is also `26071722`, while data-order seed is `26071723` for both. Each reaches `8000` steps and `3600` seconds, four validation events, twelve cases, ED plus eight non-reference frames, one-batch overfit of trainable heads, loss decrease, prediction sanity, same-case frame0 control, and isolated cache/checkpoint roots.
+```text
+Conv3d(C,C,3,padding=1,bias=false)
+GroupNorm(min(8,C/4),C)
+SiLU
+Conv3d(C,C,3,padding=1,bias=false)
+GroupNorm(min(8,C/4),C)
+residual add
+SiLU
+```
 
-Scheduled checkpoints are steps `2000, 4000, 6000, 8000` for Cine and `5000, 10000, 15000, 20000, 25000` for MyoPS. A selected checkpoint is not privileged until clean reload reproduces logits within `1e-5`.
+Private inputs are modality features. Pairwise inputs concatenate the two present modality features, project with `Conv3d(2C,C,1,bias=false)`, and then enter the same residual expert. Unavailable private or interaction slots are invalid and cannot receive gradients or weight.
 
-## 8. Selection rules and metric gates
+### 4.2 Pathology-specific two-pass routing
 
-MyoPS checkpoint eligibility requires: complete case manifests and hashes; no-T2 Route B edema delta exactly zero; nonempty prediction rate at least `0.80` on positive cases; pathology volume ratio in `[0.25,4.0]`; no NaN/Inf; all implementation and packet validators passing.
+Default semantic slot masks are fixed:
 
-Eligible checkpoints are ordered lexicographically by: maximize the smaller of scar Dice delta and T2-positive edema Dice delta; minimize positive HD95 deltas; minimize remote-FP delta; minimize component-count delta; select the earlier step on an exact tie.
+- anatomy: shared + C0-private + LGE-C0 + T2-C0;
+- scar: shared + LGE-private + LGE-T2 + LGE-C0;
+- edema: shared + T2-private + LGE-T2 + T2-C0.
 
-Cine source/checkpoint ordering is exact:
+At each scale and voxel, the router query concatenates: local fused features; a 16-channel availability embedding; anatomy union probability and signed distance; anchor entropy; anchor pathology probability; anchor component and remote-FP flags; and, in pass two, scar and edema proposal logits. The network is `Conv3d(Q,C/2,1) -> GroupNorm -> SiLU -> Conv3d(C/2,16,1)`. Routing uses entmax-1.5.
 
-1. For each source, select the checkpoint with highest mean myocardium Dice; ties within `0.001` use lower mean HD95, then earlier step.
-2. Classify `PRETRAINED_BENEFIT` only when pretrained mean Dice exceeds random by at least `0.01` and pretrained HD95 is no worse by more than `1.0 mm`.
-3. Classify `RANDOM_NONINFERIOR` when absolute Dice difference is at most `0.005` and random HD95 is no worse.
-4. Otherwise classify `CINEMA_CONTROL_UNRESOLVED`; Route B cannot be candidate-ready.
-5. Downstream Route B outputs always use the clean-reloaded pretrained checkpoint. Random control never silently replaces CineMA and cannot erase the required pretrained evidence path.
+Schedule by total MyoPS progress:
 
-Route-level metric gates:
+```text
+0%–20%: all valid entmax weights
+20%–50%: valid top-4 followed by renormalization
+50%–100%: valid top-2 followed by renormalization
+```
 
-- scar: Dice delta at least `+0.01` or HD95 delta at most `-1.0 mm`, with remote-FP non-increase and severe-harm fraction no greater than `0.20`;
-- edema: T2-positive Dice delta at least `+0.02` or HD95 delta at most `-1.0 mm`, with exact no-T2 zero delta;
-- Cine: pretrained temporal Dice delta versus frame0 at least `+0.01`, HD95 no worse by more than `1.0 mm`, and temporal on/off changes labels on at least eight of twelve cases.
+Invalid logits are `-1e4`; maximum invalid absolute weight is `1e-8`. Receipts record per-task/per-scale slot mass, invalid weight, gradient norm, and response to availability/image/proposal perturbations.
 
-A reviewer may accept an adequate negative packet, but candidate-ready requires all safety gates, full mechanism closure, and at least two positive metric gates while the third is non-worse.
+### 4.3 Pattern-SIP
 
-## 9. Slurm contract
+For spatially averaged router weight `u[b,t,l,k]`, define family mass `M[b,t,l,c]` for shared/private/interaction families. The target is `(0.50,0.35,0.15)`.
 
-Formal wrappers use `/users/a/e/aereinh/CARE/envs/env_CARE/bin/python` or an exactly fingerprinted route-local equivalent. No bare `python`.
+Availability groups are the observed canonical patterns. Style clusters are deterministic train-only k-means with `K=4`, seed `26071822`, over per-case modality-wise median/IQR/p05/p95 plus stage-1 pooled stem features. Centroids are fitted after stage-1 step 2000, frozen, serialized, and never use validation/test cases. Hard groups are scar-positive, T2-positive edema-positive, CenterB, CenterC, and anchor-remote-FP-positive multi-hot indicators.
 
-B4 runs on `htzhulab`. B5 runs after B4 is terminal; B6 runs after B5 is terminal. Default walltime is six hours per job. After two two-hour pending checks, an identical `a100-gpu` mirror may be submitted with isolated output and an atomic winner lock. `volta-gpu` is not used. Training-to-training chains use `afterok` only when the downstream phase requires successful upstream artifacts; the global finalizer uses `afterany` over every attempt. Scheduler block requires 24 hours of all submitted routes remaining pending.
+For group mean expert use `ubar[g,k]`, soft activity is `q[g,k]=min(1,ubar[g,k]/0.05)`. Coverage `gamma[k]` is the weighted mean of `q` over nonempty availability×style×hard groups. The exact loss is:
 
-## 10. Write scopes, packet, validators, and reviewer
+```text
+L_mass = mean(sum_c (M_c-target_c)^2)
+L_integrative = mean_shared relu(0.60-gamma)^2
+              + mean_private relu(0.25-gamma)^2
+              + mean_interaction relu(0.20-gamma)^2
+L_load = mean_group_family KL(normalized expert use || uniform within family)
+L_sparse = mean(normalized entropy of valid router weights)
+L_pattern_sip = L_mass + 0.50*L_integrative + 0.25*L_load + 0.10*L_sparse
+```
 
-Allowed writes: `src/care_myocardium/route_B/**`, the exact full SRR-v3 first-party files named in the implementation snapshot, `scripts/route_B/**`, `scripts/training/route_B/**`, `scripts/validation/route_B/**`, `tests/route_B/**`, `configs/route_B/**`, `jobs/route_B/**`, `results/route_B/**`, and `logs/route_B/**`. Any shared first-party file edit must be declared before editing in `implementation_snapshot.md`, remain on `route_B`, and be included in mapper/fingerprint receipts. Route A/C, root current state, submissions, raw data, and shared prompts are forbidden writes.
+Its full-loss coefficient is `0` for steps 0–999, linearly ramps to `0.02` at step 2000, is `0.05` through proposal/refiner stages, and is `0.02` in joint fine-tuning. It has an independent tensor, alias, finite-gradient, and no-gradient known-bad test.
 
-Required packet files include all Agent-Flow v2 controller receipts plus: `full_architecture_inventory.json`, `invalid_slot_runtime.csv`, `pattern_sip_runtime.csv`, `prototype_memory_provenance.csv`, `mechanism_intervention_matrix.csv`, `cinema_provenance.json`, `cinema_pretrained_random_control.csv`, `cine_registration_temporal_report.csv`, `training_adequacy.csv`, `metrics_summary.csv`, `case_safety_matrix.csv`, `help_harm_matrix.csv`, `same_split_baseline_receipt.json`, `label_cache_audit.json`, route-local mapper/fingerprint files, finalizer state, strict validator reports, commands, result/controller/completion/review request, and manifest.
+## 5. OOF prototype bank and hard negatives
 
-Strict validators must parse adequacy thresholds, Slurm terminal accounting, aggregation, controller/finalizer consistency, all mechanism outputs, hashes, and authority fields. Known-bad fixtures must fail for config/mock/CSV-only modules, old-wrapper bypass, invalid slot gradients, router input bypass, prototype leakage, no-T2 edema negative, no-effect proposal/refiner/gate, unbounded correction, fake/frame0 CineMA, unmatched random control, temporal not consuming registered evidence, undertrained ready, submitted-only packet, stale token, heavy artifacts, push/review, or forbidden authority.
+Formal prototypes are offline-fitted, fold-safe, inference-frozen, and serialized with checkpoints. Four shards are assigned by `int(sha256(case_id)[:8],16) % 4`. For each scale and pathology, positive and negative features are fitted separately with spherical k-means: scar positive 8, scar negative 12, edema positive 8, edema safe-negative 12. Candidate component centroids are sorted by case/component hash, capped at 4096 per category, initialized by deterministic farthest-point selection, and updated for 20 cosine Lloyd iterations. Empty clusters take the current farthest candidate.
 
-The durable finalizer performs terminal accounting, aggregation, mapper final, strict validation, and one local lightweight commit. It does not push or write `review.md`. The independent reviewer is read-only and post-commit. Reviewer acceptance authorizes only later portfolio comparison.
+For OOF shard `q`, fitting uses only the other three train shards. Validation/test labels and the current case never contribute. Banks are fitted after each selected stage checkpoint and frozen during the next stage; the final selected joint checkpoint receives a final clean-reloaded bank fit before evaluation. Receipts bind source manifest, fit commit, model checkpoint SHA, split hash, class counts, fallback count, and bank tensor SHA.
+
+Online EMA and deterministic bootstrap are forbidden as formal memory. A no-prototype conservative-proposal control may pass the implementation gate, but missing or invalid OOF banks block formal Route B training readiness.
+
+The training-only hard-negative queue has 256 component centroids per pathology per scale. Rank 0 gathers candidates, sorts by descending false-positive confidence then stable case/component hash, inserts at most 16 per batch, evicts oldest entries FIFO, broadcasts every 50 steps, and serializes queue state in training checkpoints. It is never loaded for validation/test inference. No-T2 myocardium can never enter the edema queue.
+
+## 6. Proposal, ROI, refinement, and final composition
+
+### 6.1 Proposal tensors
+
+Each pathology upsamples its four routed features to the finest scale, projects each to 32 channels, and sums them. Scar proposal input has 43 channels: routed 32; anatomy union; anchor pathology logit and probability; anchor entropy; anchor component map; remote-FP map; positive similarity; negative similarity; similarity difference; signed anatomy distance; and anatomy-neighborhood probability. Edema adds one T2-availability channel for 44 channels.
+
+Anchor/context maps are stop-gradient. Prototype tensors are frozen; similarity gradients reach routed features. Proposal layers are:
+
+```text
+Conv3d(in,64,3,padding=1) -> GroupNorm(8) -> SiLU
+Conv3d(64,32,3,dilation=d,padding=d) -> GroupNorm(8) -> SiLU
+Conv3d(32,1,1)
+```
+
+`d=2` for scar and `d=3` for edema. Scar target is a one-voxel dilation of scar GT; edema target is a three-voxel dilation and exists only on T2-present labeled cases.
+
+### 6.2 Soft ROI
+
+For pathology `p`:
+
+```text
+roi_p = sigmoid((proposal_prob_p-theta_p)/temperature_p)
+        * (0.7+0.3*anatomy_union)
+        * exp(-relu(distance_p-d0_p)/distance_temperature_p)
+```
+
+Scar uses `theta=.55`, `temperature=.10`, dilation 2, `d0=3`, distance temperature 2, minimum crop `[8,64,64]`, and margin `[1,4,4]`. Edema uses `theta=.35`, `temperature=.12`, dilation 5, `d0=6`, distance temperature 4, minimum crop `[12,96,96]`, and margin `[2,8,8]`. The crop includes `roi>0.1` plus anatomy support; it never hard-deletes outside predictions. Anatomy-only fallback may occur on at most 5% of formal cases and cannot earn candidate credit.
+
+### 6.3 Refiners and bounded final logits
+
+Scar refiner uses three 64-channel residual blocks with dilations `[1,2,3]`. Edema uses four 64-channel blocks with dilations `[1,2,4,6]`. Each consumes the cropped routed feature, pathology image evidence, proposal probability, ROI, endo/epi/union distance maps, anchor logit/probability, positive/negative similarity, uncertainty, and anatomy probabilities. Each returns one pathology logit and is pasted back with trilinear probability blending and the soft ROI.
+
+Gate architecture is `Conv3d(12,16,1) -> GroupNorm(4) -> SiLU -> Conv3d(16,1,1) -> sigmoid`. Gate target is the anchor-error opportunity mask inside the ROI: pathology false negatives plus pathology false positives. Gate loss is focal BCE with `alpha=.75`, `gamma=2`.
+
+Final logits preserve classes 0–3 and apply bounded pathology corrections:
+
+```text
+delta_p = 4.0*tanh(refiner_logit_p-anchor_logit_p)
+z_final_p = z_anchor_p + roi_p*gate_p*delta_p
+```
+
+No-T2 edema loss, bank update, queue update, proposal, ROI, refiner, gate, delta, and Route-B-owned edema change are exactly zero. Official six-label reconstruction uses argmax after this composition; no post-hoc label invention is allowed.
+
+Every selected checkpoint exposes the causal chain:
+
+```text
+retrieval -> prototype similarity -> proposal -> ROI -> refiner -> bounded delta -> final logits -> final labels
+```
+
+On/off interventions report changed logits, voxels, components, Dice, HD95, remote-FP, component count, and volume ratio for each node.
+
+## 7. Full loss and four-stage MyoPS training
+
+Loss terms are Dice-CE unless specified. Scar boundary uses a distance-transform boundary loss; edema boundary is uncertainty-weighted. Prototype positive/negative terms use margin `0.20`. Negative-space loss uses only safe negatives. ROI loss is BCE against the dilated target. Bounded-delta regularization is mean squared delta outside anchor-error opportunities.
+
+| term | evidence warmup | proposal | refiner | joint |
+|---|---:|---:|---:|---:|
+| anatomy | 1.00 | 0.50 | 0.20 | 0.10 |
+| scar evidence | 0.75 | 0.25 | 0.10 | 0.10 |
+| edema evidence, T2 only | 0.75 | 0.25 | 0.10 | 0.10 |
+| scar proposal | 0 | 1.00 | 0.25 | 0.20 |
+| edema proposal, T2 only | 0 | 1.00 | 0.25 | 0.20 |
+| prototype margin | 0 | 0.25 | 0.10 | 0.10 |
+| negative space | 0 | 0.20 | 0.25 | 0.10 |
+| scar refiner | 0 | 0 | 1.00 | 0.50 |
+| edema refiner, T2 only | 0 | 0 | 1.00 | 0.50 |
+| scar boundary | 0 | 0.10 | 0.20 | 0.10 |
+| edema boundary, T2 only | 0 | 0.05 | 0.10 | 0.05 |
+| ROI | 0 | 0.20 | 0.20 | 0.10 |
+| anatomy prior | 0.10 | 0.10 | 0.10 | 0.10 |
+| gate | 0 | 0 | 0 | 0.20 |
+| final output | 0 | 0 | 0.50 | 1.00 |
+| Pattern-SIP | scheduled | 0.05 | 0.05 | 0.02 |
+| bounded-delta regularizer | 0 | 0 | 0 | 0.01 |
+
+All stages use batch size 1, gradient accumulation 2, AMP, gradient clip 5, and the frozen sampler. Exact stages:
+
+1. Evidence warmup: 6,000 steps, at least 1,800 train-loop seconds, 3 validation events, AdamW `2e-4`, weight decay `1e-4`, 500-step warmup then cosine. Train stems/encoders/experts/routers/anatomy/evidence heads; freeze proposal/refiner/gate. Checkpoints 2000/4000/6000. Exit requires finite losses, one-batch overfit, anatomy-union Dice at least .70 on the overfit batch, live gradients for every valid family, and valid style-cluster freeze.
+2. Proposal: 8,000 steps, at least 2,400 seconds, 4 validation events, AdamW `1e-4`, cosine. Train routers/upper experts/anatomy/proposals; freeze refiners/gates. Checkpoints 2000/4000/6000/8000. Exit requires scar proposal recall at least .85, T2-positive edema proposal recall at least .90, nonzero similarity contribution, and no forbidden negatives.
+3. Refiner: 10,000 steps, at least 3,000 seconds, 5 validation events, AdamW `1e-4`, cosine. Freeze stems/lower encoders/prototype banks; train refiners and upper routed features. Checkpoints 2000/4000/6000/8000/10000. Exit requires positive proposal-to-final retention, nonzero changed components, scar remote-FP non-increase on the gate set, and no-T2 exact zero.
+4. Joint fine-tuning: 8,000 steps, at least 2,400 seconds, 4 validation events, AdamW `2e-5`, cosine without restart. Unfreeze all Route B modules except frozen OOF banks. Checkpoints 2000/4000/6000/8000. Exit requires 32,000 cumulative steps, 9,600 cumulative train seconds, 16 validation events, fresh 44-case evaluation, at least eight T2-positive edema-positive cases, clean reload, and all validators.
+
+A stage cannot advance when its gate fails. Operational failures receive at most two same-scope retries with identical code/config/split/scientific hashes. Scientific gate failure does not permit redesign during execution; it yields a non-ready or adequate-negative packet for review.
+
+## 8. Official CineMA and matched random control
+
+Pinned source:
+
+```text
+repository: mathpluscode/CineMA
+code commit: c10daa1d93f0ea28d8b9ad9206b0f673d25805c1
+Hugging Face revision: b1251ee50423bceeca84c080782fc3bc7756dea6
+weight: finetuned/segmentation/acdc_sax/acdc_sax_0.safetensors
+SHA256: c7a60195e6c0aa920b0d0d8221d2ea7a75b6a5ea570763c3bf4924398f5ae85f
+model: cinema.segmentation.convunetr.ConvUNetR
+license: MIT
+```
+
+The adapter imports the pinned official preprocessing symbol `cinema.data.sitk.clip_and_normalise_intensity_4d`, reorients to RAS, resamples images with linear interpolation and labels with nearest interpolation to `[1.0,1.0,10.0]` mm, and applies one physical-center crop/pad `[192,192,16]` to all frames. Tensor order is SimpleITK `(x,y,z,t)` to PyTorch `[B,T,1,192,192,16]`. No GT label is used to center a CARE inference crop.
+
+A forward hook captures the 32-channel `decoder_dict["sax"]` output immediately before `pred_head_dict["sax"]`; a route-local frozen `1x1x1` projection produces 16 channels. Outputs are logits `[B,4,192,192,16]`, probabilities, features `[B,16,192,192,16]`, and normalized entropy `[B,1,192,192,16]`. Official class mapping is `0 background, 1 RV, 2 MYO, 3 LV`; CARE mapping is recorded explicitly. Affine, direction, origin, spacing, crop, interpolation, and inverse-resampling provenance are hashed.
+
+The official source and the matched random `ConvUNetR` are both frozen. Their only difference is source initialization. One common downstream initialization artifact contains the feature projection, registration, temporal router, and temporal head state. It is created once with seed `26071831`, stored untracked, and bound by `results/route_B/round03/downstream_initialization_receipt.json`. Before any run, parameter names/shapes/frozen/trainable masks, downstream values, optimizer, cases, frames, augmentation draws, cadence, and selector hashes must match exactly; only source-weight hashes differ.
+
+Each source adapter/control uses 8,000 optimizer steps, at least 3,600 train seconds, 4 validation events, 12 cases, AdamW `2e-4`, weight decay `1e-4`, batch size one case, gradient clip 5, and checkpoints 2000/4000/6000/8000. Augmentation draws are serialized and shared: rotation `[-10,10]` degrees, gamma `[0.9,1.1]`, Gaussian sigma `[0,.03]`; temporal order is never shuffled.
+
+## 9. Faithful registration and SyN control
+
+The first-party registration U-Net has channels `[16,32,64,128]` and outputs stationary velocity `v:[B,3,Z,H,W]` in normalized-grid units. With `align_corners=true`, convert normalized displacement to voxel units only for receipts and Jacobian computation.
+
+```text
+d0 = v / 2^7
+d_{i+1} = d_i + warp(d_i,d_i), i=0..6
+phi = identity + d7
+phi_inverse = exp(-v) by the same seven steps
+```
+
+Images/features/probabilities use trilinear warp; labels use nearest; padding is border. Direct velocity-as-displacement is forbidden. Jacobian determinant uses central finite differences in voxel coordinates. Receipts include minimum/mean Jacobian, folding rate, forward/inverse output hashes, and inverse-composition error.
+
+Registration loss weights are LNCC image 1.0, soft anatomy Dice 1.0, velocity smoothness .10, negative Jacobian .05, inverse composition .50, and CineMA feature consistency .25. Training is 25,000 steps, at least 7,200 seconds, 10 validation events, four full-case events, 12 cases, at least 60 pairs, AdamW `1e-4`, weight decay `1e-5`, gradient clip 5, seed `26071832`, checkpoints 5000/10000/15000/20000/25000.
+
+A pair passes when folding fraction is at most `.005`, minimum Jacobian is positive, mean inverse-composition error is at most `1.5` voxels, and warped anatomy Dice is no worse than unregistered by more than `.01`. A case passes with at least 80% pair pass and four passed non-reference frames. The aggregate gate requires at least 90% of 12 cases.
+
+Real control uses `ants.registration(type_of_transform="SyNOnly", reg_iterations=(40,20,0), syn_metric="CC", syn_sampling=2, flow_sigma=3, total_sigma=0, grad_step=.2)` on identical pairs; `ants.apply_transforms` uses linear interpolation for images/probabilities/features and nearest-neighbor for labels. Learned and SyN outputs are independently hashed and never copied.
+
+## 10. Registered temporal aggregation
+
+The temporal interface is a named structure, never an abstract `temporal_z`. It contains ED logits/features/uncertainty; registered non-reference logits/features/uncertainty; velocity; integrated displacement; Jacobian; motion magnitude; texture residual; frame quality; two-channel sinusoidal temporal position; and valid-frame mask.
+
+Each frame is projected to 32 channels. An eight-slot masked router implements: ED anatomy anchor, early/late systolic contraction, early/late diastolic relaxation, motion magnitude, registered texture residual, and registration-uncertainty safety. Two 32-channel residual convolution blocks and a four-class head produce ED-space logits.
+
+Controls are reference-only, unregistered multi-frame, registered temporal, temporal-off, motion-off, anatomy-off, and pretrained-vs-random. Temporal starts only after selected registration clean reload passes. It trains cumulatively to 20,000 credited steps in targets 4000/8000/12000/16000/20000, at least 7,200 seconds, 10 validation events, four full-case events, 12 cases, AdamW `2e-4`, weight decay `1e-4`, gradient clip 5, seed `26071833`. Chunks are capped at 6.5 estimated hours; checkpoints are atomic at most every 500 steps and on `SIGUSR1/TERM`. Gap, overlap, reset, duplicate, missing parent hash, timeout, preemption, or partial attempts receive zero credit.
+
+Temporal on/off must alter real final logits, labels, voxels, and components on at least eight cases.
+
+## 11. Checkpoint eligibility and selector
+
+Eligibility precedes scoring: fresh `--force`; manifest/checkpoint/state-dict/prediction/evaluator hashes; complete denominators; proposal recall floors; changed voxels and components greater than zero; no-T2 edema delta exactly zero; nonempty prediction on at least 80% of positive cases; median pathology volume ratio in `[.25,4]`; finite values; clean reload within `1e-5`; and all implementation/packet validators passing.
+
+For GT-positive cases, empty prediction gives Dice 0 and HD95 100 mm. Both-empty rows are excluded and cannot count as improvement. Missing required subgroup rows make a checkpoint ineligible.
+
+Normalize terms:
+
+```text
+D_scar = clip(scar_positive_Dice_delta,-.25,.25)/.25
+D_edema = clip(T2_positive_edema_Dice_delta,-.25,.25)/.25
+H_scar = clip((anchor_HD95-model_HD95)/20,-1,1)
+H_edema = clip((anchor_HD95-model_HD95)/20,-1,1)
+F_remote = clip((anchor_remoteFP-model_remoteFP)/max(anchor_remoteFP,100),-1,1)
+S = .40*D_scar + .25*D_edema + .15*H_scar + .10*H_edema + .10*F_remote
+```
+
+Tie-breakers are higher `S`, lower severe-harm fraction, lower component-count delta, lower absolute volume-ratio deviation, then earlier cumulative optimizer step.
+
+Cine selects each source by highest mean myocardium Dice, then lower HD95 within `.001`, then earlier step. `PRETRAINED_BENEFIT` requires Dice advantage at least `.01` and HD95 disadvantage at most 1 mm. `RANDOM_NONINFERIOR` requires absolute Dice difference at most `.005` and random HD95 no worse. Otherwise state is `CINEMA_CONTROL_UNRESOLVED`. Downstream always uses the clean-reloaded pretrained source.
+
+## 12. Metric and evidence classification
+
+Positive gates:
+
+- scar: Dice delta at least `.01` or HD95 improvement at least 1 mm, with remote-FP nonincrease and severe-harm fraction at most `.20`;
+- edema: T2-positive Dice delta at least `.02` or HD95 improvement at least 1 mm, with exact no-T2 zero;
+- Cine: temporal Dice delta versus reference-only at least `.01`, HD95 disadvantage at most 1 mm, and changed labels on at least eight cases.
+
+Candidate-ready review requires all implementation/safety/mechanism gates, nonzero MyoPS changed voxels/components/cases, at least two positive target gates, and a non-worse third target. A faithful adequate run that misses this is an adequate negative, not a route stop.
+
+## 13. Executor, Slurm, and deadline contract
+
+The exact B0–B10 graph, commands, outputs, completion tokens, retry states, partition matrices, and race ledgers are in `route_B_executor_plan.yaml` and its prompt files. Multiple independent ready jobs are assigned to different partitions before duplication. Full MyoPS formal stages default to `htzhulab` and `a100-gpu`; they are V100-incompatible unless exact unchanged-config preflight proves peak memory at most 14.5 GiB. `volta-gpu` is assigned official CineMA extraction/control, replay/evaluation, registration evaluation, and lightweight GPU gates. A single compatible critical job may race immediately; no two-hour delay is required. Race attempts have identical scientific hashes, isolated output/log/checkpoint/cache roots, one atomic winner lock, pending-loser cancellation, loser zero credit, and complete accounting.
+
+Decision checkpoints:
+
+```text
+2026-07-20: B0–B2 source/manifest/validator/implementation gate terminal; no long training before pass.
+2026-07-21: evidence-warmup and proposal stages terminal with intermediate gates.
+2026-07-22: refiner/joint first formal MyoPS evidence and official CineMA/control preflight or terminal evidence.
+2026-07-23: only evidence-directed same-scope repair.
+2026-07-24: model/loss freeze.
+2026-07-25: route-local packet and independent review input.
+2026-07-26: runtime/review/Docker/packaging/paper QA only.
+2026-07-27: no new experiment.
+```
+
+## 14. Strict validators, known-bad, and reviewer state machine
+
+Strict validators must parse values and exit nonzero on every error. Executable fixtures cover wrong modality order; nnU-Net-only bypass; disconnected retrieval/proposal/refiner/gate; bootstrap/EMA formal memory; OOF leakage; no-T2 edema negatives; fewer than eight positive edema cases; zero positive edema GT; Pattern-SIP alias/no gradient; fake CineMA or wrong weight SHA; unmatched random control; direct velocity displacement; missing seven-step integration; proxy Jacobian; pair-as-case aggregation; unconsumed temporal inputs; `temporal_z`-only or frame0 fallback; zero MyoPS effect plus Cine gain; stale metrics/missing `--force`; local proxy as official metric; selected checkpoint not reloaded; pending/monitor/undertrained/stale receipts; runtime push/review; forbidden authority; inconsistent race hashes; shared race output; missing atomic lock; loser credit; pending loser not cancelled; V100 semantic downscaling; and V100 compatibility without exact-config preflight.
+
+Final Controller packet token is `ROUTE_B_ROUND03_TERMINAL_PACKET_READY_FOR_REVIEW` only after terminal accounting, aggregation, mapper final, strict validator pass, known-bad pass, heavy-artifact scan, and a lightweight local commit. Monitor, awaiting-accounting, undertrained-in-progress, stale, or validator-failed states cannot use it.
+
+The independent reviewer may emit only:
+
+```text
+ROUTE_B_ROUND03_REVIEW_CANDIDATE_READY
+ROUTE_B_ROUND03_REVIEW_ADEQUATE_NEGATIVE
+ROUTE_B_ROUND03_REVIEW_EXTERNAL_RESOURCE_BLOCKER
+ROUTE_B_ROUND03_REVIEW_UNDERTRAINED
+ROUTE_B_ROUND03_REVIEW_NEEDS_MONITOR
+ROUTE_B_ROUND03_REVIEW_NEEDS_EVIDENCE
+ROUTE_B_ROUND03_REVIEW_NEEDS_REVISION
+```
+
+Each token must bind required files, validator state, adequacy, race/finalizer accounting, rejection reasons, and next actor as specified in B10. Reviewer acceptance permits only later Portfolio reconciliation.
+
+## 15. Authority boundary
+
+Planner publication is not Critic approval. Only a Round03 Critic ready token bound to the exact route commit and blobs can authorize the Route B Controller. Nothing in this contract authorizes validation packaging/upload, route promotion, M11, cross-route merge, hosted metric claims, or a final scientific decision.
