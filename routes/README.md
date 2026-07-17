@@ -149,10 +149,11 @@ Day 3 implementation gate 未通过的 route 不得进入正式训练。
 
 ## 验证命令
 
-从主工作树运行：
+从主工作树运行当前仍有效的轻量检查：
 
 ```bash
-python scripts/ops/validate_route_setup.py
+./envs/env_CARE/bin/python -m pytest -q tests/ops/test_build_route_watchboard.py
+git diff --check
 ```
 
 查看当前状态：
