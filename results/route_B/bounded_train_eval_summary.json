@@ -1,13 +1,45 @@
 {
+  "status": "ROUTE_B_NEEDS_MONITOR",
+  "generated_at_utc": "2026-07-17T01:53:11Z",
+  "formal_training_submitted": true,
   "adequacy_passed": false,
-  "cine_eval_cases": 5,
-  "first_loss": 2.432159662246704,
-  "generated_at_utc": "2026-07-15T09:59:31.335761+00:00",
-  "last_loss": 1.2517919540405273,
+  "optimizer_steps": null,
+  "train_loop_seconds": null,
+  "validation_events": null,
   "myops_eval_cases": 10,
-  "optimizer_steps": 12,
-  "runtime_root": "results/route_B/runtime/bounded_train_eval",
-  "status": "ROUTE_B_SCIENTIFIC_UNDERTRAINED",
-  "train_loop_seconds": 1.1450198969687335,
-  "validation_events": 2
+  "cine_eval_cases": 5,
+  "failed_attempts": [
+    {
+      "job_id": "59317810",
+      "job_name": "RouteBTrainEval",
+      "partition": "htzhulab",
+      "state": "FAILED",
+      "exit_code": "1:0",
+      "elapsed": "00:00:04",
+      "node": "g180702",
+      "start": "2026-07-16T13:37:17",
+      "end": "2026-07-16T13:37:21",
+      "log_path": "logs/route_B/RouteBTrainEval_59317810_20260716_133719.log",
+      "failure_class": "STARTUP_ENVIRONMENT_ERROR",
+      "failure_reason": "Slurm wrapper used bare /usr/bin/python; torch import failed with ModuleNotFoundError.",
+      "training_credit": 0
+    }
+  ],
+  "active_replacement_job": {
+    "job_id": "59363006",
+    "job_name": "RouteBTrainEval",
+    "partition": "volta-gpu",
+    "qos": "gpu_access",
+    "state": "PENDING",
+    "pending_reason": "Priority",
+    "runtime": "00:00:00",
+    "exit_code": "0:0 while pending; terminal accounting not available",
+    "log_path": "logs/route_B/RouteBTrainEval_59363006_<job-start-timestamp>.log",
+    "runtime_output_path": "results/route_B/runtime/bounded_train_eval",
+    "sbatch_command": "sbatch --partition=volta-gpu --gres=gpu:tesla_v100-sxm2-16gb:1 --qos=gpu_access --export=ALL,ROUTE_B_STEPS=500 jobs/route_B/run_bounded_train_eval.sh",
+    "replacement_for": "59317810"
+  },
+  "aggregation_command": "python scripts/training/route_B/run_bounded_train_eval.py --steps 500 --myops-eval-cases 10 --cine-eval-cases 5",
+  "aggregation_exit_code": null,
+  "post_completion_aggregation_complete": false
 }

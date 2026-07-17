@@ -1,16 +1,3 @@
-case_id,task,gt_scar_voxels,pred_scar_voxels,gt_edema_voxels,pred_edema_voxels,scar_dice,edema_dice,t2_present,gt_myocardium_voxels,pred_myocardium_voxels,myocardium_dice,nonreference_frames
-Case1001,MyoPS,3,0,0,0,0.0,nan,True,,,,
-Case1002,MyoPS,6,0,0,0,0.0,nan,True,,,,
-Case1003,MyoPS,3,0,0,0,0.0,nan,True,,,,
-Case1004,MyoPS,7,0,0,0,0.0,nan,True,,,,
-Case1005,MyoPS,4,0,0,0,0.0,nan,True,,,,
-Case1006,MyoPS,0,0,0,0,nan,nan,True,,,,
-Case1007,MyoPS,3,0,0,0,0.0,nan,True,,,,
-Case1008,MyoPS,5,0,0,0,0.0,nan,True,,,,
-Case1009,MyoPS,11,0,0,0,0.0,nan,True,,,,
-Case1010,MyoPS,1,0,0,0,0.0,nan,True,,,,
-Case1001,CineMyoPS,2,0,,,0.0,,,18,0,0.0,3
-Case1002,CineMyoPS,3,0,,,0.0,,,16,1,0.0,3
-Case1003,CineMyoPS,1,0,,,0.0,,,12,0,0.0,3
-Case1004,CineMyoPS,3,0,,,0.0,,,17,0,0.0,3
-Case1005,CineMyoPS,4,0,,,0.0,,,20,1,0.0,3
+case_id,task,status,note
+PENDING_MONITOR,MyoPS,PENDING_MONITOR,replacement job 59363006 has not reached terminal aggregation
+PENDING_MONITOR,CineMyoPS,PENDING_MONITOR,replacement job 59363006 has not reached terminal aggregation

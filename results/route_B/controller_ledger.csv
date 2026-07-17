@@ -1,4 +1,4 @@
 timestamp_utc,phase,decision,next_action
-2026-07-15T09:59:31.381510+00:00,B3,implementation_gate_passed,B5_bounded_train_eval
-2026-07-15T09:59:31.381528+00:00,B5,ROUTE_B_SCIENTIFIC_UNDERTRAINED,B6_finalizer_packet
-2026-07-15T09:59:31.381531+00:00,B6,ROUTE_B_SCIENTIFIC_UNDERTRAINED,independent_readonly_review
+2026-07-17T01:53:11Z,B5_attempt1,FAILED_STARTUP_ENVIRONMENT_ERROR,repair_wrapper_python_environment
+2026-07-17T01:53:11Z,B5_replacement,ROUTE_B_NEEDS_MONITOR,monitor_job_59363006_until_terminal
+2026-07-17T01:53:11Z,B6_finalizer,POST_COMPLETION_AGGREGATION_PENDING,rerun_or_collect_lightweight_evidence_after_terminal_job
