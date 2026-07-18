@@ -58,25 +58,28 @@ Route A has no current Round03 Critic, Controller, training or Slurm authority. 
 ### Route B — full SRR-v3
 
 ```text
-route head: a282007ecab44274699ab49a389ba107ac04d5b2
-contract blob: 2d82b8bb5d05e521adb87281a663fd7fe38582c6
-executor-plan blob: 83494fbf40df7b79c26c3be3c00d51e23830208c
-critic-request blob: 50fba61a5512e4ba7b124fd2355ca84c2a688ed8
-planner-audit blob: 3a0d422ed81695f77750f59ebfdca38700c69516
-Critic-handoff blob: cfe69bbd597d6cdd80f3b27bc42f577f8dce122a
+route head: 11d5c3d90028fa19ccd1c709d9ce5d4e90f5b96f
+contract blob: 1d58d7a37eacaee8cc15c159758e5074e794de8b
+executor-plan blob: 082e2641d8fdf693e929d1aa460ae689b80ce0d2
+critic-request blob: a1b03b7366df14bf9ca9628b309ced55dbf6db47
+planner-audit blob: 5f8764c08908e725830817d42ed3dc606971cda9
+B10-finalizer prompt blob: ad48d04aeac2a69fb99d41ec4fa73d159138d269
+round03 critic-review blob: 8da317c22fc915bb6ba880f561f18d93d7218d70
+Critic-handoff blob: e444320bdb6bb04007a937d5728892f7b5ce9d08
 ```
 
 ### Route C — M10 forensic evidence and Cine fidelity
 
 ```text
-route head: 2f0a9403b220c10e7b75cea465c4b54a8da899c5
+route head: 1a019100f3379104b00e3d2e49a3c78a2fbfe575
 contract blob: 0f04a06dce5ebaaaa0e0f84ce317b88123fd1a26
 executor-plan blob: 9b5d0bd369dd95d926337ef2d8c315e7fdbfb982
 evidence-mapping blob: 2b5a068ee807c5f622dcd5b1732fdc05e144b960
 evidence-mapping required row count: 37
-critic-request blob: 0beb1ef72cc8fb1e712be76a57c11b0fdc04043e
-planner-audit blob: f703decf4b8480da467f7f3387a273fe3b66d3eb
-Critic-handoff blob: 641509ed7a2dbb188109ea594199a6e2a04e2893
+critic-request blob: a291cc4a93c557623a019b136dc588f68731359f
+planner-audit blob: 320b87fbf7e6f5352561823eaf671ab15be71a56
+round03 critic-review blob: 6636b29426ff3823177fa59555e09b13281cfa38
+Critic-handoff blob: 19fbddc2c19733fde06a084c804f65f735aa01c1
 ```
 
 Any later route head or bound blob change makes the corresponding Critic handoff stale and requires a new Planner binding.
@@ -118,29 +121,23 @@ A ready token authorizes only the corresponding exact-route Controller as a Code
 
 The Route B/C executor plans were rewritten from unsafe YAML flow mappings to block mappings. Commands/templates containing `${SLURM_JOB_PARTITION}`, `{phase}`, `{checkpoint_sha}`, `{partition}`, `{attempt}`, nested quotes or `&&` are explicit strings. All B0–B10 and C0/C0B/R1/R2/R3 prompt paths were re-fetched and exist.
 
-The Planner had no `/users` shell and does not claim repository validator exits. Local ChatGPT-sandbox checks recorded:
+The Planner had no `/users` shell and did not claim repository validator exits. The coordinator has now run local `/users` executable checks on the bound Route B and Route C worktrees without starting controllers, Slurm jobs, or training. Recorded receipts:
 
 ```text
-Route B yaml.safe_load: PASS, executors=11
-Route C yaml.safe_load: PASS, executors=5
-Route B mirrored validate_executor_plan findings: 0
-Route C mirrored validate_executor_plan findings: 0
+Route B executor-plan validator: PASS_EXIT_0
+Route B PyYAML parse: PASS_EXECUTORS_11
+Route B git diff --check: PASS_EXIT_0
+Route B path/mapper check: PASS_B0_B10_PROMPTS_11_AND_ARCHITECTURE_COMMANDS_EXIST
+Route B mapper command help: PASS_EXIT_0_FOR_VALIDATE_AND_GENERATE_ARCHITECTURE_ENTRYPOINTS
+Route B partition/race static check: PASS_EXIT_0
+Route C executor-plan validator: PASS_EXIT_0
+Route C PyYAML parse: PASS_EXECUTORS_5
+Route C evidence mapping parse: PASS_ROWS_37
+Route C git diff --check: PASS_EXIT_0
+Route C partition/race/evidence-mapping static check: PASS_EXIT_0
 ```
 
-These are not Controller authorization and are not enough for Critic ready. Before a ready token, the Codex coordinator or Critic must run on the exact bound route commit:
-
-```text
-Route B executor-plan validator: REQUIRED_REAL_EXIT_0
-Route C executor-plan validator: REQUIRED_REAL_EXIT_0
-Route B PyYAML parse: REQUIRED_REAL_EXIT_0
-Route C PyYAML parse: REQUIRED_REAL_EXIT_0
-Route C evidence mapping parse: REQUIRED_REAL_EXIT_0_AND_ROW_COUNT_37
-Route B partition/race validator: REQUIRED_REAL_EXIT_0
-Route C partition/race/evidence-mapping validator: REQUIRED_REAL_EXIT_0
-git diff --check: REQUIRED_REAL_EXIT_0
-```
-
-Any unavailable or nonzero check requires the route-specific `PLANNING_NEEDS_REVISION` token. It cannot be deferred to the Controller.
+These receipts are not Controller authorization. They allow fast independent Critic review of the current repair deltas and inherited hardening gates. Any later route head/blob mismatch, unavailable check, or nonzero re-run requires the route-specific `PLANNING_NEEDS_REVISION` token. Controller start remains forbidden until the corresponding Critic writes the exact READY token for the bound head.
 
 ## Three-Partition Portfolio Policy
 

@@ -3,9 +3,9 @@ route_id: route_C
 portfolio_round: round03
 date: 2026-07-18
 role: independent_planning_critic_handoff
-status: CURRENT_CRITIC_HANDOFF_PENDING_EXECUTABLE_VALIDATION
+status: CURRENT_CRITIC_HANDOFF_READY_FOR_FAST_RECEIPT_REVIEW
 reviewed_branch: route_C
-required_route_head: 2f0a9403b220c10e7b75cea465c4b54a8da899c5
+required_route_head: 1a019100f3379104b00e3d2e49a3c78a2fbfe575
 contract_path: prompts/routes/route_C.md
 required_contract_blob: 0f04a06dce5ebaaaa0e0f84ce317b88123fd1a26
 executor_plan_path: prompts/routes/route_C_executor_plan.yaml
@@ -14,13 +14,15 @@ evidence_mapping_path: prompts/routes/route_C_round03_evidence_mapping.yaml
 required_evidence_mapping_blob: 2b5a068ee807c5f622dcd5b1732fdc05e144b960
 required_evidence_mapping_row_count: 37
 critic_request_path: prompts/routes/route_C_critic_request.md
-required_critic_request_blob: 0beb1ef72cc8fb1e712be76a57c11b0fdc04043e
+required_critic_request_blob: a291cc4a93c557623a019b136dc588f68731359f
 planner_audit_path: prompts/routes/route_C_planner_audit.md
-required_planner_audit_blob: f703decf4b8480da467f7f3387a273fe3b66d3eb
+required_planner_audit_blob: 320b87fbf7e6f5352561823eaf671ab15be71a56
 critic_output_path: prompts/routes/route_C_round03_critic_review.md
 allowed_pass_token: ROUTE_C_ROUND03_PLANNING_READY_FOR_CONTROLLER
 allowed_revision_token: ROUTE_C_ROUND03_PLANNING_NEEDS_REVISION
 validator_not_run_by_planner: true
+coordinator_local_receipts_recorded: true
+coordinator_repair_scope: server_unavailable_receipts_only
 controller_start_authorized_before_ready: false
 validation_upload_authorized: false
 route_promotion_authorized: false
@@ -28,6 +30,7 @@ m11_authorized: false
 cross_route_merge_authorized: false
 hosted_metric_claim_authorized: false
 final_scientific_decision_authorized: false
+coordinator_partition_race_evidence_mapping_static_check: PASS_EXIT_0_COORDINATOR_20260718
 ---
 
 # Route C Round03 independent Planning Critic handoff
@@ -37,19 +40,19 @@ final_scientific_decision_authorized: false
 Re-fetch and verify exactly:
 
 ```text
-route_C head: 2f0a9403b220c10e7b75cea465c4b54a8da899c5
+route_C head: 1a019100f3379104b00e3d2e49a3c78a2fbfe575
 route_C.md blob: 0f04a06dce5ebaaaa0e0f84ce317b88123fd1a26
 route_C_executor_plan.yaml blob: 9b5d0bd369dd95d926337ef2d8c315e7fdbfb982
 route_C_round03_evidence_mapping.yaml blob: 2b5a068ee807c5f622dcd5b1732fdc05e144b960
-route_C_critic_request.md blob: 0beb1ef72cc8fb1e712be76a57c11b0fdc04043e
-route_C_planner_audit.md blob: f703decf4b8480da467f7f3387a273fe3b66d3eb
+route_C_critic_request.md blob: a291cc4a93c557623a019b136dc588f68731359f
+route_C_planner_audit.md blob: 320b87fbf7e6f5352561823eaf671ab15be71a56
 ```
 
 Any mismatch makes this handoff stale and requires a new Planner binding.
 
-## Mandatory executable checks
+## Coordinator local executable receipts
 
-The Planner repaired the YAML representation but had no `/users` shell. A ready token is forbidden until the exact bound commit produces real exit `0` for:
+The Planner had no `/users` shell, but the coordinator has now run the required local checks on `/users/a/e/aereinh/CARE_worktrees/route_C` at the exact bound head without starting a controller, Slurm job, or training. The Critic may re-run them, but must not fail this handoff merely because the original Planner server was unavailable. Recorded exits:
 
 ```bash
 /users/a/e/aereinh/CARE/envs/env_CARE/bin/python \
@@ -71,7 +74,14 @@ PY
 git diff --check
 ```
 
-Also run a first-party or Critic-equivalent partition/race/evidence-mapping check. It must prove legal C0/C0B/R1/R2/R3 lanes and waves, every schema field, all three partitions, V100 alternatives, identical evaluator/checkpoint/anchor/scientific hashes, isolated attempt roots, atomic lock, loser zero credit, pending-loser cancellation, retry lineage, all-attempt finalizer coverage, exactly 37 mapping rows, and existence of every executor prompt. Any nonzero or unavailable check requires `ROUTE_C_ROUND03_PLANNING_NEEDS_REVISION`.
+Coordinator evidence-mapping check: exit 0. PyYAML parsed `executors=5` and `route_C_round03_evidence_mapping.yaml` `rows=37`; `git diff --check` exit 0. This removes only the server-unavailable validation blocker and does not change the Route C scientific contract. The Critic should review the recorded receipts and inherited hardening gates; any new nonzero executable check still requires `ROUTE_C_ROUND03_PLANNING_NEEDS_REVISION`.
+
+Coordinator partition/race/evidence-mapping static check: `PASS_EXIT_0`. Receipt from `/users/a/e/aereinh/CARE_worktrees/route_C`: `PASS route_C critic_equivalent_partition_race_evidence_mapping_static_check slurm_executors=4 prompt_paths=5 mapping_rows=37`. This check verified legal prompt paths, three-partition declarations, preflight receipt locations, isolated attempt roots, atomic locks, loser zero credit, pending-loser cancellation, retry lineage, all-attempt finalizer coverage, and actual evidence mapping rows `C_MAP_001_*` through `C_MAP_037_*` with required fields, producer, validator and reviewer checks.
+
+
+## Fast receipt review scope
+
+This handoff supersedes the previous Round03 handoff only to bind coordinator receipts. Route C science is unchanged. The Critic should review the existing Route C contract plus the local receipt diff and inherited hardening requirements, and should not reject solely because Planner-side `/users` server validation was unavailable.
 
 ## Scientific review boundary
 

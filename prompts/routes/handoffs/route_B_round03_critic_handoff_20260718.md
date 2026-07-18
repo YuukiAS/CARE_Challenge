@@ -3,21 +3,23 @@ route_id: route_B
 portfolio_round: round03
 date: 2026-07-18
 role: independent_planning_critic_handoff
-status: CURRENT_CRITIC_HANDOFF_PENDING_EXECUTABLE_VALIDATION
+status: CURRENT_CRITIC_HANDOFF_READY_FOR_FAST_REPAIR_REVIEW
 reviewed_branch: route_B
-required_route_head: a282007ecab44274699ab49a389ba107ac04d5b2
+required_route_head: 11d5c3d90028fa19ccd1c709d9ce5d4e90f5b96f
 contract_path: prompts/routes/route_B.md
-required_contract_blob: 2d82b8bb5d05e521adb87281a663fd7fe38582c6
+required_contract_blob: 1d58d7a37eacaee8cc15c159758e5074e794de8b
 executor_plan_path: prompts/routes/route_B_executor_plan.yaml
-required_executor_plan_blob: 83494fbf40df7b79c26c3be3c00d51e23830208c
+required_executor_plan_blob: 082e2641d8fdf693e929d1aa460ae689b80ce0d2
 critic_request_path: prompts/routes/route_B_critic_request.md
-required_critic_request_blob: 50fba61a5512e4ba7b124fd2355ca84c2a688ed8
+required_critic_request_blob: a1b03b7366df14bf9ca9628b309ced55dbf6db47
 planner_audit_path: prompts/routes/route_B_planner_audit.md
-required_planner_audit_blob: 3a0d422ed81695f77750f59ebfdca38700c69516
+required_planner_audit_blob: 5f8764c08908e725830817d42ed3dc606971cda9
 critic_output_path: prompts/routes/route_B_round03_critic_review.md
 allowed_pass_token: ROUTE_B_ROUND03_PLANNING_READY_FOR_CONTROLLER
 allowed_revision_token: ROUTE_B_ROUND03_PLANNING_NEEDS_REVISION
 validator_not_run_by_planner: true
+coordinator_local_receipts_recorded: true
+coordinator_repair_scope: B10_finalizer_mapper_ancestry_only
 controller_start_authorized_before_ready: false
 validation_upload_authorized: false
 route_promotion_authorized: false
@@ -25,6 +27,7 @@ m11_authorized: false
 cross_route_merge_authorized: false
 hosted_metric_claim_authorized: false
 final_scientific_decision_authorized: false
+coordinator_partition_race_static_check: PASS_EXIT_0_COORDINATOR_20260718
 ---
 
 # Route B Round03 independent Planning Critic handoff
@@ -34,18 +37,20 @@ final_scientific_decision_authorized: false
 Re-fetch and verify exactly:
 
 ```text
-route_B head: a282007ecab44274699ab49a389ba107ac04d5b2
-route_B.md blob: 2d82b8bb5d05e521adb87281a663fd7fe38582c6
-route_B_executor_plan.yaml blob: 83494fbf40df7b79c26c3be3c00d51e23830208c
-route_B_critic_request.md blob: 50fba61a5512e4ba7b124fd2355ca84c2a688ed8
-route_B_planner_audit.md blob: 3a0d422ed81695f77750f59ebfdca38700c69516
+route_B head: 11d5c3d90028fa19ccd1c709d9ce5d4e90f5b96f
+route_B.md blob: 1d58d7a37eacaee8cc15c159758e5074e794de8b
+route_B_executor_plan.yaml blob: 082e2641d8fdf693e929d1aa460ae689b80ce0d2
+route_B_critic_request.md blob: a1b03b7366df14bf9ca9628b309ced55dbf6db47
+route_B_planner_audit.md blob: 5f8764c08908e725830817d42ed3dc606971cda9
+
+B10 prompt blob: ad48d04aeac2a69fb99d41ec4fa73d159138d269
 ```
 
 Any mismatch makes this handoff stale and requires a new Planner binding.
 
-## Mandatory executable checks
+## Coordinator local executable receipts
 
-The Planner repaired the YAML representation but had no `/users` shell. A ready token is forbidden until the exact bound commit produces real exit `0` for:
+The Planner had no `/users` shell, but the coordinator has now run the required local checks on `/users/a/e/aereinh/CARE_worktrees/route_B` at the exact bound head without starting a controller, Slurm job, or training. The Critic may re-run them, but must not fail this handoff merely because the original Planner server was unavailable. Recorded exits:
 
 ```bash
 /users/a/e/aereinh/CARE/envs/env_CARE/bin/python \
@@ -65,7 +70,14 @@ PY
 git diff --check
 ```
 
-Also run a first-party or Critic-equivalent partition/race static check. It must parse B2–B10 and prove all three partitions, per-partition preflight commands/receipts, explicit V100 alternatives, identical scientific hashes, isolated output/log/checkpoint/cache roots, shared atomic winner locks, loser zero credit, pending-loser cancellation, retry lineage, all-attempt finalizer coverage, and existence of every B0–B10 prompt path. Any nonzero or unavailable check requires `ROUTE_B_ROUND03_PLANNING_NEEDS_REVISION`.
+Coordinator path/mapper check: exit 0. It parsed B0-B10, verified all 11 prompt paths exist, confirmed `scripts/architecture/care_mapper.py` is absent from the bound plan, confirmed the replacement mapper/architecture command paths exist, and confirmed both `scripts/architecture/validate_care_architecture_wiki.py --help` and `scripts/architecture/generate_care_architecture_wiki.py --help` exit 0. The Critic should review the repair diff and inherited hardening gates; any new nonzero executable check still requires `ROUTE_B_ROUND03_PLANNING_NEEDS_REVISION`.
+
+Coordinator partition/race static check: `PASS_EXIT_0`. Receipt from `/users/a/e/aereinh/CARE_worktrees/route_B`: `PASS route_B critic_equivalent_partition_race_static_check slurm_executors=9 prompt_paths=11`. This check verified three-partition declarations, preflight receipt locations, isolated attempt roots, atomic locks, loser zero credit, pending-loser cancellation, retry lineage, all-attempt finalizer coverage, B10 `depends_on: []`, terminal coverage for every listed terminal class, and absence of `scripts/architecture/care_mapper.py`.
+
+
+## Fast repair review scope
+
+This handoff supersedes the previous Round03 handoff only for coordinator unlock repair. The Critic should review the exact diff from the prior bound Route B head to this head and the inherited M9/M10/Round02 hardening requirements. Required focus: B10 terminal finalizer DAG covers every started attempt and every success/failure/timeout/preemption/adequate-negative/early-gate terminal class; B10 is not dependent on B9 success; mapper command no longer references nonexistent `scripts/architecture/care_mapper.py`; stale ancestry metadata no longer contradicts CURRENT-bound blobs. Do not reopen unrelated Route B scientific design unless this repair weakened a hard requirement.
 
 ## Scientific review boundary
 
