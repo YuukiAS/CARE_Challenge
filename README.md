@@ -14,22 +14,24 @@
 
 ## 当前 tmux 与 route worktree
 
-核心 session：
+Canonical 常驻 session：
 
 ```text
-care_portfolio
-care_route_A_controller
-care_route_B_controller
-care_route_C_controller
+care_watchboard
+care_route_A
+care_route_B
+care_route_C
 ```
 
-Reviewer session 只在对应 route 产生 committed packet 后创建：
+每条 route 在对应 session 内用 window 隔离角色：
 
 ```text
-care_route_A_reviewer
-care_route_B_reviewer
-care_route_C_reviewer
+RouteA-Controller / RouteA-Continue / RouteA-Exec / RouteA-Reviewer
+RouteB-Controller / RouteB-Continue / RouteB-Exec / RouteB-Reviewer
+RouteC-Controller / RouteC-Continue / RouteC-Exec / RouteC-Reviewer
 ```
+
+历史命名 `care_portfolio`、`care_route_*_controller`、`care_route_*_reviewer` 只作为 legacy alias 兼容线索，不再作为当前操作或状态判断来源。
 
 检查当前 route 状态：
 

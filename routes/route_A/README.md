@@ -5,8 +5,9 @@
 | route 目的 | 最小工作量、最快形成新的 submission candidate |
 | branch | `route_A` |
 | worktree | `/users/a/e/aereinh/CARE_worktrees/route_A` |
-| controller tmux | `care_route_A_controller` |
-| reviewer tmux | `care_route_A_reviewer` |
+| tmux session | `care_route_A` |
+| controller window | `RouteA-Controller` |
+| reviewer window | `RouteA-Reviewer` |
 | result root | `results/route_A/` |
 | runtime root | `results/route_A/runtime/` |
 | log root | `logs/route_A/` |
