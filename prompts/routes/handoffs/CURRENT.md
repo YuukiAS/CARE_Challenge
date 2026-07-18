@@ -59,7 +59,7 @@ Route A has no current Round03 Critic, Controller, training or Slurm authority. 
 
 ```text
 route head: 0d7e0d295ca94f23c39767506bd711890ae6022e
-contract blob: 2d82b8bb5d05e5216adb87281a663fd7fe38582c6
+contract blob: 2d82b8bb5d05e521adb87281a663fd7fe38582c6
 executor-plan blob: 83494fbf40df7b79c26c3be3c00d51e23830208c
 critic-request blob: 50fba61a5512e4ba7b124fd2355ca84c2a688ed8
 planner-audit blob: 3a0d422ed81695f77750f59ebfdca38700c69516
