@@ -1,15 +1,21 @@
-# SRR 三路线动态看板
+# CARE Route Portfolio Watchboard
 
-`scripts/ops/build_route_watchboard.py` 生成 CARE SRR Route A+B+C 的只读动态看板。它用于查看 route 合同状态、轻量证据、tmux、Slurm 当前作业、最近 Slurm 作业和可审查性，不用于执行任何操作。
+`scripts/ops/build_route_watchboard.py` 生成 CARE Route A/B/C 的只读 portfolio watchboard。它从 `prompts/routes/handoffs/CURRENT.md` 动态读取当前 `round_id`、active/deferred routes、controller authority boundary、route head/blob bindings、critic handoff/review paths、allowed planning tokens 和 checkpoints，再交叉展示 route-local packet、tmux、Slurm 和 live service 状态。
 
-看板不会提交、取消、训练、上传、合并、推送，也不会产生 route promotion、route negative 或最终科学结论。
+看板只观察，不执行。页面不得有操作按钮；脚本不得提交/取消 Slurm、启动 controller、上传 validation、合并、推送、route promotion、M11、hosted metric claim 或 final scientific decision。
+
+## Source Of Truth
+
+`prompts/routes/handoffs/CURRENT.md` 是 portfolio truth。`results/watchboard/status.json` 和 `results/watchboard/index.html` 是 ignored/generated live output，只用于验证服务当前展示，不作为源码真相提交。
+
+如果 `CURRENT.md` 缺少字段，看板必须显示 parse warning 和 `unknown/blocked`，不得回退到旧 round、旧 critic path 或 hardcoded token。
 
 ## 生成
 
 从 CARE root 运行：
 
 ```bash
-python scripts/ops/build_route_watchboard.py --user aereinh
+/users/a/e/aereinh/CARE/envs/env_CARE/bin/python scripts/ops/build_route_watchboard.py --user aereinh
 ```
 
 默认输出：
@@ -19,116 +25,110 @@ results/watchboard/index.html
 results/watchboard/status.json
 ```
 
-HTML 默认每 60 秒刷新一次。可以显式设置：
+验证用临时输出建议写到 `/tmp`：
 
 ```bash
-python scripts/ops/build_route_watchboard.py --user aereinh --refresh-seconds 60
+/users/a/e/aereinh/CARE/envs/env_CARE/bin/python scripts/ops/build_route_watchboard.py --user aereinh --output-dir /tmp/care_watchboard_verify
 ```
 
-## 页面内容
+## Live Serve
 
-看板以中文为主，只保留必要英文，例如 `Route A/B/C`、branch、worktree、文件路径、Slurm state token、job id、partition、命令名和指标/任务名。
+Canonical live service 使用 `127.0.0.1:8766`，并且必须用 repo env Python：
 
-每条 route 展示：
+```bash
+/users/a/e/aereinh/CARE/envs/env_CARE/bin/python scripts/ops/build_route_watchboard.py --user aereinh --serve --host 127.0.0.1 --port 8766
+```
 
-- route 目的、下一个 gate、controller/reviewer tmux 可见性、worktree 变更数。
-- SRR 架构/合同状态；合同未落地时显示 route 默认说明。
-- result packet、controller report、manifest、completion check、review request、review 等轻量证据是否存在。
-- packet 中提取到的状态 token，例如 `NEEDS_MONITOR`、`JOB_SUBMITTED`、`AWAITING_REVIEW`。
-- packet 中提取到的 Slurm job id，以及 `squeue`/`sacct` 回填的当前或最近作业状态。
-- 中文可审查性结论：例如“不可作为完成包审查”“可进入独立审查”“尚不可审查为完成”。
+`--serve` 不是一次性静态快照。服务收到 `/`、`/index.html` 或 `/status.json` 请求时，会按 `--refresh-seconds` 重新采集 CURRENT、route packet、tmux、Slurm 和 process 状态并刷新 generated output。
 
-## 未完成状态规则
+历史 `8765` 或 bare `python ... --serve` 是 legacy/duplicate risk，可能覆盖 `results/watchboard/status.json`。替换 live service 时只能维护 `care_watchboard` session/window 和 exact matched watchboard serve 进程；不得 send-keys 到 `care_route_A/B/C`，不得触碰 Route A/B/C controller。
 
-只要 result packet 或 Slurm 当前态包含以下任一情况，看板必须显示未完成，不能显示为完成包：
+## Schema
+
+`status.json` 顶层包含：
 
 ```text
+portfolio_round
+routes[route_id].portfolio_state
+routes[route_id].planning_gate
+routes[route_id].controller_authority
+routes[route_id].runtime_state
+routes[route_id].slurm_attempts
+routes[route_id].tmux_activity
+routes[route_id].packet_state
+routes[route_id].review_state
+routes[route_id].next_action
+warnings[]
+staleness[]
+forbidden_actions[]
+live_service_state
+```
+
+每条 active route 的 critic/controller/reviewer 状态必须来自 CURRENT 绑定与 route-local evidence，不得用 main/coordinator 状态替代 route packet truth。Deferred/dormant route 只展示历史证据和 topology 风险，不进入 active completion summary。
+
+## Runtime Rules
+
+下列状态一律不是完成：
+
+```text
+PENDING
+RUNNING
 NEEDS_MONITOR
 PENDING_MONITOR
 JOB_SUBMITTED
 PENDING_PRIORITY
-RUNNING
 AWAITING_SACCT
+SCIENTIFIC_UNDERTRAINED
+submitted-only
+undertrained
 ```
 
-如果作业已经结束但没有后续聚合证据，看板应显示“需补证据”或“不可作为完成包审查”。Controller 报告只能作为运行态或待审查证据，不能替代独立 reviewer，也不能给出最终科学结论。
+如果 packet 写着 `NEEDS_MONITOR` 且 `squeue`/`sacct` 仍 pending/running/awaiting-accounting，看板必须明确显示 monitor, not completion。Slurm job IDs 优先从 packet、ledger、finalizer_state 和 controller_context 抽取；job name fuzzy match 只能作为 low-confidence fallback。
 
-## tmux 拓扑
+`general` partition 作业只读展示，不进入 CARE GPU routing summary，也不得给取消建议。`volta-gpu` 可用性必须按 packet/ledger compatibility evidence 展示；如果已有 `sm_70`、PyTorch no-kernel-image 或 V100 incompatible 记录，不得只因 volta 空闲提示可用。
 
-看板按当前常驻 tmux 约定展示运行拓扑：
+## tmux Discovery
+
+Route sessions 从 `care_route_A`、`care_route_B`、`care_route_C` 发现。Controller window 按 convention 解析：
 
 ```text
-care_watchboard
-  bash
-  watchboard-tunnel / cloudflared
-care_route_A
-  RouteA-Controller
-  RouteA-Continue
-  RouteA-Exec
-  RouteA-Reviewer
-care_route_B
-  RouteB-Controller
-care_route_C
-  RouteC-Controller
+RouteX-RoundNNController
+RouteX-Controller   # legacy/generic
 ```
 
-Route 卡片中的 controller 状态来自对应 route session 的 controller 窗口，例如 `care_route_A:RouteA-Controller.0`。旧 route README 里的 `controller tmux` / `reviewer tmux` 字段只作为 legacy 信息保留，不再覆盖当前 `care_route_A/B/C` session 布局。看板会显示 session 是否可见、预期窗口是否存在、实际窗口命令和 pane 命令；缺失窗口只作为风险提示，不触发任何 tmux 操作。
+active controller 优先匹配当前 `portfolio_round.round_id` 的 round-specific window。旧窗口只标为 legacy/inactive；pane 处于 sleep/monitor 时仍必须与 Slurm/packet truth 交叉验证。
 
-## Slurm 数据
+## Safety And Git Boundary
 
-看板只读调用：
+Implementation 只在 main worktree 修改源码、文档和测试：
 
 ```text
-squeue -h -u <user> -o %i|%u|%P|%j|%T|%M|%R
-squeue -h -u <user> -p htzhulab|a100-gpu|volta-gpu -o %i|%u|%P|%j|%T|%M|%R
-sinfo -o %P|%a|%l|%D|%t|%G
-sinfo -p htzhulab|a100-gpu|volta-gpu -o %P|%a|%l|%D|%t|%G
-sacct -n -P -S <最近14天> -u <user> --format JobIDRaw,JobName,Partition,State,ExitCode,Elapsed,Start,End
+/users/a/e/aereinh/CARE
 ```
 
-如果 `sacct` 不可用，看板仍会生成，并在风险区显示“sacct 最近作业查询不可用”。
+Route worktrees 只读检查：
 
-分区摘要只展示 CARE GPU 分区：`htzhulab`、`a100-gpu`、`volta-gpu`。`general` 和 `general_big` 不进入分区摘要。
+```text
+/users/a/e/aereinh/CARE_worktrees/route_A
+/users/a/e/aereinh/CARE_worktrees/route_B
+/users/a/e/aereinh/CARE_worktrees/route_C
+```
 
-`general` partition 作业会显示为“只读展示”。这些作业可能维持远程开发连接，不能从 watchboard 取消或修改。
+提交只 stage 必要文件：
 
-## 本地浏览
+```text
+scripts/ops/build_route_watchboard.py
+docs/route_watchboard.md
+tests/ops/test_build_route_watchboard.py
+```
 
-`--serve` 不是一次性静态快照。服务收到 `/`、`/index.html` 或 `/status.json` 请求时，会按 `--refresh-seconds` 间隔重新采集 route、tmux、Slurm 和 result packet 状态并更新输出文件。
+不要 force-add `results/watchboard/`，除非另有明确决策要求 tracked static artifact。默认保持 generated/ignored。
+
+提交前验证：
 
 ```bash
-python scripts/ops/build_route_watchboard.py --user aereinh --serve --host 127.0.0.1 --port 8765
+/users/a/e/aereinh/CARE/envs/env_CARE/bin/python -m pytest -q tests/ops/test_build_route_watchboard.py tests/ops/test_controller_notifications.py
+/users/a/e/aereinh/CARE/envs/env_CARE/bin/python scripts/ops/build_route_watchboard.py --user aereinh --output-dir /tmp/care_watchboard_verify
+git diff --check
+curl -fsS http://127.0.0.1:8766/status.json
 ```
-
-然后打开：
-
-```text
-http://127.0.0.1:8765/index.html
-```
-
-如果浏览器不在 CARE 服务器上，使用现有 tunnel 或 SSH port forwarding。
-
-## Tunnel 注意事项
-
-当前工作区存在未跟踪本地辅助脚本：
-
-```text
-jobs/watchboard_tunnel.sh
-```
-
-该脚本指向 `127.0.0.1:8766`，而 watchboard serve 默认端口是 `8765`。本看板改造不修改、不覆盖、不纳入该未跟踪脚本；如果后续要正式管理 tunnel，需要单独决策端口和版本控制策略。
-
-## 安全边界
-
-看板界面禁止加入任何操作按钮或调用以下动作：
-
-```text
-scancel
-sbatch
-srun
-git merge
-git push
-upload
-```
-
-它是运行态可视化工具，不是 executor、controller、finalizer 或 reviewer。

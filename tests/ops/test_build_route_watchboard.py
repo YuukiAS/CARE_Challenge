@@ -499,3 +499,458 @@ def test_status_class_keeps_white_background_for_active_only():
 
     route = route_fixture(display_state_zh="Controller 已结束")
     assert watchboard.status_class(route, {"care_route_A": True}) == "ended"
+
+
+
+def round03_current_text():
+    return """# CARE Route Portfolio Current Round
+
+```text
+round_id: round03
+date: 2026-07-18
+```
+
+current Planner handoff:
+prompts/routes/handoffs/portfolio_round03_planner_handoff_20260718.md
+blob: c7024ee99f1a3135f02f893b053bad8b63bf5208
+
+Portfolio state:
+
+```text
+Route A: DEFERRED_FALLBACK_NOT_ACTIVE
+Route B: ACTIVE_FULL_SRR_V3
+Route C: ACTIVE_M10_FORENSIC_EVIDENCE_AND_CINE_FIDELITY
+current_controller_authorizations: 0
+```
+
+### Route A — dormant fallback
+
+```text
+route head: fae8a732bbf625db367e0b68c04f1490d0c97be3
+contract blob: 370c25de0e35dbd5c854bbdfb81589ee8c0a4368
+executor-plan blob: c681d761cfa145d68ba906f5eb33607843af8b80
+critic-request blob: 227c8f69f69e2b07b72f5df5f3323b2f03136bd1
+planner-audit blob: 61d8cb48fab3728d1330975fb1bc2178446313f9
+```
+
+### Route B — full SRR-v3
+
+```text
+route head: a282007ecab44274699ab49a389ba107ac04d5b2
+contract blob: 2d82b8bb5d05e521adb87281a663fd7fe38582c6
+executor-plan blob: 83494fbf40df7b79c26c3be3c00d51e23830208c
+critic-request blob: 50fba61a5512e4ba7b124fd2355ca84c2a688ed8
+planner-audit blob: 3a0d422ed81695f77750f59ebfdca38700c69516
+Critic-handoff blob: cfe69bbd597d6cdd80f3b27bc42f577f8dce122a
+```
+
+### Route C — M10 forensic evidence and Cine fidelity
+
+```text
+route head: 2f0a9403b220c10e7b75cea465c4b54a8da899c5
+contract blob: 0f04a06dce5ebaaaa0e0f84ce317b88123fd1a26
+executor-plan blob: 9b5d0bd369dd95d926337ef2d8c315e7fdbfb982
+evidence-mapping blob: 2b5a068ee807c5f622dcd5b1732fdc05e144b960
+evidence-mapping required row count: 37
+critic-request blob: 0beb1ef72cc8fb1e712be76a57c11b0fdc04043e
+planner-audit blob: f703decf4b8480da467f7f3387a273fe3b66d3eb
+Critic-handoff blob: 641509ed7a2dbb188109ea594199a6e2a04e2893
+```
+
+## Critic Entries
+
+```text
+route_A critic current prompt:
+NO_CURRENT_CRITIC_HANDOFF
+
+route_B critic current prompt:
+prompts/routes/handoffs/route_B_round03_critic_handoff_20260718.md
+
+route_C critic current prompt:
+prompts/routes/handoffs/route_C_round03_critic_handoff_20260718.md
+```
+
+Allowed Route B planning tokens:
+
+```text
+ROUTE_B_ROUND03_PLANNING_READY_FOR_CONTROLLER
+ROUTE_B_ROUND03_PLANNING_NEEDS_REVISION
+```
+
+Allowed Route C planning tokens:
+
+```text
+ROUTE_C_ROUND03_PLANNING_READY_FOR_CONTROLLER
+ROUTE_C_ROUND03_PLANNING_NEEDS_REVISION
+```
+
+## Round03 Decision Checkpoints
+
+```text
+2026-07-20:
+- Route B B0-B2 implementation/manifest/validator/preflight gate terminal.
+- Route C C0/C0B fingerprint/evidence-map and exact recovery decision terminal.
+```
+
+## Authority Boundary
+
+```text
+controller_authorized_now: 0
+validation_upload_authorized: false
+route_promotion_authorized: false
+m11_authorized: false
+cross_route_merge_authorized: false
+hosted_metric_claim_authorized: false
+final_scientific_decision_authorized: false
+```
+"""
+
+
+def test_parse_current_handoff_round03_portfolio_authority_and_bindings(tmp_path):
+    root = tmp_path / "CARE"
+    (root / "prompts" / "routes" / "handoffs").mkdir(parents=True)
+    (root / "prompts" / "routes" / "handoffs" / "portfolio_round03_planner_handoff_20260718.md").write_text("planner", encoding="utf-8")
+    (root / "prompts" / "routes" / "handoffs" / "route_B_round03_critic_handoff_20260718.md").write_text("critic b", encoding="utf-8")
+    (root / "prompts" / "routes" / "handoffs" / "route_C_round03_critic_handoff_20260718.md").write_text("critic c", encoding="utf-8")
+
+    parsed = watchboard.parse_current_handoff(round03_current_text(), root)
+
+    assert parsed["round_id"] == "round03"
+    assert parsed["portfolio"]["active_routes"] == ["route_B", "route_C"]
+    assert parsed["portfolio"]["deferred_routes"] == ["route_A"]
+    assert parsed["authority"]["controller_authorized_now"] == 0
+    assert parsed["authority"]["validation_upload_authorized"] is False
+    assert parsed["route_bindings"]["route_B"]["required_head"] == "a282007ecab44274699ab49a389ba107ac04d5b2"
+    assert parsed["route_bindings"]["route_C"]["evidence_mapping_required_row_count"] == "37"
+    assert parsed["critic_readiness"]["route_B"]["allowed_tokens"] == [
+        "ROUTE_B_ROUND03_PLANNING_READY_FOR_CONTROLLER",
+        "ROUTE_B_ROUND03_PLANNING_NEEDS_REVISION",
+    ]
+
+
+def test_round03_route_a_is_dormant_not_active_controller_waiting(tmp_path):
+    root = tmp_path / "CARE"
+    handoff = watchboard.parse_current_handoff(round03_current_text(), root)
+    route = route_fixture(
+        id="route_A",
+        label="Route A",
+        display_state_zh="需修订",
+        origin_sha="fae8a732bbf625db367e0b68c04f1490d0c97be3",
+        packet_files={**route_fixture()["packet_files"], "result": True, "review": True},
+    )
+
+    watchboard.annotate_handoff_workers(route, handoff)
+
+    assert route["is_deferred_fallback"] is True
+    assert route["is_active_round_route"] is False
+    assert route["display_state_zh"] == "Dormant fallback"
+    assert route["controller_authorized"] is False
+    assert "不得启动 Route A controller" in route["next_action_zh"]
+    assert "等待任务启动" not in route["current_worker_zh"]
+
+
+def test_round03_active_route_b_controller_blocked_until_authority_and_ready_token(tmp_path):
+    root = tmp_path / "CARE"
+    handoff = watchboard.parse_current_handoff(round03_current_text(), root)
+    route = route_fixture(
+        id="route_B",
+        label="Route B",
+        tmux_session="care_route_B",
+        controller_tmux="care_route_B",
+        controller_tmux_window="RouteB-Controller",
+        origin_sha="a282007ecab44274699ab49a389ba107ac04d5b2",
+    )
+
+    watchboard.annotate_handoff_workers(route, handoff)
+
+    assert route["is_active_round_route"] is True
+    assert route["controller_authorized"] is False
+    assert route["controller_authority_state_zh"] == "blocked"
+    assert route["required_head"] == route["origin_sha"]
+    assert "Controller 当前 blocked" in route["next_action_zh"]
+
+
+def test_render_html_uses_round03_portfolio_title_and_slurm_race_guardrail(tmp_path):
+    handoff = watchboard.parse_current_handoff(round03_current_text(), tmp_path / "CARE")
+    route_a = route_fixture(id="route_A", label="Route A", origin_sha="fae8a732bbf625db367e0b68c04f1490d0c97be3")
+    route_b = route_fixture(id="route_B", label="Route B", tmux_session="care_route_B", controller_tmux="care_route_B", controller_tmux_window="RouteB-Controller", origin_sha="a282007ecab44274699ab49a389ba107ac04d5b2")
+    route_c = route_fixture(id="route_C", label="Route C", tmux_session="care_route_C", controller_tmux="care_route_C", controller_tmux_window="RouteC-Controller", origin_sha="2f0a9403b220c10e7b75cea465c4b54a8da899c5")
+    for route in (route_a, route_b, route_c):
+        watchboard.annotate_route_runtime(route, {}, [], [])
+        watchboard.annotate_handoff_workers(route, handoff)
+
+    html = watchboard.render_html(
+        {
+            "generated_at": "2026-07-18T12:00:00",
+            "tmux": {},
+            "routes": [route_a, route_b, route_c],
+            "jobs": [],
+            "route_jobs": [],
+            "general_jobs": [],
+            "partitions": [],
+            "warnings": [],
+            "guardrails": {"forbidden_actions": ["scancel", "sbatch", "srun", "git merge", "git push", "upload"]},
+            "tmux_topology": [],
+            "handoff": handoff,
+            "portfolio": handoff["portfolio"],
+            "authority": handoff["authority"],
+            "critic_readiness": handoff["critic_readiness"],
+            "round_checkpoints": handoff["round_checkpoints"],
+            "user": "aereinh",
+        }
+    )
+
+    assert "CARE Route Portfolio round03" in html
+    assert "CARE SRR Route A+B+C" not in html
+    assert "Route A 不进入 active count" in html
+    assert "controller_authorized_now" in html
+    assert "formal wrapper must use /users/a/e/aereinh/CARE/envs/env_CARE/bin/python" in html
+    assert "pending-loser cancellation" in html
+
+
+
+def portfolio_current_text(round_id="round04", include_missing=False, active=("Route B", "Route C"), deferred=("Route A",)):
+    route_a_state = "DEFERRED_FALLBACK_NOT_ACTIVE" if "Route A" in deferred else "ACTIVE_ROUTE_A"
+    route_b_state = "ACTIVE_FULL_SRR_V3" if "Route B" in active else "DEFERRED"
+    route_c_state = "ACTIVE_M10_FORENSIC_EVIDENCE_AND_CINE_FIDELITY" if "Route C" in active else "DEFERRED"
+    route_b_review = "" if include_missing else f"critic review output path: prompts/routes/route_B_{round_id}_critic_review.md\n"
+    route_c_review = "" if include_missing else f"critic review output path: prompts/routes/route_C_{round_id}_critic_review.md\n"
+    b_tokens = "" if include_missing else f"""Allowed Route B planning tokens:
+
+```text
+ROUTE_B_{round_id.upper()}_PLANNING_READY_FOR_CONTROLLER
+ROUTE_B_{round_id.upper()}_PLANNING_NEEDS_REVISION
+```
+"""
+    return f"""# CARE Route Portfolio Current Round
+
+```text
+round_id: {round_id}
+date: 2026-07-18
+```
+
+current Planner handoff:
+prompts/routes/handoffs/portfolio_{round_id}_planner.md
+
+Portfolio state:
+
+```text
+Route A: {route_a_state}
+Route B: {route_b_state}
+Route C: {route_c_state}
+current_controller_authorizations: 0
+```
+
+### Route A - dormant fallback
+
+```text
+route head: aaa111
+contract blob: contract-a
+executor-plan blob: exec-a
+critic-request blob: request-a
+planner-audit blob: audit-a
+```
+
+### Route B - full SRR
+
+```text
+route head: bbb222
+contract blob: contract-b
+executor-plan blob: exec-b
+critic-request blob: request-b
+planner-audit blob: audit-b
+Critic-handoff blob: handoff-b
+{route_b_review}```
+
+### Route C - evidence route
+
+```text
+route head: ccc333
+contract blob: contract-c
+executor-plan blob: exec-c
+critic-request blob: request-c
+planner-audit blob: audit-c
+Critic-handoff blob: handoff-c
+{route_c_review}```
+
+## Critic Entries
+
+```text
+route_A critic current prompt:
+NO_CURRENT_CRITIC_HANDOFF
+
+route_B critic current prompt:
+prompts/routes/handoffs/route_B_{round_id}_critic_handoff.md
+
+route_C critic current prompt:
+prompts/routes/handoffs/route_C_{round_id}_critic_handoff.md
+```
+
+{b_tokens}Allowed Route C planning tokens:
+
+```text
+ROUTE_C_{round_id.upper()}_PLANNING_READY_FOR_CONTROLLER
+ROUTE_C_{round_id.upper()}_PLANNING_NEEDS_REVISION
+```
+
+## Decision Checkpoints
+
+```text
+2026-07-20:
+- Route B implementation gate.
+- Route C evidence gate.
+```
+
+## Authority Boundary
+
+```text
+controller_authorized_now: 0
+validation_upload_authorized: false
+route_promotion_authorized: false
+m11_authorized: false
+cross_route_merge_authorized: false
+hosted_metric_claim_authorized: false
+final_scientific_decision_authorized: false
+```
+"""
+
+
+def test_parse_current_handoff_round04_without_round03_hardcode(tmp_path):
+    parsed = watchboard.parse_current_handoff(portfolio_current_text("round04"), tmp_path / "CARE")
+    assert parsed["portfolio_round"]["round_id"] == "round04"
+    assert parsed["portfolio_round"]["active_routes"] == ["route_B", "route_C"]
+    html = watchboard.render_html(
+        {
+            "generated_at": "2026-07-18T12:00:00",
+            "tmux": {},
+            "routes": [route_fixture(id="route_B", label="Route B", origin_sha="bbb222")],
+            "jobs": [],
+            "route_jobs": [],
+            "general_jobs": [],
+            "partitions": [],
+            "warnings": [],
+            "guardrails": {"forbidden_actions": []},
+            "tmux_topology": [],
+            "handoff": parsed,
+            "portfolio_round": parsed["portfolio_round"],
+            "portfolio": parsed["portfolio"],
+            "authority": parsed["authority"],
+            "critic_readiness": parsed["critic_readiness"],
+            "round_checkpoints": parsed["round_checkpoints"],
+            "live_service_state": {"processes": []},
+            "user": "aereinh",
+        }
+    )
+    assert "round04" in html
+    assert "Round03" not in html
+
+
+def test_parse_current_handoff_round05_missing_fields_blocks_unknown(tmp_path):
+    parsed = watchboard.parse_current_handoff(portfolio_current_text("round05", include_missing=True), tmp_path / "CARE")
+    assert parsed["portfolio_round"]["round_id"] == "round05"
+    assert parsed["critic_readiness"]["route_B"]["allowed_tokens"] == []
+    assert parsed["critic_readiness"]["route_B"]["state_zh"] in {"critic review output unknown", "allowed token unknown"}
+    assert any("critic_review_output_path" in warning for warning in parsed["parse_warnings"])
+    assert any("allowed planning tokens" in warning for warning in parsed["parse_warnings"])
+
+
+def test_active_and_deferred_routes_drive_portfolio_state(tmp_path):
+    parsed = watchboard.parse_current_handoff(portfolio_current_text("round04", active=("Route C",), deferred=("Route A", "Route B")), tmp_path / "CARE")
+    assert parsed["portfolio"]["active_routes"] == ["route_C"]
+    assert parsed["portfolio"]["deferred_routes"] == ["route_A", "route_B"]
+
+
+def test_critic_ready_needs_revision_missing_review_and_stale_head(tmp_path):
+    root = tmp_path / "CARE"
+    (root / "prompts" / "routes").mkdir(parents=True)
+    review = root / "prompts" / "routes" / "route_B_round04_critic_review.md"
+    review.write_text("ROUTE_B_ROUND04_PLANNING_READY_FOR_CONTROLLER", encoding="utf-8")
+    parsed = watchboard.parse_current_handoff(portfolio_current_text("round04"), root)
+    route = route_fixture(id="route_B", label="Route B", origin_sha="stale")
+    watchboard.annotate_handoff_workers(route, parsed)
+    assert route["planning_gate"]["ready_token"] == "ROUTE_B_ROUND04_PLANNING_READY_FOR_CONTROLLER"
+    assert route["controller_authority"]["authorized"] is False
+    assert route["head_matches_required"] is False
+    assert parsed["critic_readiness"]["route_C"]["state_zh"] == "pending critic token"
+
+
+def test_controller_running_goal_achieved_queued_message_and_stale_pane():
+    running = route_fixture(id="route_B", label="Route B", controller_tmux="care_route_B")
+    watchboard.annotate_route_runtime(running, {"care_route_B": True}, [], [], {"state": "active_or_unknown", "tail": "queued"})
+    assert running["runtime_state"]["state"] == "controller_active"
+    ended = route_fixture(id="route_B", label="Route B", controller_tmux="care_route_B")
+    watchboard.annotate_route_runtime(ended, {"care_route_B": True}, [], [], {"state": "completed_or_idle", "tail": "Goal achieved"})
+    assert ended["display_state_zh"] == "Controller 已结束"
+
+
+def test_slurm_pending_running_completed_awaiting_aggregation():
+    route = route_fixture(status_keywords=["NEEDS_MONITOR"], slurm_job_ids=["12345"])
+    current = [{"id": "12345", "partition": "a100-gpu", "name": "RCR3", "state": "PENDING", "time": "0:00", "reason": "Priority", "source": "squeue"}]
+    watchboard.annotate_route_runtime(route, {"care_route_A": False}, current, [])
+    assert route["runtime_state"]["state"] == "monitor_or_incomplete"
+    assert route["review_state"]["can_review_complete"] is False
+    completed = route_fixture(status_keywords=["NEEDS_MONITOR"], slurm_job_ids=["12345"])
+    recent = [{"id": "12345", "partition": "a100-gpu", "name": "RCR3", "state": "COMPLETED", "elapsed": "00:10", "exit_code": "0:0", "source": "sacct"}]
+    watchboard.annotate_route_runtime(completed, {"care_route_A": False}, [], recent)
+    assert any("聚合" in blocker for blocker in completed["completion_blockers"])
+
+
+def test_terminal_negative_packet_ready_for_reviewer():
+    route = route_fixture(status_keywords=["TERMINAL_NON_READY_PACKET"], packet_files={**route_fixture()["packet_files"], "review_request": True})
+    watchboard.annotate_route_runtime(route, {}, [], [])
+    assert route["runtime_state"]["state"] == "terminal_negative"
+    assert route["review_state"]["can_review_complete"] is False
+
+
+def test_v100_incompatible_ledger_overrides_idle_volta_partition():
+    compat = watchboard.detect_v100_compatibility("volta-gpu failed with sm_70 no-kernel-image")
+    assert compat["volta_usable"] is False
+
+
+def test_tmux_discovers_round_specific_controller_windows(monkeypatch):
+    def fake_run_cmd(args, cwd, timeout=8):
+        if args[:3] == ["tmux", "list-panes", "-a"]:
+            return {"ok": True, "stdout": "care_route_B|RouteB-Round04Controller|0|title|/users/a/e/aereinh/CARE_worktrees/route_B|codex", "stderr": "", "code": 0}
+        if args[:3] == ["tmux", "list-windows", "-t"]:
+            return {"ok": True, "stdout": "0|RouteB-Round04Controller|codex", "stderr": "", "code": 0} if args[3] == "care_route_B" else {"ok": True, "stdout": "", "stderr": "", "code": 0}
+        return {"ok": True, "stdout": "", "stderr": "", "code": 0}
+    monkeypatch.setattr(watchboard, "run_cmd", fake_run_cmd)
+    topology = watchboard.collect_tmux_topology(Path("/tmp"), {"care_route_B": True}, round_id="round04")
+    route = route_fixture(id="route_B", label="Route B", tmux_session="care_route_B")
+    watchboard.annotate_route_tmux(route, {item["session"]: item for item in topology}, "round04")
+    assert route["controller_tmux_window"] == "RouteB-Round04Controller"
+    assert route["tmux_activity"]["controller_window"] == "RouteB-Round04Controller"
+
+
+def test_tmux_marks_old_controller_windows_legacy_inactive(monkeypatch):
+    def fake_run_cmd(args, cwd, timeout=8):
+        if args[:3] == ["tmux", "list-panes", "-a"]:
+            return {"ok": True, "stdout": "", "stderr": "", "code": 0}
+        if args[:3] == ["tmux", "list-windows", "-t"]:
+            return {"ok": True, "stdout": "0|RouteC-Controller|codex\n1|RouteC-Round04Controller|codex", "stderr": "", "code": 0} if args[3] == "care_route_C" else {"ok": True, "stdout": "", "stderr": "", "code": 0}
+        return {"ok": True, "stdout": "", "stderr": "", "code": 0}
+    monkeypatch.setattr(watchboard, "run_cmd", fake_run_cmd)
+    topology = watchboard.collect_tmux_topology(Path("/tmp"), {"care_route_C": True}, round_id="round04")
+    route = route_fixture(id="route_C", label="Route C", tmux_session="care_route_C")
+    watchboard.annotate_route_tmux(route, {item["session"]: item for item in topology}, "round04")
+    assert route["controller_tmux_window"] == "RouteC-Round04Controller"
+    assert "RouteC-Controller" in route["legacy_controller_windows"]
+
+
+def test_duplicate_watchboard_serve_process_state_requires_refresh():
+    stdout = """192375 1 04:35:22 ./envs/env_CARE/bin/python scripts/ops/build_route_watchboard.py --user aereinh --serve --host 127.0.0.1 --port 8766
+1783551 1 1-00:00:00 python scripts/ops/build_route_watchboard.py --user aereinh --serve --host 127.0.0.1 --port 8765
+"""
+    state = watchboard.parse_watchboard_processes(stdout, Path("/users/a/e/aereinh/CARE"))
+    assert state["duplicate_or_legacy_detected"] is True
+    assert state["refresh_required"] is True
+    assert any(proc["risk"] for proc in state["processes"] if proc["port"] == 8765)
+
+
+def test_no_side_effect_guard_forbidden_commands_not_invoked():
+    assert watchboard.run_cmd(["sbatch", "x.sh"], Path("/tmp"))["code"] == 126
+    assert watchboard.run_cmd(["srun", "hostname"], Path("/tmp"))["code"] == 126
+    assert watchboard.run_cmd(["scancel", "123"], Path("/tmp"))["code"] == 126
+    assert watchboard.run_cmd(["git", "merge", "route_A"], Path("/tmp"))["code"] == 126
+    assert watchboard.run_cmd(["git", "push", "origin", "main"], Path("/tmp"))["code"] == 126
+    assert watchboard.run_cmd(["tmux", "send-keys", "x"], Path("/tmp"))["code"] == 126

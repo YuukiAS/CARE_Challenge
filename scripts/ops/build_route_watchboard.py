@@ -28,6 +28,14 @@ ROUTE_LABELS = {
     "route_B": "Route B",
     "route_C": "Route C",
 }
+ROUTE_IDS_BY_LABEL = {label: route for route, label in ROUTE_LABELS.items()}
+SLURM_RACE_READINESS = [
+    "htzhulab 是默认 CARE GPU partition。",
+    "a100-gpu 是 fallback/race partner。",
+    "volta-gpu 只用于 exact-compatible 或 independent-compatible 工作；V100 semantic downscaling forbidden。",
+    "formal wrapper must use /users/a/e/aereinh/CARE/envs/env_CARE/bin/python；no bare python。",
+    "race requires isolated roots, atomic winner lock, pending-loser cancellation, loser zero credit, retry lineage, all-attempt finalizer coverage。",
+]
 ROUTE_ARCHITECTURE_HINTS = {
     "route_A": [
         "最快形成非纯 nnU-Net submission candidate 的压缩 SRR 路线。",
@@ -124,19 +132,57 @@ SLURM_PENDING_STATES = {"PENDING", "CONFIGURING", "REQUEUED", "RESIZING"}
 SLURM_RUNNING_STATES = {"RUNNING", "COMPLETING", "SUSPENDED"}
 ROUTE_JOB_HINTS = {
     "route_A": ("route_A", "RouteA", "route-a", "care_route_A", "Route A"),
-    "route_B": ("route_B", "RouteB", "route-b", "care_route_B", "Route B"),
-    "route_C": ("route_C", "RouteC", "route-c", "care_route_C", "Route C"),
+    "route_B": ("route_B", "RouteB", "route-b", "care_route_B", "Route B", "RB3"),
+    "route_C": ("route_C", "RouteC", "route-c", "care_route_C", "Route C", "RCR3"),
 }
 PACKET_LABELS_ZH = {
-    "result": "结果包",
-    "controller_report": "Controller 报告",
-    "manifest": "清单",
-    "review": "独立审查",
+    "controller_context": "Controller context",
+    "finalizer_state": "Finalizer state",
     "completion_check": "完成检查",
     "review_request": "审查请求",
+    "commands_run": "命令记录",
+    "controller_ledger": "Controller ledger",
+    "result": "结果包",
+    "review": "独立审查",
+    "controller_report": "Controller 报告",
+    "manifest": "清单",
 }
 CARE_PARTITION_ORDER = ("htzhulab", "a100-gpu", "volta-gpu")
-TMUX_SESSION_PLAN = (
+PACKET_SCAN_FILES = {
+    "controller_context": "controller_context.json",
+    "finalizer_state": "finalizer_state.json",
+    "completion_check": "completion_check.md",
+    "review_request": "review_request.md",
+    "commands_run": "commands_run.md",
+    "controller_ledger": "controller_ledger.csv",
+    "result": "result.md",
+    "review": "review.md",
+    "controller_report": "controller_report.md",
+    "manifest": "MANIFEST.md",
+}
+AUTHORITY_KEYS = (
+    "controller_authorized_now",
+    "validation_upload_authorized",
+    "route_promotion_authorized",
+    "m11_authorized",
+    "cross_route_merge_authorized",
+    "hosted_metric_claim_authorized",
+    "final_scientific_decision_authorized",
+)
+V100_INCOMPATIBLE_PATTERNS = (
+    "sm_70",
+    "no-kernel-image",
+    "no kernel image",
+    "tesla_v100",
+    "Tesla V100",
+    "V100 incompatible",
+    "compute capability 7.0",
+    "unsupported on V100",
+)
+MUTATING_COMMANDS = {"sbatch", "srun", "scancel", "upload"}
+MUTATING_GIT_SUBCOMMANDS = {"merge", "push", "pull", "reset", "checkout", "commit", "add", "rebase"}
+MUTATING_TMUX_SUBCOMMANDS = {"send-keys", "new-session", "kill-session", "kill-window", "kill-pane", "rename-window"}
+TMUX_SESSION_SPECS = (
     {
         "session": "care_watchboard",
         "label_zh": "Watchboard 服务",
@@ -151,7 +197,6 @@ TMUX_SESSION_PLAN = (
         "label_zh": "Route A 常驻工作台",
         "purpose_zh": "controller、continue、executor、reviewer 分窗隔离",
         "route": "route_A",
-        "controller_window": "RouteA-Controller",
         "reviewer_window": "RouteA-Reviewer",
         "expected_windows": ("RouteA-Controller", "RouteA-Continue", "RouteA-Exec", "RouteA-Reviewer"),
     },
@@ -160,7 +205,6 @@ TMUX_SESSION_PLAN = (
         "label_zh": "Route B 常驻工作台",
         "purpose_zh": "controller、continue、executor、reviewer 分窗隔离",
         "route": "route_B",
-        "controller_window": "RouteB-Controller",
         "reviewer_window": "RouteB-Reviewer",
         "expected_windows": ("RouteB-Controller", "RouteB-Continue", "RouteB-Exec", "RouteB-Reviewer"),
     },
@@ -169,12 +213,11 @@ TMUX_SESSION_PLAN = (
         "label_zh": "Route C 常驻工作台",
         "purpose_zh": "controller、continue、executor、reviewer 分窗隔离",
         "route": "route_C",
-        "controller_window": "RouteC-Controller",
         "reviewer_window": "RouteC-Reviewer",
         "expected_windows": ("RouteC-Controller", "RouteC-Continue", "RouteC-Exec", "RouteC-Reviewer"),
     },
 )
-ROUTE_TMUX_PLAN = {spec["route"]: spec for spec in TMUX_SESSION_PLAN if spec.get("route")}
+ROUTE_TMUX_PLAN = {spec["route"]: spec for spec in TMUX_SESSION_SPECS if spec.get("route")}
 FORBIDDEN_ACTIONS = (
     "scancel",
     "sbatch",
@@ -186,6 +229,12 @@ FORBIDDEN_ACTIONS = (
 
 
 def run_cmd(args: list[str], cwd: Path, timeout: int = 8) -> dict[str, Any]:
+    if args and args[0] in MUTATING_COMMANDS:
+        return {"ok": False, "stdout": "", "stderr": f"forbidden mutating command: {args[0]}", "code": 126}
+    if len(args) > 1 and args[0] == "git" and args[1] in MUTATING_GIT_SUBCOMMANDS:
+        return {"ok": False, "stdout": "", "stderr": f"forbidden mutating git command: git {args[1]}", "code": 126}
+    if len(args) > 1 and args[0] == "tmux" and args[1] in MUTATING_TMUX_SUBCOMMANDS:
+        return {"ok": False, "stdout": "", "stderr": f"forbidden mutating tmux command: tmux {args[1]}", "code": 126}
     try:
         completed = subprocess.run(
             args,
@@ -258,13 +307,157 @@ def extract_slurm_job_ids(text: str) -> list[str]:
     """Extract likely Slurm job IDs from lightweight packet text."""
     ids: set[str] = set()
     direct_patterns = [
-        r"(?i)\b(?:job(?:\s*id)?|job_id|jobid|slurm[_ -]?job|sbatch(?:\s+submitted)?)\D{0,30}(\d+(?:[_\.]\d+)?)",
+        r"(?i)\b(?:job[_ -]?id|jobid|slurm[_ -]?job|submitted\s+job|sbatch\s+submitted)\D{0,30}(\d{5,}(?:[_\.]\d+)?)",
+        r"->\s*`?(\d{5,}(?:[_\.]\d+)?)`?",
         r"\b(\d{5,}(?:_\d+)?)\|[^\n|]*(?:COMPLETED|FAILED|CANCELLED|PENDING|RUNNING|TIMEOUT)",
     ]
     for pattern in direct_patterns:
         for match in re.finditer(pattern, text):
             ids.add(match.group(1))
     return sorted(ids, key=job_sort_key)
+
+
+def read_json_file(path: Path) -> tuple[Any, str]:
+    if not path.exists() or not path.is_file():
+        return None, ""
+    try:
+        return json.loads(path.read_text(encoding="utf-8", errors="replace")), ""
+    except json.JSONDecodeError as exc:
+        return None, f"{path}: JSON parse failed: {exc}"
+
+
+def extract_job_ids_from_json(value: Any) -> set[str]:
+    ids: set[str] = set()
+    if isinstance(value, dict):
+        for key, item in value.items():
+            lowered = str(key).lower()
+            if any(token in lowered for token in ("job_id", "jobid", "slurm_job", "array_job", "required_job")):
+                if isinstance(item, (str, int)) and is_slurm_job_id(str(item)):
+                    ids.add(str(item))
+                elif isinstance(item, list):
+                    ids.update(str(entry) for entry in item if isinstance(entry, (str, int)) and is_slurm_job_id(str(entry)))
+            ids.update(extract_job_ids_from_json(item))
+    elif isinstance(value, list):
+        for item in value:
+            ids.update(extract_job_ids_from_json(item))
+    return ids
+
+
+def extract_partition_from_text(text: str) -> str:
+    for pattern in (r"(?im)^partition\s*[:=|]\s*([^|\n]+)", r"(?i)--partition[=\s]+([^\s]+)", r"(?i)\bpartition\s+([a-z0-9_-]+)"):
+        match = re.search(pattern, text)
+        if match:
+            return match.group(1).strip()
+    return ""
+
+
+def parse_pipe_ledger(text: str, source_packet: str) -> list[dict[str, Any]]:
+    rows: list[dict[str, Any]] = []
+    lines = [line.strip() for line in text.splitlines() if "|" in line and line.strip()]
+    if not lines:
+        return rows
+    header = [cell.strip().lower().replace(" ", "_") for cell in lines[0].strip("|").split("|")]
+    if not any("job" in cell for cell in header):
+        return rows
+    for line in lines[1:]:
+        cells = [cell.strip() for cell in line.strip("|").split("|")]
+        values = dict(zip(header, cells, strict=False))
+        job_id = values.get("job_id") or values.get("slurm_job_id") or values.get("jobid") or values.get("job")
+        if not job_id or not is_slurm_job_id(job_id):
+            continue
+        rows.append(
+            {
+                "job_id": job_id,
+                "partition": values.get("partition", ""),
+                "state": values.get("state", values.get("slurm_state", "")),
+                "source_packet": source_packet,
+                "source_confidence": "packet_ledger",
+                "credit": values.get("credit", ""),
+                "compatibility_evidence": values.get("compatibility", values.get("compatibility_evidence", "")),
+            }
+        )
+    return rows
+
+
+def collect_packet_attempts(packet_texts: dict[str, str], packet_jsons: dict[str, Any]) -> list[dict[str, Any]]:
+    attempts: dict[tuple[str, str], dict[str, Any]] = {}
+    for source, data in packet_jsons.items():
+        if data is None:
+            continue
+        for job_id in extract_job_ids_from_json(data):
+            attempts[(normalize_job_id(job_id), source)] = {
+                "job_id": job_id,
+                "source_packet": source,
+                "source_confidence": "structured_packet",
+            }
+    for source, text in packet_texts.items():
+        if not text:
+            continue
+        for row in parse_pipe_ledger(text, source):
+            attempts[(normalize_job_id(row["job_id"]), source)] = row
+        partition = extract_partition_from_text(text)
+        for job_id in extract_slurm_job_ids(text):
+            if not is_slurm_job_id(job_id):
+                continue
+            attempts.setdefault(
+                (normalize_job_id(job_id), source),
+                {
+                    "job_id": job_id,
+                    "partition": partition,
+                    "source_packet": source,
+                    "source_confidence": "packet_text",
+                },
+            )
+    return sorted(attempts.values(), key=lambda item: job_sort_key(str(item.get("job_id", ""))))
+
+
+def detect_v100_compatibility(packet_text: str) -> dict[str, Any]:
+    matches = [pattern for pattern in V100_INCOMPATIBLE_PATTERNS if pattern.lower() in packet_text.lower()]
+    if matches:
+        return {"volta_usable": False, "evidence": matches, "source": "packet_or_ledger"}
+    if "volta-gpu" in packet_text or "tesla_v100" in packet_text.lower():
+        return {"volta_usable": True, "evidence": ["packet mentions volta-gpu without incompatibility marker"], "source": "packet_or_ledger"}
+    return {"volta_usable": None, "evidence": [], "source": "not_recorded"}
+
+
+def split_array_job_id(job_id: str) -> tuple[str, str]:
+    match = re.match(r"^(\d+)(?:[_\.](\d+))?", job_id or "")
+    if not match:
+        return "", ""
+    return match.group(1), match.group(2) or ""
+
+
+def slurm_attempt_from_job(job: dict[str, str], source_packet: str, source_confidence: str) -> dict[str, Any]:
+    root, task = split_array_job_id(job.get("id", ""))
+    return {
+        "job_id": job.get("id", ""),
+        "array_root": root,
+        "array_task": task,
+        "partition": job.get("partition", ""),
+        "state": job.get("state", ""),
+        "reason": job.get("reason", job.get("exit_code", "")),
+        "elapsed": job.get("time", job.get("elapsed", "")),
+        "start_estimate": job.get("start", ""),
+        "dependency": job.get("dependency", ""),
+        "source_packet": source_packet,
+        "source_confidence": source_confidence,
+        "credit": job.get("credit", ""),
+        "compatibility_evidence": job.get("compatibility_evidence", ""),
+    }
+
+
+def job_match_confidence(job: dict[str, str], route: dict[str, Any]) -> str:
+    job_id = normalize_job_id(job.get("id", ""))
+    route_ids = {normalize_job_id(value) for value in route.get("slurm_job_ids", [])}
+    if job_id and job_id in route_ids:
+        return "packet_job_id"
+    if route_name_matches(route["id"], job.get("name", "")):
+        return "fuzzy_name"
+    return ""
+
+
+def is_slurm_job_id(value: str) -> bool:
+    return bool(re.match(r"^\d{5,}(?:[_\.].+)?$", str(value or "")))
 
 
 def job_sort_key(job_id: str) -> tuple[int, str]:
@@ -287,9 +480,7 @@ def route_name_matches(route: str, name: str) -> bool:
 
 
 def job_matches_route(job: dict[str, str], route: dict[str, Any]) -> bool:
-    job_id = normalize_job_id(job.get("id", ""))
-    route_ids = {normalize_job_id(value) for value in route.get("slurm_job_ids", [])}
-    return bool(job_id and job_id in route_ids) or route_name_matches(route["id"], job.get("name", ""))
+    return bool(job_match_confidence(job, route))
 
 
 def evidence_summary_zh(packet_files: dict[str, Path], latest_packet: Path | None) -> str:
@@ -302,7 +493,7 @@ def evidence_summary_zh(packet_files: dict[str, Path], latest_packet: Path | Non
 
 def relative_repo_path(root: Path, raw: str) -> dict[str, Any]:
     value = raw.strip().strip("`")
-    if not value or value == "NO_CURRENT_CRITIC_HANDOFF":
+    if not value or value.startswith("NO_CURRENT_"):
         return {"path": value, "exists": False, "active": False, "absolute_path": ""}
     candidate = Path(value)
     absolute = candidate if candidate.is_absolute() else root / candidate
@@ -324,20 +515,274 @@ def first_fenced_path_after(text: str, marker: str) -> str:
     return match.group(1).strip().splitlines()[0].strip()
 
 
+def fenced_block_after(text: str, marker: str) -> str:
+    start = text.find(marker)
+    if start < 0:
+        return ""
+    match = re.search(r"```text\s*(.*?)```", text[start:], re.DOTALL)
+    return match.group(1).strip() if match else ""
+
+
+def path_after_label(text: str, label: str) -> str:
+    match = re.search(rf"(?m)^{re.escape(label)}\s*\n([^\n]+)", text)
+    return match.group(1).strip() if match else ""
+
+
+def parse_bool_text(value: str) -> bool | None:
+    lowered = value.strip().lower()
+    if lowered == "true":
+        return True
+    if lowered == "false":
+        return False
+    return None
+
+
+def parse_key_values(block: str) -> dict[str, str]:
+    values: dict[str, str] = {}
+    for raw in block.splitlines():
+        line = raw.strip().strip("- ")
+        if not line or ":" not in line:
+            continue
+        key, value = line.split(":", 1)
+        values[key.strip()] = value.strip().strip("`")
+    return values
+
+
+def parse_portfolio_state(text: str) -> tuple[dict[str, Any], list[str]]:
+    warnings: list[str] = []
+    block = fenced_block_after(text, "Portfolio state:")
+    values = parse_key_values(block)
+    routes: dict[str, str] = {}
+    active_routes: list[str] = []
+    deferred_routes: list[str] = []
+    for label, route in ROUTE_IDS_BY_LABEL.items():
+        state = values.get(label, "UNKNOWN")
+        routes[route] = state
+        if state.startswith("ACTIVE"):
+            active_routes.append(route)
+        elif "DEFERRED" in state or "DORMANT" in state.upper() or "FALLBACK_NOT_ACTIVE" in state:
+            deferred_routes.append(route)
+    raw_authorizations = values.get("current_controller_authorizations", "0")
+    try:
+        current_controller_authorizations = int(raw_authorizations)
+    except ValueError:
+        current_controller_authorizations = 0
+        warnings.append("CURRENT.md current_controller_authorizations 不是整数。")
+    if not active_routes and block:
+        warnings.append("CURRENT.md 未解析到 active_routes。")
+    if not deferred_routes and block:
+        warnings.append("CURRENT.md 未解析到 deferred_routes。")
+    return (
+        {
+            "routes": routes,
+            "active_routes": active_routes,
+            "deferred_routes": deferred_routes,
+            "active_route_labels": [ROUTE_LABELS[route] for route in active_routes],
+            "deferred_route_labels": [ROUTE_LABELS[route] for route in deferred_routes],
+            "current_controller_authorizations": current_controller_authorizations,
+        },
+        warnings,
+    )
+
+
+def parse_authority_boundary(text: str) -> tuple[dict[str, Any], list[str]]:
+    warnings: list[str] = []
+    block = fenced_block_after(text, "## Authority Boundary")
+    values = parse_key_values(block)
+    authority: dict[str, Any] = {}
+    for key, value in values.items():
+        parsed_bool = parse_bool_text(value)
+        if parsed_bool is not None:
+            authority[key] = parsed_bool
+        else:
+            try:
+                authority[key] = int(value)
+            except ValueError:
+                authority[key] = value
+    for key in AUTHORITY_KEYS:
+        if key not in authority:
+            warnings.append(f"CURRENT.md Authority Boundary 缺少 {key}。")
+    return authority, warnings
+
+
+def parse_route_binding(text: str, route: str) -> dict[str, str]:
+    label = ROUTE_LABELS[route]
+    match = re.search(rf"(?ms)^### {re.escape(label)}[^\n]*\n(.*?)(?=^### |^## |\Z)", text)
+    section = match.group(1) if match else ""
+    block = fenced_block_after(section, "```text") if "```text" in section else section
+    values = parse_key_values(block)
+
+    def first_value(*keys: str) -> str:
+        for key in keys:
+            if values.get(key):
+                return values[key]
+        return ""
+
+    return {
+        "required_head": first_value("route head", "required head", "required route head"),
+        "contract_blob": first_value("contract blob"),
+        "executor_plan_blob": first_value("executor-plan blob", "executor plan blob"),
+        "critic_request_blob": first_value("critic-request blob", "critic request blob"),
+        "planner_audit_blob": first_value("planner-audit blob", "planner audit blob"),
+        "critic_handoff_blob": first_value("Critic-handoff blob", "critic-handoff blob", "critic handoff blob"),
+        "critic_review_output_path": first_value("critic review output path", "critic-review output path", "critic review path", "critic-review path"),
+        "critic_review_blob": first_value("critic review blob", "critic-review blob"),
+        "evidence_mapping_blob": first_value("evidence-mapping blob"),
+        "evidence_mapping_required_row_count": first_value("evidence-mapping required row count"),
+    }
+
+
+def parse_allowed_tokens(text: str, route: str) -> list[str]:
+    label = ROUTE_LABELS[route]
+    patterns = (
+        f"Allowed {label} planning tokens:",
+        f"Allowed {route} planning tokens:",
+        f"{label} allowed planning tokens:",
+    )
+    for marker in patterns:
+        block = fenced_block_after(text, marker)
+        tokens = [line.strip() for line in block.splitlines() if line.strip()]
+        if tokens:
+            return tokens
+    return []
+
+
+def parse_round_checkpoints(text: str) -> list[dict[str, Any]]:
+    match = re.search(r"(?ms)^## ((?:Round[0-9]+ )?Decision Checkpoints)\s*(.*?)(?=^## |\Z)", text)
+    if not match:
+        return []
+    heading = match.group(1)
+    checkpoints: list[dict[str, Any]] = []
+    current: dict[str, Any] | None = None
+    for raw in match.group(2).splitlines():
+        line = raw.strip()
+        date_match = re.match(r"(20\d{2}-\d{2}-\d{2}):", line)
+        if date_match:
+            current = {"date": date_match.group(1), "items": [], "source_heading": heading}
+            checkpoints.append(current)
+            remainder = line.split(":", 1)[1].strip()
+            if remainder:
+                current["items"].append(remainder)
+        elif current and line.startswith("-"):
+            current["items"].append(line.lstrip("- ").strip())
+    return checkpoints
+
+
+def detect_critic_decision(root: Path, review_path: dict[str, Any], allowed_tokens: list[str]) -> dict[str, Any]:
+    text = read_text(Path(review_path.get("absolute_path", ""))) if review_path.get("absolute_path") else ""
+    found = [token for token in allowed_tokens if re.search(rf"(?<![A-Z0-9_]){re.escape(token)}(?![A-Z0-9_])", text)]
+    ready = [token for token in found if token.endswith("READY_FOR_CONTROLLER")]
+    revision = [token for token in found if token.endswith("NEEDS_REVISION")]
+    return {
+        "review_output": review_path,
+        "found_tokens": found,
+        "ready_token": ready[0] if ready else "",
+        "revision_token": revision[0] if revision else "",
+        "state_zh": "ready token present" if ready else "needs revision token present" if revision else "pending critic token",
+    }
+
+
+def build_critic_readiness(
+    root: Path,
+    critics: dict[str, dict[str, Any]],
+    allowed_tokens: dict[str, list[str]],
+    review_outputs: dict[str, dict[str, Any]] | None = None,
+) -> dict[str, Any]:
+    readiness: dict[str, Any] = {}
+    review_outputs = review_outputs or {}
+    for route in ROUTES:
+        review_path = review_outputs.get(route) or relative_repo_path(root, "NO_CURRENT_CRITIC_REVIEW")
+        tokens = allowed_tokens.get(route, [])
+        decision = detect_critic_decision(root, review_path, tokens)
+        if not review_path.get("active"):
+            decision["state_zh"] = "critic review output unknown"
+        elif not tokens:
+            decision["state_zh"] = "allowed token unknown"
+        readiness[route] = {
+            "critic_handoff": critics.get(route, relative_repo_path(root, "NO_CURRENT_CRITIC_HANDOFF")),
+            "allowed_tokens": tokens,
+            **decision,
+        }
+    return readiness
+
+
 def parse_current_handoff(text: str, root: Path) -> dict[str, Any]:
+    parse_warnings: list[str] = []
     round_id = re.search(r"(?m)^round_id:\s*(\S+)", text)
     round_date = re.search(r"(?m)^date:\s*(\S+)", text)
-    planner_prompt = first_fenced_path_after(text, "The single portfolio GPT planner should read:")
+    planner_prompt = path_after_label(text, "current Planner handoff:") or first_fenced_path_after(text, "The single portfolio GPT planner should read:")
+    portfolio, portfolio_warnings = parse_portfolio_state(text)
+    authority, authority_warnings = parse_authority_boundary(text)
+    parse_warnings.extend(portfolio_warnings)
+    parse_warnings.extend(authority_warnings)
+
     critics: dict[str, dict[str, Any]] = {}
+    allowed_tokens: dict[str, list[str]] = {}
+    route_bindings: dict[str, dict[str, str]] = {}
+    critic_review_outputs: dict[str, dict[str, Any]] = {}
+    round_value = round_id.group(1) if round_id else "unknown"
+    round_checkpoints = parse_round_checkpoints(text)
     for route in ROUTES:
         match = re.search(rf"(?m)^{re.escape(route)} critic current prompt:\s*\n([^\n]+)", text)
         raw = match.group(1).strip() if match else "NO_CURRENT_CRITIC_HANDOFF"
         critics[route] = relative_repo_path(root, raw)
+        allowed_tokens[route] = parse_allowed_tokens(text, route)
+        route_bindings[route] = parse_route_binding(text, route)
+        critic_review_outputs[route] = relative_repo_path(root, route_bindings[route].get("critic_review_output_path", "NO_CURRENT_CRITIC_REVIEW"))
+
+    if round_value == "unknown":
+        parse_warnings.append("CURRENT.md 缺少 round_id；portfolio_round.round_id=unknown。")
+    if not portfolio.get("active_routes"):
+        parse_warnings.append("CURRENT.md active route 为空；看板不能回退为三路线同权。")
+    for route in portfolio.get("active_routes", []):
+        binding = route_bindings.get(route, {})
+        for key in (
+            "required_head",
+            "contract_blob",
+            "executor_plan_blob",
+            "critic_request_blob",
+            "planner_audit_blob",
+            "critic_handoff_blob",
+            "critic_review_output_path",
+        ):
+            if not binding.get(key):
+                parse_warnings.append(f"{ROUTE_LABELS[route]} CURRENT binding 缺少 {key}；显示 unknown/blocked。")
+        if not allowed_tokens.get(route):
+            parse_warnings.append(f"{ROUTE_LABELS[route]} CURRENT 缺少 allowed planning tokens；Critic gate blocked/unknown。")
+    critic_readiness = build_critic_readiness(root, critics, allowed_tokens, critic_review_outputs)
+    portfolio_round = {
+        "round_id": round_value,
+        "date": round_date.group(1) if round_date else "",
+        "source": "prompts/routes/handoffs/CURRENT.md",
+        "active_routes": portfolio.get("active_routes", []),
+        "deferred_routes": portfolio.get("deferred_routes", []),
+        "controller_authority": authority,
+        "route_bindings": route_bindings,
+        "round_checkpoints": round_checkpoints,
+    }
     return {
-        "round_id": round_id.group(1) if round_id else "unknown",
+        "round_id": round_value,
         "date": round_date.group(1) if round_date else "",
         "planner_prompt": relative_repo_path(root, planner_prompt),
         "critics": critics,
+        "portfolio": portfolio,
+        "portfolio_round": portfolio_round,
+        "authority": authority,
+        "critic_readiness": critic_readiness,
+        "route_bindings": route_bindings,
+        "critic_review_outputs": critic_review_outputs,
+        "round_checkpoints": round_checkpoints,
+        "parse_warnings": parse_warnings,
+    }
+
+def empty_portfolio_state() -> dict[str, Any]:
+    return {
+        "routes": {route: "UNKNOWN" for route in ROUTES},
+        "active_routes": [],
+        "deferred_routes": [],
+        "active_route_labels": [],
+        "deferred_route_labels": [],
+        "current_controller_authorizations": 0,
     }
 
 
@@ -345,24 +790,46 @@ def collect_handoff_status(root: Path) -> dict[str, Any]:
     current_path = root / "prompts" / "routes" / "handoffs" / "CURRENT.md"
     text = read_text(current_path)
     if not text:
+        critics = {route: relative_repo_path(root, "NO_CURRENT_CRITIC_HANDOFF") for route in ROUTES}
+        empty_authority = {"controller_authorized_now": 0}
+        portfolio = empty_portfolio_state()
+        portfolio_round = {
+            "round_id": "unknown",
+            "date": "",
+            "source": "prompts/routes/handoffs/CURRENT.md",
+            "active_routes": [],
+            "deferred_routes": [],
+            "controller_authority": empty_authority,
+            "route_bindings": {route: {} for route in ROUTES},
+            "round_checkpoints": [],
+        }
         return {
             "current_path": str(current_path),
             "current_exists": False,
             "round_id": "unknown",
             "date": "",
             "planner_prompt": {"path": "", "exists": False, "active": False, "absolute_path": ""},
-            "critics": {route: relative_repo_path(root, "NO_CURRENT_CRITIC_HANDOFF") for route in ROUTES},
+            "critics": critics,
+            "portfolio": portfolio,
+            "portfolio_round": portfolio_round,
+            "authority": empty_authority,
+            "critic_readiness": build_critic_readiness(root, critics, {}, {}),
+            "route_bindings": {route: {} for route in ROUTES},
+            "critic_review_outputs": {route: relative_repo_path(root, "NO_CURRENT_CRITIC_REVIEW") for route in ROUTES},
+            "round_checkpoints": [],
+            "parse_warnings": ["CURRENT.md 不存在或不可读；看板不能判定当前 portfolio truth。"],
             "current_worker_zh": "等待发布当前轮次入口",
             "next_worker_zh": "规划者补齐 CURRENT.md",
         }
     parsed = parse_current_handoff(text, root)
     active_critics = [ROUTE_LABELS[route] for route, entry in parsed["critics"].items() if entry.get("active")]
+    controller_count = parsed.get("authority", {}).get("controller_authorized_now", parsed.get("portfolio", {}).get("current_controller_authorizations", 0))
     if active_critics:
         current_worker = "、".join(f"{label} Critic 正在判断" for label in active_critics)
-        next_worker = "规划者汇总 Critic 结论后决定下一步"
+        next_worker = "等待各自 route-specific ready/revision token；Controller 当前 blocked" if not controller_count else "仅 exact ready token 对应 route Controller 可启动"
     elif parsed["planner_prompt"].get("active"):
         current_worker = "规划者正在处理"
-        next_worker = "按规划者结论交给 Critic、Controller 或 Reviewer"
+        next_worker = "按规划者结论交给 Critic；Controller 未获授权前保持 blocked"
     else:
         current_worker = "等待发布规划者入口"
         next_worker = "规划者补齐当前轮次提示词"
@@ -382,10 +849,85 @@ def result_label_zh(route: dict[str, Any]) -> str:
     return state
 
 
+def next_checkpoint_for_route(handoff: dict[str, Any], route: str) -> dict[str, Any]:
+    label = ROUTE_LABELS.get(route, route)
+    for checkpoint in handoff.get("round_checkpoints", []):
+        items = [item for item in checkpoint.get("items", []) if label in item]
+        if items:
+            return {"date": checkpoint.get("date", ""), "items": items}
+    return {"date": "", "items": []}
+
+
 def annotate_handoff_workers(route: dict[str, Any], handoff: dict[str, Any]) -> None:
-    critic = handoff.get("critics", {}).get(route["id"], relative_repo_path(Path("/"), "NO_CURRENT_CRITIC_HANDOFF"))
+    route_id = route["id"]
+    readiness = handoff.get("critic_readiness", {}).get(route_id, {})
+    critic = readiness.get("critic_handoff") or handoff.get("critics", {}).get(route_id, relative_repo_path(Path("/"), "NO_CURRENT_CRITIC_HANDOFF"))
+    portfolio = handoff.get("portfolio", empty_portfolio_state())
+    authority = handoff.get("authority", {})
+    binding = handoff.get("route_bindings", {}).get(route_id, {})
+    portfolio_state = portfolio.get("routes", {}).get(route_id, "UNKNOWN")
+    active_routes = set(portfolio.get("active_routes", []))
+    deferred_routes = set(portfolio.get("deferred_routes", []))
+    allowed_tokens = readiness.get("allowed_tokens", [])
+    ready_token = readiness.get("ready_token", "")
+    revision_token = readiness.get("revision_token", "")
+    required_head = binding.get("required_head", "")
+    origin_sha = route.get("origin_sha", "")
+    head_matches_required = bool(required_head and origin_sha and required_head == origin_sha)
+    controller_authorized_now = int(authority.get("controller_authorized_now", portfolio.get("current_controller_authorizations", 0)) or 0)
+    controller_authorized = bool(route_id in active_routes and ready_token and head_matches_required and controller_authorized_now > 0)
+
     route["round_id"] = handoff.get("round_id", "unknown")
     route["critic_handoff"] = critic
+    route["portfolio_state"] = portfolio_state
+    route["is_active_round_route"] = route_id in active_routes
+    route["is_deferred_fallback"] = route_id in deferred_routes
+    route["controller_authorized"] = controller_authorized
+    route["controller_authority_state_zh"] = "authorized" if controller_authorized else "blocked"
+    route["allowed_tokens"] = allowed_tokens
+    route["critic_review_output_path"] = readiness.get("review_output", {}).get("path", "")
+    route["critic_review_output"] = readiness.get("review_output", {})
+    route["critic_found_tokens"] = readiness.get("found_tokens", [])
+    route["critic_ready_token"] = ready_token
+    route["critic_revision_token"] = revision_token
+    route["critic_gate_state_zh"] = readiness.get("state_zh", "pending critic token")
+    route["required_head"] = required_head
+    route["contract_blob"] = binding.get("contract_blob", "")
+    route["executor_plan_blob"] = binding.get("executor_plan_blob", "")
+    route["critic_request_blob"] = binding.get("critic_request_blob", "")
+    route["critic_handoff_blob"] = binding.get("critic_handoff_blob", "")
+    route["evidence_mapping_blob"] = binding.get("evidence_mapping_blob", "")
+    route["evidence_mapping_required_row_count"] = binding.get("evidence_mapping_required_row_count", "")
+    route["head_matches_required"] = head_matches_required
+    route["next_checkpoint"] = next_checkpoint_for_route(handoff, route_id)
+    route["route_requirements_summary"] = [
+        portfolio_state or "UNKNOWN portfolio state",
+        "CURRENT.md binding and route-local packet are source-of-truth.",
+        "M9/M10 hard requirements remain active from ROUTE_HARD_REQUIREMENTS_MATRIX.md.",
+    ]
+    if route_id in deferred_routes:
+        route["route_requirements_summary"] = [
+            f"{portfolio_state} / dormant or deferred route.",
+            "No current controller/training/Slurm authority unless CURRENT.md authorizes it.",
+            "Historical evidence remains display-only.",
+        ]
+    route["planning_gate"] = {
+        "state": route["critic_gate_state_zh"],
+        "critic_handoff": critic,
+        "critic_review_output": route.get("critic_review_output", {}),
+        "allowed_planning_tokens": allowed_tokens,
+        "ready_token": ready_token,
+        "revision_token": revision_token,
+        "source": "CURRENT.md + critic review output",
+    }
+    route["controller_authority"] = {
+        "authorized": controller_authorized,
+        "state": route["controller_authority_state_zh"],
+        "head_matches_required": head_matches_required,
+        "controller_authorized_now": controller_authorized_now,
+        "source": "CURRENT.md Authority Boundary + route head binding",
+    }
+
     if critic.get("active") and critic.get("exists"):
         critic_state = "已发布"
     elif critic.get("active"):
@@ -398,6 +940,43 @@ def annotate_handoff_workers(route: dict[str, Any], handoff: dict[str, Any]) -> 
     result_state = result_label_zh(route)
     has_result_packet = bool(route.get("packet_files", {}).get("result") or route.get("packet_files", {}).get("controller_report"))
     has_review = bool(route.get("packet_files", {}).get("review"))
+
+    if route["is_deferred_fallback"]:
+        route["historical_display_state_zh"] = display_state
+        route["display_state_zh"] = "Dormant fallback"
+        route["current_worker_zh"] = "非当前 active route"
+        route["work_summary_zh"] = f"{route['label']} 是 {portfolio_state}；历史证据只读保留，无当前 Critic、Controller、training 或 Slurm authority。"
+        route["next_action_zh"] = "除非用户明确授权或后续 Portfolio Planner 重新激活，否则不得启动 Route A controller。"
+        route["reviewability"] = {
+            "can_review_complete": False,
+            "label_zh": "历史归档 / 非当前 active route",
+            "reason_zh": "Dormant/deferred route 不参与当前 active route readiness。",
+        }
+        route["runtime_state"] = {
+            "state": "dormant_deferred",
+            "label_zh": "Dormant fallback",
+            "completion_blocked": True,
+            "source": "CURRENT.md portfolio_state",
+        }
+        route["review_state"] = {**route["reviewability"], "source": "portfolio_state"}
+        route["next_worker_zh"] = route["next_action_zh"]
+        route["next_action"] = {"label_zh": route["next_action_zh"], "source": "portfolio_state"}
+        return
+
+    if route["is_active_round_route"] and critic.get("active"):
+        route["current_worker_zh"] = f"{route['label']} Critic 正在判断"
+        route["work_summary_zh"] = f"{route['label']} 是 {route.get('round_id', 'unknown')} active route；Critic gate: {route['critic_gate_state_zh']}；Controller: {route['controller_authority_state_zh']}。"
+        if controller_authorized:
+            route["next_action_zh"] = "仅该 exact route Controller 可作为 Codex goal / goal resume 启动；其他权限仍禁止。"
+        elif revision_token:
+            route["next_action_zh"] = "Critic 给出 needs-revision token；返回 Planner 修订，不启动 Controller。"
+        elif ready_token and not head_matches_required:
+            route["next_action_zh"] = "Ready token 与当前 origin route head 不匹配；需要重新绑定后才可授权。"
+        else:
+            route["next_action_zh"] = "等待 route-specific ready/revision token；Controller 当前 blocked。"
+        route["next_worker_zh"] = route["next_action_zh"]
+        route["next_action"] = {"label_zh": route["next_action_zh"], "source": "critic_gate"}
+        return
 
     if display_state in {"Slurm 运行中", "Slurm 排队中", "等待监控", "等待 sacct", "未完成"}:
         route["current_worker_zh"] = "Controller 正在执行"
@@ -428,7 +1007,7 @@ def annotate_handoff_workers(route: dict[str, Any], handoff: dict[str, Any]) -> 
         route["next_action_zh"] = "等待规划者决定下一步。"
 
     route["next_worker_zh"] = route["next_action_zh"]
-
+    route["next_action"] = {"label_zh": route["next_action_zh"], "source": "route_packet"}
 
 def reviewability_from_state(display_state: str, blockers: list[str]) -> dict[str, Any]:
     if blockers:
@@ -463,7 +1042,16 @@ def annotate_route_runtime(
     recent_jobs: list[dict[str, str]],
     controller_activity: dict[str, Any] | None = None,
 ) -> None:
-    matched_jobs = [job for job in jobs + recent_jobs if job_matches_route(job, route)]
+    packet_attempts = list(route.get("slurm_attempts", []))
+    packet_ids = {normalize_job_id(str(item.get("job_id", ""))) for item in packet_attempts if item.get("job_id") and is_slurm_job_id(str(item.get("job_id", "")))}
+    matched_jobs = []
+    for job in jobs + recent_jobs:
+        confidence = job_match_confidence(job, route)
+        if not confidence:
+            continue
+        item = dict(job)
+        item["source_confidence"] = confidence
+        matched_jobs.append(item)
     seen: set[tuple[str, str]] = set()
     deduped_jobs: list[dict[str, str]] = []
     for job in matched_jobs:
@@ -474,14 +1062,50 @@ def annotate_route_runtime(
         deduped_jobs.append(job)
 
     route_ids = {normalize_job_id(value) for value in route.get("slurm_job_ids", [])}
+    route_ids.update(packet_ids)
     route_ids.update(normalize_job_id(job.get("id", "")) for job in deduped_jobs if job.get("id"))
     route["slurm_job_ids"] = sorted((value for value in route_ids if value), key=job_sort_key)
-    route["recent_slurm_jobs"] = [compact_job(job) for job in deduped_jobs[:12]]
+    route["recent_slurm_jobs"] = [compact_job(job) | {"source_confidence": job.get("source_confidence", "")} for job in deduped_jobs[:12]]
+
+    attempts_by_job: dict[str, dict[str, Any]] = {}
+    for attempt in packet_attempts:
+        job_id = str(attempt.get("job_id", ""))
+        if not job_id or not is_slurm_job_id(job_id):
+            continue
+        root_id, task = split_array_job_id(job_id)
+        normalized = normalize_job_id(job_id)
+        attempts_by_job[normalized] = {
+            "job_id": job_id,
+            "array_root": root_id,
+            "array_task": task,
+            "partition": attempt.get("partition", ""),
+            "state": attempt.get("state", ""),
+            "reason": attempt.get("reason", ""),
+            "elapsed": attempt.get("elapsed", ""),
+            "start_estimate": attempt.get("start_estimate", ""),
+            "dependency": attempt.get("dependency", ""),
+            "source_packet": attempt.get("source_packet", "packet"),
+            "source_confidence": attempt.get("source_confidence", "packet_text"),
+            "credit": attempt.get("credit", ""),
+            "compatibility_evidence": attempt.get("compatibility_evidence", ""),
+        }
+    for job in deduped_jobs:
+        normalized = normalize_job_id(job.get("id", ""))
+        if not normalized:
+            continue
+        existing = attempts_by_job.get(normalized, {})
+        source_packet = existing.get("source_packet") or ("job_name_fallback" if job.get("source_confidence") == "fuzzy_name" else "slurm")
+        merged = slurm_attempt_from_job(job, source_packet, job.get("source_confidence", "slurm"))
+        merged.update({key: value for key, value in existing.items() if value and not merged.get(key)})
+        attempts_by_job[normalized] = merged
+    route["slurm_attempts"] = sorted(attempts_by_job.values(), key=lambda item: job_sort_key(str(item.get("job_id", ""))))
 
     blockers: list[str] = []
     for keyword in route["status_keywords"]:
         if keyword in INCOMPLETE_KEYWORDS:
-            blockers.append(f"packet 包含 {keyword}，不能作为完成证据")
+            blockers.append(f"packet 包含 {keyword}，monitor, not completion")
+        if keyword in UNDERTRAINED_KEYWORDS:
+            blockers.append(f"packet 包含 {keyword}，undertrained 不能作为完成证据")
 
     current_states = {job.get("state", "").split()[0] for job in deduped_jobs if job.get("source") == "squeue"}
     recent_terminal_states = {job.get("state", "").split()[0] for job in deduped_jobs if job.get("source") == "sacct"}
@@ -489,11 +1113,12 @@ def annotate_route_runtime(
     monitor_keyword_present = any(keyword in route["status_keywords"] for keyword in INCOMPLETE_KEYWORDS)
     completed_after_monitor = bool(monitor_keyword_present and "COMPLETED" in recent_terminal_states and not active_states)
     if current_states & SLURM_PENDING_STATES:
-        blockers.append("Slurm 当前仍有排队作业")
+        blockers.append("Slurm 当前仍有排队作业，monitor, not completion")
     if current_states & SLURM_RUNNING_STATES:
-        blockers.append("Slurm 当前仍有运行中作业")
+        blockers.append("Slurm 当前仍有运行中作业，monitor, not completion")
     if completed_after_monitor:
         blockers.append("Slurm job 已完成，但 packet 仍是 monitor 状态；需要完成后聚合/提交")
+    blockers.extend(route.get("packet_parse_warnings", []))
 
     keywords = set(route["status_keywords"])
     has_review = bool(route["packet_files"].get("review"))
@@ -521,12 +1146,16 @@ def annotate_route_runtime(
             display_state = "Slurm 运行中"
         elif current_states & SLURM_PENDING_STATES or "JOB_SUBMITTED" in keywords or "PENDING_PRIORITY" in keywords:
             display_state = "Slurm 排队中"
+        elif keywords & set(UNDERTRAINED_KEYWORDS):
+            display_state = "训练不足"
         else:
             display_state = "未完成"
     elif keywords & set(UNDERTRAINED_KEYWORDS):
         display_state = "训练不足"
     elif keywords & set(REVISION_KEYWORDS):
         display_state = "需修订"
+    elif "TERMINAL_NON_READY_PACKET" in keywords:
+        display_state = "终态 negative"
     elif keywords & set(FAILURE_KEYWORDS):
         display_state = "审查未通过" if route["packet_files"].get("review") else "需补证据"
     elif has_review and keywords & set(PASS_KEYWORDS):
@@ -546,17 +1175,40 @@ def annotate_route_runtime(
         display_state = "等待合同"
 
     route["display_state_zh"] = display_state
-    if display_state in {"训练不足", "需修订", "Controller 已结束"}:
+    if blockers or display_state in {"训练不足", "Controller 已结束"}:
+        route["reviewability"] = {
+            "can_review_complete": False,
+            "label_zh": "不可作为完成包审查" if blockers else "终态非 ready",
+            "reason_zh": "存在 monitor/pending/running/awaiting-accounting/undertrained 或缺失聚合证据。" if blockers else "controller 已停止或 packet 给出非 ready 终态，需要 reviewer/GPT 决策或修订。",
+        }
+    elif display_state in {"需修订", "终态 negative"}:
         route["reviewability"] = {
             "can_review_complete": False,
             "label_zh": "终态非 ready",
-            "reason_zh": "controller 已停止或 packet 给出非 ready 终态，需要 reviewer/GPT 决策或修订。",
+            "reason_zh": "packet/review 给出 needs revision 或 terminal negative。",
         }
     else:
         route["reviewability"] = reviewability_from_state(display_state, blockers)
     route["completion_blockers"] = blockers
     route["controller_activity"] = controller_activity or {}
-
+    runtime_state = "monitor_or_incomplete" if blockers or display_state in {"Slurm 运行中", "Slurm 排队中", "等待监控", "等待 sacct", "训练不足", "未完成"} else "terminal_packet_ready" if display_state == "待独立审查" else "reviewer_completed" if display_state == "审查通过" else "needs_revision" if display_state == "需修订" else "terminal_negative" if display_state in {"审查未通过", "终态 negative"} else "controller_active" if display_state == "Controller 运行中" else "unknown"
+    route["runtime_state"] = {
+        "state": runtime_state,
+        "label_zh": display_state,
+        "completion_blocked": not route["reviewability"].get("can_review_complete", False) and runtime_state == "monitor_or_incomplete",
+        "source": "packet/slurm/tmux cross-check",
+    }
+    route["packet_state"] = {
+        **route.get("packet_state", {}),
+        "latest_packet": route.get("latest_packet", ""),
+        "status_keywords": route.get("status_keywords", []),
+        "parse_warnings": route.get("packet_parse_warnings", []),
+        "state": "parse_warning" if route.get("packet_parse_warnings") else display_state,
+    }
+    route["review_state"] = {
+        **route.get("reviewability", {}),
+        "source": "route-local review/review_request tokens",
+    }
 
 def latest_existing(paths: list[Path]) -> Path | None:
     existing = [path for path in paths if path.exists()]
@@ -606,21 +1258,31 @@ def collect_route(root: Path, worktree_root: Path, route: str) -> dict[str, Any]
 
     branch = fields.get("branch", route)
     git_sha = run_cmd(["git", "rev-parse", branch], root)
+    git_origin_sha = run_cmd(["git", "rev-parse", f"origin/{route}"], root)
     ahead_behind = run_cmd(["git", "rev-list", "--left-right", "--count", f"main...{branch}"], root)
     worktree_branch = run_cmd(["git", "-C", str(worktree), "branch", "--show-current"], root) if worktree.exists() else {"stdout": "", "ok": False}
     worktree_dirty = run_cmd(["git", "-C", str(worktree), "status", "--porcelain"], root) if worktree.exists() else {"stdout": "", "ok": False}
 
-    packet_files = {
-        "result": result_root / "result.md",
-        "controller_report": result_root / "controller_report.md",
-        "manifest": result_root / "MANIFEST.md",
-        "review": result_root / "review.md",
-        "completion_check": result_root / "completion_check.md",
-        "review_request": result_root / "review_request.md",
-    }
+    packet_files = {name: result_root / filename for name, filename in PACKET_SCAN_FILES.items()}
+    extra_ledger_candidates = [
+        result_root / "routing_ledger.csv",
+        result_root / "slurm_ledger.csv",
+        result_root / "runtime" / "controller_ledger.csv",
+    ]
+    for index, ledger in enumerate(extra_ledger_candidates, start=1):
+        if ledger.exists():
+            packet_files[f"route_ledger_{index}"] = ledger
     packet_texts = {name: read_text(path) for name, path in packet_files.items()}
+    packet_jsons: dict[str, Any] = {}
+    packet_parse_warnings: list[str] = []
+    for name in ("controller_context", "finalizer_state"):
+        parsed_json, warning = read_json_file(packet_files[name])
+        packet_jsons[name] = parsed_json
+        if warning:
+            packet_parse_warnings.append(warning)
     latest_packet = latest_existing(list(packet_files.values()))
     combined_packet_text = "\n".join(packet_texts.values())
+    packet_attempts = collect_packet_attempts(packet_texts, packet_jsons)
 
     architecture_file = latest_existing(
         [
@@ -643,11 +1305,15 @@ def collect_route(root: Path, worktree_root: Path, route: str) -> dict[str, Any]
         architecture_lines = ROUTE_ARCHITECTURE_HINTS[route]
 
     status_keywords = extract_status_keywords(combined_packet_text)
-    slurm_job_ids = extract_slurm_job_ids(combined_packet_text)
+    slurm_job_ids = sorted(
+        {normalize_job_id(attempt.get("job_id", "")) for attempt in packet_attempts if attempt.get("job_id") and is_slurm_job_id(str(attempt.get("job_id", "")))},
+        key=job_sort_key,
+    )
+    slurm_job_ids = [job_id for job_id in slurm_job_ids if job_id]
 
     tmux_plan = ROUTE_TMUX_PLAN[route]
     tmux_session = fields.get("tmux session", tmux_plan["session"])
-    controller_window = fields.get("controller window", tmux_plan.get("controller_window", ""))
+    controller_window = fields.get("controller window", default_controller_window(route, ""))
     reviewer_window = fields.get("reviewer window", tmux_plan.get("reviewer_window", ""))
     legacy_controller_tmux = fields.get("controller tmux", "")
     legacy_reviewer_tmux = fields.get("reviewer tmux", "")
@@ -659,6 +1325,7 @@ def collect_route(root: Path, worktree_root: Path, route: str) -> dict[str, Any]
         "purpose": field_value(fields, "route purpose", "route 目的"),
         "branch": branch,
         "sha": git_sha["stdout"] if git_sha["ok"] else "MISSING_BRANCH",
+        "origin_sha": git_origin_sha["stdout"] if git_origin_sha["ok"] else "MISSING_ORIGIN_BRANCH",
         "ahead_behind_main": ahead_behind["stdout"] if ahead_behind["ok"] else "unknown",
         "worktree": str(worktree),
         "worktree_exists": worktree.exists(),
@@ -684,6 +1351,16 @@ def collect_route(root: Path, worktree_root: Path, route: str) -> dict[str, Any]
         "current_status": field_value(fields, "current status", "当前状态"),
         "next_gate": field_value(fields, "next gate", "下一个 gate"),
         "packet_files": {name: path.exists() for name, path in packet_files.items()},
+        "packet_paths": {name: str(path) for name, path in packet_files.items()},
+        "packet_parse_warnings": packet_parse_warnings,
+        "packet_state": {
+            "files": {name: str(path) for name, path in packet_files.items() if path.exists()},
+            "latest_packet": str(latest_packet) if latest_packet else "",
+            "status_keywords": status_keywords,
+            "parse_warnings": packet_parse_warnings,
+        },
+        "slurm_attempts": packet_attempts,
+        "routing_compatibility": detect_v100_compatibility(combined_packet_text),
         "latest_packet": str(latest_packet) if latest_packet else "",
         "latest_packet_mtime": dt.datetime.fromtimestamp(latest_packet.stat().st_mtime).isoformat(timespec="seconds") if latest_packet else "",
         "status_keywords": status_keywords,
@@ -696,6 +1373,47 @@ def collect_route(root: Path, worktree_root: Path, route: str) -> dict[str, Any]
         "architecture_source": str(architecture_file) if architecture_file else "route default",
         "architecture_lines": architecture_lines,
     }
+
+
+def route_letter(route: str) -> str:
+    return route.rsplit("_", 1)[-1]
+
+
+def default_controller_window(route: str, round_id: str = "") -> str:
+    letter = route_letter(route)
+    if round_id and round_id != "unknown":
+        round_label = round_id.capitalize() if round_id.startswith("round") else round_id
+        return f"Route{letter}-{round_label}Controller"
+    return f"Route{letter}-Controller"
+
+
+def controller_window_pattern(route: str) -> re.Pattern[str]:
+    letter = route_letter(route)
+    return re.compile(rf"^Route{letter}-(?:Round[0-9]+)?Controller$")
+
+
+def classify_tmux_window(route: str, name: str, round_id: str) -> dict[str, Any]:
+    if not controller_window_pattern(route).match(name):
+        return {"role": "other", "legacy": False, "active_for_round": False}
+    legacy = name == default_controller_window(route, "")
+    round_specific = default_controller_window(route, round_id) if round_id and round_id != "unknown" else ""
+    return {
+        "role": "controller",
+        "legacy": legacy,
+        "active_for_round": bool(round_specific and name == round_specific),
+    }
+
+
+def choose_controller_window(route: str, windows: list[dict[str, str]], round_id: str) -> tuple[str, list[str]]:
+    names = [window.get("name", "") for window in windows]
+    preferred = default_controller_window(route, round_id) if round_id and round_id != "unknown" else ""
+    if preferred and preferred in names:
+        return preferred, [name for name in names if controller_window_pattern(route).match(name) and name != preferred]
+    generic = default_controller_window(route, "")
+    if generic in names:
+        return generic, [name for name in names if controller_window_pattern(route).match(name) and name != generic]
+    discovered = [name for name in names if controller_window_pattern(route).match(name)]
+    return (discovered[0] if discovered else generic, discovered[1:] if discovered else [])
 
 
 def collect_tmux(root: Path, sessions: list[str]) -> dict[str, bool]:
@@ -721,7 +1439,7 @@ def parse_tmux_windows(stdout: str) -> list[dict[str, str]]:
 def parse_tmux_panes(stdout: str, session: str) -> list[dict[str, str]]:
     panes: list[dict[str, str]] = []
     for line in stdout.splitlines():
-        parts = line.split("|", 4)
+        parts = line.split("|", 5)
         if len(parts) < 5 or parts[0] != session:
             continue
         panes.append(
@@ -729,71 +1447,114 @@ def parse_tmux_panes(stdout: str, session: str) -> list[dict[str, str]]:
                 "window": parts[1],
                 "pane": parts[2],
                 "title": parts[3],
-                "command": parts[4],
+                "path": parts[4] if len(parts) > 5 else "",
+                "command": parts[5] if len(parts) > 5 else parts[4],
             }
         )
     return panes
 
 
-def collect_tmux_topology(root: Path, tmux: dict[str, bool]) -> list[dict[str, Any]]:
+def collect_tmux_topology(root: Path, tmux: dict[str, bool], round_id: str = "unknown") -> list[dict[str, Any]]:
     topology: list[dict[str, Any]] = []
     all_panes = run_cmd(
-        ["tmux", "list-panes", "-a", "-F", "#{session_name}|#{window_name}|#{pane_index}|#{pane_title}|#{pane_current_command}"],
+        ["tmux", "list-panes", "-a", "-F", "#{session_name}|#{window_name}|#{pane_index}|#{pane_title}|#{pane_current_path}|#{pane_current_command}"],
         root,
         timeout=3,
     )
-    for spec in TMUX_SESSION_PLAN:
+    for spec in TMUX_SESSION_SPECS:
         session = spec["session"]
+        route = spec.get("route", "")
         present = tmux.get(session, False)
         windows_result = run_cmd(["tmux", "list-windows", "-t", session, "-F", "#{window_index}|#{window_name}|#{pane_current_command}"], root, timeout=3) if present else {"ok": False, "stdout": ""}
         windows = parse_tmux_windows(windows_result["stdout"]) if windows_result["ok"] else []
         window_aliases = spec.get("window_aliases", {})
         expected = list(spec["expected_windows"])
+        if route:
+            preferred_controller = default_controller_window(route, round_id)
+            if preferred_controller not in expected:
+                expected = [preferred_controller, *expected]
 
         def has_window(expected_name: str) -> bool:
             candidates = {expected_name, *window_aliases.get(expected_name, ())}
+            if route and expected_name == default_controller_window(route, round_id):
+                if not round_id or round_id == "unknown":
+                    return any(controller_window_pattern(route).match(window["name"]) for window in windows)
+                return any(classify_tmux_window(route, window["name"], round_id).get("active_for_round") for window in windows)
+            if route and expected_name == default_controller_window(route, ""):
+                return any(controller_window_pattern(route).match(window["name"]) for window in windows)
             return any(window["name"] in candidates or window.get("command", "") in candidates for window in windows)
+
+        annotated_windows = []
+        for window in windows:
+            item = dict(window)
+            if route:
+                item.update(classify_tmux_window(route, window.get("name", ""), round_id))
+            annotated_windows.append(item)
 
         topology.append(
             {
                 "session": session,
                 "label_zh": spec["label_zh"],
                 "purpose_zh": spec["purpose_zh"],
-                "route": spec.get("route", ""),
+                "route": route,
+                "round_id": round_id,
                 "present": present,
                 "expected_windows": expected,
                 "window_status": {name: has_window(name) for name in expected},
-                "live_windows": windows,
+                "live_windows": annotated_windows,
                 "panes": parse_tmux_panes(all_panes["stdout"], session) if all_panes["ok"] and present else [],
             }
         )
     return topology
 
 
-def annotate_route_tmux(route: dict[str, Any], topology_by_session: dict[str, dict[str, Any]]) -> None:
+def annotate_route_tmux(route: dict[str, Any], topology_by_session: dict[str, dict[str, Any]], round_id: str = "unknown") -> None:
     session_info = topology_by_session.get(route.get("tmux_session", ""), {})
+    live_windows = session_info.get("live_windows", [])
+    controller_window, legacy_windows = choose_controller_window(route["id"], live_windows, round_id)
+    route["controller_tmux_window"] = controller_window
+    route["controller_tmux_target"] = f"{route['tmux_session']}:{controller_window}.0" if controller_window else route.get("tmux_session", "")
+    route["legacy_controller_windows"] = legacy_windows
     route["tmux_window_status"] = session_info.get("window_status", {})
-    route["tmux_live_windows"] = session_info.get("live_windows", [])
+    route["tmux_live_windows"] = live_windows
     route["tmux_panes"] = session_info.get("panes", [])
+    route["tmux_activity"] = {
+        "session": route.get("tmux_session", ""),
+        "controller_window": controller_window,
+        "legacy_controller_windows": legacy_windows,
+        "panes": session_info.get("panes", []),
+        "source": "tmux list-panes/list-windows",
+    }
 
 
 def parse_squeue(stdout: str) -> list[dict[str, str]]:
     jobs: list[dict[str, str]] = []
     for line in stdout.splitlines():
         parts = line.split("|")
-        if len(parts) < 7:
+        if len(parts) >= 10:
+            job_id, array_root, array_task, partition, name, state, reason, elapsed, start, dependency = parts[:10]
+            user = ""
+            time_value = elapsed
+        elif len(parts) >= 7:
+            job_id, user, partition, name, state, time_value, reason = parts[:7]
+            array_root, array_task, start, dependency = split_array_job_id(job_id)[0], split_array_job_id(job_id)[1], "", ""
+        else:
             continue
         jobs.append(
             {
-                "id": parts[0],
-                "user": parts[1],
-                "partition": parts[2],
-                "name": parts[3],
-                "state": parts[4],
-                "time": parts[5],
-                "reason": parts[6],
-                "is_route_job": any(route_name_matches(route, parts[3]) for route in ROUTES),
-                "is_general": parts[2] == "general",
+                "id": job_id,
+                "array_root": array_root,
+                "array_task": array_task,
+                "user": user,
+                "partition": partition,
+                "name": name,
+                "state": state,
+                "time": time_value,
+                "reason": reason,
+                "start": start,
+                "dependency": dependency,
+                "is_route_job": any(route_name_matches(route, name) for route in ROUTES),
+                "is_general": partition == "general",
                 "source": "squeue",
             }
         )
@@ -945,27 +1706,90 @@ def parse_sacct(stdout: str) -> list[dict[str, str]]:
     return jobs
 
 
+def parse_watchboard_processes(stdout: str, root: Path) -> dict[str, Any]:
+    processes: list[dict[str, Any]] = []
+    for line in stdout.splitlines():
+        if "scripts/ops/build_route_watchboard.py" not in line or "--serve" not in line:
+            continue
+        parts = line.split(None, 3)
+        if len(parts) < 4:
+            continue
+        pid, ppid, etime, cmd = parts
+        port_match = re.search(r"--port\s+(\d+)", cmd)
+        port = int(port_match.group(1)) if port_match else 0
+        executable = cmd.split()[0] if cmd.split() else ""
+        canonical_python = executable in {
+            "/users/a/e/aereinh/CARE/envs/env_CARE/bin/python",
+            "./envs/env_CARE/bin/python",
+        }
+        canonical = port == 8766 and canonical_python
+        risk = ""
+        if port == 8765:
+            risk = "legacy_port"
+        if not canonical_python:
+            risk = "bare_python_or_unknown_executable" if not risk else f"{risk}+bare_python_or_unknown_executable"
+        processes.append(
+            {
+                "pid": pid,
+                "ppid": ppid,
+                "etime": etime,
+                "cmd": cmd,
+                "port": port,
+                "python_executable": executable,
+                "canonical": canonical,
+                "risk": risk,
+            }
+        )
+    canonical_count = sum(1 for proc in processes if proc.get("canonical"))
+    return {
+        "canonical_port": 8766,
+        "canonical_python": "/users/a/e/aereinh/CARE/envs/env_CARE/bin/python",
+        "processes": processes,
+        "duplicate_or_legacy_detected": len(processes) > 1 or any(proc.get("risk") for proc in processes),
+        "status_schema_freshness": "unknown_until_served_status_compared",
+        "refresh_required": canonical_count != 1 or len(processes) != 1 or any(proc.get("risk") for proc in processes),
+    }
+
+
+def collect_staleness(routes: list[dict[str, Any]], handoff: dict[str, Any], live_service_state: dict[str, Any]) -> list[dict[str, str]]:
+    staleness: list[dict[str, str]] = []
+    for warning in handoff.get("parse_warnings", []):
+        staleness.append({"scope": "CURRENT.md", "state": "parse_warning", "detail": warning})
+    if live_service_state.get("duplicate_or_legacy_detected"):
+        staleness.append({"scope": "live_service_state", "state": "duplicate_or_legacy", "detail": "旧 watchboard serve 可能覆盖 generated status.json。"})
+    for route in routes:
+        if route.get("required_head") and route.get("origin_sha") and not route.get("head_matches_required"):
+            staleness.append({"scope": route["id"], "state": "stale_head", "detail": "CURRENT required_head 与 origin route head 不一致。"})
+        if route.get("dirty_count"):
+            staleness.append({"scope": route["id"], "state": "dirty_worktree", "detail": f"worktree has {route['dirty_count']} uncommitted changes"})
+        if route.get("packet_parse_warnings"):
+            staleness.append({"scope": route["id"], "state": "packet_parse_warning", "detail": "; ".join(route.get("packet_parse_warnings", []))})
+    return staleness
+
+
 def collect_status(root: Path, worktree_root: Path, user: str) -> dict[str, Any]:
+    handoff = collect_handoff_status(root)
+    round_id = handoff.get("round_id", "unknown")
     routes = [collect_route(root, worktree_root, route) for route in ROUTES]
-    sessions = [spec["session"] for spec in TMUX_SESSION_PLAN]
+    sessions = [spec["session"] for spec in TMUX_SESSION_SPECS]
     for route in routes:
         sessions.append(route["controller_tmux"])
         sessions.append(route["reviewer_tmux"])
     tmux = collect_tmux(root, sorted({session for session in sessions if session}))
-    tmux_topology = collect_tmux_topology(root, tmux)
+    tmux_topology = collect_tmux_topology(root, tmux, round_id=round_id)
     topology_by_session = {item["session"]: item for item in tmux_topology}
     for route in routes:
-        annotate_route_tmux(route, topology_by_session)
+        annotate_route_tmux(route, topology_by_session, round_id=round_id)
     controller_activities = {
         route["id"]: controller_activity_from_pane(root, route["controller_tmux_target"])
         for route in routes
         if tmux.get(route["controller_tmux"], False) and route.get("controller_tmux_target")
     }
 
-    squeue = run_cmd(["squeue", "-h", "-u", user, "-o", "%i|%u|%P|%j|%T|%M|%R"], root)
+    squeue = run_cmd(["squeue", "-h", "-u", user, "-o", "%i|%A|%a|%P|%j|%T|%R|%M|%S|%E"], root)
     sinfo = run_cmd(["sinfo", "-o", "%P|%a|%l|%D|%t|%G"], root)
     partition_squeues = {
-        partition: run_cmd(["squeue", "-h", "-u", user, "-p", partition, "-o", "%i|%u|%P|%j|%T|%M|%R"], root)
+        partition: run_cmd(["squeue", "-h", "-u", user, "-p", partition, "-o", "%i|%A|%a|%P|%j|%T|%R|%M|%S|%E"], root)
         for partition in CARE_PARTITION_ORDER
     }
     partition_sinfos = {
@@ -1004,7 +1828,8 @@ def collect_status(root: Path, worktree_root: Path, user: str) -> dict[str, Any]
     sinfo_rows = dedupe_sinfo_rows(sinfo_rows)
     partitions = care_partition_summary(sinfo_rows)
 
-    handoff = collect_handoff_status(root)
+    process_table = run_cmd(["ps", "-u", user, "-o", "pid,ppid,etime,cmd"], root)
+    live_service_state = parse_watchboard_processes(process_table["stdout"], root) if process_table["ok"] else {"processes": [], "refresh_required": True, "duplicate_or_legacy_detected": False}
     for route in routes:
         annotate_route_runtime(route, tmux, jobs, recent_jobs, controller_activities.get(route["id"]))
         annotate_handoff_workers(route, handoff)
@@ -1026,18 +1851,33 @@ def collect_status(root: Path, worktree_root: Path, user: str) -> dict[str, Any]
     for route_id, critic_entry in handoff.get("critics", {}).items():
         if critic_entry.get("active") and not critic_entry.get("exists"):
             warnings.append(f"{ROUTE_LABELS.get(route_id, route_id)} Critic 提示词指向的文件不存在：{critic_entry.get('path', '')}。")
+    warnings.extend(handoff.get("parse_warnings", []))
+    if live_service_state.get("duplicate_or_legacy_detected"):
+        warnings.append("检测到 duplicate/legacy watchboard serve；旧服务可能覆盖 results/watchboard/status.json，需只维护 care_watchboard 服务。")
     for route in routes:
+        if route.get("is_deferred_fallback"):
+            if route["dirty_count"]:
+                warnings.append(f"{route['label']} dormant fallback worktree 有 {route['dirty_count']} 个未提交变更。")
+            continue
         if not route["result_root_exists"]:
             warnings.append(f"{route['label']} 尚无 result root，当前仍处于合同/环境阶段。")
-        if not tmux.get(route["controller_tmux"], False):
-            warnings.append(f"{route['label']} tmux session {route['controller_tmux']} 未启动或不可见。")
+        if route.get("is_active_round_route") and not tmux.get(route["controller_tmux"], False):
+            warnings.append(f"{route['label']} active route tmux session {route['controller_tmux']} 未启动或不可见。")
         missing_windows = [name for name, present in route.get("tmux_window_status", {}).items() if not present]
-        if missing_windows:
-            warnings.append(f"{route['label']} tmux 缺少窗口：{', '.join(missing_windows)}。")
+        if route.get("is_active_round_route") and missing_windows:
+            warnings.append(f"{route['label']} active route tmux 缺少窗口：{', '.join(missing_windows)}。")
+        if route.get("is_active_round_route") and route.get("required_head") and route.get("origin_sha") and not route.get("head_matches_required"):
+            warnings.append(
+                f"{route['label']} CURRENT 绑定 head {route['required_head']} 与 origin head {route['origin_sha']} 不一致；Critic handoff stale，Controller 保持 blocked。"
+            )
         if route["dirty_count"]:
             warnings.append(f"{route['label']} worktree 有 {route['dirty_count']} 个未提交变更。")
+        if route.get("routing_compatibility", {}).get("volta_usable") is False:
+            warnings.append(f"{route['label']} packet/ledger 记录 V100/volta incompatibility；不得因 volta 队列空闲提示可用。")
         for blocker in route["completion_blockers"]:
             warnings.append(f"{route['label']} 未完成阻断：{blocker}")
+
+    staleness = collect_staleness(routes, handoff, live_service_state)
 
     return {
         "generated_at": dt.datetime.now().isoformat(timespec="seconds"),
@@ -1051,6 +1891,12 @@ def collect_status(root: Path, worktree_root: Path, user: str) -> dict[str, Any]
         },
         "routes": routes,
         "handoff": handoff,
+        "portfolio_round": handoff.get("portfolio_round", {}),
+        "portfolio": handoff.get("portfolio", empty_portfolio_state()),
+        "authority": handoff.get("authority", {}),
+        "critic_readiness": handoff.get("critic_readiness", {}),
+        "route_bindings": handoff.get("route_bindings", {}),
+        "round_checkpoints": handoff.get("round_checkpoints", []),
         "tmux": tmux,
         "tmux_topology": tmux_topology,
         "controller_activities": controller_activities,
@@ -1060,6 +1906,9 @@ def collect_status(root: Path, worktree_root: Path, user: str) -> dict[str, Any]
         "general_jobs": general_jobs,
         "partitions": partitions,
         "warnings": warnings,
+        "staleness": staleness,
+        "forbidden_actions": list(FORBIDDEN_ACTIONS),
+        "live_service_state": live_service_state,
         "guardrails": {
             "mode": "read-only",
             "forbidden_actions": FORBIDDEN_ACTIONS,
@@ -1083,14 +1932,16 @@ def collect_status(root: Path, worktree_root: Path, user: str) -> dict[str, Any]
 
 def status_class(route: dict[str, Any], tmux: dict[str, bool]) -> str:
     state = route.get("display_state_zh", "")
+    if route.get("is_deferred_fallback") or state == "Dormant fallback":
+        return "archive"
     if state in {"Controller 运行中", "Slurm 运行中", "Slurm 排队中"}:
         return "active"
+    if state in {"需修订", "审查未通过"}:
+        return "revision"
     if route.get("completion_blockers") or state in {"需补证据", "等待监控", "等待 sacct", "未完成"}:
         return "risk"
     if state in {"训练不足"}:
         return "undertrained"
-    if state in {"需修订", "审查未通过"}:
-        return "revision"
     if state in {"Controller 已结束"}:
         return "ended"
     if state in {"待独立审查", "审查通过"}:
@@ -1120,6 +1971,129 @@ def window_badges(window_status: dict[str, bool]) -> str:
 
 def tmux_presence_label(present: bool) -> str:
     return "可见" if present else "未启动/不可见"
+
+
+def route_labels(routes: list[str]) -> str:
+    return ", ".join(ROUTE_LABELS.get(route, route) for route in routes) or "无"
+
+
+def render_token_list(tokens: list[str]) -> str:
+    if not tokens:
+        return render_badge("无 allowed token", "badge muted")
+    return "".join(render_badge(token, "badge warn") for token in tokens)
+
+
+def render_handoff_state(data: dict[str, Any]) -> str:
+    handoff = data.get("handoff", {})
+    portfolio_round = data.get("portfolio_round", handoff.get("portfolio_round", {}))
+    round_id = portfolio_round.get("round_id", handoff.get("round_id", "unknown"))
+    portfolio = data.get("portfolio", handoff.get("portfolio", empty_portfolio_state()))
+    authority = data.get("authority", handoff.get("authority", {}))
+    active = route_labels(portfolio.get("active_routes", []))
+    deferred = route_labels(portfolio.get("deferred_routes", []))
+    controller_count = authority.get("controller_authorized_now", portfolio.get("current_controller_authorizations", 0))
+    boundary_rows = []
+    for key in (
+        "validation_upload_authorized",
+        "route_promotion_authorized",
+        "m11_authorized",
+        "cross_route_merge_authorized",
+        "hosted_metric_claim_authorized",
+        "final_scientific_decision_authorized",
+    ):
+        value = authority.get(key, False)
+        boundary_rows.append(f"<tr><td>{html.escape(key)}</td><td>{html.escape(str(value).lower())}</td></tr>")
+    checkpoints = []
+    for checkpoint in data.get("round_checkpoints", [])[:4]:
+        items = "; ".join(checkpoint.get("items", []))
+        source_heading = checkpoint.get("source_heading", "Decision Checkpoints")
+        checkpoints.append(f"<li><strong>{html.escape(checkpoint.get('date', ''))}</strong> <span>{html.escape(source_heading)}</span>: {html.escape(items)}</li>")
+    checkpoint_html = "".join(checkpoints) or "<li>未解析到当前 round checkpoint。</li>"
+    return f"""
+    <section class="panel handoff-state">
+      <div class="panel-head"><h2>Portfolio handoff state</h2><span>{html.escape(round_id)}</span></div>
+      <div class="portfolio-grid">
+        <div><span>active routes</span><strong>{html.escape(active)}</strong></div>
+        <div><span>deferred routes</span><strong>{html.escape(deferred)}</strong></div>
+        <div><span>controller_authorized_now</span><strong>{html.escape(str(controller_count))}</strong></div>
+        <div><span>boundary</span><strong>ready token scope only</strong></div>
+      </div>
+      <p class="authority-note">Ready token 只授权对应 exact route Controller 作为 Codex goal / goal resume 启动；不授权 validation upload、route promotion、M11、cross-route merge、hosted metric claim 或 final scientific decision。</p>
+      <div class="two-col-inner">
+        <table><thead><tr><th>Authority</th><th>值</th></tr></thead><tbody>{''.join(boundary_rows)}</tbody></table>
+        <ul class="checkpoint-list">{checkpoint_html}</ul>
+      </div>
+    </section>
+    """
+
+
+def render_critic_readiness(data: dict[str, Any]) -> str:
+    rows = []
+    for route in ("route_B", "route_C"):
+        item = data.get("critic_readiness", {}).get(route, {})
+        handoff = item.get("critic_handoff", {})
+        review = item.get("review_output", {})
+        found = item.get("found_tokens", [])
+        rows.append(
+            f"""
+            <tr>
+              <td><strong>{html.escape(ROUTE_LABELS[route])}</strong></td>
+              <td>{soft_wrap_token(handoff.get('path', ''))}</td>
+              <td>{soft_wrap_token(review.get('path', ''))}</td>
+              <td><div class="badge-row compact">{render_token_list(item.get('allowed_tokens', []))}</div></td>
+              <td>{html.escape(', '.join(found) or item.get('state_zh', 'pending critic token'))}</td>
+            </tr>
+            """
+        )
+    return f"""
+    <section class="panel critic-readiness">
+      <div class="panel-head"><h2>Critic readiness gate</h2><span>B/C 可并行，互不等待</span></div>
+      <table>
+        <thead><tr><th>Route</th><th>Critic handoff</th><th>Critic review output</th><th>Allowed tokens</th><th>当前 token</th></tr></thead>
+        <tbody>{''.join(rows)}</tbody>
+      </table>
+    </section>
+    """
+
+
+def render_slurm_race_readiness() -> str:
+    items = "".join(f"<li>{html.escape(item)}</li>" for item in SLURM_RACE_READINESS)
+    return f"""
+    <section class="panel slurm-readiness">
+      <div class="panel-head"><h2>Slurm/Race readiness</h2><span>只读展示</span></div>
+      <ul>{items}</ul>
+      <p class="guardrail">submitted / pending / running / awaiting-accounting / undertrained / monitor packet 都不是完成。</p>
+    </section>
+    """
+
+
+def render_live_service_state(data: dict[str, Any]) -> str:
+    service = data.get("live_service_state", {})
+    rows = []
+    for proc in service.get("processes", []):
+        rows.append(
+            f"""
+            <tr>
+              <td>{html.escape(str(proc.get('pid', '')))}</td>
+              <td>{html.escape(str(proc.get('port', '')))}</td>
+              <td>{soft_wrap_token(str(proc.get('python_executable', '')))}</td>
+              <td>{html.escape('canonical' if proc.get('canonical') else proc.get('risk', 'legacy/unknown'))}</td>
+              <td>{soft_wrap_token(str(proc.get('cmd', '')))}</td>
+            </tr>
+            """
+        )
+    body = "".join(rows) if rows else '<tr><td colspan="5">未检测到 watchboard --serve 进程。</td></tr>'
+    badge = "refresh required" if service.get("refresh_required") else "canonical"
+    return f"""
+    <section class="panel live-service">
+      <div class="panel-head"><h2>Live service state</h2><span>{html.escape(badge)}</span></div>
+      <table>
+        <thead><tr><th>PID</th><th>Port</th><th>Python</th><th>状态</th><th>Command</th></tr></thead>
+        <tbody>{body}</tbody>
+      </table>
+      <p class="guardrail">canonical serve: /users/a/e/aereinh/CARE/envs/env_CARE/bin/python scripts/ops/build_route_watchboard.py --serve --host 127.0.0.1 --port 8766；8765 或 bare python 是 legacy risk。</p>
+    </section>
+    """
 
 
 def render_tmux_topology(data: dict[str, Any]) -> str:
@@ -1159,6 +2133,8 @@ def render_tmux_topology(data: dict[str, Any]) -> str:
 def render_html(data: dict[str, Any], refresh_seconds: int = 60) -> str:
     route_cards = []
     tmux = data["tmux"]
+    portfolio_round = data.get("portfolio_round", data.get("handoff", {}).get("portfolio_round", {}))
+    round_id = portfolio_round.get("round_id", data.get("handoff", {}).get("round_id", "unknown"))
     for route in data["routes"]:
         cls = status_class(route, tmux)
         packet_badges = "".join(
@@ -1167,7 +2143,16 @@ def render_html(data: dict[str, Any], refresh_seconds: int = 60) -> str:
         )
         keyword_badges = "".join(render_badge(keyword, "badge warn") for keyword in route["status_keywords"]) or render_badge("暂无 packet 状态", "badge muted")
         blocker_badges = "".join(render_badge(blocker, "badge danger") for blocker in route["completion_blockers"]) or render_badge(route["reviewability"].get("label_zh", "尚不可审查为完成"), "badge muted")
-        architecture_items = "".join(f"<li>{html.escape(line)}</li>" for line in route["architecture_lines"])
+        portfolio_badges = "".join(
+            [
+                render_badge(route.get("portfolio_state", "UNKNOWN"), "badge ok" if route.get("is_active_round_route") else "badge muted"),
+                render_badge(f"Controller {route.get('controller_authority_state_zh', 'blocked')}", "badge ok" if route.get("controller_authorized") else "badge danger"),
+                render_badge("head matched" if route.get("head_matches_required") else "head not matched/unknown", "badge ok" if route.get("head_matches_required") else "badge warn"),
+            ]
+        )
+        architecture_items = "".join(f"<li>{html.escape(line)}</li>" for line in (route.get("route_requirements_summary") or route["architecture_lines"]))
+        checkpoint = route.get("next_checkpoint", {})
+        checkpoint_text = f"{checkpoint.get('date', '')}: {'; '.join(checkpoint.get('items', []))}" if checkpoint.get("date") else "未解析到 route checkpoint"
         recent_job_rows = "".join(
             f"<tr><td>{html.escape(job.get('id', ''))}</td><td>{html.escape(job.get('source', ''))}</td><td>{html.escape(job.get('partition', ''))}</td><td>{html.escape(job.get('name', ''))}</td><td>{html.escape(job.get('state', ''))}</td><td>{html.escape(job.get('exit_code', job.get('reason', '')))}</td></tr>"
             for job in route["recent_slurm_jobs"]
@@ -1183,7 +2168,7 @@ def render_html(data: dict[str, Any], refresh_seconds: int = 60) -> str:
                   <h2>{html.escape(route['label'])}</h2>
                   <p class="purpose">{html.escape(route['purpose'])}</p>
                 </div>
-                <span class="state-pill">{html.escape(route['display_state_zh'])}</span>
+                <span class="state-pill">{html.escape(route.get('display_state_zh', '待判定'))}</span>
               </div>
               <div class="round-strip">
                 <span>{html.escape(route.get('round_id', 'unknown')).replace('round', '第 ')} 轮</span>
@@ -1199,14 +2184,28 @@ def render_html(data: dict[str, Any], refresh_seconds: int = 60) -> str:
                 <div><span>Controller 窗口</span><strong>{html.escape(route['controller_tmux_window'] or '未配置')}: {tmux_presence_label(route.get('tmux_window_status', {}).get(route['controller_tmux_window'], False)) if route['controller_tmux_window'] else '未配置'}</strong></div>
                 <div><span>工作树变更</span><strong>{route['dirty_count'] if route['dirty_count'] is not None else 'n/a'}</strong></div>
               </div>
+              <section class="route-section compact-section">
+                <h3>Portfolio route state</h3>
+                <div class="badge-row compact">{portfolio_badges}</div>
+                <div class="binding-grid">
+                  <div><span>required route head</span><strong>{soft_wrap_token(route.get('required_head', '') or 'unknown')}</strong></div>
+                  <div><span>origin route head</span><strong>{soft_wrap_token(route.get('origin_sha', '') or 'unknown')}</strong></div>
+                  <div><span>contract blob</span><strong>{soft_wrap_token(route.get('contract_blob', '') or 'unknown')}</strong></div>
+                  <div><span>executor-plan blob</span><strong>{soft_wrap_token(route.get('executor_plan_blob', '') or 'unknown')}</strong></div>
+                  <div><span>critic handoff</span><strong>{soft_wrap_token(route.get('critic_handoff', {}).get('path', '') or 'none')}</strong></div>
+                  <div><span>critic review output</span><strong>{soft_wrap_token(route.get('critic_review_output_path', '') or 'none')}</strong></div>
+                  <div><span>expected token</span><strong>{soft_wrap_token(', '.join(route.get('allowed_tokens', [])) or 'none')}</strong></div>
+                  <div><span>next checkpoint</span><strong>{html.escape(checkpoint_text)}</strong></div>
+                </div>
+              </section>
               <div class="route-section compact-section">
                 <h3>tmux 窗口</h3>
                 <div class="badge-row compact">{window_badges(route.get('tmux_window_status', {}))}</div>
               </div>
               <section class="route-section">
-                <h3>SRR 架构/合同状态</h3>
+                <h3>Route requirements boundary</h3>
                 <ul class="architecture-list">{architecture_items}</ul>
-                <p class="source">来源：{html.escape(route['architecture_source'])}</p>
+                <p class="source">来源：CURRENT.md / ROUTE_HARD_REQUIREMENTS_MATRIX.md；历史架构来源：{html.escape(route['architecture_source'])}</p>
               </section>
               <section class="route-section">
                 <h3>证据与可审查性</h3>
@@ -1271,12 +2270,25 @@ def render_html(data: dict[str, Any], refresh_seconds: int = 60) -> str:
         )
     warnings = "".join(f"<li>{html.escape(item)}</li>" for item in data["warnings"]) or "<li>当前没有 watchboard 警告。</li>"
 
-    total_routes = len(data["routes"])
-    active_routes = sum(1 for route in data["routes"] if tmux.get(route["tmux_session"]))
+    portfolio = data.get("portfolio", empty_portfolio_state())
+    authority = data.get("authority", {})
+    active_route_text = route_labels(portfolio.get("active_routes", []))
+    deferred_route_text = route_labels(portfolio.get("deferred_routes", []))
+    controller_authorized_now = authority.get("controller_authorized_now", portfolio.get("current_controller_authorizations", 0))
+    critic_pending = [
+        ROUTE_LABELS[route]
+        for route in portfolio.get("active_routes", [])
+        if not data.get("critic_readiness", {}).get(route, {}).get("found_tokens")
+    ]
+    critic_status_text = ", ".join(critic_pending) + " pending" if critic_pending else "ready/revision token present"
     present_tmux_sessions = sum(1 for item in data.get("tmux_topology", []) if item.get("present"))
     route_jobs = len(data["route_jobs"])
     general_jobs = len(data["general_jobs"])
     tmux_topology_html = render_tmux_topology(data)
+    live_service_html = render_live_service_state(data)
+    handoff_state_html = render_handoff_state(data)
+    critic_readiness_html = render_critic_readiness(data)
+    slurm_race_html = render_slurm_race_readiness()
     handoff = data.get("handoff", {})
 
     return f"""<!doctype html>
@@ -1285,15 +2297,15 @@ def render_html(data: dict[str, Any], refresh_seconds: int = 60) -> str:
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta http-equiv="refresh" content="{int(refresh_seconds)}">
-  <title>SRR 三路线动态看板</title>
+  <title>CARE Route Portfolio {html.escape(round_id)}</title>
   <style>{CSS}</style>
 </head>
 <body>
   <header class="topbar">
     <div>
-      <p class="eyeline">CARE SRR Route A+B+C</p>
-      <h1>SRR 三路线动态看板</h1>
-      <p class="subhead">只读汇总 Route A/B/C 的合同状态、轻量证据、tmux、Slurm 当前态和最近作业。看板不提交、不取消、不上传、不合并，也不产生科学结论。</p>
+      <p class="eyeline">CARE Route Portfolio {html.escape(round_id)}</p>
+      <h1>Route Portfolio watchboard</h1>
+      <p class="subhead">只读汇总当前 portfolio active/deferred routes、Critic readiness、Controller authority boundary、tmux、Slurm 当前态和最近作业。看板不提交、不取消、不上传、不合并，也不产生科学结论。</p>
     </div>
     <div class="top-actions">
       <span class="readonly">只读</span>
@@ -1303,24 +2315,32 @@ def render_html(data: dict[str, Any], refresh_seconds: int = 60) -> str:
 
   <main>
     <section class="summary-grid">
-      <div class="summary-card"><span>当前轮次</span><strong>{html.escape(handoff.get('round_id', 'unknown'))}</strong><small>由 CURRENT.md 自动读取</small></div>
-      <div class="summary-card"><span>路线工作台</span><strong>{active_routes}/{total_routes}</strong><small>Route A/B/C tmux 可见</small></div>
-      <div class="summary-card"><span>路线 Slurm 作业</span><strong>{route_jobs}</strong><small>按 job 名称或证据包关联</small></div>
-      <div class="summary-card"><span>常驻 tmux</span><strong>{present_tmux_sessions}/4</strong><small>watchboard + 3 条路线</small></div>
+      <div class="summary-card"><span>active routes</span><strong>{html.escape(active_route_text)}</strong><small>由 CURRENT.md Portfolio state 自动读取</small></div>
+      <div class="summary-card"><span>deferred routes</span><strong>{html.escape(deferred_route_text)}</strong><small>Route A 不进入 active count</small></div>
+      <div class="summary-card guard"><span>controller_authorized_now</span><strong>{html.escape(str(controller_authorized_now))}</strong><small>0 时页面不得暗示 Controller 可启动</small></div>
+      <div class="summary-card"><span>critic status</span><strong>{html.escape(critic_status_text)}</strong><small>B/C critics 可并行，互不等待</small></div>
     </section>
 
     <section class="flow">
       <div class="flow-line"></div>
-      <div class="flow-step done"><span>1</span><strong>环境搭建</strong><small>分支 / 工作树 / tmux</small></div>
-      <div class="flow-step active"><span>2</span><strong>合同与缺口</strong><small>路线合同 / 缺口清单</small></div>
-      <div class="flow-step"><span>3</span><strong>实现验收</strong><small>实现关口先于训练</small></div>
-      <div class="flow-step"><span>4</span><strong>运行证据</strong><small>Slurm 完成后必须聚合</small></div>
-      <div class="flow-step"><span>5</span><strong>独立审查</strong><small>Reviewer 只读审查结果包</small></div>
+      <div class="flow-step done"><span>1</span><strong>CURRENT 绑定</strong><small>{html.escape(round_id)} portfolio truth</small></div>
+      <div class="flow-step active"><span>2</span><strong>Critic gate</strong><small>B/C ready/revision token</small></div>
+      <div class="flow-step"><span>3</span><strong>Controller boundary</strong><small>exact route only</small></div>
+      <div class="flow-step"><span>4</span><strong>运行证据</strong><small>monitor 不是 completion</small></div>
+      <div class="flow-step"><span>5</span><strong>独立审查</strong><small>Reviewer 后置只读</small></div>
     </section>
+
+    {handoff_state_html}
+
+    {critic_readiness_html}
 
     <section class="routes-grid">
       {''.join(route_cards)}
     </section>
+
+    {slurm_race_html}
+
+    {live_service_html}
 
     {tmux_topology_html}
 
@@ -1366,6 +2386,7 @@ CSS = """
   --revision: #fff1f2;
   --undertrained: #fff7d6;
   --ended: #f1f5f9;
+  --archive: #f3f4f6;
   --ok: #eaf8ef;
   --shadow: 0 18px 45px rgba(17, 24, 39, 0.08);
 }
@@ -1575,6 +2596,7 @@ main {
 .route-card.undertrained { border-top-color: #ca8a04; background: var(--undertrained); }
 .route-card.revision { border-top-color: #e11d48; background: var(--revision); }
 .route-card.ended { border-top-color: #64748b; background: var(--ended); }
+.route-card.archive { border-top-color: #6b7280; background: var(--archive); }
 .route-card.idle { border-top-color: #94a3b8; background: var(--ended); }
 .route-head {
   display: flex;
@@ -1613,6 +2635,52 @@ main {
   font-size: 15px;
   line-height: 1.25;
   overflow-wrap: anywhere;
+}
+.portfolio-grid, .binding-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  margin-top: 12px;
+}
+.portfolio-grid div, .binding-grid div {
+  min-width: 0;
+  padding: 12px;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+}
+.portfolio-grid span, .binding-grid span {
+  display: block;
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+.portfolio-grid strong, .binding-grid strong {
+  display: block;
+  margin-top: 6px;
+  font-size: 13px;
+  line-height: 1.3;
+  overflow-wrap: anywhere;
+}
+.authority-note {
+  margin: 12px 0;
+  color: #374151;
+  line-height: 1.5;
+}
+.two-col-inner {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 14px;
+}
+.checkpoint-list, .slurm-readiness ul {
+  margin: 0;
+  padding-left: 18px;
+  color: #374151;
+  line-height: 1.55;
+}
+.handoff-state, .critic-readiness, .slurm-readiness {
+  margin: 16px 0;
 }
 .route-section {
   padding-top: 16px;
@@ -1774,7 +2842,7 @@ tr.tmux-present td {
   color: var(--muted);
 }
 @media (max-width: 1100px) {
-  .summary-grid, .routes-grid, .two-col {
+  .summary-grid, .routes-grid, .two-col, .two-col-inner {
     grid-template-columns: 1fr;
   }
   .flow {
@@ -1813,7 +2881,7 @@ tr.tmux-present td {
   .subhead {
     max-width: 320px;
   }
-  .metric-row {
+  .metric-row, .portfolio-grid, .binding-grid {
     grid-template-columns: 1fr;
   }
 }
