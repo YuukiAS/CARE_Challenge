@@ -142,6 +142,9 @@ TMUX_SESSION_PLAN = (
         "label_zh": "Watchboard 服务",
         "purpose_zh": "本地 shell、动态看板服务与 cloudflared tunnel",
         "expected_windows": ("bash", "watchboard-tunnel"),
+        "window_aliases": {
+            "bash": ("./envs/env_CARE/bin/python", "python", "python3"),
+        },
     },
     {
         "session": "care_route_A",
@@ -744,8 +747,13 @@ def collect_tmux_topology(root: Path, tmux: dict[str, bool]) -> list[dict[str, A
         present = tmux.get(session, False)
         windows_result = run_cmd(["tmux", "list-windows", "-t", session, "-F", "#{window_index}|#{window_name}|#{pane_current_command}"], root, timeout=3) if present else {"ok": False, "stdout": ""}
         windows = parse_tmux_windows(windows_result["stdout"]) if windows_result["ok"] else []
-        live_names = {window["name"] for window in windows}
+        window_aliases = spec.get("window_aliases", {})
         expected = list(spec["expected_windows"])
+
+        def has_window(expected_name: str) -> bool:
+            candidates = {expected_name, *window_aliases.get(expected_name, ())}
+            return any(window["name"] in candidates or window.get("command", "") in candidates for window in windows)
+
         topology.append(
             {
                 "session": session,
@@ -754,7 +762,7 @@ def collect_tmux_topology(root: Path, tmux: dict[str, bool]) -> list[dict[str, A
                 "route": spec.get("route", ""),
                 "present": present,
                 "expected_windows": expected,
-                "window_status": {name: name in live_names for name in expected},
+                "window_status": {name: has_window(name) for name in expected},
                 "live_windows": windows,
                 "panes": parse_tmux_panes(all_panes["stdout"], session) if all_panes["ok"] and present else [],
             }

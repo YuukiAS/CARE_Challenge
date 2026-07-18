@@ -53,30 +53,27 @@ Route C：
 
 ## Branch 与 Worktree
 
-| Route | Branch | Worktree | Controller tmux | Reviewer tmux |
+| Route | Branch | Worktree | Canonical tmux | Role windows |
 | --- | --- | --- | --- | --- |
-| Portfolio | `main` | `/users/a/e/aereinh/CARE` | `care_portfolio` | final reviewer only |
-| Route A | `route_A` | `/users/a/e/aereinh/CARE_worktrees/route_A` | `care_route_A_controller` | `care_route_A_reviewer` |
-| Route B | `route_B` | `/users/a/e/aereinh/CARE_worktrees/route_B` | `care_route_B_controller` | `care_route_B_reviewer` |
-| Route C | `route_C` | `/users/a/e/aereinh/CARE_worktrees/route_C` | `care_route_C_controller` | `care_route_C_reviewer` |
+| Watchboard | `main` | `/users/a/e/aereinh/CARE` | `care_watchboard` | `bash`, `watchboard-tunnel` |
+| Route A | `route_A` | `/users/a/e/aereinh/CARE_worktrees/route_A` | `care_route_A` | `RouteA-Controller`, `RouteA-Continue`, `RouteA-Exec`, `RouteA-Reviewer` |
+| Route B | `route_B` | `/users/a/e/aereinh/CARE_worktrees/route_B` | `care_route_B` | `RouteB-Controller`, `RouteB-Continue`, `RouteB-Exec`, `RouteB-Reviewer` |
+| Route C | `route_C` | `/users/a/e/aereinh/CARE_worktrees/route_C` | `care_route_C` | `RouteC-Controller`, `RouteC-Continue`, `RouteC-Exec`, `RouteC-Reviewer` |
 
 Reviewer worktree 只能在对应 controller 提交可审查 packet 后创建。Reviewer worktree 必须固定到被审查 commit，不能跟随 controller 的可变 branch。
 
 ## tmux 会话
 
-当前长期会话设计为 7 个：
+当前长期会话设计为 4 个 canonical session：
 
 ```text
-care_portfolio
-care_route_A_controller
-care_route_B_controller
-care_route_C_controller
-care_route_A_reviewer
-care_route_B_reviewer
-care_route_C_reviewer
+care_watchboard
+care_route_A
+care_route_B
+care_route_C
 ```
 
-现在只需要启动前 4 个 core session。三个 reviewer session 等对应 route 产生 committed packet 后再创建，避免 reviewer 和 controller 共用可写工作区。
+旧命名 `care_portfolio`、`care_route_*_controller`、`care_route_*_reviewer` 只作为 legacy alias 兼容线索。新脚本和 watchboard 必须以 canonical session/window 拓扑为准，不得用旧 alias 覆盖当前状态。
 
 ## Compute Routing
 

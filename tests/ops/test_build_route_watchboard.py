@@ -26,8 +26,8 @@ def route_fixture(**overrides):
         },
         "slurm_job_ids": [],
         "recent_slurm_jobs": [],
-        "controller_tmux": "care_route_A_controller",
-        "reviewer_tmux": "care_route_A_reviewer",
+        "controller_tmux": "care_route_A",
+        "reviewer_tmux": "care_route_A",
         "tmux_session": "care_route_A",
         "controller_tmux_window": "RouteA-Controller",
         "tmux_window_status": {"RouteA-Controller": False},
@@ -160,7 +160,7 @@ def test_missing_critic_prompt_is_warning_state_without_main_table(tmp_path):
     html = watchboard.render_html(
         {
             "generated_at": "2026-07-16T12:00:00",
-            "tmux": {"care_route_A_controller": False, "care_route_A": False},
+            "tmux": {"care_route_A": False},
             "routes": [route],
             "jobs": [],
             "route_jobs": [],
@@ -195,7 +195,7 @@ def test_pending_packet_blocks_completion_review():
         }
     ]
 
-    watchboard.annotate_route_runtime(route, {"care_route_A_controller": False}, jobs, [])
+    watchboard.annotate_route_runtime(route, {"care_route_A": False}, jobs, [])
 
     assert route["display_state_zh"] == "Slurm 排队中"
     assert route["reviewability"]["can_review_complete"] is False
@@ -216,7 +216,7 @@ def test_running_packet_blocks_completion_review():
         }
     ]
 
-    watchboard.annotate_route_runtime(route, {"care_route_A_controller": False}, jobs, [])
+    watchboard.annotate_route_runtime(route, {"care_route_A": False}, jobs, [])
 
     assert route["display_state_zh"] == "Slurm 运行中"
     assert route["reviewability"]["label_zh"] == "不可作为完成包审查"
@@ -225,7 +225,7 @@ def test_running_packet_blocks_completion_review():
 def test_awaiting_sacct_has_explicit_state():
     route = route_fixture(status_keywords=["AWAITING_SACCT"])
 
-    watchboard.annotate_route_runtime(route, {"care_route_A_controller": False}, [], [])
+    watchboard.annotate_route_runtime(route, {"care_route_A": False}, [], [])
 
     assert route["display_state_zh"] == "等待 sacct"
     assert route["reviewability"]["can_review_complete"] is False
@@ -238,7 +238,7 @@ def test_needs_evidence_and_review_states():
     review_fail = route_fixture(status_keywords=["FAIL"], packet_files={**route_fixture()["packet_files"], "review": True})
 
     for route in (needs_evidence, review_pending, review_pass, review_fail):
-        watchboard.annotate_route_runtime(route, {"care_route_A_controller": False}, [], [])
+        watchboard.annotate_route_runtime(route, {"care_route_A": False}, [], [])
 
     assert needs_evidence["display_state_zh"] == "需补证据"
     assert review_pending["display_state_zh"] == "待独立审查"
@@ -250,7 +250,7 @@ def test_needs_evidence_and_review_states():
 def test_setup_only_route_state():
     route = route_fixture(current_status="setup only")
 
-    watchboard.annotate_route_runtime(route, {"care_route_A_controller": False}, [], [])
+    watchboard.annotate_route_runtime(route, {"care_route_A": False}, [], [])
 
     assert route["display_state_zh"] == "仅环境搭建"
     assert route["reviewability"]["can_review_complete"] is False
@@ -369,6 +369,28 @@ def test_collect_route_uses_new_route_session_over_legacy_tmux_fields(tmp_path, 
     assert route["controller_tmux_target"] == "care_route_A:RouteA-Controller.0"
 
 
+def test_watchboard_service_window_allows_python_auto_rename(monkeypatch):
+    def fake_run_cmd(args, cwd, timeout=8):
+        if args[:3] == ["tmux", "list-panes", "-a"]:
+            return {"ok": True, "stdout": "", "stderr": "", "code": 0}
+        if args[:3] == ["tmux", "list-windows", "-t"] and args[3] == "care_watchboard":
+            return {
+                "ok": True,
+                "stdout": "0|./envs/env_CARE/bin/python|./envs/env_CARE/bin/python\n1|watchboard-tunnel|cloudflared",
+                "stderr": "",
+                "code": 0,
+            }
+        return {"ok": True, "stdout": "", "stderr": "", "code": 0}
+
+    monkeypatch.setattr(watchboard, "run_cmd", fake_run_cmd)
+
+    topology = watchboard.collect_tmux_topology(Path("/tmp"), {"care_watchboard": True})
+    watchboard_session = next(item for item in topology if item["session"] == "care_watchboard")
+
+    assert watchboard_session["window_status"]["bash"] is True
+    assert watchboard_session["window_status"]["watchboard-tunnel"] is True
+
+
 def test_tmux_topology_tracks_expected_route_windows(monkeypatch):
     def fake_run_cmd(args, cwd, timeout=8):
         if args[:3] == ["tmux", "list-panes", "-a"]:
@@ -440,7 +462,7 @@ def test_collect_status_degrades_when_slurm_commands_fail(monkeypatch):
 def test_route_a_review_needs_revision_token_sets_revision_state():
     route = route_fixture(status_keywords=["ROUTE_A_REVIEW_NEEDS_REVISION"], packet_files={**route_fixture()["packet_files"], "review": True})
 
-    watchboard.annotate_route_runtime(route, {"care_route_A_controller": False}, [], [])
+    watchboard.annotate_route_runtime(route, {"care_route_A": False}, [], [])
 
     assert route["display_state_zh"] == "需修订"
     assert watchboard.status_class(route, {}) == "revision"
@@ -454,7 +476,7 @@ def test_review_decision_overrides_stale_controller_undertrained_token():
         packet_files={**route_fixture()["packet_files"], "review": True},
     )
 
-    watchboard.annotate_route_runtime(route, {"care_route_B_controller": False}, [], [])
+    watchboard.annotate_route_runtime(route, {"care_route_B": False}, [], [])
 
     assert route["display_state_zh"] == "需修订"
     assert watchboard.status_class(route, {}) == "revision"
@@ -473,7 +495,7 @@ def test_status_class_colors_non_ready_states():
 
 def test_status_class_keeps_white_background_for_active_only():
     route = route_fixture(display_state_zh="Controller 运行中")
-    assert watchboard.status_class(route, {"care_route_A_controller": True}) == "active"
+    assert watchboard.status_class(route, {"care_route_A": True}) == "active"
 
     route = route_fixture(display_state_zh="Controller 已结束")
-    assert watchboard.status_class(route, {"care_route_A_controller": True}) == "ended"
+    assert watchboard.status_class(route, {"care_route_A": True}) == "ended"

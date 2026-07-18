@@ -5,8 +5,9 @@
 | route 目的 | 中等工作量、完整架构实现路线 |
 | branch | `route_B` |
 | worktree | `/users/a/e/aereinh/CARE_worktrees/route_B` |
-| controller tmux | `care_route_B_controller` |
-| reviewer tmux | `care_route_B_reviewer` |
+| tmux session | `care_route_B` |
+| controller window | `RouteB-Controller` |
+| reviewer window | `RouteB-Reviewer` |
 | result root | `results/route_B/` |
 | runtime root | `results/route_B/runtime/` |
 | log root | `logs/route_B/` |

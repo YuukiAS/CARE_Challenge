@@ -5,8 +5,9 @@
 | route 目的 | 最大工作量、延续完整 M10 evidence / Cine fidelity 路线 |
 | branch | `route_C` |
 | worktree | `/users/a/e/aereinh/CARE_worktrees/route_C` |
-| controller tmux | `care_route_C_controller` |
-| reviewer tmux | `care_route_C_reviewer` |
+| tmux session | `care_route_C` |
+| controller window | `RouteC-Controller` |
+| reviewer window | `RouteC-Reviewer` |
 | result root | `results/route_C/` |
 | runtime root | `results/route_C/runtime/` |
 | log root | `logs/route_C/` |
