@@ -1,0 +1,26 @@
+{
+  "completion_token": "ROUTE_B_ROUND03_B2_IMPLEMENTATION_GATE_PASSED",
+  "created_at_utc": "2026-07-18T09:33:21.361803+00:00",
+  "external_errors": [],
+  "formal_training_submitted": false,
+  "known_bad_pass_count": 10,
+  "known_bad_total": 10,
+  "modality_order": [
+    "LGE",
+    "T2",
+    "C0"
+  ],
+  "monitor_state": false,
+  "official_cinema_logits_shape": [
+    1,
+    4,
+    192,
+    192,
+    16
+  ],
+  "official_cinema_probe_status": "PASS",
+  "official_cinema_weight_sha256": "c7a60195e6c0aa920b0d0d8221d2ea7a75b6a5ea570763c3bf4924398f5ae85f",
+  "semantic_errors": [],
+  "status": "PASS",
+  "submitted_only_state": false
+}

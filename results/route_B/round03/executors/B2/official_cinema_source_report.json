@@ -1,0 +1,25 @@
+{
+  "config_path": "/users/a/e/aereinh/CARE/results/20260704_external_assets_cinema_registration/external_assets/weights/CineMA/acdc_sax/config.yaml",
+  "errors": [],
+  "loaded_state_key_count": 380,
+  "matched_random_parameter_count": 127390694,
+  "missing_keys": [],
+  "model_symbol": "cinema.segmentation.convunetr.get_model",
+  "observed_weight_sha256": "c7a60195e6c0aa920b0d0d8221d2ea7a75b6a5ea570763c3bf4924398f5ae85f",
+  "official_forward_seconds": 22.765,
+  "official_logits_abs_mean": 7.12146520614624,
+  "official_logits_finite": true,
+  "official_logits_shape": [
+    1,
+    4,
+    192,
+    192,
+    16
+  ],
+  "pretrained_parameter_count": 127390694,
+  "required_weight_sha256": "c7a60195e6c0aa920b0d0d8221d2ea7a75b6a5ea570763c3bf4924398f5ae85f",
+  "source_root": "/users/a/e/aereinh/CARE/results/20260704_external_assets_cinema_registration/external_assets/CineMA",
+  "status": "PASS",
+  "unexpected_keys": [],
+  "weight_path": "/users/a/e/aereinh/CARE/results/20260704_external_assets_cinema_registration/external_assets/weights/CineMA/acdc_sax/acdc_sax_0.safetensors"
+}

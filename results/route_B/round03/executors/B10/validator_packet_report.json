@@ -1,0 +1,11 @@
+{
+  "status": "PASS",
+  "validator_rows": [
+    {
+      "command": "/users/a/e/aereinh/CARE/envs/env_CARE/bin/python scripts/validation/route_B_round03/validate_packet.py --strict --require-all-attempt-accounting results/route_B/round03/executors/B10",
+      "exit_code": 0,
+      "stderr_tail": "",
+      "stdout_tail": "{\n  \"completion_token\": \"ROUTE_B_ROUND03_TERMINAL_PACKET_READY_FOR_REVIEW\",\n  \"errors\": [],\n  \"status\": \"PASS\"\n}\n"
+    }
+  ]
+}

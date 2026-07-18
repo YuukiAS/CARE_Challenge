@@ -1,0 +1,29 @@
+{
+  "partitions": {
+    "a100-gpu": {
+      "fallback_or_race": true,
+      "gres": "gpu:nvidia_a100-pcie-40gb:1",
+      "qos": "gpu_access"
+    },
+    "htzhulab": {
+      "default": true,
+      "gres": "gpu:1",
+      "qos": "gpu_access"
+    },
+    "volta-gpu": {
+      "gres": "gpu:tesla_v100-sxm2-16gb:1",
+      "qos": "gpu_access",
+      "v100_user_approved": true
+    }
+  },
+  "race_rules": {
+    "all_attempt_finalizer_coverage_required": true,
+    "atomic_winner_lock_required": true,
+    "isolated_output_log_checkpoint_cache_roots": true,
+    "loser_training_credit": "zero",
+    "pending_loser_cancellation_required": true,
+    "retry_lineage_required": true,
+    "scientific_hashes_identical": true,
+    "v100_semantic_downscaling_forbidden": true
+  }
+}

@@ -1,0 +1,197 @@
+{
+  "active_goal": "RouteB-Round03Controller",
+  "created_at_utc": "2026-07-18T10:39:46Z",
+  "current_phase": "B3_MYOPS_EVIDENCE_WARMUP",
+  "git_head": "a4f5799647a7ea406d5e23be0a6378571e7cae82",
+  "git_status_scope": "route_B_round03_untracked_work_in_progress",
+  "ready_gate": {
+    "critic_token": "ROUTE_B_ROUND03_PLANNING_READY_FOR_CONTROLLER",
+    "controller_start_authorized": true,
+    "route_B_md_blob": "1d58d7a37eacaee8cc15c159758e5074e794de8b",
+    "route_B_executor_plan_yaml_blob": "082e2641d8fdf693e929d1aa460ae689b80ce0d2",
+    "critic_review_blob": "0d39238ce8fae66b2b41eb584a3d081bd22e11d4"
+  },
+  "source_fingerprints": {
+    "AGENTS.md": "46fa41c9c6ca341823fcb1098225dd6caff30958",
+    "slurm_routing_skill_sha256": "9f2a985350c9e22cd020c40a8bb007ae104cb9535aa9fdc86e4edb9c2700cdb6",
+    "care_mapper_skill_sha256": "2c41516189001ec7be94d9981a69fcd5544ad5ebd244c93cdc58488f4b535d0e",
+    "wiki_README_sha256": "a7e153d58512e776d08b8441f1c1d7bd6dc1c1c5c6db40b56abbdbd3c6aedc74"
+  },
+  "completed_local_gates": {
+    "B0": "ROUTE_B_ROUND03_B0_READY_FOR_CONTROLLER_MERGE",
+    "B1": "static tests passed",
+    "B2": "ROUTE_B_ROUND03_B2_IMPLEMENTATION_GATE_PASSED"
+  },
+  "active_slurm_attempts": [],
+  "retired_runtime_locks": [
+    {
+      "job_id": "59452968",
+      "partition": "volta-gpu",
+      "retired_lock": "results/route_B/runtime/round03/B3/race/failed_winner_59452968.lock",
+      "reason": "failed winner lock preserved after V100 CUDA no-kernel-image failure"
+    }
+  ],
+  "zero_credit_attempts": [
+    {
+      "job_id": "59451468",
+      "partition": "volta-gpu",
+      "state": "FAILED",
+      "exit_code": "2:0"
+    },
+    {
+      "job_id": "59451848",
+      "partition": "volta-gpu",
+      "state": "FAILED",
+      "exit_code": "2:0"
+    },
+    {
+      "job_id": "59451083",
+      "partition": "htzhulab",
+      "state": "CANCELLED",
+      "exit_code": "0:0"
+    },
+    {
+      "job_id": "59451089",
+      "partition": "a100-gpu",
+      "state": "CANCELLED",
+      "exit_code": "0:0"
+    },
+    {
+      "job_id": "59451918",
+      "partition": "l40-gpu",
+      "state": "CANCELLED",
+      "exit_code": "0:0"
+    },
+    {
+      "job_id": "59452778",
+      "partition": "volta-gpu",
+      "state": "FAILED",
+      "exit_code": "2:0"
+    },
+    {
+      "job_id": "59452474",
+      "partition": "htzhulab",
+      "state": "CANCELLED",
+      "exit_code": "0:0"
+    },
+    {
+      "job_id": "59452498",
+      "partition": "a100-gpu",
+      "state": "CANCELLED",
+      "exit_code": "0:0"
+    },
+    {
+      "job_id": "59452967",
+      "partition": "htzhulab",
+      "state": "CANCELLED",
+      "exit_code": "0:0"
+    },
+    {
+      "job_id": "59452969",
+      "partition": "a100-gpu",
+      "state": "CANCELLED",
+      "exit_code": "0:0"
+    },
+    {
+      "job_id": "59452968",
+      "partition": "volta-gpu",
+      "state": "FAILED",
+      "exit_code": "1:0"
+    },
+    {
+      "job_id": "59453051",
+      "partition": "htzhulab",
+      "state": "CANCELLED",
+      "exit_code": "0:0"
+    },
+    {
+      "job_id": "59453052",
+      "partition": "a100-gpu",
+      "state": "CANCELLED",
+      "exit_code": "0:0"
+    },
+    {
+      "job_id": "59453374",
+      "partition": "l40-gpu",
+      "state": "CANCELLED",
+      "exit_code": "0:0"
+    },
+    {
+      "job_id": "59453905",
+      "partition": "l40-gpu",
+      "state": "CANCELLED",
+      "exit_code": "0:0"
+    },
+    {
+      "job_id": "59453903",
+      "partition": "a100-gpu",
+      "state": "CANCELLED",
+      "exit_code": "0:0"
+    },
+    {
+      "job_id": "59453904",
+      "partition": "htzhulab",
+      "state": "FAILED",
+      "exit_code": "2:0"
+    },
+    {
+      "job_id": "59456643",
+      "partition": "a100-gpu",
+      "state": "CANCELLED",
+      "exit_code": "0:0"
+    },
+    {
+      "job_id": "59456644",
+      "partition": "htzhulab",
+      "state": "CANCELLED",
+      "exit_code": "0:0"
+    },
+    {
+      "job_id": "59457075",
+      "partition": "htzhulab",
+      "state": "CANCELLED",
+      "exit_code": "0:0"
+    },
+    {
+      "job_id": "59457076",
+      "partition": "a100-gpu",
+      "state": "CANCELLED",
+      "exit_code": "0:0"
+    },
+    {
+      "job_id": "59457116",
+      "partition": "a100-gpu",
+      "state": "CANCELLED",
+      "exit_code": "0:0"
+    },
+    {
+      "job_id": "59457115",
+      "partition": "htzhulab",
+      "state": "FAILED",
+      "exit_code": "2:0"
+    }
+  ],
+  "root_isolation_incidents": [
+    {
+      "job_id": "59452778",
+      "partition": "volta-gpu",
+      "diagnostic_log": "/users/a/e/aereinh/CARE/logs/route_B_round03/RouteBMyopsV100_B3_59452778_20260718_064447.log",
+      "status": "contained_and_repaired",
+      "repair": "all Route B Slurm wrappers now force CARE_ROOT=/users/a/e/aereinh/CARE_worktrees/route_B and MAIN_CARE_ROOT=/users/a/e/aereinh/CARE"
+    }
+  ],
+  "completion_state": "ROUTE_B_ROUND03_TERMINAL_PACKET_READY_FOR_REVIEW",
+  "route_promotion_decision": "NOT_REVIEWED",
+  "route_negative_decision": "NOT_REVIEWED",
+  "scientific_resolution_status": "AWAITING_REVIEW",
+  "forbidden_actions_performed": {
+    "push": false,
+    "validation_packaging_upload": false,
+    "route_promotion": false,
+    "m11": false,
+    "cross_route_merge": false,
+    "hosted_metric_claim": false,
+    "final_scientific_decision": false,
+    "review_md_written_by_controller": false
+  }
+}

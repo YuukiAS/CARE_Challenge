@@ -1,0 +1,533 @@
+{
+  "case_count": 16,
+  "cases": [
+    {
+      "availability": [
+        true,
+        true,
+        true
+      ],
+      "availability_order": [
+        "LGE",
+        "T2",
+        "C0"
+      ],
+      "case_dir": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterB/Case2002",
+      "case_id": "Case2002",
+      "center": "CenterB",
+      "edema_positive": true,
+      "image_paths": {
+        "C0": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterB/Case2002/Case2002_C0.nii.gz",
+        "LGE": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterB/Case2002/Case2002_LGE.nii.gz",
+        "T2": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterB/Case2002/Case2002_T2.nii.gz"
+      },
+      "label_path": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterB/Case2002/Case2002_gd.nii.gz",
+      "label_sha256": "5e73be876ad74ec7eeae27db0596bfaf21392ca0c00a7768a24f50d4551aea7a",
+      "raw_label_values": [
+        200,
+        500,
+        600,
+        1220,
+        2221
+      ],
+      "scar_positive": true,
+      "t2_edema_positive": true,
+      "t2_present": true
+    },
+    {
+      "availability": [
+        true,
+        true,
+        true
+      ],
+      "availability_order": [
+        "LGE",
+        "T2",
+        "C0"
+      ],
+      "case_dir": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterB/Case2007",
+      "case_id": "Case2007",
+      "center": "CenterB",
+      "edema_positive": true,
+      "image_paths": {
+        "C0": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterB/Case2007/Case2007_C0.nii.gz",
+        "LGE": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterB/Case2007/Case2007_LGE.nii.gz",
+        "T2": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterB/Case2007/Case2007_T2.nii.gz"
+      },
+      "label_path": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterB/Case2007/Case2007_gd.nii.gz",
+      "label_sha256": "3db81153bb67adbc73d59475c357c4c689f43f3b5104b79e809f668e1b421573",
+      "raw_label_values": [
+        200,
+        500,
+        600,
+        1220,
+        2221
+      ],
+      "scar_positive": true,
+      "t2_edema_positive": true,
+      "t2_present": true
+    },
+    {
+      "availability": [
+        true,
+        true,
+        true
+      ],
+      "availability_order": [
+        "LGE",
+        "T2",
+        "C0"
+      ],
+      "case_dir": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterB/Case2008",
+      "case_id": "Case2008",
+      "center": "CenterB",
+      "edema_positive": true,
+      "image_paths": {
+        "C0": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterB/Case2008/Case2008_C0.nii.gz",
+        "LGE": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterB/Case2008/Case2008_LGE.nii.gz",
+        "T2": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterB/Case2008/Case2008_T2.nii.gz"
+      },
+      "label_path": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterB/Case2008/Case2008_gd.nii.gz",
+      "label_sha256": "1ee08dd319997766993ac927f4329a2037c1659e22e6d621bd911bb6098159d1",
+      "raw_label_values": [
+        200,
+        500,
+        600,
+        1220,
+        2221
+      ],
+      "scar_positive": true,
+      "t2_edema_positive": true,
+      "t2_present": true
+    },
+    {
+      "availability": [
+        true,
+        true,
+        true
+      ],
+      "availability_order": [
+        "LGE",
+        "T2",
+        "C0"
+      ],
+      "case_dir": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterB/Case2017",
+      "case_id": "Case2017",
+      "center": "CenterB",
+      "edema_positive": true,
+      "image_paths": {
+        "C0": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterB/Case2017/Case2017_C0.nii.gz",
+        "LGE": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterB/Case2017/Case2017_LGE.nii.gz",
+        "T2": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterB/Case2017/Case2017_T2.nii.gz"
+      },
+      "label_path": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterB/Case2017/Case2017_gd.nii.gz",
+      "label_sha256": "a832e8045bdbafd6a3dbee87bbed16197132332bdeaa3ab726f180edb8289c29",
+      "raw_label_values": [
+        200,
+        500,
+        600,
+        1220,
+        2221
+      ],
+      "scar_positive": true,
+      "t2_edema_positive": true,
+      "t2_present": true
+    },
+    {
+      "availability": [
+        true,
+        true,
+        true
+      ],
+      "availability_order": [
+        "LGE",
+        "T2",
+        "C0"
+      ],
+      "case_dir": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterB/Case2020",
+      "case_id": "Case2020",
+      "center": "CenterB",
+      "edema_positive": true,
+      "image_paths": {
+        "C0": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterB/Case2020/Case2020_C0.nii.gz",
+        "LGE": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterB/Case2020/Case2020_LGE.nii.gz",
+        "T2": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterB/Case2020/Case2020_T2.nii.gz"
+      },
+      "label_path": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterB/Case2020/Case2020_gd.nii.gz",
+      "label_sha256": "6c47410aac0b32096a2adbfb6f45ff08cec47f7bd8cb343f8739f657a1086789",
+      "raw_label_values": [
+        200,
+        500,
+        600,
+        1220,
+        2221
+      ],
+      "scar_positive": true,
+      "t2_edema_positive": true,
+      "t2_present": true
+    },
+    {
+      "availability": [
+        true,
+        true,
+        true
+      ],
+      "availability_order": [
+        "LGE",
+        "T2",
+        "C0"
+      ],
+      "case_dir": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterB/Case2031",
+      "case_id": "Case2031",
+      "center": "CenterB",
+      "edema_positive": true,
+      "image_paths": {
+        "C0": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterB/Case2031/Case2031_C0.nii.gz",
+        "LGE": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterB/Case2031/Case2031_LGE.nii.gz",
+        "T2": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterB/Case2031/Case2031_T2.nii.gz"
+      },
+      "label_path": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterB/Case2031/Case2031_gd.nii.gz",
+      "label_sha256": "7dd86b75108e4aba5f42413e4f8284b4b8514a8064f8a79292bd7de4a5dc1521",
+      "raw_label_values": [
+        200,
+        500,
+        600,
+        1220,
+        2221
+      ],
+      "scar_positive": true,
+      "t2_edema_positive": true,
+      "t2_present": true
+    },
+    {
+      "availability": [
+        true,
+        true,
+        true
+      ],
+      "availability_order": [
+        "LGE",
+        "T2",
+        "C0"
+      ],
+      "case_dir": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterB/Case2033",
+      "case_id": "Case2033",
+      "center": "CenterB",
+      "edema_positive": true,
+      "image_paths": {
+        "C0": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterB/Case2033/Case2033_C0.nii.gz",
+        "LGE": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterB/Case2033/Case2033_LGE.nii.gz",
+        "T2": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterB/Case2033/Case2033_T2.nii.gz"
+      },
+      "label_path": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterB/Case2033/Case2033_gd.nii.gz",
+      "label_sha256": "d1122326b55ed8aeb3cfd7d19c8c2577fdb55c3aaf5d239658be3d466f16d152",
+      "raw_label_values": [
+        200,
+        500,
+        600,
+        1220,
+        2221
+      ],
+      "scar_positive": true,
+      "t2_edema_positive": true,
+      "t2_present": true
+    },
+    {
+      "availability": [
+        true,
+        true,
+        true
+      ],
+      "availability_order": [
+        "LGE",
+        "T2",
+        "C0"
+      ],
+      "case_dir": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterC/Case3004",
+      "case_id": "Case3004",
+      "center": "CenterC",
+      "edema_positive": true,
+      "image_paths": {
+        "C0": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterC/Case3004/Case3004_C0.nii.gz",
+        "LGE": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterC/Case3004/Case3004_LGE.nii.gz",
+        "T2": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterC/Case3004/Case3004_T2.nii.gz"
+      },
+      "label_path": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterC/Case3004/Case3004_gd.nii.gz",
+      "label_sha256": "8b323ebf0435aa986201e5839ed88105a90f9340fcbb2d5b1715212254b2ea5d",
+      "raw_label_values": [
+        200,
+        500,
+        600,
+        1220,
+        2221
+      ],
+      "scar_positive": true,
+      "t2_edema_positive": true,
+      "t2_present": true
+    },
+    {
+      "availability": [
+        true,
+        true,
+        true
+      ],
+      "availability_order": [
+        "LGE",
+        "T2",
+        "C0"
+      ],
+      "case_dir": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterC/Case3011",
+      "case_id": "Case3011",
+      "center": "CenterC",
+      "edema_positive": true,
+      "image_paths": {
+        "C0": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterC/Case3011/Case3011_C0.nii.gz",
+        "LGE": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterC/Case3011/Case3011_LGE.nii.gz",
+        "T2": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterC/Case3011/Case3011_T2.nii.gz"
+      },
+      "label_path": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterC/Case3011/Case3011_gd.nii.gz",
+      "label_sha256": "b2f01adb1ac6badcb413103be9a060425aa91bfe029d5e802d74cb998504492d",
+      "raw_label_values": [
+        200,
+        500,
+        600,
+        1220,
+        2221
+      ],
+      "scar_positive": true,
+      "t2_edema_positive": true,
+      "t2_present": true
+    },
+    {
+      "availability": [
+        true,
+        true,
+        true
+      ],
+      "availability_order": [
+        "LGE",
+        "T2",
+        "C0"
+      ],
+      "case_dir": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterC/Case3012",
+      "case_id": "Case3012",
+      "center": "CenterC",
+      "edema_positive": true,
+      "image_paths": {
+        "C0": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterC/Case3012/Case3012_C0.nii.gz",
+        "LGE": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterC/Case3012/Case3012_LGE.nii.gz",
+        "T2": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterC/Case3012/Case3012_T2.nii.gz"
+      },
+      "label_path": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterC/Case3012/Case3012_gd.nii.gz",
+      "label_sha256": "3d8ebf16e91c7aaad079d7cc3d8ea96fc6169ab38d325fd16e3c0ef624c7683b",
+      "raw_label_values": [
+        200,
+        500,
+        600,
+        1220,
+        2221
+      ],
+      "scar_positive": true,
+      "t2_edema_positive": true,
+      "t2_present": true
+    },
+    {
+      "availability": [
+        true,
+        true,
+        true
+      ],
+      "availability_order": [
+        "LGE",
+        "T2",
+        "C0"
+      ],
+      "case_dir": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterC/Case3023",
+      "case_id": "Case3023",
+      "center": "CenterC",
+      "edema_positive": true,
+      "image_paths": {
+        "C0": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterC/Case3023/Case3023_C0.nii.gz",
+        "LGE": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterC/Case3023/Case3023_LGE.nii.gz",
+        "T2": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterC/Case3023/Case3023_T2.nii.gz"
+      },
+      "label_path": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterC/Case3023/Case3023_gd.nii.gz",
+      "label_sha256": "7d01e35a81019b0cd110874ed6b4daddc63e031c031de722b1c26c5bf8f30504",
+      "raw_label_values": [
+        200,
+        500,
+        600,
+        1220,
+        2221
+      ],
+      "scar_positive": true,
+      "t2_edema_positive": true,
+      "t2_present": true
+    },
+    {
+      "availability": [
+        true,
+        true,
+        true
+      ],
+      "availability_order": [
+        "LGE",
+        "T2",
+        "C0"
+      ],
+      "case_dir": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterC/Case3026",
+      "case_id": "Case3026",
+      "center": "CenterC",
+      "edema_positive": true,
+      "image_paths": {
+        "C0": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterC/Case3026/Case3026_C0.nii.gz",
+        "LGE": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterC/Case3026/Case3026_LGE.nii.gz",
+        "T2": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterC/Case3026/Case3026_T2.nii.gz"
+      },
+      "label_path": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterC/Case3026/Case3026_gd.nii.gz",
+      "label_sha256": "894a8436b9516466cd125adc30f751c94f85fd31588d456660410a3b8115c0ae",
+      "raw_label_values": [
+        200,
+        500,
+        600,
+        1220,
+        2221
+      ],
+      "scar_positive": true,
+      "t2_edema_positive": true,
+      "t2_present": true
+    },
+    {
+      "availability": [
+        true,
+        true,
+        true
+      ],
+      "availability_order": [
+        "LGE",
+        "T2",
+        "C0"
+      ],
+      "case_dir": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterC/Case3034",
+      "case_id": "Case3034",
+      "center": "CenterC",
+      "edema_positive": true,
+      "image_paths": {
+        "C0": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterC/Case3034/Case3034_C0.nii.gz",
+        "LGE": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterC/Case3034/Case3034_LGE.nii.gz",
+        "T2": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterC/Case3034/Case3034_T2.nii.gz"
+      },
+      "label_path": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterC/Case3034/Case3034_gd.nii.gz",
+      "label_sha256": "cc53c1b3cae84b445aba8dfa485b337b994ac6b2b0c897664a9f052cea5da537",
+      "raw_label_values": [
+        200,
+        500,
+        600,
+        1220,
+        2221
+      ],
+      "scar_positive": true,
+      "t2_edema_positive": true,
+      "t2_present": true
+    },
+    {
+      "availability": [
+        true,
+        true,
+        true
+      ],
+      "availability_order": [
+        "LGE",
+        "T2",
+        "C0"
+      ],
+      "case_dir": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterC/Case3038",
+      "case_id": "Case3038",
+      "center": "CenterC",
+      "edema_positive": true,
+      "image_paths": {
+        "C0": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterC/Case3038/Case3038_C0.nii.gz",
+        "LGE": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterC/Case3038/Case3038_LGE.nii.gz",
+        "T2": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterC/Case3038/Case3038_T2.nii.gz"
+      },
+      "label_path": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterC/Case3038/Case3038_gd.nii.gz",
+      "label_sha256": "92fec41fc62a41d04efe718423c2c974e9557e1a92b6a00b77a951f672aace48",
+      "raw_label_values": [
+        200,
+        500,
+        600,
+        1220,
+        2221
+      ],
+      "scar_positive": true,
+      "t2_edema_positive": true,
+      "t2_present": true
+    },
+    {
+      "availability": [
+        true,
+        true,
+        true
+      ],
+      "availability_order": [
+        "LGE",
+        "T2",
+        "C0"
+      ],
+      "case_dir": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterC/Case3040",
+      "case_id": "Case3040",
+      "center": "CenterC",
+      "edema_positive": true,
+      "image_paths": {
+        "C0": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterC/Case3040/Case3040_C0.nii.gz",
+        "LGE": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterC/Case3040/Case3040_LGE.nii.gz",
+        "T2": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterC/Case3040/Case3040_T2.nii.gz"
+      },
+      "label_path": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterC/Case3040/Case3040_gd.nii.gz",
+      "label_sha256": "9225ea8241e613e38e9da9f666fe1727aa0604bcd020d764121adeb5838c0b9d",
+      "raw_label_values": [
+        200,
+        500,
+        600,
+        1220,
+        2221
+      ],
+      "scar_positive": true,
+      "t2_edema_positive": true,
+      "t2_present": true
+    },
+    {
+      "availability": [
+        true,
+        true,
+        true
+      ],
+      "availability_order": [
+        "LGE",
+        "T2",
+        "C0"
+      ],
+      "case_dir": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterC/Case3044",
+      "case_id": "Case3044",
+      "center": "CenterC",
+      "edema_positive": true,
+      "image_paths": {
+        "C0": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterC/Case3044/Case3044_C0.nii.gz",
+        "LGE": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterC/Case3044/Case3044_LGE.nii.gz",
+        "T2": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterC/Case3044/Case3044_T2.nii.gz"
+      },
+      "label_path": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterC/Case3044/Case3044_gd.nii.gz",
+      "label_sha256": "994017d8d15243e3ec9b44da6e6ca3e9c66786718ad8d4784c2ab44d071297a6",
+      "raw_label_values": [
+        200,
+        500,
+        600,
+        1220,
+        2221
+      ],
+      "scar_positive": true,
+      "t2_edema_positive": true,
+      "t2_present": true
+    }
+  ]
+}

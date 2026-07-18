@@ -1,0 +1,81 @@
+{
+  "blocked_at_stage": "B3",
+  "blocked_completion_token": "ROUTE_B_ROUND03_B3_SCIENTIFIC_GATE_FAILED",
+  "blocked_stage_status": "FAIL",
+  "completion_token": "ROUTE_B_ROUND03_TERMINAL_PACKET_READY_FOR_REVIEW",
+  "created_at_utc": "2026-07-18T14:09:15.743861+00:00",
+  "forbidden_actions": {
+    "cross_route_merge": false,
+    "final_scientific_decision": false,
+    "hosted_metric_claim": false,
+    "m11": false,
+    "push": false,
+    "review_md_written_by_controller": false,
+    "route_promotion": false,
+    "validation_packaging_upload": false
+  },
+  "git_head": "a4f5799647a7ea406d5e23be0a6378571e7cae82",
+  "heavy_artifact_scan": {
+    "status": "PASS",
+    "tracked_heavy_artifacts": []
+  },
+  "missing_stage_packets": [
+    "B4",
+    "B5",
+    "B6",
+    "B7",
+    "B8",
+    "B9"
+  ],
+  "missing_stage_packets_justification": "Downstream stages are absent because the executor plan forbids advancing after this terminal scientific gate failure.",
+  "nonpass_stage_packets": [
+    {
+      "stage": "B3",
+      "status": "FAIL",
+      "token": "ROUTE_B_ROUND03_B3_SCIENTIFIC_GATE_FAILED"
+    },
+    {
+      "stage": "B4",
+      "status": null,
+      "token": null
+    },
+    {
+      "stage": "B5",
+      "status": null,
+      "token": null
+    },
+    {
+      "stage": "B6",
+      "status": null,
+      "token": null
+    },
+    {
+      "stage": "B7",
+      "status": null,
+      "token": null
+    },
+    {
+      "stage": "B8",
+      "status": null,
+      "token": null
+    },
+    {
+      "stage": "B9",
+      "status": null,
+      "token": null
+    }
+  ],
+  "route_negative_decision": "NOT_REVIEWED",
+  "route_promotion_decision": "NOT_REVIEWED",
+  "scientific_resolution_status": "AWAITING_REVIEW",
+  "status": "PASS",
+  "terminal_negative_packet": true,
+  "validator_rows": [
+    {
+      "command": "/users/a/e/aereinh/CARE/envs/env_CARE/bin/python scripts/validation/route_B_round03/validate_packet.py --strict --require-all-attempt-accounting results/route_B/round03/executors/B10",
+      "exit_code": 0,
+      "stderr_tail": "",
+      "stdout_tail": "{\n  \"completion_token\": \"ROUTE_B_ROUND03_TERMINAL_PACKET_READY_FOR_REVIEW\",\n  \"errors\": [],\n  \"status\": \"PASS\"\n}\n"
+    }
+  ]
+}

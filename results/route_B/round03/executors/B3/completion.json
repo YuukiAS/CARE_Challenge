@@ -1,0 +1,37 @@
+{
+  "completion_token": "ROUTE_B_ROUND03_B3_SCIENTIFIC_GATE_FAILED",
+  "created_at_utc": "2026-07-18T13:59:22.555084+00:00",
+  "device": "cuda",
+  "executor": "B3",
+  "first_loss": 0.4087909460067749,
+  "gate_checks": {
+    "anatomy_union_overfit": false,
+    "finite_loss": true,
+    "invalid_weights": true,
+    "loss_decrease": true,
+    "no_t2_edema_zero": true,
+    "optimizer_steps": true,
+    "train_loop_seconds": true,
+    "validation_events": true
+  },
+  "last_loss": 0.012353332713246346,
+  "optimizer_steps": 62346,
+  "parent_loaded": false,
+  "parent_path": "",
+  "parent_sha256": "",
+  "required_optimizer_steps": 6000,
+  "required_train_loop_seconds": 1800.0,
+  "required_validation_events": 3,
+  "runtime_out": "results/route_B/runtime/round03/B3/attempt_htzhulab_8",
+  "sampler_counts": {
+    "E": 1586,
+    "R": 53340,
+    "S": 7420
+  },
+  "selected_checkpoint": "results/route_B/runtime/round03/B3/attempt_htzhulab_8/selected.pt",
+  "shared_selected_checkpoint": "",
+  "stage": "evidence_warmup",
+  "status": "FAIL",
+  "train_loop_seconds": 1801.4200326240389,
+  "validation_events": 32
+}

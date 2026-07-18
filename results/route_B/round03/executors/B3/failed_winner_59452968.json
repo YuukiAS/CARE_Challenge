@@ -1,0 +1,14 @@
+{
+  "executor": "B3",
+  "stage": "evidence_warmup",
+  "job_id": "59452968",
+  "partition": "volta-gpu",
+  "state": "FAILED",
+  "exit_code": "1:0",
+  "training_credit": 0,
+  "failure_class": "OPERATIONAL_CUDA_INCOMPATIBLE_PARTITION",
+  "reason": "PyTorch 2.11.0+cu130 warned that Tesla V100-SXM2-16GB compute capability 7.0 was unsupported, then failed with CUDA no-kernel-image during the first model operation.",
+  "log_path": "logs/route_B_round03/RouteBMyopsV100_B3_59452968_20260718_064838.log",
+  "failed_winner_lock": "results/route_B/runtime/round03/B3/race/failed_winner_59452968.lock",
+  "next_action": "Do not use volta-gpu for this environment without changing the PyTorch runtime; relaunch compatible htzhulab/a100-gpu mirrors under the unchanged B3 scientific contract."
+}

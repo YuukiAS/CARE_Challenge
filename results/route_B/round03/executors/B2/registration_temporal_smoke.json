@@ -1,0 +1,27 @@
+{
+  "registration_integration_steps": 7,
+  "status": "PASS",
+  "temporal_logits_shape": [
+    1,
+    4,
+    8,
+    16,
+    16
+  ],
+  "temporal_required_fields": [
+    "reference_logits",
+    "reference_features",
+    "reference_uncertainty",
+    "registered_logits",
+    "registered_features",
+    "registered_uncertainty",
+    "velocity",
+    "integrated_displacement",
+    "jacobian",
+    "motion_magnitude",
+    "texture_residual",
+    "frame_quality",
+    "temporal_position",
+    "valid_frame_mask"
+  ]
+}

@@ -226,6 +226,7 @@ results/**/*.pth
 results/**/*.ckpt
 results/**/*.nii.gz
 results/*/coordinator/*.log
+results/route_B/runtime/
 
 # LaTeX presentation build artifacts. Keep source .tex and final .pdf tracked.
 docs/presentation/*.aux
