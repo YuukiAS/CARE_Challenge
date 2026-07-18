@@ -9,5 +9,6 @@
 - `round03/executors/B3/sampler_sequence_prefix.csv`
 - `round03/executors/B3/sampler_sequence_receipt.json`
 - `round03/executors/B10/finalizer_state.json`
+- `round03/executors/B10/packet_commit_binding.json`
 - `round03/executors/B10/routing_ledger.csv`
 - `round03/executors/B10/validator_packet_report.json`

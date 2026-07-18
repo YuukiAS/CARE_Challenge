@@ -45,8 +45,8 @@
     "route_promotion": false,
     "validation_packaging_upload": false
   },
-  "git_head": "47d0cad88aad4e0fde4ad1167f6c80c111b6697a",
-  "git_head_binding_note": "Source HEAD used for aggregation before the local packet commit; review target commit is reported in controller handoff after commit.",
+  "git_head": "c0e24baab2a75e8f329bb1c5263002beb34f25f2",
+  "git_head_binding_note": "Post-commit binding to the committed lightweight packet produced by Route B Round03 B10 aggregation.",
   "heavy_artifact_scan": {
     "status": "PASS",
     "tracked_heavy_artifacts": []

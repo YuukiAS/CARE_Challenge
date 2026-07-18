@@ -1,0 +1,12 @@
+{
+  "binding_mode": "post_commit_receipt",
+  "committed_lightweight_packet_head": "c0e24baab2a75e8f329bb1c5263002beb34f25f2",
+  "controller_boundary": {
+    "allow_git_push": false,
+    "hosted_metric_claim_authorized": false,
+    "review_md_written_by_controller": false,
+    "route_promotion_authorized": false,
+    "validation_upload_authorized": false
+  },
+  "note": "This receipt records the local packet commit produced by the controller before reviewer handoff."
+}
