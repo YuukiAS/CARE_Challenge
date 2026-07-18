@@ -15,6 +15,7 @@ allowed_revision_token: ROUTE_B_ROUND03_PLANNING_NEEDS_REVISION
 controller_start_before_pass_forbidden: true
 validator_not_run_by_planner: true
 critic_must_not_execute_model_or_training: true
+coordinator_partition_race_static_check: PASS_EXIT_0_COORDINATOR_20260718
 ---
 
 # Route B Round03 independent Planning Critic request
@@ -65,3 +66,6 @@ A ready token authorizes only the Route B Controller to start as a Codex goal or
 This coordinator revision is intentionally narrow. It removes stale ancestry metadata, hardens B10 so terminal finalization covers every started attempt and every success/failure/timeout/preemption/adequate-negative/early-gate terminal class instead of depending on B9 success, and replaces the nonexistent `scripts/architecture/care_mapper.py` reference with existing first-party architecture validator/generator entrypoints. The Critic should review only these repair diffs plus inherited hardening requirements; the Route B scientific contract is otherwise unchanged.
 
 Required coordinator receipts before ready: executor-plan validator exit 0, PyYAML `executors=11`, `git diff --check` exit 0, every B0-B10 prompt path exists, and the bound mapper/architecture command path exists.
+## Coordinator partition/race static receipt
+
+Route B critic-equivalent partition/race static check was run on `/users/a/e/aereinh/CARE_worktrees/route_B` after rebase to `origin/route_B=e893624bb3f3addaa87378e640125e15102dc6f2`. Receipt: exit 0, `PASS route_B critic_equivalent_partition_race_static_check slurm_executors=9 prompt_paths=11`. The Critic may re-run it, but this request no longer lacks coordinator partition/race evidence.

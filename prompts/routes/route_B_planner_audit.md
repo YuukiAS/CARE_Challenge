@@ -22,6 +22,7 @@ PROTOTYPE_MEMORY_RESEARCH_STATUS: READY_WITH_EXPLICIT_FALLBACK
 CINEMA_ADAPTER_RESEARCH_STATUS: READY_WITH_EXPLICIT_FALLBACK
 REGISTRATION_TEMPORAL_RESEARCH_STATUS: TARGETED_CODE_PROBE_COMPLETED_FOR_PLANNING_CONTRACT
 PLANNER_REVISION_READINESS: READY_FOR_COORDINATOR_VALIDATION_THEN_INDEPENDENT_CRITIC
+coordinator_partition_race_static_check: PASS_EXIT_0_COORDINATOR_20260718
 ---
 
 # Route B Round03 Planner audit — YAML representation repair
@@ -85,3 +86,6 @@ No Controller, Slurm job, training, runtime review, validation upload, route pro
 This coordinator revision is intentionally narrow. It removes stale ancestry metadata, hardens B10 so terminal finalization covers every started attempt and every success/failure/timeout/preemption/adequate-negative/early-gate terminal class instead of depending on B9 success, and replaces the nonexistent `scripts/architecture/care_mapper.py` reference with existing first-party architecture validator/generator entrypoints. The Critic should review only these repair diffs plus inherited hardening requirements; the Route B scientific contract is otherwise unchanged.
 
 Required coordinator receipts before ready: executor-plan validator exit 0, PyYAML `executors=11`, `git diff --check` exit 0, every B0-B10 prompt path exists, and the bound mapper/architecture command path exists.
+## Coordinator partition/race static receipt
+
+Route B critic-equivalent partition/race static check was run on `/users/a/e/aereinh/CARE_worktrees/route_B` after rebase to `origin/route_B=e893624bb3f3addaa87378e640125e15102dc6f2`. Receipt: exit 0, `PASS route_B critic_equivalent_partition_race_static_check slurm_executors=9 prompt_paths=11`. This is a local coordinator receipt only; it does not authorize Controller start or write a READY token.
