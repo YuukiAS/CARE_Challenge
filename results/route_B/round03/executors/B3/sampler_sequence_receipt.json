@@ -1,0 +1,18 @@
+{
+  "cycle_mismatch_count": 0,
+  "draw_cycle": [
+    "E",
+    "E",
+    "S",
+    "R"
+  ],
+  "philox_seed": 26071821,
+  "prefix_path": "/users/a/e/aereinh/CARE_worktrees/route_B/results/route_B/round03/executors/B3/sampler_sequence_prefix.csv",
+  "prefix_rows_recorded": 64,
+  "rng": "numpy.random.Philox",
+  "sampler_path": "/users/a/e/aereinh/CARE_worktrees/route_B/configs/route_B_round03/manifests/myops_sampler_strata.json",
+  "sampler_sha256": "6dd26194ecfc1f8794a0f7022c883893e2193e7b5ea47add49a34a373ae108eb",
+  "trace_path": "results/route_B/runtime/round03/B3/attempt_htzhulab_samplerfix_1/sampler_trace.csv",
+  "trace_sha256": "5d5dd4b944bae3a9a7d9f31c030768b6af0c606877b78e505b41e18968a4ea0e",
+  "with_replacement": true
+}

@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import math
 import shutil
@@ -17,9 +18,11 @@ import torch.nn.functional as F
 sys.path.insert(0, str(Path(__file__).resolve().parents[3]))
 
 from scripts.route_B_round03.runtime_common import (  # noqa: E402
+    FrozenMyoPSSampler,
     REPO_ROOT,
     MyoPSPatchCache,
     dice,
+    expected_frozen_sampler_counts,
     monotonic,
     sha256_file,
     utc_now,
@@ -136,7 +139,9 @@ def main() -> int:
     result_dir.mkdir(parents=True, exist_ok=True)
 
     manifest = REPO_ROOT / "configs/route_B_round03/manifests/myops_fold0_primary_44.json"
+    strata_manifest = REPO_ROOT / "configs/route_B_round03/manifests/myops_sampler_strata.json"
     cache = MyoPSPatchCache(manifest)
+    frozen_sampler = FrozenMyoPSSampler(strata_manifest)
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     torch.manual_seed(26071821 + int(args.steps))
     model = RouteBRound03MyoPS().to(device)
@@ -153,17 +158,31 @@ def main() -> int:
     start = monotonic()
     optimizer_steps = 0
     sampler_counts = {"E": 0, "S": 0, "R": 0}
+    sampler_trace_rows: list[dict[str, Any]] = []
+    sampler_prefix_rows: list[dict[str, Any]] = []
+    sampler_cycle_mismatch_count = 0
+    sampler_trace_digest = hashlib.sha256()
     model.train()
     while optimizer_steps < args.steps or monotonic() - start < min_seconds:
         step = optimizer_steps + 1
         optimizer.zero_grad(set_to_none=True)
-        x, availability, label, anchor, case_id = cache.get(step - 1, seed=step)
-        if availability[1].item() and (label == 4).any():
-            sampler_counts["E"] += 1
-        elif (label == 5).any():
-            sampler_counts["S"] += 1
-        else:
-            sampler_counts["R"] += 1
+        draw_label, case_id, stratum_index = frozen_sampler.draw(step)
+        expected_label = frozen_sampler.draw_cycle[(step - 1) % len(frozen_sampler.draw_cycle)]
+        if draw_label != expected_label:
+            sampler_cycle_mismatch_count += 1
+        sampler_counts[draw_label] += 1
+        x, availability, label, anchor, case_id = cache.get_case(case_id, seed=step)
+        trace_row = {
+            "step": step,
+            "draw_label": draw_label,
+            "expected_label": expected_label,
+            "case_id": case_id,
+            "stratum_index": stratum_index,
+        }
+        sampler_trace_rows.append(trace_row)
+        if step <= 64:
+            sampler_prefix_rows.append(trace_row)
+        sampler_trace_digest.update(f"{step},{draw_label},{case_id},{stratum_index}\n".encode("utf-8"))
         x = x[None].to(device)
         availability = availability[None].to(device)
         label = label[None].to(device)
@@ -219,6 +238,7 @@ def main() -> int:
     shared_selected_written = shared_selected == args.out / "selected.pt"
     train_seconds = monotonic() - start
     latest = validations[-1] if validations else {}
+    expected_sampler_counts = expected_frozen_sampler_counts(optimizer_steps)
     gate_checks = {
         "optimizer_steps": optimizer_steps >= args.steps,
         "train_loop_seconds": train_seconds >= min_seconds,
@@ -227,6 +247,8 @@ def main() -> int:
         "loss_decrease": last_loss < first_loss,
         "invalid_weights": float(latest.get("invalid_weight_max", 1.0)) <= 1.0e-6,
         "no_t2_edema_zero": float(latest.get("no_t2_edema_delta_abs_max", 1.0)) <= 1.0e-8,
+        "frozen_sampler_counts": sampler_counts == expected_sampler_counts,
+        "frozen_sampler_sequence": sampler_cycle_mismatch_count == 0,
     }
     if args.stage == "evidence_warmup":
         gate_checks["anatomy_union_overfit"] = float(latest.get("anatomy_union_overfit_dice", 0.0)) >= 0.70
@@ -257,16 +279,34 @@ def main() -> int:
         "last_loss": last_loss,
         "gate_checks": gate_checks,
         "sampler_counts": sampler_counts,
+        "expected_sampler_counts": expected_sampler_counts,
+        "sampler_contract": {
+            "sampler_path": str(strata_manifest),
+            "sampler_sha256": sha256_file(strata_manifest),
+            "draw_cycle": list(frozen_sampler.draw_cycle),
+            "rng": "numpy.random.Philox",
+            "philox_seed": frozen_sampler.seed,
+            "with_replacement": True,
+            "cycle_mismatch_count": sampler_cycle_mismatch_count,
+            "trace_sha256": sampler_trace_digest.hexdigest(),
+            "prefix_rows_recorded": len(sampler_prefix_rows),
+            "trace_path": str(args.out / "sampler_trace.csv"),
+            "prefix_path": str(result_dir / "sampler_sequence_prefix.csv"),
+        },
         "runtime_out": str(args.out),
         "selected_checkpoint": str(args.out / "selected.pt"),
         "shared_selected_checkpoint": str(shared_selected if shared_selected_written else ""),
         **parent_receipt,
     }
     write_csv(args.out / "loss_curve.csv", losses)
+    write_csv(args.out / "sampler_trace.csv", sampler_trace_rows)
     write_json(args.out / "stage_summary.json", summary)
     write_json(args.out / "validation_events.json", validations)
     write_csv(result_dir / "training_adequacy.csv", [summary])
     write_csv(result_dir / "metrics_summary.csv", validations)
+    write_csv(result_dir / "sampler_counts.csv", [{"label": key, "observed": sampler_counts[key], "expected": expected_sampler_counts[key]} for key in ("E", "S", "R")])
+    write_csv(result_dir / "sampler_sequence_prefix.csv", sampler_prefix_rows)
+    write_json(result_dir / "sampler_sequence_receipt.json", summary["sampler_contract"])
     write_json(result_dir / "completion.json", summary)
     print(json.dumps(summary, indent=2, sort_keys=True))
     return 0 if passed else 2

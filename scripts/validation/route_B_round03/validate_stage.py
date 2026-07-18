@@ -6,6 +6,11 @@ from __future__ import annotations
 import argparse
 import json
 from pathlib import Path
+import sys
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[3]))
+
+from scripts.route_B_round03.runtime_common import expected_frozen_sampler_counts  # noqa: E402
 
 
 TOKENS = {
@@ -45,6 +50,27 @@ def main() -> int:
             errors.append("train_loop_seconds_under_required")
         if payload.get("validation_events", 0) < payload.get("required_validation_events", 10**12):
             errors.append("validation_events_under_required")
+        if args.stage == "evidence_warmup":
+            for name in ("sampler_counts.csv", "sampler_sequence_prefix.csv", "sampler_sequence_receipt.json"):
+                if not (args.result_dir / name).is_file():
+                    errors.append(f"missing_sampler_evidence:{name}")
+            counts = payload.get("sampler_counts", {})
+            expected = payload.get("expected_sampler_counts") or expected_frozen_sampler_counts(int(payload.get("optimizer_steps", 0)))
+            if counts != expected:
+                errors.append("frozen_sampler_counts_mismatch")
+            contract = payload.get("sampler_contract", {})
+            if contract.get("draw_cycle") != ["E", "E", "S", "R"]:
+                errors.append("frozen_sampler_bad_draw_cycle")
+            if contract.get("philox_seed") != 26071821:
+                errors.append("frozen_sampler_bad_seed")
+            if contract.get("rng") != "numpy.random.Philox":
+                errors.append("frozen_sampler_bad_rng")
+            if contract.get("with_replacement") is not True:
+                errors.append("frozen_sampler_not_with_replacement")
+            if int(contract.get("cycle_mismatch_count", -1)) != 0:
+                errors.append("frozen_sampler_sequence_mismatch")
+            if not contract.get("trace_sha256"):
+                errors.append("frozen_sampler_missing_trace_sha256")
     status = "PASS" if not errors else "FAIL"
     print(json.dumps({"status": status, "errors": errors, "completion_token": payload.get("completion_token")}, indent=2, sort_keys=True))
     return 1 if args.strict and errors else 0

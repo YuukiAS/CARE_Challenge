@@ -16,6 +16,9 @@ FAILURE_KEYS = {
     "monitor_packet_completion": "ROUTE_B_ROUND03_MONITOR_PACKET_IS_NOT_COMPLETION",
     "bare_python_wrapper": "ROUTE_B_ROUND03_BARE_PYTHON_WRAPPER",
     "zero_myops_effect_plus_cine_gain": "ROUTE_B_ROUND03_ZERO_MYOPS_EFFECT_PLUS_CINE_GAIN",
+    "cycle_primary_manifest_sampler": "ROUTE_B_ROUND03_B3_SAMPLER_NOT_FROZEN_EESR",
+    "weak_all_attempt_accounting": "ROUTE_B_ROUND03_B10_WEAK_ALL_ATTEMPT_ACCOUNTING",
+    "stale_packet_git_head": "ROUTE_B_ROUND03_B10_STALE_PACKET_GIT_HEAD",
 }
 
 

@@ -2,6 +2,18 @@
   "status": "PASS",
   "validator_rows": [
     {
+      "command": "git diff --check",
+      "exit_code": 0,
+      "stderr_tail": "",
+      "stdout_tail": ""
+    },
+    {
+      "command": "/users/a/e/aereinh/CARE/envs/env_CARE/bin/python scripts/architecture/validate_care_architecture_wiki.py --strict",
+      "exit_code": 0,
+      "stderr_tail": "",
+      "stdout_tail": "care architecture wiki validation passed\n"
+    },
+    {
       "command": "/users/a/e/aereinh/CARE/envs/env_CARE/bin/python scripts/validation/route_B_round03/validate_packet.py --strict --require-all-attempt-accounting results/route_B/round03/executors/B10",
       "exit_code": 0,
       "stderr_tail": "",

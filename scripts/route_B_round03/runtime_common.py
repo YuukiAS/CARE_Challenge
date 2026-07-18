@@ -130,6 +130,7 @@ class MyoPSPatchCache:
         self.rows = read_json(manifest_path)["cases"]
         self.patch_size = patch_size
         self._cache: dict[str, tuple[torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor]] = {}
+        self._case_index = {str(row["case_id"]): idx for idx, row in enumerate(self.rows)}
 
     def __len__(self) -> int:
         return len(self.rows)
@@ -169,6 +170,49 @@ class MyoPSPatchCache:
         avail = torch.tensor(availability, dtype=torch.float32)
         self._cache[cache_key] = (x, avail, label, anchor)
         return x.clone(), avail.clone(), label.clone(), anchor.clone(), case_id
+
+    def get_case(self, case_id: str, seed: int) -> tuple[torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor, str]:
+        if case_id not in self._case_index:
+            raise KeyError(f"case {case_id} is absent from the frozen MyoPS manifest")
+        return self.get(self._case_index[case_id], seed=seed)
+
+
+class FrozenMyoPSSampler:
+    """Frozen Route B Round03 sampler: E,E,S,R with Philox replacement draws."""
+
+    def __init__(self, strata_path: Path) -> None:
+        payload = read_json(strata_path)
+        self.strata_path = strata_path
+        self.draw_cycle = tuple(str(v) for v in payload.get("draw_cycle", []))
+        self.seed = int(payload.get("philox_seed", 26071821))
+        self.strata = {
+            key: tuple(str(case_id) for case_id in payload.get("strata", {}).get(key, []))
+            for key in ("E", "S", "R")
+        }
+        if self.draw_cycle != ("E", "E", "S", "R"):
+            raise ValueError(f"Route B B3 sampler draw_cycle must be E,E,S,R, got {self.draw_cycle}")
+        for key in self.draw_cycle:
+            if not self.strata.get(key):
+                raise ValueError(f"Route B B3 sampler stratum {key} is empty")
+        self._rng = np.random.Generator(np.random.Philox(self.seed))
+
+    def draw(self, step: int) -> tuple[str, str, int]:
+        expected = self.draw_cycle[(step - 1) % len(self.draw_cycle)]
+        cases = self.strata[expected]
+        index = int(self._rng.integers(0, len(cases), endpoint=False))
+        return expected, cases[index], index
+
+
+def expected_frozen_sampler_counts(steps: int) -> dict[str, int]:
+    full, rem = divmod(int(steps), 4)
+    counts = {"E": full * 2, "S": full, "R": full}
+    if rem >= 1:
+        counts["E"] += 1
+    if rem >= 2:
+        counts["E"] += 1
+    if rem >= 3:
+        counts["S"] += 1
+    return counts
 
 
 def dice(pred: torch.Tensor, target: torch.Tensor, label: int) -> float:

@@ -39,6 +39,15 @@ def completion(stage: str) -> dict[str, Any]:
     return payload
 
 
+def ledger_job_ids() -> list[str]:
+    ledger = ROUND_ROOT / "controller_ledger.csv"
+    if not ledger.is_file():
+        return []
+    with ledger.open("r", encoding="utf-8", newline="") as handle:
+        rows = list(csv.DictReader(handle))
+    return sorted({str(row.get("job_id", "")).strip() for row in rows if str(row.get("job_id", "")).strip()})
+
+
 def early_gate_failure_packet(stages: list[dict[str, Any]]) -> dict[str, Any]:
     stage_order = {f"B{i}": i for i in range(0, 10)}
     existing = [row for row in stages if Path(row["path"]).is_file()]
@@ -100,18 +109,35 @@ def write_packet(packet: dict[str, Any], adequacy_rows: list[dict[str, Any]]) ->
     (B10_ROOT / "mapper_report_final.md").write_text("# Route B Round03 Mapper Report Final\n\nroute_promotion_decision: NOT_REVIEWED\nroute_negative_decision: NOT_REVIEWED\nscientific_resolution_status: AWAITING_REVIEW\n", encoding="utf-8")
     write_json(B10_ROOT / "route_local_architecture_fingerprint.json", {"git_head": packet["git_head"], "stages": [f"B{i}" for i in range(0, 10)]})
     negative_lines = ""
+    evidence_lines = ""
     if packet.get("terminal_negative_packet"):
+        b3_completion = read_json(ROUND_ROOT / "executors/B3/completion.json")
+        sampler = b3_completion.get("sampler_contract", {})
         negative_lines = (
             "\nterminal_negative_packet: true\n"
             f"blocked_at_stage: {packet.get('blocked_at_stage')}\n"
             f"blocked_completion_token: {packet.get('blocked_completion_token')}\n"
             f"missing_stage_packets_justification: {packet.get('missing_stage_packets_justification')}\n"
         )
+        evidence_lines = (
+            "\n## Repaired B3 Evidence\n\n"
+            f"- Slurm job: `59490811` (`htzhulab`), terminal `FAILED` with exit `2:0` after scientific gate failure.\n"
+            f"- Runtime output: `{b3_completion.get('runtime_out', '')}`.\n"
+            f"- Optimizer/time/validation: `{b3_completion.get('optimizer_steps')}` steps, "
+            f"`{b3_completion.get('train_loop_seconds')}` seconds, `{b3_completion.get('validation_events')}` validation events.\n"
+            f"- Frozen sampler: `{sampler.get('draw_cycle')}`, `{sampler.get('rng')}`, seed `{sampler.get('philox_seed')}`, "
+            f"cycle mismatches `{sampler.get('cycle_mismatch_count')}`.\n"
+            "- Sampler evidence: `round03/executors/B3/sampler_counts.csv`, "
+            "`round03/executors/B3/sampler_sequence_prefix.csv`, "
+            "`round03/executors/B3/sampler_sequence_receipt.json`.\n"
+            "- B10 validator evidence is in `round03/executors/B10/validator_packet_report.json` and "
+            "`round03/executors/B10/finalizer_state.json`.\n"
+        )
     (RESULT_ROOT / "completion_check.md").write_text(f"# Route B Round03 Completion Check\n\nCompletion token: `{token}`\n\nstatus: `{status}`\n{negative_lines}", encoding="utf-8")
-    (RESULT_ROOT / "result.md").write_text(f"# Route B Round03 Controller Result\n\nFinal controller token: `{token}`\n{negative_lines}\nroute_promotion_decision: NOT_REVIEWED\nroute_negative_decision: NOT_REVIEWED\nscientific_resolution_status: AWAITING_REVIEW\n", encoding="utf-8")
-    (RESULT_ROOT / "controller_report.md").write_text(f"# Route B Round03 Controller Report\n\ncontroller_run_status: {status}\noperational_completion_status: {token}\n{negative_lines}\nroute_promotion_decision: NOT_REVIEWED\nroute_negative_decision: NOT_REVIEWED\nscientific_resolution_status: AWAITING_REVIEW\ngit_push_decision: SKIP_PUSH\n", encoding="utf-8")
-    (RESULT_ROOT / "review_request.md").write_text("# Route B Round03 Review Request\n\nIndependent read-only reviewer handoff requested. Controller did not write review.md.\n", encoding="utf-8")
-    (RESULT_ROOT / "MANIFEST.md").write_text("# Route B Round03 Manifest\n\n- `completion_check.md`\n- `result.md`\n- `controller_report.md`\n- `review_request.md`\n- `round03/executors/B10/finalizer_state.json`\n", encoding="utf-8")
+    (RESULT_ROOT / "result.md").write_text(f"# Route B Round03 Controller Result\n\nFinal controller token: `{token}`\n{negative_lines}{evidence_lines}\nroute_promotion_decision: NOT_REVIEWED\nroute_negative_decision: NOT_REVIEWED\nscientific_resolution_status: AWAITING_REVIEW\n", encoding="utf-8")
+    (RESULT_ROOT / "controller_report.md").write_text(f"# Route B Round03 Controller Report\n\ncontroller_run_status: {status}\noperational_completion_status: {token}\n{negative_lines}{evidence_lines}\nroute_promotion_decision: NOT_REVIEWED\nroute_negative_decision: NOT_REVIEWED\nscientific_resolution_status: AWAITING_REVIEW\ngit_push_decision: SKIP_PUSH\n", encoding="utf-8")
+    (RESULT_ROOT / "review_request.md").write_text(f"# Route B Round03 Review Request\n\nIndependent read-only reviewer handoff requested. Controller did not write review.md.\n\nReview target evidence:\n\n- `round03/executors/B3/completion.json`\n- `round03/executors/B3/sampler_counts.csv`\n- `round03/executors/B3/sampler_sequence_prefix.csv`\n- `round03/executors/B3/sampler_sequence_receipt.json`\n- `round03/executors/B10/finalizer_state.json`\n- `round03/executors/B10/routing_ledger.csv`\n- `round03/executors/B10/validator_packet_report.json`\n\nController token: `{token}`\n", encoding="utf-8")
+    (RESULT_ROOT / "MANIFEST.md").write_text("# Route B Round03 Manifest\n\n- `completion_check.md`\n- `result.md`\n- `controller_report.md`\n- `review_request.md`\n- `round03/executors/B3/completion.json`\n- `round03/executors/B3/sampler_counts.csv`\n- `round03/executors/B3/sampler_sequence_prefix.csv`\n- `round03/executors/B3/sampler_sequence_receipt.json`\n- `round03/executors/B10/finalizer_state.json`\n- `round03/executors/B10/routing_ledger.csv`\n- `round03/executors/B10/validator_packet_report.json`\n", encoding="utf-8")
 
 
 def main() -> int:
@@ -122,6 +148,12 @@ def main() -> int:
     parser.add_argument("--allow-early-gate-failure", action="store_true")
     parser.add_argument("--validator-command", action="append", default=[])
     args = parser.parse_args()
+    if not args.validator_command:
+        args.validator_command = [
+            "git diff --check",
+            "/users/a/e/aereinh/CARE/envs/env_CARE/bin/python scripts/architecture/validate_care_architecture_wiki.py --strict",
+            "/users/a/e/aereinh/CARE/envs/env_CARE/bin/python scripts/validation/route_B_round03/validate_packet.py --strict --require-all-attempt-accounting results/route_B/round03/executors/B10",
+        ]
     B10_ROOT.mkdir(parents=True, exist_ok=True)
     stages = [completion(f"B{i}") for i in range(0, 10)]
     missing = [row["stage_id"] for row in stages if not Path(row["path"]).is_file()]
@@ -152,6 +184,13 @@ def main() -> int:
         "status": status,
         "completion_token": token,
         "git_head": git(["rev-parse", "HEAD"]),
+        "git_head_binding_note": "Source HEAD used for aggregation before the local packet commit; review target commit is reported in controller handoff after commit.",
+        "finalizer_dependency_coverage": {
+            "dependency": "afterany_all_started_attempts",
+            "covered_job_ids": ledger_job_ids(),
+            "ledger_path": str(ROUND_ROOT / "controller_ledger.csv"),
+            "routing_ledger_path": str(B10_ROOT / "routing_ledger.csv"),
+        },
         "missing_stage_packets": missing,
         "nonpass_stage_packets": [{"stage": row["stage_id"], "token": row.get("completion_token"), "status": row.get("status")} for row in nonpass],
         "validator_rows": validator_rows,
@@ -177,7 +216,6 @@ def main() -> int:
         validator_rows.append({"command": command, "exit_code": proc.returncode, "stdout_tail": proc.stdout[-2000:], "stderr_tail": proc.stderr[-2000:]})
         if proc.returncode != 0:
             ready = False
-    if validator_rows:
         token = TOKEN if ready else "ROUTE_B_ROUND03_B10_PACKET_INCONSISTENT"
         status = "PASS" if ready else "FAIL"
         packet["status"] = status
