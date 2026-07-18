@@ -71,15 +71,16 @@ Critic-handoff blob: e444320bdb6bb04007a937d5728892f7b5ce9d08
 ### Route C — M10 forensic evidence and Cine fidelity
 
 ```text
-route head: 1a019100f3379104b00e3d2e49a3c78a2fbfe575
+route head: d8dddfad9dbbe9089f12f452ea9c4ab65aabf633
 contract blob: 0f04a06dce5ebaaaa0e0f84ce317b88123fd1a26
-executor-plan blob: 9b5d0bd369dd95d926337ef2d8c315e7fdbfb982
+executor-plan blob: b521620e5b93ce5974882df8bad745b17a3968f9
 evidence-mapping blob: 2b5a068ee807c5f622dcd5b1732fdc05e144b960
 evidence-mapping required row count: 37
-critic-request blob: a291cc4a93c557623a019b136dc588f68731359f
-planner-audit blob: 320b87fbf7e6f5352561823eaf671ab15be71a56
+critic-request blob: 5670bde5b2c7da12a3b2a89d6c98677119ca89b7
+planner-audit blob: 753398354cd65f45cb96f2ccd2636553be755cb6
+R3-finalizer prompt blob: bc0576e09bb5998b272487fe002c39030c862b83
 round03 critic-review blob: 6636b29426ff3823177fa59555e09b13281cfa38
-Critic-handoff blob: 19fbddc2c19733fde06a084c804f65f735aa01c1
+Critic-handoff blob: 73b5bbd5e8519ce34c83b5114ce0356c3ca75b43
 ```
 
 Any later route head or bound blob change makes the corresponding Critic handoff stale and requires a new Planner binding.
@@ -134,7 +135,11 @@ Route C executor-plan validator: PASS_EXIT_0
 Route C PyYAML parse: PASS_EXECUTORS_5
 Route C evidence mapping parse: PASS_ROWS_37
 Route C git diff --check: PASS_EXIT_0
-Route C partition/race/evidence-mapping static check: PASS_EXIT_0
+Route C partition/race/evidence/static finalizer mapper-command check: PASS_EXIT_0
+Route C mapper command help: PASS_EXIT_0_FOR_VALIDATE_AND_GENERATE_ARCHITECTURE_ENTRYPOINTS
+Route C R3 mapper/finalizer chain static check: PASS_EXIT_0
+Route C care_mapper.py absent from executable commands: PASS_EXIT_0
+Route C finalizer not success-only after runtime command: PASS_EXIT_0
 ```
 
 These receipts are not Controller authorization. They allow fast independent Critic review of the current repair deltas and inherited hardening gates. Any later route head/blob mismatch, unavailable check, or nonzero re-run requires the route-specific `PLANNING_NEEDS_REVISION` token. Controller start remains forbidden until the corresponding Critic writes the exact READY token for the bound head.

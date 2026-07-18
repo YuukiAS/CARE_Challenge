@@ -5,24 +5,26 @@ date: 2026-07-18
 role: independent_planning_critic_handoff
 status: CURRENT_CRITIC_HANDOFF_READY_FOR_FAST_RECEIPT_REVIEW
 reviewed_branch: route_C
-required_route_head: 1a019100f3379104b00e3d2e49a3c78a2fbfe575
+required_route_head: d8dddfad9dbbe9089f12f452ea9c4ab65aabf633
 contract_path: prompts/routes/route_C.md
 required_contract_blob: 0f04a06dce5ebaaaa0e0f84ce317b88123fd1a26
 executor_plan_path: prompts/routes/route_C_executor_plan.yaml
-required_executor_plan_blob: 9b5d0bd369dd95d926337ef2d8c315e7fdbfb982
+required_executor_plan_blob: b521620e5b93ce5974882df8bad745b17a3968f9
 evidence_mapping_path: prompts/routes/route_C_round03_evidence_mapping.yaml
 required_evidence_mapping_blob: 2b5a068ee807c5f622dcd5b1732fdc05e144b960
 required_evidence_mapping_row_count: 37
 critic_request_path: prompts/routes/route_C_critic_request.md
-required_critic_request_blob: a291cc4a93c557623a019b136dc588f68731359f
+required_critic_request_blob: 5670bde5b2c7da12a3b2a89d6c98677119ca89b7
 planner_audit_path: prompts/routes/route_C_planner_audit.md
-required_planner_audit_blob: 320b87fbf7e6f5352561823eaf671ab15be71a56
+required_planner_audit_blob: 753398354cd65f45cb96f2ccd2636553be755cb6
+r3_finalizer_prompt_path: prompts/routes/executors/route_C_round03/R3_frozen_cine_runtime_finalizer.md
+required_r3_finalizer_prompt_blob: bc0576e09bb5998b272487fe002c39030c862b83
 critic_output_path: prompts/routes/route_C_round03_critic_review.md
 allowed_pass_token: ROUTE_C_ROUND03_PLANNING_READY_FOR_CONTROLLER
 allowed_revision_token: ROUTE_C_ROUND03_PLANNING_NEEDS_REVISION
 validator_not_run_by_planner: true
 coordinator_local_receipts_recorded: true
-coordinator_repair_scope: server_unavailable_receipts_only
+coordinator_repair_scope: server_unavailable_receipts_and_r3_mapper_finalizer_chain
 controller_start_authorized_before_ready: false
 validation_upload_authorized: false
 route_promotion_authorized: false
@@ -31,6 +33,8 @@ cross_route_merge_authorized: false
 hosted_metric_claim_authorized: false
 final_scientific_decision_authorized: false
 coordinator_partition_race_evidence_mapping_static_check: PASS_EXIT_0_COORDINATOR_20260718
+coordinator_r3_mapper_final_command_check: PASS_EXIT_0_COORDINATOR_20260718
+coordinator_r3_finalizer_chain_check: PASS_EXIT_0_COORDINATOR_20260718
 ---
 
 # Route C Round03 independent Planning Critic handoff
@@ -40,12 +44,13 @@ coordinator_partition_race_evidence_mapping_static_check: PASS_EXIT_0_COORDINATO
 Re-fetch and verify exactly:
 
 ```text
-route_C head: 1a019100f3379104b00e3d2e49a3c78a2fbfe575
+route_C head: d8dddfad9dbbe9089f12f452ea9c4ab65aabf633
 route_C.md blob: 0f04a06dce5ebaaaa0e0f84ce317b88123fd1a26
-route_C_executor_plan.yaml blob: 9b5d0bd369dd95d926337ef2d8c315e7fdbfb982
+route_C_executor_plan.yaml blob: b521620e5b93ce5974882df8bad745b17a3968f9
 route_C_round03_evidence_mapping.yaml blob: 2b5a068ee807c5f622dcd5b1732fdc05e144b960
-route_C_critic_request.md blob: a291cc4a93c557623a019b136dc588f68731359f
-route_C_planner_audit.md blob: 320b87fbf7e6f5352561823eaf671ab15be71a56
+route_C_critic_request.md blob: 5670bde5b2c7da12a3b2a89d6c98677119ca89b7
+route_C_planner_audit.md blob: 753398354cd65f45cb96f2ccd2636553be755cb6
+route_C R3_frozen_cine_runtime_finalizer.md blob: bc0576e09bb5998b272487fe002c39030c862b83
 ```
 
 Any mismatch makes this handoff stale and requires a new Planner binding.
@@ -76,12 +81,17 @@ git diff --check
 
 Coordinator evidence-mapping check: exit 0. PyYAML parsed `executors=5` and `route_C_round03_evidence_mapping.yaml` `rows=37`; `git diff --check` exit 0. This removes only the server-unavailable validation blocker and does not change the Route C scientific contract. The Critic should review the recorded receipts and inherited hardening gates; any new nonzero executable check still requires `ROUTE_C_ROUND03_PLANNING_NEEDS_REVISION`.
 
-Coordinator partition/race/evidence-mapping static check: `PASS_EXIT_0`. Receipt from `/users/a/e/aereinh/CARE_worktrees/route_C`: `PASS route_C critic_equivalent_partition_race_evidence_mapping_static_check slurm_executors=4 prompt_paths=5 mapping_rows=37`. This check verified legal prompt paths, three-partition declarations, preflight receipt locations, isolated attempt roots, atomic locks, loser zero credit, pending-loser cancellation, retry lineage, all-attempt finalizer coverage, and actual evidence mapping rows `C_MAP_001_*` through `C_MAP_037_*` with required fields, producer, validator and reviewer checks.
+Coordinator partition/race/evidence/static finalizer mapper-command check: `PASS_EXIT_0`. Receipt from `/users/a/e/aereinh/CARE_worktrees/route_C`: `PASS route_C critic_equivalent_partition_race_evidence_static_finalizer_mapper_command_check slurm_executors=4 prompt_paths=5 mapping_rows=37 mapper_command=validate_care_architecture_wiki.py finalizer_chain=afterany_all_started_attempts`. This check verified legal prompt paths, three-partition declarations, preflight receipt locations, isolated attempt roots, atomic locks, loser zero credit, pending-loser cancellation, retry lineage, all-attempt finalizer coverage, actual evidence mapping rows `C_MAP_001_*` through `C_MAP_037_*` with required fields, producer, validator and reviewer checks, replacement mapper command existence, absence of `scripts/architecture/care_mapper.py` from executable command fields, no success-only `run_frozen_cine_runtime.py && submit_care_dependency_finalizer.py` chain, afterany coverage over every started attempt, complete terminal class coverage, and the no-start local accounting path.
+
+
+Coordinator R3 finalizer-chain repair: `PASS_EXIT_0`. R3 `exact_command` is no longer a runtime-success `&&` chain. The plan separates `runtime_submission_command`, `finalizer_submission_command`, and `local_no_start_finalizer_command`; finalizer submission uses `submit_care_dependency_finalizer.py` with `--required-job-id ${ROUTE_C_R3_ALL_STARTED_ATTEMPT_IDS}` and `afterany`, while no-start local startup/preflight failure uses `care_milestone_finalizer.py --stage all` to write a terminal non-ready packet. Terminal classes covered: success, startup failure, runtime failure, timeout, preemption, adequate-negative registration evidence, external resource blocker, cancelled pending race loser, retry replacement, validator failure, and evidence missing.
+
+Coordinator R3 mapper-final-command repair: `PASS_EXIT_0`. The R3 terminal finalizer no longer uses nonexistent `scripts/architecture/care_mapper.py` as an executable command. Its `--mapper-final-command` is now `/users/a/e/aereinh/CARE/envs/env_CARE/bin/python scripts/architecture/validate_care_architecture_wiki.py --strict`. The replacement path exists and `validate_care_architecture_wiki.py --help` exited 0; the related care-mapper generator entrypoint `generate_care_architecture_wiki.py --help` also exited 0.
 
 
 ## Fast receipt review scope
 
-This handoff supersedes the previous Round03 handoff only to bind coordinator receipts. Route C science is unchanged. The Critic should review the existing Route C contract plus the local receipt diff and inherited hardening requirements, and should not reject solely because Planner-side `/users` server validation was unavailable.
+This handoff supersedes the previous Round03 handoff only to bind coordinator receipts plus the R3 mapper-final-command and finalizer-chain executable repair. Route C science is unchanged. The Critic should review the existing Route C contract plus this narrow repair diff and inherited hardening requirements, and should not reject solely because Planner-side `/users` server validation was unavailable.
 
 ## Scientific review boundary
 
