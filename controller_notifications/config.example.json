@@ -1,0 +1,60 @@
+{
+  "enabled_routes": ["route_B", "route_C"],
+  "poll_seconds": 60,
+  "repo_root": "/users/a/e/aereinh/CARE",
+  "codex_runtime_root": "/users/a/e/aereinh/.codex-runtime-homes",
+  "codex_home_root": "/users/a/e/aereinh/.codex-homes/CARE",
+  "state_path": "controller_notifications/state/notified_goals.json",
+  "email": {
+    "from": "humc2013@gmail.com",
+    "to": ["1155246312@link.cuhk.edu.hk"],
+    "smtp_host": "smtp.gmail.com",
+    "smtp_port": 587,
+    "starttls": true,
+    "subject_prefix": "[CARE]"
+  },
+  "routes": {
+    "main": {
+      "label": "Main",
+      "tmux_target": "",
+      "runtime_home_candidates": ["CARE__codex-controller"],
+      "packet_paths": []
+    },
+    "route_A": {
+      "label": "Route A",
+      "tmux_target": "care_route_A:RouteA-Controller",
+      "runtime_home_candidates": [
+        "route_A_tmux_care_route_A__care_route_A",
+        "route_A_tmux_care_route_A_controller__care_route_A_controller"
+      ],
+      "packet_paths": [
+        "/users/a/e/aereinh/CARE_worktrees/route_A/results/route_A/controller_report.md",
+        "/users/a/e/aereinh/CARE_worktrees/route_A/results/route_A/completion_check.md"
+      ]
+    },
+    "route_B": {
+      "label": "Route B",
+      "tmux_target": "care_route_B:RouteB-Controller",
+      "runtime_home_candidates": [
+        "route_B_tmux_care_route_B__care_route_B",
+        "route_B_tmux_care_route_B_controller__care_route_B_controller"
+      ],
+      "packet_paths": [
+        "/users/a/e/aereinh/CARE_worktrees/route_B/results/route_B/controller_report.md",
+        "/users/a/e/aereinh/CARE_worktrees/route_B/results/route_B/completion_check.md"
+      ]
+    },
+    "route_C": {
+      "label": "Route C",
+      "tmux_target": "care_route_C:RouteC-Controller",
+      "runtime_home_candidates": [
+        "route_C_tmux_care_route_C__care_route_C",
+        "route_C_tmux_care_route_C_controller__care_route_C_controller"
+      ],
+      "packet_paths": [
+        "/users/a/e/aereinh/CARE_worktrees/route_C/results/route_C/controller_report.md",
+        "/users/a/e/aereinh/CARE_worktrees/route_C/results/route_C/completion_check.md"
+      ]
+    }
+  }
+}

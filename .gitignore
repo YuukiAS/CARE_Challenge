@@ -101,6 +101,8 @@ ENV/
 env_nnunet.sh
 *.pem
 secrets/
+controller_notifications/logs/
+controller_notifications/state/
 
 # ------------------------------------------------------------------------------
 # Jupyter
