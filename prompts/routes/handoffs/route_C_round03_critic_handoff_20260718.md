@@ -5,7 +5,7 @@ date: 2026-07-18
 role: independent_planning_critic_handoff
 status: CURRENT_CRITIC_HANDOFF_PENDING_EXECUTABLE_VALIDATION
 reviewed_branch: route_C
-required_route_head: 8c2f4fef4f25805e8eac1a44628045bbb2875a5a
+required_route_head: 2f0a9403b220c10e7b75cea465c4b54a8da899c5
 contract_path: prompts/routes/route_C.md
 required_contract_blob: 0f04a06dce5ebaaaa0e0f84ce317b88123fd1a26
 executor_plan_path: prompts/routes/route_C_executor_plan.yaml
@@ -37,7 +37,7 @@ final_scientific_decision_authorized: false
 Re-fetch and verify exactly:
 
 ```text
-route_C head: 8c2f4fef4f25805e8eac1a44628045bbb2875a5a
+route_C head: 2f0a9403b220c10e7b75cea465c4b54a8da899c5
 route_C.md blob: 0f04a06dce5ebaaaa0e0f84ce317b88123fd1a26
 route_C_executor_plan.yaml blob: 9b5d0bd369dd95d926337ef2d8c315e7fdbfb982
 route_C_round03_evidence_mapping.yaml blob: 2b5a068ee807c5f622dcd5b1732fdc05e144b960

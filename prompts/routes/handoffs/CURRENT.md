@@ -46,7 +46,7 @@ current_controller_authorizations: 0
 ### Route A — dormant fallback
 
 ```text
-route head: a91ba0eef8dff4600e16331aea99d043e1f4339b
+route head: fae8a732bbf625db367e0b68c04f1490d0c97be3
 contract blob: 370c25de0e35dbd5c854bbdfb81589ee8c0a4368
 executor-plan blob: c681d761cfa145d68ba906f5eb33607843af8b80
 critic-request blob: 227c8f69f69e2b07b72f5df5f3323b2f03136bd1
@@ -58,25 +58,25 @@ Route A has no current Round03 Critic, Controller, training or Slurm authority. 
 ### Route B — full SRR-v3
 
 ```text
-route head: 0d7e0d295ca94f23c39767506bd711890ae6022e
+route head: a282007ecab44274699ab49a389ba107ac04d5b2
 contract blob: 2d82b8bb5d05e521adb87281a663fd7fe38582c6
 executor-plan blob: 83494fbf40df7b79c26c3be3c00d51e23830208c
 critic-request blob: 50fba61a5512e4ba7b124fd2355ca84c2a688ed8
 planner-audit blob: 3a0d422ed81695f77750f59ebfdca38700c69516
-Critic-handoff blob: 20b63e09aba621a05d9a3d175071bca4c41ddde4
+Critic-handoff blob: cfe69bbd597d6cdd80f3b27bc42f577f8dce122a
 ```
 
 ### Route C — M10 forensic evidence and Cine fidelity
 
 ```text
-route head: 8c2f4fef4f25805e8eac1a44628045bbb2875a5a
+route head: 2f0a9403b220c10e7b75cea465c4b54a8da899c5
 contract blob: 0f04a06dce5ebaaaa0e0f84ce317b88123fd1a26
 executor-plan blob: 9b5d0bd369dd95d926337ef2d8c315e7fdbfb982
 evidence-mapping blob: 2b5a068ee807c5f622dcd5b1732fdc05e144b960
 evidence-mapping required row count: 37
 critic-request blob: 0beb1ef72cc8fb1e712be76a57c11b0fdc04043e
 planner-audit blob: f703decf4b8480da467f7f3387a273fe3b66d3eb
-Critic-handoff blob: 32c67840e9c8f73c6af280534b126e8012de5a0d
+Critic-handoff blob: 641509ed7a2dbb188109ea594199a6e2a04e2893
 ```
 
 Any later route head or bound blob change makes the corresponding Critic handoff stale and requires a new Planner binding.
