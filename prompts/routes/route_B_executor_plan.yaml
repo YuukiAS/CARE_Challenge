@@ -5,8 +5,7 @@ date: '2026-07-18'
 task_key: route_B_round03_full_srr_v3
 status: DRAFT_FOR_ROUND03_CRITIC_REVIEW
 branch: route_B
-planner_main_base_commit: f15cbcfa7b7f9f699d33abcf4f3ac0c359f06c22
-remote_route_base_commit: 4c2f2ec146f5cc7a026cf4d5369c79b863f88ad2
+round03_current_binding_source: prompts/routes/handoffs/CURRENT.md
 contract_path: prompts/routes/route_B.md
 critic_request_path: prompts/routes/route_B_critic_request.md
 planner_audit_path: prompts/routes/route_B_planner_audit.md
@@ -1038,22 +1037,31 @@ executors:
   merge_order: 110
   required_completion_file: results/route_B/completion_check.md
   required_completion_token: ROUTE_B_ROUND03_TERMINAL_PACKET_READY_FOR_REVIEW
-  depends_on:
-  - B9_TEMPORAL_AND_CINE_EVIDENCE
+  depends_on: []
+  independent_of_upstream_success: true
+  independent_dependency_reason: terminal finalizer is controller-scheduled by afterany over every started attempt and every early terminal gate, not gated by B9 success
   can_run_parallel: false
   blocking: true
   slurm_required: true
   exact_inputs:
-  - all executor merge receipts
-  - every scheduler attempt ID
-  - all mapped result files
+  - controller ledger with every started attempt ID from B0-B9
+  - every executor merge receipt that exists before terminal state
+  - every terminal early gate receipt, including implementation failure and adequate negative
+  - every scheduler attempt ID, including winners, failed attempts, timed-out attempts, preempted attempts, cancelled pending losers, and retry replacements
+  - all mapped result files produced before terminal state
   exact_command: /users/a/e/aereinh/CARE/envs/env_CARE/bin/python scripts/ops/submit_care_dependency_finalizer.py
     --task-key route_B_round03_full_srr_v3 --result-dir results/route_B --stage
-    all --aggregation-command '/users/a/e/aereinh/CARE/envs/env_CARE/bin/python
-    scripts/route_B_round03/aggregate_packet.py --strict' --validator-command '/users/a/e/aereinh/CARE/envs/env_CARE/bin/python
-    scripts/validation/route_B_round03/validate_packet.py --strict' --mapper-final-command
-    '/users/a/e/aereinh/CARE/envs/env_CARE/bin/python scripts/architecture/care_mapper.py
-    --route route_B --final'
+    all --required-job-id '<each-started-attempt-id-from-controller-ledger>'
+    --failed-attempt-job-id '<each-failure-timeout-preemption-or-cancelled-loser-id>'
+    --aggregation-command '/users/a/e/aereinh/CARE/envs/env_CARE/bin/python
+    scripts/route_B_round03/aggregate_packet.py --strict --include-all-started-attempts
+    --allow-terminal-adequate-negative --allow-early-gate-failure' --validator-command
+    '/users/a/e/aereinh/CARE/envs/env_CARE/bin/python scripts/validation/route_B_round03/validate_packet.py
+    --strict --require-all-attempt-accounting' --validator-command '/users/a/e/aereinh/CARE/envs/env_CARE/bin/python
+    scripts/architecture/validate_care_architecture_wiki.py --strict' --validator-command
+    '/users/a/e/aereinh/CARE/envs/env_CARE/bin/python scripts/architecture/generate_care_architecture_wiki.py
+    --check-all' --mapper-final-command '/users/a/e/aereinh/CARE/envs/env_CARE/bin/python
+    scripts/architecture/validate_care_architecture_wiki.py --strict'
   write_scope:
   - results/route_B/round03/executors/B10
   - results/route_B
@@ -1121,9 +1129,21 @@ executors:
     retry_lineage_required: true
     all_attempt_finalizer_coverage_required: true
   routing_race_policy: *B10_routing
-  entry_gate: all prior logical jobs terminal and every attempt present
-  success_condition: afterany accounting aggregation mapper strict validators known-bad
-    heavy-artifact scan git-diff check lightweight commit and reviewer request complete
+  entry_gate: controller terminal accounting trigger exists for any started attempt or any early terminal gate; B10 is not dependent on B9 success
+  terminal_coverage_contract:
+    covers_success: true
+    covers_failure: true
+    covers_timeout: true
+    covers_preemption: true
+    covers_adequate_negative: true
+    covers_early_gate_failure: true
+    covers_cancelled_pending_loser: true
+    covers_retry_replacement: true
+    source_of_truth: results/route_B/round03/controller_ledger.csv
+    finalizer_dependency: afterany over every started Slurm attempt; local deterministic finalizer path when no Slurm attempt was started
+    review_ready_forbidden_when: any started attempt is missing terminal sacct/accounting, aggregation, validator, mapper, or ledger coverage
+  success_condition: afterany all-attempt accounting aggregation mapper strict validators known-bad
+    heavy-artifact scan git-diff check lightweight commit and reviewer request complete for the observed terminal class
   non_ready_tokens:
   - ROUTE_B_ROUND03_B10_NEEDS_MONITOR
   - ROUTE_B_ROUND03_B10_AWAITING_SACCT
@@ -1131,7 +1151,7 @@ executors:
   - ROUTE_B_ROUND03_B10_PACKET_INCONSISTENT
   retry_monitor_rule: finalizer retries accounting only and never reruns science
   failure_fallback: nonterminal accounting remains needs-monitor; semantic validator
-    failure returns revision
+    failure returns revision; early implementation gate failure or faithful adequate negative still runs B10 and produces a reviewable non-candidate packet only after complete all-attempt accounting
   reviewer_input: results/route_B
   next_state: independent_read_only_reviewer
 reviewer_tokens:

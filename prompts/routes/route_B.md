@@ -5,8 +5,7 @@ date: 2026-07-18
 task_key: route_B_round03_full_srr_v3
 route_name: "Route B — active full SRR-v3 construction and evidence"
 branch: route_B
-remote_route_base_commit: f01427e72134d5e5be1bfd51b93bdefdd5f3126c
-planner_main_base_commit: 6ed0a3bac82aa0ee8cb44250da0c2648965c6b42
+round03_current_binding_source: prompts/routes/handoffs/CURRENT.md
 status: DRAFT_FOR_ROUND03_CRITIC_REVIEW
 portfolio_status: ACTIVE_FULL_SRR_V3
 not_a_milestone: true
@@ -359,6 +358,8 @@ Decision checkpoints:
 Strict validators must parse values and exit nonzero on every error. Executable fixtures cover wrong modality order; nnU-Net-only bypass; disconnected retrieval/proposal/refiner/gate; bootstrap/EMA formal memory; OOF leakage; no-T2 edema negatives; fewer than eight positive edema cases; zero positive edema GT; Pattern-SIP alias/no gradient; fake CineMA or wrong weight SHA; unmatched random control; direct velocity displacement; missing seven-step integration; proxy Jacobian; pair-as-case aggregation; unconsumed temporal inputs; `temporal_z`-only or frame0 fallback; zero MyoPS effect plus Cine gain; stale metrics/missing `--force`; local proxy as official metric; selected checkpoint not reloaded; pending/monitor/undertrained/stale receipts; runtime push/review; forbidden authority; inconsistent race hashes; shared race output; missing atomic lock; loser credit; pending loser not cancelled; V100 semantic downscaling; and V100 compatibility without exact-config preflight.
 
 Final Controller packet token is `ROUTE_B_ROUND03_TERMINAL_PACKET_READY_FOR_REVIEW` only after terminal accounting, aggregation, mapper final, strict validator pass, known-bad pass, heavy-artifact scan, and a lightweight local commit. Monitor, awaiting-accounting, undertrained-in-progress, stale, or validator-failed states cannot use it.
+
+B10 is a terminal accounting/finalizer DAG, not a B9-success continuation. The Controller must schedule or run B10 for every terminal class after any attempt has started, including success, failure, timeout, preemption, adequate-negative evidence, early implementation/data/validator gate failure, cancelled pending race loser, and bounded retry replacement. B10 uses `afterany` over all started Slurm attempt IDs from the controller ledger; if no Slurm attempt was started because an early local gate failed, it runs the local deterministic finalizer path. A packet cannot request normal review until every started attempt has terminal accounting, aggregation, mapper/architecture validation, strict validator, known-bad, git-diff and lightweight packet receipts.
 
 The independent reviewer may emit only:
 

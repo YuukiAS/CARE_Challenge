@@ -5,8 +5,7 @@ date: 2026-07-18
 role: planner
 status: DRAFT_FOR_ROUND03_CRITIC_REVIEW
 branch: route_B
-planner_main_base_commit: f15cbcfa7b7f9f699d33abcf4f3ac0c359f06c22
-remote_route_base_commit: 4c2f2ec146f5cc7a026cf4d5369c79b863f88ad2
+round03_current_binding_source: prompts/routes/handoffs/CURRENT.md
 contract_path: prompts/routes/route_B.md
 executor_plan_path: prompts/routes/route_B_executor_plan.yaml
 critic_request_path: prompts/routes/route_B_critic_request.md
@@ -80,3 +79,9 @@ Current main governance, Agent-Flow, handoff gates, anti-laziness protocol, perm
 ## Authority boundary
 
 No Controller, Slurm job, training, runtime review, validation upload, route promotion, M11, cross-route merge, hosted metric claim, or final scientific decision is authorized. The final main handoff binds the final Route B head and blobs; a planning Critic ready token authorizes only the Route B Controller on that exact revision.
+
+## Coordinator unlock repair evidence
+
+This coordinator revision is intentionally narrow. It removes stale ancestry metadata, hardens B10 so terminal finalization covers every started attempt and every success/failure/timeout/preemption/adequate-negative/early-gate terminal class instead of depending on B9 success, and replaces the nonexistent `scripts/architecture/care_mapper.py` reference with existing first-party architecture validator/generator entrypoints. The Critic should review only these repair diffs plus inherited hardening requirements; the Route B scientific contract is otherwise unchanged.
+
+Required coordinator receipts before ready: executor-plan validator exit 0, PyYAML `executors=11`, `git diff --check` exit 0, every B0-B10 prompt path exists, and the bound mapper/architecture command path exists.

@@ -5,7 +5,7 @@ date: 2026-07-18
 role: planner_to_critic
 status: CRITIC_REVIEW_REQUESTED_AFTER_COORDINATOR_VALIDATION
 branch: route_B
-planner_main_base_commit: f15cbcfa7b7f9f699d33abcf4f3ac0c359f06c22
+round03_current_binding_source: prompts/routes/handoffs/CURRENT.md
 contract_path: prompts/routes/route_B.md
 executor_plan_path: prompts/routes/route_B_executor_plan.yaml
 planner_audit_path: prompts/routes/route_B_planner_audit.md
@@ -59,3 +59,9 @@ ROUTE_B_ROUND03_PLANNING_NEEDS_REVISION
 ```
 
 A ready token authorizes only the Route B Controller to start as a Codex goal or goal resume on the exact reviewed commit. It does not authorize validation upload, route promotion, M11, cross-route merge, hosted metric claims, or a final scientific decision.
+
+## Coordinator unlock repair evidence
+
+This coordinator revision is intentionally narrow. It removes stale ancestry metadata, hardens B10 so terminal finalization covers every started attempt and every success/failure/timeout/preemption/adequate-negative/early-gate terminal class instead of depending on B9 success, and replaces the nonexistent `scripts/architecture/care_mapper.py` reference with existing first-party architecture validator/generator entrypoints. The Critic should review only these repair diffs plus inherited hardening requirements; the Route B scientific contract is otherwise unchanged.
+
+Required coordinator receipts before ready: executor-plan validator exit 0, PyYAML `executors=11`, `git diff --check` exit 0, every B0-B10 prompt path exists, and the bound mapper/architecture command path exists.
