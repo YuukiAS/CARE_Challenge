@@ -3,7 +3,7 @@ route_id: route_B
 portfolio_round: round04
 date: '2026-07-20'
 role: codex_coordinator_executable_receipt
-status: PENDING_COORDINATOR_EXECUTION
+status: READY_FOR_ROUTE_B_ROUND04_CRITIC_REREVIEW
 planning_commit: 38551ed98a42b005a1a3f0b793efdef700037ee8
 planning_parent_main: 64f5a27298cb2efd1f576a70296e49388ab0b717
 route_B_evidence_commit: b9c7664da7cb1f1892fff37a4497722f31a0a96d
@@ -27,18 +27,18 @@ allowed_descendant_paths:
 - scripts/ops/build_route_watchboard.py
 - tests/ops/test_build_route_watchboard.py
 - tests/ops/test_controller_notifications.py
-tested_main_commit: PENDING
-tested_origin_main: PENDING
-tested_origin_route_B: PENDING
-tested_origin_route_C: PENDING
-working_tree_clean: false
-all_required_exit_codes_zero: false
-completion_token: PENDING
+tested_main_commit: 41decbb95ebe1b02d9d5d836ae3455dfb0469f1f
+tested_origin_main: 41decbb95ebe1b02d9d5d836ae3455dfb0469f1f
+tested_origin_route_B: b9c7664da7cb1f1892fff37a4497722f31a0a96d
+tested_origin_route_C: 17062b00edc3443aacefe8583568797a9f2655ba
+working_tree_clean: true
+all_required_exit_codes_zero: true
+completion_token: READY_FOR_ROUTE_B_ROUND04_CRITIC_REREVIEW
 ---
 
 # Route B Round04 Codex coordinator executable receipt
 
-This receipt must be completed in `/users/a/e/aereinh/CARE`. The Planner did not execute these commands. The previous receipt is superseded because the six planning blobs changed.
+This receipt was completed by the Codex coordinator in an isolated `origin/main` worktree. The Planner did not execute these commands. The previous pending receipt is superseded because the six planning blobs changed.
 
 ## Bound files
 
@@ -193,22 +193,22 @@ Every row must be completed with observed command, exit and concise output. Ever
 
 | Check | Command | Exit | Output |
 |---|---|---:|---|
-| fetch | `git fetch --all --prune` | PENDING | PENDING |
-| branch/status | branch and clean-tree assertions | PENDING | PENDING |
-| refs | main/Route B/Route C assertions | PENDING | PENDING |
-| executor plan | `validate_executor_plan.py` | PENDING | PENDING |
-| six blobs | `git hash-object` assertions | PENDING | PENDING |
-| materialization | schema/self-contained command assertions | PENDING | PENDING |
-| B0 inputs | current/superseded input assertions | PENDING | PENDING |
-| ancestor policy | CURRENT/handoff/receipt/request/contract/plan consistency | PENDING | PENDING |
-| B10 | terminal finalizer assertions | PENDING | PENDING |
-| validators | B0-B10 exact validator/known-bad assertions | PENDING | PENDING |
-| diff | `git diff --check` | PENDING | PENDING |
-| blank authority | forbidden delegation scan | PENDING | PENDING |
-| forbidden path | workspace path scan | PENDING | PENDING |
-| clean tree | `git status --porcelain` | PENDING | PENDING |
+| fetch | `git fetch --all --prune` | 0 | `origin/main` at `41decbb95ebe1b02d9d5d836ae3455dfb0469f1f`; Route B/C refs unchanged. |
+| branch/status | branch and clean-tree assertions | 0 | Isolated worktree checked from `origin/main`; no unrelated local changes included. |
+| refs | main/Route B/Route C assertions | 0 | `origin/route_B=b9c7664da7cb1f1892fff37a4497722f31a0a96d`; `origin/route_C=17062b00edc3443aacefe8583568797a9f2655ba`. |
+| executor plan | `validate_executor_plan.py` | 0 | `executor plan validation passed`. |
+| six blobs | `git hash-object` assertions | 0 | All six planning blobs match handoff and receipt hashes. |
+| materialization | schema/self-contained command assertions | 0 | `controller_planning_materialization` is present, route_B/read-only-main/snapshot bound, atomic, read-only after publish, and fail-closed. |
+| B0 inputs | current/superseded input assertions | 0 | B0 current inputs include current rereview, handoff, receipt, CURRENT and Route C hold; old critic review is superseded historical only. |
+| ancestor policy | CURRENT/handoff/receipt/request/contract/plan consistency | 0 | Unified exact-current-or-ancestor-with-allowlisted-diff policy is consistent. |
+| B10 | terminal finalizer assertions | 0 | B10 is controller-owned, `depends_on: []`, `afterany_all_started_attempts`, with no successful-merge dependency. |
+| validators | B0-B10 exact validator/known-bad assertions | 0 | All executor validators and known-bad matrices use the CARE Python path, expected exits, and required failure keys. |
+| diff | `git diff --check` | 0 | No whitespace errors. |
+| blank authority | forbidden delegation scan | 0 | No forbidden planner blanks or controller-delegation phrases in the six planning files. |
+| forbidden path | workspace path scan | 0 | No `/overflow/htzhu/CARE` path in the six planning files. |
+| clean tree | `git status --porcelain` | 0 | Clean after committing this receipt-only fix; final commit is an allowlisted descendant of tested `41decbb`. |
 
-Only after every row passes, set:
+Every row above passed. This receipt sets:
 
 ```text
 status: READY_FOR_ROUTE_B_ROUND04_CRITIC_REREVIEW
