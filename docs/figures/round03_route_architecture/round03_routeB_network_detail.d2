@@ -1,0 +1,85 @@
+direction: right
+layout: dagre
+
+# Route B Round03 network detail, six-panel template
+
+classes: {
+  tensor: { style: { fill: "#eef6ff"; stroke: "#245e9c"; stroke-width: 2; font-size: 13 } }
+  verified: { style: { fill: "#e8f6ed"; stroke: "#1f7a3b"; stroke-width: 3; font-size: 13 } }
+  smoke: { style: { fill: "#e9f2ff"; stroke: "#2364aa"; stroke-width: 2; stroke-dash: 6; font-size: 13 } }
+  planned: { style: { fill: "#fff6d8"; stroke: "#b07a00"; stroke-width: 2; stroke-dash: 6; font-size: 13 } }
+  blocked: { style: { fill: "#ffe8e8"; stroke: "#b42318"; stroke-width: 3; font-size: 13 } }
+  stale: { style: { fill: "#f1f1f1"; stroke: "#777777"; stroke-width: 2; stroke-dash: 6; font-size: 13 } }
+  boundary: { style: { fill: "#f3e8ff"; stroke: "#7e22ce"; stroke-width: 2; stroke-dash: 4; font-size: 13 } }
+  panel: { style: { fill: "#fbfbfb"; stroke: "#b8b8b8"; stroke-width: 1; font-size: 14 } }
+}
+
+
+inputs: { label: "1 Inputs"; class: panel; direction: down
+  x: "RouteBRound03MyoPS.forward\nx [B,3,Z,H,W]\n3 modalities | smoke"
+  av: "availability\n[B,3] -> masks\nemb16 + valid16 | verified boundary"
+  anchor: "anchor_logits\n[B,6,Z,H,W]\nsoftmax -> context | smoke"
+  x.class: tensor; av.class: verified; anchor.class: smoke
+  x -> av -> anchor
+}
+enc: { label: "2 Encoder / Trunk"; class: panel; direction: down
+  stem_lge: "LGE stem\nConv3d 1->32 k3\nout [B,32,Z,H,W]"
+  stem_t2: "T2 stem\nConv3d 1->32 k3\nout [B,32,Z,H,W]"
+  stem_c0: "C0 stem\nConv3d 1->32 k3\nout [B,32,Z,H,W]"
+  down: "pyramid down\nConv3d stride2\n32->64->128->256"
+  stem_lge.class: smoke; stem_t2.class: smoke; stem_c0.class: smoke; down.class: smoke
+  stem_lge -> down; stem_t2 -> down; stem_c0 -> down
+}
+route: { label: "3 Routing / Prototype / Proposal"; class: panel; direction: down
+  pair: "pair_project\ncat pair [B,2C,...]\nConv1x1 2C->C"
+  expert: "ResidualExpert x16/scale\nConvGNSiLU ConvGN + skip\nshared/private/pair families"
+  router: "router query\nC+16+8 -> max(8,C/2) -> 16\ninvalid -1e4 + softmax"
+  routed: "weighted sum\n16 experts -> routed [B,C,...]\ninvalid_weight_max checked"
+  proto: "OfflinePrototypeBank\nbase32 -> sim maps\nscar 8/12, edema 8/12"
+  prop: "proposal heads\nscar 36->1 d2\nedema 37->1 d3\nB4 not executed"
+  pair.class: smoke; expert.class: verified; router.class: verified; routed.class: verified; proto.class: smoke; prop.class: planned
+  pair -> expert -> router -> routed -> proto -> prop
+}
+roi: { label: "4 ROI / Refiner / Composition"; class: panel; direction: down
+  concat: "scale fusion\nupsample routed scales\ncat 32+64+128+256=480"
+  anatomy: "anatomy_head\nConv1x1 480->4\nB3 anatomy gate failed"
+  masks: "ROI masks\nproposal sigmoid thresholds\nedema_roi *= T2"
+  refiner: "scar/edema refiners\nResidualExpert32 + Conv1x1\ndelta [B,1,...]"
+  gate: "composition gate\n12->16 GN SiLU ->1 sigmoid"
+  final: "final_logits\nanchor clone + cls5 scar delta\n+ cls4 edema delta\n[B,6,Z,H,W]"
+  concat.class: smoke; anatomy.class: blocked; masks.class: smoke; refiner.class: planned; gate.class: planned; final.class: planned
+  concat -> anatomy -> masks -> refiner -> gate -> final
+}
+cine: { label: "5 CineMA / Registration / Temporal"; class: panel; direction: down
+  ca: "CineMAAdapter smoke\n1->32 decoder, 32->4 logits\n32->16 features + entropy"
+  mr: "MatchedRandomCineMA\nsame arch\nB7 not executed"
+  svf: "SVF registration\n2->16->16->3 velocity\n7-step displacement + warp"
+  temp: "TemporalModel\n35->32 project\nLinear 36->8->8 router\n8 slots, head 32->4"
+  ca.class: smoke; mr.class: planned; svf.class: planned; temp.class: planned
+  ca -> mr -> svf -> temp
+}
+out: { label: "6 Final Output / Evidence"; class: panel; direction: down
+  b2: "B2 smoke\nchanged_logit_l1=0.086838\nCine/register/temporal shape smoke"
+  b3: "B3 formal gate\n43003 steps, 1800.8 s, 22 vals\nanatomy_union_overfit=false"
+  rev: "ROUTE_B_ROUND03_REVIEW_ADEQUATE_NEGATIVE\nnot full route negative"
+  auth: "No upload / promotion / hosted metric / final decision"
+  b2.class: smoke; b3.class: blocked; rev.class: blocked; auth.class: boundary
+  b2 -> b3 -> rev -> auth
+}
+inputs.anchor -> enc.down -> route.pair -> roi.concat -> cine.ca -> out.b2: { style.stroke: "#2364aa" }
+
+legend: {
+  label: "Legend"
+  v: "verified\ngreen solid"
+  s: "smoke\nblue dashed"
+  p: "planned/not run\nyellow dashed"
+  b: "blocked/negative\nred solid"
+  st: "stale\ngray dashed"
+  a: "authority boundary\npurple dashed"
+  v.class: verified
+  s.class: smoke
+  p.class: planned
+  b.class: blocked
+  st.class: stale
+  a.class: boundary
+}

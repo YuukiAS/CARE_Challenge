@@ -1,0 +1,173 @@
+direction: right
+
+classes: {
+  verified: {
+    style.fill: "#DDEFE4"
+    style.stroke: "#2E7D32"
+    style.stroke-width: 3
+  }
+  smoke: {
+    style.fill: "#EAF3FA"
+    style.stroke: "#2D6F9F"
+    style.stroke-dash: 5
+  }
+  planned: {
+    style.fill: "#FFF4D6"
+    style.stroke: "#B78300"
+    style.stroke-dash: 7
+  }
+  blocked: {
+    style.fill: "#F8DFDE"
+    style.stroke: "#B3261E"
+    style.stroke-width: 3
+  }
+  stale: {
+    style.fill: "#ECECEC"
+    style.stroke: "#777777"
+    style.stroke-dash: 4
+  }
+  boundary: {
+    style.fill: "#F4E8FF"
+    style.stroke: "#6A3FA0"
+    style.stroke-dash: 3
+  }
+}
+
+title: "Route B Round03 Architecture State"
+
+legend: {
+  label: "Legend"
+  v: "implemented + reviewer verified"
+  v.class: verified
+  s: "implemented / smoke evidenced, not formal runtime complete"
+  s.class: smoke
+  p: "planned / scaffolded / unexecuted, pending Round04"
+  p.class: planned
+  b: "blocked / adequate negative at B3"
+  b.class: blocked
+  h: "stale historical evidence"
+  h.class: stale
+  a: "forbidden authority boundary"
+  a.class: boundary
+}
+
+inputs: {
+  label: "SRR-v3 Inputs"
+  x: "MyoPS tensor [B,3,Z,H,W]\nmodality order [LGE,T2,C0]"
+  a: "availability [B,3]\nzero-filled tensor is not availability"
+  stems: "modality stems\nLGE / T2 / C0"
+  scales: "multi-scale features\n[32,64,128,256]"
+  x -> stems
+  a -> stems
+  stems -> scales
+  x.class: smoke
+  a.class: smoke
+  stems.class: smoke
+  scales.class: smoke
+}
+
+retrieval: {
+  label: "Round03 Implemented SRR Core"
+  experts: "expert bank\n16 experts per scale\nshared/private/interaction"
+  masks: "family masks\nanatomy / scar / edema"
+  router: "two-pass spatial router\navailability + anchor + proposal context"
+  invalid: "invalid logits mask\nmax invalid weight = 0 in B3 evidence"
+  psip: "Pattern-SIP path\ncontracted loss and receipt"
+  inputs.scales -> experts
+  inputs.a -> router
+  experts -> masks -> router -> invalid -> psip
+  experts.class: smoke
+  masks.class: smoke
+  router.class: smoke
+  invalid.class: verified
+  psip.class: smoke
+}
+
+myops_path: {
+  label: "MyoPS Lesion Path"
+  anatomy: "anatomy repair target\nunion/LV/RV planned for Round04"
+  oof: "OOF prototypes + hard negatives\nformal shard discipline planned"
+  proposal: "scar/edema proposal heads\nimplementation smoke only"
+  roi: "soft ROI\nscar small ROI / edema T2-conditioned ROI"
+  refiner: "separate scar and edema refiners\nimplementation smoke only"
+  compose: "bounded final composition\nnonzero logit change in B2 smoke"
+  no_t2: "no-T2 edema exact-zero\nreviewer verified for B3 packet"
+  export: "official six-label export path\nB2 roundtrip smoke"
+  retrieval.router -> anatomy -> oof -> proposal -> roi -> refiner -> compose -> no_t2 -> export
+  anatomy.class: planned
+  oof.class: planned
+  proposal.class: smoke
+  roi.class: smoke
+  refiner.class: smoke
+  compose.class: smoke
+  no_t2.class: verified
+  export.class: smoke
+}
+
+runtime: {
+  label: "Round03 Runtime Evidence"
+  b0: "B0 manifests/source probe\nreviewer allowed inheritance after fingerprint"
+  b1: "B1 model scaffold\nfour-scale / 16 experts / Cine interfaces"
+  b2: "B2 implementation gate\nforward, gradient, save/reload, CineMA smoke"
+  b3: "B3 formal warmup\n43003 steps, 1800.796s, 22 validation events"
+  b3_fail: "B3 gate failed\nanatomy_union_overfit = false"
+  b10: "B10 terminal accounting\nvalidator PASS, no monitor packet"
+  review: "independent review\nROUTE_B_ROUND03_REVIEW_ADEQUATE_NEGATIVE"
+  b0 -> b1 -> b2 -> b3 -> b3_fail -> b10 -> review
+  b0.class: verified
+  b1.class: smoke
+  b2.class: smoke
+  b3.class: verified
+  b3_fail.class: blocked
+  b10.class: verified
+  review.class: verified
+}
+
+not_run: {
+  label: "Round03 Not Executed"
+  b4: "B4 OOF proposal\nnot executed in Round03"
+  b5: "B5 pathology refiners\nnot executed in Round03"
+  b6: "B6 joint selector + 44-case evaluation\nnot executed in Round03"
+  b7: "B7 official CineMA matched random control\nnot executed in Round03"
+  b8: "B8 faithful registration\nnot executed in Round03"
+  b9: "B9 registered temporal chain\nnot executed in Round03"
+  b4 -> b5 -> b6
+  b7 -> b8 -> b9
+  b4.class: planned
+  b5.class: planned
+  b6.class: planned
+  b7.class: planned
+  b8.class: planned
+  b9.class: planned
+}
+
+cine_target: {
+  label: "SRR-v3 Cine Target"
+  cinema: "official CineMA provenance\nweight SHA / logits / features / entropy"
+  random: "matched random control"
+  reg: "registration\n7-step SVF + real SyN"
+  temporal: "temporal fusion\nregistered logits/features/uncertainty + motion"
+  final: "myocardium_cinemyops ED-space output"
+  cinema -> random -> reg -> temporal -> final
+  cinema.class: smoke
+  random.class: planned
+  reg.class: planned
+  temporal.class: planned
+  final.class: planned
+}
+
+authority: {
+  label: "Authority Boundary"
+  controller: "controller cannot make final scientific decision"
+  reviewer: "reviewer is read-only and post-controller"
+  blocked: "no validation upload\nno route promotion\nno hosted metric claim"
+  controller -> reviewer -> blocked
+  controller.class: boundary
+  reviewer.class: boundary
+  blocked.class: boundary
+}
+
+retrieval.psip -> runtime.b3
+runtime.b3_fail -> not_run.b4: "Round03 contract stopped here"
+runtime.b3_fail -> not_run.b7: "Cine lane also absent"
+runtime.review -> authority.blocked

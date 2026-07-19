@@ -1,0 +1,85 @@
+direction: right
+layout: dagre
+
+# Route C Round03 network detail, six-panel template
+
+classes: {
+  tensor: { style: { fill: "#eef6ff"; stroke: "#245e9c"; stroke-width: 2; font-size: 13 } }
+  verified: { style: { fill: "#e8f6ed"; stroke: "#1f7a3b"; stroke-width: 3; font-size: 13 } }
+  smoke: { style: { fill: "#e9f2ff"; stroke: "#2364aa"; stroke-width: 2; stroke-dash: 6; font-size: 13 } }
+  planned: { style: { fill: "#fff6d8"; stroke: "#b07a00"; stroke-width: 2; stroke-dash: 6; font-size: 13 } }
+  blocked: { style: { fill: "#ffe8e8"; stroke: "#b42318"; stroke-width: 3; font-size: 13 } }
+  stale: { style: { fill: "#f1f1f1"; stroke: "#777777"; stroke-width: 2; stroke-dash: 6; font-size: 13 } }
+  boundary: { style: { fill: "#f3e8ff"; stroke: "#7e22ce"; stroke-width: 2; stroke-dash: 4; font-size: 13 } }
+  panel: { style: { fill: "#fbfbfb"; stroke: "#b8b8b8"; stroke-width: 1; font-size: 14 } }
+}
+
+
+inputs: { label: "1 Inputs"; class: panel; direction: down
+  x: "SRRProposeRefineMyoPS.forward\nx requires 3 channels\nspatial shape not fixed"
+  ctx: "anchor/component context\nshape checked vs x\nprob/mask/uncertainty maps"
+  cin: "cine registered evidence\nED image/prior + registered tensors\nvalid_frame_mask"
+  x.class: verified; ctx.class: verified; cin.class: verified
+  x -> ctx -> cin
+}
+enc: { label: "2 Encoder / Trunk"; class: panel; direction: down
+  encs: "encoders ModuleList x3\nModalityEncoder\nbase10 tiny_3scale [10,20,40]"
+  ret: "ScaleRetrieval per scale\nshared/private/interaction slots\nvalid masks + top_k4"
+  dec: "FlexibleTaskDecoder x3\nConvTranspose + skip concat\nout task feature ch10"
+  heads: "AnatomyPathologyHeads\nanatomy/scar/edema evidence logits"
+  encs.class: verified; ret.class: verified; dec.class: verified; heads.class: verified
+  encs -> ret -> dec -> heads
+}
+route: { label: "3 Routing / Prototype / Proposal"; class: panel; direction: down
+  m10bank: "M10SlotBank\n16 slots exact\nshared/private/interaction experts"
+  m10router: "two-pass spatial routers\nanatomy ctx4; pass0 ctx8; pass1 ctx9\ntop_k 4 then 2"
+  proto: "PrototypeBank\npos/neg banks\nT2-safe edema negatives"
+  prop: "ProposalDictionary\nemb C->C, score C->1\n2.5(pos-neg)+evidence+ctx\nedema no-T2 -20"
+  m10bank.class: verified; m10router.class: verified; proto.class: verified; prop.class: verified
+  m10bank -> m10router -> proto -> prop
+}
+roi: { label: "4 ROI / Refiner / Composition"; class: panel; direction: down
+  prior: "AnatomyDistanceROIPrior\nP_union/P_LV/P_RV\nsoft distance 6 steps\nscar/edema gates"
+  crop: "CropSoftROIRefinementHead\nfeatures + 18 ctx maps\nConv C+18->C->C->1\nsoft crop/paste residual"
+  base: "BaselinePreservingResidualGate\ninput srr+anchor+avail\nConv1x1 16->6\nmax_delta 4"
+  arb: "BranchArbitrationGate\ncontext 10 maps\nConv1x1 10->4\nfinal_logits + labels"
+  prior.class: verified; crop.class: verified; base.class: verified; arb.class: verified
+  prior -> crop -> base -> arb
+}
+cine: { label: "5 CineMA / Registration / Temporal"; class: panel; direction: down
+  ext: "official CineMA\ncommit c10daa1d, HF b1251ee\nSHA c7a60195...\nConvUNetR depth not introspected"
+  adapter: "CineMAAdapter\nimage+prior [B,2,...]\nstem 2->16; residual adapter16\nhead 16->4"
+  reg: "RegistrationUNet\nenc 16/32/64, bottleneck128\nup+skip dec, velocity 16->3"
+  math: "SVF math + SyN\n7-step scaling/squaring\ndisplacement/warp/true Jacobian"
+  td: "TemporalSlotDictionary\nencoder C->24->24\n8 Conv3d experts\nrouter 24->8 softmax"
+  head: "CineTemporalModel\nadapter logits4 + temporal24\nhead 28->24->4"
+  ext.class: verified; adapter.class: verified; reg.class: verified; math.class: verified; td.class: verified; head.class: verified
+  ext -> adapter -> reg -> math -> td -> head
+}
+out: { label: "6 Final Output / Evidence"; class: panel; direction: down
+  r1: "R1 prototype swap\n88/88 changed logits+voxels\n80/88 changed components"
+  ctrl: "zero-effect controls\nno_op 88/88\nanchor residual-off 88/88"
+  r3: "R3 temporal rows\n12/12 changed logits/voxels/components\n60 registration receipts"
+  rev: "ROUTE_C_ROUND03_REVIEW_EVIDENCE_COMPLETE\nnot promotion/final decision"
+  stale: "architecture_delta_final.md\nstale historical conflict"
+  r1.class: verified; ctrl.class: verified; r3.class: verified; rev.class: verified; stale.class: stale
+  r1 -> ctrl -> r3 -> rev
+  stale -> rev: { style.stroke-dash: 6; style.stroke: "#777777" }
+}
+inputs.cin -> enc.encs -> route.m10bank -> roi.prior -> cine.ext -> out.r1: { style.stroke: "#1f7a3b" }
+
+legend: {
+  label: "Legend"
+  v: "verified\ngreen solid"
+  s: "smoke\nblue dashed"
+  p: "planned/not run\nyellow dashed"
+  b: "blocked/negative\nred solid"
+  st: "stale\ngray dashed"
+  a: "authority boundary\npurple dashed"
+  v.class: verified
+  s.class: smoke
+  p.class: planned
+  b.class: blocked
+  st.class: stale
+  a.class: boundary
+}

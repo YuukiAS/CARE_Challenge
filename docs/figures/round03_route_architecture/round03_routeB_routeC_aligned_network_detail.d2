@@ -1,0 +1,146 @@
+direction: right
+layout: dagre
+
+# Aligned network detail: Route B top lane, Route C bottom lane in each stage column
+
+classes: {
+  tensor: { style: { fill: "#eef6ff"; stroke: "#245e9c"; stroke-width: 2; font-size: 13 } }
+  verified: { style: { fill: "#e8f6ed"; stroke: "#1f7a3b"; stroke-width: 3; font-size: 13 } }
+  smoke: { style: { fill: "#e9f2ff"; stroke: "#2364aa"; stroke-width: 2; stroke-dash: 6; font-size: 13 } }
+  planned: { style: { fill: "#fff6d8"; stroke: "#b07a00"; stroke-width: 2; stroke-dash: 6; font-size: 13 } }
+  blocked: { style: { fill: "#ffe8e8"; stroke: "#b42318"; stroke-width: 3; font-size: 13 } }
+  stale: { style: { fill: "#f1f1f1"; stroke: "#777777"; stroke-width: 2; stroke-dash: 6; font-size: 13 } }
+  boundary: { style: { fill: "#f3e8ff"; stroke: "#7e22ce"; stroke-width: 2; stroke-dash: 4; font-size: 13 } }
+  panel: { style: { fill: "#fbfbfb"; stroke: "#b8b8b8"; stroke-width: 1; font-size: 14 } }
+}
+
+
+p1: { label: "1 Inputs"; class: panel; direction: down
+  b: { label: "Route B"; direction: right
+    x: "RouteBRound03MyoPS.forward\nin: x [B,3,Z,H,W]\nout: LGE/T2/C0 tensors\nch: 3 modalities\nsmoke"
+    av: "availability clamp\nin: [B,3]\nout: masks + avail emb16\nch: 3 bits -> 16 emb\nverified at B3 boundary"
+    an: "anchor_logits\nin: [B,6,Z,H,W]\nout: anchor_prob/context\nch: 6 classes\nsmoke"
+    x.class: tensor; av.class: verified; an.class: smoke
+    x -> av -> an
+  }
+  c: { label: "Route C"; direction: right
+    x: "SRRProposeRefineMyoPS.forward\nin: x, 3 channels\nout: modality inputs\nch: spatial shape not fixed\nverified"
+    ctx: "context validators\nin: availability + anchor/component\nout: probabilities, masks, uncertainty\nch: avail3, anchor classes\nverified"
+    cine: "RouteCTemporalAdapter.forward\nin: ED + registered frame evidence\nout: temporal_z inputs\nch: B,T,C,D,H,W semantics\nverified"
+    x.class: verified; ctx.class: verified; cine.class: verified
+    x -> ctx -> cine
+  }
+}
+
+p2: { label: "2 Encoder / Trunk"; class: panel; direction: down
+  b: { label: "Route B"; direction: right
+    stem: "stems ModuleDict\nin: [B,1,Z,H,W] each\nout: f0 [B,32,Z,H,W]\nch: Conv3d 1->32\nsmoke"
+    down: "down pyramid\nin: f0/f1/f2\nout: f1/f2/f3\nch: 32->64->128->256\nsmoke"
+    rex: "ResidualExpert\nin/out: [B,C,z,h,w]\nch: C in 32/64/128/256\nConvGNSiLU ConvGN + skip\nsmoke"
+    stem.class: smoke; down.class: smoke; rex.class: smoke
+    stem -> down -> rex
+  }
+  c: { label: "Route C"; direction: right
+    enc: "ModalityEncoder\nin: [B,1,D,H,W] + present\nout: 3 scales\nch: base10 -> [10,20,40]\nverified"
+    ret: "ScaleRetrieval\nin: modality scales + availability\nout: routed task scales\nch: multi-slot top_k4\nverified"
+    dec: "FlexibleTaskDecoder\nin: routed [10,20,40]\nout: task features\nch: skip up decoder -> 10\nverified"
+    enc.class: verified; ret.class: verified; dec.class: verified
+    enc -> ret -> dec
+  }
+}
+
+p3: { label: "3 Routing / Prototype / Proposal"; class: panel; direction: down
+  b: { label: "Route B"; direction: right
+    bank: "ExpertScale experts\nin: LGE/T2/C0 scale features\nout: 16 expert_out\nch: 4 shared + 6 private + 6 pair\nverified boundary"
+    router: "ExpertScale.router\nin: fused C + emb16 + ctx8\nout: weights [B,16,z,h,w]\nch: C+24 -> max(8,C/2) -> 16\nmask -1e4 + softmax\nverified boundary"
+    proto: "OfflinePrototypeBank\nin: base [B,32,...]\nout: sim maps [B,1,...]\nch: scar 8/12, edema 8/12\nsmoke"
+    prop: "proposal heads\nin: base+anchor+proto(+T2)\nout: scar/edema prop\nch: 36->1, 37->1\nB4 not run"
+    bank.class: verified; router.class: verified; proto.class: smoke; prop.class: planned
+    bank -> router -> proto -> prop
+  }
+  c: { label: "Route C"; direction: right
+    m10: "M10TwoPassSpatialDictionary\nin: features + ctx + evidence\nout: retrieved + gates\nch: 16 slots; pass top_k4->2\nverified when enabled"
+    proto: "PrototypeBank\nin: features/labels/availability\nout: pos/neg banks\nch: T2-safe edema negatives\nverified"
+    dict: "ProposalDictionary.forward\nin: features+evidence+ROI ctx\nout: proposal_logits + sims\nch: emb C->C, score C->1\nverified"
+    m10.class: verified; proto.class: verified; dict.class: verified
+    m10 -> proto -> dict
+  }
+}
+
+p4: { label: "4 ROI / Refiner / Composition"; class: panel; direction: down
+  b: { label: "Route B"; direction: right
+    anat: "anatomy_head\nin: concat routed scales\nout: anatomy_logits [B,4,...]\nch: 480->4\nB3 blocked"
+    roi: "ROI masks\nin: proposals + T2\nout: scar_roi, edema_roi\nch: 1 + 1\nsmoke"
+    ref: "scar/edema_refiner\nin: base [B,32,...]\nout: deltas [B,1,...]\nch: ResidualExpert32 + 32->1\nB5 not run"
+    gate: "composition gate\nin: 12-channel context\nout: final_logits [B,6,...]\nch: 12->16->1, deltas to cls4/5\nB6 not run"
+    anat.class: blocked; roi.class: smoke; ref.class: planned; gate.class: planned
+    anat -> roi -> ref -> gate
+  }
+  c: { label: "Route C"; direction: right
+    roi: "AnatomyDistanceROIPrior\nin: anatomy logits + anchor\nout: P_union/LV/RV + gates\nch: 4 logits -> 1ch maps\nverified"
+    ref: "CropSoftROIRefinementHead\nin: feature + 18 ctx maps\nout: pathology logits/residual/ROI\nch: C+18 -> C -> C -> 1\nverified"
+    bg: "BaselinePreservingResidualGate\nin: srr + anchor + avail\nout: gated candidate\nch: 16->6, max_delta4\nverified control"
+    arb: "BranchArbitrationGate\nin: context 10 maps\nout: final_logits/weights\nch: 10->4 gates\nverified"
+    roi.class: verified; ref.class: verified; bg.class: verified; arb.class: verified
+    roi -> ref -> bg -> arb
+  }
+}
+
+p5: { label: "5 CineMA / Registration / Temporal"; class: panel; direction: down
+  b: { label: "Route B"; direction: right
+    cin: "RouteB CineMAAdapter\nin: frame [B,1,...]\nout: logits/prob/feat32/feat16/entropy\nch: 1->32; 32->4; 32->16\nsmoke"
+    rnd: "MatchedRandomCineMASource\nin/out: same adapter\nch: same arch\nB7 not run"
+    reg: "RouteB SVF reg\nin: fixed+moving\nout: velocity/disp/warp/jac receipt\nch: 2->16->16->3, steps7\nB8 not run"
+    tmp: "RouteB temporal\nin: registered fields\nout: logits + slot_weights\nch: project35->32, 8 slots, 32->4\nB9 not run"
+    cin.class: smoke; rnd.class: planned; reg.class: planned; tmp.class: planned
+    cin -> rnd -> reg -> tmp
+  }
+  c: { label: "Route C"; direction: right
+    ext: "official CineMA\nin: external repo/weights\nout: logits/probs/features/entropy\nch: ConvUNetR depth not introspected\nverified"
+    ad: "CineMAAdapter\nin: image+prior [B,2,...]\nout: adapter logits [B,4,...]\nch: 2->16, residual 16, head 16->4\nverified"
+    reg: "RegistrationUNet\nin: fixed+moving\nout: velocity [B,3,...]\nch: 16/32/64/128 U-Net skips\nverified"
+    math: "SVF + SyN + Jacobian\nin: velocity/images\nout: disp/warp/Jacobian/receipts\nch: 3 disp, steps7\nverified"
+    td: "TemporalSlotDictionary\nin: temporal_z [B,T,C,...]\nout: temporal [B,24,...], beta\nch: C->24; 8 experts; router 24->8\nverified"
+    head: "CineTemporalModel.head\nin: frame0 logits4 + temporal24\nout: logits [B,4,...]\nch: 28->24->4\nverified"
+    ext.class: verified; ad.class: verified; reg.class: verified; math.class: verified; td.class: verified; head.class: verified
+    ext -> ad -> reg -> math -> td -> head
+  }
+}
+
+p6: { label: "6 Final Output / Evidence Boundary"; class: panel; direction: down
+  b: { label: "Route B"; direction: right
+    gate: "B3 gate\nin: terminal B3 packet\nout: adequate negative\nch: 43003 steps, 22 vals\nanatomy_union_overfit=false"
+    auth: "authority boundary\nin: review token\nout: no upload/promotion/metric/final decision\nch: n/a\nblocked"
+    gate.class: blocked; auth.class: boundary
+    gate -> auth
+  }
+  c: { label: "Route C"; direction: right
+    r1: "R1 final effect\nin: prototype swap controls\nout: logits/voxels/components changed\nch: 88 swap rows\nverified"
+    r3: "R3 temporal effect\nin: registered temporal chain\nout: final outputs changed\nch: 12 rows; 60 reg receipts\nverified"
+    rev: "review boundary\nin: R1/R2/R3 packet\nout: evidence-complete token\nch: n/a, no promotion\nverified"
+    stale: "stale appendix\nin: architecture_delta_final.md\nout: superseded status\nch: n/a\nstale"
+    r1.class: verified; r3.class: verified; rev.class: verified; stale.class: stale
+    r1 -> r3 -> rev
+    stale -> rev: { style.stroke-dash: 6; style.stroke: "#777777" }
+  }
+}
+
+p1.b.an -> p2.b.stem -> p3.b.bank -> p4.b.anat -> p5.b.cin -> p6.b.gate: { style.stroke: "#2364aa" }
+p1.c.cine -> p2.c.enc -> p3.c.m10 -> p4.c.roi -> p5.c.ext -> p6.c.r1: { style.stroke: "#1f7a3b" }
+
+
+legend: {
+  label: "Legend"
+  v: "verified\ngreen solid"
+  s: "smoke\nblue dashed"
+  p: "planned/not run\nyellow dashed"
+  b: "blocked/negative\nred solid"
+  st: "stale\ngray dashed"
+  a: "authority boundary\npurple dashed"
+  v.class: verified
+  s.class: smoke
+  p.class: planned
+  b.class: blocked
+  st.class: stale
+  a.class: boundary
+}
