@@ -21,10 +21,18 @@ The default recipient and SMTP settings are in `config.example.json`. The defaul
 bash controller_notifications/start_in_tmux.sh --dry-run
 ```
 
-After `secrets/care_notify.env` is configured, send one real test email:
+After `secrets/care_notify.env` is configured, send one real test email. The test uses the same Chinese summary-first format as live controller terminal notifications:
 
 ```bash
 ./envs/env_CARE/bin/python controller_notifications/notify_goal_watcher.py --send-test
+```
+
+
+The default email body includes the public and local watchboard links:
+
+```text
+https://watchboard.httpwwwcardiacnexus-ukb.com/index.html
+http://127.0.0.1:8766/index.html
 ```
 
 Then start the persistent watcher:

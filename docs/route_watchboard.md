@@ -8,6 +8,8 @@
 
 `prompts/routes/handoffs/CURRENT.md` 是 portfolio truth。`results/watchboard/status.json` 和 `results/watchboard/index.html` 是 ignored/generated live output，只用于验证服务当前展示，不作为源码真相提交。
 
+当 Controller 已写出 terminal packet 并准备交 independent reviewer 时，`CURRENT.md` 可包含 `Controller Terminal Packet / Reviewer Targets` section。看板用该 section 识别当前 phase transition：旧 planner/critic binding 仍作为历史规划绑定展示，旧 `review.md` 或旧 `NEEDS_MONITOR` keyword 不得覆盖新的 terminal reviewer target。Reviewer source-of-truth 仍是 route worktree terminal packet、target commit、review request、validator 和 Slurm/accounting evidence；watchboard 不是 reviewer 证据。
+
 如果 `CURRENT.md` 缺少字段，看板必须显示 parse warning 和 `unknown/blocked`，不得回退到旧 round、旧 critic path 或 hardcoded token。
 
 ## 生成

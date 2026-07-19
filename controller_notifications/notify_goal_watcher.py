@@ -9,6 +9,7 @@ from datetime import datetime, timezone
 from email.message import EmailMessage
 import hashlib
 import json
+import re
 from pathlib import Path
 import smtplib
 import sqlite3
@@ -88,6 +89,13 @@ def load_config(path: Path) -> dict[str, Any]:
     config.setdefault("log_path", str(DEFAULT_LOG_PATH))
     config.setdefault("tmux_session", "care_watchboard")
     config.setdefault("tmux_window", "Notify")
+    config.setdefault(
+        "watchboard_urls",
+        {
+            "public": "https://watchboard.httpwwwcardiacnexus-ukb.com/index.html",
+            "local": "http://127.0.0.1:8766/index.html",
+        },
+    )
     config.setdefault("routes", {})
     return config
 
@@ -485,30 +493,192 @@ def update_observed_state(state: dict[str, Any], facts: list[GoalFact], skip_key
         }
 
 
+def route_label(config: dict[str, Any], route: str) -> str:
+    return str(route_config(config, route).get("label") or route.replace("_", " ").title())
+
+
+def route_branch(route: str) -> str:
+    return "main" if route == "main" else route
+
+
+def route_worktree(config: dict[str, Any], route: str) -> Path:
+    rcfg = route_config(config, route)
+    configured = rcfg.get("worktree")
+    if configured:
+        return Path(str(configured))
+    repo_root = repo_root_from_config(config)
+    if route == "main":
+        return repo_root
+    return repo_root.parent / "CARE_worktrees" / route
+
+
+def run_git_text(args: list[str], cwd: Path) -> str:
+    try:
+        cp = subprocess.run(
+            ["git", *args],
+            cwd=cwd,
+            text=True,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.DEVNULL,
+            timeout=5,
+            check=False,
+        )
+    except (OSError, subprocess.SubprocessError):
+        return "unknown"
+    return cp.stdout.strip() if cp.returncode == 0 and cp.stdout.strip() else "unknown"
+
+
+def route_summary(config: dict[str, Any], route: str, trigger_route: str = "") -> dict[str, str]:
+    worktree = route_worktree(config, route)
+    branch = route_branch(route)
+    if worktree.exists():
+        head = run_git_text(["rev-parse", "--short=12", "HEAD"], worktree)
+        origin = run_git_text(["rev-parse", "--short=12", f"origin/{branch}"], worktree)
+        status = run_git_text(["status", "--porcelain"], worktree)
+        ahead = run_git_text(["rev-list", "--left-right", "--count", f"origin/{branch}...HEAD"], worktree)
+        dirty = "clean" if status == "unknown" or not status else f"dirty {len(status.splitlines())}"
+        sync = ahead if ahead != "unknown" else "unknown"
+    else:
+        head = origin = sync = "missing"
+        dirty = "missing"
+
+    is_trigger = route == trigger_route
+    controller_state = "terminal event observed" if is_trigger else "not triggered"
+    reviewer_state = "等待 independent reviewer" if is_trigger else "按 route packet 判定"
+    next_action = "交 independent reviewer 审 terminal packet" if is_trigger else "保持只读观察"
+    return {
+        "route": route_label(config, route),
+        "branch_head": head,
+        "origin_head": origin,
+        "dirty_ahead": f"{dirty}; ahead/behind {sync}",
+        "controller_state": controller_state,
+        "reviewer_state": reviewer_state,
+        "next_action": next_action,
+    }
+
+
+def route_summary_table(config: dict[str, Any], trigger_route: str) -> str:
+    header = "| route | branch head | origin head | dirty/ahead | controller/reviewer state | next action |"
+    sep = "| --- | --- | --- | --- | --- | --- |"
+    rows = []
+    for route in ("route_A", "route_B", "route_C"):
+        summary = route_summary(config, route, trigger_route)
+        rows.append(
+            "| {route} | {branch_head} | {origin_head} | {dirty_ahead} | {controller_state} / {reviewer_state} | {next_action} |".format(
+                **summary
+            )
+        )
+    return "\n".join([header, sep, *rows])
+
+
+def read_limited_text(path: Path, limit: int) -> str:
+    try:
+        return path.read_text(encoding="utf-8", errors="replace")[:limit]
+    except OSError:
+        return ""
+
+
+def packet_target_paths(config: dict[str, Any], event: NotificationEvent) -> list[Path]:
+    explicit_paths = [Path(path) for path in event.packet_paths]
+    roots: list[Path] = []
+    for packet_path in explicit_paths:
+        if packet_path.name in {"controller_report.md", "completion_check.md", "result.md", "review_request.md", "MANIFEST.md"}:
+            roots.append(packet_path.parent)
+    if not roots:
+        roots.append(route_worktree(config, event.route) / "results" / event.route)
+    result_root = roots[0]
+    candidates = [
+        result_root / "result.md",
+        result_root / "completion_check.md",
+        result_root / "review_request.md",
+        result_root / "MANIFEST.md",
+    ]
+    for packet_path in explicit_paths:
+        if packet_path not in candidates:
+            candidates.append(packet_path)
+    return candidates
+
+
+def brief_file_status(path: Path) -> str:
+    if not path.exists():
+        return f"{path}: missing"
+    text = read_limited_text(path, 3000)
+    tokens = []
+    for pattern in (
+        r"ROUTE_[A-Z]_[A-Z0-9_]*TERMINAL_PACKET_READY_FOR_REVIEW",
+        r"status:\s*`?([A-Z0-9_]+)`?",
+        r"route_promotion_decision:\s*`?([A-Z0-9_]+)`?",
+        r"route_negative_decision:\s*`?([A-Z0-9_]+)`?",
+        r"scientific_resolution_status:\s*`?([A-Z0-9_]+)`?",
+        r"job[_ -]?id:\s*`?([0-9]+)`?",
+        r"Slurm job:\s*`?([0-9]+)`?",
+    ):
+        for match in re.finditer(pattern, text):
+            value = match.group(1) if match.groups() else match.group(0)
+            if value not in tokens:
+                tokens.append(value)
+    summary = ", ".join(tokens[:8]) if tokens else "present"
+    return f"{path}: {summary}"
+
+
+def terminal_intent(config: dict[str, Any], event: NotificationEvent) -> str:
+    if event.status == "blocked":
+        return "needs controller repair"
+    if event.source == "manual_test" or "terminal packet ready for reviewer" in event.objective.lower():
+        return "terminal packet ready for reviewer"
+    for packet_path in packet_target_paths(config, event):
+        text = read_limited_text(packet_path, 4000)
+        if "TERMINAL_PACKET_READY_FOR_REVIEW" in text or "AWAITING_REVIEW" in text:
+            return "terminal packet ready for reviewer"
+    return "terminal goal complete"
+
+
 def subject_for_event(config: dict[str, Any], event: NotificationEvent) -> str:
     prefix = config.get("email", {}).get("subject_prefix", "[CARE]")
-    return f"{prefix}[{event.route}][{event.subject_status}] controller goal {event.status}"
+    return f"{prefix}[{route_label(config, event.route)}][{event.subject_status}][{terminal_intent(config, event)}]"
 
 
-def body_for_event(event: NotificationEvent) -> str:
-    packet_lines = "\n".join(f"- {path}" for path in event.packet_paths) or "- none configured"
+def body_for_event(config: dict[str, Any], event: NotificationEvent) -> str:
+    label = route_label(config, event.route)
+    route_head = route_summary(config, event.route, event.route)["branch_head"]
+    if event.status == "complete":
+        conclusion = f"结论：{label} controller goal 已完成，当前应进入 independent reviewer，不需要 main/controller 介入。"
+        action = f"交 {label} reviewer 审 `{route_head}`。"
+    else:
+        conclusion = f"结论：{label} controller goal 已 blocked，当前需要 controller/main 介入修复，暂不交 reviewer。"
+        action = f"{label} controller 修复后继续 goal。"
+    packet_lines = "\n".join(f"- {brief_file_status(path)}" for path in packet_target_paths(config, event))
+    watchboard_urls = config.get("watchboard_urls", {})
+    public_url = str(watchboard_urls.get("public") or "https://watchboard.httpwwwcardiacnexus-ukb.com/index.html")
+    local_url = str(watchboard_urls.get("local") or "http://127.0.0.1:8766/index.html")
     return "\n".join(
         [
-            f"route: {event.route}",
-            f"goal_status: {event.status}",
-            f"previous_status: {event.previous_status}",
-            f"thread_id: {event.thread_id}",
-            f"objective: {event.objective[:500]}",
-            f"updated_at_ms_or_signature: {event.updated_at_ms}",
-            f"detected_at_utc: {event.detected_at_utc}",
-            f"source: {event.source}",
-            f"source_path: {event.source_path}",
-            f"tmux_target: {event.tmux_target}",
-            f"tokens_used: {event.tokens_used}",
-            f"time_used_seconds: {event.time_used_seconds}",
-            f"git_head: {event.git_head}",
-            "packet_paths:",
+            conclusion,
+            "",
+            "## Route A/B/C 当前总览",
+            route_summary_table(config, event.route),
+            "",
+            f"## 触发 route 详情：{label}",
+            f"- goal status: {event.status}",
+            f"- previous status: {event.previous_status}",
+            f"- thread id: {event.thread_id}",
+            f"- objective 摘要: {event.objective[:500]}",
+            f"- tokens/time: {event.tokens_used} tokens / {event.time_used_seconds} seconds",
+            f"- detected time: {event.detected_at_utc}",
+            f"- source: {event.source} ({event.source_path})",
+            f"- tmux target: {event.tmux_target}",
+            f"- event signature: {event.updated_at_ms}",
+            "",
+            "## Packet / review target",
+            f"- main notifier git head: {event.git_head}",
             packet_lines,
+            "",
+            "## Next action",
+            action,
+            "",
+            "## Watchboard",
+            f"- public: {public_url}",
+            f"- local: {local_url}",
             "",
         ]
     )
@@ -531,7 +701,7 @@ def send_email(config: dict[str, Any], env: dict[str, str], event: NotificationE
     message["From"] = sender
     message["To"] = ", ".join(recipients)
     message["Subject"] = subject_for_event(config, event)
-    message.set_content(body_for_event(event))
+    message.set_content(body_for_event(config, event))
 
     host = str(email_cfg.get("smtp_host") or "smtp.gmail.com")
     port = int(email_cfg.get("smtp_port") or 587)
@@ -620,7 +790,7 @@ def build_test_event(config: dict[str, Any]) -> NotificationEvent:
         status="complete",
         subject_status="GOAL_COMPLETE",
         thread_id="test-email",
-        objective="CARE controller notification test",
+        objective="CARE controller notification test: terminal packet ready for reviewer",
         updated_at_ms=str(int(time.time() * 1000)),
         source="manual_test",
         source_path="--send-test",
@@ -654,7 +824,18 @@ def main(argv: list[str] | None = None) -> int:
     if args.send_test:
         event = build_test_event(config)
         if args.dry_run:
-            print(json.dumps({"send_test": asdict(event)}, indent=2, sort_keys=True))
+            print(
+                json.dumps(
+                    {
+                        "send_test": asdict(event),
+                        "subject": subject_for_event(config, event),
+                        "body": body_for_event(config, event),
+                    },
+                    indent=2,
+                    sort_keys=True,
+                    ensure_ascii=False,
+                )
+            )
             return 0
         send_email(config, env, event)
         print("sent test email")

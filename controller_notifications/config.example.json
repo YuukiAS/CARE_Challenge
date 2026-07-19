@@ -67,5 +67,9 @@
   "status_path": "controller_notifications/state/notify_goal_watcher_status.json",
   "log_path": "controller_notifications/logs/notify_goal_watcher.log",
   "tmux_session": "care_watchboard",
-  "tmux_window": "Notify"
+  "tmux_window": "Notify",
+  "watchboard_urls": {
+    "public": "https://watchboard.httpwwwcardiacnexus-ukb.com/index.html",
+    "local": "http://127.0.0.1:8766/index.html"
+  }
 }

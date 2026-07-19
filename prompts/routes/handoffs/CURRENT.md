@@ -158,6 +158,39 @@ volta-gpu
 
 Formal wrappers must use `/users/a/e/aereinh/CARE/envs/env_CARE/bin/python`; bare `python` is forbidden. Submitted, pending, running, awaiting-accounting, undertrained and monitor packets are not completion.
 
+## Controller Terminal Packet / Reviewer Targets
+
+This section records the post-controller terminal packet handoff for the current
+Round03 route work. It supersedes the planner/critic binding only for dashboard
+phase display and reviewer-target routing. It is not a route promotion,
+validation upload authorization, M11 authorization, hosted metric claim,
+cross-route merge, or final scientific decision.
+
+```text
+route_B reviewer_target_head: 8dfa40f8c4cedb2507f35a482bd46244a7a1c94c
+route_B terminal_token: ROUTE_B_ROUND03_TERMINAL_PACKET_READY_FOR_REVIEW
+route_B reviewer_output_path: results/route_B/review.md
+route_B route_promotion_decision: NOT_REVIEWED
+route_B route_negative_decision: NOT_REVIEWED
+route_B scientific_resolution_status: AWAITING_REVIEW
+route_B validation_upload: false
+route_B hosted_metric_claim: false
+route_B m11_started: false
+route_C reviewer_target_head: 72750c431c0a1cc728928b01b5883102153dbd4b
+route_C terminal_token: ROUTE_C_ROUND03_TERMINAL_PACKET_READY_FOR_REVIEW
+route_C reviewer_output_path: results/route_C/review.md
+route_C route_promotion_decision: NOT_REVIEWED
+route_C route_negative_decision: NOT_REVIEWED
+route_C scientific_resolution_status: AWAITING_REVIEW
+route_C validation_upload: false
+route_C hosted_metric_claim: false
+route_C m11_started: false
+```
+
+Reviewer source-of-truth remains the route-local terminal packet, target commit,
+review request, validator evidence and Slurm/accounting records. The watchboard
+is an ops view for users, not reviewer evidence.
+
 ## Round03 Decision Checkpoints
 
 ```text

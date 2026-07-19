@@ -305,6 +305,11 @@ def extract_status_keywords(text: str) -> list[str]:
         pattern = rf"(?<![A-Z0-9_]){re.escape(keyword)}(?![A-Z0-9_])"
         if re.search(pattern, text) and keyword not in found:
             found.append(keyword)
+    terminal_pattern = r"(?<![A-Z0-9_])ROUTE_[ABC]_ROUND[0-9]+_TERMINAL_PACKET_READY_FOR_REVIEW(?![A-Z0-9_])"
+    for match in re.finditer(terminal_pattern, text):
+        token = match.group(0)
+        if token not in found:
+            found.append(token)
     return found
 
 
@@ -637,6 +642,36 @@ def parse_route_binding(text: str, route: str) -> dict[str, str]:
     }
 
 
+def parse_terminal_reviewer_targets(text: str) -> dict[str, dict[str, str]]:
+    block = fenced_block_after(text, "## Controller Terminal Packet / Reviewer Targets")
+    values = {key.lower(): value for key, value in parse_key_values(block).items()}
+    targets: dict[str, dict[str, str]] = {}
+    for route in ROUTES:
+        prefix = route.lower()
+
+        def value_for(*suffixes: str) -> str:
+            for suffix in suffixes:
+                for candidate in (f"{prefix} {suffix}", f"{prefix}_{suffix}"):
+                    if values.get(candidate):
+                        return values[candidate]
+            return ""
+
+        target = {
+            "reviewer_target_head": value_for("reviewer target head", "reviewer_target_head", "target head"),
+            "terminal_token": value_for("terminal token", "terminal_token"),
+            "reviewer_output_path": value_for("reviewer output path", "reviewer_output_path"),
+            "route_promotion_decision": value_for("route promotion decision", "route_promotion_decision"),
+            "route_negative_decision": value_for("route negative decision", "route_negative_decision"),
+            "scientific_resolution_status": value_for("scientific resolution status", "scientific_resolution_status"),
+            "validation_upload": value_for("validation upload", "validation_upload"),
+            "hosted_metric_claim": value_for("hosted metric claim", "hosted_metric_claim"),
+            "m11_started": value_for("m11 started", "m11_started"),
+        }
+        if any(target.values()):
+            targets[route] = target
+    return targets
+
+
 def parse_allowed_tokens(text: str, route: str) -> list[str]:
     label = ROUTE_LABELS[route]
     patterns = (
@@ -725,6 +760,7 @@ def parse_current_handoff(text: str, root: Path) -> dict[str, Any]:
     allowed_tokens: dict[str, list[str]] = {}
     route_bindings: dict[str, dict[str, str]] = {}
     critic_review_outputs: dict[str, dict[str, Any]] = {}
+    terminal_reviewer_targets = parse_terminal_reviewer_targets(text)
     round_value = round_id.group(1) if round_id else "unknown"
     round_checkpoints = parse_round_checkpoints(text)
     for route in ROUTES:
@@ -750,6 +786,8 @@ def parse_current_handoff(text: str, root: Path) -> dict[str, Any]:
             "critic_handoff_blob",
             "critic_review_output_path",
         ):
+            if key == "critic_review_output_path" and terminal_reviewer_targets.get(route):
+                continue
             if not binding.get(key):
                 parse_warnings.append(f"{ROUTE_LABELS[route]} CURRENT binding 缺少 {key}；显示 unknown/blocked。")
         if not allowed_tokens.get(route):
@@ -764,6 +802,7 @@ def parse_current_handoff(text: str, root: Path) -> dict[str, Any]:
         "controller_authority": authority,
         "route_bindings": route_bindings,
         "round_checkpoints": round_checkpoints,
+        "terminal_reviewer_targets": terminal_reviewer_targets,
     }
     return {
         "round_id": round_value,
@@ -777,6 +816,7 @@ def parse_current_handoff(text: str, root: Path) -> dict[str, Any]:
         "route_bindings": route_bindings,
         "critic_review_outputs": critic_review_outputs,
         "round_checkpoints": round_checkpoints,
+        "terminal_reviewer_targets": terminal_reviewer_targets,
         "parse_warnings": parse_warnings,
     }
 
@@ -807,6 +847,7 @@ def collect_handoff_status(root: Path) -> dict[str, Any]:
             "controller_authority": empty_authority,
             "route_bindings": {route: {} for route in ROUTES},
             "round_checkpoints": [],
+            "terminal_reviewer_targets": {},
         }
         return {
             "current_path": str(current_path),
@@ -822,6 +863,7 @@ def collect_handoff_status(root: Path) -> dict[str, Any]:
             "route_bindings": {route: {} for route in ROUTES},
             "critic_review_outputs": {route: relative_repo_path(root, "NO_CURRENT_CRITIC_REVIEW") for route in ROUTES},
             "round_checkpoints": [],
+            "terminal_reviewer_targets": {},
             "parse_warnings": ["CURRENT.md 不存在或不可读；看板不能判定当前 portfolio truth。"],
             "current_worker_zh": "等待发布当前轮次入口",
             "next_worker_zh": "规划者补齐 CURRENT.md",
@@ -852,6 +894,47 @@ def result_label_zh(route: dict[str, Any]) -> str:
     if route.get("completion_blockers"):
         return "未完成"
     return state
+
+
+def apply_terminal_reviewer_target(route: dict[str, Any], handoff: dict[str, Any]) -> None:
+    target = handoff.get("terminal_reviewer_targets", {}).get(route.get("id", ""), {})
+    route["terminal_reviewer_target"] = target
+    if not target:
+        route["terminal_reviewer_ready"] = False
+        route["terminal_reviewer_warnings"] = []
+        return
+
+    token = target.get("terminal_token", "")
+    target_head = target.get("reviewer_target_head", "")
+    route_head = route.get("sha", "")
+    origin_head = route.get("origin_sha", "")
+    required_files = ("result", "completion_check", "review_request", "manifest")
+    missing_files = [name for name in required_files if not route.get("packet_files", {}).get(name)]
+    token_present = bool(token and token in route.get("status_keywords", []))
+    head_matches_local = bool(target_head and route_head and target_head == route_head)
+    head_matches_origin = bool(target_head and origin_head and target_head == origin_head)
+    decisions_open = (
+        target.get("route_promotion_decision") in {"", "NOT_REVIEWED"}
+        and target.get("route_negative_decision") in {"", "NOT_REVIEWED"}
+        and target.get("scientific_resolution_status") in {"", "AWAITING_REVIEW"}
+    )
+    forbidden_closed = (
+        target.get("validation_upload") in {"", "false", "False"}
+        and target.get("hosted_metric_claim") in {"", "false", "False"}
+        and target.get("m11_started") in {"", "false", "False"}
+    )
+    warnings = []
+    if not token_present:
+        warnings.append("terminal reviewer target token not found in route packet")
+    if missing_files:
+        warnings.append("terminal reviewer target missing packet files: " + ", ".join(missing_files))
+    if not head_matches_local:
+        warnings.append("terminal reviewer target head does not match local route head")
+    if not decisions_open or not forbidden_closed:
+        warnings.append("terminal reviewer target authority fields are not review-boundary safe")
+    route["terminal_reviewer_ready"] = bool(token_present and not missing_files and head_matches_local and decisions_open and forbidden_closed)
+    route["terminal_reviewer_target_head_matches_origin"] = head_matches_origin
+    route["terminal_reviewer_warnings"] = warnings
 
 
 def next_checkpoint_for_route(handoff: dict[str, Any], route: str) -> dict[str, Any]:
@@ -968,6 +1051,23 @@ def annotate_handoff_workers(route: dict[str, Any], handoff: dict[str, Any]) -> 
         route["next_action"] = {"label_zh": route["next_action_zh"], "source": "portfolio_state"}
         return
 
+    if route.get("terminal_reviewer_ready"):
+        target = route.get("terminal_reviewer_target", {})
+        route["controller_authority_state_zh"] = "terminal packet ready"
+        route["controller_authority"] = {
+            **route["controller_authority"],
+            "state": "terminal_packet_ready_for_reviewer",
+            "source": "CURRENT.md terminal reviewer target + route-local packet",
+        }
+        route["current_worker_zh"] = "等待 independent reviewer"
+        route["work_summary_zh"] = f"{route['label']} controller terminal packet 已绑定到 reviewer target；当前不是 controller blocked。"
+        output_path = target.get("reviewer_output_path") or f"results/{route_id}/review.md"
+        short_head = target.get("reviewer_target_head", route.get("sha", ""))[:7]
+        route["next_action_zh"] = f"交 {route['label']} independent reviewer 审 `{short_head}`，输出 `{output_path}`。"
+        route["next_worker_zh"] = route["next_action_zh"]
+        route["next_action"] = {"label_zh": route["next_action_zh"], "source": "terminal_reviewer_target"}
+        return
+
     if route["is_active_round_route"] and critic.get("active"):
         route["current_worker_zh"] = f"{route['label']} Critic 正在判断"
         route["work_summary_zh"] = f"{route['label']} 是 {route.get('round_id', 'unknown')} active route；Critic gate: {route['critic_gate_state_zh']}；Controller: {route['controller_authority_state_zh']}。"
@@ -1021,11 +1121,11 @@ def reviewability_from_state(display_state: str, blockers: list[str]) -> dict[st
             "label_zh": "不可作为完成包审查",
             "reason_zh": "存在未完成运行态或缺失聚合证据。",
         }
-    if display_state == "待独立审查":
+    if display_state in {"待独立审查", "等待 independent reviewer"}:
         return {
             "can_review_complete": True,
             "label_zh": "可进入独立审查",
-            "reason_zh": "已有审查请求且未发现 pending/monitor 阻断 token。",
+            "reason_zh": "已有 terminal packet/review_request，且未发现当前 pending/monitor 阻断。",
         }
     if display_state == "审查通过":
         return {
@@ -1105,17 +1205,21 @@ def annotate_route_runtime(
         attempts_by_job[normalized] = merged
     route["slurm_attempts"] = sorted(attempts_by_job.values(), key=lambda item: job_sort_key(str(item.get("job_id", ""))))
 
-    blockers: list[str] = []
-    for keyword in route["status_keywords"]:
-        if keyword in INCOMPLETE_KEYWORDS:
-            blockers.append(f"packet 包含 {keyword}，monitor, not completion")
-        if keyword in UNDERTRAINED_KEYWORDS:
-            blockers.append(f"packet 包含 {keyword}，undertrained 不能作为完成证据")
-
     current_states = {job.get("state", "").split()[0] for job in deduped_jobs if job.get("source") == "squeue"}
     recent_terminal_states = {job.get("state", "").split()[0] for job in deduped_jobs if job.get("source") == "sacct"}
     active_states = current_states & ACTIVE_SLURM_STATES
-    monitor_keyword_present = any(keyword in route["status_keywords"] for keyword in INCOMPLETE_KEYWORDS)
+    terminal_reviewer_ready = bool(route.get("terminal_reviewer_ready"))
+    suppress_stale_monitor_keywords = terminal_reviewer_ready and not active_states
+
+    blockers: list[str] = []
+    for keyword in route["status_keywords"]:
+        if keyword in INCOMPLETE_KEYWORDS:
+            if not suppress_stale_monitor_keywords:
+                blockers.append(f"packet 包含 {keyword}，monitor, not completion")
+        if keyword in UNDERTRAINED_KEYWORDS:
+            blockers.append(f"packet 包含 {keyword}，undertrained 不能作为完成证据")
+
+    monitor_keyword_present = any(keyword in route["status_keywords"] for keyword in INCOMPLETE_KEYWORDS) and not suppress_stale_monitor_keywords
     completed_after_monitor = bool(monitor_keyword_present and "COMPLETED" in recent_terminal_states and not active_states)
     if current_states & SLURM_PENDING_STATES:
         blockers.append("Slurm 当前仍有排队作业，monitor, not completion")
@@ -1126,7 +1230,7 @@ def annotate_route_runtime(
     blockers.extend(route.get("packet_parse_warnings", []))
 
     keywords = set(route["status_keywords"])
-    has_review = bool(route["packet_files"].get("review"))
+    has_review = bool(route["packet_files"].get("review")) and not terminal_reviewer_ready
     review_revision = bool(keywords & set(REVIEW_REVISION_KEYWORDS))
     review_evidence = bool(keywords & set(REVIEW_EVIDENCE_KEYWORDS))
     review_monitor = bool(keywords & set(REVIEW_MONITOR_KEYWORDS))
@@ -1140,6 +1244,8 @@ def annotate_route_runtime(
         display_state = "等待监控"
     elif has_review and review_pass:
         display_state = "审查通过"
+    elif terminal_reviewer_ready:
+        display_state = "等待 independent reviewer"
     elif blockers:
         if completed_after_monitor:
             display_state = "需补证据"
@@ -1196,7 +1302,7 @@ def annotate_route_runtime(
         route["reviewability"] = reviewability_from_state(display_state, blockers)
     route["completion_blockers"] = blockers
     route["controller_activity"] = controller_activity or {}
-    runtime_state = "monitor_or_incomplete" if blockers or display_state in {"Slurm 运行中", "Slurm 排队中", "等待监控", "等待 sacct", "训练不足", "未完成"} else "terminal_packet_ready" if display_state == "待独立审查" else "reviewer_completed" if display_state == "审查通过" else "needs_revision" if display_state == "需修订" else "terminal_negative" if display_state in {"审查未通过", "终态 negative"} else "controller_active" if display_state == "Controller 运行中" else "unknown"
+    runtime_state = "monitor_or_incomplete" if blockers or display_state in {"Slurm 运行中", "Slurm 排队中", "等待监控", "等待 sacct", "训练不足", "未完成"} else "terminal_packet_ready" if display_state in {"待独立审查", "等待 independent reviewer"} else "reviewer_completed" if display_state == "审查通过" else "needs_revision" if display_state == "需修订" else "terminal_negative" if display_state in {"审查未通过", "终态 negative"} else "controller_active" if display_state == "Controller 运行中" else "unknown"
     route["runtime_state"] = {
         "state": runtime_state,
         "label_zh": display_state,
@@ -1993,6 +2099,7 @@ def collect_status(root: Path, worktree_root: Path, user: str) -> dict[str, Any]
     live_service_state = parse_watchboard_processes(process_table["stdout"], root) if process_table["ok"] else {"processes": [], "refresh_required": True, "duplicate_or_legacy_detected": False}
     ops_services = collect_ops_services(root, tmux_topology, process_table["stdout"] if process_table["ok"] else "", live_service_state)
     for route in routes:
+        apply_terminal_reviewer_target(route, handoff)
         annotate_route_runtime(route, tmux, jobs, recent_jobs, controller_activities.get(route["id"]))
         annotate_handoff_workers(route, handoff)
 
@@ -2032,9 +2139,15 @@ def collect_status(root: Path, worktree_root: Path, user: str) -> dict[str, Any]
         if route.get("is_active_round_route") and missing_windows:
             warnings.append(f"{route['label']} active route tmux 缺少窗口：{', '.join(missing_windows)}。")
         if route.get("is_active_round_route") and route.get("required_head") and route.get("origin_sha") and not route.get("head_matches_required"):
-            warnings.append(
-                f"{route['label']} CURRENT 绑定 head {route['required_head']} 与 origin head {route['origin_sha']} 不一致；Critic handoff stale，Controller 保持 blocked。"
-            )
+            if route.get("terminal_reviewer_ready"):
+                target_head = route.get("terminal_reviewer_target", {}).get("reviewer_target_head", "")
+                warnings.append(
+                    f"{route['label']} planner/critic binding head {route['required_head']} 已进入历史阶段；当前 terminal reviewer target 为 {target_head}。"
+                )
+            else:
+                warnings.append(
+                    f"{route['label']} CURRENT 绑定 head {route['required_head']} 与 origin head {route['origin_sha']} 不一致；Critic handoff stale，Controller 保持 blocked。"
+                )
         if route["dirty_count"]:
             warnings.append(f"{route['label']} worktree 有 {route['dirty_count']} 个未提交变更。")
         if route.get("routing_compatibility", {}).get("volta_usable") is False:
@@ -2381,7 +2494,7 @@ def render_html(data: dict[str, Any], refresh_seconds: int = 60) -> str:
         portfolio_badges = "".join(
             [
                 render_badge(route.get("portfolio_state", "UNKNOWN"), "badge ok" if route.get("is_active_round_route") else "badge muted"),
-                render_badge(f"Controller {route.get('controller_authority_state_zh', 'blocked')}", "badge ok" if route.get("controller_authorized") else "badge danger"),
+                render_badge(f"Controller {route.get('controller_authority_state_zh', 'blocked')}", "badge ok" if route.get("controller_authorized") or route.get("controller_authority_state_zh") != "blocked" else "badge danger"),
                 render_badge("head matched" if route.get("head_matches_required") else "head not matched/unknown", "badge ok" if route.get("head_matches_required") else "badge warn"),
             ]
         )

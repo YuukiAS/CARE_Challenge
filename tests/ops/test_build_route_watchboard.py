@@ -938,6 +938,81 @@ def test_tmux_marks_old_controller_windows_legacy_inactive(monkeypatch):
     assert "RouteC-Controller" in route["legacy_controller_windows"]
 
 
+def terminal_reviewer_current_text(round_id="round04"):
+    base = portfolio_current_text(round_id)
+    section = f"""
+## Controller Terminal Packet / Reviewer Targets
+
+```text
+route_B reviewer_target_head: bbb222
+route_B terminal_token: ROUTE_B_{round_id.upper()}_TERMINAL_PACKET_READY_FOR_REVIEW
+route_B reviewer_output_path: results/route_B/review.md
+route_B route_promotion_decision: NOT_REVIEWED
+route_B route_negative_decision: NOT_REVIEWED
+route_B scientific_resolution_status: AWAITING_REVIEW
+route_B validation_upload: false
+route_B hosted_metric_claim: false
+route_B m11_started: false
+route_C reviewer_target_head: ccc333
+route_C terminal_token: ROUTE_C_{round_id.upper()}_TERMINAL_PACKET_READY_FOR_REVIEW
+route_C reviewer_output_path: results/route_C/review.md
+route_C route_promotion_decision: NOT_REVIEWED
+route_C route_negative_decision: NOT_REVIEWED
+route_C scientific_resolution_status: AWAITING_REVIEW
+route_C validation_upload: false
+route_C hosted_metric_claim: false
+route_C m11_started: false
+```
+"""
+    return base.replace("## Decision Checkpoints", section + "\n## Decision Checkpoints")
+
+
+def test_terminal_reviewer_target_parsed_from_current_round_agnostic(tmp_path):
+    parsed = watchboard.parse_current_handoff(terminal_reviewer_current_text("round05"), tmp_path / "CARE")
+
+    target = parsed["terminal_reviewer_targets"]["route_B"]
+    assert target["reviewer_target_head"] == "bbb222"
+    assert target["terminal_token"] == "ROUTE_B_ROUND05_TERMINAL_PACKET_READY_FOR_REVIEW"
+    assert target["reviewer_output_path"] == "results/route_B/review.md"
+    assert target["scientific_resolution_status"] == "AWAITING_REVIEW"
+
+
+def test_terminal_reviewer_ready_overrides_stale_monitor_and_review_keyword(tmp_path):
+    handoff = watchboard.parse_current_handoff(terminal_reviewer_current_text("round04"), tmp_path / "CARE")
+    route = route_fixture(
+        id="route_B",
+        label="Route B",
+        sha="bbb222",
+        origin_sha="old-origin",
+        status_keywords=[
+            "NEEDS_MONITOR",
+            "ROUTE_B_ROUND04_TERMINAL_PACKET_READY_FOR_REVIEW",
+            "AWAITING_REVIEW",
+            "ROUTE_B_REVIEW_NEEDS_EVIDENCE",
+        ],
+        packet_files={
+            **route_fixture()["packet_files"],
+            "result": True,
+            "completion_check": True,
+            "review_request": True,
+            "manifest": True,
+            "review": True,
+        },
+    )
+
+    watchboard.apply_terminal_reviewer_target(route, handoff)
+    watchboard.annotate_route_runtime(route, {}, [], [])
+    watchboard.annotate_handoff_workers(route, handoff)
+
+    assert route["terminal_reviewer_ready"] is True
+    assert route["display_state_zh"] == "等待 independent reviewer"
+    assert route["runtime_state"]["state"] == "terminal_packet_ready"
+    assert route["review_state"]["can_review_complete"] is True
+    assert route["current_worker_zh"] == "等待 independent reviewer"
+    assert "Controller 当前 blocked" not in route["next_action_zh"]
+
+
+
 def test_duplicate_watchboard_serve_process_state_requires_refresh():
     stdout = """192375 1 04:35:22 ./envs/env_CARE/bin/python scripts/ops/build_route_watchboard.py --user aereinh --serve --host 127.0.0.1 --port 8766
 1783551 1 1-00:00:00 python scripts/ops/build_route_watchboard.py --user aereinh --serve --host 127.0.0.1 --port 8765

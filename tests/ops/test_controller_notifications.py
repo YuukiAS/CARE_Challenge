@@ -240,9 +240,41 @@ def test_send_email_uses_starttls_login_and_recipient(monkeypatch, tmp_path):
     sent = [call for call in calls if call[0] == "send_message"][0]
     assert sent[1] == "humc2013@gmail.com"
     assert "1155246312@link.cuhk.edu.hk" in sent[2]
-    assert "[CARE][route_B][GOAL_COMPLETE]" in sent[3]
-    assert "route: route_B" in sent[4]
+    assert "[CARE][Route B][GOAL_COMPLETE]" in sent[3]
+    assert "terminal packet ready for reviewer" in sent[3]
+    assert "结论：Route B controller goal 已完成" in sent[4]
+    assert "## Route A/B/C 当前总览" in sent[4]
+    assert "## Next action" in sent[4]
+    assert "https://watchboard.httpwwwcardiacnexus-ukb.com/index.html" in sent[4]
+    assert "http://127.0.0.1:8766/index.html" in sent[4]
+    assert "app-password" not in sent[4]
+    assert "tunnel secret" not in sent[4].lower()
 
+
+def test_send_test_dry_run_uses_summary_email_format(tmp_path):
+    config_path = tmp_path / "config.json"
+    config = make_config(tmp_path)
+    config["watchboard_urls"] = {
+        "public": "https://watchboard.httpwwwcardiacnexus-ukb.com/index.html",
+        "local": "http://127.0.0.1:8766/index.html",
+    }
+    config_path.write_text(json.dumps(config), encoding="utf-8")
+
+    proc = subprocess.run(
+        [sys.executable, str(MODULE_PATH), "--config", str(config_path), "--send-test", "--dry-run"],
+        text=True,
+        capture_output=True,
+        check=False,
+    )
+
+    assert proc.returncode == 0
+    payload = json.loads(proc.stdout)
+    assert "[CARE][Route B][GOAL_COMPLETE]" in payload["subject"]
+    assert "结论：Route B controller goal 已完成" in payload["body"]
+    assert "## Route A/B/C 当前总览" in payload["body"]
+    assert "## Next action" in payload["body"]
+    assert "https://watchboard.httpwwwcardiacnexus-ukb.com/index.html" in payload["body"]
+    assert "CARE_NOTIFY_SMTP_PASSWORD" not in payload["body"]
 
 
 def test_health_status_written_on_scan(tmp_path):
