@@ -254,6 +254,7 @@ Route C critic 必须拒绝：
 - nnU-Net-only、postprocess-only、wrapper-only、placeholder、mock、dataclass、config-only、contract-JSON-only。
 - missing same-split baseline、hard subgroup matrix、no-T2 safety、real Cine evidence 或 honest blocker classification。
 - pending、monitor、submitted-only、undertrained、stale token 让 controller 提前结束。
+- 长时间等待 Slurm 时只挂单一 compatible partition 队列，而没有按 `htzhulab` + `a100-gpu` 默认规则启动 isolated routing race；这条规则适用于 round03、round04、round05 及以后所有 CARE route/controller 任务。
 - validator 只查文件存在，known-bad 不覆盖语义绕过。
 - 没有 route-specific controller-forward task graph 和 reviewer pass requirement。
 - 留下设计空白，要求 Codex/controller 自行决定模型结构、训练预算、输入输出路径、Slurm 策略、validator 语义、known-bad、终止条件或 reviewer pass/fail。

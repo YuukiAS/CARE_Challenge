@@ -33,6 +33,8 @@ sinfo -o '%P|%a|%l|%D|%t|%G'
 
 Do not switch partitions for short waits or routine pending jobs. Switch only when `htzhulab` is full and the expected wait is long relative to the planned job budget.
 
+For CARE long-run jobs, a long expected wait on one compatible partition is not a reason to monitor a single queue indefinitely. If queue inspection or an existing pending attempt shows a materially long wait and another default routing partition is compatible, controllers must use a routing race rather than leave only one queue entry pending.
+
 ## Pending and Goal Block Rule
 
 Do not report a scheduler block just because jobs are pending.
@@ -67,7 +69,7 @@ If the job completed but runtime output is missing or aggregation fails, complet
 
 ## Routing Race
 
-When both `htzhulab` and `a100-gpu` are plausibly long-wait and either may start first, a routing race to both partitions is allowed.
+When both `htzhulab` and `a100-gpu` are plausibly long-wait and either may start first, a routing race to both partitions is required. If a controller already has only one long-wait pending attempt and the other default race partition is compatible, it must submit the isolated mirror promptly instead of continuing single-queue monitoring.
 
 Rules:
 
