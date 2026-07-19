@@ -130,13 +130,25 @@ jobs:
               raise SystemExit(f'bare Python in formal command fields: {bad}')
           print(f'formal Slurm/validator command scan passed; checked={checked}')
           PY
-          if grep -EIn 'future[ -]work|defer|deferred|optional|后续事项|非阻断附件|仅smoke' \
-            prompts/routes/portfolio_round04_route_B_planner_plan_20260719.md \
-            prompts/routes/route_B_round04_controller_contract.md \
-            prompts/routes/route_B_round04_executor_plan.yaml; then
-            echo 'formal CineMA/registration/temporal deferral found' >&2
-            exit 1
-          fi
+          python3 - <<'PY'
+          import re
+          from pathlib import Path
+          files = [
+              Path('prompts/routes/portfolio_round04_route_B_planner_plan_20260719.md'),
+              Path('prompts/routes/route_B_round04_controller_contract.md'),
+              Path('prompts/routes/route_B_round04_executor_plan.yaml'),
+          ]
+          subject = re.compile(r'CineMA|registration|temporal|SVF|SyN', re.IGNORECASE)
+          deferral = re.compile(r'future[ -]work|deferred|optional|后续事项|非阻断附件|仅smoke', re.IGNORECASE)
+          bad = []
+          for path in files:
+              for line_no, line in enumerate(path.read_text(encoding='utf-8').splitlines(), 1):
+                  if subject.search(line) and deferral.search(line):
+                      bad.append(f'{path}:{line_no}:{line}')
+          if bad:
+              raise SystemExit('formal CineMA/registration/temporal deferral found:\n' + '\n'.join(bad))
+          print('formal CineMA/registration/temporal deferral scan passed')
+          PY
           HITS=$(grep -EIn 'CineMA|registration|temporal|SVF|SyN' "${FILES[@]}" | wc -l)
           test "$HITS" -ge 20
           echo "CineMA/registration/temporal coverage hits: $HITS"
