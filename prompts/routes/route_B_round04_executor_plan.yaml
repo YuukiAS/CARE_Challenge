@@ -1,0 +1,295 @@
+plan_version: 4
+route_id: route_B
+portfolio_round: round04
+date: '2026-07-19'
+task_key: route_B_round04_leaderboard_full_implementation
+status: DRAFT_FOR_ROUND04_CRITIC_REVIEW
+branch: route_B
+contract_path: prompts/routes/route_B_round04_controller_contract.md
+source_plan_path: prompts/routes/portfolio_round04_route_B_planner_plan_20260719.md
+critic_request_path: prompts/routes/route_B_round04_critic_request.md
+planner_audit_path: prompts/routes/route_B_round04_planner_audit.md
+execution_mode: controller_supervised
+requires_execution_controller: true
+controller_start_authorized: false
+required_planning_review_path: prompts/routes/route_B_round04_critic_review.md
+required_planning_review_token: ROUTE_B_ROUND04_PLANNING_READY_FOR_CONTROLLER
+executor_slots: 2
+executor_count: 12
+max_parallel: 2
+parallel_execution_allowed: true
+merge_owner: controller
+mapper_required: true
+architecture_impact: system
+slurm_runtime_continuity_required: true
+continuity_backend: slurm_dependency
+review_mode: independent_thread
+reviewer: separate_readonly
+python_executable: /users/a/e/aereinh/CARE/envs/env_CARE/bin/python
+formal_job_walltime_max: '08:00:00'
+round03_binding: {review_commit: b9c7664da7cb1f1892fff37a4497722f31a0a96d, packet_head: 8dfa40f8c4cedb2507f35a482bd46244a7a1c94c, token: ROUTE_B_ROUND03_REVIEW_ADEQUATE_NEGATIVE}
+authority: {validation_upload: false, route_promotion: false, m11: false, cross_route_merge: false, hosted_metric_claim: false, final_scientific_decision: false, runtime_push: false, controller_review_md: false}
+b3_gate: {microfit_steps: 512, union_labels: [1, 4, 5], union_dice_min: 0.55, union_gain_min: 0.30, lv_dice_min: 0.40, rv_dice_min: 0.40, gradient_coverage_min: 0.90, old_overfit_field_blocks_flow: false, evidence_steps: 6000, evidence_seconds: 1800, validation_events: 3, round03_step_credit: 0}
+formal_metrics: [same_split_nnunet, casewise_help_harm, scar_positive, t2_edema_positive, no_t2_safety, CenterB, CenterC, remote_fp, component_count, HD95, volume_ratio]
+slurm_contract: {python: /users/a/e/aereinh/CARE/envs/env_CARE/bin/python, preferred: [htzhulab, a100-gpu], race_trigger: queue_over_30m_or_two_pending_checks, isolated_mirrors: true, atomic_winner_lock: true, pending_loser_cancel: true, loser_credit: zero, volta_exact_preflight: true, volta_semantic_downscale: false, training_dependency: afterok, finalizer_dependency: afterany, scheduler_block_hours: 24, monitor_is_completion: false}
+known_bad: [smoke_as_training, existence_only_validator, pending_as_completion, old_B3_kill_gate, bootstrap_or_EMA_formal_bank, no_t2_edema_negative, nnunet_only_bypass, fake_CineMA, unmatched_random_control, direct_velocity_warp, missing_seven_step_SVF, proxy_Jacobian, pair_as_case_aggregation, unconsumed_temporal_fields, frame0_only_temporal, stale_metrics, local_proxy_as_official, runtime_push_or_review]
+common_retry: &retry {operational_retry_allowed: true, same_executor_attempt: true, max_startup_retries: 2, max_preemption_retries: 2, max_unknown_retries: 0, require_same_code_hash: true, require_same_config_hash: true, require_same_split_hash: true, failed_attempt_training_credit: zero}
+common_dependency: &dep {training_dependency: afterok, finalizer_dependency: afterany}
+stage_contracts:
+  R4B0: {phase: 'bind/fingerprint/manifests', inputs: 'round03+main', outputs: 'source_probe,fingerprint_matrix,manifests,validator_fixtures', failure: 'fingerprint mismatch blocks inheritance', command: '/users/a/e/aereinh/CARE/envs/env_CARE/bin/python scripts/route_B_round04/build_assets.py --out results/route_B/round04/executors/R4B0', token: ROUTE_B_ROUND04_R4B0_READY_FOR_CONTROLLER_MERGE}
+  R4B1: {phase: 'package migration+B3A repair', inputs: 'R4B0', outputs: 'four-scale code,target/loss repair,static tests', failure: 'shared defect returns planner', command: '/users/a/e/aereinh/CARE/envs/env_CARE/bin/python -m pytest -q tests/route_B_round04', token: ROUTE_B_ROUND04_R4B1_READY_FOR_CONTROLLER_MERGE}
+  R4B2: {phase: 'real implementation+microfit', inputs: 'R4B1', outputs: '512-step metrics,interventions,reload,CineMA/SVF/temporal gates', failure: 'second microfit failure needs revision', command: '/users/a/e/aereinh/CARE/envs/env_CARE/bin/python scripts/route_B_round04/run_implementation_gate.py --microfit-steps 512 --strict --out results/route_B/round04/executors/R4B2', token: ROUTE_B_ROUND04_R4B2_IMPLEMENTATION_GATE_PASSED}
+  R4B3: {phase: 'evidence warmup 6000', inputs: 'R4B2', outputs: 'training,sampler,gradients,noncollapse,reload', failure: 'old anatomy field cannot block', command: '/users/a/e/aereinh/CARE/envs/env_CARE/bin/python scripts/training/route_B_round04/train_myops.py --stage evidence_warmup --steps 6000', token: ROUTE_B_ROUND04_R4B3_EVIDENCE_READY_FOR_PROPOSAL}
+  R4B4: {phase: 'OOF+safe negatives+proposal 8000', inputs: 'R4B3', outputs: 'bank/queue receipts,proposal recall,casewise', failure: 'adequate miss is stage negative', command: '/users/a/e/aereinh/CARE/envs/env_CARE/bin/python scripts/training/route_B_round04/train_myops.py --stage proposal --steps 8000', token: ROUTE_B_ROUND04_R4B4_PROPOSAL_GATE_PASSED}
+  R4B5: {phase: 'scar/edema refiners 10000', inputs: 'R4B4', outputs: 'ROI retention,metrics,component/FP interventions', failure: 'adequate miss is stage negative', command: '/users/a/e/aereinh/CARE/envs/env_CARE/bin/python scripts/training/route_B_round04/train_myops.py --stage refiner --steps 10000', token: ROUTE_B_ROUND04_R4B5_REFINER_GATE_PASSED}
+  R4B6: {phase: 'joint 8000+forced 44-case selector', inputs: 'R4B5', outputs: 'baseline,help/harm,subgroups,HD95/FP/components/volume', failure: 'adequate miss is MyoPS negative', command: '/users/a/e/aereinh/CARE/envs/env_CARE/bin/python scripts/training/route_B_round04/train_myops.py --stage joint --steps 8000 && /users/a/e/aereinh/CARE/envs/env_CARE/bin/python scripts/route_B_round04/evaluate_same_split.py --force', token: ROUTE_B_ROUND04_R4B6_MYOPS_FULL_EVIDENCE_COMPLETE}
+  R4B7: {phase: 'official CineMA 8000', inputs: 'R4B2', outputs: 'source SHA/hook,common init,case metrics,reload', failure: 'asset defect external blocker', command: '/users/a/e/aereinh/CARE/envs/env_CARE/bin/python scripts/training/route_B_round04/train_cine_source.py --source official_pretrained --steps 8000', token: ROUTE_B_ROUND04_R4B7_CINEMA_PRETRAINED_COMPLETE}
+  R4B8: {phase: 'matched-random CineMA 8000', inputs: 'R4B2', outputs: 'parameter/init/optimizer/case/frame/augmentation match', failure: 'mismatch needs revision', command: '/users/a/e/aereinh/CARE/envs/env_CARE/bin/python scripts/training/route_B_round04/train_cine_source.py --source matched_random --steps 8000', token: ROUTE_B_ROUND04_R4B8_CINEMA_RANDOM_COMPLETE}
+  R4B9: {phase: 'seven-step SVF 25000+real SyN', inputs: 'R4B7+R4B8', outputs: 'Jacobian,inverse,pair/case/aggregate,SyN', failure: 'adequate miss is stage negative', command: '/users/a/e/aereinh/CARE/envs/env_CARE/bin/python scripts/training/route_B_round04/train_registration.py --steps 25000', token: ROUTE_B_ROUND04_R4B9_REGISTRATION_COMPLETE}
+  R4B10: {phase: 'registered temporal 20000+seven controls', inputs: 'R4B9', outputs: 'field consumption,casewise ablations,selector,reload', failure: 'adequate miss is Cine negative', command: '/users/a/e/aereinh/CARE/envs/env_CARE/bin/python scripts/training/route_B_round04/train_temporal.py --steps 20000 && /users/a/e/aereinh/CARE/envs/env_CARE/bin/python scripts/route_B_round04/evaluate_temporal_ablation.py --force', token: ROUTE_B_ROUND04_R4B10_TEMPORAL_ABLATION_COMPLETE}
+  R4B11: {phase: 'afterany finalizer+mapper+validators+local commit', inputs: 'all attempts', outputs: 'accounting,packet,known-bad,scans,reports', failure: 'gaps need monitor/evidence', command: '/users/a/e/aereinh/CARE/envs/env_CARE/bin/python scripts/route_B_round04/finalize_round04.py --plan prompts/routes/route_B_round04_executor_plan.yaml', token: ROUTE_B_ROUND04_TERMINAL_PACKET_READY_FOR_REVIEW}
+executors:
+  - id: R4B0
+    lane: tooling
+    wave: 1
+    prompt_path: prompts/routes/executors/route_B_round04/r4b0.md
+    result_dir: results/route_B/round04/executors/R4B0
+    runtime_output_root: results/route_B/runtime/round04/R4B0
+    slurm_job_namespace: care_rB04_r4b0
+    lock_path: results/route_B/runtime/round04/R4B0/R4B0.lock
+    log_path: logs/route_B_round04/R4B0.log
+    merge_order: 10
+    required_completion_file: results/route_B/round04/executors/R4B0/completion.json
+    required_completion_token: ROUTE_B_ROUND04_R4B0_READY_FOR_CONTROLLER_MERGE
+    depends_on: []
+    can_run_parallel: false
+    slurm_required: false
+    write_scope: [results/route_B/round04/executors/R4B0, results/route_B/runtime/round04/R4B0]
+  - id: R4B1
+    lane: shared
+    wave: 2
+    prompt_path: prompts/routes/executors/route_B_round04/r4b1.md
+    result_dir: results/route_B/round04/executors/R4B1
+    runtime_output_root: results/route_B/runtime/round04/R4B1
+    slurm_job_namespace: care_rB04_r4b1
+    lock_path: results/route_B/runtime/round04/R4B1/R4B1.lock
+    log_path: logs/route_B_round04/R4B1.log
+    merge_order: 20
+    required_completion_file: results/route_B/round04/executors/R4B1/completion.json
+    required_completion_token: ROUTE_B_ROUND04_R4B1_READY_FOR_CONTROLLER_MERGE
+    depends_on: [R4B0]
+    can_run_parallel: false
+    slurm_required: false
+    write_scope: [results/route_B/round04/executors/R4B1, results/route_B/runtime/round04/R4B1]
+    write_scope: [src/care_myocardium/route_B_round04, configs/route_B_round04, scripts/route_B_round04, scripts/training/route_B_round04, scripts/validation/route_B_round04, tests/route_B_round04, jobs/route_B_round04, results/route_B/round04/executors/R4B1]
+  - id: R4B2
+    lane: tooling
+    wave: 3
+    prompt_path: prompts/routes/executors/route_B_round04/r4b2.md
+    result_dir: results/route_B/round04/executors/R4B2
+    runtime_output_root: results/route_B/runtime/round04/R4B2
+    slurm_job_namespace: care_rB04_r4b2
+    lock_path: results/route_B/runtime/round04/R4B2/R4B2.lock
+    log_path: logs/route_B_round04/R4B2.log
+    merge_order: 30
+    required_completion_file: results/route_B/round04/executors/R4B2/completion.json
+    required_completion_token: ROUTE_B_ROUND04_R4B2_IMPLEMENTATION_GATE_PASSED
+    depends_on: [R4B1]
+    can_run_parallel: false
+    slurm_required: true
+    write_scope: [results/route_B/round04/executors/R4B2, results/route_B/runtime/round04/R4B2]
+    retry_policy: *retry
+    slurm_dependency_policy: *dep
+    preflight: {required: true, command: '/users/a/e/aereinh/CARE/envs/env_CARE/bin/python scripts/route_B_round04/preflight.py --executor R4B2 --partition ${SLURM_JOB_PARTITION}', receipt_path: results/route_B/round04/executors/R4B2/preflight.json}
+    retry_ledger_path: results/route_B/round04/executors/R4B2/retry_ledger.json
+  - id: R4B3
+    lane: myops
+    wave: 4
+    prompt_path: prompts/routes/executors/route_B_round04/r4b3.md
+    result_dir: results/route_B/round04/executors/R4B3
+    runtime_output_root: results/route_B/runtime/round04/R4B3
+    slurm_job_namespace: care_rB04_r4b3
+    lock_path: results/route_B/runtime/round04/R4B3/R4B3.lock
+    log_path: logs/route_B_round04/R4B3.log
+    merge_order: 40
+    required_completion_file: results/route_B/round04/executors/R4B3/completion.json
+    required_completion_token: ROUTE_B_ROUND04_R4B3_EVIDENCE_READY_FOR_PROPOSAL
+    depends_on: [R4B2]
+    can_run_parallel: true
+    slurm_required: true
+    write_scope: [results/route_B/round04/executors/R4B3, results/route_B/runtime/round04/R4B3]
+    isolation_proof: myops_only_unique_result_runtime_log_lock
+    retry_policy: *retry
+    slurm_dependency_policy: *dep
+    preflight: {required: true, command: '/users/a/e/aereinh/CARE/envs/env_CARE/bin/python scripts/route_B_round04/preflight.py --executor R4B3 --partition ${SLURM_JOB_PARTITION}', receipt_path: results/route_B/round04/executors/R4B3/preflight.json}
+    retry_ledger_path: results/route_B/round04/executors/R4B3/retry_ledger.json
+  - id: R4B7
+    lane: cine
+    wave: 4
+    prompt_path: prompts/routes/executors/route_B_round04/r4b7.md
+    result_dir: results/route_B/round04/executors/R4B7
+    runtime_output_root: results/route_B/runtime/round04/R4B7
+    slurm_job_namespace: care_rB04_r4b7
+    lock_path: results/route_B/runtime/round04/R4B7/R4B7.lock
+    log_path: logs/route_B_round04/R4B7.log
+    merge_order: 70
+    required_completion_file: results/route_B/round04/executors/R4B7/completion.json
+    required_completion_token: ROUTE_B_ROUND04_R4B7_CINEMA_PRETRAINED_COMPLETE
+    depends_on: [R4B2]
+    can_run_parallel: true
+    slurm_required: true
+    write_scope: [results/route_B/round04/executors/R4B7, results/route_B/runtime/round04/R4B7]
+    isolation_proof: cine_only_unique_result_runtime_log_lock
+    retry_policy: *retry
+    slurm_dependency_policy: *dep
+    preflight: {required: true, command: '/users/a/e/aereinh/CARE/envs/env_CARE/bin/python scripts/route_B_round04/preflight.py --executor R4B7 --partition ${SLURM_JOB_PARTITION}', receipt_path: results/route_B/round04/executors/R4B7/preflight.json}
+    retry_ledger_path: results/route_B/round04/executors/R4B7/retry_ledger.json
+  - id: R4B4
+    lane: myops
+    wave: 5
+    prompt_path: prompts/routes/executors/route_B_round04/r4b4.md
+    result_dir: results/route_B/round04/executors/R4B4
+    runtime_output_root: results/route_B/runtime/round04/R4B4
+    slurm_job_namespace: care_rB04_r4b4
+    lock_path: results/route_B/runtime/round04/R4B4/R4B4.lock
+    log_path: logs/route_B_round04/R4B4.log
+    merge_order: 50
+    required_completion_file: results/route_B/round04/executors/R4B4/completion.json
+    required_completion_token: ROUTE_B_ROUND04_R4B4_PROPOSAL_GATE_PASSED
+    depends_on: [R4B3]
+    can_run_parallel: true
+    slurm_required: true
+    write_scope: [results/route_B/round04/executors/R4B4, results/route_B/runtime/round04/R4B4]
+    isolation_proof: myops_only_unique_result_runtime_log_lock
+    retry_policy: *retry
+    slurm_dependency_policy: *dep
+    preflight: {required: true, command: '/users/a/e/aereinh/CARE/envs/env_CARE/bin/python scripts/route_B_round04/preflight.py --executor R4B4 --partition ${SLURM_JOB_PARTITION}', receipt_path: results/route_B/round04/executors/R4B4/preflight.json}
+    retry_ledger_path: results/route_B/round04/executors/R4B4/retry_ledger.json
+  - id: R4B8
+    lane: cine
+    wave: 5
+    prompt_path: prompts/routes/executors/route_B_round04/r4b8.md
+    result_dir: results/route_B/round04/executors/R4B8
+    runtime_output_root: results/route_B/runtime/round04/R4B8
+    slurm_job_namespace: care_rB04_r4b8
+    lock_path: results/route_B/runtime/round04/R4B8/R4B8.lock
+    log_path: logs/route_B_round04/R4B8.log
+    merge_order: 80
+    required_completion_file: results/route_B/round04/executors/R4B8/completion.json
+    required_completion_token: ROUTE_B_ROUND04_R4B8_CINEMA_RANDOM_COMPLETE
+    depends_on: [R4B2]
+    can_run_parallel: true
+    slurm_required: true
+    write_scope: [results/route_B/round04/executors/R4B8, results/route_B/runtime/round04/R4B8]
+    isolation_proof: cine_only_unique_result_runtime_log_lock
+    retry_policy: *retry
+    slurm_dependency_policy: *dep
+    preflight: {required: true, command: '/users/a/e/aereinh/CARE/envs/env_CARE/bin/python scripts/route_B_round04/preflight.py --executor R4B8 --partition ${SLURM_JOB_PARTITION}', receipt_path: results/route_B/round04/executors/R4B8/preflight.json}
+    retry_ledger_path: results/route_B/round04/executors/R4B8/retry_ledger.json
+  - id: R4B5
+    lane: myops
+    wave: 6
+    prompt_path: prompts/routes/executors/route_B_round04/r4b5.md
+    result_dir: results/route_B/round04/executors/R4B5
+    runtime_output_root: results/route_B/runtime/round04/R4B5
+    slurm_job_namespace: care_rB04_r4b5
+    lock_path: results/route_B/runtime/round04/R4B5/R4B5.lock
+    log_path: logs/route_B_round04/R4B5.log
+    merge_order: 60
+    required_completion_file: results/route_B/round04/executors/R4B5/completion.json
+    required_completion_token: ROUTE_B_ROUND04_R4B5_REFINER_GATE_PASSED
+    depends_on: [R4B4]
+    can_run_parallel: true
+    slurm_required: true
+    write_scope: [results/route_B/round04/executors/R4B5, results/route_B/runtime/round04/R4B5]
+    isolation_proof: myops_only_unique_result_runtime_log_lock
+    retry_policy: *retry
+    slurm_dependency_policy: *dep
+    preflight: {required: true, command: '/users/a/e/aereinh/CARE/envs/env_CARE/bin/python scripts/route_B_round04/preflight.py --executor R4B5 --partition ${SLURM_JOB_PARTITION}', receipt_path: results/route_B/round04/executors/R4B5/preflight.json}
+    retry_ledger_path: results/route_B/round04/executors/R4B5/retry_ledger.json
+  - id: R4B9
+    lane: cine
+    wave: 6
+    prompt_path: prompts/routes/executors/route_B_round04/r4b9.md
+    result_dir: results/route_B/round04/executors/R4B9
+    runtime_output_root: results/route_B/runtime/round04/R4B9
+    slurm_job_namespace: care_rB04_r4b9
+    lock_path: results/route_B/runtime/round04/R4B9/R4B9.lock
+    log_path: logs/route_B_round04/R4B9.log
+    merge_order: 90
+    required_completion_file: results/route_B/round04/executors/R4B9/completion.json
+    required_completion_token: ROUTE_B_ROUND04_R4B9_REGISTRATION_COMPLETE
+    depends_on: [R4B7, R4B8]
+    can_run_parallel: true
+    slurm_required: true
+    write_scope: [results/route_B/round04/executors/R4B9, results/route_B/runtime/round04/R4B9]
+    isolation_proof: cine_only_unique_result_runtime_log_lock
+    retry_policy: *retry
+    slurm_dependency_policy: *dep
+    preflight: {required: true, command: '/users/a/e/aereinh/CARE/envs/env_CARE/bin/python scripts/route_B_round04/preflight.py --executor R4B9 --partition ${SLURM_JOB_PARTITION}', receipt_path: results/route_B/round04/executors/R4B9/preflight.json}
+    retry_ledger_path: results/route_B/round04/executors/R4B9/retry_ledger.json
+  - id: R4B6
+    lane: myops
+    wave: 7
+    prompt_path: prompts/routes/executors/route_B_round04/r4b6.md
+    result_dir: results/route_B/round04/executors/R4B6
+    runtime_output_root: results/route_B/runtime/round04/R4B6
+    slurm_job_namespace: care_rB04_r4b6
+    lock_path: results/route_B/runtime/round04/R4B6/R4B6.lock
+    log_path: logs/route_B_round04/R4B6.log
+    merge_order: 65
+    required_completion_file: results/route_B/round04/executors/R4B6/completion.json
+    required_completion_token: ROUTE_B_ROUND04_R4B6_MYOPS_FULL_EVIDENCE_COMPLETE
+    depends_on: [R4B5]
+    can_run_parallel: true
+    slurm_required: true
+    write_scope: [results/route_B/round04/executors/R4B6, results/route_B/runtime/round04/R4B6]
+    isolation_proof: myops_only_unique_result_runtime_log_lock
+    retry_policy: *retry
+    slurm_dependency_policy: *dep
+    preflight: {required: true, command: '/users/a/e/aereinh/CARE/envs/env_CARE/bin/python scripts/route_B_round04/preflight.py --executor R4B6 --partition ${SLURM_JOB_PARTITION}', receipt_path: results/route_B/round04/executors/R4B6/preflight.json}
+    retry_ledger_path: results/route_B/round04/executors/R4B6/retry_ledger.json
+  - id: R4B10
+    lane: cine
+    wave: 7
+    prompt_path: prompts/routes/executors/route_B_round04/r4b10.md
+    result_dir: results/route_B/round04/executors/R4B10
+    runtime_output_root: results/route_B/runtime/round04/R4B10
+    slurm_job_namespace: care_rB04_r4b10
+    lock_path: results/route_B/runtime/round04/R4B10/R4B10.lock
+    log_path: logs/route_B_round04/R4B10.log
+    merge_order: 100
+    required_completion_file: results/route_B/round04/executors/R4B10/completion.json
+    required_completion_token: ROUTE_B_ROUND04_R4B10_TEMPORAL_ABLATION_COMPLETE
+    depends_on: [R4B9]
+    can_run_parallel: true
+    slurm_required: true
+    write_scope: [results/route_B/round04/executors/R4B10, results/route_B/runtime/round04/R4B10]
+    isolation_proof: cine_only_unique_result_runtime_log_lock
+    retry_policy: *retry
+    slurm_dependency_policy: *dep
+    preflight: {required: true, command: '/users/a/e/aereinh/CARE/envs/env_CARE/bin/python scripts/route_B_round04/preflight.py --executor R4B10 --partition ${SLURM_JOB_PARTITION}', receipt_path: results/route_B/round04/executors/R4B10/preflight.json}
+    retry_ledger_path: results/route_B/round04/executors/R4B10/retry_ledger.json
+  - id: R4B11
+    lane: tooling
+    wave: 8
+    prompt_path: prompts/routes/executors/route_B_round04/r4b11.md
+    result_dir: results/route_B/round04/executors/R4B11
+    runtime_output_root: results/route_B/runtime/round04/R4B11
+    slurm_job_namespace: care_rB04_r4b11
+    lock_path: results/route_B/runtime/round04/R4B11/R4B11.lock
+    log_path: logs/route_B_round04/R4B11.log
+    merge_order: 110
+    required_completion_file: results/route_B/round04/executors/R4B11/completion.json
+    required_completion_token: ROUTE_B_ROUND04_TERMINAL_PACKET_READY_FOR_REVIEW
+    depends_on: [R4B2]
+    can_run_parallel: false
+    slurm_required: true
+    write_scope: [results/route_B/round04/executors/R4B11, results/route_B/runtime/round04/R4B11]
+    retry_policy: *retry
+    slurm_dependency_policy: *dep
+    preflight: {required: true, command: '/users/a/e/aereinh/CARE/envs/env_CARE/bin/python scripts/route_B_round04/preflight.py --executor R4B11 --partition ${SLURM_JOB_PARTITION}', receipt_path: results/route_B/round04/executors/R4B11/preflight.json}
+    retry_ledger_path: results/route_B/round04/executors/R4B11/retry_ledger.json
+    slurm_dependency_policy: {training_dependency: afterany, finalizer_dependency: afterany}
+    independent_of_upstream_success: true
+    independent_dependency_reason: terminal_accounting_for_every_started_attempt
