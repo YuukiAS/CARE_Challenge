@@ -185,11 +185,12 @@ MUTATING_TMUX_SUBCOMMANDS = {"send-keys", "new-session", "kill-session", "kill-w
 TMUX_SESSION_SPECS = (
     {
         "session": "care_watchboard",
-        "label_zh": "Watchboard 服务",
-        "purpose_zh": "本地 shell、动态看板服务与 cloudflared tunnel",
-        "expected_windows": ("bash", "watchboard-tunnel"),
+        "label_zh": "Ops layer",
+        "purpose_zh": "Watchboard server、cloudflared tunnel 与 controller goal email notifier",
+        "expected_windows": ("Watchboard", "watchboard-tunnel", "Notify"),
         "window_aliases": {
-            "bash": ("./envs/env_CARE/bin/python", "python", "python3"),
+            "Watchboard": ("python", "python3", "./envs/env_CARE/bin/python", "/users/a/e/aereinh/CARE/envs/env_CARE/bin/python"),
+            "watchboard-tunnel": ("Tunnel", "cloudflared"),
         },
     },
     {
@@ -225,6 +226,10 @@ FORBIDDEN_ACTIONS = (
     "git merge",
     "git push",
     "upload",
+    "route promotion",
+    "M11",
+    "hosted metric claim",
+    "final scientific decision",
 )
 
 
@@ -1751,6 +1756,162 @@ def parse_watchboard_processes(stdout: str, root: Path) -> dict[str, Any]:
     }
 
 
+def path_from_config(root: Path, config: dict[str, Any], key: str, default: str) -> Path:
+    raw = Path(str(config.get(key) or default))
+    return raw if raw.is_absolute() else root / raw
+
+
+def parse_notifier_processes(stdout: str) -> list[dict[str, Any]]:
+    processes: list[dict[str, Any]] = []
+    for line in stdout.splitlines():
+        if "notify_goal_watcher.py" not in line or "--loop" not in line:
+            continue
+        parts = line.split(None, 3)
+        if len(parts) < 4:
+            continue
+        pid, ppid, etime, cmd = parts
+        processes.append(
+            {
+                "pid": pid,
+                "ppid": ppid,
+                "etime": etime,
+                "cmd": cmd,
+                "canonical_python": "/users/a/e/aereinh/CARE/envs/env_CARE/bin/python" in cmd,
+            }
+        )
+    return processes
+
+
+def read_notifier_config(root: Path) -> tuple[dict[str, Any], list[str]]:
+    path = root / "controller_notifications" / "config.example.json"
+    config, warning = read_json_file(path)
+    warnings: list[str] = []
+    if warning:
+        warnings.append(warning)
+    if not isinstance(config, dict):
+        config = {}
+    config.setdefault("enabled_routes", ["route_B", "route_C"])
+    config.setdefault("state_path", "controller_notifications/state/notified_goals.json")
+    config.setdefault("status_path", "controller_notifications/state/notify_goal_watcher_status.json")
+    config.setdefault("log_path", "controller_notifications/logs/notify_goal_watcher.log")
+    config.setdefault("tmux_session", "care_watchboard")
+    config.setdefault("tmux_window", "Notify")
+    return config, warnings
+
+
+def secret_file_presence(root: Path) -> dict[str, Any]:
+    env_path = root / "secrets" / "care_notify.env"
+    return {
+        "env_file_path": str(env_path),
+        "env_file_exists": env_path.is_file(),
+    }
+
+
+def collect_ops_services(
+    root: Path,
+    tmux_topology: list[dict[str, Any]],
+    process_stdout: str,
+    live_service_state: dict[str, Any],
+) -> dict[str, Any]:
+    topology_by_session = {item.get("session", ""): item for item in tmux_topology}
+    watchboard_topology = topology_by_session.get("care_watchboard", {})
+    window_status = watchboard_topology.get("window_status", {})
+    live_windows = watchboard_topology.get("live_windows", [])
+    panes = watchboard_topology.get("panes", [])
+
+    notifier_config, config_warnings = read_notifier_config(root)
+    notifier_status_path = path_from_config(root, notifier_config, "status_path", "controller_notifications/state/notify_goal_watcher_status.json")
+    notifier_state_path = path_from_config(root, notifier_config, "state_path", "controller_notifications/state/notified_goals.json")
+    notifier_log_path = path_from_config(root, notifier_config, "log_path", "controller_notifications/logs/notify_goal_watcher.log")
+    notifier_status, notifier_status_warning = read_json_file(notifier_status_path)
+    if notifier_status_warning:
+        config_warnings.append(notifier_status_warning)
+    if not isinstance(notifier_status, dict):
+        notifier_status = {}
+
+    notifier_processes = parse_notifier_processes(process_stdout)
+    notify_window = str(notifier_config.get("tmux_window") or "Notify")
+    notify_window_present = bool(window_status.get(notify_window)) or any(window.get("name") == notify_window for window in live_windows)
+    notifier_warnings = list(config_warnings)
+    if not notify_window_present:
+        notifier_warnings.append(f"care_watchboard:{notify_window} window missing")
+    if notify_window_present and not notifier_processes:
+        notifier_warnings.append("Notify window exists but notify_goal_watcher.py --loop process was not detected")
+    if not notifier_status_path.exists():
+        notifier_warnings.append("notify_goal_watcher_status.json missing until watcher completes first scan")
+
+    smtp_from_status = notifier_status.get("smtp", {}) if isinstance(notifier_status.get("smtp"), dict) else {}
+    secret_presence = secret_file_presence(root)
+    smtp_secret_present = bool(smtp_from_status.get("smtp_password_present")) or bool(secret_presence.get("env_file_exists"))
+
+    tunnel_processes = []
+    for line in process_stdout.splitlines():
+        if "cloudflared" not in line:
+            continue
+        if " rg " in f" {line} " or " grep " in f" {line} " or "ps -u" in line:
+            continue
+        parts = line.split(None, 3)
+        if len(parts) < 4:
+            continue
+        pid, ppid, etime, cmd = parts
+        if "care-watchboard" in cmd or "cloudflared_watchboard" in cmd:
+            tunnel_processes.append({"pid": pid, "ppid": ppid, "etime": etime, "cmd": cmd})
+    tunnel_window_present = bool(window_status.get("watchboard-tunnel")) or bool(window_status.get("Tunnel"))
+    tunnel_warnings: list[str] = []
+    if not tunnel_window_present:
+        tunnel_warnings.append("care_watchboard tunnel window missing")
+    if not tunnel_processes:
+        tunnel_warnings.append("cloudflared care-watchboard process not detected")
+
+    server_warnings: list[str] = []
+    if not window_status.get("Watchboard"):
+        server_warnings.append("canonical Watchboard window missing; legacy python window may still be serving")
+    if live_service_state.get("duplicate_or_legacy_detected"):
+        server_warnings.append("duplicate or legacy watchboard serve detected")
+
+    controller_notifier = {
+        "enabled": bool(notifier_config.get("enabled_routes")),
+        "tmux_window": notify_window,
+        "tmux_window_present": notify_window_present,
+        "process_detected": bool(notifier_processes),
+        "processes": notifier_processes,
+        "loop_command": notifier_processes[0]["cmd"] if notifier_processes else "",
+        "log_path": str(notifier_log_path),
+        "state_path": str(notifier_state_path),
+        "status_path": str(notifier_status_path),
+        "enabled_routes": list(notifier_status.get("enabled_routes") or notifier_config.get("enabled_routes", [])),
+        "last_scan": str(notifier_status.get("last_scan_at_utc") or ""),
+        "last_event": notifier_status.get("last_event"),
+        "last_email_status": str(notifier_status.get("last_email_status") or "unknown"),
+        "smtp_secret_present": smtp_secret_present,
+        "smtp_user_present": bool(smtp_from_status.get("smtp_user_present")),
+        "config_warnings": notifier_warnings,
+    }
+    return {
+        "watchboard_server": {
+            "enabled": True,
+            "tmux_window": "Watchboard",
+            "tmux_window_present": bool(window_status.get("Watchboard")),
+            "process_detected": bool(live_service_state.get("processes")),
+            "canonical_process_detected": any(proc.get("canonical") for proc in live_service_state.get("processes", [])),
+            "canonical_command": "/users/a/e/aereinh/CARE/envs/env_CARE/bin/python scripts/ops/build_route_watchboard.py --user aereinh --serve --host 127.0.0.1 --port 8766",
+            "processes": live_service_state.get("processes", []),
+            "warnings": server_warnings,
+        },
+        "watchboard_tunnel": {
+            "enabled": True,
+            "tmux_window": "watchboard-tunnel",
+            "tmux_window_present": tunnel_window_present,
+            "process_detected": bool(tunnel_processes),
+            "processes": tunnel_processes,
+            "warnings": tunnel_warnings,
+        },
+        "controller_notifier": controller_notifier,
+        "source": "tmux list-windows/list-panes + ps + notifier health JSON",
+        "panes": panes,
+    }
+
+
 def collect_staleness(routes: list[dict[str, Any]], handoff: dict[str, Any], live_service_state: dict[str, Any]) -> list[dict[str, str]]:
     staleness: list[dict[str, str]] = []
     for warning in handoff.get("parse_warnings", []):
@@ -1830,6 +1991,7 @@ def collect_status(root: Path, worktree_root: Path, user: str) -> dict[str, Any]
 
     process_table = run_cmd(["ps", "-u", user, "-o", "pid,ppid,etime,cmd"], root)
     live_service_state = parse_watchboard_processes(process_table["stdout"], root) if process_table["ok"] else {"processes": [], "refresh_required": True, "duplicate_or_legacy_detected": False}
+    ops_services = collect_ops_services(root, tmux_topology, process_table["stdout"] if process_table["ok"] else "", live_service_state)
     for route in routes:
         annotate_route_runtime(route, tmux, jobs, recent_jobs, controller_activities.get(route["id"]))
         annotate_handoff_workers(route, handoff)
@@ -1854,6 +2016,9 @@ def collect_status(root: Path, worktree_root: Path, user: str) -> dict[str, Any]
     warnings.extend(handoff.get("parse_warnings", []))
     if live_service_state.get("duplicate_or_legacy_detected"):
         warnings.append("检测到 duplicate/legacy watchboard serve；旧服务可能覆盖 results/watchboard/status.json，需只维护 care_watchboard 服务。")
+    notifier_health = ops_services.get("controller_notifier", {})
+    if notifier_health.get("config_warnings"):
+        warnings.append("Controller notifier health warning: " + "; ".join(notifier_health.get("config_warnings", [])))
     for route in routes:
         if route.get("is_deferred_fallback"):
             if route["dirty_count"]:
@@ -1909,6 +2074,7 @@ def collect_status(root: Path, worktree_root: Path, user: str) -> dict[str, Any]
         "staleness": staleness,
         "forbidden_actions": list(FORBIDDEN_ACTIONS),
         "live_service_state": live_service_state,
+        "ops_services": ops_services,
         "guardrails": {
             "mode": "read-only",
             "forbidden_actions": FORBIDDEN_ACTIONS,
@@ -2063,6 +2229,75 @@ def render_slurm_race_readiness() -> str:
       <div class="panel-head"><h2>Slurm/Race readiness</h2><span>只读展示</span></div>
       <ul>{items}</ul>
       <p class="guardrail">submitted / pending / running / awaiting-accounting / undertrained / monitor packet 都不是完成。</p>
+    </section>
+    """
+
+
+def render_ops_services(data: dict[str, Any]) -> str:
+    services = data.get("ops_services", {})
+    server = services.get("watchboard_server", {})
+    tunnel = services.get("watchboard_tunnel", {})
+    notifier = services.get("controller_notifier", {})
+
+    def status_badge(ok: bool, label: str) -> str:
+        return render_badge(label, "badge ok" if ok else "badge danger")
+
+    server_status = "canonical" if server.get("canonical_process_detected") else "needs attention"
+    tunnel_status = "running" if tunnel.get("tmux_window_present") and tunnel.get("process_detected") else "needs attention"
+    notifier_status = str(notifier.get("last_email_status") or "unknown")
+    last_event = notifier.get("last_event")
+    if isinstance(last_event, dict):
+        last_event_text = f"{last_event.get('route', '')} {last_event.get('status', '')} {last_event.get('detected_at_utc', '')}"
+    else:
+        last_event_text = str(last_event or "none")
+    warning_items = []
+    for scope, service in (("watchboard_server", server), ("watchboard_tunnel", tunnel)):
+        for warning in service.get("warnings", []):
+            warning_items.append(f"<li>{html.escape(scope)}: {html.escape(str(warning))}</li>")
+    for warning in notifier.get("config_warnings", []):
+        warning_items.append(f"<li>controller_notifier: {html.escape(str(warning))}</li>")
+    warnings_html = "".join(warning_items) or "<li>ops services have no current warnings.</li>"
+
+    return f"""
+    <section class="panel ops-services">
+      <div class="panel-head"><h2>Ops services</h2><span>care_watchboard</span></div>
+      <div class="ops-grid">
+        <div class="ops-card">
+          <h3>Watchboard server</h3>
+          <div class="badge-row compact">
+            {status_badge(bool(server.get('tmux_window_present')), 'tmux window')}
+            {status_badge(bool(server.get('canonical_process_detected')), 'canonical process')}
+          </div>
+          <p><strong>{html.escape(server_status)}</strong></p>
+          <p class="path">{soft_wrap_token(str(server.get('canonical_command', '')))}</p>
+        </div>
+        <div class="ops-card">
+          <h3>Watchboard tunnel</h3>
+          <div class="badge-row compact">
+            {status_badge(bool(tunnel.get('tmux_window_present')), 'tmux window')}
+            {status_badge(bool(tunnel.get('process_detected')), 'cloudflared')}
+          </div>
+          <p><strong>{html.escape(tunnel_status)}</strong></p>
+          <p class="path">window: {html.escape(str(tunnel.get('tmux_window', 'watchboard-tunnel')))}</p>
+        </div>
+        <div class="ops-card">
+          <h3>Controller notifier</h3>
+          <div class="badge-row compact">
+            {status_badge(bool(notifier.get('tmux_window_present')), 'Notify window')}
+            {status_badge(bool(notifier.get('process_detected')), 'watcher loop')}
+            {status_badge(bool(notifier.get('smtp_secret_present')), 'SMTP secret present')}
+          </div>
+          <div class="binding-grid single">
+            <div><span>enabled_routes</span><strong>{html.escape(', '.join(notifier.get('enabled_routes', [])) or 'none')}</strong></div>
+            <div><span>last_scan</span><strong>{html.escape(str(notifier.get('last_scan') or 'never'))}</strong></div>
+            <div><span>last_email_status</span><strong>{html.escape(notifier_status)}</strong></div>
+            <div><span>last_event</span><strong>{html.escape(last_event_text)}</strong></div>
+            <div><span>state_path</span><strong>{soft_wrap_token(str(notifier.get('state_path', '')))}</strong></div>
+            <div><span>log_path</span><strong>{soft_wrap_token(str(notifier.get('log_path', '')))}</strong></div>
+          </div>
+        </div>
+      </div>
+      <ul class="ops-warnings">{warnings_html}</ul>
     </section>
     """
 
@@ -2285,6 +2520,7 @@ def render_html(data: dict[str, Any], refresh_seconds: int = 60) -> str:
     route_jobs = len(data["route_jobs"])
     general_jobs = len(data["general_jobs"])
     tmux_topology_html = render_tmux_topology(data)
+    ops_services_html = render_ops_services(data)
     live_service_html = render_live_service_state(data)
     handoff_state_html = render_handoff_state(data)
     critic_readiness_html = render_critic_readiness(data)
@@ -2339,6 +2575,8 @@ def render_html(data: dict[str, Any], refresh_seconds: int = 60) -> str:
     </section>
 
     {slurm_race_html}
+
+    {ops_services_html}
 
     {live_service_html}
 
@@ -2642,6 +2880,34 @@ main {
   gap: 10px;
   margin-top: 12px;
 }
+.binding-grid.single {
+  grid-template-columns: 1fr;
+}
+.ops-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+}
+.ops-card {
+  min-width: 0;
+  padding: 14px;
+  background: #fbfcfd;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+}
+.ops-card h3 {
+  margin-bottom: 10px;
+  font-size: 15px;
+}
+.ops-card p {
+  margin: 8px 0 0;
+}
+.ops-warnings {
+  margin: 12px 0 0;
+  padding-left: 18px;
+  color: #374151;
+  line-height: 1.5;
+}
 .portfolio-grid div, .binding-grid div {
   min-width: 0;
   padding: 12px;
@@ -2842,7 +3108,7 @@ tr.tmux-present td {
   color: var(--muted);
 }
 @media (max-width: 1100px) {
-  .summary-grid, .routes-grid, .two-col, .two-col-inner {
+  .summary-grid, .routes-grid, .two-col, .two-col-inner, .ops-grid {
     grid-template-columns: 1fr;
   }
   .flow {

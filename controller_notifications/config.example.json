@@ -1,5 +1,8 @@
 {
-  "enabled_routes": ["route_B", "route_C"],
+  "enabled_routes": [
+    "route_B",
+    "route_C"
+  ],
   "poll_seconds": 60,
   "repo_root": "/users/a/e/aereinh/CARE",
   "codex_runtime_root": "/users/a/e/aereinh/.codex-runtime-homes",
@@ -7,7 +10,9 @@
   "state_path": "controller_notifications/state/notified_goals.json",
   "email": {
     "from": "humc2013@gmail.com",
-    "to": ["1155246312@link.cuhk.edu.hk"],
+    "to": [
+      "1155246312@link.cuhk.edu.hk"
+    ],
     "smtp_host": "smtp.gmail.com",
     "smtp_port": 587,
     "starttls": true,
@@ -17,7 +22,9 @@
     "main": {
       "label": "Main",
       "tmux_target": "",
-      "runtime_home_candidates": ["CARE__codex-controller"],
+      "runtime_home_candidates": [
+        "CARE__codex-controller"
+      ],
       "packet_paths": []
     },
     "route_A": {
@@ -56,5 +63,9 @@
         "/users/a/e/aereinh/CARE_worktrees/route_C/results/route_C/completion_check.md"
       ]
     }
-  }
+  },
+  "status_path": "controller_notifications/state/notify_goal_watcher_status.json",
+  "log_path": "controller_notifications/logs/notify_goal_watcher.log",
+  "tmux_session": "care_watchboard",
+  "tmux_window": "Notify"
 }

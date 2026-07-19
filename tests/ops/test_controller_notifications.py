@@ -1,6 +1,9 @@
 from __future__ import annotations
 
 from email.message import EmailMessage
+import json
+import os
+import subprocess
 import importlib.util
 from pathlib import Path
 import sqlite3
@@ -239,3 +242,148 @@ def test_send_email_uses_starttls_login_and_recipient(monkeypatch, tmp_path):
     assert "1155246312@link.cuhk.edu.hk" in sent[2]
     assert "[CARE][route_B][GOAL_COMPLETE]" in sent[3]
     assert "route: route_B" in sent[4]
+
+
+
+def test_health_status_written_on_scan(tmp_path):
+    config = make_config(tmp_path)
+    db = tmp_path / "runtime" / "route_B_tmux_care_route_B__care_route_B" / "goals_1.sqlite"
+    state_path = Path(config["state_path"])
+    status_path = tmp_path / "state" / "notify_goal_watcher_status.json"
+
+    write_goal_db(db, "active", updated_at_ms=1)
+    notify.run_once(config, state_path=state_path, status_path=status_path, env={}, sender=Sender(), capture_func=lambda target, root: "")
+
+    status = json.loads(status_path.read_text(encoding="utf-8"))
+    assert status["service"] == "controller_goal_notifier"
+    assert status["last_scan_at_utc"]
+    assert status["enabled_routes"] == ["route_B", "route_C"]
+    assert status["facts_count"] == 1
+    assert status["state_path"] == str(state_path)
+    assert status["status_path"] == str(status_path)
+    assert status["smtp"]["smtp_password_present"] is False
+    assert "CARE_NOTIFY_SMTP_PASSWORD is missing" in status["config_warnings"]
+
+
+def test_email_failure_records_status_and_retries_next_scan(tmp_path):
+    config = make_config(tmp_path)
+    db = tmp_path / "runtime" / "route_B_tmux_care_route_B__care_route_B" / "goals_1.sqlite"
+    state_path = Path(config["state_path"])
+    status_path = tmp_path / "state" / "notify_goal_watcher_status.json"
+    sender = Sender()
+
+    write_goal_db(db, "active", updated_at_ms=1)
+    notify.run_once(config, state_path=state_path, status_path=status_path, env={}, sender=sender)
+    write_goal_db(db, "complete", updated_at_ms=2)
+
+    def failing_sender(config, env, event):
+        raise OSError("smtp temporary down")
+
+    events = notify.run_once(
+        config,
+        state_path=state_path,
+        status_path=status_path,
+        env={"CARE_NOTIFY_SMTP_USER": "user", "CARE_NOTIFY_SMTP_PASSWORD": "password"},
+        sender=failing_sender,
+    )
+    assert len(events) == 1
+    status = json.loads(status_path.read_text(encoding="utf-8"))
+    assert status["last_email_status"] == "failed"
+    assert status["failed_email_count"] == 1
+    state = json.loads(state_path.read_text(encoding="utf-8"))
+    assert state["notified"] == {}
+    assert state["observed"]["route_B|sqlite|thread-route-b"]["status"] == "active"
+
+    events = notify.run_once(
+        config,
+        state_path=state_path,
+        status_path=status_path,
+        env={"CARE_NOTIFY_SMTP_USER": "user", "CARE_NOTIFY_SMTP_PASSWORD": "password"},
+        sender=sender,
+    )
+    assert len(events) == 1
+    assert len(sender.events) == 1
+    status = json.loads(status_path.read_text(encoding="utf-8"))
+    assert status["last_email_status"] == "sent"
+    assert status["sent_email_count"] == 1
+
+
+def test_missing_smtp_config_records_blocked_config_without_crashing(tmp_path):
+    config = make_config(tmp_path)
+    db = tmp_path / "runtime" / "route_C_tmux_care_route_C__care_route_C" / "goals_1.sqlite"
+    state_path = Path(config["state_path"])
+    status_path = tmp_path / "state" / "notify_goal_watcher_status.json"
+
+    write_goal_db(db, "active", updated_at_ms=1)
+    notify.run_once(config, state_path=state_path, status_path=status_path, env={})
+    write_goal_db(db, "blocked", updated_at_ms=2)
+    events = notify.run_once(config, state_path=state_path, status_path=status_path, env={})
+
+    assert len(events) == 1
+    status = json.loads(status_path.read_text(encoding="utf-8"))
+    assert status["last_email_status"] == "blocked_config"
+    assert status["last_event"]["status"] == "blocked"
+    state = json.loads(state_path.read_text(encoding="utf-8"))
+    assert state["notified"] == {}
+
+
+def test_existing_terminal_goal_baselines_without_backfill(tmp_path):
+    config = make_config(tmp_path)
+    db = tmp_path / "runtime" / "route_B_tmux_care_route_B__care_route_B" / "goals_1.sqlite"
+    state_path = Path(config["state_path"])
+    status_path = tmp_path / "state" / "notify_goal_watcher_status.json"
+    sender = Sender()
+
+    write_goal_db(db, "complete", updated_at_ms=1)
+    events = notify.run_once(config, state_path=state_path, status_path=status_path, env={}, sender=sender)
+
+    assert events == []
+    assert sender.events == []
+    state = json.loads(state_path.read_text(encoding="utf-8"))
+    assert state["observed"]["route_B|sqlite|thread-route-b"]["status"] == "complete"
+    assert state["notified"] == {}
+
+
+def test_start_in_tmux_dry_run_no_duplicate_and_dead_restart(tmp_path):
+    fakebin = tmp_path / "bin"
+    fakebin.mkdir()
+    care_root = tmp_path / "CARE"
+    python_path = care_root / "envs" / "env_CARE" / "bin" / "python"
+    python_path.parent.mkdir(parents=True)
+    python_path.write_text("#!/usr/bin/env bash\nexit 0\n", encoding="utf-8")
+    python_path.chmod(0o755)
+
+    tmux = fakebin / "tmux"
+    tmux.write_text(
+        "#!/usr/bin/env bash\n"
+        "if [[ \"$1\" == \"has-session\" ]]; then exit 0; fi\n"
+        "if [[ \"$1\" == \"list-windows\" ]]; then echo Notify; exit 0; fi\n"
+        "echo unexpected tmux $* >&2; exit 1\n",
+        encoding="utf-8",
+    )
+    tmux.chmod(0o755)
+    ps = fakebin / "ps"
+    ps.write_text(
+        f"#!/usr/bin/env bash\n"
+        f"if [[ \"${{CARE_FAKE_WATCHER_RUNNING:-0}}\" == \"1\" ]]; then echo '{python_path} {care_root}/controller_notifications/notify_goal_watcher.py --loop --poll-seconds 60'; fi\n",
+        encoding="utf-8",
+    )
+    ps.chmod(0o755)
+    env = {
+        **os.environ,
+        "PATH": f"{fakebin}:{os.environ['PATH']}",
+        "CARE_ROOT": str(care_root),
+        "CARE_FAKE_WATCHER_RUNNING": "1",
+        "USER": "aereinh",
+    }
+    script = Path(__file__).resolve().parents[2] / "controller_notifications" / "start_in_tmux.sh"
+
+    running = subprocess.run(["bash", str(script), "--dry-run"], env=env, text=True, capture_output=True, check=False)
+    assert running.returncode == 0
+    assert "watcher already running" in running.stdout
+    assert "new-window" not in running.stdout
+
+    env["CARE_FAKE_WATCHER_RUNNING"] = "0"
+    dead = subprocess.run(["bash", str(script), "--dry-run"], env=env, text=True, capture_output=True, check=False)
+    assert dead.returncode == 0
+    assert "tmux respawn-window -k -t care_watchboard:Notify" in dead.stdout

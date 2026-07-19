@@ -39,7 +39,7 @@ Canonical live service 使用 `127.0.0.1:8766`，并且必须用 repo env Python
 /users/a/e/aereinh/CARE/envs/env_CARE/bin/python scripts/ops/build_route_watchboard.py --user aereinh --serve --host 127.0.0.1 --port 8766
 ```
 
-`--serve` 不是一次性静态快照。服务收到 `/`、`/index.html` 或 `/status.json` 请求时，会按 `--refresh-seconds` 重新采集 CURRENT、route packet、tmux、Slurm 和 process 状态并刷新 generated output。
+`--serve` 不是一次性静态快照。服务收到 `/`、`/index.html` 或 `/status.json` 请求时，会按 `--refresh-seconds` 重新采集 CURRENT、route packet、tmux、Slurm、process 和 ops service 状态并刷新 generated output。
 
 历史 `8765` 或 bare `python ... --serve` 是 legacy/duplicate risk，可能覆盖 `results/watchboard/status.json`。替换 live service 时只能维护 `care_watchboard` session/window 和 exact matched watchboard serve 进程；不得 send-keys 到 `care_route_A/B/C`，不得触碰 Route A/B/C controller。
 
@@ -62,9 +62,14 @@ warnings[]
 staleness[]
 forbidden_actions[]
 live_service_state
+ops_services.watchboard_server
+ops_services.watchboard_tunnel
+ops_services.controller_notifier
 ```
 
 每条 active route 的 critic/controller/reviewer 状态必须来自 CURRENT 绑定与 route-local evidence，不得用 main/coordinator 状态替代 route packet truth。Deferred/dormant route 只展示历史证据和 topology 风险，不进入 active completion summary。
+
+`ops_services.controller_notifier` 展示 notifier health：`Notify` tmux window、watcher loop 进程、state/status/log paths、last scan、last event、last email status、enabled routes、config warnings，以及 SMTP secret 是否存在的布尔值。不得写出 SMTP password 或 secret 内容。
 
 ## Runtime Rules
 

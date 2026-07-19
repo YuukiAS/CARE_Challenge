@@ -1,6 +1,6 @@
 # Controller Notifications
 
-Standalone Route B/C controller goal notification service. It is intentionally separate from the watchboard renderer; the only tmux coupling is that `start_in_tmux.sh` opens a `Notify` window inside the existing `care_watchboard` session.
+Standalone controller goal notification service. It is intentionally separate from the watchboard renderer, but it now publishes lightweight health for the watchboard ops layer. `start_in_tmux.sh` opens or restarts a `Notify` window inside the existing `care_watchboard` session; it never creates a separate ops session.
 
 ## Configure Email
 
@@ -11,7 +11,7 @@ CARE_NOTIFY_SMTP_USER=humc2013@gmail.com
 CARE_NOTIFY_SMTP_PASSWORD=<gmail_app_password>
 ```
 
-The default recipient and SMTP settings are in `config.example.json`.
+The default recipient and SMTP settings are in `config.example.json`. The default monitored routes are Route B/C, while the config keeps `main`, `route_A`, `route_B`, and `route_C` sections for future rounds.
 
 ## Checks
 
@@ -34,3 +34,19 @@ bash controller_notifications/start_in_tmux.sh
 ```
 
 The watcher sends email only after it has already observed a controller goal in a non-terminal state and later sees `complete` or `blocked`. Existing terminal goals at first startup are recorded as baseline state, not backfilled as old notifications.
+
+## Health
+
+Each scan writes a status JSON without secret values:
+
+```text
+controller_notifications/state/notify_goal_watcher_status.json
+```
+
+The status records last scan time, discovered goal sources, pending events, enabled routes, state/log paths, last sent or failed email summary, and SMTP secret presence as booleans only. Email failures are recorded and the loop continues; config-level send blockers are shown as `blocked_config`.
+
+The persistent log is:
+
+```text
+controller_notifications/logs/notify_goal_watcher.log
+```

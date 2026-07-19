@@ -22,6 +22,9 @@ NOTIFY_STATUSES = {"complete", "blocked"}
 IGNORED_TERMINAL_STATUSES = {"paused", "usage_limited", "budget_limited"}
 ALL_GOAL_STATUSES = NOTIFY_STATUSES | IGNORED_TERMINAL_STATUSES | {"active"}
 DEFAULT_REPO_ROOT = Path("/users/a/e/aereinh/CARE")
+DEFAULT_STATE_PATH = Path("controller_notifications/state/notified_goals.json")
+DEFAULT_STATUS_PATH = Path("controller_notifications/state/notify_goal_watcher_status.json")
+DEFAULT_LOG_PATH = Path("controller_notifications/logs/notify_goal_watcher.log")
 
 
 @dataclass(frozen=True)
@@ -80,7 +83,11 @@ def load_config(path: Path) -> dict[str, Any]:
     config.setdefault("enabled_routes", ["route_B", "route_C"])
     config.setdefault("repo_root", str(DEFAULT_REPO_ROOT))
     config.setdefault("codex_runtime_root", "/users/a/e/aereinh/.codex-runtime-homes")
-    config.setdefault("state_path", "controller_notifications/state/notified_goals.json")
+    config.setdefault("state_path", str(DEFAULT_STATE_PATH))
+    config.setdefault("status_path", str(DEFAULT_STATUS_PATH))
+    config.setdefault("log_path", str(DEFAULT_LOG_PATH))
+    config.setdefault("tmux_session", "care_watchboard")
+    config.setdefault("tmux_window", "Notify")
     config.setdefault("routes", {})
     return config
 
@@ -121,10 +128,33 @@ def write_state(path: Path, state: dict[str, Any]) -> None:
     tmp.replace(path)
 
 
+def write_status(path: Path, status: dict[str, Any]) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    tmp = path.with_suffix(path.suffix + ".tmp")
+    tmp.write_text(json.dumps(status, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    tmp.replace(path)
+
+
 def state_path_from_config(config: dict[str, Any], override: Path | None = None) -> Path:
     if override is not None:
         return override
-    path = Path(config.get("state_path", "controller_notifications/state/notified_goals.json"))
+    path = Path(config.get("state_path", str(DEFAULT_STATE_PATH)))
+    if path.is_absolute():
+        return path
+    return repo_root_from_config(config) / path
+
+
+def status_path_from_config(config: dict[str, Any], override: Path | None = None) -> Path:
+    if override is not None:
+        return override
+    path = Path(config.get("status_path", str(DEFAULT_STATUS_PATH)))
+    if path.is_absolute():
+        return path
+    return repo_root_from_config(config) / path
+
+
+def log_path_from_config(config: dict[str, Any]) -> Path:
+    path = Path(config.get("log_path", str(DEFAULT_LOG_PATH)))
     if path.is_absolute():
         return path
     return repo_root_from_config(config) / path
@@ -350,9 +380,101 @@ def pending_events_from_facts(config: dict[str, Any], state: dict[str, Any], fac
     return events
 
 
-def update_observed_state(state: dict[str, Any], facts: list[GoalFact]) -> None:
+def discovered_goal_sources(facts: list[GoalFact]) -> dict[str, list[dict[str, Any]]]:
+    sources: dict[str, list[dict[str, Any]]] = {}
     for fact in facts:
-        state["observed"][observed_key(fact)] = {
+        sources.setdefault(fact.route, []).append(
+            {
+                "source": fact.source,
+                "source_path": fact.source_path,
+                "thread_id": fact.thread_id,
+                "status": fact.status,
+                "updated_at_ms": fact.updated_at_ms,
+                "tmux_target": fact.tmux_target,
+            }
+        )
+    return sources
+
+
+def smtp_secret_status(env: dict[str, str]) -> dict[str, bool]:
+    return {
+        "smtp_user_present": bool(env.get("CARE_NOTIFY_SMTP_USER")),
+        "smtp_password_present": bool(env.get("CARE_NOTIFY_SMTP_PASSWORD")),
+    }
+
+
+def build_config_warnings(config: dict[str, Any], env: dict[str, str]) -> list[str]:
+    warnings: list[str] = []
+    if not config.get("enabled_routes"):
+        warnings.append("enabled_routes is empty")
+    if not config.get("email", {}).get("to"):
+        warnings.append("email.to is empty")
+    secrets = smtp_secret_status(env)
+    if not secrets["smtp_user_present"]:
+        warnings.append("CARE_NOTIFY_SMTP_USER is missing")
+    if not secrets["smtp_password_present"]:
+        warnings.append("CARE_NOTIFY_SMTP_PASSWORD is missing")
+    return warnings
+
+
+def event_summary(event: NotificationEvent) -> dict[str, Any]:
+    return {
+        "route": event.route,
+        "status": event.status,
+        "subject_status": event.subject_status,
+        "thread_id": event.thread_id,
+        "source": event.source,
+        "source_path": event.source_path,
+        "updated_at_ms": event.updated_at_ms,
+        "detected_at_utc": event.detected_at_utc,
+        "previous_status": event.previous_status,
+        "key": event.key,
+    }
+
+
+def base_health_status(
+    config: dict[str, Any],
+    *,
+    state_path: Path,
+    status_path: Path,
+    env: dict[str, str],
+    dry_run: bool,
+    facts: list[GoalFact],
+    events: list[NotificationEvent],
+) -> dict[str, Any]:
+    enabled_routes = list(config.get("enabled_routes", ["route_B", "route_C"]))
+    return {
+        "service": "controller_goal_notifier",
+        "enabled": bool(enabled_routes),
+        "last_scan_at_utc": utc_now(),
+        "enabled_routes": enabled_routes,
+        "discovered_goal_sources": discovered_goal_sources(facts),
+        "facts_count": len(facts),
+        "pending_events": [event_summary(event) for event in events],
+        "pending_event_count": len(events),
+        "state_path": str(state_path),
+        "status_path": str(status_path),
+        "log_path": str(log_path_from_config(config)),
+        "tmux_session": str(config.get("tmux_session", "care_watchboard")),
+        "tmux_window": str(config.get("tmux_window", "Notify")),
+        "dry_run": dry_run,
+        "smtp": smtp_secret_status(env),
+        "config_warnings": build_config_warnings(config, env),
+        "last_event": None,
+        "last_email_status": "dry_run" if dry_run else "idle",
+        "sent_email_count": 0,
+        "failed_email_count": 0,
+        "failures": [],
+    }
+
+
+def update_observed_state(state: dict[str, Any], facts: list[GoalFact], skip_keys: set[str] | None = None) -> None:
+    skip_keys = skip_keys or set()
+    for fact in facts:
+        key = observed_key(fact)
+        if key in skip_keys:
+            continue
+        state["observed"][key] = {
             "route": fact.route,
             "source": fact.source,
             "source_path": fact.source_path,
@@ -424,29 +546,71 @@ def run_once(
     config: dict[str, Any],
     *,
     state_path: Path,
+    status_path: Path | None = None,
     env: dict[str, str] | None = None,
     dry_run: bool = False,
     sender: Callable[[dict[str, Any], dict[str, str], NotificationEvent], None] = send_email,
     capture_func: Callable[[str, Path], str] = capture_tmux_pane,
 ) -> list[NotificationEvent]:
+    env = env or {}
+    status_path = status_path or status_path_from_config(config)
     state = load_state(state_path)
     facts = collect_goal_facts(config, capture_func=capture_func)
     events = pending_events_from_facts(config, state, facts)
+    health = base_health_status(
+        config,
+        state_path=state_path,
+        status_path=status_path,
+        env=env,
+        dry_run=dry_run,
+        facts=facts,
+        events=events,
+    )
     if dry_run:
+        write_status(status_path, health)
         return events
-    env = env or {}
+
+    failed_observed_keys: set[str] = set()
     for event in events:
-        sender(config, env, event)
+        try:
+            sender(config, env, event)
+        except Exception as exc:  # keep the watcher alive and retry on next scan
+            message = str(exc)
+            if "CARE_NOTIFY_SMTP_USER" in message or "CARE_NOTIFY_SMTP_PASSWORD" in message:
+                health["last_email_status"] = "blocked_config"
+            else:
+                health["last_email_status"] = "failed"
+            health["failed_email_count"] += 1
+            health["last_event"] = event_summary(event)
+            health["failures"].append(
+                {
+                    "event": event_summary(event),
+                    "error_type": type(exc).__name__,
+                    "error": message,
+                    "failed_at_utc": utc_now(),
+                }
+            )
+            failed_observed_keys.add("|".join([event.route, event.source, event.thread_id]))
+            continue
+
+        sent_at = utc_now()
         state["notified"][event.key] = {
             "route": event.route,
             "status": event.status,
             "thread_id": event.thread_id,
-            "sent_at_utc": utc_now(),
+            "sent_at_utc": sent_at,
             "source": event.source,
             "source_path": event.source_path,
         }
-    update_observed_state(state, facts)
+        health["last_email_status"] = "sent"
+        health["sent_email_count"] += 1
+        health["last_event"] = {**event_summary(event), "sent_at_utc": sent_at}
+
+    update_observed_state(state, facts, skip_keys=failed_observed_keys)
     write_state(state_path, state)
+    if health["last_email_status"] == "idle" and health["config_warnings"]:
+        health["last_email_status"] = "blocked_config"
+    write_status(status_path, health)
     return events
 
 
@@ -484,6 +648,7 @@ def main(argv: list[str] | None = None) -> int:
 
     config = load_config(args.config)
     state_path = state_path_from_config(config, args.state_path)
+    status_path = status_path_from_config(config)
     env = load_env_file(args.env_file)
 
     if args.send_test:
@@ -498,7 +663,7 @@ def main(argv: list[str] | None = None) -> int:
     poll_seconds = args.poll_seconds or int(config.get("poll_seconds", 60))
     loop = args.loop and not args.once
     while True:
-        events = run_once(config, state_path=state_path, env=env, dry_run=args.dry_run)
+        events = run_once(config, state_path=state_path, status_path=status_path, env=env, dry_run=args.dry_run)
         print(
             json.dumps(
                 {
@@ -506,6 +671,7 @@ def main(argv: list[str] | None = None) -> int:
                     "dry_run": args.dry_run,
                     "events": [asdict(event) for event in events],
                     "state_path": str(state_path),
+                    "status_path": str(status_path),
                 },
                 indent=2,
                 sort_keys=True,

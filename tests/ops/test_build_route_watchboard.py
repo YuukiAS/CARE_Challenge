@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import importlib.util
+import json
 from pathlib import Path
 
 
@@ -387,7 +388,7 @@ def test_watchboard_service_window_allows_python_auto_rename(monkeypatch):
     topology = watchboard.collect_tmux_topology(Path("/tmp"), {"care_watchboard": True})
     watchboard_session = next(item for item in topology if item["session"] == "care_watchboard")
 
-    assert watchboard_session["window_status"]["bash"] is True
+    assert watchboard_session["window_status"]["Watchboard"] is True
     assert watchboard_session["window_status"]["watchboard-tunnel"] is True
 
 
@@ -954,3 +955,120 @@ def test_no_side_effect_guard_forbidden_commands_not_invoked():
     assert watchboard.run_cmd(["git", "merge", "route_A"], Path("/tmp"))["code"] == 126
     assert watchboard.run_cmd(["git", "push", "origin", "main"], Path("/tmp"))["code"] == 126
     assert watchboard.run_cmd(["tmux", "send-keys", "x"], Path("/tmp"))["code"] == 126
+
+
+
+def test_ops_services_controller_notifier_schema_and_html(tmp_path):
+    root = tmp_path / "CARE"
+    (root / "controller_notifications" / "state").mkdir(parents=True)
+    (root / "controller_notifications" / "logs").mkdir(parents=True)
+    (root / "controller_notifications" / "config.example.json").write_text(
+        json.dumps(
+            {
+                "enabled_routes": ["route_B", "route_C"],
+                "state_path": "controller_notifications/state/notified_goals.json",
+                "status_path": "controller_notifications/state/notify_goal_watcher_status.json",
+                "log_path": "controller_notifications/logs/notify_goal_watcher.log",
+                "tmux_session": "care_watchboard",
+                "tmux_window": "Notify",
+                "routes": {"main": {}, "route_A": {}, "route_B": {}, "route_C": {}},
+            }
+        ),
+        encoding="utf-8",
+    )
+    status_path = root / "controller_notifications" / "state" / "notify_goal_watcher_status.json"
+    status_path.write_text(
+        json.dumps(
+            {
+                "last_scan_at_utc": "2026-07-19T12:00:00+00:00",
+                "enabled_routes": ["route_B", "route_C"],
+                "last_event": {"route": "route_B", "status": "complete", "detected_at_utc": "2026-07-19T12:01:00+00:00"},
+                "last_email_status": "sent",
+                "smtp": {"smtp_user_present": True, "smtp_password_present": True},
+                "config_warnings": [],
+            }
+        ),
+        encoding="utf-8",
+    )
+    topology = [
+        {
+            "session": "care_watchboard",
+            "window_status": {"Watchboard": True, "watchboard-tunnel": True, "Notify": True},
+            "live_windows": [],
+            "panes": [],
+        }
+    ]
+    process_stdout = "\n".join(
+        [
+            "111 1 00:01 /users/a/e/aereinh/CARE/envs/env_CARE/bin/python scripts/ops/build_route_watchboard.py --user aereinh --serve --host 127.0.0.1 --port 8766",
+            f"222 1 00:01 /users/a/e/aereinh/CARE/envs/env_CARE/bin/python {root}/controller_notifications/notify_goal_watcher.py --loop --poll-seconds 60",
+            "333 1 00:01 /usr/bin/cloudflared tunnel --config /tmp/cloudflared_watchboard/config.yml run care-watchboard",
+        ]
+    )
+    services = watchboard.collect_ops_services(
+        root,
+        topology,
+        process_stdout,
+        watchboard.parse_watchboard_processes(process_stdout, root),
+    )
+
+    notifier = services["controller_notifier"]
+    assert notifier["enabled"] is True
+    assert notifier["tmux_window"] == "Notify"
+    assert notifier["process_detected"] is True
+    assert "notify_goal_watcher.py" in notifier["loop_command"]
+    assert notifier["enabled_routes"] == ["route_B", "route_C"]
+    assert notifier["last_scan"] == "2026-07-19T12:00:00+00:00"
+    assert notifier["last_email_status"] == "sent"
+    assert notifier["smtp_secret_present"] is True
+    assert "password" not in json.dumps(notifier).lower()
+    html = watchboard.render_ops_services({"ops_services": services})
+    assert "Controller notifier" in html
+    assert "notify_<wbr>goal_<wbr>watcher.log" in html
+    assert "route_B, route_C" in html
+
+
+def test_missing_notifier_window_warns_without_breaking_dashboard(tmp_path):
+    root = tmp_path / "CARE"
+    (root / "controller_notifications").mkdir(parents=True)
+    (root / "controller_notifications" / "config.example.json").write_text(
+        json.dumps({"enabled_routes": ["route_B", "route_C"], "tmux_window": "Notify"}),
+        encoding="utf-8",
+    )
+    services = watchboard.collect_ops_services(
+        root,
+        [{"session": "care_watchboard", "window_status": {"Watchboard": True, "watchboard-tunnel": True, "Notify": False}, "live_windows": [], "panes": []}],
+        "111 1 00:01 /usr/bin/cloudflared tunnel --config /tmp/cloudflared_watchboard/config.yml run care-watchboard",
+        {"processes": [], "duplicate_or_legacy_detected": False},
+    )
+    html = watchboard.render_ops_services({"ops_services": services})
+    assert services["controller_notifier"]["tmux_window_present"] is False
+    assert any("window missing" in warning for warning in services["controller_notifier"]["config_warnings"])
+    assert "Ops services" in html
+    assert "care_watchboard:Notify window missing" in html
+
+
+def test_stale_generated_watchboard_status_is_not_route_truth(tmp_path):
+    root = tmp_path / "CARE"
+    generated = root / "results" / "watchboard"
+    generated.mkdir(parents=True)
+    (generated / "status.json").write_text(
+        json.dumps({"portfolio_round": {"round_id": "round03", "active_routes": ["route_A"]}}),
+        encoding="utf-8",
+    )
+    handoff = watchboard.parse_current_handoff(portfolio_current_text("round04", active=("Route C",), deferred=("Route A", "Route B")), root)
+    route_a = route_fixture(id="route_A", label="Route A", origin_sha="aaa111")
+    watchboard.annotate_route_runtime(route_a, {}, [], [])
+    watchboard.annotate_handoff_workers(route_a, handoff)
+
+    assert handoff["portfolio_round"]["round_id"] == "round04"
+    assert handoff["portfolio"]["active_routes"] == ["route_C"]
+    assert route_a["is_deferred_fallback"] is True
+    assert route_a["display_state_zh"] == "Dormant fallback"
+
+
+def test_forbidden_actions_include_scientific_boundaries():
+    assert "route promotion" in watchboard.FORBIDDEN_ACTIONS
+    assert "M11" in watchboard.FORBIDDEN_ACTIONS
+    assert "hosted metric claim" in watchboard.FORBIDDEN_ACTIONS
+    assert "final scientific decision" in watchboard.FORBIDDEN_ACTIONS
