@@ -1316,6 +1316,34 @@ def test_round04_status_priorities_override_stale_packet_keywords(tmp_path):
     assert route_c["controller_allowed"] is False
 
 
+def test_round04_ready_for_critic_rereview_overrides_stale_packet_keywords(tmp_path):
+    root = tmp_path / "CARE"
+    handoff = watchboard.parse_current_handoff(
+        round04_current_style_text().replace(
+            "PLANNING_REVISION_PENDING_COORDINATOR_RECEIPT_AND_CRITIC_REREVIEW",
+            "PLANNING_REVISION_READY_FOR_CRITIC_REREVIEW",
+        ),
+        root,
+    )
+    route_b = route_fixture(
+        id="route_B",
+        label="Route B",
+        origin_sha="b9c7664da7cb1f1892fff37a4497722f31a0a96d",
+        status_keywords=["ROUTE_B_SCIENTIFIC_UNDERTRAINED", "ROUTE_B_ROUND04_PLANNING_NEEDS_REVISION"],
+        display_state_zh="训练不足",
+    )
+
+    watchboard.annotate_route_runtime(route_b, {}, [], [])
+    watchboard.annotate_handoff_workers(route_b, handoff)
+
+    assert route_b["display_state_zh"] == "Round04 planning ready for critic rereview / controller blocked"
+    assert route_b["runtime_state"]["state"] == "planning_ready_for_critic_rereview"
+    assert route_b["completion_blockers"] == []
+    assert route_b["controller_allowed"] is False
+    assert "Critic rereview" in route_b["current_worker_zh"]
+    assert "ready token 前不得交 Controller" in route_b["next_action_zh"]
+
+
 def test_future_round05_tokens_parse_without_controller_authority():
     text = "ROUTE_B_ROUND05_PLANNING_NEEDS_REVISION\nROUTE_C_ROUND05_REVIEW_EVIDENCE_COMPLETE"
     tokens = watchboard.extract_role_tokens(text)

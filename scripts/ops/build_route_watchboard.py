@@ -986,7 +986,7 @@ def parse_current_handoff(text: str, root: Path) -> dict[str, Any]:
     for route in portfolio.get("active_routes", []):
         binding = route_bindings.get(route, {})
         state = str(portfolio.get("routes", {}).get(route, "")).upper()
-        if state.startswith("PLANNING_REVISION_PENDING") or state.startswith("ACTIVE"):
+        if state.startswith("PLANNING_REVISION") or state.startswith("ACTIVE"):
             required_keys = ("required_head", "critic_review_output_path")
             for key in required_keys:
                 if key == "critic_review_output_path" and terminal_reviewer_targets.get(route):
@@ -1283,6 +1283,39 @@ def annotate_handoff_workers(route: dict[str, Any], handoff: dict[str, Any]) -> 
         route["review_state"] = {**route["reviewability"], "source": "portfolio_state"}
         route["next_worker_zh"] = route["next_action_zh"]
         route["next_action"] = {"label_zh": route["next_action_zh"], "source": "portfolio_state"}
+        return
+
+    if portfolio_upper.startswith("PLANNING_REVISION_READY_FOR_CRITIC_REREVIEW"):
+        route["historical_display_state_zh"] = display_state
+        route["display_state_zh"] = f"{str(route.get('round_id', 'round')).capitalize()} planning ready for critic rereview / controller blocked"
+        route["current_worker_zh"] = f"{route['label']} Critic rereview pending"
+        route["work_summary_zh"] = (
+            f"{route['label']} 当前是 {portfolio_state}；coordinator receipt 已就绪，"
+            "正在等待 independent planning critic rereview。Controller 仍不可启动。"
+        )
+        route["next_action_zh"] = f"交 {route['label']} independent planning critic rereview；ready token 前不得交 Controller。"
+        route["next_worker_zh"] = route["next_action_zh"]
+        route["completion_blockers"] = []
+        route["reviewability"] = {
+            "can_review_complete": False,
+            "label_zh": "planning critic rereview pending",
+            "reason_zh": "Coordinator receipt 已就绪，但 planning critic rereview 尚未给出 ready token。",
+        }
+        route["runtime_state"] = {
+            "state": "planning_ready_for_critic_rereview",
+            "label_zh": route["display_state_zh"],
+            "completion_blocked": False,
+            "source": "CURRENT.md portfolio_state + coordinator receipt",
+        }
+        route["review_state"] = {**route["reviewability"], "source": "planning_critic_rereview_gate"}
+        route["controller_authority"] = {
+            **route["controller_authority"],
+            "authorized": False,
+            "state": "controller blocked",
+            "source": "CURRENT.md Authority Boundary + pending planning critic rereview",
+        }
+        route["controller_allowed"] = False
+        route["next_action"] = {"label_zh": route["next_action_zh"], "source": "planning_critic_rereview_gate"}
         return
 
     if portfolio_upper.startswith("PLANNING_REVISION_PENDING"):
