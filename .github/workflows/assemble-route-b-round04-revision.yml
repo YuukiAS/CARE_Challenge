@@ -1,0 +1,189 @@
+name: Assemble Route B Round04 planning revision
+
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: write
+
+jobs:
+  assemble:
+    if: github.event.head_commit.message == 'Stage Route B Round04 revision bundle'
+    runs-on: ubuntu-24.04
+    env:
+      CLEAN_BASE: 30098813522cecd98e60bcb99e2676b28c1a5461
+    steps:
+      - name: Checkout staging commit
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Extract exact planner bundle
+        shell: bash
+        run: |
+          set -euo pipefail
+          OUT=/tmp/care-r04-revision
+          mkdir -p "$OUT"
+          cat .planner_upload_chunks/routeB_round04_revision.part* | tr -d '\r\n' | base64 --decode > "$OUT/bundle.tar.gz"
+          echo '74170de1a236e0777702824107f2482291e24aff9b0c856fd235f23dbccdf4b4  $OUT/bundle.tar.gz' | sha256sum --check
+          tar -xzf "$OUT/bundle.tar.gz" -C "$OUT"
+          echo 'cccc7af5477d43cff6fd9053e496c4d23cbff41dc8a67e35421af26222aca592  $OUT/prompts/routes/portfolio_round04_route_B_planner_plan_20260719.md' | sha256sum --check
+          echo '4cd6479500005bfa2cf878795015ee6997cf3c0e0f7efd931321e4ed7a6e6755  $OUT/prompts/routes/route_B_round04_planner_prompt.md' | sha256sum --check
+          echo 'a467b8bc25d8d07853c3159c09a8f79f360c2834308a6ac59f9c48edaa149a19  $OUT/prompts/routes/route_B_round04_controller_contract.md' | sha256sum --check
+          echo '1e5b9d932cfac35cf8aa3e66dbcefd25064e5b4ccbb5df3adc27b9f8d22fa10f  $OUT/prompts/routes/route_B_round04_executor_plan.yaml' | sha256sum --check
+          echo 'd65d65117fc0fbb31ca15d4f3b2c5fa1ae2d78b655fd011963ceb45e9c4808d8  $OUT/prompts/routes/route_B_round04_critic_request.md' | sha256sum --check
+          echo 'ef43a4999f340b53f33412f8ff0c5d28f2e392f129af024fdb8d8d3fee604747  $OUT/prompts/routes/route_B_round04_planner_audit.md' | sha256sum --check
+          echo '023ac48dca2866b0fd34bd88066ad2a6bc108a2bfac0f6e88bc425114c555213  $OUT/prompts/routes/portfolio_round04_routeC_review_and_routeB_revision_planner_update_20260719.md' | sha256sum --check
+          test -f "$OUT/assembly/build_bindings.py"
+
+      - name: Apply core planning files to clean base
+        shell: bash
+        run: |
+          set -euo pipefail
+          OUT=/tmp/care-r04-revision
+          git switch -C planner-assembled-route-b-r04-revision "$CLEAN_BASE"
+          cp "$OUT/prompts/routes/portfolio_round04_route_B_planner_plan_20260719.md" "prompts/routes/portfolio_round04_route_B_planner_plan_20260719.md"
+          cp "$OUT/prompts/routes/route_B_round04_planner_prompt.md" "prompts/routes/route_B_round04_planner_prompt.md"
+          cp "$OUT/prompts/routes/route_B_round04_controller_contract.md" "prompts/routes/route_B_round04_controller_contract.md"
+          cp "$OUT/prompts/routes/route_B_round04_executor_plan.yaml" "prompts/routes/route_B_round04_executor_plan.yaml"
+          cp "$OUT/prompts/routes/route_B_round04_critic_request.md" "prompts/routes/route_B_round04_critic_request.md"
+          cp "$OUT/prompts/routes/route_B_round04_planner_audit.md" "prompts/routes/route_B_round04_planner_audit.md"
+          cp "$OUT/prompts/routes/portfolio_round04_routeC_review_and_routeB_revision_planner_update_20260719.md" "prompts/routes/portfolio_round04_routeC_review_and_routeB_revision_planner_update_20260719.md"
+          python3 -m pip install --disable-pip-version-check --quiet pyyaml
+          python3 scripts/ops/validate_executor_plan.py prompts/routes/route_B_round04_executor_plan.yaml
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+          import yaml
+
+          p = Path("prompts/routes/route_B_round04_executor_plan.yaml")
+          data = yaml.safe_load(p.read_text(encoding="utf-8"))
+          assert data["executor_count"] == 11
+          assert data["max_parallel"] == 2
+          assert data["required_planning_review_token"] == "ROUTE_B_ROUND04_PLANNING_READY_FOR_CONTROLLER"
+          assert data["route_evidence_ref"] == "b9c7664da7cb1f1892fff37a4497722f31a0a96d"
+          assert len(data["executors"]) == 11
+
+          ids = {entry["id"]: entry for entry in data["executors"]}
+          b10 = ids["B10_TERMINAL_ACCOUNTING_REVIEW_PACKET"]
+          assert b10["depends_on"] == []
+          assert b10["controller_terminal_finalizer"] is True
+          assert b10["prepare_wave_helper_exempt"] is True
+          assert b10["depends_on_successful_merge_receipts"] is False
+          assert b10["finalizer_dependency_policy"] == "afterany_all_started_attempts"
+
+          scenarios = set(data["terminal_finalizer_contract"]["static_regression_scenarios"])
+          required = {
+              "B1 failure before B2",
+              "B2 external blocker",
+              "B7 external/matching blocker",
+              "B8 CINE_REGISTRATION_BLOCKER without B9",
+              "timeout",
+              "preemption",
+              "cancelled race loser",
+              "successful B6 and B9",
+          }
+          assert required <= scenarios
+
+          bad_interpreters = []
+          for entry in data["executors"]:
+              validator = entry["validator"]
+              known_bad = entry["known_bad_contract"]
+              assert validator["script_path"]
+              assert validator["command"].startswith("/users/a/e/aereinh/CARE/envs/env_CARE/bin/python ")
+              assert validator["input_path"] == entry["result_dir"]
+              assert validator["report_file"].startswith(entry["result_dir"] + "/")
+              assert validator["expected_exit_code"] == 0
+              assert validator["success_token"] == entry["required_completion_token"]
+              assert known_bad["matrix_path"]
+              assert known_bad["matrix_command"].startswith("/users/a/e/aereinh/CARE/envs/env_CARE/bin/python ")
+              assert known_bad["report_file"].startswith(entry["result_dir"] + "/")
+              assert known_bad["runner_expected_exit_code"] == 0
+              assert known_bad["validator_expected_exit_code_per_fixture"] == 1
+              assert known_bad["expected_failure_keys"]
+              assert known_bad["all_keys_required"] is True
+              assert known_bad["unexpected_pass_is_failure"] is True
+
+              def walk(node, path="root"):
+                  if isinstance(node, dict):
+                      for key, value in node.items():
+                          walk(value, f"{path}.{key}")
+                  elif isinstance(node, list):
+                      for index, value in enumerate(node):
+                          walk(value, f"{path}[{index}]")
+                  elif isinstance(node, str) and any(tag in path.lower() for tag in ("command", "validator")):
+                      if re.search(r"(^|[;&|]\s*)python(?:3)?\s", node):
+                          bad_interpreters.append((entry["id"], path, node))
+              walk(entry)
+          assert not bad_interpreters, bad_interpreters
+          print("Route B Round04 planner structural assertions passed")
+          PY
+          git diff --check
+
+          FILES=(
+            prompts/routes/portfolio_round04_route_B_planner_plan_20260719.md
+            prompts/routes/route_B_round04_planner_prompt.md
+            prompts/routes/route_B_round04_controller_contract.md
+            prompts/routes/route_B_round04_executor_plan.yaml
+            prompts/routes/route_B_round04_critic_request.md
+            prompts/routes/route_B_round04_planner_audit.md
+            prompts/routes/portfolio_round04_routeC_review_and_routeB_revision_planner_update_20260719.md
+          )
+          if grep -EIn 'TBD|optional|as appropriate|if needed|choose best|Codex decide|controller decide|按需|视情况|自行决定' "${FILES[@]}"; then
+            echo 'blank authority found' >&2
+            exit 1
+          fi
+          if grep -FIn '/overflow/htzhu/CARE' "${FILES[@]}"; then
+            echo 'forbidden workspace path found' >&2
+            exit 1
+          fi
+          if grep -EIn 'future[ -]work|optional future|Cine .*defer|registration .*defer|temporal .*defer|后续事项|仅smoke' prompts/routes/portfolio_round04_route_B_planner_plan_20260719.md prompts/routes/route_B_round04_controller_contract.md prompts/routes/route_B_round04_executor_plan.yaml; then
+            echo 'CineMA/registration/temporal deferral found' >&2
+            exit 1
+          fi
+          HITS=$(grep -EIn 'CineMA|registration|temporal|SVF|SyN' "${FILES[@]}" | wc -l)
+          test "$HITS" -ge 40
+          echo "CineMA/registration/temporal coverage hits: $HITS"
+
+      - name: Commit exact core planning revision
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'CARE Route Portfolio Planner'
+          git config user.email 'actions@users.noreply.github.com'
+          git add \
+            prompts/routes/portfolio_round04_route_B_planner_plan_20260719.md \
+            prompts/routes/route_B_round04_planner_prompt.md \
+            prompts/routes/route_B_round04_controller_contract.md \
+            prompts/routes/route_B_round04_executor_plan.yaml \
+            prompts/routes/route_B_round04_critic_request.md \
+            prompts/routes/route_B_round04_planner_audit.md \
+            prompts/routes/portfolio_round04_routeC_review_and_routeB_revision_planner_update_20260719.md
+          test "$(git diff --cached --name-only | wc -l)" -eq 7
+          git commit -m 'Revise Route B Round04 planning after critic'
+          echo "CORE_PLANNING_COMMIT=$(git rev-parse HEAD)" >> "$GITHUB_ENV"
+
+      - name: Generate exact current handoff and pending coordinator receipt
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 /tmp/care-r04-revision/assembly/build_bindings.py
+          git diff --check
+          test "$(grep -c '^route_C_portfolio_status:' prompts/routes/portfolio_round04_routeC_review_and_routeB_revision_planner_update_20260719.md)" -eq 1
+          grep -q 'EVIDENCE_COMPLETE_FOR_PORTFOLIO_RECONCILIATION' prompts/routes/handoffs/CURRENT.md
+          grep -q 'ROUTE_B_ROUND04_PLANNING_NEEDS_REVISION' prompts/routes/handoffs/route_B_round04_critic_handoff_20260719.md
+          grep -q 'status: PENDING_COORDINATOR_EXECUTION' prompts/routes/handoffs/route_B_round04_coordinator_receipt_20260719.md
+          git add prompts/routes/handoffs/CURRENT.md prompts/routes/handoffs/route_B_round04_critic_handoff_20260719.md prompts/routes/handoffs/route_B_round04_coordinator_receipt_20260719.md
+          test "$(git diff --cached --name-only | wc -l)" -eq 3
+          git commit -m 'Advance CARE portfolio Round04 handoff'
+
+      - name: Push clean assembled candidate
+        shell: bash
+        run: |
+          set -euo pipefail
+          git status --short --branch
+          test -z "$(git status --porcelain)"
+          git push --force origin HEAD:refs/heads/planner-assembled-route-b-r04-revision
+          echo "FINAL_CANDIDATE_COMMIT=$(git rev-parse HEAD)" >> "$GITHUB_ENV"
