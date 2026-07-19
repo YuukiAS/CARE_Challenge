@@ -1,1 +1,1 @@
-Trigger same-repository pull_request assembly for the validated Route B Round04 planner revision bundle.
+Retrigger same-repository pull_request assembly after correcting checksum path expansion for the validated Route B Round04 planner revision bundle.
