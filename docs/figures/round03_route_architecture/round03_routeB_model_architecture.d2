@@ -1,0 +1,143 @@
+direction: right
+
+classes: {
+  verified: { style.fill: "#DDEFE4"; style.stroke: "#2E7D32"; style.stroke-width: 3 }
+  smoke: { style.fill: "#EAF3FA"; style.stroke: "#2D6F9F"; style.stroke-dash: 5 }
+  planned: { style.fill: "#FFF4D6"; style.stroke: "#B78300"; style.stroke-dash: 7 }
+  blocked: { style.fill: "#F8DFDE"; style.stroke: "#B3261E"; style.stroke-width: 3 }
+  boundary: { style.fill: "#F4E8FF"; style.stroke: "#6A3FA0"; style.stroke-dash: 3 }
+}
+
+title: "Route B Round03 MyoPS and Cine Model Architecture"
+
+legend: {
+  label: "Status legend"
+  ok: "verified final-path evidence"
+  ok.class: verified
+  sm: "implemented smoke evidence"
+  sm.class: smoke
+  nr: "planned or not executed"
+  nr.class: planned
+  bl: "B3 blocking gate"
+  bl.class: blocked
+  bd: "authority boundary"
+  bd.class: boundary
+}
+
+myops_input: {
+  label: "MyoPS input contract"
+  x: "x [B,3,Z,H,W]\nLGE,T2,C0"
+  avail: "availability [B,3]\nzero fill not enough"
+  anchor: "anchor_logits\n[B,6,Z,H,W]"
+  x.class: smoke
+  avail.class: smoke
+  anchor.class: smoke
+}
+
+srr_trunk: {
+  label: "RouteBRound03MyoPS.forward"
+  stems: "stems ModuleDict\nConv3d 1->32"
+  pyramid: "down pyramid\n32,64,128,256"
+  experts: "ExpertScale x4\n16 experts each"
+  families: "families\nshared/private/pairs"
+  router: "router query\nfused+avail+anchor+proposal"
+  mask: "valid mask\ninvalid logits -1e4"
+  weights: "softmax weights\nnot entmax"
+  routed: "routed scales\nsum weights*experts"
+  myops_input.x -> stems
+  myops_input.avail -> stems
+  stems -> pyramid -> experts -> families -> router -> mask -> weights -> routed
+  myops_input.anchor -> router
+  stems.class: smoke
+  pyramid.class: smoke
+  experts.class: smoke
+  families.class: smoke
+  router.class: smoke
+  mask.class: verified
+  weights.class: verified
+  routed.class: smoke
+}
+
+myops_heads: {
+  label: "MyoPS lesion path"
+  anatomy: "anatomy_head\n4 logits"
+  proto: "OfflinePrototypeBank\nscar 8/12 edema 8/12"
+  proposal: "scar_prop edema_prop\nprototype +/- terms"
+  roi: "scar_roi edema_roi\nedema gated by T2"
+  refiners: "scar_refiner\nedema_refiner"
+  gate: "composition gate\n12->16->1"
+  final: "final_logits\nanchor + bounded deltas"
+  no_t2: "no-T2 edema\nexact zero delta"
+  export: "six-label export\nsmoke roundtrip"
+  srr_trunk.routed -> anatomy
+  srr_trunk.routed -> proto -> proposal -> roi -> refiners -> gate -> final -> no_t2 -> export
+  myops_input.anchor -> final
+  myops_input.avail -> roi
+  anatomy.class: blocked
+  proto.class: smoke
+  proposal.class: smoke
+  roi.class: smoke
+  refiners.class: smoke
+  gate.class: smoke
+  final.class: smoke
+  no_t2.class: verified
+  export.class: smoke
+}
+
+b3_evidence: {
+  label: "Round03 B3 evidence boundary"
+  loss: "train loss\nCE final + prop losses"
+  run: "B3 formal run\n43003 steps, 1800.796s"
+  checks: "passed checks\nloss, invalid, no-T2"
+  fail: "failed gate\nanatomy_union_overfit=false"
+  review: "review token\nADEQUATE_NEGATIVE"
+  myops_heads.final -> loss -> run -> checks -> fail -> review
+  loss.class: verified
+  run.class: verified
+  checks.class: verified
+  fail.class: blocked
+  review.class: verified
+}
+
+planned_srr: {
+  label: "SRR-v3 target not proven in Round03"
+  psip: "Pattern-SIP target\nmass+load+sparse"
+  entmax: "entmax/top schedule\ntarget only"
+  oof: "formal OOF shards\nnot B3 evidence"
+  b4b6: "B4-B6 proposal/refiner\nnot executed"
+  psip -> entmax -> oof -> b4b6
+  psip.class: planned
+  entmax.class: planned
+  oof.class: planned
+  b4b6.class: planned
+}
+
+cine_lane: {
+  label: "Cine lane in Round03"
+  cinema: "RouteBRound03CineMAAdapter\nlogits/features/entropy smoke"
+  random: "matched random control\nB7 not executed"
+  reg: "SVF registration\n7-step smoke"
+  temporal: "TemporalEvidence consumer\nB9 not executed"
+  cine_final: "Cine final effect\nnot proven"
+  cinema -> random -> reg -> temporal -> cine_final
+  cinema.class: smoke
+  random.class: planned
+  reg.class: smoke
+  temporal.class: smoke
+  cine_final.class: planned
+}
+
+authority: {
+  label: "Blocked authority"
+  no_upload: "no validation upload"
+  no_promo: "no route promotion"
+  no_final: "no final science decision"
+  no_upload -> no_promo -> no_final
+  no_upload.class: boundary
+  no_promo.class: boundary
+  no_final.class: boundary
+}
+
+b3_evidence.fail -> planned_srr.b4b6: "stops before downstream"
+b3_evidence.fail -> cine_lane.random: "Cine formal lane absent"
+b3_evidence.review -> authority.no_upload

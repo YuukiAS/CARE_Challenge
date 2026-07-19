@@ -1,0 +1,90 @@
+direction: right
+
+classes: {
+  verified: { style.fill: "#DDEFE4"; style.stroke: "#2E7D32"; style.stroke-width: 3 }
+  smoke: { style.fill: "#EAF3FA"; style.stroke: "#2D6F9F"; style.stroke-dash: 5 }
+  planned: { style.fill: "#FFF4D6"; style.stroke: "#B78300"; style.stroke-dash: 7 }
+  blocked: { style.fill: "#F8DFDE"; style.stroke: "#B3261E"; style.stroke-width: 3 }
+  boundary: { style.fill: "#F4E8FF"; style.stroke: "#6A3FA0"; style.stroke-dash: 3 }
+}
+
+title: "Route B vs Route C Round03 Technical Model Gap"
+
+legend: {
+  label: "Status legend"
+  v: "verified final-path evidence"
+  v.class: verified
+  s: "smoke evidence only"
+  s.class: smoke
+  p: "planned potential"
+  p.class: planned
+  b: "blocked evidence boundary"
+  b.class: blocked
+}
+
+route_b_target: {
+  label: "Route B full SRR-v3 potential"
+  b_stems: "modality stems\nLGE/T2/C0"
+  b_experts: "16 experts/scale\nshared/private/pair"
+  b_router: "two-pass router\nentmax/top target"
+  b_psip: "Pattern-SIP\nmass/floor target"
+  b_refine: "OOF proposal\nscar/edema refiners"
+  b_cine: "CineMA + registration\nregistered temporal target"
+  b_stems -> b_experts -> b_router -> b_psip -> b_refine -> b_cine
+  b_stems.class: smoke
+  b_experts.class: smoke
+  b_router.class: planned
+  b_psip.class: planned
+  b_refine.class: planned
+  b_cine.class: planned
+}
+
+route_b_actual: {
+  label: "Route B Round03 evidence boundary"
+  b_softmax: "actual masked softmax\ninvalid weight zero"
+  b_final: "final logits changed\nB2 smoke"
+  b_b3: "B3 formal gate\nanatomy failed"
+  b_notrun: "B4-B9\nnot executed"
+  b_token: "ADEQUATE_NEGATIVE\nB3 only"
+  b_softmax -> b_final -> b_b3 -> b_notrun -> b_token
+  b_softmax.class: verified
+  b_final.class: smoke
+  b_b3.class: blocked
+  b_notrun.class: planned
+  b_token.class: verified
+}
+
+route_c_actual: {
+  label: "Route C Round03 implemented chain"
+  c_myops: "MyoPS prototype\nD2/D3 interventions"
+  c_cinema: "CineMA real source\nfeatures+entropy"
+  c_reg: "SVF 7-step\nSyN controls"
+  c_temp: "registered temporal\n8-slot dictionary"
+  c_effect: "12 final rows\nchanged outputs"
+  c_token: "EVIDENCE_COMPLETE\nreviewer verified"
+  c_myops -> c_cinema -> c_reg -> c_temp -> c_effect -> c_token
+  c_myops.class: verified
+  c_cinema.class: verified
+  c_reg.class: verified
+  c_temp.class: verified
+  c_effect.class: verified
+  c_token.class: verified
+}
+
+judgment: {
+  label: "Allowed conclusions"
+  can_b: "Route B: B3 negative\nnot full route negative"
+  can_c: "Route C: evidence-complete\nnot promotion"
+  cannot: "cannot claim hosted metric\nor final science decision"
+  next: "Round4 planner/reviewer\nmay use diagrams as structure basis"
+  can_b -> cannot
+  can_c -> cannot -> next
+  can_b.class: blocked
+  can_c.class: verified
+  cannot.class: boundary
+  next.class: boundary
+}
+
+route_b_target.b_refine -> route_b_actual.b_notrun: "unproven in Round03"
+route_b_actual.b_token -> judgment.can_b
+route_c_actual.c_token -> judgment.can_c
