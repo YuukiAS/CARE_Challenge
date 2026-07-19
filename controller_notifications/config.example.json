@@ -16,7 +16,9 @@
     "smtp_host": "smtp.gmail.com",
     "smtp_port": 587,
     "starttls": true,
-    "subject_prefix": "[CARE]"
+    "subject_prefix": "[CARE]",
+    "body_format": "plain_plus_html",
+    "max_important_slurm_jobs": 6
   },
   "routes": {
     "main": {

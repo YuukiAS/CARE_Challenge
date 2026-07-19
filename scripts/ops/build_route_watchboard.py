@@ -86,6 +86,14 @@ STATUS_KEYWORDS = (
     "NEEDS_REVISION",
     "TERMINAL_NON_READY_PACKET",
 )
+ROLE_TOKEN_PATTERN = re.compile(
+    r"(?<![A-Z0-9_])"
+    r"(ROUTE_(?P<route>[ABC])_ROUND(?P<round>[0-9]+)_"
+    r"(?P<kind>PLANNING_READY_FOR_CONTROLLER|PLANNING_NEEDS_REVISION|TERMINAL_PACKET_READY_FOR_REVIEW|"
+    r"REVIEW_EVIDENCE_COMPLETE|REVIEW_ADEQUATE_NEGATIVE|REVIEW_NEEDS_REVISION|REVIEW_NEEDS_EVIDENCE|"
+    r"REVIEW_NEEDS_MONITOR|REVIEW_UNDERTRAINED|REVIEW_EXTERNAL_RESOURCE_BLOCKER))"
+    r"(?![A-Z0-9_])"
+)
 INCOMPLETE_KEYWORDS = (
     "NEEDS_MONITOR",
     "PENDING_MONITOR",
@@ -305,12 +313,37 @@ def extract_status_keywords(text: str) -> list[str]:
         pattern = rf"(?<![A-Z0-9_]){re.escape(keyword)}(?![A-Z0-9_])"
         if re.search(pattern, text) and keyword not in found:
             found.append(keyword)
-    terminal_pattern = r"(?<![A-Z0-9_])ROUTE_[ABC]_ROUND[0-9]+_TERMINAL_PACKET_READY_FOR_REVIEW(?![A-Z0-9_])"
-    for match in re.finditer(terminal_pattern, text):
+    for match in ROLE_TOKEN_PATTERN.finditer(text):
         token = match.group(0)
         if token not in found:
             found.append(token)
     return found
+
+
+def extract_role_tokens(text: str, *, source_role: str = "", source_path: str = "", mtime: float = 0) -> list[dict[str, Any]]:
+    tokens: list[dict[str, Any]] = []
+    for match in ROLE_TOKEN_PATTERN.finditer(text):
+        route = f"route_{match.group('route')}"
+        kind = match.group("kind")
+        if kind.startswith("PLANNING_"):
+            role = "planning_critic"
+        elif kind.startswith("REVIEW_"):
+            role = "reviewer"
+        else:
+            role = "controller_terminal"
+        tokens.append(
+            {
+                "token": match.group(1),
+                "route": route,
+                "round": int(match.group("round")),
+                "kind": kind,
+                "role": role,
+                "source_role": source_role,
+                "source_path": source_path,
+                "mtime": mtime,
+            }
+        )
+    return tokens
 
 
 def extract_slurm_job_ids(text: str) -> list[str]:
@@ -515,22 +548,43 @@ def relative_repo_path(root: Path, raw: str) -> dict[str, Any]:
     }
 
 
-def first_fenced_path_after(text: str, marker: str) -> str:
+def marker_offset(text: str, marker: str) -> int:
     start = text.find(marker)
+    if start >= 0:
+        return start
+    plain_marker = marker.strip().lstrip("#").strip().rstrip(":").lower()
+    for match in re.finditer(r"(?im)^#{0,6}\s*([^\n:]+):?\s*$", text):
+        heading = match.group(1).strip().rstrip(":").lower()
+        if heading == plain_marker:
+            return match.start()
+    lowered = text.lower()
+    return lowered.find(marker.lower())
+
+
+def first_fenced_path_after(text: str, marker: str) -> str:
+    start = marker_offset(text, marker)
     if start < 0:
         return ""
-    match = re.search(r"```text\s*([^`\n][^`]*)```", text[start:], re.DOTALL)
+    match = re.search(r"```(?:text)?\s*([^`\n][^`]*)```", text[start:], re.DOTALL)
     if not match:
         return ""
     return match.group(1).strip().splitlines()[0].strip()
 
 
 def fenced_block_after(text: str, marker: str) -> str:
-    start = text.find(marker)
+    start = marker_offset(text, marker)
     if start < 0:
         return ""
-    match = re.search(r"```text\s*(.*?)```", text[start:], re.DOTALL)
+    match = re.search(r"```(?:text)?\s*(.*?)```", text[start:], re.DOTALL)
     return match.group(1).strip() if match else ""
+
+
+def fenced_block_after_any(text: str, markers: tuple[str, ...]) -> str:
+    for marker in markers:
+        block = fenced_block_after(text, marker)
+        if block:
+            return block
+    return ""
 
 
 def path_after_label(text: str, label: str) -> str:
@@ -560,34 +614,53 @@ def parse_key_values(block: str) -> dict[str, str]:
 
 def parse_portfolio_state(text: str) -> tuple[dict[str, Any], list[str]]:
     warnings: list[str] = []
-    block = fenced_block_after(text, "Portfolio state:")
+    block = fenced_block_after_any(text, ("## Portfolio state", "Portfolio state:"))
     values = parse_key_values(block)
     routes: dict[str, str] = {}
     active_routes: list[str] = []
     deferred_routes: list[str] = []
+    active_controller_routes: list[str] = []
+    portfolio_context_routes: list[str] = []
     for label, route in ROUTE_IDS_BY_LABEL.items():
         state = values.get(label, "UNKNOWN")
+        upper_state = state.upper()
         routes[route] = state
-        if state.startswith("ACTIVE"):
-            active_routes.append(route)
-        elif "DEFERRED" in state or "DORMANT" in state.upper() or "FALLBACK_NOT_ACTIVE" in state:
+        is_deferred = upper_state.startswith("DEFERRED") or upper_state.startswith("DORMANT") or "FALLBACK_NOT_ACTIVE" in upper_state
+        if is_deferred:
             deferred_routes.append(route)
-    raw_authorizations = values.get("current_controller_authorizations", "0")
+        elif state != "UNKNOWN":
+            active_routes.append(route)
+            if upper_state.startswith("ACTIVE"):
+                active_controller_routes.append(route)
+            else:
+                portfolio_context_routes.append(route)
+    raw_authorizations = values.get("current_controller_authorizations")
+    if raw_authorizations is None:
+        match = re.search(r"(?m)^controller_authorized_now:\s*(\d+)", text)
+        raw_authorizations = match.group(1) if match else "0"
     try:
-        current_controller_authorizations = int(raw_authorizations)
+        current_controller_authorizations = int(str(raw_authorizations).strip())
     except ValueError:
         current_controller_authorizations = 0
-        warnings.append("CURRENT.md current_controller_authorizations 不是整数。")
+        warnings.append("CURRENT.md current_controller_authorizations/controller_authorized_now 不是整数。")
+    if not block:
+        warnings.append("CURRENT.md Portfolio state 缺失或不可解析。")
     if not active_routes and block:
-        warnings.append("CURRENT.md 未解析到 active_routes。")
+        warnings.append("CURRENT.md 未解析到 current/active route。")
     if not deferred_routes and block:
         warnings.append("CURRENT.md 未解析到 deferred_routes。")
     return (
         {
             "routes": routes,
             "active_routes": active_routes,
+            "current_routes": active_routes,
+            "active_controller_routes": active_controller_routes,
+            "portfolio_context_routes": portfolio_context_routes,
             "deferred_routes": deferred_routes,
             "active_route_labels": [ROUTE_LABELS[route] for route in active_routes],
+            "current_route_labels": [ROUTE_LABELS[route] for route in active_routes],
+            "active_controller_route_labels": [ROUTE_LABELS[route] for route in active_controller_routes],
+            "portfolio_context_route_labels": [ROUTE_LABELS[route] for route in portfolio_context_routes],
             "deferred_route_labels": [ROUTE_LABELS[route] for route in deferred_routes],
             "current_controller_authorizations": current_controller_authorizations,
         },
@@ -597,7 +670,7 @@ def parse_portfolio_state(text: str) -> tuple[dict[str, Any], list[str]]:
 
 def parse_authority_boundary(text: str) -> tuple[dict[str, Any], list[str]]:
     warnings: list[str] = []
-    block = fenced_block_after(text, "## Authority Boundary")
+    block = fenced_block_after_any(text, ("## Authority boundary", "## Authority Boundary", "Authority Boundary"))
     values = parse_key_values(block)
     authority: dict[str, Any] = {}
     for key, value in values.items():
@@ -609,33 +682,55 @@ def parse_authority_boundary(text: str) -> tuple[dict[str, Any], list[str]]:
                 authority[key] = int(value)
             except ValueError:
                 authority[key] = value
+    top_controller = re.search(r"(?m)^controller_authorized_now:\s*(\d+)", text)
+    if top_controller and "controller_authorized_now" not in authority:
+        authority["controller_authorized_now"] = int(top_controller.group(1))
     for key in AUTHORITY_KEYS:
         if key not in authority:
             warnings.append(f"CURRENT.md Authority Boundary 缺少 {key}。")
     return authority, warnings
 
 
+def parse_exact_evidence_bindings(text: str) -> dict[str, str]:
+    block = fenced_block_after_any(text, ("## Exact remote evidence bindings", "Exact remote evidence bindings"))
+    return parse_key_values(block)
+
+
 def parse_route_binding(text: str, route: str) -> dict[str, str]:
     label = ROUTE_LABELS[route]
     match = re.search(rf"(?ms)^### {re.escape(label)}[^\n]*\n(.*?)(?=^### |^## |\Z)", text)
     section = match.group(1) if match else ""
-    block = fenced_block_after(section, "```text") if "```text" in section else section
+    block = fenced_block_after(section, "```text") if "```" in section else section
     values = parse_key_values(block)
+    exact = parse_exact_evidence_bindings(text)
 
     def first_value(*keys: str) -> str:
         for key in keys:
             if values.get(key):
                 return values[key]
+            if exact.get(key):
+                return exact[key]
         return ""
 
+    evidence_key = f"{label} evidence commit"
+    reviewer_key = f"{label} reviewer commit"
+    reviewed_key = f"{label} reviewed controller repair"
     return {
-        "required_head": first_value("route head", "required head", "required route head"),
+        "required_head": first_value("route head", "required head", "required route head", evidence_key),
+        "evidence_head": first_value(evidence_key, "route head", "required head", "required route head"),
+        "reviewer_commit": first_value("review commit", reviewer_key),
+        "reviewed_controller_commit": first_value("reviewed controller repair", reviewed_key),
+        "review_token": first_value("review token"),
+        "portfolio_status": first_value("portfolio status"),
         "contract_blob": first_value("contract blob"),
         "executor_plan_blob": first_value("executor-plan blob", "executor plan blob"),
         "critic_request_blob": first_value("critic-request blob", "critic request blob"),
         "planner_audit_blob": first_value("planner-audit blob", "planner audit blob"),
         "critic_handoff_blob": first_value("Critic-handoff blob", "critic-handoff blob", "critic handoff blob"),
-        "critic_review_output_path": first_value("critic review output path", "critic-review output path", "critic review path", "critic-review path"),
+        "critic_handoff_path": first_value("critic handoff", "critic handoff path"),
+        "coordinator_receipt_path": first_value("coordinator receipt", "coordinator receipt path"),
+        "critic_review_output_path": first_value("critic output", "critic review output path", "critic-review output path", "critic review path", "critic-review path"),
+        "revision_source_critic_token": first_value("revision source critic token"),
         "critic_review_blob": first_value("critic review blob", "critic-review blob"),
         "evidence_mapping_blob": first_value("evidence-mapping blob"),
         "evidence_mapping_required_row_count": first_value("evidence-mapping required row count"),
@@ -674,17 +769,21 @@ def parse_terminal_reviewer_targets(text: str) -> dict[str, dict[str, str]]:
 
 def parse_allowed_tokens(text: str, route: str) -> list[str]:
     label = ROUTE_LABELS[route]
+    letter = route_letter(route)
     patterns = (
-        f"Allowed {label} planning tokens:",
-        f"Allowed {route} planning tokens:",
-        f"{label} allowed planning tokens:",
+        rf"Allowed {re.escape(label)}(?: Round[0-9]+)? planning (?:tokens|decisions):",
+        rf"Allowed {re.escape(route)}(?: Round[0-9]+)? planning (?:tokens|decisions):",
+        rf"{re.escape(label)} allowed planning tokens:",
     )
-    for marker in patterns:
-        block = fenced_block_after(text, marker)
+    for pattern in patterns:
+        match = re.search(pattern, text, re.I)
+        if not match:
+            continue
+        block = fenced_block_after(text[match.start():], match.group(0))
         tokens = [line.strip() for line in block.splitlines() if line.strip()]
         if tokens:
             return tokens
-    return []
+    return [token["token"] for token in extract_role_tokens(text) if token["route"] == route and token["role"] == "planning_critic"]
 
 
 def parse_round_checkpoints(text: str) -> list[dict[str, Any]]:
@@ -708,13 +807,41 @@ def parse_round_checkpoints(text: str) -> list[dict[str, Any]]:
     return checkpoints
 
 
-def detect_critic_decision(root: Path, review_path: dict[str, Any], allowed_tokens: list[str]) -> dict[str, Any]:
-    text = read_text(Path(review_path.get("absolute_path", ""))) if review_path.get("absolute_path") else ""
+def discover_critic_review_output(root: Path, route: str, round_id: str, configured: dict[str, Any]) -> dict[str, Any]:
+    if configured.get("exists"):
+        return configured
+    round_suffix = round_id if round_id and round_id != "unknown" else "round[0-9]+"
+    candidates: list[Path] = []
+    if round_suffix.startswith("round") and "[" not in round_suffix:
+        candidates.extend(
+            [
+                root / "prompts" / "routes" / f"{route}_{round_suffix}_critic_review.md",
+                root / "prompts" / "routes" / f"{route}_{round_suffix}_critic_rereview.md",
+            ]
+        )
+    candidates.extend(sorted((root / "prompts" / "routes").glob(f"{route}_round*_critic_review.md")))
+    candidates.extend(sorted((root / "prompts" / "routes").glob(f"{route}_round*_critic_rereview.md")))
+    existing = [path for path in candidates if path.is_file()]
+    if not existing:
+        return configured
+    latest = max(existing, key=lambda path: path.stat().st_mtime)
+    try:
+        rel = str(latest.relative_to(root))
+    except ValueError:
+        rel = str(latest)
+    return relative_repo_path(root, rel)
+
+
+def detect_critic_decision(root: Path, route: str, round_id: str, review_path: dict[str, Any], allowed_tokens: list[str]) -> dict[str, Any]:
+    resolved_review_path = discover_critic_review_output(root, route, round_id, review_path)
+    text = read_text(Path(resolved_review_path.get("absolute_path", ""))) if resolved_review_path.get("absolute_path") else ""
     found = [token for token in allowed_tokens if re.search(rf"(?<![A-Z0-9_]){re.escape(token)}(?![A-Z0-9_])", text)]
+    if not found:
+        found = [token["token"] for token in extract_role_tokens(text) if token["route"] == route and token["role"] == "planning_critic"]
     ready = [token for token in found if token.endswith("READY_FOR_CONTROLLER")]
     revision = [token for token in found if token.endswith("NEEDS_REVISION")]
     return {
-        "review_output": review_path,
+        "review_output": resolved_review_path,
         "found_tokens": found,
         "ready_token": ready[0] if ready else "",
         "revision_token": revision[0] if revision else "",
@@ -727,13 +854,14 @@ def build_critic_readiness(
     critics: dict[str, dict[str, Any]],
     allowed_tokens: dict[str, list[str]],
     review_outputs: dict[str, dict[str, Any]] | None = None,
+    round_id: str = "unknown",
 ) -> dict[str, Any]:
     readiness: dict[str, Any] = {}
     review_outputs = review_outputs or {}
     for route in ROUTES:
         review_path = review_outputs.get(route) or relative_repo_path(root, "NO_CURRENT_CRITIC_REVIEW")
         tokens = allowed_tokens.get(route, [])
-        decision = detect_critic_decision(root, review_path, tokens)
+        decision = detect_critic_decision(root, route, round_id, review_path, tokens)
         if not review_path.get("active"):
             decision["state_zh"] = "critic review output unknown"
         elif not tokens:
@@ -744,6 +872,85 @@ def build_critic_readiness(
             **decision,
         }
     return readiness
+
+
+def current_role_entry(text: str, route: str, role: str) -> str:
+    label = ROUTE_LABELS[route]
+    block = fenced_block_after_any(text, ("## Current role entries", "## Critic Entries", "Critic Entries"))
+    patterns = (
+        rf"(?im)^{re.escape(label)}\s+{re.escape(role)}:\s*([^\n]+)",
+        rf"(?im)^{re.escape(route)}\s+{re.escape(role)}\s+current\s+prompt:\s*\n([^\n]+)",
+        rf"(?im)^{re.escape(route)}\s+{re.escape(role)}:\s*([^\n]+)",
+    )
+    haystacks = (block, text)
+    for haystack in haystacks:
+        for pattern in patterns:
+            match = re.search(pattern, haystack)
+            if match:
+                return match.group(1).strip()
+    return f"NO_CURRENT_{role.upper()}_HANDOFF"
+
+
+def route_token_priority(token: dict[str, Any]) -> tuple[int, int, float, str]:
+    source_role = token.get("source_role", "")
+    if source_role == "review":
+        source_rank = 4
+    elif source_role == "critic_review":
+        source_rank = 3
+    elif source_role in {"result", "controller_report", "completion_check", "review_request"}:
+        source_rank = 2
+    else:
+        source_rank = 1
+    role = token.get("role", "")
+    role_rank = {"reviewer": 4, "planning_critic": 3, "controller_terminal": 2}.get(role, 1)
+    return (role_rank + source_rank, int(token.get("round", 0)), float(token.get("mtime", 0)), str(token.get("token", "")))
+
+
+def latest_role_token(tokens: list[dict[str, Any]], route: str, roles: set[str] | None = None) -> dict[str, Any]:
+    candidates = [token for token in tokens if token.get("route") == route and (roles is None or token.get("role") in roles)]
+    if not candidates:
+        return {}
+    return max(candidates, key=route_token_priority)
+
+
+def parse_critic_blockers(path_info: dict[str, Any]) -> list[str]:
+    path = Path(path_info.get("absolute_path", "")) if path_info.get("absolute_path") else None
+    text = read_text(path) if path else ""
+    blockers: list[str] = []
+    capture = False
+    for raw in text.splitlines():
+        line = raw.strip()
+        lowered = line.lower()
+        if lowered.startswith("hard_blockers") or lowered.startswith("blockers") or lowered.startswith("critical blockers"):
+            capture = True
+            continue
+        if capture and line.startswith("#"):
+            break
+        if capture and line.startswith("-"):
+            blocker = line.lstrip("- ").strip().strip("`")
+            if blocker:
+                blockers.append(blocker)
+        if len(blockers) >= 8:
+            break
+    if not blockers:
+        for match in re.finditer(r"(?m)^-\s*`?([A-Z0-9_]{8,})`?", text):
+            value = match.group(1)
+            if value not in blockers and any(part in value for part in ("CURRENT", "B10", "VALIDATOR", "EXECUTABLE", "RECEIPT")):
+                blockers.append(value)
+            if len(blockers) >= 8:
+                break
+    return blockers
+
+
+def stale_warning_for_route(route: dict[str, Any]) -> str:
+    required_head = route.get("required_head", "")
+    origin_sha = route.get("origin_sha", "")
+    reviewer_commit = route.get("reviewer_commit", "")
+    if required_head and origin_sha and required_head != origin_sha and reviewer_commit and origin_sha == reviewer_commit:
+        return "handoff stale for controller authorization, but reviewer result current"
+    if required_head and origin_sha and required_head != origin_sha:
+        return "CURRENT.md stale for current route head; controller remains blocked"
+    return ""
 
 
 def parse_current_handoff(text: str, root: Path) -> dict[str, Any]:
@@ -764,43 +971,47 @@ def parse_current_handoff(text: str, root: Path) -> dict[str, Any]:
     round_value = round_id.group(1) if round_id else "unknown"
     round_checkpoints = parse_round_checkpoints(text)
     for route in ROUTES:
-        match = re.search(rf"(?m)^{re.escape(route)} critic current prompt:\s*\n([^\n]+)", text)
-        raw = match.group(1).strip() if match else "NO_CURRENT_CRITIC_HANDOFF"
+        raw = current_role_entry(text, route, "critic")
+        route_bindings[route] = parse_route_binding(text, route)
+        if raw.startswith("NO_CURRENT_") and route_bindings[route].get("critic_handoff_path"):
+            raw = route_bindings[route]["critic_handoff_path"]
         critics[route] = relative_repo_path(root, raw)
         allowed_tokens[route] = parse_allowed_tokens(text, route)
-        route_bindings[route] = parse_route_binding(text, route)
         critic_review_outputs[route] = relative_repo_path(root, route_bindings[route].get("critic_review_output_path", "NO_CURRENT_CRITIC_REVIEW"))
 
     if round_value == "unknown":
         parse_warnings.append("CURRENT.md 缺少 round_id；portfolio_round.round_id=unknown。")
     if not portfolio.get("active_routes"):
-        parse_warnings.append("CURRENT.md active route 为空；看板不能回退为三路线同权。")
+        parse_warnings.append("CURRENT.md current route 为空；看板不能回退为三路线同权。")
     for route in portfolio.get("active_routes", []):
         binding = route_bindings.get(route, {})
-        for key in (
-            "required_head",
-            "contract_blob",
-            "executor_plan_blob",
-            "critic_request_blob",
-            "planner_audit_blob",
-            "critic_handoff_blob",
-            "critic_review_output_path",
-        ):
-            if key == "critic_review_output_path" and terminal_reviewer_targets.get(route):
-                continue
-            if not binding.get(key):
-                parse_warnings.append(f"{ROUTE_LABELS[route]} CURRENT binding 缺少 {key}；显示 unknown/blocked。")
-        if not allowed_tokens.get(route):
-            parse_warnings.append(f"{ROUTE_LABELS[route]} CURRENT 缺少 allowed planning tokens；Critic gate blocked/unknown。")
-    critic_readiness = build_critic_readiness(root, critics, allowed_tokens, critic_review_outputs)
+        state = str(portfolio.get("routes", {}).get(route, "")).upper()
+        if state.startswith("PLANNING_REVISION_PENDING") or state.startswith("ACTIVE"):
+            required_keys = ("required_head", "critic_review_output_path")
+            for key in required_keys:
+                if key == "critic_review_output_path" and terminal_reviewer_targets.get(route):
+                    continue
+                if not binding.get(key):
+                    parse_warnings.append(f"{ROUTE_LABELS[route]} CURRENT binding 缺少 {key}；显示 unknown/blocked。")
+            if state.startswith("ACTIVE") and not allowed_tokens.get(route):
+                parse_warnings.append(f"{ROUTE_LABELS[route]} CURRENT 缺少 allowed planning tokens；Critic gate blocked/unknown。")
+        elif state == "EVIDENCE_COMPLETE_FOR_PORTFOLIO_RECONCILIATION":
+            if not (binding.get("reviewer_commit") and binding.get("reviewed_controller_commit") and binding.get("review_token")):
+                parse_warnings.append(f"{ROUTE_LABELS[route]} evidence-complete binding 缺少 reviewer commit/review token 字段。")
+    critic_readiness = build_critic_readiness(root, critics, allowed_tokens, critic_review_outputs, round_id=round_value)
+    exact_bindings = parse_exact_evidence_bindings(text)
     portfolio_round = {
         "round_id": round_value,
         "date": round_date.group(1) if round_date else "",
         "source": "prompts/routes/handoffs/CURRENT.md",
         "active_routes": portfolio.get("active_routes", []),
+        "current_routes": portfolio.get("current_routes", []),
+        "active_controller_routes": portfolio.get("active_controller_routes", []),
+        "portfolio_context_routes": portfolio.get("portfolio_context_routes", []),
         "deferred_routes": portfolio.get("deferred_routes", []),
         "controller_authority": authority,
         "route_bindings": route_bindings,
+        "exact_remote_evidence_bindings": exact_bindings,
         "round_checkpoints": round_checkpoints,
         "terminal_reviewer_targets": terminal_reviewer_targets,
     }
@@ -824,8 +1035,14 @@ def empty_portfolio_state() -> dict[str, Any]:
     return {
         "routes": {route: "UNKNOWN" for route in ROUTES},
         "active_routes": [],
+        "current_routes": [],
+        "active_controller_routes": [],
+        "portfolio_context_routes": [],
         "deferred_routes": [],
         "active_route_labels": [],
+        "current_route_labels": [],
+        "active_controller_route_labels": [],
+        "portfolio_context_route_labels": [],
         "deferred_route_labels": [],
         "current_controller_authorizations": 0,
     }
@@ -843,6 +1060,9 @@ def collect_handoff_status(root: Path) -> dict[str, Any]:
             "date": "",
             "source": "prompts/routes/handoffs/CURRENT.md",
             "active_routes": [],
+            "current_routes": [],
+            "active_controller_routes": [],
+            "portfolio_context_routes": [],
             "deferred_routes": [],
             "controller_authority": empty_authority,
             "route_bindings": {route: {} for route in ROUTES},
@@ -955,6 +1175,7 @@ def annotate_handoff_workers(route: dict[str, Any], handoff: dict[str, Any]) -> 
     binding = handoff.get("route_bindings", {}).get(route_id, {})
     portfolio_state = portfolio.get("routes", {}).get(route_id, "UNKNOWN")
     active_routes = set(portfolio.get("active_routes", []))
+    active_controller_routes = set(portfolio.get("active_controller_routes", []))
     deferred_routes = set(portfolio.get("deferred_routes", []))
     allowed_tokens = readiness.get("allowed_tokens", [])
     ready_token = readiness.get("ready_token", "")
@@ -969,6 +1190,7 @@ def annotate_handoff_workers(route: dict[str, Any], handoff: dict[str, Any]) -> 
     route["critic_handoff"] = critic
     route["portfolio_state"] = portfolio_state
     route["is_active_round_route"] = route_id in active_routes
+    route["is_active_controller_route"] = route_id in active_controller_routes
     route["is_deferred_fallback"] = route_id in deferred_routes
     route["controller_authorized"] = controller_authorized
     route["controller_authority_state_zh"] = "authorized" if controller_authorized else "blocked"
@@ -979,7 +1201,17 @@ def annotate_handoff_workers(route: dict[str, Any], handoff: dict[str, Any]) -> 
     route["critic_ready_token"] = ready_token
     route["critic_revision_token"] = revision_token
     route["critic_gate_state_zh"] = readiness.get("state_zh", "pending critic token")
+    route["latest_role_token"] = latest_role_token(route.get("role_tokens", []), route_id)
     route["required_head"] = required_head
+    route["evidence_head"] = binding.get("evidence_head", "")
+    route["reviewer_commit"] = binding.get("reviewer_commit", "")
+    route["reviewed_controller_commit"] = binding.get("reviewed_controller_commit", "")
+    route["review_token"] = binding.get("review_token", "")
+    route["source_of_truth"] = "CURRENT.md + route-local packet/review + main critic review"
+    route["controller_allowed"] = controller_authorized
+    route["planning_blockers"] = parse_critic_blockers(route.get("critic_review_output", {})) if route_id == "route_B" else []
+    stale_warning = stale_warning_for_route(route)
+    route["stale_warnings"] = [stale_warning] if stale_warning else []
     route["contract_blob"] = binding.get("contract_blob", "")
     route["executor_plan_blob"] = binding.get("executor_plan_blob", "")
     route["critic_request_blob"] = binding.get("critic_request_blob", "")
@@ -1029,9 +1261,11 @@ def annotate_handoff_workers(route: dict[str, Any], handoff: dict[str, Any]) -> 
     has_result_packet = bool(route.get("packet_files", {}).get("result") or route.get("packet_files", {}).get("controller_report"))
     has_review = bool(route.get("packet_files", {}).get("review"))
 
+    portfolio_upper = str(portfolio_state or "").upper()
+
     if route["is_deferred_fallback"]:
         route["historical_display_state_zh"] = display_state
-        route["display_state_zh"] = "Dormant fallback"
+        route["display_state_zh"] = "Dormant fallback / inactive unless explicitly reauthorized"
         route["current_worker_zh"] = "非当前 active route"
         route["work_summary_zh"] = f"{route['label']} 是 {portfolio_state}；历史证据只读保留，无当前 Critic、Controller、training 或 Slurm authority。"
         route["next_action_zh"] = "除非用户明确授权或后续 Portfolio Planner 重新激活，否则不得启动 Route A controller。"
@@ -1051,6 +1285,93 @@ def annotate_handoff_workers(route: dict[str, Any], handoff: dict[str, Any]) -> 
         route["next_action"] = {"label_zh": route["next_action_zh"], "source": "portfolio_state"}
         return
 
+    if portfolio_upper.startswith("PLANNING_REVISION_PENDING"):
+        token = revision_token or binding.get("revision_source_critic_token", "")
+        route["latest_role_token"] = {
+            "token": token,
+            "route": route_id,
+            "round": int(re.search(r"ROUND([0-9]+)", token).group(1)) if token and re.search(r"ROUND([0-9]+)", token) else 0,
+            "kind": "PLANNING_NEEDS_REVISION",
+            "role": "planning_critic",
+            "source_role": "critic_review",
+            "source_path": route.get("critic_review_output_path", ""),
+        } if token else route.get("latest_role_token", {})
+        blockers = route.get("planning_blockers") or [
+            "stale CURRENT/coordinator receipt must be repaired before controller authorization",
+            "critic rereview ready token is not present",
+        ]
+        route["historical_display_state_zh"] = display_state
+        round_label = (token.split("_PLANNING", 1)[0].split("_", 2)[-1].title().replace("Round", "Round") if token else str(route.get("round_id", "round")).capitalize())
+        route["display_state_zh"] = f"{round_label} planning needs revision / controller blocked"
+        route["current_worker_zh"] = "等待 coordinator receipt / Route B critic rereview"
+        route["work_summary_zh"] = f"{route['label']} 当前是 {portfolio_state}；Planning critic 给出 needs revision，Controller 不可启动。"
+        route["next_action_zh"] = "GPT Planner / coordinator 先修订 receipt 与 critic blocker；完成 ready token 前不得交 Controller。"
+        route["next_worker_zh"] = route["next_action_zh"]
+        route["completion_blockers"] = blockers
+        route["reviewability"] = {
+            "can_review_complete": False,
+            "label_zh": "planning gate blocked",
+            "reason_zh": "Planning critic needs-revision token 不授权 controller，也不是 reviewer 完成证据。",
+        }
+        route["runtime_state"] = {
+            "state": "planning_needs_revision",
+            "label_zh": route["display_state_zh"],
+            "completion_blocked": True,
+            "source": "CURRENT.md portfolio_state + main planning critic review",
+        }
+        route["review_state"] = {**route["reviewability"], "source": "planning_critic"}
+        route["controller_authority"] = {
+            **route["controller_authority"],
+            "authorized": False,
+            "state": "controller blocked",
+            "source": "CURRENT.md Authority Boundary + planning needs-revision token",
+        }
+        route["controller_allowed"] = False
+        route["next_action"] = {"label_zh": route["next_action_zh"], "source": "planning_critic"}
+        return
+
+    if portfolio_upper == "EVIDENCE_COMPLETE_FOR_PORTFOLIO_RECONCILIATION":
+        token = binding.get("review_token", "")
+        if not token:
+            reviewer_token = latest_role_token(route.get("role_tokens", []), route_id, {"reviewer"})
+            token = reviewer_token.get("token", "")
+        route["latest_role_token"] = {
+            "token": token,
+            "route": route_id,
+            "round": int(re.search(r"ROUND([0-9]+)", token).group(1)) if token and re.search(r"ROUND([0-9]+)", token) else 0,
+            "kind": "REVIEW_EVIDENCE_COMPLETE",
+            "role": "reviewer",
+            "source_role": "CURRENT.md" if binding.get("review_token") else "review",
+            "source_path": binding.get("reviewer_commit", "") or route.get("latest_packet", ""),
+        } if token else route.get("latest_role_token", {})
+        route["historical_display_state_zh"] = display_state
+        route["display_state_zh"] = "Reviewed evidence-complete / waiting portfolio reconciliation"
+        route["current_worker_zh"] = "当前不需要 critic/reviewer/controller"
+        route["work_summary_zh"] = f"{route['label']} reviewer 已确认 evidence complete；当前仅等待 portfolio reconciliation。"
+        route["next_action_zh"] = "等待 GPT Planner 做 portfolio reconciliation；不得 upload、promotion、M11 或 final decision。"
+        route["next_worker_zh"] = route["next_action_zh"]
+        route["completion_blockers"] = []
+        route["reviewability"] = {
+            "can_review_complete": False,
+            "label_zh": "review complete / portfolio pending",
+            "reason_zh": "Reviewer 结果已完成 evidence completeness；下一步不是 controller 或 reviewer。",
+        }
+        route["runtime_state"] = {
+            "state": "reviewed_evidence_complete",
+            "label_zh": route["display_state_zh"],
+            "completion_blocked": False,
+            "source": "CURRENT.md Route C section + route-local review.md",
+        }
+        route["review_state"] = {**route["reviewability"], "source": "route-local reviewer result"}
+        route["controller_authority"] = {
+            **route["controller_authority"],
+            "authorized": False,
+            "state": "not needed / blocked",
+            "source": "CURRENT.md portfolio evidence-complete state",
+        }
+        route["controller_allowed"] = False
+        route["next_action"] = {"label_zh": route["next_action_zh"], "source": "portfolio_reconciliation"}
+        return
     if route.get("terminal_reviewer_ready"):
         target = route.get("terminal_reviewer_target", {})
         route["controller_authority_state_zh"] = "terminal packet ready"
@@ -1416,6 +1737,16 @@ def collect_route(root: Path, worktree_root: Path, route: str) -> dict[str, Any]
         architecture_lines = ROUTE_ARCHITECTURE_HINTS[route]
 
     status_keywords = extract_status_keywords(combined_packet_text)
+    role_tokens: list[dict[str, Any]] = []
+    for name, path in packet_files.items():
+        role_tokens.extend(
+            extract_role_tokens(
+                packet_texts.get(name, ""),
+                source_role=name,
+                source_path=str(path),
+                mtime=path.stat().st_mtime if path.exists() else 0,
+            )
+        )
     slurm_job_ids = sorted(
         {normalize_job_id(attempt.get("job_id", "")) for attempt in packet_attempts if attempt.get("job_id") and is_slurm_job_id(str(attempt.get("job_id", "")))},
         key=job_sort_key,
@@ -1468,8 +1799,10 @@ def collect_route(root: Path, worktree_root: Path, route: str) -> dict[str, Any]
             "files": {name: str(path) for name, path in packet_files.items() if path.exists()},
             "latest_packet": str(latest_packet) if latest_packet else "",
             "status_keywords": status_keywords,
+            "role_tokens": role_tokens,
             "parse_warnings": packet_parse_warnings,
         },
+        "role_tokens": role_tokens,
         "slurm_attempts": packet_attempts,
         "routing_compatibility": detect_v100_compatibility(combined_packet_text),
         "latest_packet": str(latest_packet) if latest_packet else "",
@@ -1565,8 +1898,9 @@ def parse_tmux_panes(stdout: str, session: str) -> list[dict[str, str]]:
     return panes
 
 
-def collect_tmux_topology(root: Path, tmux: dict[str, bool], round_id: str = "unknown") -> list[dict[str, Any]]:
+def collect_tmux_topology(root: Path, tmux: dict[str, bool], round_id: str = "unknown", active_controller_routes: set[str] | None = None) -> list[dict[str, Any]]:
     topology: list[dict[str, Any]] = []
+    active_controller_routes = active_controller_routes or set(ROUTES)
     all_panes = run_cmd(
         ["tmux", "list-panes", "-a", "-F", "#{session_name}|#{window_name}|#{pane_index}|#{pane_title}|#{pane_current_path}|#{pane_current_command}"],
         root,
@@ -1580,7 +1914,7 @@ def collect_tmux_topology(root: Path, tmux: dict[str, bool], round_id: str = "un
         windows = parse_tmux_windows(windows_result["stdout"]) if windows_result["ok"] else []
         window_aliases = spec.get("window_aliases", {})
         expected = list(spec["expected_windows"])
-        if route:
+        if route and route in active_controller_routes:
             preferred_controller = default_controller_window(route, round_id)
             if preferred_controller not in expected:
                 expected = [preferred_controller, *expected]
@@ -2025,7 +2359,9 @@ def collect_staleness(routes: list[dict[str, Any]], handoff: dict[str, Any], liv
     if live_service_state.get("duplicate_or_legacy_detected"):
         staleness.append({"scope": "live_service_state", "state": "duplicate_or_legacy", "detail": "旧 watchboard serve 可能覆盖 generated status.json。"})
     for route in routes:
-        if route.get("required_head") and route.get("origin_sha") and not route.get("head_matches_required"):
+        for warning in route.get("stale_warnings", []):
+            staleness.append({"scope": route["id"], "state": "stale_current", "detail": warning})
+        if route.get("required_head") and route.get("origin_sha") and not route.get("head_matches_required") and not route.get("stale_warnings"):
             staleness.append({"scope": route["id"], "state": "stale_head", "detail": "CURRENT required_head 与 origin route head 不一致。"})
         if route.get("dirty_count"):
             staleness.append({"scope": route["id"], "state": "dirty_worktree", "detail": f"worktree has {route['dirty_count']} uncommitted changes"})
@@ -2043,7 +2379,7 @@ def collect_status(root: Path, worktree_root: Path, user: str) -> dict[str, Any]
         sessions.append(route["controller_tmux"])
         sessions.append(route["reviewer_tmux"])
     tmux = collect_tmux(root, sorted({session for session in sessions if session}))
-    tmux_topology = collect_tmux_topology(root, tmux, round_id=round_id)
+    tmux_topology = collect_tmux_topology(root, tmux, round_id=round_id, active_controller_routes=set(handoff.get("portfolio", {}).get("active_controller_routes", [])))
     topology_by_session = {item["session"]: item for item in tmux_topology}
     for route in routes:
         annotate_route_tmux(route, topology_by_session, round_id=round_id)
@@ -2106,6 +2442,10 @@ def collect_status(root: Path, worktree_root: Path, user: str) -> dict[str, Any]
     route_jobs = [job for job in jobs if job["is_route_job"] or any(job_matches_route(job, route) for route in routes)]
     general_jobs = [job for job in jobs if job["partition"] == "general"]
     warnings = []
+    exact_bindings = handoff.get("portfolio_round", {}).get("exact_remote_evidence_bindings", {})
+    planner_base_main = exact_bindings.get("planner base main", "")
+    if planner_base_main and git_origin_main["ok"] and planner_base_main != git_origin_main["stdout"]:
+        warnings.append("CURRENT.md stale: planner base main differs from origin/main; show as warning only, not as route-local truth override.")
     if general_jobs:
         warnings.append("general partition 作业只读展示；不要从 watchboard 取消或修改它们。")
     if not sacct["ok"]:
@@ -2133,12 +2473,14 @@ def collect_status(root: Path, worktree_root: Path, user: str) -> dict[str, Any]
             continue
         if not route["result_root_exists"]:
             warnings.append(f"{route['label']} 尚无 result root，当前仍处于合同/环境阶段。")
-        if route.get("is_active_round_route") and not tmux.get(route["controller_tmux"], False):
-            warnings.append(f"{route['label']} active route tmux session {route['controller_tmux']} 未启动或不可见。")
+        if route.get("is_active_controller_route") and not tmux.get(route["controller_tmux"], False):
+            warnings.append(f"{route['label']} active controller route tmux session {route['controller_tmux']} 未启动或不可见。")
         missing_windows = [name for name, present in route.get("tmux_window_status", {}).items() if not present]
-        if route.get("is_active_round_route") and missing_windows:
-            warnings.append(f"{route['label']} active route tmux 缺少窗口：{', '.join(missing_windows)}。")
-        if route.get("is_active_round_route") and route.get("required_head") and route.get("origin_sha") and not route.get("head_matches_required"):
+        if route.get("is_active_controller_route") and missing_windows:
+            warnings.append(f"{route['label']} active controller route tmux 缺少窗口：{', '.join(missing_windows)}。")
+        if route.get("stale_warnings"):
+            warnings.extend(f"{route['label']} {warning}" for warning in route.get("stale_warnings", []))
+        elif route.get("is_active_round_route") and route.get("required_head") and route.get("origin_sha") and not route.get("head_matches_required"):
             if route.get("terminal_reviewer_ready"):
                 target_head = route.get("terminal_reviewer_target", {}).get("reviewer_target_head", "")
                 warnings.append(
@@ -2211,11 +2553,11 @@ def collect_status(root: Path, worktree_root: Path, user: str) -> dict[str, Any]
 
 def status_class(route: dict[str, Any], tmux: dict[str, bool]) -> str:
     state = route.get("display_state_zh", "")
-    if route.get("is_deferred_fallback") or state == "Dormant fallback":
+    if route.get("is_deferred_fallback") or state.startswith("Dormant fallback"):
         return "archive"
     if state in {"Controller 运行中", "Slurm 运行中", "Slurm 排队中"}:
         return "active"
-    if state in {"需修订", "审查未通过"}:
+    if state in {"需修订", "审查未通过"} or (state.startswith("Round") and "planning needs revision" in state):
         return "revision"
     if route.get("completion_blockers") or state in {"需补证据", "等待监控", "等待 sacct", "未完成"}:
         return "risk"
@@ -2223,7 +2565,7 @@ def status_class(route: dict[str, Any], tmux: dict[str, bool]) -> str:
         return "undertrained"
     if state in {"Controller 已结束"}:
         return "ended"
-    if state in {"待独立审查", "审查通过"}:
+    if state in {"待独立审查", "审查通过", "Reviewed evidence-complete / waiting portfolio reconciliation"}:
         return "review"
     if tmux.get(route["controller_tmux"]):
         return "ended"
@@ -2536,10 +2878,12 @@ def render_html(data: dict[str, Any], refresh_seconds: int = 60) -> str:
                 <h3>Portfolio route state</h3>
                 <div class="badge-row compact">{portfolio_badges}</div>
                 <div class="binding-grid">
-                  <div><span>required route head</span><strong>{soft_wrap_token(route.get('required_head', '') or 'unknown')}</strong></div>
+                  <div><span>latest role token</span><strong>{soft_wrap_token(route.get('latest_role_token', {}).get('token', '') or route.get('review_token', '') or route.get('critic_revision_token', '') or 'none')}</strong></div>
+                  <div><span>source of truth</span><strong>{html.escape(route.get('source_of_truth', 'packet/slurm/tmux'))}</strong></div>
+                  <div><span>required/evidence head</span><strong>{soft_wrap_token(route.get('required_head', '') or route.get('evidence_head', '') or 'unknown')}</strong></div>
                   <div><span>origin route head</span><strong>{soft_wrap_token(route.get('origin_sha', '') or 'unknown')}</strong></div>
-                  <div><span>contract blob</span><strong>{soft_wrap_token(route.get('contract_blob', '') or 'unknown')}</strong></div>
-                  <div><span>executor-plan blob</span><strong>{soft_wrap_token(route.get('executor_plan_blob', '') or 'unknown')}</strong></div>
+                  <div><span>reviewer commit</span><strong>{soft_wrap_token(route.get('reviewer_commit', '') or 'none')}</strong></div>
+                  <div><span>reviewed controller commit</span><strong>{soft_wrap_token(route.get('reviewed_controller_commit', '') or 'none')}</strong></div>
                   <div><span>critic handoff</span><strong>{soft_wrap_token(route.get('critic_handoff', {}).get('path', '') or 'none')}</strong></div>
                   <div><span>critic review output</span><strong>{soft_wrap_token(route.get('critic_review_output_path', '') or 'none')}</strong></div>
                   <div><span>expected token</span><strong>{soft_wrap_token(', '.join(route.get('allowed_tokens', [])) or 'none')}</strong></div>

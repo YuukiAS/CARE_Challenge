@@ -95,6 +95,51 @@ class Sender:
         self.events.append(event)
 
 
+def write_route_packet_fixture(config: dict, tmp_path: Path, route: str = "route_B") -> Path:
+    worktree = tmp_path / "CARE_worktrees" / route
+    root = worktree / "results" / route
+    root.mkdir(parents=True, exist_ok=True)
+    config["routes"][route]["worktree"] = str(worktree)
+    config["routes"][route]["packet_paths"] = [
+        str(root / "controller_report.md"),
+        str(root / "completion_check.md"),
+    ]
+    (root / "result.md").write_text(
+        "status: ROUTE_B_ROUND03_TERMINAL_PACKET_READY_FOR_REVIEW\n"
+        "scientific_resolution_status: AWAITING_REVIEW\n"
+        "route_promotion_decision: NOT_REVIEWED\n"
+        "Slurm job: 111\n",
+        encoding="utf-8",
+    )
+    (root / "completion_check.md").write_text(
+        "ROUTE_B_ROUND03_TERMINAL_PACKET_READY_FOR_REVIEW\nstatus: PASS\n",
+        encoding="utf-8",
+    )
+    (root / "review_request.md").write_text("ROUTE_B_ROUND03_TERMINAL_PACKET_READY_FOR_REVIEW\n", encoding="utf-8")
+    (root / "MANIFEST.md").write_text("manifest\n", encoding="utf-8")
+    (root / "controller_report.md").write_text("ROUTE_B_ROUND03_TERMINAL_PACKET_READY_FOR_REVIEW\nPASS\n", encoding="utf-8")
+    (root / "routing_ledger.csv").write_text(
+        "timestamp_utc,event,executor,stage,partition,job_id,state,exit_code,output_root,credit,lineage_note\n"
+        "2026-07-19T00:00:00Z,submitted,B3,train,htzhulab,111,SUBMITTED,,out,pending,submitted\n"
+        "2026-07-19T00:03:00Z,terminal,B3,train,htzhulab,111,COMPLETED,0:0,out,true,sacct elapsed 00:03:00\n"
+        "2026-07-19T00:04:00Z,terminal,B3,train,a100-gpu,222,FAILED,2:0,out,zero,sacct elapsed 00:01:30\n"
+        "2026-07-19T00:05:00Z,cancel,B3,train,volta-gpu,333,CANCELLED by 123,0:0,out,zero,cancelled while pending\n",
+        encoding="utf-8",
+    )
+    (root / "finalizer_state.json").write_text(
+        json.dumps(
+            {
+                "job_states": {"444": "COMPLETED"},
+                "exit_codes": {"444": "0:0"},
+                "elapsed": {"444": "00:00:10"},
+                "required_job_ids": ["444"],
+            }
+        ),
+        encoding="utf-8",
+    )
+    return root
+
+
 def test_active_to_complete_sends_once(tmp_path):
     config = make_config(tmp_path)
     db = tmp_path / "runtime" / "route_B_tmux_care_route_B__care_route_B" / "goals_1.sqlite"
@@ -205,6 +250,7 @@ def test_dry_run_returns_event_without_sending_or_writing_state(tmp_path):
 
 def test_send_email_uses_starttls_login_and_recipient(monkeypatch, tmp_path):
     config = make_config(tmp_path)
+    root = write_route_packet_fixture(config, tmp_path)
     event = notify.build_test_event(config)
     calls = []
 
@@ -225,7 +271,7 @@ def test_send_email_uses_starttls_login_and_recipient(monkeypatch, tmp_path):
             calls.append(("login", user, password))
 
         def send_message(self, message: EmailMessage):
-            calls.append(("send_message", message["From"], message["To"], message["Subject"], message.get_content()))
+            calls.append(("send_message", message))
 
     monkeypatch.setattr(notify.smtplib, "SMTP", FakeSMTP)
     notify.send_email(
@@ -237,23 +283,41 @@ def test_send_email_uses_starttls_login_and_recipient(monkeypatch, tmp_path):
     assert ("connect", "smtp.gmail.com", 587, 30) in calls
     assert ("starttls",) in calls
     assert ("login", "humc2013@gmail.com", "app-password") in calls
-    sent = [call for call in calls if call[0] == "send_message"][0]
-    assert sent[1] == "humc2013@gmail.com"
-    assert "1155246312@link.cuhk.edu.hk" in sent[2]
-    assert "[CARE][Route B][GOAL_COMPLETE]" in sent[3]
-    assert "terminal packet ready for reviewer" in sent[3]
-    assert "结论：Route B controller goal 已完成" in sent[4]
-    assert "## Route A/B/C 当前总览" in sent[4]
-    assert "## Next action" in sent[4]
-    assert "https://watchboard.httpwwwcardiacnexus-ukb.com/index.html" in sent[4]
-    assert "http://127.0.0.1:8766/index.html" in sent[4]
-    assert "app-password" not in sent[4]
-    assert "tunnel secret" not in sent[4].lower()
+    message = [call[1] for call in calls if call[0] == "send_message"][0]
+    assert message["From"] == "humc2013@gmail.com"
+    assert "1155246312@link.cuhk.edu.hk" in message["To"]
+    assert "[CARE][Route B][GOAL_COMPLETE][等待 reviewer]" in message["Subject"]
+    assert message.is_multipart()
+    parts = {part.get_content_type(): part.get_content() for part in message.iter_parts()}
+    plain = parts["text/plain"]
+    html_body = parts["text/html"]
+
+    assert "结论：Route B controller goal 已完成" in plain
+    assert "下一步：交 Route B independent reviewer 审" in plain
+    assert "Slurm 作业概览" in plain
+    assert "结果：COMPLETED 2；FAILED 1；CANCELLED 1" in plain
+    assert "计入结果：2" in plain
+    assert "可得总运行时长：4分40秒" in plain
+    assert "Route 总览" in plain
+    assert "Watchboard" in plain
+    assert "https://watchboard.httpwwwcardiacnexus-ukb.com/index.html" in plain
+    assert "http://127.0.0.1:8766/index.html" in plain
+    assert "| --- |" not in plain
+    assert "##" not in plain
+    assert "event signature" not in plain
+    assert "app-password" not in plain
+    assert "tunnel secret" not in plain.lower()
+    assert str(root) not in plain
+    assert "results/route_B/result.md" in plain
+    assert "<table" in html_body
+    assert "结论" in html_body
+    assert "app-password" not in html_body
 
 
 def test_send_test_dry_run_uses_summary_email_format(tmp_path):
     config_path = tmp_path / "config.json"
     config = make_config(tmp_path)
+    write_route_packet_fixture(config, tmp_path)
     config["watchboard_urls"] = {
         "public": "https://watchboard.httpwwwcardiacnexus-ukb.com/index.html",
         "local": "http://127.0.0.1:8766/index.html",
@@ -269,13 +333,35 @@ def test_send_test_dry_run_uses_summary_email_format(tmp_path):
 
     assert proc.returncode == 0
     payload = json.loads(proc.stdout)
-    assert "[CARE][Route B][GOAL_COMPLETE]" in payload["subject"]
-    assert "结论：Route B controller goal 已完成" in payload["body"]
-    assert "## Route A/B/C 当前总览" in payload["body"]
-    assert "## Next action" in payload["body"]
-    assert "https://watchboard.httpwwwcardiacnexus-ukb.com/index.html" in payload["body"]
-    assert "CARE_NOTIFY_SMTP_PASSWORD" not in payload["body"]
+    assert "[CARE][Route B][GOAL_COMPLETE][等待 reviewer]" in payload["subject"]
+    assert "结论：Route B controller goal 已完成" in payload["plain_body"]
+    assert "Slurm 作业概览" in payload["plain_body"]
+    assert "结果：COMPLETED 2；FAILED 1；CANCELLED 1" in payload["plain_body"]
+    assert "Route 总览" in payload["plain_body"]
+    assert "Watchboard" in payload["plain_body"]
+    assert "| --- |" not in payload["plain_body"]
+    assert "##" not in payload["plain_body"]
+    assert "event signature" not in payload["plain_body"]
+    assert "<table" in payload["html_body"]
+    assert "https://watchboard.httpwwwcardiacnexus-ukb.com/index.html" in payload["plain_body"]
+    assert "CARE_NOTIFY_SMTP_PASSWORD" not in payload["plain_body"]
+    assert "app-password" not in payload["plain_body"]
 
+
+def test_slurm_summary_handles_missing_packet_evidence(tmp_path):
+    config = make_config(tmp_path)
+    event = notify.build_test_event(config)
+    summary = notify.summarize_slurm(config, event)
+
+    assert summary.total_jobs == 0
+    assert summary.total_elapsed == "未记录"
+    assert "packet 未记录 Slurm ledger/finalizer_state" in summary.warnings
+
+
+def test_slurm_elapsed_parser_handles_route_ledger_notes():
+    assert notify.extract_elapsed_from_note("allocated then failed after 00:00:05 before receipt") == "00:00:05"
+    assert notify.extract_elapsed_from_note("6000 steps completed but train_loop_seconds 300.9 < 1800") == "00:05:01"
+    assert notify.extract_elapsed_from_note("62346 steps and 1801.4 seconds completed") == "00:30:01"
 
 def test_health_status_written_on_scan(tmp_path):
     config = make_config(tmp_path)
@@ -419,3 +505,55 @@ def test_start_in_tmux_dry_run_no_duplicate_and_dead_restart(tmp_path):
     dead = subprocess.run(["bash", str(script), "--dry-run"], env=env, text=True, capture_output=True, check=False)
     assert dead.returncode == 0
     assert "tmux respawn-window -k -t care_watchboard:Notify" in dead.stdout
+
+
+
+def test_route_summary_uses_watchboard_dynamic_status(monkeypatch, tmp_path):
+    config = make_config(tmp_path)
+    status = {
+        "routes": [
+            {
+                "id": "route_A",
+                "label": "Route A",
+                "sha": "fae8a732bbf625db367e0b68c04f1490d0c97be3",
+                "origin_sha": "fae8a732bbf625db367e0b68c04f1490d0c97be3",
+                "dirty_count": 0,
+                "ahead_behind_main": "0\t0",
+                "current_worker_zh": "非当前 active route",
+                "display_state_zh": "Dormant fallback / inactive unless explicitly reauthorized",
+                "next_action_zh": "保持只读观察",
+            },
+            {
+                "id": "route_B",
+                "label": "Route B",
+                "sha": "b9c7664da7cb1f1892fff37a4497722f31a0a96d",
+                "origin_sha": "b9c7664da7cb1f1892fff37a4497722f31a0a96d",
+                "dirty_count": 0,
+                "ahead_behind_main": "56\t58",
+                "current_worker_zh": "等待 coordinator receipt / Route B critic rereview",
+                "display_state_zh": "Round04 planning needs revision / controller blocked",
+                "next_action_zh": "GPT Planner / planner revision",
+            },
+            {
+                "id": "route_C",
+                "label": "Route C",
+                "sha": "17062b00edc3443aacefe8583568797a9f2655ba",
+                "origin_sha": "17062b00edc3443aacefe8583568797a9f2655ba",
+                "dirty_count": 0,
+                "ahead_behind_main": "56\t60",
+                "current_worker_zh": "当前不需要 critic/reviewer/controller",
+                "display_state_zh": "Reviewed evidence-complete / waiting portfolio reconciliation",
+                "next_action_zh": "等待 GPT Planner 做 portfolio reconciliation",
+            },
+        ]
+    }
+    monkeypatch.setattr(notify, "collect_watchboard_status", lambda cfg: status)
+    event = notify.build_test_event(config)
+    plain = notify.render_plain_email(config, event)
+
+    assert "Route A：branch fae8a73 / origin fae8a73" in plain
+    assert "Dormant fallback / inactive unless explicitly reauthorized" in plain
+    assert "Round04 planning needs revision / controller blocked" in plain
+    assert "Reviewed evidence-complete / waiting portfolio reconciliation" in plain
+    assert "terminal event observed / 等待 independent reviewer" not in plain
+    assert "not triggered / 按 route packet 判定" not in plain

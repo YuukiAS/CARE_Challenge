@@ -4,10 +4,12 @@
 from __future__ import annotations
 
 import argparse
+import csv
 from dataclasses import asdict, dataclass
 from datetime import datetime, timezone
 from email.message import EmailMessage
 import hashlib
+import html
 import json
 import re
 from pathlib import Path
@@ -65,6 +67,28 @@ class NotificationEvent:
     def key(self) -> str:
         parts = [self.route, self.source, self.thread_id, self.status, str(self.updated_at_ms)]
         return "|".join(parts)
+
+
+@dataclass(frozen=True)
+class SlurmJobSummary:
+    job_id: str
+    partition: str = "unknown"
+    state: str = "UNKNOWN"
+    exit_code: str = "unknown"
+    elapsed: str = ""
+    credited: bool = False
+    role: str = ""
+    note: str = ""
+
+
+@dataclass(frozen=True)
+class SlurmRunSummary:
+    total_jobs: int
+    state_counts: dict[str, int]
+    credited_jobs: int
+    total_elapsed: str
+    important_jobs: list[SlurmJobSummary]
+    warnings: list[str]
 
 
 def utc_now() -> str:
@@ -528,7 +552,43 @@ def run_git_text(args: list[str], cwd: Path) -> str:
     return cp.stdout.strip() if cp.returncode == 0 and cp.stdout.strip() else "unknown"
 
 
-def route_summary(config: dict[str, Any], route: str, trigger_route: str = "") -> dict[str, str]:
+def collect_watchboard_status(config: dict[str, Any]) -> dict[str, Any]:
+    repo_root = repo_root_from_config(config)
+    module_path = repo_root / "scripts" / "ops" / "build_route_watchboard.py"
+    if not module_path.is_file():
+        return {}
+    try:
+        spec = importlib.util.spec_from_file_location("care_watchboard_status_for_notifier", module_path)
+        if spec is None or spec.loader is None:
+            return {}
+        module = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(module)
+        worktree_root = repo_root.parent / "CARE_worktrees"
+        user = str(config.get("user") or os.environ.get("USER") or "aereinh")
+        return module.collect_status(repo_root, worktree_root, user)
+    except Exception:
+        return {}
+
+
+def route_summary_from_watchboard(route: dict[str, Any]) -> dict[str, str]:
+    dirty_count = route.get("dirty_count")
+    dirty = "clean" if dirty_count in {0, None} else f"dirty {dirty_count}"
+    state = str(route.get("display_state_zh") or route.get("runtime_state", {}).get("label_zh") or "待判定")
+    controller = str(route.get("current_worker_zh") or route.get("controller_authority", {}).get("state") or "未判定")
+    next_action = str(route.get("next_action_zh") or route.get("next_action", {}).get("label_zh") or "等待下一步")
+    return {
+        "route": str(route.get("label") or route.get("id", "route")),
+        "branch_head": str(route.get("sha") or "unknown"),
+        "origin_head": str(route.get("origin_sha") or "unknown"),
+        "dirty_ahead": f"{dirty}; main delta {str(route.get('ahead_behind_main') or 'unknown').replace(chr(9), ' ')}",
+        "controller_state": controller,
+        "reviewer_state": state,
+        "next_action": next_action,
+        "source": "watchboard",
+    }
+
+
+def fallback_route_summary(config: dict[str, Any], route: str) -> dict[str, str]:
     worktree = route_worktree(config, route)
     branch = route_branch(route)
     if worktree.exists():
@@ -541,34 +601,45 @@ def route_summary(config: dict[str, Any], route: str, trigger_route: str = "") -
     else:
         head = origin = sync = "missing"
         dirty = "missing"
-
-    is_trigger = route == trigger_route
-    controller_state = "terminal event observed" if is_trigger else "not triggered"
-    reviewer_state = "等待 independent reviewer" if is_trigger else "按 route packet 判定"
-    next_action = "交 independent reviewer 审 terminal packet" if is_trigger else "保持只读观察"
     return {
         "route": route_label(config, route),
         "branch_head": head,
         "origin_head": origin,
         "dirty_ahead": f"{dirty}; ahead/behind {sync}",
-        "controller_state": controller_state,
-        "reviewer_state": reviewer_state,
-        "next_action": next_action,
+        "controller_state": "watchboard summary unavailable",
+        "reviewer_state": "只读 git fallback",
+        "next_action": "查看 watchboard / route packet 后判断",
+        "source": "fallback",
     }
 
 
-def route_summary_table(config: dict[str, Any], trigger_route: str) -> str:
-    header = "| route | branch head | origin head | dirty/ahead | controller/reviewer state | next action |"
-    sep = "| --- | --- | --- | --- | --- | --- |"
-    rows = []
-    for route in ("route_A", "route_B", "route_C"):
-        summary = route_summary(config, route, trigger_route)
-        rows.append(
-            "| {route} | {branch_head} | {origin_head} | {dirty_ahead} | {controller_state} / {reviewer_state} | {next_action} |".format(
-                **summary
-            )
+def route_summary(config: dict[str, Any], route: str, trigger_route: str = "", watchboard_status: dict[str, Any] | None = None) -> dict[str, str]:
+    status = watchboard_status if watchboard_status is not None else collect_watchboard_status(config)
+    for item in status.get("routes", []) if isinstance(status, dict) else []:
+        if item.get("id") == route:
+            return route_summary_from_watchboard(item)
+    return fallback_route_summary(config, route)
+
+
+def route_summary_rows(config: dict[str, Any], trigger_route: str, watchboard_status: dict[str, Any] | None = None) -> list[dict[str, str]]:
+    status = watchboard_status if watchboard_status is not None else collect_watchboard_status(config)
+    return [route_summary(config, route, trigger_route, status) for route in ("route_A", "route_B", "route_C")]
+
+
+def render_route_summary_text(rows: list[dict[str, str]]) -> str:
+    rendered = []
+    for summary in rows:
+        state = f"{summary['controller_state']} / {summary['reviewer_state']}"
+        dirty_ahead = summary["dirty_ahead"].replace("\t", " ")
+        rendered.append(
+            f"{summary['route']}：branch {short_hash(summary['branch_head'])} / origin {short_hash(summary['origin_head'])}；"
+            f"{dirty_ahead}；{state}；下一步：{summary['next_action']}"
         )
-    return "\n".join([header, sep, *rows])
+    return "\n".join(rendered)
+
+
+def route_summary_table(config: dict[str, Any], trigger_route: str, watchboard_status: dict[str, Any] | None = None) -> str:
+    return render_route_summary_text(route_summary_rows(config, trigger_route, watchboard_status))
 
 
 def read_limited_text(path: Path, limit: int) -> str:
@@ -599,9 +670,27 @@ def packet_target_paths(config: dict[str, Any], event: NotificationEvent) -> lis
     return candidates
 
 
-def brief_file_status(path: Path) -> str:
+def short_hash(value: str, length: int = 7) -> str:
+    value = str(value or "")
+    if re.fullmatch(r"[0-9a-fA-F]{12,}", value):
+        return value[:length]
+    return value or "unknown"
+
+
+def display_path(config: dict[str, Any], route: str, path: Path) -> str:
+    roots = [route_worktree(config, route), repo_root_from_config(config)]
+    for root in roots:
+        try:
+            return str(path.relative_to(root))
+        except ValueError:
+            continue
+    return str(path)
+
+
+def brief_file_status(path: Path, *, config: dict[str, Any] | None = None, route: str = "") -> str:
+    label = display_path(config, route, path) if config is not None and route else str(path)
     if not path.exists():
-        return f"{path}: missing"
+        return f"{label}: missing"
     text = read_limited_text(path, 3000)
     tokens = []
     for pattern in (
@@ -617,8 +706,8 @@ def brief_file_status(path: Path) -> str:
             value = match.group(1) if match.groups() else match.group(0)
             if value not in tokens:
                 tokens.append(value)
-    summary = ", ".join(tokens[:8]) if tokens else "present"
-    return f"{path}: {summary}"
+    summary = ", ".join(tokens[:5]) if tokens else "present"
+    return f"{label}: {summary}"
 
 
 def terminal_intent(config: dict[str, Any], event: NotificationEvent) -> str:
@@ -635,53 +724,447 @@ def terminal_intent(config: dict[str, Any], event: NotificationEvent) -> str:
 
 def subject_for_event(config: dict[str, Any], event: NotificationEvent) -> str:
     prefix = config.get("email", {}).get("subject_prefix", "[CARE]")
-    return f"{prefix}[{route_label(config, event.route)}][{event.subject_status}][{terminal_intent(config, event)}]"
-
-
-def body_for_event(config: dict[str, Any], event: NotificationEvent) -> str:
-    label = route_label(config, event.route)
-    route_head = route_summary(config, event.route, event.route)["branch_head"]
-    if event.status == "complete":
-        conclusion = f"结论：{label} controller goal 已完成，当前应进入 independent reviewer，不需要 main/controller 介入。"
-        action = f"交 {label} reviewer 审 `{route_head}`。"
+    route = route_label(config, event.route)
+    if event.status == "blocked":
+        intent = "需要 controller 修复"
     else:
-        conclusion = f"结论：{label} controller goal 已 blocked，当前需要 controller/main 介入修复，暂不交 reviewer。"
-        action = f"{label} controller 修复后继续 goal。"
-    packet_lines = "\n".join(f"- {brief_file_status(path)}" for path in packet_target_paths(config, event))
+        intent = "等待 reviewer"
+    return f"{prefix}[{route}][{event.subject_status}][{intent}]"
+
+
+def normalize_slurm_state(raw: str) -> str:
+    state = str(raw or "").strip().upper()
+    if not state:
+        return "UNKNOWN"
+    if state.startswith("COMPLETED"):
+        return "COMPLETED"
+    if state.startswith("FAILED"):
+        return "FAILED"
+    if state.startswith("CANCELLED"):
+        return "CANCELLED"
+    if state.startswith("RUNNING"):
+        return "RUNNING"
+    if state.startswith("PENDING") or state == "SUBMITTED":
+        return "PENDING"
+    return state.split()[0]
+
+
+def elapsed_to_seconds(value: str) -> int | None:
+    value = str(value or "").strip()
+    if not value or value.lower() in {"unknown", "n/a"}:
+        return None
+    parts = value.split("-")
+    days = 0
+    clock = parts[-1]
+    if len(parts) == 2:
+        try:
+            days = int(parts[0])
+        except ValueError:
+            return None
+    fields = clock.split(":")
+    try:
+        if len(fields) == 3:
+            hours, minutes, seconds = [int(part) for part in fields]
+        elif len(fields) == 2:
+            hours = 0
+            minutes, seconds = [int(part) for part in fields]
+        else:
+            return None
+    except ValueError:
+        return None
+    return days * 86400 + hours * 3600 + minutes * 60 + seconds
+
+
+def format_elapsed(seconds: int | None) -> str:
+    if seconds is None:
+        return "未记录"
+    hours, rem = divmod(seconds, 3600)
+    minutes, secs = divmod(rem, 60)
+    if hours:
+        return f"{hours}小时{minutes}分{secs}秒"
+    if minutes:
+        return f"{minutes}分{secs}秒"
+    return f"{secs}秒"
+
+
+def credited_value(value: str) -> bool:
+    lowered = str(value or "").strip().lower()
+    if not lowered:
+        return False
+    if lowered in {"true", "yes", "credited", "credit"}:
+        return True
+    if lowered.startswith("zero") or lowered in {"false", "no", "pending", "none"}:
+        return False
+    return "credit" in lowered and "zero" not in lowered
+
+
+def update_job_summary(jobs: dict[str, SlurmJobSummary], candidate: SlurmJobSummary) -> None:
+    current = jobs.get(candidate.job_id)
+    if current is None:
+        jobs[candidate.job_id] = candidate
+        return
+    terminal_order = {"UNKNOWN": 0, "PENDING": 1, "RUNNING": 2, "CANCELLED": 3, "FAILED": 4, "COMPLETED": 5}
+    if terminal_order.get(candidate.state, 0) >= terminal_order.get(current.state, 0):
+        jobs[candidate.job_id] = SlurmJobSummary(
+            job_id=candidate.job_id,
+            partition=candidate.partition if candidate.partition != "unknown" else current.partition,
+            state=candidate.state,
+            exit_code=candidate.exit_code if candidate.exit_code != "unknown" else current.exit_code,
+            elapsed=candidate.elapsed or current.elapsed,
+            credited=candidate.credited or current.credited,
+            role=candidate.role or current.role,
+            note=candidate.note or current.note,
+        )
+
+
+def seconds_to_clock(seconds: float) -> str:
+    total = int(round(seconds))
+    hours, rem = divmod(total, 3600)
+    minutes, secs = divmod(rem, 60)
+    return f"{hours:02d}:{minutes:02d}:{secs:02d}"
+
+
+def extract_elapsed_from_note(note: str) -> str:
+    for pattern in (
+        r"elapsed\s+([0-9]+-[0-9:]+|[0-9]{1,2}:[0-9]{2}:[0-9]{2}|[0-9]{1,2}:[0-9]{2})",
+        r"after\s+([0-9]+-[0-9:]+|[0-9]{1,2}:[0-9]{2}:[0-9]{2}|[0-9]{1,2}:[0-9]{2})",
+    ):
+        match = re.search(pattern, note, re.I)
+        if match:
+            return match.group(1)
+    for pattern in (
+        r"train_loop_seconds\s+([0-9]+(?:\.[0-9]+)?)",
+        r"([0-9]+(?:\.[0-9]+)?)\s+seconds completed",
+    ):
+        match = re.search(pattern, note, re.I)
+        if match:
+            return seconds_to_clock(float(match.group(1)))
+    return ""
+
+
+def route_packet_root(config: dict[str, Any], event: NotificationEvent) -> Path:
+    paths = packet_target_paths(config, event)
+    for path in paths:
+        if path.name in {"controller_report.md", "completion_check.md", "result.md", "review_request.md", "MANIFEST.md"}:
+            return path.parent
+    return route_worktree(config, event.route) / "results" / event.route
+
+
+def evidence_file_candidates(root: Path) -> list[Path]:
+    if not root.exists():
+        return []
+    candidates: list[Path] = []
+    for name in ("finalizer_state.json", "routing_and_finalizer_ledger.csv", "routing_ledger.csv", "controller_ledger.csv"):
+        path = root / name
+        if path.is_file():
+            candidates.append(path)
+    for path in sorted(root.rglob("*ledger*.csv")):
+        if "runtime" not in path.parts and path not in candidates:
+            candidates.append(path)
+    for path in sorted(root.rglob("finalizer_state.json")):
+        if "runtime" not in path.parts and path not in candidates:
+            candidates.append(path)
+    return candidates[:40]
+
+
+def parse_slurm_csv(path: Path, jobs: dict[str, SlurmJobSummary], warnings: list[str]) -> None:
+    try:
+        with path.open("r", encoding="utf-8", errors="replace", newline="") as handle:
+            for row in csv.DictReader(handle):
+                job_id = str(row.get("job_id") or "").strip()
+                if not job_id:
+                    continue
+                state = normalize_slurm_state(row.get("state") or row.get("scheduler_state") or "")
+                note = str(row.get("lineage_note") or row.get("winner_lock_result") or row.get("cancel_command") or "").strip()
+                role = str(row.get("stage") or row.get("logical_run_id") or row.get("executor") or row.get("attempt_id") or "").strip()
+                elapsed = str(row.get("elapsed") or "").strip() or extract_elapsed_from_note(note)
+                update_job_summary(
+                    jobs,
+                    SlurmJobSummary(
+                        job_id=job_id,
+                        partition=str(row.get("partition") or "unknown").strip() or "unknown",
+                        state=state,
+                        exit_code=str(row.get("exit_code") or "unknown").strip() or "unknown",
+                        elapsed=elapsed,
+                        credited=credited_value(str(row.get("credited") or row.get("credit") or "")),
+                        role=role,
+                        note=note,
+                    ),
+                )
+    except (OSError, csv.Error) as exc:
+        warnings.append(f"无法读取 Slurm ledger {path.name}: {type(exc).__name__}")
+
+
+def parse_finalizer_json(path: Path, jobs: dict[str, SlurmJobSummary], warnings: list[str]) -> None:
+    try:
+        data = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError) as exc:
+        warnings.append(f"无法读取 finalizer state {path.name}: {type(exc).__name__}")
+        return
+    for item in data.get("slurm_jobs", []) if isinstance(data.get("slurm_jobs"), list) else []:
+        job_id = str(item.get("job_id") or "").strip()
+        if not job_id:
+            continue
+        update_job_summary(
+            jobs,
+            SlurmJobSummary(
+                job_id=job_id,
+                partition=str(item.get("partition") or "unknown"),
+                state=normalize_slurm_state(item.get("state") or ""),
+                exit_code=str(item.get("exit_code") or "unknown"),
+                elapsed=str(item.get("elapsed") or ""),
+                credited=item.get("state") == "COMPLETED" and str(item.get("exit_code") or "") == "0:0",
+                role="finalizer slurm_jobs",
+                note=str(item.get("log_path") or ""),
+            ),
+        )
+    job_states = data.get("job_states") if isinstance(data.get("job_states"), dict) else {}
+    elapsed = data.get("elapsed") if isinstance(data.get("elapsed"), dict) else {}
+    exit_codes = data.get("exit_codes") if isinstance(data.get("exit_codes"), dict) else {}
+    required = {str(job_id) for job_id in data.get("required_job_ids", [])} if isinstance(data.get("required_job_ids"), list) else set()
+    for job_id, state in job_states.items():
+        job_id = str(job_id)
+        update_job_summary(
+            jobs,
+            SlurmJobSummary(
+                job_id=job_id,
+                state=normalize_slurm_state(str(state)),
+                exit_code=str(exit_codes.get(job_id) or "unknown"),
+                elapsed=str(elapsed.get(job_id) or ""),
+                credited=job_id in required,
+                role="required runtime" if job_id in required else "finalizer state",
+            ),
+        )
+    repair = data.get("reviewer_revision_repair")
+    if isinstance(repair, dict):
+        repair_job_id = str(repair.get("repair_job_id") or "").strip()
+        if repair_job_id:
+            update_job_summary(
+                jobs,
+                SlurmJobSummary(
+                    job_id=repair_job_id,
+                    partition="htzhulab",
+                    state=normalize_slurm_state(repair.get("repair_job_state") or ""),
+                    exit_code=str(repair.get("repair_exit_code") or "unknown"),
+                    elapsed=str(repair.get("repair_elapsed") or ""),
+                    credited=True,
+                    role="reviewer revision repair",
+                    note=str(repair.get("repair_log_path") or ""),
+                ),
+            )
+        failed_job_id = str(repair.get("superseded_failed_repair_job_id") or "").strip()
+        if failed_job_id:
+            update_job_summary(
+                jobs,
+                SlurmJobSummary(
+                    job_id=failed_job_id,
+                    partition="htzhulab",
+                    state=normalize_slurm_state(repair.get("superseded_failed_repair_state") or ""),
+                    exit_code=str(repair.get("superseded_failed_repair_exit_code") or "unknown"),
+                    elapsed=str(repair.get("superseded_failed_repair_elapsed") or ""),
+                    credited=False,
+                    role="superseded repair",
+                ),
+            )
+
+
+def summarize_slurm(config: dict[str, Any], event: NotificationEvent) -> SlurmRunSummary:
+    root = route_packet_root(config, event)
+    jobs: dict[str, SlurmJobSummary] = {}
+    warnings: list[str] = []
+    candidates = evidence_file_candidates(root)
+    if not candidates:
+        warnings.append("packet 未记录 Slurm ledger/finalizer_state")
+    for path in candidates:
+        if path.suffix == ".csv":
+            parse_slurm_csv(path, jobs, warnings)
+        elif path.name == "finalizer_state.json":
+            parse_finalizer_json(path, jobs, warnings)
+    state_counts: dict[str, int] = {}
+    elapsed_seconds = 0
+    elapsed_seen = False
+    for job in jobs.values():
+        state_counts[job.state] = state_counts.get(job.state, 0) + 1
+        seconds = elapsed_to_seconds(job.elapsed)
+        if seconds is not None:
+            elapsed_seconds += seconds
+            elapsed_seen = True
+    ordered = sorted(
+        jobs.values(),
+        key=lambda job: (
+            {"FAILED": 0, "CANCELLED": 1, "RUNNING": 2, "PENDING": 3, "COMPLETED": 4}.get(job.state, 5),
+            not job.credited,
+            job.job_id,
+        ),
+    )
+    max_jobs = int(config.get("email", {}).get("max_important_slurm_jobs", 6) or 6)
+    important = ordered[:max_jobs]
+    if len(ordered) > len(important):
+        warnings.append(f"另有 {len(ordered) - len(important)} 个 job 未在邮件正文展开")
+    return SlurmRunSummary(
+        total_jobs=len(jobs),
+        state_counts=state_counts,
+        credited_jobs=sum(1 for job in jobs.values() if job.credited),
+        total_elapsed=format_elapsed(elapsed_seconds if elapsed_seen else None),
+        important_jobs=important,
+        warnings=warnings,
+    )
+
+
+def summarize_counts(counts: dict[str, int]) -> str:
+    if not counts:
+        return "未记录"
+    order = ["COMPLETED", "FAILED", "CANCELLED", "RUNNING", "PENDING", "UNKNOWN"]
+    parts = [f"{state} {counts[state]}" for state in order if counts.get(state)]
+    parts.extend(f"{state} {count}" for state, count in sorted(counts.items()) if state not in order)
+    return "；".join(parts)
+
+
+def format_job_line(job: SlurmJobSummary) -> str:
+    elapsed = job.elapsed or "未记录"
+    credited = "计入结果" if job.credited else "未计入结果"
+    role = f"，{job.role}" if job.role else ""
+    note = f"，{job.note[:120]}" if job.note else ""
+    return f"job {job.job_id}，{job.partition}，{job.state}，exit {job.exit_code}，耗时 {elapsed}，{credited}{role}{note}"
+
+
+def build_email_context(config: dict[str, Any], event: NotificationEvent) -> dict[str, Any]:
+    label = route_label(config, event.route)
+    watchboard_status = collect_watchboard_status(config)
+    trigger_summary = route_summary(config, event.route, event.route, watchboard_status)
+    route_head = short_hash(trigger_summary["branch_head"])
     watchboard_urls = config.get("watchboard_urls", {})
     public_url = str(watchboard_urls.get("public") or "https://watchboard.httpwwwcardiacnexus-ukb.com/index.html")
     local_url = str(watchboard_urls.get("local") or "http://127.0.0.1:8766/index.html")
-    return "\n".join(
-        [
-            conclusion,
-            "",
-            "## Route A/B/C 当前总览",
-            route_summary_table(config, event.route),
-            "",
-            f"## 触发 route 详情：{label}",
-            f"- goal status: {event.status}",
-            f"- previous status: {event.previous_status}",
-            f"- thread id: {event.thread_id}",
-            f"- objective 摘要: {event.objective[:500]}",
-            f"- tokens/time: {event.tokens_used} tokens / {event.time_used_seconds} seconds",
-            f"- detected time: {event.detected_at_utc}",
-            f"- source: {event.source} ({event.source_path})",
-            f"- tmux target: {event.tmux_target}",
-            f"- event signature: {event.updated_at_ms}",
-            "",
-            "## Packet / review target",
-            f"- main notifier git head: {event.git_head}",
-            packet_lines,
-            "",
-            "## Next action",
-            action,
-            "",
-            "## Watchboard",
-            f"- public: {public_url}",
-            f"- local: {local_url}",
-            "",
-        ]
-    )
+    if event.status == "complete":
+        conclusion = f"{label} controller goal 已完成；终端包已准备给 independent reviewer，不需要 main/controller 介入。"
+        action = f"交 {label} independent reviewer 审 {route_head}。"
+    else:
+        conclusion = f"{label} controller goal 已 blocked；当前需要 controller/main 介入修复，暂不交 reviewer。"
+        action = f"{label} controller 修复后继续 goal。"
+    return {
+        "label": label,
+        "route_head": route_head,
+        "conclusion": conclusion,
+        "action": action,
+        "route_rows": route_summary_rows(config, event.route, watchboard_status),
+        "route_summary_source": "watchboard" if watchboard_status.get("routes") else "fallback",
+        "packet_lines": [brief_file_status(path, config=config, route=event.route) for path in packet_target_paths(config, event)],
+        "slurm": summarize_slurm(config, event),
+        "public_url": public_url,
+        "local_url": local_url,
+    }
+
+
+def render_plain_email(config: dict[str, Any], event: NotificationEvent) -> str:
+    ctx = build_email_context(config, event)
+    slurm: SlurmRunSummary = ctx["slurm"]
+    lines = [
+        f"结论：{ctx['conclusion']}",
+        f"下一步：{ctx['action']}",
+        "",
+        "Controller 状态",
+        f"状态：{event.status}",
+        f"上一状态：{event.previous_status}",
+        f"thread：{event.thread_id}",
+        f"目标摘要：{event.objective[:500]}",
+        f"用量：{event.tokens_used} tokens / {event.time_used_seconds} 秒",
+        f"检测时间：{event.detected_at_utc}",
+        f"来源：{event.source} ({event.source_path})",
+        f"tmux：{event.tmux_target or '未记录'}",
+        "",
+        "Slurm 作业概览",
+        f"总 job：{slurm.total_jobs if slurm.total_jobs else '未记录'}",
+        f"结果：{summarize_counts(slurm.state_counts)}",
+        f"可得总运行时长：{slurm.total_elapsed}",
+        f"计入结果：{slurm.credited_jobs if slurm.total_jobs else '未记录'}",
+    ]
+    if slurm.important_jobs:
+        lines.append("关键 job：")
+        lines.extend(f"- {format_job_line(job)}" for job in slurm.important_jobs)
+    if slurm.warnings:
+        lines.append("备注：")
+        lines.extend(f"- {warning}" for warning in slurm.warnings)
+    if ctx.get("route_summary_source") != "watchboard":
+        lines.extend(["", "Route 总览", "watchboard 动态状态暂不可用，以下为只读 fallback 摘要。", render_route_summary_text(ctx["route_rows"]), "", "关键证据"])
+    else:
+        lines.extend(["", "Route 总览", render_route_summary_text(ctx["route_rows"]), "", "关键证据"])
+    lines.extend(f"- {line}" for line in ctx["packet_lines"])
+    lines.extend(["", "Watchboard", f"public：{ctx['public_url']}", f"local：{ctx['local_url']}", ""])
+    return "\n".join(lines)
+
+
+def render_route_rows_html(rows: list[dict[str, str]]) -> str:
+    body = []
+    for row in rows:
+        state = f"{row['controller_state']} / {row['reviewer_state']}"
+        body.append(
+            "<tr>"
+            f"<td>{html.escape(row['route'])}</td>"
+            f"<td>{html.escape(short_hash(row['branch_head']))}</td>"
+            f"<td>{html.escape(short_hash(row['origin_head']))}</td>"
+            f"<td>{html.escape(row['dirty_ahead'])}</td>"
+            f"<td>{html.escape(state)}</td>"
+            f"<td>{html.escape(row['next_action'])}</td>"
+            "</tr>"
+        )
+    return "".join(body)
+
+
+def render_html_email(config: dict[str, Any], event: NotificationEvent) -> str:
+    ctx = build_email_context(config, event)
+    slurm: SlurmRunSummary = ctx["slurm"]
+    job_items = "".join(f"<li>{html.escape(format_job_line(job))}</li>" for job in slurm.important_jobs)
+    warning_items = "".join(f"<li>{html.escape(warning)}</li>" for warning in slurm.warnings)
+    packet_items = "".join(f"<li>{html.escape(line)}</li>" for line in ctx["packet_lines"])
+    return f"""<!doctype html>
+<html>
+  <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; color: #111827; line-height: 1.45;">
+    <h2>结论</h2>
+    <p>{html.escape(ctx['conclusion'])}</p>
+    <p><strong>下一步：</strong>{html.escape(ctx['action'])}</p>
+
+    <h2>Controller 状态</h2>
+    <ul>
+      <li>状态：{html.escape(event.status)}</li>
+      <li>上一状态：{html.escape(event.previous_status)}</li>
+      <li>thread：{html.escape(event.thread_id)}</li>
+      <li>目标摘要：{html.escape(event.objective[:500])}</li>
+      <li>用量：{event.tokens_used} tokens / {event.time_used_seconds} 秒</li>
+      <li>检测时间：{html.escape(event.detected_at_utc)}</li>
+      <li>来源：{html.escape(event.source)} ({html.escape(event.source_path)})</li>
+      <li>tmux：{html.escape(event.tmux_target or '未记录')}</li>
+    </ul>
+
+    <h2>Slurm 作业概览</h2>
+    <ul>
+      <li>总 job：{html.escape(str(slurm.total_jobs if slurm.total_jobs else '未记录'))}</li>
+      <li>结果：{html.escape(summarize_counts(slurm.state_counts))}</li>
+      <li>可得总运行时长：{html.escape(slurm.total_elapsed)}</li>
+      <li>计入结果：{html.escape(str(slurm.credited_jobs if slurm.total_jobs else '未记录'))}</li>
+    </ul>
+    {('<p><strong>关键 job：</strong></p><ul>' + job_items + '</ul>') if job_items else ''}
+    {('<p><strong>备注：</strong></p><ul>' + warning_items + '</ul>') if warning_items else ''}
+
+    <h2>Route 总览</h2>
+    <table border="1" cellspacing="0" cellpadding="6" style="border-collapse: collapse;">
+      <thead><tr><th>route</th><th>branch</th><th>origin</th><th>dirty/ahead</th><th>状态</th><th>next action</th></tr></thead>
+      <tbody>{render_route_rows_html(ctx['route_rows'])}</tbody>
+    </table>
+
+    <h2>关键证据</h2>
+    <ul>{packet_items}</ul>
+
+    <h2>Watchboard</h2>
+    <p>public：<a href="{html.escape(ctx['public_url'])}">{html.escape(ctx['public_url'])}</a><br>
+       local：<a href="{html.escape(ctx['local_url'])}">{html.escape(ctx['local_url'])}</a></p>
+  </body>
+</html>
+"""
+
+
+def body_for_event(config: dict[str, Any], event: NotificationEvent) -> str:
+    return render_plain_email(config, event)
 
 
 def send_email(config: dict[str, Any], env: dict[str, str], event: NotificationEvent) -> None:
@@ -701,7 +1184,8 @@ def send_email(config: dict[str, Any], env: dict[str, str], event: NotificationE
     message["From"] = sender
     message["To"] = ", ".join(recipients)
     message["Subject"] = subject_for_event(config, event)
-    message.set_content(body_for_event(config, event))
+    message.set_content(render_plain_email(config, event))
+    message.add_alternative(render_html_email(config, event), subtype="html")
 
     host = str(email_cfg.get("smtp_host") or "smtp.gmail.com")
     port = int(email_cfg.get("smtp_port") or 587)
@@ -710,7 +1194,6 @@ def send_email(config: dict[str, Any], env: dict[str, str], event: NotificationE
             smtp.starttls()
         smtp.login(smtp_user, smtp_password)
         smtp.send_message(message)
-
 
 def run_once(
     config: dict[str, Any],
@@ -829,7 +1312,9 @@ def main(argv: list[str] | None = None) -> int:
                     {
                         "send_test": asdict(event),
                         "subject": subject_for_event(config, event),
-                        "body": body_for_event(config, event),
+                        "body": render_plain_email(config, event),
+                        "plain_body": render_plain_email(config, event),
+                        "html_body": render_html_email(config, event),
                     },
                     indent=2,
                     sort_keys=True,

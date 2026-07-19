@@ -644,7 +644,7 @@ def test_round03_route_a_is_dormant_not_active_controller_waiting(tmp_path):
 
     assert route["is_deferred_fallback"] is True
     assert route["is_active_round_route"] is False
-    assert route["display_state_zh"] == "Dormant fallback"
+    assert route["display_state_zh"].startswith("Dormant fallback")
     assert route["controller_authorized"] is False
     assert "不得启动 Route A controller" in route["next_action_zh"]
     assert "等待任务启动" not in route["current_worker_zh"]
@@ -1139,7 +1139,7 @@ def test_stale_generated_watchboard_status_is_not_route_truth(tmp_path):
     assert handoff["portfolio_round"]["round_id"] == "round04"
     assert handoff["portfolio"]["active_routes"] == ["route_C"]
     assert route_a["is_deferred_fallback"] is True
-    assert route_a["display_state_zh"] == "Dormant fallback"
+    assert route_a["display_state_zh"].startswith("Dormant fallback")
 
 
 def test_forbidden_actions_include_scientific_boundaries():
@@ -1147,3 +1147,181 @@ def test_forbidden_actions_include_scientific_boundaries():
     assert "M11" in watchboard.FORBIDDEN_ACTIONS
     assert "hosted metric claim" in watchboard.FORBIDDEN_ACTIONS
     assert "final scientific decision" in watchboard.FORBIDDEN_ACTIONS
+
+
+
+def round04_current_style_text() -> str:
+    return """# CARE Route Portfolio Current Round
+
+## Active round
+
+```text
+round_id: round04
+date: 2026-07-19
+controller_authorized_now: 0
+```
+
+## Exact remote evidence bindings
+
+```text
+planner base main: 30098813522cecd98e60bcb99e2676b28c1a5461
+Route B evidence: b9c7664da7cb1f1892fff37a4497722f31a0a96d
+Route C reviewer commit: 17062b00edc3443aacefe8583568797a9f2655ba
+Route C reviewed controller repair: 1e663cfa64f00413f005bef26310290fd43ec8ab
+```
+
+## Portfolio state
+
+```text
+Route A: DEFERRED_FALLBACK_NOT_ACTIVE
+Route B: PLANNING_REVISION_PENDING_COORDINATOR_RECEIPT_AND_CRITIC_REREVIEW
+Route C: EVIDENCE_COMPLETE_FOR_PORTFOLIO_RECONCILIATION
+```
+
+### Route C
+
+```text
+review path: results/route_C/review.md
+review commit: 17062b00edc3443aacefe8583568797a9f2655ba
+reviewed controller repair: 1e663cfa64f00413f005bef26310290fd43ec8ab
+review token: ROUTE_C_ROUND03_REVIEW_EVIDENCE_COMPLETE
+portfolio status: EVIDENCE_COMPLETE_FOR_PORTFOLIO_RECONCILIATION
+reviewer required now: false
+```
+
+### Route B Round04 planning binding
+
+```text
+Route B evidence commit: b9c7664da7cb1f1892fff37a4497722f31a0a96d
+revision source critic token: ROUTE_B_ROUND04_PLANNING_NEEDS_REVISION
+critic handoff: prompts/routes/handoffs/route_B_round04_critic_handoff_20260719.md
+coordinator receipt: prompts/routes/handoffs/route_B_round04_coordinator_receipt_20260719.md
+critic output: prompts/routes/route_B_round04_critic_rereview.md
+controller start authorized: false
+```
+
+## Current role entries
+
+```text
+Route A critic: NO_CURRENT_CRITIC_HANDOFF
+Route B critic: prompts/routes/handoffs/route_B_round04_critic_handoff_20260719.md
+Route C critic: NO_CURRENT_CRITIC_HANDOFF
+Route C reviewer: NO_CURRENT_REVIEWER_HANDOFF
+```
+
+Allowed Route B Round04 planning decisions:
+
+```text
+ROUTE_B_ROUND04_PLANNING_READY_FOR_CONTROLLER
+ROUTE_B_ROUND04_PLANNING_NEEDS_REVISION
+```
+
+## Authority boundary
+
+```text
+controller_authorized_now: 0
+validation_upload_authorized: false
+route_promotion_authorized: false
+m11_authorized: false
+hosted_metric_claim_authorized: false
+cross_route_merge_authorized: false
+final_scientific_decision_authorized: false
+```
+"""
+
+
+def test_round04_current_style_parses_portfolio_roles_and_authority(tmp_path):
+    root = tmp_path / "CARE"
+    critic = root / "prompts" / "routes" / "route_B_round04_critic_review.md"
+    critic.parent.mkdir(parents=True)
+    critic.write_text(
+        "decision_token: ROUTE_B_ROUND04_PLANNING_NEEDS_REVISION\n"
+        "hard_blockers:\n"
+        "- CURRENT_NOT_ADVANCED_TO_ROUND04\n"
+        "- B10_TERMINAL_FINALIZER_UNREACHABLE_ON_EARLY_TERMINAL_BRANCHES\n",
+        encoding="utf-8",
+    )
+    parsed = watchboard.parse_current_handoff(round04_current_style_text(), root)
+
+    assert parsed["round_id"] == "round04"
+    assert parsed["portfolio"]["active_routes"] == ["route_B", "route_C"]
+    assert parsed["portfolio"]["portfolio_context_routes"] == ["route_B", "route_C"]
+    assert parsed["portfolio"]["deferred_routes"] == ["route_A"]
+    assert parsed["authority"]["controller_authorized_now"] == 0
+    assert not any("Authority Boundary 缺少" in warning for warning in parsed["parse_warnings"])
+    assert not any("active route 为空" in warning for warning in parsed["parse_warnings"])
+    assert parsed["critics"]["route_B"]["path"].endswith("route_B_round04_critic_handoff_20260719.md")
+    assert parsed["route_bindings"]["route_B"]["required_head"] == "b9c7664da7cb1f1892fff37a4497722f31a0a96d"
+    assert parsed["route_bindings"]["route_C"]["reviewer_commit"] == "17062b00edc3443aacefe8583568797a9f2655ba"
+    assert parsed["critic_readiness"]["route_B"]["revision_token"] == "ROUTE_B_ROUND04_PLANNING_NEEDS_REVISION"
+
+
+def test_round04_status_priorities_override_stale_packet_keywords(tmp_path):
+    root = tmp_path / "CARE"
+    critic = root / "prompts" / "routes" / "route_B_round04_critic_review.md"
+    critic.parent.mkdir(parents=True)
+    critic.write_text(
+        "ROUTE_B_ROUND04_PLANNING_NEEDS_REVISION\n"
+        "hard_blockers:\n"
+        "- CURRENT_NOT_ADVANCED_TO_ROUND04\n"
+        "- B10_TERMINAL_FINALIZER_UNREACHABLE_ON_EARLY_TERMINAL_BRANCHES\n"
+        "- PER_EXECUTOR_VALIDATOR_COMMANDS_NOT_MACHINE_BOUND\n"
+        "- REQUIRED_USERS_EXECUTABLE_CHECKS_NOT_EXIT_ZERO\n",
+        encoding="utf-8",
+    )
+    handoff = watchboard.parse_current_handoff(round04_current_style_text(), root)
+    route_a = route_fixture(id="route_A", label="Route A", status_keywords=["ROUTE_A_REVIEW_NEEDS_REVISION"], display_state_zh="需修订")
+    route_b = route_fixture(
+        id="route_B",
+        label="Route B",
+        origin_sha="b9c7664da7cb1f1892fff37a4497722f31a0a96d",
+        status_keywords=["ROUTE_B_SCIENTIFIC_UNDERTRAINED", "ROUTE_B_ROUND03_TERMINAL_PACKET_READY_FOR_REVIEW"],
+        display_state_zh="训练不足",
+    )
+    route_c = route_fixture(
+        id="route_C",
+        label="Route C",
+        origin_sha="17062b00edc3443aacefe8583568797a9f2655ba",
+        status_keywords=["NEEDS_MONITOR", "ROUTE_C_REVIEW_NEEDS_REVISION", "ROUTE_C_ROUND03_REVIEW_EVIDENCE_COMPLETE"],
+        display_state_zh="需补证据",
+        role_tokens=[
+            {
+                "token": "ROUTE_C_ROUND03_REVIEW_EVIDENCE_COMPLETE",
+                "route": "route_C",
+                "round": 3,
+                "kind": "REVIEW_EVIDENCE_COMPLETE",
+                "role": "reviewer",
+                "source_role": "review",
+                "source_path": "results/route_C/review.md",
+                "mtime": 2,
+            }
+        ],
+    )
+
+    for route in (route_a, route_b, route_c):
+        watchboard.annotate_route_runtime(route, {}, [], [])
+        watchboard.annotate_handoff_workers(route, handoff)
+
+    assert route_a["display_state_zh"].startswith("Dormant fallback")
+    assert route_a["controller_allowed"] is False
+    assert route_b["display_state_zh"] == "Round04 planning needs revision / controller blocked"
+    assert route_b["latest_role_token"]["token"] == "ROUTE_B_ROUND04_PLANNING_NEEDS_REVISION"
+    assert route_b["controller_allowed"] is False
+    assert any("B10_TERMINAL_FINALIZER" in blocker for blocker in route_b["completion_blockers"])
+    assert route_c["display_state_zh"] == "Reviewed evidence-complete / waiting portfolio reconciliation"
+    assert route_c["runtime_state"]["state"] == "reviewed_evidence_complete"
+    assert route_c["completion_blockers"] == []
+    assert route_c["reviewer_commit"] == "17062b00edc3443aacefe8583568797a9f2655ba"
+    assert route_c["reviewed_controller_commit"] == "1e663cfa64f00413f005bef26310290fd43ec8ab"
+    assert route_c["controller_allowed"] is False
+
+
+def test_future_round05_tokens_parse_without_controller_authority():
+    text = "ROUTE_B_ROUND05_PLANNING_NEEDS_REVISION\nROUTE_C_ROUND05_REVIEW_EVIDENCE_COMPLETE"
+    tokens = watchboard.extract_role_tokens(text)
+    assert {token["round"] for token in tokens} == {5}
+    assert {token["role"] for token in tokens} == {"planning_critic", "reviewer"}
+    route = route_fixture(id="route_B", label="Route B", role_tokens=tokens)
+    handoff = watchboard.parse_current_handoff(round04_current_style_text().replace("ROUND04", "ROUND05").replace("round04", "round05"), Path("/tmp/CARE"))
+    watchboard.annotate_handoff_workers(route, handoff)
+    assert route["controller_allowed"] is False
