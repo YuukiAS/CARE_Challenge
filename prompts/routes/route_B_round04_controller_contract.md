@@ -9,9 +9,11 @@ route_round_not_milestone: true
 route_change: true
 scientific_decision_scope: mechanism_signal
 planning_review_required: true
-planning_review_path: prompts/routes/route_B_round04_critic_review.md
+planning_reviewer: separate_gpt_thread
+planning_review_path: prompts/routes/route_B_round04_critic_rereview.md
 planning_review_token: ROUTE_B_ROUND04_PLANNING_READY_FOR_CONTROLLER
-planning_commit_binding_mode: containing_commit_resolved_and_recorded_by_critic
+planning_commit_binding_mode: exact_planning_commit_and_six_blobs_from_current_handoff
+coordinator_receipt_path: prompts/routes/handoffs/route_B_round04_coordinator_receipt_20260719.md
 execution_mode: controller_supervised
 requires_execution_controller: true
 executor_plan_path: prompts/routes/route_B_round04_executor_plan.yaml
@@ -19,6 +21,7 @@ executor_count: 11
 executor_slots: 2
 parallel_execution_allowed: true
 merge_owner: controller
+mapper_slots: 1
 mapper_required: true
 route_local_mapper_receipt_required: true
 architecture_impact: system
@@ -29,7 +32,8 @@ slurm_runtime_continuity_required: true
 continuity_backend: slurm_dependency
 reviewer: separate_readonly
 review_mode: independent_thread
-planner_base_main: 7042135a4cc5be44b090fee93d4d1ee25b72fc0e
+planner_base_main: 30098813522cecd98e60bcb99e2676b28c1a5461
+revision_source_token: ROUTE_B_ROUND04_PLANNING_NEEDS_REVISION
 route_evidence_ref: b9c7664da7cb1f1892fff37a4497722f31a0a96d
 inherited_review_token: ROUTE_B_ROUND03_REVIEW_ADEQUATE_NEGATIVE
 controller_start_authorized: false
@@ -44,40 +48,50 @@ final_scientific_decision_authorized: false
 
 # Route B Round04 Controller Contract
 
-## 0. Authority and entry gate
+## 0. Non-executable status and entry gate
 
-This contract becomes executable only after a separate critic writes:
+This file is a planning contract. It is not executable until a separate Route B planning critic writes `ROUTE_B_ROUND04_PLANNING_READY_FOR_CONTROLLER` in `prompts/routes/route_B_round04_critic_rereview.md` and binds the exact current handoff planning commit and six planning blobs.
+
+Before any implementation or Slurm action, the future controller must verify:
 
 ```text
-prompts/routes/route_B_round04_critic_review.md
-ROUTE_B_ROUND04_PLANNING_READY_FOR_CONTROLLER
-planning_reviewed_commit: <exact main planning commit>
+CURRENT.md points to the current Round04 Route B critic handoff
+critic token == ROUTE_B_ROUND04_PLANNING_READY_FOR_CONTROLLER
+critic reviewed planning commit == handoff planning commit
+six planning blobs == handoff blobs
+coordinator receipt status == READY_FOR_ROUTE_B_ROUND04_CRITIC_REREVIEW
+coordinator tested commit == current origin/main
+origin/route_B contains b9c7664da7cb1f1892fff37a4497722f31a0a96d
+results/route_B/review.md contains ROUTE_B_ROUND03_REVIEW_ADEQUATE_NEGATIVE
+current branch == route_B
+worktree clean
 ```
 
-The controller must verify that the reviewed commit contains byte-identical versions of this contract, the executor plan, the planner plan, the critic request, and the planner audit. A mismatch returns `ROUTE_B_ROUND04_STALE_PLANNING_BINDING` and stops before implementation or Slurm.
+Any mismatch returns `ROUTE_B_ROUND04_STALE_PLANNING_BINDING` before code, training or Slurm.
 
-This contract does not authorize validation upload, route promotion, M11, hosted metric claims, cross-route merge, or a final scientific decision. Runtime roles do not push and do not write `review.md`.
+Before executing the scientific task, enforce the hard-gate policy: exact task graph, agent-flow v2 execution contract, strict validator, completion-check-before-final-audit, minimum effective training, current-bad-packet regression, mapper/wiki/fingerprint gates when architecture is affected, and SRR diagram-bootstrap evidence when the task touches SRR/MyoPS/Cine route planning. If any hard gate fails, stop with NEEDS_REVISION or NEEDS_EVIDENCE; do not continue to final audit.
 
-## 1. Frozen Round03 evidence interpretation
+The controller runs only as a Codex goal or goal resume. Runtime roles do not push, do not write `review.md`, and do not authorize any downstream scientific action.
 
-The controller must not rerun Round03 B3 merely to reproduce the reviewed negative. The following evidence is inherited as historical background after B0 fingerprint verification:
+## 1. Frozen evidence interpretation
+
+The inherited Route B Round03 review is an adequate negative for the B3 evidence-warmup gate, not for the full Route B route. Historical facts after B0 fingerprint verification:
 
 ```text
-review token: ROUTE_B_ROUND03_REVIEW_ADEQUATE_NEGATIVE
 optimizer steps: 43003
 train-loop seconds: 1800.7964860140346
 validation events: 22
-sampler cycle: E,E,S,R
+sampler: E,E,S,R
 sampler counts: E=21502, S=10751, R=10750
-passed: finite loss, loss decrease, invalid-slot zero, no-T2 edema zero, sampler count/sequence
+passed: finite loss, loss decrease, invalid-slot zero, no-T2 edema zero, exact sampler
 failed: anatomy_union_overfit
 ```
 
-Historical runtime receives no Round04 training credit. B0 must classify every inherited artifact through code/config/split/case/label/preprocess/decode/checkpoint/runtime fingerprints. Any mismatch is recorded rather than silently inherited.
+Round03 runtime gives zero Round04 training credit. B4-B6 and B7-B9 were not executed and must not be described as failed.
 
-## 2. Scientific objective
+## 2. Scientific objective and immutable full route
 
-The controller must implement and execute the complete SRR-v3 chain for the three leaderboard-facing targets:
+Primary targets:
 
 ```text
 myops_scar
@@ -85,40 +99,39 @@ myops_edema
 myocardium_cinemyops
 ```
 
-The full chain is:
+MyoPS final path:
 
 ```text
-observed modalities
--> modality-specific four-scale features
--> availability/spatial/pathology-conditioned shared-private-interaction retrieval
--> train/OOF frozen prototype similarity and training-only safe hard negatives
--> union/LV/RV anatomy support
--> scar and edema proposals
--> pathology-specific soft ROIs
--> scar and edema refiners
+observed [LGE,T2,C0] plus availability
+-> four-scale modality-specific evidence
+-> spatial/pathology-conditioned shared-private-interaction retrieval
+-> optimized Pattern-SIP
+-> train/OOF frozen prototypes and training-only safe hard negatives
+-> learned union/LV/RV support
+-> separate scar and edema proposals
+-> separate pathology-specific soft ROI refiners
 -> bounded final correction
--> official label reconstruction
--> case-wise same-split evaluation and interventions
+-> official six-label reconstruction
+-> same-split case-wise evaluation and real final-output interventions
 ```
 
-The Cine chain is:
+Cine final path:
 
 ```text
-official CineMA pretrained or matched-random source
--> per-frame multiclass logits/features/uncertainty
+official CineMA pretrained and architecture-matched random source
+-> per-frame multiclass logits/features/probabilities/uncertainty
 -> ED/reference and fixed key frames
--> learned seven-step SVF and real SyN control
+-> learned seven-step SVF and independently generated real SyN control
 -> registered anatomy/features/motion/Jacobian/quality
--> temporal retrieval and aggregation
--> ED-space myocardium output
--> same-case controls and interventions
+-> registered temporal aggregation
+-> ED-space output, same-case controls and real final-output interventions
 ```
 
-No stage may replace these chains with an nnU-Net-only prediction, a morphology-only result, a single-frame wrapper, a placeholder table, a mock tensor, or contract JSON without runtime effects.
+An nnU-Net-only prediction, postprocessing-only result, single-frame wrapper, internal fake CineMA adapter, direct velocity displacement, proxy Jacobian/SyN, abstract temporal latent, placeholder table or contract-only JSON is forbidden.
 
-## 3. Route-local source and write boundary
+## 3. Route-local write boundary
 
-Round04 implementation lives under:
+Authorized Round04 implementation paths:
 
 ```text
 src/care_myocardium/route_B_round04/
@@ -132,28 +145,14 @@ jobs/route_B_round04/
 results/route_B/round04/
 ```
 
-Shared source under these paths is read-only during Route B execution:
+Shared model, Cine, anchor, loss, refiner and root wiki/current-state paths are read-only. A required shared-source edit returns `ROUTE_B_ROUND04_NEEDS_PLANNER_SCOPE_REVISION`; the controller cannot enlarge scope.
 
-```text
-src/care_myocardium/models/
-src/care_myocardium/cine/
-src/care_myocardium/anchors/
-src/care_myocardium/losses/
-src/care_myocardium/refiner/
-wiki/current_state.yaml
-wiki/README.md
-wiki/MODEL.md
-wiki/COMPONENTS.csv
-wiki/architecture.yaml
-```
-
-A required shared-source edit returns `ROUTE_B_ROUND04_NEEDS_PLANNER_SCOPE_REVISION`. The controller cannot widen scope.
-
-Route-local mapper outputs are required:
+Required route-local controller/mapper receipts:
 
 ```text
 results/route_B/round04/controller_context.json
 results/route_B/round04/controller_ledger.csv
+results/route_B/round04/controller_terminal_registry.json
 results/route_B/round04/controller_bootstrap_snapshot.md
 results/route_B/round04/implementation_snapshot.md
 results/route_B/round04/mapper_report_draft.md
@@ -163,11 +162,11 @@ results/route_B/round04/architecture_delta_final.md
 results/route_B/round04/finalizer_state.json
 ```
 
-The mapper records a route-local architecture delta and code fingerprint. Root wiki/current-state publication waits for later portfolio reconciliation.
+Root `wiki/current_state.yaml` and current figures do not advance before portfolio reconciliation.
 
-## 4. Frozen data and baseline contracts
+## 4. Data, labels and same-split baseline
 
-B0 must create and hash:
+B0 freezes and hashes:
 
 ```text
 configs/route_B_round04/manifests/myops_fold0_primary_44.json
@@ -180,28 +179,23 @@ results/route_B/round04/manifest_freeze_receipt.json
 results/route_B/round04/same_split_baseline_receipt.json
 ```
 
-The 44-case and 12-case lists must match the verified Round03 manifests byte-for-byte unless B0 proves a manifest defect. A manifest correction requires planner/critic revision; execution cannot change cases.
+The 44-case and 12-case manifests inherit only after exact fingerprint audit. Case-list correction is a planner/critic revision. The sampler is disjoint `E,E,S,R`, Philox seed `26071821`, with replacement.
 
-The MyoPS sampler remains disjoint `E,E,S,R` with Philox seed `26071821`, sampling with replacement. The microset is the lexicographically first qualifying complete tri-modal anatomy-positive CenterB case and the lexicographically first qualifying complete tri-modal anatomy-positive CenterC case in the frozen 44-case list. Missing either class blocks B1.
-
-The nnU-Net receipt contains checkpoint path and SHA, model/config SHA, split SHA, case-list SHA, preprocess SHA, label-map SHA, decode SHA, evaluator SHA, prediction SHA per case, and command receipt. The anchor is read-only baseline/context/safety evidence.
-
-## 5. Exact MyoPS model contract
-
-### 5.1 Inputs and stems
+Anatomy targets are exactly:
 
 ```text
-modality order: [LGE,T2,C0]
-input: [B,3,Z,H,W]
-availability: [B,3]
-channels: [32,64,128,256]
+Y_union = 1[label in {1,4,5}]
+Y_LV    = 1[label == 2]
+Y_RV    = 1[label == 3]
 ```
 
-Unavailable modalities are masked before the stem, after the stem, and in every private/interaction route. Their private or interaction weight and gradient are zero. Zero-filled tensors never imply availability.
+The nnU-Net anchor receipt binds checkpoint/model/config/split/case/preprocess/label/decode/evaluator/prediction hashes and a command receipt. It remains baseline/context/safety evidence, not the SRR route identity.
 
-### 5.2 Expert bank
+## 5. Exact MyoPS model
 
-Every scale has sixteen experts:
+Inputs are `[B,3,Z,H,W]` in `[LGE,T2,C0]` order with availability `[B,3]`. Missing modalities are masked before and after stems and in every private/interaction path.
+
+Four scales use channels `[32,64,128,256]`. Each scale contains sixteen experts:
 
 ```text
 4 shared
@@ -213,92 +207,49 @@ Every scale has sixteen experts:
 2 T2-C0 interaction
 ```
 
-Each expert uses two `3x3x3` convolutions, GroupNorm, SiLU, and a residual connection. Pairwise features concatenate the two present modalities and use a `1x1x1` projection before the residual expert.
-
-Task family masks are fixed:
+Task family masks:
 
 ```text
 anatomy: shared + C0-private + LGE-C0 + T2-C0
-scar: shared + LGE-private + LGE-T2 + LGE-C0
-edema: shared + T2-private + LGE-T2 + T2-C0
+scar:    shared + LGE-private + LGE-T2 + LGE-C0
+edema:   shared + T2-private + LGE-T2 + T2-C0
 ```
 
-The two-pass spatial router consumes local observed-modality features, availability embedding, anatomy union/distance, anchor entropy/pathology/component/remote-FP evidence, and pass-two proposal logits. Entmax-1.5 is used with valid top-all, top-4, then top-2 scheduling. Invalid logits are `-1e4`; maximum invalid absolute weight is `1e-8`.
+The two-pass spatial router consumes local observed-modality features, availability, anatomy union/distance, anchor entropy/pathology/component/remote-FP evidence and pass-two proposal logits. Entmax-1.5 schedules valid top-all, top-4 and top-2. Invalid logits are `-1e4`; invalid absolute weight is at most `1e-8`.
 
-### 5.3 Pattern-SIP
-
-Pattern-SIP is a real forward loss over availability groups, four train-only style clusters, and hard subgroup indicators. It retains the Round03 numeric target and schedule:
+Pattern-SIP remains a real optimized loss:
 
 ```text
-family target mass: shared=.50, private=.35, interaction=.15
-shared coverage floor=.60
-private coverage floor=.25
-interaction coverage floor=.20
-loss = mass + .50*integrative + .25*load + .10*sparse
-coefficient: 0 steps 0-999; ramp to .02 at step 2000; .05 proposal/refiner; .02 joint
+family mass target: shared=.50, private=.35, interaction=.15
+coverage floors: shared=.60, private=.25, interaction=.20
+loss: mass + .50*integrative + .25*load + .10*sparse
+coefficient: 0 at steps 0-999; ramp to .02 at 2000; .05 proposal/refiner; .02 joint
 ```
 
-The validator rejects an alias to generic dictionary loss, a detached report-only value, a constant tensor, or missing final-output intervention.
-
-### 5.4 Anatomy target and decoder repair
-
-Targets are:
-
-```text
-Y_union = 1[compact label in {1,4,5}]
-Y_LV = 1[compact label == 2]
-Y_RV = 1[compact label == 3]
-```
-
-The anatomy decoder input at scale `l` is:
-
-```text
-a_l = Conv1x1(concat(routed_anatomy_l, masked_mean(valid_modality_features_l)))
-```
-
-The localization support passed to proposal/ROI is:
+The anatomy decoder consumes live routed anatomy plus a masked observed-modality lateral feature. Localization support is:
 
 ```text
 p_support = max(p_learned_union, 0.5 * stop_gradient(p_anchor_union))
 ```
 
-Both learned and anchor support channels remain separately observable. The final output cannot be credited without a nonzero learned-anatomy intervention.
+Both channels remain separately observable. Anchor support cannot receive final-route credit without a nonzero learned-anatomy intervention.
 
-### 5.5 OOF prototypes and hard negatives
+Formal prototypes use four deterministic OOF shards. Per scale/pathology: scar positive `K=8`, scar negative `K=12`, edema positive `K=8`, edema safe-negative `K=12`. Current-case, validation-label and test-label leakage is forbidden. Bootstrap or online EMA bank is forbidden at formal inference. The training-only queue holds 256 component centroids per pathology per scale; no-T2 myocardium never enters edema negatives.
 
-Four shards are assigned by `int(sha256(case_id)[:8],16) % 4`. Every scale and pathology uses:
+Scar and edema use separate proposal heads, soft ROI geometry and refiners. Scar uses three residual blocks with dilations `[1,2,3]`; edema uses four with `[1,2,4,6]`. Soft ROI never hard-deletes predictions. A weak but valid learned proposal uses the declared conservative anatomy-neighborhood control and must still proceed.
 
-```text
-scar positive K=8
-scar negative K=12
-edema positive K=8
-edema safe-negative K=12
-```
-
-Each OOF bank is fitted from the other three train shards, frozen for validation/test, serialized with checkpoint and source receipts, and clean-reloaded. Current-case, validation-label, and test-label contributions are forbidden. Bootstrap vectors and online EMA banks cannot enter formal inference.
-
-The training-only hard-negative queue holds 256 component centroids per pathology per scale. Rank 0 inserts at most 16 stable-sorted candidates per batch and broadcasts every 50 steps. No-T2 myocardium and unknown edema-status tissue cannot enter the edema queue.
-
-### 5.6 Proposals, soft ROI, and refiners
-
-Scar and edema use separate heads and targets. Scar is LGE-dominant with smaller dilation and higher precision. Edema is T2-conditioned with larger context and no loss/update/output on no-T2 cases.
-
-Soft ROI never hard-deletes predictions. The full path uses learned proposal plus `p_support`, anatomy distance, uncertainty, anchor component, positive similarity, and negative similarity. A fixed anatomy-neighborhood floor preserves lesion coverage when B4 classifies the learned proposal as weak.
-
-Scar refiner uses three residual blocks with dilations `[1,2,3]`. Edema refiner uses four residual blocks with dilations `[1,2,4,6]`. Both return pathology logits and are blended back through the soft ROI.
-
-### 5.7 Bounded final composition
+Bounded final composition:
 
 ```text
-delta_p = 4.0 * tanh(refiner_logit_p - anchor_logit_p)
+delta_p   = 4.0 * tanh(refiner_logit_p - anchor_logit_p)
 z_final_p = z_anchor_p + roi_p * gate_p * delta_p
 ```
 
-Classes 0-3 remain unchanged by the pathology correction. No-T2 edema loss, bank update, queue update, proposal, ROI, refiner, gate, delta, and Route-B-owned edema change are exactly zero. Final labels are the official six-label argmax reconstruction; no post-hoc label invention is permitted.
+No-T2 edema loss, bank/queue update, proposal, ROI, refiner, gate, delta and Route-B-owned change are exactly zero.
 
-## 6. Exact Cine model contract
+## 6. Exact Cine model
 
-### 6.1 CineMA source
+Pinned CineMA source:
 
 ```text
 repository: mathpluscode/CineMA
@@ -310,380 +261,129 @@ model: cinema.segmentation.convunetr.ConvUNetR
 license: MIT
 ```
 
-The source exposes official four-class logits, probabilities, pre-head decoder features, projected features, and normalized entropy for every selected frame. Orientation, spacing, crop/pad, affine, interpolation, and inverse-resampling provenance are hashed.
+Pretrained/random matching holds architecture, parameter names/shapes, trainable masks, data, frames, augmentation draws, optimizer, budget, cadence, downstream initialization, selector and decode fixed. Only source initialization differs.
 
-### 6.2 Matched random control
+Learned registration emits stationary velocity `v:[B,3,Z,H,W]`. Forward and inverse transforms each use seven scaling-and-squaring steps. Images/probabilities/features use trilinear interpolation, labels use nearest, and padding is border. True Jacobian is computed in voxel coordinates. The loss includes LNCC, soft anatomy Dice, velocity smoothness, negative-Jacobian penalty, inverse composition and feature consistency. Real SyN is independently run and hashed on identical pairs.
 
-Pretrained and random lanes use the same ConvUNetR architecture, config, cases, frames, augmentation draws, trainable/frozen masks, downstream initialization artifact, optimizer, budget, cadence, selector, and decode. Only source initialization differs. A parameter-name/shape/value audit runs before training.
+Pair gate: folding fraction at most `.005`, positive minimum Jacobian, inverse-composition error at most `1.5` voxels, warped anatomy Dice no worse than unregistered by more than `.01`. Case gate: at least `80%` pair pass and four passed non-reference frames. Aggregate learned gate: at least `90%` of 12 cases. If learned fails and real SyN passes, B9 uses SyN and preserves learned negative evidence. If neither passes, a faithful B8 blocker terminates Cine without fabricating B9.
 
-### 6.3 Registration
+Temporal inputs are named and mandatory: reference and registered logits/features/uncertainty, velocity, integrated displacement, Jacobian, motion magnitude, texture residual, frame quality, temporal position and valid-frame mask. Every field has consumption and intervention evidence.
 
-The learned registration network outputs stationary velocity `v:[B,3,Z,H,W]`. Forward and inverse transforms use seven scaling-and-squaring steps:
+## 7. Stage progression and fixed budgets
 
 ```text
-d0 = v / 2^7
-d_{i+1} = d_i + warp(d_i,d_i), i=0..6
-phi = identity + d7
-phi_inverse = exp(-v) by the same seven steps
+B0 -> B1 -> B2
+B2 -> B3 -> B4 -> B5 -> B6
+B2 -> B7 -> B8 -> B9
+controller terminal registry -> B10 for every terminal class
 ```
 
-Images, probabilities, and features use trilinear interpolation; labels use nearest; padding is border. Jacobian determinant uses central finite differences in voxel coordinates. The full loss contains LNCC, soft-anatomy Dice, velocity smoothness, negative-Jacobian penalty, inverse-composition loss, and CineMA feature consistency.
+B3/B7, B4/B8 and B5/B9 may run as isolated two-slot waves. MyoPS and Cine remain sequential within lane.
 
-Real SyN uses the frozen `SyNOnly` parameter contract on identical pairs. Learned and SyN transforms and outputs are independently produced and hashed.
+| Stage | Steps | Minimum seconds | Validation events | Full-case/case floor | Progression |
+|---|---:|---:|---:|---|---|
+| B1 | 2,000 | 600 | 4 | 2 train-only cases | failure is implementation revision |
+| B3 | 6,000 | 1,800 | 3 | 44-case manifest | valid readiness always advances B4 |
+| B4 | 8,000 | 2,400 | 4 | 44-case manifest | strong or weak-valid always advances B5 |
+| B5 | 10,000 | 3,000 | 5 | 44-case manifest | strong or weak-faithful always advances B6 |
+| B6 | 8,000 | 2,400 | 4 | four events, 44 cases | first full MyoPS classification |
+| B7 pretrained | 8,000 | 3,600 | 4 | four events, 12 cases | B8 follows faithful matched runtime |
+| B7 random | 8,000 | 3,600 | 4 | four events, 12 cases | matched control |
+| B8 | 25,000 | 7,200 | 10 | four events, 12 cases, 60 pairs | B9 or faithful blocker |
+| B9 | 20,000 cumulative | 7,200 | 10 | four events, 12 cases | Cine terminal evidence |
 
-A pair passes when folding fraction is at most `.005`, minimum Jacobian is positive, inverse-composition error is at most `1.5` voxels, and warped anatomy Dice is no worse than unregistered by more than `.01`. A case passes with at least `80%` pair pass and four passed non-reference frames. Aggregate learned registration passes with at least `90%` of 12 cases.
+Selected checkpoints are clean-reloaded. Every stage requires prediction sanity, loss decrease, cache isolation and source/config/split/case/label/preprocess/decode/checkpoint/runtime hashes.
 
-### 6.4 Registered temporal model
+## 8. Same-split evidence, selector and interventions
 
-The temporal interface contains:
+B6 must produce fresh forced 44-case predictions and case-wise baseline/model values for Dice, HD95, remote-FP, component count, volume ratio, lesion-wise recall, changed logits/voxels/components and help/harm/severe-harm. Required subgroups: scar-positive, T2-present edema-positive, no-T2 safety, CenterB, CenterC, complete tri-modal, remote-FP-positive and high-component-burden.
 
-```text
-reference logits/features/uncertainty
-registered non-reference logits/features/uncertainty
-velocity and integrated displacement
-Jacobian and motion magnitude
-registered texture residual
-frame quality
-temporal position
-valid-frame mask
-```
-
-The eight-slot router models ED anchor, early/late systole, early/late diastole, motion, texture residual, and registration-uncertainty safety. Two residual blocks and a four-class ED-space head produce final logits. Every required input has a consumption hook, gradient/intervention receipt, and shape/hash provenance.
-
-## 7. Training and evaluation budgets
-
-### B1 anatomy repair
+The MyoPS selector remains:
 
 ```text
-steps: 2000
-minimum train-loop seconds: 600
-validation events: 4
-cases: frozen train-only microset of 2
-optimizer: AdamW, lr=2e-4, weight_decay=1e-4
-batch size: 1
-gradient accumulation: 2
-AMP: enabled
-gradient clip: 5
-```
-
-Pass gates: union Dice `>=.90` each case; mean LV/RV Dice `>=.85` each case; loss decrease `>=70%`; finite live routed/lateral gradients; reload delta `<=1e-5`.
-
-### B3 representation warmup
-
-```text
-steps: 6000
-minimum train-loop seconds: 1800
-validation events: 3
-optimizer: AdamW, lr=2e-4, weight_decay=1e-4
-warmup: 500 steps
-scheduler: cosine
-```
-
-Pass gates: all adequacy checks; B1 microset union Dice retained `>=.85`; invalid weight `<=1e-8`; exact no-T2 zero; live gradients for every valid family; style cluster freeze; finite nonconstant learned anatomy; one of the two localization classes defined in the planner plan.
-
-### B4 proposal
-
-```text
-steps: 8000
-minimum train-loop seconds: 2400
-validation events: 4
-optimizer: AdamW, lr=1e-4, weight_decay=1e-4
-```
-
-B4 always emits a proposal-strength classification after valid OOF/provenance/gradient/safety gates. `PROPOSAL_STRONG` and `PROPOSAL_WEAK_WITH_CONSERVATIVE_ROI` both advance to B5. Invalid OOF, leakage, unsafe edema negatives, disconnected similarity, or nonfinite training block progression.
-
-### B5 refiner
-
-```text
-steps: 10000
-minimum train-loop seconds: 3000
-validation events: 5
-optimizer: AdamW, lr=1e-4, weight_decay=1e-4
-```
-
-Pass gates: proposal-to-final retention positive; changed logits/voxels/components nonzero; scar remote-FP does not increase on the gate set; exact no-T2 zero; full and conservative-ROI controls evaluated when B4 is weak.
-
-### B6 joint and MyoPS terminal evidence
-
-```text
-steps: 8000
-minimum train-loop seconds: 2400
-validation events: 4
-optimizer: AdamW, lr=2e-5, weight_decay=1e-4
-```
-
-B6 performs fresh full 44-case predictions, clean reload, selector, case-wise baseline comparison, full interventions, and ablations. B6 is the first stage that may provide complete MyoPS candidate or adequate-negative evidence to the independent reviewer.
-
-### B7 CineMA control
-
-Each lane uses:
-
-```text
-steps: 8000
-minimum train-loop seconds: 3600
-validation events: 4
-full-case events: 4
-cases: 12
-optimizer: AdamW, lr=2e-4, weight_decay=1e-4
-```
-
-### B8 registration
-
-```text
-steps: 25000
-minimum train-loop seconds: 7200
-validation events: 10
-full-case events: 4
-cases: 12
-pairs: at least 60
-optimizer: AdamW, lr=1e-4, weight_decay=1e-5
-```
-
-B9 uses learned SVF when learned aggregation passes. B9 uses real SyN when learned aggregation misses and SyN passes. Neither passing yields a faithful registration blocker.
-
-### B9 temporal
-
-```text
-credited cumulative steps: 20000
-minimum train-loop seconds: 7200
-validation events: 10
-full-case events: 4
-cases: 12
-optimizer: AdamW, lr=2e-4, weight_decay=1e-4
-```
-
-Chunks target 4000/8000/12000/16000/20000 credited steps. Atomic checkpoints occur at most every 500 steps and on `SIGUSR1`/`TERM`. Reset, gap, overlap, duplicate, missing parent, timeout, preemption, and partial attempts receive zero credit.
-
-## 8. Checkpoint eligibility and selector
-
-Eligibility precedes scoring. Required gates:
-
-- fresh forced evaluation;
-- complete source/config/split/case/label/preprocess/decode/evaluator/checkpoint/prediction hashes;
-- complete denominators;
-- proposal/ROI coverage floors;
-- changed voxels and components greater than zero;
-- no-T2 Route-B-owned edema change exactly zero;
-- positive-case nonempty rate at least `0.80`;
-- median pathology volume ratio in `[0.25,4.0]`;
-- finite metrics;
-- selected checkpoint clean reload within `1e-5`;
-- all strict validators and known-bad tests pass.
-
-For GT-positive cases, empty prediction has Dice `0` and HD95 `100 mm`. Both-empty rows are excluded and cannot count as improvement.
-
-The MyoPS score is:
-
-```text
-D_scar = clip(scar-positive Dice delta,-.25,.25)/.25
-D_edema = clip(T2-positive edema Dice delta,-.25,.25)/.25
-H_scar = clip((anchor HD95 - model HD95)/20,-1,1)
-H_edema = clip((anchor HD95 - model HD95)/20,-1,1)
+D_scar   = clip(scar-positive Dice delta,-.25,.25)/.25
+D_edema  = clip(T2-positive edema Dice delta,-.25,.25)/.25
+H_scar   = clip((anchor HD95 - model HD95)/20,-1,1)
+H_edema  = clip((anchor HD95 - model HD95)/20,-1,1)
 F_remote = clip((anchor remoteFP - model remoteFP)/max(anchor remoteFP,100),-1,1)
 S = .40*D_scar + .25*D_edema + .15*H_scar + .10*H_edema + .10*F_remote
 ```
 
-Tie-break order: higher `S`, lower severe-harm fraction, lower component-count delta, lower absolute volume-ratio deviation, then earlier cumulative optimizer step.
+Required MyoPS interventions: learned anatomy off, anchor support floor off, prototype similarity off, hard-negative refresh off, interaction experts off, Pattern-SIP off, proposal off, scar refiner off, edema refiner off, both refiners off, bounded correction off and nnU-Net context off.
 
-Cine source selection uses higher mean myocardium Dice, then lower HD95 within `.001`, then earlier step. `PRETRAINED_BENEFIT` requires Dice advantage at least `.01` and HD95 disadvantage at most `1 mm`. `RANDOM_NONINFERIOR` requires absolute Dice difference at most `.005` and random HD95 no worse. Other results are `CINEMA_CONTROL_UNRESOLVED`. The downstream full lane still uses the clean-reloaded pretrained source; the control classification limits scientific claims.
+Required Cine controls: reference-only, unregistered multi-frame, registered temporal full, temporal router off, motion/Jacobian off, anatomy evidence off, uncertainty/quality off, matched random, learned SVF and real SyN.
 
-## 9. Required case-wise and subgroup evidence
+An ablation/intervention file must contain real same-checkpoint final-output deltas, not a renamed summary.
 
-MyoPS case rows contain:
+## 9. Controller-level B10 terminal finalizer
 
-```text
-case_id
-center
-availability pattern
-scar-positive flag
-T2-present flag
-edema-positive flag
-complete-trimodal flag
-remote-FP-positive baseline flag
-baseline and model Dice by pathology
-baseline and model HD95 by pathology
-baseline and model remote-FP volume
-baseline and model component count
-baseline and model volume ratio
-lesion-wise recall
-changed logits/voxels/components
-help/harm/severe-harm classification
-```
+B10 is outside the successful executor merge DAG.
 
-Summaries are mandatory for scar-positive, T2-present edema-positive, no-T2 safety, CenterB, CenterC, complete tri-modal, remote-FP-positive, and high-component-burden groups.
-
-Cine rows contain case/center/frame counts, registration source, passed-pair denominator, reference-only and temporal Dice/HD95, changed logits/labels/components, and ablation deltas.
-
-## 10. Real intervention and ablation contract
-
-A real intervention uses the same selected/reloaded checkpoint, same cases, same inputs, same decode rule, and one named node disabled or replaced. Required MyoPS interventions:
+Machine fields in the executor plan:
 
 ```text
-learned_anatomy_off
-anchor_support_floor_off
-prototype_similarity_off
-hard_negative_refresh_off
-interaction_experts_off
-pattern_sip_off
-proposal_off
-scar_refiner_off
-edema_refiner_off
-both_refiners_off
-bounded_correction_off
-nnunet_context_off
+B10 depends_on: []
+controller_terminal_finalizer: true
+launch_owner: controller
+prepare_wave_helper_exempt: true
+depends_on_successful_merge_receipts: false
+terminal_registry_path: results/route_B/round04/controller_terminal_registry.json
+all_started_attempt_ids_source: results/route_B/round04/controller_ledger.csv
+finalizer_dependency_policy: afterany_all_started_attempts
+no_started_attempt_backend: local_deterministic
 ```
 
-Required Cine interventions:
+The controller records each stage outcome in `controller_terminal_registry.json`.
 
-```text
-reference_only
-unregistered_multiframe
-registered_temporal_full
-temporal_router_off
-motion_jacobian_off
-anatomy_evidence_off
-uncertainty_quality_off
-matched_random_source
-learned_svf_source
-real_syn_source
-```
+Launch rules:
 
-Each intervention records final logit L1/Linf delta, changed voxels, changed components, Dice, HD95, remote-FP, component count, and volume ratio. A summary derived from unrelated rows cannot use an intervention or ablation filename.
+1. B0/B1/B2 global terminal blocker or revision launches B10 immediately.
+2. After B2, B10 waits until both MyoPS and Cine lanes have terminal classes.
+3. B3/B4/B5 implementation revision terminates MyoPS only; Cine continues.
+4. B7 blocker or B8 faithful registration blocker terminates Cine only; MyoPS continues.
+5. B6 and B9 terminal evidence are normal lane terminal classes.
+6. Timeout, preemption, failed startup, started/cancelled race loser and successful attempts all enter the controller ledger.
+7. The controller computes an `afterany` dependency over every started attempt. If none started, it runs local deterministic finalization.
+8. An atomic launch lock prevents duplicate B10 starts.
 
-## 11. Slurm routing and environment
+B10 performs terminal accounting, post-completion aggregation, retry/race reconciliation, mapper final, all strict validators and known-bad matrices, `git diff --check`, heavy-artifact and authority scans, completion check, review request and one local lightweight packet commit. Pending/running/awaiting-accounting states cannot produce the review-ready token.
 
-Every formal job starts with compute-node preflight using:
+## 10. Exact strict validators
 
-```text
-/users/a/e/aereinh/CARE/envs/env_CARE/bin/python
-```
+`prompts/routes/route_B_round04_executor_plan.yaml` is the machine source. Each B0-B10 entry fixes its strict validator script/command/input/report/exit/success token and known-bad matrix command/report/expected validator exit/failure keys.
 
-The preflight prints and stores Python executable/version, torch/CUDA versions, CUDA visibility, optimizer construction, semantic config, code/config/split hashes, and writability of output/log/checkpoint/cache/lock roots.
+| Stage | Strict validator command | Validator report | Known-bad command | Known-bad report |
+|---|---|---|---|---|
+| B0 | `/users/a/e/aereinh/CARE/envs/env_CARE/bin/python scripts/validation/route_B_round04/validate_B0_binding_manifests.py --strict --input results/route_B/round04/executors/B0 --report results/route_B/round04/executors/B0/validator_report.json --require-token ROUTE_B_ROUND04_B0_READY_FOR_CONTROLLER_MERGE` | `results/route_B/round04/executors/B0/validator_report.json` | `/users/a/e/aereinh/CARE/envs/env_CARE/bin/python scripts/validation/route_B_round04/run_known_bad_matrix.py --stage B0 --matrix tests/route_B_round04/fixtures/B0/known_bad_matrix.yaml --validator scripts/validation/route_B_round04/validate_B0_binding_manifests.py --report results/route_B/round04/executors/B0/known_bad_matrix_report.json` | `results/route_B/round04/executors/B0/known_bad_matrix_report.json` |
+| B1 | `/users/a/e/aereinh/CARE/envs/env_CARE/bin/python scripts/validation/route_B_round04/validate_B1_anatomy_repair.py --strict --input results/route_B/round04/executors/B1 --report results/route_B/round04/executors/B1/validator_report.json --require-token ROUTE_B_ROUND04_B1_ANATOMY_REPAIR_IMPLEMENTED` | `results/route_B/round04/executors/B1/validator_report.json` | `/users/a/e/aereinh/CARE/envs/env_CARE/bin/python scripts/validation/route_B_round04/run_known_bad_matrix.py --stage B1 --matrix tests/route_B_round04/fixtures/B1/known_bad_matrix.yaml --validator scripts/validation/route_B_round04/validate_B1_anatomy_repair.py --report results/route_B/round04/executors/B1/known_bad_matrix_report.json` | `results/route_B/round04/executors/B1/known_bad_matrix_report.json` |
+| B2 | `/users/a/e/aereinh/CARE/envs/env_CARE/bin/python scripts/validation/route_B_round04/validate_B2_implementation_freeze.py --strict --input results/route_B/round04/executors/B2 --report results/route_B/round04/executors/B2/validator_report.json --require-token ROUTE_B_ROUND04_B2_IMPLEMENTATION_GATE_PASSED` | `results/route_B/round04/executors/B2/validator_report.json` | `/users/a/e/aereinh/CARE/envs/env_CARE/bin/python scripts/validation/route_B_round04/run_known_bad_matrix.py --stage B2 --matrix tests/route_B_round04/fixtures/B2/known_bad_matrix.yaml --validator scripts/validation/route_B_round04/validate_B2_implementation_freeze.py --report results/route_B/round04/executors/B2/known_bad_matrix_report.json` | `results/route_B/round04/executors/B2/known_bad_matrix_report.json` |
+| B3 | `/users/a/e/aereinh/CARE/envs/env_CARE/bin/python scripts/validation/route_B_round04/validate_B3_representation.py --strict --input results/route_B/round04/executors/B3 --report results/route_B/round04/executors/B3/validator_report.json --require-token ROUTE_B_ROUND04_B3_REPRESENTATION_READY_FOR_PROPOSAL` | `results/route_B/round04/executors/B3/validator_report.json` | `/users/a/e/aereinh/CARE/envs/env_CARE/bin/python scripts/validation/route_B_round04/run_known_bad_matrix.py --stage B3 --matrix tests/route_B_round04/fixtures/B3/known_bad_matrix.yaml --validator scripts/validation/route_B_round04/validate_B3_representation.py --report results/route_B/round04/executors/B3/known_bad_matrix_report.json` | `results/route_B/round04/executors/B3/known_bad_matrix_report.json` |
+| B7 | `/users/a/e/aereinh/CARE/envs/env_CARE/bin/python scripts/validation/route_B_round04/validate_B7_cinema_control.py --strict --input results/route_B/round04/executors/B7 --report results/route_B/round04/executors/B7/validator_report.json --require-token ROUTE_B_ROUND04_B7_CINEMA_MATCHED_CONTROL_COMPLETE` | `results/route_B/round04/executors/B7/validator_report.json` | `/users/a/e/aereinh/CARE/envs/env_CARE/bin/python scripts/validation/route_B_round04/run_known_bad_matrix.py --stage B7 --matrix tests/route_B_round04/fixtures/B7/known_bad_matrix.yaml --validator scripts/validation/route_B_round04/validate_B7_cinema_control.py --report results/route_B/round04/executors/B7/known_bad_matrix_report.json` | `results/route_B/round04/executors/B7/known_bad_matrix_report.json` |
+| B4 | `/users/a/e/aereinh/CARE/envs/env_CARE/bin/python scripts/validation/route_B_round04/validate_B4_proposal.py --strict --input results/route_B/round04/executors/B4 --report results/route_B/round04/executors/B4/validator_report.json --require-token ROUTE_B_ROUND04_B4_PROPOSAL_STAGE_COMPLETE` | `results/route_B/round04/executors/B4/validator_report.json` | `/users/a/e/aereinh/CARE/envs/env_CARE/bin/python scripts/validation/route_B_round04/run_known_bad_matrix.py --stage B4 --matrix tests/route_B_round04/fixtures/B4/known_bad_matrix.yaml --validator scripts/validation/route_B_round04/validate_B4_proposal.py --report results/route_B/round04/executors/B4/known_bad_matrix_report.json` | `results/route_B/round04/executors/B4/known_bad_matrix_report.json` |
+| B8 | `/users/a/e/aereinh/CARE/envs/env_CARE/bin/python scripts/validation/route_B_round04/validate_B8_registration.py --strict --input results/route_B/round04/executors/B8 --report results/route_B/round04/executors/B8/validator_report.json --require-token ROUTE_B_ROUND04_B8_REGISTRATION_STAGE_COMPLETE` | `results/route_B/round04/executors/B8/validator_report.json` | `/users/a/e/aereinh/CARE/envs/env_CARE/bin/python scripts/validation/route_B_round04/run_known_bad_matrix.py --stage B8 --matrix tests/route_B_round04/fixtures/B8/known_bad_matrix.yaml --validator scripts/validation/route_B_round04/validate_B8_registration.py --report results/route_B/round04/executors/B8/known_bad_matrix_report.json` | `results/route_B/round04/executors/B8/known_bad_matrix_report.json` |
+| B5 | `/users/a/e/aereinh/CARE/envs/env_CARE/bin/python scripts/validation/route_B_round04/validate_B5_refiner.py --strict --input results/route_B/round04/executors/B5 --report results/route_B/round04/executors/B5/validator_report.json --require-token ROUTE_B_ROUND04_B5_REFINER_STAGE_COMPLETE` | `results/route_B/round04/executors/B5/validator_report.json` | `/users/a/e/aereinh/CARE/envs/env_CARE/bin/python scripts/validation/route_B_round04/run_known_bad_matrix.py --stage B5 --matrix tests/route_B_round04/fixtures/B5/known_bad_matrix.yaml --validator scripts/validation/route_B_round04/validate_B5_refiner.py --report results/route_B/round04/executors/B5/known_bad_matrix_report.json` | `results/route_B/round04/executors/B5/known_bad_matrix_report.json` |
+| B9 | `/users/a/e/aereinh/CARE/envs/env_CARE/bin/python scripts/validation/route_B_round04/validate_B9_temporal.py --strict --input results/route_B/round04/executors/B9 --report results/route_B/round04/executors/B9/validator_report.json --require-token ROUTE_B_ROUND04_B9_TEMPORAL_TERMINAL_EVIDENCE_READY` | `results/route_B/round04/executors/B9/validator_report.json` | `/users/a/e/aereinh/CARE/envs/env_CARE/bin/python scripts/validation/route_B_round04/run_known_bad_matrix.py --stage B9 --matrix tests/route_B_round04/fixtures/B9/known_bad_matrix.yaml --validator scripts/validation/route_B_round04/validate_B9_temporal.py --report results/route_B/round04/executors/B9/known_bad_matrix_report.json` | `results/route_B/round04/executors/B9/known_bad_matrix_report.json` |
+| B6 | `/users/a/e/aereinh/CARE/envs/env_CARE/bin/python scripts/validation/route_B_round04/validate_B6_myops_terminal.py --strict --input results/route_B/round04/executors/B6 --report results/route_B/round04/executors/B6/validator_report.json --require-token ROUTE_B_ROUND04_B6_MYOPS_TERMINAL_EVIDENCE_READY` | `results/route_B/round04/executors/B6/validator_report.json` | `/users/a/e/aereinh/CARE/envs/env_CARE/bin/python scripts/validation/route_B_round04/run_known_bad_matrix.py --stage B6 --matrix tests/route_B_round04/fixtures/B6/known_bad_matrix.yaml --validator scripts/validation/route_B_round04/validate_B6_myops_terminal.py --report results/route_B/round04/executors/B6/known_bad_matrix_report.json` | `results/route_B/round04/executors/B6/known_bad_matrix_report.json` |
+| B10 | `/users/a/e/aereinh/CARE/envs/env_CARE/bin/python scripts/validation/route_B_round04/validate_B10_terminal_packet.py --strict --input results/route_B/round04/executors/B10 --report results/route_B/round04/executors/B10/validator_report.json --require-token ROUTE_B_ROUND04_TERMINAL_PACKET_READY_FOR_REVIEW` | `results/route_B/round04/executors/B10/validator_report.json` | `/users/a/e/aereinh/CARE/envs/env_CARE/bin/python scripts/validation/route_B_round04/run_known_bad_matrix.py --stage B10 --matrix tests/route_B_round04/fixtures/B10/known_bad_matrix.yaml --validator scripts/validation/route_B_round04/validate_B10_terminal_packet.py --report results/route_B/round04/executors/B10/known_bad_matrix_report.json` | `results/route_B/round04/executors/B10/known_bad_matrix_report.json` |
 
-Long compatible waits use an isolated routing race across `htzhulab` and `a100-gpu`. Rules:
+The controller cannot select a substitute validator, omit a failure key, accept an unexpected known-bad pass or use a file-existence-only check.
 
-```text
-same logical_run_id
-same code/config/split/checkpoint/scientific hashes
-isolated attempt output/log/checkpoint/cache roots
-one atomic winner lock
-first started lock holder receives credit
-started losers write RACE_LOST and exit zero-credit
-pending losers are cancelled immediately
-all attempts remain in routing and finalizer ledgers
-```
+## 11. Slurm and continuity
 
-`volta-gpu` has user authorization for unchanged-semantics work. A stage can submit a V100 attempt only when its exact scientific configuration passes peak memory `<=14.5 GiB`. Failed V100 compatibility gives zero credit and cannot trigger batch, crop, model, loss, label, split, or budget changes.
+Formal Python is `/users/a/e/aereinh/CARE/envs/env_CARE/bin/python`. Compute-node preflight records Python/torch/CUDA, optimizer construction, semantic config, hashes and writable roots.
 
-Training-to-training dependencies use `afterok`. B10 accounting/finalizer dependencies use `afterany`. Operational retries preserve all scientific fingerprints and use at most two startup retries, two preemption retries, and zero unknown-state retries. A semantic change returns to planning/critic.
+`htzhulab` is default. A materially long compatible wait requires an isolated `htzhulab+a100-gpu` race with identical scientific hashes, separate output/log/checkpoint/cache roots, one atomic winner lock, immediate pending-loser cancellation, zero-credit losers and complete accounting. `volta-gpu` is credited only for unchanged scientific configuration and measured peak memory at most `14.5 GiB`; semantic downscaling is forbidden.
 
-## 12. Executor contracts and completion tokens
+Training-to-training dependencies use `afterok`; B10 uses `afterany`. Submitted, pending, running, awaiting-accounting, monitor, timeout, preemption and partial states are not completion. Same-scope operational retry preserves scientific hashes and failed attempts retain zero credit.
 
-### B0 — evidence, fingerprint, manifest, baseline rebind
+## 12. Terminal packet and reviewer boundary
 
-Inputs: current planning commit, Round03 reviewed packet, current main governance, current route_B source/evidence.
-Outputs:
-
-```text
-results/route_B/round04/executors/B0/source_fingerprint_audit.json
-results/route_B/round04/executors/B0/round03_inheritance_matrix.csv
-results/route_B/round04/executors/B0/label_target_audit.json
-results/route_B/round04/executors/B0/manifest_freeze_receipt.json
-results/route_B/round04/executors/B0/same_split_baseline_receipt.json
-results/route_B/round04/executors/B0/validator_fixture_index.json
-results/route_B/round04/executors/B0/completion.json
-```
-
-Success token: `ROUTE_B_ROUND04_B0_READY_FOR_CONTROLLER_MERGE`.
-Failure tokens: `ROUTE_B_ROUND04_B0_STALE_BINDING`, `ROUTE_B_ROUND04_B0_FINGERPRINT_BLOCKER`, `ROUTE_B_ROUND04_B0_MANIFEST_OR_LABEL_BLOCKER`.
-
-### B1 — anatomy target and optimization repair
-
-Inputs: B0 receipts and inherited route-local Round03 scaffold.
-Outputs:
-
-```text
-results/route_B/round04/executors/B1/anatomy_target_roundtrip.json
-results/route_B/round04/executors/B1/anatomy_microset_metrics.csv
-results/route_B/round04/executors/B1/anatomy_gradient_receipt.csv
-results/route_B/round04/executors/B1/anatomy_intervention_receipt.csv
-results/route_B/round04/executors/B1/save_reload_report.json
-results/route_B/round04/executors/B1/completion.json
-```
-
-Success token: `ROUTE_B_ROUND04_B1_ANATOMY_REPAIR_IMPLEMENTED`.
-Failure token: `ROUTE_B_ROUND04_B1_ANATOMY_REPAIR_NEEDS_REVISION`.
-
-### B2 — implementation and regression freeze
-
-Inputs: merged B1 code/config and all B0 manifests.
-Outputs:
-
-```text
-results/route_B/round04/executors/B2/implementation_gate.json
-results/route_B/round04/executors/B2/myops_gradient_interventions.csv
-results/route_B/round04/executors/B2/cinema_source_smoke.json
-results/route_B/round04/executors/B2/registration_temporal_smoke.json
-results/route_B/round04/executors/B2/export_roundtrip.json
-results/route_B/round04/executors/B2/known_bad_selftest_report.json
-results/route_B/round04/executors/B2/freeze_receipt.json
-results/route_B/round04/executors/B2/completion.json
-```
-
-Success token: `ROUTE_B_ROUND04_B2_IMPLEMENTATION_GATE_PASSED`.
-Failure tokens: `ROUTE_B_ROUND04_B2_IMPLEMENTATION_NEEDS_REVISION`, `ROUTE_B_ROUND04_B2_EXTERNAL_RESOURCE_BLOCKER`.
-
-### B3 — MyoPS representation warmup
-
-Outputs include training summary, checkpoints, validation rows, sampler traces, router/Pattern-SIP gradients, style clusters, anatomy classification, stage gate, and completion.
-Success token: `ROUTE_B_ROUND04_B3_REPRESENTATION_READY_FOR_PROPOSAL`.
-Failure tokens: monitor/accounting operational states or `ROUTE_B_ROUND04_B3_NEEDS_REVISION`. No full-route negative token is valid at B3.
-
-### B4 — OOF bank and proposal
-
-Outputs include bank provenance/tensors, queue ledger, proposal metrics, similarity interventions, conservative-ROI comparison, stage classification, and completion.
-Success token: `ROUTE_B_ROUND04_B4_PROPOSAL_STAGE_COMPLETE`.
-The completion records `PROPOSAL_STRONG` or `PROPOSAL_WEAK_WITH_CONSERVATIVE_ROI`. Invalid OOF/safety/connectivity returns `ROUTE_B_ROUND04_B4_NEEDS_REVISION`.
-
-### B5 — refiner
-
-Outputs include refiner training, ROI retention, changed-component rows, remote-FP comparison, full versus conservative control when present, and completion.
-Success token: `ROUTE_B_ROUND04_B5_REFINER_STAGE_COMPLETE`.
-Failure token: `ROUTE_B_ROUND04_B5_NEEDS_REVISION`.
-
-### B6 — joint selector and MyoPS terminal evidence
-
-Outputs include fresh 44-case predictions, selector, case-wise metrics, help/harm, subgroups, real ablations, final interventions, clean reload, export QA, and completion.
-Success token: `ROUTE_B_ROUND04_B6_MYOPS_TERMINAL_EVIDENCE_READY`.
-B6 completion class is `MYOPS_CANDIDATE_SIGNAL`, `MYOPS_ADEQUATE_NEGATIVE`, or `MYOPS_NEEDS_EVIDENCE`. Only the independent reviewer interprets the route.
-
-### B7 — official CineMA matched control
-
-Outputs include source provenance, matched-parameter audit, shared downstream initialization receipt, both runtime ledgers, selected checkpoints, case-wise control metrics, reload checks, and completion.
-Success token: `ROUTE_B_ROUND04_B7_CINEMA_MATCHED_CONTROL_COMPLETE`.
-Failure tokens: `ROUTE_B_ROUND04_B7_EXTERNAL_RESOURCE_BLOCKER`, `ROUTE_B_ROUND04_B7_MATCHING_NEEDS_REVISION`, and operational monitor/accounting states.
-
-### B8 — faithful registration
-
-Outputs include learned and SyN pair receipts, true Jacobian, inverse-composition, full loss, case aggregation, full denominators, selected/reloaded registration, source classification, and completion.
-Success token: `ROUTE_B_ROUND04_B8_REGISTRATION_STAGE_COMPLETE`.
-Completion class: `LEARNED_SVF_PRIMARY`, `SYN_PRIMARY_LEARNED_NEGATIVE`, or `CINE_REGISTRATION_BLOCKER`.
-
-### B9 — registered temporal terminal evidence
-
-Outputs include cumulative ledger, parent hashes, registered input manifest, temporal training, case-wise metrics, help/harm, full ablation, final interventions, clean reload, export QA, and completion.
-Success token: `ROUTE_B_ROUND04_B9_TEMPORAL_TERMINAL_EVIDENCE_READY`.
-A `CINE_REGISTRATION_BLOCKER` from B8 produces an evidence-complete blocker packet rather than a fabricated B9 result.
-
-### B10 — durable finalizer and reviewer handoff
-
-B10 runs through local deterministic finalization or Slurm `afterany` over every started attempt. It records terminal `sacct`, exit code, elapsed, node, log, runtime output, retry lineage, race cancellation, aggregation commands/exits, validator commands/exits, tracked lightweight files, ignored heavy files, and superseded receipts.
-
-Required outputs:
+B10 required packet:
 
 ```text
 results/route_B/round04/executors/B10/routing_ledger.csv
 results/route_B/round04/executors/B10/training_adequacy.csv
+results/route_B/round04/executors/B10/terminal_branch_coverage.json
 results/route_B/round04/executors/B10/validator_packet_report.json
 results/route_B/round04/executors/B10/known_bad_report.json
 results/route_B/round04/executors/B10/heavy_artifact_scan.json
@@ -696,52 +396,16 @@ results/route_B/review_request.md
 results/route_B/MANIFEST.md
 ```
 
-Final controller token: `ROUTE_B_ROUND04_TERMINAL_PACKET_READY_FOR_REVIEW` only after terminal accounting, aggregation, mapper final, strict validator pass, known-bad pass, `git diff --check`, heavy-artifact scan, and local lightweight packet commit.
+Controller report before review fixes:
 
-## 13. Required semantic validators and known-bad fixtures
+```text
+route_promotion_decision: NOT_REVIEWED
+route_negative_decision: NOT_REVIEWED
+scientific_resolution_status: AWAITING_REVIEW
+git_push_decision: SKIP_PUSH
+```
 
-The strict validator must fail closed on:
-
-1. stale planning commit or evidence ref;
-2. wrong modality order or zero-fill availability shortcut;
-3. legacy Round03 formal wrapper invocation;
-4. pure-myocardium anatomy union target;
-5. anatomy micro-overfit failure labeled as scientific negative;
-6. Round03 B3 failure used to skip B4-B9;
-7. missing lateral or routed anatomy gradient;
-8. invalid private/interaction slot weight above `1e-8`;
-9. Pattern-SIP alias, detached tensor, constant tensor, or missing gradient;
-10. bootstrap/EMA formal prototype path;
-11. current-case, validation, or test leakage into an OOF bank;
-12. no-T2 myocardium entering edema negatives;
-13. disconnected proposal similarity or constant proposal;
-14. hard ROI deletion;
-15. shared undifferentiated scar/edema refiner;
-16. zero or unbounded final correction;
-17. missing same-split nnU-Net baseline;
-18. missing scar-positive, T2-present edema-positive, no-T2, CenterB, or CenterC rows;
-19. empty-GT rows counted as improvements;
-20. summary rows named as interventions;
-21. selected checkpoint not clean-reloaded;
-22. fake CineMA source, wrong SHA, or internal small wrapper used as official source;
-23. pretrained/random mismatch beyond source initialization;
-24. direct velocity-as-displacement;
-25. fewer than seven scaling-and-squaring steps;
-26. proxy Jacobian, copied SyN output, or pair-level rows presented as case-level gate;
-27. temporal path missing any required registered input;
-28. frame0 fallback, unregistered primary output, reset/gap/overlap/duplicate cumulative ledger;
-29. formal Slurm wrapper resolving to a system or unapproved interpreter;
-30. smoke/one-batch/local run credited as formal training;
-31. submitted/pending/running/monitor/awaiting-accounting packet presented as completion;
-32. race attempts sharing output roots, mismatched scientific hashes, loser credit, or uncancelled pending loser;
-33. V100 semantic downscaling;
-34. validator checking only file presence;
-35. controller push, controller-authored review, or forbidden authority claim;
-36. inconsistent final receipts that leave superseded failure text as current truth.
-
-## 14. Independent reviewer prompt draft
-
-The independent reviewer must check the exact committed terminal packet and may emit only:
+The independent runtime reviewer may emit only:
 
 ```text
 ROUTE_B_ROUND04_REVIEW_EVIDENCE_COMPLETE
@@ -752,36 +416,8 @@ ROUTE_B_ROUND04_REVIEW_NEEDS_EVIDENCE
 ROUTE_B_ROUND04_REVIEW_NEEDS_REVISION
 ```
 
-Reviewer decision rules:
+Reviewer is read-only and runs after the local packet commit. Evidence completeness or adequate negative is not route promotion.
 
-- `EVIDENCE_COMPLETE`: all B0-B10 integrity gates pass; B6 and B9 are terminal; two target gates are positive; the third is non-worse; final-output effects are real; no-T2 safety and subgroup evidence pass. This is evidence completeness, not route promotion.
-- `ADEQUATE_NEGATIVE`: implementation and fidelity are faithful; minimum effective training and terminal accounting pass; the full MyoPS and available registered Cine chains were exercised; candidate thresholds are missed. A faithful B8 blocker with real learned/SyN evidence can support this classification only when the missing B9 result is causally forced by the registration gate and all blocker evidence is complete.
-- `EXTERNAL_RESOURCE_BLOCKER`: official external asset access prevents the exact Cine source and the packet proves the blocker without substitutes.
-- `NEEDS_MONITOR`: at least one required attempt lacks terminal accounting.
-- `NEEDS_EVIDENCE`: runtime is terminal but required aggregation, denominators, hashes, intervention rows, or receipts are missing/inconsistent.
-- `NEEDS_REVISION`: implementation, label semantics, data leakage, matcher fidelity, registration mathematics, temporal consumption, validator semantics, or authority boundary is defective.
+## 13. Authority boundary
 
-The reviewer is read-only, runs after the terminal packet commit, and does not authorize validation upload, route promotion, M11, hosted metrics, cross-route merge, or final scientific decision.
-
-## 15. Controller completion checklist
-
-Before requesting review, the controller verifies:
-
-- exact critic-ready planning binding;
-- B0-B2 implementation/fingerprint gates;
-- B3-B6 MyoPS lane terminal state;
-- B7-B9 Cine lane terminal state or faithful B8 blocker state;
-- every started Slurm attempt terminal and aggregated;
-- every failed/losing attempt zero-credit and retained in ledger;
-- same-split baseline and all hard subgroup rows;
-- real final-output interventions and full ablations;
-- selected checkpoints clean-reloaded;
-- route-local mapper final and architecture delta final;
-- strict validator and known-bad suite pass;
-- no heavy artifact tracked;
-- old receipts explicitly superseded;
-- lightweight local commit created;
-- git push skipped by controller;
-- runtime `review.md` absent.
-
-Only then may B10 write `ROUTE_B_ROUND04_TERMINAL_PACKET_READY_FOR_REVIEW`.
+This contract authorizes nothing until the new critic-ready token. It never authorizes validation packaging/upload, route promotion, M11, hosted metric claims, cross-route merge or final scientific decision.

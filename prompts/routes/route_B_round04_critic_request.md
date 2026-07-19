@@ -2,229 +2,129 @@
 route_id: route_B
 portfolio_round: round04
 date: 2026-07-19
-role: critic
-status: REQUESTED
-planner_base_main: 7042135a4cc5be44b090fee93d4d1ee25b72fc0e
-route_evidence_ref: b9c7664da7cb1f1892fff37a4497722f31a0a96d
-inherited_review_token: ROUTE_B_ROUND03_REVIEW_ADEQUATE_NEGATIVE
-planner_plan_path: prompts/routes/portfolio_round04_route_B_planner_plan_20260719.md
-planner_prompt_path: prompts/routes/route_B_round04_planner_prompt.md
-controller_contract_path: prompts/routes/route_B_round04_controller_contract.md
-executor_plan_path: prompts/routes/route_B_round04_executor_plan.yaml
-planner_audit_path: prompts/routes/route_B_round04_planner_audit.md
-critic_output_path: prompts/routes/route_B_round04_critic_review.md
+role: planning_critic_request
+planner_base_main: 30098813522cecd98e60bcb99e2676b28c1a5461
+route_B_evidence_ref: b9c7664da7cb1f1892fff37a4497722f31a0a96d
+revision_source_token: ROUTE_B_ROUND04_PLANNING_NEEDS_REVISION
+status: PENDING_COORDINATOR_RECEIPT_AND_CRITIC_REREVIEW
+critic_handoff_path: prompts/routes/handoffs/route_B_round04_critic_handoff_20260719.md
+coordinator_receipt_path: prompts/routes/handoffs/route_B_round04_coordinator_receipt_20260719.md
+critic_output_path: prompts/routes/route_B_round04_critic_rereview.md
+allowed_decision_tokens:
+  - ROUTE_B_ROUND04_PLANNING_READY_FOR_CONTROLLER
+  - ROUTE_B_ROUND04_PLANNING_NEEDS_REVISION
 controller_start_authorized: false
-ready_token: ROUTE_B_ROUND04_PLANNING_READY_FOR_CONTROLLER
-revision_token: ROUTE_B_ROUND04_PLANNING_NEEDS_REVISION
 validation_upload_authorized: false
 route_promotion_authorized: false
 m11_authorized: false
-cross_route_merge_authorized: false
 hosted_metric_claim_authorized: false
+cross_route_merge_authorized: false
 final_scientific_decision_authorized: false
 ---
 
-# Route B Round04 Critic Request
+# Route B Round04 Independent Planning Critic Rereview Request
 
-You are the independent CARE Route B Round04 Critic. Review planning only. Do not implement code, train, submit or monitor Slurm, write runtime reviewer output, package or upload validation, start M11, promote a route, merge across routes, claim hosted metrics, or make a final scientific decision.
+This is a separate planning critic task. It is not a controller task, runtime reviewer task, implementation task or Slurm task.
 
-## 1. Exact sources to re-fetch
+## Entry and binding
 
-Re-fetch current main and `origin/route_B`, then read:
+Read `prompts/routes/handoffs/CURRENT.md` first, then read only the current Route B Round04 critic handoff named there. Stop with `ROUTE_B_ROUND04_PLANNING_NEEDS_REVISION` when:
 
-```text
-AGENTS.md
-START_HERE_FOR_GPT.md
-GPT_PLANNER_CARE_PROTOCOL.md
-prompts/AGENT_FLOW_V2_PROTOCOL.md
-prompts/HANDOFF_GATE_POLICY.md
-prompts/GPT_HARD_GATE_PROMPT.md
-prompts/routes/README.md
-prompts/routes/ROUTE_ANTI_LAZINESS_PROTOCOL.md
-prompts/routes/ROUTE_HARD_REQUIREMENTS_MATRIX.md
-.agents/skills/slurm-routing-partition/SKILL.md
-.agents/skills/care-mapper/SKILL.md
-prompts/routes/handoffs/CURRENT.md
-routes/README.md
-wiki/README.md
-wiki/current_state.yaml
-wiki/history/README.md
-wiki/history/COMPARISON.md
-docs/notes/deep_research/care_2026_myocardium_round02_targeted_deep_research_cleaned.md
-```
+- the handoff does not bind an exact planning commit and all six planning blobs;
+- current `origin/main` is not a descendant of the planning commit through only declared handoff/receipt commits;
+- any of the six planning blobs differs;
+- `origin/route_B` does not equal `b9c7664da7cb1f1892fff37a4497722f31a0a96d` or no longer contains the reviewed Round03 packet;
+- `prompts/routes/handoffs/route_B_round04_coordinator_receipt_20260719.md` is absent, pending, stale, has a nonzero exit, or tested a commit other than current `origin/main`;
+- a later commit changed the route contract, executor plan, critic request, planner audit, planner prompt or portfolio plan.
 
-Read the exact Round03 Route B evidence from `origin/route_B`:
+The critic must independently visually read SRR-v2/v2.5/v3 from Project/current-conversation materials and recover the full Route B objective.
+
+## Route C portfolio context
+
+Confirm only as portfolio context:
 
 ```text
-results/route_B/review.md
-results/route_B/result.md
-results/route_B/controller_report.md
-results/route_B/completion_check.md
-results/route_B/round03/executors/B0/*
-results/route_B/round03/executors/B1/*
-results/route_B/round03/executors/B2/*
-results/route_B/round03/executors/B3/completion.json
-results/route_B/round03/executors/B3/training_adequacy.csv
-results/route_B/round03/executors/B10/completion.json
-results/route_B/round03/executors/B10/validator_packet_report.json
-prompts/routes/route_B.md
-prompts/routes/route_B_executor_plan.yaml
+origin/route_C: 17062b00edc3443aacefe8583568797a9f2655ba
+reviewed controller repair: 1e663cfa64f00413f005bef26310290fd43ec8ab
+review token: ROUTE_C_ROUND03_REVIEW_EVIDENCE_COMPLETE
+portfolio status: EVIDENCE_COMPLETE_FOR_PORTFOLIO_RECONCILIATION
 ```
 
-Visually read the Project-background SRR-v2, SRR-v2.5, and SRR-v3 diagrams. Repository filenames alone do not satisfy this requirement.
+Route C must not be sent to another reviewer unless its binding is stale. Route C evidence completeness neither authorizes downstream actions nor removes the Route B Cine lane.
 
-Then review the six Round04 planning files on the exact planning commit.
+## Required Route B checks
 
-## 2. Required factual baseline
+### Scientific scope
 
-The Critic must preserve these facts:
+Reject any reduction of:
 
-- Round03 B3 was adequately trained and terminally accounted.
-- The final sampler was corrected and exact.
-- `anatomy_union_overfit` remained false.
-- B4-B9 did not execute.
-- The Round03 reviewer token is `ROUTE_B_ROUND03_REVIEW_ADEQUATE_NEGATIVE`.
-- That token reviews the B3-blocked Round03 packet and does not establish a full Route B scientific stop.
-
-A review that calls B3 monitor-only, undertrained, or proof that proposal/refiner/Cine failed is invalid.
-
-## 3. Core scientific question
-
-Judge whether the Round04 revision solves the old gate error without hiding a real implementation defect.
-
-The planning is acceptable only when all of the following are true:
-
-1. Anatomy target semantics are explicit and correct for compact labels, including scar/edema in the union target.
-2. A strict train-only micro-overfit remains an implementation gate.
-3. Failure of that repaired micro-overfit returns `NEEDS_REVISION`, not a scientific negative.
-4. B3 still requires adequate runtime, routing, gradient, no-T2, provenance, and localization evidence.
-5. B3 alone cannot classify the whole route adequate negative.
-6. B4 and B5 execute after valid B3 readiness, including the prescribed conservative-ROI continuation for a weak but valid proposal.
-7. B6 is the first complete MyoPS scientific classification point.
-8. B7-B9 form a real Cine lane after B2 and cannot be skipped because of a MyoPS auxiliary-stage metric.
-9. A registration miss has a fixed learned/SyN decision branch rather than an invented temporal substitute.
-10. The final reviewer, not the controller, classifies candidate, adequate negative, blocker, monitor, evidence gap, or revision.
-
-Reject a document that merely changes the B3 token while leaving anatomy label/optimization ambiguity unresolved.
-
-## 4. Deep-research coverage audit
-
-Check that the contract maps every research requirement to code, stage, evidence, and validator:
-
-- observed-modality inputs and no zero filling;
-- four-scale shared/private/interaction retrieval;
-- spatial/pathology-conditioned routing;
+- full four-scale `[32,64,128,256]` SRR-v3;
+- canonical `[LGE,T2,C0]` and explicit availability;
+- shared/private/interaction experts and spatial/pathology-conditioned routing;
 - optimized Pattern-SIP;
-- train/OOF frozen prototypes;
-- safe hard-negative queues;
-- corrected anatomy union/LV/RV targets;
-- separate scar and edema proposals;
-- pathology-specific soft ROI and refiners;
-- bounded final correction;
-- same-split nnU-Net baseline;
-- case-wise help/harm and hard subgroups;
-- official CineMA source and matched random control;
-- faithful seven-step SVF and real SyN;
-- registered temporal aggregation;
-- full MyoPS and Cine ablation;
-- clean reload and official label/export round trip.
+- fold-safe train/OOF frozen prototype banks;
+- training-only safe hard-negative queues and no-T2 edema exclusion;
+- separate scar/edema proposal, soft ROI and refiner;
+- bounded final correction and real final-output intervention;
+- same-split nnU-Net baseline, case-wise help/harm, scar-positive, T2-present edema-positive, no-T2, CenterB/CenterC, remote-FP, component count, HD95 and volume ratio;
+- official CineMA pretrained/matched-random control;
+- seven-step SVF, true Jacobian/inverse consistency, real SyN, case denominators;
+- registered temporal aggregation and full controls;
+- declared training budgets and selected-checkpoint clean reload.
 
-Reject any requirement that remains a name without a final-path tensor, training stage, evidence product, or fail-closed validator.
+Confirm that Round03 B3 remains B3-only adequate negative, B4/B5/B6 continue after valid predecessors, B6 is the first MyoPS full-route classification, and B7/B8/B9 remain mandatory after B2.
 
-## 5. Leaderboard-facing metric audit
+### Terminal finalizer
 
-Verify exact coverage of:
+Parse `terminal_finalizer_contract` and the B10 executor. B10 must:
 
-```text
-myops_scar
-myops_edema
-myocardium_cinemyops
-```
+- have `depends_on: []`;
+- be controller-launched and exempt from the successful wave-preparation helper;
+- consume `controller_terminal_registry.json` and all started attempt IDs in `controller_ledger.csv`;
+- use `afterany` over every started attempt;
+- use a local deterministic path when none started;
+- launch immediately for B0/B1/B2 global terminals;
+- launch after both lane terminals post-B2;
+- account B1 failure, B2 external blocker, B7 blocker, B8 registration blocker without B9, timeout, preemption, failed startup, cancelled/started race loser and successful B6/B9;
+- prevent duplicate launch with an atomic lock.
 
-MyoPS must compare against a same-split nnU-Net baseline and report case-wise Dice, HD95, remote-FP, component count, volume ratio, lesion-wise recall, changed voxels, changed components, and help/harm. Required groups are scar-positive, T2-present edema-positive, no-T2 safety, CenterB, CenterC, complete tri-modal, remote-FP-positive, and high-component-burden.
+Reject any plan where an authorized early terminal class cannot reach B10.
 
-No-T2 cases are safety evidence, not edema-negative training evidence. Both-empty rows cannot earn improvement credit. Compact-label proxy means cannot decide candidate status.
+### Per-executor validators
 
-Cine must compare reference-only, unregistered multi-frame, registered temporal full, node-off variants, pretrained/random, and learned-SVF/real-SyN on the same cases and decode.
-
-## 6. Controller executability audit
-
-Check every B0-B10 executor for:
-
-- exact dependency;
-- exact input and output paths;
-- isolated branch/worktree/result/runtime/log/lock roots;
-- explicit write scope;
-- one deterministic command;
-- environment preflight;
-- minimum effective training;
-- validator and known-bad matrix;
-- success token and failure branch;
-- terminal accounting and retry lineage;
-- reviewer input.
-
-The controller must not be asked to invent architecture, target semantics, training budget, thresholds, cases, source assets, registration source, temporal inputs, checkpoint selector, Slurm route, retry behavior, evidence naming, or reviewer thresholds.
-
-## 7. Slurm and anti-laziness audit
-
-Verify:
-
-- formal wrappers resolve to `/users/a/e/aereinh/CARE/envs/env_CARE/bin/python`;
-- compute-node preflight records interpreter, torch/CUDA, optimizer, semantic config, hashes, and writable roots;
-- long compatible waits use isolated `htzhulab` plus `a100-gpu` race;
-- V100 credit requires exact-config peak memory at or below `14.5 GiB` and never changes scientific semantics;
-- training dependencies are `afterok`;
-- B10 is `afterany` across every started attempt;
-- pending/running/monitor/submitted-only/awaiting-accounting/partial states cannot complete a stage;
-- loser and failed attempts receive zero credit and remain in ledgers;
-- post-completion aggregation and strict semantic validation are mandatory;
-- B10 runs for success, adequate negative, blocker, timeout, preemption, cancellation, and early local gate failure.
-
-Reject validators that only check file presence or completion strings.
-
-## 8. Full ablation and causal evidence audit
-
-Check that every item called an ablation is a real same-checkpoint node intervention with final-output deltas. MyoPS must cover anatomy, anchor support floor, prototypes, hard-negative refresh, interactions, Pattern-SIP, proposal, scar refiner, edema refiner, both refiners, bounded correction, and nnU-Net context. Cine must cover reference-only, unregistered, registered temporal, temporal router, motion/Jacobian, anatomy, uncertainty/quality, matched random, learned SVF, and real SyN.
-
-Reject summary tables relabeled as causal evidence.
-
-## 9. Reviewer-state audit
-
-The reviewer prompt draft must distinguish:
+For B0-B10, require machine-readable:
 
 ```text
-ROUTE_B_ROUND04_REVIEW_EVIDENCE_COMPLETE
-ROUTE_B_ROUND04_REVIEW_ADEQUATE_NEGATIVE
-ROUTE_B_ROUND04_REVIEW_EXTERNAL_RESOURCE_BLOCKER
-ROUTE_B_ROUND04_REVIEW_NEEDS_MONITOR
-ROUTE_B_ROUND04_REVIEW_NEEDS_EVIDENCE
-ROUTE_B_ROUND04_REVIEW_NEEDS_REVISION
+validator.script_path
+validator.command
+validator.input_path
+validator.report_file
+validator.expected_exit_code == 0
+validator.success_token
+known_bad_contract.matrix_path
+known_bad_contract.matrix_command
+known_bad_contract.report_file
+known_bad_contract.runner_expected_exit_code == 0
+known_bad_contract.validator_expected_exit_code_per_fixture == 1
+known_bad_contract.expected_failure_keys
+known_bad_contract.all_keys_required == true
+known_bad_contract.unexpected_pass_is_failure == true
 ```
 
-An adequate negative requires faithful implementation, adequate training, terminal accounting, and execution of the full available scientific path. A B3 auxiliary metric cannot earn this token.
+The exact commands must use `/users/a/e/aereinh/CARE/envs/env_CARE/bin/python`. A generic executor-plan validator cannot substitute for stage semantic validators.
 
-## 10. Required executable checks
+### Slurm and continuity
 
-Run at minimum:
+Confirm `htzhulab` default, isolated long-wait `htzhulab+a100-gpu` race, V100 unchanged-config/`<=14.5 GiB` credit gate, zero-credit failed/partial/losing attempts, `afterok` training, `afterany` finalizer, and controller goal/goal-resume responsibility through accounting, aggregation, mapper final, packet commit and reviewer handoff. Monitor-like states are not completion.
 
-```text
-/users/a/e/aereinh/CARE/envs/env_CARE/bin/python scripts/ops/validate_executor_plan.py prompts/routes/route_B_round04_executor_plan.yaml
-git diff --check
-```
+### Coordinator receipt
 
-Run semantic scans for blank execution authority, bare-interpreter formal wrappers, wording that postpones CineMA, registration, or temporal execution, missing Round04 path binding, and missing prohibited-authority flags. Record commands, exits, and findings in the critic review.
+Independently inspect the exact commands and exit codes in the coordinator receipt. A remote statement that checks “should pass” is insufficient. All required exits must be `0`, the tested commit must equal current `origin/main`, and the working tree must be clean.
 
-## 11. Critic decision
+## Allowed decisions
 
-Write exactly one token to `prompts/routes/route_B_round04_critic_review.md`:
+`ROUTE_B_ROUND04_PLANNING_READY_FOR_CONTROLLER` may be written only when every requirement passes and is bound to the exact current main commit, exact planning commit, six blobs and coordinator receipt blob.
 
-```text
-ROUTE_B_ROUND04_PLANNING_READY_FOR_CONTROLLER
-ROUTE_B_ROUND04_PLANNING_NEEDS_REVISION
-```
+Otherwise write `ROUTE_B_ROUND04_PLANNING_NEEDS_REVISION` with exact paths, fields and failed commands.
 
-A ready token must bind the exact planning commit and the blob SHA of all six planning files. Planner push is not critic passage. A later blob or commit change invalidates the token.
-
-## 12. Authority boundary
-
-Critic review authorizes only a later Route B controller start when the ready token is exact and current. It does not authorize validation packaging/upload, route promotion, M11, hosted metric claims, cross-route merge, or final scientific decision.
+Neither token authorizes validation upload, route promotion, M11, hosted metrics, cross-route merge or a final scientific decision. The ready token authorizes only a future exact Route B Controller as a Codex goal/goal resume.
