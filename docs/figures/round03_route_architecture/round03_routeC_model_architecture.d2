@@ -1,123 +1,119 @@
-direction: down
+direction: right
+layout: dagre
+
+# Route C Round03 model architecture in aligned six-panel template
 
 classes: {
-  verified: { style.fill: "#DDEFE4"; style.stroke: "#2E7D32"; style.stroke-width: 3 }
-  smoke: { style.fill: "#EAF3FA"; style.stroke: "#2D6F9F"; style.stroke-dash: 5 }
-  stale: { style.fill: "#ECECEC"; style.stroke: "#777777"; style.stroke-dash: 4 }
-  boundary: { style.fill: "#F4E8FF"; style.stroke: "#6A3FA0"; style.stroke-dash: 3 }
+  tensor: {
+    style: { fill: "#eef6ff"; stroke: "#245e9c"; stroke-width: 2 }
+  }
+  verified: {
+    style: { fill: "#e7f6e8"; stroke: "#1f7a3b"; stroke-width: 3 }
+  }
+  smoke: {
+    style: { fill: "#e9f2ff"; stroke: "#2364aa"; stroke-width: 2; stroke-dash: 6 }
+  }
+  planned: {
+    style: { fill: "#fff6d8"; stroke: "#b07a00"; stroke-width: 2; stroke-dash: 6 }
+  }
+  blocked: {
+    style: { fill: "#ffe8e8"; stroke: "#b42318"; stroke-width: 3 }
+  }
+  stale: {
+    style: { fill: "#f1f1f1"; stroke: "#777777"; stroke-width: 2; stroke-dash: 6 }
+  }
+  boundary: {
+    style: { fill: "#f3e8ff"; stroke: "#7e22ce"; stroke-width: 2; stroke-dash: 4 }
+  }
+  panel: {
+    style: { fill: "#fbfbfb"; stroke: "#b8b8b8"; stroke-width: 1 }
+  }
 }
 
-title: "Route C Round03 Implemented Model and Evidence Hooks"
+
+p1: {
+  label: "Panel 1 - Inputs"
+  class: panel
+  x: "MyoPS volumes\nshape not explicit in code\navailability / T2 flag\nanchor_features\ncomponent_features"
+  cine: "Cine frames\nED image + prior\nregistered anatomy/features\nmotion + uncertainty\nvalid_frame_mask"
+  x.class: tensor
+  cine.class: tensor
+}
+p2: {
+  label: "Panel 2 - Trunk / Encoder"
+  class: panel
+  trunk: "SRRProposeRefineMyoPS\nmodality encoder/retrieval\noptional M10 two-pass dictionary\nscar/edema decoders"
+  cine: "CineMAAdapter\nstem(image + cinema_prior)\nadapter residual + head\nexternal ConvUNetR depth not introspected in repo"
+  reg: "RegistrationUNet\nenc1/enc2/enc3/bottleneck\nup3/up2/up1\ndec3/dec2/dec1\nvelocity Conv3d -> 3"
+  trunk.class: verified
+  cine.class: verified
+  reg.class: verified
+}
+p3: {
+  label: "Panel 3 - Routing / Proposal / Prototype"
+  class: panel
+  proto: "PrototypeBank\nscar pos/neg\nedema pos/T2-safe neg\nhard negatives\npositive-negative swap verified"
+  dict: "ProposalDictionary\npositive sim - negative sim\nnegative memory\nevidence logits\nanatomy/anchor/component ctx"
+  control: "Matched random control\ndistinct source hashes\nsame downstream contract"
+  proto.class: verified
+  dict.class: verified
+  control.class: verified
+}
+p4: {
+  label: "Panel 4 - ROI / Refinement / Composition"
+  class: panel
+  roi: "AnatomyDistanceROIPrior\nP_union/P_LV/P_RV\ndistance + uncertainty\nscar gate; edema gate*T2"
+  refine: "CropSoftROIRefinementHead\nscar crop refine\nedema crop refine\nbounded residual paste\nno-T2 edema -20"
+  compose: "BaselinePreservingResidualGate\nBranchArbitrationGate\nfinal logits + labels"
+  roi.class: verified
+  refine.class: verified
+  compose.class: verified
+}
+p5: {
+  label: "Panel 5 - CineMA / Registration / Temporal"
+  class: panel
+  cine: "official CineMA source\ncommit c10daa1d\nHF rev b1251ee\nweight SHA c7a60195...\nlogits/probs/features/entropy"
+  reg: "learned SVF\n7-step scaling/squaring\ndisplacement + warp\ntrue Jacobian\ninverse consistency\nreal SyN control"
+  temp: "TemporalSlotDictionary 8 slots\nregistered logits/features/uncertainty\nvelocity/displacement/Jacobian/motion\ntexture residual + quality + position\nCineTemporalModel head"
+  cine.class: verified
+  reg.class: verified
+  temp.class: verified
+}
+p6: {
+  label: "Panel 6 - Final Output Evidence / Review"
+  class: panel
+  r1: "R1 evidence\n88 swap rows changed logits/voxels\n80/88 changed components\nno-op and residual-off zero-effect"
+  r3: "R3 evidence\n60 registration receipts\n12 case gates pass\n12 temporal rows changed\nlogits/voxels/components"
+  review: "ROUTE_C_ROUND03_REVIEW_EVIDENCE_COMPLETE"
+  stale: "stale historical\narchitecture_delta_final.md\nsuperseded by review.md"
+  auth: "No validation upload\nNo route promotion\nNo hosted metric claim\nNo final scientific decision"
+  r1.class: verified
+  r3.class: verified
+  review.class: verified
+  stale.class: stale
+  auth.class: boundary
+}
+
+p1.x -> p2.trunk -> p3.proto -> p3.dict -> p4.roi -> p4.refine -> p4.compose -> p6.r1 -> p6.review
+p1.cine -> p2.cine -> p5.cine -> p5.reg -> p5.temp -> p6.r3 -> p6.review
+p2.reg -> p5.reg
+p6.stale -> p6.review: { style.stroke-dash: 6; style.stroke: "#777777" }
+p6.review -> p6.auth: { style.stroke-dash: 4; style.stroke: "#7e22ce" }
+
 
 legend: {
   label: "Status legend"
-  v: "implemented and reviewer verified"
+  direction: down
+  v: "green solid\nimplemented + reviewer verified"
+  s: "blue dashed\nimplemented / smoke only"
+  p: "yellow dashed\nplanned or not executed"
+  b: "red solid\nblocked / adequate negative"
+  g: "gray dashed\nstale historical"
+  a: "purple dashed\nauthority boundary"
   v.class: verified
-  s: "smoke evidence retained"
   s.class: smoke
-  h: "stale conflict"
-  h.class: stale
-  a: "not authorized"
+  p.class: planned
+  b.class: blocked
+  g.class: stale
   a.class: boundary
 }
-
-r1_myops: {
-  label: "R1 MyoPS SRR evidence chain"
-  anchor: "nnU-Net anchor\ncontext only"
-  trunk: "SRRProposeRefineMyoPS\nD2/D3 variants"
-  proto: "PrototypeBank\npositive/negative banks"
-  proposals: "ProposalDictionary\npos-neg+context"
-  roi: "AnatomyDistanceROIPrior\nP_union/P_LV/P_RV"
-  refine: "CropSoftROIRefinementHead\nscar/edema crops"
-  final: "final logits/labels\nSRR prop-refine"
-  anchor -> trunk -> proto -> proposals -> roi -> refine -> final
-  anchor.class: verified
-  trunk.class: verified
-  proto.class: verified
-  proposals.class: verified
-  roi.class: verified
-  refine.class: verified
-  final.class: verified
-}
-
-r1_hooks: {
-  label: "R1 final-output intervention hooks"
-  swap: "positive/negative swap\n88 harmful rows"
-  noop: "no-op control\n88 zero-effect rows"
-  anchor_off: "anchor residual off\n88 zero-effect rows"
-  d2d3: "D2/D3 rows\nlogits+labels changed"
-  validator: "strict validators\nknown-bad PASS"
-  swap -> d2d3 -> validator
-  noop -> validator
-  anchor_off -> validator
-  swap.class: verified
-  noop.class: verified
-  anchor_off.class: verified
-  d2d3.class: verified
-  validator.class: verified
-}
-
-r2_cinema: {
-  label: "R2 CineMA real source"
-  source: "mathpluscode/CineMA\nConvUNetR"
-  weights: "weight SHA\nc7a60195..."
-  outputs: "logits/probs\nfeatures/entropy"
-  control: "matched random\nsame downstream"
-  source -> weights -> outputs -> control
-  source.class: verified
-  weights.class: verified
-  outputs.class: verified
-  control.class: verified
-}
-
-r3_registration: {
-  label: "R3 registration"
-  regnet: "RegistrationUNet\nstationary velocity"
-  integrate: "7-step scaling/squaring"
-  warp: "displacement + warp"
-  jac: "true Jacobian\ninverse consistency"
-  syn: "real ANTsPy SyN\n60 controls"
-  gate: "60 pair receipts\n12/12 case PASS"
-  regnet -> integrate -> warp -> jac -> syn -> gate
-  regnet.class: verified
-  integrate.class: verified
-  warp.class: verified
-  jac.class: verified
-  syn.class: verified
-  gate.class: verified
-}
-
-r3_temporal: {
-  label: "R3 registered temporal fusion"
-  inputs: "registered logits/features\nuncertainty"
-  motion: "velocity/displacement\nJacobian/motion"
-  qc: "texture residual\nquality/position/mask"
-  dict: "TemporalSlotDictionary\n8 slots"
-  model: "CineTemporalModel\nED-space head"
-  effect: "12 final rows\nchanged logits/voxels/components"
-  inputs -> motion -> qc -> dict -> model -> effect
-  inputs.class: verified
-  motion.class: verified
-  qc.class: verified
-  dict.class: verified
-  model.class: verified
-  effect.class: verified
-}
-
-review: {
-  label: "Review and stale conflict"
-  stale_delta: "architecture_delta_final.md\nstale needs-evidence text"
-  latest: "latest review\nEVIDENCE_COMPLETE"
-  blocked: "no upload, no promotion\nno hosted metric claim"
-  stale_delta -> latest: "superseded"
-  latest -> blocked
-  stale_delta.class: stale
-  latest.class: verified
-  blocked.class: boundary
-}
-
-r1_myops.final -> r1_hooks.swap
-r1_hooks.validator -> r2_cinema.source
-r2_cinema.outputs -> r3_registration.regnet
-r3_registration.gate -> r3_temporal.inputs
-r3_temporal.effect -> review.latest
