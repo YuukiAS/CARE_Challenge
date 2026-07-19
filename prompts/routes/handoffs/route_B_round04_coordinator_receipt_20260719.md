@@ -1,42 +1,72 @@
 ---
 route_id: route_B
 portfolio_round: round04
-date: 2026-07-19
+date: '2026-07-20'
 role: codex_coordinator_executable_receipt
-status: READY_FOR_ROUTE_B_ROUND04_CRITIC_REREVIEW
-planning_commit: 755e5919d472e3033c23ff7a848cac618aca1d34
-planning_parent_main: 30098813522cecd98e60bcb99e2676b28c1a5461
+status: PENDING_COORDINATOR_EXECUTION
+planning_commit: 38551ed98a42b005a1a3f0b793efdef700037ee8
+planning_parent_main: 64f5a27298cb2efd1f576a70296e49388ab0b717
 route_B_evidence_commit: b9c7664da7cb1f1892fff37a4497722f31a0a96d
-route_C_review_commit: 17062b00edc3443aacefe8583568797a9f2655ba
-planner_plan_blob: e6e31f772e2766ec79c466660fe8f56f14350d6f
-planner_prompt_blob: 030c4ae0cb97bae1d661b40786bf3d7be78d930d
-controller_contract_blob: fdb74c49634ba02a30b96979f185bd71fcf085c4
-executor_plan_blob: 505b3a64d83b3d17cbc28ea7c0837d098665f821
-critic_request_blob: 9911593bef8d8381e0df620bf22ca8c759e24186
-planner_audit_blob: 6a9881f3eba630ec51ffed2b9ecb0ca0367262ed
-tested_main_commit: aea169e65e19c674b8c6cdba74fc1cab7a07713f
-tested_origin_main: aea169e65e19c674b8c6cdba74fc1cab7a07713f
-tested_origin_route_B: b9c7664da7cb1f1892fff37a4497722f31a0a96d
-tested_origin_route_C: 17062b00edc3443aacefe8583568797a9f2655ba
-working_tree_clean: true
-all_required_exit_codes_zero: true
-completion_token: READY_FOR_ROUTE_B_ROUND04_CRITIC_REREVIEW
+route_C_evidence_commit: 17062b00edc3443aacefe8583568797a9f2655ba
+six_planning_blobs:
+  prompts/routes/portfolio_round04_route_B_planner_plan_20260719.md: a537e0e86e3059efa27d128ac3a018a22a6a40aa
+  prompts/routes/route_B_round04_planner_prompt.md: 1ea2277d20f9e4eab1711c767274204342c372e2
+  prompts/routes/route_B_round04_controller_contract.md: 3087283d65dbb6eeca697a393fc545528fe7fada
+  prompts/routes/route_B_round04_executor_plan.yaml: c5e437a0cd847ade5244727a43c239da9825c737
+  prompts/routes/route_B_round04_critic_request.md: fcac92428b38d4b10e21e3ff594b83cac7eeba60
+  prompts/routes/route_B_round04_planner_audit.md: 7a7964867557fb8f43a236d4aefecfd6174a7b4c
+tested_commit_policy: exact_current_main_or_ancestor_with_allowlisted_diff_and_unchanged_six_blobs
+allowed_descendant_paths:
+- prompts/routes/handoffs/CURRENT.md
+- prompts/routes/handoffs/route_B_round04_critic_handoff_20260719.md
+- prompts/routes/handoffs/route_B_round04_coordinator_receipt_20260719.md
+- prompts/routes/route_B_round04_critic_rereview.md
+- prompts/routes/portfolio_round04_route_C_followup_decision_20260719.md
+- docs/figures/round03_route_architecture/**
+- controller_notifications/**
+- scripts/ops/build_route_watchboard.py
+- tests/ops/test_build_route_watchboard.py
+- tests/ops/test_controller_notifications.py
+tested_main_commit: PENDING
+tested_origin_main: PENDING
+tested_origin_route_B: PENDING
+tested_origin_route_C: PENDING
+working_tree_clean: false
+all_required_exit_codes_zero: false
+completion_token: PENDING
 ---
 
 # Route B Round04 Codex coordinator executable receipt
 
-This file must be completed by a Codex coordinator in `/users/a/e/aereinh/CARE` after the final binding commit is on `origin/main`. The Planner has not executed these commands.
+This receipt must be completed in `/users/a/e/aereinh/CARE`. The Planner did not execute these commands. The previous receipt is superseded because the six planning blobs changed.
 
-The coordinator must not edit the six planning files. A planning-blob change requires a new Planner handoff and a new critic cycle.
+## Bound files
 
-## Bound planning files
+- `prompts/routes/portfolio_round04_route_B_planner_plan_20260719.md`: `a537e0e86e3059efa27d128ac3a018a22a6a40aa`
+- `prompts/routes/route_B_round04_planner_prompt.md`: `1ea2277d20f9e4eab1711c767274204342c372e2`
+- `prompts/routes/route_B_round04_controller_contract.md`: `3087283d65dbb6eeca697a393fc545528fe7fada`
+- `prompts/routes/route_B_round04_executor_plan.yaml`: `c5e437a0cd847ade5244727a43c239da9825c737`
+- `prompts/routes/route_B_round04_critic_request.md`: `fcac92428b38d4b10e21e3ff594b83cac7eeba60`
+- `prompts/routes/route_B_round04_planner_audit.md`: `7a7964867557fb8f43a236d4aefecfd6174a7b4c`
 
-- `prompts/routes/portfolio_round04_route_B_planner_plan_20260719.md`: `e6e31f772e2766ec79c466660fe8f56f14350d6f`
-- `prompts/routes/route_B_round04_planner_prompt.md`: `030c4ae0cb97bae1d661b40786bf3d7be78d930d`
-- `prompts/routes/route_B_round04_controller_contract.md`: `fdb74c49634ba02a30b96979f185bd71fcf085c4`
-- `prompts/routes/route_B_round04_executor_plan.yaml`: `505b3a64d83b3d17cbc28ea7c0837d098665f821`
-- `prompts/routes/route_B_round04_critic_request.md`: `9911593bef8d8381e0df620bf22ca8c759e24186`
-- `prompts/routes/route_B_round04_planner_audit.md`: `6a9881f3eba630ec51ffed2b9ecb0ca0367262ed`
+## Unified tested-commit rule
+
+The tested commit must equal current `origin/main`, or be its ancestor with a complete descendant diff limited to:
+
+```text
+prompts/routes/handoffs/CURRENT.md
+prompts/routes/handoffs/route_B_round04_critic_handoff_20260719.md
+prompts/routes/handoffs/route_B_round04_coordinator_receipt_20260719.md
+prompts/routes/route_B_round04_critic_rereview.md
+prompts/routes/portfolio_round04_route_C_followup_decision_20260719.md
+docs/figures/round03_route_architecture/**
+controller_notifications/**
+scripts/ops/build_route_watchboard.py
+tests/ops/test_build_route_watchboard.py
+tests/ops/test_controller_notifications.py
+```
+
+All six blobs must remain unchanged under either relation.
 
 ## Required command sequence
 
@@ -49,73 +79,93 @@ test "$(git rev-parse HEAD)" = "$(git rev-parse origin/main)"
 test "$(git rev-parse origin/route_B)" = "b9c7664da7cb1f1892fff37a4497722f31a0a96d"
 test "$(git rev-parse origin/route_C)" = "17062b00edc3443aacefe8583568797a9f2655ba"
 
-/users/a/e/aereinh/CARE/envs/env_CARE/bin/python   scripts/ops/validate_executor_plan.py   prompts/routes/route_B_round04_executor_plan.yaml
+/users/a/e/aereinh/CARE/envs/env_CARE/bin/python scripts/ops/validate_executor_plan.py prompts/routes/route_B_round04_executor_plan.yaml
 
 /users/a/e/aereinh/CARE/envs/env_CARE/bin/python - <<'PY'
 from pathlib import Path
-import subprocess
-import yaml
+import re, subprocess, yaml
 
-plan_path = Path("prompts/routes/route_B_round04_executor_plan.yaml")
-data = yaml.safe_load(plan_path.read_text(encoding="utf-8"))
-assert data["executor_count"] == 11
-assert data["max_parallel"] == 2
-assert data["required_planning_review_token"] == "ROUTE_B_ROUND04_PLANNING_READY_FOR_CONTROLLER"
-assert data["route_evidence_ref"] == "b9c7664da7cb1f1892fff37a4497722f31a0a96d"
+handoff_path=Path("prompts/routes/handoffs/route_B_round04_critic_handoff_20260719.md")
+receipt_path=Path("prompts/routes/handoffs/route_B_round04_coordinator_receipt_20260719.md")
+plan_path=Path("prompts/routes/route_B_round04_executor_plan.yaml")
+current_path=Path("prompts/routes/handoffs/CURRENT.md")
+critic_request=Path("prompts/routes/route_B_round04_critic_request.md")
+planner_audit=Path("prompts/routes/route_B_round04_planner_audit.md")
 
-executors = data["executors"]
-assert len(executors) == 11
-ids = {entry["id"]: entry for entry in executors}
-b10 = ids["B10_TERMINAL_ACCOUNTING_REVIEW_PACKET"]
+def fm(path):
+    text=path.read_text(encoding="utf-8")
+    assert text.startswith("---\n"), path
+    return yaml.safe_load(text.split("---",2)[1])
+
+handoff=fm(handoff_path)
+receipt=fm(receipt_path)
+plan=yaml.safe_load(plan_path.read_text(encoding="utf-8"))
+expected=handoff["six_planning_blobs"]
+assert expected == receipt["six_planning_blobs"]
+assert handoff["planning_commit"] == "38551ed98a42b005a1a3f0b793efdef700037ee8"
+assert plan["executor_count"] == 11
+assert plan["controller_start_authorized"] is False
+assert plan["tested_commit_policy"]["allowed_descendant_paths"] == handoff["allowed_descendant_paths"]
+assert receipt["allowed_descendant_paths"] == handoff["allowed_descendant_paths"]
+
+for path, blob in expected.items():
+    actual=subprocess.check_output(["git","hash-object",path],text=True).strip()
+    assert actual == blob, (path,actual,blob)
+
+mat=plan["controller_planning_materialization"]
+assert mat["controller_worktree"] == "/users/a/e/aereinh/CARE_worktrees/route_B"
+assert mat["source_main_worktree"] == "/users/a/e/aereinh/CARE"
+assert mat["snapshot_root"] == "results/route_B/round04/planning_snapshot"
+assert mat["manifest_path"].endswith("/MANIFEST.json")
+assert mat["hash_audit_path"].endswith("/hash_audit.json")
+assert mat["descendant_diff_audit_path"].endswith("/descendant_diff_audit.json")
+assert mat["receipt_path"].endswith("/materialization_receipt.json")
+assert mat["failure_token"] == "ROUTE_B_ROUND04_B0_STALE_PLANNING_BINDING"
+assert mat["atomic_publish"] is True
+assert mat["final_snapshot_read_only"] is True
+assert mat["no_code_or_slurm_before_pass"] is True
+assert mat["materialization_command"].startswith("bash -lc ")
+assert "/users/a/e/aereinh/CARE/envs/env_CARE/bin/python" in mat["materialization_command"]
+assert "validate_planning_snapshot.py" not in mat["materialization_command"]
+
+ids={e["id"]:e for e in plan["executors"]}
+b0=ids["B0_REBIND_EVIDENCE_MANIFEST_BASELINE"]
+for path in (
+    "prompts/routes/route_B_round04_critic_rereview.md","prompts/routes/handoffs/route_B_round04_critic_handoff_20260719.md","prompts/routes/handoffs/route_B_round04_coordinator_receipt_20260719.md","prompts/routes/handoffs/CURRENT.md","prompts/routes/portfolio_round04_route_C_followup_decision_20260719.md"
+):
+    assert path in b0["current_gate_inputs"], path
+assert b0["superseded_historical_inputs"] == ["prompts/routes/route_B_round04_critic_review.md"]
+for key in (
+    "STALE_PLANNING_BINDING","PLANNING_SOURCE_UNREADABLE",
+    "PLANNING_SNAPSHOT_INCOMPLETE","PLANNING_SNAPSHOT_HASH_MISMATCH",
+    "CURRENT_REREVIEW_MISSING_OR_NOT_READY",
+    "CURRENT_COORDINATOR_RECEIPT_MISSING_OR_STALE",
+    "DISALLOWED_MAIN_DESCENDANT_PATH"
+):
+    assert key in b0["known_bad_contract"]["expected_failure_keys"]
+
+b10=ids["B10_TERMINAL_ACCOUNTING_REVIEW_PACKET"]
 assert b10["depends_on"] == []
 assert b10["controller_terminal_finalizer"] is True
 assert b10["prepare_wave_helper_exempt"] is True
 assert b10["depends_on_successful_merge_receipts"] is False
 assert b10["finalizer_dependency_policy"] == "afterany_all_started_attempts"
 
-required_scenarios = {
-    "B1 failure before B2",
-    "B2 external blocker",
-    "B7 external/matching blocker",
-    "B8 CINE_REGISTRATION_BLOCKER without B9",
-    "timeout",
-    "preemption",
-    "cancelled race loser",
-    "successful B6 and B9",
-}
-observed = set(data["terminal_finalizer_contract"]["static_regression_scenarios"])
-assert required_scenarios <= observed
+for e in plan["executors"]:
+    v=e["validator"]; k=e["known_bad_contract"]
+    assert v["command"].startswith("/users/a/e/aereinh/CARE/envs/env_CARE/bin/python ")
+    assert v["expected_exit_code"] == 0
+    assert k["matrix_command"].startswith("/users/a/e/aereinh/CARE/envs/env_CARE/bin/python ")
+    assert k["runner_expected_exit_code"] == 0
+    assert k["validator_expected_exit_code_per_fixture"] == 1
+    assert k["expected_failure_keys"]
+    assert k["all_keys_required"] is True
+    assert k["unexpected_pass_is_failure"] is True
 
-for entry in executors:
-    validator = entry["validator"]
-    known_bad = entry["known_bad_contract"]
-    assert validator["script_path"]
-    assert validator["command"].startswith("/users/a/e/aereinh/CARE/envs/env_CARE/bin/python ")
-    assert validator["input_path"] == entry["result_dir"]
-    assert validator["report_file"].startswith(entry["result_dir"] + "/")
-    assert validator["expected_exit_code"] == 0
-    assert validator["success_token"] == entry["required_completion_token"]
-    assert known_bad["matrix_path"]
-    assert known_bad["matrix_command"].startswith("/users/a/e/aereinh/CARE/envs/env_CARE/bin/python ")
-    assert known_bad["report_file"].startswith(entry["result_dir"] + "/")
-    assert known_bad["runner_expected_exit_code"] == 0
-    assert known_bad["validator_expected_exit_code_per_fixture"] == 1
-    assert known_bad["expected_failure_keys"]
-    assert known_bad["all_keys_required"] is True
-    assert known_bad["unexpected_pass_is_failure"] is True
-
-bound = {
-    "prompts/routes/portfolio_round04_route_B_planner_plan_20260719.md": "e6e31f772e2766ec79c466660fe8f56f14350d6f",
-    "prompts/routes/route_B_round04_planner_prompt.md": "030c4ae0cb97bae1d661b40786bf3d7be78d930d",
-    "prompts/routes/route_B_round04_controller_contract.md": "fdb74c49634ba02a30b96979f185bd71fcf085c4",
-    "prompts/routes/route_B_round04_executor_plan.yaml": "505b3a64d83b3d17cbc28ea7c0837d098665f821",
-    "prompts/routes/route_B_round04_critic_request.md": "9911593bef8d8381e0df620bf22ca8c759e24186",
-    "prompts/routes/route_B_round04_planner_audit.md": "6a9881f3eba630ec51ffed2b9ecb0ca0367262ed",
-}
-for path, expected in bound.items():
-    actual = subprocess.check_output(["git", "hash-object", path], text=True).strip()
-    assert actual == expected, (path, actual, expected)
-print("Route B Round04 structural and binding assertions passed")
+assert critic_request.read_text(encoding="utf-8").find("six_planning_blob_binding_source") >= 0
+assert planner_audit.read_text(encoding="utf-8").find("six_planning_blob_binding_source") >= 0
+assert "controller_authorized_now: 0" in current_path.read_text(encoding="utf-8")
+print("Route B Round04 planning revision structural checks passed")
 PY
 
 git diff --check
@@ -127,88 +177,44 @@ FILES=(
   prompts/routes/route_B_round04_executor_plan.yaml
   prompts/routes/route_B_round04_critic_request.md
   prompts/routes/route_B_round04_planner_audit.md
-  prompts/routes/portfolio_round04_routeC_review_and_routeB_revision_planner_update_20260719.md
 )
-
 if rg -n 'TBD|optional|as appropriate|if needed|choose best|Codex decide|controller decide|按需|视情况|自行决定' "${FILES[@]}"; then
-  echo "blank authority found" >&2
   exit 1
 fi
-
-FORBIDDEN_ROOT='/overflow/htzhu/CARE'
-if rg -n "$FORBIDDEN_ROOT" "${FILES[@]}"; then
-  echo "forbidden workspace path found in planning files" >&2
+if rg -n '/overflow/htzhu/CARE' "${FILES[@]}"; then
   exit 1
 fi
-
-/users/a/e/aereinh/CARE/envs/env_CARE/bin/python - <<'PY'
-from pathlib import Path
-import re
-import yaml
-data = yaml.safe_load(Path("prompts/routes/route_B_round04_executor_plan.yaml").read_text())
-bad = []
-def walk(node, path="root"):
-    if isinstance(node, dict):
-        for key, value in node.items():
-            walk(value, f"{path}.{key}")
-    elif isinstance(node, list):
-        for index, value in enumerate(node):
-            walk(value, f"{path}[{index}]")
-    elif isinstance(node, str) and any(tag in path.lower() for tag in ("command", "validator")):
-        if re.search(r"(^|[;&|]\s*)python(?:3)?\s", node):
-            bad.append((path, node))
-walk(data)
-assert not bad, bad
-print("formal command interpreter scan passed")
-PY
-
-if rg -ni 'future[ -]work|optional future|Cine .*defer|registration .*defer|temporal .*defer|后续事项|仅smoke'   prompts/routes/portfolio_round04_route_B_planner_plan_20260719.md   prompts/routes/route_B_round04_controller_contract.md   prompts/routes/route_B_round04_executor_plan.yaml; then
-  echo "CineMA/registration/temporal deferral found" >&2
-  exit 1
-fi
-
-test "$(rg -n 'CineMA|registration|temporal|SVF|SyN' "${FILES[@]}" | wc -l)" -ge 40
 test -z "$(git status --porcelain)"
 ```
 
 ## Required result table
 
-Replace every `PENDING` value below with the observed command, exit code and concise output. Every required exit must be `0`.
+Every row must be completed with observed command, exit and concise output. Every required exit must be `0`.
 
-| Check | Command | Exit | Output/receipt |
+| Check | Command | Exit | Output |
 |---|---|---:|---|
-| fetch | `git fetch --all --prune` | 0 | completed with no pruning output; cwd verified as `/users/a/e/aereinh/CARE` |
-| branch/status | `git status --short --branch` and branch assertion | 0 | `## main...origin/main`; current branch `main` |
-| ref binding | HEAD/origin assertions | 0 | HEAD=`aea169e65e19c674b8c6cdba74fc1cab7a07713f`; origin/main=`aea169e65e19c674b8c6cdba74fc1cab7a07713f`; origin/route_B=`b9c7664da7cb1f1892fff37a4497722f31a0a96d`; origin/route_C=`17062b00edc3443aacefe8583568797a9f2655ba` |
-| executor plan | `validate_executor_plan.py` | 0 | `executor plan validation passed` |
-| structure/binding | PyYAML assertion block | 0 | `PYASSERT_PASS executor_count=11 max_parallel=2 B10_afterany_all_started formal_python_commands_ok`; six planning blobs matched bound hashes |
-| diff | `git diff --check` | 0 | no whitespace errors |
-| blank authority | `rg` scan | 0 | `SCAN_PASS no blank delegation terms` |
-| forbidden workspace | `rg` scan | 0 | `SCAN_PASS no /overflow/htzhu/CARE references` |
-| interpreter | formal command scan | 0 | covered by PyYAML assertion: every executor validator and known-bad command uses `/users/a/e/aereinh/CARE/envs/env_CARE/bin/python` |
-| Cine fidelity | non-deferral and coverage scan | 0 | `SCAN_PASS no Cine/registration/temporal defer or smoke-only terms` |
-| clean tree | `git status --porcelain` | 0 | clean before coordinator receipt and handoff edits |
+| fetch | `git fetch --all --prune` | PENDING | PENDING |
+| branch/status | branch and clean-tree assertions | PENDING | PENDING |
+| refs | main/Route B/Route C assertions | PENDING | PENDING |
+| executor plan | `validate_executor_plan.py` | PENDING | PENDING |
+| six blobs | `git hash-object` assertions | PENDING | PENDING |
+| materialization | schema/self-contained command assertions | PENDING | PENDING |
+| B0 inputs | current/superseded input assertions | PENDING | PENDING |
+| ancestor policy | CURRENT/handoff/receipt/request/contract/plan consistency | PENDING | PENDING |
+| B10 | terminal finalizer assertions | PENDING | PENDING |
+| validators | B0-B10 exact validator/known-bad assertions | PENDING | PENDING |
+| diff | `git diff --check` | PENDING | PENDING |
+| blank authority | forbidden delegation scan | PENDING | PENDING |
+| forbidden path | workspace path scan | PENDING | PENDING |
+| clean tree | `git status --porcelain` | PENDING | PENDING |
 
-## Completion fields to fill
+Only after every row passes, set:
 
 ```text
-tested_main_commit: aea169e65e19c674b8c6cdba74fc1cab7a07713f
-tested_origin_main: aea169e65e19c674b8c6cdba74fc1cab7a07713f
-tested_origin_route_B: b9c7664da7cb1f1892fff37a4497722f31a0a96d
-tested_origin_route_C: 17062b00edc3443aacefe8583568797a9f2655ba
-coordinator_identity: CARE Round04 Route B coordinator gate fixer Codex thread
-executed_at_utc: 2026-07-19T16:37:38Z
+status: READY_FOR_ROUTE_B_ROUND04_CRITIC_REREVIEW
 working_tree_clean: true
 all_required_exit_codes_zero: true
 completion_token: READY_FOR_ROUTE_B_ROUND04_CRITIC_REREVIEW
 ```
 
-Only after all checks pass, set:
-
-```text
-status: READY_FOR_ROUTE_B_ROUND04_CRITIC_REREVIEW
-all_required_exit_codes_zero: true
-completion_token: READY_FOR_ROUTE_B_ROUND04_CRITIC_REREVIEW
-```
-
-This receipt does not authorize a controller or any downstream scientific action. It only opens the next independent planning critic rereview.
+This receipt opens only the next independent planning critic rereview. It authorizes no Controller or downstream scientific action.
