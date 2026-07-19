@@ -1,17 +1,23 @@
 ---
 route_id: route_B
 portfolio_round: round04
-date: 2026-07-19
-role: portfolio_planner_revision
+date: 2026-07-20
+role: portfolio_planner_revision_after_critic_rereview
 planner_branch: main
-planner_base_main: 30098813522cecd98e60bcb99e2676b28c1a5461
-revision_source_critic_commit: 30098813522cecd98e60bcb99e2676b28c1a5461
+planner_base_main: 64f5a27298cb2efd1f576a70296e49388ab0b717
+revision_source_critic_commit: de5f47b9f4404c85db1bd0f570b576d9d03b0372
+concurrent_architecture_context_commit: 64f5a27298cb2efd1f576a70296e49388ab0b717
+revision_source_critic_path: prompts/routes/route_B_round04_critic_rereview.md
+revision_source_critic_blob: 4e5cd46a6494bd6c12f3985b99abd390a00b0786
 revision_source_token: ROUTE_B_ROUND04_PLANNING_NEEDS_REVISION
 route_B_evidence_ref: b9c7664da7cb1f1892fff37a4497722f31a0a96d
 route_C_review_commit: 17062b00edc3443aacefe8583568797a9f2655ba
 route_C_reviewed_controller_commit: 1e663cfa64f00413f005bef26310290fd43ec8ab
 route_C_review_token: ROUTE_C_ROUND03_REVIEW_EVIDENCE_COMPLETE
-status: REVISION_PENDING_COORDINATOR_RECEIPT_AND_CRITIC_REREVIEW
+route_C_followup_decision_path: prompts/routes/portfolio_round04_route_C_followup_decision_20260719.md
+route_C_followup_decision_blob: 6564e1d6423b43b44a0c96b510a172fb92785873
+route_C_followup_decision_token: ROUTE_C_PORTFOLIO_STOP_AND_HOLD
+status: PLANNING_REVISION_PENDING_COORDINATOR_RECEIPT_AND_CRITIC_REREVIEW
 controller_start_authorized: false
 required_coordinator_receipt: prompts/routes/handoffs/route_B_round04_coordinator_receipt_20260719.md
 required_critic_output: prompts/routes/route_B_round04_critic_rereview.md
@@ -26,99 +32,215 @@ cross_route_merge_authorized: false
 final_scientific_decision_authorized: false
 ---
 
-# CARE Route B Round04 planner revision after Route C review and Route B critic
+# CARE Route B Round04 planner revision after critic rereview
 
-## 1. Portfolio decision
+## 1. Decision and scope
 
-Route C Round03 has completed its controller task and its independent reviewer has accepted the repaired packet with `ROUTE_C_ROUND03_REVIEW_EVIDENCE_COMPLETE`. The former `positive_negative_prototype_swap` validator fail-open is closed: the repaired swap is detected as harmful, the no-op controls remain zero-effect, strict R1/R2/final validators pass, and the known-bad pytest suite passes. Route C is now `EVIDENCE_COMPLETE_FOR_PORTFOLIO_RECONCILIATION`. It is not sent to another reviewer unless a later Route C commit changes the reviewed packet or otherwise makes the reviewer binding stale.
+The revision source critic is bound to `de5f47b9f4404c85db1bd0f570b576d9d03b0372`. Before publication, `origin/main` advanced to `64f5a27298cb2efd1f576a70296e49388ab0b717` through the allowlisted `docs/figures/round03_route_architecture/**` architecture audit only. The updated report was read; it confirms the same B3-only evidence boundary and full Round04 target, so the new planning parent is the later commit.
 
-Route B Round04 remains planning-only. The independent planning critic accepted the scientific design without downgrade but returned `ROUTE_B_ROUND04_PLANNING_NEEDS_REVISION` for four mechanical blockers:
+This pass repairs only the four controller-forward binding blockers in the independent planning critic rereview at `de5f47b9f4404c85db1bd0f570b576d9d03b0372`. It does not change the accepted scientific contract, execute implementation, train, submit Slurm, start a controller, start a runtime reviewer, package validation, upload validation, promote a route, start M11, merge routes, claim hosted metrics, or make a final scientific decision.
 
-1. `CURRENT.md` remained on Round03.
-2. B10 required successful B6/B9 merge receipts and was unreachable after authorized early terminal classes.
-3. B0-B10 did not bind exact per-stage strict validator commands and exact known-bad failure keys.
-4. No current exit-zero coordinator receipt existed for the final planning commit.
+The current state remains:
 
-This revision closes the first three blockers in repository planning. The fourth remains deliberately pending: a Codex coordinator must execute the declared commands on the final `origin/main` commit in `/users/a/e/aereinh/CARE`, fill the coordinator receipt with exit-zero evidence, and only then request a new independent Route B planning critic review.
+```text
+Route B planning: revision pending coordinator receipt and independent critic rereview
+Route C: ROUTE_C_PORTFOLIO_STOP_AND_HOLD
+controller_authorized_now: 0
+```
 
-No controller is authorized by this publication.
+Route C hold is now explicit portfolio context. It records that Route C is evidence-complete and held, does not authorize a Route C controller, does not alter Route B scientific scope, and does not remove the mandatory Route B Cine lane.
 
 ## 2. Route objective recovered from SRR-v2, SRR-v2.5 and SRR-v3
 
-The diagrams define one continuous Route B objective:
+MyoPS remains:
 
 ```text
-observed LGE/T2/C0 with explicit availability
--> four-scale modality-specific stems and encoders
--> shared/private/interaction representation retrieval
--> learned anatomy support plus train/OOF frozen prototypes
--> scar and edema proposals with safe hard negatives
+observed [LGE,T2,C0] plus explicit availability
+-> four-scale modality-specific encoding [32,64,128,256]
+-> sixteen shared/private/interaction experts at every scale
+-> spatial/pathology-conditioned two-pass retrieval and optimized Pattern-SIP
+-> learned union/LV/RV anatomy support
+-> four-shard fold-safe OOF-fitted inference-frozen prototypes
+-> training-only safe hard-negative queues
+-> separate scar and edema proposal heads
 -> separate pathology-specific soft ROIs and refiners
--> bounded final correction over an nnU-Net anchor/context/safety source
--> official-label reconstruction and real final-output interventions
+-> bounded correction over nnU-Net anchor/context/safety evidence
+-> official six-label reconstruction
+-> fresh same-split case-wise evaluation and real final-output interventions
 ```
 
-The Cine lane is equally mandatory:
+Cine remains:
 
 ```text
-official CineMA pretrained and architecture-matched random source
--> per-frame multiclass logits/features/uncertainty
+official CineMA pretrained source and architecture-matched random control
+-> per-frame multiclass logits/features/probabilities/uncertainty
 -> ED/reference and fixed key-frame provenance
--> seven-step SVF plus real SyN control
--> registered anatomy/features/motion/Jacobian/quality
+-> learned stationary velocity with seven-step scaling-and-squaring
+-> true Jacobian, inverse consistency and independently generated real SyN
+-> registered anatomy/features/motion/Jacobian/quality evidence
 -> registered temporal aggregation
--> case-wise controls, ablations and ED-space final output
+-> same-case controls and ED-space final output
 ```
 
-Route B is not Route A, nnU-Net-only, postprocess-only, wrapper-only, validator-only, or declaration-only.
+Route B is not Route A, nnU-Net-only, postprocess-only, wrapper-only, validator-only, proxy-only, single-frame-only or declaration-only.
 
-## 3. Frozen interpretation of Round03 Route B
+## 3. Critic rereview blockers and exact repairs
 
-Round03 B3 reached `43003` optimizer steps, `1800.7964860140346` train-loop seconds and `22` validation events after the `E,E,S,R` sampler repair. It passed finite loss, loss decrease, exact sampler counts/sequence, invalid-slot zero and no-T2 edema zero, but failed `anatomy_union_overfit`.
+### 3.1 Concurrent main movement
 
-That is a reviewed adequate negative for the old B3 gate only. B4 proposal, B5 refiner, B6 joint selector, B7 CineMA matched control, B8 faithful registration and B9 registered temporal runtime did not execute. Therefore:
-
-- B1 keeps a strict repaired anatomy micro-overfit implementation/label gate.
-- B3 is representation readiness and cannot issue a full-route adequate-negative token.
-- A valid B3 must continue to B4.
-- A valid but weak B4 must continue to B5 through the conservative-ROI control.
-- A faithful but weak B5 must continue to B6.
-- B6 is the first MyoPS full-route scientific classification stage.
-- B7-B9 start after B2 independently of B3 and independently of Route C completion.
-- Route C evidence completeness does not remove or substitute Route B Cine work.
-
-## 4. Scientific contract retained without reduction
-
-### 4.1 MyoPS architecture
-
-The canonical order is `[LGE,T2,C0]`; availability is explicit and unavailable modalities are masked before/after stems and in every private/interaction route. Four scales use channels `[32,64,128,256]`. Every scale has sixteen experts: four shared, two each for LGE/T2/C0 private evidence, and two each for LGE-T2, LGE-C0 and T2-C0 interactions.
-
-Anatomy, scar and edema use pathology/spatial-conditioned two-pass entmax routing. Invalid logits are `-1e4` and maximum invalid absolute weight is `1e-8`. Pattern-SIP remains an optimized group-conditioned objective with family target mass `.50/.35/.15`, shared/private/interaction coverage floors `.60/.25/.20`, and the original coefficient schedule.
-
-The anatomy target is:
+`prompts/routes/portfolio_round04_route_C_followup_decision_20260719.md` is added to the explicit Round04 descendant allowlist. Its meaning is fixed:
 
 ```text
-Y_union = 1[compact label in {1 myocardium, 4 edema, 5 scar}]
-Y_LV    = 1[compact label == 2]
-Y_RV    = 1[compact label == 3]
+decision: ROUTE_C_PORTFOLIO_STOP_AND_HOLD
+Route C controller authorized: false
+Route B controller authority changed: false
+Route B scientific contract changed: false
 ```
 
-The learned anatomy path stays live. A bounded stop-gradient anchor union floor may support localization, but it cannot become the final-output base or satisfy the learned-anatomy intervention.
+The unified tested-commit rule is:
 
-Formal prototypes remain four-shard, fold-safe, train/OOF-fitted, inference-frozen and serialized with source/checkpoint/split/tensor hashes. Bootstrap or online EMA memory cannot enter formal inference. The training-only hard-negative queue holds 256 component centroids per pathology per scale. No-T2 myocardium or unknown edema-status tissue cannot enter the edema queue.
+```text
+accept when tested commit == current origin/main
+or
+accept when tested commit is an ancestor of current origin/main,
+the descendant diff contains only explicit allowlist paths,
+and every one of the six Route B planning blob hashes remains unchanged
+```
 
-Scar and edema have separate proposals, soft ROI geometry and refiners. Scar is LGE-dominant, focal and remote-FP sensitive. Edema is T2-conditioned, larger-context and recall sensitive. No-T2 edema loss, prototype/queue update, proposal, ROI, refiner, gate, delta and Route-B-owned output change are exactly zero.
+Any other descendant path, any six-blob change, a non-ancestor tested commit or an unreadable diff is stale.
 
-Final correction remains bounded:
+Explicit allowlist:
+
+```text
+prompts/routes/handoffs/CURRENT.md
+prompts/routes/handoffs/route_B_round04_critic_handoff_20260719.md
+prompts/routes/handoffs/route_B_round04_coordinator_receipt_20260719.md
+prompts/routes/route_B_round04_critic_rereview.md
+prompts/routes/portfolio_round04_route_C_followup_decision_20260719.md
+docs/figures/round03_route_architecture/**
+controller_notifications/**
+scripts/ops/build_route_watchboard.py
+tests/ops/test_build_route_watchboard.py
+tests/ops/test_controller_notifications.py
+```
+
+### 3.2 Immutable planning materialization
+
+The future controller runs only in:
+
+```text
+/users/a/e/aereinh/CARE_worktrees/route_B
+```
+
+The read-only planning source is:
+
+```text
+/users/a/e/aereinh/CARE
+```
+
+The controller may consume an equivalent immutable snapshot produced by the coordinator, but the resulting snapshot paths, manifest fields, hashes and failure behavior are identical.
+
+Before B0 writes code, starts a worker, submits Slurm, trains, or requests runtime review, the controller executes the exact `controller_planning_materialization` contract in the controller contract and executor plan. It copies the current gate files and the six planning files into:
+
+```text
+results/route_B/round04/planning_snapshot/
+```
+
+Required snapshot outputs:
+
+```text
+results/route_B/round04/planning_snapshot/MANIFEST.json
+results/route_B/round04/planning_snapshot/hash_audit.json
+results/route_B/round04/planning_snapshot/descendant_diff_audit.json
+results/route_B/round04/planning_snapshot/materialization_receipt.json
+```
+
+The six planning files are validated against the current handoff hashes. The critic rereview, current handoff, coordinator receipt, CURRENT and Route C hold decision are validated from the accepted current-main gate state. Snapshot files become read-only after the atomic rename.
+
+Source unreadability, incomplete snapshot, hash mismatch, disallowed descendant path, missing current rereview, non-ready critic token or stale receipt returns:
+
+```text
+ROUTE_B_ROUND04_B0_STALE_PLANNING_BINDING
+```
+
+No later stage starts.
+
+### 3.3 B0 current gate inputs
+
+B0 current exact inputs now include:
+
+```text
+prompts/routes/route_B_round04_critic_rereview.md
+prompts/routes/handoffs/route_B_round04_critic_handoff_20260719.md
+prompts/routes/handoffs/route_B_round04_coordinator_receipt_20260719.md
+prompts/routes/handoffs/CURRENT.md
+prompts/routes/portfolio_round04_route_C_followup_decision_20260719.md
+```
+
+`prompts/routes/route_B_round04_critic_review.md` is retained only as superseded historical context and cannot satisfy the current controller gate.
+
+### 3.4 Unified receipt and controller entry policy
+
+CURRENT, handoff, coordinator receipt, critic request, controller contract and executor plan use the same exact-or-ancestor-with-allowlist rule. No file requires strict current-main equality while another accepts a declared ancestor. The six planning blobs remain immutable under both branches of the rule.
+
+## 4. Frozen Round03 interpretation
+
+Round03 B3 reached `43003` optimizer steps, `1800.7964860140346` train-loop seconds and `22` validation events. It passed finite loss, loss decrease, exact `E,E,S,R` sampling, invalid-slot zero and no-T2 edema zero, but failed `anatomy_union_overfit`.
+
+This is adequate negative evidence for the old B3 gate only. B4-B9 did not execute. Therefore:
+
+- B1 retains the repaired anatomy micro-overfit implementation gate.
+- B3 is representation readiness and cannot terminate the full route.
+- A valid B3 continues to B4.
+- A valid weak B4 continues to B5 through the conservative soft-ROI control.
+- A faithful weak B5 continues to B6.
+- B6 is the first MyoPS full-route scientific classification.
+- B7-B9 remain mandatory after B2 and run independently of B3 and Route C hold.
+
+## 5. Frozen scientific contract
+
+### 5.1 MyoPS
+
+Canonical modality order is `[LGE,T2,C0]`; availability is explicit. Missing inputs are masked before and after modality stems and in every private/interaction route.
+
+Each scale has sixteen experts:
+
+```text
+4 shared
+2 LGE-private
+2 T2-private
+2 C0-private
+2 LGE-T2 interaction
+2 LGE-C0 interaction
+2 T2-C0 interaction
+```
+
+Pattern-SIP family targets remain `.50/.35/.15`, coverage floors remain `.60/.25/.20`, and the optimized coefficient schedule remains frozen.
+
+Anatomy targets remain:
+
+```text
+Y_union = 1[label in {1,4,5}]
+Y_LV    = 1[label == 2]
+Y_RV    = 1[label == 3]
+```
+
+Prototypes remain four-shard, fold-safe, OOF-fitted, inference-frozen and serialized with source/checkpoint/split/tensor hashes. Current-case, validation-label and test-label leakage is forbidden. Formal inference cannot use bootstrap or online EMA prototypes.
+
+The training-only hard-negative queue retains 256 component centroids per pathology per scale. No-T2 myocardium and unknown edema-status tissue cannot enter edema negatives.
+
+Scar and edema use separate proposal heads, separate soft ROI geometry and separate refiners. No-T2 edema loss, bank update, queue update, proposal, ROI, refiner, gate, delta and Route-B-owned final change are exactly zero.
+
+Final correction remains:
 
 ```text
 delta_p   = 4.0 * tanh(refiner_logit_p - anchor_logit_p)
 z_final_p = z_anchor_p + roi_p * gate_p * delta_p
 ```
 
-### 4.2 Cine architecture
+### 5.2 Cine
 
-The official source remains pinned to:
+Pinned source remains:
 
 ```text
 repository: mathpluscode/CineMA
@@ -130,113 +252,56 @@ model: cinema.segmentation.convunetr.ConvUNetR
 license: MIT
 ```
 
-Pretrained and random lanes have identical architecture, parameter names/shapes, cases, frames, augmentation draws, optimizer, schedule, downstream initialization, cadence, selector and decode. Only source initialization differs.
+Pretrained and random lanes retain identical architecture, parameter names/shapes, trainable masks, cases, frames, augmentation draws, optimizer, schedule, downstream initialization, cadence, selector and decode. Only source initialization differs.
 
-The registration network emits stationary velocity and integrates forward/inverse transforms with exactly seven scaling-and-squaring steps. The packet must contain true voxel-coordinate Jacobian, folding rate, inverse-composition error, full registration loss, independently generated real SyN control, pair receipts, case aggregation and full denominators.
+Registration retains symmetric stationary velocity, exactly seven scaling-and-squaring steps, true voxel-coordinate Jacobian, folding rate, inverse composition, full loss, independent real SyN, pair receipts, case aggregation, full denominators and clean selected-checkpoint reload.
 
-Temporal aggregation must consume registered logits/features/uncertainty, velocity, integrated displacement, Jacobian, motion magnitude, texture residual, frame quality, temporal position and valid-frame mask. Frame0-only, unregistered primary output, missing-field consumption, cumulative reset/gap/overlap/duplicate, or partial-attempt credit fails closed.
+Temporal retains explicit consumption of registered logits/features/uncertainty, velocity, integrated displacement, Jacobian, motion magnitude, texture residual, frame quality, temporal position and valid-frame mask. Every field requires a consumption hook and final-output intervention.
 
-## 5. Fixed training and evaluation budgets
+## 6. Fixed budgets and progression
 
-| Stage | Steps | Minimum train-loop seconds | Validation events | Full-case events / cases | Role |
-|---|---:|---:|---:|---|---|
-| B1 anatomy repair | 2,000 | 600 | 4 | 2 train-only cases | implementation/label gate |
-| B3 representation | 6,000 | 1,800 | 3 | 44-case manifest | readiness; B4 follows |
-| B4 proposal | 8,000 | 2,400 | 4 | 44-case manifest | OOF/proposal evidence; B5 follows |
-| B5 refiner | 10,000 | 3,000 | 5 | 44-case manifest | refiner evidence; B6 follows |
-| B6 joint | 8,000 | 2,400 | 4 | four full-case events, 44 cases | first MyoPS full-route judgment |
-| B7 pretrained | 8,000 | 3,600 | 4 | four events, 12 cases | official source |
-| B7 random | 8,000 | 3,600 | 4 | four events, 12 cases | matched control |
-| B8 registration | 25,000 | 7,200 | 10 | four events, 12 cases, at least 60 pairs | SVF/SyN fidelity |
-| B9 temporal | 20,000 cumulative | 7,200 | 10 | four events, 12 cases | Cine terminal evidence |
+| Stage | Optimizer steps | Minimum train-loop seconds | Validation events | Evaluation floor |
+|---|---:|---:|---:|---|
+| B1 | 2,000 | 600 | 4 | two train-only anatomy cases |
+| B3 | 6,000 | 1,800 | 3 | 44-case manifest |
+| B4 | 8,000 | 2,400 | 4 | 44-case manifest |
+| B5 | 10,000 | 3,000 | 5 | 44-case manifest |
+| B6 | 8,000 | 2,400 | 4 | four full-case events, 44 cases |
+| B7 pretrained | 8,000 | 3,600 | 4 | four events, 12 cases |
+| B7 random | 8,000 | 3,600 | 4 | four events, 12 cases |
+| B8 | 25,000 | 7,200 | 10 | four events, 12 cases, at least 60 pairs |
+| B9 | 20,000 cumulative | 7,200 | 10 | four events, 12 cases |
 
-Every selected checkpoint is clean-reloaded. Failed startup, timeout, preemption, incomplete chunk, race loss and partial checkpoint receive zero training credit.
+Every selected checkpoint is clean-reloaded. Failed startup, timeout, preemption, incomplete chunk, race loss and partial checkpoint receive zero scientific credit.
 
-## 6. Same-split and challenge-facing evidence
+## 7. Same-split and challenge-facing evidence
 
-B0 freezes the exact same-split nnU-Net baseline. B6 reports per-case baseline/model Dice, HD95, remote-FP, component count, volume ratio, lesion-wise recall, changed logits/voxels/components, and help/harm/severe-harm. Required subgroup summaries are scar-positive, T2-present edema-positive, no-T2 safety, CenterB, CenterC, complete tri-modal, remote-FP-positive and high-component-burden.
+B6 reports per-case anchor/model Dice, HD95, remote FP, component count, volume ratio, lesion-wise recall, changed logits/voxels/components and help/harm/severe-harm. Required groups are scar-positive, T2-present edema-positive, no-T2 safety, CenterB, CenterC, complete tri-modal, remote-FP-positive and high-component-burden.
 
-B9 reports reference-only, unregistered multi-frame, registered temporal, temporal-router-off, motion/Jacobian-off, anatomy-off, uncertainty/quality-off, matched-random, learned-SVF and real-SyN controls on the same cases, frames, downstream checkpoint and decode rule.
+B9 compares reference-only, unregistered multi-frame, registered temporal, router-off, motion/Jacobian-off, anatomy-off, uncertainty/quality-off, matched-random, learned-SVF and real-SyN on identical cases, frames, downstream checkpoint and decode.
 
-Local proxy metrics are not hosted metrics. No validation package or upload is authorized.
+Local results are not hosted metrics.
 
-## 7. Controller terminal finalizer repair
+## 8. Slurm and continuity
 
-B10 is now a controller-level terminal finalizer, not a successful-wave executor dependent on B6 and B9 merge receipts.
-
-Machine source: `terminal_finalizer_contract` in `prompts/routes/route_B_round04_executor_plan.yaml`.
-
-The controller writes:
-
-```text
-results/route_B/round04/controller_terminal_registry.json
-results/route_B/round04/controller_ledger.csv
-```
-
-B10 has `depends_on: []`, `prepare_wave_helper_exempt: true`, `depends_on_successful_merge_receipts: false`, and is launched by the controller through an atomic launch lock. Its `afterany` dependency is computed from every started attempt ID in the controller ledger. When no job started, it uses the local deterministic finalizer path.
-
-Launch barrier:
-
-- B0/B1/B2 global terminal blocker or revision: launch B10 immediately.
-- After B2: launch only after both MyoPS and Cine lanes have a declared terminal class.
-- A B7 blocker or B8 faithful registration blocker terminates the Cine lane while MyoPS continues.
-- A B3/B4/B5 implementation revision terminates the MyoPS lane while Cine continues.
-- Successful B6 and B9 are also terminal classes.
-- Timeout, preemption, failed startup, started/cancelled race loser and success are all retained in accounting.
-
-The B10 static known-bad matrix must exercise B1 failure, B2 external blocker, B7 blocker, B8 registration blocker without B9, timeout, preemption, cancelled race loser and successful B6/B9.
-
-## 8. Exact stage validators and known-bad bindings
-
-Every executor entry now contains a machine-readable `validator` and `known_bad_contract`. The validator command fixes the script, strict mode, input directory, report file, expected exit `0` and success token. The known-bad runner fixes the matrix path, command, report, runner exit `0`, validator exit `1` for every fixture and the exact expected failure keys.
-
-| Stage | Strict validator | Input | Report | Success token | Required known-bad failure keys |
-|---|---|---|---|---|---|
-| B0 | `scripts/validation/route_B_round04/validate_B0_binding_manifests.py` | `results/route_B/round04/executors/B0` | `results/route_B/round04/executors/B0/validator_report.json` | `ROUTE_B_ROUND04_B0_READY_FOR_CONTROLLER_MERGE` | `STALE_PLANNING_BINDING`, `ROUTE_EVIDENCE_REF_MISMATCH`, `MANIFEST_HASH_MISMATCH`, `ANATOMY_TARGET_LABEL_ROUNDTRIP_FAILED`, `SAME_SPLIT_BASELINE_MISSING`, `VALIDATOR_MATRIX_INCOMPLETE` |
-| B1 | `scripts/validation/route_B_round04/validate_B1_anatomy_repair.py` | `results/route_B/round04/executors/B1` | `results/route_B/round04/executors/B1/validator_report.json` | `ROUTE_B_ROUND04_B1_ANATOMY_REPAIR_IMPLEMENTED` | `PURE_MYOCARDIUM_UNION_TARGET`, `ANATOMY_MICRO_OVERFIT_INADEQUATE`, `ROUTED_ANATOMY_GRADIENT_MISSING`, `LATERAL_ANATOMY_GRADIENT_MISSING`, `ANCHOR_SUPPORT_FLOOR_BECAME_FINAL_BASE`, `SAVE_RELOAD_MISMATCH` |
-| B2 | `scripts/validation/route_B_round04/validate_B2_implementation_freeze.py` | `results/route_B/round04/executors/B2` | `results/route_B/round04/executors/B2/validator_report.json` | `ROUTE_B_ROUND04_B2_IMPLEMENTATION_GATE_PASSED` | `NNUNET_ONLY_BYPASS`, `DISCONNECTED_RETRIEVAL_PROPOSAL_REFINER`, `INVALID_SLOT_WEIGHT_NONZERO`, `PATTERN_SIP_ALIAS_OR_NO_GRADIENT`, `FAKE_CINEMA_SOURCE_OR_WRONG_SHA`, `DIRECT_VELOCITY_AS_DISPLACEMENT`, `TEMPORAL_REQUIRED_INPUT_UNCONSUMED`, `OFFICIAL_LABEL_ROUNDTRIP_FAILED`, `LEGACY_ROUND03_WRAPPER_BYPASS` |
-| B3 | `scripts/validation/route_B_round04/validate_B3_representation.py` | `results/route_B/round04/executors/B3` | `results/route_B/round04/executors/B3/validator_report.json` | `ROUTE_B_ROUND04_B3_REPRESENTATION_READY_FOR_PROPOSAL` | `ROUND03_B3_GLOBAL_STOP_REUSED`, `SAMPLER_CONTRACT_MISMATCH`, `FORMAL_TRAINING_INADEQUATE`, `INVALID_SLOT_WEIGHT_NONZERO`, `NO_T2_EDEMA_NONZERO`, `ROUTER_FAMILY_GRADIENT_MISSING`, `LEARNED_ANATOMY_NONFINITE_OR_CONSTANT`, `B3_FULL_ROUTE_NEGATIVE_TOKEN_FORBIDDEN` |
-| B7 | `scripts/validation/route_B_round04/validate_B7_cinema_control.py` | `results/route_B/round04/executors/B7` | `results/route_B/round04/executors/B7/validator_report.json` | `ROUTE_B_ROUND04_B7_CINEMA_MATCHED_CONTROL_COMPLETE` | `FAKE_CINEMA_SOURCE_OR_WRONG_SHA`, `CINEMA_LICENSE_OR_COMMIT_MISSING`, `PRETRAINED_RANDOM_ARCHITECTURE_MISMATCH`, `DOWNSTREAM_INITIALIZATION_MISMATCH`, `CASES_FRAMES_OPTIMIZER_BUDGET_MISMATCH`, `SOURCE_INITIALIZATION_NOT_ONLY_DIFFERENCE`, `SELECTED_CHECKPOINT_NOT_RELOADED`, `INTERNAL_SMALL_WRAPPER_USED_AS_OFFICIAL` |
-| B4 | `scripts/validation/route_B_round04/validate_B4_proposal.py` | `results/route_B/round04/executors/B4` | `results/route_B/round04/executors/B4/validator_report.json` | `ROUTE_B_ROUND04_B4_PROPOSAL_STAGE_COMPLETE` | `OOF_CURRENT_CASE_LEAKAGE`, `OOF_VALIDATION_OR_TEST_LEAKAGE`, `BOOTSTRAP_OR_EMA_FORMAL_BANK`, `NO_T2_EDEMA_NEGATIVE`, `PROTOTYPE_SIMILARITY_DISCONNECTED`, `CONSTANT_PROPOSAL`, `HARD_ROI_DELETION`, `WEAK_VALID_PROPOSAL_PREMATURE_STOP` |
-| B8 | `scripts/validation/route_B_round04/validate_B8_registration.py` | `results/route_B/round04/executors/B8` | `results/route_B/round04/executors/B8/validator_report.json` | `ROUTE_B_ROUND04_B8_REGISTRATION_STAGE_COMPLETE` | `DIRECT_VELOCITY_AS_DISPLACEMENT`, `SCALING_SQUARING_STEPS_NOT_SEVEN`, `PROXY_JACOBIAN`, `INVERSE_CONSISTENCY_MISSING`, `SYN_OUTPUT_COPIED_OR_PROXY`, `PAIR_AS_CASE_AGGREGATION`, `FULL_DENOMINATOR_MISSING`, `SELECTED_REGISTRATION_NOT_RELOADED`, `REGISTRATION_BLOCKER_WITHOUT_FAITHFUL_RUNTIME` |
-| B5 | `scripts/validation/route_B_round04/validate_B5_refiner.py` | `results/route_B/round04/executors/B5` | `results/route_B/round04/executors/B5/validator_report.json` | `ROUTE_B_ROUND04_B5_REFINER_STAGE_COMPLETE` | `SHARED_UNDIFFERENTIATED_REFINER`, `REFINER_FINAL_EFFECT_ZERO`, `PROPOSAL_TO_FINAL_RETENTION_FAILED`, `SCAR_REMOTE_FP_REGRESSION`, `NO_T2_EDEMA_NONZERO`, `HARD_ROI_DELETION`, `WEAK_B4_CONTROL_MISSING`, `WEAK_FAITHFUL_REFINER_PREMATURE_STOP` |
-| B9 | `scripts/validation/route_B_round04/validate_B9_temporal.py` | `results/route_B/round04/executors/B9` | `results/route_B/round04/executors/B9/validator_report.json` | `ROUTE_B_ROUND04_B9_TEMPORAL_TERMINAL_EVIDENCE_READY` | `FRAME0_ONLY_FALLBACK`, `UNREGISTERED_PRIMARY_OUTPUT`, `REQUIRED_TEMPORAL_INPUT_UNCONSUMED`, `CUMULATIVE_RESET_GAP_OVERLAP_DUPLICATE`, `PARENT_HASH_MISSING`, `TIMEOUT_OR_PARTIAL_CREDITED`, `TEMPORAL_FINAL_OUTPUT_EFFECT_ZERO`, `FULL_CINE_ABLATION_MISSING`, `SELECTED_CHECKPOINT_NOT_RELOADED` |
-| B6 | `scripts/validation/route_B_round04/validate_B6_myops_terminal.py` | `results/route_B/round04/executors/B6` | `results/route_B/round04/executors/B6/validator_report.json` | `ROUTE_B_ROUND04_B6_MYOPS_TERMINAL_EVIDENCE_READY` | `SAME_SPLIT_BASELINE_MISSING`, `FRESH_FORCE_EVALUATION_MISSING`, `SCAR_POSITIVE_ROWS_MISSING`, `T2_PRESENT_EDEMA_POSITIVE_ROWS_MISSING`, `NO_T2_SAFETY_ROWS_MISSING`, `CENTERB_OR_CENTERC_ROWS_MISSING`, `EMPTY_GT_COUNTED_AS_HELP`, `SUMMARY_MISNAMED_AS_ABLATION`, `SELECTED_CHECKPOINT_NOT_RELOADED`, `FINAL_OUTPUT_INTERVENTION_ZERO_OR_MISSING`, `PROXY_METRIC_AS_HOSTED` |
-| B10 | `scripts/validation/route_B_round04/validate_B10_terminal_packet.py` | `results/route_B/round04/executors/B10` | `results/route_B/round04/executors/B10/validator_report.json` | `ROUTE_B_ROUND04_TERMINAL_PACKET_READY_FOR_REVIEW` | `EARLY_TERMINAL_BRANCH_UNREACHABLE`, `B1_FAILURE_FINALIZER_NOT_LAUNCHED`, `B2_EXTERNAL_BLOCKER_FINALIZER_NOT_LAUNCHED`, `B7_BLOCKER_FINALIZER_NOT_LAUNCHED`, `B8_REGISTRATION_BLOCKER_FINALIZER_NOT_LAUNCHED`, `TIMEOUT_PREEMPTION_CANCELLED_LOSER_NOT_ACCOUNTED`, `SUCCESSFUL_B6_B9_NOT_ACCOUNTED`, `PENDING_OR_RUNNING_PRESENTED_AS_COMPLETE`, `AGGREGATION_MISSING_OR_NONZERO`, `SUPERSEDED_RECEIPT_NOT_RECONCILED`, `CONTROLLER_PUSH_OR_REVIEW_AUTHORITY_VIOLATION`, `HEAVY_ARTIFACT_TRACKED`, `VALIDATOR_FILE_EXISTENCE_ONLY` |
-
-A missing key, unexpected fixture pass, file-existence-only validator, mismatched report path, or a validator selected by the controller is a planning/runtime failure.
-
-## 9. Slurm and continuity hardening retained
-
-- `htzhulab` is the default.
-- Materially long compatible waits use an isolated `htzhulab+a100-gpu` race.
-- Attempts share scientific hashes but never output/log/checkpoint/cache roots.
-- One atomic winner lock determines credit; pending losers are cancelled; every loser is zero-credit and accounted.
-- `volta-gpu` is credited only for an unchanged scientific configuration whose measured peak memory is at most `14.5 GiB`; semantic downscaling is forbidden.
-- Formal wrappers and validator commands use `/users/a/e/aereinh/CARE/envs/env_CARE/bin/python`; formal bare `python` is forbidden.
-- Training dependencies use `afterok`; B10 finalization uses `afterany` over all started attempts.
-- Pending, submitted, running, awaiting-accounting, monitor and undertrained states are not completion.
-- The controller must run as a Codex goal/goal resume and remains responsible through terminal accounting, aggregation, mapper final, packet validation, local lightweight commit and reviewer handoff.
+- Formal command interpreter is `/users/a/e/aereinh/CARE/envs/env_CARE/bin/python`.
+- `htzhulab` is the default partition.
+- A materially long compatible wait triggers an isolated `htzhulab+a100-gpu` race.
+- Race attempts retain identical scientific hashes and separate output/log/checkpoint/cache roots.
+- One atomic winner lock assigns credit; pending losers are cancelled; all losers receive zero credit and remain in accounting.
+- V100 credit requires an unchanged scientific configuration and measured peak memory at most `14.5 GiB`.
+- Training dependencies use `afterok`; terminal accounting uses `afterany`.
+- Submitted, pending, running, awaiting-accounting, monitor and undertrained states are not completion.
+- The controller runs as a Codex goal or goal resume through terminal accounting, post-completion aggregation, mapper final, packet validation, local lightweight commit and reviewer handoff.
 - Runtime roles do not push and do not write `review.md`.
 
-## 10. Coordinator receipt and next critic
+## 9. B10 and independent review
 
-This Planner does not claim local executable validation. After the final main commit is published, the Codex coordinator must use the receipt template at `prompts/routes/handoffs/route_B_round04_coordinator_receipt_20260719.md` and run the exact commands in `/users/a/e/aereinh/CARE`.
+B10 remains a controller-level terminal finalizer with `depends_on: []`. It consumes the controller terminal registry and all started attempt IDs, covers global and lane-local blockers, success, timeout, preemption, failed startup and race losers, and uses `afterany` for all started attempts. When no Slurm attempt started, it uses the deterministic local finalizer path.
 
-The next Route B critic must stop unless all of the following are true:
+The next independent planning critic remains mandatory. Planner publication and coordinator validation do not authorize the controller.
 
-1. the receipt status is `READY_FOR_ROUTE_B_ROUND04_CRITIC_REREVIEW`;
-2. every required command has exit `0`;
-3. the tested commit equals current `origin/main`;
-4. the six planning blobs equal the handoff binding;
-5. the working tree is clean;
-6. no later planning edit made the handoff stale.
-
-Only `ROUTE_B_ROUND04_PLANNING_READY_FOR_CONTROLLER` written by the new independent critic permits a later controller start. Planner publication, coordinator validation and Route C evidence completion do not authorize the controller.
-
-## 11. Authority boundary
-
-The following remain false:
+## 10. Authority boundary
 
 ```text
 controller_authorized_now: 0

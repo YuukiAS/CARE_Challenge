@@ -1,20 +1,27 @@
 ---
 route_id: route_B
 portfolio_round: round04
-date: 2026-07-19
-role: planner_audit
+date: 2026-07-20
+role: planner_audit_after_critic_rereview
 planning_mode: GITHUB_ONLY
-planner_base_main: 30098813522cecd98e60bcb99e2676b28c1a5461
-origin_main_verified: 30098813522cecd98e60bcb99e2676b28c1a5461
+planner_base_main: 64f5a27298cb2efd1f576a70296e49388ab0b717
+revision_source_critic_commit: de5f47b9f4404c85db1bd0f570b576d9d03b0372
+concurrent_architecture_context_commit: 64f5a27298cb2efd1f576a70296e49388ab0b717
+origin_main_verified: 64f5a27298cb2efd1f576a70296e49388ab0b717
 origin_route_B_verified: b9c7664da7cb1f1892fff37a4497722f31a0a96d
 origin_route_C_verified: 17062b00edc3443aacefe8583568797a9f2655ba
 route_C_review_token: ROUTE_C_ROUND03_REVIEW_EVIDENCE_COMPLETE
+route_C_hold_decision_token: ROUTE_C_PORTFOLIO_STOP_AND_HOLD
+route_B_revision_source_path: prompts/routes/route_B_round04_critic_rereview.md
+route_B_revision_source_blob: 4e5cd46a6494bd6c12f3985b99abd390a00b0786
 route_B_revision_source_token: ROUTE_B_ROUND04_PLANNING_NEEDS_REVISION
 status: PLANNING_REVISION_PUBLISHED_PENDING_COORDINATOR_RECEIPT_AND_CRITIC_REREVIEW
 controller_start_authorized: false
 coordinator_receipt_path: prompts/routes/handoffs/route_B_round04_coordinator_receipt_20260719.md
 critic_output_path: prompts/routes/route_B_round04_critic_rereview.md
 required_critic_token: ROUTE_B_ROUND04_PLANNING_READY_FOR_CONTROLLER
+six_planning_blob_binding_source: prompts/routes/handoffs/route_B_round04_critic_handoff_20260719.md
+six_planning_blob_binding_required: true
 local_users_checks_claimed_by_planner: false
 validation_upload_authorized: false
 route_promotion_authorized: false
@@ -24,170 +31,134 @@ cross_route_merge_authorized: false
 final_scientific_decision_authorized: false
 ---
 
-# Route B Round04 Planner Audit
+# Route B Round04 Planner Audit After Critic Rereview
 
 ## 1. Operating boundary
 
-This planning pass used authenticated GitHub repository reads and writes only. It did not require or claim access to server shell, tmux, Slurm or a local `/users` worktree. It did not execute model code, train a model, submit a job, produce a runtime reviewer decision or access `the prohibited overflow CARE workspace`.
+This pass used authenticated GitHub reads and writes. It did not execute model code, train, submit or monitor Slurm, start a Controller, start a runtime reviewer, create validation packages, upload, promote a route, start M11, merge routes, claim hosted metrics or make a final scientific decision.
 
-Executable checks on `/users/a/e/aereinh/CARE` are delegated to the Codex coordinator through `prompts/routes/handoffs/route_B_round04_coordinator_receipt_20260719.md`. The receipt is a hard prerequisite for the next critic and is not pre-filled by this Planner.
+Executable validation in `/users/a/e/aereinh/CARE` remains assigned to the Codex coordinator. This Planner does not pre-fill an exit-zero receipt.
 
-## 2. Exact remote bindings
+## 2. Refs and sources
 
-At planning start, authenticated repository refs matched:
+The critic source remains `de5f47b9f4404c85db1bd0f570b576d9d03b0372`. The planning publication parent is `64f5a27298cb2efd1f576a70296e49388ab0b717` because the intervening commit changes only the explicitly allowlisted Round03 architecture-report/diagram paths. The updated architecture report was read and introduces no Route B scientific-contract change.
+
+Planning start refs:
 
 ```text
-origin/main: 30098813522cecd98e60bcb99e2676b28c1a5461
+origin/main: 64f5a27298cb2efd1f576a70296e49388ab0b717
 origin/route_B: b9c7664da7cb1f1892fff37a4497722f31a0a96d
 origin/route_C: 17062b00edc3443aacefe8583568797a9f2655ba
 ```
 
-The revision is based on:
+Revision sources:
 
 ```text
-Route B planning critic file: prompts/routes/route_B_round04_critic_review.md
-Route B planning critic token: ROUTE_B_ROUND04_PLANNING_NEEDS_REVISION
-Route C review file: results/route_C/review.md
-Route C review token: ROUTE_C_ROUND03_REVIEW_EVIDENCE_COMPLETE
-Route C reviewed controller repair: 1e663cfa64f00413f005bef26310290fd43ec8ab
+critic rereview: prompts/routes/route_B_round04_critic_rereview.md
+critic rereview blob: 4e5cd46a6494bd6c12f3985b99abd390a00b0786
+critic token: ROUTE_B_ROUND04_PLANNING_NEEDS_REVISION
+Route C hold decision: prompts/routes/portfolio_round04_route_C_followup_decision_20260719.md
+Route C decision blob: 6564e1d6423b43b44a0c96b510a172fb92785873
+Route C token: ROUTE_C_PORTFOLIO_STOP_AND_HOLD
 ```
 
-A later Route B evidence or planning-file change invalidates the handoff. A later Route C packet change invalidates its evidence-complete reviewer binding.
+The required governance, route, hard-gate, anti-laziness, hard-requirements and Slurm/mapper skill files were reread from `de5f47b9f4404c85db1bd0f570b576d9d03b0372`. SRR-v2, SRR-v2.5 and SRR-v3 were visually read from current-conversation Project materials.
 
-## 3. Required governance and evidence read
-
-The Planner read the exact-main versions of:
+## 3. Recovered route objective
 
 ```text
-AGENTS.md
-START_HERE_FOR_GPT.md
-GPT_PLANNER_CARE_PROTOCOL.md
-prompts/AGENT_FLOW_V2_PROTOCOL.md
-prompts/HANDOFF_GATE_POLICY.md
-prompts/GPT_HARD_GATE_PROMPT.md
-prompts/routes/README.md
-prompts/routes/ROUTE_ANTI_LAZINESS_PROTOCOL.md
-prompts/routes/ROUTE_HARD_REQUIREMENTS_MATRIX.md
-prompts/routes/handoffs/CURRENT.md
-routes/README.md
-wiki/README.md
-.agents/skills/slurm-routing-partition/SKILL.md
-.agents/skills/care-mapper/SKILL.md
-docs/notes/deep_research/care_2026_myocardium_round02_targeted_deep_research_cleaned.md
+availability-aware four-scale shared/private/interaction retrieval
+-> optimized Pattern-SIP
+-> learned anatomy
+-> OOF frozen prototypes and safe hard negatives
+-> separate scar/edema proposal and soft-ROI refinement
+-> bounded anchor-aware final correction
+-> official-label output and same-split final-output interventions
 ```
 
-It also read the Route C reviewer packet at `17062b00edc3443aacefe8583568797a9f2655ba`, the Route B Round04 critic review at `30098813522cecd98e60bcb99e2676b28c1a5461`, and all six pre-revision Route B Round04 planning files.
+Cine remains official CineMA matched control, seven-step SVF, true Jacobian, inverse consistency, real SyN, registered temporal evidence and ED-space final output.
 
-## 4. Visual route recovery
+No scientific component, budget, continuation rule or hard group was removed.
 
-SRR-v2, SRR-v2.5 and SRR-v3 were visually read from current Project/current-conversation materials.
+## 4. Four blocker repairs
 
-Recovered invariant:
+### `CONCURRENT_MAIN_MOVEMENT_OUTSIDE_HANDOFF_ALLOWLIST`
+
+The Route C follow-up decision path is explicitly allowlisted. Its semantics are frozen as hold/context only. It gives no Route C Controller authority, no Route B authority and no Route B scope change.
+
+### `CONTROLLER_ROUTE_B_WORKTREE_LACKS_BOUND_PLANNING_FILES_AND_HAS_NO_MATERIALIZATION_CONTRACT`
+
+The controller contract and executor plan now define `controller_planning_materialization`. Source, controller worktree, snapshot root, file set, four receipt paths, atomic rename, read-only state, hash semantics and failure token are exact. Source unreadability, incomplete copy or mismatch stops before code and Slurm.
+
+### `B0_EXACT_INPUT_BINDS_OLD_CRITIC_REVIEW_INSTEAD_OF_CURRENT_REREVIEW`
+
+B0 exact inputs now bind the current rereview, handoff, coordinator receipt, CURRENT and Route C hold decision. The old critic review is listed only as superseded history.
+
+### `COORDINATOR_RECEIPT_ANCESTOR_POLICY_CONTRADICTS_CONTROLLER_ENTRY_GATE`
+
+CURRENT, handoff, coordinator receipt, critic request, controller contract and executor plan now use one rule: exact current main, or ancestor plus allowlisted descendant diff plus unchanged six planning blobs.
+
+## 5. Scientific and operational non-regression
+
+Preserved without change:
+
+- Round03 B3 is B3-only adequate negative.
+- B1 anatomy gate remains strict.
+- B4-B6 continue after valid predecessors; B6 is first MyoPS full-route judgment.
+- B7-B9 remain mandatory after B2.
+- Full SRR-v3, OOF banks, hard negatives, separate proposal/refiner and bounded correction remain.
+- Same-split lesion-centric evidence and all hard groups remain.
+- Official CineMA matched random, seven-step SVF, real SyN and registered temporal remain.
+- Fixed training budgets and clean reload remain.
+- `htzhulab` default and isolated long-wait `htzhulab+a100-gpu` race remain.
+- V100 credit remains unchanged-config and peak memory `<=14.5 GiB`.
+- Formal wrappers use `/users/a/e/aereinh/CARE/envs/env_CARE/bin/python`.
+- Training dependencies use `afterok`; final accounting uses `afterany`.
+- Monitor-like and undertrained states are not completion.
+- Controller remains a Codex goal or goal resume through terminal packet and reviewer handoff.
+- Runtime push and runtime `review.md` remain forbidden.
+
+## 6. Planning files and hash binding
+
+The six planning files are:
 
 ```text
-explicit observed-modality availability
--> four-scale shared/private/interaction retrieval
--> anatomy-guided scar and edema proposal
--> separate pathology-specific soft ROI refinement
--> bounded final correction
+prompts/routes/portfolio_round04_route_B_planner_plan_20260719.md
+prompts/routes/route_B_round04_planner_prompt.md
+prompts/routes/route_B_round04_controller_contract.md
+prompts/routes/route_B_round04_executor_plan.yaml
+prompts/routes/route_B_round04_critic_request.md
+prompts/routes/route_B_round04_planner_audit.md
 ```
 
-Cine invariant:
+Their Git blob hashes are computed after the core planning commit and inserted into CURRENT, the critic handoff and the coordinator receipt. This audit and the critic request bind the exact mapping through that handoff; neither file can literally embed its own final Git blob SHA without creating a recursive Git-object self-reference. A later change to any one of the six files makes the planning handoff stale.
+
+## 7. Coordinator checks required
+
+The coordinator must record exit zero for:
 
 ```text
-official per-frame anatomy features
--> reference-space registration and motion/Jacobian evidence
--> registered temporal aggregation
--> final-output effect
+fetch and clean main worktree checks
+origin/main, origin/route_B and origin/route_C binding
+executor-plan validator
+controller_planning_materialization schema assertions
+B0 current-input and superseded-history assertions
+exact-or-ancestor allowlist-policy consistency across files
+six planning Git blob hashes
+B10 terminal coverage
+B0-B10 exact validator and known-bad binding
+diff check
+blank-delegation scan
+formal Python scan
+Cine non-deferral scan
+authority scan
 ```
 
-The revision does not reduce either invariant.
+The receipt is reset to pending by this revision. No prior receipt authorizes the new planning blobs.
 
-## 5. Route C portfolio audit
+## 8. Publication and authority
 
-The Route C reviewer accepted the repaired controller packet. The former `positive_negative_prototype_swap` fail-open is fixed and re-reviewed: harmful swaps are detected, no-op/off-path controls remain zero-effect, strict validators pass and known-bad tests pass.
-
-Planner state:
-
-```text
-route_C_status: EVIDENCE_COMPLETE_FOR_PORTFOLIO_RECONCILIATION
-route_C_reviewer_required_now: false
-route_C_reviewer_required_if_binding_stale: true
-```
-
-This status provides portfolio evidence only. It does not authorize promotion/upload/M11/hosted metrics/cross-route merge/final decision.
-
-## 6. Route B critic blockers and exact repairs
-
-### `CURRENT_NOT_ADVANCED_TO_ROUND04`
-
-Repair: `prompts/routes/handoffs/CURRENT.md` is advanced to Round04 and points to `prompts/routes/handoffs/route_B_round04_critic_handoff_20260719.md`. The handoff binds the exact planning commit, `b9c7664da7cb1f1892fff37a4497722f31a0a96d`, all six planning blobs, coordinator receipt, critic output path, allowed tokens and authority boundary.
-
-### `B10_TERMINAL_FINALIZER_UNREACHABLE_ON_EARLY_TERMINAL_BRANCHES`
-
-Repair: B10 has `depends_on: []`, `controller_terminal_finalizer: true`, `prepare_wave_helper_exempt: true` and `depends_on_successful_merge_receipts: false`. The controller terminal registry has global and lane terminal classes. B10 launches from the registry and controller ledger, not from successful B6/B9 merge receipts. Static regression cases explicitly cover B1 failure, B2 external blocker, B7 blocker, B8 registration blocker, timeout, preemption, cancelled race loser and successful B6/B9.
-
-### `PER_EXECUTOR_VALIDATOR_COMMANDS_NOT_MACHINE_BOUND`
-
-Repair: every B0-B10 executor has an exact `validator` block and exact `known_bad_contract`, including script, command, input, report, exit, success token, matrix path, runner command, expected validator exit `1`, exact failure keys, all-keys-required and unexpected-pass-is-failure.
-
-### `REQUIRED_USERS_EXECUTABLE_CHECKS_NOT_EXIT_ZERO`
-
-Planning action: the exact coordinator command set is written into `prompts/routes/handoffs/route_B_round04_coordinator_receipt_20260719.md`. Current state remains pending. The next critic must reject a missing, stale or nonzero receipt.
-
-## 7. Scientific and routing non-regression
-
-The revision preserves:
-
-- Round03 B3 as B3-only adequate negative;
-- strict B1 micro-overfit implementation gate;
-- mandatory B4/B5/B6 after valid predecessors and B6 first full MyoPS judgment;
-- mandatory independent B7/B8/B9 after B2;
-- full four-scale SRR-v3, OOF bank, hard negatives, proposals, refiners and bounded correction;
-- same-split baseline and lesion-centric case/subgroup evidence;
-- official CineMA matched random control, seven-step SVF, real SyN and registered temporal aggregation;
-- all fixed training budgets and clean reload;
-- `htzhulab` default, isolated long-wait `htzhulab+a100-gpu` race, V100 unchanged-config/`<=14.5 GiB` gate;
-- monitor states not completion and controller goal continuity;
-- no runtime push and independent reviewer boundary.
-
-## 8. Planner-side static preparation
-
-The generated executor plan was parsed as YAML in the Planner's isolated formatting environment. This is a syntax preparation check only; it is not the required repository validator receipt.
-
-Generated-file SHA256 before GitHub publication:
-
-- `portfolio_round04_route_B_planner_plan_20260719.md`: `cccc7af5477d43cff6fd9053e496c4d23cbff41dc8a67e35421af26222aca592`
-- `route_B_round04_planner_prompt.md`: `4cd6479500005bfa2cf878795015ee6997cf3c0e0f7efd931321e4ed7a6e6755`
-- `route_B_round04_controller_contract.md`: `a467b8bc25d8d07853c3159c09a8f79f360c2834308a6ac59f9c48edaa149a19`
-- `route_B_round04_executor_plan.yaml`: `1e5b9d932cfac35cf8aa3e66dbcefd25064e5b4ccbb5df3adc27b9f8d22fa10f`
-- `route_B_round04_critic_request.md`: `d65d65117fc0fbb31ca15d4f3b2c5fa1ae2d78b655fd011963ceb45e9c4808d8`
-
-Git blob SHAs and the exact containing planning commit are recorded later in the current handoff after GitHub publication.
-
-## 9. Required Codex coordinator checks
-
-The coordinator receipt must record exit `0` for:
-
-```text
-git fetch --all --prune
-git status --short --branch
-exact HEAD/origin ref assertions
-/users/a/e/aereinh/CARE/envs/env_CARE/bin/python scripts/ops/validate_executor_plan.py prompts/routes/route_B_round04_executor_plan.yaml
-PyYAML structural and B0-B10 validator-binding assertions
-B10 early-terminal reachability regression assertions
-git diff --check
-blank-authority scan
-forbidden-path scan
-formal bare-interpreter scan
-CineMA/registration/temporal non-deferral scan
-```
-
-The tested commit must equal current `origin/main`, and the working tree must be clean.
-
-## 10. Publication and authority
-
-Planner publication and push are not critic passage. Until a new independent critic writes `ROUTE_B_ROUND04_PLANNING_READY_FOR_CONTROLLER` for the exact current binding:
+A new independent critic rereview is still required. Until it writes the ready token for the exact new binding:
 
 ```text
 controller_start_authorized: false

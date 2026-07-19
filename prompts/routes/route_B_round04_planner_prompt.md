@@ -1,13 +1,18 @@
 ---
 route_id: route_B
 portfolio_round: round04
-date: 2026-07-19
+date: 2026-07-20
 role: route_B_planner_revision_prompt
-planner_base_main: 30098813522cecd98e60bcb99e2676b28c1a5461
+planner_base_main: 64f5a27298cb2efd1f576a70296e49388ab0b717
+revision_source_critic_commit: de5f47b9f4404c85db1bd0f570b576d9d03b0372
+concurrent_architecture_context_commit: 64f5a27298cb2efd1f576a70296e49388ab0b717
 route_B_evidence_ref: b9c7664da7cb1f1892fff37a4497722f31a0a96d
 route_C_review_commit: 17062b00edc3443aacefe8583568797a9f2655ba
+route_C_followup_decision_token: ROUTE_C_PORTFOLIO_STOP_AND_HOLD
+revision_source_critic_path: prompts/routes/route_B_round04_critic_rereview.md
+revision_source_critic_blob: 4e5cd46a6494bd6c12f3985b99abd390a00b0786
 revision_source_token: ROUTE_B_ROUND04_PLANNING_NEEDS_REVISION
-status: REVISION_PENDING_COORDINATOR_RECEIPT_AND_CRITIC_REREVIEW
+status: PLANNING_REVISION_PENDING_COORDINATOR_RECEIPT_AND_CRITIC_REREVIEW
 controller_start_authorized: false
 required_coordinator_receipt: prompts/routes/handoffs/route_B_round04_coordinator_receipt_20260719.md
 required_critic_output: prompts/routes/route_B_round04_critic_rereview.md
@@ -22,35 +27,48 @@ final_scientific_decision_authorized: false
 
 # Route B Round04 Planner Revision Prompt
 
-You are the CARE Route Portfolio GPT Planner. Work only from the exact GitHub repository refs and repository files. Do not require this planning thread to access server shell, tmux, Slurm or a local `/users` worktree. Do not write `the prohibited overflow CARE workspace`.
+You are the CARE Round04 Route B Planner revision thread. Work only on planning files. Do not implement code, train, submit Slurm, start a controller or runtime reviewer, package or upload validation, promote a route, start M11, merge routes, claim hosted metrics, or make a final scientific decision.
 
-## Exact remote bindings
+## Exact revision baseline
 
 ```text
-origin/main: 30098813522cecd98e60bcb99e2676b28c1a5461
+origin/main: 64f5a27298cb2efd1f576a70296e49388ab0b717
 origin/route_B: b9c7664da7cb1f1892fff37a4497722f31a0a96d
 origin/route_C: 17062b00edc3443aacefe8583568797a9f2655ba
-Route C reviewer token: ROUTE_C_ROUND03_REVIEW_EVIDENCE_COMPLETE
-Route B planning critic token: ROUTE_B_ROUND04_PLANNING_NEEDS_REVISION
+revision source: prompts/routes/route_B_round04_critic_rereview.md
+revision source token: ROUTE_B_ROUND04_PLANNING_NEEDS_REVISION
+Route C decision: ROUTE_C_PORTFOLIO_STOP_AND_HOLD
 ```
 
-Visually read SRR-v2, SRR-v2.5 and SRR-v3 from current Project/current-conversation materials. Preserve the full route objective: availability-aware four-scale retrieval, shared/private/interaction experts, train/OOF frozen prototypes, safe hard negatives, anatomy-guided scar/edema proposals, separate soft-ROI refiners, bounded final correction, official CineMA matched random control, seven-step SVF, real SyN and registered temporal aggregation.
+Visually read SRR-v2, SRR-v2.5 and SRR-v3 from Project/current-conversation materials. Preserve full Route B: four-scale availability-aware shared/private/interaction retrieval, optimized Pattern-SIP, OOF frozen prototypes, safe hard negatives, learned anatomy, separate scar/edema proposal and soft-ROI refiners, bounded correction, same-split evidence, official CineMA matched random control, seven-step SVF, true Jacobian, inverse consistency, real SyN and registered temporal aggregation.
 
-## Portfolio state to preserve
+## Required repairs
 
-Route C Round03 is `EVIDENCE_COMPLETE_FOR_PORTFOLIO_RECONCILIATION`. The `positive_negative_prototype_swap` fail-open has been repaired and independently re-reviewed. Route C does not need another reviewer unless a new Route C commit makes the review binding stale. Route C completion does not authorize promotion/upload/M11/hosted metrics/cross-route merge/final decision and does not remove Route B Cine work.
+1. Add the Route C hold decision path to the explicit Round04 descendant allowlist. State that it is portfolio context only, changes no Route B authority and authorizes no Route C controller.
+2. Add one machine-readable `controller_planning_materialization` policy to the controller contract and executor plan. The controller runs in `/users/a/e/aereinh/CARE_worktrees/route_B`, reads `/users/a/e/aereinh/CARE` only as a read-only planning source, atomically creates `results/route_B/round04/planning_snapshot/`, writes manifest/hash/diff/materialization receipts, and fails closed before any code or Slurm action on source, completeness or hash failure.
+3. Change B0 current exact inputs to the current critic rereview, current handoff, current coordinator receipt, CURRENT and Route C hold decision. Keep `route_B_round04_critic_review.md` only under superseded historical context.
+4. Use one tested-commit rule everywhere: exact current `origin/main`, or an ancestor whose descendant diff is restricted to the explicit allowlist while all six planning blobs remain unchanged.
+5. Regenerate the six planning blob mapping in CURRENT, handoff and coordinator receipt; make critic request and planner audit bind that exact mapping through the current handoff to avoid recursive self-hash embedding.
+6. Keep `controller_authorized_now: 0`. A future controller requires a fresh coordinator receipt and a new independent critic token for the exact binding.
 
-Route B Round03 B3 is an adequate negative for B3 only. B4/B5/B6 must run after valid predecessor implementation/readiness; B6 is the first MyoPS full-route judgment. B7/B8/B9 are mandatory after B2 and remain independent of B3 and Route C.
+## Explicit descendant allowlist
 
-## Required planning repairs
+```text
+prompts/routes/handoffs/CURRENT.md
+prompts/routes/handoffs/route_B_round04_critic_handoff_20260719.md
+prompts/routes/handoffs/route_B_round04_coordinator_receipt_20260719.md
+prompts/routes/route_B_round04_critic_rereview.md
+prompts/routes/portfolio_round04_route_C_followup_decision_20260719.md
+docs/figures/round03_route_architecture/**
+controller_notifications/**
+scripts/ops/build_route_watchboard.py
+tests/ops/test_build_route_watchboard.py
+tests/ops/test_controller_notifications.py
+```
 
-1. Advance `prompts/routes/handoffs/CURRENT.md` to Round04 and bind the exact planning commit, Route B evidence ref, six planning blobs, current critic handoff, critic output path, allowed Round04 tokens and authority boundary.
-2. Make B10 a controller-level terminal finalizer with no successful B6/B9 merge dependency. It must cover global B0/B1/B2 blockers, lane-local B3/B4/B5/B7/B8 blockers, timeout, preemption, failed startup, cancelled/started race losers and successful B6/B9.
-3. Bind B0-B10 exact strict validator script/command/input/report/success token and exact known-bad matrix command/report/expected validator exit/failure keys.
-4. Require a Codex coordinator to run the final-commit checks at `/users/a/e/aereinh/CARE` and fill `prompts/routes/handoffs/route_B_round04_coordinator_receipt_20260719.md` with exit-zero evidence before critic rereview.
-5. Keep `controller_start_authorized: false` until `ROUTE_B_ROUND04_PLANNING_READY_FOR_CONTROLLER` is written by a new independent critic against the current binding.
+A six-planning-blob change is never covered by the allowlist.
 
-## Output files
+## Required outputs
 
 ```text
 prompts/routes/portfolio_round04_route_B_planner_plan_20260719.md
@@ -59,12 +77,9 @@ prompts/routes/route_B_round04_controller_contract.md
 prompts/routes/route_B_round04_executor_plan.yaml
 prompts/routes/route_B_round04_critic_request.md
 prompts/routes/route_B_round04_planner_audit.md
-prompts/routes/portfolio_round04_routeC_review_and_routeB_revision_planner_update_20260719.md
+prompts/routes/handoffs/CURRENT.md
 prompts/routes/handoffs/route_B_round04_critic_handoff_20260719.md
 prompts/routes/handoffs/route_B_round04_coordinator_receipt_20260719.md
-prompts/routes/handoffs/CURRENT.md
 ```
 
-A planning-file edit after binding makes the critic handoff stale. A receipt-only commit may follow only when all six planning blobs remain byte-identical.
-
-No controller, implementation, training, Slurm, validation upload, route promotion, M11, hosted metric claim, cross-route merge or final scientific decision is authorized.
+No output from this planning thread authorizes runtime action.
