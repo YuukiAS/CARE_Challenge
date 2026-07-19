@@ -1,21 +1,23 @@
 name: Assemble Route B Round04 final planner bundle
 
 on:
-  push:
-    branches:
-      - main
+  pull_request:
+    types:
+      - opened
+      - synchronize
+      - reopened
 
 permissions:
   contents: write
 
 jobs:
   assemble:
-    if: github.event.head_commit.message == 'Stage Route B round04 final bundle'
+    if: github.event.pull_request.head.ref == 'planner-trigger-route-b-r04'
     runs-on: ubuntu-latest
     env:
-      BASE_SHA: ${{ github.event.before }}
+      CLEAN_BASE: 7042135a4cc5be44b090fee93d4d1ee25b72fc0e
     steps:
-      - name: Checkout staging commit
+      - name: Checkout pull request context
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
@@ -24,25 +26,35 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          cat .planner_upload_chunks/r4bundle.part* | tr -d '\r\n' | base64 --decode > /tmp/routeB_round04_files.tar.gz
-          echo 'd75e4f11f6eb23d48ced5e97dc2ebe0623adf3d6a24ba37910e3138dee5644bb  /tmp/routeB_round04_files.tar.gz' | sha256sum --check
-          tar -xzf /tmp/routeB_round04_files.tar.gz
-          test "$(git hash-object prompts/routes/portfolio_round04_route_B_planner_plan_20260719.md)" = '13746e0211f9d1565d84689b20a6a4ce66b1fcf3'
-          test "$(git hash-object prompts/routes/route_B_round04_planner_prompt.md)" = 'e69475402659882edca04279ce47dfe8bab16493'
-          test "$(git hash-object prompts/routes/route_B_round04_controller_contract.md)" = 'afa3b8cc6e2461a4ddb4332b839b0113e16e5757'
-          test "$(git hash-object prompts/routes/route_B_round04_executor_plan.yaml)" = '4ea9a6632fb95020dc7e362c33e1d747bf1c6bb8'
-          test "$(git hash-object prompts/routes/route_B_round04_critic_request.md)" = '265826ac9c5f5c77e6d6e1fde6a8e710e7884b0e'
-          test "$(git hash-object prompts/routes/route_B_round04_planner_audit.md)" = 'c7ef75fa4536cef17ffde4d7ea5f26ef01fb6e75'
+          OUT=/tmp/routeB-round04
+          mkdir -p "$OUT"
+          cat .planner_upload_chunks/r4bundle.part* | tr -d '\r\n' | base64 --decode > "$OUT/routeB_round04_files.tar.gz"
+          echo "d75e4f11f6eb23d48ced5e97dc2ebe0623adf3d6a24ba37910e3138dee5644bb  $OUT/routeB_round04_files.tar.gz" | sha256sum --check
+          tar -xzf "$OUT/routeB_round04_files.tar.gz" -C "$OUT"
+          test "$(git hash-object "$OUT/prompts/routes/portfolio_round04_route_B_planner_plan_20260719.md")" = '13746e0211f9d1565d84689b20a6a4ce66b1fcf3'
+          test "$(git hash-object "$OUT/prompts/routes/route_B_round04_planner_prompt.md")" = 'e69475402659882edca04279ce47dfe8bab16493'
+          test "$(git hash-object "$OUT/prompts/routes/route_B_round04_controller_contract.md")" = 'afa3b8cc6e2461a4ddb4332b839b0113e16e5757'
+          test "$(git hash-object "$OUT/prompts/routes/route_B_round04_executor_plan.yaml")" = '4ea9a6632fb95020dc7e362c33e1d747bf1c6bb8'
+          test "$(git hash-object "$OUT/prompts/routes/route_B_round04_critic_request.md")" = '265826ac9c5f5c77e6d6e1fde6a8e710e7884b0e'
+          test "$(git hash-object "$OUT/prompts/routes/route_B_round04_planner_audit.md")" = 'c7ef75fa4536cef17ffde4d7ea5f26ef01fb6e75'
 
-      - name: Rebind planning files to current main parent
+      - name: Apply to clean preliminary parent and bind base
         shell: bash
         run: |
           set -euo pipefail
+          OUT=/tmp/routeB-round04
+          git switch -C planner-assembled-route-b-r04 "$CLEAN_BASE"
+          cp "$OUT/prompts/routes/portfolio_round04_route_B_planner_plan_20260719.md" prompts/routes/
+          cp "$OUT/prompts/routes/route_B_round04_planner_prompt.md" prompts/routes/
+          cp "$OUT/prompts/routes/route_B_round04_controller_contract.md" prompts/routes/
+          cp "$OUT/prompts/routes/route_B_round04_executor_plan.yaml" prompts/routes/
+          cp "$OUT/prompts/routes/route_B_round04_critic_request.md" prompts/routes/
+          cp "$OUT/prompts/routes/route_B_round04_planner_audit.md" prompts/routes/
           python3 - <<'PY'
           import os
           from pathlib import Path
           old = '43f80f1078822c3cc17206898a244956178296e2'
-          new = os.environ['BASE_SHA']
+          new = os.environ['CLEAN_BASE']
           files = [
               Path('prompts/routes/portfolio_round04_route_B_planner_plan_20260719.md'),
               Path('prompts/routes/route_B_round04_planner_prompt.md'),
@@ -133,10 +145,15 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          rm -rf .planner_upload_chunks
-          rm -f .github/workflows/assemble-route-b-round04.yml
           git config user.name 'CARE Route B Planner'
           git config user.email 'actions@users.noreply.github.com'
-          git add -A
+          git add \
+            prompts/routes/portfolio_round04_route_B_planner_plan_20260719.md \
+            prompts/routes/route_B_round04_planner_prompt.md \
+            prompts/routes/route_B_round04_controller_contract.md \
+            prompts/routes/route_B_round04_executor_plan.yaml \
+            prompts/routes/route_B_round04_critic_request.md \
+            prompts/routes/route_B_round04_planner_audit.md
+          test "$(git diff --cached --name-only | wc -l)" -eq 6
           git commit -m 'Plan Route B round04 deep-research implementation'
           git push --force origin HEAD:refs/heads/planner-assembled-route-b-r04
