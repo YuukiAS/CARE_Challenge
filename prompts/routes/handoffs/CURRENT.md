@@ -27,7 +27,7 @@ Route C reviewed controller repair: 1e663cfa64f00413f005bef26310290fd43ec8ab
 
 ```text
 Route A: DEFERRED_FALLBACK_NOT_ACTIVE
-Route B: PLANNING_REVISION_PENDING_COORDINATOR_RECEIPT_AND_CRITIC_REREVIEW
+Route B: PLANNING_REVISION_READY_FOR_CRITIC_REREVIEW
 Route C: EVIDENCE_COMPLETE_FOR_PORTFOLIO_RECONCILIATION
 ```
 
@@ -61,6 +61,19 @@ critic output: prompts/routes/route_B_round04_critic_rereview.md
 controller start authorized: false
 ```
 
+The current `origin/main` may include non-planning descendant commits after
+`755e5919d472e3033c23ff7a848cac618aca1d34`, including
+`docs/figures/round03_route_architecture/*` and the watchboard/notifier ops
+fix `aea169e65e19c674b8c6cdba74fc1cab7a07713f`, only while the six planning
+blob hashes below remain byte-identical. Watchboard/notifier files are
+observability only; they are not scientific evidence and do not alter the
+Route B planning contract, controller contract or executor plan. The
+coordinator receipt may record the pre-receipt `origin/main` as
+`tested_origin_main` when the current descendant commit only records this
+receipt/handoff/CURRENT administrative update. Any change to one of the six
+planning blobs still makes this handoff stale and requires a new planner/critic
+cycle.
+
 Six planning blobs:
 
 - `prompts/routes/portfolio_round04_route_B_planner_plan_20260719.md`: `e6e31f772e2766ec79c466660fe8f56f14350d6f`
@@ -88,7 +101,7 @@ ROUTE_B_ROUND04_PLANNING_READY_FOR_CONTROLLER
 ROUTE_B_ROUND04_PLANNING_NEEDS_REVISION
 ```
 
-The ready token is invalid unless the coordinator receipt is current, has every required exit `0`, tested current `origin/main`, and the six planning blobs still match.
+The ready token is invalid unless the coordinator receipt is current, has every required exit `0`, tested current `origin/main` or its receipt-only administrative ancestor, and the six planning blobs still match.
 
 ## Route B scientific invariants
 

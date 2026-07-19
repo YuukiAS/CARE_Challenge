@@ -47,15 +47,22 @@ Six bound files:
 
 A change to any bound blob requires a new Planner handoff.
 
-Current `origin/main` may be a descendant of the planning commit only through these binding/receipt paths:
+Current `origin/main` may be a descendant of the planning commit through non-planning administrative, documentation and observability commits when the six planning blobs above remain byte-identical. Allowed descendant changes include these paths/classes:
 
 ```text
 prompts/routes/handoffs/CURRENT.md
 prompts/routes/handoffs/route_B_round04_critic_handoff_20260719.md
 prompts/routes/handoffs/route_B_round04_coordinator_receipt_20260719.md
+docs/figures/round03_route_architecture/*
+controller_notifications/*
+scripts/ops/build_route_watchboard.py
+tests/ops/test_build_route_watchboard.py
+tests/ops/test_controller_notifications.py
 ```
 
-A coordinator receipt update is allowed only when the six planning blobs remain byte-identical.
+The known descendant `aea169e65e19c674b8c6cdba74fc1cab7a07713f` (`Fix round04 watchboard status parsing`) is allowed only as an ops/observability update. Watchboard/notifier state is not scientific evidence, not Route B runtime evidence, and does not modify the Route B planning contract, controller contract, executor plan, reviewer pass/fail standard, or authority boundary.
+
+A coordinator receipt update is allowed only when the six planning blobs remain byte-identical. Because the receipt is committed after the executable checks, its `tested_origin_main` may be an ancestor of current `origin/main` when the descendant diff is limited to `CURRENT.md`, this handoff, and the coordinator receipt itself. A change to any one of the six planning blobs remains a hard stale handoff condition, regardless of whether `origin/main` descends from `755e5919d472e3033c23ff7a848cac618aca1d34`.
 
 ## Entry gate
 
@@ -63,11 +70,11 @@ Read `prompts/routes/handoffs/CURRENT.md`, the six bound planning files, the old
 
 Stop with `ROUTE_B_ROUND04_PLANNING_NEEDS_REVISION` when:
 
-- current main is not descended from `755e5919d472e3033c23ff7a848cac618aca1d34` through only declared binding/receipt paths;
+- current main is not descended from `755e5919d472e3033c23ff7a848cac618aca1d34` through only declared non-planning binding/receipt/docs/ops/observability paths;
 - one bound blob differs;
 - `origin/route_B` differs from `b9c7664da7cb1f1892fff37a4497722f31a0a96d`;
 - the coordinator receipt is pending, stale or contains any nonzero required exit;
-- the receipt tested a commit other than current `origin/main`;
+- the receipt `tested_origin_main` is neither current `origin/main` nor an ancestor whose descendant diff is limited to the declared non-planning receipt/handoff update paths;
 - the working tree receipt is not clean;
 - the critic cannot visually read SRR-v2/v2.5/v3 from Project/current-conversation materials.
 
