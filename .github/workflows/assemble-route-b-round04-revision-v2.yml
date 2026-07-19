@@ -1,16 +1,21 @@
-name: Assemble Route B Round04 planning revision v2
+name: Assemble Route B Round04 planning revision
 
 on:
   push:
     branches:
       - main
+  pull_request:
+    types:
+      - opened
+      - synchronize
+      - reopened
 
 permissions:
   contents: write
 
 jobs:
   assemble:
-    if: github.event.head_commit.message == 'Stage Route B Round04 revision bundle v2'
+    if: (github.event_name == 'push' && github.event.head_commit.message == 'Stage Route B Round04 revision bundle v2') || (github.event_name == 'pull_request' && github.event.pull_request.head.ref == 'planner-trigger-route-b-r04-revision')
     runs-on: ubuntu-24.04
     env:
       CLEAN_BASE: 30098813522cecd98e60bcb99e2676b28c1a5461
