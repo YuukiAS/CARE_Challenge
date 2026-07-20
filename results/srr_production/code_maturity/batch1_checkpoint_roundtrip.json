@@ -1,0 +1,11 @@
+{
+  "amp_scaler_state": null,
+  "checkpoint_path": "/overflow/htzhu/mingcheng_new/.tmp/codex-aereinh/care_batch1_myops_roundtrip.pt",
+  "checkpoint_sha256": "388a06d15f4b1026aa1eea137a5eec6c1ead962ac77401d7afe47372d6954bb9",
+  "epoch": 0,
+  "global_step": 0,
+  "max_tensor_delta_after_reload": 0.0,
+  "optimizer_restored": true,
+  "prototype_memory_state_restored": true,
+  "scheduler_state": null
+}

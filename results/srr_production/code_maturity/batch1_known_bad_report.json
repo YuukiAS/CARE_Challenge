@@ -1,0 +1,18 @@
+{
+  "fixtures": [
+    "deterministic_prototype",
+    "prototype_missing_provenance",
+    "validation_leakage",
+    "current_case_leakage",
+    "no_t2_edema_nonzero",
+    "missing_modality_slot_nonzero",
+    "pattern_sip_no_router_grad",
+    "memory_no_effect",
+    "pure_srr_production",
+    "non_oof_anchor",
+    "checkpoint_resets_state",
+    "legacy_b6_chain"
+  ],
+  "last_executed_by_pytest": "see tests/srr_production/test_myops_mainline_batch1.py",
+  "status": "KNOWN_BAD_FIXTURES_DEFINED"
+}

@@ -1,13 +1,13 @@
 schema_version: 1
 authority_name: srr_production_batch0_formal_entrypoints
 created_from_head: 3f36a4ec62278ae097267d9c0eea14dd5e68a9e7
-formal_training_status: BLOCKED_PENDING_BATCH1_REPAIR
+formal_training_status: BLOCKED_PENDING_BATCH2_INFERENCE_AND_FAIR_EVALUATION
 status_reason: >-
-  Batch 0 found reusable real SRRProposeRefineMyoPS code and a real-data
-  fold0 runner, but no fully trusted production training entrypoint yet.
-  The formal training path remains blocked until Batch 1 repairs checkpoint
-  continuity, prototype authority, formal loss/gradient gates, and fair
-  evaluator authority.
+  Batch 1 repaired the MyoPS single-mainline non-training authority path:
+  OOF anchor manifest, strict prototype provenance, cross-fitted memory
+  proposal influence, production anchor-bounded final output, one-shot
+  gradient smoke, no-T2 exact-zero checks, and checkpoint roundtrip.
+  Formal training remains blocked until Batch 2 inference and fair evaluation.
 
 selected_model:
   class_name: SRRProposeRefineMyoPS
@@ -33,6 +33,17 @@ candidate_entrypoints:
       - prototype fallback can be deterministic when fitting has no vectors or is skipped
       - M10 variants are instantiable in model code but not exposed by this runner CLI
       - current evaluation is local prediction/GT recomputation, not hosted or performance-authoritative
+  - id: myops_batch1_mainline_validator
+    role: non_training_production_authority_validator
+    path: scripts/srr_production/validate_myops_mainline.py
+    config_path: configs/srr_production/myops_batch1.yaml
+    formal_authority: false
+    audit_status: batch1_non_training_complete_for_batch2
+    allowed_in_batch1: strict_manifest_forward_backward_intervention_checkpoint_tests_only
+    notes:
+      - Generated a complete 220-case real OOF nnU-Net anchor manifest.
+      - Proved production final output uses anchor_bounded_srr_correction in smoke, not pure SRR.
+      - Does not authorize formal training or performance claims.
   - id: unified_prediction_evaluator
     role: local_prediction_metric_recompute_candidate
     path: scripts/evaluation/evaluate_predictions.py

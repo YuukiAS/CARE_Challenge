@@ -72,6 +72,13 @@ M9_FORMAL_VARIANTS = (
     "m9_srr_main_t2_edema_recall_focus",
 )
 
+M10_PRODUCTION_VARIANTS = (
+    "m10_d0_static_matched_propref",
+    "m10_d1_spatial_br2_propref",
+    "m10_d2_hierarchical_psip_propref",
+    "m10_d3_hierarchical_memory_propref",
+)
+
 
 def canonical_model_variant(variant: str) -> str:
     value = str(variant)
@@ -696,6 +703,7 @@ def model_kwargs_from_args(args: argparse.Namespace) -> dict[str, object]:
         "encoder_profile": args.encoder_profile,
         "disable_local_refinement": bool(getattr(args, "disable_local_refinement", False)),
         "disable_anatomy_roi_prior": bool(getattr(args, "disable_anatomy_roi_prior", False)),
+        "final_output_mode": str(getattr(args, "final_output_mode", "legacy_variant")),
     }
 
 
@@ -854,7 +862,7 @@ def propref_loss(
     detach_m6_metrics: bool = True,
 ) -> tuple[torch.Tensor, dict[str, torch.Tensor]]:
     variant = str(getattr(args, "variant", "") or "")
-    if variant.startswith(("m6_", "m7_", "m8_", "m9_")):
+    if variant.startswith(("m6_", "m7_", "m8_", "m9_", "m10_")):
         total, m6_metrics = srr_m6_expanded_total_loss(
             outputs,
             labels,
@@ -1125,7 +1133,7 @@ def predict_case(
         anchor_features, component_features = full_case_anchor_tensors(case, device)
         if disable_nnunet_anchor:
             anchor_features, component_features = None, None
-        outputs = model(x, av, anchor_features=anchor_features, component_features=component_features)
+        outputs = model(x, av, anchor_features=anchor_features, component_features=component_features, case_ids=[case.case_id])
         preds = {
             "argmax": _decode_argmax(outputs)[0].detach().cpu().numpy().astype(np.uint8),
             "pathology_aware": _decode_pathology_aware(
@@ -1420,6 +1428,7 @@ def validate_patch_loss(
                 av,
                 anchor_features=anchor_features,
                 component_features=component_features,
+                case_ids=[case.case_id],
             )
             loss, _ = propref_loss(outputs, y, av, "soft_roi_refinement", args)
             losses.append(float(loss.detach().cpu()))
@@ -1684,7 +1693,7 @@ def run_one_batch_overfit(
         stage = "soft_roi_refinement"
         before = {name: param.detach().clone() for name, param in prototype_parameters(model)} if step == 1 else {}
         optimizer.zero_grad(set_to_none=True)
-        outputs = model(x, av, anchor_features=anchor_features, component_features=component_features)
+        outputs = model(x, av, anchor_features=anchor_features, component_features=component_features, case_ids=keys)
         loss, metrics = propref_loss(outputs, y, av, stage, args)
         loss.backward()
         torch.nn.utils.clip_grad_norm_(model.parameters(), args.grad_clip)
@@ -1860,6 +1869,7 @@ def train_variant(args: argparse.Namespace) -> None:
             "disable_local_refinement": bool(getattr(args, "disable_local_refinement", False)),
             "disable_anatomy_roi_prior": bool(getattr(args, "disable_anatomy_roi_prior", False)),
             "disable_nnunet_anchor": bool(getattr(args, "disable_nnunet_anchor", False)),
+            "final_output_mode": str(getattr(args, "final_output_mode", "legacy_variant")),
         }
         (variant_dir / "summary.json").write_text(json.dumps(summary, indent=2, sort_keys=True), encoding="utf-8")
         return
@@ -1937,7 +1947,7 @@ def train_variant(args: argparse.Namespace) -> None:
         )
         before = {name: param.detach().clone() for name, param in prototype_parameters(model)} if step in {1, max(1, args.max_steps // 2)} else {}
         optimizer.zero_grad(set_to_none=True)
-        outputs = model(x, av, anchor_features=anchor_features, component_features=component_features)
+        outputs = model(x, av, anchor_features=anchor_features, component_features=component_features, case_ids=keys)
         loss, metrics = propref_loss(outputs, y, av, stage, args)
         if step == 1:
             _grad_loss, grad_metrics = propref_loss(
@@ -2210,6 +2220,7 @@ def train_variant(args: argparse.Namespace) -> None:
         "disable_local_refinement": bool(getattr(args, "disable_local_refinement", False)),
         "disable_anatomy_roi_prior": bool(getattr(args, "disable_anatomy_roi_prior", False)),
         "disable_nnunet_anchor": bool(getattr(args, "disable_nnunet_anchor", False)),
+        "final_output_mode": str(getattr(args, "final_output_mode", "legacy_variant")),
         "hardneg_components_csv": str(hardneg_path) if hardneg_path else "evidence not found",
         "hardneg_case_count": len(hardneg_targets),
         "hardneg_component_count": sum(len(v) for v in hardneg_targets.values()),
@@ -2268,9 +2279,16 @@ def main() -> None:
             "m8_scar_precision_edema_safe_longrun",
             "m8_t2_centerC_edema_repair_longrun",
             *M9_FORMAL_VARIANTS,
+            *M10_PRODUCTION_VARIANTS,
         ],
     )
     parser.add_argument("--run-label", default="", help="Optional isolated output label under variants/ without changing model hparams.")
+    parser.add_argument(
+        "--final-output-mode",
+        choices=("legacy_variant", "anchor_bounded_srr_correction", "srr_no_anchor_control"),
+        default="legacy_variant",
+        help="Explicit final-output authority mode; production MyoPS Batch 1 uses anchor_bounded_srr_correction.",
+    )
     parser.add_argument("--fold", type=int, default=0)
     parser.add_argument("--seed", type=int, default=20260703)
     parser.add_argument("--device", choices=["cuda", "cpu"], default="cuda")

@@ -53,6 +53,7 @@ class SafePrototypeMemoryBank(torch.nn.Module):
         self.register_buffer("counts", torch.zeros(len(M9_MEMORY_CATEGORIES), dtype=torch.long))
         self.category_to_index = {name: idx for idx, name in enumerate(M9_MEMORY_CATEGORIES)}
         self.update_ledger: list[PrototypeMemoryUpdate] = []
+        self.provenance: dict[str, list[dict[str, object]]] = {name: [] for name in M9_MEMORY_CATEGORIES}
 
     def update(self, category: str, features: torch.Tensor, *, case_id: str, t2_present: bool) -> PrototypeMemoryUpdate:
         if category not in self.category_to_index:
@@ -78,6 +79,15 @@ class SafePrototypeMemoryBank(torch.nn.Module):
         self.counts[idx] += feature_count
         event = PrototypeMemoryUpdate(category, case_id, bool(t2_present), feature_count, True, "ACCEPTED")
         self.update_ledger.append(event)
+        self.provenance[category].append(
+            {
+                "case_id": str(case_id),
+                "category": str(category),
+                "t2_present": bool(t2_present),
+                "feature_count": int(feature_count),
+                "accepted": True,
+            }
+        )
         return event
 
     def summary(self) -> dict[str, object]:
@@ -89,6 +99,8 @@ class SafePrototypeMemoryBank(torch.nn.Module):
             },
             "no_t2_edema_negative_policy": "REJECT_NO_T2_EDEMA_NEGATIVE",
             "ledger_events": len(self.update_ledger),
+            "accepted_events": sum(1 for row in self.update_ledger if row.status == "ACCEPTED"),
+            "provenance": self.provenance,
         }
 
     def ledger_rows(self) -> list[dict[str, object]]:
@@ -158,6 +170,7 @@ class M10CrossFittedPrototypeMemory(torch.nn.Module):
         self.negative_delta = torch.nn.Parameter(torch.zeros(shape_neg))
         self.pathology_to_index = {name: idx for idx, name in enumerate(M10_PATHOLOGIES)}
         self.update_ledger: list[M10MemoryUpdate] = []
+        self.provenance: dict[str, list[dict[str, object]]] = {pathology: [] for pathology in M10_PATHOLOGIES}
 
     @staticmethod
     def _slot_indices(feature_count: int, slot_count: int, device: torch.device) -> torch.Tensor:
@@ -223,15 +236,31 @@ class M10CrossFittedPrototypeMemory(torch.nn.Module):
             counts[slot] += int(selected.shape[0])
         event = M10MemoryUpdate(pathology, polarity, category, str(case_id), shard, shard, bool(t2_present), feature_count, feature_count, "ACCEPTED")
         self.update_ledger.append(event)
+        self.provenance[pathology].append(
+            {
+                "case_id": str(case_id),
+                "shard": int(shard),
+                "polarity": str(polarity),
+                "category": str(category),
+                "t2_present": bool(t2_present),
+                "feature_count": int(feature_count),
+                "accepted_count": int(feature_count),
+            }
+        )
         return event
 
-    def query(self, features: torch.Tensor, *, pathology: str, case_id: str) -> dict[str, torch.Tensor]:
+    def query(self, features: torch.Tensor, *, pathology: str, case_id: str, require_ready: bool = False) -> dict[str, torch.Tensor]:
         if pathology not in self.pathology_to_index:
             raise ValueError(f"unknown pathology: {pathology!r}")
         query_shard = deterministic_memory_shard(case_id)
         include = torch.ones(M10_SHARDS, dtype=torch.bool, device=features.device)
         include[query_shard] = False
         emb = F.normalize(features, dim=1)
+        pidx = self.pathology_to_index[pathology]
+        pos_counts = self.positive_counts[pidx].to(device=features.device)[include]
+        neg_counts = self.negative_counts[pidx].to(device=features.device)[include]
+        if require_ready and (not bool((pos_counts > 0).any()) or not bool((neg_counts > 0).any())):
+            raise ValueError(f"cross-fitted memory for {pathology} is not ready for case {case_id}: missing positive or negative source shards")
         pos = self._prototype_tensor(pathology, "positive").to(device=features.device, dtype=features.dtype)[include]
         neg = self._prototype_tensor(pathology, "negative").to(device=features.device, dtype=features.dtype)[include]
         pos_flat = pos.reshape(-1, self.channels)
@@ -243,6 +272,8 @@ class M10CrossFittedPrototypeMemory(torch.nn.Module):
             "negative_similarity": neg_score,
             "query_shard": torch.tensor(query_shard, device=features.device),
             "source_shards": torch.nonzero(include, as_tuple=False).flatten().to(device=features.device),
+            "positive_source_count": pos_counts.sum().to(dtype=features.dtype),
+            "negative_source_count": neg_counts.sum().to(dtype=features.dtype),
         }
 
     def summary(self) -> dict[str, object]:
@@ -253,6 +284,8 @@ class M10CrossFittedPrototypeMemory(torch.nn.Module):
             "shards": M10_SHARDS,
             "edema_no_t2_policy": "REJECT_NO_T2_EDEMA_MEMORY",
             "ledger_events": len(self.update_ledger),
+            "accepted_events": sum(1 for row in self.update_ledger if row.reason == "ACCEPTED"),
+            "provenance": self.provenance,
         }
 
     def ledger_rows(self) -> list[dict[str, object]]:

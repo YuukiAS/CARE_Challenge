@@ -324,3 +324,132 @@ Batch 1 应只修改现有文件和函数，不做新架构搜索:
 - Cine 审计 GPT: B7 official CineMA 只是 isolated probe，adapter 使用 synthetic frame/target；B8 使用 synthetic fixed/moving pair，没有真实 4D frame、registration warp、temporal aggregation 或 ED-space export。
 - 红队 GPT: 必须同时禁止 B3-B8 Python 和 job wrappers；formal scanner 需要拦截 random scientific data、hard-coded metric、deterministic/random prototype bootstrap、legacy wrapper 调用。
 - Integrator 处理结果: 已把 B3-B8 与 wrapper 收入 `forbidden_formal_entrypoints`，新增 strict audit 和 pytest known-bad；当前没有 production formal training entrypoint，状态保持 `BLOCKED_PENDING_BATCH1_REPAIR`。
+
+
+---
+
+## Change 002: Batch 1 MyoPS single-mainline non-training repair
+
+- 日期/时间: 2026-07-20
+- 执行线程: CARE SRR main integrator, main-only
+- 只读审计线程: Model-forward auditor, Anchor/prototype auditor, Loss/gradient auditor, Checkpoint/red-team auditor
+- Base commit: `bfced937d0d864e2f591664d71b27b545fe792fb`
+- Head commit: final Batch 1 commit SHA is reported in the final integrator response; exact self SHA cannot be embedded before commit without changing that SHA.
+- 对应 TODO: Batch 1 MyoPS mainline repair
+- 状态: complete pending commit/push
+
+### 1. 本次目标
+
+只修 MyoPS 单一主干，不修 Cine、不恢复 B3-B8、不训练、不 Slurm、不做 44 例性能比较。目标是把现有 `SRRProposeRefineMyoPS` 和 fold0 runner 收束为非训练 production authority smoke: 真实 OOF anchor、真实 prototype/memory、显式 anchor-bounded final output、单次 forward/backward、known-bad 拒绝和 checkpoint roundtrip。
+
+### 2. 修改文件
+
+| 文件 | 函数/区域 | 修改前行为 | 修改后行为 |
+| --- | --- | --- | --- |
+| `src/care_myocardium/models/srr_propref.py` | `ProposalDictionary.load_prototype_bank` | 只复制 bank；允许 deterministic/repeat fallback 结果被当作普通 source | 增加 `strict` 与 provenance；production strict 拒绝 deterministic/random、空向量、repeat-last、source vector count 不足 |
+| `src/care_myocardium/models/srr_propref.py` | `ProposalDictionary.forward` | proposal 只用本地 positive/negative prototype buffers 和内置 negative memories | 接收 `memory_query`，将 cross-fitted positive/negative similarity 合入 proposal formula，影响 proposal logits |
+| `src/care_myocardium/models/srr_propref.py` | `SRRProposeRefineMyoPS.__init__` | final-output 语义由 variant 隐式决定；无 production correction gate；未实例化 cross-fitted memory | 增加 `final_output_mode`，支持 `anchor_bounded_srr_correction` 和 `srr_no_anchor_control`；增加 `production_correction_gate` 和 `M10CrossFittedPrototypeMemory` |
+| `src/care_myocardium/models/srr_propref.py` | `SRRProposeRefineMyoPS.forward` | M9/M10 可直接输出 `srr_logits`；memory 未接 proposal；production 无 `case_ids` fail gate | production mode 要求 `case_ids`，query cross-fitted memory，计算 `final_logits = frozen anchor + bounded scar correction + bounded edema correction`；`anchor_identity_control` 使 correction exact zero；`srr_no_anchor_control_logits` 仅诊断输出 |
+| `src/care_myocardium/models/srr_dictionary_memory.py` | `SafePrototypeMemoryBank.update/summary` | 记录 ledger 但无 provenance summary | 记录 accepted provenance；保留 no-T2 edema-negative rejection |
+| `src/care_myocardium/models/srr_dictionary_memory.py` | `M10CrossFittedPrototypeMemory.update/query/summary` | query 排除当前 shard，但可在未 ready 时返回零初始化 memory；summary 使用错误 `row.status` | 增加 source provenance、positive/negative source count、`require_ready` fail-closed；summary 使用 `row.reason == ACCEPTED` |
+| `src/care_myocardium/models/srr_spatial_dictionary.py` | `M10TwoPassSpatialDictionary.forward` | 返回 gates/status，但 receipt 缺 query 输入与 slot mask policy 字段 | 增加 `spatial_query_inputs` 和 `slot_mask_policy` 审计字段 |
+| `scripts/training/run_srr_propref_myops_fold0.py` | `M10_PRODUCTION_VARIANTS`, CLI choices | M10 只能从 wrapper 间接触达，runner CLI 不接受 | runner CLI 接受 M10 variants，但仍不授权正式训练 |
+| `scripts/training/run_srr_propref_myops_fold0.py` | `model_kwargs_from_args`, `main` | 无显式 final-output mode 参数 | 增加 `--final-output-mode` 并传入现有模型 |
+| `scripts/training/run_srr_propref_myops_fold0.py` | `propref_loss` | expanded loss 只覆盖 M6/M7/M8/M9 | M10 也走 expanded SRR loss，包含 live Pattern-SIP/dictionary/proposal/refiner/control terms |
+| `scripts/training/run_srr_propref_myops_fold0.py` | `predict_case`, `validate_patch_loss`, `run_one_batch_overfit`, `train_variant` model calls | production memory 无 `case_ids`，正常 path 不能 query cross-fitted bank | 按真实 case id/keys 传 `case_ids`，使 production mode 的 memory leakage control 与 proposal影响可执行 |
+| `configs/srr_production/myops_batch1.yaml` | new | 无 Batch 1 MyoPS production smoke config | 固定 M10 D3、四尺度、spatial retrieval、Pattern-SIP、cross-fitted memory、`anchor_bounded_srr_correction`；formal authority 仍 false |
+| `scripts/srr_production/validate_myops_mainline.py` | new | 无 Batch 1 strict validator | 生成 220-case OOF manifest、prototype/memory provenance、forward/gradient/intervention/checkpoint/known-bad receipts；不训练不 step |
+| `tests/srr_production/test_myops_mainline_batch1.py` | new | 无 Batch 1 unit/integration known-bad coverage | 检查 authority 仍 blocked for Batch2、OOF manifest/receipts、12 个 known-bad fixture 全拒绝 |
+| `scripts/srr_production/audit_formal_entrypoints.py` | `audit_config` | strict 只允许 `BLOCKED_PENDING_BATCH1_REPAIR` 下空 formal entrypoints | 允许 Batch 2 blocked 状态下继续空 formal entrypoints |
+| `tests/srr_production/test_formal_entrypoint_authority.py` | default status test | 期待 Batch 1 blocked status | 期待 `BLOCKED_PENDING_BATCH2_INFERENCE_AND_FAIR_EVALUATION` |
+| `configs/srr_production/entrypoints.yaml` | authority status/candidates | `BLOCKED_PENDING_BATCH1_REPAIR` | `BLOCKED_PENDING_BATCH2_INFERENCE_AND_FAIR_EVALUATION`；新增 Batch 1 validator candidate，formal training 仍空 |
+
+### 3. 真实数据流变化
+
+Production MyoPS smoke 现在的真实链路为：
+
+```text
+Dataset501 real patch + availability
+-> four-scale modality encoders
+-> shared/private/interaction retrieval gates with invalid-slot zeroing
+-> M10 spatial dictionary gates and live Pattern-SIP statistics
+-> real fold0-train prototype vectors and cross-fitted memory query excluding query shard
+-> positive/negative similarity
+-> scar/edema proposal logits
+-> scar/edema soft-ROI refiner logits
+-> bounded scar/edema correction
+-> frozen same-case OOF nnU-Net anchor logits
+-> final logits
+```
+
+`anchor_identity_control` 的实测 `anchor_identity_max_abs_delta = 0.0`。`srr_no_anchor_control_logits` 保留为诊断输出，不进入 production final path。
+
+### 4. 删除或关闭的绕过
+
+- production pure-SRR 绕过: `final_output_mode=anchor_bounded_srr_correction` 时 final logits 不再由 M9/M10 variant 隐式切到 `srr_logits`。
+- memory-disconnected 绕过: validator 记录 `memory_intervention_proposal_delta_mean=0.0655626654624939` 和 `memory_intervention_final_delta_mean=0.0031393414828926325`；memory 改变会影响 proposal 和 final。
+- prototype fallback 绕过: strict `load_prototype_bank` 拒绝 deterministic/random/empty/repeat-last/source-count 不足。
+- current-case leakage: production forward 必须传 `case_ids`，`M10CrossFittedPrototypeMemory.query(require_ready=True)` 排除当前 deterministic shard。
+- missing modality slot: strict smoke 记录 `invalid_missing_slot_gate_max=0.0`。
+- no-T2 edema: strict smoke 记录 `no_t2_edema_correction_abs_max=0.0`，`edema_owned` gradient `0.0`。
+- old B3-B8: Batch 0 禁止保持不变，Batch 1 known-bad 包含 `legacy_b6_chain` 拒绝。
+
+### 5. 运行命令与结果
+
+| 命令 | Exit | 真实输入 | 真实输出 | 验证的事实 |
+| --- | ---: | --- | --- | --- |
+| `git status --short` | 0 | `/users/a/e/aereinh/CARE` | 启动为空 | 无需保全未提交工作 |
+| `git fetch --all --prune` | 0 | origin | `origin/main` updated `4144277..bfced93` | 远端同步 |
+| `git merge --ff-only origin/main` | 0 | local main | fast-forward 到 `bfced937d0d864e2f591664d71b27b545fe792fb` | 当前 main 满足 expected minimum |
+| `python scripts/srr_production/audit_formal_entrypoints.py --strict` | 0 | `configs/srr_production/entrypoints.yaml` | failure_count 0; formal_entrypoint_count 0 | formal training 仍未授权，Batch2 blocked 状态合法 |
+| `PATH=/users/a/e/aereinh/CARE/envs/env_CARE/bin:$PATH python scripts/srr_production/validate_myops_mainline.py --strict` | 1 then fixed | real Dataset501, cached nnU-Net anchors, current model | first failed on `M10MemoryUpdate.status`; fixed summary to use `reason` | 审计发现的 memory summary bug 被真实 smoke 触发并修复 |
+| same strict validator | 1 then fixed | same | failed `BATCH_1_BLOCKED_PROTOTYPE_MEMORY_NOT_CONNECTED` because query shard lacked edema source memory | source selection changed to include T2-present edema-positive cases across all four shards |
+| same strict validator | 1 then fixed | same | failed checkpoint roundtrip exact because validator compared post-intervention checkpoint against pre-intervention outputs | roundtrip reference changed to current post-intervention state |
+| same strict validator | 0 | `configs/srr_production/myops_batch1.yaml`; 220 cached OOF anchor rows | 8 Batch 1 receipts under `results/srr_production/code_maturity/` | OOF manifest, production final output, memory influence, no-T2 exact-zero, Pattern-SIP grad, checkpoint roundtrip all passed |
+| `PATH=/users/a/e/aereinh/CARE/envs/env_CARE/bin:$PATH python -m pytest -q tests/srr_production/test_formal_entrypoint_authority.py` | 0 | formal authority tests | `5 passed` | B3/B8 formal-entrypoint rejection remains active |
+| `PATH=/users/a/e/aereinh/CARE/envs/env_CARE/bin:$PATH python -m pytest -q tests/srr_production/test_myops_mainline_batch1.py` | 0 | Batch 1 receipts and known-bad fixtures | `4 passed` with 12 known-bad fixtures rejected | Batch 1 authority and known-bad coverage pass |
+| `git diff --check` | 0 | current diff | no whitespace errors | diff clean |
+
+### 6. 关键数值/形状/哈希
+
+- Base commit: `bfced937d0d864e2f591664d71b27b545fe792fb`
+- OOF anchor manifest: `case_count=220`, `unique_cases=220`, `fold_counts={0:44,1:44,2:44,3:44,4:44}`
+- First manifest row: `Case1001`, source fold `1`, tensor shape `[6, 9, 256, 256]`, `is_oof=true`
+- Smoke selected cases: LGE-only `Case1001`; LGE+C0 `Case5001`; LGE+C0+T2 `Case2001`; T2-present edema-positive `Case2001`; no-T2 scar-positive `Case1001`
+- Prototype/memory source cases: `Case2009`, `Case2001`, `Case2005`, `Case2006`, `Case1001`, `Case5001`
+- Prototype vector counts: scar positive `288`, scar negative `1024`, edema positive `384`, edema negative `768`; required scar positive `6`, scar negative `12`, edema positive `8`, edema negative `6`
+- Gradient receipt: edema encoder `313.71407964185346`, router `2110.2480482227734`, dictionary `0.448317086789757`, proposal `0.448317086789757`, refiner `117.02662850171328`, correction gate `8.817614934741869e-05`, Pattern-SIP router `9.56051271986784`, no-T2 edema-owned `0.0`
+- Intervention: identity max delta `0.0`; invalid missing slot gate max `0.0`; memory proposal delta mean `0.0655626654624939`; memory final delta mean `0.0031393414828926325`; optimizer/slurm/formal training counts all `0`
+- Checkpoint roundtrip: max tensor delta `0.0`; global step `0`; epoch `0`; optimizer state present; scheduler/scaler explicit null; checkpoint SHA `388a06d15f4b1026aa1eea137a5eec6c1ead962ac77401d7afe47372d6954bb9`
+- File hashes: `configs/srr_production/myops_batch1.yaml=5c1448f509e672adb11e1dff84c889403d4485441f652c02364c8bccb9983ccf`; `validate_myops_mainline.py=f3cc94800dbb970ce5d0db115cad11c96a3ba72b0b03b2a4031b39f33ae16219`; `batch1_anchor_oof_manifest.json=ecde977a1d1d72014b9abff18cfd56320720ec6cfbac649dece30801fc5f2465`; `batch1_gradient_receipt.csv=2661b45f4fe37dd232986438fda269686cc6e4b5025093410056998b0d6593a6`
+
+### 7. 人类解释
+
+这次修的是 MyoPS SRR 主干的代码真实性，不是模型性能。现在 production smoke 的 final logits 有唯一语义：冻结 OOF nnU-Net anchor 作为 base，只允许由真实图像、retrieval、prototype/memory proposal 和 refiner 产生 bounded scar/edema correction。旧的 pure SRR、M6 arbitration、B3-B8 synthetic/proxy 都不能被默认为 production authority。
+
+### 8. 未解决项
+
+| 文件 | 函数/区域 | 未解决项 |
+| --- | --- | --- |
+| `scripts/training/run_srr_propref_myops_fold0.py` | `train_variant` | 虽然 production mode runner plumbing 已接通，但本批没有执行正式训练；formal training 仍未授权 |
+| `scripts/training/run_srr_propref_myops_fold0.py` | checkpoint save/resume | validator 证明了 one-shot model/optimizer/null scheduler/null scaler/RNG metadata roundtrip；完整 long-run resume CLI 仍属于 Batch 2/训练授权前工作 |
+| `scripts/evaluation/evaluate_predictions.py` | all | 本批禁止修改 evaluator；fair inference/evaluation 属于 Batch 2 |
+| Cine files | all | 本批禁止 Cine；B7/B8 仍 historical forbidden，不代表 Cine production repaired |
+| performance | all | 没有 44 例评价、没有 Dice 结论、没有 hosted metric 结论 |
+
+### 9. 下一批允许范围
+
+Batch 2 应只做 inference and fair evaluation authority:
+
+1. 在不训练或按新授权训练的前提下，建立 production inference entrypoint，读取 Batch 1 anchor/prototype/memory manifests。
+2. 绑定 `scripts/evaluation/evaluate_predictions.py` 的 empty-GT、fold parity、component/remote-FP/subgroup 输出，不改写 metric 含义。
+3. 对 fold0 validation 做公平 SRR-vs-nnU-Net 本地重算；仍不得把结果包装成 hosted leaderboard 结论。
+4. 若需要正式训练，必须有新的明确授权和资源计划；Batch 1 commit 本身不授权训练。
+
+### 10. 审计意见
+
+- Model-forward auditor: 指出 M9/M10 pure-SRR final-output、缺 `srr_no_anchor_control`、M10 memory 未接 proposal、M10 CLI 未暴露；Integrator 已用 `final_output_mode`、diagnostic logits、memory query、M10 CLI choices 修复。
+- Anchor/prototype auditor: 确认 5 fold x 44 = 220 OOF anchors 完整，protocol split 与 nnU-Net split 匹配；指出 memory summary `row.status` bug 和 memory readiness 问题；Integrator 已修复并生成 220-case manifest。
+- Loss/gradient auditor: 指出 M10 未走 expanded loss、Pattern-SIP 需要 live gate gradient、no-T2 exact-zero 需独立 receipt；Integrator 已让 M10 走 expanded loss并生成 gradient/no-T2 receipt。
+- Checkpoint/red-team auditor: 指出 runner 默认非 production、normal path 未传 `case_ids`、checkpoint 不等于 resume authority；Integrator 已传 `case_ids`、做 checkpoint roundtrip receipt，但保留 formal training blocked 到 Batch 2。
+- Integrator 处理结果: Batch 1 MyoPS mainline non-training authority complete for Batch 2; no training, no Slurm, no performance conclusion.

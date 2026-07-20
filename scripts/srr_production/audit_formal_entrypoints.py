@@ -144,11 +144,15 @@ def audit_config(config: dict[str, Any], *, strict: bool) -> tuple[list[dict[str
     entries = formal_entries(config)
     formal_training_status = str(config.get("formal_training_status", ""))
 
-    if strict and not entries and formal_training_status != "BLOCKED_PENDING_BATCH1_REPAIR":
+    allowed_empty_formal_statuses = {
+        "BLOCKED_PENDING_BATCH1_REPAIR",
+        "BLOCKED_PENDING_BATCH2_INFERENCE_AND_FAIR_EVALUATION",
+    }
+    if strict and not entries and formal_training_status not in allowed_empty_formal_statuses:
         failures.append(
             {
                 "check": "formal_authority_empty_without_blocked_status",
-                "message": "No formal entrypoint is declared, but formal_training_status is not BLOCKED_PENDING_BATCH1_REPAIR.",
+                "message": "No formal entrypoint is declared, but formal_training_status is not an allowed blocked status.",
             }
         )
 

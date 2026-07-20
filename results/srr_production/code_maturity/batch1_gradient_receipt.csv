@@ -1,0 +1,9 @@
+batch,module,grad_abs_sum,expected
+t2_present,edema_encoder,313.71407964185346,nonzero
+t2_present,router,2110.2480482227734,nonzero
+t2_present,dictionary,0.448317086789757,nonzero
+t2_present,proposal,0.448317086789757,nonzero
+t2_present,refiner,117.02662850171328,nonzero
+t2_present,correction_gate,8.817614934741869e-05,nonzero
+t2_present,pattern_sip_router,9.56051271986784,nonzero
+no_t2,edema_owned,0.0,zero

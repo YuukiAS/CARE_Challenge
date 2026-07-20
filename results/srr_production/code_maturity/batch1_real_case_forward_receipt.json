@@ -1,0 +1,64 @@
+{
+  "branch_arbitration_status": "production_anchor_bounded_srr_correction",
+  "final_output_mode": "anchor_bounded_srr_correction",
+  "no_t2_edema_correction_abs_max": 0.0,
+  "output_shapes": {
+    "bounded_edema_correction": [
+      1,
+      1,
+      4,
+      32,
+      32
+    ],
+    "bounded_scar_correction": [
+      1,
+      1,
+      4,
+      32,
+      32
+    ],
+    "edema_proposal_logits": [
+      1,
+      1,
+      4,
+      32,
+      32
+    ],
+    "logits": [
+      1,
+      6,
+      4,
+      32,
+      32
+    ],
+    "nnunet_anchor_logits": [
+      1,
+      6,
+      4,
+      32,
+      32
+    ],
+    "scar_proposal_logits": [
+      1,
+      1,
+      4,
+      32,
+      32
+    ]
+  },
+  "selected_case_ids": {
+    "first_lge_c0": "Case5001",
+    "first_lge_c0_t2": "Case2001",
+    "first_lge_only": "Case1001",
+    "first_no_t2_scar_positive": "Case1001",
+    "first_t2_present_edema_positive": "Case2001"
+  },
+  "source_case_ids": [
+    "Case2009",
+    "Case2001",
+    "Case2005",
+    "Case2006",
+    "Case1001",
+    "Case5001"
+  ]
+}

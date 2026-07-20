@@ -10,6 +10,7 @@ from src.care_myocardium.anchors.myops_decode import canonical_t2_present
 from src.care_myocardium.models.pathology_heads import AnatomyPathologyHeads
 from src.care_myocardium.models.proposal_prototypes import deterministic_axis_prototypes
 from src.care_myocardium.models.srr_blocks import gate_diagnostics
+from src.care_myocardium.models.srr_dictionary_memory import M10CrossFittedPrototypeMemory
 from src.care_myocardium.models.srr_spatial_dictionary import M10TwoPassSpatialDictionary
 from src.care_myocardium.models.srr_v2_unet import FlexibleTaskDecoder, ScaleRetrieval, build_modality_encoder, encoder_profile_scale_channels
 
@@ -36,6 +37,7 @@ class ProposalDictionary(nn.Module):
         self.embedding = nn.Conv3d(channels, channels, kernel_size=1, bias=False)
         self.conv_score = nn.Conv3d(channels, 1, kernel_size=1)
         self.prototype_source = "no_proto_variant" if self.no_proto else "deterministic_axis_bootstrap_pending_train_or_oof_fit"
+        self.prototype_provenance: dict[str, object] = {}
         if not self.no_proto:
             self.memory_types = (
                 "outside_myocardium",
@@ -50,12 +52,37 @@ class ProposalDictionary(nn.Module):
             for idx, name in enumerate(self.memory_types):
                 self.register_buffer(f"negative_memory_{name}", deterministic_axis_prototypes(2, channels, offset=idx + 2))
 
-    def load_prototype_bank(self, *, positive: torch.Tensor, negative: torch.Tensor, source: str) -> None:
+    def load_prototype_bank(
+        self,
+        *,
+        positive: torch.Tensor,
+        negative: torch.Tensor,
+        source: str,
+        provenance: dict[str, object] | None = None,
+        strict: bool = False,
+    ) -> None:
         if self.no_proto:
             return
+        source_text = str(source)
+        if strict:
+            vector_counts = {} if provenance is None else dict(provenance.get("vector_counts", {})) if isinstance(provenance.get("vector_counts", {}), dict) else {}
+            repeat_last = bool(provenance.get("repeat_last_vector_fallback", False)) if provenance is not None else False
+            if (
+                "deterministic_axis" in source_text
+                or "random" in source_text.lower()
+                or positive.numel() == 0
+                or negative.numel() == 0
+                or positive.shape[0] < self.positive.shape[0]
+                or negative.shape[0] < self.negative.shape[0]
+                or repeat_last
+                or int(vector_counts.get("positive", 0)) < self.positive.shape[0]
+                or int(vector_counts.get("negative", 0)) < self.negative.shape[0]
+            ):
+                raise ValueError(f"forbidden production prototype source: {source_text}")
         self.positive.copy_(self._resize_bank(positive, self.positive))
         self.negative.copy_(self._resize_bank(negative, self.negative))
-        self.prototype_source = str(source)
+        self.prototype_source = source_text
+        self.prototype_provenance = dict(provenance or {})
 
     @staticmethod
     def _resize_bank(bank: torch.Tensor, target: torch.Tensor) -> torch.Tensor:
@@ -126,6 +153,7 @@ class ProposalDictionary(nn.Module):
         anchor_features: torch.Tensor | dict[str, torch.Tensor] | None = None,
         component_features: torch.Tensor | dict[str, torch.Tensor] | None = None,
         availability: torch.Tensor | None = None,
+        memory_query: dict[str, torch.Tensor] | None = None,
     ) -> dict[str, torch.Tensor]:
         emb = self.embedding(features)
         conv = self.conv_score(features)
@@ -155,6 +183,13 @@ class ProposalDictionary(nn.Module):
         neg_proto = self._max_similarity(emb, self.negative)
         memory_bank = self._negative_memory_bank()
         neg_memory = self._max_similarity(emb, memory_bank)
+        if memory_query is not None:
+            memory_pos = memory_query.get("positive_similarity")
+            memory_neg = memory_query.get("negative_similarity")
+            if isinstance(memory_pos, torch.Tensor):
+                pos_sim = torch.maximum(pos_sim, memory_pos.to(device=pos_sim.device, dtype=pos_sim.dtype))
+            if isinstance(memory_neg, torch.Tensor):
+                neg_memory = torch.maximum(neg_memory, memory_neg.to(device=neg_memory.device, dtype=neg_memory.dtype))
         neg_sim = torch.maximum(neg_proto, neg_memory)
         proposal = (
             conv
@@ -1005,6 +1040,7 @@ class SRRProposeRefineMyoPS(nn.Module):
         encoder_profile: str = "tiny_3scale",
         disable_local_refinement: bool = False,
         disable_anatomy_roi_prior: bool = False,
+        final_output_mode: str = "legacy_variant",
     ) -> None:
         super().__init__()
         if variant not in {
@@ -1025,6 +1061,9 @@ class SRRProposeRefineMyoPS(nn.Module):
         self.encoder_profile = str(encoder_profile)
         self.disable_local_refinement = bool(disable_local_refinement)
         self.disable_anatomy_roi_prior = bool(disable_anatomy_roi_prior)
+        self.final_output_mode = str(final_output_mode or "legacy_variant")
+        if self.final_output_mode not in {"legacy_variant", "anchor_bounded_srr_correction", "srr_no_anchor_control"}:
+            raise ValueError(f"unknown final_output_mode: {self.final_output_mode}")
         self.encoder_scale_channels = encoder_profile_scale_channels(base_channels, self.encoder_profile)
         self.feature_channels = int(self.encoder_scale_channels[0])
         self.dictionary_config = str(self.m6_config.get("dictionary_config", "legacy_interaction_slots"))
@@ -1093,6 +1132,8 @@ class SRRProposeRefineMyoPS(nn.Module):
         self.baseline_gate = BaselinePreservingResidualGate(num_classes=6)
         self.segmentation_context_interface = SegmentationContextInterface()
         self.branch_arbitration = BranchArbitrationGate(mode=str(self.m6_config.get("arbitration_mode", "legacy_baseline")))
+        self.production_correction_gate = nn.Conv3d(4, 2, kernel_size=1)
+        self.cross_fitted_memory = M10CrossFittedPrototypeMemory(self.feature_channels)
         self.m10_spatial_dictionary = (
             M10TwoPassSpatialDictionary(
                 self.feature_channels,
@@ -1232,6 +1273,8 @@ class SRRProposeRefineMyoPS(nn.Module):
         force_segmentation_fallback: bool = False,
         force_closed_gate: bool = False,
         disable_srr_evidence: bool = False,
+        case_ids: list[str] | tuple[str, ...] | None = None,
+        anchor_identity_control: bool = False,
     ) -> dict[str, torch.Tensor]:
         if x.shape[1] != 3:
             raise ValueError(f"SRRProposeRefineMyoPS expects 3 channels, got {x.shape[1]}")
@@ -1274,6 +1317,38 @@ class SRRProposeRefineMyoPS(nn.Module):
             gate_valid_masks = {**gate_valid_masks, **spatial_valid}  # type: ignore[arg-type]
         scar_anatomy_prior = anatomy_context["scar_soft_gate_logits"]
         edema_anatomy_prior = anatomy_context["edema_soft_gate_logits"]
+        scar_memory_queries: list[dict[str, torch.Tensor]] = []
+        edema_memory_queries: list[dict[str, torch.Tensor]] = []
+        if self.final_output_mode == "anchor_bounded_srr_correction" and case_ids is None:
+            raise ValueError("production final_output_mode requires case_ids for cross-fitted memory leakage control")
+        require_memory_ready = self.final_output_mode == "anchor_bounded_srr_correction"
+        if case_ids is not None:
+            for batch_idx, case_id in enumerate(case_ids):
+                scar_memory_queries.append(
+                    self.cross_fitted_memory.query(
+                        features["scar"][batch_idx : batch_idx + 1],
+                        pathology="scar",
+                        case_id=str(case_id),
+                        require_ready=require_memory_ready,
+                    )
+                )
+                edema_memory_queries.append(
+                    self.cross_fitted_memory.query(
+                        features["edema"][batch_idx : batch_idx + 1],
+                        pathology="edema",
+                        case_id=str(case_id),
+                        require_ready=require_memory_ready,
+                    )
+                )
+
+        def _merge_memory_queries(rows: list[dict[str, torch.Tensor]]) -> dict[str, torch.Tensor] | None:
+            if not rows:
+                return None
+            return {
+                "positive_similarity": torch.cat([row["positive_similarity"] for row in rows], dim=0),
+                "negative_similarity": torch.cat([row["negative_similarity"] for row in rows], dim=0),
+            }
+
         scar_dict = self.scar_dictionary(
             features["scar"],
             evidence["scar_logits"],
@@ -1281,6 +1356,7 @@ class SRRProposeRefineMyoPS(nn.Module):
             anchor_features=anchor_features,
             component_features=component_features,
             availability=availability,
+            memory_query=_merge_memory_queries(scar_memory_queries),
         )
         edema_dict = self.edema_dictionary(
             features["edema"],
@@ -1289,6 +1365,7 @@ class SRRProposeRefineMyoPS(nn.Module):
             anchor_features=anchor_features,
             component_features=component_features,
             availability=availability,
+            memory_query=_merge_memory_queries(edema_memory_queries),
         )
         if self.disable_local_refinement:
             scar_logits, scar_residual, scar_roi, scar_crop_mask, scar_crop_bounds, scar_roi_stats = self._bypass_refinement(
@@ -1371,13 +1448,39 @@ class SRRProposeRefineMyoPS(nn.Module):
         )
         proposal_logits = torch.cat([evidence["anatomy_logits"], edema_dict["proposal_logits"], scar_dict["proposal_logits"]], dim=1)
         refiner_logits = srr_logits
+        anchor_logits = baseline_blend["anchor_logits"].detach()
+        gate_input = torch.cat([scar_dict["proposal_logits"], edema_dict["proposal_logits"], scar_logits, edema_logits], dim=1)
+        production_gate = torch.sigmoid(self.production_correction_gate(gate_input))
+        scar_raw_correction = 0.5 * (scar_logits + scar_dict["proposal_logits"]) - anchor_logits[:, 5:6]
+        edema_raw_correction = 0.5 * (edema_logits + edema_dict["proposal_logits"]) - anchor_logits[:, 4:5]
+        scar_bounded_correction = 4.0 * torch.tanh(scar_raw_correction / 4.0) * production_gate[:, 0:1]
+        edema_bounded_correction = 4.0 * torch.tanh(edema_raw_correction / 4.0) * production_gate[:, 1:2]
+        edema_bounded_correction = torch.where(no_t2_mask, torch.zeros_like(edema_bounded_correction), edema_bounded_correction)
+        if bool(anchor_identity_control or force_closed_gate):
+            scar_bounded_correction = torch.zeros_like(scar_bounded_correction)
+            edema_bounded_correction = torch.zeros_like(edema_bounded_correction)
+        production_final_logits = torch.cat(
+            [
+                anchor_logits[:, :4],
+                anchor_logits[:, 4:5] + edema_bounded_correction,
+                anchor_logits[:, 5:6] + scar_bounded_correction,
+            ],
+            dim=1,
+        )
         use_arbitration = self.variant in M6_VARIANT_CONFIGS and not self.m9_srr_main_output
-        if self.m9_srr_main_output or self.m10_final_output:
+        if self.final_output_mode == "anchor_bounded_srr_correction":
+            final_logits = production_final_logits
+            branch_arbitration_status = "production_anchor_bounded_srr_correction"
+        elif self.final_output_mode == "srr_no_anchor_control" or self.m9_srr_main_output or self.m10_final_output:
             final_logits = srr_logits
             branch_arbitration_status = (
-                "m10_srr_proposal_refinement_no_anchor_identity"
-                if self.m10_final_output
-                else "m9_srr_main_output_anchor_control_only"
+                "srr_no_anchor_control_diagnostic"
+                if self.final_output_mode == "srr_no_anchor_control"
+                else (
+                    "m10_srr_proposal_refinement_no_anchor_identity"
+                    if self.m10_final_output
+                    else "m9_srr_main_output_anchor_control_only"
+                )
             )
         else:
             final_logits = arbitration["final_logits"] if use_arbitration else baseline_blend["final_logits"]
@@ -1395,6 +1498,13 @@ class SRRProposeRefineMyoPS(nn.Module):
         m10_final_probabilities = torch.cat([residual_anatomy * q_struct, p_edema, p_scar], dim=1)
         outputs = {
             "logits": final_logits,
+            "final_output_mode": self.final_output_mode,
+            "production_final_logits": production_final_logits,
+            "production_correction_gate": production_gate,
+            "bounded_scar_correction": scar_bounded_correction,
+            "bounded_edema_correction": edema_bounded_correction,
+            "srr_no_anchor_control_logits": srr_logits,
+            "anchor_identity_control_enabled": torch.tensor(bool(anchor_identity_control or force_closed_gate), device=final_logits.device),
             "branch_arbitration_status": branch_arbitration_status,
             "branch_chosen_source": arbitration["chosen_source"],
             "branch_fallback_reason": arbitration["fallback_reason"],
@@ -1409,7 +1519,7 @@ class SRRProposeRefineMyoPS(nn.Module):
             "srr_logits_pre_anchor": srr_logits,
             "m9_final_output_mode": "SRR_MAIN_NOT_ANCHOR_RESIDUAL" if self.m9_srr_main_output else "ANCHOR_RESIDUAL_OR_LEGACY_CONTROL",
             "m10_design": self.m10_design,
-            "final_output_base": "SRR_PROPOSAL_REFINEMENT" if self.m10_final_output else "ANCHOR_RESIDUAL_OR_LEGACY_CONTROL",
+            "final_output_base": self.final_output_mode if self.final_output_mode != "legacy_variant" else ("SRR_PROPOSAL_REFINEMENT" if self.m10_final_output else "ANCHOR_RESIDUAL_OR_LEGACY_CONTROL"),
             "m10_final_probabilities": m10_final_probabilities,
             "m10_no_t2_edema_probability_max": p_edema[q_edema.expand_as(p_edema) <= 0].max() if bool((q_edema <= 0).any()) else p_edema.new_tensor(0.0),
             "nnunet_role": (
@@ -1503,6 +1613,11 @@ class SRRProposeRefineMyoPS(nn.Module):
                 "scar": self.scar_dictionary.prototype_source,
                 "edema": self.edema_dictionary.prototype_source,
             },
+            "prototype_provenance": {
+                "scar": self.scar_dictionary.prototype_provenance,
+                "edema": self.edema_dictionary.prototype_provenance,
+            },
+            "cross_fitted_memory_summary": self.cross_fitted_memory.summary(),
             "gates": gates,
             "availability": availability,
             "expert_usage": {name: gate.mean(dim=0) for name, gate in gates.items()},

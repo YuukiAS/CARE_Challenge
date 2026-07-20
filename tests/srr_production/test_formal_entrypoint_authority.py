@@ -26,7 +26,7 @@ def run_audit(*args: str) -> subprocess.CompletedProcess[str]:
 def test_default_batch0_config_is_blocked_but_strict_clean() -> None:
     result = run_audit("--strict")
     assert result.returncode == 0, result.stdout + result.stderr
-    assert "BLOCKED_PENDING_BATCH1_REPAIR" in result.stdout
+    assert "BLOCKED_PENDING_BATCH2_INFERENCE_AND_FAIR_EVALUATION" in result.stdout
 
 
 def test_b6_known_bad_cannot_be_formal_entrypoint() -> None:

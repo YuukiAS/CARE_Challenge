@@ -1,0 +1,38 @@
+{
+  "authority_status_after_batch1": "BLOCKED_PENDING_BATCH2_INFERENCE_AND_FAIR_EVALUATION",
+  "config_path": "configs/srr_production/myops_batch1.yaml",
+  "config_sha256": "5c1448f509e672adb11e1dff84c889403d4485441f652c02364c8bccb9983ccf",
+  "model": {
+    "class_name": "SRRProposeRefineMyoPS",
+    "encoder_profile": "full_4scale",
+    "final_output_mode": "anchor_bounded_srr_correction",
+    "path": "src/care_myocardium/models/srr_propref.py",
+    "required_structure": {
+      "cross_fitted_memory": true,
+      "four_scale": true,
+      "pattern_sip": true,
+      "shared_private_interaction_retrieval": true,
+      "spatial_retrieval": true
+    },
+    "variant": "m10_d3_hierarchical_memory_propref"
+  },
+  "prohibited_counts": {
+    "formal_training_count": 0,
+    "optimizer_step_count": 0,
+    "slurm_job_count": 0
+  },
+  "runner": {
+    "allowed_batch1_modes": [
+      "manifest_build",
+      "single_forward",
+      "single_backward",
+      "prototype_memory_smoke",
+      "checkpoint_roundtrip"
+    ],
+    "formal_authority": false,
+    "path": "scripts/training/run_srr_propref_myops_fold0.py"
+  },
+  "schema_version": 1,
+  "source_commit": "bfced937d0d864e2f591664d71b27b545fe792fb",
+  "status": "BATCH_1_MYOPS_MAINLINE_CONTRACT_NONTRAINING"
+}

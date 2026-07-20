@@ -302,4 +302,6 @@ class M10TwoPassSpatialDictionary(nn.Module):
             },
             "pattern_sip_status": "independent_enabled" if self.enable_pattern_sip else "disabled_by_design",
             "memory_status": "cross_fitted_memory_enabled" if self.enable_memory else "disabled_by_design",
+            "spatial_query_inputs": "local_feature_plus_anatomy_initial_evidence_prototype_context",
+            "slot_mask_policy": "invalid_private_and_interaction_slots_zeroed_before_softmax",
         }

@@ -1,0 +1,35 @@
+schema_version: 1
+authority_name: myops_batch1_mainline_repair
+batch: 1
+model:
+  class_name: SRRProposeRefineMyoPS
+  path: src/care_myocardium/models/srr_propref.py
+  variant: m10_d3_hierarchical_memory_propref
+  encoder_profile: full_4scale
+  final_output_mode: anchor_bounded_srr_correction
+  required_structure:
+    four_scale: true
+    shared_private_interaction_retrieval: true
+    spatial_retrieval: true
+    pattern_sip: true
+    cross_fitted_memory: true
+runner:
+  path: scripts/training/run_srr_propref_myops_fold0.py
+  formal_authority: false
+  allowed_batch1_modes:
+    - manifest_build
+    - single_forward
+    - single_backward
+    - prototype_memory_smoke
+    - checkpoint_roundtrip
+prohibited:
+  optimizer_step_count: 0
+  slurm_job_count: 0
+  formal_training_count: 0
+anchors:
+  split_path: data/benchmarks/protocol/splits_MyoPS.json
+  raw_root: data/nnUNet/nnUNet_raw/Dataset501_CAREMyoPS
+  anchor_root: data/nnUNet/nnUNet_results/Dataset501_CAREMyoPS/nnUNetTrainer_500epochs__nnUNetPlans__3d_fullres
+  class_order: [background, myocardium, LV_blood, RV_blood, edema, scar]
+receipts:
+  root: results/srr_production/code_maturity
