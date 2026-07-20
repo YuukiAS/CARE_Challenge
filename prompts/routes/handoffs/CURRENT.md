@@ -20,6 +20,8 @@ Round04 is not route promotion, validation authorization, M11 authorization, hos
 planning parent main: 64f5a27298cb2efd1f576a70296e49388ab0b717
 planning commit: 38551ed98a42b005a1a3f0b793efdef700037ee8
 Route B evidence: b9c7664da7cb1f1892fff37a4497722f31a0a96d
+Route B reviewed controller packet: 2e24f290e83e356fbfba5f73da4fde98b657390b
+Route B reviewer commit: 3950fe10ac31ef68da20f3ef7ffb001d6b17e6d9
 Route C evidence/review commit: 17062b00edc3443aacefe8583568797a9f2655ba
 Route C reviewed controller repair: 1e663cfa64f00413f005bef26310290fd43ec8ab
 revision source critic commit: de5f47b9f4404c85db1bd0f570b576d9d03b0372
@@ -31,21 +33,45 @@ revision source token: ROUTE_B_ROUND04_PLANNING_NEEDS_REVISION
 
 ```text
 Route A: DEFERRED_FALLBACK_NOT_ACTIVE
-Route B: PLANNING_REVISION_PENDING_COORDINATOR_RECEIPT_AND_CRITIC_REREVIEW
+Route B: EVIDENCE_COMPLETE_FOR_PORTFOLIO_RECONCILIATION
 Route C: ROUTE_C_PORTFOLIO_STOP_AND_HOLD
 ```
 
 Route C hold is portfolio context only. `prompts/routes/portfolio_round04_route_C_followup_decision_20260719.md` authorizes no Route C Controller, changes no Route B authority, removes no Route B Cine stage and makes no downstream scientific decision.
 
-## Route B current handoff
+### Route B
 
 ```text
-critic handoff: prompts/routes/handoffs/route_B_round04_critic_handoff_20260719.md
+route head: 3950fe10ac31ef68da20f3ef7ffb001d6b17e6d9
+review commit: 3950fe10ac31ef68da20f3ef7ffb001d6b17e6d9
+reviewed controller repair: 2e24f290e83e356fbfba5f73da4fde98b657390b
+review path: results/route_B/review.md
+review token: ROUTE_B_ROUND04_REVIEW_EVIDENCE_COMPLETE
+completion check: results/route_B/completion_check.md
+review request: results/route_B/review_request.md
+portfolio status: EVIDENCE_COMPLETE_FOR_PORTFOLIO_RECONCILIATION
+controller start authorized: false
+critic handoff: NO_CURRENT_CRITIC_HANDOFF
 coordinator receipt: prompts/routes/handoffs/route_B_round04_coordinator_receipt_20260719.md
 critic output: prompts/routes/route_B_round04_critic_rereview.md
-controller start authorized: false
 controller planning materialization root: results/route_B/round04/planning_snapshot
 materialization failure token: ROUTE_B_ROUND04_B0_STALE_PLANNING_BINDING
+```
+
+Route B Round04 controller and independent reviewer are complete. The reviewer reported no blocking findings and confirmed the terminal packet is reviewable and operational execution is complete for the controller scope. This does not authorize route promotion, validation upload, M11, hosted metric claims, cross-route merge, or a final scientific decision.
+
+## Controller Terminal Packet / Reviewer Targets
+
+```text
+route_B reviewer_target_head: 3950fe10ac31ef68da20f3ef7ffb001d6b17e6d9
+route_B terminal_token: ROUTE_B_ROUND04_TERMINAL_PACKET_READY_FOR_REVIEW
+route_B reviewer_output_path: results/route_B/review.md
+route_B route_promotion_decision: NOT_REVIEWED
+route_B route_negative_decision: NOT_REVIEWED
+route_B scientific_resolution_status: AWAITING_REVIEW
+route_B validation_upload: false
+route_B hosted_metric_claim: false
+route_B m11_started: false
 ```
 
 Six planning blobs:
@@ -82,7 +108,7 @@ A non-ancestor relation, unreadable diff, disallowed path or changed planning bl
 
 ```text
 Route A critic: NO_CURRENT_CRITIC_HANDOFF
-Route B critic: prompts/routes/handoffs/route_B_round04_critic_handoff_20260719.md
+Route B critic: NO_CURRENT_CRITIC_HANDOFF
 Route C critic: NO_CURRENT_CRITIC_HANDOFF
 Route C reviewer: NO_CURRENT_REVIEWER_HANDOFF
 Route C controller: NO_CURRENT_CONTROLLER_HANDOFF
