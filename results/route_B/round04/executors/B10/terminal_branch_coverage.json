@@ -1,0 +1,11 @@
+{
+  "b1_failure_finalizer_launch_covered": true,
+  "b2_external_blocker_finalizer_launch_covered": true,
+  "b6_terminal_accounted": true,
+  "b7_blocker_finalizer_launch_covered": true,
+  "b8_registration_blocker_finalizer_launch_covered": true,
+  "b9_absence_justified": true,
+  "b9_launch_allowed": false,
+  "cine_lane_terminal_class": "B8_CINE_REGISTRATION_BLOCKER_NO_B9",
+  "early_terminal_branches_reachable": true
+}

@@ -1,0 +1,15 @@
+{
+  "case_ids": [
+    "Case1002",
+    "Case1007"
+  ],
+  "completion_token": "ROUTE_B_ROUND04_B1_ANATOMY_REPAIR_IMPLEMENTED",
+  "created_at_utc": "2026-07-19T19:25:23.823427+00:00",
+  "first_loss": 0.6552160978317261,
+  "last_loss": 0.03872348740696907,
+  "optimizer_steps": 467402,
+  "required_completion_token": "ROUTE_B_ROUND04_B1_ANATOMY_REPAIR_IMPLEMENTED",
+  "status": "PASS",
+  "train_loop_seconds": 600.0004463458899,
+  "validation_events": 934
+}

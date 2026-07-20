@@ -1,0 +1,3 @@
+source,status,device,formal,optimizer_steps,required_optimizer_steps,train_loop_seconds,required_train_loop_seconds,validation_events,required_validation_events,eval_cases,required_eval_cases,first_loss,last_loss,loss_decrease
+official_pretrained,PASS,cuda,True,4148867,8000,3600.00047496194,3600,2074,4,12,12,0.11871065199375153,0.09735877811908722,True
+matched_random,PASS,cuda,True,4170225,8000,3600.0010165649,3600,2085,4,12,12,0.12409976124763489,0.09932826459407806,True

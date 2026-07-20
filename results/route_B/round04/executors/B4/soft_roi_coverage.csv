@@ -1,0 +1,3 @@
+target,coverage,hard_roi_deleted,no_t2_edema_negative
+scar,0.0703125,False,
+edema,0.09375,False,True

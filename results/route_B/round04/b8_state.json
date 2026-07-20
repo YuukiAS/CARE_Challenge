@@ -1,0 +1,30 @@
+{
+  "completion": {
+    "pass": true,
+    "payload": {
+      "completion_token": "ROUTE_B_ROUND04_B8_REGISTRATION_STAGE_COMPLETE",
+      "created_at_utc": "2026-07-19T23:51:07.693576+00:00",
+      "eval_cases": 12,
+      "formal_training": true,
+      "method_decision": "CINE_REGISTRATION_BLOCKER",
+      "pair_receipts": 60,
+      "required_completion_token": "ROUTE_B_ROUND04_B8_REGISTRATION_STAGE_COMPLETE",
+      "status": "PASS"
+    },
+    "present": true
+  },
+  "job_id": "59562056",
+  "state": {
+    "elapsed": "02:00:13",
+    "end": "2026-07-19T19:51:10",
+    "exit_code": "0:0",
+    "job_id": "59562056",
+    "node": "g1807htzh01",
+    "partition": "htzhulab",
+    "start": "2026-07-19T17:50:57",
+    "state": "COMPLETED"
+  },
+  "status": "B8_STAGE_COMPLETE",
+  "updated_at_utc": "2026-07-19T23:53:10.343282+00:00",
+  "watcher_log": "/users/a/e/aereinh/CARE_worktrees/route_B/logs/RouteB04_B8_watch_59562056_20260719_184808.log"
+}

@@ -1,0 +1,24 @@
+{
+  "critic_token": "ROUTE_B_ROUND04_PLANNING_READY_FOR_CONTROLLER",
+  "descendant_diff_audit_status": "PASS",
+  "hash_audit_status": "PASS",
+  "manifest_status": "PASS",
+  "materialization_receipt_status": "PASS",
+  "planning_commit": "38551ed98a42b005a1a3f0b793efdef700037ee8",
+  "read_only_files": true,
+  "snapshot_paths": [
+    "prompts/routes/portfolio_round04_route_B_planner_plan_20260719.md",
+    "prompts/routes/route_B_round04_planner_prompt.md",
+    "prompts/routes/route_B_round04_controller_contract.md",
+    "prompts/routes/route_B_round04_executor_plan.yaml",
+    "prompts/routes/route_B_round04_critic_request.md",
+    "prompts/routes/route_B_round04_planner_audit.md",
+    "prompts/routes/route_B_round04_critic_rereview.md",
+    "prompts/routes/handoffs/CURRENT.md",
+    "prompts/routes/handoffs/route_B_round04_critic_handoff_20260719.md",
+    "prompts/routes/handoffs/route_B_round04_coordinator_receipt_20260719.md",
+    "prompts/routes/portfolio_round04_route_C_followup_decision_20260719.md"
+  ],
+  "source_origin_main": "de16b239ecdb0265ef8da172238ca289d0ff4c39",
+  "status": "PASS"
+}

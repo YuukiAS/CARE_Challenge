@@ -1,0 +1,8 @@
+{
+  "architecture_match": true,
+  "downstream_initialization_match": true,
+  "matched_random_parameter_count": 127390694,
+  "pretrained_parameter_count": 127390694,
+  "source_initialization_only_difference": true,
+  "status": "PASS"
+}

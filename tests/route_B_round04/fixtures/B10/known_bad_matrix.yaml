@@ -1,0 +1,44 @@
+stage: B10
+source_input: results/route_B/round04/executors/B10
+require_token: ROUTE_B_ROUND04_TERMINAL_PACKET_READY_FOR_REVIEW
+expected_fixture_count: 13
+fixtures:
+  - name: early_terminal_branch_unreachable
+    expected_failure_key: EARLY_TERMINAL_BRANCH_UNREACHABLE
+    expected_validator_exit: 1
+  - name: b1_failure_finalizer_not_launched
+    expected_failure_key: B1_FAILURE_FINALIZER_NOT_LAUNCHED
+    expected_validator_exit: 1
+  - name: b2_external_blocker_finalizer_not_launched
+    expected_failure_key: B2_EXTERNAL_BLOCKER_FINALIZER_NOT_LAUNCHED
+    expected_validator_exit: 1
+  - name: b7_blocker_finalizer_not_launched
+    expected_failure_key: B7_BLOCKER_FINALIZER_NOT_LAUNCHED
+    expected_validator_exit: 1
+  - name: b8_registration_blocker_finalizer_not_launched
+    expected_failure_key: B8_REGISTRATION_BLOCKER_FINALIZER_NOT_LAUNCHED
+    expected_validator_exit: 1
+  - name: timeout_preemption_cancelled_loser_not_accounted
+    expected_failure_key: TIMEOUT_PREEMPTION_CANCELLED_LOSER_NOT_ACCOUNTED
+    expected_validator_exit: 1
+  - name: successful_b6_b9_not_accounted
+    expected_failure_key: SUCCESSFUL_B6_B9_NOT_ACCOUNTED
+    expected_validator_exit: 1
+  - name: pending_or_running_presented_as_complete
+    expected_failure_key: PENDING_OR_RUNNING_PRESENTED_AS_COMPLETE
+    expected_validator_exit: 1
+  - name: aggregation_missing_or_nonzero
+    expected_failure_key: AGGREGATION_MISSING_OR_NONZERO
+    expected_validator_exit: 1
+  - name: superseded_receipt_not_reconciled
+    expected_failure_key: SUPERSEDED_RECEIPT_NOT_RECONCILED
+    expected_validator_exit: 1
+  - name: controller_push_or_review_authority_violation
+    expected_failure_key: CONTROLLER_PUSH_OR_REVIEW_AUTHORITY_VIOLATION
+    expected_validator_exit: 1
+  - name: heavy_artifact_tracked
+    expected_failure_key: HEAVY_ARTIFACT_TRACKED
+    expected_validator_exit: 1
+  - name: validator_file_existence_only
+    expected_failure_key: VALIDATOR_FILE_EXISTENCE_ONLY
+    expected_validator_exit: 1

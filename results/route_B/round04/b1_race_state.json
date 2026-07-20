@@ -1,0 +1,33 @@
+{
+  "canonical_completion": "/users/a/e/aereinh/CARE_worktrees/route_B/results/route_B/round04/executors/B1/completion.json",
+  "canonical_completion_pass": true,
+  "jobs": {
+    "a100": "59548314",
+    "htzhulab": "59548190"
+  },
+  "states": {
+    "a100": {
+      "elapsed": "00:00:00",
+      "end": "2026-07-19T15:15:33",
+      "exit_code": "0:0",
+      "job_id": "59548314",
+      "node": "None assigned",
+      "partition": "a100-gpu",
+      "start": "None",
+      "state": "CANCELLED by 397557"
+    },
+    "htzhulab": {
+      "elapsed": "00:10:15",
+      "end": "2026-07-19T15:25:25",
+      "exit_code": "0:0",
+      "job_id": "59548190",
+      "node": "g1807htzh01",
+      "partition": "htzhulab",
+      "start": "2026-07-19T15:15:10",
+      "state": "COMPLETED"
+    }
+  },
+  "status": "ROUTE_B_ROUND04_B1_ANATOMY_REPAIR_IMPLEMENTED",
+  "updated_at_utc": "2026-07-19T19:25:35.282290+00:00",
+  "winner_file": "/users/a/e/aereinh/CARE_worktrees/route_B/results/route_B/runtime/round04/B1/B1_winner.lock/winner.txt"
+}

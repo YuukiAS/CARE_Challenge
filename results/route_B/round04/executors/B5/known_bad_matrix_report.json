@@ -1,0 +1,86 @@
+{
+  "fixture_count": 8,
+  "rows": [
+    {
+      "expected_failure_key": "SHARED_UNDIFFERENTIATED_REFINER",
+      "failure_keys": [
+        "SHARED_UNDIFFERENTIATED_REFINER",
+        "WEAK_B4_CONTROL_MISSING"
+      ],
+      "name": "SHARED_UNDIFFERENTIATED_REFINER",
+      "passed": true,
+      "validator_exit": 1
+    },
+    {
+      "expected_failure_key": "REFINER_FINAL_EFFECT_ZERO",
+      "failure_keys": [
+        "REFINER_FINAL_EFFECT_ZERO",
+        "WEAK_B4_CONTROL_MISSING"
+      ],
+      "name": "REFINER_FINAL_EFFECT_ZERO",
+      "passed": true,
+      "validator_exit": 1
+    },
+    {
+      "expected_failure_key": "PROPOSAL_TO_FINAL_RETENTION_FAILED",
+      "failure_keys": [
+        "PROPOSAL_TO_FINAL_RETENTION_FAILED",
+        "WEAK_B4_CONTROL_MISSING"
+      ],
+      "name": "PROPOSAL_TO_FINAL_RETENTION_FAILED",
+      "passed": true,
+      "validator_exit": 1
+    },
+    {
+      "expected_failure_key": "SCAR_REMOTE_FP_REGRESSION",
+      "failure_keys": [
+        "SCAR_REMOTE_FP_REGRESSION",
+        "WEAK_B4_CONTROL_MISSING"
+      ],
+      "name": "SCAR_REMOTE_FP_REGRESSION",
+      "passed": true,
+      "validator_exit": 1
+    },
+    {
+      "expected_failure_key": "NO_T2_EDEMA_NONZERO",
+      "failure_keys": [
+        "NO_T2_EDEMA_NONZERO",
+        "WEAK_B4_CONTROL_MISSING"
+      ],
+      "name": "NO_T2_EDEMA_NONZERO",
+      "passed": true,
+      "validator_exit": 1
+    },
+    {
+      "expected_failure_key": "HARD_ROI_DELETION",
+      "failure_keys": [
+        "HARD_ROI_DELETION",
+        "WEAK_B4_CONTROL_MISSING"
+      ],
+      "name": "HARD_ROI_DELETION",
+      "passed": true,
+      "validator_exit": 1
+    },
+    {
+      "expected_failure_key": "WEAK_B4_CONTROL_MISSING",
+      "failure_keys": [
+        "WEAK_B4_CONTROL_MISSING"
+      ],
+      "name": "WEAK_B4_CONTROL_MISSING",
+      "passed": true,
+      "validator_exit": 1
+    },
+    {
+      "expected_failure_key": "WEAK_FAITHFUL_REFINER_PREMATURE_STOP",
+      "failure_keys": [
+        "WEAK_B4_CONTROL_MISSING",
+        "WEAK_FAITHFUL_REFINER_PREMATURE_STOP"
+      ],
+      "name": "WEAK_FAITHFUL_REFINER_PREMATURE_STOP",
+      "passed": true,
+      "validator_exit": 1
+    }
+  ],
+  "stage": "B5",
+  "status": "PASS"
+}

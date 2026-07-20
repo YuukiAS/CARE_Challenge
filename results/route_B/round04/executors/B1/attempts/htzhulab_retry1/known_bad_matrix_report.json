@@ -1,0 +1,61 @@
+{
+  "fixture_count": 6,
+  "rows": [
+    {
+      "expected_failure_key": "PURE_MYOCARDIUM_UNION_TARGET",
+      "failure_keys": [
+        "PURE_MYOCARDIUM_UNION_TARGET"
+      ],
+      "name": "PURE_MYOCARDIUM_UNION_TARGET",
+      "passed": true,
+      "validator_exit": 1
+    },
+    {
+      "expected_failure_key": "ANATOMY_MICRO_OVERFIT_INADEQUATE",
+      "failure_keys": [
+        "ANATOMY_MICRO_OVERFIT_INADEQUATE"
+      ],
+      "name": "ANATOMY_MICRO_OVERFIT_INADEQUATE",
+      "passed": true,
+      "validator_exit": 1
+    },
+    {
+      "expected_failure_key": "ROUTED_ANATOMY_GRADIENT_MISSING",
+      "failure_keys": [
+        "ROUTED_ANATOMY_GRADIENT_MISSING"
+      ],
+      "name": "ROUTED_ANATOMY_GRADIENT_MISSING",
+      "passed": true,
+      "validator_exit": 1
+    },
+    {
+      "expected_failure_key": "LATERAL_ANATOMY_GRADIENT_MISSING",
+      "failure_keys": [
+        "LATERAL_ANATOMY_GRADIENT_MISSING"
+      ],
+      "name": "LATERAL_ANATOMY_GRADIENT_MISSING",
+      "passed": true,
+      "validator_exit": 1
+    },
+    {
+      "expected_failure_key": "ANCHOR_SUPPORT_FLOOR_BECAME_FINAL_BASE",
+      "failure_keys": [
+        "ANCHOR_SUPPORT_FLOOR_BECAME_FINAL_BASE"
+      ],
+      "name": "ANCHOR_SUPPORT_FLOOR_BECAME_FINAL_BASE",
+      "passed": true,
+      "validator_exit": 1
+    },
+    {
+      "expected_failure_key": "SAVE_RELOAD_MISMATCH",
+      "failure_keys": [
+        "SAVE_RELOAD_MISMATCH"
+      ],
+      "name": "SAVE_RELOAD_MISMATCH",
+      "passed": true,
+      "validator_exit": 1
+    }
+  ],
+  "stage": "B1",
+  "status": "PASS"
+}

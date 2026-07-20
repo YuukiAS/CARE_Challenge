@@ -1,0 +1,125 @@
+{
+  "fixture_count": 13,
+  "rows": [
+    {
+      "expected_failure_key": "STALE_PLANNING_BINDING",
+      "failure_keys": [
+        "ROUTE_EVIDENCE_REF_MISMATCH",
+        "STALE_PLANNING_BINDING"
+      ],
+      "name": "STALE_PLANNING_BINDING",
+      "passed": true,
+      "validator_exit": 1
+    },
+    {
+      "expected_failure_key": "PLANNING_SOURCE_UNREADABLE",
+      "failure_keys": [
+        "PLANNING_SOURCE_UNREADABLE"
+      ],
+      "name": "PLANNING_SOURCE_UNREADABLE",
+      "passed": true,
+      "validator_exit": 1
+    },
+    {
+      "expected_failure_key": "PLANNING_SNAPSHOT_INCOMPLETE",
+      "failure_keys": [
+        "PLANNING_SNAPSHOT_INCOMPLETE"
+      ],
+      "name": "PLANNING_SNAPSHOT_INCOMPLETE",
+      "passed": true,
+      "validator_exit": 1
+    },
+    {
+      "expected_failure_key": "PLANNING_SNAPSHOT_HASH_MISMATCH",
+      "failure_keys": [
+        "PLANNING_SNAPSHOT_HASH_MISMATCH"
+      ],
+      "name": "PLANNING_SNAPSHOT_HASH_MISMATCH",
+      "passed": true,
+      "validator_exit": 1
+    },
+    {
+      "expected_failure_key": "CURRENT_REREVIEW_MISSING_OR_NOT_READY",
+      "failure_keys": [
+        "CURRENT_REREVIEW_MISSING_OR_NOT_READY"
+      ],
+      "name": "CURRENT_REREVIEW_MISSING_OR_NOT_READY",
+      "passed": true,
+      "validator_exit": 1
+    },
+    {
+      "expected_failure_key": "CURRENT_HANDOFF_MISSING",
+      "failure_keys": [
+        "CURRENT_HANDOFF_MISSING"
+      ],
+      "name": "CURRENT_HANDOFF_MISSING",
+      "passed": true,
+      "validator_exit": 1
+    },
+    {
+      "expected_failure_key": "CURRENT_COORDINATOR_RECEIPT_MISSING_OR_STALE",
+      "failure_keys": [
+        "CURRENT_COORDINATOR_RECEIPT_MISSING_OR_STALE"
+      ],
+      "name": "CURRENT_COORDINATOR_RECEIPT_MISSING_OR_STALE",
+      "passed": true,
+      "validator_exit": 1
+    },
+    {
+      "expected_failure_key": "DISALLOWED_MAIN_DESCENDANT_PATH",
+      "failure_keys": [
+        "DISALLOWED_MAIN_DESCENDANT_PATH"
+      ],
+      "name": "DISALLOWED_MAIN_DESCENDANT_PATH",
+      "passed": true,
+      "validator_exit": 1
+    },
+    {
+      "expected_failure_key": "ROUTE_EVIDENCE_REF_MISMATCH",
+      "failure_keys": [
+        "ROUTE_EVIDENCE_REF_MISMATCH"
+      ],
+      "name": "ROUTE_EVIDENCE_REF_MISMATCH",
+      "passed": true,
+      "validator_exit": 1
+    },
+    {
+      "expected_failure_key": "MANIFEST_HASH_MISMATCH",
+      "failure_keys": [
+        "MANIFEST_HASH_MISMATCH"
+      ],
+      "name": "MANIFEST_HASH_MISMATCH",
+      "passed": true,
+      "validator_exit": 1
+    },
+    {
+      "expected_failure_key": "ANATOMY_TARGET_LABEL_ROUNDTRIP_FAILED",
+      "failure_keys": [
+        "ANATOMY_TARGET_LABEL_ROUNDTRIP_FAILED"
+      ],
+      "name": "ANATOMY_TARGET_LABEL_ROUNDTRIP_FAILED",
+      "passed": true,
+      "validator_exit": 1
+    },
+    {
+      "expected_failure_key": "SAME_SPLIT_BASELINE_MISSING",
+      "failure_keys": [
+        "SAME_SPLIT_BASELINE_MISSING"
+      ],
+      "name": "SAME_SPLIT_BASELINE_MISSING",
+      "passed": true,
+      "validator_exit": 1
+    },
+    {
+      "expected_failure_key": "VALIDATOR_MATRIX_INCOMPLETE",
+      "failure_keys": [
+        "VALIDATOR_MATRIX_INCOMPLETE"
+      ],
+      "name": "VALIDATOR_MATRIX_INCOMPLETE",
+      "passed": true,
+      "validator_exit": 1
+    }
+  ],
+  "stage": "B0",
+  "status": "PASS"
+}

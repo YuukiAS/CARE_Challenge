@@ -1,0 +1,8 @@
+{
+  "completion_token": "ROUTE_B_ROUND04_B7_CINEMA_MATCHED_CONTROL_COMPLETE",
+  "created_at_utc": "2026-07-19T21:39:57.696129+00:00",
+  "eval_cases": 12,
+  "formal_training": true,
+  "required_completion_token": "ROUTE_B_ROUND04_B7_CINEMA_MATCHED_CONTROL_COMPLETE",
+  "status": "PASS"
+}

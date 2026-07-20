@@ -1,0 +1,88 @@
+{
+  "fixture_count": 9,
+  "rows": [
+    {
+      "expected_failure_key": "NNUNET_ONLY_BYPASS",
+      "failure_keys": [
+        "NNUNET_ONLY_BYPASS"
+      ],
+      "name": "NNUNET_ONLY_BYPASS",
+      "passed": true,
+      "validator_exit": 1
+    },
+    {
+      "expected_failure_key": "DISCONNECTED_RETRIEVAL_PROPOSAL_REFINER",
+      "failure_keys": [
+        "DISCONNECTED_RETRIEVAL_PROPOSAL_REFINER"
+      ],
+      "name": "DISCONNECTED_RETRIEVAL_PROPOSAL_REFINER",
+      "passed": true,
+      "validator_exit": 1
+    },
+    {
+      "expected_failure_key": "INVALID_SLOT_WEIGHT_NONZERO",
+      "failure_keys": [
+        "INVALID_SLOT_WEIGHT_NONZERO"
+      ],
+      "name": "INVALID_SLOT_WEIGHT_NONZERO",
+      "passed": true,
+      "validator_exit": 1
+    },
+    {
+      "expected_failure_key": "PATTERN_SIP_ALIAS_OR_NO_GRADIENT",
+      "failure_keys": [
+        "PATTERN_SIP_ALIAS_OR_NO_GRADIENT"
+      ],
+      "name": "PATTERN_SIP_ALIAS_OR_NO_GRADIENT",
+      "passed": true,
+      "validator_exit": 1
+    },
+    {
+      "expected_failure_key": "FAKE_CINEMA_SOURCE_OR_WRONG_SHA",
+      "failure_keys": [
+        "FAKE_CINEMA_SOURCE_OR_WRONG_SHA"
+      ],
+      "name": "FAKE_CINEMA_SOURCE_OR_WRONG_SHA",
+      "passed": true,
+      "validator_exit": 1
+    },
+    {
+      "expected_failure_key": "DIRECT_VELOCITY_AS_DISPLACEMENT",
+      "failure_keys": [
+        "DIRECT_VELOCITY_AS_DISPLACEMENT"
+      ],
+      "name": "DIRECT_VELOCITY_AS_DISPLACEMENT",
+      "passed": true,
+      "validator_exit": 1
+    },
+    {
+      "expected_failure_key": "TEMPORAL_REQUIRED_INPUT_UNCONSUMED",
+      "failure_keys": [
+        "TEMPORAL_REQUIRED_INPUT_UNCONSUMED"
+      ],
+      "name": "TEMPORAL_REQUIRED_INPUT_UNCONSUMED",
+      "passed": true,
+      "validator_exit": 1
+    },
+    {
+      "expected_failure_key": "OFFICIAL_LABEL_ROUNDTRIP_FAILED",
+      "failure_keys": [
+        "OFFICIAL_LABEL_ROUNDTRIP_FAILED"
+      ],
+      "name": "OFFICIAL_LABEL_ROUNDTRIP_FAILED",
+      "passed": true,
+      "validator_exit": 1
+    },
+    {
+      "expected_failure_key": "LEGACY_ROUND03_WRAPPER_BYPASS",
+      "failure_keys": [
+        "LEGACY_ROUND03_WRAPPER_BYPASS"
+      ],
+      "name": "LEGACY_ROUND03_WRAPPER_BYPASS",
+      "passed": true,
+      "validator_exit": 1
+    }
+  ],
+  "stage": "B2",
+  "status": "PASS"
+}

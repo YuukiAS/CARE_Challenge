@@ -1,0 +1,28 @@
+require_token: ROUTE_B_ROUND04_B4_PROPOSAL_STAGE_COMPLETE
+source_input: results/route_B/round04/executors/B4
+expected_fixture_count: 8
+fixtures:
+  - name: OOF_CURRENT_CASE_LEAKAGE
+    expected_failure_key: OOF_CURRENT_CASE_LEAKAGE
+    expected_validator_exit: 1
+  - name: OOF_VALIDATION_OR_TEST_LEAKAGE
+    expected_failure_key: OOF_VALIDATION_OR_TEST_LEAKAGE
+    expected_validator_exit: 1
+  - name: BOOTSTRAP_OR_EMA_FORMAL_BANK
+    expected_failure_key: BOOTSTRAP_OR_EMA_FORMAL_BANK
+    expected_validator_exit: 1
+  - name: NO_T2_EDEMA_NEGATIVE
+    expected_failure_key: NO_T2_EDEMA_NEGATIVE
+    expected_validator_exit: 1
+  - name: PROTOTYPE_SIMILARITY_DISCONNECTED
+    expected_failure_key: PROTOTYPE_SIMILARITY_DISCONNECTED
+    expected_validator_exit: 1
+  - name: CONSTANT_PROPOSAL
+    expected_failure_key: CONSTANT_PROPOSAL
+    expected_validator_exit: 1
+  - name: HARD_ROI_DELETION
+    expected_failure_key: HARD_ROI_DELETION
+    expected_validator_exit: 1
+  - name: WEAK_VALID_PROPOSAL_PREMATURE_STOP
+    expected_failure_key: WEAK_VALID_PROPOSAL_PREMATURE_STOP
+    expected_validator_exit: 1

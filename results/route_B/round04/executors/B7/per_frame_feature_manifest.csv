@@ -1,0 +1,2 @@
+case_count,frame_source,pretrained_feature_shape,matched_random_feature_shape,pretrained_feature_mean_abs,matched_random_feature_mean_abs
+12,cine_train12,"[2, 16, 16, 32, 32]","[2, 16, 16, 32, 32]",3.210916519165039,3.491908311843872

@@ -1,0 +1,88 @@
+{
+  "fixture_count": 9,
+  "rows": [
+    {
+      "expected_failure_key": "DIRECT_VELOCITY_AS_DISPLACEMENT",
+      "failure_keys": [
+        "DIRECT_VELOCITY_AS_DISPLACEMENT"
+      ],
+      "name": "DIRECT_VELOCITY_AS_DISPLACEMENT",
+      "passed": true,
+      "validator_exit": 1
+    },
+    {
+      "expected_failure_key": "SCALING_SQUARING_STEPS_NOT_SEVEN",
+      "failure_keys": [
+        "SCALING_SQUARING_STEPS_NOT_SEVEN"
+      ],
+      "name": "SCALING_SQUARING_STEPS_NOT_SEVEN",
+      "passed": true,
+      "validator_exit": 1
+    },
+    {
+      "expected_failure_key": "PROXY_JACOBIAN",
+      "failure_keys": [
+        "PROXY_JACOBIAN"
+      ],
+      "name": "PROXY_JACOBIAN",
+      "passed": true,
+      "validator_exit": 1
+    },
+    {
+      "expected_failure_key": "INVERSE_CONSISTENCY_MISSING",
+      "failure_keys": [
+        "INVERSE_CONSISTENCY_MISSING"
+      ],
+      "name": "INVERSE_CONSISTENCY_MISSING",
+      "passed": true,
+      "validator_exit": 1
+    },
+    {
+      "expected_failure_key": "SYN_OUTPUT_COPIED_OR_PROXY",
+      "failure_keys": [
+        "SYN_OUTPUT_COPIED_OR_PROXY"
+      ],
+      "name": "SYN_OUTPUT_COPIED_OR_PROXY",
+      "passed": true,
+      "validator_exit": 1
+    },
+    {
+      "expected_failure_key": "PAIR_AS_CASE_AGGREGATION",
+      "failure_keys": [
+        "PAIR_AS_CASE_AGGREGATION"
+      ],
+      "name": "PAIR_AS_CASE_AGGREGATION",
+      "passed": true,
+      "validator_exit": 1
+    },
+    {
+      "expected_failure_key": "FULL_DENOMINATOR_MISSING",
+      "failure_keys": [
+        "FULL_DENOMINATOR_MISSING"
+      ],
+      "name": "FULL_DENOMINATOR_MISSING",
+      "passed": true,
+      "validator_exit": 1
+    },
+    {
+      "expected_failure_key": "SELECTED_REGISTRATION_NOT_RELOADED",
+      "failure_keys": [
+        "SELECTED_REGISTRATION_NOT_RELOADED"
+      ],
+      "name": "SELECTED_REGISTRATION_NOT_RELOADED",
+      "passed": true,
+      "validator_exit": 1
+    },
+    {
+      "expected_failure_key": "REGISTRATION_BLOCKER_WITHOUT_FAITHFUL_RUNTIME",
+      "failure_keys": [
+        "REGISTRATION_BLOCKER_WITHOUT_FAITHFUL_RUNTIME"
+      ],
+      "name": "REGISTRATION_BLOCKER_WITHOUT_FAITHFUL_RUNTIME",
+      "passed": true,
+      "validator_exit": 1
+    }
+  ],
+  "stage": "B8",
+  "status": "PASS"
+}

@@ -1,0 +1,13 @@
+case_id,pair_count,full_denominator_present,failed_rows_in_denominator,case_level_denominator,full_case_event,pair_as_case_aggregation,status
+Case1001,5,True,True,12,True,False,PASS
+Case1002,5,True,True,12,True,False,PASS
+Case1003,5,True,True,12,True,False,PASS
+Case1004,5,True,True,12,True,False,PASS
+Case1005,5,True,True,12,False,False,PASS
+Case1006,5,True,True,12,False,False,PASS
+Case2001,5,True,True,12,False,False,PASS
+Case2002,5,True,True,12,False,False,PASS
+Case2003,5,True,True,12,False,False,PASS
+Case2004,5,True,True,12,False,False,PASS
+Case2005,5,True,True,12,False,False,PASS
+Case2006,5,True,True,12,False,False,PASS

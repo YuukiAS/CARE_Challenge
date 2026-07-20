@@ -1,0 +1,13 @@
+{
+  "case_count": 44,
+  "current_case_excluded": true,
+  "shards": [
+    "fold0_train_shard_a",
+    "fold0_train_shard_b",
+    "fold0_train_shard_c",
+    "fold0_train_shard_d"
+  ],
+  "source_manifest": "configs/route_B_round04/manifests/myops_fold0_primary_44.json",
+  "status": "PASS",
+  "validation_or_test_excluded": true
+}

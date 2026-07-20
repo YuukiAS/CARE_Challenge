@@ -1,0 +1,3 @@
+target,proposal_auc_proxy,constant,similarity_connected
+scar,0.72,False,True
+edema,0.7,False,True

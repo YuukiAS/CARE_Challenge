@@ -1,0 +1,79 @@
+{
+  "fixture_count": 8,
+  "rows": [
+    {
+      "expected_failure_key": "FAKE_CINEMA_SOURCE_OR_WRONG_SHA",
+      "failure_keys": [
+        "FAKE_CINEMA_SOURCE_OR_WRONG_SHA"
+      ],
+      "name": "FAKE_CINEMA_SOURCE_OR_WRONG_SHA",
+      "passed": true,
+      "validator_exit": 1
+    },
+    {
+      "expected_failure_key": "CINEMA_LICENSE_OR_COMMIT_MISSING",
+      "failure_keys": [
+        "CINEMA_LICENSE_OR_COMMIT_MISSING"
+      ],
+      "name": "CINEMA_LICENSE_OR_COMMIT_MISSING",
+      "passed": true,
+      "validator_exit": 1
+    },
+    {
+      "expected_failure_key": "PRETRAINED_RANDOM_ARCHITECTURE_MISMATCH",
+      "failure_keys": [
+        "PRETRAINED_RANDOM_ARCHITECTURE_MISMATCH"
+      ],
+      "name": "PRETRAINED_RANDOM_ARCHITECTURE_MISMATCH",
+      "passed": true,
+      "validator_exit": 1
+    },
+    {
+      "expected_failure_key": "DOWNSTREAM_INITIALIZATION_MISMATCH",
+      "failure_keys": [
+        "DOWNSTREAM_INITIALIZATION_MISMATCH"
+      ],
+      "name": "DOWNSTREAM_INITIALIZATION_MISMATCH",
+      "passed": true,
+      "validator_exit": 1
+    },
+    {
+      "expected_failure_key": "CASES_FRAMES_OPTIMIZER_BUDGET_MISMATCH",
+      "failure_keys": [
+        "CASES_FRAMES_OPTIMIZER_BUDGET_MISMATCH"
+      ],
+      "name": "CASES_FRAMES_OPTIMIZER_BUDGET_MISMATCH",
+      "passed": true,
+      "validator_exit": 1
+    },
+    {
+      "expected_failure_key": "SOURCE_INITIALIZATION_NOT_ONLY_DIFFERENCE",
+      "failure_keys": [
+        "SOURCE_INITIALIZATION_NOT_ONLY_DIFFERENCE"
+      ],
+      "name": "SOURCE_INITIALIZATION_NOT_ONLY_DIFFERENCE",
+      "passed": true,
+      "validator_exit": 1
+    },
+    {
+      "expected_failure_key": "SELECTED_CHECKPOINT_NOT_RELOADED",
+      "failure_keys": [
+        "SELECTED_CHECKPOINT_NOT_RELOADED"
+      ],
+      "name": "SELECTED_CHECKPOINT_NOT_RELOADED",
+      "passed": true,
+      "validator_exit": 1
+    },
+    {
+      "expected_failure_key": "INTERNAL_SMALL_WRAPPER_USED_AS_OFFICIAL",
+      "failure_keys": [
+        "INTERNAL_SMALL_WRAPPER_USED_AS_OFFICIAL"
+      ],
+      "name": "INTERNAL_SMALL_WRAPPER_USED_AS_OFFICIAL",
+      "passed": true,
+      "validator_exit": 1
+    }
+  ],
+  "stage": "B7",
+  "status": "PASS"
+}

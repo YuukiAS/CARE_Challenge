@@ -1,0 +1,66 @@
+{
+  "draw_cycle": [
+    "E",
+    "E",
+    "S",
+    "R"
+  ],
+  "philox_seed": 26071821,
+  "precedence": [
+    "E",
+    "S",
+    "R"
+  ],
+  "strata": {
+    "E": [
+      "Case2002",
+      "Case2007",
+      "Case2008",
+      "Case2017",
+      "Case2020",
+      "Case2031",
+      "Case2033",
+      "Case3004",
+      "Case3011",
+      "Case3012",
+      "Case3023",
+      "Case3026",
+      "Case3034",
+      "Case3038",
+      "Case3040",
+      "Case3044"
+    ],
+    "R": [
+      "Case7005"
+    ],
+    "S": [
+      "Case1002",
+      "Case1007",
+      "Case1009",
+      "Case1010",
+      "Case1021",
+      "Case1023",
+      "Case1029",
+      "Case1033",
+      "Case1040",
+      "Case1042",
+      "Case1045",
+      "Case1047",
+      "Case1053",
+      "Case1062",
+      "Case1070",
+      "Case1073",
+      "Case1080",
+      "Case5005",
+      "Case6001",
+      "Case6010",
+      "Case8003",
+      "Case8011",
+      "Case8015",
+      "Case8019",
+      "Case8021",
+      "Case8022",
+      "Case8023"
+    ]
+  }
+}

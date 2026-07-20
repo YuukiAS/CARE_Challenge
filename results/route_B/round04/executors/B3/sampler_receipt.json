@@ -1,0 +1,8 @@
+{
+  "cache_isolation": "/users/a/e/aereinh/CARE_worktrees/route_B/results/route_B/runtime/round04/B3/59552550",
+  "case_count": 44,
+  "manifest": "configs/route_B_round04/manifests/myops_fold0_primary_44.json",
+  "same_split_baseline": true,
+  "sampler_contract": "myops_fold0_primary_44",
+  "status": "PASS"
+}

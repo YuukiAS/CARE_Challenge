@@ -1,0 +1,44 @@
+{
+  "displacement_shape": [
+    1,
+    3,
+    8,
+    16,
+    16
+  ],
+  "folding_rate": 0.0,
+  "inverse_composition_error": 0.005869583692401648,
+  "minimum_jacobian": 0.9134846329689026,
+  "registration_integration_steps": 7,
+  "status": "PASS",
+  "temporal_logits_shape": [
+    1,
+    4,
+    8,
+    16,
+    16
+  ],
+  "temporal_required_fields": [
+    "reference_logits",
+    "reference_features",
+    "reference_uncertainty",
+    "registered_logits",
+    "registered_features",
+    "registered_uncertainty",
+    "velocity",
+    "integrated_displacement",
+    "jacobian",
+    "motion_magnitude",
+    "texture_residual",
+    "frame_quality",
+    "temporal_position",
+    "valid_frame_mask"
+  ],
+  "velocity_shape": [
+    1,
+    3,
+    8,
+    16,
+    16
+  ]
+}

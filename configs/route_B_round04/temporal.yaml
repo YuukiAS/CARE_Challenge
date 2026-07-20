@@ -1,0 +1,19 @@
+route_id: route_B
+portfolio_round: round03
+temporal:
+  targets: [4000, 8000, 12000, 16000, 20000]
+  required_fields:
+    - reference_logits
+    - reference_features
+    - reference_uncertainty
+    - registered_logits
+    - registered_features
+    - registered_uncertainty
+    - velocity
+    - integrated_displacement
+    - jacobian
+    - motion_magnitude
+    - texture_residual
+    - frame_quality
+    - temporal_position
+    - valid_frame_mask

@@ -1,0 +1,31 @@
+require_token: ROUTE_B_ROUND04_B8_REGISTRATION_STAGE_COMPLETE
+source_input: results/route_B/round04/executors/B8
+expected_fixture_count: 9
+fixtures:
+  - name: DIRECT_VELOCITY_AS_DISPLACEMENT
+    expected_failure_key: DIRECT_VELOCITY_AS_DISPLACEMENT
+    expected_validator_exit: 1
+  - name: SCALING_SQUARING_STEPS_NOT_SEVEN
+    expected_failure_key: SCALING_SQUARING_STEPS_NOT_SEVEN
+    expected_validator_exit: 1
+  - name: PROXY_JACOBIAN
+    expected_failure_key: PROXY_JACOBIAN
+    expected_validator_exit: 1
+  - name: INVERSE_CONSISTENCY_MISSING
+    expected_failure_key: INVERSE_CONSISTENCY_MISSING
+    expected_validator_exit: 1
+  - name: SYN_OUTPUT_COPIED_OR_PROXY
+    expected_failure_key: SYN_OUTPUT_COPIED_OR_PROXY
+    expected_validator_exit: 1
+  - name: PAIR_AS_CASE_AGGREGATION
+    expected_failure_key: PAIR_AS_CASE_AGGREGATION
+    expected_validator_exit: 1
+  - name: FULL_DENOMINATOR_MISSING
+    expected_failure_key: FULL_DENOMINATOR_MISSING
+    expected_validator_exit: 1
+  - name: SELECTED_REGISTRATION_NOT_RELOADED
+    expected_failure_key: SELECTED_REGISTRATION_NOT_RELOADED
+    expected_validator_exit: 1
+  - name: REGISTRATION_BLOCKER_WITHOUT_FAITHFUL_RUNTIME
+    expected_failure_key: REGISTRATION_BLOCKER_WITHOUT_FAITHFUL_RUNTIME
+    expected_validator_exit: 1

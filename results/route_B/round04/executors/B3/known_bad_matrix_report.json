@@ -1,0 +1,81 @@
+{
+  "fixture_count": 8,
+  "rows": [
+    {
+      "expected_failure_key": "ROUND03_B3_GLOBAL_STOP_REUSED",
+      "failure_keys": [
+        "FORMAL_TRAINING_INADEQUATE",
+        "ROUND03_B3_GLOBAL_STOP_REUSED"
+      ],
+      "name": "ROUND03_B3_GLOBAL_STOP_REUSED",
+      "passed": true,
+      "validator_exit": 1
+    },
+    {
+      "expected_failure_key": "SAMPLER_CONTRACT_MISMATCH",
+      "failure_keys": [
+        "SAMPLER_CONTRACT_MISMATCH"
+      ],
+      "name": "SAMPLER_CONTRACT_MISMATCH",
+      "passed": true,
+      "validator_exit": 1
+    },
+    {
+      "expected_failure_key": "FORMAL_TRAINING_INADEQUATE",
+      "failure_keys": [
+        "FORMAL_TRAINING_INADEQUATE"
+      ],
+      "name": "FORMAL_TRAINING_INADEQUATE",
+      "passed": true,
+      "validator_exit": 1
+    },
+    {
+      "expected_failure_key": "INVALID_SLOT_WEIGHT_NONZERO",
+      "failure_keys": [
+        "INVALID_SLOT_WEIGHT_NONZERO"
+      ],
+      "name": "INVALID_SLOT_WEIGHT_NONZERO",
+      "passed": true,
+      "validator_exit": 1
+    },
+    {
+      "expected_failure_key": "NO_T2_EDEMA_NONZERO",
+      "failure_keys": [
+        "NO_T2_EDEMA_NONZERO"
+      ],
+      "name": "NO_T2_EDEMA_NONZERO",
+      "passed": true,
+      "validator_exit": 1
+    },
+    {
+      "expected_failure_key": "ROUTER_FAMILY_GRADIENT_MISSING",
+      "failure_keys": [
+        "ROUTER_FAMILY_GRADIENT_MISSING"
+      ],
+      "name": "ROUTER_FAMILY_GRADIENT_MISSING",
+      "passed": true,
+      "validator_exit": 1
+    },
+    {
+      "expected_failure_key": "LEARNED_ANATOMY_NONFINITE_OR_CONSTANT",
+      "failure_keys": [
+        "LEARNED_ANATOMY_NONFINITE_OR_CONSTANT"
+      ],
+      "name": "LEARNED_ANATOMY_NONFINITE_OR_CONSTANT",
+      "passed": true,
+      "validator_exit": 1
+    },
+    {
+      "expected_failure_key": "B3_FULL_ROUTE_NEGATIVE_TOKEN_FORBIDDEN",
+      "failure_keys": [
+        "B3_FULL_ROUTE_NEGATIVE_TOKEN_FORBIDDEN",
+        "FORMAL_TRAINING_INADEQUATE"
+      ],
+      "name": "B3_FULL_ROUTE_NEGATIVE_TOKEN_FORBIDDEN",
+      "passed": true,
+      "validator_exit": 1
+    }
+  ],
+  "stage": "B3",
+  "status": "PASS"
+}
