@@ -22,6 +22,7 @@ PYTHON="${PYTHON:-${CARE_ROOT}/envs/env_CARE/bin/python}"
 TASK_KEY="20260721_srr_batch4_forced_fold0_training"
 CONFIG="${CONFIG:-configs/srr_production/myops_batch4.yaml}"
 CHECKPOINT="${CHECKPOINT:?CHECKPOINT is required}"
+TRAINING_SUMMARY="${TRAINING_SUMMARY:?TRAINING_SUMMARY is required}"
 OUTPUT_ROOT="${OUTPUT_ROOT:-results/${TASK_KEY}/selected_checkpoint_controls}"
 EVAL_ROOT="${EVAL_ROOT:-results/${TASK_KEY}/selected_checkpoint_evaluation}"
 
@@ -34,6 +35,7 @@ echo "CARE_ROOT=${CARE_ROOT}"
 echo "PYTHON=${PYTHON}"
 echo "CONFIG=${CONFIG}"
 echo "CHECKPOINT=${CHECKPOINT}"
+echo "TRAINING_SUMMARY=${TRAINING_SUMMARY}"
 echo "OUTPUT_ROOT=${OUTPUT_ROOT}"
 echo "EVAL_ROOT=${EVAL_ROOT}"
 echo "SLURM_JOB_ID=${SLURM_JOB_ID:-local}"
@@ -56,6 +58,7 @@ for MODE in anchor_identity_control anchor_bounded_srr_correction srr_no_anchor_
     --mode "${MODE}" \
     --fold 0 \
     --checkpoint "${CHECKPOINT}" \
+    --training-summary "${TRAINING_SUMMARY}" \
     --output-root "${OUTPUT_ROOT}" \
     --device cuda
 done

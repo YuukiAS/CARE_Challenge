@@ -122,6 +122,18 @@ def manifest_hash(manifest: dict[str, Any]) -> str:
     return sha256_text(json.dumps(manifest, sort_keys=True, separators=(",", ":")))
 
 
+def training_summary_anchor_hash(summary_path: Path | None) -> str:
+    if summary_path is None:
+        return ""
+    if not summary_path.is_file():
+        raise FileNotFoundError(f"training summary not found: {summary_path}")
+    summary = load_json(summary_path)
+    manifest = summary.get("nnunet_anchor_manifest")
+    if not isinstance(manifest, dict):
+        raise ValueError(f"{summary_path} does not contain nnunet_anchor_manifest")
+    return manifest_hash(manifest)
+
+
 def build_zero_step_checkpoint(
     *,
     cfg: dict[str, Any],
@@ -166,6 +178,7 @@ def load_checkpoint_into_model(
     manifest: dict[str, Any],
     split_hash: str,
     device: torch.device,
+    training_anchor_manifest_hash: str = "",
 ) -> tuple[SRRProposeRefineMyoPS, dict[str, Any], dict[str, Any]]:
     model = model_from_config(cfg, mode).to(device)
     optimizer = torch.optim.AdamW(model.parameters(), lr=1e-4)
@@ -183,7 +196,11 @@ def load_checkpoint_into_model(
     for key, expected in expected_arch.items():
         if actual_arch.get(key) != expected:
             raise ValueError(f"checkpoint architecture mismatch for {key}: {actual_arch.get(key)!r} != {expected!r}")
-    if str(payload.get("oof_anchor_manifest_hash")) != manifest_hash(manifest):
+    full_manifest_hash = manifest_hash(manifest)
+    accepted_hashes = {full_manifest_hash}
+    if training_anchor_manifest_hash:
+        accepted_hashes.add(training_anchor_manifest_hash)
+    if str(payload.get("oof_anchor_manifest_hash")) not in accepted_hashes:
         raise ValueError("checkpoint OOF anchor manifest hash mismatch")
     if str(payload.get("split_hash")) != str(split_hash):
         raise ValueError("checkpoint split hash mismatch")
@@ -229,6 +246,10 @@ def run(args: argparse.Namespace) -> dict[str, Any]:
         out_path=out_root / "batch3a_raw_oof_anchor_manifest.json",
     )
     split_hash = sha256_file(split_path)
+    summary_path = Path(args.training_summary) if args.training_summary else None
+    if summary_path is not None and not summary_path.is_absolute():
+        summary_path = REPO_ROOT / summary_path
+    compact_anchor_manifest_hash = training_summary_anchor_hash(summary_path)
     checkpoint_path = Path(args.checkpoint) if args.checkpoint else out_root / "runtime_checkpoints" / f"{mode}_zero_step_diagnostic.pth"
     if not checkpoint_path.is_absolute():
         checkpoint_path = REPO_ROOT / checkpoint_path
@@ -252,6 +273,7 @@ def run(args: argparse.Namespace) -> dict[str, Any]:
         manifest=manifest,
         split_hash=split_hash,
         device=device,
+        training_anchor_manifest_hash=compact_anchor_manifest_hash,
     )
     model.eval()
     metadata = load_myops_case_metadata(REPO_ROOT)
@@ -371,6 +393,8 @@ def run(args: argparse.Namespace) -> dict[str, Any]:
         "tensor_checks_csv": rel(tensor_csv, REPO_ROOT),
         "raw_oof_anchor_manifest_status": manifest["status"],
         "raw_oof_anchor_manifest_hash": manifest_hash(manifest),
+        "training_summary_anchor_manifest_hash": compact_anchor_manifest_hash,
+        "checkpoint_oof_anchor_manifest_hash": payload.get("oof_anchor_manifest_hash"),
         "anchor_identity_changed_voxels_total": changed_total,
         "anchor_identity_softmax_max_abs_delta": identity_softmax_max_abs_delta,
         "identity_export_source": "model_logits_argmax",
@@ -403,6 +427,7 @@ def main() -> int:
     parser.add_argument("--cases", default="")
     parser.add_argument("--max-cases", type=int, default=0)
     parser.add_argument("--checkpoint", default="")
+    parser.add_argument("--training-summary", default="")
     parser.add_argument("--allow-untrained-diagnostic", action="store_true")
     parser.add_argument("--output-root", default="")
     parser.add_argument("--device", default="cpu")
