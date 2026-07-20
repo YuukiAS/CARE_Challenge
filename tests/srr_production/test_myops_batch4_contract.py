@@ -74,6 +74,20 @@ def test_preflight_only_stops_before_formal_training() -> None:
     assert "--preflight-only" in parser_source
 
 
+def test_vectors_from_mask_shape_empty_and_cap() -> None:
+    features = torch.arange(1 * 2 * 2 * 2 * 3, dtype=torch.float32).reshape(1, 2, 2, 2, 3)
+    labels = torch.zeros((1, 2, 2, 3), dtype=torch.long)
+    mask = torch.zeros_like(labels, dtype=torch.bool)
+    empty = train_myops.vectors_from_mask(features, labels, mask, max_vectors=4)
+    assert tuple(empty.shape) == (0, 2)
+
+    mask[..., :] = True
+    capped = train_myops.vectors_from_mask(features, labels, mask, max_vectors=5)
+    assert tuple(capped.shape) == (5, 2)
+    full = train_myops.vectors_from_mask(features, labels, mask, max_vectors=12)
+    assert tuple(full.shape) == (12, 2)
+
+
 def test_training_checkpoint_helper_writes_schema_v2_mode_independent_architecture(tmp_path: Path) -> None:
     args = batch4_args()
     model = SRRProposeRefineMyoPS(base_channels=2, encoder_profile="tiny_3scale", final_output_mode="anchor_bounded_srr_correction")

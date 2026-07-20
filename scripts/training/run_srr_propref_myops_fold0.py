@@ -1739,6 +1739,24 @@ def memory_rows(variant: str, mined_csv: Path | None, loaded_case_count: int, lo
     return rows
 
 
+def vectors_from_mask(features: torch.Tensor, labels: torch.Tensor, mask: torch.Tensor, *, max_vectors: int) -> torch.Tensor:
+    if features.ndim != 5:
+        raise ValueError(f"expected features shape (B,C,D,H,W), got {tuple(features.shape)}")
+    if labels.shape != features.shape[:1] + features.shape[-3:]:
+        raise ValueError(f"labels shape {tuple(labels.shape)} does not match feature spatial shape {tuple(features.shape)}")
+    if mask.shape != labels.shape:
+        raise ValueError(f"mask shape {tuple(mask.shape)} does not match labels shape {tuple(labels.shape)}")
+    if max_vectors <= 0:
+        raise ValueError("max_vectors must be positive")
+    mask_flat = mask.to(device=features.device, dtype=torch.bool).reshape(-1)
+    vectors = features.permute(0, 2, 3, 4, 1).reshape(-1, features.shape[1])[mask_flat]
+    if vectors.numel() == 0:
+        return features.new_empty((0, int(features.shape[1])))
+    if vectors.shape[0] <= max_vectors:
+        return vectors.detach()
+    indices = torch.linspace(0, vectors.shape[0] - 1, steps=max_vectors, device=vectors.device).round().long()
+    return vectors.index_select(0, indices).detach()
+
 
 def _prototype_bank_summary(bank: PrototypeBank, *, selected_case_ids: list[str], feature_stage: str) -> dict[str, object]:
     return {
