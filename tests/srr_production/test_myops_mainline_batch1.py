@@ -27,9 +27,9 @@ def run_validator_known_bad(name: str) -> subprocess.CompletedProcess[str]:
 
 def test_batch1_authority_remains_nontraining_blocked_for_batch2() -> None:
     cfg = yaml.safe_load(ENTRYPOINTS.read_text(encoding="utf-8"))
-    assert cfg["formal_training_status"] == "BLOCKED_PENDING_AUTHORIZED_FOLD0_TRAINING"
+    assert cfg["formal_training_status"] == "BLOCKED_PENDING_BATCH3A_REAL_SRR_INFERENCE"
     assert cfg["formal_entrypoints"] == []
-    candidate = next(row for row in cfg["candidate_entrypoints"] if row["id"] == "myops_batch1_mainline_validator")
+    candidate = next(row for row in cfg["candidate_entrypoints"] if row["id"] == "myops_batch2a_mainline_validator")
     assert candidate["formal_authority"] is False
 
 
