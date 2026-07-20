@@ -558,3 +558,104 @@ Batch 2B 只允许新增/修复 MyoPS full-volume inference 与 fair evaluation 
 - Cine 审计 GPT：未执行；本批不改 Cine。
 - 红队 GPT：未执行独立线程；known-bad fixture 已从固定字符串升级为实际错误注入。
 - Integrator 处理结果：Batch 2A complete pending commit/push；允许进入 Batch 2B，但仍禁止训练、Slurm、upload 和性能主张。
+
+
+---
+
+## Change 004: Batch 2B full-volume inference and fair-evaluation authority
+
+- 日期/时间: 2026-07-20
+- 执行线程: CARE SRR main integrator, main-only Codex goal
+- 只读审计线程: none; integrator self-validated only, no runtime reviewer
+- Base commit: `b797a55`
+- Head commit: final Batch 2B commit SHA is reported in the final integrator response; exact self SHA cannot be embedded before commit without changing that SHA.
+- 对应 TODO: Batch 2B / full-volume Dataset501 inference and fair evaluation authority
+- 状态: complete pending commit/push
+
+### 1. 本次目标
+
+只执行 Batch 2B：建立真实 Dataset501 fold0 full-volume NIfTI identity inference 与统一公平评价入口，重现 nnU-Net fold0 baseline，证明 44 例 `anchor_identity_control` 与 raw OOF prediction 逐体素一致，并将当前 SRR 状态固定为 `UNTRAINED_PIPELINE_DIAGNOSTIC`。没有训练、没有 Slurm、没有 validation upload、没有 SRR 性能主张。
+
+### 2. 修改文件
+
+| 文件 | 动作 | 修改前行为 | 修改后行为 |
+| --- | --- | --- | --- |
+| `.gitignore` | modify | 新的 full-volume prediction runtime 目录未忽略 | 忽略 `results/srr_production/inference/*/predictions/`，只提交轻量 JSON/CSV evidence |
+| `configs/srr_production/myops_batch2.yaml` | add | 无 Batch 2B inference/evaluation authority config | 固定 fold0、class 4/5、anchor paths、expected baseline、identity gates 和 untrained SRR policy |
+| `scripts/srr_production/infer_myops.py` | add | 无 Batch 2B full-volume inference/export entrypoint | 支持 `anchor_identity_control`、`srr_no_anchor_control`、`anchor_bounded_srr_correction`；无 checkpoint 的 SRR 模式必须显式 `--allow-untrained-diagnostic` |
+| `scripts/srr_production/evaluate_myops_fair.py` | add | 无统一 Batch 2B fold0 authority wrapper | 从 NIfTI prediction/GT 重算 Dice、HD、HD95、components、remote FP、volume ratio、changed voxels、help/harm 和 subgroup |
+| `tests/srr_production/test_myops_batch2_inference_evaluation.py` | add | 无 Batch 2B CLI/schema tests | 覆盖小样本 identity export/eval 和 untrained diagnostic gate |
+| `configs/srr_production/entrypoints.yaml` | modify | formal training blocked pending Batch 2B | 记录 Batch 2B authority complete；formal training 仍 blocked pending explicit authorized fold0 training |
+| `scripts/srr_production/audit_formal_entrypoints.py` | modify | empty formal authority 不接受新的 post-2B blocked token | 允许 `BLOCKED_PENDING_AUTHORIZED_FOLD0_TRAINING` |
+| `tests/srr_production/test_formal_entrypoint_authority.py` | modify | 期望旧 blocked token | 期望 post-2B blocked token |
+| `tests/srr_production/test_myops_mainline_batch1.py` | modify | 期望旧 blocked token | 期望 post-2B blocked token |
+| `prompts/routes/handoffs/CURRENT.md` | modify | 当前立即任务仍是 Batch 2B | 标记 `batch2b_status: BATCH_2_INFERENCE_EVALUATION_AUTHORITY_COMPLETE`，下一步等待明确训练授权 |
+
+### 3. 真实数据流变化
+
+Batch 2B 已建立：
+
+```text
+fold0 validation case list (44 cases)
+-> raw OOF nnU-Net prediction NIfTI
+-> anchor_identity_control full-volume copy/export
+-> geometry/hash/changed-voxel audit
+-> common prediction/GT evaluator
+-> casewise Dice/HD/HD95/component/remote-FP/volume/help-harm/subgroup evidence
+```
+
+### 4. 删除或关闭的绕过
+
+- evaluator self-report 绕过：Batch 2B evaluator 只读 NIfTI prediction 和 GT，不读取训练脚本自报 Dice。
+- identity ambiguity：`anchor_identity_control` 输出 44 例 NIfTI，与 raw OOF prediction hash/label mismatch 逐例核对。
+- untrained SRR 性能误读：无 checkpoint 的 SRR 模式默认拒绝；只有显式 diagnostic flag 才允许，receipt 写 `UNTRAINED_PIPELINE_DIAGNOSTIC`。
+- runtime bulk commit 绕过：NIfTI prediction runtime 目录被 `.gitignore` 忽略，只提交轻量 evidence。
+
+### 5. 运行命令与结果
+
+| 命令 | Exit | 真实输入 | 真实输出 | 验证的事实 |
+| --- | ---: | --- | --- | --- |
+| `./envs/env_CARE/bin/python scripts/evaluation/evaluate_predictions.py --pred-dir .../fold_0/validation --gt-dir .../labelsTr --fold-json data/benchmarks/protocol/splits_MyoPS.json --fold 0 --foreground-classes 4,5 --skip-dice-if-gt-empty --output-dir /tmp/care_batch2b_nnunet_repro` | 0 | raw nnU-Net fold0 predictions and GT | `/tmp/care_batch2b_nnunet_repro/evaluation_summary.json` | 独立重算 baseline：edema `0.3944358976789887`，scar `0.5601692281262312` |
+| `./envs/env_CARE/bin/python -m py_compile scripts/srr_production/infer_myops.py scripts/srr_production/evaluate_myops_fair.py tests/srr_production/test_myops_batch2_inference_evaluation.py` | 0 | new scripts/tests | no syntax errors | 新入口可编译 |
+| `./envs/env_CARE/bin/python -m pytest -q tests/srr_production/test_myops_batch2_inference_evaluation.py` | 1 then fixed | subset cases | first failed because subset lacked edema GT and baseline expected check assumed full 44 | 修复为只有完整 44 例执行 expected tolerance |
+| same pytest | 0 | subset identity/eval and diagnostic gate | `2 passed in 93.94s` | CLI/schema/diagnostic gates pass |
+| `./envs/env_CARE/bin/python scripts/srr_production/infer_myops.py --mode anchor_identity_control --fold 0` | 0 | 44 raw OOF fold0 predictions | `results/srr_production/inference/batch2_inference_contract.json`, `batch2_geometry_roundtrip.csv` | 44 full-volume predictions exported; changed voxels `0` |
+| `./envs/env_CARE/bin/python scripts/srr_production/evaluate_myops_fair.py --fold 0` | 0 | 44 identity predictions, raw anchor predictions, GT | required evaluation JSON/CSV files | baseline reproduction PASS; anchor identity PASS; completion status `BATCH_2_INFERENCE_EVALUATION_AUTHORITY_COMPLETE` |
+
+### 6. 关键数值/形状/哈希
+
+- Fold0 case count: `44`
+- `nnunet_fold0_reproduction.json`: edema Dice `0.3944358976789887`; scar Dice `0.5601692281262312`; tolerance `1e-09`; status `PASS`
+- `anchor_identity_44case.json`: `changed_voxels_total=0`; `raw_label_mismatch_total=0`; `max_logit_or_probability_delta=0.0`; status `PASS`
+- `batch2_geometry_roundtrip.csv`: 44 case rows plus header
+- `casewise_metrics.csv`: 88 pathology rows plus header
+- `subgroup_metrics.csv`: 14 subgroup/pathology rows plus header
+- `help_harm.csv`: 88 pathology rows plus header
+- `component_remote_fp.csv`: 88 pathology rows plus header
+- `batch2_completion.json`: status `BATCH_2_INFERENCE_EVALUATION_AUTHORITY_COMPLETE`; `srr_scientific_status=UNTRAINED_PIPELINE_DIAGNOSTIC`; `performance_claim=NONE`
+
+### 7. 人类解释
+
+这次改动证明的是“我们现在有一套能从真实 full-volume NIfTI prediction/GT 重算 fold0 指标、并能证明 anchor identity 完全一致的入口”。它没有证明 SRR 优于 nnU-Net；当前 SRR 仍没有受信任训练后 checkpoint，所以所有 SRR-on 结果只能是管线诊断。
+
+### 8. 未解决项
+
+| 文件/区域 | 未解决项 |
+| --- | --- |
+| `scripts/srr_production/infer_myops.py` | 非 identity SRR 模式需要训练后 checkpoint 才能形成性能评价；当前仅有 explicit untrained diagnostic gate |
+| production SRR checkpoint | 不存在受信任训练后 checkpoint |
+| formal training | 仍未授权；需要用户另行批准 fold0 train budget/entrypoint |
+| validation upload/hosted metrics | 仍未授权；本批只有本地 fold0 authority |
+| Cine | 本批未修改 |
+
+### 9. 下一批允许范围
+
+下一步只能在用户明确授权后做真实 fold0 training；授权必须写清训练预算、入口、checkpoint selection、eval cadence、是否 Slurm、是否只 fold0、输出路径和 reviewer gate。未授权前不得启动训练、Slurm、upload、hosted claim 或 SRR performance conclusion。
+
+### 10. 审计意见
+
+- 模型审计 GPT：未执行独立线程。
+- 数据/评价审计 GPT：未执行独立线程；integrator 用 prediction/GT evaluator 自检。
+- Cine 审计 GPT：未执行；本批不改 Cine。
+- 红队 GPT：未执行独立线程；脚本 gate 防止无 checkpoint 的 SRR 模式被静默当作性能结果。
+- Integrator 处理结果：Batch 2B complete pending commit/push；no training, no Slurm, no performance conclusion.

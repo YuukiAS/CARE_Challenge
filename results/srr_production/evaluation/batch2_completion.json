@@ -1,0 +1,14 @@
+{
+  "anchor_identity_path": "results/srr_production/evaluation/anchor_identity_44case.json",
+  "baseline_reproduction_path": "results/srr_production/evaluation/nnunet_fold0_reproduction.json",
+  "case_count": 44,
+  "fold": 0,
+  "formal_training_count": 0,
+  "hosted_metric_claim_count": 0,
+  "performance_claim": "NONE",
+  "schema_version": 1,
+  "slurm_job_count": 0,
+  "srr_scientific_status": "UNTRAINED_PIPELINE_DIAGNOSTIC",
+  "status": "BATCH_2_INFERENCE_EVALUATION_AUTHORITY_COMPLETE",
+  "validation_upload_count": 0
+}

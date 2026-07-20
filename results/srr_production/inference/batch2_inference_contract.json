@@ -1,0 +1,18 @@
+{
+  "anchor_identity_changed_voxels_total": 0,
+  "case_count": 44,
+  "fold": 0,
+  "formal_training_count": 0,
+  "geometry_roundtrip_csv": "results/srr_production/inference/batch2_geometry_roundtrip.csv",
+  "hosted_metric_claim_count": 0,
+  "mode": "anchor_identity_control",
+  "notes": "anchor_identity_control copies raw OOF nnU-Net full-volume predictions byte-for-byte",
+  "prediction_dir": "results/srr_production/inference/anchor_identity_control/predictions",
+  "raw_label_mismatch_total": 0,
+  "raw_oof_anchor_manifest_status": "COMPLETE_RAW_REAL_OOF_ANCHOR",
+  "schema_version": 1,
+  "slurm_job_count": 0,
+  "status": "BATCH_2B_INFERENCE_CONTRACT_COMPLETE",
+  "untrained_srr_policy": "UNTRAINED_PIPELINE_DIAGNOSTIC",
+  "validation_upload_count": 0
+}

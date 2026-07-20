@@ -15,7 +15,8 @@ single_active_scientific_line: SRR_MyoPS_Cine_from_historical_Route_B
 latest_remote_batch1_commit: ef98e2d3e6808fd616d2732f4d6a645431a7a4ff
 batch1_review_status: PARTIAL_IMPLEMENTATION_NEEDS_CLOSURE
 batch2a_status: BATCH_2A_BATCH1_CLOSURE_COMPLETE
-next_required_batch: BATCH_2B_INFERENCE_EVALUATION_AUTHORITY
+batch2b_status: BATCH_2_INFERENCE_EVALUATION_AUTHORITY_COMPLETE
+next_required_batch: WAIT_FOR_EXPLICIT_AUTHORIZED_FOLD0_TRAINING
 controller_authorized_now: 0
 route_worktree_development_authorized: false
 formal_training_authorized_now: false
@@ -168,7 +169,33 @@ results/srr_production/code_maturity/batch2a_known_bad_execution_report.json
 results/srr_production/code_maturity/batch2a_checkpoint_resume_receipt.json
 ```
 
-## 当前立即任务：Batch 2B
+## Batch 2B 状态
+
+Batch 2B 已完成，不训练、不提交 Slurm、不上传 validation。已建立完整体积 Dataset501 fold0 identity inference 与统一公平评价权威：
+
+```text
+results/srr_production/inference/batch2_inference_contract.json
+results/srr_production/inference/batch2_geometry_roundtrip.csv
+results/srr_production/evaluation/nnunet_fold0_reproduction.json
+results/srr_production/evaluation/anchor_identity_44case.json
+results/srr_production/evaluation/casewise_metrics.csv
+results/srr_production/evaluation/subgroup_metrics.csv
+results/srr_production/evaluation/help_harm.csv
+results/srr_production/evaluation/component_remote_fp.csv
+results/srr_production/evaluation/batch2_completion.json
+```
+
+关键结果：
+
+```text
+nnU-Net fold0 edema Dice: 0.3944358976789887
+nnU-Net fold0 scar Dice: 0.5601692281262312
+anchor_identity_control changed_voxels_total: 0
+anchor_identity_control raw_label_mismatch_total: 0
+srr_scientific_status: UNTRAINED_PIPELINE_DIAGNOSTIC
+```
+
+这些数值只证明 evaluator 和 identity control 正确；不得解释为 SRR 性能或榜单结果。
 
 ## Batch 2B 目标
 

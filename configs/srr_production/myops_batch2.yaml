@@ -1,0 +1,34 @@
+schema_version: 1
+authority_name: myops_batch2_inference_and_fair_evaluation
+batch: 2B
+status: BATCH_2B_INFERENCE_EVALUATION_AUTHORITY
+fold: 0
+labels:
+  edema: 4
+  scar: 5
+paths:
+  raw_root: data/nnUNet/nnUNet_raw/Dataset501_CAREMyoPS
+  gt_dir: data/nnUNet/nnUNet_raw/Dataset501_CAREMyoPS/labelsTr
+  split_path: data/benchmarks/protocol/splits_MyoPS.json
+  anchor_root: data/nnUNet/nnUNet_results/Dataset501_CAREMyoPS/nnUNetTrainer_500epochs__nnUNetPlans__3d_fullres
+  anchor_fold0_pred_dir: data/nnUNet/nnUNet_results/Dataset501_CAREMyoPS/nnUNetTrainer_500epochs__nnUNetPlans__3d_fullres/fold_0/validation
+  inference_root: results/srr_production/inference
+  evaluation_root: results/srr_production/evaluation
+modes:
+  - anchor_identity_control
+  - srr_no_anchor_control
+  - anchor_bounded_srr_correction
+controls:
+  baseline_expected:
+    edema_dice: 0.3944358977
+    scar_dice: 0.5601692281
+    tolerance: 0.000000001
+  anchor_identity:
+    changed_voxels_required: 0
+    raw_label_mismatch_required: 0
+  untrained_srr_policy: UNTRAINED_PIPELINE_DIAGNOSTIC
+prohibited:
+  formal_training_count: 0
+  slurm_job_count: 0
+  validation_upload_count: 0
+  hosted_metric_claim_count: 0

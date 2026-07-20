@@ -1,14 +1,15 @@
 schema_version: 1
 authority_name: srr_production_batch0_formal_entrypoints
 created_from_head: 3f36a4ec62278ae097267d9c0eea14dd5e68a9e7
-formal_training_status: BLOCKED_PENDING_BATCH2B_INFERENCE_AND_FAIR_EVALUATION
+formal_training_status: BLOCKED_PENDING_AUTHORIZED_FOLD0_TRAINING
 status_reason: >-
-  Batch 2A closed the Batch 1 production-component gap without training:
-  validator and training runner now share raw OOF anchor manifest semantics,
-  casewise four-shard prototype/memory helpers, count-masked cross-fitted
-  memory query, explicit no-T2 exact-zero safety outputs, and checkpoint
-  schema-v2 resume helpers. Formal training remains blocked until Batch 2B
-  full-volume inference and fair evaluation authority is established.
+  Batch 2B established full-volume Dataset501 fold0 inference/evaluation
+  authority without training: nnU-Net fold0 baseline reproduction passed,
+  anchor_identity_control exported 44 geometry-preserving NIfTI predictions
+  byte-identical to raw OOF predictions, and fair evaluator wrote casewise,
+  subgroup, help/harm, component, and remote-FP receipts. Current SRR remains
+  zero-step/untrained diagnostic only; formal fold0 training still requires
+  separate human authorization.
 
 selected_model:
   class_name: SRRProposeRefineMyoPS
@@ -31,8 +32,28 @@ candidate_entrypoints:
     blocked_reasons:
       - no production authority wrapper yet
       - formal training is still unauthorized
-      - Batch 2B full-volume inference/fair evaluation authority not yet complete
+      - no trusted trained production SRR checkpoint exists
       - current evaluation is local prediction/GT recomputation, not hosted or performance-authoritative
+  - id: myops_batch2_full_volume_inference
+    role: full_volume_inference_authority
+    path: scripts/srr_production/infer_myops.py
+    config_path: configs/srr_production/myops_batch2.yaml
+    formal_authority: false
+    audit_status: batch2b_inference_authority_complete_no_training
+    notes:
+      - "`anchor_identity_control` exported 44 fold0 validation predictions with changed voxels 0."
+      - "`srr_no_anchor_control` and `anchor_bounded_srr_correction` require a checkpoint or explicit untrained diagnostic flag."
+      - Does not authorize performance claims.
+  - id: myops_batch2_fair_evaluator
+    role: local_prediction_metric_recompute_authority
+    path: scripts/srr_production/evaluate_myops_fair.py
+    config_path: configs/srr_production/myops_batch2.yaml
+    formal_authority: false
+    audit_status: batch2b_fair_evaluation_authority_complete_no_training
+    notes:
+      - Reproduced nnU-Net fold0 edema Dice 0.3944358976789887 and scar Dice 0.5601692281262312.
+      - Wrote casewise, subgroup, help/harm, component, and remote-FP receipts from prediction/GT NIfTI.
+      - Does not authorize hosted metrics or validation upload.
   - id: myops_batch1_mainline_validator
     role: non_training_production_authority_validator
     path: scripts/srr_production/validate_myops_mainline.py

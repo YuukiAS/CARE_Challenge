@@ -161,6 +161,7 @@ __MACOSX/
 # ------------------------------------------------------------------------------
 results/checkpoints/
 results/predictions/
+results/srr_production/inference/*/predictions/
 
 # Large task/pilot output trees. Keep lightweight task-scoped bridge artifacts
 # under results/<task_key>/ tracked, but ignore bulky domain outputs.
