@@ -32,6 +32,12 @@ five-day production plan added:
 
 code completion TODO added:
 bde402a85fd11beca3f908e3e41c93d369f529d7
+
+change ledger bootstrap:
+1db3c46a3e51915eb51402bc894c2529f1cfa498
+
+CURRENT bound to production sprint:
+339738d6790c71d6bee87d59678afeacce67f59a
 ```
 
 当前已知事实：Round04 reviewer 只确认 operational packet reviewability；旧 B3-B6/B8 不能作为真实生产训练和公平评价证据。后续记录必须从这一事实出发。
@@ -140,7 +146,7 @@ bde402a85fd11beca3f908e3e41c93d369f529d7
 - 执行线程：GPT Planner / GitHub connector
 - 审计线程：none
 - Base commit：`078c3548645b14224b997e41995520ec865d4b62`
-- Head commit：待本文件和 CURRENT 更新完成后补记
+- Head commit：`339738d6790c71d6bee87d59678afeacce67f59a`
 - 对应 TODO：plan bootstrap
 - 状态：complete
 
@@ -155,7 +161,7 @@ bde402a85fd11beca3f908e3e41c93d369f529d7
 | `docs/plans/laneB_round04_active_srr_mainline_production_execution.md` | add | 无五天单主线计划 | 定义五天生产化、唯一入口、今日禁训、后续训练顺序 |
 | `docs/plans/laneB_round04_active_srr_code_completion_todo.md` | add | 无逐批代码补全清单 | 定义 C0-C14 真实代码、评价、Cine、anti-bypass TODO |
 | `docs/plans/laneB_round04_active_srr_change_review_ledger.md` | add | 代码改动难以逐次追踪 | 每个 commit 必须解释真实变化和未解决项 |
-| `prompts/routes/handoffs/CURRENT.md` | pending in this bootstrap | 仍指向过时 Round04 critic/controller handoff | 将改为 mainline production sprint 状态 |
+| `prompts/routes/handoffs/CURRENT.md` | modify | main-only 状态未绑定五天代码计划 | 绑定 production plan/TODO/ledger、今日禁训和唯一 integrator 规则 |
 
 ### 3. 真实数据流变化
 
@@ -167,13 +173,15 @@ bde402a85fd11beca3f908e3e41c93d369f529d7
 
 ### 5. 运行命令与结果
 
-GitHub contents API 已成功创建总计划和 TODO；本次未运行服务器测试或训练。
+GitHub contents API 已成功创建总计划、TODO、账本并更新 CURRENT；本次未运行服务器测试或训练。
 
 ### 6. 关键数值/形状/哈希
 
 - historical reviewed merge: `078c3548645b14224b997e41995520ec865d4b62`
 - production plan commit: `8b801e80472dba54c1bcee008f5c2525e9636723`
 - TODO commit: `bde402a85fd11beca3f908e3e41c93d369f529d7`
+- ledger bootstrap commit: `1db3c46a3e51915eb51402bc894c2529f1cfa498`
+- CURRENT production-sprint commit: `339738d6790c71d6bee87d59678afeacce67f59a`
 
 ### 7. 人类解释
 
