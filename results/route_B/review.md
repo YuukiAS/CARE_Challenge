@@ -1,39 +1,64 @@
-# Route B Round03 Independent Review
+# Route B Round04 Independent Reviewer Audit
 
-decision: `ROUTE_B_ROUND03_REVIEW_ADEQUATE_NEGATIVE`
+Reviewer scope: commit `2e24f290e83e356fbfba5f73da4fde98b657390b` and handoff `results/route_B/review_request.md`.
 
-reviewed_head: `8dfa40f8c4cedb2507f35a482bd46244a7a1c94c`
-reviewed_origin_route_B: `8dfa40f8c4cedb2507f35a482bd46244a7a1c94c`
-review_date: `2026-07-19`
+## Findings
 
-## Scope
+No blocking findings.
 
-This is a separate read-only reviewer pass over the Route B Round03 terminal packet. I did not start a controller, submit Slurm work, run training, package or upload validation, promote a route, start M11, merge across routes, claim hosted metrics, or make a final scientific decision.
+## Reviewability And Operational Completion
 
-`prompts/routes/handoffs/CURRENT.md` was requested as a prerequisite source, but that path is absent at the reviewed commit. I did not substitute a neighboring handoff file as source-of-truth. The review below is therefore bound to the exact fetched commit, the manifest-listed Route B terminal packet, `review_request.md`, the strict validator output, and the B10/B3 Slurm/accounting evidence.
+Controller packet is reviewable: YES.
+
+Operational execution is complete for the Round04 controller scope: YES.
+
+This is an operational review only. This review does not make a route-promotion decision, route-negative scientific decision, validation upload decision, M11 decision, hosted metric claim, or cross-route merge decision.
 
 ## Evidence Checked
 
-1. Repository state was current after `git fetch --all --prune`: `pwd` was `/users/a/e/aereinh/CARE_worktrees/route_B`, and both `HEAD` and `origin/route_B` resolved to `8dfa40f8c4cedb2507f35a482bd46244a7a1c94c`.
-2. The requested strict validator passed:
+- Root packet token is `ROUTE_B_ROUND04_TERMINAL_PACKET_READY_FOR_REVIEW` in `results/route_B/completion_check.md`, `results/route_B/result.md`, and `results/route_B/review_request.md`.
+- B6 passed with `ROUTE_B_ROUND04_B6_MYOPS_TERMINAL_EVIDENCE_READY`: `optimizer_steps=111557`, `train_loop_seconds=2400.014326528879`, `eval_cases=44`, `formal_training=true`.
+- B8 passed the registration stage and records `method_decision=CINE_REGISTRATION_BLOCKER`.
+- B8 records `launch_B9_allowed=false`, `learned_runtime_faithful=true`, `syn_control_available=false`, and blocker reason `ANTS_EXECUTABLE_NOT_FOUND_OR_LEARNED_GATE_FAILED`.
+- B10 terminal branch coverage records `b9_absence_justified=true`, `b9_launch_allowed=false`, and `cine_lane_terminal_class=B8_CINE_REGISTRATION_BLOCKER_NO_B9`.
+- Therefore B9 was correctly not launched under this packet's evidence.
 
-   ```text
-   /users/a/e/aereinh/CARE/envs/env_CARE/bin/python scripts/validation/route_B_round03/validate_packet.py --strict --require-all-attempt-accounting results/route_B/round03/executors/B10
-   status: PASS
-   completion_token: ROUTE_B_ROUND03_TERMINAL_PACKET_READY_FOR_REVIEW
-   errors: []
-   ```
+## Slurm Accounting
 
-3. The terminal packet is not a monitor packet. B10 `routing_ledger.csv` accounts for every listed B3 attempt, and B10 `finalizer_state.json` records `afterany_all_started_attempts` coverage for the same job IDs. The final credited rerun, job `59490811` on `htzhulab`, reached terminal `FAILED`, exit `2:0`, with runtime output `results/route_B/runtime/round03/B3/attempt_htzhulab_samplerfix_1`.
-4. The B3 terminal scientific gate failure is supported by current evidence. `results/route_B/round03/executors/B3/completion.json` reports `43003` optimizer steps, `1800.7964860140346` train-loop seconds, and `22` validation events against requirements of `6000`, `1800.0`, and `3`. It passed finite-loss, loss-decrease, invalid-weight, no-T2 edema-zero, frozen sampler count, and frozen sampler sequence checks, but failed `anatomy_union_overfit`.
-5. The sampler defect from the old review is closed in the reviewed terminal packet. The final B3 sampler receipt uses draw cycle `E,E,S,R`, `numpy.random.Philox`, seed `26071821`, with replacement, `cycle_mismatch_count: 0`, and counts `E=21502`, `S=10751`, `R=10750`, matching expected counts.
-6. Missing B4-B9 packets are justified by the executor plan and B10 packet only because B3 is a blocking terminal scientific gate. The current B10 packet records `terminal_negative_packet: true`, `blocked_at_stage: B3`, and `blocked_completion_token: ROUTE_B_ROUND03_B3_SCIENTIFIC_GATE_FAILED`.
-7. Forbidden authority boundaries are intact in B10: route promotion, route-negative decision, final scientific decision, validation packaging/upload, hosted metric claim, M11, cross-route merge, push, and controller-authored review are all false or `NOT_REVIEWED` / `AWAITING_REVIEW`.
-8. B10 heavy-artifact scan reports `PASS` with no tracked heavy artifacts. B10 validator evidence includes successful `git diff --check`, architecture wiki validation, and strict packet validation.
-9. Legacy first-level Route B files still contain earlier `ROUTE_B_SCIENTIFIC_UNDERTRAINED` / `ROUTE_B_READY_FOR_REVIEW` text, but they are not listed in the current `MANIFEST.md` review target except where explicitly superseded by `result.md`, `completion_check.md`, `controller_report.md`, `review_request.md`, and `round03/executors/B10/*`. I did not use those legacy files as current terminal evidence.
+Live `sacct` verification confirmed all RouteB04 started attempts are terminal-accounted:
 
-## Decision
+- `59546347` B1 htzhulab: `FAILED`, `ExitCode=2:0`, zero-credit superseded attempt.
+- `59546548` B1 A100: `CANCELLED by 397557`.
+- `59548190` B1 htzhulab retry: `COMPLETED`, `ExitCode=0:0`.
+- `59548314` B1 A100 retry: `CANCELLED by 397557`.
+- `59552549` B7: `COMPLETED`, `ExitCode=0:0`.
+- `59552550` B3: `COMPLETED`, `ExitCode=0:0`.
+- `59554239` B4: `COMPLETED`, `ExitCode=0:0`.
+- `59560352` B5: `COMPLETED`, `ExitCode=0:0`.
+- `59562056` B8: `COMPLETED`, `ExitCode=0:0`.
+- `59568601` B6: `COMPLETED`, `ExitCode=0:0`.
 
-`ROUTE_B_ROUND03_REVIEW_ADEQUATE_NEGATIVE` is the supported reviewer token.
+B10 `finalizer_state.json` uses `afterany_all_started_attempts`, lists the same ten job IDs, and marks each as `terminal_accounted=true`.
 
-This means the terminal packet is reviewable and non-candidate: Route B Round03 produced faithful B3 runtime evidence, satisfied the B3 minimum runtime/sampler/accounting gates, and then failed the B3 scientific gate because `anatomy_union_overfit` remained false. It does not authorize validation upload, route promotion, M11, cross-route merge, hosted metric claims, or a final scientific conclusion. It only provides reviewed evidence for later portfolio reconciliation.
+## Validators And Tests
+
+Reviewer reruns:
+
+- `/users/a/e/aereinh/CARE/envs/env_CARE/bin/python scripts/validation/route_B_round04/validate_B10_terminal_packet.py --strict --input results/route_B/round04/executors/B10 --report /tmp/route_B_round04_B10_reviewer_validator.json` -> PASS.
+- `/users/a/e/aereinh/CARE/envs/env_CARE/bin/python scripts/validation/route_B_round04/validate_B6_myops_terminal.py --strict --input results/route_B/round04/executors/B6 --report /tmp/route_B_round04_B6_reviewer_validator.json` -> PASS.
+- `/users/a/e/aereinh/CARE/envs/env_CARE/bin/python scripts/validation/route_B_round04/validate_B8_registration.py --strict --input results/route_B/round04/executors/B8 --report /tmp/route_B_round04_B8_reviewer_validator.json` -> PASS.
+- `/users/a/e/aereinh/CARE/envs/env_CARE/bin/python -m pytest -q tests/route_B_round04/test_round04_validators.py` -> `10 passed`.
+
+B10 `validator_packet_report.json` records `status=PASS`, `semantic_checks_performed=true`, `only_file_existence=false`, all B0-B8 validators PASS, and all B0-B8 known-bad rows PASS. B10 `known_bad_report.json` records `fixture_count=13`, `status=PASS`.
+
+An initial reviewer command using `./envs/env_CARE/bin/python` failed because that worktree-local venv path does not exist; the checks above were rerun with the repository-standard `/users/a/e/aereinh/CARE/envs/env_CARE/bin/python`.
+
+## Packet Scope Checks
+
+- First-level root packet files under `results/route_B` have no `NEEDS_MONITOR`, `PENDING_MONITOR`, `JOB_SUBMITTED`, `PENDING_PRIORITY`, `AWAITING_SACCT`, `RUNNING`, or `PENDING` matches.
+- Round04 ledgers contain historical monitor states as expected, but B10 terminalizes those states with final accounting.
+- B10 `heavy_artifact_scan.json` records `tracked_heavy_artifacts=[]`, `status=PASS`.
+- Independent `git ls-tree` size scan of `results/route_B/round04` found no tracked file at or above 1 MB; the largest tracked Round04 file is about 80 KB.
+- Worktree was clean before review output. No code, controller packet, validation upload, push, M11, or cross-route merge action was performed.
+
+Reviewer conclusion: PASS for Round04 controller packet reviewability and operational execution completion.
