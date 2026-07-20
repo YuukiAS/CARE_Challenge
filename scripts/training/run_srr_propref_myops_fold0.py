@@ -906,6 +906,29 @@ def required_validation_steps(max_steps: int, val_every: int) -> set[int]:
     return steps
 
 
+def wait_for_min_train_loop_seconds_after_optimizer_budget(
+    *,
+    start_time: float,
+    min_train_loop_seconds: float,
+    max_runtime_seconds: float,
+    poll_seconds: float = 30.0,
+) -> tuple[str, float]:
+    waited = 0.0
+    while True:
+        elapsed = time.monotonic() - start_time
+        if elapsed >= min_train_loop_seconds:
+            return "max_steps_min_train_loop_seconds_satisfied_without_extra_optimizer_steps", waited
+        if elapsed >= max_runtime_seconds:
+            return "max_runtime_seconds_during_post_max_steps_wait", waited
+        remaining_to_min = max(0.0, min_train_loop_seconds - elapsed)
+        remaining_to_runtime = max(0.0, max_runtime_seconds - elapsed)
+        sleep_for = min(poll_seconds, remaining_to_min, remaining_to_runtime)
+        if sleep_for <= 0.0:
+            continue
+        time.sleep(sleep_for)
+        waited += sleep_for
+
+
 def stage_counts(actual_steps: int, max_steps: int) -> dict[str, int]:
     counts = {name: 0 for name in ("evidence_warmup", "proposal_dictionary", "soft_roi_refinement", "low_lr_calibration")}
     for step in range(1, actual_steps + 1):
@@ -2328,6 +2351,7 @@ def train_variant(args: argparse.Namespace) -> None:
     validation_schedule = required_validation_steps(args.max_steps, args.val_every)
     start = time.monotonic()
     process_start = time.process_time()
+    post_optimizer_wait_seconds = 0.0
     model.train()
     step = 1
     while True:
@@ -2337,9 +2361,12 @@ def train_variant(args: argparse.Namespace) -> None:
         if step > args.max_steps:
             if not args.enforce_min_train_loop_seconds:
                 break
-            if time.monotonic() - start >= args.min_train_loop_seconds_for_plateau:
-                stop_reason = "max_steps_min_train_loop_seconds_satisfied"
-                break
+            stop_reason, post_optimizer_wait_seconds = wait_for_min_train_loop_seconds_after_optimizer_budget(
+                start_time=start,
+                min_train_loop_seconds=float(args.min_train_loop_seconds_for_plateau),
+                max_runtime_seconds=float(args.max_runtime_seconds),
+            )
+            break
         stage = stage_for_step(step, args.max_steps)
         if stage == "low_lr_calibration":
             for group in optimizer.param_groups:
@@ -2657,6 +2684,7 @@ def train_variant(args: argparse.Namespace) -> None:
         "stop_reason": stop_reason,
         "elapsed_seconds": elapsed,
         "train_loop_seconds": elapsed,
+        "post_optimizer_wait_seconds": post_optimizer_wait_seconds,
         "process_wall_seconds": process_elapsed,
         "max_runtime_seconds": args.max_runtime_seconds,
         "max_steps": args.max_steps,

@@ -108,6 +108,30 @@ def test_batch4_gate_usage_accepts_nested_gate_means() -> None:
     assert rows[1]["valid_fraction"] == pytest.approx(1.0)
 
 
+def test_batch4_post_max_steps_wait_does_not_extend_optimizer_budget(monkeypatch: pytest.MonkeyPatch) -> None:
+    now = {"value": 1794.0}
+    sleeps: list[float] = []
+
+    def fake_monotonic() -> float:
+        return now["value"]
+
+    def fake_sleep(seconds: float) -> None:
+        sleeps.append(seconds)
+        now["value"] += seconds
+
+    monkeypatch.setattr(train_myops.time, "monotonic", fake_monotonic)
+    monkeypatch.setattr(train_myops.time, "sleep", fake_sleep)
+    reason, waited = train_myops.wait_for_min_train_loop_seconds_after_optimizer_budget(
+        start_time=0.0,
+        min_train_loop_seconds=1800.0,
+        max_runtime_seconds=21600.0,
+        poll_seconds=2.0,
+    )
+    assert reason == "max_steps_min_train_loop_seconds_satisfied_without_extra_optimizer_steps"
+    assert waited == pytest.approx(6.0)
+    assert sleeps == [2.0, 2.0, 2.0]
+
+
 def test_training_checkpoint_helper_writes_schema_v2_mode_independent_architecture(tmp_path: Path) -> None:
     args = batch4_args()
     model = SRRProposeRefineMyoPS(base_channels=2, encoder_profile="tiny_3scale", final_output_mode="anchor_bounded_srr_correction")
