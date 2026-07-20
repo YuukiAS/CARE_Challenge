@@ -1,157 +1,168 @@
-schema_version: 1
-authority_name: srr_production_batch0_formal_entrypoints
-created_from_head: 3f36a4ec62278ae097267d9c0eea14dd5e68a9e7
-formal_training_status: BLOCKED_PENDING_AUTHORIZED_FOLD0_TRAINING
+schema_version: 2
+authority_name: srr_production_mainline_authority
+reviewed_from_head: b38b1a045236d94045c48f12831a41b190abe691
+formal_training_status: BLOCKED_PENDING_BATCH3A_REAL_SRR_INFERENCE
 status_reason: >-
-  Batch 2B established full-volume Dataset501 fold0 inference/evaluation
-  authority without training: nnU-Net fold0 baseline reproduction passed,
-  anchor_identity_control exported 44 geometry-preserving NIfTI predictions
-  byte-identical to raw OOF predictions, and fair evaluator wrote casewise,
-  subgroup, help/harm, component, and remote-FP receipts. Current SRR remains
-  zero-step/untrained diagnostic only; formal fold0 training still requires
-  separate human authorization.
+  Batch 2A repaired several shared MyoPS components, and Batch 2B established
+  a real nnU-Net fold0 metric recomputation plus byte-identical label-copy
+  identity audit. However scripts/srr_production/infer_myops.py does not yet
+  read Dataset501 images, instantiate SRRProposeRefineMyoPS, load a checkpoint,
+  load frozen prototype/memory assets, or execute model inference. Its three
+  modes currently copy raw nnU-Net prediction NIfTI files. Formal training is
+  blocked because a trained checkpoint could not yet enter a trusted full-volume
+  SRR inference and evaluation path.
 
 selected_model:
   class_name: SRRProposeRefineMyoPS
   path: src/care_myocardium/models/srr_propref.py
-  status: real_batch2a_shared_component_closure_no_training
+  status: real_model_components_but_no_trusted_full_volume_inference
   notes:
-    - Uses existing encoder, retrieval, proposal dictionary, crop soft-ROI refiner, and final-output variants.
-    - Production Batch 2A requires strict casewise train/OOF prototypes and masks zero-count memory slots from similarity.
-    - M10 cross-fitted memory is connected to proposal logits, and production crossfit-exclusive queries bypass global self-leaking prototype buffers.
+    - Existing modality encoders, retrieval, anatomy, proposal dictionaries, soft-ROI refiners, and bounded corrections are retained.
+    - Batch 2A connected casewise prototype/memory smoke and masked zero-count slots.
+    - Training and validation/inference still require distinct memory query policies.
+    - Raw OOF anchor and derived no-T2 safety context must be separated at the model interface.
 
 formal_entrypoints: []
 
 candidate_entrypoints:
   - id: srr_propref_myops_fold0_candidate
-    role: training_and_local_evaluation_candidate
+    role: training_candidate_after_batch3a
     path: scripts/training/run_srr_propref_myops_fold0.py
     formal_authority: false
-    audit_status: real_but_incomplete
-    allowed_in_batch0: read_only_audit_static_tests_only
+    audit_status: shared_components_partial_training_unauthorized
     blocked_reasons:
-      - no production authority wrapper yet
-      - formal training is still unauthorized
+      - formal training is unauthorized
       - no trusted trained production SRR checkpoint exists
-      - current evaluation is local prediction/GT recomputation, not hosted or performance-authoritative
-  - id: myops_batch2_full_volume_inference
-    role: full_volume_inference_authority
+      - no trusted full-volume SRR checkpoint inference path exists
+      - validation/inference prototype-memory query policy is not yet separated from training cross-fit policy
+
+  - id: myops_batch2_identity_copy_candidate
+    role: nnunet_label_copy_identity_and_geometry_audit
     path: scripts/srr_production/infer_myops.py
     config_path: configs/srr_production/myops_batch2.yaml
     formal_authority: false
-    audit_status: batch2b_inference_authority_complete_no_training
+    audit_status: identity_copy_complete_srr_inference_not_implemented
     notes:
-      - "`anchor_identity_control` exported 44 fold0 validation predictions with changed voxels 0."
-      - "`srr_no_anchor_control` and `anchor_bounded_srr_correction` require a checkpoint or explicit untrained diagnostic flag."
-      - Does not authorize performance claims.
+      - anchor_identity_control copies raw nnU-Net OOF prediction NIfTI byte-for-byte.
+      - srr_no_anchor_control and anchor_bounded_srr_correction do not currently execute SRRProposeRefineMyoPS.
+      - checkpoint argument is currently a command gate and is not loaded.
+      - Batch 3A must replace label copy for non-identity modes with real model inference.
+
   - id: myops_batch2_fair_evaluator
-    role: local_prediction_metric_recompute_authority
+    role: local_nifti_metric_recompute_authority
     path: scripts/srr_production/evaluate_myops_fair.py
     config_path: configs/srr_production/myops_batch2.yaml
     formal_authority: false
-    audit_status: batch2b_fair_evaluation_authority_complete_no_training
+    audit_status: nnunet_baseline_and_identity_evaluator_complete_srr_comparison_blocked
     notes:
       - Reproduced nnU-Net fold0 edema Dice 0.3944358976789887 and scar Dice 0.5601692281262312.
-      - Wrote casewise, subgroup, help/harm, component, and remote-FP receipts from prediction/GT NIfTI.
-      - Does not authorize hosted metrics or validation upload.
-  - id: myops_batch1_mainline_validator
-    role: non_training_production_authority_validator
+      - Writes casewise, subgroup, help/harm, component, and remote-FP receipts from prediction/GT NIfTI.
+      - Current default srr prediction directory can fall back to identity predictions and must be removed in Batch 3A.
+      - Does not authorize SRR performance, hosted metrics, or validation upload.
+
+  - id: myops_batch2a_mainline_validator
+    role: nontraining_component_smoke_validator
     path: scripts/srr_production/validate_myops_mainline.py
     config_path: configs/srr_production/myops_batch1.yaml
     formal_authority: false
-    audit_status: batch1_non_training_complete_for_batch2
-    allowed_in_batch1: strict_manifest_forward_backward_intervention_checkpoint_tests_only
+    audit_status: partial_shared_component_closure_known_bad_needs_real_detectors
     notes:
-      - Generated a complete 220-case real OOF nnU-Net anchor manifest.
-      - Batch 2A upgraded the manifest semantics to raw, unmodified OOF anchor plus derived safety context.
-      - Proved production final output uses anchor_bounded_srr_correction in smoke, not pure SRR.
-      - Batch 2A generated shared component receipts under results/srr_production/code_maturity/batch2a_*.
-      - Does not authorize formal training or performance claims.
+      - Generated complete raw OOF anchor manifests and Batch 2A component receipts.
+      - Verified one real-case model smoke and no-T2 exact-zero values.
+      - Several known-bad fixtures still return detected from constructed dictionaries rather than invoking production validators.
+
   - id: unified_prediction_evaluator
-    role: local_prediction_metric_recompute_candidate
+    role: reusable_local_prediction_metric_helper
     path: scripts/evaluation/evaluate_predictions.py
     formal_authority: false
-    audit_status: already_real_and_reusable_for_local_metrics
+    audit_status: real_reusable_local_metric_helper
     notes:
-      - Recomputes Dice and optional HD/HD95 from prediction NIfTI and GT NIfTI.
-      - It is not a training entrypoint and does not make hosted leaderboard claims.
+      - Recomputes Dice and optional HD/HD95 from prediction and GT NIfTI.
+      - It does not make hosted leaderboard claims.
 
 required_real_assets:
   myops_raw:
     path: data/nnUNet/nnUNet_raw/Dataset501_CAREMyoPS
-    role: real Dataset501 imagesTr and labelsTr source
+    role: Dataset501 imagesTr and labelsTr
   myops_protocol_split:
     path: data/benchmarks/protocol/splits_MyoPS.json
-    role: patient/case split source for fold evaluation
+    role: exact fold split source
   nnunet_anchor_root:
     path: data/nnUNet/nnUNet_results/Dataset501_CAREMyoPS/nnUNetTrainer_500epochs__nnUNetPlans__3d_fullres
-    role: fold validation probabilities and predictions used as cached nnU-Net anchor/context
+    role: raw OOF nnU-Net probabilities and predictions
   nnunet_checkpoint_pattern:
     path: data/nnUNet/nnUNet_results/Dataset501_CAREMyoPS/nnUNetTrainer_500epochs__nnUNetPlans__3d_fullres/fold_*/checkpoint_best.pth
-    role: real nnU-Net checkpoints, not directly loaded by current SRR runner
+    role: real nnU-Net checkpoints recorded by the anchor manifest
 
 forbidden_formal_entrypoints:
   - id: route_b_round04_b3_representation
     path: scripts/training/route_B_round04/myops/B3/run_B3_representation.py
-    forbidden_reason: synthetic tensors, random anchor, token-gated stage, independent RouteBRound03MyoPS initialization
+    forbidden_reason: synthetic tensors, random anchor, token-gated independent initialization
   - id: route_b_round04_b4_proposal
     path: scripts/training/route_B_round04/myops/B4/run_B4_proposal.py
-    forbidden_reason: synthetic tensors, random anchor, handwritten target, OOF/prototype CSV assertions not backed by real prototype construction
+    forbidden_reason: synthetic tensors, random anchor, handwritten target, unsupported metrics
   - id: route_b_round04_b5_refiner
     path: scripts/training/route_B_round04/myops/B5/run_B5_refiner.py
-    forbidden_reason: synthetic tensors, random anchor, hard-coded dice_proxy rows, independent model initialization
+    forbidden_reason: synthetic tensors, random anchor, hard-coded proxy metrics
   - id: route_b_round04_b6_joint
     path: scripts/training/route_B_round04/myops/B6/run_B6_joint.py
-    forbidden_reason: synthetic tensors, random anchor, fixed local proxy metric formulas, independent model initialization
+    forbidden_reason: synthetic tensors, fixed proxy formulas, independent model initialization
   - id: route_b_round04_b7_cinema_control
     path: scripts/training/route_B_round04/cine/B7/run_B7_cinema_control.py
-    forbidden_reason: synthetic frame training tensor and adapter probe not connected to downstream Cine export
+    forbidden_reason: synthetic frame training tensor and disconnected CineMA probe
   - id: route_b_round04_b8_registration
     path: scripts/training/route_B_round04/cine/B8/run_B8_registration.py
-    forbidden_reason: synthetic fixed/moving pairs from random tensors and no real 4D Cine frame-pair loader
-
-  - id: route_b_round04_b3_representation_job_wrapper
+    forbidden_reason: synthetic fixed-moving pairs and no real 4D Cine path
+  - id: route_b_round04_b3_wrapper
     path: jobs/route_B_round04/run_B3_representation.sh
-    forbidden_reason: shell wrapper calls the forbidden B3 script with --formal
-  - id: route_b_round04_b4_proposal_job_wrapper
+    forbidden_reason: calls forbidden B3 formal script
+  - id: route_b_round04_b4_wrapper
     path: jobs/route_B_round04/run_B4_proposal.sh
-    forbidden_reason: shell wrapper calls the forbidden B4 script with --formal
-  - id: route_b_round04_b5_refiner_job_wrapper
+    forbidden_reason: calls forbidden B4 formal script
+  - id: route_b_round04_b5_wrapper
     path: jobs/route_B_round04/run_B5_refiner.sh
-    forbidden_reason: shell wrapper calls the forbidden B5 script with --formal
-  - id: route_b_round04_b6_joint_job_wrapper
+    forbidden_reason: calls forbidden B5 formal script
+  - id: route_b_round04_b6_wrapper
     path: jobs/route_B_round04/run_B6_joint.sh
-    forbidden_reason: shell wrapper calls the forbidden B6 script with --formal
-  - id: route_b_round04_b7_cinema_control_job_wrapper
+    forbidden_reason: calls forbidden B6 formal script
+  - id: route_b_round04_b7_wrapper
     path: jobs/route_B_round04/run_B7_cinema_control.sh
-    forbidden_reason: shell wrapper calls the forbidden B7 script with --formal
-  - id: route_b_round04_b8_registration_job_wrapper
+    forbidden_reason: calls forbidden B7 formal script
+  - id: route_b_round04_b8_wrapper
     path: jobs/route_B_round04/run_B8_registration.sh
-    forbidden_reason: shell wrapper calls the forbidden B8 script with --formal
+    forbidden_reason: calls forbidden B8 formal script
 
-batch1_required_repairs:
-  - file: scripts/training/run_srr_propref_myops_fold0.py
-    functions:
-      - main
-      - train_variant
-      - fit_and_load_runtime_prototype_bank
-      - propref_loss
-    required_change: create production-mode authority gates, expose chosen M10 variant if selected, and reject deterministic prototype fallback in formal mode
-  - file: src/care_myocardium/models/srr_propref.py
-    functions:
-      - SRRProposeRefineMyoPS.forward
-      - ProposalDictionary.forward
-      - ProposalDictionary.load_prototype_bank
-    required_change: connect real OOF prototype/memory provenance to proposal logits and make final-output mode explicit in production config
+batch3a_required_repairs:
+  - file: scripts/srr_production/infer_myops.py
+    required_change: >-
+      Read real Dataset501 images and availability, load schema-v2 checkpoint and
+      frozen prototype/memory assets, instantiate SRRProposeRefineMyoPS, run model
+      full-volume or deterministic sliding-window inference, and export NIfTI.
   - file: src/care_myocardium/models/srr_dictionary_memory.py
-    functions:
-      - M10CrossFittedPrototypeMemory.update
-      - M10CrossFittedPrototypeMemory.query
-    required_change: wire cross-fitted memory into training and proposal terms or keep memory variants blocked
-  - file: scripts/evaluation/evaluate_predictions.py
-    functions:
-      - main
-      - dice_per_class
-      - hd_class
-      - hd95_class
-    required_change: bind fair fold0 SRR-vs-nnU-Net evaluator config and component/remote-FP outputs under production authority
+    required_change: >-
+      Separate training query exclusion from validation/inference use of all frozen
+      training shards.
+  - file: scripts/training/run_srr_propref_myops_fold0.py
+    required_change: >-
+      Keep raw anchor as final segmentation basis and pass derived safety context
+      separately; produce frozen full-train prototype/memory assets for checkpoint use.
+  - file: scripts/srr_production/evaluate_myops_fair.py
+    required_change: >-
+      Remove SRR-to-identity directory fallback, verify inference contract and hashes,
+      separate identity completion from SRR model inference completion, and report
+      explicit empty-prediction HD/HD95 flags.
+  - file: scripts/srr_production/validate_myops_mainline.py
+    required_change: >-
+      Replace remaining dictionary-only known-bad shortcuts with actual production
+      validator calls and asset/model mutations.
+  - file: tests/srr_production/test_myops_batch2_preflight.py
+    required_change: create the missing Batch 3A model/checkpoint/prototype/inference preflight tests
+
+batch3b_scope_after_batch3a:
+  - real Dataset502 4D Cine loading with preserved time axis
+  - auditable ED/reference selection
+  - real frame-pair registration and warping
+  - frame-wise anatomy transformed into ED space
+  - temporal aggregation affecting final output
+  - geometry-preserving ED-space export and evaluator
+  - historical B7/B8 remain forbidden
