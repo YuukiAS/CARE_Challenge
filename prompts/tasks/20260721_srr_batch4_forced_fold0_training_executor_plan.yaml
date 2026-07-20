@@ -1,0 +1,167 @@
+schema_version: 1
+task_key: 20260721_srr_batch4_forced_fold0_training
+status: DRAFT_FOR_PLANNING_REVIEW
+execution_mode: controller_supervised
+executor_slots: 1
+executor_count: 1
+parallel_execution_allowed: false
+mapper_slots: 1
+continuity_backend: slurm_dependency
+result_root: results/20260721_srr_batch4_forced_fold0_training
+controller_task_path: prompts/tasks/20260721_srr_batch4_forced_fold0_training_controller.md
+planning_review_path: prompts/tasks/20260721_srr_batch4_forced_fold0_training_planning_review.md
+required_planning_review_token: BATCH4_PLANNING_AUDITED_GO
+waves:
+  - wave_id: B4_WAVE0_INTERFACE_AND_PREFLIGHT
+    executor_id: batch4_executor
+    blocking: true
+    dependencies: []
+    write_scope:
+      - scripts/training/run_srr_propref_myops_fold0.py
+      - scripts/srr_production/infer_myops.py
+      - scripts/srr_production/evaluate_myops_fair.py
+      - scripts/srr_production/validate_myops_mainline.py
+      - src/care_myocardium/models/srr_propref.py
+      - src/care_myocardium/models/srr_dictionary_memory.py
+      - src/care_myocardium/srr_production/checkpoint.py
+      - src/care_myocardium/srr_production/prototype_memory.py
+      - configs/srr_production/myops_batch4.yaml
+      - configs/srr_production/entrypoints.yaml
+      - tests/srr_production/
+      - jobs/srr_production/
+      - scripts/ops/
+      - results/20260721_srr_batch4_forced_fold0_training/
+    required_outputs:
+      - results/20260721_srr_batch4_forced_fold0_training/implementation_snapshot.md
+      - results/20260721_srr_batch4_forced_fold0_training/preflight_receipt.json
+      - results/20260721_srr_batch4_forced_fold0_training/frozen_prototype_memory_manifest.json
+    completion_conditions:
+      - planning_review_token_valid
+      - schema_v2_training_checkpoint_roundtrip
+      - same_checkpoint_runtime_modes_supported
+      - identity_model_logits_exact
+      - all_176_train_cases_in_prototype_memory_manifest
+      - one_batch_overfit_relative_loss_decrease_at_least_0_05
+      - target_module_gradients_nonzero
+      - no_t2_full_chain_exact_zero
+    failure_action: repair_within_write_scope_and_repeat_preflight
+
+  - wave_id: B4_WAVE1_FORCED_FOLD0_TRAINING
+    executor_id: batch4_executor
+    blocking: true
+    dependencies:
+      - B4_WAVE0_INTERFACE_AND_PREFLIGHT
+    write_scope:
+      - jobs/srr_production/
+      - scripts/ops/
+      - results/20260721_srr_batch4_forced_fold0_training/
+      - logs/srr_batch4/
+    logical_run_id: srr_batch4_m10d3_full4scale_fold0_seed20260721
+    scientific_config:
+      model_variant: m10_d3_hierarchical_memory_propref
+      encoder_profile: full_4scale
+      final_output_mode: anchor_bounded_srr_correction
+      fold: 0
+      seed: 20260721
+      patch_shape_zyx: [12, 96, 96]
+      batch_size: 1
+      optimizer_steps: 1800
+      minimum_train_loop_seconds: 1800
+      maximum_runtime_seconds: 21600
+      full_volume_eval_steps: [600, 1200, 1800]
+    routing:
+      primary_partition: htzhulab
+      a100_race_after_pending_seconds: 900
+      volta_race_after_pending_seconds: 1800
+      partitions:
+        - htzhulab
+        - a100-gpu
+        - volta-gpu
+      require_atomic_winner_lock: true
+      require_isolated_attempt_directories: true
+      cancel_pending_losers: true
+      started_loser_training_credit: 0
+      v100_same_config_preflight_required: true
+    required_outputs:
+      - results/20260721_srr_batch4_forced_fold0_training/slurm_attempts.csv
+      - results/20260721_srr_batch4_forced_fold0_training/training_adequacy.json
+      - results/20260721_srr_batch4_forced_fold0_training/training_log_summary.csv
+      - results/20260721_srr_batch4_forced_fold0_training/validation_checkpoint_metrics.csv
+    completion_conditions:
+      - one_official_winner_completed
+      - winner_optimizer_steps_at_least_1800
+      - winner_train_loop_seconds_at_least_1800
+      - train_unique_case_count_equals_176
+      - full_volume_eval_event_count_equals_3
+      - each_full_volume_eval_case_count_equals_44
+    retry_policy:
+      max_startup_retries: 2
+      max_preemption_retries: 2
+      max_unknown_retries: 0
+      preserve_scientific_fingerprints: true
+    failure_action: terminal_evidence_or_same_scope_operational_retry
+
+  - wave_id: B4_WAVE2_SELECTION_DIAGNOSIS_FINALIZATION
+    executor_id: batch4_executor
+    blocking: true
+    dependencies:
+      - B4_WAVE1_FORCED_FOLD0_TRAINING
+    write_scope:
+      - scripts/srr_production/
+      - scripts/evaluation/
+      - scripts/architecture/
+      - wiki/
+      - results/20260721_srr_batch4_forced_fold0_training/
+    required_outputs:
+      - results/20260721_srr_batch4_forced_fold0_training/selected_checkpoint.json
+      - results/20260721_srr_batch4_forced_fold0_training/casewise_metrics.csv
+      - results/20260721_srr_batch4_forced_fold0_training/subgroup_metrics.csv
+      - results/20260721_srr_batch4_forced_fold0_training/help_harm.csv
+      - results/20260721_srr_batch4_forced_fold0_training/component_remote_fp.csv
+      - results/20260721_srr_batch4_forced_fold0_training/proposal_diagnostics.csv
+      - results/20260721_srr_batch4_forced_fold0_training/roi_diagnostics.csv
+      - results/20260721_srr_batch4_forced_fold0_training/correction_gate_diagnostics.csv
+      - results/20260721_srr_batch4_forced_fold0_training/commands_run.md
+      - results/20260721_srr_batch4_forced_fold0_training/mapper_report_draft.md
+      - results/20260721_srr_batch4_forced_fold0_training/mapper_report_final.md
+      - results/20260721_srr_batch4_forced_fold0_training/architecture_delta_draft.md
+      - results/20260721_srr_batch4_forced_fold0_training/architecture_delta_final.md
+      - results/20260721_srr_batch4_forced_fold0_training/finalizer_state.json
+      - results/20260721_srr_batch4_forced_fold0_training/completion_check.md
+      - results/20260721_srr_batch4_forced_fold0_training/review_request.md
+      - results/20260721_srr_batch4_forced_fold0_training/controller_report.md
+    completion_conditions:
+      - selected_checkpoint_reloaded
+      - same_checkpoint_identity_anchorbounded_noanchor_complete
+      - strict_validators_exit_zero
+      - all_race_attempts_terminal_accounted
+      - post_completion_aggregation_exit_zero
+      - mapper_final_complete
+      - completion_check_token_READY_FOR_INDEPENDENT_REVIEW
+    failure_action: NEEDS_EVIDENCE_OR_NEEDS_REVISION
+finalizer:
+  dependency: afterany
+  required_job_ids: all_routing_attempt_ids
+  required_state_file: results/20260721_srr_batch4_forced_fold0_training/finalizer_state.json
+  terminal_success_states:
+    - READY_FOR_MAPPER_FINAL
+    - READY_FOR_LOCAL_PACKET_COMMIT
+    - PACKET_COMMITTED_FOR_REVIEW
+  monitor_states:
+    - NEEDS_MONITOR
+    - AWAITING_SACCT
+    - AWAITING_SACCT_RETRY_EXHAUSTED
+  failure_states:
+    - NEEDS_EVIDENCE
+    - NEEDS_REVISION
+    - RUNTIME_FAILED
+review:
+  mode: independent_thread
+  review_path: results/20260721_srr_batch4_forced_fold0_training/review.md
+  audited_go_token: BATCH4_TRAINING_PACKET_AUDITED_GO
+  controller_must_stop_before_review: true
+git_policy:
+  allow_local_commit: true
+  auto_local_commit: true
+  allow_push: false
+  allow_runtime_artifact_commit: false
