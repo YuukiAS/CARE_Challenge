@@ -1,16 +1,16 @@
 schema_version: 3
 authority_name: srr_production_mainline_authority
 reviewed_from_head: d251bde18199d2afa9de60b28d02336f88994941
-formal_training_status: AUTHORIZED_BATCH4_PENDING_PLANNING_REVIEW_AND_PREFLIGHT
+formal_training_status: BLOCKED_PENDING_AUTHORIZED_FOLD0_TRAINING
 status_reason: >-
   The user explicitly authorized one real MyoPS fold0 training wave and Slurm
   routing race for Batch 4. Batch 3A established a real model-in-loop diagnostic,
   but its tiny zero-step configuration, label-level identity export bypass,
   small smoke prototype/memory asset, mode-bound checkpoints, legacy training
   checkpoint schema, and patch-loss checkpoint selection must be repaired before
-  a formal entrypoint may be declared. Batch 4 is therefore budget-authorized but
-  execution-blocked until an independent planning review and same-config preflight
-  pass. Cine Batch 3B remains a proxy diagnostic and is excluded from this training.
+  a formal entrypoint may be declared. Batch 4 is budget-authorized but remains
+  blocked until an independent planning review and same-config preflight pass.
+  Cine Batch 3B remains a proxy diagnostic and is excluded from this training.
 training_authorization:
   user_authorized: true
   authorized_scope: batch4_myops_fold0_only
