@@ -1,8 +1,8 @@
 {
   "task_key": "20260721_srr_batch4_forced_fold0_training",
-  "state": "FORMAL_STARTUP_FAILED_REPAIRED_AWAITING_RETRY",
-  "as_of_utc": "2026-07-20T18:36:37Z",
-  "scope": "formal_startup_failure_accounting_and_same_scope_repair",
+  "state": "FORMAL_TRAINING_RETRY_RUNNING_NEEDS_MONITOR",
+  "as_of_utc": "2026-07-20T18:41:45Z",
+  "scope": "formal_training_retry_running_monitor",
   "formal_training_completion": false,
   "attempts": [
     {
@@ -56,11 +56,24 @@
       "attempt_root": "results/20260721_srr_batch4_forced_fold0_training/runtime/attempts/srr_batch4_m10d3_full4scale_fold0_seed20260721_htzhulab_59674902",
       "winner_lock_owner": "results/20260721_srr_batch4_forced_fold0_training/runtime/locks/srr_batch4_m10d3_full4scale_fold0_seed20260721.winner/owner.json",
       "failure_reason": "TypeError in record_gate_usage: list-valued gate mean could not be converted with float(value)"
+    },
+    {
+      "job_id": "59678596",
+      "job_name": "SRRB4MyoPS",
+      "partition": "htzhulab",
+      "state": "RUNNING",
+      "exit_code": "0:0",
+      "elapsed": "00:02:14_at_record",
+      "node": "g1807htzh01",
+      "log_path": "logs/srr_batch4/SRRB4MyoPS_htzhulab_59678596_20260720_143925.log",
+      "training_credit": "AWAIT_TERMINAL_AGGREGATION",
+      "attempt_root": "results/20260721_srr_batch4_forced_fold0_training/runtime/attempts/srr_batch4_m10d3_full4scale_fold0_seed20260721_htzhulab_59678596",
+      "winner_lock_owner": "results/20260721_srr_batch4_forced_fold0_training/runtime/locks/srr_batch4_m10d3_full4scale_fold0_seed20260721.winner/owner.json"
     }
   ],
   "aggregation": {
-    "aggregation_exit_code": 0,
-    "aggregation_command": "formal startup failure accounting from sacct/log/runtime evidence; no training completion aggregation run",
+    "aggregation_exit_code": "NOT_RUN_RUNNING_FORMAL_RETRY",
+    "aggregation_command": "not run; formal retry job 59678596 is running",
     "tracked_evidence_files": [
       "results/20260721_srr_batch4_forced_fold0_training/controller_context.json",
       "results/20260721_srr_batch4_forced_fold0_training/controller_dispatch_status.json",
@@ -68,12 +81,7 @@
       "results/20260721_srr_batch4_forced_fold0_training/commands_run.md",
       "results/20260721_srr_batch4_forced_fold0_training/finalizer_state.json",
       "results/20260721_srr_batch4_forced_fold0_training/slurm_attempts.csv"
-    ],
-    "runtime_evidence_files_untracked": [
-      "logs/srr_batch4/SRRB4MyoPS_htzhulab_59674902_20260720_143201.log",
-      "results/20260721_srr_batch4_forced_fold0_training/runtime/attempts/srr_batch4_m10d3_full4scale_fold0_seed20260721_htzhulab_59674902/frozen_prototype_memory_manifest.json",
-      "results/20260721_srr_batch4_forced_fold0_training/runtime/attempts/srr_batch4_m10d3_full4scale_fold0_seed20260721_htzhulab_59674902/variants/srr_batch4_m10d3_full4scale_fold0_seed20260721_htzhulab_59674902/one_batch_overfit.json"
     ]
   },
-  "next_action": "Retry only after stale failed winner lock is archived and pre-submit contract/hash checks pass at the repair commit."
+  "next_action": "Monitor 59678596 to terminal state; running is not completion."
 }

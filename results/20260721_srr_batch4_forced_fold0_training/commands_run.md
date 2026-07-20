@@ -66,3 +66,13 @@ Running formal training is not completion. Terminal aggregation, validators, map
 - Regression: `./envs/env_CARE/bin/python -m pytest tests/srr_production/test_myops_batch4_contract.py` -> `11 passed, 3 warnings`.
 
 This failure is zero formal training credit. Retry requires archiving the stale failed winner lock and rechecking exact command/scripts/config/hash at the repair commit.
+
+## Formal Retry Dispatch
+
+- Archived stale failed winner lock to `results/20260721_srr_batch4_forced_fold0_training/runtime/locks/srr_batch4_m10d3_full4scale_fold0_seed20260721.winner.failed_59674902_20260720T183637Z/owner.json`.
+- Retry pre-submit `--print-contract` at `36d1ef9241a5b5a1606770a5c12e84faff43017f` -> `CONTRACT_VALID`, model `m10_d3_hierarchical_memory_propref`, `full_4scale`, `base_channels=32`, train `176`, validation `44`, eval steps `[600, 1200, 1800]`, max steps `1800`, min train loop seconds `1800`.
+- `sbatch --export=ALL,LOGICAL_RUN_ID=srr_batch4_m10d3_full4scale_fold0_seed20260721 jobs/srr_production/run_myops_batch4_fold0_htzhulab.sh` -> submitted `59678596`.
+- `squeue -j 59678596` at `2026-07-20T18:41:45Z` -> `RUNNING` on `g1807htzh01`; no A100 mirror submitted because htzhulab retry started immediately.
+- Startup log `logs/srr_batch4/SRRB4MyoPS_htzhulab_59678596_20260720_143925.log` confirms `env_CARE` Python, torch `2.11.0+cu130`, GPU `NVIDIA H100 NVL`, capability `sm_90`, logical run `srr_batch4_m10d3_full4scale_fold0_seed20260721`, isolated attempt root, and winner lock.
+
+Running formal retry is not completion. Terminal aggregation, validators, mapper final, final packet commit, and independent reviewer handoff remain required.

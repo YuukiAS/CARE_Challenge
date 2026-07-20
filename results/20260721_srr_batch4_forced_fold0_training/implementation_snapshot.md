@@ -70,3 +70,12 @@ Formal 1800-step training has not started. The `one_batch_overfit.json` inline f
 - Training credit: `0`; formal 1800-step training did not complete and no 44-case evaluation exists.
 - Same-scope repair stayed in `scripts/training/run_srr_propref_myops_fold0.py`: nested/list gate means and valid fractions are scalarized by averaging numeric leaves before CSV writing.
 - Test: `tests/srr_production/test_myops_batch4_contract.py` now includes nested gate means regression; local run passed `11 passed, 3 warnings`.
+
+## Formal Retry Running
+
+- Job `59678596` submitted to `htzhulab` from repair commit `36d1ef9241a5b5a1606770a5c12e84faff43017f`.
+- Initial monitored state after the previous failure window: `RUNNING` for `00:02:14` on `g1807htzh01`; no A100 mirror submitted.
+- Attempt root: `results/20260721_srr_batch4_forced_fold0_training/runtime/attempts/srr_batch4_m10d3_full4scale_fold0_seed20260721_htzhulab_59678596`.
+- Log: `logs/srr_batch4/SRRB4MyoPS_htzhulab_59678596_20260720_143925.log`.
+- Winner lock: `results/20260721_srr_batch4_forced_fold0_training/runtime/locks/srr_batch4_m10d3_full4scale_fold0_seed20260721.winner/owner.json`.
+- This is a running monitor state, not Batch4 completion.

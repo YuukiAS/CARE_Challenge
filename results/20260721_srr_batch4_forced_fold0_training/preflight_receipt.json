@@ -1,7 +1,7 @@
 {
   "task_key": "20260721_srr_batch4_forced_fold0_training",
   "status": "PREFLIGHT_PASS_WITH_RECONCILED_PROTOTYPE_ACCOUNTING_FORMAL_NOT_STARTED",
-  "as_of_utc": "2026-07-20T18:36:37Z",
+  "as_of_utc": "2026-07-20T18:41:45Z",
   "receipt_kind": "gpu_one_batch_preflight_terminal_receipt",
   "environment_contract_receipt": "results/20260721_srr_batch4_forced_fold0_training/preflight_environment_receipt.json",
   "required_preflight": {
@@ -136,5 +136,16 @@
     "failure_reason": "TypeError in record_gate_usage: list-valued gate mean could not be converted with float(value)",
     "training_credit": 0,
     "same_scope_repair": "scripts/training/run_srr_propref_myops_fold0.py now records nested/list-valued gate means as scalar means locally for Batch4 runner"
+  },
+  "formal_training_retry_after_repair": {
+    "submitted": true,
+    "job_id": "59678596",
+    "state_at_record": "RUNNING",
+    "elapsed_at_record": "00:02:14",
+    "partition": "htzhulab",
+    "node": "g1807htzh01",
+    "command": "sbatch --export=ALL,LOGICAL_RUN_ID=srr_batch4_m10d3_full4scale_fold0_seed20260721 jobs/srr_production/run_myops_batch4_fold0_htzhulab.sh",
+    "source_commit": "36d1ef9241a5b5a1606770a5c12e84faff43017f",
+    "a100_mirror_submitted": false
   }
 }

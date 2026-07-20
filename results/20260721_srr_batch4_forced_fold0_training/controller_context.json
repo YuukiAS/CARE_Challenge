@@ -1,8 +1,8 @@
 {
   "task_key": "20260721_srr_batch4_forced_fold0_training",
-  "phase": "B4-04_FORMAL_STARTUP_FAILED_REPAIRED",
-  "status": "FORMAL_STARTUP_FAILED_REPAIRED_AWAITING_RETRY",
-  "as_of_utc": "2026-07-20T18:36:37Z",
+  "phase": "B4-04_FORMAL_RETRY_RUNNING",
+  "status": "FORMAL_TRAINING_RETRY_RUNNING_NEEDS_MONITOR",
+  "as_of_utc": "2026-07-20T18:41:45Z",
   "repo_root": "/users/a/e/aereinh/CARE",
   "branch": "main",
   "git_head": "53fc6e60c1510dfe17aec7a1460883c88e46c705",
@@ -79,6 +79,18 @@
       "reason": "TypeError in record_gate_usage: list-valued gate mean could not be converted with float(value)",
       "logical_run_id": "srr_batch4_m10d3_full4scale_fold0_seed20260721",
       "log_path": "logs/srr_batch4/SRRB4MyoPS_htzhulab_59674902_20260720_143201.log"
+    },
+    {
+      "job_id": "59678596",
+      "role": "formal_training_retry",
+      "partition": "htzhulab",
+      "state": "RUNNING",
+      "exit_code": "0:0",
+      "elapsed": "00:02:14_at_record",
+      "node": "g1807htzh01",
+      "reason": "same-scope retry running after gate usage repair",
+      "logical_run_id": "srr_batch4_m10d3_full4scale_fold0_seed20260721",
+      "log_path": "logs/srr_batch4/SRRB4MyoPS_htzhulab_59678596_20260720_143925.log"
     }
   ],
   "runtime_paths": {
@@ -95,7 +107,7 @@
     "formal_training_submitted": true,
     "formal_training_completed": false,
     "review_ready": false,
-    "formal_training_running": false
+    "formal_training_running": true
   },
   "git_head_before_terminal_receipt_update": "1d3d1d5dbf66fc6a5e76251d709304e1a2574db2",
   "git_head_at_formal_submit": "a984992ba3689bac0b5c7590b7049816fcd4c931",
@@ -131,5 +143,22 @@
       "source_hash_after_repair": "1795ab8fc1dc3f6d87cbe7059f8be191fff15c3c0148db2283af768bb5ce5fdd",
       "test_hash_after_repair": "8da0b58a71d006d735989d2f56cb0ea7e71bbb6e56f5427662e1d600725efb82"
     }
-  ]
+  ],
+  "git_head_at_formal_retry_submit": "36d1ef9241a5b5a1606770a5c12e84faff43017f",
+  "formal_training_retry": {
+    "job_id": "59678596",
+    "job_name": "SRRB4MyoPS",
+    "partition": "htzhulab",
+    "state": "RUNNING",
+    "elapsed_at_record": "00:02:14",
+    "node": "g1807htzh01",
+    "command": "sbatch --export=ALL,LOGICAL_RUN_ID=srr_batch4_m10d3_full4scale_fold0_seed20260721 jobs/srr_production/run_myops_batch4_fold0_htzhulab.sh",
+    "logical_run_id": "srr_batch4_m10d3_full4scale_fold0_seed20260721",
+    "attempt_root": "results/20260721_srr_batch4_forced_fold0_training/runtime/attempts/srr_batch4_m10d3_full4scale_fold0_seed20260721_htzhulab_59678596",
+    "log_path": "logs/srr_batch4/SRRB4MyoPS_htzhulab_59678596_20260720_143925.log",
+    "winner_lock_owner": "results/20260721_srr_batch4_forced_fold0_training/runtime/locks/srr_batch4_m10d3_full4scale_fold0_seed20260721.winner/owner.json",
+    "archived_failed_lock_owner": "results/20260721_srr_batch4_forced_fold0_training/runtime/locks/srr_batch4_m10d3_full4scale_fold0_seed20260721.winner.failed_59674902_20260720T183637Z/owner.json",
+    "a100_mirror_submitted": false,
+    "reason_no_a100_mirror": "htzhulab retry started immediately and is running past prior failure point"
+  }
 }
