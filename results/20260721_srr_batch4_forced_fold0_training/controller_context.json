@@ -2,11 +2,11 @@
   "task_key": "20260721_srr_batch4_forced_fold0_training",
   "phase": "B4-03_PRECHECK_MONITOR",
   "status": "PREFLIGHT_SUBMITTED_AWAITING_TERMINAL_EVIDENCE",
-  "as_of_utc": "2026-07-20T17:52:41Z",
+  "as_of_utc": "2026-07-20T18:08:33Z",
   "repo_root": "/users/a/e/aereinh/CARE",
   "branch": "main",
-  "git_head": "4c998754506a48b610bcd6437ea70c7965048577",
-  "git_status": "main...origin/main [ahead 3]; worktree clean",
+  "git_head": "53fc6e60c1510dfe17aec7a1460883c88e46c705",
+  "git_status": "main...origin/main [ahead 5]; preflight_environment_receipt.json refreshed but not yet committed",
   "origin_main_synced_head_before_batch4_local_commits": "89474f7de8c38db1448e47ca7fe94d6620932b31",
   "planning_review": {
     "path": "prompts/tasks/20260721_srr_batch4_forced_fold0_training_planning_review.md",
@@ -27,7 +27,7 @@
   },
   "source_fingerprints": {
     "configs/srr_production/myops_batch4.yaml": "5c4da81bc6f01c360c288370b8b1e21371448e2715d5159ba32aa85f2794fc73",
-    "scripts/training/run_srr_propref_myops_fold0.py": "6a9113cda9d1e2b7e297a40d594d824981f9d752f2014fe27c3942e6bfe9aeee",
+    "scripts/training/run_srr_propref_myops_fold0.py": "0284bca9aba418f492da2b92b6d99665a9b44be7206740a4c496f39845b5430a",
     "scripts/srr_production/infer_myops.py": "ac7a5f7339ab87439302bb59b9fb856b91ac64709b99114555a52165aad877be",
     "jobs/srr_production/run_myops_batch4_fold0_common.sh": "19a17f98ae1493e640eadd9b53798a56738a3a28d1d9195c2578c0b5bbd37d5c"
   },
@@ -45,9 +45,18 @@
       "role": "preflight_only",
       "partition": "htzhulab",
       "gres": "gpu:nvidia_a100-sxm4-80gb:1",
+      "state": "FAILED",
+      "reason": "startup NameError: vectors_from_mask was missing before commit 53fc6e6",
+      "logical_run_id": "srr_batch4_m10d3_full4scale_fold0_seed20260721_preflight_htzhulab_retry1"
+    },
+    {
+      "job_id": "59673675",
+      "role": "preflight_only",
+      "partition": "htzhulab",
+      "gres": "gpu:nvidia_a100-sxm4-80gb:1",
       "state": "PENDING",
       "reason": "Resources",
-      "logical_run_id": "srr_batch4_m10d3_full4scale_fold0_seed20260721_preflight_htzhulab_retry1"
+      "logical_run_id": "srr_batch4_m10d3_full4scale_fold0_seed20260721_preflight_htzhulab_retry2"
     }
   ],
   "runtime_paths": {

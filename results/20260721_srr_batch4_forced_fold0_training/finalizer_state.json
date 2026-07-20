@@ -1,7 +1,7 @@
 {
   "task_key": "20260721_srr_batch4_forced_fold0_training",
   "state": "NEEDS_MONITOR",
-  "as_of_utc": "2026-07-20T17:52:41Z",
+  "as_of_utc": "2026-07-20T18:08:33Z",
   "scope": "preflight_monitor_only",
   "formal_training_completion": false,
   "attempts": [
@@ -20,6 +20,18 @@
       "job_id": "59672892",
       "job_name": "SRRB4Pre",
       "partition": "htzhulab",
+      "state": "FAILED",
+      "exit_code": "1:0",
+      "elapsed": "00:03:58",
+      "node": "g180702",
+      "log_path": "logs/srr_batch4/SRRB4Pre_htzhulab_59672892_20260720_135831.log",
+      "failure_reason": "startup NameError: vectors_from_mask was not defined",
+      "training_credit": 0
+    },
+    {
+      "job_id": "59673675",
+      "job_name": "SRRB4Pre",
+      "partition": "htzhulab",
       "state": "PENDING",
       "exit_code": "0:0",
       "elapsed": "00:00:00",
@@ -36,5 +48,5 @@
       "results/20260721_srr_batch4_forced_fold0_training/controller_dispatch_status.json"
     ]
   },
-  "next_action": "Monitor job 59672892 until terminal state; if preflight passes, submit formal compatible training race."
+  "next_action": "Monitor job 59673675 until terminal state; if preflight passes, submit formal compatible training race."
 }

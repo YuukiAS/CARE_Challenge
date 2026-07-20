@@ -1,9 +1,9 @@
 {
   "task_key": "20260721_srr_batch4_forced_fold0_training",
   "status": "PREFLIGHT_SUBMITTED_AWAITING_TERMINAL_EVIDENCE",
-  "as_of_utc": "2026-07-20T17:49:33Z",
+  "as_of_utc": "2026-07-20T18:08:33Z",
   "source_head_before_local_commit": "89474f7de8c38db1448e47ca7fe94d6620932b31",
-  "latest_local_commit": "2d1f74d506d4fdaa21a769a070684614a14a77d7",
+  "latest_local_commit": "53fc6e60c1510dfe17aec7a1460883c88e46c705",
   "review_gate": {
     "planning_review_path": "prompts/tasks/20260721_srr_batch4_forced_fold0_training_planning_review.md",
     "planning_review_decision": "AUDITED_GO",
@@ -50,10 +50,22 @@
       "job_id": "59672892",
       "partition": "htzhulab",
       "job_name": "SRRB4Pre",
-      "state": "PENDING",
-      "reason": "Resources",
+      "state": "FAILED",
+      "exit_code": "1:0",
+      "elapsed": "00:03:58",
+      "node": "g180702",
+      "reason": "startup_name_error_vectors_from_mask_missing",
       "logical_run_id": "srr_batch4_m10d3_full4scale_fold0_seed20260721_preflight_htzhulab_retry1",
       "command": "sbatch --partition=htzhulab --gres=gpu:nvidia_a100-sxm4-80gb:1 --qos=gpu_access --export=ALL,LOGICAL_RUN_ID=srr_batch4_m10d3_full4scale_fold0_seed20260721_preflight_htzhulab_retry1 jobs/srr_production/run_myops_batch4_preflight_htzhulab.sh"
+    },
+    {
+      "job_id": "59673675",
+      "partition": "htzhulab",
+      "job_name": "SRRB4Pre",
+      "state": "PENDING",
+      "reason": "Resources",
+      "logical_run_id": "srr_batch4_m10d3_full4scale_fold0_seed20260721_preflight_htzhulab_retry2",
+      "command": "sbatch --partition=htzhulab --gres=gpu:nvidia_a100-sxm4-80gb:1 --qos=gpu_access --export=ALL,LOGICAL_RUN_ID=srr_batch4_m10d3_full4scale_fold0_seed20260721_preflight_htzhulab_retry2 jobs/srr_production/run_myops_batch4_preflight_htzhulab.sh"
     }
   ],
   "training_status": {
@@ -65,5 +77,5 @@
     "validation_upload_started": false,
     "hosted_metric_claim": false
   },
-  "next_allowed_action": "Monitor htzhulab preflight job 59672892 to terminal state; submit formal training race only after preflight terminal PASS evidence is collected."
+  "next_allowed_action": "Monitor htzhulab preflight retry2 job 59673675 to terminal state; if still pending after the configured window, submit compatible A100 fallback. Submit formal training race only after preflight terminal PASS evidence is collected."
 }

@@ -1,10 +1,10 @@
 # Batch4 Implementation Snapshot
 
-Status: `PREFLIGHT_SUBMITTED_AWAITING_TERMINAL_EVIDENCE`
+Status: `PREFLIGHT_RETRY2_SUBMITTED_AWAITING_TERMINAL_EVIDENCE`
 
-As of: `2026-07-20T17:52:41Z`
+As of: `2026-07-20T18:08:33Z`
 
-Current local commit: `4c998754506a48b610bcd6437ea70c7965048577`
+Current local commit: `53fc6e60c1510dfe17aec7a1460883c88e46c705`
 
 ## Gate
 
@@ -39,7 +39,8 @@ Current local commit: `4c998754506a48b610bcd6437ea70c7965048577`
 | job_id | role | partition | state | evidence |
 | --- | --- | --- | --- | --- |
 | `59672536` | preflight-only | `volta-gpu` | `CANCELLED` | `logs/srr_batch4/SRRB4Pre_volta_59672536_20260720_134651.log` showed unsupported V100 compute capability for current torch build. |
-| `59672892` | preflight-only | `htzhulab` | `PENDING (Resources)` | `squeue -j 59672892` at `2026-07-20T17:52:41Z`. |
+| `59672892` | preflight-only | `htzhulab` | `FAILED` | `logs/srr_batch4/SRRB4Pre_htzhulab_59672892_20260720_135831.log` showed startup `NameError: vectors_from_mask is not defined`. |
+| `59673675` | preflight-only | `htzhulab` | `PENDING (Resources)` | `squeue -j 59673675` at `2026-07-20T18:08:33Z`. |
 
 ## Boundary
 
