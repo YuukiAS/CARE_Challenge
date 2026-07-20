@@ -1,7 +1,7 @@
 schema_version: 2
 authority_name: myops_batch3a_model_in_loop_inference_and_evaluator
 batch: 3A
-reported_commit: pending_batch3a_commit
+reported_commit: 1cce038ac6c3cbb91ab2a9bc1033315571d09f71
 reviewed_status: SRR_MODEL_IN_LOOP_UNTRAINED_DIAGNOSTIC
 fold: 0
 labels:

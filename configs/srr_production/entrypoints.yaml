@@ -11,6 +11,10 @@ status_reason: >-
   Because no trusted trained SRR checkpoint exists and this handoff does not
   authorize training, Slurm, validation packaging, upload, or hosted claims,
   formal training remains unauthorized pending a separate user-approved budget.
+  Batch 3B added a real Dataset502 4D Cine diagnostic mainline for time-axis
+  audit, frame0 label-geometry reference selection, image-based non-reference
+  registration/warp, temporal aggregation that changes ED-space output, and local
+  evaluator/export correctness evidence. Cine remains diagnostic only.
 
 selected_model:
   class_name: SRRProposeRefineMyoPS
@@ -46,6 +50,18 @@ candidate_entrypoints:
       - srr_no_anchor_control and anchor_bounded_srr_correction execute the same SRRProposeRefineMyoPS object.
       - checkpoint argument is loaded through schema-v2 checkpoint restore; zero-step diagnostic checkpoint is allowed only with --allow-untrained-diagnostic.
       - Outputs remain diagnostic until a user-authorized trained checkpoint is produced.
+
+  - id: cine_batch3b_real_4d_mainline_candidate
+    role: batch3b_real_cine_4d_registration_temporal_export_audit
+    path: scripts/srr_production/infer_cine_batch3b.py
+    formal_authority: false
+    audit_status: real_4d_cine_mainline_diagnostic_complete_not_training
+    notes:
+      - Reads real Dataset502 Cine NIfTI as t,z,y,x and fails closed on missing time axis.
+      - Selects frame0 as the label-geometry reference/ED-space frame and records the policy per case.
+      - Uses slice-wise image-based optical-flow registration from non-reference frame 15 into reference space, warps anatomy proxy labels, and requires non-reference evidence to alter the final ED-space output.
+      - Exports geometry-preserving raw-label NIfTI predictions and writes local Dice/HD95 diagnostics without hosted or performance claims.
+      - Does not use CineMA because this batch did not load official CineMA weights.
 
   - id: myops_batch2_fair_evaluator
     role: local_nifti_metric_recompute_authority
@@ -92,6 +108,9 @@ required_real_assets:
   nnunet_checkpoint_pattern:
     path: data/nnUNet/nnUNet_results/Dataset501_CAREMyoPS/nnUNetTrainer_500epochs__nnUNetPlans__3d_fullres/fold_*/checkpoint_best.pth
     role: real nnU-Net checkpoints recorded by the anchor manifest
+  cine_raw_train_root:
+    path: data/CARE_Challenge/CineMyoPS_train
+    role: Dataset502 4D Cine raw train cases and ED/reference labels
 
 forbidden_formal_entrypoints:
   - id: route_b_round04_b3_representation
@@ -171,3 +190,13 @@ batch3b_scope_after_batch3a:
   - temporal aggregation affecting final output
   - geometry-preserving ED-space export and evaluator
   - historical B7/B8 remain forbidden
+batch3b_current_status:
+  reviewed_status: BATCH3B_REAL_CINE_MAINLINE_DIAGNOSTIC_COMPLETE
+  evidence_root: results/srr_production/cine_batch3b
+  case_count: 3
+  time_axis_preserved_all_cases: true
+  nonreference_entered_temporal_aggregation_all_cases: true
+  temporal_aggregation_affects_output: true
+  registration_method: slice2d_dense_optical_flow_ilk_image_based
+  cinema_used: false
+  completion_without_training: DIAGNOSTIC_ONLY_NO_PERFORMANCE_CLAIM

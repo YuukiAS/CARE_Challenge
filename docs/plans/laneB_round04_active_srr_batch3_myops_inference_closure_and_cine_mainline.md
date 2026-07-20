@@ -249,6 +249,39 @@ Dataset502 真实 4D Cine
 
 本计划只授权代码修复、真实病例前向、配准/变形烟雾验证、导出和评价正确性检查。持续训练、Slurm、validation 上传和性能结论仍需用户另行授权。
 
+### 5.4 Batch 3B 执行状态
+
+```text
+status: BATCH3B_REAL_CINE_MAINLINE_DIAGNOSTIC_COMPLETE
+commit: pending_batch3b_commit
+evidence_root: results/srr_production/cine_batch3b
+```
+
+Batch 3B 已完成 3 个真实 Dataset502 Cine 病例的轻量诊断链：
+
+```text
+Case1001/Case1002/Case1003 4D Cine
+-> frame0 label-geometry reference/ED-space audit
+-> frame15 non-reference image-based optical-flow registration
+-> non-reference label proxy warp into reference space
+-> temporal aggregation alters ED-space output
+-> geometry-preserving raw-label NIfTI export
+-> local diagnostic Dice/HD95 evaluator
+```
+
+证据文件：
+
+```text
+results/srr_production/cine_batch3b/batch3b_cine_contract.json
+results/srr_production/cine_batch3b/batch3b_time_axis_audit.csv
+results/srr_production/cine_batch3b/batch3b_registration_warp_qc.csv
+results/srr_production/cine_batch3b/batch3b_temporal_aggregation.csv
+results/srr_production/cine_batch3b/batch3b_ed_space_evaluation.csv
+results/srr_production/cine_batch3b/batch3b_known_bad_report.json
+```
+
+边界不变：这是诊断主干正确性证据，不是训练结果、正式注册质量证明、validation-facing export、hosted metric 或性能结论。CineMA 本批未使用，因为没有在本批加载官方 CineMA 权重。
+
 ## 六、后续训练顺序
 
 正式 MyoPS fold0 训练不能排在 Batch 3A 之前。正确顺序是：

@@ -749,3 +749,99 @@ Dataset501 imagesTr [LGE,T2,C0] + case availability
 - Cine 审计 GPT：未执行；Batch3B 待做。
 - 红队 GPT：未执行独立线程；known-bad/preflight 覆盖已增强。
 - Integrator 处理结果：Batch3A 可提交，状态仅为 `SRR_MODEL_IN_LOOP_UNTRAINED_DIAGNOSTIC`。
+
+
+---
+
+## Change 009：Batch 3B 真实 4D Cine 诊断主干
+
+- 日期/时间：2026-07-20
+- 执行线程：CARE SRR main integrator Codex goal
+- 审计线程：targeted pytest + production diagnostic script；独立 reviewer 未启动
+- Base commit：`1cce038ac6c3cbb91ab2a9bc1033315571d09f71`
+- Head commit：pending Batch 3B commit
+- 对应 TODO：Batch 3B real Dataset502 Cine mainline
+- 状态：complete diagnostic
+
+### 1. 本次目标
+
+在 Batch 3A 通过后，建立真实 Dataset502 4D Cine 数据链：保留时间维、审计 reference/ED-space 帧、执行真实帧对配准和 warp、让非参考帧进入并改变 temporal aggregation 输出、导出 ED-space NIfTI，并写本地评价正确性证据。
+
+### 2. 修改文件
+
+| 文件 | 动作 | 修改前行为 | 修改后行为 |
+| --- | --- | --- | --- |
+| `scripts/srr_production/infer_cine_batch3b.py` | add | 无 Batch 3B production 薄入口 | 读取真实 4D Cine，frame0 reference，frame15 非参考帧光流配准/warp，temporal aggregation，raw-label NIfTI 导出和本地评价 |
+| `tests/srr_production/test_cine_batch3b_mainline.py` | add | 无 3B gate 测试 | 覆盖真实病例子集运行、contract 字段、known-bad 注入和禁止训练/Slurm/upload/performance claim |
+| `configs/srr_production/entrypoints.yaml` | modify | Batch 3B 只列 scope | 添加 `cine_batch3b_real_4d_mainline_candidate`，状态为 diagnostic，不授权 formal training |
+| `prompts/routes/handoffs/CURRENT.md` | modify | `next_required_batch=BATCH_3B_REAL_CINE_MAINLINE` | 记录 Batch 3B diagnostic complete 和证据路径 |
+| `docs/plans/laneB_round04_active_srr_batch3_myops_inference_closure_and_cine_mainline.md` | modify | 只有计划要求 | 追加 3B 执行状态、证据和边界 |
+| `configs/srr_production/myops_batch2.yaml` | modify | Batch 3A commit 仍 pending | 固化 Batch 3A commit SHA |
+
+### 3. 真实数据流
+
+```text
+data/CARE_Challenge/CineMyoPS_train/*/Case*_Cine.nii.gz
+-> SimpleITK 4D read, array shape t,z,y,x
+-> frame0 extracted as label-geometry reference/ED-space
+-> frame15 selected as non-reference frame
+-> deterministic anatomy proxy per frame
+-> slice-wise image-based optical-flow registration
+-> non-reference proxy warp into reference space
+-> temporal aggregation adds warped non-reference evidence to reference output
+-> raw-label NIfTI export with GT label geometry
+-> local diagnostic Dice/HD95 CSV
+```
+
+### 4. 删除或关闭的绕过
+
+- 不使用历史 B7/B8 formal scripts；它们仍为 `forbidden_formal_entrypoint`。
+- 不把 3D frame0-only nnU-Net 结果冒充 4D temporal path。
+- 不使用 CineMA artifacts；本批没有加载官方 CineMA 权重，因此 contract 写 `cinema_used=false`。
+- 不允许 temporal aggregation 只读非参考帧但不改变输出；contract 要求 `temporal_aggregation_affects_output=true`。
+- known-bad 注入覆盖缺失时间轴、无非参考帧、非参考权重破坏 reference anchor。
+
+### 5. 运行命令与结果
+
+| 命令 | Exit | 真实输入 | 真实输出 | 验证的事实 |
+| --- | ---: | --- | --- | --- |
+| `python -m py_compile scripts/srr_production/infer_cine_batch3b.py tests/srr_production/test_cine_batch3b_mainline.py` | 0 | touched Python files | bytecode compile | 无语法/import 级错误 |
+| `python scripts/srr_production/infer_cine_batch3b.py --max-cases 3 --output-root results/srr_production/cine_batch3b` | 0 | Case1001/Case1002/Case1003 4D Cine + labels | `batch3b_cine_contract.json` and CSV evidence | 4D time axis、reference geometry、真实光流 warp、temporal output change、ED-space export 通过 |
+| `pytest tests/srr_production/test_cine_batch3b_mainline.py tests/srr_production/test_myops_batch2_preflight.py tests/srr_production/test_formal_entrypoint_authority.py tests/srr_production/test_myops_batch2_inference_evaluation.py -q` | 0 | 3B tests + 3A gates | 13 passed, 3 warnings | 3B 未破坏 3A/MyoPS 和 formal-entrypoint gates |
+
+### 6. 关键数值/形状/状态
+
+- `case_count=3`: Case1001, Case1002, Case1003。
+- `time_axis_preserved_all_cases=true`; shapes include `30x14x256x256`, `30x10x256x256`, `30x11x256x256`.
+- `reference_frame_indices`: all `0`; `nonreference_frame_indices`: all `15`.
+- `registration_method=slice2d_dense_optical_flow_ilk_image_based`.
+- `nonreference_entered_temporal_aggregation_all_cases=true`.
+- `temporal_aggregation_affects_output=true`.
+- temporal changed voxels: Case1001 `11469`, Case1002 `9858`, Case1003 `10587`.
+- `cinema_used=false`; `historical_b7_b8_formal_authority=false`.
+- `formal_training_count=0`, `slurm_job_count=0`, `validation_upload_count=0`, `hosted_metric_claim_count=0`.
+- `performance_claim=NONE_LOCAL_DIAGNOSTIC_ONLY`.
+
+### 7. 人类解释
+
+这次解决的是“Cine 还没有真实 4D 主干”的工程缺口。现在主线有一个能读取真实 Cine 时间轴、选择可审计 reference、把真实非参考帧配准/warp 到 reference space、使 temporal aggregation 改变 ED-space 导出并进行本地评价的薄入口。它不是训练，也不是对注册质量或 challenge 指标的科学结论。
+
+### 8. 未解决项
+
+- Cine anatomy 仍是 deterministic diagnostic proxy，不是训练后 Cine SRR 模型或 validation-facing model。
+- 光流配准是本地正确性/连通性证据，不是 validated clinical registration claim。
+- CineMA 本批未使用；若后续使用，必须加载官方权重并进入下游输出。
+- 没有 validation upload、hosted `myocardium_cinemyops` 指标或 leaderboard 结论。
+- 没有正式训练、Slurm 或 route promotion。
+
+### 9. 下一批允许范围
+
+当前 Batch 3A/3B 都已完成 diagnostic gate。任何 MyoPS/Cine 训练、Slurm、validation package/upload、hosted metric 或性能结论都需要用户另行授权，并必须给出预算、入口、checkpoint selection、输出路径和 reviewer gate。
+
+### 10. 审计意见
+
+- 模型审计 GPT：未执行独立线程。
+- 数据/评价审计 GPT：未执行独立线程；由 production diagnostic script 和 pytest 自检。
+- Cine 审计 GPT：未执行独立线程；3B evidence 保持 diagnostic-only。
+- 红队 GPT：未执行独立线程；known-bad 注入已进入新 3B 入口的真实 validation functions。
+- Integrator 处理结果：Batch3B 可提交，状态为 `BATCH3B_REAL_CINE_MAINLINE_DIAGNOSTIC_COMPLETE`。

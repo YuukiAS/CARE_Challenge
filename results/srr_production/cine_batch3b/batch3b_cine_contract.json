@@ -1,0 +1,45 @@
+{
+  "batch": "3B",
+  "case_count": 3,
+  "cinema_official_weights_loaded": false,
+  "cinema_policy": "not_used_in_batch3b_to_avoid_unverified_official_weight_claim",
+  "cinema_used": false,
+  "command": "/users/a/e/aereinh/CARE/envs/env_CARE/bin/python scripts/srr_production/infer_cine_batch3b.py --max-cases 3 --output-root results/srr_production/cine_batch3b",
+  "ed_space_evaluation_path": "results/srr_production/cine_batch3b/batch3b_ed_space_evaluation.csv",
+  "formal_training_count": 0,
+  "git_head": "1cce038ac6c3cbb91ab2a9bc1033315571d09f71",
+  "historical_b7_b8_formal_authority": false,
+  "hosted_metric_claim_count": 0,
+  "known_bad_report_path": "results/srr_production/cine_batch3b/batch3b_known_bad_report.json",
+  "nonreference_entered_temporal_aggregation_all_cases": true,
+  "nonreference_frame_indices": {
+    "Case1001": 15,
+    "Case1002": 15,
+    "Case1003": 15
+  },
+  "output_root": "results/srr_production/cine_batch3b",
+  "performance_claim": "NONE_LOCAL_DIAGNOSTIC_ONLY",
+  "prediction_hashes": {
+    "Case1001": "217d9690fd0b2b1a1753e3ec2918df7f0c799a6cece3a423a5c0792b0267248c",
+    "Case1002": "77e9297130df048920fa1fae1a48dc4d08ce7fc5139dc213af37747e846cf60a",
+    "Case1003": "e08860a219200ced4ef7d417b84f2102faa235aa81f0312cf7ffa11d189b3499"
+  },
+  "reference_frame_indices": {
+    "Case1001": 0,
+    "Case1002": 0,
+    "Case1003": 0
+  },
+  "reference_frame_policy": "frame0_label_geometry_reference_ed_space",
+  "registration_method": "slice2d_dense_optical_flow_ilk_image_based",
+  "registration_warp_qc_path": "results/srr_production/cine_batch3b/batch3b_registration_warp_qc.csv",
+  "runtime_seconds": 4.376547519932501,
+  "schema_version": 1,
+  "slurm_job_count": 0,
+  "status": "BATCH3B_REAL_CINE_MAINLINE_DIAGNOSTIC_COMPLETE",
+  "temporal_aggregation_affects_output": true,
+  "temporal_aggregation_path": "results/srr_production/cine_batch3b/batch3b_temporal_aggregation.csv",
+  "time_axis_audit_path": "results/srr_production/cine_batch3b/batch3b_time_axis_audit.csv",
+  "time_axis_preserved_all_cases": true,
+  "train_root": "data/CARE_Challenge/CineMyoPS_train",
+  "validation_upload_count": 0
+}

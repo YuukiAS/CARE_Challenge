@@ -1,0 +1,4 @@
+case_id,center,cine_path,cine_shape_tzyx,label_path,nonreference_frame_index,reference_frame_index,reference_frame_policy,reference_geometry_matches_label,time_axis_preserved,time_frame_count
+Case1001,center_alpha,data/CARE_Challenge/CineMyoPS_train/center_alpha/Case1001_Cine.nii.gz,30x14x256x256,data/CARE_Challenge/CineMyoPS_train/center_alpha/Case1001_gd.nii.gz,15,0,frame0_label_geometry_reference_ed_space,True,True,30
+Case1002,center_alpha,data/CARE_Challenge/CineMyoPS_train/center_alpha/Case1002_Cine.nii.gz,30x10x256x256,data/CARE_Challenge/CineMyoPS_train/center_alpha/Case1002_gd.nii.gz,15,0,frame0_label_geometry_reference_ed_space,True,True,30
+Case1003,center_alpha,data/CARE_Challenge/CineMyoPS_train/center_alpha/Case1003_Cine.nii.gz,30x11x256x256,data/CARE_Challenge/CineMyoPS_train/center_alpha/Case1003_gd.nii.gz,15,0,frame0_label_geometry_reference_ed_space,True,True,30

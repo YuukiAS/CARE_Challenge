@@ -17,7 +17,8 @@ batch1_review_status: PARTIAL_IMPLEMENTATION_CLOSED_ONLY_AT_SMOKE_LEVEL
 batch2a_review_status: PARTIAL_SHARED_COMPONENT_CLOSURE_WITH_REMAINING_GAPS
 batch2b_review_status: NNUNET_BASELINE_AND_IDENTITY_EVALUATOR_COMPLETE_SRR_INFERENCE_MISSING
 batch3a_status: SRR_MODEL_IN_LOOP_UNTRAINED_DIAGNOSTIC
-next_required_batch: BATCH_3B_REAL_CINE_MAINLINE
+batch3b_status: BATCH3B_REAL_CINE_MAINLINE_DIAGNOSTIC_COMPLETE
+next_required_batch: USER_AUTHORIZATION_REQUIRED_FOR_ANY_TRAINING_OR_VALIDATION
 controller_authorized_now: 0
 route_worktree_development_authorized: false
 formal_training_authorized_now: false
@@ -184,7 +185,7 @@ Batch 3A 不授权训练。
 ## Batch 3A 状态
 
 ```text
-commit: pending_batch3a_commit
+commit: 1cce038ac6c3cbb91ab2a9bc1033315571d09f71
 status: SRR_MODEL_IN_LOOP_UNTRAINED_DIAGNOSTIC
 ```
 
@@ -210,9 +211,14 @@ tests/srr_production/test_myops_batch2_preflight.py
 
 Batch 3A 没有训练、没有 Slurm、没有 validation upload、没有 hosted metric claim、没有性能结论。由于 checkpoint 为零步诊断，正式训练仍需用户另行授权。
 
-## 后续：Batch 3B
+## Batch 3B 状态
 
-Batch 3A 已完成诊断门；下一步进入真实 4D Cine 主干：
+```text
+commit: pending_batch3b_commit
+status: BATCH3B_REAL_CINE_MAINLINE_DIAGNOSTIC_COMPLETE
+```
+
+Batch 3B 已在 `main` 建立真实 4D Cine 诊断主干：
 
 ```text
 Dataset502 real 4D Cine
@@ -225,7 +231,28 @@ Dataset502 real 4D Cine
 -> ED-space export and evaluation
 ```
 
-历史 B7/B8 继续禁止正式使用。CineMA 若使用，必须实际加载官方权重并进入下游输出；单独特征探针不算接通。
+主要事实：
+
+1. `scripts/srr_production/infer_cine_batch3b.py` 读取真实 Dataset502 4D `*_Cine.nii.gz`，数组保持 `t,z,y,x`。
+2. frame0 作为 label-geometry reference/ED-space 帧，并逐病例记录在 `batch3b_time_axis_audit.csv`。
+3. 每例使用 frame15 作为非参考帧，经 `skimage.registration.optical_flow_ilk` 图像配准并 warp 到 reference space。
+4. 非参考帧进入 temporal aggregation，且 `temporal_aggregation_affects_output=true`。
+5. 输出 NIfTI 使用 CARE raw label 值并复制 GT label 几何；本地评价只写 diagnostic CSV，不写性能结论。
+6. CineMA 本批未使用，因为没有在本批加载官方 CineMA 权重。
+
+主要证据：
+
+```text
+results/srr_production/cine_batch3b/batch3b_cine_contract.json
+results/srr_production/cine_batch3b/batch3b_time_axis_audit.csv
+results/srr_production/cine_batch3b/batch3b_registration_warp_qc.csv
+results/srr_production/cine_batch3b/batch3b_temporal_aggregation.csv
+results/srr_production/cine_batch3b/batch3b_ed_space_evaluation.csv
+results/srr_production/cine_batch3b/batch3b_known_bad_report.json
+tests/srr_production/test_cine_batch3b_mainline.py
+```
+
+Batch 3B 没有训练、没有 Slurm、没有 validation upload、没有 hosted metric claim、没有性能结论。历史 B7/B8 继续禁止正式使用。Cine 训练或 validation-facing export 仍需用户另行授权。
 
 ## 权威边界
 

@@ -1,0 +1,10 @@
+case_id,center,class_id,component_count,dice,empty_prediction,gt_voxels,hd95,metric_name,performance_claim,pred_voxels
+Case1001,center_alpha,1,1251,0.011880766268456156,False,12155,141.4152077634778,myocardium_cinemyops_local_proxy,NONE_LOCAL_DIAGNOSTIC_ONLY,109891
+Case1001,center_alpha,2,175,0.3545548169647037,False,16304,147.4650440795206,lv_blood_sanity,NONE_LOCAL_DIAGNOSTIC_ONLY,47782
+Case1001,center_alpha,3,0,0.0,True,2237,,scar_sanity_negative_control,NONE_LOCAL_DIAGNOSTIC_ONLY,0
+Case1002,center_alpha,1,670,0.04714151239410103,False,10136,117.51833191801963,myocardium_cinemyops_local_proxy,NONE_LOCAL_DIAGNOSTIC_ONLY,69539
+Case1002,center_alpha,2,120,0.45575804018295457,False,16382,127.92569826561208,lv_blood_sanity,NONE_LOCAL_DIAGNOSTIC_ONLY,25377
+Case1002,center_alpha,3,0,0.0,True,2690,,scar_sanity_negative_control,NONE_LOCAL_DIAGNOSTIC_ONLY,0
+Case1003,center_alpha,1,779,0.018814211938174053,False,9858,132.79367714918237,myocardium_cinemyops_local_proxy,NONE_LOCAL_DIAGNOSTIC_ONLY,99740
+Case1003,center_alpha,2,119,0.18898425570006847,False,7259,146.38986493783514,lv_blood_sanity,NONE_LOCAL_DIAGNOSTIC_ONLY,30723
+Case1003,center_alpha,3,0,0.0,True,502,,scar_sanity_negative_control,NONE_LOCAL_DIAGNOSTIC_ONLY,0

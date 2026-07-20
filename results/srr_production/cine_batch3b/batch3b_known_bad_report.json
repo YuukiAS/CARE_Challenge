@@ -1,0 +1,20 @@
+{
+  "checks": [
+    {
+      "detected": true,
+      "error": "known_bad_3d: expected 4D Cine array t,z,y,x, got shape (3, 8, 8)",
+      "name": "reject_3d_cine_missing_time_axis"
+    },
+    {
+      "detected": true,
+      "error": "Cine temporal aggregation requires at least one non-reference frame",
+      "name": "reject_no_nonreference_frame"
+    },
+    {
+      "detected": true,
+      "error": "nonreference_weight must be in (0, 0.5) so reference remains audited anchor",
+      "name": "reject_nonreference_weight_without_reference_anchor"
+    }
+  ],
+  "status": "BATCH3B_KNOWN_BAD_INJECTION_PASS"
+}
