@@ -625,7 +625,14 @@ def parse_portfolio_state(text: str) -> tuple[dict[str, Any], list[str]]:
         state = values.get(label, "UNKNOWN")
         upper_state = state.upper()
         routes[route] = state
-        is_deferred = upper_state.startswith("DEFERRED") or upper_state.startswith("DORMANT") or "FALLBACK_NOT_ACTIVE" in upper_state
+        is_deferred = (
+            upper_state.startswith("DEFERRED")
+            or upper_state.startswith("DORMANT")
+            or upper_state.startswith("INACTIVE")
+            or "FALLBACK_NOT_ACTIVE" in upper_state
+            or "STOP_AND_HOLD" in upper_state
+            or "HISTORICAL" in upper_state
+        )
         if is_deferred:
             deferred_routes.append(route)
         elif state != "UNKNOWN":
@@ -2263,7 +2270,7 @@ def read_notifier_config(root: Path) -> tuple[dict[str, Any], list[str]]:
         warnings.append(warning)
     if not isinstance(config, dict):
         config = {}
-    config.setdefault("enabled_routes", ["route_B", "route_C"])
+    config.setdefault("enabled_routes", ["route_B"])
     config.setdefault("state_path", "controller_notifications/state/notified_goals.json")
     config.setdefault("status_path", "controller_notifications/state/notify_goal_watcher_status.json")
     config.setdefault("log_path", "controller_notifications/logs/notify_goal_watcher.log")
@@ -2683,7 +2690,7 @@ def render_handoff_state(data: dict[str, Any]) -> str:
 
 def render_critic_readiness(data: dict[str, Any]) -> str:
     rows = []
-    for route in ("route_B", "route_C"):
+    for route in data.get("portfolio", empty_portfolio_state()).get("active_routes", []):
         item = data.get("critic_readiness", {}).get(route, {})
         handoff = item.get("critic_handoff", {})
         review = item.get("review_output", {})
@@ -2701,7 +2708,7 @@ def render_critic_readiness(data: dict[str, Any]) -> str:
         )
     return f"""
     <section class="panel critic-readiness">
-      <div class="panel-head"><h2>Critic readiness gate</h2><span>B/C 可并行，互不等待</span></div>
+      <div class="panel-head"><h2>Critic readiness gate</h2><span>active routes only</span></div>
       <table>
         <thead><tr><th>Route</th><th>Critic handoff</th><th>Critic review output</th><th>Allowed tokens</th><th>当前 token</th></tr></thead>
         <tbody>{''.join(rows)}</tbody>
@@ -3042,15 +3049,15 @@ def render_html(data: dict[str, Any], refresh_seconds: int = 60) -> str:
   <main>
     <section class="summary-grid">
       <div class="summary-card"><span>active routes</span><strong>{html.escape(active_route_text)}</strong><small>由 CURRENT.md Portfolio state 自动读取</small></div>
-      <div class="summary-card"><span>deferred routes</span><strong>{html.escape(deferred_route_text)}</strong><small>Route A 不进入 active count</small></div>
+      <div class="summary-card"><span>inactive/deferred routes</span><strong>{html.escape(deferred_route_text)}</strong><small>Route A/C 不进入 active count</small></div>
       <div class="summary-card guard"><span>controller_authorized_now</span><strong>{html.escape(str(controller_authorized_now))}</strong><small>0 时页面不得暗示 Controller 可启动</small></div>
-      <div class="summary-card"><span>critic status</span><strong>{html.escape(critic_status_text)}</strong><small>B/C critics 可并行，互不等待</small></div>
+      <div class="summary-card"><span>critic status</span><strong>{html.escape(critic_status_text)}</strong><small>仅当前 active route 进入 critic gate；inactive routes 只读保留</small></div>
     </section>
 
     <section class="flow">
       <div class="flow-line"></div>
       <div class="flow-step done"><span>1</span><strong>CURRENT 绑定</strong><small>{html.escape(round_id)} portfolio truth</small></div>
-      <div class="flow-step active"><span>2</span><strong>Critic gate</strong><small>B/C ready/revision token</small></div>
+      <div class="flow-step active"><span>2</span><strong>Critic gate</strong><small>active route ready/revision token</small></div>
       <div class="flow-step"><span>3</span><strong>Controller boundary</strong><small>exact route only</small></div>
       <div class="flow-step"><span>4</span><strong>运行证据</strong><small>monitor 不是 completion</small></div>
       <div class="flow-step"><span>5</span><strong>独立审查</strong><small>Reviewer 后置只读</small></div>

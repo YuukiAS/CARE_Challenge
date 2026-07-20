@@ -11,7 +11,7 @@ CARE_NOTIFY_SMTP_USER=humc2013@gmail.com
 CARE_NOTIFY_SMTP_PASSWORD=<gmail_app_password>
 ```
 
-The default recipient and SMTP settings are in `config.example.json`. The default monitored routes are Route B/C, while the config keeps `main`, `route_A`, `route_B`, and `route_C` sections for future rounds. Email is sent as `plain_plus_html`: a Chinese plain-text decision brief plus an HTML alternative for clients that render tables. `email.max_important_slurm_jobs` limits how many Slurm jobs are expanded in the body.
+The default recipient and SMTP settings are in `config.example.json`. The default monitored route is Route B only; the config keeps `main`, `route_A`, `route_B`, and `route_C` sections so an explicit `enabled_routes` override can opt into historical or future routes. Email is sent as `plain_plus_html`: a Chinese plain-text decision brief plus an HTML alternative for clients that render tables. `email.max_important_slurm_jobs` limits how many Slurm jobs are expanded in the body, but credited `COMPLETED` jobs with elapsed runtime are always included before failed/cancelled attempts are truncated.
 
 ## Checks
 
@@ -21,7 +21,7 @@ The default recipient and SMTP settings are in `config.example.json`. The defaul
 bash controller_notifications/start_in_tmux.sh --dry-run
 ```
 
-After `secrets/care_notify.env` is configured, send one real test email. The test uses the same Chinese summary-first format as live controller terminal notifications, including controller status, a Route A/B/C overview, watchboard links, and a Slurm job summary read from route-local packet evidence. It does not print SMTP passwords or tunnel secrets.
+After `secrets/care_notify.env` is configured, send one real test email. The test uses the same Chinese summary-first format as live controller terminal notifications, including controller status, a route overview, watchboard links, and a Slurm job summary read from route-local packet evidence. It does not print SMTP passwords or tunnel secrets, and it does not imply Route C is active unless `enabled_routes` explicitly includes it.
 
 ```bash
 ./envs/env_CARE/bin/python controller_notifications/notify_goal_watcher.py --send-test

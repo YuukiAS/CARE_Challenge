@@ -1,6 +1,6 @@
 # CARE Route Portfolio Watchboard
 
-`scripts/ops/build_route_watchboard.py` 生成 CARE Route A/B/C 的只读 portfolio watchboard。它从 `prompts/routes/handoffs/CURRENT.md` 动态读取当前 `round_id`、active/deferred routes、controller authority boundary、route head/blob bindings、critic handoff/review paths、allowed planning tokens 和 checkpoints，再交叉展示 route-local packet、tmux、Slurm 和 live service 状态。
+`scripts/ops/build_route_watchboard.py` 生成 CARE Route A/B/C 的只读 portfolio watchboard。当前 active future work 是 Route B only；Route A 和 Route C 作为 inactive/deferred/historical lanes 展示，不进入 active controller count。脚本从 `prompts/routes/handoffs/CURRENT.md` 动态读取当前 `round_id`、active/deferred routes、controller authority boundary、route head/blob bindings、critic handoff/review paths、allowed planning tokens 和 checkpoints，再交叉展示 route-local packet、tmux、Slurm 和 live service 状态。
 
 看板只观察，不执行。页面不得有操作按钮；脚本不得提交/取消 Slurm、启动 controller、上传 validation、合并、推送、route promotion、M11、hosted metric claim 或 final scientific decision。
 
@@ -69,9 +69,16 @@ ops_services.watchboard_tunnel
 ops_services.controller_notifier
 ```
 
-每条 active route 的 critic/controller/reviewer 状态必须来自 CURRENT 绑定与 route-local evidence，不得用 main/coordinator 状态替代 route packet truth。Deferred/dormant route 只展示历史证据和 topology 风险，不进入 active completion summary。
+每条 active route 的 critic/controller/reviewer 状态必须来自 CURRENT 绑定与 route-local evidence，不得用 main/coordinator 状态替代 route packet truth。当前 Route B 是唯一 active future-work route；Route A 和 Route C 的 deferred、dormant、stop-and-hold 或 historical 状态只展示历史证据和 topology 风险，不进入 active completion summary，也不得阻塞 Route B readiness。
 
 `ops_services.controller_notifier` 展示 notifier health：`Notify` tmux window、watcher loop 进程、state/status/log paths、last scan、last event、last email status、enabled routes、config warnings，以及 SMTP secret 是否存在的布尔值。不得写出 SMTP password 或 secret 内容。
+
+
+## Route B-only Active Mode
+
+Task 2 后，看板必须把 active future work 呈现为 Route B only。`CURRENT.md` 中的 Route C `STOP_AND_HOLD`、`DEFERRED`、`DORMANT`、`INACTIVE` 或 `HISTORICAL` 状态都应进入 inactive/deferred lane；Route A 同理保持 dormant fallback。
+
+这不是删除 Route A/C 历史：route packets、review evidence、tmux topology 和 branch heads 仍只读展示。区别是它们不再被渲染成当前 controller lanes，不参与 active route count，不触发 active controller tmux 缺口警告，也不影响 Route B critic/controller status。
 
 ## Runtime Rules
 
@@ -96,14 +103,14 @@ undertrained
 
 ## tmux Discovery
 
-Route sessions 从 `care_route_A`、`care_route_B`、`care_route_C` 发现。Controller window 按 convention 解析：
+Route sessions 从 `care_route_A`、`care_route_B`、`care_route_C` 发现，用于保留历史/topology 可见性。只有 `CURRENT.md` active_controller_routes 中的 route 被当作当前 controller lane；Route A/C inactive sessions 不触发 active controller 缺口。Controller window 按 convention 解析：
 
 ```text
 RouteX-RoundNNController
 RouteX-Controller   # legacy/generic
 ```
 
-active controller 优先匹配当前 `portfolio_round.round_id` 的 round-specific window。旧窗口只标为 legacy/inactive；pane 处于 sleep/monitor 时仍必须与 Slurm/packet truth 交叉验证。
+active controller 优先匹配当前 `portfolio_round.round_id` 的 round-specific window。旧窗口以及 inactive/deferred Route A/C 窗口只标为 legacy/inactive；pane 处于 sleep/monitor 时仍必须与 Slurm/packet truth 交叉验证。
 
 ## Safety And Git Boundary
 
@@ -127,6 +134,10 @@ Route worktrees 只读检查：
 scripts/ops/build_route_watchboard.py
 docs/route_watchboard.md
 tests/ops/test_build_route_watchboard.py
+controller_notifications/notify_goal_watcher.py
+controller_notifications/config.example.json
+controller_notifications/README.md
+tests/ops/test_controller_notifications.py
 ```
 
 不要 force-add `results/watchboard/`，除非另有明确决策要求 tracked static artifact。默认保持 generated/ignored。

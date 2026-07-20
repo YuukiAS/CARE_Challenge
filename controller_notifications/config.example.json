@@ -1,7 +1,6 @@
 {
   "enabled_routes": [
-    "route_B",
-    "route_C"
+    "route_B"
   ],
   "poll_seconds": 60,
   "repo_root": "/users/a/e/aereinh/CARE",

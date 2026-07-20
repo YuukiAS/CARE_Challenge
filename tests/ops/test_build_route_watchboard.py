@@ -703,14 +703,14 @@ def test_render_html_uses_round03_portfolio_title_and_slurm_race_guardrail(tmp_p
 
     assert "CARE Route Portfolio round03" in html
     assert "CARE SRR Route A+B+C" not in html
-    assert "Route A 不进入 active count" in html
+    assert "Route A/C 不进入 active count" in html
     assert "controller_authorized_now" in html
     assert "formal wrapper must use /users/a/e/aereinh/CARE/envs/env_CARE/bin/python" in html
     assert "pending-loser cancellation" in html
 
 
 
-def portfolio_current_text(round_id="round04", include_missing=False, active=("Route B", "Route C"), deferred=("Route A",)):
+def portfolio_current_text(round_id="round04", include_missing=False, active=("Route B",), deferred=("Route A", "Route C")):
     route_a_state = "DEFERRED_FALLBACK_NOT_ACTIVE" if "Route A" in deferred else "ACTIVE_ROUTE_A"
     route_b_state = "ACTIVE_FULL_SRR_V3" if "Route B" in active else "DEFERRED"
     route_c_state = "ACTIVE_M10_FORENSIC_EVIDENCE_AND_CINE_FIDELITY" if "Route C" in active else "DEFERRED"
@@ -819,7 +819,7 @@ final_scientific_decision_authorized: false
 def test_parse_current_handoff_round04_without_round03_hardcode(tmp_path):
     parsed = watchboard.parse_current_handoff(portfolio_current_text("round04"), tmp_path / "CARE")
     assert parsed["portfolio_round"]["round_id"] == "round04"
-    assert parsed["portfolio_round"]["active_routes"] == ["route_B", "route_C"]
+    assert parsed["portfolio_round"]["active_routes"] == ["route_B"]
     html = watchboard.render_html(
         {
             "generated_at": "2026-07-18T12:00:00",
@@ -859,6 +859,34 @@ def test_active_and_deferred_routes_drive_portfolio_state(tmp_path):
     parsed = watchboard.parse_current_handoff(portfolio_current_text("round04", active=("Route C",), deferred=("Route A", "Route B")), tmp_path / "CARE")
     assert parsed["portfolio"]["active_routes"] == ["route_C"]
     assert parsed["portfolio"]["deferred_routes"] == ["route_A", "route_B"]
+
+
+def test_stop_and_hold_portfolio_state_is_inactive_not_active(tmp_path):
+    current = portfolio_current_text("round04").replace("Route C: DEFERRED", "Route C: ROUTE_C_PORTFOLIO_STOP_AND_HOLD")
+    parsed = watchboard.parse_current_handoff(current, tmp_path / "CARE")
+    assert parsed["portfolio"]["active_routes"] == ["route_B"]
+    assert parsed["portfolio"]["deferred_routes"] == ["route_A", "route_C"]
+
+
+def test_route_b_only_active_mode_keeps_route_a_c_inactive_from_blocking_route_b(tmp_path):
+    parsed = watchboard.parse_current_handoff(portfolio_current_text("round04"), tmp_path / "CARE")
+    assert parsed["portfolio"]["active_routes"] == ["route_B"]
+    assert parsed["portfolio"]["active_controller_routes"] == ["route_B"]
+    assert parsed["portfolio"]["deferred_routes"] == ["route_A", "route_C"]
+
+    route_a = route_fixture(id="route_A", label="Route A", origin_sha="aaa111")
+    route_b = route_fixture(id="route_B", label="Route B", origin_sha="bbb222")
+    route_c = route_fixture(id="route_C", label="Route C", origin_sha="ccc333")
+    for route in (route_a, route_b, route_c):
+        watchboard.annotate_route_runtime(route, {}, [], [])
+        watchboard.annotate_handoff_workers(route, parsed)
+
+    assert route_b["is_active_round_route"] is True
+    assert route_b["display_state_zh"] != "Dormant fallback / inactive unless explicitly reauthorized"
+    assert route_a["is_deferred_fallback"] is True
+    assert route_c["is_deferred_fallback"] is True
+    assert route_c["runtime_state"]["state"] == "dormant_deferred"
+    assert route_b["runtime_state"]["state"] != "dormant_deferred"
 
 
 def test_critic_ready_needs_revision_missing_review_and_stale_head(tmp_path):
@@ -1175,7 +1203,7 @@ Route C reviewed controller repair: 1e663cfa64f00413f005bef26310290fd43ec8ab
 ```text
 Route A: DEFERRED_FALLBACK_NOT_ACTIVE
 Route B: PLANNING_REVISION_PENDING_COORDINATOR_RECEIPT_AND_CRITIC_REREVIEW
-Route C: EVIDENCE_COMPLETE_FOR_PORTFOLIO_RECONCILIATION
+Route C: ROUTE_C_PORTFOLIO_STOP_AND_HOLD
 ```
 
 ### Route C
@@ -1244,9 +1272,9 @@ def test_round04_current_style_parses_portfolio_roles_and_authority(tmp_path):
     parsed = watchboard.parse_current_handoff(round04_current_style_text(), root)
 
     assert parsed["round_id"] == "round04"
-    assert parsed["portfolio"]["active_routes"] == ["route_B", "route_C"]
-    assert parsed["portfolio"]["portfolio_context_routes"] == ["route_B", "route_C"]
-    assert parsed["portfolio"]["deferred_routes"] == ["route_A"]
+    assert parsed["portfolio"]["active_routes"] == ["route_B"]
+    assert parsed["portfolio"]["portfolio_context_routes"] == ["route_B"]
+    assert parsed["portfolio"]["deferred_routes"] == ["route_A", "route_C"]
     assert parsed["authority"]["controller_authorized_now"] == 0
     assert not any("Authority Boundary 缺少" in warning for warning in parsed["parse_warnings"])
     assert not any("active route 为空" in warning for warning in parsed["parse_warnings"])
@@ -1308,9 +1336,8 @@ def test_round04_status_priorities_override_stale_packet_keywords(tmp_path):
     assert route_b["latest_role_token"]["token"] == "ROUTE_B_ROUND04_PLANNING_NEEDS_REVISION"
     assert route_b["controller_allowed"] is False
     assert any("B10_TERMINAL_FINALIZER" in blocker for blocker in route_b["completion_blockers"])
-    assert route_c["display_state_zh"] == "Reviewed evidence-complete / waiting portfolio reconciliation"
-    assert route_c["runtime_state"]["state"] == "reviewed_evidence_complete"
-    assert route_c["completion_blockers"] == []
+    assert route_c["display_state_zh"].startswith("Dormant fallback")
+    assert route_c["runtime_state"]["state"] == "dormant_deferred"
     assert route_c["reviewer_commit"] == "17062b00edc3443aacefe8583568797a9f2655ba"
     assert route_c["reviewed_controller_commit"] == "1e663cfa64f00413f005bef26310290fd43ec8ab"
     assert route_c["controller_allowed"] is False

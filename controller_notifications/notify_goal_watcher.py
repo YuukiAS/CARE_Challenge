@@ -105,7 +105,7 @@ def load_json(path: Path) -> dict[str, Any]:
 
 def load_config(path: Path) -> dict[str, Any]:
     config = load_json(path)
-    config.setdefault("enabled_routes", ["route_B", "route_C"])
+    config.setdefault("enabled_routes", ["route_B"])
     config.setdefault("repo_root", str(DEFAULT_REPO_ROOT))
     config.setdefault("codex_runtime_root", "/users/a/e/aereinh/.codex-runtime-homes")
     config.setdefault("state_path", str(DEFAULT_STATE_PATH))
@@ -334,7 +334,7 @@ def collect_goal_facts(
     capture_func: Callable[[str, Path], str] = capture_tmux_pane,
 ) -> list[GoalFact]:
     facts: list[GoalFact] = []
-    for route in config.get("enabled_routes", ["route_B", "route_C"]):
+    for route in config.get("enabled_routes", ["route_B"]):
         route_db_facts: list[GoalFact] = []
         for db in route_runtime_goal_dbs(config, route):
             route_db_facts.extend(read_goal_facts_from_db(route, db))
@@ -474,7 +474,7 @@ def base_health_status(
     facts: list[GoalFact],
     events: list[NotificationEvent],
 ) -> dict[str, Any]:
-    enabled_routes = list(config.get("enabled_routes", ["route_B", "route_C"]))
+    enabled_routes = list(config.get("enabled_routes", ["route_B"]))
     return {
         "service": "controller_goal_notifier",
         "enabled": bool(enabled_routes),
@@ -623,7 +623,10 @@ def route_summary(config: dict[str, Any], route: str, trigger_route: str = "", w
 
 def route_summary_rows(config: dict[str, Any], trigger_route: str, watchboard_status: dict[str, Any] | None = None) -> list[dict[str, str]]:
     status = watchboard_status if watchboard_status is not None else collect_watchboard_status(config)
-    return [route_summary(config, route, trigger_route, status) for route in ("route_A", "route_B", "route_C")]
+    routes = [route for route in config.get("enabled_routes", ["route_B"]) if route in {"route_A", "route_B", "route_C"}]
+    if trigger_route in {"route_A", "route_B", "route_C"} and trigger_route not in routes:
+        routes.append(trigger_route)
+    return [route_summary(config, route, trigger_route, status) for route in routes]
 
 
 def render_route_summary_text(rows: list[dict[str, str]]) -> str:
@@ -989,18 +992,32 @@ def summarize_slurm(config: dict[str, Any], event: NotificationEvent) -> SlurmRu
         if seconds is not None:
             elapsed_seconds += seconds
             elapsed_seen = True
-    ordered = sorted(
-        jobs.values(),
+    max_jobs = int(config.get("email", {}).get("max_important_slurm_jobs", 6) or 6)
+    credited_completed = sorted(
+        (job for job in jobs.values() if job.state == "COMPLETED" and job.credited and job.elapsed),
+        key=lambda job: job.job_id,
+    )
+    other_ordered = sorted(
+        (job for job in jobs.values() if job not in credited_completed),
         key=lambda job: (
             {"FAILED": 0, "CANCELLED": 1, "RUNNING": 2, "PENDING": 3, "COMPLETED": 4}.get(job.state, 5),
             not job.credited,
             job.job_id,
         ),
     )
-    max_jobs = int(config.get("email", {}).get("max_important_slurm_jobs", 6) or 6)
-    important = ordered[:max_jobs]
-    if len(ordered) > len(important):
-        warnings.append(f"另有 {len(ordered) - len(important)} 个 job 未在邮件正文展开")
+    important = list(credited_completed)
+    remaining_slots = max(0, max_jobs - len(important))
+    important.extend(other_ordered[:remaining_slots])
+    important_ids = {job.job_id for job in important}
+    omitted = [job for job in jobs.values() if job.job_id not in important_ids]
+    if omitted:
+        omitted_credited_completed = [job for job in omitted if job.state == "COMPLETED" and job.credited]
+        suffix = ""
+        if omitted_credited_completed:
+            suffix = f"；其中 {len(omitted_credited_completed)} 个为 credited COMPLETED job"
+        else:
+            suffix = "；未省略 credited COMPLETED job"
+        warnings.append(f"另有 {len(omitted)} 个 job 未在邮件正文展开{suffix}")
     return SlurmRunSummary(
         total_jobs=len(jobs),
         state_counts=state_counts,

@@ -23,7 +23,7 @@ def make_config(tmp_path: Path) -> dict:
     repo = tmp_path / "repo"
     repo.mkdir(parents=True)
     return {
-        "enabled_routes": ["route_B", "route_C"],
+        "enabled_routes": ["route_B"],
         "repo_root": str(repo),
         "codex_runtime_root": str(runtime),
         "state_path": str(tmp_path / "state" / "notified_goals.json"),
@@ -163,6 +163,7 @@ def test_active_to_complete_sends_once(tmp_path):
 
 def test_active_to_blocked_sends_once(tmp_path):
     config = make_config(tmp_path)
+    config["enabled_routes"] = ["route_B", "route_C"]
     db = tmp_path / "runtime" / "route_C_tmux_care_route_C__care_route_C" / "goals_1.sqlite"
     state_path = Path(config["state_path"])
     sender = Sender()
@@ -338,6 +339,8 @@ def test_send_test_dry_run_uses_summary_email_format(tmp_path):
     assert "Slurm 作业概览" in payload["plain_body"]
     assert "结果：COMPLETED 2；FAILED 1；CANCELLED 1" in payload["plain_body"]
     assert "Route 总览" in payload["plain_body"]
+    assert "Route B：" in payload["plain_body"]
+    assert "Route C：" not in payload["plain_body"]
     assert "Watchboard" in payload["plain_body"]
     assert "| --- |" not in payload["plain_body"]
     assert "##" not in payload["plain_body"]
@@ -364,10 +367,65 @@ def test_slurm_summary_handles_missing_packet_evidence(tmp_path):
     assert "packet 未记录 Slurm ledger/finalizer_state" in summary.warnings
 
 
+def test_important_jobs_keep_credited_completed_elapsed_when_truncated(tmp_path):
+    config = make_config(tmp_path)
+    config["email"]["max_important_slurm_jobs"] = 4
+    worktree = tmp_path / "CARE_worktrees" / "route_B"
+    root = worktree / "results" / "route_B"
+    root.mkdir(parents=True)
+    config["routes"]["route_B"]["worktree"] = str(worktree)
+    config["routes"]["route_B"]["packet_paths"] = [str(root / "controller_report.md")]
+    (root / "controller_report.md").write_text("ROUTE_B_ROUND04_TERMINAL_PACKET_READY_FOR_REVIEW\n", encoding="utf-8")
+    ledger_lines = ["timestamp_utc,event,executor,stage,partition,job_id,state,exit_code,output_root,credit,lineage_note"]
+    for idx in range(10):
+        ledger_lines.append(
+            f"2026-07-19T00:{idx:02d}:00Z,terminal,B{idx},train,a100-gpu,{7000 + idx},FAILED,2:0,out,zero,sacct elapsed 00:00:0{idx % 10}"
+        )
+    ledger_lines.append(
+        "2026-07-19T01:00:00Z,terminal,B10,train,htzhulab,9999,COMPLETED,0:0,out,true,sacct elapsed 02:03:04"
+    )
+    (root / "routing_ledger.csv").write_text("\n".join(ledger_lines) + "\n", encoding="utf-8")
+
+    event = notify.build_test_event(config)
+    summary = notify.summarize_slurm(config, event)
+    important_ids = [job.job_id for job in summary.important_jobs]
+    assert "9999" in important_ids
+    completed = next(job for job in summary.important_jobs if job.job_id == "9999")
+    assert completed.state == "COMPLETED"
+    assert completed.credited is True
+    assert completed.elapsed == "02:03:04"
+    assert len(summary.important_jobs) == 4
+    assert any("未省略 credited COMPLETED job" in warning for warning in summary.warnings)
+
+    plain = notify.render_plain_email(config, event)
+    html_body = notify.render_html_email(config, event)
+    assert "job 9999" in plain
+    assert "耗时 02:03:04" in plain
+    assert "计入结果" in plain
+    assert "job 9999" in html_body
+    assert "02:03:04" in html_body
+
+
 def test_slurm_elapsed_parser_handles_route_ledger_notes():
     assert notify.extract_elapsed_from_note("allocated then failed after 00:00:05 before receipt") == "00:00:05"
     assert notify.extract_elapsed_from_note("6000 steps completed but train_loop_seconds 300.9 < 1800") == "00:05:01"
     assert notify.extract_elapsed_from_note("62346 steps and 1801.4 seconds completed") == "00:30:01"
+
+
+def test_load_config_defaults_to_route_b_only(tmp_path):
+    config_path = tmp_path / "config.json"
+    config_path.write_text(json.dumps({"routes": {"route_B": {}}}), encoding="utf-8")
+    loaded = notify.load_config(config_path)
+    assert loaded["enabled_routes"] == ["route_B"]
+
+
+def test_explicit_route_c_enabled_remains_backward_compatible(tmp_path):
+    config = make_config(tmp_path)
+    config["enabled_routes"] = ["route_B", "route_C"]
+    db = tmp_path / "runtime" / "route_C_tmux_care_route_C__care_route_C" / "goals_1.sqlite"
+    write_goal_db(db, "active", updated_at_ms=1)
+    facts = notify.collect_goal_facts(config, capture_func=lambda target, root: "")
+    assert any(fact.route == "route_C" for fact in facts)
 
 def test_health_status_written_on_scan(tmp_path):
     config = make_config(tmp_path)
@@ -381,7 +439,7 @@ def test_health_status_written_on_scan(tmp_path):
     status = json.loads(status_path.read_text(encoding="utf-8"))
     assert status["service"] == "controller_goal_notifier"
     assert status["last_scan_at_utc"]
-    assert status["enabled_routes"] == ["route_B", "route_C"]
+    assert status["enabled_routes"] == ["route_B"]
     assert status["facts_count"] == 1
     assert status["state_path"] == str(state_path)
     assert status["status_path"] == str(status_path)
@@ -434,6 +492,7 @@ def test_email_failure_records_status_and_retries_next_scan(tmp_path):
 
 def test_missing_smtp_config_records_blocked_config_without_crashing(tmp_path):
     config = make_config(tmp_path)
+    config["enabled_routes"] = ["route_B", "route_C"]
     db = tmp_path / "runtime" / "route_C_tmux_care_route_C__care_route_C" / "goals_1.sqlite"
     state_path = Path(config["state_path"])
     status_path = tmp_path / "state" / "notify_goal_watcher_status.json"
@@ -514,8 +573,19 @@ def test_start_in_tmux_dry_run_no_duplicate_and_dead_restart(tmp_path):
 
 
 
+def test_route_summary_defaults_to_enabled_route_b_only(tmp_path):
+    config = make_config(tmp_path)
+    rows = notify.route_summary_rows(config, "route_B", {"routes": []})
+    assert [row["route"] for row in rows] == ["Route B"]
+
+    config["enabled_routes"] = ["route_B", "route_C"]
+    rows = notify.route_summary_rows(config, "route_C", {"routes": []})
+    assert [row["route"] for row in rows] == ["Route B", "Route C"]
+
+
 def test_route_summary_uses_watchboard_dynamic_status(monkeypatch, tmp_path):
     config = make_config(tmp_path)
+    config["enabled_routes"] = ["route_A", "route_B", "route_C"]
     status = {
         "routes": [
             {
