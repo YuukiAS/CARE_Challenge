@@ -1,8 +1,9 @@
 {
   "task_key": "20260721_srr_batch4_forced_fold0_training",
-  "status": "PREFLIGHT_READY_NOT_SUBMITTED",
-  "as_of_utc": "2026-07-20T18:14:00Z",
+  "status": "PREFLIGHT_SUBMITTED_AWAITING_TERMINAL_EVIDENCE",
+  "as_of_utc": "2026-07-20T17:49:33Z",
   "source_head_before_local_commit": "89474f7de8c38db1448e47ca7fe94d6620932b31",
+  "latest_local_commit": "2d1f74d506d4fdaa21a769a070684614a14a77d7",
   "review_gate": {
     "planning_review_path": "prompts/tasks/20260721_srr_batch4_forced_fold0_training_planning_review.md",
     "planning_review_decision": "AUDITED_GO",
@@ -32,7 +33,31 @@
     "a100-gpu": "Job 59668370 to start at 2026-08-06T03:13:37 using g141604",
     "volta-gpu": "Job 59671717 to start at 2026-07-20T14:14:35 using g0311"
   },
+  "slurm_attempts": [
+    {
+      "job_id": "59672536",
+      "partition": "volta-gpu",
+      "job_name": "SRRB4Pre",
+      "state": "CANCELLED",
+      "exit_code": "0:0",
+      "elapsed": "00:00:56",
+      "node": "g0311",
+      "reason": "manual_cancel_after_runtime_log_showed_current_torch_build_does_not_support_Tesla_V100_compute_capability_7_0",
+      "log_path": "logs/srr_batch4/SRRB4Pre_volta_59672536_20260720_134651.log",
+      "attempt_root": "results/20260721_srr_batch4_forced_fold0_training/runtime/attempts/srr_batch4_m10d3_full4scale_fold0_seed20260721_preflight_volta_preflight_59672536"
+    },
+    {
+      "job_id": "59672892",
+      "partition": "htzhulab",
+      "job_name": "SRRB4Pre",
+      "state": "PENDING",
+      "reason": "Resources",
+      "logical_run_id": "srr_batch4_m10d3_full4scale_fold0_seed20260721_preflight_htzhulab_retry1",
+      "command": "sbatch --partition=htzhulab --gres=gpu:nvidia_a100-sxm4-80gb:1 --qos=gpu_access --export=ALL,LOGICAL_RUN_ID=srr_batch4_m10d3_full4scale_fold0_seed20260721_preflight_htzhulab_retry1 jobs/srr_production/run_myops_batch4_preflight_htzhulab.sh"
+    }
+  ],
   "training_status": {
+    "preflight_only_completed": false,
     "formal_1800_step_training_started": false,
     "formal_1800_step_training_completed": false,
     "full_volume_eval_steps_completed": [],
@@ -40,5 +65,5 @@
     "validation_upload_started": false,
     "hosted_metric_claim": false
   },
-  "next_allowed_action": "Submit the volta-gpu preflight-only job if the local code commit succeeds; submit formal race only after preflight terminal PASS evidence is collected."
+  "next_allowed_action": "Monitor htzhulab preflight job 59672892 to terminal state; submit formal training race only after preflight terminal PASS evidence is collected."
 }
