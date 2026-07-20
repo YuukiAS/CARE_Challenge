@@ -16,15 +16,6 @@ WINNER_LOCK="${RUNTIME_ROOT}/locks/${LOGICAL_RUN_ID}.winner"
 
 mkdir -p "${ATTEMPT_ROOT}" "${RUNTIME_ROOT}/locks"
 
-if mkdir "${WINNER_LOCK}" 2>/dev/null; then
-  cat > "${WINNER_LOCK}/owner.json" <<EOF
-{"attempt_id":"${ATTEMPT_ID}","partition":"${PARTITION_LABEL}","job_id":"${SLURM_JOB_ID:-local}","log_file":"${LOG_FILE:-}","status":"winner_started"}
-EOF
-else
-  echo "Winner lock already exists at ${WINNER_LOCK}; started loser exits before optimizer step."
-  exit 0
-fi
-
 echo "CARE_ROOT=${CARE_ROOT}"
 echo "PYTHON=${PYTHON}"
 echo "PARTITION_LABEL=${PARTITION_LABEL}"
@@ -40,7 +31,23 @@ print("cuda_available", torch.cuda.is_available())
 print("cuda_device_count", torch.cuda.device_count())
 if torch.cuda.is_available():
     print("cuda_device_name", torch.cuda.get_device_name(0))
+    major, minor = torch.cuda.get_device_capability(0)
+    current = f"sm_{major}{minor}"
+    arch_list = set(torch.cuda.get_arch_list())
+    print("cuda_device_capability", current)
+    print("torch_cuda_arch_list", ",".join(sorted(arch_list)))
+    if current not in arch_list:
+        raise SystemExit(f"UNSUPPORTED_CUDA_DEVICE_CAPABILITY:{current}")
 PY
+
+if mkdir "${WINNER_LOCK}" 2>/dev/null; then
+  cat > "${WINNER_LOCK}/owner.json" <<EOF
+{"attempt_id":"${ATTEMPT_ID}","partition":"${PARTITION_LABEL}","job_id":"${SLURM_JOB_ID:-local}","log_file":"${LOG_FILE:-}","status":"winner_started"}
+EOF
+else
+  echo "Winner lock already exists at ${WINNER_LOCK}; started loser exits before optimizer step."
+  exit 0
+fi
 
 exec "${PYTHON}" scripts/training/run_srr_propref_myops_fold0.py \
   --variant m10_d3_hierarchical_memory_propref \
