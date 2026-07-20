@@ -1,164 +1,191 @@
 {
-  "task_key": "20260721_srr_batch4_forced_fold0_training",
-  "phase": "B4-04_FORMAL_RETRY_RUNNING",
-  "status": "FORMAL_TRAINING_RETRY_RUNNING_NEEDS_MONITOR",
-  "as_of_utc": "2026-07-20T18:41:45Z",
-  "repo_root": "/users/a/e/aereinh/CARE",
+  "as_of_utc": "2026-07-20T19:55:00Z",
   "branch": "main",
-  "git_head": "53fc6e60c1510dfe17aec7a1460883c88e46c705",
-  "git_status": "main...origin/main [ahead 7] before formal dispatch monitor commit",
-  "origin_main_synced_head_before_batch4_local_commits": "89474f7de8c38db1448e47ca7fe94d6620932b31",
-  "planning_review": {
-    "path": "prompts/tasks/20260721_srr_batch4_forced_fold0_training_planning_review.md",
-    "sha256": "fab472d2053e2bb1f8e97def294f3aed81230b9f1d79faacefc86a0003ad6cca",
-    "decision": "AUDITED_GO",
-    "token": "BATCH4_PLANNING_AUDITED_GO",
-    "reviewed_commit": "20e3aaf304f1687ba2e50c3885eb4bf88738d889"
+  "completion_boundary": {
+    "formal_training_completed": false,
+    "formal_training_running": true,
+    "formal_training_submitted": true,
+    "invalid_59678596_zero_credit": true,
+    "preflight_only_completed": true,
+    "preflight_terminal_accounted": true,
+    "prototype_inline_count_gap_reconciled": true,
+    "review_ready": false,
+    "selected_control_59680114_zero_credit": true
   },
   "files_read_or_refreshed": {
-    "AGENTS.md": "2828bf4ef9c1d0b91034ac17641f309d739a346460ee11880f71cf8ecb4dc903",
-    ".agents/skills/slurm-routing-partition/SKILL.md": "2b7e87f58b275b50dc9d4a9377f4e2518c3a390c806e400cb32e07ebac3f83a6",
     ".agents/skills/care-mapper/SKILL.md": "2c41516189001ec7be94d9981a69fcd5544ad5ebd244c93cdc58488f4b535d0e",
-    "prompts/routes/handoffs/CURRENT.md": "read_current_turn",
+    ".agents/skills/slurm-routing-partition/SKILL.md": "2b7e87f58b275b50dc9d4a9377f4e2518c3a390c806e400cb32e07ebac3f83a6",
+    "AGENTS.md": "2828bf4ef9c1d0b91034ac17641f309d739a346460ee11880f71cf8ecb4dc903",
     "docs/plans/laneB_round04_active_srr_batch4_forced_fold0_training_execution.md": "read_current_turn",
+    "prompts/routes/handoffs/CURRENT.md": "read_current_turn",
     "prompts/tasks/20260721_srr_batch4_forced_fold0_training_controller.md": "9b3ed173001089db778aa3e5462fd8794c3194dbd7d855d95d12c695ec7ae49b",
     "prompts/tasks/20260721_srr_batch4_forced_fold0_training_executor_plan.yaml": "8b82d180eaa548fb5a38788b7550648c1e8722682792e0bccd180131eece83a9",
     "wiki/README.md": "read_current_turn"
   },
-  "source_fingerprints": {
-    "configs/srr_production/myops_batch4.yaml": "5c4da81bc6f01c360c288370b8b1e21371448e2715d5159ba32aa85f2794fc73",
-    "scripts/training/run_srr_propref_myops_fold0.py": "0284bca9aba418f492da2b92b6d99665a9b44be7206740a4c496f39845b5430a",
-    "scripts/srr_production/infer_myops.py": "ac7a5f7339ab87439302bb59b9fb856b91ac64709b99114555a52165aad877be",
-    "jobs/srr_production/run_myops_batch4_fold0_common.sh": "19a17f98ae1493e640eadd9b53798a56738a3a28d1d9195c2578c0b5bbd37d5c"
-  },
-  "slurm_jobs": [
-    {
-      "job_id": "59672536",
-      "role": "preflight_only",
-      "partition": "volta-gpu",
-      "state": "CANCELLED by 397557",
-      "exit_code": "0:0",
-      "elapsed": "00:00:56",
-      "node": "g0311",
-      "reason": "current torch build does not support Tesla V100 compute capability 7.0; batch step exit 0:15",
-      "logical_run_id": "srr_batch4_m10d3_full4scale_fold0_seed20260721_preflight",
-      "log_path": "logs/srr_batch4/SRRB4Pre_volta_59672536_20260720_134651.log"
-    },
-    {
-      "job_id": "59672892",
-      "role": "preflight_only",
-      "partition": "htzhulab",
-      "state": "FAILED",
-      "exit_code": "1:0",
-      "elapsed": "00:03:58",
-      "node": "g180702",
-      "reason": "startup NameError: vectors_from_mask was not defined before retry repair",
-      "logical_run_id": "srr_batch4_m10d3_full4scale_fold0_seed20260721_preflight_htzhulab_retry1",
-      "log_path": "logs/srr_batch4/SRRB4Pre_htzhulab_59672892_20260720_135831.log"
-    },
-    {
-      "job_id": "59673675",
-      "role": "preflight_only",
-      "partition": "htzhulab",
-      "state": "COMPLETED",
-      "exit_code": "0:0",
-      "elapsed": "00:01:41",
-      "node": "g180702",
-      "reason": "terminal gpu one-batch preflight completed; formal training was not started",
-      "logical_run_id": "srr_batch4_m10d3_full4scale_fold0_seed20260721_preflight_htzhulab_retry2",
-      "log_path": "logs/srr_batch4/SRRB4Pre_htzhulab_59673675_20260720_141649.log"
-    },
-    {
-      "job_id": "59674902",
-      "role": "formal_training_startup_failed",
-      "partition": "htzhulab",
-      "state": "FAILED",
-      "exit_code": "1:0",
-      "elapsed": "00:01:22",
-      "node": "g1807htzh01",
-      "reason": "TypeError in record_gate_usage: list-valued gate mean could not be converted with float(value)",
-      "logical_run_id": "srr_batch4_m10d3_full4scale_fold0_seed20260721",
-      "log_path": "logs/srr_batch4/SRRB4MyoPS_htzhulab_59674902_20260720_143201.log"
-    },
-    {
-      "job_id": "59678596",
-      "role": "formal_training_retry",
-      "partition": "htzhulab",
-      "state": "RUNNING",
-      "exit_code": "0:0",
-      "elapsed": "00:02:14_at_record",
-      "node": "g1807htzh01",
-      "reason": "same-scope retry running after gate usage repair",
-      "logical_run_id": "srr_batch4_m10d3_full4scale_fold0_seed20260721",
-      "log_path": "logs/srr_batch4/SRRB4MyoPS_htzhulab_59678596_20260720_143925.log"
-    }
-  ],
-  "runtime_paths": {
-    "result_root": "results/20260721_srr_batch4_forced_fold0_training",
-    "runtime_root": "results/20260721_srr_batch4_forced_fold0_training/runtime",
-    "log_root": "logs/srr_batch4",
-    "preflight_retry2_attempt_root": "results/20260721_srr_batch4_forced_fold0_training/runtime/attempts/srr_batch4_m10d3_full4scale_fold0_seed20260721_preflight_htzhulab_retry2_htzhulab_preflight_59673675",
-    "preflight_retry2_summary": "results/20260721_srr_batch4_forced_fold0_training/runtime/attempts/srr_batch4_m10d3_full4scale_fold0_seed20260721_preflight_htzhulab_retry2_htzhulab_preflight_59673675/variants/srr_batch4_m10d3_full4scale_fold0_seed20260721_preflight_htzhulab_retry2_htzhulab_preflight_59673675/summary.json"
-  },
-  "completion_boundary": {
-    "preflight_only_completed": true,
-    "preflight_terminal_accounted": true,
-    "prototype_inline_count_gap_reconciled": true,
-    "formal_training_submitted": true,
-    "formal_training_completed": false,
-    "review_ready": false,
-    "formal_training_running": true
-  },
-  "git_head_before_terminal_receipt_update": "1d3d1d5dbf66fc6a5e76251d709304e1a2574db2",
-  "git_head_at_formal_submit": "a984992ba3689bac0b5c7590b7049816fcd4c931",
   "formal_training": {
+    "a100_mirror_submitted": false,
+    "attempt_root": "results/20260721_srr_batch4_forced_fold0_training/runtime/attempts/srr_batch4_m10d3_full4scale_fold0_seed20260721_htzhulab_59674902",
+    "command": "sbatch --export=ALL,LOGICAL_RUN_ID=srr_batch4_m10d3_full4scale_fold0_seed20260721 jobs/srr_production/run_myops_batch4_fold0_htzhulab.sh",
+    "elapsed": "00:01:22",
+    "exit_code": "1:0",
+    "failure_reason": "TypeError in record_gate_usage: list-valued gate mean could not be converted with float(value)",
     "job_id": "59674902",
     "job_name": "SRRB4MyoPS",
+    "log_path": "logs/srr_batch4/SRRB4MyoPS_htzhulab_59674902_20260720_143201.log",
+    "logical_run_id": "srr_batch4_m10d3_full4scale_fold0_seed20260721",
+    "node": "g1807htzh01",
     "partition": "htzhulab",
     "state": "FAILED",
-    "exit_code": "1:0",
-    "elapsed": "00:01:22",
-    "node": "g1807htzh01",
-    "command": "sbatch --export=ALL,LOGICAL_RUN_ID=srr_batch4_m10d3_full4scale_fold0_seed20260721 jobs/srr_production/run_myops_batch4_fold0_htzhulab.sh",
-    "logical_run_id": "srr_batch4_m10d3_full4scale_fold0_seed20260721",
-    "attempt_root": "results/20260721_srr_batch4_forced_fold0_training/runtime/attempts/srr_batch4_m10d3_full4scale_fold0_seed20260721_htzhulab_59674902",
-    "log_path": "logs/srr_batch4/SRRB4MyoPS_htzhulab_59674902_20260720_143201.log",
-    "winner_lock_owner": "results/20260721_srr_batch4_forced_fold0_training/runtime/locks/srr_batch4_m10d3_full4scale_fold0_seed20260721.winner/owner.json",
-    "a100_mirror_submitted": false,
     "training_credit": 0,
-    "failure_reason": "TypeError in record_gate_usage: list-valued gate mean could not be converted with float(value)"
+    "winner_lock_owner": "results/20260721_srr_batch4_forced_fold0_training/runtime/locks/srr_batch4_m10d3_full4scale_fold0_seed20260721.winner/owner.json"
   },
-  "git_head_before_repair_commit": "a984992ba3689bac0b5c7590b7049816fcd4c931",
-  "same_scope_repairs": [
-    {
-      "failure_job_id": "59674902",
-      "failure_state": "FAILED",
-      "failure_exit_code": "1:0",
-      "failure_elapsed": "00:01:22",
-      "failure_node": "g1807htzh01",
-      "failure_reason": "TypeError in record_gate_usage: list-valued gate mean could not be converted with float(value)",
-      "training_credit": 0,
-      "same_scope_repair": "scripts/training/run_srr_propref_myops_fold0.py now records nested/list-valued gate means as scalar means locally for Batch4 runner",
-      "regression_test": "./envs/env_CARE/bin/python -m pytest tests/srr_production/test_myops_batch4_contract.py -> 11 passed, 3 warnings",
-      "source_hash_after_repair": "1795ab8fc1dc3f6d87cbe7059f8be191fff15c3c0148db2283af768bb5ce5fdd",
-      "test_hash_after_repair": "8da0b58a71d006d735989d2f56cb0ea7e71bbb6e56f5427662e1d600725efb82"
-    }
-  ],
-  "git_head_at_formal_retry_submit": "36d1ef9241a5b5a1606770a5c12e84faff43017f",
   "formal_training_retry": {
+    "a100_mirror_submitted": false,
+    "archived_failed_lock_owner": "results/20260721_srr_batch4_forced_fold0_training/runtime/locks/srr_batch4_m10d3_full4scale_fold0_seed20260721.winner.failed_59674902_20260720T183637Z/owner.json",
+    "attempt_root": "results/20260721_srr_batch4_forced_fold0_training/runtime/attempts/srr_batch4_m10d3_full4scale_fold0_seed20260721_htzhulab_59678596",
+    "command": "sbatch --export=ALL,LOGICAL_RUN_ID=srr_batch4_m10d3_full4scale_fold0_seed20260721 jobs/srr_production/run_myops_batch4_fold0_htzhulab.sh",
+    "elapsed_at_record": "00:02:14",
     "job_id": "59678596",
     "job_name": "SRRB4MyoPS",
-    "partition": "htzhulab",
-    "state": "RUNNING",
-    "elapsed_at_record": "00:02:14",
-    "node": "g1807htzh01",
-    "command": "sbatch --export=ALL,LOGICAL_RUN_ID=srr_batch4_m10d3_full4scale_fold0_seed20260721 jobs/srr_production/run_myops_batch4_fold0_htzhulab.sh",
-    "logical_run_id": "srr_batch4_m10d3_full4scale_fold0_seed20260721",
-    "attempt_root": "results/20260721_srr_batch4_forced_fold0_training/runtime/attempts/srr_batch4_m10d3_full4scale_fold0_seed20260721_htzhulab_59678596",
     "log_path": "logs/srr_batch4/SRRB4MyoPS_htzhulab_59678596_20260720_143925.log",
-    "winner_lock_owner": "results/20260721_srr_batch4_forced_fold0_training/runtime/locks/srr_batch4_m10d3_full4scale_fold0_seed20260721.winner/owner.json",
-    "archived_failed_lock_owner": "results/20260721_srr_batch4_forced_fold0_training/runtime/locks/srr_batch4_m10d3_full4scale_fold0_seed20260721.winner.failed_59674902_20260720T183637Z/owner.json",
-    "a100_mirror_submitted": false,
-    "reason_no_a100_mirror": "htzhulab retry started immediately and is running past prior failure point"
-  }
+    "logical_run_id": "srr_batch4_m10d3_full4scale_fold0_seed20260721",
+    "node": "g1807htzh01",
+    "partition": "htzhulab",
+    "reason_no_a100_mirror": "htzhulab retry started immediately and is running past prior failure point",
+    "state": "RUNNING",
+    "winner_lock_owner": "results/20260721_srr_batch4_forced_fold0_training/runtime/locks/srr_batch4_m10d3_full4scale_fold0_seed20260721.winner/owner.json"
+  },
+  "git_head": "b2663c690b567683bde73686f7f5c25307131904",
+  "git_head_at_formal_retry_submit": "36d1ef9241a5b5a1606770a5c12e84faff43017f",
+  "git_head_at_formal_submit": "a984992ba3689bac0b5c7590b7049816fcd4c931",
+  "git_head_before_repair_commit": "a984992ba3689bac0b5c7590b7049816fcd4c931",
+  "git_head_before_terminal_receipt_update": "1d3d1d5dbf66fc6a5e76251d709304e1a2574db2",
+  "git_status": "main...origin/main [ahead 7] before formal dispatch monitor commit",
+  "invalid_attempts": [
+    {
+      "actual_optimizer_steps": 7182,
+      "archived_winner_lock_owner": "results/20260721_srr_batch4_forced_fold0_training/runtime/locks/srr_batch4_m10d3_full4scale_fold0_seed20260721.winner.invalid_59678596_20260720T195500Z/owner.json",
+      "job_id": "59678596",
+      "max_steps": 1800,
+      "state": "COMPLETED_INVALID_BATCH4_BUDGET",
+      "training_credit": 0
+    },
+    {
+      "archived_partial_evidence": "results/20260721_srr_batch4_forced_fold0_training/selected_checkpoint_controls.invalid_59680114_20260720T195500Z",
+      "job_id": "59680114",
+      "reason": "failed selected-control job from invalid checkpoint; not valid evidence",
+      "state": "FAILED",
+      "training_credit": 0
+    }
+  ],
+  "origin_main": "89474f7de8c38db1448e47ca7fe94d6620932b31",
+  "origin_main_synced_head_before_batch4_local_commits": "89474f7de8c38db1448e47ca7fe94d6620932b31",
+  "phase": "B4-04_INVALID_59678596_REPAIRED_AWAITING_RETRY",
+  "planning_review": {
+    "decision": "AUDITED_GO",
+    "path": "prompts/tasks/20260721_srr_batch4_forced_fold0_training_planning_review.md",
+    "reviewed_commit": "20e3aaf304f1687ba2e50c3885eb4bf88738d889",
+    "sha256": "fab472d2053e2bb1f8e97def294f3aed81230b9f1d79faacefc86a0003ad6cca",
+    "token": "BATCH4_PLANNING_AUDITED_GO"
+  },
+  "repo_root": "/users/a/e/aereinh/CARE",
+  "runtime_paths": {
+    "log_root": "logs/srr_batch4",
+    "preflight_retry2_attempt_root": "results/20260721_srr_batch4_forced_fold0_training/runtime/attempts/srr_batch4_m10d3_full4scale_fold0_seed20260721_preflight_htzhulab_retry2_htzhulab_preflight_59673675",
+    "preflight_retry2_summary": "results/20260721_srr_batch4_forced_fold0_training/runtime/attempts/srr_batch4_m10d3_full4scale_fold0_seed20260721_preflight_htzhulab_retry2_htzhulab_preflight_59673675/variants/srr_batch4_m10d3_full4scale_fold0_seed20260721_preflight_htzhulab_retry2_htzhulab_preflight_59673675/summary.json",
+    "result_root": "results/20260721_srr_batch4_forced_fold0_training",
+    "runtime_root": "results/20260721_srr_batch4_forced_fold0_training/runtime"
+  },
+  "same_scope_repair_after_invalid_59678596": {
+    "regression_test": "./envs/env_CARE/bin/python -m pytest tests/srr_production/test_myops_batch4_contract.py -> 12 passed, 3 warnings",
+    "repair": "scripts/training/run_srr_propref_myops_fold0.py stops optimizer.step exactly at max_steps and waits without extra optimizer updates until min_train_loop_seconds is satisfied",
+    "repair_commit": "b2663c690b567683bde73686f7f5c25307131904",
+    "source_hash_after_repair": "6e73ce536e92fc53ea9bd730dab7bb45dfeda9689a9fd185a756c15e49ff8319",
+    "test_hash_after_repair": "d2085e0062413cc5bc659b590e7aa03bb687745e9d6bd4470a2b6262bf344f4b"
+  },
+  "same_scope_repairs": [
+    {
+      "failure_elapsed": "00:01:22",
+      "failure_exit_code": "1:0",
+      "failure_job_id": "59674902",
+      "failure_node": "g1807htzh01",
+      "failure_reason": "TypeError in record_gate_usage: list-valued gate mean could not be converted with float(value)",
+      "failure_state": "FAILED",
+      "regression_test": "./envs/env_CARE/bin/python -m pytest tests/srr_production/test_myops_batch4_contract.py -> 11 passed, 3 warnings",
+      "same_scope_repair": "scripts/training/run_srr_propref_myops_fold0.py now records nested/list-valued gate means as scalar means locally for Batch4 runner",
+      "source_hash_after_repair": "1795ab8fc1dc3f6d87cbe7059f8be191fff15c3c0148db2283af768bb5ce5fdd",
+      "test_hash_after_repair": "8da0b58a71d006d735989d2f56cb0ea7e71bbb6e56f5427662e1d600725efb82",
+      "training_credit": 0
+    }
+  ],
+  "slurm_jobs": [
+    {
+      "elapsed": "00:00:56",
+      "exit_code": "0:0",
+      "job_id": "59672536",
+      "log_path": "logs/srr_batch4/SRRB4Pre_volta_59672536_20260720_134651.log",
+      "logical_run_id": "srr_batch4_m10d3_full4scale_fold0_seed20260721_preflight",
+      "node": "g0311",
+      "partition": "volta-gpu",
+      "reason": "current torch build does not support Tesla V100 compute capability 7.0; batch step exit 0:15",
+      "role": "preflight_only",
+      "state": "CANCELLED by 397557"
+    },
+    {
+      "elapsed": "00:03:58",
+      "exit_code": "1:0",
+      "job_id": "59672892",
+      "log_path": "logs/srr_batch4/SRRB4Pre_htzhulab_59672892_20260720_135831.log",
+      "logical_run_id": "srr_batch4_m10d3_full4scale_fold0_seed20260721_preflight_htzhulab_retry1",
+      "node": "g180702",
+      "partition": "htzhulab",
+      "reason": "startup NameError: vectors_from_mask was not defined before retry repair",
+      "role": "preflight_only",
+      "state": "FAILED"
+    },
+    {
+      "elapsed": "00:01:41",
+      "exit_code": "0:0",
+      "job_id": "59673675",
+      "log_path": "logs/srr_batch4/SRRB4Pre_htzhulab_59673675_20260720_141649.log",
+      "logical_run_id": "srr_batch4_m10d3_full4scale_fold0_seed20260721_preflight_htzhulab_retry2",
+      "node": "g180702",
+      "partition": "htzhulab",
+      "reason": "terminal gpu one-batch preflight completed; formal training was not started",
+      "role": "preflight_only",
+      "state": "COMPLETED"
+    },
+    {
+      "elapsed": "00:01:22",
+      "exit_code": "1:0",
+      "job_id": "59674902",
+      "log_path": "logs/srr_batch4/SRRB4MyoPS_htzhulab_59674902_20260720_143201.log",
+      "logical_run_id": "srr_batch4_m10d3_full4scale_fold0_seed20260721",
+      "node": "g1807htzh01",
+      "partition": "htzhulab",
+      "reason": "TypeError in record_gate_usage: list-valued gate mean could not be converted with float(value)",
+      "role": "formal_training_startup_failed",
+      "state": "FAILED"
+    },
+    {
+      "elapsed": "00:02:14_at_record",
+      "exit_code": "0:0",
+      "job_id": "59678596",
+      "log_path": "logs/srr_batch4/SRRB4MyoPS_htzhulab_59678596_20260720_143925.log",
+      "logical_run_id": "srr_batch4_m10d3_full4scale_fold0_seed20260721",
+      "node": "g1807htzh01",
+      "partition": "htzhulab",
+      "reason": "same-scope retry running after gate usage repair",
+      "role": "formal_training_retry",
+      "state": "RUNNING"
+    }
+  ],
+  "source_fingerprints": {
+    "configs/srr_production/myops_batch4.yaml": "5c4da81bc6f01c360c288370b8b1e21371448e2715d5159ba32aa85f2794fc73",
+    "jobs/srr_production/run_myops_batch4_fold0_common.sh": "19a17f98ae1493e640eadd9b53798a56738a3a28d1d9195c2578c0b5bbd37d5c",
+    "scripts/srr_production/infer_myops.py": "ac7a5f7339ab87439302bb59b9fb856b91ac64709b99114555a52165aad877be",
+    "scripts/training/run_srr_propref_myops_fold0.py": "0284bca9aba418f492da2b92b6d99665a9b44be7206740a4c496f39845b5430a"
+  },
+  "status": "FORMAL_TRAINING_INVALID_REPAIRED_AWAITING_RETRY",
+  "task_key": "20260721_srr_batch4_forced_fold0_training"
 }

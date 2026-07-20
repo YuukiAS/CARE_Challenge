@@ -76,3 +76,16 @@ This failure is zero formal training credit. Retry requires archiving the stale 
 - Startup log `logs/srr_batch4/SRRB4MyoPS_htzhulab_59678596_20260720_143925.log` confirms `env_CARE` Python, torch `2.11.0+cu130`, GPU `NVIDIA H100 NVL`, capability `sm_90`, logical run `srr_batch4_m10d3_full4scale_fold0_seed20260721`, isolated attempt root, and winner lock.
 
 Running formal retry is not completion. Terminal aggregation, validators, mapper final, final packet commit, and independent reviewer handoff remain required.
+
+
+## Formal Retry Invalidated By Coordinator Gate
+
+- `sacct -j 59678596 --format=JobID,JobName,Partition,State,ExitCode,Elapsed,NodeList -P` -> `59678596 COMPLETED 0:0 00:33:34 g1807htzh01`.
+- Runtime summary for `59678596` -> `actual_optimizer_steps=7182`, `max_steps=1800`, `elapsed_seconds=1800.0442795499694`. This is invalid for Batch4 because the optimizer continued after the 1800-step budget while waiting for the minimum duration. Training credit: `0`.
+- `sacct -j 59680114 --format=JobID,JobName,Partition,State,ExitCode,Elapsed,NodeList -P` -> `59680114 FAILED 1:0 00:01:41 g1807htzh01`; selected-control evidence is invalid and archived.
+- Archived invalid winner lock: `results/20260721_srr_batch4_forced_fold0_training/runtime/locks/srr_batch4_m10d3_full4scale_fold0_seed20260721.winner.invalid_59678596_20260720T195500Z/owner.json`.
+- Archived invalid partial selected-control evidence: `results/20260721_srr_batch4_forced_fold0_training/selected_checkpoint_controls.invalid_59680114_20260720T195500Z`.
+- Same-scope repair commit `b2663c690b567683bde73686f7f5c25307131904`: `scripts/training/run_srr_propref_myops_fold0.py` stops optimizer updates exactly at `max_steps` and waits without additional `optimizer.step()` until `min_train_loop_seconds_for_plateau` is satisfied.
+- Regression: `./envs/env_CARE/bin/python -m pytest tests/srr_production/test_myops_batch4_contract.py` -> `12 passed, 3 warnings`.
+
+No reviewer handoff is allowed from `59678596` or `59680114`. Next formal retry must be audited from commit `b2663c690b567683bde73686f7f5c25307131904` and must produce `actual_optimizer_steps == max_steps == 1800` plus `train_loop_seconds >= 1800` before aggregation.

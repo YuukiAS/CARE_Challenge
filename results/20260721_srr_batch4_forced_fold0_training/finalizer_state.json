@@ -1,87 +1,110 @@
 {
-  "task_key": "20260721_srr_batch4_forced_fold0_training",
-  "state": "FORMAL_TRAINING_RETRY_RUNNING_NEEDS_MONITOR",
-  "as_of_utc": "2026-07-20T18:41:45Z",
-  "scope": "formal_training_retry_running_monitor",
-  "formal_training_completion": false,
-  "attempts": [
-    {
-      "job_id": "59672536",
-      "job_name": "SRRB4Pre",
-      "partition": "volta-gpu",
-      "state": "CANCELLED by 397557",
-      "exit_code": "0:0",
-      "elapsed": "00:00:56",
-      "node": "g0311",
-      "log_path": "logs/srr_batch4/SRRB4Pre_volta_59672536_20260720_134651.log",
-      "training_credit": 0,
-      "failure_reason": "current torch build does not support Tesla V100 compute capability 7.0; batch step exit 0:15"
-    },
-    {
-      "job_id": "59672892",
-      "job_name": "SRRB4Pre",
-      "partition": "htzhulab",
-      "state": "FAILED",
-      "exit_code": "1:0",
-      "elapsed": "00:03:58",
-      "node": "g180702",
-      "log_path": "logs/srr_batch4/SRRB4Pre_htzhulab_59672892_20260720_135831.log",
-      "training_credit": 0,
-      "failure_reason": "startup NameError: vectors_from_mask was not defined before retry repair"
-    },
-    {
-      "job_id": "59673675",
-      "job_name": "SRRB4Pre",
-      "partition": "htzhulab",
-      "state": "COMPLETED",
-      "exit_code": "0:0",
-      "elapsed": "00:01:41",
-      "node": "g180702",
-      "log_path": "logs/srr_batch4/SRRB4Pre_htzhulab_59673675_20260720_141649.log",
-      "training_credit": 0,
-      "preflight_summary": "results/20260721_srr_batch4_forced_fold0_training/runtime/attempts/srr_batch4_m10d3_full4scale_fold0_seed20260721_preflight_htzhulab_retry2_htzhulab_preflight_59673675/variants/srr_batch4_m10d3_full4scale_fold0_seed20260721_preflight_htzhulab_retry2_htzhulab_preflight_59673675/summary.json",
-      "one_batch_overfit": "results/20260721_srr_batch4_forced_fold0_training/runtime/attempts/srr_batch4_m10d3_full4scale_fold0_seed20260721_preflight_htzhulab_retry2_htzhulab_preflight_59673675/variants/srr_batch4_m10d3_full4scale_fold0_seed20260721_preflight_htzhulab_retry2_htzhulab_preflight_59673675/one_batch_overfit.json",
-      "prototype_bank_summary": "results/20260721_srr_batch4_forced_fold0_training/runtime/attempts/srr_batch4_m10d3_full4scale_fold0_seed20260721_preflight_htzhulab_retry2_htzhulab_preflight_59673675/variants/srr_batch4_m10d3_full4scale_fold0_seed20260721_preflight_htzhulab_retry2_htzhulab_preflight_59673675/prototype_bank_summary.json"
-    },
-    {
-      "job_id": "59674902",
-      "job_name": "SRRB4MyoPS",
-      "partition": "htzhulab",
-      "state": "FAILED",
-      "exit_code": "1:0",
-      "elapsed": "00:01:22",
-      "node": "g1807htzh01",
-      "log_path": "logs/srr_batch4/SRRB4MyoPS_htzhulab_59674902_20260720_143201.log",
-      "training_credit": 0,
-      "attempt_root": "results/20260721_srr_batch4_forced_fold0_training/runtime/attempts/srr_batch4_m10d3_full4scale_fold0_seed20260721_htzhulab_59674902",
-      "winner_lock_owner": "results/20260721_srr_batch4_forced_fold0_training/runtime/locks/srr_batch4_m10d3_full4scale_fold0_seed20260721.winner/owner.json",
-      "failure_reason": "TypeError in record_gate_usage: list-valued gate mean could not be converted with float(value)"
-    },
-    {
-      "job_id": "59678596",
-      "job_name": "SRRB4MyoPS",
-      "partition": "htzhulab",
-      "state": "RUNNING",
-      "exit_code": "0:0",
-      "elapsed": "00:02:14_at_record",
-      "node": "g1807htzh01",
-      "log_path": "logs/srr_batch4/SRRB4MyoPS_htzhulab_59678596_20260720_143925.log",
-      "training_credit": "AWAIT_TERMINAL_AGGREGATION",
-      "attempt_root": "results/20260721_srr_batch4_forced_fold0_training/runtime/attempts/srr_batch4_m10d3_full4scale_fold0_seed20260721_htzhulab_59678596",
-      "winner_lock_owner": "results/20260721_srr_batch4_forced_fold0_training/runtime/locks/srr_batch4_m10d3_full4scale_fold0_seed20260721.winner/owner.json"
-    }
-  ],
   "aggregation": {
-    "aggregation_exit_code": "NOT_RUN_RUNNING_FORMAL_RETRY",
-    "aggregation_command": "not run; formal retry job 59678596 is running",
+    "aggregation_command": "not run as completion; 59678596 invalidated by optimizer budget violation",
+    "aggregation_exit_code": "NOT_RUN_INVALID_59678596",
     "tracked_evidence_files": [
-      "results/20260721_srr_batch4_forced_fold0_training/controller_context.json",
-      "results/20260721_srr_batch4_forced_fold0_training/controller_dispatch_status.json",
-      "results/20260721_srr_batch4_forced_fold0_training/controller_ledger.csv",
+      "results/20260721_srr_batch4_forced_fold0_training/slurm_attempts.csv",
       "results/20260721_srr_batch4_forced_fold0_training/commands_run.md",
       "results/20260721_srr_batch4_forced_fold0_training/finalizer_state.json",
-      "results/20260721_srr_batch4_forced_fold0_training/slurm_attempts.csv"
+      "results/20260721_srr_batch4_forced_fold0_training/controller_context.json",
+      "results/20260721_srr_batch4_forced_fold0_training/controller_dispatch_status.json"
     ]
   },
-  "next_action": "Monitor 59678596 to terminal state; running is not completion."
+  "as_of_utc": "2026-07-20T19:55:00Z",
+  "attempts": [
+    {
+      "elapsed": "00:00:56",
+      "exit_code": "0:0",
+      "failure_reason": "current torch build does not support Tesla V100 compute capability 7.0; batch step exit 0:15",
+      "job_id": "59672536",
+      "job_name": "SRRB4Pre",
+      "log_path": "logs/srr_batch4/SRRB4Pre_volta_59672536_20260720_134651.log",
+      "node": "g0311",
+      "partition": "volta-gpu",
+      "state": "CANCELLED by 397557",
+      "training_credit": 0
+    },
+    {
+      "elapsed": "00:03:58",
+      "exit_code": "1:0",
+      "failure_reason": "startup NameError: vectors_from_mask was not defined before retry repair",
+      "job_id": "59672892",
+      "job_name": "SRRB4Pre",
+      "log_path": "logs/srr_batch4/SRRB4Pre_htzhulab_59672892_20260720_135831.log",
+      "node": "g180702",
+      "partition": "htzhulab",
+      "state": "FAILED",
+      "training_credit": 0
+    },
+    {
+      "elapsed": "00:01:41",
+      "exit_code": "0:0",
+      "job_id": "59673675",
+      "job_name": "SRRB4Pre",
+      "log_path": "logs/srr_batch4/SRRB4Pre_htzhulab_59673675_20260720_141649.log",
+      "node": "g180702",
+      "one_batch_overfit": "results/20260721_srr_batch4_forced_fold0_training/runtime/attempts/srr_batch4_m10d3_full4scale_fold0_seed20260721_preflight_htzhulab_retry2_htzhulab_preflight_59673675/variants/srr_batch4_m10d3_full4scale_fold0_seed20260721_preflight_htzhulab_retry2_htzhulab_preflight_59673675/one_batch_overfit.json",
+      "partition": "htzhulab",
+      "preflight_summary": "results/20260721_srr_batch4_forced_fold0_training/runtime/attempts/srr_batch4_m10d3_full4scale_fold0_seed20260721_preflight_htzhulab_retry2_htzhulab_preflight_59673675/variants/srr_batch4_m10d3_full4scale_fold0_seed20260721_preflight_htzhulab_retry2_htzhulab_preflight_59673675/summary.json",
+      "prototype_bank_summary": "results/20260721_srr_batch4_forced_fold0_training/runtime/attempts/srr_batch4_m10d3_full4scale_fold0_seed20260721_preflight_htzhulab_retry2_htzhulab_preflight_59673675/variants/srr_batch4_m10d3_full4scale_fold0_seed20260721_preflight_htzhulab_retry2_htzhulab_preflight_59673675/prototype_bank_summary.json",
+      "state": "COMPLETED",
+      "training_credit": 0
+    },
+    {
+      "attempt_root": "results/20260721_srr_batch4_forced_fold0_training/runtime/attempts/srr_batch4_m10d3_full4scale_fold0_seed20260721_htzhulab_59674902",
+      "elapsed": "00:01:22",
+      "exit_code": "1:0",
+      "failure_reason": "TypeError in record_gate_usage: list-valued gate mean could not be converted with float(value)",
+      "job_id": "59674902",
+      "job_name": "SRRB4MyoPS",
+      "log_path": "logs/srr_batch4/SRRB4MyoPS_htzhulab_59674902_20260720_143201.log",
+      "node": "g1807htzh01",
+      "partition": "htzhulab",
+      "state": "FAILED",
+      "training_credit": 0,
+      "winner_lock_owner": "results/20260721_srr_batch4_forced_fold0_training/runtime/locks/srr_batch4_m10d3_full4scale_fold0_seed20260721.winner/owner.json"
+    },
+    {
+      "archived_winner_lock_owner": "results/20260721_srr_batch4_forced_fold0_training/runtime/locks/srr_batch4_m10d3_full4scale_fold0_seed20260721.winner.invalid_59678596_20260720T195500Z/owner.json",
+      "attempt_root": "results/20260721_srr_batch4_forced_fold0_training/runtime/attempts/srr_batch4_m10d3_full4scale_fold0_seed20260721_htzhulab_59678596",
+      "elapsed": "00:33:34",
+      "exit_code": "0:0",
+      "invalid_reason": "actual_optimizer_steps=7182 while max_steps=1800; continuous optimizer-loop budget violation",
+      "job_id": "59678596",
+      "job_name": "SRRB4MyoPS",
+      "log_path": "logs/srr_batch4/SRRB4MyoPS_htzhulab_59678596_20260720_143925.log",
+      "node": "g1807htzh01",
+      "partition": "htzhulab",
+      "state": "COMPLETED_INVALID_BATCH4_BUDGET",
+      "training_credit": 0,
+      "winner_lock_owner": "results/20260721_srr_batch4_forced_fold0_training/runtime/locks/srr_batch4_m10d3_full4scale_fold0_seed20260721.winner/owner.json"
+    },
+    {
+      "archived_partial_evidence": "results/20260721_srr_batch4_forced_fold0_training/selected_checkpoint_controls.invalid_59680114_20260720T195500Z",
+      "elapsed": "00:01:41",
+      "exit_code": "1:0",
+      "failure_reason": "selected-control job was based on invalid 59678596 checkpoint and failed checkpoint OOF anchor manifest hash gate",
+      "job_id": "59680114",
+      "job_name": "SRRB4Ctrl",
+      "log_path": "logs/srr_batch4/SRRB4Ctrl_htzhulab_59680114_20260720_152248.log",
+      "node": "g1807htzh01",
+      "partition": "htzhulab",
+      "state": "FAILED",
+      "training_credit": 0
+    }
+  ],
+  "formal_training_completion": false,
+  "next_action": "Re-audit command/scripts/config/hash at repair commit, submit formal htzhulab retry, monitor to terminal, then aggregate only if actual_optimizer_steps == max_steps == 1800 and train_loop_seconds >= 1800.",
+  "reason_not_review_ready": "59678596 completed Slurm 0:0 but violates Batch4 optimizer budget: actual_optimizer_steps=7182 while max_steps=1800; 59680114 failed and is not valid control evidence.",
+  "review_ready": false,
+  "same_scope_repair_after_invalid_59678596": {
+    "regression_test": "./envs/env_CARE/bin/python -m pytest tests/srr_production/test_myops_batch4_contract.py -> 12 passed, 3 warnings",
+    "repair": "scripts/training/run_srr_propref_myops_fold0.py stops optimizer.step exactly at max_steps and waits without extra optimizer updates until min_train_loop_seconds is satisfied",
+    "repair_commit": "b2663c690b567683bde73686f7f5c25307131904",
+    "source_hash_after_repair": "6e73ce536e92fc53ea9bd730dab7bb45dfeda9689a9fd185a756c15e49ff8319",
+    "test_hash_after_repair": "d2085e0062413cc5bc659b590e7aa03bb687745e9d6bd4470a2b6262bf344f4b"
+  },
+  "scope": "optimizer_budget_violation_repair_and_retry_required",
+  "state": "FORMAL_TRAINING_INVALID_REPAIRED_AWAITING_RETRY",
+  "task_key": "20260721_srr_batch4_forced_fold0_training"
 }
