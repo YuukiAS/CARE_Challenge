@@ -853,7 +853,8 @@ def propref_loss(
     *,
     detach_m6_metrics: bool = True,
 ) -> tuple[torch.Tensor, dict[str, torch.Tensor]]:
-    if str(args.variant).startswith(("m6_", "m7_", "m8_", "m9_")):
+    variant = str(getattr(args, "variant", "") or "")
+    if variant.startswith(("m6_", "m7_", "m8_", "m9_")):
         total, m6_metrics = srr_m6_expanded_total_loss(
             outputs,
             labels,
