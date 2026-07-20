@@ -1,0 +1,4468 @@
+{
+  "asset_path": "/users/a/e/aereinh/CARE/results/20260721_srr_batch4_forced_fold0_training/runtime/attempts/srr_batch4_m10d3_full4scale_fold0_seed20260721_htzhulab_59682067/frozen_prototype_memory.pt",
+  "asset_sha256": "8b262f8bb87e0733a48e169c77b028a3833b70cbcd33d2ac2fb4857ba1cbde83",
+  "counts": {
+    "edema_negative": 9216,
+    "edema_positive": 4096,
+    "scar_negative": 22368,
+    "scar_positive": 10752
+  },
+  "expected_train_case_count": 176,
+  "feature_hash": "",
+  "memory_summary": {
+    "accepted_events": 472,
+    "edema_no_t2_policy": "REJECT_NO_T2_EDEMA_MEMORY",
+    "ledger_events": 704,
+    "memory_type": "m10_cross_fitted_ema_plus_learnable_residual",
+    "negative_slots_per_pathology": 12,
+    "positive_slots_per_pathology": 8,
+    "provenance": {
+      "edema": [
+        {
+          "accepted_count": 64,
+          "case_id": "Case2001",
+          "category": "t2_present_edema_positive",
+          "feature_count": 64,
+          "polarity": "positive",
+          "shard": 1,
+          "t2_present": true
+        },
+        {
+          "accepted_count": 144,
+          "case_id": "Case2001",
+          "category": "t2_present_safe_negative",
+          "feature_count": 144,
+          "polarity": "negative",
+          "shard": 1,
+          "t2_present": true
+        },
+        {
+          "accepted_count": 64,
+          "case_id": "Case2003",
+          "category": "t2_present_edema_positive",
+          "feature_count": 64,
+          "polarity": "positive",
+          "shard": 1,
+          "t2_present": true
+        },
+        {
+          "accepted_count": 144,
+          "case_id": "Case2003",
+          "category": "t2_present_safe_negative",
+          "feature_count": 144,
+          "polarity": "negative",
+          "shard": 1,
+          "t2_present": true
+        },
+        {
+          "accepted_count": 64,
+          "case_id": "Case2004",
+          "category": "t2_present_edema_positive",
+          "feature_count": 64,
+          "polarity": "positive",
+          "shard": 1,
+          "t2_present": true
+        },
+        {
+          "accepted_count": 144,
+          "case_id": "Case2004",
+          "category": "t2_present_safe_negative",
+          "feature_count": 144,
+          "polarity": "negative",
+          "shard": 1,
+          "t2_present": true
+        },
+        {
+          "accepted_count": 64,
+          "case_id": "Case2005",
+          "category": "t2_present_edema_positive",
+          "feature_count": 64,
+          "polarity": "positive",
+          "shard": 2,
+          "t2_present": true
+        },
+        {
+          "accepted_count": 144,
+          "case_id": "Case2005",
+          "category": "t2_present_safe_negative",
+          "feature_count": 144,
+          "polarity": "negative",
+          "shard": 2,
+          "t2_present": true
+        },
+        {
+          "accepted_count": 64,
+          "case_id": "Case2006",
+          "category": "t2_present_edema_positive",
+          "feature_count": 64,
+          "polarity": "positive",
+          "shard": 3,
+          "t2_present": true
+        },
+        {
+          "accepted_count": 144,
+          "case_id": "Case2006",
+          "category": "t2_present_safe_negative",
+          "feature_count": 144,
+          "polarity": "negative",
+          "shard": 3,
+          "t2_present": true
+        },
+        {
+          "accepted_count": 64,
+          "case_id": "Case2009",
+          "category": "t2_present_edema_positive",
+          "feature_count": 64,
+          "polarity": "positive",
+          "shard": 0,
+          "t2_present": true
+        },
+        {
+          "accepted_count": 144,
+          "case_id": "Case2009",
+          "category": "t2_present_safe_negative",
+          "feature_count": 144,
+          "polarity": "negative",
+          "shard": 0,
+          "t2_present": true
+        },
+        {
+          "accepted_count": 64,
+          "case_id": "Case2010",
+          "category": "t2_present_edema_positive",
+          "feature_count": 64,
+          "polarity": "positive",
+          "shard": 0,
+          "t2_present": true
+        },
+        {
+          "accepted_count": 144,
+          "case_id": "Case2010",
+          "category": "t2_present_safe_negative",
+          "feature_count": 144,
+          "polarity": "negative",
+          "shard": 0,
+          "t2_present": true
+        },
+        {
+          "accepted_count": 64,
+          "case_id": "Case2011",
+          "category": "t2_present_edema_positive",
+          "feature_count": 64,
+          "polarity": "positive",
+          "shard": 3,
+          "t2_present": true
+        },
+        {
+          "accepted_count": 144,
+          "case_id": "Case2011",
+          "category": "t2_present_safe_negative",
+          "feature_count": 144,
+          "polarity": "negative",
+          "shard": 3,
+          "t2_present": true
+        },
+        {
+          "accepted_count": 64,
+          "case_id": "Case2012",
+          "category": "t2_present_edema_positive",
+          "feature_count": 64,
+          "polarity": "positive",
+          "shard": 2,
+          "t2_present": true
+        },
+        {
+          "accepted_count": 144,
+          "case_id": "Case2012",
+          "category": "t2_present_safe_negative",
+          "feature_count": 144,
+          "polarity": "negative",
+          "shard": 2,
+          "t2_present": true
+        },
+        {
+          "accepted_count": 64,
+          "case_id": "Case2013",
+          "category": "t2_present_edema_positive",
+          "feature_count": 64,
+          "polarity": "positive",
+          "shard": 0,
+          "t2_present": true
+        },
+        {
+          "accepted_count": 144,
+          "case_id": "Case2013",
+          "category": "t2_present_safe_negative",
+          "feature_count": 144,
+          "polarity": "negative",
+          "shard": 0,
+          "t2_present": true
+        },
+        {
+          "accepted_count": 64,
+          "case_id": "Case2014",
+          "category": "t2_present_edema_positive",
+          "feature_count": 64,
+          "polarity": "positive",
+          "shard": 2,
+          "t2_present": true
+        },
+        {
+          "accepted_count": 144,
+          "case_id": "Case2014",
+          "category": "t2_present_safe_negative",
+          "feature_count": 144,
+          "polarity": "negative",
+          "shard": 2,
+          "t2_present": true
+        },
+        {
+          "accepted_count": 64,
+          "case_id": "Case2015",
+          "category": "t2_present_edema_positive",
+          "feature_count": 64,
+          "polarity": "positive",
+          "shard": 3,
+          "t2_present": true
+        },
+        {
+          "accepted_count": 144,
+          "case_id": "Case2015",
+          "category": "t2_present_safe_negative",
+          "feature_count": 144,
+          "polarity": "negative",
+          "shard": 3,
+          "t2_present": true
+        },
+        {
+          "accepted_count": 64,
+          "case_id": "Case2016",
+          "category": "t2_present_edema_positive",
+          "feature_count": 64,
+          "polarity": "positive",
+          "shard": 1,
+          "t2_present": true
+        },
+        {
+          "accepted_count": 144,
+          "case_id": "Case2016",
+          "category": "t2_present_safe_negative",
+          "feature_count": 144,
+          "polarity": "negative",
+          "shard": 1,
+          "t2_present": true
+        },
+        {
+          "accepted_count": 64,
+          "case_id": "Case2018",
+          "category": "t2_present_edema_positive",
+          "feature_count": 64,
+          "polarity": "positive",
+          "shard": 0,
+          "t2_present": true
+        },
+        {
+          "accepted_count": 144,
+          "case_id": "Case2018",
+          "category": "t2_present_safe_negative",
+          "feature_count": 144,
+          "polarity": "negative",
+          "shard": 0,
+          "t2_present": true
+        },
+        {
+          "accepted_count": 64,
+          "case_id": "Case2019",
+          "category": "t2_present_edema_positive",
+          "feature_count": 64,
+          "polarity": "positive",
+          "shard": 1,
+          "t2_present": true
+        },
+        {
+          "accepted_count": 144,
+          "case_id": "Case2019",
+          "category": "t2_present_safe_negative",
+          "feature_count": 144,
+          "polarity": "negative",
+          "shard": 1,
+          "t2_present": true
+        },
+        {
+          "accepted_count": 64,
+          "case_id": "Case2021",
+          "category": "t2_present_edema_positive",
+          "feature_count": 64,
+          "polarity": "positive",
+          "shard": 2,
+          "t2_present": true
+        },
+        {
+          "accepted_count": 144,
+          "case_id": "Case2021",
+          "category": "t2_present_safe_negative",
+          "feature_count": 144,
+          "polarity": "negative",
+          "shard": 2,
+          "t2_present": true
+        },
+        {
+          "accepted_count": 64,
+          "case_id": "Case2022",
+          "category": "t2_present_edema_positive",
+          "feature_count": 64,
+          "polarity": "positive",
+          "shard": 1,
+          "t2_present": true
+        },
+        {
+          "accepted_count": 144,
+          "case_id": "Case2022",
+          "category": "t2_present_safe_negative",
+          "feature_count": 144,
+          "polarity": "negative",
+          "shard": 1,
+          "t2_present": true
+        },
+        {
+          "accepted_count": 64,
+          "case_id": "Case2023",
+          "category": "t2_present_edema_positive",
+          "feature_count": 64,
+          "polarity": "positive",
+          "shard": 3,
+          "t2_present": true
+        },
+        {
+          "accepted_count": 144,
+          "case_id": "Case2023",
+          "category": "t2_present_safe_negative",
+          "feature_count": 144,
+          "polarity": "negative",
+          "shard": 3,
+          "t2_present": true
+        },
+        {
+          "accepted_count": 64,
+          "case_id": "Case2024",
+          "category": "t2_present_edema_positive",
+          "feature_count": 64,
+          "polarity": "positive",
+          "shard": 1,
+          "t2_present": true
+        },
+        {
+          "accepted_count": 144,
+          "case_id": "Case2024",
+          "category": "t2_present_safe_negative",
+          "feature_count": 144,
+          "polarity": "negative",
+          "shard": 1,
+          "t2_present": true
+        },
+        {
+          "accepted_count": 64,
+          "case_id": "Case2025",
+          "category": "t2_present_edema_positive",
+          "feature_count": 64,
+          "polarity": "positive",
+          "shard": 0,
+          "t2_present": true
+        },
+        {
+          "accepted_count": 144,
+          "case_id": "Case2025",
+          "category": "t2_present_safe_negative",
+          "feature_count": 144,
+          "polarity": "negative",
+          "shard": 0,
+          "t2_present": true
+        },
+        {
+          "accepted_count": 64,
+          "case_id": "Case2026",
+          "category": "t2_present_edema_positive",
+          "feature_count": 64,
+          "polarity": "positive",
+          "shard": 3,
+          "t2_present": true
+        },
+        {
+          "accepted_count": 144,
+          "case_id": "Case2026",
+          "category": "t2_present_safe_negative",
+          "feature_count": 144,
+          "polarity": "negative",
+          "shard": 3,
+          "t2_present": true
+        },
+        {
+          "accepted_count": 64,
+          "case_id": "Case2027",
+          "category": "t2_present_edema_positive",
+          "feature_count": 64,
+          "polarity": "positive",
+          "shard": 2,
+          "t2_present": true
+        },
+        {
+          "accepted_count": 144,
+          "case_id": "Case2027",
+          "category": "t2_present_safe_negative",
+          "feature_count": 144,
+          "polarity": "negative",
+          "shard": 2,
+          "t2_present": true
+        },
+        {
+          "accepted_count": 64,
+          "case_id": "Case2028",
+          "category": "t2_present_edema_positive",
+          "feature_count": 64,
+          "polarity": "positive",
+          "shard": 3,
+          "t2_present": true
+        },
+        {
+          "accepted_count": 144,
+          "case_id": "Case2028",
+          "category": "t2_present_safe_negative",
+          "feature_count": 144,
+          "polarity": "negative",
+          "shard": 3,
+          "t2_present": true
+        },
+        {
+          "accepted_count": 64,
+          "case_id": "Case2029",
+          "category": "t2_present_edema_positive",
+          "feature_count": 64,
+          "polarity": "positive",
+          "shard": 1,
+          "t2_present": true
+        },
+        {
+          "accepted_count": 144,
+          "case_id": "Case2029",
+          "category": "t2_present_safe_negative",
+          "feature_count": 144,
+          "polarity": "negative",
+          "shard": 1,
+          "t2_present": true
+        },
+        {
+          "accepted_count": 64,
+          "case_id": "Case2030",
+          "category": "t2_present_edema_positive",
+          "feature_count": 64,
+          "polarity": "positive",
+          "shard": 3,
+          "t2_present": true
+        },
+        {
+          "accepted_count": 144,
+          "case_id": "Case2030",
+          "category": "t2_present_safe_negative",
+          "feature_count": 144,
+          "polarity": "negative",
+          "shard": 3,
+          "t2_present": true
+        },
+        {
+          "accepted_count": 64,
+          "case_id": "Case2032",
+          "category": "t2_present_edema_positive",
+          "feature_count": 64,
+          "polarity": "positive",
+          "shard": 1,
+          "t2_present": true
+        },
+        {
+          "accepted_count": 144,
+          "case_id": "Case2032",
+          "category": "t2_present_safe_negative",
+          "feature_count": 144,
+          "polarity": "negative",
+          "shard": 1,
+          "t2_present": true
+        },
+        {
+          "accepted_count": 64,
+          "case_id": "Case2034",
+          "category": "t2_present_edema_positive",
+          "feature_count": 64,
+          "polarity": "positive",
+          "shard": 1,
+          "t2_present": true
+        },
+        {
+          "accepted_count": 144,
+          "case_id": "Case2034",
+          "category": "t2_present_safe_negative",
+          "feature_count": 144,
+          "polarity": "negative",
+          "shard": 1,
+          "t2_present": true
+        },
+        {
+          "accepted_count": 64,
+          "case_id": "Case2035",
+          "category": "t2_present_edema_positive",
+          "feature_count": 64,
+          "polarity": "positive",
+          "shard": 1,
+          "t2_present": true
+        },
+        {
+          "accepted_count": 144,
+          "case_id": "Case2035",
+          "category": "t2_present_safe_negative",
+          "feature_count": 144,
+          "polarity": "negative",
+          "shard": 1,
+          "t2_present": true
+        },
+        {
+          "accepted_count": 64,
+          "case_id": "Case3001",
+          "category": "t2_present_edema_positive",
+          "feature_count": 64,
+          "polarity": "positive",
+          "shard": 0,
+          "t2_present": true
+        },
+        {
+          "accepted_count": 144,
+          "case_id": "Case3001",
+          "category": "t2_present_safe_negative",
+          "feature_count": 144,
+          "polarity": "negative",
+          "shard": 0,
+          "t2_present": true
+        },
+        {
+          "accepted_count": 64,
+          "case_id": "Case3002",
+          "category": "t2_present_edema_positive",
+          "feature_count": 64,
+          "polarity": "positive",
+          "shard": 2,
+          "t2_present": true
+        },
+        {
+          "accepted_count": 144,
+          "case_id": "Case3002",
+          "category": "t2_present_safe_negative",
+          "feature_count": 144,
+          "polarity": "negative",
+          "shard": 2,
+          "t2_present": true
+        },
+        {
+          "accepted_count": 64,
+          "case_id": "Case3003",
+          "category": "t2_present_edema_positive",
+          "feature_count": 64,
+          "polarity": "positive",
+          "shard": 1,
+          "t2_present": true
+        },
+        {
+          "accepted_count": 144,
+          "case_id": "Case3003",
+          "category": "t2_present_safe_negative",
+          "feature_count": 144,
+          "polarity": "negative",
+          "shard": 1,
+          "t2_present": true
+        },
+        {
+          "accepted_count": 64,
+          "case_id": "Case3005",
+          "category": "t2_present_edema_positive",
+          "feature_count": 64,
+          "polarity": "positive",
+          "shard": 0,
+          "t2_present": true
+        },
+        {
+          "accepted_count": 144,
+          "case_id": "Case3005",
+          "category": "t2_present_safe_negative",
+          "feature_count": 144,
+          "polarity": "negative",
+          "shard": 0,
+          "t2_present": true
+        },
+        {
+          "accepted_count": 64,
+          "case_id": "Case3006",
+          "category": "t2_present_edema_positive",
+          "feature_count": 64,
+          "polarity": "positive",
+          "shard": 2,
+          "t2_present": true
+        },
+        {
+          "accepted_count": 144,
+          "case_id": "Case3006",
+          "category": "t2_present_safe_negative",
+          "feature_count": 144,
+          "polarity": "negative",
+          "shard": 2,
+          "t2_present": true
+        },
+        {
+          "accepted_count": 64,
+          "case_id": "Case3007",
+          "category": "t2_present_edema_positive",
+          "feature_count": 64,
+          "polarity": "positive",
+          "shard": 2,
+          "t2_present": true
+        },
+        {
+          "accepted_count": 144,
+          "case_id": "Case3007",
+          "category": "t2_present_safe_negative",
+          "feature_count": 144,
+          "polarity": "negative",
+          "shard": 2,
+          "t2_present": true
+        },
+        {
+          "accepted_count": 64,
+          "case_id": "Case3008",
+          "category": "t2_present_edema_positive",
+          "feature_count": 64,
+          "polarity": "positive",
+          "shard": 2,
+          "t2_present": true
+        },
+        {
+          "accepted_count": 144,
+          "case_id": "Case3008",
+          "category": "t2_present_safe_negative",
+          "feature_count": 144,
+          "polarity": "negative",
+          "shard": 2,
+          "t2_present": true
+        },
+        {
+          "accepted_count": 64,
+          "case_id": "Case3009",
+          "category": "t2_present_edema_positive",
+          "feature_count": 64,
+          "polarity": "positive",
+          "shard": 0,
+          "t2_present": true
+        },
+        {
+          "accepted_count": 144,
+          "case_id": "Case3009",
+          "category": "t2_present_safe_negative",
+          "feature_count": 144,
+          "polarity": "negative",
+          "shard": 0,
+          "t2_present": true
+        },
+        {
+          "accepted_count": 64,
+          "case_id": "Case3010",
+          "category": "t2_present_edema_positive",
+          "feature_count": 64,
+          "polarity": "positive",
+          "shard": 2,
+          "t2_present": true
+        },
+        {
+          "accepted_count": 144,
+          "case_id": "Case3010",
+          "category": "t2_present_safe_negative",
+          "feature_count": 144,
+          "polarity": "negative",
+          "shard": 2,
+          "t2_present": true
+        },
+        {
+          "accepted_count": 64,
+          "case_id": "Case3013",
+          "category": "t2_present_edema_positive",
+          "feature_count": 64,
+          "polarity": "positive",
+          "shard": 3,
+          "t2_present": true
+        },
+        {
+          "accepted_count": 144,
+          "case_id": "Case3013",
+          "category": "t2_present_safe_negative",
+          "feature_count": 144,
+          "polarity": "negative",
+          "shard": 3,
+          "t2_present": true
+        },
+        {
+          "accepted_count": 64,
+          "case_id": "Case3014",
+          "category": "t2_present_edema_positive",
+          "feature_count": 64,
+          "polarity": "positive",
+          "shard": 3,
+          "t2_present": true
+        },
+        {
+          "accepted_count": 144,
+          "case_id": "Case3014",
+          "category": "t2_present_safe_negative",
+          "feature_count": 144,
+          "polarity": "negative",
+          "shard": 3,
+          "t2_present": true
+        },
+        {
+          "accepted_count": 64,
+          "case_id": "Case3015",
+          "category": "t2_present_edema_positive",
+          "feature_count": 64,
+          "polarity": "positive",
+          "shard": 2,
+          "t2_present": true
+        },
+        {
+          "accepted_count": 144,
+          "case_id": "Case3015",
+          "category": "t2_present_safe_negative",
+          "feature_count": 144,
+          "polarity": "negative",
+          "shard": 2,
+          "t2_present": true
+        },
+        {
+          "accepted_count": 64,
+          "case_id": "Case3016",
+          "category": "t2_present_edema_positive",
+          "feature_count": 64,
+          "polarity": "positive",
+          "shard": 1,
+          "t2_present": true
+        },
+        {
+          "accepted_count": 144,
+          "case_id": "Case3016",
+          "category": "t2_present_safe_negative",
+          "feature_count": 144,
+          "polarity": "negative",
+          "shard": 1,
+          "t2_present": true
+        },
+        {
+          "accepted_count": 64,
+          "case_id": "Case3017",
+          "category": "t2_present_edema_positive",
+          "feature_count": 64,
+          "polarity": "positive",
+          "shard": 2,
+          "t2_present": true
+        },
+        {
+          "accepted_count": 144,
+          "case_id": "Case3017",
+          "category": "t2_present_safe_negative",
+          "feature_count": 144,
+          "polarity": "negative",
+          "shard": 2,
+          "t2_present": true
+        },
+        {
+          "accepted_count": 64,
+          "case_id": "Case3018",
+          "category": "t2_present_edema_positive",
+          "feature_count": 64,
+          "polarity": "positive",
+          "shard": 3,
+          "t2_present": true
+        },
+        {
+          "accepted_count": 144,
+          "case_id": "Case3018",
+          "category": "t2_present_safe_negative",
+          "feature_count": 144,
+          "polarity": "negative",
+          "shard": 3,
+          "t2_present": true
+        },
+        {
+          "accepted_count": 64,
+          "case_id": "Case3019",
+          "category": "t2_present_edema_positive",
+          "feature_count": 64,
+          "polarity": "positive",
+          "shard": 0,
+          "t2_present": true
+        },
+        {
+          "accepted_count": 144,
+          "case_id": "Case3019",
+          "category": "t2_present_safe_negative",
+          "feature_count": 144,
+          "polarity": "negative",
+          "shard": 0,
+          "t2_present": true
+        },
+        {
+          "accepted_count": 64,
+          "case_id": "Case3020",
+          "category": "t2_present_edema_positive",
+          "feature_count": 64,
+          "polarity": "positive",
+          "shard": 0,
+          "t2_present": true
+        },
+        {
+          "accepted_count": 144,
+          "case_id": "Case3020",
+          "category": "t2_present_safe_negative",
+          "feature_count": 144,
+          "polarity": "negative",
+          "shard": 0,
+          "t2_present": true
+        },
+        {
+          "accepted_count": 64,
+          "case_id": "Case3021",
+          "category": "t2_present_edema_positive",
+          "feature_count": 64,
+          "polarity": "positive",
+          "shard": 3,
+          "t2_present": true
+        },
+        {
+          "accepted_count": 144,
+          "case_id": "Case3021",
+          "category": "t2_present_safe_negative",
+          "feature_count": 144,
+          "polarity": "negative",
+          "shard": 3,
+          "t2_present": true
+        },
+        {
+          "accepted_count": 64,
+          "case_id": "Case3022",
+          "category": "t2_present_edema_positive",
+          "feature_count": 64,
+          "polarity": "positive",
+          "shard": 0,
+          "t2_present": true
+        },
+        {
+          "accepted_count": 144,
+          "case_id": "Case3022",
+          "category": "t2_present_safe_negative",
+          "feature_count": 144,
+          "polarity": "negative",
+          "shard": 0,
+          "t2_present": true
+        },
+        {
+          "accepted_count": 64,
+          "case_id": "Case3024",
+          "category": "t2_present_edema_positive",
+          "feature_count": 64,
+          "polarity": "positive",
+          "shard": 0,
+          "t2_present": true
+        },
+        {
+          "accepted_count": 144,
+          "case_id": "Case3024",
+          "category": "t2_present_safe_negative",
+          "feature_count": 144,
+          "polarity": "negative",
+          "shard": 0,
+          "t2_present": true
+        },
+        {
+          "accepted_count": 64,
+          "case_id": "Case3025",
+          "category": "t2_present_edema_positive",
+          "feature_count": 64,
+          "polarity": "positive",
+          "shard": 3,
+          "t2_present": true
+        },
+        {
+          "accepted_count": 144,
+          "case_id": "Case3025",
+          "category": "t2_present_safe_negative",
+          "feature_count": 144,
+          "polarity": "negative",
+          "shard": 3,
+          "t2_present": true
+        },
+        {
+          "accepted_count": 64,
+          "case_id": "Case3027",
+          "category": "t2_present_edema_positive",
+          "feature_count": 64,
+          "polarity": "positive",
+          "shard": 2,
+          "t2_present": true
+        },
+        {
+          "accepted_count": 144,
+          "case_id": "Case3027",
+          "category": "t2_present_safe_negative",
+          "feature_count": 144,
+          "polarity": "negative",
+          "shard": 2,
+          "t2_present": true
+        },
+        {
+          "accepted_count": 64,
+          "case_id": "Case3028",
+          "category": "t2_present_edema_positive",
+          "feature_count": 64,
+          "polarity": "positive",
+          "shard": 2,
+          "t2_present": true
+        },
+        {
+          "accepted_count": 144,
+          "case_id": "Case3028",
+          "category": "t2_present_safe_negative",
+          "feature_count": 144,
+          "polarity": "negative",
+          "shard": 2,
+          "t2_present": true
+        },
+        {
+          "accepted_count": 64,
+          "case_id": "Case3029",
+          "category": "t2_present_edema_positive",
+          "feature_count": 64,
+          "polarity": "positive",
+          "shard": 0,
+          "t2_present": true
+        },
+        {
+          "accepted_count": 144,
+          "case_id": "Case3029",
+          "category": "t2_present_safe_negative",
+          "feature_count": 144,
+          "polarity": "negative",
+          "shard": 0,
+          "t2_present": true
+        },
+        {
+          "accepted_count": 64,
+          "case_id": "Case3030",
+          "category": "t2_present_edema_positive",
+          "feature_count": 64,
+          "polarity": "positive",
+          "shard": 3,
+          "t2_present": true
+        },
+        {
+          "accepted_count": 144,
+          "case_id": "Case3030",
+          "category": "t2_present_safe_negative",
+          "feature_count": 144,
+          "polarity": "negative",
+          "shard": 3,
+          "t2_present": true
+        },
+        {
+          "accepted_count": 64,
+          "case_id": "Case3031",
+          "category": "t2_present_edema_positive",
+          "feature_count": 64,
+          "polarity": "positive",
+          "shard": 0,
+          "t2_present": true
+        },
+        {
+          "accepted_count": 144,
+          "case_id": "Case3031",
+          "category": "t2_present_safe_negative",
+          "feature_count": 144,
+          "polarity": "negative",
+          "shard": 0,
+          "t2_present": true
+        },
+        {
+          "accepted_count": 64,
+          "case_id": "Case3032",
+          "category": "t2_present_edema_positive",
+          "feature_count": 64,
+          "polarity": "positive",
+          "shard": 3,
+          "t2_present": true
+        },
+        {
+          "accepted_count": 144,
+          "case_id": "Case3032",
+          "category": "t2_present_safe_negative",
+          "feature_count": 144,
+          "polarity": "negative",
+          "shard": 3,
+          "t2_present": true
+        },
+        {
+          "accepted_count": 64,
+          "case_id": "Case3033",
+          "category": "t2_present_edema_positive",
+          "feature_count": 64,
+          "polarity": "positive",
+          "shard": 1,
+          "t2_present": true
+        },
+        {
+          "accepted_count": 144,
+          "case_id": "Case3033",
+          "category": "t2_present_safe_negative",
+          "feature_count": 144,
+          "polarity": "negative",
+          "shard": 1,
+          "t2_present": true
+        },
+        {
+          "accepted_count": 64,
+          "case_id": "Case3035",
+          "category": "t2_present_edema_positive",
+          "feature_count": 64,
+          "polarity": "positive",
+          "shard": 1,
+          "t2_present": true
+        },
+        {
+          "accepted_count": 144,
+          "case_id": "Case3035",
+          "category": "t2_present_safe_negative",
+          "feature_count": 144,
+          "polarity": "negative",
+          "shard": 1,
+          "t2_present": true
+        },
+        {
+          "accepted_count": 64,
+          "case_id": "Case3036",
+          "category": "t2_present_edema_positive",
+          "feature_count": 64,
+          "polarity": "positive",
+          "shard": 1,
+          "t2_present": true
+        },
+        {
+          "accepted_count": 144,
+          "case_id": "Case3036",
+          "category": "t2_present_safe_negative",
+          "feature_count": 144,
+          "polarity": "negative",
+          "shard": 1,
+          "t2_present": true
+        },
+        {
+          "accepted_count": 64,
+          "case_id": "Case3037",
+          "category": "t2_present_edema_positive",
+          "feature_count": 64,
+          "polarity": "positive",
+          "shard": 0,
+          "t2_present": true
+        },
+        {
+          "accepted_count": 144,
+          "case_id": "Case3037",
+          "category": "t2_present_safe_negative",
+          "feature_count": 144,
+          "polarity": "negative",
+          "shard": 0,
+          "t2_present": true
+        },
+        {
+          "accepted_count": 64,
+          "case_id": "Case3039",
+          "category": "t2_present_edema_positive",
+          "feature_count": 64,
+          "polarity": "positive",
+          "shard": 2,
+          "t2_present": true
+        },
+        {
+          "accepted_count": 144,
+          "case_id": "Case3039",
+          "category": "t2_present_safe_negative",
+          "feature_count": 144,
+          "polarity": "negative",
+          "shard": 2,
+          "t2_present": true
+        },
+        {
+          "accepted_count": 64,
+          "case_id": "Case3041",
+          "category": "t2_present_edema_positive",
+          "feature_count": 64,
+          "polarity": "positive",
+          "shard": 1,
+          "t2_present": true
+        },
+        {
+          "accepted_count": 144,
+          "case_id": "Case3041",
+          "category": "t2_present_safe_negative",
+          "feature_count": 144,
+          "polarity": "negative",
+          "shard": 1,
+          "t2_present": true
+        },
+        {
+          "accepted_count": 64,
+          "case_id": "Case3042",
+          "category": "t2_present_edema_positive",
+          "feature_count": 64,
+          "polarity": "positive",
+          "shard": 2,
+          "t2_present": true
+        },
+        {
+          "accepted_count": 144,
+          "case_id": "Case3042",
+          "category": "t2_present_safe_negative",
+          "feature_count": 144,
+          "polarity": "negative",
+          "shard": 2,
+          "t2_present": true
+        },
+        {
+          "accepted_count": 64,
+          "case_id": "Case3043",
+          "category": "t2_present_edema_positive",
+          "feature_count": 64,
+          "polarity": "positive",
+          "shard": 2,
+          "t2_present": true
+        },
+        {
+          "accepted_count": 144,
+          "case_id": "Case3043",
+          "category": "t2_present_safe_negative",
+          "feature_count": 144,
+          "polarity": "negative",
+          "shard": 2,
+          "t2_present": true
+        },
+        {
+          "accepted_count": 64,
+          "case_id": "Case3045",
+          "category": "t2_present_edema_positive",
+          "feature_count": 64,
+          "polarity": "positive",
+          "shard": 0,
+          "t2_present": true
+        },
+        {
+          "accepted_count": 144,
+          "case_id": "Case3045",
+          "category": "t2_present_safe_negative",
+          "feature_count": 144,
+          "polarity": "negative",
+          "shard": 0,
+          "t2_present": true
+        }
+      ],
+      "scar": [
+        {
+          "accepted_count": 64,
+          "case_id": "Case2001",
+          "category": "scar_positive",
+          "feature_count": 64,
+          "polarity": "positive",
+          "shard": 1,
+          "t2_present": true
+        },
+        {
+          "accepted_count": 144,
+          "case_id": "Case2001",
+          "category": "scar_safe_negative",
+          "feature_count": 144,
+          "polarity": "negative",
+          "shard": 1,
+          "t2_present": true
+        },
+        {
+          "accepted_count": 64,
+          "case_id": "Case2003",
+          "category": "scar_positive",
+          "feature_count": 64,
+          "polarity": "positive",
+          "shard": 1,
+          "t2_present": true
+        },
+        {
+          "accepted_count": 144,
+          "case_id": "Case2003",
+          "category": "scar_safe_negative",
+          "feature_count": 144,
+          "polarity": "negative",
+          "shard": 1,
+          "t2_present": true
+        },
+        {
+          "accepted_count": 64,
+          "case_id": "Case2004",
+          "category": "scar_positive",
+          "feature_count": 64,
+          "polarity": "positive",
+          "shard": 1,
+          "t2_present": true
+        },
+        {
+          "accepted_count": 144,
+          "case_id": "Case2004",
+          "category": "scar_safe_negative",
+          "feature_count": 144,
+          "polarity": "negative",
+          "shard": 1,
+          "t2_present": true
+        },
+        {
+          "accepted_count": 64,
+          "case_id": "Case2005",
+          "category": "scar_positive",
+          "feature_count": 64,
+          "polarity": "positive",
+          "shard": 2,
+          "t2_present": true
+        },
+        {
+          "accepted_count": 144,
+          "case_id": "Case2005",
+          "category": "scar_safe_negative",
+          "feature_count": 144,
+          "polarity": "negative",
+          "shard": 2,
+          "t2_present": true
+        },
+        {
+          "accepted_count": 64,
+          "case_id": "Case2006",
+          "category": "scar_positive",
+          "feature_count": 64,
+          "polarity": "positive",
+          "shard": 3,
+          "t2_present": true
+        },
+        {
+          "accepted_count": 144,
+          "case_id": "Case2006",
+          "category": "scar_safe_negative",
+          "feature_count": 144,
+          "polarity": "negative",
+          "shard": 3,
+          "t2_present": true
+        },
+        {
+          "accepted_count": 64,
+          "case_id": "Case2009",
+          "category": "scar_positive",
+          "feature_count": 64,
+          "polarity": "positive",
+          "shard": 0,
+          "t2_present": true
+        },
+        {
+          "accepted_count": 144,
+          "case_id": "Case2009",
+          "category": "scar_safe_negative",
+          "feature_count": 144,
+          "polarity": "negative",
+          "shard": 0,
+          "t2_present": true
+        },
+        {
+          "accepted_count": 64,
+          "case_id": "Case2010",
+          "category": "scar_positive",
+          "feature_count": 64,
+          "polarity": "positive",
+          "shard": 0,
+          "t2_present": true
+        },
+        {
+          "accepted_count": 144,
+          "case_id": "Case2010",
+          "category": "scar_safe_negative",
+          "feature_count": 144,
+          "polarity": "negative",
+          "shard": 0,
+          "t2_present": true
+        },
+        {
+          "accepted_count": 64,
+          "case_id": "Case2011",
+          "category": "scar_positive",
+          "feature_count": 64,
+          "polarity": "positive",
+          "shard": 3,
+          "t2_present": true
+        },
+        {
+          "accepted_count": 144,
+          "case_id": "Case2011",
+          "category": "scar_safe_negative",
+          "feature_count": 144,
+          "polarity": "negative",
+          "shard": 3,
+          "t2_present": true
+        },
+        {
+          "accepted_count": 64,
+          "case_id": "Case2012",
+          "category": "scar_positive",
+          "feature_count": 64,
+          "polarity": "positive",
+          "shard": 2,
+          "t2_present": true
+        },
+        {
+          "accepted_count": 144,
+          "case_id": "Case2012",
+          "category": "scar_safe_negative",
+          "feature_count": 144,
+          "polarity": "negative",
+          "shard": 2,
+          "t2_present": true
+        },
+        {
+          "accepted_count": 64,
+          "case_id": "Case2013",
+          "category": "scar_positive",
+          "feature_count": 64,
+          "polarity": "positive",
+          "shard": 0,
+          "t2_present": true
+        },
+        {
+          "accepted_count": 144,
+          "case_id": "Case2013",
+          "category": "scar_safe_negative",
+          "feature_count": 144,
+          "polarity": "negative",
+          "shard": 0,
+          "t2_present": true
+        },
+        {
+          "accepted_count": 64,
+          "case_id": "Case2014",
+          "category": "scar_positive",
+          "feature_count": 64,
+          "polarity": "positive",
+          "shard": 2,
+          "t2_present": true
+        },
+        {
+          "accepted_count": 144,
+          "case_id": "Case2014",
+          "category": "scar_safe_negative",
+          "feature_count": 144,
+          "polarity": "negative",
+          "shard": 2,
+          "t2_present": true
+        },
+        {
+          "accepted_count": 64,
+          "case_id": "Case2015",
+          "category": "scar_positive",
+          "feature_count": 64,
+          "polarity": "positive",
+          "shard": 3,
+          "t2_present": true
+        },
+        {
+          "accepted_count": 144,
+          "case_id": "Case2015",
+          "category": "scar_safe_negative",
+          "feature_count": 144,
+          "polarity": "negative",
+          "shard": 3,
+          "t2_present": true
+        },
+        {
+          "accepted_count": 64,
+          "case_id": "Case2016",
+          "category": "scar_positive",
+          "feature_count": 64,
+          "polarity": "positive",
+          "shard": 1,
+          "t2_present": true
+        },
+        {
+          "accepted_count": 144,
+          "case_id": "Case2016",
+          "category": "scar_safe_negative",
+          "feature_count": 144,
+          "polarity": "negative",
+          "shard": 1,
+          "t2_present": true
+        },
+        {
+          "accepted_count": 64,
+          "case_id": "Case2018",
+          "category": "scar_positive",
+          "feature_count": 64,
+          "polarity": "positive",
+          "shard": 0,
+          "t2_present": true
+        },
+        {
+          "accepted_count": 144,
+          "case_id": "Case2018",
+          "category": "scar_safe_negative",
+          "feature_count": 144,
+          "polarity": "negative",
+          "shard": 0,
+          "t2_present": true
+        },
+        {
+          "accepted_count": 64,
+          "case_id": "Case2019",
+          "category": "scar_positive",
+          "feature_count": 64,
+          "polarity": "positive",
+          "shard": 1,
+          "t2_present": true
+        },
+        {
+          "accepted_count": 144,
+          "case_id": "Case2019",
+          "category": "scar_safe_negative",
+          "feature_count": 144,
+          "polarity": "negative",
+          "shard": 1,
+          "t2_present": true
+        },
+        {
+          "accepted_count": 64,
+          "case_id": "Case2021",
+          "category": "scar_positive",
+          "feature_count": 64,
+          "polarity": "positive",
+          "shard": 2,
+          "t2_present": true
+        },
+        {
+          "accepted_count": 144,
+          "case_id": "Case2021",
+          "category": "scar_safe_negative",
+          "feature_count": 144,
+          "polarity": "negative",
+          "shard": 2,
+          "t2_present": true
+        },
+        {
+          "accepted_count": 64,
+          "case_id": "Case2022",
+          "category": "scar_positive",
+          "feature_count": 64,
+          "polarity": "positive",
+          "shard": 1,
+          "t2_present": true
+        },
+        {
+          "accepted_count": 144,
+          "case_id": "Case2022",
+          "category": "scar_safe_negative",
+          "feature_count": 144,
+          "polarity": "negative",
+          "shard": 1,
+          "t2_present": true
+        },
+        {
+          "accepted_count": 64,
+          "case_id": "Case2023",
+          "category": "scar_positive",
+          "feature_count": 64,
+          "polarity": "positive",
+          "shard": 3,
+          "t2_present": true
+        },
+        {
+          "accepted_count": 144,
+          "case_id": "Case2023",
+          "category": "scar_safe_negative",
+          "feature_count": 144,
+          "polarity": "negative",
+          "shard": 3,
+          "t2_present": true
+        },
+        {
+          "accepted_count": 64,
+          "case_id": "Case2024",
+          "category": "scar_positive",
+          "feature_count": 64,
+          "polarity": "positive",
+          "shard": 1,
+          "t2_present": true
+        },
+        {
+          "accepted_count": 144,
+          "case_id": "Case2024",
+          "category": "scar_safe_negative",
+          "feature_count": 144,
+          "polarity": "negative",
+          "shard": 1,
+          "t2_present": true
+        },
+        {
+          "accepted_count": 64,
+          "case_id": "Case2025",
+          "category": "scar_positive",
+          "feature_count": 64,
+          "polarity": "positive",
+          "shard": 0,
+          "t2_present": true
+        },
+        {
+          "accepted_count": 144,
+          "case_id": "Case2025",
+          "category": "scar_safe_negative",
+          "feature_count": 144,
+          "polarity": "negative",
+          "shard": 0,
+          "t2_present": true
+        },
+        {
+          "accepted_count": 64,
+          "case_id": "Case2026",
+          "category": "scar_positive",
+          "feature_count": 64,
+          "polarity": "positive",
+          "shard": 3,
+          "t2_present": true
+        },
+        {
+          "accepted_count": 144,
+          "case_id": "Case2026",
+          "category": "scar_safe_negative",
+          "feature_count": 144,
+          "polarity": "negative",
+          "shard": 3,
+          "t2_present": true
+        },
+        {
+          "accepted_count": 64,
+          "case_id": "Case2027",
+          "category": "scar_positive",
+          "feature_count": 64,
+          "polarity": "positive",
+          "shard": 2,
+          "t2_present": true
+        },
+        {
+          "accepted_count": 144,
+          "case_id": "Case2027",
+          "category": "scar_safe_negative",
+          "feature_count": 144,
+          "polarity": "negative",
+          "shard": 2,
+          "t2_present": true
+        },
+        {
+          "accepted_count": 64,
+          "case_id": "Case2028",
+          "category": "scar_positive",
+          "feature_count": 64,
+          "polarity": "positive",
+          "shard": 3,
+          "t2_present": true
+        },
+        {
+          "accepted_count": 144,
+          "case_id": "Case2028",
+          "category": "scar_safe_negative",
+          "feature_count": 144,
+          "polarity": "negative",
+          "shard": 3,
+          "t2_present": true
+        },
+        {
+          "accepted_count": 64,
+          "case_id": "Case2029",
+          "category": "scar_positive",
+          "feature_count": 64,
+          "polarity": "positive",
+          "shard": 1,
+          "t2_present": true
+        },
+        {
+          "accepted_count": 144,
+          "case_id": "Case2029",
+          "category": "scar_safe_negative",
+          "feature_count": 144,
+          "polarity": "negative",
+          "shard": 1,
+          "t2_present": true
+        },
+        {
+          "accepted_count": 64,
+          "case_id": "Case2030",
+          "category": "scar_positive",
+          "feature_count": 64,
+          "polarity": "positive",
+          "shard": 3,
+          "t2_present": true
+        },
+        {
+          "accepted_count": 144,
+          "case_id": "Case2030",
+          "category": "scar_safe_negative",
+          "feature_count": 144,
+          "polarity": "negative",
+          "shard": 3,
+          "t2_present": true
+        },
+        {
+          "accepted_count": 64,
+          "case_id": "Case2032",
+          "category": "scar_positive",
+          "feature_count": 64,
+          "polarity": "positive",
+          "shard": 1,
+          "t2_present": true
+        },
+        {
+          "accepted_count": 144,
+          "case_id": "Case2032",
+          "category": "scar_safe_negative",
+          "feature_count": 144,
+          "polarity": "negative",
+          "shard": 1,
+          "t2_present": true
+        },
+        {
+          "accepted_count": 64,
+          "case_id": "Case2034",
+          "category": "scar_positive",
+          "feature_count": 64,
+          "polarity": "positive",
+          "shard": 1,
+          "t2_present": true
+        },
+        {
+          "accepted_count": 144,
+          "case_id": "Case2034",
+          "category": "scar_safe_negative",
+          "feature_count": 144,
+          "polarity": "negative",
+          "shard": 1,
+          "t2_present": true
+        },
+        {
+          "accepted_count": 64,
+          "case_id": "Case2035",
+          "category": "scar_positive",
+          "feature_count": 64,
+          "polarity": "positive",
+          "shard": 1,
+          "t2_present": true
+        },
+        {
+          "accepted_count": 144,
+          "case_id": "Case2035",
+          "category": "scar_safe_negative",
+          "feature_count": 144,
+          "polarity": "negative",
+          "shard": 1,
+          "t2_present": true
+        },
+        {
+          "accepted_count": 64,
+          "case_id": "Case3001",
+          "category": "scar_positive",
+          "feature_count": 64,
+          "polarity": "positive",
+          "shard": 0,
+          "t2_present": true
+        },
+        {
+          "accepted_count": 144,
+          "case_id": "Case3001",
+          "category": "scar_safe_negative",
+          "feature_count": 144,
+          "polarity": "negative",
+          "shard": 0,
+          "t2_present": true
+        },
+        {
+          "accepted_count": 64,
+          "case_id": "Case3002",
+          "category": "scar_positive",
+          "feature_count": 64,
+          "polarity": "positive",
+          "shard": 2,
+          "t2_present": true
+        },
+        {
+          "accepted_count": 144,
+          "case_id": "Case3002",
+          "category": "scar_safe_negative",
+          "feature_count": 144,
+          "polarity": "negative",
+          "shard": 2,
+          "t2_present": true
+        },
+        {
+          "accepted_count": 64,
+          "case_id": "Case3003",
+          "category": "scar_positive",
+          "feature_count": 64,
+          "polarity": "positive",
+          "shard": 1,
+          "t2_present": true
+        },
+        {
+          "accepted_count": 144,
+          "case_id": "Case3003",
+          "category": "scar_safe_negative",
+          "feature_count": 144,
+          "polarity": "negative",
+          "shard": 1,
+          "t2_present": true
+        },
+        {
+          "accepted_count": 144,
+          "case_id": "Case3005",
+          "category": "scar_safe_negative",
+          "feature_count": 144,
+          "polarity": "negative",
+          "shard": 0,
+          "t2_present": true
+        },
+        {
+          "accepted_count": 64,
+          "case_id": "Case3006",
+          "category": "scar_positive",
+          "feature_count": 64,
+          "polarity": "positive",
+          "shard": 2,
+          "t2_present": true
+        },
+        {
+          "accepted_count": 144,
+          "case_id": "Case3006",
+          "category": "scar_safe_negative",
+          "feature_count": 144,
+          "polarity": "negative",
+          "shard": 2,
+          "t2_present": true
+        },
+        {
+          "accepted_count": 64,
+          "case_id": "Case3007",
+          "category": "scar_positive",
+          "feature_count": 64,
+          "polarity": "positive",
+          "shard": 2,
+          "t2_present": true
+        },
+        {
+          "accepted_count": 144,
+          "case_id": "Case3007",
+          "category": "scar_safe_negative",
+          "feature_count": 144,
+          "polarity": "negative",
+          "shard": 2,
+          "t2_present": true
+        },
+        {
+          "accepted_count": 64,
+          "case_id": "Case3008",
+          "category": "scar_positive",
+          "feature_count": 64,
+          "polarity": "positive",
+          "shard": 2,
+          "t2_present": true
+        },
+        {
+          "accepted_count": 144,
+          "case_id": "Case3008",
+          "category": "scar_safe_negative",
+          "feature_count": 144,
+          "polarity": "negative",
+          "shard": 2,
+          "t2_present": true
+        },
+        {
+          "accepted_count": 64,
+          "case_id": "Case3009",
+          "category": "scar_positive",
+          "feature_count": 64,
+          "polarity": "positive",
+          "shard": 0,
+          "t2_present": true
+        },
+        {
+          "accepted_count": 144,
+          "case_id": "Case3009",
+          "category": "scar_safe_negative",
+          "feature_count": 144,
+          "polarity": "negative",
+          "shard": 0,
+          "t2_present": true
+        },
+        {
+          "accepted_count": 64,
+          "case_id": "Case3010",
+          "category": "scar_positive",
+          "feature_count": 64,
+          "polarity": "positive",
+          "shard": 2,
+          "t2_present": true
+        },
+        {
+          "accepted_count": 144,
+          "case_id": "Case3010",
+          "category": "scar_safe_negative",
+          "feature_count": 144,
+          "polarity": "negative",
+          "shard": 2,
+          "t2_present": true
+        },
+        {
+          "accepted_count": 64,
+          "case_id": "Case3013",
+          "category": "scar_positive",
+          "feature_count": 64,
+          "polarity": "positive",
+          "shard": 3,
+          "t2_present": true
+        },
+        {
+          "accepted_count": 144,
+          "case_id": "Case3013",
+          "category": "scar_safe_negative",
+          "feature_count": 144,
+          "polarity": "negative",
+          "shard": 3,
+          "t2_present": true
+        },
+        {
+          "accepted_count": 64,
+          "case_id": "Case3014",
+          "category": "scar_positive",
+          "feature_count": 64,
+          "polarity": "positive",
+          "shard": 3,
+          "t2_present": true
+        },
+        {
+          "accepted_count": 144,
+          "case_id": "Case3014",
+          "category": "scar_safe_negative",
+          "feature_count": 144,
+          "polarity": "negative",
+          "shard": 3,
+          "t2_present": true
+        },
+        {
+          "accepted_count": 64,
+          "case_id": "Case3015",
+          "category": "scar_positive",
+          "feature_count": 64,
+          "polarity": "positive",
+          "shard": 2,
+          "t2_present": true
+        },
+        {
+          "accepted_count": 144,
+          "case_id": "Case3015",
+          "category": "scar_safe_negative",
+          "feature_count": 144,
+          "polarity": "negative",
+          "shard": 2,
+          "t2_present": true
+        },
+        {
+          "accepted_count": 64,
+          "case_id": "Case3016",
+          "category": "scar_positive",
+          "feature_count": 64,
+          "polarity": "positive",
+          "shard": 1,
+          "t2_present": true
+        },
+        {
+          "accepted_count": 144,
+          "case_id": "Case3016",
+          "category": "scar_safe_negative",
+          "feature_count": 144,
+          "polarity": "negative",
+          "shard": 1,
+          "t2_present": true
+        },
+        {
+          "accepted_count": 64,
+          "case_id": "Case3017",
+          "category": "scar_positive",
+          "feature_count": 64,
+          "polarity": "positive",
+          "shard": 2,
+          "t2_present": true
+        },
+        {
+          "accepted_count": 144,
+          "case_id": "Case3017",
+          "category": "scar_safe_negative",
+          "feature_count": 144,
+          "polarity": "negative",
+          "shard": 2,
+          "t2_present": true
+        },
+        {
+          "accepted_count": 64,
+          "case_id": "Case3018",
+          "category": "scar_positive",
+          "feature_count": 64,
+          "polarity": "positive",
+          "shard": 3,
+          "t2_present": true
+        },
+        {
+          "accepted_count": 144,
+          "case_id": "Case3018",
+          "category": "scar_safe_negative",
+          "feature_count": 144,
+          "polarity": "negative",
+          "shard": 3,
+          "t2_present": true
+        },
+        {
+          "accepted_count": 64,
+          "case_id": "Case3019",
+          "category": "scar_positive",
+          "feature_count": 64,
+          "polarity": "positive",
+          "shard": 0,
+          "t2_present": true
+        },
+        {
+          "accepted_count": 144,
+          "case_id": "Case3019",
+          "category": "scar_safe_negative",
+          "feature_count": 144,
+          "polarity": "negative",
+          "shard": 0,
+          "t2_present": true
+        },
+        {
+          "accepted_count": 64,
+          "case_id": "Case3020",
+          "category": "scar_positive",
+          "feature_count": 64,
+          "polarity": "positive",
+          "shard": 0,
+          "t2_present": true
+        },
+        {
+          "accepted_count": 144,
+          "case_id": "Case3020",
+          "category": "scar_safe_negative",
+          "feature_count": 144,
+          "polarity": "negative",
+          "shard": 0,
+          "t2_present": true
+        },
+        {
+          "accepted_count": 64,
+          "case_id": "Case3021",
+          "category": "scar_positive",
+          "feature_count": 64,
+          "polarity": "positive",
+          "shard": 3,
+          "t2_present": true
+        },
+        {
+          "accepted_count": 144,
+          "case_id": "Case3021",
+          "category": "scar_safe_negative",
+          "feature_count": 144,
+          "polarity": "negative",
+          "shard": 3,
+          "t2_present": true
+        },
+        {
+          "accepted_count": 64,
+          "case_id": "Case3022",
+          "category": "scar_positive",
+          "feature_count": 64,
+          "polarity": "positive",
+          "shard": 0,
+          "t2_present": true
+        },
+        {
+          "accepted_count": 144,
+          "case_id": "Case3022",
+          "category": "scar_safe_negative",
+          "feature_count": 144,
+          "polarity": "negative",
+          "shard": 0,
+          "t2_present": true
+        },
+        {
+          "accepted_count": 64,
+          "case_id": "Case3024",
+          "category": "scar_positive",
+          "feature_count": 64,
+          "polarity": "positive",
+          "shard": 0,
+          "t2_present": true
+        },
+        {
+          "accepted_count": 144,
+          "case_id": "Case3024",
+          "category": "scar_safe_negative",
+          "feature_count": 144,
+          "polarity": "negative",
+          "shard": 0,
+          "t2_present": true
+        },
+        {
+          "accepted_count": 64,
+          "case_id": "Case3025",
+          "category": "scar_positive",
+          "feature_count": 64,
+          "polarity": "positive",
+          "shard": 3,
+          "t2_present": true
+        },
+        {
+          "accepted_count": 144,
+          "case_id": "Case3025",
+          "category": "scar_safe_negative",
+          "feature_count": 144,
+          "polarity": "negative",
+          "shard": 3,
+          "t2_present": true
+        },
+        {
+          "accepted_count": 64,
+          "case_id": "Case3027",
+          "category": "scar_positive",
+          "feature_count": 64,
+          "polarity": "positive",
+          "shard": 2,
+          "t2_present": true
+        },
+        {
+          "accepted_count": 144,
+          "case_id": "Case3027",
+          "category": "scar_safe_negative",
+          "feature_count": 144,
+          "polarity": "negative",
+          "shard": 2,
+          "t2_present": true
+        },
+        {
+          "accepted_count": 64,
+          "case_id": "Case3028",
+          "category": "scar_positive",
+          "feature_count": 64,
+          "polarity": "positive",
+          "shard": 2,
+          "t2_present": true
+        },
+        {
+          "accepted_count": 144,
+          "case_id": "Case3028",
+          "category": "scar_safe_negative",
+          "feature_count": 144,
+          "polarity": "negative",
+          "shard": 2,
+          "t2_present": true
+        },
+        {
+          "accepted_count": 64,
+          "case_id": "Case3029",
+          "category": "scar_positive",
+          "feature_count": 64,
+          "polarity": "positive",
+          "shard": 0,
+          "t2_present": true
+        },
+        {
+          "accepted_count": 144,
+          "case_id": "Case3029",
+          "category": "scar_safe_negative",
+          "feature_count": 144,
+          "polarity": "negative",
+          "shard": 0,
+          "t2_present": true
+        },
+        {
+          "accepted_count": 64,
+          "case_id": "Case3030",
+          "category": "scar_positive",
+          "feature_count": 64,
+          "polarity": "positive",
+          "shard": 3,
+          "t2_present": true
+        },
+        {
+          "accepted_count": 144,
+          "case_id": "Case3030",
+          "category": "scar_safe_negative",
+          "feature_count": 144,
+          "polarity": "negative",
+          "shard": 3,
+          "t2_present": true
+        },
+        {
+          "accepted_count": 64,
+          "case_id": "Case3031",
+          "category": "scar_positive",
+          "feature_count": 64,
+          "polarity": "positive",
+          "shard": 0,
+          "t2_present": true
+        },
+        {
+          "accepted_count": 144,
+          "case_id": "Case3031",
+          "category": "scar_safe_negative",
+          "feature_count": 144,
+          "polarity": "negative",
+          "shard": 0,
+          "t2_present": true
+        },
+        {
+          "accepted_count": 144,
+          "case_id": "Case3032",
+          "category": "scar_safe_negative",
+          "feature_count": 144,
+          "polarity": "negative",
+          "shard": 3,
+          "t2_present": true
+        },
+        {
+          "accepted_count": 64,
+          "case_id": "Case3033",
+          "category": "scar_positive",
+          "feature_count": 64,
+          "polarity": "positive",
+          "shard": 1,
+          "t2_present": true
+        },
+        {
+          "accepted_count": 144,
+          "case_id": "Case3033",
+          "category": "scar_safe_negative",
+          "feature_count": 144,
+          "polarity": "negative",
+          "shard": 1,
+          "t2_present": true
+        },
+        {
+          "accepted_count": 64,
+          "case_id": "Case3035",
+          "category": "scar_positive",
+          "feature_count": 64,
+          "polarity": "positive",
+          "shard": 1,
+          "t2_present": true
+        },
+        {
+          "accepted_count": 144,
+          "case_id": "Case3035",
+          "category": "scar_safe_negative",
+          "feature_count": 144,
+          "polarity": "negative",
+          "shard": 1,
+          "t2_present": true
+        },
+        {
+          "accepted_count": 64,
+          "case_id": "Case3036",
+          "category": "scar_positive",
+          "feature_count": 64,
+          "polarity": "positive",
+          "shard": 1,
+          "t2_present": true
+        },
+        {
+          "accepted_count": 144,
+          "case_id": "Case3036",
+          "category": "scar_safe_negative",
+          "feature_count": 144,
+          "polarity": "negative",
+          "shard": 1,
+          "t2_present": true
+        },
+        {
+          "accepted_count": 64,
+          "case_id": "Case3037",
+          "category": "scar_positive",
+          "feature_count": 64,
+          "polarity": "positive",
+          "shard": 0,
+          "t2_present": true
+        },
+        {
+          "accepted_count": 144,
+          "case_id": "Case3037",
+          "category": "scar_safe_negative",
+          "feature_count": 144,
+          "polarity": "negative",
+          "shard": 0,
+          "t2_present": true
+        },
+        {
+          "accepted_count": 64,
+          "case_id": "Case3039",
+          "category": "scar_positive",
+          "feature_count": 64,
+          "polarity": "positive",
+          "shard": 2,
+          "t2_present": true
+        },
+        {
+          "accepted_count": 144,
+          "case_id": "Case3039",
+          "category": "scar_safe_negative",
+          "feature_count": 144,
+          "polarity": "negative",
+          "shard": 2,
+          "t2_present": true
+        },
+        {
+          "accepted_count": 64,
+          "case_id": "Case3041",
+          "category": "scar_positive",
+          "feature_count": 64,
+          "polarity": "positive",
+          "shard": 1,
+          "t2_present": true
+        },
+        {
+          "accepted_count": 144,
+          "case_id": "Case3041",
+          "category": "scar_safe_negative",
+          "feature_count": 144,
+          "polarity": "negative",
+          "shard": 1,
+          "t2_present": true
+        },
+        {
+          "accepted_count": 64,
+          "case_id": "Case3042",
+          "category": "scar_positive",
+          "feature_count": 64,
+          "polarity": "positive",
+          "shard": 2,
+          "t2_present": true
+        },
+        {
+          "accepted_count": 144,
+          "case_id": "Case3042",
+          "category": "scar_safe_negative",
+          "feature_count": 144,
+          "polarity": "negative",
+          "shard": 2,
+          "t2_present": true
+        },
+        {
+          "accepted_count": 64,
+          "case_id": "Case3043",
+          "category": "scar_positive",
+          "feature_count": 64,
+          "polarity": "positive",
+          "shard": 2,
+          "t2_present": true
+        },
+        {
+          "accepted_count": 144,
+          "case_id": "Case3043",
+          "category": "scar_safe_negative",
+          "feature_count": 144,
+          "polarity": "negative",
+          "shard": 2,
+          "t2_present": true
+        },
+        {
+          "accepted_count": 64,
+          "case_id": "Case3045",
+          "category": "scar_positive",
+          "feature_count": 64,
+          "polarity": "positive",
+          "shard": 0,
+          "t2_present": true
+        },
+        {
+          "accepted_count": 144,
+          "case_id": "Case3045",
+          "category": "scar_safe_negative",
+          "feature_count": 144,
+          "polarity": "negative",
+          "shard": 0,
+          "t2_present": true
+        },
+        {
+          "accepted_count": 64,
+          "case_id": "Case1001",
+          "category": "scar_positive",
+          "feature_count": 64,
+          "polarity": "positive",
+          "shard": 2,
+          "t2_present": false
+        },
+        {
+          "accepted_count": 144,
+          "case_id": "Case1001",
+          "category": "scar_safe_negative",
+          "feature_count": 144,
+          "polarity": "negative",
+          "shard": 2,
+          "t2_present": false
+        },
+        {
+          "accepted_count": 64,
+          "case_id": "Case1003",
+          "category": "scar_positive",
+          "feature_count": 64,
+          "polarity": "positive",
+          "shard": 2,
+          "t2_present": false
+        },
+        {
+          "accepted_count": 144,
+          "case_id": "Case1003",
+          "category": "scar_safe_negative",
+          "feature_count": 144,
+          "polarity": "negative",
+          "shard": 2,
+          "t2_present": false
+        },
+        {
+          "accepted_count": 64,
+          "case_id": "Case1004",
+          "category": "scar_positive",
+          "feature_count": 64,
+          "polarity": "positive",
+          "shard": 0,
+          "t2_present": false
+        },
+        {
+          "accepted_count": 144,
+          "case_id": "Case1004",
+          "category": "scar_safe_negative",
+          "feature_count": 144,
+          "polarity": "negative",
+          "shard": 0,
+          "t2_present": false
+        },
+        {
+          "accepted_count": 64,
+          "case_id": "Case1005",
+          "category": "scar_positive",
+          "feature_count": 64,
+          "polarity": "positive",
+          "shard": 1,
+          "t2_present": false
+        },
+        {
+          "accepted_count": 144,
+          "case_id": "Case1005",
+          "category": "scar_safe_negative",
+          "feature_count": 144,
+          "polarity": "negative",
+          "shard": 1,
+          "t2_present": false
+        },
+        {
+          "accepted_count": 64,
+          "case_id": "Case1006",
+          "category": "scar_positive",
+          "feature_count": 64,
+          "polarity": "positive",
+          "shard": 1,
+          "t2_present": false
+        },
+        {
+          "accepted_count": 144,
+          "case_id": "Case1006",
+          "category": "scar_safe_negative",
+          "feature_count": 144,
+          "polarity": "negative",
+          "shard": 1,
+          "t2_present": false
+        },
+        {
+          "accepted_count": 64,
+          "case_id": "Case1008",
+          "category": "scar_positive",
+          "feature_count": 64,
+          "polarity": "positive",
+          "shard": 0,
+          "t2_present": false
+        },
+        {
+          "accepted_count": 144,
+          "case_id": "Case1008",
+          "category": "scar_safe_negative",
+          "feature_count": 144,
+          "polarity": "negative",
+          "shard": 0,
+          "t2_present": false
+        },
+        {
+          "accepted_count": 64,
+          "case_id": "Case1011",
+          "category": "scar_positive",
+          "feature_count": 64,
+          "polarity": "positive",
+          "shard": 3,
+          "t2_present": false
+        },
+        {
+          "accepted_count": 144,
+          "case_id": "Case1011",
+          "category": "scar_safe_negative",
+          "feature_count": 144,
+          "polarity": "negative",
+          "shard": 3,
+          "t2_present": false
+        },
+        {
+          "accepted_count": 64,
+          "case_id": "Case1012",
+          "category": "scar_positive",
+          "feature_count": 64,
+          "polarity": "positive",
+          "shard": 0,
+          "t2_present": false
+        },
+        {
+          "accepted_count": 144,
+          "case_id": "Case1012",
+          "category": "scar_safe_negative",
+          "feature_count": 144,
+          "polarity": "negative",
+          "shard": 0,
+          "t2_present": false
+        },
+        {
+          "accepted_count": 64,
+          "case_id": "Case1013",
+          "category": "scar_positive",
+          "feature_count": 64,
+          "polarity": "positive",
+          "shard": 0,
+          "t2_present": false
+        },
+        {
+          "accepted_count": 144,
+          "case_id": "Case1013",
+          "category": "scar_safe_negative",
+          "feature_count": 144,
+          "polarity": "negative",
+          "shard": 0,
+          "t2_present": false
+        },
+        {
+          "accepted_count": 64,
+          "case_id": "Case1014",
+          "category": "scar_positive",
+          "feature_count": 64,
+          "polarity": "positive",
+          "shard": 0,
+          "t2_present": false
+        },
+        {
+          "accepted_count": 144,
+          "case_id": "Case1014",
+          "category": "scar_safe_negative",
+          "feature_count": 144,
+          "polarity": "negative",
+          "shard": 0,
+          "t2_present": false
+        },
+        {
+          "accepted_count": 64,
+          "case_id": "Case1015",
+          "category": "scar_positive",
+          "feature_count": 64,
+          "polarity": "positive",
+          "shard": 3,
+          "t2_present": false
+        },
+        {
+          "accepted_count": 144,
+          "case_id": "Case1015",
+          "category": "scar_safe_negative",
+          "feature_count": 144,
+          "polarity": "negative",
+          "shard": 3,
+          "t2_present": false
+        },
+        {
+          "accepted_count": 64,
+          "case_id": "Case1016",
+          "category": "scar_positive",
+          "feature_count": 64,
+          "polarity": "positive",
+          "shard": 1,
+          "t2_present": false
+        },
+        {
+          "accepted_count": 144,
+          "case_id": "Case1016",
+          "category": "scar_safe_negative",
+          "feature_count": 144,
+          "polarity": "negative",
+          "shard": 1,
+          "t2_present": false
+        },
+        {
+          "accepted_count": 64,
+          "case_id": "Case1017",
+          "category": "scar_positive",
+          "feature_count": 64,
+          "polarity": "positive",
+          "shard": 3,
+          "t2_present": false
+        },
+        {
+          "accepted_count": 144,
+          "case_id": "Case1017",
+          "category": "scar_safe_negative",
+          "feature_count": 144,
+          "polarity": "negative",
+          "shard": 3,
+          "t2_present": false
+        },
+        {
+          "accepted_count": 64,
+          "case_id": "Case1018",
+          "category": "scar_positive",
+          "feature_count": 64,
+          "polarity": "positive",
+          "shard": 0,
+          "t2_present": false
+        },
+        {
+          "accepted_count": 144,
+          "case_id": "Case1018",
+          "category": "scar_safe_negative",
+          "feature_count": 144,
+          "polarity": "negative",
+          "shard": 0,
+          "t2_present": false
+        },
+        {
+          "accepted_count": 64,
+          "case_id": "Case1019",
+          "category": "scar_positive",
+          "feature_count": 64,
+          "polarity": "positive",
+          "shard": 1,
+          "t2_present": false
+        },
+        {
+          "accepted_count": 144,
+          "case_id": "Case1019",
+          "category": "scar_safe_negative",
+          "feature_count": 144,
+          "polarity": "negative",
+          "shard": 1,
+          "t2_present": false
+        },
+        {
+          "accepted_count": 64,
+          "case_id": "Case1020",
+          "category": "scar_positive",
+          "feature_count": 64,
+          "polarity": "positive",
+          "shard": 0,
+          "t2_present": false
+        },
+        {
+          "accepted_count": 144,
+          "case_id": "Case1020",
+          "category": "scar_safe_negative",
+          "feature_count": 144,
+          "polarity": "negative",
+          "shard": 0,
+          "t2_present": false
+        },
+        {
+          "accepted_count": 64,
+          "case_id": "Case1022",
+          "category": "scar_positive",
+          "feature_count": 64,
+          "polarity": "positive",
+          "shard": 1,
+          "t2_present": false
+        },
+        {
+          "accepted_count": 144,
+          "case_id": "Case1022",
+          "category": "scar_safe_negative",
+          "feature_count": 144,
+          "polarity": "negative",
+          "shard": 1,
+          "t2_present": false
+        },
+        {
+          "accepted_count": 64,
+          "case_id": "Case1024",
+          "category": "scar_positive",
+          "feature_count": 64,
+          "polarity": "positive",
+          "shard": 2,
+          "t2_present": false
+        },
+        {
+          "accepted_count": 144,
+          "case_id": "Case1024",
+          "category": "scar_safe_negative",
+          "feature_count": 144,
+          "polarity": "negative",
+          "shard": 2,
+          "t2_present": false
+        },
+        {
+          "accepted_count": 64,
+          "case_id": "Case1025",
+          "category": "scar_positive",
+          "feature_count": 64,
+          "polarity": "positive",
+          "shard": 3,
+          "t2_present": false
+        },
+        {
+          "accepted_count": 144,
+          "case_id": "Case1025",
+          "category": "scar_safe_negative",
+          "feature_count": 144,
+          "polarity": "negative",
+          "shard": 3,
+          "t2_present": false
+        },
+        {
+          "accepted_count": 64,
+          "case_id": "Case1026",
+          "category": "scar_positive",
+          "feature_count": 64,
+          "polarity": "positive",
+          "shard": 0,
+          "t2_present": false
+        },
+        {
+          "accepted_count": 144,
+          "case_id": "Case1026",
+          "category": "scar_safe_negative",
+          "feature_count": 144,
+          "polarity": "negative",
+          "shard": 0,
+          "t2_present": false
+        },
+        {
+          "accepted_count": 64,
+          "case_id": "Case1027",
+          "category": "scar_positive",
+          "feature_count": 64,
+          "polarity": "positive",
+          "shard": 1,
+          "t2_present": false
+        },
+        {
+          "accepted_count": 144,
+          "case_id": "Case1027",
+          "category": "scar_safe_negative",
+          "feature_count": 144,
+          "polarity": "negative",
+          "shard": 1,
+          "t2_present": false
+        },
+        {
+          "accepted_count": 64,
+          "case_id": "Case1028",
+          "category": "scar_positive",
+          "feature_count": 64,
+          "polarity": "positive",
+          "shard": 3,
+          "t2_present": false
+        },
+        {
+          "accepted_count": 144,
+          "case_id": "Case1028",
+          "category": "scar_safe_negative",
+          "feature_count": 144,
+          "polarity": "negative",
+          "shard": 3,
+          "t2_present": false
+        },
+        {
+          "accepted_count": 64,
+          "case_id": "Case1030",
+          "category": "scar_positive",
+          "feature_count": 64,
+          "polarity": "positive",
+          "shard": 0,
+          "t2_present": false
+        },
+        {
+          "accepted_count": 144,
+          "case_id": "Case1030",
+          "category": "scar_safe_negative",
+          "feature_count": 144,
+          "polarity": "negative",
+          "shard": 0,
+          "t2_present": false
+        },
+        {
+          "accepted_count": 64,
+          "case_id": "Case1031",
+          "category": "scar_positive",
+          "feature_count": 64,
+          "polarity": "positive",
+          "shard": 3,
+          "t2_present": false
+        },
+        {
+          "accepted_count": 144,
+          "case_id": "Case1031",
+          "category": "scar_safe_negative",
+          "feature_count": 144,
+          "polarity": "negative",
+          "shard": 3,
+          "t2_present": false
+        },
+        {
+          "accepted_count": 64,
+          "case_id": "Case1032",
+          "category": "scar_positive",
+          "feature_count": 64,
+          "polarity": "positive",
+          "shard": 1,
+          "t2_present": false
+        },
+        {
+          "accepted_count": 144,
+          "case_id": "Case1032",
+          "category": "scar_safe_negative",
+          "feature_count": 144,
+          "polarity": "negative",
+          "shard": 1,
+          "t2_present": false
+        },
+        {
+          "accepted_count": 64,
+          "case_id": "Case1034",
+          "category": "scar_positive",
+          "feature_count": 64,
+          "polarity": "positive",
+          "shard": 3,
+          "t2_present": false
+        },
+        {
+          "accepted_count": 144,
+          "case_id": "Case1034",
+          "category": "scar_safe_negative",
+          "feature_count": 144,
+          "polarity": "negative",
+          "shard": 3,
+          "t2_present": false
+        },
+        {
+          "accepted_count": 64,
+          "case_id": "Case1035",
+          "category": "scar_positive",
+          "feature_count": 64,
+          "polarity": "positive",
+          "shard": 3,
+          "t2_present": false
+        },
+        {
+          "accepted_count": 144,
+          "case_id": "Case1035",
+          "category": "scar_safe_negative",
+          "feature_count": 144,
+          "polarity": "negative",
+          "shard": 3,
+          "t2_present": false
+        },
+        {
+          "accepted_count": 64,
+          "case_id": "Case1036",
+          "category": "scar_positive",
+          "feature_count": 64,
+          "polarity": "positive",
+          "shard": 2,
+          "t2_present": false
+        },
+        {
+          "accepted_count": 144,
+          "case_id": "Case1036",
+          "category": "scar_safe_negative",
+          "feature_count": 144,
+          "polarity": "negative",
+          "shard": 2,
+          "t2_present": false
+        },
+        {
+          "accepted_count": 64,
+          "case_id": "Case1037",
+          "category": "scar_positive",
+          "feature_count": 64,
+          "polarity": "positive",
+          "shard": 2,
+          "t2_present": false
+        },
+        {
+          "accepted_count": 144,
+          "case_id": "Case1037",
+          "category": "scar_safe_negative",
+          "feature_count": 144,
+          "polarity": "negative",
+          "shard": 2,
+          "t2_present": false
+        },
+        {
+          "accepted_count": 64,
+          "case_id": "Case1038",
+          "category": "scar_positive",
+          "feature_count": 64,
+          "polarity": "positive",
+          "shard": 1,
+          "t2_present": false
+        },
+        {
+          "accepted_count": 144,
+          "case_id": "Case1038",
+          "category": "scar_safe_negative",
+          "feature_count": 144,
+          "polarity": "negative",
+          "shard": 1,
+          "t2_present": false
+        },
+        {
+          "accepted_count": 64,
+          "case_id": "Case1039",
+          "category": "scar_positive",
+          "feature_count": 64,
+          "polarity": "positive",
+          "shard": 2,
+          "t2_present": false
+        },
+        {
+          "accepted_count": 144,
+          "case_id": "Case1039",
+          "category": "scar_safe_negative",
+          "feature_count": 144,
+          "polarity": "negative",
+          "shard": 2,
+          "t2_present": false
+        },
+        {
+          "accepted_count": 64,
+          "case_id": "Case1041",
+          "category": "scar_positive",
+          "feature_count": 64,
+          "polarity": "positive",
+          "shard": 3,
+          "t2_present": false
+        },
+        {
+          "accepted_count": 144,
+          "case_id": "Case1041",
+          "category": "scar_safe_negative",
+          "feature_count": 144,
+          "polarity": "negative",
+          "shard": 3,
+          "t2_present": false
+        },
+        {
+          "accepted_count": 64,
+          "case_id": "Case1043",
+          "category": "scar_positive",
+          "feature_count": 64,
+          "polarity": "positive",
+          "shard": 0,
+          "t2_present": false
+        },
+        {
+          "accepted_count": 144,
+          "case_id": "Case1043",
+          "category": "scar_safe_negative",
+          "feature_count": 144,
+          "polarity": "negative",
+          "shard": 0,
+          "t2_present": false
+        },
+        {
+          "accepted_count": 64,
+          "case_id": "Case1044",
+          "category": "scar_positive",
+          "feature_count": 64,
+          "polarity": "positive",
+          "shard": 1,
+          "t2_present": false
+        },
+        {
+          "accepted_count": 144,
+          "case_id": "Case1044",
+          "category": "scar_safe_negative",
+          "feature_count": 144,
+          "polarity": "negative",
+          "shard": 1,
+          "t2_present": false
+        },
+        {
+          "accepted_count": 64,
+          "case_id": "Case1046",
+          "category": "scar_positive",
+          "feature_count": 64,
+          "polarity": "positive",
+          "shard": 1,
+          "t2_present": false
+        },
+        {
+          "accepted_count": 144,
+          "case_id": "Case1046",
+          "category": "scar_safe_negative",
+          "feature_count": 144,
+          "polarity": "negative",
+          "shard": 1,
+          "t2_present": false
+        },
+        {
+          "accepted_count": 64,
+          "case_id": "Case1048",
+          "category": "scar_positive",
+          "feature_count": 64,
+          "polarity": "positive",
+          "shard": 3,
+          "t2_present": false
+        },
+        {
+          "accepted_count": 144,
+          "case_id": "Case1048",
+          "category": "scar_safe_negative",
+          "feature_count": 144,
+          "polarity": "negative",
+          "shard": 3,
+          "t2_present": false
+        },
+        {
+          "accepted_count": 64,
+          "case_id": "Case1049",
+          "category": "scar_positive",
+          "feature_count": 64,
+          "polarity": "positive",
+          "shard": 1,
+          "t2_present": false
+        },
+        {
+          "accepted_count": 144,
+          "case_id": "Case1049",
+          "category": "scar_safe_negative",
+          "feature_count": 144,
+          "polarity": "negative",
+          "shard": 1,
+          "t2_present": false
+        },
+        {
+          "accepted_count": 64,
+          "case_id": "Case1050",
+          "category": "scar_positive",
+          "feature_count": 64,
+          "polarity": "positive",
+          "shard": 1,
+          "t2_present": false
+        },
+        {
+          "accepted_count": 144,
+          "case_id": "Case1050",
+          "category": "scar_safe_negative",
+          "feature_count": 144,
+          "polarity": "negative",
+          "shard": 1,
+          "t2_present": false
+        },
+        {
+          "accepted_count": 64,
+          "case_id": "Case1051",
+          "category": "scar_positive",
+          "feature_count": 64,
+          "polarity": "positive",
+          "shard": 3,
+          "t2_present": false
+        },
+        {
+          "accepted_count": 144,
+          "case_id": "Case1051",
+          "category": "scar_safe_negative",
+          "feature_count": 144,
+          "polarity": "negative",
+          "shard": 3,
+          "t2_present": false
+        },
+        {
+          "accepted_count": 64,
+          "case_id": "Case1052",
+          "category": "scar_positive",
+          "feature_count": 64,
+          "polarity": "positive",
+          "shard": 0,
+          "t2_present": false
+        },
+        {
+          "accepted_count": 144,
+          "case_id": "Case1052",
+          "category": "scar_safe_negative",
+          "feature_count": 144,
+          "polarity": "negative",
+          "shard": 0,
+          "t2_present": false
+        },
+        {
+          "accepted_count": 64,
+          "case_id": "Case1054",
+          "category": "scar_positive",
+          "feature_count": 64,
+          "polarity": "positive",
+          "shard": 2,
+          "t2_present": false
+        },
+        {
+          "accepted_count": 144,
+          "case_id": "Case1054",
+          "category": "scar_safe_negative",
+          "feature_count": 144,
+          "polarity": "negative",
+          "shard": 2,
+          "t2_present": false
+        },
+        {
+          "accepted_count": 64,
+          "case_id": "Case1055",
+          "category": "scar_positive",
+          "feature_count": 64,
+          "polarity": "positive",
+          "shard": 1,
+          "t2_present": false
+        },
+        {
+          "accepted_count": 144,
+          "case_id": "Case1055",
+          "category": "scar_safe_negative",
+          "feature_count": 144,
+          "polarity": "negative",
+          "shard": 1,
+          "t2_present": false
+        },
+        {
+          "accepted_count": 64,
+          "case_id": "Case1056",
+          "category": "scar_positive",
+          "feature_count": 64,
+          "polarity": "positive",
+          "shard": 0,
+          "t2_present": false
+        },
+        {
+          "accepted_count": 144,
+          "case_id": "Case1056",
+          "category": "scar_safe_negative",
+          "feature_count": 144,
+          "polarity": "negative",
+          "shard": 0,
+          "t2_present": false
+        },
+        {
+          "accepted_count": 64,
+          "case_id": "Case1057",
+          "category": "scar_positive",
+          "feature_count": 64,
+          "polarity": "positive",
+          "shard": 3,
+          "t2_present": false
+        },
+        {
+          "accepted_count": 144,
+          "case_id": "Case1057",
+          "category": "scar_safe_negative",
+          "feature_count": 144,
+          "polarity": "negative",
+          "shard": 3,
+          "t2_present": false
+        },
+        {
+          "accepted_count": 64,
+          "case_id": "Case1058",
+          "category": "scar_positive",
+          "feature_count": 64,
+          "polarity": "positive",
+          "shard": 0,
+          "t2_present": false
+        },
+        {
+          "accepted_count": 144,
+          "case_id": "Case1058",
+          "category": "scar_safe_negative",
+          "feature_count": 144,
+          "polarity": "negative",
+          "shard": 0,
+          "t2_present": false
+        },
+        {
+          "accepted_count": 64,
+          "case_id": "Case1059",
+          "category": "scar_positive",
+          "feature_count": 64,
+          "polarity": "positive",
+          "shard": 3,
+          "t2_present": false
+        },
+        {
+          "accepted_count": 144,
+          "case_id": "Case1059",
+          "category": "scar_safe_negative",
+          "feature_count": 144,
+          "polarity": "negative",
+          "shard": 3,
+          "t2_present": false
+        },
+        {
+          "accepted_count": 64,
+          "case_id": "Case1060",
+          "category": "scar_positive",
+          "feature_count": 64,
+          "polarity": "positive",
+          "shard": 3,
+          "t2_present": false
+        },
+        {
+          "accepted_count": 144,
+          "case_id": "Case1060",
+          "category": "scar_safe_negative",
+          "feature_count": 144,
+          "polarity": "negative",
+          "shard": 3,
+          "t2_present": false
+        },
+        {
+          "accepted_count": 64,
+          "case_id": "Case1061",
+          "category": "scar_positive",
+          "feature_count": 64,
+          "polarity": "positive",
+          "shard": 3,
+          "t2_present": false
+        },
+        {
+          "accepted_count": 144,
+          "case_id": "Case1061",
+          "category": "scar_safe_negative",
+          "feature_count": 144,
+          "polarity": "negative",
+          "shard": 3,
+          "t2_present": false
+        },
+        {
+          "accepted_count": 64,
+          "case_id": "Case1063",
+          "category": "scar_positive",
+          "feature_count": 64,
+          "polarity": "positive",
+          "shard": 0,
+          "t2_present": false
+        },
+        {
+          "accepted_count": 144,
+          "case_id": "Case1063",
+          "category": "scar_safe_negative",
+          "feature_count": 144,
+          "polarity": "negative",
+          "shard": 0,
+          "t2_present": false
+        },
+        {
+          "accepted_count": 64,
+          "case_id": "Case1064",
+          "category": "scar_positive",
+          "feature_count": 64,
+          "polarity": "positive",
+          "shard": 1,
+          "t2_present": false
+        },
+        {
+          "accepted_count": 144,
+          "case_id": "Case1064",
+          "category": "scar_safe_negative",
+          "feature_count": 144,
+          "polarity": "negative",
+          "shard": 1,
+          "t2_present": false
+        },
+        {
+          "accepted_count": 64,
+          "case_id": "Case1065",
+          "category": "scar_positive",
+          "feature_count": 64,
+          "polarity": "positive",
+          "shard": 0,
+          "t2_present": false
+        },
+        {
+          "accepted_count": 144,
+          "case_id": "Case1065",
+          "category": "scar_safe_negative",
+          "feature_count": 144,
+          "polarity": "negative",
+          "shard": 0,
+          "t2_present": false
+        },
+        {
+          "accepted_count": 64,
+          "case_id": "Case1066",
+          "category": "scar_positive",
+          "feature_count": 64,
+          "polarity": "positive",
+          "shard": 0,
+          "t2_present": false
+        },
+        {
+          "accepted_count": 144,
+          "case_id": "Case1066",
+          "category": "scar_safe_negative",
+          "feature_count": 144,
+          "polarity": "negative",
+          "shard": 0,
+          "t2_present": false
+        },
+        {
+          "accepted_count": 64,
+          "case_id": "Case1067",
+          "category": "scar_positive",
+          "feature_count": 64,
+          "polarity": "positive",
+          "shard": 3,
+          "t2_present": false
+        },
+        {
+          "accepted_count": 144,
+          "case_id": "Case1067",
+          "category": "scar_safe_negative",
+          "feature_count": 144,
+          "polarity": "negative",
+          "shard": 3,
+          "t2_present": false
+        },
+        {
+          "accepted_count": 64,
+          "case_id": "Case1068",
+          "category": "scar_positive",
+          "feature_count": 64,
+          "polarity": "positive",
+          "shard": 0,
+          "t2_present": false
+        },
+        {
+          "accepted_count": 144,
+          "case_id": "Case1068",
+          "category": "scar_safe_negative",
+          "feature_count": 144,
+          "polarity": "negative",
+          "shard": 0,
+          "t2_present": false
+        },
+        {
+          "accepted_count": 64,
+          "case_id": "Case1069",
+          "category": "scar_positive",
+          "feature_count": 64,
+          "polarity": "positive",
+          "shard": 2,
+          "t2_present": false
+        },
+        {
+          "accepted_count": 144,
+          "case_id": "Case1069",
+          "category": "scar_safe_negative",
+          "feature_count": 144,
+          "polarity": "negative",
+          "shard": 2,
+          "t2_present": false
+        },
+        {
+          "accepted_count": 64,
+          "case_id": "Case1071",
+          "category": "scar_positive",
+          "feature_count": 64,
+          "polarity": "positive",
+          "shard": 0,
+          "t2_present": false
+        },
+        {
+          "accepted_count": 144,
+          "case_id": "Case1071",
+          "category": "scar_safe_negative",
+          "feature_count": 144,
+          "polarity": "negative",
+          "shard": 0,
+          "t2_present": false
+        },
+        {
+          "accepted_count": 64,
+          "case_id": "Case1072",
+          "category": "scar_positive",
+          "feature_count": 64,
+          "polarity": "positive",
+          "shard": 2,
+          "t2_present": false
+        },
+        {
+          "accepted_count": 144,
+          "case_id": "Case1072",
+          "category": "scar_safe_negative",
+          "feature_count": 144,
+          "polarity": "negative",
+          "shard": 2,
+          "t2_present": false
+        },
+        {
+          "accepted_count": 64,
+          "case_id": "Case1074",
+          "category": "scar_positive",
+          "feature_count": 64,
+          "polarity": "positive",
+          "shard": 1,
+          "t2_present": false
+        },
+        {
+          "accepted_count": 144,
+          "case_id": "Case1074",
+          "category": "scar_safe_negative",
+          "feature_count": 144,
+          "polarity": "negative",
+          "shard": 1,
+          "t2_present": false
+        },
+        {
+          "accepted_count": 64,
+          "case_id": "Case1075",
+          "category": "scar_positive",
+          "feature_count": 64,
+          "polarity": "positive",
+          "shard": 1,
+          "t2_present": false
+        },
+        {
+          "accepted_count": 144,
+          "case_id": "Case1075",
+          "category": "scar_safe_negative",
+          "feature_count": 144,
+          "polarity": "negative",
+          "shard": 1,
+          "t2_present": false
+        },
+        {
+          "accepted_count": 64,
+          "case_id": "Case1076",
+          "category": "scar_positive",
+          "feature_count": 64,
+          "polarity": "positive",
+          "shard": 3,
+          "t2_present": false
+        },
+        {
+          "accepted_count": 144,
+          "case_id": "Case1076",
+          "category": "scar_safe_negative",
+          "feature_count": 144,
+          "polarity": "negative",
+          "shard": 3,
+          "t2_present": false
+        },
+        {
+          "accepted_count": 64,
+          "case_id": "Case1077",
+          "category": "scar_positive",
+          "feature_count": 64,
+          "polarity": "positive",
+          "shard": 1,
+          "t2_present": false
+        },
+        {
+          "accepted_count": 144,
+          "case_id": "Case1077",
+          "category": "scar_safe_negative",
+          "feature_count": 144,
+          "polarity": "negative",
+          "shard": 1,
+          "t2_present": false
+        },
+        {
+          "accepted_count": 64,
+          "case_id": "Case1078",
+          "category": "scar_positive",
+          "feature_count": 64,
+          "polarity": "positive",
+          "shard": 1,
+          "t2_present": false
+        },
+        {
+          "accepted_count": 144,
+          "case_id": "Case1078",
+          "category": "scar_safe_negative",
+          "feature_count": 144,
+          "polarity": "negative",
+          "shard": 1,
+          "t2_present": false
+        },
+        {
+          "accepted_count": 64,
+          "case_id": "Case1079",
+          "category": "scar_positive",
+          "feature_count": 64,
+          "polarity": "positive",
+          "shard": 2,
+          "t2_present": false
+        },
+        {
+          "accepted_count": 144,
+          "case_id": "Case1079",
+          "category": "scar_safe_negative",
+          "feature_count": 144,
+          "polarity": "negative",
+          "shard": 2,
+          "t2_present": false
+        },
+        {
+          "accepted_count": 64,
+          "case_id": "Case1081",
+          "category": "scar_positive",
+          "feature_count": 64,
+          "polarity": "positive",
+          "shard": 1,
+          "t2_present": false
+        },
+        {
+          "accepted_count": 144,
+          "case_id": "Case1081",
+          "category": "scar_safe_negative",
+          "feature_count": 144,
+          "polarity": "negative",
+          "shard": 1,
+          "t2_present": false
+        },
+        {
+          "accepted_count": 64,
+          "case_id": "Case5002",
+          "category": "scar_positive",
+          "feature_count": 64,
+          "polarity": "positive",
+          "shard": 0,
+          "t2_present": false
+        },
+        {
+          "accepted_count": 144,
+          "case_id": "Case5002",
+          "category": "scar_safe_negative",
+          "feature_count": 144,
+          "polarity": "negative",
+          "shard": 0,
+          "t2_present": false
+        },
+        {
+          "accepted_count": 64,
+          "case_id": "Case5003",
+          "category": "scar_positive",
+          "feature_count": 64,
+          "polarity": "positive",
+          "shard": 0,
+          "t2_present": false
+        },
+        {
+          "accepted_count": 144,
+          "case_id": "Case5003",
+          "category": "scar_safe_negative",
+          "feature_count": 144,
+          "polarity": "negative",
+          "shard": 0,
+          "t2_present": false
+        },
+        {
+          "accepted_count": 64,
+          "case_id": "Case5006",
+          "category": "scar_positive",
+          "feature_count": 64,
+          "polarity": "positive",
+          "shard": 0,
+          "t2_present": false
+        },
+        {
+          "accepted_count": 144,
+          "case_id": "Case5006",
+          "category": "scar_safe_negative",
+          "feature_count": 144,
+          "polarity": "negative",
+          "shard": 0,
+          "t2_present": false
+        },
+        {
+          "accepted_count": 64,
+          "case_id": "Case5010",
+          "category": "scar_positive",
+          "feature_count": 64,
+          "polarity": "positive",
+          "shard": 3,
+          "t2_present": false
+        },
+        {
+          "accepted_count": 144,
+          "case_id": "Case5010",
+          "category": "scar_safe_negative",
+          "feature_count": 144,
+          "polarity": "negative",
+          "shard": 3,
+          "t2_present": false
+        },
+        {
+          "accepted_count": 64,
+          "case_id": "Case6002",
+          "category": "scar_positive",
+          "feature_count": 64,
+          "polarity": "positive",
+          "shard": 2,
+          "t2_present": false
+        },
+        {
+          "accepted_count": 144,
+          "case_id": "Case6002",
+          "category": "scar_safe_negative",
+          "feature_count": 144,
+          "polarity": "negative",
+          "shard": 2,
+          "t2_present": false
+        },
+        {
+          "accepted_count": 64,
+          "case_id": "Case6003",
+          "category": "scar_positive",
+          "feature_count": 64,
+          "polarity": "positive",
+          "shard": 1,
+          "t2_present": false
+        },
+        {
+          "accepted_count": 144,
+          "case_id": "Case6003",
+          "category": "scar_safe_negative",
+          "feature_count": 144,
+          "polarity": "negative",
+          "shard": 1,
+          "t2_present": false
+        },
+        {
+          "accepted_count": 64,
+          "case_id": "Case6004",
+          "category": "scar_positive",
+          "feature_count": 64,
+          "polarity": "positive",
+          "shard": 3,
+          "t2_present": false
+        },
+        {
+          "accepted_count": 144,
+          "case_id": "Case6004",
+          "category": "scar_safe_negative",
+          "feature_count": 144,
+          "polarity": "negative",
+          "shard": 3,
+          "t2_present": false
+        },
+        {
+          "accepted_count": 64,
+          "case_id": "Case6005",
+          "category": "scar_positive",
+          "feature_count": 64,
+          "polarity": "positive",
+          "shard": 2,
+          "t2_present": false
+        },
+        {
+          "accepted_count": 144,
+          "case_id": "Case6005",
+          "category": "scar_safe_negative",
+          "feature_count": 144,
+          "polarity": "negative",
+          "shard": 2,
+          "t2_present": false
+        },
+        {
+          "accepted_count": 64,
+          "case_id": "Case6006",
+          "category": "scar_positive",
+          "feature_count": 64,
+          "polarity": "positive",
+          "shard": 3,
+          "t2_present": false
+        },
+        {
+          "accepted_count": 144,
+          "case_id": "Case6006",
+          "category": "scar_safe_negative",
+          "feature_count": 144,
+          "polarity": "negative",
+          "shard": 3,
+          "t2_present": false
+        },
+        {
+          "accepted_count": 64,
+          "case_id": "Case6009",
+          "category": "scar_positive",
+          "feature_count": 64,
+          "polarity": "positive",
+          "shard": 1,
+          "t2_present": false
+        },
+        {
+          "accepted_count": 144,
+          "case_id": "Case6009",
+          "category": "scar_safe_negative",
+          "feature_count": 144,
+          "polarity": "negative",
+          "shard": 1,
+          "t2_present": false
+        },
+        {
+          "accepted_count": 64,
+          "case_id": "Case7001",
+          "category": "scar_positive",
+          "feature_count": 64,
+          "polarity": "positive",
+          "shard": 0,
+          "t2_present": false
+        },
+        {
+          "accepted_count": 144,
+          "case_id": "Case7001",
+          "category": "scar_safe_negative",
+          "feature_count": 144,
+          "polarity": "negative",
+          "shard": 0,
+          "t2_present": false
+        },
+        {
+          "accepted_count": 64,
+          "case_id": "Case7002",
+          "category": "scar_positive",
+          "feature_count": 64,
+          "polarity": "positive",
+          "shard": 0,
+          "t2_present": false
+        },
+        {
+          "accepted_count": 144,
+          "case_id": "Case7002",
+          "category": "scar_safe_negative",
+          "feature_count": 144,
+          "polarity": "negative",
+          "shard": 0,
+          "t2_present": false
+        },
+        {
+          "accepted_count": 64,
+          "case_id": "Case7004",
+          "category": "scar_positive",
+          "feature_count": 64,
+          "polarity": "positive",
+          "shard": 3,
+          "t2_present": false
+        },
+        {
+          "accepted_count": 144,
+          "case_id": "Case7004",
+          "category": "scar_safe_negative",
+          "feature_count": 144,
+          "polarity": "negative",
+          "shard": 3,
+          "t2_present": false
+        },
+        {
+          "accepted_count": 64,
+          "case_id": "Case7008",
+          "category": "scar_positive",
+          "feature_count": 64,
+          "polarity": "positive",
+          "shard": 3,
+          "t2_present": false
+        },
+        {
+          "accepted_count": 144,
+          "case_id": "Case7008",
+          "category": "scar_safe_negative",
+          "feature_count": 144,
+          "polarity": "negative",
+          "shard": 3,
+          "t2_present": false
+        },
+        {
+          "accepted_count": 64,
+          "case_id": "Case7009",
+          "category": "scar_positive",
+          "feature_count": 64,
+          "polarity": "positive",
+          "shard": 3,
+          "t2_present": false
+        },
+        {
+          "accepted_count": 144,
+          "case_id": "Case7009",
+          "category": "scar_safe_negative",
+          "feature_count": 144,
+          "polarity": "negative",
+          "shard": 3,
+          "t2_present": false
+        },
+        {
+          "accepted_count": 64,
+          "case_id": "Case8001",
+          "category": "scar_positive",
+          "feature_count": 64,
+          "polarity": "positive",
+          "shard": 1,
+          "t2_present": false
+        },
+        {
+          "accepted_count": 48,
+          "case_id": "Case8001",
+          "category": "scar_safe_negative",
+          "feature_count": 48,
+          "polarity": "negative",
+          "shard": 1,
+          "t2_present": false
+        },
+        {
+          "accepted_count": 64,
+          "case_id": "Case8002",
+          "category": "scar_positive",
+          "feature_count": 64,
+          "polarity": "positive",
+          "shard": 1,
+          "t2_present": false
+        },
+        {
+          "accepted_count": 48,
+          "case_id": "Case8002",
+          "category": "scar_safe_negative",
+          "feature_count": 48,
+          "polarity": "negative",
+          "shard": 1,
+          "t2_present": false
+        },
+        {
+          "accepted_count": 64,
+          "case_id": "Case8004",
+          "category": "scar_positive",
+          "feature_count": 64,
+          "polarity": "positive",
+          "shard": 0,
+          "t2_present": false
+        },
+        {
+          "accepted_count": 48,
+          "case_id": "Case8004",
+          "category": "scar_safe_negative",
+          "feature_count": 48,
+          "polarity": "negative",
+          "shard": 0,
+          "t2_present": false
+        },
+        {
+          "accepted_count": 64,
+          "case_id": "Case8005",
+          "category": "scar_positive",
+          "feature_count": 64,
+          "polarity": "positive",
+          "shard": 0,
+          "t2_present": false
+        },
+        {
+          "accepted_count": 48,
+          "case_id": "Case8005",
+          "category": "scar_safe_negative",
+          "feature_count": 48,
+          "polarity": "negative",
+          "shard": 0,
+          "t2_present": false
+        },
+        {
+          "accepted_count": 64,
+          "case_id": "Case8006",
+          "category": "scar_positive",
+          "feature_count": 64,
+          "polarity": "positive",
+          "shard": 3,
+          "t2_present": false
+        },
+        {
+          "accepted_count": 48,
+          "case_id": "Case8006",
+          "category": "scar_safe_negative",
+          "feature_count": 48,
+          "polarity": "negative",
+          "shard": 3,
+          "t2_present": false
+        },
+        {
+          "accepted_count": 64,
+          "case_id": "Case8007",
+          "category": "scar_positive",
+          "feature_count": 64,
+          "polarity": "positive",
+          "shard": 2,
+          "t2_present": false
+        },
+        {
+          "accepted_count": 48,
+          "case_id": "Case8007",
+          "category": "scar_safe_negative",
+          "feature_count": 48,
+          "polarity": "negative",
+          "shard": 2,
+          "t2_present": false
+        },
+        {
+          "accepted_count": 64,
+          "case_id": "Case8008",
+          "category": "scar_positive",
+          "feature_count": 64,
+          "polarity": "positive",
+          "shard": 1,
+          "t2_present": false
+        },
+        {
+          "accepted_count": 48,
+          "case_id": "Case8008",
+          "category": "scar_safe_negative",
+          "feature_count": 48,
+          "polarity": "negative",
+          "shard": 1,
+          "t2_present": false
+        },
+        {
+          "accepted_count": 64,
+          "case_id": "Case8009",
+          "category": "scar_positive",
+          "feature_count": 64,
+          "polarity": "positive",
+          "shard": 0,
+          "t2_present": false
+        },
+        {
+          "accepted_count": 48,
+          "case_id": "Case8009",
+          "category": "scar_safe_negative",
+          "feature_count": 48,
+          "polarity": "negative",
+          "shard": 0,
+          "t2_present": false
+        },
+        {
+          "accepted_count": 64,
+          "case_id": "Case8010",
+          "category": "scar_positive",
+          "feature_count": 64,
+          "polarity": "positive",
+          "shard": 3,
+          "t2_present": false
+        },
+        {
+          "accepted_count": 48,
+          "case_id": "Case8010",
+          "category": "scar_safe_negative",
+          "feature_count": 48,
+          "polarity": "negative",
+          "shard": 3,
+          "t2_present": false
+        },
+        {
+          "accepted_count": 64,
+          "case_id": "Case8012",
+          "category": "scar_positive",
+          "feature_count": 64,
+          "polarity": "positive",
+          "shard": 2,
+          "t2_present": false
+        },
+        {
+          "accepted_count": 48,
+          "case_id": "Case8012",
+          "category": "scar_safe_negative",
+          "feature_count": 48,
+          "polarity": "negative",
+          "shard": 2,
+          "t2_present": false
+        },
+        {
+          "accepted_count": 64,
+          "case_id": "Case8013",
+          "category": "scar_positive",
+          "feature_count": 64,
+          "polarity": "positive",
+          "shard": 3,
+          "t2_present": false
+        },
+        {
+          "accepted_count": 48,
+          "case_id": "Case8013",
+          "category": "scar_safe_negative",
+          "feature_count": 48,
+          "polarity": "negative",
+          "shard": 3,
+          "t2_present": false
+        },
+        {
+          "accepted_count": 64,
+          "case_id": "Case8014",
+          "category": "scar_positive",
+          "feature_count": 64,
+          "polarity": "positive",
+          "shard": 1,
+          "t2_present": false
+        },
+        {
+          "accepted_count": 48,
+          "case_id": "Case8014",
+          "category": "scar_safe_negative",
+          "feature_count": 48,
+          "polarity": "negative",
+          "shard": 1,
+          "t2_present": false
+        },
+        {
+          "accepted_count": 64,
+          "case_id": "Case8016",
+          "category": "scar_positive",
+          "feature_count": 64,
+          "polarity": "positive",
+          "shard": 3,
+          "t2_present": false
+        },
+        {
+          "accepted_count": 48,
+          "case_id": "Case8016",
+          "category": "scar_safe_negative",
+          "feature_count": 48,
+          "polarity": "negative",
+          "shard": 3,
+          "t2_present": false
+        },
+        {
+          "accepted_count": 64,
+          "case_id": "Case8017",
+          "category": "scar_positive",
+          "feature_count": 64,
+          "polarity": "positive",
+          "shard": 3,
+          "t2_present": false
+        },
+        {
+          "accepted_count": 48,
+          "case_id": "Case8017",
+          "category": "scar_safe_negative",
+          "feature_count": 48,
+          "polarity": "negative",
+          "shard": 3,
+          "t2_present": false
+        },
+        {
+          "accepted_count": 64,
+          "case_id": "Case8018",
+          "category": "scar_positive",
+          "feature_count": 64,
+          "polarity": "positive",
+          "shard": 1,
+          "t2_present": false
+        },
+        {
+          "accepted_count": 48,
+          "case_id": "Case8018",
+          "category": "scar_safe_negative",
+          "feature_count": 48,
+          "polarity": "negative",
+          "shard": 1,
+          "t2_present": false
+        },
+        {
+          "accepted_count": 64,
+          "case_id": "Case8020",
+          "category": "scar_positive",
+          "feature_count": 64,
+          "polarity": "positive",
+          "shard": 3,
+          "t2_present": false
+        },
+        {
+          "accepted_count": 48,
+          "case_id": "Case8020",
+          "category": "scar_safe_negative",
+          "feature_count": 48,
+          "polarity": "negative",
+          "shard": 3,
+          "t2_present": false
+        },
+        {
+          "accepted_count": 64,
+          "case_id": "Case8024",
+          "category": "scar_positive",
+          "feature_count": 64,
+          "polarity": "positive",
+          "shard": 3,
+          "t2_present": false
+        },
+        {
+          "accepted_count": 48,
+          "case_id": "Case8024",
+          "category": "scar_safe_negative",
+          "feature_count": 48,
+          "polarity": "negative",
+          "shard": 3,
+          "t2_present": false
+        },
+        {
+          "accepted_count": 64,
+          "case_id": "Case8025",
+          "category": "scar_positive",
+          "feature_count": 64,
+          "polarity": "positive",
+          "shard": 2,
+          "t2_present": false
+        },
+        {
+          "accepted_count": 48,
+          "case_id": "Case8025",
+          "category": "scar_safe_negative",
+          "feature_count": 48,
+          "polarity": "negative",
+          "shard": 2,
+          "t2_present": false
+        },
+        {
+          "accepted_count": 64,
+          "case_id": "Case8026",
+          "category": "scar_positive",
+          "feature_count": 64,
+          "polarity": "positive",
+          "shard": 1,
+          "t2_present": false
+        },
+        {
+          "accepted_count": 48,
+          "case_id": "Case8026",
+          "category": "scar_safe_negative",
+          "feature_count": 48,
+          "polarity": "negative",
+          "shard": 1,
+          "t2_present": false
+        },
+        {
+          "accepted_count": 64,
+          "case_id": "Case8027",
+          "category": "scar_positive",
+          "feature_count": 64,
+          "polarity": "positive",
+          "shard": 2,
+          "t2_present": false
+        },
+        {
+          "accepted_count": 48,
+          "case_id": "Case8027",
+          "category": "scar_safe_negative",
+          "feature_count": 48,
+          "polarity": "negative",
+          "shard": 2,
+          "t2_present": false
+        },
+        {
+          "accepted_count": 64,
+          "case_id": "Case8029",
+          "category": "scar_positive",
+          "feature_count": 64,
+          "polarity": "positive",
+          "shard": 0,
+          "t2_present": false
+        },
+        {
+          "accepted_count": 48,
+          "case_id": "Case8029",
+          "category": "scar_safe_negative",
+          "feature_count": 48,
+          "polarity": "negative",
+          "shard": 0,
+          "t2_present": false
+        },
+        {
+          "accepted_count": 64,
+          "case_id": "Case8030",
+          "category": "scar_positive",
+          "feature_count": 64,
+          "polarity": "positive",
+          "shard": 0,
+          "t2_present": false
+        },
+        {
+          "accepted_count": 48,
+          "case_id": "Case8030",
+          "category": "scar_safe_negative",
+          "feature_count": 48,
+          "polarity": "negative",
+          "shard": 0,
+          "t2_present": false
+        },
+        {
+          "accepted_count": 64,
+          "case_id": "Case8031",
+          "category": "scar_positive",
+          "feature_count": 64,
+          "polarity": "positive",
+          "shard": 2,
+          "t2_present": false
+        },
+        {
+          "accepted_count": 48,
+          "case_id": "Case8031",
+          "category": "scar_safe_negative",
+          "feature_count": 48,
+          "polarity": "negative",
+          "shard": 2,
+          "t2_present": false
+        },
+        {
+          "accepted_count": 64,
+          "case_id": "Case8032",
+          "category": "scar_positive",
+          "feature_count": 64,
+          "polarity": "positive",
+          "shard": 3,
+          "t2_present": false
+        },
+        {
+          "accepted_count": 48,
+          "case_id": "Case8032",
+          "category": "scar_safe_negative",
+          "feature_count": 48,
+          "polarity": "negative",
+          "shard": 3,
+          "t2_present": false
+        },
+        {
+          "accepted_count": 64,
+          "case_id": "Case8033",
+          "category": "scar_positive",
+          "feature_count": 64,
+          "polarity": "positive",
+          "shard": 1,
+          "t2_present": false
+        },
+        {
+          "accepted_count": 48,
+          "case_id": "Case8033",
+          "category": "scar_safe_negative",
+          "feature_count": 48,
+          "polarity": "negative",
+          "shard": 1,
+          "t2_present": false
+        },
+        {
+          "accepted_count": 64,
+          "case_id": "Case8034",
+          "category": "scar_positive",
+          "feature_count": 64,
+          "polarity": "positive",
+          "shard": 2,
+          "t2_present": false
+        },
+        {
+          "accepted_count": 48,
+          "case_id": "Case8034",
+          "category": "scar_safe_negative",
+          "feature_count": 48,
+          "polarity": "negative",
+          "shard": 2,
+          "t2_present": false
+        },
+        {
+          "accepted_count": 64,
+          "case_id": "Case8035",
+          "category": "scar_positive",
+          "feature_count": 64,
+          "polarity": "positive",
+          "shard": 0,
+          "t2_present": false
+        },
+        {
+          "accepted_count": 48,
+          "case_id": "Case8035",
+          "category": "scar_safe_negative",
+          "feature_count": 48,
+          "polarity": "negative",
+          "shard": 0,
+          "t2_present": false
+        },
+        {
+          "accepted_count": 48,
+          "case_id": "Case5001",
+          "category": "scar_safe_negative",
+          "feature_count": 48,
+          "polarity": "negative",
+          "shard": 3,
+          "t2_present": false
+        },
+        {
+          "accepted_count": 48,
+          "case_id": "Case5007",
+          "category": "scar_safe_negative",
+          "feature_count": 48,
+          "polarity": "negative",
+          "shard": 0,
+          "t2_present": false
+        },
+        {
+          "accepted_count": 48,
+          "case_id": "Case6008",
+          "category": "scar_safe_negative",
+          "feature_count": 48,
+          "polarity": "negative",
+          "shard": 3,
+          "t2_present": false
+        },
+        {
+          "accepted_count": 144,
+          "case_id": "Case7006",
+          "category": "scar_safe_negative",
+          "feature_count": 144,
+          "polarity": "negative",
+          "shard": 3,
+          "t2_present": false
+        },
+        {
+          "accepted_count": 144,
+          "case_id": "Case7010",
+          "category": "scar_safe_negative",
+          "feature_count": 144,
+          "polarity": "negative",
+          "shard": 0,
+          "t2_present": false
+        },
+        {
+          "accepted_count": 48,
+          "case_id": "Case8028",
+          "category": "scar_safe_negative",
+          "feature_count": 48,
+          "polarity": "negative",
+          "shard": 3,
+          "t2_present": false
+        }
+      ]
+    },
+    "shards": 4
+  },
+  "missing_train_case_ids": [],
+  "no_t2_edema_negative_forbidden": true,
+  "no_t2_edema_positive_forbidden": true,
+  "required": {
+    "edema_negative": 6,
+    "edema_positive": 8,
+    "scar_negative": 12,
+    "scar_positive": 6
+  },
+  "schema_version": 1,
+  "source_case_count": 176,
+  "source_case_ids": [
+    "Case2001",
+    "Case2003",
+    "Case2004",
+    "Case2005",
+    "Case2006",
+    "Case2009",
+    "Case2010",
+    "Case2011",
+    "Case2012",
+    "Case2013",
+    "Case2014",
+    "Case2015",
+    "Case2016",
+    "Case2018",
+    "Case2019",
+    "Case2021",
+    "Case2022",
+    "Case2023",
+    "Case2024",
+    "Case2025",
+    "Case2026",
+    "Case2027",
+    "Case2028",
+    "Case2029",
+    "Case2030",
+    "Case2032",
+    "Case2034",
+    "Case2035",
+    "Case3001",
+    "Case3002",
+    "Case3003",
+    "Case3005",
+    "Case3006",
+    "Case3007",
+    "Case3008",
+    "Case3009",
+    "Case3010",
+    "Case3013",
+    "Case3014",
+    "Case3015",
+    "Case3016",
+    "Case3017",
+    "Case3018",
+    "Case3019",
+    "Case3020",
+    "Case3021",
+    "Case3022",
+    "Case3024",
+    "Case3025",
+    "Case3027",
+    "Case3028",
+    "Case3029",
+    "Case3030",
+    "Case3031",
+    "Case3032",
+    "Case3033",
+    "Case3035",
+    "Case3036",
+    "Case3037",
+    "Case3039",
+    "Case3041",
+    "Case3042",
+    "Case3043",
+    "Case3045",
+    "Case1001",
+    "Case1003",
+    "Case1004",
+    "Case1005",
+    "Case1006",
+    "Case1008",
+    "Case1011",
+    "Case1012",
+    "Case1013",
+    "Case1014",
+    "Case1015",
+    "Case1016",
+    "Case1017",
+    "Case1018",
+    "Case1019",
+    "Case1020",
+    "Case1022",
+    "Case1024",
+    "Case1025",
+    "Case1026",
+    "Case1027",
+    "Case1028",
+    "Case1030",
+    "Case1031",
+    "Case1032",
+    "Case1034",
+    "Case1035",
+    "Case1036",
+    "Case1037",
+    "Case1038",
+    "Case1039",
+    "Case1041",
+    "Case1043",
+    "Case1044",
+    "Case1046",
+    "Case1048",
+    "Case1049",
+    "Case1050",
+    "Case1051",
+    "Case1052",
+    "Case1054",
+    "Case1055",
+    "Case1056",
+    "Case1057",
+    "Case1058",
+    "Case1059",
+    "Case1060",
+    "Case1061",
+    "Case1063",
+    "Case1064",
+    "Case1065",
+    "Case1066",
+    "Case1067",
+    "Case1068",
+    "Case1069",
+    "Case1071",
+    "Case1072",
+    "Case1074",
+    "Case1075",
+    "Case1076",
+    "Case1077",
+    "Case1078",
+    "Case1079",
+    "Case1081",
+    "Case5002",
+    "Case5003",
+    "Case5006",
+    "Case5010",
+    "Case6002",
+    "Case6003",
+    "Case6004",
+    "Case6005",
+    "Case6006",
+    "Case6009",
+    "Case7001",
+    "Case7002",
+    "Case7004",
+    "Case7008",
+    "Case7009",
+    "Case8001",
+    "Case8002",
+    "Case8004",
+    "Case8005",
+    "Case8006",
+    "Case8007",
+    "Case8008",
+    "Case8009",
+    "Case8010",
+    "Case8012",
+    "Case8013",
+    "Case8014",
+    "Case8016",
+    "Case8017",
+    "Case8018",
+    "Case8020",
+    "Case8024",
+    "Case8025",
+    "Case8026",
+    "Case8027",
+    "Case8029",
+    "Case8030",
+    "Case8031",
+    "Case8032",
+    "Case8033",
+    "Case8034",
+    "Case8035",
+    "Case5001",
+    "Case5007",
+    "Case6008",
+    "Case7006",
+    "Case7010",
+    "Case8028"
+  ],
+  "source_commit": "0466260e3f4eb6c50b05a7f5a8b66652b873fe46",
+  "split_hash": "6165caeb5b47feb0d24f20380898037b7e6cead4db1eeba398a3c5a57faf9a1b",
+  "status": "FROZEN_PROTOTYPE_MEMORY_MANIFEST_READY",
+  "validation_leakage_case_ids": []
+}

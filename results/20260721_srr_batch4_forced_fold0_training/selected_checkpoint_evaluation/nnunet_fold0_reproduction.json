@@ -1,0 +1,17 @@
+{
+  "actual": {
+    "edema_dice": 0.3944358976789887,
+    "scar_dice": 0.5601692281262312
+  },
+  "case_count": 44,
+  "expected": {
+    "edema_dice": 0.3944358977,
+    "scar_dice": 0.5601692281,
+    "tolerance": 1e-09
+  },
+  "expected_check_scope": "full_fold0_44case",
+  "fold": 0,
+  "schema_version": 1,
+  "source": "data/nnUNet/nnUNet_results/Dataset501_CAREMyoPS/nnUNetTrainer_500epochs__nnUNetPlans__3d_fullres/fold_0/validation",
+  "status": "PASS"
+}

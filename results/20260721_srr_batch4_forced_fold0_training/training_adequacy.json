@@ -1,0 +1,42 @@
+{
+  "actual_optimizer_steps": 1800,
+  "coverage_for_missing_summary_fields": {
+    "runtime_full_volume_eval_case_counts": {
+      "step_1200": 44,
+      "step_1800": 44,
+      "step_600": 44
+    },
+    "summary_top_level_full_volume_eval_steps": null,
+    "summary_top_level_full_volume_eval_steps_status": "MISSING_COVERED_BY_RUNTIME_STEP_FILES",
+    "summary_top_level_source_commit": null,
+    "summary_top_level_source_commit_status": "MISSING_COVERED_BY_CHECKPOINT_PAYLOAD"
+  },
+  "elapsed": "00:33:26",
+  "encoder_profile": "full_4scale",
+  "encoder_scale_channels": [
+    32,
+    64,
+    128,
+    256
+  ],
+  "eval_cases": 44,
+  "job_exit_code": "0:0",
+  "job_id": "59682067",
+  "job_state": "COMPLETED",
+  "max_steps": 1800,
+  "minimum_case_usage": 1,
+  "model_variant": "m10_d3_hierarchical_memory_propref",
+  "node": "g1807htzh01",
+  "optimizer_steps": 1800,
+  "post_optimizer_wait_seconds": 1195.3847569739446,
+  "schema_version": 1,
+  "selected_checkpoint": "step_1800",
+  "selected_checkpoint_path": "results/20260721_srr_batch4_forced_fold0_training/runtime/attempts/srr_batch4_m10d3_full4scale_fold0_seed20260721_htzhulab_59682067/variants/srr_batch4_m10d3_full4scale_fold0_seed20260721_htzhulab_59682067/checkpoints/fold_0/propref_config/checkpoint_validation_step_1800.pt",
+  "selected_checkpoint_sha256": "bc325754202d5cf0aa59aa8fab0306b38c2665640339afa3f8d06a13c70009f6",
+  "status": "TRAINING_BUDGET_VALID_AGGREGATED_FROM_59682067",
+  "stop_reason": "max_steps_min_train_loop_seconds_satisfied_without_extra_optimizer_steps",
+  "train_cases": 176,
+  "train_loop_seconds": 1800.0000680589583,
+  "train_unique_case_count": 176,
+  "val_cases": 44
+}

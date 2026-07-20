@@ -89,3 +89,24 @@ Running formal retry is not completion. Terminal aggregation, validators, mapper
 - Regression: `./envs/env_CARE/bin/python -m pytest tests/srr_production/test_myops_batch4_contract.py` -> `12 passed, 3 warnings`.
 
 No reviewer handoff is allowed from `59678596` or `59680114`. Next formal retry must be audited from commit `b2663c690b567683bde73686f7f5c25307131904` and must produce `actual_optimizer_steps == max_steps == 1800` plus `train_loop_seconds >= 1800` before aggregation.
+
+## Repaired Formal Retry Terminal Aggregation
+
+- `sacct -j 59682067 --format=JobID,JobName,Partition,State,ExitCode,Elapsed,NodeList -P` -> `59682067 SRRB4MyoPS htzhulab COMPLETED 0:0 00:33:26 g1807htzh01`.
+- Runtime summary for `59682067` -> `actual_optimizer_steps=1800`, `optimizer_steps=1800`, `max_steps=1800`, `train_loop_seconds=1800.0000680589583`, `post_optimizer_wait_seconds=1195.3847569739446`, `stop_reason=max_steps_min_train_loop_seconds_satisfied_without_extra_optimizer_steps`.
+- Summary top-level `source_commit=None` is explicitly accounted in `training_adequacy.json`; strict validation covers it from the selected 1800-step checkpoint payload `source_commit=0466260e3f4eb6c50b05a7f5a8b66652b873fe46`.
+- Summary top-level `full_volume_eval_steps=None` is explicitly accounted in `training_adequacy.json`; strict validation covers it from runtime full-volume evaluation files for steps `600`, `1200`, and `1800`, each with 44 cases.
+- `sacct -j 59686817 --format=JobID,JobName,Partition,State,ExitCode,Elapsed,NodeList -P` -> `59686817 SRRB4Ctrl htzhulab FAILED 1:0 00:04:33 g1807htzh01`.
+- `59686817` remains failed and zero completion credit. It wrote all three 44-case inference contracts/predictions, then failed in evaluator config lookup. After the config/evaluator contract repair, the evaluator was rerun locally against the same prediction directories.
+- `./envs/env_CARE/bin/python scripts/srr_production/evaluate_myops_fair.py --config configs/srr_production/myops_batch4.yaml --fold 0 --identity-pred-dir results/20260721_srr_batch4_forced_fold0_training/selected_checkpoint_controls/anchor_identity_control/predictions --srr-pred-dir results/20260721_srr_batch4_forced_fold0_training/selected_checkpoint_controls/anchor_bounded_srr_correction/predictions --srr-contract results/20260721_srr_batch4_forced_fold0_training/selected_checkpoint_controls/batch3a_anchor_bounded_srr_correction_inference_contract.json --output-dir results/20260721_srr_batch4_forced_fold0_training/selected_checkpoint_evaluation` -> `BATCH3A_MODEL_IN_LOOP_EVALUATION_COMPLETE`, 44 cases, no validation upload, no hosted metric claim, no performance claim.
+- `./envs/env_CARE/bin/python scripts/evaluation/aggregate_srr_batch4_packet.py` -> `OK`, selected checkpoint `step_1800`.
+- `./envs/env_CARE/bin/python scripts/evaluation/validate_srr_batch4_packet.py` -> `BATCH4_STRICT_VALIDATION_PASS`.
+- `./envs/env_CARE/bin/python scripts/architecture/validate_care_architecture_wiki.py --strict` -> `care architecture wiki validation passed`.
+- `./envs/env_CARE/bin/python scripts/architecture/generate_care_architecture_wiki.py --check` -> `care architecture wiki diagrams ok`.
+- `git diff --check` -> pass.
+- `./envs/env_CARE/bin/python scripts/ops/validate_executor_plan.py prompts/tasks/20260721_srr_batch4_forced_fold0_training_executor_plan.yaml` -> `executor plan validation passed`.
+- `./envs/env_CARE/bin/python -m pytest tests/srr_production/test_myops_batch4_contract.py tests/srr_production/test_myops_batch2_inference_evaluation.py` -> `15 passed, 3 warnings`.
+- Historical dirty files `results/srr_production/code_maturity/batch1_prototype_memory_provenance.json` and `results/srr_production/code_maturity/batch2a_prototype_crossfit_audit.json` were restored before the selected-control/config repair commit and are not included in this packet.
+- The same two historical `code_maturity` JSON files were dirtied again by the post-packet pytest run and restored again before this terminal packet commit; they remain excluded.
+
+This terminal packet is ready for independent read-only review only after the lightweight files are committed. The controller did not write `review.md`, did not push, did not package validation, did not upload, and did not claim hosted or production performance.

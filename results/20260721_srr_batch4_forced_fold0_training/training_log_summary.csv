@@ -1,0 +1,5 @@
+stage,logged_rows,first_step,last_step,mean_loss
+evidence_warmup,10,1,360,2.3789583444595337
+low_lr_calibration,5,1650,1800,1.70408134162426
+proposal_dictionary,17,400,1080,1.6332527015890395
+soft_roi_refinement,14,1100,1620,1.4021136218851262

@@ -1,0 +1,111 @@
+{
+  "candidate_rows_ranked": [
+    {
+      "case_count": 44,
+      "checkpoint": "step_1800",
+      "edema_changed_cases": 15,
+      "edema_dice_delta_mean": 0.0008187687803664686,
+      "harm_case_pathology_count": 18,
+      "mean_hd95": 11.86440185272857,
+      "mean_scar_edema_dice_delta": 0.0016096314261340046,
+      "min_scar_edema_dice_delta": 0.0008187687803664686,
+      "remote_fp_delta_mean_mm3": 340.1431515289194,
+      "scar_changed_cases": 37,
+      "scar_dice_delta_mean": 0.0024004940719015407,
+      "step": 1800
+    },
+    {
+      "case_count": 44,
+      "checkpoint": "step_1200",
+      "edema_changed_cases": 4,
+      "edema_dice_delta_mean": 0.0006541995797370997,
+      "harm_case_pathology_count": 18,
+      "mean_hd95": 10.630510057703917,
+      "mean_scar_edema_dice_delta": 0.0015898019496800651,
+      "min_scar_edema_dice_delta": 0.0006541995797370997,
+      "remote_fp_delta_mean_mm3": -0.06538771014272465,
+      "scar_changed_cases": 36,
+      "scar_dice_delta_mean": 0.0025254043196230305,
+      "step": 1200
+    },
+    {
+      "case_count": 44,
+      "checkpoint": "step_600",
+      "edema_changed_cases": 16,
+      "edema_dice_delta_mean": 0.0004907988560311563,
+      "harm_case_pathology_count": 15,
+      "mean_hd95": 12.29683723558249,
+      "mean_scar_edema_dice_delta": 0.0010625959539971187,
+      "min_scar_edema_dice_delta": 0.0004907988560311563,
+      "remote_fp_delta_mean_mm3": 194.75526979744743,
+      "scar_changed_cases": 23,
+      "scar_dice_delta_mean": 0.0016343930519630812,
+      "step": 600
+    }
+  ],
+  "control_contracts": {
+    "anchor_bounded_srr_correction": {
+      "anchor_identity_changed_voxels_total": 1062,
+      "anchor_identity_softmax_max_abs_delta": 0.0,
+      "case_count": 44,
+      "checkpoint_global_step": 1800,
+      "checkpoint_oof_anchor_manifest_hash": "511f2f22150f40adadabb1b5b3541b4b04d0730d6905c55f612cfded54a78b8c",
+      "checkpoint_sha256": "bc325754202d5cf0aa59aa8fab0306b38c2665640339afa3f8d06a13c70009f6",
+      "nonidentity_downstream_tensor_max_abs_delta": 3.9990234375,
+      "prediction_dir": "results/20260721_srr_batch4_forced_fold0_training/selected_checkpoint_controls/anchor_bounded_srr_correction/predictions",
+      "raw_oof_anchor_manifest_hash": "e67724c35ec13f50db394064184032a0ef6a785eff840235b9b0550a40ee8add",
+      "status": "SRR_MODEL_IN_LOOP_CHECKPOINT_INFERENCE",
+      "training_summary_anchor_manifest_hash": "511f2f22150f40adadabb1b5b3541b4b04d0730d6905c55f612cfded54a78b8c"
+    },
+    "anchor_identity_control": {
+      "anchor_identity_changed_voxels_total": 0,
+      "anchor_identity_softmax_max_abs_delta": 0.0,
+      "case_count": 44,
+      "checkpoint_global_step": 1800,
+      "checkpoint_oof_anchor_manifest_hash": "511f2f22150f40adadabb1b5b3541b4b04d0730d6905c55f612cfded54a78b8c",
+      "checkpoint_sha256": "bc325754202d5cf0aa59aa8fab0306b38c2665640339afa3f8d06a13c70009f6",
+      "nonidentity_downstream_tensor_max_abs_delta": 0.0,
+      "prediction_dir": "results/20260721_srr_batch4_forced_fold0_training/selected_checkpoint_controls/anchor_identity_control/predictions",
+      "raw_oof_anchor_manifest_hash": "e67724c35ec13f50db394064184032a0ef6a785eff840235b9b0550a40ee8add",
+      "status": "SRR_MODEL_IN_LOOP_CHECKPOINT_INFERENCE",
+      "training_summary_anchor_manifest_hash": "511f2f22150f40adadabb1b5b3541b4b04d0730d6905c55f612cfded54a78b8c"
+    },
+    "srr_no_anchor_control": {
+      "anchor_identity_changed_voxels_total": 2735469,
+      "anchor_identity_softmax_max_abs_delta": 0.0,
+      "case_count": 44,
+      "checkpoint_global_step": 1800,
+      "checkpoint_oof_anchor_manifest_hash": "511f2f22150f40adadabb1b5b3541b4b04d0730d6905c55f612cfded54a78b8c",
+      "checkpoint_sha256": "bc325754202d5cf0aa59aa8fab0306b38c2665640339afa3f8d06a13c70009f6",
+      "nonidentity_downstream_tensor_max_abs_delta": 3.9990234375,
+      "prediction_dir": "results/20260721_srr_batch4_forced_fold0_training/selected_checkpoint_controls/srr_no_anchor_control/predictions",
+      "raw_oof_anchor_manifest_hash": "e67724c35ec13f50db394064184032a0ef6a785eff840235b9b0550a40ee8add",
+      "status": "SRR_MODEL_IN_LOOP_CHECKPOINT_INFERENCE",
+      "training_summary_anchor_manifest_hash": "511f2f22150f40adadabb1b5b3541b4b04d0730d6905c55f612cfded54a78b8c"
+    }
+  },
+  "control_evaluation_completion": {
+    "anchor_identity_path": "results/20260721_srr_batch4_forced_fold0_training/selected_checkpoint_evaluation/anchor_identity_44case.json",
+    "baseline_reproduction_path": "results/20260721_srr_batch4_forced_fold0_training/selected_checkpoint_evaluation/nnunet_fold0_reproduction.json",
+    "case_count": 44,
+    "fold": 0,
+    "formal_training_count": 0,
+    "hosted_metric_claim_count": 0,
+    "performance_claim": "NONE",
+    "schema_version": 1,
+    "slurm_job_count": 0,
+    "srr_contract_path": "results/20260721_srr_batch4_forced_fold0_training/selected_checkpoint_controls/batch3a_anchor_bounded_srr_correction_inference_contract.json",
+    "srr_prediction_dir": "results/20260721_srr_batch4_forced_fold0_training/selected_checkpoint_controls/anchor_bounded_srr_correction/predictions",
+    "srr_scientific_status": "SRR_MODEL_IN_LOOP_CHECKPOINT_INFERENCE",
+    "status": "BATCH3A_MODEL_IN_LOOP_EVALUATION_COMPLETE",
+    "validation_upload_count": 0
+  },
+  "control_slurm_failure_accounting": "59686817 failed only in downstream evaluator before config repair; inference contracts and predictions were written, then evaluator was rerun locally under audited config 74afdf0.",
+  "control_slurm_job_id": "59686817",
+  "control_slurm_job_status": "FAILED_1:0_ZERO_COMPLETION_CREDIT",
+  "same_checkpoint_three_mode_controls_complete": true,
+  "schema_version": 1,
+  "selected_checkpoint": "step_1800",
+  "selected_checkpoint_sha256": "bc325754202d5cf0aa59aa8fab0306b38c2665640339afa3f8d06a13c70009f6",
+  "status": "SELECTED_CHECKPOINT_RELOADED_THREE_MODE_CONTROLS_COMPLETE"
+}
