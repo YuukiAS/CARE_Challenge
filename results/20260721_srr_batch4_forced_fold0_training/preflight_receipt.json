@@ -1,0 +1,40 @@
+{
+  "task_key": "20260721_srr_batch4_forced_fold0_training",
+  "status": "NEEDS_MONITOR",
+  "as_of_utc": "2026-07-20T17:52:41Z",
+  "receipt_kind": "gpu_one_batch_preflight_monitor",
+  "environment_contract_receipt": "results/20260721_srr_batch4_forced_fold0_training/preflight_environment_receipt.json",
+  "required_preflight": {
+    "overfit_steps": 60,
+    "relative_total_loss_decrease_min": 0.05,
+    "full_train_prototype_bank_cases": 176,
+    "target_module_gradients_nonzero": true,
+    "no_t2_edema_full_chain_exact_zero": true,
+    "schema_v2_reload_max_tensor_delta_max": 0.000001
+  },
+  "completed_preflight_evidence": {
+    "environment_contract_preflight": "PASS",
+    "gpu_one_batch_overfit": "NOT_COMPLETE",
+    "frozen_prototype_memory_manifest": "NOT_COMPLETE",
+    "schema_v2_reload_runtime_evidence": "NOT_COMPLETE"
+  },
+  "attempts": [
+    {
+      "job_id": "59672536",
+      "partition": "volta-gpu",
+      "state": "CANCELLED",
+      "exit_code": "0:0",
+      "elapsed": "00:00:56",
+      "reason": "current torch build does not support Tesla V100 compute capability 7.0",
+      "log_path": "logs/srr_batch4/SRRB4Pre_volta_59672536_20260720_134651.log"
+    },
+    {
+      "job_id": "59672892",
+      "partition": "htzhulab",
+      "state": "PENDING",
+      "reason": "Resources",
+      "logical_run_id": "srr_batch4_m10d3_full4scale_fold0_seed20260721_preflight_htzhulab_retry1"
+    }
+  ],
+  "decision": "Do not submit formal 1800-step training until this receipt is replaced or updated with terminal PASS evidence."
+}

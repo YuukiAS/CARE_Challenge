@@ -1,0 +1,2 @@
+timestamp,phase,git_head,task_hash,job_states,decision,next_action
+2026-07-20T17:52:41Z,B4-03_PRECHECK_MONITOR,4c998754506a48b610bcd6437ea70c7965048577,9b3ed173001089db778aa3e5462fd8794c3194dbd7d855d95d12c695ec7ae49b,"59672536=volta-gpu:CANCELLED unsupported_v100;59672892=htzhulab:PENDING Resources",NEEDS_MONITOR,"Monitor job 59672892 to terminal state; do not submit formal 1800-step training until preflight PASS exists."

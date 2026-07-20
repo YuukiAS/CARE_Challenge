@@ -1,0 +1,64 @@
+{
+  "task_key": "20260721_srr_batch4_forced_fold0_training",
+  "phase": "B4-03_PRECHECK_MONITOR",
+  "status": "PREFLIGHT_SUBMITTED_AWAITING_TERMINAL_EVIDENCE",
+  "as_of_utc": "2026-07-20T17:52:41Z",
+  "repo_root": "/users/a/e/aereinh/CARE",
+  "branch": "main",
+  "git_head": "4c998754506a48b610bcd6437ea70c7965048577",
+  "git_status": "main...origin/main [ahead 3]; worktree clean",
+  "origin_main_synced_head_before_batch4_local_commits": "89474f7de8c38db1448e47ca7fe94d6620932b31",
+  "planning_review": {
+    "path": "prompts/tasks/20260721_srr_batch4_forced_fold0_training_planning_review.md",
+    "sha256": "fab472d2053e2bb1f8e97def294f3aed81230b9f1d79faacefc86a0003ad6cca",
+    "decision": "AUDITED_GO",
+    "token": "BATCH4_PLANNING_AUDITED_GO",
+    "reviewed_commit": "20e3aaf304f1687ba2e50c3885eb4bf88738d889"
+  },
+  "files_read_or_refreshed": {
+    "AGENTS.md": "2828bf4ef9c1d0b91034ac17641f309d739a346460ee11880f71cf8ecb4dc903",
+    ".agents/skills/slurm-routing-partition/SKILL.md": "2b7e87f58b275b50dc9d4a9377f4e2518c3a390c806e400cb32e07ebac3f83a6",
+    ".agents/skills/care-mapper/SKILL.md": "2c41516189001ec7be94d9981a69fcd5544ad5ebd244c93cdc58488f4b535d0e",
+    "prompts/routes/handoffs/CURRENT.md": "read_current_turn",
+    "docs/plans/laneB_round04_active_srr_batch4_forced_fold0_training_execution.md": "read_current_turn",
+    "prompts/tasks/20260721_srr_batch4_forced_fold0_training_controller.md": "9b3ed173001089db778aa3e5462fd8794c3194dbd7d855d95d12c695ec7ae49b",
+    "prompts/tasks/20260721_srr_batch4_forced_fold0_training_executor_plan.yaml": "8b82d180eaa548fb5a38788b7550648c1e8722682792e0bccd180131eece83a9",
+    "wiki/README.md": "read_current_turn"
+  },
+  "source_fingerprints": {
+    "configs/srr_production/myops_batch4.yaml": "5c4da81bc6f01c360c288370b8b1e21371448e2715d5159ba32aa85f2794fc73",
+    "scripts/training/run_srr_propref_myops_fold0.py": "6a9113cda9d1e2b7e297a40d594d824981f9d752f2014fe27c3942e6bfe9aeee",
+    "scripts/srr_production/infer_myops.py": "ac7a5f7339ab87439302bb59b9fb856b91ac64709b99114555a52165aad877be",
+    "jobs/srr_production/run_myops_batch4_fold0_common.sh": "19a17f98ae1493e640eadd9b53798a56738a3a28d1d9195c2578c0b5bbd37d5c"
+  },
+  "slurm_jobs": [
+    {
+      "job_id": "59672536",
+      "role": "preflight_only",
+      "partition": "volta-gpu",
+      "state": "CANCELLED",
+      "reason": "torch_build_unsupported_for_v100_sm70",
+      "log_path": "logs/srr_batch4/SRRB4Pre_volta_59672536_20260720_134651.log"
+    },
+    {
+      "job_id": "59672892",
+      "role": "preflight_only",
+      "partition": "htzhulab",
+      "gres": "gpu:nvidia_a100-sxm4-80gb:1",
+      "state": "PENDING",
+      "reason": "Resources",
+      "logical_run_id": "srr_batch4_m10d3_full4scale_fold0_seed20260721_preflight_htzhulab_retry1"
+    }
+  ],
+  "runtime_paths": {
+    "result_root": "results/20260721_srr_batch4_forced_fold0_training",
+    "runtime_root": "results/20260721_srr_batch4_forced_fold0_training/runtime",
+    "log_root": "logs/srr_batch4"
+  },
+  "completion_boundary": {
+    "preflight_only_completed": false,
+    "formal_training_submitted": false,
+    "formal_training_completed": false,
+    "review_ready": false
+  }
+}

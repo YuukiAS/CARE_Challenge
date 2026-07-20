@@ -1,0 +1,40 @@
+{
+  "task_key": "20260721_srr_batch4_forced_fold0_training",
+  "state": "NEEDS_MONITOR",
+  "as_of_utc": "2026-07-20T17:52:41Z",
+  "scope": "preflight_monitor_only",
+  "formal_training_completion": false,
+  "attempts": [
+    {
+      "job_id": "59672536",
+      "job_name": "SRRB4Pre",
+      "partition": "volta-gpu",
+      "state": "CANCELLED",
+      "exit_code": "0:0",
+      "elapsed": "00:00:56",
+      "node": "g0311",
+      "log_path": "logs/srr_batch4/SRRB4Pre_volta_59672536_20260720_134651.log",
+      "training_credit": 0
+    },
+    {
+      "job_id": "59672892",
+      "job_name": "SRRB4Pre",
+      "partition": "htzhulab",
+      "state": "PENDING",
+      "exit_code": "0:0",
+      "elapsed": "00:00:00",
+      "node": "None assigned",
+      "training_credit": 0
+    }
+  ],
+  "aggregation": {
+    "aggregation_exit_code": "NOT_RUN_PENDING_PREFLIGHT",
+    "tracked_evidence_files": [
+      "results/20260721_srr_batch4_forced_fold0_training/controller_context.json",
+      "results/20260721_srr_batch4_forced_fold0_training/controller_ledger.csv",
+      "results/20260721_srr_batch4_forced_fold0_training/preflight_receipt.json",
+      "results/20260721_srr_batch4_forced_fold0_training/controller_dispatch_status.json"
+    ]
+  },
+  "next_action": "Monitor job 59672892 until terminal state; if preflight passes, submit formal compatible training race."
+}
