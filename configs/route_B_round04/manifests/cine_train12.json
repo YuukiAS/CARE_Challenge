@@ -1,0 +1,197 @@
+{
+  "case_count": 12,
+  "cases": [
+    {
+      "affine_header_sha256": "26a112d830fe5c908092471d8321c90047c22d8f31e6fe217bdd6bc7c57c6ed2",
+      "case_id": "Case1001",
+      "center": "center_alpha",
+      "frame_count": 30,
+      "image_path": "/users/a/e/aereinh/CARE/data/CARE_Challenge/CineMyoPS_train/center_alpha/Case1001_Cine.nii.gz",
+      "image_sha256": "e5cf6a5bf9798aa8a0d9d88d5026be3fec4f1d13af93e2e6f85371aaeda6e35b",
+      "image_shape": [
+        256,
+        256,
+        14,
+        30
+      ],
+      "label_path": "/users/a/e/aereinh/CARE/data/CARE_Challenge/CineMyoPS_train/center_alpha/Case1001_gd.nii.gz",
+      "label_sha256": "e3f820a2f5645a8406f3d07419302967bedcd0578bc8ee7b7c74bb3f9cc5bf65"
+    },
+    {
+      "affine_header_sha256": "f08ab807ab61bcd9cb80f2bbd1d2565305e7cdcade3befac842ee1cefaf63466",
+      "case_id": "Case1002",
+      "center": "center_alpha",
+      "frame_count": 30,
+      "image_path": "/users/a/e/aereinh/CARE/data/CARE_Challenge/CineMyoPS_train/center_alpha/Case1002_Cine.nii.gz",
+      "image_sha256": "70a792c44061e57de0bb39a667fee5ff20a855a135eae6cd28bb2dd1782f2cfa",
+      "image_shape": [
+        256,
+        256,
+        10,
+        30
+      ],
+      "label_path": "/users/a/e/aereinh/CARE/data/CARE_Challenge/CineMyoPS_train/center_alpha/Case1002_gd.nii.gz",
+      "label_sha256": "e4abf7f4af7e45e17e5ef38c0ab4b80cd588738796d1624e524ecac59e195208"
+    },
+    {
+      "affine_header_sha256": "d3d8ceddc5488a803c2b0bc513501189697b508515a90c2238043a66e0b0e969",
+      "case_id": "Case1003",
+      "center": "center_alpha",
+      "frame_count": 30,
+      "image_path": "/users/a/e/aereinh/CARE/data/CARE_Challenge/CineMyoPS_train/center_alpha/Case1003_Cine.nii.gz",
+      "image_sha256": "5d11edf22b60033df1c3f20b9ff846ab6dfc7ffda8dfb2d1d50c298454ee3bd0",
+      "image_shape": [
+        256,
+        256,
+        11,
+        30
+      ],
+      "label_path": "/users/a/e/aereinh/CARE/data/CARE_Challenge/CineMyoPS_train/center_alpha/Case1003_gd.nii.gz",
+      "label_sha256": "b90238a689078a1a760bb6e99ebabee0580080ff66df0449ad0826a162d1d2fc"
+    },
+    {
+      "affine_header_sha256": "99831eb8ec47b61e08f10284146a5295e1d79c34cbb0e0b23ff4a8d21db1fd88",
+      "case_id": "Case1004",
+      "center": "center_alpha",
+      "frame_count": 30,
+      "image_path": "/users/a/e/aereinh/CARE/data/CARE_Challenge/CineMyoPS_train/center_alpha/Case1004_Cine.nii.gz",
+      "image_sha256": "ed50e8f9b22003434ea701b4c38dd1e34879b087c44cfc51a3c3c00133bcbb23",
+      "image_shape": [
+        256,
+        256,
+        9,
+        30
+      ],
+      "label_path": "/users/a/e/aereinh/CARE/data/CARE_Challenge/CineMyoPS_train/center_alpha/Case1004_gd.nii.gz",
+      "label_sha256": "41eeae4ac365f5eba50aa2f48f32b681daeada8b4f8875f1228ff54a65ad64f0"
+    },
+    {
+      "affine_header_sha256": "019f334c748e04e468e3ec09696bc63c20da8d49fda12d69ef399e57a64c4b81",
+      "case_id": "Case1005",
+      "center": "center_alpha",
+      "frame_count": 30,
+      "image_path": "/users/a/e/aereinh/CARE/data/CARE_Challenge/CineMyoPS_train/center_alpha/Case1005_Cine.nii.gz",
+      "image_sha256": "9cffc00e05ee0c6cb85c8e3c7ad477c1ab3dc432475c7eb2f4889cacabaa491f",
+      "image_shape": [
+        256,
+        256,
+        11,
+        30
+      ],
+      "label_path": "/users/a/e/aereinh/CARE/data/CARE_Challenge/CineMyoPS_train/center_alpha/Case1005_gd.nii.gz",
+      "label_sha256": "d6657edd26c1bae3d893f607b25cca5ebb9a36d0d67be08182712d49f025e545"
+    },
+    {
+      "affine_header_sha256": "20210897f85fd58a620053833419ba5600c1ea2fe72729703e96e310144142fb",
+      "case_id": "Case1006",
+      "center": "center_alpha",
+      "frame_count": 30,
+      "image_path": "/users/a/e/aereinh/CARE/data/CARE_Challenge/CineMyoPS_train/center_alpha/Case1006_Cine.nii.gz",
+      "image_sha256": "be6087259553f5f2790e156231d46164bb150007bd9965f628988daf228d35b2",
+      "image_shape": [
+        256,
+        256,
+        13,
+        30
+      ],
+      "label_path": "/users/a/e/aereinh/CARE/data/CARE_Challenge/CineMyoPS_train/center_alpha/Case1006_gd.nii.gz",
+      "label_sha256": "e7651ff4bca63149a3fedf17abe4f7304f819e8a013b02ba4cf28e63115f73e9"
+    },
+    {
+      "affine_header_sha256": "835c974aba3f41e104efeb7b9c1831e114a4af64003bb5426e373cfb1a8b4703",
+      "case_id": "Case2001",
+      "center": "center_beta",
+      "frame_count": 30,
+      "image_path": "/users/a/e/aereinh/CARE/data/CARE_Challenge/CineMyoPS_train/center_beta/Case2001_Cine.nii.gz",
+      "image_sha256": "c9a27f600d3289f1544dd1f0ec53351a99f1f0deb78e24c74f60cf0339eae942",
+      "image_shape": [
+        268,
+        268,
+        5,
+        30
+      ],
+      "label_path": "/users/a/e/aereinh/CARE/data/CARE_Challenge/CineMyoPS_train/center_beta/Case2001_gd.nii.gz",
+      "label_sha256": "d2ea93867682095cf1c78682a8036c6783eef7f28693a283d19b6425f5dfdf2b"
+    },
+    {
+      "affine_header_sha256": "a0789419eb29446c87a18cf48bb555d1cd593157a00b0cf4f95de8cda185c68c",
+      "case_id": "Case2002",
+      "center": "center_beta",
+      "frame_count": 30,
+      "image_path": "/users/a/e/aereinh/CARE/data/CARE_Challenge/CineMyoPS_train/center_beta/Case2002_Cine.nii.gz",
+      "image_sha256": "b4954c4fe9a785b4a6fe36f983045f2f31c95916f94ac768f4cbd73bc0648c2d",
+      "image_shape": [
+        293,
+        292,
+        3,
+        30
+      ],
+      "label_path": "/users/a/e/aereinh/CARE/data/CARE_Challenge/CineMyoPS_train/center_beta/Case2002_gd.nii.gz",
+      "label_sha256": "d818ecef478d2b7177e1ab090eb750c52baef91ca65b8deba056bd44aa5f7799"
+    },
+    {
+      "affine_header_sha256": "9fa474855cdb9516652b931f2ca9ddd0798c3bc3ab008e80973dab8abdf5dcc9",
+      "case_id": "Case2003",
+      "center": "center_beta",
+      "frame_count": 30,
+      "image_path": "/users/a/e/aereinh/CARE/data/CARE_Challenge/CineMyoPS_train/center_beta/Case2003_Cine.nii.gz",
+      "image_sha256": "fcd72d6a8d5d9fd172158f19c7ec430d3d5d025fb00e0823f2bdba9bcfd69cb8",
+      "image_shape": [
+        320,
+        320,
+        3,
+        30
+      ],
+      "label_path": "/users/a/e/aereinh/CARE/data/CARE_Challenge/CineMyoPS_train/center_beta/Case2003_gd.nii.gz",
+      "label_sha256": "5038150b88ec24739a2382077d3cde3ea11393edd33c6e492e7fa113eed2b07b"
+    },
+    {
+      "affine_header_sha256": "f2f73f6d25c6966df9fbcb6859554be76674c6d852d73de2f2e76bf74fba0cf8",
+      "case_id": "Case2004",
+      "center": "center_beta",
+      "frame_count": 30,
+      "image_path": "/users/a/e/aereinh/CARE/data/CARE_Challenge/CineMyoPS_train/center_beta/Case2004_Cine.nii.gz",
+      "image_sha256": "81fd90e06519ee14de2948a818ab7188787d3c0d84e71bbf23216e432bbebf73",
+      "image_shape": [
+        255,
+        255,
+        5,
+        30
+      ],
+      "label_path": "/users/a/e/aereinh/CARE/data/CARE_Challenge/CineMyoPS_train/center_beta/Case2004_gd.nii.gz",
+      "label_sha256": "44ef8f6f31d08abf9e6f7c3da8fb47171773d6322d425c3fcf2ce88025024ca2"
+    },
+    {
+      "affine_header_sha256": "154581fc387238c113f6b22aa87ab60dbde62d29e182906c26db5af002a0a9af",
+      "case_id": "Case2005",
+      "center": "center_beta",
+      "frame_count": 30,
+      "image_path": "/users/a/e/aereinh/CARE/data/CARE_Challenge/CineMyoPS_train/center_beta/Case2005_Cine.nii.gz",
+      "image_sha256": "062d69bd42e420b4187be89043951d926f63a95d4c6fbbc32307ad78bc73f4d3",
+      "image_shape": [
+        275,
+        270,
+        4,
+        30
+      ],
+      "label_path": "/users/a/e/aereinh/CARE/data/CARE_Challenge/CineMyoPS_train/center_beta/Case2005_gd.nii.gz",
+      "label_sha256": "7532f2d55fd4976f0adefe115ac5c3efe7fa7b9d1339ca6382b83541b4fa59a9"
+    },
+    {
+      "affine_header_sha256": "df549587686b7556ef718076e013aee1f98f057cbb6ce4ca01d5a2ae6c930fbb",
+      "case_id": "Case2006",
+      "center": "center_beta",
+      "frame_count": 30,
+      "image_path": "/users/a/e/aereinh/CARE/data/CARE_Challenge/CineMyoPS_train/center_beta/Case2006_Cine.nii.gz",
+      "image_sha256": "93541601f46dd740887689711ff80daea3341a128b3959a76605b296473b5ae5",
+      "image_shape": [
+        287,
+        289,
+        3,
+        30
+      ],
+      "label_path": "/users/a/e/aereinh/CARE/data/CARE_Challenge/CineMyoPS_train/center_beta/Case2006_gd.nii.gz",
+      "label_sha256": "3039696a15d9709f06fe082f2118536cdf6a0c587458ab71eaea3fd3ea1b701a"
+    }
+  ]
+}

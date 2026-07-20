@@ -1,0 +1,13 @@
+case_id,attempted,ants_available,syn_executed,command,ants_version,parameter_json,transform_files,same_case_frame_metrics,runtime_seconds_recorded,failure_rows_recorded,copied_or_proxy,uses_proxy_after_metric,learned_minus_syn_mse_delta,status
+Case1001,True,False,False,ANTS_EXECUTABLE_NOT_FOUND,not_available,"{""transform"":""SyN"",""dimension"":3}",,True,False,True,False,False,,ANTS_EXECUTABLE_NOT_FOUND
+Case1002,True,False,False,ANTS_EXECUTABLE_NOT_FOUND,not_available,"{""transform"":""SyN"",""dimension"":3}",,True,False,True,False,False,,ANTS_EXECUTABLE_NOT_FOUND
+Case1003,True,False,False,ANTS_EXECUTABLE_NOT_FOUND,not_available,"{""transform"":""SyN"",""dimension"":3}",,True,False,True,False,False,,ANTS_EXECUTABLE_NOT_FOUND
+Case1004,True,False,False,ANTS_EXECUTABLE_NOT_FOUND,not_available,"{""transform"":""SyN"",""dimension"":3}",,True,False,True,False,False,,ANTS_EXECUTABLE_NOT_FOUND
+Case1005,True,False,False,ANTS_EXECUTABLE_NOT_FOUND,not_available,"{""transform"":""SyN"",""dimension"":3}",,True,False,True,False,False,,ANTS_EXECUTABLE_NOT_FOUND
+Case1006,True,False,False,ANTS_EXECUTABLE_NOT_FOUND,not_available,"{""transform"":""SyN"",""dimension"":3}",,True,False,True,False,False,,ANTS_EXECUTABLE_NOT_FOUND
+Case2001,True,False,False,ANTS_EXECUTABLE_NOT_FOUND,not_available,"{""transform"":""SyN"",""dimension"":3}",,True,False,True,False,False,,ANTS_EXECUTABLE_NOT_FOUND
+Case2002,True,False,False,ANTS_EXECUTABLE_NOT_FOUND,not_available,"{""transform"":""SyN"",""dimension"":3}",,True,False,True,False,False,,ANTS_EXECUTABLE_NOT_FOUND
+Case2003,True,False,False,ANTS_EXECUTABLE_NOT_FOUND,not_available,"{""transform"":""SyN"",""dimension"":3}",,True,False,True,False,False,,ANTS_EXECUTABLE_NOT_FOUND
+Case2004,True,False,False,ANTS_EXECUTABLE_NOT_FOUND,not_available,"{""transform"":""SyN"",""dimension"":3}",,True,False,True,False,False,,ANTS_EXECUTABLE_NOT_FOUND
+Case2005,True,False,False,ANTS_EXECUTABLE_NOT_FOUND,not_available,"{""transform"":""SyN"",""dimension"":3}",,True,False,True,False,False,,ANTS_EXECUTABLE_NOT_FOUND
+Case2006,True,False,False,ANTS_EXECUTABLE_NOT_FOUND,not_available,"{""transform"":""SyN"",""dimension"":3}",,True,False,True,False,False,,ANTS_EXECUTABLE_NOT_FOUND

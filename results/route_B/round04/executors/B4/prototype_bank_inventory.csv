@@ -1,0 +1,5 @@
+bank,source,count,bootstrap,ema
+scar_positive,oof_frozen,8,False,False
+scar_negative,oof_frozen,12,False,False
+edema_positive,oof_frozen,8,False,False
+edema_safe_negative,oof_frozen,12,False,False

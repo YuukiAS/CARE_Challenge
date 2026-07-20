@@ -1,0 +1,17 @@
+{
+  "cinema_weight_sha256": "c7a60195e6c0aa920b0d0d8221d2ea7a75b6a5ea570763c3bf4924398f5ae85f",
+  "completion_token": "ROUTE_B_ROUND03_B1_READY_FOR_CONTROLLER_MERGE",
+  "experts_per_scale": 16,
+  "modality_order": [
+    "LGE",
+    "T2",
+    "C0"
+  ],
+  "scales": [
+    32,
+    64,
+    128,
+    256
+  ],
+  "status": "PASS"
+}

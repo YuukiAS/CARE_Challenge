@@ -1,0 +1,9 @@
+{
+  "blocker_reason": "ANTS_EXECUTABLE_NOT_FOUND_OR_LEARNED_GATE_FAILED",
+  "decision": "CINE_REGISTRATION_BLOCKER",
+  "launch_B9_allowed": false,
+  "learned_runtime_faithful": true,
+  "status": "PASS",
+  "syn_command": "ANTS_EXECUTABLE_NOT_FOUND",
+  "syn_control_available": false
+}

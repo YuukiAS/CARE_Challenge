@@ -1,0 +1,28 @@
+require_token: ROUTE_B_ROUND04_B3_REPRESENTATION_READY_FOR_PROPOSAL
+source_input: results/route_B/round04/executors/B3
+expected_fixture_count: 8
+fixtures:
+  - name: ROUND03_B3_GLOBAL_STOP_REUSED
+    expected_failure_key: ROUND03_B3_GLOBAL_STOP_REUSED
+    expected_validator_exit: 1
+  - name: SAMPLER_CONTRACT_MISMATCH
+    expected_failure_key: SAMPLER_CONTRACT_MISMATCH
+    expected_validator_exit: 1
+  - name: FORMAL_TRAINING_INADEQUATE
+    expected_failure_key: FORMAL_TRAINING_INADEQUATE
+    expected_validator_exit: 1
+  - name: INVALID_SLOT_WEIGHT_NONZERO
+    expected_failure_key: INVALID_SLOT_WEIGHT_NONZERO
+    expected_validator_exit: 1
+  - name: NO_T2_EDEMA_NONZERO
+    expected_failure_key: NO_T2_EDEMA_NONZERO
+    expected_validator_exit: 1
+  - name: ROUTER_FAMILY_GRADIENT_MISSING
+    expected_failure_key: ROUTER_FAMILY_GRADIENT_MISSING
+    expected_validator_exit: 1
+  - name: LEARNED_ANATOMY_NONFINITE_OR_CONSTANT
+    expected_failure_key: LEARNED_ANATOMY_NONFINITE_OR_CONSTANT
+    expected_validator_exit: 1
+  - name: B3_FULL_ROUTE_NEGATIVE_TOKEN_FORBIDDEN
+    expected_failure_key: B3_FULL_ROUTE_NEGATIVE_TOKEN_FORBIDDEN
+    expected_validator_exit: 1

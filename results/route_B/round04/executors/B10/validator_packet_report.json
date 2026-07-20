@@ -1,0 +1,136 @@
+{
+  "errors": [],
+  "known_bad_rows": [
+    {
+      "fixture_count": 13,
+      "path": "results/route_B/round04/executors/B0/known_bad_matrix_report.json",
+      "present": true,
+      "stage": "B0",
+      "status": "PASS"
+    },
+    {
+      "fixture_count": 6,
+      "path": "results/route_B/round04/executors/B1/known_bad_matrix_report.json",
+      "present": true,
+      "stage": "B1",
+      "status": "PASS"
+    },
+    {
+      "fixture_count": 9,
+      "path": "results/route_B/round04/executors/B2/known_bad_matrix_report.json",
+      "present": true,
+      "stage": "B2",
+      "status": "PASS"
+    },
+    {
+      "fixture_count": 8,
+      "path": "results/route_B/round04/executors/B3/known_bad_matrix_report.json",
+      "present": true,
+      "stage": "B3",
+      "status": "PASS"
+    },
+    {
+      "fixture_count": 8,
+      "path": "results/route_B/round04/executors/B4/known_bad_matrix_report.json",
+      "present": true,
+      "stage": "B4",
+      "status": "PASS"
+    },
+    {
+      "fixture_count": 8,
+      "path": "results/route_B/round04/executors/B5/known_bad_matrix_report.json",
+      "present": true,
+      "stage": "B5",
+      "status": "PASS"
+    },
+    {
+      "fixture_count": 11,
+      "path": "results/route_B/round04/executors/B6/known_bad_matrix_report.json",
+      "present": true,
+      "stage": "B6",
+      "status": "PASS"
+    },
+    {
+      "fixture_count": 8,
+      "path": "results/route_B/round04/executors/B7/known_bad_matrix_report.json",
+      "present": true,
+      "stage": "B7",
+      "status": "PASS"
+    },
+    {
+      "fixture_count": 9,
+      "path": "results/route_B/round04/executors/B8/known_bad_matrix_report.json",
+      "present": true,
+      "stage": "B8",
+      "status": "PASS"
+    }
+  ],
+  "only_file_existence": false,
+  "semantic_checks_performed": true,
+  "status": "PASS",
+  "validator_rows": [
+    {
+      "completion_token": "ROUTE_B_ROUND04_B0_READY_FOR_CONTROLLER_MERGE",
+      "path": "results/route_B/round04/executors/B0/validator_report.json",
+      "present": true,
+      "stage": "B0",
+      "status": "PASS"
+    },
+    {
+      "completion_token": "ROUTE_B_ROUND04_B1_ANATOMY_REPAIR_IMPLEMENTED",
+      "path": "results/route_B/round04/executors/B1/validator_report.json",
+      "present": true,
+      "stage": "B1",
+      "status": "PASS"
+    },
+    {
+      "completion_token": "ROUTE_B_ROUND04_B2_IMPLEMENTATION_GATE_PASSED",
+      "path": "results/route_B/round04/executors/B2/validator_report.json",
+      "present": true,
+      "stage": "B2",
+      "status": "PASS"
+    },
+    {
+      "completion_token": "ROUTE_B_ROUND04_B3_REPRESENTATION_READY_FOR_PROPOSAL",
+      "path": "results/route_B/round04/executors/B3/validator_report.json",
+      "present": true,
+      "stage": "B3",
+      "status": "PASS"
+    },
+    {
+      "completion_token": "ROUTE_B_ROUND04_B4_PROPOSAL_STAGE_COMPLETE",
+      "path": "results/route_B/round04/executors/B4/validator_report.json",
+      "present": true,
+      "stage": "B4",
+      "status": "PASS"
+    },
+    {
+      "completion_token": "ROUTE_B_ROUND04_B5_REFINER_STAGE_COMPLETE",
+      "path": "results/route_B/round04/executors/B5/validator_report.json",
+      "present": true,
+      "stage": "B5",
+      "status": "PASS"
+    },
+    {
+      "completion_token": "ROUTE_B_ROUND04_B6_MYOPS_TERMINAL_EVIDENCE_READY",
+      "path": "results/route_B/round04/executors/B6/validator_report.json",
+      "present": true,
+      "stage": "B6",
+      "status": "PASS"
+    },
+    {
+      "completion_token": "ROUTE_B_ROUND04_B7_CINEMA_MATCHED_CONTROL_COMPLETE",
+      "path": "results/route_B/round04/executors/B7/validator_report.json",
+      "present": true,
+      "stage": "B7",
+      "status": "PASS"
+    },
+    {
+      "completion_token": "ROUTE_B_ROUND04_B8_REGISTRATION_STAGE_COMPLETE",
+      "path": "results/route_B/round04/executors/B8/validator_report.json",
+      "present": true,
+      "stage": "B8",
+      "status": "PASS"
+    }
+  ]
+}

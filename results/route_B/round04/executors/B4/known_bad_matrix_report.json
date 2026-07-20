@@ -1,0 +1,79 @@
+{
+  "fixture_count": 8,
+  "rows": [
+    {
+      "expected_failure_key": "OOF_CURRENT_CASE_LEAKAGE",
+      "failure_keys": [
+        "OOF_CURRENT_CASE_LEAKAGE"
+      ],
+      "name": "OOF_CURRENT_CASE_LEAKAGE",
+      "passed": true,
+      "validator_exit": 1
+    },
+    {
+      "expected_failure_key": "OOF_VALIDATION_OR_TEST_LEAKAGE",
+      "failure_keys": [
+        "OOF_VALIDATION_OR_TEST_LEAKAGE"
+      ],
+      "name": "OOF_VALIDATION_OR_TEST_LEAKAGE",
+      "passed": true,
+      "validator_exit": 1
+    },
+    {
+      "expected_failure_key": "BOOTSTRAP_OR_EMA_FORMAL_BANK",
+      "failure_keys": [
+        "BOOTSTRAP_OR_EMA_FORMAL_BANK"
+      ],
+      "name": "BOOTSTRAP_OR_EMA_FORMAL_BANK",
+      "passed": true,
+      "validator_exit": 1
+    },
+    {
+      "expected_failure_key": "NO_T2_EDEMA_NEGATIVE",
+      "failure_keys": [
+        "NO_T2_EDEMA_NEGATIVE"
+      ],
+      "name": "NO_T2_EDEMA_NEGATIVE",
+      "passed": true,
+      "validator_exit": 1
+    },
+    {
+      "expected_failure_key": "PROTOTYPE_SIMILARITY_DISCONNECTED",
+      "failure_keys": [
+        "PROTOTYPE_SIMILARITY_DISCONNECTED"
+      ],
+      "name": "PROTOTYPE_SIMILARITY_DISCONNECTED",
+      "passed": true,
+      "validator_exit": 1
+    },
+    {
+      "expected_failure_key": "CONSTANT_PROPOSAL",
+      "failure_keys": [
+        "CONSTANT_PROPOSAL"
+      ],
+      "name": "CONSTANT_PROPOSAL",
+      "passed": true,
+      "validator_exit": 1
+    },
+    {
+      "expected_failure_key": "HARD_ROI_DELETION",
+      "failure_keys": [
+        "HARD_ROI_DELETION"
+      ],
+      "name": "HARD_ROI_DELETION",
+      "passed": true,
+      "validator_exit": 1
+    },
+    {
+      "expected_failure_key": "WEAK_VALID_PROPOSAL_PREMATURE_STOP",
+      "failure_keys": [
+        "WEAK_VALID_PROPOSAL_PREMATURE_STOP"
+      ],
+      "name": "WEAK_VALID_PROPOSAL_PREMATURE_STOP",
+      "passed": true,
+      "validator_exit": 1
+    }
+  ],
+  "stage": "B4",
+  "status": "PASS"
+}

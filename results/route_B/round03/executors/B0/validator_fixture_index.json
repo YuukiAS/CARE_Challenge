@@ -1,0 +1,76 @@
+{
+  "fixture_count": 10,
+  "fixtures": [
+    {
+      "command": "/users/a/e/aereinh/CARE/envs/env_CARE/bin/python scripts/validation/route_B_round03/known_bad_fixture.py --fixture wrong_modality_order",
+      "expected_exit": 1,
+      "expected_failure_key": "ROUTE_B_ROUND03_WRONG_MODALITY_ORDER",
+      "mutation": "wrong_modality_order",
+      "name": "wrong_modality_order"
+    },
+    {
+      "command": "/users/a/e/aereinh/CARE/envs/env_CARE/bin/python scripts/validation/route_B_round03/known_bad_fixture.py --fixture bootstrap_formal_memory",
+      "expected_exit": 1,
+      "expected_failure_key": "ROUTE_B_ROUND03_BOOTSTRAP_FORMAL_MEMORY",
+      "mutation": "bootstrap_formal_memory",
+      "name": "bootstrap_formal_memory"
+    },
+    {
+      "command": "/users/a/e/aereinh/CARE/envs/env_CARE/bin/python scripts/validation/route_B_round03/known_bad_fixture.py --fixture ema_formal_memory",
+      "expected_exit": 1,
+      "expected_failure_key": "ROUTE_B_ROUND03_EMA_FORMAL_MEMORY",
+      "mutation": "ema_formal_memory",
+      "name": "ema_formal_memory"
+    },
+    {
+      "command": "/users/a/e/aereinh/CARE/envs/env_CARE/bin/python scripts/validation/route_B_round03/known_bad_fixture.py --fixture fake_cinema",
+      "expected_exit": 1,
+      "expected_failure_key": "ROUTE_B_ROUND03_FAKE_CINEMA",
+      "mutation": "fake_cinema",
+      "name": "fake_cinema"
+    },
+    {
+      "command": "/users/a/e/aereinh/CARE/envs/env_CARE/bin/python scripts/validation/route_B_round03/known_bad_fixture.py --fixture direct_velocity_displacement",
+      "expected_exit": 1,
+      "expected_failure_key": "ROUTE_B_ROUND03_DIRECT_VELOCITY_DISPLACEMENT",
+      "mutation": "direct_velocity_displacement",
+      "name": "direct_velocity_displacement"
+    },
+    {
+      "command": "/users/a/e/aereinh/CARE/envs/env_CARE/bin/python scripts/validation/route_B_round03/known_bad_fixture.py --fixture proxy_jacobian",
+      "expected_exit": 1,
+      "expected_failure_key": "ROUTE_B_ROUND03_PROXY_JACOBIAN",
+      "mutation": "proxy_jacobian",
+      "name": "proxy_jacobian"
+    },
+    {
+      "command": "/users/a/e/aereinh/CARE/envs/env_CARE/bin/python scripts/validation/route_B_round03/known_bad_fixture.py --fixture abstract_temporal_z",
+      "expected_exit": 1,
+      "expected_failure_key": "ROUTE_B_ROUND03_TEMPORAL_Z_ONLY",
+      "mutation": "abstract_temporal_z",
+      "name": "abstract_temporal_z"
+    },
+    {
+      "command": "/users/a/e/aereinh/CARE/envs/env_CARE/bin/python scripts/validation/route_B_round03/known_bad_fixture.py --fixture monitor_packet_completion",
+      "expected_exit": 1,
+      "expected_failure_key": "ROUTE_B_ROUND03_MONITOR_PACKET_IS_NOT_COMPLETION",
+      "mutation": "monitor_packet_completion",
+      "name": "monitor_packet_completion"
+    },
+    {
+      "command": "/users/a/e/aereinh/CARE/envs/env_CARE/bin/python scripts/validation/route_B_round03/known_bad_fixture.py --fixture bare_python_wrapper",
+      "expected_exit": 1,
+      "expected_failure_key": "ROUTE_B_ROUND03_BARE_PYTHON_WRAPPER",
+      "mutation": "bare_python_wrapper",
+      "name": "bare_python_wrapper"
+    },
+    {
+      "command": "/users/a/e/aereinh/CARE/envs/env_CARE/bin/python scripts/validation/route_B_round03/known_bad_fixture.py --fixture zero_myops_effect_plus_cine_gain",
+      "expected_exit": 1,
+      "expected_failure_key": "ROUTE_B_ROUND03_ZERO_MYOPS_EFFECT_PLUS_CINE_GAIN",
+      "mutation": "zero_myops_effect_plus_cine_gain",
+      "name": "zero_myops_effect_plus_cine_gain"
+    }
+  ],
+  "index_path": "results/route_B/round03/executors/B0/validator_fixture_index.json"
+}

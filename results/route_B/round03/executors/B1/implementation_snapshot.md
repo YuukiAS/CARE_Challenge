@@ -1,0 +1,8 @@
+# Route B Round03 B1 implementation snapshot
+
+completion_token: ROUTE_B_ROUND03_B1_READY_FOR_CONTROLLER_MERGE
+route_local_package: src/care_myocardium/route_B_round03
+shared_source_edits: false
+formal_memory: four_shard_fold_safe_oof_fitted_inference_frozen
+registration: seven_step_svf_scaling_and_squaring
+temporal_interface: registered_named_fields

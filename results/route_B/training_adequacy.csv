@@ -1,0 +1,9 @@
+criterion,observed,required,pass
+min_optimizer_steps,25000,500,True
+min_train_loop_seconds,1908.338,1800,True
+min_validation_events,2,2,True
+min_eval_cases_myops,10,10,True
+min_eval_cases_cine,5,5,True
+loss_decrease,2.432160->0.001281,last_loss < first_loss,True
+cache_isolation,results/route_B/runtime/bounded_train_eval,route_B runtime namespace,True
+same_split_anchor_baseline,nnUNet anchor predictions read-only; no validation upload,baseline available,True

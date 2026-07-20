@@ -1,0 +1,44 @@
+stage: B0
+source_input: results/route_B/round04/executors/B0
+require_token: ROUTE_B_ROUND04_B0_READY_FOR_CONTROLLER_MERGE
+expected_fixture_count: 13
+fixtures:
+  - name: STALE_PLANNING_BINDING
+    expected_failure_key: STALE_PLANNING_BINDING
+    expected_validator_exit: 1
+  - name: PLANNING_SOURCE_UNREADABLE
+    expected_failure_key: PLANNING_SOURCE_UNREADABLE
+    expected_validator_exit: 1
+  - name: PLANNING_SNAPSHOT_INCOMPLETE
+    expected_failure_key: PLANNING_SNAPSHOT_INCOMPLETE
+    expected_validator_exit: 1
+  - name: PLANNING_SNAPSHOT_HASH_MISMATCH
+    expected_failure_key: PLANNING_SNAPSHOT_HASH_MISMATCH
+    expected_validator_exit: 1
+  - name: CURRENT_REREVIEW_MISSING_OR_NOT_READY
+    expected_failure_key: CURRENT_REREVIEW_MISSING_OR_NOT_READY
+    expected_validator_exit: 1
+  - name: CURRENT_HANDOFF_MISSING
+    expected_failure_key: CURRENT_HANDOFF_MISSING
+    expected_validator_exit: 1
+  - name: CURRENT_COORDINATOR_RECEIPT_MISSING_OR_STALE
+    expected_failure_key: CURRENT_COORDINATOR_RECEIPT_MISSING_OR_STALE
+    expected_validator_exit: 1
+  - name: DISALLOWED_MAIN_DESCENDANT_PATH
+    expected_failure_key: DISALLOWED_MAIN_DESCENDANT_PATH
+    expected_validator_exit: 1
+  - name: ROUTE_EVIDENCE_REF_MISMATCH
+    expected_failure_key: ROUTE_EVIDENCE_REF_MISMATCH
+    expected_validator_exit: 1
+  - name: MANIFEST_HASH_MISMATCH
+    expected_failure_key: MANIFEST_HASH_MISMATCH
+    expected_validator_exit: 1
+  - name: ANATOMY_TARGET_LABEL_ROUNDTRIP_FAILED
+    expected_failure_key: ANATOMY_TARGET_LABEL_ROUNDTRIP_FAILED
+    expected_validator_exit: 1
+  - name: SAME_SPLIT_BASELINE_MISSING
+    expected_failure_key: SAME_SPLIT_BASELINE_MISSING
+    expected_validator_exit: 1
+  - name: VALIDATOR_MATRIX_INCOMPLETE
+    expected_failure_key: VALIDATOR_MATRIX_INCOMPLETE
+    expected_validator_exit: 1

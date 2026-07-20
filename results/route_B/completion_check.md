@@ -1,0 +1,9 @@
+# Route B Round04 Completion Check
+
+Completion token: `ROUTE_B_ROUND04_TERMINAL_PACKET_READY_FOR_REVIEW`
+
+status: `PASS`
+
+B6 token: `ROUTE_B_ROUND04_B6_MYOPS_TERMINAL_EVIDENCE_READY`
+
+Cine terminal class: `B8_CINE_REGISTRATION_BLOCKER_NO_B9`

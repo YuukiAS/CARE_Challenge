@@ -1,0 +1,551 @@
+{
+  "aggregation_command": "scripts/route_B_round04/finalize_round04.py --registry results/route_B/round04/controller_terminal_registry.json --ledger results/route_B/round04/controller_ledger.csv --snapshot results/route_B/round04/planning_snapshot --out results/route_B/round04/executors/B10",
+  "aggregation_command_exit_code": 0,
+  "completion_token": "ROUTE_B_ROUND04_TERMINAL_PACKET_READY_FOR_REVIEW",
+  "created_at_utc": "2026-07-20T00:44:16.196609+00:00",
+  "finalizer_dependency_coverage": {
+    "covered_job_ids": [
+      "59546347",
+      "59546548",
+      "59548190",
+      "59548314",
+      "59552549",
+      "59552550",
+      "59554239",
+      "59560352",
+      "59562056",
+      "59568601"
+    ],
+    "dependency": "afterany_all_started_attempts",
+    "ledger_path": "/users/a/e/aereinh/CARE_worktrees/route_B/results/route_B/round04/controller_ledger.csv",
+    "routing_ledger_path": "/users/a/e/aereinh/CARE_worktrees/route_B/results/route_B/round04/executors/B10/routing_ledger.csv",
+    "terminal_accounting": [
+      {
+        "elapsed": "00:00:03",
+        "end": "2026-07-19T14:53:15",
+        "exit_code": "2:0",
+        "job_id": "59546347",
+        "job_name": "RouteB04B1",
+        "node": "g1807htzh01",
+        "partition": "htzhulab",
+        "start": "2026-07-19T14:53:12",
+        "state": "FAILED",
+        "terminal_accounted": true
+      },
+      {
+        "elapsed": "00:00:00",
+        "end": "2026-07-19T14:53:31",
+        "exit_code": "0:0",
+        "job_id": "59546548",
+        "job_name": "RouteB04B1A100",
+        "node": "None assigned",
+        "partition": "a100-gpu",
+        "start": "None",
+        "state": "CANCELLED by 397557",
+        "terminal_accounted": true
+      },
+      {
+        "elapsed": "00:10:15",
+        "end": "2026-07-19T15:25:25",
+        "exit_code": "0:0",
+        "job_id": "59548190",
+        "job_name": "RouteB04B1",
+        "node": "g1807htzh01",
+        "partition": "htzhulab",
+        "start": "2026-07-19T15:15:10",
+        "state": "COMPLETED",
+        "terminal_accounted": true
+      },
+      {
+        "elapsed": "00:00:00",
+        "end": "2026-07-19T15:15:33",
+        "exit_code": "0:0",
+        "job_id": "59548314",
+        "job_name": "RouteB04B1A100",
+        "node": "None assigned",
+        "partition": "a100-gpu",
+        "start": "None",
+        "state": "CANCELLED by 397557",
+        "terminal_accounted": true
+      },
+      {
+        "elapsed": "02:02:44",
+        "end": "2026-07-19T17:40:01",
+        "exit_code": "0:0",
+        "job_id": "59552549",
+        "job_name": "RouteB04B7",
+        "node": "g1807htzh01",
+        "partition": "htzhulab",
+        "start": "2026-07-19T15:37:17",
+        "state": "COMPLETED",
+        "terminal_accounted": true
+      },
+      {
+        "elapsed": "00:31:51",
+        "end": "2026-07-19T16:15:14",
+        "exit_code": "0:0",
+        "job_id": "59552550",
+        "job_name": "RouteB04B3",
+        "node": "g180702",
+        "partition": "htzhulab",
+        "start": "2026-07-19T15:43:23",
+        "state": "COMPLETED",
+        "terminal_accounted": true
+      },
+      {
+        "elapsed": "00:40:31",
+        "end": "2026-07-19T17:01:14",
+        "exit_code": "0:0",
+        "job_id": "59554239",
+        "job_name": "RouteB04B4",
+        "node": "g180702",
+        "partition": "htzhulab",
+        "start": "2026-07-19T16:20:43",
+        "state": "COMPLETED",
+        "terminal_accounted": true
+      },
+      {
+        "elapsed": "00:50:43",
+        "end": "2026-07-19T18:05:25",
+        "exit_code": "0:0",
+        "job_id": "59560352",
+        "job_name": "RouteB04B5",
+        "node": "g180702",
+        "partition": "htzhulab",
+        "start": "2026-07-19T17:14:42",
+        "state": "COMPLETED",
+        "terminal_accounted": true
+      },
+      {
+        "elapsed": "02:00:13",
+        "end": "2026-07-19T19:51:10",
+        "exit_code": "0:0",
+        "job_id": "59562056",
+        "job_name": "RouteB04B8",
+        "node": "g1807htzh01",
+        "partition": "htzhulab",
+        "start": "2026-07-19T17:50:57",
+        "state": "COMPLETED",
+        "terminal_accounted": true
+      },
+      {
+        "elapsed": "00:40:11",
+        "end": "2026-07-19T20:39:22",
+        "exit_code": "0:0",
+        "job_id": "59568601",
+        "job_name": "RouteB04B6",
+        "node": "g1807htzh01",
+        "partition": "htzhulab",
+        "start": "2026-07-19T19:59:11",
+        "state": "COMPLETED",
+        "terminal_accounted": true
+      }
+    ]
+  },
+  "forbidden_actions": {
+    "cross_route_merge": false,
+    "final_scientific_decision": false,
+    "hosted_metric_claim": false,
+    "m11": false,
+    "push": false,
+    "review_md_written_by_controller": false,
+    "route_promotion": false,
+    "validation_packaging_upload": false
+  },
+  "git_head": "b9c7664da7cb1f1892fff37a4497722f31a0a96d",
+  "heavy_artifact_scan": {
+    "status": "PASS",
+    "tracked_heavy_artifacts": []
+  },
+  "known_bad_report": {
+    "fixture_count": 13,
+    "matrix_report": "results/route_B/round04/executors/B10/known_bad_matrix_report.json",
+    "status": "PASS"
+  },
+  "materialization_receipt": "/users/a/e/aereinh/CARE_worktrees/route_B/results/route_B/round04/planning_snapshot/materialization_receipt.json",
+  "planning_snapshot": "/users/a/e/aereinh/CARE_worktrees/route_B/results/route_B/round04/planning_snapshot",
+  "required_completion_token": "ROUTE_B_ROUND04_TERMINAL_PACKET_READY_FOR_REVIEW",
+  "route_negative_decision": "NOT_REVIEWED",
+  "route_promotion_decision": "NOT_REVIEWED",
+  "scientific_resolution_status": "AWAITING_REVIEW",
+  "stage_completions": {
+    "B0": {
+      "completion_token": "ROUTE_B_ROUND04_B0_READY_FOR_CONTROLLER_MERGE",
+      "created_at_utc": "2026-07-19T18:44:16.194757+00:00",
+      "next_stage": "B1_REPAIR_ANATOMY_TARGET_OPTIMIZATION",
+      "path": "results/route_B/round04/executors/B0/completion.json",
+      "present": true,
+      "required_completion_token": "ROUTE_B_ROUND04_B0_READY_FOR_CONTROLLER_MERGE",
+      "round04_training_credit": 0,
+      "stage_id": "B0",
+      "status": "PASS"
+    },
+    "B1": {
+      "case_ids": [
+        "Case1002",
+        "Case1007"
+      ],
+      "completion_token": "ROUTE_B_ROUND04_B1_ANATOMY_REPAIR_IMPLEMENTED",
+      "created_at_utc": "2026-07-19T19:25:23.823427+00:00",
+      "first_loss": 0.6552160978317261,
+      "last_loss": 0.03872348740696907,
+      "optimizer_steps": 467402,
+      "path": "results/route_B/round04/executors/B1/completion.json",
+      "present": true,
+      "required_completion_token": "ROUTE_B_ROUND04_B1_ANATOMY_REPAIR_IMPLEMENTED",
+      "stage_id": "B1",
+      "status": "PASS",
+      "train_loop_seconds": 600.0004463458899,
+      "validation_events": 934
+    },
+    "B2": {
+      "completion_token": "ROUTE_B_ROUND04_B2_IMPLEMENTATION_GATE_PASSED",
+      "created_at_utc": "2026-07-19T19:26:27.727993+00:00",
+      "errors": [],
+      "formal_training_submitted": false,
+      "monitor_state": false,
+      "path": "results/route_B/round04/executors/B2/completion.json",
+      "present": true,
+      "required_completion_token": "ROUTE_B_ROUND04_B2_IMPLEMENTATION_GATE_PASSED",
+      "stage_id": "B2",
+      "status": "PASS",
+      "submitted_only_state": false
+    },
+    "B3": {
+      "completion_token": "ROUTE_B_ROUND04_B3_REPRESENTATION_READY_FOR_PROPOSAL",
+      "created_at_utc": "2026-07-19T20:15:09.346880+00:00",
+      "eval_cases": 44,
+      "formal_training": true,
+      "optimizer_steps": 87187,
+      "path": "results/route_B/round04/executors/B3/completion.json",
+      "present": true,
+      "required_completion_token": "ROUTE_B_ROUND04_B3_REPRESENTATION_READY_FOR_PROPOSAL",
+      "stage_id": "B3",
+      "status": "PASS",
+      "train_loop_seconds": 1801.7054935699562
+    },
+    "B4": {
+      "completion_token": "ROUTE_B_ROUND04_B4_PROPOSAL_STAGE_COMPLETE",
+      "created_at_utc": "2026-07-19T21:01:10.673674+00:00",
+      "eval_cases": 44,
+      "formal_training": true,
+      "optimizer_steps": 85886,
+      "path": "results/route_B/round04/executors/B4/completion.json",
+      "present": true,
+      "required_completion_token": "ROUTE_B_ROUND04_B4_PROPOSAL_STAGE_COMPLETE",
+      "stage_id": "B4",
+      "status": "PASS",
+      "train_loop_seconds": 2402.6774257150246
+    },
+    "B5": {
+      "completion_token": "ROUTE_B_ROUND04_B5_REFINER_STAGE_COMPLETE",
+      "created_at_utc": "2026-07-19T22:05:23.232714+00:00",
+      "eval_cases": 44,
+      "formal_training": true,
+      "optimizer_steps": 87863,
+      "path": "results/route_B/round04/executors/B5/completion.json",
+      "present": true,
+      "required_completion_token": "ROUTE_B_ROUND04_B5_REFINER_STAGE_COMPLETE",
+      "stage_id": "B5",
+      "status": "PASS",
+      "train_loop_seconds": 3002.6900876590516
+    },
+    "B6": {
+      "completion_token": "ROUTE_B_ROUND04_B6_MYOPS_TERMINAL_EVIDENCE_READY",
+      "created_at_utc": "2026-07-20T00:39:20.842861+00:00",
+      "eval_cases": 44,
+      "formal_training": true,
+      "optimizer_steps": 111557,
+      "path": "results/route_B/round04/executors/B6/completion.json",
+      "present": true,
+      "required_completion_token": "ROUTE_B_ROUND04_B6_MYOPS_TERMINAL_EVIDENCE_READY",
+      "stage_id": "B6",
+      "status": "PASS",
+      "train_loop_seconds": 2400.014326528879
+    },
+    "B7": {
+      "completion_token": "ROUTE_B_ROUND04_B7_CINEMA_MATCHED_CONTROL_COMPLETE",
+      "created_at_utc": "2026-07-19T21:39:57.696129+00:00",
+      "eval_cases": 12,
+      "formal_training": true,
+      "path": "results/route_B/round04/executors/B7/completion.json",
+      "present": true,
+      "required_completion_token": "ROUTE_B_ROUND04_B7_CINEMA_MATCHED_CONTROL_COMPLETE",
+      "stage_id": "B7",
+      "status": "PASS"
+    },
+    "B8": {
+      "completion_token": "ROUTE_B_ROUND04_B8_REGISTRATION_STAGE_COMPLETE",
+      "created_at_utc": "2026-07-19T23:51:07.693576+00:00",
+      "eval_cases": 12,
+      "formal_training": true,
+      "method_decision": "CINE_REGISTRATION_BLOCKER",
+      "pair_receipts": 60,
+      "path": "results/route_B/round04/executors/B8/completion.json",
+      "present": true,
+      "required_completion_token": "ROUTE_B_ROUND04_B8_REGISTRATION_STAGE_COMPLETE",
+      "stage_id": "B8",
+      "status": "PASS"
+    }
+  },
+  "stage_training_adequacy_rows": [
+    {
+      "completion_token": "ROUTE_B_ROUND04_B0_READY_FOR_CONTROLLER_MERGE",
+      "eval_cases": "",
+      "expected_completion_token": "ROUTE_B_ROUND04_B0_READY_FOR_CONTROLLER_MERGE",
+      "formal_training": "",
+      "optimizer_steps": "",
+      "stage": "B0",
+      "status": "PASS",
+      "train_loop_seconds": "",
+      "validation_events": ""
+    },
+    {
+      "completion_token": "ROUTE_B_ROUND04_B1_ANATOMY_REPAIR_IMPLEMENTED",
+      "eval_cases": "",
+      "expected_completion_token": "ROUTE_B_ROUND04_B1_ANATOMY_REPAIR_IMPLEMENTED",
+      "formal_training": "",
+      "optimizer_steps": 467402,
+      "stage": "B1",
+      "status": "PASS",
+      "train_loop_seconds": 600.0004463458899,
+      "validation_events": 934
+    },
+    {
+      "completion_token": "ROUTE_B_ROUND04_B2_IMPLEMENTATION_GATE_PASSED",
+      "eval_cases": "",
+      "expected_completion_token": "ROUTE_B_ROUND04_B2_IMPLEMENTATION_GATE_PASSED",
+      "formal_training": "",
+      "optimizer_steps": "",
+      "stage": "B2",
+      "status": "PASS",
+      "train_loop_seconds": "",
+      "validation_events": ""
+    },
+    {
+      "completion_token": "ROUTE_B_ROUND04_B3_REPRESENTATION_READY_FOR_PROPOSAL",
+      "eval_cases": 44,
+      "expected_completion_token": "ROUTE_B_ROUND04_B3_REPRESENTATION_READY_FOR_PROPOSAL",
+      "formal_training": true,
+      "optimizer_steps": 87187,
+      "stage": "B3",
+      "status": "PASS",
+      "train_loop_seconds": 1801.7054935699562,
+      "validation_events": ""
+    },
+    {
+      "completion_token": "ROUTE_B_ROUND04_B4_PROPOSAL_STAGE_COMPLETE",
+      "eval_cases": 44,
+      "expected_completion_token": "ROUTE_B_ROUND04_B4_PROPOSAL_STAGE_COMPLETE",
+      "formal_training": true,
+      "optimizer_steps": 85886,
+      "stage": "B4",
+      "status": "PASS",
+      "train_loop_seconds": 2402.6774257150246,
+      "validation_events": ""
+    },
+    {
+      "completion_token": "ROUTE_B_ROUND04_B5_REFINER_STAGE_COMPLETE",
+      "eval_cases": 44,
+      "expected_completion_token": "ROUTE_B_ROUND04_B5_REFINER_STAGE_COMPLETE",
+      "formal_training": true,
+      "optimizer_steps": 87863,
+      "stage": "B5",
+      "status": "PASS",
+      "train_loop_seconds": 3002.6900876590516,
+      "validation_events": ""
+    },
+    {
+      "completion_token": "ROUTE_B_ROUND04_B6_MYOPS_TERMINAL_EVIDENCE_READY",
+      "eval_cases": 44,
+      "expected_completion_token": "ROUTE_B_ROUND04_B6_MYOPS_TERMINAL_EVIDENCE_READY",
+      "formal_training": true,
+      "optimizer_steps": 111557,
+      "stage": "B6",
+      "status": "PASS",
+      "train_loop_seconds": 2400.014326528879,
+      "validation_events": ""
+    },
+    {
+      "completion_token": "ROUTE_B_ROUND04_B7_CINEMA_MATCHED_CONTROL_COMPLETE",
+      "eval_cases": 12,
+      "expected_completion_token": "ROUTE_B_ROUND04_B7_CINEMA_MATCHED_CONTROL_COMPLETE",
+      "formal_training": true,
+      "optimizer_steps": "",
+      "stage": "B7",
+      "status": "PASS",
+      "train_loop_seconds": "",
+      "validation_events": ""
+    },
+    {
+      "completion_token": "ROUTE_B_ROUND04_B8_REGISTRATION_STAGE_COMPLETE",
+      "eval_cases": 12,
+      "expected_completion_token": "ROUTE_B_ROUND04_B8_REGISTRATION_STAGE_COMPLETE",
+      "formal_training": true,
+      "optimizer_steps": "",
+      "stage": "B8",
+      "status": "PASS",
+      "train_loop_seconds": "",
+      "validation_events": ""
+    },
+    {
+      "completion_token": "B9_NOT_LAUNCHED_BECAUSE_B8_CINE_REGISTRATION_BLOCKER",
+      "eval_cases": "",
+      "expected_completion_token": "ROUTE_B_ROUND04_B9_CINE_TERMINAL_EVIDENCE_READY",
+      "formal_training": "",
+      "optimizer_steps": "",
+      "stage": "B9",
+      "status": "SKIPPED_DUE_B8_REGISTRATION_BLOCKER",
+      "train_loop_seconds": "",
+      "validation_events": ""
+    }
+  ],
+  "status": "PASS",
+  "terminal_branch_coverage": {
+    "b1_failure_finalizer_launch_covered": true,
+    "b2_external_blocker_finalizer_launch_covered": true,
+    "b6_terminal_accounted": true,
+    "b7_blocker_finalizer_launch_covered": true,
+    "b8_registration_blocker_finalizer_launch_covered": true,
+    "b9_absence_justified": true,
+    "b9_launch_allowed": false,
+    "cine_lane_terminal_class": "B8_CINE_REGISTRATION_BLOCKER_NO_B9",
+    "early_terminal_branches_reachable": true
+  },
+  "validator_packet_report": {
+    "errors": [],
+    "known_bad_rows": [
+      {
+        "fixture_count": 13,
+        "path": "results/route_B/round04/executors/B0/known_bad_matrix_report.json",
+        "present": true,
+        "stage": "B0",
+        "status": "PASS"
+      },
+      {
+        "fixture_count": 6,
+        "path": "results/route_B/round04/executors/B1/known_bad_matrix_report.json",
+        "present": true,
+        "stage": "B1",
+        "status": "PASS"
+      },
+      {
+        "fixture_count": 9,
+        "path": "results/route_B/round04/executors/B2/known_bad_matrix_report.json",
+        "present": true,
+        "stage": "B2",
+        "status": "PASS"
+      },
+      {
+        "fixture_count": 8,
+        "path": "results/route_B/round04/executors/B3/known_bad_matrix_report.json",
+        "present": true,
+        "stage": "B3",
+        "status": "PASS"
+      },
+      {
+        "fixture_count": 8,
+        "path": "results/route_B/round04/executors/B4/known_bad_matrix_report.json",
+        "present": true,
+        "stage": "B4",
+        "status": "PASS"
+      },
+      {
+        "fixture_count": 8,
+        "path": "results/route_B/round04/executors/B5/known_bad_matrix_report.json",
+        "present": true,
+        "stage": "B5",
+        "status": "PASS"
+      },
+      {
+        "fixture_count": 11,
+        "path": "results/route_B/round04/executors/B6/known_bad_matrix_report.json",
+        "present": true,
+        "stage": "B6",
+        "status": "PASS"
+      },
+      {
+        "fixture_count": 8,
+        "path": "results/route_B/round04/executors/B7/known_bad_matrix_report.json",
+        "present": true,
+        "stage": "B7",
+        "status": "PASS"
+      },
+      {
+        "fixture_count": 9,
+        "path": "results/route_B/round04/executors/B8/known_bad_matrix_report.json",
+        "present": true,
+        "stage": "B8",
+        "status": "PASS"
+      }
+    ],
+    "only_file_existence": false,
+    "semantic_checks_performed": true,
+    "status": "PASS",
+    "validator_rows": [
+      {
+        "completion_token": "ROUTE_B_ROUND04_B0_READY_FOR_CONTROLLER_MERGE",
+        "path": "results/route_B/round04/executors/B0/validator_report.json",
+        "present": true,
+        "stage": "B0",
+        "status": "PASS"
+      },
+      {
+        "completion_token": "ROUTE_B_ROUND04_B1_ANATOMY_REPAIR_IMPLEMENTED",
+        "path": "results/route_B/round04/executors/B1/validator_report.json",
+        "present": true,
+        "stage": "B1",
+        "status": "PASS"
+      },
+      {
+        "completion_token": "ROUTE_B_ROUND04_B2_IMPLEMENTATION_GATE_PASSED",
+        "path": "results/route_B/round04/executors/B2/validator_report.json",
+        "present": true,
+        "stage": "B2",
+        "status": "PASS"
+      },
+      {
+        "completion_token": "ROUTE_B_ROUND04_B3_REPRESENTATION_READY_FOR_PROPOSAL",
+        "path": "results/route_B/round04/executors/B3/validator_report.json",
+        "present": true,
+        "stage": "B3",
+        "status": "PASS"
+      },
+      {
+        "completion_token": "ROUTE_B_ROUND04_B4_PROPOSAL_STAGE_COMPLETE",
+        "path": "results/route_B/round04/executors/B4/validator_report.json",
+        "present": true,
+        "stage": "B4",
+        "status": "PASS"
+      },
+      {
+        "completion_token": "ROUTE_B_ROUND04_B5_REFINER_STAGE_COMPLETE",
+        "path": "results/route_B/round04/executors/B5/validator_report.json",
+        "present": true,
+        "stage": "B5",
+        "status": "PASS"
+      },
+      {
+        "completion_token": "ROUTE_B_ROUND04_B6_MYOPS_TERMINAL_EVIDENCE_READY",
+        "path": "results/route_B/round04/executors/B6/validator_report.json",
+        "present": true,
+        "stage": "B6",
+        "status": "PASS"
+      },
+      {
+        "completion_token": "ROUTE_B_ROUND04_B7_CINEMA_MATCHED_CONTROL_COMPLETE",
+        "path": "results/route_B/round04/executors/B7/validator_report.json",
+        "present": true,
+        "stage": "B7",
+        "status": "PASS"
+      },
+      {
+        "completion_token": "ROUTE_B_ROUND04_B8_REGISTRATION_STAGE_COMPLETE",
+        "path": "results/route_B/round04/executors/B8/validator_report.json",
+        "present": true,
+        "stage": "B8",
+        "status": "PASS"
+      }
+    ]
+  }
+}

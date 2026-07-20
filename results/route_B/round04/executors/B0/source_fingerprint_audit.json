@@ -1,0 +1,42 @@
+{
+  "contract_path": "results/route_B/round04/planning_snapshot/prompts/routes/route_B_round04_controller_contract.md",
+  "contract_sha256": "a71d7999c7f995d492312eaf051cae08d0d2e0df4507775ec5b7ef4ea2a0c086",
+  "created_at_utc": "2026-07-19T18:44:15.983101+00:00",
+  "expected_route_B": "b9c7664da7cb1f1892fff37a4497722f31a0a96d",
+  "git_head": "b9c7664da7cb1f1892fff37a4497722f31a0a96d",
+  "origin_route_B": "b9c7664da7cb1f1892fff37a4497722f31a0a96d",
+  "round03_inheritance_credit": "zero_round04_training_credit",
+  "snapshot_receipt_sha256": "e9353f1186256bf95e0ba2338339981cf3f74ed207549554ad0f235bc8ea2681",
+  "snapshot_root": "results/route_B/round04/planning_snapshot",
+  "source_blobs": {
+    "scripts/route_B_round03/build_round03_assets.py": "fe8482c36ba3dd13aa47b14a6e2623194f27cbfc",
+    "scripts/route_B_round03/runtime_common.py": "26e2e6b64bbdf5b0316022e4e538234d73cee6c9",
+    "scripts/route_B_round04/build_round04_assets.py": "",
+    "scripts/training/route_B_round03/train_cinema_control.py": "05d37dd5f85ad6d08e11d9849a8b5a6bf036ed30",
+    "scripts/training/route_B_round03/train_myops.py": "ce0844bc2d5a9bd1d3b813b21d3c7d3dc4a367db",
+    "scripts/training/route_B_round03/train_registration.py": "20966a02c37fdaf0aa021a026bd441faedfc6ace",
+    "scripts/training/route_B_round03/train_temporal.py": "29079fa1a72238ebfe43e58f831f65b193e623f8",
+    "scripts/validation/route_B_round04/validate_B0_binding_manifests.py": "",
+    "src/care_myocardium/route_B_round03/cinema.py": "c4f3636bf6fb479018542b56c9b5704ce6efb583",
+    "src/care_myocardium/route_B_round03/contract.py": "82bc2b1d2cb1ea97b4ef7378f5754cdc739bee5b",
+    "src/care_myocardium/route_B_round03/model.py": "1b9694989b34fc278520460fe07acad5911fb4d9",
+    "src/care_myocardium/route_B_round03/registration.py": "acf93291a9c508006b09216c4e1dbd60c22f1e63",
+    "src/care_myocardium/route_B_round03/temporal.py": "ea75d61fb57b72005d077f75fe275eb69dd35a74"
+  },
+  "source_sha256": {
+    "scripts/route_B_round03/build_round03_assets.py": "34221253919b76e3ae4cd0ef19d9ffb14850d37cb2389e23e99aa437c5b0846d",
+    "scripts/route_B_round03/runtime_common.py": "16760262605309d699db30cac8d1ee30ca89c6cc7e4e8f370ee7efd54ff577f4",
+    "scripts/route_B_round04/build_round04_assets.py": "1aafa0869d9e0dcd98468c55727970b78c5238effee47555453777553bef391f",
+    "scripts/training/route_B_round03/train_cinema_control.py": "b4250d657e0e85eb9e44f34435bce92378894625eb19cbcc0533e994667afad3",
+    "scripts/training/route_B_round03/train_myops.py": "01bbbe1344ed06f0f62bc06a5d7bcb2165bf45d82055384963399212ff5b4b22",
+    "scripts/training/route_B_round03/train_registration.py": "24fbf01869f02fa5b70b72fff179e03dbfe7225e1ad121fc6a9b1dcade538198",
+    "scripts/training/route_B_round03/train_temporal.py": "cf91e4e6aa4c7592eb7f65b9fe195b22132f2bfd25bad54c6b991db45df9965d",
+    "scripts/validation/route_B_round04/validate_B0_binding_manifests.py": "f956d8cd59bdab5d5fad51b775e48951c0d2874a7e3e7aa424fdd7d6afecaf3b",
+    "src/care_myocardium/route_B_round03/cinema.py": "2f2298bd5b646745005f8f081ee4979e665d70efe5c56ab4cf3139350cfa214b",
+    "src/care_myocardium/route_B_round03/contract.py": "0b0a2b546769685e685b496b46799287751c08fb256a5fe5f090db53b127e2f9",
+    "src/care_myocardium/route_B_round03/model.py": "66da99fd2dbd2431f52150cce34bf1bea8fc302b0ffb2b0d8ced4bc0667bef88",
+    "src/care_myocardium/route_B_round03/registration.py": "9fe262cd343352383d92016fac35bbfcb7e18a6e5e13eb6227370151a5441210",
+    "src/care_myocardium/route_B_round03/temporal.py": "036ed3bba291ae4c7c4770750328256fce18167a0b88f614983f57492f6a11e9"
+  },
+  "status": "PASS"
+}

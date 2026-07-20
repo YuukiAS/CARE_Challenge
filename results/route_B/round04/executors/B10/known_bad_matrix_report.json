@@ -1,0 +1,124 @@
+{
+  "fixture_count": 13,
+  "rows": [
+    {
+      "expected_failure_key": "EARLY_TERMINAL_BRANCH_UNREACHABLE",
+      "failure_keys": [
+        "EARLY_TERMINAL_BRANCH_UNREACHABLE"
+      ],
+      "name": "early_terminal_branch_unreachable",
+      "passed": true,
+      "validator_exit": 1
+    },
+    {
+      "expected_failure_key": "B1_FAILURE_FINALIZER_NOT_LAUNCHED",
+      "failure_keys": [
+        "B1_FAILURE_FINALIZER_NOT_LAUNCHED"
+      ],
+      "name": "b1_failure_finalizer_not_launched",
+      "passed": true,
+      "validator_exit": 1
+    },
+    {
+      "expected_failure_key": "B2_EXTERNAL_BLOCKER_FINALIZER_NOT_LAUNCHED",
+      "failure_keys": [
+        "B2_EXTERNAL_BLOCKER_FINALIZER_NOT_LAUNCHED"
+      ],
+      "name": "b2_external_blocker_finalizer_not_launched",
+      "passed": true,
+      "validator_exit": 1
+    },
+    {
+      "expected_failure_key": "B7_BLOCKER_FINALIZER_NOT_LAUNCHED",
+      "failure_keys": [
+        "B7_BLOCKER_FINALIZER_NOT_LAUNCHED"
+      ],
+      "name": "b7_blocker_finalizer_not_launched",
+      "passed": true,
+      "validator_exit": 1
+    },
+    {
+      "expected_failure_key": "B8_REGISTRATION_BLOCKER_FINALIZER_NOT_LAUNCHED",
+      "failure_keys": [
+        "B8_REGISTRATION_BLOCKER_FINALIZER_NOT_LAUNCHED"
+      ],
+      "name": "b8_registration_blocker_finalizer_not_launched",
+      "passed": true,
+      "validator_exit": 1
+    },
+    {
+      "expected_failure_key": "TIMEOUT_PREEMPTION_CANCELLED_LOSER_NOT_ACCOUNTED",
+      "failure_keys": [
+        "TIMEOUT_PREEMPTION_CANCELLED_LOSER_NOT_ACCOUNTED"
+      ],
+      "name": "timeout_preemption_cancelled_loser_not_accounted",
+      "passed": true,
+      "validator_exit": 1
+    },
+    {
+      "expected_failure_key": "SUCCESSFUL_B6_B9_NOT_ACCOUNTED",
+      "failure_keys": [
+        "SUCCESSFUL_B6_B9_NOT_ACCOUNTED"
+      ],
+      "name": "successful_b6_b9_not_accounted",
+      "passed": true,
+      "validator_exit": 1
+    },
+    {
+      "expected_failure_key": "PENDING_OR_RUNNING_PRESENTED_AS_COMPLETE",
+      "failure_keys": [
+        "PENDING_OR_RUNNING_PRESENTED_AS_COMPLETE"
+      ],
+      "name": "pending_or_running_presented_as_complete",
+      "passed": true,
+      "validator_exit": 1
+    },
+    {
+      "expected_failure_key": "AGGREGATION_MISSING_OR_NONZERO",
+      "failure_keys": [
+        "AGGREGATION_MISSING_OR_NONZERO"
+      ],
+      "name": "aggregation_missing_or_nonzero",
+      "passed": true,
+      "validator_exit": 1
+    },
+    {
+      "expected_failure_key": "SUPERSEDED_RECEIPT_NOT_RECONCILED",
+      "failure_keys": [
+        "SUPERSEDED_RECEIPT_NOT_RECONCILED"
+      ],
+      "name": "superseded_receipt_not_reconciled",
+      "passed": true,
+      "validator_exit": 1
+    },
+    {
+      "expected_failure_key": "CONTROLLER_PUSH_OR_REVIEW_AUTHORITY_VIOLATION",
+      "failure_keys": [
+        "CONTROLLER_PUSH_OR_REVIEW_AUTHORITY_VIOLATION"
+      ],
+      "name": "controller_push_or_review_authority_violation",
+      "passed": true,
+      "validator_exit": 1
+    },
+    {
+      "expected_failure_key": "HEAVY_ARTIFACT_TRACKED",
+      "failure_keys": [
+        "HEAVY_ARTIFACT_TRACKED"
+      ],
+      "name": "heavy_artifact_tracked",
+      "passed": true,
+      "validator_exit": 1
+    },
+    {
+      "expected_failure_key": "VALIDATOR_FILE_EXISTENCE_ONLY",
+      "failure_keys": [
+        "VALIDATOR_FILE_EXISTENCE_ONLY"
+      ],
+      "name": "validator_file_existence_only",
+      "passed": true,
+      "validator_exit": 1
+    }
+  ],
+  "stage": "B10",
+  "status": "PASS"
+}

@@ -1,0 +1,11 @@
+{
+  "baseline_role": "same-split anchor/reference for Round04 fresh B6 comparison, not Round04 training credit",
+  "case_count": 44,
+  "round03_help_harm_case_count": 44,
+  "round03_help_harm_status": "PASS",
+  "round03_safety_case_count": 44,
+  "round03_safety_status": "PASS",
+  "same_split_manifest": "configs/route_B_round04/manifests/myops_fold0_primary_44.json",
+  "same_split_manifest_sha256": "c2de7575fe7c47ab78382c16dba28d8f4393aee4f7ce999ca748ab041307f165",
+  "status": "PASS"
+}

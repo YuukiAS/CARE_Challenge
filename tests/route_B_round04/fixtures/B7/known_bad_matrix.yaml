@@ -1,0 +1,28 @@
+require_token: ROUTE_B_ROUND04_B7_CINEMA_MATCHED_CONTROL_COMPLETE
+source_input: results/route_B/round04/executors/B7
+expected_fixture_count: 8
+fixtures:
+  - name: FAKE_CINEMA_SOURCE_OR_WRONG_SHA
+    expected_failure_key: FAKE_CINEMA_SOURCE_OR_WRONG_SHA
+    expected_validator_exit: 1
+  - name: CINEMA_LICENSE_OR_COMMIT_MISSING
+    expected_failure_key: CINEMA_LICENSE_OR_COMMIT_MISSING
+    expected_validator_exit: 1
+  - name: PRETRAINED_RANDOM_ARCHITECTURE_MISMATCH
+    expected_failure_key: PRETRAINED_RANDOM_ARCHITECTURE_MISMATCH
+    expected_validator_exit: 1
+  - name: DOWNSTREAM_INITIALIZATION_MISMATCH
+    expected_failure_key: DOWNSTREAM_INITIALIZATION_MISMATCH
+    expected_validator_exit: 1
+  - name: CASES_FRAMES_OPTIMIZER_BUDGET_MISMATCH
+    expected_failure_key: CASES_FRAMES_OPTIMIZER_BUDGET_MISMATCH
+    expected_validator_exit: 1
+  - name: SOURCE_INITIALIZATION_NOT_ONLY_DIFFERENCE
+    expected_failure_key: SOURCE_INITIALIZATION_NOT_ONLY_DIFFERENCE
+    expected_validator_exit: 1
+  - name: SELECTED_CHECKPOINT_NOT_RELOADED
+    expected_failure_key: SELECTED_CHECKPOINT_NOT_RELOADED
+    expected_validator_exit: 1
+  - name: INTERNAL_SMALL_WRAPPER_USED_AS_OFFICIAL
+    expected_failure_key: INTERNAL_SMALL_WRAPPER_USED_AS_OFFICIAL
+    expected_validator_exit: 1

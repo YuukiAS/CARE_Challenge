@@ -1,0 +1,4 @@
+slot,availability,max_weight
+valid_LGE,1,0.5
+valid_T2,1,0.5
+missing_T2,0,0.0

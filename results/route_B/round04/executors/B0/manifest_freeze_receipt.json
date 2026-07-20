@@ -1,0 +1,47 @@
+{
+  "center_counts": {
+    "CenterA": 17,
+    "CenterB": 7,
+    "CenterC": 9,
+    "CenterE": 1,
+    "CenterF": 2,
+    "CenterG": 1,
+    "CenterH": 7
+  },
+  "cine_case_count": 12,
+  "cine_center_counts": {
+    "center_alpha": 6,
+    "center_beta": 6
+  },
+  "copied_round04_manifests": {
+    "cine_train12.json": {
+      "case_count": 12,
+      "path": "configs/route_B_round04/manifests/cine_train12.json",
+      "sha256": "bda5ff9eec3976f4db801e49890c516ed22566330036467fc8a200be9e650cd2"
+    },
+    "myops_fold0_primary_44.json": {
+      "case_count": 44,
+      "path": "configs/route_B_round04/manifests/myops_fold0_primary_44.json",
+      "sha256": "c2de7575fe7c47ab78382c16dba28d8f4393aee4f7ce999ca748ab041307f165"
+    },
+    "myops_sampler_strata.json": {
+      "case_count": null,
+      "path": "configs/route_B_round04/manifests/myops_sampler_strata.json",
+      "sha256": "6dd26194ecfc1f8794a0f7022c883893e2193e7b5ea47add49a34a373ae108eb"
+    },
+    "myops_t2_edema_positive.json": {
+      "case_count": 16,
+      "path": "configs/route_B_round04/manifests/myops_t2_edema_positive.json",
+      "sha256": "986c1d6399c818ec02cba3126209d7684b7963b7b1709bc075ecef6dfdce17c2"
+    }
+  },
+  "created_at_utc": "2026-07-19T18:44:15.982855+00:00",
+  "min_frame_count": 30,
+  "no_raw_data_published": true,
+  "primary_case_count": 44,
+  "round03_manifest_sha256": "44a58e53d83b20d50fe6ce0a4bf205d6a767b2f6cfcfb52b3a059fdc7cad61e6",
+  "scar_positive_count": 43,
+  "source_round03_manifest_freeze": "/users/a/e/aereinh/CARE_worktrees/route_B/results/route_B/round03/executors/B0/manifest_freeze_receipt.json",
+  "status": "PASS",
+  "t2_edema_positive_count": 16
+}

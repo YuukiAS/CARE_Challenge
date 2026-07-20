@@ -1,0 +1,13 @@
+{
+  "config": "configs/route_B_round03/formal.yaml",
+  "config_exists": true,
+  "created_at_utc": "2026-07-18T09:07:02.568905+00:00",
+  "cuda_available": false,
+  "cuda_visible_devices": "",
+  "executor": "B2",
+  "official_cinema_package_available": true,
+  "partition": "volta-gpu",
+  "python_executable": "/users/a/e/aereinh/CARE/envs/env_CARE/bin/python",
+  "status": "PASS",
+  "torch_version": "2.11.0+cu130"
+}

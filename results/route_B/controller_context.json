@@ -1,0 +1,45 @@
+{
+  "bounded_train_eval_run": true,
+  "formal_training_submitted": false,
+  "generated_at_utc": "2026-07-17T03:07:49.670117+00:00",
+  "git_head_before_continuation": "00a64683a0a58bd0b194cc0a136c6a01fa62e0fd",
+  "post_completion_aggregation_run": true,
+  "route_id": "route_B",
+  "slurm_jobs_submitted": [
+    {
+      "elapsed": "00:32:02",
+      "end": "2026-07-16T23:07:51",
+      "exit_code": "0:0",
+      "job_id": "59364846",
+      "node": "g180702",
+      "partition": "htzhulab",
+      "role": "adequacy_race_winner_completed",
+      "start": "2026-07-16T22:35:49",
+      "state": "COMPLETED"
+    },
+    {
+      "elapsed": "00:00:00",
+      "end": "2026-07-16T22:37:30",
+      "exit_code": "0:0",
+      "job_id": "59364845",
+      "node": "None assigned",
+      "partition": "a100-gpu",
+      "role": "adequacy_race_loser_cancelled",
+      "start": "None",
+      "state": "CANCELLED by 397557"
+    },
+    {
+      "elapsed": "00:00:00",
+      "end": "2026-07-16T22:37:30",
+      "exit_code": "0:0",
+      "job_id": "59364847",
+      "node": "None assigned",
+      "partition": "volta-gpu",
+      "role": "adequacy_race_loser_cancelled",
+      "start": "None",
+      "state": "CANCELLED by 397557"
+    }
+  ],
+  "status": "ROUTE_B_READY_FOR_REVIEW",
+  "task": "RouteB-Controller-continuation"
+}

@@ -1,0 +1,6 @@
+subgroup,row_count,mean_scar_delta_local,mean_edema_delta_local,terminal_summary_not_ablation
+scar_positive,43,0.015,0.006698,True
+t2_present_edema_positive,16,0.015,0.018,True
+no_t2_safety,28,0.014464,0.0,True
+CenterB,7,0.015,0.018,True
+CenterC,9,0.015,0.018,True

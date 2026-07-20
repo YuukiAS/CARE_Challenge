@@ -1,0 +1,64 @@
+{
+  "b1_dependency_token": "ROUTE_B_ROUND04_B1_ANATOMY_REPAIR_IMPLEMENTED",
+  "edema_proposal_shape": [
+    2,
+    1,
+    8,
+    16,
+    16
+  ],
+  "expert_families_per_scale": 16,
+  "experts_per_scale": 16,
+  "invalid_weight_max": 0.0,
+  "modality_order": [
+    "LGE",
+    "T2",
+    "C0"
+  ],
+  "myops_final_logits_shape": [
+    2,
+    6,
+    8,
+    16,
+    16
+  ],
+  "no_t2_edema_delta_abs_max": 0.0,
+  "route_b_owned_changed_logit_l1": 0.1067180261015892,
+  "scale_channels": [
+    32,
+    64,
+    128,
+    256
+  ],
+  "scar_proposal_shape": [
+    2,
+    1,
+    8,
+    16,
+    16
+  ],
+  "status": "PASS",
+  "temporal_logits_shape": [
+    1,
+    4,
+    8,
+    16,
+    16
+  ],
+  "temporal_required_fields": [
+    "reference_logits",
+    "reference_features",
+    "reference_uncertainty",
+    "registered_logits",
+    "registered_features",
+    "registered_uncertainty",
+    "velocity",
+    "integrated_displacement",
+    "jacobian",
+    "motion_magnitude",
+    "texture_residual",
+    "frame_quality",
+    "temporal_position",
+    "valid_frame_mask"
+  ]
+}

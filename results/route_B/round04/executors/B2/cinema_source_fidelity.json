@@ -1,0 +1,40 @@
+{
+  "code_commit": "c10daa1d93f0ea28d8b9ad9206b0f673d25805c1",
+  "errors": [],
+  "hf_revision": "b1251ee50423bceeca84c080782fc3bc7756dea6",
+  "matched_random_parameter_count": 127390694,
+  "official_logits_finite": true,
+  "official_logits_shape": [
+    1,
+    4,
+    192,
+    192,
+    16
+  ],
+  "pretrained_parameter_count": 127390694,
+  "repository": "mathpluscode/CineMA",
+  "route_local_decoder_feature_shape": [
+    1,
+    32,
+    16,
+    32,
+    32
+  ],
+  "route_local_entropy_shape": [
+    1,
+    1,
+    16,
+    32,
+    32
+  ],
+  "route_local_projected_feature_shape": [
+    1,
+    16,
+    16,
+    32,
+    32
+  ],
+  "status": "PASS",
+  "weight_sha256_observed": "c7a60195e6c0aa920b0d0d8221d2ea7a75b6a5ea570763c3bf4924398f5ae85f",
+  "weight_sha256_required": "c7a60195e6c0aa920b0d0d8221d2ea7a75b6a5ea570763c3bf4924398f5ae85f"
+}

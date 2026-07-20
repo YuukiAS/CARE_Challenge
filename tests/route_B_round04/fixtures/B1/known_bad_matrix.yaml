@@ -1,0 +1,23 @@
+stage: B1
+source_input: results/route_B/round04/executors/B1
+require_token: ROUTE_B_ROUND04_B1_ANATOMY_REPAIR_IMPLEMENTED
+expected_fixture_count: 6
+fixtures:
+  - name: PURE_MYOCARDIUM_UNION_TARGET
+    expected_failure_key: PURE_MYOCARDIUM_UNION_TARGET
+    expected_validator_exit: 1
+  - name: ANATOMY_MICRO_OVERFIT_INADEQUATE
+    expected_failure_key: ANATOMY_MICRO_OVERFIT_INADEQUATE
+    expected_validator_exit: 1
+  - name: ROUTED_ANATOMY_GRADIENT_MISSING
+    expected_failure_key: ROUTED_ANATOMY_GRADIENT_MISSING
+    expected_validator_exit: 1
+  - name: LATERAL_ANATOMY_GRADIENT_MISSING
+    expected_failure_key: LATERAL_ANATOMY_GRADIENT_MISSING
+    expected_validator_exit: 1
+  - name: ANCHOR_SUPPORT_FLOOR_BECAME_FINAL_BASE
+    expected_failure_key: ANCHOR_SUPPORT_FLOOR_BECAME_FINAL_BASE
+    expected_validator_exit: 1
+  - name: SAVE_RELOAD_MISMATCH
+    expected_failure_key: SAVE_RELOAD_MISMATCH
+    expected_validator_exit: 1

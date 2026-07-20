@@ -1,0 +1,27 @@
+{
+  "controller_worktree": "/users/a/e/aereinh/CARE_worktrees/route_B",
+  "critic_token": "ROUTE_B_ROUND04_PLANNING_READY_FOR_CONTROLLER",
+  "downstream_authorities": {
+    "M11": false,
+    "cross_route_merge": false,
+    "final_scientific_decision": false,
+    "hosted_metric_claim": false,
+    "route_promotion": false,
+    "validation_upload": false
+  },
+  "entry_gate_satisfied": true,
+  "planning_commit": "38551ed98a42b005a1a3f0b793efdef700037ee8",
+  "route_C_hold_token": "ROUTE_C_PORTFOLIO_STOP_AND_HOLD",
+  "six_planning_blobs": {
+    "prompts/routes/portfolio_round04_route_B_planner_plan_20260719.md": "a537e0e86e3059efa27d128ac3a018a22a6a40aa",
+    "prompts/routes/route_B_round04_controller_contract.md": "3087283d65dbb6eeca697a393fc545528fe7fada",
+    "prompts/routes/route_B_round04_critic_request.md": "fcac92428b38d4b10e21e3ff594b83cac7eeba60",
+    "prompts/routes/route_B_round04_executor_plan.yaml": "c5e437a0cd847ade5244727a43c239da9825c737",
+    "prompts/routes/route_B_round04_planner_audit.md": "7a7964867557fb8f43a236d4aefecfd6174a7b4c",
+    "prompts/routes/route_B_round04_planner_prompt.md": "1ea2277d20f9e4eab1711c767274204342c372e2"
+  },
+  "snapshot_root": "/users/a/e/aereinh/CARE_worktrees/route_B/results/route_B/round04/planning_snapshot",
+  "source_main_worktree": "/users/a/e/aereinh/CARE",
+  "source_origin_main": "de16b239ecdb0265ef8da172238ca289d0ff4c39",
+  "status": "PASS"
+}

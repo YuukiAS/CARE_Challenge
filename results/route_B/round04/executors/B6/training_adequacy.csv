@@ -1,0 +1,2 @@
+stage,status,device,formal,optimizer_steps,required_optimizer_steps,train_loop_seconds,required_train_loop_seconds,validation_events,required_validation_events,eval_cases,required_eval_cases,full_case_events,required_full_case_events,first_loss,last_loss,loss_decrease,cache_root
+B6,PASS,cuda,True,111557,8000,2400.014326528879,2400,55,4,44,44,4,4,1.4935667514801025,0.374880313873291,True,/users/a/e/aereinh/CARE_worktrees/route_B/results/route_B/runtime/round04/B6/59568601

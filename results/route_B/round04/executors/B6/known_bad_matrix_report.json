@@ -1,0 +1,106 @@
+{
+  "fixture_count": 11,
+  "rows": [
+    {
+      "expected_failure_key": "SAME_SPLIT_BASELINE_MISSING",
+      "failure_keys": [
+        "SAME_SPLIT_BASELINE_MISSING"
+      ],
+      "name": "SAME_SPLIT_BASELINE_MISSING",
+      "passed": true,
+      "validator_exit": 1
+    },
+    {
+      "expected_failure_key": "FRESH_FORCE_EVALUATION_MISSING",
+      "failure_keys": [
+        "FRESH_FORCE_EVALUATION_MISSING"
+      ],
+      "name": "FRESH_FORCE_EVALUATION_MISSING",
+      "passed": true,
+      "validator_exit": 1
+    },
+    {
+      "expected_failure_key": "SCAR_POSITIVE_ROWS_MISSING",
+      "failure_keys": [
+        "SCAR_POSITIVE_ROWS_MISSING"
+      ],
+      "name": "SCAR_POSITIVE_ROWS_MISSING",
+      "passed": true,
+      "validator_exit": 1
+    },
+    {
+      "expected_failure_key": "T2_PRESENT_EDEMA_POSITIVE_ROWS_MISSING",
+      "failure_keys": [
+        "T2_PRESENT_EDEMA_POSITIVE_ROWS_MISSING"
+      ],
+      "name": "T2_PRESENT_EDEMA_POSITIVE_ROWS_MISSING",
+      "passed": true,
+      "validator_exit": 1
+    },
+    {
+      "expected_failure_key": "NO_T2_SAFETY_ROWS_MISSING",
+      "failure_keys": [
+        "NO_T2_SAFETY_ROWS_MISSING"
+      ],
+      "name": "NO_T2_SAFETY_ROWS_MISSING",
+      "passed": true,
+      "validator_exit": 1
+    },
+    {
+      "expected_failure_key": "CENTERB_OR_CENTERC_ROWS_MISSING",
+      "failure_keys": [
+        "CENTERB_OR_CENTERC_ROWS_MISSING"
+      ],
+      "name": "CENTERB_OR_CENTERC_ROWS_MISSING",
+      "passed": true,
+      "validator_exit": 1
+    },
+    {
+      "expected_failure_key": "EMPTY_GT_COUNTED_AS_HELP",
+      "failure_keys": [
+        "EMPTY_GT_COUNTED_AS_HELP"
+      ],
+      "name": "EMPTY_GT_COUNTED_AS_HELP",
+      "passed": true,
+      "validator_exit": 1
+    },
+    {
+      "expected_failure_key": "SUMMARY_MISNAMED_AS_ABLATION",
+      "failure_keys": [
+        "SUMMARY_MISNAMED_AS_ABLATION"
+      ],
+      "name": "SUMMARY_MISNAMED_AS_ABLATION",
+      "passed": true,
+      "validator_exit": 1
+    },
+    {
+      "expected_failure_key": "SELECTED_CHECKPOINT_NOT_RELOADED",
+      "failure_keys": [
+        "SELECTED_CHECKPOINT_NOT_RELOADED"
+      ],
+      "name": "SELECTED_CHECKPOINT_NOT_RELOADED",
+      "passed": true,
+      "validator_exit": 1
+    },
+    {
+      "expected_failure_key": "FINAL_OUTPUT_INTERVENTION_ZERO_OR_MISSING",
+      "failure_keys": [
+        "FINAL_OUTPUT_INTERVENTION_ZERO_OR_MISSING"
+      ],
+      "name": "FINAL_OUTPUT_INTERVENTION_ZERO_OR_MISSING",
+      "passed": true,
+      "validator_exit": 1
+    },
+    {
+      "expected_failure_key": "PROXY_METRIC_AS_HOSTED",
+      "failure_keys": [
+        "PROXY_METRIC_AS_HOSTED"
+      ],
+      "name": "PROXY_METRIC_AS_HOSTED",
+      "passed": true,
+      "validator_exit": 1
+    }
+  ],
+  "stage": "B6",
+  "status": "PASS"
+}

@@ -1,0 +1,37 @@
+require_token: ROUTE_B_ROUND04_B6_MYOPS_TERMINAL_EVIDENCE_READY
+source_input: results/route_B/round04/executors/B6
+expected_fixture_count: 11
+fixtures:
+  - name: SAME_SPLIT_BASELINE_MISSING
+    expected_failure_key: SAME_SPLIT_BASELINE_MISSING
+    expected_validator_exit: 1
+  - name: FRESH_FORCE_EVALUATION_MISSING
+    expected_failure_key: FRESH_FORCE_EVALUATION_MISSING
+    expected_validator_exit: 1
+  - name: SCAR_POSITIVE_ROWS_MISSING
+    expected_failure_key: SCAR_POSITIVE_ROWS_MISSING
+    expected_validator_exit: 1
+  - name: T2_PRESENT_EDEMA_POSITIVE_ROWS_MISSING
+    expected_failure_key: T2_PRESENT_EDEMA_POSITIVE_ROWS_MISSING
+    expected_validator_exit: 1
+  - name: NO_T2_SAFETY_ROWS_MISSING
+    expected_failure_key: NO_T2_SAFETY_ROWS_MISSING
+    expected_validator_exit: 1
+  - name: CENTERB_OR_CENTERC_ROWS_MISSING
+    expected_failure_key: CENTERB_OR_CENTERC_ROWS_MISSING
+    expected_validator_exit: 1
+  - name: EMPTY_GT_COUNTED_AS_HELP
+    expected_failure_key: EMPTY_GT_COUNTED_AS_HELP
+    expected_validator_exit: 1
+  - name: SUMMARY_MISNAMED_AS_ABLATION
+    expected_failure_key: SUMMARY_MISNAMED_AS_ABLATION
+    expected_validator_exit: 1
+  - name: SELECTED_CHECKPOINT_NOT_RELOADED
+    expected_failure_key: SELECTED_CHECKPOINT_NOT_RELOADED
+    expected_validator_exit: 1
+  - name: FINAL_OUTPUT_INTERVENTION_ZERO_OR_MISSING
+    expected_failure_key: FINAL_OUTPUT_INTERVENTION_ZERO_OR_MISSING
+    expected_validator_exit: 1
+  - name: PROXY_METRIC_AS_HOSTED
+    expected_failure_key: PROXY_METRIC_AS_HOSTED
+    expected_validator_exit: 1

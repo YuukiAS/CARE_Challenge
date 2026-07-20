@@ -1,0 +1,9 @@
+{
+  "cache_isolation": true,
+  "fresh_force_evaluation": true,
+  "hosted_metric_claim": false,
+  "same_split_baseline_status": "PASS",
+  "same_split_manifest": "configs/route_B_round04/manifests/myops_fold0_primary_44.json",
+  "status": "PASS",
+  "summary_type": "terminal_summary_not_ablation"
+}

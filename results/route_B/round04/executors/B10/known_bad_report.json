@@ -1,0 +1,5 @@
+{
+  "fixture_count": 13,
+  "matrix_report": "results/route_B/round04/executors/B10/known_bad_matrix_report.json",
+  "status": "PASS"
+}

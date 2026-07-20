@@ -1,0 +1,12 @@
+{
+  "completion_token": "ROUTE_B_ROUND03_B0_READY_FOR_CONTROLLER_MERGE",
+  "manifest_freeze_receipt": "results/route_B/round03/executors/B0/manifest_freeze_receipt.json",
+  "required_completion_token": "ROUTE_B_ROUND03_B0_READY_FOR_CONTROLLER_MERGE",
+  "sha256_values": {
+    "cine_train12": "bda5ff9eec3976f4db801e49890c516ed22566330036467fc8a200be9e650cd2",
+    "myops_fold0_primary_44": "c2de7575fe7c47ab78382c16dba28d8f4393aee4f7ce999ca748ab041307f165",
+    "myops_sampler_strata": "6dd26194ecfc1f8794a0f7022c883893e2193e7b5ea47add49a34a373ae108eb",
+    "myops_t2_edema_positive": "986c1d6399c818ec02cba3126209d7684b7963b7b1709bc075ecef6dfdce17c2"
+  },
+  "status": "PASS"
+}

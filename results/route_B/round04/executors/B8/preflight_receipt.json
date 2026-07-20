@@ -1,0 +1,21 @@
+{
+  "contract_path": "results/route_B/round04/planning_snapshot/prompts/routes/route_B_round04_controller_contract.md",
+  "contract_sha256": "a71d7999c7f995d492312eaf051cae08d0d2e0df4507775ec5b7ef4ea2a0c086",
+  "created_at_utc": "2026-07-19T21:51:04.445092+00:00",
+  "cuda_available": true,
+  "cuda_device_count": 1,
+  "cuda_visible_devices": "0",
+  "errors": [],
+  "expected_python": "/users/a/e/aereinh/CARE/envs/env_CARE/bin/python",
+  "python_executable": "/users/a/e/aereinh/CARE/envs/env_CARE/bin/python",
+  "snapshot_receipt_present": true,
+  "stage": "B8",
+  "status": "PASS",
+  "torch_import": true,
+  "torch_version": "2.11.0+cu130",
+  "writable_roots": [
+    "/users/a/e/aereinh/CARE_worktrees/route_B/results/route_B/round04/executors/B8",
+    "/users/a/e/aereinh/CARE_worktrees/route_B/results/route_B/runtime/round04/B8",
+    "/users/a/e/aereinh/CARE_worktrees/route_B/logs"
+  ]
+}

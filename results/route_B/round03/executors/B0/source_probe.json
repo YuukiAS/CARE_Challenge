@@ -1,0 +1,37 @@
+{
+  "canonical_modality_order": [
+    "LGE",
+    "T2",
+    "C0"
+  ],
+  "contract_path": "prompts/routes/route_B.md",
+  "contract_sha256": "4ca3472d07313e042c76efb51c59b6b9b164a15a36dd469b01326247f448a8de",
+  "created_at_utc": "2026-07-18T09:00:40.819004+00:00",
+  "git_head": "a4f5799647a7ea406d5e23be0a6378571e7cae82",
+  "known_bad_historical_paths": [
+    "src/care_myocardium/route_B/**",
+    "deterministic_axis_bootstrap_pending_train_or_oof_fit",
+    "online_ema_formal_memory",
+    "small_internal_CineMAAdapter",
+    "direct_velocity_displacement",
+    "abstract_temporal_z"
+  ],
+  "legacy_order_rejected": [
+    "LGE",
+    "C0",
+    "T2"
+  ],
+  "source_blobs": {
+    "src/care_myocardium/anchors/myops_decode.py": "c3f4f223dc0cf4bea2b2b37866e80f82a73da062",
+    "src/care_myocardium/cine/cinema_adapter.py": "7ce691b9ee5f7d9894898e25242913e514729534",
+    "src/care_myocardium/cine/registration_model.py": "c2bcc057e0d26fdda2e2910deb30408a3ec16646",
+    "src/care_myocardium/cine/temporal_dictionary.py": "91978beed7c5f82793fececf685205ea80ab7628",
+    "src/care_myocardium/cine/temporal_model.py": "f6b204678e29fec28fc1bd2801cf5bbf0d5be3e1",
+    "src/care_myocardium/losses/srr_losses.py": "1c34fdf538ed60e5599789957d8e383800768d49",
+    "src/care_myocardium/models/pathology_heads.py": "fc1bdbe165a1537b60418539637cdb0589ce9056",
+    "src/care_myocardium/models/proposal_prototypes.py": "c470c8665adec853d0bbe9f653067b58917dd07e",
+    "src/care_myocardium/models/srr_dictionary_memory.py": "2d9164f3218dfc45956d62cec3c6ddabe78daa93",
+    "src/care_myocardium/models/srr_propref.py": "206fff35ade194cc97e75a6ac5649e8402aa34fb",
+    "src/care_myocardium/refiner/soft_roi.py": "92de7ac296732c42bc49a34c1c9462c3db3b26d9"
+  }
+}

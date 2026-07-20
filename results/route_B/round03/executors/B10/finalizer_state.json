@@ -1,0 +1,125 @@
+{
+  "blocked_at_stage": "B3",
+  "blocked_completion_token": "ROUTE_B_ROUND03_B3_SCIENTIFIC_GATE_FAILED",
+  "blocked_stage_status": "FAIL",
+  "completion_token": "ROUTE_B_ROUND03_TERMINAL_PACKET_READY_FOR_REVIEW",
+  "created_at_utc": "2026-07-18T18:04:07.072683+00:00",
+  "finalizer_dependency_coverage": {
+    "covered_job_ids": [
+      "59451083",
+      "59451089",
+      "59451468",
+      "59451848",
+      "59451918",
+      "59452474",
+      "59452498",
+      "59452778",
+      "59452967",
+      "59452968",
+      "59452969",
+      "59453051",
+      "59453052",
+      "59453374",
+      "59453903",
+      "59453904",
+      "59453905",
+      "59456643",
+      "59456644",
+      "59457075",
+      "59457076",
+      "59457115",
+      "59457116",
+      "59490811"
+    ],
+    "dependency": "afterany_all_started_attempts",
+    "ledger_path": "/users/a/e/aereinh/CARE_worktrees/route_B/results/route_B/round03/controller_ledger.csv",
+    "routing_ledger_path": "/users/a/e/aereinh/CARE_worktrees/route_B/results/route_B/round03/executors/B10/routing_ledger.csv"
+  },
+  "forbidden_actions": {
+    "cross_route_merge": false,
+    "final_scientific_decision": false,
+    "hosted_metric_claim": false,
+    "m11": false,
+    "push": false,
+    "review_md_written_by_controller": false,
+    "route_promotion": false,
+    "validation_packaging_upload": false
+  },
+  "git_head": "c0e24baab2a75e8f329bb1c5263002beb34f25f2",
+  "git_head_binding_note": "Post-commit binding to the committed lightweight packet produced by Route B Round03 B10 aggregation.",
+  "heavy_artifact_scan": {
+    "status": "PASS",
+    "tracked_heavy_artifacts": []
+  },
+  "missing_stage_packets": [
+    "B4",
+    "B5",
+    "B6",
+    "B7",
+    "B8",
+    "B9"
+  ],
+  "missing_stage_packets_justification": "Downstream stages are absent because the executor plan forbids advancing after this terminal scientific gate failure.",
+  "nonpass_stage_packets": [
+    {
+      "stage": "B3",
+      "status": "FAIL",
+      "token": "ROUTE_B_ROUND03_B3_SCIENTIFIC_GATE_FAILED"
+    },
+    {
+      "stage": "B4",
+      "status": null,
+      "token": null
+    },
+    {
+      "stage": "B5",
+      "status": null,
+      "token": null
+    },
+    {
+      "stage": "B6",
+      "status": null,
+      "token": null
+    },
+    {
+      "stage": "B7",
+      "status": null,
+      "token": null
+    },
+    {
+      "stage": "B8",
+      "status": null,
+      "token": null
+    },
+    {
+      "stage": "B9",
+      "status": null,
+      "token": null
+    }
+  ],
+  "route_negative_decision": "NOT_REVIEWED",
+  "route_promotion_decision": "NOT_REVIEWED",
+  "scientific_resolution_status": "AWAITING_REVIEW",
+  "status": "PASS",
+  "terminal_negative_packet": true,
+  "validator_rows": [
+    {
+      "command": "git diff --check",
+      "exit_code": 0,
+      "stderr_tail": "",
+      "stdout_tail": ""
+    },
+    {
+      "command": "/users/a/e/aereinh/CARE/envs/env_CARE/bin/python scripts/architecture/validate_care_architecture_wiki.py --strict",
+      "exit_code": 0,
+      "stderr_tail": "",
+      "stdout_tail": "care architecture wiki validation passed\n"
+    },
+    {
+      "command": "/users/a/e/aereinh/CARE/envs/env_CARE/bin/python scripts/validation/route_B_round03/validate_packet.py --strict --require-all-attempt-accounting results/route_B/round03/executors/B10",
+      "exit_code": 0,
+      "stderr_tail": "",
+      "stdout_tail": "{\n  \"completion_token\": \"ROUTE_B_ROUND03_TERMINAL_PACKET_READY_FOR_REVIEW\",\n  \"errors\": [],\n  \"status\": \"PASS\"\n}\n"
+    }
+  ]
+}

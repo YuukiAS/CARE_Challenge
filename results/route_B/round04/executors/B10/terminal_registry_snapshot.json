@@ -1,0 +1,140 @@
+{
+  "all_started_attempt_ids": [
+    "59546347",
+    "59546548",
+    "59548190",
+    "59548314",
+    "59552549",
+    "59552550",
+    "59554239",
+    "59560352",
+    "59562056",
+    "59568601"
+  ],
+  "created_at_utc": "2026-07-20T00:44:16.196578+00:00",
+  "ledger_path": "/users/a/e/aereinh/CARE_worktrees/route_B/results/route_B/round04/controller_ledger.csv",
+  "status": "PASS",
+  "superseded_attempts_reconciled": true,
+  "terminal_accounting": [
+    {
+      "elapsed": "00:00:03",
+      "end": "2026-07-19T14:53:15",
+      "exit_code": "2:0",
+      "job_id": "59546347",
+      "job_name": "RouteB04B1",
+      "node": "g1807htzh01",
+      "partition": "htzhulab",
+      "start": "2026-07-19T14:53:12",
+      "state": "FAILED",
+      "terminal_accounted": true
+    },
+    {
+      "elapsed": "00:00:00",
+      "end": "2026-07-19T14:53:31",
+      "exit_code": "0:0",
+      "job_id": "59546548",
+      "job_name": "RouteB04B1A100",
+      "node": "None assigned",
+      "partition": "a100-gpu",
+      "start": "None",
+      "state": "CANCELLED by 397557",
+      "terminal_accounted": true
+    },
+    {
+      "elapsed": "00:10:15",
+      "end": "2026-07-19T15:25:25",
+      "exit_code": "0:0",
+      "job_id": "59548190",
+      "job_name": "RouteB04B1",
+      "node": "g1807htzh01",
+      "partition": "htzhulab",
+      "start": "2026-07-19T15:15:10",
+      "state": "COMPLETED",
+      "terminal_accounted": true
+    },
+    {
+      "elapsed": "00:00:00",
+      "end": "2026-07-19T15:15:33",
+      "exit_code": "0:0",
+      "job_id": "59548314",
+      "job_name": "RouteB04B1A100",
+      "node": "None assigned",
+      "partition": "a100-gpu",
+      "start": "None",
+      "state": "CANCELLED by 397557",
+      "terminal_accounted": true
+    },
+    {
+      "elapsed": "02:02:44",
+      "end": "2026-07-19T17:40:01",
+      "exit_code": "0:0",
+      "job_id": "59552549",
+      "job_name": "RouteB04B7",
+      "node": "g1807htzh01",
+      "partition": "htzhulab",
+      "start": "2026-07-19T15:37:17",
+      "state": "COMPLETED",
+      "terminal_accounted": true
+    },
+    {
+      "elapsed": "00:31:51",
+      "end": "2026-07-19T16:15:14",
+      "exit_code": "0:0",
+      "job_id": "59552550",
+      "job_name": "RouteB04B3",
+      "node": "g180702",
+      "partition": "htzhulab",
+      "start": "2026-07-19T15:43:23",
+      "state": "COMPLETED",
+      "terminal_accounted": true
+    },
+    {
+      "elapsed": "00:40:31",
+      "end": "2026-07-19T17:01:14",
+      "exit_code": "0:0",
+      "job_id": "59554239",
+      "job_name": "RouteB04B4",
+      "node": "g180702",
+      "partition": "htzhulab",
+      "start": "2026-07-19T16:20:43",
+      "state": "COMPLETED",
+      "terminal_accounted": true
+    },
+    {
+      "elapsed": "00:50:43",
+      "end": "2026-07-19T18:05:25",
+      "exit_code": "0:0",
+      "job_id": "59560352",
+      "job_name": "RouteB04B5",
+      "node": "g180702",
+      "partition": "htzhulab",
+      "start": "2026-07-19T17:14:42",
+      "state": "COMPLETED",
+      "terminal_accounted": true
+    },
+    {
+      "elapsed": "02:00:13",
+      "end": "2026-07-19T19:51:10",
+      "exit_code": "0:0",
+      "job_id": "59562056",
+      "job_name": "RouteB04B8",
+      "node": "g1807htzh01",
+      "partition": "htzhulab",
+      "start": "2026-07-19T17:50:57",
+      "state": "COMPLETED",
+      "terminal_accounted": true
+    },
+    {
+      "elapsed": "00:40:11",
+      "end": "2026-07-19T20:39:22",
+      "exit_code": "0:0",
+      "job_id": "59568601",
+      "job_name": "RouteB04B6",
+      "node": "g1807htzh01",
+      "partition": "htzhulab",
+      "start": "2026-07-19T19:59:11",
+      "state": "COMPLETED",
+      "terminal_accounted": true
+    }
+  ]
+}

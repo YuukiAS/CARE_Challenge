@@ -1,0 +1,62 @@
+{
+  "completion_token": "ROUTE_B_ROUND03_B3_SCIENTIFIC_GATE_FAILED",
+  "created_at_utc": "2026-07-18T17:58:54.757706+00:00",
+  "device": "cuda",
+  "executor": "B3",
+  "expected_sampler_counts": {
+    "E": 21502,
+    "R": 10750,
+    "S": 10751
+  },
+  "first_loss": 2.188593864440918,
+  "gate_checks": {
+    "anatomy_union_overfit": false,
+    "finite_loss": true,
+    "frozen_sampler_counts": true,
+    "frozen_sampler_sequence": true,
+    "invalid_weights": true,
+    "loss_decrease": true,
+    "no_t2_edema_zero": true,
+    "optimizer_steps": true,
+    "train_loop_seconds": true,
+    "validation_events": true
+  },
+  "last_loss": 0.020892778411507607,
+  "optimizer_steps": 43003,
+  "parent_loaded": false,
+  "parent_path": "",
+  "parent_sha256": "",
+  "required_optimizer_steps": 6000,
+  "required_train_loop_seconds": 1800.0,
+  "required_validation_events": 3,
+  "runtime_out": "results/route_B/runtime/round03/B3/attempt_htzhulab_samplerfix_1",
+  "sampler_contract": {
+    "cycle_mismatch_count": 0,
+    "draw_cycle": [
+      "E",
+      "E",
+      "S",
+      "R"
+    ],
+    "philox_seed": 26071821,
+    "prefix_path": "/users/a/e/aereinh/CARE_worktrees/route_B/results/route_B/round03/executors/B3/sampler_sequence_prefix.csv",
+    "prefix_rows_recorded": 64,
+    "rng": "numpy.random.Philox",
+    "sampler_path": "/users/a/e/aereinh/CARE_worktrees/route_B/configs/route_B_round03/manifests/myops_sampler_strata.json",
+    "sampler_sha256": "6dd26194ecfc1f8794a0f7022c883893e2193e7b5ea47add49a34a373ae108eb",
+    "trace_path": "results/route_B/runtime/round03/B3/attempt_htzhulab_samplerfix_1/sampler_trace.csv",
+    "trace_sha256": "5d5dd4b944bae3a9a7d9f31c030768b6af0c606877b78e505b41e18968a4ea0e",
+    "with_replacement": true
+  },
+  "sampler_counts": {
+    "E": 21502,
+    "R": 10750,
+    "S": 10751
+  },
+  "selected_checkpoint": "results/route_B/runtime/round03/B3/attempt_htzhulab_samplerfix_1/selected.pt",
+  "shared_selected_checkpoint": "",
+  "stage": "evidence_warmup",
+  "status": "FAIL",
+  "train_loop_seconds": 1800.7964860140346,
+  "validation_events": 22
+}

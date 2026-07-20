@@ -1,0 +1,86 @@
+{
+  "files": [
+    {
+      "bytes": 15136,
+      "git_blob_sha": "a537e0e86e3059efa27d128ac3a018a22a6a40aa",
+      "path": "prompts/routes/portfolio_round04_route_B_planner_plan_20260719.md",
+      "sha256": "d72f1514be84125bb10623cffb82062ef7b19e4a763ddfdf60a4f95a70e51e2c"
+    },
+    {
+      "bytes": 5177,
+      "git_blob_sha": "1ea2277d20f9e4eab1711c767274204342c372e2",
+      "path": "prompts/routes/route_B_round04_planner_prompt.md",
+      "sha256": "cf307fc73cd1e74b9d73ed5d2c4f8b4f5ac6067a36fae5d59af2eec2026f558d"
+    },
+    {
+      "bytes": 20699,
+      "git_blob_sha": "3087283d65dbb6eeca697a393fc545528fe7fada",
+      "path": "prompts/routes/route_B_round04_controller_contract.md",
+      "sha256": "a71d7999c7f995d492312eaf051cae08d0d2e0df4507775ec5b7ef4ea2a0c086"
+    },
+    {
+      "bytes": 80354,
+      "git_blob_sha": "c5e437a0cd847ade5244727a43c239da9825c737",
+      "path": "prompts/routes/route_B_round04_executor_plan.yaml",
+      "sha256": "f50637daa0054697d90893bcf0a1f1f8b364fc57a68c315600e8bb2fdcd40c4d"
+    },
+    {
+      "bytes": 7266,
+      "git_blob_sha": "fcac92428b38d4b10e21e3ff594b83cac7eeba60",
+      "path": "prompts/routes/route_B_round04_critic_request.md",
+      "sha256": "ee1a5036e2af25fa85718395a91e7590d5461a715f2c0709e4db723c87e97492"
+    },
+    {
+      "bytes": 8254,
+      "git_blob_sha": "7a7964867557fb8f43a236d4aefecfd6174a7b4c",
+      "path": "prompts/routes/route_B_round04_planner_audit.md",
+      "sha256": "bd6e6ea5106526f5c3f94c1024c1568caa219fc748f2f5ed224ff075f9222151"
+    },
+    {
+      "bytes": 13226,
+      "git_blob_sha": "2bcd9ead2e095bcb276d8d7adc4c59bb9f5bc62b",
+      "path": "prompts/routes/route_B_round04_critic_rereview.md",
+      "sha256": "3a54c68f582b76c83638d9ee69cf7f5378323c8a4fefc327ef04accc9fe6bf0f"
+    },
+    {
+      "bytes": 5181,
+      "git_blob_sha": "aa25dfa59b1666d37dc648a2cde6aca0e87dff22",
+      "path": "prompts/routes/handoffs/CURRENT.md",
+      "sha256": "857c9654305d74cdb5774492b03532055c338694e7d12779eb0586f4e11864de"
+    },
+    {
+      "bytes": 6094,
+      "git_blob_sha": "7759cbf99d374022dce6013c5b4f411d49d1f294",
+      "path": "prompts/routes/handoffs/route_B_round04_critic_handoff_20260719.md",
+      "sha256": "8f2ac84eaf5860d9a07ce6b52b112ba418ea536b141e006f4933b458cff43ee3"
+    },
+    {
+      "bytes": 11844,
+      "git_blob_sha": "d8ff48a577e1ff752bbb1c7ed5f0739e153ac416",
+      "path": "prompts/routes/handoffs/route_B_round04_coordinator_receipt_20260719.md",
+      "sha256": "e714341c9cb7e71142826b22bb7b1e63cfe87369fde56e1d36669098616001fc"
+    },
+    {
+      "bytes": 13733,
+      "git_blob_sha": "6564e1d6423b43b44a0c96b510a172fb92785873",
+      "path": "prompts/routes/portfolio_round04_route_C_followup_decision_20260719.md",
+      "sha256": "c67f926a3b0e99699cf558e088a54d28137ce7e8501fe2e5d35959c56712d92c"
+    }
+  ],
+  "planning_commit": "38551ed98a42b005a1a3f0b793efdef700037ee8",
+  "snapshot_paths": [
+    "prompts/routes/portfolio_round04_route_B_planner_plan_20260719.md",
+    "prompts/routes/route_B_round04_planner_prompt.md",
+    "prompts/routes/route_B_round04_controller_contract.md",
+    "prompts/routes/route_B_round04_executor_plan.yaml",
+    "prompts/routes/route_B_round04_critic_request.md",
+    "prompts/routes/route_B_round04_planner_audit.md",
+    "prompts/routes/route_B_round04_critic_rereview.md",
+    "prompts/routes/handoffs/CURRENT.md",
+    "prompts/routes/handoffs/route_B_round04_critic_handoff_20260719.md",
+    "prompts/routes/handoffs/route_B_round04_coordinator_receipt_20260719.md",
+    "prompts/routes/portfolio_round04_route_C_followup_decision_20260719.md"
+  ],
+  "source_origin_main": "de16b239ecdb0265ef8da172238ca289d0ff4c39",
+  "status": "PASS"
+}

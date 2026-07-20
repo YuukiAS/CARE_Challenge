@@ -1,0 +1,4 @@
+component,final_output_delta_l1,intervention_changes_final_output
+final_scar_logits,3.956052303314209,True
+final_edema_logits,1.9911553859710693,True
+no_t2_edema_guard,0.0,False

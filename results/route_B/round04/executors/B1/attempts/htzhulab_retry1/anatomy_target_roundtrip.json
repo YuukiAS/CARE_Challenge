@@ -1,0 +1,21 @@
+{
+  "case_ids": [
+    "Case1002",
+    "Case1007"
+  ],
+  "compact_lv_labels": [
+    2
+  ],
+  "compact_rv_labels": [
+    3
+  ],
+  "compact_union_labels": [
+    1,
+    4,
+    5
+  ],
+  "lv_positive_voxels": 24158,
+  "rv_positive_voxels": 0,
+  "status": "PASS",
+  "union_positive_voxels": 7575
+}

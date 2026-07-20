@@ -1,0 +1,2 @@
+stage,status,device,optimizer_steps,required_optimizer_steps,train_loop_seconds,required_train_loop_seconds,validation_events,required_validation_events,first_loss,last_loss,loss_decrease
+B1,PASS,cuda,467402,2000,600.0004463458899,600.0,934,4,0.6552160978317261,0.03872348740696907,True

@@ -1,0 +1,39 @@
+{
+  "errors": [],
+  "official_cinema_python_package_available": true,
+  "official_logits_finite": true,
+  "official_logits_shape": [
+    1,
+    4,
+    192,
+    192,
+    16
+  ],
+  "official_source_report": "official_cinema_source_report.json",
+  "official_weight_path": "/users/a/e/aereinh/CARE/results/20260704_external_assets_cinema_registration/external_assets/weights/CineMA/acdc_sax/acdc_sax_0.safetensors",
+  "official_weight_sha256": "c7a60195e6c0aa920b0d0d8221d2ea7a75b6a5ea570763c3bf4924398f5ae85f",
+  "required_weight_sha256": "c7a60195e6c0aa920b0d0d8221d2ea7a75b6a5ea570763c3bf4924398f5ae85f",
+  "route_local_decoder_feature_shape": [
+    1,
+    32,
+    16,
+    32,
+    32
+  ],
+  "route_local_entropy_shape": [
+    1,
+    1,
+    16,
+    32,
+    32
+  ],
+  "route_local_projected_feature_shape": [
+    1,
+    16,
+    16,
+    32,
+    32
+  ],
+  "route_local_shape_contract_passed": true,
+  "status": "PASS"
+}

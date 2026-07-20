@@ -1,0 +1,75 @@
+{
+  "adequacy_passed": true,
+  "cine_eval_cases": 5,
+  "first_loss": 2.432159900665283,
+  "generated_at_utc": "2026-07-17T03:07:49.602310+00:00",
+  "last_loss": 0.0012813624925911427,
+  "myops_eval_cases": 10,
+  "optimizer_steps": 25000,
+  "post_completion_metrics_available": true,
+  "runtime_root": "results/route_B/runtime/bounded_train_eval",
+  "slurm_completion": {
+    "aggregation_exit_code": 0,
+    "aggregation_outputs": [
+      "results/route_B/bounded_train_eval_summary.json",
+      "results/route_B/training_adequacy.csv",
+      "results/route_B/metrics_summary.csv",
+      "results/route_B/case_safety_matrix.csv",
+      "results/route_B/completion_check.md",
+      "results/route_B/controller_report.md",
+      "results/route_B/result.md",
+      "results/route_B/review_request.md"
+    ],
+    "log_path": "logs/route_B/RouteBTrainEval_59364846_20260716_223551.log",
+    "race_lock": "results/route_B/locks/bounded_train_eval_25000_adequacy_winner.lock",
+    "watcher_log": "logs/route_B/controller_goal_monitor_adequacy_25000.log",
+    "winner_job": {
+      "elapsed": "00:32:02",
+      "end": "2026-07-16T23:07:51",
+      "exit_code": "0:0",
+      "job_id": "59364846",
+      "node": "g180702",
+      "partition": "htzhulab",
+      "start": "2026-07-16T22:35:49",
+      "state": "COMPLETED"
+    }
+  },
+  "slurm_jobs_submitted": [
+    {
+      "elapsed": "00:32:02",
+      "end": "2026-07-16T23:07:51",
+      "exit_code": "0:0",
+      "job_id": "59364846",
+      "node": "g180702",
+      "partition": "htzhulab",
+      "role": "adequacy_race_winner_completed",
+      "start": "2026-07-16T22:35:49",
+      "state": "COMPLETED"
+    },
+    {
+      "elapsed": "00:00:00",
+      "end": "2026-07-16T22:37:30",
+      "exit_code": "0:0",
+      "job_id": "59364845",
+      "node": "None assigned",
+      "partition": "a100-gpu",
+      "role": "adequacy_race_loser_cancelled",
+      "start": "None",
+      "state": "CANCELLED by 397557"
+    },
+    {
+      "elapsed": "00:00:00",
+      "end": "2026-07-16T22:37:30",
+      "exit_code": "0:0",
+      "job_id": "59364847",
+      "node": "None assigned",
+      "partition": "volta-gpu",
+      "role": "adequacy_race_loser_cancelled",
+      "start": "None",
+      "state": "CANCELLED by 397557"
+    }
+  ],
+  "status": "ROUTE_B_READY_FOR_REVIEW",
+  "train_loop_seconds": 1908.337507105898,
+  "validation_events": 2
+}

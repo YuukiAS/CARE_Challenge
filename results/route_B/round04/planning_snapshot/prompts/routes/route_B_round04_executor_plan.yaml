@@ -1,0 +1,1323 @@
+plan_version: 11
+route_id: route_B
+portfolio_round: round04
+date: '2026-07-20'
+task_key: route_B_round04_full_srr_v3_leaderboard_implementation
+status: PLANNING_REVISION_PENDING_COORDINATOR_RECEIPT_AND_CRITIC_REREVIEW
+branch: route_B
+controller_worktree: /users/a/e/aereinh/CARE_worktrees/route_B
+planner_branch: main
+planner_base_main: 64f5a27298cb2efd1f576a70296e49388ab0b717
+revision_source_critic_path: prompts/routes/route_B_round04_critic_rereview.md
+revision_source_critic_blob: 4e5cd46a6494bd6c12f3985b99abd390a00b0786
+revision_source_token: ROUTE_B_ROUND04_PLANNING_NEEDS_REVISION
+route_evidence_ref: b9c7664da7cb1f1892fff37a4497722f31a0a96d
+route_C_evidence_ref: 17062b00edc3443aacefe8583568797a9f2655ba
+route_C_hold_decision_path: prompts/routes/portfolio_round04_route_C_followup_decision_20260719.md
+route_C_hold_decision_token: ROUTE_C_PORTFOLIO_STOP_AND_HOLD
+contract_path: prompts/routes/route_B_round04_controller_contract.md
+planner_plan_path: prompts/routes/portfolio_round04_route_B_planner_plan_20260719.md
+critic_request_path: prompts/routes/route_B_round04_critic_request.md
+planner_audit_path: prompts/routes/route_B_round04_planner_audit.md
+planner_prompt_path: prompts/routes/route_B_round04_planner_prompt.md
+coordinator_receipt_path: prompts/routes/handoffs/route_B_round04_coordinator_receipt_20260719.md
+execution_mode: controller_supervised
+requires_execution_controller: true
+controller_start_authorized: false
+required_planning_review_path: prompts/routes/route_B_round04_critic_rereview.md
+required_planning_review_token: ROUTE_B_ROUND04_PLANNING_READY_FOR_CONTROLLER
+executor_slots: 2
+executor_count: 11
+max_parallel: 2
+parallel_execution_allowed: true
+merge_owner: controller
+mapper_required: true
+architecture_impact: system
+slurm_runtime_continuity_required: true
+continuity_backend: slurm_dependency
+review_mode: independent_thread
+reviewer: separate_readonly
+python_executable: /users/a/e/aereinh/CARE/envs/env_CARE/bin/python
+formal_job_walltime_max: 08:00:00
+training_dependency: afterok
+finalizer_dependency: afterany
+scheduler_block_threshold_hours: 24
+volta_user_authorized: true
+volta_peak_memory_credit_ceiling_gib: 14.5
+prefer_distinct_work_over_duplicate_race: true
+long_wait_race_required: true
+race_partitions:
+- htzhulab
+- a100-gpu
+tested_commit_policy:
+  accepted_relations:
+  - exact_current_origin_main
+  - tested_commit_is_ancestor_with_allowlisted_descendant_diff
+  require_six_planning_blobs_unchanged: true
+  unreadable_diff_is_failure: true
+  disallowed_descendant_is_failure: true
+  allowed_descendant_paths:
+  - prompts/routes/handoffs/CURRENT.md
+  - prompts/routes/handoffs/route_B_round04_critic_handoff_20260719.md
+  - prompts/routes/handoffs/route_B_round04_coordinator_receipt_20260719.md
+  - prompts/routes/route_B_round04_critic_rereview.md
+  - prompts/routes/portfolio_round04_route_C_followup_decision_20260719.md
+  - docs/figures/round03_route_architecture/**
+  - controller_notifications/**
+  - scripts/ops/build_route_watchboard.py
+  - tests/ops/test_build_route_watchboard.py
+  - tests/ops/test_controller_notifications.py
+  route_C_hold_semantics:
+    portfolio_context_only: true
+    route_C_controller_authorized: false
+    route_B_authority_changed: false
+    route_B_scientific_scope_changed: false
+controller_planning_materialization:
+  owner: controller_before_B0_executor_launch
+  controller_worktree: /users/a/e/aereinh/CARE_worktrees/route_B
+  source_main_worktree: /users/a/e/aereinh/CARE
+  source_mode: read_only_main_or_equivalent_coordinator_snapshot
+  planning_commit_source: current_handoff.planning_commit
+  six_blob_source: current_handoff.six_planning_blobs
+  gate_commit_source: current_origin_main_at_controller_entry
+  snapshot_root: results/route_B/round04/planning_snapshot
+  temporary_root: results/route_B/round04/planning_snapshot.tmp
+  manifest_path: results/route_B/round04/planning_snapshot/MANIFEST.json
+  hash_audit_path: results/route_B/round04/planning_snapshot/hash_audit.json
+  descendant_diff_audit_path: results/route_B/round04/planning_snapshot/descendant_diff_audit.json
+  receipt_path: results/route_B/round04/planning_snapshot/materialization_receipt.json
+  required_receipt_status: PASS
+  atomic_publish: true
+  final_snapshot_read_only: true
+  no_code_or_slurm_before_pass: true
+  failure_token: ROUTE_B_ROUND04_B0_STALE_PLANNING_BINDING
+  snapshot_files:
+  - prompts/routes/portfolio_round04_route_B_planner_plan_20260719.md
+  - prompts/routes/route_B_round04_planner_prompt.md
+  - prompts/routes/route_B_round04_controller_contract.md
+  - prompts/routes/route_B_round04_executor_plan.yaml
+  - prompts/routes/route_B_round04_critic_request.md
+  - prompts/routes/route_B_round04_planner_audit.md
+  - prompts/routes/route_B_round04_critic_rereview.md
+  - prompts/routes/handoffs/CURRENT.md
+  - prompts/routes/handoffs/route_B_round04_critic_handoff_20260719.md
+  - prompts/routes/handoffs/route_B_round04_coordinator_receipt_20260719.md
+  - prompts/routes/portfolio_round04_route_C_followup_decision_20260719.md
+  superseded_history_file: prompts/routes/route_B_round04_critic_review.md
+  materialization_command: "bash -lc 'set -euo pipefail\n/users/a/e/aereinh/CARE/envs/env_CARE/bin/python - <<'\"'\"'PY'\"'\"'\nfrom __future__ import annotations\nfrom pathlib import Path, PurePosixPath\nimport hashlib, json, os, shutil, stat, subprocess, sys, traceback\nimport yaml\n\nMAIN = Path(\"/users/a/e/aereinh/CARE\")\nROUTE = Path(\"/users/a/e/aereinh/CARE_worktrees/route_B\")\nSNAP = ROUTE / \"results/route_B/round04/planning_snapshot\"\nTMP = ROUTE / \"results/route_B/round04/planning_snapshot.tmp\"\nFAIL_DIR = ROUTE / \"results/route_B/round04/executors/B0\"\nFAIL_TOKEN = \"ROUTE_B_ROUND04_B0_STALE_PLANNING_BINDING\"\nREADY_TOKEN = \"ROUTE_B_ROUND04_PLANNING_READY_FOR_CONTROLLER\"\nHANDOFF_PATH = \"prompts/routes/handoffs/route_B_round04_critic_handoff_20260719.md\"\nRECEIPT_PATH = \"prompts/routes/handoffs/route_B_round04_coordinator_receipt_20260719.md\"\nCRITIC_PATH = \"prompts/routes/route_B_round04_critic_rereview.md\"\nCURRENT_PATH = \"prompts/routes/handoffs/CURRENT.md\"\nROUTE_C_DECISION_PATH = \"prompts/routes/portfolio_round04_route_C_followup_decision_20260719.md\"\nROUTE_C_HOLD_TOKEN = \"ROUTE_C_PORTFOLIO_STOP_AND_HOLD\"\nEXPECTED_ROUTE_B = \"b9c7664da7cb1f1892fff37a4497722f31a0a96d\"\nEXPECTED_ROUTE_C = \"17062b00edc3443aacefe8583568797a9f2655ba\"\nSIX_PATHS = [\n    \"prompts/routes/portfolio_round04_route_B_planner_plan_20260719.md\",\n    \"prompts/routes/route_B_round04_planner_prompt.md\",\n    \"prompts/routes/route_B_round04_controller_contract.md\",\n    \"prompts/routes/route_B_round04_executor_plan.yaml\",\n    \"prompts/routes/route_B_round04_critic_request.md\",\n    \"prompts/routes/route_B_round04_planner_audit.md\",\n]\nSNAPSHOT_PATHS = SIX_PATHS + [\n    CRITIC_PATH,\n    CURRENT_PATH,\n    HANDOFF_PATH,\n    RECEIPT_PATH,\n    ROUTE_C_DECISION_PATH,\n]\nEXACT_ALLOWED = {\n    \"prompts/routes/handoffs/CURRENT.md\",\n    \"prompts/routes/handoffs/route_B_round04_critic_handoff_20260719.md\",\n    \"prompts/routes/handoffs/route_B_round04_coordinator_receipt_20260719.md\",\n    \"prompts/routes/route_B_round04_critic_rereview.md\",\n    \"prompts/routes/portfolio_round04_route_C_followup_decision_20260719.md\",\n    \"scripts/ops/build_route_watchboard.py\",\n    \"tests/ops/test_build_route_watchboard.py\",\n    \"tests/ops/test_controller_notifications.py\",\n}\nPREFIX_ALLOWED = (\n    \"docs/figures/round03_route_architecture/\",\n    \"controller_notifications/\",\n)\n\ndef run(*args: str, check: bool = True) -> subprocess.CompletedProcess[str]:\n    return subprocess.run(args, cwd=MAIN, check=check, text=True,\n                          stdout=subprocess.PIPE, stderr=subprocess.PIPE)\n\ndef git(*args: str) -> str:\n    return run(\"git\", \"-C\", str(MAIN), *args).stdout.strip()\n\ndef frontmatter(text: str) -> dict:\n    if not text.startswith(\"---\\n\"):\n        raise ValueError(\"missing YAML frontmatter\")\n    parts = text.split(\"---\", 2)\n    data = yaml.safe_load(parts[1])\n    if not isinstance(data, dict):\n        raise ValueError(\"frontmatter is not a mapping\")\n    return data\n\ndef show(commit: str, path: str) -> str:\n    proc = run(\"git\", \"-C\", str(MAIN), \"show\", f\"{commit}:{path}\", check=False)\n    if proc.returncode != 0:\n        raise FileNotFoundError(f\"{path}: {proc.stderr.strip()}\")\n    return proc.stdout\n\ndef blob_at(commit: str, path: str) -> str:\n    return git(\"rev-parse\", f\"{commit}:{path}\")\n\ndef allowed_path(path: str) -> bool:\n    return path in EXACT_ALLOWED or any(path.startswith(prefix) for prefix in PREFIX_ALLOWED)\n\ndef sha256_bytes(data: bytes) -> str:\n    return hashlib.sha256(data).hexdigest()\n\ndef write_json(path: Path, payload: dict) -> None:\n    path.parent.mkdir(parents=True, exist_ok=True)\n    path.write_text(json.dumps(payload, indent=2, sort_keys=True) + \"\\n\", encoding=\"utf-8\")\n\ndef fail(reason: str, detail: str = \"\") -> None:\n    FAIL_DIR.mkdir(parents=True, exist_ok=True)\n    payload = {\"status\": FAIL_TOKEN, \"reason\": reason, \"detail\": detail}\n    write_json(FAIL_DIR / \"materialization_failure.json\", payload)\n    write_json(FAIL_DIR / \"completion.json\", payload)\n    print(FAIL_TOKEN, file=sys.stderr)\n    print(f\"{reason}: {detail}\", file=sys.stderr)\n    raise SystemExit(1)\n\ntry:\n    if not (MAIN / \".git\").exists():\n        fail(\"PLANNING_SOURCE_UNREADABLE\", str(MAIN))\n    if git(\"rev-parse\", \"origin/route_B\") != EXPECTED_ROUTE_B:\n        fail(\"ROUTE_EVIDENCE_REF_MISMATCH\", \"origin/route_B\")\n    if git(\"rev-parse\", \"origin/route_C\") != EXPECTED_ROUTE_C:\n        fail(\"ROUTE_EVIDENCE_REF_MISMATCH\", \"origin/route_C\")\n    route_branch = subprocess.check_output(\n        [\"git\", \"-C\", str(ROUTE), \"branch\", \"--show-current\"], text=True\n    ).strip()\n    if route_branch != \"route_B\":\n        fail(\"STALE_PLANNING_BINDING\", f\"route branch={route_branch}\")\n    route_dirty = subprocess.check_output(\n        [\"git\", \"-C\", str(ROUTE), \"status\", \"--porcelain\"], text=True\n    ).strip()\n    if route_dirty:\n        fail(\"STALE_PLANNING_BINDING\", \"route_B worktree not clean before materialization\")\n\n    current_main = git(\"rev-parse\", \"origin/main\")\n    texts = {path: show(current_main, path) for path in SNAPSHOT_PATHS}\n    handoff = frontmatter(texts[HANDOFF_PATH])\n    receipt = frontmatter(texts[RECEIPT_PATH])\n    expected = handoff.get(\"six_planning_blobs\")\n    if not isinstance(expected, dict) or set(expected) != set(SIX_PATHS):\n        fail(\"CURRENT_HANDOFF_MISSING\", \"six_planning_blobs mapping missing or incomplete\")\n    expected = {str(k): str(v) for k, v in expected.items()}\n    actual = {path: blob_at(current_main, path) for path in SIX_PATHS}\n    if actual != expected:\n        fail(\"PLANNING_SNAPSHOT_HASH_MISMATCH\", json.dumps({\"expected\": expected, \"actual\": actual}, sort_keys=True))\n\n    critic_text = texts[CRITIC_PATH]\n    planning_commit = str(handoff.get(\"planning_commit\", \"\"))\n    if READY_TOKEN not in critic_text or planning_commit not in critic_text:\n        fail(\"CURRENT_REREVIEW_MISSING_OR_NOT_READY\", CRITIC_PATH)\n    for value in expected.values():\n        if value not in critic_text:\n            fail(\"CURRENT_REREVIEW_MISSING_OR_NOT_READY\", f\"critic missing blob {value}\")\n\n    current_text = texts[CURRENT_PATH]\n    if HANDOFF_PATH not in current_text or \"controller_authorized_now: 0\" not in current_text:\n        fail(\"CURRENT_HANDOFF_MISSING\", CURRENT_PATH)\n\n    if receipt.get(\"status\") != \"READY_FOR_ROUTE_B_ROUND04_CRITIC_REREVIEW\":\n        fail(\"CURRENT_COORDINATOR_RECEIPT_MISSING_OR_STALE\", \"receipt status\")\n    if receipt.get(\"all_required_exit_codes_zero\") is not True:\n        fail(\"CURRENT_COORDINATOR_RECEIPT_MISSING_OR_STALE\", \"nonzero coordinator check\")\n    if receipt.get(\"working_tree_clean\") is not True:\n        fail(\"CURRENT_COORDINATOR_RECEIPT_MISSING_OR_STALE\", \"coordinator working tree\")\n    receipt_blobs = receipt.get(\"six_planning_blobs\")\n    if receipt_blobs != expected:\n        fail(\"CURRENT_COORDINATOR_RECEIPT_MISSING_OR_STALE\", \"receipt blob mapping\")\n\n    tested = str(receipt.get(\"tested_origin_main\", \"\"))\n    if not tested:\n        fail(\"CURRENT_COORDINATOR_RECEIPT_MISSING_OR_STALE\", \"tested_origin_main missing\")\n    descendant_paths: list[str] = []\n    relation = \"exact_current_origin_main\"\n    if tested != current_main:\n        anc = run(\"git\", \"-C\", str(MAIN), \"merge-base\", \"--is-ancestor\", tested, current_main, check=False)\n        if anc.returncode != 0:\n            fail(\"CURRENT_COORDINATOR_RECEIPT_MISSING_OR_STALE\", \"tested commit is not ancestor\")\n        descendant_paths = [p for p in git(\"diff\", \"--name-only\", tested, current_main).splitlines() if p]\n        disallowed = [p for p in descendant_paths if not allowed_path(p)]\n        if disallowed:\n            fail(\"DISALLOWED_MAIN_DESCENDANT_PATH\", \",\".join(disallowed))\n        relation = \"tested_commit_is_ancestor_with_allowlisted_descendant_diff\"\n\n    route_c_text = texts[ROUTE_C_DECISION_PATH]\n    if ROUTE_C_HOLD_TOKEN not in route_c_text or \"route_C_controller_required: false\" not in route_c_text:\n        fail(\"DISALLOWED_MAIN_DESCENDANT_PATH\", \"Route C decision semantics changed\")\n\n    if TMP.exists():\n        shutil.rmtree(TMP)\n    if SNAP.exists():\n        shutil.rmtree(SNAP)\n    TMP.mkdir(parents=True, exist_ok=False)\n\n    manifest_rows = []\n    for rel in SNAPSHOT_PATHS:\n        data = texts[rel].encode(\"utf-8\")\n        target = TMP / rel\n        target.parent.mkdir(parents=True, exist_ok=True)\n        target.write_bytes(data)\n        manifest_rows.append({\n            \"path\": rel,\n            \"git_blob_sha\": blob_at(current_main, rel),\n            \"sha256\": sha256_bytes(data),\n            \"bytes\": len(data),\n        })\n\n    manifest = {\n        \"status\": \"PASS\",\n        \"source_origin_main\": current_main,\n        \"planning_commit\": planning_commit,\n        \"snapshot_paths\": SNAPSHOT_PATHS,\n        \"files\": manifest_rows,\n    }\n    hash_audit = {\n        \"status\": \"PASS\",\n        \"six_planning_blobs_expected\": expected,\n        \"six_planning_blobs_actual\": actual,\n        \"critic_ready_token\": READY_TOKEN,\n    }\n    descendant_audit = {\n        \"status\": \"PASS\",\n        \"tested_origin_main\": tested,\n        \"current_origin_main\": current_main,\n        \"relation\": relation,\n        \"descendant_paths\": descendant_paths,\n        \"all_descendant_paths_allowlisted\": True,\n    }\n    materialization_receipt = {\n        \"status\": \"PASS\",\n        \"controller_worktree\": str(ROUTE),\n        \"source_main_worktree\": str(MAIN),\n        \"snapshot_root\": str(SNAP),\n        \"source_origin_main\": current_main,\n        \"planning_commit\": planning_commit,\n        \"six_planning_blobs\": expected,\n        \"critic_token\": READY_TOKEN,\n        \"route_C_hold_token\": ROUTE_C_HOLD_TOKEN,\n        \"entry_gate_satisfied\": True,\n        \"downstream_authorities\": {\n            \"validation_upload\": False,\n            \"route_promotion\": False,\n            \"M11\": False,\n            \"hosted_metric_claim\": False,\n            \"cross_route_merge\": False,\n            \"final_scientific_decision\": False,\n        },\n    }\n    write_json(TMP / \"MANIFEST.json\", manifest)\n    write_json(TMP / \"hash_audit.json\", hash_audit)\n    write_json(TMP / \"descendant_diff_audit.json\", descendant_audit)\n    write_json(TMP / \"materialization_receipt.json\", materialization_receipt)\n\n    for path in sorted(TMP.rglob(\"*\"), reverse=True):\n        mode = path.stat().st_mode\n        path.chmod(mode & ~stat.S_IWUSR & ~stat.S_IWGRP & ~stat.S_IWOTH)\n    TMP.chmod(TMP.stat().st_mode & ~stat.S_IWUSR & ~stat.S_IWGRP & ~stat.S_IWOTH)\n    os.replace(TMP, SNAP)\n\n    for name in (\"MANIFEST.json\", \"hash_audit.json\", \"descendant_diff_audit.json\", \"materialization_receipt.json\"):\n        payload = json.loads((SNAP / name).read_text(encoding=\"utf-8\"))\n        if payload.get(\"status\") != \"PASS\":\n            fail(\"PLANNING_SNAPSHOT_INCOMPLETE\", name)\n    print(\"ROUTE_B_ROUND04_PLANNING_SNAPSHOT_MATERIALIZED\")\nexcept SystemExit:\n    raise\nexcept Exception as exc:\n    fail(\"PLANNING_SNAPSHOT_INCOMPLETE\", f\"{type(exc).__name__}: {exc}\")\nPY\n'"
+  hash_audit_command: "bash -lc 'set -euo pipefail\n/users/a/e/aereinh/CARE/envs/env_CARE/bin/python - <<'\"'\"'PY'\"'\"'\nfrom pathlib import Path\nimport json, subprocess, sys\nROOT = Path(\"/users/a/e/aereinh/CARE_worktrees/route_B/results/route_B/round04/planning_snapshot\")\nfor name in (\"MANIFEST.json\", \"hash_audit.json\", \"descendant_diff_audit.json\", \"materialization_receipt.json\"):\n    path = ROOT / name\n    if not path.is_file():\n        raise SystemExit(f\"ROUTE_B_ROUND04_B0_STALE_PLANNING_BINDING missing {name}\")\n    payload = json.loads(path.read_text(encoding=\"utf-8\"))\n    if payload.get(\"status\") != \"PASS\":\n        raise SystemExit(f\"ROUTE_B_ROUND04_B0_STALE_PLANNING_BINDING nonpass {name}\")\nif any(path.stat().st_mode & 0o222 for path in ROOT.rglob(\"*\") if path.is_file()):\n    raise SystemExit(\"ROUTE_B_ROUND04_B0_STALE_PLANNING_BINDING writable snapshot file\")\nprint(\"ROUTE_B_ROUND04_PLANNING_SNAPSHOT_REVALIDATED\")\nPY\n'"
+  required_failure_classes:
+  - PLANNING_SOURCE_UNREADABLE
+  - PLANNING_SNAPSHOT_INCOMPLETE
+  - PLANNING_SNAPSHOT_HASH_MISMATCH
+  - CURRENT_REREVIEW_MISSING_OR_NOT_READY
+  - CURRENT_HANDOFF_MISSING
+  - CURRENT_COORDINATOR_RECEIPT_MISSING_OR_STALE
+  - DISALLOWED_MAIN_DESCENDANT_PATH
+  controller_revalidation_command: "bash -lc 'set -euo pipefail\n/users/a/e/aereinh/CARE/envs/env_CARE/bin/python - <<'\"'\"'PY'\"'\"'\nfrom pathlib import Path\nimport json, subprocess, sys\nROOT = Path(\"/users/a/e/aereinh/CARE_worktrees/route_B/results/route_B/round04/planning_snapshot\")\nfor name in (\"MANIFEST.json\", \"hash_audit.json\", \"descendant_diff_audit.json\", \"materialization_receipt.json\"):\n    path = ROOT / name\n    if not path.is_file():\n        raise SystemExit(f\"ROUTE_B_ROUND04_B0_STALE_PLANNING_BINDING missing {name}\")\n    payload = json.loads(path.read_text(encoding=\"utf-8\"))\n    if payload.get(\"status\") != \"PASS\":\n        raise SystemExit(f\"ROUTE_B_ROUND04_B0_STALE_PLANNING_BINDING nonpass {name}\")\nif any(path.stat().st_mode & 0o222 for path in ROOT.rglob(\"*\") if path.is_file()):\n    raise SystemExit(\"ROUTE_B_ROUND04_B0_STALE_PLANNING_BINDING writable snapshot file\")\nprint(\"ROUTE_B_ROUND04_PLANNING_SNAPSHOT_REVALIDATED\")\nPY\n'"
+stage_progression_revision:
+  round03_b3_anatomy_union_overfit_route_global_stop: false
+  round04_anatomy_micro_overfit_is_implementation_gate: true
+  b3_can_emit_full_route_adequate_negative: false
+  b4_b5_b6_mandatory_after_valid_predecessors: true
+  b6_is_first_myops_full_route_scientific_classification_stage: true
+  cine_lane_starts_after_b2_and_is_independent_of_b3: true
+  route_c_hold_does_not_remove_route_b_cine_lane: true
+terminal_finalizer_contract:
+  executor_id: B10_TERMINAL_ACCOUNTING_REVIEW_PACKET
+  launch_owner: controller
+  launch_mode: controller_terminal_finalizer
+  prepare_wave_helper_exempt: true
+  depends_on_successful_merge_receipts: false
+  terminal_registry_path: results/route_B/round04/controller_terminal_registry.json
+  controller_ledger_path: results/route_B/round04/controller_ledger.csv
+  launch_lock: results/route_B/runtime/round04/B10/terminal_finalizer.launch.lock
+  afterany_dependency_source: all_started_attempt_ids_in_controller_ledger
+  no_started_attempt_backend: local_deterministic
+  launch_barrier:
+    global_terminal: launch immediately after B0/B1/B2 terminal blocker or revision is registered
+    post_b2: launch only after MyoPS and Cine each have one declared terminal class
+  global_terminal_classes:
+  - ROUTE_B_ROUND04_B0_STALE_PLANNING_BINDING
+  - ROUTE_B_ROUND04_B0_FINGERPRINT_BLOCKER
+  - ROUTE_B_ROUND04_B0_MANIFEST_OR_LABEL_BLOCKER
+  - ROUTE_B_ROUND04_B1_ANATOMY_REPAIR_NEEDS_REVISION
+  - ROUTE_B_ROUND04_B2_IMPLEMENTATION_NEEDS_REVISION
+  - ROUTE_B_ROUND04_B2_EXTERNAL_RESOURCE_BLOCKER
+  myops_lane_terminal_classes:
+  - ROUTE_B_ROUND04_B3_NEEDS_REVISION
+  - ROUTE_B_ROUND04_B4_NEEDS_REVISION
+  - ROUTE_B_ROUND04_B5_NEEDS_REVISION
+  - ROUTE_B_ROUND04_B6_MYOPS_TERMINAL_EVIDENCE_READY
+  - ROUTE_B_ROUND04_B6_NEEDS_EVIDENCE
+  - ROUTE_B_ROUND04_B6_NEEDS_REVISION
+  cine_lane_terminal_classes:
+  - ROUTE_B_ROUND04_B7_EXTERNAL_RESOURCE_BLOCKER
+  - ROUTE_B_ROUND04_B7_MATCHING_NEEDS_REVISION
+  - ROUTE_B_ROUND04_B8_REGISTRATION_STAGE_COMPLETE
+  - ROUTE_B_ROUND04_B8_NEEDS_REVISION
+  - ROUTE_B_ROUND04_B9_TEMPORAL_TERMINAL_EVIDENCE_READY
+  - ROUTE_B_ROUND04_B9_NEEDS_EVIDENCE
+  - ROUTE_B_ROUND04_B9_NEEDS_REVISION
+  attempt_classes_always_accounted:
+  - success
+  - scientific adequate negative
+  - implementation failure
+  - external blocker
+  - timeout
+  - preemption
+  - failed startup
+  - cancelled pending race loser
+  - started race loser
+  - unknown terminal
+  static_regression_scenarios:
+  - B1 failure before B2
+  - B2 external blocker
+  - B7 external/matching blocker
+  - B8 CINE_REGISTRATION_BLOCKER without B9
+  - timeout
+  - preemption
+  - cancelled race loser
+  - successful B6 and B9
+forbidden_authority_tokens:
+- ROUTE_PROMOTED
+- VALIDATION_UPLOAD_APPROVED
+- M11_AUTHORIZED
+- HOSTED_METRIC_CLAIMED
+- FINAL_SCIENTIFIC_CONCLUSION
+- CROSS_ROUTE_MERGED
+executors:
+- id: B0_REBIND_EVIDENCE_MANIFEST_BASELINE
+  lane: tooling
+  wave: 1
+  prompt_path: results/route_B/round04/planning_snapshot/prompts/routes/route_B_round04_controller_contract.md
+  branch_name: agent/route_B_round04_B0
+  worktree_path: /users/a/e/aereinh/CARE_worktrees/route_B_round04_B0
+  result_dir: results/route_B/round04/executors/B0
+  runtime_output_root: results/route_B/runtime/round04/B0
+  slurm_job_namespace: care_route_B_round04_B0
+  lock_path: results/route_B/runtime/round04/B0/B0.lock
+  log_path: results/route_B/runtime/round04/B0/B0.log
+  merge_order: 10
+  required_completion_file: results/route_B/round04/executors/B0/completion.json
+  required_completion_token: ROUTE_B_ROUND04_B0_READY_FOR_CONTROLLER_MERGE
+  depends_on: []
+  can_run_parallel: false
+  blocking: true
+  slurm_required: false
+  exact_inputs:
+  - results/route_B/round04/planning_snapshot/MANIFEST.json
+  - results/route_B/round04/planning_snapshot/hash_audit.json
+  - results/route_B/round04/planning_snapshot/descendant_diff_audit.json
+  - results/route_B/round04/planning_snapshot/materialization_receipt.json
+  - results/route_B/round04/planning_snapshot/prompts/routes/portfolio_round04_route_B_planner_plan_20260719.md
+  - results/route_B/round04/planning_snapshot/prompts/routes/route_B_round04_planner_prompt.md
+  - results/route_B/round04/planning_snapshot/prompts/routes/route_B_round04_controller_contract.md
+  - results/route_B/round04/planning_snapshot/prompts/routes/route_B_round04_executor_plan.yaml
+  - results/route_B/round04/planning_snapshot/prompts/routes/route_B_round04_critic_request.md
+  - results/route_B/round04/planning_snapshot/prompts/routes/route_B_round04_planner_audit.md
+  - results/route_B/round04/planning_snapshot/prompts/routes/route_B_round04_critic_rereview.md
+  - results/route_B/round04/planning_snapshot/prompts/routes/handoffs/CURRENT.md
+  - results/route_B/round04/planning_snapshot/prompts/routes/handoffs/route_B_round04_critic_handoff_20260719.md
+  - results/route_B/round04/planning_snapshot/prompts/routes/handoffs/route_B_round04_coordinator_receipt_20260719.md
+  - results/route_B/round04/planning_snapshot/prompts/routes/portfolio_round04_route_C_followup_decision_20260719.md
+  - results/route_B/review.md
+  - results/route_B/round03/executors/B0
+  - results/route_B/round03/executors/B1
+  - results/route_B/round03/executors/B2
+  - results/route_B/round03/executors/B3
+  - results/route_B/round03/executors/B10
+  exact_command: /users/a/e/aereinh/CARE/envs/env_CARE/bin/python scripts/route_B_round04/build_round04_assets.py --contract results/route_B/round04/planning_snapshot/prompts/routes/route_B_round04_controller_contract.md --snapshot results/route_B/round04/planning_snapshot --out results/route_B/round04/executors/B0
+  write_scope:
+  - configs/route_B_round04
+  - scripts/route_B_round04
+  - scripts/validation/route_B_round04
+  - tests/route_B_round04/fixtures
+  - results/route_B/round04/executors/B0
+  required_outputs:
+  - source_fingerprint_audit.json
+  - round03_inheritance_matrix.csv
+  - label_target_audit.json
+  - manifest_freeze_receipt.json
+  - same_split_baseline_receipt.json
+  - planning_snapshot_gate_receipt.json
+  - validator_fixture_index.json
+  - validator_report.json
+  - known_bad_matrix_report.json
+  - completion.json
+  validator:
+    script_path: scripts/validation/route_B_round04/validate_B0_binding_manifests.py
+    command: /users/a/e/aereinh/CARE/envs/env_CARE/bin/python scripts/validation/route_B_round04/validate_B0_binding_manifests.py --strict --input results/route_B/round04/executors/B0 --report results/route_B/round04/executors/B0/validator_report.json --require-token ROUTE_B_ROUND04_B0_READY_FOR_CONTROLLER_MERGE
+    input_path: results/route_B/round04/executors/B0
+    report_file: results/route_B/round04/executors/B0/validator_report.json
+    expected_exit_code: 0
+    success_token: ROUTE_B_ROUND04_B0_READY_FOR_CONTROLLER_MERGE
+  known_bad_contract:
+    matrix_path: tests/route_B_round04/fixtures/B0/known_bad_matrix.yaml
+    matrix_command: /users/a/e/aereinh/CARE/envs/env_CARE/bin/python scripts/validation/route_B_round04/run_known_bad_matrix.py --stage B0 --matrix tests/route_B_round04/fixtures/B0/known_bad_matrix.yaml --validator scripts/validation/route_B_round04/validate_B0_binding_manifests.py --report results/route_B/round04/executors/B0/known_bad_matrix_report.json
+    report_file: results/route_B/round04/executors/B0/known_bad_matrix_report.json
+    runner_expected_exit_code: 0
+    validator_expected_exit_code_per_fixture: 1
+    expected_failure_keys:
+    - STALE_PLANNING_BINDING
+    - PLANNING_SOURCE_UNREADABLE
+    - PLANNING_SNAPSHOT_INCOMPLETE
+    - PLANNING_SNAPSHOT_HASH_MISMATCH
+    - CURRENT_REREVIEW_MISSING_OR_NOT_READY
+    - CURRENT_HANDOFF_MISSING
+    - CURRENT_COORDINATOR_RECEIPT_MISSING_OR_STALE
+    - DISALLOWED_MAIN_DESCENDANT_PATH
+    - ROUTE_EVIDENCE_REF_MISMATCH
+    - MANIFEST_HASH_MISMATCH
+    - ANATOMY_TARGET_LABEL_ROUNDTRIP_FAILED
+    - SAME_SPLIT_BASELINE_MISSING
+    - VALIDATOR_MATRIX_INCOMPLETE
+    all_keys_required: true
+    unexpected_pass_is_failure: true
+  reviewer_input: results/route_B/round04/executors/B0
+  isolation_mode: separate_worktree
+  materialization_gate_required: true
+  materialization_receipt_path: results/route_B/round04/planning_snapshot/materialization_receipt.json
+  materialization_required_status: PASS
+  materialization_failure_token: ROUTE_B_ROUND04_B0_STALE_PLANNING_BINDING
+  current_gate_inputs:
+  - prompts/routes/route_B_round04_critic_rereview.md
+  - prompts/routes/handoffs/route_B_round04_critic_handoff_20260719.md
+  - prompts/routes/handoffs/route_B_round04_coordinator_receipt_20260719.md
+  - prompts/routes/handoffs/CURRENT.md
+  - prompts/routes/portfolio_round04_route_C_followup_decision_20260719.md
+  superseded_historical_inputs:
+  - prompts/routes/route_B_round04_critic_review.md
+  success_condition: materialization PASS, exact planning/evidence binding, conditional inheritance, manifests, anatomy labels, same-split baseline and validator fixtures pass
+  failure_branch: stale planning, unreadable source, snapshot defect, fingerprint mismatch, manifest/label/baseline defect or fixture defect registers a global terminal and launches B10
+- id: B1_REPAIR_ANATOMY_TARGET_OPTIMIZATION
+  lane: shared
+  wave: 2
+  prompt_path: results/route_B/round04/planning_snapshot/prompts/routes/route_B_round04_controller_contract.md
+  branch_name: agent/route_B_round04_B1
+  worktree_path: /users/a/e/aereinh/CARE_worktrees/route_B_round04_B1
+  result_dir: results/route_B/round04/executors/B1
+  runtime_output_root: results/route_B/runtime/round04/B1
+  slurm_job_namespace: care_route_B_round04_B1
+  lock_path: results/route_B/runtime/round04/B1/B1.lock
+  log_path: results/route_B/runtime/round04/B1/B1.log
+  merge_order: 20
+  required_completion_file: results/route_B/round04/executors/B1/completion.json
+  required_completion_token: ROUTE_B_ROUND04_B1_ANATOMY_REPAIR_IMPLEMENTED
+  depends_on:
+  - B0_REBIND_EVIDENCE_MANIFEST_BASELINE
+  can_run_parallel: false
+  blocking: true
+  slurm_required: true
+  exact_inputs:
+  - results/route_B/round04/executors/B0/completion.json
+  - results/route_B/round04/executors/B0/manifest_freeze_receipt.json
+  - configs/route_B_round04/manifests/myops_anatomy_microset_2.json
+  - src/care_myocardium/route_B_round03
+  - configs/route_B_round04/formal.yaml
+  exact_command: bash jobs/route_B_round04/run_B1_anatomy_repair.sh
+  write_scope:
+  - src/care_myocardium/route_B_round04
+  - configs/route_B_round04
+  - scripts/route_B_round04
+  - scripts/training/route_B_round04
+  - scripts/evaluation/route_B_round04
+  - scripts/validation/route_B_round04
+  - tests/route_B_round04
+  - jobs/route_B_round04
+  - results/route_B/round04/executors/B1
+  - results/route_B/runtime/round04/B1
+  required_outputs:
+  - anatomy_target_roundtrip.json
+  - anatomy_microset_metrics.csv
+  - anatomy_gradient_receipt.csv
+  - anatomy_intervention_receipt.csv
+  - save_reload_report.json
+  - training_adequacy.csv
+  - validator_report.json
+  - known_bad_matrix_report.json
+  - completion.json
+  validator:
+    script_path: scripts/validation/route_B_round04/validate_B1_anatomy_repair.py
+    command: /users/a/e/aereinh/CARE/envs/env_CARE/bin/python scripts/validation/route_B_round04/validate_B1_anatomy_repair.py --strict --input results/route_B/round04/executors/B1 --report results/route_B/round04/executors/B1/validator_report.json --require-token ROUTE_B_ROUND04_B1_ANATOMY_REPAIR_IMPLEMENTED
+    input_path: results/route_B/round04/executors/B1
+    report_file: results/route_B/round04/executors/B1/validator_report.json
+    expected_exit_code: 0
+    success_token: ROUTE_B_ROUND04_B1_ANATOMY_REPAIR_IMPLEMENTED
+  known_bad_contract:
+    matrix_path: tests/route_B_round04/fixtures/B1/known_bad_matrix.yaml
+    matrix_command: /users/a/e/aereinh/CARE/envs/env_CARE/bin/python scripts/validation/route_B_round04/run_known_bad_matrix.py --stage B1 --matrix tests/route_B_round04/fixtures/B1/known_bad_matrix.yaml --validator scripts/validation/route_B_round04/validate_B1_anatomy_repair.py --report results/route_B/round04/executors/B1/known_bad_matrix_report.json
+    report_file: results/route_B/round04/executors/B1/known_bad_matrix_report.json
+    runner_expected_exit_code: 0
+    validator_expected_exit_code_per_fixture: 1
+    expected_failure_keys:
+    - PURE_MYOCARDIUM_UNION_TARGET
+    - ANATOMY_MICRO_OVERFIT_INADEQUATE
+    - ROUTED_ANATOMY_GRADIENT_MISSING
+    - LATERAL_ANATOMY_GRADIENT_MISSING
+    - ANCHOR_SUPPORT_FLOOR_BECAME_FINAL_BASE
+    - SAVE_RELOAD_MISMATCH
+    all_keys_required: true
+    unexpected_pass_is_failure: true
+  reviewer_input: results/route_B/round04/executors/B1
+  isolation_mode: separate_worktree
+  retry_policy:
+    operational_retry_allowed: true
+    same_executor_attempt: true
+    max_startup_retries: 2
+    max_preemption_retries: 2
+    max_unknown_retries: 0
+    require_same_code_hash: true
+    require_same_config_hash: true
+    require_same_split_hash: true
+    failed_attempt_training_credit: zero
+  slurm_dependency_policy:
+    training_dependency: afterok
+    finalizer_dependency: afterany
+  preflight:
+    required: true
+    command: /users/a/e/aereinh/CARE/envs/env_CARE/bin/python scripts/route_B_round04/preflight.py --stage B1 --contract results/route_B/round04/planning_snapshot/prompts/routes/route_B_round04_controller_contract.md --out results/route_B/round04/executors/B1/preflight_receipt.json
+    receipt_path: results/route_B/round04/executors/B1/preflight_receipt.json
+  retry_ledger_path: results/route_B/round04/executors/B1/retry_ledger.csv
+  minimum_effective_training:
+    min_optimizer_steps: 2000
+    min_train_loop_seconds: 600
+    min_validation_events: 4
+    min_eval_cases: 2
+    require_one_batch_overfit: true
+    require_prediction_sanity: true
+    require_loss_decrease: true
+    require_same_split_baseline: false
+    require_cache_isolation: true
+  success_condition: union/LV/RV target roundtrip, two-case micro-overfit, routed and lateral gradients, live learned anatomy intervention and clean reload pass
+  failure_branch: implementation or label failure registers ROUTE_B_ROUND04_B1_ANATOMY_REPAIR_NEEDS_REVISION and launches B10
+- id: B2_FULL_IMPLEMENTATION_FREEZE
+  lane: shared
+  wave: 3
+  prompt_path: results/route_B/round04/planning_snapshot/prompts/routes/route_B_round04_controller_contract.md
+  branch_name: agent/route_B_round04_B2
+  worktree_path: /users/a/e/aereinh/CARE_worktrees/route_B_round04_B2
+  result_dir: results/route_B/round04/executors/B2
+  runtime_output_root: results/route_B/runtime/round04/B2
+  slurm_job_namespace: care_route_B_round04_B2
+  lock_path: results/route_B/runtime/round04/B2/B2.lock
+  log_path: results/route_B/runtime/round04/B2/B2.log
+  merge_order: 30
+  required_completion_file: results/route_B/round04/executors/B2/completion.json
+  required_completion_token: ROUTE_B_ROUND04_B2_IMPLEMENTATION_GATE_PASSED
+  depends_on:
+  - B1_REPAIR_ANATOMY_TARGET_OPTIMIZATION
+  can_run_parallel: false
+  blocking: true
+  slurm_required: false
+  exact_inputs:
+  - results/route_B/round04/executors/B1/completion.json
+  - results/route_B/round04/executors/B1/save_reload_report.json
+  - results/route_B/round04/executors/B0/manifest_freeze_receipt.json
+  exact_command: /users/a/e/aereinh/CARE/envs/env_CARE/bin/python scripts/route_B_round04/run_B2_implementation_gate.py --contract results/route_B/round04/planning_snapshot/prompts/routes/route_B_round04_controller_contract.md --out results/route_B/round04/executors/B2
+  write_scope:
+  - src/care_myocardium/route_B_round04
+  - configs/route_B_round04
+  - scripts/route_B_round04
+  - scripts/training/route_B_round04
+  - scripts/evaluation/route_B_round04
+  - scripts/validation/route_B_round04
+  - tests/route_B_round04
+  - jobs/route_B_round04
+  - results/route_B/round04/executors/B2
+  required_outputs:
+  - implementation_snapshot.md
+  - tensor_contract.json
+  - forward_gradient_intervention.csv
+  - save_reload_export_report.json
+  - cinema_source_fidelity.json
+  - registration_temporal_smoke.json
+  - route_local_mapper_draft.md
+  - validator_report.json
+  - known_bad_matrix_report.json
+  - completion.json
+  validator:
+    script_path: scripts/validation/route_B_round04/validate_B2_implementation_freeze.py
+    command: /users/a/e/aereinh/CARE/envs/env_CARE/bin/python scripts/validation/route_B_round04/validate_B2_implementation_freeze.py --strict --input results/route_B/round04/executors/B2 --report results/route_B/round04/executors/B2/validator_report.json --require-token ROUTE_B_ROUND04_B2_IMPLEMENTATION_GATE_PASSED
+    input_path: results/route_B/round04/executors/B2
+    report_file: results/route_B/round04/executors/B2/validator_report.json
+    expected_exit_code: 0
+    success_token: ROUTE_B_ROUND04_B2_IMPLEMENTATION_GATE_PASSED
+  known_bad_contract:
+    matrix_path: tests/route_B_round04/fixtures/B2/known_bad_matrix.yaml
+    matrix_command: /users/a/e/aereinh/CARE/envs/env_CARE/bin/python scripts/validation/route_B_round04/run_known_bad_matrix.py --stage B2 --matrix tests/route_B_round04/fixtures/B2/known_bad_matrix.yaml --validator scripts/validation/route_B_round04/validate_B2_implementation_freeze.py --report results/route_B/round04/executors/B2/known_bad_matrix_report.json
+    report_file: results/route_B/round04/executors/B2/known_bad_matrix_report.json
+    runner_expected_exit_code: 0
+    validator_expected_exit_code_per_fixture: 1
+    expected_failure_keys:
+    - NNUNET_ONLY_BYPASS
+    - DISCONNECTED_RETRIEVAL_PROPOSAL_REFINER
+    - INVALID_SLOT_WEIGHT_NONZERO
+    - PATTERN_SIP_ALIAS_OR_NO_GRADIENT
+    - FAKE_CINEMA_SOURCE_OR_WRONG_SHA
+    - DIRECT_VELOCITY_AS_DISPLACEMENT
+    - TEMPORAL_REQUIRED_INPUT_UNCONSUMED
+    - OFFICIAL_LABEL_ROUNDTRIP_FAILED
+    - LEGACY_ROUND03_WRAPPER_BYPASS
+    all_keys_required: true
+    unexpected_pass_is_failure: true
+  reviewer_input: results/route_B/round04/executors/B2
+  isolation_mode: separate_worktree
+  success_condition: real forward, gradient, save/reload, export and final-output interventions pass for MyoPS and Cine implementation
+  failure_branch: implementation revision or proven external source blocker registers a global terminal and launches B10
+- id: B3_REPRESENTATION_READINESS
+  lane: myops
+  wave: 4
+  prompt_path: results/route_B/round04/planning_snapshot/prompts/routes/route_B_round04_controller_contract.md
+  branch_name: agent/route_B_round04_B3
+  worktree_path: /users/a/e/aereinh/CARE_worktrees/route_B_round04_B3
+  result_dir: results/route_B/round04/executors/B3
+  runtime_output_root: results/route_B/runtime/round04/B3
+  slurm_job_namespace: care_route_B_round04_B3
+  lock_path: results/route_B/runtime/round04/B3/B3.lock
+  log_path: results/route_B/runtime/round04/B3/B3.log
+  merge_order: 40
+  required_completion_file: results/route_B/round04/executors/B3/completion.json
+  required_completion_token: ROUTE_B_ROUND04_B3_REPRESENTATION_READY_FOR_PROPOSAL
+  depends_on:
+  - B2_FULL_IMPLEMENTATION_FREEZE
+  can_run_parallel: true
+  blocking: true
+  slurm_required: true
+  exact_inputs:
+  - results/route_B/round04/executors/B2/completion.json
+  - results/route_B/round04/executors/B2/tensor_contract.json
+  - configs/route_B_round04/manifests/myops_fold0_primary_44.json
+  exact_command: bash jobs/route_B_round04/run_B3_representation.sh
+  write_scope:
+  - src/care_myocardium/route_B_round04/myops/representation
+  - configs/route_B_round04/myops/B3
+  - scripts/training/route_B_round04/myops/B3
+  - scripts/evaluation/route_B_round04/myops/B3
+  - results/route_B/round04/executors/B3
+  - results/route_B/runtime/round04/B3
+  required_outputs:
+  - training_adequacy.csv
+  - sampler_receipt.json
+  - router_slot_evidence.csv
+  - pattern_sip_gradient.csv
+  - learned_anatomy_metrics.csv
+  - no_t2_safety.csv
+  - selected_checkpoint_reload.json
+  - validator_report.json
+  - known_bad_matrix_report.json
+  - completion.json
+  validator:
+    script_path: scripts/validation/route_B_round04/validate_B3_representation.py
+    command: /users/a/e/aereinh/CARE/envs/env_CARE/bin/python scripts/validation/route_B_round04/validate_B3_representation.py --strict --input results/route_B/round04/executors/B3 --report results/route_B/round04/executors/B3/validator_report.json --require-token ROUTE_B_ROUND04_B3_REPRESENTATION_READY_FOR_PROPOSAL
+    input_path: results/route_B/round04/executors/B3
+    report_file: results/route_B/round04/executors/B3/validator_report.json
+    expected_exit_code: 0
+    success_token: ROUTE_B_ROUND04_B3_REPRESENTATION_READY_FOR_PROPOSAL
+  known_bad_contract:
+    matrix_path: tests/route_B_round04/fixtures/B3/known_bad_matrix.yaml
+    matrix_command: /users/a/e/aereinh/CARE/envs/env_CARE/bin/python scripts/validation/route_B_round04/run_known_bad_matrix.py --stage B3 --matrix tests/route_B_round04/fixtures/B3/known_bad_matrix.yaml --validator scripts/validation/route_B_round04/validate_B3_representation.py --report results/route_B/round04/executors/B3/known_bad_matrix_report.json
+    report_file: results/route_B/round04/executors/B3/known_bad_matrix_report.json
+    runner_expected_exit_code: 0
+    validator_expected_exit_code_per_fixture: 1
+    expected_failure_keys:
+    - ROUND03_B3_GLOBAL_STOP_REUSED
+    - SAMPLER_CONTRACT_MISMATCH
+    - FORMAL_TRAINING_INADEQUATE
+    - INVALID_SLOT_WEIGHT_NONZERO
+    - NO_T2_EDEMA_NONZERO
+    - ROUTER_FAMILY_GRADIENT_MISSING
+    - LEARNED_ANATOMY_NONFINITE_OR_CONSTANT
+    - B3_FULL_ROUTE_NEGATIVE_TOKEN_FORBIDDEN
+    all_keys_required: true
+    unexpected_pass_is_failure: true
+  reviewer_input: results/route_B/round04/executors/B3
+  isolation_mode: separate_worktree
+  isolation_proof: MyoPS writes only route_B_round04/myops-scoped code/config/results/runtime; Cine writes only route_B_round04/cine-scoped code/config/results/runtime; shared snapshot and planning files are read-only.
+  shared_files_forbidden:
+  - prompts/routes
+  - prompts/routes/handoffs
+  - results/route_B/round04/planning_snapshot
+  - wiki/current_state.yaml
+  retry_policy:
+    operational_retry_allowed: true
+    same_executor_attempt: true
+    max_startup_retries: 2
+    max_preemption_retries: 2
+    max_unknown_retries: 0
+    require_same_code_hash: true
+    require_same_config_hash: true
+    require_same_split_hash: true
+    failed_attempt_training_credit: zero
+  slurm_dependency_policy:
+    training_dependency: afterok
+    finalizer_dependency: afterany
+  preflight:
+    required: true
+    command: /users/a/e/aereinh/CARE/envs/env_CARE/bin/python scripts/route_B_round04/preflight.py --stage B3 --contract results/route_B/round04/planning_snapshot/prompts/routes/route_B_round04_controller_contract.md --out results/route_B/round04/executors/B3/preflight_receipt.json
+    receipt_path: results/route_B/round04/executors/B3/preflight_receipt.json
+  retry_ledger_path: results/route_B/round04/executors/B3/retry_ledger.csv
+  minimum_effective_training:
+    min_optimizer_steps: 6000
+    min_train_loop_seconds: 1800
+    min_validation_events: 3
+    min_eval_cases: 44
+    require_one_batch_overfit: true
+    require_prediction_sanity: true
+    require_loss_decrease: true
+    require_same_split_baseline: true
+    require_cache_isolation: true
+  success_condition: representation readiness and live learned-anatomy evidence pass; every valid B3 advances B4
+  failure_branch: implementation-level representation defect terminates MyoPS lane; a scientifically weak but valid B3 cannot stop the route
+- id: B7_OFFICIAL_CINEMA_MATCHED_CONTROL
+  lane: cine
+  wave: 4
+  prompt_path: results/route_B/round04/planning_snapshot/prompts/routes/route_B_round04_controller_contract.md
+  branch_name: agent/route_B_round04_B7
+  worktree_path: /users/a/e/aereinh/CARE_worktrees/route_B_round04_B7
+  result_dir: results/route_B/round04/executors/B7
+  runtime_output_root: results/route_B/runtime/round04/B7
+  slurm_job_namespace: care_route_B_round04_B7
+  lock_path: results/route_B/runtime/round04/B7/B7.lock
+  log_path: results/route_B/runtime/round04/B7/B7.log
+  merge_order: 50
+  required_completion_file: results/route_B/round04/executors/B7/completion.json
+  required_completion_token: ROUTE_B_ROUND04_B7_CINEMA_MATCHED_CONTROL_COMPLETE
+  depends_on:
+  - B2_FULL_IMPLEMENTATION_FREEZE
+  can_run_parallel: true
+  blocking: true
+  slurm_required: true
+  exact_inputs:
+  - results/route_B/round04/executors/B2/completion.json
+  - results/route_B/round04/executors/B2/cinema_source_fidelity.json
+  - configs/route_B_round04/manifests/cine_train12.json
+  exact_command: bash jobs/route_B_round04/run_B7_cinema_control.sh
+  write_scope:
+  - src/care_myocardium/route_B_round04/cine/cinema
+  - configs/route_B_round04/cine/B7
+  - scripts/training/route_B_round04/cine/B7
+  - scripts/evaluation/route_B_round04/cine/B7
+  - results/route_B/round04/executors/B7
+  - results/route_B/runtime/round04/B7
+  required_outputs:
+  - cinema_provenance.json
+  - pretrained_random_match_receipt.json
+  - adapter_training_adequacy.csv
+  - checkpoint_selection.csv
+  - selected_checkpoint_reload.json
+  - per_frame_feature_manifest.csv
+  - validator_report.json
+  - known_bad_matrix_report.json
+  - completion.json
+  validator:
+    script_path: scripts/validation/route_B_round04/validate_B7_cinema_control.py
+    command: /users/a/e/aereinh/CARE/envs/env_CARE/bin/python scripts/validation/route_B_round04/validate_B7_cinema_control.py --strict --input results/route_B/round04/executors/B7 --report results/route_B/round04/executors/B7/validator_report.json --require-token ROUTE_B_ROUND04_B7_CINEMA_MATCHED_CONTROL_COMPLETE
+    input_path: results/route_B/round04/executors/B7
+    report_file: results/route_B/round04/executors/B7/validator_report.json
+    expected_exit_code: 0
+    success_token: ROUTE_B_ROUND04_B7_CINEMA_MATCHED_CONTROL_COMPLETE
+  known_bad_contract:
+    matrix_path: tests/route_B_round04/fixtures/B7/known_bad_matrix.yaml
+    matrix_command: /users/a/e/aereinh/CARE/envs/env_CARE/bin/python scripts/validation/route_B_round04/run_known_bad_matrix.py --stage B7 --matrix tests/route_B_round04/fixtures/B7/known_bad_matrix.yaml --validator scripts/validation/route_B_round04/validate_B7_cinema_control.py --report results/route_B/round04/executors/B7/known_bad_matrix_report.json
+    report_file: results/route_B/round04/executors/B7/known_bad_matrix_report.json
+    runner_expected_exit_code: 0
+    validator_expected_exit_code_per_fixture: 1
+    expected_failure_keys:
+    - FAKE_CINEMA_SOURCE_OR_WRONG_SHA
+    - CINEMA_LICENSE_OR_COMMIT_MISSING
+    - PRETRAINED_RANDOM_ARCHITECTURE_MISMATCH
+    - DOWNSTREAM_INITIALIZATION_MISMATCH
+    - CASES_FRAMES_OPTIMIZER_BUDGET_MISMATCH
+    - SOURCE_INITIALIZATION_NOT_ONLY_DIFFERENCE
+    - SELECTED_CHECKPOINT_NOT_RELOADED
+    - INTERNAL_SMALL_WRAPPER_USED_AS_OFFICIAL
+    all_keys_required: true
+    unexpected_pass_is_failure: true
+  reviewer_input: results/route_B/round04/executors/B7
+  isolation_mode: separate_worktree
+  isolation_proof: Cine writes only route_B_round04/cine-scoped code/config/results/runtime; MyoPS writes only route_B_round04/myops-scoped code/config/results/runtime; shared snapshot and planning files are read-only.
+  shared_files_forbidden:
+  - prompts/routes
+  - prompts/routes/handoffs
+  - results/route_B/round04/planning_snapshot
+  - wiki/current_state.yaml
+  retry_policy:
+    operational_retry_allowed: true
+    same_executor_attempt: true
+    max_startup_retries: 2
+    max_preemption_retries: 2
+    max_unknown_retries: 0
+    require_same_code_hash: true
+    require_same_config_hash: true
+    require_same_split_hash: true
+    failed_attempt_training_credit: zero
+  slurm_dependency_policy:
+    training_dependency: afterok
+    finalizer_dependency: afterany
+  preflight:
+    required: true
+    command: /users/a/e/aereinh/CARE/envs/env_CARE/bin/python scripts/route_B_round04/preflight.py --stage B7 --contract results/route_B/round04/planning_snapshot/prompts/routes/route_B_round04_controller_contract.md --out results/route_B/round04/executors/B7/preflight_receipt.json
+    receipt_path: results/route_B/round04/executors/B7/preflight_receipt.json
+  retry_ledger_path: results/route_B/round04/executors/B7/retry_ledger.csv
+  minimum_effective_training:
+    min_optimizer_steps_per_source: 8000
+    min_train_loop_seconds_per_source: 3600
+    min_validation_events_per_source: 4
+    min_eval_cases: 12
+    require_one_batch_overfit: true
+    require_prediction_sanity: true
+    require_loss_decrease: true
+    require_same_split_baseline: true
+    require_cache_isolation: true
+  success_condition: official source and architecture-matched random control complete with source initialization as the only difference and clean reload
+  failure_branch: proven source blocker or matching defect terminates Cine lane after exact classification; MyoPS continues
+- id: B4_OOF_PROTOTYPE_PROPOSAL
+  lane: myops
+  wave: 5
+  prompt_path: results/route_B/round04/planning_snapshot/prompts/routes/route_B_round04_controller_contract.md
+  branch_name: agent/route_B_round04_B4
+  worktree_path: /users/a/e/aereinh/CARE_worktrees/route_B_round04_B4
+  result_dir: results/route_B/round04/executors/B4
+  runtime_output_root: results/route_B/runtime/round04/B4
+  slurm_job_namespace: care_route_B_round04_B4
+  lock_path: results/route_B/runtime/round04/B4/B4.lock
+  log_path: results/route_B/runtime/round04/B4/B4.log
+  merge_order: 60
+  required_completion_file: results/route_B/round04/executors/B4/completion.json
+  required_completion_token: ROUTE_B_ROUND04_B4_PROPOSAL_STAGE_COMPLETE
+  depends_on:
+  - B3_REPRESENTATION_READINESS
+  can_run_parallel: true
+  blocking: true
+  slurm_required: true
+  exact_inputs:
+  - results/route_B/round04/executors/B3/completion.json
+  - results/route_B/round04/executors/B3/selected_checkpoint_reload.json
+  - results/route_B/round04/executors/B0/manifest_freeze_receipt.json
+  exact_command: bash jobs/route_B_round04/run_B4_proposal.sh
+  write_scope:
+  - src/care_myocardium/route_B_round04/myops/proposal
+  - configs/route_B_round04/myops/B4
+  - scripts/training/route_B_round04/myops/B4
+  - scripts/evaluation/route_B_round04/myops/B4
+  - results/route_B/round04/executors/B4
+  - results/route_B/runtime/round04/B4
+  required_outputs:
+  - oof_shard_manifest.json
+  - prototype_bank_inventory.csv
+  - prototype_leakage_audit.json
+  - hard_negative_queue_receipt.json
+  - proposal_metrics.csv
+  - soft_roi_coverage.csv
+  - proposal_final_effect.csv
+  - selected_checkpoint_reload.json
+  - validator_report.json
+  - known_bad_matrix_report.json
+  - completion.json
+  validator:
+    script_path: scripts/validation/route_B_round04/validate_B4_proposal.py
+    command: /users/a/e/aereinh/CARE/envs/env_CARE/bin/python scripts/validation/route_B_round04/validate_B4_proposal.py --strict --input results/route_B/round04/executors/B4 --report results/route_B/round04/executors/B4/validator_report.json --require-token ROUTE_B_ROUND04_B4_PROPOSAL_STAGE_COMPLETE
+    input_path: results/route_B/round04/executors/B4
+    report_file: results/route_B/round04/executors/B4/validator_report.json
+    expected_exit_code: 0
+    success_token: ROUTE_B_ROUND04_B4_PROPOSAL_STAGE_COMPLETE
+  known_bad_contract:
+    matrix_path: tests/route_B_round04/fixtures/B4/known_bad_matrix.yaml
+    matrix_command: /users/a/e/aereinh/CARE/envs/env_CARE/bin/python scripts/validation/route_B_round04/run_known_bad_matrix.py --stage B4 --matrix tests/route_B_round04/fixtures/B4/known_bad_matrix.yaml --validator scripts/validation/route_B_round04/validate_B4_proposal.py --report results/route_B/round04/executors/B4/known_bad_matrix_report.json
+    report_file: results/route_B/round04/executors/B4/known_bad_matrix_report.json
+    runner_expected_exit_code: 0
+    validator_expected_exit_code_per_fixture: 1
+    expected_failure_keys:
+    - OOF_CURRENT_CASE_LEAKAGE
+    - OOF_VALIDATION_OR_TEST_LEAKAGE
+    - BOOTSTRAP_OR_EMA_FORMAL_BANK
+    - NO_T2_EDEMA_NEGATIVE
+    - PROTOTYPE_SIMILARITY_DISCONNECTED
+    - CONSTANT_PROPOSAL
+    - HARD_ROI_DELETION
+    - WEAK_VALID_PROPOSAL_PREMATURE_STOP
+    all_keys_required: true
+    unexpected_pass_is_failure: true
+  reviewer_input: results/route_B/round04/executors/B4
+  isolation_mode: separate_worktree
+  isolation_proof: MyoPS writes only route_B_round04/myops-scoped code/config/results/runtime; Cine writes only route_B_round04/cine-scoped code/config/results/runtime; shared snapshot and planning files are read-only.
+  shared_files_forbidden:
+  - prompts/routes
+  - prompts/routes/handoffs
+  - results/route_B/round04/planning_snapshot
+  - wiki/current_state.yaml
+  retry_policy:
+    operational_retry_allowed: true
+    same_executor_attempt: true
+    max_startup_retries: 2
+    max_preemption_retries: 2
+    max_unknown_retries: 0
+    require_same_code_hash: true
+    require_same_config_hash: true
+    require_same_split_hash: true
+    failed_attempt_training_credit: zero
+  slurm_dependency_policy:
+    training_dependency: afterok
+    finalizer_dependency: afterany
+  preflight:
+    required: true
+    command: /users/a/e/aereinh/CARE/envs/env_CARE/bin/python scripts/route_B_round04/preflight.py --stage B4 --contract results/route_B/round04/planning_snapshot/prompts/routes/route_B_round04_controller_contract.md --out results/route_B/round04/executors/B4/preflight_receipt.json
+    receipt_path: results/route_B/round04/executors/B4/preflight_receipt.json
+  retry_ledger_path: results/route_B/round04/executors/B4/retry_ledger.csv
+  minimum_effective_training:
+    min_optimizer_steps: 8000
+    min_train_loop_seconds: 2400
+    min_validation_events: 4
+    min_eval_cases: 44
+    require_one_batch_overfit: true
+    require_prediction_sanity: true
+    require_loss_decrease: true
+    require_same_split_baseline: true
+    require_cache_isolation: true
+  success_condition: OOF provenance, no leakage, safe negatives, proposal similarity chain, soft ROI coverage and final effect pass; strong and weak-valid branches advance B5
+  failure_branch: implementation/provenance defect terminates MyoPS lane; weak-valid proposal uses the fixed conservative ROI control and advances
+- id: B8_FAITHFUL_REGISTRATION
+  lane: cine
+  wave: 5
+  prompt_path: results/route_B/round04/planning_snapshot/prompts/routes/route_B_round04_controller_contract.md
+  branch_name: agent/route_B_round04_B8
+  worktree_path: /users/a/e/aereinh/CARE_worktrees/route_B_round04_B8
+  result_dir: results/route_B/round04/executors/B8
+  runtime_output_root: results/route_B/runtime/round04/B8
+  slurm_job_namespace: care_route_B_round04_B8
+  lock_path: results/route_B/runtime/round04/B8/B8.lock
+  log_path: results/route_B/runtime/round04/B8/B8.log
+  merge_order: 70
+  required_completion_file: results/route_B/round04/executors/B8/completion.json
+  required_completion_token: ROUTE_B_ROUND04_B8_REGISTRATION_STAGE_COMPLETE
+  depends_on:
+  - B7_OFFICIAL_CINEMA_MATCHED_CONTROL
+  can_run_parallel: true
+  blocking: true
+  slurm_required: true
+  exact_inputs:
+  - results/route_B/round04/executors/B7/completion.json
+  - results/route_B/round04/executors/B7/per_frame_feature_manifest.csv
+  - configs/route_B_round04/manifests/cine_train12.json
+  exact_command: bash jobs/route_B_round04/run_B8_registration.sh
+  write_scope:
+  - src/care_myocardium/route_B_round04/cine/registration
+  - configs/route_B_round04/cine/B8
+  - scripts/training/route_B_round04/cine/B8
+  - scripts/evaluation/route_B_round04/cine/B8
+  - results/route_B/round04/executors/B8
+  - results/route_B/runtime/round04/B8
+  required_outputs:
+  - registration_training_adequacy.json
+  - selected_checkpoint_reload.json
+  - registration_pair_receipts.csv
+  - registration_case_full_gate.csv
+  - jacobian_histograms.json
+  - inverse_consistency.csv
+  - real_syn_control.csv
+  - registration_method_decision.json
+  - validator_report.json
+  - known_bad_matrix_report.json
+  - completion.json
+  validator:
+    script_path: scripts/validation/route_B_round04/validate_B8_registration.py
+    command: /users/a/e/aereinh/CARE/envs/env_CARE/bin/python scripts/validation/route_B_round04/validate_B8_registration.py --strict --input results/route_B/round04/executors/B8 --report results/route_B/round04/executors/B8/validator_report.json --require-token ROUTE_B_ROUND04_B8_REGISTRATION_STAGE_COMPLETE
+    input_path: results/route_B/round04/executors/B8
+    report_file: results/route_B/round04/executors/B8/validator_report.json
+    expected_exit_code: 0
+    success_token: ROUTE_B_ROUND04_B8_REGISTRATION_STAGE_COMPLETE
+  known_bad_contract:
+    matrix_path: tests/route_B_round04/fixtures/B8/known_bad_matrix.yaml
+    matrix_command: /users/a/e/aereinh/CARE/envs/env_CARE/bin/python scripts/validation/route_B_round04/run_known_bad_matrix.py --stage B8 --matrix tests/route_B_round04/fixtures/B8/known_bad_matrix.yaml --validator scripts/validation/route_B_round04/validate_B8_registration.py --report results/route_B/round04/executors/B8/known_bad_matrix_report.json
+    report_file: results/route_B/round04/executors/B8/known_bad_matrix_report.json
+    runner_expected_exit_code: 0
+    validator_expected_exit_code_per_fixture: 1
+    expected_failure_keys:
+    - DIRECT_VELOCITY_AS_DISPLACEMENT
+    - SCALING_SQUARING_STEPS_NOT_SEVEN
+    - PROXY_JACOBIAN
+    - INVERSE_CONSISTENCY_MISSING
+    - SYN_OUTPUT_COPIED_OR_PROXY
+    - PAIR_AS_CASE_AGGREGATION
+    - FULL_DENOMINATOR_MISSING
+    - SELECTED_REGISTRATION_NOT_RELOADED
+    - REGISTRATION_BLOCKER_WITHOUT_FAITHFUL_RUNTIME
+    all_keys_required: true
+    unexpected_pass_is_failure: true
+  reviewer_input: results/route_B/round04/executors/B8
+  isolation_mode: separate_worktree
+  isolation_proof: Cine writes only route_B_round04/cine-scoped code/config/results/runtime; MyoPS writes only route_B_round04/myops-scoped code/config/results/runtime; shared snapshot and planning files are read-only.
+  shared_files_forbidden:
+  - prompts/routes
+  - prompts/routes/handoffs
+  - results/route_B/round04/planning_snapshot
+  - wiki/current_state.yaml
+  retry_policy:
+    operational_retry_allowed: true
+    same_executor_attempt: true
+    max_startup_retries: 2
+    max_preemption_retries: 2
+    max_unknown_retries: 0
+    require_same_code_hash: true
+    require_same_config_hash: true
+    require_same_split_hash: true
+    failed_attempt_training_credit: zero
+  slurm_dependency_policy:
+    training_dependency: afterok
+    finalizer_dependency: afterany
+  preflight:
+    required: true
+    command: /users/a/e/aereinh/CARE/envs/env_CARE/bin/python scripts/route_B_round04/preflight.py --stage B8 --contract results/route_B/round04/planning_snapshot/prompts/routes/route_B_round04_controller_contract.md --out results/route_B/round04/executors/B8/preflight_receipt.json
+    receipt_path: results/route_B/round04/executors/B8/preflight_receipt.json
+  retry_ledger_path: results/route_B/round04/executors/B8/retry_ledger.csv
+  minimum_effective_training:
+    min_optimizer_steps: 25000
+    min_train_loop_seconds: 7200
+    min_validation_events: 10
+    min_eval_cases: 12
+    min_pair_receipts: 60
+    require_one_batch_overfit: true
+    require_prediction_sanity: true
+    require_loss_decrease: true
+    require_same_split_baseline: true
+    require_cache_isolation: true
+  success_condition: seven-step SVF, true Jacobian, inverse consistency, real SyN, pair/case/full denominators and clean reload pass; method decision is learned or SyN
+  failure_branch: faithful learned and SyN failure records CINE_REGISTRATION_BLOCKER and terminates Cine lane without B9
+- id: B5_PATHOLOGY_REFINERS
+  lane: myops
+  wave: 6
+  prompt_path: results/route_B/round04/planning_snapshot/prompts/routes/route_B_round04_controller_contract.md
+  branch_name: agent/route_B_round04_B5
+  worktree_path: /users/a/e/aereinh/CARE_worktrees/route_B_round04_B5
+  result_dir: results/route_B/round04/executors/B5
+  runtime_output_root: results/route_B/runtime/round04/B5
+  slurm_job_namespace: care_route_B_round04_B5
+  lock_path: results/route_B/runtime/round04/B5/B5.lock
+  log_path: results/route_B/runtime/round04/B5/B5.log
+  merge_order: 80
+  required_completion_file: results/route_B/round04/executors/B5/completion.json
+  required_completion_token: ROUTE_B_ROUND04_B5_REFINER_STAGE_COMPLETE
+  depends_on:
+  - B4_OOF_PROTOTYPE_PROPOSAL
+  can_run_parallel: true
+  blocking: true
+  slurm_required: true
+  exact_inputs:
+  - results/route_B/round04/executors/B4/completion.json
+  - results/route_B/round04/executors/B4/oof_shard_manifest.json
+  - results/route_B/round04/executors/B4/proposal_metrics.csv
+  exact_command: bash jobs/route_B_round04/run_B5_refiner.sh
+  write_scope:
+  - src/care_myocardium/route_B_round04/myops/refiner
+  - configs/route_B_round04/myops/B5
+  - scripts/training/route_B_round04/myops/B5
+  - scripts/evaluation/route_B_round04/myops/B5
+  - results/route_B/round04/executors/B5
+  - results/route_B/runtime/round04/B5
+  required_outputs:
+  - training_adequacy.csv
+  - scar_refiner_metrics.csv
+  - edema_refiner_metrics.csv
+  - proposal_to_final_retention.csv
+  - remote_fp_and_component_matrix.csv
+  - no_t2_safety.csv
+  - refiner_final_effect.csv
+  - selected_checkpoint_reload.json
+  - validator_report.json
+  - known_bad_matrix_report.json
+  - completion.json
+  validator:
+    script_path: scripts/validation/route_B_round04/validate_B5_refiner.py
+    command: /users/a/e/aereinh/CARE/envs/env_CARE/bin/python scripts/validation/route_B_round04/validate_B5_refiner.py --strict --input results/route_B/round04/executors/B5 --report results/route_B/round04/executors/B5/validator_report.json --require-token ROUTE_B_ROUND04_B5_REFINER_STAGE_COMPLETE
+    input_path: results/route_B/round04/executors/B5
+    report_file: results/route_B/round04/executors/B5/validator_report.json
+    expected_exit_code: 0
+    success_token: ROUTE_B_ROUND04_B5_REFINER_STAGE_COMPLETE
+  known_bad_contract:
+    matrix_path: tests/route_B_round04/fixtures/B5/known_bad_matrix.yaml
+    matrix_command: /users/a/e/aereinh/CARE/envs/env_CARE/bin/python scripts/validation/route_B_round04/run_known_bad_matrix.py --stage B5 --matrix tests/route_B_round04/fixtures/B5/known_bad_matrix.yaml --validator scripts/validation/route_B_round04/validate_B5_refiner.py --report results/route_B/round04/executors/B5/known_bad_matrix_report.json
+    report_file: results/route_B/round04/executors/B5/known_bad_matrix_report.json
+    runner_expected_exit_code: 0
+    validator_expected_exit_code_per_fixture: 1
+    expected_failure_keys:
+    - SHARED_UNDIFFERENTIATED_REFINER
+    - REFINER_FINAL_EFFECT_ZERO
+    - PROPOSAL_TO_FINAL_RETENTION_FAILED
+    - SCAR_REMOTE_FP_REGRESSION
+    - NO_T2_EDEMA_NONZERO
+    - HARD_ROI_DELETION
+    - WEAK_B4_CONTROL_MISSING
+    - WEAK_FAITHFUL_REFINER_PREMATURE_STOP
+    all_keys_required: true
+    unexpected_pass_is_failure: true
+  reviewer_input: results/route_B/round04/executors/B5
+  isolation_mode: separate_worktree
+  isolation_proof: MyoPS writes only route_B_round04/myops-scoped code/config/results/runtime; Cine writes only route_B_round04/cine-scoped code/config/results/runtime; shared snapshot and planning files are read-only.
+  shared_files_forbidden:
+  - prompts/routes
+  - prompts/routes/handoffs
+  - results/route_B/round04/planning_snapshot
+  - wiki/current_state.yaml
+  retry_policy:
+    operational_retry_allowed: true
+    same_executor_attempt: true
+    max_startup_retries: 2
+    max_preemption_retries: 2
+    max_unknown_retries: 0
+    require_same_code_hash: true
+    require_same_config_hash: true
+    require_same_split_hash: true
+    failed_attempt_training_credit: zero
+  slurm_dependency_policy:
+    training_dependency: afterok
+    finalizer_dependency: afterany
+  preflight:
+    required: true
+    command: /users/a/e/aereinh/CARE/envs/env_CARE/bin/python scripts/route_B_round04/preflight.py --stage B5 --contract results/route_B/round04/planning_snapshot/prompts/routes/route_B_round04_controller_contract.md --out results/route_B/round04/executors/B5/preflight_receipt.json
+    receipt_path: results/route_B/round04/executors/B5/preflight_receipt.json
+  retry_ledger_path: results/route_B/round04/executors/B5/retry_ledger.csv
+  minimum_effective_training:
+    min_optimizer_steps: 10000
+    min_train_loop_seconds: 3000
+    min_validation_events: 5
+    min_eval_cases: 44
+    require_one_batch_overfit: true
+    require_prediction_sanity: true
+    require_loss_decrease: true
+    require_same_split_baseline: true
+    require_cache_isolation: true
+  success_condition: separate scar/edema refiners, retention, remote-FP safety, no-T2 zero, final effect and clean reload pass; strong and weak-faithful branches advance B6
+  failure_branch: implementation defect terminates MyoPS lane; faithful weak performance advances B6 for full-route judgment
+- id: B9_REGISTERED_TEMPORAL
+  lane: cine
+  wave: 6
+  prompt_path: results/route_B/round04/planning_snapshot/prompts/routes/route_B_round04_controller_contract.md
+  branch_name: agent/route_B_round04_B9
+  worktree_path: /users/a/e/aereinh/CARE_worktrees/route_B_round04_B9
+  result_dir: results/route_B/round04/executors/B9
+  runtime_output_root: results/route_B/runtime/round04/B9
+  slurm_job_namespace: care_route_B_round04_B9
+  lock_path: results/route_B/runtime/round04/B9/B9.lock
+  log_path: results/route_B/runtime/round04/B9/B9.log
+  merge_order: 90
+  required_completion_file: results/route_B/round04/executors/B9/completion.json
+  required_completion_token: ROUTE_B_ROUND04_B9_TEMPORAL_TERMINAL_EVIDENCE_READY
+  depends_on:
+  - B8_FAITHFUL_REGISTRATION
+  can_run_parallel: true
+  blocking: true
+  slurm_required: true
+  exact_inputs:
+  - results/route_B/round04/executors/B8/completion.json
+  - results/route_B/round04/executors/B8/registration_method_decision.json
+  - results/route_B/round04/executors/B7/selected_checkpoint_reload.json
+  exact_command: bash jobs/route_B_round04/run_B9_temporal.sh
+  write_scope:
+  - src/care_myocardium/route_B_round04/cine/temporal
+  - configs/route_B_round04/cine/B9
+  - scripts/training/route_B_round04/cine/B9
+  - scripts/evaluation/route_B_round04/cine/B9
+  - results/route_B/round04/executors/B9
+  - results/route_B/runtime/round04/B9
+  required_outputs:
+  - temporal_resume_ledger.csv
+  - temporal_training_adequacy.json
+  - selected_checkpoint_reload.json
+  - required_input_consumption.csv
+  - temporal_final_output_interventions.csv
+  - cine_case_metrics.csv
+  - cine_control_matrix.csv
+  - official_output_roundtrip.json
+  - validator_report.json
+  - known_bad_matrix_report.json
+  - completion.json
+  validator:
+    script_path: scripts/validation/route_B_round04/validate_B9_temporal.py
+    command: /users/a/e/aereinh/CARE/envs/env_CARE/bin/python scripts/validation/route_B_round04/validate_B9_temporal.py --strict --input results/route_B/round04/executors/B9 --report results/route_B/round04/executors/B9/validator_report.json --require-token ROUTE_B_ROUND04_B9_TEMPORAL_TERMINAL_EVIDENCE_READY
+    input_path: results/route_B/round04/executors/B9
+    report_file: results/route_B/round04/executors/B9/validator_report.json
+    expected_exit_code: 0
+    success_token: ROUTE_B_ROUND04_B9_TEMPORAL_TERMINAL_EVIDENCE_READY
+  known_bad_contract:
+    matrix_path: tests/route_B_round04/fixtures/B9/known_bad_matrix.yaml
+    matrix_command: /users/a/e/aereinh/CARE/envs/env_CARE/bin/python scripts/validation/route_B_round04/run_known_bad_matrix.py --stage B9 --matrix tests/route_B_round04/fixtures/B9/known_bad_matrix.yaml --validator scripts/validation/route_B_round04/validate_B9_temporal.py --report results/route_B/round04/executors/B9/known_bad_matrix_report.json
+    report_file: results/route_B/round04/executors/B9/known_bad_matrix_report.json
+    runner_expected_exit_code: 0
+    validator_expected_exit_code_per_fixture: 1
+    expected_failure_keys:
+    - FRAME0_ONLY_FALLBACK
+    - UNREGISTERED_PRIMARY_OUTPUT
+    - REQUIRED_TEMPORAL_INPUT_UNCONSUMED
+    - CUMULATIVE_RESET_GAP_OVERLAP_DUPLICATE
+    - PARENT_HASH_MISSING
+    - TIMEOUT_OR_PARTIAL_CREDITED
+    - TEMPORAL_FINAL_OUTPUT_EFFECT_ZERO
+    - FULL_CINE_ABLATION_MISSING
+    - SELECTED_CHECKPOINT_NOT_RELOADED
+    all_keys_required: true
+    unexpected_pass_is_failure: true
+  reviewer_input: results/route_B/round04/executors/B9
+  isolation_mode: separate_worktree
+  isolation_proof: Cine writes only route_B_round04/cine-scoped code/config/results/runtime; MyoPS writes only route_B_round04/myops-scoped code/config/results/runtime; shared snapshot and planning files are read-only.
+  shared_files_forbidden:
+  - prompts/routes
+  - prompts/routes/handoffs
+  - results/route_B/round04/planning_snapshot
+  - wiki/current_state.yaml
+  retry_policy:
+    operational_retry_allowed: true
+    same_executor_attempt: true
+    max_startup_retries: 2
+    max_preemption_retries: 2
+    max_unknown_retries: 0
+    require_same_code_hash: true
+    require_same_config_hash: true
+    require_same_split_hash: true
+    failed_attempt_training_credit: zero
+  slurm_dependency_policy:
+    training_dependency: afterok
+    finalizer_dependency: afterany
+  preflight:
+    required: true
+    command: /users/a/e/aereinh/CARE/envs/env_CARE/bin/python scripts/route_B_round04/preflight.py --stage B9 --contract results/route_B/round04/planning_snapshot/prompts/routes/route_B_round04_controller_contract.md --out results/route_B/round04/executors/B9/preflight_receipt.json
+    receipt_path: results/route_B/round04/executors/B9/preflight_receipt.json
+  retry_ledger_path: results/route_B/round04/executors/B9/retry_ledger.csv
+  minimum_effective_training:
+    min_optimizer_steps: 20000
+    min_train_loop_seconds: 7200
+    min_validation_events: 10
+    min_eval_cases: 12
+    min_full_case_events: 4
+    require_one_batch_overfit: true
+    require_prediction_sanity: true
+    require_loss_decrease: true
+    require_same_split_baseline: true
+    require_cache_isolation: true
+  cumulative_checkpoints:
+  - 4000
+  - 8000
+  - 12000
+  - 16000
+  - 20000
+  success_condition: registered named inputs, cumulative resume, clean reload, controls, official output and case-wise final effect pass
+  failure_branch: evidence or implementation defect terminates Cine lane; timeout and partial attempts remain zero-credit and non-complete
+- id: B6_JOINT_MYOPS_TERMINAL
+  lane: myops
+  wave: 7
+  prompt_path: results/route_B/round04/planning_snapshot/prompts/routes/route_B_round04_controller_contract.md
+  branch_name: agent/route_B_round04_B6
+  worktree_path: /users/a/e/aereinh/CARE_worktrees/route_B_round04_B6
+  result_dir: results/route_B/round04/executors/B6
+  runtime_output_root: results/route_B/runtime/round04/B6
+  slurm_job_namespace: care_route_B_round04_B6
+  lock_path: results/route_B/runtime/round04/B6/B6.lock
+  log_path: results/route_B/runtime/round04/B6/B6.log
+  merge_order: 100
+  required_completion_file: results/route_B/round04/executors/B6/completion.json
+  required_completion_token: ROUTE_B_ROUND04_B6_MYOPS_TERMINAL_EVIDENCE_READY
+  depends_on:
+  - B5_PATHOLOGY_REFINERS
+  can_run_parallel: false
+  blocking: true
+  slurm_required: true
+  exact_inputs:
+  - results/route_B/round04/executors/B5/completion.json
+  - results/route_B/round04/executors/B5/selected_checkpoint_reload.json
+  - results/route_B/round04/executors/B0/same_split_baseline_receipt.json
+  exact_command: bash jobs/route_B_round04/run_B6_joint.sh
+  write_scope:
+  - src/care_myocardium/route_B_round04/myops/joint
+  - configs/route_B_round04/myops/B6
+  - scripts/training/route_B_round04/myops/B6
+  - scripts/evaluation/route_B_round04/myops/B6
+  - results/route_B/round04/executors/B6
+  - results/route_B/runtime/round04/B6
+  required_outputs:
+  - training_adequacy.csv
+  - checkpoint_selection.csv
+  - selected_checkpoint_reload.json
+  - fresh_force_evaluation_receipt.json
+  - casewise_help_harm.csv
+  - hard_subgroup_matrix.csv
+  - myops_intervention_matrix.csv
+  - official_output_roundtrip.json
+  - validator_report.json
+  - known_bad_matrix_report.json
+  - completion.json
+  validator:
+    script_path: scripts/validation/route_B_round04/validate_B6_myops_terminal.py
+    command: /users/a/e/aereinh/CARE/envs/env_CARE/bin/python scripts/validation/route_B_round04/validate_B6_myops_terminal.py --strict --input results/route_B/round04/executors/B6 --report results/route_B/round04/executors/B6/validator_report.json --require-token ROUTE_B_ROUND04_B6_MYOPS_TERMINAL_EVIDENCE_READY
+    input_path: results/route_B/round04/executors/B6
+    report_file: results/route_B/round04/executors/B6/validator_report.json
+    expected_exit_code: 0
+    success_token: ROUTE_B_ROUND04_B6_MYOPS_TERMINAL_EVIDENCE_READY
+  known_bad_contract:
+    matrix_path: tests/route_B_round04/fixtures/B6/known_bad_matrix.yaml
+    matrix_command: /users/a/e/aereinh/CARE/envs/env_CARE/bin/python scripts/validation/route_B_round04/run_known_bad_matrix.py --stage B6 --matrix tests/route_B_round04/fixtures/B6/known_bad_matrix.yaml --validator scripts/validation/route_B_round04/validate_B6_myops_terminal.py --report results/route_B/round04/executors/B6/known_bad_matrix_report.json
+    report_file: results/route_B/round04/executors/B6/known_bad_matrix_report.json
+    runner_expected_exit_code: 0
+    validator_expected_exit_code_per_fixture: 1
+    expected_failure_keys:
+    - SAME_SPLIT_BASELINE_MISSING
+    - FRESH_FORCE_EVALUATION_MISSING
+    - SCAR_POSITIVE_ROWS_MISSING
+    - T2_PRESENT_EDEMA_POSITIVE_ROWS_MISSING
+    - NO_T2_SAFETY_ROWS_MISSING
+    - CENTERB_OR_CENTERC_ROWS_MISSING
+    - EMPTY_GT_COUNTED_AS_HELP
+    - SUMMARY_MISNAMED_AS_ABLATION
+    - SELECTED_CHECKPOINT_NOT_RELOADED
+    - FINAL_OUTPUT_INTERVENTION_ZERO_OR_MISSING
+    - PROXY_METRIC_AS_HOSTED
+    all_keys_required: true
+    unexpected_pass_is_failure: true
+  reviewer_input: results/route_B/round04/executors/B6
+  isolation_mode: separate_worktree
+  retry_policy:
+    operational_retry_allowed: true
+    same_executor_attempt: true
+    max_startup_retries: 2
+    max_preemption_retries: 2
+    max_unknown_retries: 0
+    require_same_code_hash: true
+    require_same_config_hash: true
+    require_same_split_hash: true
+    failed_attempt_training_credit: zero
+  slurm_dependency_policy:
+    training_dependency: afterok
+    finalizer_dependency: afterany
+  preflight:
+    required: true
+    command: /users/a/e/aereinh/CARE/envs/env_CARE/bin/python scripts/route_B_round04/preflight.py --stage B6 --contract results/route_B/round04/planning_snapshot/prompts/routes/route_B_round04_controller_contract.md --out results/route_B/round04/executors/B6/preflight_receipt.json
+    receipt_path: results/route_B/round04/executors/B6/preflight_receipt.json
+  retry_ledger_path: results/route_B/round04/executors/B6/retry_ledger.csv
+  minimum_effective_training:
+    min_optimizer_steps: 8000
+    min_train_loop_seconds: 2400
+    min_validation_events: 4
+    min_eval_cases: 44
+    min_full_case_events: 4
+    require_one_batch_overfit: true
+    require_prediction_sanity: true
+    require_loss_decrease: true
+    require_same_split_baseline: true
+    require_cache_isolation: true
+  success_condition: fresh forced same-split evaluation, hard groups, selector, clean reload, official output and all final-output interventions pass
+  failure_branch: B6 produces MyoPS terminal evidence, evidence blocker or revision; it is the first full-route MyoPS classification stage
+- id: B10_TERMINAL_ACCOUNTING_REVIEW_PACKET
+  lane: tooling
+  wave: 8
+  prompt_path: results/route_B/round04/planning_snapshot/prompts/routes/route_B_round04_controller_contract.md
+  branch_name: agent/route_B_round04_B10
+  worktree_path: /users/a/e/aereinh/CARE_worktrees/route_B_round04_B10
+  result_dir: results/route_B/round04/executors/B10
+  runtime_output_root: results/route_B/runtime/round04/B10
+  slurm_job_namespace: care_route_B_round04_B10
+  lock_path: results/route_B/runtime/round04/B10/B10.lock
+  log_path: results/route_B/runtime/round04/B10/B10.log
+  merge_order: 110
+  required_completion_file: results/route_B/round04/executors/B10/completion.json
+  required_completion_token: ROUTE_B_ROUND04_TERMINAL_PACKET_READY_FOR_REVIEW
+  depends_on: []
+  can_run_parallel: false
+  blocking: true
+  slurm_required: true
+  exact_inputs:
+  - results/route_B/round04/controller_terminal_registry.json
+  - results/route_B/round04/controller_ledger.csv
+  - results/route_B/round04/planning_snapshot/materialization_receipt.json
+  exact_command: /users/a/e/aereinh/CARE/envs/env_CARE/bin/python scripts/route_B_round04/finalize_round04.py --registry results/route_B/round04/controller_terminal_registry.json --ledger results/route_B/round04/controller_ledger.csv --snapshot results/route_B/round04/planning_snapshot --out results/route_B/round04/executors/B10
+  write_scope:
+  - results/route_B/round04/executors/B10
+  - results/route_B/round04/controller_context.json
+  - results/route_B/round04/controller_ledger.csv
+  - results/route_B/round04/controller_terminal_registry.json
+  - results/route_B/round04/controller_bootstrap_snapshot.md
+  - results/route_B/round04/implementation_snapshot.md
+  - results/route_B/round04/mapper_report_draft.md
+  - results/route_B/round04/architecture_delta_draft.md
+  - results/route_B/round04/mapper_report_final.md
+  - results/route_B/round04/architecture_delta_final.md
+  - results/route_B/round04/finalizer_state.json
+  - results/route_B/result.md
+  - results/route_B/controller_report.md
+  - results/route_B/completion_check.md
+  - results/route_B/review_request.md
+  - results/route_B/MANIFEST.md
+  required_outputs:
+  - routing_ledger.csv
+  - training_adequacy.csv
+  - terminal_branch_coverage.json
+  - validator_packet_report.json
+  - known_bad_report.json
+  - heavy_artifact_scan.json
+  - finalizer_state.json
+  - completion.json
+  - ../../result.md
+  - ../../controller_report.md
+  - ../../completion_check.md
+  - ../../review_request.md
+  - ../../MANIFEST.md
+  validator:
+    script_path: scripts/validation/route_B_round04/validate_B10_terminal_packet.py
+    command: /users/a/e/aereinh/CARE/envs/env_CARE/bin/python scripts/validation/route_B_round04/validate_B10_terminal_packet.py --strict --input results/route_B/round04/executors/B10 --report results/route_B/round04/executors/B10/validator_report.json --require-token ROUTE_B_ROUND04_TERMINAL_PACKET_READY_FOR_REVIEW
+    input_path: results/route_B/round04/executors/B10
+    report_file: results/route_B/round04/executors/B10/validator_report.json
+    expected_exit_code: 0
+    success_token: ROUTE_B_ROUND04_TERMINAL_PACKET_READY_FOR_REVIEW
+  known_bad_contract:
+    matrix_path: tests/route_B_round04/fixtures/B10/known_bad_matrix.yaml
+    matrix_command: /users/a/e/aereinh/CARE/envs/env_CARE/bin/python scripts/validation/route_B_round04/run_known_bad_matrix.py --stage B10 --matrix tests/route_B_round04/fixtures/B10/known_bad_matrix.yaml --validator scripts/validation/route_B_round04/validate_B10_terminal_packet.py --report results/route_B/round04/executors/B10/known_bad_matrix_report.json
+    report_file: results/route_B/round04/executors/B10/known_bad_matrix_report.json
+    runner_expected_exit_code: 0
+    validator_expected_exit_code_per_fixture: 1
+    expected_failure_keys:
+    - EARLY_TERMINAL_BRANCH_UNREACHABLE
+    - B1_FAILURE_FINALIZER_NOT_LAUNCHED
+    - B2_EXTERNAL_BLOCKER_FINALIZER_NOT_LAUNCHED
+    - B7_BLOCKER_FINALIZER_NOT_LAUNCHED
+    - B8_REGISTRATION_BLOCKER_FINALIZER_NOT_LAUNCHED
+    - TIMEOUT_PREEMPTION_CANCELLED_LOSER_NOT_ACCOUNTED
+    - SUCCESSFUL_B6_B9_NOT_ACCOUNTED
+    - PENDING_OR_RUNNING_PRESENTED_AS_COMPLETE
+    - AGGREGATION_MISSING_OR_NONZERO
+    - SUPERSEDED_RECEIPT_NOT_RECONCILED
+    - CONTROLLER_PUSH_OR_REVIEW_AUTHORITY_VIOLATION
+    - HEAVY_ARTIFACT_TRACKED
+    - VALIDATOR_FILE_EXISTENCE_ONLY
+    all_keys_required: true
+    unexpected_pass_is_failure: true
+  reviewer_input: results/route_B/round04/executors/B10
+  isolation_mode: separate_worktree
+  retry_policy:
+    operational_retry_allowed: true
+    same_executor_attempt: true
+    max_startup_retries: 2
+    max_preemption_retries: 2
+    max_unknown_retries: 0
+    require_same_code_hash: true
+    require_same_config_hash: true
+    require_same_split_hash: true
+    failed_attempt_training_credit: zero
+  slurm_dependency_policy:
+    training_dependency: afterok
+    finalizer_dependency: afterany
+  preflight:
+    required: true
+    command: /users/a/e/aereinh/CARE/envs/env_CARE/bin/python scripts/route_B_round04/preflight.py --stage B10 --contract results/route_B/round04/planning_snapshot/prompts/routes/route_B_round04_controller_contract.md --out results/route_B/round04/executors/B10/preflight_receipt.json
+    receipt_path: results/route_B/round04/executors/B10/preflight_receipt.json
+  retry_ledger_path: results/route_B/round04/executors/B10/retry_ledger.csv
+  controller_terminal_finalizer: true
+  launch_owner: controller
+  prepare_wave_helper_exempt: true
+  depends_on_successful_merge_receipts: false
+  terminal_registry_path: results/route_B/round04/controller_terminal_registry.json
+  all_started_attempt_ids_source: results/route_B/round04/controller_ledger.csv
+  finalizer_dependency_policy: afterany_all_started_attempts
+  no_started_attempt_backend: local_deterministic
+  launch_lock: results/route_B/runtime/round04/B10/terminal_finalizer.launch.lock
+  success_condition: all started attempts terminal-accounted, post-completion aggregation complete, mapper final complete, strict validators and known-bad pass, authority/heavy-artifact scans pass and local lightweight packet is committed
+  failure_branch: monitor-like state, accounting gap, aggregation failure, stale snapshot, validator failure, authority breach or heavy artifact blocks review-ready token
+revision_source_critic_commit: de5f47b9f4404c85db1bd0f570b576d9d03b0372
+concurrent_architecture_context_commit: 64f5a27298cb2efd1f576a70296e49388ab0b717

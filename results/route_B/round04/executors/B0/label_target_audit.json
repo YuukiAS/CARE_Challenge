@@ -1,0 +1,42 @@
+{
+  "anatomy_targets_compact": {
+    "lv": [
+      2
+    ],
+    "rv": [
+      3
+    ],
+    "union": [
+      1,
+      4,
+      5
+    ]
+  },
+  "case_count": 44,
+  "compact_label_map": {
+    "0": 0,
+    "1220": 4,
+    "200": 1,
+    "2221": 5,
+    "500": 2,
+    "600": 3
+  },
+  "no_t2_edema_negative_policy": "no_t2 myocardium cannot enter edema negatives",
+  "pathology_targets_compact": {
+    "edema": [
+      4
+    ],
+    "scar": [
+      5
+    ]
+  },
+  "raw_values_observed": [
+    200,
+    500,
+    600,
+    1220,
+    2221
+  ],
+  "roundtrip_pass": true,
+  "status": "PASS"
+}

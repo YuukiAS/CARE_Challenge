@@ -1,0 +1,28 @@
+require_token: ROUTE_B_ROUND04_B5_REFINER_STAGE_COMPLETE
+source_input: results/route_B/round04/executors/B5
+expected_fixture_count: 8
+fixtures:
+  - name: SHARED_UNDIFFERENTIATED_REFINER
+    expected_failure_key: SHARED_UNDIFFERENTIATED_REFINER
+    expected_validator_exit: 1
+  - name: REFINER_FINAL_EFFECT_ZERO
+    expected_failure_key: REFINER_FINAL_EFFECT_ZERO
+    expected_validator_exit: 1
+  - name: PROPOSAL_TO_FINAL_RETENTION_FAILED
+    expected_failure_key: PROPOSAL_TO_FINAL_RETENTION_FAILED
+    expected_validator_exit: 1
+  - name: SCAR_REMOTE_FP_REGRESSION
+    expected_failure_key: SCAR_REMOTE_FP_REGRESSION
+    expected_validator_exit: 1
+  - name: NO_T2_EDEMA_NONZERO
+    expected_failure_key: NO_T2_EDEMA_NONZERO
+    expected_validator_exit: 1
+  - name: HARD_ROI_DELETION
+    expected_failure_key: HARD_ROI_DELETION
+    expected_validator_exit: 1
+  - name: WEAK_B4_CONTROL_MISSING
+    expected_failure_key: WEAK_B4_CONTROL_MISSING
+    expected_validator_exit: 1
+  - name: WEAK_FAITHFUL_REFINER_PREMATURE_STOP
+    expected_failure_key: WEAK_FAITHFUL_REFINER_PREMATURE_STOP
+    expected_validator_exit: 1

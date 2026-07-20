@@ -1,0 +1,5 @@
+component,grad_l1,final_effect_l1,invalid_weight_max,delta_abs_max,consumed_field_count
+myops_final_logits,614.3618488626089,0.1067180261015892,,,
+invalid_slot_mask,,,0.0,,
+no_t2_edema_guard,,0.0,,0.0,
+temporal_registered_inputs,,0.2538474202156067,,,14

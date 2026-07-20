@@ -1,0 +1,31 @@
+{
+  "center_counts": {
+    "CenterA": 17,
+    "CenterB": 7,
+    "CenterC": 9,
+    "CenterE": 1,
+    "CenterF": 2,
+    "CenterG": 1,
+    "CenterH": 7
+  },
+  "cine_case_count": 12,
+  "cine_center_counts": {
+    "center_alpha": 6,
+    "center_beta": 6
+  },
+  "cine_path": "/users/a/e/aereinh/CARE_worktrees/route_B/configs/route_B_round03/manifests/cine_train12.json",
+  "cine_sha256": "bda5ff9eec3976f4db801e49890c516ed22566330036467fc8a200be9e650cd2",
+  "created_at_utc": "2026-07-18T09:00:47.346105+00:00",
+  "data_root": "/users/a/e/aereinh/CARE/data/CARE_Challenge",
+  "edema_path": "/users/a/e/aereinh/CARE_worktrees/route_B/configs/route_B_round03/manifests/myops_t2_edema_positive.json",
+  "edema_sha256": "986c1d6399c818ec02cba3126209d7684b7963b7b1709bc075ecef6dfdce17c2",
+  "min_frame_count": 30,
+  "primary_case_count": 44,
+  "primary_path": "/users/a/e/aereinh/CARE_worktrees/route_B/configs/route_B_round03/manifests/myops_fold0_primary_44.json",
+  "primary_sha256": "c2de7575fe7c47ab78382c16dba28d8f4393aee4f7ce999ca748ab041307f165",
+  "route_worktree_data_dir_present": false,
+  "sampler_path": "/users/a/e/aereinh/CARE_worktrees/route_B/configs/route_B_round03/manifests/myops_sampler_strata.json",
+  "sampler_sha256": "6dd26194ecfc1f8794a0f7022c883893e2193e7b5ea47add49a34a373ae108eb",
+  "scar_positive_count": 43,
+  "t2_edema_positive_count": 16
+}

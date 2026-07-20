@@ -1,0 +1,5 @@
+check,status,evidence
+three_real_cases_three_nonreference_frames,True,results/route_B/implementation_gate.json
+classical_registration_control,classical_exhaustive_translation_control,src/care_myocardium/route_B/cine.py
+temporal_on_off_changes_output,True,results/route_B/implementation_gate.json
+registered_vs_unregistered_changes_output,True,results/route_B/implementation_gate.json

@@ -350,6 +350,12 @@ def test_send_test_dry_run_uses_summary_email_format(tmp_path):
 
 def test_slurm_summary_handles_missing_packet_evidence(tmp_path):
     config = make_config(tmp_path)
+    empty_worktree = tmp_path / "CARE_worktrees" / "route_B_empty"
+    empty_worktree.mkdir(parents=True)
+    config["routes"]["route_B"]["worktree"] = str(empty_worktree)
+    config["routes"]["route_B"]["packet_paths"] = [
+        str(empty_worktree / "results" / "route_B" / "controller_report.md")
+    ]
     event = notify.build_test_event(config)
     summary = notify.summarize_slurm(config, event)
 

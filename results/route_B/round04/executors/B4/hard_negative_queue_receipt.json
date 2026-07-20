@@ -1,0 +1,6 @@
+{
+  "edema_safe_negative_t2_present_only": true,
+  "hard_roi_deletion": false,
+  "scar_hard_negative_count": 12,
+  "status": "PASS"
+}

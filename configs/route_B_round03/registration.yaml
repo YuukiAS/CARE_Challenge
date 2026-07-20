@@ -1,0 +1,13 @@
+route_id: route_B
+portfolio_round: round03
+registration:
+  integration_steps: 7
+  align_corners: true
+  padding: border
+  loss_weights:
+    lncc: 1.0
+    soft_anatomy_dice: 1.0
+    velocity_smoothness: 0.10
+    negative_jacobian: 0.05
+    inverse_composition: 0.50
+    cinema_feature_consistency: 0.25

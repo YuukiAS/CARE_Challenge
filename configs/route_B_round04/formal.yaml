@@ -1,0 +1,16 @@
+route_id: route_B
+portfolio_round: round03
+modality_order: [LGE, T2, C0]
+scales: [32, 64, 128, 256]
+experts_per_scale: 16
+sampler_manifest: configs/route_B_round03/manifests/myops_sampler_strata.json
+primary_manifest: configs/route_B_round03/manifests/myops_fold0_primary_44.json
+edema_positive_manifest: configs/route_B_round03/manifests/myops_t2_edema_positive.json
+cinema_manifest: configs/route_B_round03/manifests/cine_train12.json
+no_t2_edema_policy: exact_zero
+formal_training:
+  batch_size: 1
+  gradient_accumulation: 2
+  amp: true
+  gradient_clip: 5
+  max_walltime: "08:00:00"

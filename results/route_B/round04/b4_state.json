@@ -1,0 +1,30 @@
+{
+  "completion": {
+    "pass": true,
+    "payload": {
+      "completion_token": "ROUTE_B_ROUND04_B4_PROPOSAL_STAGE_COMPLETE",
+      "created_at_utc": "2026-07-19T21:01:10.673674+00:00",
+      "eval_cases": 44,
+      "formal_training": true,
+      "optimizer_steps": 85886,
+      "required_completion_token": "ROUTE_B_ROUND04_B4_PROPOSAL_STAGE_COMPLETE",
+      "status": "PASS",
+      "train_loop_seconds": 2402.6774257150246
+    },
+    "present": true
+  },
+  "job_id": "59554239",
+  "state": {
+    "elapsed": "00:40:31",
+    "end": "2026-07-19T17:01:14",
+    "exit_code": "0:0",
+    "job_id": "59554239",
+    "node": "g180702",
+    "partition": "htzhulab",
+    "start": "2026-07-19T16:20:43",
+    "state": "COMPLETED"
+  },
+  "status": "B4_PASS",
+  "updated_at_utc": "2026-07-19T21:01:32.033925+00:00",
+  "watcher_log": "/users/a/e/aereinh/CARE_worktrees/route_B/logs/RouteB04_B4_watch_59554239_20260719_162131.log"
+}

@@ -1,0 +1,32 @@
+stage: B2
+source_input: results/route_B/round04/executors/B2
+require_token: ROUTE_B_ROUND04_B2_IMPLEMENTATION_GATE_PASSED
+expected_fixture_count: 9
+fixtures:
+  - name: NNUNET_ONLY_BYPASS
+    expected_failure_key: NNUNET_ONLY_BYPASS
+    expected_validator_exit: 1
+  - name: DISCONNECTED_RETRIEVAL_PROPOSAL_REFINER
+    expected_failure_key: DISCONNECTED_RETRIEVAL_PROPOSAL_REFINER
+    expected_validator_exit: 1
+  - name: INVALID_SLOT_WEIGHT_NONZERO
+    expected_failure_key: INVALID_SLOT_WEIGHT_NONZERO
+    expected_validator_exit: 1
+  - name: PATTERN_SIP_ALIAS_OR_NO_GRADIENT
+    expected_failure_key: PATTERN_SIP_ALIAS_OR_NO_GRADIENT
+    expected_validator_exit: 1
+  - name: FAKE_CINEMA_SOURCE_OR_WRONG_SHA
+    expected_failure_key: FAKE_CINEMA_SOURCE_OR_WRONG_SHA
+    expected_validator_exit: 1
+  - name: DIRECT_VELOCITY_AS_DISPLACEMENT
+    expected_failure_key: DIRECT_VELOCITY_AS_DISPLACEMENT
+    expected_validator_exit: 1
+  - name: TEMPORAL_REQUIRED_INPUT_UNCONSUMED
+    expected_failure_key: TEMPORAL_REQUIRED_INPUT_UNCONSUMED
+    expected_validator_exit: 1
+  - name: OFFICIAL_LABEL_ROUNDTRIP_FAILED
+    expected_failure_key: OFFICIAL_LABEL_ROUNDTRIP_FAILED
+    expected_validator_exit: 1
+  - name: LEGACY_ROUND03_WRAPPER_BYPASS
+    expected_failure_key: LEGACY_ROUND03_WRAPPER_BYPASS
+    expected_validator_exit: 1

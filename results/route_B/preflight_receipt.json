@@ -1,0 +1,61 @@
+{
+  "contract": {
+    "formal_training_allowed_before_gate": false,
+    "implementation_gate_required": true,
+    "m11_allowed": false,
+    "review_md_allowed": false,
+    "route": "route_B",
+    "validation_upload_allowed": false
+  },
+  "cuda_visible": "",
+  "formal_training_credit": 0,
+  "formal_training_submitted": false,
+  "generated_at_utc": "2026-07-15T09:30:22.114834+00:00",
+  "git": {
+    "branch": "route_B",
+    "head": "6dac039fe6b19a3e2c2f661641673f70d5f6957f"
+  },
+  "hashes": {
+    ".agents/skills/slurm-routing-partition/SKILL.md": "9f2a985350c9e22cd020c40a8bb007ae104cb9535aa9fdc86e4edb9c2700cdb6",
+    "AGENTS.md": "aac65e30bcb71848cf2c91e23b379e29b92c102544e14ed5ad71b250bfc923c9",
+    "prompts/routes/route_B.md": "76102664dba2a9adf88052c968b520f46ef3da1abcb1068853546219b8e272fb",
+    "prompts/routes/route_B_executor_plan.yaml": "299f392735960842ac5b84c29ca5e59f944cc9a43034dfa526147175c24d7782"
+  },
+  "imports": {
+    "src.care_myocardium.cine.registration_model": {
+      "status": "PASS"
+    },
+    "src.care_myocardium.cine.temporal_model": {
+      "status": "PASS"
+    },
+    "src.care_myocardium.models.srr_blocks": {
+      "status": "PASS"
+    },
+    "src.care_myocardium.models.srr_propref": {
+      "status": "PASS"
+    },
+    "torch": {
+      "status": "PASS"
+    }
+  },
+  "preflight_failures": [],
+  "python": {
+    "executable": "/users/a/e/aereinh/CARE/envs/env_CARE/bin/python",
+    "platform": "Linux-5.14.0-611.16.1.el9_7.x86_64-x86_64-with-glibc2.34",
+    "version": "3.12.13 | packaged by conda-forge | (main, Mar  5 2026, 16:50:00) [GCC 14.3.0]"
+  },
+  "status": "ZERO_CREDIT_PREFLIGHT_RECORDED",
+  "strict": true,
+  "task": "RouteB-Controller",
+  "writable_roots": {
+    "logs/route_B": {
+      "status": "PASS"
+    },
+    "results/route_B": {
+      "status": "PASS"
+    },
+    "results/route_B/locks": {
+      "status": "PASS"
+    }
+  }
+}
