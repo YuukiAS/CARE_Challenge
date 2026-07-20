@@ -214,7 +214,7 @@ Batch 3A 没有训练、没有 Slurm、没有 validation upload、没有 hosted 
 ## Batch 3B 状态
 
 ```text
-commit: pending_batch3b_commit
+implementation_commit: 1395ffb29879ab208103bd3acb3c46ad4ab1934f
 status: BATCH3B_REAL_CINE_MAINLINE_DIAGNOSTIC_COMPLETE
 ```
 

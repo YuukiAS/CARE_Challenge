@@ -666,7 +666,7 @@ fold0 validation case list (44 cases)
 - 执行线程：CARE SRR main integrator Codex goal
 - 审计线程：targeted pytest + production validator；独立 reviewer 未启动
 - Base commit：`03f3222`
-- Head commit：pending Batch 3A commit
+- Head commit：`1cce038ac6c3cbb91ab2a9bc1033315571d09f71`
 - 对应 TODO：Batch 3A real MyoPS inference closure
 - 状态：complete
 
@@ -759,7 +759,7 @@ Dataset501 imagesTr [LGE,T2,C0] + case availability
 - 执行线程：CARE SRR main integrator Codex goal
 - 审计线程：targeted pytest + production diagnostic script；独立 reviewer 未启动
 - Base commit：`1cce038ac6c3cbb91ab2a9bc1033315571d09f71`
-- Head commit：pending Batch 3B commit
+- Head commit：`1395ffb29879ab208103bd3acb3c46ad4ab1934f`
 - 对应 TODO：Batch 3B real Dataset502 Cine mainline
 - 状态：complete diagnostic
 

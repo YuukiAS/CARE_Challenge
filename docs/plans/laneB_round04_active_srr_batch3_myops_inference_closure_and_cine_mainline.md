@@ -253,7 +253,7 @@ Dataset502 真实 4D Cine
 
 ```text
 status: BATCH3B_REAL_CINE_MAINLINE_DIAGNOSTIC_COMPLETE
-commit: pending_batch3b_commit
+implementation_commit: 1395ffb29879ab208103bd3acb3c46ad4ab1934f
 evidence_root: results/srr_production/cine_batch3b
 ```
 
