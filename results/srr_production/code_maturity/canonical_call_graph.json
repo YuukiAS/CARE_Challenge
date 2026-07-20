@@ -1,0 +1,147 @@
+{
+  "schema_version": 1,
+  "base_head": "3f36a4ec62278ae097267d9c0eea14dd5e68a9e7",
+  "batch": "Batch 0 implementation truth",
+  "formal_training_status": "BLOCKED_PENDING_BATCH1_REPAIR",
+  "canonical_model_candidate": {
+    "class": "SRRProposeRefineMyoPS",
+    "path": "src/care_myocardium/models/srr_propref.py",
+    "status": "real_but_incomplete"
+  },
+  "myops_candidate_call_graph": [
+    {
+      "node": "CLI",
+      "path": "scripts/training/run_srr_propref_myops_fold0.py",
+      "functions": ["main", "train_variant"],
+      "truth": "candidate only; no formal authority in Batch 0"
+    },
+    {
+      "node": "Dataset501 split",
+      "path": "scripts/training/run_srr_myops_fold0.py",
+      "functions": ["load_split", "read_case"],
+      "truth": "reads protocol fold cases and raw Dataset501 images/labels"
+    },
+    {
+      "node": "nnU-Net anchor cache",
+      "path": "scripts/training/run_srr_propref_myops_fold0.py",
+      "functions": ["_find_anchor_paths", "_load_anchor_probabilities", "_load_component_features", "read_anchored_case"],
+      "truth": "uses cached fold validation probabilities and predictions; does not run nnU-Net checkpoint inference"
+    },
+    {
+      "node": "SRR feature trunk",
+      "path": "src/care_myocardium/models/srr_propref.py",
+      "functions": ["SRRProposeRefineMyoPS._evidence_features"],
+      "truth": "three modality encoders, per-scale retrieval, task decoders"
+    },
+    {
+      "node": "Anatomy/pathology heads",
+      "path": "src/care_myocardium/models/pathology_heads.py",
+      "functions": ["AnatomyPathologyHeads.forward"],
+      "truth": "anatomy logits plus scar/edema evidence logits with union prior"
+    },
+    {
+      "node": "Anatomy ROI context",
+      "path": "src/care_myocardium/models/srr_propref.py",
+      "functions": ["AnatomyDistanceROIPrior.forward"],
+      "truth": "computes p_union/p_lv/p_rv, distance/proximity, task soft gates, uncertainty"
+    },
+    {
+      "node": "Segmentation context",
+      "path": "src/care_myocardium/models/srr_propref.py",
+      "functions": ["SegmentationContextInterface.forward"],
+      "truth": "uses anchor probabilities/logits if supplied, otherwise reference softmax"
+    },
+    {
+      "node": "M10 spatial dictionary",
+      "path": "src/care_myocardium/models/srr_spatial_dictionary.py",
+      "functions": ["M10TwoPassSpatialDictionary.forward"],
+      "truth": "available for M10 D1-D3 model variants, but M10 variants are not exposed in current SRR runner CLI"
+    },
+    {
+      "node": "Proposal dictionaries",
+      "path": "src/care_myocardium/models/srr_propref.py",
+      "functions": ["ProposalDictionary.forward", "ProposalDictionary.load_prototype_bank"],
+      "truth": "proposal logits use positive/negative similarity, anchor/component evidence, and anatomy prior; default prototype bootstrap is deterministic until real bank loaded"
+    },
+    {
+      "node": "Runtime prototype fitting",
+      "path": "scripts/training/run_srr_propref_myops_fold0.py",
+      "functions": ["fit_and_load_runtime_prototype_bank"],
+      "truth": "fits selected train runtime features and loads dictionary banks; not a full formal OOF authority yet"
+    },
+    {
+      "node": "Soft ROI refinement",
+      "path": "src/care_myocardium/models/srr_propref.py",
+      "functions": ["CropSoftROIRefinementHead.forward"],
+      "truth": "scar/edema refinement consumes image, features, evidence logits, proposal logits, anchor/component evidence, similarity, and anatomy context"
+    },
+    {
+      "node": "Final output",
+      "path": "src/care_myocardium/models/srr_propref.py",
+      "functions": ["SRRProposeRefineMyoPS.forward", "BaselinePreservingResidualGate.forward", "BranchArbitrationGate.forward"],
+      "truth": "legacy variants use baseline gate; M6 uses branch arbitration; M9/M10 output srr_logits directly"
+    },
+    {
+      "node": "Loss",
+      "path": "scripts/training/run_srr_propref_myops_fold0.py",
+      "functions": ["propref_loss"],
+      "truth": "legacy variants use local BCE/Dice/proposal/ROI terms; M6/M9 variants use expanded SRR loss"
+    },
+    {
+      "node": "Expanded loss",
+      "path": "src/care_myocardium/losses/srr_losses.py",
+      "functions": ["srr_m6_expanded_total_loss", "pattern_sip_integrativeness_loss", "_memory_alignment_loss"],
+      "truth": "most terms are real optimized losses; current memory loss is zero placeholder unless memory similarity keys exist"
+    },
+    {
+      "node": "Checkpoint",
+      "path": "scripts/training/run_srr_propref_myops_fold0.py",
+      "functions": ["save_checkpoint", "train_variant"],
+      "truth": "single-run model_state_dict save/reload for evaluation; optimizer/prototype continuity not formalized"
+    },
+    {
+      "node": "Prediction/evaluation",
+      "path": "scripts/training/run_srr_propref_myops_fold0.py",
+      "functions": ["predict_case", "write_prediction", "evaluate"],
+      "truth": "writes full-case NIfTI predictions and computes local component metrics from prediction/GT"
+    },
+    {
+      "node": "Unified evaluator candidate",
+      "path": "scripts/evaluation/evaluate_predictions.py",
+      "functions": ["main", "dice_per_class", "hd_class", "hd95_class"],
+      "truth": "recomputes metrics from prediction/GT NIfTI; empty-GT semantics must be bound before production authority"
+    }
+  ],
+  "forbidden_legacy_call_graphs": [
+    {
+      "stage": "B3",
+      "path": "scripts/training/route_B_round04/myops/B3/run_B3_representation.py",
+      "truth": "synthetic tensors and random anchor; token-driven readiness"
+    },
+    {
+      "stage": "B4",
+      "path": "scripts/training/route_B_round04/myops/B4/run_B4_proposal.py",
+      "truth": "synthetic tensors, hard-coded proposal proxy metrics, no parent model load"
+    },
+    {
+      "stage": "B5",
+      "path": "scripts/training/route_B_round04/myops/B5/run_B5_refiner.py",
+      "truth": "synthetic tensors, hard-coded dice_proxy metrics, no parent model load"
+    },
+    {
+      "stage": "B6",
+      "path": "scripts/training/route_B_round04/myops/B6/run_B6_joint.py",
+      "truth": "synthetic tensors and fixed-formula casewise local proxy metrics"
+    },
+    {
+      "stage": "B7",
+      "path": "scripts/training/route_B_round04/cine/B7/run_B7_cinema_control.py",
+      "truth": "official CineMA probe only; adapter training uses synthetic frame tensors"
+    },
+    {
+      "stage": "B8",
+      "path": "scripts/training/route_B_round04/cine/B8/run_B8_registration.py",
+      "truth": "synthetic fixed/moving pairs; no real 4D cine frame registration/export"
+    }
+  ]
+}

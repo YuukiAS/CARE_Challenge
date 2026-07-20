@@ -1,0 +1,123 @@
+schema_version: 1
+authority_name: srr_production_batch0_formal_entrypoints
+created_from_head: 3f36a4ec62278ae097267d9c0eea14dd5e68a9e7
+formal_training_status: BLOCKED_PENDING_BATCH1_REPAIR
+status_reason: >-
+  Batch 0 found reusable real SRRProposeRefineMyoPS code and a real-data
+  fold0 runner, but no fully trusted production training entrypoint yet.
+  The formal training path remains blocked until Batch 1 repairs checkpoint
+  continuity, prototype authority, formal loss/gradient gates, and fair
+  evaluator authority.
+
+selected_model:
+  class_name: SRRProposeRefineMyoPS
+  path: src/care_myocardium/models/srr_propref.py
+  status: real_but_incomplete
+  notes:
+    - Uses existing encoder, retrieval, proposal dictionary, crop soft-ROI refiner, and final-output variants.
+    - ProposalDictionary bootstraps deterministic axis prototypes unless runtime train/OOF prototypes are loaded.
+    - M10 memory flag is surfaced in spatial dictionary status, but cross-fitted memory query is not connected to proposal logits.
+
+formal_entrypoints: []
+
+candidate_entrypoints:
+  - id: srr_propref_myops_fold0_candidate
+    role: training_and_local_evaluation_candidate
+    path: scripts/training/run_srr_propref_myops_fold0.py
+    formal_authority: false
+    audit_status: real_but_incomplete
+    allowed_in_batch0: read_only_audit_static_tests_only
+    blocked_reasons:
+      - no production authority wrapper yet
+      - no Batch1 checkpoint-continuity repair yet
+      - prototype fallback can be deterministic when fitting has no vectors or is skipped
+      - M10 variants are instantiable in model code but not exposed by this runner CLI
+      - current evaluation is local prediction/GT recomputation, not hosted or performance-authoritative
+  - id: unified_prediction_evaluator
+    role: local_prediction_metric_recompute_candidate
+    path: scripts/evaluation/evaluate_predictions.py
+    formal_authority: false
+    audit_status: already_real_and_reusable_for_local_metrics
+    notes:
+      - Recomputes Dice and optional HD/HD95 from prediction NIfTI and GT NIfTI.
+      - It is not a training entrypoint and does not make hosted leaderboard claims.
+
+required_real_assets:
+  myops_raw:
+    path: data/nnUNet/nnUNet_raw/Dataset501_CAREMyoPS
+    role: real Dataset501 imagesTr and labelsTr source
+  myops_protocol_split:
+    path: data/benchmarks/protocol/splits_MyoPS.json
+    role: patient/case split source for fold evaluation
+  nnunet_anchor_root:
+    path: data/nnUNet/nnUNet_results/Dataset501_CAREMyoPS/nnUNetTrainer_500epochs__nnUNetPlans__3d_fullres
+    role: fold validation probabilities and predictions used as cached nnU-Net anchor/context
+  nnunet_checkpoint_pattern:
+    path: data/nnUNet/nnUNet_results/Dataset501_CAREMyoPS/nnUNetTrainer_500epochs__nnUNetPlans__3d_fullres/fold_*/checkpoint_best.pth
+    role: real nnU-Net checkpoints, not directly loaded by current SRR runner
+
+forbidden_formal_entrypoints:
+  - id: route_b_round04_b3_representation
+    path: scripts/training/route_B_round04/myops/B3/run_B3_representation.py
+    forbidden_reason: synthetic tensors, random anchor, token-gated stage, independent RouteBRound03MyoPS initialization
+  - id: route_b_round04_b4_proposal
+    path: scripts/training/route_B_round04/myops/B4/run_B4_proposal.py
+    forbidden_reason: synthetic tensors, random anchor, handwritten target, OOF/prototype CSV assertions not backed by real prototype construction
+  - id: route_b_round04_b5_refiner
+    path: scripts/training/route_B_round04/myops/B5/run_B5_refiner.py
+    forbidden_reason: synthetic tensors, random anchor, hard-coded dice_proxy rows, independent model initialization
+  - id: route_b_round04_b6_joint
+    path: scripts/training/route_B_round04/myops/B6/run_B6_joint.py
+    forbidden_reason: synthetic tensors, random anchor, fixed local proxy metric formulas, independent model initialization
+  - id: route_b_round04_b7_cinema_control
+    path: scripts/training/route_B_round04/cine/B7/run_B7_cinema_control.py
+    forbidden_reason: synthetic frame training tensor and adapter probe not connected to downstream Cine export
+  - id: route_b_round04_b8_registration
+    path: scripts/training/route_B_round04/cine/B8/run_B8_registration.py
+    forbidden_reason: synthetic fixed/moving pairs from random tensors and no real 4D Cine frame-pair loader
+
+  - id: route_b_round04_b3_representation_job_wrapper
+    path: jobs/route_B_round04/run_B3_representation.sh
+    forbidden_reason: shell wrapper calls the forbidden B3 script with --formal
+  - id: route_b_round04_b4_proposal_job_wrapper
+    path: jobs/route_B_round04/run_B4_proposal.sh
+    forbidden_reason: shell wrapper calls the forbidden B4 script with --formal
+  - id: route_b_round04_b5_refiner_job_wrapper
+    path: jobs/route_B_round04/run_B5_refiner.sh
+    forbidden_reason: shell wrapper calls the forbidden B5 script with --formal
+  - id: route_b_round04_b6_joint_job_wrapper
+    path: jobs/route_B_round04/run_B6_joint.sh
+    forbidden_reason: shell wrapper calls the forbidden B6 script with --formal
+  - id: route_b_round04_b7_cinema_control_job_wrapper
+    path: jobs/route_B_round04/run_B7_cinema_control.sh
+    forbidden_reason: shell wrapper calls the forbidden B7 script with --formal
+  - id: route_b_round04_b8_registration_job_wrapper
+    path: jobs/route_B_round04/run_B8_registration.sh
+    forbidden_reason: shell wrapper calls the forbidden B8 script with --formal
+
+batch1_required_repairs:
+  - file: scripts/training/run_srr_propref_myops_fold0.py
+    functions:
+      - main
+      - train_variant
+      - fit_and_load_runtime_prototype_bank
+      - propref_loss
+    required_change: create production-mode authority gates, expose chosen M10 variant if selected, and reject deterministic prototype fallback in formal mode
+  - file: src/care_myocardium/models/srr_propref.py
+    functions:
+      - SRRProposeRefineMyoPS.forward
+      - ProposalDictionary.forward
+      - ProposalDictionary.load_prototype_bank
+    required_change: connect real OOF prototype/memory provenance to proposal logits and make final-output mode explicit in production config
+  - file: src/care_myocardium/models/srr_dictionary_memory.py
+    functions:
+      - M10CrossFittedPrototypeMemory.update
+      - M10CrossFittedPrototypeMemory.query
+    required_change: wire cross-fitted memory into training and proposal terms or keep memory variants blocked
+  - file: scripts/evaluation/evaluate_predictions.py
+    functions:
+      - main
+      - dice_per_class
+      - hd_class
+      - hd95_class
+    required_change: bind fair fold0 SRR-vs-nnU-Net evaluator config and component/remote-FP outputs under production authority
