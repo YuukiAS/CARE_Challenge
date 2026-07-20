@@ -1,7 +1,7 @@
 {
   "task_key": "20260721_srr_batch4_forced_fold0_training",
-  "status": "PREFLIGHT_SUBMITTED_AWAITING_TERMINAL_EVIDENCE",
-  "as_of_utc": "2026-07-20T18:08:33Z",
+  "status": "PREFLIGHT_PASS_FORMAL_TRAINING_NOT_STARTED",
+  "as_of_utc": "2026-07-20T18:27:28Z",
   "source_head_before_local_commit": "89474f7de8c38db1448e47ca7fe94d6620932b31",
   "latest_local_commit": "53fc6e60c1510dfe17aec7a1460883c88e46c705",
   "review_gate": {
@@ -36,40 +36,52 @@
   "slurm_attempts": [
     {
       "job_id": "59672536",
-      "partition": "volta-gpu",
       "job_name": "SRRB4Pre",
-      "state": "CANCELLED",
+      "role": "preflight_only",
+      "partition": "volta-gpu",
+      "state": "CANCELLED by 397557",
       "exit_code": "0:0",
       "elapsed": "00:00:56",
       "node": "g0311",
-      "reason": "manual_cancel_after_runtime_log_showed_current_torch_build_does_not_support_Tesla_V100_compute_capability_7_0",
+      "reason": "current torch build does not support Tesla V100 compute capability 7.0; batch step exit 0:15",
+      "logical_run_id": "srr_batch4_m10d3_full4scale_fold0_seed20260721_preflight",
       "log_path": "logs/srr_batch4/SRRB4Pre_volta_59672536_20260720_134651.log",
-      "attempt_root": "results/20260721_srr_batch4_forced_fold0_training/runtime/attempts/srr_batch4_m10d3_full4scale_fold0_seed20260721_preflight_volta_preflight_59672536"
+      "attempt_root": "results/20260721_srr_batch4_forced_fold0_training/runtime/attempts/srr_batch4_m10d3_full4scale_fold0_seed20260721_preflight_volta_preflight_59672536",
+      "training_credit": 0
     },
     {
       "job_id": "59672892",
-      "partition": "htzhulab",
       "job_name": "SRRB4Pre",
+      "role": "preflight_only",
+      "partition": "htzhulab",
       "state": "FAILED",
       "exit_code": "1:0",
       "elapsed": "00:03:58",
       "node": "g180702",
-      "reason": "startup_name_error_vectors_from_mask_missing",
+      "reason": "startup NameError: vectors_from_mask was not defined before retry repair",
       "logical_run_id": "srr_batch4_m10d3_full4scale_fold0_seed20260721_preflight_htzhulab_retry1",
-      "command": "sbatch --partition=htzhulab --gres=gpu:nvidia_a100-sxm4-80gb:1 --qos=gpu_access --export=ALL,LOGICAL_RUN_ID=srr_batch4_m10d3_full4scale_fold0_seed20260721_preflight_htzhulab_retry1 jobs/srr_production/run_myops_batch4_preflight_htzhulab.sh"
+      "log_path": "logs/srr_batch4/SRRB4Pre_htzhulab_59672892_20260720_135831.log",
+      "attempt_root": "",
+      "training_credit": 0
     },
     {
       "job_id": "59673675",
-      "partition": "htzhulab",
       "job_name": "SRRB4Pre",
-      "state": "PENDING",
-      "reason": "Resources",
+      "role": "preflight_only",
+      "partition": "htzhulab",
+      "state": "COMPLETED",
+      "exit_code": "0:0",
+      "elapsed": "00:01:41",
+      "node": "g180702",
+      "reason": "terminal gpu one-batch preflight completed; formal training was not started",
       "logical_run_id": "srr_batch4_m10d3_full4scale_fold0_seed20260721_preflight_htzhulab_retry2",
-      "command": "sbatch --partition=htzhulab --gres=gpu:nvidia_a100-sxm4-80gb:1 --qos=gpu_access --export=ALL,LOGICAL_RUN_ID=srr_batch4_m10d3_full4scale_fold0_seed20260721_preflight_htzhulab_retry2 jobs/srr_production/run_myops_batch4_preflight_htzhulab.sh"
+      "log_path": "logs/srr_batch4/SRRB4Pre_htzhulab_59673675_20260720_141649.log",
+      "attempt_root": "results/20260721_srr_batch4_forced_fold0_training/runtime/attempts/srr_batch4_m10d3_full4scale_fold0_seed20260721_preflight_htzhulab_retry2_htzhulab_preflight_59673675",
+      "training_credit": 0
     }
   ],
   "training_status": {
-    "preflight_only_completed": false,
+    "preflight_only_completed": true,
     "formal_1800_step_training_started": false,
     "formal_1800_step_training_completed": false,
     "full_volume_eval_steps_completed": [],
@@ -77,5 +89,19 @@
     "validation_upload_started": false,
     "hosted_metric_claim": false
   },
-  "next_allowed_action": "Monitor htzhulab preflight retry2 job 59673675 to terminal state; if still pending after the configured window, submit compatible A100 fallback. Submit formal training race only after preflight terminal PASS evidence is collected."
+  "next_allowed_action": "Before any formal sbatch, re-audit exact command, scripts, config and hashes for m10_d3_hierarchical_memory_propref + full_4scale + base_channels32, 176 train, 44 eval at 600/1200/1800, 1800 optimizer steps, >=1800s, env_CARE python, same split/config/assets.",
+  "latest_local_commit_before_terminal_receipt_update": "1d3d1d5dbf66fc6a5e76251d709304e1a2574db2",
+  "terminal_preflight_summary": {
+    "job_id": "59673675",
+    "status": "PREFLIGHT_PASS_FORMAL_TRAINING_NOT_STARTED",
+    "train_cases": 176,
+    "val_cases": 44,
+    "overfit_steps": 60,
+    "loss_decrease_fraction": 0.7058283652256124,
+    "formal_training_started": false,
+    "actual_optimizer_steps": 0,
+    "runtime_prototype_bank_selected_case_count": 176,
+    "one_batch_overfit_inline_selected_case_count_field": "EVIDENCE_NOT_FOUND",
+    "prototype_count_accounting": "reconciled from prototype_bank_summary.json selected_case_ids/source_case_ids"
+  }
 }

@@ -1,12 +1,12 @@
 {
   "task_key": "20260721_srr_batch4_forced_fold0_training",
-  "phase": "B4-03_PRECHECK_MONITOR",
-  "status": "PREFLIGHT_SUBMITTED_AWAITING_TERMINAL_EVIDENCE",
-  "as_of_utc": "2026-07-20T18:08:33Z",
+  "phase": "B4-03_PREFLIGHT_TERMINAL_ACCOUNTED",
+  "status": "PREFLIGHT_PASS_FORMAL_TRAINING_NOT_STARTED",
+  "as_of_utc": "2026-07-20T18:27:28Z",
   "repo_root": "/users/a/e/aereinh/CARE",
   "branch": "main",
   "git_head": "53fc6e60c1510dfe17aec7a1460883c88e46c705",
-  "git_status": "main...origin/main [ahead 5]; preflight_environment_receipt.json refreshed but not yet committed",
+  "git_status": "main...origin/main [ahead 6] before terminal preflight receipt update",
   "origin_main_synced_head_before_batch4_local_commits": "89474f7de8c38db1448e47ca7fe94d6620932b31",
   "planning_review": {
     "path": "prompts/tasks/20260721_srr_batch4_forced_fold0_training_planning_review.md",
@@ -36,38 +36,53 @@
       "job_id": "59672536",
       "role": "preflight_only",
       "partition": "volta-gpu",
-      "state": "CANCELLED",
-      "reason": "torch_build_unsupported_for_v100_sm70",
+      "state": "CANCELLED by 397557",
+      "exit_code": "0:0",
+      "elapsed": "00:00:56",
+      "node": "g0311",
+      "reason": "current torch build does not support Tesla V100 compute capability 7.0; batch step exit 0:15",
+      "logical_run_id": "srr_batch4_m10d3_full4scale_fold0_seed20260721_preflight",
       "log_path": "logs/srr_batch4/SRRB4Pre_volta_59672536_20260720_134651.log"
     },
     {
       "job_id": "59672892",
       "role": "preflight_only",
       "partition": "htzhulab",
-      "gres": "gpu:nvidia_a100-sxm4-80gb:1",
       "state": "FAILED",
-      "reason": "startup NameError: vectors_from_mask was missing before commit 53fc6e6",
-      "logical_run_id": "srr_batch4_m10d3_full4scale_fold0_seed20260721_preflight_htzhulab_retry1"
+      "exit_code": "1:0",
+      "elapsed": "00:03:58",
+      "node": "g180702",
+      "reason": "startup NameError: vectors_from_mask was not defined before retry repair",
+      "logical_run_id": "srr_batch4_m10d3_full4scale_fold0_seed20260721_preflight_htzhulab_retry1",
+      "log_path": "logs/srr_batch4/SRRB4Pre_htzhulab_59672892_20260720_135831.log"
     },
     {
       "job_id": "59673675",
       "role": "preflight_only",
       "partition": "htzhulab",
-      "gres": "gpu:nvidia_a100-sxm4-80gb:1",
-      "state": "PENDING",
-      "reason": "Resources",
-      "logical_run_id": "srr_batch4_m10d3_full4scale_fold0_seed20260721_preflight_htzhulab_retry2"
+      "state": "COMPLETED",
+      "exit_code": "0:0",
+      "elapsed": "00:01:41",
+      "node": "g180702",
+      "reason": "terminal gpu one-batch preflight completed; formal training was not started",
+      "logical_run_id": "srr_batch4_m10d3_full4scale_fold0_seed20260721_preflight_htzhulab_retry2",
+      "log_path": "logs/srr_batch4/SRRB4Pre_htzhulab_59673675_20260720_141649.log"
     }
   ],
   "runtime_paths": {
     "result_root": "results/20260721_srr_batch4_forced_fold0_training",
     "runtime_root": "results/20260721_srr_batch4_forced_fold0_training/runtime",
-    "log_root": "logs/srr_batch4"
+    "log_root": "logs/srr_batch4",
+    "preflight_retry2_attempt_root": "results/20260721_srr_batch4_forced_fold0_training/runtime/attempts/srr_batch4_m10d3_full4scale_fold0_seed20260721_preflight_htzhulab_retry2_htzhulab_preflight_59673675",
+    "preflight_retry2_summary": "results/20260721_srr_batch4_forced_fold0_training/runtime/attempts/srr_batch4_m10d3_full4scale_fold0_seed20260721_preflight_htzhulab_retry2_htzhulab_preflight_59673675/variants/srr_batch4_m10d3_full4scale_fold0_seed20260721_preflight_htzhulab_retry2_htzhulab_preflight_59673675/summary.json"
   },
   "completion_boundary": {
-    "preflight_only_completed": false,
+    "preflight_only_completed": true,
+    "preflight_terminal_accounted": true,
+    "prototype_inline_count_gap_reconciled": true,
     "formal_training_submitted": false,
     "formal_training_completed": false,
     "review_ready": false
-  }
+  },
+  "git_head_before_terminal_receipt_update": "1d3d1d5dbf66fc6a5e76251d709304e1a2574db2"
 }

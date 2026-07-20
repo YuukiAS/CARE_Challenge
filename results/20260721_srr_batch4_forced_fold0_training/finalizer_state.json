@@ -1,20 +1,21 @@
 {
   "task_key": "20260721_srr_batch4_forced_fold0_training",
-  "state": "NEEDS_MONITOR",
-  "as_of_utc": "2026-07-20T18:08:33Z",
-  "scope": "preflight_monitor_only",
+  "state": "PREFLIGHT_PASS_FORMAL_TRAINING_NOT_STARTED",
+  "as_of_utc": "2026-07-20T18:27:28Z",
+  "scope": "preflight_terminal_accounting_only",
   "formal_training_completion": false,
   "attempts": [
     {
       "job_id": "59672536",
       "job_name": "SRRB4Pre",
       "partition": "volta-gpu",
-      "state": "CANCELLED",
+      "state": "CANCELLED by 397557",
       "exit_code": "0:0",
       "elapsed": "00:00:56",
       "node": "g0311",
       "log_path": "logs/srr_batch4/SRRB4Pre_volta_59672536_20260720_134651.log",
-      "training_credit": 0
+      "training_credit": 0,
+      "failure_reason": "current torch build does not support Tesla V100 compute capability 7.0; batch step exit 0:15"
     },
     {
       "job_id": "59672892",
@@ -25,28 +26,45 @@
       "elapsed": "00:03:58",
       "node": "g180702",
       "log_path": "logs/srr_batch4/SRRB4Pre_htzhulab_59672892_20260720_135831.log",
-      "failure_reason": "startup NameError: vectors_from_mask was not defined",
-      "training_credit": 0
+      "training_credit": 0,
+      "failure_reason": "startup NameError: vectors_from_mask was not defined before retry repair"
     },
     {
       "job_id": "59673675",
       "job_name": "SRRB4Pre",
       "partition": "htzhulab",
-      "state": "PENDING",
+      "state": "COMPLETED",
       "exit_code": "0:0",
-      "elapsed": "00:00:00",
-      "node": "None assigned",
-      "training_credit": 0
+      "elapsed": "00:01:41",
+      "node": "g180702",
+      "log_path": "logs/srr_batch4/SRRB4Pre_htzhulab_59673675_20260720_141649.log",
+      "training_credit": 0,
+      "preflight_summary": "results/20260721_srr_batch4_forced_fold0_training/runtime/attempts/srr_batch4_m10d3_full4scale_fold0_seed20260721_preflight_htzhulab_retry2_htzhulab_preflight_59673675/variants/srr_batch4_m10d3_full4scale_fold0_seed20260721_preflight_htzhulab_retry2_htzhulab_preflight_59673675/summary.json",
+      "one_batch_overfit": "results/20260721_srr_batch4_forced_fold0_training/runtime/attempts/srr_batch4_m10d3_full4scale_fold0_seed20260721_preflight_htzhulab_retry2_htzhulab_preflight_59673675/variants/srr_batch4_m10d3_full4scale_fold0_seed20260721_preflight_htzhulab_retry2_htzhulab_preflight_59673675/one_batch_overfit.json",
+      "prototype_bank_summary": "results/20260721_srr_batch4_forced_fold0_training/runtime/attempts/srr_batch4_m10d3_full4scale_fold0_seed20260721_preflight_htzhulab_retry2_htzhulab_preflight_59673675/variants/srr_batch4_m10d3_full4scale_fold0_seed20260721_preflight_htzhulab_retry2_htzhulab_preflight_59673675/prototype_bank_summary.json"
     }
   ],
   "aggregation": {
-    "aggregation_exit_code": "NOT_RUN_PENDING_PREFLIGHT",
+    "aggregation_exit_code": 0,
+    "aggregation_command": "manual controller aggregation from sacct plus 59673675 runtime summary/one_batch_overfit/prototype_bank_summary receipts",
     "tracked_evidence_files": [
       "results/20260721_srr_batch4_forced_fold0_training/controller_context.json",
       "results/20260721_srr_batch4_forced_fold0_training/controller_ledger.csv",
       "results/20260721_srr_batch4_forced_fold0_training/preflight_receipt.json",
-      "results/20260721_srr_batch4_forced_fold0_training/controller_dispatch_status.json"
-    ]
+      "results/20260721_srr_batch4_forced_fold0_training/finalizer_state.json",
+      "results/20260721_srr_batch4_forced_fold0_training/controller_dispatch_status.json",
+      "results/20260721_srr_batch4_forced_fold0_training/commands_run.md",
+      "results/20260721_srr_batch4_forced_fold0_training/implementation_snapshot.md",
+      "results/20260721_srr_batch4_forced_fold0_training/slurm_attempts.csv"
+    ],
+    "runtime_evidence_files_untracked": [
+      "results/20260721_srr_batch4_forced_fold0_training/runtime/attempts/srr_batch4_m10d3_full4scale_fold0_seed20260721_preflight_htzhulab_retry2_htzhulab_preflight_59673675/variants/srr_batch4_m10d3_full4scale_fold0_seed20260721_preflight_htzhulab_retry2_htzhulab_preflight_59673675/summary.json",
+      "results/20260721_srr_batch4_forced_fold0_training/runtime/attempts/srr_batch4_m10d3_full4scale_fold0_seed20260721_preflight_htzhulab_retry2_htzhulab_preflight_59673675/variants/srr_batch4_m10d3_full4scale_fold0_seed20260721_preflight_htzhulab_retry2_htzhulab_preflight_59673675/one_batch_overfit.json",
+      "results/20260721_srr_batch4_forced_fold0_training/runtime/attempts/srr_batch4_m10d3_full4scale_fold0_seed20260721_preflight_htzhulab_retry2_htzhulab_preflight_59673675/variants/srr_batch4_m10d3_full4scale_fold0_seed20260721_preflight_htzhulab_retry2_htzhulab_preflight_59673675/prototype_bank_summary.json",
+      "results/20260721_srr_batch4_forced_fold0_training/runtime/attempts/srr_batch4_m10d3_full4scale_fold0_seed20260721_preflight_htzhulab_retry2_htzhulab_preflight_59673675/variants/srr_batch4_m10d3_full4scale_fold0_seed20260721_preflight_htzhulab_retry2_htzhulab_preflight_59673675/prototype_update_sanity.csv",
+      "logs/srr_batch4/SRRB4Pre_htzhulab_59673675_20260720_141649.log"
+    ],
+    "prototype_count_reconciliation": "one_batch_overfit.json inline prototype_bank_selected_case_count is EVIDENCE_NOT_FOUND; sibling prototype_bank_summary.json records selected_case_ids=176 and source_case_ids=176 for the same attempt."
   },
-  "next_action": "Monitor job 59673675 until terminal state; if preflight passes, submit formal compatible training race."
+  "next_action": "Before any formal sbatch, re-audit exact command, scripts, config and hashes for m10_d3_hierarchical_memory_propref + full_4scale + base_channels32, 176 train, 44 eval at 600/1200/1800, 1800 optimizer steps, >=1800s, env_CARE python, same split/config/assets."
 }

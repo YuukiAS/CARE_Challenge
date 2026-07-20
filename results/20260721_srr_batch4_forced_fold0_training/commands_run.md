@@ -11,7 +11,7 @@ This file records current lightweight controller evidence only. Submitted, pendi
 - `git commit -m "Record SRR Batch4 preflight dispatch"` -> `4c99875`
 - `git commit -m "Add SRR Batch4 monitor packet"` -> `d385242`
 - `git commit -m "Fix Batch4 prototype vector extraction"` -> `53fc6e6`
-- current HEAD: `53fc6e60c1510dfe17aec7a1460883c88e46c705`
+- current HEAD before terminal preflight receipt update: `1d3d1d5dbf66fc6a5e76251d709304e1a2574db2`
 
 ## Validation
 
@@ -38,7 +38,10 @@ This file records current lightweight controller evidence only. Submitted, pendi
 
 - `squeue -j 59673675` at `2026-07-20T18:08:33Z` -> `PENDING (Resources)`
 - `sacct -j 59672536,59672892 --format=JobID,JobName,Partition,State,ExitCode,Elapsed,NodeList -P` -> `59672536 CANCELLED`, `59672892 FAILED`
+- `sacct -j 59672536,59672892,59673675 --format=JobID,JobName,Partition,State,ExitCode,Elapsed,NodeList -P` at `2026-07-20T18:27:28Z` -> `59672536 CANCELLED by 397557 0:0 00:00:56 g0311`; `59672892 FAILED 1:0 00:03:58 g180702`; `59673675 COMPLETED 0:0 00:01:41 g180702`
+- Read `59673675` runtime summary/overfit/prototype receipts under `results/20260721_srr_batch4_forced_fold0_training/runtime/attempts/srr_batch4_m10d3_full4scale_fold0_seed20260721_preflight_htzhulab_retry2_htzhulab_preflight_59673675/variants/...` -> terminal preflight-only PASS, train176, val44, 60 overfit steps, formal_started=false, optimizer_steps=0
+- Reconciled `one_batch_overfit.json` inline `prototype_bank_selected_case_count=EVIDENCE_NOT_FOUND` from same-attempt `prototype_bank_summary.json` -> `selected_case_ids=176`, `source_case_ids=176`, `status=REAL_CASEWISE_PROTOTYPE_MEMORY_READY`, repeat-last fallback false
 
 ## Non-Completion Statement
 
-No command in this file proves Batch4 completion. The current terminal state is `NEEDS_MONITOR` because job `59673675` has not started or completed and formal 1800-step training has not been submitted.
+No command in this file proves Batch4 completion. The current preflight state is `PREFLIGHT_PASS_FORMAL_TRAINING_NOT_STARTED`: job `59673675` completed a preflight-only run, but formal 1800-step training, 44-case evaluation, selected checkpoint reload, mapper final, reviewer handoff, validation upload, hosted metric claim, and push have not occurred.

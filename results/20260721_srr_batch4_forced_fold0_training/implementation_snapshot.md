@@ -1,10 +1,10 @@
 # Batch4 Implementation Snapshot
 
-Status: `PREFLIGHT_RETRY2_SUBMITTED_AWAITING_TERMINAL_EVIDENCE`
+Status: `PREFLIGHT_PASS_FORMAL_TRAINING_NOT_STARTED`
 
-As of: `2026-07-20T18:08:33Z`
+As of: `2026-07-20T18:27:28Z`
 
-Current local commit: `53fc6e60c1510dfe17aec7a1460883c88e46c705`
+Current local commit before this receipt update: `1d3d1d5dbf66fc6a5e76251d709304e1a2574db2`
 
 ## Gate
 
@@ -40,8 +40,16 @@ Current local commit: `53fc6e60c1510dfe17aec7a1460883c88e46c705`
 | --- | --- | --- | --- | --- |
 | `59672536` | preflight-only | `volta-gpu` | `CANCELLED` | `logs/srr_batch4/SRRB4Pre_volta_59672536_20260720_134651.log` showed unsupported V100 compute capability for current torch build. |
 | `59672892` | preflight-only | `htzhulab` | `FAILED` | `logs/srr_batch4/SRRB4Pre_htzhulab_59672892_20260720_135831.log` showed startup `NameError: vectors_from_mask is not defined`. |
-| `59673675` | preflight-only | `htzhulab` | `PENDING (Resources)` | `squeue -j 59673675` at `2026-07-20T18:08:33Z`. |
+| `59673675` | preflight-only | `htzhulab` | `COMPLETED 0:0` | `sacct` shows elapsed `00:01:41` on `g180702`; runtime summary records preflight-only PASS, 176 train cases, 44 validation cases, 60 overfit steps, formal training false. |
 
 ## Boundary
 
-Formal 1800-step training has not started. Step 600/1200/1800 full-volume evaluation, selected checkpoint reload, mapper final, independent review, validation upload, hosted metric claim, and push have not occurred.
+Formal 1800-step training has not started. The `one_batch_overfit.json` inline field `prototype_bank_selected_case_count` is `EVIDENCE_NOT_FOUND`; this receipt accounts it from the same-attempt `prototype_bank_summary.json`, which records `selected_case_ids=176` and `source_case_ids=176`. Step 600/1200/1800 full-volume evaluation, selected checkpoint reload, mapper final, independent review, validation upload, hosted metric claim, and push have not occurred.
+
+## Terminal Preflight Receipt Update
+
+- `sacct -j 59672536,59672892,59673675 --format=JobID,JobName,Partition,State,ExitCode,Elapsed,NodeList -P` -> `59672536 CANCELLED by 397557`, `59672892 FAILED 1:0`, `59673675 COMPLETED 0:0 elapsed 00:01:41 g180702`.
+- `59673675` runtime summary: `status=PREFLIGHT_PASS_FORMAL_TRAINING_NOT_STARTED`, `train_cases=176`, `val_cases=44`, `preflight_overfit_steps=60`, `formal_training_started=false`, `actual_optimizer_steps=0`.
+- `59673675` one-batch overfit: `status=PASS`, first loss `3.4422695636749268`, last loss `1.012618064880371`, relative decrease `0.7058283652256124`.
+- Prototype count reconciliation: inline `one_batch_overfit.json` has `prototype_bank_selected_case_count=EVIDENCE_NOT_FOUND`; sibling `prototype_bank_summary.json` from the same attempt records `selected_case_ids=176`, `source_case_ids=176`, `status=REAL_CASEWISE_PROTOTYPE_MEMORY_READY`, and no repeat-last vector fallback.
+- This is a terminal preflight receipt only. It is not formal training completion, not a 44-case evaluation, not review-ready, and not a performance claim.
