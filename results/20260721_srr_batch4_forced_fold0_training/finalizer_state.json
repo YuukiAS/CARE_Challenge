@@ -1,8 +1,8 @@
 {
   "task_key": "20260721_srr_batch4_forced_fold0_training",
-  "state": "PREFLIGHT_PASS_FORMAL_TRAINING_NOT_STARTED",
-  "as_of_utc": "2026-07-20T18:27:28Z",
-  "scope": "preflight_terminal_accounting_only",
+  "state": "FORMAL_STARTUP_FAILED_REPAIRED_AWAITING_RETRY",
+  "as_of_utc": "2026-07-20T18:36:37Z",
+  "scope": "formal_startup_failure_accounting_and_same_scope_repair",
   "formal_training_completion": false,
   "attempts": [
     {
@@ -42,29 +42,38 @@
       "preflight_summary": "results/20260721_srr_batch4_forced_fold0_training/runtime/attempts/srr_batch4_m10d3_full4scale_fold0_seed20260721_preflight_htzhulab_retry2_htzhulab_preflight_59673675/variants/srr_batch4_m10d3_full4scale_fold0_seed20260721_preflight_htzhulab_retry2_htzhulab_preflight_59673675/summary.json",
       "one_batch_overfit": "results/20260721_srr_batch4_forced_fold0_training/runtime/attempts/srr_batch4_m10d3_full4scale_fold0_seed20260721_preflight_htzhulab_retry2_htzhulab_preflight_59673675/variants/srr_batch4_m10d3_full4scale_fold0_seed20260721_preflight_htzhulab_retry2_htzhulab_preflight_59673675/one_batch_overfit.json",
       "prototype_bank_summary": "results/20260721_srr_batch4_forced_fold0_training/runtime/attempts/srr_batch4_m10d3_full4scale_fold0_seed20260721_preflight_htzhulab_retry2_htzhulab_preflight_59673675/variants/srr_batch4_m10d3_full4scale_fold0_seed20260721_preflight_htzhulab_retry2_htzhulab_preflight_59673675/prototype_bank_summary.json"
+    },
+    {
+      "job_id": "59674902",
+      "job_name": "SRRB4MyoPS",
+      "partition": "htzhulab",
+      "state": "FAILED",
+      "exit_code": "1:0",
+      "elapsed": "00:01:22",
+      "node": "g1807htzh01",
+      "log_path": "logs/srr_batch4/SRRB4MyoPS_htzhulab_59674902_20260720_143201.log",
+      "training_credit": 0,
+      "attempt_root": "results/20260721_srr_batch4_forced_fold0_training/runtime/attempts/srr_batch4_m10d3_full4scale_fold0_seed20260721_htzhulab_59674902",
+      "winner_lock_owner": "results/20260721_srr_batch4_forced_fold0_training/runtime/locks/srr_batch4_m10d3_full4scale_fold0_seed20260721.winner/owner.json",
+      "failure_reason": "TypeError in record_gate_usage: list-valued gate mean could not be converted with float(value)"
     }
   ],
   "aggregation": {
     "aggregation_exit_code": 0,
-    "aggregation_command": "manual controller aggregation from sacct plus 59673675 runtime summary/one_batch_overfit/prototype_bank_summary receipts",
+    "aggregation_command": "formal startup failure accounting from sacct/log/runtime evidence; no training completion aggregation run",
     "tracked_evidence_files": [
       "results/20260721_srr_batch4_forced_fold0_training/controller_context.json",
-      "results/20260721_srr_batch4_forced_fold0_training/controller_ledger.csv",
-      "results/20260721_srr_batch4_forced_fold0_training/preflight_receipt.json",
-      "results/20260721_srr_batch4_forced_fold0_training/finalizer_state.json",
       "results/20260721_srr_batch4_forced_fold0_training/controller_dispatch_status.json",
+      "results/20260721_srr_batch4_forced_fold0_training/controller_ledger.csv",
       "results/20260721_srr_batch4_forced_fold0_training/commands_run.md",
-      "results/20260721_srr_batch4_forced_fold0_training/implementation_snapshot.md",
+      "results/20260721_srr_batch4_forced_fold0_training/finalizer_state.json",
       "results/20260721_srr_batch4_forced_fold0_training/slurm_attempts.csv"
     ],
     "runtime_evidence_files_untracked": [
-      "results/20260721_srr_batch4_forced_fold0_training/runtime/attempts/srr_batch4_m10d3_full4scale_fold0_seed20260721_preflight_htzhulab_retry2_htzhulab_preflight_59673675/variants/srr_batch4_m10d3_full4scale_fold0_seed20260721_preflight_htzhulab_retry2_htzhulab_preflight_59673675/summary.json",
-      "results/20260721_srr_batch4_forced_fold0_training/runtime/attempts/srr_batch4_m10d3_full4scale_fold0_seed20260721_preflight_htzhulab_retry2_htzhulab_preflight_59673675/variants/srr_batch4_m10d3_full4scale_fold0_seed20260721_preflight_htzhulab_retry2_htzhulab_preflight_59673675/one_batch_overfit.json",
-      "results/20260721_srr_batch4_forced_fold0_training/runtime/attempts/srr_batch4_m10d3_full4scale_fold0_seed20260721_preflight_htzhulab_retry2_htzhulab_preflight_59673675/variants/srr_batch4_m10d3_full4scale_fold0_seed20260721_preflight_htzhulab_retry2_htzhulab_preflight_59673675/prototype_bank_summary.json",
-      "results/20260721_srr_batch4_forced_fold0_training/runtime/attempts/srr_batch4_m10d3_full4scale_fold0_seed20260721_preflight_htzhulab_retry2_htzhulab_preflight_59673675/variants/srr_batch4_m10d3_full4scale_fold0_seed20260721_preflight_htzhulab_retry2_htzhulab_preflight_59673675/prototype_update_sanity.csv",
-      "logs/srr_batch4/SRRB4Pre_htzhulab_59673675_20260720_141649.log"
-    ],
-    "prototype_count_reconciliation": "one_batch_overfit.json inline prototype_bank_selected_case_count is EVIDENCE_NOT_FOUND; sibling prototype_bank_summary.json records selected_case_ids=176 and source_case_ids=176 for the same attempt."
+      "logs/srr_batch4/SRRB4MyoPS_htzhulab_59674902_20260720_143201.log",
+      "results/20260721_srr_batch4_forced_fold0_training/runtime/attempts/srr_batch4_m10d3_full4scale_fold0_seed20260721_htzhulab_59674902/frozen_prototype_memory_manifest.json",
+      "results/20260721_srr_batch4_forced_fold0_training/runtime/attempts/srr_batch4_m10d3_full4scale_fold0_seed20260721_htzhulab_59674902/variants/srr_batch4_m10d3_full4scale_fold0_seed20260721_htzhulab_59674902/one_batch_overfit.json"
+    ]
   },
-  "next_action": "Before any formal sbatch, re-audit exact command, scripts, config and hashes for m10_d3_hierarchical_memory_propref + full_4scale + base_channels32, 176 train, 44 eval at 600/1200/1800, 1800 optimizer steps, >=1800s, env_CARE python, same split/config/assets."
+  "next_action": "Retry only after stale failed winner lock is archived and pre-submit contract/hash checks pass at the repair commit."
 }

@@ -45,3 +45,24 @@ This file records current lightweight controller evidence only. Submitted, pendi
 ## Non-Completion Statement
 
 No command in this file proves Batch4 completion. The current preflight state is `PREFLIGHT_PASS_FORMAL_TRAINING_NOT_STARTED`: job `59673675` completed a preflight-only run, but formal 1800-step training, 44-case evaluation, selected checkpoint reload, mapper final, reviewer handoff, validation upload, hosted metric claim, and push have not occurred.
+
+## Formal Training Dispatch
+
+- Pre-submit `--print-contract` at `a984992ba3689bac0b5c7590b7049816fcd4c931` -> `CONTRACT_VALID`, model `m10_d3_hierarchical_memory_propref`, `full_4scale`, `base_channels=32`, train `176`, validation `44`, eval steps `[600, 1200, 1800]`, max steps `1800`, min train loop seconds `1800`.
+- `bash -n jobs/srr_production/run_myops_batch4_fold0_common.sh jobs/srr_production/run_myops_batch4_fold0_htzhulab.sh jobs/srr_production/run_myops_batch4_fold0_a100.sh jobs/srr_production/run_myops_batch4_fold0_volta.sh` -> pass.
+- `squeue -p htzhulab` and `sinfo -o ...` inspected before submission; primary `htzhulab` remained default.
+- `sbatch --export=ALL,LOGICAL_RUN_ID=srr_batch4_m10d3_full4scale_fold0_seed20260721 jobs/srr_production/run_myops_batch4_fold0_htzhulab.sh` -> submitted `59674902`.
+- `squeue -j 59674902` at `2026-07-20T18:32:55Z` -> `RUNNING` on `g1807htzh01`; no A100 mirror submitted because primary started immediately.
+- Startup log `logs/srr_batch4/SRRB4MyoPS_htzhulab_59674902_20260720_143201.log` confirms `env_CARE` Python, torch `2.11.0+cu130`, GPU `NVIDIA H100 NVL`, capability `sm_90`, logical run `srr_batch4_m10d3_full4scale_fold0_seed20260721`, isolated attempt root, and winner lock.
+
+Running formal training is not completion. Terminal aggregation, validators, mapper final, final packet commit, and independent reviewer handoff remain required.
+
+## Formal Startup Failure And Repair
+
+- `sacct -j 59674902 --format=JobID,JobName,Partition,State,ExitCode,Elapsed,NodeList -P` -> `59674902 FAILED 1:0 00:01:22 g1807htzh01`.
+- Log `logs/srr_batch4/SRRB4MyoPS_htzhulab_59674902_20260720_143201.log` traceback: `TypeError: float() argument must be a string or a real number, not list` in `record_gate_usage`.
+- Runtime attempt produced frozen prototype asset/manifest and one-batch overfit files, but no terminal formal training summary and no 1800-step credit.
+- Same-scope repair: `scripts/training/run_srr_propref_myops_fold0.py` now records nested/list-valued gate means as scalar means locally for the propref runner.
+- Regression: `./envs/env_CARE/bin/python -m pytest tests/srr_production/test_myops_batch4_contract.py` -> `11 passed, 3 warnings`.
+
+This failure is zero formal training credit. Retry requires archiving the stale failed winner lock and rechecking exact command/scripts/config/hash at the repair commit.

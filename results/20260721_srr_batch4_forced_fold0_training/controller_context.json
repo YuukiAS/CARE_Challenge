@@ -1,12 +1,12 @@
 {
   "task_key": "20260721_srr_batch4_forced_fold0_training",
-  "phase": "B4-03_PREFLIGHT_TERMINAL_ACCOUNTED",
-  "status": "PREFLIGHT_PASS_FORMAL_TRAINING_NOT_STARTED",
-  "as_of_utc": "2026-07-20T18:27:28Z",
+  "phase": "B4-04_FORMAL_STARTUP_FAILED_REPAIRED",
+  "status": "FORMAL_STARTUP_FAILED_REPAIRED_AWAITING_RETRY",
+  "as_of_utc": "2026-07-20T18:36:37Z",
   "repo_root": "/users/a/e/aereinh/CARE",
   "branch": "main",
   "git_head": "53fc6e60c1510dfe17aec7a1460883c88e46c705",
-  "git_status": "main...origin/main [ahead 6] before terminal preflight receipt update",
+  "git_status": "main...origin/main [ahead 7] before formal dispatch monitor commit",
   "origin_main_synced_head_before_batch4_local_commits": "89474f7de8c38db1448e47ca7fe94d6620932b31",
   "planning_review": {
     "path": "prompts/tasks/20260721_srr_batch4_forced_fold0_training_planning_review.md",
@@ -67,6 +67,18 @@
       "reason": "terminal gpu one-batch preflight completed; formal training was not started",
       "logical_run_id": "srr_batch4_m10d3_full4scale_fold0_seed20260721_preflight_htzhulab_retry2",
       "log_path": "logs/srr_batch4/SRRB4Pre_htzhulab_59673675_20260720_141649.log"
+    },
+    {
+      "job_id": "59674902",
+      "role": "formal_training_startup_failed",
+      "partition": "htzhulab",
+      "state": "FAILED",
+      "exit_code": "1:0",
+      "elapsed": "00:01:22",
+      "node": "g1807htzh01",
+      "reason": "TypeError in record_gate_usage: list-valued gate mean could not be converted with float(value)",
+      "logical_run_id": "srr_batch4_m10d3_full4scale_fold0_seed20260721",
+      "log_path": "logs/srr_batch4/SRRB4MyoPS_htzhulab_59674902_20260720_143201.log"
     }
   ],
   "runtime_paths": {
@@ -80,9 +92,44 @@
     "preflight_only_completed": true,
     "preflight_terminal_accounted": true,
     "prototype_inline_count_gap_reconciled": true,
-    "formal_training_submitted": false,
+    "formal_training_submitted": true,
     "formal_training_completed": false,
-    "review_ready": false
+    "review_ready": false,
+    "formal_training_running": false
   },
-  "git_head_before_terminal_receipt_update": "1d3d1d5dbf66fc6a5e76251d709304e1a2574db2"
+  "git_head_before_terminal_receipt_update": "1d3d1d5dbf66fc6a5e76251d709304e1a2574db2",
+  "git_head_at_formal_submit": "a984992ba3689bac0b5c7590b7049816fcd4c931",
+  "formal_training": {
+    "job_id": "59674902",
+    "job_name": "SRRB4MyoPS",
+    "partition": "htzhulab",
+    "state": "FAILED",
+    "exit_code": "1:0",
+    "elapsed": "00:01:22",
+    "node": "g1807htzh01",
+    "command": "sbatch --export=ALL,LOGICAL_RUN_ID=srr_batch4_m10d3_full4scale_fold0_seed20260721 jobs/srr_production/run_myops_batch4_fold0_htzhulab.sh",
+    "logical_run_id": "srr_batch4_m10d3_full4scale_fold0_seed20260721",
+    "attempt_root": "results/20260721_srr_batch4_forced_fold0_training/runtime/attempts/srr_batch4_m10d3_full4scale_fold0_seed20260721_htzhulab_59674902",
+    "log_path": "logs/srr_batch4/SRRB4MyoPS_htzhulab_59674902_20260720_143201.log",
+    "winner_lock_owner": "results/20260721_srr_batch4_forced_fold0_training/runtime/locks/srr_batch4_m10d3_full4scale_fold0_seed20260721.winner/owner.json",
+    "a100_mirror_submitted": false,
+    "training_credit": 0,
+    "failure_reason": "TypeError in record_gate_usage: list-valued gate mean could not be converted with float(value)"
+  },
+  "git_head_before_repair_commit": "a984992ba3689bac0b5c7590b7049816fcd4c931",
+  "same_scope_repairs": [
+    {
+      "failure_job_id": "59674902",
+      "failure_state": "FAILED",
+      "failure_exit_code": "1:0",
+      "failure_elapsed": "00:01:22",
+      "failure_node": "g1807htzh01",
+      "failure_reason": "TypeError in record_gate_usage: list-valued gate mean could not be converted with float(value)",
+      "training_credit": 0,
+      "same_scope_repair": "scripts/training/run_srr_propref_myops_fold0.py now records nested/list-valued gate means as scalar means locally for Batch4 runner",
+      "regression_test": "./envs/env_CARE/bin/python -m pytest tests/srr_production/test_myops_batch4_contract.py -> 11 passed, 3 warnings",
+      "source_hash_after_repair": "1795ab8fc1dc3f6d87cbe7059f8be191fff15c3c0148db2283af768bb5ce5fdd",
+      "test_hash_after_repair": "8da0b58a71d006d735989d2f56cb0ea7e71bbb6e56f5427662e1d600725efb82"
+    }
+  ]
 }

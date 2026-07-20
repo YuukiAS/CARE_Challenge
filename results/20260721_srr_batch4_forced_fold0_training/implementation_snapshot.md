@@ -53,3 +53,20 @@ Formal 1800-step training has not started. The `one_batch_overfit.json` inline f
 - `59673675` one-batch overfit: `status=PASS`, first loss `3.4422695636749268`, last loss `1.012618064880371`, relative decrease `0.7058283652256124`.
 - Prototype count reconciliation: inline `one_batch_overfit.json` has `prototype_bank_selected_case_count=EVIDENCE_NOT_FOUND`; sibling `prototype_bank_summary.json` from the same attempt records `selected_case_ids=176`, `source_case_ids=176`, `status=REAL_CASEWISE_PROTOTYPE_MEMORY_READY`, and no repeat-last vector fallback.
 - This is a terminal preflight receipt only. It is not formal training completion, not a 44-case evaluation, not review-ready, and not a performance claim.
+
+## Formal Training Dispatch
+
+- Job `59674902` submitted to `htzhulab` from commit `a984992ba3689bac0b5c7590b7049816fcd4c931`.
+- Initial state: `RUNNING` on `g1807htzh01`; no A100 mirror submitted because the primary started before the pending-race threshold.
+- Attempt root: `results/20260721_srr_batch4_forced_fold0_training/runtime/attempts/srr_batch4_m10d3_full4scale_fold0_seed20260721_htzhulab_59674902`.
+- Log: `logs/srr_batch4/SRRB4MyoPS_htzhulab_59674902_20260720_143201.log`.
+- Winner lock: `results/20260721_srr_batch4_forced_fold0_training/runtime/locks/srr_batch4_m10d3_full4scale_fold0_seed20260721.winner/owner.json`.
+- This is a running monitor state, not Batch4 completion.
+
+## Formal Startup Failure And Repair
+
+- Formal attempt `59674902` failed with exit `1:0` after `00:01:22` on `g1807htzh01`.
+- Failure reason: `record_gate_usage` received nested/list-valued gate means and attempted `float(value)`.
+- Training credit: `0`; formal 1800-step training did not complete and no 44-case evaluation exists.
+- Same-scope repair stayed in `scripts/training/run_srr_propref_myops_fold0.py`: nested/list gate means and valid fractions are scalarized by averaging numeric leaves before CSV writing.
+- Test: `tests/srr_production/test_myops_batch4_contract.py` now includes nested gate means regression; local run passed `11 passed, 3 warnings`.

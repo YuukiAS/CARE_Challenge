@@ -35,7 +35,7 @@ from scripts.training.run_srr_myops_fold0 import (  # noqa: E402
     load_split,
     parse_shape,
     read_case,
-    record_gate_usage,
+    record_gate_usage as legacy_record_gate_usage,
     sample_patch,
     summarize_subgroups,
     write_csv,
@@ -100,6 +100,68 @@ M10_PRODUCTION_VARIANTS = (
 def canonical_model_variant(variant: str) -> str:
     value = str(variant)
     return M8_TO_M6_VARIANT.get(value, M7_TO_M6_VARIANT.get(value, value))
+
+
+def _numeric_leaf_values(value: object) -> list[float]:
+    if isinstance(value, (list, tuple)):
+        leaves: list[float] = []
+        for item in value:
+            leaves.extend(_numeric_leaf_values(item))
+        return leaves
+    try:
+        return [float(value)]
+    except (TypeError, ValueError):
+        return []
+
+
+def _mean_numeric_value(value: object) -> float | str:
+    leaves = _numeric_leaf_values(value)
+    if not leaves:
+        return "NA"
+    return float(sum(leaves) / len(leaves))
+
+
+def record_gate_usage(
+    rows: list[dict[str, object]],
+    variant: str,
+    step: int,
+    keys: list[str],
+    outputs: dict[str, object],
+) -> None:
+    gates = outputs.get("gates", {})
+    if not gates:
+        legacy_record_gate_usage(rows, variant, step, keys, outputs)
+        return
+    metadata = outputs.get("dictionary_slot_metadata", {}) if isinstance(outputs.get("dictionary_slot_metadata", {}), dict) else {}
+    valid_masks = outputs.get("gate_valid_masks", {}) if isinstance(outputs.get("gate_valid_masks", {}), dict) else {}
+    for task, gate in gates.items():
+        usage = gate.detach().mean(dim=0).cpu().tolist() if hasattr(gate, "detach") else []
+        if not isinstance(usage, list):
+            usage = [usage]
+        specs = metadata.get(task, []) if isinstance(metadata, dict) else []
+        valid = valid_masks.get(task) if isinstance(valid_masks, dict) else None
+        valid_usage = valid.detach().mean(dim=0).cpu().tolist() if hasattr(valid, "detach") else []
+        if not isinstance(valid_usage, list):
+            valid_usage = [valid_usage]
+        task_prefix = str(task).split("_", 1)[0]
+        for idx, value in enumerate(usage):
+            spec = specs[idx] if idx < len(specs) else {}
+            rows.append(
+                {
+                    "variant": variant,
+                    "step": step,
+                    "task": task,
+                    "semantic_task": task_prefix,
+                    "expert_index": idx,
+                    "slot_group": spec.get("group", "unknown") if isinstance(spec, dict) else "unknown",
+                    "slot_kind": spec.get("kind", "unknown") if isinstance(spec, dict) else "unknown",
+                    "slot_modality": spec.get("modality", "") if isinstance(spec, dict) else "",
+                    "slot_modalities": ";".join(str(v) for v in spec.get("modalities", ())) if isinstance(spec, dict) else "",
+                    "valid_fraction": _mean_numeric_value(valid_usage[idx]) if idx < len(valid_usage) else "NA",
+                    "mean_weight": _mean_numeric_value(value),
+                    "batch_cases": ",".join(keys),
+                }
+            )
 
 
 def apply_variant_config_contract(args: argparse.Namespace) -> None:

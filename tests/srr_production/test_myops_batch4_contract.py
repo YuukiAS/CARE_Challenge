@@ -88,6 +88,26 @@ def test_vectors_from_mask_shape_empty_and_cap() -> None:
     assert tuple(full.shape) == (12, 2)
 
 
+def test_batch4_gate_usage_accepts_nested_gate_means() -> None:
+    rows: list[dict[str, object]] = []
+    outputs = {
+        "gates": {"scar_memory": torch.tensor([[[0.2, 0.4], [0.6, 0.8]]])},
+        "gate_valid_masks": {"scar_memory": torch.tensor([[[1.0, 0.0], [1.0, 1.0]]])},
+        "dictionary_slot_metadata": {
+            "scar_memory": [
+                {"group": "scar", "kind": "positive", "modality": "LGE", "modalities": ("LGE",)},
+                {"group": "scar", "kind": "negative", "modality": "T2", "modalities": ("T2", "C0")},
+            ]
+        },
+    }
+    train_myops.record_gate_usage(rows, "batch4", 1, ["Case2013"], outputs)
+    assert len(rows) == 2
+    assert rows[0]["mean_weight"] == pytest.approx(0.3)
+    assert rows[1]["mean_weight"] == pytest.approx(0.7)
+    assert rows[0]["valid_fraction"] == pytest.approx(0.5)
+    assert rows[1]["valid_fraction"] == pytest.approx(1.0)
+
+
 def test_training_checkpoint_helper_writes_schema_v2_mode_independent_architecture(tmp_path: Path) -> None:
     args = batch4_args()
     model = SRRProposeRefineMyoPS(base_channels=2, encoder_profile="tiny_3scale", final_output_mode="anchor_bounded_srr_correction")
