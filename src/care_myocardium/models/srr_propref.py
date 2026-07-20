@@ -186,10 +186,15 @@ class ProposalDictionary(nn.Module):
         if memory_query is not None:
             memory_pos = memory_query.get("positive_similarity")
             memory_neg = memory_query.get("negative_similarity")
+            crossfit_exclusive = bool(torch.as_tensor(memory_query.get("production_crossfit_exclusive", False)).detach().cpu().item())
             if isinstance(memory_pos, torch.Tensor):
-                pos_sim = torch.maximum(pos_sim, memory_pos.to(device=pos_sim.device, dtype=pos_sim.dtype))
+                memory_pos = memory_pos.to(device=pos_sim.device, dtype=pos_sim.dtype)
+                pos_sim = memory_pos if crossfit_exclusive else torch.maximum(pos_sim, memory_pos)
             if isinstance(memory_neg, torch.Tensor):
-                neg_memory = torch.maximum(neg_memory, memory_neg.to(device=neg_memory.device, dtype=neg_memory.dtype))
+                memory_neg = memory_neg.to(device=neg_memory.device, dtype=neg_memory.dtype)
+                neg_memory = memory_neg if crossfit_exclusive else torch.maximum(neg_memory, memory_neg)
+                if crossfit_exclusive:
+                    neg_proto = memory_neg
         neg_sim = torch.maximum(neg_proto, neg_memory)
         proposal = (
             conv
@@ -1347,6 +1352,10 @@ class SRRProposeRefineMyoPS(nn.Module):
             return {
                 "positive_similarity": torch.cat([row["positive_similarity"] for row in rows], dim=0),
                 "negative_similarity": torch.cat([row["negative_similarity"] for row in rows], dim=0),
+                "production_crossfit_exclusive": torch.tensor(
+                    all(bool(row.get("production_crossfit_exclusive", torch.tensor(False)).detach().cpu().item()) for row in rows),
+                    device=rows[0]["positive_similarity"].device,
+                ),
             }
 
         scar_dict = self.scar_dictionary(
@@ -1418,6 +1427,9 @@ class SRRProposeRefineMyoPS(nn.Module):
         t2_present = canonical_t2_present(availability).to(device=edema_logits.device)
         no_t2_mask = (~t2_present).view(-1, 1, 1, 1, 1)
         edema_logits = torch.where(no_t2_mask, torch.full_like(edema_logits, -20.0), edema_logits)
+        edema_dict["proposal_logits"] = torch.where(no_t2_mask, torch.full_like(edema_dict["proposal_logits"], -20.0), edema_dict["proposal_logits"])
+        edema_residual = torch.where(no_t2_mask, torch.zeros_like(edema_residual), edema_residual)
+        edema_roi = torch.where(no_t2_mask, torch.zeros_like(edema_roi), edema_roi)
         if disable_srr_evidence:
             scar_dict["proposal_logits"] = torch.full_like(scar_dict["proposal_logits"], -20.0)
             edema_dict["proposal_logits"] = torch.full_like(edema_dict["proposal_logits"], -20.0)
@@ -1425,6 +1437,7 @@ class SRRProposeRefineMyoPS(nn.Module):
             edema_logits = torch.full_like(edema_logits, -20.0)
             scar_roi = torch.zeros_like(scar_roi)
             edema_roi = torch.zeros_like(edema_roi)
+            edema_residual = torch.zeros_like(edema_residual)
         srr_logits = torch.cat([evidence["anatomy_logits"], edema_logits, scar_logits], dim=1)
         baseline_blend = self.baseline_gate(srr_logits, anchor_features, availability, force_closed=force_closed_gate)
         fallback_reason_override = None
@@ -1494,6 +1507,7 @@ class SRRProposeRefineMyoPS(nn.Module):
         p_scar = torch.sigmoid(scar_logits)
         q_edema = canonical_t2_present(availability).to(device=final_logits.device, dtype=final_logits.dtype).view(-1, 1, 1, 1, 1)
         p_edema = q_edema * (1.0 - p_scar).clamp_min(0.0) * torch.sigmoid(edema_logits)
+        edema_candidate_probability = torch.where(no_t2_mask, torch.zeros_like(edema_logits), torch.sigmoid(edema_dict["proposal_logits"]))
         residual_anatomy = (1.0 - p_scar - p_edema).clamp_min(0.0)
         m10_final_probabilities = torch.cat([residual_anatomy * q_struct, p_edema, p_scar], dim=1)
         outputs = {
@@ -1564,6 +1578,7 @@ class SRRProposeRefineMyoPS(nn.Module):
             "anatomy_logits": evidence["anatomy_logits"],
             "scar_logits": scar_logits,
             "edema_logits": edema_logits,
+            "edema_candidate_probability": edema_candidate_probability,
             "union_prior_logits": anatomy_prior,
             "p_union": anatomy_context["p_union"],
             "p_lv": anatomy_context["p_lv"],

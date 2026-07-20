@@ -259,14 +259,22 @@ class M10CrossFittedPrototypeMemory(torch.nn.Module):
         pidx = self.pathology_to_index[pathology]
         pos_counts = self.positive_counts[pidx].to(device=features.device)[include]
         neg_counts = self.negative_counts[pidx].to(device=features.device)[include]
-        if require_ready and (not bool((pos_counts > 0).any()) or not bool((neg_counts > 0).any())):
+        pos_slot_mask = pos_counts.reshape(-1) > 0
+        neg_slot_mask = neg_counts.reshape(-1) > 0
+        if require_ready and (not bool(pos_slot_mask.any()) or not bool(neg_slot_mask.any())):
             raise ValueError(f"cross-fitted memory for {pathology} is not ready for case {case_id}: missing positive or negative source shards")
         pos = self._prototype_tensor(pathology, "positive").to(device=features.device, dtype=features.dtype)[include]
         neg = self._prototype_tensor(pathology, "negative").to(device=features.device, dtype=features.dtype)[include]
-        pos_flat = pos.reshape(-1, self.channels)
-        neg_flat = neg.reshape(-1, self.channels)
-        pos_score = 0.07 * torch.logsumexp(torch.einsum("bcdhw,kc->bkdhw", emb, pos_flat) / 0.07, dim=1, keepdim=True)
-        neg_score = 0.07 * torch.logsumexp(torch.einsum("bcdhw,kc->bkdhw", emb, neg_flat) / 0.07, dim=1, keepdim=True)
+        pos_flat = pos.reshape(-1, self.channels)[pos_slot_mask]
+        neg_flat = neg.reshape(-1, self.channels)[neg_slot_mask]
+
+        def active_score(prototypes: torch.Tensor) -> torch.Tensor:
+            if prototypes.numel() == 0:
+                return emb.new_zeros((emb.shape[0], 1, *emb.shape[-3:]))
+            return 0.07 * torch.logsumexp(torch.einsum("bcdhw,kc->bkdhw", emb, prototypes) / 0.07, dim=1, keepdim=True)
+
+        pos_score = active_score(pos_flat)
+        neg_score = active_score(neg_flat)
         return {
             "positive_similarity": pos_score,
             "negative_similarity": neg_score,
@@ -274,6 +282,9 @@ class M10CrossFittedPrototypeMemory(torch.nn.Module):
             "source_shards": torch.nonzero(include, as_tuple=False).flatten().to(device=features.device),
             "positive_source_count": pos_counts.sum().to(dtype=features.dtype),
             "negative_source_count": neg_counts.sum().to(dtype=features.dtype),
+            "positive_active_slot_count": pos_slot_mask.sum().to(device=features.device, dtype=features.dtype),
+            "negative_active_slot_count": neg_slot_mask.sum().to(device=features.device, dtype=features.dtype),
+            "production_crossfit_exclusive": torch.tensor(True, device=features.device),
         }
 
     def summary(self) -> dict[str, object]:

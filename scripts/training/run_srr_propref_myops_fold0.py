@@ -42,7 +42,20 @@ from scripts.training.run_srr_myops_fold0 import (  # noqa: E402
 from src.care_myocardium.data.case_metadata import load_myops_case_metadata  # noqa: E402
 from src.care_myocardium.losses.srr_losses import anatomy_loss, retrieval_regularization, scar_loss, semantic_retrieval_regularization, srr_m6_expanded_total_loss, t2_masked_edema_loss  # noqa: E402
 from src.care_myocardium.models.proposal_prototypes import PrototypeBank, build_prototype_bank_from_labeled_features  # noqa: E402
+from src.care_myocardium.models.srr_dictionary_memory import deterministic_memory_shard  # noqa: E402
 from src.care_myocardium.models.srr_propref import SRRProposeRefineMyoPS  # noqa: E402
+from src.care_myocardium.srr_production.anchor_manifest import (  # noqa: E402
+    find_anchor_paths as production_find_anchor_paths,
+    load_anchor_probabilities as production_load_anchor_probabilities,
+    load_component_features as production_load_component_features,
+    safety_context_from_raw_anchor,
+)
+from src.care_myocardium.srr_production.checkpoint import save_srr_checkpoint  # noqa: E402
+from src.care_myocardium.srr_production.prototype_memory import (  # noqa: E402
+    CasePrototypeVectors,
+    hash_tensor,
+    load_casewise_prototype_memory,
+)
 
 
 OUT_ROOT = REPO_ROOT / "results/20260703_srr_propref_repair"
@@ -374,6 +387,9 @@ class AnchoredCaseData:
     component_features: np.ndarray
     anchor_source: str
     anchor_fold: int
+    raw_anchor_probabilities: np.ndarray | None = None
+    raw_component_features: np.ndarray | None = None
+    safety_context: dict[str, object] | None = None
 
 
 def _masked_bce_dice(logits: torch.Tensor, target: torch.Tensor, mask: torch.Tensor) -> torch.Tensor:
@@ -462,53 +478,23 @@ def _anchor_root(path_text: str) -> Path:
 
 
 def _find_anchor_paths(case_id: str, anchor_root: Path) -> tuple[int, Path, Path]:
-    matches: list[tuple[int, Path, Path]] = []
-    for fold_dir in sorted(anchor_root.glob("fold_*")):
-        try:
-            fold = int(fold_dir.name.split("_", 1)[1])
-        except (IndexError, ValueError):
-            continue
-        prob_path = fold_dir / "validation" / f"{case_id}.npz"
-        pred_path = fold_dir / "validation" / f"{case_id}.nii.gz"
-        if prob_path.is_file() and pred_path.is_file():
-            matches.append((fold, prob_path, pred_path))
-    if not matches:
-        raise FileNotFoundError(f"nnU-Net anchor probabilities/prediction not found for {case_id} under {anchor_root}")
-    return matches[0]
+    return production_find_anchor_paths(case_id, anchor_root)
 
 
 def _load_anchor_probabilities(prob_path: Path, reference_shape: tuple[int, int, int]) -> np.ndarray:
-    with np.load(prob_path) as data:
-        if "probabilities" not in data:
-            raise KeyError(f"{prob_path} does not contain a 'probabilities' array")
-        probs = data["probabilities"].astype(np.float32, copy=False)
-    if probs.ndim != 4 or probs.shape[0] < 6:
-        raise ValueError(f"{prob_path} must have shape (C,D,H,W) with at least 6 classes, got {probs.shape}")
-    probs = probs[:6]
-    if tuple(probs.shape[-3:]) != tuple(reference_shape):
-        raise ValueError(f"{prob_path} spatial shape {probs.shape[-3:]} does not match label shape {reference_shape}")
-    return np.clip(probs, 0.0, 1.0).astype(np.float32, copy=False)
+    return production_load_anchor_probabilities(prob_path, reference_shape)
 
 
 def _load_component_features(pred_path: Path, reference_shape: tuple[int, int, int]) -> np.ndarray:
-    pred = sitk.GetArrayFromImage(sitk.ReadImage(str(pred_path))).astype(np.uint8, copy=False)
-    if tuple(pred.shape) != tuple(reference_shape):
-        raise ValueError(f"{pred_path} spatial shape {pred.shape} does not match label shape {reference_shape}")
-    components = []
-    for cls in (5, 4):
-        cc, n_cc = label((pred == cls).astype(bool), structure=generate_binary_structure(pred.ndim, 1))
-        components.append((cc > 0 if n_cc > 0 else np.zeros_like(pred, dtype=bool)).astype(np.float32, copy=False))
-    return np.stack(components, axis=0).astype(np.float32, copy=False)
+    return production_load_component_features(pred_path, reference_shape)
 
 
 def read_anchored_case(case_id: str, metadata: dict[str, object], anchor_root: Path) -> AnchoredCaseData:
     base = read_case(case_id, metadata)  # type: ignore[arg-type]
     fold, prob_path, pred_path = _find_anchor_paths(case_id, anchor_root)
-    anchor = _load_anchor_probabilities(prob_path, tuple(base.label_arr.shape))
-    components = _load_component_features(pred_path, tuple(base.label_arr.shape))
-    if not bool(base.availability[1] > 0):
-        anchor[4] = 0.0
-        components[1] = 0.0
+    raw_anchor = _load_anchor_probabilities(prob_path, tuple(base.label_arr.shape))
+    raw_components = _load_component_features(pred_path, tuple(base.label_arr.shape))
+    safety_anchor, safety_components, safety_context = safety_context_from_raw_anchor(raw_anchor, raw_components, base.availability)
     return AnchoredCaseData(
         case_id=base.case_id,
         image=base.image,
@@ -516,10 +502,13 @@ def read_anchored_case(case_id: str, metadata: dict[str, object], anchor_root: P
         label_img=base.label_img,
         availability=base.availability,
         metadata=base.metadata,
-        anchor_probabilities=anchor,
-        component_features=components,
+        anchor_probabilities=raw_anchor,
+        component_features=raw_components,
         anchor_source=str(prob_path),
         anchor_fold=fold,
+        raw_anchor_probabilities=raw_anchor,
+        raw_component_features=raw_components,
+        safety_context=safety_context,
     )
 
 
@@ -556,8 +545,10 @@ def sample_patch_with_anchor(
     forced_center_zyx: tuple[int, int, int] | None = None,
 ) -> tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
     image, target, starts = _crop_patch_arrays(case, patch_shape, rng, oversample_foreground, focus_classes, forced_center_zyx)
-    anchor = crop_or_pad(case.anchor_probabilities, starts, patch_shape, 0.0).astype(np.float32, copy=False)
-    components = crop_or_pad(case.component_features, starts, patch_shape, 0.0).astype(np.float32, copy=False)
+    raw_anchor = case.raw_anchor_probabilities if case.raw_anchor_probabilities is not None else case.anchor_probabilities
+    raw_components = case.raw_component_features if case.raw_component_features is not None else case.component_features
+    anchor = crop_or_pad(raw_anchor, starts, patch_shape, 0.0).astype(np.float32, copy=True)
+    components = crop_or_pad(raw_components, starts, patch_shape, 0.0).astype(np.float32, copy=True)
     availability = case.availability.copy()
     original_availability = availability.copy()
     if modality_dropout:
@@ -1548,7 +1539,8 @@ def fit_and_load_runtime_prototype_bank(
     if not selected:
         raise ValueError("cannot fit prototype bank without train cases")
 
-    xs, ys, avs, anchors, keys = [], [], [], [], []
+    records: list[CasePrototypeVectors] = []
+    keys: list[str] = []
     for case in selected:
         if case.metadata.t2_present and np.any(case.label_arr == 4):
             focus_classes = (4,)
@@ -1564,35 +1556,69 @@ def fit_and_load_runtime_prototype_bank(
             modality_dropout=False,
             focus_classes=focus_classes,
         )
-        xs.append(x_np)
-        ys.append(y_np)
-        avs.append(av_np)
-        anchors.append(anchor_np)
         keys.append(case.case_id)
-    x = torch.from_numpy(np.stack(xs, axis=0)).float().to(device)
-    y = torch.from_numpy(np.stack(ys, axis=0)).long().to(device)
-    av = torch.from_numpy(np.stack(avs, axis=0)).float().to(device)
-    anchor_t = torch.from_numpy(np.stack(anchors, axis=0)).float().to(device)
-    model_was_training = model.training
-    model.eval()
-    with torch.no_grad():
-        anchor_for_fit = None if bool(getattr(args, "disable_nnunet_anchor", False)) else anchor_dict_from_tensor(anchor_t)
-        features, _gates, _metadata, _valid = model._evidence_features(x, av, anchor_for_fit)
-        bank = build_prototype_bank_from_labeled_features(
-            scar_features=features["scar"].detach(),
-            edema_features=features["edema"].detach(),
-            labels=y,
-            availability=av,
-            anchor_probabilities=None if bool(getattr(args, "disable_nnunet_anchor", False)) else anchor_t,
-            source="train_runtime_features_fold0_no_nnunet_anchor"
-            if bool(getattr(args, "disable_nnunet_anchor", False))
-            else "train_oof_runtime_features_fold0",
+        x = torch.from_numpy(x_np[None]).float().to(device)
+        y = torch.from_numpy(y_np[None]).long().to(device)
+        av = torch.from_numpy(av_np[None]).float().to(device)
+        anchor_t = torch.from_numpy(anchor_np[None]).float().to(device)
+        model_was_training = model.training
+        model.eval()
+        with torch.no_grad():
+            anchor_for_fit = None if bool(getattr(args, "disable_nnunet_anchor", False)) else anchor_dict_from_tensor(anchor_t)
+            features, _gates, _metadata, _valid = model._evidence_features(x, av, anchor_for_fit)
+        if model_was_training:
+            model.train()
+        lab = F.interpolate(y[:, None].float(), size=features["scar"].shape[-3:], mode="nearest")[:, 0].long()
+        anatomy = (lab >= 1) & (lab <= 5)
+        blood = (lab == 2) | (lab == 3)
+        outside = ~anatomy
+        normal = lab == 1
+        scar_gt = lab == 5
+        edema_gt = lab == 4
+        t2 = av[:, 1].view(-1, 1, 1, 1) > 0.5
+        scar_pos = vectors_from_mask(features["scar"], lab, scar_gt, max_vectors=64)
+        scar_neg = torch.cat(
+            [
+                vectors_from_mask(features["scar"], lab, normal & ~scar_gt, max_vectors=48),
+                vectors_from_mask(features["scar"], lab, blood, max_vectors=48),
+                vectors_from_mask(features["scar"], lab, outside, max_vectors=48),
+            ],
+            dim=0,
         )
-    if model_was_training:
-        model.train()
-    model.scar_dictionary.load_prototype_bank(positive=bank.scar_positive, negative=bank.scar_negative, source=bank.source)
-    model.edema_dictionary.load_prototype_bank(positive=bank.edema_positive, negative=bank.edema_negative, source=bank.source)
-    summary = _prototype_bank_summary(bank, selected_case_ids=keys, feature_stage="SRRProposeRefineMyoPS._evidence_features")
+        edema_pos = vectors_from_mask(features["edema"], lab, edema_gt & t2, max_vectors=64)
+        edema_neg = torch.cat(
+            [
+                vectors_from_mask(features["edema"], lab, normal & t2, max_vectors=48),
+                vectors_from_mask(features["edema"], lab, blood & t2, max_vectors=48),
+                vectors_from_mask(features["edema"], lab, outside & t2, max_vectors=48),
+            ],
+            dim=0,
+        )
+        non_empty = [v for v in (scar_pos, scar_neg, edema_pos, edema_neg) if v.numel() > 0]
+        feature_hash = hash_tensor(torch.cat(non_empty, dim=0)) if non_empty else "empty"
+        records.append(
+            CasePrototypeVectors(
+                case_id=case.case_id,
+                shard=deterministic_memory_shard(case.case_id),
+                t2_present=bool(av[0, 1].item() > 0.5),
+                scar_positive=scar_pos,
+                scar_negative=scar_neg,
+                edema_positive=edema_pos,
+                edema_negative=edema_neg,
+                feature_hash=feature_hash,
+            )
+        )
+    summary = load_casewise_prototype_memory(
+        model=model,
+        records=records,
+        source="train_oof_runtime_features_fold0_casewise_cross_fitted"
+        if not bool(getattr(args, "disable_nnunet_anchor", False))
+        else "train_runtime_features_fold0_casewise_no_nnunet_anchor",
+        strict=True,
+    )
+    summary["feature_stage"] = "SRRProposeRefineMyoPS._evidence_features"
+    summary["selected_case_ids"] = keys
+    summary["case_count"] = len(keys)
     (variant_dir / "prototype_bank_summary.json").write_text(json.dumps(summary, indent=2, sort_keys=True), encoding="utf-8")
     return summary
 

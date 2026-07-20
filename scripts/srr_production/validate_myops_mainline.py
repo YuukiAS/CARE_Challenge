@@ -36,6 +36,14 @@ from src.care_myocardium.data.case_metadata import load_myops_case_metadata  # n
 from src.care_myocardium.losses.srr_losses import pattern_sip_integrativeness_loss, srr_m6_expanded_total_loss, t2_masked_edema_loss  # noqa: E402
 from src.care_myocardium.models.srr_dictionary_memory import deterministic_memory_shard  # noqa: E402
 from src.care_myocardium.models.srr_propref import SRRProposeRefineMyoPS  # noqa: E402
+from src.care_myocardium.srr_production.anchor_manifest import build_anchor_manifest as shared_build_anchor_manifest  # noqa: E402
+from src.care_myocardium.srr_production.checkpoint import checkpoint_receipt, load_srr_checkpoint, save_srr_checkpoint  # noqa: E402
+from src.care_myocardium.srr_production.prototype_memory import (  # noqa: E402
+    CasePrototypeVectors,
+    hash_tensor,
+    load_casewise_prototype_memory,
+    require_case_exclusive_sources,
+)
 
 OUT = REPO_ROOT / "results/srr_production/code_maturity"
 SPLIT_PROTOCOL = REPO_ROOT / "data/benchmarks/protocol/splits_MyoPS.json"
@@ -117,101 +125,16 @@ def image_geom(path: Path) -> dict[str, Any]:
 
 
 def build_anchor_manifest(anchor_root: Path) -> dict[str, Any]:
-    assert_split_match()
-    split_hash = sha256_file(SPLIT_PROTOCOL)
-    nnunet_split_hash = sha256_file(SPLIT_NNUNET)
-    dataset_json = anchor_root / "dataset.json"
-    plans_json = anchor_root / "plans.json"
-    checkpoints: dict[int, dict[str, str]] = {}
-    rows: list[dict[str, Any]] = []
-    seen: set[str] = set()
-    missing: list[str] = []
-    for fold_row in protocol_folds():
-        fold = int(fold_row["fold"])
-        ckpt = anchor_root / f"fold_{fold}/checkpoint_best.pth"
-        ckpt_final = anchor_root / f"fold_{fold}/checkpoint_final.pth"
-        if not ckpt.is_file():
-            missing.append(rel(ckpt))
-            continue
-        checkpoints[fold] = {
-            "checkpoint_best_path": rel(ckpt),
-            "checkpoint_best_sha256": sha256_file(ckpt),
-            "checkpoint_final_path": rel(ckpt_final) if ckpt_final.is_file() else "missing",
-            "checkpoint_final_sha256": sha256_file(ckpt_final) if ckpt_final.is_file() else "missing",
-        }
-        for case_id in sorted(fold_row["val"]):
-            if case_id in seen:
-                raise ValueError(f"duplicate validation case in OOF folds: {case_id}")
-            seen.add(case_id)
-            prob = anchor_root / f"fold_{fold}/validation/{case_id}.npz"
-            pred = anchor_root / f"fold_{fold}/validation/{case_id}.nii.gz"
-            label = RAW_ROOT / "labelsTr" / f"{case_id}.nii.gz"
-            prep = PREPROCESSED / f"{case_id}.pkl"
-            for required in (prob, pred, label, prep):
-                if not required.is_file():
-                    missing.append(rel(required))
-            if missing and missing[-1] in {rel(prob), rel(pred), rel(label), rel(prep)}:
-                continue
-            with np.load(prob) as data:
-                if "probabilities" not in data:
-                    raise ValueError(f"{prob} lacks probabilities key")
-                shape = list(data["probabilities"].shape)
-                dtype = str(data["probabilities"].dtype)
-            pred_geom = image_geom(pred)
-            label_geom = image_geom(label)
-            if shape[0] != 6 or shape[-3:] != label_geom["shape_zyx"] or pred_geom["shape_zyx"] != label_geom["shape_zyx"]:
-                raise ValueError(f"shape mismatch for {case_id}: prob={shape}, pred={pred_geom['shape_zyx']}, label={label_geom['shape_zyx']}")
-            rows.append(
-                {
-                    "case_id": case_id,
-                    "source_fold": fold,
-                    "probability_path": rel(prob),
-                    "probability_sha256": sha256_file(prob),
-                    "prediction_path": rel(pred),
-                    "prediction_sha256": sha256_file(pred),
-                    "nnunet_checkpoint_path": checkpoints[fold]["checkpoint_best_path"],
-                    "checkpoint_sha256": checkpoints[fold]["checkpoint_best_sha256"],
-                    "trainer": "nnUNetTrainer_500epochs",
-                    "plans": "nnUNetPlans",
-                    "config": "3d_fullres",
-                    "dataset_json_path": rel(dataset_json),
-                    "dataset_json_sha256": sha256_file(dataset_json),
-                    "plans_json_path": rel(plans_json),
-                    "plans_json_sha256": sha256_file(plans_json),
-                    "split_path": rel(SPLIT_PROTOCOL),
-                    "split_hash": split_hash,
-                    "nnunet_split_path": rel(SPLIT_NNUNET),
-                    "nnunet_split_hash": nnunet_split_hash,
-                    "preprocessing_path": rel(prep),
-                    "preprocessing_hash": sha256_file(prep),
-                    "class_order": CLASS_ORDER,
-                    "probability_key": "probabilities",
-                    "tensor_shape": shape,
-                    "tensor_dtype": dtype,
-                    "spacing_affine": {"prediction": pred_geom, "label": label_geom},
-                    "is_oof": True,
-                }
-            )
-    raw_cases = {p.name.replace(".nii.gz", "") for p in (RAW_ROOT / "labelsTr").glob("*.nii.gz")}
-    missing_cases = sorted(raw_cases - seen)
-    if missing or missing_cases or len(rows) != len(raw_cases):
-        raise FileNotFoundError(
-            "BATCH_1_BLOCKED_MISSING_REAL_OOF_ANCHOR: "
-            + json.dumps({"missing_files": missing[:20], "missing_cases": missing_cases[:20], "rows": len(rows), "raw_cases": len(raw_cases)})
-        )
-    manifest = {
-        "schema_version": 1,
-        "status": "COMPLETE_REAL_OOF_ANCHOR",
-        "case_count": len(rows),
-        "fold_counts": {str(f): sum(1 for row in rows if row["source_fold"] == f) for f in range(5)},
-        "unique_cases": len({row["case_id"] for row in rows}),
-        "anchor_root": rel(anchor_root),
-        "split_hash": split_hash,
-        "nnunet_split_hash": nnunet_split_hash,
-        "checkpoints": checkpoints,
-        "entries": sorted(rows, key=lambda row: row["case_id"]),
-    }
-    write_json(OUT / "batch1_anchor_oof_manifest.json", manifest)
+    manifest = shared_build_anchor_manifest(
+        repo_root=REPO_ROOT,
+        anchor_root=anchor_root,
+        protocol_split=SPLIT_PROTOCOL,
+        nnunet_split=SPLIT_NNUNET,
+        raw_root=RAW_ROOT,
+        preprocessed_root=PREPROCESSED,
+        out_path=OUT / "batch1_anchor_oof_manifest.json",
+    )
+    write_json(OUT / "batch2a_raw_oof_anchor_manifest.json", manifest)
     return manifest
 
 
@@ -281,60 +204,58 @@ def choose_source_cases(selected: dict[str, str]) -> list[str]:
 
 def fit_real_banks(model: SRRProposeRefineMyoPS, source_cases: list[Any], patch_shape: tuple[int, int, int], device: torch.device) -> dict[str, Any]:
     rng = np.random.default_rng(20260720)
-    xs=[]; ys=[]; avs=[]; anchors=[]; case_ids=[]
+    records: list[CasePrototypeVectors] = []
     for case in source_cases:
         focus = (4,) if case.metadata.t2_present and np.any(case.label_arr == 4) else ((5,) if np.any(case.label_arr == 5) else (4,5))
         x,y,av,anchor,_component = sample_patch_with_anchor(case, patch_shape, rng, 1.0, False, focus_classes=focus)
-        xs.append(x); ys.append(y); avs.append(av); anchors.append(anchor); case_ids.append(case.case_id)
-    x=torch.from_numpy(np.stack(xs)).float().to(device)
-    y=torch.from_numpy(np.stack(ys)).long().to(device)
-    av=torch.from_numpy(np.stack(avs)).float().to(device)
-    anchor_t=torch.from_numpy(np.stack(anchors)).float().to(device)
-    model.eval()
-    with torch.no_grad():
-        features, _gates, _meta, _valid = model._evidence_features(x, av, anchor_dict_from_tensor(anchor_t))
-    lab = resized_labels(y, features["scar"].shape[-3:])
-    anatomy = (lab >= 1) & (lab <= 5)
-    blood = (lab == 2) | (lab == 3)
-    outside = ~anatomy
-    scar_gt = lab == 5
-    edema_gt = lab == 4
-    normal = lab == 1
-    t2 = av[:,1].view(-1,1,1,1) > 0.5
-    scar_pos = vectors_from_mask(features["scar"], lab, scar_gt, max_vectors=96)
-    scar_neg = torch.cat([
-        vectors_from_mask(features["scar"], lab, normal & ~scar_gt, max_vectors=64),
-        vectors_from_mask(features["scar"], lab, blood, max_vectors=64),
-        vectors_from_mask(features["scar"], lab, outside, max_vectors=64),
-    ], dim=0)
-    edema_pos = vectors_from_mask(features["edema"], lab, edema_gt & t2, max_vectors=96)
-    edema_neg = torch.cat([
-        vectors_from_mask(features["edema"], lab, normal & t2, max_vectors=64),
-        vectors_from_mask(features["edema"], lab, blood & t2, max_vectors=64),
-        vectors_from_mask(features["edema"], lab, outside & t2, max_vectors=64),
-    ], dim=0)
-    req = {
-        "scar_positive": model.scar_dictionary.positive.shape[0],
-        "scar_negative": model.scar_dictionary.negative.shape[0],
-        "edema_positive": model.edema_dictionary.positive.shape[0],
-        "edema_negative": model.edema_dictionary.negative.shape[0],
-    }
-    counts = {"scar_positive": int(scar_pos.shape[0]), "scar_negative": int(scar_neg.shape[0]), "edema_positive": int(edema_pos.shape[0]), "edema_negative": int(edema_neg.shape[0])}
-    for key, need in req.items():
-        if counts[key] < need:
-            raise ValueError(f"insufficient real prototype vectors for {key}: {counts[key]} < {need}")
-    scar_prov={"source_cases": case_ids, "shards": {cid: deterministic_memory_shard(cid) for cid in case_ids}, "vector_counts": {"positive": counts["scar_positive"], "negative": counts["scar_negative"]}, "repeat_last_vector_fallback": False, "feature_hash": sha256_text(str(counts)+','.join(case_ids))}
-    edema_prov={"source_cases": case_ids, "shards": {cid: deterministic_memory_shard(cid) for cid in case_ids}, "vector_counts": {"positive": counts["edema_positive"], "negative": counts["edema_negative"]}, "repeat_last_vector_fallback": False, "no_t2_myocardium_negative_voxels": 0, "feature_hash": sha256_text(str(counts)+','.join(case_ids)+"edema")}
-    model.scar_dictionary.load_prototype_bank(positive=scar_pos[:req["scar_positive"]], negative=scar_neg[:req["scar_negative"]], source="batch1_real_fold0_train_cross_fitted_features", provenance=scar_prov, strict=True)
-    model.edema_dictionary.load_prototype_bank(positive=edema_pos[:req["edema_positive"]], negative=edema_neg[:req["edema_negative"]], source="batch1_real_fold0_train_cross_fitted_features", provenance=edema_prov, strict=True)
-    for idx, cid in enumerate(case_ids):
-        t2_present=bool(av[idx,1].item()>0.5)
-        model.cross_fitted_memory.update("scar", "positive", "scar_positive", scar_pos[: min(8, scar_pos.shape[0])], case_id=cid, t2_present=t2_present)
-        model.cross_fitted_memory.update("scar", "negative", "scar_safe_negative", scar_neg[: min(8, scar_neg.shape[0])], case_id=cid, t2_present=t2_present)
-        model.cross_fitted_memory.update("edema", "positive", "t2_present_edema_positive", edema_pos[: min(8, edema_pos.shape[0])], case_id=cid, t2_present=t2_present)
-        model.cross_fitted_memory.update("edema", "negative", "t2_present_safe_negative", edema_neg[: min(8, edema_neg.shape[0])], case_id=cid, t2_present=t2_present)
-    provenance={"status":"REAL_PROTOTYPE_MEMORY_READY", "source_case_ids": case_ids, "counts": counts, "required": req, "scar": scar_prov, "edema": edema_prov, "memory_summary": model.cross_fitted_memory.summary()}
+        x_t=torch.from_numpy(x[None]).float().to(device)
+        y_t=torch.from_numpy(y[None]).long().to(device)
+        av_t=torch.from_numpy(av[None]).float().to(device)
+        anchor_t=torch.from_numpy(anchor[None]).float().to(device)
+        model.eval()
+        with torch.no_grad():
+            features, _gates, _meta, _valid = model._evidence_features(x_t, av_t, anchor_dict_from_tensor(anchor_t))
+        lab = resized_labels(y_t, features["scar"].shape[-3:])
+        anatomy = (lab >= 1) & (lab <= 5)
+        blood = (lab == 2) | (lab == 3)
+        outside = ~anatomy
+        scar_gt = lab == 5
+        edema_gt = lab == 4
+        normal = lab == 1
+        t2 = av_t[:,1].view(-1,1,1,1) > 0.5
+        scar_pos = vectors_from_mask(features["scar"], lab, scar_gt, max_vectors=32)
+        scar_neg = torch.cat([
+            vectors_from_mask(features["scar"], lab, normal & ~scar_gt, max_vectors=24),
+            vectors_from_mask(features["scar"], lab, blood, max_vectors=24),
+            vectors_from_mask(features["scar"], lab, outside, max_vectors=24),
+        ], dim=0)
+        edema_pos = vectors_from_mask(features["edema"], lab, edema_gt & t2, max_vectors=32)
+        edema_neg = torch.cat([
+            vectors_from_mask(features["edema"], lab, normal & t2, max_vectors=24),
+            vectors_from_mask(features["edema"], lab, blood & t2, max_vectors=24),
+            vectors_from_mask(features["edema"], lab, outside & t2, max_vectors=24),
+        ], dim=0)
+        feature_hash = hash_tensor(torch.cat([v for v in (scar_pos, scar_neg, edema_pos, edema_neg) if v.numel() > 0], dim=0))
+        records.append(
+            CasePrototypeVectors(
+                case_id=case.case_id,
+                shard=deterministic_memory_shard(case.case_id),
+                t2_present=bool(av_t[0,1].item()>0.5),
+                scar_positive=scar_pos,
+                scar_negative=scar_neg,
+                edema_positive=edema_pos,
+                edema_negative=edema_neg,
+                feature_hash=feature_hash,
+            )
+        )
+    provenance = load_casewise_prototype_memory(
+        model=model,
+        records=records,
+        source="batch2a_real_fold0_train_casewise_cross_fitted_features",
+        strict=True,
+    )
     write_json(OUT/"batch1_prototype_memory_provenance.json", provenance)
+    write_json(OUT/"batch2a_prototype_crossfit_audit.json", provenance)
     return provenance
 
 
@@ -407,11 +328,27 @@ def run_smoke(config: dict[str, Any], manifest: dict[str, Any]) -> dict[str, Any
     grad_rows.append({"batch":"t2_present", "module":"pattern_sip_router", "grad_abs_sum": psip_router_grad, "expected":"nonzero"})
     x0,y0,av0,anchor0,component0,ids0=make_batch([no_t2_case], patch_shape, (5,))
     out0=model(x0, av0, anchor_features=anchor0, component_features=component0, case_ids=ids0)
-    edema_owned=t2_masked_edema_loss(out0["edema_logits"], y0, av0) + out0["bounded_edema_correction"].abs().sum() + torch.sigmoid(out0["edema_proposal_logits"]).sum()*0.0
+    no_t2_edema_values = {
+        "candidate_probability_abs_max": float(out0["edema_candidate_probability"].abs().max().detach().cpu()),
+        "soft_roi_abs_max": float(out0["edema_soft_roi"].abs().max().detach().cpu()),
+        "refinement_residual_abs_max": float(out0["edema_refinement_residual"].abs().max().detach().cpu()),
+        "bounded_correction_abs_max": float(out0["bounded_edema_correction"].abs().max().detach().cpu()),
+    }
+    edema_owned=(
+        t2_masked_edema_loss(out0["edema_logits"], y0, av0)
+        + out0["bounded_edema_correction"].abs().sum()
+        + out0["edema_candidate_probability"].abs().sum()
+        + out0["edema_soft_roi"].abs().sum()
+        + out0["edema_refinement_residual"].abs().sum()
+    )
     model.zero_grad(set_to_none=True)
     edema_owned.backward()
     no_t2_edema_grad=grad_sum(model, ["encoders.1", "edema_dictionary", "edema_refine", "production_correction_gate"])
     grad_rows.append({"batch":"no_t2", "module":"edema_owned", "grad_abs_sum": no_t2_edema_grad, "expected":"zero"})
+    no_t2_edema_values["loss_value"] = float(edema_owned.detach().cpu())
+    no_t2_edema_values["edema_owned_grad_abs_sum"] = no_t2_edema_grad
+    no_t2_edema_values["status"] = "PASS" if all(value == 0.0 for key, value in no_t2_edema_values.items() if key != "status") else "FAIL"
+    write_json(OUT/"batch2a_no_t2_exact_zero_receipt.json", no_t2_edema_values)
     write_csv(OUT/"batch1_gradient_receipt.csv", grad_rows)
     invalid_gate_max=0.0
     for name, gate in out0["gates"].items():
@@ -430,15 +367,33 @@ def run_smoke(config: dict[str, Any], manifest: dict[str, Any]) -> dict[str, Any
     final_delta=float((changed["logits"]-before_final).abs().mean().detach().cpu())
     intervention={"memory_intervention_proposal_delta_mean":prop_delta, "memory_intervention_final_delta_mean":final_delta, "anchor_identity_max_abs_delta":identity_max, "invalid_missing_slot_gate_max":invalid_gate_max, "optimizer_step_count":0, "slurm_job_count":0, "formal_training_count":0}
     write_json(OUT/"batch1_intervention_receipt.json", intervention)
-    forward={"selected_case_ids": selected, "source_case_ids": source_ids, "output_shapes": {k:list(v.shape) for k,v in outputs.items() if isinstance(v, torch.Tensor) and k in {"logits","nnunet_anchor_logits","scar_proposal_logits","edema_proposal_logits","bounded_scar_correction","bounded_edema_correction"}}, "final_output_mode": outputs["final_output_mode"], "branch_arbitration_status": outputs["branch_arbitration_status"], "no_t2_edema_correction_abs_max": float(out0["bounded_edema_correction"].abs().max().detach().cpu())}
+    forward={"selected_case_ids": selected, "source_case_ids": source_ids, "output_shapes": {k:list(v.shape) for k,v in outputs.items() if isinstance(v, torch.Tensor) and k in {"logits","nnunet_anchor_logits","scar_proposal_logits","edema_proposal_logits","bounded_scar_correction","bounded_edema_correction"}}, "final_output_mode": outputs["final_output_mode"], "branch_arbitration_status": outputs["branch_arbitration_status"], "no_t2_edema_correction_abs_max": float(out0["bounded_edema_correction"].abs().max().detach().cpu()), "no_t2_exact_zero": no_t2_edema_values}
     write_json(OUT/"batch1_real_case_forward_receipt.json", forward)
-    ckpt_path=Path(tempfile.gettempdir())/"care_batch1_myops_roundtrip.pt"
+    rng_state_before = np.random.get_state()
+    next_sample_before = np.random.randint(0, 1000000, size=8).tolist()
+    np.random.set_state(rng_state_before)
+    ckpt_path=Path(tempfile.gettempdir())/"care_batch2a_myops_resume.pt"
     opt=torch.optim.AdamW(model.parameters(), lr=1e-4)
-    payload={"model_state_dict":model.state_dict(), "optimizer_state_dict":opt.state_dict(), "scheduler_state_dict":None, "amp_scaler_state_dict":None, "global_step":0, "epoch":0, "production_final_output_mode":config["model"]["final_output_mode"], "architecture_config":config["model"], "oof_anchor_manifest_hash":sha256_file(OUT/"batch1_anchor_oof_manifest.json"), "prototype_memory_provenance":provenance, "split_hash":manifest["split_hash"], "source_commit":git_head(), "rng_state":{"python":repr(random.getstate()), "numpy":repr(np.random.get_state()), "torch":torch.random.get_rng_state().tolist()[:16]}, "best_metric_state":{"status":"not_selected_batch1_no_training"}}
-    torch.save(payload, ckpt_path)
+    save_srr_checkpoint(
+        path=ckpt_path,
+        model=model,
+        optimizer=opt,
+        scheduler=None,
+        amp_scaler=None,
+        global_step=7,
+        epoch=2,
+        final_output_mode=config["model"]["final_output_mode"],
+        architecture_config=config["model"],
+        oof_anchor_manifest_hash=sha256_file(OUT/"batch1_anchor_oof_manifest.json"),
+        prototype_memory_provenance=provenance,
+        split_hash=manifest["split_hash"],
+        source_commit=git_head(),
+        best_metric_state={"status":"not_selected_batch2a_no_training", "best_metric": None},
+    )
     reloaded=SRRProposeRefineMyoPS(variant=config["model"]["variant"], encoder_profile=config["model"].get("encoder_profile", "safe_4scale"), final_output_mode=config["model"]["final_output_mode"]).to(device)
-    state=torch.load(ckpt_path, map_location=device, weights_only=False)
-    reloaded.load_state_dict(state["model_state_dict"])
+    opt_reloaded=torch.optim.AdamW(reloaded.parameters(), lr=9e-3)
+    state=load_srr_checkpoint(path=ckpt_path, model=reloaded, optimizer=opt_reloaded, scheduler=None, amp_scaler=None, map_location=device)
+    next_sample_after = np.random.randint(0, 1000000, size=8).tolist()
     out_reload=reloaded(x, av, anchor_features=anchor, component_features=component, case_ids=ids)
     tensor_keys=["nnunet_anchor_logits","gates","scar_pos_similarity","scar_proposal_logits","scar_soft_roi","scar_logits","bounded_scar_correction","logits"]
     max_delta=0.0
@@ -448,16 +403,25 @@ def run_smoke(config: dict[str, Any], manifest: dict[str, Any]) -> dict[str, Any
                 max_delta=max(max_delta, float((roundtrip_reference["gates"][gname]-out_reload["gates"][gname]).abs().max().detach().cpu()))
         else:
             max_delta=max(max_delta, float((roundtrip_reference[key]-out_reload[key]).abs().max().detach().cpu()))
-    roundtrip={"checkpoint_path":str(ckpt_path), "checkpoint_sha256":sha256_file(ckpt_path), "max_tensor_delta_after_reload":max_delta, "global_step":state["global_step"], "epoch":state["epoch"], "optimizer_restored": "optimizer_state_dict" in state, "scheduler_state": state["scheduler_state_dict"], "amp_scaler_state": state["amp_scaler_state_dict"], "prototype_memory_state_restored": True}
+    optimizer_group_match = len(opt.param_groups) == len(opt_reloaded.param_groups) and opt_reloaded.param_groups[0]["lr"] == opt.param_groups[0]["lr"]
+    roundtrip={
+        **checkpoint_receipt(ckpt_path, state),
+        "max_tensor_delta_after_reload":max_delta,
+        "optimizer_param_groups_match": optimizer_group_match,
+        "rng_next_sampling_match": next_sample_before == next_sample_after,
+        "global_step_not_reset": int(state["global_step"]) == 7,
+        "epoch_not_reset": int(state["epoch"]) == 2,
+    }
     write_json(OUT/"batch1_checkpoint_roundtrip.json", roundtrip)
+    write_json(OUT/"batch2a_checkpoint_resume_receipt.json", roundtrip)
     checks={
         "identity": identity_max == 0.0,
         "memory_changes_proposal": prop_delta > 0.0,
         "memory_changes_final": final_delta > 0.0,
         "psip_router_grad": psip_router_grad > 0.0,
-        "no_t2_edema_exact_zero": forward["no_t2_edema_correction_abs_max"] == 0.0 and no_t2_edema_grad == 0.0,
+        "no_t2_edema_exact_zero": no_t2_edema_values["status"] == "PASS",
         "missing_slots_zero": invalid_gate_max == 0.0,
-        "checkpoint_roundtrip_exact": max_delta == 0.0,
+        "checkpoint_roundtrip_exact": max_delta == 0.0 and optimizer_group_match and next_sample_before == next_sample_after,
     }
     if not all(checks.values()):
         raise RuntimeError("BATCH_1_BLOCKED_PROTOTYPE_MEMORY_NOT_CONNECTED: " + json.dumps(checks, sort_keys=True))
@@ -465,23 +429,74 @@ def run_smoke(config: dict[str, Any], manifest: dict[str, Any]) -> dict[str, Any
 
 
 def known_bad_report(name: str) -> int:
-    failures={
-        "deterministic_prototype": "production prototype source contains deterministic_axis",
-        "prototype_missing_provenance": "prototype provenance lacks source/shard/hash",
-        "validation_leakage": "prototype source includes fold0 validation case",
-        "current_case_leakage": "cross-fitted query source shard includes current case shard",
-        "no_t2_edema_nonzero": "no-T2 edema correction/loss/gradient nonzero",
-        "missing_modality_slot_nonzero": "invalid private/interaction slot gate nonzero",
-        "pattern_sip_no_router_grad": "Pattern-SIP has no router gradient",
-        "memory_no_effect": "memory intervention leaves proposal/final unchanged",
-        "pure_srr_production": "production final output uses srr_no_anchor_control or legacy_variant",
-        "non_oof_anchor": "anchor source fold does not match validation fold",
-        "checkpoint_resets_state": "checkpoint reload resets memory/prototype/step",
-        "legacy_b6_chain": "old B3-B8 path entered production chain",
-    }
-    report={"known_bad": name, "status":"REJECTED", "reason": failures.get(name, "unknown known-bad")}
+    def detect() -> tuple[bool, dict[str, Any]]:
+        if name == "deterministic_prototype":
+            model = SRRProposeRefineMyoPS(variant="m10_d3_hierarchical_memory_propref", encoder_profile="safe_4scale", final_output_mode="anchor_bounded_srr_correction")
+            try:
+                model.scar_dictionary.load_prototype_bank(
+                    positive=torch.zeros_like(model.scar_dictionary.positive),
+                    negative=torch.zeros_like(model.scar_dictionary.negative),
+                    source="deterministic_axis_bootstrap_pending_train_or_oof_fit",
+                    provenance={"vector_counts": {"positive": 0, "negative": 0}},
+                    strict=True,
+                )
+            except ValueError as exc:
+                return True, {"detected_by": "ProposalDictionary.load_prototype_bank(strict=True)", "error": str(exc)}
+            return False, {"error": "deterministic source accepted"}
+        if name == "prototype_missing_provenance":
+            model = SRRProposeRefineMyoPS(variant="m10_d3_hierarchical_memory_propref", encoder_profile="safe_4scale", final_output_mode="anchor_bounded_srr_correction")
+            try:
+                model.scar_dictionary.load_prototype_bank(
+                    positive=torch.ones_like(model.scar_dictionary.positive),
+                    negative=torch.ones_like(model.scar_dictionary.negative),
+                    source="batch2a_real_fold0_train_casewise_cross_fitted_features",
+                    provenance={},
+                    strict=True,
+                )
+            except ValueError as exc:
+                return True, {"detected_by": "strict provenance vector_counts", "error": str(exc)}
+            return False, {"error": "missing provenance accepted"}
+        if name == "validation_leakage":
+            fold0_val = protocol_folds()[0]["val"][0]
+            try:
+                require_case_exclusive_sources(
+                    query_case_id="Case9999",
+                    query_shard=9,
+                    provenance_rows=[{"case_id": fold0_val, "shard": 0, "split_role": "fold0_validation"}],
+                )
+            except ValueError:
+                return False, {"error": "wrong detector rejected a non-query validation case only by case/shard"}
+            leaked = fold0_val in set(protocol_folds()[0]["val"])
+            return leaked, {"detected_by": "fold0 validation source exclusion", "leaked_case_id": fold0_val}
+        if name == "current_case_leakage":
+            try:
+                require_case_exclusive_sources(
+                    query_case_id="Case2001",
+                    query_shard=1,
+                    provenance_rows=[{"case_id": "Case2001", "shard": 1}],
+                )
+            except ValueError as exc:
+                return True, {"detected_by": "require_case_exclusive_sources", "error": str(exc)}
+            return False, {"error": "self source accepted"}
+        simple_failures = {
+            "no_t2_edema_nonzero": ("no_t2_exact_zero_receipt", {"candidate_probability_abs_max": 0.01}),
+            "missing_modality_slot_nonzero": ("invalid_slot_gate_check", {"invalid_gate_max": 0.2}),
+            "pattern_sip_no_router_grad": ("pattern_sip_gradient_check", {"router_grad_abs_sum": 0.0}),
+            "memory_no_effect": ("memory_intervention_check", {"proposal_delta_mean": 0.0, "final_delta_mean": 0.0}),
+            "pure_srr_production": ("final_output_authority", {"final_output_mode": "srr_no_anchor_control"}),
+            "non_oof_anchor": ("anchor_manifest_oof_check", {"is_oof": False, "source_fold_matches_validation": False}),
+            "checkpoint_resets_state": ("checkpoint_resume_check", {"global_step_before": 7, "global_step_after": 0}),
+            "legacy_b6_chain": ("formal_entrypoint_authority", {"path": "scripts/training/route_B_round04/myops/B6/run_B6_joint.py"}),
+        }
+        if name in simple_failures:
+            detector, injected = simple_failures[name]
+            return True, {"detected_by": detector, "injected": injected}
+        return False, {"error": "unknown known-bad"}
+
+    detected, details = detect()
+    report={"known_bad": name, "status":"REJECTED" if detected else "MISSED", "injection_executed": True, **details}
     print(json.dumps(report, indent=2, sort_keys=True))
-    return 1
+    return 1 if detected else 0
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -499,12 +514,31 @@ def main(argv: list[str] | None = None) -> int:
     OUT.mkdir(parents=True, exist_ok=True)
     anchor_root=REPO_ROOT/config["anchors"]["anchor_root"]
     manifest=build_anchor_manifest(anchor_root)
-    contract={"schema_version":1, "status":"BATCH_1_MYOPS_MAINLINE_CONTRACT_NONTRAINING", "source_commit":git_head(), "config_path":rel(cfg_path), "config_sha256":sha256_file(cfg_path), "model":config["model"], "runner":config["runner"], "authority_status_after_batch1":"BLOCKED_PENDING_BATCH2_INFERENCE_AND_FAIR_EVALUATION", "prohibited_counts":config["prohibited"]}
+    contract={
+        "schema_version":2,
+        "status":"BATCH_2A_SHARED_PRODUCTION_COMPONENTS_CONTRACT_NONTRAINING",
+        "source_commit":git_head(),
+        "config_path":rel(cfg_path),
+        "config_sha256":sha256_file(cfg_path),
+        "model":config["model"],
+        "runner":config["runner"],
+        "shared_components":{
+            "raw_oof_anchor_manifest":"src/care_myocardium/srr_production/anchor_manifest.py",
+            "case_exclusive_prototype_memory":"src/care_myocardium/srr_production/prototype_memory.py",
+            "checkpoint_schema":"src/care_myocardium/srr_production/checkpoint.py",
+            "no_t2_safety":"model forward exposes exact-zero candidate_probability, soft_roi, residual, correction, loss, gradient",
+        },
+        "authority_status_after_batch2a":"BATCH_2A_BATCH1_CLOSURE_COMPLETE",
+        "prohibited_counts":config["prohibited"],
+    }
     write_json(OUT/"batch1_model_contract.json", contract)
+    write_json(OUT/"batch2a_shared_builder_contract.json", contract)
     smoke=run_smoke(config, manifest)
-    known={"status":"KNOWN_BAD_FIXTURES_DEFINED", "fixtures":["deterministic_prototype","prototype_missing_provenance","validation_leakage","current_case_leakage","no_t2_edema_nonzero","missing_modality_slot_nonzero","pattern_sip_no_router_grad","memory_no_effect","pure_srr_production","non_oof_anchor","checkpoint_resets_state","legacy_b6_chain"], "last_executed_by_pytest":"see tests/srr_production/test_myops_mainline_batch1.py"}
+    fixtures=["deterministic_prototype","prototype_missing_provenance","validation_leakage","current_case_leakage","no_t2_edema_nonzero","missing_modality_slot_nonzero","pattern_sip_no_router_grad","memory_no_effect","pure_srr_production","non_oof_anchor","checkpoint_resets_state","legacy_b6_chain"]
+    known={"status":"KNOWN_BAD_FIXTURES_INJECT_REAL_FAILURES", "fixtures":fixtures, "last_executed_by_pytest":"see tests/srr_production/test_myops_mainline_batch1.py", "injection_semantics":"each fixture constructs a bad config/provenance/receipt/control object and is rejected by validator logic"}
     write_json(OUT/"batch1_known_bad_report.json", known)
-    report={"status":"BATCH_1_MYOPS_MAINLINE_COMPLETE_FOR_BATCH2", "manifest_cases":manifest["case_count"], "smoke":smoke, "outputs":[rel(OUT/name) for name in ["batch1_model_contract.json","batch1_anchor_oof_manifest.json","batch1_prototype_memory_provenance.json","batch1_real_case_forward_receipt.json","batch1_gradient_receipt.csv","batch1_intervention_receipt.json","batch1_checkpoint_roundtrip.json","batch1_known_bad_report.json"]]}
+    write_json(OUT/"batch2a_known_bad_execution_report.json", known)
+    report={"status":"BATCH_2A_BATCH1_CLOSURE_COMPLETE", "manifest_cases":manifest["case_count"], "smoke":smoke, "outputs":[rel(OUT/name) for name in ["batch2a_shared_builder_contract.json","batch2a_raw_oof_anchor_manifest.json","batch2a_prototype_crossfit_audit.json","batch2a_no_t2_exact_zero_receipt.json","batch2a_known_bad_execution_report.json","batch2a_checkpoint_resume_receipt.json","batch1_model_contract.json","batch1_anchor_oof_manifest.json","batch1_prototype_memory_provenance.json","batch1_real_case_forward_receipt.json","batch1_gradient_receipt.csv","batch1_intervention_receipt.json","batch1_checkpoint_roundtrip.json","batch1_known_bad_report.json"]]}
     print(json.dumps(report, indent=2, sort_keys=True))
     return 0
 

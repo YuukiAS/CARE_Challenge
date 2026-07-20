@@ -2,8 +2,8 @@
   "anchor_identity_max_abs_delta": 0.0,
   "formal_training_count": 0,
   "invalid_missing_slot_gate_max": 0.0,
-  "memory_intervention_final_delta_mean": 0.0031393414828926325,
-  "memory_intervention_proposal_delta_mean": 0.0655626654624939,
+  "memory_intervention_final_delta_mean": 0.00161982502322644,
+  "memory_intervention_proposal_delta_mean": 0.023237474262714386,
   "optimizer_step_count": 0,
   "slurm_job_count": 0
 }

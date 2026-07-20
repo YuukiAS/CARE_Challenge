@@ -1,22 +1,23 @@
 schema_version: 1
 authority_name: srr_production_batch0_formal_entrypoints
 created_from_head: 3f36a4ec62278ae097267d9c0eea14dd5e68a9e7
-formal_training_status: BLOCKED_PENDING_BATCH2_INFERENCE_AND_FAIR_EVALUATION
+formal_training_status: BLOCKED_PENDING_BATCH2B_INFERENCE_AND_FAIR_EVALUATION
 status_reason: >-
-  Batch 1 repaired the MyoPS single-mainline non-training authority path:
-  OOF anchor manifest, strict prototype provenance, cross-fitted memory
-  proposal influence, production anchor-bounded final output, one-shot
-  gradient smoke, no-T2 exact-zero checks, and checkpoint roundtrip.
-  Formal training remains blocked until Batch 2 inference and fair evaluation.
+  Batch 2A closed the Batch 1 production-component gap without training:
+  validator and training runner now share raw OOF anchor manifest semantics,
+  casewise four-shard prototype/memory helpers, count-masked cross-fitted
+  memory query, explicit no-T2 exact-zero safety outputs, and checkpoint
+  schema-v2 resume helpers. Formal training remains blocked until Batch 2B
+  full-volume inference and fair evaluation authority is established.
 
 selected_model:
   class_name: SRRProposeRefineMyoPS
   path: src/care_myocardium/models/srr_propref.py
-  status: real_but_incomplete
+  status: real_batch2a_shared_component_closure_no_training
   notes:
     - Uses existing encoder, retrieval, proposal dictionary, crop soft-ROI refiner, and final-output variants.
-    - ProposalDictionary bootstraps deterministic axis prototypes unless runtime train/OOF prototypes are loaded.
-    - M10 memory flag is surfaced in spatial dictionary status, but cross-fitted memory query is not connected to proposal logits.
+    - Production Batch 2A requires strict casewise train/OOF prototypes and masks zero-count memory slots from similarity.
+    - M10 cross-fitted memory is connected to proposal logits, and production crossfit-exclusive queries bypass global self-leaking prototype buffers.
 
 formal_entrypoints: []
 
@@ -29,9 +30,8 @@ candidate_entrypoints:
     allowed_in_batch0: read_only_audit_static_tests_only
     blocked_reasons:
       - no production authority wrapper yet
-      - no Batch1 checkpoint-continuity repair yet
-      - prototype fallback can be deterministic when fitting has no vectors or is skipped
-      - M10 variants are instantiable in model code but not exposed by this runner CLI
+      - formal training is still unauthorized
+      - Batch 2B full-volume inference/fair evaluation authority not yet complete
       - current evaluation is local prediction/GT recomputation, not hosted or performance-authoritative
   - id: myops_batch1_mainline_validator
     role: non_training_production_authority_validator
@@ -42,7 +42,9 @@ candidate_entrypoints:
     allowed_in_batch1: strict_manifest_forward_backward_intervention_checkpoint_tests_only
     notes:
       - Generated a complete 220-case real OOF nnU-Net anchor manifest.
+      - Batch 2A upgraded the manifest semantics to raw, unmodified OOF anchor plus derived safety context.
       - Proved production final output uses anchor_bounded_srr_correction in smoke, not pure SRR.
+      - Batch 2A generated shared component receipts under results/srr_production/code_maturity/batch2a_*.
       - Does not authorize formal training or performance claims.
   - id: unified_prediction_evaluator
     role: local_prediction_metric_recompute_candidate

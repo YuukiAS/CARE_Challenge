@@ -14,7 +14,8 @@ portfolio_mode: SUSPENDED
 single_active_scientific_line: SRR_MyoPS_Cine_from_historical_Route_B
 latest_remote_batch1_commit: ef98e2d3e6808fd616d2732f4d6a645431a7a4ff
 batch1_review_status: PARTIAL_IMPLEMENTATION_NEEDS_CLOSURE
-next_required_batch: BATCH_2A_BATCH1_CLOSURE_THEN_BATCH2B_INFERENCE_EVALUATION
+batch2a_status: BATCH_2A_BATCH1_CLOSURE_COMPLETE
+next_required_batch: BATCH_2B_INFERENCE_EVALUATION_AUTHORITY
 controller_authorized_now: 0
 route_worktree_development_authorized: false
 formal_training_authorized_now: false
@@ -111,24 +112,22 @@ Batch 1 已确认的真实进展：
 5. 一次性真实病例验证中，关闭修正可恢复传入的 anchor tensor。
 6. 没有运行优化器更新、Slurm 或正式训练。
 
-Batch 1 尚未闭环的事实：
+Batch 2A 已收口的 Batch 1 缺口：
 
-1. 原型、记忆和 checkpoint 的完整逻辑主要位于 `validate_myops_mainline.py`，尚未由训练 runner 和完整推理入口共同调用。
-2. 训练 runner 仍使用旧的全局原型构建逻辑，没有加载 Batch 1 的四 shard 原型/记忆库。
-3. 跨折记忆会排除当前 shard，但全局 `ProposalDictionary` 原型仍可能包含当前查询病例。
-4. 验证器以合并后的总向量重复更新不同病例的记忆 provenance，不能证明逐病例来源真实对应。
-5. 未使用的零计数记忆槽仍可能进入相似度计算。
-6. no-T2 安全只证明最终修正和部分梯度为零，尚未证明候选概率、soft ROI、细化残差、全部损失和全部病种专属梯度为零。
-7. `read_anchored_case` 会修改 no-T2 病例的水肿 anchor；当前恒等测试不是对原始 nnU-Net OOF 输出的恒等测试。
-8. 12 个 known-bad 目前只是按名字固定返回 `REJECTED`，不是实际错误注入。
-9. checkpoint receipt 没有真实恢复新 optimizer、随机数状态和下一次采样，因此不是完整 resume 证据。
-10. `configs/srr_production/entrypoints.yaml` 内仍存在与 Batch 1 报告互相矛盾的旧说明。
+1. `src/care_myocardium/srr_production/anchor_manifest.py` 生成共享 raw OOF anchor manifest，`read_anchored_case` 不再静默修改 raw nnU-Net OOF anchor。
+2. `src/care_myocardium/srr_production/prototype_memory.py` 让 validator 与 training runner 共用逐病例四 shard prototype/memory provenance helper。
+3. `M10CrossFittedPrototypeMemory.query` 使用 `counts > 0` 槽位掩码；production crossfit-exclusive 查询不再混入全局 `ProposalDictionary` 原型。
+4. validator 不再把合并向量重复写给不同病例；每个 memory provenance 行来自对应病例的真实 feature vector。
+5. no-T2 receipt 现在分别记录候选概率、soft ROI、refinement residual、bounded correction、loss 与 edema-owned gradient 的 exact-zero。
+6. known-bad fixture 构造具体错误 config/provenance/receipt/control 对象后由 validator 逻辑拒绝。
+7. checkpoint helper 使用 schema v2，并用新模型、新 optimizer、RNG 恢复和下一次采样一致性验证真 resume。
+8. `configs/srr_production/entrypoints.yaml` 已清理为 Batch 2A 状态。
 
-因此，Batch 1 不得被解释为训练就绪，也不得直接进入性能比较。
+Batch 2A 仍不表示训练就绪，不表示 SRR 有性能结论，也不授权正式训练、Slurm、validation upload 或 hosted metric claim。
 
-## 当前立即任务：Batch 2A
+## Batch 2A 状态
 
-Batch 2A 先完成 Batch 1 收口，不训练、不跑 44 例性能比较。必须让以下路径使用同一套共享实现：
+Batch 2A 已完成，不训练、不跑 44 例性能比较。validator 和 training runner 现在使用同一套共享实现；Batch 2B 新增 full-volume inference 时必须调用同一套共享模块：
 
 ```text
 validator
@@ -147,7 +146,7 @@ checkpoint schema
 no-T2 safety function
 ```
 
-Batch 2A 必须解决：
+Batch 2A 已验证解决：
 
 - 全局原型的当前病例泄漏；
 - 逐病例 provenance 不真实；
@@ -158,7 +157,18 @@ Batch 2A 必须解决：
 - checkpoint 只检查字段存在；
 - runner 与 validator 数据流分叉。
 
-Batch 2A 完成前，不得进入 Batch 2B。
+证据路径：
+
+```text
+results/srr_production/code_maturity/batch2a_shared_builder_contract.json
+results/srr_production/code_maturity/batch2a_raw_oof_anchor_manifest.json
+results/srr_production/code_maturity/batch2a_prototype_crossfit_audit.json
+results/srr_production/code_maturity/batch2a_no_t2_exact_zero_receipt.json
+results/srr_production/code_maturity/batch2a_known_bad_execution_report.json
+results/srr_production/code_maturity/batch2a_checkpoint_resume_receipt.json
+```
+
+## 当前立即任务：Batch 2B
 
 ## Batch 2B 目标
 

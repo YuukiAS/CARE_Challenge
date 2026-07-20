@@ -2,6 +2,15 @@
   "branch_arbitration_status": "production_anchor_bounded_srr_correction",
   "final_output_mode": "anchor_bounded_srr_correction",
   "no_t2_edema_correction_abs_max": 0.0,
+  "no_t2_exact_zero": {
+    "bounded_correction_abs_max": 0.0,
+    "candidate_probability_abs_max": 0.0,
+    "edema_owned_grad_abs_sum": 0.0,
+    "loss_value": 0.0,
+    "refinement_residual_abs_max": 0.0,
+    "soft_roi_abs_max": 0.0,
+    "status": "PASS"
+  },
   "output_shapes": {
     "bounded_edema_correction": [
       1,

@@ -1,0 +1,9 @@
+{
+  "bounded_correction_abs_max": 0.0,
+  "candidate_probability_abs_max": 0.0,
+  "edema_owned_grad_abs_sum": 0.0,
+  "loss_value": 0.0,
+  "refinement_residual_abs_max": 0.0,
+  "soft_roi_abs_max": 0.0,
+  "status": "PASS"
+}

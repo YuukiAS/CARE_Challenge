@@ -147,6 +147,7 @@ def audit_config(config: dict[str, Any], *, strict: bool) -> tuple[list[dict[str
     allowed_empty_formal_statuses = {
         "BLOCKED_PENDING_BATCH1_REPAIR",
         "BLOCKED_PENDING_BATCH2_INFERENCE_AND_FAIR_EVALUATION",
+        "BLOCKED_PENDING_BATCH2B_INFERENCE_AND_FAIR_EVALUATION",
     }
     if strict and not entries and formal_training_status not in allowed_empty_formal_statuses:
         failures.append(

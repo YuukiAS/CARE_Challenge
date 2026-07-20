@@ -453,3 +453,108 @@ Batch 2 应只做 inference and fair evaluation authority:
 - Loss/gradient auditor: 指出 M10 未走 expanded loss、Pattern-SIP 需要 live gate gradient、no-T2 exact-zero 需独立 receipt；Integrator 已让 M10 走 expanded loss并生成 gradient/no-T2 receipt。
 - Checkpoint/red-team auditor: 指出 runner 默认非 production、normal path 未传 `case_ids`、checkpoint 不等于 resume authority；Integrator 已传 `case_ids`、做 checkpoint roundtrip receipt，但保留 formal training blocked 到 Batch 2。
 - Integrator 处理结果: Batch 1 MyoPS mainline non-training authority complete for Batch 2; no training, no Slurm, no performance conclusion.
+
+
+---
+
+## Change 003: Batch 2A shared production-component closure
+
+- 日期/时间: 2026-07-20
+- 执行线程: CARE SRR main integrator, main-only Codex goal
+- 只读审计线程: none; integrator self-validated only, no runtime reviewer
+- Base commit: `72e4bd0`
+- Head commit: final Batch 2A commit SHA is reported in the final integrator response; exact self SHA cannot be embedded before commit without changing that SHA.
+- 对应 TODO: Batch 2A / Batch 1 closure before Batch 2B
+- 状态: complete pending commit/push
+
+### 1. 本次目标
+
+只执行 Batch 2A：把 Batch 1 中散落在 validator 的 manifest、prototype/memory、checkpoint、known-bad 和 no-T2 safety 逻辑抽成共享生产薄层，让 validator 和 training runner 复用同一套 raw OOF anchor、casewise cross-fit memory、checkpoint schema 和 no-T2 safety 语义。没有训练、没有 Slurm、没有 44 例性能比较、没有 validation upload。
+
+### 2. 修改文件
+
+| 文件 | 动作 | 修改前行为 | 修改后行为 |
+| --- | --- | --- | --- |
+| `src/care_myocardium/srr_production/anchor_manifest.py` | add | anchor manifest 只在 validator 内部生成；`read_anchored_case` 会静默修改 no-T2 raw anchor | 共享 raw OOF anchor manifest builder、path/hash/geometry 检查和 raw-anchor-preserved safety context helper |
+| `src/care_myocardium/srr_production/prototype_memory.py` | add | validator 把合并向量重复写入多个病例；runner 走旧全局 prototype builder | 共享逐病例 `CasePrototypeVectors`、case/shard exclusion 检查、casewise dictionary/memory loader 和 zero-count slot policy |
+| `src/care_myocardium/srr_production/checkpoint.py` | add | checkpoint receipt 主要检查字段存在和 tensor roundtrip | 共享 schema v2 save/load，真实恢复新 model、新 optimizer、RNG、best state、prototype/memory provenance |
+| `src/care_myocardium/models/srr_dictionary_memory.py` | modify | query 排除当前 shard，但 zero-count slots 仍进入 similarity | query 只使用 `counts > 0` active slots；production ready 缺正/负来源 fail closed |
+| `src/care_myocardium/models/srr_propref.py` | modify | production proposal 仍可能混入全局 prototype；no-T2 residual/ROI/probability receipt 不完整 | crossfit-exclusive memory query 不再混入全局 prototype；no-T2 candidate probability、soft ROI、refinement residual、bounded correction exact-zero 可直接检查 |
+| `scripts/training/run_srr_propref_myops_fold0.py` | modify | 读取病例时修改 raw anchor；runtime prototype fit 使用旧全局 builder | 保留 raw anchor，采样时派生 safety context；runner prototype/memory fit 调用共享 casewise helper |
+| `scripts/srr_production/validate_myops_mainline.py` | modify | Batch 1 逻辑在脚本内重复实现；known-bad 是按名字固定拒绝；checkpoint resume 不完整 | 调用共享 builder/helper；生成 `batch2a_*` receipts；known-bad 构造实际错误对象；checkpoint schema v2 真恢复 |
+| `tests/srr_production/test_myops_mainline_batch1.py` | modify | 只检查 Batch 1 receipt 和旧 manifest status | 检查 raw anchor semantics、Batch 2A required receipts、no-T2 exact-zero、checkpoint resume |
+| `configs/srr_production/entrypoints.yaml` | modify | 仍描述 Batch 1 后的旧 blocked 状态和分叉缺口 | 记录 Batch 2A shared-component closure，formal training 仍 blocked pending Batch 2B |
+| `prompts/routes/handoffs/CURRENT.md` | modify | 机器真值仍要求先做 Batch 2A | 标记 `batch2a_status: BATCH_2A_BATCH1_CLOSURE_COMPLETE`，下一步为 Batch 2B |
+
+### 3. 真实数据流变化
+
+Batch 2A 后的共享路径为：
+
+```text
+raw OOF nnU-Net fold validation probability/prediction
+-> shared anchor manifest with hashes/geometry/class order
+-> raw anchor preserved on case object
+-> derived safety context only at patch/inference context stage
+-> casewise real feature extraction per source case
+-> four-shard M10 memory update with per-case provenance
+-> counts>0, non-query-shard memory query
+-> proposal/refiner/final bounded correction
+-> checkpoint schema v2 save/load with model/optimizer/RNG/provenance state
+```
+
+### 4. 删除或关闭的绕过
+
+- raw anchor mutation: no-T2 raw OOF edema channel is no longer changed by `read_anchored_case`.
+- prototype self-leakage: production memory query uses non-query shards and crossfit-exclusive proposal similarity instead of global dictionary buffers.
+- fake provenance: memory updates now consume each case's own extracted vectors.
+- zero-count memory slots: excluded from similarity via `counts > 0` active slot masks.
+- no-T2 partial safety: receipt covers candidate probability, soft ROI, residual, correction, loss and gradient.
+- fixed-string known-bad: fixtures now inject bad objects and are rejected by validator logic.
+- checkpoint field-only receipt: schema v2 restore loads a new optimizer and restores RNG state.
+
+### 5. 运行命令与结果
+
+| 命令 | Exit | 真实输入 | 真实输出 | 验证的事实 |
+| --- | ---: | --- | --- | --- |
+| `git status --short --branch` | 0 | `/users/a/e/aereinh/CARE` | `## main...origin/main` | 启动时无本地未提交变更 |
+| `git fetch origin` | 0 | origin | fetched | 远端可达 |
+| `git pull --ff-only` | 0 | origin/main | `Already up to date.` | main 与 origin/main 同步且未丢弃本地变更 |
+| `./envs/env_CARE/bin/python -m py_compile ...` | 0 | modified Python files | no syntax errors | 共享模块、runner、validator、model 编译通过 |
+| `./envs/env_CARE/bin/python scripts/srr_production/validate_myops_mainline.py --strict` | 0 | real Dataset501, 220 OOF nnU-Net anchors, Batch 1 config | `BATCH_2A_BATCH1_CLOSURE_COMPLETE` and `batch2a_*` receipts | Batch 2A 允许完成状态成立 |
+| `./envs/env_CARE/bin/python -m pytest -q tests/srr_production/test_myops_mainline_batch1.py` | 1 then fixed | refreshed raw manifest | failed old manifest status expectation | 测试更新为 raw anchor schema |
+| same pytest | 0 | Batch 2A receipts and known-bad fixtures | `5 passed` after test update | Batch 1/2A receipt gates pass |
+
+### 6. 关键数值/形状/哈希
+
+- Raw OOF anchor manifest: `case_count=220`, `unique_cases=220`, `fold_counts={0:44,1:44,2:44,3:44,4:44}`
+- Batch 2A validator status: `BATCH_2A_BATCH1_CLOSURE_COMPLETE`
+- Smoke source cases: `Case2009`, `Case2001`, `Case2005`, `Case2006`, `Case1001`, `Case5001`
+- no-T2 exact-zero receipt: candidate probability `0.0`, soft ROI `0.0`, refinement residual `0.0`, bounded correction `0.0`, loss `0.0`, edema-owned gradient `0.0`
+- Checkpoint resume receipt: schema version `2`, optimizer param groups match `true`, RNG next sampling match `true`, global step not reset `true`, epoch not reset `true`
+
+### 7. 人类解释
+
+这次改动解决的是 Batch 1 “validator 能跑但生产 runner 不一定走同一条路”的问题。现在 raw OOF anchor、原型/记忆、case exclusion、no-T2 safety 和 checkpoint schema 都有共享代码路径和轻量证据。它仍不是训练完成，也不是性能结论。
+
+### 8. 未解决项
+
+| 文件/区域 | 未解决项 |
+| --- | --- |
+| `scripts/srr_production/infer_myops.py` | 尚未创建；Batch 2B 必须建立 full-volume NIfTI inference 并复用 Batch 2A 共享模块 |
+| `scripts/srr_production/evaluate_myops_fair.py` | 尚未创建；Batch 2B 必须统一 fold0 baseline reproduction、anchor identity、casewise/subgroup/component/remote-FP 输出 |
+| production SRR checkpoint | 当前只有非训练 smoke/resume checkpoint；没有受信任训练后 checkpoint |
+| formal training | 仍未授权 |
+| performance/leaderboard | 无性能结论、无 hosted metric claim |
+| Cine | 本批未修改，旧 B7/B8 仍 forbidden/historical |
+
+### 9. 下一批允许范围
+
+Batch 2B 只允许新增/修复 MyoPS full-volume inference 与 fair evaluation authority：`configs/srr_production/myops_batch2.yaml`、`scripts/srr_production/infer_myops.py`、`scripts/srr_production/evaluate_myops_fair.py`、`tests/srr_production/test_myops_batch2_inference_evaluation.py` 和计划列出的 inference/evaluation receipts。零步 SRR 只能标记为 `UNTRAINED_PIPELINE_DIAGNOSTIC`。
+
+### 10. 审计意见
+
+- 模型审计 GPT：未执行独立线程。
+- 数据/评价审计 GPT：未执行独立线程。
+- Cine 审计 GPT：未执行；本批不改 Cine。
+- 红队 GPT：未执行独立线程；known-bad fixture 已从固定字符串升级为实际错误注入。
+- Integrator 处理结果：Batch 2A complete pending commit/push；允许进入 Batch 2B，但仍禁止训练、Slurm、upload 和性能主张。
