@@ -1,0 +1,149 @@
+schema_version: 1
+authority_name: srr_batch4_forced_fold0_training
+batch: 4
+status: DRAFT_FOR_PLANNING_REVIEW
+user_authorization:
+  formal_fold0_training: true
+  slurm: true
+  routing_race_if_pending: true
+  validation_upload: false
+  hosted_metric_claim: false
+source_reviewed_head: d251bde18199d2afa9de60b28d02336f88994941
+paths:
+  raw_root: data/nnUNet/nnUNet_raw/Dataset501_CAREMyoPS
+  split_path: data/benchmarks/protocol/splits_MyoPS.json
+  anchor_root: data/nnUNet/nnUNet_results/Dataset501_CAREMyoPS/nnUNetTrainer_500epochs__nnUNetPlans__3d_fullres
+  result_root: results/20260721_srr_batch4_forced_fold0_training
+  runtime_root: results/20260721_srr_batch4_forced_fold0_training/runtime
+  log_root: logs/srr_batch4
+  lock_root: results/20260721_srr_batch4_forced_fold0_training/runtime/locks
+model:
+  class_name: SRRProposeRefineMyoPS
+  variant: m10_d3_hierarchical_memory_propref
+  encoder_profile: full_4scale
+  base_channels: 32
+  training_final_output_mode: anchor_bounded_srr_correction
+  runtime_modes:
+    - anchor_identity_control
+    - anchor_bounded_srr_correction
+    - srr_no_anchor_control
+  same_checkpoint_all_runtime_modes: true
+  raw_anchor_and_safety_context_separated: true
+data:
+  fold: 0
+  expected_train_cases: 176
+  expected_validation_cases: 44
+  allow_limit_train_cases: false
+  allow_limit_validation_cases: false
+  train_case_coverage_required: 176
+  modality_order: [LGE, T2, C0]
+  class_order: [background, myocardium, LV_blood, RV_blood, edema, scar]
+sampler:
+  cycle_length: 20
+  coverage_cycle_slots: 8
+  t2_edema_positive_slots: 5
+  scar_positive_slots: 4
+  hard_negative_slots: 3
+  minimum_unique_train_cases: 176
+  minimum_case_usage: 1
+prototype_memory:
+  source_cases: all_fold0_train_cases
+  expected_case_count: 176
+  deterministic_patches_per_case_max: 2
+  validation_cases_forbidden: true
+  no_t2_edema_positive_forbidden: true
+  no_t2_edema_negative_forbidden: true
+  runtime_asset: results/20260721_srr_batch4_forced_fold0_training/runtime/frozen_prototype_memory.pt
+  manifest: results/20260721_srr_batch4_forced_fold0_training/frozen_prototype_memory_manifest.json
+training:
+  optimizer: AdamW
+  learning_rate: 0.0002
+  weight_decay: 0.0001
+  grad_clip: 12.0
+  patch_shape_zyx: [12, 96, 96]
+  batch_size: 1
+  required_optimizer_steps: 1800
+  minimum_train_loop_seconds: 1800
+  maximum_runtime_seconds: 21600
+  validation_patch_interval: 300
+  full_volume_eval_steps: [600, 1200, 1800]
+  early_stop_before_required_steps: false
+  one_batch_overfit:
+    steps: 60
+    minimum_relative_loss_decrease: 0.05
+    require_finite_loss: true
+    require_target_module_gradients: true
+    require_no_t2_exact_zero: true
+loss_weights:
+  scar: 1.35
+  edema: 1.35
+  proposal: 0.45
+  prototype_margin: 0.20
+  component_proposal: 0.20
+  semantic_retrieval: 0.04
+  semantic_coverage: 0.03
+  semantic_integrative: 0.02
+  anchor_preservation: 0.10
+  roi: 0.25
+  remote_roi: 0.05
+inference:
+  full_volume_validation_cases: 44
+  checkpoint_schema_version: 2
+  identity_export_from_model_logits: true
+  identity_changed_voxels_required: 0
+  identity_softmax_max_abs_delta: 0.000001
+  minimum_changed_cases_for_nonidentity: 4
+  require_same_weights_for_all_modes: true
+checkpoint_selection:
+  eligibility:
+    require_all_44_cases: true
+    require_hash_match: true
+    require_geometry_pass: true
+    require_no_t2_exact_zero: true
+    require_identity_exact: true
+    require_valid_label_range: true
+    require_nonempty_scar: true
+    require_nonempty_t2_edema: true
+  lexicographic_order:
+    - maximize_min_scar_edema_dice_delta
+    - maximize_mean_scar_edema_dice_delta
+    - minimize_harm_case_count
+    - minimize_mean_hd95
+    - minimize_remote_fp_delta
+    - select_earlier_step
+scientific_status_gates:
+  candidate_signal:
+    minimum_each_pathology_dice_delta: -0.002
+    minimum_mean_dice_delta: 0.01
+    maximum_hd95_relative_worsening: 0.05
+    maximum_remote_fp_relative_worsening: 0.05
+    require_help_cases_not_less_than_harm: true
+  strong_signal:
+    minimum_scar_dice_delta: 0.03
+    minimum_edema_dice_delta: 0.03
+    require_hd95_nonworse: true
+    require_remote_fp_nonworse: true
+slurm:
+  python_executable: /users/a/e/aereinh/CARE/envs/env_CARE/bin/python
+  walltime_seconds: 21600
+  primary_partition: htzhulab
+  a100_race_after_pending_seconds: 900
+  volta_race_after_pending_seconds: 1800
+  partitions: [htzhulab, a100-gpu, volta-gpu]
+  volta_requires_same_config_vram_preflight: true
+  same_logical_run_id: true
+  same_code_config_split_asset_hashes: true
+  isolated_attempt_directories: true
+  atomic_winner_lock: true
+  cancel_pending_losers: true
+  started_loser_zero_optimizer_steps: true
+  training_dependency: afterok
+  finalizer_dependency: afterany
+  continuity_backend: slurm_dependency
+completion:
+  required_status: READY_FOR_INDEPENDENT_REVIEW
+  minimum_full_volume_evaluation_events: 3
+  monitor_packet_is_completion: false
+  controller_push_allowed: false
+  validation_upload_allowed: false
+  hosted_metric_claim_allowed: false
