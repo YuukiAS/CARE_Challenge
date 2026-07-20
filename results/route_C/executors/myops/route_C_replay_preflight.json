@@ -1,0 +1,45 @@
+{
+  "argv": [
+    "scripts/route_C/myops/replay_intervention_selector.py",
+    "--preflight",
+    "--strict",
+    "--print-contract",
+    "--phase",
+    "d2_hierarchical_psip",
+    "--max-inventory",
+    "32"
+  ],
+  "branch": "codex/route_C/myops_evidence",
+  "compatibility_shim": {
+    "case_json": "/users/a/e/aereinh/CARE/data/benchmarks/protocol/cases_MyoPS.json",
+    "implementation": "scripts/route_C/myops/replay_intervention_selector.py::install_case_metadata_shim",
+    "implementation_sha256": "3349110a39b9f7670f05c64a5aeb760e4d141cb15b773f5976d02d6e58b9c7bc",
+    "module": "src.care_myocardium.data.case_metadata",
+    "raw_modality_root": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train",
+    "source_care_root": "/users/a/e/aereinh/CARE",
+    "status": "INSTALLED",
+    "symbols": [
+      "MyoPSCaseMetadata",
+      "load_myops_case_metadata"
+    ]
+  },
+  "external_results": "/users/a/e/aereinh/CARE/results/20260711_srr_v3_m10_complete_mechanism_repair/runtime/m10_myops_training_executor",
+  "findings": [],
+  "force_evaluate_semantics": "requires --evaluate --force for runtime execution",
+  "git_head": "64bcbf4e2d8130b4536062a2920d87f2ad602e73",
+  "intervention_modes": [
+    "retrieval_prototype",
+    "proposal",
+    "scar_refiner",
+    "edema_refiner",
+    "nnunet_context",
+    "residual_gate",
+    "bounded_correction",
+    "no_op_control"
+  ],
+  "inventory_count": 21,
+  "lane_id": "route_C_myops_evidence_executor",
+  "output_root": "/users/a/e/aereinh/CARE_worktrees/route_C_executors/myops_evidence/results/route_C/executors/myops/runtime",
+  "source_care_root": "/users/a/e/aereinh/CARE",
+  "status": "PASS"
+}

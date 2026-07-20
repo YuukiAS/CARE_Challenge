@@ -1,0 +1,125 @@
+{
+  "generated_at_utc": "2026-07-19T11:18:51Z",
+  "reviewer_revision_blocker_inherited_verbatim": "Route C R1 requires positive_negative_prototype_swap to be a known-bad control, and it must be detected as harmful or semantically invalid. Current intervention_controls.csv has 88 positive_negative_prototype_swap rows with expected_behavior=known_bad_detected, observed_behavior=KNOWN_BAD_NOT_DETECTED, pass=False, but validate_r1_packet.py and validate_final_packet.py still exit 0. This is a semantic validator fail-open, not adequate negative, not monitor, not undertrained, and not evidence-complete.",
+  "repair_summary": {
+    "code_fix": "scripts/evaluation/route_C_round03/run_full_replay_and_interventions.py now applies shape-aware positive/negative prototype-bank swap by resizing the source bank to the target bank shape instead of silently skipping unequal positive/negative banks.",
+    "validator_fix": "scripts/validation/route_C_round03/validate_r1_packet.py now reads intervention_controls.csv and component_state_classification.csv; scripts/validation/route_C_round03/validate_final_packet.py propagates R1 strict validation failures.",
+    "known_bad_fixture_fix": "tests/route_C_round03/test_r1_validator_known_bad.py covers terminal-looking bad packets, completion-only final validation, missing/empty swap rows, boolean-string bypasses, and no-op/off-path zero-effect controls."
+  },
+  "slurm_accounting": [
+    {
+      "job_id": "59530017",
+      "partition": "htzhulab",
+      "state": "FAILED",
+      "exit_code": "2:0",
+      "elapsed": "00:19:02",
+      "log_path": "logs/route_C/round03/R1Final_59530017_20260719_063440.log",
+      "role": "same-scope replacement attempt after runner/validator repair",
+      "result": "zero-credit validator failure; fresh swap rows were detected but component classification aggregation still mixed D2 and D3 rows"
+    },
+    {
+      "job_id": "59530203",
+      "partition": "htzhulab",
+      "state": "COMPLETED",
+      "exit_code": "0:0",
+      "elapsed": "00:18:53",
+      "log_path": "logs/route_C/round03/R1Final_59530203_20260719_065904.log",
+      "role": "same-scope replacement R1 aggregate-only finalizer",
+      "result": "R1 packet validation passed"
+    }
+  ],
+  "fresh_aggregation_command": "/users/a/e/aereinh/CARE/envs/env_CARE/bin/python scripts/evaluation/route_C_round03/run_full_replay_and_interventions.py --aggregate-only --manifest results/route_C/round03/C0/phase_checkpoint_inventory.csv --anchor results/route_C/round03/C0/immutable_anchor.json --out results/route_C/round03/R1 --device cuda",
+  "validator_command": "/users/a/e/aereinh/CARE/envs/env_CARE/bin/python scripts/validation/route_C_round03/validate_r1_packet.py --strict results/route_C/round03/R1",
+  "git_head_before_repair": "0e11e3eb2e1f16d68b8c1d87a59e5f4f5cf7d156",
+  "input_sha256": {
+    "c0_phase_checkpoint_inventory": "4af18bd2ecf91ae598f0b591d438663841b0c576675d99003c14c591da962d03",
+    "c0_immutable_anchor": "73f160f95daa3215e3c98532f0510b2f8c955db9d9bf88aebe729a21442c2229",
+    "checkpoint_replay_receipts": "8c721e95133aef48c36ae0b366ec96ce309192c793bda7885de110ec5b818066",
+    "checkpoint_raw_output_manifest": "4e892f27e08dfd697c0248a0b9fcf280e14fb2c967b032f3c628e7195fbb48db"
+  },
+  "output_sha256": {
+    "intervention_controls": "4f66ecd2bb1d9f4ebf6d02a5bdec07bfe49cb77d1b20d49a8fba60eb40f92bdb",
+    "component_state_classification": "d013b1b6f50bd3ba9b1fbc106e70ee4c3d4593a19dba7bfed3c3fbee13868a0c",
+    "intervention_report": "1273fe13370e06cdaedb874545d8a4df84cb49c6a68576829a0b3c3b2b406d38",
+    "intervention_clean_baselines": "e61ebb792913a968d83b44936676f977655cbcfcdbc782ea25bde2b3e7a7b050",
+    "help_harm_matrix": "b10ecf889a7073c1a601bdd373f171cdb25dd9d4a37a47de519af7596861de31",
+    "selected_checkpoint_reload": "897f4d7a4e3c8acaaa4cdc85346fb43a74597a08c5da211516cc4bb9ae4544cf",
+    "completion": "3ef38a32b957a10d0eff760db7c38012b7e3044fb089d4b7b751f67c5ab2176e"
+  },
+  "selected_checkpoints": [
+    {
+      "phase": "d2_hierarchical_psip",
+      "checkpoint_name": "checkpoint_validation_step_25000",
+      "checkpoint_path": "/users/a/e/aereinh/CARE/results/20260711_srr_v3_m10_complete_mechanism_repair/runtime/m10_myops_training_executor/partition_race_retry11/htzhulab/variants/m10_d2_hierarchical_psip_formal/checkpoints/fold_0/propref_config/checkpoint_validation_step_25000.pt",
+      "checkpoint_sha256": "a1951e40522eae03fd103938e3fff827a127d29f01ab1ad66619d3376aac7bb0",
+      "loaded_state_dict_sha256": "04bb108fe090a332c8b0ff80b5610dcb6655b6c178bf91c545f926e795864444"
+    },
+    {
+      "phase": "d3_full_propref",
+      "checkpoint_name": "checkpoint_validation_step_30675",
+      "checkpoint_path": "/users/a/e/aereinh/CARE/results/20260711_srr_v3_m10_complete_mechanism_repair/runtime/m10_myops_training_executor/partition_race_retry11/htzhulab/variants/m10_d3_full_memory_propref_formal/checkpoints/fold_0/propref_config/checkpoint_validation_step_30675.pt",
+      "checkpoint_sha256": "42377997f1cd5caea25e85fb702c7faede084d9b17a695b503e092e3819b6c49",
+      "loaded_state_dict_sha256": "3346eca56d3f1fdd671a00e18eedf3e84487ba45c6c99eaea0231f05ac64e3b6"
+    }
+  ],
+  "case_ids": [
+    "Case1002",
+    "Case1007",
+    "Case1009",
+    "Case1010",
+    "Case1021",
+    "Case1023",
+    "Case1029",
+    "Case1033",
+    "Case1040",
+    "Case1042",
+    "Case1045",
+    "Case1047",
+    "Case1053",
+    "Case1062",
+    "Case1070",
+    "Case1073",
+    "Case1080",
+    "Case2002",
+    "Case2007",
+    "Case2008",
+    "Case2017",
+    "Case2020",
+    "Case2031",
+    "Case2033",
+    "Case3004",
+    "Case3011",
+    "Case3012",
+    "Case3023",
+    "Case3026",
+    "Case3034",
+    "Case3038",
+    "Case3040",
+    "Case3044",
+    "Case5005",
+    "Case6001",
+    "Case6010",
+    "Case7005",
+    "Case8003",
+    "Case8011",
+    "Case8015",
+    "Case8019",
+    "Case8021",
+    "Case8022",
+    "Case8023"
+  ],
+  "control_counts": {
+    "total_rows": 264,
+    "positive_negative_prototype_swap_rows": 88,
+    "positive_negative_prototype_swap_failed_rows": 0,
+    "positive_negative_prototype_swap_observed_behavior": "KNOWN_BAD_DETECTED_HARMFUL",
+    "no_op_nonzero_rows": 0,
+    "anchor_residual_control_off_path_nonzero_rows": 0
+  },
+  "authority_boundary": {
+    "validation_upload_authorized": false,
+    "route_promotion_decision": "NOT_REVIEWED",
+    "route_negative_decision": "NOT_REVIEWED",
+    "scientific_resolution_status": "AWAITING_REVIEW"
+  }
+}

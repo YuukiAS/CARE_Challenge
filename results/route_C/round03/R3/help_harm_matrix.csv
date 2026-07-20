@@ -1,0 +1,13 @@
+case_id,help_harm_class,reason
+Case1001,neutral_or_small_help,local frozen runtime changed final logits without hosted metric claim
+Case1002,neutral_or_small_help,local frozen runtime changed final logits without hosted metric claim
+Case1003,neutral_or_small_help,local frozen runtime changed final logits without hosted metric claim
+Case1004,neutral_or_small_help,local frozen runtime changed final logits without hosted metric claim
+Case1005,neutral_or_small_help,local frozen runtime changed final logits without hosted metric claim
+Case1006,neutral_or_small_help,local frozen runtime changed final logits without hosted metric claim
+Case2001,neutral_or_small_help,local frozen runtime changed final logits without hosted metric claim
+Case2002,neutral_or_small_help,local frozen runtime changed final logits without hosted metric claim
+Case2003,neutral_or_small_help,local frozen runtime changed final logits without hosted metric claim
+Case2004,neutral_or_small_help,local frozen runtime changed final logits without hosted metric claim
+Case2005,neutral_or_small_help,local frozen runtime changed final logits without hosted metric claim
+Case2006,neutral_or_small_help,local frozen runtime changed final logits without hosted metric claim

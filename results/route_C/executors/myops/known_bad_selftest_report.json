@@ -1,0 +1,48 @@
+{
+  "cases": [
+    {
+      "case": "completion_token_without_gate",
+      "expected_nonzero": true,
+      "findings": [
+        "completion token claims PACKET_COMMITTED_FOR_CONTROLLER while implementation gate is not PASS",
+        "completion packet contains monitor/blocking terms in myops_fresh_replay_manifest.json: NEEDS_EVIDENCE",
+        "completion packet contains monitor/blocking terms in eligibility_gate_report.json: NEEDS_EVIDENCE",
+        "completion packet contains monitor/blocking terms in selected_checkpoint_reload_receipt.json: NEEDS_EVIDENCE",
+        "completion packet contains monitor/blocking terms in myops_intervention_report.csv: NEEDS_EVIDENCE",
+        "completion packet contains monitor/blocking terms in hard_subgroup_help_harm.csv: NEEDS_EVIDENCE",
+        "completion packet contains monitor/blocking terms in no_t2_safety_report.csv: NEEDS_EVIDENCE",
+        "completion blocker: fresh Route C replay manifest is missing or incomplete",
+        "completion blocker: cache isolation not proven",
+        "completion blocker: fresh inference call count is zero or missing",
+        "completion blocker: checkpoint raw output manifest is empty",
+        "completion blocker: checkpoint selector report is empty",
+        "completion blocker: eligibility gate is not PASS",
+        "completion blocker: selected checkpoint reload is not proven"
+      ],
+      "observed_nonzero": true
+    },
+    {
+      "case": "honest_packet_missing_selector_strict_gate",
+      "expected_nonzero": true,
+      "findings": [
+        "fresh Route C replay manifest is missing or incomplete",
+        "cache isolation not proven",
+        "fresh inference call count is zero or missing",
+        "checkpoint raw output manifest is empty",
+        "checkpoint selector report is empty",
+        "eligibility gate is not PASS",
+        "selected checkpoint reload is not proven"
+      ],
+      "observed_nonzero": true
+    },
+    {
+      "case": "output_changing_no_op_control",
+      "expected_nonzero": true,
+      "findings": [
+        "no-op control changed final output"
+      ],
+      "observed_nonzero": true
+    }
+  ],
+  "status": "PASS"
+}

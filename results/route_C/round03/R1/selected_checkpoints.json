@@ -1,0 +1,1731 @@
+{
+  "eligible_inventory_sha256": "0b92f190e8736160ed109ef8daf71d4e27095bf96c4e294b21ff0a7936fa4dd6",
+  "every_candidate_score": [
+    {
+      "checkpoint_name": "checkpoint_validation_step_5000",
+      "eligible": true,
+      "phase": "alignment_control",
+      "selector_tuple": [
+        -0.37909906458416304,
+        -177.07956634913688,
+        -2768.3333333333335,
+        0.0,
+        -2.6323889757620105,
+        -5000
+      ]
+    },
+    {
+      "checkpoint_name": "checkpoint_best",
+      "eligible": true,
+      "phase": "alignment_control",
+      "selector_tuple": [
+        -0.2578780532313816,
+        -168.0901047156951,
+        -1927.7333333333333,
+        0.0,
+        -2.8807491002960504,
+        -999999999999
+      ]
+    },
+    {
+      "checkpoint_name": "checkpoint_validation_step_10000",
+      "eligible": true,
+      "phase": "alignment_control",
+      "selector_tuple": [
+        -0.2578780532313816,
+        -168.0901047156951,
+        -1927.7333333333333,
+        0.0,
+        -2.8807491002960504,
+        -10000
+      ]
+    },
+    {
+      "checkpoint_name": "checkpoint_validation_step_2500",
+      "eligible": true,
+      "phase": "alignment_control",
+      "selector_tuple": [
+        -0.4048572760056766,
+        -226.35526741397732,
+        -5794.516666666666,
+        0.0,
+        -5.212116143917331,
+        -2500
+      ]
+    },
+    {
+      "checkpoint_name": "checkpoint_validation_step_9000",
+      "eligible": true,
+      "phase": "alignment_control",
+      "selector_tuple": [
+        -0.20761274632330107,
+        -119.50919714239771,
+        -694.6166666666667,
+        0.0,
+        -1.4047298339761307,
+        -9000
+      ]
+    },
+    {
+      "checkpoint_name": "checkpoint_validation_step_8750",
+      "eligible": true,
+      "phase": "alignment_control",
+      "selector_tuple": [
+        -0.23719993628405656,
+        -158.57407992902571,
+        -1933.2833333333333,
+        0.0,
+        -2.5616103798851784,
+        -8750
+      ]
+    },
+    {
+      "checkpoint_name": "checkpoint_validation_step_7500",
+      "eligible": true,
+      "phase": "alignment_control",
+      "selector_tuple": [
+        -0.24097667921528,
+        -170.4020538849469,
+        -2127.2,
+        0.0,
+        -2.9102097456562217,
+        -7500
+      ]
+    },
+    {
+      "checkpoint_name": "checkpoint_validation_step_3750",
+      "eligible": true,
+      "phase": "alignment_control",
+      "selector_tuple": [
+        -0.4010816714308396,
+        -237.09668311465433,
+        -10923.033333333333,
+        0.0,
+        -13.7825045741374,
+        -3750
+      ]
+    },
+    {
+      "checkpoint_name": "checkpoint_validation_step_1250",
+      "eligible": true,
+      "phase": "alignment_control",
+      "selector_tuple": [
+        -0.396179304532756,
+        -236.9257045068519,
+        -4927.133333333333,
+        0.0,
+        -6.100615076793508,
+        -1250
+      ]
+    },
+    {
+      "checkpoint_name": "checkpoint_final",
+      "eligible": true,
+      "phase": "alignment_control",
+      "selector_tuple": [
+        -0.2721198851323336,
+        -144.7222752070116,
+        -785.7,
+        0.0,
+        -1.0540356974775824,
+        -1000000000000
+      ]
+    },
+    {
+      "checkpoint_name": "checkpoint_validation_step_6000",
+      "eligible": true,
+      "phase": "alignment_control",
+      "selector_tuple": [
+        -0.36733732262488483,
+        -228.22117316930385,
+        -5607.516666666666,
+        0.0,
+        -7.301392709012331,
+        -6000
+      ]
+    },
+    {
+      "checkpoint_name": "checkpoint_validation_step_6250",
+      "eligible": true,
+      "phase": "alignment_control",
+      "selector_tuple": [
+        -0.2750962117571595,
+        -224.22542977676696,
+        -4649.733333333334,
+        0.0,
+        -5.158298955618047,
+        -6250
+      ]
+    },
+    {
+      "checkpoint_name": "checkpoint_validation_step_2000",
+      "eligible": true,
+      "phase": "alignment_control",
+      "selector_tuple": [
+        -0.43445000923945654,
+        -216.60764541223796,
+        -3582.633333333333,
+        0.0,
+        -2.5592499704958867,
+        -2000
+      ]
+    },
+    {
+      "checkpoint_name": "checkpoint_validation_step_11662",
+      "eligible": true,
+      "phase": "d0_control",
+      "selector_tuple": [
+        -0.33398074182419846,
+        -198.3157725089624,
+        -6947.366666666667,
+        0.0,
+        -5.637395354229201,
+        -11662
+      ]
+    },
+    {
+      "checkpoint_name": "checkpoint_validation_step_8330",
+      "eligible": true,
+      "phase": "d0_control",
+      "selector_tuple": [
+        -0.4072858299023699,
+        -239.97021106981282,
+        -27183.266666666666,
+        0.0,
+        -13.716900222630594,
+        -8330
+      ]
+    },
+    {
+      "checkpoint_name": "checkpoint_validation_step_18326",
+      "eligible": true,
+      "phase": "d0_control",
+      "selector_tuple": [
+        -0.26395896094667304,
+        -192.58193902687432,
+        -4835.083333333333,
+        0.0,
+        -5.081416904076038,
+        -18326
+      ]
+    },
+    {
+      "checkpoint_name": "checkpoint_best",
+      "eligible": true,
+      "phase": "d0_control",
+      "selector_tuple": [
+        -0.26395896094667304,
+        -192.58193902687432,
+        -4835.083333333333,
+        0.0,
+        -5.081416904076038,
+        -999999999999
+      ]
+    },
+    {
+      "checkpoint_name": "checkpoint_validation_step_4000",
+      "eligible": true,
+      "phase": "d0_control",
+      "selector_tuple": [
+        -0.41447109866047244,
+        -215.22494705644576,
+        -9874.75,
+        0.0,
+        -7.182833985975975,
+        -4000
+      ]
+    },
+    {
+      "checkpoint_name": "checkpoint_validation_step_13328",
+      "eligible": true,
+      "phase": "d0_control",
+      "selector_tuple": [
+        -0.28384311217090585,
+        -201.09973934752884,
+        -5126.966666666666,
+        0.0,
+        -5.009528348210636,
+        -13328
+      ]
+    },
+    {
+      "checkpoint_name": "checkpoint_validation_step_12000",
+      "eligible": true,
+      "phase": "d0_control",
+      "selector_tuple": [
+        -0.34996581555987655,
+        -212.91358332657384,
+        -9156.116666666667,
+        0.0,
+        -6.136791910671968,
+        -12000
+      ]
+    },
+    {
+      "checkpoint_name": "checkpoint_validation_step_16660",
+      "eligible": true,
+      "phase": "d0_control",
+      "selector_tuple": [
+        -0.2714623372284447,
+        -164.89685034344524,
+        -3786.4333333333334,
+        0.0,
+        -4.715778641212895,
+        -16660
+      ]
+    },
+    {
+      "checkpoint_name": "checkpoint_validation_step_3332",
+      "eligible": true,
+      "phase": "d0_control",
+      "selector_tuple": [
+        -0.3898781447877981,
+        -182.9320164186368,
+        -5737.683333333333,
+        0.0,
+        -5.305467802443409,
+        -3332
+      ]
+    },
+    {
+      "checkpoint_name": "checkpoint_validation_step_1666",
+      "eligible": true,
+      "phase": "d0_control",
+      "selector_tuple": [
+        -0.47057840192857836,
+        -246.10461071857324,
+        -14080.966666666667,
+        0.0,
+        -7.325602514390507,
+        -1666
+      ]
+    },
+    {
+      "checkpoint_name": "checkpoint_validation_step_9996",
+      "eligible": true,
+      "phase": "d0_control",
+      "selector_tuple": [
+        -0.3540582902824195,
+        -222.1275751554991,
+        -9380.45,
+        0.0,
+        -7.472268239072702,
+        -9996
+      ]
+    },
+    {
+      "checkpoint_name": "checkpoint_validation_step_18000",
+      "eligible": true,
+      "phase": "d0_control",
+      "selector_tuple": [
+        -0.2742712650111009,
+        -196.66769672231945,
+        -3680.15,
+        0.0,
+        -4.564225316705138,
+        -18000
+      ]
+    },
+    {
+      "checkpoint_name": "checkpoint_validation_step_20000",
+      "eligible": true,
+      "phase": "d0_control",
+      "selector_tuple": [
+        -0.2544713111434922,
+        -183.12119740478042,
+        -3442.116666666667,
+        0.0,
+        -4.621553867118863,
+        -20000
+      ]
+    },
+    {
+      "checkpoint_name": "checkpoint_final",
+      "eligible": true,
+      "phase": "d0_control",
+      "selector_tuple": [
+        -0.2703729700441266,
+        -163.88902411070467,
+        -3179.2833333333333,
+        0.0,
+        -4.665383124039349,
+        -1000000000000
+      ]
+    },
+    {
+      "checkpoint_name": "checkpoint_validation_step_14994",
+      "eligible": true,
+      "phase": "d0_control",
+      "selector_tuple": [
+        -0.23003391889625585,
+        -160.76205706396337,
+        -2422.8333333333335,
+        0.0,
+        -2.866407474926829,
+        -14994
+      ]
+    },
+    {
+      "checkpoint_name": "checkpoint_validation_step_4998",
+      "eligible": true,
+      "phase": "d0_control",
+      "selector_tuple": [
+        -0.43093224120977586,
+        -209.99053547536508,
+        -9452.833333333334,
+        0.0,
+        -4.803814284930485,
+        -4998
+      ]
+    },
+    {
+      "checkpoint_name": "checkpoint_validation_step_6664",
+      "eligible": true,
+      "phase": "d0_control",
+      "selector_tuple": [
+        -0.40219252901947394,
+        -229.26085784300045,
+        -16337.3,
+        0.0,
+        -10.01627850681226,
+        -6664
+      ]
+    },
+    {
+      "checkpoint_name": "checkpoint_validation_step_19992",
+      "eligible": true,
+      "phase": "d0_control",
+      "selector_tuple": [
+        -0.25732952138430787,
+        -184.1782305477106,
+        -3428.65,
+        0.0,
+        -4.438820297158598,
+        -19992
+      ]
+    },
+    {
+      "checkpoint_name": "checkpoint_validation_step_18326",
+      "eligible": true,
+      "phase": "d1_spatial_br2",
+      "selector_tuple": [
+        -0.26026854886224027,
+        -205.7593917738275,
+        -3936.633333333333,
+        0.0,
+        -4.210648537859906,
+        -18326
+      ]
+    },
+    {
+      "checkpoint_name": "checkpoint_validation_step_3332",
+      "eligible": true,
+      "phase": "d1_spatial_br2",
+      "selector_tuple": [
+        -0.36942816798129635,
+        -239.66519176278447,
+        -5222.25,
+        0.0,
+        -5.894196539540275,
+        -3332
+      ]
+    },
+    {
+      "checkpoint_name": "checkpoint_final",
+      "eligible": true,
+      "phase": "d1_spatial_br2",
+      "selector_tuple": [
+        -0.267321077439349,
+        -231.94897199235734,
+        -9700.533333333333,
+        0.0,
+        -10.70277435671247,
+        -1000000000000
+      ]
+    },
+    {
+      "checkpoint_name": "checkpoint_validation_step_21658",
+      "eligible": true,
+      "phase": "d1_spatial_br2",
+      "selector_tuple": [
+        -0.2691378209657622,
+        -199.50571309157908,
+        -3042.9666666666667,
+        0.0,
+        -3.7456446645495753,
+        -21658
+      ]
+    },
+    {
+      "checkpoint_name": "checkpoint_validation_step_13328",
+      "eligible": true,
+      "phase": "d1_spatial_br2",
+      "selector_tuple": [
+        -0.30652818955857364,
+        -202.2621523831482,
+        -3136.266666666667,
+        0.0,
+        -3.6959997534531497,
+        -13328
+      ]
+    },
+    {
+      "checkpoint_name": "checkpoint_validation_step_22500",
+      "eligible": true,
+      "phase": "d1_spatial_br2",
+      "selector_tuple": [
+        -0.2566807516677142,
+        -207.08066358188603,
+        -3946.65,
+        0.0,
+        -3.533403816478779,
+        -22500
+      ]
+    },
+    {
+      "checkpoint_name": "checkpoint_validation_step_19992",
+      "eligible": true,
+      "phase": "d1_spatial_br2",
+      "selector_tuple": [
+        -0.2244400791654228,
+        -193.54033212978663,
+        -2305.25,
+        0.0,
+        -2.6646555231861284,
+        -19992
+      ]
+    },
+    {
+      "checkpoint_name": "checkpoint_validation_step_9996",
+      "eligible": true,
+      "phase": "d1_spatial_br2",
+      "selector_tuple": [
+        -0.374905361134498,
+        -258.8237886490792,
+        -16548.65,
+        0.0,
+        -9.668678501835478,
+        -9996
+      ]
+    },
+    {
+      "checkpoint_name": "checkpoint_best",
+      "eligible": true,
+      "phase": "d1_spatial_br2",
+      "selector_tuple": [
+        -0.26826733627292654,
+        -236.47071888699008,
+        -8110.0,
+        0.0,
+        -10.260431770389207,
+        -999999999999
+      ]
+    },
+    {
+      "checkpoint_name": "checkpoint_validation_step_23324",
+      "eligible": true,
+      "phase": "d1_spatial_br2",
+      "selector_tuple": [
+        -0.2635282435406306,
+        -239.72128027953124,
+        -8655.283333333333,
+        0.0,
+        -9.032515325570893,
+        -23324
+      ]
+    },
+    {
+      "checkpoint_name": "checkpoint_validation_step_24990",
+      "eligible": true,
+      "phase": "d1_spatial_br2",
+      "selector_tuple": [
+        -0.2694677367969108,
+        -236.79009736278132,
+        -7797.95,
+        0.0,
+        -10.213960646447173,
+        -24990
+      ]
+    },
+    {
+      "checkpoint_name": "checkpoint_validation_step_8330",
+      "eligible": true,
+      "phase": "d1_spatial_br2",
+      "selector_tuple": [
+        -0.3637433499533344,
+        -236.41957208804456,
+        -3001.1,
+        0.0,
+        -2.889663482432123,
+        -8330
+      ]
+    },
+    {
+      "checkpoint_name": "checkpoint_validation_step_5000",
+      "eligible": true,
+      "phase": "d1_spatial_br2",
+      "selector_tuple": [
+        -0.3646608663794966,
+        -217.61549431289916,
+        -4949.866666666667,
+        0.0,
+        -4.785021256096753,
+        -5000
+      ]
+    },
+    {
+      "checkpoint_name": "checkpoint_validation_step_1666",
+      "eligible": true,
+      "phase": "d1_spatial_br2",
+      "selector_tuple": [
+        -0.40395435901936083,
+        -242.83837065338838,
+        -8874.666666666666,
+        0.0,
+        -10.60837992883557,
+        -1666
+      ]
+    },
+    {
+      "checkpoint_name": "checkpoint_validation_step_14994",
+      "eligible": true,
+      "phase": "d1_spatial_br2",
+      "selector_tuple": [
+        -0.3065319153588968,
+        -190.82671819245655,
+        -1822.8833333333334,
+        0.0,
+        -2.2351748818032706,
+        -14994
+      ]
+    },
+    {
+      "checkpoint_name": "checkpoint_validation_step_6664",
+      "eligible": true,
+      "phase": "d1_spatial_br2",
+      "selector_tuple": [
+        -0.3580334316234201,
+        -238.9537220435952,
+        -9767.316666666668,
+        0.0,
+        -10.602641347598501,
+        -6664
+      ]
+    },
+    {
+      "checkpoint_name": "checkpoint_validation_step_15000",
+      "eligible": true,
+      "phase": "d1_spatial_br2",
+      "selector_tuple": [
+        -0.32206022279002416,
+        -192.18410498675905,
+        -1695.25,
+        0.0,
+        -2.4566306421987725,
+        -15000
+      ]
+    },
+    {
+      "checkpoint_name": "checkpoint_validation_step_11662",
+      "eligible": true,
+      "phase": "d1_spatial_br2",
+      "selector_tuple": [
+        -0.3202297195723793,
+        -229.42126959742745,
+        -3525.883333333333,
+        0.0,
+        -3.986746003889661,
+        -11662
+      ]
+    },
+    {
+      "checkpoint_name": "checkpoint_validation_step_4998",
+      "eligible": true,
+      "phase": "d1_spatial_br2",
+      "selector_tuple": [
+        -0.368104173196951,
+        -215.1676231251592,
+        -4800.716666666666,
+        0.0,
+        -4.621197199003699,
+        -4998
+      ]
+    },
+    {
+      "checkpoint_name": "checkpoint_validation_step_25000",
+      "eligible": true,
+      "phase": "d1_spatial_br2",
+      "selector_tuple": [
+        -0.26826733627292654,
+        -236.47071888699008,
+        -8110.0,
+        0.0,
+        -10.260431770389207,
+        -25000
+      ]
+    },
+    {
+      "checkpoint_name": "checkpoint_validation_step_16660",
+      "eligible": true,
+      "phase": "d1_spatial_br2",
+      "selector_tuple": [
+        -0.2505882417108183,
+        -191.28510175722545,
+        -3291.016666666667,
+        0.0,
+        -6.189651370287269,
+        -16660
+      ]
+    },
+    {
+      "checkpoint_name": "checkpoint_validation_step_23324",
+      "eligible": true,
+      "phase": "d2_hierarchical_psip",
+      "selector_tuple": [
+        -0.22176332391172013,
+        -207.46094702636168,
+        -1507.2666666666667,
+        0.0,
+        -1.5718043401104818,
+        -23324
+      ]
+    },
+    {
+      "checkpoint_name": "checkpoint_validation_step_13328",
+      "eligible": true,
+      "phase": "d2_hierarchical_psip",
+      "selector_tuple": [
+        -0.3297866370502782,
+        -217.10712163169788,
+        -3774.266666666667,
+        0.0,
+        -4.221107057110217,
+        -13328
+      ]
+    },
+    {
+      "checkpoint_name": "checkpoint_validation_step_9996",
+      "eligible": true,
+      "phase": "d2_hierarchical_psip",
+      "selector_tuple": [
+        -0.345762644493862,
+        -201.0081215080369,
+        -5046.3,
+        0.0,
+        -8.17231402438831,
+        -9996
+      ]
+    },
+    {
+      "checkpoint_name": "checkpoint_validation_step_14994",
+      "eligible": true,
+      "phase": "d2_hierarchical_psip",
+      "selector_tuple": [
+        -0.3236256516714641,
+        -219.48214227534154,
+        -2538.0,
+        0.0,
+        -2.8644357990028095,
+        -14994
+      ]
+    },
+    {
+      "checkpoint_name": "checkpoint_validation_step_24990",
+      "eligible": true,
+      "phase": "d2_hierarchical_psip",
+      "selector_tuple": [
+        -0.21803363460535297,
+        -187.78122311684703,
+        -1098.5833333333333,
+        0.0,
+        -1.3279156724326924,
+        -24990
+      ]
+    },
+    {
+      "checkpoint_name": "checkpoint_validation_step_16660",
+      "eligible": true,
+      "phase": "d2_hierarchical_psip",
+      "selector_tuple": [
+        -0.23228430570551634,
+        -168.26635901914057,
+        -2023.45,
+        0.0,
+        -2.536204840729328,
+        -16660
+      ]
+    },
+    {
+      "checkpoint_name": "checkpoint_validation_step_1666",
+      "eligible": true,
+      "phase": "d2_hierarchical_psip",
+      "selector_tuple": [
+        -0.4228105010401206,
+        -209.97816764619014,
+        -3410.866666666667,
+        0.0,
+        -2.668827271574026,
+        -1666
+      ]
+    },
+    {
+      "checkpoint_name": "checkpoint_final",
+      "eligible": true,
+      "phase": "d2_hierarchical_psip",
+      "selector_tuple": [
+        -0.21623425352713843,
+        -172.13411418651083,
+        -1152.7166666666667,
+        0.0,
+        -1.5412436513525936,
+        -1000000000000
+      ]
+    },
+    {
+      "checkpoint_name": "checkpoint_validation_step_21658",
+      "eligible": true,
+      "phase": "d2_hierarchical_psip",
+      "selector_tuple": [
+        -0.253394771496225,
+        -176.88575278015065,
+        -2118.7166666666667,
+        0.0,
+        -2.480814804625054,
+        -21658
+      ]
+    },
+    {
+      "checkpoint_name": "checkpoint_validation_step_8330",
+      "eligible": true,
+      "phase": "d2_hierarchical_psip",
+      "selector_tuple": [
+        -0.4030914343090506,
+        -236.89160442062555,
+        -8092.45,
+        0.0,
+        -5.548950633437729,
+        -8330
+      ]
+    },
+    {
+      "checkpoint_name": "checkpoint_validation_step_4998",
+      "eligible": true,
+      "phase": "d2_hierarchical_psip",
+      "selector_tuple": [
+        -0.35539692267330864,
+        -192.24466837297985,
+        -2444.9333333333334,
+        0.0,
+        -2.891402698997514,
+        -4998
+      ]
+    },
+    {
+      "checkpoint_name": "checkpoint_validation_step_19992",
+      "eligible": true,
+      "phase": "d2_hierarchical_psip",
+      "selector_tuple": [
+        -0.2237382620882683,
+        -182.03193819769763,
+        -1570.8333333333333,
+        0.0,
+        -1.7393656256334091,
+        -19992
+      ]
+    },
+    {
+      "checkpoint_name": "checkpoint_validation_step_3332",
+      "eligible": true,
+      "phase": "d2_hierarchical_psip",
+      "selector_tuple": [
+        -0.35957914944785296,
+        -201.36333787677353,
+        -2468.6666666666665,
+        0.0,
+        -2.509688539470102,
+        -3332
+      ]
+    },
+    {
+      "checkpoint_name": "checkpoint_best",
+      "eligible": true,
+      "phase": "d2_hierarchical_psip",
+      "selector_tuple": [
+        -0.2143461325829157,
+        -184.47089916972442,
+        -996.5166666666667,
+        0.0,
+        -1.2679544258364055,
+        -999999999999
+      ]
+    },
+    {
+      "checkpoint_name": "checkpoint_validation_step_25000",
+      "eligible": true,
+      "phase": "d2_hierarchical_psip",
+      "selector_tuple": [
+        -0.2143461325829157,
+        -184.47089916972442,
+        -996.5166666666667,
+        0.0,
+        -1.2679544258364055,
+        -25000
+      ]
+    },
+    {
+      "checkpoint_name": "checkpoint_validation_step_11662",
+      "eligible": true,
+      "phase": "d2_hierarchical_psip",
+      "selector_tuple": [
+        -0.33370024897092965,
+        -224.2259424293905,
+        -3915.2,
+        0.0,
+        -5.299190492982775,
+        -11662
+      ]
+    },
+    {
+      "checkpoint_name": "checkpoint_validation_step_15000",
+      "eligible": true,
+      "phase": "d2_hierarchical_psip",
+      "selector_tuple": [
+        -0.34226524793656526,
+        -216.37985487011488,
+        -3088.2,
+        0.0,
+        -3.834188963217082,
+        -15000
+      ]
+    },
+    {
+      "checkpoint_name": "checkpoint_validation_step_22500",
+      "eligible": true,
+      "phase": "d2_hierarchical_psip",
+      "selector_tuple": [
+        -0.218160530450624,
+        -194.61325757968544,
+        -1203.0666666666666,
+        0.0,
+        -1.4475167483856402,
+        -22500
+      ]
+    },
+    {
+      "checkpoint_name": "checkpoint_validation_step_18326",
+      "eligible": true,
+      "phase": "d2_hierarchical_psip",
+      "selector_tuple": [
+        -0.23393850156260537,
+        -211.10440143140596,
+        -2016.4166666666667,
+        0.0,
+        -2.1594502111212956,
+        -18326
+      ]
+    },
+    {
+      "checkpoint_name": "checkpoint_validation_step_6664",
+      "eligible": true,
+      "phase": "d2_hierarchical_psip",
+      "selector_tuple": [
+        -0.3624536646353328,
+        -248.078725266086,
+        -7721.383333333333,
+        0.0,
+        -10.37384649066693,
+        -6664
+      ]
+    },
+    {
+      "checkpoint_name": "checkpoint_validation_step_5000",
+      "eligible": true,
+      "phase": "d2_hierarchical_psip",
+      "selector_tuple": [
+        -0.3536885649827124,
+        -196.59909102484983,
+        -2820.5833333333335,
+        0.0,
+        -3.207245211660936,
+        -5000
+      ]
+    },
+    {
+      "checkpoint_name": "checkpoint_validation_step_20450",
+      "eligible": true,
+      "phase": "d3_full_propref",
+      "selector_tuple": [
+        -0.29808877101782766,
+        -218.1781397081026,
+        -4921.55,
+        0.0,
+        -5.012148726581072,
+        -20450
+      ]
+    },
+    {
+      "checkpoint_name": "checkpoint_validation_step_27000",
+      "eligible": true,
+      "phase": "d3_full_propref",
+      "selector_tuple": [
+        -0.3080001744429828,
+        -251.2236269121272,
+        -7609.783333333334,
+        0.0,
+        -7.455139266884643,
+        -27000
+      ]
+    },
+    {
+      "checkpoint_name": "checkpoint_validation_step_6135",
+      "eligible": true,
+      "phase": "d3_full_propref",
+      "selector_tuple": [
+        -0.35794908930124186,
+        -225.2289370890863,
+        -6048.45,
+        0.0,
+        -6.656735493273592,
+        -6135
+      ]
+    },
+    {
+      "checkpoint_name": "checkpoint_validation_step_42945",
+      "eligible": true,
+      "phase": "d3_full_propref",
+      "selector_tuple": [
+        -0.31856409300530997,
+        -220.54143248706254,
+        -10987.5,
+        0.0,
+        -13.491238718325361,
+        -42945
+      ]
+    },
+    {
+      "checkpoint_name": "checkpoint_best",
+      "eligible": true,
+      "phase": "d3_full_propref",
+      "selector_tuple": [
+        -0.29808877101782766,
+        -218.1781397081026,
+        -4921.55,
+        0.0,
+        -5.012148726581072,
+        -999999999999
+      ]
+    },
+    {
+      "checkpoint_name": "checkpoint_validation_step_4090",
+      "eligible": true,
+      "phase": "d3_full_propref",
+      "selector_tuple": [
+        -0.38308031575092333,
+        -259.9982019965853,
+        -15414.533333333333,
+        0.0,
+        -17.00156580721695,
+        -4090
+      ]
+    },
+    {
+      "checkpoint_name": "checkpoint_validation_step_22495",
+      "eligible": true,
+      "phase": "d3_full_propref",
+      "selector_tuple": [
+        -0.3233614577546025,
+        -235.55613799498119,
+        -7205.3,
+        0.0,
+        -7.420031763381796,
+        -22495
+      ]
+    },
+    {
+      "checkpoint_name": "checkpoint_validation_step_26585",
+      "eligible": true,
+      "phase": "d3_full_propref",
+      "selector_tuple": [
+        -0.2964859411615879,
+        -235.97011735921942,
+        -4390.35,
+        0.0,
+        -4.424828383803801,
+        -26585
+      ]
+    },
+    {
+      "checkpoint_name": "checkpoint_validation_step_40500",
+      "eligible": true,
+      "phase": "d3_full_propref",
+      "selector_tuple": [
+        -0.3039760154921413,
+        -206.05215517816967,
+        -8272.1,
+        0.0,
+        -10.005058813706427,
+        -40500
+      ]
+    },
+    {
+      "checkpoint_name": "checkpoint_validation_step_38855",
+      "eligible": true,
+      "phase": "d3_full_propref",
+      "selector_tuple": [
+        -0.31178486973029046,
+        -222.67958243340303,
+        -9996.733333333334,
+        0.0,
+        -13.138676409178712,
+        -38855
+      ]
+    },
+    {
+      "checkpoint_name": "checkpoint_validation_step_30675",
+      "eligible": true,
+      "phase": "d3_full_propref",
+      "selector_tuple": [
+        -0.25853295738219234,
+        -241.23879321786868,
+        -5710.366666666667,
+        0.0,
+        -6.323351908909208,
+        -30675
+      ]
+    },
+    {
+      "checkpoint_name": "checkpoint_validation_step_36810",
+      "eligible": true,
+      "phase": "d3_full_propref",
+      "selector_tuple": [
+        -0.27827511546249106,
+        -192.6586103571627,
+        -7296.666666666667,
+        0.0,
+        -8.943815253379176,
+        -36810
+      ]
+    },
+    {
+      "checkpoint_name": "checkpoint_validation_step_24540",
+      "eligible": true,
+      "phase": "d3_full_propref",
+      "selector_tuple": [
+        -0.30771293648648695,
+        -235.33498537791885,
+        -10501.35,
+        0.0,
+        -15.324250513388668,
+        -24540
+      ]
+    },
+    {
+      "checkpoint_name": "checkpoint_validation_step_10225",
+      "eligible": true,
+      "phase": "d3_full_propref",
+      "selector_tuple": [
+        -0.3517942927459746,
+        -250.66837324998437,
+        -12780.4,
+        0.0,
+        -15.104049056180724,
+        -10225
+      ]
+    },
+    {
+      "checkpoint_name": "checkpoint_validation_step_12270",
+      "eligible": true,
+      "phase": "d3_full_propref",
+      "selector_tuple": [
+        -0.36875379796784635,
+        -223.84364919779634,
+        -7077.15,
+        0.0,
+        -7.867974192548088,
+        -12270
+      ]
+    },
+    {
+      "checkpoint_name": "checkpoint_validation_step_18405",
+      "eligible": true,
+      "phase": "d3_full_propref",
+      "selector_tuple": [
+        -0.32396908911383965,
+        -231.32577270655437,
+        -6512.35,
+        0.0,
+        -5.807630579872368,
+        -18405
+      ]
+    },
+    {
+      "checkpoint_name": "checkpoint_validation_step_45000",
+      "eligible": true,
+      "phase": "d3_full_propref",
+      "selector_tuple": [
+        -0.3193634133232505,
+        -228.0928723678726,
+        -12076.666666666666,
+        0.0,
+        -14.38046615269643,
+        -45000
+      ]
+    },
+    {
+      "checkpoint_name": "checkpoint_validation_step_16360",
+      "eligible": true,
+      "phase": "d3_full_propref",
+      "selector_tuple": [
+        -0.3204297034159463,
+        -237.31140288960248,
+        -5499.133333333333,
+        0.0,
+        -4.775854444974168,
+        -16360
+      ]
+    },
+    {
+      "checkpoint_name": "checkpoint_validation_step_34765",
+      "eligible": true,
+      "phase": "d3_full_propref",
+      "selector_tuple": [
+        -0.28313066354623456,
+        -240.31560693273767,
+        -8164.65,
+        0.0,
+        -9.749720688746685,
+        -34765
+      ]
+    },
+    {
+      "checkpoint_name": "checkpoint_validation_step_2045",
+      "eligible": true,
+      "phase": "d3_full_propref",
+      "selector_tuple": [
+        -0.41013582945605725,
+        -253.46177435501286,
+        -8850.616666666667,
+        0.0,
+        -7.9618553722537495,
+        -2045
+      ]
+    },
+    {
+      "checkpoint_name": "checkpoint_validation_step_32720",
+      "eligible": true,
+      "phase": "d3_full_propref",
+      "selector_tuple": [
+        -0.27235501242603405,
+        -249.33586539866153,
+        -9128.95,
+        0.0,
+        -11.765624939440505,
+        -32720
+      ]
+    },
+    {
+      "checkpoint_name": "checkpoint_validation_step_28630",
+      "eligible": true,
+      "phase": "d3_full_propref",
+      "selector_tuple": [
+        -0.2863667843106733,
+        -239.9916896367952,
+        -7019.866666666667,
+        0.0,
+        -7.461145773432055,
+        -28630
+      ]
+    },
+    {
+      "checkpoint_name": "checkpoint_final",
+      "eligible": true,
+      "phase": "d3_full_propref",
+      "selector_tuple": [
+        -0.3378038180329152,
+        -225.4302857888711,
+        -14003.066666666668,
+        0.0,
+        -16.204822155019496,
+        -1000000000000
+      ]
+    },
+    {
+      "checkpoint_name": "checkpoint_validation_step_14315",
+      "eligible": true,
+      "phase": "d3_full_propref",
+      "selector_tuple": [
+        -0.30355311897423154,
+        -240.24411086306958,
+        -7780.683333333333,
+        0.0,
+        -7.953972498049903,
+        -14315
+      ]
+    },
+    {
+      "checkpoint_name": "checkpoint_validation_step_40900",
+      "eligible": true,
+      "phase": "d3_full_propref",
+      "selector_tuple": [
+        -0.29150010911096763,
+        -198.76855821969244,
+        -7706.683333333333,
+        0.0,
+        -10.906716313691875,
+        -40900
+      ]
+    },
+    {
+      "checkpoint_name": "checkpoint_validation_step_8180",
+      "eligible": true,
+      "phase": "d3_full_propref",
+      "selector_tuple": [
+        -0.3514848786837163,
+        -259.1513050151966,
+        -15343.9,
+        0.0,
+        -19.531922263577584,
+        -8180
+      ]
+    },
+    {
+      "checkpoint_name": "checkpoint_validation_step_9000",
+      "eligible": true,
+      "phase": "d3_full_propref",
+      "selector_tuple": [
+        -0.32414472796138494,
+        -222.85917652354232,
+        -6467.666666666667,
+        0.0,
+        -5.370765368512482,
+        -9000
+      ]
+    },
+    {
+      "checkpoint_name": "checkpoint_validation_step_44990",
+      "eligible": true,
+      "phase": "d3_full_propref",
+      "selector_tuple": [
+        -0.31459191385586394,
+        -229.1505861376531,
+        -11497.283333333333,
+        0.0,
+        -13.533456765380963,
+        -44990
+      ]
+    },
+    {
+      "checkpoint_name": "checkpoint_validation_step_10000",
+      "eligible": true,
+      "phase": "hard_negative_refresh",
+      "selector_tuple": [
+        -0.3452350457039914,
+        -187.8969615445217,
+        -3845.4166666666665,
+        0.0,
+        -4.654126309212049,
+        -10000
+      ]
+    },
+    {
+      "checkpoint_name": "checkpoint_validation_step_2000",
+      "eligible": true,
+      "phase": "hard_negative_refresh",
+      "selector_tuple": [
+        -0.4144361445646254,
+        -218.4343001399655,
+        -3060.9333333333334,
+        0.0,
+        -2.4715346749456626,
+        -2000
+      ]
+    },
+    {
+      "checkpoint_name": "checkpoint_validation_step_8000",
+      "eligible": true,
+      "phase": "hard_negative_refresh",
+      "selector_tuple": [
+        -0.3707183501904542,
+        -205.6099230090518,
+        -3620.633333333333,
+        0.0,
+        -3.0925551105525106,
+        -8000
+      ]
+    },
+    {
+      "checkpoint_name": "checkpoint_validation_step_4000",
+      "eligible": true,
+      "phase": "hard_negative_refresh",
+      "selector_tuple": [
+        -0.36845635230536933,
+        -265.0306891213719,
+        -18928.816666666666,
+        0.0,
+        -23.642925447498023,
+        -4000
+      ]
+    },
+    {
+      "checkpoint_name": "checkpoint_validation_step_20000",
+      "eligible": true,
+      "phase": "hard_negative_refresh",
+      "selector_tuple": [
+        -0.2482695744531873,
+        -171.45129804746395,
+        -2122.766666666667,
+        0.0,
+        -2.5999821168497452,
+        -20000
+      ]
+    },
+    {
+      "checkpoint_name": "checkpoint_validation_step_6000",
+      "eligible": true,
+      "phase": "hard_negative_refresh",
+      "selector_tuple": [
+        -0.3894259157988161,
+        -233.91560607300016,
+        -5037.283333333334,
+        0.0,
+        -5.02680456853793,
+        -6000
+      ]
+    },
+    {
+      "checkpoint_name": "checkpoint_validation_step_18000",
+      "eligible": true,
+      "phase": "hard_negative_refresh",
+      "selector_tuple": [
+        -0.24270151385549152,
+        -178.26635689951007,
+        -2384.05,
+        0.0,
+        -2.7949840366140726,
+        -18000
+      ]
+    },
+    {
+      "checkpoint_name": "checkpoint_validation_step_12000",
+      "eligible": true,
+      "phase": "hard_negative_refresh",
+      "selector_tuple": [
+        -0.34043335406915504,
+        -201.32400806973092,
+        -3465.1833333333334,
+        0.0,
+        -3.337662606442733,
+        -12000
+      ]
+    },
+    {
+      "checkpoint_name": "checkpoint_final",
+      "eligible": true,
+      "phase": "hard_negative_refresh",
+      "selector_tuple": [
+        -0.2482695744531873,
+        -171.45129804746395,
+        -2122.766666666667,
+        0.0,
+        -2.5999821168497452,
+        -1000000000000
+      ]
+    },
+    {
+      "checkpoint_name": "checkpoint_validation_step_16000",
+      "eligible": true,
+      "phase": "hard_negative_refresh",
+      "selector_tuple": [
+        -0.22274178965630426,
+        -184.80745846410568,
+        -1586.0,
+        0.0,
+        -1.9593015475606212,
+        -16000
+      ]
+    },
+    {
+      "checkpoint_name": "checkpoint_best",
+      "eligible": true,
+      "phase": "hard_negative_refresh",
+      "selector_tuple": [
+        -0.24073335902377008,
+        -181.7376431253792,
+        -1996.1166666666666,
+        0.0,
+        -2.6936161720939285,
+        -999999999999
+      ]
+    },
+    {
+      "checkpoint_name": "checkpoint_validation_step_14000",
+      "eligible": true,
+      "phase": "hard_negative_refresh",
+      "selector_tuple": [
+        -0.24073335902377008,
+        -181.7376431253792,
+        -1996.1166666666666,
+        0.0,
+        -2.6936161720939285,
+        -14000
+      ]
+    },
+    {
+      "checkpoint_name": "checkpoint_validation_step_18000",
+      "eligible": true,
+      "phase": "no_context_control",
+      "selector_tuple": [
+        -0.2550666969045272,
+        -198.76659202266273,
+        -1292.4,
+        0.0,
+        -1.703947132646968,
+        -18000
+      ]
+    },
+    {
+      "checkpoint_name": "checkpoint_validation_step_16000",
+      "eligible": true,
+      "phase": "no_context_control",
+      "selector_tuple": [
+        -0.25608223449596,
+        -190.99931851867535,
+        -1528.1333333333334,
+        0.0,
+        -2.1311581587221995,
+        -16000
+      ]
+    },
+    {
+      "checkpoint_name": "checkpoint_validation_step_2000",
+      "eligible": true,
+      "phase": "no_context_control",
+      "selector_tuple": [
+        -0.42446626393438297,
+        -192.21088541518634,
+        -4125.7,
+        0.0,
+        -2.9585973413379123,
+        -2000
+      ]
+    },
+    {
+      "checkpoint_name": "checkpoint_validation_step_20000",
+      "eligible": true,
+      "phase": "no_context_control",
+      "selector_tuple": [
+        -0.20220334143959404,
+        -195.14806558210051,
+        -1539.9,
+        0.0,
+        -2.0380906551513895,
+        -20000
+      ]
+    },
+    {
+      "checkpoint_name": "checkpoint_validation_step_4000",
+      "eligible": true,
+      "phase": "no_context_control",
+      "selector_tuple": [
+        -0.4341216188358594,
+        -265.7544726667121,
+        -8316.816666666668,
+        0.0,
+        -8.583506113981402,
+        -4000
+      ]
+    },
+    {
+      "checkpoint_name": "checkpoint_validation_step_6000",
+      "eligible": true,
+      "phase": "no_context_control",
+      "selector_tuple": [
+        -0.4010435380086443,
+        -243.92231216329387,
+        -4400.033333333334,
+        0.0,
+        -3.511411621725173,
+        -6000
+      ]
+    },
+    {
+      "checkpoint_name": "checkpoint_validation_step_14000",
+      "eligible": true,
+      "phase": "no_context_control",
+      "selector_tuple": [
+        -0.27856670196754696,
+        -197.35903829448162,
+        -2425.233333333333,
+        0.0,
+        -2.6692338710038475,
+        -14000
+      ]
+    },
+    {
+      "checkpoint_name": "checkpoint_validation_step_10000",
+      "eligible": true,
+      "phase": "no_context_control",
+      "selector_tuple": [
+        -0.3244025856376461,
+        -195.520071774084,
+        -1824.7333333333333,
+        0.0,
+        -2.4389814883870624,
+        -10000
+      ]
+    },
+    {
+      "checkpoint_name": "checkpoint_final",
+      "eligible": true,
+      "phase": "no_context_control",
+      "selector_tuple": [
+        -0.20220334143959404,
+        -195.14806558210051,
+        -1539.9,
+        0.0,
+        -2.0380906551513895,
+        -1000000000000
+      ]
+    },
+    {
+      "checkpoint_name": "checkpoint_validation_step_8000",
+      "eligible": true,
+      "phase": "no_context_control",
+      "selector_tuple": [
+        -0.40648561915182635,
+        -258.09943509254924,
+        -7450.7,
+        0.0,
+        -6.083464575536977,
+        -8000
+      ]
+    },
+    {
+      "checkpoint_name": "checkpoint_best",
+      "eligible": true,
+      "phase": "no_context_control",
+      "selector_tuple": [
+        -0.20220334143959404,
+        -195.14806558210051,
+        -1539.9,
+        0.0,
+        -2.0380906551513895,
+        -999999999999
+      ]
+    },
+    {
+      "checkpoint_name": "checkpoint_validation_step_12000",
+      "eligible": true,
+      "phase": "no_context_control",
+      "selector_tuple": [
+        -0.31135744142003596,
+        -250.37589815075015,
+        -3498.1666666666665,
+        0.0,
+        -3.426316850212813,
+        -12000
+      ]
+    }
+  ],
+  "exclusion_reasons": [],
+  "formula_sha256": "0d7310288ff2b66d5781dd6c6aa46f964155bdb076fca1d02b434180477dff37",
+  "immutable_anchor_sha256": "73f160f95daa3215e3c98532f0510b2f8c955db9d9bf88aebe729a21442c2229",
+  "ordered_tie_breaks": [
+    "maximize_min_delta_dice_scar_edema_t2_positive",
+    "minimize_positive_hd95_delta_sum",
+    "minimize_remote_fp_delta",
+    "minimize_component_count_delta",
+    "minimize_abs_volume_ratio_deviation_from_1",
+    "earlier_optimizer_step"
+  ],
+  "phases": {
+    "alignment_control": {
+      "checkpoint_name": "checkpoint_validation_step_9000",
+      "selector_tuple": [
+        -0.20761274632330107,
+        -119.50919714239771,
+        -694.6166666666667,
+        0.0,
+        -1.4047298339761307,
+        -9000
+      ],
+      "status": "SELECTED"
+    },
+    "d0_control": {
+      "checkpoint_name": "checkpoint_validation_step_14994",
+      "selector_tuple": [
+        -0.23003391889625585,
+        -160.76205706396337,
+        -2422.8333333333335,
+        0.0,
+        -2.866407474926829,
+        -14994
+      ],
+      "status": "SELECTED"
+    },
+    "d1_spatial_br2": {
+      "checkpoint_name": "checkpoint_validation_step_19992",
+      "selector_tuple": [
+        -0.2244400791654228,
+        -193.54033212978663,
+        -2305.25,
+        0.0,
+        -2.6646555231861284,
+        -19992
+      ],
+      "status": "SELECTED"
+    },
+    "d2_hierarchical_psip": {
+      "checkpoint_name": "checkpoint_validation_step_25000",
+      "selector_tuple": [
+        -0.2143461325829157,
+        -184.47089916972442,
+        -996.5166666666667,
+        0.0,
+        -1.2679544258364055,
+        -25000
+      ],
+      "status": "SELECTED"
+    },
+    "d3_full_propref": {
+      "checkpoint_name": "checkpoint_validation_step_30675",
+      "selector_tuple": [
+        -0.25853295738219234,
+        -241.23879321786868,
+        -5710.366666666667,
+        0.0,
+        -6.323351908909208,
+        -30675
+      ],
+      "status": "SELECTED"
+    },
+    "hard_negative_refresh": {
+      "checkpoint_name": "checkpoint_validation_step_16000",
+      "selector_tuple": [
+        -0.22274178965630426,
+        -184.80745846410568,
+        -1586.0,
+        0.0,
+        -1.9593015475606212,
+        -16000
+      ],
+      "status": "SELECTED"
+    },
+    "no_context_control": {
+      "checkpoint_name": "checkpoint_validation_step_20000",
+      "selector_tuple": [
+        -0.20220334143959404,
+        -195.14806558210051,
+        -1539.9,
+        0.0,
+        -2.0380906551513895,
+        -20000
+      ],
+      "status": "SELECTED"
+    }
+  },
+  "selected_D2": "checkpoint_validation_step_25000",
+  "selected_D3": "checkpoint_validation_step_30675",
+  "selector": "historical_m10_anchor_relative_lexicographic",
+  "status": "COMPLETE"
+}

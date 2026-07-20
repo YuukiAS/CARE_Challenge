@@ -1,0 +1,13 @@
+case_id,center,registration_pass,temporal_changed,safety_flag
+Case1001,center_alpha,true,true,none
+Case1002,center_alpha,true,true,none
+Case1003,center_alpha,true,true,none
+Case1004,center_alpha,true,true,none
+Case1005,center_alpha,true,true,none
+Case1006,center_alpha,true,true,none
+Case2001,center_beta,true,true,none
+Case2002,center_beta,true,true,none
+Case2003,center_beta,true,true,none
+Case2004,center_beta,true,true,none
+Case2005,center_beta,true,true,none
+Case2006,center_beta,true,true,none

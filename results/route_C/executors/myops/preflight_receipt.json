@@ -1,0 +1,131 @@
+{
+  "blockers": [],
+  "branch": "codex/route_C/myops_evidence",
+  "contract_files": {
+    ".agents/skills/codex-workflow-protocol/SKILL.md": {
+      "bytes": 4850,
+      "present": true,
+      "sha256": "828fd6ed7c86ff4b22fc5b601e73f4639fa6462006a626eb99e2d37d938089f2"
+    },
+    ".agents/skills/slurm-routing-partition/SKILL.md": {
+      "bytes": 7559,
+      "present": true,
+      "sha256": "9f2a985350c9e22cd020c40a8bb007ae104cb9535aa9fdc86e4edb9c2700cdb6"
+    },
+    "AGENTS.md": {
+      "bytes": 34798,
+      "present": true,
+      "sha256": "aac65e30bcb71848cf2c91e23b379e29b92c102544e14ed5ad71b250bfc923c9"
+    },
+    "configs/routes/partition_routing.yaml": {
+      "bytes": 734,
+      "present": true,
+      "sha256": "b83e44118217ab11c7c42ad26984840ccb6e325e4a27e092c0d15eae8e31198f"
+    },
+    "docs/route_watchboard.md": {
+      "bytes": 1633,
+      "present": true,
+      "sha256": "46797bef0975eec2350450cbcdc432527c45480e07f54d19e8856ed620a9eef3"
+    },
+    "prompts/routes/README.md": {
+      "bytes": 2987,
+      "present": true,
+      "sha256": "4eac50263436b87a1fe6c1f88eab56a9a7bd930c2aaa716a729b4f57a18a1b7d"
+    },
+    "prompts/routes/route_C.md": {
+      "bytes": 19165,
+      "present": true,
+      "sha256": "95d7d19eb61bc666d1106367e6d51b6f84fed2f62344a5ac0353181c95d490da"
+    },
+    "prompts/routes/route_C_executor_plan.yaml": {
+      "bytes": 29000,
+      "present": true,
+      "sha256": "9f9b78626e5f81ecee40cbfadcadb5c307f80d78bdf405bf1eeea86c2fb07f41"
+    },
+    "wiki/README.md": {
+      "bytes": 2291,
+      "present": true,
+      "sha256": "a7e153d58512e776d08b8441f1c1d7bd6dc1c1c5c6db40b56abbdbd3c6aedc74"
+    },
+    "wiki/current_state.yaml": {
+      "bytes": 572,
+      "present": true,
+      "sha256": "6241fb46eb16390f128cb9647521dc93b3c6bde19b853266b3d168ed684d2da3"
+    },
+    "wiki/history/COMPARISON.md": {
+      "bytes": 5266,
+      "present": true,
+      "sha256": "6bdb207f89f85ce73983523358bab058dcc93757e499197bbbe60d2bcdeac620"
+    },
+    "wiki/history/M09/COMPONENTS.csv": {
+      "bytes": 4922,
+      "present": true,
+      "sha256": "7a53eb0fcfcbacc7d9b52bb02b3dcf5130548f35dd2e8c905a43b9049473849e"
+    },
+    "wiki/history/M09/README.md": {
+      "bytes": 338,
+      "present": true,
+      "sha256": "c5a4b5cad49ed0b32d79986011f18607d84e25dc86fc6659dc60cd32b0c2d27d"
+    }
+  },
+  "cuda_visible_devices": "",
+  "first_party_import_freeze": {
+    "scripts/evaluation/evaluate_srr_v3_m10_followup2_all_checkpoints.py": {
+      "bytes": 24721,
+      "present": true,
+      "sha256": "5dbf431d5d17eca95b333f97688d0e828210f912656552b8762b73fb22472bdc"
+    },
+    "scripts/evaluation/run_srr_v3_m10_followup2_interventions.py": {
+      "bytes": 4157,
+      "present": true,
+      "sha256": "63a5fef7dfe12b2889b1def95475ede1d823cb159730164cf2204fbfd354c29e"
+    },
+    "src/care_myocardium/losses/srr_losses.py": {
+      "bytes": 29911,
+      "present": true,
+      "sha256": "e65806ee817fd38f4f2cc03d362593d562def6fcc9cbc2d1b58e9f35150023d2"
+    },
+    "src/care_myocardium/models/srr_blocks.py": {
+      "bytes": 26187,
+      "present": true,
+      "sha256": "77d670922588706250592dc134a547120a63e84f9c421741a294b3c311b3453d"
+    },
+    "src/care_myocardium/models/srr_dictionary_memory.py": {
+      "bytes": 11556,
+      "present": true,
+      "sha256": "6fb5db33a88ff5c295d3056b200d3d0a2cd7cd040af39c2aae606e3acb0204aa"
+    },
+    "src/care_myocardium/models/srr_propref.py": {
+      "bytes": 76590,
+      "present": true,
+      "sha256": "64a3f5c49763719d87e020512bd945b1b452df70ba7d05881fde90af2c019d00"
+    }
+  },
+  "formal_slurm_allowed": false,
+  "formal_training_credit": "ZERO",
+  "git_head": "963d75b7bd37b9862a8420c1a6bac3156f73a0fb",
+  "import_checks": [
+    {
+      "name": "torch",
+      "status": "PASS",
+      "version": "2.11.0+cu130"
+    },
+    {
+      "name": "numpy",
+      "status": "PASS",
+      "version": "1.26.4"
+    }
+  ],
+  "lane_id": "route_C_myops_evidence_executor",
+  "optimizer_error": "",
+  "optimizer_smoke": "PASS",
+  "path_checks": {
+    "lock_dir_writable": true,
+    "log_dir_writable": true,
+    "result_dir_writable": true
+  },
+  "preflight_kind": "zero_credit_implementation_preflight",
+  "python": "/users/a/e/aereinh/CARE/envs/env_CARE/bin/python",
+  "python_version": "3.12.13",
+  "status": "PASS"
+}

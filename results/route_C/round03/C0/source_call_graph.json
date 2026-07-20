@@ -1,0 +1,51 @@
+{
+  "classes": {
+    "src/care_myocardium/models/srr_propref.py": [
+      "ProposalDictionary",
+      "AnatomyDistanceROIPrior",
+      "CropSoftROIRefinementHead",
+      "BaselinePreservingResidualGate",
+      "SegmentationContextInterface",
+      "BranchArbitrationGate",
+      "SRRProposeRefineMyoPS"
+    ]
+  },
+  "contract_blob": "0f04a06dce5ebaaaa0e0f84ce317b88123fd1a26",
+  "contract_path": "prompts/routes/route_C.md",
+  "historical_runtime_root_read_only": "/users/a/e/aereinh/CARE",
+  "mapping_path": "prompts/routes/route_C_round03_evidence_mapping.yaml",
+  "mapping_rows": 37,
+  "no_training_or_slurm_submitted": true,
+  "source_files": [
+    {
+      "blob": "206fff35ade194cc97e75a6ac5649e8402aa34fb",
+      "path": "src/care_myocardium/models/srr_propref.py",
+      "sha256": "64a3f5c49763719d87e020512bd945b1b452df70ba7d05881fde90af2c019d00"
+    },
+    {
+      "blob": "6d112910f2f9dae08243a5f460777c82fb33d3b9",
+      "path": "scripts/training/run_srr_v3_m10_complete_repair.py",
+      "sha256": "c1d8124dd0e3d0407cfa0fca1e6ea310121e00a4ece290c4b0dc19cf638dd1a3"
+    },
+    {
+      "blob": "d2debe2cac6a83c19c56097c6f7816c5ff5b64a5",
+      "path": "scripts/training/run_srr_propref_myops_fold0.py",
+      "sha256": "5ff1a1da327d59f99f22238eb712544a8a146c12ddce1ef8823f11ab9607f647"
+    }
+  ],
+  "symbols": {
+    "anchor_residual_control_off_path": "baseline_blend['gate'] off path when m10_final_output",
+    "edema_proposal_off": "edema_dict['proposal_logits']",
+    "edema_refiner_off": "self.edema_refine -> edema_logits",
+    "final_probability_composition_off": "m10_final_probabilities",
+    "final_srr_logits_replaced": "srr_logits / outputs['logits'] when m10_final_output",
+    "nnunet_context_off": "anchor_features / segmentation_context_interface",
+    "no_op": "identity intervention wrapper",
+    "positive_negative_prototype_swap": "ProposalDictionary positive/negative buffers",
+    "prototype_memory_off": "ProposalDictionary.positive/negative/memory_negative_similarity",
+    "retrieval": "SRRProposeRefineMyoPS._evidence_features / self.retrieval",
+    "scar_proposal_off": "scar_dict['proposal_logits']",
+    "scar_refiner_off": "self.scar_refine -> scar_logits"
+  },
+  "task": "Route C Round03 C0"
+}

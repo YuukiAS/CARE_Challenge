@@ -1,0 +1,35 @@
+{
+  "all_required_fields_consumed_with_gradients": true,
+  "all_required_fields_present": true,
+  "changed_final_logits_vs_registered_logits": true,
+  "cine_hook_case": "Case1001",
+  "fields": [
+    "registered_logits",
+    "registered_features",
+    "uncertainty",
+    "velocity",
+    "displacement",
+    "jacobian",
+    "motion",
+    "texture",
+    "frame_quality",
+    "position",
+    "mask"
+  ],
+  "gradient_by_field": {
+    "displacement": true,
+    "frame_quality": true,
+    "jacobian": true,
+    "mask": true,
+    "motion": true,
+    "position": true,
+    "registered_features": true,
+    "registered_logits": true,
+    "texture": true,
+    "uncertainty": true,
+    "velocity": true
+  },
+  "status": "PASS",
+  "svf_case": "Case1001",
+  "temporal_input_object": "RouteCRound03TemporalCineInput"
+}

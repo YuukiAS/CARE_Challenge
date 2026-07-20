@@ -1,0 +1,27 @@
+{
+  "case_id": "Case1001",
+  "direct_displacement_used": false,
+  "fixed_frame": 0,
+  "fixed_moving_mse": 0.012846380472183228,
+  "forward_displacement_shape": [
+    1,
+    2,
+    64,
+    64
+  ],
+  "inverse_composition_l2": 0.00010674618533812463,
+  "inverse_displacement_shape": [
+    1,
+    2,
+    64,
+    64
+  ],
+  "jacobian_determinant_max": 1.0086748600006104,
+  "jacobian_determinant_min": 0.988623321056366,
+  "moving_frame": 1,
+  "scaling_squaring_steps_forward": 7,
+  "scaling_squaring_steps_inverse": 7,
+  "status": "PASS",
+  "velocity_family": "first_party_symmetric_stationary_velocity",
+  "warped_fixed_mse": 0.009647619910538197
+}

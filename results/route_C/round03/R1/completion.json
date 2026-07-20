@@ -1,0 +1,14 @@
+{
+  "expected_checkpoints": 125,
+  "failed": [],
+  "failed_count": 0,
+  "missing": [],
+  "missing_count": 0,
+  "receipt_count": 125,
+  "route_id": "route_C",
+  "runtime_output_root": "/users/a/e/aereinh/CARE_worktrees/route_C/results/route_C/runtime/round03/R1",
+  "selected_reload_status": "PASS",
+  "stage": "R1",
+  "status": "EVIDENCE_TERMINAL",
+  "token": "ROUTE_C_ROUND03_R1_EVIDENCE_TERMINAL"
+}

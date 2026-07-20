@@ -1,0 +1,26 @@
+{
+  "r2_self_freeze": false,
+  "required_for_r3": "R3 must recompute final freeze from this frozen source/config/evidence and must return to R2 on implementation defect.",
+  "route_commit": "cdc6f0472ad56a6125aeefb25b19aeddc504658a",
+  "source_config_evidence": {
+    "aggregator": "scripts/route_C_round03/aggregate_packet.py",
+    "cinema_source_commit": "c10daa1d93f0ea28d8b9ad9206b0f673d25805c1",
+    "cinema_weight_sha256": "c7a60195e6c0aa920b0d0d8221d2ea7a75b6a5ea570763c3bf4924398f5ae85f",
+    "config": "configs/route_C_round03/cine_fidelity.yaml",
+    "final_validator": "scripts/validation/route_C_round03/validate_final_packet.py",
+    "gate_script": "scripts/route_C_round03/run_cine_implementation_gate.py",
+    "runtime_script": "scripts/training/route_C_round03/run_frozen_cine_runtime.py",
+    "validator": "scripts/validation/route_C_round03/validate_r2_packet.py"
+  },
+  "source_files": [
+    "scripts/route_C_round03/run_cine_implementation_gate.py",
+    "scripts/training/route_C_round03/run_frozen_cine_runtime.py",
+    "scripts/route_C_round03/aggregate_packet.py",
+    "scripts/validation/route_C_round03/validate_r2_packet.py",
+    "scripts/validation/route_C_round03/validate_final_packet.py",
+    "configs/route_C_round03/cine_fidelity.yaml"
+  ],
+  "source_sha256": "fc7429d75ea336d37ddf1ef99b1d4abfba620be796140f7961e7db9987efd63d",
+  "status": "FREEZE_CANDIDATE_ONLY",
+  "token": "ROUTE_C_ROUND03_R2_FREEZE_CANDIDATE_READY"
+}

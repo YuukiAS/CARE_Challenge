@@ -1,0 +1,66 @@
+{
+  "route_id": "route_C",
+  "controller_goal": "execute Route C controller until a reviewable controller packet or contract-defined NEEDS_EVIDENCE / NEEDS_REVISION / NEEDS_MONITOR state",
+  "phase": "C1_SHARED_BOOTSTRAP",
+  "created_at_utc": "2026-07-15T09:26:43Z",
+  "worktree": "/users/a/e/aereinh/CARE_worktrees/route_C",
+  "branch": "route_C",
+  "git_head": "963d75b7bd37b9862a8420c1a6bac3156f73a0fb",
+  "git_status_short": "",
+  "critic_token": "ROUTE_C_PLANNING_READY_FOR_CONTROLLER",
+  "critic_decision": "APPROVED_AFTER_PLANNING_REVISION",
+  "execution_mode": "controller_supervised",
+  "executor_plan_path": "prompts/routes/route_C_executor_plan.yaml",
+  "executor_plan_sha256": "9f9b78626e5f81ecee40cbfadcadb5c307f80d78bdf405bf1eeea86c2fb07f41",
+  "executor_plan_validation": {
+    "command": "python scripts/ops/validate_executor_plan.py prompts/routes/route_C_executor_plan.yaml",
+    "exit_code": 0,
+    "result": "passed"
+  },
+  "prepare_wave_dry_run": {
+    "command": "python scripts/ops/prepare_care_executor_wave.py --plan prompts/routes/route_C_executor_plan.yaml --wave 1 --receipt-path results/route_C/executor_waves/wave_1/prepare_dry_run_receipt.json --allow-subagent-launch --dry-run",
+    "exit_code": 0,
+    "receipt_path": "results/route_C/executor_waves/wave_1/prepare_dry_run_receipt.json",
+    "controller_action": "LAUNCH_EXECUTORS"
+  },
+  "hashes": {
+    "AGENTS.md": "aac65e30bcb71848cf2c91e23b379e29b92c102544e14ed5ad71b250bfc923c9",
+    ".agents/skills/slurm-routing-partition/SKILL.md": "9f2a985350c9e22cd020c40a8bb007ae104cb9535aa9fdc86e4edb9c2700cdb6",
+    ".agents/skills/codex-workflow-protocol/SKILL.md": "828fd6ed7c86ff4b22fc5b601e73f4639fa6462006a626eb99e2d37d938089f2",
+    ".agents/skills/care-mapper/SKILL.md": "2c41516189001ec7be94d9981a69fcd5544ad5ebd244c93cdc58488f4b535d0e",
+    "prompts/routes/route_C.md": "95d7d19eb61bc666d1106367e6d51b6f84fed2f62344a5ac0353181c95d490da",
+    "prompts/routes/route_C_executor_plan.yaml": "9f9b78626e5f81ecee40cbfadcadb5c307f80d78bdf405bf1eeea86c2fb07f41",
+    "configs/routes/partition_routing.yaml": "b83e44118217ab11c7c42ad26984840ccb6e325e4a27e092c0d15eae8e31198f",
+    "docs/route_watchboard.md": "46797bef0975eec2350450cbcdc432527c45480e07f54d19e8856ed620a9eef3",
+    "wiki/README.md": "a7e153d58512e776d08b8441f1c1d7bd6dc1c1c5c6db40b56abbdbd3c6aedc74",
+    "wiki/current_state.yaml": "6241fb46eb16390f128cb9647521dc93b3c6bde19b853266b3d168ed684d2da3"
+  },
+  "history_baseline": {
+    "current_milestone_id": "M09",
+    "current_review_token": "M9_FOLLOWUP_AUDITED_READY_NO_PROMOTION_DIAGNOSTIC_ONLY",
+    "reviewed_commit": "fa4e50ba77743322104e7d61ae69a2382f3a89c2",
+    "wiki_fingerprint": "srr_propref=f7f9df91;srr_blocks=8d126023;srr_losses=dca8e5e1;agent_flow=fa4e50b"
+  },
+  "allowed_write_roots": [
+    "src/care_myocardium/route_C/**",
+    "scripts/route_C/**",
+    "scripts/diagnostics/route_C/**",
+    "scripts/training/route_C/**",
+    "scripts/validation/route_C/**",
+    "tests/route_C/**",
+    "configs/route_C/**",
+    "jobs/route_C/**",
+    "results/route_C/**",
+    "logs/route_C/**"
+  ],
+  "forbidden_actions": [
+    "write review.md",
+    "push",
+    "validation upload",
+    "start M11",
+    "cross-route writes",
+    "root wiki mutation before portfolio reconciliation",
+    "treat submitted/pending/running monitor state as completion"
+  ],
+  "next_phase": "prepare isolated executor worktrees and launch MyoPS/Cine lane executors"
+}

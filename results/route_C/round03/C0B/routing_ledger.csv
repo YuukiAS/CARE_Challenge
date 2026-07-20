@@ -1,0 +1,2 @@
+stage,partition,job_id,state,exit_code,reason,attempt_credit
+C0B,none,,NOT_SUBMITTED,,NOT_REQUIRED_FINGERPRINT_MATCH submits no training,zero_for_failed_or_unstarted_attempts

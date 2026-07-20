@@ -1,0 +1,10 @@
+{
+  "all_phases_exact_match_skipped": true,
+  "all_phases_terminal": true,
+  "phase_count": 7,
+  "rerun_phase_count": 0,
+  "runtime_root_difference_policy": "ignored_only_as_output_location_not_train_time_science",
+  "source_fingerprint_receipt": "/users/a/e/aereinh/CARE_worktrees/route_C/results/20260711_srr_v3_m10_architecture_fidelity/m10_source_fingerprints.json",
+  "status": "READY_FOR_CONTROLLER_MERGE",
+  "token": "ROUTE_C_ROUND03_C0B_TERMINAL_READY_FOR_CONTROLLER_MERGE"
+}

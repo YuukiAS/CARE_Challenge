@@ -1,0 +1,40 @@
+{
+  "baseline_commit": "963d75b7bd37b9862a8420c1a6bac3156f73a0fb",
+  "controller_action": "LAUNCH_EXECUTORS",
+  "created_at": "2026-07-15T09:26:47.731937+00:00",
+  "dry_run": true,
+  "executors": [
+    {
+      "branch_name": "codex/route_C/myops_evidence",
+      "id": "route_C_myops_evidence_executor",
+      "lane": "myops",
+      "lock_path": "results/route_C/executors/myops/locks/controller.lock",
+      "log_path": "logs/route_C/myops",
+      "merge_order": 1,
+      "prompt_path": "prompts/routes/route_C.md",
+      "result_dir": "results/route_C/executors/myops",
+      "runtime_output_root": "results/route_C/executors/myops/runtime",
+      "slurm_job_namespace": "route_C_myops_evidence",
+      "worktree_path": "/users/a/e/aereinh/CARE_worktrees/route_C_executors/myops_evidence"
+    },
+    {
+      "branch_name": "codex/route_C/cine_fidelity",
+      "id": "route_C_cine_fidelity_executor",
+      "lane": "cine",
+      "lock_path": "results/route_C/executors/cine/locks/controller.lock",
+      "log_path": "logs/route_C/cine",
+      "merge_order": 2,
+      "prompt_path": "prompts/routes/route_C.md",
+      "result_dir": "results/route_C/executors/cine",
+      "runtime_output_root": "results/route_C/executors/cine/runtime",
+      "slurm_job_namespace": "route_C_cine_fidelity",
+      "worktree_path": "/users/a/e/aereinh/CARE_worktrees/route_C_executors/cine_fidelity"
+    }
+  ],
+  "plan_path": "prompts/routes/route_C_executor_plan.yaml",
+  "plan_sha256": "9f9b78626e5f81ecee40cbfadcadb5c307f80d78bdf405bf1eeea86c2fb07f41",
+  "records": [],
+  "subagent_launch_supported": true,
+  "task_key": null,
+  "wave": 1
+}

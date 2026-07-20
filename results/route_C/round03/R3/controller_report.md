@@ -1,0 +1,3 @@
+# Route C Round03 Controller Report
+
+Controller status: terminal packet ready for independent read-only reviewer. R1 V100 attempt 59451002 is zero-credit accounted in R1 evidence. Coordinator-corrected duplicate-routing attempt 59496858 is also zero-credit accounted in `round03/R1/r1_duplicate_routing_59496858_zero_credit_terminal_receipt.json`; replacement 59497884 supplied the 62 a100-gpu logical shard receipts, replacement 59498943 completed the 63 htzhulab logical shard receipts, and finalizer 59498944 covered all replay attempts with strict R1 validation passing. R2 freeze candidate is candidate-only; R3 executed the controller final freeze and finalizer aggregation.

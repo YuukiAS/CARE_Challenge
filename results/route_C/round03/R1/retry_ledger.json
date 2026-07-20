@@ -1,0 +1,224 @@
+{
+  "additional_same_scope_reroutes": [
+    {
+      "array_task_count": 63,
+      "assignment_partition": "htzhulab",
+      "attempt_credit": {
+        "59451661": "zero_cancelled_pending_no_runtime_credit",
+        "59451662": "pending",
+        "59452729": "pending"
+      },
+      "c0_state_dict_obligation_preserved": "R1 replay receipts and selected clean reload must provide state_dict hashes before terminal token",
+      "cancelled_pending_job_ids": {
+        "htzhulab_array": "59451661",
+        "old_afterany_finalizer": "59451663"
+      },
+      "dependency": "afterany:59451661:59451662:59452729",
+      "forbidden_actions": [
+        "no_push",
+        "no_validation_upload",
+        "no_route_promotion",
+        "no_cross_route_write",
+        "no_runtime_review_md"
+      ],
+      "identical_scientific_inputs": {
+        "anchor": "results/route_C/round03/C0/immutable_anchor.json",
+        "assignment_env": "ROUTE_C_R1_ASSIGNMENT_PARTITION=htzhulab",
+        "flags": "--evaluate --force --device cuda",
+        "manifest": "results/route_C/round03/C0/phase_checkpoint_inventory.csv",
+        "runner": "scripts/evaluation/route_C_round03/run_full_replay_and_interventions.py"
+      },
+      "preserved_active_job_ids": {
+        "a100_array": "59451662"
+      },
+      "reason": "htzhulab split had long StartTime estimate while a100-gpu is exact-compatible; same C0 manifest/anchor, same runner, same checkpoint assignment, no semantic downscaling",
+      "replacement_job_ids": {
+        "a100_htzhulab_assignment_mirror": "59452729",
+        "afterany_finalizer": "59452730"
+      },
+      "slurm_partition": "a100-gpu",
+      "status": "A100_MIRROR_REROUTE_SUBMITTED_OLD_HTZHULAB_PENDING_CANCELLED",
+      "timestamp": "2026-07-18T10:41:45.475206+00:00"
+    },
+    {
+      "attempt_credit": {
+        "59452730": "zero_cancelled_pending_no_runtime_credit",
+        "59452978": "pending"
+      },
+      "c0_state_dict_obligation_preserved": "R1 replay receipts and selected clean reload must provide state_dict hashes before terminal token",
+      "cancelled_pending_job_ids": {
+        "old_afterany_finalizer": "59452730"
+      },
+      "dependency": "afterany:59451661:59451662:59452729",
+      "forbidden_actions": [
+        "no_push",
+        "no_validation_upload",
+        "no_route_promotion",
+        "no_cross_route_write",
+        "no_runtime_review_md"
+      ],
+      "reason": "R1 replay work is now routed to a100-gpu; keeping finalizer on htzhulab would introduce avoidable post-replay resource wait. Same aggregate/validator script and dependencies, no scientific semantic change.",
+      "replacement_job_ids": {
+        "a100_afterany_finalizer": "59452978"
+      },
+      "status": "A100_FINALIZER_REROUTE_SUBMITTED_OLD_HTZHULAB_FINALIZER_CANCELLED",
+      "timestamp": "2026-07-18T10:48:48.757762+00:00"
+    },
+    {
+      "array_task_count": 63,
+      "assignment_partition": "htzhulab",
+      "attempt_credit": {
+        "59451662": "pending_a100_assigned_shard_preserved",
+        "59452729": "zero_cancelled_pending_loser_no_runtime_credit",
+        "59452978": "zero_cancelled_stale_finalizer_no_runtime_credit",
+        "59491654": "pending_or_running_htzhulab_assignment_mirror",
+        "59491769": "pending_afterany_finalizer"
+      },
+      "cancelled_pending_job_ids": {
+        "a100_htzhulab_assignment_loser": "59452729",
+        "stale_a100_afterany_finalizer": "59452978"
+      },
+      "code_correction": {
+        "atomic_winner_lock": "results/route_C/runtime/round03/R1/race/{assigned_partition}/{checkpoint_sha256}_winner.lock",
+        "isolation": "attempt-local runtime roots",
+        "observed_winner_lock": "results/route_C/runtime/round03/R1/race/htzhulab/04f14bef1b17e0eb06d4d734a88b0a84908ef0dc0f2fcd40955c17d437b8a2e8_winner.lock",
+        "runner": "scripts/evaluation/route_C_round03/run_full_replay_and_interventions.py"
+      },
+      "dependency": "afterany:59451662:59452729:59491654",
+      "forbidden_actions": [
+        "no_push",
+        "no_validation_upload",
+        "no_route_promotion",
+        "no_M11",
+        "no_cross_route_merge",
+        "no_hosted_metric_claim",
+        "no_final_scientific_decision",
+        "no_R2_advance_before_R1_terminal_validator"
+      ],
+      "identical_scientific_inputs": {
+        "anchor": "results/route_C/round03/C0/immutable_anchor.json",
+        "assignment_env": "ROUTE_C_R1_ASSIGNMENT_PARTITION=htzhulab",
+        "enabled_partitions": "htzhulab,a100-gpu",
+        "flags": "--evaluate --force --device cuda",
+        "manifest": "results/route_C/round03/C0/phase_checkpoint_inventory.csv",
+        "runner": "scripts/evaluation/route_C_round03/run_full_replay_and_interventions.py"
+      },
+      "preserved_active_job_ids": {
+        "a100_assigned_replay_array": "59451662"
+      },
+      "reason": "Existing R1 attempts were both pending on a100-gpu; after adding lock/isolation, htzhulab mirror was submitted for the htzhulab assignment. Task 59491654_0 started on htzhulab, so the pending a100 mirror 59452729 was cancelled as the race loser. Stale finalizer 59452978 was cancelled because it omitted 59491654 from dependency coverage.",
+      "replacement_job_ids": {
+        "htzhulab_assignment_mirror_array": "59491654",
+        "replacement_afterany_finalizer": "59491769"
+      },
+      "status": "HTZHULAB_MIRROR_RUNNING_A100_PENDING_LOSER_CANCELLED_REPLACEMENT_FINALIZER_SUBMITTED",
+      "timestamp": "2026-07-18T17:46:56Z"
+    },
+    {
+      "active_replay_attempts": [
+        "59451662",
+        "59491654"
+      ],
+      "attempt_credit": {
+        "59451000": "zero_cancelled_superseded",
+        "59451001": "zero_cancelled_superseded",
+        "59451002": "zero_partition_compatibility_failure",
+        "59451087": "zero_cancelled_superseded",
+        "59451661": "zero_cancelled_superseded",
+        "59451662": "pending",
+        "59452729": "zero_cancelled_superseded",
+        "59491654": "running_or_pending"
+      },
+      "c0_state_dict_obligation_preserved": "R1 replay receipts and selected clean reload must provide state_dict hashes before terminal token",
+      "cancelled_pending_finalizer_job_ids": {
+        "old_discovered_finalizer": "59491769"
+      },
+      "covered_replay_attempts": [
+        "59451000",
+        "59451001",
+        "59451002",
+        "59451087",
+        "59451661",
+        "59451662",
+        "59452729",
+        "59491654"
+      ],
+      "dependency": "afterany:59451000:59451001:59451002:59451087:59451661:59451662:59452729:59491654",
+      "forbidden_actions": [
+        "no_push",
+        "no_validation_upload",
+        "no_route_promotion",
+        "no_cross_route_write",
+        "no_runtime_review_md"
+      ],
+      "reason": "Coordinator strictness: interim finalizer dependencies omitted earlier replay attempts including V100 59451002; new finalizer uses afterany over all known replay attempts and preserves explicit zero-credit accounting receipt.",
+      "replacement_job_ids": {
+        "afterany_finalizer_all_replay_attempts": "59496619"
+      },
+      "status": "FINALIZER_RESUBMITTED_WITH_ALL_REPLAY_ATTEMPT_AFTERANY_COVERAGE",
+      "timestamp": "2026-07-18T17:58:24.655201+00:00",
+      "zero_credit_attempt_accounting_path": "results/route_C/round03/R1/r1_zero_credit_attempt_accounting.json"
+    },
+    {
+      "array_task_count": 62,
+      "assignment_partition": "a100-gpu",
+      "attempt_credit": {
+        "59451002": "zero_partition_compatibility_failure",
+        "59451662": "zero_cancelled_pending_no_runtime_credit",
+        "59491654": "running_or_pending",
+        "59496858": "pending"
+      },
+      "c0_state_dict_obligation_preserved": "R1 replay receipts and selected clean reload must provide state_dict hashes before terminal token",
+      "cancelled_pending_job_ids": {
+        "a100_array": "59451662",
+        "prior_all_attempt_finalizer": "59496619"
+      },
+      "covered_replay_attempts": [
+        "59451000",
+        "59451001",
+        "59451002",
+        "59451087",
+        "59451661",
+        "59451662",
+        "59452729",
+        "59491654",
+        "59496858"
+      ],
+      "dependency": "afterany:59451000:59451001:59451002:59451087:59451661:59451662:59452729:59491654:59496858",
+      "forbidden_actions": [
+        "no_push",
+        "no_validation_upload",
+        "no_route_promotion",
+        "no_cross_route_write",
+        "no_runtime_review_md"
+      ],
+      "identical_scientific_inputs": {
+        "anchor": "results/route_C/round03/C0/immutable_anchor.json",
+        "assignment_env": "ROUTE_C_R1_ASSIGNMENT_PARTITION=a100-gpu",
+        "flags": "--evaluate --force --device cuda",
+        "manifest": "results/route_C/round03/C0/phase_checkpoint_inventory.csv",
+        "runner": "scripts/evaluation/route_C_round03/run_full_replay_and_interventions.py"
+      },
+      "reason": "a100-gpu assignment array 59451662 remained pending with long start estimate while htzhulab is exact-compatible and already running R1 shards on A100 hardware; same C0 manifest/anchor, same runner hash, same assignment partition, no semantic downscaling.",
+      "replacement_job_ids": {
+        "afterany_finalizer_all_replay_attempts": "59496859",
+        "htzhulab_running_a100_assignment_array": "59496858"
+      },
+      "slurm_partition": "htzhulab",
+      "status": "A100_ASSIGNMENT_REROUTED_TO_HTZHULAB_AND_FINALIZER_RESUBMITTED",
+      "timestamp": "2026-07-18T18:10:29.688784+00:00",
+      "zero_credit_attempt_accounting_path": "results/route_C/round03/R1/r1_zero_credit_attempt_accounting.json"
+    }
+  ],
+  "cancelled_finalizer_job_id": "59451003",
+  "failed_array_job_id": "59451002",
+  "failed_attempt_credit": "zero",
+  "failed_partition": "volta-gpu",
+  "new_afterany_finalizer_job_id": "59451088",
+  "reason": "V100 CUDA runtime incompatible with current PyTorch build (no sm_70 kernel image); same scientific hashes, no semantic downscaling",
+  "reroute_array_job_id": "59451087",
+  "reroute_partition": "htzhulab",
+  "submitted_epoch_seconds": 1784366901.9123564,
+  "v100_zero_credit_accounting_receipt": "results/route_C/round03/R1/r1_zero_credit_attempt_accounting.json",
+  "v100_zero_credit_attempt_accounted": true
+}

@@ -1,0 +1,31 @@
+{
+  "checked_at_utc": "2026-07-15T09:30:24.613029+00:00",
+  "commands": [
+    {
+      "command": "bin/ai-research-toolkit validate",
+      "exit_code": 0,
+      "stderr": "",
+      "stdout": "OK\tinventory/resources.yaml\n"
+    },
+    {
+      "command": "bin/ai-research-toolkit doctor --json",
+      "exit_code": 0,
+      "stderr": "",
+      "stdout": "[\n  {\n    \"checks\": [\n      {\n        \"command\": \"d2 --version\",\n        \"detail\": \"v0.7.1\",\n        \"executable\": \"/nas/longleaf/home/aereinh/.local/bin/d2\",\n        \"status\": \"OK\",\n        \"version\": \"v0.7.1\"\n      }\n    ],\n    \"detail\": \"v0.7.1\",\n    \"id\": \"d2\",\n    \"status\": \"OK\"\n  },\n  {\n    \"checks\": [\n      {\n        \"command\": \"dot -V\",\n        \"detail\": \"dot - graphviz version 2.44.0 (0)\",\n        \"executable\": \"/usr/bin/dot\",\n        \"status\": \"OK\",\n        \"version\": \"dot - graphviz version 2.44.0 (0)\"\n      }\n    ],\n    \"detail\": \"dot - graphviz version 2.44.0 (0)\",\n    \"id\": \"graphviz\",\n    \"status\": \"OK\"\n  },\n  {\n    \"checks\": [\n      {\n        \"command\": \"plantuml -version\",\n        \"detail\": \"Error: Unable to access jarfile /users/a/e/aereinh/.tmp/codex-care/care_toolkit_shadow_er8ro9_y/AI_Research_Toolkit/.local/cache/plantuml/plantuml.jar\",\n        \"executable\": \"/users/a/e/aereinh/.tmp/codex-care/care_toolkit_shadow_er8ro9_y/AI_Research_Toolkit/bin/plantuml\",\n        \"status\": \"BROKEN\",\n        \"version\": \"Error: Unable to access jarfile /users/a/e/aereinh/.tmp/codex-care/care_toolkit_shadow_er8ro9_y/AI_Research_Toolkit/.local/cache/plantuml/plantuml.jar\"\n      }\n    ],\n    \"detail\": \"Error: Unable to access jarfile /users/a/e/aereinh/.tmp/codex-care/care_toolkit_shadow_er8ro9_y/AI_Research_Toolkit/.local/cache/plantuml/plantuml.jar\",\n    \"id\": \"plantuml\",\n    \"status\": \"BROKEN\"\n  },\n  {\n    \"detail\": \"manual or non-software resource\",\n    \"id\": \"paper2any\",\n    \"status\": \"SKIPPED\"\n  },\n  {\n    \"detail\": \"manual or non-software resource\",\n    \"id\": \"academic-figure-generator\",\n    \"status\": \"SKIPPED\"\n  }\n]\n"
+    },
+    {
+      "command": "bin/ai-research-toolkit status",
+      "exit_code": 0,
+      "stderr": "",
+      "stdout": "d2\tFalse\tNone\tNone\tNone\tclean\ngraphviz\tFalse\tNone\tNone\tNone\tclean\ndrawio\tFalse\tNone\tNone\tNone\tclean\nplantuml\tFalse\tNone\tNone\tNone\tclean\ntypst\tFalse\tNone\tNone\tNone\tclean\nmanim\tFalse\tNone\tNone\tNone\tclean\ndiagrams-py\tFalse\tNone\tNone\tNone\tclean\nexcalidraw\tFalse\tNone\tNone\tNone\tclean\npaper2any\tTrue\tNone\tNone\tNone\tclean\nautofigure\tFalse\tNone\tNone\tNone\tclean\nacademic-figure-generator\tTrue\tNone\tNone\tNone\tclean\nfigures4papers\tTrue\tNone\tNone\tNone\tclean\nawesome-ai-research-writing\tTrue\tNone\tNone\tNone\tclean\nawesome-autoresearch\tTrue\tNone\tNone\tNone\tclean\n"
+    },
+    {
+      "command": "bin/ai-research-toolkit smoke",
+      "exit_code": 0,
+      "stderr": "",
+      "stdout": "d2\tOK\t.local/smoke/d2/smoke_architecture.svg\tsuccess: successfully compiled examples/smoke/d2/smoke_architecture.d2 to .local/smoke/d2/smoke_architecture.svg in 71.61666ms\ngraphviz\tOK\t.local/smoke/graphviz/smoke_map.svg\t\nplantuml\tBROKEN\t.local/smoke/plantuml/smoke_sequence.svg\tError: Unable to access jarfile /users/a/e/aereinh/.tmp/codex-care/care_toolkit_shadow_er8ro9_y/AI_Research_Toolkit/.local/cache/plantuml/plantuml.jar\ntypst\tBROKEN\t.local/smoke/typst/smoke_note.pdf\t/users/a/e/aereinh/.tmp/codex-care/care_toolkit_shadow_er8ro9_y/AI_Research_Toolkit/bin/typst: line 5: /users/a/e/aereinh/.tmp/codex-care/care_toolkit_shadow_er8ro9_y/AI_Research_Toolkit/.local/envs/typst/typst: No such file or directory\nmanim\tBROKEN\t\t/users/a/e/aereinh/.tmp/codex-care/care_toolkit_shadow_er8ro9_y/AI_Research_Toolkit/bin/manim: line 5: /users/a/e/aereinh/.tmp/codex-care/care_toolkit_shadow_er8ro9_y/AI_Research_Toolkit/.local/envs/python-tools/bin/python: No such file or directory\n"
+    }
+  ],
+  "shadow_mode": true,
+  "source_root": "/overflow/htzhu/mingcheng_new/AI_Research_Toolkit"
+}

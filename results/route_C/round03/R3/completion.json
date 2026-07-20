@@ -1,0 +1,14 @@
+{
+  "M11_started": false,
+  "finalizer_job_id": "59501378",
+  "hosted_metric_claim": false,
+  "push_performed": false,
+  "review_md_written_by_round03": false,
+  "route_negative_decision": "NOT_REVIEWED",
+  "route_promotion_decision": "NOT_REVIEWED",
+  "runtime_job_id": "59501370",
+  "scientific_resolution_status": "AWAITING_REVIEW",
+  "status": "READY_FOR_REVIEW",
+  "token": "ROUTE_C_ROUND03_TERMINAL_PACKET_READY_FOR_REVIEW",
+  "validation_upload": false
+}

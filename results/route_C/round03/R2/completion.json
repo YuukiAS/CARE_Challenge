@@ -1,0 +1,17 @@
+{
+  "case_count": 12,
+  "final_freeze_created": false,
+  "forbidden_actions": {
+    "formal_training": false,
+    "push": false,
+    "review_md": false,
+    "route_promotion": false,
+    "validation_packaging_upload": false
+  },
+  "formal_training_credit": "zero",
+  "git_head": "cdc6f0472ad56a6125aeefb25b19aeddc504658a",
+  "known_bad_status": "PASS",
+  "registration_pair_count": 60,
+  "status": "READY_FOR_CONTROLLER_MERGE",
+  "token": "ROUTE_C_ROUND03_R2_FREEZE_CANDIDATE_READY"
+}

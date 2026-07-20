@@ -1,0 +1,2 @@
+status,velocity_shape,scaling_and_squaring_steps,jacobian_min,jacobian_negative_fraction,inverse_consistency_error,real_case_metrics
+PREFLIGHT_ONLY_NEEDS_REAL_CASE_METRICS,"[1, 3, 8, 16, 16]",7,0.8128119111061096,0.0,0.037919092923402786,EVIDENCE_NOT_FOUND

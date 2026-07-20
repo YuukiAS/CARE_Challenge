@@ -1,0 +1,15 @@
+{
+  "blockers": [],
+  "executor": "R1",
+  "formal_training_credit": "zero",
+  "git_head": "618ef2596a06845bad9155b01f17040f72504faa",
+  "mode": "fresh_replay",
+  "partition": "htzhulab",
+  "python": "/users/a/e/aereinh/CARE/envs/env_CARE/bin/python",
+  "python_version": "3.12.13",
+  "route_C_round03_script_hashes": {
+    "scripts/evaluation/route_C_round03/run_full_replay_and_interventions.py": "9ad83309c67479001294d79007ac685db0be07d82877f777bc681a60c5a92ca9",
+    "scripts/route_C_round03/preflight.py": "84a294a17a264e90fb0d3f980229ae4a785361a2d754b214951d48f87e3a05f4"
+  },
+  "status": "PASS"
+}

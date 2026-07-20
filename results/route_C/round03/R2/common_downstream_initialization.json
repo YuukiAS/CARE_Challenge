@@ -1,0 +1,24 @@
+{
+  "common_initialization_path": "/users/a/e/aereinh/CARE_worktrees/route_C/results/route_C/round03/R2/common_downstream_initialization.pt",
+  "common_initialization_sha256": "b2505729d54b0a0e4ea7bfbe3653c8a4a6cf163692a62ba552122fa2e06498f5",
+  "distinct_pretrained_random_source_hashes": true,
+  "identical_config_data_augmentation_optimizer_schedule_cadence_selector": true,
+  "identical_downstream_parameter_names": true,
+  "identical_downstream_parameter_shapes": true,
+  "identical_trainable_masks": true,
+  "lanes": {
+    "pretrained": {
+      "after_hash": "1a415a7398815ab38e56b913a8734559464f1da6ec90b1feccd988c52b84fa2c",
+      "changed_parameter_tensors": 4,
+      "loss": 0.0696215108036995,
+      "source_hash": "481dc37769e8b894a9774dcaf8ee1e63318e9070434fe64f67162a6a23381a86"
+    },
+    "random_control": {
+      "after_hash": "fe579210bb18d242451e693fe39cdf09d45bbe9bc74fe0f578095022d103b588",
+      "changed_parameter_tensors": 4,
+      "loss": 0.10139995813369751,
+      "source_hash": "3cd1ebf4891fa5f2f5212b48506455214a3b328b55fba0afe39266fe9e8245b6"
+    }
+  },
+  "status": "PASS"
+}

@@ -1,0 +1,33 @@
+{
+  "checkpoint_file_sha256_receipt_status": "C0_LIGHTWEIGHT_INVENTORY_ONLY_NONFINAL",
+  "checkpoint_inventory_rows": 125,
+  "mapping_rows": 37,
+  "no_training_or_slurm_submitted": true,
+  "r1_clean_reload_obligation": {
+    "c0_must_not_be_interpreted_as_completed_checkpoint_reload_receipt": true,
+    "must_record": [
+      "checkpoint_path",
+      "checkpoint_sha256",
+      "loaded_state_dict_sha256",
+      "argv",
+      "code_hash",
+      "config_hash",
+      "split_hash",
+      "case_hash",
+      "label_hash",
+      "preprocess_hash",
+      "decode_hash",
+      "metric_hash",
+      "evaluator_hash",
+      "raw_output_manifest"
+    ],
+    "required": true,
+    "scope": "every_recoverable_checkpoint_before_R1_completion"
+  },
+  "recoverable_checkpoint_rows": 125,
+  "required_outputs_present": true,
+  "route_id": "route_C",
+  "state_dict_sha256_status": "DEFERRED_TO_R1_CLEAN_RELOAD",
+  "status": "READY_FOR_CONTROLLER_MERGE",
+  "token": "ROUTE_C_ROUND03_C0_READY_FOR_CONTROLLER_MERGE"
+}

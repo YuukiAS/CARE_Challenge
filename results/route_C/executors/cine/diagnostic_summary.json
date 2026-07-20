@@ -1,0 +1,15 @@
+{
+  "anatomy_source_status": "MISSING_WEIGHT_PATH",
+  "case_input_status": "MISSING_CASE_INPUT_PATHS",
+  "formal_runtime_allowed": false,
+  "formal_training_credit": 0,
+  "gate_status_counts": {
+    "EVIDENCE_NOT_FOUND": 6,
+    "PASS": 3,
+    "PASS_ZERO_CREDIT_PREFLIGHT": 5
+  },
+  "known_bad_selftest_report": "results/route_C/executors/cine/known_bad_selftest_report.md",
+  "lane_state": "ROUTE_C_NEEDS_EVIDENCE",
+  "registration_dependency_status": "ANTSPY_AVAILABLE",
+  "strict_validator_report": "results/route_C/executors/cine/strict_validator_report.md"
+}

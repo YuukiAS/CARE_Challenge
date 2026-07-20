@@ -1,0 +1,24 @@
+{
+  "anchor_residual_control_off_path": {
+    "causal_intervention": false,
+    "expected_changed_voxels": 0,
+    "symbol": "baseline_blend['gate']"
+  },
+  "final_logits_assignment_line": 1376,
+  "final_output_base_expected": "SRR_PROPOSAL_REFINEMENT",
+  "final_output_base_line": 1412,
+  "historical_final_path": "m10_srr_owned_final_logits_and_probability_composition",
+  "m10_final_probabilities_line": 1395,
+  "required_causal_nodes": [
+    "retrieval",
+    "prototype_memory_off",
+    "scar_proposal_off",
+    "edema_proposal_off",
+    "scar_refiner_off",
+    "edema_refiner_off",
+    "nnunet_context_off",
+    "final_probability_composition_off",
+    "final_srr_logits_replaced"
+  ],
+  "source_file": "src/care_myocardium/models/srr_propref.py"
+}

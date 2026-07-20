@@ -1,0 +1,12 @@
+{
+  "anchor_file_count_sampled": 33,
+  "anchor_manifest_sha256": "0a2fc0d554fbc84137068eeba9e5fafd6f6d7e7af883b7a0ee178988b1e1e72a",
+  "anchor_root": "data/nnUNet/nnUNet_results/Dataset501_CAREMyoPS/nnUNetTrainer_500epochs__nnUNetPlans__3d_fullres",
+  "anchor_root_exists": true,
+  "decode_sha256": "13cb963ec42dc23c2c45f78d554ffd334c3db04a766b41c8088f55bcab7a1583",
+  "evaluator_sha256": "5ff1a1da327d59f99f22238eb712544a8a146c12ddce1ef8823f11ab9607f647",
+  "frozen_before_replay": true,
+  "prediction_sha256_by_case": {},
+  "read_only": true,
+  "resolved_anchor_root": "/users/a/e/aereinh/CARE/data/nnUNet/nnUNet_results/Dataset501_CAREMyoPS/nnUNetTrainer_500epochs__nnUNetPlans__3d_fullres"
+}

@@ -1,0 +1,10 @@
+{
+  "exact_match_skip_count": 7,
+  "required_outputs_present": true,
+  "rerun_required_count": 0,
+  "route_id": "route_C",
+  "stage": "C0B",
+  "status": "READY_FOR_CONTROLLER_MERGE",
+  "token": "ROUTE_C_ROUND03_C0B_TERMINAL_READY_FOR_CONTROLLER_MERGE",
+  "training_submitted": false
+}

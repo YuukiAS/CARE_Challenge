@@ -1,0 +1,46 @@
+{
+  "controller_waiver_allowed": false,
+  "fields": [
+    "architecture",
+    "loss",
+    "config",
+    "split",
+    "case",
+    "label",
+    "preprocess",
+    "augmentation",
+    "optimizer",
+    "budget",
+    "checkpoint",
+    "decode"
+  ],
+  "mismatch_requires_exact_phase_rerun": [
+    "architecture",
+    "loss",
+    "config",
+    "split",
+    "case",
+    "label",
+    "preprocess",
+    "augmentation",
+    "optimizer",
+    "budget",
+    "checkpoint",
+    "decode"
+  ],
+  "phases": [
+    "alignment_control",
+    "d0_control",
+    "d1_spatial_br2",
+    "d2_hierarchical_psip",
+    "d3_full_propref",
+    "hard_negative_refresh",
+    "no_context_control"
+  ],
+  "source_hashes": {
+    "architecture": "64a3f5c49763719d87e020512bd945b1b452df70ba7d05881fde90af2c019d00",
+    "config": "df42f9ee55a3ba6ac616a37b2455cb7bca67c5f751f0c5a31c4a18938b107a9b",
+    "legacy_data_decode": "5ff1a1da327d59f99f22238eb712544a8a146c12ddce1ef8823f11ab9607f647",
+    "training_entrypoint": "c1d8124dd0e3d0407cfa0fca1e6ea310121e00a4ece290c4b0dc19cf638dd1a3"
+  }
+}

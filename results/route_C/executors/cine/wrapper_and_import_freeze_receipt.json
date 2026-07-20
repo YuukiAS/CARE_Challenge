@@ -1,0 +1,45 @@
+{
+  "argv": [
+    "scripts/route_C/cine/preflight.py",
+    "--strict",
+    "--print-contract"
+  ],
+  "files": [
+    {
+      "path": "/users/a/e/aereinh/CARE_worktrees/route_C_executors/cine_fidelity/configs/route_C/cine/fidelity_contract.json",
+      "sha256": "45b101b4005bfd90a912c999fa6754995585e2489d3fe4a624621a77d0458375"
+    },
+    {
+      "path": "/users/a/e/aereinh/CARE_worktrees/route_C_executors/cine_fidelity/src/care_myocardium/route_C/cine/fidelity.py",
+      "sha256": "85fa22e16f25c2b366a917504fbe685e40f879ddb73cfdd81345d7be05f76745"
+    },
+    {
+      "path": "/users/a/e/aereinh/CARE_worktrees/route_C_executors/cine_fidelity/scripts/route_C/cine/preflight.py",
+      "sha256": "957d3e1a1038e1d8d9fe2d5761b2252cd43b003d975807b5d58fd610b5e5f95b"
+    },
+    {
+      "path": "/users/a/e/aereinh/CARE_worktrees/route_C_executors/cine_fidelity/scripts/validation/route_C/cine/strict_validator.py",
+      "sha256": "14df378ad2c5ab977b9f1edb7d5e78f13972c5df61dbe3ce4c2015845696c7b0"
+    },
+    {
+      "path": "/users/a/e/aereinh/CARE_worktrees/route_C_executors/cine_fidelity/src/care_myocardium/cine/registration_model.py",
+      "sha256": "780a4b76e8490dffb4299afbcb972a82943a2d982a810d1348b84a0f1064676b"
+    },
+    {
+      "path": "/users/a/e/aereinh/CARE_worktrees/route_C_executors/cine_fidelity/src/care_myocardium/cine/temporal_model.py",
+      "sha256": "ef725222aeb437b7f25162133ddbbe94789e023f717efcec3bf138b98711a1fa"
+    },
+    {
+      "path": "/users/a/e/aereinh/CARE_worktrees/route_C_executors/cine_fidelity/src/care_myocardium/cine/temporal_dictionary.py",
+      "sha256": "4e87ff2f72b07061bbf25b9d4b0b71932d3cabb9321160bb33d5d25becc27032"
+    },
+    {
+      "path": "/users/a/e/aereinh/CARE_worktrees/route_C_executors/cine_fidelity/src/care_myocardium/cine/cinema_adapter.py",
+      "sha256": "3eaffe349c86b2d50175bcdee32f1393a2dfea29477c2dd184987eda96f73c7b"
+    }
+  ],
+  "freeze_hash": "8f24e59b31c577d404bef7590361ae3d90226de973b60fc1f8fa5f90286b0fe7",
+  "old_first_party_dependencies_are_read_only": true,
+  "route_C_entrypoint": "scripts/route_C/cine/preflight.py",
+  "status": "ROUTE_C_EXECUTED_GRAPH_FROZEN"
+}

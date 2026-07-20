@@ -1,0 +1,35 @@
+{
+  "checkpoint_parents": [
+    "R1 selected D2/D3",
+    "R2 freeze candidate",
+    "R3 controller final freeze"
+  ],
+  "config_sha256": "bbfbd4b2a5a9e2d7b22840ecde8d8295bef9104b4b4de133df1d3c2fdc6f0df9",
+  "dataflow_nodes": [
+    "CineMA decoder hook",
+    "16-channel projection",
+    "SVF",
+    "SyNOnly",
+    "temporal inputs",
+    "final logits"
+  ],
+  "external_assets": {
+    "CineMA": "c7a60195e6c0aa920b0d0d8221d2ea7a75b6a5ea570763c3bf4924398f5ae85f"
+  },
+  "final_path": "results/route_C/round03/R3/temporal_final_output_interventions.csv",
+  "intervention_points": [
+    "registered temporal on/off",
+    "motion/anatomy controls"
+  ],
+  "output_sha256": "58603c95d7652108fa364750b396dbe282e9c2a85ab707b7b8a2f54112e86e87",
+  "route_commit": "cdc6f0472ad56a6125aeefb25b19aeddc504658a",
+  "source_files": [
+    "scripts/route_C_round03/run_cine_implementation_gate.py",
+    "scripts/training/route_C_round03/run_frozen_cine_runtime.py"
+  ],
+  "source_symbols": [
+    "ConvUNetR",
+    "TinyDownstream",
+    "RouteCRound03TemporalCineInput"
+  ]
+}

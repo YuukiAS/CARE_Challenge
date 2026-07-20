@@ -1,0 +1,4 @@
+metric,value,scope
+local_myocardium_proxy_dice,0.721,local_frozen_runtime_not_hosted
+registration_pair_pass_fraction,1.0,60_real_manifest_pairs
+temporal_changed_case_fraction,1.0,12_cases

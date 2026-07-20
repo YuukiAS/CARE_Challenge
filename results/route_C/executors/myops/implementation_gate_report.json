@@ -1,0 +1,11 @@
+{
+  "failed_items": [
+    "FAIL_RESIDUAL_GATE_DISCONNECTED_FROM_M10_FINAL_OUTPUT"
+  ],
+  "formal_slurm_allowed": false,
+  "gate_status": "FAIL",
+  "intervention_rows": 8,
+  "lane_id": "route_C_myops_evidence_executor",
+  "raw_manifest_rows": 9,
+  "selector_rows": 1
+}

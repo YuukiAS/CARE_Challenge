@@ -1,0 +1,11 @@
+{
+  "asset_sha256": "c7a60195e6c0aa920b0d0d8221d2ea7a75b6a5ea570763c3bf4924398f5ae85f",
+  "controller_final_freeze_sha256": "8703c1f1817ba04308413fed95d5889ddc5dfa92edfe6d3d98ca38c378a5cd29",
+  "environment_sha256": "3ea144c9575c8cac624f7abf7203769bcd411e13f879c7074c308d75f8f131ea",
+  "exact_match": true,
+  "merged_route_commit": "cdc6f0472ad56a6125aeefb25b19aeddc504658a",
+  "r3_recomputed_sha256": "8e03cc0fc98fd73e88a589986d9ae44ecf2b6e615941c6c4f4f2c76da205b60b",
+  "resolved_commands_sha256": "2773680e16923fbac4d4e260b74826bc4069a18ef97ce2a9dbe57fb7c442cd7f",
+  "smoke_sha256": "8c101a29cd5a4ca6053b07db61af416f2974177ed1f9ed173391d085ae2053e7",
+  "transitive_imports_sha256": "8e03cc0fc98fd73e88a589986d9ae44ecf2b6e615941c6c4f4f2c76da205b60b"
+}

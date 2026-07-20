@@ -1,0 +1,30 @@
+{
+  "authority": {
+    "hosted_metric_claim": false,
+    "route_negative_decision": "NOT_REVIEWED",
+    "route_promotion_decision": "NOT_REVIEWED",
+    "scientific_resolution_status": "AWAITING_REVIEW"
+  },
+  "config_sha256": "bbfbd4b2a5a9e2d7b22840ecde8d8295bef9104b4b4de133df1d3c2fdc6f0df9",
+  "created_at_utc": "2026-07-18T21:14:18.763460+00:00",
+  "external_asset_sha256": "c7a60195e6c0aa920b0d0d8221d2ea7a75b6a5ea570763c3bf4924398f5ae85f",
+  "merged_route_commit": "cdc6f0472ad56a6125aeefb25b19aeddc504658a",
+  "r2_candidate_only_acknowledged": true,
+  "r2_freeze_candidate_sha256": "092b5f85afcd31d23dd4fb5b84343ee48d5fd4245493b25cb172ebf071f0908f",
+  "source_hashes": {
+    "configs/route_C_round03/cine_fidelity.yaml": "bbfbd4b2a5a9e2d7b22840ecde8d8295bef9104b4b4de133df1d3c2fdc6f0df9",
+    "results/route_C/round03/R2/cine_manifest.csv": "90e56c8ec85e9a3f9e390118b02850953de66230360457235ea7c4de38caf536",
+    "results/route_C/round03/R2/cinema_provenance.json": "41dcd2f157669c4417e45c317200b5259599c3da9e37db028daafe666cb6cff7",
+    "results/route_C/round03/R2/freeze_candidate.json": "092b5f85afcd31d23dd4fb5b84343ee48d5fd4245493b25cb172ebf071f0908f",
+    "results/route_C/round03/R2/real_syn_pair_smoke.json": "46ee29e097c7bf9d9fe53ea9dfeea1af63d5e41cb04a5c274cce95dbc76be0bc",
+    "results/route_C/round03/R2/svf_real_pair_smoke.json": "a685dd09498b362b5a00a23d5510f686624dd8e310d78f101994b234a4f58c68",
+    "results/route_C/round03/R2/temporal_consumption_smoke.json": "f602055ba1d6e9b83fd55ebd49122c67c05cbc9b06e8bd825f9af2b5bad36b84",
+    "scripts/route_C_round03/aggregate_packet.py": "be2e164c38253ec25326646ae264d4cb4c132343b640f601a48bfaccd87c98b6",
+    "scripts/route_C_round03/run_cine_implementation_gate.py": "18fec7e3fc369578f4dd0f8fb2ce543d2785f0d124e7f99355a21476e0891f5b",
+    "scripts/training/route_C_round03/run_frozen_cine_runtime.py": "71e02783c36dd4979dfdf31bc7366441799c0fe9118114edca6e5c7f5850e8e6",
+    "scripts/validation/route_C_round03/validate_final_packet.py": "d10e47ba9abd1f3109b80abdb82d22ae84bf2db8f5feddab14d51fd29c1d12ba",
+    "scripts/validation/route_C_round03/validate_r2_packet.py": "3f899e412c9fa6ade559d25d5794256c17de76201c3bc5f67cd442663e0b4712"
+  },
+  "source_sha256": "8e03cc0fc98fd73e88a589986d9ae44ecf2b6e615941c6c4f4f2c76da205b60b",
+  "status": "CONTROLLER_FINAL_FREEZE"
+}

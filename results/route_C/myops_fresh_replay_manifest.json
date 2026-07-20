@@ -1,0 +1,31 @@
+{
+  "argv": [
+    "scripts/route_C/myops/replay_intervention_selector.py",
+    "--evaluate",
+    "--force",
+    "--phase",
+    "d2_hierarchical_psip",
+    "--checkpoint",
+    "checkpoint_best.pt",
+    "--max-cases",
+    "1",
+    "--device",
+    "cpu"
+  ],
+  "cache_isolation": true,
+  "case_ids": [
+    "Case2002"
+  ],
+  "case_list_hash": "7d173e501d57aa6064240bd0e4993fb905a0b44081f5b6c41d1d398b0f8dea48",
+  "checkpoint_name": "checkpoint_best",
+  "checkpoint_path": "/users/a/e/aereinh/CARE/results/20260711_srr_v3_m10_complete_mechanism_repair/runtime/m10_myops_training_executor/partition_race_retry11/htzhulab/variants/m10_d2_hierarchical_psip_formal/checkpoints/fold_0/propref_config/checkpoint_best.pt",
+  "checkpoint_sha256": "8bddcbbd760babe5c3241915ca925cf47cc36bf27128eb682ed3ea043a4d1ae4",
+  "finished_epoch_seconds": 1784110360.1513855,
+  "force_evaluate": true,
+  "inference_call_count": 9,
+  "lane_id": "route_C_myops_evidence_executor",
+  "phase": "d2_hierarchical_psip",
+  "runtime_output_root": "/users/a/e/aereinh/CARE_worktrees/route_C_executors/myops_evidence/results/route_C/executors/myops/runtime",
+  "started_epoch_seconds": 1784110080.8555923,
+  "status": "FRESH_ROUTE_C_REPLAY_COMPLETE"
+}

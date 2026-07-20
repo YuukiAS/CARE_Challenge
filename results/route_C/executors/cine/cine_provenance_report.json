@@ -1,0 +1,37 @@
+{
+  "anatomy_source": {
+    "blocker": "missing anatomy weight file: /users/a/e/aereinh/CARE_worktrees/route_C_executors/cine_fidelity/results/20260704_external_assets_cinema_registration/external_assets/weights/CineMA/acdc_sax/acdc_sax_0.safetensors",
+    "class_mapping": {
+      "background": 0,
+      "lv": 2,
+      "myocardium": 1,
+      "rv": 3
+    },
+    "exists": false,
+    "expected_sha256": "c7a60195e6c0aa920b0d0d8221d2ea7a75b6a5ea570763c3bf4924398f5ae85f",
+    "license": "MIT",
+    "repository": "https://github.com/mathpluscode/CineMA.git",
+    "sha256": "",
+    "sha256_matches_expected": false,
+    "source_name": "CineMA ACDC SAX seed0 local asset",
+    "status": "MISSING_WEIGHT_PATH",
+    "weight_path": "/users/a/e/aereinh/CARE_worktrees/route_C_executors/cine_fidelity/results/20260704_external_assets_cinema_registration/external_assets/weights/CineMA/acdc_sax/acdc_sax_0.safetensors"
+  },
+  "dependency_probe": {
+    "ants_cli": "",
+    "antspy_importable": true,
+    "simpleitk_importable": true,
+    "status": "ANTSPY_AVAILABLE"
+  },
+  "official_mapping": {
+    "compact_to_raw": {
+      "0": 0,
+      "1": 200,
+      "2": 500,
+      "3": 2221
+    },
+    "layout": "CineMyoPS/Anonymous Center/Case****/Case****_pred.nii.gz",
+    "task": "myocardium_cinemyops",
+    "upload_packaging": "forbidden_for_executor"
+  }
+}

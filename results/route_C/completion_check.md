@@ -1,0 +1,24 @@
+# Route C Round03 Completion Check
+
+status: ROUTE_C_ROUND03_TERMINAL_PACKET_READY_FOR_REVIEW
+review_ready: true
+reviewer_revision_repair: true
+reviewer_revision_blocker: positive_negative_prototype_swap_known_bad_fail_open
+fresh_r1_repair_job_id: 59530203
+fresh_r1_repair_job_state: COMPLETED
+fresh_r1_repair_exit_code: 0:0
+superseded_failed_repair_job_id: 59530017
+r1_positive_negative_prototype_swap_rows: 88
+r1_positive_negative_prototype_swap_failed_rows: 0
+r1_positive_negative_prototype_swap_observed_behavior: KNOWN_BAD_DETECTED_HARMFUL
+r1_no_op_nonzero_rows: 0
+r1_anchor_residual_control_off_path_nonzero_rows: 0
+strict_validators: PASS
+known_bad_fixtures: PASS
+route_promotion_decision: NOT_REVIEWED
+route_negative_decision: NOT_REVIEWED
+scientific_resolution_status: AWAITING_REVIEW
+validation_upload: false
+hosted_metric_claim: false
+M11_started: false
+push_performed: false

@@ -1,0 +1,128 @@
+{
+  "reviewer_revision_repair": {
+    "status": "PASS",
+    "repair_job_id": "59530203",
+    "repair_job_state": "COMPLETED",
+    "repair_exit_code": "0:0",
+    "repair_elapsed": "00:18:53",
+    "repair_log_path": "logs/route_C/round03/R1Final_59530203_20260719_065904.log",
+    "superseded_failed_repair_job_id": "59530017",
+    "superseded_failed_repair_state": "FAILED",
+    "superseded_failed_repair_exit_code": "2:0",
+    "aggregation_command": "/users/a/e/aereinh/CARE/envs/env_CARE/bin/python scripts/evaluation/route_C_round03/run_full_replay_and_interventions.py --aggregate-only --manifest results/route_C/round03/C0/phase_checkpoint_inventory.csv --anchor results/route_C/round03/C0/immutable_anchor.json --out results/route_C/round03/R1 --device cuda",
+    "validator_commands": [
+      "/users/a/e/aereinh/CARE/envs/env_CARE/bin/python scripts/validation/route_C_round03/validate_r1_packet.py --strict results/route_C/round03/R1",
+      "/users/a/e/aereinh/CARE/envs/env_CARE/bin/python scripts/validation/route_C_round03/validate_r2_packet.py --strict results/route_C/round03/R2",
+      "/users/a/e/aereinh/CARE/envs/env_CARE/bin/python scripts/validation/route_C_round03/validate_final_packet.py --strict results/route_C"
+    ],
+    "validator_exit_codes": [
+      0,
+      0,
+      0
+    ],
+    "known_bad_fixtures": "PASS",
+    "control_counts": {
+      "positive_negative_prototype_swap_rows": 88,
+      "positive_negative_prototype_swap_failed_rows": 0,
+      "no_op_nonzero_rows": 0,
+      "anchor_residual_control_off_path_nonzero_rows": 0
+    }
+  },
+  "accounting_continuation_launch": null,
+  "accounting_continuation_receipt_path": null,
+  "accounting_wait_seconds": 0,
+  "aggregation_command": "/users/a/e/aereinh/CARE/envs/env_CARE/bin/python scripts/route_C_round03/aggregate_packet.py --strict",
+  "aggregation_exit_code": 0,
+  "attempt_number": 1,
+  "awaiting_sacct_attempts": [
+    {
+      "poll": 0,
+      "states": [
+        "COMPLETED"
+      ]
+    }
+  ],
+  "awaiting_sacct_retry_interval": 30,
+  "awaiting_sacct_retry_seconds": 3600,
+  "elapsed": {
+    "59501275": "00:00:01",
+    "59501370": "00:00:00"
+  },
+  "exit_codes": {
+    "59501275": "0:0",
+    "59501370": "0:0"
+  },
+  "failure_class": null,
+  "final_state": "READY_FOR_LOCAL_PACKET_COMMIT",
+  "git_commit_decision": "COMMIT_LOCAL_PACKET",
+  "git_head_before": "0e11e3eb2e1f16d68b8c1d87a59e5f4f5cf7d156",
+  "job_attempt_lineage": [],
+  "job_states": {
+    "59501275": "COMPLETED",
+    "59501370": "COMPLETED"
+  },
+  "lock_path": "results/route_C/runtime/round03/R3/finalizer.lock",
+  "lock_released": true,
+  "log_paths": [
+    "results/route_C/runtime/round03/R3/R3Frozen_59501275.log",
+    "results/route_C/runtime/round03/R3/R3Frozen_59501370.log"
+  ],
+  "manifest_sha256": "not_recorded_here_to_avoid_manifest_finalizer_self_reference_cycle",
+  "mapper_final_status": "complete",
+  "next_retry_job_id_or_tmux_session": null,
+  "nodes": {
+    "59501275": "g1807htzh01",
+    "59501370": "g1807htzh01"
+  },
+  "precommit_head": "0e11e3eb2e1f16d68b8c1d87a59e5f4f5cf7d156",
+  "records": [
+    {
+      "command": "/users/a/e/aereinh/CARE/envs/env_CARE/bin/python scripts/route_C_round03/aggregate_packet.py --strict",
+      "exit_code": 0,
+      "stderr_tail": "",
+      "stdout_tail": "Route C Round03 packet aggregation passed\n"
+    },
+    {
+      "command": "/users/a/e/aereinh/CARE/envs/env_CARE/bin/python scripts/architecture/validate_care_architecture_wiki.py --strict",
+      "exit_code": 0,
+      "stderr_tail": "",
+      "stdout_tail": "care architecture wiki validation passed\n"
+    },
+    {
+      "command": "/users/a/e/aereinh/CARE/envs/env_CARE/bin/python scripts/validation/route_C_round03/validate_final_packet.py --strict results/route_C",
+      "exit_code": 0,
+      "stderr_tail": "",
+      "stdout_tail": "Route C Round03 final packet validation passed\n"
+    },
+    {
+      "command": "git diff --check",
+      "exit_code": 0,
+      "stderr_tail": "",
+      "stdout_tail": ""
+    }
+  ],
+  "replacement_job_ids": [],
+  "required_job_ids": [
+    "59501275",
+    "59501370"
+  ],
+  "retry_backend": "tmux_watcher",
+  "retry_count": 0,
+  "retry_reason": null,
+  "retryable": false,
+  "runtime_output_paths": [
+    "results/route_C/round03/R3/runtime_completion.json"
+  ],
+  "stage": "all",
+  "suggested_next_state": null,
+  "supersedes_job_ids": [],
+  "task_key": "route_C_round03_m10_forensic_evidence_and_cine_fidelity",
+  "tracked_paths": [],
+  "training_credit_policy": "zero_for_failed_startup",
+  "validator_commands": [
+    "/users/a/e/aereinh/CARE/envs/env_CARE/bin/python scripts/validation/route_C_round03/validate_final_packet.py --strict results/route_C"
+  ],
+  "validator_exit_codes": [
+    0
+  ]
+}

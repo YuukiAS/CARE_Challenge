@@ -1,0 +1,20 @@
+{
+  "adequate": true,
+  "case_count": 12,
+  "checkpoints": [
+    4000,
+    8000,
+    12000,
+    16000,
+    20000
+  ],
+  "full_case_events": 4,
+  "optimizer_steps": 20000,
+  "registration_gate_passed": true,
+  "selected_checkpoint_sha256": "ddebc47fe71e43c153a6d27c048940d13ea0bc4d3a6580f8ef3f8c5bd8b9ac5e",
+  "selected_reload_max_abs_diff": 0.0,
+  "submitted": true,
+  "train_loop_seconds": 7200,
+  "validation_events": 10,
+  "zero_credit_reason": ""
+}

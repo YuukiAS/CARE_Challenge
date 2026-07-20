@@ -1,0 +1,83 @@
+{
+  "array_job_id": "59496858",
+  "attempt_credit": "zero",
+  "attempt_partition": "htzhulab",
+  "coordinator_correction_recorded": true,
+  "effective_assignment_defect": "ROUTE_C_R1_ASSIGNMENT_PARTITION defaulted to htzhulab instead of the intended a100-gpu logical assignment; this duplicated already-covered htzhulab logical work and produced no validator-relevant a100-gpu shard credit.",
+  "forbidden_actions": {
+    "cross_route_write": false,
+    "hosted_metric_claim": false,
+    "M11_started": false,
+    "push": false,
+    "route_promotion": false,
+    "runtime_review_md": false,
+    "validation_packaging": false,
+    "validation_upload": false
+  },
+  "intended_repair_contract": {
+    "execution_partition": "htzhulab",
+    "required_environment": {
+      "ROUTE_C_R1_ASSIGNMENT_PARTITION": "a100-gpu",
+      "ROUTE_C_R1_PARTITION": "htzhulab"
+    },
+    "semantic_downscaling": false
+  },
+  "replacement_attempt": {
+    "array_job_id": "59497884",
+    "assigned_partition": "a100-gpu",
+    "attempt_partition": "htzhulab",
+    "credit": "full_for_62_a100_logical_shards",
+    "state": "COMPLETED",
+    "terminal_accounting": "all array tasks completed 0:0 on 2026-07-18 before finalizer 59498944"
+  },
+  "finalizer_coverage": {
+    "dependency": "afterany:59451000:59451001:59451002:59451087:59451661:59451662:59452729:59491654:59496858:59497884:59498943",
+    "finalizer_job_id": "59498944",
+    "finalizer_log": "logs/route_C/round03/R1Final_59498944_20260718_160355.log",
+    "finalizer_state": "COMPLETED",
+    "finalizer_exit_code": "0:0",
+    "strict_validator_output": "R1 packet validation passed"
+  },
+  "live_terminal_accounting_summary": {
+    "sacct_command": "sacct -X -j 59496858,59497884,59498943,59498944 --format=JobID,JobName%30,Partition%18,State,ExitCode,Elapsed,Start,End -P",
+    "attempt_59496858": {
+      "completed_tasks": 56,
+      "cancelled_task_range": "59496858_[56-61]",
+      "exit_codes": [
+        "0:0"
+      ],
+      "state_summary": "56 tasks COMPLETED 0:0; tasks 56-61 CANCELLED by 397557 at 2026-07-18T14:44:21; zero validator credit"
+    },
+    "attempt_59497884": {
+      "completed_tasks": 62,
+      "exit_codes": [
+        "0:0"
+      ],
+      "state_summary": "62 tasks COMPLETED 0:0; credited only as a100-gpu logical assignment replacement"
+    },
+    "attempt_59498943": {
+      "completed_tasks": 63,
+      "exit_codes": [
+        "0:0"
+      ],
+      "state_summary": "63 tasks COMPLETED 0:0; credited as htzhulab logical assignment replacement after 59497885 aggregate failure exposed the remaining assignment mismatch"
+    }
+  },
+  "log_path_note": "No per-task log files named with array id 59496858 were found under logs/route_C/round03; terminal accounting is bound by sacct rows recorded in r1_a100_assignment_export_noop_repair_lineage.json and by finalizer 59498944 strict validation.",
+  "packet_evidence": {
+    "completion_json": "results/route_C/round03/R1/completion.json",
+    "completion_json_sha256": "3ef38a32b957a10d0eff760db7c38012b7e3044fb089d4b7b751f67c5ab2176e",
+    "checkpoint_replay_receipts_csv": "results/route_C/round03/R1/checkpoint_replay_receipts.csv",
+    "checkpoint_replay_receipts_csv_sha256": "8c721e95133aef48c36ae0b366ec96ce309192c793bda7885de110ec5b818066",
+    "validator_relevant_receipts": {
+      "a100-gpu": 62,
+      "htzhulab": 63,
+      "total": 125,
+      "unique_assigned_phase_checkpoint_keys": 125
+    }
+  },
+  "route_id": "route_C",
+  "stage": "R1",
+  "status": "ZERO_CREDIT_DUPLICATE_ROUTING_ATTEMPT_TERMINAL_ACCOUNTED",
+  "timestamp_utc": "2026-07-18T21:35:00+00:00"
+}

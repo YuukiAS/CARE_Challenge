@@ -1,0 +1,14 @@
+{
+  "status": "PASS",
+  "strict": true,
+  "tests": [
+    "pinned_cinema_asset_provenance",
+    "real_12_case_manifest",
+    "official_convunetr_decoder_hook",
+    "matched_downstream_optimizer_step",
+    "first_party_svf_symmetric_scaling_squaring",
+    "real_antspy_synonly_pair",
+    "temporal_input_consumption_gradient",
+    "known_bad_fixtures"
+  ]
+}

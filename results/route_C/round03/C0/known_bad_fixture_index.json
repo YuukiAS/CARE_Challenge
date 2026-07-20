@@ -1,0 +1,32 @@
+{
+  "fixtures": [
+    {
+      "expected_result": "validator_nonzero",
+      "name": "old_18_of_125_partial_replay_as_completion"
+    },
+    {
+      "expected_result": "validator_nonzero",
+      "name": "missing_evaluate_force"
+    },
+    {
+      "expected_result": "validator_nonzero",
+      "name": "selector_without_immutable_anchor"
+    },
+    {
+      "expected_result": "validator_nonzero",
+      "name": "disconnected_intervention_row"
+    },
+    {
+      "expected_result": "validator_nonzero",
+      "name": "misnamed_residual_control_as_causal"
+    },
+    {
+      "expected_result": "validator_nonzero",
+      "name": "pending_monitor_as_ready"
+    },
+    {
+      "expected_result": "validator_nonzero",
+      "name": "forbidden_authority_claim"
+    }
+  ]
+}

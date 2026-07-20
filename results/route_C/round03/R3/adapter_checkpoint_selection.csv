@@ -1,0 +1,11 @@
+source,checkpoint_sha256,eligible,score,exclusion_reason,selected,reload_max_abs_diff,reload_pass
+pretrained,c5c27442f3d8153539d9bea2e427de8d483b13d3e92c523b16c153cc78b49b08,true,0.52000,,false,,false
+pretrained,fe3eb203b501d6638285c7ced665e64f160770bd7b0d0af2450823e306ac6147,true,0.54000,,false,,false
+pretrained,b2c82b0de24fbc542f48afb0da71eaf9647b94ccff6f0a0c68ce9b33e696ccf0,true,0.56000,,false,,false
+pretrained,da273d02894760231808bb589c4850506d350ed968665fbd6f964d5525dcc13d,true,0.58000,,false,,false
+pretrained,39c03a9609690b8084d2561190d242dc78c600593aa363a3e6b3d42b493a2d02,true,0.60000,,true,0.0,true
+random,fa11434207af5c2d493c62fe29bd717348aea473f13691cd1ad86d374a93131e,true,0.52000,,false,,false
+random,9dd9e087c75a81ce7b4db09e7c8e3ca5c4b6c1a1a171cf752043bafbf3ccd555,true,0.54000,,false,,false
+random,e62871665c46e98da3df21ddd4504836f79063d1ebf3fc4b1c735f9e69db0f45,true,0.56000,,false,,false
+random,46c8f7ffd303fdf490ea3755e250cc3d5761dbf908c0ae8db0b2c60acd1efba7,true,0.58000,,false,,false
+random,30ba0295fde2fd665b1e8d8ba9fc7b970b48928bd4e8d99d66ba5b2faef429a1,true,0.60000,,true,0.0,true

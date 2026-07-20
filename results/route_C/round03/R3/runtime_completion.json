@@ -1,0 +1,9 @@
+{
+  "elapsed_seconds": 0.033,
+  "freeze_sha256": "8703c1f1817ba04308413fed95d5889ddc5dfa92edfe6d3d98ca38c378a5cd29",
+  "job_id": "59501370",
+  "output_dir": "results/route_C/runtime/round03/R3",
+  "partition": "htzhulab",
+  "status": "R3_RUNTIME_TERMINAL",
+  "token": "ROUTE_C_ROUND03_R3_RUNTIME_TERMINAL"
+}

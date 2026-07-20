@@ -1,0 +1,764 @@
+{
+  "accounting_scope": "explicit coverage receipt for terminal old attempts omitted by interim finalizer dependency before final aggregation",
+  "active_attempts_pending": [
+    "59498943",
+    "59498944"
+  ],
+  "all_relevant_sacct_stdout": "JobID|JobName|Partition|State|ExitCode|Elapsed|Start|End|AllocTRES\n59451000_[0-41]|RCR3R1Replay|htzhulab|CANCELLED by 397557|0:0|00:00:00|None|2026-07-18T05:39:55|\n59451001_[0-41]|RCR3R1Replay|a100-gpu|CANCELLED by 397557|0:0|00:00:00|None|2026-07-18T05:39:55|\n59451002_0|RCR3R1Replay|volta-gpu|FAILED|2:0|00:02:09|2026-07-18T05:24:59|2026-07-18T05:27:08|billing=20,cpu=8,gres/gpu:tesla_v100-sxm2-16gb=1,gres/gpu=1,mem=64G,node=1\n59451002_0.batch|batch||FAILED|2:0|00:02:09|2026-07-18T05:24:59|2026-07-18T05:27:08|cpu=8,gres/gpu:tesla_v100-sxm2-16gb=1,gres/gpu=1,mem=64G,node=1\n59451002_0.extern|extern||COMPLETED|0:0|00:02:09|2026-07-18T05:24:59|2026-07-18T05:27:08|billing=20,cpu=8,gres/gpu:tesla_v100-sxm2-16gb=1,gres/gpu=1,mem=64G,node=1\n59451002_1|RCR3R1Replay|volta-gpu|FAILED|2:0|00:02:09|2026-07-18T05:24:59|2026-07-18T05:27:08|billing=20,cpu=8,gres/gpu:tesla_v100-sxm2-16gb=1,gres/gpu=1,mem=64G,node=1\n59451002_1.batch|batch||FAILED|2:0|00:02:09|2026-07-18T05:24:59|2026-07-18T05:27:08|cpu=8,gres/gpu:tesla_v100-sxm2-16gb=1,gres/gpu=1,mem=64G,node=1\n59451002_1.extern|extern||COMPLETED|0:0|00:02:09|2026-07-18T05:24:59|2026-07-18T05:27:08|billing=20,cpu=8,gres/gpu:tesla_v100-sxm2-16gb=1,gres/gpu=1,mem=64G,node=1\n59451002_2|RCR3R1Replay|volta-gpu|FAILED|2:0|00:02:09|2026-07-18T05:24:59|2026-07-18T05:27:08|billing=20,cpu=8,gres/gpu:tesla_v100-sxm2-16gb=1,gres/gpu=1,mem=64G,node=1\n59451002_2.batch|batch||FAILED|2:0|00:02:09|2026-07-18T05:24:59|2026-07-18T05:27:08|cpu=8,gres/gpu:tesla_v100-sxm2-16gb=1,gres/gpu=1,mem=64G,node=1\n59451002_2.extern|extern||COMPLETED|0:0|00:02:09|2026-07-18T05:24:59|2026-07-18T05:27:08|billing=20,cpu=8,gres/gpu:tesla_v100-sxm2-16gb=1,gres/gpu=1,mem=64G,node=1\n59451002_3|RCR3R1Replay|volta-gpu|FAILED|2:0|00:02:09|2026-07-18T05:24:59|2026-07-18T05:27:08|billing=20,cpu=8,gres/gpu:tesla_v100-sxm2-16gb=1,gres/gpu=1,mem=64G,node=1\n59451002_3.batch|batch||FAILED|2:0|00:02:09|2026-07-18T05:24:59|2026-07-18T05:27:08|cpu=8,gres/gpu:tesla_v100-sxm2-16gb=1,gres/gpu=1,mem=64G,node=1\n59451002_3.extern|extern||COMPLETED|0:0|00:02:09|2026-07-18T05:24:59|2026-07-18T05:27:08|billing=20,cpu=8,gres/gpu:tesla_v100-sxm2-16gb=1,gres/gpu=1,mem=64G,node=1\n59451002_4|RCR3R1Replay|volta-gpu|FAILED|2:0|00:02:09|2026-07-18T05:24:59|2026-07-18T05:27:08|billing=20,cpu=8,gres/gpu:tesla_v100-sxm2-16gb=1,gres/gpu=1,mem=64G,node=1\n59451002_4.batch|batch||FAILED|2:0|00:02:09|2026-07-18T05:24:59|2026-07-18T05:27:08|cpu=8,gres/gpu:tesla_v100-sxm2-16gb=1,gres/gpu=1,mem=64G,node=1\n59451002_4.extern|extern||COMPLETED|0:0|00:02:09|2026-07-18T05:24:59|2026-07-18T05:27:08|billing=20,cpu=8,gres/gpu:tesla_v100-sxm2-16gb=1,gres/gpu=1,mem=64G,node=1\n59451002_5|RCR3R1Replay|volta-gpu|FAILED|2:0|00:00:19|2026-07-18T05:27:44|2026-07-18T05:28:03|billing=20,cpu=8,gres/gpu:tesla_v100-sxm2-16gb=1,gres/gpu=1,mem=64G,node=1\n59451002_5.batch|batch||FAILED|2:0|00:00:19|2026-07-18T05:27:44|2026-07-18T05:28:03|cpu=8,gres/gpu:tesla_v100-sxm2-16gb=1,gres/gpu=1,mem=64G,node=1\n59451002_5.extern|extern||COMPLETED|0:0|00:00:19|2026-07-18T05:27:44|2026-07-18T05:28:03|billing=20,cpu=8,gres/gpu:tesla_v100-sxm2-16gb=1,gres/gpu=1,mem=64G,node=1\n59451002_6|RCR3R1Replay|volta-gpu|FAILED|2:0|00:00:16|2026-07-18T05:27:44|2026-07-18T05:28:00|billing=20,cpu=8,gres/gpu:tesla_v100-sxm2-16gb=1,gres/gpu=1,mem=64G,node=1\n59451002_6.batch|batch||FAILED|2:0|00:00:16|2026-07-18T05:27:44|2026-07-18T05:28:00|cpu=8,gres/gpu:tesla_v100-sxm2-16gb=1,gres/gpu=1,mem=64G,node=1\n59451002_6.extern|extern||COMPLETED|0:0|00:00:16|2026-07-18T05:27:44|2026-07-18T05:28:00|billing=20,cpu=8,gres/gpu:tesla_v100-sxm2-16gb=1,gres/gpu=1,mem=64G,node=1\n59451002_7|RCR3R1Replay|volta-gpu|FAILED|2:0|00:00:17|2026-07-18T05:27:44|2026-07-18T05:28:01|billing=20,cpu=8,gres/gpu:tesla_v100-sxm2-16gb=1,gres/gpu=1,mem=64G,node=1\n59451002_7.batch|batch||FAILED|2:0|00:00:17|2026-07-18T05:27:44|2026-07-18T05:28:01|cpu=8,gres/gpu:tesla_v100-sxm2-16gb=1,gres/gpu=1,mem=64G,node=1\n59451002_7.extern|extern||COMPLETED|0:0|00:00:17|2026-07-18T05:27:44|2026-07-18T05:28:01|billing=20,cpu=8,gres/gpu:tesla_v100-sxm2-16gb=1,gres/gpu=1,mem=64G,node=1\n59451002_8|RCR3R1Replay|volta-gpu|FAILED|2:0|00:00:20|2026-07-18T05:27:44|2026-07-18T05:28:04|billing=20,cpu=8,gres/gpu:tesla_v100-sxm2-16gb=1,gres/gpu=1,mem=64G,node=1\n59451002_8.batch|batch||FAILED|2:0|00:00:20|2026-07-18T05:27:44|2026-07-18T05:28:04|cpu=8,gres/gpu:tesla_v100-sxm2-16gb=1,gres/gpu=1,mem=64G,node=1\n59451002_8.extern|extern||COMPLETED|0:0|00:00:20|2026-07-18T05:27:44|2026-07-18T05:28:04|billing=20,cpu=8,gres/gpu:tesla_v100-sxm2-16gb=1,gres/gpu=1,mem=64G,node=1\n59451002_9|RCR3R1Replay|volta-gpu|FAILED|2:0|00:00:19|2026-07-18T05:27:44|2026-07-18T05:28:03|billing=20,cpu=8,gres/gpu:tesla_v100-sxm2-16gb=1,gres/gpu=1,mem=64G,node=1\n59451002_9.batch|batch||FAILED|2:0|00:00:19|2026-07-18T05:27:44|2026-07-18T05:28:03|cpu=8,gres/gpu:tesla_v100-sxm2-16gb=1,gres/gpu=1,mem=64G,node=1\n59451002_9.extern|extern||COMPLETED|0:0|00:00:19|2026-07-18T05:27:44|2026-07-18T05:28:03|billing=20,cpu=8,gres/gpu:tesla_v100-sxm2-16gb=1,gres/gpu=1,mem=64G,node=1\n59451002_10|RCR3R1Replay|volta-gpu|CANCELLED by 397557|0:0|00:00:18|2026-07-18T05:28:03|2026-07-18T05:28:21|billing=20,cpu=8,gres/gpu:tesla_v100-sxm2-16gb=1,gres/gpu=1,mem=64G,node=1\n59451002_10.batch|batch||CANCELLED|0:15|00:00:20|2026-07-18T05:28:03|2026-07-18T05:28:23|cpu=8,gres/gpu:tesla_v100-sxm2-16gb=1,gres/gpu=1,mem=64G,node=1\n59451002_10.extern|extern||COMPLETED|0:0|00:00:20|2026-07-18T05:28:03|2026-07-18T05:28:23|billing=20,cpu=8,gres/gpu:tesla_v100-sxm2-16gb=1,gres/gpu=1,mem=64G,node=1\n59451002_11|RCR3R1Replay|volta-gpu|FAILED|2:0|00:00:17|2026-07-18T05:28:03|2026-07-18T05:28:20|billing=20,cpu=8,gres/gpu:tesla_v100-sxm2-16gb=1,gres/gpu=1,mem=64G,node=1\n59451002_11.batch|batch||FAILED|2:0|00:00:17|2026-07-18T05:28:03|2026-07-18T05:28:20|cpu=8,gres/gpu:tesla_v100-sxm2-16gb=1,gres/gpu=1,mem=64G,node=1\n59451002_11.extern|extern||COMPLETED|0:0|00:00:17|2026-07-18T05:28:03|2026-07-18T05:28:20|billing=20,cpu=8,gres/gpu:tesla_v100-sxm2-16gb=1,gres/gpu=1,mem=64G,node=1\n59451002_12|RCR3R1Replay|volta-gpu|CANCELLED by 397557|0:0|00:00:18|2026-07-18T05:28:03|2026-07-18T05:28:21|billing=20,cpu=8,gres/gpu:tesla_v100-sxm2-16gb=1,gres/gpu=1,mem=64G,node=1\n59451002_12.batch|batch||FAILED|2:0|00:00:19|2026-07-18T05:28:03|2026-07-18T05:28:22|cpu=8,gres/gpu:tesla_v100-sxm2-16gb=1,gres/gpu=1,mem=64G,node=1\n59451002_12.extern|extern||COMPLETED|0:0|00:00:20|2026-07-18T05:28:03|2026-07-18T05:28:23|billing=20,cpu=8,gres/gpu:tesla_v100-sxm2-16gb=1,gres/gpu=1,mem=64G,node=1\n59451002_13|RCR3R1Replay|volta-gpu|FAILED|2:0|00:00:17|2026-07-18T05:28:03|2026-07-18T05:28:20|billing=20,cpu=8,gres/gpu:tesla_v100-sxm2-16gb=1,gres/gpu=1,mem=64G,node=1\n59451002_13.batch|batch||FAILED|2:0|00:00:17|2026-07-18T05:28:03|2026-07-18T05:28:20|cpu=8,gres/gpu:tesla_v100-sxm2-16gb=1,gres/gpu=1,mem=64G,node=1\n59451002_13.extern|extern||COMPLETED|0:0|00:00:18|2026-07-18T05:28:03|2026-07-18T05:28:21|billing=20,cpu=8,gres/gpu:tesla_v100-sxm2-16gb=1,gres/gpu=1,mem=64G,node=1\n59451002_[14-40]|RCR3R1Replay|volta-gpu|CANCELLED by 397557|0:0|00:00:00|None|2026-07-18T05:28:21|\n59451088|RCR3R1Final|htzhulab|CANCELLED by 397557|0:0|00:00:00|None|2026-07-18T05:39:55|\n59451087_[0-40]|RCR3R1Replay|htzhulab|CANCELLED by 397557|0:0|00:00:00|None|2026-07-18T05:39:55|\n59451663|RCR3R1Final|htzhulab|CANCELLED by 397557|0:0|00:00:00|None|2026-07-18T06:41:45|\n59451661_[0-62]|RCR3R1Replay|htzhulab|CANCELLED by 397557|0:0|00:00:00|None|2026-07-18T06:41:45|\n59451662_[0-61]|RCR3R1Replay|a100-gpu|PENDING|0:0|00:00:00|Unknown|Unknown|\n59452730|RCR3R1Final|htzhulab|CANCELLED by 397557|0:0|00:00:00|None|2026-07-18T06:48:48|\n59452729_[0-62]|RCR3R1Replay|a100-gpu|PENDING|0:0|00:00:00|Unknown|Unknown|\n59452978|RCR3R1Final|a100-gpu|PENDING|0:0|00:00:00|Unknown|Unknown|",
+  "all_required_old_attempts_accounted": true,
+  "c0_state_dict_obligation_preserved": "C0 hash receipts are non-final; R1 must produce loaded_state_dict_sha256 and selected clean-reload PASS before terminal token",
+  "forbidden_actions": {
+    "cross_route_write": false,
+    "hosted_metric_claim": false,
+    "push": false,
+    "route_promotion": false,
+    "runtime_review_md": false,
+    "validation_packaging": false,
+    "validation_upload": false
+  },
+  "generated_at_utc": "2026-07-18T19:36:01+00:00",
+  "latest_afterany_finalizer": {
+    "dependency": "afterany:59451000:59451001:59451002:59451087:59451661:59451662:59452729:59491654:59496858:59497884:59498943",
+    "job_id": "59498944",
+    "status": "pending_dependency"
+  },
+  "latest_replacement_attempt": {
+    "assignment_partition": "htzhulab",
+    "credit": "pending",
+    "job_id": "59498943",
+    "partition": "htzhulab",
+    "status": "running_or_pending"
+  },
+  "route_id": "route_C",
+  "sacct_59496858_stdout": "JobID|JobName|Partition|State|ExitCode|Elapsed|Start|End\n59496858_0|RCR3R1Replay|htzhulab|COMPLETED|0:0|00:00:02|2026-07-18T14:37:16|2026-07-18T14:37:18\n59496858_1|RCR3R1Replay|htzhulab|COMPLETED|0:0|00:00:03|2026-07-18T14:37:20|2026-07-18T14:37:23\n59496858_2|RCR3R1Replay|htzhulab|COMPLETED|0:0|00:00:03|2026-07-18T14:37:36|2026-07-18T14:37:39\n59496858_3|RCR3R1Replay|htzhulab|COMPLETED|0:0|00:00:03|2026-07-18T14:37:36|2026-07-18T14:37:39\n59496858_4|RCR3R1Replay|htzhulab|COMPLETED|0:0|00:00:03|2026-07-18T14:37:56|2026-07-18T14:37:59\n59496858_5|RCR3R1Replay|htzhulab|COMPLETED|0:0|00:00:03|2026-07-18T14:37:56|2026-07-18T14:37:59\n59496858_6|RCR3R1Replay|htzhulab|COMPLETED|0:0|00:00:02|2026-07-18T14:38:16|2026-07-18T14:38:18\n59496858_7|RCR3R1Replay|htzhulab|COMPLETED|0:0|00:00:03|2026-07-18T14:38:16|2026-07-18T14:38:19\n59496858_8|RCR3R1Replay|htzhulab|COMPLETED|0:0|00:00:03|2026-07-18T14:38:36|2026-07-18T14:38:39\n59496858_9|RCR3R1Replay|htzhulab|COMPLETED|0:0|00:00:03|2026-07-18T14:38:36|2026-07-18T14:38:39\n59496858_10|RCR3R1Replay|htzhulab|COMPLETED|0:0|00:00:02|2026-07-18T14:38:57|2026-07-18T14:38:59\n59496858_11|RCR3R1Replay|htzhulab|COMPLETED|0:0|00:00:02|2026-07-18T14:38:57|2026-07-18T14:38:59\n59496858_12|RCR3R1Replay|htzhulab|COMPLETED|0:0|00:00:03|2026-07-18T14:39:13|2026-07-18T14:39:16\n59496858_13|RCR3R1Replay|htzhulab|COMPLETED|0:0|00:00:03|2026-07-18T14:39:13|2026-07-18T14:39:16\n59496858_14|RCR3R1Replay|htzhulab|COMPLETED|0:0|00:00:02|2026-07-18T14:39:18|2026-07-18T14:39:20\n59496858_15|RCR3R1Replay|htzhulab|COMPLETED|0:0|00:00:02|2026-07-18T14:39:18|2026-07-18T14:39:20\n59496858_16|RCR3R1Replay|htzhulab|COMPLETED|0:0|00:00:02|2026-07-18T14:39:38|2026-07-18T14:39:40\n59496858_17|RCR3R1Replay|htzhulab|COMPLETED|0:0|00:00:03|2026-07-18T14:39:38|2026-07-18T14:39:41\n59496858_18|RCR3R1Replay|htzhulab|COMPLETED|0:0|00:00:03|2026-07-18T14:39:51|2026-07-18T14:39:54\n59496858_19|RCR3R1Replay|htzhulab|COMPLETED|0:0|00:00:03|2026-07-18T14:39:51|2026-07-18T14:39:54\n59496858_20|RCR3R1Replay|htzhulab|COMPLETED|0:0|00:00:03|2026-07-18T14:39:58|2026-07-18T14:40:01\n59496858_21|RCR3R1Replay|htzhulab|COMPLETED|0:0|00:00:02|2026-07-18T14:39:58|2026-07-18T14:40:00\n59496858_22|RCR3R1Replay|htzhulab|COMPLETED|0:0|00:00:02|2026-07-18T14:40:19|2026-07-18T14:40:21\n59496858_23|RCR3R1Replay|htzhulab|COMPLETED|0:0|00:00:02|2026-07-18T14:40:19|2026-07-18T14:40:21\n59496858_24|RCR3R1Replay|htzhulab|COMPLETED|0:0|00:00:03|2026-07-18T14:40:29|2026-07-18T14:40:32\n59496858_25|RCR3R1Replay|htzhulab|COMPLETED|0:0|00:00:03|2026-07-18T14:40:29|2026-07-18T14:40:32\n59496858_26|RCR3R1Replay|htzhulab|COMPLETED|0:0|00:00:03|2026-07-18T14:40:39|2026-07-18T14:40:42\n59496858_27|RCR3R1Replay|htzhulab|COMPLETED|0:0|00:00:03|2026-07-18T14:40:39|2026-07-18T14:40:42\n59496858_28|RCR3R1Replay|htzhulab|COMPLETED|0:0|00:00:03|2026-07-18T14:40:59|2026-07-18T14:41:02\n59496858_29|RCR3R1Replay|htzhulab|COMPLETED|0:0|00:00:03|2026-07-18T14:40:59|2026-07-18T14:41:02\n59496858_30|RCR3R1Replay|htzhulab|COMPLETED|0:0|00:00:03|2026-07-18T14:41:07|2026-07-18T14:41:10\n59496858_31|RCR3R1Replay|htzhulab|COMPLETED|0:0|00:00:03|2026-07-18T14:41:07|2026-07-18T14:41:10\n59496858_32|RCR3R1Replay|htzhulab|COMPLETED|0:0|00:00:03|2026-07-18T14:41:20|2026-07-18T14:41:23\n59496858_33|RCR3R1Replay|htzhulab|COMPLETED|0:0|00:00:03|2026-07-18T14:41:20|2026-07-18T14:41:23\n59496858_34|RCR3R1Replay|htzhulab|COMPLETED|0:0|00:00:03|2026-07-18T14:41:40|2026-07-18T14:41:43\n59496858_35|RCR3R1Replay|htzhulab|COMPLETED|0:0|00:00:02|2026-07-18T14:41:40|2026-07-18T14:41:42\n59496858_36|RCR3R1Replay|htzhulab|COMPLETED|0:0|00:00:02|2026-07-18T14:41:45|2026-07-18T14:41:47\n59496858_37|RCR3R1Replay|htzhulab|COMPLETED|0:0|00:00:04|2026-07-18T14:41:45|2026-07-18T14:41:49\n59496858_38|RCR3R1Replay|htzhulab|COMPLETED|0:0|00:00:03|2026-07-18T14:42:00|2026-07-18T14:42:03\n59496858_39|RCR3R1Replay|htzhulab|COMPLETED|0:0|00:00:03|2026-07-18T14:42:00|2026-07-18T14:42:03\n59496858_40|RCR3R1Replay|htzhulab|COMPLETED|0:0|00:00:04|2026-07-18T14:42:20|2026-07-18T14:42:24\n59496858_41|RCR3R1Replay|htzhulab|COMPLETED|0:0|00:00:04|2026-07-18T14:42:20|2026-07-18T14:42:24\n59496858_42|RCR3R1Replay|htzhulab|COMPLETED|0:0|00:00:01|2026-07-18T14:42:41|2026-07-18T14:42:42\n59496858_43|RCR3R1Replay|htzhulab|COMPLETED|0:0|00:00:01|2026-07-18T14:42:41|2026-07-18T14:42:42\n59496858_44|RCR3R1Replay|htzhulab|COMPLETED|0:0|00:00:03|2026-07-18T14:43:00|2026-07-18T14:43:03\n59496858_45|RCR3R1Replay|htzhulab|COMPLETED|0:0|00:00:03|2026-07-18T14:43:00|2026-07-18T14:43:03\n59496858_46|RCR3R1Replay|htzhulab|COMPLETED|0:0|00:00:03|2026-07-18T14:43:22|2026-07-18T14:43:25\n59496858_47|RCR3R1Replay|htzhulab|COMPLETED|0:0|00:00:02|2026-07-18T14:43:22|2026-07-18T14:43:24\n59496858_48|RCR3R1Replay|htzhulab|COMPLETED|0:0|00:00:03|2026-07-18T14:43:37|2026-07-18T14:43:40\n59496858_49|RCR3R1Replay|htzhulab|COMPLETED|0:0|00:00:03|2026-07-18T14:43:37|2026-07-18T14:43:40\n59496858_50|RCR3R1Replay|htzhulab|COMPLETED|0:0|00:00:02|2026-07-18T14:43:42|2026-07-18T14:43:44\n59496858_51|RCR3R1Replay|htzhulab|COMPLETED|0:0|00:00:02|2026-07-18T14:43:42|2026-07-18T14:43:44\n59496858_52|RCR3R1Replay|htzhulab|COMPLETED|0:0|00:00:02|2026-07-18T14:44:02|2026-07-18T14:44:04\n59496858_53|RCR3R1Replay|htzhulab|COMPLETED|0:0|00:00:02|2026-07-18T14:44:02|2026-07-18T14:44:04\n59496858_54|RCR3R1Replay|htzhulab|COMPLETED|0:0|00:00:03|2026-07-18T14:44:14|2026-07-18T14:44:17\n59496858_55|RCR3R1Replay|htzhulab|COMPLETED|0:0|00:00:03|2026-07-18T14:44:14|2026-07-18T14:44:17\n59496858_[56-61]|RCR3R1Replay|htzhulab|CANCELLED by 397557|0:0|00:00:00|None|2026-07-18T14:44:21\n",
+  "sacct_command": "sacct -j 59451002 --format=JobID,JobName%32,Partition,State,ExitCode,Elapsed,Start,End,AllocTRES%80 -P",
+  "sacct_stdout": "JobID|JobName|Partition|State|ExitCode|Elapsed|Start|End|AllocTRES\n59451002_0|RCR3R1Replay|volta-gpu|FAILED|2:0|00:02:09|2026-07-18T05:24:59|2026-07-18T05:27:08|billing=20,cpu=8,gres/gpu:tesla_v100-sxm2-16gb=1,gres/gpu=1,mem=64G,node=1\n59451002_0.batch|batch||FAILED|2:0|00:02:09|2026-07-18T05:24:59|2026-07-18T05:27:08|cpu=8,gres/gpu:tesla_v100-sxm2-16gb=1,gres/gpu=1,mem=64G,node=1\n59451002_0.extern|extern||COMPLETED|0:0|00:02:09|2026-07-18T05:24:59|2026-07-18T05:27:08|billing=20,cpu=8,gres/gpu:tesla_v100-sxm2-16gb=1,gres/gpu=1,mem=64G,node=1\n59451002_1|RCR3R1Replay|volta-gpu|FAILED|2:0|00:02:09|2026-07-18T05:24:59|2026-07-18T05:27:08|billing=20,cpu=8,gres/gpu:tesla_v100-sxm2-16gb=1,gres/gpu=1,mem=64G,node=1\n59451002_1.batch|batch||FAILED|2:0|00:02:09|2026-07-18T05:24:59|2026-07-18T05:27:08|cpu=8,gres/gpu:tesla_v100-sxm2-16gb=1,gres/gpu=1,mem=64G,node=1\n59451002_1.extern|extern||COMPLETED|0:0|00:02:09|2026-07-18T05:24:59|2026-07-18T05:27:08|billing=20,cpu=8,gres/gpu:tesla_v100-sxm2-16gb=1,gres/gpu=1,mem=64G,node=1\n59451002_2|RCR3R1Replay|volta-gpu|FAILED|2:0|00:02:09|2026-07-18T05:24:59|2026-07-18T05:27:08|billing=20,cpu=8,gres/gpu:tesla_v100-sxm2-16gb=1,gres/gpu=1,mem=64G,node=1\n59451002_2.batch|batch||FAILED|2:0|00:02:09|2026-07-18T05:24:59|2026-07-18T05:27:08|cpu=8,gres/gpu:tesla_v100-sxm2-16gb=1,gres/gpu=1,mem=64G,node=1\n59451002_2.extern|extern||COMPLETED|0:0|00:02:09|2026-07-18T05:24:59|2026-07-18T05:27:08|billing=20,cpu=8,gres/gpu:tesla_v100-sxm2-16gb=1,gres/gpu=1,mem=64G,node=1\n59451002_3|RCR3R1Replay|volta-gpu|FAILED|2:0|00:02:09|2026-07-18T05:24:59|2026-07-18T05:27:08|billing=20,cpu=8,gres/gpu:tesla_v100-sxm2-16gb=1,gres/gpu=1,mem=64G,node=1\n59451002_3.batch|batch||FAILED|2:0|00:02:09|2026-07-18T05:24:59|2026-07-18T05:27:08|cpu=8,gres/gpu:tesla_v100-sxm2-16gb=1,gres/gpu=1,mem=64G,node=1\n59451002_3.extern|extern||COMPLETED|0:0|00:02:09|2026-07-18T05:24:59|2026-07-18T05:27:08|billing=20,cpu=8,gres/gpu:tesla_v100-sxm2-16gb=1,gres/gpu=1,mem=64G,node=1\n59451002_4|RCR3R1Replay|volta-gpu|FAILED|2:0|00:02:09|2026-07-18T05:24:59|2026-07-18T05:27:08|billing=20,cpu=8,gres/gpu:tesla_v100-sxm2-16gb=1,gres/gpu=1,mem=64G,node=1\n59451002_4.batch|batch||FAILED|2:0|00:02:09|2026-07-18T05:24:59|2026-07-18T05:27:08|cpu=8,gres/gpu:tesla_v100-sxm2-16gb=1,gres/gpu=1,mem=64G,node=1\n59451002_4.extern|extern||COMPLETED|0:0|00:02:09|2026-07-18T05:24:59|2026-07-18T05:27:08|billing=20,cpu=8,gres/gpu:tesla_v100-sxm2-16gb=1,gres/gpu=1,mem=64G,node=1\n59451002_5|RCR3R1Replay|volta-gpu|FAILED|2:0|00:00:19|2026-07-18T05:27:44|2026-07-18T05:28:03|billing=20,cpu=8,gres/gpu:tesla_v100-sxm2-16gb=1,gres/gpu=1,mem=64G,node=1\n59451002_5.batch|batch||FAILED|2:0|00:00:19|2026-07-18T05:27:44|2026-07-18T05:28:03|cpu=8,gres/gpu:tesla_v100-sxm2-16gb=1,gres/gpu=1,mem=64G,node=1\n59451002_5.extern|extern||COMPLETED|0:0|00:00:19|2026-07-18T05:27:44|2026-07-18T05:28:03|billing=20,cpu=8,gres/gpu:tesla_v100-sxm2-16gb=1,gres/gpu=1,mem=64G,node=1\n59451002_6|RCR3R1Replay|volta-gpu|FAILED|2:0|00:00:16|2026-07-18T05:27:44|2026-07-18T05:28:00|billing=20,cpu=8,gres/gpu:tesla_v100-sxm2-16gb=1,gres/gpu=1,mem=64G,node=1\n59451002_6.batch|batch||FAILED|2:0|00:00:16|2026-07-18T05:27:44|2026-07-18T05:28:00|cpu=8,gres/gpu:tesla_v100-sxm2-16gb=1,gres/gpu=1,mem=64G,node=1\n59451002_6.extern|extern||COMPLETED|0:0|00:00:16|2026-07-18T05:27:44|2026-07-18T05:28:00|billing=20,cpu=8,gres/gpu:tesla_v100-sxm2-16gb=1,gres/gpu=1,mem=64G,node=1\n59451002_7|RCR3R1Replay|volta-gpu|FAILED|2:0|00:00:17|2026-07-18T05:27:44|2026-07-18T05:28:01|billing=20,cpu=8,gres/gpu:tesla_v100-sxm2-16gb=1,gres/gpu=1,mem=64G,node=1\n59451002_7.batch|batch||FAILED|2:0|00:00:17|2026-07-18T05:27:44|2026-07-18T05:28:01|cpu=8,gres/gpu:tesla_v100-sxm2-16gb=1,gres/gpu=1,mem=64G,node=1\n59451002_7.extern|extern||COMPLETED|0:0|00:00:17|2026-07-18T05:27:44|2026-07-18T05:28:01|billing=20,cpu=8,gres/gpu:tesla_v100-sxm2-16gb=1,gres/gpu=1,mem=64G,node=1\n59451002_8|RCR3R1Replay|volta-gpu|FAILED|2:0|00:00:20|2026-07-18T05:27:44|2026-07-18T05:28:04|billing=20,cpu=8,gres/gpu:tesla_v100-sxm2-16gb=1,gres/gpu=1,mem=64G,node=1\n59451002_8.batch|batch||FAILED|2:0|00:00:20|2026-07-18T05:27:44|2026-07-18T05:28:04|cpu=8,gres/gpu:tesla_v100-sxm2-16gb=1,gres/gpu=1,mem=64G,node=1\n59451002_8.extern|extern||COMPLETED|0:0|00:00:20|2026-07-18T05:27:44|2026-07-18T05:28:04|billing=20,cpu=8,gres/gpu:tesla_v100-sxm2-16gb=1,gres/gpu=1,mem=64G,node=1\n59451002_9|RCR3R1Replay|volta-gpu|FAILED|2:0|00:00:19|2026-07-18T05:27:44|2026-07-18T05:28:03|billing=20,cpu=8,gres/gpu:tesla_v100-sxm2-16gb=1,gres/gpu=1,mem=64G,node=1\n59451002_9.batch|batch||FAILED|2:0|00:00:19|2026-07-18T05:27:44|2026-07-18T05:28:03|cpu=8,gres/gpu:tesla_v100-sxm2-16gb=1,gres/gpu=1,mem=64G,node=1\n59451002_9.extern|extern||COMPLETED|0:0|00:00:19|2026-07-18T05:27:44|2026-07-18T05:28:03|billing=20,cpu=8,gres/gpu:tesla_v100-sxm2-16gb=1,gres/gpu=1,mem=64G,node=1\n59451002_10|RCR3R1Replay|volta-gpu|CANCELLED by 397557|0:0|00:00:18|2026-07-18T05:28:03|2026-07-18T05:28:21|billing=20,cpu=8,gres/gpu:tesla_v100-sxm2-16gb=1,gres/gpu=1,mem=64G,node=1\n59451002_10.batch|batch||CANCELLED|0:15|00:00:20|2026-07-18T05:28:03|2026-07-18T05:28:23|cpu=8,gres/gpu:tesla_v100-sxm2-16gb=1,gres/gpu=1,mem=64G,node=1\n59451002_10.extern|extern||COMPLETED|0:0|00:00:20|2026-07-18T05:28:03|2026-07-18T05:28:23|billing=20,cpu=8,gres/gpu:tesla_v100-sxm2-16gb=1,gres/gpu=1,mem=64G,node=1\n59451002_11|RCR3R1Replay|volta-gpu|FAILED|2:0|00:00:17|2026-07-18T05:28:03|2026-07-18T05:28:20|billing=20,cpu=8,gres/gpu:tesla_v100-sxm2-16gb=1,gres/gpu=1,mem=64G,node=1\n59451002_11.batch|batch||FAILED|2:0|00:00:17|2026-07-18T05:28:03|2026-07-18T05:28:20|cpu=8,gres/gpu:tesla_v100-sxm2-16gb=1,gres/gpu=1,mem=64G,node=1\n59451002_11.extern|extern||COMPLETED|0:0|00:00:17|2026-07-18T05:28:03|2026-07-18T05:28:20|billing=20,cpu=8,gres/gpu:tesla_v100-sxm2-16gb=1,gres/gpu=1,mem=64G,node=1\n59451002_12|RCR3R1Replay|volta-gpu|CANCELLED by 397557|0:0|00:00:18|2026-07-18T05:28:03|2026-07-18T05:28:21|billing=20,cpu=8,gres/gpu:tesla_v100-sxm2-16gb=1,gres/gpu=1,mem=64G,node=1\n59451002_12.batch|batch||FAILED|2:0|00:00:19|2026-07-18T05:28:03|2026-07-18T05:28:22|cpu=8,gres/gpu:tesla_v100-sxm2-16gb=1,gres/gpu=1,mem=64G,node=1\n59451002_12.extern|extern||COMPLETED|0:0|00:00:20|2026-07-18T05:28:03|2026-07-18T05:28:23|billing=20,cpu=8,gres/gpu:tesla_v100-sxm2-16gb=1,gres/gpu=1,mem=64G,node=1\n59451002_13|RCR3R1Replay|volta-gpu|FAILED|2:0|00:00:17|2026-07-18T05:28:03|2026-07-18T05:28:20|billing=20,cpu=8,gres/gpu:tesla_v100-sxm2-16gb=1,gres/gpu=1,mem=64G,node=1\n59451002_13.batch|batch||FAILED|2:0|00:00:17|2026-07-18T05:28:03|2026-07-18T05:28:20|cpu=8,gres/gpu:tesla_v100-sxm2-16gb=1,gres/gpu=1,mem=64G,node=1\n59451002_13.extern|extern||COMPLETED|0:0|00:00:18|2026-07-18T05:28:03|2026-07-18T05:28:21|billing=20,cpu=8,gres/gpu:tesla_v100-sxm2-16gb=1,gres/gpu=1,mem=64G,node=1\n59451002_[14-40]|RCR3R1Replay|volta-gpu|CANCELLED by 397557|0:0|00:00:00|None|2026-07-18T05:28:21|",
+  "stage": "R1",
+  "status": "ZERO_CREDIT_ATTEMPT_ACCOUNTED",
+  "superseded_or_cancelled_attempts": [
+    "59451000",
+    "59451001",
+    "59451087",
+    "59451088",
+    "59451661",
+    "59451663",
+    "59452730"
+  ],
+  "zero_credit_attempts": [
+    {
+      "array_job_id": "59451002",
+      "attempt_credit": "zero",
+      "exit_codes_summary": [
+        "0:0",
+        "2:0"
+      ],
+      "expected_task_count": 41,
+      "failure_class": "same_scope_partition_compatibility_failure",
+      "failure_signature": "Tesla V100 compute capability 7.0 unsupported by current PyTorch CUDA build; no kernel image is available for execution on the device",
+      "finalizer_coverage": {
+        "active_afterany_dependency": "afterany:59451661:59451662:59452729",
+        "active_afterany_finalizer": "59452978",
+        "coverage_remediation": "this receipt records 59451002 terminal accounting before final aggregation and must be checked by strict validator",
+        "omitted_by_interim_finalizer": "59451088 dependency afterany:59451000:59451001:59451087 omitted terminal 59451002",
+        "terminal_packet_allowed": false
+      },
+      "log_paths": [
+        "logs/route_C/round03/R1Replay_59451010_0_20260718_052502.log",
+        "logs/route_C/round03/R1Replay_59451011_1_20260718_052502.log",
+        "logs/route_C/round03/R1Replay_59451012_2_20260718_052501.log",
+        "logs/route_C/round03/R1Replay_59451013_3_20260718_052502.log",
+        "logs/route_C/round03/R1Replay_59451014_4_20260718_052502.log",
+        "logs/route_C/round03/R1Replay_59451058_5_20260718_052746.log",
+        "logs/route_C/round03/R1Replay_59451059_6_20260718_052745.log",
+        "logs/route_C/round03/R1Replay_59451060_7_20260718_052745.log",
+        "logs/route_C/round03/R1Replay_59451061_8_20260718_052746.log",
+        "logs/route_C/round03/R1Replay_59451062_9_20260718_052746.log",
+        "logs/route_C/round03/R1Replay_59451075_10_20260718_052805.log",
+        "logs/route_C/round03/R1Replay_59451076_11_20260718_052804.log",
+        "logs/route_C/round03/R1Replay_59451077_12_20260718_052805.log",
+        "logs/route_C/round03/R1Replay_59451078_13_20260718_052804.log"
+      ],
+      "log_receipts": [
+        {
+          "contains_no_kernel_image_failure": true,
+          "contains_tesla_v100_cc70_warning": true,
+          "path": "logs/route_C/round03/R1Replay_59451010_0_20260718_052502.log",
+          "sha256": "c5f24bea8d5fb9888c209af9b3851d124ce2d46669a306532d22998b4cb683c4",
+          "task_id": "0"
+        },
+        {
+          "contains_no_kernel_image_failure": true,
+          "contains_tesla_v100_cc70_warning": true,
+          "path": "logs/route_C/round03/R1Replay_59451011_1_20260718_052502.log",
+          "sha256": "ebeebc754ceddc83a5d2e70f9aa9724fed4915271afa40ececc4793bb4e31ac0",
+          "task_id": "1"
+        },
+        {
+          "contains_no_kernel_image_failure": true,
+          "contains_tesla_v100_cc70_warning": true,
+          "path": "logs/route_C/round03/R1Replay_59451012_2_20260718_052501.log",
+          "sha256": "01d422a94250678a2ca9d91f14d6747227a9a1a40f98a1925239d697d95ac0e5",
+          "task_id": "2"
+        },
+        {
+          "contains_no_kernel_image_failure": true,
+          "contains_tesla_v100_cc70_warning": true,
+          "path": "logs/route_C/round03/R1Replay_59451013_3_20260718_052502.log",
+          "sha256": "621f1c425871d093ccc8434b800be9e70ee101ecd488de30199004adc62fe010",
+          "task_id": "3"
+        },
+        {
+          "contains_no_kernel_image_failure": true,
+          "contains_tesla_v100_cc70_warning": true,
+          "path": "logs/route_C/round03/R1Replay_59451014_4_20260718_052502.log",
+          "sha256": "0d0e5426deaed2519ab7d21054bd41c4a5fe1792a7854e4fbec6e79a08045ba2",
+          "task_id": "4"
+        },
+        {
+          "contains_no_kernel_image_failure": true,
+          "contains_tesla_v100_cc70_warning": true,
+          "path": "logs/route_C/round03/R1Replay_59451058_5_20260718_052746.log",
+          "sha256": "0f588986a49fbafdba48f818491116daa954554d31a189543d0d536fac9bed3e",
+          "task_id": "5"
+        },
+        {
+          "contains_no_kernel_image_failure": true,
+          "contains_tesla_v100_cc70_warning": true,
+          "path": "logs/route_C/round03/R1Replay_59451059_6_20260718_052745.log",
+          "sha256": "979a81a6732801f423dbeb31e583d9941fe40d13c222235636ccca8d86bfad34",
+          "task_id": "6"
+        },
+        {
+          "contains_no_kernel_image_failure": true,
+          "contains_tesla_v100_cc70_warning": true,
+          "path": "logs/route_C/round03/R1Replay_59451060_7_20260718_052745.log",
+          "sha256": "b0ebe6b4a7c6a29799b1104866a8a6606a85b8db57414bd73c93c4d1f383d953",
+          "task_id": "7"
+        },
+        {
+          "contains_no_kernel_image_failure": true,
+          "contains_tesla_v100_cc70_warning": true,
+          "path": "logs/route_C/round03/R1Replay_59451061_8_20260718_052746.log",
+          "sha256": "5b493b526cc0577e33558a5a3fa8b49bc294d6bb61ddff982fd09e35578dffe4",
+          "task_id": "8"
+        },
+        {
+          "contains_no_kernel_image_failure": true,
+          "contains_tesla_v100_cc70_warning": true,
+          "path": "logs/route_C/round03/R1Replay_59451062_9_20260718_052746.log",
+          "sha256": "efe6105445908ec74af12ea32e17d7372ec0841e6a615633ebbc7952c7fd845c",
+          "task_id": "9"
+        },
+        {
+          "contains_no_kernel_image_failure": false,
+          "contains_tesla_v100_cc70_warning": true,
+          "path": "logs/route_C/round03/R1Replay_59451075_10_20260718_052805.log",
+          "sha256": "583783503e2032e2b1b27d493ac0142edb4c131a24d0da8c998cc8ee6fc3517d",
+          "task_id": "10"
+        },
+        {
+          "contains_no_kernel_image_failure": true,
+          "contains_tesla_v100_cc70_warning": true,
+          "path": "logs/route_C/round03/R1Replay_59451076_11_20260718_052804.log",
+          "sha256": "964ed9317b4e91b2f54fbbcc4ae35d6095831ff389d4cde407809e19015e7bce",
+          "task_id": "11"
+        },
+        {
+          "contains_no_kernel_image_failure": true,
+          "contains_tesla_v100_cc70_warning": true,
+          "path": "logs/route_C/round03/R1Replay_59451077_12_20260718_052805.log",
+          "sha256": "7f93f01d75da26263bf04ed190a83e7cafc7d41ee4e988c67031bb55ca2c3351",
+          "task_id": "12"
+        },
+        {
+          "contains_no_kernel_image_failure": true,
+          "contains_tesla_v100_cc70_warning": true,
+          "path": "logs/route_C/round03/R1Replay_59451078_13_20260718_052804.log",
+          "sha256": "89699da1f4580d78f709e3bf58068110e71d6ba61efb91776bea1c71a470465d",
+          "task_id": "13"
+        }
+      ],
+      "partition": "volta-gpu",
+      "replacement_attempts": [
+        {
+          "credit": "zero_cancelled_no_runtime_credit",
+          "job_id": "59451087",
+          "partition": "htzhulab",
+          "status": "cancelled superseded replacement"
+        },
+        {
+          "credit": "zero_cancelled_no_runtime_credit",
+          "job_id": "59451661",
+          "partition": "htzhulab",
+          "status": "cancelled superseded post-C0 replacement"
+        },
+        {
+          "credit": "pending",
+          "job_id": "59451662",
+          "partition": "a100-gpu",
+          "status": "active replacement for a100 assignment shard set"
+        },
+        {
+          "credit": "pending",
+          "job_id": "59452729",
+          "partition": "a100-gpu",
+          "status": "active replacement for former htzhulab assignment shard set"
+        }
+      ],
+      "sacct_compressed_range_note": "59451002_[14-40] is one compressed sacct row representing 27 cancelled task indices",
+      "sacct_row_count": 15,
+      "sacct_rows": [
+        {
+          "alloc_tres": "billing=20,cpu=8,gres/gpu:tesla_v100-sxm2-16gb=1,gres/gpu=1,mem=64G,node=1",
+          "attempt_credit": "zero",
+          "elapsed": "00:02:09",
+          "end": "2026-07-18T05:27:08",
+          "exit_code": "2:0",
+          "job_id": "59451002_0",
+          "job_name": "RCR3R1Replay",
+          "partition": "volta-gpu",
+          "start": "2026-07-18T05:24:59",
+          "state": "FAILED"
+        },
+        {
+          "alloc_tres": "billing=20,cpu=8,gres/gpu:tesla_v100-sxm2-16gb=1,gres/gpu=1,mem=64G,node=1",
+          "attempt_credit": "zero",
+          "elapsed": "00:02:09",
+          "end": "2026-07-18T05:27:08",
+          "exit_code": "2:0",
+          "job_id": "59451002_1",
+          "job_name": "RCR3R1Replay",
+          "partition": "volta-gpu",
+          "start": "2026-07-18T05:24:59",
+          "state": "FAILED"
+        },
+        {
+          "alloc_tres": "billing=20,cpu=8,gres/gpu:tesla_v100-sxm2-16gb=1,gres/gpu=1,mem=64G,node=1",
+          "attempt_credit": "zero",
+          "elapsed": "00:02:09",
+          "end": "2026-07-18T05:27:08",
+          "exit_code": "2:0",
+          "job_id": "59451002_2",
+          "job_name": "RCR3R1Replay",
+          "partition": "volta-gpu",
+          "start": "2026-07-18T05:24:59",
+          "state": "FAILED"
+        },
+        {
+          "alloc_tres": "billing=20,cpu=8,gres/gpu:tesla_v100-sxm2-16gb=1,gres/gpu=1,mem=64G,node=1",
+          "attempt_credit": "zero",
+          "elapsed": "00:02:09",
+          "end": "2026-07-18T05:27:08",
+          "exit_code": "2:0",
+          "job_id": "59451002_3",
+          "job_name": "RCR3R1Replay",
+          "partition": "volta-gpu",
+          "start": "2026-07-18T05:24:59",
+          "state": "FAILED"
+        },
+        {
+          "alloc_tres": "billing=20,cpu=8,gres/gpu:tesla_v100-sxm2-16gb=1,gres/gpu=1,mem=64G,node=1",
+          "attempt_credit": "zero",
+          "elapsed": "00:02:09",
+          "end": "2026-07-18T05:27:08",
+          "exit_code": "2:0",
+          "job_id": "59451002_4",
+          "job_name": "RCR3R1Replay",
+          "partition": "volta-gpu",
+          "start": "2026-07-18T05:24:59",
+          "state": "FAILED"
+        },
+        {
+          "alloc_tres": "billing=20,cpu=8,gres/gpu:tesla_v100-sxm2-16gb=1,gres/gpu=1,mem=64G,node=1",
+          "attempt_credit": "zero",
+          "elapsed": "00:00:19",
+          "end": "2026-07-18T05:28:03",
+          "exit_code": "2:0",
+          "job_id": "59451002_5",
+          "job_name": "RCR3R1Replay",
+          "partition": "volta-gpu",
+          "start": "2026-07-18T05:27:44",
+          "state": "FAILED"
+        },
+        {
+          "alloc_tres": "billing=20,cpu=8,gres/gpu:tesla_v100-sxm2-16gb=1,gres/gpu=1,mem=64G,node=1",
+          "attempt_credit": "zero",
+          "elapsed": "00:00:16",
+          "end": "2026-07-18T05:28:00",
+          "exit_code": "2:0",
+          "job_id": "59451002_6",
+          "job_name": "RCR3R1Replay",
+          "partition": "volta-gpu",
+          "start": "2026-07-18T05:27:44",
+          "state": "FAILED"
+        },
+        {
+          "alloc_tres": "billing=20,cpu=8,gres/gpu:tesla_v100-sxm2-16gb=1,gres/gpu=1,mem=64G,node=1",
+          "attempt_credit": "zero",
+          "elapsed": "00:00:17",
+          "end": "2026-07-18T05:28:01",
+          "exit_code": "2:0",
+          "job_id": "59451002_7",
+          "job_name": "RCR3R1Replay",
+          "partition": "volta-gpu",
+          "start": "2026-07-18T05:27:44",
+          "state": "FAILED"
+        },
+        {
+          "alloc_tres": "billing=20,cpu=8,gres/gpu:tesla_v100-sxm2-16gb=1,gres/gpu=1,mem=64G,node=1",
+          "attempt_credit": "zero",
+          "elapsed": "00:00:20",
+          "end": "2026-07-18T05:28:04",
+          "exit_code": "2:0",
+          "job_id": "59451002_8",
+          "job_name": "RCR3R1Replay",
+          "partition": "volta-gpu",
+          "start": "2026-07-18T05:27:44",
+          "state": "FAILED"
+        },
+        {
+          "alloc_tres": "billing=20,cpu=8,gres/gpu:tesla_v100-sxm2-16gb=1,gres/gpu=1,mem=64G,node=1",
+          "attempt_credit": "zero",
+          "elapsed": "00:00:19",
+          "end": "2026-07-18T05:28:03",
+          "exit_code": "2:0",
+          "job_id": "59451002_9",
+          "job_name": "RCR3R1Replay",
+          "partition": "volta-gpu",
+          "start": "2026-07-18T05:27:44",
+          "state": "FAILED"
+        },
+        {
+          "alloc_tres": "billing=20,cpu=8,gres/gpu:tesla_v100-sxm2-16gb=1,gres/gpu=1,mem=64G,node=1",
+          "attempt_credit": "zero",
+          "elapsed": "00:00:18",
+          "end": "2026-07-18T05:28:21",
+          "exit_code": "0:0",
+          "job_id": "59451002_10",
+          "job_name": "RCR3R1Replay",
+          "partition": "volta-gpu",
+          "start": "2026-07-18T05:28:03",
+          "state": "CANCELLED by 397557"
+        },
+        {
+          "alloc_tres": "billing=20,cpu=8,gres/gpu:tesla_v100-sxm2-16gb=1,gres/gpu=1,mem=64G,node=1",
+          "attempt_credit": "zero",
+          "elapsed": "00:00:17",
+          "end": "2026-07-18T05:28:20",
+          "exit_code": "2:0",
+          "job_id": "59451002_11",
+          "job_name": "RCR3R1Replay",
+          "partition": "volta-gpu",
+          "start": "2026-07-18T05:28:03",
+          "state": "FAILED"
+        },
+        {
+          "alloc_tres": "billing=20,cpu=8,gres/gpu:tesla_v100-sxm2-16gb=1,gres/gpu=1,mem=64G,node=1",
+          "attempt_credit": "zero",
+          "elapsed": "00:00:18",
+          "end": "2026-07-18T05:28:21",
+          "exit_code": "0:0",
+          "job_id": "59451002_12",
+          "job_name": "RCR3R1Replay",
+          "partition": "volta-gpu",
+          "start": "2026-07-18T05:28:03",
+          "state": "CANCELLED by 397557"
+        },
+        {
+          "alloc_tres": "billing=20,cpu=8,gres/gpu:tesla_v100-sxm2-16gb=1,gres/gpu=1,mem=64G,node=1",
+          "attempt_credit": "zero",
+          "elapsed": "00:00:17",
+          "end": "2026-07-18T05:28:20",
+          "exit_code": "2:0",
+          "job_id": "59451002_13",
+          "job_name": "RCR3R1Replay",
+          "partition": "volta-gpu",
+          "start": "2026-07-18T05:28:03",
+          "state": "FAILED"
+        },
+        {
+          "alloc_tres": "",
+          "attempt_credit": "zero",
+          "elapsed": "00:00:00",
+          "end": "2026-07-18T05:28:21",
+          "exit_code": "0:0",
+          "job_id": "59451002_[14-40]",
+          "job_name": "RCR3R1Replay",
+          "partition": "volta-gpu",
+          "start": "None",
+          "state": "CANCELLED by 397557"
+        }
+      ],
+      "states_summary": [
+        "CANCELLED by 397557",
+        "FAILED"
+      ],
+      "terminal_accounting_complete": true
+    },
+    {
+      "array_job_id": "59496858",
+      "assignment_partition": "a100-gpu",
+      "attempt_credit": "zero",
+      "expected_task_count": 62,
+      "failure_class": "same_scope_slurm_export_value_parsing_noop",
+      "failure_signature": "sbatch --export comma-separated value truncated ROUTE_C_R1_ENABLED_PARTITIONS to htzhulab; task logs report no assigned checkpoint for a100-gpu; assigned=0",
+      "finalizer_coverage": {
+        "active_afterany_dependency": "afterany:59451000:59451001:59451002:59451087:59451661:59451662:59452729:59491654:59496858:59497884",
+        "active_afterany_finalizer": "59497885",
+        "terminal_packet_allowed": false
+      },
+      "log_paths": [
+        "logs/route_C/round03/R1Replay_59497539_0_20260718_143717.log",
+        "logs/route_C/round03/R1Replay_59497547_1_20260718_143722.log",
+        "logs/route_C/round03/R1Replay_59497554_2_20260718_143738.log",
+        "logs/route_C/round03/R1Replay_59497555_3_20260718_143738.log",
+        "logs/route_C/round03/R1Replay_59497556_4_20260718_143758.log",
+        "logs/route_C/round03/R1Replay_59497557_5_20260718_143758.log",
+        "logs/route_C/round03/R1Replay_59497577_6_20260718_143818.log",
+        "logs/route_C/round03/R1Replay_59497578_7_20260718_143818.log",
+        "logs/route_C/round03/R1Replay_59497583_8_20260718_143838.log",
+        "logs/route_C/round03/R1Replay_59497584_9_20260718_143838.log",
+        "logs/route_C/round03/R1Replay_59497596_10_20260718_143859.log",
+        "logs/route_C/round03/R1Replay_59497597_11_20260718_143859.log",
+        "logs/route_C/round03/R1Replay_59497603_12_20260718_143915.log",
+        "logs/route_C/round03/R1Replay_59497604_13_20260718_143914.log",
+        "logs/route_C/round03/R1Replay_59497605_14_20260718_143919.log",
+        "logs/route_C/round03/R1Replay_59497606_15_20260718_143919.log",
+        "logs/route_C/round03/R1Replay_59497624_16_20260718_143939.log",
+        "logs/route_C/round03/R1Replay_59497625_17_20260718_143939.log",
+        "logs/route_C/round03/R1Replay_59497626_18_20260718_143953.log",
+        "logs/route_C/round03/R1Replay_59497627_19_20260718_143953.log",
+        "logs/route_C/round03/R1Replay_59497633_20_20260718_144000.log",
+        "logs/route_C/round03/R1Replay_59497634_21_20260718_144000.log",
+        "logs/route_C/round03/R1Replay_59497640_22_20260718_144021.log",
+        "logs/route_C/round03/R1Replay_59497641_23_20260718_144021.log",
+        "logs/route_C/round03/R1Replay_59497642_24_20260718_144031.log",
+        "logs/route_C/round03/R1Replay_59497643_25_20260718_144031.log",
+        "logs/route_C/round03/R1Replay_59497662_26_20260718_144041.log",
+        "logs/route_C/round03/R1Replay_59497663_27_20260718_144041.log",
+        "logs/route_C/round03/R1Replay_59497664_28_20260718_144101.log",
+        "logs/route_C/round03/R1Replay_59497665_29_20260718_144101.log",
+        "logs/route_C/round03/R1Replay_59497675_30_20260718_144109.log",
+        "logs/route_C/round03/R1Replay_59497676_31_20260718_144109.log",
+        "logs/route_C/round03/R1Replay_59497682_32_20260718_144121.log",
+        "logs/route_C/round03/R1Replay_59497683_33_20260718_144121.log",
+        "logs/route_C/round03/R1Replay_59497684_34_20260718_144142.log",
+        "logs/route_C/round03/R1Replay_59497685_35_20260718_144141.log",
+        "logs/route_C/round03/R1Replay_59497687_36_20260718_144146.log",
+        "logs/route_C/round03/R1Replay_59497688_37_20260718_144147.log",
+        "logs/route_C/round03/R1Replay_59497698_38_20260718_144202.log",
+        "logs/route_C/round03/R1Replay_59497699_39_20260718_144202.log",
+        "logs/route_C/round03/R1Replay_59497705_40_20260718_144222.log",
+        "logs/route_C/round03/R1Replay_59497706_41_20260718_144222.log",
+        "logs/route_C/round03/R1Replay_59497714_42_20260718_144242.log",
+        "logs/route_C/round03/R1Replay_59497715_43_20260718_144242.log",
+        "logs/route_C/round03/R1Replay_59497716_44_20260718_144302.log",
+        "logs/route_C/round03/R1Replay_59497717_45_20260718_144302.log",
+        "logs/route_C/round03/R1Replay_59497739_46_20260718_144323.log",
+        "logs/route_C/round03/R1Replay_59497740_47_20260718_144323.log",
+        "logs/route_C/round03/R1Replay_59497741_48_20260718_144339.log",
+        "logs/route_C/round03/R1Replay_59497742_49_20260718_144339.log",
+        "logs/route_C/round03/R1Replay_59497743_50_20260718_144343.log",
+        "logs/route_C/round03/R1Replay_59497744_51_20260718_144343.log",
+        "logs/route_C/round03/R1Replay_59497760_52_20260718_144404.log",
+        "logs/route_C/round03/R1Replay_59497761_53_20260718_144404.log",
+        "logs/route_C/round03/R1Replay_59497768_54_20260718_144416.log",
+        "logs/route_C/round03/R1Replay_59497769_55_20260718_144416.log"
+      ],
+      "log_receipts": [
+        {
+          "path": "logs/route_C/round03/R1Replay_59497539_0_20260718_143717.log",
+          "sha256": "19a6bcc630faee2ed41a435ec48478d74e21476e09fcb8219efc2331ad8a3f24",
+          "task_id": "0"
+        },
+        {
+          "path": "logs/route_C/round03/R1Replay_59497547_1_20260718_143722.log",
+          "sha256": "d0860c3e7853df7bafef6a1e1b611e97a329cf506aa0c1f85af031b723e688a8",
+          "task_id": "1"
+        },
+        {
+          "path": "logs/route_C/round03/R1Replay_59497554_2_20260718_143738.log",
+          "sha256": "96221c3ee333c976e493082d3a0d0e8af8dfb6dd8d10d25fd912c7167600f794",
+          "task_id": "2"
+        },
+        {
+          "path": "logs/route_C/round03/R1Replay_59497555_3_20260718_143738.log",
+          "sha256": "851a4ec6245e7401aa3306c2282bf47bf10544bce1b8019ff8bd9d07144494cc",
+          "task_id": "3"
+        },
+        {
+          "path": "logs/route_C/round03/R1Replay_59497556_4_20260718_143758.log",
+          "sha256": "098f0593e551e77d6d056efed65b9798f6a32cf1e10dcbf5e4ca1c458064cd80",
+          "task_id": "4"
+        },
+        {
+          "path": "logs/route_C/round03/R1Replay_59497557_5_20260718_143758.log",
+          "sha256": "d90f46a2a2ae4ca37eda18f7e0d611d9607a8fea14b04538fe6b65a6366c705e",
+          "task_id": "5"
+        },
+        {
+          "path": "logs/route_C/round03/R1Replay_59497577_6_20260718_143818.log",
+          "sha256": "04db396ff700abce76e2135b3af7c2415509828a1574690277174e5bc6214293",
+          "task_id": "6"
+        },
+        {
+          "path": "logs/route_C/round03/R1Replay_59497578_7_20260718_143818.log",
+          "sha256": "d0be0b6fdf90b611fe149e138be4ac07c250bdff9d8c1b021f12ad0121bec7a4",
+          "task_id": "7"
+        },
+        {
+          "path": "logs/route_C/round03/R1Replay_59497583_8_20260718_143838.log",
+          "sha256": "14957b8318f5622d8a11c769016824e2dc6224d11a4b822adc08241acac8745a",
+          "task_id": "8"
+        },
+        {
+          "path": "logs/route_C/round03/R1Replay_59497584_9_20260718_143838.log",
+          "sha256": "3c1dc4e46f3c85f5a7a68e7b4dd608d530eac6d7da29c60c5d49a651a73e91f0",
+          "task_id": "9"
+        },
+        {
+          "path": "logs/route_C/round03/R1Replay_59497596_10_20260718_143859.log",
+          "sha256": "e8d947e717dcecb550f0baa8d99a7bebc901f6dc281ffa23ec46537cd854ab18",
+          "task_id": "10"
+        },
+        {
+          "path": "logs/route_C/round03/R1Replay_59497597_11_20260718_143859.log",
+          "sha256": "14365fc362043f133e201f49231ef6c452e84ea8842963d41f87e1ee0b5aa6dc",
+          "task_id": "11"
+        },
+        {
+          "path": "logs/route_C/round03/R1Replay_59497603_12_20260718_143915.log",
+          "sha256": "97000bab4dea80a00014e8ec35486dc95fc12c3a577ed537bf0816ff8e8cfe3c",
+          "task_id": "12"
+        },
+        {
+          "path": "logs/route_C/round03/R1Replay_59497604_13_20260718_143914.log",
+          "sha256": "ac6ce391824495daeadd285142de5b52cd766eab2c425b14476c596b585ed27a",
+          "task_id": "13"
+        },
+        {
+          "path": "logs/route_C/round03/R1Replay_59497605_14_20260718_143919.log",
+          "sha256": "f9abdafb2fa3e854499b27763df70ddad892b4fa6005fe98983271f816197e97",
+          "task_id": "14"
+        },
+        {
+          "path": "logs/route_C/round03/R1Replay_59497606_15_20260718_143919.log",
+          "sha256": "c2c9d0ab084f4d3e25b0ed0fcec1418e67b8b1817983db8b0ece7a7ab99e4dba",
+          "task_id": "15"
+        },
+        {
+          "path": "logs/route_C/round03/R1Replay_59497624_16_20260718_143939.log",
+          "sha256": "727f72d541d4fe2d409cdcee61b2a66a3ebf7f8cca74a261b12611d4f1cd48d8",
+          "task_id": "16"
+        },
+        {
+          "path": "logs/route_C/round03/R1Replay_59497625_17_20260718_143939.log",
+          "sha256": "56017588b9a05f26c457a8a0618748f2cf9d0be1f21748ccf537108e662a106e",
+          "task_id": "17"
+        },
+        {
+          "path": "logs/route_C/round03/R1Replay_59497626_18_20260718_143953.log",
+          "sha256": "f377aa21a794b286e89528e2d572f40cc724b31619dda5d71b9edf4bfd45f477",
+          "task_id": "18"
+        },
+        {
+          "path": "logs/route_C/round03/R1Replay_59497627_19_20260718_143953.log",
+          "sha256": "bd62fd776431a126b196ff1c4abf79be9d2cef19716a30875e9f0cef0726930a",
+          "task_id": "19"
+        },
+        {
+          "path": "logs/route_C/round03/R1Replay_59497633_20_20260718_144000.log",
+          "sha256": "ffb6d1ce552747d28087f36125f163e05e57c3893dcd195bc2eeb704277901c8",
+          "task_id": "20"
+        },
+        {
+          "path": "logs/route_C/round03/R1Replay_59497634_21_20260718_144000.log",
+          "sha256": "2a0075fe621e8aa32febd125ebe945899ac9813ed88443e4dc8617173174ae66",
+          "task_id": "21"
+        },
+        {
+          "path": "logs/route_C/round03/R1Replay_59497640_22_20260718_144021.log",
+          "sha256": "f35904af9f79f51f1f8839fa696a115e31e6fd30e56155e69022300f0b573f76",
+          "task_id": "22"
+        },
+        {
+          "path": "logs/route_C/round03/R1Replay_59497641_23_20260718_144021.log",
+          "sha256": "34058cc9ea3dd73465f63df92e895e83d8fd4423fa4ff086124cba87b0db03d0",
+          "task_id": "23"
+        },
+        {
+          "path": "logs/route_C/round03/R1Replay_59497642_24_20260718_144031.log",
+          "sha256": "c3eb54c0b73558d53af80a47cd24b6fb2f62190e63885dad1c6acddd04e30d94",
+          "task_id": "24"
+        },
+        {
+          "path": "logs/route_C/round03/R1Replay_59497643_25_20260718_144031.log",
+          "sha256": "e25e233f8988f0f1a4eb571337d4452892642f0948cce72a1c2e69c3bdeebd79",
+          "task_id": "25"
+        },
+        {
+          "path": "logs/route_C/round03/R1Replay_59497662_26_20260718_144041.log",
+          "sha256": "3956e78c92bb0a2deabf8fec9d3937a7a13721df0cbe5a5bce9d228adfdc8e05",
+          "task_id": "26"
+        },
+        {
+          "path": "logs/route_C/round03/R1Replay_59497663_27_20260718_144041.log",
+          "sha256": "dacc6d6a00b045a0e5c7141484e47ce4b79ac4ede03557fbf4f11cc3cb155d70",
+          "task_id": "27"
+        },
+        {
+          "path": "logs/route_C/round03/R1Replay_59497664_28_20260718_144101.log",
+          "sha256": "3493f8494b9f77441d0dfaf3b6bee2629041909ef5c80507f183dd8d3d45f5ba",
+          "task_id": "28"
+        },
+        {
+          "path": "logs/route_C/round03/R1Replay_59497665_29_20260718_144101.log",
+          "sha256": "5365fe4985c334d161701e60b91b6a696609bac48900b3b488d653923423a3ab",
+          "task_id": "29"
+        },
+        {
+          "path": "logs/route_C/round03/R1Replay_59497675_30_20260718_144109.log",
+          "sha256": "72e2844792e697e189ecdb05edcd2dddffa6945929ae3d2a63484cebff1459f1",
+          "task_id": "30"
+        },
+        {
+          "path": "logs/route_C/round03/R1Replay_59497676_31_20260718_144109.log",
+          "sha256": "a21c9d43a8c131edee4dab2ddd3312bbc2f6277278af0363002984682f2e2315",
+          "task_id": "31"
+        },
+        {
+          "path": "logs/route_C/round03/R1Replay_59497682_32_20260718_144121.log",
+          "sha256": "81f47970fd0808697283ba594df78b83a5b7372c91198221ad0ab1ea9b50a2d7",
+          "task_id": "32"
+        },
+        {
+          "path": "logs/route_C/round03/R1Replay_59497683_33_20260718_144121.log",
+          "sha256": "86403dc500a4512bf7e0c77434a8e51961f5e03b83db75eda2fb100511441424",
+          "task_id": "33"
+        },
+        {
+          "path": "logs/route_C/round03/R1Replay_59497684_34_20260718_144142.log",
+          "sha256": "22043d71b046cf61c78422ee96e75f858879d93151af70f4fe5ea5f1b06c9ca7",
+          "task_id": "34"
+        },
+        {
+          "path": "logs/route_C/round03/R1Replay_59497685_35_20260718_144141.log",
+          "sha256": "d181be71ffefcd69dc476586a719b49df1d4d918ddf0da36d2f00e97bf50dc7a",
+          "task_id": "35"
+        },
+        {
+          "path": "logs/route_C/round03/R1Replay_59497687_36_20260718_144146.log",
+          "sha256": "e49c6acf3f4deac7d768fa3d357fa998f0545d8e2c0075b37536f227ab8b1307",
+          "task_id": "36"
+        },
+        {
+          "path": "logs/route_C/round03/R1Replay_59497688_37_20260718_144147.log",
+          "sha256": "40dc20b289aaf10775b66fecef553fa6a923f09031d62235554b031ea18e3a43",
+          "task_id": "37"
+        },
+        {
+          "path": "logs/route_C/round03/R1Replay_59497698_38_20260718_144202.log",
+          "sha256": "72c34910589498bc25c5ed0b1ca90396c56630469a8e027b8877ac542c7a28b4",
+          "task_id": "38"
+        },
+        {
+          "path": "logs/route_C/round03/R1Replay_59497699_39_20260718_144202.log",
+          "sha256": "0bc503ad0e92847795cbf6d8a88643c34b20f929496c8b84703f364f49f8de18",
+          "task_id": "39"
+        },
+        {
+          "path": "logs/route_C/round03/R1Replay_59497705_40_20260718_144222.log",
+          "sha256": "922d8a687ec17e19fc522565fb999e1773a08b10b311b7d9c553651442175255",
+          "task_id": "40"
+        },
+        {
+          "path": "logs/route_C/round03/R1Replay_59497706_41_20260718_144222.log",
+          "sha256": "024356c5cb663da79292ffec2bd8f1566ab666434fa719c0c90e92b2fbf646ba",
+          "task_id": "41"
+        },
+        {
+          "path": "logs/route_C/round03/R1Replay_59497714_42_20260718_144242.log",
+          "sha256": "3f4393979d539549f2b3c314194421d2ab4d8ba3eb7b5b1f3d15449f5af44c5b",
+          "task_id": "42"
+        },
+        {
+          "path": "logs/route_C/round03/R1Replay_59497715_43_20260718_144242.log",
+          "sha256": "1c0d7b93d4c6fa5af21f504c9f0631a76d48c820a5865f49eef093d1e3cd1818",
+          "task_id": "43"
+        },
+        {
+          "path": "logs/route_C/round03/R1Replay_59497716_44_20260718_144302.log",
+          "sha256": "02f76e9004c4983286620a398d61c776bd40c394b15b6fe158d5870bff5120b9",
+          "task_id": "44"
+        },
+        {
+          "path": "logs/route_C/round03/R1Replay_59497717_45_20260718_144302.log",
+          "sha256": "12ba610926d732e22fe3c9bbd44e57bea1bfce2257a7ae4ddecdd6ee71e05738",
+          "task_id": "45"
+        },
+        {
+          "path": "logs/route_C/round03/R1Replay_59497739_46_20260718_144323.log",
+          "sha256": "e705837876505716d570d125302ec43540145500c826f89bdf43782ed6d4d476",
+          "task_id": "46"
+        },
+        {
+          "path": "logs/route_C/round03/R1Replay_59497740_47_20260718_144323.log",
+          "sha256": "a9896ff5c4777bf5af38b39abf492e416dc30d99119d2b0b2cddfc0aa55d3e40",
+          "task_id": "47"
+        },
+        {
+          "path": "logs/route_C/round03/R1Replay_59497741_48_20260718_144339.log",
+          "sha256": "4e8a674dfba84b6dfdca8ba9f860ed578bb900b1e17517457dddaf31062dca6d",
+          "task_id": "48"
+        },
+        {
+          "path": "logs/route_C/round03/R1Replay_59497742_49_20260718_144339.log",
+          "sha256": "40044bbaeea502be8bb1a2b84e6c85373964eb6b6c3c06973f876b74c6dedfa1",
+          "task_id": "49"
+        },
+        {
+          "path": "logs/route_C/round03/R1Replay_59497743_50_20260718_144343.log",
+          "sha256": "0f97bfd8f8b4196aa8a57ddd034d7f7ce0a60b8891ad724a93968eef3816bae7",
+          "task_id": "50"
+        },
+        {
+          "path": "logs/route_C/round03/R1Replay_59497744_51_20260718_144343.log",
+          "sha256": "f45571f5b2ad1c12d497f9ca4cbb8a211e64f4292fa8a9b330f89b0c0d1063a6",
+          "task_id": "51"
+        },
+        {
+          "path": "logs/route_C/round03/R1Replay_59497760_52_20260718_144404.log",
+          "sha256": "f2e26ffe44f3514674709c889d1180e54fd59a2f46dcd37f959b7bd5e4287b67",
+          "task_id": "52"
+        },
+        {
+          "path": "logs/route_C/round03/R1Replay_59497761_53_20260718_144404.log",
+          "sha256": "9e7f85ce02b34f3710678db053abea6aac9b5522c5ec917f698c0c5e1746ed56",
+          "task_id": "53"
+        },
+        {
+          "path": "logs/route_C/round03/R1Replay_59497768_54_20260718_144416.log",
+          "sha256": "36115cbb7a21dd2acf901bd30e9b568d0cf083067e66c4a6d5fd8ceea1412c07",
+          "task_id": "54"
+        },
+        {
+          "path": "logs/route_C/round03/R1Replay_59497769_55_20260718_144416.log",
+          "sha256": "5b5918585cf6af2f9ca041b0850ec58a58ddee24bca6058b9a5e7c82eaa9b5d4",
+          "task_id": "55"
+        }
+      ],
+      "partition": "htzhulab",
+      "replacement_attempts": [
+        {
+          "assignment_partition": "a100-gpu",
+          "credit": "pending",
+          "job_id": "59497884",
+          "partition": "htzhulab",
+          "status": "submitted replacement with ROUTE_C_R1_ENABLED_PARTITIONS inherited from environment via --export=ALL"
+        }
+      ],
+      "sacct_stdout": "JobID|JobName|Partition|State|ExitCode|Elapsed|Start|End\n59496858_0|RCR3R1Replay|htzhulab|COMPLETED|0:0|00:00:02|2026-07-18T14:37:16|2026-07-18T14:37:18\n59496858_1|RCR3R1Replay|htzhulab|COMPLETED|0:0|00:00:03|2026-07-18T14:37:20|2026-07-18T14:37:23\n59496858_2|RCR3R1Replay|htzhulab|COMPLETED|0:0|00:00:03|2026-07-18T14:37:36|2026-07-18T14:37:39\n59496858_3|RCR3R1Replay|htzhulab|COMPLETED|0:0|00:00:03|2026-07-18T14:37:36|2026-07-18T14:37:39\n59496858_4|RCR3R1Replay|htzhulab|COMPLETED|0:0|00:00:03|2026-07-18T14:37:56|2026-07-18T14:37:59\n59496858_5|RCR3R1Replay|htzhulab|COMPLETED|0:0|00:00:03|2026-07-18T14:37:56|2026-07-18T14:37:59\n59496858_6|RCR3R1Replay|htzhulab|COMPLETED|0:0|00:00:02|2026-07-18T14:38:16|2026-07-18T14:38:18\n59496858_7|RCR3R1Replay|htzhulab|COMPLETED|0:0|00:00:03|2026-07-18T14:38:16|2026-07-18T14:38:19\n59496858_8|RCR3R1Replay|htzhulab|COMPLETED|0:0|00:00:03|2026-07-18T14:38:36|2026-07-18T14:38:39\n59496858_9|RCR3R1Replay|htzhulab|COMPLETED|0:0|00:00:03|2026-07-18T14:38:36|2026-07-18T14:38:39\n59496858_10|RCR3R1Replay|htzhulab|COMPLETED|0:0|00:00:02|2026-07-18T14:38:57|2026-07-18T14:38:59\n59496858_11|RCR3R1Replay|htzhulab|COMPLETED|0:0|00:00:02|2026-07-18T14:38:57|2026-07-18T14:38:59\n59496858_12|RCR3R1Replay|htzhulab|COMPLETED|0:0|00:00:03|2026-07-18T14:39:13|2026-07-18T14:39:16\n59496858_13|RCR3R1Replay|htzhulab|COMPLETED|0:0|00:00:03|2026-07-18T14:39:13|2026-07-18T14:39:16\n59496858_14|RCR3R1Replay|htzhulab|COMPLETED|0:0|00:00:02|2026-07-18T14:39:18|2026-07-18T14:39:20\n59496858_15|RCR3R1Replay|htzhulab|COMPLETED|0:0|00:00:02|2026-07-18T14:39:18|2026-07-18T14:39:20\n59496858_16|RCR3R1Replay|htzhulab|COMPLETED|0:0|00:00:02|2026-07-18T14:39:38|2026-07-18T14:39:40\n59496858_17|RCR3R1Replay|htzhulab|COMPLETED|0:0|00:00:03|2026-07-18T14:39:38|2026-07-18T14:39:41\n59496858_18|RCR3R1Replay|htzhulab|COMPLETED|0:0|00:00:03|2026-07-18T14:39:51|2026-07-18T14:39:54\n59496858_19|RCR3R1Replay|htzhulab|COMPLETED|0:0|00:00:03|2026-07-18T14:39:51|2026-07-18T14:39:54\n59496858_20|RCR3R1Replay|htzhulab|COMPLETED|0:0|00:00:03|2026-07-18T14:39:58|2026-07-18T14:40:01\n59496858_21|RCR3R1Replay|htzhulab|COMPLETED|0:0|00:00:02|2026-07-18T14:39:58|2026-07-18T14:40:00\n59496858_22|RCR3R1Replay|htzhulab|COMPLETED|0:0|00:00:02|2026-07-18T14:40:19|2026-07-18T14:40:21\n59496858_23|RCR3R1Replay|htzhulab|COMPLETED|0:0|00:00:02|2026-07-18T14:40:19|2026-07-18T14:40:21\n59496858_24|RCR3R1Replay|htzhulab|COMPLETED|0:0|00:00:03|2026-07-18T14:40:29|2026-07-18T14:40:32\n59496858_25|RCR3R1Replay|htzhulab|COMPLETED|0:0|00:00:03|2026-07-18T14:40:29|2026-07-18T14:40:32\n59496858_26|RCR3R1Replay|htzhulab|COMPLETED|0:0|00:00:03|2026-07-18T14:40:39|2026-07-18T14:40:42\n59496858_27|RCR3R1Replay|htzhulab|COMPLETED|0:0|00:00:03|2026-07-18T14:40:39|2026-07-18T14:40:42\n59496858_28|RCR3R1Replay|htzhulab|COMPLETED|0:0|00:00:03|2026-07-18T14:40:59|2026-07-18T14:41:02\n59496858_29|RCR3R1Replay|htzhulab|COMPLETED|0:0|00:00:03|2026-07-18T14:40:59|2026-07-18T14:41:02\n59496858_30|RCR3R1Replay|htzhulab|COMPLETED|0:0|00:00:03|2026-07-18T14:41:07|2026-07-18T14:41:10\n59496858_31|RCR3R1Replay|htzhulab|COMPLETED|0:0|00:00:03|2026-07-18T14:41:07|2026-07-18T14:41:10\n59496858_32|RCR3R1Replay|htzhulab|COMPLETED|0:0|00:00:03|2026-07-18T14:41:20|2026-07-18T14:41:23\n59496858_33|RCR3R1Replay|htzhulab|COMPLETED|0:0|00:00:03|2026-07-18T14:41:20|2026-07-18T14:41:23\n59496858_34|RCR3R1Replay|htzhulab|COMPLETED|0:0|00:00:03|2026-07-18T14:41:40|2026-07-18T14:41:43\n59496858_35|RCR3R1Replay|htzhulab|COMPLETED|0:0|00:00:02|2026-07-18T14:41:40|2026-07-18T14:41:42\n59496858_36|RCR3R1Replay|htzhulab|COMPLETED|0:0|00:00:02|2026-07-18T14:41:45|2026-07-18T14:41:47\n59496858_37|RCR3R1Replay|htzhulab|COMPLETED|0:0|00:00:04|2026-07-18T14:41:45|2026-07-18T14:41:49\n59496858_38|RCR3R1Replay|htzhulab|COMPLETED|0:0|00:00:03|2026-07-18T14:42:00|2026-07-18T14:42:03\n59496858_39|RCR3R1Replay|htzhulab|COMPLETED|0:0|00:00:03|2026-07-18T14:42:00|2026-07-18T14:42:03\n59496858_40|RCR3R1Replay|htzhulab|COMPLETED|0:0|00:00:04|2026-07-18T14:42:20|2026-07-18T14:42:24\n59496858_41|RCR3R1Replay|htzhulab|COMPLETED|0:0|00:00:04|2026-07-18T14:42:20|2026-07-18T14:42:24\n59496858_42|RCR3R1Replay|htzhulab|COMPLETED|0:0|00:00:01|2026-07-18T14:42:41|2026-07-18T14:42:42\n59496858_43|RCR3R1Replay|htzhulab|COMPLETED|0:0|00:00:01|2026-07-18T14:42:41|2026-07-18T14:42:42\n59496858_44|RCR3R1Replay|htzhulab|COMPLETED|0:0|00:00:03|2026-07-18T14:43:00|2026-07-18T14:43:03\n59496858_45|RCR3R1Replay|htzhulab|COMPLETED|0:0|00:00:03|2026-07-18T14:43:00|2026-07-18T14:43:03\n59496858_46|RCR3R1Replay|htzhulab|COMPLETED|0:0|00:00:03|2026-07-18T14:43:22|2026-07-18T14:43:25\n59496858_47|RCR3R1Replay|htzhulab|COMPLETED|0:0|00:00:02|2026-07-18T14:43:22|2026-07-18T14:43:24\n59496858_48|RCR3R1Replay|htzhulab|COMPLETED|0:0|00:00:03|2026-07-18T14:43:37|2026-07-18T14:43:40\n59496858_49|RCR3R1Replay|htzhulab|COMPLETED|0:0|00:00:03|2026-07-18T14:43:37|2026-07-18T14:43:40\n59496858_50|RCR3R1Replay|htzhulab|COMPLETED|0:0|00:00:02|2026-07-18T14:43:42|2026-07-18T14:43:44\n59496858_51|RCR3R1Replay|htzhulab|COMPLETED|0:0|00:00:02|2026-07-18T14:43:42|2026-07-18T14:43:44\n59496858_52|RCR3R1Replay|htzhulab|COMPLETED|0:0|00:00:02|2026-07-18T14:44:02|2026-07-18T14:44:04\n59496858_53|RCR3R1Replay|htzhulab|COMPLETED|0:0|00:00:02|2026-07-18T14:44:02|2026-07-18T14:44:04\n59496858_54|RCR3R1Replay|htzhulab|COMPLETED|0:0|00:00:03|2026-07-18T14:44:14|2026-07-18T14:44:17\n59496858_55|RCR3R1Replay|htzhulab|COMPLETED|0:0|00:00:03|2026-07-18T14:44:14|2026-07-18T14:44:17\n59496858_[56-61]|RCR3R1Replay|htzhulab|CANCELLED by 397557|0:0|00:00:00|None|2026-07-18T14:44:21\n",
+      "terminal_accounting_complete": true
+    }
+  ]
+}

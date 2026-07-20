@@ -1,0 +1,46 @@
+{
+  "findings": [],
+  "reloads": [
+    {
+      "baseline_logits_sha256": "397c11d538560b5bc4c09cef39f18000ce83db3c16def89b4abb823b510444cc",
+      "checkpoint_name": "checkpoint_validation_step_25000",
+      "checkpoint_path": "/users/a/e/aereinh/CARE/results/20260711_srr_v3_m10_complete_mechanism_repair/runtime/m10_myops_training_executor/partition_race_retry11/htzhulab/variants/m10_d2_hierarchical_psip_formal/checkpoints/fold_0/propref_config/checkpoint_validation_step_25000.pt",
+      "checkpoint_sha256": "a1951e40522eae03fd103938e3fff827a127d29f01ab1ad66619d3376aac7bb0",
+      "clean_environment": true,
+      "input_manifest_sha256": "f18217f1d52e1c81b4fbf7344bcbd8bca7ec7790bf12acdf2780ec380d0bed8a",
+      "max_abs_diff": 0.0,
+      "pass": true,
+      "phase": "d2_hierarchical_psip",
+      "process_id": 4003661,
+      "reloaded_logits_sha256": "397c11d538560b5bc4c09cef39f18000ce83db3c16def89b4abb823b510444cc",
+      "state_dict_sha256": "04bb108fe090a332c8b0ff80b5610dcb6655b6c178bf91c545f926e795864444",
+      "state_dict_sha256_second_reload": "04bb108fe090a332c8b0ff80b5610dcb6655b6c178bf91c545f926e795864444"
+    },
+    {
+      "baseline_logits_sha256": "e02e624cabae3bbd6aff7ac8cda5fbc1be4d82ef42f28734d568db0418ff304d",
+      "checkpoint_name": "checkpoint_validation_step_30675",
+      "checkpoint_path": "/users/a/e/aereinh/CARE/results/20260711_srr_v3_m10_complete_mechanism_repair/runtime/m10_myops_training_executor/partition_race_retry11/htzhulab/variants/m10_d3_full_memory_propref_formal/checkpoints/fold_0/propref_config/checkpoint_validation_step_30675.pt",
+      "checkpoint_sha256": "42377997f1cd5caea25e85fb702c7faede084d9b17a695b503e092e3819b6c49",
+      "clean_environment": true,
+      "input_manifest_sha256": "f18217f1d52e1c81b4fbf7344bcbd8bca7ec7790bf12acdf2780ec380d0bed8a",
+      "max_abs_diff": 0.0,
+      "pass": true,
+      "phase": "d3_full_propref",
+      "process_id": 4003661,
+      "reloaded_logits_sha256": "e02e624cabae3bbd6aff7ac8cda5fbc1be4d82ef42f28734d568db0418ff304d",
+      "state_dict_sha256": "3346eca56d3f1fdd671a00e18eedf3e84487ba45c6c99eaea0231f05ac64e3b6",
+      "state_dict_sha256_second_reload": "3346eca56d3f1fdd671a00e18eedf3e84487ba45c6c99eaea0231f05ac64e3b6"
+    }
+  ],
+  "selected_phases": [
+    {
+      "checkpoint_name": "checkpoint_validation_step_25000",
+      "phase": "d2_hierarchical_psip"
+    },
+    {
+      "checkpoint_name": "checkpoint_validation_step_30675",
+      "phase": "d3_full_propref"
+    }
+  ],
+  "status": "PASS"
+}

@@ -1,0 +1,12 @@
+{
+  "case_ids": [
+    "Case2002"
+  ],
+  "checkpoint_name": "checkpoint_best",
+  "checkpoint_path": "/users/a/e/aereinh/CARE/results/20260711_srr_v3_m10_complete_mechanism_repair/runtime/m10_myops_training_executor/partition_race_retry11/htzhulab/variants/m10_d2_hierarchical_psip_formal/checkpoints/fold_0/propref_config/checkpoint_best.pt",
+  "checkpoint_sha256": "8bddcbbd760babe5c3241915ca925cf47cc36bf27128eb682ed3ea043a4d1ae4",
+  "device": "cpu",
+  "loaded_state_dict_sha256": "04bb108fe090a332c8b0ff80b5610dcb6655b6c178bf91c545f926e795864444",
+  "phase": "d2_hierarchical_psip",
+  "status": "PASS"
+}

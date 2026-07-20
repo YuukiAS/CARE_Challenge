@@ -1,0 +1,25 @@
+{
+  "controller_decision": "ROUTE_C_NEEDS_REVISION",
+  "controller_head_after_merges": "fc5bdc865c5beaa40207a8818216378668a08609",
+  "created_at_utc": "2026-07-15T10:16:07.889073+00:00",
+  "merge_order": [
+    {
+      "branch": "codex/route_C/myops_evidence",
+      "executor_id": "route_C_myops_evidence_executor",
+      "lane_token": "ROUTE_C_NEEDS_REVISION",
+      "merge_commit": "e8f3143",
+      "merge_state": "MERGED_TERMINAL_NEEDS_REVISION",
+      "source_head": "e7b57d9fdb1499e57b2533161dff625b9631d050"
+    },
+    {
+      "branch": "codex/route_C/cine_fidelity",
+      "executor_id": "route_C_cine_fidelity_executor",
+      "lane_token": "ROUTE_C_NEEDS_EVIDENCE",
+      "merge_commit": "fc5bdc8",
+      "merge_state": "MERGED_TERMINAL_NEEDS_EVIDENCE",
+      "source_head": "8c023a85da8b4a5ca36f48e0189a9eadd919e0d4"
+    }
+  ],
+  "normal_ready_review_requested": false,
+  "route_id": "route_C"
+}

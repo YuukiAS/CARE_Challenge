@@ -1,0 +1,25 @@
+{
+  "known_bad_controls": [
+    "positive_negative_prototype_swap"
+  ],
+  "real_graph_nodes_available_for_adapter": true,
+  "surrogate_or_posthoc_csv_allowed": false,
+  "symbols": {
+    "anchor_residual_control_off_path": "baseline_blend['gate'] off path when m10_final_output",
+    "edema_proposal_off": "edema_dict['proposal_logits']",
+    "edema_refiner_off": "self.edema_refine -> edema_logits",
+    "final_probability_composition_off": "m10_final_probabilities",
+    "final_srr_logits_replaced": "srr_logits / outputs['logits'] when m10_final_output",
+    "nnunet_context_off": "anchor_features / segmentation_context_interface",
+    "no_op": "identity intervention wrapper",
+    "positive_negative_prototype_swap": "ProposalDictionary positive/negative buffers",
+    "prototype_memory_off": "ProposalDictionary.positive/negative/memory_negative_similarity",
+    "retrieval": "SRRProposeRefineMyoPS._evidence_features / self.retrieval",
+    "scar_proposal_off": "scar_dict['proposal_logits']",
+    "scar_refiner_off": "self.scar_refine -> scar_logits"
+  },
+  "zero_effect_required_controls": [
+    "no_op",
+    "anchor_residual_control_off_path"
+  ]
+}

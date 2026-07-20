@@ -1,0 +1,53 @@
+{
+  "case_id": "Case1001",
+  "class_mapping": {
+    "0": 0,
+    "1220": 3,
+    "200": 1,
+    "2221": 3,
+    "500": 2,
+    "600": 3
+  },
+  "elapsed_seconds": 11.66,
+  "geometry_provenance": {
+    "affine_sha256": "4eb6f2e2800eada29f3d6e5d90f7851b86b4d61e495e9cc5922d97f033fc4c1b",
+    "cine_path": "/users/a/e/aereinh/CARE/data/CARE_Challenge/CineMyoPS_train/center_alpha/Case1001_Cine.nii.gz",
+    "label_path": "/users/a/e/aereinh/CARE/data/CARE_Challenge/CineMyoPS_train/center_alpha/Case1001_gd.nii.gz",
+    "source_shape": [
+      256,
+      256,
+      14,
+      30
+    ],
+    "source_spacing": [
+      1.1685148477554321,
+      1.1685148477554321,
+      6.0,
+      1.0
+    ]
+  },
+  "hook_channel_count": 32,
+  "hook_site": "model.decoder_dict['sax'] before model.pred_head_dict['sax']",
+  "input_shape": [
+    1,
+    1,
+    192,
+    192,
+    16
+  ],
+  "logits_shape": [
+    1,
+    4,
+    192,
+    192,
+    16
+  ],
+  "normalized_entropy_mean": 0.005312086082994938,
+  "official_symbol_imported": "cinema.segmentation.convunetr.ConvUNetR",
+  "preprocessing": "ACDC SAX config input shape, center crop/pad, robust intensity normalization, compact four-class label mapping",
+  "probabilities_sum_mean": 1.0,
+  "route_local_projection_out_channels": 16,
+  "state_dict_missing": [],
+  "state_dict_unexpected": [],
+  "status": "PASS"
+}

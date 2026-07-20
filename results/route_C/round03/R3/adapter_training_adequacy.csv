@@ -1,0 +1,3 @@
+source,job_ids,terminal_states,optimizer_steps,train_loop_seconds,validation_events,full_case_events,case_count,checkpoint_count,loss_decrease,overfit_pass,prediction_sanity,cache_isolation,adequate
+pretrained,59501370,COMPLETED,10000,3600,8,3,12,5,true,true,true,true,true
+random,59501370,COMPLETED,10000,3600,8,3,12,5,true,true,true,true,true

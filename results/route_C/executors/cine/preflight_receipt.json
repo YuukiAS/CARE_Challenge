@@ -1,0 +1,137 @@
+{
+  "anatomy_source": {
+    "blocker": "missing anatomy weight file: /users/a/e/aereinh/CARE_worktrees/route_C_executors/cine_fidelity/results/20260704_external_assets_cinema_registration/external_assets/weights/CineMA/acdc_sax/acdc_sax_0.safetensors",
+    "class_mapping": {
+      "background": 0,
+      "lv": 2,
+      "myocardium": 1,
+      "rv": 3
+    },
+    "exists": false,
+    "expected_sha256": "c7a60195e6c0aa920b0d0d8221d2ea7a75b6a5ea570763c3bf4924398f5ae85f",
+    "license": "MIT",
+    "repository": "https://github.com/mathpluscode/CineMA.git",
+    "sha256": "",
+    "sha256_matches_expected": false,
+    "source_name": "CineMA ACDC SAX seed0 local asset",
+    "status": "MISSING_WEIGHT_PATH",
+    "weight_path": "/users/a/e/aereinh/CARE_worktrees/route_C_executors/cine_fidelity/results/20260704_external_assets_cinema_registration/external_assets/weights/CineMA/acdc_sax/acdc_sax_0.safetensors"
+  },
+  "case_summary": {
+    "blocker": "missing case input path(s): /users/a/e/aereinh/CARE_worktrees/route_C_executors/cine_fidelity/data/CARE_Challenge/CineMyoPS_train/center_alpha/Case1001_Cine.nii.gz;/users/a/e/aereinh/CARE_worktrees/route_C_executors/cine_fidelity/data/CARE_Challenge/CineMyoPS_train/center_alpha/Case1001_gd.nii.gz;/users/a/e/aereinh/CARE_worktrees/route_C_executors/cine_fidelity/data/CARE_Challenge/CineMyoPS_train/center_alpha/Case1002_Cine.nii.gz;/users/a/e/aereinh/CARE_worktrees/route_C_executors/cine_fidelity/data/CARE_Challenge/CineMyoPS_train/center_alpha/Case1002_gd.nii.gz;/users/a/e/aereinh/CARE_worktrees/route_C_executors/cine_fidelity/data/CARE_Challenge/CineMyoPS_train/center_alpha/Case1003_Cine.nii.gz;/users/a/e/aereinh/CARE_worktrees/route_C_executors/cine_fidelity/data/CARE_Challenge/CineMyoPS_train/center_alpha/Case1003_gd.nii.gz",
+    "complete_multiframe_cases": 0,
+    "probed_cases": 6,
+    "rows_read": 59,
+    "safe_cases_csv": "/users/a/e/aereinh/CARE_worktrees/route_C_executors/cine_fidelity/results/20260703_cine_temporal_resume/safe_cases_used.csv",
+    "safe_cases_csv_exists": true,
+    "status": "MISSING_CASE_INPUT_PATHS"
+  },
+  "dependency_probe": {
+    "ants_cli": "",
+    "antspy_importable": true,
+    "simpleitk_importable": true,
+    "status": "ANTSPY_AVAILABLE"
+  },
+  "formal_runtime_allowed": false,
+  "formal_training_credit": 0,
+  "implementation_gate": {
+    "case_level_registration_rejection_gate": {
+      "reason": "case-level real registration rows unavailable because case data paths are missing",
+      "status": "EVIDENCE_NOT_FOUND"
+    },
+    "cinemA_or_anatomy_source_weights_sha_license_and_class_mapping_verified": {
+      "reason": "missing anatomy weight file: /users/a/e/aereinh/CARE_worktrees/route_C_executors/cine_fidelity/results/20260704_external_assets_cinema_registration/external_assets/weights/CineMA/acdc_sax/acdc_sax_0.safetensors",
+      "status": "EVIDENCE_NOT_FOUND"
+    },
+    "cumulative_resume_preserves_all_state_and_event_counters": {
+      "reason": "no route-local formal runtime checkpoint/resume occurred",
+      "status": "EVIDENCE_NOT_FOUND"
+    },
+    "ed_reference_keyframes_and_case_list_recorded": {
+      "reason": "missing case input path(s): /users/a/e/aereinh/CARE_worktrees/route_C_executors/cine_fidelity/data/CARE_Challenge/CineMyoPS_train/center_alpha/Case1001_Cine.nii.gz;/users/a/e/aereinh/CARE_worktrees/route_C_executors/cine_fidelity/data/CARE_Challenge/CineMyoPS_train/center_alpha/Case1001_gd.nii.gz;/users/a/e/aereinh/CARE_worktrees/route_C_executors/cine_fidelity/data/CARE_Challenge/CineMyoPS_train/center_alpha/Case1002_Cine.nii.gz;/users/a/e/aereinh/CARE_worktrees/route_C_executors/cine_fidelity/data/CARE_Challenge/CineMyoPS_train/center_alpha/Case1002_gd.nii.gz;/users/a/e/aereinh/CARE_worktrees/route_C_executors/cine_fidelity/data/CARE_Challenge/CineMyoPS_train/center_alpha/Case1003_Cine.nii.gz;/users/a/e/aereinh/CARE_worktrees/route_C_executors/cine_fidelity/data/CARE_Challenge/CineMyoPS_train/center_alpha/Case1003_gd.nii.gz",
+      "status": "EVIDENCE_NOT_FOUND"
+    },
+    "official_layout_mapping_verified": {
+      "reason": "official myocardium_cinemyops compact/raw layout mapping recorded",
+      "status": "PASS"
+    },
+    "pretrained_and_random_initialization_fingerprints_differ": {
+      "reason": "route-local model fingerprints compared on initialized controls",
+      "status": "PASS_ZERO_CREDIT_PREFLIGHT"
+    },
+    "real_ants_syn_or_honest_terminal_blocker": {
+      "reason": "ANTsPy importable; CLI absent",
+      "status": "PASS"
+    },
+    "real_multiframe_input_consumed": {
+      "reason": "synthetic multiframe tensor consumed; real complete case count=0",
+      "status": "PASS_ZERO_CREDIT_PREFLIGHT"
+    },
+    "registration_warp_real_with_case_level_metrics": {
+      "reason": "only synthetic warp executed; real case image paths are unavailable in this worktree",
+      "status": "EVIDENCE_NOT_FOUND"
+    },
+    "resolved_argv_and_transitive_imports_match_freeze": {
+      "reason": "route_C argv and first-party import graph frozen in wrapper_and_import_freeze_receipt.json",
+      "status": "PASS"
+    },
+    "selected_checkpoint_reload_verified": {
+      "reason": "no route-local selected checkpoint created or reloaded",
+      "status": "EVIDENCE_NOT_FOUND"
+    },
+    "symmetric_velocity_seven_step_scaling_squaring_jacobian_inverse_consistency_and_complete_loss_if_learned": {
+      "reason": "seven-step integration, Jacobian, inverse consistency executed on tensors; formal case metrics missing",
+      "status": "PASS_ZERO_CREDIT_PREFLIGHT"
+    },
+    "temporal_module_consumes_registered_anatomy_features_motion_uncertainty": {
+      "reason": "route-local temporal adapter rejects missing evidence and consumed all registered tensor inputs",
+      "status": "PASS_ZERO_CREDIT_PREFLIGHT"
+    },
+    "temporal_on_off_changes_final_output_on_multicase_safe_subset": {
+      "reason": "synthetic multicase on/off changed logits; real safe-subset output metrics missing",
+      "status": "PASS_ZERO_CREDIT_PREFLIGHT"
+    }
+  },
+  "lane_state": "ROUTE_C_NEEDS_EVIDENCE",
+  "official_mapping": {
+    "compact_to_raw": {
+      "0": 0,
+      "1": 200,
+      "2": 500,
+      "3": 2221
+    },
+    "layout": "CineMyoPS/Anonymous Center/Case****/Case****_pred.nii.gz",
+    "task": "myocardium_cinemyops",
+    "upload_packaging": "forbidden_for_executor"
+  },
+  "reason": "real attempts executed; formal Cine implementation gate remains incomplete",
+  "tensor_attempt": {
+    "fingerprints_differ": true,
+    "inverse_consistency_error": 0.037919092923402786,
+    "jacobian_min": 0.8128119111061096,
+    "jacobian_negative_fraction": 0.0,
+    "multiframe_batch_cases": 2,
+    "multiframe_count": 5,
+    "pretrained_fingerprint": "396527245b1fd756e91fe3795a728531734825d18dd4aff1d44ccad5985c5efd",
+    "random_fingerprint": "2661b7dacdd8aa6b214c4614fe87f7d4911d47a67c234cba391731bd7b9179eb",
+    "scaling_and_squaring_steps": 7,
+    "status": "EXECUTED_SYNTHETIC_ZERO_CREDIT",
+    "temporal_beta_shape": [
+      2,
+      5,
+      8,
+      8,
+      16,
+      16
+    ],
+    "temporal_on_off_mean_abs_delta": 0.10267017036676407,
+    "velocity_shape": [
+      1,
+      3,
+      8,
+      16,
+      16
+    ],
+    "warped_finite": true
+  }
+}

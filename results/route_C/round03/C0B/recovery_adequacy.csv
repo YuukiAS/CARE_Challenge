@@ -1,0 +1,8 @@
+phase,optimizer_steps,optimizer_steps_min,train_loop_seconds,train_loop_seconds_min,validation_events,validation_events_min,eval_cases,eval_cases_min,adequate,terminal,failed_attempt_credit
+d0_control,36746,20000,7200.021336678998,7200,16,12,44,44,true,true,zero
+d1_spatial_br2,31778,25000,9000.150148481014,9000,19,15,44,44,true,true,zero
+d2_hierarchical_psip,31810,25000,9000.034213767038,9000,19,15,44,44,true,true,zero
+d3_full_propref,50820,45000,14400.138177286019,14400,26,22,44,44,true,true,zero
+hard_negative_refresh,20000,20000,5684.537394266925,5400,10,10,44,44,true,true,zero
+no_context_control,20000,20000,5488.0439176289365,5400,10,10,44,44,true,true,zero
+alignment_control,12501,10000,3600.2238130120095,3600,11,8,44,44,true,true,zero

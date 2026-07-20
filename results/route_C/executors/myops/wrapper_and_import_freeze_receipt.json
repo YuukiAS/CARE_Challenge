@@ -1,0 +1,70 @@
+{
+  "argv": [
+    "scripts/route_C/myops/replay_intervention_selector.py",
+    "--evaluate",
+    "--force",
+    "--phase",
+    "d2_hierarchical_psip",
+    "--checkpoint",
+    "checkpoint_best.pt",
+    "--max-cases",
+    "1",
+    "--device",
+    "cpu"
+  ],
+  "branch": "codex/route_C/myops_evidence",
+  "compatibility_shim": {
+    "case_json": "/users/a/e/aereinh/CARE/data/benchmarks/protocol/cases_MyoPS.json",
+    "implementation": "scripts/route_C/myops/replay_intervention_selector.py::install_case_metadata_shim",
+    "implementation_sha256": "3349110a39b9f7670f05c64a5aeb760e4d141cb15b773f5976d02d6e58b9c7bc",
+    "module": "src.care_myocardium.data.case_metadata",
+    "raw_modality_root": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train",
+    "source_care_root": "/users/a/e/aereinh/CARE",
+    "status": "INSTALLED",
+    "symbols": [
+      "MyoPSCaseMetadata",
+      "load_myops_case_metadata"
+    ]
+  },
+  "entrypoint": "scripts/route_C/myops/replay_intervention_selector.py",
+  "external_checkpoint_root": "/users/a/e/aereinh/CARE/results/20260711_srr_v3_m10_complete_mechanism_repair/runtime/m10_myops_training_executor",
+  "first_party_import_freeze": {
+    "scripts/route_C/myops/replay_intervention_selector.py": {
+      "bytes": 41501,
+      "present": true,
+      "sha256": "3349110a39b9f7670f05c64a5aeb760e4d141cb15b773f5976d02d6e58b9c7bc"
+    },
+    "scripts/training/run_srr_propref_myops_fold0.py": {
+      "bytes": 112445,
+      "present": true,
+      "sha256": "5ff1a1da327d59f99f22238eb712544a8a146c12ddce1ef8823f11ab9607f647"
+    },
+    "scripts/training/run_srr_v3_m10_complete_repair.py": {
+      "bytes": 20767,
+      "present": true,
+      "sha256": "c1d8124dd0e3d0407cfa0fca1e6ea310121e00a4ece290c4b0dc19cf638dd1a3"
+    },
+    "src/care_myocardium/models/srr_propref.py": {
+      "bytes": 76590,
+      "present": true,
+      "sha256": "64a3f5c49763719d87e020512bd945b1b452df70ba7d05881fde90af2c019d00"
+    },
+    "src/care_myocardium/route_C/myops/evidence_contract.py": {
+      "bytes": 10142,
+      "present": true,
+      "sha256": "6bda5a5bb0ef7e5955bfcde86c7e16d1134066ad26ef075d43711ca3a06eba87"
+    }
+  },
+  "git_head": "cd4714322b2a0c63831d3e4dd0d7080121f85752",
+  "lane_id": "route_C_myops_evidence_executor",
+  "legacy_root_patch": {
+    "anchor_root": "/users/a/e/aereinh/CARE/data/nnUNet/nnUNet_results/Dataset501_CAREMyoPS/nnUNetTrainer_500epochs__nnUNetPlans__3d_fullres",
+    "base_module_present": true,
+    "raw_root": "/users/a/e/aereinh/CARE/data/nnUNet/nnUNet_raw/Dataset501_CAREMyoPS",
+    "split_json": "/users/a/e/aereinh/CARE/data/benchmarks/protocol/splits_MyoPS.json",
+    "status": "PATCHED"
+  },
+  "runtime_call_evidence": "/users/a/e/aereinh/CARE_worktrees/route_C_executors/myops_evidence/results/route_C/executors/myops/myops_fresh_replay_manifest.json",
+  "source_care_root": "/users/a/e/aereinh/CARE",
+  "status": "PASS"
+}

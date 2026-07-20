@@ -1,0 +1,53 @@
+{
+  "baseline_commit": "963d75b7bd37b9862a8420c1a6bac3156f73a0fb",
+  "controller_action": "LAUNCH_EXECUTORS",
+  "created_at": "2026-07-15T09:28:01.094694+00:00",
+  "dry_run": false,
+  "executors": [
+    {
+      "branch_name": "codex/route_C/myops_evidence",
+      "id": "route_C_myops_evidence_executor",
+      "lane": "myops",
+      "lock_path": "results/route_C/executors/myops/locks/controller.lock",
+      "log_path": "logs/route_C/myops",
+      "merge_order": 1,
+      "prompt_path": "prompts/routes/route_C.md",
+      "result_dir": "results/route_C/executors/myops",
+      "runtime_output_root": "results/route_C/executors/myops/runtime",
+      "slurm_job_namespace": "route_C_myops_evidence",
+      "worktree_path": "/users/a/e/aereinh/CARE_worktrees/route_C_executors/myops_evidence"
+    },
+    {
+      "branch_name": "codex/route_C/cine_fidelity",
+      "id": "route_C_cine_fidelity_executor",
+      "lane": "cine",
+      "lock_path": "results/route_C/executors/cine/locks/controller.lock",
+      "log_path": "logs/route_C/cine",
+      "merge_order": 2,
+      "prompt_path": "prompts/routes/route_C.md",
+      "result_dir": "results/route_C/executors/cine",
+      "runtime_output_root": "results/route_C/executors/cine/runtime",
+      "slurm_job_namespace": "route_C_cine_fidelity",
+      "worktree_path": "/users/a/e/aereinh/CARE_worktrees/route_C_executors/cine_fidelity"
+    }
+  ],
+  "plan_path": "prompts/routes/route_C_executor_plan.yaml",
+  "plan_sha256": "9f9b78626e5f81ecee40cbfadcadb5c307f80d78bdf405bf1eeea86c2fb07f41",
+  "records": [
+    {
+      "command": "git worktree add -b codex/route_C/myops_evidence /users/a/e/aereinh/CARE_worktrees/route_C_executors/myops_evidence HEAD",
+      "exit_code": 0,
+      "stderr_tail": " (1288/2862)\nUpdating files:  46% (1317/2862)\nUpdating files:  47% (1346/2862)\nUpdating files:  48% (1374/2862)\nUpdating files:  49% (1403/2862)\nUpdating files:  50% (1431/2862)\nUpdating files:  51% (1460/2862)\nUpdating files:  52% (1489/2862)\nUpdating files:  52% (1496/2862)\nUpdating files:  53% (1517/2862)\nUpdating files:  54% (1546/2862)\nUpdating files:  55% (1575/2862)\nUpdating files:  56% (1603/2862)\nUpdating files:  57% (1632/2862)\nUpdating files:  58% (1660/2862)\nUpdating files:  59% (1689/2862)\nUpdating files:  60% (1718/2862)\nUpdating files:  61% (1746/2862)\nUpdating files:  62% (1775/2862)\nUpdating files:  63% (1804/2862)\nUpdating files:  63% (1824/2862)\nUpdating files:  64% (1832/2862)\nUpdating files:  65% (1861/2862)\nUpdating files:  66% (1889/2862)\nUpdating files:  67% (1918/2862)\nUpdating files:  68% (1947/2862)\nUpdating files:  69% (1975/2862)\nUpdating files:  70% (2004/2862)\nUpdating files:  71% (2033/2862)\nUpdating files:  72% (2061/2862)\nUpdating files:  73% (2090/2862)\nUpdating files:  74% (2118/2862)\nUpdating files:  75% (2147/2862)\nUpdating files:  76% (2176/2862)\nUpdating files:  77% (2204/2862)\nUpdating files:  78% (2233/2862)\nUpdating files:  79% (2261/2862)\nUpdating files:  80% (2290/2862)\nUpdating files:  81% (2319/2862)\nUpdating files:  82% (2347/2862)\nUpdating files:  82% (2352/2862)\nUpdating files:  83% (2376/2862)\nUpdating files:  84% (2405/2862)\nUpdating files:  85% (2433/2862)\nUpdating files:  86% (2462/2862)\nUpdating files:  87% (2490/2862)\nUpdating files:  88% (2519/2862)\nUpdating files:  89% (2548/2862)\nUpdating files:  90% (2576/2862)\nUpdating files:  91% (2605/2862)\nUpdating files:  92% (2634/2862)\nUpdating files:  92% (2658/2862)\nUpdating files:  93% (2662/2862)\nUpdating files:  94% (2691/2862)\nUpdating files:  95% (2719/2862)\nUpdating files:  96% (2748/2862)\nUpdating files:  97% (2777/2862)\nUpdating files:  98% (2805/2862)\nUpdating files:  99% (2834/2862)\nUpdating files: 100% (2862/2862)\nUpdating files: 100% (2862/2862), done.\n",
+      "stdout_tail": "HEAD is now at 963d75b Record Route C Critic decision and planning delta\n"
+    },
+    {
+      "command": "git worktree add -b codex/route_C/cine_fidelity /users/a/e/aereinh/CARE_worktrees/route_C_executors/cine_fidelity HEAD",
+      "exit_code": 0,
+      "stderr_tail": " (1288/2862)\nUpdating files:  46% (1317/2862)\nUpdating files:  47% (1346/2862)\nUpdating files:  48% (1374/2862)\nUpdating files:  49% (1403/2862)\nUpdating files:  50% (1431/2862)\nUpdating files:  51% (1460/2862)\nUpdating files:  52% (1489/2862)\nUpdating files:  53% (1517/2862)\nUpdating files:  54% (1546/2862)\nUpdating files:  55% (1575/2862)\nUpdating files:  56% (1603/2862)\nUpdating files:  57% (1632/2862)\nUpdating files:  58% (1660/2862)\nUpdating files:  59% (1689/2862)\nUpdating files:  60% (1718/2862)\nUpdating files:  61% (1746/2862)\nUpdating files:  62% (1775/2862)\nUpdating files:  63% (1804/2862)\nUpdating files:  64% (1832/2862)\nUpdating files:  64% (1833/2862)\nUpdating files:  65% (1861/2862)\nUpdating files:  66% (1889/2862)\nUpdating files:  67% (1918/2862)\nUpdating files:  68% (1947/2862)\nUpdating files:  69% (1975/2862)\nUpdating files:  70% (2004/2862)\nUpdating files:  71% (2033/2862)\nUpdating files:  72% (2061/2862)\nUpdating files:  73% (2090/2862)\nUpdating files:  73% (2117/2862)\nUpdating files:  74% (2118/2862)\nUpdating files:  75% (2147/2862)\nUpdating files:  76% (2176/2862)\nUpdating files:  77% (2204/2862)\nUpdating files:  78% (2233/2862)\nUpdating files:  79% (2261/2862)\nUpdating files:  80% (2290/2862)\nUpdating files:  81% (2319/2862)\nUpdating files:  82% (2347/2862)\nUpdating files:  83% (2376/2862)\nUpdating files:  84% (2405/2862)\nUpdating files:  85% (2433/2862)\nUpdating files:  86% (2462/2862)\nUpdating files:  86% (2465/2862)\nUpdating files:  87% (2490/2862)\nUpdating files:  88% (2519/2862)\nUpdating files:  89% (2548/2862)\nUpdating files:  90% (2576/2862)\nUpdating files:  91% (2605/2862)\nUpdating files:  92% (2634/2862)\nUpdating files:  93% (2662/2862)\nUpdating files:  94% (2691/2862)\nUpdating files:  95% (2719/2862)\nUpdating files:  96% (2748/2862)\nUpdating files:  97% (2777/2862)\nUpdating files:  98% (2805/2862)\nUpdating files:  98% (2809/2862)\nUpdating files:  99% (2834/2862)\nUpdating files: 100% (2862/2862)\nUpdating files: 100% (2862/2862), done.\n",
+      "stdout_tail": "HEAD is now at 963d75b Record Route C Critic decision and planning delta\n"
+    }
+  ],
+  "subagent_launch_supported": true,
+  "task_key": null,
+  "wave": 1
+}

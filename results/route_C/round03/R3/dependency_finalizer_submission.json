@@ -1,0 +1,27 @@
+{
+  "accounting_exhaustion_backend": "tmux_watcher",
+  "all_attempt_job_ids": [
+    "59501275",
+    "59501370"
+  ],
+  "command": "sbatch --dependency=afterany:59501275:59501370 --parsable --output results/route_C/care_milestone_finalizer_%j.log /users/a/e/aereinh/CARE_worktrees/route_C/jobs/src/care_milestone_finalizer.sh --task-key route_C_round03_m10_forensic_evidence_and_cine_fidelity --result-dir results/route_C --lock-path results/route_C/runtime/round03/R3/finalizer.lock --stage all --awaiting-sacct-retry-seconds 3600 --awaiting-sacct-retry-interval 30 --accounting-exhaustion-backend tmux_watcher --required-job-id 59501275 --required-job-id 59501370 --runtime-output-path results/route_C/round03/R3/runtime_completion.json --log-path results/route_C/runtime/round03/R3/R3Frozen_59501275.log --log-path results/route_C/runtime/round03/R3/R3Frozen_59501370.log --aggregation-command '/users/a/e/aereinh/CARE/envs/env_CARE/bin/python scripts/route_C_round03/aggregate_packet.py --strict' --validator-command '/users/a/e/aereinh/CARE/envs/env_CARE/bin/python scripts/validation/route_C_round03/validate_final_packet.py --strict results/route_C' --mapper-final-command '/users/a/e/aereinh/CARE/envs/env_CARE/bin/python scripts/architecture/validate_care_architecture_wiki.py --strict' --commit-message 'Finalize CARE milestone packet'",
+  "dependency": "afterany:59501275:59501370",
+  "dependency_type": "afterany",
+  "dry_run": false,
+  "effective_training_job_ids": [],
+  "failed_attempt_job_ids": [],
+  "finalizer_job_id": "59501378",
+  "finalizer_only": true,
+  "lock_path": "results/route_C/runtime/round03/R3/finalizer.lock",
+  "log_path": "results/route_C/care_milestone_finalizer_%j.log",
+  "required_job_ids": [
+    "59501275",
+    "59501370"
+  ],
+  "result_dir": "results/route_C",
+  "submit_exit_code": 0,
+  "submit_stderr": "",
+  "submit_stdout": "59501378\n",
+  "submitted_at_utc": "2026-07-18T21:15:20.916412+00:00",
+  "task_key": "route_C_round03_m10_forensic_evidence_and_cine_fidelity"
+}
