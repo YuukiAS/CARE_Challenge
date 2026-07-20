@@ -203,9 +203,6 @@ GitHub contents API 已成功创建总计划、TODO、账本并更新 CURRENT；
 - 红队 GPT：未执行。
 - Integrator 处理结果：等待首次代码批次。
 
-
----
-
 ## Change 001: Batch 0 SRR implementation truth and formal-entrypoint authority
 
 - 日期/时间: 2026-07-20
@@ -659,3 +656,96 @@ fold0 validation case list (44 cases)
 - Cine 审计 GPT：未执行；本批不改 Cine。
 - 红队 GPT：未执行独立线程；脚本 gate 防止无 checkpoint 的 SRR 模式被静默当作性能结果。
 - Integrator 处理结果：Batch 2B complete pending commit/push；no training, no Slurm, no performance conclusion.
+
+
+---
+
+## Change 008：Batch 3A MyoPS 模型在环推理收口
+
+- 日期/时间：2026-07-20
+- 执行线程：CARE SRR main integrator Codex goal
+- 审计线程：targeted pytest + production validator；独立 reviewer 未启动
+- Base commit：`03f3222`
+- Head commit：pending Batch 3A commit
+- 对应 TODO：Batch 3A real MyoPS inference closure
+- 状态：complete
+
+### 1. 本次目标
+
+把 `scripts/srr_production/infer_myops.py` 从 nnU-Net 标签复制脚本改为真实 `SRRProposeRefineMyoPS` 薄入口。无训练后 checkpoint 时只允许零步 schema v2 checkpoint 诊断，不能写性能结论。
+
+### 2. 修改文件
+
+| 文件 | 动作 | 修改前行为 | 修改后行为 |
+| --- | --- | --- | --- |
+| `scripts/srr_production/infer_myops.py` | modify | 三种模式复制 raw nnU-Net prediction；`--checkpoint` 不加载 | 读取 Dataset501 三模态、availability、raw OOF anchor、schema v2 checkpoint、prototype/memory state；三模式均模型前向并导出 NIfTI |
+| `src/care_myocardium/models/srr_dictionary_memory.py` | modify | 训练/验证/推理都排除按病例 hash 得到的 query shard | `training_crossfit_exclude_query_shard` 与 `validation_inference_all_train_shards` 分离 |
+| `src/care_myocardium/models/srr_propref.py` | modify | raw anchor 和 no-T2 safety context 共用同一入口 | 新增 `safety_anchor_features` / `safety_component_features`；最终 baseline 使用 raw anchor，SRR evidence 使用 safety context |
+| `scripts/training/run_srr_propref_myops_fold0.py` | modify | helper 会原地清零无 T2 raw anchor edema 通道 | helper 保留 raw anchor，派生 safety context 后传模型 |
+| `scripts/srr_production/evaluate_myops_fair.py` | modify | `srr_pred_dir` 可默认回退 identity 目录 | SRR 比较必须显式传 `--srr-pred-dir` + `--srr-contract` 并核对 prediction hash |
+| `tests/srr_production/test_myops_batch2_preflight.py` | add | 缺少 Batch3A preflight 文件 | 覆盖 query policy、raw/safety split、schema v2 checkpoint restore |
+| `configs/srr_production/*.yaml`、`prompts/routes/handoffs/CURRENT.md` | modify | 权威状态仍是 Batch3A blocked | 记录 Batch3A `SRR_MODEL_IN_LOOP_UNTRAINED_DIAGNOSTIC`，next batch 前移到 3B |
+
+### 3. 真实数据流变化
+
+```text
+Dataset501 imagesTr [LGE,T2,C0] + case availability
+-> raw OOF nnU-Net probability/prediction manifest
+-> derived no-T2 safety context, without mutating raw anchor
+-> schema v2 zero-step diagnostic checkpoint restore
+-> SRRProposeRefineMyoPS forward
+-> mode-specific compact-label NIfTI export
+-> fair evaluator with inference contract/hash verification
+```
+
+### 4. 删除或关闭的绕过
+
+- 关闭 `infer_myops.py` 的标签复制绕过。
+- 关闭 `--checkpoint` 仅作为字符串门的绕过。
+- 关闭验证/推理 memory query 随机排除 validation shard 的绕过。
+- 关闭 SRR evaluator 默认读 identity 目录的绕过。
+- 保留旧 B3-B8 为 `forbidden_formal_entrypoint`，未重新授权。
+
+### 5. 运行命令与结果
+
+| 命令 | Exit | 真实输入 | 真实输出 | 验证的事实 |
+| --- | ---: | --- | --- | --- |
+| `python -m py_compile ...` | 0 | touched Python files | bytecode compile | 无语法/import 级错误 |
+| `pytest tests/srr_production/test_myops_batch2_preflight.py tests/srr_production/test_formal_entrypoint_authority.py tests/srr_production/test_myops_batch2_inference_evaluation.py -q` | 0 | model/checkpoint/evaluator/tests | 11 passed | query policy、raw/safety、checkpoint、fail-closed evaluator、真实小样本推理通过 |
+| `python scripts/srr_production/infer_myops.py --mode anchor_identity_control --allow-untrained-diagnostic --output-root results/srr_production/inference` | 0 | fold0 44 cases | `batch3a_anchor_identity_control_inference_contract.json` | 44 次模型前向；changed voxels 0 |
+| `python scripts/srr_production/infer_myops.py --mode anchor_bounded_srr_correction --allow-untrained-diagnostic --output-root results/srr_production/inference` | 0 | fold0 44 cases | `batch3a_anchor_bounded_srr_correction_inference_contract.json` | 44 次模型前向；nonidentity tensor delta > 0 |
+| `python scripts/srr_production/infer_myops.py --mode srr_no_anchor_control --allow-untrained-diagnostic --output-root results/srr_production/inference` | 0 | fold0 44 cases | `batch3a_srr_no_anchor_control_inference_contract.json` | 第三模式也调用同一模型类 |
+| `python scripts/srr_production/evaluate_myops_fair.py --identity-pred-dir ... --srr-pred-dir ... --srr-contract ... --output-dir results/srr_production/evaluation` | 0 | fold0 44 predictions/GT | `batch2_completion.json` | evaluator contract/hash 门禁通过 |
+| `python scripts/srr_production/validate_myops_mainline.py --strict` | 0 | real smoke cases + raw OOF assets | code maturity receipts | no-T2 exact zero、checkpoint roundtrip、memory intervention 通过 |
+
+### 6. 关键数值/形状/哈希
+
+- `anchor_identity_control`: `case_count=44`, `model_forward_count=44`, `anchor_identity_changed_voxels_total=0`.
+- `anchor_bounded_srr_correction`: `case_count=44`, `model_forward_count=44`, `nonidentity_downstream_tensor_max_abs_delta=3.804779291152954`.
+- `srr_no_anchor_control`: `case_count=44`, `model_forward_count=44`, `nonidentity_downstream_tensor_max_abs_delta=3.7004940509796143`.
+- checkpoint schema version: `2`; checkpoint global step: `0`.
+- shared raw OOF anchor manifest hash: `e67724c35ec13f50db394064184032a0ef6a785eff840235b9b0550a40ee8add`.
+- split hash: `6165caeb5b47feb0d24f20380898037b7e6cead4db1eeba398a3c5a57faf9a1b`.
+
+### 7. 人类解释
+
+这次解决的是“训练后 checkpoint 即使存在也进不了可信推理入口”的旧假进展。现在 checkpoint、prototype/memory、raw anchor、安全上下文和 evaluator contract 都进入同一条 MyoPS SRR 推理链。它仍然没有训练模型，因此只能说明工程路径闭合，不能说明 SRR 性能优于 nnU-Net。
+
+### 8. 未解决项
+
+- 没有 trusted trained SRR checkpoint；当前 checkpoint 是零步诊断。
+- prototype/memory 来源仍是非训练 smoke/frozen diagnostic asset，不是正式训练后资产。
+- known-bad validator 对部分历史语义绕过仍以 preflight/receipt 形式覆盖，后续可继续加生产级突变 fixture。
+- Cine 真实 4D 数据链尚未完成，进入 Batch3B。
+
+### 9. 下一批允许范围
+
+只允许 Batch3B：真实 Dataset502 4D loading、ED/reference、frame-pair registration/warp、temporal aggregation、ED-space export/evaluator 和对应轻量 evidence。继续禁止训练、Slurm、validation upload、hosted metric claim、Round05 和 route worktree。
+
+### 10. 审计意见
+
+- 模型审计 GPT：未执行独立线程；由 targeted tests 覆盖核心接口。
+- 数据/评价审计 GPT：未执行独立线程；evaluator contract/hash 检查已通过。
+- Cine 审计 GPT：未执行；Batch3B 待做。
+- 红队 GPT：未执行独立线程；known-bad/preflight 覆盖已增强。
+- Integrator 处理结果：Batch3A 可提交，状态仅为 `SRR_MODEL_IN_LOOP_UNTRAINED_DIAGNOSTIC`。

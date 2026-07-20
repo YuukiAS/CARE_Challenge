@@ -2,7 +2,7 @@
   "amp_scaler_state": "disabled_by_config",
   "best_metric_state_restored": true,
   "checkpoint_path": "/users/a/e/aereinh/.tmp/codex-care/care_batch2a_myops_resume.pt",
-  "checkpoint_sha256": "774e511eff5b2c073831bdfd712da4deef03ec9aef87d720e35c5e2879eb0f09",
+  "checkpoint_sha256": "b5481c4a9199a41172e538cbcfe7abbda52165e59075cf3cfa8c131b072e5628",
   "epoch": 2,
   "epoch_not_reset": true,
   "global_step": 7,

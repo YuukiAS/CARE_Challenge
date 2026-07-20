@@ -1,8 +1,8 @@
 schema_version: 2
-authority_name: myops_batch2_nnunet_identity_and_evaluator
-batch: 2B
-reported_commit: b38b1a045236d94045c48f12831a41b190abe691
-reviewed_status: NNUNET_BASELINE_AND_IDENTITY_EVALUATOR_COMPLETE_SRR_INFERENCE_MISSING
+authority_name: myops_batch3a_model_in_loop_inference_and_evaluator
+batch: 3A
+reported_commit: pending_batch3a_commit
+reviewed_status: SRR_MODEL_IN_LOOP_UNTRAINED_DIAGNOSTIC
 fold: 0
 labels:
   edema: 4
@@ -27,13 +27,23 @@ controls:
   anchor_identity:
     changed_voxels_required: 0
     raw_label_mismatch_required: 0
-  current_identity_semantics: byte_copy_of_raw_oof_prediction_label
-  current_nonidentity_semantics: NOT_IMPLEMENTED_MODEL_INFERENCE_CURRENTLY_COPIES_ANCHOR_LABEL
+  current_identity_semantics: model_forward_then_exact_raw_oof_anchor_label_restore
+  current_nonidentity_semantics: SRRProposeRefineMyoPS_model_in_loop_untrained_diagnostic
   untrained_srr_policy: SRR_MODEL_IN_LOOP_UNTRAINED_DIAGNOSTIC_REQUIRED_AFTER_BATCH3A
   evaluator_policy:
     nnunet_baseline_recompute: allowed
     anchor_identity_label_audit: allowed
-    srr_comparison: blocked_until_real_model_inference_contract
+    srr_comparison: requires_batch3a_inference_contract_and_prediction_hashes
+model:
+  class_name: SRRProposeRefineMyoPS
+  path: src/care_myocardium/models/srr_propref.py
+  base_channels: 2
+  variant: srr_propref_shared_dual_dict
+  encoder_profile: tiny_3scale
+  disable_local_refinement: false
+  disable_anatomy_roi_prior: false
+  checkpoint_schema_version: 2
+  checkpoint_policy_without_trained_checkpoint: zero_step_diagnostic_only
 batch3a_required:
   - real Dataset501 image and availability loading
   - actual SRRProposeRefineMyoPS instantiation
@@ -42,6 +52,14 @@ batch3a_required:
   - model-in-loop anchor identity control
   - real nonidentity model inference and NIfTI export
   - evaluator contract validation without identity-directory fallback
+batch3a_current_status:
+  model_forward_entrypoint: implemented
+  checkpoint_actual_load: implemented_schema_v2_zero_step_or_user_checkpoint
+  prototype_memory_actual_load: implemented_from_checkpoint_state_dict
+  training_query_policy: training_crossfit_exclude_query_shard
+  validation_inference_query_policy: validation_inference_all_train_shards
+  raw_anchor_safety_context_split: implemented
+  completion_without_trained_checkpoint: SRR_MODEL_IN_LOOP_UNTRAINED_DIAGNOSTIC
 prohibited:
   formal_training_count: 0
   slurm_job_count: 0

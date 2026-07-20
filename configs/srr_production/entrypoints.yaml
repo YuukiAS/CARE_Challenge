@@ -1,26 +1,26 @@
 schema_version: 2
 authority_name: srr_production_mainline_authority
 reviewed_from_head: b38b1a045236d94045c48f12831a41b190abe691
-formal_training_status: BLOCKED_PENDING_BATCH3A_REAL_SRR_INFERENCE
+formal_training_status: UNAUTHORIZED_PENDING_USER_TRAINING_BUDGET_AFTER_BATCH3A
 status_reason: >-
-  Batch 2A repaired several shared MyoPS components, and Batch 2B established
-  a real nnU-Net fold0 metric recomputation plus byte-identical label-copy
-  identity audit. However scripts/srr_production/infer_myops.py does not yet
-  read Dataset501 images, instantiate SRRProposeRefineMyoPS, load a checkpoint,
-  load frozen prototype/memory assets, or execute model inference. Its three
-  modes currently copy raw nnU-Net prediction NIfTI files. Formal training is
-  blocked because a trained checkpoint could not yet enter a trusted full-volume
-  SRR inference and evaluation path.
+  Batch 3A replaced the Batch 2B label-copy MyoPS inference script with a
+  model-in-loop SRRProposeRefineMyoPS diagnostic entrypoint. It reads real
+  Dataset501 images and availability, loads schema-v2 checkpoints, restores
+  frozen prototype/memory state, separates raw OOF anchor from no-T2 safety
+  context, and requires evaluator contract/hash checks for SRR comparison.
+  Because no trusted trained SRR checkpoint exists and this handoff does not
+  authorize training, Slurm, validation packaging, upload, or hosted claims,
+  formal training remains unauthorized pending a separate user-approved budget.
 
 selected_model:
   class_name: SRRProposeRefineMyoPS
   path: src/care_myocardium/models/srr_propref.py
-  status: real_model_components_but_no_trusted_full_volume_inference
+  status: real_model_components_with_batch3a_model_in_loop_diagnostic_inference
   notes:
     - Existing modality encoders, retrieval, anatomy, proposal dictionaries, soft-ROI refiners, and bounded corrections are retained.
     - Batch 2A connected casewise prototype/memory smoke and masked zero-count slots.
-    - Training and validation/inference still require distinct memory query policies.
-    - Raw OOF anchor and derived no-T2 safety context must be separated at the model interface.
+    - Training and validation/inference use distinct memory query policies.
+    - Raw OOF anchor and derived no-T2 safety context are separated at the model interface.
 
 formal_entrypoints: []
 
@@ -33,31 +33,30 @@ candidate_entrypoints:
     blocked_reasons:
       - formal training is unauthorized
       - no trusted trained production SRR checkpoint exists
-      - no trusted full-volume SRR checkpoint inference path exists
-      - validation/inference prototype-memory query policy is not yet separated from training cross-fit policy
+      - formal training still requires separate user authorization after Batch 3A
 
-  - id: myops_batch2_identity_copy_candidate
-    role: nnunet_label_copy_identity_and_geometry_audit
+  - id: myops_batch3a_model_in_loop_candidate
+    role: batch3a_model_in_loop_identity_and_geometry_audit
     path: scripts/srr_production/infer_myops.py
     config_path: configs/srr_production/myops_batch2.yaml
     formal_authority: false
-    audit_status: identity_copy_complete_srr_inference_not_implemented
+    audit_status: model_in_loop_untrained_diagnostic_complete_not_training
     notes:
-      - anchor_identity_control copies raw nnU-Net OOF prediction NIfTI byte-for-byte.
-      - srr_no_anchor_control and anchor_bounded_srr_correction do not currently execute SRRProposeRefineMyoPS.
-      - checkpoint argument is currently a command gate and is not loaded.
-      - Batch 3A must replace label copy for non-identity modes with real model inference.
+      - anchor_identity_control executes SRRProposeRefineMyoPS, then restores raw OOF anchor labels exactly.
+      - srr_no_anchor_control and anchor_bounded_srr_correction execute the same SRRProposeRefineMyoPS object.
+      - checkpoint argument is loaded through schema-v2 checkpoint restore; zero-step diagnostic checkpoint is allowed only with --allow-untrained-diagnostic.
+      - Outputs remain diagnostic until a user-authorized trained checkpoint is produced.
 
   - id: myops_batch2_fair_evaluator
     role: local_nifti_metric_recompute_authority
     path: scripts/srr_production/evaluate_myops_fair.py
     config_path: configs/srr_production/myops_batch2.yaml
     formal_authority: false
-    audit_status: nnunet_baseline_and_identity_evaluator_complete_srr_comparison_blocked
+    audit_status: nnunet_baseline_identity_and_batch3a_contract_evaluator_complete
     notes:
       - Reproduced nnU-Net fold0 edema Dice 0.3944358976789887 and scar Dice 0.5601692281262312.
       - Writes casewise, subgroup, help/harm, component, and remote-FP receipts from prediction/GT NIfTI.
-      - Current default srr prediction directory can fall back to identity predictions and must be removed in Batch 3A.
+      - SRR comparison requires explicit --srr-pred-dir plus --srr-contract and verifies prediction hashes.
       - Does not authorize SRR performance, hosted metrics, or validation upload.
 
   - id: myops_batch2a_mainline_validator
@@ -69,7 +68,7 @@ candidate_entrypoints:
     notes:
       - Generated complete raw OOF anchor manifests and Batch 2A component receipts.
       - Verified one real-case model smoke and no-T2 exact-zero values.
-      - Several known-bad fixtures still return detected from constructed dictionaries rather than invoking production validators.
+      - Batch 3A adds preflight tests for memory query policy, raw/safety split, and schema-v2 checkpoint restore.
 
   - id: unified_prediction_evaluator
     role: reusable_local_prediction_metric_helper
@@ -138,25 +137,31 @@ batch3a_required_repairs:
       Read real Dataset501 images and availability, load schema-v2 checkpoint and
       frozen prototype/memory assets, instantiate SRRProposeRefineMyoPS, run model
       full-volume or deterministic sliding-window inference, and export NIfTI.
+    status: implemented_batch3a_untrained_diagnostic
   - file: src/care_myocardium/models/srr_dictionary_memory.py
     required_change: >-
       Separate training query exclusion from validation/inference use of all frozen
       training shards.
+    status: implemented
   - file: scripts/training/run_srr_propref_myops_fold0.py
     required_change: >-
       Keep raw anchor as final segmentation basis and pass derived safety context
       separately; produce frozen full-train prototype/memory assets for checkpoint use.
+    status: implemented_for_raw_safety_split_and_checkpoint_memory_restore
   - file: scripts/srr_production/evaluate_myops_fair.py
     required_change: >-
       Remove SRR-to-identity directory fallback, verify inference contract and hashes,
       separate identity completion from SRR model inference completion, and report
       explicit empty-prediction HD/HD95 flags.
+    status: implemented
   - file: scripts/srr_production/validate_myops_mainline.py
     required_change: >-
       Replace remaining dictionary-only known-bad shortcuts with actual production
       validator calls and asset/model mutations.
+    status: partial_batch3a_preflight_covers_core_semantic_bypasses
   - file: tests/srr_production/test_myops_batch2_preflight.py
     required_change: create the missing Batch 3A model/checkpoint/prototype/inference preflight tests
+    status: implemented
 
 batch3b_scope_after_batch3a:
   - real Dataset502 4D Cine loading with preserved time axis

@@ -227,6 +227,9 @@ results/*/variants/*/checkpoints/
 results/*/variants/*/predictions/
 results/*/**/checkpoints/
 results/*/**/predictions/
+results/srr_production/inference/batch3a_geometry_roundtrip.csv
+results/srr_production/inference/batch3a_inference_contract.json
+results/srr_production/inference/batch3a_tensor_checks.csv
 results/*/preflight/
 results/*/preflight_probe/
 results/*/smoke/

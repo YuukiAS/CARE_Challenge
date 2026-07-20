@@ -564,9 +564,6 @@ def sample_patch_with_anchor(
     if not np.array_equal(availability, original_availability):
         anchor[...] = 0.0
         components[...] = 0.0
-    if not bool(availability[1] > 0):
-        anchor[4] = 0.0
-        components[1] = 0.0
     return image, target, availability, anchor, components
 
 
@@ -583,6 +580,35 @@ def component_dict_from_tensor(component: torch.Tensor) -> dict[str, torch.Tenso
         "scar_component": component[:, 0:1],
         "edema_component": component[:, 1:2],
     }
+
+
+def safety_context_dicts_from_raw(
+    anchor_features: dict[str, torch.Tensor],
+    component_features: dict[str, torch.Tensor],
+    availability: torch.Tensor,
+) -> tuple[dict[str, torch.Tensor], dict[str, torch.Tensor]]:
+    safety_anchor = {key: value.clone() for key, value in anchor_features.items()}
+    safety_component = {key: value.clone() for key, value in component_features.items()}
+    no_t2 = ~(availability[:, 1].to(dtype=torch.bool, device=availability.device))
+    if bool(no_t2.any()):
+        view = no_t2.view(-1, 1, 1, 1, 1)
+        for key in ("probabilities", "edema_prob"):
+            if key in safety_anchor:
+                if key == "probabilities":
+                    safety_anchor[key][:, 4:5] = torch.where(
+                        view,
+                        torch.zeros_like(safety_anchor[key][:, 4:5]),
+                        safety_anchor[key][:, 4:5],
+                    )
+                else:
+                    safety_anchor[key] = torch.where(view, torch.zeros_like(safety_anchor[key]), safety_anchor[key])
+        if "edema_component" in safety_component:
+            safety_component["edema_component"] = torch.where(
+                view,
+                torch.zeros_like(safety_component["edema_component"]),
+                safety_component["edema_component"],
+            )
+    return safety_anchor, safety_component
 
 
 def batch_composition_row(case: AnchoredCaseData, *, step: int, stage: str, usage_role: str) -> dict[str, object]:
@@ -672,11 +698,8 @@ def batch_from_anchored_cases(
 
 
 def full_case_anchor_tensors(case: AnchoredCaseData, device: torch.device) -> tuple[dict[str, torch.Tensor], dict[str, torch.Tensor]]:
-    anchor = case.anchor_probabilities.copy()
-    component = case.component_features.copy()
-    if not bool(case.availability[1] > 0):
-        anchor[4] = 0.0
-        component[1] = 0.0
+    anchor = (case.raw_anchor_probabilities if case.raw_anchor_probabilities is not None else case.anchor_probabilities).copy()
+    component = (case.raw_component_features if case.raw_component_features is not None else case.component_features).copy()
     anchor_t = torch.from_numpy(anchor[None]).float().to(device)
     component_t = torch.from_numpy(component[None]).float().to(device)
     return anchor_dict_from_tensor(anchor_t), component_dict_from_tensor(component_t)
@@ -1122,9 +1145,20 @@ def predict_case(
         x = torch.from_numpy(case.image[None]).float().to(device)
         av = torch.from_numpy(case.availability[None]).float().to(device)
         anchor_features, component_features = full_case_anchor_tensors(case, device)
+        safety_anchor_features, safety_component_features = safety_context_dicts_from_raw(anchor_features, component_features, av)
         if disable_nnunet_anchor:
             anchor_features, component_features = None, None
-        outputs = model(x, av, anchor_features=anchor_features, component_features=component_features, case_ids=[case.case_id])
+            safety_anchor_features, safety_component_features = None, None
+        outputs = model(
+            x,
+            av,
+            anchor_features=anchor_features,
+            component_features=component_features,
+            safety_anchor_features=safety_anchor_features,
+            safety_component_features=safety_component_features,
+            memory_query_policy="validation_inference_all_train_shards",
+            case_ids=[case.case_id],
+        )
         preds = {
             "argmax": _decode_argmax(outputs)[0].detach().cpu().numpy().astype(np.uint8),
             "pathology_aware": _decode_pathology_aware(
@@ -1414,11 +1448,19 @@ def validate_patch_loss(
                 anchor_dict_from_tensor(anchor_t),
                 component_dict_from_tensor(component_t),
             )
+            safety_anchor_features, safety_component_features = (
+                (None, None)
+                if anchor_features is None or component_features is None
+                else safety_context_dicts_from_raw(anchor_features, component_features, av)
+            )
             outputs = model(
                 x,
                 av,
                 anchor_features=anchor_features,
                 component_features=component_features,
+                safety_anchor_features=safety_anchor_features,
+                safety_component_features=safety_component_features,
+                memory_query_policy="validation_inference_all_train_shards",
                 case_ids=[case.case_id],
             )
             loss, _ = propref_loss(outputs, y, av, "soft_roi_refinement", args)
@@ -1719,7 +1761,20 @@ def run_one_batch_overfit(
         stage = "soft_roi_refinement"
         before = {name: param.detach().clone() for name, param in prototype_parameters(model)} if step == 1 else {}
         optimizer.zero_grad(set_to_none=True)
-        outputs = model(x, av, anchor_features=anchor_features, component_features=component_features, case_ids=keys)
+        safety_anchor_features, safety_component_features = (
+            (None, None)
+            if anchor_features is None or component_features is None
+            else safety_context_dicts_from_raw(anchor_features, component_features, av)
+        )
+        outputs = model(
+            x,
+            av,
+            anchor_features=anchor_features,
+            component_features=component_features,
+            safety_anchor_features=safety_anchor_features,
+            safety_component_features=safety_component_features,
+            case_ids=keys,
+        )
         loss, metrics = propref_loss(outputs, y, av, stage, args)
         loss.backward()
         torch.nn.utils.clip_grad_norm_(model.parameters(), args.grad_clip)
@@ -1965,6 +2020,11 @@ def train_variant(args: argparse.Namespace) -> None:
         anchor_features = {key: value.to(device) for key, value in anchor_cpu.items()}
         component_features = {key: value.to(device) for key, value in component_cpu.items()}
         anchor_features, component_features = maybe_disable_context(args, anchor_features, component_features)
+        safety_anchor_features, safety_component_features = (
+            (None, None)
+            if anchor_features is None or component_features is None
+            else safety_context_dicts_from_raw(anchor_features, component_features, av)
+        )
         case_lookup = {case.case_id: case for case in train_cases}
         batch_composition_rows.extend(
             batch_composition_row(case_lookup[key], step=step, stage=stage, usage_role="training")
@@ -1973,7 +2033,15 @@ def train_variant(args: argparse.Namespace) -> None:
         )
         before = {name: param.detach().clone() for name, param in prototype_parameters(model)} if step in {1, max(1, args.max_steps // 2)} else {}
         optimizer.zero_grad(set_to_none=True)
-        outputs = model(x, av, anchor_features=anchor_features, component_features=component_features, case_ids=keys)
+        outputs = model(
+            x,
+            av,
+            anchor_features=anchor_features,
+            component_features=component_features,
+            safety_anchor_features=safety_anchor_features,
+            safety_component_features=safety_component_features,
+            case_ids=keys,
+        )
         loss, metrics = propref_loss(outputs, y, av, stage, args)
         if step == 1:
             _grad_loss, grad_metrics = propref_loss(

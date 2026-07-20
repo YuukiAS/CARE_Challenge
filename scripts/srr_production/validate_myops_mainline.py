@@ -30,6 +30,7 @@ from scripts.training.run_srr_propref_myops_fold0 import (  # noqa: E402
     anchor_dict_from_tensor,
     component_dict_from_tensor,
     read_anchored_case,
+    safety_context_dicts_from_raw,
     sample_patch_with_anchor,
 )
 from src.care_myocardium.data.case_metadata import load_myops_case_metadata  # noqa: E402
@@ -303,8 +304,28 @@ def run_smoke(config: dict[str, Any], manifest: dict[str, Any]) -> dict[str, Any
     t2_case=read_anchored_case(selected["first_t2_present_edema_positive"], metadata, anchor_root)
     no_t2_case=read_anchored_case(selected["first_no_t2_scar_positive"], metadata, anchor_root)
     x,y,av,anchor,component,ids=make_batch([t2_case], patch_shape, (4,5))
-    outputs=model(x, av, anchor_features=anchor, component_features=component, case_ids=ids)
-    identity=model(x, av, anchor_features=anchor, component_features=component, case_ids=ids, anchor_identity_control=True)
+    safety_anchor, safety_component = safety_context_dicts_from_raw(anchor, component, av)
+    outputs=model(
+        x,
+        av,
+        anchor_features=anchor,
+        component_features=component,
+        safety_anchor_features=safety_anchor,
+        safety_component_features=safety_component,
+        memory_query_policy="validation_inference_all_train_shards",
+        case_ids=ids,
+    )
+    identity=model(
+        x,
+        av,
+        anchor_features=anchor,
+        component_features=component,
+        safety_anchor_features=safety_anchor,
+        safety_component_features=safety_component,
+        memory_query_policy="validation_inference_all_train_shards",
+        case_ids=ids,
+        anchor_identity_control=True,
+    )
     identity_max=float((identity["logits"]-identity["nnunet_anchor_logits"]).abs().max().detach().cpu())
     model.zero_grad(set_to_none=True)
     total, metrics=srr_m6_expanded_total_loss(outputs, y, av, detach_metrics=False)
@@ -327,7 +348,17 @@ def run_smoke(config: dict[str, Any], manifest: dict[str, Any]) -> dict[str, Any
     psip_router_grad=grad_sum(model, ["retrieval", "m10_spatial_dictionary"])
     grad_rows.append({"batch":"t2_present", "module":"pattern_sip_router", "grad_abs_sum": psip_router_grad, "expected":"nonzero"})
     x0,y0,av0,anchor0,component0,ids0=make_batch([no_t2_case], patch_shape, (5,))
-    out0=model(x0, av0, anchor_features=anchor0, component_features=component0, case_ids=ids0)
+    safety_anchor0, safety_component0 = safety_context_dicts_from_raw(anchor0, component0, av0)
+    out0=model(
+        x0,
+        av0,
+        anchor_features=anchor0,
+        component_features=component0,
+        safety_anchor_features=safety_anchor0,
+        safety_component_features=safety_component0,
+        memory_query_policy="validation_inference_all_train_shards",
+        case_ids=ids0,
+    )
     no_t2_edema_values = {
         "candidate_probability_abs_max": float(out0["edema_candidate_probability"].abs().max().detach().cpu()),
         "soft_roi_abs_max": float(out0["edema_soft_roi"].abs().max().detach().cpu()),
@@ -361,7 +392,16 @@ def run_smoke(config: dict[str, Any], manifest: dict[str, Any]) -> dict[str, Any
     before_final=outputs["logits"].detach().clone()
     with torch.no_grad():
         model.cross_fitted_memory.positive_delta.add_(0.25)
-    changed=model(x, av, anchor_features=anchor, component_features=component, case_ids=ids)
+    changed=model(
+        x,
+        av,
+        anchor_features=anchor,
+        component_features=component,
+        safety_anchor_features=safety_anchor,
+        safety_component_features=safety_component,
+        memory_query_policy="validation_inference_all_train_shards",
+        case_ids=ids,
+    )
     roundtrip_reference = changed
     prop_delta=float((changed["scar_proposal_logits"]-before_prop).abs().mean().detach().cpu())
     final_delta=float((changed["logits"]-before_final).abs().mean().detach().cpu())
@@ -394,7 +434,16 @@ def run_smoke(config: dict[str, Any], manifest: dict[str, Any]) -> dict[str, Any
     opt_reloaded=torch.optim.AdamW(reloaded.parameters(), lr=9e-3)
     state=load_srr_checkpoint(path=ckpt_path, model=reloaded, optimizer=opt_reloaded, scheduler=None, amp_scaler=None, map_location=device)
     next_sample_after = np.random.randint(0, 1000000, size=8).tolist()
-    out_reload=reloaded(x, av, anchor_features=anchor, component_features=component, case_ids=ids)
+    out_reload=reloaded(
+        x,
+        av,
+        anchor_features=anchor,
+        component_features=component,
+        safety_anchor_features=safety_anchor,
+        safety_component_features=safety_component,
+        memory_query_policy="validation_inference_all_train_shards",
+        case_ids=ids,
+    )
     tensor_keys=["nnunet_anchor_logits","gates","scar_pos_similarity","scar_proposal_logits","scar_soft_roi","scar_logits","bounded_scar_correction","logits"]
     max_delta=0.0
     for key in tensor_keys:

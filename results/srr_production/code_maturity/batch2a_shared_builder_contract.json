@@ -39,6 +39,6 @@
     "no_t2_safety": "model forward exposes exact-zero candidate_probability, soft_roi, residual, correction, loss, gradient",
     "raw_oof_anchor_manifest": "src/care_myocardium/srr_production/anchor_manifest.py"
   },
-  "source_commit": "72e4bd04957f7a48743d57366f620fb0ed67d2da",
+  "source_commit": "03f32229cc706448577de6bed51bcc4d2aa75eb6",
   "status": "BATCH_2A_SHARED_PRODUCTION_COMPONENTS_CONTRACT_NONTRAINING"
 }

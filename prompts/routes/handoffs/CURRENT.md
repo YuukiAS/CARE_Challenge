@@ -16,7 +16,8 @@ latest_reviewed_remote_commit: b38b1a045236d94045c48f12831a41b190abe691
 batch1_review_status: PARTIAL_IMPLEMENTATION_CLOSED_ONLY_AT_SMOKE_LEVEL
 batch2a_review_status: PARTIAL_SHARED_COMPONENT_CLOSURE_WITH_REMAINING_GAPS
 batch2b_review_status: NNUNET_BASELINE_AND_IDENTITY_EVALUATOR_COMPLETE_SRR_INFERENCE_MISSING
-next_required_batch: BATCH_3A_REAL_MYOPS_MODEL_INFERENCE_THEN_BATCH_3B_REAL_CINE
+batch3a_status: SRR_MODEL_IN_LOOP_UNTRAINED_DIAGNOSTIC
+next_required_batch: BATCH_3B_REAL_CINE_MAINLINE
 controller_authorized_now: 0
 route_worktree_development_authorized: false
 formal_training_authorized_now: false
@@ -180,9 +181,38 @@ Dataset501 [LGE,T2,C0] + availability
 
 Batch 3A 不授权训练。
 
+## Batch 3A 状态
+
+```text
+commit: pending_batch3a_commit
+status: SRR_MODEL_IN_LOOP_UNTRAINED_DIAGNOSTIC
+```
+
+Batch 3A 已在 `main` 建立真实 MyoPS 模型在环推理入口：
+
+1. `scripts/srr_production/infer_myops.py` 读取真实 Dataset501 `[LGE,T2,C0]` 与 availability。
+2. 三种模式 `anchor_identity_control`、`srr_no_anchor_control`、`anchor_bounded_srr_correction` 均实例化并调用同一个 `SRRProposeRefineMyoPS` 类。
+3. checkpoint 通过 schema v2 实际加载；无训练后 checkpoint 时只生成/加载零步诊断 checkpoint，并将状态写为 `SRR_MODEL_IN_LOOP_UNTRAINED_DIAGNOSTIC`。
+4. fold0 训练来源 prototype/memory 进入 checkpoint state dict；推理恢复后 `prototype_memory_actual_load_count=1`。
+5. 训练 memory query policy 为 `training_crossfit_exclude_query_shard`，验证/推理为 `validation_inference_all_train_shards`。
+6. raw OOF anchor 与 no-T2 safety context 已在模型接口分离；identity 模式模型前向后逐体素恢复 raw OOF anchor。
+7. `evaluate_myops_fair.py` 的 SRR 比较禁止 identity 目录回退；`--srr-pred-dir` 必须配套 `--srr-contract` 并核对 prediction hashes。
+
+主要证据：
+
+```text
+results/srr_production/inference/batch3a_anchor_identity_control_inference_contract.json
+results/srr_production/inference/batch3a_srr_no_anchor_control_inference_contract.json
+results/srr_production/inference/batch3a_anchor_bounded_srr_correction_inference_contract.json
+results/srr_production/evaluation/batch2_completion.json
+tests/srr_production/test_myops_batch2_preflight.py
+```
+
+Batch 3A 没有训练、没有 Slurm、没有 validation upload、没有 hosted metric claim、没有性能结论。由于 checkpoint 为零步诊断，正式训练仍需用户另行授权。
+
 ## 后续：Batch 3B
 
-只有 Batch 3A 通过后，才进入真实 4D Cine 主干：
+Batch 3A 已完成诊断门；下一步进入真实 4D Cine 主干：
 
 ```text
 Dataset502 real 4D Cine

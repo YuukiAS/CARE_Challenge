@@ -1,25 +1,50 @@
 #!/usr/bin/env python3
-"""Batch 2B MyoPS full-volume inference/export authority."""
+"""Batch 3A MyoPS SRR model-in-loop inference/export authority."""
 
 from __future__ import annotations
 
 import argparse
 import csv
 import json
-import shutil
+import subprocess
 import sys
 from pathlib import Path
 from typing import Any
 
 import numpy as np
 import SimpleITK as sitk
+import torch
 import yaml
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
 
-from src.care_myocardium.srr_production.anchor_manifest import build_anchor_manifest, find_anchor_paths, rel, sha256_file  # noqa: E402
+from scripts.training.run_srr_myops_fold0 import load_split  # noqa: E402
+from scripts.training.run_srr_propref_myops_fold0 import (  # noqa: E402
+    read_anchored_case,
+    safety_context_dicts_from_raw,
+    full_case_anchor_tensors,
+)
+from scripts.srr_production.validate_myops_mainline import (  # noqa: E402
+    choose_source_cases,
+    fit_real_banks,
+    select_smoke_cases,
+)
+from src.care_myocardium.data.case_metadata import load_myops_case_metadata  # noqa: E402
+from src.care_myocardium.models.srr_propref import SRRProposeRefineMyoPS  # noqa: E402
+from src.care_myocardium.srr_production.anchor_manifest import (  # noqa: E402
+    build_anchor_manifest,
+    find_anchor_paths,
+    rel,
+    sha256_file,
+    sha256_text,
+)
+from src.care_myocardium.srr_production.checkpoint import (  # noqa: E402
+    checkpoint_receipt,
+    load_srr_checkpoint,
+    save_srr_checkpoint,
+)
 
 SPLIT_NNUNET = REPO_ROOT / "data/nnUNet/nnUNet_preprocessed/Dataset501_CAREMyoPS/splits_final.json"
 PREPROCESSED = REPO_ROOT / "data/nnUNet/nnUNet_preprocessed/Dataset501_CAREMyoPS/nnUNetPlans_3d_fullres"
@@ -49,14 +74,125 @@ def image_geometry(path: Path) -> dict[str, Any]:
     }
 
 
-def copy_prediction_with_reference(pred_path: Path, out_path: Path) -> dict[str, Any]:
-    out_path.parent.mkdir(parents=True, exist_ok=True)
-    shutil.copy2(pred_path, out_path)
+def write_csv(path: Path, rows: list[dict[str, Any]]) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    names = list(rows[0].keys()) if rows else []
+    with path.open("w", newline="", encoding="utf-8") as f:
+        writer = csv.DictWriter(f, fieldnames=names, extrasaction="ignore", lineterminator="\n")
+        writer.writeheader()
+        writer.writerows(rows)
+
+
+def git_head() -> str:
+    try:
+        return subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=REPO_ROOT, text=True).strip()
+    except Exception:
+        return "UNKNOWN"
+
+
+def model_from_config(cfg: dict[str, Any], mode: str) -> SRRProposeRefineMyoPS:
+    model_cfg = cfg.get("model", {}) or {}
+    return SRRProposeRefineMyoPS(
+        base_channels=int(model_cfg.get("base_channels", 2)),
+        variant=str(model_cfg.get("variant", "srr_propref_shared_dual_dict")),
+        encoder_profile=str(model_cfg.get("encoder_profile", "tiny_3scale")),
+        disable_local_refinement=bool(model_cfg.get("disable_local_refinement", False)),
+        disable_anatomy_roi_prior=bool(model_cfg.get("disable_anatomy_roi_prior", False)),
+        final_output_mode="srr_no_anchor_control" if mode == "srr_no_anchor_control" else "anchor_bounded_srr_correction",
+    )
+
+
+def architecture_config(cfg: dict[str, Any], mode: str) -> dict[str, Any]:
+    model_cfg = dict(cfg.get("model", {}) or {})
     return {
-        "prediction_sha256": sha256_file(pred_path),
-        "output_sha256": sha256_file(out_path),
-        "byte_identical": sha256_file(pred_path) == sha256_file(out_path),
+        "class_name": "SRRProposeRefineMyoPS",
+        "base_channels": int(model_cfg.get("base_channels", 2)),
+        "variant": str(model_cfg.get("variant", "srr_propref_shared_dual_dict")),
+        "encoder_profile": str(model_cfg.get("encoder_profile", "tiny_3scale")),
+        "disable_local_refinement": bool(model_cfg.get("disable_local_refinement", False)),
+        "disable_anatomy_roi_prior": bool(model_cfg.get("disable_anatomy_roi_prior", False)),
+        "final_output_mode": "srr_no_anchor_control" if mode == "srr_no_anchor_control" else "anchor_bounded_srr_correction",
     }
+
+
+def manifest_hash(manifest: dict[str, Any]) -> str:
+    return sha256_text(json.dumps(manifest, sort_keys=True, separators=(",", ":")))
+
+
+def build_zero_step_checkpoint(
+    *,
+    cfg: dict[str, Any],
+    mode: str,
+    manifest: dict[str, Any],
+    checkpoint_path: Path,
+    anchor_root: Path,
+    split_hash: str,
+    device: torch.device,
+) -> tuple[Path, dict[str, Any]]:
+    metadata = load_myops_case_metadata(REPO_ROOT)
+    selected = select_smoke_cases(manifest)
+    source_ids = choose_source_cases(selected)
+    source_cases = [read_anchored_case(cid, metadata, anchor_root) for cid in source_ids]
+    model = model_from_config(cfg, mode).to(device)
+    prototype_memory_provenance = fit_real_banks(model, source_cases, (4, 32, 32), device)
+    optimizer = torch.optim.AdamW(model.parameters(), lr=1e-4)
+    save_srr_checkpoint(
+        path=checkpoint_path,
+        model=model,
+        optimizer=optimizer,
+        scheduler=None,
+        amp_scaler=None,
+        global_step=0,
+        epoch=0,
+        final_output_mode=architecture_config(cfg, mode)["final_output_mode"],
+        architecture_config=architecture_config(cfg, mode),
+        oof_anchor_manifest_hash=manifest_hash(manifest),
+        prototype_memory_provenance=prototype_memory_provenance,
+        split_hash=split_hash,
+        source_commit=git_head(),
+        best_metric_state={"status": "ZERO_STEP_DIAGNOSTIC_NO_TRAINING", "metric_claim": "NONE"},
+    )
+    return checkpoint_path, prototype_memory_provenance
+
+
+def load_checkpoint_into_model(
+    *,
+    cfg: dict[str, Any],
+    mode: str,
+    checkpoint_path: Path,
+    manifest: dict[str, Any],
+    split_hash: str,
+    device: torch.device,
+) -> tuple[SRRProposeRefineMyoPS, dict[str, Any], dict[str, Any]]:
+    model = model_from_config(cfg, mode).to(device)
+    optimizer = torch.optim.AdamW(model.parameters(), lr=1e-4)
+    payload = load_srr_checkpoint(
+        path=checkpoint_path,
+        model=model,
+        optimizer=optimizer,
+        scheduler=None,
+        amp_scaler=None,
+        map_location=device,
+        restore_rng=False,
+    )
+    expected_arch = architecture_config(cfg, mode)
+    actual_arch = dict(payload.get("architecture_config", {}) or {})
+    for key, expected in expected_arch.items():
+        if actual_arch.get(key) != expected:
+            raise ValueError(f"checkpoint architecture mismatch for {key}: {actual_arch.get(key)!r} != {expected!r}")
+    if str(payload.get("production_final_output_mode")) != expected_arch["final_output_mode"]:
+        raise ValueError("checkpoint final output mode does not match requested inference mode")
+    if str(payload.get("oof_anchor_manifest_hash")) != manifest_hash(manifest):
+        raise ValueError("checkpoint OOF anchor manifest hash mismatch")
+    if str(payload.get("split_hash")) != str(split_hash):
+        raise ValueError("checkpoint split hash mismatch")
+    return model, payload, checkpoint_receipt(checkpoint_path, payload)
+
+
+def prediction_image_from_array(arr: np.ndarray, reference: sitk.Image) -> sitk.Image:
+    img = sitk.GetImageFromArray(arr.astype(np.uint8, copy=False))
+    img.CopyInformation(reference)
+    return img
 
 
 def run(args: argparse.Namespace) -> dict[str, Any]:
@@ -79,6 +215,8 @@ def run(args: argparse.Namespace) -> dict[str, Any]:
         raise ValueError(
             f"{mode} requires --checkpoint, or --allow-untrained-diagnostic to write a zero-step diagnostic receipt"
         )
+
+    device = torch.device(args.device)
     case_ids = [item.strip() for item in args.cases.split(",") if item.strip()] if args.cases else fold_cases(split_path, args.fold, args.max_cases)
     manifest = build_anchor_manifest(
         repo_root=REPO_ROOT,
@@ -87,65 +225,151 @@ def run(args: argparse.Namespace) -> dict[str, Any]:
         nnunet_split=SPLIT_NNUNET,
         raw_root=raw_root,
         preprocessed_root=PREPROCESSED,
+        out_path=out_root / "batch3a_raw_oof_anchor_manifest.json",
     )
+    split_hash = sha256_file(split_path)
+    checkpoint_path = Path(args.checkpoint) if args.checkpoint else out_root / "runtime_checkpoints" / f"{mode}_zero_step_diagnostic.pth"
+    if not checkpoint_path.is_absolute():
+        checkpoint_path = REPO_ROOT / checkpoint_path
+    prototype_memory_provenance: dict[str, Any] | None = None
+    if not checkpoint_path.is_file():
+        if not args.allow_untrained_diagnostic:
+            raise FileNotFoundError(f"checkpoint not found: {checkpoint_path}")
+        checkpoint_path, prototype_memory_provenance = build_zero_step_checkpoint(
+            cfg=cfg,
+            mode=mode,
+            manifest=manifest,
+            checkpoint_path=checkpoint_path,
+            anchor_root=anchor_root,
+            split_hash=split_hash,
+            device=device,
+        )
+    model, payload, ckpt_receipt = load_checkpoint_into_model(
+        cfg=cfg,
+        mode=mode,
+        checkpoint_path=checkpoint_path,
+        manifest=manifest,
+        split_hash=split_hash,
+        device=device,
+    )
+    model.eval()
+    metadata = load_myops_case_metadata(REPO_ROOT)
     pred_dir = out_root / mode / "predictions"
     rows: list[dict[str, Any]] = []
+    tensor_rows: list[dict[str, Any]] = []
     for cid in case_ids:
-        source_fold, _prob_path, pred_path = find_anchor_paths(cid, anchor_root)
+        source_fold, prob_path, pred_path = find_anchor_paths(cid, anchor_root)
+        case = read_anchored_case(cid, metadata, anchor_root)
         gt_path = gt_dir / f"{cid}.nii.gz"
+        gt_img = sitk.ReadImage(str(gt_path))
         out_path = pred_dir / f"{cid}.nii.gz"
-        copied = copy_prediction_with_reference(pred_path, out_path)
-        source_arr = sitk.GetArrayFromImage(sitk.ReadImage(str(pred_path)))
-        out_arr = sitk.GetArrayFromImage(sitk.ReadImage(str(out_path)))
-        mismatch = int(np.count_nonzero(source_arr != out_arr))
-        geom_pred = image_geometry(pred_path)
-        geom_out = image_geometry(out_path)
-        geom_gt = image_geometry(gt_path)
+        x = torch.from_numpy(case.image[None]).float().to(device)
+        av = torch.from_numpy(case.availability[None]).float().to(device)
+        raw_anchor, raw_component = full_case_anchor_tensors(case, device)
+        safety_anchor, safety_component = safety_context_dicts_from_raw(raw_anchor, raw_component, av)
+        with torch.no_grad():
+            outputs = model(
+                x,
+                av,
+                anchor_features=raw_anchor,
+                component_features=raw_component,
+                safety_anchor_features=safety_anchor,
+                safety_component_features=safety_component,
+                memory_query_policy="validation_inference_all_train_shards",
+                case_ids=[cid],
+                anchor_identity_control=mode == "anchor_identity_control",
+            )
+        raw_anchor_labels = raw_anchor["probabilities"].argmax(dim=1)[0].detach().cpu().numpy().astype(np.uint8)
+        model_labels = outputs["logits"].argmax(dim=1)[0].detach().cpu().numpy().astype(np.uint8)
+        out_arr = raw_anchor_labels if mode == "anchor_identity_control" else model_labels
+        out_path.parent.mkdir(parents=True, exist_ok=True)
+        sitk.WriteImage(prediction_image_from_array(out_arr, gt_img), str(out_path))
+        source_arr = sitk.GetArrayFromImage(sitk.ReadImage(str(pred_path))).astype(np.uint8, copy=False)
+        written_arr = sitk.GetArrayFromImage(sitk.ReadImage(str(out_path))).astype(np.uint8, copy=False)
+        changed_voxels = int(np.count_nonzero(written_arr != source_arr))
+        correction = float(outputs["bounded_scar_correction"].abs().max().detach().cpu())
+        correction = max(correction, float(outputs["bounded_edema_correction"].abs().max().detach().cpu()))
+        no_t2 = not bool(case.availability[1] > 0)
+        no_t2_values = {
+            "edema_candidate_probability_abs_max": float(outputs["edema_candidate_probability"].abs().max().detach().cpu()),
+            "edema_soft_roi_abs_max": float(outputs["edema_soft_roi"].abs().max().detach().cpu()),
+            "edema_refinement_residual_abs_max": float(outputs["edema_refinement_residual"].abs().max().detach().cpu()),
+            "bounded_edema_correction_abs_max": float(outputs["bounded_edema_correction"].abs().max().detach().cpu()),
+        }
         rows.append(
             {
                 "case_id": cid,
                 "mode": mode,
                 "source_fold": source_fold,
+                "image_shape_zyx": list(case.image.shape[-3:]),
+                "availability_lge_t2_c0": ",".join(str(float(v)) for v in case.availability.tolist()),
+                "source_probability_path": rel(prob_path, REPO_ROOT),
                 "source_prediction_path": rel(pred_path, REPO_ROOT),
                 "output_prediction_path": rel(out_path, REPO_ROOT),
                 "gt_path": rel(gt_path, REPO_ROOT),
-                "raw_label_mismatch": mismatch,
-                "changed_voxels": mismatch,
-                "byte_identical": copied["byte_identical"],
-                "geometry_matches_source": geom_pred == geom_out,
-                "geometry_matches_gt": geom_out == geom_gt,
-                "prediction_sha256": copied["prediction_sha256"],
-                "output_sha256": copied["output_sha256"],
+                "model_forward_count": 1,
+                "checkpoint_actual_load_count": 1,
+                "prototype_memory_actual_load_count": 1,
+                "memory_query_policy": str(outputs["memory_query_policy"]),
+                "raw_anchor_used_for_final_baseline": bool(outputs["raw_anchor_used_for_final_baseline"].detach().cpu().item()),
+                "safety_context_used_for_srr_evidence": bool(outputs["safety_context_used_for_srr_evidence"].detach().cpu().item()),
+                "changed_voxels": changed_voxels,
+                "raw_label_mismatch": int(np.count_nonzero(raw_anchor_labels != source_arr)),
+                "nonidentity_downstream_tensor_max_abs_delta": 0.0 if mode == "anchor_identity_control" else correction,
+                "no_t2_case": no_t2,
+                "no_t2_full_chain_exact_zero": (not no_t2) or all(value == 0.0 for value in no_t2_values.values()),
+                "geometry_matches_gt": image_geometry(out_path) == image_geometry(gt_path),
+                "output_sha256": sha256_file(out_path),
             }
         )
-    geometry_csv = out_root / "batch2_geometry_roundtrip.csv"
-    with geometry_csv.open("w", newline="", encoding="utf-8") as f:
-        writer = csv.DictWriter(f, fieldnames=list(rows[0].keys()), lineterminator="\n")
-        writer.writeheader()
-        writer.writerows(rows)
+        tensor_rows.append({"case_id": cid, **no_t2_values})
+
+    geometry_csv = out_root / f"batch3a_{mode}_geometry_roundtrip.csv"
+    tensor_csv = out_root / f"batch3a_{mode}_tensor_checks.csv"
+    write_csv(geometry_csv, rows)
+    write_csv(tensor_csv, tensor_rows)
+    changed_total = int(sum(int(row["changed_voxels"]) for row in rows))
+    nonidentity_tensor_delta = max(float(row["nonidentity_downstream_tensor_max_abs_delta"]) for row in rows) if rows else 0.0
+    status = "SRR_MODEL_IN_LOOP_UNTRAINED_DIAGNOSTIC" if int(payload.get("global_step", 0)) == 0 else "SRR_MODEL_IN_LOOP_CHECKPOINT_INFERENCE"
+    if mode == "anchor_identity_control" and changed_total != 0:
+        status = "BATCH3A_NEEDS_REPAIR_ANCHOR_IDENTITY_NOT_EXACT"
+    if mode != "anchor_identity_control" and nonidentity_tensor_delta <= 0.0:
+        status = "BATCH3A_NEEDS_REPAIR_NO_NONIDENTITY_TENSOR_EFFECT"
     contract = {
-        "schema_version": 1,
-        "status": "BATCH_2B_INFERENCE_CONTRACT_COMPLETE" if mode == "anchor_identity_control" else "UNTRAINED_PIPELINE_DIAGNOSTIC",
+        "schema_version": 3,
+        "batch": "3A",
+        "status": status,
         "mode": mode,
         "fold": args.fold,
         "case_count": len(rows),
+        "model_forward_count": int(sum(int(row["model_forward_count"]) for row in rows)),
+        "checkpoint_actual_load_count": 1,
+        "prototype_memory_actual_load_count": 1,
+        "checkpoint_receipt": ckpt_receipt,
+        "checkpoint_global_step": int(payload.get("global_step", 0)),
         "prediction_dir": rel(pred_dir, REPO_ROOT),
         "geometry_roundtrip_csv": rel(geometry_csv, REPO_ROOT),
+        "tensor_checks_csv": rel(tensor_csv, REPO_ROOT),
         "raw_oof_anchor_manifest_status": manifest["status"],
-        "anchor_identity_changed_voxels_total": int(sum(row["changed_voxels"] for row in rows)),
-        "raw_label_mismatch_total": int(sum(row["raw_label_mismatch"] for row in rows)),
-        "untrained_srr_policy": cfg["controls"]["untrained_srr_policy"],
+        "raw_oof_anchor_manifest_hash": manifest_hash(manifest),
+        "anchor_identity_changed_voxels_total": changed_total,
+        "raw_label_mismatch_total": int(sum(int(row["raw_label_mismatch"]) for row in rows)),
+        "nonidentity_downstream_tensor_max_abs_delta": nonidentity_tensor_delta,
+        "memory_query_policy": "validation_inference_all_train_shards",
+        "training_query_policy": "training_crossfit_exclude_query_shard",
+        "raw_anchor_and_safety_context_separated": True,
+        "prototype_memory_source": (
+            prototype_memory_provenance["source"] if prototype_memory_provenance else payload["prototype_memory_provenance"].get("source")
+        ),
         "formal_training_count": 0,
         "slurm_job_count": 0,
         "validation_upload_count": 0,
         "hosted_metric_claim_count": 0,
-        "notes": (
-            "anchor_identity_control copies raw OOF nnU-Net full-volume predictions byte-for-byte"
-            if mode == "anchor_identity_control"
-            else "no trusted trained SRR checkpoint was provided; output is diagnostic only and must not be interpreted as SRR performance"
-        ),
+        "performance_claim": "NONE",
+        "notes": "All modes instantiate and call SRRProposeRefineMyoPS. Zero-step checkpoint output is diagnostic only when checkpoint_global_step is 0.",
     }
-    write_json(out_root / "batch2_inference_contract.json", contract)
+    write_json(out_root / f"batch3a_{mode}_inference_contract.json", contract)
+    write_json(out_root / "batch3a_inference_contract.json", contract)
     print(json.dumps(contract, indent=2, sort_keys=True))
     return contract
 
@@ -160,11 +384,11 @@ def main() -> int:
     parser.add_argument("--checkpoint", default="")
     parser.add_argument("--allow-untrained-diagnostic", action="store_true")
     parser.add_argument("--output-root", default="")
+    parser.add_argument("--device", default="cpu")
     args = parser.parse_args()
-    run(args)
-    return 0
+    result = run(args)
+    return 0 if not str(result["status"]).startswith("BATCH3A_NEEDS_REPAIR") else 1
 
 
 if __name__ == "__main__":
     raise SystemExit(main())
-

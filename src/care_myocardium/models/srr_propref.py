@@ -1275,6 +1275,9 @@ class SRRProposeRefineMyoPS(nn.Module):
         anchor_features: torch.Tensor | dict[str, torch.Tensor] | None = None,
         component_features: torch.Tensor | dict[str, torch.Tensor] | None = None,
         *,
+        safety_anchor_features: torch.Tensor | dict[str, torch.Tensor] | None = None,
+        safety_component_features: torch.Tensor | dict[str, torch.Tensor] | None = None,
+        memory_query_policy: str = "training_crossfit_exclude_query_shard",
         force_segmentation_fallback: bool = False,
         force_closed_gate: bool = False,
         disable_srr_evidence: bool = False,
@@ -1284,18 +1287,21 @@ class SRRProposeRefineMyoPS(nn.Module):
         if x.shape[1] != 3:
             raise ValueError(f"SRRProposeRefineMyoPS expects 3 channels, got {x.shape[1]}")
         self._validate_context_shapes(x, anchor_features, component_features)
+        self._validate_context_shapes(x, safety_anchor_features, safety_component_features)
+        context_anchor_features = safety_anchor_features if safety_anchor_features is not None else anchor_features
+        context_component_features = safety_component_features if safety_component_features is not None else component_features
         availability = availability.to(device=x.device, dtype=x.dtype).clamp(0, 1)
-        features, gates, gate_metadata, gate_valid_masks = self._evidence_features(x, availability, anchor_features)
+        features, gates, gate_metadata, gate_valid_masks = self._evidence_features(x, availability, context_anchor_features)
         evidence = self.evidence_heads(features["anatomy"], features["scar"], features["edema"])
         anatomy_prior = evidence["union_prior_logits"]
         if self.disable_anatomy_roi_prior:
             anatomy_context = self._neutral_anatomy_context(evidence["anatomy_logits"], availability)
         else:
-            anatomy_context = self.anatomy_roi_prior(evidence["anatomy_logits"], anchor_features, availability)
+            anatomy_context = self.anatomy_roi_prior(evidence["anatomy_logits"], context_anchor_features, availability)
         segmentation_context = self.segmentation_context_interface(
             evidence["anatomy_logits"],
-            anchor_features,
-            component_features,
+            context_anchor_features,
+            context_component_features,
             anatomy_context,
         )
         m10_spatial: dict[str, object] | None = None
@@ -1335,6 +1341,7 @@ class SRRProposeRefineMyoPS(nn.Module):
                         pathology="scar",
                         case_id=str(case_id),
                         require_ready=require_memory_ready,
+                        query_policy=memory_query_policy,
                     )
                 )
                 edema_memory_queries.append(
@@ -1343,6 +1350,7 @@ class SRRProposeRefineMyoPS(nn.Module):
                         pathology="edema",
                         case_id=str(case_id),
                         require_ready=require_memory_ready,
+                        query_policy=memory_query_policy,
                     )
                 )
 
@@ -1362,8 +1370,8 @@ class SRRProposeRefineMyoPS(nn.Module):
             features["scar"],
             evidence["scar_logits"],
             scar_anatomy_prior,
-            anchor_features=anchor_features,
-            component_features=component_features,
+            anchor_features=context_anchor_features,
+            component_features=context_component_features,
             availability=availability,
             memory_query=_merge_memory_queries(scar_memory_queries),
         )
@@ -1371,8 +1379,8 @@ class SRRProposeRefineMyoPS(nn.Module):
             features["edema"],
             evidence["edema_logits"],
             edema_anatomy_prior,
-            anchor_features=anchor_features,
-            component_features=component_features,
+            anchor_features=context_anchor_features,
+            component_features=context_component_features,
             availability=availability,
             memory_query=_merge_memory_queries(edema_memory_queries),
         )
@@ -1513,6 +1521,9 @@ class SRRProposeRefineMyoPS(nn.Module):
         outputs = {
             "logits": final_logits,
             "final_output_mode": self.final_output_mode,
+            "memory_query_policy": memory_query_policy,
+            "raw_anchor_used_for_final_baseline": torch.tensor(anchor_features is not None, device=final_logits.device),
+            "safety_context_used_for_srr_evidence": torch.tensor(context_anchor_features is not anchor_features, device=final_logits.device),
             "production_final_logits": production_final_logits,
             "production_correction_gate": production_gate,
             "bounded_scar_correction": scar_bounded_correction,

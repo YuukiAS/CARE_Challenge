@@ -8,7 +8,9 @@
   "performance_claim": "NONE",
   "schema_version": 1,
   "slurm_job_count": 0,
-  "srr_scientific_status": "UNTRAINED_PIPELINE_DIAGNOSTIC",
-  "status": "BATCH_2_INFERENCE_EVALUATION_AUTHORITY_COMPLETE",
+  "srr_contract_path": "results/srr_production/inference/batch3a_anchor_bounded_srr_correction_inference_contract.json",
+  "srr_prediction_dir": "results/srr_production/inference/anchor_bounded_srr_correction/predictions",
+  "srr_scientific_status": "SRR_MODEL_IN_LOOP_UNTRAINED_DIAGNOSTIC",
+  "status": "BATCH3A_MODEL_IN_LOOP_EVALUATION_COMPLETE",
   "validation_upload_count": 0
 }

@@ -249,12 +249,23 @@ class M10CrossFittedPrototypeMemory(torch.nn.Module):
         )
         return event
 
-    def query(self, features: torch.Tensor, *, pathology: str, case_id: str, require_ready: bool = False) -> dict[str, torch.Tensor]:
+    def query(
+        self,
+        features: torch.Tensor,
+        *,
+        pathology: str,
+        case_id: str,
+        require_ready: bool = False,
+        query_policy: str = "training_crossfit_exclude_query_shard",
+    ) -> dict[str, torch.Tensor]:
         if pathology not in self.pathology_to_index:
             raise ValueError(f"unknown pathology: {pathology!r}")
+        if query_policy not in {"training_crossfit_exclude_query_shard", "validation_inference_all_train_shards"}:
+            raise ValueError(f"unknown memory query_policy: {query_policy!r}")
         query_shard = deterministic_memory_shard(case_id)
         include = torch.ones(M10_SHARDS, dtype=torch.bool, device=features.device)
-        include[query_shard] = False
+        if query_policy == "training_crossfit_exclude_query_shard":
+            include[query_shard] = False
         emb = F.normalize(features, dim=1)
         pidx = self.pathology_to_index[pathology]
         pos_counts = self.positive_counts[pidx].to(device=features.device)[include]
@@ -280,11 +291,15 @@ class M10CrossFittedPrototypeMemory(torch.nn.Module):
             "negative_similarity": neg_score,
             "query_shard": torch.tensor(query_shard, device=features.device),
             "source_shards": torch.nonzero(include, as_tuple=False).flatten().to(device=features.device),
+            "query_policy": query_policy,
             "positive_source_count": pos_counts.sum().to(dtype=features.dtype),
             "negative_source_count": neg_counts.sum().to(dtype=features.dtype),
             "positive_active_slot_count": pos_slot_mask.sum().to(device=features.device, dtype=features.dtype),
             "negative_active_slot_count": neg_slot_mask.sum().to(device=features.device, dtype=features.dtype),
-            "production_crossfit_exclusive": torch.tensor(True, device=features.device),
+            "production_crossfit_exclusive": torch.tensor(
+                query_policy == "training_crossfit_exclude_query_shard",
+                device=features.device,
+            ),
         }
 
     def summary(self) -> dict[str, object]:

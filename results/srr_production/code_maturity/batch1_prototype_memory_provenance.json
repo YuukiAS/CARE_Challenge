@@ -173,7 +173,7 @@
         "case_id": "Case1001",
         "category": "scar_positive",
         "entered_final_bank": true,
-        "feature_hash": "209577f1303d048b6568a1df392b7822a7a89e17c519f7201187c2cacce826b9",
+        "feature_hash": "7b25517fde970106346d339d07de9ad637379df5f2b0549adaf059219a526e1f",
         "raw_vector_count": 32,
         "shard": 2,
         "t2_present": false
@@ -183,7 +183,7 @@
         "case_id": "Case1001",
         "category": "scar_negative",
         "entered_final_bank": true,
-        "feature_hash": "209577f1303d048b6568a1df392b7822a7a89e17c519f7201187c2cacce826b9",
+        "feature_hash": "7b25517fde970106346d339d07de9ad637379df5f2b0549adaf059219a526e1f",
         "raw_vector_count": 72,
         "shard": 2,
         "t2_present": false
@@ -193,7 +193,7 @@
         "case_id": "Case1001",
         "category": "edema_positive",
         "entered_final_bank": false,
-        "feature_hash": "209577f1303d048b6568a1df392b7822a7a89e17c519f7201187c2cacce826b9",
+        "feature_hash": "7b25517fde970106346d339d07de9ad637379df5f2b0549adaf059219a526e1f",
         "raw_vector_count": 0,
         "shard": 2,
         "t2_present": false
@@ -203,7 +203,7 @@
         "case_id": "Case1001",
         "category": "edema_negative",
         "entered_final_bank": false,
-        "feature_hash": "209577f1303d048b6568a1df392b7822a7a89e17c519f7201187c2cacce826b9",
+        "feature_hash": "7b25517fde970106346d339d07de9ad637379df5f2b0549adaf059219a526e1f",
         "raw_vector_count": 0,
         "shard": 2,
         "t2_present": false
@@ -249,7 +249,7 @@
         "t2_present": false
       }
     ],
-    "feature_hash": "e954ff86a452b326589778784840306eaa3b38fd595d3f83058cf4f36a27c72a",
+    "feature_hash": "79d8b2ebd244fbc8365972c31dfe4328a7a608a9ff4b80d05177fb91ab8849cb",
     "no_t2_myocardium_negative_voxels": 0,
     "repeat_last_vector_fallback": false,
     "shards": {
@@ -614,7 +614,7 @@
         "case_id": "Case1001",
         "category": "scar_positive",
         "entered_final_bank": true,
-        "feature_hash": "209577f1303d048b6568a1df392b7822a7a89e17c519f7201187c2cacce826b9",
+        "feature_hash": "7b25517fde970106346d339d07de9ad637379df5f2b0549adaf059219a526e1f",
         "raw_vector_count": 32,
         "shard": 2,
         "t2_present": false
@@ -624,7 +624,7 @@
         "case_id": "Case1001",
         "category": "scar_negative",
         "entered_final_bank": true,
-        "feature_hash": "209577f1303d048b6568a1df392b7822a7a89e17c519f7201187c2cacce826b9",
+        "feature_hash": "7b25517fde970106346d339d07de9ad637379df5f2b0549adaf059219a526e1f",
         "raw_vector_count": 72,
         "shard": 2,
         "t2_present": false
@@ -634,7 +634,7 @@
         "case_id": "Case1001",
         "category": "edema_positive",
         "entered_final_bank": false,
-        "feature_hash": "209577f1303d048b6568a1df392b7822a7a89e17c519f7201187c2cacce826b9",
+        "feature_hash": "7b25517fde970106346d339d07de9ad637379df5f2b0549adaf059219a526e1f",
         "raw_vector_count": 0,
         "shard": 2,
         "t2_present": false
@@ -644,7 +644,7 @@
         "case_id": "Case1001",
         "category": "edema_negative",
         "entered_final_bank": false,
-        "feature_hash": "209577f1303d048b6568a1df392b7822a7a89e17c519f7201187c2cacce826b9",
+        "feature_hash": "7b25517fde970106346d339d07de9ad637379df5f2b0549adaf059219a526e1f",
         "raw_vector_count": 0,
         "shard": 2,
         "t2_present": false
@@ -690,7 +690,7 @@
         "t2_present": false
       }
     ],
-    "feature_hash": "e954ff86a452b326589778784840306eaa3b38fd595d3f83058cf4f36a27c72a",
+    "feature_hash": "79d8b2ebd244fbc8365972c31dfe4328a7a608a9ff4b80d05177fb91ab8849cb",
     "repeat_last_vector_fallback": false,
     "shards": {
       "Case1001": 2,

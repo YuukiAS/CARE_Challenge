@@ -108,6 +108,43 @@ def mean_non_null(rows: list[dict[str, Any]], key: str) -> float | None:
     return float(np.mean(vals)) if vals else None
 
 
+def empty_surface_flag(pred: np.ndarray, gt: np.ndarray, class_id: int) -> str:
+    pred_empty = not bool(np.any(pred == class_id))
+    gt_empty = not bool(np.any(gt == class_id))
+    if pred_empty and gt_empty:
+        return "EMPTY_GT_EMPTY_PRED_HD_NA"
+    if pred_empty:
+        return "EMPTY_PRED_HD_NA"
+    if gt_empty:
+        return "EMPTY_GT_HD_NA"
+    return "OK"
+
+
+def validate_srr_contract(contract_path: Path, srr_pred_dir: Path, cases: list[str]) -> dict[str, Any]:
+    contract = load_json(contract_path)
+    if contract.get("batch") != "3A":
+        raise ValueError(f"SRR contract is not a Batch 3A inference contract: {contract_path}")
+    if "SRR_MODEL_IN_LOOP" not in str(contract.get("status", "")):
+        raise ValueError(f"SRR contract is not model-in-loop complete: {contract.get('status')}")
+    expected_dir = REPO_ROOT / str(contract["prediction_dir"])
+    if expected_dir.resolve() != srr_pred_dir.resolve():
+        raise ValueError(f"SRR prediction dir does not match contract: {srr_pred_dir} != {expected_dir}")
+    csv_path = REPO_ROOT / str(contract["geometry_roundtrip_csv"])
+    with csv_path.open(newline="", encoding="utf-8") as f:
+        rows = {row["case_id"]: row for row in csv.DictReader(f)}
+    missing = [cid for cid in cases if cid not in rows]
+    if missing:
+        raise ValueError(f"SRR contract missing requested cases: {missing[:10]}")
+    for cid in cases:
+        pred_path = srr_pred_dir / f"{cid}.nii.gz"
+        if not pred_path.is_file():
+            raise FileNotFoundError(f"SRR prediction missing for {cid}: {pred_path}")
+        expected_hash = str(rows[cid].get("output_sha256", ""))
+        if expected_hash and sha256_file(pred_path) != expected_hash:
+            raise ValueError(f"SRR prediction hash mismatch for {cid}")
+    return contract
+
+
 def run(args: argparse.Namespace) -> dict[str, Any]:
     cfg_path = Path(args.config)
     if not cfg_path.is_absolute():
@@ -120,13 +157,23 @@ def run(args: argparse.Namespace) -> dict[str, Any]:
     identity_pred_dir = Path(args.identity_pred_dir or REPO_ROOT / paths["inference_root"] / "anchor_identity_control/predictions")
     if not identity_pred_dir.is_absolute():
         identity_pred_dir = REPO_ROOT / identity_pred_dir
-    srr_pred_dir = Path(args.srr_pred_dir) if args.srr_pred_dir else identity_pred_dir
-    if not srr_pred_dir.is_absolute():
+    srr_pred_dir = Path(args.srr_pred_dir) if args.srr_pred_dir else None
+    if srr_pred_dir is not None and not srr_pred_dir.is_absolute():
         srr_pred_dir = REPO_ROOT / srr_pred_dir
     out_dir = Path(args.output_dir or paths["evaluation_root"])
     if not out_dir.is_absolute():
         out_dir = REPO_ROOT / out_dir
     cases = [item.strip() for item in args.cases.split(",") if item.strip()] if args.cases else fold_cases(split_path, args.fold, args.max_cases)
+    srr_contract = None
+    if args.srr_contract:
+        contract_path = Path(args.srr_contract)
+        if not contract_path.is_absolute():
+            contract_path = REPO_ROOT / contract_path
+        if srr_pred_dir is None:
+            raise ValueError("--srr-contract requires --srr-pred-dir; SRR comparison never falls back to identity predictions")
+        srr_contract = validate_srr_contract(contract_path, srr_pred_dir, cases)
+    elif srr_pred_dir is not None:
+        raise ValueError("--srr-pred-dir requires --srr-contract so hashes and mode can be audited")
     metadata = load_myops_case_metadata(REPO_ROOT)
     case_rows: list[dict[str, Any]] = []
     help_rows: list[dict[str, Any]] = []
@@ -136,7 +183,10 @@ def run(args: argparse.Namespace) -> dict[str, Any]:
         gt_img, gt = read_label(gt_dir / f"{cid}.nii.gz")
         anchor_img, anchor = read_label(anchor_pred_dir / f"{cid}.nii.gz", gt_img)
         identity_img, identity = read_label(identity_pred_dir / f"{cid}.nii.gz", gt_img)
-        srr_img, srr = read_label(srr_pred_dir / f"{cid}.nii.gz", gt_img)
+        if srr_pred_dir is None:
+            srr_img, srr = identity_img, identity
+        else:
+            srr_img, srr = read_label(srr_pred_dir / f"{cid}.nii.gz", gt_img)
         spacing = tuple(float(x) for x in gt_img.GetSpacing()[::-1])
         changed_identity = int(np.count_nonzero(identity != anchor))
         anchor_identity_rows.append(
@@ -167,6 +217,8 @@ def run(args: argparse.Namespace) -> dict[str, Any]:
                 "srr_hd": hd_class(srr, gt, class_id, spacing),
                 "anchor_hd95": hd95_class(anchor, gt, class_id, spacing),
                 "srr_hd95": hd95_class(srr, gt, class_id, spacing),
+                "anchor_hd_failure_flag": empty_surface_flag(anchor, gt, class_id),
+                "srr_hd_failure_flag": empty_surface_flag(srr, gt, class_id),
                 "changed_voxels": int(np.count_nonzero((srr == class_id) != (anchor == class_id))),
                 "gt_positive": bool(np.any(gt == class_id)),
                 "prediction_positive": bool(np.any(srr == class_id)),
@@ -258,8 +310,18 @@ def run(args: argparse.Namespace) -> dict[str, Any]:
     }
     completion = {
         "schema_version": 1,
-        "status": "BATCH_2_INFERENCE_EVALUATION_AUTHORITY_COMPLETE" if baseline["status"] == "PASS" and anchor_identity["status"] == "PASS" else "BATCH_2_NEEDS_REPAIR",
-        "srr_scientific_status": "UNTRAINED_PIPELINE_DIAGNOSTIC",
+        "status": (
+            "BATCH3A_MODEL_IN_LOOP_EVALUATION_COMPLETE"
+            if baseline["status"] == "PASS" and anchor_identity["status"] == "PASS" and srr_contract is not None
+            else (
+                "BATCH_2_IDENTITY_EVALUATION_AUTHORITY_COMPLETE"
+                if baseline["status"] == "PASS" and anchor_identity["status"] == "PASS" and srr_contract is None
+                else "BATCH3A_EVALUATION_NEEDS_REPAIR"
+            )
+        ),
+        "srr_scientific_status": (
+            str(srr_contract.get("status")) if srr_contract is not None else "SRR_COMPARISON_DISABLED_NO_CONTRACT"
+        ),
         "fold": args.fold,
         "case_count": len(cases),
         "formal_training_count": 0,
@@ -269,6 +331,8 @@ def run(args: argparse.Namespace) -> dict[str, Any]:
         "performance_claim": "NONE",
         "baseline_reproduction_path": rel(out_dir / "nnunet_fold0_reproduction.json", REPO_ROOT),
         "anchor_identity_path": rel(out_dir / "anchor_identity_44case.json", REPO_ROOT),
+        "srr_contract_path": rel(Path(args.srr_contract), REPO_ROOT) if args.srr_contract else "",
+        "srr_prediction_dir": rel(srr_pred_dir, REPO_ROOT) if srr_pred_dir is not None else "",
     }
     write_csv(out_dir / "casewise_metrics.csv", case_rows)
     write_csv(out_dir / "subgroup_metrics.csv", subgroup_rows)
@@ -278,8 +342,6 @@ def run(args: argparse.Namespace) -> dict[str, Any]:
     write_json(out_dir / "anchor_identity_44case.json", anchor_identity)
     write_json(out_dir / "batch2_completion.json", completion)
     print(json.dumps(completion, indent=2, sort_keys=True))
-    if completion["status"] != "BATCH_2_INFERENCE_EVALUATION_AUTHORITY_COMPLETE":
-        return completion
     return completion
 
 
@@ -291,10 +353,11 @@ def main() -> int:
     parser.add_argument("--max-cases", type=int, default=0)
     parser.add_argument("--identity-pred-dir", default="")
     parser.add_argument("--srr-pred-dir", default="")
+    parser.add_argument("--srr-contract", default="")
     parser.add_argument("--output-dir", default="")
     args = parser.parse_args()
     result = run(args)
-    return 0 if result["status"] == "BATCH_2_INFERENCE_EVALUATION_AUTHORITY_COMPLETE" else 1
+    return 0 if result["status"] in {"BATCH3A_MODEL_IN_LOOP_EVALUATION_COMPLETE", "BATCH_2_IDENTITY_EVALUATION_AUTHORITY_COMPLETE"} else 1
 
 
 if __name__ == "__main__":
