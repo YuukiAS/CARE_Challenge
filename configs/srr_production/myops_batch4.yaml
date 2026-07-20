@@ -11,12 +11,20 @@ user_authorization:
 source_reviewed_head: d251bde18199d2afa9de60b28d02336f88994941
 paths:
   raw_root: data/nnUNet/nnUNet_raw/Dataset501_CAREMyoPS
+  gt_dir: data/nnUNet/nnUNet_raw/Dataset501_CAREMyoPS/labelsTr
   split_path: data/benchmarks/protocol/splits_MyoPS.json
   anchor_root: data/nnUNet/nnUNet_results/Dataset501_CAREMyoPS/nnUNetTrainer_500epochs__nnUNetPlans__3d_fullres
+  anchor_fold0_pred_dir: data/nnUNet/nnUNet_results/Dataset501_CAREMyoPS/nnUNetTrainer_500epochs__nnUNetPlans__3d_fullres/fold_0/validation
   result_root: results/20260721_srr_batch4_forced_fold0_training
   runtime_root: results/20260721_srr_batch4_forced_fold0_training/runtime
+  inference_root: results/20260721_srr_batch4_forced_fold0_training/inference
+  evaluation_root: results/20260721_srr_batch4_forced_fold0_training/evaluation
   log_root: logs/srr_batch4
   lock_root: results/20260721_srr_batch4_forced_fold0_training/runtime/locks
+modes:
+  - anchor_identity_control
+  - anchor_bounded_srr_correction
+  - srr_no_anchor_control
 model:
   class_name: SRRProposeRefineMyoPS
   variant: m10_d3_hierarchical_memory_propref

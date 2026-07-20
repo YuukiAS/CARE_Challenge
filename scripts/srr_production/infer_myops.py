@@ -90,6 +90,10 @@ def git_head() -> str:
         return "UNKNOWN"
 
 
+def runtime_final_output_mode(mode: str) -> str:
+    return "srr_no_anchor_control" if mode == "srr_no_anchor_control" else "anchor_bounded_srr_correction"
+
+
 def model_from_config(cfg: dict[str, Any], mode: str) -> SRRProposeRefineMyoPS:
     model_cfg = cfg.get("model", {}) or {}
     return SRRProposeRefineMyoPS(
@@ -98,7 +102,7 @@ def model_from_config(cfg: dict[str, Any], mode: str) -> SRRProposeRefineMyoPS:
         encoder_profile=str(model_cfg.get("encoder_profile", "tiny_3scale")),
         disable_local_refinement=bool(model_cfg.get("disable_local_refinement", False)),
         disable_anatomy_roi_prior=bool(model_cfg.get("disable_anatomy_roi_prior", False)),
-        final_output_mode="srr_no_anchor_control" if mode == "srr_no_anchor_control" else "anchor_bounded_srr_correction",
+        final_output_mode=runtime_final_output_mode(mode),
     )
 
 
@@ -111,7 +115,6 @@ def architecture_config(cfg: dict[str, Any], mode: str) -> dict[str, Any]:
         "encoder_profile": str(model_cfg.get("encoder_profile", "tiny_3scale")),
         "disable_local_refinement": bool(model_cfg.get("disable_local_refinement", False)),
         "disable_anatomy_roi_prior": bool(model_cfg.get("disable_anatomy_roi_prior", False)),
-        "final_output_mode": "srr_no_anchor_control" if mode == "srr_no_anchor_control" else "anchor_bounded_srr_correction",
     }
 
 
@@ -144,7 +147,7 @@ def build_zero_step_checkpoint(
         amp_scaler=None,
         global_step=0,
         epoch=0,
-        final_output_mode=architecture_config(cfg, mode)["final_output_mode"],
+        final_output_mode=runtime_final_output_mode(mode),
         architecture_config=architecture_config(cfg, mode),
         oof_anchor_manifest_hash=manifest_hash(manifest),
         prototype_memory_provenance=prototype_memory_provenance,
@@ -180,8 +183,6 @@ def load_checkpoint_into_model(
     for key, expected in expected_arch.items():
         if actual_arch.get(key) != expected:
             raise ValueError(f"checkpoint architecture mismatch for {key}: {actual_arch.get(key)!r} != {expected!r}")
-    if str(payload.get("production_final_output_mode")) != expected_arch["final_output_mode"]:
-        raise ValueError("checkpoint final output mode does not match requested inference mode")
     if str(payload.get("oof_anchor_manifest_hash")) != manifest_hash(manifest):
         raise ValueError("checkpoint OOF anchor manifest hash mismatch")
     if str(payload.get("split_hash")) != str(split_hash):
@@ -281,7 +282,7 @@ def run(args: argparse.Namespace) -> dict[str, Any]:
             )
         raw_anchor_labels = raw_anchor["probabilities"].argmax(dim=1)[0].detach().cpu().numpy().astype(np.uint8)
         model_labels = outputs["logits"].argmax(dim=1)[0].detach().cpu().numpy().astype(np.uint8)
-        out_arr = raw_anchor_labels if mode == "anchor_identity_control" else model_labels
+        out_arr = model_labels
         out_path.parent.mkdir(parents=True, exist_ok=True)
         sitk.WriteImage(prediction_image_from_array(out_arr, gt_img), str(out_path))
         source_arr = sitk.GetArrayFromImage(sitk.ReadImage(str(pred_path))).astype(np.uint8, copy=False)
@@ -296,6 +297,16 @@ def run(args: argparse.Namespace) -> dict[str, Any]:
             "edema_refinement_residual_abs_max": float(outputs["edema_refinement_residual"].abs().max().detach().cpu()),
             "bounded_edema_correction_abs_max": float(outputs["bounded_edema_correction"].abs().max().detach().cpu()),
         }
+        final_anchor_softmax_delta = float(
+            (
+                torch.softmax(outputs["logits"], dim=1)
+                - torch.softmax(outputs["nnunet_anchor_logits"], dim=1)
+            )
+            .abs()
+            .max()
+            .detach()
+            .cpu()
+        )
         rows.append(
             {
                 "case_id": cid,
@@ -315,6 +326,7 @@ def run(args: argparse.Namespace) -> dict[str, Any]:
                 "safety_context_used_for_srr_evidence": bool(outputs["safety_context_used_for_srr_evidence"].detach().cpu().item()),
                 "changed_voxels": changed_voxels,
                 "raw_label_mismatch": int(np.count_nonzero(raw_anchor_labels != source_arr)),
+                "anchor_identity_softmax_max_abs_delta": final_anchor_softmax_delta if mode == "anchor_identity_control" else "",
                 "nonidentity_downstream_tensor_max_abs_delta": 0.0 if mode == "anchor_identity_control" else correction,
                 "no_t2_case": no_t2,
                 "no_t2_full_chain_exact_zero": (not no_t2) or all(value == 0.0 for value in no_t2_values.values()),
@@ -330,9 +342,16 @@ def run(args: argparse.Namespace) -> dict[str, Any]:
     write_csv(tensor_csv, tensor_rows)
     changed_total = int(sum(int(row["changed_voxels"]) for row in rows))
     nonidentity_tensor_delta = max(float(row["nonidentity_downstream_tensor_max_abs_delta"]) for row in rows) if rows else 0.0
+    identity_softmax_max_abs_delta = (
+        max(float(row["anchor_identity_softmax_max_abs_delta"]) for row in rows)
+        if mode == "anchor_identity_control" and rows
+        else 0.0
+    )
     status = "SRR_MODEL_IN_LOOP_UNTRAINED_DIAGNOSTIC" if int(payload.get("global_step", 0)) == 0 else "SRR_MODEL_IN_LOOP_CHECKPOINT_INFERENCE"
     if mode == "anchor_identity_control" and changed_total != 0:
         status = "BATCH3A_NEEDS_REPAIR_ANCHOR_IDENTITY_NOT_EXACT"
+    if mode == "anchor_identity_control" and identity_softmax_max_abs_delta > 1e-6:
+        status = "BATCH3A_NEEDS_REPAIR_ANCHOR_IDENTITY_SOFTMAX_NOT_EXACT"
     if mode != "anchor_identity_control" and nonidentity_tensor_delta <= 0.0:
         status = "BATCH3A_NEEDS_REPAIR_NO_NONIDENTITY_TENSOR_EFFECT"
     contract = {
@@ -353,6 +372,8 @@ def run(args: argparse.Namespace) -> dict[str, Any]:
         "raw_oof_anchor_manifest_status": manifest["status"],
         "raw_oof_anchor_manifest_hash": manifest_hash(manifest),
         "anchor_identity_changed_voxels_total": changed_total,
+        "anchor_identity_softmax_max_abs_delta": identity_softmax_max_abs_delta,
+        "identity_export_source": "model_logits_argmax",
         "raw_label_mismatch_total": int(sum(int(row["raw_label_mismatch"]) for row in rows)),
         "nonidentity_downstream_tensor_max_abs_delta": nonidentity_tensor_delta,
         "memory_query_policy": "validation_inference_all_train_shards",

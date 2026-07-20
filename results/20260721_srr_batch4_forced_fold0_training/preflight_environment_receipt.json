@@ -1,0 +1,60 @@
+{
+  "checked_at_utc": "2026-07-20T17:45:40.062416+00:00",
+  "code_hash": "6a9113cda9d1e2b7e297a40d594d824981f9d752f2014fe27c3942e6bfe9aeee",
+  "config": "configs/srr_production/myops_batch4.yaml",
+  "config_hash": "5c4da81bc6f01c360c288370b8b1e21371448e2715d5159ba32aa85f2794fc73",
+  "contract_command": "./envs/env_CARE/bin/python scripts/training/run_srr_propref_myops_fold0.py --variant m10_d3_hierarchical_memory_propref --encoder-profile full_4scale --base-channels 32 --final-output-mode anchor_bounded_srr_correction --batch-size 1 --max-steps 1800 --overfit-steps 60 --min-overfit-loss-decrease 0.05 --prototype-bank-cases 176 --full-volume-eval-steps 600,1200,1800 --enforce-min-train-loop-seconds --batch4-production-contract --print-contract",
+  "contract_exit_code": 0,
+  "contract_stderr_tail": "",
+  "contract_stdout_tail": "{\n  \"architecture_config\": {\n    \"base_channels\": 32,\n    \"class_name\": \"SRRProposeRefineMyoPS\",\n    \"disable_anatomy_roi_prior\": false,\n    \"disable_local_refinement\": false,\n    \"encoder_profile\": \"full_4scale\",\n    \"runtime_final_output_modes_supported\": [\n      \"anchor_identity_control\",\n      \"anchor_bounded_srr_correction\",\n      \"srr_no_anchor_control\"\n    ],\n    \"variant\": \"m10_d3_hierarchical_memory_propref\"\n  },\n  \"batch4_production_contract\": true,\n  \"batch_size\": 1,\n  \"fold\": 0,\n  \"full_volume_eval_steps\": [\n    600,\n    1200,\n    1800\n  ],\n  \"max_steps\": 1800,\n  \"min_train_loop_seconds_for_plateau\": 1800.0,\n  \"patch_shape\": \"12,96,96\",\n  \"prototype_bank_cases\": 176,\n  \"prototype_memory_asset\": \"\",\n  \"prototype_memory_manifest\": \"\",\n  \"source_commit\": \"89474f7de8c38db1448e47ca7fe94d6620932b31\",\n  \"status\": \"CONTRACT_VALID\",\n  \"train_case_count\": 176,\n  \"validation_case_count\": 44,\n  \"variant\": \"m10_d3_hierarchical_memory_propref\"\n}\n",
+  "cuda_visible": false,
+  "entrypoint": "scripts/training/run_srr_propref_myops_fold0.py",
+  "entrypoint_hash": "6a9113cda9d1e2b7e297a40d594d824981f9d752f2014fe27c3942e6bfe9aeee",
+  "exit_code": 0,
+  "imports": {
+    "SimpleITK": {
+      "exit_code": 0,
+      "module": "SimpleITK",
+      "stderr_tail": ""
+    },
+    "src.care_myocardium.models.srr_propref": {
+      "exit_code": 0,
+      "module": "src.care_myocardium.models.srr_propref",
+      "stderr_tail": ""
+    },
+    "torch": {
+      "exit_code": 0,
+      "module": "torch",
+      "stderr_tail": ""
+    },
+    "yaml": {
+      "exit_code": 0,
+      "module": "yaml",
+      "stderr_tail": ""
+    }
+  },
+  "optimizer_smoke": {
+    "exit_code": 0,
+    "mode": "adamw",
+    "stderr_tail": "",
+    "stdout_tail": "PASS\n"
+  },
+  "path_writability": {
+    "lock_parent": {
+      "path": "results/20260721_srr_batch4_forced_fold0_training/runtime/locks",
+      "writable": true
+    },
+    "log_dir": {
+      "path": "logs/srr_batch4",
+      "writable": true
+    },
+    "result_dir": {
+      "path": "results/20260721_srr_batch4_forced_fold0_training",
+      "writable": true
+    }
+  },
+  "python": "/users/a/e/aereinh/CARE/envs/env_CARE/bin/python",
+  "python_exists": true,
+  "python_version": "Python 3.12.13",
+  "split_hash": ""
+}

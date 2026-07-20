@@ -8,6 +8,7 @@ import csv
 import json
 import math
 import random
+import subprocess
 import sys
 import time
 from dataclasses import dataclass
@@ -49,8 +50,10 @@ from src.care_myocardium.srr_production.anchor_manifest import (  # noqa: E402
     load_anchor_probabilities as production_load_anchor_probabilities,
     load_component_features as production_load_component_features,
     safety_context_from_raw_anchor,
+    sha256_file,
+    sha256_text,
 )
-from src.care_myocardium.srr_production.checkpoint import save_srr_checkpoint  # noqa: E402
+from src.care_myocardium.srr_production.checkpoint import load_srr_checkpoint, save_srr_checkpoint  # noqa: E402
 from src.care_myocardium.srr_production.prototype_memory import (  # noqa: E402
     CasePrototypeVectors,
     hash_tensor,
@@ -66,6 +69,7 @@ DEFAULT_NNUNET_ANCHOR_ROOT = (
     / "data/nnUNet/nnUNet_results/Dataset501_CAREMyoPS/"
     "nnUNetTrainer_500epochs__nnUNetPlans__3d_fullres"
 )
+PROTOCOL_SPLIT_PATH = REPO_ROOT / "data/benchmarks/protocol/splits_MyoPS.json"
 
 M7_TO_M6_VARIANT = {
     "m7_full_srr_context_arbitration": "m6_full_srr_context_arbitration",
@@ -719,6 +723,93 @@ def model_kwargs_from_args(args: argparse.Namespace) -> dict[str, object]:
         "disable_anatomy_roi_prior": bool(getattr(args, "disable_anatomy_roi_prior", False)),
         "final_output_mode": str(getattr(args, "final_output_mode", "legacy_variant")),
     }
+
+
+def git_head() -> str:
+    try:
+        return subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=REPO_ROOT, text=True).strip()
+    except Exception:
+        return "UNKNOWN"
+
+
+def architecture_config_from_args(args: argparse.Namespace) -> dict[str, object]:
+    cfg = model_kwargs_from_args(args)
+    return {
+        "class_name": "SRRProposeRefineMyoPS",
+        "base_channels": int(cfg["base_channels"]),
+        "variant": str(cfg["variant"]),
+        "encoder_profile": str(cfg["encoder_profile"]),
+        "disable_local_refinement": bool(cfg["disable_local_refinement"]),
+        "disable_anatomy_roi_prior": bool(cfg["disable_anatomy_roi_prior"]),
+        "runtime_final_output_modes_supported": [
+            "anchor_identity_control",
+            "anchor_bounded_srr_correction",
+            "srr_no_anchor_control",
+        ],
+    }
+
+
+def stable_manifest_hash(data: dict[str, object]) -> str:
+    return sha256_text(json.dumps(data, sort_keys=True, separators=(",", ":")))
+
+
+def parse_int_set(raw: str) -> set[int]:
+    values: set[int] = set()
+    for item in str(raw or "").replace(";", ",").split(","):
+        item = item.strip()
+        if item:
+            values.add(int(item))
+    return values
+
+
+def enforce_batch4_contract(args: argparse.Namespace, train_case_count: int, val_case_count: int) -> None:
+    if not bool(getattr(args, "batch4_production_contract", False)):
+        return
+    errors: list[str] = []
+    expected = {
+        "variant": "m10_d3_hierarchical_memory_propref",
+        "encoder_profile": "full_4scale",
+        "base_channels": 32,
+        "final_output_mode": "anchor_bounded_srr_correction",
+        "batch_size": 1,
+        "max_steps": 1800,
+        "overfit_steps": 60,
+    }
+    for key, value in expected.items():
+        if getattr(args, key) != value:
+            errors.append(f"{key}={getattr(args, key)!r} != {value!r}")
+    if int(args.limit_train_cases) != 0 or int(args.limit_val_cases) != 0 or int(args.max_eval_cases) != 0:
+        errors.append("Batch4 forbids --limit-train-cases, --limit-val-cases, and --max-eval-cases")
+    if train_case_count != 176:
+        errors.append(f"train_case_count={train_case_count} != 176")
+    if val_case_count != 44:
+        errors.append(f"val_case_count={val_case_count} != 44")
+    if int(args.prototype_bank_cases) < 176:
+        errors.append(f"prototype_bank_cases={args.prototype_bank_cases} < 176")
+    if float(args.min_overfit_loss_decrease) < 0.05:
+        errors.append(f"min_overfit_loss_decrease={args.min_overfit_loss_decrease} < 0.05")
+    if not bool(args.enforce_min_train_loop_seconds) or float(args.min_train_loop_seconds_for_plateau) < 1800.0:
+        errors.append("Batch4 requires --enforce-min-train-loop-seconds and min_train_loop_seconds_for_plateau >= 1800")
+    required_eval_steps = {600, 1200, 1800}
+    if not required_eval_steps.issubset(parse_int_set(args.full_volume_eval_steps)):
+        errors.append(f"full_volume_eval_steps must include {sorted(required_eval_steps)}")
+    if errors:
+        raise ValueError("Batch4 production contract failed: " + "; ".join(errors))
+
+
+def relative_loss_decrease(first_loss: float | None, last_loss: float | None) -> float | None:
+    if first_loss is None or last_loss is None:
+        return None
+    denom = max(abs(float(first_loss)), 1e-12)
+    return (float(first_loss) - float(last_loss)) / denom
+
+
+def reset_rng_seeds(seed: int) -> None:
+    random.seed(seed)
+    np.random.seed(seed)
+    torch.manual_seed(seed)
+    if torch.cuda.is_available():
+        torch.cuda.manual_seed_all(seed)
 
 
 def maybe_disable_context(
@@ -1489,6 +1580,129 @@ def save_checkpoint(payload: dict[str, object], path: Path) -> None:
     tmp.replace(path)
 
 
+def save_training_checkpoint(
+    *,
+    path: Path,
+    model: SRRProposeRefineMyoPS,
+    optimizer: torch.optim.Optimizer,
+    args: argparse.Namespace,
+    global_step: int,
+    epoch: int,
+    anchor_manifest_hash: str,
+    prototype_memory_provenance: dict[str, object],
+    best_metric_state: dict[str, object],
+) -> None:
+    save_srr_checkpoint(
+        path=path,
+        model=model,
+        optimizer=optimizer,
+        scheduler=None,
+        amp_scaler=None,
+        global_step=int(global_step),
+        epoch=int(epoch),
+        final_output_mode=str(getattr(args, "final_output_mode", "legacy_variant")),
+        architecture_config=architecture_config_from_args(args),
+        oof_anchor_manifest_hash=anchor_manifest_hash,
+        prototype_memory_provenance=prototype_memory_provenance,
+        split_hash=sha256_file(PROTOCOL_SPLIT_PATH),
+        source_commit=git_head(),
+        best_metric_state=best_metric_state,
+    )
+
+
+def write_frozen_prototype_asset(
+    *,
+    model: SRRProposeRefineMyoPS,
+    summary: dict[str, object],
+    args: argparse.Namespace,
+    train_case_ids: list[str],
+    val_case_ids: list[str],
+) -> dict[str, object]:
+    asset_raw = str(getattr(args, "prototype_memory_asset", "") or "").strip()
+    manifest_raw = str(getattr(args, "prototype_memory_manifest", "") or "").strip()
+    if not asset_raw or not manifest_raw:
+        return {}
+    asset_path = Path(asset_raw)
+    manifest_path = Path(manifest_raw)
+    if not asset_path.is_absolute():
+        asset_path = REPO_ROOT / asset_path
+    if not manifest_path.is_absolute():
+        manifest_path = REPO_ROOT / manifest_path
+    asset = {
+        "scar_dictionary": {
+            "positive": model.scar_dictionary.positive.detach().cpu(),
+            "negative": model.scar_dictionary.negative.detach().cpu(),
+            "prototype_source": model.scar_dictionary.prototype_source,
+            "prototype_provenance": model.scar_dictionary.prototype_provenance,
+        },
+        "edema_dictionary": {
+            "positive": model.edema_dictionary.positive.detach().cpu(),
+            "negative": model.edema_dictionary.negative.detach().cpu(),
+            "prototype_source": model.edema_dictionary.prototype_source,
+            "prototype_provenance": model.edema_dictionary.prototype_provenance,
+        },
+        "cross_fitted_memory_state_dict": model.cross_fitted_memory.state_dict(),
+    }
+    asset_path.parent.mkdir(parents=True, exist_ok=True)
+    tmp = asset_path.with_name(f".{asset_path.name}.tmp")
+    torch.save(asset, tmp)
+    tmp.replace(asset_path)
+    selected = [str(x) for x in summary.get("selected_case_ids", [])]
+    leakage = sorted(set(selected) & set(val_case_ids))
+    manifest = {
+        "schema_version": 1,
+        "status": "FROZEN_PROTOTYPE_MEMORY_MANIFEST_READY" if len(selected) == len(train_case_ids) and not leakage else "INVALID",
+        "asset_path": str(asset_path),
+        "asset_sha256": sha256_file(asset_path),
+        "source_case_count": len(selected),
+        "expected_train_case_count": len(train_case_ids),
+        "source_case_ids": selected,
+        "missing_train_case_ids": sorted(set(train_case_ids) - set(selected)),
+        "validation_leakage_case_ids": leakage,
+        "split_hash": sha256_file(PROTOCOL_SPLIT_PATH),
+        "source_commit": git_head(),
+        "feature_hash": summary.get("feature_hash", ""),
+        "counts": summary.get("counts", {}),
+        "required": summary.get("required", {}),
+        "memory_summary": summary.get("memory_summary", {}),
+        "no_t2_edema_positive_forbidden": True,
+        "no_t2_edema_negative_forbidden": True,
+    }
+    manifest_path.parent.mkdir(parents=True, exist_ok=True)
+    manifest_path.write_text(json.dumps(manifest, indent=2, sort_keys=True), encoding="utf-8")
+    if manifest["status"] != "FROZEN_PROTOTYPE_MEMORY_MANIFEST_READY":
+        raise ValueError(f"invalid frozen prototype memory manifest: {manifest_path}")
+    return manifest
+
+
+def print_contract(args: argparse.Namespace) -> None:
+    train_ids, val_ids = load_split(args.fold)
+    if args.limit_train_cases > 0:
+        train_ids = train_ids[: args.limit_train_cases]
+    if args.limit_val_cases > 0:
+        val_ids = val_ids[: args.limit_val_cases]
+    enforce_batch4_contract(args, len(train_ids), len(val_ids))
+    contract = {
+        "status": "CONTRACT_VALID",
+        "batch4_production_contract": bool(getattr(args, "batch4_production_contract", False)),
+        "architecture_config": architecture_config_from_args(args),
+        "variant": args.variant,
+        "fold": args.fold,
+        "train_case_count": len(train_ids),
+        "validation_case_count": len(val_ids),
+        "batch_size": args.batch_size,
+        "patch_shape": args.patch_shape,
+        "max_steps": args.max_steps,
+        "min_train_loop_seconds_for_plateau": args.min_train_loop_seconds_for_plateau,
+        "full_volume_eval_steps": sorted(parse_int_set(args.full_volume_eval_steps)),
+        "prototype_bank_cases": args.prototype_bank_cases,
+        "prototype_memory_asset": str(getattr(args, "prototype_memory_asset", "")),
+        "prototype_memory_manifest": str(getattr(args, "prototype_memory_manifest", "")),
+        "source_commit": git_head(),
+    }
+    print(json.dumps(contract, indent=2, sort_keys=True))
+
+
 def memory_rows(variant: str, mined_csv: Path | None, loaded_case_count: int, loaded_component_count: int) -> list[dict[str, object]]:
     rows = []
     if mined_csv is None or not mined_csv.is_file():
@@ -1748,7 +1962,8 @@ def run_one_batch_overfit(
     component_features = component_dict_from_tensor(component_t)
     anchor_features, component_features = maybe_disable_context(args, anchor_features, component_features)
     model = SRRProposeRefineMyoPS(**model_kwargs_from_args(args)).to(device)
-    fit_and_load_runtime_prototype_bank(model, [case], patch_shape, device, args, variant_dir)
+    prototype_fit_cases = train_cases if bool(getattr(args, "batch4_production_contract", False)) else [case]
+    prototype_bank_summary = fit_and_load_runtime_prototype_bank(model, prototype_fit_cases, patch_shape, device, args, variant_dir)
     optimizer = torch.optim.AdamW(model.parameters(), lr=args.lr, weight_decay=args.weight_decay)
     rows: list[dict[str, object]] = []
     proto_rows: list[dict[str, object]] = []
@@ -1773,7 +1988,7 @@ def run_one_batch_overfit(
             component_features=component_features,
             safety_anchor_features=safety_anchor_features,
             safety_component_features=safety_component_features,
-            case_ids=keys,
+            case_ids=[case.case_id],
         )
         loss, metrics = propref_loss(outputs, y, av, stage, args)
         loss.backward()
@@ -1803,7 +2018,8 @@ def run_one_batch_overfit(
             row.update(loss_component_metric_row(metrics))
             rows.append(row)
     loss_decrease = None if first_loss is None or last_loss is None else first_loss - last_loss
-    passed = bool(loss_decrease is not None and loss_decrease >= args.min_overfit_loss_decrease)
+    loss_decrease_fraction = relative_loss_decrease(first_loss, last_loss)
+    passed = bool(loss_decrease_fraction is not None and loss_decrease_fraction >= args.min_overfit_loss_decrease)
     write_csv(variant_dir / "one_batch_overfit.csv", rows)
     write_csv(variant_dir / "prototype_update_sanity.csv", proto_rows)
     summary = {
@@ -1826,19 +2042,22 @@ def run_one_batch_overfit(
         "first_loss": first_loss,
         "last_loss": last_loss,
         "loss_decrease": loss_decrease,
-        "min_required_loss_decrease": args.min_overfit_loss_decrease,
+        "loss_decrease_fraction": loss_decrease_fraction,
+        "loss_decrease_criterion": "relative_fraction_of_first_loss",
+        "min_required_loss_decrease_fraction": args.min_overfit_loss_decrease,
         "elapsed_seconds": time.monotonic() - start,
         "process_seconds": time.process_time() - process_start,
         "prototype_rows": str(variant_dir / "prototype_update_sanity.csv"),
+        "prototype_bank_case_count": len(prototype_fit_cases),
+        "prototype_bank_selected_case_count": prototype_bank_summary.get("selected_case_count", "EVIDENCE_NOT_FOUND"),
+        "batch4_uses_full_train_split_for_overfit_prototype_bank": bool(getattr(args, "batch4_production_contract", False)),
     }
     (variant_dir / "one_batch_overfit.json").write_text(json.dumps(summary, indent=2, sort_keys=True), encoding="utf-8")
     return passed, summary
 
 
 def train_variant(args: argparse.Namespace) -> None:
-    random.seed(args.seed)
-    np.random.seed(args.seed)
-    torch.manual_seed(args.seed)
+    reset_rng_seeds(args.seed)
     output_variant = output_variant_name(args)
     hp = variant_hparams(args.variant)
     for key, value in hp.items():
@@ -1861,6 +2080,7 @@ def train_variant(args: argparse.Namespace) -> None:
         train_ids = train_ids[: args.limit_train_cases]
     if args.limit_val_cases > 0:
         val_ids = val_ids[: args.limit_val_cases]
+    enforce_batch4_contract(args, len(train_ids), len(val_ids))
     eval_case_ids = parse_case_id_list(args.eval_case_ids)
     if eval_case_ids:
         invalid_eval_ids = [case_id for case_id in eval_case_ids if case_id not in full_val_ids]
@@ -1900,6 +2120,7 @@ def train_variant(args: argparse.Namespace) -> None:
         "prototype_t2_repair_added_case_ids": prototype_t2_repair_added_case_ids,
         "prototype_t2_repair_policy": "if a limited train subset lacks T2-present edema-positive cases, append same-split T2 edema-positive cases for prototype fitting evidence",
     }
+    anchor_manifest_hash = stable_manifest_hash(anchor_manifest)
     complete_cases = [case for case in train_cases if case.metadata.modality_group == "C0+LGE+T2"]
     scar_cases = [case for case in train_cases if np.any(case.label_arr == 5)]
     lge_only_scar_cases = [case for case in scar_cases if case.metadata.modality_group == "LGE-only"]
@@ -1955,17 +2176,61 @@ def train_variant(args: argparse.Namespace) -> None:
         (variant_dir / "summary.json").write_text(json.dumps(summary, indent=2, sort_keys=True), encoding="utf-8")
         return
 
+    if bool(getattr(args, "preflight_only", False)):
+        summary = {
+            "variant": output_variant,
+            "model_variant": args.variant,
+            "source_model_variant": canonical_model_variant(args.variant),
+            "variant_config_contract": getattr(args, "variant_config_record", {}),
+            "fold": args.fold,
+            "device": str(device),
+            "encoder_profile": args.encoder_profile,
+            "encoder_scale_channels": encoder_scale_channels_from_args(args),
+            "train_cases": len(train_cases),
+            "val_cases": len(val_cases),
+            "stop_reason": "preflight_only_after_one_batch_overfit",
+            "actual_optimizer_steps": 0,
+            "optimizer_steps": 0,
+            "formal_training_started": False,
+            "preflight_overfit_steps": args.overfit_steps,
+            "one_batch_overfit": overfit_summary,
+            "checkpoint_best": "not written; preflight-only path",
+            "checkpoint_final": "not written; preflight-only path",
+            "prediction_dirs": [],
+            "skip_export": bool(args.skip_export),
+            "disable_local_refinement": bool(getattr(args, "disable_local_refinement", False)),
+            "disable_anatomy_roi_prior": bool(getattr(args, "disable_anatomy_roi_prior", False)),
+            "disable_nnunet_anchor": bool(getattr(args, "disable_nnunet_anchor", False)),
+            "final_output_mode": str(getattr(args, "final_output_mode", "legacy_variant")),
+            "batch4_production_contract": bool(getattr(args, "batch4_production_contract", False)),
+            "status": "PREFLIGHT_PASS_FORMAL_TRAINING_NOT_STARTED",
+        }
+        (variant_dir / "summary.json").write_text(json.dumps(summary, indent=2, sort_keys=True), encoding="utf-8")
+        return
+
+    reset_rng_seeds(args.seed)
     model = SRRProposeRefineMyoPS(**model_kwargs_from_args(args)).to(device)
     model_param_count = parameter_count(model)
     prototype_bank_summary = fit_and_load_runtime_prototype_bank(model, train_cases, patch_shape, device, args, variant_dir)
+    frozen_prototype_manifest = write_frozen_prototype_asset(
+        model=model,
+        summary=prototype_bank_summary,
+        args=args,
+        train_case_ids=full_train_ids,
+        val_case_ids=full_val_ids,
+    )
     optimizer = torch.optim.AdamW(model.parameters(), lr=args.lr, weight_decay=args.weight_decay)
     rng = np.random.default_rng(args.seed)
     best_val = float("inf")
     best_step = 0
     checkpoint_selection_mode = (
-        "m9_runtime_proxy_requires_post_job_metric_aggregation"
-        if str(args.variant).startswith("m9_")
-        else "legacy_val_patch_loss"
+        "batch4_full_volume_post_job_lexicographic_selection"
+        if bool(getattr(args, "batch4_production_contract", False))
+        else (
+            "m9_runtime_proxy_requires_post_job_metric_aggregation"
+            if str(args.variant).startswith("m9_")
+            else "legacy_val_patch_loss"
+        )
     )
     no_improve_validation_events = 0
     stop_reason = "max_steps"
@@ -1976,6 +2241,7 @@ def train_variant(args: argparse.Namespace) -> None:
     batch_composition_rows: list[dict[str, object]] = []
     validation_rows: list[dict[str, object]] = []
     validation_events: list[dict[str, object]] = []
+    full_volume_eval_steps = parse_int_set(args.full_volume_eval_steps)
     first_train_loss: float | None = None
     last_train_loss: float | None = None
     optimizer_steps = 0
@@ -2160,43 +2426,68 @@ def train_variant(args: argparse.Namespace) -> None:
             validation_rows.append(validation_row)
             train_rows.append(validation_row)
             checkpoint_step_path = checkpoint_dir / f"checkpoint_validation_step_{step}.pt"
-            save_checkpoint(
-                {
-                    "variant": output_variant,
-                    "model_variant": args.variant,
-                    "step": step,
-                    "model_state_dict": model.state_dict(),
-                        "args": vars(args),
-                        "val_patch_loss": val_loss,
-                        "checkpoint_selection_mode": checkpoint_selection_mode,
-                        "checkpoint_selection_score": val_loss,
-                        "checkpoint_role": "validation_milestone",
-                    },
-                checkpoint_step_path,
+            save_training_checkpoint(
+                path=checkpoint_step_path,
+                model=model,
+                optimizer=optimizer,
+                args=args,
+                global_step=step,
+                epoch=0,
+                anchor_manifest_hash=anchor_manifest_hash,
+                prototype_memory_provenance=prototype_bank_summary,
+                best_metric_state={
+                    "val_patch_loss": val_loss,
+                    "checkpoint_selection_mode": checkpoint_selection_mode,
+                    "checkpoint_selection_score": val_loss,
+                    "checkpoint_role": "validation_milestone",
+                },
             )
             validation_event = dict(validation_row)
             validation_event["checkpoint_path"] = str(checkpoint_step_path)
             validation_events.append(validation_event)
-            improved = bool(validation_row["eligible_for_best"] and val_loss < best_val - args.early_stop_min_delta)
+            if not args.skip_export and step in full_volume_eval_steps:
+                eval_source_cases = eval_cases_override if eval_cases_override else val_cases
+                eval_cases_for_step = eval_source_cases[: args.max_eval_cases] if args.max_eval_cases > 0 else eval_source_cases
+                evaluate(
+                    model,
+                    eval_cases_for_step,
+                    variant_dir,
+                    output_variant,
+                    device,
+                    disable_nnunet_anchor=bool(getattr(args, "disable_nnunet_anchor", False)),
+                    checkpoint_name=f"step_{step}",
+                    proposal_thresholds=proposal_thresholds,
+                    scar_decode_threshold=args.scar_decode_threshold,
+                    edema_decode_threshold=args.edema_decode_threshold,
+                )
+                validation_event["full_volume_eval_case_count"] = len(eval_cases_for_step)
+                validation_event["full_volume_eval_checkpoint_name"] = f"step_{step}"
+            improved = bool(
+                (not bool(getattr(args, "batch4_production_contract", False)))
+                and validation_row["eligible_for_best"]
+                and val_loss < best_val - args.early_stop_min_delta
+            )
             validation_row["best_improved"] = improved
             validation_event["best_improved"] = improved
             if improved:
                 best_val = val_loss
                 best_step = step
                 no_improve_validation_events = 0
-                save_checkpoint(
-                    {
-                        "variant": output_variant,
-                        "model_variant": args.variant,
-                        "step": step,
-                        "model_state_dict": model.state_dict(),
-                        "args": vars(args),
+                save_training_checkpoint(
+                    path=checkpoint_dir / "checkpoint_best.pt",
+                    model=model,
+                    optimizer=optimizer,
+                    args=args,
+                    global_step=step,
+                    epoch=0,
+                    anchor_manifest_hash=anchor_manifest_hash,
+                    prototype_memory_provenance=prototype_bank_summary,
+                    best_metric_state={
                         "val_patch_loss": best_val,
                         "checkpoint_selection_mode": checkpoint_selection_mode,
                         "checkpoint_selection_score": best_val,
                         "checkpoint_role": "eligible_best",
                     },
-                    checkpoint_dir / "checkpoint_best.pt",
                 )
             elif validation_row["eligible_for_best"]:
                 no_improve_validation_events += 1
@@ -2213,16 +2504,19 @@ def train_variant(args: argparse.Namespace) -> None:
     elapsed = time.monotonic() - start
     process_elapsed = time.process_time() - process_start
     actual_steps = optimizer_steps
-    save_checkpoint(
-        {
-            "variant": output_variant,
-            "model_variant": args.variant,
-            "step": actual_steps,
-            "model_state_dict": model.state_dict(),
-            "args": vars(args),
+    save_training_checkpoint(
+        path=checkpoint_dir / "checkpoint_final.pt",
+        model=model,
+        optimizer=optimizer,
+        args=args,
+        global_step=actual_steps,
+        epoch=0,
+        anchor_manifest_hash=anchor_manifest_hash,
+        prototype_memory_provenance=prototype_bank_summary,
+        best_metric_state={
+            "checkpoint_selection_mode": checkpoint_selection_mode,
             "checkpoint_role": "final",
         },
-        checkpoint_dir / "checkpoint_final.pt",
     )
     best_path = checkpoint_dir / "checkpoint_best.pt"
     if not best_path.is_file():
@@ -2232,8 +2526,15 @@ def train_variant(args: argparse.Namespace) -> None:
         eval_source_cases = eval_cases_override if eval_cases_override else val_cases
         eval_cases = eval_source_cases[: args.max_eval_cases] if args.max_eval_cases > 0 else eval_source_cases
         for checkpoint_name, checkpoint_path in [("checkpoint_best", best_path), ("checkpoint_final", checkpoint_dir / "checkpoint_final.pt")]:
-            state = torch.load(checkpoint_path, map_location=device, weights_only=False)
-            model.load_state_dict(state["model_state_dict"])
+            load_srr_checkpoint(
+                path=checkpoint_path,
+                model=model,
+                optimizer=optimizer,
+                scheduler=None,
+                amp_scaler=None,
+                map_location=device,
+                restore_rng=False,
+            )
             evaluate(
                 model,
                 eval_cases,
@@ -2291,9 +2592,13 @@ def train_variant(args: argparse.Namespace) -> None:
         "validation_schedule": sorted(validation_schedule),
         "checkpoint_selection_mode": checkpoint_selection_mode,
         "checkpoint_selection_status": (
-            "M9_POST_JOB_METRIC_ALIGNED_SELECTION_REQUIRED"
-            if str(args.variant).startswith("m9_")
-            else "LEGACY_PATCH_LOSS_SELECTION"
+            "BATCH4_POST_JOB_FULL_VOLUME_SELECTION_REQUIRED"
+            if bool(getattr(args, "batch4_production_contract", False))
+            else (
+                "M9_POST_JOB_METRIC_ALIGNED_SELECTION_REQUIRED"
+                if str(args.variant).startswith("m9_")
+                else "LEGACY_PATCH_LOSS_SELECTION"
+            )
         ),
         "stage_step_counts": stage_counts(actual_steps, args.max_steps),
         "first_train_loss": first_train_loss,
@@ -2349,6 +2654,7 @@ def train_variant(args: argparse.Namespace) -> None:
         },
         "prototype_bank_summary": prototype_bank_summary,
         "prototype_bank_summary_path": str(variant_dir / "prototype_bank_summary.json"),
+        "frozen_prototype_memory_manifest": frozen_prototype_manifest,
         "skip_export": bool(args.skip_export),
     }
     (variant_dir / "summary.json").write_text(json.dumps(summary, indent=2, sort_keys=True), encoding="utf-8")
@@ -2443,6 +2749,7 @@ def main() -> None:
         help="Repeatable expanded SRR loss override as key=value; applied after config and --loss-weight-json.",
     )
     parser.add_argument("--proposal-thresholds", default=DEFAULT_PROPOSAL_THRESHOLDS)
+    parser.add_argument("--full-volume-eval-steps", default="", help="Comma-separated optimizer steps that trigger full-volume validation export/evaluation.")
     parser.add_argument("--scar-decode-threshold", type=float, default=0.50)
     parser.add_argument("--edema-decode-threshold", type=float, default=0.50)
     parser.add_argument("--overfit-steps", type=int, default=40)
@@ -2450,6 +2757,8 @@ def main() -> None:
     parser.add_argument("--min-overfit-loss-decrease", type=float, default=0.01)
     parser.add_argument("--skip-overfit-sanity", action="store_true")
     parser.add_argument("--prototype-bank-cases", type=int, default=16)
+    parser.add_argument("--prototype-memory-asset", default="", help="Optional frozen prototype/memory runtime asset path for production runs.")
+    parser.add_argument("--prototype-memory-manifest", default="", help="Optional tracked frozen prototype/memory manifest path for production runs.")
     parser.add_argument("--skip-prototype-bank-fit", action="store_true")
     parser.add_argument("--max-eval-cases", type=int, default=0)
     parser.add_argument("--eval-case-ids", default="", help="Comma/semicolon-separated fold validation case ids to export/evaluate.")
@@ -2463,9 +2772,15 @@ def main() -> None:
     parser.add_argument("--disable-local-refinement", action="store_true", help="Bypass crop ROI refinement and use proposal logits for pathology heads.")
     parser.add_argument("--disable-anatomy-roi-prior", action="store_true", help="Replace P_union/P_LV/P_RV distance gates with neutral ROI context.")
     parser.add_argument("--disable-nnunet-anchor", action="store_true", help="Remove nnU-Net anchor/component context from training, prototype fitting, and evaluation.")
+    parser.add_argument("--batch4-production-contract", action="store_true", help="Fail closed unless CLI values match the approved Batch4 MyoPS fold0 contract.")
+    parser.add_argument("--print-contract", action="store_true", help="Validate and print the resolved training contract without loading images or training.")
+    parser.add_argument("--preflight-only", action="store_true", help="Run contract and one-batch overfit preflight, then stop before formal optimizer training.")
     parser.add_argument("--skip-export", action="store_true")
     args = parser.parse_args()
     apply_variant_config_contract(args)
+    if args.print_contract:
+        print_contract(args)
+        return
     train_variant(args)
 
 

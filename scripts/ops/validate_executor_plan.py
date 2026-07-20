@@ -322,6 +322,9 @@ def validate_plan(data: dict[str, Any]) -> list[str]:
     errors: list[str] = []
     executors = data.get("executors")
     if not isinstance(executors, list) or not executors:
+        waves = data.get("waves")
+        if isinstance(waves, list) and waves:
+            return validate_single_executor_wave_plan(data, waves)
         return ["executor plan must define non-empty executors list"]
     max_parallel = int(data.get("max_parallel", 1))
     if max_parallel < 1:
@@ -407,6 +410,73 @@ def validate_plan(data: dict[str, Any]) -> list[str]:
             writes = set(as_list(entry.get("write_scope")))
             if any(path_overlap(forbid, write) for forbid in forbidden for write in writes):
                 errors.append(f"{entry.get('id')}: write_scope includes forbidden shared files")
+    return errors
+
+
+def validate_single_executor_wave_plan(data: dict[str, Any], waves: list[Any]) -> list[str]:
+    """Validate the sequential `waves:` plan shape used by controller tasks.
+
+    Parallel executor plans still use the stricter `executors:` isolation
+    schema above. This branch exists for single-executor controller plans whose
+    task graph is wave-ordered but not split across separate worktrees.
+    """
+
+    errors: list[str] = []
+    if int(data.get("executor_count", 1)) != 1:
+        errors.append("waves plan is allowed only for executor_count=1")
+    if int(data.get("executor_slots", 1)) != 1:
+        errors.append("waves plan is allowed only for executor_slots=1")
+    if bool(data.get("parallel_execution_allowed", False)):
+        errors.append("waves plan is allowed only when parallel_execution_allowed=false")
+    if not str(data.get("result_root", "")).strip():
+        errors.append("waves plan missing result_root")
+
+    seen: set[str] = set()
+    for idx, wave in enumerate(waves):
+        if not isinstance(wave, dict):
+            errors.append(f"wave[{idx}] must be a mapping")
+            continue
+        wave_id = str(wave.get("wave_id", "")).strip()
+        if not wave_id:
+            errors.append(f"wave[{idx}] missing wave_id")
+            continue
+        if wave_id in seen:
+            errors.append(f"duplicate wave_id: {wave_id}")
+        seen.add(wave_id)
+        for field in ("executor_id", "write_scope", "required_outputs", "completion_conditions", "failure_action"):
+            value = wave.get(field)
+            if value in (None, "", []):
+                errors.append(f"{wave_id}: missing {field}")
+        if not isinstance(wave.get("write_scope"), list):
+            errors.append(f"{wave_id}: write_scope must be a list")
+        if not isinstance(wave.get("required_outputs"), list):
+            errors.append(f"{wave_id}: required_outputs must be a list")
+        if not isinstance(wave.get("completion_conditions"), list):
+            errors.append(f"{wave_id}: completion_conditions must be a list")
+        for dep in as_list(wave.get("dependencies")):
+            if dep and dep not in seen:
+                errors.append(f"{wave_id}: dependency {dep} is not an earlier wave")
+        if "routing" in wave:
+            routing = as_mapping(wave.get("routing"))
+            for field in ("primary_partition", "partitions", "require_atomic_winner_lock", "require_isolated_attempt_directories"):
+                if routing.get(field) in (None, "", []):
+                    errors.append(f"{wave_id}: routing missing {field}")
+            if routing.get("require_atomic_winner_lock") is not True:
+                errors.append(f"{wave_id}: routing.require_atomic_winner_lock must be true")
+            if routing.get("require_isolated_attempt_directories") is not True:
+                errors.append(f"{wave_id}: routing.require_isolated_attempt_directories must be true")
+        if "retry_policy" in wave:
+            retry = as_mapping(wave.get("retry_policy"))
+            for field in ("max_startup_retries", "max_preemption_retries", "max_unknown_retries"):
+                if field not in retry:
+                    errors.append(f"{wave_id}: retry_policy missing {field}")
+
+    finalizer = as_mapping(data.get("finalizer"))
+    if finalizer:
+        if finalizer.get("dependency") != "afterany":
+            errors.append("finalizer.dependency must be afterany")
+        if not str(finalizer.get("required_state_file", "")).strip():
+            errors.append("finalizer missing required_state_file")
     return errors
 
 

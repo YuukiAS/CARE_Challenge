@@ -1,0 +1,44 @@
+{
+  "task_key": "20260721_srr_batch4_forced_fold0_training",
+  "status": "PREFLIGHT_READY_NOT_SUBMITTED",
+  "as_of_utc": "2026-07-20T18:14:00Z",
+  "source_head_before_local_commit": "89474f7de8c38db1448e47ca7fe94d6620932b31",
+  "review_gate": {
+    "planning_review_path": "prompts/tasks/20260721_srr_batch4_forced_fold0_training_planning_review.md",
+    "planning_review_decision": "AUDITED_GO",
+    "planning_review_token": "BATCH4_PLANNING_AUDITED_GO",
+    "reviewed_commit": "20e3aaf304f1687ba2e50c3885eb4bf88738d889",
+    "execution_head_with_review": "89474f7de8c38db1448e47ca7fe94d6620932b31"
+  },
+  "implemented_contract_repairs": [
+    "schema_v2_training_checkpoints_with_optimizer_rng_best_metric_state",
+    "mode_independent_checkpoint_architecture_for_three_runtime_modes",
+    "anchor_identity_exports_from_model_logits_argmax_with_softmax_delta_check",
+    "batch4_fail_closed_cli_contract_for_fold0_176_train_44_validation_1800_steps",
+    "batch4_one_batch_overfit_uses_full_train_split_prototype_bank",
+    "batch4_one_batch_overfit_uses_relative_loss_decrease_fraction",
+    "preflight_only_cli_stops_before_formal_training",
+    "formal_training_rng_reset_after_preflight"
+  ],
+  "verification": {
+    "pytest": "PASS: ./envs/env_CARE/bin/python -m pytest tests/srr_production/test_myops_batch4_contract.py tests/srr_production/test_myops_batch2_preflight.py tests/srr_production/test_myops_batch2_inference_evaluation.py -> 15 passed, 3 warnings",
+    "executor_plan_validator": "PASS: ./envs/env_CARE/bin/python scripts/ops/validate_executor_plan.py prompts/tasks/20260721_srr_batch4_forced_fold0_training_executor_plan.yaml",
+    "job_shell_syntax": "PASS: bash -n jobs/srr_production/run_myops_batch4_preflight_*.sh jobs/srr_production/run_myops_batch4_fold0_*.sh",
+    "diff_check": "PASS: git diff --check",
+    "environment_contract_preflight": "PASS: results/20260721_srr_batch4_forced_fold0_training/preflight_environment_receipt.json"
+  },
+  "slurm_routing_test_only": {
+    "htzhulab": "Job 59668347 to start at 2026-07-21T12:29:18 using g180702",
+    "a100-gpu": "Job 59668370 to start at 2026-08-06T03:13:37 using g141604",
+    "volta-gpu": "Job 59671717 to start at 2026-07-20T14:14:35 using g0311"
+  },
+  "training_status": {
+    "formal_1800_step_training_started": false,
+    "formal_1800_step_training_completed": false,
+    "full_volume_eval_steps_completed": [],
+    "selected_checkpoint_reload_completed": false,
+    "validation_upload_started": false,
+    "hosted_metric_claim": false
+  },
+  "next_allowed_action": "Submit the volta-gpu preflight-only job if the local code commit succeeds; submit formal race only after preflight terminal PASS evidence is collected."
+}
