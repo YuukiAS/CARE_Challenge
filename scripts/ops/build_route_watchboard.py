@@ -616,6 +616,10 @@ def parse_portfolio_state(text: str) -> tuple[dict[str, Any], list[str]]:
     warnings: list[str] = []
     block = fenced_block_after_any(text, ("## Portfolio state", "Portfolio state:"))
     values = parse_key_values(block)
+    main_only_development = bool(
+        re.search(r"(?m)^active_development_branch:\s*main\b", text)
+        and re.search(r"(?m)^route_worktree_development_authorized:\s*false\b", text, re.IGNORECASE)
+    )
     routes: dict[str, str] = {}
     active_routes: list[str] = []
     deferred_routes: list[str] = []
@@ -652,13 +656,14 @@ def parse_portfolio_state(text: str) -> tuple[dict[str, Any], list[str]]:
         warnings.append("CURRENT.md current_controller_authorizations/controller_authorized_now 不是整数。")
     if not block:
         warnings.append("CURRENT.md Portfolio state 缺失或不可解析。")
-    if not active_routes and block:
+    if not active_routes and block and not main_only_development:
         warnings.append("CURRENT.md 未解析到 current/active route。")
     if not deferred_routes and block:
         warnings.append("CURRENT.md 未解析到 deferred_routes。")
     return (
         {
             "routes": routes,
+            "main_only_development": main_only_development,
             "active_routes": active_routes,
             "current_routes": active_routes,
             "active_controller_routes": active_controller_routes,
@@ -988,7 +993,7 @@ def parse_current_handoff(text: str, root: Path) -> dict[str, Any]:
 
     if round_value == "unknown":
         parse_warnings.append("CURRENT.md 缺少 round_id；portfolio_round.round_id=unknown。")
-    if not portfolio.get("active_routes"):
+    if not portfolio.get("active_routes") and not portfolio.get("main_only_development"):
         parse_warnings.append("CURRENT.md current route 为空；看板不能回退为三路线同权。")
     for route in portfolio.get("active_routes", []):
         binding = route_bindings.get(route, {})
@@ -1041,6 +1046,7 @@ def parse_current_handoff(text: str, root: Path) -> dict[str, Any]:
 def empty_portfolio_state() -> dict[str, Any]:
     return {
         "routes": {route: "UNKNOWN" for route in ROUTES},
+        "main_only_development": False,
         "active_routes": [],
         "current_routes": [],
         "active_controller_routes": [],
@@ -2270,7 +2276,7 @@ def read_notifier_config(root: Path) -> tuple[dict[str, Any], list[str]]:
         warnings.append(warning)
     if not isinstance(config, dict):
         config = {}
-    config.setdefault("enabled_routes", ["route_B"])
+    config.setdefault("enabled_routes", [])
     config.setdefault("state_path", "controller_notifications/state/notified_goals.json")
     config.setdefault("status_path", "controller_notifications/state/notify_goal_watcher_status.json")
     config.setdefault("log_path", "controller_notifications/logs/notify_goal_watcher.log")
@@ -2349,8 +2355,13 @@ def collect_ops_services(
     if live_service_state.get("duplicate_or_legacy_detected"):
         server_warnings.append("duplicate or legacy watchboard serve detected")
 
+    notifier_enabled_routes = list(notifier_config.get("enabled_routes", []))
+    stale_status_routes = list(notifier_status.get("enabled_routes") or [])
+    if stale_status_routes != notifier_enabled_routes:
+        notifier_warnings.append("notify_goal_watcher_status.json enabled_routes stale; config.example.json/current config wins")
+
     controller_notifier = {
-        "enabled": bool(notifier_config.get("enabled_routes")),
+        "enabled": bool(notifier_enabled_routes),
         "tmux_window": notify_window,
         "tmux_window_present": notify_window_present,
         "process_detected": bool(notifier_processes),
@@ -2359,7 +2370,7 @@ def collect_ops_services(
         "log_path": str(notifier_log_path),
         "state_path": str(notifier_state_path),
         "status_path": str(notifier_status_path),
-        "enabled_routes": list(notifier_status.get("enabled_routes") or notifier_config.get("enabled_routes", [])),
+        "enabled_routes": notifier_enabled_routes,
         "last_scan": str(notifier_status.get("last_scan_at_utc") or ""),
         "last_event": notifier_status.get("last_event"),
         "last_email_status": str(notifier_status.get("last_email_status") or "unknown"),
@@ -3012,7 +3023,10 @@ def render_html(data: dict[str, Any], refresh_seconds: int = 60) -> str:
         for route in portfolio.get("active_routes", [])
         if not data.get("critic_readiness", {}).get(route, {}).get("found_tokens")
     ]
-    critic_status_text = ", ".join(critic_pending) + " pending" if critic_pending else "ready/revision token present"
+    if portfolio.get("main_only_development") and not portfolio.get("active_routes"):
+        critic_status_text = "main-only: no active route critic"
+    else:
+        critic_status_text = ", ".join(critic_pending) + " pending" if critic_pending else "ready/revision token present"
     present_tmux_sessions = sum(1 for item in data.get("tmux_topology", []) if item.get("present"))
     route_jobs = len(data["route_jobs"])
     general_jobs = len(data["general_jobs"])
@@ -3038,7 +3052,7 @@ def render_html(data: dict[str, Any], refresh_seconds: int = 60) -> str:
     <div>
       <p class="eyeline">CARE Route Portfolio {html.escape(round_id)}</p>
       <h1>Route Portfolio watchboard</h1>
-      <p class="subhead">只读汇总当前 portfolio active/deferred routes、Critic readiness、Controller authority boundary、tmux、Slurm 当前态和最近作业。看板不提交、不取消、不上传、不合并，也不产生科学结论。</p>
+      <p class="subhead">只读汇总当前 main-only/portfolio posture、active/deferred routes、Critic readiness、Controller authority boundary、tmux、Slurm 当前态和最近作业。看板不提交、不取消、不上传、不合并，也不产生科学结论。</p>
     </div>
     <div class="top-actions">
       <span class="readonly">只读</span>
@@ -3048,7 +3062,7 @@ def render_html(data: dict[str, Any], refresh_seconds: int = 60) -> str:
 
   <main>
     <section class="summary-grid">
-      <div class="summary-card"><span>active routes</span><strong>{html.escape(active_route_text)}</strong><small>由 CURRENT.md Portfolio state 自动读取</small></div>
+      <div class="summary-card"><span>active routes</span><strong>{html.escape(active_route_text)}</strong><small>由 CURRENT.md Portfolio state 自动读取；main-only 时应为无</small></div>
       <div class="summary-card"><span>inactive/deferred routes</span><strong>{html.escape(deferred_route_text)}</strong><small>Route A/C 不进入 active count</small></div>
       <div class="summary-card guard"><span>controller_authorized_now</span><strong>{html.escape(str(controller_authorized_now))}</strong><small>0 时页面不得暗示 Controller 可启动</small></div>
       <div class="summary-card"><span>critic status</span><strong>{html.escape(critic_status_text)}</strong><small>仅当前 active route 进入 critic gate；inactive routes 只读保留</small></div>

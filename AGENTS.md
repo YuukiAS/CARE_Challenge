@@ -59,6 +59,10 @@ Treat this `AGENTS.md` as the repo-level Codex rules source. Do not rely on `.cu
 
 ## Agent-Flow v2 controller handoff
 
+### Current main-only posture
+
+As of 2026-07-20, future GPT/Codex implementation defaults to `main` in `/users/a/e/aereinh/CARE`. Route A/B/C worktrees and remote route branches are retained for provenance, but they are not active development targets. Do not start a new route controller, route worktree implementation, portfolio round, validation upload, route promotion, M11, hosted metric claim, or final scientific decision unless the user explicitly authorizes that scope in a new handoff. Historical route protocols remain binding when reading route evidence or if a route is later reactivated.
+
 For new CARE handoffs, `prompts/AGENT_FLOW_V2_PROTOCOL.md` and `prompts/schemas/agent_flow_policy.yaml` are the canonical sources. Use only these active role names: `planner`, `critic`, `controller`, `executor`, `mapper`, `finalizer`, `validator`, and `reviewer`. Historical `auditor`, `execution_controller`, and strategic-controller fields are legacy aliases only; do not create a controller-internal auditor subagent in new tasks.
 
 Short, non-Slurm, low-resume-risk work may use `planner -> executor -> reviewer`. Overnight, long Slurm, multi-job, or high-resume-risk work must use `planner -> controller -> executor/mapper/finalizer/validator -> separate reviewer`.

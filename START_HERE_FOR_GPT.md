@@ -18,6 +18,12 @@ This is the root entrypoint for any new GPT/ChatGPT planning thread reading this
 
 Do not rely only on old chat summaries, memory, or natural-language recaps when planning SRR/MyoPS/Cine routes.
 
+## Current Main-Only Development Posture
+
+As of `prompts/routes/handoffs/CURRENT.md` dated 2026-07-20, default future GPT/Codex work is on `main` at `/users/a/e/aereinh/CARE`. Route A, Route B, and Route C are historical evidence lanes, not active development branches. Do not start route worktree controllers, do not create a new portfolio round, and do not use `/users/a/e/aereinh/CARE_worktrees/route_*` for new implementation unless the user explicitly authorizes a named route reactivation in a new handoff.
+
+Future planning should focus on diagnosing and repairing the current `main` codebase, fair baseline comparison, validation packaging readiness, and evidence-backed small improvements. Historical route evidence may be read from `results/route_B/`, `results/route_C/`, and retained remote route branches as provenance, but route-specific rules below apply only when a route is explicitly reactivated or when interpreting historical route evidence.
+
 For Route A/B/C work, every planner, critic, controller, and reviewer must apply `prompts/routes/ROUTE_ANTI_LAZINESS_PROTOCOL.md` and `prompts/routes/ROUTE_HARD_REQUIREMENTS_MATRIX.md` before accepting a non-ready token, short smoke run, monitor packet, validator pass, or runnable-only plan as a stopping point. The hard-requirements matrix persists across all future route portfolio rounds.
 
 Planner and critic must not leave design blanks for Codex/controller. A route plan or critic handoff must explicitly define model structure, training/eval budget, input/output paths, Slurm strategy, validator semantics, known-bad fixtures, stop conditions, completion tokens, and reviewer pass/fail. Vague delegation such as `TBD`, `optional`, `as appropriate`, `if needed`, `choose best`, `Codex decide`, or `controller decide` is a hard-gate failure unless the same section defines the trigger, default, allowed range, evidence requirement, failure branch, and reviewer judgment.

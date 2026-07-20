@@ -1,108 +1,97 @@
-# CARE Route Portfolio Current Round
+# CARE Current Development State
 
-This is the stable source of truth for the active portfolio round. Read this file first, then read only the handoff named for the current role and route.
+This is the stable source of truth for the current CARE planning/development posture. Read this file first before writing CARE milestones, Codex goals, route judgments, controller prompts, reviewer prompts, or handoffs.
 
 ## Active round
 
 ```text
-round_id: round04
+round_id: post_round04_main_only
 date: 2026-07-20
-planner_environment: authenticated GitHub repository planning
+active_development_branch: main
+active_worktree: /users/a/e/aereinh/CARE
 local_executable_validation_owner: Codex coordinator at /users/a/e/aereinh/CARE
 controller_authorized_now: 0
+route_worktree_development_authorized: false
+route_branch_deletion_authorized: false
 ```
 
-Round04 is not route promotion, validation authorization, M11 authorization, hosted-metric authorization, cross-route merge or a final scientific decision.
+Default future GPT/Codex work is `main`-only. Do not start Route A, Route B, or Route C controllers; do not continue route worktree development; do not open a new portfolio round; and do not use `/users/a/e/aereinh/CARE_worktrees/route_A`, `/users/a/e/aereinh/CARE_worktrees/route_B`, or `/users/a/e/aereinh/CARE_worktrees/route_C` for new implementation unless a later explicit human-approved handoff reactivates a named route.
 
-## Exact remote and planning bindings
+Remote route branches are retained for provenance. They are not deleted and are not active development targets.
+
+## Exact remote evidence bindings
 
 ```text
-planning parent main: 64f5a27298cb2efd1f576a70296e49388ab0b717
-planning commit: 38551ed98a42b005a1a3f0b793efdef700037ee8
-Route B evidence: b9c7664da7cb1f1892fff37a4497722f31a0a96d
-Route B reviewed controller packet: 2e24f290e83e356fbfba5f73da4fde98b657390b
+main_after_route_C_visibility_commit: 26a8d16d8d684551b6e90717ee6715d0d71b6a4d
 Route B reviewer commit: 3950fe10ac31ef68da20f3ef7ffb001d6b17e6d9
+Route B reviewed controller packet: 2e24f290e83e356fbfba5f73da4fde98b657390b
 Route C evidence/review commit: 17062b00edc3443aacefe8583568797a9f2655ba
 Route C reviewed controller repair: 1e663cfa64f00413f005bef26310290fd43ec8ab
-revision source critic commit: de5f47b9f4404c85db1bd0f570b576d9d03b0372
-revision source critic blob: 4e5cd46a6494bd6c12f3985b99abd390a00b0786
-revision source token: ROUTE_B_ROUND04_PLANNING_NEEDS_REVISION
+Route C main visibility commit: 26a8d16d8d684551b6e90717ee6715d0d71b6a4d
 ```
+
+Route C's reusable conclusion packet is preserved on `main` under `results/route_C/`, including `main_visibility_note.md`, `review.md`, `controller_report.md`, `result.md`, and selected Round03 terminal evidence. This preservation does not mean Route C is active, promoted, upload-authorized, or scientifically resolved.
 
 ## Portfolio state
 
 ```text
-Route A: DEFERRED_FALLBACK_NOT_ACTIVE
-Route B: EVIDENCE_COMPLETE_FOR_PORTFOLIO_RECONCILIATION
-Route C: ROUTE_C_PORTFOLIO_STOP_AND_HOLD
+Route A: HISTORICAL_DORMANT_NOT_ACTIVE
+Route B: HISTORICAL_EVIDENCE_COMPLETE_NOT_ACTIVE
+Route C: HISTORICAL_STOP_AND_HOLD_NOT_ACTIVE
 ```
 
-Route C hold is portfolio context only. `prompts/routes/portfolio_round04_route_C_followup_decision_20260719.md` authorizes no Route C Controller, changes no Route B authority, removes no Route B Cine stage and makes no downstream scientific decision.
+No route currently has controller authority. Route A/B/C evidence may be read as historical context, but future implementation and protocol maintenance should target `main` unless a later human-approved planning step explicitly reactivates a route and binds a new critic/controller/reviewer packet.
+
+### Route A
+
+```text
+portfolio status: HISTORICAL_DORMANT_NOT_ACTIVE
+controller start authorized: false
+critic handoff: NO_CURRENT_CRITIC_HANDOFF
+reviewer handoff: NO_CURRENT_REVIEWER_HANDOFF
+controller handoff: NO_CURRENT_CONTROLLER_HANDOFF
+main result packet: NOT_PRESERVED_ON_MAIN
+remote branch: origin/route_A
+```
+
+Route A remains historical/dormant provenance. Do not delete the remote branch unless the user later approves either preservation of its needed conclusions on `main` or loss of that branch-only evidence.
 
 ### Route B
 
 ```text
-route head: 3950fe10ac31ef68da20f3ef7ffb001d6b17e6d9
-review commit: 3950fe10ac31ef68da20f3ef7ffb001d6b17e6d9
-reviewed controller repair: 2e24f290e83e356fbfba5f73da4fde98b657390b
-review path: results/route_B/review.md
-review token: ROUTE_B_ROUND04_REVIEW_EVIDENCE_COMPLETE
-completion check: results/route_B/completion_check.md
-review request: results/route_B/review_request.md
-portfolio status: EVIDENCE_COMPLETE_FOR_PORTFOLIO_RECONCILIATION
+portfolio status: HISTORICAL_EVIDENCE_COMPLETE_NOT_ACTIVE
 controller start authorized: false
 critic handoff: NO_CURRENT_CRITIC_HANDOFF
-coordinator receipt: prompts/routes/handoffs/route_B_round04_coordinator_receipt_20260719.md
-critic output: prompts/routes/route_B_round04_critic_rereview.md
-controller planning materialization root: results/route_B/round04/planning_snapshot
-materialization failure token: ROUTE_B_ROUND04_B0_STALE_PLANNING_BINDING
+review path: results/route_B/review.md
+review token: ROUTE_B_ROUND04_REVIEW_EVIDENCE_COMPLETE
+reviewer commit: 3950fe10ac31ef68da20f3ef7ffb001d6b17e6d9
+reviewed controller repair: 2e24f290e83e356fbfba5f73da4fde98b657390b
+validation_upload: false
+hosted_metric_claim: false
+m11_started: false
 ```
 
-Route B Round04 controller and independent reviewer are complete. The reviewer reported no blocking findings and confirmed the terminal packet is reviewable and operational execution is complete for the controller scope. This does not authorize route promotion, validation upload, M11, hosted metric claims, cross-route merge, or a final scientific decision.
+Route B Round04 controller and independent reviewer are complete for their controller/reviewer scope. This does not authorize route promotion, validation upload, M11, hosted metric claims, cross-route merge, final scientific decision, or new Route B controller work.
 
-## Controller Terminal Packet / Reviewer Targets
+### Route C
 
 ```text
-route_B reviewer_target_head: 3950fe10ac31ef68da20f3ef7ffb001d6b17e6d9
-route_B terminal_token: ROUTE_B_ROUND04_TERMINAL_PACKET_READY_FOR_REVIEW
-route_B reviewer_output_path: results/route_B/review.md
-route_B route_promotion_decision: NOT_REVIEWED
-route_B route_negative_decision: NOT_REVIEWED
-route_B scientific_resolution_status: AWAITING_REVIEW
-route_B validation_upload: false
-route_B hosted_metric_claim: false
-route_B m11_started: false
+portfolio status: HISTORICAL_STOP_AND_HOLD_NOT_ACTIVE
+controller start authorized: false
+critic handoff: NO_CURRENT_CRITIC_HANDOFF
+reviewer handoff: NO_CURRENT_REVIEWER_HANDOFF
+controller handoff: NO_CURRENT_CONTROLLER_HANDOFF
+review path: results/route_C/review.md
+review token: ROUTE_C_ROUND03_REVIEW_EVIDENCE_COMPLETE
+reviewer commit: 17062b00edc3443aacefe8583568797a9f2655ba
+reviewed controller repair: 1e663cfa64f00413f005bef26310290fd43ec8ab
+main visibility note: results/route_C/main_visibility_note.md
+validation_upload: false
+hosted_metric_claim: false
+m11_started: false
 ```
 
-Six planning blobs:
-
-- `prompts/routes/portfolio_round04_route_B_planner_plan_20260719.md`: `a537e0e86e3059efa27d128ac3a018a22a6a40aa`
-- `prompts/routes/route_B_round04_planner_prompt.md`: `1ea2277d20f9e4eab1711c767274204342c372e2`
-- `prompts/routes/route_B_round04_controller_contract.md`: `3087283d65dbb6eeca697a393fc545528fe7fada`
-- `prompts/routes/route_B_round04_executor_plan.yaml`: `c5e437a0cd847ade5244727a43c239da9825c737`
-- `prompts/routes/route_B_round04_critic_request.md`: `fcac92428b38d4b10e21e3ff594b83cac7eeba60`
-- `prompts/routes/route_B_round04_planner_audit.md`: `7a7964867557fb8f43a236d4aefecfd6174a7b4c`
-
-A change to any of the six planning blobs makes the handoff stale.
-
-## Tested-commit policy
-
-The coordinator tested commit is valid only when it equals current `origin/main`, or is its ancestor and every descendant path is in this explicit allowlist while all six planning blobs remain byte-identical:
-
-```text
-prompts/routes/handoffs/CURRENT.md
-prompts/routes/handoffs/route_B_round04_critic_handoff_20260719.md
-prompts/routes/handoffs/route_B_round04_coordinator_receipt_20260719.md
-prompts/routes/route_B_round04_critic_rereview.md
-prompts/routes/portfolio_round04_route_C_followup_decision_20260719.md
-docs/figures/round03_route_architecture/**
-controller_notifications/**
-scripts/ops/build_route_watchboard.py
-tests/ops/test_build_route_watchboard.py
-tests/ops/test_controller_notifications.py
-```
-
-A non-ancestor relation, unreadable diff, disallowed path or changed planning blob is stale.
+Route C remains stopped/held as portfolio evidence. `prompts/routes/portfolio_round04_route_C_followup_decision_20260719.md` authorizes no Route C Controller, changes no main authority, and makes no downstream scientific decision.
 
 ## Current role entries
 
@@ -110,24 +99,27 @@ A non-ancestor relation, unreadable diff, disallowed path or changed planning bl
 Route A critic: NO_CURRENT_CRITIC_HANDOFF
 Route B critic: NO_CURRENT_CRITIC_HANDOFF
 Route C critic: NO_CURRENT_CRITIC_HANDOFF
+Route A reviewer: NO_CURRENT_REVIEWER_HANDOFF
+Route B reviewer: NO_CURRENT_REVIEWER_HANDOFF
 Route C reviewer: NO_CURRENT_REVIEWER_HANDOFF
+Route A controller: NO_CURRENT_CONTROLLER_HANDOFF
+Route B controller: NO_CURRENT_CONTROLLER_HANDOFF
 Route C controller: NO_CURRENT_CONTROLLER_HANDOFF
 ```
 
-Allowed Route B planning decisions:
+## Main-only planning policy
+
+Future GPT planning should focus on diagnosing and repairing the current `main` codebase, result interpretation, fair baseline comparison, validation packaging readiness, and small evidence-backed improvements. It must not create Round5, route promotion, validation upload, hosted metric claim, M11, or new route-controller work unless the user explicitly authorizes that scope.
+
+If a future task needs historical route evidence, read the `main` packet first:
 
 ```text
-ROUTE_B_ROUND04_PLANNING_READY_FOR_CONTROLLER
-ROUTE_B_ROUND04_PLANNING_NEEDS_REVISION
+results/route_B/
+results/route_C/
+prompts/routes/portfolio_round04_route_C_followup_decision_20260719.md
 ```
 
-The ready token is invalid until a fresh coordinator receipt records all required exits `0` and a new independent critic binds `38551ed98a42b005a1a3f0b793efdef700037ee8` plus all six blobs.
-
-## Scientific invariants
-
-Route B remains full four-scale SRR-v3: `[LGE,T2,C0]` with explicit availability, sixteen shared/private/interaction experts per scale, spatial two-pass routing, optimized Pattern-SIP, learned anatomy, four-shard OOF-fitted frozen prototypes, safe hard negatives, separate scar/edema proposal and refiners, bounded correction, same-split final-output evidence, official CineMA matched random control, seven-step SVF, true Jacobian/inverse consistency, real SyN and registered temporal aggregation.
-
-Round03 B3 is B3-only adequate negative. B4-B6 and B7-B9 remain required after valid predecessors; B6 is the first MyoPS full-route judgment.
+Read `origin/route_A`, `origin/route_B`, or `origin/route_C` only as read-only provenance unless a later handoff explicitly reactivates that route.
 
 ## Authority boundary
 
@@ -139,4 +131,6 @@ m11_authorized: false
 hosted_metric_claim_authorized: false
 cross_route_merge_authorized: false
 final_scientific_decision_authorized: false
+route_worktree_development_authorized: false
+route_branch_deletion_authorized: false
 ```

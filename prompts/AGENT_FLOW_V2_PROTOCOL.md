@@ -36,6 +36,8 @@ controller-internal auditor subagent.
 
 ## Execution Modes
 
+Current default posture is main-only development on `/users/a/e/aereinh/CARE`. Route worktrees and route controllers are not active execution targets unless a new human-approved handoff explicitly reactivates a named route. The role model below still applies to main-line milestones and any future route reactivation.
+
 Short, non-Slurm, low-resume-risk work may use:
 
 ```text
@@ -59,7 +61,7 @@ planner -> controller
 
 The controller, executor, mapper, finalizer, and validator must not write
 `review.md`. The reviewer must not become a controller subagent. No role may
-push; the user pushes manually.
+push unless the user explicitly authorizes pushing for that task.
 
 ## Controller Lifecycle
 

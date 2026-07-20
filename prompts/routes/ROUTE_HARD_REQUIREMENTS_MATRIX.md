@@ -11,6 +11,8 @@
 
 后续 `round03`、`round04` 及任何新 round 都必须继续适用本文。不得因为 round 编号变化、旧 milestone 迁移到 route portfolio、或某一轮 handoff 没有逐字复制本文，就弱化这些要求。
 
+当前 `prompts/routes/handoffs/CURRENT.md` 已切换到 `active_development_branch: main` 且 `route_worktree_development_authorized: false`。在这个 main-only posture 下，本文作为历史 route evidence 的解释规则和未来 route reactivation 的硬门槛保留；它不再自动要求 GPT 为 Route A、Route B、Route C 同时生成新 controller-forward work。只有用户明确批准某条 route 重启时，本文对应 route 的完整要求才重新成为 active contract。
+
 每个新的 portfolio planner handoff 必须明确引用本文，并说明本轮是否仍按本文继承。默认答案必须是“仍继承”。任何删除、降级或暂缓本文要求的行为，都需要用户明确授权，并在 handoff 中写出被修改的具体条目、原因和影响。
 
 ## 三路线共同要求
@@ -262,6 +264,8 @@ Route C critic 必须拒绝：
 
 ## Planner 输出底线
 
-每个 portfolio round planner 必须为 Route A、Route B、Route C 都产出 controller-forward work，并准备 route-specific critic handoff 或 critic-ready request。Critic 通过前，controller 不应启动。
+在历史三路线 portfolio 模式下，每个 portfolio round planner 必须为 Route A、Route B、Route C 都产出 controller-forward work，并准备 route-specific critic handoff 或 critic-ready request。Critic 通过前，controller 不应启动。
 
-失败可以接受，低目标假推进不接受。一个能跑通但没有 leaderboard-facing rationale、没有三主指标目标、没有同一划分 baseline、没有困难子组 help/harm、没有 reviewer 可审计 evidence，或把关键设计留给 controller 补完的计划，不是合格的 CARE route plan。
+在当前 main-only posture 下，planner 不得自动生成新的三路线 portfolio work。新计划应直接说明它是 main-line diagnostic/repair/evidence work；若 planner 认为必须重启某条 route，必须先请求用户授权并写明触发的 reactivation gate。
+
+失败可以接受，低目标假推进不接受。一个能跑通但没有 leaderboard-facing rationale、没有三主指标目标、没有同一划分 baseline、没有困难子组 help/harm、没有 reviewer 可审计 evidence，或把关键设计留给 controller 补完的计划，不是合格的 CARE route/main-line plan。

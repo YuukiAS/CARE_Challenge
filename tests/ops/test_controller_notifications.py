@@ -412,11 +412,11 @@ def test_slurm_elapsed_parser_handles_route_ledger_notes():
     assert notify.extract_elapsed_from_note("62346 steps and 1801.4 seconds completed") == "00:30:01"
 
 
-def test_load_config_defaults_to_route_b_only(tmp_path):
+def test_load_config_defaults_to_no_enabled_routes_for_main_only(tmp_path):
     config_path = tmp_path / "config.json"
     config_path.write_text(json.dumps({"routes": {"route_B": {}}}), encoding="utf-8")
     loaded = notify.load_config(config_path)
-    assert loaded["enabled_routes"] == ["route_B"]
+    assert loaded["enabled_routes"] == []
 
 
 def test_explicit_route_c_enabled_remains_backward_compatible(tmp_path):
@@ -429,6 +429,7 @@ def test_explicit_route_c_enabled_remains_backward_compatible(tmp_path):
 
 def test_health_status_written_on_scan(tmp_path):
     config = make_config(tmp_path)
+    config["enabled_routes"] = ["route_B"]
     db = tmp_path / "runtime" / "route_B_tmux_care_route_B__care_route_B" / "goals_1.sqlite"
     state_path = Path(config["state_path"])
     status_path = tmp_path / "state" / "notify_goal_watcher_status.json"

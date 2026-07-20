@@ -105,7 +105,7 @@ def load_json(path: Path) -> dict[str, Any]:
 
 def load_config(path: Path) -> dict[str, Any]:
     config = load_json(path)
-    config.setdefault("enabled_routes", ["route_B"])
+    config.setdefault("enabled_routes", [])
     config.setdefault("repo_root", str(DEFAULT_REPO_ROOT))
     config.setdefault("codex_runtime_root", "/users/a/e/aereinh/.codex-runtime-homes")
     config.setdefault("state_path", str(DEFAULT_STATE_PATH))
@@ -334,7 +334,7 @@ def collect_goal_facts(
     capture_func: Callable[[str, Path], str] = capture_tmux_pane,
 ) -> list[GoalFact]:
     facts: list[GoalFact] = []
-    for route in config.get("enabled_routes", ["route_B"]):
+    for route in config.get("enabled_routes", []):
         route_db_facts: list[GoalFact] = []
         for db in route_runtime_goal_dbs(config, route):
             route_db_facts.extend(read_goal_facts_from_db(route, db))
@@ -474,7 +474,7 @@ def base_health_status(
     facts: list[GoalFact],
     events: list[NotificationEvent],
 ) -> dict[str, Any]:
-    enabled_routes = list(config.get("enabled_routes", ["route_B"]))
+    enabled_routes = list(config.get("enabled_routes", []))
     return {
         "service": "controller_goal_notifier",
         "enabled": bool(enabled_routes),
@@ -623,7 +623,7 @@ def route_summary(config: dict[str, Any], route: str, trigger_route: str = "", w
 
 def route_summary_rows(config: dict[str, Any], trigger_route: str, watchboard_status: dict[str, Any] | None = None) -> list[dict[str, str]]:
     status = watchboard_status if watchboard_status is not None else collect_watchboard_status(config)
-    routes = [route for route in config.get("enabled_routes", ["route_B"]) if route in {"route_A", "route_B", "route_C"}]
+    routes = [route for route in config.get("enabled_routes", []) if route in {"route_A", "route_B", "route_C"}]
     if trigger_route in {"route_A", "route_B", "route_C"} and trigger_route not in routes:
         routes.append(trigger_route)
     return [route_summary(config, route, trigger_route, status) for route in routes]

@@ -1,7 +1,5 @@
 {
-  "enabled_routes": [
-    "route_B"
-  ],
+  "enabled_routes": [],
   "poll_seconds": 60,
   "repo_root": "/users/a/e/aereinh/CARE",
   "codex_runtime_root": "/users/a/e/aereinh/.codex-runtime-homes",

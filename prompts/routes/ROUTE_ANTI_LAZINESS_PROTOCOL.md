@@ -4,6 +4,8 @@
 
 本文不是新的路线合同，也不替代 `prompts/AGENT_FLOW_V2_PROTOCOL.md`、`prompts/routes/route_portfolio_planner_prompt.md` 或各 route 分支上的 `prompts/routes/route_X.md`。它记录本轮 controller 执行暴露出的具体问题，并把已有反偷懒要求收紧成可检查规则。
 
+当前 `CURRENT.md` 已切换为 main-only development posture：Route A/B/C 不再是 active controller lane。本文仍用于解释历史 route packet、审查未来显式 reactivation、以及防止 main-line 诊断/修复任务把 smoke、monitor、validator pass 或 undertrained evidence 包装成科学完成。
+
 本文件必须与 `prompts/routes/ROUTE_HARD_REQUIREMENTS_MATRIX.md` 一起阅读。`ROUTE_ANTI_LAZINESS_PROTOCOL.md` 负责防止 controller/reviewer 把未完成工作包装成完成；`ROUTE_HARD_REQUIREMENTS_MATRIX.md` 负责定义 Route A/B/C 在所有未来 round 中持续继承的 leaderboard-facing 强要求。后续 `round03`、`round04` 及更晚 round 不得把这些要求视为 Round02 一次性补丁，除非用户明确批准删除或降级某条要求。
 
 ## 本轮已经明确的反偷懒要求

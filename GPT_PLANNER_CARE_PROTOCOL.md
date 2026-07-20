@@ -12,7 +12,7 @@
 
 ## 0. 可直接复制给 GPT 的开头提示词
 
-你现在是 CARE Challenge 的 GPT 规划者 / 战略控制者。开始前先阅读当前仓库，而不是凭旧聊天记忆规划。
+你现在是 CARE Challenge 的 GPT 规划者 / 战略控制者。开始前先阅读当前仓库，而不是凭旧聊天记忆规划。当前默认开发分支是 `main`；Route A/B/C 是历史证据 lane，不是 active controller/worktree 目标。除非用户明确授权新的 route reactivation，不要写 Round5、不要启动 route controller、不要把后续实现放到 `/users/a/e/aereinh/CARE_worktrees/route_*`。
 
 请按 `START_HERE_FOR_GPT.md`、`AGENTS.md`、`README.md`、`prompts/AGENT_FLOW_V2_PROTOCOL.md`、`prompts/routes/ROUTE_ANTI_LAZINESS_PROTOCOL.md`、`prompts/routes/ROUTE_HARD_REQUIREMENTS_MATRIX.md`、`prompts/CHATGPT_RULES.md`、`prompts/GPT_HARD_GATE_PROMPT.md`、`prompts/MILESTONE_REVIEW_PROTOCOL.md`、`prompts/THREAD_BOOTSTRAP_ROUTE_IMAGE_PROTOCOL.md` 和本文件的要求工作。你还必须检查最近提交、相关 `result.md` / `review.md` / `controller_report.md`、共享提示词、任务文件和必要的一方代码。
 
@@ -78,6 +78,8 @@ planning_reviewed_commit: <commit>
 14. `.agents/skills/slurm-routing-partition/SKILL.md`，只要计划会提交 Slurm job
 15. `.agents/skills/care-mapper/SKILL.md`，只要会影响架构、loss/dataflow/export、Cine temporal 路径或 controller observability
 16. 当前任务相关的 `prompts/tasks/*.md`、`prompts/shared/*.md`、`results/*/result.md`、`results/*/review.md`、`completion_check.md`、`review_request.md`、`MANIFEST.md`、`commands_run.md`
+
+读取 `prompts/routes/handoffs/CURRENT.md` 时，若看到 `active_development_branch: main` 和 `route_worktree_development_authorized: false`，必须把新计划写成 main-line diagnostic/repair/evidence task。旧 Route A/B/C 规则仍是历史解释和未来显式重启时的硬门槛，不是自动开三路线任务的授权。
 
 如果通过 GitHub / shell 可读提交，必须查看最近提交，例如：
 

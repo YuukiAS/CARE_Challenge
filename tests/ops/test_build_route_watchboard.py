@@ -1380,3 +1380,53 @@ def test_future_round05_tokens_parse_without_controller_authority():
     handoff = watchboard.parse_current_handoff(round04_current_style_text().replace("ROUND04", "ROUND05").replace("round04", "round05"), Path("/tmp/CARE"))
     watchboard.annotate_handoff_workers(route, handoff)
     assert route["controller_allowed"] is False
+
+def test_main_only_current_accepts_no_active_routes(tmp_path):
+    root = tmp_path / "CARE"
+    current_text = """# CARE Current Development State
+
+## Active round
+
+```text
+round_id: post_round04_main_only
+date: 2026-07-20
+active_development_branch: main
+route_worktree_development_authorized: false
+controller_authorized_now: 0
+```
+
+## Portfolio state
+
+```text
+Route A: HISTORICAL_DORMANT_NOT_ACTIVE
+Route B: HISTORICAL_EVIDENCE_COMPLETE_NOT_ACTIVE
+Route C: HISTORICAL_STOP_AND_HOLD_NOT_ACTIVE
+```
+
+## Current role entries
+
+```text
+Route A critic: NO_CURRENT_CRITIC_HANDOFF
+Route B critic: NO_CURRENT_CRITIC_HANDOFF
+Route C critic: NO_CURRENT_CRITIC_HANDOFF
+```
+
+## Authority boundary
+
+```text
+controller_authorized_now: 0
+validation_upload_authorized: false
+route_promotion_authorized: false
+m11_authorized: false
+hosted_metric_claim_authorized: false
+cross_route_merge_authorized: false
+final_scientific_decision_authorized: false
+```
+"""
+
+    parsed = watchboard.parse_current_handoff(current_text, root)
+
+    assert parsed["portfolio"]["main_only_development"] is True
+    assert parsed["portfolio"]["active_routes"] == []
+    assert parsed["portfolio"]["deferred_routes"] == ["route_A", "route_B", "route_C"]
+    assert not any("current route" in warning for warning in parsed["parse_warnings"])

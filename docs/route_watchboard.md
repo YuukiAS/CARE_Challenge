@@ -1,6 +1,6 @@
 # CARE Route Portfolio Watchboard
 
-`scripts/ops/build_route_watchboard.py` 生成 CARE Route A/B/C 的只读 portfolio watchboard。当前 active future work 是 Route B only；Route A 和 Route C 作为 inactive/deferred/historical lanes 展示，不进入 active controller count。脚本从 `prompts/routes/handoffs/CURRENT.md` 动态读取当前 `round_id`、active/deferred routes、controller authority boundary、route head/blob bindings、critic handoff/review paths、allowed planning tokens 和 checkpoints，再交叉展示 route-local packet、tmux、Slurm 和 live service 状态。
+`scripts/ops/build_route_watchboard.py` 生成 CARE Route A/B/C 的只读 portfolio watchboard。当前 active future work 是 main-only；Route A、Route B、Route C 都作为 inactive/deferred/historical lanes 展示，不进入 active controller count。脚本从 `prompts/routes/handoffs/CURRENT.md` 动态读取当前 `round_id`、active/deferred routes、controller authority boundary、route head/blob bindings、critic handoff/review paths、allowed planning tokens 和 checkpoints，再交叉展示 route-local packet、tmux、Slurm 和 live service 状态。
 
 看板只观察，不执行。页面不得有操作按钮；脚本不得提交/取消 Slurm、启动 controller、上传 validation、合并、推送、route promotion、M11、hosted metric claim 或 final scientific decision。
 
@@ -69,14 +69,14 @@ ops_services.watchboard_tunnel
 ops_services.controller_notifier
 ```
 
-每条 active route 的 critic/controller/reviewer 状态必须来自 CURRENT 绑定与 route-local evidence，不得用 main/coordinator 状态替代 route packet truth。当前 Route B 是唯一 active future-work route；Route A 和 Route C 的 deferred、dormant、stop-and-hold 或 historical 状态只展示历史证据和 topology 风险，不进入 active completion summary，也不得阻塞 Route B readiness。
+每条 active route 的 critic/controller/reviewer 状态必须来自 CURRENT 绑定与 route-local evidence，不得用 main/coordinator 状态替代 route packet truth。当前没有 active route；Route A、Route B、Route C 的 deferred、dormant、stop-and-hold 或 historical 状态只展示历史证据和 topology 风险，不进入 active completion summary，也不得阻塞 main-line work。
 
 `ops_services.controller_notifier` 展示 notifier health：`Notify` tmux window、watcher loop 进程、state/status/log paths、last scan、last event、last email status、enabled routes、config warnings，以及 SMTP secret 是否存在的布尔值。不得写出 SMTP password 或 secret 内容。
 
 
 ## Route B-only Active Mode
 
-Task 2 后，看板必须把 active future work 呈现为 Route B only。`CURRENT.md` 中的 Route C `STOP_AND_HOLD`、`DEFERRED`、`DORMANT`、`INACTIVE` 或 `HISTORICAL` 状态都应进入 inactive/deferred lane；Route A 同理保持 dormant fallback。
+当前看板必须把 active future work 呈现为 main-only/no active route。`CURRENT.md` 中 Route A/B/C 的 `STOP_AND_HOLD`、`DEFERRED`、`DORMANT`、`INACTIVE`、`NOT_ACTIVE` 或 `HISTORICAL` 状态都应进入 inactive/deferred lane。
 
 这不是删除 Route A/C 历史：route packets、review evidence、tmux topology 和 branch heads 仍只读展示。区别是它们不再被渲染成当前 controller lanes，不参与 active route count，不触发 active controller tmux 缺口警告，也不影响 Route B critic/controller status。
 
