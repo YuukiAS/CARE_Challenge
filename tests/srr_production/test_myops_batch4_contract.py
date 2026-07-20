@@ -186,6 +186,10 @@ def test_batch4_config_exposes_infer_and_eval_paths() -> None:
     for key in ("gt_dir", "anchor_fold0_pred_dir", "inference_root", "evaluation_root", "runtime_root", "log_root", "lock_root"):
         assert paths[key]
     assert set(cfg["modes"]) == {"anchor_identity_control", "anchor_bounded_srr_correction", "srr_no_anchor_control"}
+    assert cfg["controls"]["baseline_expected"]["edema_dice"] == pytest.approx(0.3944358977)
+    assert cfg["controls"]["baseline_expected"]["scar_dice"] == pytest.approx(0.5601692281)
+    assert cfg["controls"]["anchor_identity"]["changed_voxels_required"] == 0
+    assert cfg["controls"]["evaluator_policy"]["srr_comparison"] == "requires_inference_contract_and_prediction_hashes"
 
 
 def test_training_cli_print_contract_for_batch4() -> None:

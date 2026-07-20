@@ -25,6 +25,18 @@ modes:
   - anchor_identity_control
   - anchor_bounded_srr_correction
   - srr_no_anchor_control
+controls:
+  baseline_expected:
+    edema_dice: 0.3944358977
+    scar_dice: 0.5601692281
+    tolerance: 0.000000001
+  anchor_identity:
+    changed_voxels_required: 0
+    raw_label_mismatch_required: 0
+  evaluator_policy:
+    nnunet_baseline_recompute: allowed
+    anchor_identity_label_audit: required
+    srr_comparison: requires_inference_contract_and_prediction_hashes
 model:
   class_name: SRRProposeRefineMyoPS
   variant: m10_d3_hierarchical_memory_propref
