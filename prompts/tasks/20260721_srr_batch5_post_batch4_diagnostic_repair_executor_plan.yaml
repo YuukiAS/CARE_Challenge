@@ -28,6 +28,7 @@ waves:
       - jobs/srr_production/
       - results/20260721_srr_batch5_post_batch4_diagnostic_repair/
     read_required:
+      - docs/plans/laneB_round04_active_srr_batch5_loss_authority_addendum.md
       - scripts/training/run_srr_propref_myops_fold0.py
       - src/care_myocardium/losses/srr_losses.py
       - configs/srr_production/myops_batch4.yaml
