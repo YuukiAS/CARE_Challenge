@@ -2,7 +2,7 @@
 
 ## GPT / ChatGPT route bootstrap
 
-New GPT/ChatGPT planning threads must read `START_HERE_FOR_GPT.md`, `GPT_PLANNER_CARE_PROTOCOL.md`, `prompts/AGENT_FLOW_V2_PROTOCOL.md`, `prompts/routes/ROUTE_ANTI_LAZINESS_PROTOCOL.md`, and `prompts/routes/ROUTE_HARD_REQUIREMENTS_MATRIX.md` before writing CARE milestones, Codex goals, handoffs, or route judgments. For any SRR/MyoPS/Cine route planning, they must execute `prompts/THREAD_BOOTSTRAP_ROUTE_IMAGE_PROTOCOL.md`, visually read the SRR diagrams at `v2` and later from ChatGPT Project background files / project materials, and block without generating a milestone if those project-background diagrams cannot be accessed or interpreted. Repository paths such as `images/SRR-v2.png`, `images/SRR-v2.5.png`, and `images/SRR-v3.png` remain canonical filenames and version references, not the required GPT visual-reading entrypoint.
+New GPT/ChatGPT planning threads must read `START_HERE_FOR_GPT.md`, `GPT_PLANNER_CARE_PROTOCOL.md`, `prompts/FINAL_OUTPUT_READABILITY_POLICY.md`, `prompts/AGENT_FLOW_V2_PROTOCOL.md`, `prompts/routes/ROUTE_ANTI_LAZINESS_PROTOCOL.md`, and `prompts/routes/ROUTE_HARD_REQUIREMENTS_MATRIX.md` before writing CARE milestones, Codex goals, handoffs, or route judgments. For any SRR/MyoPS/Cine route planning, they must execute `prompts/THREAD_BOOTSTRAP_ROUTE_IMAGE_PROTOCOL.md`, visually read the SRR diagrams at `v2` and later from ChatGPT Project background files / project materials, and block without generating a milestone if those project-background diagrams cannot be accessed or interpreted. Repository paths such as `images/SRR-v2.png`, `images/SRR-v2.5.png`, and `images/SRR-v3.png` remain canonical filenames and version references, not the required GPT visual-reading entrypoint.
 
 For future CARE milestones, GPT/ChatGPT must author executor/controller content before asking Codex to implement the milestone. Reviewer content is optional and required only when a task explicitly sets `review_required: true`. To avoid oversized direct edits to `prompts/shared/EXECUTOR_PROMPTS.md` and `prompts/shared/REVIEWER_PROMPTS.md`, GPT must place the new milestone prompt as a standalone Markdown staging file under `prompts/shared/` named `M<id>_<short_slug>.md`, for example `M<id>_mechanism_repair.md`. That staging file must clearly separate executor and reviewer sections. A later Codex maintenance step will split/merge those sections into the canonical shared prompt files and delete the standalone staging file after merge.
 
@@ -56,6 +56,10 @@ For this temporary `/users` copy, repo-local skills under `.agents/skills/` shou
 ## Codex rule source
 
 Treat this `AGENTS.md` as the repo-level Codex rules source. Do not rely on `.cursor/rules/`, `.cursor/skills/`, `.cursor/plans/`, or Cursor plugins; migrate future rule changes here.
+
+## Final output readability gate
+
+For user-facing analysis, Batch retrospectives, planner recommendations, controller conclusions, and any explicit reviewer conclusions, follow `prompts/FINAL_OUTPUT_READABILITY_POLICY.md`. The final answer must first state the scientific meaning in natural Chinese, then provide internal labels, paths, metrics, commands, or machine fields only as locating evidence. Do not use repository experiment codes, status tokens, route labels, or mechanism names as the heading or conclusion unless their meaning has already been explained in plain language.
 
 ## Agent-Flow v2 controller handoff
 
@@ -433,9 +437,10 @@ Controller operational completion is not scientific route resolution. A
 controller may finish executor/mapper/finalizer/validator workflow and locally
 commit a lightweight final packet with `controller_verification_decision: VERIFIED_COMPLETE` while scientific next steps remain a Planner/user decision. Route-negative conclusions such as `STOP_NO_SIGNAL`,
 `STOP_NO_PROPREF_SIGNAL`, `STOP_NO_CLEAN_ANCHOR_SIGNAL`, or
-`STOP_NO_ROUTE_BEATS_BASELINE_SIGNAL` require later independent reviewer
-support and GPT planner judgment; controller reports generated before review
-must not claim that decision.
+`STOP_NO_ROUTE_BEATS_BASELINE_SIGNAL` require explicit Planner/user
+authorization; an independent reviewer is required only when the task sets
+`review_required: true`. Controller reports must not claim those final
+scientific decisions.
 
 ## Codex Rules
 
@@ -450,9 +455,9 @@ must not claim that decision.
 - If the task explicitly sets `review_required: true` and the current session is executor/controller, do not also review.
 - If acting as reviewer, remain read-only; do not fix code, generate missing
   artifacts, or continue execution.
-- If acting as milestone reviewer, read only the completed result
-  directory and write `review.md`; only an exact audited-go token in that review
-  permits the next milestone.
+- If acting as milestone reviewer for an explicit `review_required: true` task,
+  read only the completed result directory and write `review.md`; reviewer
+  tokens gate continuation only for that explicit reviewer-gated task.
 - If acting as controller, coordinate executor/mapper/finalizer/validator
   handoff only inside the GPT-authored controller task. Inspect git diff, commands, frozen contract fields, outputs, tests, Slurm terminal accounting, aggregation, and validators after each executor wave; return same-scope gaps to the executor until complete. Prepare a separate reviewer handoff only when `review_required: true`; do not use an internal auditor for final review.
 - The execution controller must not invent new research/product directions. If a

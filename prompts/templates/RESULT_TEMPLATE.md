@@ -6,7 +6,16 @@ self_assessed_status: completed
 ## Execution Summary
 
 Briefly state what was completed, what was not completed, and whether the task
-goal appears satisfied from the executor perspective.
+goal appears satisfied from the executor perspective. Start with the practical
+meaning in natural prose before listing paths, metrics, commands, or state
+tokens.
+
+## Final Output Readability
+
+If this result is summarized for a user, Planner, controller, or reviewer, apply
+`prompts/FINAL_OUTPUT_READABILITY_POLICY.md`. First explain the main finding,
+why it happened, what should happen next, and what should not be done yet. Put
+internal labels and technical evidence after that explanation.
 
 ## Files Read
 
@@ -147,8 +156,9 @@ The executor may write one of:
 - `blocked`
 - `failed`
 
-This is executor self-assessment only. It is not an audit decision and does not
-replace `review.md` or `controller_report.md`.
+This is executor self-assessment only. It is not a controller verification
+decision and does not replace `controller_report.md`, `completion_check.md`, or
+explicit `review.md` when `review_required: true`.
 
 Executors must not self-authorize `SCIENTIFIC_STOP_SUPPORTED` or `STOP_NO_*`.
 If experiment adequacy is incomplete, self-assess the scientific state as

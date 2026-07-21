@@ -24,6 +24,7 @@ prompts/HANDOFF_ROLES.md
 prompts/HANDOFF_STATE_MACHINE.md
 prompts/CONTROLLER_TASK_PROTOCOL.md
 prompts/EXPERIMENT_ADEQUACY_GATE.md
+prompts/FINAL_OUTPUT_READABILITY_POLICY.md
 prompts/HANDOFF_GATE_POLICY.md
 prompts/GPT_HARD_GATE_PROMPT.md
 prompts/MILESTONE_REVIEW_PROTOCOL.md
@@ -64,8 +65,10 @@ Active agent-flow roles are defined in
 - `reviewer`: independent read-only runtime reviewer after packet commit.
 
 Do not let one session silently switch roles. If the current session is an
-executor/controller, it must stop after the task packet and reviewer handoff are
-ready; it must not write `review.md`. Historical `auditor`,
+executor, it must stop after the authorized worker packet. If the current
+session is a controller, it must verify executor work and write the terminal
+controller packet; it must not write `review.md`. A reviewer handoff is required
+only when `review_required: true` is explicitly set. Historical `auditor`,
 `execution_controller`, and strategic-controller fields are legacy aliases only.
 
 ## Language Policy
@@ -77,8 +80,10 @@ user's language or the target repository's project rules.
 
 If the target project prefers Chinese, write human-readable report prose
 primarily in Chinese while keeping protocol fields and controlled values in
-English. Project-level language rules win unless they would break
-machine-readable protocol fields.
+English. For CARE, final user-facing analysis must follow
+`prompts/FINAL_OUTPUT_READABILITY_POLICY.md`: explain the scientific meaning
+before internal labels, paths, metrics, commands, or state tokens. Project-level
+language rules win unless they would break machine-readable protocol fields.
 
 ## Permission Boundary
 
@@ -131,10 +136,12 @@ For `task_type: execution`:
 ## Milestone Task Rules
 
 For `task_type: milestone`, read `prompts/MILESTONE_REVIEW_PROTOCOL.md` before
-acting. A Codex executor/controller session may execute exactly one milestone.
-It must write the milestone's required outputs, `completion_check.md`,
-`review_request.md`, and `MANIFEST.md` under the exact `results/<task_key>/`
-directory, then stop.
+acting when the task explicitly sets `review_required: true` or belongs to a
+historical reviewer-gated milestone chain. A Codex executor/controller session
+may execute exactly one milestone. It must write the milestone's required
+outputs, `completion_check.md`, and `MANIFEST.md` under the exact
+`results/<task_key>/` directory, then stop. Write `review_request.md` only when
+`review_required: true` is explicit.
 
 Milestone result directories matching `results/20??????_*_m[0-9]_*/` are a
 repository-visible handoff packet by default. Track the top-level task-required
@@ -145,13 +152,14 @@ heavy/sensitive tables.
 
 A milestone executor/controller session must not write `review.md`, must not
 write or claim a `*_AUDITED_GO` state, must not approve itself, and must not
-start the next milestone. The next milestone is blocked until a separate
-read-only `reviewer` writes `results/<task_key>/review.md` with the exact
-controlled token defined by the milestone.
+start the next milestone. Missing `review.md` blocks continuation only for
+explicit reviewer-gated tasks whose frontmatter or historical contract sets
+`review_required: true`.
 
-If a milestone prerequisite review is missing or lacks the required audited-go
-token, stop before scientific work with the milestone's blocked/needs-evidence
-state. Do not generate replacement review evidence inside the executor session.
+If an explicit milestone prerequisite review is required and is missing or lacks
+the required audited-go token, stop before scientific work with the milestone's
+blocked/needs-evidence state. Do not generate replacement review evidence
+inside the executor session.
 
 ## Controller Task Rules
 
@@ -171,11 +179,11 @@ For `task_type: controller` or `controller_mode: true`:
 - At `BOOTSTRAP`, `PRE_SUBMISSION`, `MONITOR_RESUME`, `FINALIZE_A`,
   `MAPPER_FINAL`, and `FINALIZE_B`, re-read disk/live state and write fresh
   controller receipts rather than relying on old context.
-- If the controller task is part of a milestone chain, the two-step milestone
-  gate in `prompts/MILESTONE_REVIEW_PROTOCOL.md` overrides same-session
-  controller review: the controller may coordinate the executor step but must
-  stop after `completion_check.md` and `review_request.md`; a separate
-  read-only reviewer must write `review.md`.
+- If the controller task is part of an explicit reviewer-gated milestone chain,
+  the two-step gate in `prompts/MILESTONE_REVIEW_PROTOCOL.md` applies. Otherwise
+  the controller owns acceptance through `controller_report.md` and
+  `completion_check.md`, and missing `review.md` must not block the next Planner
+  decision.
 - For high-risk CARE controller work, enforce `prompts/HANDOFF_GATE_POLICY.md`
   before final audit or completion decisions: exact ordered task graph, exact
   result directories and required filenames, strict validator exit behavior,

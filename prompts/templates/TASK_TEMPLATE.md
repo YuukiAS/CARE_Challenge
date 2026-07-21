@@ -86,8 +86,19 @@ reported as `evidence not found` or `未找到证据`.
 
 ## Review Requirement
 
-The executor/controller stops after its packet and reviewer handoff. Only an
-independent `reviewer` writes runtime `review.md`.
+Default review is disabled. Use `review_required: true`, `review_mode`, and
+`reviewer` only when the Planner or user explicitly requires an independent
+read-only runtime review. Missing `review.md` must not block a task whose
+frontmatter keeps `review_required: false`.
+
+## Final Output Readability
+
+Before the task, result, controller report, or explicit review is sent to a
+user or Planner, apply `prompts/FINAL_OUTPUT_READABILITY_POLICY.md`. Start with
+a natural Chinese judgment that explains the main problem, why it happened, what
+to do now, and what not to do yet. Put internal labels, paths, metrics, commands,
+and machine fields after the meaning is clear. Technical details and training
+contracts belong at the end.
 
 ## Git Policy
 

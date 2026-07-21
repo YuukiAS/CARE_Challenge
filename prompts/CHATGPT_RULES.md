@@ -11,6 +11,8 @@ contract.
 - `GPT_PLANNER_CARE_PROTOCOL.md`: Chinese-first CARE planner protocol.
 - `prompts/AGENT_FLOW_V2_PROTOCOL.md`: durable human-readable agent-flow
   protocol.
+- `prompts/FINAL_OUTPUT_READABILITY_POLICY.md`: final-answer readability gate
+  for Chinese-first scientific judgments and recommendations.
 - `prompts/ACTIVE_POLICY_FILES.yaml`: registry of active rule sources,
   templates, schemas, and required skills.
 - `prompts/schemas/agent_flow_policy.yaml`: canonical roles, critic trigger
@@ -29,18 +31,18 @@ contract.
 
 ## Roles
 
-Use only active roles from `agent_flow_policy.yaml`:
+Use only active roles from `agent_flow_policy.yaml`. The default flow is:
 
 ```text
-planner -> critic -> controller/executor/mapper/finalizer/validator -> reviewer
+planner -> controller/executor/mapper/finalizer/validator -> planner
 ```
 
-`planner` writes the draft. `critic` is a separate GPT planning-review thread
-that does not execute code, submit jobs, or write runtime `review.md`.
-`controller` owns long-task continuity. `executor` implements authorized work.
-`mapper` maps code/evidence/architecture. `finalizer` is deterministic.
-`validator` is fail-closed first-party validation. `reviewer` is the separate
-read-only runtime reviewer after packet commit.
+`critic` and `reviewer` are legacy-compatible optional roles. `critic` is used
+only when `planning_review_required: true` is explicit. `reviewer` is used only
+when `review_required: true` is explicit. `controller` owns long-task
+continuity. `executor` implements authorized work. `mapper` maps
+code/evidence/architecture. `finalizer` is deterministic. `validator` is
+fail-closed first-party validation.
 
 Historical `auditor`, `execution_controller`, and strategic-controller names are
 legacy aliases only. Do not create a controller-internal auditor.
@@ -58,10 +60,12 @@ scientific_decision_scope: none | mechanism_signal | promotion_candidate | stop_
 planning_review_required: true | false
 ```
 
-The separate GPT `critic` is required when any trigger in
-`agent_flow_policy.yaml` applies: scientific milestone, high risk, system
-architecture impact, Slurm runtime continuity, more than one executor, route
-change, or non-`none` scientific decision scope.
+The separate GPT `critic` is optional by default. It is required only when the
+Planner or user explicitly sets `planning_review_required: true` for the task.
+Risk fields such as scientific milestone, high risk, system architecture impact,
+Slurm runtime continuity, more than one executor, route change, or non-`none`
+scientific decision scope increase evidence and validation requirements, but do
+not automatically block controller startup.
 
 A critic review lives at:
 
@@ -101,7 +105,8 @@ Long/controller-supervised work uses:
 ## Controller Prompt
 ## Executor Worker Contract
 ## Mapper Contract
-## Reviewer Prompt
+## Final Output Readability
+## Reviewer Prompt  # only when review_required: true
 ```
 
 Do not paste executor plans into the large shared prompt files. Keep executor

@@ -7,17 +7,22 @@
 1. `START_HERE_FOR_GPT.md`
 2. `GPT_PLANNER_CARE_PROTOCOL.md`
 3. `AGENTS.md`
-4. `prompts/AGENT_FLOW_V2_PROTOCOL.md`
-5. `prompts/HANDOFF_GATE_POLICY.md`
-6. `prompts/GPT_HARD_GATE_PROMPT.md`
-7. `prompts/routes/ROUTE_ANTI_LAZINESS_PROTOCOL.md`
-8. `prompts/routes/ROUTE_HARD_REQUIREMENTS_MATRIX.md`
-9. `prompts/routes/handoffs/CURRENT.md`
-10. `routes/README.md`
-11. `wiki/README.md`
-12. 当前任务、结果、代码和必要 skill。
+4. `prompts/FINAL_OUTPUT_READABILITY_POLICY.md`
+5. `prompts/AGENT_FLOW_V2_PROTOCOL.md`
+6. `prompts/HANDOFF_GATE_POLICY.md`
+7. `prompts/GPT_HARD_GATE_PROMPT.md`
+8. `prompts/routes/ROUTE_ANTI_LAZINESS_PROTOCOL.md`
+9. `prompts/routes/ROUTE_HARD_REQUIREMENTS_MATRIX.md`
+10. `prompts/routes/handoffs/CURRENT.md`
+11. `routes/README.md`
+12. `wiki/README.md`
+13. 当前任务、结果、代码和必要 skill。
 
 不得用旧聊天记忆、watchboard、旧 route 状态或自然语言总结替代当前远端 `main` 和 `CURRENT.md`。
+
+## 最终输出说人话
+
+面向用户、Planner 或科研负责人的最终分析必须先给自然中文判断，再给内部标签、路径、指标和命令。不得把仓库内部实验名、状态 token、机制标签或英文短语堆叠当作标题或结论；内部代号只能放在解释后的括号中用于定位。发送前按 `prompts/FINAL_OUTPUT_READABILITY_POLICY.md` 做可读性验收。
 
 ## 当前 main-only posture
 

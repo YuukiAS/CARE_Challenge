@@ -15,6 +15,8 @@
 
 无法机器检查的内容只能作为建议，不能作为完成门。
 
+最终面向用户、Planner 或科研负责人的分析还必须通过 `prompts/FINAL_OUTPUT_READABILITY_POLICY.md`：先写自然中文判断和因果解释，再写内部标签、路径、指标、命令和机器字段。不得把仓库内部实验名、状态 token 或机制标签直接当标题或结论。
+
 ## 二、SRR 图视觉启动门
 
 任何 SRR/MyoPS/Cine 规划、目标修订或路线判断前，GPT 必须按 `prompts/THREAD_BOOTSTRAP_ROUTE_IMAGE_PROTOCOL.md` 视觉阅读 ChatGPT Project 材料中的 SRR-v2、SRR-v2.5、SRR-v3 及更晚版本。

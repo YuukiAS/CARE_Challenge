@@ -16,9 +16,18 @@ read_only: true
 
 ## Read-Only Boundary
 
-The reviewer is independent and read-only. Do not fix code, generate missing
+The reviewer is independent and read-only and starts only when
+`review_required: true` is explicitly set. Do not fix code, generate missing
 artifacts, resume monitors, submit jobs, package/upload validation, push, or
 start another milestone. If evidence is missing, report it as missing.
+
+## Final Output Readability
+
+The review conclusion must pass `prompts/FINAL_OUTPUT_READABILITY_POLICY.md`.
+Start with a natural Chinese judgment explaining whether the evidence supports
+the claim, why, what should happen next, and what remains unauthorized. Put
+review tokens, paths, metrics, commands, and machine fields after the meaning is
+clear.
 
 ## Inputs Reviewed
 

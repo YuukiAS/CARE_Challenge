@@ -20,21 +20,26 @@ Route A/B/C: historical evidence lanes
 1. `START_HERE_FOR_GPT.md`
 2. `GPT_PLANNER_CARE_PROTOCOL.md`
 3. `AGENTS.md`
-4. `prompts/AGENT_FLOW_V2_PROTOCOL.md`
-5. `prompts/HANDOFF_GATE_POLICY.md`
-6. `prompts/GPT_HARD_GATE_PROMPT.md`
-7. `prompts/routes/ROUTE_ANTI_LAZINESS_PROTOCOL.md`
-8. `prompts/routes/ROUTE_HARD_REQUIREMENTS_MATRIX.md`
-9. `prompts/routes/handoffs/CURRENT.md`
-10. `routes/README.md`
-11. `wiki/README.md`
-12. 当前 task/config/result/code/commit。
-13. 涉及 Slurm 时读 `.agents/skills/slurm-routing-partition/SKILL.md`。
-14. 涉及 architecture/loss/dataflow/export/Cine temporal/mapper 时读 `.agents/skills/care-mapper/SKILL.md`。
+4. `prompts/FINAL_OUTPUT_READABILITY_POLICY.md`
+5. `prompts/AGENT_FLOW_V2_PROTOCOL.md`
+6. `prompts/HANDOFF_GATE_POLICY.md`
+7. `prompts/GPT_HARD_GATE_PROMPT.md`
+8. `prompts/routes/ROUTE_ANTI_LAZINESS_PROTOCOL.md`
+9. `prompts/routes/ROUTE_HARD_REQUIREMENTS_MATRIX.md`
+10. `prompts/routes/handoffs/CURRENT.md`
+11. `routes/README.md`
+12. `wiki/README.md`
+13. 当前 task/config/result/code/commit。
+14. 涉及 Slurm 时读 `.agents/skills/slurm-routing-partition/SKILL.md`。
+15. 涉及 architecture/loss/dataflow/export/Cine temporal/mapper 时读 `.agents/skills/care-mapper/SKILL.md`。
 
 查看最近至少 5–10 个提交，区分规划、代码、runtime packet、protocol 和 state 更新。
 
-## 三、SRR 图视觉规则
+## 三、最终输出表达门槛
+
+Planner 的最终回答、Batch 复盘和下一步建议必须遵守 `prompts/FINAL_OUTPUT_READABILITY_POLICY.md`：先用自然中文说明科学判断、失败原因和下一步最小行动，再给内部标签、指标、路径、命令和字段。内部实验名不能当标题或结论；如果需要保留仓库标签，把它放在解释后的括号中用于检索。
+
+## 四、SRR 图视觉规则
 
 任何 SRR/MyoPS/Cine 规划、审计或下一步判断前，必须从 ChatGPT Project 背景材料或当前对话上传图片中视觉读取：
 
@@ -67,7 +72,7 @@ nnU-Net 只能作为 baseline、anchor、context、evidence 或 safety source，
 BLOCKED_PROJECT_ROUTE_DIAGRAMS_UNAVAILABLE
 ```
 
-## 四、默认 Agent Flow
+## 五、默认 Agent Flow
 
 当前默认：
 
@@ -112,7 +117,7 @@ reviewer: none
 
 只有用户或 Planner 在具体 task 中显式设置对应字段为 true，才启用独立 planning critic 或 read-only reviewer。
 
-## 五、Planner 的职责
+## 六、Planner 的职责
 
 Planner 负责：
 

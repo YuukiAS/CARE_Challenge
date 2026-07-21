@@ -184,17 +184,47 @@ ACTIVE_DOC_BASENAMES = {
     "AGENTS.md",
     "START_HERE_FOR_GPT.md",
     "GPT_PLANNER_CARE_PROTOCOL.md",
+    "FINAL_OUTPUT_READABILITY_POLICY.md",
     "AGENT_FLOW_V2_PROTOCOL.md",
+    "AGENT_RULES.md",
+    "CHATGPT_RULES.md",
     "HANDOFF_ROLES.md",
     "HANDOFF_STATE_MACHINE.md",
     "CONTROLLER_TASK_PROTOCOL.md",
     "HANDOFF_GATE_POLICY.md",
     "GPT_HARD_GATE_PROMPT.md",
     "MILESTONE_REVIEW_PROTOCOL.md",
+    "TASK_TEMPLATE.md",
     "CONTROLLER_TASK_TEMPLATE.md",
+    "RESULT_TEMPLATE.md",
+    "REVIEW_TEMPLATE.md",
+}
+READABILITY_POLICY_REFERENCE_DOCS = {
+    "AGENTS.md",
+    "START_HERE_FOR_GPT.md",
+    "GPT_PLANNER_CARE_PROTOCOL.md",
+    "AGENT_RULES.md",
+    "CHATGPT_RULES.md",
+    "GPT_HARD_GATE_PROMPT.md",
+}
+READABILITY_TEMPLATE_DOCS = {
+    "TASK_TEMPLATE.md",
+    "CONTROLLER_TASK_TEMPLATE.md",
+    "RESULT_TEMPLATE.md",
+    "REVIEW_TEMPLATE.md",
 }
 PUSH_TRUE_RE = re.compile(r"(?m)^\s*(auto_git_push|allow_git_push|allow_diagnostic_push)\s*:\s*true\s*$", re.IGNORECASE)
 TODO_RUNTIME_RE = re.compile(r"\bTODO-agents(?:-v2)?\.md\b")
+INTERNAL_CODE_HEADING_RE = re.compile(
+    r"^(?:`)?(?:[A-Z][A-Z0-9]*(?:_[A-Z0-9]+){1,}|[A-Z][A-Z0-9]+[-_][A-Z0-9_-]+|B\d+_[A-Z0-9_]+)(?:`)?$"
+)
+HYPHENATED_ENGLISH_HEADING_RE = re.compile(r"\b[a-z]+-[a-z]+\b(?:\s*/\s*|\s+)\b[a-z]+(?:-[a-z]+)?\b", re.IGNORECASE)
+BAD_FIRST_PARAGRAPH_START_RE = re.compile(
+    r"^(?:`?(?:/|\./|\.\./|~|git\b|python(?:3)?\b|pytest\b|sbatch\b|srun\b|rg\b|cd\b)|[A-Z0-9]{2,}_[A-Z0-9_]+\b|[A-Z][A-Z0-9]{4,}\b)"
+)
+ENGLISH_STACK_RE = re.compile(r"\b[a-z][a-z-]{2,}\s+[a-z][a-z-]{2,}\s+[a-z][a-z-]{2,}\s+[a-z][a-z-]{2,}\b", re.IGNORECASE)
+FORMULA_LINE_RE = re.compile(r"(\$\$|\\\[|\\begin\{equation\})")
+CHINESE_RE = re.compile(r"[\u4e00-\u9fff]")
 
 
 @dataclass(frozen=True)
@@ -1140,6 +1170,161 @@ def validate_review_file(path: Path, text: str) -> list[Finding]:
     return findings
 
 
+
+def strip_frontmatter_and_code_fences(text: str) -> str:
+    lines = text.splitlines()
+    start = 0
+    if lines and lines[0].strip() == "---":
+        for idx in range(1, len(lines)):
+            if lines[idx].strip() == "---":
+                start = idx + 1
+                break
+    kept: list[str] = []
+    in_fence = False
+    for line in lines[start:]:
+        if line.strip().startswith("```"):
+            in_fence = not in_fence
+            continue
+        if in_fence:
+            continue
+        kept.append(line)
+    return "\n".join(kept)
+
+
+def first_prose_paragraph(text: str) -> str:
+    clean = strip_frontmatter_and_code_fences(text)
+    paragraphs: list[str] = []
+    current: list[str] = []
+    for raw in clean.splitlines():
+        line = raw.strip()
+        if not line:
+            if current:
+                paragraphs.append(" ".join(current).strip())
+                current = []
+            continue
+        if line.startswith("#"):
+            if current:
+                paragraphs.append(" ".join(current).strip())
+                current = []
+            continue
+        if re.match(r"^[-*]\s+|^\d+\.\s+", line):
+            if current:
+                paragraphs.append(" ".join(current).strip())
+                current = []
+            continue
+        current.append(line)
+    if current:
+        paragraphs.append(" ".join(current).strip())
+    return paragraphs[0] if paragraphs else ""
+
+
+def section_texts(clean_text: str, heading_pattern: re.Pattern[str]) -> list[str]:
+    sections: list[str] = []
+    current: list[str] | None = None
+    for line in clean_text.splitlines():
+        if re.match(r"^#{1,6}\s+", line):
+            if current is not None:
+                sections.append("\n".join(current))
+            current = [line] if heading_pattern.search(line) else None
+        elif current is not None:
+            current.append(line)
+    if current is not None:
+        sections.append("\n".join(current))
+    return sections
+
+
+def should_run_full_readability_check(path: Path, text: str) -> bool:
+    if path.name == "FINAL_OUTPUT_READABILITY_POLICY.md":
+        return False
+    path_text = "/".join(path.parts).lower()
+    return (
+        "readability" in path_text
+        or "final_output_readability_check: true" in text
+        or (is_milestone_staging_file(path) and "Final Output Readability" in text)
+    )
+
+
+def validate_formula_explanations(path: Path, clean: str) -> list[Finding]:
+    findings: list[Finding] = []
+    lines = clean.splitlines()
+    for idx, line in enumerate(lines):
+        if not FORMULA_LINE_RE.search(line):
+            continue
+        before = next((lines[j].strip() for j in range(idx - 1, -1, -1) if lines[j].strip()), "")
+        after = next((lines[j].strip() for j in range(idx + 1, len(lines)) if lines[j].strip()), "")
+        before_ok = CHINESE_RE.search(before) and re.search(r"为什么|需要|公式|计算|约束|定义", before)
+        after_ok = CHINESE_RE.search(after) and re.search(r"变量|含义|表示|影响|模型|行为|实际", after)
+        if not before_ok or not after_ok:
+            findings.append(Finding("error", path, "formula lacks natural-language explanation before and after it."))
+            break
+    return findings
+
+
+def validate_final_output_readability(path: Path, text: str) -> list[Finding]:
+    findings: list[Finding] = []
+    if path.name in READABILITY_POLICY_REFERENCE_DOCS and "prompts/FINAL_OUTPUT_READABILITY_POLICY.md" not in text:
+        findings.append(Finding("error", path, "active rule file does not reference prompts/FINAL_OUTPUT_READABILITY_POLICY.md."))
+    if path.name in READABILITY_TEMPLATE_DOCS:
+        if "Final Output Readability" not in text and "最终可读性验收" not in text:
+            findings.append(Finding("error", path, "template lacks a Final Output Readability section."))
+        if "prompts/FINAL_OUTPUT_READABILITY_POLICY.md" not in text:
+            findings.append(Finding("error", path, "template does not bind to prompts/FINAL_OUTPUT_READABILITY_POLICY.md."))
+    if not should_run_full_readability_check(path, text):
+        return findings
+
+    clean = strip_frontmatter_and_code_fences(text)
+    for line in clean.splitlines():
+        stripped = line.strip()
+        if not stripped.startswith("#"):
+            continue
+        heading = re.sub(r"^#{1,6}\s+", "", stripped).strip().strip("`")
+        if INTERNAL_CODE_HEADING_RE.match(heading) or HYPHENATED_ENGLISH_HEADING_RE.search(heading) or re.match(r"(?i)^stage\s+[A-Z]\b", heading) or heading.lower() == "current mature judgment":
+            findings.append(Finding("error", path, f"internal code or machine-style label used as heading: {heading}"))
+
+    first = first_prose_paragraph(text)
+    if not first:
+        findings.append(Finding("error", path, "readability check could not find a natural first paragraph."))
+    else:
+        if BAD_FIRST_PARAGRAPH_START_RE.search(first):
+            findings.append(Finding("error", path, "first paragraph starts with a path, command, all-caps code, or underscore status."))
+        required_groups = [
+            ("main issue", r"问题|瓶颈|关键|最重要|核心"),
+            ("cause", r"为什么|因为|原因|来自|出现"),
+            ("next action", r"现在|下一步|应当|建议|需要"),
+            ("temporary non-action", r"暂时不|不要|不应|不宜|先不"),
+        ]
+        missing = [name for name, pattern in required_groups if not re.search(pattern, first)]
+        if missing:
+            findings.append(Finding("error", path, "first paragraph does not explain: " + ", ".join(missing)))
+
+    if ENGLISH_STACK_RE.search(clean) and not re.search(r"中文|解释|含义", clean):
+        findings.append(Finding("error", path, "final output stacks consecutive English tokens without explanation."))
+
+    mechanism_sections = section_texts(clean, re.compile(r"机制|mechanism", re.IGNORECASE))
+    for section in mechanism_sections:
+        required = [
+            ("problem solved", r"解决|目的|原本|想"),
+            ("implementation gap", r"没有达到|缺口|失败|不足|为什么"),
+            ("information or gradient path", r"信息流|梯度|监督路径|输出路径|gradient"),
+            ("minimal experiment", r"最小实验|最小验证|如何验证|判断改动"),
+        ]
+        missing = [name for name, pattern in required if not re.search(pattern, section, re.IGNORECASE)]
+        if missing:
+            findings.append(Finding("error", path, "mechanism explanation misses: " + ", ".join(missing)))
+
+    findings.extend(validate_formula_explanations(path, clean))
+
+    training_sections = section_texts(clean, re.compile(r"训练阶段|training stage|^#{1,6}\s+Stage\b", re.IGNORECASE))
+    for section in training_sections:
+        section_lines = section.splitlines()
+        section_body = "\n".join(section_lines[1:])
+        bullet_count = sum(1 for line in section_body.splitlines() if re.match(r"^\s*(?:[-*]|\d+\.)\s+", line))
+        has_causal_explanation = re.search(r"排除|为什么|冻结|训练|成功|失败|说明|判断|下一步", section_body)
+        if bullet_count >= 2 and not has_causal_explanation:
+            findings.append(Finding("error", path, "training stages are written as a bare checklist without causal interpretation."))
+    return findings
+
+
 def validate_active_policy_doc(path: Path, text: str) -> list[Finding]:
     findings: list[Finding] = []
     if path.name in ACTIVE_DOC_BASENAMES:
@@ -1445,6 +1630,7 @@ def validate_paths(paths: Sequence[Path], strict_tasks: bool = False) -> list[Fi
     for path in iter_policy_files(paths):
         text = path.read_text(encoding="utf-8")
         findings.extend(validate_active_policy_doc(path, text))
+        findings.extend(validate_final_output_readability(path, text))
         findings.extend(validate_finalizer_state(path, text))
         if path.suffix == ".md":
             findings.extend(validate_task_file(path, text, strict=strict_tasks))

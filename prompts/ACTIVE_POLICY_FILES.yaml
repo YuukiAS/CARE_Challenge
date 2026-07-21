@@ -3,6 +3,7 @@ active_rule_sources:
   - AGENTS.md
   - START_HERE_FOR_GPT.md
   - GPT_PLANNER_CARE_PROTOCOL.md
+  - prompts/FINAL_OUTPUT_READABILITY_POLICY.md
   - prompts/AGENT_FLOW_V2_PROTOCOL.md
   - prompts/AGENT_RULES.md
   - prompts/CHATGPT_RULES.md
