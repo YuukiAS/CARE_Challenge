@@ -72,9 +72,11 @@ def main() -> int:
         if not bool(manifest.get("no_t2_edema_memory_count_zero", False)):
             fail(errors, "no-T2 edema memory vector accepted")
     fixed_path = result_root / "fixed_batch_overfit.json"
+    fixed_passed = False
     if fixed_path.is_file():
         fixed = load_json(fixed_path)
-        if fixed.get("status") != "PASS":
+        fixed_passed = fixed.get("status") == "PASS"
+        if not fixed_passed:
             fail(errors, "fixed overfit did not PASS")
         if int(fixed.get("optimizer_steps", -1)) != 100:
             fail(errors, "fixed overfit steps not exactly 100")
@@ -83,12 +85,24 @@ def main() -> int:
     adequacy_path = result_root / "training_adequacy.json"
     if adequacy_path.is_file():
         adequacy = load_json(adequacy_path)
-        if adequacy.get("formal_training_submitted") is not True:
+        fixed_blocked = adequacy.get("stage") == "fixed_gate_blocked" or adequacy.get("blocking_gate") == "fixed_batch_overfit"
+        if fixed_blocked:
+            if adequacy.get("formal_training_submitted") is not False:
+                fail(errors, "fixed-gate blocked packet must not claim formal training submitted")
+            if adequacy.get("formal_300_step_status") not in {"BLOCKED_FIXED_GATE_FAILED", "SKIPPED_FIXED_GATE_FAILED"}:
+                fail(errors, "formal300 was not marked blocked after fixed gate failure")
+            if adequacy.get("formal_1200_step_status") != "SKIPPED_FIXED_GATE_FAILED":
+                fail(errors, "formal1200 was not skipped after fixed gate failure")
+        elif fixed_passed and adequacy.get("formal_training_submitted") is not True:
             fail(errors, "formal training was not submitted")
         if int(adequacy.get("actual_optimizer_steps", -1)) != 300 and adequacy.get("stage") == "formal_300":
             fail(errors, "formal300 does not report exactly 300 optimizer steps")
         gate = adequacy.get("continuation_gate", {})
-        if adequacy.get("continuation_gate_decision") == "FAIL" and adequacy.get("formal_1200_step_status") != "SKIPPED_STEP300_GATE_FAILED":
+        if (
+            adequacy.get("stage") == "formal_300"
+            and adequacy.get("continuation_gate_decision") == "FAIL"
+            and adequacy.get("formal_1200_step_status") != "SKIPPED_STEP300_GATE_FAILED"
+        ):
             fail(errors, "1200 was not skipped after failed 300 gate")
         if gate.get("decision") == "PASS" and gate.get("checks", {}).get("scar_refiner_only_dice_delta") is False:
             fail(errors, "scar refiner harmful but continuation passed")

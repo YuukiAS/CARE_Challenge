@@ -6,4 +6,4 @@ asset,zero_anchor_pathology_context,discovery_abs_max,1.5380449295043945,PASS
 asset,no_t2_edema_chain,edema_roi_abs_max,0.0,PASS
 asset,no_t2_edema_chain,edema_residual_abs_max,0.0,PASS
 asset,no_t2_edema_chain,edema_correction_abs_max,0.0,PASS
-fixed_overfit,combined_final_pathology_loss_relative_decrease,actual,0.11222805524509555,FAIL
+fixed_overfit,combined_final_pathology_loss_relative_decrease,actual,0.20564072041957518,PASS

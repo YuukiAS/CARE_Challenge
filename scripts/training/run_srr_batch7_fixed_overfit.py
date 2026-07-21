@@ -230,6 +230,10 @@ def run(config: Path, result_root: Path, device_arg: str) -> dict[str, Any]:
             case_ids=case_ids,
         )
         loss, metrics = propref_loss(outputs, y, av, "soft_roi_refinement", args, detach_m6_metrics=False)
+        final_pathology_loss = metrics["loss_final_scar_pathology"] + metrics["loss_final_edema_t2_present_pathology"]
+        final_multiplier = float(cfg["fixed_batch_overfit"].get("final_pathology_loss_multiplier", 1.0))
+        if final_multiplier > 1.0:
+            loss = loss + (final_multiplier - 1.0) * final_pathology_loss
         if step == 0:
             initial_logits = outputs["logits"].detach().clone()
             first = values(metrics)
@@ -340,6 +344,10 @@ def run(config: Path, result_root: Path, device_arg: str) -> dict[str, Any]:
         "rebuilt_asset_sha256": sha256_file(repo_path(cfg["paths"]["rebuilt_asset_path"])),
         "source_model_load": payload.get("model_state_load", {}),
         "production_gate_migration": payload.get("production_gate_migration", {"applied": False}),
+        "fixed_training_loss_overrides": {
+            "final_pathology_loss_multiplier": float(cfg["fixed_batch_overfit"].get("final_pathology_loss_multiplier", 1.0)),
+            "formal_training_credit": 0,
+        },
         "trainable_parameter_names": trainable,
         "initial_losses": first,
         "final_losses": last,

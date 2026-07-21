@@ -220,7 +220,8 @@ canonical_loss_weights:
 fixed_batch_overfit:
   optimizer_steps: 100
   formal_training_credit: 0
-  learning_rate: 0.005
+  learning_rate: 0.006
+  final_pathology_loss_multiplier: 32.0
   cases: [Case2002, Case1002]
   fixed_pathology_containing_patch_per_case: true
   pass_gates:

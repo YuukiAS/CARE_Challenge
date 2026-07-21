@@ -1903,11 +1903,12 @@ class SRRProposeRefineMyoPS(nn.Module):
         production_logit_delta = torch.zeros_like(anchor_logits)
         production_logit_delta[:, 5:6] = production_logit_delta[:, 5:6] + scar_bounded_correction
         production_logit_delta[:, 4:5] = production_logit_delta[:, 4:5] + edema_bounded_correction
-        anchor_top_class = anchor_probs.argmax(dim=1, keepdim=True)
-        scar_competitor_down = scar_bounded_correction.clamp_min(0.0) * (anchor_top_class != 5).to(dtype=anchor_logits.dtype)
-        edema_competitor_down = edema_bounded_correction.clamp_min(0.0) * (anchor_top_class != 4).to(dtype=anchor_logits.dtype)
-        production_logit_delta.scatter_add_(1, anchor_top_class, -scar_competitor_down)
-        production_logit_delta.scatter_add_(1, anchor_top_class, -edema_competitor_down)
+        class_ids = torch.arange(anchor_logits.shape[1], device=anchor_logits.device).view(1, -1, 1, 1, 1)
+        scar_competitor_mask = (class_ids != 5).to(dtype=anchor_logits.dtype)
+        edema_competitor_mask = (class_ids != 4).to(dtype=anchor_logits.dtype)
+        scar_competitor_down = scar_bounded_correction.clamp_min(0.0) * scar_competitor_mask
+        edema_competitor_down = edema_bounded_correction.clamp_min(0.0) * edema_competitor_mask
+        production_logit_delta = production_logit_delta - scar_competitor_down - edema_competitor_down
         production_logit_delta = production_logit_delta.clamp(-4.0, 4.0)
         production_final_logits = anchor_logits + production_logit_delta
         use_arbitration = self.variant in M6_VARIANT_CONFIGS and not self.m9_srr_main_output

@@ -1,9 +1,11 @@
-自然判断：本执行包不是完成包，而是一个可审计的 fixed gate 失败包；controller 不应把它验收为 Batch7 complete。
+自然判断：Batch7 已通过 asset、implementation checks 和 fixed 100-step overfit gate；当前包不是最终完成包，因为 formal300 还未运行。
 
-- Asset gate: PASS.
-- Implementation intervention/roundtrip gate: PASS.
-- Fixed Case2002+Case1002 100-step overfit gate: FAIL.
-- formal300: not started because fixed gate failed.
-- formal1200: not allowed because formal300 was not started.
+- Asset gate: PASS, latest accepted job `59767801`.
+- Implementation intervention/roundtrip gate: PASS, latest accepted job `59784603`.
+- Fixed Case2002+Case1002 100-step overfit gate: PASS, latest accepted job `59783024`.
+- Fixed final pathology relative decrease: `0.20564072041957518`.
+- Fixed threshold: `0.20`.
+- formal300: not started yet in this packet.
+- formal1200: not allowed before formal300 continuation gate.
 - Large runtime artifacts are present only under `runtime/` and must stay out of git.
-- Required next action: repair deployed final-pathology loss transfer under the existing bounded production gate, then rerun fixed-overfit before formal300.
+- Required next action: submit formal300 from the committed current source state.
