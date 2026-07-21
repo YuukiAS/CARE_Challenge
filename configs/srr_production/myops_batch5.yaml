@@ -1,0 +1,120 @@
+schema_version: 1
+authority_name: srr_batch5_post_batch4_diagnostic_repair
+batch: 5
+status: READY_FOR_CONTROLLER
+source_batch4:
+  result_root: results/20260721_srr_batch4_forced_fold0_training
+  training_source_commit: 0466260e3f4eb6c50b05a7f5a8b66652b873fe46
+  terminal_packet_commit: 82524678e8c4aae5c088b24db8a00643c2603ae9
+  selected_checkpoint_step: 1800
+  selected_checkpoint_sha256: bc325754202d5cf0aa59aa8fab0306b38c2665640339afa3f8d06a13c70009f6
+  candidate_steps: [600, 1200, 1800]
+  fold: 0
+  train_cases: 176
+  validation_cases: 44
+baseline:
+  source: nnunet_fold0_validation
+  edema_positive_case_dice: 0.3944358976789887
+  scar_positive_case_dice: 0.5601692281262312
+scope:
+  training_allowed: false
+  optimizer_steps_allowed: 0
+  checkpoint_weights_mutable: false
+  prototype_memory_mutable: false
+  validation_upload_allowed: false
+  hosted_metric_claim_allowed: false
+  fold_expansion_allowed: false
+  cine_allowed: false
+primary_output_semantics:
+  runtime_mode: anchor_bounded_srr_correction
+  decode_rule: model_logits_argmax
+  selection_decode_rule: model_logits_argmax
+  pathology_aware_role: diagnostic_only_not_checkpoint_authority
+metric_semantics:
+  primary_pathology_population: positive_gt_cases
+  report_all_case_empty_safe_separately: true
+  report_positive_case_dice: true
+  report_positive_case_hd95: true
+  report_casewise_help_harm: true
+  report_component_count: true
+  report_remote_fp_volume_mm3: true
+checkpoint_selection:
+  candidates: [600, 1200, 1800]
+  eligibility:
+    minimum_each_pathology_dice_delta: -0.002
+    maximum_hd95_relative_worsening: 0.05
+    maximum_remote_fp_relative_worsening: 0.05
+    require_help_cases_not_less_than_harm: true
+  lexicographic_order:
+    - maximize_min_scar_edema_positive_case_dice_delta
+    - maximize_mean_scar_edema_positive_case_dice_delta
+    - minimize_harm_case_pathology_count
+    - minimize_mean_positive_case_hd95
+    - minimize_remote_fp_delta_mm3
+    - select_earlier_step
+  no_eligible_candidate_status: B5_NO_SAFETY_ELIGIBLE_CHECKPOINT
+runtime_interventions:
+  checkpoint_sha_must_match: true
+  case_set_must_match: true
+  decode_rule_must_match: true
+  modes:
+    - anchor_identity_control
+    - anchor_bounded_full
+    - srr_no_anchor_control
+    - anchor_bounded_proposal_only
+    - anchor_bounded_refiner_only
+    - production_gate_closed
+    - production_gate_open_bounded_control
+  diagnostic_only_modes:
+    - anchor_bounded_proposal_only
+    - anchor_bounded_refiner_only
+    - production_gate_open_bounded_control
+production_gate_evidence:
+  per_pathology_fields:
+    - gate_mean
+    - gate_p50
+    - gate_p95
+    - gate_max
+    - raw_correction_abs_mean
+    - raw_correction_abs_p95
+    - bounded_correction_abs_mean
+    - bounded_correction_abs_p95
+    - changed_voxels
+    - dice_delta
+    - hd95_delta
+    - component_delta
+    - remote_fp_delta_mm3
+  require_casewise_join: true
+prototype_manifest_required_hashes:
+  - asset_sha256
+  - feature_hash
+  - config_sha256
+  - source_commit
+  - split_hash
+  - anchor_manifest_hash
+scientific_classification:
+  candidate_signal_minimum_mean_dice_delta: 0.01
+  strong_signal_minimum_each_pathology_dice_delta: 0.03
+  allowed_batch5_decisions:
+    - B5_OUTPUT_AUTHORITY_BOTTLENECK
+    - B5_PROPOSAL_PRECISION_BOTTLENECK
+    - B5_REFINER_EFFECTIVENESS_BOTTLENECK
+    - B5_EVALUATION_SEMANTICS_ONLY_ISSUE
+    - B5_INSUFFICIENT_MECHANISM_EVIDENCE
+  require_exactly_one_batch6_repair_direction: true
+slurm:
+  inference_only_allowed: true
+  training_forbidden: true
+  python_executable: /users/a/e/aereinh/CARE/envs/env_CARE/bin/python
+  primary_partition: htzhulab
+  a100_race_after_pending_seconds: 900
+  volta_allowed: false
+  maximum_runtime_seconds: 3600
+  continuity_backend: slurm_dependency
+  finalizer_dependency: afterany
+completion:
+  required_status: VERIFIED_COMPLETE
+  planning_review_required: false
+  review_required: false
+  controller_is_coordinator: true
+  next_action: RETURN_TO_PLANNER
