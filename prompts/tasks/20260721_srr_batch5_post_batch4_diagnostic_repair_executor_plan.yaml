@@ -1,4 +1,4 @@
-schema_version: 1
+schema_version: 2
 task_key: 20260721_srr_batch5_post_batch4_diagnostic_repair
 status: READY_FOR_CONTROLLER
 execution_mode: controller_supervised
@@ -11,12 +11,13 @@ controller_task_path: prompts/tasks/20260721_srr_batch5_post_batch4_diagnostic_r
 planning_review_required: false
 review_required: false
 waves:
-  - wave_id: B5_WAVE0_CODE_AND_SEMANTICS_REPAIR
+  - wave_id: B5_WAVE0_CODE_SEMANTICS_AND_LOSS_AUTHORITY_AUDIT
     executor_id: batch5_executor
     blocking: true
     dependencies: []
     write_scope:
       - scripts/evaluation/audit_srr_batch4_selection_semantics.py
+      - scripts/evaluation/audit_srr_batch5_loss_authority.py
       - scripts/evaluation/aggregate_srr_batch4_packet.py
       - scripts/srr_production/infer_myops.py
       - src/care_myocardium/models/srr_propref.py
@@ -26,15 +27,28 @@ waves:
       - configs/srr_production/myops_batch5.yaml
       - jobs/srr_production/
       - results/20260721_srr_batch5_post_batch4_diagnostic_repair/
+    read_required:
+      - scripts/training/run_srr_propref_myops_fold0.py
+      - src/care_myocardium/losses/srr_losses.py
+      - configs/srr_production/myops_batch4.yaml
     required_outputs:
       - results/20260721_srr_batch5_post_batch4_diagnostic_repair/implementation_snapshot.md
       - results/20260721_srr_batch5_post_batch4_diagnostic_repair/evaluation_semantics_audit.md
+      - results/20260721_srr_batch5_post_batch4_diagnostic_repair/loss_authority_audit.md
+      - results/20260721_srr_batch5_post_batch4_diagnostic_repair/loss_parameter_gradient_matrix.csv
+      - results/20260721_srr_batch5_post_batch4_diagnostic_repair/loss_directionality_audit.csv
     completion_conditions:
       - batch4_historical_results_immutable
       - formal_decode_rule_is_model_logits_argmax
       - pathology_aware_is_diagnostic_only
       - production_gate_outputs_exposed
       - inference_ablation_defaults_preserve_existing_behavior
+      - effective_loss_weights_and_aliases_resolved
+      - direct_final_pathology_supervision_status_recorded
+      - production_gate_gradient_authority_recorded
+      - correction_and_refiner_magnitude_directionality_recorded
+      - no_backbone_replacement_or_comparison
+      - optimizer_step_count_zero
       - tests_exit_zero
     failure_action: controller_returns_to_same_executor_for_repair
 
@@ -42,7 +56,7 @@ waves:
     executor_id: batch5_executor
     blocking: true
     dependencies:
-      - B5_WAVE0_CODE_AND_SEMANTICS_REPAIR
+      - B5_WAVE0_CODE_SEMANTICS_AND_LOSS_AUTHORITY_AUDIT
     write_scope:
       - jobs/srr_production/
       - logs/srr_batch5/
@@ -70,18 +84,24 @@ waves:
       require_isolated_attempt_directories: true
       cancel_pending_losers: true
       optimizer_steps_must_equal_zero: true
+      backward_diagnostic_allowed: true
+      parameter_updates_forbidden: true
     required_outputs:
       - results/20260721_srr_batch5_post_batch4_diagnostic_repair/slurm_attempts.csv
       - results/20260721_srr_batch5_post_batch4_diagnostic_repair/checkpoint_reranking.csv
       - results/20260721_srr_batch5_post_batch4_diagnostic_repair/mode_intervention_metrics.csv
       - results/20260721_srr_batch5_post_batch4_diagnostic_repair/casewise_mechanism_attribution.csv
+      - results/20260721_srr_batch5_post_batch4_diagnostic_repair/oracle_headroom.csv
     completion_conditions:
       - all_three_checkpoint_steps_evaluated_on_44_cases
       - all_interventions_use_same_case_set_and_checkpoint_hash
       - positive_gt_and_all_case_metrics_separated
       - production_gate_casewise_fields_complete
+      - oracle_best_mode_is_labeled_diagnostic_only
+      - oracle_gain_and_correctable_error_fields_complete
       - all_inference_jobs_terminal_accounted
       - optimizer_step_count_zero
+      - no_parameter_updates
     failure_action: same_scope_operational_repair_and_retry
 
   - wave_id: B5_WAVE2_PROVENANCE_STATE_AND_DECISION
@@ -104,12 +124,21 @@ waves:
       - results/20260721_srr_batch5_post_batch4_diagnostic_repair/controller_report.md
       - results/20260721_srr_batch5_post_batch4_diagnostic_repair/completion_check.md
       - results/20260721_srr_batch5_post_batch4_diagnostic_repair/MANIFEST.md
+    allowed_unique_decisions:
+      - B5_FINAL_OBJECTIVE_ALIGNMENT_BOTTLENECK
+      - B5_OUTPUT_AUTHORITY_BOTTLENECK
+      - B5_PROPOSAL_PRECISION_BOTTLENECK
+      - B5_REFINER_EFFECTIVENESS_BOTTLENECK
+      - B5_EVALUATION_SEMANTICS_ONLY_ISSUE
+      - B5_INSUFFICIENT_MECHANISM_EVIDENCE
     completion_conditions:
       - prototype_feature_config_code_split_anchor_asset_hashes_nonempty
       - current_machine_truth_updated
       - root_wiki_and_fingerprint_updated
       - strict_validator_exit_zero
       - exactly_one_batch6_repair_direction
+      - batch6_decision_uses_loss_authority_and_oracle_headroom_evidence
+      - backbone_swap_not_selected_from_batch5
       - controller_verification_decision_VERIFIED_COMPLETE
     failure_action: NEEDS_REPAIR
 finalizer:
