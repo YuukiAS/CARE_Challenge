@@ -1,108 +1,101 @@
 # Start Here For GPT
 
-This is the root entrypoint for any new GPT/ChatGPT planning thread reading this repository. Read this file before writing CARE milestones, Codex goals, handoffs, route judgments, or review instructions.
+本文件是所有 CARE GPT/ChatGPT 规划、路线判断、Batch 复盘和 Codex goal 的根入口。
 
-## Required Reading Order
+## 必读顺序
 
 1. `START_HERE_FOR_GPT.md`
 2. `GPT_PLANNER_CARE_PROTOCOL.md`
 3. `AGENTS.md`
-4. `README.md`
-5. `prompts/CHATGPT_RULES.md`
+4. `prompts/AGENT_FLOW_V2_PROTOCOL.md`
+5. `prompts/HANDOFF_GATE_POLICY.md`
 6. `prompts/GPT_HARD_GATE_PROMPT.md`
-7. `prompts/MILESTONE_REVIEW_PROTOCOL.md`
-8. `prompts/AGENT_FLOW_V2_PROTOCOL.md`
-9. `prompts/routes/ROUTE_ANTI_LAZINESS_PROTOCOL.md`
-10. `prompts/routes/ROUTE_HARD_REQUIREMENTS_MATRIX.md`
-11. `prompts/THREAD_BOOTSTRAP_ROUTE_IMAGE_PROTOCOL.md`
+7. `prompts/routes/ROUTE_ANTI_LAZINESS_PROTOCOL.md`
+8. `prompts/routes/ROUTE_HARD_REQUIREMENTS_MATRIX.md`
+9. `prompts/routes/handoffs/CURRENT.md`
+10. `routes/README.md`
+11. `wiki/README.md`
+12. 当前任务、结果、代码和必要 skill。
 
-Do not rely only on old chat summaries, memory, or natural-language recaps when planning SRR/MyoPS/Cine routes.
+不得用旧聊天记忆、watchboard、旧 route 状态或自然语言总结替代当前远端 `main` 和 `CURRENT.md`。
 
-## Current Main-Only Development Posture
+## 当前 main-only posture
 
-As of `prompts/routes/handoffs/CURRENT.md` dated 2026-07-20, default future GPT/Codex work is on `main` at `/users/a/e/aereinh/CARE`. Route A, Route B, and Route C are historical evidence lanes, not active development branches. Do not start route worktree controllers, do not create a new portfolio round, and do not use `/users/a/e/aereinh/CARE_worktrees/route_*` for new implementation unless the user explicitly authorizes a named route reactivation in a new handoff.
-
-Future planning should focus on diagnosing and repairing the current `main` codebase, fair baseline comparison, validation packaging readiness, and evidence-backed small improvements. Historical route evidence may be read from `results/route_B/`, `results/route_C/`, and retained remote route branches as provenance, but route-specific rules below apply only when a route is explicitly reactivated or when interpreting historical route evidence.
-
-For Route A/B/C work, every planner, critic, controller, and reviewer must apply `prompts/routes/ROUTE_ANTI_LAZINESS_PROTOCOL.md` and `prompts/routes/ROUTE_HARD_REQUIREMENTS_MATRIX.md` before accepting a non-ready token, short smoke run, monitor packet, validator pass, or runnable-only plan as a stopping point. The hard-requirements matrix persists across all future route portfolio rounds.
-
-Planner and critic must not leave design blanks for Codex/controller. A route plan or critic handoff must explicitly define model structure, training/eval budget, input/output paths, Slurm strategy, validator semantics, known-bad fixtures, stop conditions, completion tokens, and reviewer pass/fail. Vague delegation such as `TBD`, `optional`, `as appropriate`, `if needed`, `choose best`, `Codex decide`, or `controller decide` is a hard-gate failure unless the same section defines the trigger, default, allowed range, evidence requirement, failure branch, and reviewer judgment.
-
-Planner and critic must also apply the M9/M10 inherited hard gates now recorded in `prompts/routes/ROUTE_HARD_REQUIREMENTS_MATRIX.md`: truthful mechanism-closure evidence naming, runtime fingerprint audit before inheritance, machine-readable contract and hash/commit binding, faithful Cine/registration negative boundaries, durable finalizer, runtime no-push, and independent reviewer boundary.
-
-## Future Milestone Prompt Authoring
-
-For any future CARE milestone, GPT/ChatGPT must write both the Codex executor prompt content and the independent reviewer prompt content. Do not provide only an executor prompt or only a reviewer prompt.
-
-Because direct GPT edits to the large canonical shared files can fail or corrupt context, author each new milestone first as a standalone Markdown staging file under `prompts/shared/` named `M<id>_<short_slug>.md`, for example `M<id>_mechanism_repair.md`. The staged file is temporary: a later Codex maintenance step will split/merge its content into `prompts/shared/EXECUTOR_PROMPTS.md` and `prompts/shared/REVIEWER_PROMPTS.md`, then delete the standalone staging file after successful merge.
-
-Every staged milestone file matching `prompts/shared/M[0-9]*_*.md` must start on
-line 1 with real YAML frontmatter. `## Execution Contract` is a human-readable
-mirror only. The validator must reject a staging file with no frontmatter, a
-frontmatter/body mismatch, a missing `executor_plan_path`, or an executor plan
-that fails `scripts/ops/validate_executor_plan.py`.
-
-Future staged milestones default to no planning critic. Risk fields such as
-`task_kind: scientific_milestone`, `risk_level: high`,
-`architecture_impact: system`, `slurm_runtime_continuity_required: true`,
-`executor_count > 1`, `route_change: true`, and
-`scientific_decision_scope != none` classify risk and required evidence, but do
-not automatically require a separate GPT critic.
+默认仓库：
 
 ```text
-planner GPT -> separate GPT critic -> Codex merge/validator -> controller
+/users/a/e/aereinh/CARE
+main
 ```
 
-This planning critic is not a controller subagent and is not the runtime
-reviewer after execution. Use frontmatter fields
-`planning_review_required: true`, `planning_reviewer: separate_gpt_thread`,
-`planning_review_path`, `planning_review_token`, and
-`planning_reviewed_commit`. Without a valid critic review whose contract hash
-matches the current staging prompt, a critic-required staging file can only be
-`DRAFT_FOR_PLANNING_REVIEW`, `PLANNING_REVIEW_RUNNING`,
-`NEEDS_PLANNING_REVISION`, or `BLOCKED_HANDOFF_REVIEW`, never
-`READY_FOR_CODEX_MERGE`.
-
-Short tasks must use this structure:
+禁止默认写入：
 
 ```text
-## Execution Contract
-## Executor Prompt
-## Reviewer Prompt
+/overflow/htzhu/CARE
+/users/a/e/aereinh/CARE_worktrees/route_A
+/users/a/e/aereinh/CARE_worktrees/route_B
+/users/a/e/aereinh/CARE_worktrees/route_C
 ```
 
-Long Slurm, overnight, multi-job, controller-supervised, or high-resume-risk tasks must use this structure:
+Route A/B/C 是历史 evidence lanes。只有用户显式重新授权某条 route 时，才恢复 route worktree/controller。
+
+## 默认 Sprint Flow
+
+当前默认流程：
 
 ```text
-## Execution Contract
-## Controller Prompt
-## Executor Worker Contract
-## Mapper Contract
-## Reviewer Prompt
+Planner
+-> Controller/Coordinator
+   -> Executor
+   -> optional Mapper
+   -> deterministic Finalizer/Validator
+   -> Controller verification and repair loop
+   -> local lightweight result commit
+-> Planner
 ```
 
-Long Slurm or overnight tasks without a Controller Prompt and durable finalizer contract are invalid.
+短、非 Slurm、低恢复风险任务可以：
 
-When a staged long milestone is later merged into the shared prompts, merge
-`Execution Contract`, `Controller Prompt`, `Executor Worker Contract`, and
-`Mapper Contract` into `prompts/shared/EXECUTOR_PROMPTS.md`. Merge only
-`Reviewer Prompt` into `prompts/shared/REVIEWER_PROMPTS.md`. Keep any
-`executor_plan.yaml` as `prompts/tasks/<task_key>_executor_plan.yaml`; do not
-paste executor plans into the large shared prompt files.
+```text
+Planner -> Executor -> local result commit -> Planner
+```
 
-## Agent-Flow v2 Handoff Model
+Controller 是 coordinator 和 acceptance owner。Executor 负责代码和命令，但不能宣布整个任务完成。
 
-Before writing a CARE handoff, read `prompts/AGENT_FLOW_V2_PROTOCOL.md` and the current architecture entry at `wiki/README.md`. Use only the v2 role names from the permanent protocol: `planner`, `critic`, `controller`, `executor`, `mapper`, `finalizer`, `validator`, and `reviewer`. New tasks must not introduce an internal `auditor` role; historical `auditor` fields are legacy aliases for the independent `reviewer`.
-
-Every new CARE milestone or controller task must explicitly declare:
+默认：
 
 ```yaml
+planning_review_required: false
+planning_reviewer: none
+planning_review_path: null
+planning_review_token: null
+planning_reviewed_commit: null
+review_required: false
+review_mode: none
+reviewer: none
+```
+
+高风险、system-impact、Slurm、scientific milestone、route change 或 scientific decision scope 只提高证据、validator 和 controller 验收要求，不自动触发 critic/reviewer。
+
+只有用户或 Planner 在具体任务中显式设置 `planning_review_required: true` 或 `review_required: true`，才启用旧的独立 planning critic 或 read-only reviewer。
+
+## 新任务必须声明
+
+```yaml
+task_key:
+task_kind:
+task_type:
+status:
+risk_level:
+route_change:
+scientific_decision_scope:
 execution_mode: direct_executor | controller_supervised
 requires_execution_controller: true | false
+controller_is_coordinator: true | false
 executor_slots: 1
 executor_count: 1
 parallel_execution_allowed: false
-executor_plan_path: prompts/tasks/<task_key>_executor_plan.yaml
+executor_plan_path:
 mapper_slots: 1
 mapper_required: true | false
 architecture_impact: none | component | system
@@ -110,68 +103,104 @@ wiki_update_required: true | false
 diagram_update_required: true | false
 slurm_runtime_continuity_required: true | false
 continuity_backend: none | slurm_dependency | tmux_watcher
+planning_review_required: false | true
 review_required: false | true
-review_mode: none | independent_thread | short_goal
-reviewer: none | separate_readonly
+allow_git_commit: true | false
+auto_git_commit: true | false
+allow_git_push: false
+auto_git_push: false
+allow_diagnostic_push: false
 ```
 
-Use `controller_supervised` for overnight, long Slurm, multi-job, or high-resume-risk work. Default to exactly one executor and one mapper unless the GPT-authored task graph explicitly grants more isolated slots. Any `executor_count > 1`, `executor_slots > 1`, or `parallel_execution_allowed: true` task must include a validated executor plan with isolated write scopes, worktrees, runtime outputs, logs, locks, and merge order. The controller is the coordinator and acceptance owner: it owns continuity, phase grounding, executor supervision, git-diff inspection, same-scope repair loops, Slurm terminal accounting, aggregation, validators, and local result commit. Reviewer is optional and used only when `review_required: true` is explicit. Controller reports must end with `controller_verification_decision` and the required machine-checkable completion fields.
+长 Slurm/overnight/multi-job/high-resume-risk 必须用 `controller_supervised` 和 durable finalizer。任何 `executor_count > 1` 必须有隔离写入范围和有效 executor plan。
 
-For architecture-affecting work, use `.agents/skills/care-mapper/SKILL.md` and the helpers in `scripts/architecture/`. A route or handoff update is not complete if `wiki/COMPONENTS.csv`, `wiki/architecture.yaml`, required figures, Toolkit healthcheck, or mapper/finalizer evidence is stale.
+## Prompt 结构
 
-## Dynamic History Reading For System-Level Redesign
+短任务默认：
 
-Before writing any system-level milestone or route-level redesign, GPT must read
-the latest reviewed predecessor from `wiki/current_state.yaml` unless the task
-explicitly declares:
-
-```yaml
-history_baseline_override:
-history_baseline_override_reason:
+```text
+## Execution Contract
+## Executor Prompt
 ```
 
-Minimum dynamic history sources:
+长 controller 任务默认：
 
-- `wiki/history/COMPARISON.md`
-- `wiki/current_state.yaml`
-- `wiki/history/<predecessor>/README.md`
-- `wiki/history/<predecessor>/COMPONENTS.csv`
-- every relevant file matching `wiki/history/<predecessor>/components/*.md`
+```text
+## Execution Contract
+## Controller Prompt
+## Executor Worker Contract
+## Mapper Contract
+```
 
-If the milestone touches only a small component subset, GPT may read the
-predecessor README, COMPARISON, COMPONENTS, and relevant component files.
-System-level redesign must read all predecessor component files. GPT output
-must list the exact history files read before proposing execution.
+只有 `review_required: true` 时才添加：
 
-## MONITOR_PACKET_IS_NOT_COMPLETION
+```text
+## Reviewer Prompt
+```
 
-Any GPT/ChatGPT milestone, handoff, or review instruction must enforce this rule: a monitor packet, pending Slurm job packet, watcher packet, or submitted-only job packet is not completion.
+Reviewer prompt 不得作为所有 milestone 的默认必需段。
 
-If `completion_check.md` includes `NEEDS_MONITOR`, `PENDING_MONITOR`, `JOB_SUBMITTED`, `PENDING_PRIORITY`, `RUNNING`, `AWAITING_SACCT`, or equivalent pending/monitor language, GPT must not ask a reviewer to grant audited-go. The correct reviewer decision is `NEEDS_EVIDENCE` or `NEEDS_MONITOR`.
+## Controller 完成语义
 
-After a Slurm job completes, the executor must rerun the relevant aggregator/evidence collector and commit tracked lightweight evidence containing job id, state, exit code, runtime, log path, runtime output path, aggregation command, and updated tracked evidence files. `commands_run.md` with only `sbatch submitted`, `squeue pending`, `PENDING Priority`, or pending `sacct` is not completion evidence.
+Controller 必须检查：
 
-This applies to all CARE milestones and follow-ups.
+- 当前 SHA 和任务 hash；
+- Executor 的真实 diff；
+- frozen model/config/split/case/budget/decode/metric 字段；
+- tests、known-bad、strict validators；
+- Slurm terminal accounting；
+- post-completion aggregation；
+- exact required outputs；
+- CURRENT/wiki/fingerprint 一致性；
+- lightweight local commit 边界。
 
-## Slurm Job Planning Skill
+Controller report 必须包含：
 
-Before writing any GPT/ChatGPT milestone, Codex goal, handoff, or execution instruction that will submit a Slurm job, read and apply `.agents/skills/slurm-routing-partition/SKILL.md`. The same skill must be used before every actual `sbatch` or `srun` submission in this repo.
+```text
+controller_verification_decision: VERIFIED_COMPLETE | NEEDS_REPAIR | OPERATIONALLY_BLOCKED
+```
 
-The skill is the local source for CARE partition priority, fallback routing, routing races, QOS/header defaults, monitor packet handling, and scheduler block rules. For goal tasks, if all submitted routing partitions remain pending, poll every 2 hours; only after 12 consecutive 2-hour checks, 24 hours total, with every submitted routing partition still pending and no job started may the goal be marked blocked for scheduler saturation.
+`VERIFIED_COMPLETE` 只代表当前 Batch 执行合同完成。下一 Batch、训练扩展、route promotion、validation upload、hosted claim 和 final scientific decision仍由 Planner/用户决定。
 
-## SRR/MyoPS/Cine Route Bootstrap
+## SRR/MyoPS/Cine 图视觉门
 
-Before writing any SRR/MyoPS/Cine milestone, Codex goal, handoff, or route decision, read the SRR route diagrams from the current ChatGPT Project background files / project materials. Use these canonical repository filenames and versions as identifiers:
+任何 SRR/MyoPS/Cine 规划前必须按 `prompts/THREAD_BOOTSTRAP_ROUTE_IMAGE_PROTOCOL.md` 视觉读取 ChatGPT Project 材料中的：
 
-- `images/SRR-v2.png`
-- `images/SRR-v2.5.png`
-- `images/SRR-v3.png`
-- any later SRR/MyoPS route diagrams present under `images/`
+```text
+SRR-v2
+SRR-v2.5
+SRR-v3
+以及更晚版本
+```
 
-The repository image paths remain the canonical filenames and version references, but they are not the required GPT visual-reading entrypoint. Do not rely on GitHub connector PNG blobs, SHA/base64 metadata, filenames, old chat summaries, memory, or text recaps as a substitute for visual reading through ChatGPT Project background materials or images uploaded into the current conversation.
+仓库文件名和 GitHub blob metadata 不能替代视觉阅读。
 
-Follow `prompts/THREAD_BOOTSTRAP_ROUTE_IMAGE_PROTOCOL.md` exactly. After reading the diagrams, first state the route objective in your own words.
+规划必须恢复以下路线目标：
 
-The recovered route objective must preserve this meaning: SRR-MyoPS is availability-aware selective retrieval plus a semantic representation retrieval bank, anatomy-guided lesion proposal, pathology-specific soft-ROI refinement, and explicit losses/objectives. nnU-Net or another strong segmentation model may be used only as anchor, context, evidence, or safety source. Do not downgrade SRR into optional post-processing or a generic fallback around nnU-Net.
+```text
+[LGE,T2,C0] + availability
+-> modality-specific multi-scale encoding
+-> shared/private/interaction selective retrieval
+-> prototype/memory/negative-space
+-> anatomy-guided scar/edema proposals
+-> pathology-specific soft ROI refinement
+-> bounded nnU-Net correction
+```
 
-If the diagrams cannot be accessed or visually interpreted from ChatGPT Project background materials, block before generating any milestone. Report `BLOCKED_PROJECT_ROUTE_DIAGRAMS_UNAVAILABLE`, list the missing versions, and ask the user to add the diagrams to the ChatGPT Project background materials or upload them into the current conversation.
+无法读图时停止为：
+
+```text
+BLOCKED_PROJECT_ROUTE_DIAGRAMS_UNAVAILABLE
+```
+
+## Slurm 门
+
+涉及 Slurm 时必须读取 `.agents/skills/slurm-routing-partition/SKILL.md`。正式 wrapper 禁止裸 `python`。Submitted、pending、running、monitor、awaiting sacct 均不是完成。Controller 必须持续负责到所有 job terminal、aggregation 和 validator 完成。
+
+## Mapper 门
+
+涉及 architecture、loss、dataflow、export、Cine temporal、registration 或 controller observability 时必须读取 `.agents/skills/care-mapper/SKILL.md`，并更新 root wiki/fingerprint 或明确记录 stale evidence。
+
+## 历史 reviewer 协议
+
+`prompts/MILESTONE_REVIEW_PROTOCOL.md` 只适用于显式 `review_required: true` 的历史或特殊任务。默认 Batch 不得因为缺少 `review.md` 被阻塞。
