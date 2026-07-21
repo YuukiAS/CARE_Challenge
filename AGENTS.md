@@ -57,17 +57,28 @@ For this temporary `/users` copy, repo-local skills under `.agents/skills/` shou
 
 Treat this `AGENTS.md` as the repo-level Codex rules source. Do not rely on `.cursor/rules/`, `.cursor/skills/`, `.cursor/plans/`, or Cursor plugins; migrate future rule changes here.
 
+Current CARE rule priority:
+
+- `AGENTS.md` is the repository entrypoint and local operating rule source.
+- For new CARE handoffs, `prompts/AGENT_FLOW_V2_PROTOCOL.md` and `prompts/schemas/agent_flow_policy.yaml` define the active role model, schemas, and controller lifecycle.
+- Bridge Kit sections in this file are compatibility guidance and reference indexes. They must not override the current Agent-Flow v2 active roles, main-only default, reviewer boundary, or readability gate.
+- Route A/B/C rules remain binding when reading historical route evidence or when a new human-approved handoff explicitly reactivates a named route; otherwise future implementation defaults to `main`.
+
 ## Final output readability gate
 
-For user-facing analysis, Batch retrospectives, planner recommendations, controller conclusions, and any explicit reviewer conclusions, follow `prompts/FINAL_OUTPUT_READABILITY_POLICY.md`. Controller analysis of status, cause, and repair direction must start with a natural Chinese judgment and must not begin with internal terms such as scar FN/FP, anchor, gate, final loss, or repair target. The final answer must first state the scientific meaning in natural Chinese, then provide internal labels, paths, metrics, commands, or machine fields only as locating evidence. Do not use repository experiment codes, status tokens, route labels, or mechanism names as the heading or conclusion unless their meaning has already been explained in plain language.
+For user-facing analysis, Batch retrospectives, planner recommendations, controller reports, controller conclusions, and any explicit reviewer conclusions, follow `prompts/FINAL_OUTPUT_READABILITY_POLICY.md`. The first paragraph must explain the practical scientific meaning in natural Chinese: what happened, why it matters, what should happen next, and what remains unauthorized or uncertain.
+
+Paths, metrics, commands, schema fields, status tokens, route labels, experiment codes, English model names, and machine-readable decisions are locating evidence only. Put them after the plain-language judgment, not in the title or opening conclusion. Do not use repository experiment codes, status tokens, route labels, or mechanism names as the heading or conclusion unless their meaning has already been explained in plain language.
+
+Do not stack unexplained English technical phrases. Controller analysis of status, cause, and repair direction must not begin with internal terms such as scar FN/FP, anchor, gate, final loss, or repair target; translate the mechanism into plain scientific language first, then provide the internal labels for lookup.
 
 ## Agent-Flow v2 controller handoff
 
 ### Current main-only posture
 
-As of 2026-07-20, future GPT/Codex implementation defaults to `main` in `/users/a/e/aereinh/CARE`. Route A/B/C worktrees and remote route branches are retained for provenance, but they are not active development targets. Do not start a new route controller, route worktree implementation, portfolio round, validation upload, route promotion, M11, hosted metric claim, or final scientific decision unless the user explicitly authorizes that scope in a new handoff. Historical route protocols remain binding when reading route evidence or if a route is later reactivated.
+As of 2026-07-20, future GPT/Codex implementation defaults to `main` in `/users/a/e/aereinh/CARE`. Route A/B/C worktrees and remote route branches are retained for provenance, but they are not active development targets. Do not start a new route controller, route worktree implementation, portfolio round, validation upload, route promotion, M11, hosted metric claim, or final scientific decision unless the user explicitly authorizes that scope in a new handoff. Historical route protocols remain binding when reading route evidence or if a route is later reactivated by a human-approved handoff.
 
-For new CARE handoffs, `prompts/AGENT_FLOW_V2_PROTOCOL.md` and `prompts/schemas/agent_flow_policy.yaml` are the canonical sources. Use only these active role names: `planner`, `critic`, `controller`, `executor`, `mapper`, `finalizer`, `validator`, and `reviewer`. Historical `auditor`, `execution_controller`, and strategic-controller fields are legacy aliases only; do not create a controller-internal auditor subagent in new tasks.
+For new CARE handoffs, `prompts/AGENT_FLOW_V2_PROTOCOL.md` and `prompts/schemas/agent_flow_policy.yaml` are the canonical sources. Use only these active role names: `planner`, `critic`, `controller`, `executor`, `mapper`, `finalizer`, `validator`, and `reviewer`. Historical `auditor`, `execution_controller`, and `strategic-controller` fields are legacy aliases only; do not create a controller-internal legacy `auditor` subagent in new tasks.
 
 Short, non-Slurm, low-resume-risk work may use `planner -> executor -> local result commit -> planner`. Overnight, long Slurm, multi-job, or high-resume-risk work must use `planner -> controller/coordinator -> executor/mapper/finalizer/validator -> controller verification and repair loop -> local result commit -> planner`.
 
@@ -346,6 +357,8 @@ When a task matches an installed skill, read that skill's `SKILL.md` before acti
 - The installer only manages paths recorded in that manifest.
 - User-created skills outside the manifest are never pruned.
 <!-- AI_SKILLS_COLLECTION_END -->
+The following Bridge Kit-managed section is retained as generic handoff protocol and compatibility reference. If it appears to conflict with the current CARE Agent-Flow v2 rules above, follow the current CARE rule priority section, active role list, main-only default, and final-output readability gate.
+
 <!-- ai-bridge-kit:start -->
 # Handoff Protocol
 
@@ -385,8 +398,8 @@ data-derived local evidence packages. They are ignored by default and must not b
 published wholesale.
 
 When GPT needs repository-visible context for deciding the next task, the
-controller may publish only the smallest reviewed diagnostic packet after audit
-or re-audit. Prefer the controller `controller_report.md` and
+controller may publish only the smallest reviewed diagnostic packet after review
+or re-review. Prefer the controller `controller_report.md` and
 `execution_plan.md`, plus each relevant subtask's `result.md` and explicit `review.md` only when review was required.
 Small reviewed Markdown decision packets such as `failure_interpretation.md`,
 `architecture_gap_audit.md`, `label_export_qc.md`, `training_schedule.md`, or
@@ -413,7 +426,7 @@ reviewer can see `completion_check.md`, `review_request.md`, contracts, and
 required evidence tables without relying on local ignored state. Nested
 runtime artifacts, checkpoints, predictions, NIfTI files, logs, uploads,
 transcripts, environment dumps, and heavy or sensitive tables remain forbidden
-unless an explicit audited publication gate approves the exact files.
+unless an explicit reviewed publication gate approves the exact files.
 
 For routine handoff/result publication commits, Codex may stage the safe
 first-level Markdown packet without a separate user reminder by running:
@@ -447,7 +460,7 @@ scientific decisions.
 - Execute only the GPT-authored task scope.
 - Obey frontmatter permission fields and stop on unauthorized actions.
 - If acting as executor, write `result.md` and stop at self-assessment; do not
-  claim final audited completion or open the next task.
+  claim final controlled completion or open the next task.
 - If acting as milestone executor/controller, execute exactly one milestone,
   write required outputs plus `controller_report.md`, `completion_check.md`, and
   `MANIFEST.md`, then stop after a verified terminal result or controlled repair/block decision. Do not write `review.md`, do not approve scientific next steps,
@@ -459,7 +472,7 @@ scientific decisions.
   read only the completed result directory and write `review.md`; reviewer
   tokens gate continuation only for that explicit reviewer-gated task.
 - If acting as controller, coordinate executor/mapper/finalizer/validator
-  handoff only inside the GPT-authored controller task. Inspect git diff, commands, frozen contract fields, outputs, tests, Slurm terminal accounting, aggregation, and validators after each executor wave; return same-scope gaps to the executor until complete. Prepare a separate reviewer handoff only when `review_required: true`; do not use an internal auditor for final review.
+  handoff only inside the GPT-authored controller task. Inspect git diff, commands, frozen contract fields, outputs, tests, Slurm terminal accounting, aggregation, and validators after each executor wave; return same-scope gaps to the executor until complete. Prepare a separate reviewer handoff only when `review_required: true`; do not use a controller-internal legacy `auditor` for final review.
 - The execution controller must not invent new research/product directions. If a
   new direction is needed, write `NEEDS_GPT_PLANNER`.
 - Controller reports must start with a natural Chinese judgment that explains
@@ -477,8 +490,8 @@ scientific decisions.
 
 ### CARE GPT-Codex Overlay
 
-This repo uses the Bridge Kit handoff protocol plus a CARE-specific overlay. Generic role/state/task/result/review/controller rules live in the Bridge Kit-managed files under `prompts/`. Generic medical-imaging mechanism gates live in `.agents/skills/domains-medical-imaging-medical-imaging-deep-learning/SKILL.md` and its upstream AI_Skills_Collection source.
+This repo uses the Bridge Kit handoff protocol plus a CARE-specific overlay. Generic role/state/task/result/review/controller rules live in the Bridge Kit-managed files under `prompts/`, but new CARE handoffs still use Agent-Flow v2 active roles and schemas as the higher-priority current rule. Generic medical-imaging mechanism gates live in `.agents/skills/domains-medical-imaging-medical-imaging-deep-learning/SKILL.md` and its upstream AI_Skills_Collection source.
 
 CARE-specific additions live in `prompts/CARE_OVERLAY_GATES.md` and the CARE task/review/controller templates under `prompts/templates/`. Keep this layer limited to CARE Challenge contracts: `myops_scar`, `myops_edema`, `myocardium_cinemyops`, raw-vs-compact labels, no-T2 edema semantics, CineMyoPS temporal evidence, one-zip validation packaging, CenterB/CenterC reporting, and historical stop/revise failure rules. Do not copy the full medical-imaging skill into CARE rules.
 
-For high-risk CARE work, a Codex executor result cannot authorize fold expansion, validation packaging, upload, or next-stage training by itself. Use a separate read-only audit or a controller report, and escalate new scientific directions to the user-supervised GPT strategic controller.
+For high-risk CARE work, a Codex executor result cannot authorize fold expansion, validation packaging, upload, or next-stage training by itself. Use a separate read-only reviewer when `review_required: true`, or a controller report when the task is controller-supervised, and escalate new scientific directions to the user-supervised Planner/GPT thread.
