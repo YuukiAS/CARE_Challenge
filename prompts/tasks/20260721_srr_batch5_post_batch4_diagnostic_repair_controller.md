@@ -90,6 +90,8 @@ main
 
 你是 Controller，也是 Coordinator 和 acceptance owner。你必须检查 Executor 的真实 diff、命令、参数 hash、checkpoint/case/decode hash、loss call graph、梯度矩阵、Slurm 终态、聚合和 validator。发现缺口时，在当前 Batch 内退回同一 Executor 修复；不得请求 critic/reviewer。
 
+执行组织边界：若使用 tmux，tmux 只作为 `batch5_executor` 的运行容器或短 watcher 容器。Controller/Coordinator/acceptance owner 必须由非 tmux 的当前 Codex 主线线程执行；tmux session 不得承担 controller verification、reviewer、push 或下一 Batch 授权职责。
+
 固定任务图：
 
 ```text

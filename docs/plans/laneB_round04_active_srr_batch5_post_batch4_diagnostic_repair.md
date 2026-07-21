@@ -302,6 +302,7 @@ Controller 只有在以下条件全部满足时才能写 `VERIFIED_COMPLETE`：
 根据干预证据只能选择一个：
 
 ```text
+B5_FINAL_OBJECTIVE_ALIGNMENT_BOTTLENECK
 B5_OUTPUT_AUTHORITY_BOTTLENECK
 B5_PROPOSAL_PRECISION_BOTTLENECK
 B5_REFINER_EFFECTIVENESS_BOTTLENECK
@@ -311,10 +312,11 @@ B5_INSUFFICIENT_MECHANISM_EVIDENCE
 
 判断优先级：
 
-1. gate-open 明显提升而 full 近 identity：`OUTPUT_AUTHORITY`。
-2. proposal-only 已差且 component/remote FP 高：`PROPOSAL_PRECISION`。
-3. proposal-only 有信号、refiner-only 或 full 破坏：`REFINER_EFFECTIVENESS`。
-4. 只因 selection/decode mismatch 改变结论：`EVALUATION_SEMANTICS_ONLY`。
-5. 以上均不能稳定解释：`INSUFFICIENT_MECHANISM_EVIDENCE`。
+1. oracle 平均增益至少 `+0.01`、full 仍接近 identity，且 production gate 缺少直接 final-pathology repair loss或 magnitude penalty 明确偏好零修正：`B5_FINAL_OBJECTIVE_ALIGNMENT_BOTTLENECK`。
+2. loss 路径合理，但 gate-open 相对 full 的平均 positive-case Dice 至少 `+0.005`：`B5_OUTPUT_AUTHORITY_BOTTLENECK`。
+3. proposal-only 无信号或 remote/component FP 明显恶化：`B5_PROPOSAL_PRECISION_BOTTLENECK`。
+4. proposal-only 有信号，但 refiner-only/full 相对 proposal 平均下降至少 `0.002`：`B5_REFINER_EFFECTIVENESS_BOTTLENECK`。
+5. 只有 selection/decode 修复改变结论：`B5_EVALUATION_SEMANTICS_ONLY_ISSUE`。
+6. 其他：`B5_INSUFFICIENT_MECHANISM_EVIDENCE`。
 
 Batch 5 不得自行启动 Batch 6 训练。

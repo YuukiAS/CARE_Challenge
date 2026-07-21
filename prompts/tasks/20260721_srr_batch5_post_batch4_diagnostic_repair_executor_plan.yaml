@@ -78,6 +78,7 @@ waves:
       - production_gate_open_bounded_control
     routing:
       primary_partition: htzhulab
+      partitions: [htzhulab, a100-gpu]
       a100_race_after_pending_seconds: 900
       volta_allowed: false
       maximum_runtime_seconds: 3600
