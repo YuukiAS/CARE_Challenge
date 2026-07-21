@@ -1,0 +1,3 @@
+pathology,learned_source_dice_delta,production_gate_one_dice_delta,learned_source_minus_proposal_dice_delta,source
+myops_edema,0.0014420850704259594,0.002360621468821454,-0.0010702406184355303,independent_prediction_roots
+myops_scar,-0.006723852211292934,-0.005960899667090342,-0.0004591642896879444,independent_prediction_roots

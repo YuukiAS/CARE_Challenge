@@ -5,7 +5,7 @@
 ## 当前状态
 
 ```text
-state_id: srr_mainline_batch7_mechanism_closure_repair_ready_20260721
+state_id: srr_mainline_batch7_mechanism_closure_repair_terminal_20260721
 round_id: post_round04_main_only
 state_updated_date: 2026-07-21
 active_development_branch: main
@@ -20,9 +20,9 @@ batch5_scientific_status: DIAGNOSTIC_PACKET_REQUIRED_REPAIR
 batch6_operational_status: CONTROLLER_VERIFIED_COMPLETE_STOP_AT_300
 batch6_scientific_status: FINAL_OBJECTIVE_REPAIRED_BUT_BELOW_USABLE_SIGNAL
 batch7_operational_status: FORMAL300_COMPLETED_STOP_GATE
-batch7_scientific_status: MECHANISM_CLOSURE_INVALID_NEEDS_SAME_SCOPE_REPAIR
-batch7_repair_status: READY_FOR_CONTROLLER
-next_required_action: RUN_BATCH7_MECHANISM_CLOSURE_REPAIR
+batch7_scientific_status: MECHANISM_REPAIR_CONNECTED_BUT_PROPOSAL_CHAIN_INADEQUATE
+batch7_repair_status: VERIFIED_COMPLETE_STOPPED_AT_PROPOSAL_GATE
+next_required_action: PLANNER_DECIDE_POST_PROPOSAL_CHAIN_INADEQUATE
 planning_review_required: false
 review_required: false
 controller_is_coordinator: true
@@ -156,7 +156,7 @@ results/20260721_srr_batch7_upstream_candidate_quality/source_arbiter_metrics.cs
 ## 当前唯一任务
 
 ```text
-BATCH7_MECHANISM_CLOSURE_AND_STAGEWISE_COMPONENT_REPAIR
+BATCH7_MECHANISM_CLOSURE_REPAIR_TERMINAL_PACKET_REVIEW
 ```
 
 权威文件顺序：
@@ -171,17 +171,30 @@ BATCH7_MECHANISM_CLOSURE_AND_STAGEWISE_COMPONENT_REPAIR
 7. results/20260721_srr_batch6_final_objective_alignment/
 ```
 
-## 修复阶段
+## Batch7 repair 执行结果
 
 ```text
-B7R-00 bind terminal evidence, supersede invalid mechanism tables, repair state
-B7R-01 real per-mode intervention runner and semantic fail-closed validator
-B7R-02 real category semantic memory and genuinely anchor-free discovery
-B7R-03 same-checkpoint 44-case truthful intervention replay
-B7R-04 proposal-only 600-step stage
-B7R-05 scar refiner 300 and edema refiner 300, separately gated
-B7R-06 accepted-source arbiter 200 and production gate 200
-B7R-07 final independent interventions, mapper, validator and state closure
+B7R-00 COMPLETE
+B7R-01 COMPLETE
+B7R-02 COMPLETE
+B7R-03 COMPLETE
+B7R-04 COMPLETE_STOPPED_AT_PROPOSAL_GATE
+B7R-05 NOT_RUN_PROPOSAL_GATE_FAILED
+B7R-06 NOT_RUN_PROPOSAL_GATE_FAILED
+B7R-07 COMPLETE_TERMINAL_PACKET_WRITTEN
+```
+
+Proposal gate evidence:
+
+```text
+job: 59828884 FAILED 2:0 as encoded continuation-gate stop
+optimizer steps: 600
+selected checkpoint SHA256: a2412889d55a0e3eee0ca2d57a77f34db0f10f0a069193cc906785f49fae97f1
+mean positive Dice delta: +0.0012229660
+scar positive Dice delta: -0.0019961366
+edema positive Dice delta: +0.0044420686
+help/harm: 25/27
+remote-FP relative worsening max: 0.0530525167
 ```
 
 ## 关键执行门
@@ -210,7 +223,7 @@ HD95 and remote-FP worsening <=5%
 no-T2 edema exact zero
 ```
 
-Proposal 阶段失败时必须停止全部 downstream training 并返回 Planner。
+Proposal 阶段已经失败，downstream refiner、source arbiter 和 production gate 训练均未运行。
 
 Scar/edema refiner 必须分别优于本病种 proposal 至少 `+0.001` 才允许进入正式 source；失败 refiner 必须 hard-disable，不能继续平均。
 
@@ -258,7 +271,7 @@ final scientific stop
 
 ## 完成语义
 
-Controller 只有在真实干预、semantic memory、anchor-free discovery、分阶段训练、所有 job terminal accounting、post-completion aggregation、strict validator、known-bad、mapper final、CURRENT/wiki/fingerprint 和本地轻量 commit 全部完成时，才可写：
+Controller 已在真实干预、semantic memory、anchor-free discovery、proposal-stage terminal accounting、post-completion aggregation、strict validator、known-bad、mapper final、CURRENT/wiki/fingerprint 和本地轻量 commit 完成后写入：
 
 ```text
 controller_verification_decision: VERIFIED_COMPLETE

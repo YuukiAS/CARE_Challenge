@@ -67,11 +67,18 @@ BATCH6_MODES = (
 )
 BATCH7_MODES = (
     "anchor_identity",
+    "production_gate_closed",
+    "full_learned",
+    "production_gate_one",
+    "proposal_only_gate_one",
+    "refiner_only_gate_one",
+    "learned_source_gate_one",
     "old_batch4_asset",
     "rebuilt_batch7_asset",
     "prototype_maps_off",
     "semantic_negative_memory_off",
     "zero_anchor_pathology_context",
+    "zero_anchor_confirmation_context",
     "discovery_off",
     "proposal_only",
     "refiner_only",
@@ -101,16 +108,19 @@ BATCH5_PRODUCTION_INTERVENTIONS = {
     "anchor_identity": "full",
     "old_batch4_asset": "learned_source",
     "rebuilt_batch7_asset": "learned_source",
-    "prototype_maps_off": "learned_source",
-    "semantic_negative_memory_off": "learned_source",
-    "zero_anchor_pathology_context": "learned_source",
-    "discovery_off": "learned_source",
+    "prototype_maps_off": "prototype_maps_off",
+    "semantic_negative_memory_off": "semantic_negative_memory_off",
+    "zero_anchor_pathology_context": "zero_anchor_pathology_context",
+    "discovery_off": "discovery_off",
     "proposal_only": "proposal_only",
     "refiner_only": "refiner_only",
     "learned_source": "learned_source",
     "gt_oracle_source_diagnostic_only": "gt_oracle_source_diagnostic_only",
     "production_gate_learned": "learned_source",
     "production_gate_one": "gate_open_bounded_control",
+    "full_learned": "learned_source",
+    "learned_source_gate_one": "learned_source_gate_one",
+    "zero_anchor_confirmation_context": "zero_anchor_confirmation_context",
     "no_anchor_diagnostic": "learned_source",
 }
 
@@ -156,7 +166,7 @@ def git_head() -> str:
 
 
 def runtime_final_output_mode(mode: str) -> str:
-    return "srr_no_anchor_control" if mode == "srr_no_anchor_control" else "anchor_bounded_srr_correction"
+    return "srr_no_anchor_control" if mode in {"srr_no_anchor_control", "no_anchor_diagnostic"} else "anchor_bounded_srr_correction"
 
 
 def normalized_mode(mode: str) -> str:
@@ -168,8 +178,11 @@ def normalized_mode(mode: str) -> str:
         "proposal_only_gate_one": "anchor_bounded_proposal_only",
         "refiner_only_gate_one": "anchor_bounded_refiner_only",
         "anchor_identity": "anchor_identity_control",
+        "full_learned": "learned_source",
         "rebuilt_batch7_asset": "learned_source",
         "production_gate_one": "production_gate_open_bounded_control",
+        "learned_source_gate_one": "learned_source_gate_one",
+        "zero_anchor_confirmation_context": "zero_anchor_confirmation_context",
         "production_gate_learned": "learned_source",
         "no_anchor_diagnostic": "srr_no_anchor_control",
     }
@@ -180,10 +193,54 @@ def configured_modes(cfg: dict[str, Any]) -> set[str]:
     modes = cfg.get("modes")
     if isinstance(modes, list):
         return {str(item) for item in modes}
+    interventions = cfg.get("intervention_execution", {})
+    if isinstance(interventions, dict) and isinstance(interventions.get("modes"), list):
+        return {str(item) for item in interventions["modes"]}
     interventions = cfg.get("runtime_interventions", {})
     if isinstance(interventions, dict) and isinstance(interventions.get("modes"), list):
         return {str(item) for item in interventions["modes"]}
     return {"anchor_identity_control", "anchor_bounded_srr_correction", "srr_no_anchor_control"}
+
+
+def load_memory_asset_fail_closed(model: torch.nn.Module, asset_path: Path, device: torch.device) -> dict[str, Any]:
+    asset = torch.load(asset_path, map_location=device, weights_only=False)
+    state = dict(asset.get("model_memory_state", asset))
+    model_state = model.state_dict()
+    required_prefixes = ("cross_fitted_memory.",)
+    allowed_prefixes = ("cross_fitted_memory.", "scar_dictionary.", "edema_dictionary.")
+    required = sorted(key for key in model_state if key.startswith(required_prefixes))
+    missing_required = [key for key in required if key not in state]
+    invalid_keys = [
+        key
+        for key, value in state.items()
+        if key not in model_state or not key.startswith(allowed_prefixes) or not isinstance(value, torch.Tensor)
+    ]
+    shape_mismatch = [
+        key
+        for key, value in state.items()
+        if key in model_state
+        and key not in invalid_keys
+        and tuple(value.shape) != tuple(model_state[key].shape)
+    ]
+    if missing_required or invalid_keys or shape_mismatch:
+        raise ValueError(
+            "invalid semantic memory asset state: "
+            f"missing_required={missing_required[:8]} invalid_keys={invalid_keys[:8]} shape_mismatch={shape_mismatch[:8]}"
+        )
+    load_result = model.load_state_dict(state, strict=False)
+    unexpected = list(load_result.unexpected_keys)
+    if unexpected:
+        raise ValueError(f"unexpected keys while loading semantic memory asset: {unexpected[:8]}")
+    return {
+        "path": rel(asset_path, REPO_ROOT),
+        "sha256": sha256_file(asset_path),
+        "required_memory_key_count": len(required),
+        "loaded_state_key_count": len(state),
+        "missing_required_memory_keys": missing_required,
+        "invalid_asset_keys": invalid_keys,
+        "shape_mismatch_keys": shape_mismatch,
+        "ignored_nonmemory_model_missing_key_count": len(load_result.missing_keys),
+    }
 
 
 def model_from_config(cfg: dict[str, Any], mode: str) -> SRRProposeRefineMyoPS:
@@ -402,6 +459,13 @@ def run(args: argparse.Namespace) -> dict[str, Any]:
         device=device,
         training_anchor_manifest_hash=compact_anchor_manifest_hash,
     )
+    semantic_asset_raw = str(paths.get("semantic_memory_asset", "") or "").strip()
+    if semantic_asset_raw:
+        semantic_asset_path = Path(semantic_asset_raw)
+        if not semantic_asset_path.is_absolute():
+            semantic_asset_path = REPO_ROOT / semantic_asset_path
+        if semantic_asset_path.is_file():
+            ckpt_receipt["semantic_memory_asset"] = load_memory_asset_fail_closed(model, semantic_asset_path, device)
     model.eval()
     metadata = load_myops_case_metadata(REPO_ROOT)
     pred_dir = out_root / mode / "predictions"
@@ -427,7 +491,7 @@ def run(args: argparse.Namespace) -> dict[str, Any]:
                 safety_component_features=safety_component,
                 memory_query_policy="validation_inference_all_train_shards",
                 case_ids=[cid],
-                anchor_identity_control=mode == "anchor_identity_control",
+                anchor_identity_control=mode in {"anchor_identity_control", "anchor_identity"},
                 production_intervention_mode=BATCH5_PRODUCTION_INTERVENTIONS.get(mode, "full"),
             )
         raw_anchor_labels = raw_anchor["probabilities"].argmax(dim=1)[0].detach().cpu().numpy().astype(np.uint8)
@@ -498,8 +562,8 @@ def run(args: argparse.Namespace) -> dict[str, Any]:
                 "safety_context_used_for_srr_evidence": bool(outputs["safety_context_used_for_srr_evidence"].detach().cpu().item()),
                 "changed_voxels": changed_voxels,
                 "raw_label_mismatch": int(np.count_nonzero(raw_anchor_labels != source_arr)),
-                "anchor_identity_softmax_max_abs_delta": final_anchor_softmax_delta if mode == "anchor_identity_control" else "",
-                "nonidentity_downstream_tensor_max_abs_delta": 0.0 if mode == "anchor_identity_control" else correction,
+                "anchor_identity_softmax_max_abs_delta": final_anchor_softmax_delta if mode in {"anchor_identity_control", "anchor_identity"} else "",
+                "nonidentity_downstream_tensor_max_abs_delta": 0.0 if mode in {"anchor_identity_control", "anchor_identity"} else correction,
                 "no_t2_case": no_t2,
                 "no_t2_full_chain_exact_zero": (not no_t2) or all(value == 0.0 for value in no_t2_values.values()),
                 "geometry_matches_gt": image_geometry(out_path) == image_geometry(gt_path),
@@ -517,15 +581,15 @@ def run(args: argparse.Namespace) -> dict[str, Any]:
     nonidentity_tensor_delta = max(float(row["nonidentity_downstream_tensor_max_abs_delta"]) for row in rows) if rows else 0.0
     identity_softmax_max_abs_delta = (
         max(float(row["anchor_identity_softmax_max_abs_delta"]) for row in rows)
-        if mode == "anchor_identity_control" and rows
+        if mode in {"anchor_identity_control", "anchor_identity"} and rows
         else 0.0
     )
     status = "SRR_MODEL_IN_LOOP_UNTRAINED_DIAGNOSTIC" if int(payload.get("global_step", 0)) == 0 else "SRR_MODEL_IN_LOOP_CHECKPOINT_INFERENCE"
-    if mode == "anchor_identity_control" and changed_total != 0:
+    if mode in {"anchor_identity_control", "anchor_identity"} and changed_total != 0:
         status = "BATCH3A_NEEDS_REPAIR_ANCHOR_IDENTITY_NOT_EXACT"
-    if mode == "anchor_identity_control" and identity_softmax_max_abs_delta > 1e-6:
+    if mode in {"anchor_identity_control", "anchor_identity"} and identity_softmax_max_abs_delta > 1e-6:
         status = "BATCH3A_NEEDS_REPAIR_ANCHOR_IDENTITY_SOFTMAX_NOT_EXACT"
-    zero_delta_control_modes = {"anchor_identity_control", "production_gate_closed", "full_gate_zero"}
+    zero_delta_control_modes = {"anchor_identity_control", "anchor_identity", "production_gate_closed", "full_gate_zero"}
     if mode not in zero_delta_control_modes and nonidentity_tensor_delta <= 0.0:
         status = "BATCH3A_NEEDS_REPAIR_NO_NONIDENTITY_TENSOR_EFFECT"
     contract = {
@@ -557,8 +621,11 @@ def run(args: argparse.Namespace) -> dict[str, Any]:
         "training_query_policy": "training_crossfit_exclude_query_shard",
         "raw_anchor_and_safety_context_separated": True,
         "prototype_memory_source": (
-            prototype_memory_provenance["source"] if prototype_memory_provenance else payload["prototype_memory_provenance"].get("source")
+            ckpt_receipt.get("semantic_memory_asset", {}).get("path")
+            if ckpt_receipt.get("semantic_memory_asset")
+            else (prototype_memory_provenance["source"] if prototype_memory_provenance else payload["prototype_memory_provenance"].get("source"))
         ),
+        "semantic_memory_asset": ckpt_receipt.get("semantic_memory_asset", {}),
         "formal_training_count": 0,
         "slurm_job_count": 0,
         "validation_upload_count": 0,
@@ -591,6 +658,19 @@ def main() -> int:
             "full_gate_zero",
             "proposal_only_gate_one",
             "refiner_only_gate_one",
+            "learned_source_gate_one",
+            "anchor_identity",
+            "production_gate_one",
+            "full_learned",
+            "proposal_only",
+            "refiner_only",
+            "learned_source",
+            "production_gate_learned",
+            "prototype_maps_off",
+            "semantic_negative_memory_off",
+            "zero_anchor_pathology_context",
+            "zero_anchor_confirmation_context",
+            "no_anchor_diagnostic",
         ),
         default="anchor_identity_control",
     )

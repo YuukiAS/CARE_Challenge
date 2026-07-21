@@ -1,0 +1,23 @@
+{
+  "errors": [],
+  "final_mode": true,
+  "known_bad_error_count": 13,
+  "known_bad_errors_sample": [
+    "missing_or_empty:intervention_runner_contract.json",
+    "missing_or_empty:intervention_casewise_metrics.csv",
+    "missing_or_empty:intervention_summary.csv",
+    "missing_or_empty:intervention_prediction_manifest.csv",
+    "forbidden_token:proposal_refiner_metrics.csv:placeholder",
+    "forbidden_token:proposal_refiner_metrics.csv:continuation_gate_or_final_intervention_placeholder",
+    "gradient_authority_zero:scar:spatial_dictionary",
+    "gradient_authority_zero:scar:scar_dictionary",
+    "gradient_authority_zero:edema:spatial_dictionary",
+    "gradient_authority_zero:edema:edema_dictionary",
+    "gradient_authority_zero:edema:edema_evidence_head",
+    "gradient_authority_zero:scar:scar_evidence_head",
+    "gradient_authority_missing_t2_present_edema_case"
+  ],
+  "known_bad_rejected": true,
+  "known_bad_root": "results/20260721_srr_batch7_upstream_candidate_quality",
+  "status": "PASS"
+}

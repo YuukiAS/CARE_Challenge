@@ -1,0 +1,42 @@
+{
+  "actual_optimizer_steps": 600,
+  "attempt_label": "batch7_repair_proposal_htzhulab_59828884",
+  "checks": {
+    "hd95_relative_worsening": true,
+    "help_not_less_than_harm": false,
+    "minimum_edema_positive_dice_delta": true,
+    "minimum_mean_positive_dice_delta": false,
+    "minimum_scar_positive_dice_delta": false,
+    "no_t2_edema_exact_zero": true,
+    "remote_fp_relative_worsening": false
+  },
+  "continuation_gate_decision": "FAIL",
+  "edema_positive_dice_delta": 0.0044420686060207895,
+  "elapsed": "00:14:25",
+  "failure_action": "STOP_RETURN_TO_PLANNER_PROPOSAL_CHAIN_INADEQUATE",
+  "full_volume_eval_steps": [
+    200,
+    400,
+    600
+  ],
+  "harm_count": 27,
+  "help_count": 25,
+  "job_exit_code": "2:0",
+  "job_id": "59828884",
+  "job_state": "FAILED",
+  "mean_positive_dice_delta": 0.0012229660043303135,
+  "node": "g1807htzh01",
+  "observed_hd95_relative_worsening_max": -0.015862809427617836,
+  "observed_remote_fp_relative_worsening_max": 0.053052516728197975,
+  "pathology_positive_dice_delta": {
+    "myops_edema": 0.0044420686060207895,
+    "myops_scar": -0.0019961365973601626
+  },
+  "scar_positive_dice_delta": -0.0019961365973601626,
+  "schema_version": 1,
+  "selected_checkpoint_path": "results/20260721_srr_batch7_mechanism_closure_repair/runtime/stages/proposal/attempts/batch7_repair_proposal_htzhulab_59828884/variants/batch7_repair_proposal_htzhulab_59828884/checkpoints/fold_0/propref_config/checkpoint_validation_step_600.pt",
+  "selected_checkpoint_sha256": "a2412889d55a0e3eee0ca2d57a77f34db0f10f0a069193cc906785f49fae97f1",
+  "stage": "proposal",
+  "status": "COMPLETE",
+  "validation_event_count": 6
+}

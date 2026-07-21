@@ -1,0 +1,7 @@
+{
+  "checkpoint_path": "results/20260721_srr_batch7_mechanism_closure_repair/runtime/checkpoint_roundtrip/batch7_repair_roundtrip.pt",
+  "checkpoint_sha256": "f3fce980a2ac979590a5cfb9b1ad29b82c6403ab439eb67b7aa314ab31c66377",
+  "max_abs_delta": 0.0,
+  "status": "PASS",
+  "threshold": 1e-06
+}

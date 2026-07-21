@@ -1,0 +1,36 @@
+{
+  "completion_evidence": true,
+  "dry_run": false,
+  "mode_count": 1,
+  "runs": [
+    {
+      "checkpoint_path": "results/20260721_srr_batch7_upstream_candidate_quality/runtime/attempts/batch7_formal300_htzhulab_59789651/variants/batch7_formal300_htzhulab_59789651/checkpoints/fold_0/propref_config/checkpoint_validation_step_300.pt",
+      "checkpoint_sha256_expected": "d34ad65890cbb6a12aac3fc35bcab71709d680bff5a3aae2d93e010db1cc0e0d",
+      "command": [
+        "/users/a/e/aereinh/CARE/envs/env_CARE/bin/python",
+        "scripts/srr_production/infer_myops.py",
+        "--config",
+        "configs/srr_production/myops_batch7_repair.yaml",
+        "--mode",
+        "production_gate_one",
+        "--fold",
+        "0",
+        "--checkpoint",
+        "results/20260721_srr_batch7_upstream_candidate_quality/runtime/attempts/batch7_formal300_htzhulab_59789651/variants/batch7_formal300_htzhulab_59789651/checkpoints/fold_0/propref_config/checkpoint_validation_step_300.pt",
+        "--training-summary",
+        "results/20260721_srr_batch7_upstream_candidate_quality/runtime/attempts/batch7_formal300_htzhulab_59789651/variants/batch7_formal300_htzhulab_59789651/summary.json",
+        "--output-root",
+        "results/20260721_srr_batch7_mechanism_closure_repair/runtime/interventions",
+        "--device",
+        "cuda"
+      ],
+      "command_hash": "2b6a7d489ae9be11703b3583a67d669606ce541b17b445cbec3fc56376ea69df",
+      "dry_run": false,
+      "mode": "production_gate_one",
+      "prediction_root": "results/20260721_srr_batch7_mechanism_closure_repair/runtime/interventions/production_gate_one/predictions",
+      "returncode": 0,
+      "status": "PASS"
+    }
+  ],
+  "status": "PASS"
+}

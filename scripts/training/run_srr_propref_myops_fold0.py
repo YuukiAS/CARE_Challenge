@@ -1334,6 +1334,7 @@ def predict_case(
     device: torch.device,
     *,
     disable_nnunet_anchor: bool = False,
+    production_intervention_mode: str = "full",
     scar_decode_threshold: float,
     edema_decode_threshold: float,
 ) -> tuple[dict[str, np.ndarray], dict[str, np.ndarray]]:
@@ -1355,6 +1356,7 @@ def predict_case(
             safety_component_features=safety_component_features,
             memory_query_policy="validation_inference_all_train_shards",
             case_ids=[case.case_id],
+            production_intervention_mode=production_intervention_mode,
         )
         preds = {
             "argmax": _decode_argmax(outputs)[0].detach().cpu().numpy().astype(np.uint8),
@@ -1579,6 +1581,7 @@ def evaluate(
     device: torch.device,
     *,
     disable_nnunet_anchor: bool = False,
+    production_intervention_mode: str = "full",
     checkpoint_name: str,
     proposal_thresholds: list[float],
     scar_decode_threshold: float,
@@ -1595,6 +1598,7 @@ def evaluate(
             case,
             device,
             disable_nnunet_anchor=disable_nnunet_anchor,
+            production_intervention_mode=production_intervention_mode,
             scar_decode_threshold=scar_decode_threshold,
             edema_decode_threshold=edema_decode_threshold,
         )
@@ -1802,6 +1806,7 @@ def print_contract(args: argparse.Namespace) -> None:
         "max_steps": args.max_steps,
         "min_train_loop_seconds_for_plateau": args.min_train_loop_seconds_for_plateau,
         "full_volume_eval_steps": sorted(parse_int_set(args.full_volume_eval_steps)),
+        "production_intervention_mode": str(getattr(args, "production_intervention_mode", "full")),
         "prototype_bank_cases": args.prototype_bank_cases,
         "prototype_memory_asset": str(getattr(args, "prototype_memory_asset", "")),
         "prototype_memory_manifest": str(getattr(args, "prototype_memory_manifest", "")),
@@ -2069,6 +2074,47 @@ def _repo_path(raw: str | None) -> Path | None:
     return path if path.is_absolute() else REPO_ROOT / path
 
 
+def load_memory_asset_fail_closed(model: torch.nn.Module, asset_path: Path, device: torch.device) -> dict[str, object]:
+    asset_payload = torch.load(asset_path, map_location=device, weights_only=False)
+    state = dict(asset_payload.get("model_memory_state", asset_payload))
+    model_state = model.state_dict()
+    required_prefixes = ("cross_fitted_memory.",)
+    allowed_prefixes = ("cross_fitted_memory.", "scar_dictionary.", "edema_dictionary.")
+    required = sorted(key for key in model_state if key.startswith(required_prefixes))
+    missing_required = [key for key in required if key not in state]
+    invalid_keys = [
+        key
+        for key, value in state.items()
+        if key not in model_state or not key.startswith(allowed_prefixes) or not isinstance(value, torch.Tensor)
+    ]
+    shape_mismatch = [
+        key
+        for key, value in state.items()
+        if key in model_state
+        and key not in invalid_keys
+        and tuple(value.shape) != tuple(model_state[key].shape)
+    ]
+    if missing_required or invalid_keys or shape_mismatch:
+        raise ValueError(
+            "invalid prototype/semantic memory asset state: "
+            f"missing_required={missing_required[:8]} invalid_keys={invalid_keys[:8]} shape_mismatch={shape_mismatch[:8]}"
+        )
+    load_result = model.load_state_dict(state, strict=False)
+    unexpected = list(load_result.unexpected_keys)
+    if unexpected:
+        raise ValueError(f"unexpected keys while loading prototype/semantic memory asset: {unexpected[:8]}")
+    summary = dict(asset_payload.get("summary", {}))
+    summary["asset_path"] = str(asset_path)
+    summary["asset_sha256"] = sha256_file(asset_path)
+    summary["required_memory_key_count"] = len(required)
+    summary["loaded_state_key_count"] = len(state)
+    summary["missing_required_memory_keys"] = missing_required
+    summary["invalid_asset_keys"] = invalid_keys
+    summary["shape_mismatch_keys"] = shape_mismatch
+    summary["ignored_nonmemory_model_missing_key_count"] = len(load_result.missing_keys)
+    return summary
+
+
 def _batch6_group_prefixes(groups: Iterable[str]) -> list[str]:
     prefixes: list[str] = []
     mapping = {
@@ -2081,10 +2127,18 @@ def _batch6_group_prefixes(groups: Iterable[str]) -> list[str]:
         "m10_spatial_dictionary": ("m10_spatial_dictionary.",),
         "scar_dictionary_learned_fusion_and_embedding": ("scar_dictionary.",),
         "edema_dictionary_learned_fusion_and_embedding": ("edema_dictionary.",),
+        "anchor_free_spatial_discovery_dictionary": ("m10_spatial_dictionary.",),
+        "all_proposal_components": ("m10_spatial_dictionary.", "scar_dictionary.", "edema_dictionary.", "evidence_heads.scar.", "evidence_heads.edema."),
+        "all_dictionary_components": ("m10_spatial_dictionary.", "scar_dictionary.", "edema_dictionary."),
+        "scar_proposal_dictionary": ("scar_dictionary.",),
+        "edema_proposal_dictionary": ("edema_dictionary.",),
+        "scar_evidence_head": ("evidence_heads.scar.",),
+        "edema_evidence_head": ("evidence_heads.edema.",),
         "evidence_heads_scar": ("evidence_heads.scar.",),
         "evidence_heads_edema": ("evidence_heads.edema.",),
         "scar_source_arbiter": ("scar_source_arbiter.",),
         "edema_source_arbiter": ("edema_source_arbiter.",),
+        "accepted_pathology_source_arbiters_only": ("scar_source_arbiter.", "edema_source_arbiter."),
     }
     for group in groups:
         key = str(group).strip()
@@ -2231,8 +2285,16 @@ def run_one_batch_overfit(
     component_features = component_dict_from_tensor(component_t)
     anchor_features, component_features = maybe_disable_context(args, anchor_features, component_features)
     model = SRRProposeRefineMyoPS(**model_kwargs_from_args(args)).to(device)
-    prototype_fit_cases = train_cases if bool(getattr(args, "batch4_production_contract", False)) else [case]
-    prototype_bank_summary = fit_and_load_runtime_prototype_bank(model, prototype_fit_cases, patch_shape, device, args, variant_dir)
+    asset_path = _repo_path(getattr(args, "prototype_memory_asset", ""))
+    prototype_bank_case_count = 0
+    if asset_path is not None:
+        prototype_bank_summary = load_memory_asset_fail_closed(model, asset_path, device)
+        prototype_bank_summary.setdefault("status", "OVERFIT_PREFLIGHT_ASSET_LOADED")
+        (variant_dir / "prototype_bank_summary.json").write_text(json.dumps(prototype_bank_summary, indent=2, sort_keys=True), encoding="utf-8")
+    else:
+        prototype_fit_cases = train_cases if bool(getattr(args, "batch4_production_contract", False)) else [case]
+        prototype_bank_case_count = len(prototype_fit_cases)
+        prototype_bank_summary = fit_and_load_runtime_prototype_bank(model, prototype_fit_cases, patch_shape, device, args, variant_dir)
     optimizer = torch.optim.AdamW(model.parameters(), lr=args.lr, weight_decay=args.weight_decay)
     rows: list[dict[str, object]] = []
     proto_rows: list[dict[str, object]] = []
@@ -2258,6 +2320,7 @@ def run_one_batch_overfit(
             safety_anchor_features=safety_anchor_features,
             safety_component_features=safety_component_features,
             case_ids=[case.case_id],
+            production_intervention_mode=getattr(args, "production_intervention_mode", "full"),
         )
         loss, metrics = propref_loss(outputs, y, av, stage, args)
         loss.backward()
@@ -2317,7 +2380,7 @@ def run_one_batch_overfit(
         "elapsed_seconds": time.monotonic() - start,
         "process_seconds": time.process_time() - process_start,
         "prototype_rows": str(variant_dir / "prototype_update_sanity.csv"),
-        "prototype_bank_case_count": len(prototype_fit_cases),
+        "prototype_bank_case_count": prototype_bank_case_count,
         "prototype_bank_selected_case_count": prototype_bank_summary.get("selected_case_count", "EVIDENCE_NOT_FOUND"),
         "batch4_uses_full_train_split_for_overfit_prototype_bank": bool(getattr(args, "batch4_production_contract", False)),
     }
@@ -2520,15 +2583,8 @@ def train_variant(args: argparse.Namespace) -> None:
         }
         asset_path = _repo_path(getattr(args, "prototype_memory_asset", ""))
         if asset_path is not None:
-            asset_payload = torch.load(asset_path, map_location=device, weights_only=False)
-            state = asset_payload.get("model_memory_state", asset_payload)
-            load_result = model.load_state_dict(state, strict=False)
-            prototype_bank_summary = dict(asset_payload.get("summary", {}))
+            prototype_bank_summary = load_memory_asset_fail_closed(model, asset_path, device)
             prototype_bank_summary.setdefault("status", "BATCH7_REBUILT_ASSET_LOADED")
-            prototype_bank_summary["asset_path"] = str(asset_path)
-            prototype_bank_summary["asset_sha256"] = sha256_file(asset_path)
-            prototype_bank_summary["state_missing_keys_count"] = len(load_result.missing_keys)
-            prototype_bank_summary["state_unexpected_keys_count"] = len(load_result.unexpected_keys)
             (variant_dir / "prototype_bank_summary.json").write_text(json.dumps(prototype_bank_summary, indent=2, sort_keys=True), encoding="utf-8")
             frozen_prototype_manifest = {
                 "status": "BATCH7_REBUILT_ASSET_LOADED",
@@ -2653,6 +2709,7 @@ def train_variant(args: argparse.Namespace) -> None:
             safety_anchor_features=safety_anchor_features,
             safety_component_features=safety_component_features,
             case_ids=keys,
+            production_intervention_mode=args.production_intervention_mode,
         )
         loss, metrics = propref_loss(outputs, y, av, stage, args)
         if step == 1:
@@ -2801,6 +2858,7 @@ def train_variant(args: argparse.Namespace) -> None:
                     output_variant,
                     device,
                     disable_nnunet_anchor=bool(getattr(args, "disable_nnunet_anchor", False)),
+                    production_intervention_mode=args.production_intervention_mode,
                     checkpoint_name=f"step_{step}",
                     proposal_thresholds=proposal_thresholds,
                     scar_decode_threshold=args.scar_decode_threshold,
@@ -3106,6 +3164,7 @@ def main() -> None:
     parser.add_argument("--full-volume-eval-steps", default="", help="Comma-separated optimizer steps that trigger full-volume validation export/evaluation.")
     parser.add_argument("--scar-decode-threshold", type=float, default=0.50)
     parser.add_argument("--edema-decode-threshold", type=float, default=0.50)
+    parser.add_argument("--production-intervention-mode", default="full")
     parser.add_argument("--overfit-steps", type=int, default=40)
     parser.add_argument("--overfit-log-every", type=int, default=10)
     parser.add_argument("--min-overfit-loss-decrease", type=float, default=0.01)

@@ -1,0 +1,60 @@
+{
+  "actual_head": "63973de4b447fcfba7f0a92f48da1b26c4b85e72",
+  "agent_flow_protocol_sha256": "29b417ef95e5b54d046e9fafb6cede016d74e74c88426756546b507fb09a22a1",
+  "agents_sha256": "8bd3d7f945725b08ea8353861afed94eeab9f14ff1d795af53205f850e40986b",
+  "allowed_partitions": [
+    "htzhulab",
+    "a100-gpu"
+  ],
+  "batch7_checkpoint_path": "results/20260721_srr_batch7_upstream_candidate_quality/runtime/attempts/batch7_formal300_htzhulab_59789651/variants/batch7_formal300_htzhulab_59789651/checkpoints/fold_0/propref_config/checkpoint_validation_step_300.pt",
+  "batch7_checkpoint_sha256": "d34ad65890cbb6a12aac3fc35bcab71709d680bff5a3aae2d93e010db1cc0e0d",
+  "case_counts": {
+    "train": 176,
+    "validation": 44
+  },
+  "code_sha256": {
+    "aggregate_srr_batch7_repair_training.py": "6d703ffdff0e5e67a87f4a1d2310baa6429049fa9bcc7e25802c3a7081dad8c5",
+    "infer_myops.py": "000f2f7c4e6597361292b8ab9ec5ed9da515ff620aa43f5dff9b47e543a0d13d",
+    "run_srr_batch7_repair_implementation_checks.py": "c94a52f06c307d71dbafa3327cced9385eeb40e97852f65e01094bba02e2e9e3",
+    "run_srr_batch7_repair_interventions.py": "5e7b7bb10417acc8b55b2b201806e3e7ae6b19dedfe7900ec1ebdee20037a962",
+    "run_srr_batch7_repair_stagewise.py": "2f1fec5c279adf89ca1d10e8961d3d797fb9394fc02578c3f1482190f05b7a47",
+    "run_srr_propref_myops_fold0.py": "0114fc4289a91170a5cd5f2464bdd8a524fb0796ad7d56c699e2db513c71898a",
+    "srr_dictionary_memory.py": "3c5e953de5bfef4b32f8ec35498698e2c46cce8e6c59e7adf374913e0bc139b5",
+    "srr_propref.py": "61de3de6610fdfc082ff3b7532f21911c00d1112559515b9491dc9678b2e3162",
+    "validate_srr_batch7_repair_packet.py": "1ff2b215d0a626a926e3f99f30e563c431a20f7a44e5769db2d138bd3ee0a0fe"
+  },
+  "config_path": "configs/srr_production/myops_batch7_repair.yaml",
+  "config_sha256": "d09688cc02abad2fe394599aca9e0010c9a2787a393b7ab16f1d091bd10b924a",
+  "controller_runtime_standard_sha256": "2551e9a9e68e4f9c3a279dcdcdc4e2d479372fd87f55d81316d43a839d593bfc",
+  "current_handoff_sha256": "1ad52ab261a2bd6d148fac919685e75792f6430458fdb4882f63d40250684dd9",
+  "decode_rule": "outputs_logits_argmax",
+  "executor_count": 1,
+  "executor_plan_path": "prompts/tasks/20260721_srr_batch7_mechanism_closure_repair_executor_plan.yaml",
+  "executor_plan_sha256": "bc93d68a2552bc60785acf79e751c4d2ba8d1c63ad6b7dc2d9828812a488d9a0",
+  "fold": 0,
+  "forbidden_actions": [
+    "Batch8",
+    "monolithic_1200",
+    "fold_expansion",
+    "Cine",
+    "validation_upload",
+    "hosted_claim",
+    "route_promotion",
+    "M11",
+    "push"
+  ],
+  "mapper_required": true,
+  "phase": "B7R_WAVE7_FINAL_PACKET_PROPOSAL_GATE_STOP",
+  "python_executable": "/users/a/e/aereinh/CARE/envs/env_CARE/bin/python",
+  "result_root": "results/20260721_srr_batch7_mechanism_closure_repair",
+  "runtime_root": "results/20260721_srr_batch7_mechanism_closure_repair/runtime",
+  "slurm_primary_partition": "htzhulab",
+  "slurm_skill_sha256": "2b7e87f58b275b50dc9d4a9377f4e2518c3a390c806e400cb32e07ebac3f83a6",
+  "source_main_commit_from_task": "4c79554de785030ed59081ce3ae233711efc062a",
+  "split_path": "data/benchmarks/protocol/splits_MyoPS.json",
+  "split_sha256": "6165caeb5b47feb0d24f20380898037b7e6cead4db1eeba398a3c5a57faf9a1b",
+  "task_prompt_path": "prompts/tasks/20260721_srr_batch7_mechanism_closure_repair_controller.md",
+  "task_prompt_sha256": "d20ccd1d19736931cb6d10e5166ae4d92a8da08cfd1363985ec88ccbbca3279e",
+  "wiki_readme_sha256": "9165a87637b2539ab45550cf0d315992e34e4079990bc5278b4c3154432d2250",
+  "worktree": "/users/a/e/aereinh/CARE"
+}

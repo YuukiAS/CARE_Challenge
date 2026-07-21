@@ -1,0 +1,3 @@
+case_id,scar_discovery_logits_max_abs_delta,edema_discovery_logits_max_abs_delta,discovery_logits_max_abs_delta,scar_confirmation_logits_max_abs_delta,edema_confirmation_logits_max_abs_delta,confirmation_logits_max_abs_delta,discovery_logits_abs_max
+Case1002,0.0,0.0,0.0,0.7986160516738892,0.0,0.7986160516738892,20.0
+Case1007,0.0,0.0,0.0,0.8145741820335388,0.0,0.8145741820335388,20.0

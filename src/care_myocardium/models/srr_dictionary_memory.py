@@ -300,6 +300,7 @@ class M10CrossFittedPrototypeMemory(torch.nn.Module):
                 query_policy == "training_crossfit_exclude_query_shard",
                 device=features.device,
             ),
+            "formal_real_memory_exclusive": torch.tensor(True, device=features.device),
         }
 
     def summary(self) -> dict[str, object]:

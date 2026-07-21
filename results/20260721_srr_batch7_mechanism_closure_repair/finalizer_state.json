@@ -1,0 +1,49 @@
+{
+  "schema_version": 1,
+  "status": "STOPPED_AT_PROPOSAL_GATE",
+  "timestamp": "2026-07-21T13:00:21-0400",
+  "controller_verification_decision": "VERIFIED_COMPLETE",
+  "terminal_scientific_outcome": "proposal_chain_inadequate",
+  "proposal_continuation_gate_decision": "FAIL",
+  "failure_action": "STOP_RETURN_TO_PLANNER_PROPOSAL_CHAIN_INADEQUATE",
+  "downstream_waves": {
+    "B7R_WAVE5_PATHOLOGY_SPECIFIC_REFINERS": "NOT_RUN_PROPOSAL_GATE_FAILED",
+    "B7R_WAVE6_SOURCE_ARBITER_AND_PRODUCTION_GATE": "NOT_RUN_PROPOSAL_GATE_FAILED"
+  },
+  "proposal_stage": {
+    "job_id": "59828884",
+    "job_state": "FAILED",
+    "job_exit_code": "2:0",
+    "elapsed": "00:14:25",
+    "node": "g1807htzh01",
+    "actual_optimizer_steps": 600,
+    "aggregation_command": "./envs/env_CARE/bin/python scripts/evaluation/aggregate_srr_batch7_repair_training.py --stage proposal --attempt-label batch7_repair_proposal_htzhulab_59828884 --job-id 59828884 --job-state FAILED --exit-code 2:0 --elapsed 00:14:25 --node g1807htzh01",
+    "aggregation_exit_code": 0,
+    "selected_checkpoint_path": "results/20260721_srr_batch7_mechanism_closure_repair/runtime/stages/proposal/attempts/batch7_repair_proposal_htzhulab_59828884/variants/batch7_repair_proposal_htzhulab_59828884/checkpoints/fold_0/propref_config/checkpoint_validation_step_600.pt",
+    "selected_checkpoint_sha256": "a2412889d55a0e3eee0ca2d57a77f34db0f10f0a069193cc906785f49fae97f1"
+  },
+  "proposal_gate_metrics": {
+    "mean_positive_dice_delta": 0.0012229660043303135,
+    "scar_positive_dice_delta": -0.0019961365973601626,
+    "edema_positive_dice_delta": 0.0044420686060207895,
+    "help_count": 25,
+    "harm_count": 27,
+    "observed_remote_fp_relative_worsening_max": 0.053052516728197975
+  },
+  "validator": {
+    "command": "./envs/env_CARE/bin/python scripts/evaluation/validate_srr_batch7_repair_packet.py --final --write-status",
+    "status": "PASS",
+    "known_bad_rejected": true
+  },
+  "forbidden_actions_not_run": [
+    "Batch8",
+    "monolithic_1200",
+    "fold_expansion",
+    "Cine",
+    "validation_upload",
+    "hosted_claim",
+    "route_promotion",
+    "M11",
+    "push"
+  ]
+}

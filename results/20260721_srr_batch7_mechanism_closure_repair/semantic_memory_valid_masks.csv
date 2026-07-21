@@ -1,0 +1,13 @@
+pathology,polarity,category,valid_mask,vector_count
+scar,negative,normal_myocardium,True,1752
+scar,negative,blood_pool,True,1752
+scar,negative,outside_myocardium,True,2112
+scar,negative,lge_bright_non_scar,True,1721
+scar,negative,anchor_remote_false_positive,True,1172
+edema,negative,normal_myocardium,True,768
+edema,negative,blood_pool,True,768
+edema,negative,outside_myocardium,True,768
+edema,negative,t2_high_non_edema,True,727
+edema,negative,anchor_remote_false_positive,True,353
+scar,positive,scar_positive,True,2016
+edema,positive,edema_positive,True,768

@@ -1,0 +1,23 @@
+{
+  "asset_path": "results/20260721_srr_batch7_mechanism_closure_repair/runtime/assets/semantic_memory.pt",
+  "asset_sha256": "772c73c4c2f4b790fe99c6d380a8bedadf9f0636e52b75b39adf0d5a86d34a77",
+  "category_counts_path": "results/20260721_srr_batch7_mechanism_closure_repair/semantic_memory_category_counts.csv",
+  "deterministic_axis_random_repeat_formal_contribution": 0,
+  "formal_named_negative_source": "real_category_banks_with_valid_mask_only",
+  "full_tensor_sha256_required": true,
+  "no_t2_edema_memory_count_zero": true,
+  "schema_version": 1,
+  "shard_count": 4,
+  "source_case_count": 176,
+  "source_checkpoint_global_step": 300,
+  "source_checkpoint_path": "results/20260721_srr_batch7_upstream_candidate_quality/runtime/attempts/batch7_formal300_htzhulab_59789651/variants/batch7_formal300_htzhulab_59789651/checkpoints/fold_0/propref_config/checkpoint_validation_step_300.pt",
+  "source_checkpoint_sha256": "d34ad65890cbb6a12aac3fc35bcab71709d680bff5a3aae2d93e010db1cc0e0d",
+  "status": "PASS",
+  "tensor_hashes_path": "results/20260721_srr_batch7_mechanism_closure_repair/semantic_memory_tensor_hashes.csv",
+  "training_query_policy": "exclude_query_shard",
+  "valid_masks_path": "results/20260721_srr_batch7_mechanism_closure_repair/semantic_memory_valid_masks.csv",
+  "validation_case_count": 44,
+  "validation_intersection": [],
+  "validation_query_policy": "all_train_shards",
+  "zero_count_category_policy": "valid_mask_false"
+}
