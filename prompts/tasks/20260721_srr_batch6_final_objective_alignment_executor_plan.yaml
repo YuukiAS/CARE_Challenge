@@ -1,0 +1,296 @@
+schema_version: 2
+task_key: 20260721_srr_batch6_final_objective_alignment
+status: READY_FOR_CONTROLLER
+execution_mode: controller_supervised
+controller_is_coordinator: true
+executor_slots: 1
+executor_count: 1
+parallel_execution_allowed: false
+result_root: results/20260721_srr_batch6_final_objective_alignment
+controller_task_path: prompts/tasks/20260721_srr_batch6_final_objective_alignment_controller.md
+planning_review_required: false
+review_required: false
+waves:
+  - wave_id: B6_WAVE0_BATCH5_RECONCILIATION
+    executor_id: batch6_executor
+    blocking: true
+    dependencies: []
+    write_scope:
+      - scripts/evaluation/audit_srr_batch5_loss_authority.py
+      - scripts/evaluation/audit_srr_batch4_selection_semantics.py
+      - scripts/evaluation/validate_srr_batch5_packet.py
+      - scripts/srr_production/infer_myops.py
+      - src/care_myocardium/models/srr_propref.py
+      - tests/srr_production/test_myops_batch5_diagnostics.py
+      - tests/srr_production/test_myops_batch6_objective_alignment.py
+      - jobs/srr_production/
+      - logs/srr_batch6/
+      - results/20260721_srr_batch6_final_objective_alignment/
+    read_required:
+      - results/20260721_srr_batch5_post_batch4_diagnostic_repair/
+      - configs/srr_production/myops_batch4.yaml
+      - configs/srr_production/myops_batch5.yaml
+      - configs/srr_production/myops_batch6.yaml
+      - scripts/training/run_srr_propref_myops_fold0.py
+      - src/care_myocardium/losses/srr_losses.py
+    scientific_inputs:
+      fold: 0
+      case_count: 44
+      selected_checkpoint_sha256: bc325754202d5cf0aa59aa8fab0306b38c2665640339afa3f8d06a13c70009f6
+      optimizer_steps: 0
+    intervention_modes:
+      - anchor_identity_control
+      - full_learned_gate
+      - full_gate_one
+      - full_gate_zero
+      - proposal_only_gate_one
+      - refiner_only_gate_one
+    required_outputs:
+      - results/20260721_srr_batch6_final_objective_alignment/batch5_reconciliation.md
+      - results/20260721_srr_batch6_final_objective_alignment/resolved_loss_weights.csv
+      - results/20260721_srr_batch6_final_objective_alignment/pure_intervention_metrics.csv
+      - results/20260721_srr_batch6_final_objective_alignment/proposal_roi_metrics.csv
+    completion_conditions:
+      - batch4_and_batch5_historical_results_immutable
+      - resolved_loss_weights_nonempty_for_all_active_components
+      - alias_chain_and_source_recorded
+      - proposal_only_gate_one_does_not_consume_refiner
+      - refiner_only_gate_one_does_not_consume_proposal
+      - proposal_precision_recall_lesion_recall_nonempty
+      - proposal_component_and_remote_fp_fields_nonempty
+      - roi_gt_coverage_and_outside_ratio_nonempty
+      - exact_aggregation_command_executes_on_current_script
+      - parameter_hash_unchanged
+      - optimizer_steps_zero
+      - semantic_validator_and_known_bad_tests_exit_zero
+    failure_action: controller_returns_to_same_executor_for_repair
+
+  - wave_id: B6_WAVE1_FINAL_OBJECTIVE_AND_GATE_IMPLEMENTATION
+    executor_id: batch6_executor
+    blocking: true
+    dependencies:
+      - B6_WAVE0_BATCH5_RECONCILIATION
+    write_scope:
+      - src/care_myocardium/models/srr_propref.py
+      - src/care_myocardium/losses/srr_losses.py
+      - scripts/training/run_srr_propref_myops_fold0.py
+      - scripts/srr_production/infer_myops.py
+      - scripts/evaluation/
+      - configs/srr_production/myops_batch6.yaml
+      - jobs/srr_production/
+      - tests/srr_production/test_myops_batch6_objective_alignment.py
+      - results/20260721_srr_batch6_final_objective_alignment/
+    implementation_contract:
+      final_scar_loss_consumes_outputs_logits: true
+      final_edema_loss_consumes_outputs_logits_t2_present_only: true
+      production_gate_input_channels: 13
+      gate_old_four_channels_copied: true
+      gate_new_channels_zero_initialized: true
+      gate_bias_copied: true
+      gate_repair_preserve_balanced_bce: true
+      legacy_correction_opportunity_weight: 0.0
+      legacy_branch_arbitration_weight: 0.0
+      bounded_correction_shrink_weight: 0.0
+      refiner_effect_shrink_weight: 0.0
+      canonical_weights_override_legacy_aliases: true
+      no_t2_edema_exact_zero: true
+    required_outputs:
+      - results/20260721_srr_batch6_final_objective_alignment/implementation_snapshot.md
+      - results/20260721_srr_batch6_final_objective_alignment/loss_gradient_authority.csv
+    completion_conditions:
+      - source_checkpoint_migration_only_changes_allowed_gate_shape_keys
+      - all_non_gate_source_parameters_exact_loaded
+      - final_scar_and_edema_losses_finite
+      - final_scar_loss_has_gradient_to_scar_refiner_and_production_gate
+      - final_edema_loss_has_gradient_to_edema_refiner_and_production_gate
+      - gate_repair_loss_has_gradient_to_production_gate
+      - no_t2_edema_receives_no_edema_final_or_gate_supervision
+      - resolved_checkpoint_loss_contract_matches_config
+      - tests_and_known_bad_exit_zero
+    failure_action: controller_returns_to_same_executor_for_repair
+
+  - wave_id: B6_WAVE2_FIXED_BATCH_OVERFIT
+    executor_id: batch6_executor
+    blocking: true
+    dependencies:
+      - B6_WAVE1_FINAL_OBJECTIVE_AND_GATE_IMPLEMENTATION
+    write_scope:
+      - jobs/srr_production/
+      - logs/srr_batch6/
+      - results/20260721_srr_batch6_final_objective_alignment/
+    scientific_inputs:
+      cases: [Case2002, Case1002]
+      optimizer_steps: 60
+      formal_training_credit: 0
+      trainable_groups: [production_correction_gate, scar_refine, edema_refine]
+      frozen_groups: [encoders, retrieval, evidence_heads, scar_dictionary, edema_dictionary, prototype_memory]
+    required_outputs:
+      - results/20260721_srr_batch6_final_objective_alignment/fixed_batch_overfit.json
+      - results/20260721_srr_batch6_final_objective_alignment/loss_gradient_authority.csv
+    completion_conditions:
+      - combined_final_pathology_loss_relative_decrease_at_least_0_20
+      - scar_final_pathology_loss_relative_decrease_at_least_0_15
+      - edema_final_pathology_loss_relative_decrease_at_least_0_15
+      - gate_loss_relative_decrease_at_least_0_10
+      - production_gate_repair_gradient_nonzero
+      - final_logits_change_from_step_zero
+      - Case1002_no_t2_edema_full_chain_exact_zero
+      - all_losses_finite
+      - checkpoint_save_reload_max_abs_delta_at_most_1e_6
+    failure_action: NEEDS_REPAIR_NO_FORMAL_TRAINING_SUBMISSION
+
+  - wave_id: B6_WAVE3_FORMAL_300_STEP_CALIBRATION
+    executor_id: batch6_executor
+    blocking: true
+    dependencies:
+      - B6_WAVE2_FIXED_BATCH_OVERFIT
+    write_scope:
+      - jobs/srr_production/
+      - logs/srr_batch6/
+      - results/20260721_srr_batch6_final_objective_alignment/
+    scientific_inputs:
+      fold: 0
+      train_cases: 176
+      validation_cases: 44
+      optimizer_steps: 300
+      full_volume_eval_steps: [100, 200, 300]
+      patch_shape: [12, 96, 96]
+      batch_size: 1
+      learning_rate: 0.0001
+      weight_decay: 0.0001
+      grad_clip: 12.0
+      trainable_groups: [production_correction_gate, scar_refine, edema_refine]
+      frozen_groups: [encoders, retrieval, evidence_heads, scar_dictionary, edema_dictionary, prototype_memory]
+    routing:
+      python_executable: /users/a/e/aereinh/CARE/envs/env_CARE/bin/python
+      primary_partition: htzhulab
+      mirror_partition: a100-gpu
+      mirror_after_pending_seconds: 900
+      volta_allowed: false
+      maximum_runtime_seconds: 14400
+      require_preflight: true
+      require_atomic_winner_lock: true
+      require_isolated_attempt_directories: true
+      cancel_pending_losers: true
+    required_outputs:
+      - results/20260721_srr_batch6_final_objective_alignment/training_adequacy.json
+      - results/20260721_srr_batch6_final_objective_alignment/checkpoint_selection.csv
+      - results/20260721_srr_batch6_final_objective_alignment/subgroup_metrics.csv
+      - results/20260721_srr_batch6_final_objective_alignment/help_harm.csv
+      - results/20260721_srr_batch6_final_objective_alignment/slurm_attempts.csv
+    continuation_gate:
+      minimum_mean_scar_edema_positive_dice_delta: 0.003
+      minimum_each_pathology_dice_delta: -0.002
+      require_help_not_less_than_harm: true
+      maximum_each_pathology_hd95_relative_worsening: 0.05
+      maximum_each_pathology_remote_fp_relative_worsening: 0.05
+      require_no_t2_edema_exact_zero: true
+      require_finite_losses_and_nonzero_final_gate_gradients: true
+    completion_conditions:
+      - exactly_300_optimizer_steps_for_formal_stage
+      - all_176_train_cases_eligible_for_sampling
+      - three_44_case_full_volume_evaluations
+      - selected_checkpoint_reloaded_before_formal_metrics
+      - positive_gt_and_all_case_metrics_separated
+      - all_attempts_terminal_accounted
+      - aggregation_exit_zero
+      - continuation_gate_machine_decision_written
+    failure_action: STOP_AT_300_AND_SKIP_WAVE4
+
+  - wave_id: B6_WAVE4_CONDITIONAL_900_STEP_EXTENSION
+    executor_id: batch6_executor
+    blocking: true
+    conditional_on: B6_WAVE3_FORMAL_300_STEP_CALIBRATION.continuation_gate_pass
+    dependencies:
+      - B6_WAVE3_FORMAL_300_STEP_CALIBRATION
+    write_scope:
+      - jobs/srr_production/
+      - logs/srr_batch6/
+      - results/20260721_srr_batch6_final_objective_alignment/
+    scientific_inputs:
+      total_optimizer_steps: 900
+      additional_full_volume_eval_steps: [450, 600, 900]
+      additionally_unfreeze_at_step_301: [scar_dictionary, edema_dictionary, evidence_heads]
+      remain_frozen: [encoders, retrieval, prototype_memory]
+      training_dependency: afterok
+    routing:
+      python_executable: /users/a/e/aereinh/CARE/envs/env_CARE/bin/python
+      primary_partition: htzhulab
+      mirror_partition: a100-gpu
+      mirror_after_pending_seconds: 900
+      volta_allowed: false
+      maximum_runtime_seconds: 14400
+      require_atomic_winner_lock: true
+      require_isolated_attempt_directories: true
+      cancel_pending_losers: true
+    required_outputs:
+      - results/20260721_srr_batch6_final_objective_alignment/training_adequacy.json
+      - results/20260721_srr_batch6_final_objective_alignment/checkpoint_selection.csv
+      - results/20260721_srr_batch6_final_objective_alignment/subgroup_metrics.csv
+      - results/20260721_srr_batch6_final_objective_alignment/help_harm.csv
+      - results/20260721_srr_batch6_final_objective_alignment/slurm_attempts.csv
+    completion_conditions:
+      - wave_runs_only_after_machine_verified_step300_gate
+      - total_optimizer_steps_exactly_900
+      - three_additional_44_case_full_volume_evaluations
+      - selected_checkpoint_reloaded_before_formal_metrics
+      - all_attempts_terminal_accounted
+      - aggregation_exit_zero
+    failure_action: same_scope_operational_repair_or_NEEDS_REPAIR
+
+  - wave_id: B6_WAVE5_FINAL_MECHANISM_AND_STATE
+    executor_id: batch6_executor
+    blocking: true
+    dependencies:
+      - B6_WAVE3_FORMAL_300_STEP_CALIBRATION
+    accepts_skipped_dependency:
+      - B6_WAVE4_CONDITIONAL_900_STEP_EXTENSION_when_step300_gate_failed
+    write_scope:
+      - scripts/evaluation/
+      - scripts/srr_production/infer_myops.py
+      - tests/srr_production/test_myops_batch6_objective_alignment.py
+      - prompts/routes/handoffs/CURRENT.md
+      - configs/srr_production/entrypoints.yaml
+      - wiki/
+      - results/20260721_srr_batch6_final_objective_alignment/
+    final_intervention_modes:
+      - anchor_identity_control
+      - full_learned_gate
+      - full_gate_one
+      - full_gate_zero
+      - proposal_only_gate_one
+      - refiner_only_gate_one
+    required_outputs:
+      - results/20260721_srr_batch6_final_objective_alignment/final_mechanism_interventions.csv
+      - results/20260721_srr_batch6_final_objective_alignment/mapper_report_draft.md
+      - results/20260721_srr_batch6_final_objective_alignment/architecture_delta_draft.md
+      - results/20260721_srr_batch6_final_objective_alignment/mapper_report_final.md
+      - results/20260721_srr_batch6_final_objective_alignment/architecture_delta_final.md
+      - results/20260721_srr_batch6_final_objective_alignment/controller_report.md
+      - results/20260721_srr_batch6_final_objective_alignment/completion_check.md
+      - results/20260721_srr_batch6_final_objective_alignment/MANIFEST.md
+    completion_conditions:
+      - final_selected_checkpoint_same_for_all_interventions
+      - final_interventions_use_44_cases_and_outputs_logits_argmax
+      - proposal_roi_gate_and_final_metric_chain_complete
+      - scientific_signal_class_is_one_of_BELOW_USABLE_SMALL_USABLE_CANDIDATE_STRONG
+      - current_machine_truth_updated
+      - root_wiki_components_architecture_current_state_lineage_and_figures_updated
+      - strict_validator_and_known_bad_exit_zero
+      - controller_verification_decision_VERIFIED_COMPLETE
+    failure_action: NEEDS_REPAIR
+finalizer:
+  dependency: afterany
+  required_job_ids: all_batch6_preflight_training_inference_and_extension_attempt_ids
+  required_state_file: results/20260721_srr_batch6_final_objective_alignment/finalizer_state.json
+  terminal_success_state: READY_FOR_CONTROLLER_VERIFICATION
+  monitor_states: [NEEDS_MONITOR, AWAITING_SACCT]
+  failure_states: [NEEDS_REPAIR, RUNTIME_FAILED, NEEDS_EVIDENCE]
+git_policy:
+  allow_local_commit: true
+  auto_local_commit: true
+  allow_push: false
+  auto_push: false
+completion:
+  controller_verification_decision: VERIFIED_COMPLETE
+  next_required_action: RETURN_TO_PLANNER
