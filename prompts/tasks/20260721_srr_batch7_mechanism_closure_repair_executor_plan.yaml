@@ -1,0 +1,482 @@
+schema_version: 2
+task_key: 20260721_srr_batch7_mechanism_closure_repair
+status: READY_FOR_CONTROLLER
+execution_mode: controller_supervised
+controller_is_coordinator: true
+executor_slots: 1
+executor_count: 1
+parallel_execution_allowed: false
+result_root: results/20260721_srr_batch7_mechanism_closure_repair
+controller_task_path: prompts/tasks/20260721_srr_batch7_mechanism_closure_repair_controller.md
+planning_review_required: false
+review_required: false
+
+waves:
+  - wave_id: B7R_WAVE0_BOOTSTRAP_STATE_AND_SUPERSEDE
+    executor_id: batch7_repair_executor
+    blocking: true
+    dependencies: []
+    write_scope:
+      - results/20260721_srr_batch7_mechanism_closure_repair/
+      - prompts/routes/handoffs/CURRENT.md
+    read_required:
+      - AGENTS.md
+      - START_HERE_FOR_GPT.md
+      - GPT_PLANNER_CARE_PROTOCOL.md
+      - prompts/FINAL_OUTPUT_READABILITY_POLICY.md
+      - prompts/AGENT_FLOW_V2_PROTOCOL.md
+      - prompts/HANDOFF_GATE_POLICY.md
+      - prompts/GPT_HARD_GATE_PROMPT.md
+      - prompts/routes/ROUTE_ANTI_LAZINESS_PROTOCOL.md
+      - prompts/routes/ROUTE_HARD_REQUIREMENTS_MATRIX.md
+      - prompts/routes/handoffs/CURRENT.md
+      - wiki/README.md
+      - .agents/skills/slurm-routing-partition/SKILL.md
+      - .agents/skills/care-mapper/SKILL.md
+      - results/srr_production/code_maturity/batch7_planner_audit_and_mechanism_closure_decision.md
+      - docs/plans/laneB_round04_active_srr_batch7_mechanism_closure_repair_execution.md
+      - configs/srr_production/myops_batch7_repair.yaml
+      - results/20260721_srr_batch7_upstream_candidate_quality/
+    scientific_inputs:
+      source_main_commit: 4c79554de785030ed59081ce3ae233711efc062a
+      batch7_checkpoint_sha256: d34ad65890cbb6a12aac3fc35bcab71709d680bff5a3aae2d93e010db1cc0e0d
+      fold: 0
+      train_cases: 176
+      validation_cases: 44
+      optimizer_steps: 0
+    required_outputs:
+      - results/20260721_srr_batch7_mechanism_closure_repair/controller_bootstrap_snapshot.md
+      - results/20260721_srr_batch7_mechanism_closure_repair/controller_context.json
+      - results/20260721_srr_batch7_mechanism_closure_repair/controller_ledger.csv
+      - results/20260721_srr_batch7_mechanism_closure_repair/superseded_evidence.md
+      - results/20260721_srr_batch7_mechanism_closure_repair/implementation_snapshot.md
+    completion_conditions:
+      - current_main_head_bound
+      - source_checkpoint_hash_exact
+      - split_case_decode_metric_semantics_bound
+      - old_batch7_intervention_tables_marked_invalid_not_deleted
+      - stale_CURRENT_and_wiki_recorded
+      - optimizer_steps_zero
+    failure_action: NEEDS_REPAIR_NO_IMPLEMENTATION
+
+  - wave_id: B7R_WAVE1_TRUTHFUL_INTERVENTION_INFRASTRUCTURE
+    executor_id: batch7_repair_executor
+    blocking: true
+    dependencies: [B7R_WAVE0_BOOTSTRAP_STATE_AND_SUPERSEDE]
+    write_scope:
+      - scripts/evaluation/run_srr_batch7_repair_interventions.py
+      - scripts/evaluation/aggregate_srr_batch7_repair_interventions.py
+      - scripts/evaluation/validate_srr_batch7_repair_packet.py
+      - scripts/srr_production/infer_myops.py
+      - tests/srr_production/test_myops_batch7_repair_semantics.py
+      - jobs/srr_production/
+      - logs/srr_batch7_repair/
+      - results/20260721_srr_batch7_mechanism_closure_repair/
+    intervention_modes:
+      - anchor_identity
+      - production_gate_closed
+      - full_learned
+      - production_gate_one
+      - proposal_only_gate_one
+      - refiner_only_gate_one
+      - learned_source_gate_one
+      - prototype_maps_off
+      - semantic_negative_memory_off
+      - zero_anchor_confirmation_context
+      - no_anchor_diagnostic
+    implementation_contract:
+      one_prediction_root_per_mode: true
+      one_command_manifest_per_mode: true
+      prediction_sha256_per_case: true
+      inference_calls_per_mode: 44
+      same_checkpoint_all_modes: true
+      same_decode_all_modes: outputs_logits_argmax
+      identity_changed_voxels_per_case: 0
+      identity_softmax_max_abs_delta: 0.000001
+      forbid_placeholder: true
+      forbid_copied_metrics: true
+      forbid_shared_prediction_root: true
+      known_bad_old_batch7_table_must_fail: true
+    required_outputs:
+      - results/20260721_srr_batch7_mechanism_closure_repair/intervention_runner_contract.json
+      - results/20260721_srr_batch7_mechanism_closure_repair/intervention_known_bad_results.json
+      - results/20260721_srr_batch7_mechanism_closure_repair/validator_semantics.md
+    completion_conditions:
+      - real_model_loop_exists_for_every_mode
+      - each_mode_has_isolated_prediction_root
+      - each_mode_has_command_and_prediction_hash_manifest
+      - identity_and_gate_closed_exact_zero
+      - old_batch7_copied_table_rejected
+      - empty_or_placeholder_metric_rejected
+      - distinct_mode_hash_rule_enforced
+      - tests_and_validator_exit_zero
+    failure_action: controller_returns_to_same_executor_for_repair
+
+  - wave_id: B7R_WAVE2_SEMANTIC_MEMORY_AND_ANCHOR_FREE_DISCOVERY
+    executor_id: batch7_repair_executor
+    blocking: true
+    dependencies: [B7R_WAVE1_TRUTHFUL_INTERVENTION_INFRASTRUCTURE]
+    write_scope:
+      - scripts/srr_production/build_srr_batch7_repair_semantic_memory.py
+      - src/care_myocardium/models/srr_propref.py
+      - src/care_myocardium/models/srr_dictionary_memory.py
+      - src/care_myocardium/models/srr_spatial_dictionary.py
+      - src/care_myocardium/srr_production/prototype_memory.py
+      - src/care_myocardium/srr_production/checkpoint.py
+      - scripts/training/run_srr_propref_myops_fold0.py
+      - scripts/evaluation/run_srr_batch7_repair_implementation_checks.py
+      - tests/srr_production/test_myops_batch7_repair_semantics.py
+      - jobs/srr_production/
+      - logs/srr_batch7_repair/
+      - results/20260721_srr_batch7_mechanism_closure_repair/
+    semantic_memory_contract:
+      scar_categories:
+        - normal_myocardium
+        - blood_pool
+        - outside_myocardium
+        - lge_bright_non_scar
+        - anchor_remote_false_positive
+      edema_categories_t2_present_only:
+        - normal_myocardium
+        - blood_pool
+        - outside_myocardium
+        - t2_high_non_edema
+        - anchor_remote_false_positive
+      required_fields: [tensor, source_case_ids, vector_count, valid_mask, full_tensor_sha256]
+      insufficient_category_policy: valid_mask_false
+      deterministic_axis_forbidden_formal: true
+      random_forbidden_formal: true
+      repeat_last_forbidden_formal: true
+      validation_leakage_forbidden: true
+      no_t2_edema_memory_forbidden: true
+    discovery_contract:
+      modality_encoder_calls: one
+      discovery_retrieval_anchor_features: null
+      confirmation_retrieval_anchor_features: nnunet_context
+      prototype_maps_feed_anchor_free_discovery: true
+      discovery_anchor_invariance_max_abs_delta: 0.000001
+      confirmation_anchor_sensitivity_min_abs_delta: 0.00001
+      discovery_nonzero_required: true
+    required_outputs:
+      - results/20260721_srr_batch7_mechanism_closure_repair/semantic_memory_manifest.json
+      - results/20260721_srr_batch7_mechanism_closure_repair/semantic_memory_category_counts.csv
+      - results/20260721_srr_batch7_mechanism_closure_repair/semantic_memory_tensor_hashes.csv
+      - results/20260721_srr_batch7_mechanism_closure_repair/semantic_memory_valid_masks.csv
+      - results/20260721_srr_batch7_mechanism_closure_repair/discovery_independence.csv
+      - results/20260721_srr_batch7_mechanism_closure_repair/prototype_map_intervention.csv
+      - results/20260721_srr_batch7_mechanism_closure_repair/semantic_memory_intervention.csv
+      - results/20260721_srr_batch7_mechanism_closure_repair/gradient_authority.csv
+      - results/20260721_srr_batch7_mechanism_closure_repair/checkpoint_roundtrip.json
+    completion_conditions:
+      - category_banks_real_or_masked
+      - formal_named_memory_contains_no_deterministic_random_repeat_vectors
+      - all_tensor_hashes_full
+      - validation_intersection_empty
+      - no_t2_edema_memory_zero
+      - discovery_recomputed_without_anchor_context
+      - discovery_invariant_to_confirmation_anchor_zeroing
+      - confirmation_changes_when_anchor_context_zeroed
+      - prototype_maps_affect_spatial_gate_and_proposal_logits
+      - checkpoint_save_reload_max_abs_delta_at_most_1e_6
+      - required_gradients_nonzero
+      - tests_and_validator_exit_zero
+    failure_action: controller_returns_to_same_executor_for_repair
+
+  - wave_id: B7R_WAVE3_PRETRAINING_REAL_INTERVENTION_REPLAY
+    executor_id: batch7_repair_executor
+    blocking: true
+    dependencies: [B7R_WAVE2_SEMANTIC_MEMORY_AND_ANCHOR_FREE_DISCOVERY]
+    write_scope:
+      - jobs/srr_production/
+      - logs/srr_batch7_repair/
+      - results/20260721_srr_batch7_mechanism_closure_repair/runtime/interventions/
+      - results/20260721_srr_batch7_mechanism_closure_repair/
+    scientific_inputs:
+      checkpoint_sha256: d34ad65890cbb6a12aac3fc35bcab71709d680bff5a3aae2d93e010db1cc0e0d
+      evaluation_cases: 44
+      optimizer_steps: 0
+      decode_rule: outputs_logits_argmax
+    routing:
+      python_executable: /users/a/e/aereinh/CARE/envs/env_CARE/bin/python
+      primary_partition: htzhulab
+      mirror_partition: a100-gpu
+      mirror_after_pending_seconds: 900
+      volta_allowed: false
+      require_preflight: true
+      require_isolated_attempt_directories: true
+      require_atomic_winner_lock: true
+      cancel_pending_losers: true
+    required_outputs:
+      - results/20260721_srr_batch7_mechanism_closure_repair/intervention_casewise_metrics.csv
+      - results/20260721_srr_batch7_mechanism_closure_repair/intervention_summary.csv
+      - results/20260721_srr_batch7_mechanism_closure_repair/intervention_prediction_manifest.csv
+      - results/20260721_srr_batch7_mechanism_closure_repair/proposal_refiner_metrics.csv
+      - results/20260721_srr_batch7_mechanism_closure_repair/source_arbiter_metrics.csv
+      - results/20260721_srr_batch7_mechanism_closure_repair/slurm_attempts.csv
+    completion_conditions:
+      - all_modes_run_on_same_checkpoint_and_44_cases
+      - all_modes_have_independent_predictions_and_hashes
+      - identity_exact_zero
+      - proposal_refiner_source_gate_metrics_nonempty
+      - prototype_and_semantic_memory_effects_nonempty
+      - no_placeholder_or_copied_source
+      - all_jobs_terminal_accounted
+      - aggregation_exit_zero
+      - validator_exit_zero
+    failure_action: NEEDS_REPAIR_NO_TRAINING
+
+  - wave_id: B7R_WAVE4_PROPOSAL_ONLY_STAGE
+    executor_id: batch7_repair_executor
+    blocking: true
+    dependencies: [B7R_WAVE3_PRETRAINING_REAL_INTERVENTION_REPLAY]
+    write_scope:
+      - scripts/training/run_srr_batch7_repair_stagewise.py
+      - scripts/evaluation/aggregate_srr_batch7_repair_training.py
+      - scripts/evaluation/validate_srr_batch7_repair_packet.py
+      - jobs/srr_production/
+      - logs/srr_batch7_repair/
+      - results/20260721_srr_batch7_mechanism_closure_repair/runtime/stages/proposal/
+      - results/20260721_srr_batch7_mechanism_closure_repair/
+    scientific_inputs:
+      stage: proposal_only
+      source_checkpoint: batch7_step300
+      optimizer_steps: 600
+      full_volume_eval_steps: [200, 400, 600]
+      validation_cases_per_eval: 44
+      trainable_groups:
+        - anchor_free_spatial_discovery_dictionary
+        - scar_proposal_dictionary
+        - edema_proposal_dictionary
+        - scar_evidence_head
+        - edema_evidence_head
+      frozen_groups:
+        - encoders
+        - base_scale_retrieval
+        - scar_refiner
+        - edema_refiner
+        - scar_source_arbiter
+        - edema_source_arbiter
+        - production_correction_gate
+      evaluation_mode: proposal_only_gate_one
+    routing:
+      python_executable: /users/a/e/aereinh/CARE/envs/env_CARE/bin/python
+      primary_partition: htzhulab
+      mirror_partition: a100-gpu
+      mirror_after_pending_seconds: 900
+      volta_allowed: false
+      maximum_runtime_seconds: 14400
+      require_preflight: true
+      require_atomic_winner_lock: true
+      require_isolated_attempt_directories: true
+      cancel_pending_losers: true
+    continuation_gate:
+      minimum_mean_positive_dice_delta: 0.003
+      minimum_scar_positive_dice_delta: -0.001
+      minimum_edema_positive_dice_delta: 0.003
+      require_help_not_less_than_harm: true
+      maximum_each_pathology_hd95_relative_worsening: 0.05
+      maximum_each_pathology_remote_fp_relative_worsening: 0.05
+      require_no_t2_edema_exact_zero: true
+      require_nonzero_proposal_dictionary_gradients: true
+    required_outputs:
+      - results/20260721_srr_batch7_mechanism_closure_repair/proposal_stage_adequacy.json
+      - results/20260721_srr_batch7_mechanism_closure_repair/proposal_stage_checkpoint_selection.csv
+      - results/20260721_srr_batch7_mechanism_closure_repair/proposal_stage_casewise.csv
+      - results/20260721_srr_batch7_mechanism_closure_repair/proposal_stage_help_harm.csv
+      - results/20260721_srr_batch7_mechanism_closure_repair/proposal_stage_subgroups.csv
+      - results/20260721_srr_batch7_mechanism_closure_repair/slurm_attempts.csv
+    completion_conditions:
+      - exactly_600_optimizer_steps
+      - three_44_case_evaluations
+      - selected_checkpoint_reloaded
+      - proposal_gate_machine_decision_written
+      - all_jobs_terminal_accounted
+      - aggregation_exit_zero
+    failure_action: STOP_ALL_DOWNSTREAM_TRAINING_RETURN_TO_PLANNER
+
+  - wave_id: B7R_WAVE5_PATHOLOGY_SPECIFIC_REFINERS
+    executor_id: batch7_repair_executor
+    blocking: true
+    conditional_on: B7R_WAVE4_PROPOSAL_ONLY_STAGE.continuation_gate_pass
+    dependencies: [B7R_WAVE4_PROPOSAL_ONLY_STAGE]
+    write_scope:
+      - scripts/training/run_srr_batch7_repair_stagewise.py
+      - scripts/evaluation/aggregate_srr_batch7_repair_training.py
+      - jobs/srr_production/
+      - logs/srr_batch7_repair/
+      - results/20260721_srr_batch7_mechanism_closure_repair/runtime/stages/scar_refiner/
+      - results/20260721_srr_batch7_mechanism_closure_repair/runtime/stages/edema_refiner/
+      - results/20260721_srr_batch7_mechanism_closure_repair/
+    stages:
+      scar_refiner:
+        optimizer_steps: 300
+        full_volume_eval_steps: [100, 200, 300]
+        trainable_groups: [scar_refiner]
+        evaluation_baseline: scar_proposal_only
+        acceptance_gate:
+          minimum_dice_gain_over_proposal: 0.001
+          maximum_hd95_relative_worsening: 0.02
+          maximum_remote_fp_relative_worsening: 0.02
+          require_harm_not_greater_than_proposal: true
+        failure_action: DISABLE_SCAR_REFINER_FORMAL_SOURCE_PROPOSAL_ONLY
+      edema_refiner:
+        optimizer_steps: 300
+        full_volume_eval_steps: [100, 200, 300]
+        trainable_groups: [edema_refiner]
+        evaluation_baseline: edema_proposal_only
+        t2_present_only: true
+        acceptance_gate:
+          minimum_dice_gain_over_proposal: 0.001
+          maximum_hd95_relative_worsening: 0.02
+          maximum_remote_fp_relative_worsening: 0.05
+          require_no_t2_edema_exact_zero: true
+        failure_action: DISABLE_EDEMA_REFINER_FORMAL_SOURCE_PROPOSAL_ONLY
+    routing:
+      python_executable: /users/a/e/aereinh/CARE/envs/env_CARE/bin/python
+      primary_partition: htzhulab
+      mirror_partition: a100-gpu
+      mirror_after_pending_seconds: 900
+      volta_allowed: false
+      maximum_runtime_seconds: 14400
+      training_dependency: afterok
+      require_preflight: true
+      require_atomic_winner_lock: true
+      require_isolated_attempt_directories: true
+      cancel_pending_losers: true
+    required_outputs:
+      - results/20260721_srr_batch7_mechanism_closure_repair/scar_refiner_stage_adequacy.json
+      - results/20260721_srr_batch7_mechanism_closure_repair/edema_refiner_stage_adequacy.json
+      - results/20260721_srr_batch7_mechanism_closure_repair/refiner_acceptance.csv
+      - results/20260721_srr_batch7_mechanism_closure_repair/slurm_attempts.csv
+    completion_conditions:
+      - scar_and_edema_stages_use_same_selected_proposal_checkpoint
+      - each_refiner_evaluated_against_its_pathology_proposal
+      - rejected_refiner_formal_weight_exact_zero
+      - no_composite_mean_hides_pathology_failure
+      - all_jobs_terminal_accounted
+      - aggregation_exit_zero
+    failure_action: same_scope_repair_or_record_refiner_rejection
+
+  - wave_id: B7R_WAVE6_SOURCE_ARBITER_AND_PRODUCTION_GATE
+    executor_id: batch7_repair_executor
+    blocking: true
+    conditional_on: B7R_WAVE4_PROPOSAL_ONLY_STAGE.continuation_gate_pass
+    dependencies: [B7R_WAVE5_PATHOLOGY_SPECIFIC_REFINERS]
+    write_scope:
+      - scripts/training/run_srr_batch7_repair_stagewise.py
+      - scripts/evaluation/aggregate_srr_batch7_repair_training.py
+      - jobs/srr_production/
+      - logs/srr_batch7_repair/
+      - results/20260721_srr_batch7_mechanism_closure_repair/runtime/stages/source_arbiter/
+      - results/20260721_srr_batch7_mechanism_closure_repair/runtime/stages/production_gate/
+      - results/20260721_srr_batch7_mechanism_closure_repair/
+    stages:
+      source_arbiter:
+        run_only_if_any_refiner_accepted: true
+        optimizer_steps: 200
+        full_volume_eval_steps: [100, 200]
+        trainable_groups: [accepted_pathology_source_arbiters_only]
+        rejected_pathology_refiner_weight: 0.0
+        acceptance_gate:
+          maximum_dice_below_best_accepted_source: 0.001
+          require_help_harm_not_worse: true
+        failure_action: USE_BEST_ACCEPTED_SOURCE_PER_PATHOLOGY
+      production_gate:
+        optimizer_steps: 200
+        full_volume_eval_steps: [100, 200]
+        trainable_groups: [production_correction_gate]
+        final_gate:
+          minimum_mean_positive_dice_delta: 0.005
+          minimum_each_pathology_positive_dice_delta: 0.0
+          require_help_not_less_than_harm: true
+          maximum_each_pathology_hd95_relative_worsening: 0.05
+          maximum_each_pathology_remote_fp_relative_worsening: 0.05
+          require_no_t2_edema_exact_zero: true
+    routing:
+      python_executable: /users/a/e/aereinh/CARE/envs/env_CARE/bin/python
+      primary_partition: htzhulab
+      mirror_partition: a100-gpu
+      mirror_after_pending_seconds: 900
+      volta_allowed: false
+      maximum_runtime_seconds: 14400
+      training_dependency: afterok
+      require_preflight: true
+      require_atomic_winner_lock: true
+      require_isolated_attempt_directories: true
+      cancel_pending_losers: true
+    required_outputs:
+      - results/20260721_srr_batch7_mechanism_closure_repair/source_arbiter_stage_adequacy.json
+      - results/20260721_srr_batch7_mechanism_closure_repair/production_gate_stage_adequacy.json
+      - results/20260721_srr_batch7_mechanism_closure_repair/training_stage_adequacy.json
+      - results/20260721_srr_batch7_mechanism_closure_repair/checkpoint_selection.csv
+      - results/20260721_srr_batch7_mechanism_closure_repair/help_harm.csv
+      - results/20260721_srr_batch7_mechanism_closure_repair/subgroup_metrics.csv
+      - results/20260721_srr_batch7_mechanism_closure_repair/slurm_attempts.csv
+    completion_conditions:
+      - rejected_refiner_never_reintroduced
+      - arbiter_not_worse_than_best_accepted_source_beyond_tolerance
+      - production_gate_trained_only_after_upstream_selection
+      - final_gate_machine_decision_written
+      - selected_checkpoint_reloaded
+      - all_jobs_terminal_accounted
+      - aggregation_exit_zero
+    failure_action: same_scope_repair_or_record_scientific_failure
+
+  - wave_id: B7R_WAVE7_FINAL_INTERVENTIONS_MAPPER_AND_STATE
+    executor_id: batch7_repair_executor
+    blocking: true
+    dependencies: [B7R_WAVE4_PROPOSAL_ONLY_STAGE]
+    accepts_skipped_dependencies:
+      - B7R_WAVE5_PATHOLOGY_SPECIFIC_REFINERS_when_proposal_gate_failed
+      - B7R_WAVE6_SOURCE_ARBITER_AND_PRODUCTION_GATE_when_proposal_gate_failed
+    write_scope:
+      - scripts/evaluation/
+      - scripts/srr_production/infer_myops.py
+      - tests/srr_production/test_myops_batch7_repair_semantics.py
+      - prompts/routes/handoffs/CURRENT.md
+      - configs/srr_production/entrypoints.yaml
+      - wiki/
+      - results/20260721_srr_batch7_mechanism_closure_repair/
+    final_intervention_modes:
+      - anchor_identity
+      - production_gate_closed
+      - full_learned
+      - production_gate_one
+      - proposal_only_gate_one
+      - refiner_only_gate_one
+      - learned_source_gate_one
+      - prototype_maps_off
+      - semantic_negative_memory_off
+      - zero_anchor_confirmation_context
+      - no_anchor_diagnostic
+    required_outputs:
+      - results/20260721_srr_batch7_mechanism_closure_repair/final_intervention_casewise.csv
+      - results/20260721_srr_batch7_mechanism_closure_repair/final_intervention_summary.csv
+      - results/20260721_srr_batch7_mechanism_closure_repair/intervention_prediction_manifest.csv
+      - results/20260721_srr_batch7_mechanism_closure_repair/proposal_refiner_metrics.csv
+      - results/20260721_srr_batch7_mechanism_closure_repair/source_arbiter_metrics.csv
+      - results/20260721_srr_batch7_mechanism_closure_repair/semantic_memory_effect.csv
+      - results/20260721_srr_batch7_mechanism_closure_repair/discovery_independence.csv
+      - results/20260721_srr_batch7_mechanism_closure_repair/mapper_report_draft.md
+      - results/20260721_srr_batch7_mechanism_closure_repair/mapper_report_final.md
+      - results/20260721_srr_batch7_mechanism_closure_repair/architecture_delta_final.md
+      - results/20260721_srr_batch7_mechanism_closure_repair/validator_status.json
+      - results/20260721_srr_batch7_mechanism_closure_repair/finalizer_state.json
+      - results/20260721_srr_batch7_mechanism_closure_repair/controller_report.md
+      - results/20260721_srr_batch7_mechanism_closure_repair/completion_check.md
+      - results/20260721_srr_batch7_mechanism_closure_repair/MANIFEST.md
+    completion_conditions:
+      - final_selected_checkpoint_or_proposal_failure_checkpoint_bound
+      - all_final_modes_have_independent_44_case_predictions
+      - identity_and_gate_closed_exact_zero
+      - no_placeholder_empty_or_copied_metrics
+      - proposal_refiner_source_gate_chain_complete
+      - semantic_memory_and_anchor_free_discovery_evidence_complete
+      - strict_validator_and_known_bad_exit_zero
+      - mapper_final_complete
+      - CURRENT_entrypoints_wiki_fingerprint_consistent
+      - all_jobs_terminal_accounted
+      - post_completion_aggregation_complete
+      - single_lightweight_local_commit
+      - no_runtime_artifacts_committed
+    failure_action: controller_returns_to_same_executor_or_finalizer_for_repair
