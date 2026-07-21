@@ -1,155 +1,172 @@
-schema_version: 3
+schema_version: 4
 authority_name: srr_production_mainline_authority
-reviewed_from_head: d251bde18199d2afa9de60b28d02336f88994941
-formal_training_status: BLOCKED_PENDING_AUTHORIZED_FOLD0_TRAINING
+reviewed_from_head: 5352d3c7b614adcbe4388a6fcef45c9db662dc38
+formal_training_status: BATCH4_COMPLETE_SCIENTIFIC_REPAIR_REQUIRED
 status_reason: >-
-  The user explicitly authorized one real MyoPS fold0 training wave and Slurm
-  routing race for Batch 4. Batch 3A established a real model-in-loop diagnostic,
-  but its tiny zero-step configuration, label-level identity export bypass,
-  small smoke prototype/memory asset, mode-bound checkpoints, legacy training
-  checkpoint schema, and patch-loss checkpoint selection must be repaired before
-  a formal entrypoint may be declared. Batch 4 is budget-authorized but remains
-  blocked until an independent planning review and same-config preflight pass.
-  Cine Batch 3B remains a proxy diagnostic and is excluded from this training.
-training_authorization:
-  user_authorized: true
-  authorized_scope: batch4_myops_fold0_only
-  slurm_authorized: true
-  partition_race_authorized: true
-  authorized_partitions: [htzhulab, a100-gpu, volta-gpu]
-  required_planning_review_token: BATCH4_PLANNING_AUDITED_GO
-  required_config: configs/srr_production/myops_batch4.yaml
-  required_controller_task: prompts/tasks/20260721_srr_batch4_forced_fold0_training_controller.md
-  formal_entrypoint_may_be_declared_after:
-    - independent_planning_review_pass
-    - schema_v2_training_checkpoint_preflight
-    - same_checkpoint_three_mode_preflight
-    - full_176_case_prototype_memory_manifest
-    - identity_model_logits_exact_preflight
-  validation_upload_authorized: false
-  hosted_metric_claim_authorized: false
+  Batch 4 completed a valid M10 D3 full-4scale 176/44 fold0 training wave with
+  exactly 1800 optimizer steps, three 44-case evaluation events, schema-v2
+  checkpoint reload, same-checkpoint three-mode controls, identity model-logit
+  exactness, and a full 176-case prototype-memory asset. The resulting
+  anchor-bounded improvement is only approximately +0.00068 edema Dice and
+  +0.00134 scar Dice, far below the +0.01 candidate-signal gate. Batch 5 is an
+  authorized no-training diagnostic repair to fix decode/selection semantics,
+  expose the real production correction gate, close casewise mechanism
+  attribution, and repair provenance/current-state/wiki evidence before any new
+  training decision.
+
+current_scientific_status:
+  batch4_operational: VERIFIED_COMPLETE
+  batch4_scientific: BATCH4_TRAINED_NEGATIVE_OR_REPAIR_REQUIRED
+  significantly_better_than_nnunet: false
+  batch5: READY_FOR_CONTROLLER
 
 selected_model:
   class_name: SRRProposeRefineMyoPS
   path: src/care_myocardium/models/srr_propref.py
-  target_variant: m10_d3_hierarchical_memory_propref
-  target_encoder_profile: full_4scale
-  target_final_output_mode: anchor_bounded_srr_correction
-  current_status: batch3a_real_model_loop_but_batch4_training_preflight_repairs_required
+  variant: m10_d3_hierarchical_memory_propref
+  encoder_profile: full_4scale
+  base_channels: 32
+  final_output_mode: anchor_bounded_srr_correction
+  current_status: trained_fold0_weak_anchor_bounded_signal_requires_mechanism_repair
+
+batch4_evidence:
+  training_source_commit: 0466260e3f4eb6c50b05a7f5a8b66652b873fe46
+  terminal_packet_commit: 82524678e8c4aae5c088b24db8a00643c2603ae9
+  explicit_review_commit: 5352d3c7b614adcbe4388a6fcef45c9db662dc38
+  result_root: results/20260721_srr_batch4_forced_fold0_training
+  valid_training_job: "59682067"
+  optimizer_steps: 1800
+  train_loop_seconds_minimum_met: true
+  train_cases: 176
+  validation_cases: 44
+  full_volume_eval_steps: [600, 1200, 1800]
+  selected_checkpoint_step: 1800
+  selected_checkpoint_sha256: bc325754202d5cf0aa59aa8fab0306b38c2665640339afa3f8d06a13c70009f6
+  same_checkpoint_three_modes: true
+  identity_changed_voxels: 0
+  identity_softmax_delta: 0.0
+  prototype_memory_source_cases: 176
+  validation_leakage_cases: 0
+  metrics:
+    edema_anchor_dice: 0.3944358976789887
+    edema_srr_dice: 0.39511554834642215
+    edema_dice_delta: 0.00067965066743345
+    scar_anchor_dice: 0.5601692281262312
+    scar_srr_dice: 0.5615107217364417
+    scar_dice_delta: 0.0013414936102105
+    scar_anchor_remote_fp_mm3: 620.3619700074735
+    scar_srr_remote_fp_mm3: 605.6288666886041
 
 formal_entrypoints: []
 
 candidate_entrypoints:
-  - id: srr_batch4_fold0_training_candidate
-    role: batch4_forced_fold0_training_after_review_and_preflight
+  - id: srr_batch4_fold0_trained_diagnostic
+    role: local_same_split_trained_diagnostic_not_submission_candidate
     path: scripts/training/run_srr_propref_myops_fold0.py
     config_path: configs/srr_production/myops_batch4.yaml
     formal_authority: false
-    audit_status: budget_authorized_execution_blocked_pending_review_and_preflight
-    blocked_reasons:
-      - planning review token is not yet present
-      - training runner still writes legacy non-schema-v2 checkpoints
-      - same trained checkpoint runtime-mode switching is not yet verified
-      - full 176-case prototype-memory asset is not yet built
-      - identity export still requires model-logit exactness repair
-      - full-volume checkpoint selection is not yet connected
-
-  - id: myops_batch3a_model_in_loop_candidate
-    role: untrained_model_in_loop_diagnostic
-    path: scripts/srr_production/infer_myops.py
-    config_path: configs/srr_production/myops_batch2.yaml
-    formal_authority: false
-    audit_status: partial_pass_untrained_diagnostic_not_formal_training_inference
+    audit_status: operationally_verified_scientifically_insufficient
     notes:
-      - real Dataset501 images and availability enter SRRProposeRefineMyoPS
-      - schema-v2 zero-step checkpoint loading is real
-      - current diagnostic model is base_channels=2 and tiny_3scale
-      - identity export currently restores raw labels after model forward
-      - current prototype-memory source is a small smoke asset
+      - valid exact-1800-step fold0 training exists
+      - candidate and strong signal gates failed
+      - no fold expansion or hosted claim authority
+
+  - id: myops_batch4_selected_checkpoint_inference
+    role: local_checkpoint_bound_model_in_loop_diagnostic
+    path: scripts/srr_production/infer_myops.py
+    formal_authority: false
+    audit_status: same_checkpoint_three_modes_identity_exact
+    notes:
+      - same checkpoint SHA used for identity, bounded and no-anchor
+      - identity exports model logits argmax
+      - Batch 5 must add proposal/refiner/production-gate interventions
 
   - id: myops_fair_evaluator
     role: local_full_volume_metric_recompute_authority
     path: scripts/srr_production/evaluate_myops_fair.py
-    config_path: configs/srr_production/myops_batch4.yaml
     formal_authority: false
-    audit_status: reusable_after_batch4_contract_hash_binding
+    audit_status: reusable_with_batch5_semantic_repairs
     notes:
-      - recomputes Dice, HD, HD95, component, remote-FP, volume and help-harm from NIfTI
-      - Batch 4 must bind step-600/1200/1800 contracts and selected checkpoint hashes
-      - no hosted metric authority
+      - computes Dice, HD, HD95, component, remote-FP, volume and help-harm from NIfTI
+      - positive-GT and all-case empty-safe metrics must be explicitly separated
+      - checkpoint selection must use formal logits-argmax deployment semantics
+
+  - id: srr_batch5_diagnostic_repair
+    role: authorized_existing_checkpoint_mechanism_diagnostic
+    path: prompts/tasks/20260721_srr_batch5_post_batch4_diagnostic_repair_controller.md
+    config_path: configs/srr_production/myops_batch5.yaml
+    formal_authority: true
+    audit_status: READY_FOR_CONTROLLER
+    allowed_actions:
+      - evaluation semantic repair
+      - existing-checkpoint inference interventions
+      - production correction gate evidence
+      - prototype provenance hash repair
+      - current/wiki/fingerprint repair
+    forbidden_actions:
+      - training
+      - fold expansion
+      - Cine
+      - validation upload
+      - hosted metric claim
+      - Batch6 automatic start
 
   - id: cine_batch3b_proxy_diagnostic
     role: real_4d_io_optical_flow_proxy_diagnostic
     path: scripts/srr_production/infer_cine_batch3b.py
     formal_authority: false
-    audit_status: diagnostic_only_excluded_from_batch4_training
+    audit_status: diagnostic_only_not_model_ready
     notes:
-      - reads real 4D Cine and performs frame0/mid-frame proxy aggregation
-      - anatomy is intensity-threshold proxy, not a trained model
+      - real 4D I/O exists
+      - anatomy remains threshold proxy
       - CineMA is not loaded
       - current three-case myocardium Dice is approximately 0.01 to 0.05
 
 required_real_assets:
   myops_raw:
     path: data/nnUNet/nnUNet_raw/Dataset501_CAREMyoPS
-    role: Dataset501 imagesTr and labelsTr
   myops_protocol_split:
     path: data/benchmarks/protocol/splits_MyoPS.json
-    role: exact 176/44 fold0 split
   nnunet_anchor_root:
     path: data/nnUNet/nnUNet_results/Dataset501_CAREMyoPS/nnUNetTrainer_500epochs__nnUNetPlans__3d_fullres
-    role: raw OOF nnU-Net probabilities and predictions
+  batch4_selected_checkpoint:
+    path: results/20260721_srr_batch4_forced_fold0_training/runtime/attempts/srr_batch4_m10d3_full4scale_fold0_seed20260721_htzhulab_59682067/variants/srr_batch4_m10d3_full4scale_fold0_seed20260721_htzhulab_59682067/checkpoints/fold_0/propref_config/checkpoint_validation_step_1800.pt
+    sha256: bc325754202d5cf0aa59aa8fab0306b38c2665640339afa3f8d06a13c70009f6
   batch4_frozen_prototype_memory:
-    path: results/20260721_srr_batch4_forced_fold0_training/runtime/frozen_prototype_memory.pt
     manifest_path: results/20260721_srr_batch4_forced_fold0_training/frozen_prototype_memory_manifest.json
-    role: all-176-case fold0-train-only frozen prototype and memory asset
+    asset_sha256: 8b262f8bb87e0733a48e169c77b028a3833b70cbcd33d2ac2fb4857ba1cbde83
 
 forbidden_formal_entrypoints:
-  - id: route_b_round04_b3_representation
-    path: scripts/training/route_B_round04/myops/B3/run_B3_representation.py
-    forbidden_reason: synthetic tensors and independent initialization
-  - id: route_b_round04_b4_proposal
-    path: scripts/training/route_B_round04/myops/B4/run_B4_proposal.py
-    forbidden_reason: synthetic tensors and unsupported metrics
-  - id: route_b_round04_b5_refiner
-    path: scripts/training/route_B_round04/myops/B5/run_B5_refiner.py
-    forbidden_reason: synthetic tensors and hard-coded proxies
-  - id: route_b_round04_b6_joint
-    path: scripts/training/route_B_round04/myops/B6/run_B6_joint.py
-    forbidden_reason: fixed proxy formulas and independent initialization
-  - id: route_b_round04_b7_cinema_control
-    path: scripts/training/route_B_round04/cine/B7/run_B7_cinema_control.py
-    forbidden_reason: synthetic frame tensor and disconnected CineMA probe
-  - id: route_b_round04_b8_registration
-    path: scripts/training/route_B_round04/cine/B8/run_B8_registration.py
-    forbidden_reason: synthetic pair and no real 4D path
-  - id: route_b_round04_b3_wrapper
-    path: jobs/route_B_round04/run_B3_representation.sh
-    forbidden_reason: calls forbidden B3
-  - id: route_b_round04_b4_wrapper
-    path: jobs/route_B_round04/run_B4_proposal.sh
-    forbidden_reason: calls forbidden B4
-  - id: route_b_round04_b5_wrapper
-    path: jobs/route_B_round04/run_B5_refiner.sh
-    forbidden_reason: calls forbidden B5
-  - id: route_b_round04_b6_wrapper
-    path: jobs/route_B_round04/run_B6_joint.sh
-    forbidden_reason: calls forbidden B6
-  - id: route_b_round04_b7_wrapper
-    path: jobs/route_B_round04/run_B7_cinema_control.sh
-    forbidden_reason: calls forbidden B7
-  - id: route_b_round04_b8_wrapper
-    path: jobs/route_B_round04/run_B8_registration.sh
-    forbidden_reason: calls forbidden B8
+  - path: scripts/training/route_B_round04/myops/B3/run_B3_representation.py
+    reason: synthetic historical path
+  - path: scripts/training/route_B_round04/myops/B4/run_B4_proposal.py
+    reason: synthetic historical path
+  - path: scripts/training/route_B_round04/myops/B5/run_B5_refiner.py
+    reason: hard-coded proxy historical path
+  - path: scripts/training/route_B_round04/myops/B6/run_B6_joint.py
+    reason: fixed proxy historical path
+  - path: scripts/training/route_B_round04/cine/B7/run_B7_cinema_control.py
+    reason: disconnected synthetic Cine path
+  - path: scripts/training/route_B_round04/cine/B8/run_B8_registration.py
+    reason: synthetic registration pair path
 
-batch4_required_repairs:
-  - file: scripts/training/run_srr_propref_myops_fold0.py
-    required_change: save schema-v2 resumable checkpoints and use all-44 full-volume selection evidence
-  - file: scripts/srr_production/infer_myops.py
-    required_change: export identity from model logits and use one checkpoint for all runtime modes
-  - file: src/care_myocardium/srr_production/prototype_memory.py
-    required_change: build and hash all-176-case frozen fold0-train-only assets
-  - file: configs/srr_production/myops_batch4.yaml
-    required_change: enforce M10 D3 full-4scale 1800-step training and routing race contract
-  - file: tests/srr_production/
-    required_change: add semantic known-bad tests for checkpoint schema, same-weight modes, identity bypass, leakage and undertraining
+batch5_required_repairs:
+  - issue: checkpoint_selection_decode_mismatch
+    required_change: rerank steps 600/1200/1800 using anchor-bounded model-logits argmax
+  - issue: production_gate_not_observed
+    required_change: record production_correction_gate and bounded corrections casewise
+  - issue: mechanism_chain_missing
+    required_change: same-checkpoint proposal/refiner/gate interventions with final metrics
+  - issue: metric_population_ambiguity
+    required_change: separate positive-GT and all-case empty-safe metrics
+  - issue: prototype_provenance_incomplete
+    required_change: nonempty feature/config/code/split/anchor/asset hashes
+  - issue: machine_state_and_wiki_stale
+    required_change: update CURRENT and root wiki/fingerprint
+
+publication_boundary:
+  validation_upload_authorized: false
+  hosted_metric_claim_authorized: false
+  fold_expansion_authorized: false
+  route_promotion_authorized: false
+  final_scientific_decision_authorized: false
