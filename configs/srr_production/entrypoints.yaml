@@ -1,25 +1,28 @@
-schema_version: 4
+schema_version: 5
 authority_name: srr_production_mainline_authority
 reviewed_from_head: 5352d3c7b614adcbe4388a6fcef45c9db662dc38
-formal_training_status: BATCH4_COMPLETE_SCIENTIFIC_REPAIR_REQUIRED
+formal_training_status: BATCH6_READY_FOR_CONTROLLER
 status_reason: >-
   Batch 4 completed a valid M10 D3 full-4scale 176/44 fold0 training wave with
-  exactly 1800 optimizer steps, three 44-case evaluation events, schema-v2
-  checkpoint reload, same-checkpoint three-mode controls, identity model-logit
-  exactness, and a full 176-case prototype-memory asset. The resulting
-  anchor-bounded improvement is only approximately +0.00068 edema Dice and
-  +0.00134 scar Dice, far below the +0.01 candidate-signal gate. Batch 5 is an
-  authorized no-training diagnostic repair to fix decode/selection semantics,
-  expose the real production correction gate, close casewise mechanism
-  attribution, and repair provenance/current-state/wiki evidence before any new
-  training decision.
+  exactly 1800 optimizer steps, but the resulting anchor-bounded improvement was
+  only approximately +0.00068 edema Dice and +0.00134 scar Dice. Batch 5
+  completed existing-checkpoint diagnostics and confirmed that selection semantics
+  and simply opening the production gate do not explain the weak result. Planner
+  code review found that final deployed logits lack direct pathology GT loss, the
+  production gate lacks a GT-driven repair objective, positive magnitude penalties
+  prefer near-zero corrections, and the Batch 5 effective-weight, pure-intervention,
+  proposal/ROI and validator evidence remains incomplete. Batch 6 is therefore
+  authorized to reconcile those diagnostics, repair final objective and production
+  authority, pass fixed-batch overfit, run an exact 300-step fold0 calibration, and
+  continue to total 900 steps only after a fixed machine gate.
 
 current_scientific_status:
   batch4_operational: VERIFIED_COMPLETE
   batch4_scientific: BATCH4_TRAINED_NEGATIVE_OR_REPAIR_REQUIRED
+  batch5_operational: CONTROLLER_VERIFIED_COMPLETE
+  batch5_planner_audit: RUNTIME_COMPLETE_MECHANISM_PACKET_NEEDS_REPAIR
+  batch6: READY_FOR_CONTROLLER
   significantly_better_than_nnunet: false
-  batch5: CONTROLLER_VERIFIED_COMPLETE
-  batch5_controller_acceptance: VERIFIED_COMPLETE
 
 selected_model:
   class_name: SRRProposeRefineMyoPS
@@ -28,7 +31,7 @@ selected_model:
   encoder_profile: full_4scale
   base_channels: 32
   final_output_mode: anchor_bounded_srr_correction
-  current_status: trained_fold0_weak_anchor_bounded_signal_requires_mechanism_repair
+  current_status: trained_fold0_weak_signal_final_objective_and_gate_repair_authorized
 
 batch4_evidence:
   training_source_commit: 0466260e3f4eb6c50b05a7f5a8b66652b873fe46
@@ -43,7 +46,6 @@ batch4_evidence:
   full_volume_eval_steps: [600, 1200, 1800]
   selected_checkpoint_step: 1800
   selected_checkpoint_sha256: bc325754202d5cf0aa59aa8fab0306b38c2665640339afa3f8d06a13c70009f6
-  same_checkpoint_three_modes: true
   identity_changed_voxels: 0
   identity_softmax_delta: 0.0
   prototype_memory_source_cases: 176
@@ -57,6 +59,30 @@ batch4_evidence:
     scar_dice_delta: 0.0013414936102105
     scar_anchor_remote_fp_mm3: 620.3619700074735
     scar_srr_remote_fp_mm3: 605.6288666886041
+
+batch5_evidence:
+  result_root: results/20260721_srr_batch5_post_batch4_diagnostic_repair
+  controller_acceptance: VERIFIED_COMPLETE
+  primary_job_id: "59730568"
+  primary_partition: htzhulab
+  primary_state: COMPLETED
+  primary_exit_code: "0:0"
+  optimizer_steps: 0
+  parameter_updates: 0
+  accepted_findings:
+    - formal argmax reranking preserves step1800 as top checkpoint
+    - gate-open versus full changes Dice by far less than the authority threshold
+    - no-anchor control is substantially worse than the nnU-Net anchored output
+    - mean best-of-mode oracle Dice headroom is approximately 0.00256
+    - final deployed logits have no direct scar or edema GT repair loss
+    - legacy correction opportunity targets branch arbitration rather than production gate
+    - active bounded-correction and refiner-effect terms prefer small corrections
+  planner_found_gaps:
+    - effective weights and aliases were not fully resolved from the actual Batch4 wrapper
+    - proposal-only and refiner-only interventions still share proposal/refiner gate inputs
+    - proposal component remote-FP and ROI coverage fields are blank
+    - preservation gradient was mislabeled as task-corrective production-gate gradient
+    - strict validator does not enforce the above semantics and receipt consistency
 
 formal_entrypoints: []
 
@@ -76,56 +102,82 @@ candidate_entrypoints:
     role: local_checkpoint_bound_model_in_loop_diagnostic
     path: scripts/srr_production/infer_myops.py
     formal_authority: false
-    audit_status: same_checkpoint_three_modes_identity_exact
+    audit_status: same_checkpoint_identity_and_batch5_interventions_available
     notes:
-      - same checkpoint SHA used for identity, bounded and no-anchor
       - identity exports model logits argmax
-      - Batch 5 must add proposal/refiner/production-gate interventions
+      - existing Batch5 component interventions require purity repair before causal interpretation
 
   - id: myops_fair_evaluator
     role: local_full_volume_metric_recompute_authority
     path: scripts/srr_production/evaluate_myops_fair.py
     formal_authority: false
-    audit_status: reusable_with_batch5_semantic_repairs
+    audit_status: reusable_with_positive_gt_and_all_case_separation
     notes:
       - computes Dice, HD, HD95, component, remote-FP, volume and help-harm from NIfTI
-      - positive-GT and all-case empty-safe metrics must be explicitly separated
-      - checkpoint selection must use formal logits-argmax deployment semantics
+      - scientific decisions use positive-GT pathology populations
+      - final deployment and selection decode must remain outputs logits argmax
 
   - id: srr_batch5_diagnostic_repair
-    role: authorized_existing_checkpoint_mechanism_diagnostic
+    role: completed_existing_checkpoint_mechanism_diagnostic_needing_planner_reconciliation
     path: prompts/tasks/20260721_srr_batch5_post_batch4_diagnostic_repair_controller.md
     config_path: configs/srr_production/myops_batch5.yaml
-    formal_authority: true
-    audit_status: CONTROLLER_VERIFIED_COMPLETE
+    formal_authority: false
+    audit_status: CONTROLLER_VERIFIED_COMPLETE_PLANNER_MECHANISM_REPAIR_REQUIRED
     result_root: results/20260721_srr_batch5_post_batch4_diagnostic_repair
     selected_checkpoint_sha256: bc325754202d5cf0aa59aa8fab0306b38c2665640339afa3f8d06a13c70009f6
     case_count: 44
     optimizer_steps: 0
-    controller_acceptance: VERIFIED_COMPLETE
-    slurm_accounting:
-      primary_job_id: "59730568"
-      primary_partition: htzhulab
-      primary_state: COMPLETED
-      primary_exit_code: "0:0"
-      a100_mirror_job_id: "59730666"
-      a100_mirror_state: "CANCELLED by 397557"
-      log_path: logs/srr_batch5/SRRB5Diag_59730568_20260721_005609.log
-      runtime_output_path: results/20260721_srr_batch5_post_batch4_diagnostic_repair/runtime/inference
-      aggregation_exit_code: 0
+
+  - id: srr_batch6_final_objective_alignment
+    role: authorized_mainline_final_objective_and_production_gate_repair
+    path: prompts/tasks/20260721_srr_batch6_final_objective_alignment_controller.md
+    config_path: configs/srr_production/myops_batch6.yaml
+    plan_path: docs/plans/laneB_round04_active_srr_batch6_final_objective_alignment_execution.md
+    executor_plan_path: prompts/tasks/20260721_srr_batch6_final_objective_alignment_executor_plan.yaml
+    formal_authority: true
+    audit_status: READY_FOR_CONTROLLER
+    source_checkpoint_sha256: bc325754202d5cf0aa59aa8fab0306b38c2665640339afa3f8d06a13c70009f6
+    source_prototype_asset_sha256: 8b262f8bb87e0733a48e169c77b028a3833b70cbcd33d2ac2fb4857ba1cbde83
+    fold: 0
+    train_cases: 176
+    validation_cases: 44
+    required_sequence:
+      - repair Batch5 effective-weight pure-intervention proposal-ROI and validator evidence
+      - implement direct final scar and T2-present edema losses
+      - implement GT-driven production gate repair-preserve objective and 13-channel context
+      - pass two-case 60-step fixed-batch overfit
+      - run exact 300-step fold0 calibration with 44-case evaluations
+      - continue to total 900 steps only after the fixed step300 gate
+      - run selected-checkpoint pure interventions and final mechanism aggregation
+    training_authority:
+      fixed_batch_overfit_steps: 60
+      fixed_batch_formal_credit: 0
+      formal_stage_steps: 300
+      conditional_total_steps: 900
+      stage300_eval_steps: [100, 200, 300]
+      extension_eval_steps: [450, 600, 900]
     allowed_actions:
-      - evaluation semantic repair
-      - existing-checkpoint inference interventions
-      - production correction gate evidence
-      - prototype provenance hash repair
-      - current/wiki/fingerprint repair
+      - Batch5 mechanism evidence reconciliation
+      - loss gate model test validator and wrapper repair
+      - source checkpoint production-gate migration
+      - fixed-batch overfit
+      - exact 300-step fold0 calibration
+      - conditional 900-step extension after machine-verified gate
+      - same-checkpoint mechanism interventions
+      - CURRENT wiki and fingerprint repair
+      - local lightweight result commit
     forbidden_actions:
-      - training
+      - backbone replacement or comparison
+      - encoder or retrieval redesign
+      - prototype or memory rebuild
       - fold expansion
       - Cine
+      - external weights or data
       - validation upload
       - hosted metric claim
-      - Batch6 automatic start
+      - route promotion
+      - M11
+      - Batch7 automatic start
 
   - id: cine_batch3b_proxy_diagnostic
     role: real_4d_io_optical_flow_proxy_diagnostic
@@ -165,20 +217,6 @@ forbidden_formal_entrypoints:
     reason: disconnected synthetic Cine path
   - path: scripts/training/route_B_round04/cine/B8/run_B8_registration.py
     reason: synthetic registration pair path
-
-batch5_required_repairs:
-  - issue: checkpoint_selection_decode_mismatch
-    required_change: rerank steps 600/1200/1800 using anchor-bounded model-logits argmax
-  - issue: production_gate_not_observed
-    required_change: record production_correction_gate and bounded corrections casewise
-  - issue: mechanism_chain_missing
-    required_change: same-checkpoint proposal/refiner/gate interventions with final metrics
-  - issue: metric_population_ambiguity
-    required_change: separate positive-GT and all-case empty-safe metrics
-  - issue: prototype_provenance_incomplete
-    required_change: nonempty feature/config/code/split/anchor/asset hashes
-  - issue: machine_state_and_wiki_stale
-    required_change: update CURRENT and root wiki/fingerprint
 
 publication_boundary:
   validation_upload_authorized: false
