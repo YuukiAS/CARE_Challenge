@@ -45,3 +45,13 @@ The follow-up controller-specific validator check was also run after this harden
 - `./envs/env_CARE/bin/python -m py_compile scripts/validation/validate_handoff_policy.py`: exit code 0.
 - `./envs/env_CARE/bin/python scripts/validation/validate_handoff_policy.py --policy --warnings-as-errors`: exit code 0; handoff policy validation passed.
 - `./envs/env_CARE/bin/python -m pytest -q tests/validation/test_final_output_readability_policy.py tests/validation/test_sprint_flow_policy.py`: exit code 0; 20 passed.
+
+## Controller analysis regression hardening
+
+A later user-provided bad example showed that Controller analysis could still be unreadable even when it was not a formal `controller_report.md`: it started from internal scar/anchor/gate terms, repeated a long paragraph, and listed repair fragments before giving a controller-level judgment. The validator now treats this as a known-bad pattern. Controller analysis must first explain the practical meaning, cause, next repair, and unauthorized actions in natural Chinese; internal terms such as `scar FN`, `scar FP`, `anchor`, `gate`, `final loss`, and `BCE` can appear only after that meaning is clear.
+
+Additional validation after this regression hardening:
+
+- `./envs/env_CARE/bin/python -m py_compile scripts/validation/validate_handoff_policy.py`: exit code 0.
+- `./envs/env_CARE/bin/python scripts/validation/validate_handoff_policy.py --policy --warnings-as-errors`: exit code 0; handoff policy validation passed.
+- `./envs/env_CARE/bin/python -m pytest -q tests/validation/test_final_output_readability_policy.py tests/validation/test_sprint_flow_policy.py`: exit code 0; 22 passed.

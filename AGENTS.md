@@ -59,7 +59,7 @@ Treat this `AGENTS.md` as the repo-level Codex rules source. Do not rely on `.cu
 
 ## Final output readability gate
 
-For user-facing analysis, Batch retrospectives, planner recommendations, controller conclusions, and any explicit reviewer conclusions, follow `prompts/FINAL_OUTPUT_READABILITY_POLICY.md`. The final answer must first state the scientific meaning in natural Chinese, then provide internal labels, paths, metrics, commands, or machine fields only as locating evidence. Do not use repository experiment codes, status tokens, route labels, or mechanism names as the heading or conclusion unless their meaning has already been explained in plain language.
+For user-facing analysis, Batch retrospectives, planner recommendations, controller conclusions, and any explicit reviewer conclusions, follow `prompts/FINAL_OUTPUT_READABILITY_POLICY.md`. Controller analysis of status, cause, and repair direction must start with a natural Chinese judgment and must not begin with internal terms such as scar FN/FP, anchor, gate, final loss, or repair target. The final answer must first state the scientific meaning in natural Chinese, then provide internal labels, paths, metrics, commands, or machine fields only as locating evidence. Do not use repository experiment codes, status tokens, route labels, or mechanism names as the heading or conclusion unless their meaning has already been explained in plain language.
 
 ## Agent-Flow v2 controller handoff
 

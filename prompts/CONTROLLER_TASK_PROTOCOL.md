@@ -166,7 +166,7 @@ why_operational_retry_is_insufficient:
 
 ## Controller Report
 
-`controller_report.md` is written before independent review. It must start with
+Any Controller analysis requested by the user must first explain the practical scientific judgment in natural Chinese before internal labels. `controller_report.md` is written before independent review. It must start with
 a natural Chinese judgment for the Planner/user, then provide evidence and the
 required machine fields. It must not claim reviewer approval, audited-go, final
 route promotion, or final scientific stop.

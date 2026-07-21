@@ -41,6 +41,12 @@
 
 内部代号可以放在段末括号中，供仓库检索；不得要求读者先学习一套命名系统。
 
+## Controller Analysis Rule
+
+当用户要求 Controller 分析现状、原因和修改方向时，Controller 必须写成科研负责人能直接读懂的判断。第一段先说：当前最重要的问题是什么，为什么会发生，下一步要修什么，暂时不启动什么或不授权什么。之后才能解释 `scar FN/FP`、`anchor`、`gate`、`final loss`、`BCE`、`same-scope repair` 等内部术语。
+
+对于 scar 这类机制分析，必须先把内部标签翻译成实际含义，例如“漏检的 scar 需要把最终 scar 分数抬高，误检的 scar 需要把最终 scar 分数压低”，再在括号或后续证据中给出 `scar FN`、`scar FP`、`gate`、`correction` 等定位词。不得以“对 scar 来说，anchor 错误分两类”这类内部机制开头。不得重复粘贴整段分析。不得只写“怎么修”加短语清单；修复方向必须说明它改变了哪条监督方向、信息流或梯度路径，以及用什么最小实验判断是否有效。
+
 ## Controller Report Rule
 
 `controller_report.md` 必须以一个自然中文段落开头。该段先回答：当前任务真正完成了什么或卡在哪里，为什么会这样，控制器现在建议做什么，暂时不允许做什么。随后再给证据摘要、路径、命令、指标和机器字段。不得让 `controller_verification_decision`、`operational_completion_status`、实验代号或状态 token 成为读者看到的第一个结论。

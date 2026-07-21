@@ -143,7 +143,7 @@ separation happened.
 
 ## Final Output Readability
 
-Controller-facing and Planner-facing prose must pass
+Controller-facing and Planner-facing prose, including ad hoc controller analysis requested by the user, must pass
 `prompts/FINAL_OUTPUT_READABILITY_POLICY.md`. Start `controller_report.md` with a
 natural Chinese judgment explaining what was completed or blocked, why the
 evidence is or is not adequate, what should happen next, and what remains

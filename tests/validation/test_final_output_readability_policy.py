@@ -111,3 +111,38 @@ def test_controller_report_with_human_intro_then_fields_passes() -> None:
     )
     findings = policy.validate_final_output_readability(Path("results/example/controller_report.md"), text)
     assert findings == []
+
+
+
+def test_user_reported_bad_controller_analysis_style_fails() -> None:
+    text = """对 scar 来说，anchor 错误分两类：
+scar FN：GT 是 scar，anchor 不是 scar，应该提高 class 5；
+scar FP：GT 不是 scar，anchor 是 scar，应该降低 class 5。
+现在 gate repair target 把两者都当成 “open gate”，但 raw correction 本身可能方向错误。结果就是 gate 学会打开/关闭，scar final loss 却没被有效拉下来。
+还有一个次要问题：scar final loss 在全 patch 上算，scar 体素占比很小，BCE 部分容易被大量非 scar 体素稀释；gate loss 的梯度又比 scar final loss 强很多，导致优化更偏向 preserve/close gate，而不是修 scar FN。
+
+怎么修
+我会把它作为 Batch6 same-scope repair，不启动 Batch7，不改病例、不改阈值、不跳过 fixed-overfit。
+
+对 scar 来说，anchor 错误分两类：
+scar FN：GT 是 scar，anchor 不是 scar，应该提高 class 5；
+scar FP：GT 不是 scar，anchor 是 scar，应该降低 class 5。
+现在 gate repair target 把两者都当成 “open gate”，但 raw correction 本身可能方向错误。结果就是 gate 学会打开/关闭，scar final loss 却没被有效拉下来。
+还有一个次要问题：scar final loss 在全 patch 上算，scar 体素占比很小，BCE 部分容易被大量非 scar 体素稀释；gate loss 的梯度又比 scar final loss 强很多，导致优化更偏向 preserve/close gate，而不是修 scar FN。
+"""
+    msgs = messages(text, "bad_user_controller_analysis_readability.md")
+    assert any("controller-level judgment" in msg for msg in msgs)
+    assert any("repeats a long paragraph" in msg for msg in msgs)
+
+
+def test_controller_scar_analysis_must_explain_meaning_before_terms() -> None:
+    text = (
+        "当前最重要的问题是 scar 的最终预测没有被监督方向稳定拉动，因为漏检和误检需要相反的修正方向，"
+        "但现在的门控目标只教模型在哪里打开修复通道。下一步应当在 Batch6 同范围内把漏检和误检分开约束，"
+        "暂时不启动 Batch7、不改病例划分、不上传验证，也不扩大训练范围。"
+        "\n\n具体含义是：漏检的 scar 需要把最终 scar 分数抬高，误检的 scar 需要把最终 scar 分数压低；"
+        "这些定位词分别对应 `scar FN` 和 `scar FP`。这样改动的是最终输出上的监督方向，而不是只让 `gate` 学会开关。"
+        "\n\n最小验证实验是固定病例、阈值和训练预算，只比较修复前后漏检区和误检区的最终 margin、correction 与 gate；"
+        "如果漏检区上升、误检区下降且正确区域没有明显漂移，才说明修复有效。"
+    )
+    assert messages(text, "good_controller_scar_analysis_readability.md") == []

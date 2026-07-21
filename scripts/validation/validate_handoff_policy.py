@@ -225,6 +225,10 @@ BAD_FIRST_PARAGRAPH_START_RE = re.compile(
 ENGLISH_STACK_RE = re.compile(r"\b[a-z][a-z-]{2,}\s+[a-z][a-z-]{2,}\s+[a-z][a-z-]{2,}\s+[a-z][a-z-]{2,}\b", re.IGNORECASE)
 FORMULA_LINE_RE = re.compile(r"(\$\$|\\\[|\\begin\{equation\})")
 CHINESE_RE = re.compile(r"[\u4e00-\u9fff]")
+CONTROLLER_INTERNAL_TERM_RE = re.compile(
+    r"\b(anchor|gate|repair|target|raw|correction|final loss|BCE|same-scope|fixed-overfit|outputs|logits|FN|FP|GT|TP|class\s*\d+)\b",
+    re.IGNORECASE,
+)
 
 
 @dataclass(frozen=True)
@@ -1191,7 +1195,7 @@ def strip_frontmatter_and_code_fences(text: str) -> str:
     return "\n".join(kept)
 
 
-def first_prose_paragraph(text: str) -> str:
+def prose_paragraphs(text: str) -> list[str]:
     clean = strip_frontmatter_and_code_fences(text)
     paragraphs: list[str] = []
     current: list[str] = []
@@ -1215,6 +1219,11 @@ def first_prose_paragraph(text: str) -> str:
         current.append(line)
     if current:
         paragraphs.append(" ".join(current).strip())
+    return paragraphs
+
+
+def first_prose_paragraph(text: str) -> str:
+    paragraphs = prose_paragraphs(text)
     return paragraphs[0] if paragraphs else ""
 
 
@@ -1283,17 +1292,32 @@ def validate_final_output_readability(path: Path, text: str) -> list[Finding]:
         if INTERNAL_CODE_HEADING_RE.match(heading) or HYPHENATED_ENGLISH_HEADING_RE.search(heading) or re.match(r"(?i)^stage\s+[A-Z]\b", heading) or heading.lower() == "current mature judgment":
             findings.append(Finding("error", path, f"internal code or machine-style label used as heading: {heading}"))
 
-    first = first_prose_paragraph(text)
+    paragraphs = prose_paragraphs(text)
+    normalized_seen: set[str] = set()
+    for paragraph in paragraphs:
+        normalized = re.sub(r"\s+", "", paragraph)
+        if len(normalized) >= 80:
+            if normalized in normalized_seen:
+                findings.append(Finding("error", path, "final output repeats a long paragraph instead of rewriting the analysis clearly."))
+                break
+            normalized_seen.add(normalized)
+
+    first = paragraphs[0] if paragraphs else ""
     if not first:
         findings.append(Finding("error", path, "readability check could not find a natural first paragraph."))
     else:
         if BAD_FIRST_PARAGRAPH_START_RE.search(first):
             findings.append(Finding("error", path, "first paragraph starts with a path, command, all-caps code, or underscore status."))
+        first_internal_terms = CONTROLLER_INTERNAL_TERM_RE.findall(first)
+        if re.match(r"^对[^，。]{1,30}来说", first) and len(first_internal_terms) >= 2:
+            findings.append(Finding("error", path, "first paragraph starts from internal mechanism details instead of a controller-level judgment."))
+        if len(first_internal_terms) >= 5 and not re.search(r"含义|意思|漏检|误检|最终预测|监督方向|梯度|自然", first):
+            findings.append(Finding("error", path, "first paragraph uses too many internal training terms before explaining their scientific meaning."))
         required_groups = [
-            ("main issue", r"问题|瓶颈|关键|最重要|核心"),
-            ("cause", r"为什么|因为|原因|来自|出现"),
-            ("next action", r"现在|下一步|应当|建议|需要"),
-            ("temporary non-action", r"暂时不|不要|不应|不宜|先不"),
+            ("main issue", r"问题|瓶颈|关键|最重要|核心|根因"),
+            ("cause", r"为什么|因为|原因|来自|出现|导致|根因"),
+            ("next action", r"现在|下一步|应当|建议|需要|我会|打算"),
+            ("temporary non-action", r"暂时不|不要|不应|不宜|先不|不启动|不改|不上传|没有授权"),
         ]
         missing = [name for name, pattern in required_groups if not re.search(pattern, first)]
         if missing:
