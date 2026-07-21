@@ -5,7 +5,7 @@
 ## 当前状态
 
 ```text
-state_id: srr_mainline_batch7_upstream_candidate_quality_ready_20260721
+state_id: srr_mainline_batch7_mechanism_closure_repair_ready_20260721
 round_id: post_round04_main_only
 state_updated_date: 2026-07-21
 active_development_branch: main
@@ -14,36 +14,31 @@ portfolio_mode: SUSPENDED
 route_worktree_development_authorized: false
 single_active_scientific_line: SRR_MyoPS_from_historical_Route_B_lineage
 batch4_operational_status: VERIFIED_COMPLETE
-batch4_training_adequacy_status: PASS_EXACT_1800_STEPS_1800_SECONDS_176_44
-batch4_scientific_status: BATCH4_TRAINED_NEGATIVE_OR_REPAIR_REQUIRED
+batch4_scientific_status: TRAINED_BUT_NEAR_BASELINE
 batch5_operational_status: CONTROLLER_VERIFIED_COMPLETE
-batch5_planner_audit_status: RUNTIME_COMPLETE_MECHANISM_PACKET_NEEDS_REPAIR
-batch6_operational_status: CONTROLLER_VERIFIED_COMPLETE_STOP_AT_300_GATE_FAIL
+batch5_scientific_status: DIAGNOSTIC_PACKET_REQUIRED_REPAIR
+batch6_operational_status: CONTROLLER_VERIFIED_COMPLETE_STOP_AT_300
 batch6_scientific_status: FINAL_OBJECTIVE_REPAIRED_BUT_BELOW_USABLE_SIGNAL
-batch7_status: READY_FOR_CONTROLLER
-next_required_action: RUN_BATCH7_UPSTREAM_CANDIDATE_QUALITY
+batch7_operational_status: FORMAL300_COMPLETED_STOP_GATE
+batch7_scientific_status: MECHANISM_CLOSURE_INVALID_NEEDS_SAME_SCOPE_REPAIR
+batch7_repair_status: READY_FOR_CONTROLLER
+next_required_action: RUN_BATCH7_MECHANISM_CLOSURE_REPAIR
 planning_review_required: false
 review_required: false
 controller_is_coordinator: true
-batch7_asset_rebuild_authorized: true
-batch7_fixed_overfit_authorized: true
-batch7_formal_300_authorized: true
-batch7_conditional_1200_authorized: true_only_after_step300_gate
-validation_upload_authorized: false
-hosted_metric_claim_authorized: false
+batch8_authorized: false
 fold_expansion_authorized: false
 cine_training_authorized: false
 backbone_replacement_authorized: false
-encoder_base_retrieval_redesign_authorized: false
+validation_upload_authorized: false
+hosted_metric_claim_authorized: false
 route_promotion_authorized: false
-m11_authorized: false
-batch8_authorized: false
 final_scientific_decision_authorized: false
 ```
 
 ## 当前开发边界
 
-当前只在：
+只允许在：
 
 ```text
 /users/a/e/aereinh/CARE
@@ -74,19 +69,7 @@ Planner
 -> Planner
 ```
 
-默认不要求 planning critic，也不要求 independent reviewer：
-
-```yaml
-planning_review_required: false
-planning_reviewer: none
-review_required: false
-review_mode: none
-reviewer: none
-```
-
-Controller 是 coordinator 和 acceptance owner。Executor 不能自行宣布任务完成。Controller 必须检查真实 diff、实现语义、测试、prototype/memory 来源、Slurm、runtime、aggregation、required outputs、CURRENT/wiki/fingerprint 和 contract-sensitive fields，并在同范围内要求 Executor 修复，直到 `VERIFIED_COMPLETE`、`NEEDS_REPAIR` 或 `OPERATIONALLY_BLOCKED`。
-
-面向 Planner/user 的 Controller 报告必须先用自然中文解释结论，再列内部字段、路径和指标。
+Controller 是 coordinator 和 acceptance owner。Executor 不能自行宣布任务完成。Controller 必须检查真实 diff、模型运行、独立 prediction roots、hash、测试、semantic memory、Slurm、aggregation、CURRENT/wiki/fingerprint，并在同范围内要求 Executor 修复。
 
 ## SRR 图与路线目标
 
@@ -99,223 +82,186 @@ SRR-v3
 visual_read_status: COMPLETE
 ```
 
-当前路线目标：
+当前仍保留的路线目标：
 
 ```text
 [LGE,T2,C0] + availability
 -> modality-specific multi-scale encoding
--> shared/private/interaction selective retrieval
--> trained-feature-aligned prototype/memory/negative-space
--> anatomy-guided anchor-independent discovery + anchor-confirmation proposals
--> scar/edema differentiable soft ROI refinement
--> learned proposal/refiner source selection
+-> availability-aware shared/private/interaction retrieval
+-> real prototype and semantic negative memory
+-> anatomy-guided anchor-free discovery + anchor-confirmation proposals
+-> pathology-specific scar/edema soft-ROI refinement
+-> source selection
 -> directly supervised bounded nnU-Net correction
 ```
 
 nnU-Net 只能作为 baseline、anchor、context、error signal 和 safety source，不能替代 SRR。
 
-## Batch 4 终态
+## 已确认结果
+
+### Batch 6
 
 ```text
-model: SRRProposeRefineMyoPS
-variant: m10_d3_hierarchical_memory_propref
-encoder_profile: full_4scale
-base_channels: 32
-final_output_mode: anchor_bounded_srr_correction
-fold0 train/validation: 176/44
-valid job: 59682067 COMPLETED 0:0
-optimizer_steps: 1800
-selected checkpoint step: 1800
-selected checkpoint SHA256: bc325754202d5cf0aa59aa8fab0306b38c2665640339afa3f8d06a13c70009f6
-prototype asset SHA256: 8b262f8bb87e0733a48e169c77b028a3833b70cbcd33d2ac2fb4857ba1cbde83
-```
-
-科学结果：
-
-```text
-edema Dice delta: +0.00067965066743345
-scar Dice delta:  +0.0013414936102105
-```
-
-工程闭环成立，但仍接近 nnU-Net。
-
-## Batch 5 终态
-
-Batch 5 完成 existing-checkpoint 诊断，确认：
-
-- 正式 argmax 重排后 step1800 仍最好；
-- 单纯 gate-open 不能解决低分；
-- no-anchor 明显变差，主体性能仍来自 nnU-Net；
-- proposal/refiner 平均 oracle headroom 约 `+0.00256`；
-- 最终 logits 当时缺少直接 pathology GT loss；
-- Batch 5 packet 的有效权重、纯组件干预和 ROI/validator 语义需要后续修复。
-
-## Batch 6 终态
-
-Batch 6 terminal commit：
-
-```text
-f139c54fd6b55b99409fcf546a1a0e117d7aa06b
-```
-
-执行证据：
-
-```text
-fixed-overfit job: 59743323 PASS
-formal300 job: 59744053 COMPLETED
-final interventions job: 59744941 COMPLETED
-formal900: SKIPPED_STEP300_GATE_FAILED
-selected checkpoint step: 300
 selected checkpoint SHA256: 729c81e49bf846339ed2f39ef0f2656319befd2b9cfe73268d7cf501e6b40fbd
-train/validation: 176/44
-optimizer_steps: 300
+formal300: COMPLETED
+edema positive Dice delta: +0.0027247487
+scar positive Dice delta: +0.0006739682
+mean positive Dice delta: +0.0016993584
+formal900: skipped after gate fail
 ```
 
-Batch 6 修通了 direct final scar/edema supervision、13-channel production gate 和 GT-driven repair/preserve loss。Fixed overfit 通过，说明方向性 loss 和 gate 梯度真实存在。
+Batch 6 修通 final pathology supervision 和 production gate，但收益不足。
 
-300 步结果：
+### Batch 7 formal300
 
 ```text
-edema positive Dice delta: +0.0027247486728372468
-scar positive Dice delta:  +0.0006739681677682672
-mean positive Dice delta:  +0.001699358420302757
-required continuation gate: +0.003
-help/harm: 25/18
+terminal commit: 4c79554de785030ed59081ce3ae233711efc062a
+selected checkpoint SHA256: d34ad65890cbb6a12aac3fc35bcab71709d680bff5a3aae2d93e010db1cc0e0d
+job: 59789651 COMPLETED 0:0
+optimizer steps: 300
+full-volume eval: 100,200,300
+edema positive Dice delta: +0.0054302188
+scar positive Dice delta: -0.0048258512
+mean positive Dice delta: +0.0003021838
+help/harm: 23/35
+formal1200: skipped after gate fail
 no-T2 edema exact zero: true
 ```
 
-这不是运行失败，而是科学继续门失败。900 步被正确禁止。
+这证明当前联合模型未达到继续门，但不能作为完整 SRR 设计的有效否定，因为机制证据没有闭环。
 
-同 checkpoint 干预：
+## Batch 7 机制证据失效原因
+
+以下原 Batch7 文件不得用于机制结论：
 
 ```text
-full gate=1:
-  edema +0.00772109
-  scar  +0.00028663
-proposal-only gate=1:
-  edema +0.00434505
-  scar  +0.00261628
-refiner-only gate=1:
-  edema +0.00495245
-  scar  -0.00876189
+results/20260721_srr_batch7_upstream_candidate_quality/final_mechanism_interventions.csv
+results/20260721_srr_batch7_upstream_candidate_quality/proposal_refiner_metrics.csv
+results/20260721_srr_batch7_upstream_candidate_quality/source_arbiter_metrics.csv
 ```
 
-结论：final loss/gate 修复有真实但有限作用；scar refiner 明显有害，proposal/refiner 固定平均不合理，上游候选质量成为主瓶颈。
+原因：
 
-## 当前 Batch 7
+1. 所有 intervention mode 被写入同一组 formal300 指标；
+2. identity 相对 anchor 不为零；
+3. proposal-only 和 scar refiner-only 正式指标为空；
+4. source arbiter 只有 softmax 单元测试，没有 44 例效果；
+5. validator 没有拒绝 placeholder、复制指标和复用预测；
+6. named semantic negative memory 没有逐类替换真实 bank；
+7. discovery retrieval 仍间接读取 nnU-Net context；
+8. CURRENT 和 root wiki 没有在 terminal packet 后正确收尾。
 
-### 唯一目标
+原 Batch7 的 `controller_verification_decision: VERIFIED_COMPLETE` 只保留为 formal300 操作流程完成，不代表 mechanism closure 完成。
+
+## 当前唯一任务
 
 ```text
-UPSTREAM_CANDIDATE_QUALITY_AND_SOURCE_SELECTION_REPAIR
+BATCH7_MECHANISM_CLOSURE_AND_STAGEWISE_COMPONENT_REPAIR
 ```
 
-Batch 7 不再只调 final gate，也不把 Batch 6 机械延长。它必须：
-
-1. 从 Batch 6 step300 训练后 checkpoint 和全部 176 个训练病例重建 prototype/memory；
-2. 用完整 tensor SHA256、四 shard 和 validation-zero-leakage 绑定资产；
-3. 用真实语义负样本替换正式路径中的 deterministic/random named negatives；
-4. 在 M10 spatial dictionary 前查询 memory，并把 scar/edema 正负 prototype maps 真正传入两轮空间路由；
-5. 将 proposal 拆成不读取 nnU-Net pathology context 的 discovery branch 与 anchor-confirmation branch；
-6. 将正式 refiner 改为从 proposal logits 起步的可微软 ROI residual，不再用离散 crop 作为正式路径；
-7. 用 learned source arbiter 选择 proposal/refiner，删除固定 `0.5/0.5` 平均；
-8. 保留 Batch 6 direct final loss、production gate repair/preserve 和 no-T2 safety。
-
-### 当前权威文件顺序
+权威文件顺序：
 
 ```text
-1. results/srr_production/code_maturity/batch6_planner_audit_and_batch7_decision.md
-2. docs/plans/laneB_round04_active_srr_batch7_upstream_candidate_quality_execution.md
-3. configs/srr_production/myops_batch7.yaml
-4. prompts/tasks/20260721_srr_batch7_upstream_candidate_quality_controller.md
-5. prompts/tasks/20260721_srr_batch7_upstream_candidate_quality_executor_plan.yaml
-6. results/20260721_srr_batch6_final_objective_alignment/
-7. configs/srr_production/myops_batch6.yaml
-8. results/20260721_srr_batch4_forced_fold0_training/
+1. results/srr_production/code_maturity/batch7_planner_audit_and_mechanism_closure_decision.md
+2. docs/plans/laneB_round04_active_srr_batch7_mechanism_closure_repair_execution.md
+3. configs/srr_production/myops_batch7_repair.yaml
+4. prompts/tasks/20260721_srr_batch7_mechanism_closure_repair_controller.md
+5. prompts/tasks/20260721_srr_batch7_mechanism_closure_repair_executor_plan.yaml
+6. results/20260721_srr_batch7_upstream_candidate_quality/
+7. results/20260721_srr_batch6_final_objective_alignment/
 ```
 
-### Batch 7 阶段
+## 修复阶段
 
 ```text
-B7-00: bind Batch6 terminal evidence and forensic code truth; no training
-B7-01: rebuild trained-feature-aligned prototype/memory asset; no training
-B7-02: wire prototype maps into spatial dictionary
-B7-03: implement dual-source proposal, differentiable refiner and source arbiter
-B7-04: real-case interventions, strict tests and checkpoint roundtrip
-B7-05: Case2002 + Case1002 fixed 100-step overfit; zero formal credit
-B7-06: exact 300-step fold0 upstream calibration; 44-case eval at 100/200/300
-B7-07: continue to total 1200 only after machine-verified step300 gate
-B7-08: selected-checkpoint interventions, mapper/wiki/fingerprint and controller verification
+B7R-00 bind terminal evidence, supersede invalid mechanism tables, repair state
+B7R-01 real per-mode intervention runner and semantic fail-closed validator
+B7R-02 real category semantic memory and genuinely anchor-free discovery
+B7R-03 same-checkpoint 44-case truthful intervention replay
+B7R-04 proposal-only 600-step stage
+B7R-05 scar refiner 300 and edema refiner 300, separately gated
+B7R-06 accepted-source arbiter 200 and production gate 200
+B7R-07 final independent interventions, mapper, validator and state closure
 ```
 
-### Batch 7 300 步继续门
+## 关键执行门
 
-只有全部满足才允许继续到 1200：
+在任何新训练前必须满足：
 
 ```text
-final mean positive Dice delta >= +0.005
-each pathology final Dice delta >= +0.001
-proposal-only mean positive Dice delta >= +0.005
-scar refiner-only Dice delta >= 0
-scar learned-source no more than 0.001 below scar proposal-only
-edema learned gate captures >=60% of gate-one gain
+each intervention has its own 44-case prediction root and manifest
+identity and gate-closed changed voxels = 0 for every case
+identity softmax max abs delta <= 1e-6
+no placeholder or copied metrics
+old Batch7 copied table rejected by known-bad test
+named semantic memory real by category or valid-mask disabled
+discovery logits invariant to anchor confirmation context <=1e-6
+confirmation logits change under zeroed anchor context >1e-5
+```
+
+Proposal-only 阶段继续门：
+
+```text
+mean positive Dice delta >= +0.003
+scar Dice delta >= -0.001
+edema Dice delta >= +0.003
 help >= harm
-HD95 relative worsening <=5% each pathology
-remote-FP relative worsening <=5% each pathology
+HD95 and remote-FP worsening <=5%
 no-T2 edema exact zero
-finite losses and nonzero required gradients
 ```
 
-失败时固定停止在 300，跳过 1200，但仍形成完整机制和终态包。
+Proposal 阶段失败时必须停止全部 downstream training 并返回 Planner。
 
-### Batch 7 科学等级
+Scar/edema refiner 必须分别优于本病种 proposal 至少 `+0.001` 才允许进入正式 source；失败 refiner 必须 hard-disable，不能继续平均。
+
+最终 production gate 候选门：
 
 ```text
-mean Dice delta < +0.01: still insufficient
-+0.01 to < +0.03: useful upstream mechanism signal
-+0.03 to < +0.05: substantial but below project target
->= +0.05 mean and each pathology >= +0.03: Batch7 target reached
+mean positive Dice delta >= +0.005
+each pathology Dice delta >= 0
+help >= harm
+HD95 and remote-FP worsening <=5%
+no-T2 edema exact zero
 ```
 
-这些等级都不自动授权 fold expansion 或 validation upload。
-
-## Batch 7 授权边界
-
-已授权：
+## 已授权
 
 ```text
-Batch6 code/result forensic binding
-trained-checkpoint prototype/memory rebuild
-real semantic negative memory
-spatial prototype-map wiring
-dual-source proposal repair
-differentiable soft-ROI refiner repair
-learned proposal/refiner source arbiter
-loss/test/validator/checkpoint/inference repair
-fixed two-case 100-step overfit
-formal 300-step fold0 calibration
-conditional extension to total 1200 after machine gate
-selected-checkpoint mechanism interventions
-CURRENT/wiki/fingerprint update
+truthful independent intervention infrastructure
+semantic validator and known-bad repair
+real category semantic memory with valid masks
+anchor-free discovery routing repair
+same-checkpoint 44-case intervention replay
+proposal-only 600-step training
+conditional pathology-specific refiner stages
+conditional source-arbiter and production-gate stages
+mapper/wiki/fingerprint repair
 local lightweight result commit
 ```
 
-未授权：
+## 未授权
 
 ```text
-backbone replacement or comparison
+Batch8
+monolithic Batch7 1200-step continuation
+backbone replacement
 encoder/base retrieval redesign
 fold expansion
-Cine training
+Cine
 external data or weights
 validation packaging/upload
 hosted metric claim
 route promotion
 M11
-Batch8 automatic start
 final scientific stop
 ```
 
-## 目标边界
+## 完成语义
 
-Batch 6 已经说明“过度保守”不是唯一问题。Batch 7 的任务是证明：当 prototype/memory 与当前特征空间一致、spatial dictionary 真正读取 prototype、proposal 能独立发现 baseline 漏检、scar refiner 不再有害且系统能选择 proposal/refiner 后，是否可以把局部 `+0.001` 级变化提高到至少 `+0.01`，并争取接近项目希望的 `+0.05`。若 300 步连上游继续门都过不了，就不能再把失败归因于 gate 或训练时长。
+Controller 只有在真实干预、semantic memory、anchor-free discovery、分阶段训练、所有 job terminal accounting、post-completion aggregation、strict validator、known-bad、mapper final、CURRENT/wiki/fingerprint 和本地轻量 commit 全部完成时，才可写：
+
+```text
+controller_verification_decision: VERIFIED_COMPLETE
+```
+
+这只表示当前修复合同完成。下一步仍由 Planner/用户决定。
