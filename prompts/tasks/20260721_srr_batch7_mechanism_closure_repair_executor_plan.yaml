@@ -200,6 +200,9 @@ waves:
       python_executable: /users/a/e/aereinh/CARE/envs/env_CARE/bin/python
       primary_partition: htzhulab
       mirror_partition: a100-gpu
+      partitions:
+        - htzhulab
+        - a100-gpu
       mirror_after_pending_seconds: 900
       volta_allowed: false
       require_preflight: true
@@ -262,6 +265,9 @@ waves:
       python_executable: /users/a/e/aereinh/CARE/envs/env_CARE/bin/python
       primary_partition: htzhulab
       mirror_partition: a100-gpu
+      partitions:
+        - htzhulab
+        - a100-gpu
       mirror_after_pending_seconds: 900
       volta_allowed: false
       maximum_runtime_seconds: 14400
@@ -335,6 +341,9 @@ waves:
       python_executable: /users/a/e/aereinh/CARE/envs/env_CARE/bin/python
       primary_partition: htzhulab
       mirror_partition: a100-gpu
+      partitions:
+        - htzhulab
+        - a100-gpu
       mirror_after_pending_seconds: 900
       volta_allowed: false
       maximum_runtime_seconds: 14400
@@ -396,6 +405,9 @@ waves:
       python_executable: /users/a/e/aereinh/CARE/envs/env_CARE/bin/python
       primary_partition: htzhulab
       mirror_partition: a100-gpu
+      partitions:
+        - htzhulab
+        - a100-gpu
       mirror_after_pending_seconds: 900
       volta_allowed: false
       maximum_runtime_seconds: 14400
