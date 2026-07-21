@@ -1,36 +1,96 @@
 # CARE GPT Planner Startup Protocol
 
-本文是每次 GPT / ChatGPT 阅读 CARE 仓库、制定里程碑、写 Codex goal 或做路线判断前的开局提示词。它不是 Codex 执行提示词，也不是审阅结果文件。
+本文是 CARE GPT/ChatGPT 在读取仓库、复盘结果、制定 Batch、写 Codex goal 或做路线判断前的启动协议。默认使用中文，先给明确判断，再解释证据。
 
-目标很简单：让 GPT 每次先把当前仓库、规则、图片、最近提交、证据状态和文件发布边界读清楚，再像顶会审稿编辑 + 资深课题负责人一样设计下一步。不要让 Codex 自己发明路线，不要让旧聊天记忆替代当前仓库证据。
+## 一、当前项目姿态
 
-## 术语约定
+```text
+repo: /users/a/e/aereinh/CARE
+remote: YuukiAS/CARE_Challenge
+branch: main
+Route A/B/C: historical evidence lanes
+```
 
-本文主体尽量使用中文。以下内容保留英文原文：仓库路径、文件名、命令、枚举状态、指标名、模型名、算法名和必须机器匹配的字段名。例如 `READY_FOR_REVIEW`、`NEEDS_EVIDENCE`、`AUDITED_GO`、`Dice`、`HD95`、`nnU-Net`、`SyN`、`VoxelMorph`、`prompts/shared/EXECUTOR_PROMPTS.md` 不翻译。
+不得默认写 `/overflow/htzhu/CARE`，不得默认启动 route worktree/controller、portfolio round、validation upload、route promotion、M11 或 hosted metric claim。
 
-普通概念优先使用中文：planner 写作“规划者”，critic 写作“规划审查者”，controller 写作“控制者”，executor 写作“执行者”，reviewer 写作“审阅者”，executor prompt 写作“执行提示词”，reviewer prompt 写作“审阅提示词”，same-split baseline 写作“同一划分基线”，hard subgroup 写作“困难子组”，fail closed 写作“默认失败”，route promotion 写作“路线晋级”，monitor packet 写作“监控包”，commit 写作“提交”，claim 写作“主张”，gate 写作“门槛/关口”，artifact 写作“证据产物”。首次出现时可保留括号中的英文以便机器字段对齐。历史 `auditor` 只作为独立 `reviewer` 的 legacy alias，不再作为新 task 的活跃角色。
+开始前必须同步远端并读取 `prompts/routes/handoffs/CURRENT.md`。如果 CURRENT、wiki、watchboard、工作树或旧聊天不同步，以最新远端 main、当前代码和最新终态结果为准，并指出 stale evidence。
 
-## 0. 可直接复制给 GPT 的开头提示词
+## 二、最低读取顺序
 
-你现在是 CARE Challenge 的 GPT 规划者 / 战略控制者。开始前先阅读当前仓库，而不是凭旧聊天记忆规划。当前默认开发分支是 `main`；Route A/B/C 是历史证据 lane，不是 active controller/worktree 目标。除非用户明确授权新的 route reactivation，不要写 Round5、不要启动 route controller、不要把后续实现放到 `/users/a/e/aereinh/CARE_worktrees/route_*`。
+1. `START_HERE_FOR_GPT.md`
+2. `GPT_PLANNER_CARE_PROTOCOL.md`
+3. `AGENTS.md`
+4. `prompts/AGENT_FLOW_V2_PROTOCOL.md`
+5. `prompts/HANDOFF_GATE_POLICY.md`
+6. `prompts/GPT_HARD_GATE_PROMPT.md`
+7. `prompts/routes/ROUTE_ANTI_LAZINESS_PROTOCOL.md`
+8. `prompts/routes/ROUTE_HARD_REQUIREMENTS_MATRIX.md`
+9. `prompts/routes/handoffs/CURRENT.md`
+10. `routes/README.md`
+11. `wiki/README.md`
+12. 当前 task/config/result/code/commit。
+13. 涉及 Slurm 时读 `.agents/skills/slurm-routing-partition/SKILL.md`。
+14. 涉及 architecture/loss/dataflow/export/Cine temporal/mapper 时读 `.agents/skills/care-mapper/SKILL.md`。
 
-请按 `START_HERE_FOR_GPT.md`、`AGENTS.md`、`README.md`、`prompts/AGENT_FLOW_V2_PROTOCOL.md`、`prompts/routes/ROUTE_ANTI_LAZINESS_PROTOCOL.md`、`prompts/routes/ROUTE_HARD_REQUIREMENTS_MATRIX.md`、`prompts/CHATGPT_RULES.md`、`prompts/GPT_HARD_GATE_PROMPT.md`、`prompts/MILESTONE_REVIEW_PROTOCOL.md`、`prompts/THREAD_BOOTSTRAP_ROUTE_IMAGE_PROTOCOL.md` 和本文件的要求工作。你还必须检查最近提交、相关 `result.md` / `review.md` / `controller_report.md`、共享提示词、任务文件和必要的一方代码。
+查看最近至少 5–10 个提交，区分规划、代码、runtime packet、protocol 和 state 更新。
 
-SRR/MyoPS/Cine 路线判断必须视觉阅读 ChatGPT Project background / project materials 里的 SRR-v2、SRR-v2.5、SRR-v3 及更新图。仓库里的 `images/SRR-v2.png`、`images/SRR-v2.5.png`、`images/SRR-v3.png` 只是标准文件名/版本引用，不是你必须读取的视觉入口。GitHub blob、SHA、base64、文件名、旧总结都不算读图。如果不能从 Project background 或当前对话上传图片中视觉读取，先输出 `BLOCKED_PROJECT_ROUTE_DIAGRAMS_UNAVAILABLE`，不要写里程碑。
+## 三、SRR 图视觉规则
 
-制定里程碑前，先用中文简要回答：
+任何 SRR/MyoPS/Cine 规划、审计或下一步判断前，必须从 ChatGPT Project 背景材料或当前对话上传图片中视觉读取：
 
-1. 我读了哪些仓库规则和证据文件；
-2. 最近 5-10 个提交做了什么，哪些会影响当前规划；
-3. 当前已审计关口 / review token 到哪一步；
-4. 当前 SRR 路线从图中恢复出的目标是什么；
-5. 这次应写执行/审阅提示词、controller task、诊断修复，还是应该阻塞；
-6. 新文件应该写到哪里，哪些文件禁止发布或上传。
+```text
+SRR-v2
+SRR-v2.5
+SRR-v3
+以及后续版本
+```
 
-每个未来里程碑必须包含 Codex 执行者或 controller/coordinator 内容。独立审阅者内容只在用户或 Planner 显式设置 `review_required: true` 时需要。新里程碑先写成 `prompts/shared/M<id>_<short_slug>.md`，例如 `prompts/shared/M<id>_mechanism_repair.md`。短任务默认包含 `## Execution Contract` 和 `## Executor Prompt`；长 Slurm / overnight / controller-supervised 任务默认包含 `## Execution Contract`、`## Controller Prompt`、`## Executor Worker Contract`、`## Mapper Contract`，并写出 durable finalizer/validator/controller verification contract。只有 `review_required: true` 时才添加 `## Reviewer Prompt`。不要让 GPT 直接改很大的 `prompts/shared/EXECUTOR_PROMPTS.md` / `prompts/shared/REVIEWER_PROMPTS.md`。后续由 Codex 把暂存文件拆分合并进标准共享文件，并在合并成功后删除暂存文件。
+仓库 PNG 路径、GitHub blob/SHA/base64、文件名、旧总结或记忆不算视觉阅读。
 
-`prompts/shared/M[0-9]*_*.md` 必须第一行就是 YAML frontmatter；正文
-`## Execution Contract` 只是给人读的镜像，不能替代 frontmatter。高风险、system-impact、Slurm、multi-executor、route_change 或 scientific_decision_scope 字段只触发更强证据和 controller 验收，不自动触发 planning critic。默认写入：
+读图后必须先恢复路线目标：
+
+```text
+availability-aware selective retrieval
+semantic shared/private/interaction representation bank
+prototype/memory/negative-space
+anatomy-guided pathology proposal
+scar/edema pathology-specific soft ROI refinement
+explicit losses and safety supervision
+bounded nnU-Net anchor correction
+```
+
+nnU-Net 只能作为 baseline、anchor、context、evidence 或 safety source，不能把 SRR 降级成可有可无的后处理。
+
+无法视觉读取时停止为：
+
+```text
+BLOCKED_PROJECT_ROUTE_DIAGRAMS_UNAVAILABLE
+```
+
+## 四、默认 Agent Flow
+
+当前默认：
+
+```text
+Planner
+-> Controller/Coordinator
+   -> Executor
+   -> optional Mapper
+   -> deterministic Finalizer/Validator
+   -> Controller verification and same-scope repair loop
+   -> local lightweight commit
+-> Planner
+```
+
+短任务可使用：
+
+```text
+Planner -> Executor -> local result commit -> Planner
+```
+
+Controller 是 coordinator 和 acceptance owner。它必须检查真实 diff、命令、frozen contract fields、tests、Slurm、aggregation、required outputs 和 state/wiki consistency；不合格时在同范围内要求 Executor 修复。
+
+默认不启用 planning critic：
 
 ```yaml
 planning_review_required: false
@@ -40,92 +100,69 @@ planning_review_token: null
 planning_reviewed_commit: null
 ```
 
-只有用户或 Planner 显式设置 `planning_review_required: true` 时，才启用旧的独立 GPT planning critic 流程；此时 review hash/token 必须匹配当前合同，READY 状态才可通过。
-
-规划时按顶会审稿编辑标准追问：证据是否足以支持主张？是否有同一划分基线？是否覆盖困难子组？是否防止 no-T2 edema 误监督？是否有 validator 和 known-bad fixtures？是否只是 smoke / monitor / synthetic / stale evidence？是否把 nnU-Net fallback 包装成 SRR？失败可以接受，假成功不接受。
-
-## 1. 必读顺序
-
-最低读取顺序：
-
-1. `START_HERE_FOR_GPT.md`
-2. `GPT_PLANNER_CARE_PROTOCOL.md`
-3. `AGENTS.md`
-4. `README.md`
-5. `wiki/README.md`
-6. `wiki/COMPONENTS.csv`
-7. `prompts/AGENT_FLOW_V2_PROTOCOL.md`
-8. `prompts/routes/ROUTE_ANTI_LAZINESS_PROTOCOL.md`
-9. `prompts/routes/ROUTE_HARD_REQUIREMENTS_MATRIX.md`
-10. `prompts/CHATGPT_RULES.md`
-11. `prompts/GPT_HARD_GATE_PROMPT.md`
-12. `prompts/MILESTONE_REVIEW_PROTOCOL.md`
-13. `prompts/THREAD_BOOTSTRAP_ROUTE_IMAGE_PROTOCOL.md`
-14. `.agents/skills/slurm-routing-partition/SKILL.md`，只要计划会提交 Slurm job
-15. `.agents/skills/care-mapper/SKILL.md`，只要会影响架构、loss/dataflow/export、Cine temporal 路径或 controller observability
-16. 当前任务相关的 `prompts/tasks/*.md`、`prompts/shared/*.md`、`results/*/result.md`、`results/*/review.md`、`completion_check.md`、`review_request.md`、`MANIFEST.md`、`commands_run.md`
-
-读取 `prompts/routes/handoffs/CURRENT.md` 时，若看到 `active_development_branch: main` 和 `route_worktree_development_authorized: false`，必须把新计划写成 main-line diagnostic/repair/evidence task。旧 Route A/B/C 规则仍是历史解释和未来显式重启时的硬门槛，不是自动开三路线任务的授权。
-
-如果通过 GitHub / shell 可读提交，必须查看最近提交，例如：
-
-```bash
-git log --oneline --decorate -10
-git show --stat --oneline HEAD
-```
-
-如果不能运行 shell，也要通过 GitHub 提交历史检查最近 5-10 个提交，并在规划前说明哪些提交改了协议、提示词、结果证据或路线门槛。
-
-任何 CARE route plan、critic handoff 或 executor plan 都不得把关键设计留给 Codex/controller 自行决定。规划者必须明确模型结构、训练/eval 预算、输入输出路径、Slurm 策略、validator 语义、known-bad、终止条件、completion token 和 reviewer pass/fail；审查者必须把 `TBD`、`optional`、`as appropriate`、`if needed`、`choose best`、`Codex decide`、`controller decide` 等空白授权视为 hard-gate failure，除非同一节写清触发条件、默认选择、允许范围、证据要求、失败分支和审阅判断。
-
-规划者和审查者还必须应用 `prompts/routes/ROUTE_HARD_REQUIREMENTS_MATRIX.md` 中从 M9/M10 继承的硬门：机制闭环证据命名、旧 runtime 继承前的 fingerprint audit、机器可解析合同和 hash/commit 绑定、faithful Cine/registration negative 边界、durable finalizer、runtime no-push、独立 reviewer 后置边界。
-
-## 2. 图片读取规则
-
-SRR/MyoPS/Cine 里程碑不能只读仓库文字。必须按 `prompts/THREAD_BOOTSTRAP_ROUTE_IMAGE_PROTOCOL.md` 从 ChatGPT Project background / project materials 或当前对话上传图片中视觉读取：
-
-- `SRR-v2`
-- `SRR-v2.5`
-- `SRR-v3`
-- 后续版本，如 `v3.1`、`v4` 或新 MyoPS/Cine architecture diagram
-
-仓库路径 `images/SRR-v2.png`、`images/SRR-v2.5.png`、`images/SRR-v3.png` 只用于版本引用。不要把 GitHub connector 看到的 PNG blob metadata 当作视觉读取。
-
-读图后必须先写出路线目标。最低要求：
-
-- MyoPS 主线是 availability-aware selective retrieval + semantic representation retrieval bank；
-- 包含 anatomy-guided lesion proposal；
-- 包含 scar / edema pathology-specific soft-ROI refinement；
-- 有明确 losses/objectives、prototype/dictionary、hard-negative / negative-space、安全监督；
-- nnU-Net 或其它强分割模型只能作为 anchor / context / evidence / safety / fallback，不能把 SRR 降级成后处理。
-
-## 3. Agent-flow v2 角色边界
-
-新任务只使用这些角色名：`planner`、`critic`、`controller`、`executor`、`mapper`、`finalizer`、`validator`、`reviewer`。
-
-GPT planner 负责路线选择、科学判断、任务拆解、反偷懒约束、执行模式、subagent 数量和审阅关口。`critic` 是另一个独立 GPT thread，只做规划审查和修订建议，不执行代码、不提交 job、不写 runtime `review.md`。
-
-`controller` 是顶层 Codex goal，只能在 GPT-authored controller task 内维持长任务连续性、调度 executor/mapper/finalizer/validator、执行 phase grounding、Slurm continuity、本地提交最终轻量 packet，然后停止等待独立 reviewer。它不得发明新路线，不得写 `review.md`，不得收集 reviewer review 后再提交 packet，不得启动下一 milestone。
-
-`executor` 是 controller 内部 subagent，或短任务中的独立 executor thread/goal。它修改代码、运行授权命令、提交 jobs、写初始 evidence；但不拥有 overnight continuity，不自审，不决定路线晋级。
-
-`mapper` 是 controller 内部只读 subagent。它从代码、配置、入口和 runtime evidence 映射当前架构，更新 `wiki/`、component 表和图；不改模型代码，不写 `review.md`，不做科学晋级判断。
-
-`finalizer` 是 controller 管理的确定性阶段/脚本，不是 LLM subagent。它负责 terminal Slurm accounting、aggregation、validation、wiki finalization 和本地轻量 packet commit；不能用自然语言自行解释状态，不能替代 reviewer，不能写 `review.md`，不能 push。
-
-`validator` 是 first-party 脚本，必须 fail closed。
-
-`reviewer` 是独立只读 Codex thread 或短 reviewer goal。Reviewer 在 controller/executor final packet 已本地提交之后才启动。Reviewer 不补文件、不训练、不改代码、不继续执行、不做 wiki generation，只检查证据是否支持主张，并写受控 review decision。历史 `auditor` 仅作为 `reviewer` legacy alias；新 task 不再使用内部 `auditor`。
-
-每个新 milestone / controller task 必须显式写：
+默认不启用 reviewer：
 
 ```yaml
+review_required: false
+review_mode: none
+reviewer: none
+```
+
+高风险、system-impact、Slurm、scientific milestone、route change 或 scientific decision scope 只提高证据要求，不自动触发 critic/reviewer。
+
+只有用户或 Planner 在具体 task 中显式设置对应字段为 true，才启用独立 planning critic 或 read-only reviewer。
+
+## 五、Planner 的职责
+
+Planner 负责：
+
+- 科学目标和业务动机；
+- 真实代码/结果审计；
+- model/data/loss/metric/decode 语义；
+- exact task graph；
+- write scopes 和 outputs；
+- minimum effective training 或 diagnostic adequacy；
+- Slurm strategy、retry、finalizer；
+- strict validator 和 known-bad；
+- stop/continue/repair rules；
+- 下一 Batch 判断。
+
+不得把以下关键决定留给 Codex/controller：
+
+```text
+模型主体
+loss/监督语义
+split/cases
+训练预算
+checkpoint selection
+正式 decode rule
+metric population
+Slurm partitions/race
+是否使用外部数据/权重
+是否上传或扩 fold
+```
+
+`TBD`、`optional`、`as appropriate`、`choose best`、`Codex decide`、`controller decide` 等写法默认不合格，除非同节给出精确触发条件、默认值、允许范围、证据和失败分支。
+
+## 六、新任务合同
+
+每个任务至少声明：
+
+```yaml
+task_key:
+task_kind:
+task_type:
+status:
+risk_level:
+route_change:
+scientific_decision_scope:
 execution_mode: direct_executor | controller_supervised
 requires_execution_controller: true | false
+controller_is_coordinator: true | false
 executor_slots: 1
 executor_count: 1
 parallel_execution_allowed: false
-executor_plan_path: prompts/tasks/<task_key>_executor_plan.yaml
+executor_plan_path:
 mapper_slots: 1
 mapper_required: true | false
 architecture_impact: none | component | system
@@ -133,181 +170,84 @@ wiki_update_required: true | false
 diagram_update_required: true | false
 slurm_runtime_continuity_required: true | false
 continuity_backend: none | slurm_dependency | tmux_watcher
+planning_review_required: false | true
 review_required: false | true
-review_mode: none | independent_thread | short_goal
-reviewer: none | separate_readonly
+allow_git_commit:
+auto_git_commit:
+allow_git_push: false
+auto_git_push: false
+allow_diagnostic_push: false
 ```
 
-overnight、长 Slurm、多 job、高 resume 风险必须使用 `controller_supervised`，并且 `continuity_backend` 不能是 `none`。模型结构、loss wiring、dataflow、export、registration/temporal 路径变化必须启用 mapper。Controller 是 coordinator 和 acceptance owner：每个 executor wave 后必须检查 git diff、命令、冻结合同字段、required outputs、训练充分性、terminal job accounting、aggregation 和 validator exit code；不合格则在原任务范围内退回 executor/finalizer 修复。`controller_verification_decision: VERIFIED_COMPLETE` 只表示当前 Batch 操作完成并返回 Planner，不授权 validation upload、hosted metric claim、fold expansion、下一 Batch、路线晋级或最终科学结论。
-
-## 4. 写里程碑的格式
-
-未来里程碑先作为暂存文件写入：
+短任务正文默认：
 
 ```text
-prompts/shared/M<id>_<short_slug>.md
+## Execution Contract
+## Executor Prompt
 ```
 
-文件必须以真实 YAML frontmatter 开头，且至少包含
-`prompts/AGENT_FLOW_V2_PROTOCOL.md` 所列的 controller、review、publication
-和 planning review 字段。正文 `## Execution Contract` 只能镜像这些字段；若
-frontmatter 与正文不一致，Codex validator 必须默认失败。
+长 controller task 默认：
 
-命名和机器字段规则：
-
-- 机器真值是正整数 `milestone_number`；
-- `milestone_id` 使用 canonical ID，例如 `M<nn>` 或 `M<nnn>`；
-- `<short_slug>` 用小写英文、数字和下划线，表达主题；
-- 示例：`prompts/shared/M<id>_mechanism_repair.md`；
-- 短任务文件必须包含清楚的 `## Execution Contract`、`## Executor Prompt` 和 `## Reviewer Prompt` 三部分；
-- 长 Slurm / overnight / controller-supervised 文件必须包含 `## Execution Contract`、`## Controller Prompt`、`## Executor Worker Contract`、`## Mapper Contract` 和 `## Reviewer Prompt`，并包含 durable finalizer contract；
-- 文件必须写明后续 Codex maintenance 任务：拆分合并到 `prompts/shared/EXECUTOR_PROMPTS.md` 和 `prompts/shared/REVIEWER_PROMPTS.md`，合并后删除暂存文件。
-
-不要直接让 GPT 大段改标准共享文件；这些文件太大，容易发生上下文丢失或位置错误。
-
-合并位置必须明确：`Execution Contract`、`Controller Prompt`、`Executor Worker Contract` 和 `Mapper Contract` 合并到 `prompts/shared/EXECUTOR_PROMPTS.md`；`Reviewer Prompt` 合并到 `prompts/shared/REVIEWER_PROMPTS.md`。`executor_plan.yaml` 保留为 `prompts/tasks/<task_key>_executor_plan.yaml`，不要塞进巨大的 shared prompt。
-
-## 4.1 System-level 历史分析读取
-
-任何 system-level redesign 之前，GPT 必须从 `wiki/current_state.yaml`
-动态解析 latest reviewed predecessor，或显式声明：
-
-```yaml
-history_baseline_override:
-history_baseline_override_reason:
+```text
+## Execution Contract
+## Controller Prompt
+## Executor Worker Contract
+## Mapper Contract
 ```
 
-然后读取并在输出中列出：
+只有 `review_required: true` 时添加 `## Reviewer Prompt`。
 
-- `wiki/history/COMPARISON.md`
-- `wiki/current_state.yaml`
-- `wiki/history/<predecessor>/README.md`
-- `wiki/history/<predecessor>/COMPONENTS.csv`
-- `wiki/history/<predecessor>/components/*.md`
+## 七、结果复盘顺序
 
-如果只是修改少数组件，可以读取 predecessor README、COMPARISON、COMPONENTS 和相关 component files；全局重设计必须读取所有 predecessor component 分析。没有列出动态 history files read 的 system-level milestone 是 hard-gate failure。
+默认按以下逻辑组织：
 
-## 5. Codex 执行提示词必须包含
+1. 动机背景；
+2. 核心目标；
+3. 已有行动；
+4. 数据结论：Dice、HD95、case-wise help/harm、baseline；
+5. 目标达成度；
+6. 真实差距；
+7. 下一步唯一优先方向。
 
-每个执行提示词至少写清：
+必须区分：
 
-- 当前上下文：为什么做这一轮，前一轮 review 支持了什么、否定了什么；
-- 前置关口：exact review token、必须读取的文件、阻塞条件；
-- 路线目标：用 GPT 从图中恢复的目标，不让 Codex 自己解释 SRR；
-- exact source files / scripts / configs / result directory；
-- required outputs 和每个 CSV/JSON/MD 的字段 schema；
-- training budget：optimizer steps、train_loop_seconds、validation events、eval cases、early-stop / plateau / OOM / pending 处理；
-- 同一划分 nnU-Net 基线和困难子组 help/harm；
-- no-T2 edema safety、T2-present edema、CenterB/CenterC、scar-positive、remote-FP、small/large lesion 覆盖；
-- Cine 次线：推进真实 registration / temporal evidence，或写诚实 blocker；
-- strict validator 和 known-bad fixtures，必须默认失败；
-- 允许的 completion states 和不能 ready 的条件；
-- 证据产物 / git policy：只允许轻量 MD/CSV/JSON、一方 source/helper/test；禁止 checkpoint、NIfTI、raw data、大日志、secrets、upload package；
-- 明确不授权 validation upload、hosted metric claim、路线晋级、fold expansion、scientific stop、执行者自审。
+```text
+operational completion
+training adequacy
+scientific signal
+submission readiness
+```
 
-## 6. 审阅提示词必须包含
+Validator pass 或 `VERIFIED_COMPLETE` 只能证明执行合同完成，不能掩盖主指标失败。
 
-审阅提示词必须是独立只读审阅，不能让审阅者补执行者缺失。
+## 八、训练和评价判断
 
-必须写清：
+涉及训练时必须明确：optimizer steps、train-loop seconds、validation events、eval cases、loss behavior、checkpoint save/reload、cache/split、same-split baseline。
 
-- 审阅范围：只读哪个 result directory 和哪些一方 helper/source/test；
-- 必读内容：执行提示词、required outputs、commands、MANIFEST、completion_check、review_request、validator report；
-- 精确拒绝情形：missing required output、监控包、pending Slurm、stale/synthetic evidence、known-bad not failing、同一划分基线缺失、困难子组覆盖不足、no-T2 safety violation、Cine skipped / frame0-only / descriptor-only；
-- allowed review decisions；
-- review decision 的权限边界：即使 `AUDITED_GO`，是否只允许下一步规划，是否仍禁止 upload / hosted claim / route promotion。
+短 smoke、preflight、failed startup、race loser、partial checkpoint、submitted/pending/running 均不是正式训练证据。
 
-## 7. 顶会审稿编辑视角
+评价必须固定：case set、checkpoint hash、runtime mode、decode rule、positive-GT/all-case population、metric implementation、help/harm、HD95、remote FP、component count。
 
-GPT 每次规划前都要问：
+Checkpoint selection 与最终 deployment decode 不一致必须视为评价缺口。
 
-- 这个主张如果写进 MICCAI / CVPR / Nature Methods rebuttal，会被审稿人追问什么？
-- 证据是 runtime evidence，还是自然语言承诺？
-- 模块真的影响最终 logits / 最终 label，还是只导出表格？
-- 是否证明了同一划分 help/harm，而不是只报告 foreground mean？
-- 失败是不是训练不足、资源不足、证据不足、pipeline bug，还是科学路线真的无信号？
-- 是否把 diagnostic publication、operational completion、scientific resolution、路线晋级混为一谈？
+## 九、Controller 终态
 
-不要用漂亮话代替门槛。任何不能被文件、字段、命令 exit code、metric、provenance 或 reviewer decision 检查的要求，只能算建议，不能算完成条件。
+Controller report 使用：
 
-## 8. CARE/SRR 不可降级约束
+```text
+controller_verification_decision: VERIFIED_COMPLETE | NEEDS_REPAIR | OPERATIONALLY_BLOCKED
+```
 
-MyoPS 是主线，Cine 是次线但不是可无限跳过的 optional future work。
+`VERIFIED_COMPLETE` 表示当前任务的 required outputs、validators、terminal job accounting、aggregation、contract compliance 和 local commit 完成。它不授权下一 Batch、训练扩展、validation upload、hosted claim、route promotion 或 final scientific decision。
 
-本节列出的具体例子是历史失败模式和 known-bad fixture，不是穷尽清单。任何与这些例子结构等价的替代行为，即使换了名称、换了脚本、增加了少量无效样本或只改变表面证据产物，也必须默认失败。
+无显式 reviewer 的任务完成后，直接返回 Planner。
 
-### 8.1 MyoPS SRR 的结构性最低要求
+## 十、历史 Reviewer 协议
 
-MyoPS SRR 的最低结构要求是：执行链必须真实利用可用性信息、检索表示、解剖先验、病种 proposal/refinement、安全监督和最终输出之间的因果关系。一个模块只有在影响最终 logits / 最终 label，并且能用同一划分基线、困难子组、逐病例贡献、runtime artifact 和独立审阅证据证明 help/harm 时，才算进入正式路线。
+`prompts/MILESTONE_REVIEW_PROTOCOL.md` 仅适用于显式 `review_required: true` 的特殊或历史 milestone chain。默认新 Batch 不需要 `review.md`，也不得因缺少 reviewer token 阻塞。
 
-如果一个设计只改变名称、配置表、诊断 CSV 或 wrapper，但不能证明它对最终输出产生可审计影响，就不能算 SRR 路线完成。Reviewer 应按结构等价失败处理，而不是只匹配历史关键词。
+## 十一、输出边界
 
-MyoPS SRR 不能退化为以下结构性失败，包括但不限于：
+默认只提交小型 Markdown/CSV/JSON、必要 source/config/test/wiki。禁止提交 checkpoint、prototype `.pt`、NIfTI、raw data、大日志、secret、upload package 或 hosted submission artifact。
 
-- 普通 nnU-Net 后处理；
-- 静默 fallback 或隐藏 nnU-Net identity；
-- 只在最终 logits 上加通用 residual head；
-- 只有 late fusion 或 channel concat，没有 availability-aware retrieval；
-- proposal/refiner 只导出 CSV，不改变最终 logits / 最终 label；
-- prototype/dictionary 没有真实 train/OOF 来源、positive/negative 定义和 safe-negative 规则；
-- no-T2 样本被当作 edema negative；
-- 只用 foreground_mean、empty-GT improvement 或 compact-label proxy 做路线晋级；
-- 用 smoke、synthetic、old evidence、undertrained run 或监控包支持路线结论。
-
-### 8.2 Cine 的结构性最低要求
-
-Cine 的最低结构要求是：必须围绕 ED/reference、motion/registration、anatomy、texture 和 temporal aggregation 建立证据链。Cine route 只有在多病例安全子集上有 temporal evidence、before/after 指标、failure matrix、最终输出影响或诚实 blocker 时，才可进入 review。
-
-如果没有同一安全子集上的多病例运动/配准证据，没有 before/after 指标，没有 temporal aggregation 对最终输出的影响，也没有失败矩阵或 fallback 解释，就不能进入 ready 状态。增加少量无效病例、换一个算法名、或把单帧输出包成 temporal artifact，都不能绕过这个结构性标准。
-
-Cine 不能退化为以下结构性失败，包括但不限于：
-
-- frame0-only；
-- descriptor-only temporal retrieval；
-- 单例或近似单例 SyN / 配准 smoke；
-- 未训练或未验证的 VoxelMorph；
-- optical-flow proxy without registration evidence；
-- topology / LCC-only 后处理冒充完整 temporal route；
-- registration 未合格却声称 temporal dictionary ready；
-- registration 可用却不尝试 temporal dictionary 或 anatomy-first fallback。
-
-## 9. 文件发布和推送边界
-
-常见位置：
-
-- 新里程碑暂存提示词：`prompts/shared/M<id>_<short_slug>.md`
-- 标准执行提示词：`prompts/shared/EXECUTOR_PROMPTS.md`
-- 标准审阅提示词：`prompts/shared/REVIEWER_PROMPTS.md`
-- 可执行任务：`prompts/tasks/<task_key>.md`
-- 结果包：`results/<task_key>/`
-- 长期计划：`docs/plans/<governed_plan_name>.md`
-- 参考笔记 / wiki：`docs/notes/`、`docs/wiki/`
-
-发布规则：
-
-- `results/20??????_*` 多数默认 ignored；只有 reviewed、轻量、必要的 top-level MD/CSV/JSON 才能按规则 force-add；
-- 里程碑 result directory 的 top-level `.md`、`.csv`、`.json` 可以在符合协议时追踪；
-- 不发布 checkpoints、predictions、NIfTI、upload zip、raw data、大日志、secret/env dump、整棵 runtime tree；
-- validation package / upload / hosted metric claim 必须有人类明确批准；
-- 如果任务说“本地 commit，用户手动 push”，就不要 push。
-
-## 10. 失败出口
-
-失败要诚实分类：
-
-- `NEEDS_EVIDENCE`：缺证据；
-- `NEEDS_REVISION`：实现或协议要修；
-- `NEEDS_MONITOR`：job pending/running/awaiting accounting；
-- `RESOURCE_BLOCKED`：资源或数据阻塞；
-- `SCIENTIFIC_UNDERTRAINED`：训练不足，不能做科学结论；
-- `SCIENTIFIC_UNRESOLVED`：当前证据不能支持路线晋级或科学停止；
-- `NEEDS_GPT_PLANNER`：需要用户监督的 GPT 重新决定方向。
-
-监控包不是 completion。Slurm job 完成后必须重新 aggregation，把 runtime output 合并成 tracked lightweight evidence，再请求 review。
-
-## 11. 一句话标准
-
-好的 GPT 规划者输出应把“冲击 CARE leaderboard 的研究设计”变成“Codex 无法偷懒、审阅者可以独立审计的执行合同”：路线由 GPT 明确，Codex 只执行；每个主张有证据产物；每个证据产物有 schema；每个 validator 有 known-bad；每个 completion 有审阅者；每个失败有诚实出口。
-
-
-Executor parallelism gate: any `executor_count > 1`, `executor_slots > 1`, or `parallel_execution_allowed: true` task must provide `executor_plan_path` and pass `scripts/ops/validate_executor_plan.py`. MyoPS and Cine remain sequential unless GPT provides explicit isolation proof.
+用户显式授权 Planner 通过 GitHub 推送规划、状态或轻量修复时，可以推送到 main；runtime controller 仍默认 no-push。
