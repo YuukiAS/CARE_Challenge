@@ -1,13 +1,12 @@
 # CARE 架构 Wiki
 
-architecture_version: `care-srr-batch6-final-objective-alignment-stop300`
-latest_verified_milestone: `Batch6 final objective alignment`
-latest_executor_packet: `Batch6 formal300 gate-fail stop packet`
-latest_review_token: `NOT_REVIEWED_CONTROLLER_VERIFIED`
-route_status: `BATCH6_BELOW_USABLE_STOP_AT_300_NO_PROMOTION`
-code_fingerprint: `srr_propref=8b98ac43;srr_losses=eaabe101;run_myops=e9f531b0;infer_myops=df3922d7;batch6_formal=8619856a;batch6_validator=635f0157;batch6_config=9922ba2c`
+architecture_version: `care-srr-batch7-formal300-mechanism-closure-repair-pending`
+latest_verified_runtime: `Batch7 formal300 stop gate`
+latest_scientific_status: `Batch7 joint model below gate; mechanism packet invalid and pending same-scope repair`
+latest_controller_task: `20260721_srr_batch7_mechanism_closure_repair`
+route_status: `MAIN_ONLY_BATCH7_REPAIR_READY_NO_PROMOTION`
 
-本页是 GPT、Codex controller、mapper、finalizer 和 reviewer 读取当前架构状态的根入口。它只描述当前已提交证据，不授权路线晋级、validation packaging/upload、hosted metric claim、fold expansion、Cine、Batch7 或 scientific stop。
+本页是 GPT、Controller、Executor、Mapper 和 Planner 读取当前架构状态的根入口。当前代码已经包含 Batch7 的 semantic memory、prototype-map spatial dictionary、dual-source proposal、differentiable refiner、source arbiter 和 bounded production gate，但原 Batch7 终态没有提供可信的独立组件干预，因此不能把 formal300 失败解释为完整 SRR 思想已被否定。
 
 ## 当前图
 
@@ -17,21 +16,68 @@ code_fingerprint: `srr_propref=8b98ac43;srr_losses=eaabe101;run_myops=e9f531b0;i
 
 ![执行流程](figures/execution-flow.png)
 
-## 组件摘要
+这些图仍反映最近生成的已实现架构，不代表 Batch7 机制已经通过科学验证。修复完成后 Mapper 必须重新生成并绑定 fingerprint。
 
-| 分支 | 当前判断 |
-| --- | --- |
-| MyoPS SRR | Batch6 修通 direct final logits loss 和 13-channel production gate repair path，fixed-overfit PASS；formal300 mean Dice delta 未达继续门。 |
-| nnU-Net anchor | 仍只作为 baseline、anchor、context、evidence 和 safety source，不能替代 SRR。 |
-| Cine | Batch6 未授权、未修改、未训练。 |
-| Controller flow | 当前为 controller-supervised local packet；executor tmux 只作为执行容器，controller 在主线程完成验收。 |
-| 历史版本 | M8/M9/M10 和 Batch5 的历史证据保留在 result packets 与 [wiki/history/](history/README.md)。 |
+## 当前科学结论
 
-## Batch6 controller packet
+Batch7 formal300 已完成：
 
-Batch6 final-objective alignment packet is at `results/20260721_srr_batch6_final_objective_alignment/`. It used the Batch4 selected checkpoint SHA `bc325754202d5cf0aa59aa8fab0306b38c2665640339afa3f8d06a13c70009f6`, passed the required two-case fixed-overfit in job `59743323`, ran formal300 in job `59744053`, and ran final interventions in job `59744941`.
+```text
+job: 59789651 COMPLETED 0:0
+optimizer steps: 300
+edema positive Dice delta: +0.0054302188
+scar positive Dice delta: -0.0048258512
+mean positive Dice delta: +0.0003021838
+help/harm: 23/35
+formal1200: skipped
+```
 
-Step300 positive-pathology Dice deltas were edema `+0.002724749` and scar `+0.000673968`; mean `+0.001699358` failed the required `+0.003` continuation gate. Therefore 900-step extension was skipped by contract. This is an operational mechanism-repair completion with below-usable signal, not a performance claim over nnU-Net.
+这说明当前联合训练版本没有形成稳定收益，scar 路径尤其有害。但原 terminal intervention packet 存在以下问题：
+
+- 所有 intervention mode 复用同一组 formal metrics；
+- identity 不为零；
+- proposal-only/refiner-only 关键字段为空；
+- source arbiter 没有真实 44 例效果；
+- validator 接受 placeholder 和复制结果；
+- named semantic memory 没有完整逐类落地；
+- discovery retrieval 仍间接读取 nnU-Net context。
+
+因此当前科学状态为：
+
+```text
+BATCH7_OPERATIONALLY_COMPLETE
+BATCH7_MECHANISM_CLOSURE_INVALID
+SAME_SCOPE_REPAIR_REQUIRED
+```
+
+## 当前唯一任务
+
+```text
+results/srr_production/code_maturity/batch7_planner_audit_and_mechanism_closure_decision.md
+docs/plans/laneB_round04_active_srr_batch7_mechanism_closure_repair_execution.md
+configs/srr_production/myops_batch7_repair.yaml
+prompts/tasks/20260721_srr_batch7_mechanism_closure_repair_controller.md
+prompts/tasks/20260721_srr_batch7_mechanism_closure_repair_executor_plan.yaml
+```
+
+修复必须先完成真实独立干预、fail-closed validator、真实 category semantic memory 和 anchor-free discovery，然后按 proposal、scar/edema refiner、source arbiter、production gate 分阶段训练。Proposal 阶段失败时立即返回 Planner，不得继续用长训练掩盖。
+
+## 边界
+
+当前不授权：
+
+```text
+Batch8
+monolithic Batch7 1200 continuation
+fold expansion
+Cine
+backbone replacement
+external data or weights
+validation packaging/upload
+hosted metric claim
+route promotion
+final scientific stop
+```
 
 ## 入口
 
@@ -40,5 +86,5 @@ Step300 positive-pathology Dice deltas were edema `+0.002724749` and scar `+0.00
 - [COMPONENTS.csv](COMPONENTS.csv)
 - [LINEAGE.md](LINEAGE.md)
 - [architecture.yaml](architecture.yaml)
+- [current_state.yaml](current_state.yaml)
 - [history/README.md](history/README.md)
-- [writing_skill_receipt.json](writing_skill_receipt.json)
