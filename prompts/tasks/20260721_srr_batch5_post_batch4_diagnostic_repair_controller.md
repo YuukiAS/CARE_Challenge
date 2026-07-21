@@ -40,25 +40,44 @@ validation_upload_allowed: false
 hosted_metric_claim_allowed: false
 fold_expansion_allowed: false
 training_allowed: false
+backbone_replacement_allowed: false
 next_batch_authorization: planner_only
 ---
 
 ## Execution Contract
 
-本任务只执行 Batch 5：审计和修复 Batch 4 的 checkpoint selection、decode 语义、production correction gate 证据、prototype provenance 和机器状态。不得训练、不得修改 checkpoint 权重、不得重建 prototype/memory、不得上传 validation、不得启动 Cine、不得启动 Batch 6。
-
-权威输入：
+本任务只执行 Batch 5。目标是用 Batch 4 的既有 checkpoint 查清：
 
 ```text
+checkpoint/decode 语义是否正确
+proposal 是否有信号
+refiner 是否改善 proposal
+production gate 是否压制有效修正
+当前 loss 是否在结构上鼓励 near-identity
+现有组件在 oracle 意义下有多少可兑现上界
+```
+
+不得训练，不得修改 checkpoint 权重，不得重建 prototype/memory，不得更换或比较 U-Mamba、MedSAM、MedNeXt、nnU-Net 等骨干，不得扩 fold、启动 Cine、上传 validation、写 hosted claim 或启动 Batch 6。
+
+开始前同步 `main`，确认工作树安全，并读取：
+
+```text
+AGENTS.md
+START_HERE_FOR_GPT.md
+GPT_PLANNER_CARE_PROTOCOL.md
+prompts/AGENT_FLOW_V2_PROTOCOL.md
+prompts/HANDOFF_GATE_POLICY.md
 prompts/routes/handoffs/CURRENT.md
 docs/plans/laneB_round04_active_srr_batch5_post_batch4_diagnostic_repair.md
+docs/plans/laneB_round04_active_srr_batch5_loss_authority_addendum.md
 configs/srr_production/myops_batch5.yaml
 prompts/tasks/20260721_srr_batch5_post_batch4_diagnostic_repair_executor_plan.yaml
-results/srr_production/code_maturity/batch4_planner_audit_and_batch5_decision.md
+scripts/training/run_srr_propref_myops_fold0.py
+src/care_myocardium/losses/srr_losses.py
 results/20260721_srr_batch4_forced_fold0_training/
 ```
 
-运行仓库：
+仓库固定为：
 
 ```text
 /users/a/e/aereinh/CARE
@@ -69,90 +88,39 @@ main
 
 ## Controller Prompt
 
-你是 CARE Batch 5 Controller，也是 Coordinator 和最终执行验收者。你不能只启动 Executor、等待自然语言总结后退出。你必须持续检查实际 git diff、命令、checkpoint/case/decode hashes、Slurm 状态和病例级结果；发现缩水、语义偏移或缺失证据时，必须把当前 wave 退回同一 Executor 原地修复。
+你是 Controller，也是 Coordinator 和 acceptance owner。你必须检查 Executor 的真实 diff、命令、参数 hash、checkpoint/case/decode hash、loss call graph、梯度矩阵、Slurm 终态、聚合和 validator。发现缺口时，在当前 Batch 内退回同一 Executor 修复；不得请求 critic/reviewer。
 
-开始时：
-
-```bash
-cd /users/a/e/aereinh/CARE
-git status --short
-git fetch --all --prune
-git switch main
-git pull --ff-only origin main
-```
-
-工作树不干净时保全并报告，不得覆盖未知改动。
-
-必须读取：
-
-```text
-AGENTS.md
-START_HERE_FOR_GPT.md
-GPT_PLANNER_CARE_PROTOCOL.md
-prompts/AGENT_FLOW_V2_PROTOCOL.md
-prompts/HANDOFF_GATE_POLICY.md
-prompts/GPT_HARD_GATE_PROMPT.md
-prompts/routes/ROUTE_ANTI_LAZINESS_PROTOCOL.md
-prompts/routes/ROUTE_HARD_REQUIREMENTS_MATRIX.md
-prompts/routes/handoffs/CURRENT.md
-.agents/skills/care-mapper/SKILL.md
-.agents/skills/slurm-routing-partition/SKILL.md
-wiki/README.md
-```
-
-视觉图版本由 Planner 已完成：
-
-```text
-diagram_versions_read: SRR-v2, SRR-v2.5, SRR-v3
-visual_read_status: COMPLETE_FROM_CHATGPT_PROJECT_MATERIALS
-```
-
-恢复出的路线目标是：availability-aware selective retrieval、semantic representation bank、anatomy-guided pathology proposal、scar/edema soft-ROI refinement 和 bounded nnU-Net correction。Batch 5 不得把 SRR 退化为普通后处理。
-
-### 固定任务图
+固定任务图：
 
 ```text
 B5-00 bootstrap and immutable Batch4 binding
 B5-01 evaluation/decode repair
-B5-02 production correction intervention implementation
-B5-03 44-case same-checkpoint diagnostic inference
-B5-04 paired aggregation and mechanism attribution
-B5-05 prototype provenance and semantic validator repair
-B5-06 CURRENT/wiki/fingerprint repair
-B5-07 controller terminal verification and unique Batch6 direction
+B5-02 final-loss and production-authority audit
+B5-03 production correction interventions
+B5-04 44-case same-checkpoint diagnostic inference
+B5-05 paired aggregation and oracle headroom
+B5-06 prototype provenance and validator repair
+B5-07 CURRENT/wiki/fingerprint repair
+B5-08 controller verification and unique Batch6 direction
 ```
 
-每个阶段都 blocking。不得用旧 Batch 4 文件、自然语言解释或 validator pass 替代缺失的新 Batch 5 输出。
-
-### 不可更改的科学输入
+不可改变：
 
 ```text
 fold = 0
 validation cases = 44
-checkpoint candidates = 600, 1200, 1800
+checkpoint candidates = 600,1200,1800
 historical selected checkpoint SHA = bc325754202d5cf0aa59aa8fab0306b38c2665640339afa3f8d06a13c70009f6
 optimizer steps = 0
-model weights immutable
-prototype/memory immutable
+model/checkpoint/prototype/backbone weights immutable
 ```
 
-### 评价修复
+允许 `backward()` 做梯度诊断，但禁止 `optimizer.step()` 和任何参数更新。每个 probe 前后必须证明参数 hash 不变或重新加载同一 checkpoint。
 
-Checkpoint reranking 的正式输入必须是：
+### 必须完成的诊断
 
-```text
-runtime_mode = anchor_bounded_srr_correction
-decode = outputs["logits"].argmax
-population = positive-GT cases for each pathology
-```
-
-`pathology_aware` 只能作为 diagnostic decode，不能授予 checkpoint authority。
-
-必须明确输出 positive-GT 与 all-case empty-safe 两套指标。不得把约 0.78 的 all-case edema Dice 与 0.3944 positive-case baseline 混为一谈。
-
-### 真实机制干预
-
-在不改变 checkpoint 参数的前提下实现并运行：
+1. 用 `anchor_bounded_srr_correction + outputs["logits"].argmax + positive-GT population` 重新排序 step 600/1200/1800；`pathology_aware` 仅作诊断。
+2. 在相同 checkpoint、44 cases、anchor、prototype/memory、argmax decode 下运行：
 
 ```text
 anchor_identity_control
@@ -164,75 +132,46 @@ production_gate_closed
 production_gate_open_bounded_control
 ```
 
-所有模式必须使用相同 checkpoint SHA、相同 44 cases、相同 raw OOF anchor、相同 prototype/memory 和相同 argmax decode。
-
-必须直接从模型输出记录：
+3. 直接记录 `production_correction_gate`、raw/bounded correction、proposal logits、refiner logits、final logits；旧 baseline/arbitration gate 不能冒充 production gate。
+4. 从正式 `propref_loss` 解析实际 loss、别名和有效权重，回答：
 
 ```text
-production_correction_gate
-bounded_scar_correction
-bounded_edema_correction
-scar/edema proposal logits
-scar/edema refiner logits
-final logits
+是否有直接监督 outputs["logits"] 的 scar/edema GT loss
+production_correction_gate 是否获得纠错梯度
+correction_opportunity 是否仍连接旧 arbitration
+bounded-correction penalty 是否偏好 correction -> 0
+refiner-effect penalty 是否偏好 residual -> 0
+proposal/refiner/dictionary 到最终 gate 的真实梯度路径
 ```
 
-不得用旧 `baseline_residual_gate` 或 branch arbitration weight 冒充 production gate。
+5. 输出仅用于诊断的 `oracle_headroom.csv`，从 identity/full/proposal-only/refiner-only/gate-open 中记录每个 case/pathology 的 GT-aware best mode、oracle Dice gain、correctable anchor-error voxels 和 avoided harmful-correction voxels。必须标记 `diagnostic_only=true`、`deployable_candidate=false`。
 
-### Controller 反偷懒检查
-
-每次 Executor 提交结果后，Controller 必须检查：
+### Required outputs
 
 ```text
-git diff --stat
-git diff --check
-changed file list
-checkpoint SHA and case-list hashes
-no optimizer call/step
-all intervention modes present
-44 NIfTI outputs per required mode or exact fail-closed evidence
-positive-case/all-case metric names
-production-gate fields nonempty
-historical Batch4 files unchanged
-strict validator exit code
+results/20260721_srr_batch5_post_batch4_diagnostic_repair/implementation_snapshot.md
+results/20260721_srr_batch5_post_batch4_diagnostic_repair/evaluation_semantics_audit.md
+results/20260721_srr_batch5_post_batch4_diagnostic_repair/loss_authority_audit.md
+results/20260721_srr_batch5_post_batch4_diagnostic_repair/loss_parameter_gradient_matrix.csv
+results/20260721_srr_batch5_post_batch4_diagnostic_repair/loss_directionality_audit.csv
+results/20260721_srr_batch5_post_batch4_diagnostic_repair/checkpoint_reranking.csv
+results/20260721_srr_batch5_post_batch4_diagnostic_repair/mode_intervention_metrics.csv
+results/20260721_srr_batch5_post_batch4_diagnostic_repair/casewise_mechanism_attribution.csv
+results/20260721_srr_batch5_post_batch4_diagnostic_repair/oracle_headroom.csv
+results/20260721_srr_batch5_post_batch4_diagnostic_repair/prototype_manifest_audit.json
+results/20260721_srr_batch5_post_batch4_diagnostic_repair/batch6_unique_repair_decision.md
+results/20260721_srr_batch5_post_batch4_diagnostic_repair/mapper_report_final.md
+results/20260721_srr_batch5_post_batch4_diagnostic_repair/controller_report.md
+results/20260721_srr_batch5_post_batch4_diagnostic_repair/completion_check.md
+results/20260721_srr_batch5_post_batch4_diagnostic_repair/MANIFEST.md
 ```
 
-出现以下情况必须退回修复：
+### Batch 6 unique decision
+
+只允许一个：
 
 ```text
-只重排 CSV 不运行真实 intervention
-proposal-only/refiner-only 使用不同 checkpoint
-pathology-aware 继续作为正式 selection authority
-使用 all-case edema Dice 作主结果
-只记录 baseline/arbitration gate
-feature/config hash 为空
-修改 Batch4 historical packet
-写 review.md
-启动训练
-```
-
-### Slurm inference-only
-
-只允许 short inference job：
-
-```text
-Python: /users/a/e/aereinh/CARE/envs/env_CARE/bin/python
-primary: htzhulab
-900s pending: isolated a100-gpu mirror
-volta-gpu: forbidden
-max runtime: 3600s
-optimizer steps: exactly 0
-winner lock: required
-finalizer: afterany
-```
-
-Controller 必须负责到所有 attempts terminal、aggregation 和 validator 完成。`SUBMITTED`、`PENDING`、`RUNNING`、`NEEDS_MONITOR` 不是完成。
-
-### Batch 6 唯一方向
-
-最终文件 `batch6_unique_repair_decision.md` 必须只选一个：
-
-```text
+B5_FINAL_OBJECTIVE_ALIGNMENT_BOTTLENECK
 B5_OUTPUT_AUTHORITY_BOTTLENECK
 B5_PROPOSAL_PRECISION_BOTTLENECK
 B5_REFINER_EFFECTIVENESS_BOTTLENECK
@@ -240,11 +179,36 @@ B5_EVALUATION_SEMANTICS_ONLY_ISSUE
 B5_INSUFFICIENT_MECHANISM_EVIDENCE
 ```
 
-不得同时推荐多条训练路线，不得直接启动 Batch 6。
+固定优先级：
 
-### Controller Ending
+1. oracle 平均增益至少 `+0.01`、full 仍接近 identity，且 production gate 缺少直接 final-pathology repair loss或 magnitude penalty 明确偏好零修正：`FINAL_OBJECTIVE_ALIGNMENT`。
+2. loss 路径合理，但 gate-open 相对 full 的平均 positive-case Dice 至少 `+0.005`：`OUTPUT_AUTHORITY`。
+3. proposal-only 无信号或 remote/component FP 明显恶化：`PROPOSAL_PRECISION`。
+4. proposal-only 有信号，但 refiner-only/full 相对 proposal 平均下降至少 `0.002`：`REFINER_EFFECTIVENESS`。
+5. 只有 selection/decode 修复改变结论：`EVALUATION_SEMANTICS_ONLY`。
+6. 其他：`INSUFFICIENT_MECHANISM_EVIDENCE`。
 
-`controller_report.md` 必须以以下字段结束：
+不得选择 backbone replacement，不得启动 Batch 6。
+
+### Slurm boundary
+
+仅允许 inference/gradient-audit short job：
+
+```text
+Python: /users/a/e/aereinh/CARE/envs/env_CARE/bin/python
+primary: htzhulab
+900s pending: isolated a100-gpu mirror
+volta-gpu: forbidden
+max runtime: 3600s
+optimizer steps: 0
+parameter updates: 0
+winner lock: required
+finalizer: afterany
+```
+
+Controller 负责到所有 attempts terminal、聚合和 strict validator 完成。`SUBMITTED/PENDING/RUNNING/NEEDS_MONITOR` 不是完成。
+
+### Controller ending
 
 ```text
 controller_verification_decision: VERIFIED_COMPLETE | NEEDS_REPAIR | OPERATIONALLY_BLOCKED
@@ -257,43 +221,27 @@ all_jobs_terminal:
 aggregation_complete:
 git_commit_decision:
 git_push_decision: NO_PUSH
-blocked_actions: training,fold_expansion,Cine,validation_upload,hosted_claim,Batch6
+blocked_actions: training,backbone_swap,fold_expansion,Cine,validation_upload,hosted_claim,Batch6
 next_required_action: RETURN_TO_PLANNER | CONTINUE_CURRENT_TASK | HUMAN_INTERVENTION_REQUIRED
 batch6_unique_repair_direction:
 ```
 
-只有全部完成条件满足时才写 `VERIFIED_COMPLETE`。
+只有全部 required outputs、参数不变、optimizer step 为 0、44 例诊断完整、prototype hashes 完整、CURRENT/wiki 更新且 validator exit 0，才可写 `VERIFIED_COMPLETE`。
 
 ## Executor Worker Contract
 
-Executor 只有一个，按 executor plan 顺序工作。Executor 负责实现、命令和证据写入，但不能自行宣布整个 Batch 5 完成，不能写 `review.md`，不能 push，不能启动训练或下一 Batch。
-
-Executor 必须将所有新结果写入：
+Executor 只有一个，按 executor plan 顺序实现和运行。不能宣布整个 Batch 完成，不能写 `review.md`，不能 push，不能训练、换骨干或启动下一 Batch。所有新结果写入：
 
 ```text
 results/20260721_srr_batch5_post_batch4_diagnostic_repair/
 ```
 
-不得覆盖：
-
-```text
-results/20260721_srr_batch4_forced_fold0_training/
-```
+不得覆盖 Batch 4 历史结果目录。
 
 ## Mapper Contract
 
-Mapper 在代码和诊断结束后读取最终实现与结果，更新 CURRENT、root wiki、COMPONENTS/architecture fingerprint，使其反映：
-
-```text
-Batch4 operationally complete
-Batch4 scientific signal insufficient
-Batch5 diagnostic repair active/complete
-production correction mechanism evidence status
-Cine remains proxy/incomplete
-```
-
-Mapper 不训练、不提交 Slurm、不作下一 Batch 授权。
+Mapper 更新 CURRENT、root wiki、COMPONENTS/architecture fingerprint，明确记录 Batch 4 足额但信号不足、Batch 5 final-loss authority、production gate、oracle headroom 状态，以及 backbone replacement 未测试、未授权。Mapper 不训练、不作下一 Batch 授权。
 
 ## Reviewer Prompt
 
-`review_required: false`。不得启动独立 reviewer。Controller 完成执行验收后将结果返回 Planner。
+`review_required: false`。不得启动独立 reviewer。Controller 完成后返回 Planner。
