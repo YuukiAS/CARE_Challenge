@@ -1,285 +1,304 @@
-architecture_version: care-agent-flow-v2-batch5-controller-verified
-verified_at_utc: '2026-07-21T01:20:00Z'
-verified_milestone: M9 follow-up evidence reconciliation; Batch5 controller-verified diagnostic packet
-review_token: M9_FOLLOWUP_AUDITED_READY_NO_PROMOTION_DIAGNOSTIC_ONLY
-verification_base_commit: d82c6475d23a1e5a40eb1f624d2e46f433381072
-code_fingerprint: srr_propref=c939b0a6;infer_myops=2ebdab1a;batch5_selection=93d2be96;batch5_loss=27760631;batch5_validator=7f9a0b68;batch5_config=6ab9ff3f
-evidence_fingerprint: m9_followup_review=results/20260708_srr_v3_m9_dictionary_fidelity_repair_training/review.md;batch5_executor_packet=results/20260721_srr_batch5_post_batch4_diagnostic_repair/MANIFEST.md
+architecture_version: care-srr-batch6-final-objective-alignment-stop300
+verified_at_utc: '2026-07-21T06:45:00-04:00'
+verified_milestone: Batch6 final objective alignment controller packet
+review_token: NOT_REVIEWED_CONTROLLER_VERIFIED
+verification_base_commit: f700ee5f739f8291532b35df7a6c99a56b54d9e6
+code_fingerprint: srr_propref=8b98ac43;srr_losses=eaabe101;run_myops=e9f531b0;infer_myops=df3922d7;batch6_formal=8619856a;batch6_validator=635f0157;batch6_config=9922ba2c
+evidence_fingerprint: batch6_packet=results/20260721_srr_batch6_final_objective_alignment/MANIFEST.md;formal300=results/20260721_srr_batch6_final_objective_alignment/training_adequacy.json
 nodes:
-  - id: inputs_availability
-    label: 输入与 availability mask
-    branch: MyoPS
-    current_status: implemented
-    target_status: implemented
-    source_file: src/care_myocardium/models/srr_propref.py
-    symbol: availability
-  - id: modality_stems_encoders
-    label: 模态 stems/encoders
-    branch: MyoPS
-    current_status: implemented
-    target_status: implemented
-    source_file: src/care_myocardium/models/srr_propref.py
-    symbol: self.encoders
-  - id: retrieval_dictionary
-    label: 检索 dictionary 与表示槽
-    branch: MyoPS
-    current_status: partial
-    target_status: implemented
-    source_file: src/care_myocardium/models/srr_blocks.py
-    symbol: dictionary_slot_config
-  - id: router_pattern_sip
-    label: router / Pattern-SIP 状态
-    branch: MyoPS
-    current_status: partial
-    target_status: implemented
-    source_file: src/care_myocardium/models/srr_blocks.py
-    symbol: MultiSlotDictionaryRouter
-  - id: prototype_memory
-    label: prototype memory 与 hard-negative
-    branch: MyoPS
-    current_status: partial
-    target_status: implemented
-    source_file: src/care_myocardium/models/srr_propref.py
-    symbol: ProposalDictionary
-  - id: anatomy_prior
-    label: 解剖先验
-    branch: MyoPS
-    current_status: partial
-    target_status: implemented
-    source_file: src/care_myocardium/models/srr_propref.py
-    symbol: AnatomyDistanceROIPrior
-  - id: scar_proposal
-    label: scar proposal
-    branch: MyoPS
-    current_status: partial
-    target_status: implemented
-    source_file: src/care_myocardium/models/srr_propref.py
-    symbol: scar_dictionary
-  - id: edema_proposal
-    label: edema proposal
-    branch: MyoPS
-    current_status: partial
-    target_status: implemented
-    source_file: src/care_myocardium/models/srr_propref.py
-    symbol: edema_dictionary
-  - id: scar_refiner
-    label: scar soft-ROI refiner
-    branch: MyoPS
-    current_status: partial
-    target_status: implemented
-    source_file: src/care_myocardium/models/srr_propref.py
-    symbol: scar_refiner
-  - id: edema_refiner
-    label: edema soft-ROI refiner
-    branch: MyoPS
-    current_status: partial
-    target_status: implemented
-    source_file: src/care_myocardium/models/srr_propref.py
-    symbol: edema_refiner
-  - id: no_t2_safety
-    label: no-T2 edema 安全门
-    branch: MyoPS
-    current_status: implemented
-    target_status: implemented
-    source_file: src/care_myocardium/models/srr_propref.py
-    symbol: canonical_t2_present
-  - id: arbitration_final_output
-    label: arbitration 与 final output
-    branch: MyoPS
-    current_status: partial
-    target_status: implemented
-    source_file: src/care_myocardium/models/srr_propref.py
-    symbol: BranchArbitrationGate
-  - id: losses
-    label: loss 与优化目标
-    branch: MyoPS
-    current_status: implemented
-    target_status: implemented
-    source_file: src/care_myocardium/losses/srr_losses.py
-    symbol: srr_m6_expanded_total_loss
-  - id: checkpoint_selection
-    label: checkpoint 选择
-    branch: MyoPS
-    current_status: partial
-    target_status: implemented
-    source_file: scripts/evaluation/aggregate_srr_v3_m9_dictionary_fidelity_packet.py
-    symbol: select_metric_checkpoint
-  - id: cine_temporal
-    label: Cine temporal 次线
-    branch: Cine
-    current_status: partial
-    target_status: implemented
-    source_file: scripts/evaluation/aggregate_srr_v3_m9_dictionary_fidelity_packet.py
-    symbol: Cine
-  - id: controller_continuity
-    label: controller continuity 与 finalizer
-    branch: AgentFlow
-    current_status: partial
-    target_status: implemented
-    source_file: prompts/CONTROLLER_TASK_PROTOCOL.md
-    symbol: controller_supervised
-  - id: mapper_wiki_observability
-    label: mapper/wiki observability
-    branch: AgentFlow
-    current_status: partial
-    target_status: implemented
-    source_file: .agents/skills/care-mapper/SKILL.md
-    symbol: care-mapper
-  - id: m10_followup_wave2_reconciliation
-    label: M10 inherited Wave2 checkpoint/intervention reconciliation
-    branch: MyoPS
-    current_status: partial
-    target_status: implemented
-    source_file: scripts/evaluation/aggregate_srr_v3_m10_followup_wave2.py
-    symbol: aggregate
-  - id: cine_followup_fidelity_contracts
-    label: CineMA/registration/temporal fail-closed fidelity contracts
-    branch: Cine
-    current_status: implemented
-    target_status: implemented
-    source_file: src/care_myocardium/cine/followup/contracts.py
-    symbol: RegistrationGateContract
-  - id: cine_followup_adapter_control
-    label: CineMA adapted model versus capacity-matched random-init control
-    branch: Cine
-    current_status: partial
-    target_status: implemented
-    source_file: scripts/training/run_cinema_adapter_m10.py
-    symbol: CONTRACT
-  - id: cine_followup_registration
-    label: learned registration plus gate and SyN control requirement
-    branch: Cine
-    current_status: partial
-    target_status: implemented
-    source_file: scripts/training/run_cine_registration_m10.py
-    symbol: registration_gate_passed
-  - id: cine_followup_temporal_dictionary
-    label: learned temporal dictionary/model after registration gate
-    branch: Cine
-    current_status: partial
-    target_status: implemented
-    source_file: scripts/training/run_cine_temporal_model_m10.py
-    symbol: CineTemporalModel
-  - id: m10_followup_controller_finalizer
-    label: M10 follow-up controller finalizer and packet publication boundary
-    branch: AgentFlow
-    current_status: partial
-    target_status: implemented
-    source_file: prompts/CONTROLLER_TASK_PROTOCOL.md
-    symbol: FINALIZER_A
-  - id: batch5_post_batch4_diagnostic
-    label: Batch5 post-Batch4 checkpoint/loss/gate diagnostic
-    branch: MyoPS
-    current_status: partial
-    target_status: implemented
-    source_file: scripts/evaluation/audit_srr_batch4_selection_semantics.py
-    symbol: Batch5
+- id: inputs_availability
+  label: 输入与 availability mask
+  branch: MyoPS
+  current_status: implemented
+  target_status: implemented
+  source_file: src/care_myocardium/models/srr_propref.py
+  symbol: availability
+- id: modality_stems_encoders
+  label: 模态 stems/encoders
+  branch: MyoPS
+  current_status: implemented
+  target_status: implemented
+  source_file: src/care_myocardium/models/srr_propref.py
+  symbol: self.encoders
+- id: retrieval_dictionary
+  label: 检索 dictionary 与表示槽
+  branch: MyoPS
+  current_status: partial
+  target_status: implemented
+  source_file: src/care_myocardium/models/srr_blocks.py
+  symbol: dictionary_slot_config
+- id: router_pattern_sip
+  label: router / Pattern-SIP 状态
+  branch: MyoPS
+  current_status: partial
+  target_status: implemented
+  source_file: src/care_myocardium/models/srr_blocks.py
+  symbol: MultiSlotDictionaryRouter
+- id: prototype_memory
+  label: prototype memory 与 hard-negative
+  branch: MyoPS
+  current_status: partial
+  target_status: implemented
+  source_file: src/care_myocardium/models/srr_propref.py
+  symbol: ProposalDictionary
+- id: anatomy_prior
+  label: 解剖先验
+  branch: MyoPS
+  current_status: partial
+  target_status: implemented
+  source_file: src/care_myocardium/models/srr_propref.py
+  symbol: AnatomyDistanceROIPrior
+- id: scar_proposal
+  label: scar proposal
+  branch: MyoPS
+  current_status: partial
+  target_status: implemented
+  source_file: src/care_myocardium/models/srr_propref.py
+  symbol: scar_dictionary
+- id: edema_proposal
+  label: edema proposal
+  branch: MyoPS
+  current_status: partial
+  target_status: implemented
+  source_file: src/care_myocardium/models/srr_propref.py
+  symbol: edema_dictionary
+- id: scar_refiner
+  label: scar soft-ROI refiner
+  branch: MyoPS
+  current_status: partial
+  target_status: implemented
+  source_file: src/care_myocardium/models/srr_propref.py
+  symbol: scar_refiner
+- id: edema_refiner
+  label: edema soft-ROI refiner
+  branch: MyoPS
+  current_status: partial
+  target_status: implemented
+  source_file: src/care_myocardium/models/srr_propref.py
+  symbol: edema_refiner
+- id: no_t2_safety
+  label: no-T2 edema 安全门
+  branch: MyoPS
+  current_status: implemented
+  target_status: implemented
+  source_file: src/care_myocardium/models/srr_propref.py
+  symbol: canonical_t2_present
+- id: arbitration_final_output
+  label: arbitration 与 final output
+  branch: MyoPS
+  current_status: partial
+  target_status: implemented
+  source_file: src/care_myocardium/models/srr_propref.py
+  symbol: BranchArbitrationGate
+- id: losses
+  label: loss 与优化目标
+  branch: MyoPS
+  current_status: implemented
+  target_status: implemented
+  source_file: src/care_myocardium/losses/srr_losses.py
+  symbol: srr_m6_expanded_total_loss
+- id: checkpoint_selection
+  label: checkpoint 选择
+  branch: MyoPS
+  current_status: partial
+  target_status: implemented
+  source_file: scripts/evaluation/aggregate_srr_v3_m9_dictionary_fidelity_packet.py
+  symbol: select_metric_checkpoint
+- id: cine_temporal
+  label: Cine temporal 次线
+  branch: Cine
+  current_status: partial
+  target_status: implemented
+  source_file: scripts/evaluation/aggregate_srr_v3_m9_dictionary_fidelity_packet.py
+  symbol: Cine
+- id: controller_continuity
+  label: controller continuity 与 finalizer
+  branch: AgentFlow
+  current_status: partial
+  target_status: implemented
+  source_file: prompts/CONTROLLER_TASK_PROTOCOL.md
+  symbol: controller_supervised
+- id: mapper_wiki_observability
+  label: mapper/wiki observability
+  branch: AgentFlow
+  current_status: partial
+  target_status: implemented
+  source_file: .agents/skills/care-mapper/SKILL.md
+  symbol: care-mapper
+- id: m10_followup_wave2_reconciliation
+  label: M10 inherited Wave2 checkpoint/intervention reconciliation
+  branch: MyoPS
+  current_status: partial
+  target_status: implemented
+  source_file: scripts/evaluation/aggregate_srr_v3_m10_followup_wave2.py
+  symbol: aggregate
+- id: cine_followup_fidelity_contracts
+  label: CineMA/registration/temporal fail-closed fidelity contracts
+  branch: Cine
+  current_status: implemented
+  target_status: implemented
+  source_file: src/care_myocardium/cine/followup/contracts.py
+  symbol: RegistrationGateContract
+- id: cine_followup_adapter_control
+  label: CineMA adapted model versus capacity-matched random-init control
+  branch: Cine
+  current_status: partial
+  target_status: implemented
+  source_file: scripts/training/run_cinema_adapter_m10.py
+  symbol: CONTRACT
+- id: cine_followup_registration
+  label: learned registration plus gate and SyN control requirement
+  branch: Cine
+  current_status: partial
+  target_status: implemented
+  source_file: scripts/training/run_cine_registration_m10.py
+  symbol: registration_gate_passed
+- id: cine_followup_temporal_dictionary
+  label: learned temporal dictionary/model after registration gate
+  branch: Cine
+  current_status: partial
+  target_status: implemented
+  source_file: scripts/training/run_cine_temporal_model_m10.py
+  symbol: CineTemporalModel
+- id: m10_followup_controller_finalizer
+  label: M10 follow-up controller finalizer and packet publication boundary
+  branch: AgentFlow
+  current_status: partial
+  target_status: implemented
+  source_file: prompts/CONTROLLER_TASK_PROTOCOL.md
+  symbol: FINALIZER_A
+- id: batch5_post_batch4_diagnostic
+  label: Batch5 post-Batch4 checkpoint/loss/gate diagnostic
+  branch: MyoPS
+  current_status: partial
+  target_status: implemented
+  source_file: scripts/evaluation/audit_srr_batch4_selection_semantics.py
+  symbol: Batch5
+- id: batch6_final_objective_alignment
+  label: Batch6 final objective alignment
+  branch: MyoPS
+  current_status: partial
+  target_status: implemented
+  source_file: src/care_myocardium/losses/srr_losses.py
+  symbol: srr_m6_expanded_total_loss
 edges:
-  - from: inputs_availability
-    to: modality_stems_encoders
-    kind: data
-    condition: availability 控制输入
-  - from: modality_stems_encoders
-    to: retrieval_dictionary
-    kind: data
-    condition: 模态特征
-  - from: retrieval_dictionary
-    to: router_pattern_sip
-    kind: data
-    condition: slot routing
-  - from: router_pattern_sip
-    to: scar_proposal
-    kind: data
-    condition: scar evidence
-  - from: router_pattern_sip
-    to: edema_proposal
-    kind: data
-    condition: edema evidence
-  - from: prototype_memory
-    to: scar_proposal
-    kind: data
-    condition: prototype support
-  - from: prototype_memory
-    to: edema_proposal
-    kind: data
-    condition: prototype support
-  - from: anatomy_prior
-    to: scar_proposal
-    kind: data
-    condition: ROI prior
-  - from: anatomy_prior
-    to: edema_proposal
-    kind: data
-    condition: ROI prior
-  - from: scar_proposal
-    to: scar_refiner
-    kind: data
-    condition: scar ROI
-  - from: edema_proposal
-    to: edema_refiner
-    kind: data
-    condition: edema ROI
-  - from: edema_refiner
-    to: no_t2_safety
-    kind: data
-    condition: T2 gate
-  - from: scar_refiner
-    to: arbitration_final_output
-    kind: data
-    condition: scar delta
-  - from: no_t2_safety
-    to: arbitration_final_output
-    kind: data
-    condition: safe edema delta
-  - from: losses
-    to: retrieval_dictionary
-    kind: data
-    condition: 优化目标
-  - from: checkpoint_selection
-    to: arbitration_final_output
-    kind: data
-    condition: formal decision
-  - from: batch5_post_batch4_diagnostic
-    to: checkpoint_selection
-    kind: data
-    condition: formal logits argmax reranking and safety gates
-  - from: batch5_post_batch4_diagnostic
-    to: arbitration_final_output
-    kind: data
-    condition: production gate intervention evidence
-  - from: cine_temporal
-    to: checkpoint_selection
-    kind: data
-    condition: local proxy only
-  - from: controller_continuity
-    to: mapper_wiki_observability
-    kind: data
-    condition: receipts
-  - from: mapper_wiki_observability
-    to: checkpoint_selection
-    kind: data
-    condition: observability
-  - from: m10_followup_wave2_reconciliation
-    to: checkpoint_selection
-    kind: data
-    condition: M10 all-checkpoint selection evidence
-  - from: cine_followup_fidelity_contracts
-    to: cine_followup_adapter_control
-    kind: data
-    condition: F2 freeze contracts gate F3 adapter/control
-  - from: cine_followup_adapter_control
-    to: cine_followup_registration
-    kind: data
-    condition: selected source feeds registration
-  - from: cine_followup_registration
-    to: cine_followup_temporal_dictionary
-    kind: data
-    condition: registration gate allows temporal attempt
-  - from: cine_followup_temporal_dictionary
-    to: cine_temporal
-    kind: data
-    condition: temporal evidence missing keeps Cine unverified
-  - from: m10_followup_controller_finalizer
-    to: mapper_wiki_observability
-    kind: data
-    condition: controller packet and mapper final receipts
+- from: inputs_availability
+  to: modality_stems_encoders
+  kind: data
+  condition: availability 控制输入
+- from: modality_stems_encoders
+  to: retrieval_dictionary
+  kind: data
+  condition: 模态特征
+- from: retrieval_dictionary
+  to: router_pattern_sip
+  kind: data
+  condition: slot routing
+- from: router_pattern_sip
+  to: scar_proposal
+  kind: data
+  condition: scar evidence
+- from: router_pattern_sip
+  to: edema_proposal
+  kind: data
+  condition: edema evidence
+- from: prototype_memory
+  to: scar_proposal
+  kind: data
+  condition: prototype support
+- from: prototype_memory
+  to: edema_proposal
+  kind: data
+  condition: prototype support
+- from: anatomy_prior
+  to: scar_proposal
+  kind: data
+  condition: ROI prior
+- from: anatomy_prior
+  to: edema_proposal
+  kind: data
+  condition: ROI prior
+- from: scar_proposal
+  to: scar_refiner
+  kind: data
+  condition: scar ROI
+- from: edema_proposal
+  to: edema_refiner
+  kind: data
+  condition: edema ROI
+- from: edema_refiner
+  to: no_t2_safety
+  kind: data
+  condition: T2 gate
+- from: scar_refiner
+  to: arbitration_final_output
+  kind: data
+  condition: scar delta
+- from: no_t2_safety
+  to: arbitration_final_output
+  kind: data
+  condition: safe edema delta
+- from: losses
+  to: retrieval_dictionary
+  kind: data
+  condition: 优化目标
+- from: checkpoint_selection
+  to: arbitration_final_output
+  kind: data
+  condition: formal decision
+- from: batch5_post_batch4_diagnostic
+  to: checkpoint_selection
+  kind: data
+  condition: formal logits argmax reranking and safety gates
+- from: batch5_post_batch4_diagnostic
+  to: arbitration_final_output
+  kind: data
+  condition: production gate intervention evidence
+- from: cine_temporal
+  to: checkpoint_selection
+  kind: data
+  condition: local proxy only
+- from: controller_continuity
+  to: mapper_wiki_observability
+  kind: data
+  condition: receipts
+- from: mapper_wiki_observability
+  to: checkpoint_selection
+  kind: data
+  condition: observability
+- from: m10_followup_wave2_reconciliation
+  to: checkpoint_selection
+  kind: data
+  condition: M10 all-checkpoint selection evidence
+- from: cine_followup_fidelity_contracts
+  to: cine_followup_adapter_control
+  kind: data
+  condition: F2 freeze contracts gate F3 adapter/control
+- from: cine_followup_adapter_control
+  to: cine_followup_registration
+  kind: data
+  condition: selected source feeds registration
+- from: cine_followup_registration
+  to: cine_followup_temporal_dictionary
+  kind: data
+  condition: registration gate allows temporal attempt
+- from: cine_followup_temporal_dictionary
+  to: cine_temporal
+  kind: data
+  condition: temporal evidence missing keeps Cine unverified
+- from: m10_followup_controller_finalizer
+  to: mapper_wiki_observability
+  kind: data
+  condition: controller packet and mapper final receipts
+- from: losses
+  to: batch6_final_objective_alignment
+  kind: data
+  condition: direct final logits and gate repair losses
+- from: batch6_final_objective_alignment
+  to: arbitration_final_output
+  kind: data
+  condition: anchor-bounded final correction evidence
+- from: batch6_final_objective_alignment
+  to: checkpoint_selection
+  kind: data
+  condition: formal300 stop gate

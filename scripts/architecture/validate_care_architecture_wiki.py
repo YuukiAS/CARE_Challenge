@@ -124,6 +124,15 @@ def discover_history_versions(repo_root: Path) -> list[str]:
 
 
 def parse_yaml_ids(text: str, key: str) -> set[str]:
+    try:
+        import yaml  # type: ignore
+
+        loaded = yaml.safe_load(text)
+    except Exception:
+        loaded = None
+    if isinstance(loaded, dict) and isinstance(loaded.get(key), list):
+        return {str(item.get("id")) for item in loaded[key] if isinstance(item, dict) and item.get("id")}
+
     inside = False
     ids: set[str] = set()
     for line in text.splitlines():
@@ -136,7 +145,6 @@ def parse_yaml_ids(text: str, key: str) -> set[str]:
         if inside and match:
             ids.add(match.group(1))
     return ids
-
 
 def load_generator(repo_root: Path):
     path = repo_root / "scripts" / "architecture" / "generate_care_architecture_wiki.py"

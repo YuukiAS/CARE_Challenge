@@ -32,3 +32,19 @@ M9 follow-up 的证据已经完成一致性修复并通过独立 review，但结
 ## M10 follow-up candidate mapping
 
 M10 follow-up adds tracked candidate evidence for inherited MyoPS checkpoint selection/interventions and first-party Cine fidelity contracts. The new Cine runtime remains incomplete: adapter/control and registration jobs completed, but `real_syn_control.csv` is still `NEEDS_EVIDENCE_REAL_SYN_NOT_RUN_BY_CURRENT_ENTRYPOINT`, and the temporal dictionary replacement timed out before writing terminal outputs. The candidate rows in `COMPONENTS.csv` are marked `NOT_REVIEWED`; they do not update `wiki/current_state.yaml`.
+
+## Batch6 final objective alignment
+
+Batch6 keeps the existing `SRRProposeRefineMyoPS` MyoPS backbone and repairs objective wiring in place. The production final output remains `anchor_bounded_srr_correction`: nnU-Net anchor logits plus bounded scar and edema corrections. The change is that the final deployed six-class logits now receive direct scar and T2-present edema pathology losses, and the production correction gate receives 13-channel context plus repair/preserve supervision.
+
+Runtime evidence:
+
+| Evidence | Result |
+| --- | --- |
+| fixed-overfit | PASS, job `59743323`, 60 steps, formal credit 0 |
+| formal300 | COMPLETED, job `59744053`, 300 steps, 44-case eval at 100/200/300 |
+| step300 gate | FAIL because mean positive-pathology Dice delta `+0.001699358` < `+0.003` |
+| selected checkpoint | step300, SHA `729c81e49bf846339ed2f39ef0f2656319befd2b9cfe73268d7cf501e6b40fbd` |
+| final interventions | COMPLETED, job `59744941`, six modes |
+
+This verifies a connected mechanism path but leaves the scientific signal below usable; it does not authorize 900, fold expansion, upload, Cine, or Batch7.

@@ -1,0 +1,5 @@
+timestamp,phase,git_head,task_hash,job_states,decision,next_action
+2026-07-21T06:45:00-04:00,bootstrap,f700ee5f739f8291532b35df7a6c99a56b54d9e6,595d0b41bb84,read authority files,CONTROLLER_ACCEPTANCE_OWNER,verify runtime packet
+2026-07-21T06:45:00-04:00,fixed_overfit,f700ee5f739f8291532b35df7a6c99a56b54d9e6,595d0b41bb84,59743323 COMPLETED 0:0,PASS_FORMAL_CREDIT_0,formal 300 allowed
+2026-07-21T06:45:00-04:00,formal300,f700ee5f739f8291532b35df7a6c99a56b54d9e6,595d0b41bb84,59744053 COMPLETED 0:0,GATE_FAIL_STOP_AT_300,skip 900 and run final interventions
+2026-07-21T06:45:00-04:00,final_interventions,f700ee5f739f8291532b35df7a6c99a56b54d9e6,595d0b41bb84,59744941 COMPLETED 0:0,INTERVENTIONS_AGGREGATED,validator/wiki/local commit

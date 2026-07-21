@@ -84,6 +84,7 @@ def load_srr_checkpoint(
     amp_scaler: Any,
     map_location: torch.device | str = "cpu",
     restore_rng: bool = True,
+    restore_optimizer: bool = True,
 ) -> dict[str, Any]:
     payload = torch.load(path, map_location=map_location, weights_only=False)
     if int(payload.get("schema_version", 0)) != CHECKPOINT_SCHEMA_VERSION:
@@ -126,8 +127,10 @@ def load_srr_checkpoint(
     model.load_state_dict(state)
     if migration["applied"]:
         payload["optimizer_state_dict_migration"] = "skipped_optimizer_state_due_to_production_gate_input_shape_migration"
-    else:
+    elif restore_optimizer:
         optimizer.load_state_dict(payload["optimizer_state_dict"])
+    else:
+        payload["optimizer_state_dict_migration"] = "skipped_optimizer_state_by_warm_start_finetune_contract"
     payload["production_gate_migration"] = migration
     if scheduler is not None:
         scheduler_state = payload.get("scheduler_state_dict")

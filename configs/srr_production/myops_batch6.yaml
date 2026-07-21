@@ -120,7 +120,10 @@ final_pathology_loss:
   scar_margin: final_logits_class5_minus_logsumexp_other_classes
   edema_margin: final_logits_class4_minus_logsumexp_other_classes
   scar_loss: half_bce_half_dice_all_valid_cases
+  scar_directionality_loss: anchor_error_margin_delta_fn_up_fp_down_preserve_confident_correct_anchor
+  scar_anchor_error_loss: deployed_final_scar_attainable_margin_delta_bce_dice_on_anchor_fn_fp
   edema_loss: half_bce_half_dice_t2_present_only
+  edema_anchor_error_loss: deployed_final_edema_t2_present_attainable_margin_delta_bce_dice_on_anchor_fn_fp
   direct_outputs_logits_supervision_required: true
 canonical_loss_weights:
   loss_anatomy_union_lv_rv: 1.0
@@ -129,7 +132,10 @@ canonical_loss_weights:
   loss_scar_refiner_roi: 1.0
   loss_edema_refiner_t2_present_roi: 1.0
   loss_final_scar_pathology: 1.0
+  loss_final_scar_correction_directionality: 1.0
+  loss_final_scar_anchor_error_pathology: 20.0
   loss_final_edema_t2_present_pathology: 1.0
+  loss_final_edema_anchor_error_pathology: 20.0
   loss_production_gate_repair_preserve: 0.20
   loss_anchor_preservation_outside_roi: 0.05
   loss_component_remote_fp: 0.05
@@ -150,7 +156,7 @@ loss_weight_policy:
   checkpoint_contract_must_store_resolved_weights: true
 fixed_batch_overfit:
   optimizer_steps: 60
-  learning_rate: 0.01
+  learning_rate: 0.03
   formal_training_credit: 0
   cases:
     - Case2002
@@ -167,6 +173,10 @@ fixed_batch_overfit:
     - scar_dictionary
     - edema_dictionary
     - prototype_memory
+  overfit_loss_multipliers:
+    loss_final_scar_pathology: 30.0
+    loss_final_edema_t2_present_pathology: 30.0
+    loss_production_gate_repair_preserve: 15.0
   pass_gates:
     combined_final_pathology_loss_relative_decrease_minimum: 0.20
     scar_final_pathology_loss_relative_decrease_minimum: 0.15
@@ -263,3 +273,12 @@ completion:
   controller_is_coordinator: true
   required_status: VERIFIED_COMPLETE
   next_action: RETURN_TO_PLANNER
+
+runtime_interventions:
+  modes:
+    - anchor_identity_control
+    - full_learned_gate
+    - full_gate_one
+    - full_gate_zero
+    - proposal_only_gate_one
+    - refiner_only_gate_one

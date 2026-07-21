@@ -6,20 +6,45 @@
   "checkpoint_path": "results/20260721_srr_batch6_final_objective_alignment/runtime/fixed_batch_overfit/checkpoint_step_60.pt",
   "checks": {
     "all_losses_finite": true,
-    "combined_final_pathology_loss_relative_decrease": 0.11140374811087732,
-    "edema_final_pathology_loss_relative_decrease": 0.1729726555528828,
-    "final_logits_max_abs_change_from_step0": 5.8848066329956055,
-    "gate_loss_relative_decrease": 0.8508913721094874,
+    "combined_final_pathology_loss_relative_decrease": 0.22169648876881362,
+    "edema_anchor_error_abs_margin_shortfall_final": 65.89470672607422,
+    "edema_anchor_error_pathology_loss_relative_decrease": 0.5306602304766928,
+    "edema_bounded_correction_on_anchor_fn_final": 3.8186492919921875,
+    "edema_bounded_correction_on_anchor_fp_final": -3.883615016937256,
+    "edema_bounded_correction_on_preserve_final": 0.1485644280910492,
+    "edema_final_margin_on_anchor_fn_final": -6.318603515625,
+    "edema_final_margin_on_anchor_fp_final": 5.758668422698975,
+    "edema_final_pathology_loss_relative_decrease": 0.26412012419374487,
+    "edema_final_prob_on_anchor_fn_final": 0.1529364436864853,
+    "edema_final_prob_on_anchor_fp_final": 0.8185781240463257,
+    "final_logits_max_abs_change_from_step0": 7.999979496002197,
+    "gate_loss_relative_decrease": 0.3865146147271092,
     "no_t2_edema_exact_zero": true,
-    "production_gate_repair_gradient_l2_max": 2.024569724646358,
+    "production_gate_repair_gradient_l2_max": 2010.4200978300662,
     "save_reload_final_logits_max_abs_delta": 0.0,
-    "scar_final_pathology_loss_relative_decrease": 0.028044275705941434
+    "scar_anchor_error_abs_margin_shortfall_final": 65.99688720703125,
+    "scar_anchor_error_pathology_loss_relative_decrease": 0.499113036746604,
+    "scar_bounded_correction_on_anchor_fn_final": 3.519592523574829,
+    "scar_bounded_correction_on_anchor_fp_final": -3.058558940887451,
+    "scar_bounded_correction_on_preserve_final": 1.0528373718261719,
+    "scar_directionality_loss_relative_decrease": 0.515523226638692,
+    "scar_final_margin_on_anchor_fn_final": -5.481348991394043,
+    "scar_final_margin_on_anchor_fp_final": 5.76806640625,
+    "scar_final_pathology_loss_relative_decrease": 0.16623363430373905,
+    "scar_final_prob_on_anchor_fn_final": 0.18641841411590576,
+    "scar_final_prob_on_anchor_fp_final": 0.8089040517807007,
+    "scar_margin_abs_delta_on_preserve_final": 2.2097787857055664,
+    "scar_margin_delta_on_fn_final": 7.0140299797058105,
+    "scar_margin_delta_on_fp_final": -4.524555206298828
   },
   "final_losses": {
-    "combined_final_pathology_loss": 0.6021547913551331,
-    "edema_final_pathology_loss": 0.32234805822372437,
-    "gate_repair_preserve_loss": 0.3303159475326538,
-    "scar_final_pathology_loss": 0.2798067331314087
+    "combined_final_pathology_loss": 0.4973379373550415,
+    "edema_final_anchor_error_pathology_loss": 35.41802215576172,
+    "edema_final_pathology_loss": 0.26643359661102295,
+    "gate_repair_preserve_loss": 1.3590360879898071,
+    "scar_final_anchor_error_pathology_loss": 37.1908073425293,
+    "scar_final_correction_directionality_loss": 0.5264244079589844,
+    "scar_final_pathology_loss": 0.23090434074401855
   },
   "formal_training_credit": 0,
   "frozen_scope": [
@@ -31,14 +56,22 @@
     "prototype_memory"
   ],
   "initial_losses": {
-    "combined_final_pathology_loss": 0.6776472330093384,
-    "edema_final_pathology_loss": 0.3897671103477478,
+    "combined_final_pathology_loss": 0.6390025615692139,
+    "edema_final_anchor_error_pathology_loss": 75.4635009765625,
+    "edema_final_pathology_loss": 0.3620612621307373,
     "gate_repair_preserve_loss": 2.215270519256592,
-    "scar_final_pathology_loss": 0.2878801226615906
+    "scar_final_anchor_error_pathology_loss": 74.2499008178711,
+    "scar_final_correction_directionality_loss": 1.0865833759307861,
+    "scar_final_pathology_loss": 0.27694129943847656
   },
-  "learning_rate": 0.01,
+  "learning_rate": 0.03,
   "optimizer_steps": 60,
-  "parameter_hash_after": "5c6b339b5baa36503ea0e8209cfdadd2d001d4ed5cf28c7ee3328f775ebf29cf",
+  "overfit_loss_multipliers": {
+    "loss_final_edema_t2_present_pathology": 30.0,
+    "loss_final_scar_pathology": 30.0,
+    "loss_production_gate_repair_preserve": 15.0
+  },
+  "parameter_hash_after": "928eae358cef313026be846bc70cfc229423a06d37e4906e5e5d1c8a23fd7f32",
   "production_gate_migration": {
     "applied": true,
     "copied_input_channels": [
@@ -77,7 +110,7 @@
   },
   "source_checkpoint_path": "results/20260721_srr_batch4_forced_fold0_training/runtime/attempts/srr_batch4_m10d3_full4scale_fold0_seed20260721_htzhulab_59682067/variants/srr_batch4_m10d3_full4scale_fold0_seed20260721_htzhulab_59682067/checkpoints/fold_0/propref_config/checkpoint_validation_step_1800.pt",
   "source_checkpoint_sha256": "bc325754202d5cf0aa59aa8fab0306b38c2665640339afa3f8d06a13c70009f6",
-  "status": "FAIL",
+  "status": "PASS",
   "trainable_parameter_names": [
     "edema_refine.refine.0.weight",
     "edema_refine.refine.1.bias",

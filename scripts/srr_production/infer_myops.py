@@ -276,6 +276,7 @@ def load_checkpoint_into_model(
         amp_scaler=None,
         map_location=device,
         restore_rng=False,
+        restore_optimizer=False,
     )
     expected_arch = architecture_config(cfg, mode)
     actual_arch = dict(payload.get("architecture_config", {}) or {})
@@ -486,11 +487,12 @@ def run(args: argparse.Namespace) -> dict[str, Any]:
         status = "BATCH3A_NEEDS_REPAIR_ANCHOR_IDENTITY_NOT_EXACT"
     if mode == "anchor_identity_control" and identity_softmax_max_abs_delta > 1e-6:
         status = "BATCH3A_NEEDS_REPAIR_ANCHOR_IDENTITY_SOFTMAX_NOT_EXACT"
-    if mode not in {"anchor_identity_control", "production_gate_closed"} and nonidentity_tensor_delta <= 0.0:
+    zero_delta_control_modes = {"anchor_identity_control", "production_gate_closed", "full_gate_zero"}
+    if mode not in zero_delta_control_modes and nonidentity_tensor_delta <= 0.0:
         status = "BATCH3A_NEEDS_REPAIR_NO_NONIDENTITY_TENSOR_EFFECT"
     contract = {
         "schema_version": 5,
-        "batch": "5" if mode in BATCH5_MODES else "3A",
+        "batch": "6" if mode in BATCH6_MODES else ("5" if mode in BATCH5_MODES else "3A"),
         "status": status,
         "mode": mode,
         "production_intervention_mode": BATCH5_PRODUCTION_INTERVENTIONS.get(mode, "full"),

@@ -1,29 +1,20 @@
 schema_version: 5
 authority_name: srr_production_mainline_authority
-reviewed_from_head: 5352d3c7b614adcbe4388a6fcef45c9db662dc38
-formal_training_status: BATCH6_READY_FOR_CONTROLLER
-status_reason: >-
-  Batch 4 completed a valid M10 D3 full-4scale 176/44 fold0 training wave with
-  exactly 1800 optimizer steps, but the resulting anchor-bounded improvement was
-  only approximately +0.00068 edema Dice and +0.00134 scar Dice. Batch 5
-  completed existing-checkpoint diagnostics and confirmed that selection semantics
-  and simply opening the production gate do not explain the weak result. Planner
-  code review found that final deployed logits lack direct pathology GT loss, the
-  production gate lacks a GT-driven repair objective, positive magnitude penalties
-  prefer near-zero corrections, and the Batch 5 effective-weight, pure-intervention,
-  proposal/ROI and validator evidence remains incomplete. Batch 6 is therefore
-  authorized to reconcile those diagnostics, repair final objective and production
-  authority, pass fixed-batch overfit, run an exact 300-step fold0 calibration, and
-  continue to total 900 steps only after a fixed machine gate.
-
+reviewed_from_head: f700ee5f739f8291532b35df7a6c99a56b54d9e6
+formal_training_status: BLOCKED_PENDING_PLANNER_AFTER_BATCH6_STOP_AT_300
+status_reason: Batch 6 fixed the same-scope final-objective and production-gate path
+  enough to pass the required fixed two-case overfit and run the authorized exact
+  300-step fold0 calibration. The step300 continuation gate failed because mean scar/edema
+  positive-case Dice delta was below +0.003, so the 900-step extension, fold expansion,
+  upload, hosted claim, Cine work, and Batch7 remain unauthorized pending Planner/user
+  decision.
 current_scientific_status:
   batch4_operational: VERIFIED_COMPLETE
   batch4_scientific: BATCH4_TRAINED_NEGATIVE_OR_REPAIR_REQUIRED
   batch5_operational: CONTROLLER_VERIFIED_COMPLETE
   batch5_planner_audit: RUNTIME_COMPLETE_MECHANISM_PACKET_NEEDS_REPAIR
-  batch6: READY_FOR_CONTROLLER
+  batch6: CONTROLLER_VERIFIED_COMPLETE_STOP_AT_300_GATE_FAIL_BELOW_USABLE_SIGNAL
   significantly_better_than_nnunet: false
-
 selected_model:
   class_name: SRRProposeRefineMyoPS
   path: src/care_myocardium/models/srr_propref.py
@@ -32,18 +23,20 @@ selected_model:
   base_channels: 32
   final_output_mode: anchor_bounded_srr_correction
   current_status: trained_fold0_weak_signal_final_objective_and_gate_repair_authorized
-
 batch4_evidence:
   training_source_commit: 0466260e3f4eb6c50b05a7f5a8b66652b873fe46
   terminal_packet_commit: 82524678e8c4aae5c088b24db8a00643c2603ae9
   explicit_review_commit: 5352d3c7b614adcbe4388a6fcef45c9db662dc38
   result_root: results/20260721_srr_batch4_forced_fold0_training
-  valid_training_job: "59682067"
+  valid_training_job: '59682067'
   optimizer_steps: 1800
   train_loop_seconds_minimum_met: true
   train_cases: 176
   validation_cases: 44
-  full_volume_eval_steps: [600, 1200, 1800]
+  full_volume_eval_steps:
+  - 600
+  - 1200
+  - 1800
   selected_checkpoint_step: 1800
   selected_checkpoint_sha256: bc325754202d5cf0aa59aa8fab0306b38c2665640339afa3f8d06a13c70009f6
   identity_changed_voxels: 0
@@ -59,137 +52,140 @@ batch4_evidence:
     scar_dice_delta: 0.0013414936102105
     scar_anchor_remote_fp_mm3: 620.3619700074735
     scar_srr_remote_fp_mm3: 605.6288666886041
-
 batch5_evidence:
   result_root: results/20260721_srr_batch5_post_batch4_diagnostic_repair
   controller_acceptance: VERIFIED_COMPLETE
-  primary_job_id: "59730568"
+  primary_job_id: '59730568'
   primary_partition: htzhulab
   primary_state: COMPLETED
-  primary_exit_code: "0:0"
+  primary_exit_code: 0:0
   optimizer_steps: 0
   parameter_updates: 0
   accepted_findings:
-    - formal argmax reranking preserves step1800 as top checkpoint
-    - gate-open versus full changes Dice by far less than the authority threshold
-    - no-anchor control is substantially worse than the nnU-Net anchored output
-    - mean best-of-mode oracle Dice headroom is approximately 0.00256
-    - final deployed logits have no direct scar or edema GT repair loss
-    - legacy correction opportunity targets branch arbitration rather than production gate
-    - active bounded-correction and refiner-effect terms prefer small corrections
+  - formal argmax reranking preserves step1800 as top checkpoint
+  - gate-open versus full changes Dice by far less than the authority threshold
+  - no-anchor control is substantially worse than the nnU-Net anchored output
+  - mean best-of-mode oracle Dice headroom is approximately 0.00256
+  - final deployed logits have no direct scar or edema GT repair loss
+  - legacy correction opportunity targets branch arbitration rather than production
+    gate
+  - active bounded-correction and refiner-effect terms prefer small corrections
   planner_found_gaps:
-    - effective weights and aliases were not fully resolved from the actual Batch4 wrapper
-    - proposal-only and refiner-only interventions still share proposal/refiner gate inputs
-    - proposal component remote-FP and ROI coverage fields are blank
-    - preservation gradient was mislabeled as task-corrective production-gate gradient
-    - strict validator does not enforce the above semantics and receipt consistency
-
+  - effective weights and aliases were not fully resolved from the actual Batch4 wrapper
+  - proposal-only and refiner-only interventions still share proposal/refiner gate
+    inputs
+  - proposal component remote-FP and ROI coverage fields are blank
+  - preservation gradient was mislabeled as task-corrective production-gate gradient
+  - strict validator does not enforce the above semantics and receipt consistency
 formal_entrypoints: []
-
 candidate_entrypoints:
-  - id: srr_batch4_fold0_trained_diagnostic
-    role: local_same_split_trained_diagnostic_not_submission_candidate
-    path: scripts/training/run_srr_propref_myops_fold0.py
-    config_path: configs/srr_production/myops_batch4.yaml
-    formal_authority: false
-    audit_status: operationally_verified_scientifically_insufficient
-    notes:
-      - valid exact-1800-step fold0 training exists
-      - candidate and strong signal gates failed
-      - no fold expansion or hosted claim authority
-
-  - id: myops_batch4_selected_checkpoint_inference
-    role: local_checkpoint_bound_model_in_loop_diagnostic
-    path: scripts/srr_production/infer_myops.py
-    formal_authority: false
-    audit_status: same_checkpoint_identity_and_batch5_interventions_available
-    notes:
-      - identity exports model logits argmax
-      - existing Batch5 component interventions require purity repair before causal interpretation
-
-  - id: myops_fair_evaluator
-    role: local_full_volume_metric_recompute_authority
-    path: scripts/srr_production/evaluate_myops_fair.py
-    formal_authority: false
-    audit_status: reusable_with_positive_gt_and_all_case_separation
-    notes:
-      - computes Dice, HD, HD95, component, remote-FP, volume and help-harm from NIfTI
-      - scientific decisions use positive-GT pathology populations
-      - final deployment and selection decode must remain outputs logits argmax
-
-  - id: srr_batch5_diagnostic_repair
-    role: completed_existing_checkpoint_mechanism_diagnostic_needing_planner_reconciliation
-    path: prompts/tasks/20260721_srr_batch5_post_batch4_diagnostic_repair_controller.md
-    config_path: configs/srr_production/myops_batch5.yaml
-    formal_authority: false
-    audit_status: CONTROLLER_VERIFIED_COMPLETE_PLANNER_MECHANISM_REPAIR_REQUIRED
-    result_root: results/20260721_srr_batch5_post_batch4_diagnostic_repair
-    selected_checkpoint_sha256: bc325754202d5cf0aa59aa8fab0306b38c2665640339afa3f8d06a13c70009f6
-    case_count: 44
-    optimizer_steps: 0
-
-  - id: srr_batch6_final_objective_alignment
-    role: authorized_mainline_final_objective_and_production_gate_repair
-    path: prompts/tasks/20260721_srr_batch6_final_objective_alignment_controller.md
-    config_path: configs/srr_production/myops_batch6.yaml
-    plan_path: docs/plans/laneB_round04_active_srr_batch6_final_objective_alignment_execution.md
-    executor_plan_path: prompts/tasks/20260721_srr_batch6_final_objective_alignment_executor_plan.yaml
-    formal_authority: true
-    audit_status: READY_FOR_CONTROLLER
-    source_checkpoint_sha256: bc325754202d5cf0aa59aa8fab0306b38c2665640339afa3f8d06a13c70009f6
-    source_prototype_asset_sha256: 8b262f8bb87e0733a48e169c77b028a3833b70cbcd33d2ac2fb4857ba1cbde83
-    fold: 0
-    train_cases: 176
-    validation_cases: 44
-    required_sequence:
-      - repair Batch5 effective-weight pure-intervention proposal-ROI and validator evidence
-      - implement direct final scar and T2-present edema losses
-      - implement GT-driven production gate repair-preserve objective and 13-channel context
-      - pass two-case 60-step fixed-batch overfit
-      - run exact 300-step fold0 calibration with 44-case evaluations
-      - continue to total 900 steps only after the fixed step300 gate
-      - run selected-checkpoint pure interventions and final mechanism aggregation
-    training_authority:
-      fixed_batch_overfit_steps: 60
-      fixed_batch_formal_credit: 0
-      formal_stage_steps: 300
-      conditional_total_steps: 900
-      stage300_eval_steps: [100, 200, 300]
-      extension_eval_steps: [450, 600, 900]
-    allowed_actions:
-      - Batch5 mechanism evidence reconciliation
-      - loss gate model test validator and wrapper repair
-      - source checkpoint production-gate migration
-      - fixed-batch overfit
-      - exact 300-step fold0 calibration
-      - conditional 900-step extension after machine-verified gate
-      - same-checkpoint mechanism interventions
-      - CURRENT wiki and fingerprint repair
-      - local lightweight result commit
-    forbidden_actions:
-      - backbone replacement or comparison
-      - encoder or retrieval redesign
-      - prototype or memory rebuild
-      - fold expansion
-      - Cine
-      - external weights or data
-      - validation upload
-      - hosted metric claim
-      - route promotion
-      - M11
-      - Batch7 automatic start
-
-  - id: cine_batch3b_proxy_diagnostic
-    role: real_4d_io_optical_flow_proxy_diagnostic
-    path: scripts/srr_production/infer_cine_batch3b.py
-    formal_authority: false
-    audit_status: diagnostic_only_not_model_ready
-    notes:
-      - real 4D I/O exists
-      - anatomy remains threshold proxy
-      - CineMA is not loaded
-      - current three-case myocardium Dice is approximately 0.01 to 0.05
-
+- id: srr_batch4_fold0_trained_diagnostic
+  role: local_same_split_trained_diagnostic_not_submission_candidate
+  path: scripts/training/run_srr_propref_myops_fold0.py
+  config_path: configs/srr_production/myops_batch4.yaml
+  formal_authority: false
+  audit_status: operationally_verified_scientifically_insufficient
+  notes:
+  - valid exact-1800-step fold0 training exists
+  - candidate and strong signal gates failed
+  - no fold expansion or hosted claim authority
+- id: myops_batch4_selected_checkpoint_inference
+  role: local_checkpoint_bound_model_in_loop_diagnostic
+  path: scripts/srr_production/infer_myops.py
+  formal_authority: false
+  audit_status: same_checkpoint_identity_and_batch5_interventions_available
+  notes:
+  - identity exports model logits argmax
+  - existing Batch5 component interventions require purity repair before causal interpretation
+- id: myops_fair_evaluator
+  role: local_full_volume_metric_recompute_authority
+  path: scripts/srr_production/evaluate_myops_fair.py
+  formal_authority: false
+  audit_status: reusable_with_positive_gt_and_all_case_separation
+  notes:
+  - computes Dice, HD, HD95, component, remote-FP, volume and help-harm from NIfTI
+  - scientific decisions use positive-GT pathology populations
+  - final deployment and selection decode must remain outputs logits argmax
+- id: srr_batch5_diagnostic_repair
+  role: completed_existing_checkpoint_mechanism_diagnostic_needing_planner_reconciliation
+  path: prompts/tasks/20260721_srr_batch5_post_batch4_diagnostic_repair_controller.md
+  config_path: configs/srr_production/myops_batch5.yaml
+  formal_authority: false
+  audit_status: CONTROLLER_VERIFIED_COMPLETE_PLANNER_MECHANISM_REPAIR_REQUIRED
+  result_root: results/20260721_srr_batch5_post_batch4_diagnostic_repair
+  selected_checkpoint_sha256: bc325754202d5cf0aa59aa8fab0306b38c2665640339afa3f8d06a13c70009f6
+  case_count: 44
+  optimizer_steps: 0
+- id: srr_batch6_final_objective_alignment
+  role: completed_mainline_final_objective_repair_below_usable_signal_not_authorized_for_more_training
+  path: prompts/tasks/20260721_srr_batch6_final_objective_alignment_controller.md
+  config_path: configs/srr_production/myops_batch6.yaml
+  plan_path: docs/plans/laneB_round04_active_srr_batch6_final_objective_alignment_execution.md
+  executor_plan_path: prompts/tasks/20260721_srr_batch6_final_objective_alignment_executor_plan.yaml
+  formal_authority: false
+  audit_status: CONTROLLER_VERIFIED_COMPLETE_STOP_AT_300_GATE_FAIL
+  source_checkpoint_sha256: bc325754202d5cf0aa59aa8fab0306b38c2665640339afa3f8d06a13c70009f6
+  source_prototype_asset_sha256: 8b262f8bb87e0733a48e169c77b028a3833b70cbcd33d2ac2fb4857ba1cbde83
+  fold: 0
+  train_cases: 176
+  validation_cases: 44
+  required_sequence:
+  - repair Batch5 effective-weight pure-intervention proposal-ROI and validator evidence
+  - implement direct final scar and T2-present edema losses
+  - implement GT-driven production gate repair-preserve objective and 13-channel context
+  - pass two-case 60-step fixed-batch overfit
+  - run exact 300-step fold0 calibration with 44-case evaluations
+  - continue to total 900 steps only after the fixed step300 gate
+  - run selected-checkpoint pure interventions and final mechanism aggregation
+  training_authority:
+    fixed_batch_overfit_steps: 60
+    fixed_batch_formal_credit: 0
+    formal_stage_steps: 300
+    conditional_total_steps: 900
+    stage300_eval_steps:
+    - 100
+    - 200
+    - 300
+    extension_eval_steps:
+    - 450
+    - 600
+    - 900
+  allowed_actions:
+  - Batch5 mechanism evidence reconciliation
+  - loss gate model test validator and wrapper repair
+  - source checkpoint production-gate migration
+  - fixed-batch overfit
+  - exact 300-step fold0 calibration
+  - conditional 900-step extension after machine-verified gate
+  - same-checkpoint mechanism interventions
+  - CURRENT wiki and fingerprint repair
+  - local lightweight result commit
+  forbidden_actions:
+  - backbone replacement or comparison
+  - encoder or retrieval redesign
+  - prototype or memory rebuild
+  - fold expansion
+  - Cine
+  - external weights or data
+  - validation upload
+  - hosted metric claim
+  - route promotion
+  - M11
+  - Batch7 automatic start
+  result_root: results/20260721_srr_batch6_final_objective_alignment
+  selected_checkpoint_sha256: 729c81e49bf846339ed2f39ef0f2656319befd2b9cfe73268d7cf501e6b40fbd
+  optimizer_steps_completed: 300
+  formal_900_status: SKIPPED_STEP300_GATE_FAILED
+- id: cine_batch3b_proxy_diagnostic
+  role: real_4d_io_optical_flow_proxy_diagnostic
+  path: scripts/srr_production/infer_cine_batch3b.py
+  formal_authority: false
+  audit_status: diagnostic_only_not_model_ready
+  notes:
+  - real 4D I/O exists
+  - anatomy remains threshold proxy
+  - CineMA is not loaded
+  - current three-case myocardium Dice is approximately 0.01 to 0.05
 required_real_assets:
   myops_raw:
     path: data/nnUNet/nnUNet_raw/Dataset501_CAREMyoPS
@@ -203,24 +199,36 @@ required_real_assets:
   batch4_frozen_prototype_memory:
     manifest_path: results/20260721_srr_batch4_forced_fold0_training/frozen_prototype_memory_manifest.json
     asset_sha256: 8b262f8bb87e0733a48e169c77b028a3833b70cbcd33d2ac2fb4857ba1cbde83
-
 forbidden_formal_entrypoints:
-  - path: scripts/training/route_B_round04/myops/B3/run_B3_representation.py
-    reason: synthetic historical path
-  - path: scripts/training/route_B_round04/myops/B4/run_B4_proposal.py
-    reason: synthetic historical path
-  - path: scripts/training/route_B_round04/myops/B5/run_B5_refiner.py
-    reason: hard-coded proxy historical path
-  - path: scripts/training/route_B_round04/myops/B6/run_B6_joint.py
-    reason: fixed proxy historical path
-  - path: scripts/training/route_B_round04/cine/B7/run_B7_cinema_control.py
-    reason: disconnected synthetic Cine path
-  - path: scripts/training/route_B_round04/cine/B8/run_B8_registration.py
-    reason: synthetic registration pair path
-
+- path: scripts/training/route_B_round04/myops/B3/run_B3_representation.py
+  reason: synthetic historical path
+- path: scripts/training/route_B_round04/myops/B4/run_B4_proposal.py
+  reason: synthetic historical path
+- path: scripts/training/route_B_round04/myops/B5/run_B5_refiner.py
+  reason: hard-coded proxy historical path
+- path: scripts/training/route_B_round04/myops/B6/run_B6_joint.py
+  reason: fixed proxy historical path
+- path: scripts/training/route_B_round04/cine/B7/run_B7_cinema_control.py
+  reason: disconnected synthetic Cine path
+- path: scripts/training/route_B_round04/cine/B8/run_B8_registration.py
+  reason: synthetic registration pair path
 publication_boundary:
   validation_upload_authorized: false
   hosted_metric_claim_authorized: false
   fold_expansion_authorized: false
   route_promotion_authorized: false
   final_scientific_decision_authorized: false
+batch6_evidence:
+  result_root: results/20260721_srr_batch6_final_objective_alignment
+  controller_verification: VERIFIED_COMPLETE
+  fixed_overfit_job_id: '59743323'
+  fixed_overfit_status: PASS
+  formal300_job_id: '59744053'
+  formal300_status: COMPLETED
+  formal900_status: SKIPPED_STEP300_GATE_FAILED
+  final_intervention_job_id: '59744941'
+  selected_checkpoint_sha256: 729c81e49bf846339ed2f39ef0f2656319befd2b9cfe73268d7cf501e6b40fbd
+  mean_scar_edema_positive_dice_delta: 0.001699358420302757
+  edema_positive_dice_delta: 0.0027247486728372468
+  scar_positive_dice_delta: 0.0006739681677682672
+  scientific_signal_class: BELOW_USABLE

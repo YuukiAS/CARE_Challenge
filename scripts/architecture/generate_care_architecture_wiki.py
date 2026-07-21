@@ -24,6 +24,25 @@ def run(cmd: list[str], cwd: Path) -> subprocess.CompletedProcess[str]:
 
 
 def parse_architecture(text: str) -> tuple[list[dict[str, str]], list[dict[str, str]], dict[str, str]]:
+    """Parse architecture.yaml.
+
+    Prefer real YAML parsing because repo maintenance may use standard yaml.safe_dump,
+    whose list indentation differs from the original hand-written file.
+    """
+    try:
+        import yaml  # type: ignore
+
+        loaded = yaml.safe_load(text)
+    except Exception:
+        loaded = None
+    if isinstance(loaded, dict):
+        raw_nodes = loaded.get("nodes", [])
+        raw_edges = loaded.get("edges", [])
+        nodes = [{str(k): str(v) for k, v in item.items()} for item in raw_nodes if isinstance(item, dict)] if isinstance(raw_nodes, list) else []
+        edges = [{str(k): str(v) for k, v in item.items()} for item in raw_edges if isinstance(item, dict)] if isinstance(raw_edges, list) else []
+        meta = {str(k): str(v) for k, v in loaded.items() if k not in {"nodes", "edges"}}
+        return nodes, edges, meta
+
     nodes: list[dict[str, str]] = []
     edges: list[dict[str, str]] = []
     meta: dict[str, str] = {}
@@ -33,16 +52,6 @@ def parse_architecture(text: str) -> tuple[list[dict[str, str]], list[dict[str, 
         line = raw.rstrip()
         if not line.strip() or line.lstrip().startswith("#"):
             continue
-        top = line.split(":", 1)
-        if not line.startswith(" ") and len(top) == 2:
-            key = top[0].strip()
-            value = top[1].strip()
-            if key in {"nodes", "edges"}:
-                section = key
-                current = None
-            else:
-                meta[key] = value.strip("\"'")
-            continue
         item = line.strip()
         if item.startswith("- "):
             current = {}
@@ -51,11 +60,19 @@ def parse_architecture(text: str) -> tuple[list[dict[str, str]], list[dict[str, 
             elif section == "edges":
                 edges.append(current)
             item = item[2:]
+        elif not line.startswith(" ") and ":" in line:
+            key, value = line.split(":", 1)
+            key = key.strip()
+            if key in {"nodes", "edges"}:
+                section = key
+                current = None
+            else:
+                meta[key] = value.strip().strip("\"'")
+            continue
         if current is not None and ":" in item:
             key, value = item.split(":", 1)
             current[key.strip()] = value.strip().strip("\"'")
     return nodes, edges, meta
-
 
 def read_components(path: Path) -> dict[str, dict[str, str]]:
     if not path.is_file():

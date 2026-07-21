@@ -5,7 +5,7 @@
 ## 当前状态
 
 ```text
-state_id: srr_mainline_batch6_final_objective_alignment_ready_20260721
+state_id: srr_mainline_batch6_formal300_gate_fail_stop_20260721
 round_id: post_round04_main_only
 state_updated_date: 2026-07-21
 active_development_branch: main
@@ -19,15 +19,15 @@ batch4_scientific_status: BATCH4_TRAINED_NEGATIVE_OR_REPAIR_REQUIRED
 batch4_candidate_signal_gate: FAIL
 batch5_operational_status: CONTROLLER_VERIFIED_COMPLETE
 batch5_planner_audit_status: RUNTIME_COMPLETE_MECHANISM_PACKET_NEEDS_REPAIR
-batch6_status: READY_FOR_CONTROLLER
-next_required_action: RUN_BATCH6_FINAL_OBJECTIVE_ALIGNMENT
+batch6_status: CONTROLLER_VERIFIED_COMPLETE_STOP_AT_300_GATE_FAIL
+next_required_action: RETURN_TO_PLANNER
 planning_review_required: false
 review_required: false
 controller_is_coordinator: true
-batch6_training_authorized: true
+batch6_training_authorized: false
 batch6_fixed_overfit_required: true
-batch6_formal_300_step_authorized: true
-batch6_conditional_900_step_authorized: true_only_after_step300_gate
+batch6_formal_300_step_authorized: false
+batch6_conditional_900_step_authorized: false_step300_gate_failed
 validation_upload_authorized: false
 hosted_metric_claim_authorized: false
 fold_expansion_authorized: false
@@ -261,6 +261,25 @@ strong: scar and edema Dice delta each >= +0.030
 ```
 
 即使 Batch 6 达到 candidate，fold expansion 仍需要 Planner/用户单独授权。
+
+## Batch 6 当前终态
+
+```text
+batch6_controller_verification_decision: VERIFIED_COMPLETE
+fixed_overfit_status: PASS
+fixed_overfit_job_id: 59743323
+formal_300_status: COMPLETED
+formal_300_job_id: 59744053
+formal_900_status: SKIPPED_STEP300_GATE_FAILED
+final_interventions_job_id: 59744941
+selected_checkpoint_step: 300
+selected_checkpoint_sha256: 729c81e49bf846339ed2f39ef0f2656319befd2b9cfe73268d7cf501e6b40fbd
+mean_scar_edema_positive_dice_delta: 0.001699358420302757
+continuation_gate_required_mean_delta: 0.003
+scientific_signal_class: BELOW_USABLE
+```
+
+解释：Batch6 修通了 fixed-overfit 所需的方向性纠错 loss 和 gate 梯度，但 300-step formal calibration 的平均正例 Dice 增量没有达到继续到 900 的门槛。因此当前必须停在 300，返回 Planner；不允许自动启动 900、Batch7、fold expansion、Cine、upload 或 hosted claim。
 
 ## Batch 6 授权边界
 

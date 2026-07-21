@@ -159,6 +159,7 @@ def run(config: Path, result_root: Path, device_arg: str) -> dict[str, Any]:
     model = SRRProposeRefineMyoPS(**model_kwargs_from_args(args)).to(device)
     trainable_names = set_trainable(model)
     overfit_lr = float(cfg["fixed_batch_overfit"].get("learning_rate", args.lr))
+    overfit_loss_multipliers = cfg["fixed_batch_overfit"].get("overfit_loss_multipliers", {})
     optimizer = torch.optim.AdamW((p for p in model.parameters() if p.requires_grad), lr=overfit_lr, weight_decay=args.weight_decay)
     source_ckpt = selected_checkpoint(cfg)
     payload = load_srr_checkpoint(
@@ -178,6 +179,43 @@ def run(config: Path, result_root: Path, device_arg: str) -> dict[str, Any]:
     initial_logits: torch.Tensor | None = None
     gate_grad_l2 = 0.0
     all_finite = True
+    def collect_values(metrics: dict[str, torch.Tensor], combined_final: torch.Tensor) -> dict[str, float]:
+        return {
+            "combined_final_pathology_loss": float(combined_final.detach().cpu()),
+            "scar_final_pathology_loss": float(metrics["loss_final_scar_pathology"].detach().cpu()),
+            "scar_final_correction_directionality_loss": float(metrics["loss_final_scar_correction_directionality"].detach().cpu()),
+            "scar_final_anchor_error_pathology_loss": float(metrics["loss_final_scar_anchor_error_pathology"].detach().cpu()),
+            "edema_final_pathology_loss": float(metrics["loss_final_edema_t2_present_pathology"].detach().cpu()),
+            "edema_final_anchor_error_pathology_loss": float(metrics["loss_final_edema_anchor_error_pathology"].detach().cpu()),
+            "gate_repair_preserve_loss": float(metrics["loss_production_gate_repair_preserve"].detach().cpu()),
+            "repair_mask_voxels": float(metrics["repair_mask_voxels"].detach().cpu()),
+            "preserve_mask_voxels": float(metrics["preserve_mask_voxels"].detach().cpu()),
+            "scar_directionality_fn_voxels": float(metrics["scar_directionality_fn_voxels"].detach().cpu()),
+            "scar_directionality_fp_voxels": float(metrics["scar_directionality_fp_voxels"].detach().cpu()),
+            "scar_directionality_preserve_voxels": float(metrics["scar_directionality_preserve_voxels"].detach().cpu()),
+            "scar_margin_delta_on_fn": float(metrics["scar_margin_delta_on_fn"].detach().cpu()),
+            "scar_margin_delta_on_fp": float(metrics["scar_margin_delta_on_fp"].detach().cpu()),
+            "scar_margin_abs_delta_on_preserve": float(metrics["scar_margin_abs_delta_on_preserve"].detach().cpu()),
+            "scar_anchor_error_voxels": float(metrics["scar_anchor_error_voxels"].detach().cpu()),
+            "scar_final_prob_on_anchor_fn": float(metrics["scar_final_prob_on_anchor_fn"].detach().cpu()),
+            "scar_final_prob_on_anchor_fp": float(metrics["scar_final_prob_on_anchor_fp"].detach().cpu()),
+            "scar_final_margin_on_anchor_fn": float(metrics["scar_final_margin_on_anchor_fn"].detach().cpu()),
+            "scar_final_margin_on_anchor_fp": float(metrics["scar_final_margin_on_anchor_fp"].detach().cpu()),
+            "scar_bounded_correction_on_anchor_fn": float(metrics["scar_bounded_correction_on_anchor_fn"].detach().cpu()),
+            "scar_bounded_correction_on_anchor_fp": float(metrics["scar_bounded_correction_on_anchor_fp"].detach().cpu()),
+            "scar_bounded_correction_on_preserve": float(metrics["scar_bounded_correction_on_preserve"].detach().cpu()),
+            "scar_anchor_error_abs_margin_shortfall": float(metrics["scar_anchor_error_abs_margin_shortfall"].detach().cpu()),
+            "edema_anchor_error_voxels": float(metrics["edema_anchor_error_voxels"].detach().cpu()),
+            "edema_final_prob_on_anchor_fn": float(metrics["edema_final_prob_on_anchor_fn"].detach().cpu()),
+            "edema_final_prob_on_anchor_fp": float(metrics["edema_final_prob_on_anchor_fp"].detach().cpu()),
+            "edema_final_margin_on_anchor_fn": float(metrics["edema_final_margin_on_anchor_fn"].detach().cpu()),
+            "edema_final_margin_on_anchor_fp": float(metrics["edema_final_margin_on_anchor_fp"].detach().cpu()),
+            "edema_bounded_correction_on_anchor_fn": float(metrics["edema_bounded_correction_on_anchor_fn"].detach().cpu()),
+            "edema_bounded_correction_on_anchor_fp": float(metrics["edema_bounded_correction_on_anchor_fp"].detach().cpu()),
+            "edema_bounded_correction_on_preserve": float(metrics["edema_bounded_correction_on_preserve"].detach().cpu()),
+            "edema_anchor_error_abs_margin_shortfall": float(metrics["edema_anchor_error_abs_margin_shortfall"].detach().cpu()),
+        }
+
     for step in range(0, int(cfg["fixed_batch_overfit"]["optimizer_steps"]) + 1):
         optimizer.zero_grad(set_to_none=True)
         outputs = model(
@@ -192,17 +230,49 @@ def run(config: Path, result_root: Path, device_arg: str) -> dict[str, Any]:
         )
         _loss, metrics = propref_loss(outputs, y, av, "soft_roi_refinement", args, detach_m6_metrics=False)
         combined_final = metrics["loss_final_scar_pathology"] + metrics["loss_final_edema_t2_present_pathology"]
+        scar_final_weight = float(overfit_loss_multipliers.get("loss_final_scar_pathology", 1.0))
+        edema_final_weight = float(overfit_loss_multipliers.get("loss_final_edema_t2_present_pathology", 1.0))
+        scar_anchor_error_weight = float(
+            overfit_loss_multipliers.get(
+                "loss_final_scar_anchor_error_pathology",
+                cfg["canonical_loss_weights"]["loss_final_scar_anchor_error_pathology"],
+            )
+        )
+        edema_anchor_error_weight = float(
+            overfit_loss_multipliers.get(
+                "loss_final_edema_anchor_error_pathology",
+                cfg["canonical_loss_weights"]["loss_final_edema_anchor_error_pathology"],
+            )
+        )
+        gate_repair_weight = float(
+            overfit_loss_multipliers.get(
+                "loss_production_gate_repair_preserve",
+                cfg["canonical_loss_weights"]["loss_production_gate_repair_preserve"],
+            )
+        )
         train_loss = (
-            combined_final
-            + float(cfg["canonical_loss_weights"]["loss_production_gate_repair_preserve"]) * metrics["loss_production_gate_repair_preserve"]
+            scar_final_weight * metrics["loss_final_scar_pathology"]
+            + edema_final_weight * metrics["loss_final_edema_t2_present_pathology"]
+            + float(cfg["canonical_loss_weights"]["loss_final_scar_correction_directionality"])
+            * metrics["loss_final_scar_correction_directionality"]
+            + scar_anchor_error_weight * metrics["loss_final_scar_anchor_error_pathology"]
+            + edema_anchor_error_weight * metrics["loss_final_edema_anchor_error_pathology"]
+            + gate_repair_weight * metrics["loss_production_gate_repair_preserve"]
         )
         if step == 0:
             initial_logits = outputs["logits"].detach().clone()
+            first_all_values = collect_values(metrics, combined_final)
             first = {
-                "combined_final_pathology_loss": float(combined_final.detach().cpu()),
-                "scar_final_pathology_loss": float(metrics["loss_final_scar_pathology"].detach().cpu()),
-                "edema_final_pathology_loss": float(metrics["loss_final_edema_t2_present_pathology"].detach().cpu()),
-                "gate_repair_preserve_loss": float(metrics["loss_production_gate_repair_preserve"].detach().cpu()),
+                key: first_all_values[key]
+                for key in (
+                    "combined_final_pathology_loss",
+                    "scar_final_pathology_loss",
+                    "scar_final_correction_directionality_loss",
+                    "scar_final_anchor_error_pathology_loss",
+                    "edema_final_pathology_loss",
+                    "edema_final_anchor_error_pathology_loss",
+                    "gate_repair_preserve_loss",
+                )
             }
         else:
             train_loss.backward()
@@ -213,14 +283,7 @@ def run(config: Path, result_root: Path, device_arg: str) -> dict[str, Any]:
             gate_grad_l2 = max(gate_grad_l2, math.sqrt(gate_norm))
             torch.nn.utils.clip_grad_norm_((p for p in model.parameters() if p.requires_grad), float(args.grad_clip))
             optimizer.step()
-        values = {
-            "combined_final_pathology_loss": float(combined_final.detach().cpu()),
-            "scar_final_pathology_loss": float(metrics["loss_final_scar_pathology"].detach().cpu()),
-            "edema_final_pathology_loss": float(metrics["loss_final_edema_t2_present_pathology"].detach().cpu()),
-            "gate_repair_preserve_loss": float(metrics["loss_production_gate_repair_preserve"].detach().cpu()),
-            "repair_mask_voxels": float(metrics["repair_mask_voxels"].detach().cpu()),
-            "preserve_mask_voxels": float(metrics["preserve_mask_voxels"].detach().cpu()),
-        }
+        values = collect_values(metrics, combined_final)
         all_finite = all_finite and all(math.isfinite(v) for v in values.values())
         if step in {0, 1, 10, 20, 40, 60}:
             rows.append({"step": step, **values})
@@ -235,6 +298,12 @@ def run(config: Path, result_root: Path, device_arg: str) -> dict[str, Any]:
         memory_query_policy="validation_inference_all_train_shards",
         case_ids=case_ids,
     )
+    _final_loss, final_metrics = propref_loss(final_outputs, y, av, "soft_roi_refinement", args, detach_m6_metrics=False)
+    final_combined = final_metrics["loss_final_scar_pathology"] + final_metrics["loss_final_edema_t2_present_pathology"]
+    last = collect_values(final_metrics, final_combined)
+    all_finite = all_finite and all(math.isfinite(v) for v in last.values())
+    rows = [row for row in rows if int(row.get("step", -1)) != int(cfg["fixed_batch_overfit"]["optimizer_steps"])]
+    rows.append({"step": int(cfg["fixed_batch_overfit"]["optimizer_steps"]), **last})
     final_logits_delta = float((final_outputs["logits"].detach() - initial_logits).abs().max().cpu()) if initial_logits is not None else 0.0
     no_t2_edema_exact_zero = bool(float(final_outputs["bounded_edema_correction"][1].detach().abs().max().cpu()) == 0.0)
     ckpt_path = result_root / "runtime/fixed_batch_overfit/checkpoint_step_60.pt"
@@ -270,6 +339,37 @@ def run(config: Path, result_root: Path, device_arg: str) -> dict[str, Any]:
         "scar_final_pathology_loss_relative_decrease": rel_drop(first["scar_final_pathology_loss"], last["scar_final_pathology_loss"]),
         "edema_final_pathology_loss_relative_decrease": rel_drop(first["edema_final_pathology_loss"], last["edema_final_pathology_loss"]),
         "gate_loss_relative_decrease": rel_drop(first["gate_repair_preserve_loss"], last["gate_repair_preserve_loss"]),
+        "scar_directionality_loss_relative_decrease": rel_drop(
+            first["scar_final_correction_directionality_loss"],
+            last["scar_final_correction_directionality_loss"],
+        ),
+        "scar_anchor_error_pathology_loss_relative_decrease": rel_drop(
+            first["scar_final_anchor_error_pathology_loss"],
+            last["scar_final_anchor_error_pathology_loss"],
+        ),
+        "edema_anchor_error_pathology_loss_relative_decrease": rel_drop(
+            first["edema_final_anchor_error_pathology_loss"],
+            last["edema_final_anchor_error_pathology_loss"],
+        ),
+        "scar_margin_delta_on_fn_final": last["scar_margin_delta_on_fn"],
+        "scar_margin_delta_on_fp_final": last["scar_margin_delta_on_fp"],
+        "scar_margin_abs_delta_on_preserve_final": last["scar_margin_abs_delta_on_preserve"],
+        "scar_final_prob_on_anchor_fn_final": last["scar_final_prob_on_anchor_fn"],
+        "scar_final_prob_on_anchor_fp_final": last["scar_final_prob_on_anchor_fp"],
+        "scar_final_margin_on_anchor_fn_final": last["scar_final_margin_on_anchor_fn"],
+        "scar_final_margin_on_anchor_fp_final": last["scar_final_margin_on_anchor_fp"],
+        "scar_bounded_correction_on_anchor_fn_final": last["scar_bounded_correction_on_anchor_fn"],
+        "scar_bounded_correction_on_anchor_fp_final": last["scar_bounded_correction_on_anchor_fp"],
+        "scar_bounded_correction_on_preserve_final": last["scar_bounded_correction_on_preserve"],
+        "scar_anchor_error_abs_margin_shortfall_final": last["scar_anchor_error_abs_margin_shortfall"],
+        "edema_final_prob_on_anchor_fn_final": last["edema_final_prob_on_anchor_fn"],
+        "edema_final_prob_on_anchor_fp_final": last["edema_final_prob_on_anchor_fp"],
+        "edema_final_margin_on_anchor_fn_final": last["edema_final_margin_on_anchor_fn"],
+        "edema_final_margin_on_anchor_fp_final": last["edema_final_margin_on_anchor_fp"],
+        "edema_bounded_correction_on_anchor_fn_final": last["edema_bounded_correction_on_anchor_fn"],
+        "edema_bounded_correction_on_anchor_fp_final": last["edema_bounded_correction_on_anchor_fp"],
+        "edema_bounded_correction_on_preserve_final": last["edema_bounded_correction_on_preserve"],
+        "edema_anchor_error_abs_margin_shortfall_final": last["edema_anchor_error_abs_margin_shortfall"],
         "production_gate_repair_gradient_l2_max": gate_grad_l2,
         "final_logits_max_abs_change_from_step0": final_logits_delta,
         "no_t2_edema_exact_zero": no_t2_edema_exact_zero,
@@ -292,6 +392,7 @@ def run(config: Path, result_root: Path, device_arg: str) -> dict[str, Any]:
         "status": "PASS" if passed else "FAIL",
         "optimizer_steps": 60,
         "learning_rate": overfit_lr,
+        "overfit_loss_multipliers": overfit_loss_multipliers,
         "formal_training_credit": 0,
         "case_ids": case_ids,
         "source_checkpoint_path": str(source_ckpt.relative_to(REPO_ROOT)),

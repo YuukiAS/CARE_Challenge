@@ -1547,14 +1547,16 @@ class SRRProposeRefineMyoPS(nn.Module):
         if bool(anchor_identity_control or force_closed_gate or production_intervention_mode == "gate_closed"):
             scar_bounded_correction = torch.zeros_like(scar_bounded_correction)
             edema_bounded_correction = torch.zeros_like(edema_bounded_correction)
-        production_final_logits = torch.cat(
-            [
-                anchor_logits[:, :4],
-                anchor_logits[:, 4:5] + edema_bounded_correction,
-                anchor_logits[:, 5:6] + scar_bounded_correction,
-            ],
-            dim=1,
-        )
+        production_logit_delta = torch.zeros_like(anchor_logits)
+        production_logit_delta[:, 5:6] = production_logit_delta[:, 5:6] + scar_bounded_correction
+        production_logit_delta[:, 4:5] = production_logit_delta[:, 4:5] + edema_bounded_correction
+        anchor_top_class = anchor_probs.argmax(dim=1, keepdim=True)
+        scar_competitor_down = scar_bounded_correction.clamp_min(0.0) * (anchor_top_class != 5).to(dtype=anchor_logits.dtype)
+        edema_competitor_down = edema_bounded_correction.clamp_min(0.0) * (anchor_top_class != 4).to(dtype=anchor_logits.dtype)
+        production_logit_delta.scatter_add_(1, anchor_top_class, -scar_competitor_down)
+        production_logit_delta.scatter_add_(1, anchor_top_class, -edema_competitor_down)
+        production_logit_delta = production_logit_delta.clamp(-4.0, 4.0)
+        production_final_logits = anchor_logits + production_logit_delta
         use_arbitration = self.variant in M6_VARIANT_CONFIGS and not self.m9_srr_main_output
         if self.final_output_mode == "anchor_bounded_srr_correction":
             final_logits = production_final_logits
@@ -1592,6 +1594,7 @@ class SRRProposeRefineMyoPS(nn.Module):
             "raw_anchor_used_for_final_baseline": torch.tensor(anchor_features is not None, device=final_logits.device),
             "safety_context_used_for_srr_evidence": torch.tensor(context_anchor_features is not anchor_features, device=final_logits.device),
             "production_final_logits": production_final_logits,
+            "production_logit_delta": production_logit_delta,
             "production_intervention_mode": production_intervention_mode,
             "production_correction_gate_input": gate_input,
             "production_correction_gate_logits": production_gate_logits,

@@ -230,7 +230,10 @@ EXPANDED_SRR_LOSS_COMPONENT_KEYS = (
     "loss_edema_refiner_t2_present_roi",
     "loss_edema_refiner_large_roi_t2_present",
     "loss_final_scar_pathology",
+    "loss_final_scar_correction_directionality",
+    "loss_final_scar_anchor_error_pathology",
     "loss_final_edema_t2_present_pathology",
+    "loss_final_edema_anchor_error_pathology",
     "loss_production_gate_repair_preserve",
     "loss_anchor_preservation_outside_roi",
     "loss_correction_opportunity",
@@ -265,11 +268,13 @@ def _load_loss_weight_json(raw: str) -> dict[str, float]:
     value = str(raw or "").strip()
     if not value:
         return {}
-    candidate = Path(value)
-    if candidate.is_file():
-        data = json.loads(candidate.read_text(encoding="utf-8"))
-    else:
+    if value.startswith("{"):
         data = json.loads(value)
+    else:
+        candidate = Path(value)
+        if not candidate.is_absolute():
+            candidate = REPO_ROOT / candidate
+        data = json.loads(candidate.read_text(encoding="utf-8") if candidate.is_file() else value)
     if not isinstance(data, dict):
         raise ValueError("--loss-weight-json must be a JSON object or a path to one")
     return {str(key): float(val) for key, val in data.items()}
@@ -1800,6 +1805,12 @@ def print_contract(args: argparse.Namespace) -> None:
         "prototype_bank_cases": args.prototype_bank_cases,
         "prototype_memory_asset": str(getattr(args, "prototype_memory_asset", "")),
         "prototype_memory_manifest": str(getattr(args, "prototype_memory_manifest", "")),
+        "warm_start_checkpoint": str(getattr(args, "warm_start_checkpoint", "")),
+        "warm_start_checkpoint_sha256": str(getattr(args, "warm_start_checkpoint_sha256", "")),
+        "batch6_trainable_groups": parse_case_id_list(str(getattr(args, "batch6_trainable_groups", "") or "")),
+        "batch6_unfreeze_at_step": int(getattr(args, "batch6_unfreeze_at_step", 0) or 0),
+        "batch6_additional_trainable_groups": parse_case_id_list(str(getattr(args, "batch6_additional_trainable_groups", "") or "")),
+        "external_fixed_overfit_receipt": str(getattr(args, "external_fixed_overfit_receipt", "")),
         "source_commit": git_head(),
     }
     print(json.dumps(contract, indent=2, sort_keys=True))
@@ -2050,6 +2061,115 @@ def prototype_sanity_row(
     return rows
 
 
+def _repo_path(raw: str | None) -> Path | None:
+    text = str(raw or "").strip()
+    if not text:
+        return None
+    path = Path(text)
+    return path if path.is_absolute() else REPO_ROOT / path
+
+
+def _batch6_group_prefixes(groups: Iterable[str]) -> list[str]:
+    prefixes: list[str] = []
+    mapping = {
+        "production_correction_gate": ("production_correction_gate.",),
+        "scar_refine": ("scar_refine.",),
+        "edema_refine": ("edema_refine.",),
+        "scar_dictionary": ("scar_dictionary.",),
+        "edema_dictionary": ("edema_dictionary.",),
+        "evidence_heads": ("evidence_heads.",),
+    }
+    for group in groups:
+        key = str(group).strip()
+        if not key:
+            continue
+        if key not in mapping:
+            raise ValueError(f"unknown Batch6 trainable group: {key}")
+        prefixes.extend(mapping[key])
+    return prefixes
+
+
+def apply_batch6_trainable_groups(model: SRRProposeRefineMyoPS, groups_text: str) -> dict[str, object]:
+    groups = parse_case_id_list(groups_text)
+    if not groups:
+        return {
+            "enabled": False,
+            "trainable_groups": [],
+            "trainable_parameter_count": sum(1 for _name, param in model.named_parameters() if param.requires_grad),
+            "frozen_parameter_count": 0,
+        }
+    prefixes = tuple(_batch6_group_prefixes(groups))
+    trainable_names: list[str] = []
+    frozen_names: list[str] = []
+    for name, param in model.named_parameters():
+        keep = any(name.startswith(prefix) for prefix in prefixes)
+        param.requires_grad_(keep)
+        if keep:
+            trainable_names.append(name)
+        else:
+            frozen_names.append(name)
+    if not trainable_names:
+        raise ValueError(f"Batch6 trainable groups selected no parameters: {groups}")
+    return {
+        "enabled": True,
+        "trainable_groups": groups,
+        "trainable_parameter_count": len(trainable_names),
+        "frozen_parameter_count": len(frozen_names),
+        "trainable_parameter_names": trainable_names,
+        "frozen_parameter_names_sample": frozen_names[:32],
+    }
+
+
+def apply_batch6_unfreeze_if_needed(
+    model: SRRProposeRefineMyoPS,
+    *,
+    step: int,
+    already_applied: bool,
+    unfreeze_step: int,
+    additional_groups_text: str,
+) -> tuple[bool, dict[str, object] | None]:
+    if already_applied or unfreeze_step <= 0 or step < unfreeze_step:
+        return already_applied, None
+    additional = parse_case_id_list(additional_groups_text)
+    if not additional:
+        return True, {"step": step, "status": "NO_ADDITIONAL_GROUPS"}
+    prefixes = tuple(_batch6_group_prefixes(additional))
+    changed: list[str] = []
+    for name, param in model.named_parameters():
+        if any(name.startswith(prefix) for prefix in prefixes):
+            if not param.requires_grad:
+                changed.append(name)
+            param.requires_grad_(True)
+    return True, {
+        "step": step,
+        "status": "APPLIED",
+        "additional_trainable_groups": additional,
+        "newly_trainable_parameter_count": len(changed),
+        "newly_trainable_parameter_names": changed,
+    }
+
+
+def trainable_parameters_for_optimizer(model: SRRProposeRefineMyoPS) -> list[torch.nn.Parameter]:
+    params = [param for param in model.parameters() if param.requires_grad]
+    if not params:
+        raise ValueError("no trainable parameters available for optimizer")
+    return params
+
+
+def _load_external_fixed_overfit_receipt(args: argparse.Namespace) -> dict[str, object] | None:
+    path = _repo_path(getattr(args, "external_fixed_overfit_receipt", ""))
+    if path is None:
+        return None
+    payload = json.loads(path.read_text(encoding="utf-8"))
+    if payload.get("status") != "PASS":
+        raise ValueError(f"external fixed-overfit receipt is not PASS: {path}")
+    if int(payload.get("optimizer_steps", -1)) != 60:
+        raise ValueError(f"external fixed-overfit receipt has wrong optimizer_steps: {path}")
+    if int(payload.get("formal_training_credit", -1)) != 0:
+        raise ValueError(f"external fixed-overfit receipt must have zero formal training credit: {path}")
+    return {"receipt_path": str(path), **payload}
+
+
 def run_one_batch_overfit(
     args: argparse.Namespace,
     train_cases: list[AnchoredCaseData],
@@ -2059,16 +2179,18 @@ def run_one_batch_overfit(
 ) -> tuple[bool, dict[str, object]]:
     output_variant = output_variant_name(args)
     if args.skip_overfit_sanity:
+        external = _load_external_fixed_overfit_receipt(args)
         summary = {
             "variant": output_variant,
             "model_variant": args.variant,
             "source_model_variant": canonical_model_variant(args.variant),
-            "status": "SKIPPED",
-            "reason": "skip_overfit_sanity was set",
+            "status": "EXTERNAL_BATCH6_FIXED_OVERFIT_PASS" if external else "SKIPPED",
+            "reason": "external fixed-overfit receipt already passed" if external else "skip_overfit_sanity was set",
             "required_by_task": True,
+            "external_fixed_overfit_receipt": external or {},
         }
         (variant_dir / "one_batch_overfit.json").write_text(json.dumps(summary, indent=2, sort_keys=True), encoding="utf-8")
-        return False, summary
+        return bool(external), summary
     rng = np.random.default_rng(args.seed + 991)
     case_pool = [case for case in train_cases if np.any(np.isin(case.label_arr, [4, 5]))] or train_cases
     case = case_pool[int(rng.integers(0, len(case_pool)))]
@@ -2330,17 +2452,51 @@ def train_variant(args: argparse.Namespace) -> None:
 
     reset_rng_seeds(args.seed)
     model = SRRProposeRefineMyoPS(**model_kwargs_from_args(args)).to(device)
+    trainable_contract = apply_batch6_trainable_groups(model, getattr(args, "batch6_trainable_groups", ""))
     model_param_count = parameter_count(model)
-    prototype_bank_summary = fit_and_load_runtime_prototype_bank(model, train_cases, patch_shape, device, args, variant_dir)
-    frozen_prototype_manifest = write_frozen_prototype_asset(
-        model=model,
-        summary=prototype_bank_summary,
-        args=args,
-        train_case_ids=full_train_ids,
-        val_case_ids=full_val_ids,
-    )
-    optimizer = torch.optim.AdamW(model.parameters(), lr=args.lr, weight_decay=args.weight_decay)
+    optimizer = torch.optim.AdamW(trainable_parameters_for_optimizer(model), lr=args.lr, weight_decay=args.weight_decay)
+    warm_start_payload: dict[str, object] = {}
+    warm_start_path = _repo_path(getattr(args, "warm_start_checkpoint", ""))
+    if warm_start_path is not None:
+        expected_sha = str(getattr(args, "warm_start_checkpoint_sha256", "") or "").strip()
+        actual_sha = sha256_file(warm_start_path)
+        if expected_sha and actual_sha != expected_sha:
+            raise ValueError(f"warm-start checkpoint sha mismatch: {actual_sha} != {expected_sha}")
+        warm_start_payload = load_srr_checkpoint(
+            path=warm_start_path,
+            model=model,
+            optimizer=optimizer,
+            scheduler=None,
+            amp_scaler=None,
+            map_location=device,
+            restore_rng=False,
+            restore_optimizer=False,
+        )
+        prototype_bank_summary = dict(warm_start_payload.get("prototype_memory_provenance", {}))
+        prototype_bank_summary.setdefault("status", "RESTORED_FROM_WARM_START_CHECKPOINT")
+        prototype_bank_summary["warm_start_checkpoint_path"] = str(warm_start_path)
+        prototype_bank_summary["warm_start_checkpoint_sha256"] = actual_sha
+        prototype_bank_summary["prototype_memory_mutable"] = False
+        (variant_dir / "prototype_bank_summary.json").write_text(json.dumps(prototype_bank_summary, indent=2, sort_keys=True), encoding="utf-8")
+        frozen_prototype_manifest = {
+            "status": "RESTORED_FROM_WARM_START_CHECKPOINT",
+            "asset_path": str(warm_start_path),
+            "asset_sha256": actual_sha,
+            "prototype_memory_mutable": False,
+            "source_checkpoint_global_step": warm_start_payload.get("global_step"),
+        }
+    else:
+        prototype_bank_summary = fit_and_load_runtime_prototype_bank(model, train_cases, patch_shape, device, args, variant_dir)
+        frozen_prototype_manifest = write_frozen_prototype_asset(
+            model=model,
+            summary=prototype_bank_summary,
+            args=args,
+            train_case_ids=full_train_ids,
+            val_case_ids=full_val_ids,
+        )
     rng = np.random.default_rng(args.seed)
+    unfreeze_applied = False
+    unfreeze_events: list[dict[str, object]] = []
     best_val = float("inf")
     best_step = 0
     checkpoint_selection_mode = (
@@ -2388,6 +2544,19 @@ def train_variant(args: argparse.Namespace) -> None:
         if stage == "low_lr_calibration":
             for group in optimizer.param_groups:
                 group["lr"] = args.lr * 0.20
+        unfreeze_applied, unfreeze_event = apply_batch6_unfreeze_if_needed(
+            model,
+            step=step,
+            already_applied=unfreeze_applied,
+            unfreeze_step=int(getattr(args, "batch6_unfreeze_at_step", 0) or 0),
+            additional_groups_text=str(getattr(args, "batch6_additional_trainable_groups", "") or ""),
+        )
+        if unfreeze_event is not None:
+            unfreeze_events.append(unfreeze_event)
+            new_names = set(unfreeze_event.get("newly_trainable_parameter_names", [])) if isinstance(unfreeze_event, dict) else set()
+            new_params = [param for name, param in model.named_parameters() if name in new_names]
+            if new_params:
+                optimizer.add_param_group({"params": new_params, "lr": optimizer.param_groups[0]["lr"], "weight_decay": args.weight_decay})
         x_cpu, y_cpu, av_cpu, anchor_cpu, component_cpu, keys = batch_from_anchored_cases(
             train_cases,
             complete_cases,
@@ -2780,6 +2949,13 @@ def train_variant(args: argparse.Namespace) -> None:
         "prototype_bank_summary": prototype_bank_summary,
         "prototype_bank_summary_path": str(variant_dir / "prototype_bank_summary.json"),
         "frozen_prototype_memory_manifest": frozen_prototype_manifest,
+        "warm_start_checkpoint": str(warm_start_path) if warm_start_path is not None else "",
+        "warm_start_checkpoint_sha256": sha256_file(warm_start_path) if warm_start_path is not None else "",
+        "warm_start_checkpoint_global_step": warm_start_payload.get("global_step") if warm_start_payload else None,
+        "warm_start_optimizer_restored": False if warm_start_payload else None,
+        "production_gate_migration": warm_start_payload.get("production_gate_migration") if warm_start_payload else {"applied": False},
+        "batch6_trainable_contract": trainable_contract,
+        "batch6_unfreeze_events": unfreeze_events,
         "skip_export": bool(args.skip_export),
     }
     (variant_dir / "summary.json").write_text(json.dumps(summary, indent=2, sort_keys=True), encoding="utf-8")
@@ -2885,6 +3061,16 @@ def main() -> None:
     parser.add_argument("--prototype-memory-asset", default="", help="Optional frozen prototype/memory runtime asset path for production runs.")
     parser.add_argument("--prototype-memory-manifest", default="", help="Optional tracked frozen prototype/memory manifest path for production runs.")
     parser.add_argument("--skip-prototype-bank-fit", action="store_true")
+    parser.add_argument("--warm-start-checkpoint", default="", help="SRR production checkpoint used as model-state warm start for Batch6 fine-tuning.")
+    parser.add_argument("--warm-start-checkpoint-sha256", default="", help="Expected SHA256 for --warm-start-checkpoint.")
+    parser.add_argument(
+        "--batch6-trainable-groups",
+        default="",
+        help="Comma-separated Batch6 trainable groups: production_correction_gate,scar_refine,edema_refine,scar_dictionary,edema_dictionary,evidence_heads.",
+    )
+    parser.add_argument("--batch6-unfreeze-at-step", type=int, default=0, help="Step at which Batch6 additional groups become trainable.")
+    parser.add_argument("--batch6-additional-trainable-groups", default="", help="Comma-separated groups to unfreeze at --batch6-unfreeze-at-step.")
+    parser.add_argument("--external-fixed-overfit-receipt", default="", help="PASS fixed-overfit receipt that authorizes --skip-overfit-sanity for Batch6 formal runs.")
     parser.add_argument("--max-eval-cases", type=int, default=0)
     parser.add_argument("--eval-case-ids", default="", help="Comma/semicolon-separated fold validation case ids to export/evaluate.")
     parser.add_argument("--train-case-ids", default="", help="Comma/semicolon-separated fold training case ids for controlled pilot subsets.")

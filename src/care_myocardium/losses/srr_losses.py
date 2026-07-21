@@ -96,6 +96,293 @@ def final_pathology_loss_from_logits(
     return scar_final, edema_final
 
 
+def _masked_mean(values: torch.Tensor, mask: torch.Tensor) -> torch.Tensor:
+    mask_f = mask.to(device=values.device, dtype=values.dtype)
+    return (values * mask_f).sum() / mask_f.sum().clamp_min(1.0)
+
+
+def scar_final_correction_directionality_loss(
+    outputs: dict[str, torch.Tensor],
+    labels: torch.Tensor,
+    *,
+    preserve_confidence_threshold: float = 0.80,
+    target_margin_delta: float = 1.0,
+    preserve_weight: float = 0.05,
+) -> tuple[torch.Tensor, dict[str, torch.Tensor]]:
+    """Force final scar logits to correct anchor scar FN/FP directions while preserving confident correct anchor margins."""
+
+    final_logits = outputs.get("logits")
+    anchor_logits = outputs.get("nnunet_anchor_logits")
+    if not isinstance(final_logits, torch.Tensor) or not isinstance(anchor_logits, torch.Tensor):
+        ref = outputs["logits"] if isinstance(outputs.get("logits"), torch.Tensor) else labels.float()
+        zero = ref.sum() * 0.0
+        return zero, {
+            "scar_directionality_fn_voxels": zero.detach(),
+            "scar_directionality_fp_voxels": zero.detach(),
+            "scar_directionality_preserve_voxels": zero.detach(),
+            "scar_margin_delta_on_fn": zero.detach(),
+            "scar_margin_delta_on_fp": zero.detach(),
+            "scar_margin_abs_delta_on_preserve": zero.detach(),
+        }
+
+    valid = labels != IGNORE_LABEL
+    scar_target = labels == SCAR_CLASS
+    anchor_probs = torch.softmax(anchor_logits, dim=1)
+    anchor_conf, anchor_pred = anchor_probs.max(dim=1)
+    anchor_scar = anchor_pred == SCAR_CLASS
+    scar_fn = valid & scar_target & ~anchor_scar
+    scar_fp = valid & ~scar_target & anchor_scar
+    preserve = valid & (anchor_scar == scar_target) & (anchor_conf >= float(preserve_confidence_threshold))
+
+    final_margin = _one_vs_rest_margin(final_logits, SCAR_CLASS)
+    anchor_margin = _one_vs_rest_margin(anchor_logits, SCAR_CLASS).detach()
+    margin_delta = final_margin - anchor_margin
+    target_delta = final_margin.new_tensor(float(target_margin_delta))
+
+    terms: list[torch.Tensor] = []
+    if bool(scar_fn.any()):
+        terms.append(_masked_mean(torch.relu(target_delta - margin_delta), scar_fn))
+    if bool(scar_fp.any()):
+        terms.append(_masked_mean(torch.relu(target_delta + margin_delta), scar_fp))
+    if bool(preserve.any()) and preserve_weight > 0.0:
+        terms.append(float(preserve_weight) * _masked_mean(F.smooth_l1_loss(margin_delta, torch.zeros_like(margin_delta), reduction="none"), preserve))
+
+    zero = final_logits.sum() * 0.0
+    loss = torch.stack(terms).sum() if terms else zero
+
+    def diagnostic_mean(values: torch.Tensor, mask: torch.Tensor, *, absolute: bool = False) -> torch.Tensor:
+        if not bool(mask.any()):
+            return zero.detach()
+        tensor = values.abs() if absolute else values
+        return _masked_mean(tensor, mask).detach()
+
+    return loss, {
+        "scar_directionality_fn_voxels": scar_fn.to(device=final_logits.device, dtype=final_logits.dtype).sum().detach(),
+        "scar_directionality_fp_voxels": scar_fp.to(device=final_logits.device, dtype=final_logits.dtype).sum().detach(),
+        "scar_directionality_preserve_voxels": preserve.to(device=final_logits.device, dtype=final_logits.dtype).sum().detach(),
+        "scar_margin_delta_on_fn": diagnostic_mean(margin_delta, scar_fn),
+        "scar_margin_delta_on_fp": diagnostic_mean(margin_delta, scar_fp),
+        "scar_margin_abs_delta_on_preserve": diagnostic_mean(margin_delta, preserve, absolute=True),
+    }
+
+
+def scar_final_anchor_error_pathology_loss(
+    outputs: dict[str, torch.Tensor],
+    labels: torch.Tensor,
+    *,
+    target_margin_delta: float = 3.75,
+    fn_weight: float = 8.0,
+    fp_weight: float = 1.5,
+    preserve_correction_weight: float = 2.0,
+) -> tuple[torch.Tensor, dict[str, torch.Tensor]]:
+    """Direct deployed-logit scar supervision concentrated on anchor scar FN/FP voxels."""
+
+    final_logits = outputs.get("logits")
+    anchor_logits = outputs.get("nnunet_anchor_logits")
+    if not isinstance(final_logits, torch.Tensor) or not isinstance(anchor_logits, torch.Tensor):
+        ref = outputs["logits"] if isinstance(outputs.get("logits"), torch.Tensor) else labels.float()
+        zero = ref.sum() * 0.0
+        return zero, {
+            "scar_anchor_error_voxels": zero.detach(),
+            "scar_final_prob_on_anchor_fn": zero.detach(),
+            "scar_final_prob_on_anchor_fp": zero.detach(),
+            "scar_final_margin_on_anchor_fn": zero.detach(),
+            "scar_final_margin_on_anchor_fp": zero.detach(),
+            "scar_bounded_correction_on_anchor_fn": zero.detach(),
+            "scar_bounded_correction_on_anchor_fp": zero.detach(),
+            "scar_bounded_correction_on_preserve": zero.detach(),
+            "scar_anchor_error_abs_margin_shortfall": zero.detach(),
+        }
+
+    valid = labels != IGNORE_LABEL
+    scar_target_bool = labels == SCAR_CLASS
+    anchor_probs = torch.softmax(anchor_logits, dim=1)
+    anchor_conf, anchor_pred = anchor_probs.max(dim=1)
+    anchor_scar = anchor_pred == SCAR_CLASS
+    scar_fn = valid & scar_target_bool & ~anchor_scar
+    scar_fp = valid & ~scar_target_bool & anchor_scar
+    preserve = valid & (anchor_scar == scar_target_bool) & (anchor_conf >= 0.80)
+    anchor_error = scar_fn | scar_fp
+    zero = final_logits.sum() * 0.0
+    if not bool(anchor_error.any()):
+        return zero, {
+            "scar_anchor_error_voxels": zero.detach(),
+            "scar_final_prob_on_anchor_fn": zero.detach(),
+            "scar_final_prob_on_anchor_fp": zero.detach(),
+            "scar_final_margin_on_anchor_fn": zero.detach(),
+            "scar_final_margin_on_anchor_fp": zero.detach(),
+            "scar_bounded_correction_on_anchor_fn": zero.detach(),
+            "scar_bounded_correction_on_anchor_fp": zero.detach(),
+            "scar_bounded_correction_on_preserve": zero.detach(),
+            "scar_anchor_error_abs_margin_shortfall": zero.detach(),
+        }
+
+    scar_margin = _one_vs_rest_margin(final_logits, SCAR_CLASS)
+    scar_target = scar_target_bool.float()
+    bce = _masked_bce_with_logits(scar_margin, scar_target, anchor_error)
+    dice = _binary_dice_loss(torch.sigmoid(scar_margin), scar_target, anchor_error)
+    anchor_margin = _one_vs_rest_margin(anchor_logits, SCAR_CLASS).detach()
+    margin_delta = scar_margin - anchor_margin
+    target = scar_margin.new_tensor(float(target_margin_delta))
+    fn_shortfall = torch.relu(target - margin_delta)
+    fp_shortfall = torch.relu(target + margin_delta)
+    fn_margin_loss = _masked_mean(fn_shortfall.square(), scar_fn) if bool(scar_fn.any()) else zero
+    fp_margin_loss = _masked_mean(fp_shortfall.square(), scar_fp) if bool(scar_fp.any()) else zero
+    fn_logistic = _masked_mean(F.softplus(-scar_margin), scar_fn) if bool(scar_fn.any()) else zero
+    fp_logistic = _masked_mean(F.softplus(scar_margin), scar_fp) if bool(scar_fp.any()) else zero
+    margin_loss = float(fn_weight) * (fn_logistic + 0.25 * fn_margin_loss) + float(fp_weight) * (
+        fp_logistic + 0.25 * fp_margin_loss
+    )
+
+    bounded_correction = outputs.get("bounded_scar_correction")
+    correction_loss = zero
+    bounded = None
+    if isinstance(bounded_correction, torch.Tensor):
+        bounded = bounded_correction[:, 0]
+        max_correction = bounded.new_tensor(4.0)
+        if bool(scar_fn.any()):
+            fn_target = torch.full_like(bounded, float(max_correction))
+            fn_raw = F.smooth_l1_loss(bounded, fn_target, reduction="none")
+            correction_loss = correction_loss + float(fn_weight) * _masked_mean(fn_raw, scar_fn)
+        if bool(scar_fp.any()):
+            fp_target = torch.full_like(bounded, -float(max_correction))
+            fp_raw = F.smooth_l1_loss(bounded, fp_target, reduction="none")
+            correction_loss = correction_loss + float(fp_weight) * _masked_mean(fp_raw, scar_fp)
+        if bool(preserve.any()):
+            preserve_raw = F.smooth_l1_loss(bounded, torch.zeros_like(bounded), reduction="none")
+            correction_loss = correction_loss + float(preserve_correction_weight) * _masked_mean(preserve_raw, preserve)
+    loss = 0.25 * bce + 0.25 * dice + 0.50 * margin_loss + correction_loss
+
+    prob = torch.sigmoid(scar_margin)
+
+    def diagnostic_mean(values: torch.Tensor | None, mask: torch.Tensor) -> torch.Tensor:
+        if values is None or not bool(mask.any()):
+            return zero.detach()
+        return _masked_mean(values, mask).detach()
+
+    return loss, {
+        "scar_anchor_error_voxels": anchor_error.to(device=final_logits.device, dtype=final_logits.dtype).sum().detach(),
+        "scar_final_prob_on_anchor_fn": diagnostic_mean(prob, scar_fn),
+        "scar_final_prob_on_anchor_fp": diagnostic_mean(prob, scar_fp),
+        "scar_final_margin_on_anchor_fn": diagnostic_mean(scar_margin, scar_fn),
+        "scar_final_margin_on_anchor_fp": diagnostic_mean(scar_margin, scar_fp),
+        "scar_bounded_correction_on_anchor_fn": diagnostic_mean(bounded, scar_fn),
+        "scar_bounded_correction_on_anchor_fp": diagnostic_mean(bounded, scar_fp),
+        "scar_bounded_correction_on_preserve": diagnostic_mean(bounded, preserve),
+        "scar_anchor_error_abs_margin_shortfall": (margin_loss + correction_loss).detach(),
+    }
+
+
+def edema_final_anchor_error_pathology_loss(
+    outputs: dict[str, torch.Tensor],
+    labels: torch.Tensor,
+    availability: torch.Tensor,
+    *,
+    target_margin_delta: float = 3.75,
+    fn_weight: float = 8.0,
+    fp_weight: float = 1.5,
+    preserve_correction_weight: float = 2.0,
+) -> tuple[torch.Tensor, dict[str, torch.Tensor]]:
+    """Direct deployed-logit edema correction on T2-present anchor edema FN/FP voxels."""
+
+    final_logits = outputs.get("logits")
+    anchor_logits = outputs.get("nnunet_anchor_logits")
+    if not isinstance(final_logits, torch.Tensor) or not isinstance(anchor_logits, torch.Tensor):
+        ref = outputs["logits"] if isinstance(outputs.get("logits"), torch.Tensor) else labels.float()
+        zero = ref.sum() * 0.0
+        return zero, {
+            "edema_anchor_error_voxels": zero.detach(),
+            "edema_final_prob_on_anchor_fn": zero.detach(),
+            "edema_final_prob_on_anchor_fp": zero.detach(),
+            "edema_final_margin_on_anchor_fn": zero.detach(),
+            "edema_final_margin_on_anchor_fp": zero.detach(),
+            "edema_bounded_correction_on_anchor_fn": zero.detach(),
+            "edema_bounded_correction_on_anchor_fp": zero.detach(),
+            "edema_bounded_correction_on_preserve": zero.detach(),
+            "edema_anchor_error_abs_margin_shortfall": zero.detach(),
+        }
+
+    valid = labels != IGNORE_LABEL
+    t2_present = availability[:, 1].to(device=labels.device, dtype=torch.bool).view(-1, 1, 1, 1)
+    pathology_valid = valid & t2_present
+    edema_target_bool = labels == EDEMA_CLASS
+    anchor_probs = torch.softmax(anchor_logits, dim=1)
+    anchor_conf, anchor_pred = anchor_probs.max(dim=1)
+    anchor_edema = anchor_pred == EDEMA_CLASS
+    edema_fn = pathology_valid & edema_target_bool & ~anchor_edema
+    edema_fp = pathology_valid & ~edema_target_bool & anchor_edema
+    preserve = pathology_valid & (anchor_edema == edema_target_bool) & (anchor_conf >= 0.80)
+    anchor_error = edema_fn | edema_fp
+    zero = final_logits.sum() * 0.0
+    if not bool(anchor_error.any()):
+        return zero, {
+            "edema_anchor_error_voxels": zero.detach(),
+            "edema_final_prob_on_anchor_fn": zero.detach(),
+            "edema_final_prob_on_anchor_fp": zero.detach(),
+            "edema_final_margin_on_anchor_fn": zero.detach(),
+            "edema_final_margin_on_anchor_fp": zero.detach(),
+            "edema_bounded_correction_on_anchor_fn": zero.detach(),
+            "edema_bounded_correction_on_anchor_fp": zero.detach(),
+            "edema_bounded_correction_on_preserve": zero.detach(),
+            "edema_anchor_error_abs_margin_shortfall": zero.detach(),
+        }
+
+    edema_margin = _one_vs_rest_margin(final_logits, EDEMA_CLASS)
+    edema_target = edema_target_bool.float()
+    bce = _masked_bce_with_logits(edema_margin, edema_target, anchor_error)
+    dice = _binary_dice_loss(torch.sigmoid(edema_margin), edema_target, anchor_error)
+    anchor_margin = _one_vs_rest_margin(anchor_logits, EDEMA_CLASS).detach()
+    margin_delta = edema_margin - anchor_margin
+    target = edema_margin.new_tensor(float(target_margin_delta))
+    fn_shortfall = torch.relu(target - margin_delta)
+    fp_shortfall = torch.relu(target + margin_delta)
+    fn_margin_loss = _masked_mean(fn_shortfall.square(), edema_fn) if bool(edema_fn.any()) else zero
+    fp_margin_loss = _masked_mean(fp_shortfall.square(), edema_fp) if bool(edema_fp.any()) else zero
+    fn_logistic = _masked_mean(F.softplus(-edema_margin), edema_fn) if bool(edema_fn.any()) else zero
+    fp_logistic = _masked_mean(F.softplus(edema_margin), edema_fp) if bool(edema_fp.any()) else zero
+    margin_loss = float(fn_weight) * (fn_logistic + 0.25 * fn_margin_loss) + float(fp_weight) * (
+        fp_logistic + 0.25 * fp_margin_loss
+    )
+
+    bounded_correction = outputs.get("bounded_edema_correction")
+    correction_loss = zero
+    bounded = None
+    if isinstance(bounded_correction, torch.Tensor):
+        bounded = bounded_correction[:, 0]
+        max_correction = bounded.new_tensor(4.0)
+        if bool(edema_fn.any()):
+            fn_target = torch.full_like(bounded, float(max_correction))
+            fn_raw = F.smooth_l1_loss(bounded, fn_target, reduction="none")
+            correction_loss = correction_loss + float(fn_weight) * _masked_mean(fn_raw, edema_fn)
+        if bool(edema_fp.any()):
+            fp_target = torch.full_like(bounded, -float(max_correction))
+            fp_raw = F.smooth_l1_loss(bounded, fp_target, reduction="none")
+            correction_loss = correction_loss + float(fp_weight) * _masked_mean(fp_raw, edema_fp)
+        if bool(preserve.any()):
+            preserve_raw = F.smooth_l1_loss(bounded, torch.zeros_like(bounded), reduction="none")
+            correction_loss = correction_loss + float(preserve_correction_weight) * _masked_mean(preserve_raw, preserve)
+    loss = 0.25 * bce + 0.25 * dice + 0.50 * margin_loss + correction_loss
+
+    prob = torch.sigmoid(edema_margin)
+
+    def diagnostic_mean(values: torch.Tensor | None, mask: torch.Tensor) -> torch.Tensor:
+        if values is None or not bool(mask.any()):
+            return zero.detach()
+        return _masked_mean(values, mask).detach()
+
+    return loss, {
+        "edema_anchor_error_voxels": anchor_error.to(device=final_logits.device, dtype=final_logits.dtype).sum().detach(),
+        "edema_final_prob_on_anchor_fn": diagnostic_mean(prob, edema_fn),
+        "edema_final_prob_on_anchor_fp": diagnostic_mean(prob, edema_fp),
+        "edema_final_margin_on_anchor_fn": diagnostic_mean(edema_margin, edema_fn),
+        "edema_final_margin_on_anchor_fp": diagnostic_mean(edema_margin, edema_fp),
+        "edema_bounded_correction_on_anchor_fn": diagnostic_mean(bounded, edema_fn),
+        "edema_bounded_correction_on_anchor_fp": diagnostic_mean(bounded, edema_fp),
+        "edema_bounded_correction_on_preserve": diagnostic_mean(bounded, preserve),
+        "edema_anchor_error_abs_margin_shortfall": (margin_loss + correction_loss).detach(),
+    }
+
+
 def production_gate_repair_preserve_loss(
     outputs: dict[str, torch.Tensor],
     labels: torch.Tensor,
@@ -631,6 +918,9 @@ def srr_m6_expanded_total_loss(
     loss_scar_ref = scar_loss(outputs["scar_logits"], labels)
     loss_edema_ref = t2_masked_edema_loss(outputs["edema_logits"], labels, availability)
     loss_final_scar, loss_final_edema = final_pathology_loss_from_logits(outputs["logits"], labels, availability)
+    loss_scar_directionality, scar_directionality_metrics = scar_final_correction_directionality_loss(outputs, labels)
+    loss_scar_anchor_error, scar_anchor_error_metrics = scar_final_anchor_error_pathology_loss(outputs, labels)
+    loss_edema_anchor_error, edema_anchor_error_metrics = edema_final_anchor_error_pathology_loss(outputs, labels, availability)
     loss_gate_repair_preserve, gate_repair_metrics = production_gate_repair_preserve_loss(outputs, labels, availability)
 
     anchor_logits = outputs.get("nnunet_anchor_logits")
@@ -705,7 +995,10 @@ def srr_m6_expanded_total_loss(
             "edema_refiner",
         ),
         "loss_final_scar_pathology": component_weight("loss_final_scar_pathology", 0.0),
+        "loss_final_scar_correction_directionality": component_weight("loss_final_scar_correction_directionality", 0.0),
+        "loss_final_scar_anchor_error_pathology": component_weight("loss_final_scar_anchor_error_pathology", 0.0),
         "loss_final_edema_t2_present_pathology": component_weight("loss_final_edema_t2_present_pathology", 0.0),
+        "loss_final_edema_anchor_error_pathology": component_weight("loss_final_edema_anchor_error_pathology", 0.0),
         "loss_production_gate_repair_preserve": component_weight("loss_production_gate_repair_preserve", 0.0),
         "loss_anchor_preservation_outside_roi": component_weight("loss_anchor_preservation_outside_roi", 0.20, "baseline_preservation"),
         "loss_correction_opportunity": component_weight("loss_correction_opportunity", 0.20),
@@ -732,7 +1025,10 @@ def srr_m6_expanded_total_loss(
         "loss_scar_refiner_roi": loss_scar_ref,
         "loss_edema_refiner_t2_present_roi": loss_edema_ref,
         "loss_final_scar_pathology": loss_final_scar,
+        "loss_final_scar_correction_directionality": loss_scar_directionality,
+        "loss_final_scar_anchor_error_pathology": loss_scar_anchor_error,
         "loss_final_edema_t2_present_pathology": loss_final_edema,
+        "loss_final_edema_anchor_error_pathology": loss_edema_anchor_error,
         "loss_production_gate_repair_preserve": loss_gate_repair_preserve,
         "loss_anchor_preservation_outside_roi": loss_anchor,
         "loss_correction_opportunity": loss_correction_opportunity,
@@ -760,6 +1056,9 @@ def srr_m6_expanded_total_loss(
     metrics.update(dict_metrics)
     metrics.update(psip_metrics)
     metrics.update(gate_repair_metrics)
+    metrics.update(scar_directionality_metrics)
+    metrics.update(scar_anchor_error_metrics)
+    metrics.update(edema_anchor_error_metrics)
     metrics["loss_component_contract_rows"] = srr_m10_loss_component_contract(metrics, component_weights)  # type: ignore[assignment]
     metrics["m6_expanded_total_loss"] = total.detach() if detach_metrics else total
     return total, metrics

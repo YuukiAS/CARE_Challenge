@@ -44,3 +44,7 @@ planner -> controller
 ## M10 follow-up controller status
 
 The M10 follow-up controller executed three serial waves under `executor_slots=1`. F1 and F2 reached controller-accepted local completion. F3 reached terminal accounting but returned `M10_FOLLOWUP_CINE_RUNTIME_NEEDS_EVIDENCE` because temporal job `58997393` timed out with no `summary.json`, runtime CSVs, or final checkpoint. This is a completed terminal-accounting state, not scheduler saturation and not an audited scientific decision.
+
+## Batch6 controller status
+
+Batch6 ran under controller-supervised execution. Fixed-overfit job `59743323`, formal300 job `59744053`, and final-intervention job `59744941` are terminal completed. Failed same-scope attempts are retained in `results/20260721_srr_batch6_final_objective_alignment/slurm_attempts.csv` with zero formal credit. The step300 continuation gate failed, so no 900-step extension was submitted.

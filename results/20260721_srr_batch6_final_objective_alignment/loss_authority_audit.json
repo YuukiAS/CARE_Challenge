@@ -48,6 +48,6 @@
     32
   ],
   "probe_type": "real_batch4_selected_checkpoint_fixed_validation_patch_backward_only",
-  "production_gate_gradient_rows": 5,
+  "production_gate_gradient_rows": 8,
   "status": "BATCH5_LOSS_AUTHORITY_AUDIT_COMPLETE"
 }
