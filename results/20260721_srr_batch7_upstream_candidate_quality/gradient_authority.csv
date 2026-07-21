@@ -1,0 +1,9 @@
+group,grad_l2_max,status
+m10_spatial_dictionary,2.3019398412613485,nonzero
+scar_dictionary,3.8929913777556298,nonzero
+edema_dictionary,4.742351525356771,nonzero
+scar_refine,0.27937688674956607,nonzero
+edema_refine,0.39354020400673445,nonzero
+scar_source_arbiter,0.18030623869522092,nonzero
+edema_source_arbiter,0.10592114665201534,nonzero
+production_correction_gate,1.3448593545121261,nonzero

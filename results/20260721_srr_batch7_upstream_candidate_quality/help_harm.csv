@@ -1,0 +1,2 @@
+stage,comparison,metric,value,status
+formal300,batch7_vs_batch6,not_run,,blocked_by_fixed_gate_failed

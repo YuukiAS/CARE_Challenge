@@ -23,6 +23,7 @@ paths:
   gt_dir: data/nnUNet/nnUNet_raw/Dataset501_CAREMyoPS/labelsTr
   split_path: data/benchmarks/protocol/splits_MyoPS.json
   anchor_root: data/nnUNet/nnUNet_results/Dataset501_CAREMyoPS/nnUNetTrainer_500epochs__nnUNetPlans__3d_fullres
+  anchor_fold0_pred_dir: data/nnUNet/nnUNet_results/Dataset501_CAREMyoPS/nnUNetTrainer_500epochs__nnUNetPlans__3d_fullres/fold_0/validation
   result_root: results/20260721_srr_batch7_upstream_candidate_quality
   runtime_root: results/20260721_srr_batch7_upstream_candidate_quality/runtime
   rebuilt_asset_path: results/20260721_srr_batch7_upstream_candidate_quality/runtime/assets/batch7_prototype_memory.pt
@@ -219,6 +220,7 @@ canonical_loss_weights:
 fixed_batch_overfit:
   optimizer_steps: 100
   formal_training_credit: 0
+  learning_rate: 0.005
   cases: [Case2002, Case1002]
   fixed_pathology_containing_patch_per_case: true
   pass_gates:

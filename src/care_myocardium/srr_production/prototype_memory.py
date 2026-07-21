@@ -25,7 +25,11 @@ class CasePrototypeVectors:
 
 def hash_tensor(tensor: torch.Tensor) -> str:
     value = tensor.detach().cpu().contiguous()
-    return sha256_text(f"{tuple(value.shape)}:{value.numpy().tobytes().hex()[:4096]}:{float(value.sum()) if value.numel() else 0.0}")
+    h = __import__("hashlib").sha256()
+    h.update(str(tuple(value.shape)).encode("utf-8"))
+    h.update(str(value.dtype).encode("utf-8"))
+    h.update(value.numpy().tobytes())
+    return h.hexdigest()
 
 
 def require_case_exclusive_sources(
@@ -172,4 +176,3 @@ def load_casewise_prototype_memory(
         "case_exclusion_policy": "training queries use cross-fitted counts>0 memory slots from non-query shards; validation/inference use frozen training shards",
         "zero_count_slot_policy": "masked_out_of_similarity",
     }
-

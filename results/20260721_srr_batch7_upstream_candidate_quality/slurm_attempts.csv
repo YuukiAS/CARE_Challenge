@@ -1,0 +1,11 @@
+job_id,stage,partition,state,exit_code,elapsed,node,log_path,outcome
+59767671,asset_build_initial,htzhulab,FAILED,1:0,00:00:57,g1807htzh01,logs/srr_batch7/B7Asset_59767671_20260721_081656.log,startup_path_bug_runtime_asset_builder_missing
+59767801,asset_build_retry,htzhulab,COMPLETED,0:0,00:00:56,g1807htzh01,logs/srr_batch7/B7Asset_59767801_20260721_081937.log,PASS
+59767993,implementation_checks_initial,htzhulab,FAILED,1:0,00:00:09,g1807htzh01,logs/srr_batch7/B7Impl_59767993_20260721_082319.log,startup_grad_check_no_autograd_graph
+59768200,implementation_checks_retry,htzhulab,COMPLETED,0:0,00:00:12,g1807htzh01,logs/srr_batch7/B7Impl_59768200_20260721_082722.log,PASS
+59768256,fixed_overfit_initial,htzhulab,FAILED,1:0,00:00:57,g1807htzh01,logs/srr_batch7/B7Fixed_59768256_20260721_082839.log,FAIL_final_pathology_drop_0_012170495355298426
+59768424,fixed_overfit_fixed_lr_0_001,htzhulab,FAILED,1:0,00:00:55,g1807htzh01,logs/srr_batch7/B7Fixed_59768424_20260721_083226.log,FAIL_final_pathology_drop_0_07664596638779522
+59771743,fixed_overfit_fixed_lr_0_005,htzhulab,FAILED,1:0,00:00:50,g1807htzh01,logs/srr_batch7/B7Fixed_59771743_20260721_083443.log,FAIL_final_pathology_drop_0_1150432406995704
+59775079,fixed_overfit_gate_migration,htzhulab,FAILED,1:0,00:00:50,g1807htzh01,logs/srr_batch7/B7Fixed_59775079_20260721_083812.log,FAIL_final_pathology_drop_0_09259148469438629
+59775210,fixed_overfit_patch_selection,htzhulab,FAILED,1:0,00:00:52,g1807htzh01,logs/srr_batch7/B7Fixed_59775210_20260721_084033.log,FAIL_final_pathology_drop_0_09885069888711119
+59775353,fixed_overfit_final_record,htzhulab,FAILED,1:0,00:00:54,g1807htzh01,logs/srr_batch7/B7Fixed_59775353_20260721_084335.log,FAIL_final_pathology_drop_0_11222805524509555

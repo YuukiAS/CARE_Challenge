@@ -1,0 +1,6 @@
+intervention,spatial_gate_delta,retrieved_feature_delta,proposal_logit_delta,final_logit_delta,discovery_abs_max,scar_sum_max_abs_error,edema_sum_max_abs_error,case_id,edema_roi_abs_max,edema_residual_abs_max,edema_correction_abs_max
+prototype_maps_on_vs_off,0.006843425799161196,0.8153003454208374,0.009941655211150646,0.0005111541831865907,,,,,,,
+semantic_negative_memory_on_vs_off,,,0.031628064811229706,0.001480195438489318,,,,,,,
+zero_anchor_pathology_context,,,0.024026568979024887,,1.5380449295043945,,,,,,
+source_weight_normalization,,,,,,5.960464477539063e-08,5.960464477539063e-08,,,,
+no_t2_edema_chain,,,,,,,,Case1002,0.0,0.0,0.0

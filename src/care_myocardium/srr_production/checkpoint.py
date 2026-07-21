@@ -85,6 +85,7 @@ def load_srr_checkpoint(
     map_location: torch.device | str = "cpu",
     restore_rng: bool = True,
     restore_optimizer: bool = True,
+    strict_model_state: bool = True,
 ) -> dict[str, Any]:
     payload = torch.load(path, map_location=map_location, weights_only=False)
     if int(payload.get("schema_version", 0)) != CHECKPOINT_SCHEMA_VERSION:
@@ -124,7 +125,14 @@ def load_srr_checkpoint(
             "zero_initialized_input_channels": [4, 5, 6, 7, 8, 9, 10, 11, 12],
             "non_gate_parameters_loaded_strict": True,
         }
-    model.load_state_dict(state)
+    missing_keys: list[str] = []
+    unexpected_keys: list[str] = []
+    if strict_model_state:
+        model.load_state_dict(state)
+    else:
+        load_result = model.load_state_dict(state, strict=False)
+        missing_keys = list(load_result.missing_keys)
+        unexpected_keys = list(load_result.unexpected_keys)
     if migration["applied"]:
         payload["optimizer_state_dict_migration"] = "skipped_optimizer_state_due_to_production_gate_input_shape_migration"
     elif restore_optimizer:
@@ -132,6 +140,11 @@ def load_srr_checkpoint(
     else:
         payload["optimizer_state_dict_migration"] = "skipped_optimizer_state_by_warm_start_finetune_contract"
     payload["production_gate_migration"] = migration
+    payload["model_state_load"] = {
+        "strict_model_state": bool(strict_model_state),
+        "missing_keys": missing_keys,
+        "unexpected_keys": unexpected_keys,
+    }
     if scheduler is not None:
         scheduler_state = payload.get("scheduler_state_dict")
         if scheduler_state is None:

@@ -65,6 +65,25 @@ BATCH6_MODES = (
     "proposal_only_gate_one",
     "refiner_only_gate_one",
 )
+BATCH7_MODES = (
+    "anchor_identity",
+    "old_batch4_asset",
+    "rebuilt_batch7_asset",
+    "prototype_maps_off",
+    "semantic_negative_memory_off",
+    "zero_anchor_pathology_context",
+    "discovery_off",
+    "proposal_only",
+    "refiner_only",
+    "learned_source",
+    "gt_oracle_source_diagnostic_only",
+    "production_gate_closed",
+    "production_gate_learned",
+    "production_gate_one",
+    "no_anchor_diagnostic",
+    "anchor_identity_control",
+    "srr_no_anchor_control",
+)
 BATCH5_PRODUCTION_INTERVENTIONS = {
     "anchor_identity_control": "full",
     "anchor_bounded_srr_correction": "full",
@@ -79,6 +98,20 @@ BATCH5_PRODUCTION_INTERVENTIONS = {
     "full_gate_zero": "gate_closed",
     "production_gate_open_bounded_control": "gate_open_bounded_control",
     "full_gate_one": "gate_open_bounded_control",
+    "anchor_identity": "full",
+    "old_batch4_asset": "learned_source",
+    "rebuilt_batch7_asset": "learned_source",
+    "prototype_maps_off": "learned_source",
+    "semantic_negative_memory_off": "learned_source",
+    "zero_anchor_pathology_context": "learned_source",
+    "discovery_off": "learned_source",
+    "proposal_only": "proposal_only",
+    "refiner_only": "refiner_only",
+    "learned_source": "learned_source",
+    "gt_oracle_source_diagnostic_only": "gt_oracle_source_diagnostic_only",
+    "production_gate_learned": "learned_source",
+    "production_gate_one": "gate_open_bounded_control",
+    "no_anchor_diagnostic": "learned_source",
 }
 
 
@@ -134,6 +167,11 @@ def normalized_mode(mode: str) -> str:
         "full_gate_zero": "production_gate_closed",
         "proposal_only_gate_one": "anchor_bounded_proposal_only",
         "refiner_only_gate_one": "anchor_bounded_refiner_only",
+        "anchor_identity": "anchor_identity_control",
+        "rebuilt_batch7_asset": "learned_source",
+        "production_gate_one": "production_gate_open_bounded_control",
+        "production_gate_learned": "learned_source",
+        "no_anchor_diagnostic": "srr_no_anchor_control",
     }
     return aliases.get(str(mode), str(mode))
 
@@ -492,7 +530,7 @@ def run(args: argparse.Namespace) -> dict[str, Any]:
         status = "BATCH3A_NEEDS_REPAIR_NO_NONIDENTITY_TENSOR_EFFECT"
     contract = {
         "schema_version": 5,
-        "batch": "6" if mode in BATCH6_MODES else ("5" if mode in BATCH5_MODES else "3A"),
+        "batch": "7" if mode in BATCH7_MODES else ("6" if mode in BATCH6_MODES else ("5" if mode in BATCH5_MODES else "3A")),
         "status": status,
         "mode": mode,
         "production_intervention_mode": BATCH5_PRODUCTION_INTERVENTIONS.get(mode, "full"),

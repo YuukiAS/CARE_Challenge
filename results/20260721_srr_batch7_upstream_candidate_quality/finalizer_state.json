@@ -1,0 +1,14 @@
+{
+  "decision": "NEEDS_REPAIR",
+  "formal300_submitted": false,
+  "formal1200_submitted": false,
+  "latest_fixed_job_id": "59775353",
+  "local_commit_required": true,
+  "reason": "Batch7 implementation and asset gates passed, but the required 100-step fixed-overfit gate did not reach the configured deployed final-pathology loss decrease threshold.",
+  "runtime_artifacts_not_for_git": [
+    "results/20260721_srr_batch7_upstream_candidate_quality/runtime/assets/batch7_prototype_memory.pt",
+    "results/20260721_srr_batch7_upstream_candidate_quality/runtime/implementation_roundtrip/checkpoint_roundtrip.pt",
+    "results/20260721_srr_batch7_upstream_candidate_quality/runtime/fixed_batch_overfit/checkpoint_step_100.pt"
+  ],
+  "status": "FIXED_GATE_FAILED"
+}

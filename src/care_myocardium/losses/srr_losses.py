@@ -848,6 +848,42 @@ def _memory_alignment_loss(outputs: dict[str, torch.Tensor], labels: torch.Tenso
     return torch.stack(terms).mean()
 
 
+def _source_arbiter_loss(
+    outputs: dict[str, torch.Tensor],
+    labels: torch.Tensor,
+    availability: torch.Tensor,
+) -> tuple[torch.Tensor, dict[str, torch.Tensor]]:
+    valid = labels != IGNORE_LABEL
+    t2_present = availability[:, 1].to(device=labels.device, dtype=torch.bool).view(-1, 1, 1, 1)
+    losses: list[torch.Tensor] = []
+    metrics: dict[str, torch.Tensor] = {}
+    for prefix, cls, mask in (
+        ("scar", SCAR_CLASS, valid),
+        ("edema", EDEMA_CLASS, valid & t2_present),
+    ):
+        proposal = outputs.get(f"{prefix}_proposal_logits")
+        refiner = outputs.get(f"{prefix}_logits")
+        arbiter_logits = outputs.get(f"{prefix}_source_arbiter_logits")
+        if not isinstance(proposal, torch.Tensor) or not isinstance(refiner, torch.Tensor) or not isinstance(arbiter_logits, torch.Tensor):
+            zero = outputs["logits"].sum() * 0.0
+            metrics[f"{prefix}_source_arbiter_loss"] = zero.detach()
+            metrics[f"{prefix}_source_arbiter_mask_voxels"] = zero.detach()
+            continue
+        target = (labels == cls).float().unsqueeze(1)
+        proposal_loss = F.binary_cross_entropy_with_logits(proposal.detach(), target, reduction="none")
+        refiner_loss = F.binary_cross_entropy_with_logits(refiner.detach(), target, reduction="none")
+        best_refiner = (refiner_loss < proposal_loss).long()[:, 0]
+        if bool(mask.any()):
+            raw = F.cross_entropy(arbiter_logits, best_refiner, reduction="none")
+            value = _masked_abs_mean(raw, mask)
+        else:
+            value = outputs["logits"].sum() * 0.0
+        losses.append(value)
+        metrics[f"{prefix}_source_arbiter_loss"] = value.detach()
+        metrics[f"{prefix}_source_arbiter_mask_voxels"] = mask.to(device=proposal.device, dtype=proposal.dtype).sum().detach()
+    return (torch.stack(losses).mean() if losses else outputs["logits"].sum() * 0.0), metrics
+
+
 def srr_m10_loss_component_contract(
     metrics: dict[str, torch.Tensor],
     weights: dict[str, float] | None = None,
@@ -909,9 +945,21 @@ def srr_m6_expanded_total_loss(
 
     loss_anatomy = anatomy_loss(outputs["anatomy_logits"], labels)
     loss_scar_prop = _masked_bce_with_logits(outputs["scar_proposal_logits"][:, 0], scar_target.float(), valid)
+    loss_scar_discovery = _masked_bce_with_logits(outputs["scar_discovery_logits"][:, 0], scar_target.float(), valid)
+    loss_scar_confirmation = _masked_bce_with_logits(outputs["scar_confirmation_logits"][:, 0], scar_target.float(), valid)
     edema_mask = valid & t2_present
     loss_edema_prop = (
         _masked_bce_with_logits(outputs["edema_proposal_logits"][:, 0], edema_target.float(), edema_mask)
+        if bool(edema_mask.any())
+        else outputs["logits"].sum() * 0.0
+    )
+    loss_edema_discovery = (
+        _masked_bce_with_logits(outputs["edema_discovery_logits"][:, 0], edema_target.float(), edema_mask)
+        if bool(edema_mask.any())
+        else outputs["logits"].sum() * 0.0
+    )
+    loss_edema_confirmation = (
+        _masked_bce_with_logits(outputs["edema_confirmation_logits"][:, 0], edema_target.float(), edema_mask)
         if bool(edema_mask.any())
         else outputs["logits"].sum() * 0.0
     )
@@ -976,6 +1024,7 @@ def srr_m6_expanded_total_loss(
         psip_loss = outputs["logits"].sum() * 0.0
     loss_proto = _prototype_margin_loss(outputs, labels, availability)
     loss_memory = _memory_alignment_loss(outputs, labels, availability)
+    loss_source_arbiter, source_arbiter_metrics = _source_arbiter_loss(outputs, labels, availability)
 
     scar_refiner_residual = outputs.get("scar_refiner_residual", outputs.get("scar_refinement_residual", outputs["logits"][:, :1] * 0.0))
     edema_refiner_residual = outputs.get("edema_refiner_residual", outputs.get("edema_refinement_residual", outputs["logits"][:, :1] * 0.0))
@@ -987,6 +1036,10 @@ def srr_m6_expanded_total_loss(
         "loss_anatomy_union_lv_rv": component_weight("loss_anatomy_union_lv_rv", 1.0, "anatomy"),
         "loss_scar_proposal": component_weight("loss_scar_proposal", 1.0, "scar_proposal", "proposal"),
         "loss_edema_proposal_t2_present_only": component_weight("loss_edema_proposal_t2_present_only", 1.0, "edema_proposal", "proposal"),
+        "loss_scar_discovery_proposal": component_weight("loss_scar_discovery_proposal", 0.0),
+        "loss_edema_discovery_proposal_t2_present": component_weight("loss_edema_discovery_proposal_t2_present", 0.0),
+        "loss_scar_confirmation_proposal": component_weight("loss_scar_confirmation_proposal", 0.0),
+        "loss_edema_confirmation_proposal_t2_present": component_weight("loss_edema_confirmation_proposal_t2_present", 0.0),
         "loss_scar_refiner_roi": component_weight("loss_scar_refiner_roi", 1.0, "loss_scar_refiner_small_roi", "scar_refiner"),
         "loss_edema_refiner_t2_present_roi": component_weight(
             "loss_edema_refiner_t2_present_roi",
@@ -1014,6 +1067,7 @@ def srr_m6_expanded_total_loss(
         "loss_pattern_sip_integrativeness": component_weight("loss_pattern_sip_integrativeness", 0.05, "semantic_integrative"),
         "loss_prototype_diversity_margin": component_weight("loss_prototype_diversity_margin", 0.20, "prototype_margin"),
         "loss_memory_bank_update_or_alignment": component_weight("loss_memory_bank_update_or_alignment", 0.05),
+        "loss_source_arbiter": component_weight("loss_source_arbiter", 0.0),
         "loss_refiner_final_label_effect": component_weight("loss_refiner_final_label_effect", 0.02),
         "loss_cine_temporal_consistency": component_weight("loss_cine_temporal_consistency", 0.0),
         "loss_cine_reference_warp_consistency": component_weight("loss_cine_reference_warp_consistency", 0.0),
@@ -1022,6 +1076,10 @@ def srr_m6_expanded_total_loss(
         "loss_anatomy_union_lv_rv": loss_anatomy,
         "loss_scar_proposal": loss_scar_prop,
         "loss_edema_proposal_t2_present_only": loss_edema_prop,
+        "loss_scar_discovery_proposal": loss_scar_discovery,
+        "loss_edema_discovery_proposal_t2_present": loss_edema_discovery,
+        "loss_scar_confirmation_proposal": loss_scar_confirmation,
+        "loss_edema_confirmation_proposal_t2_present": loss_edema_confirmation,
         "loss_scar_refiner_roi": loss_scar_ref,
         "loss_edema_refiner_t2_present_roi": loss_edema_ref,
         "loss_final_scar_pathology": loss_final_scar,
@@ -1040,6 +1098,7 @@ def srr_m6_expanded_total_loss(
         "loss_pattern_sip_integrativeness": psip_loss,
         "loss_prototype_diversity_margin": loss_proto,
         "loss_memory_bank_update_or_alignment": loss_memory,
+        "loss_source_arbiter": loss_source_arbiter,
         "loss_refiner_final_label_effect": loss_refiner_final_label_effect,
         "loss_cine_temporal_consistency": outputs["logits"].sum() * 0.0,
         "loss_cine_reference_warp_consistency": outputs["logits"].sum() * 0.0,
@@ -1056,6 +1115,7 @@ def srr_m6_expanded_total_loss(
     metrics.update(dict_metrics)
     metrics.update(psip_metrics)
     metrics.update(gate_repair_metrics)
+    metrics.update(source_arbiter_metrics)
     metrics.update(scar_directionality_metrics)
     metrics.update(scar_anchor_error_metrics)
     metrics.update(edema_anchor_error_metrics)

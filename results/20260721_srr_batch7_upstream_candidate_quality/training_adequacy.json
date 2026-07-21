@@ -1,0 +1,21 @@
+{
+  "actual_optimizer_steps": 0,
+  "blocking_gate": "fixed_batch_overfit",
+  "continuation_gate": {
+    "checks": {
+      "asset_gate_passed": true,
+      "implementation_checks_passed": true,
+      "fixed_batch_overfit_passed": false
+    },
+    "decision": "FAIL"
+  },
+  "continuation_gate_decision": "FAIL",
+  "fixed_gate_final_pathology_loss_relative_decrease": 0.11222805524509555,
+  "fixed_gate_required_final_pathology_loss_relative_decrease": 0.2,
+  "formal_1200_step_status": "SKIPPED_FIXED_GATE_FAILED",
+  "formal_training_submitted": false,
+  "reason": "formal300 was not submitted because the required Case2002+Case1002 100-step fixed-overfit gate did not PASS",
+  "selected_checkpoint_path": "",
+  "stage": "fixed_gate_blocked",
+  "status": "NEEDS_REPAIR"
+}

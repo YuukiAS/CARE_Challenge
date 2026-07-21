@@ -2078,6 +2078,13 @@ def _batch6_group_prefixes(groups: Iterable[str]) -> list[str]:
         "scar_dictionary": ("scar_dictionary.",),
         "edema_dictionary": ("edema_dictionary.",),
         "evidence_heads": ("evidence_heads.",),
+        "m10_spatial_dictionary": ("m10_spatial_dictionary.",),
+        "scar_dictionary_learned_fusion_and_embedding": ("scar_dictionary.",),
+        "edema_dictionary_learned_fusion_and_embedding": ("edema_dictionary.",),
+        "evidence_heads_scar": ("evidence_heads.scar.",),
+        "evidence_heads_edema": ("evidence_heads.edema.",),
+        "scar_source_arbiter": ("scar_source_arbiter.",),
+        "edema_source_arbiter": ("edema_source_arbiter.",),
     }
     for group in groups:
         key = str(group).strip()
@@ -2087,6 +2094,25 @@ def _batch6_group_prefixes(groups: Iterable[str]) -> list[str]:
             raise ValueError(f"unknown Batch6 trainable group: {key}")
         prefixes.extend(mapping[key])
     return prefixes
+
+
+def reset_batch7_production_gate(model: torch.nn.Module, *, variant: str, allow_architecture_extension: bool) -> dict[str, object]:
+    if str(variant) != "m10_d3_hierarchical_memory_propref" or not bool(allow_architecture_extension):
+        return {"applied": False, "reason": "not_batch7_architecture_extension_warm_start"}
+    gate = getattr(model, "production_correction_gate", None)
+    if not isinstance(gate, torch.nn.Conv3d):
+        return {"applied": False, "reason": "production_correction_gate_missing"}
+    with torch.no_grad():
+        gate.weight.zero_()
+        if gate.bias is not None:
+            gate.bias.fill_(2.0)
+    return {
+        "applied": True,
+        "reason": "batch7_source_candidate_input_migrated_from_batch6_gate_weights",
+        "weight_init": "zeros",
+        "bias_init": 2.0,
+        "gate_semantics": "sigmoid_gate_preserved_with_bounded_correction",
+    }
 
 
 def apply_batch6_trainable_groups(model: SRRProposeRefineMyoPS, groups_text: str) -> dict[str, object]:
@@ -2471,6 +2497,12 @@ def train_variant(args: argparse.Namespace) -> None:
             map_location=device,
             restore_rng=False,
             restore_optimizer=False,
+            strict_model_state=not bool(getattr(args, "warm_start_allow_architecture_extension", False)),
+        )
+        warm_start_payload["production_gate_migration"] = reset_batch7_production_gate(
+            model,
+            variant=str(getattr(args, "variant", "")),
+            allow_architecture_extension=bool(getattr(args, "warm_start_allow_architecture_extension", False)),
         )
         prototype_bank_summary = dict(warm_start_payload.get("prototype_memory_provenance", {}))
         prototype_bank_summary.setdefault("status", "RESTORED_FROM_WARM_START_CHECKPOINT")
@@ -2485,6 +2517,26 @@ def train_variant(args: argparse.Namespace) -> None:
             "prototype_memory_mutable": False,
             "source_checkpoint_global_step": warm_start_payload.get("global_step"),
         }
+        asset_path = _repo_path(getattr(args, "prototype_memory_asset", ""))
+        if asset_path is not None:
+            asset_payload = torch.load(asset_path, map_location=device, weights_only=False)
+            state = asset_payload.get("model_memory_state", asset_payload)
+            load_result = model.load_state_dict(state, strict=False)
+            prototype_bank_summary = dict(asset_payload.get("summary", {}))
+            prototype_bank_summary.setdefault("status", "BATCH7_REBUILT_ASSET_LOADED")
+            prototype_bank_summary["asset_path"] = str(asset_path)
+            prototype_bank_summary["asset_sha256"] = sha256_file(asset_path)
+            prototype_bank_summary["state_missing_keys_count"] = len(load_result.missing_keys)
+            prototype_bank_summary["state_unexpected_keys_count"] = len(load_result.unexpected_keys)
+            (variant_dir / "prototype_bank_summary.json").write_text(json.dumps(prototype_bank_summary, indent=2, sort_keys=True), encoding="utf-8")
+            frozen_prototype_manifest = {
+                "status": "BATCH7_REBUILT_ASSET_LOADED",
+                "asset_path": str(asset_path),
+                "asset_sha256": sha256_file(asset_path),
+                "prototype_memory_mutable": False,
+                "source_checkpoint_global_step": warm_start_payload.get("global_step"),
+                "manifest_path": str(getattr(args, "prototype_memory_manifest", "")),
+            }
     else:
         prototype_bank_summary = fit_and_load_runtime_prototype_bank(model, train_cases, patch_shape, device, args, variant_dir)
         frozen_prototype_manifest = write_frozen_prototype_asset(
@@ -3063,6 +3115,7 @@ def main() -> None:
     parser.add_argument("--skip-prototype-bank-fit", action="store_true")
     parser.add_argument("--warm-start-checkpoint", default="", help="SRR production checkpoint used as model-state warm start for Batch6 fine-tuning.")
     parser.add_argument("--warm-start-checkpoint-sha256", default="", help="Expected SHA256 for --warm-start-checkpoint.")
+    parser.add_argument("--warm-start-allow-architecture-extension", action="store_true", help="Allow missing new Batch7 architecture keys when warm-starting from an older checkpoint.")
     parser.add_argument(
         "--batch6-trainable-groups",
         default="",

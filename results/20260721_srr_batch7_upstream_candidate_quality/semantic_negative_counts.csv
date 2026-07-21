@@ -1,0 +1,5 @@
+pathology,category,accepted_count
+scar,scar_positive,10752
+scar,scar_safe_negative,22368
+edema,t2_present_edema_positive,4096
+edema,t2_present_safe_negative,9216

@@ -1,0 +1,5 @@
+source,metric,value,status
+implementation_checks,scar_source_weight_sum_max_abs_error,5.960464477539063e-08,PASS
+implementation_checks,edema_source_weight_sum_max_abs_error,5.960464477539063e-08,PASS
+fixed_overfit,source_arbiter_loss_relative_decrease,0.9524718072422331,PASS
+fixed_overfit,production_gate_gradient_l2_max,1.3448593545121261,PASS

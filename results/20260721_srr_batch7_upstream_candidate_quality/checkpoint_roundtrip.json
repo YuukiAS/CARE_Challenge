@@ -1,0 +1,6 @@
+{
+  "checkpoint_path": "results/20260721_srr_batch7_upstream_candidate_quality/runtime/implementation_roundtrip/checkpoint_roundtrip.pt",
+  "save_reload_final_logits_max_abs_delta": 0.0,
+  "status": "PASS",
+  "threshold": 1e-06
+}

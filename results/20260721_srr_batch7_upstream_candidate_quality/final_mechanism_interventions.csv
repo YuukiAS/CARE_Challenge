@@ -1,0 +1,9 @@
+gate,intervention,metric,value,status
+asset,prototype_maps_on_vs_off,spatial_gate_delta,0.006843425799161196,PASS
+asset,prototype_maps_on_vs_off,retrieved_feature_delta,0.8153003454208374,PASS
+asset,semantic_negative_memory_on_vs_off,proposal_logit_delta,0.031628064811229706,PASS
+asset,zero_anchor_pathology_context,discovery_abs_max,1.5380449295043945,PASS
+asset,no_t2_edema_chain,edema_roi_abs_max,0.0,PASS
+asset,no_t2_edema_chain,edema_residual_abs_max,0.0,PASS
+asset,no_t2_edema_chain,edema_correction_abs_max,0.0,PASS
+fixed_overfit,combined_final_pathology_loss_relative_decrease,actual,0.11222805524509555,FAIL

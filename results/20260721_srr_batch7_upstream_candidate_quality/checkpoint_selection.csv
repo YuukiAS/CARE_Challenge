@@ -1,0 +1,3 @@
+stage,checkpoint_path,selected,reason
+formal300,,false,not_started_fixed_gate_failed
+formal1200,,false,not_allowed_fixed_gate_failed
