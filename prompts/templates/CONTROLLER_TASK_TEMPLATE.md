@@ -145,11 +145,13 @@ separation happened.
 
 Controller-facing and Planner-facing prose must pass
 `prompts/FINAL_OUTPUT_READABILITY_POLICY.md`. Start `controller_report.md` with a
-natural Chinese judgment explaining what was completed, why the evidence is or
-is not adequate, what should happen next, and what remains unauthorized. Put
-internal labels, paths, metrics, commands, and machine fields after the meaning
-is clear. Do not use repository status tokens or mechanism labels as section
-headings unless their scientific meaning has already been explained.
+natural Chinese judgment explaining what was completed or blocked, why the
+evidence is or is not adequate, what should happen next, and what remains
+unauthorized. Put internal labels, paths, metrics, commands, and machine fields
+after the meaning is clear. Do not use repository status tokens, machine fields,
+paths, commands, or mechanism labels as the opening conclusion or section
+headings unless their scientific meaning has already been explained. The
+validator fails controller reports that start directly with machine fields.
 
 ## Git Policy
 

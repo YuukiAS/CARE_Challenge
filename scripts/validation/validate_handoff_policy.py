@@ -1236,6 +1236,8 @@ def section_texts(clean_text: str, heading_pattern: re.Pattern[str]) -> list[str
 def should_run_full_readability_check(path: Path, text: str) -> bool:
     if path.name == "FINAL_OUTPUT_READABILITY_POLICY.md":
         return False
+    if path.name == "controller_report.md":
+        return True
     path_text = "/".join(path.parts).lower()
     return (
         "readability" in path_text
@@ -1595,6 +1597,7 @@ def validate_controller_packet_dir(path: Path) -> list[Finding]:
         report = path / "controller_report.md"
         if report.is_file():
             report_text = report.read_text(encoding="utf-8")
+            findings.extend(validate_final_output_readability(report, report_text))
             if normalized_field_value(report_text, "controller_verification_decision") != "VERIFIED_COMPLETE":
                 findings.append(Finding("error", report, "completion_check VERIFIED_COMPLETE requires controller_report.md to agree."))
         finalizer = path / "finalizer_state.json"

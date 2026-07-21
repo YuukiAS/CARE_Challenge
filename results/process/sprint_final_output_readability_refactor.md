@@ -19,6 +19,11 @@ Updated the task, controller, result, and review templates so future reports inc
 
 The active default remains controller-centered: future tasks use `planning_review_required: false` and `review_required: false` unless the Planner or user explicitly opts into the legacy critic or reviewer path. Focused active-policy search confirmed the remaining critic/reviewer wording is either an explicit opt-in rule, a historical compatibility rule, or a test that verifies the explicit old gates still work. Missing `planning_review.md` and missing `review.md` do not block default new tasks.
 
+
+## Controller readability hardening
+
+Follow-up hardening makes `controller_report.md` a direct validator target for the final-output readability gate. Future controller reports must begin with a natural Chinese judgment for the Planner/user before the machine-checkable ending fields. Machine-only controller reports now fail validation instead of merely being discouraged by templates.
+
 ## Validator and tests
 
 Enhanced `scripts/validation/validate_handoff_policy.py` with active policy/template checks and opt-in full readability checks for new readability fixtures or staged prompts. The validator catches machine-style first paragraphs, internal labels used as headings, unexplained mechanism sections, formulas without natural-language context, bare training-stage checklists, and unexplained English-token stacking.
@@ -33,4 +38,10 @@ This change does not rewrite historical experiment packets. Machine-readable fie
 
 - `./envs/env_CARE/bin/python -m py_compile scripts/validation/validate_handoff_policy.py`: exit code 0.
 - `./envs/env_CARE/bin/python scripts/validation/validate_handoff_policy.py --policy --warnings-as-errors`: exit code 0; handoff policy validation passed.
-- `./envs/env_CARE/bin/python -m pytest -q tests/validation/test_final_output_readability_policy.py tests/validation/test_sprint_flow_policy.py`: exit code 0; 18 passed.
+- `./envs/env_CARE/bin/python -m pytest -q tests/validation/test_final_output_readability_policy.py tests/validation/test_sprint_flow_policy.py`: exit code 0; 20 passed.
+
+The follow-up controller-specific validator check was also run after this hardening:
+
+- `./envs/env_CARE/bin/python -m py_compile scripts/validation/validate_handoff_policy.py`: exit code 0.
+- `./envs/env_CARE/bin/python scripts/validation/validate_handoff_policy.py --policy --warnings-as-errors`: exit code 0; handoff policy validation passed.
+- `./envs/env_CARE/bin/python -m pytest -q tests/validation/test_final_output_readability_policy.py tests/validation/test_sprint_flow_policy.py`: exit code 0; 20 passed.

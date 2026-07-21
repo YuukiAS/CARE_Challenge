@@ -166,8 +166,15 @@ why_operational_retry_is_insufficient:
 
 ## Controller Report
 
-`controller_report.md` is written before independent review. It must not claim
-reviewer approval, audited-go, final route promotion, or final scientific stop.
+`controller_report.md` is written before independent review. It must start with
+a natural Chinese judgment for the Planner/user, then provide evidence and the
+required machine fields. It must not claim reviewer approval, audited-go, final
+route promotion, or final scientific stop.
+
+The opening paragraph must explain what was completed or blocked, why, what the
+Controller recommends next, and what remains unauthorized. A report that starts
+with paths, commands, status tokens, YAML fields, or experiment codes fails the
+controller readability gate.
 
 Required ending fields:
 

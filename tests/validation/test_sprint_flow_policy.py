@@ -119,7 +119,14 @@ git_push_decision: SKIP_PUSH
 next_required_action: RETURN_TO_PLANNER
 {monitor}
 """
-    report = f"""controller_run_status: COMPLETE
+    human_intro = (
+        "当前最重要的问题是确认这次执行是否已经满足原任务合同，因为控制器必须用真实输出、"
+        "终端作业状态和验证器结果验收执行者，而不能只相信自然语言总结。现在应当把完成包交回规划者判断下一步，"
+        "暂时不要上传验证、扩展训练或开启下一批任务。"
+    )
+    report = f"""{human_intro}
+
+controller_run_status: COMPLETE
 {completion}route_promotion_decision: NOT_AUTHORIZED
 route_negative_decision: NOT_AUTHORIZED
 scientific_resolution_status: PLANNER_DECISION_REQUIRED

@@ -4,7 +4,7 @@
 
 ## Scope
 
-本规则约束 human-facing final output，包括 GPT/Codex 最终回答、Batch 复盘、结果解释、下一步建议、controller 面向 Planner 的结论段、显式 reviewer 结论段和新 staged prompt 的分析性正文。
+本规则约束 human-facing final output，包括 GPT/Codex 最终回答、Batch 复盘、结果解释、下一步建议、`controller_report.md` 面向 Planner 的结论段、显式 reviewer 结论段和新 staged prompt 的分析性正文。Controller report 不是例外：它可以在末尾保留机器字段，但开头必须先说人话。
 
 本规则不改变必须机器精确匹配的 YAML 字段、路径、命令、状态枚举、代码标识符、schema key、validator token 和 evidence 索引。内部标识可以保留，但只能用于定位，不能替代科学判断。
 
@@ -40,6 +40,10 @@
 - 只有修复输出机制仍无效，才说明中间表征本身不足。
 
 内部代号可以放在段末括号中，供仓库检索；不得要求读者先学习一套命名系统。
+
+## Controller Report Rule
+
+`controller_report.md` 必须以一个自然中文段落开头。该段先回答：当前任务真正完成了什么或卡在哪里，为什么会这样，控制器现在建议做什么，暂时不允许做什么。随后再给证据摘要、路径、命令、指标和机器字段。不得让 `controller_verification_decision`、`operational_completion_status`、实验代号或状态 token 成为读者看到的第一个结论。
 
 ## Acceptance Check
 

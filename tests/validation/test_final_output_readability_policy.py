@@ -74,3 +74,40 @@ def test_technical_details_last_and_main_judgment_independent_passes() -> None:
         + "\n\n## 技术细节\n\n```text\nresults/example/controller_report.md\npython scripts/validation/validate_handoff_policy.py --policy\n```\n"
     )
     assert messages(text) == []
+
+
+def test_controller_report_must_not_start_with_machine_fields() -> None:
+    text = """controller_verification_decision: VERIFIED_COMPLETE
+operational_completion_status: COMPLETE
+experiment_adequacy_decision: PASS
+contract_compliance_status: PASS
+required_outputs_complete: true
+validators_passed: true
+all_jobs_terminal: true
+aggregation_complete: true
+git_commit_decision: COMMIT_LOCAL_PACKET
+git_push_decision: SKIP_PUSH
+next_required_action: RETURN_TO_PLANNER
+"""
+    findings = policy.validate_final_output_readability(Path("results/example/controller_report.md"), text)
+    assert any("first paragraph starts" in finding.message or "first paragraph does not explain" in finding.message for finding in findings)
+
+
+def test_controller_report_with_human_intro_then_fields_passes() -> None:
+    text = (
+        good_opening()
+        + "\n\n这些证据说明控制器已经检查了输出、验证器和作业状态，技术字段放在最后用于机器读取。"
+        + "\n\ncontroller_verification_decision: VERIFIED_COMPLETE\n"
+        + "operational_completion_status: COMPLETE\n"
+        + "experiment_adequacy_decision: PASS\n"
+        + "contract_compliance_status: PASS\n"
+        + "required_outputs_complete: true\n"
+        + "validators_passed: true\n"
+        + "all_jobs_terminal: true\n"
+        + "aggregation_complete: true\n"
+        + "git_commit_decision: COMMIT_LOCAL_PACKET\n"
+        + "git_push_decision: SKIP_PUSH\n"
+        + "next_required_action: RETURN_TO_PLANNER\n"
+    )
+    findings = policy.validate_final_output_readability(Path("results/example/controller_report.md"), text)
+    assert findings == []

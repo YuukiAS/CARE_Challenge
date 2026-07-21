@@ -88,8 +88,9 @@ Controller-supervised tasks follow this exact order:
     authorized same-scope repair left, or `OPERATIONALLY_BLOCKED`;
 12. planner later reads the result packet and decides the next task.
 
-`controller_report.md` must not require or invent a reviewer decision. The
-default terminal controller decision is machine-checkable:
+`controller_report.md` must not require or invent a reviewer decision. It must
+start with a natural Chinese judgment for the Planner/user before listing
+machine fields. The default terminal controller decision is machine-checkable:
 
 ```text
 controller_verification_decision: VERIFIED_COMPLETE | NEEDS_REPAIR | OPERATIONALLY_BLOCKED

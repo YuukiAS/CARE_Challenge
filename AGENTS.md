@@ -75,7 +75,7 @@ Every new CARE task or milestone must satisfy the appropriate schema under `prom
 
 The `controller` is the coordinator and acceptance owner. It owns task continuity, phase re-grounding, executor supervision, git-diff inspection, Slurm monitor state, same-scope repair loops, finalizer handoff, validator success, and the verified terminal local result commit inside one GPT-authored task. The `executor` performs authorized implementation and job submission but cannot declare the whole task complete. The `mapper` is read-only architecture/evidence mapping and uses `.agents/skills/care-mapper/SKILL.md`. The `finalizer` is deterministic terminal accounting, aggregation, validation, wiki finalization, and local packet commit; it is not an LLM subagent. The `reviewer` starts only when `review_required: true` is explicitly set and remains read-only.
 
-Controller reports are generated as the terminal operational acceptance packet. The required machine decision is `controller_verification_decision: VERIFIED_COMPLETE | NEEDS_REPAIR | OPERATIONALLY_BLOCKED`. `VERIFIED_COMPLETE` requires required outputs, validators, terminal job accounting, aggregation, contract compliance, and local commit policy to be complete. Final scientific decisions, validation upload, hosted metric claims, fold expansion, route promotion, and next Batch authorization remain Planner/user decisions.
+Controller reports are generated as the terminal operational acceptance packet, but they must still start with a natural Chinese judgment for the Planner/user before any machine fields. The required machine decision is `controller_verification_decision: VERIFIED_COMPLETE | NEEDS_REPAIR | OPERATIONALLY_BLOCKED`. `VERIFIED_COMPLETE` requires required outputs, validators, terminal job accounting, aggregation, contract compliance, and local commit policy to be complete. Final scientific decisions, validation upload, hosted metric claims, fold expansion, route promotion, and next Batch authorization remain Planner/user decisions.
 
 Executor parallelism gate: any `executor_count > 1`, `executor_slots > 1`, or `parallel_execution_allowed: true` task must provide `executor_plan_path` and pass `scripts/ops/validate_executor_plan.py`. MyoPS and Cine remain sequential unless GPT provides explicit isolation proof.
 
@@ -462,7 +462,9 @@ scientific decisions.
   handoff only inside the GPT-authored controller task. Inspect git diff, commands, frozen contract fields, outputs, tests, Slurm terminal accounting, aggregation, and validators after each executor wave; return same-scope gaps to the executor until complete. Prepare a separate reviewer handoff only when `review_required: true`; do not use an internal auditor for final review.
 - The execution controller must not invent new research/product directions. If a
   new direction is needed, write `NEEDS_GPT_PLANNER`.
-- Controller reports must separate `controller_run_status`,
+- Controller reports must start with a natural Chinese judgment that explains
+  what was completed or blocked, why, what should happen next, and what remains
+  unauthorized. Then separate `controller_run_status`,
   `operational_completion_status`, `experiment_adequacy_decision`,
   `route_promotion_decision`, `route_negative_decision`, and
   `scientific_resolution_status`. For default sprint-flow tasks, the report must include `controller_verification_decision`, `operational_completion_status`, `experiment_adequacy_decision`, `contract_compliance_status`, `required_outputs_complete`, `validators_passed`, `all_jobs_terminal`, `aggregation_complete`, `git_commit_decision`, `git_push_decision`, and `next_required_action`.

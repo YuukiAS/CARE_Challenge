@@ -26,7 +26,7 @@ validates.
 
 Overnight, long Slurm, multi-job, or high-resume-risk tasks must use `execution_mode: controller_supervised` and a durable continuity backend. Architecture-changing tasks must enable mapper and update root `wiki/` unless they provide a machine-readable no-change fingerprint receipt. A controller must not increase executor/mapper slots beyond the GPT-authored task graph. New tasks must not use an internal `auditor`; historical `auditor` fields are legacy aliases for the final independent `reviewer`.
 
-Controller reports are terminal operational acceptance records. They must not require `reviewer_review` as evidence before local packet commit and must not claim audited-go, validation upload, hosted metric claim, fold expansion, route promotion, final scientific stop, or the next Batch. The machine decision is `controller_verification_decision: VERIFIED_COMPLETE | NEEDS_REPAIR | OPERATIONALLY_BLOCKED`.
+Controller reports are terminal operational acceptance records for machines and for the Planner/user. They must start with a natural Chinese judgment before machine fields, must not require `reviewer_review` as evidence before local packet commit, and must not claim audited-go, validation upload, hosted metric claim, fold expansion, route promotion, final scientific stop, or the next Batch. The machine decision is `controller_verification_decision: VERIFIED_COMPLETE | NEEDS_REPAIR | OPERATIONALLY_BLOCKED`.
 
 For new controller tasks, push permissions are invalid by default: `auto_git_push`, `allow_git_push`, and `allow_diagnostic_push` must be false. Local commit only means the lightweight final packet is ready for Planner inspection, or for optional separate reviewer inspection when `review_required: true`.
 
