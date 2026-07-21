@@ -27,34 +27,20 @@ SRR/MyoPS/Cine 路线判断必须视觉阅读 ChatGPT Project background / proje
 5. 这次应写执行/审阅提示词、controller task、诊断修复，还是应该阻塞；
 6. 新文件应该写到哪里，哪些文件禁止发布或上传。
 
-每个未来里程碑必须同时包含 Codex 执行者内容和独立审阅者内容。新里程碑先写成 `prompts/shared/M<id>_<short_slug>.md`，例如 `prompts/shared/M<id>_mechanism_repair.md`。短任务必须包含 `## Execution Contract`、`## Executor Prompt`、`## Reviewer Prompt`。长 Slurm / overnight / controller-supervised 任务必须包含 `## Execution Contract`、`## Controller Prompt`、`## Executor Worker Contract`、`## Mapper Contract`、`## Reviewer Prompt`，并写出 durable finalizer contract。不要让 GPT 直接改很大的 `prompts/shared/EXECUTOR_PROMPTS.md` / `prompts/shared/REVIEWER_PROMPTS.md`。后续由 Codex 把暂存文件拆分合并进这两个标准共享文件，并在合并成功后删除暂存文件。
+每个未来里程碑必须包含 Codex 执行者或 controller/coordinator 内容。独立审阅者内容只在用户或 Planner 显式设置 `review_required: true` 时需要。新里程碑先写成 `prompts/shared/M<id>_<short_slug>.md`，例如 `prompts/shared/M<id>_mechanism_repair.md`。短任务默认包含 `## Execution Contract` 和 `## Executor Prompt`；长 Slurm / overnight / controller-supervised 任务默认包含 `## Execution Contract`、`## Controller Prompt`、`## Executor Worker Contract`、`## Mapper Contract`，并写出 durable finalizer/validator/controller verification contract。只有 `review_required: true` 时才添加 `## Reviewer Prompt`。不要让 GPT 直接改很大的 `prompts/shared/EXECUTOR_PROMPTS.md` / `prompts/shared/REVIEWER_PROMPTS.md`。后续由 Codex 把暂存文件拆分合并进标准共享文件，并在合并成功后删除暂存文件。
 
 `prompts/shared/M[0-9]*_*.md` 必须第一行就是 YAML frontmatter；正文
-`## Execution Contract` 只是给人读的镜像，不能替代 frontmatter。任何满足
-generic critic gate 的 staging 在进入 Codex 前，必须经过另一个 GPT thread
-的规划期审查。触发条件包括：`task_kind: scientific_milestone`、
-`risk_level: high`、`architecture_impact: system`、
-`slurm_runtime_continuity_required: true`、`executor_count > 1`、
-`route_change: true`、或 `scientific_decision_scope != none`。
-
-```text
-planner GPT -> separate GPT critic -> Codex merge/validator -> controller
-```
-
-这不是 controller runtime subagent，也不是执行后的 read-only reviewer。必须写入：
+`## Execution Contract` 只是给人读的镜像，不能替代 frontmatter。高风险、system-impact、Slurm、multi-executor、route_change 或 scientific_decision_scope 字段只触发更强证据和 controller 验收，不自动触发 planning critic。默认写入：
 
 ```yaml
-planning_review_required: true
-planning_reviewer: separate_gpt_thread
-planning_review_path: prompts/tasks/<task_key>_planning_review.md
-planning_review_token: <controlled token>
-planning_reviewed_commit: <commit>
+planning_review_required: false
+planning_reviewer: none
+planning_review_path: null
+planning_review_token: null
+planning_reviewed_commit: null
 ```
 
-没有有效 critic review hash/token 的 critic-required staging 只能是
-`DRAFT_FOR_PLANNING_REVIEW`、`PLANNING_REVIEW_RUNNING`、
-`NEEDS_PLANNING_REVISION` 或 `BLOCKED_HANDOFF_REVIEW`，不能写
-`READY_FOR_CODEX_MERGE`。
+只有用户或 Planner 显式设置 `planning_review_required: true` 时，才启用旧的独立 GPT planning critic 流程；此时 review hash/token 必须匹配当前合同，READY 状态才可通过。
 
 规划时按顶会审稿编辑标准追问：证据是否足以支持主张？是否有同一划分基线？是否覆盖困难子组？是否防止 no-T2 edema 误监督？是否有 validator 和 known-bad fixtures？是否只是 smoke / monitor / synthetic / stale evidence？是否把 nnU-Net fallback 包装成 SRR？失败可以接受，假成功不接受。
 
@@ -147,11 +133,12 @@ wiki_update_required: true | false
 diagram_update_required: true | false
 slurm_runtime_continuity_required: true | false
 continuity_backend: none | slurm_dependency | tmux_watcher
-review_mode: independent_thread | short_goal
-reviewer: separate_readonly
+review_required: false | true
+review_mode: none | independent_thread | short_goal
+reviewer: none | separate_readonly
 ```
 
-overnight、长 Slurm、多 job、高 resume 风险必须使用 `controller_supervised`，并且 `continuity_backend` 不能是 `none`。模型结构、loss wiring、dataflow、export、registration/temporal 路径变化必须启用 mapper。Controller report 在 reviewer 之前生成，只能写 `route_promotion_decision: NOT_REVIEWED`、`route_negative_decision: NOT_REVIEWED`、`scientific_resolution_status: AWAITING_REVIEW`；最终科学判断只能由 reviewer token 和后续 GPT planner 决定。
+overnight、长 Slurm、多 job、高 resume 风险必须使用 `controller_supervised`，并且 `continuity_backend` 不能是 `none`。模型结构、loss wiring、dataflow、export、registration/temporal 路径变化必须启用 mapper。Controller 是 coordinator 和 acceptance owner：每个 executor wave 后必须检查 git diff、命令、冻结合同字段、required outputs、训练充分性、terminal job accounting、aggregation 和 validator exit code；不合格则在原任务范围内退回 executor/finalizer 修复。`controller_verification_decision: VERIFIED_COMPLETE` 只表示当前 Batch 操作完成并返回 Planner，不授权 validation upload、hosted metric claim、fold expansion、下一 Batch、路线晋级或最终科学结论。
 
 ## 4. 写里程碑的格式
 

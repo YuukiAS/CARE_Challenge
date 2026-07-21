@@ -10,13 +10,15 @@ Only these role names are active for new CARE handoffs:
 
 - `planner`: the user-supervised GPT/ChatGPT thread that designs the task,
   execution mode, role graph, evidence gates, and reviewer contract.
-- `critic`: the separate GPT/ChatGPT planning-review thread. It reviews the
-  planner's staged contract before Codex execution when
-  `prompts/schemas/agent_flow_policy.yaml` requires it. It does not execute
+- `critic`: an optional separate GPT/ChatGPT planning-review thread. It reviews
+  the planner's staged contract before Codex execution only when the Planner or
+  user explicitly sets `planning_review_required: true`. It does not execute
   code, submit jobs, join the controller runtime, or write runtime `review.md`.
 - `controller`: the top-level Codex goal for one GPT-authored controller task.
-  It owns phase re-grounding, subagent coordination, Slurm continuity,
-  finalizer handoff, validators, local packet commit, and stop-before-review.
+  The controller is the coordinator and acceptance owner. It owns phase
+  re-grounding, executor supervision, git-diff inspection, Slurm continuity,
+  same-scope repair loops, finalizer handoff, validators, terminal completion
+  checks, and the local result commit.
 - `executor`: an implementation/command worker. It performs authorized edits,
   job submission, aggregation, and evidence writing, but it does not self-review
   and does not own overnight continuity.
@@ -27,8 +29,8 @@ Only these role names are active for new CARE handoffs:
   finalization, and local packet commit. It is not an LLM reviewer.
 - `validator`: first-party fail-closed scripts that check task, packet,
   controller, wiki, and known-bad fixtures.
-- `reviewer`: a separate read-only Codex thread or short goal that starts after
-  the controller/executor packet is locally committed. It writes `review.md`.
+- `reviewer`: an optional separate read-only Codex thread or short goal that
+  starts only when `review_required: true` is explicit. It writes `review.md`.
 
 Historical `auditor`, `execution_controller`, and old strategic-controller
 runtime fields are legacy aliases only. New tasks must not create a
@@ -41,60 +43,72 @@ Current default posture is main-only development on `/users/a/e/aereinh/CARE`. R
 Short, non-Slurm, low-resume-risk work may use:
 
 ```text
-planner -> executor -> local commit -> separate reviewer
+planner -> executor -> local result commit -> planner
 ```
 
 Long Slurm, overnight, multi-job, architecture-affecting, or high-resume-risk
 work must use:
 
 ```text
-planner -> controller
+planner -> controller/coordinator
                  |-> executor subagent
-                 |-> mapper draft
+                 |-> optional mapper draft/final
                  |-> durable Slurm watcher/finalizer
-                 |-> mapper final
                  |-> validator
-                 |-> local commit
-            controller stops
-            -> separate reviewer
+                 |-> controller verification and repair loop
+                 |-> local result commit
+            controller stops with verified terminal result
+            -> planner reads results and decides the next task
 ```
 
 The controller, executor, mapper, finalizer, and validator must not write
-`review.md`. The reviewer must not become a controller subagent. No role may
-push unless the user explicitly authorizes pushing for that task.
+`review.md`. The reviewer must not become a controller subagent and is used only
+when explicitly required. No role may push unless the user explicitly authorizes
+pushing for that task.
 
 ## Controller Lifecycle
 
 Controller-supervised tasks follow this exact order:
 
-1. controller bootstrap;
+1. controller bootstrap and frozen Planner contract capture;
 2. executor implementation;
-3. implementation snapshot;
-4. mapper draft;
-5. durable continuity;
-6. `FINALIZER_A`: terminal accounting, runtime-output check, aggregation, and
-   `finalizer_state.json` with `READY_FOR_MAPPER_FINAL` or a failure state;
-7. mapper final;
-8. `FINALIZER_B`: validators, wiki/history checks, `git diff --check`, and the
-   single local packet commit;
-9. controller report confirming the committed packet;
-10. controller stops;
-11. separate reviewer independently runs;
-12. reviewer separately commits `review.md`;
-13. user manually pushes.
+3. controller inspects git diff, commands, changed files, and contract-sensitive
+   implementation findings;
+4. controller checks model/config/data split/case count/training budget/eval
+   scale were not reduced;
+5. optional mapper draft/final when authorized;
+6. durable continuity for Slurm work;
+7. `FINALIZER_A`: terminal accounting, runtime-output check, aggregation, and
+   `finalizer_state.json` with a terminal or repair state;
+8. `FINALIZER_B`: validators, known-bad regressions, wiki/history checks when
+   relevant, `git diff --check`, and the single local result commit;
+9. controller report and completion check with `controller_verification_decision`;
+10. if incomplete, controller returns the same-scope gap to executor/finalizer;
+11. controller stops only at `VERIFIED_COMPLETE`, `NEEDS_REPAIR` with no
+    authorized same-scope repair left, or `OPERATIONALLY_BLOCKED`;
+12. planner later reads the result packet and decides the next task.
 
-Because `controller_report.md` is generated before reviewer execution, it must
-not require or invent a reviewer decision. Before independent review, controller
-reports may only use:
+`controller_report.md` must not require or invent a reviewer decision. The
+default terminal controller decision is machine-checkable:
 
 ```text
-route_promotion_decision: NOT_REVIEWED
-route_negative_decision: NOT_REVIEWED
-scientific_resolution_status: AWAITING_REVIEW
+controller_verification_decision: VERIFIED_COMPLETE | NEEDS_REPAIR | OPERATIONALLY_BLOCKED
+operational_completion_status:
+experiment_adequacy_decision:
+contract_compliance_status:
+required_outputs_complete:
+validators_passed:
+all_jobs_terminal:
+aggregation_complete:
+git_commit_decision:
+git_push_decision:
+next_required_action: RETURN_TO_PLANNER | CONTINUE_CURRENT_TASK | HUMAN_INTERVENTION_REQUIRED
 ```
 
-Final scientific decisions require the independent reviewer token and later GPT
-planner judgment.
+Only `controller_verification_decision: VERIFIED_COMPLETE` represents current
+Batch completion. Final scientific decisions, validation upload, hosted metric
+claims, fold expansion, new architecture, external data, route promotion, and
+the next Batch require Planner/user authorization.
 
 ## Required Execution Contract
 
@@ -120,8 +134,9 @@ wiki_update_required: true | false
 diagram_update_required: true | false
 slurm_runtime_continuity_required: true | false
 continuity_backend: none | slurm_dependency | tmux_watcher
-review_mode: independent_thread | short_goal
-reviewer: separate_readonly
+review_required: false | true
+review_mode: none | independent_thread | short_goal
+reviewer: none | separate_readonly
 ```
 
 The controller must not increase executor or mapper counts beyond the
@@ -281,24 +296,12 @@ planning_reviewed_commit:
 ---
 ```
 
-Critic is required whenever `task_kind: scientific_milestone`,
-`risk_level: high`, `architecture_impact: system`,
-`slurm_runtime_continuity_required: true`, `executor_count > 1`,
-`route_change: true`, or `scientific_decision_scope != none`. A critic-required
-staging prompt can become `READY_FOR_CODEX_MERGE` only when
-`prompts/tasks/<task_key>_planning_review.md` validates against
-`planning_review.schema.yaml` and its reviewed contract hash matches the current
-prompt.
-
-The generic critic gate requires pre-execution planning review whenever any
-schema trigger applies:
-
-```text
-planner GPT -> separate GPT critic -> Codex merge/validator -> controller
-```
-
-This planning critic is not a controller runtime subagent and is not the
-post-execution reviewer. The frontmatter must use:
+Risk fields such as `task_kind: scientific_milestone`, `risk_level: high`,
+`architecture_impact: system`, `slurm_runtime_continuity_required: true`,
+`executor_count > 1`, `route_change: true`, and
+`scientific_decision_scope != none` classify risk and required evidence, but
+they do not automatically require a planning critic. A planning critic is
+enabled only when the Planner or user explicitly sets:
 
 ```yaml
 planning_review_required: true
@@ -308,10 +311,14 @@ planning_review_token: <controlled token>
 planning_reviewed_commit: <commit>
 ```
 
-Without a completed matching planning review, critic-required staging files may
-only use `status: DRAFT_FOR_PLANNING_REVIEW`,
-`status: PLANNING_REVIEW_RUNNING`, `status: NEEDS_PLANNING_REVISION`, or
-`status: BLOCKED_HANDOFF_REVIEW`. They must not be `READY_FOR_CODEX_MERGE`.
+When this explicit opt-in is present, the legacy planning-review receipt remains
+binding: `prompts/tasks/<task_key>_planning_review.md` must validate against
+`planning_review.schema.yaml`, its reviewed contract hash must match the
+current prompt, and READY candidates without a completed matching planning
+review remain blocked. Future tasks without explicit opt-in use
+`planning_review_required: false`, `planning_reviewer: none`,
+`planning_review_path: null`, `planning_review_token: null`, and
+`planning_reviewed_commit: null`.
 
 ```text
 ## Execution Contract
@@ -321,16 +328,54 @@ only use `status: DRAFT_FOR_PLANNING_REVIEW`,
 ## Reviewer Prompt
 ```
 
-Future short-task staging prompts must contain:
+Future short-task staging prompts with `review_required: false` must contain:
 
 ```text
 ## Execution Contract
 ## Executor Prompt
-## Reviewer Prompt
 ```
+
+Add `## Reviewer Prompt` only when `review_required: true`.
 
 Long Slurm or overnight prompts without both a Controller Prompt and durable
 finalizer contract are invalid.
+
+## Default Sprint Template
+
+```yaml
+task_kind: scientific_milestone
+risk_level: high
+execution_mode: controller_supervised
+requires_execution_controller: true
+executor_count: 1
+controller_is_coordinator: true
+planning_review_required: false
+planning_reviewer: none
+planning_review_path: null
+planning_review_token: null
+planning_reviewed_commit: null
+review_required: false
+review_mode: none
+reviewer: none
+slurm_runtime_continuity_required: true
+continuity_backend: slurm_dependency
+allow_git_commit: true
+auto_git_commit: true
+allow_git_push: false
+auto_git_push: false
+```
+
+Default flow:
+
+```text
+Planner
+-> Controller/Coordinator
+-> Executor
+-> Controller verification and repair loop
+-> deterministic finalizer/validators
+-> local commit
+-> Planner
+```
 
 ## Git Boundary
 

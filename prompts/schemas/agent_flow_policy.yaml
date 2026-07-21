@@ -1,4 +1,4 @@
-schema_version: 1
+schema_version: 2
 canonical_roles:
   - planner
   - critic
@@ -13,27 +13,66 @@ legacy_role_aliases:
   execution_controller: controller
   strategic_controller: planner
 planning_states:
+  - READY
   - DRAFT_FOR_PLANNING_REVIEW
   - PLANNING_REVIEW_RUNNING
   - NEEDS_PLANNING_REVISION
   - READY_FOR_CODEX_MERGE
   - BLOCKED_HANDOFF_REVIEW
-critic_required_when:
-  task_kind:
-    - scientific_milestone
-  risk_level:
-    - high
-  architecture_impact:
-    - system
-  slurm_runtime_continuity_required: true
-  executor_count_gt: 1
-  route_change: true
-  scientific_decision_scope_not:
-    - none
-controller_pre_review_fields:
-  route_promotion_decision: NOT_REVIEWED
-  route_negative_decision: NOT_REVIEWED
-  scientific_resolution_status: AWAITING_REVIEW
+planning_review_defaults:
+  planning_review_required: false
+  planning_reviewer: none
+  planning_review_path: null
+  planning_review_token: null
+  planning_reviewed_commit: null
+planning_review_opt_in:
+  enabled_only_when_planner_or_user_sets_planning_review_required: true
+  required_reviewer: separate_gpt_thread
+risk_classification_fields_not_auto_critic_gates:
+  - task_kind
+  - risk_level
+  - architecture_impact
+  - slurm_runtime_continuity_required
+  - executor_count
+  - route_change
+  - scientific_decision_scope
+review_defaults:
+  review_required: false
+  review_mode: none
+  reviewer: none
+review_opt_in:
+  enabled_only_when_planner_or_user_sets_review_required: true
+  valid_review_modes:
+    - independent_thread
+    - short_goal
+  required_reviewer: separate_readonly
+default_sprint_flow:
+  - planner
+  - controller/coordinator
+  - executor
+  - optional mapper
+  - deterministic finalizer
+  - deterministic validators
+  - controller verification and repair loop
+  - local lightweight commit
+  - planner
+controller_completion_decisions:
+  - VERIFIED_COMPLETE
+  - NEEDS_REPAIR
+  - OPERATIONALLY_BLOCKED
+controller_terminal_completion_fields:
+  controller_verification_decision: VERIFIED_COMPLETE
+  required_outputs_complete: true
+  validators_passed: true
+  all_jobs_terminal: true
+  aggregation_complete: true
+  next_required_action: RETURN_TO_PLANNER
+noncompletion_runtime_states:
+  - SUBMITTED
+  - PENDING
+  - RUNNING
+  - NEEDS_MONITOR
+  - AWAITING_SACCT
 git_defaults:
   auto_git_commit: true
   allow_git_commit: true
@@ -47,19 +86,19 @@ publication:
     - .json
   max_lightweight_file_bytes: 1048576
   forbidden_path_patterns:
-    - "(^|/)checkpoints?(/|$)"
-    - "checkpoint_.*\\.(pth|pt|ckpt)$"
-    - "\\.(pth|pt|ckpt)$"
-    - "(^|/)predictions?(/|$)"
-    - "\\.nii(\\.gz)?$"
-    - "\\.zip$"
-    - "(^|/)upload_ready(/|$)"
-    - "validation[_-]?package"
-    - "hosted[_-]?validation"
-    - "(^|/)logs?(/|$)"
-    - "\\.log$"
-    - "transcript"
-    - "environment[_-]?dump"
-    - "\\.env($|[./])"
-    - "credential"
-    - "secret"
+    - '(^|/)checkpoints?(/|$)'
+    - 'checkpoint_.*\.(pth|pt|ckpt)$'
+    - '\.(pth|pt|ckpt)$'
+    - '(^|/)predictions?(/|$)'
+    - '\.nii(\.gz)?$'
+    - '\.zip$'
+    - '(^|/)upload_ready(/|$)'
+    - 'validation[_-]?package'
+    - 'hosted[_-]?validation'
+    - '(^|/)logs?(/|$)'
+    - '\.log$'
+    - 'transcript'
+    - 'environment[_-]?dump'
+    - '\.env($|[./])'
+    - 'credential'
+    - 'secret'

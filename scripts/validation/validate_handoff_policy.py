@@ -40,8 +40,14 @@ FORBIDDEN_PUBLICATION_PATTERNS = [
 
 REPORT_REQUIRED_FIELDS = [
     "controller_run_status",
+    "controller_verification_decision",
     "operational_completion_status",
     "experiment_adequacy_decision",
+    "contract_compliance_status",
+    "required_outputs_complete",
+    "validators_passed",
+    "all_jobs_terminal",
+    "aggregation_complete",
     "route_promotion_decision",
     "route_negative_decision",
     "scientific_resolution_status",
@@ -64,7 +70,7 @@ TRAINING_EVIDENCE_FIELDS = [
     "prediction_sanity",
 ]
 MONITOR_STATE_RE = re.compile(
-    r"\b(NEEDS_MONITOR|PENDING_MONITOR|JOB_SUBMITTED|PENDING_PRIORITY|PENDING|RUNNING|AWAITING_SACCT|CONFIGURING|COMPLETING)\b",
+    r"\b(SUBMITTED|NEEDS_MONITOR|PENDING_MONITOR|JOB_SUBMITTED|PENDING_PRIORITY|PENDING|RUNNING|AWAITING_SACCT|CONFIGURING|COMPLETING)\b",
     re.IGNORECASE,
 )
 FORBIDDEN_MAPPER_SCAN_RE = re.compile(
@@ -278,19 +284,8 @@ def canonical_milestone_id(value: object) -> str:
 
 
 def critic_required(frontmatter: dict[str, object]) -> bool:
-    task_kind = normalized_scalar(frontmatter.get("task_kind")).lower()
-    risk_level = normalized_scalar(frontmatter.get("risk_level")).lower()
-    architecture_impact = normalized_scalar(frontmatter.get("architecture_impact")).lower()
-    scientific_scope = normalized_scalar(frontmatter.get("scientific_decision_scope")).lower()
-    return (
-        task_kind == "scientific_milestone"
-        or risk_level == "high"
-        or architecture_impact == "system"
-        or as_bool(frontmatter.get("slurm_runtime_continuity_required"))
-        or as_int(frontmatter.get("executor_count"), 1) > 1
-        or as_bool(frontmatter.get("route_change"))
-        or (scientific_scope not in {"", "none", "null"})
-    )
+    """Return whether the task explicitly opts into the legacy planning critic gate."""
+    return as_bool(frontmatter.get("planning_review_required"))
 
 
 def load_contract_hasher(repo_root: Path):
@@ -489,6 +484,20 @@ def validate_task_file(path: Path, text: str, strict: bool) -> list[Finding]:
     if not frontmatter:
         return findings
 
+    review_required = as_bool(frontmatter.get("review_required"))
+    review_mode = normalized_scalar(frontmatter.get("review_mode")).lower()
+    reviewer = normalized_scalar(frontmatter.get("reviewer")).lower()
+    if review_required:
+        if review_mode not in {"independent_thread", "short_goal"}:
+            findings.append(Finding(severity(strict), path, "review_required: true requires review_mode: independent_thread or short_goal."))
+        if reviewer != "separate_readonly":
+            findings.append(Finding(severity(strict), path, "review_required: true requires reviewer: separate_readonly."))
+    else:
+        if review_mode not in {"", "none", "null"}:
+            findings.append(Finding(severity(strict), path, "review_required: false requires review_mode: none."))
+        if reviewer not in {"", "none", "null"}:
+            findings.append(Finding(severity(strict), path, "review_required: false requires reviewer: none."))
+
     execution_mode = str(frontmatter.get("execution_mode", "")).strip("\"'")
     continuity_backend = str(frontmatter.get("continuity_backend", "")).strip("\"'")
     if milestone_staging:
@@ -534,8 +543,6 @@ def validate_task_file(path: Path, text: str, strict: bool) -> list[Finding]:
                 )
             if BAD_PLANNING_REVIEWER_RE.search(normalized_scalar(frontmatter.get("planning_reviewer"))):
                 findings.append(Finding("error", path, "planning reviewer cannot be a controller/executor/runtime subagent."))
-        elif needs_critic:
-            findings.append(Finding("error", path, "this task requires planning_review_required: true under agent_flow_policy critic_required_when."))
         if status in PLANNING_REVIEW_READY_STATUSES:
             if needs_critic and is_blank_or_none(frontmatter.get("planning_review_token")):
                 findings.append(Finding("error", path, "READY milestone staging requires non-empty planning_review_token."))
@@ -754,23 +761,17 @@ def validate_task_file(path: Path, text: str, strict: bool) -> list[Finding]:
         is_execution_task(frontmatter)
         and risk_level in {"medium", "high"}
         and has_any_git_permission(frontmatter)
+        and as_bool(frontmatter.get("review_required"))
+        and "audit" not in text.lower()
+        and "review" not in text.lower()
     ):
-        if not as_bool(frontmatter.get("review_required")):
-            findings.append(
-                Finding(
-                    severity(strict),
-                    path,
-                    "medium/high-risk executor task allows git without review_required: true.",
-                )
+        findings.append(
+            Finding(
+                severity(strict),
+                path,
+                "explicit review_required task allows git but lacks audit/review text.",
             )
-        if "audit" not in text.lower() and "review" not in text.lower():
-            findings.append(
-                Finding(
-                    severity(strict),
-                    path,
-                    "medium/high-risk executor task allows git without explicit audit/review text.",
-                )
-            )
+        )
 
     return findings
 
@@ -829,11 +830,57 @@ def has_forbidden_publication_path(path_text: str) -> bool:
     return any(pattern.search(normalized) for pattern in FORBIDDEN_PUBLICATION_PATTERNS)
 
 
+def normalized_field_value(text: str, field: str) -> str:
+    value = field_value(text, field)
+    if value is None:
+        return ""
+    return value.strip().strip("`\"'")
+
+
+def field_is_true(text: str, field: str) -> bool:
+    return normalized_field_value(text, field).lower() in {"true", "yes", "pass", "passed", "complete"}
+
+
+def verify_controller_completion_fields(path: Path, text: str) -> list[Finding]:
+    findings: list[Finding] = []
+    if normalized_field_value(text, "controller_verification_decision") != "VERIFIED_COMPLETE":
+        return findings
+    required_true = {
+        "required_outputs_complete": "required outputs are incomplete",
+        "validators_passed": "validators did not pass",
+        "all_jobs_terminal": "Slurm/job accounting is not terminal",
+        "aggregation_complete": "aggregation is incomplete",
+    }
+    for field, message in required_true.items():
+        if not field_is_true(text, field):
+            findings.append(Finding("error", path, f"VERIFIED_COMPLETE invalid: {message}."))
+    contract_status = normalized_field_value(text, "contract_compliance_status")
+    if contract_status not in {"PASS", "COMPLETE", "COMPLIANT"}:
+        findings.append(Finding("error", path, "VERIFIED_COMPLETE requires contract_compliance_status: PASS/COMPLETE/COMPLIANT."))
+    adequacy = normalized_field_value(text, "experiment_adequacy_decision")
+    if adequacy in {"FAIL", "EVIDENCE_NOT_FOUND", "NEEDS_EVIDENCE", "NEEDS_REPAIR"}:
+        findings.append(Finding("error", path, "VERIFIED_COMPLETE cannot use failing experiment_adequacy_decision."))
+    if MONITOR_STATE_RE.search(text):
+        findings.append(Finding("error", path, "VERIFIED_COMPLETE contains submitted/pending/running/monitor state."))
+    next_action = normalized_field_value(text, "next_required_action")
+    if next_action != "RETURN_TO_PLANNER":
+        findings.append(Finding("error", path, "VERIFIED_COMPLETE requires next_required_action: RETURN_TO_PLANNER."))
+    return findings
+
+
+def validate_completion_check_file(path: Path, text: str) -> list[Finding]:
+    if path.name != "completion_check.md":
+        return []
+    return verify_controller_completion_fields(path, text)
+
+
 def validate_controller_report(path: Path, text: str) -> list[Finding]:
     findings: list[Finding] = []
     lower_text = text.lower()
     if path.name != "controller_report.md":
         return findings
+
+    findings.extend(verify_controller_completion_fields(path, text))
 
     if "review.md" in text and re.search(r"(?i)controller.*wrote|wrote.*review\.md|AUDITED_GO", text):
         findings.append(
@@ -1106,8 +1153,13 @@ def validate_active_policy_doc(path: Path, text: str) -> list[Finding]:
             )
         if re.search(r"(?i)controller\s+(launches|starts|creates|uses)\s+(an\s+)?internal auditor|auditor_subtasks|controller-internal auditor", text) and not re.search(r"(?is)must not.*internal auditor|must not.*controller-internal auditor|must not use `?auditor_subtasks`?|do not create.*internal auditor|do not create.*controller-internal auditor", text):
             findings.append(Finding("error", path, "active policy still describes controller-internal auditor behavior."))
-        if re.search(r"(?i)controller.*(decide|decides|decision).*route promotion", text) and "NOT_REVIEWED" not in text:
-            findings.append(Finding("error", path, "active policy lets controller decide route promotion before reviewer."))
+        if re.search(r"(?i)controller.*(decide|decides|decision).*route promotion", text):
+            safe_boundary = re.search(
+                r"(?i)(must not|不得|not decide|remain[s]? planner|planner/user decision|planner.*decision|not authorized)",
+                text,
+            )
+            if "NOT_REVIEWED" not in text and not safe_boundary:
+                findings.append(Finding("error", path, "active policy lets controller decide route promotion."))
         if "reviewer_review" in text and not re.search(r"(?i)must not require `?reviewer_review`?|without reviewer_review|requires `?reviewer_review`?.*failure", text):
             findings.append(Finding("error", path, "active policy requires reviewer_review before controller commit."))
         if PUSH_TRUE_RE.search(text):
@@ -1329,8 +1381,9 @@ def validate_controller_packet_dir(path: Path) -> list[Finding]:
     completion = path / "completion_check.md"
     if not completion.is_file():
         return findings
-    text = completion.read_text(encoding="utf-8")
-    if "PACKET_COMMITTED_FOR_REVIEW" not in text:
+    completion_text = completion.read_text(encoding="utf-8")
+    terminal_markers = {"PACKET_COMMITTED_FOR_REVIEW", "VERIFIED_COMPLETE"}
+    if not any(marker in completion_text for marker in terminal_markers):
         return findings
     missing = [rel for rel in controller_packet_base_files(Path.cwd()) if not (path / rel).is_file()]
     if missing:
@@ -1338,9 +1391,37 @@ def validate_controller_packet_dir(path: Path) -> list[Finding]:
             Finding(
                 "error",
                 path,
-                "controller packet committed for review is missing required files: " + ", ".join(missing),
+                "controller packet terminal completion is missing required files: " + ", ".join(missing),
             )
         )
+    if re.search(r"(?m)^review_required\s*:\s*true\s*$", completion_text, re.IGNORECASE):
+        reviewer_required = ["review_request.md", "subagents/reviewer_prompt.md"]
+        missing_reviewer = [rel for rel in reviewer_required if not (path / rel).is_file()]
+        if missing_reviewer:
+            findings.append(
+                Finding(
+                    "error",
+                    path,
+                    "explicit review_required packet is missing reviewer handoff files: " + ", ".join(missing_reviewer),
+                )
+            )
+    if "VERIFIED_COMPLETE" in completion_text:
+        findings.extend(verify_controller_completion_fields(completion, completion_text))
+        report = path / "controller_report.md"
+        if report.is_file():
+            report_text = report.read_text(encoding="utf-8")
+            if normalized_field_value(report_text, "controller_verification_decision") != "VERIFIED_COMPLETE":
+                findings.append(Finding("error", report, "completion_check VERIFIED_COMPLETE requires controller_report.md to agree."))
+        finalizer = path / "finalizer_state.json"
+        if finalizer.is_file():
+            try:
+                finalizer_data = json.loads(finalizer.read_text(encoding="utf-8"))
+            except json.JSONDecodeError as exc:
+                findings.append(Finding("error", finalizer, f"finalizer_state.json is not valid JSON: {exc}"))
+            else:
+                final_state = str(finalizer_data.get("final_state", "")).upper()
+                if final_state not in {"VERIFIED_COMPLETE", "READY_FOR_LOCAL_PACKET_COMMIT", "PACKET_COMMITTED_FOR_REVIEW"}:
+                    findings.append(Finding("error", finalizer, "VERIFIED_COMPLETE packet requires terminal finalizer_state."))
     return findings
 
 
@@ -1368,6 +1449,7 @@ def validate_paths(paths: Sequence[Path], strict_tasks: bool = False) -> list[Fi
         if path.suffix == ".md":
             findings.extend(validate_task_file(path, text, strict=strict_tasks))
             findings.extend(validate_controller_report(path, text))
+            findings.extend(validate_completion_check_file(path, text))
             findings.extend(validate_review_file(path, text))
         elif path.name == "COMPONENTS.csv":
             findings.extend(validate_components_csv(path, text))

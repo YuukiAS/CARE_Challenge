@@ -42,12 +42,12 @@ mirror only. The validator must reject a staging file with no frontmatter, a
 frontmatter/body mismatch, a missing `executor_plan_path`, or an executor plan
 that fails `scripts/ops/validate_executor_plan.py`.
 
-Any staged milestone requires a pre-execution planning review by a separate GPT
-thread when the generic critic gate is triggered. The gate is triggered by any
-of: `task_kind: scientific_milestone`, `risk_level: high`,
+Future staged milestones default to no planning critic. Risk fields such as
+`task_kind: scientific_milestone`, `risk_level: high`,
 `architecture_impact: system`, `slurm_runtime_continuity_required: true`,
-`executor_count > 1`, `route_change: true`, or
-`scientific_decision_scope != none`.
+`executor_count > 1`, `route_change: true`, and
+`scientific_decision_scope != none` classify risk and required evidence, but do
+not automatically require a separate GPT critic.
 
 ```text
 planner GPT -> separate GPT critic -> Codex merge/validator -> controller
@@ -110,11 +110,12 @@ wiki_update_required: true | false
 diagram_update_required: true | false
 slurm_runtime_continuity_required: true | false
 continuity_backend: none | slurm_dependency | tmux_watcher
-review_mode: independent_thread | short_goal
-reviewer: separate_readonly
+review_required: false | true
+review_mode: none | independent_thread | short_goal
+reviewer: none | separate_readonly
 ```
 
-Use `controller_supervised` for overnight, long Slurm, multi-job, or high-resume-risk work. Default to exactly one executor and one mapper unless the GPT-authored task graph explicitly grants more isolated slots. Any `executor_count > 1`, `executor_slots > 1`, or `parallel_execution_allowed: true` task must include a validated executor plan with isolated write scopes, worktrees, runtime outputs, logs, locks, and merge order. The controller owns continuity and phase grounding; the executor performs authorized implementation/jobs; the mapper is read-only architecture/evidence mapping; the finalizer is deterministic `FINALIZER_A` accounting/aggregation plus `FINALIZER_B` validation/local packet commit; the reviewer is a separate read-only thread after the final packet is committed. Controller reports written before review must use `route_promotion_decision: NOT_REVIEWED`, `route_negative_decision: NOT_REVIEWED`, and `scientific_resolution_status: AWAITING_REVIEW`.
+Use `controller_supervised` for overnight, long Slurm, multi-job, or high-resume-risk work. Default to exactly one executor and one mapper unless the GPT-authored task graph explicitly grants more isolated slots. Any `executor_count > 1`, `executor_slots > 1`, or `parallel_execution_allowed: true` task must include a validated executor plan with isolated write scopes, worktrees, runtime outputs, logs, locks, and merge order. The controller is the coordinator and acceptance owner: it owns continuity, phase grounding, executor supervision, git-diff inspection, same-scope repair loops, Slurm terminal accounting, aggregation, validators, and local result commit. Reviewer is optional and used only when `review_required: true` is explicit. Controller reports must end with `controller_verification_decision` and the required machine-checkable completion fields.
 
 For architecture-affecting work, use `.agents/skills/care-mapper/SKILL.md` and the helpers in `scripts/architecture/`. A route or handoff update is not complete if `wiki/COMPONENTS.csv`, `wiki/architecture.yaml`, required figures, Toolkit healthcheck, or mapper/finalizer evidence is stale.
 

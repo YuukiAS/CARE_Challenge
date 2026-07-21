@@ -44,8 +44,9 @@ wiki_update_required: true | false
 diagram_update_required: true | false
 slurm_runtime_continuity_required: true | false
 continuity_backend: none | slurm_dependency | tmux_watcher
-review_mode: independent_thread | short_goal
-reviewer: separate_readonly
+review_required: false | true
+review_mode: none | independent_thread | short_goal
+reviewer: none | separate_readonly
 ```
 
 Every milestone staging file matching `prompts/shared/M[0-9]*_*.md` must place
@@ -55,29 +56,26 @@ malformed frontmatter, body/frontmatter mismatches, missing `executor_plan_path`
 or a failing `scripts/ops/validate_executor_plan.py` result are hard-gate
 failures.
 
-Any staging prompt that triggers the generic critic gate requires a separate GPT
-planning critic before Codex execution. The required sequence is:
+Planning critic is opt-in only. Default frontmatter is:
+
+```yaml
+planning_review_required: false
+planning_reviewer: none
+planning_review_path: null
+planning_review_token: null
+planning_reviewed_commit: null
+```
+
+If the Planner or user explicitly sets `planning_review_required: true`, the
+legacy sequence remains available:
 
 ```text
 planner GPT -> separate GPT critic -> Codex merge/validator -> controller
 ```
 
-This planning critic is not a controller subagent and not the independent
-post-execution reviewer. Required frontmatter:
-
-```yaml
-planning_review_required: true
-planning_reviewer: separate_gpt_thread
-planning_review_path: prompts/tasks/<task_key>_planning_review.md
-planning_review_token: <controlled token>
-planning_reviewed_commit: <commit>
-```
-
-If a critic-required staging prompt lacks a matching planning review hash/token,
-its only allowed statuses are `DRAFT_FOR_PLANNING_REVIEW`,
-`PLANNING_REVIEW_RUNNING`, `NEEDS_PLANNING_REVISION`, or
-`BLOCKED_HANDOFF_REVIEW`. `READY_FOR_CODEX_MERGE` is forbidden until the
-separate GPT planning review is present and current.
+Then the planning reviewer must be `separate_gpt_thread`, the review hash/token
+must match the current contract, and READY status is forbidden until the receipt
+validates.
 
 Overnight, long Slurm, multi-job, or high-resume-risk work must be `controller_supervised` and must have a durable continuity backend. Architecture/loss/dataflow/export/registration/temporal changes must enable mapper and update root `wiki/` unless explicitly classified as `architecture_impact: none` with fingerprint evidence. New tasks must not introduce a controller-internal `auditor`; use `mapper` for internal read-only architecture mapping and `reviewer` for the final independent read-only audit.
 
@@ -100,7 +98,7 @@ read all predecessor component analyses. A non-latest predecessor requires
 `history_baseline_override` and `history_baseline_override_reason`. Missing
 `history_files_read` or equivalent explicit file list is a hard-gate failure.
 
-Controller reports written before the independent reviewer must not claim reviewer approval, audited-go, route promotion, or scientific stop. They must use `route_promotion_decision: NOT_REVIEWED`, `route_negative_decision: NOT_REVIEWED`, and `scientific_resolution_status: AWAITING_REVIEW`. Any controller prompt that requires `reviewer_review` as evidence before controller commit, permits controller/reviewer push, or sets `auto_git_push` / `allow_git_push` / `allow_diagnostic_push` true is a hard-gate failure.
+Controller reports must not claim reviewer approval, audited-go, route promotion, validation upload, hosted metric claim, fold expansion, next Batch, or scientific stop. They must use `controller_verification_decision: VERIFIED_COMPLETE | NEEDS_REPAIR | OPERATIONALLY_BLOCKED` and prove required outputs, validators, terminal job accounting, aggregation, contract compliance, and local commit status. Any controller prompt that requires `reviewer_review` as evidence before controller commit, permits controller/reviewer push, or sets `auto_git_push` / `allow_git_push` / `allow_diagnostic_push` true is a hard-gate failure.
 
 For every controller task, GPT must define an explicit ordered task graph. The graph must include every required subtask key, the exact expected `results/<task_key>/` directory, and whether that subtask is blocking or optional. A blocking subtask that has no result directory must be treated as `INCOMPLETE`, not as skipped, replaced, or diagnostic.
 

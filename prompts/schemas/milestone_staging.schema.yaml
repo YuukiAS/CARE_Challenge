@@ -65,13 +65,13 @@ draft_states:
   - NEEDS_PLANNING_REVISION
   - BLOCKED_HANDOFF_REVIEW
 body_sections:
-  direct_executor:
+  direct_executor_default:
     - "## Execution Contract"
     - "## Executor Prompt"
-    - "## Reviewer Prompt"
-  controller_supervised:
+  controller_supervised_default:
     - "## Execution Contract"
     - "## Controller Prompt"
     - "## Executor Worker Contract"
     - "## Mapper Contract"
+  review_required_additional:
     - "## Reviewer Prompt"

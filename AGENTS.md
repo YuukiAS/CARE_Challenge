@@ -4,7 +4,7 @@
 
 New GPT/ChatGPT planning threads must read `START_HERE_FOR_GPT.md`, `GPT_PLANNER_CARE_PROTOCOL.md`, `prompts/AGENT_FLOW_V2_PROTOCOL.md`, `prompts/routes/ROUTE_ANTI_LAZINESS_PROTOCOL.md`, and `prompts/routes/ROUTE_HARD_REQUIREMENTS_MATRIX.md` before writing CARE milestones, Codex goals, handoffs, or route judgments. For any SRR/MyoPS/Cine route planning, they must execute `prompts/THREAD_BOOTSTRAP_ROUTE_IMAGE_PROTOCOL.md`, visually read the SRR diagrams at `v2` and later from ChatGPT Project background files / project materials, and block without generating a milestone if those project-background diagrams cannot be accessed or interpreted. Repository paths such as `images/SRR-v2.png`, `images/SRR-v2.5.png`, and `images/SRR-v3.png` remain canonical filenames and version references, not the required GPT visual-reading entrypoint.
 
-For future CARE milestones, GPT/ChatGPT must author both executor and reviewer content before asking Codex to implement the milestone. To avoid oversized direct edits to `prompts/shared/EXECUTOR_PROMPTS.md` and `prompts/shared/REVIEWER_PROMPTS.md`, GPT must place the new milestone prompt as a standalone Markdown staging file under `prompts/shared/` named `M<id>_<short_slug>.md`, for example `M<id>_mechanism_repair.md`. That staging file must clearly separate executor and reviewer sections. A later Codex maintenance step will split/merge those sections into the canonical shared prompt files and delete the standalone staging file after merge.
+For future CARE milestones, GPT/ChatGPT must author executor/controller content before asking Codex to implement the milestone. Reviewer content is optional and required only when a task explicitly sets `review_required: true`. To avoid oversized direct edits to `prompts/shared/EXECUTOR_PROMPTS.md` and `prompts/shared/REVIEWER_PROMPTS.md`, GPT must place the new milestone prompt as a standalone Markdown staging file under `prompts/shared/` named `M<id>_<short_slug>.md`, for example `M<id>_mechanism_repair.md`. That staging file must clearly separate executor and reviewer sections. A later Codex maintenance step will split/merge those sections into the canonical shared prompt files and delete the standalone staging file after merge.
 
 ## Temporary /users Workspace Safety
 
@@ -65,13 +65,13 @@ As of 2026-07-20, future GPT/Codex implementation defaults to `main` in `/users/
 
 For new CARE handoffs, `prompts/AGENT_FLOW_V2_PROTOCOL.md` and `prompts/schemas/agent_flow_policy.yaml` are the canonical sources. Use only these active role names: `planner`, `critic`, `controller`, `executor`, `mapper`, `finalizer`, `validator`, and `reviewer`. Historical `auditor`, `execution_controller`, and strategic-controller fields are legacy aliases only; do not create a controller-internal auditor subagent in new tasks.
 
-Short, non-Slurm, low-resume-risk work may use `planner -> executor -> reviewer`. Overnight, long Slurm, multi-job, or high-resume-risk work must use `planner -> controller -> executor/mapper/finalizer/validator -> separate reviewer`.
+Short, non-Slurm, low-resume-risk work may use `planner -> executor -> local result commit -> planner`. Overnight, long Slurm, multi-job, or high-resume-risk work must use `planner -> controller/coordinator -> executor/mapper/finalizer/validator -> controller verification and repair loop -> local result commit -> planner`.
 
 Every new CARE task or milestone must satisfy the appropriate schema under `prompts/schemas/`: direct executor and controller-supervised staging use `milestone_staging.schema.yaml`, executor waves use `executor_plan.schema.yaml`, result packets use `controller_packet.schema.yaml`, and runtime review uses `runtime_review.schema.yaml`. Defaults are one executor and one mapper for controller-supervised work; the controller must not increase subagent counts beyond the GPT-authored task graph.
 
-The `controller` owns task continuity, phase re-grounding, Slurm monitor state, and finalizer handoff inside one GPT-authored task. The `executor` performs authorized implementation and job submission but does not own overnight continuity or self-review. The `mapper` is read-only architecture/evidence mapping and uses `.agents/skills/care-mapper/SKILL.md`. The `finalizer` is deterministic terminal accounting, aggregation, validation, wiki finalization, and local packet commit; it is not an LLM subagent. The `reviewer` starts only after the final packet is committed and remains read-only.
+The `controller` is the coordinator and acceptance owner. It owns task continuity, phase re-grounding, executor supervision, git-diff inspection, Slurm monitor state, same-scope repair loops, finalizer handoff, validator success, and the verified terminal local result commit inside one GPT-authored task. The `executor` performs authorized implementation and job submission but cannot declare the whole task complete. The `mapper` is read-only architecture/evidence mapping and uses `.agents/skills/care-mapper/SKILL.md`. The `finalizer` is deterministic terminal accounting, aggregation, validation, wiki finalization, and local packet commit; it is not an LLM subagent. The `reviewer` starts only when `review_required: true` is explicitly set and remains read-only.
 
-Controller reports are generated before independent review. Before reviewer execution, controllers may only write `route_promotion_decision: NOT_REVIEWED`, `route_negative_decision: NOT_REVIEWED`, and `scientific_resolution_status: AWAITING_REVIEW`; final scientific decisions require reviewer evidence and later GPT planner judgment.
+Controller reports are generated as the terminal operational acceptance packet. The required machine decision is `controller_verification_decision: VERIFIED_COMPLETE | NEEDS_REPAIR | OPERATIONALLY_BLOCKED`. `VERIFIED_COMPLETE` requires required outputs, validators, terminal job accounting, aggregation, contract compliance, and local commit policy to be complete. Final scientific decisions, validation upload, hosted metric claims, fold expansion, route promotion, and next Batch authorization remain Planner/user decisions.
 
 Executor parallelism gate: any `executor_count > 1`, `executor_slots > 1`, or `parallel_execution_allowed: true` task must provide `executor_plan_path` and pass `scripts/ops/validate_executor_plan.py`. MyoPS and Cine remain sequential unless GPT provides explicit isolation proof.
 
@@ -83,7 +83,7 @@ Route planners and critics must not leave design blanks for Codex/controller to 
 
 Route planners and critics must also preserve the M9/M10 inherited gates now recorded in `prompts/routes/ROUTE_HARD_REQUIREMENTS_MATRIX.md`: truthful mechanism-closure evidence naming, fingerprint audit before inheriting old runtime, machine-readable contract/hash binding, faithful Cine/registration negative boundaries, durable finalizer, runtime no-push, and independent reviewer boundaries.
 
-All Route A/B/C controller work must run as a Codex goal or explicit goal resume, not as a one-off interactive continuation. If a controller submits or inherits Slurm work, the goal must remain responsible through terminal accounting, same-scope operational retry when allowed, post-completion aggregation, local lightweight packet update, and reviewer handoff. A controller must not exit at `NEEDS_MONITOR`, submitted-only, pending, running, or awaiting-accounting state unless a durable watcher/finalizer is already running and recorded in the packet.
+All Route A/B/C controller work must run as a Codex goal or explicit goal resume, not as a one-off interactive continuation. If a controller submits or inherits Slurm work, the goal must remain responsible through terminal accounting, same-scope operational retry when allowed, post-completion aggregation, local lightweight packet update, and verified terminal result. A controller must not exit at `NEEDS_MONITOR`, submitted-only, pending, running, or awaiting-accounting state unless a durable watcher/finalizer is already running and recorded in the packet.
 
 ## MONITOR_PACKET_IS_NOT_COMPLETION
 
@@ -91,13 +91,13 @@ This rule applies to every CARE milestone and follow-up.
 
 A Slurm submission, monitor job, watcher, pending queue state, or submitted-only packet is not a milestone completion packet. If an executor only submitted a job or wrote a monitor packet, it must not write milestone ready or request normal review.
 
-If `completion_check.md`, `result.md`, `commands_run.md`, or a training adequacy table contains `NEEDS_MONITOR`, `PENDING_MONITOR`, `JOB_SUBMITTED`, `PENDING_PRIORITY`, `RUNNING`, `AWAITING_SACCT`, or an equivalent pending/monitor state, the packet is not reviewable as complete. A reviewer must return `NEEDS_EVIDENCE` or `NEEDS_MONITOR`, not audited-go.
+If `completion_check.md`, `result.md`, `commands_run.md`, or a training adequacy table contains `NEEDS_MONITOR`, `PENDING_MONITOR`, `JOB_SUBMITTED`, `PENDING_PRIORITY`, `RUNNING`, `AWAITING_SACCT`, or an equivalent pending/monitor state, the packet is not reviewable as complete. A completion validator or explicit reviewer must return `NEEDS_EVIDENCE` or `NEEDS_MONITOR`, not audited-go or `VERIFIED_COMPLETE`.
 
 After a Slurm job completes, the executor must rerun the relevant aggregator or evidence collector and commit the tracked lightweight result files produced from runtime outputs before requesting review. `commands_run.md` entries showing only `sbatch submitted`, `squeue pending`, `PENDING Priority`, or pending `sacct` are not completion evidence.
 
 Every job-derived completion packet must record job id, state, exit code, runtime, log path, runtime output path, aggregation command, aggregation exit code, and the tracked evidence files updated from runtime output. If the job completed but runtime output is missing or aggregation fails, completion must be `NEEDS_EVIDENCE`, not ready.
 
-Reviewers must check that the tracked packet is the final post-completion aggregation, not the placeholder packet from job submission time. Validators and reviewer prompts must include known-bad cases for: ready completion while `followup*_training_adequacy.csv` contains `PENDING_MONITOR`; `commands_run.md` contains only submitted/pending job state; a Slurm job id exists without completed aggregation record; `result.md` says monitor packet; runtime output is not merged into tracked evidence.
+Controllers, validators, and any explicit reviewers must check that the tracked packet is the final post-completion aggregation, not the placeholder packet from job submission time. Validators and reviewer prompts must include known-bad cases for: ready completion while `followup*_training_adequacy.csv` contains `PENDING_MONITOR`; `commands_run.md` contains only submitted/pending job state; a Slurm job id exists without completed aggregation record; `result.md` says monitor packet; runtime output is not merged into tracked evidence.
 
 ## Plan document governance
 
@@ -383,7 +383,7 @@ published wholesale.
 When GPT needs repository-visible context for deciding the next task, the
 controller may publish only the smallest reviewed diagnostic packet after audit
 or re-audit. Prefer the controller `controller_report.md` and
-`execution_plan.md`, plus each relevant subtask's `result.md` and `review.md`.
+`execution_plan.md`, plus each relevant subtask's `result.md` and explicit `review.md` only when review was required.
 Small reviewed Markdown decision packets such as `failure_interpretation.md`,
 `architecture_gap_audit.md`, `label_export_qc.md`, `training_schedule.md`, or
 `provenance_reconciliation.md` may be published when they are necessary for GPT
@@ -431,8 +431,7 @@ training.
 
 Controller operational completion is not scientific route resolution. A
 controller may finish executor/mapper/finalizer/validator workflow and locally
-commit a lightweight final packet while `scientific_resolution_status` remains
-`AWAITING_REVIEW`. Route-negative conclusions such as `STOP_NO_SIGNAL`,
+commit a lightweight final packet with `controller_verification_decision: VERIFIED_COMPLETE` while scientific next steps remain a Planner/user decision. Route-negative conclusions such as `STOP_NO_SIGNAL`,
 `STOP_NO_PROPREF_SIGNAL`, `STOP_NO_CLEAN_ANCHOR_SIGNAL`, or
 `STOP_NO_ROUTE_BEATS_BASELINE_SIGNAL` require later independent reviewer
 support and GPT planner judgment; controller reports generated before review
@@ -445,29 +444,23 @@ must not claim that decision.
 - If acting as executor, write `result.md` and stop at self-assessment; do not
   claim final audited completion or open the next task.
 - If acting as milestone executor/controller, execute exactly one milestone,
-  write required outputs plus `completion_check.md`, `review_request.md`, and
-  `MANIFEST.md`, then stop. Do not write `review.md`, do not approve yourself,
+  write required outputs plus `controller_report.md`, `completion_check.md`, and
+  `MANIFEST.md`, then stop after a verified terminal result or controlled repair/block decision. Do not write `review.md`, do not approve scientific next steps,
   and do not start the next milestone.
-- If the task requires a reviewer and the current session is executor, do not
-  also review.
+- If the task explicitly sets `review_required: true` and the current session is executor/controller, do not also review.
 - If acting as reviewer, remain read-only; do not fix code, generate missing
   artifacts, or continue execution.
 - If acting as milestone reviewer, read only the completed result
   directory and write `review.md`; only an exact audited-go token in that review
   permits the next milestone.
 - If acting as controller, coordinate executor/mapper/finalizer/validator
-  handoff only inside the GPT-authored controller task. Prepare the separate
-  reviewer handoff after the final packet is committed; do not use an internal
-  auditor for final review.
+  handoff only inside the GPT-authored controller task. Inspect git diff, commands, frozen contract fields, outputs, tests, Slurm terminal accounting, aggregation, and validators after each executor wave; return same-scope gaps to the executor until complete. Prepare a separate reviewer handoff only when `review_required: true`; do not use an internal auditor for final review.
 - The execution controller must not invent new research/product directions. If a
   new direction is needed, write `NEEDS_GPT_PLANNER`.
 - Controller reports must separate `controller_run_status`,
   `operational_completion_status`, `experiment_adequacy_decision`,
   `route_promotion_decision`, `route_negative_decision`, and
-  `scientific_resolution_status`. Before independent review, these must be
-  `route_promotion_decision: NOT_REVIEWED`,
-  `route_negative_decision: NOT_REVIEWED`, and
-  `scientific_resolution_status: AWAITING_REVIEW`.
+  `scientific_resolution_status`. For default sprint-flow tasks, the report must include `controller_verification_decision`, `operational_completion_status`, `experiment_adequacy_decision`, `contract_compliance_status`, `required_outputs_complete`, `validators_passed`, `all_jobs_terminal`, `aggregation_complete`, `git_commit_decision`, `git_push_decision`, and `next_required_action`.
 - For controller tasks, `auto_git_commit: true` and `allow_git_commit: true`
   authorize only a local lightweight final-packet commit for the current task.
   `auto_git_push`, `allow_git_push`, and `allow_diagnostic_push` must remain

@@ -31,9 +31,9 @@ agent-flow v2 lifecycle.
 - `PARALLEL_EXECUTOR_WAVE_RUNNING`: a GPT-authored executor wave is active under
   an executor plan.
 - `VALIDATOR_RUNNING`: fail-closed validators are active.
-- `PACKET_COMMITTED_FOR_REVIEW`: controller/executor locally committed the
-  lightweight final packet and stopped before review.
-- `REVIEWER_RUNNING`: separate read-only reviewer is active.
+- `VERIFIED_COMPLETE`: controller accepted the executor/finalizer/validator packet as terminal for the current task and committed the lightweight result locally.
+- `PACKET_COMMITTED_FOR_REVIEW`: legacy or explicit-review packet locally committed before optional independent review.
+- `REVIEWER_RUNNING`: explicit optional separate read-only reviewer is active.
 - `REVIEWED`: reviewer wrote `review.md`.
 
 ## Outcome States
@@ -95,17 +95,14 @@ machine-checkable scope or permission change may move the task to
 
 ## Scientific States
 
-Controller reports written before independent review must use:
+Default controller reports use:
 
 ```text
-route_promotion_decision: NOT_REVIEWED
-route_negative_decision: NOT_REVIEWED
-scientific_resolution_status: AWAITING_REVIEW
+controller_verification_decision: VERIFIED_COMPLETE | NEEDS_REPAIR | OPERATIONALLY_BLOCKED
+next_required_action: RETURN_TO_PLANNER | CONTINUE_CURRENT_TASK | HUMAN_INTERVENTION_REQUIRED
 ```
 
-Reviewer reviews may use milestone-specific audited tokens. Final route
-promotion or final scientific stop is a reviewer-plus-GPT-planner decision, not
-a controller decision.
+Reviewer reviews may use milestone-specific audited tokens only when `review_required: true` is explicit. Final route promotion, validation upload, hosted metric claim, fold expansion, next Batch, or final scientific stop is a Planner/user decision, not a controller decision.
 
 ## Legacy States
 
@@ -136,4 +133,4 @@ a controller decision.
   `NEEDS_REVISION_PARALLEL_MERGE_CONFLICT` or `NEEDS_REVISION`.
 - Scheduler block requires the Slurm routing skill's pending threshold.
 - Controller local commit does not authorize push, validation upload, hosted
-  metric claims, route promotion, scientific stop, or next milestone.
+  metric claims, fold expansion, route promotion, scientific stop, next Batch, or next milestone.

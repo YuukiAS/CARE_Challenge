@@ -1,7 +1,7 @@
 ---
 task_key: "YYYYMMDD_short_slug"
 project: "CARE_Challenge"
-status: "DRAFT_FOR_PLANNING_REVIEW"
+status: "READY"
 task_kind: "scientific_milestone | maintenance | hotfix | audit"
 task_type: "milestone | execution | controller"
 controller_mode: false
@@ -23,14 +23,14 @@ wiki_update_required: false
 diagram_update_required: false
 slurm_runtime_continuity_required: false
 continuity_backend: none
-review_mode: independent_thread
-reviewer: separate_readonly
-review_required: true
+review_required: false
+review_mode: none
+reviewer: none
 planning_review_required: false
-planning_reviewer: separate_gpt_thread
-planning_review_path: "prompts/tasks/<task_key>_planning_review.md"
-planning_review_token: ""
-planning_reviewed_commit: ""
+planning_reviewer: none
+planning_review_path: null
+planning_review_token: null
+planning_reviewed_commit: null
 allow_code_change: true
 allow_shell_command: true
 allow_network: false
@@ -41,9 +41,9 @@ auto_git_commit: false
 allow_git_push: false
 auto_git_push: false
 allow_diagnostic_push: false
-route_promotion_gate: "No route promotion without independent runtime review."
+route_promotion_gate: "No route promotion without Planner/user authorization."
 experiment_adequacy_gate: "Task-specific evidence gate."
-route_negative_gate: "No scientific stop without adequate evidence and independent review."
+route_negative_gate: "No scientific stop without adequate evidence and Planner/user authorization."
 scientific_completion_gate: "Operational completion is not scientific resolution."
 diagnostic_publication_gate: "none unless explicitly authorized"
 diagnostic_publication_scope: []
@@ -67,7 +67,7 @@ Choose one schema:
 Use `prompts/schemas/milestone_staging.schema.yaml`,
 `prompts/schemas/executor_plan.schema.yaml`,
 `prompts/schemas/controller_packet.schema.yaml`, and
-`prompts/schemas/runtime_review.schema.yaml` as the machine source.
+`prompts/schemas/runtime_review.schema.yaml` as the machine source. Runtime review is optional and applies only when `review_required: true`.
 
 ## Goal
 

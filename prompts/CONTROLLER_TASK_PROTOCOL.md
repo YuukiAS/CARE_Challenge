@@ -27,8 +27,9 @@ wiki_update_required: true | false
 diagram_update_required: true | false
 slurm_runtime_continuity_required: true | false
 continuity_backend: "none" | "slurm_dependency" | "tmux_watcher"
-review_mode: "independent_thread" | "short_goal"
-reviewer: "separate_readonly"
+review_required: false | true
+review_mode: "none" | "independent_thread" | "short_goal"
+reviewer: "none" | "separate_readonly"
 allow_git_commit: true
 auto_git_commit: true
 allow_git_push: false
@@ -56,10 +57,10 @@ tasks must follow this order:
 7. mapper final
 8. FINALIZER_B validators, wiki/history checks, and the single local commit
 9. controller report confirming the committed packet
-10. controller stops
-11. separate reviewer independently runs
-12. reviewer separately commits review.md
-13. user manually pushes
+10. controller stops with `VERIFIED_COMPLETE`, `NEEDS_REPAIR`, or `OPERATIONALLY_BLOCKED`
+11. planner later reads the result packet and decides the next task
+12. optional separate reviewer runs only when `review_required: true`
+13. user pushes only when explicitly authorized
 ```
 
 At each phase, the controller re-grounds from disk/live state. It must not rely
@@ -168,33 +169,31 @@ why_operational_retry_is_insufficient:
 `controller_report.md` is written before independent review. It must not claim
 reviewer approval, audited-go, final route promotion, or final scientific stop.
 
-Before review, the report ending must use:
-
-```text
-route_promotion_decision: NOT_REVIEWED
-route_negative_decision: NOT_REVIEWED
-scientific_resolution_status: AWAITING_REVIEW
-```
-
 Required ending fields:
 
 ```text
 controller_run_status: COMPLETE | INCOMPLETE | BLOCKED
+controller_verification_decision: VERIFIED_COMPLETE | NEEDS_REPAIR | OPERATIONALLY_BLOCKED
 operational_completion_status: COMPLETE | INCOMPLETE
 experiment_adequacy_decision: PASS | FAIL | PARTIAL | EVIDENCE_NOT_FOUND | NOT_REVIEWED
-route_promotion_decision: NOT_REVIEWED
-route_negative_decision: NOT_REVIEWED
-scientific_resolution_status: AWAITING_REVIEW
-diagnostic_publication_decision: LOCAL_PACKET_COMMITTED_FOR_REVIEW | DO_NOT_PUBLISH | NOT_APPLICABLE
+contract_compliance_status: PASS | FAIL
+required_outputs_complete: true | false
+validators_passed: true | false
+all_jobs_terminal: true | false
+aggregation_complete: true | false
+route_promotion_decision: NOT_AUTHORIZED
+route_negative_decision: NOT_AUTHORIZED
+scientific_resolution_status: PLANNER_DECISION_REQUIRED
+diagnostic_publication_decision: LOCAL_PACKET_COMMITTED | DO_NOT_PUBLISH | NOT_APPLICABLE
 git_commit_decision: COMMIT_LOCAL_PACKET | SKIP_COMMIT
 git_push_decision: SKIP_PUSH
 published_files:
   - path
 blocked_actions:
   - validation packaging/upload/fold expansion/hosted metric claim/next-stage training remain blocked
-next_required_action: separate reviewer writes review.md
+next_required_action: RETURN_TO_PLANNER | CONTINUE_CURRENT_TASK | HUMAN_INTERVENTION_REQUIRED
 reason_if_not_published: ...
-reason_if_no_route_promotion: awaiting independent review
+reason_if_no_route_promotion: not authorized by this controller task
 ```
 
 ## Subagent Fallback

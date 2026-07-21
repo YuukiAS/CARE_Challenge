@@ -15,22 +15,20 @@ executor plan, invalid lane, missing `required_completion_file`, missing
 `required_completion_token`, or task/plan executor-count mismatch is a
 planning-stage blocker.
 
-Staging requires a separate GPT planning review before Codex execution whenever
-the generic critic gate in `prompts/schemas/agent_flow_policy.yaml` is
-triggered. It must declare
-`planning_review_required: true`, `planning_reviewer: separate_gpt_thread`,
-`planning_review_path`, `planning_review_token`, and
-`planning_reviewed_commit`. The planning reviewer is not a controller subagent
-and not the post-execution runtime reviewer. Without the token, the staging
-status must be `DRAFT_FOR_PLANNING_REVIEW`, `PLANNING_REVIEW_RUNNING`,
-`NEEDS_PLANNING_REVISION`, or `BLOCKED_HANDOFF_REVIEW`, not
-`READY_FOR_CODEX_MERGE`.
+Staging uses no separate GPT planning review by default:
+`planning_review_required: false`, `planning_reviewer: none`,
+`planning_review_path: null`, `planning_review_token: null`, and
+`planning_reviewed_commit: null`. The legacy planning critic is preserved only
+when the Planner or user explicitly sets `planning_review_required: true`; in
+that case the planning reviewer must be `separate_gpt_thread`, the review hash
+and token must match, and READY status remains blocked until the receipt
+validates.
 
 Overnight, long Slurm, multi-job, or high-resume-risk tasks must use `execution_mode: controller_supervised` and a durable continuity backend. Architecture-changing tasks must enable mapper and update root `wiki/` unless they provide a machine-readable no-change fingerprint receipt. A controller must not increase executor/mapper slots beyond the GPT-authored task graph. New tasks must not use an internal `auditor`; historical `auditor` fields are legacy aliases for the final independent `reviewer`.
 
-Controller reports are written before independent review. They must not require `reviewer_review` as evidence before local packet commit, must not claim audited-go, and must use `route_promotion_decision: NOT_REVIEWED`, `route_negative_decision: NOT_REVIEWED`, and `scientific_resolution_status: AWAITING_REVIEW`.
+Controller reports are terminal operational acceptance records. They must not require `reviewer_review` as evidence before local packet commit and must not claim audited-go, validation upload, hosted metric claim, fold expansion, route promotion, final scientific stop, or the next Batch. The machine decision is `controller_verification_decision: VERIFIED_COMPLETE | NEEDS_REPAIR | OPERATIONALLY_BLOCKED`.
 
-For new controller tasks, push permissions are invalid by default: `auto_git_push`, `allow_git_push`, and `allow_diagnostic_push` must be false. Local commit only means the lightweight final packet is ready for separate reviewer inspection.
+For new controller tasks, push permissions are invalid by default: `auto_git_push`, `allow_git_push`, and `allow_diagnostic_push` must be false. Local commit only means the lightweight final packet is ready for Planner inspection, or for optional separate reviewer inspection when `review_required: true`.
 
 ## Gate Principles
 
@@ -71,13 +69,14 @@ Trainable model evidence must be classified by adequacy. Small probes and smoke 
 
 Operational completion and scientific route status are separate. A controller may finish its assigned workflow while the model route remains undertrained, unresolved, or in need of evidence.
 
-Milestone executor completion and milestone review are also separate. For
-`task_type: milestone`, the executor/controller step must stop after writing
-`completion_check.md` and `review_request.md`. It must not write `review.md`,
-must not mark `*_AUDITED_GO`, and must not start the next milestone. A separate
-read-only reviewer must inspect the result directory and write
-`review.md`; only the exact audited-go token in that review permits the next
-milestone.
+Milestone executor/controller completion and optional milestone review are
+separate. For default `task_type: milestone` or controller sprint tasks, the
+executor/controller step must stop after writing `controller_report.md`,
+`completion_check.md`, and `MANIFEST.md` with a machine-checkable
+`controller_verification_decision`. It must not write `review.md`, must not mark
+`*_AUDITED_GO`, and must not start the next milestone or Batch. A separate
+read-only reviewer and `review.md` are required only when `review_required:
+true` is explicit.
 
 ## Required Controller Report Ending
 
@@ -128,10 +127,11 @@ If any of these gates fail, the controller must stop with `NEEDS_EVIDENCE` or `N
 For milestone chains, also enforce:
 
 10. exact prerequisite `review.md:<MILESTONE>_AUDITED_GO` before starting any
-   non-initial milestone;
-11. exact `completion_check.md` and `review_request.md` before executor stop;
-12. missing independent `review.md` blocks the next milestone;
-13. same-session executor/controller review is invalid for continuation.
+   non-initial milestone only when that predecessor explicitly used
+   `review_required: true`;
+11. exact `controller_report.md`, `completion_check.md`, and `MANIFEST.md` before controller stop;
+12. missing independent `review.md` blocks continuation only for explicit reviewer-gated tasks;
+13. same-session executor/controller review is invalid when an independent reviewer was explicitly required.
 
 
 Executor parallelism gate: any `executor_count > 1`, `executor_slots > 1`, or `parallel_execution_allowed: true` task must provide `executor_plan_path` and pass `scripts/ops/validate_executor_plan.py`. MyoPS and Cine remain sequential unless GPT provides explicit isolation proof.

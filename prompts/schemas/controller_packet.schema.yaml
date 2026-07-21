@@ -9,10 +9,11 @@ base_required_files:
   - validator_report.md
   - controller_report.md
   - completion_check.md
-  - review_request.md
   - MANIFEST.md
-  - subagents/reviewer_prompt.md
 conditional_required_files:
+  review_required:
+    - review_request.md
+    - subagents/reviewer_prompt.md
   mapper_required:
     - mapper_report_draft.md
     - mapper_report_final.md
@@ -31,9 +32,26 @@ conditional_required_files:
     - mapper_report_final.md
     - architecture_delta_final.md
 terminal_packet_states:
+  - VERIFIED_COMPLETE
   - PACKET_COMMITTED_FOR_REVIEW
   - READY_FOR_LOCAL_PACKET_COMMIT
   - READY_FOR_MAPPER_FINAL
+controller_completion_decisions:
+  - VERIFIED_COMPLETE
+  - NEEDS_REPAIR
+  - OPERATIONALLY_BLOCKED
+controller_completion_required_fields:
+  - controller_verification_decision
+  - operational_completion_status
+  - experiment_adequacy_decision
+  - contract_compliance_status
+  - required_outputs_complete
+  - validators_passed
+  - all_jobs_terminal
+  - aggregation_complete
+  - git_commit_decision
+  - git_push_decision
+  - next_required_action
 precommit_finalizer_fields:
   - task_key
   - final_state
