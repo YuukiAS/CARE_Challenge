@@ -9,4 +9,4 @@ Final deltas verified for code review:
 - Batch7-specific Slurm and validator tooling.
 
 Remaining repair target:
-- Improve deployed final-pathology loss transfer under Batch6 anchor-bounded gate semantics before formal300 can be submitted.
+- Improve formal deployed pathology benefit under Batch6 anchor-bounded/no-T2 semantics before any future 1200-style continuation is scientifically justified.

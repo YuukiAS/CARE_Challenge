@@ -1,16 +1,23 @@
 {
-  "decision": "CONTINUE_CURRENT_TASK",
-  "fixed_gate_passed": true,
-  "formal300_submitted": false,
-  "formal1200_submitted": false,
-  "latest_fixed_job_id": "59783024",
-  "latest_implementation_check_job_id": "59784603",
-  "local_commit_required_before_formal300": true,
-  "reason": "Batch7 asset, implementation, and fixed gates passed; formal300 should run only after the current source state is committed.",
-  "runtime_artifacts_not_for_git": [
-    "results/20260721_srr_batch7_upstream_candidate_quality/runtime/assets/batch7_prototype_memory.pt",
-    "results/20260721_srr_batch7_upstream_candidate_quality/runtime/implementation_roundtrip/checkpoint_roundtrip.pt",
-    "results/20260721_srr_batch7_upstream_candidate_quality/runtime/fixed_batch_overfit/checkpoint_step_100.pt"
-  ],
-  "status": "READY_FOR_FORMAL300"
+    "decision": "STOP_AT_300_AND_SKIP_1200",
+    "fixed_gate_passed": true,
+    "formal300_submitted": true,
+    "formal300_job_id": "59789651",
+    "formal300_job_state": "COMPLETED",
+    "formal300_exit_code": "0:0",
+    "formal300_elapsed": "00:11:25",
+    "formal300_node": "g1807htzh01",
+    "formal1200_submitted": false,
+    "formal1200_step_status": "SKIPPED_STEP300_GATE_FAILED",
+    "latest_fixed_job_id": "59783024",
+    "latest_implementation_check_job_id": "59784603",
+    "continuation_gate_decision": "FAIL",
+    "reason": "Formal300 completed, but the continuation gate failed: mean positive Dice delta was 0.0003021837774180077 against the 0.005 threshold, scar gt-positive Dice delta was negative, help count was lower than harm count, and remote FP relative worsening exceeded the configured bound.",
+    "runtime_artifacts_not_for_git": [
+        "results/20260721_srr_batch7_upstream_candidate_quality/runtime/assets/batch7_prototype_memory.pt",
+        "results/20260721_srr_batch7_upstream_candidate_quality/runtime/implementation_roundtrip/checkpoint_roundtrip.pt",
+        "results/20260721_srr_batch7_upstream_candidate_quality/runtime/fixed_batch_overfit/checkpoint_step_100.pt",
+        "results/20260721_srr_batch7_upstream_candidate_quality/runtime/attempts/batch7_formal300_htzhulab_59789651/"
+    ],
+    "status": "FORMAL_300_COMPLETE_GATE_FAIL_STOP_AT_300"
 }

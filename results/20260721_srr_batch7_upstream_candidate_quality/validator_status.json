@@ -1,27 +1,31 @@
 {
-  "batch7_packet_validator": {
-    "command": "./envs/env_CARE/bin/python scripts/evaluation/validate_srr_batch7_packet.py",
-    "exit_code": 1,
-    "expected_for_current_packet": true,
-    "stderr_errors": [
-      "formal training was not submitted"
-    ],
-    "status": "FAIL_CLOSED_READY_FOR_FORMAL300"
-  },
-  "git_diff_check": {
-    "command": "git diff --check",
-    "exit_code": 0,
-    "status": "PASS"
-  },
-  "py_compile": {
-    "command": "./envs/env_CARE/bin/python -m py_compile scripts/training/run_srr_batch7_fixed_overfit.py src/care_myocardium/models/srr_propref.py scripts/evaluation/validate_srr_batch7_packet.py",
-    "exit_code": 0,
-    "status": "PASS"
-  },
-  "pytest": {
-    "command": "./envs/env_CARE/bin/python -m pytest -q tests/srr_production/test_myops_batch7_upstream_candidate.py tests/srr_production/test_myops_batch6_objective_alignment.py",
-    "exit_code": 0,
-    "status": "PASS",
-    "summary": "14 passed, 3 warnings"
-  }
+    "batch7_packet_validator": {
+        "command": "./envs/env_CARE/bin/python scripts/evaluation/validate_srr_batch7_packet.py",
+        "exit_code": 0,
+        "expected_for_current_packet": true,
+        "status": "PASS_FORMAL300_GATE_FAIL_STOP_AT_300"
+    },
+    "formal300_gate": {
+        "continuation_gate_decision": "FAIL",
+        "formal_1200_step_status": "SKIPPED_STEP300_GATE_FAILED",
+        "job_id": "59789651",
+        "job_state": "COMPLETED",
+        "exit_code": "0:0"
+    },
+    "git_diff_check": {
+        "command": "git diff --check",
+        "exit_code": 0,
+        "status": "PASS"
+    },
+    "py_compile": {
+        "command": "./envs/env_CARE/bin/python -m py_compile scripts/training/run_srr_batch7_fixed_overfit.py src/care_myocardium/models/srr_propref.py scripts/evaluation/aggregate_srr_batch7_formal.py scripts/evaluation/validate_srr_batch7_packet.py scripts/training/run_srr_propref_myops_fold0.py",
+        "exit_code": 0,
+        "status": "PASS"
+    },
+    "pytest": {
+        "command": "./envs/env_CARE/bin/python -m pytest -q tests/srr_production/test_myops_batch7_upstream_candidate.py tests/srr_production/test_myops_batch6_objective_alignment.py",
+        "exit_code": 0,
+        "status": "PASS",
+        "summary": "14 passed, 3 warnings"
+    }
 }

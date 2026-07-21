@@ -19,3 +19,4 @@ job_id,stage,partition,state,exit_code,elapsed,node,log_path,outcome
 59783024,fixed_overfit_lr_0_006_multiplier_32,htzhulab,COMPLETED,0:0,00:00:50,g1807htzh01,logs/srr_batch7/B7Fixed_59783024_20260721_091743.log,PASS_final_pathology_drop_0_20564072041957518
 59784603,implementation_checks_current_final_transfer,htzhulab,COMPLETED,0:0,00:00:15,g1807htzh01,logs/srr_batch7/B7Impl_59784603_20260721_092025.log,PASS
 59789522,formal300_initial_receipt_parser,htzhulab,FAILED,1:0,00:00:48,g1807htzh01,logs/srr_batch7/B7F300_59789522_20260721_092529.log,FAIL_external_fixed_receipt_expected_60_instead_of_batch7_100
+59789651,formal300_retry_batch7_fixed_receipt,htzhulab,COMPLETED,0:0,00:11:25,g1807htzh01,logs/srr_batch7/B7F300_59789651_20260721_092928.log,FORMAL300_GATE_FAIL_STOP_AT_300_mean_delta_0_0003021837774180077

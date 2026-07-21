@@ -1,4 +1,4 @@
-自然判断：Batch7 的候选质量链路已接入并能在真实 Case2002/Case1002 batch 上产生非零干预和梯度，但 deployed final output 在固定 100 步内没有达到进入 formal300 的 gate。
+自然判断：Batch7 的候选质量链路已接入并能在真实 Case2002/Case1002 batch 上产生非零干预和梯度；fixed 100-step 已过，但 formal300 没有达到继续 1200 的效果门槛。
 
 Implemented:
 - Rebuilt Batch7 prototype/memory asset from Batch6 selected checkpoint and fold0 training cases only.
@@ -12,14 +12,20 @@ Implemented:
 
 Passed gates:
 - Asset rebuild: `59767801`, PASS.
-- Real implementation interventions and checkpoint roundtrip: `59768200`, PASS.
+- Real implementation interventions and checkpoint roundtrip: latest `59784603`, PASS.
+- Fixed Case2002+Case1002 100-step overfit: `59783024`, PASS.
 
-Failed gate:
-- Fixed Case2002+Case1002 100-step overfit: latest `59775353`, FAIL.
-- Actual final pathology relative decrease: `0.11222805524509555`.
-- Required final pathology relative decrease: `0.20`.
-- Other fixed checks passed: finite losses, discovery loss decrease, scar refiner decrease, source arbiter decrease, all required gradient groups nonzero, zero-anchor discovery nonzero, no-T2 edema exact zero, checkpoint reload delta zero.
+Formal300 stop gate:
+- Formal300 job: `59789651`, COMPLETED `0:0`, elapsed `00:11:25`, node `g1807htzh01`.
+- Actual optimizer steps: `300`.
+- Full-volume eval steps: `100`, `200`, `300`.
+- Continuation gate: FAIL.
+- Mean positive pathology Dice delta: `0.0003021837774180077`, required `>=0.005`.
+- Scar gt-positive Dice delta: `-0.0048258512122039895`.
+- Edema gt-positive Dice delta: `0.005430218767040005`.
+- Help/harm count: `23/35`.
+- No-T2 edema exact zero and formal gradient gate passed.
 
 Formal training status:
-- formal300 not submitted.
-- formal1200 not submitted.
+- formal300 completed and aggregated.
+- formal1200 skipped by contract after failed step300 gate.

@@ -1,4 +1,4 @@
-自然判断：该目录记录 Batch7 执行到 fixed-overfit gate 的全部轻量证据；runtime checkpoint 和 `.pt` asset 仅作为本地路径引用。
+自然判断：该目录记录 Batch7 执行到 formal300 gate 的全部轻量证据；runtime checkpoint、预测和 `.pt` asset 仅作为本地路径引用。
 
 Tracked lightweight outputs:
 - `prototype_memory_manifest.json`
@@ -34,3 +34,4 @@ Runtime-only local artifacts:
 - `runtime/assets/batch7_prototype_memory.pt`
 - `runtime/implementation_roundtrip/checkpoint_roundtrip.pt`
 - `runtime/fixed_batch_overfit/checkpoint_step_100.pt`
+- `runtime/attempts/batch7_formal300_htzhulab_59789651/`

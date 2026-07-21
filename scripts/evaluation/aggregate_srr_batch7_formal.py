@@ -55,19 +55,36 @@ def finite_losses(variant_dir: Path) -> bool:
 def gradient_pass(variant_dir: Path) -> dict[str, Any]:
     path = variant_dir / "loss_component_gradient_sanity.csv"
     rows = read_csv(path) if path.is_file() else []
-    wanted_prefixes = (
-        "m10_spatial_dictionary",
-        "scar_dictionary",
-        "edema_dictionary",
-        "scar_refine",
-        "edema_refine",
-        "scar_source_arbiter",
-        "edema_source_arbiter",
-        "production_correction_gate",
-    )
-    hits = [row for row in rows if any(str(row.get("parameter", row.get("component", ""))).startswith(prefix) for prefix in wanted_prefixes)]
-    nonzero = [row for row in hits if float(row.get("grad_l2_norm") or row.get("grad_norm") or 0.0) > 0.0]
-    return {"gradient_rows": len(rows), "required_rows": len(hits), "nonzero_required_rows": len(nonzero), "pass": len(nonzero) >= 4}
+    group_patterns = {
+        "m10_spatial_dictionary": ("m10_", "loss_dictionary", "loss_pattern_sip", "semantic_retrieval"),
+        "proposal_dictionary": ("loss_scar_proposal", "loss_edema_proposal"),
+        "soft_roi_refinement": ("loss_scar_refiner", "loss_edema_refiner", "loss_refiner_final_label_effect"),
+        "source_arbiter_or_final_pathology": ("loss_branch_arbitration", "loss_final_scar", "loss_final_edema"),
+        "production_correction_gate": ("loss_production_gate", "loss_bounded_correction", "loss_anchor_preservation", "loss_component_remote_fp"),
+    }
+    required_rows: list[dict[str, Any]] = []
+    nonzero_rows: list[dict[str, Any]] = []
+    nonzero_groups: set[str] = set()
+    for row in rows:
+        component = str(row.get("component", ""))
+        matched = [group for group, patterns in group_patterns.items() if any(component.startswith(pattern) for pattern in patterns)]
+        if not matched:
+            continue
+        required_rows.append(row)
+        try:
+            grad_norm = float(row.get("grad_l2_norm") or row.get("grad_norm") or 0.0)
+        except (TypeError, ValueError):
+            grad_norm = 0.0
+        if str(row.get("requires_grad")) == "True" and str(row.get("status")) == "PASS" and grad_norm > 0.0:
+            nonzero_rows.append(row)
+            nonzero_groups.update(matched)
+    return {
+        "gradient_rows": len(rows),
+        "required_rows": len(required_rows),
+        "nonzero_required_rows": len(nonzero_rows),
+        "nonzero_required_groups": sorted(nonzero_groups),
+        "pass": len(nonzero_groups) >= 4 and len(nonzero_rows) >= 4,
+    }
 
 
 def rel_worse(row: dict[str, Any], pred_key: str, anchor_key: str) -> float:
