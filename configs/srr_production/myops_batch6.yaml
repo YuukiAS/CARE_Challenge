@@ -1,0 +1,264 @@
+schema_version: 1
+authority_name: srr_batch6_final_objective_alignment
+batch: 6
+status: READY_FOR_CONTROLLER
+source_main_commit: 4bf66a9274fd540163794ed11d34db5a4ff54ecf
+source_batch4:
+  result_root: results/20260721_srr_batch4_forced_fold0_training
+  selected_checkpoint_step: 1800
+  selected_checkpoint_sha256: bc325754202d5cf0aa59aa8fab0306b38c2665640339afa3f8d06a13c70009f6
+  prototype_asset_sha256: 8b262f8bb87e0733a48e169c77b028a3833b70cbcd33d2ac2fb4857ba1cbde83
+  fold: 0
+  train_cases: 176
+  validation_cases: 44
+source_batch5:
+  result_root: results/20260721_srr_batch5_post_batch4_diagnostic_repair
+  operational_status: CONTROLLER_VERIFIED_COMPLETE
+  planner_audit_status: RUNTIME_COMPLETE_MECHANISM_PACKET_NEEDS_REPAIR
+paths:
+  raw_root: data/nnUNet/nnUNet_raw/Dataset501_CAREMyoPS
+  gt_dir: data/nnUNet/nnUNet_raw/Dataset501_CAREMyoPS/labelsTr
+  split_path: data/benchmarks/protocol/splits_MyoPS.json
+  anchor_root: data/nnUNet/nnUNet_results/Dataset501_CAREMyoPS/nnUNetTrainer_500epochs__nnUNetPlans__3d_fullres
+  anchor_fold0_pred_dir: data/nnUNet/nnUNet_results/Dataset501_CAREMyoPS/nnUNetTrainer_500epochs__nnUNetPlans__3d_fullres/fold_0/validation
+  result_root: results/20260721_srr_batch6_final_objective_alignment
+  runtime_root: results/20260721_srr_batch6_final_objective_alignment/runtime
+  log_root: logs/srr_batch6
+  lock_root: results/20260721_srr_batch6_final_objective_alignment/runtime/locks
+model:
+  class_name: SRRProposeRefineMyoPS
+  variant: m10_d3_hierarchical_memory_propref
+  encoder_profile: full_4scale
+  base_channels: 32
+  final_output_mode: anchor_bounded_srr_correction
+  maximum_correction_logit_delta: 4.0
+  warm_start_from_batch4: true
+  gate_migration:
+    old_input_channels: 4
+    new_input_channels: 13
+    output_channels: 2
+    copy_old_weight_channels: [0, 1, 2, 3]
+    zero_initialize_new_weight_channels: [4, 5, 6, 7, 8, 9, 10, 11, 12]
+    copy_old_bias: true
+    allowed_missing_or_unexpected_keys:
+      - production_correction_gate.weight
+training_data:
+  fold: 0
+  train_case_count: 176
+  validation_case_count: 44
+  edema_positive_validation_cases: 16
+  scar_positive_validation_cases: 43
+  label_mapping:
+    background: 0
+    lv_myo: 1
+    lv_blood: 2
+    rv_blood: 3
+    edema: 4
+    scar: 5
+  no_t2_edema_supervision: forbidden
+primary_output_semantics:
+  runtime_mode: anchor_bounded_srr_correction
+  decode_rule: outputs_logits_argmax
+  selection_decode_rule: outputs_logits_argmax
+  primary_population: positive_gt_cases
+  report_all_case_empty_safe_separately: true
+batch5_reconciliation:
+  optimizer_steps: 0
+  required: true
+  modes:
+    - anchor_identity_control
+    - full_learned_gate
+    - full_gate_one
+    - full_gate_zero
+    - proposal_only_gate_one
+    - refiner_only_gate_one
+  pure_intervention_rules:
+    proposal_only_gate_one_must_not_read_refiner: true
+    refiner_only_gate_one_must_not_read_proposal: true
+  required_nonempty_fields:
+    - proposal_voxel_precision
+    - proposal_voxel_recall
+    - proposal_lesion_recall
+    - proposal_component_count
+    - proposal_remote_fp_count
+    - proposal_remote_fp_volume_mm3
+    - roi_gt_coverage
+    - roi_outside_ratio
+    - refiner_residual_abs_mean
+    - changed_voxels_vs_anchor
+    - dice_delta_vs_anchor
+    - hd95_delta_vs_anchor
+    - component_delta
+    - remote_fp_delta_mm3
+production_gate:
+  input_channels:
+    - scar_proposal_logit
+    - edema_proposal_logit
+    - scar_refiner_logit
+    - edema_refiner_logit
+    - anchor_scar_probability
+    - anchor_edema_probability
+    - anchor_maximum_confidence
+    - anchor_entropy
+    - anchor_top1_top2_margin
+    - scar_proposal_refiner_absolute_disagreement
+    - edema_proposal_refiner_absolute_disagreement
+    - anatomy_uncertainty
+    - anatomy_union_support
+  outputs:
+    - scar_gate_logit
+    - edema_gate_logit
+  repair_mask: valid_and_anchor_binary_prediction_not_equal_gt_binary
+  preserve_mask: valid_and_anchor_correct_and_anchor_maximum_confidence_at_least_0.80
+  edema_masks_require_t2_present: true
+  gate_loss:
+    type: balanced_bce_with_logits
+    positive_class: repair_mask
+    negative_class: preserve_mask
+    positive_weight_formula: clamp(preserve_voxels/max(repair_voxels,1),1,20)
+final_pathology_loss:
+  scar_margin: final_logits_class5_minus_logsumexp_other_classes
+  edema_margin: final_logits_class4_minus_logsumexp_other_classes
+  scar_loss: half_bce_half_dice_all_valid_cases
+  edema_loss: half_bce_half_dice_t2_present_only
+  direct_outputs_logits_supervision_required: true
+canonical_loss_weights:
+  loss_anatomy_union_lv_rv: 1.0
+  loss_scar_proposal: 1.0
+  loss_edema_proposal_t2_present_only: 1.0
+  loss_scar_refiner_roi: 1.0
+  loss_edema_refiner_t2_present_roi: 1.0
+  loss_final_scar_pathology: 1.0
+  loss_final_edema_t2_present_pathology: 1.0
+  loss_production_gate_repair_preserve: 0.20
+  loss_anchor_preservation_outside_roi: 0.05
+  loss_component_remote_fp: 0.05
+  loss_no_t2_edema_safety: 0.50
+  loss_dictionary_entropy_coverage_load_balance: 0.20
+  loss_pattern_sip_integrativeness: 0.05
+  loss_prototype_diversity_margin: 0.20
+  loss_memory_bank_update_or_alignment: 0.05
+  loss_correction_opportunity: 0.0
+  loss_branch_arbitration_consistency: 0.0
+  loss_bounded_correction: 0.0
+  loss_refiner_final_label_effect: 0.0
+  loss_cine_temporal_consistency: 0.0
+  loss_cine_reference_warp_consistency: 0.0
+loss_weight_policy:
+  canonical_names_override_legacy_aliases: true
+  resolved_weight_table_required: true
+  checkpoint_contract_must_store_resolved_weights: true
+fixed_batch_overfit:
+  optimizer_steps: 60
+  formal_training_credit: 0
+  cases:
+    - Case2002
+    - Case1002
+  fixed_pathology_containing_patch_per_case: true
+  trainable_groups:
+    - production_correction_gate
+    - scar_refine
+    - edema_refine
+  frozen_groups:
+    - encoders
+    - retrieval
+    - evidence_heads
+    - scar_dictionary
+    - edema_dictionary
+    - prototype_memory
+  pass_gates:
+    combined_final_pathology_loss_relative_decrease_minimum: 0.20
+    scar_final_pathology_loss_relative_decrease_minimum: 0.15
+    edema_final_pathology_loss_relative_decrease_minimum: 0.15
+    gate_loss_relative_decrease_minimum: 0.10
+    production_gate_repair_gradient_required: true
+    final_logits_change_required: true
+    no_t2_edema_exact_zero_required: true
+    all_losses_finite: true
+    save_reload_final_logits_max_abs_delta: 0.000001
+formal_training:
+  optimizer: AdamW
+  learning_rate: 0.0001
+  weight_decay: 0.0001
+  grad_clip: 12.0
+  patch_shape: [12, 96, 96]
+  batch_size: 1
+  stage_300:
+    optimizer_steps: 300
+    full_volume_eval_steps: [100, 200, 300]
+    validation_cases_per_eval: 44
+    trainable_groups:
+      - production_correction_gate
+      - scar_refine
+      - edema_refine
+    frozen_groups:
+      - encoders
+      - retrieval
+      - evidence_heads
+      - scar_dictionary
+      - edema_dictionary
+      - prototype_memory
+    continuation_gate:
+      minimum_mean_scar_edema_positive_dice_delta: 0.003
+      minimum_each_pathology_dice_delta: -0.002
+      require_help_not_less_than_harm: true
+      maximum_each_pathology_hd95_relative_worsening: 0.05
+      maximum_each_pathology_remote_fp_relative_worsening: 0.05
+      require_no_t2_edema_exact_zero: true
+      require_finite_losses_and_nonzero_final_gate_gradients: true
+  stage_900:
+    conditional_on_stage_300_gate: true
+    total_optimizer_steps: 900
+    full_volume_eval_steps: [450, 600, 900]
+    additionally_unfreeze_at_step_301:
+      - scar_dictionary
+      - edema_dictionary
+      - evidence_heads
+    remain_frozen:
+      - encoders
+      - retrieval
+      - prototype_memory
+scientific_gates:
+  small_usable_signal:
+    minimum_mean_scar_edema_positive_dice_delta: 0.005
+    minimum_each_pathology_dice_delta: 0.0
+  candidate_signal:
+    minimum_mean_scar_edema_positive_dice_delta: 0.010
+    safety_gates_required: true
+  strong_signal:
+    minimum_scar_positive_dice_delta: 0.030
+    minimum_edema_positive_dice_delta: 0.030
+  fold_expansion_requires_planner_or_user: true
+slurm:
+  python_executable: /users/a/e/aereinh/CARE/envs/env_CARE/bin/python
+  primary_partition: htzhulab
+  mirror_partition: a100-gpu
+  submit_mirror_after_pending_seconds: 900
+  volta_allowed: false
+  maximum_runtime_seconds_per_stage: 14400
+  training_dependency: afterok
+  finalizer_dependency: afterany
+  require_atomic_winner_lock: true
+  require_isolated_attempt_directories: true
+  cancel_pending_losers: true
+scope:
+  training_allowed: true
+  source_checkpoint_warm_start_required: true
+  prototype_memory_mutable: false
+  backbone_replacement_allowed: false
+  backbone_comparison_allowed: false
+  encoder_retrieval_redesign_allowed: false
+  fold_expansion_allowed: false
+  cine_allowed: false
+  external_weights_or_data_allowed: false
+  validation_upload_allowed: false
+  hosted_metric_claim_allowed: false
+  route_promotion_allowed: false
+  m11_allowed: false
+  batch7_automatic_start_allowed: false
+completion:
+  planning_review_required: false
+  review_required: false
+  controller_is_coordinator: true
+  required_status: VERIFIED_COMPLETE
+  next_action: RETURN_TO_PLANNER
