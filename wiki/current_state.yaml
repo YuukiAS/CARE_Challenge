@@ -1,24 +1,47 @@
-current_milestone_id: Batch6_controller_packet
-current_task_key: 20260721_srr_batch6_final_objective_alignment
-current_review_path: results/20260721_srr_batch6_final_objective_alignment/controller_report.md
-current_review_token: NOT_REVIEWED_CONTROLLER_VERIFIED
-reviewed_commit: f700ee5f739f8291532b35df7a6c99a56b54d9e6
+current_milestone_id: Batch7_mechanism_closure_repair_ready
+current_task_key: 20260721_srr_batch7_mechanism_closure_repair
+current_plan_path: docs/plans/laneB_round04_active_srr_batch7_mechanism_closure_repair_execution.md
+current_controller_path: prompts/tasks/20260721_srr_batch7_mechanism_closure_repair_controller.md
+current_config_path: configs/srr_production/myops_batch7_repair.yaml
+current_result_root: results/20260721_srr_batch7_mechanism_closure_repair
+current_review_path: null
+current_review_token: NOT_REVIEWED_REPAIR_READY
+source_terminal_commit: 4c79554de785030ed59081ce3ae233711efc062a
 architecture_path: wiki/architecture.yaml
 component_table_path: wiki/COMPONENTS.csv
-wiki_fingerprint: srr_propref=8b98ac43;srr_losses=eaabe101;run_myops=e9f531b0;infer_myops=df3922d7;batch6_formal=8619856a;batch6_validator=635f0157;batch6_config=9922ba2c
-previous_milestone_id: Batch5_executor_packet
-updated_at: '2026-07-21T06:45:00-04:00'
-batch6_controller_packet:
-  result_root: results/20260721_srr_batch6_final_objective_alignment
-  selected_checkpoint_sha256: 729c81e49bf846339ed2f39ef0f2656319befd2b9cfe73268d7cf501e6b40fbd
+wiki_fingerprint_status: STALE_UNTIL_BATCH7_REPAIR_MAPPER_FINAL
+updated_at: '2026-07-21'
+
+batch7_terminal_packet:
+  result_root: results/20260721_srr_batch7_upstream_candidate_quality
+  selected_checkpoint_sha256: d34ad65890cbb6a12aac3fc35bcab71709d680bff5a3aae2d93e010db1cc0e0d
   case_count: 44
   optimizer_steps: 300
-  fixed_overfit_job_id: '59743323'
-  fixed_overfit_status: PASS
-  formal300_job_id: '59744053'
+  formal300_job_id: '59789651'
   formal300_state: COMPLETED
-  formal900_state: SKIPPED_STEP300_GATE_FAILED
-  final_intervention_job_id: '59744941'
-  controller_acceptance: VERIFIED_COMPLETE
-  scientific_signal_class: BELOW_USABLE
-  mean_positive_pathology_dice_delta: 0.001699358420302757
+  formal1200_state: SKIPPED_STEP300_GATE_FAILED
+  operational_status: COMPLETE
+  scientific_status: MECHANISM_CLOSURE_INVALID
+  edema_positive_dice_delta: 0.005430218767040005
+  scar_positive_dice_delta: -0.0048258512122039895
+  mean_positive_pathology_dice_delta: 0.0003021837774180077
+  help_count: 23
+  harm_count: 35
+  invalid_evidence:
+    - final_mechanism_interventions_copied_across_modes
+    - identity_not_zero
+    - proposal_refiner_metrics_empty_or_placeholder
+    - source_arbiter_no_real_44_case_evidence
+    - validator_failed_to_check_semantic_truth
+    - named_semantic_memory_not_faithfully_category_loaded
+    - discovery_not_genuinely_anchor_free
+
+batch7_repair:
+  status: READY_FOR_CONTROLLER
+  objective: truthful_interventions_real_semantic_memory_anchor_free_discovery_stagewise_training
+  planning_review_required: false
+  review_required: false
+  batch8_authorized: false
+  fold_expansion_authorized: false
+  cine_authorized: false
+  validation_upload_authorized: false
