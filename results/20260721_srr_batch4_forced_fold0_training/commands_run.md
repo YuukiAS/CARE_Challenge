@@ -110,3 +110,16 @@ No reviewer handoff is allowed from `59678596` or `59680114`. Next formal retry 
 - The same two historical `code_maturity` JSON files were dirtied again by the post-packet pytest run and restored again before this terminal packet commit; they remain excluded.
 
 This terminal packet is ready for independent read-only review only after the lightweight files are committed. The controller did not write `review.md`, did not push, did not package validation, did not upload, and did not claim hosted or production performance.
+
+## Independent Review And Protocol Reconciliation
+
+- `sed -n '1,220p' prompts/AGENT_FLOW_V2_PROTOCOL.md` -> confirmed updated protocol: reviewer is optional by default and required only when `review_required: true` is explicit.
+- `sed -n '1,220p' prompts/CONTROLLER_TASK_PROTOCOL.md` -> confirmed updated controller ending fields and push boundary.
+- `sed -n '1,120p' prompts/tasks/20260721_srr_batch4_forced_fold0_training_controller.md` -> Batch4 explicitly sets `review_required: true`, `review_mode: independent_thread`, and `reviewer: separate_readonly`.
+- `./envs/env_CARE/bin/python scripts/ops/validate_executor_plan.py prompts/tasks/20260721_srr_batch4_forced_fold0_training_executor_plan.yaml` -> `executor plan validation passed`.
+- `./envs/env_CARE/bin/python scripts/evaluation/validate_srr_batch4_packet.py` -> `BATCH4_STRICT_VALIDATION_PASS`.
+- Metric evidence inspected from `validation_checkpoint_metrics.csv`, `casewise_metrics.csv`, and `subgroup_metrics.csv`; the packet includes Dice, HD, HD95, component, remote false-positive, subgroup, and casewise metrics.
+- Added independent read-only reviewer output `review.md` with token `BATCH4_TRAINING_PACKET_AUDITED_GO`.
+- Updated `controller_report.md` ending fields to the current Agent-Flow v2 vocabulary while preserving the controller/reviewer boundary.
+
+No new training, Slurm job, validation packaging, validation upload, hosted metric claim, route promotion, Cine work, or scientific final decision was performed during this review/protocol reconciliation step.

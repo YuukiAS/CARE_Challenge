@@ -2,9 +2,10 @@
 
 task_key: `20260721_srr_batch4_forced_fold0_training`
 
-status: `READY_FOR_INDEPENDENT_REVIEW`
+status: `REVIEWED_PACKET_AUDITED_GO`
 
 review_token_requested: `BATCH4_TRAINING_PACKET_AUDITED_GO`
+review_token_received: `BATCH4_TRAINING_PACKET_AUDITED_GO`
 
 ## Terminal Evidence
 
@@ -34,4 +35,4 @@ review_token_requested: `BATCH4_TRAINING_PACKET_AUDITED_GO`
 
 ## Boundaries
 
-No `review.md` was written by the controller. No push, validation packaging, validation upload, hosted metric claim, Cine expansion, route promotion, or scientific final decision was performed.
+No `review.md` was written by the controller. The required independent read-only reviewer report was added after the controller packet because the task explicitly set `review_required: true`. No training, Slurm submission, validation packaging, validation upload, hosted metric claim, Cine expansion, route promotion, or scientific final decision was performed during review.

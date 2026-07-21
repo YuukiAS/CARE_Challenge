@@ -34,6 +34,7 @@ Tracked lightweight packet files:
 - `selected_checkpoint_evaluation/nnunet_fold0_reproduction.json`
 - `completion_check.md`
 - `review_request.md`
+- `review.md`
 - `mapper_report_final.md`
 - `architecture_delta_final.md`
 - `controller_report.md`
@@ -43,4 +44,4 @@ Tracked code/config support:
 - `scripts/evaluation/aggregate_srr_batch4_packet.py`
 - `scripts/evaluation/validate_srr_batch4_packet.py`
 
-Excluded by design: checkpoints, prototype `.pt` assets, prediction NIfTI files, full raw OOF anchor manifest bodies, runtime locks, full logs, upload packages, secrets, and `review.md`. The full raw OOF anchor manifest hash is retained in the three inference contracts and `selected_checkpoint.json`.
+Excluded by design: checkpoints, prototype `.pt` assets, prediction NIfTI files, full raw OOF anchor manifest bodies, runtime locks, full logs, upload packages, and secrets. The full raw OOF anchor manifest hash is retained in the three inference contracts and `selected_checkpoint.json`.
