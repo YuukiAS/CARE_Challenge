@@ -1,27 +1,25 @@
-schema_version: 6
+schema_version: 7
 authority_name: srr_production_mainline_authority
-reviewed_from_head: f139c54fd6b55b99409fcf546a1a0e117d7aa06b
-formal_training_status: BATCH7_READY_FOR_CONTROLLER
+reviewed_from_head: 4c79554de785030ed59081ce3ae233711efc062a
+formal_training_status: BATCH7_MECHANISM_CLOSURE_REPAIR_READY_FOR_CONTROLLER
 status_reason: >-
-  Batch 6 repaired direct final pathology supervision and the production-gate
-  repair/preserve path, passed fixed overfit, and completed an exact 300-step fold0
-  calibration. The mean positive-case Dice delta remained only 0.001699358, below
-  the 0.003 continuation gate. Same-checkpoint interventions show small positive
-  proposal signal, harmful scar refiner behavior, residual edema gate suppression,
-  and insufficient upstream candidate quality. Batch 7 is authorized to rebuild
-  trained-feature-aligned prototype/memory, replace synthetic named negatives,
-  wire prototype maps into spatial retrieval, implement anchor-independent discovery
-  proposals, differentiable proposal-based refiners, and learned proposal/refiner
-  source selection before a gated 300-step and conditional 1200-step fold0 run.
+  Batch7 formal300 completed but failed its scientific continuation gate. The terminal
+  mechanism packet is not trustworthy because all intervention modes reused the same
+  formal metrics, identity was not zero, proposal/refiner fields were empty, and the
+  validator accepted placeholders. Code review also found incomplete category semantic
+  memory and discovery features that still consumed nnU-Net context. A same-scope Batch7
+  repair is now authorized to produce truthful per-mode inference, real category memory,
+  genuinely anchor-free discovery, and stagewise proposal/refiner/arbiter/gate training.
+
 current_scientific_status:
-  batch4_operational: VERIFIED_COMPLETE
-  batch4_scientific: BATCH4_TRAINED_NEGATIVE_OR_REPAIR_REQUIRED
-  batch5_operational: CONTROLLER_VERIFIED_COMPLETE
-  batch5_planner_audit: RUNTIME_COMPLETE_MECHANISM_PACKET_NEEDS_REPAIR
-  batch6_operational: CONTROLLER_VERIFIED_COMPLETE_STOP_AT_300_GATE_FAIL
-  batch6_scientific: FINAL_OBJECTIVE_REPAIRED_BUT_BELOW_USABLE_SIGNAL
-  batch7: READY_FOR_CONTROLLER
+  batch4: TRAINED_NEAR_BASELINE
+  batch5: DIAGNOSTIC_PACKET_REQUIRED_REPAIR
+  batch6: FINAL_OBJECTIVE_REPAIRED_BELOW_USABLE_SIGNAL
+  batch7_operational: FORMAL300_COMPLETE_STOP_GATE
+  batch7_scientific: MECHANISM_CLOSURE_INVALID_NEEDS_SAME_SCOPE_REPAIR
+  batch7_repair: READY_FOR_CONTROLLER
   significantly_better_than_nnunet: false
+
 selected_model:
   class_name: SRRProposeRefineMyoPS
   path: src/care_myocardium/models/srr_propref.py
@@ -29,146 +27,118 @@ selected_model:
   encoder_profile: full_4scale
   base_channels: 32
   final_output_mode: anchor_bounded_srr_correction
-  current_status: batch7_upstream_candidate_quality_repair_authorized
-batch4_evidence:
-  training_source_commit: 0466260e3f4eb6c50b05a7f5a8b66652b873fe46
-  terminal_packet_commit: 82524678e8c4aae5c088b24db8a00643c2603ae9
-  explicit_review_commit: 5352d3c7b614adcbe4388a6fcef45c9db662dc38
-  result_root: results/20260721_srr_batch4_forced_fold0_training
-  valid_training_job: '59682067'
-  optimizer_steps: 1800
-  train_cases: 176
-  validation_cases: 44
-  selected_checkpoint_step: 1800
-  selected_checkpoint_sha256: bc325754202d5cf0aa59aa8fab0306b38c2665640339afa3f8d06a13c70009f6
-  prototype_memory_source_cases: 176
-  validation_leakage_cases: 0
-  prototype_asset_sha256: 8b262f8bb87e0733a48e169c77b028a3833b70cbcd33d2ac2fb4857ba1cbde83
-  metrics:
-    edema_dice_delta: 0.00067965066743345
-    scar_dice_delta: 0.0013414936102105
-batch5_evidence:
-  result_root: results/20260721_srr_batch5_post_batch4_diagnostic_repair
-  controller_acceptance: VERIFIED_COMPLETE
-  optimizer_steps: 0
-  accepted_findings:
-    - formal argmax reranking preserves step1800 as top checkpoint
-    - simply opening the production gate does not explain the weak result
-    - no-anchor control is substantially worse than the nnU-Net anchored output
-    - mean best-of-mode oracle Dice headroom is approximately 0.00256
-    - direct final pathology supervision and production-gate repair were missing before Batch6
+  current_status: batch7_mechanism_closure_repair_authorized
+
 batch6_evidence:
-  terminal_commit: f139c54fd6b55b99409fcf546a1a0e117d7aa06b
   result_root: results/20260721_srr_batch6_final_objective_alignment
-  controller_verification: VERIFIED_COMPLETE
-  fixed_overfit_job_id: '59743323'
-  fixed_overfit_status: PASS
-  formal300_job_id: '59744053'
-  formal300_status: COMPLETED
-  formal900_status: SKIPPED_STEP300_GATE_FAILED
-  final_intervention_job_id: '59744941'
-  selected_checkpoint_step: 300
   selected_checkpoint_sha256: 729c81e49bf846339ed2f39ef0f2656319befd2b9cfe73268d7cf501e6b40fbd
   optimizer_steps: 300
-  train_cases: 176
-  validation_cases: 44
-  mean_scar_edema_positive_dice_delta: 0.001699358420302757
   edema_positive_dice_delta: 0.0027247486728372468
   scar_positive_dice_delta: 0.0006739681677682672
-  help_count: 25
-  harm_count: 18
-  no_t2_edema_exact_zero: true
-  intervention_findings:
-    full_gate_one_edema_delta: 0.0077210937630865055
-    proposal_only_edema_delta: 0.004345054502731016
-    proposal_only_scar_delta: 0.002616275732070718
-    refiner_only_edema_delta: 0.004952445344147677
-    refiner_only_scar_delta: -0.008761891500618712
+  mean_positive_dice_delta: 0.001699358420302757
+
+batch7_evidence:
+  terminal_commit: 4c79554de785030ed59081ce3ae233711efc062a
+  result_root: results/20260721_srr_batch7_upstream_candidate_quality
+  selected_checkpoint_sha256: d34ad65890cbb6a12aac3fc35bcab71709d680bff5a3aae2d93e010db1cc0e0d
+  optimizer_steps: 300
+  formal300_job_id: '59789651'
+  formal300_status: COMPLETED
+  formal1200_status: SKIPPED_STEP300_GATE_FAILED
+  edema_positive_dice_delta: 0.005430218767040005
+  scar_positive_dice_delta: -0.0048258512122039895
+  mean_positive_dice_delta: 0.0003021837774180077
+  help_count: 23
+  harm_count: 35
+  mechanism_evidence_status: INVALID_COPIED_OR_PLACEHOLDER
+  invalid_files:
+    - results/20260721_srr_batch7_upstream_candidate_quality/final_mechanism_interventions.csv
+    - results/20260721_srr_batch7_upstream_candidate_quality/proposal_refiner_metrics.csv
+    - results/20260721_srr_batch7_upstream_candidate_quality/source_arbiter_metrics.csv
+  invalid_reasons:
+    - all intervention modes reused the same formal casewise metrics
+    - anchor identity was not exact zero
+    - proposal-only and scar refiner-only metrics were empty
+    - source arbiter had no 44-case effect evidence
+    - validator accepted placeholder and copied metrics
+    - category semantic memory was not faithfully installed
+    - discovery retrieval still consumed nnU-Net context
+
 formal_entrypoints: []
+
 candidate_entrypoints:
-  - id: srr_batch4_fold0_trained_diagnostic
-    role: historical_full_model_fold0_training_diagnostic
-    path: scripts/training/run_srr_propref_myops_fold0.py
-    config_path: configs/srr_production/myops_batch4.yaml
-    formal_authority: false
-    audit_status: operationally_verified_scientifically_insufficient
   - id: myops_fair_evaluator
     role: local_full_volume_metric_recompute_authority
     path: scripts/srr_production/evaluate_myops_fair.py
     formal_authority: false
     audit_status: reusable_positive_gt_and_all_case_separated
-    notes:
-      - computes Dice HD HD95 component remote-FP volume and help-harm from prediction and GT
-      - final deployment and selection decode must use outputs logits argmax
+
   - id: srr_batch6_final_objective_alignment
-    role: completed_final_objective_and_gate_repair_below_usable_signal
+    role: historical_final_objective_repair_below_usable_signal
     path: prompts/tasks/20260721_srr_batch6_final_objective_alignment_controller.md
     config_path: configs/srr_production/myops_batch6.yaml
+    result_root: results/20260721_srr_batch6_final_objective_alignment
     formal_authority: false
     audit_status: CONTROLLER_VERIFIED_COMPLETE_STOP_AT_300_GATE_FAIL
-    result_root: results/20260721_srr_batch6_final_objective_alignment
-    selected_checkpoint_sha256: 729c81e49bf846339ed2f39ef0f2656319befd2b9cfe73268d7cf501e6b40fbd
+
   - id: srr_batch7_upstream_candidate_quality
-    role: authorized_mainline_upstream_candidate_quality_and_source_selection_repair
+    role: historical_joint_upstream_training_with_invalid_mechanism_packet
     path: prompts/tasks/20260721_srr_batch7_upstream_candidate_quality_controller.md
     config_path: configs/srr_production/myops_batch7.yaml
-    plan_path: docs/plans/laneB_round04_active_srr_batch7_upstream_candidate_quality_execution.md
-    executor_plan_path: prompts/tasks/20260721_srr_batch7_upstream_candidate_quality_executor_plan.yaml
-    planner_audit_path: results/srr_production/code_maturity/batch6_planner_audit_and_batch7_decision.md
+    result_root: results/20260721_srr_batch7_upstream_candidate_quality
+    formal_authority: false
+    audit_status: FORMAL300_COMPLETE_MECHANISM_CLOSURE_INVALID
+
+  - id: srr_batch7_mechanism_closure_repair
+    role: authorized_same_scope_truthful_intervention_and_stagewise_component_repair
+    path: prompts/tasks/20260721_srr_batch7_mechanism_closure_repair_controller.md
+    config_path: configs/srr_production/myops_batch7_repair.yaml
+    plan_path: docs/plans/laneB_round04_active_srr_batch7_mechanism_closure_repair_execution.md
+    executor_plan_path: prompts/tasks/20260721_srr_batch7_mechanism_closure_repair_executor_plan.yaml
+    planner_audit_path: results/srr_production/code_maturity/batch7_planner_audit_and_mechanism_closure_decision.md
+    result_root: results/20260721_srr_batch7_mechanism_closure_repair
     formal_authority: true
     audit_status: READY_FOR_CONTROLLER
-    source_terminal_commit: f139c54fd6b55b99409fcf546a1a0e117d7aa06b
-    source_checkpoint_step: 300
-    source_checkpoint_sha256: 729c81e49bf846339ed2f39ef0f2656319befd2b9cfe73268d7cf501e6b40fbd
+    source_terminal_commit: 4c79554de785030ed59081ce3ae233711efc062a
+    source_checkpoint_sha256: d34ad65890cbb6a12aac3fc35bcab71709d680bff5a3aae2d93e010db1cc0e0d
     fold: 0
     train_cases: 176
     validation_cases: 44
     required_sequence:
-      - bind Batch6 terminal evidence and current code truth
-      - rebuild trained-feature-aligned case-exclusive prototype and semantic negative memory
-      - query memory before M10 spatial dictionary and pass nonzero prototype maps
-      - implement anchor-independent discovery and anchor-confirmation proposal branches
-      - replace formal discrete crop refiner with proposal-based differentiable soft-ROI refiner
-      - replace fixed proposal-refiner average with learned pathology source arbiter
-      - pass fixed Case2002 and Case1002 100-step overfit
-      - run exact 300-step fold0 upstream calibration with 44-case evaluations
-      - continue to total 1200 only after the fixed machine gate
-      - reload selected checkpoint and run full mechanism interventions
-    training_authority:
-      fixed_batch_overfit_steps: 100
-      fixed_batch_formal_credit: 0
-      formal_stage_steps: 300
-      conditional_total_steps: 1200
-      stage300_eval_steps: [100, 200, 300]
-      extension_eval_steps: [600, 900, 1200]
-      encoders_frozen: true
-      base_retrieval_frozen: true
-      rebuilt_prototype_memory_frozen_during_training: true
+      - supersede invalid Batch7 mechanism evidence without deleting history
+      - implement real per-mode 44-case intervention inference and fail-closed validator
+      - build real category semantic memory with valid masks
+      - split anchor-free discovery retrieval from anchor-conditioned confirmation
+      - replay all interventions on the same Batch7 checkpoint
+      - train proposal-only for 600 steps and stop downstream if its gate fails
+      - train scar and edema refiners separately and disable failed refiners
+      - train only accepted source arbiters and then production gate
+      - rerun final independent interventions and update mapper wiki CURRENT fingerprint
     allowed_actions:
-      - trained-checkpoint prototype and memory rebuild
-      - real semantic negative memory
-      - spatial prototype-map wiring
-      - dual-source proposal implementation
-      - differentiable proposal-based scar and edema refiner implementation
-      - learned proposal-refiner source arbiter
-      - loss test validator checkpoint inference and wrapper repair
-      - fixed-batch overfit
-      - exact 300-step fold0 calibration
-      - conditional 1200-step extension after machine gate
-      - same-checkpoint final mechanism interventions
-      - CURRENT wiki and fingerprint repair
+      - truthful intervention infrastructure
+      - semantic validator and known-bad repair
+      - real category semantic memory
+      - anchor-free discovery routing repair
+      - 44-case same-checkpoint intervention replay
+      - proposal-only 600-step stage
+      - conditional scar and edema refiner stages
+      - conditional source-arbiter and production-gate stages
+      - mapper wiki fingerprint repair
       - local lightweight result commit
     forbidden_actions:
-      - backbone replacement or comparison
+      - Batch8
+      - monolithic Batch7 1200 continuation
+      - backbone replacement
       - encoder or base retrieval redesign
       - fold expansion
       - Cine
-      - external weights or data
-      - validation upload
+      - external data or weights
+      - validation packaging or upload
       - hosted metric claim
       - route promotion
       - M11
-      - Batch8 automatic start
+      - final scientific stop
+
 required_real_assets:
   myops_raw:
     path: data/nnUNet/nnUNet_raw/Dataset501_CAREMyoPS
@@ -176,31 +146,15 @@ required_real_assets:
     path: data/benchmarks/protocol/splits_MyoPS.json
   nnunet_anchor_root:
     path: data/nnUNet/nnUNet_results/Dataset501_CAREMyoPS/nnUNetTrainer_500epochs__nnUNetPlans__3d_fullres
-  batch6_selected_checkpoint:
-    path: results/20260721_srr_batch6_final_objective_alignment/runtime/attempts/batch6_formal300_htzhulab_59744053/variants/batch6_formal300_htzhulab_59744053/checkpoints/fold_0/propref_config/checkpoint_validation_step_300.pt
-    sha256: 729c81e49bf846339ed2f39ef0f2656319befd2b9cfe73268d7cf501e6b40fbd
-  batch4_prototype_memory_control:
-    role: historical_intervention_control_only
-    manifest_path: results/20260721_srr_batch4_forced_fold0_training/frozen_prototype_memory_manifest.json
-    sha256: 8b262f8bb87e0733a48e169c77b028a3833b70cbcd33d2ac2fb4857ba1cbde83
-forbidden_formal_entrypoints:
-  - path: scripts/training/route_B_round04/myops/B3/run_B3_representation.py
-    reason: synthetic historical path
-  - path: scripts/training/route_B_round04/myops/B4/run_B4_proposal.py
-    reason: synthetic historical path
-  - path: scripts/training/route_B_round04/myops/B5/run_B5_refiner.py
-    reason: hard-coded proxy historical path
-  - path: scripts/training/route_B_round04/myops/B6/run_B6_joint.py
-    reason: fixed proxy historical path
-  - path: scripts/training/route_B_round04/cine/B7/run_B7_cinema_control.py
-    reason: disconnected synthetic Cine path
-  - path: scripts/training/route_B_round04/cine/B8/run_B8_registration.py
-    reason: synthetic registration pair path
+  batch7_selected_checkpoint:
+    path: results/20260721_srr_batch7_upstream_candidate_quality/runtime/attempts/batch7_formal300_htzhulab_59789651/variants/batch7_formal300_htzhulab_59789651/checkpoints/fold_0/propref_config/checkpoint_validation_step_300.pt
+    sha256: d34ad65890cbb6a12aac3fc35bcab71709d680bff5a3aae2d93e010db1cc0e0d
+
 publication_boundary:
+  batch8_authorized: false
   validation_upload_authorized: false
   hosted_metric_claim_authorized: false
   fold_expansion_authorized: false
-  route_promotion_authorized: false
   cine_authorized: false
+  route_promotion_authorized: false
   final_scientific_decision_authorized: false
-  batch8_authorized: false
