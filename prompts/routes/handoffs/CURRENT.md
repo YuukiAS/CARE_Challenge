@@ -5,7 +5,7 @@
 ## 当前状态
 
 ```text
-state_id: srr_mainline_batch5_post_batch4_diagnostic_repair_20260721
+state_id: srr_mainline_batch5_executor_packet_20260721
 round_id: post_round04_main_only
 state_updated_date: 2026-07-21
 active_development_branch: main
@@ -21,8 +21,9 @@ batch4_operational_status: VERIFIED_COMPLETE
 batch4_training_adequacy_status: PASS_EXACT_1800_STEPS_1800_SECONDS_176_44
 batch4_scientific_status: BATCH4_TRAINED_NEGATIVE_OR_REPAIR_REQUIRED
 batch4_candidate_signal_gate: FAIL
-batch5_status: READY_FOR_CONTROLLER
-next_required_action: RUN_BATCH5_POST_BATCH4_DIAGNOSTIC_REPAIR
+batch5_status: CONTROLLER_VERIFIED_COMPLETE
+batch5_controller_acceptance: VERIFIED_COMPLETE
+next_required_action: PLANNER_DECIDE_BATCH6_FROM_B5_INSUFFICIENT_MECHANISM_EVIDENCE
 planning_review_required: false
 review_required: false
 controller_is_coordinator: true
@@ -187,6 +188,29 @@ Batch 5 不训练，不改变 checkpoint 权重，不重建 prototype/memory。�
 5. 补齐 prototype feature/config/code/split/anchor/asset hashes。
 6. 更新 CURRENT、entrypoint authority、wiki 和 fingerprint。
 7. 只给出一个 Batch 6 训练修复方向。
+
+### Executor packet evidence
+
+```text
+result_root: results/20260721_srr_batch5_post_batch4_diagnostic_repair
+selected_checkpoint_sha256: bc325754202d5cf0aa59aa8fab0306b38c2665640339afa3f8d06a13c70009f6
+case_count: 44
+intervention_modes: 7
+checkpoint_steps: 600,1200,1800
+primary_job_id: 59730568
+primary_partition: htzhulab
+primary_state: COMPLETED
+primary_exit_code: 0:0
+a100_mirror_job_id: 59730666
+a100_mirror_state: CANCELLED by 397557
+optimizer_steps: 0
+parameter_updates: 0
+training_credit: 0_DIAGNOSTIC_INFERENCE_ONLY
+controller_acceptance: VERIFIED_COMPLETE
+batch6_unique_repair_decision: B5_INSUFFICIENT_MECHANISM_EVIDENCE
+```
+
+Batch 5 executor evidence includes formal logits-argmax checkpoint reranking, HD95/remote-FP eligibility gates, production-gate casewise attribution, GT-aware oracle headroom, real-checkpoint backward-only loss audit, prototype hash audit, terminal Slurm accounting, and strict packet validator support. The external non-tmux controller independently verified the packet and created a local commit. Executor did not commit, push, upload validation, start Cine, or start Batch 6.
 
 ### 当前权威文件顺序
 

@@ -1,10 +1,10 @@
-architecture_version: care-agent-flow-v2-m10-candidate-unreviewed
-verified_at_utc: '2026-07-15T01:20:27Z'
-verified_milestone: M9 follow-up evidence reconciliation; M10 candidate packet unreviewed
+architecture_version: care-agent-flow-v2-batch5-controller-verified
+verified_at_utc: '2026-07-21T01:20:00Z'
+verified_milestone: M9 follow-up evidence reconciliation; Batch5 controller-verified diagnostic packet
 review_token: M9_FOLLOWUP_AUDITED_READY_NO_PROMOTION_DIAGNOSTIC_ONLY
 verification_base_commit: d82c6475d23a1e5a40eb1f624d2e46f433381072
-code_fingerprint: srr_propref=f7f9df91;srr_blocks=8d126023;srr_losses=dca8e5e1;agent_flow=78d6398;m10_candidate=78d6398
-evidence_fingerprint: m9_followup_review=results/20260708_srr_v3_m9_dictionary_fidelity_repair_training/review.md;m10_followup_packet=results/20260714_srr_v3_m10_continuation_reconciliation/result.md
+code_fingerprint: srr_propref=c939b0a6;infer_myops=2ebdab1a;batch5_selection=93d2be96;batch5_loss=27760631;batch5_validator=7f9a0b68;batch5_config=6ab9ff3f
+evidence_fingerprint: m9_followup_review=results/20260708_srr_v3_m9_dictionary_fidelity_repair_training/review.md;batch5_executor_packet=results/20260721_srr_batch5_post_batch4_diagnostic_repair/MANIFEST.md
 nodes:
   - id: inputs_availability
     label: 输入与 availability mask
@@ -167,6 +167,13 @@ nodes:
     target_status: implemented
     source_file: prompts/CONTROLLER_TASK_PROTOCOL.md
     symbol: FINALIZER_A
+  - id: batch5_post_batch4_diagnostic
+    label: Batch5 post-Batch4 checkpoint/loss/gate diagnostic
+    branch: MyoPS
+    current_status: partial
+    target_status: implemented
+    source_file: scripts/evaluation/audit_srr_batch4_selection_semantics.py
+    symbol: Batch5
 edges:
   - from: inputs_availability
     to: modality_stems_encoders
@@ -232,6 +239,14 @@ edges:
     to: arbitration_final_output
     kind: data
     condition: formal decision
+  - from: batch5_post_batch4_diagnostic
+    to: checkpoint_selection
+    kind: data
+    condition: formal logits argmax reranking and safety gates
+  - from: batch5_post_batch4_diagnostic
+    to: arbitration_final_output
+    kind: data
+    condition: production gate intervention evidence
   - from: cine_temporal
     to: checkpoint_selection
     kind: data

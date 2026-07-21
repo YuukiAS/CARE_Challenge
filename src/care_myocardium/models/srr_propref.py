@@ -1283,7 +1283,16 @@ class SRRProposeRefineMyoPS(nn.Module):
         disable_srr_evidence: bool = False,
         case_ids: list[str] | tuple[str, ...] | None = None,
         anchor_identity_control: bool = False,
+        production_intervention_mode: str = "full",
     ) -> dict[str, torch.Tensor]:
+        if production_intervention_mode not in {
+            "full",
+            "proposal_only",
+            "refiner_only",
+            "gate_closed",
+            "gate_open_bounded_control",
+        }:
+            raise ValueError(f"unknown production_intervention_mode: {production_intervention_mode}")
         if x.shape[1] != 3:
             raise ValueError(f"SRRProposeRefineMyoPS expects 3 channels, got {x.shape[1]}")
         self._validate_context_shapes(x, anchor_features, component_features)
@@ -1472,12 +1481,21 @@ class SRRProposeRefineMyoPS(nn.Module):
         anchor_logits = baseline_blend["anchor_logits"].detach()
         gate_input = torch.cat([scar_dict["proposal_logits"], edema_dict["proposal_logits"], scar_logits, edema_logits], dim=1)
         production_gate = torch.sigmoid(self.production_correction_gate(gate_input))
-        scar_raw_correction = 0.5 * (scar_logits + scar_dict["proposal_logits"]) - anchor_logits[:, 5:6]
-        edema_raw_correction = 0.5 * (edema_logits + edema_dict["proposal_logits"]) - anchor_logits[:, 4:5]
+        if production_intervention_mode == "proposal_only":
+            scar_raw_correction = scar_dict["proposal_logits"] - anchor_logits[:, 5:6]
+            edema_raw_correction = edema_dict["proposal_logits"] - anchor_logits[:, 4:5]
+        elif production_intervention_mode == "refiner_only":
+            scar_raw_correction = scar_logits - anchor_logits[:, 5:6]
+            edema_raw_correction = edema_logits - anchor_logits[:, 4:5]
+        else:
+            scar_raw_correction = 0.5 * (scar_logits + scar_dict["proposal_logits"]) - anchor_logits[:, 5:6]
+            edema_raw_correction = 0.5 * (edema_logits + edema_dict["proposal_logits"]) - anchor_logits[:, 4:5]
+        if production_intervention_mode == "gate_open_bounded_control":
+            production_gate = torch.ones_like(production_gate)
         scar_bounded_correction = 4.0 * torch.tanh(scar_raw_correction / 4.0) * production_gate[:, 0:1]
         edema_bounded_correction = 4.0 * torch.tanh(edema_raw_correction / 4.0) * production_gate[:, 1:2]
         edema_bounded_correction = torch.where(no_t2_mask, torch.zeros_like(edema_bounded_correction), edema_bounded_correction)
-        if bool(anchor_identity_control or force_closed_gate):
+        if bool(anchor_identity_control or force_closed_gate or production_intervention_mode == "gate_closed"):
             scar_bounded_correction = torch.zeros_like(scar_bounded_correction)
             edema_bounded_correction = torch.zeros_like(edema_bounded_correction)
         production_final_logits = torch.cat(
@@ -1525,7 +1543,10 @@ class SRRProposeRefineMyoPS(nn.Module):
             "raw_anchor_used_for_final_baseline": torch.tensor(anchor_features is not None, device=final_logits.device),
             "safety_context_used_for_srr_evidence": torch.tensor(context_anchor_features is not anchor_features, device=final_logits.device),
             "production_final_logits": production_final_logits,
+            "production_intervention_mode": production_intervention_mode,
             "production_correction_gate": production_gate,
+            "raw_scar_correction": scar_raw_correction,
+            "raw_edema_correction": edema_raw_correction,
             "bounded_scar_correction": scar_bounded_correction,
             "bounded_edema_correction": edema_bounded_correction,
             "srr_no_anchor_control_logits": srr_logits,

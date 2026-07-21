@@ -1,10 +1,20 @@
-current_milestone_id: M09
-current_task_key: 20260708_srr_v3_m9_dictionary_fidelity_repair_training
+current_milestone_id: Batch5_executor_packet
+current_task_key: 20260721_srr_batch5_post_batch4_diagnostic_repair
 current_review_path: results/20260708_srr_v3_m9_dictionary_fidelity_repair_training/review.md
 current_review_token: M9_FOLLOWUP_AUDITED_READY_NO_PROMOTION_DIAGNOSTIC_ONLY
 reviewed_commit: fa4e50ba77743322104e7d61ae69a2382f3a89c2
 architecture_path: wiki/architecture.yaml
 component_table_path: wiki/COMPONENTS.csv
-wiki_fingerprint: srr_propref=f7f9df91;srr_blocks=8d126023;srr_losses=dca8e5e1;agent_flow=fa4e50b
+wiki_fingerprint: srr_propref=c939b0a6;infer_myops=2ebdab1a;batch5_selection=93d2be96;batch5_loss=27760631;batch5_validator=7f9a0b68;batch5_config=6ab9ff3f
 previous_milestone_id: M08
-updated_at: "2026-07-11T00:00:00Z"
+updated_at: "2026-07-21T01:20:00Z"
+batch5_executor_packet:
+  result_root: results/20260721_srr_batch5_post_batch4_diagnostic_repair
+  selected_checkpoint_sha256: bc325754202d5cf0aa59aa8fab0306b38c2665640339afa3f8d06a13c70009f6
+  case_count: 44
+  optimizer_steps: 0
+  primary_job_id: "59730568"
+  primary_state: COMPLETED
+  a100_mirror_job_id: "59730666"
+  a100_mirror_state: "CANCELLED by 397557"
+  controller_acceptance: VERIFIED_COMPLETE

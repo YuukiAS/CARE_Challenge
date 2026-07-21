@@ -18,7 +18,8 @@ current_scientific_status:
   batch4_operational: VERIFIED_COMPLETE
   batch4_scientific: BATCH4_TRAINED_NEGATIVE_OR_REPAIR_REQUIRED
   significantly_better_than_nnunet: false
-  batch5: READY_FOR_CONTROLLER
+  batch5: CONTROLLER_VERIFIED_COMPLETE
+  batch5_controller_acceptance: VERIFIED_COMPLETE
 
 selected_model:
   class_name: SRRProposeRefineMyoPS
@@ -96,7 +97,22 @@ candidate_entrypoints:
     path: prompts/tasks/20260721_srr_batch5_post_batch4_diagnostic_repair_controller.md
     config_path: configs/srr_production/myops_batch5.yaml
     formal_authority: true
-    audit_status: READY_FOR_CONTROLLER
+    audit_status: CONTROLLER_VERIFIED_COMPLETE
+    result_root: results/20260721_srr_batch5_post_batch4_diagnostic_repair
+    selected_checkpoint_sha256: bc325754202d5cf0aa59aa8fab0306b38c2665640339afa3f8d06a13c70009f6
+    case_count: 44
+    optimizer_steps: 0
+    controller_acceptance: VERIFIED_COMPLETE
+    slurm_accounting:
+      primary_job_id: "59730568"
+      primary_partition: htzhulab
+      primary_state: COMPLETED
+      primary_exit_code: "0:0"
+      a100_mirror_job_id: "59730666"
+      a100_mirror_state: "CANCELLED by 397557"
+      log_path: logs/srr_batch5/SRRB5Diag_59730568_20260721_005609.log
+      runtime_output_path: results/20260721_srr_batch5_post_batch4_diagnostic_repair/runtime/inference
+      aggregation_exit_code: 0
     allowed_actions:
       - evaluation semantic repair
       - existing-checkpoint inference interventions

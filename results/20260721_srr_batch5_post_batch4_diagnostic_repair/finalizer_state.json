@@ -1,0 +1,17 @@
+{
+  "aggregation_command": "./envs/env_CARE/bin/python scripts/evaluation/audit_srr_batch4_selection_semantics.py --config configs/srr_production/myops_batch5.yaml --result-root results/20260721_srr_batch5_post_batch4_diagnostic_repair --inference-root results/20260721_srr_batch5_post_batch4_diagnostic_repair/runtime/inference",
+  "aggregation_exit_code": 0,
+  "a100_mirror_job_id": "59730666",
+  "a100_mirror_state": "CANCELLED by 397557",
+  "case_count": 44,
+  "controller_acceptance": "VERIFIED_COMPLETE",
+  "htzhulab_primary_job_id": "59730568",
+  "htzhulab_primary_state": "COMPLETED",
+  "optimizer_steps": 0,
+  "parameter_updates": 0,
+  "result_root": "results/20260721_srr_batch5_post_batch4_diagnostic_repair",
+  "runtime_output_path": "results/20260721_srr_batch5_post_batch4_diagnostic_repair/runtime/inference",
+  "selected_checkpoint_sha256": "bc325754202d5cf0aa59aa8fab0306b38c2665640339afa3f8d06a13c70009f6",
+  "status": "BATCH5_CONTROLLER_VERIFIED_COMPLETE",
+  "training_credit": "0_DIAGNOSTIC_INFERENCE_ONLY"
+}

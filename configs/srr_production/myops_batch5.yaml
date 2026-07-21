@@ -12,6 +12,33 @@ source_batch4:
   fold: 0
   train_cases: 176
   validation_cases: 44
+paths:
+  raw_root: data/nnUNet/nnUNet_raw/Dataset501_CAREMyoPS
+  gt_dir: data/nnUNet/nnUNet_raw/Dataset501_CAREMyoPS/labelsTr
+  split_path: data/benchmarks/protocol/splits_MyoPS.json
+  anchor_root: data/nnUNet/nnUNet_results/Dataset501_CAREMyoPS/nnUNetTrainer_500epochs__nnUNetPlans__3d_fullres
+  anchor_fold0_pred_dir: data/nnUNet/nnUNet_results/Dataset501_CAREMyoPS/nnUNetTrainer_500epochs__nnUNetPlans__3d_fullres/fold_0/validation
+  result_root: results/20260721_srr_batch5_post_batch4_diagnostic_repair
+  runtime_root: results/20260721_srr_batch5_post_batch4_diagnostic_repair/runtime
+  inference_root: results/20260721_srr_batch5_post_batch4_diagnostic_repair/runtime/inference
+  evaluation_root: results/20260721_srr_batch5_post_batch4_diagnostic_repair
+  log_root: logs/srr_batch5
+  lock_root: results/20260721_srr_batch5_post_batch4_diagnostic_repair/runtime/locks
+model:
+  class_name: SRRProposeRefineMyoPS
+  variant: m10_d3_hierarchical_memory_propref
+  encoder_profile: full_4scale
+  base_channels: 32
+  training_final_output_mode: anchor_bounded_srr_correction
+  same_checkpoint_all_runtime_modes: true
+modes:
+  - anchor_identity_control
+  - anchor_bounded_full
+  - srr_no_anchor_control
+  - anchor_bounded_proposal_only
+  - anchor_bounded_refiner_only
+  - production_gate_closed
+  - production_gate_open_bounded_control
 baseline:
   source: nnunet_fold0_validation
   edema_positive_case_dice: 0.3944358976789887

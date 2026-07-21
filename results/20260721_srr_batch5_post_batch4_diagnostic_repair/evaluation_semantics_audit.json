@@ -1,0 +1,19 @@
+{
+  "case_count": 44,
+  "intervention_modes": [
+    "anchor_identity_control",
+    "anchor_bounded_full",
+    "srr_no_anchor_control",
+    "anchor_bounded_proposal_only",
+    "anchor_bounded_refiner_only",
+    "production_gate_closed",
+    "production_gate_open_bounded_control"
+  ],
+  "reranked_checkpoints": [
+    "step_1800",
+    "step_600",
+    "step_1200"
+  ],
+  "result_root": "results/20260721_srr_batch5_post_batch4_diagnostic_repair",
+  "status": "BATCH5_EVALUATION_SEMANTICS_COMPLETE"
+}

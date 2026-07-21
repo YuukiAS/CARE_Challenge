@@ -48,6 +48,25 @@ from src.care_myocardium.srr_production.checkpoint import (  # noqa: E402
 
 SPLIT_NNUNET = REPO_ROOT / "data/nnUNet/nnUNet_preprocessed/Dataset501_CAREMyoPS/splits_final.json"
 PREPROCESSED = REPO_ROOT / "data/nnUNet/nnUNet_preprocessed/Dataset501_CAREMyoPS/nnUNetPlans_3d_fullres"
+BATCH5_MODES = (
+    "anchor_identity_control",
+    "anchor_bounded_full",
+    "srr_no_anchor_control",
+    "anchor_bounded_proposal_only",
+    "anchor_bounded_refiner_only",
+    "production_gate_closed",
+    "production_gate_open_bounded_control",
+)
+BATCH5_PRODUCTION_INTERVENTIONS = {
+    "anchor_identity_control": "full",
+    "anchor_bounded_srr_correction": "full",
+    "anchor_bounded_full": "full",
+    "srr_no_anchor_control": "full",
+    "anchor_bounded_proposal_only": "proposal_only",
+    "anchor_bounded_refiner_only": "refiner_only",
+    "production_gate_closed": "gate_closed",
+    "production_gate_open_bounded_control": "gate_open_bounded_control",
+}
 
 
 def load_json(path: Path) -> Any:
@@ -94,6 +113,20 @@ def runtime_final_output_mode(mode: str) -> str:
     return "srr_no_anchor_control" if mode == "srr_no_anchor_control" else "anchor_bounded_srr_correction"
 
 
+def normalized_mode(mode: str) -> str:
+    return "anchor_bounded_full" if mode == "anchor_bounded_srr_correction" else str(mode)
+
+
+def configured_modes(cfg: dict[str, Any]) -> set[str]:
+    modes = cfg.get("modes")
+    if isinstance(modes, list):
+        return {str(item) for item in modes}
+    interventions = cfg.get("runtime_interventions", {})
+    if isinstance(interventions, dict) and isinstance(interventions.get("modes"), list):
+        return {str(item) for item in interventions["modes"]}
+    return {"anchor_identity_control", "anchor_bounded_srr_correction", "srr_no_anchor_control"}
+
+
 def model_from_config(cfg: dict[str, Any], mode: str) -> SRRProposeRefineMyoPS:
     model_cfg = cfg.get("model", {}) or {}
     return SRRProposeRefineMyoPS(
@@ -120,6 +153,38 @@ def architecture_config(cfg: dict[str, Any], mode: str) -> dict[str, Any]:
 
 def manifest_hash(manifest: dict[str, Any]) -> str:
     return sha256_text(json.dumps(manifest, sort_keys=True, separators=(",", ":")))
+
+
+def tensor_stats(prefix: str, tensor: torch.Tensor) -> dict[str, float]:
+    value = tensor.detach().abs().float().flatten().cpu()
+    if value.numel() == 0:
+        return {
+            f"{prefix}_abs_mean": 0.0,
+            f"{prefix}_abs_p95": 0.0,
+            f"{prefix}_abs_max": 0.0,
+        }
+    return {
+        f"{prefix}_abs_mean": float(value.mean()),
+        f"{prefix}_abs_p95": float(torch.quantile(value, 0.95)),
+        f"{prefix}_abs_max": float(value.max()),
+    }
+
+
+def gate_stats(prefix: str, tensor: torch.Tensor) -> dict[str, float]:
+    value = tensor.detach().float().flatten().cpu()
+    if value.numel() == 0:
+        return {
+            f"{prefix}_mean": 0.0,
+            f"{prefix}_p50": 0.0,
+            f"{prefix}_p95": 0.0,
+            f"{prefix}_max": 0.0,
+        }
+    return {
+        f"{prefix}_mean": float(value.mean()),
+        f"{prefix}_p50": float(torch.quantile(value, 0.50)),
+        f"{prefix}_p95": float(torch.quantile(value, 0.95)),
+        f"{prefix}_max": float(value.max()),
+    }
 
 
 def training_summary_anchor_hash(summary_path: Path | None) -> str:
@@ -226,8 +291,10 @@ def run(args: argparse.Namespace) -> dict[str, Any]:
     out_root = Path(args.output_root or paths["inference_root"])
     if not out_root.is_absolute():
         out_root = REPO_ROOT / out_root
-    mode = args.mode
-    if mode not in set(cfg["modes"]):
+    raw_mode = str(args.mode)
+    cfg_modes = configured_modes(cfg)
+    mode = normalized_mode(raw_mode) if normalized_mode(raw_mode) in cfg_modes else raw_mode
+    if mode not in cfg_modes:
         raise ValueError(f"unsupported inference mode {mode!r}")
     if mode != "anchor_identity_control" and not args.checkpoint and not args.allow_untrained_diagnostic:
         raise ValueError(
@@ -301,6 +368,7 @@ def run(args: argparse.Namespace) -> dict[str, Any]:
                 memory_query_policy="validation_inference_all_train_shards",
                 case_ids=[cid],
                 anchor_identity_control=mode == "anchor_identity_control",
+                production_intervention_mode=BATCH5_PRODUCTION_INTERVENTIONS.get(mode, "full"),
             )
         raw_anchor_labels = raw_anchor["probabilities"].argmax(dim=1)[0].detach().cpu().numpy().astype(np.uint8)
         model_labels = outputs["logits"].argmax(dim=1)[0].detach().cpu().numpy().astype(np.uint8)
@@ -319,6 +387,28 @@ def run(args: argparse.Namespace) -> dict[str, Any]:
             "edema_refinement_residual_abs_max": float(outputs["edema_refinement_residual"].abs().max().detach().cpu()),
             "bounded_edema_correction_abs_max": float(outputs["bounded_edema_correction"].abs().max().detach().cpu()),
         }
+        production_rows = []
+        for pathology, channel, gate_channel in (("edema", 4, 1), ("scar", 5, 0)):
+            raw_key = f"raw_{pathology}_correction"
+            bounded_key = f"bounded_{pathology}_correction"
+            proposal_key = f"{pathology}_proposal_logits"
+            residual_key = f"{pathology}_refinement_residual"
+            production_rows.append(
+                {
+                    "case_id": cid,
+                    "mode": mode,
+                    "pathology": pathology,
+                    "class_id": channel,
+                    "production_intervention_mode": outputs["production_intervention_mode"],
+                    **gate_stats("production_gate", outputs["production_correction_gate"][:, gate_channel : gate_channel + 1]),
+                    **tensor_stats("raw_correction", outputs[raw_key]),
+                    **tensor_stats("bounded_correction", outputs[bounded_key]),
+                    "proposal_positive_voxels": int((outputs[proposal_key].detach().sigmoid() >= 0.5).sum().cpu()),
+                    "refiner_positive_voxels": int((outputs[f"{pathology}_logits"].detach().sigmoid() >= 0.5).sum().cpu()),
+                    "refiner_residual_abs_mean": float(outputs[residual_key].detach().abs().mean().cpu()),
+                    "changed_voxels_vs_anchor": int(np.count_nonzero((written_arr == channel) != (source_arr == channel))),
+                }
+            )
         final_anchor_softmax_delta = float(
             (
                 torch.softmax(outputs["logits"], dim=1)
@@ -356,7 +446,8 @@ def run(args: argparse.Namespace) -> dict[str, Any]:
                 "output_sha256": sha256_file(out_path),
             }
         )
-        tensor_rows.append({"case_id": cid, **no_t2_values})
+        for production_row in production_rows:
+            tensor_rows.append({"case_id": cid, **no_t2_values, **production_row})
 
     geometry_csv = out_root / f"batch3a_{mode}_geometry_roundtrip.csv"
     tensor_csv = out_root / f"batch3a_{mode}_tensor_checks.csv"
@@ -374,13 +465,14 @@ def run(args: argparse.Namespace) -> dict[str, Any]:
         status = "BATCH3A_NEEDS_REPAIR_ANCHOR_IDENTITY_NOT_EXACT"
     if mode == "anchor_identity_control" and identity_softmax_max_abs_delta > 1e-6:
         status = "BATCH3A_NEEDS_REPAIR_ANCHOR_IDENTITY_SOFTMAX_NOT_EXACT"
-    if mode != "anchor_identity_control" and nonidentity_tensor_delta <= 0.0:
+    if mode not in {"anchor_identity_control", "production_gate_closed"} and nonidentity_tensor_delta <= 0.0:
         status = "BATCH3A_NEEDS_REPAIR_NO_NONIDENTITY_TENSOR_EFFECT"
     contract = {
-        "schema_version": 3,
-        "batch": "3A",
+        "schema_version": 5,
+        "batch": "5" if mode in BATCH5_MODES else "3A",
         "status": status,
         "mode": mode,
+        "production_intervention_mode": BATCH5_PRODUCTION_INTERVENTIONS.get(mode, "full"),
         "fold": args.fold,
         "case_count": len(rows),
         "model_forward_count": int(sum(int(row["model_forward_count"]) for row in rows)),
@@ -411,7 +503,7 @@ def run(args: argparse.Namespace) -> dict[str, Any]:
         "validation_upload_count": 0,
         "hosted_metric_claim_count": 0,
         "performance_claim": "NONE",
-        "notes": "All modes instantiate and call SRRProposeRefineMyoPS. Zero-step checkpoint output is diagnostic only when checkpoint_global_step is 0.",
+        "notes": "All modes instantiate and call SRRProposeRefineMyoPS. Batch5 intervention modes are inference-only and preserve checkpoint parameters.",
     }
     write_json(out_root / f"batch3a_{mode}_inference_contract.json", contract)
     write_json(out_root / "batch3a_inference_contract.json", contract)
@@ -422,7 +514,20 @@ def run(args: argparse.Namespace) -> dict[str, Any]:
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--config", default="configs/srr_production/myops_batch2.yaml")
-    parser.add_argument("--mode", choices=("anchor_identity_control", "srr_no_anchor_control", "anchor_bounded_srr_correction"), default="anchor_identity_control")
+    parser.add_argument(
+        "--mode",
+        choices=(
+            "anchor_identity_control",
+            "srr_no_anchor_control",
+            "anchor_bounded_srr_correction",
+            "anchor_bounded_full",
+            "anchor_bounded_proposal_only",
+            "anchor_bounded_refiner_only",
+            "production_gate_closed",
+            "production_gate_open_bounded_control",
+        ),
+        default="anchor_identity_control",
+    )
     parser.add_argument("--fold", type=int, default=0)
     parser.add_argument("--cases", default="")
     parser.add_argument("--max-cases", type=int, default=0)
