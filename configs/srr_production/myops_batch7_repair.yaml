@@ -1,0 +1,359 @@
+schema_version: 1
+authority_name: srr_batch7_mechanism_closure_repair
+status: READY_FOR_CONTROLLER
+source_main_commit: 4c79554de785030ed59081ce3ae233711efc062a
+
+source_checkpoints:
+  batch6:
+    path: results/20260721_srr_batch6_final_objective_alignment/runtime/attempts/batch6_formal300_htzhulab_59744053/variants/batch6_formal300_htzhulab_59744053/checkpoints/fold_0/propref_config/checkpoint_validation_step_300.pt
+    sha256: 729c81e49bf846339ed2f39ef0f2656319befd2b9cfe73268d7cf501e6b40fbd
+  batch7:
+    path: results/20260721_srr_batch7_upstream_candidate_quality/runtime/attempts/batch7_formal300_htzhulab_59789651/variants/batch7_formal300_htzhulab_59789651/checkpoints/fold_0/propref_config/checkpoint_validation_step_300.pt
+    sha256: d34ad65890cbb6a12aac3fc35bcab71709d680bff5a3aae2d93e010db1cc0e0d
+    global_step: 300
+
+paths:
+  raw_root: data/nnUNet/nnUNet_raw/Dataset501_CAREMyoPS
+  gt_dir: data/nnUNet/nnUNet_raw/Dataset501_CAREMyoPS/labelsTr
+  split_path: data/benchmarks/protocol/splits_MyoPS.json
+  anchor_root: data/nnUNet/nnUNet_results/Dataset501_CAREMyoPS/nnUNetTrainer_500epochs__nnUNetPlans__3d_fullres
+  result_root: results/20260721_srr_batch7_mechanism_closure_repair
+  runtime_root: results/20260721_srr_batch7_mechanism_closure_repair/runtime
+  intervention_root: results/20260721_srr_batch7_mechanism_closure_repair/runtime/interventions
+  semantic_memory_asset: results/20260721_srr_batch7_mechanism_closure_repair/runtime/assets/semantic_memory.pt
+  log_root: logs/srr_batch7_repair
+  lock_root: results/20260721_srr_batch7_mechanism_closure_repair/runtime/locks
+
+model:
+  class_name: SRRProposeRefineMyoPS
+  variant: m10_d3_hierarchical_memory_propref
+  encoder_profile: full_4scale
+  base_channels: 32
+  final_output_mode: anchor_bounded_srr_correction
+  maximum_correction_logit_delta: 4.0
+  backbone_replacement: forbidden
+  encoder_redesign: forbidden
+  base_retrieval_redesign: forbidden
+
+training_data:
+  fold: 0
+  train_case_count: 176
+  validation_case_count: 44
+  label_mapping:
+    background: 0
+    lv_myo: 1
+    lv_blood: 2
+    rv_blood: 3
+    edema: 4
+    scar: 5
+  validation_labels_for_asset_build: forbidden
+  no_t2_edema_supervision: forbidden
+
+output_semantics:
+  runtime_mode: anchor_bounded_srr_correction
+  decode_rule: outputs_logits_argmax
+  selection_decode_rule: outputs_logits_argmax
+  primary_population: positive_gt_cases
+  report_all_case_empty_safe_separately: true
+  same_split_anchor_required: true
+
+superseded_batch7_evidence:
+  - results/20260721_srr_batch7_upstream_candidate_quality/final_mechanism_interventions.csv
+  - results/20260721_srr_batch7_upstream_candidate_quality/proposal_refiner_metrics.csv
+  - results/20260721_srr_batch7_upstream_candidate_quality/source_arbiter_metrics.csv
+  reason: copied_or_placeholder_not_independent_intervention_evidence
+
+intervention_execution:
+  checkpoint: batch7
+  case_count: 44
+  one_prediction_root_per_mode: true
+  one_command_manifest_per_mode: true
+  one_prediction_hash_per_case_per_mode: true
+  modes:
+    - anchor_identity
+    - production_gate_closed
+    - full_learned
+    - production_gate_one
+    - proposal_only_gate_one
+    - refiner_only_gate_one
+    - learned_source_gate_one
+    - prototype_maps_off
+    - semantic_negative_memory_off
+    - zero_anchor_confirmation_context
+    - no_anchor_diagnostic
+  expected_equivalent_pairs:
+    - [anchor_identity, production_gate_closed]
+  exact_identity:
+    changed_voxels_per_case: 0
+    softmax_max_abs_delta_maximum: 0.000001
+  forbidden_tokens:
+    - placeholder
+    - copied_from_formal
+    - continuation_gate_or_final_intervention_placeholder
+  require_nonempty_metrics:
+    - proposal_only_scar_dice_delta
+    - proposal_only_edema_dice_delta
+    - refiner_only_scar_dice_delta
+    - refiner_only_edema_dice_delta
+    - learned_source_scar_dice_delta
+    - learned_source_edema_dice_delta
+    - production_gate_one_scar_dice_delta
+    - production_gate_one_edema_dice_delta
+  distinct_hash_rule:
+    all_distinct_except_expected_equivalent_pairs: true
+    minimum_changed_mode_pairs: 1
+
+semantic_memory:
+  builder: scripts/srr_production/build_srr_batch7_repair_semantic_memory.py
+  source_checkpoint: batch7
+  source_train_cases: 176
+  shard_count: 4
+  training_query_policy: exclude_query_shard
+  validation_query_policy: all_train_shards
+  full_tensor_sha256_required: true
+  forbid_validation_case_or_label: true
+  forbid_deterministic_axis: true
+  forbid_random: true
+  forbid_repeat_last: true
+  zero_count_category_policy: valid_mask_false
+  scar_categories:
+    - normal_myocardium
+    - blood_pool
+    - outside_myocardium
+    - lge_bright_non_scar
+    - anchor_remote_false_positive
+  edema_categories_t2_present_only:
+    - normal_myocardium
+    - blood_pool
+    - outside_myocardium
+    - t2_high_non_edema
+    - anchor_remote_false_positive
+  category_rules:
+    lge_bright_non_scar:
+      allowed_gt_labels: [1, 4]
+      excluded_gt_label: 5
+      robust_z_minimum: 2.0
+      modality: LGE
+    t2_high_non_edema:
+      allowed_gt_labels: [1, 5]
+      excluded_gt_label: 4
+      robust_z_minimum: 2.0
+      modality: T2
+      require_t2_present: true
+    anchor_remote_false_positive:
+      require_zero_gt_overlap: true
+      union_distance_minimum: 0.65
+    edema_all_categories:
+      require_t2_present: true
+  required_asset_fields:
+    - tensor
+    - category
+    - pathology
+    - source_case_ids
+    - vector_count
+    - valid_mask
+    - full_tensor_sha256
+  formal_named_negative_source: real_category_banks_with_valid_mask_only
+
+anchor_free_discovery:
+  encode_modalities_once: true
+  discovery_retrieval_anchor_features: null
+  confirmation_retrieval_anchor_features: nnunet_context
+  discovery_forbidden_inputs:
+    - nnunet_pathology_probability
+    - nnunet_pathology_component
+    - nnunet_confidence
+    - nnunet_entropy
+    - nnunet_uncertainty
+  confirmation_allowed_inputs:
+    - discovery_logit
+    - nnunet_pathology_probability
+    - nnunet_pathology_component
+    - anchor_confidence
+    - anchor_entropy
+    - anatomy_support
+  invariance_test:
+    intervention: zero_anchor_confirmation_context
+    discovery_logits_max_abs_delta_maximum: 0.000001
+    confirmation_logits_minimum_abs_delta: 0.00001
+    discovery_nonzero_required: true
+  spatial_prototype_maps_target: anchor_free_discovery_path
+
+stagewise_training:
+  common:
+    optimizer: AdamW
+    learning_rate: 0.0001
+    weight_decay: 0.0001
+    grad_clip: 12.0
+    batch_size: 1
+    patch_shape: [12, 96, 96]
+    encoder_frozen: true
+    base_scale_retrieval_frozen: true
+    nnunet_anchor_frozen: true
+    no_t2_edema_exact_zero: true
+    checkpoint_reload_required: true
+
+  proposal_stage:
+    optimizer_steps: 600
+    full_volume_eval_steps: [200, 400, 600]
+    validation_cases_per_eval: 44
+    trainable_groups:
+      - anchor_free_spatial_discovery_dictionary
+      - scar_proposal_dictionary
+      - edema_proposal_dictionary
+      - scar_evidence_head
+      - edema_evidence_head
+    frozen_groups:
+      - scar_refiner
+      - edema_refiner
+      - scar_source_arbiter
+      - edema_source_arbiter
+      - production_correction_gate
+    evaluation_mode: proposal_only_gate_one
+    continuation_gate:
+      minimum_mean_positive_dice_delta: 0.003
+      minimum_scar_positive_dice_delta: -0.001
+      minimum_edema_positive_dice_delta: 0.003
+      require_help_not_less_than_harm: true
+      maximum_each_pathology_hd95_relative_worsening: 0.05
+      maximum_each_pathology_remote_fp_relative_worsening: 0.05
+      require_nonzero_proposal_and_dictionary_gradients: true
+      require_no_t2_edema_exact_zero: true
+    failure_action: STOP_RETURN_TO_PLANNER_PROPOSAL_CHAIN_INADEQUATE
+
+  scar_refiner_stage:
+    conditional_on: proposal_stage_pass
+    optimizer_steps: 300
+    full_volume_eval_steps: [100, 200, 300]
+    trainable_groups: [scar_refiner]
+    frozen_groups:
+      - all_proposal_components
+      - all_dictionary_components
+      - edema_refiner
+      - scar_source_arbiter
+      - edema_source_arbiter
+      - production_correction_gate
+    evaluation_baseline: scar_proposal_only
+    acceptance_gate:
+      minimum_dice_gain_over_proposal: 0.001
+      maximum_hd95_relative_worsening: 0.02
+      maximum_remote_fp_relative_worsening: 0.02
+      require_harm_not_greater_than_proposal: true
+    failure_action: DISABLE_SCAR_REFINER_FORMAL_SOURCE_PROPOSAL_ONLY
+
+  edema_refiner_stage:
+    conditional_on: proposal_stage_pass
+    optimizer_steps: 300
+    full_volume_eval_steps: [100, 200, 300]
+    trainable_groups: [edema_refiner]
+    frozen_groups:
+      - all_proposal_components
+      - all_dictionary_components
+      - scar_refiner
+      - scar_source_arbiter
+      - edema_source_arbiter
+      - production_correction_gate
+    evaluation_baseline: edema_proposal_only
+    t2_present_only: true
+    acceptance_gate:
+      minimum_dice_gain_over_proposal: 0.001
+      maximum_hd95_relative_worsening: 0.02
+      maximum_remote_fp_relative_worsening: 0.05
+      require_no_t2_edema_exact_zero: true
+    failure_action: DISABLE_EDEMA_REFINER_FORMAL_SOURCE_PROPOSAL_ONLY
+
+  source_arbiter_stage:
+    conditional_on_any_refiner_accepted: true
+    optimizer_steps: 200
+    full_volume_eval_steps: [100, 200]
+    trainable_groups:
+      - accepted_pathology_source_arbiters_only
+    rejected_pathology_refiner_weight: 0.0
+    frozen_groups: [all_non_arbiter_parameters]
+    acceptance_gate:
+      maximum_dice_below_best_accepted_source: 0.001
+      require_help_harm_not_worse: true
+    failure_action: USE_BEST_ACCEPTED_SOURCE_PER_PATHOLOGY
+
+  production_gate_stage:
+    conditional_on: proposal_stage_pass
+    optimizer_steps: 200
+    full_volume_eval_steps: [100, 200]
+    trainable_groups: [production_correction_gate]
+    frozen_groups: [all_upstream_components]
+    final_gate:
+      minimum_mean_positive_dice_delta: 0.005
+      minimum_each_pathology_positive_dice_delta: 0.0
+      require_help_not_less_than_harm: true
+      maximum_each_pathology_hd95_relative_worsening: 0.05
+      maximum_each_pathology_remote_fp_relative_worsening: 0.05
+      require_no_t2_edema_exact_zero: true
+
+checkpoint_selection:
+  eligibility:
+    minimum_each_pathology_positive_dice_delta: 0.0
+    require_help_not_less_than_harm: true
+    maximum_each_pathology_hd95_relative_worsening: 0.05
+    maximum_each_pathology_remote_fp_relative_worsening: 0.05
+    require_no_t2_edema_exact_zero: true
+  ranking:
+    - maximize_minimum_pathology_dice_delta
+    - maximize_mean_pathology_dice_delta
+    - minimize_harm_count
+    - minimize_hd95
+    - minimize_remote_fp
+    - select_earlier_step
+
+required_terminal_outputs:
+  - superseded_evidence.md
+  - semantic_memory_manifest.json
+  - semantic_memory_category_counts.csv
+  - semantic_memory_tensor_hashes.csv
+  - semantic_memory_valid_masks.csv
+  - discovery_independence.csv
+  - prototype_map_intervention.csv
+  - semantic_memory_intervention.csv
+  - intervention_casewise_metrics.csv
+  - intervention_summary.csv
+  - intervention_prediction_manifest.csv
+  - proposal_refiner_metrics.csv
+  - source_arbiter_metrics.csv
+  - training_stage_adequacy.json
+  - checkpoint_selection.csv
+  - help_harm.csv
+  - subgroup_metrics.csv
+  - slurm_attempts.csv
+  - mapper_report_draft.md
+  - mapper_report_final.md
+  - architecture_delta_final.md
+  - validator_status.json
+  - finalizer_state.json
+  - controller_report.md
+  - completion_check.md
+  - MANIFEST.md
+
+slurm:
+  python_executable: /users/a/e/aereinh/CARE/envs/env_CARE/bin/python
+  primary_partition: htzhulab
+  mirror_partition: a100-gpu
+  mirror_after_pending_seconds: 900
+  volta_allowed: false
+  maximum_runtime_seconds_per_job: 14400
+  require_preflight: true
+  require_atomic_winner_lock: true
+  require_isolated_attempt_directories: true
+  cancel_pending_losers: true
+  training_dependency: afterok
+  finalizer_dependency: afterany
+  continuity_backend: slurm_dependency
+
+publication_boundary:
+  fold_expansion_authorized: false
+  cine_authorized: false
+  external_data_or_weights_authorized: false
+  validation_packaging_authorized: false
+  validation_upload_authorized: false
+  hosted_metric_claim_authorized: false
+  route_promotion_authorized: false
+  batch8_authorized: false
+  final_scientific_decision_authorized: false
