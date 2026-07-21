@@ -1,37 +1,52 @@
 # CARE 当前开发状态
 
-本文件是当前 CARE 主线工作的机器真值。任何新的规划、实现、审查、训练、推理或评价任务，都必须先读取本文件。
+本文件是当前 CARE 主线工作的机器真值。任何新的规划、实现、训练、推理、评价或状态判断都必须先读取本文件。
 
 ## 当前状态
 
 ```text
-state_id: srr_mainline_batch4_forced_fold0_training_20260721
+state_id: srr_mainline_batch5_post_batch4_diagnostic_repair_20260721
 round_id: post_round04_main_only
-date: 2026-07-21
+state_updated_date: 2026-07-21
 active_development_branch: main
 active_worktree: /users/a/e/aereinh/CARE
 portfolio_mode: SUSPENDED
-single_active_scientific_line: SRR_MyoPS_Cine_from_historical_Route_B
-latest_batch3_implementation_commit: 1395ffb29879ab208103bd3acb3c46ad4ab1934f
-latest_batch3_record_commit: d251bde18199d2afa9de60b28d02336f88994941
-latest_batch4_planning_commit_before_current: 8a5e73c9c0245bd0632faeb3b57723e9f394a9cf
-batch3a_review_status: PARTIAL_PASS_REAL_MODEL_IN_LOOP_DIAGNOSTIC_NOT_TRAIN_READY
-batch3b_review_status: REAL_4D_IO_DIAGNOSTIC_PROXY_SEGMENTATION_NOT_MODEL_READY
-batch4_status: DRAFT_FOR_PLANNING_REVIEW_USER_AUTHORIZED_TRAINING
-next_required_action: SEPARATE_GPT_PLANNING_REVIEW_THEN_BATCH4_CONTROLLER
-user_training_authorization_received: true
-user_slurm_authorization_received: true
-user_partition_race_authorization_received: true
-controller_authorized_now: 0
-formal_training_authorized_now: false_pending_planning_review_and_preflight
-slurm_authorized_now: false_pending_planning_review_and_preflight
+route_worktree_development_authorized: false
+single_active_scientific_line: SRR_MyoPS_from_historical_Route_B_lineage
+latest_handoff_flow_commit: 1e74da7527e801726ce6990c9f963119e7cbe9ed
+latest_batch4_training_source_commit: 0466260e3f4eb6c50b05a7f5a8b66652b873fe46
+latest_batch4_terminal_packet_commit: 82524678e8c4aae5c088b24db8a00643c2603ae9
+latest_batch4_explicit_review_commit: 5352d3c7b614adcbe4388a6fcef45c9db662dc38
+batch4_operational_status: VERIFIED_COMPLETE
+batch4_training_adequacy_status: PASS_EXACT_1800_STEPS_1800_SECONDS_176_44
+batch4_scientific_status: BATCH4_TRAINED_NEGATIVE_OR_REPAIR_REQUIRED
+batch4_candidate_signal_gate: FAIL
+batch5_status: READY_FOR_CONTROLLER
+next_required_action: RUN_BATCH5_POST_BATCH4_DIAGNOSTIC_REPAIR
+planning_review_required: false
+review_required: false
+controller_is_coordinator: true
+batch5_training_authorized: false
+batch5_inference_only_diagnostic_authorized: true
 validation_upload_authorized: false
 hosted_metric_claim_authorized: false
+fold_expansion_authorized: false
+cine_training_authorized: false
+route_promotion_authorized: false
+m11_authorized: false
+final_scientific_decision_authorized: false
 ```
 
 ## 当前开发边界
 
-当前只在 `main` 开发。不得启动 Route A/B/C controller，不得继续 route worktree 开发，不得创建 Round05，不得写入：
+当前只在：
+
+```text
+/users/a/e/aereinh/CARE
+main
+```
+
+开发。不得写入：
 
 ```text
 /overflow/htzhu/CARE
@@ -40,211 +55,182 @@ hosted_metric_claim_authorized: false
 /users/a/e/aereinh/CARE_worktrees/route_C
 ```
 
-用户已明确授权 Batch 4 进行一次真实 MyoPS fold0 训练，并允许等待过长时使用 `htzhulab`、`a100-gpu`、`volta-gpu` 的同逻辑运行竞速。但本任务属于高风险 Slurm 科学任务，必须先通过独立 GPT 规划审查和同配置预检。规划审查通过前不得提交训练 job。
+Route A/B/C 仅保留历史证据和 lineage，不是 active development branches。
 
-本轮授权不包括：
+## 当前默认 Agent Flow
+
+未来任务默认：
 
 ```text
+Planner
+-> Controller/Coordinator
+   -> Executor
+   -> optional Mapper
+   -> deterministic Finalizer/Validator
+   -> Controller verification and same-scope repair loop
+   -> local lightweight commit
+-> Planner
+```
+
+默认不要求 planning critic，也不要求 independent reviewer：
+
+```yaml
+planning_review_required: false
+planning_reviewer: none
+review_required: false
+review_mode: none
+reviewer: none
+```
+
+只有用户或 Planner 在具体任务中显式设置为 true 时，旧 critic/reviewer 流程才启用。
+
+Controller 是 coordinator 和 acceptance owner。Executor 不能自行宣布任务完成。Controller 必须检查真实 diff、测试、Slurm、runtime、aggregation、required outputs 和 contract-sensitive fields，并在同范围内要求 Executor 修复，直到 `VERIFIED_COMPLETE`、`NEEDS_REPAIR` 或 `OPERATIONALLY_BLOCKED`。
+
+## Batch 4 已完成内容
+
+### 正式模型与数据
+
+```text
+model: SRRProposeRefineMyoPS
+variant: m10_d3_hierarchical_memory_propref
+encoder_profile: full_4scale
+base_channels: 32
+final_output_mode: anchor_bounded_srr_correction
+fold0 train: 176
+fold0 validation: 44
+```
+
+### 合法训练作业
+
+```text
+job_id: 59682067
+partition: htzhulab
+state: COMPLETED
+exit_code: 0:0
+elapsed: 00:33:26
+optimizer_steps: 1800
+train_loop_seconds: 1800.0000680589583
+unique_train_cases: 176
+minimum_case_usage: 1
+full_volume_eval_steps: 600,1200,1800
+cases_per_eval: 44
+```
+
+### checkpoint 与控制
+
+```text
+selected_checkpoint: step_1800
+selected_checkpoint_sha256: bc325754202d5cf0aa59aa8fab0306b38c2665640339afa3f8d06a13c70009f6
+same_checkpoint_three_modes: complete
+identity_changed_voxels: 0
+identity_softmax_max_abs_delta: 0
+```
+
+### prototype/memory
+
+```text
+source_case_count: 176
+missing_train_cases: 0
+validation_leakage_cases: 0
+no_t2_edema_positive_forbidden: true
+no_t2_edema_negative_forbidden: true
+asset_sha256: 8b262f8bb87e0733a48e169c77b028a3833b70cbcd33d2ac2fb4857ba1cbde83
+```
+
+## Batch 4 科学结果
+
+同一 fold0 44 例、同一 nnU-Net anchor：
+
+```text
+edema Dice: 0.3944358976789887 -> 0.39511554834642215
+edema Dice delta: +0.00067965066743345
+scar Dice: 0.5601692281262312 -> 0.5615107217364417
+scar Dice delta: +0.0013414936102105
+scar remote FP volume: 620.3619700074735 -> 605.6288666886041 mm3
+```
+
+结论：
+
+```text
+Batch4 engineering closure: achieved
+Batch4 significantly better than nnU-Net: no
+Batch4 candidate signal threshold +0.01 mean Dice: failed
+Batch4 strong signal threshold +0.03 each pathology: failed
+```
+
+主要正贡献来自 no-T2/LGE-only scar；T2-present scar 和 CenterC 未改善。当前不能进入 fold expansion、submission candidate 或论文正结果。
+
+## Batch 4 已识别的剩余缺口
+
+1. 历史 checkpoint selection 使用 `pathology_aware` decode，而最终正式结果使用 `anchor_bounded_srr_correction` logits argmax；语义不一致。
+2. `correction_gate_diagnostics.csv` 主要记录旧 baseline/arbitration gate，不是正式 `production_correction_gate`。
+3. 缺少 proposal/refiner/production-gate 到 final metrics 的病例级机制闭环。
+4. frozen prototype manifest 顶层 `feature_hash` 为空，缺少明确 config hash。
+5. preflight GPU attempt 没有直接产生 schema-v2 runtime roundtrip receipt；训练后 reload 已证明可用。
+6. selected-control Slurm job在 evaluator config 阶段失败，后续评价由本地修复后重跑。
+7. root `wiki/README.md` 和 architecture fingerprint 仍停在 M9，需由 Batch 5 mapper 修复。
+
+## 当前 Batch 5
+
+### 目标
+
+```text
+POST_BATCH4_EVALUATION_AND_OUTPUT_AUTHORITY_DIAGNOSTIC_REPAIR
+```
+
+Batch 5 不训练，不改变 checkpoint 权重，不重建 prototype/memory。它必须：
+
+1. 使用正式 logits argmax 重排 step 600/1200/1800。
+2. 分离 positive-GT 与 all-case empty-safe 指标。
+3. 对同 checkpoint 做 identity、bounded-full、no-anchor、proposal-only、refiner-only、gate-closed、gate-open-bounded 干预。
+4. 直接记录 production gate、raw correction、bounded correction 和病例级 metric delta。
+5. 补齐 prototype feature/config/code/split/anchor/asset hashes。
+6. 更新 CURRENT、entrypoint authority、wiki 和 fingerprint。
+7. 只给出一个 Batch 6 训练修复方向。
+
+### 当前权威文件顺序
+
+```text
+1. docs/plans/laneB_round04_active_srr_batch5_post_batch4_diagnostic_repair.md
+2. configs/srr_production/myops_batch5.yaml
+3. prompts/tasks/20260721_srr_batch5_post_batch4_diagnostic_repair_controller.md
+4. prompts/tasks/20260721_srr_batch5_post_batch4_diagnostic_repair_executor_plan.yaml
+5. results/srr_production/code_maturity/batch4_planner_audit_and_batch5_decision.md
+6. results/20260721_srr_batch4_forced_fold0_training/training_adequacy.json
+7. results/20260721_srr_batch4_forced_fold0_training/selected_checkpoint.json
+8. results/20260721_srr_batch4_forced_fold0_training/subgroup_metrics.csv
+9. results/20260721_srr_batch4_forced_fold0_training/help_harm.csv
+10. results/20260721_srr_batch4_forced_fold0_training/slurm_attempts.csv
+```
+
+## Batch 5 授权边界
+
+已授权：
+
+```text
+code repair within Batch5 write scope
+existing-checkpoint diagnostic inference
+short inference-only Slurm job
+htzhulab -> a100-gpu pending race
+CURRENT/entrypoint/wiki/fingerprint repair
+local lightweight commit
+```
+
+未授权：
+
+```text
+optimizer training
+new checkpoint training
+prototype/memory rebuild
+fold expansion
 Cine training
 validation packaging/upload
 hosted metric claim
-fold expansion
 route promotion
 M11
-final scientific decision
+Batch6 automatic start
 ```
 
-## 当前权威文件顺序
+## 目标边界
 
-按以下顺序读取：
-
-```text
-1. docs/plans/laneB_round04_active_srr_batch4_forced_fold0_training_execution.md
-2. configs/srr_production/myops_batch4.yaml
-3. prompts/tasks/20260721_srr_batch4_forced_fold0_training_controller.md
-4. prompts/tasks/20260721_srr_batch4_forced_fold0_training_executor_plan.yaml
-5. prompts/tasks/20260721_srr_batch4_forced_fold0_training_planning_review_request.md
-6. docs/plans/laneB_round04_active_srr_batch3_myops_inference_closure_and_cine_mainline.md
-7. results/srr_production/code_maturity/batch2_critic_audit_and_batch3_decision.md
-8. docs/plans/laneB_round04_active_srr_batch2_inference_and_fair_evaluation.md
-9. docs/plans/laneB_round04_active_srr_batch1_myops_mainline_repair.md
-10. docs/plans/laneB_round04_active_srr_change_review_ledger.md
-```
-
-Batch 4 文件覆盖旧文件中与以下内容冲突的表述：
-
-- Batch 3A 已完全达到正式训练前的全部要求；
-- 当前诊断模型可以直接作为正式训练模型；
-- 训练 runner 的 checkpoint 已与 Batch 3A 推理 schema 兼容；
-- identity 模式已经证明模型 logits 与 anchor 精确一致；
-- 原型/记忆已经覆盖完整 176 例训练集；
-- patch loss 可以作为正式 best checkpoint 选择依据；
-- Batch 3B 已经形成可训练 Cine 模型候选；
-- 用户仍未授权训练或 Slurm。
-
-## Batch 0–2 结论
-
-### Batch 0
-
-```text
-commit: 414427746e51e5d84918e57512619a2d3412326c
-status: COMPLETE
-```
-
-完成当前实现真相、正式入口收束和旧 B3-B8 去授权。历史 B3-B8 及 wrapper 继续是 `forbidden_formal_entrypoint`。
-
-### Batch 1
-
-```text
-commit: ef98e2d3e6808fd616d2732f4d6a645431a7a4ff
-reviewed_status: PARTIAL_IMPLEMENTATION_CLOSED_ONLY_AT_SMOKE_LEVEL
-```
-
-建立 220 例 OOF anchor、anchor-bounded 输出、记忆接线、梯度和 checkpoint smoke；没有训练和性能结论。
-
-### Batch 2A
-
-```text
-commit: b797a55f17b5e4c39a6cb97e8d1e295923f7b546
-reviewed_status: PARTIAL_SHARED_COMPONENT_CLOSURE_WITH_REMAINING_GAPS
-```
-
-真实解决病例级 provenance、空槽屏蔽、无 T2 全链路检查和 schema v2 smoke。它未建立完整训练集原型资产。
-
-### Batch 2B
-
-```text
-commit: b38b1a045236d94045c48f12831a41b190abe691
-reviewed_status: NNUNET_BASELINE_AND_IDENTITY_EVALUATOR_COMPLETE_SRR_INFERENCE_MISSING
-```
-
-可靠结果是 nnU-Net fold0 44 例重算和统一评价器：
-
-```text
-edema Dice: 0.3944358976789887
-scar Dice: 0.5601692281262312
-```
-
-当时 SRR 推理仍是标签复制，后由 Batch 3A 修复。
-
-## Batch 3A 审查结论
-
-```text
-implementation_commit: 1cce038ac6c3cbb91ab2a9bc1033315571d09f71
-reported_status: SRR_MODEL_IN_LOOP_UNTRAINED_DIAGNOSTIC
-reviewed_status: PARTIAL_PASS_REAL_MODEL_IN_LOOP_DIAGNOSTIC_NOT_TRAIN_READY
-```
-
-### 已真实完成
-
-1. 44 个 fold0 验证病例读取真实 Dataset501 `[LGE,T2,C0]` 与 availability，并调用 `SRRProposeRefineMyoPS`。
-2. schema v2 零步 checkpoint 被实际加载。
-3. raw OOF anchor 与 no-T2 safety context 在模型接口分离。
-4. 训练查询排除自身分片；验证/推理读取全部冻结训练分片。
-5. 三种模式导出 NIfTI，评价器不再默认把 SRR 目录回退到 identity 目录。
-6. geometry 和 no-T2 tensor 检查得到轻量证据。
-
-### 尚未达到训练前全部期望
-
-1. 正式配置仍是 `base_channels=2`、`tiny_3scale`、`srr_propref_shared_dual_dict`，不是 SRR-v3 主线的 M10 D3 full-4scale。
-2. identity 虽然调用模型，但推理脚本导出时直接选择 raw anchor labels；changed voxels 为零是部分由导出绕过保证，未证明模型 final logits/softmax 本身精确等于 anchor。
-3. zero-step 三模式使用按 final-output mode 绑定的独立 checkpoint；尚未证明同一组训练权重能够公平运行三种控制。
-4. zero-step 原型/记忆来自少数病例、单 patch，不是完整 176 例冻结训练资产。
-5. 训练 runner 仍写只含 `model_state_dict` 的旧 checkpoint，不能直接由 Batch 3A schema v2 推理入口加载。
-6. 当前 best checkpoint 由最多 10 例 patch loss 选择，不是完整 44 例 Dice、HD95、远端假阳性和 help/harm。
-7. zero-step anchor-bounded 在 44 例只改变 5 个标签体素：水肿 Dice 从 `0.3944358976789887` 变为 `0.3943897861345629`，瘢痕完全不变。这只证明管线接通。
-
-## Batch 3B 审查结论
-
-```text
-implementation_commit: 1395ffb29879ab208103bd3acb3c46ad4ab1934f
-reported_status: BATCH3B_REAL_CINE_MAINLINE_DIAGNOSTIC_COMPLETE
-reviewed_status: REAL_4D_IO_DIAGNOSTIC_PROXY_SEGMENTATION_NOT_MODEL_READY
-```
-
-### 已真实完成
-
-- 三个真实 Dataset502 4D Cine 病例保留时间维；
-- frame0 与标签几何对齐并作为参考空间；
-- 中间帧通过逐切片二维图像光流 warp 到参考空间；
-- 非参考帧能够改变最终输出；
-- NIfTI raw-label 导出和本地 Dice/HD95 计算可运行。
-
-### 关键边界
-
-- 解剖预测来自强度百分位阈值和形态学规则，不是训练模型；
-- 只使用 frame0 和一个中间帧，不是完整多帧时间建模；
-- 配准是 2D optical flow，Jacobian 是代理量；
-- CineMA 官方权重未加载；
-- 三例心肌 Dice 约为 `0.012`、`0.047`、`0.019`，连通域数量很大；
-- 这只能作为 I/O、warp、aggregation 诊断，不能进入本轮训练或 submission 候选。
-
-## Batch 4 决策
-
-Batch 4 只训练 MyoPS。固定顺序：
-
-```text
-独立 GPT 规划审查
--> 修复 schema-v2 训练 checkpoint、同 checkpoint 三模式和 identity 导出绕过
--> 用全部 176 例构建冻结原型/记忆资产
--> 60-step one-batch overfit 与同环境预检
--> 强制 1800-step / >=1800-second fold0 Slurm training
--> step 600/1200/1800 各运行完整 44 例评价
--> 固定规则选择 checkpoint 并重新加载
--> 同 checkpoint 运行 identity/anchor-bounded/no-anchor
--> 失败诊断、mapper final、终态 accounting、轻量本地 commit
--> 独立只读 reviewer
-```
-
-唯一训练模型：
-
-```text
-SRRProposeRefineMyoPS
-m10_d3_hierarchical_memory_propref
-full_4scale
-anchor_bounded_srr_correction
-```
-
-本批训练预算不能被 smoke 替代：
-
-```text
-optimizer steps >= 1800
-train loop seconds >= 1800
-full-volume evaluation events = 3
-cases per event = 44
-unique train cases loaded/sampled = 176
-```
-
-分区竞速：先 `htzhulab`；900 秒仍 pending 时加 `a100-gpu`；首次提交后 1800 秒前两者均未开始时，只有在同配置 V100 显存预检通过后才加 `volta-gpu`。所有尝试必须同一逻辑运行、相同哈希、隔离目录、原子 winner lock，并取消 loser。
-
-## 当前立即动作
-
-启动一个独立 GPT 规划审查，读取当前权威文件并写：
-
-```text
-prompts/tasks/20260721_srr_batch4_forced_fold0_training_planning_review.md
-```
-
-只有该文件包含：
-
-```text
-planning_review_decision: AUDITED_GO
-planning_review_token: BATCH4_PLANNING_AUDITED_GO
-```
-
-并绑定当前有效 main SHA 后，才允许启动 Batch 4 controller。用户训练授权已经收到，规划审查不得把任务改回“只做代码 smoke、不训练”。
-
-## 权威边界
-
-```text
-controller_authorized_now: 0
-user_training_authorization_received: true
-user_slurm_authorization_received: true
-formal_training_authorized_now: false_pending_planning_review_and_preflight
-slurm_authorized_now: false_pending_planning_review_and_preflight
-validation_upload_authorized: false
-hosted_metric_claim_authorized: false
-route_promotion_authorized: false
-m11_authorized: false
-final_scientific_decision_authorized: false
-```
+最终目标仍是显著优于 nnU-Net，而不是 near-identity correction。`+0.001` 级别提升不足。Batch 5 必须先找出一个可验证的主要瓶颈，之后 Planner 才决定是否授权下一次训练。
