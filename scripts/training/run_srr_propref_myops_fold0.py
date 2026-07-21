@@ -2189,7 +2189,8 @@ def _load_external_fixed_overfit_receipt(args: argparse.Namespace) -> dict[str, 
     payload = json.loads(path.read_text(encoding="utf-8"))
     if payload.get("status") != "PASS":
         raise ValueError(f"external fixed-overfit receipt is not PASS: {path}")
-    if int(payload.get("optimizer_steps", -1)) != 60:
+    expected_steps = 100 if str(getattr(args, "variant", "")) == "m10_d3_hierarchical_memory_propref" else 60
+    if int(payload.get("optimizer_steps", -1)) != expected_steps:
         raise ValueError(f"external fixed-overfit receipt has wrong optimizer_steps: {path}")
     if int(payload.get("formal_training_credit", -1)) != 0:
         raise ValueError(f"external fixed-overfit receipt must have zero formal training credit: {path}")
@@ -2210,7 +2211,7 @@ def run_one_batch_overfit(
             "variant": output_variant,
             "model_variant": args.variant,
             "source_model_variant": canonical_model_variant(args.variant),
-            "status": "EXTERNAL_BATCH6_FIXED_OVERFIT_PASS" if external else "SKIPPED",
+            "status": "EXTERNAL_FIXED_OVERFIT_PASS" if external else "SKIPPED",
             "reason": "external fixed-overfit receipt already passed" if external else "skip_overfit_sanity was set",
             "required_by_task": True,
             "external_fixed_overfit_receipt": external or {},
