@@ -150,6 +150,7 @@ loss_weight_policy:
   checkpoint_contract_must_store_resolved_weights: true
 fixed_batch_overfit:
   optimizer_steps: 60
+  learning_rate: 0.01
   formal_training_credit: 0
   cases:
     - Case2002

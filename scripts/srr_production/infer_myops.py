@@ -57,15 +57,28 @@ BATCH5_MODES = (
     "production_gate_closed",
     "production_gate_open_bounded_control",
 )
+BATCH6_MODES = (
+    "anchor_identity_control",
+    "full_learned_gate",
+    "full_gate_one",
+    "full_gate_zero",
+    "proposal_only_gate_one",
+    "refiner_only_gate_one",
+)
 BATCH5_PRODUCTION_INTERVENTIONS = {
     "anchor_identity_control": "full",
     "anchor_bounded_srr_correction": "full",
     "anchor_bounded_full": "full",
+    "full_learned_gate": "full",
     "srr_no_anchor_control": "full",
     "anchor_bounded_proposal_only": "proposal_only",
     "anchor_bounded_refiner_only": "refiner_only",
+    "proposal_only_gate_one": "proposal_only_gate_one",
+    "refiner_only_gate_one": "refiner_only_gate_one",
     "production_gate_closed": "gate_closed",
+    "full_gate_zero": "gate_closed",
     "production_gate_open_bounded_control": "gate_open_bounded_control",
+    "full_gate_one": "gate_open_bounded_control",
 }
 
 
@@ -114,7 +127,15 @@ def runtime_final_output_mode(mode: str) -> str:
 
 
 def normalized_mode(mode: str) -> str:
-    return "anchor_bounded_full" if mode == "anchor_bounded_srr_correction" else str(mode)
+    aliases = {
+        "anchor_bounded_srr_correction": "anchor_bounded_full",
+        "full_learned_gate": "anchor_bounded_full",
+        "full_gate_one": "production_gate_open_bounded_control",
+        "full_gate_zero": "production_gate_closed",
+        "proposal_only_gate_one": "anchor_bounded_proposal_only",
+        "refiner_only_gate_one": "anchor_bounded_refiner_only",
+    }
+    return aliases.get(str(mode), str(mode))
 
 
 def configured_modes(cfg: dict[str, Any]) -> set[str]:
@@ -525,6 +546,11 @@ def main() -> int:
             "anchor_bounded_refiner_only",
             "production_gate_closed",
             "production_gate_open_bounded_control",
+            "full_learned_gate",
+            "full_gate_one",
+            "full_gate_zero",
+            "proposal_only_gate_one",
+            "refiner_only_gate_one",
         ),
         default="anchor_identity_control",
     )

@@ -6,6 +6,7 @@ from __future__ import annotations
 import argparse
 import csv
 import json
+import math
 import sys
 from pathlib import Path
 from typing import Any
@@ -71,6 +72,16 @@ def expect(condition: bool, message: str) -> None:
         raise ValidationError(message)
 
 
+def _finite_cell(row: dict[str, str], key: str) -> bool:
+    value = str(row.get(key, "")).strip()
+    if value == "":
+        return False
+    try:
+        return math.isfinite(float(value))
+    except ValueError:
+        return False
+
+
 def validate_packet(result_root: Path) -> dict[str, Any]:
     for name in REQUIRED:
         expect((result_root / name).is_file(), f"missing required output: {name}")
@@ -90,6 +101,35 @@ def validate_packet(result_root: Path) -> dict[str, Any]:
     expect(len(case_rows) >= 44 * 2 * len(MODES), "casewise mechanism attribution does not cover 44 cases x 2 pathologies x modes")
     for key in ("production_gate_mean", "raw_correction_abs_mean", "bounded_correction_abs_mean", "dice_delta_vs_anchor"):
         expect(key in case_rows[0], f"casewise mechanism field missing: {key}")
+        expect(all(_finite_cell(row, key) for row in case_rows), f"casewise mechanism field blank/nonfinite: {key}")
+
+    for optional_file, required_fields in (
+        (
+            "resolved_loss_weights.csv",
+            ("loss_component", "resolved_weight", "consumed_tensors", "parameter_groups_receiving_gradient", "optimization_direction"),
+        ),
+        (
+            "proposal_roi_metrics.csv",
+            (
+                "proposal_voxel_precision",
+                "proposal_voxel_recall",
+                "proposal_lesion_recall",
+                "proposal_component_count",
+                "proposal_remote_fp_count",
+                "proposal_remote_fp_volume_mm3",
+                "roi_gt_coverage",
+                "roi_outside_ratio",
+            ),
+        ),
+    ):
+        path = result_root / optional_file
+        if path.is_file():
+            rows = read_csv(path)
+            expect(rows, f"{optional_file} is empty")
+            for field in required_fields:
+                expect(field in rows[0], f"{optional_file} missing field: {field}")
+                if field != "parameter_groups_receiving_gradient":
+                    expect(all(str(row.get(field, "")).strip() for row in rows), f"{optional_file} blank field: {field}")
 
     oracle_rows = read_csv(result_root / "oracle_headroom.csv")
     expect(len(oracle_rows) >= 44 * 2, "oracle headroom does not cover 44 cases x 2 pathologies")
@@ -99,6 +139,7 @@ def validate_packet(result_root: Path) -> dict[str, Any]:
     gradient_rows = read_csv(result_root / "loss_parameter_gradient_matrix.csv")
     expect(gradient_rows, "loss gradient matrix is empty")
     expect(all(row.get("optimizer_steps") == "0" for row in gradient_rows), "gradient matrix records optimizer steps")
+    expect(all(str(row.get("resolved_weight", "")).strip() for row in gradient_rows), "gradient matrix has blank resolved_weight")
     groups = {row["parameter_group"] for row in gradient_rows}
     for group in ("production_correction_gate", "scar_refiner", "edema_refiner", "scar_dictionary", "edema_dictionary", "retrieval_router"):
         expect(group in groups, f"loss gradient matrix missing parameter group {group}")

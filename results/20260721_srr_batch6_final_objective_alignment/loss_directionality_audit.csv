@@ -1,0 +1,10 @@
+loss_component,resolved_weight,consumed_output_tensors,direct_final_pathology_supervision,production_gate_corrective_gradient,optimization_direction
+loss_final_scar_pathology,1.0,outputs.logits class5 one-vs-rest margin,True,True,repair
+loss_final_edema_t2_present_pathology,1.0,outputs.logits class4 one-vs-rest margin; T2-present mask,True,True,repair
+loss_production_gate_repair_preserve,0.2,"production_correction_gate_logits,nnunet_anchor_logits,labels,availability",False,True,repair | preserve
+loss_scar_refiner_roi,1.0,scar_logits,False,False,repair_refiner_branch_not_final_logits
+loss_edema_refiner_t2_present_roi,1.0,edema_logits,False,False,repair_refiner_branch_not_final_logits
+loss_correction_opportunity,0.0,"segmentation_weight,nnunet_anchor_logits",False,False,legacy_arbitration_open_signal
+loss_branch_arbitration_consistency,0.0,"segmentation_weight,branch_correction_mask",False,False,legacy_arbitration_consistency
+loss_bounded_correction,0.0,arbitration_bounded_delta,False,False,shrink
+loss_refiner_final_label_effect,0.0,"scar_refinement_residual,edema_refinement_residual",False,False,shrink

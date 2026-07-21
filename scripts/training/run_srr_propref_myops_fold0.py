@@ -229,6 +229,9 @@ EXPANDED_SRR_LOSS_COMPONENT_KEYS = (
     "loss_scar_refiner_small_roi",
     "loss_edema_refiner_t2_present_roi",
     "loss_edema_refiner_large_roi_t2_present",
+    "loss_final_scar_pathology",
+    "loss_final_edema_t2_present_pathology",
+    "loss_production_gate_repair_preserve",
     "loss_anchor_preservation_outside_roi",
     "loss_correction_opportunity",
     "loss_branch_arbitration_consistency",
@@ -277,6 +280,11 @@ def collect_expanded_loss_weights(args: argparse.Namespace) -> dict[str, float]:
 
     weights: dict[str, float] = {}
     variant_cfg = getattr(args, "variant_config_record", {}).get("variant_config", {})
+    canonical_weights = {}
+    if isinstance(variant_cfg, dict):
+        canonical_weights = variant_cfg.get("canonical_loss_weights", {}) or {}
+    if not canonical_weights:
+        canonical_weights = getattr(args, "canonical_loss_weights", {}) or {}
     if isinstance(variant_cfg, dict) and isinstance(variant_cfg.get("loss_weights"), dict):
         for key, value in variant_cfg["loss_weights"].items():
             try:
@@ -299,6 +307,12 @@ def collect_expanded_loss_weights(args: argparse.Namespace) -> dict[str, float]:
         value = getattr(args, attr, None)
         if value is not None and key not in weights:
             weights[key] = float(value)
+    if isinstance(canonical_weights, dict):
+        for key, value in canonical_weights.items():
+            try:
+                weights[str(key)] = float(value)
+            except (TypeError, ValueError):
+                continue
     weights.update(_load_loss_weight_json(getattr(args, "loss_weight_json", "")))
     for item in getattr(args, "loss_weight", []) or []:
         if "=" not in str(item):
@@ -354,6 +368,8 @@ def loss_component_gradient_sanity_rows(
     target_counts = {
         "loss_edema_proposal_t2_present_only": edema_t2_voxels,
         "loss_edema_refiner_t2_present_roi": edema_t2_voxels,
+        "loss_edema_refiner_large_roi_t2_present": edema_t2_voxels,
+        "loss_final_edema_t2_present_pathology": edema_t2_voxels,
         "loss_no_t2_edema_safety": no_t2_case_count,
     }
     masked_components = set(target_counts)
@@ -1692,6 +1708,7 @@ def save_training_checkpoint(
         split_hash=sha256_file(PROTOCOL_SPLIT_PATH),
         source_commit=git_head(),
         best_metric_state=best_metric_state,
+        loss_weight_contract=collect_expanded_loss_weights(args),
     )
 
 

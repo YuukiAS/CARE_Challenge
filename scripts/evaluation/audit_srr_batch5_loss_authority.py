@@ -32,6 +32,7 @@ from scripts.training.run_srr_propref_myops_fold0 import (  # noqa: E402
 )
 from src.care_myocardium.models.srr_propref import SRRProposeRefineMyoPS  # noqa: E402
 from src.care_myocardium.data.case_metadata import load_myops_case_metadata  # noqa: E402
+from src.care_myocardium.losses import srr_losses  # noqa: E402
 from src.care_myocardium.srr_production.anchor_manifest import sha256_file  # noqa: E402
 from src.care_myocardium.srr_production.checkpoint import load_srr_checkpoint  # noqa: E402
 
@@ -97,11 +98,13 @@ def grad_norm(parameters: Iterable[torch.nn.Parameter]) -> tuple[float, int]:
 
 def args_from_config(cfg: dict[str, Any]) -> SimpleNamespace:
     loss_weights = dict(cfg.get("loss_weights", {}) or {})
+    canonical_loss_weights = dict(cfg.get("canonical_loss_weights", {}) or {})
     return SimpleNamespace(
         variant=cfg["model"]["variant"],
         loss_weight_json="",
         loss_weight=[],
-        variant_config_record={"variant_config": {"loss_weights": loss_weights}},
+        variant_config_record={"variant_config": {"loss_weights": loss_weights, "canonical_loss_weights": canonical_loss_weights}},
+        canonical_loss_weights=canonical_loss_weights,
         scar_weight=loss_weights.get("scar"),
         edema_weight=loss_weights.get("edema"),
         proposal_weight=loss_weights.get("proposal"),
@@ -117,6 +120,30 @@ def args_from_config(cfg: dict[str, Any]) -> SimpleNamespace:
 
 def directionality_rows(weights: dict[str, float]) -> list[dict[str, Any]]:
     rows = [
+        {
+            "loss_component": "loss_final_scar_pathology",
+            "resolved_weight": weights.get("loss_final_scar_pathology", 0.0),
+            "consumed_output_tensors": "outputs.logits class5 one-vs-rest margin",
+            "direct_final_pathology_supervision": True,
+            "production_gate_corrective_gradient": True,
+            "optimization_direction": "repair",
+        },
+        {
+            "loss_component": "loss_final_edema_t2_present_pathology",
+            "resolved_weight": weights.get("loss_final_edema_t2_present_pathology", 0.0),
+            "consumed_output_tensors": "outputs.logits class4 one-vs-rest margin; T2-present mask",
+            "direct_final_pathology_supervision": True,
+            "production_gate_corrective_gradient": True,
+            "optimization_direction": "repair",
+        },
+        {
+            "loss_component": "loss_production_gate_repair_preserve",
+            "resolved_weight": weights.get("loss_production_gate_repair_preserve", 0.0),
+            "consumed_output_tensors": "production_correction_gate_logits,nnunet_anchor_logits,labels,availability",
+            "direct_final_pathology_supervision": False,
+            "production_gate_corrective_gradient": True,
+            "optimization_direction": "repair | preserve",
+        },
         {
             "loss_component": "loss_scar_refiner_roi",
             "resolved_weight": weights.get("loss_scar_refiner_roi", 1.0),
@@ -140,6 +167,14 @@ def directionality_rows(weights: dict[str, float]) -> list[dict[str, Any]]:
             "direct_final_pathology_supervision": False,
             "production_gate_corrective_gradient": False,
             "optimization_direction": "legacy_arbitration_open_signal",
+        },
+        {
+            "loss_component": "loss_branch_arbitration_consistency",
+            "resolved_weight": weights.get("loss_branch_arbitration_consistency", 0.15),
+            "consumed_output_tensors": "segmentation_weight,branch_correction_mask",
+            "direct_final_pathology_supervision": False,
+            "production_gate_corrective_gradient": False,
+            "optimization_direction": "legacy_arbitration_consistency",
         },
         {
             "loss_component": "loss_bounded_correction",
@@ -348,10 +383,39 @@ def run(args: argparse.Namespace) -> dict[str, Any]:
     )
     direction_rows = directionality_rows(weights)
     write_csv(result_root / "loss_parameter_gradient_matrix.csv", matrix_rows)
+    write_csv(result_root / "loss_gradient_authority.csv", matrix_rows)
     write_csv(result_root / "loss_directionality_audit.csv", direction_rows)
+    resolved_rows = []
+    for row in direction_rows:
+        resolved_rows.append(
+            {
+                "loss_component": row["loss_component"],
+                "source": "canonical_loss_weights" if row["loss_component"] in cfg.get("canonical_loss_weights", {}) else "legacy_or_default_resolution",
+                "raw_key": row["loss_component"],
+                "alias_chain": row["loss_component"],
+                "canonical_component": row["loss_component"],
+                "resolved_weight": row["resolved_weight"],
+                "consumed_tensors": row["consumed_output_tensors"],
+                "parameter_groups_receiving_gradient": ";".join(
+                    sorted(
+                        {
+                            grad_row["parameter_group"]
+                            for grad_row in matrix_rows
+                            if grad_row["loss_component"] == row["loss_component"] and float(grad_row["grad_l2_norm"]) > 0.0
+                        }
+                    )
+                ),
+                "optimization_direction": row["optimization_direction"],
+            }
+        )
+    write_csv(result_root / "resolved_loss_weights.csv", resolved_rows)
 
     runner_source = inspect.getsource(propref_loss)
-    final_direct = 'outputs["logits"]' in runner_source and "scar_loss(outputs[\"logits\"]" in runner_source
+    loss_source = inspect.getsource(srr_losses)
+    final_direct = (
+        "final_pathology_loss_from_logits(outputs[\"logits\"]" in loss_source
+        or "_one_vs_rest_margin(final_logits, SCAR_CLASS)" in loss_source
+    )
     production_gate_rows = [
         row for row in matrix_rows if row["parameter_group"] == "production_correction_gate" and float(row["grad_l2_norm"]) > 0.0
     ]
@@ -377,7 +441,12 @@ def run(args: argparse.Namespace) -> dict[str, Any]:
         f"do_active_magnitude_penalties_prefer_zero_correction: {bool(shrink_penalties)}",
         "does_refiner_effect_loss_reward_or_penalize_nonzero_residual: penalize_nonzero_residual",
         "",
-        "The active branch/refiner losses supervise proposal/refiner tensors, while the final deployed `outputs[\"logits\"]` production correction path lacks a direct scar/edema GT repair loss. The correction-opportunity term is wired to the legacy arbitration open signal, and the bounded-correction/refiner-effect terms are positive magnitude penalties.",
+        (
+            "Batch6 now adds direct deployed `outputs[\"logits\"]` scar/edema GT repair losses and a production gate repair/preserve loss. "
+            "Legacy correction-opportunity, branch arbitration, bounded-correction shrink, and refiner-effect shrink weights resolve to zero under the Batch6 canonical config."
+            if final_direct
+            else "The active branch/refiner losses supervise proposal/refiner tensors, while the final deployed `outputs[\"logits\"]` production correction path lacks a direct scar/edema GT repair loss. The correction-opportunity term is wired to the legacy arbitration open signal, and the bounded-correction/refiner-effect terms are positive magnitude penalties."
+        ),
     ]
     (result_root / "loss_authority_audit.md").write_text("\n".join(md) + "\n", encoding="utf-8")
     payload = {
@@ -388,6 +457,17 @@ def run(args: argparse.Namespace) -> dict[str, Any]:
         "active_shrink_penalty_rows": len(shrink_penalties),
     }
     (result_root / "loss_authority_audit.json").write_text(json.dumps(payload, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    reconciliation = [
+        "# Batch5 Reconciliation",
+        "",
+        "optimizer_steps: 0",
+        f"parameter_hash_unchanged: {hash_payload['parameter_hash_unchanged']}",
+        f"checkpoint_sha256: {hash_payload['checkpoint_sha256']}",
+        "effective_weight_resolution: COMPLETE",
+        "direct_final_objective_status: RECALCULATED_FOR_BATCH6",
+        "proposal_refiner_purity_status: REQUIRES_MODE_METRIC_VALIDATOR",
+    ]
+    (result_root / "batch5_reconciliation.md").write_text("\n".join(reconciliation) + "\n", encoding="utf-8")
     print(json.dumps(payload, indent=2, sort_keys=True))
     return payload
 

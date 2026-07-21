@@ -60,6 +60,111 @@ def scar_loss(scar_logits: torch.Tensor, labels: torch.Tensor) -> torch.Tensor:
     return 0.5 * bce + 0.5 * dice
 
 
+def _one_vs_rest_margin(final_logits: torch.Tensor, class_index: int) -> torch.Tensor:
+    keep = [idx for idx in range(final_logits.shape[1]) if idx != int(class_index)]
+    other = torch.logsumexp(final_logits[:, keep], dim=1)
+    return final_logits[:, int(class_index)] - other
+
+
+def final_pathology_loss_from_logits(
+    final_logits: torch.Tensor,
+    labels: torch.Tensor,
+    availability: torch.Tensor,
+) -> tuple[torch.Tensor, torch.Tensor]:
+    """Directly supervise deployed six-class logits for scar and T2-present edema."""
+
+    valid = labels != IGNORE_LABEL
+    scar_target = (labels == SCAR_CLASS).float()
+    scar_margin = _one_vs_rest_margin(final_logits, SCAR_CLASS)
+    if bool(valid.any()):
+        scar_bce = _masked_bce_with_logits(scar_margin, scar_target, valid)
+        scar_dice = _binary_dice_loss(torch.sigmoid(scar_margin), scar_target, valid)
+        scar_final = 0.5 * scar_bce + 0.5 * scar_dice
+    else:
+        scar_final = final_logits.sum() * 0.0
+
+    t2_present = availability[:, 1].to(device=labels.device, dtype=torch.bool).view(-1, 1, 1, 1)
+    edema_mask = valid & t2_present
+    edema_target = (labels == EDEMA_CLASS).float()
+    edema_margin = _one_vs_rest_margin(final_logits, EDEMA_CLASS)
+    if bool(edema_mask.any()):
+        edema_bce = _masked_bce_with_logits(edema_margin, edema_target, edema_mask)
+        edema_dice = _binary_dice_loss(torch.sigmoid(edema_margin), edema_target, edema_mask)
+        edema_final = 0.5 * edema_bce + 0.5 * edema_dice
+    else:
+        edema_final = final_logits.sum() * 0.0
+    return scar_final, edema_final
+
+
+def production_gate_repair_preserve_loss(
+    outputs: dict[str, torch.Tensor],
+    labels: torch.Tensor,
+    availability: torch.Tensor,
+    *,
+    preserve_confidence_threshold: float = 0.80,
+) -> tuple[torch.Tensor, dict[str, torch.Tensor]]:
+    """Supervise production gate to open on anchor errors and preserve confident correct anchor voxels."""
+
+    gate_logits = outputs.get("production_correction_gate_logits")
+    anchor_logits = outputs.get("nnunet_anchor_logits")
+    if not isinstance(gate_logits, torch.Tensor) or not isinstance(anchor_logits, torch.Tensor):
+        zero = outputs["logits"].sum() * 0.0
+        return zero, {
+            "repair_mask_voxels": zero.detach(),
+            "preserve_mask_voxels": zero.detach(),
+            "gate_mean_on_repair": zero.detach(),
+            "gate_mean_on_preserve": zero.detach(),
+        }
+    valid = labels != IGNORE_LABEL
+    anchor_probs = torch.softmax(anchor_logits, dim=1)
+    anchor_conf, anchor_pred = anchor_probs.max(dim=1)
+    t2_present = availability[:, 1].to(device=labels.device, dtype=torch.bool).view(-1, 1, 1, 1)
+    losses: list[torch.Tensor] = []
+    repair_counts: list[torch.Tensor] = []
+    preserve_counts: list[torch.Tensor] = []
+    repair_means: list[torch.Tensor] = []
+    preserve_means: list[torch.Tensor] = []
+    gate_prob = torch.sigmoid(gate_logits)
+    for gate_channel, class_index, pathology_valid in (
+        (0, SCAR_CLASS, valid),
+        (1, EDEMA_CLASS, valid & t2_present),
+    ):
+        target_binary = labels == class_index
+        anchor_binary = anchor_pred == class_index
+        repair = pathology_valid & (anchor_binary != target_binary)
+        preserve = pathology_valid & ~repair & (anchor_conf >= float(preserve_confidence_threshold))
+        supervised = repair | preserve
+        repair_f = repair.to(device=gate_logits.device, dtype=gate_logits.dtype)
+        preserve_f = preserve.to(device=gate_logits.device, dtype=gate_logits.dtype)
+        repair_n = repair_f.sum()
+        preserve_n = preserve_f.sum()
+        repair_counts.append(repair_n.detach())
+        preserve_counts.append(preserve_n.detach())
+        if bool(supervised.any()):
+            pos_weight = torch.clamp(preserve_n / repair_n.clamp_min(1.0), 1.0, 20.0)
+            target = repair.to(device=gate_logits.device, dtype=gate_logits.dtype)
+            raw = F.binary_cross_entropy_with_logits(
+                gate_logits[:, gate_channel],
+                target,
+                reduction="none",
+                pos_weight=pos_weight,
+            )
+            mask_f = supervised.to(device=gate_logits.device, dtype=gate_logits.dtype)
+            losses.append((raw * mask_f).sum() / mask_f.sum().clamp_min(1.0))
+        if bool(repair.any()):
+            repair_means.append((gate_prob[:, gate_channel] * repair_f).sum() / repair_n.clamp_min(1.0))
+        if bool(preserve.any()):
+            preserve_means.append((gate_prob[:, gate_channel] * preserve_f).sum() / preserve_n.clamp_min(1.0))
+    zero = gate_logits.sum() * 0.0
+    loss = torch.stack(losses).mean() if losses else zero
+    return loss, {
+        "repair_mask_voxels": torch.stack(repair_counts).sum().detach() if repair_counts else zero.detach(),
+        "preserve_mask_voxels": torch.stack(preserve_counts).sum().detach() if preserve_counts else zero.detach(),
+        "gate_mean_on_repair": torch.stack(repair_means).mean().detach() if repair_means else zero.detach(),
+        "gate_mean_on_preserve": torch.stack(preserve_means).mean().detach() if preserve_means else zero.detach(),
+    }
+
+
 def anatomy_loss(anatomy_logits: torch.Tensor, labels: torch.Tensor) -> torch.Tensor:
     anatomy_target = labels.clone()
     anatomy_target = torch.where(anatomy_target == EDEMA_CLASS, torch.ones_like(anatomy_target), anatomy_target)
@@ -525,6 +630,8 @@ def srr_m6_expanded_total_loss(
     )
     loss_scar_ref = scar_loss(outputs["scar_logits"], labels)
     loss_edema_ref = t2_masked_edema_loss(outputs["edema_logits"], labels, availability)
+    loss_final_scar, loss_final_edema = final_pathology_loss_from_logits(outputs["logits"], labels, availability)
+    loss_gate_repair_preserve, gate_repair_metrics = production_gate_repair_preserve_loss(outputs, labels, availability)
 
     anchor_logits = outputs.get("nnunet_anchor_logits")
     loss_correction_opportunity = outputs["logits"].sum() * 0.0
@@ -597,6 +704,9 @@ def srr_m6_expanded_total_loss(
             "loss_edema_refiner_large_roi_t2_present",
             "edema_refiner",
         ),
+        "loss_final_scar_pathology": component_weight("loss_final_scar_pathology", 0.0),
+        "loss_final_edema_t2_present_pathology": component_weight("loss_final_edema_t2_present_pathology", 0.0),
+        "loss_production_gate_repair_preserve": component_weight("loss_production_gate_repair_preserve", 0.0),
         "loss_anchor_preservation_outside_roi": component_weight("loss_anchor_preservation_outside_roi", 0.20, "baseline_preservation"),
         "loss_correction_opportunity": component_weight("loss_correction_opportunity", 0.20),
         "loss_branch_arbitration_consistency": component_weight("loss_branch_arbitration_consistency", 0.15),
@@ -621,6 +731,9 @@ def srr_m6_expanded_total_loss(
         "loss_edema_proposal_t2_present_only": loss_edema_prop,
         "loss_scar_refiner_roi": loss_scar_ref,
         "loss_edema_refiner_t2_present_roi": loss_edema_ref,
+        "loss_final_scar_pathology": loss_final_scar,
+        "loss_final_edema_t2_present_pathology": loss_final_edema,
+        "loss_production_gate_repair_preserve": loss_gate_repair_preserve,
         "loss_anchor_preservation_outside_roi": loss_anchor,
         "loss_correction_opportunity": loss_correction_opportunity,
         "loss_branch_arbitration_consistency": loss_arbitration,
@@ -646,6 +759,7 @@ def srr_m6_expanded_total_loss(
     )
     metrics.update(dict_metrics)
     metrics.update(psip_metrics)
+    metrics.update(gate_repair_metrics)
     metrics["loss_component_contract_rows"] = srr_m10_loss_component_contract(metrics, component_weights)  # type: ignore[assignment]
     metrics["m6_expanded_total_loss"] = total.detach() if detach_metrics else total
     return total, metrics

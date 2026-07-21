@@ -1,0 +1,101 @@
+{
+  "case_ids": [
+    "Case2002",
+    "Case1002"
+  ],
+  "checkpoint_path": "results/20260721_srr_batch6_final_objective_alignment/runtime/fixed_batch_overfit/checkpoint_step_60.pt",
+  "checks": {
+    "all_losses_finite": true,
+    "combined_final_pathology_loss_relative_decrease": 0.11140374811087732,
+    "edema_final_pathology_loss_relative_decrease": 0.1729726555528828,
+    "final_logits_max_abs_change_from_step0": 5.8848066329956055,
+    "gate_loss_relative_decrease": 0.8508913721094874,
+    "no_t2_edema_exact_zero": true,
+    "production_gate_repair_gradient_l2_max": 2.024569724646358,
+    "save_reload_final_logits_max_abs_delta": 0.0,
+    "scar_final_pathology_loss_relative_decrease": 0.028044275705941434
+  },
+  "final_losses": {
+    "combined_final_pathology_loss": 0.6021547913551331,
+    "edema_final_pathology_loss": 0.32234805822372437,
+    "gate_repair_preserve_loss": 0.3303159475326538,
+    "scar_final_pathology_loss": 0.2798067331314087
+  },
+  "formal_training_credit": 0,
+  "frozen_scope": [
+    "encoders",
+    "retrieval",
+    "evidence_heads",
+    "scar_dictionary",
+    "edema_dictionary",
+    "prototype_memory"
+  ],
+  "initial_losses": {
+    "combined_final_pathology_loss": 0.6776472330093384,
+    "edema_final_pathology_loss": 0.3897671103477478,
+    "gate_repair_preserve_loss": 2.215270519256592,
+    "scar_final_pathology_loss": 0.2878801226615906
+  },
+  "learning_rate": 0.01,
+  "optimizer_steps": 60,
+  "parameter_hash_after": "5c6b339b5baa36503ea0e8209cfdadd2d001d4ed5cf28c7ee3328f775ebf29cf",
+  "production_gate_migration": {
+    "applied": true,
+    "copied_input_channels": [
+      0,
+      1,
+      2,
+      3
+    ],
+    "key": "production_correction_gate.weight",
+    "non_gate_parameters_loaded_strict": true,
+    "source_shape": [
+      2,
+      4,
+      1,
+      1,
+      1
+    ],
+    "target_shape": [
+      2,
+      13,
+      1,
+      1,
+      1
+    ],
+    "zero_initialized_input_channels": [
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12
+    ]
+  },
+  "source_checkpoint_path": "results/20260721_srr_batch4_forced_fold0_training/runtime/attempts/srr_batch4_m10d3_full4scale_fold0_seed20260721_htzhulab_59682067/variants/srr_batch4_m10d3_full4scale_fold0_seed20260721_htzhulab_59682067/checkpoints/fold_0/propref_config/checkpoint_validation_step_1800.pt",
+  "source_checkpoint_sha256": "bc325754202d5cf0aa59aa8fab0306b38c2665640339afa3f8d06a13c70009f6",
+  "status": "FAIL",
+  "trainable_parameter_names": [
+    "edema_refine.refine.0.weight",
+    "edema_refine.refine.1.bias",
+    "edema_refine.refine.1.weight",
+    "edema_refine.refine.3.weight",
+    "edema_refine.refine.4.bias",
+    "edema_refine.refine.4.weight",
+    "edema_refine.refine.6.bias",
+    "edema_refine.refine.6.weight",
+    "production_correction_gate.bias",
+    "production_correction_gate.weight",
+    "scar_refine.refine.0.weight",
+    "scar_refine.refine.1.bias",
+    "scar_refine.refine.1.weight",
+    "scar_refine.refine.3.weight",
+    "scar_refine.refine.4.bias",
+    "scar_refine.refine.4.weight",
+    "scar_refine.refine.6.bias",
+    "scar_refine.refine.6.weight"
+  ]
+}

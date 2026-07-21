@@ -1,0 +1,29 @@
+{
+  "batch": 6,
+  "status": "OVERFIT_OR_IMPLEMENTATION_FAILED",
+  "experiment_adequacy_decision": "OVERFIT_OR_IMPLEMENTATION_FAILED",
+  "fixed_batch_overfit_status": "FAIL",
+  "fixed_batch_overfit_optimizer_steps": 60,
+  "formal_training_submitted": false,
+  "formal_300_step_status": "NOT_SUBMITTED_FIXED_OVERFIT_GATE_FAILED",
+  "conditional_900_step_status": "NOT_SUBMITTED_300_STEP_GATE_NOT_REACHED",
+  "latest_fixed_overfit_attempt_job_id": "59737830",
+  "latest_fixed_overfit_checks": {
+    "combined_final_pathology_loss_relative_decrease": 0.11140374811087732,
+    "scar_final_pathology_loss_relative_decrease": 0.028044275705941434,
+    "edema_final_pathology_loss_relative_decrease": 0.1729726555528828,
+    "gate_loss_relative_decrease": 0.8508913721094874,
+    "production_gate_repair_gradient_l2_max": 2.024569724646358,
+    "final_logits_max_abs_change_from_step0": 5.8848066329956055,
+    "no_t2_edema_exact_zero": true,
+    "all_losses_finite": true,
+    "save_reload_final_logits_max_abs_delta": 0.0
+  },
+  "required_minima": {
+    "combined_final_pathology_loss_relative_decrease": 0.20,
+    "scar_final_pathology_loss_relative_decrease": 0.15,
+    "edema_final_pathology_loss_relative_decrease": 0.15,
+    "gate_loss_relative_decrease": 0.10
+  },
+  "stop_reason": "fixed overfit gate failed; contract forbids formal 300-step calibration"
+}

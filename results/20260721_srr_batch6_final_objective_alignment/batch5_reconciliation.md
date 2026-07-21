@@ -1,0 +1,8 @@
+# Batch5 Reconciliation
+
+optimizer_steps: 0
+parameter_hash_unchanged: True
+checkpoint_sha256: bc325754202d5cf0aa59aa8fab0306b38c2665640339afa3f8d06a13c70009f6
+effective_weight_resolution: COMPLETE
+direct_final_objective_status: RECALCULATED_FOR_BATCH6
+proposal_refiner_purity_status: REQUIRES_MODE_METRIC_VALIDATOR

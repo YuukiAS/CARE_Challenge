@@ -1,0 +1,53 @@
+{
+  "active_shrink_penalty_rows": 0,
+  "checkpoint_global_step": 1800,
+  "checkpoint_path": "results/20260721_srr_batch4_forced_fold0_training/runtime/attempts/srr_batch4_m10d3_full4scale_fold0_seed20260721_htzhulab_59682067/variants/srr_batch4_m10d3_full4scale_fold0_seed20260721_htzhulab_59682067/checkpoints/fold_0/propref_config/checkpoint_validation_step_1800.pt",
+  "checkpoint_sha256": "bc325754202d5cf0aa59aa8fab0306b38c2665640339afa3f8d06a13c70009f6",
+  "device": "cpu",
+  "direct_final_logits_supervision": true,
+  "fixed_case_ids": [
+    "Case1002",
+    "Case2002"
+  ],
+  "fixed_case_manifest": [
+    {
+      "anchor_source": "/users/a/e/aereinh/CARE/data/nnUNet/nnUNet_results/Dataset501_CAREMyoPS/nnUNetTrainer_500epochs__nnUNetPlans__3d_fullres/fold_0/validation/Case1002.npz",
+      "case_id": "Case1002",
+      "edema_positive": false,
+      "label_path": "data/nnUNet/nnUNet_raw/Dataset501_CAREMyoPS/labelsTr/Case1002.nii.gz",
+      "patch_shape_zyx": [
+        4,
+        32,
+        32
+      ],
+      "scar_positive": true,
+      "t2_present": false
+    },
+    {
+      "anchor_source": "/users/a/e/aereinh/CARE/data/nnUNet/nnUNet_results/Dataset501_CAREMyoPS/nnUNetTrainer_500epochs__nnUNetPlans__3d_fullres/fold_0/validation/Case2002.npz",
+      "case_id": "Case2002",
+      "edema_positive": true,
+      "label_path": "data/nnUNet/nnUNet_raw/Dataset501_CAREMyoPS/labelsTr/Case2002.nii.gz",
+      "patch_shape_zyx": [
+        4,
+        32,
+        32
+      ],
+      "scar_positive": true,
+      "t2_present": true
+    }
+  ],
+  "optimizer_steps": 0,
+  "parameter_hash_after": "a3acff8df2531e808efbfcf3d2ac4d4c95df702fdc2fcf7662639d82aed4f832",
+  "parameter_hash_before": "a3acff8df2531e808efbfcf3d2ac4d4c95df702fdc2fcf7662639d82aed4f832",
+  "parameter_hash_unchanged": true,
+  "parameter_updates": 0,
+  "patch_shape_zyx": [
+    4,
+    32,
+    32
+  ],
+  "probe_type": "real_batch4_selected_checkpoint_fixed_validation_patch_backward_only",
+  "production_gate_gradient_rows": 5,
+  "status": "BATCH5_LOSS_AUTHORITY_AUDIT_COMPLETE"
+}

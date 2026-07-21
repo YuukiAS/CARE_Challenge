@@ -1,0 +1,17 @@
+{
+  "state": "NEEDS_REPAIR_NO_FORMAL_TRAINING_SUBMISSION",
+  "executor_role": "batch6_executor_only",
+  "all_submitted_jobs_terminal": true,
+  "terminal_job_ids": [
+    "59737558",
+    "59737686",
+    "59737738",
+    "59737830"
+  ],
+  "aggregation_complete": true,
+  "latest_runtime_output": "results/20260721_srr_batch6_final_objective_alignment/fixed_batch_overfit.json",
+  "formal_300_step_submitted": false,
+  "conditional_900_step_submitted": false,
+  "no_push": true,
+  "next_required_action": "EXTERNAL_CONTROLLER_INSPECTION_OR_PLANNER_REPAIR_DECISION"
+}

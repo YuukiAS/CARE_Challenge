@@ -1137,7 +1137,7 @@ class SRRProposeRefineMyoPS(nn.Module):
         self.baseline_gate = BaselinePreservingResidualGate(num_classes=6)
         self.segmentation_context_interface = SegmentationContextInterface()
         self.branch_arbitration = BranchArbitrationGate(mode=str(self.m6_config.get("arbitration_mode", "legacy_baseline")))
-        self.production_correction_gate = nn.Conv3d(4, 2, kernel_size=1)
+        self.production_correction_gate = nn.Conv3d(13, 2, kernel_size=1)
         self.cross_fitted_memory = M10CrossFittedPrototypeMemory(self.feature_channels)
         self.m10_spatial_dictionary = (
             M10TwoPassSpatialDictionary(
@@ -1289,6 +1289,8 @@ class SRRProposeRefineMyoPS(nn.Module):
             "full",
             "proposal_only",
             "refiner_only",
+            "proposal_only_gate_one",
+            "refiner_only_gate_one",
             "gate_closed",
             "gate_open_bounded_control",
         }:
@@ -1479,18 +1481,65 @@ class SRRProposeRefineMyoPS(nn.Module):
         proposal_logits = torch.cat([evidence["anatomy_logits"], edema_dict["proposal_logits"], scar_dict["proposal_logits"]], dim=1)
         refiner_logits = srr_logits
         anchor_logits = baseline_blend["anchor_logits"].detach()
-        gate_input = torch.cat([scar_dict["proposal_logits"], edema_dict["proposal_logits"], scar_logits, edema_logits], dim=1)
-        production_gate = torch.sigmoid(self.production_correction_gate(gate_input))
-        if production_intervention_mode == "proposal_only":
+        anchor_probs = torch.softmax(anchor_logits, dim=1)
+        anchor_top2 = torch.topk(anchor_probs, k=2, dim=1).values
+        anchor_confidence = anchor_top2[:, 0:1]
+        anchor_margin = (anchor_top2[:, 0:1] - anchor_top2[:, 1:2]).clamp_min(0.0)
+        anchor_entropy = -(anchor_probs * torch.log(anchor_probs.clamp_min(1e-6))).sum(dim=1, keepdim=True)
+        scar_gate_proposal = scar_dict["proposal_logits"]
+        edema_gate_proposal = edema_dict["proposal_logits"]
+        scar_gate_refiner = scar_logits
+        edema_gate_refiner = edema_logits
+        if production_intervention_mode == "proposal_only" or production_intervention_mode == "proposal_only_gate_one":
+            scar_gate_refiner = torch.zeros_like(scar_gate_proposal)
+            edema_gate_refiner = torch.zeros_like(edema_gate_proposal)
+        elif production_intervention_mode == "refiner_only" or production_intervention_mode == "refiner_only_gate_one":
+            scar_gate_proposal = torch.zeros_like(scar_gate_refiner)
+            edema_gate_proposal = torch.zeros_like(edema_gate_refiner)
+        scar_disagreement = (
+            (scar_gate_proposal - scar_gate_refiner).abs()
+            if production_intervention_mode == "full"
+            else torch.zeros_like(scar_gate_refiner)
+        )
+        edema_disagreement = (
+            (edema_gate_proposal - edema_gate_refiner).abs()
+            if production_intervention_mode == "full"
+            else torch.zeros_like(edema_gate_refiner)
+        )
+        gate_input = torch.cat(
+            [
+                scar_gate_proposal,
+                edema_gate_proposal,
+                scar_gate_refiner,
+                edema_gate_refiner,
+                anchor_probs[:, 5:6],
+                anchor_probs[:, 4:5],
+                anchor_confidence,
+                anchor_entropy,
+                anchor_margin,
+                scar_disagreement,
+                edema_disagreement,
+                anatomy_context["anatomy_uncertainty"],
+                segmentation_context["anatomy_union_support"],
+            ],
+            dim=1,
+        )
+        production_gate_logits = self.production_correction_gate(gate_input)
+        production_gate = torch.sigmoid(production_gate_logits)
+        if production_intervention_mode == "proposal_only" or production_intervention_mode == "proposal_only_gate_one":
             scar_raw_correction = scar_dict["proposal_logits"] - anchor_logits[:, 5:6]
             edema_raw_correction = edema_dict["proposal_logits"] - anchor_logits[:, 4:5]
-        elif production_intervention_mode == "refiner_only":
+        elif production_intervention_mode == "refiner_only" or production_intervention_mode == "refiner_only_gate_one":
             scar_raw_correction = scar_logits - anchor_logits[:, 5:6]
             edema_raw_correction = edema_logits - anchor_logits[:, 4:5]
         else:
             scar_raw_correction = 0.5 * (scar_logits + scar_dict["proposal_logits"]) - anchor_logits[:, 5:6]
             edema_raw_correction = 0.5 * (edema_logits + edema_dict["proposal_logits"]) - anchor_logits[:, 4:5]
-        if production_intervention_mode == "gate_open_bounded_control":
+        if (
+            production_intervention_mode == "gate_open_bounded_control"
+            or production_intervention_mode == "proposal_only_gate_one"
+            or production_intervention_mode == "refiner_only_gate_one"
+        ):
             production_gate = torch.ones_like(production_gate)
         scar_bounded_correction = 4.0 * torch.tanh(scar_raw_correction / 4.0) * production_gate[:, 0:1]
         edema_bounded_correction = 4.0 * torch.tanh(edema_raw_correction / 4.0) * production_gate[:, 1:2]
@@ -1544,6 +1593,27 @@ class SRRProposeRefineMyoPS(nn.Module):
             "safety_context_used_for_srr_evidence": torch.tensor(context_anchor_features is not anchor_features, device=final_logits.device),
             "production_final_logits": production_final_logits,
             "production_intervention_mode": production_intervention_mode,
+            "production_correction_gate_input": gate_input,
+            "production_correction_gate_logits": production_gate_logits,
+            "production_correction_gate_input_channel_names": (
+                "scar_proposal_logit",
+                "edema_proposal_logit",
+                "scar_refiner_logit",
+                "edema_refiner_logit",
+                "anchor_scar_probability",
+                "anchor_edema_probability",
+                "anchor_maximum_confidence",
+                "anchor_entropy",
+                "anchor_top1_top2_margin",
+                "scar_proposal_refiner_absolute_disagreement",
+                "edema_proposal_refiner_absolute_disagreement",
+                "anatomy_uncertainty",
+                "anatomy_union_support",
+            ),
+            "production_correction_gate_component_sources": {
+                "proposal_consumed": production_intervention_mode not in {"refiner_only", "refiner_only_gate_one"},
+                "refiner_consumed": production_intervention_mode not in {"proposal_only", "proposal_only_gate_one"},
+            },
             "production_correction_gate": production_gate,
             "raw_scar_correction": scar_raw_correction,
             "raw_edema_correction": edema_raw_correction,

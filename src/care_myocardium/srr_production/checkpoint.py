@@ -49,6 +49,7 @@ def save_srr_checkpoint(
     split_hash: str,
     source_commit: str,
     best_metric_state: dict[str, Any],
+    loss_weight_contract: dict[str, float] | None = None,
 ) -> None:
     payload = {
         "schema_version": CHECKPOINT_SCHEMA_VERSION,
@@ -66,6 +67,7 @@ def save_srr_checkpoint(
         "source_commit": str(source_commit),
         "rng_state": capture_rng_state(),
         "best_metric_state": dict(best_metric_state),
+        "loss_weight_contract": dict(loss_weight_contract or {}),
     }
     path.parent.mkdir(parents=True, exist_ok=True)
     tmp = path.with_name(f".{path.name}.tmp")
@@ -100,8 +102,33 @@ def load_srr_checkpoint(
     missing = [key for key in required if key not in payload]
     if missing:
         raise ValueError(f"SRR checkpoint missing required fields: {missing}")
-    model.load_state_dict(payload["model_state_dict"])
-    optimizer.load_state_dict(payload["optimizer_state_dict"])
+    state = dict(payload["model_state_dict"])
+    model_state = model.state_dict()
+    migration: dict[str, Any] = {"applied": False}
+    key = "production_correction_gate.weight"
+    if key in state and key in model_state and tuple(state[key].shape) != tuple(model_state[key].shape):
+        source = state[key]
+        target = model_state[key].clone()
+        if tuple(source.shape[:1] + source.shape[2:]) != tuple(target.shape[:1] + target.shape[2:]) or source.shape[1] != 4 or target.shape[1] != 13:
+            raise ValueError(f"unsupported production gate checkpoint migration: {tuple(source.shape)} -> {tuple(target.shape)}")
+        target.zero_()
+        target[:, :4].copy_(source)
+        state[key] = target
+        migration = {
+            "applied": True,
+            "key": key,
+            "source_shape": list(source.shape),
+            "target_shape": list(target.shape),
+            "copied_input_channels": [0, 1, 2, 3],
+            "zero_initialized_input_channels": [4, 5, 6, 7, 8, 9, 10, 11, 12],
+            "non_gate_parameters_loaded_strict": True,
+        }
+    model.load_state_dict(state)
+    if migration["applied"]:
+        payload["optimizer_state_dict_migration"] = "skipped_optimizer_state_due_to_production_gate_input_shape_migration"
+    else:
+        optimizer.load_state_dict(payload["optimizer_state_dict"])
+    payload["production_gate_migration"] = migration
     if scheduler is not None:
         scheduler_state = payload.get("scheduler_state_dict")
         if scheduler_state is None:
@@ -132,5 +159,6 @@ def checkpoint_receipt(path: Path, payload: dict[str, Any]) -> dict[str, Any]:
         "best_metric_state_restored": "best_metric_state" in payload,
         "oof_anchor_manifest_hash": payload["oof_anchor_manifest_hash"],
         "split_hash": payload["split_hash"],
+        "production_gate_migration": payload.get("production_gate_migration", {"applied": False}),
+        "loss_weight_contract": payload.get("loss_weight_contract", {}),
     }
-
