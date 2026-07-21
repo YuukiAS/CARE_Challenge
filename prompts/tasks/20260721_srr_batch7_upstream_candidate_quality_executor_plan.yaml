@@ -1,0 +1,431 @@
+schema_version: 2
+task_key: 20260721_srr_batch7_upstream_candidate_quality
+status: READY_FOR_CONTROLLER
+execution_mode: controller_supervised
+controller_is_coordinator: true
+executor_slots: 1
+executor_count: 1
+parallel_execution_allowed: false
+result_root: results/20260721_srr_batch7_upstream_candidate_quality
+controller_task_path: prompts/tasks/20260721_srr_batch7_upstream_candidate_quality_controller.md
+planning_review_required: false
+review_required: false
+waves:
+  - wave_id: B7_WAVE0_BOOTSTRAP_AND_FORENSIC_BINDING
+    executor_id: batch7_executor
+    blocking: true
+    dependencies: []
+    write_scope:
+      - results/20260721_srr_batch7_upstream_candidate_quality/
+    read_required:
+      - AGENTS.md
+      - START_HERE_FOR_GPT.md
+      - GPT_PLANNER_CARE_PROTOCOL.md
+      - prompts/FINAL_OUTPUT_READABILITY_POLICY.md
+      - prompts/AGENT_FLOW_V2_PROTOCOL.md
+      - prompts/HANDOFF_GATE_POLICY.md
+      - prompts/GPT_HARD_GATE_PROMPT.md
+      - prompts/routes/ROUTE_ANTI_LAZINESS_PROTOCOL.md
+      - prompts/routes/ROUTE_HARD_REQUIREMENTS_MATRIX.md
+      - prompts/routes/handoffs/CURRENT.md
+      - wiki/README.md
+      - .agents/skills/slurm-routing-partition/SKILL.md
+      - .agents/skills/care-mapper/SKILL.md
+      - results/srr_production/code_maturity/batch6_planner_audit_and_batch7_decision.md
+      - docs/plans/laneB_round04_active_srr_batch7_upstream_candidate_quality_execution.md
+      - configs/srr_production/myops_batch7.yaml
+      - results/20260721_srr_batch6_final_objective_alignment/
+      - src/care_myocardium/models/srr_propref.py
+      - src/care_myocardium/models/srr_spatial_dictionary.py
+      - src/care_myocardium/models/srr_dictionary_memory.py
+      - src/care_myocardium/srr_production/prototype_memory.py
+      - scripts/training/run_srr_propref_myops_fold0.py
+    scientific_inputs:
+      source_terminal_commit: f139c54fd6b55b99409fcf546a1a0e117d7aa06b
+      source_checkpoint_step: 300
+      source_checkpoint_sha256: 729c81e49bf846339ed2f39ef0f2656319befd2b9cfe73268d7cf501e6b40fbd
+      fold: 0
+      train_cases: 176
+      validation_cases: 44
+      optimizer_steps: 0
+    required_outputs:
+      - results/20260721_srr_batch7_upstream_candidate_quality/controller_bootstrap_snapshot.md
+      - results/20260721_srr_batch7_upstream_candidate_quality/implementation_snapshot.md
+    completion_conditions:
+      - main_head_and_source_terminal_commit_bound
+      - worktree_clean_or_only_authorized_changes
+      - source_checkpoint_hash_exact
+      - split_case_decode_metric_and_asset_controls_frozen
+      - current_code_findings_recorded_with_symbols
+      - optimizer_steps_zero
+    failure_action: NEEDS_REPAIR_NO_ASSET_BUILD
+
+  - wave_id: B7_WAVE1_TRAINED_FEATURE_ASSET_REBUILD
+    executor_id: batch7_executor
+    blocking: true
+    dependencies:
+      - B7_WAVE0_BOOTSTRAP_AND_FORENSIC_BINDING
+    write_scope:
+      - scripts/srr_production/build_srr_batch7_prototype_memory.py
+      - src/care_myocardium/srr_production/prototype_memory.py
+      - src/care_myocardium/models/srr_dictionary_memory.py
+      - tests/srr_production/test_myops_batch7_upstream_candidate.py
+      - jobs/srr_production/
+      - logs/srr_batch7/
+      - results/20260721_srr_batch7_upstream_candidate_quality/
+    scientific_inputs:
+      source_checkpoint_sha256: 729c81e49bf846339ed2f39ef0f2656319befd2b9cfe73268d7cf501e6b40fbd
+      source_train_case_count: 176
+      validation_case_count_for_leakage_check: 44
+      feature_stage: pre_m10_spatial
+      shard_count: 4
+      optimizer_steps: 0
+    implementation_contract:
+      model_eval_during_extraction: true
+      full_tensor_sha256: true
+      exclude_validation_cases_and_labels: true
+      training_query_excludes_query_shard: true
+      validation_query_uses_all_training_shards: true
+      zero_count_categories_masked: true
+      deterministic_random_repeat_fallback_forbidden: true
+      no_t2_edema_positive_negative_forbidden: true
+      old_batch4_asset_formal_training_authority: false
+    required_outputs:
+      - results/20260721_srr_batch7_upstream_candidate_quality/prototype_memory_manifest.json
+      - results/20260721_srr_batch7_upstream_candidate_quality/prototype_feature_drift.csv
+      - results/20260721_srr_batch7_upstream_candidate_quality/semantic_negative_counts.csv
+    completion_conditions:
+      - exactly_176_unique_train_source_cases
+      - validation_intersection_zero
+      - source_checkpoint_and_feature_stage_hash_bound
+      - all_required_tensor_hashes_full_and_nonempty
+      - semantic_negative_category_counts_recorded
+      - formal_named_negative_contribution_has_no_deterministic_axis_random_or_repeat
+      - no_t2_edema_memory_count_zero
+      - rebuilt_asset_runtime_file_exists_and_is_untracked
+      - optimizer_steps_zero
+      - strict_tests_exit_zero
+    failure_action: controller_returns_to_same_executor_for_asset_repair
+
+  - wave_id: B7_WAVE2_UPSTREAM_ARCHITECTURE_IMPLEMENTATION
+    executor_id: batch7_executor
+    blocking: true
+    dependencies:
+      - B7_WAVE1_TRAINED_FEATURE_ASSET_REBUILD
+    write_scope:
+      - src/care_myocardium/models/srr_propref.py
+      - src/care_myocardium/models/srr_spatial_dictionary.py
+      - src/care_myocardium/models/srr_dictionary_memory.py
+      - src/care_myocardium/srr_production/prototype_memory.py
+      - src/care_myocardium/losses/srr_losses.py
+      - scripts/training/run_srr_propref_myops_fold0.py
+      - scripts/training/run_srr_batch7_fixed_overfit.py
+      - scripts/training/run_srr_batch7_formal.py
+      - scripts/srr_production/infer_myops.py
+      - scripts/evaluation/aggregate_srr_batch7_formal.py
+      - scripts/evaluation/aggregate_srr_batch7_interventions.py
+      - scripts/evaluation/validate_srr_batch7_packet.py
+      - tests/srr_production/test_myops_batch7_upstream_candidate.py
+      - configs/srr_production/myops_batch7.yaml
+      - jobs/srr_production/
+      - results/20260721_srr_batch7_upstream_candidate_quality/
+    implementation_contract:
+      pre_spatial_memory_query: true
+      prototype_maps_passed_to_spatial_dictionary: true
+      post_spatial_memory_query_for_formal_score: false
+      dual_source_discovery_confirmation_proposal: true
+      discovery_reads_anchor_pathology_probability_or_component: false
+      proposal_reliability_fusion: learned_two_source_softmax
+      formal_refiner_class: DifferentiableSoftROIRefinementHead
+      formal_refiner_base: proposal_logits
+      formal_refiner_discrete_crop_or_bbox: false
+      formal_refiner_python_case_loop: false
+      source_arbiter_class: PathologySourceArbiter
+      fixed_half_proposal_half_refiner: false
+      no_t2_edema_exact_zero: true
+      batch6_final_and_gate_losses_preserved: true
+    intervention_modes:
+      - rebuilt_asset
+      - old_batch4_asset
+      - prototype_maps_off
+      - semantic_negative_memory_off
+      - zero_anchor_pathology_context
+      - discovery_off
+      - proposal_only
+      - refiner_only
+      - learned_source
+    required_outputs:
+      - results/20260721_srr_batch7_upstream_candidate_quality/implementation_snapshot.md
+      - results/20260721_srr_batch7_upstream_candidate_quality/asset_intervention_metrics.csv
+      - results/20260721_srr_batch7_upstream_candidate_quality/gradient_authority.csv
+      - results/20260721_srr_batch7_upstream_candidate_quality/checkpoint_roundtrip.json
+    completion_conditions:
+      - prototype_maps_on_off_change_spatial_gates_retrieved_features_and_proposal
+      - prototype_maps_change_final_logits_for_at_least_one_real_case
+      - zero_anchor_pathology_context_keeps_discovery_nonzero_and_gt_gradient_nonzero
+      - missing_modality_slot_max_weight_zero
+      - formal_refiner_starts_from_proposal_logits
+      - source_weights_sum_to_one_per_pathology
+      - formal_full_path_contains_no_fixed_half_average
+      - no_t2_edema_full_chain_exact_zero
+      - source_checkpoint_non_architecture_keys_loaded_strict
+      - save_reload_max_abs_delta_at_most_1e_6
+      - strict_tests_and_known_bad_exit_zero
+    failure_action: controller_returns_to_same_executor_for_implementation_repair
+
+  - wave_id: B7_WAVE3_FIXED_BATCH_OVERFIT
+    executor_id: batch7_executor
+    blocking: true
+    dependencies:
+      - B7_WAVE2_UPSTREAM_ARCHITECTURE_IMPLEMENTATION
+    write_scope:
+      - jobs/srr_production/
+      - logs/srr_batch7/
+      - results/20260721_srr_batch7_upstream_candidate_quality/
+    scientific_inputs:
+      cases: [Case2002, Case1002]
+      optimizer_steps: 100
+      formal_training_credit: 0
+      fixed_pathology_containing_patch_per_case: true
+    routing:
+      python_executable: /users/a/e/aereinh/CARE/envs/env_CARE/bin/python
+      primary_partition: htzhulab
+      partitions: [htzhulab, a100-gpu]
+      mirror_partition: a100-gpu
+      mirror_after_pending_seconds: 900
+      volta_allowed: false
+      maximum_runtime_seconds: 14400
+      require_preflight: true
+      require_atomic_winner_lock: true
+      require_isolated_attempt_directories: true
+      cancel_pending_losers: true
+    required_outputs:
+      - results/20260721_srr_batch7_upstream_candidate_quality/fixed_batch_overfit.json
+      - results/20260721_srr_batch7_upstream_candidate_quality/fixed_batch_overfit_trace.csv
+      - results/20260721_srr_batch7_upstream_candidate_quality/gradient_authority.csv
+      - results/20260721_srr_batch7_upstream_candidate_quality/slurm_attempts.csv
+    completion_conditions:
+      - combined_final_pathology_loss_relative_decrease_at_least_0_20
+      - discovery_proposal_loss_relative_decrease_at_least_0_20
+      - scar_refiner_repair_loss_relative_decrease_at_least_0_15
+      - source_arbiter_loss_relative_decrease_at_least_0_10
+      - nonzero_gradients_to_all_required_upstream_groups
+      - zero_anchor_context_discovery_nonzero
+      - Case1002_no_t2_edema_full_chain_exact_zero
+      - all_losses_finite
+      - checkpoint_save_reload_max_abs_delta_at_most_1e_6
+      - all_attempts_terminal_accounted
+    failure_action: NEEDS_REPAIR_NO_FORMAL_TRAINING_SUBMISSION
+
+  - wave_id: B7_WAVE4_FORMAL_300_UPSTREAM_CALIBRATION
+    executor_id: batch7_executor
+    blocking: true
+    dependencies:
+      - B7_WAVE3_FIXED_BATCH_OVERFIT
+    write_scope:
+      - jobs/srr_production/
+      - logs/srr_batch7/
+      - scripts/evaluation/aggregate_srr_batch7_formal.py
+      - results/20260721_srr_batch7_upstream_candidate_quality/
+    scientific_inputs:
+      fold: 0
+      train_cases: 176
+      validation_cases: 44
+      optimizer_steps: 300
+      full_volume_eval_steps: [100, 200, 300]
+      patch_shape: [12, 96, 96]
+      batch_size: 1
+      learning_rate: 0.0001
+      weight_decay: 0.0001
+      grad_clip: 12.0
+      trainable_groups:
+        - m10_spatial_dictionary
+        - scar_dictionary_learned_fusion_and_embedding
+        - edema_dictionary_learned_fusion_and_embedding
+        - evidence_heads_scar
+        - evidence_heads_edema
+        - scar_refine
+        - edema_refine
+        - scar_source_arbiter
+        - edema_source_arbiter
+        - production_correction_gate
+      frozen_groups:
+        - encoders
+        - base_scale_retrieval
+        - decoders
+        - evidence_heads_anatomy
+        - rebuilt_prototype_memory_tensors
+        - nnunet_anchor
+    routing:
+      python_executable: /users/a/e/aereinh/CARE/envs/env_CARE/bin/python
+      primary_partition: htzhulab
+      partitions: [htzhulab, a100-gpu]
+      mirror_partition: a100-gpu
+      mirror_after_pending_seconds: 900
+      volta_allowed: false
+      maximum_runtime_seconds: 14400
+      require_preflight: true
+      require_atomic_winner_lock: true
+      require_isolated_attempt_directories: true
+      cancel_pending_losers: true
+    required_outputs:
+      - results/20260721_srr_batch7_upstream_candidate_quality/training_adequacy.json
+      - results/20260721_srr_batch7_upstream_candidate_quality/checkpoint_selection.csv
+      - results/20260721_srr_batch7_upstream_candidate_quality/casewise_metrics.csv
+      - results/20260721_srr_batch7_upstream_candidate_quality/subgroup_metrics.csv
+      - results/20260721_srr_batch7_upstream_candidate_quality/help_harm.csv
+      - results/20260721_srr_batch7_upstream_candidate_quality/proposal_refiner_metrics.csv
+      - results/20260721_srr_batch7_upstream_candidate_quality/source_arbiter_metrics.csv
+      - results/20260721_srr_batch7_upstream_candidate_quality/slurm_attempts.csv
+    continuation_gate:
+      minimum_final_mean_positive_dice_delta: 0.005
+      minimum_each_pathology_final_dice_delta: 0.001
+      minimum_proposal_only_mean_positive_dice_delta: 0.005
+      minimum_scar_refiner_only_dice_delta: 0.0
+      maximum_scar_learned_source_below_proposal_only: 0.001
+      minimum_edema_learned_gate_capture_fraction_of_gate_one_gain: 0.60
+      require_help_not_less_than_harm: true
+      maximum_each_pathology_hd95_relative_worsening: 0.05
+      maximum_each_pathology_remote_fp_relative_worsening: 0.05
+      require_no_t2_edema_exact_zero: true
+      require_finite_losses_and_nonzero_required_gradients: true
+    completion_conditions:
+      - exactly_300_optimizer_steps
+      - all_176_train_cases_eligible_for_sampling
+      - three_44_case_full_volume_evaluations
+      - exact_trainable_and_frozen_parameter_name_receipt
+      - selected_checkpoint_reloaded_before_metrics
+      - positive_gt_and_all_case_metrics_separated
+      - all_attempts_terminal_accounted
+      - aggregation_exit_zero
+      - continuation_gate_machine_decision_written
+    failure_action: STOP_AT_300_AND_SKIP_WAVE5
+
+  - wave_id: B7_WAVE5_CONDITIONAL_1200_EXTENSION
+    executor_id: batch7_executor
+    blocking: true
+    conditional_on: B7_WAVE4_FORMAL_300_UPSTREAM_CALIBRATION.continuation_gate_pass
+    dependencies:
+      - B7_WAVE4_FORMAL_300_UPSTREAM_CALIBRATION
+    write_scope:
+      - jobs/srr_production/
+      - logs/srr_batch7/
+      - scripts/evaluation/aggregate_srr_batch7_formal.py
+      - results/20260721_srr_batch7_upstream_candidate_quality/
+    scientific_inputs:
+      total_optimizer_steps: 1200
+      additional_full_volume_eval_steps: [600, 900, 1200]
+      trainable_groups_unchanged: true
+      frozen_groups_unchanged: true
+      prototype_memory_asset_unchanged: true
+      training_dependency: afterok
+    routing:
+      python_executable: /users/a/e/aereinh/CARE/envs/env_CARE/bin/python
+      primary_partition: htzhulab
+      partitions: [htzhulab, a100-gpu]
+      mirror_partition: a100-gpu
+      mirror_after_pending_seconds: 900
+      volta_allowed: false
+      maximum_runtime_seconds: 14400
+      require_atomic_winner_lock: true
+      require_isolated_attempt_directories: true
+      cancel_pending_losers: true
+    required_outputs:
+      - results/20260721_srr_batch7_upstream_candidate_quality/training_adequacy.json
+      - results/20260721_srr_batch7_upstream_candidate_quality/checkpoint_selection.csv
+      - results/20260721_srr_batch7_upstream_candidate_quality/casewise_metrics.csv
+      - results/20260721_srr_batch7_upstream_candidate_quality/subgroup_metrics.csv
+      - results/20260721_srr_batch7_upstream_candidate_quality/help_harm.csv
+      - results/20260721_srr_batch7_upstream_candidate_quality/proposal_refiner_metrics.csv
+      - results/20260721_srr_batch7_upstream_candidate_quality/source_arbiter_metrics.csv
+      - results/20260721_srr_batch7_upstream_candidate_quality/slurm_attempts.csv
+    completion_conditions:
+      - wave_runs_only_after_machine_verified_step300_gate
+      - total_optimizer_steps_exactly_1200
+      - three_additional_44_case_full_volume_evaluations
+      - trainable_frozen_groups_and_asset_unchanged
+      - selected_checkpoint_reloaded_before_metrics
+      - all_attempts_terminal_accounted
+      - aggregation_exit_zero
+    failure_action: same_scope_operational_repair_or_NEEDS_REPAIR
+
+  - wave_id: B7_WAVE6_FINAL_INTERVENTIONS_MAPPER_AND_STATE
+    executor_id: batch7_executor
+    blocking: true
+    dependencies:
+      - B7_WAVE4_FORMAL_300_UPSTREAM_CALIBRATION
+    accepts_skipped_dependency:
+      - B7_WAVE5_CONDITIONAL_1200_EXTENSION_when_step300_gate_failed
+    write_scope:
+      - scripts/evaluation/aggregate_srr_batch7_interventions.py
+      - scripts/evaluation/validate_srr_batch7_packet.py
+      - scripts/srr_production/infer_myops.py
+      - tests/srr_production/test_myops_batch7_upstream_candidate.py
+      - prompts/routes/handoffs/CURRENT.md
+      - configs/srr_production/entrypoints.yaml
+      - wiki/
+      - results/20260721_srr_batch7_upstream_candidate_quality/
+    final_intervention_modes:
+      - anchor_identity
+      - old_batch4_asset
+      - rebuilt_batch7_asset
+      - prototype_maps_off
+      - semantic_negative_memory_off
+      - zero_anchor_pathology_context
+      - proposal_only
+      - refiner_only
+      - learned_source
+      - gt_oracle_source_diagnostic_only
+      - production_gate_closed
+      - production_gate_learned
+      - production_gate_one
+      - no_anchor_diagnostic
+    required_outputs:
+      - results/20260721_srr_batch7_upstream_candidate_quality/final_mechanism_interventions.csv
+      - results/20260721_srr_batch7_upstream_candidate_quality/proposal_refiner_metrics.csv
+      - results/20260721_srr_batch7_upstream_candidate_quality/source_arbiter_metrics.csv
+      - results/20260721_srr_batch7_upstream_candidate_quality/mapper_report_draft.md
+      - results/20260721_srr_batch7_upstream_candidate_quality/architecture_delta_draft.md
+      - results/20260721_srr_batch7_upstream_candidate_quality/mapper_report_final.md
+      - results/20260721_srr_batch7_upstream_candidate_quality/architecture_delta_final.md
+      - results/20260721_srr_batch7_upstream_candidate_quality/controller_report.md
+      - results/20260721_srr_batch7_upstream_candidate_quality/completion_check.md
+      - results/20260721_srr_batch7_upstream_candidate_quality/finalizer_state.json
+      - results/20260721_srr_batch7_upstream_candidate_quality/MANIFEST.md
+    completion_conditions:
+      - final_selected_checkpoint_same_for_all_interventions
+      - final_interventions_use_44_cases_and_outputs_logits_argmax
+      - gt_oracle_source_marked_diagnostic_only
+      - proposal_memory_spatial_refiner_source_gate_final_metric_chain_complete
+      - controller_report_starts_with_natural_chinese_judgment
+      - root_wiki_components_architecture_figures_and_fingerprint_updated
+      - strict_validator_and_all_known_bad_exit_zero
+      - all_jobs_terminal_and_post_completion_aggregation_complete
+      - runtime_assets_checkpoints_predictions_and_large_logs_untracked
+      - local_lightweight_commit_created
+      - no_push_no_review_no_upload_no_fold_expansion_no_Cine_no_Batch8
+    failure_action: NEEDS_REPAIR
+
+finalizer:
+  dependency: afterany
+  required_job_ids: all_batch7_slurm_attempt_ids
+  required_state_file: results/20260721_srr_batch7_upstream_candidate_quality/finalizer_state.json
+  terminal_success_state: READY_FOR_CONTROLLER_VERIFICATION
+  monitor_states: [NEEDS_MONITOR, AWAITING_SACCT]
+  failure_states: [NEEDS_REPAIR, RUNTIME_FAILED, NEEDS_EVIDENCE]
+git_policy:
+  allow_local_commit: true
+  auto_local_commit: true
+  allow_push: false
+  auto_push: false
+  forbidden_tracked_artifacts:
+    - checkpoint
+    - prototype_pt
+    - nifti
+    - raw_data
+    - large_logs
+    - secrets
+    - upload_package
+completion:
+  controller_verification_decision: VERIFIED_COMPLETE
+  next_required_action: RETURN_TO_PLANNER
