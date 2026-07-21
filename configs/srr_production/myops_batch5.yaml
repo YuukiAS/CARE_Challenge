@@ -1,4 +1,4 @@
-schema_version: 1
+schema_version: 2
 authority_name: srr_batch5_post_batch4_diagnostic_repair
 batch: 5
 status: READY_FOR_CONTROLLER
@@ -19,12 +19,24 @@ baseline:
 scope:
   training_allowed: false
   optimizer_steps_allowed: 0
+  backward_diagnostic_allowed: true
+  optimizer_step_forbidden: true
   checkpoint_weights_mutable: false
   prototype_memory_mutable: false
   validation_upload_allowed: false
   hosted_metric_claim_allowed: false
   fold_expansion_allowed: false
   cine_allowed: false
+  backbone_replacement_allowed: false
+  backbone_comparison_allowed: false
+  foundation_model_integration_allowed: false
+backbone_policy:
+  decision: KEEP_CURRENT_M10_D3_FULL4SCALE_FOR_BATCH5
+  rationale: >-
+    Batch5 diagnoses whether the existing proposal/refiner signal is lost at the
+    final objective or production correction authority. U-Mamba, MedSAM,
+    MedNeXt, or other backbone substitution would confound that diagnosis and is
+    not treated as a decisive factor for this dataset.
 primary_output_semantics:
   runtime_mode: anchor_bounded_srr_correction
   decode_rule: model_logits_argmax
@@ -85,6 +97,53 @@ production_gate_evidence:
     - component_delta
     - remote_fp_delta_mm3
   require_casewise_join: true
+loss_authority_audit:
+  runner_symbol: scripts.training.run_srr_propref_myops_fold0.propref_loss
+  loss_source: src/care_myocardium/losses/srr_losses.py
+  require_resolved_effective_weights: true
+  require_alias_resolution: true
+  required_parameter_groups:
+    - production_correction_gate
+    - scar_refiner
+    - edema_refiner
+    - scar_dictionary
+    - edema_dictionary
+    - retrieval_router
+  required_questions:
+    - does_any_direct_final_pathology_loss_supervise_model_logits
+    - does_production_correction_gate_receive_task_corrective_gradient
+    - do_active_magnitude_penalties_prefer_zero_correction
+    - does_correction_opportunity_target_production_gate_or_legacy_arbitration
+    - does_refiner_effect_loss_reward_or_penalize_nonzero_residual
+  required_outputs:
+    - loss_authority_audit.md
+    - loss_parameter_gradient_matrix.csv
+    - loss_directionality_audit.csv
+  gradient_diagnostic:
+    optimizer_step_count: 0
+    parameter_updates_forbidden: true
+    restore_checkpoint_after_each_probe: true
+    fixed_case_manifest_required: true
+oracle_headroom:
+  diagnostic_only: true
+  deployable_candidate: false
+  modes_considered:
+    - anchor_identity_control
+    - anchor_bounded_full
+    - anchor_bounded_proposal_only
+    - anchor_bounded_refiner_only
+    - production_gate_open_bounded_control
+  required_fields:
+    - case_id
+    - pathology
+    - anchor_dice
+    - best_mode
+    - best_mode_dice
+    - oracle_dice_gain
+    - correctable_anchor_error_voxels
+    - harmful_correction_voxels_avoided
+  minimum_mean_gain_for_actionable_headroom: 0.01
+  required_output: oracle_headroom.csv
 prototype_manifest_required_hashes:
   - asset_sha256
   - feature_hash
@@ -96,12 +155,20 @@ scientific_classification:
   candidate_signal_minimum_mean_dice_delta: 0.01
   strong_signal_minimum_each_pathology_dice_delta: 0.03
   allowed_batch5_decisions:
+    - B5_FINAL_OBJECTIVE_ALIGNMENT_BOTTLENECK
     - B5_OUTPUT_AUTHORITY_BOTTLENECK
     - B5_PROPOSAL_PRECISION_BOTTLENECK
     - B5_REFINER_EFFECTIVENESS_BOTTLENECK
     - B5_EVALUATION_SEMANTICS_ONLY_ISSUE
     - B5_INSUFFICIENT_MECHANISM_EVIDENCE
   require_exactly_one_batch6_repair_direction: true
+  decision_priority:
+    - final_objective_alignment
+    - output_authority
+    - proposal_precision
+    - refiner_effectiveness
+    - evaluation_semantics_only
+    - insufficient_evidence
 slurm:
   inference_only_allowed: true
   training_forbidden: true
