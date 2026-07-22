@@ -53,7 +53,7 @@ def _batch7_cfg() -> dict:
 
 def _copy_batch7_packet(tmp_path):
     packet = tmp_path / "packet"
-    shutil.copytree(BATCH7_RESULT_ROOT, packet)
+    shutil.copytree(BATCH7_RESULT_ROOT, packet, ignore=shutil.ignore_patterns("runtime"))
     return packet
 
 
