@@ -243,6 +243,7 @@ waves:
       only_sip_weight_differs_between_br2_pair: true
     routing:
       primary_partition: htzhulab
+      partitions: [htzhulab, a100-gpu]
       mirror_partition: a100-gpu
       mirror_after_pending_seconds: 900
       require_isolated_attempt_directories: true
@@ -315,6 +316,7 @@ waves:
       only_sip_weight_differs_between_br2_pair: true
     routing:
       primary_partition: htzhulab
+      partitions: [htzhulab, a100-gpu]
       mirror_partition: a100-gpu
       mirror_after_pending_seconds: 900
       require_isolated_attempt_directories: true
