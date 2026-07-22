@@ -24,7 +24,7 @@ SIP 权重校准脚本已补上：正式 driver 会在 BR2 warmup 第50步 check
 
 - source=metadata.center sampler: implemented and unit-tested
 - availability as observation set: implemented and unit-tested
-- BR2 zero-projection staged gradient: implemented and unit-tested
+- BR2 zero-projection staged gradient: implemented and unit-tested; `br2_staged_gradient_checks.json` is PASS with initial delta 0, step0 projection gradient >0, and post-projection-step beta/representer gradients >0
 - no-SIP/SIP step50 shared-state driver: implemented, print-contract reaches SIP calibration gate
 - SIP train-only calibration: implemented as warmup-checkpoint backward script; runtime PASS rows pending Slurm execution
 - formal Slurm training: NOT_SUBMITTED
@@ -32,7 +32,7 @@ SIP 权重校准脚本已补上：正式 driver 会在 BR2 warmup 第50步 check
 
 ## 验证
 
-- `python -m pytest -q tests/srr_production/test_myops_batch7_minimal_decomposition.py` -> 20 passed
+- `python -m pytest -q tests/srr_production/test_myops_batch7_minimal_decomposition.py` -> 21 passed
 - `python scripts/srr_production/audit_formal_entrypoints.py --strict` -> failure_count 0
 - `python scripts/training/run_srr_batch7_minimal_decomposition.py --pathology scar --print-contract` -> exit 0, prints calibration command and all branch contracts
 - `python scripts/evaluation/validate_srr_batch7_minimal_decomposition_packet.py --preflight` -> exit 0; final mode intentionally fails until six 400-step runs and aggregation finish
@@ -53,4 +53,5 @@ SIP 权重校准脚本已补上：正式 driver 会在 BR2 warmup 第50步 check
 - 2026-07-22T00:48:46-0400: scar GPU preflight htzhulab job `59977481` completed on `g180702` with `sacct=COMPLETED`, exit code `0:0`, elapsed `00:00:14`; log evidence: `logs/srr_batch7_minimal_decomposition/B7MinDec_scar_59977481_20260722_004722.log`, `status=CONTRACT_VALID`, formal_training_credit=0.
 - 2026-07-22T00:48:46-0400: scar GPU preflight a100 mirror job `59979732` was cancelled by controller after htzhulab terminal PASS; `sacct=CANCELLED`, no allocated node, formal_training_credit=0.
 - Current controller head and `origin/main` are both `2b700d073258c7c88cd483f0ec3e5caa4d0a25ae`.
-- Scar GPU preflight terminal PASS is now recorded; no formal 400-step Batch7 training has started yet. Next action is to resume executor for the formal scar wave, then aggregate terminal runtime evidence before edema submission.
+- At preflight close, no formal 400-step Batch7 training had started; next action was formal scar wave submission, then terminal aggregation before edema submission.
+- 2026-07-22T00:56:04-0400: submitted formal scar matched wave htzhulab job `59983573`, attempt `batch7_minimal_decomposition_scar_htzhulab_formal_20260722_005552`; initial state `PENDING(Resources)`, formal_training_credit=0 until terminal runtime and aggregation evidence exist.
