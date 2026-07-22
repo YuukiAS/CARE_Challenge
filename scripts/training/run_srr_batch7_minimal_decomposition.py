@@ -171,6 +171,7 @@ def base_command(
         pathology,
         "--batch7-decomposition-schedule",
         "center_hierarchical_br2_400",
+        "--batch7-minimal-decomposition-mode",
         "--full-volume-eval-steps",
         eval_steps,
         "--out-root",

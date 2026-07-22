@@ -977,6 +977,7 @@ def model_kwargs_from_args(args: argparse.Namespace) -> dict[str, object]:
         "final_output_mode": str(getattr(args, "final_output_mode", "legacy_variant")),
         "enable_batch7_decomposition_br2": bool(getattr(args, "enable_batch7_decomposition_br2", False)),
         "batch7_decomposition_use_sip": bool(getattr(args, "batch7_decomposition_use_sip", False)),
+        "batch7_minimal_decomposition_mode": bool(getattr(args, "batch7_minimal_decomposition_mode", False)),
     }
 
 
@@ -998,6 +999,7 @@ def architecture_config_from_args(args: argparse.Namespace) -> dict[str, object]
         "disable_anatomy_roi_prior": bool(cfg["disable_anatomy_roi_prior"]),
         "enable_batch7_decomposition_br2": bool(cfg["enable_batch7_decomposition_br2"]),
         "batch7_decomposition_use_sip": bool(cfg["batch7_decomposition_use_sip"]),
+        "batch7_minimal_decomposition_mode": bool(cfg["batch7_minimal_decomposition_mode"]),
         "runtime_final_output_modes_supported": [
             "anchor_identity_control",
             "anchor_bounded_srr_correction",
@@ -3635,6 +3637,11 @@ def main() -> None:
     parser.add_argument("--disable-nnunet-anchor", action="store_true", help="Remove nnU-Net anchor/component context from training, prototype fitting, and evaluation.")
     parser.add_argument("--enable-batch7-decomposition-br2", action="store_true", help="Enable center-hierarchical signed lightweight BR2 for Batch7 decomposition.")
     parser.add_argument("--batch7-decomposition-use-sip", action="store_true", help="Mark Batch7 decomposition run as the explicit SIP ablation.")
+    parser.add_argument(
+        "--batch7-minimal-decomposition-mode",
+        action="store_true",
+        help="Disable legacy M10 spatial dictionary/prototype-map/semantic-memory formal assets for Batch7 minimal decomposition.",
+    )
     parser.add_argument("--batch7-source-balanced-pathology", choices=("", "scar", "edema"), default="", help="Use Batch7 center-balanced sampler for one target pathology.")
     parser.add_argument("--batch4-production-contract", action="store_true", help="Fail closed unless CLI values match the approved Batch4 MyoPS fold0 contract.")
     parser.add_argument("--print-contract", action="store_true", help="Validate and print the resolved training contract without loading images or training.")

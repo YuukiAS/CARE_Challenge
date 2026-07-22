@@ -1598,6 +1598,7 @@ class SRRProposeRefineMyoPS(nn.Module):
         final_output_mode: str = "legacy_variant",
         enable_batch7_decomposition_br2: bool = False,
         batch7_decomposition_use_sip: bool = False,
+        batch7_minimal_decomposition_mode: bool = False,
     ) -> None:
         super().__init__()
         if variant not in {
@@ -1620,6 +1621,7 @@ class SRRProposeRefineMyoPS(nn.Module):
         self.disable_anatomy_roi_prior = bool(disable_anatomy_roi_prior)
         self.enable_batch7_decomposition_br2 = bool(enable_batch7_decomposition_br2)
         self.batch7_decomposition_use_sip = bool(batch7_decomposition_use_sip)
+        self.batch7_minimal_decomposition_mode = bool(batch7_minimal_decomposition_mode)
         self.final_output_mode = str(final_output_mode or "legacy_variant")
         if self.final_output_mode not in {"legacy_variant", "anchor_bounded_srr_correction", "srr_no_anchor_control"}:
             raise ValueError(f"unknown final_output_mode: {self.final_output_mode}")
@@ -1696,13 +1698,15 @@ class SRRProposeRefineMyoPS(nn.Module):
         self.scar_source_arbiter = PathologySourceArbiter(self.feature_channels)
         self.edema_source_arbiter = PathologySourceArbiter(self.feature_channels)
         self.cross_fitted_memory = M10CrossFittedPrototypeMemory(self.feature_channels)
+        if self.enable_batch7_decomposition_br2 and not self.batch7_minimal_decomposition_mode:
+            raise ValueError("Batch7 BR2 requires batch7_minimal_decomposition_mode to disable legacy M10 formal assets")
         self.m10_spatial_dictionary = (
             M10TwoPassSpatialDictionary(
                 self.feature_channels,
                 enable_pattern_sip=bool(self.m6_config.get("m10_pattern_sip", False)),
                 enable_memory=bool(self.m6_config.get("m10_memory", False)),
             )
-            if bool(self.m6_config.get("m10_spatial_dictionary", False)) and not self.enable_batch7_decomposition_br2
+            if bool(self.m6_config.get("m10_spatial_dictionary", False)) and not self.batch7_minimal_decomposition_mode
             else None
         )
         self.scar_lightweight_br2 = (
@@ -1911,10 +1915,11 @@ class SRRProposeRefineMyoPS(nn.Module):
         )
         scar_memory_queries: list[dict[str, torch.Tensor]] = []
         edema_memory_queries: list[dict[str, torch.Tensor]] = []
-        if self.final_output_mode == "anchor_bounded_srr_correction" and case_ids is None:
+        use_cross_fitted_memory = not self.batch7_minimal_decomposition_mode
+        if use_cross_fitted_memory and self.final_output_mode == "anchor_bounded_srr_correction" and case_ids is None:
             raise ValueError("production final_output_mode requires case_ids for cross-fitted memory leakage control")
         require_memory_ready = self.final_output_mode == "anchor_bounded_srr_correction"
-        if case_ids is not None:
+        if use_cross_fitted_memory and case_ids is not None:
             for batch_idx, case_id in enumerate(case_ids):
                 scar_memory_queries.append(
                     self.cross_fitted_memory.query(
@@ -2272,6 +2277,9 @@ class SRRProposeRefineMyoPS(nn.Module):
         outputs = {
             "logits": final_logits,
             "final_output_mode": self.final_output_mode,
+            "batch7_minimal_decomposition_mode": torch.tensor(
+                self.batch7_minimal_decomposition_mode, device=final_logits.device
+            ),
             "memory_query_policy": memory_query_policy,
             "raw_anchor_used_for_final_baseline": torch.tensor(anchor_features is not None, device=final_logits.device),
             "safety_context_used_for_srr_evidence": torch.tensor(context_anchor_features is not anchor_features, device=final_logits.device),

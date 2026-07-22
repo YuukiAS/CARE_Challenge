@@ -7,6 +7,7 @@ import sys
 from types import SimpleNamespace
 
 import numpy as np
+import pytest
 import torch
 import torch.nn.functional as F
 import yaml
@@ -449,6 +450,7 @@ def test_batch7_decomposition_schedule_authorizes_only_target_blocks_by_phase() 
         encoder_profile="tiny_3scale",
         final_output_mode="anchor_bounded_srr_correction",
         enable_batch7_decomposition_br2=True,
+        batch7_minimal_decomposition_mode=True,
     )
 
     warmup = apply_batch7_decomposition_schedule(model, pathology="scar", step=1, br2_enabled=True)
@@ -479,13 +481,21 @@ def test_batch7_decomposition_schedule_authorizes_only_target_blocks_by_phase() 
     assert not any(name.startswith("scar_lightweight_br2.representers.") for name in names)
 
 
-def test_batch7_br2_disables_legacy_m10_spatial_dictionary_without_disabling_minimal_baseline() -> None:
-    minimal_baseline = SRRProposeRefineMyoPS(
+def test_batch7_formal_mode_disables_legacy_m10_spatial_dictionary_for_all_matched_runs() -> None:
+    historical_m10 = SRRProposeRefineMyoPS(
         base_channels=4,
         variant="m10_d3_hierarchical_memory_propref",
         encoder_profile="tiny_3scale",
         final_output_mode="anchor_bounded_srr_correction",
         enable_batch7_decomposition_br2=False,
+    )
+    minimal_decomposition = SRRProposeRefineMyoPS(
+        base_channels=4,
+        variant="m10_d3_hierarchical_memory_propref",
+        encoder_profile="tiny_3scale",
+        final_output_mode="anchor_bounded_srr_correction",
+        enable_batch7_decomposition_br2=False,
+        batch7_minimal_decomposition_mode=True,
     )
     br2_decomposition = SRRProposeRefineMyoPS(
         base_channels=4,
@@ -493,10 +503,25 @@ def test_batch7_br2_disables_legacy_m10_spatial_dictionary_without_disabling_min
         encoder_profile="tiny_3scale",
         final_output_mode="anchor_bounded_srr_correction",
         enable_batch7_decomposition_br2=True,
+        batch7_minimal_decomposition_mode=True,
     )
 
-    assert minimal_baseline.m10_spatial_dictionary is not None
+    assert historical_m10.m10_spatial_dictionary is not None
+    assert minimal_decomposition.m10_spatial_dictionary is None
     assert br2_decomposition.m10_spatial_dictionary is None
+    assert minimal_decomposition.batch7_minimal_decomposition_mode is True
+    assert br2_decomposition.batch7_minimal_decomposition_mode is True
+
+
+def test_batch7_br2_requires_formal_minimal_decomposition_mode() -> None:
+    with pytest.raises(ValueError, match="Batch7 BR2 requires batch7_minimal_decomposition_mode"):
+        SRRProposeRefineMyoPS(
+            base_channels=4,
+            variant="m10_d3_hierarchical_memory_propref",
+            encoder_profile="tiny_3scale",
+            final_output_mode="anchor_bounded_srr_correction",
+            enable_batch7_decomposition_br2=True,
+        )
 
 
 def test_resume_replay_preserves_source_balanced_step_51_case_and_patch() -> None:
