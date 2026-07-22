@@ -43,7 +43,7 @@ def csv_rows(path: Path) -> list[dict[str, str]]:
         return list(csv.DictReader(handle))
 
 
-def calibrated_sip_weight(result_root: Path, pathology: str) -> float:
+def calibrated_sip_weight(result_root: Path, pathology: str, *, placeholder: float | None = None) -> float:
     path = result_root / "sip_weight_calibration.csv"
     rows = csv_rows(path)
     candidates: list[tuple[float, dict[str, str]]] = []
@@ -57,13 +57,23 @@ def calibrated_sip_weight(result_root: Path, pathology: str) -> float:
         except (KeyError, TypeError, ValueError):
             continue
     if not candidates:
+        if placeholder is not None:
+            return float(placeholder)
         raise SystemExit(
             f"Batch7 SIP run blocked: missing PASS train-only calibration row for {pathology} in {path}"
         )
     return candidates[0][0]
 
 
-def loss_weights(cfg: dict[str, Any], pathology: str, *, br2: bool, sip: bool, result_root: Path) -> dict[str, float]:
+def loss_weights(
+    cfg: dict[str, Any],
+    pathology: str,
+    *,
+    br2: bool,
+    sip: bool,
+    result_root: Path,
+    placeholder_sip_weight: float | None = None,
+) -> dict[str, float]:
     source = cfg["loss_weights"]
     merged: dict[str, float] = {}
     for section in ("common_zero", f"{pathology}_common"):
@@ -76,7 +86,7 @@ def loss_weights(cfg: dict[str, Any], pathology: str, *, br2: bool, sip: bool, r
         br2_section = "br2_sip" if sip else "br2_no_sip"
         for key, value in source.get(br2_section, {}).items():
             if str(value) == "calibrated_from_candidates":
-                merged[str(key)] = calibrated_sip_weight(result_root, pathology)
+                merged[str(key)] = calibrated_sip_weight(result_root, pathology, placeholder=placeholder_sip_weight)
             else:
                 merged[str(key)] = float(value)
     return merged
@@ -269,6 +279,24 @@ def main() -> int:
         from src.care_myocardium.srr_production.anchor_manifest import sha256_file
 
         ckpt_sha = sha256_file(ckpt)
+    calibration_cmd = [
+        str(PYTHON),
+        "scripts/evaluation/calibrate_srr_batch7_sip_weight.py",
+        "--pathology",
+        args.pathology,
+        "--checkpoint",
+        str(ckpt.relative_to(REPO_ROOT)),
+        "--checkpoint-sha256",
+        str(ckpt_sha),
+        "--device",
+        "cuda",
+    ]
+    print(json.dumps({"calibration_command": calibration_cmd}, indent=2, sort_keys=True), flush=True)
+    if not args.print_contract:
+        proc = subprocess.run(calibration_cmd, cwd=REPO_ROOT)
+        if proc.returncode != 0:
+            raise SystemExit(proc.returncode)
+
     for suffix, sip in (("br2_no_sip", False), ("br2_sip", True)):
         cmd = base_command(
             cfg,
@@ -279,7 +307,14 @@ def main() -> int:
             eval_steps="200,400",
             br2=True,
             sip=sip,
-            loss_json=loss_weights(cfg, args.pathology, br2=True, sip=sip, result_root=result_root),
+            loss_json=loss_weights(
+                cfg,
+                args.pathology,
+                br2=True,
+                sip=sip,
+                result_root=result_root,
+                placeholder_sip_weight=0.01 if args.print_contract else None,
+            ),
         )
         cmd.extend(
             [
