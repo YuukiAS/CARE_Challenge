@@ -8,12 +8,15 @@ import csv
 import json
 import os
 import subprocess
+import sys
 from pathlib import Path
 from typing import Any
 
 import yaml
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
+if str(REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(REPO_ROOT))
 PYTHON = REPO_ROOT / "envs/env_CARE/bin/python"
 DEFAULT_FIXED_OVERFIT = REPO_ROOT / "results/20260721_srr_batch7_upstream_candidate_quality/fixed_batch_overfit.json"
 
