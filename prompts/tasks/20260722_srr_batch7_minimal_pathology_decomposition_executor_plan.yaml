@@ -1,6 +1,6 @@
-schema_version: 3
+schema_version: 4
 task_key: 20260722_srr_batch7_minimal_pathology_decomposition
-status: READY_FOR_CONTROLLER
+status: READY_FOR_CONTROLLER_COMPREHENSIVE_BR2_AMENDMENT
 execution_mode: controller_supervised
 controller_is_coordinator: true
 executor_slots: 1
@@ -10,8 +10,9 @@ result_root: results/20260722_srr_batch7_minimal_pathology_decomposition
 controller_task_path: prompts/tasks/20260722_srr_batch7_minimal_pathology_decomposition_controller.md
 planning_review_required: false
 review_required: false
+
 waves:
-  - wave_id: B7D_WAVE0_BIND_AND_AUDIT
+  - wave_id: B7D_WAVE0_BIND_DATA_AND_SOURCE_SEMANTICS
     executor_id: batch7_decomposition_executor
     blocking: true
     dependencies: []
@@ -28,7 +29,7 @@ waves:
       - wiki/README.md
       - .agents/skills/slurm-routing-partition/SKILL.md
       - .agents/skills/care-mapper/SKILL.md
-      - results/srr_production/code_maturity/batch7_repair_planner_audit_and_minimal_decomposition_decision_20260722.md
+      - results/srr_production/code_maturity/batch7_br2_sip_comprehensive_architecture_audit_20260722.md
       - docs/plans/laneB_round04_active_srr_batch7_minimal_pathology_decomposition_execution.md
       - configs/srr_production/myops_batch7_minimal_decomposition.yaml
       - results/20260721_srr_batch7_mechanism_closure_repair/
@@ -41,17 +42,30 @@ waves:
     required_outputs:
       - results/20260722_srr_batch7_minimal_pathology_decomposition/controller_bootstrap_snapshot.md
       - results/20260722_srr_batch7_minimal_pathology_decomposition/implementation_snapshot.md
+      - results/20260722_srr_batch7_minimal_pathology_decomposition/center_modality_inventory.csv
+      - results/20260722_srr_batch7_minimal_pathology_decomposition/pathology_source_eligibility.csv
     completion_conditions:
       - latest_remote_main_and_source_checkpoint_bound
       - worktree_clean_or_only_authorized_changes
       - split_decode_metric_and_case_counts_frozen
       - prior_batch7_results_immutable
-    failure_action: NEEDS_REPAIR_NO_IMPLEMENTATION
+      - actual_center_availability_inventory_derived_from_metadata
+      - each_center_has_one_audited_observation_set
+      - scar_eligible_sources_identified
+      - edema_eligible_sources_only_t2_present_reliable_supervision
+      - no_t2_source_excluded_from_edema_beta_sip_and_loss
+      - deployment_source_defined_as_availability_pattern_not_center
+    known_bad:
+      - hardcoded_center_counts_disagreeing_with_metadata_must_fail
+      - availability_pattern_used_as_only_training_source_must_fail
+      - no_t2_center_marked_edema_supervised_must_fail
+      - validation_configured_to_use_center_specific_beta_must_fail
+    failure_action: controller_returns_to_same_executor_for_source_semantics_repair_no_implementation
 
-  - wave_id: B7D_WAVE1_LIGHTWEIGHT_BR2_SIP_AND_LOSS_AUTHORITY
+  - wave_id: B7D_WAVE1_IMPLEMENT_CENTER_HIERARCHICAL_BR2_SIP_AND_LOSS_AUTHORITY
     executor_id: batch7_decomposition_executor
     blocking: true
-    dependencies: [B7D_WAVE0_BIND_AND_AUDIT]
+    dependencies: [B7D_WAVE0_BIND_DATA_AND_SOURCE_SEMANTICS]
     write_scope:
       - scripts/training/
       - scripts/evaluation/
@@ -69,9 +83,19 @@ waves:
         - edema_minimal
         - edema_br2_no_sip
         - edema_br2_sip
-      current_m10_spatial_dictionary_formal_use: false
-      prototype_maps_formal_use: false
-      semantic_negative_memory_formal_use: false
+      source_semantics:
+        training_source: metadata_center
+        source_observation_set: availability
+        deployment_source: availability_pattern_pooled
+        center_as_network_or_router_input: false
+        training_center_coefficient_allowed: true
+        validation_center_coefficient_allowed: false
+      prohibited_legacy_path:
+        current_m10_spatial_dictionary_formal_use: false
+        prototype_maps_formal_use: false
+        semantic_negative_memory_formal_use: false
+        legacy_semantic_retrieval_weight: 0.0
+        legacy_pattern_sip_weight: 0.0
       lightweight_representers:
         - shared_anatomy
         - lge_private
@@ -80,35 +104,67 @@ waves:
         - interaction_lge_c0
         - interaction_lge_t2
         - interaction_t2_c0
-      source_patterns: [lge_only, lge_c0, lge_t2_c0]
-      source_from_availability_only: true
-      center_router_input_forbidden: true
-      independent_representer_parameters_required: true
-      hard_availability_mask_before_normalization: true
-      source_coefficients_residual_final_weights_separate_outputs: true
-      minimal_does_not_instantiate_or_consume_br2: true
-      br2_no_sip_and_sip_same_architecture_initialization_data: true
+      representer_contract:
+        feature_stage: full_resolution_pathology_feature_before_proposal
+        independent_parameterized_modules_required: true
+        private_reads_only_own_modality: true
+        interaction_reads_normalized_pair_product_and_absolute_difference: true
+        final_layer_zero_initialized: true
+        pathology_projection_zero_initialized: true
+        per_case_per_representer_rms_normalization: true
+        rms_target: 1.0
+        duplicate_tensor_alias_forbidden: true
+      coefficient_contract:
+        pathology_specific: true
+        signed_spatially_global: true
+        softmax_simplex_topk_forbidden: true
+        image_conditioned_coefficient_residual_forbidden: true
+        beta_center_equals_beta_pattern_plus_center_deviation: true
+        center_deviation_zero_sum_within_pattern: true
+        center_deviation_l2_shrinkage: true
+        training_uses_center_beta: true
+        validation_and_deployment_use_pattern_beta_only: true
+        hard_availability_mask_by_multiplication: true
+        invalid_effective_beta_exact_zero: true
+      sip_contract:
+        loss_name: loss_br2_selective_integration_penalty
+        l1_name: loss_br2_source_l1_sparsity
+        center_shrinkage_name: loss_br2_center_deviation_shrinkage
+        direct_input: signed_center_specific_beta_after_rms_normalization
+        source_set_scar: centers_with_required_modalities_and_reliable_scar_supervision
+        source_set_edema: centers_with_required_modalities_and_t2_present_reliable_edema_supervision
+        no_t2_edema_source_excluded: true
+        eligible_source_count_one_excluded: true
+        tau: 0.10
+        deterministic_lambda_selection: true
+        original_dense_segmentation_theory_claim: forbidden
+      optimization_schedule:
+        steps_1_50: coefficients_and_target_pathology_heads_representers_frozen
+        steps_51_350: alternate_coefficient_and_representer_pathology_blocks
+        steps_351_400: representers_frozen_coefficient_calibration
+        no_sip_and_sip_share_warmup_state: true
+      source_balanced_sampler:
+        order: uniform_eligible_center_then_uniform_case_then_pathology_or_anchor_error_patch
+        exact_manifest_required: true
+        maximum_count_deviation_fraction: 0.15
       explicit_loss_weights_required: true
       reject_empty_loss_json: true
       loss_specific_backward_required: true
       logits_mean_backward_for_authority_forbidden: true
-      legacy_semantic_retrieval_weight: 0.0
-      legacy_pattern_sip_weight: 0.0
-      paper_sip_loss_name: loss_br2_selective_integration_penalty
-      source_l1_loss_name: loss_br2_source_l1_sparsity
-      sip_formula_exact_from_config: true
-      sip_weight_selection_deterministic: true
       refiner_arbiter_gate_training_forbidden: true
       anchor_free_coverage_types: [lge_only_scar_positive, t2_present_edema_positive, center_c_complete_trimodal]
     required_outputs:
+      - results/20260722_srr_batch7_minimal_pathology_decomposition/source_balanced_sampler_manifest.csv
       - results/20260722_srr_batch7_minimal_pathology_decomposition/resolved_stage_loss_weights.csv
       - results/20260722_srr_batch7_minimal_pathology_decomposition/loss_specific_gradient_matrix.csv
       - results/20260722_srr_batch7_minimal_pathology_decomposition/sip_formula_unit_tests.json
       - results/20260722_srr_batch7_minimal_pathology_decomposition/sip_weight_calibration.csv
       - results/20260722_srr_batch7_minimal_pathology_decomposition/representer_parameter_manifest.csv
+      - results/20260722_srr_batch7_minimal_pathology_decomposition/representer_scale_checks.csv
+      - results/20260722_srr_batch7_minimal_pathology_decomposition/beta_hierarchy_checks.csv
       - results/20260722_srr_batch7_minimal_pathology_decomposition/availability_mask_checks.csv
       - results/20260722_srr_batch7_minimal_pathology_decomposition/source_learner_coefficients.csv
-      - results/20260722_srr_batch7_minimal_pathology_decomposition/retrieval_weight_diagnostics.csv
+      - results/20260722_srr_batch7_minimal_pathology_decomposition/integrativeness_diagnostics.csv
       - results/20260722_srr_batch7_minimal_pathology_decomposition/anchor_free_discovery_coverage.csv
       - results/20260722_srr_batch7_minimal_pathology_decomposition/matched_run_manifest.csv
     completion_conditions:
@@ -117,24 +173,41 @@ waves:
       - legacy_pattern_sip_and_semantic_regularization_exact_zero
       - each_nonzero_loss_has_target_gradient
       - no_gradient_to_frozen_or_other_pathology_modules
-      - empty_loss_json_known_bad_rejected
-      - mixed_m10_default_loss_known_bad_rejected
-      - legacy_pattern_sip_renamed_as_new_sip_known_bad_rejected
-      - batch_average_gate_proxy_known_bad_rejected
-      - center_conditioned_router_known_bad_rejected
-      - duplicate_representer_known_bad_rejected
-      - unavailable_representer_nonzero_weight_known_bad_rejected
+      - each_representer_has_distinct_parameter_storage
+      - br2_zero_init_forward_matches_minimal_within_1e_6
+      - representer_output_rms_within_config_tolerance
+      - beta_pattern_center_deviation_identity_passes
+      - center_deviation_zero_sum_within_pattern_passes
+      - validation_forward_uses_pattern_beta_only
+      - invalid_effective_beta_exact_zero
+      - no_t2_edema_beta_sip_loss_exact_absent
+      - source_balanced_sampling_count_gate_passes
       - sip_formula_unit_tests_pass
       - sip_gradient_ratio_calibration_pass
       - three_required_anchor_free_case_types_pass
       - checkpoint_roundtrip_max_abs_delta_at_most_1e_6
       - tests_and_preflight_exit_zero
+    known_bad:
+      - empty_loss_json_rejected
+      - mixed_m10_default_loss_rejected
+      - legacy_pattern_sip_renamed_as_new_sip_rejected
+      - batch_average_gate_proxy_rejected
+      - availability_pattern_only_training_source_rejected
+      - center_conditioned_network_or_router_rejected
+      - validation_center_beta_rejected
+      - softmax_simplex_or_topk_beta_rejected
+      - image_conditioned_coefficient_residual_rejected
+      - duplicate_representer_rejected
+      - unavailable_representer_nonzero_beta_rejected
+      - representer_beta_inverse_scale_escape_rejected
+      - no_t2_edema_source_membership_rejected
+      - no_sip_sip_warmup_or_sampler_mismatch_rejected
     failure_action: controller_returns_to_same_executor_for_repair_no_training
 
   - wave_id: B7D_WAVE2_SCAR_MATCHED_RUNS
     executor_id: batch7_decomposition_executor
     blocking: true
-    dependencies: [B7D_WAVE1_LIGHTWEIGHT_BR2_SIP_AND_LOSS_AUTHORITY]
+    dependencies: [B7D_WAVE1_IMPLEMENT_CENTER_HIERARCHICAL_BR2_SIP_AND_LOSS_AUTHORITY]
     write_scope:
       - jobs/srr_production/
       - logs/srr_batch7_minimal_decomposition/
@@ -158,13 +231,16 @@ waves:
     matching:
       source_checkpoint_equal: true
       seed_equal: true
-      case_sequence_equal: true
+      source_balanced_case_sequence_equal: true
       patch_centers_equal: true
       optimizer_equal: true
+      optimization_schedule_equal: true
       budget_equal: true
       decode_equal: true
       common_module_initialization_equal: true
       br2_pair_parameter_initialization_equal: true
+      br2_pair_step50_warmup_state_equal: true
+      only_sip_weight_differs_between_br2_pair: true
     routing:
       primary_partition: htzhulab
       mirror_partition: a100-gpu
@@ -177,9 +253,14 @@ waves:
       - results/20260722_srr_batch7_minimal_pathology_decomposition/scar_checkpoint_selection.csv
       - results/20260722_srr_batch7_minimal_pathology_decomposition/scar_help_harm.csv
       - results/20260722_srr_batch7_minimal_pathology_decomposition/scar_source_learner_coefficients.csv
+      - results/20260722_srr_batch7_minimal_pathology_decomposition/scar_proposal_mechanism_metrics.csv
+      - results/20260722_srr_batch7_minimal_pathology_decomposition/scar_deployment_subgroup_metrics.csv
     completion_conditions:
       - all_three_runs_exact_400_steps
       - all_three_runs_eval_all_44_cases_at_200_and_400
+      - formal_validation_uses_pattern_beta_only
+      - complete_trimodal_and_all_positive_centers_reported
+      - proposal_precision_recall_lesion_recall_reported
       - selected_checkpoints_reloaded
       - all_attempts_terminal_accounted
       - aggregation_exit_zero
@@ -188,6 +269,8 @@ waves:
       minimal_retain_positive_dice_minimum: 0.003
       br2_increment_over_minimal_minimum: 0.001
       sip_increment_or_safety_gate_from_config: true
+      complete_trimodal_not_worse: true
+      worst_positive_center_drop_maximum: 0.003
     failure_action: same_scope_operational_repair_or_NEEDS_REPAIR
 
   - wave_id: B7D_WAVE3_EDEMA_MATCHED_RUNS
@@ -220,13 +303,16 @@ waves:
     matching:
       source_checkpoint_equal: true
       seed_equal: true
-      case_sequence_equal: true
+      source_balanced_case_sequence_equal: true
       patch_centers_equal: true
       optimizer_equal: true
+      optimization_schedule_equal: true
       budget_equal: true
       decode_equal: true
       common_module_initialization_equal: true
       br2_pair_parameter_initialization_equal: true
+      br2_pair_step50_warmup_state_equal: true
+      only_sip_weight_differs_between_br2_pair: true
     routing:
       primary_partition: htzhulab
       mirror_partition: a100-gpu
@@ -239,10 +325,16 @@ waves:
       - results/20260722_srr_batch7_minimal_pathology_decomposition/edema_checkpoint_selection.csv
       - results/20260722_srr_batch7_minimal_pathology_decomposition/edema_help_harm.csv
       - results/20260722_srr_batch7_minimal_pathology_decomposition/edema_source_learner_coefficients.csv
+      - results/20260722_srr_batch7_minimal_pathology_decomposition/edema_proposal_mechanism_metrics.csv
+      - results/20260722_srr_batch7_minimal_pathology_decomposition/edema_deployment_subgroup_metrics.csv
     completion_conditions:
       - all_three_runs_exact_400_steps
       - all_three_runs_eval_all_44_cases_at_200_and_400
       - no_t2_edema_exact_zero
+      - no_t2_source_absent_from_edema_coefficients_and_sip
+      - formal_validation_uses_pattern_beta_only
+      - complete_trimodal_and_all_positive_centers_reported
+      - proposal_precision_recall_lesion_recall_reported
       - selected_checkpoints_reloaded
       - all_attempts_terminal_accounted
       - aggregation_exit_zero
@@ -251,9 +343,11 @@ waves:
       minimal_retain_positive_dice_minimum: 0.003
       br2_increment_over_minimal_minimum: 0.001
       sip_increment_or_safety_gate_from_config: true
+      complete_trimodal_not_worse: true
+      worst_positive_center_drop_maximum: 0.003
     failure_action: same_scope_operational_repair_or_NEEDS_REPAIR
 
-  - wave_id: B7D_WAVE4_DECISION_AND_STATE
+  - wave_id: B7D_WAVE4_DECISION_CLAIM_BOUNDARY_AND_STATE
     executor_id: batch7_decomposition_executor
     blocking: true
     dependencies: [B7D_WAVE3_EDEMA_MATCHED_RUNS]
@@ -267,9 +361,12 @@ waves:
       - results/20260722_srr_batch7_minimal_pathology_decomposition/pathology_decision_matrix.csv
       - results/20260722_srr_batch7_minimal_pathology_decomposition/br2_increment_matrix.csv
       - results/20260722_srr_batch7_minimal_pathology_decomposition/sip_increment_matrix.csv
+      - results/20260722_srr_batch7_minimal_pathology_decomposition/deployment_subgroup_metrics.csv
+      - results/20260722_srr_batch7_minimal_pathology_decomposition/proposal_mechanism_metrics.csv
       - results/20260722_srr_batch7_minimal_pathology_decomposition/casewise_metrics.csv
       - results/20260722_srr_batch7_minimal_pathology_decomposition/subgroup_metrics.csv
       - results/20260722_srr_batch7_minimal_pathology_decomposition/help_harm.csv
+      - results/20260722_srr_batch7_minimal_pathology_decomposition/claim_boundary.md
       - results/20260722_srr_batch7_minimal_pathology_decomposition/slurm_attempts.csv
       - results/20260722_srr_batch7_minimal_pathology_decomposition/mapper_report_final.md
       - results/20260722_srr_batch7_minimal_pathology_decomposition/controller_report.md
@@ -282,7 +379,9 @@ waves:
       - edema_minimal_decision_is_RETAIN_or_RETIRE
       - edema_br2_decision_is_RETAIN_RETIRE_or_NOT_APPLICABLE
       - edema_sip_decision_is_RETAIN_REMOVE_or_NOT_APPLICABLE
+      - complete_trimodal_and_worst_center_gates_applied
       - no_component_left_as_needs_more_repair
+      - claim_boundary_forbids_original_dense_theory_and_causal_confounding_claims
       - strict_validator_and_known_bad_exit_zero
       - mapper_wiki_current_fingerprint_consistent
       - lightweight_local_commit_complete
