@@ -1,4 +1,4 @@
-schema_version: 1
+schema_version: 2
 authority_name: care_myops_batch9_reliable_label_distillation
 status: READY_FOR_CONTROLLER
 planner_base_head: a75ca09cf589e744123cd085db6f483f9b0ec8cd
@@ -45,6 +45,10 @@ model:
       class_3: anatomy_rv
       class_4: anatomy_healthy_myocardium_plus_edema_residual
       class_5: anatomy_healthy_myocardium_plus_scar_residual
+    scar_supervision_margin: class5_minus_logsumexp_classes0_to4
+    edema_supervision_margin: class4_minus_logsumexp_classes0_1_2_3_5
+    pathology_losses_use_composed_final_logit_margins: true
+    raw_residual_only_pathology_supervision: forbidden
     decode_rule: six_class_logits_argmax
     no_t2_edema_logit: -20.0
   forbidden_imports_or_instantiations:
@@ -77,6 +81,9 @@ training_data:
       rule: t2_present_and_metadata_edema_reliable
       no_t2_as_negative: forbidden
       no_t2_supervised_voxel_count_required: 0
+    final_six_class:
+      rule: t2_present_and_all_pathology_labels_reliable
+      no_t2_participation: forbidden
   sampler:
     edema_eligible_pool_probability: 0.50
     anatomy_scar_pool_probability: 0.50
@@ -100,32 +107,36 @@ training_data:
 losses:
   direct_reliable:
     loss_anatomy_ce_dice: 1.0
-    loss_scar_bce_dice: 1.0
-    loss_edema_bce_dice_reliable_only: 1.0
+    loss_scar_final_margin_bce_dice: 1.0
+    loss_edema_final_margin_bce_dice_reliable_only: 1.0
+    loss_final_six_class_reliable: 0.5
     loss_moddrop_consistency: 0.0
     loss_distill_logits: 0.0
     loss_distill_feature: 0.0
     loss_distill_anatomy: 0.0
   teacher_full_view:
     loss_anatomy_ce_dice: 1.0
-    loss_scar_bce_dice: 1.0
-    loss_edema_bce_dice_reliable_only: 1.0
+    loss_scar_final_margin_bce_dice: 1.0
+    loss_edema_final_margin_bce_dice_reliable_only: 1.0
+    loss_final_six_class_reliable: 0.5
     loss_moddrop_consistency: 0.0
     loss_distill_logits: 0.0
     loss_distill_feature: 0.0
     loss_distill_anatomy: 0.0
   moddrop_control:
     loss_anatomy_ce_dice: 1.0
-    loss_scar_bce_dice: 1.0
-    loss_edema_bce_dice_reliable_only: 1.0
+    loss_scar_final_margin_bce_dice: 1.0
+    loss_edema_final_margin_bce_dice_reliable_only: 1.0
+    loss_final_six_class_reliable: 0.5
     loss_moddrop_consistency: 0.1
     loss_distill_logits: 0.0
     loss_distill_feature: 0.0
     loss_distill_anatomy: 0.0
   reliable_distill:
     loss_anatomy_ce_dice: 1.0
-    loss_scar_bce_dice: 1.0
-    loss_edema_bce_dice_reliable_only: 1.0
+    loss_scar_final_margin_bce_dice: 1.0
+    loss_edema_final_margin_bce_dice_reliable_only: 1.0
+    loss_final_six_class_reliable: 0.5
     loss_moddrop_consistency: 0.1
     loss_distill_logits: 0.5
     loss_distill_feature: 0.1
@@ -142,6 +153,8 @@ losses:
     every_nonzero_loss_independent_backward_required: true
     declared_but_not_summed_known_bad_required: true
     no_t2_edema_gradient_exact_zero_required: true
+    composed_final_margin_gradient_required: true
+    raw_residual_only_supervision_known_bad_required: true
 
 training_schedule:
   iterations_per_epoch: 250
@@ -209,6 +222,7 @@ preflight:
   complete_case_scar_prediction_nonempty: true
   complete_case_edema_prediction_nonempty: true
   no_t2_edema_supervised_voxels_exact_zero: true
+  final_logit_margin_losses_nonzero_on_reliable_case: true
   checkpoint_roundtrip_max_abs_delta: 0.000001
   required_files:
     - center_modality_label_inventory.csv
@@ -219,6 +233,7 @@ preflight:
     - reliable_supervision_mask_checks.csv
     - resolved_loss_contract.json
     - loss_gradient_matrix.csv
+    - final_logit_authority_checks.csv
     - fixed_real_case_overfit.json
     - checkpoint_roundtrip.json
     - known_bad_report.json
@@ -231,6 +246,8 @@ known_bad:
   reject_no_t2_edema_supervision: true
   reject_no_t2_edema_distillation: true
   reject_declared_loss_not_in_total: true
+  reject_raw_residual_only_pathology_supervision: true
+  reject_final_six_class_loss_on_no_t2: true
   reject_static_config_as_runtime_loss_contract: true
   reject_matched_sampler_mismatch: true
   reject_checkpoint_not_reloaded: true
@@ -298,6 +315,7 @@ formal_evaluation:
     - subgroup_metrics.csv
     - help_harm.csv
     - supervision_audit.csv
+    - final_logit_authority_checks.csv
     - distillation_mechanism.csv
     - matched_run_manifest.csv
 
