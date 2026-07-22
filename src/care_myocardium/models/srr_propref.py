@@ -1702,7 +1702,7 @@ class SRRProposeRefineMyoPS(nn.Module):
                 enable_pattern_sip=bool(self.m6_config.get("m10_pattern_sip", False)),
                 enable_memory=bool(self.m6_config.get("m10_memory", False)),
             )
-            if bool(self.m6_config.get("m10_spatial_dictionary", False))
+            if bool(self.m6_config.get("m10_spatial_dictionary", False)) and not self.enable_batch7_decomposition_br2
             else None
         )
         self.scar_lightweight_br2 = (
@@ -1965,6 +1965,8 @@ class SRRProposeRefineMyoPS(nn.Module):
                 "edema_pos": edema_memory_query["positive_similarity"],
                 "edema_neg": edema_memory_query["negative_similarity"],
             }
+        if self.enable_batch7_decomposition_br2 and self.m10_spatial_dictionary is not None:
+            raise ValueError("Batch7 minimal decomposition forbids formal M10 spatial dictionary use")
         m10_spatial: dict[str, object] | None = None
         if self.m10_spatial_dictionary is not None:
             m10_spatial = self.m10_spatial_dictionary(
@@ -1990,8 +1992,6 @@ class SRRProposeRefineMyoPS(nn.Module):
             gate_valid_masks = {**gate_valid_masks, **spatial_valid}  # type: ignore[arg-type]
         batch7_br2_outputs: dict[str, torch.Tensor] = {}
         if self.enable_batch7_decomposition_br2:
-            if self.m10_spatial_dictionary is not None:
-                raise ValueError("Batch7 minimal decomposition forbids formal M10 spatial dictionary use")
             if self.scar_lightweight_br2 is None or self.edema_lightweight_br2 is None:
                 raise RuntimeError("Batch7 lightweight BR2 modules were not initialized")
             features["scar"], scar_br2 = self.scar_lightweight_br2(

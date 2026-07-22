@@ -479,6 +479,26 @@ def test_batch7_decomposition_schedule_authorizes_only_target_blocks_by_phase() 
     assert not any(name.startswith("scar_lightweight_br2.representers.") for name in names)
 
 
+def test_batch7_br2_disables_legacy_m10_spatial_dictionary_without_disabling_minimal_baseline() -> None:
+    minimal_baseline = SRRProposeRefineMyoPS(
+        base_channels=4,
+        variant="m10_d3_hierarchical_memory_propref",
+        encoder_profile="tiny_3scale",
+        final_output_mode="anchor_bounded_srr_correction",
+        enable_batch7_decomposition_br2=False,
+    )
+    br2_decomposition = SRRProposeRefineMyoPS(
+        base_channels=4,
+        variant="m10_d3_hierarchical_memory_propref",
+        encoder_profile="tiny_3scale",
+        final_output_mode="anchor_bounded_srr_correction",
+        enable_batch7_decomposition_br2=True,
+    )
+
+    assert minimal_baseline.m10_spatial_dictionary is not None
+    assert br2_decomposition.m10_spatial_dictionary is None
+
+
 def test_resume_replay_preserves_source_balanced_step_51_case_and_patch() -> None:
     cases = [
         _fake_anchored_case("A001", center="CenterA", t2_present=False, c0_present=False, scar=True),
