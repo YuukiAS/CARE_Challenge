@@ -1,101 +1,147 @@
-current_milestone_id: Batch8_clean_edema_BR2_ready
-current_task_key: 20260722_srr_batch8_clean_edema_br2_confirmation
-current_plan_path: docs/plans/laneB_round04_active_srr_batch8_clean_edema_br2_confirmation_execution.md
-current_controller_path: prompts/tasks/20260722_srr_batch8_clean_edema_br2_controller.md
-current_config_path: configs/srr_production/myops_batch8_clean_edema_br2.yaml
-current_executor_plan_path: prompts/tasks/20260722_srr_batch8_clean_edema_br2_executor_plan.yaml
-current_planner_audit_path: results/srr_production/code_maturity/batch8_clean_edema_br2_planner_decision_20260722.md
-current_result_root: results/20260722_srr_batch8_clean_edema_br2_confirmation
+current_milestone_id: Batch9_reliable_label_distillation_ready
+current_task_key: 20260722_care_myops_batch9_reliable_label_distillation
+current_plan_path: docs/plans/laneB_round04_active_srr_batch9_reliable_label_distillation_execution.md
+current_controller_path: prompts/tasks/20260722_care_myops_batch9_reliable_label_distillation_controller.md
+current_config_path: configs/care_mm/batch9_reliable_label_distillation.yaml
+current_executor_plan_path: prompts/tasks/20260722_care_myops_batch9_reliable_label_distillation_executor_plan.yaml
+current_planner_audit_path: results/srr_production/code_maturity/batch9_reliable_label_distillation_planner_synthesis_20260722.md
+current_result_root: results/20260722_care_myops_batch9_reliable_label_distillation
 current_review_path: null
 current_review_token: NOT_REVIEWED_CONTROLLER_READY
 controller_bind_latest_main: true
-source_checkpoint_sha256: d34ad65890cbb6a12aac3fc35bcab71709d680bff5a3aae2d93e010db1cc0e0d
 architecture_path: wiki/architecture.yaml
 component_table_path: wiki/COMPONENTS.csv
-wiki_fingerprint_status: BATCH8_PLAN_READY_DIAGRAMS_REMAIN_BATCH7_IMPLEMENTATION_VIEW
+wiki_fingerprint_status: BATCH9_PLAN_READY_DIAGRAMS_REMAIN_HISTORICAL_IMPLEMENTATION_VIEW
 updated_at: '2026-07-22'
 
 diagram_evidence:
   diagram_versions_read: [SRR-v2, SRR-v2.5, SRR-v3]
   visual_read_status: PASS_PROJECT_BACKGROUND_IMAGES_VISUALLY_READ
 
-batch7_terminal_reassessment:
-  operational_status: SIX_MATCHED_RUNS_COMPLETE
-  scientific_packet_status: NEEDS_EVIDENCE_REPAIR_NOT_VALID_BR2_SIP_CLOSURE
-  scar_minimal_positive_dice_delta: -0.004992862041668997
-  edema_minimal_positive_dice_delta: 0.0013426793445873494
-  edema_br2_positive_dice_delta: 0.0029631723979889144
-  edema_br2_increment_over_minimal: 0.001620493053401617
-  retained_runtime_jobs:
-    scar: '59992434'
-    edema: '59994167'
-  gaps:
-    - controller_report_not_final_verified
-    - source_coefficients_static_or_pending
-    - integrativeness_static_initial_coefficients
-    - scar_BR2_empty_prediction_collapse_not_diagnosed
-    - SIP_noSIP_identical_prediction_not_explained
-    - legacy_ProposalDictionary_present_in_both_variants
-    - validator_did_not_require_checkpoint_derived_mechanisms
-    - decision_code_did_not_apply_all_safety_gates
+method_reselection:
+  deep_research_direction: strong_backbone_reliable_label_distillation_direct_segmentation
+  planner_decision: ACCEPT_WITH_MATERIAL_REVISIONS
+  accepted:
+    - modality_specific_stems
+    - official_residual_encoder_backbone
+    - reliable_edema_supervision
+    - structured_modality_dropout
+    - complete_view_teacher_distillation
+    - anatomy_scar_edema_specific_heads
+  revised:
+    - short_1200_1600_step_budget_replaced_by_epoch_matched_long_training
+    - teacher_random_init_replaced_by_same_seed_direct_checkpoint_init
+    - no_pseudo_t2_or_pseudo_edema_for_natural_incomplete_cases
+    - br2_lite_sip_refiner_deferred_out_of_batch9
 
-scar_status:
-  training: STOPPED
-  challenge_path: NNUNET_ANCHOR
-  batch8_scope: DIAGNOSE_BATCH7_COLLAPSE_ONLY
+historical_state:
+  batch7:
+    operational_status: SIX_MATCHED_RUNS_COMPLETE
+    scientific_packet_status: INCOMPLETE_BR2_SIP_MECHANISM_CLOSURE
+    scar_minimal_positive_dice_delta: -0.004992862041668997
+    edema_minimal_positive_dice_delta: 0.0013426793445873494
+    edema_br2_positive_dice_delta: 0.0029631723979889144
+    edema_br2_increment_over_minimal: 0.001620493053401617
+  batch8:
+    status: SUPERSEDED_UNEXECUTED_DIAGNOSTIC_CONTRACT
+    formal_authority: false
+    runtime_authorized: false
+    files_preserved: true
 
-batch8_clean_edema_br2:
+batch9_reliable_label_distillation:
   status: READY_FOR_CONTROLLER
-  objective: repair_Batch7_mechanism_evidence_and_confirm_clean_edema_BR2_across_two_seeds
-  model_file: src/care_myocardium/models/srr_batch8_clean_edema.py
-  model_class: CleanEdemaBR2Corrector
-  clean_model_not_yet_implemented: true
-  full_SRRProposeRefineMyoPS_reuse: FORBIDDEN
-  old_module_call_count_required: 0
-  representers:
-    - shared_anatomy
-    - lge_private
-    - t2_private
-    - interaction_lge_t2
-  sip_enabled: false
-  refiner_enabled: false
-  scar_enabled: false
-  seeds: [20260722, 20260723]
-  experiments:
-    - edema_clean_minimal_seed20260722
-    - edema_clean_br2_seed20260722
-    - edema_clean_minimal_seed20260723
-    - edema_clean_br2_seed20260723
-  optimizer_steps_each: 800
-  eval_steps: [200, 400, 800]
-  selected_checkpoint_step: 800
-  training_centers: [CenterB, CenterC]
-  no_t2_training: FORBIDDEN
-  no_t2_final_anchor_identity: REQUIRED
+  objective: establish_direct_reliable_label_resenc_and_test_complete_view_teacher_distillation
+  model_file: src/care_myocardium/models/care_mm_reliable_distill.py
+  model_class: CAREMMReliableDistillResEnc
+  model_not_yet_implemented: true
+  old_srr_forward_reuse: FORBIDDEN
+  nnunet_anchor_in_model_forward: FORBIDDEN
+  external_pretrained_weights: FORBIDDEN
+  input_channel_order: [LGE, T2, C0]
+  modality_stem_channels_each: 8
+  fused_input_channels: 27
+  backbone: nnUNet_v2_ResidualEncoderUNet_M_level
+  outputs:
+    anatomy_channels: 4
+    scar_residual_channels: 1
+    edema_residual_channels: 1
+    decode: direct_six_class_logits_argmax
+  supervision:
+    anatomy: all_valid_pathology_remapped_to_myocardium
+    scar: metadata_reliable
+    edema: t2_present_and_metadata_reliable_only
+    no_t2_edema_negative: FORBIDDEN
+    no_t2_edema_pseudo_label: FORBIDDEN
+  center_policy:
+    sampler_and_diagnostics: ALLOWED
+    network_input: FORBIDDEN
+    normalization_selector: FORBIDDEN
+    validation_source_selector: FORBIDDEN
+  seeds: [20260723, 20260724]
+  stages:
+    student_direct_reliable:
+      epochs: 500
+      optimizer_steps: 125000
+      selected_checkpoint_epoch: 500
+    teacher_full_view:
+      epochs: 100
+      optimizer_steps: 25000
+      warm_start: same_seed_direct_epoch500
+      random_initialization: FORBIDDEN
+      population: natural_complete_trimodal_reliable_only
+    student_moddrop_control:
+      epochs: 100
+      optimizer_steps: 25000
+      warm_start: same_seed_direct_epoch500
+      frozen_teacher_forward: REQUIRED
+      distillation_weights: ZERO
+    student_reliable_distill:
+      epochs: 100
+      optimizer_steps: 25000
+      warm_start: same_seed_direct_epoch500
+      frozen_teacher: same_seed_teacher_epoch100
+  structured_modality_dropout:
+    full: {lge_t2_c0: 0.50, lge_c0: 0.25, lge_only: 0.25}
+    lge_c0: {lge_c0: 0.75, lge_only: 0.25}
+    lge_only: {lge_only: 1.00}
+    lge_always_present: true
+  losses:
+    anatomy_ce_dice: 1.0
+    scar_bce_dice: 1.0
+    edema_bce_dice_reliable_only: 1.0
+    moddrop_consistency: 0.1
+    distill_logits: 0.5
+    distill_feature: 0.1
+    distill_anatomy: 0.1
+    distill_temperature: 2.0
+    teacher_confidence_threshold: 0.60
   required_preflight:
-    - batch7_real_checkpoint_mechanism_export
-    - scar_empty_prediction_onset_diagnosis
-    - clean_model_import_graph
-    - checkpoint_prefix_whitelist
-    - legacy_module_call_count_zero
-    - minimal_BR2_initial_equivalence
-    - no_T2_exact_anchor_identity
-    - fixed_real_case_overfit
-    - loss_specific_gradient_authority
+    - runtime_center_modality_label_inventory
+    - official_resenc_environment_contract
+    - clean_import_graph_and_legacy_call_count_zero
+    - availability_hard_mask
+    - reliable_supervision_mask
+    - runtime_resolved_loss_and_gradient_authority
+    - real_case_overfit_full_lge_c0_lge_only
     - checkpoint_roundtrip
-    - real_known_bad_fail_closed
+    - semantic_known_bad_fail_closed
+  formal_evaluation:
+    case_count: 44
+    selected_checkpoints_must_reload: true
+    primary_subgroups: [complete_trimodal, CenterB, CenterC, lge_only, lge_c0]
+    center_d_generalization_proven_locally: false
   terminal_tokens:
-    pass: EDEMA_CLEAN_BR2_RETAIN_PENDING_PLANNER
-    fail: RETIRE_SRRMyoPS_PERFORMANCE_LINE_USE_NNUNET
+    - BATCH9_RELIABLE_DISTILL_RETAIN_PENDING_PLANNER
+    - BATCH9_DIRECT_RESENC_ONLY_PENDING_PLANNER
+    - BATCH9_MAINLINE_NO_USABLE_SIGNAL_RETURN_TO_PLANNER
   planning_review_required: false
   review_required: false
-  batch8_authorized: true
-  batch9_authorized: false
-  scar_training_authorized: false
+  batch8_authorized: false
+  batch9_authorized: true
+  batch10_authorized: false
+  br2_lite_authorized: false
   sip_training_authorized: false
-  refiner_training_authorized: false
-  source_arbiter_training_authorized: false
-  production_gate_training_authorized: false
+  proposal_refiner_training_authorized: false
   fold_expansion_authorized: false
   cine_authorized: false
   validation_upload_authorized: false
