@@ -1,4 +1,4 @@
-current_milestone_id: Batch7_minimal_pathology_decomposition_ready
+current_milestone_id: Batch7_lightweight_BR2_SIP_decomposition_ready
 current_task_key: 20260722_srr_batch7_minimal_pathology_decomposition
 current_plan_path: docs/plans/laneB_round04_active_srr_batch7_minimal_pathology_decomposition_execution.md
 current_controller_path: prompts/tasks/20260722_srr_batch7_minimal_pathology_decomposition_controller.md
@@ -6,6 +6,7 @@ current_config_path: configs/srr_production/myops_batch7_minimal_decomposition.y
 current_result_root: results/20260722_srr_batch7_minimal_pathology_decomposition
 current_review_path: null
 current_review_token: NOT_REVIEWED_CONTROLLER_READY
+controller_bind_latest_main: true
 source_terminal_commit: 0fcc3ff605112a0efeab73f3df2f83249793d321
 source_checkpoint_sha256: d34ad65890cbb6a12aac3fc35bcab71709d680bff5a3aae2d93e010db1cc0e0d
 architecture_path: wiki/architecture.yaml
@@ -39,16 +40,39 @@ batch7_repair_terminal:
     - gradient_authority_used_logits_mean_not_formal_loss
     - anchor_free_coverage_missing_t2_and_center_c_complete_cases
 
+r2_br2_sip_decision:
+  representation_retrieval_paper_line: RETAIN
+  current_m10_spatial_dictionary: DO_NOT_USE_IN_FORMAL_DECOMPOSITION
+  current_prototype_maps: DO_NOT_USE_IN_FORMAL_DECOMPOSITION
+  current_semantic_negative_memory: DO_NOT_USE_IN_FORMAL_DECOMPOSITION
+  legacy_semantic_retrieval_regularization: HISTORICAL_ONLY_WEIGHT_ZERO
+  legacy_pattern_sip_integrativeness: HISTORICAL_ONLY_WEIGHT_ZERO
+  new_lightweight_br2: REQUIRED_MATCHED_ABLATION
+  new_br2_sip: REQUIRED_NO_SIP_VS_SIP_ABLATION
+  source_definition: availability_pattern_only
+  source_patterns: [lge_only, lge_c0, lge_t2_c0]
+  center_router_input: FORBIDDEN
+  no_cross_source_representer_sip_policy: EXCLUDE_IF_OBSERVATION_SET_SIZE_AT_MOST_ONE
+
 batch7_minimal_decomposition:
-  status: READY_FOR_CONTROLLER
-  objective: final_retain_or_retire_decision_for_minimal_and_dictionary_proposals
+  status: READY_FOR_CONTROLLER_AMENDED_TO_LIGHTWEIGHT_BR2_SIP
+  objective: final_retain_or_retire_decision_for_minimal_BR2_and_SIP
   experiments:
     - scar_minimal
-    - scar_dictionary
+    - scar_br2_no_sip
+    - scar_br2_sip
     - edema_minimal
-    - edema_dictionary
+    - edema_br2_no_sip
+    - edema_br2_sip
   optimizer_steps_each: 400
   eval_steps: [200, 400]
+  required_terminal_decisions:
+    - scar_minimal
+    - scar_br2
+    - scar_sip
+    - edema_minimal
+    - edema_br2
+    - edema_sip
   planning_review_required: false
   review_required: false
   batch8_authorized: false
