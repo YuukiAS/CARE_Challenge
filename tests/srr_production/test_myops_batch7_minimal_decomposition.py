@@ -40,6 +40,7 @@ from src.care_myocardium.models.srr_propref import (
     SRRProposeRefineMyoPS,
 )
 from scripts.evaluation.prepare_srr_batch7_minimal_decomposition_packet import validate_resolved_loss_rows
+from scripts.evaluation.aggregate_srr_batch7_minimal_decomposition import update_matched_manifest
 
 
 BATCH7_CONFIG_PATH = REPO_ROOT / "configs/srr_production/myops_batch7_minimal_decomposition.yaml"
@@ -612,7 +613,8 @@ def test_minimal_decomposition_validator_accepts_static_preflight_packet() -> No
 def test_minimal_decomposition_validator_rejects_static_packet_as_final_completion() -> None:
     errors = validate_packet(BATCH7_RESULT_ROOT, _batch7_cfg(), final=True)
 
-    assert any(error.startswith("missing_or_empty:scar_casewise_metrics.csv") for error in errors)
+    assert any(error.startswith("missing_or_empty:edema_casewise_metrics.csv") for error in errors)
+    assert not any(error.startswith("missing_or_empty:scar_casewise_metrics.csv") for error in errors)
     assert not any(error == "known_bad_packet_not_rejected" for error in errors)
 
 
@@ -631,7 +633,8 @@ def test_minimal_decomposition_validator_strict_cli_is_final_fail_closed() -> No
 
     assert result.returncode == 1
     assert "unrecognized arguments" not in result.stderr
-    assert "missing_or_empty:scar_casewise_metrics.csv" in result.stderr
+    assert "missing_or_empty:edema_casewise_metrics.csv" in result.stderr
+    assert "missing_or_empty:scar_casewise_metrics.csv" not in result.stderr
 
 
 def test_minimal_decomposition_validator_rejects_known_bad_source_and_loss(tmp_path) -> None:
@@ -657,3 +660,34 @@ def test_minimal_decomposition_validator_rejects_known_bad_source_and_loss(tmp_p
 
     assert any(error.startswith("center_source_not_metadata_center") for error in errors)
     assert any(error.startswith("legacy_sip_or_dictionary_nonzero") for error in errors)
+
+
+
+def test_batch7_aggregation_manifest_uses_calibrated_sip_lambda(tmp_path) -> None:
+    root = tmp_path / "packet"
+    root.mkdir()
+    calibration_path = root / "sip_weight_calibration.csv"
+    with calibration_path.open("w", newline="", encoding="utf-8") as handle:
+        writer = csv.DictWriter(
+            handle,
+            fieldnames=["pathology", "candidate_lambda_sip", "selected_lambda", "selected"],
+        )
+        writer.writeheader()
+        writer.writerow({"pathology": "scar", "candidate_lambda_sip": "0.005", "selected_lambda": "0.005", "selected": "1"})
+        writer.writerow({"pathology": "scar", "candidate_lambda_sip": "0.01", "selected_lambda": "", "selected": "0"})
+
+    manifest_path = root / "matched_run_manifest.csv"
+    fieldnames = ["pathology", "experiment", "sip_weight", "runtime_status"]
+    with manifest_path.open("w", newline="", encoding="utf-8") as handle:
+        writer = csv.DictWriter(handle, fieldnames=fieldnames)
+        writer.writeheader()
+        writer.writerow({"pathology": "scar", "experiment": "scar_br2_sip", "sip_weight": "0.01", "runtime_status": "PENDING"})
+        writer.writerow({"pathology": "edema", "experiment": "edema_br2_sip", "sip_weight": "0.01", "runtime_status": "PENDING"})
+
+    update_matched_manifest(root, {"scar"})
+
+    rows = list(csv.DictReader(manifest_path.open(newline="", encoding="utf-8")))
+    assert rows[0]["sip_weight"] == "0.005"
+    assert rows[0]["runtime_status"] == "TERMINAL_AGGREGATED_PASS"
+    assert rows[1]["sip_weight"] == "0.01"
+    assert rows[1]["runtime_status"] == "PENDING"

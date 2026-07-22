@@ -1,0 +1,4 @@
+pathology,experiment,source,status
+scar,scar_minimal,summary_and_br2_diagnostics,PENDING_DETAILED_BETA_EXPORT
+scar,scar_br2_no_sip,summary_and_br2_diagnostics,PENDING_DETAILED_BETA_EXPORT
+scar,scar_br2_sip,summary_and_br2_diagnostics,PENDING_DETAILED_BETA_EXPORT

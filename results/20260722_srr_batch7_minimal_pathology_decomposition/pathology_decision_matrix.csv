@@ -1,0 +1,4 @@
+decision_id,decision,basis
+scar_minimal,RETIRE,positive_dice_delta_and_complete_trimodal_gate
+scar_br2,NOT_APPLICABLE,increment_over_minimal
+scar_sip,NOT_APPLICABLE,increment_over_no_sip

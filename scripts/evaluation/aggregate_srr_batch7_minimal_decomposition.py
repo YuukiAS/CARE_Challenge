@@ -238,13 +238,27 @@ def aggregate_pathology(cfg: dict[str, Any], result_root: Path, pathology: str, 
     return {"pathology": pathology, "case_rows": case_rows, "subgroup_rows": subgroup_rows, "proposal_rows": proposal, "checkpoint_rows": checkpoint_rows}
 
 
+def selected_sip_weights(result_root: Path) -> dict[str, str]:
+    weights: dict[str, str] = {}
+    for row in read_csv(result_root / "sip_weight_calibration.csv"):
+        if row.get("selected") == "1" and row.get("selected_lambda") not in {"", None}:
+            weights[row["pathology"]] = row["selected_lambda"]
+    return weights
+
+
 def update_matched_manifest(result_root: Path, completed_pathologies: set[str]) -> None:
     path = result_root / "matched_run_manifest.csv"
     rows = read_csv(path)
+    sip_weights = selected_sip_weights(result_root)
     out = []
     for row in rows:
         if row.get("pathology") in completed_pathologies:
             row = {**row, "runtime_status": "TERMINAL_AGGREGATED_PASS"}
+            if row.get("experiment", "").endswith("_br2_sip"):
+                selected = sip_weights.get(row["pathology"])
+                if selected is None:
+                    raise SystemExit(f"missing selected SIP lambda for completed {row['pathology']}")
+                row["sip_weight"] = selected
         out.append(row)
     write_csv(path, out)
 
