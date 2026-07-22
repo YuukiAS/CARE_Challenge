@@ -1,0 +1,293 @@
+schema_version: 1
+authority_name: srr_batch8_clean_edema_br2_confirmation
+status: READY_FOR_CONTROLLER
+planner_audit_path: results/srr_production/code_maturity/batch8_clean_edema_br2_planner_decision_20260722.md
+plan_path: docs/plans/laneB_round04_active_srr_batch8_clean_edema_br2_confirmation_execution.md
+controller_bind_latest_main: true
+
+diagram_evidence:
+  diagram_versions_read: [SRR-v2, SRR-v2.5, SRR-v3]
+  visual_read_status: PASS_PROJECT_BACKGROUND_IMAGES_VISUALLY_READ
+
+source_checkpoint:
+  path: results/20260721_srr_batch7_upstream_candidate_quality/runtime/attempts/batch7_formal300_htzhulab_59789651/variants/batch7_formal300_htzhulab_59789651/checkpoints/fold_0/propref_config/checkpoint_validation_step_300.pt
+  sha256: d34ad65890cbb6a12aac3fc35bcab71709d680bff5a3aae2d93e010db1cc0e0d
+  global_step: 300
+  allowed_state_prefixes:
+    - encoders.
+    - retrieval.
+    - decoders.anatomy.
+    - decoders.edema.
+    - evidence_heads.anatomy.
+    - evidence_heads.anatomy_union.
+  full_model_object_reuse_forbidden: true
+
+paths:
+  split_path: data/benchmarks/protocol/splits_MyoPS.json
+  raw_dataset: data/nnUNet/nnUNet_raw/Dataset501_CAREMyoPS
+  anchor_root: data/nnUNet/nnUNet_results/Dataset501_CAREMyoPS/nnUNetTrainer_500epochs__nnUNetPlans__3d_fullres
+  result_root: results/20260722_srr_batch8_clean_edema_br2_confirmation
+  runtime_root: results/20260722_srr_batch8_clean_edema_br2_confirmation/runtime
+  log_root: logs/srr_batch8_clean_edema_br2
+  lock_root: results/20260722_srr_batch8_clean_edema_br2_confirmation/runtime/locks
+
+batch7_evidence_repair:
+  required: true
+  historical_result_root: results/20260722_srr_batch7_minimal_pathology_decomposition
+  required_checkpoint_stages: [warmup50, step200, step400]
+  required_variants:
+    - scar_br2_no_sip
+    - scar_br2_sip
+    - edema_br2_no_sip
+    - edema_br2_sip
+  checkpoint_derived_fields:
+    - beta_pattern
+    - center_deviation
+    - effective_beta
+    - representer_pre_beta_rms
+    - pathology_projection_weight_norm
+    - pathology_projection_bias_norm
+    - proposal_logit_q01
+    - proposal_logit_q50
+    - proposal_logit_q99
+    - predicted_positive_voxels
+    - sip_value
+    - sip_gradient_norm
+  reject_tokens: [PENDING, STATIC_INITIAL_COEFFICIENTS, PLACEHOLDER, EVIDENCE_NOT_FOUND]
+  scar_retraining: forbidden
+
+model:
+  file: src/care_myocardium/models/srr_batch8_clean_edema.py
+  class_name: CleanEdemaBR2Corrector
+  pathology: edema
+  frozen_backbone:
+    modality_encoders: true
+    base_retrieval: true
+    anatomy_decoder: true
+    edema_decoder: true
+    anatomy_union_context: true
+  clean_head:
+    inputs: [frozen_edema_feature, resampled_t2_image, frozen_anatomy_union_probability]
+    block1: conv3d_3x3_groupnorm_silu
+    block2: conv3d_3x3_groupnorm_silu
+    output: conv3d_1x1_delta
+    output_layer_zero_initialized: true
+  final_output:
+    anchor_base: raw_same_split_nnunet_logits
+    modified_channel: 4
+    correction_formula: anchor_edema_logit_plus_2_tanh_delta
+    all_other_channels_unchanged: true
+    decode: six_class_argmax
+    no_t2_delta_exact_zero: true
+    no_t2_final_anchor_identity: true
+  clean_br2:
+    enabled_variant: edema_clean_br2
+    feature_stage: frozen_full_resolution_edema_feature_before_clean_head
+    representers:
+      - id: shared_anatomy
+        required_modalities: [LGE]
+      - id: lge_private
+        required_modalities: [LGE]
+      - id: t2_private
+        required_modalities: [T2]
+      - id: interaction_lge_t2
+        required_modalities: [LGE, T2]
+    independent_modules: true
+    final_adapter_zero_initialized: true
+    output_normalization: per_case_per_representer_rms
+    output_rms_target: 1.0
+    coefficients:
+      pathology_specific: true
+      signed: true
+      spatially_global: true
+      softmax_simplex_topk: forbidden
+      image_conditioned_residual: forbidden
+      training_sources: [CenterB, CenterC]
+      beta_center_equals_pooled_plus_center_deviation: true
+      center_deviation_zero_sum: true
+      validation_uses_pooled_beta_only: true
+      center_as_network_input: forbidden
+  forbidden_runtime_symbols:
+    - ProposalDictionary
+    - M10TwoPassSpatialDictionary
+    - M10CrossFittedPrototypeMemory
+    - CropSoftROIRefinementHead
+    - DifferentiableSoftROIRefinementHead
+    - PathologySourceArbiter
+    - BranchArbitrationGate
+    - BaselinePreservingResidualGate
+    - production_correction_gate
+
+training_data:
+  fold: 0
+  train_case_count: 176
+  validation_case_count: 44
+  training_pathology: edema
+  eligible_centers: [CenterB, CenterC]
+  require_t2_present: true
+  require_reliable_edema_supervision: true
+  no_t2_training: forbidden
+  no_t2_negative_mining: forbidden
+  source_balanced_sampler:
+    order: uniform_center_then_uniform_case_then_patch_type
+    patch_types:
+      edema_positive: 0.50
+      nnunet_edema_error: 0.50
+    exact_manifest_required: true
+
+loss_weights:
+  loss_clean_edema_final_bce_dice: 1.0
+  loss_clean_edema_anchor_error: 0.50
+  loss_clean_edema_confident_anchor_preserve: 0.10
+  loss_clean_br2_beta_l1_minimal: 0.0
+  loss_clean_br2_center_deviation_l2_minimal: 0.0
+  loss_clean_br2_beta_l1_br2: 0.001
+  loss_clean_br2_center_deviation_l2_br2: 0.001
+  forbidden_losses_exact_zero:
+    - loss_scar_proposal
+    - loss_edema_proposal_t2_present_only
+    - loss_edema_discovery_proposal_t2_present
+    - loss_edema_confirmation_proposal_t2_present
+    - loss_pattern_sip_integrativeness
+    - loss_br2_selective_integration_penalty
+    - loss_dictionary_entropy_coverage_load_balance
+    - loss_prototype_diversity_margin
+    - loss_memory_bank_update_or_alignment
+    - loss_scar_refiner_roi
+    - loss_edema_refiner_t2_present_roi
+    - loss_source_arbiter
+    - loss_production_gate_repair_preserve
+    - loss_branch_arbitration_consistency
+    - loss_bounded_correction
+
+preflight:
+  fixed_overfit:
+    case_count: 2
+    optimizer_steps: 100
+    formal_training_credit: 0
+    minimum_total_loss_reduction_fraction: 0.30
+    require_nonempty_prediction: true
+    require_br2_nonzero_delta_after_step: 25
+  checkpoint_reload_max_abs_delta: 0.000001
+  initial_minimal_br2_max_abs_logit_delta: 0.000001
+  no_t2_anchor_logit_max_abs_delta: 0.0
+  no_t2_changed_label_count: 0
+  require_loss_specific_backward: true
+  require_frozen_gradient_exact_zero: true
+  require_legacy_module_call_count_zero: true
+  require_checkpoint_whitelist_report: true
+
+experiments:
+  - id: edema_clean_minimal_seed20260722
+    seed: 20260722
+    br2_enabled: false
+  - id: edema_clean_br2_seed20260722
+    seed: 20260722
+    br2_enabled: true
+  - id: edema_clean_minimal_seed20260723
+    seed: 20260723
+    br2_enabled: false
+  - id: edema_clean_br2_seed20260723
+    seed: 20260723
+    br2_enabled: true
+
+common_training:
+  optimizer: AdamW
+  learning_rate: 0.0001
+  weight_decay: 0.0001
+  grad_clip: 12.0
+  batch_size: 1
+  patch_shape: [12, 96, 96]
+  optimizer_steps: 800
+  full_volume_eval_steps: [200, 400, 800]
+  selected_checkpoint_step: 800
+  same_seed_pair_must_match:
+    - source_checkpoint
+    - common_head_initialization
+    - center_sequence
+    - case_sequence
+    - patch_centers
+    - augmentation
+    - optimizer_template
+    - budget
+    - evaluator
+    - decode
+
+slurm:
+  python_executable: /users/a/e/aereinh/CARE/envs/env_CARE/bin/python
+  seed_jobs_independent: true
+  seed_20260722_partition: htzhulab
+  seed_20260723_partition: a100-gpu
+  maximum_runtime_seconds_per_job: 14400
+  preflight_same_partition_required: true
+  isolated_runtime_log_lock_roots: true
+  training_dependency: none_independent_seeds
+  finalizer_dependency: afterany_all_seed_jobs
+  continuity_backend: slurm_dependency
+  max_startup_retries: 2
+  max_preemption_retries: 2
+
+required_outputs:
+  - controller_context.json
+  - controller_ledger.csv
+  - controller_bootstrap_snapshot.md
+  - implementation_snapshot.md
+  - batch7_checkpoint_mechanism_export.csv
+  - batch7_scar_collapse_diagnosis.csv
+  - batch7_sip_effect_diagnosis.csv
+  - batch7_packet_supersession.md
+  - clean_model_import_graph.json
+  - checkpoint_whitelist_load.csv
+  - legacy_module_call_counters.csv
+  - clean_initial_equivalence.json
+  - clean_no_t2_identity.csv
+  - clean_fixed_overfit.json
+  - clean_loss_gradient_matrix.csv
+  - clean_checkpoint_roundtrip.json
+  - clean_known_bad_report.json
+  - matched_run_manifest.csv
+  - checkpoint_selection.csv
+  - casewise_metrics.csv
+  - subgroup_metrics.csv
+  - help_harm.csv
+  - clean_br2_increment_by_seed.csv
+  - clean_br2_checkpoint_mechanisms.csv
+  - slurm_attempts.csv
+  - finalizer_state.json
+  - mapper_report_draft.md
+  - architecture_delta_draft.md
+  - mapper_report_final.md
+  - architecture_delta_final.md
+  - controller_report.md
+  - completion_check.md
+  - MANIFEST.md
+
+retain_gate:
+  each_seed_br2_positive_dice_delta_min: 0.002
+  mean_br2_positive_dice_delta_min: 0.003
+  each_seed_br2_minus_minimal_min: 0.0005
+  mean_br2_minus_minimal_min: 0.001
+  center_b_mean_delta_min: 0.0
+  center_c_mean_delta_min: 0.0
+  combined_help_not_less_than_harm: true
+  hd95_non_worse: true
+  maximum_remote_fp_relative_worsening: 0.05
+  no_t2_exact_anchor_identity: true
+  empty_prediction_forbidden: true
+  all_mechanism_fields_numeric_checkpoint_derived: true
+
+terminal_decisions:
+  pass: EDEMA_CLEAN_BR2_RETAIN_PENDING_PLANNER
+  fail: RETIRE_SRRMyoPS_PERFORMANCE_LINE_USE_NNUNET
+  scar: SCAR_SRR_TRAINING_STOPPED_USE_NNUNET
+
+publication_boundary:
+  sip_training_authorized: false
+  refiner_training_authorized: false
+  scar_training_authorized: false
+  batch9_authorized: false
+  fold_expansion_authorized: false
+  cine_authorized: false
+  validation_upload_authorized: false
+  hosted_metric_claim_authorized: false
+  route_promotion_authorized: false
