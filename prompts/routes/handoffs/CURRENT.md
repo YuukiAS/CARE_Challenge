@@ -5,7 +5,7 @@
 ## 当前状态
 
 ```text
-state_id: srr_mainline_batch7_minimal_pathology_decomposition_ready_20260722
+state_id: srr_mainline_batch7_lightweight_br2_sip_decomposition_ready_20260722
 round_id: post_round04_main_only
 state_updated_date: 2026-07-22
 active_development_branch: main
@@ -17,7 +17,7 @@ batch6_scientific_status: FINAL_OBJECTIVE_REPAIRED_BUT_BELOW_USABLE_SIGNAL
 batch7_operational_status: FORMAL300_COMPLETE_STOP_GATE
 batch7_repair_operational_status: VERIFIED_COMPLETE_STOPPED_AT_PROPOSAL_GATE
 batch7_repair_scientific_status: TRUTHFUL_EVIDENCE_BUT_PROPOSAL_STAGE_LOSS_AUTHORITY_IMPURE
-batch7_minimal_decomposition_status: READY_FOR_CONTROLLER
+batch7_minimal_decomposition_status: READY_FOR_CONTROLLER_AMENDED_TO_LIGHTWEIGHT_BR2_SIP
 next_required_action: RUN_BATCH7_MINIMAL_PATHOLOGY_DECOMPOSITION
 planning_review_required: false
 review_required: false
@@ -59,26 +59,30 @@ Planner
 -> Planner
 ```
 
-Controller 必须检查真实 diff、resolved loss、loss-specific gradient、训练冻结范围、匹配实验、Slurm、aggregation、CURRENT/wiki/fingerprint。普通实现和证据问题必须在当前任务内修复，不得直接退回用户。
+Controller 必须检查真实 diff、resolved loss、SIP公式、representer参数、availability mask、loss-specific gradient、匹配实验、Slurm、aggregation、CURRENT/wiki/fingerprint。普通实现和证据问题必须在当前任务内修复，不得直接退回用户。
 
 ## SRR 图与仍保留的目标
 
 Planner 已视觉读取 ChatGPT Project 材料中的 SRR-v2、SRR-v2.5、SRR-v3。
 
-仍保留的高层目标是：
+当前保留的论文主线是：
 
 ```text
 observed-modality-only encoding
--> availability-aware retrieval
+-> availability-masked representer dictionary
+-> source-pattern-specific sparse retrieval
+-> optional BR2 selective integration penalty
 -> pathology proposal
--> optional evidence-proven dictionary
--> pathology-specific refinement only after proposal success
--> bounded nnU-Net correction
+-> bounded nnU-Net comparison/safety
 ```
 
-高层思想尚未被当前证据否定，但复杂 dictionary、memory、refiner 和 arbiter 不再默认保留，必须分别证明增量价值。
+需要明确区分：
 
-## 已确认的历史结果
+- 当前 M10 16-slot spatial dictionary、prototype maps 和 semantic negative memory 已出现低杠杆负证据，不再作为默认论文核心；
+- Representation Retrieval Learning 的高层思想尚未被否定；
+- 当前任务检验的是轻量 BR2 representer dictionary 和正式 SIP，而不是继续修旧 dictionary。
+
+## 历史结果
 
 ### Batch 6
 
@@ -87,8 +91,6 @@ edema positive Dice delta: +0.0027247487
 scar positive Dice delta: +0.0006739682
 mean positive Dice delta: +0.0016993584
 ```
-
-Batch 6 修通 final pathology supervision 和 production gate，但收益不足。
 
 ### Batch 7 formal300
 
@@ -108,7 +110,6 @@ help/harm: 23/35
 terminal commit: 0fcc3ff605112a0efeab73f3df2f83249793d321
 proposal job: 59828884
 optimizer steps: 600
-selected checkpoint SHA256: a2412889d55a0e3eee0ca2d57a77f34db0f10f0a069193cc906785f49fae97f1
 mean positive Dice delta: +0.0012229660
 scar positive Dice delta: -0.0019961366
 edema positive Dice delta: +0.0044420686
@@ -116,52 +117,42 @@ help/harm: 25/27
 remote-FP relative worsening max: 0.0530525167
 ```
 
-本轮真实补齐了：
+它真实补齐独立干预、identity零变化、真实category memory、anchor-free discovery code path和strict validator，因此不是全面占位失败。但Planner复核发现proposal stage仍传入空loss JSON，历史混合M10 loss继续参与，不能作为纯proposal或BR2的最终否定。
+
+## 当前 SIP 状态与决定
+
+当前代码仍有：
 
 ```text
-independent 44-case interventions
-identity and gate-closed exact zero
-real category semantic memory with hashes and valid masks
-anchor-free discovery implementation check
-600-step proposal stage
-strict known-bad validator
+semantic_retrieval_regularization
+pattern_sip_integrativeness_loss
 ```
 
-因此它不是原 Batch 7 那种全面占位失败。
+它们属于历史启发式正则，不是论文的 source-specific SIP：没有直接定义 $\beta_d^{(s)}$，也没有跨source pattern计算representer integrativeness。
 
-## Planner 复核发现的剩余问题
-
-### 1. Proposal stage loss authority 不纯
-
-Stage wrapper 传入空 `--loss-weight-json {}`。M10 variant 因此继续使用历史默认混合 loss：refiner、anchor preservation、correction opportunity、branch arbitration、bounded correction、dictionary regularization、prototype/memory 和 refiner-effect 等仍可能参与；新的 discovery/confirmation direct loss默认却为零。
-
-因此 600 步结果不是“纯 proposal 训练后的充分负结果”。
-
-### 2. Gradient authority 只证明连接
-
-当前检查对 proposal logits 均值 backward，而不是对正式非零 loss逐项 backward。它不能证明训练目标方向正确，也没有证明梯度只进入授权模块。
-
-### 3. Anchor-free discovery 测试覆盖不足
-
-当前只检查验证集前两个 LGE-only 病例，没有覆盖 T2-present edema 和 CenterC完整多模态病例。
-
-### 4. 具体组件已经出现负证据
-
-真实 intervention 显示：
+当前决定：
 
 ```text
-semantic negative memory off 后 edema 更好，scar几乎不变
-prototype maps 对 edema贡献约 +0.0007，对 scar无稳定收益
-scar proposal/refiner/learned-source/gate-one均为负
-no-anchor仍严重崩溃
+legacy semantic retrieval regularization: formal weight 0
+legacy Pattern-SIP: formal weight 0
+new BR2 source L1 sparsity: implement and test
+new BR2 selective integration penalty: implement and test with SIP-on/off ablation
 ```
 
-这说明当前 semantic memory 和复杂 dictionary 的杠杆很低，scar 与 edema 共享 proposal/dictionary训练存在明显冲突。
+Source只按availability pattern定义：
+
+```text
+LGE-only
+LGE+C0
+LGE+T2+C0
+```
+
+Center不得输入router。$|O_d|\le1$ 的representer不得进入SIP。
 
 ## 当前唯一任务
 
 ```text
-BATCH7_FINAL_MINIMAL_PATHOLOGY_DECOMPOSITION
+BATCH7_FINAL_MINIMAL_BR2_SIP_PATHOLOGY_DECOMPOSITION
 ```
 
 权威文件顺序：
@@ -175,51 +166,82 @@ BATCH7_FINAL_MINIMAL_PATHOLOGY_DECOMPOSITION
 6. results/20260721_srr_batch7_mechanism_closure_repair/
 ```
 
-## 执行阶段
+## 六个匹配实验
 
 ```text
-B7D-00 bind latest evidence and source checkpoint
-B7D-01 implement explicit loss authority and matched variant gates
-B7D-02 train scar_minimal and scar_dictionary, 400 steps each
-B7D-03 train edema_minimal and edema_dictionary, 400 steps each
-B7D-04 write final RETAIN/RETIRE decisions and update state
+scar_minimal
+scar_br2_no_sip
+scar_br2_sip
+edema_minimal
+edema_br2_no_sip
+edema_br2_sip
 ```
 
-四个实验必须从相同 checkpoint 开始、使用相同 seed、病例顺序、patch centers、optimizer、步数、评价和 decode。Dictionary pair只允许 prototype maps/spatial dictionary开关不同；semantic negative memory不得进入正式训练。
+同病种三组必须从同一checkpoint开始，使用相同seed、病例顺序、patch centers、optimizer、400步预算、评价和decode。两个BR2组还必须共享全部BR2参数初始化，只允许SIP权重不同。
 
-## 最终保留或删除门
-
-Minimal proposal 保留：
+Lightweight BR2只允许：
 
 ```text
-positive-case Dice delta >= +0.003
-help >= harm
-HD95 relative worsening <=5%
-remote-FP relative worsening <=5%
-no-T2 edema exact zero
+shared anatomy
+LGE private
+C0 private
+T2 private
+LGE-C0 interaction
+LGE-T2 interaction
+T2-C0 interaction
 ```
 
-Dictionary 只有相对同病种 minimal额外提高 `>=+0.001` 且安全不恶化才保留。
+必须hard-mask缺失模态模块，分别输出source coefficients、image residual和final retrieval weights。禁止M10 spatial dictionary、prototype maps、semantic negative memory、refiner、arbiter和gate训练。
+
+## Loss和实现硬门
+
+训练前必须证明：
+
+```text
+六组resolved loss完整
+空loss JSON被拒绝
+legacy semantic/Pattern-SIP精确为零
+新SIP数值公式测试通过
+每个非零loss单独backward且梯度范围正确
+minimal不实例化/消费BR2
+BR2 no-SIP/SIP结构和初始化一致
+center不进入router
+invalid representer在normalization前hard-mask且最终权重为零
+重复representer或feature别名被known-bad拒绝
+anchor-free discovery覆盖LGE-only scar、T2-present edema、CenterC complete tri-modal
+```
+
+## 最终保留门
+
+Minimal保留：positive-case Dice `>=+0.003` 且help/harm、HD95、remote-FP和no-T2安全通过。
+
+BR2保留：相对minimal额外Dice `>=+0.001` 且安全不恶化。
+
+SIP保留：相对no-SIP额外Dice `>=+0.0005`；或Dice下降不超过`0.0005`且HD95/remote-FP改善至少2%，help/harm不恶化。
 
 终态必须写出：
 
 ```text
 scar_minimal: RETAIN | RETIRE
-scar_dictionary: RETAIN | RETIRE | NOT_APPLICABLE
+scar_br2: RETAIN | RETIRE | NOT_APPLICABLE
+scar_sip: RETAIN | REMOVE | NOT_APPLICABLE
 edema_minimal: RETAIN | RETIRE
-edema_dictionary: RETAIN | RETIRE | NOT_APPLICABLE
+edema_br2: RETAIN | RETIRE | NOT_APPLICABLE
+edema_sip: RETAIN | REMOVE | NOT_APPLICABLE
 ```
 
-Minimal失败后不得继续该病种的 dictionary/refiner/arbiter/gate修复。本任务后不允许再用“组件仍需完善”延长同一复杂路线。
+SIP失败只删除SIP，不自动删除有效BR2。Scar minimal仍为负时停止scar SRR，不得用BR2/refiner/gate继续补救。
 
 ## 已授权
 
 ```text
-explicit proposal-stage loss authority
+explicit proposal loss authority
+lightweight availability-masked BR2 representer dictionary
+source-pattern learner coefficients
+paper-form BR2 SIP and no-SIP ablation
 loss-specific gradient verification
 expanded anchor-free discovery coverage
-scar minimal/dictionary matched runs
-edema minimal/dictionary matched runs
+six matched 400-step runs
 strict validator and known-bad
 mapper/wiki/fingerprint update
 local lightweight result commit
@@ -229,10 +251,10 @@ local lightweight result commit
 
 ```text
 Batch8
+current M10 dictionary/prototype/memory continuation
 refiner training
 source-arbiter training
 production-gate training
-monolithic continuation
 backbone replacement
 encoder redesign
 fold expansion
@@ -244,4 +266,4 @@ route promotion
 final scientific stop
 ```
 
-Controller 的 `VERIFIED_COMPLETE` 只表示本次最终分解合同完成，下一步仍返回 Planner。
+Controller 的 `VERIFIED_COMPLETE` 只表示本次分解合同完成，下一步仍返回 Planner。
