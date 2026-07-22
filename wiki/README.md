@@ -1,12 +1,12 @@
 # CARE 架构 Wiki
 
-architecture_version: `care-srr-batch7-minimal-pathology-decomposition-ready`
+architecture_version: `care-srr-batch7-lightweight-br2-sip-decomposition-ready`
 latest_verified_runtime: `Batch7 repair stopped at proposal gate`
-latest_scientific_status: `truthful repair evidence, but proposal loss authority impure`
+latest_scientific_status: `current complex dictionary underperforms; lightweight BR2 and faithful SIP still require matched testing`
 latest_controller_task: `20260722_srr_batch7_minimal_pathology_decomposition`
-route_status: `MAIN_ONLY_FINAL_MINIMAL_DECOMPOSITION_NO_PROMOTION`
+route_status: `MAIN_ONLY_LIGHTWEIGHT_BR2_SIP_DECOMPOSITION_READY`
 
-本页是 GPT、Controller、Executor、Mapper 和 Planner 读取当前架构状态的根入口。Batch7 repair 已经补齐真实独立干预、semantic category memory、anchor-free discovery路径和严格 validator，因此它不是原 Batch7那种复制表失败。但 Planner 代码复核发现，600步所谓 proposal-only stage传入空 loss配置，继续使用历史 M10混合损失；当前结果不能作为纯 proposal设计的最终否定。
+本页是 GPT、Controller、Executor、Mapper 和 Planner 读取当前架构状态的根入口。Batch7 repair 已补齐真实独立干预、真实 category memory、anchor-free discovery code path 和 strict validator，但 proposal stage 使用的仍是混合 M10 loss。当前任务不是继续维护现有 16-slot/prototype dictionary，也不是放弃 Representation Retrieval Learning；它要比较普通 pathology proposal、轻量 BR2 representer dictionary，以及同一 BR2 dictionary 的 SIP-on/off。
 
 ## 当前图
 
@@ -16,12 +16,13 @@ route_status: `MAIN_ONLY_FINAL_MINIMAL_DECOMPOSITION_NO_PROMOTION`
 
 ![执行流程](figures/execution-flow.png)
 
-图表示当前代码中存在的完整架构，不表示所有组件都应继续保留。最新任务将分别判断 minimal proposal 和 dictionary proposal是否值得保留。
+这些图仍反映最近已实现的 Batch7 复杂架构，不代表本次轻量 BR2 候选已经实现。Mapper 必须在任务完成后更新图和 fingerprint。
 
-## 已确认的 Batch7 repair 结果
+## 已确认的历史结果
+
+Batch7 repair proposal stage：
 
 ```text
-terminal commit: 0fcc3ff605112a0efeab73f3df2f83249793d321
 proposal job: 59828884
 optimizer steps: 600
 mean positive Dice delta: +0.0012229660
@@ -31,42 +32,101 @@ help/harm: 25/27
 remote-FP relative worsening max: 0.0530525167
 ```
 
-真实完成：
+这次运行和干预是真实的，但不能解释为纯 proposal 或 R2/BR2 的最终负结果，因为 stage wrapper 传入空 loss JSON，历史混合 M10 loss仍参与。
+
+## 当前复杂 dictionary 的结论
+
+真实干预显示：
+
+- semantic negative memory 对 scar几乎无益，关闭后 edema反而更好；
+- prototype maps 对 edema约有 `+0.0007` 的微小贡献，对 scar无稳定收益；
+- scar proposal、refiner、learned source和gate-one均为负；
+- 现有16-slot spatial dictionary、prototype maps和semantic memory不再作为正式分解候选。
+
+这只否定当前具体实现的性能价值，不否定R2/BR2的表示检索思想。
+
+## SIP 当前状态
+
+当前源码仍有：
 
 ```text
-independent 44-case intervention predictions
-identity and gate-closed exact zero
-real category semantic memory with valid masks and hashes
-anchor-free discovery implementation path
-strict known-bad validator
+semantic_retrieval_regularization
+pattern_sip_integrativeness_loss
 ```
 
-## Planner 复核结论
-
-### 仍未实现到位
-
-- proposal stage 使用空 loss JSON，M10历史 refiner、preservation、arbitration、bounded correction和dictionary regularization等默认项仍可能参与；
-- 新的 discovery/confirmation direct loss没有显式开启；
-- gradient authority对 proposal logits均值反向传播，而不是逐项验证正式 loss；
-- anchor-free检查仅覆盖两个 LGE-only病例，没有覆盖 T2-present edema和CenterC完整多模态病例。
-
-### 已经出现的设计负证据
-
-- semantic negative memory关闭后 edema更好，scar几乎不变；
-- prototype maps对 edema约只有 `+0.0007` 贡献，对 scar没有稳定收益；
-- scar proposal、refiner、source和gate相关真实模式持续为负；
-- edema保留约 `+0.004` 的小幅正信号；
-- no-anchor仍严重崩溃。
-
-因此当前完整 dictionary/proposal链路不能继续默认保留，但高层的病种特异 proposal 思想尚未被纯实验否定。
-
-## 当前唯一任务
+它们是历史启发式正则：使用手工槽位先验、batch-average gate、KL/entropy/collapse等量，并未直接在source-specific learner coefficients $\beta_d^{(s)}$ 上实现论文SIP。因此：
 
 ```text
-BATCH7_FINAL_MINIMAL_PATHOLOGY_DECOMPOSITION
+legacy semantic retrieval regularization: historical only, formal weight 0
+legacy Pattern-SIP: historical only, formal weight 0
+new BR2 source L1 sparsity: required
+new BR2 selective integration penalty: required SIP-on/off ablation
 ```
 
-证据和合同入口：
+新的source只由availability pattern定义：LGE-only、LGE+C0、LGE+T2+C0；center不能输入router。$|O_d|\le1$ 的representer不进入SIP。
+
+## 当前轻量 BR2 候选
+
+轻量 representer dictionary 只允许：
+
+```text
+shared anatomy
+LGE private
+C0 private
+T2 private
+LGE-C0 interaction
+LGE-T2 interaction
+T2-C0 interaction
+```
+
+要求每个模块有独立参数；无效模块在normalization前hard-mask；router分别输出source-level learner coefficients、image-conditioned residual和final retrieval weights。禁止prototype bank、prototype maps、semantic negative memory和当前M10 spatial dictionary。
+
+## 六个匹配实验
+
+```text
+scar_minimal
+scar_br2_no_sip
+scar_br2_sip
+edema_minimal
+edema_br2_no_sip
+edema_br2_sip
+```
+
+同病种三组从同一checkpoint开始，使用相同seed、病例顺序、patch centers、optimizer、400步预算、评价与decode。两个BR2组共享全部BR2参数初始化，只允许SIP权重不同。
+
+## 正式 SIP
+
+对representer $d$，令 $O_d$ 为能够观察其所需模态的source patterns：
+
+$$\widetilde\gamma_d(\tau)=\sum_{s\in O_d}\min\left(1,\frac{|\beta_d^{(s)}|}{\tau}\right),$$
+
+$$P_{SIP}=\sum_{d:|O_d|>1}\min\left(1,\frac{|O_d|-\widetilde\gamma_d(\tau)}{|O_d|-1}\right).$$
+
+该loss必须有数值单元测试和no-SIP/SIP匹配消融。不能用旧Pattern-SIP重命名代替。
+
+## 保留门
+
+```text
+minimal: positive-case Dice >= +0.003 and safety pass
+BR2: additional Dice over minimal >= +0.001 and safety not worse
+SIP: additional Dice over no-SIP >= +0.0005
+     or Dice drop <=0.0005 with >=2% HD95/remote-FP improvement
+```
+
+终态必须分别给出：
+
+```text
+scar_minimal: RETAIN | RETIRE
+scar_br2: RETAIN | RETIRE | NOT_APPLICABLE
+scar_sip: RETAIN | REMOVE | NOT_APPLICABLE
+edema_minimal: RETAIN | RETIRE
+edema_br2: RETAIN | RETIRE | NOT_APPLICABLE
+edema_sip: RETAIN | REMOVE | NOT_APPLICABLE
+```
+
+SIP失败只删除SIP，不自动删除有效BR2。Scar minimal仍为负时停止scar SRR，不允许再用BR2/refiner/gate补救。
+
+## 当前证据入口
 
 ```text
 results/srr_production/code_maturity/batch7_repair_planner_audit_and_minimal_decomposition_decision_20260722.md
@@ -76,25 +136,16 @@ prompts/tasks/20260722_srr_batch7_minimal_pathology_decomposition_controller.md
 prompts/tasks/20260722_srr_batch7_minimal_pathology_decomposition_executor_plan.yaml
 ```
 
-任务只运行四个匹配实验：
+## 边界
 
-```text
-scar_minimal
-scar_dictionary
-edema_minimal
-edema_dictionary
-```
-
-四个实验先修复显式 loss authority，再从相同 checkpoint 独立训练400步并评价全部44例。Minimal失败则该病种 proposal直接 RETIRE；dictionary只有相对 minimal额外提高至少 `+0.001` 且安全不恶化才保留。任务结束后不得继续以“组件尚需完善”为理由延长同一复杂路线。
-
-## 当前不授权
+当前不授权：
 
 ```text
 Batch8
+current M10 dictionary/prototype/memory continuation
 refiner training
-source arbiter training
-production gate training
-monolithic continuation
+source-arbiter training
+production-gate training
 fold expansion
 Cine
 backbone replacement
