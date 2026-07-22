@@ -1,0 +1,228 @@
+schema_version: 1
+task_key: 20260722_srr_batch8_clean_edema_br2_confirmation
+status: READY_FOR_CONTROLLER
+execution_mode: controller_supervised
+controller_is_coordinator: true
+executor_slots: 1
+executor_count: 1
+parallel_execution_allowed: false
+result_root: results/20260722_srr_batch8_clean_edema_br2_confirmation
+controller_task_path: prompts/tasks/20260722_srr_batch8_clean_edema_br2_controller.md
+planning_review_required: false
+review_required: false
+
+waves:
+  - wave_id: B8_WAVE0_BIND_AND_SUPERSEDE
+    executor_id: batch8_clean_edema_executor
+    blocking: true
+    dependencies: []
+    read_required:
+      - AGENTS.md
+      - START_HERE_FOR_GPT.md
+      - GPT_PLANNER_CARE_PROTOCOL.md
+      - prompts/AGENT_FLOW_V2_PROTOCOL.md
+      - prompts/HANDOFF_GATE_POLICY.md
+      - prompts/GPT_HARD_GATE_PROMPT.md
+      - prompts/routes/ROUTE_ANTI_LAZINESS_PROTOCOL.md
+      - prompts/routes/ROUTE_HARD_REQUIREMENTS_MATRIX.md
+      - prompts/routes/handoffs/CURRENT.md
+      - wiki/README.md
+      - .agents/skills/slurm-routing-partition/SKILL.md
+      - .agents/skills/care-mapper/SKILL.md
+      - results/srr_production/code_maturity/batch8_clean_edema_br2_planner_decision_20260722.md
+      - docs/plans/laneB_round04_active_srr_batch8_clean_edema_br2_confirmation_execution.md
+      - configs/srr_production/myops_batch8_clean_edema_br2.yaml
+      - results/20260722_srr_batch7_minimal_pathology_decomposition/
+    write_scope:
+      - results/20260722_srr_batch8_clean_edema_br2_confirmation/
+    required_outputs:
+      - results/20260722_srr_batch8_clean_edema_br2_confirmation/controller_context.json
+      - results/20260722_srr_batch8_clean_edema_br2_confirmation/controller_ledger.csv
+      - results/20260722_srr_batch8_clean_edema_br2_confirmation/controller_bootstrap_snapshot.md
+      - results/20260722_srr_batch8_clean_edema_br2_confirmation/implementation_snapshot.md
+    completion_conditions:
+      - latest_remote_main_bound
+      - planner_task_config_executor_hashes_recorded
+      - source_checkpoint_exists_and_sha_matches
+      - prior_batch7_runtime_immutable
+      - worktree_clean_or_only_authorized_changes
+    failure_action: NEEDS_REPAIR_NO_IMPLEMENTATION
+
+  - wave_id: B8_WAVE1_BATCH7_CHECKPOINT_EVIDENCE_REPAIR
+    executor_id: batch8_clean_edema_executor
+    blocking: true
+    dependencies: [B8_WAVE0_BIND_AND_SUPERSEDE]
+    write_scope:
+      - scripts/evaluation/
+      - tests/srr_production/
+      - results/20260722_srr_batch8_clean_edema_br2_confirmation/
+    implementation_contract:
+      checkpoint_stages: [warmup50, step200, step400]
+      variants: [scar_br2_no_sip, scar_br2_sip, edema_br2_no_sip, edema_br2_sip]
+      checkpoint_real_load_required: true
+      new_model_initial_values_as_evidence_forbidden: true
+      pending_placeholder_tokens_forbidden: true
+      scar_empty_prediction_onset_diagnosis_required: true
+      sip_no_sip_checkpoint_difference_required: true
+    required_outputs:
+      - results/20260722_srr_batch8_clean_edema_br2_confirmation/batch7_checkpoint_mechanism_export.csv
+      - results/20260722_srr_batch8_clean_edema_br2_confirmation/batch7_scar_collapse_diagnosis.csv
+      - results/20260722_srr_batch8_clean_edema_br2_confirmation/batch7_sip_effect_diagnosis.csv
+      - results/20260722_srr_batch8_clean_edema_br2_confirmation/batch7_packet_supersession.md
+    completion_conditions:
+      - all_required_checkpoints_loaded_with_sha
+      - all_required_mechanism_fields_numeric
+      - no_PENDING_STATIC_INITIAL_PLACEHOLDER_tokens
+      - scar_first_empty_prediction_stage_identified
+      - sip_no_sip_parameter_and_output_delta_reported
+      - batch7_operational_evidence_preserved_scientific_closure_superseded
+    failure_action: controller_returns_to_same_executor_for_evidence_repair
+
+  - wave_id: B8_WAVE2_CLEAN_MODEL_AND_PREFLIGHT
+    executor_id: batch8_clean_edema_executor
+    blocking: true
+    dependencies: [B8_WAVE1_BATCH7_CHECKPOINT_EVIDENCE_REPAIR]
+    write_scope:
+      - src/care_myocardium/models/srr_batch8_clean_edema.py
+      - src/care_myocardium/losses/
+      - scripts/training/
+      - scripts/evaluation/
+      - jobs/srr_production/
+      - tests/srr_production/
+      - configs/srr_production/myops_batch8_clean_edema_br2.yaml
+      - results/20260722_srr_batch8_clean_edema_br2_confirmation/
+    implementation_contract:
+      model_class: CleanEdemaBR2Corrector
+      full_SRRProposeRefineMyoPS_object_reuse: forbidden
+      checkpoint_prefix_whitelist_required: true
+      clean_minimal_inputs: [frozen_edema_feature, t2_image, frozen_anatomy_union_probability]
+      clean_br2_representers: [shared_anatomy, lge_private, t2_private, interaction_lge_t2]
+      legacy_module_call_count_zero: true
+      no_t2_exact_anchor_identity: true
+      old_propref_loss_forbidden: true
+      clean_loss_specific_backward_required: true
+      fixed_overfit_steps: 100
+      fixed_overfit_formal_credit: 0
+      fixed_overfit_minimum_loss_reduction_fraction: 0.30
+      checkpoint_roundtrip_max_abs_delta: 0.000001
+    required_outputs:
+      - results/20260722_srr_batch8_clean_edema_br2_confirmation/clean_model_import_graph.json
+      - results/20260722_srr_batch8_clean_edema_br2_confirmation/checkpoint_whitelist_load.csv
+      - results/20260722_srr_batch8_clean_edema_br2_confirmation/legacy_module_call_counters.csv
+      - results/20260722_srr_batch8_clean_edema_br2_confirmation/clean_initial_equivalence.json
+      - results/20260722_srr_batch8_clean_edema_br2_confirmation/clean_no_t2_identity.csv
+      - results/20260722_srr_batch8_clean_edema_br2_confirmation/clean_fixed_overfit.json
+      - results/20260722_srr_batch8_clean_edema_br2_confirmation/clean_loss_gradient_matrix.csv
+      - results/20260722_srr_batch8_clean_edema_br2_confirmation/clean_checkpoint_roundtrip.json
+      - results/20260722_srr_batch8_clean_edema_br2_confirmation/clean_known_bad_report.json
+      - results/20260722_srr_batch8_clean_edema_br2_confirmation/matched_run_manifest.csv
+    completion_conditions:
+      - old_module_call_counts_all_zero
+      - checkpoint_loaded_only_from_whitelist
+      - minimal_br2_initial_logits_max_delta_at_most_1e_6
+      - no_t2_logits_and_labels_exact_anchor_identity
+      - fixed_overfit_passes_loss_and_nonempty_prediction_gate
+      - every_nonzero_loss_has_target_gradient
+      - frozen_and_forbidden_gradients_zero
+      - checkpoint_roundtrip_at_most_1e_6
+      - all_known_bad_fixtures_rejected_by_real_validator
+      - tests_and_gpu_preflights_exit_zero
+    failure_action: controller_returns_to_same_executor_for_repair_no_formal_training
+
+  - wave_id: B8_WAVE3_TWO_SEED_FORMAL_RUNS
+    executor_id: batch8_clean_edema_executor
+    blocking: true
+    dependencies: [B8_WAVE2_CLEAN_MODEL_AND_PREFLIGHT]
+    write_scope:
+      - jobs/srr_production/
+      - logs/srr_batch8_clean_edema_br2/
+      - results/20260722_srr_batch8_clean_edema_br2_confirmation/
+    formal_jobs:
+      - logical_run_id: edema_clean_seed20260722
+        seed: 20260722
+        partition: htzhulab
+        variants: [edema_clean_minimal_seed20260722, edema_clean_br2_seed20260722]
+        optimizer_steps_each: 800
+        eval_steps: [200, 400, 800]
+        runtime_root: results/20260722_srr_batch8_clean_edema_br2_confirmation/runtime/seed20260722
+        log_root: logs/srr_batch8_clean_edema_br2/seed20260722
+        lock_root: results/20260722_srr_batch8_clean_edema_br2_confirmation/runtime/locks/seed20260722
+      - logical_run_id: edema_clean_seed20260723
+        seed: 20260723
+        partition: a100-gpu
+        variants: [edema_clean_minimal_seed20260723, edema_clean_br2_seed20260723]
+        optimizer_steps_each: 800
+        eval_steps: [200, 400, 800]
+        runtime_root: results/20260722_srr_batch8_clean_edema_br2_confirmation/runtime/seed20260723
+        log_root: logs/srr_batch8_clean_edema_br2/seed20260723
+        lock_root: results/20260722_srr_batch8_clean_edema_br2_confirmation/runtime/locks/seed20260723
+    matching:
+      source_checkpoint_equal: true
+      common_head_initialization_equal_within_seed: true
+      center_sequence_equal_within_seed: true
+      case_sequence_equal_within_seed: true
+      patch_centers_equal_within_seed: true
+      augmentation_equal_within_seed: true
+      optimizer_template_equal_within_seed: true
+      budget_equal_within_seed: true
+      decode_equal: true
+      selected_checkpoint_step_fixed_800: true
+    slurm_contract:
+      python_executable: /users/a/e/aereinh/CARE/envs/env_CARE/bin/python
+      same_partition_gpu_preflight_required: true
+      independent_seed_jobs: true
+      isolated_roots_required: true
+      one_seed_cannot_replace_other: true
+      same_scope_startup_retry_allowed: true
+      finalizer_dependency: afterany_all_seed_jobs
+    required_outputs:
+      - results/20260722_srr_batch8_clean_edema_br2_confirmation/slurm_attempts.csv
+      - results/20260722_srr_batch8_clean_edema_br2_confirmation/checkpoint_selection.csv
+      - results/20260722_srr_batch8_clean_edema_br2_confirmation/casewise_metrics.csv
+      - results/20260722_srr_batch8_clean_edema_br2_confirmation/subgroup_metrics.csv
+      - results/20260722_srr_batch8_clean_edema_br2_confirmation/help_harm.csv
+      - results/20260722_srr_batch8_clean_edema_br2_confirmation/clean_br2_increment_by_seed.csv
+      - results/20260722_srr_batch8_clean_edema_br2_confirmation/clean_br2_checkpoint_mechanisms.csv
+    completion_conditions:
+      - both_seed_jobs_terminal_accounted
+      - all_four_variants_exact_800_steps
+      - all_four_variants_eval_all_44_cases_at_200_400_800
+      - step800_checkpoints_reloaded_for_formal_inference
+      - each_variant_has_independent_prediction_root_and_hashes
+      - no_empty_prediction
+      - centerB_and_centerC_metrics_present
+      - help_harm_hd95_remote_fp_present
+      - selected_checkpoint_beta_projection_representer_fields_numeric
+      - post_completion_aggregation_exit_zero
+    failure_action: same_scope_operational_repair_or_NEEDS_REPAIR
+
+  - wave_id: B8_WAVE4_FINALIZER_MAPPER_AND_STATE
+    executor_id: batch8_clean_edema_executor
+    blocking: true
+    dependencies: [B8_WAVE3_TWO_SEED_FORMAL_RUNS]
+    write_scope:
+      - scripts/evaluation/
+      - prompts/routes/handoffs/CURRENT.md
+      - configs/srr_production/entrypoints.yaml
+      - wiki/
+      - results/20260722_srr_batch8_clean_edema_br2_confirmation/
+    required_outputs:
+      - results/20260722_srr_batch8_clean_edema_br2_confirmation/finalizer_state.json
+      - results/20260722_srr_batch8_clean_edema_br2_confirmation/mapper_report_draft.md
+      - results/20260722_srr_batch8_clean_edema_br2_confirmation/architecture_delta_draft.md
+      - results/20260722_srr_batch8_clean_edema_br2_confirmation/mapper_report_final.md
+      - results/20260722_srr_batch8_clean_edema_br2_confirmation/architecture_delta_final.md
+      - results/20260722_srr_batch8_clean_edema_br2_confirmation/controller_report.md
+      - results/20260722_srr_batch8_clean_edema_br2_confirmation/completion_check.md
+      - results/20260722_srr_batch8_clean_edema_br2_confirmation/MANIFEST.md
+    completion_conditions:
+      - strict_validator_and_known_bad_exit_zero
+      - retain_gate_all_fields_evaluated
+      - final_token_is_exactly_one_allowed_value
+      - scar_status_fixed_use_nnunet
+      - no_PENDING_STATIC_INITIAL_PLACEHOLDER_tokens_in_final_packet
+      - mapper_wiki_current_fingerprint_consistent
+      - all_jobs_terminal_and_aggregation_complete
+      - local_lightweight_commit_complete
+      - no_SIP_refiner_scar_Batch9_Cine_fold_upload_actions
+    failure_action: controller_returns_to_same_executor_or_finalizer_for_repair
