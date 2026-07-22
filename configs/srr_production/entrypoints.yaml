@@ -1,24 +1,22 @@
-schema_version: 7
+schema_version: 8
 authority_name: srr_production_mainline_authority
-reviewed_from_head: 4c79554de785030ed59081ce3ae233711efc062a
-formal_training_status: BLOCKED_PENDING_PLANNER_POST_BATCH7_PROPOSAL_CHAIN_DECISION
+reviewed_from_head: 0fcc3ff605112a0efeab73f3df2f83249793d321
+formal_training_status: BATCH7_MINIMAL_PATHOLOGY_DECOMPOSITION_READY_FOR_CONTROLLER
 status_reason: >-
-  Batch7 mechanism-closure repair completed truthful per-mode inference, real category
-  memory, anchor-free discovery checks, strict known-bad validation, and a 600-step
-  proposal-only stage. The proposal stage failed its continuation gate: scar Dice delta
-  was negative, help was below harm, and remote-FP worsening exceeded the threshold.
-  Downstream refiner, arbiter, and production-gate stages were therefore not run; the
-  next action is a Planner decision, not formal training.
-
+  Batch7 mechanism-closure repair produced truthful interventions and completed a
+  600-step proposal stage, but Planner review found that the stage still used an
+  empty loss-weight JSON and therefore inherited mixed M10 losses rather than a
+  pure proposal objective. Real interventions also show weak prototype-map leverage,
+  non-beneficial semantic negative memory, persistent harmful scar candidates, and
+  a small positive edema signal. The only authorized next action is a final matched
+  four-run decomposition of minimal versus dictionary proposals for scar and edema.
 current_scientific_status:
-  batch4: TRAINED_NEAR_BASELINE
-  batch5: DIAGNOSTIC_PACKET_REQUIRED_REPAIR
   batch6: FINAL_OBJECTIVE_REPAIRED_BELOW_USABLE_SIGNAL
   batch7_operational: FORMAL300_COMPLETE_STOP_GATE
-  batch7_scientific: MECHANISM_REPAIR_CONNECTED_BUT_PROPOSAL_CHAIN_INADEQUATE
-  batch7_repair: VERIFIED_COMPLETE_STOPPED_AT_PROPOSAL_GATE
+  batch7_repair_operational: VERIFIED_COMPLETE_STOPPED_AT_PROPOSAL_GATE
+  batch7_repair_scientific: TRUTHFUL_BUT_PROPOSAL_LOSS_AUTHORITY_IMPURE
+  batch7_minimal_decomposition: READY_FOR_CONTROLLER
   significantly_better_than_nnunet: false
-
 selected_model:
   class_name: SRRProposeRefineMyoPS
   path: src/care_myocardium/models/srr_propref.py
@@ -26,140 +24,84 @@ selected_model:
   encoder_profile: full_4scale
   base_channels: 32
   final_output_mode: anchor_bounded_srr_correction
-  current_status: batch7_repair_connected_but_proposal_chain_inadequate
-
-batch6_evidence:
-  result_root: results/20260721_srr_batch6_final_objective_alignment
-  selected_checkpoint_sha256: 729c81e49bf846339ed2f39ef0f2656319befd2b9cfe73268d7cf501e6b40fbd
-  optimizer_steps: 300
-  edema_positive_dice_delta: 0.0027247486728372468
-  scar_positive_dice_delta: 0.0006739681677682672
-  mean_positive_dice_delta: 0.001699358420302757
-
-batch7_evidence:
-  terminal_commit: 4c79554de785030ed59081ce3ae233711efc062a
-  result_root: results/20260721_srr_batch7_upstream_candidate_quality
-  selected_checkpoint_sha256: d34ad65890cbb6a12aac3fc35bcab71709d680bff5a3aae2d93e010db1cc0e0d
-  optimizer_steps: 300
-  formal300_job_id: '59789651'
-  formal300_status: COMPLETED
-  formal1200_status: SKIPPED_STEP300_GATE_FAILED
-  edema_positive_dice_delta: 0.005430218767040005
-  scar_positive_dice_delta: -0.0048258512122039895
-  mean_positive_dice_delta: 0.0003021837774180077
-  help_count: 23
-  harm_count: 35
-  mechanism_evidence_status: INVALID_COPIED_OR_PLACEHOLDER
-  invalid_files:
-    - results/20260721_srr_batch7_upstream_candidate_quality/final_mechanism_interventions.csv
-    - results/20260721_srr_batch7_upstream_candidate_quality/proposal_refiner_metrics.csv
-    - results/20260721_srr_batch7_upstream_candidate_quality/source_arbiter_metrics.csv
-  invalid_reasons:
-    - all intervention modes reused the same formal casewise metrics
-    - anchor identity was not exact zero
-    - proposal-only and scar refiner-only metrics were empty
-    - source arbiter had no 44-case effect evidence
-    - validator accepted placeholder and copied metrics
-    - category semantic memory was not faithfully installed
-    - discovery retrieval still consumed nnU-Net context
-
+batch7_repair_evidence:
+  terminal_commit: 0fcc3ff605112a0efeab73f3df2f83249793d321
+  result_root: results/20260721_srr_batch7_mechanism_closure_repair
+  controller_verification_decision: VERIFIED_COMPLETE
+  proposal_job_id: '59828884'
+  proposal_optimizer_steps: 600
+  proposal_selected_checkpoint_sha256: a2412889d55a0e3eee0ca2d57a77f34db0f10f0a069193cc906785f49fae97f1
+  mean_positive_dice_delta: 0.0012229660043303135
+  scar_positive_dice_delta: -0.0019961365973601626
+  edema_positive_dice_delta: 0.0044420686060207895
+  help_count: 25
+  harm_count: 27
+  remote_fp_relative_worsening_max: 0.053052516728197975
+  accepted_repairs:
+    - truthful independent 44-case interventions
+    - anchor identity and gate closed exact zero
+    - real category semantic memory with valid masks and hashes
+    - anchor-free discovery code path
+    - strict known-bad validator
+  planner_gaps:
+    - proposal wrapper passed empty loss weight JSON
+    - M10 mixed default losses remained active
+    - discovery and confirmation direct losses were not explicitly activated
+    - gradient authority backpropagated proposal-logit mean rather than formal losses
+    - anchor-free coverage omitted T2-present edema and CenterC complete cases
+  design_findings:
+    - semantic negative memory did not improve scar and slightly harmed edema
+    - prototype maps added only about 0.0007 edema Dice and no stable scar gain
+    - scar candidate modes remained negative
+    - edema retained a small positive signal
 formal_entrypoints: []
-
 candidate_entrypoints:
-  - id: myops_fair_evaluator
-    role: local_full_volume_metric_recompute_authority
-    path: scripts/srr_production/evaluate_myops_fair.py
-    formal_authority: false
-    audit_status: reusable_positive_gt_and_all_case_separated
-
-  - id: srr_batch6_final_objective_alignment
-    role: historical_final_objective_repair_below_usable_signal
-    path: prompts/tasks/20260721_srr_batch6_final_objective_alignment_controller.md
-    config_path: configs/srr_production/myops_batch6.yaml
-    result_root: results/20260721_srr_batch6_final_objective_alignment
-    formal_authority: false
-    audit_status: CONTROLLER_VERIFIED_COMPLETE_STOP_AT_300_GATE_FAIL
-
-  - id: srr_batch7_upstream_candidate_quality
-    role: historical_joint_upstream_training_with_invalid_mechanism_packet
-    path: prompts/tasks/20260721_srr_batch7_upstream_candidate_quality_controller.md
-    config_path: configs/srr_production/myops_batch7.yaml
-    result_root: results/20260721_srr_batch7_upstream_candidate_quality
-    formal_authority: false
-    audit_status: FORMAL300_COMPLETE_MECHANISM_CLOSURE_INVALID
-
-  - id: srr_batch7_mechanism_closure_repair
-    role: completed_same_scope_truthful_intervention_and_stagewise_component_repair
-    path: prompts/tasks/20260721_srr_batch7_mechanism_closure_repair_controller.md
-    config_path: configs/srr_production/myops_batch7_repair.yaml
-    plan_path: docs/plans/laneB_round04_active_srr_batch7_mechanism_closure_repair_execution.md
-    executor_plan_path: prompts/tasks/20260721_srr_batch7_mechanism_closure_repair_executor_plan.yaml
-    planner_audit_path: results/srr_production/code_maturity/batch7_planner_audit_and_mechanism_closure_decision.md
-    result_root: results/20260721_srr_batch7_mechanism_closure_repair
-    formal_authority: false
-    audit_status: VERIFIED_COMPLETE_STOPPED_AT_PROPOSAL_GATE
-    source_terminal_commit: 4c79554de785030ed59081ce3ae233711efc062a
+  - id: srr_batch7_minimal_pathology_decomposition
+    role: authorized_final_matched_minimal_vs_dictionary_proposal_decomposition
+    path: prompts/tasks/20260722_srr_batch7_minimal_pathology_decomposition_controller.md
+    config_path: configs/srr_production/myops_batch7_minimal_decomposition.yaml
+    plan_path: docs/plans/laneB_round04_active_srr_batch7_minimal_pathology_decomposition_execution.md
+    executor_plan_path: prompts/tasks/20260722_srr_batch7_minimal_pathology_decomposition_executor_plan.yaml
+    planner_audit_path: results/srr_production/code_maturity/batch7_repair_planner_audit_and_minimal_decomposition_decision_20260722.md
+    result_root: results/20260722_srr_batch7_minimal_pathology_decomposition
+    formal_authority: true
+    audit_status: READY_FOR_CONTROLLER
+    source_terminal_commit: 0fcc3ff605112a0efeab73f3df2f83249793d321
     source_checkpoint_sha256: d34ad65890cbb6a12aac3fc35bcab71709d680bff5a3aae2d93e010db1cc0e0d
-    fold: 0
-    train_cases: 176
-    validation_cases: 44
-    required_sequence:
-      - supersede invalid Batch7 mechanism evidence without deleting history
-      - implement real per-mode 44-case intervention inference and fail-closed validator
-      - build real category semantic memory with valid masks
-      - split anchor-free discovery retrieval from anchor-conditioned confirmation
-      - replay all interventions on the same Batch7 checkpoint
-      - train proposal-only for 600 steps and stop downstream if its gate fails
-      - train scar and edema refiners separately and disable failed refiners
-      - train only accepted source arbiters and then production gate
-      - rerun final independent interventions and update mapper wiki CURRENT fingerprint
+    experiments:
+      - scar_minimal
+      - scar_dictionary
+      - edema_minimal
+      - edema_dictionary
+    optimizer_steps_each: 400
+    full_volume_eval_steps: [200, 400]
+    required_terminal_decisions:
+      - scar_minimal_RETAIN_or_RETIRE
+      - scar_dictionary_RETAIN_RETIRE_or_NOT_APPLICABLE
+      - edema_minimal_RETAIN_or_RETIRE
+      - edema_dictionary_RETAIN_RETIRE_or_NOT_APPLICABLE
     allowed_actions:
-      - truthful intervention infrastructure
-      - semantic validator and known-bad repair
-      - real category semantic memory
-      - anchor-free discovery routing repair
-      - 44-case same-checkpoint intervention replay
-      - proposal-only 600-step stage
-      - conditional scar and edema refiner stages
-      - conditional source-arbiter and production-gate stages
+      - explicit stage loss authority
+      - loss-specific gradient verification
+      - expanded anchor-free coverage
+      - four matched pathology proposal runs
+      - strict validator and known-bad
       - mapper wiki fingerprint repair
       - local lightweight result commit
-    terminal_result:
-      controller_verification_decision: VERIFIED_COMPLETE
-      terminal_scientific_outcome: proposal_chain_inadequate
-      proposal_job_id: "59828884"
-      proposal_selected_checkpoint_sha256: a2412889d55a0e3eee0ca2d57a77f34db0f10f0a069193cc906785f49fae97f1
-      mean_positive_dice_delta: 0.0012229660043303135
-      scar_positive_dice_delta: -0.0019961365973601626
-      edema_positive_dice_delta: 0.0044420686060207895
-      help_count: 25
-      harm_count: 27
-      downstream_waves: NOT_RUN_PROPOSAL_GATE_FAILED
     forbidden_actions:
       - Batch8
-      - monolithic Batch7 1200 continuation
+      - refiner training
+      - source arbiter training
+      - production gate training
       - backbone replacement
-      - encoder or base retrieval redesign
+      - encoder redesign
       - fold expansion
       - Cine
       - external data or weights
-      - validation packaging or upload
+      - validation upload
       - hosted metric claim
       - route promotion
-      - M11
       - final scientific stop
-
-required_real_assets:
-  myops_raw:
-    path: data/nnUNet/nnUNet_raw/Dataset501_CAREMyoPS
-  myops_protocol_split:
-    path: data/benchmarks/protocol/splits_MyoPS.json
-  nnunet_anchor_root:
-    path: data/nnUNet/nnUNet_results/Dataset501_CAREMyoPS/nnUNetTrainer_500epochs__nnUNetPlans__3d_fullres
-  batch7_selected_checkpoint:
-    path: results/20260721_srr_batch7_upstream_candidate_quality/runtime/attempts/batch7_formal300_htzhulab_59789651/variants/batch7_formal300_htzhulab_59789651/checkpoints/fold_0/propref_config/checkpoint_validation_step_300.pt
-    sha256: d34ad65890cbb6a12aac3fc35bcab71709d680bff5a3aae2d93e010db1cc0e0d
-
 publication_boundary:
   batch8_authorized: false
   validation_upload_authorized: false
