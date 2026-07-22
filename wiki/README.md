@@ -1,24 +1,52 @@
 # CARE 架构 Wiki
 
-architecture_version: `care-srr-batch8-clean-edema-br2-ready`
-latest_verified_runtime: `Batch7 six-run execution complete but BR2/SIP mechanism packet incomplete`
-latest_scientific_status: `scar SRR stopped; edema clean BR2 requires two-seed confirmation`
-latest_controller_task: `20260722_srr_batch8_clean_edema_br2_confirmation`
-route_status: `MAIN_ONLY_BATCH8_CLEAN_EDEMA_BR2_NO_PROMOTION`
+architecture_version: `care-myops-batch9-reliable-label-distillation-planned`
+latest_verified_runtime: `Batch7 six-run runtime complete; Batch8 unexecuted`
+latest_scientific_status: `direct reliable-label distillation mainline selected; implementation pending`
+latest_controller_task: `20260722_care_myops_batch9_reliable_label_distillation`
+route_status: `MAIN_ONLY_BATCH9_RELIABLE_LABEL_DISTILLATION_NO_PROMOTION`
 
-本页是 GPT、Controller、Executor、Mapper 和 Planner 读取当前架构状态的根入口。Batch 7 的六组运行在操作层面完成，但原终态不能被当作 BR2/SIP 的充分科学闭环：scar BR2 清空、SIP/no-SIP完全相同、训练后 beta 未真实导出，终态机制文件仍有静态初值和 `PENDING`，validator没有拒绝这些问题。
+本页是 GPT、Controller、Executor、Mapper 和 Planner 读取当前架构状态的根入口。当前正式主线已经从旧 SRR/BR2 anchor correction 切换为直接分割，但 Batch 9 代码和训练尚未执行；当前图仍表示仓库中已实现的历史架构，不能把规划中的新模型标成 implemented 或 verified。
 
 ## 当前判断
 
 ```text
-scar SRR: stop training, use nnU-Net anchor
-edema minimal: small positive signal
-edema BR2: +0.00162 over minimal in one seed, requires clean two-seed confirmation
-SIP: paused, not evaluated faithfully
-refiner: paused, proposal precondition not established
+Batch7: 操作完成，BR2/SIP机制闭环不完整
+Batch8: 未执行，已被方法重选降级为历史诊断合同
+Batch9: 唯一正式Controller入口
+旧完整SRR: 历史实现，不进入Batch9 forward
+nnU-Net: 评价基线，不进入Batch9模型forward
 ```
 
-Batch 7 关键数字：
+## 为什么重选主线
+
+CARE MyoPS 训练数据同时存在：
+
+```text
+availability与center高度绑定
+no-T2病例没有可靠edema监督
+官方validation/test来自未知CenterD且是完整三模态
+scar与edema具有不同形态和模态依赖
+```
+
+因此，主要问题不是单纯“测试时缺模态”，而是中心绑定的模态不平衡、部分标签可靠和完整三模态未知中心泛化。旧 SRR 试图用 retrieval/prototype/memory/proposal/refiner/gate 同时处理这些问题，导致工程链过长、信号被稀释且难以归因。
+
+用户提供的 Deep Research 推荐强 backbone、可靠标签掩码、完整视图teacher蒸馏和病种特异直分割。Planner接受该方向，但修正：
+
+- 正式训练不能使用1200–1600 step短预算；
+- teacher不从少量B/C完整病例随机初始化；
+- 自然缺失病例不生成伪T2或伪edema；
+- 首轮不同时加入BR2-lite、SIP或refiner。
+
+权威综合判断：
+
+```text
+results/srr_production/code_maturity/batch9_reliable_label_distillation_planner_synthesis_20260722.md
+```
+
+## 历史 Batch 7 / Batch 8
+
+Batch 7 保留的数字：
 
 ```text
 scar minimal positive Dice delta: -0.0049928620
@@ -27,20 +55,190 @@ edema BR2 positive Dice delta: +0.0029631724
 edema BR2 minus minimal: +0.0016204931
 ```
 
-这些数值保留为假设生成证据，但 Batch 7 的 BR2/SIP科学结论已被 Batch 8 Planner 审计 supersede。
+这些只作为假设生成证据。其终态仍有：scar BR2空预测、SIP/no-SIP完全相同、训练后beta未真实导出、静态/PENDING字段和validator语义缺口。
 
-## Batch 7 证据缺口
+Batch 8 文件继续保留，但状态固定为：
 
-- `controller_report.md` 仍是 `READY_FOR_CONTROLLER_VERIFICATION`，不是 Controller 最终验收；
-- `source_learner_coefficients.csv` 由新建模型导出初始系数；
-- 病种系数文件仍有 `PENDING_DETAILED_BETA_EXPORT`；
-- `integrativeness_diagnostics.csv` 仅为 `STATIC_INITIAL_COEFFICIENTS`；
-- scar BR2 no-SIP/SIP均为空预测，没有定位塌缩阶段；
-- SIP/no-SIP预测完全相同，没有checkpoint-derived解释；
-- minimal与BR2均继续走旧 `ProposalDictionary`；
-- validator没有检查checkpoint-derived beta、空预测、PENDING或完整安全门。
+```text
+SUPERSEDED_UNEXECUTED_DIAGNOSTIC_CONTRACT
+formal_authority: false
+runtime_authorized: false
+```
 
-Batch 8 首先修这些证据，不删除历史runtime。
+不得启动其Controller，也不得删除其规划证据。
+
+## Batch 9 唯一任务
+
+```text
+BATCH9_RELIABLE_LABEL_DISTILLATION_DIRECT_SEGMENTATION
+```
+
+合同入口：
+
+```text
+results/srr_production/code_maturity/batch9_reliable_label_distillation_planner_synthesis_20260722.md
+docs/plans/laneB_round04_active_srr_batch9_reliable_label_distillation_execution.md
+configs/care_mm/batch9_reliable_label_distillation.yaml
+prompts/tasks/20260722_care_myops_batch9_reliable_label_distillation_controller.md
+prompts/tasks/20260722_care_myops_batch9_reliable_label_distillation_executor_plan.yaml
+```
+
+结果目录：
+
+```text
+results/20260722_care_myops_batch9_reliable_label_distillation/
+```
+
+## 规划中的新模型
+
+```text
+src/care_myocardium/models/care_mm_reliable_distill.py
+CAREMMReliableDistillResEnc
+```
+
+数据流：
+
+```text
+[LGE,T2,C0] + availability
+-> 3 independent modality stems
+-> hard mask immediately after each stem
+-> concatenate stem features and availability channels
+-> official nnU-Net v2 ResidualEncoderUNet M-level backbone
+-> shared decoder feature
+-> anatomy head + scar head + edema head
+-> direct six-class logits
+-> argmax
+```
+
+输出定义：
+
+```text
+anatomy: background, healthy myocardium, LV, RV
+scar: myocardium logit + scar residual
+edema: myocardium logit + edema residual
+```
+
+No-T2时edema logit设为-20，但No-T2不参与edema supervision或distillation。
+
+Center只允许用于训练采样、监督资格和诊断分组；禁止进入network tensor、normalization、router和validation inference。
+
+## 旧组件在 Batch 9 的状态
+
+以下调用计数必须为0：
+
+```text
+SRRProposeRefineMyoPS
+ProposalDictionary
+M10TwoPassSpatialDictionary
+M10CrossFittedPrototypeMemory
+prototype maps
+semantic negative memory
+scar/edema refiner
+source arbiter
+branch arbitration
+bounded nnU-Net correction
+production gate
+legacy Pattern-SIP
+```
+
+BR2-lite、SIP和refiner不等于永久删除，但必须等Batch 9 direct mainline完成后由Planner另行授权，并做容量匹配对照。
+
+## 可靠标签与模态训练
+
+```text
+anatomy: 所有有效标签；scar/edema remap为myocardium
+scar: metadata标记可靠的病例
+edema: T2-present且metadata标记可靠的病例
+```
+
+结构化 student view：
+
+```text
+full -> full 0.50 / LGE+C0 0.25 / LGE-only 0.25
+LGE+C0 -> LGE+C0 0.75 / LGE-only 0.25
+LGE-only -> LGE-only 1.00
+```
+
+只删除已观测模态，不做模态插补。LGE始终保留。
+
+## Teacher/student
+
+每seed先训练500-epoch direct student。Teacher从同seed direct终点复制，然后只在天然完整三模态可靠训练病例上fine-tune 100 epochs。
+
+```text
+student_moddrop_control
+student_reliable_distill
+```
+
+均从同一student checkpoint开始，使用相同病例、patch、dropout mask、augmentation、optimizer、teacher forward和100-epoch预算。唯一差异是distillation loss权重。
+
+Distillation只作用于天然完整三模态训练病例。自然缺失病例不接收伪T2、伪edema或teacher edema pseudo-label。
+
+## 训练预算
+
+固定seeds：
+
+```text
+20260723
+20260724
+```
+
+每seed：
+
+```text
+direct student: 500 epochs / 125000 steps
+complete-view teacher: 100 epochs / 25000 steps
+moddrop control: 100 epochs / 25000 steps
+reliable distill: 100 epochs / 25000 steps
+```
+
+Short smoke和100-step overfit的formal credit为0。
+
+## 训练前硬门
+
+必须验证：
+
+```text
+runtime center/modality/label inventory
+official ResEnc environment and plans
+clean import graph
+legacy module call count zero
+availability hard mask
+reliable supervision masks
+runtime resolved loss and per-loss gradient
+real full/LGE+C0/LGE-only overfit
+checkpoint roundtrip
+semantic known-bad fixtures
+```
+
+Known-bad必须拒绝旧SRR捷径、center泄漏、no-T2 edema监督、loss未进total、matched manifest不一致、checkpoint未reload、prediction复用、空预测和短训伪完成。
+
+## 评价
+
+Selected checkpoint必须reload后评价44例，报告：
+
+```text
+scar/edema Dice, HD95, precision, recall
+component count, remote FP, volume ratio, empty rate
+changed voxels, case-wise help/harm
+complete-trimodal, CenterB, CenterC
+LGE-only, LGE+C0
+small/large scar, low/high baseline
+```
+
+B/C只是CenterD本地代理，不得声称已证明未知中心泛化。
+
+## 终态
+
+只允许：
+
+```text
+BATCH9_RELIABLE_DISTILL_RETAIN_PENDING_PLANNER
+BATCH9_DIRECT_RESENC_ONLY_PENDING_PLANNER
+BATCH9_MAINLINE_NO_USABLE_SIGNAL_RETURN_TO_PLANNER
+```
+
+Controller完成后返回Planner，不得启动Batch10、BR2-lite、SIP、refiner、fold expansion、Cine或上传。
 
 ## 当前图
 
@@ -50,152 +248,7 @@ Batch 8 首先修这些证据，不删除历史runtime。
 
 ![执行流程](figures/execution-flow.png)
 
-当前图仍表示仓库中已实现的历史完整架构，不表示 Batch 8 clean model 已完成。Batch 8 Mapper 必须在终态区分：legacy完整SRR、disabled旧组件、clean edema corrector 和 clean BR2候选。
-
-## Batch 8 唯一任务
-
-```text
-BATCH8_CLEAN_EDEMA_BR2_CONFIRMATION
-```
-
-合同入口：
-
-```text
-results/srr_production/code_maturity/batch8_clean_edema_br2_planner_decision_20260722.md
-docs/plans/laneB_round04_active_srr_batch8_clean_edema_br2_confirmation_execution.md
-configs/srr_production/myops_batch8_clean_edema_br2.yaml
-prompts/tasks/20260722_srr_batch8_clean_edema_br2_controller.md
-prompts/tasks/20260722_srr_batch8_clean_edema_br2_executor_plan.yaml
-```
-
-结果目录：
-
-```text
-results/20260722_srr_batch8_clean_edema_br2_confirmation/
-```
-
-## Clean 模型
-
-Batch 8 必须新增独立薄模型：
-
-```text
-src/care_myocardium/models/srr_batch8_clean_edema.py
-CleanEdemaBR2Corrector
-```
-
-它只持有并冻结 source checkpoint 中必要的 modality encoders、base retrieval、anatomy decoder、edema decoder和anatomy-union上下文。不得实例化完整 `SRRProposeRefineMyoPS` 后仅靠 flags 关闭旧模块。
-
-旧组件调用计数必须为0：
-
-```text
-ProposalDictionary
-M10TwoPassSpatialDictionary
-M10CrossFittedPrototypeMemory
-prototype maps / semantic negative memory
-refiner
-source arbiter
-branch arbitration
-learned production gate
-legacy Pattern-SIP
-```
-
-### Clean minimal
-
-```text
-frozen edema feature
-+ T2 image
-+ frozen anatomy-union probability
--> clean edema delta head
--> raw nnU-Net edema logit + 2*tanh(delta)
-```
-
-其余五类logits保持原始anchor。No-T2时delta、logit变化和label变化必须精确为0。
-
-### Clean BR2
-
-只增加四个病种特异representer：
-
-```text
-shared anatomy
-LGE private
-T2 private
-LGE-T2 interaction
-```
-
-每个独立参数化、输出固定per-case RMS。Beta为signed、spatially-global，不使用softmax/simplex/top-k，不允许逐病例beta residual。训练使用CenterB/CenterC beta，验证只使用pooled beta，center不得进入图像网络。
-
-## Batch 8 实验
-
-```text
-seed 20260722:
-  edema_clean_minimal_seed20260722
-  edema_clean_br2_seed20260722
-seed 20260723:
-  edema_clean_minimal_seed20260723
-  edema_clean_br2_seed20260723
-```
-
-每组800 optimizer steps，在200/400/800评价全部44例；step800固定为正式checkpoint并reload。同seed minimal/BR2必须共享common-head初始化、病例/patch序列、augmentation、optimizer模板、预算、评价和decode。
-
-训练仅使用T2-present、可靠edema监督的CenterB/CenterC病例；no-T2病例不进入训练、beta、loss或negative。
-
-## 训练前硬门
-
-- 从Batch7真实checkpoint导出机制，禁止静态新建模型和PENDING；
-- 定位scar空预测发生阶段；
-- clean import graph证明旧模块调用计数为0；
-- checkpoint只加载白名单key；
-- minimal/BR2初始logits差 `<=1e-6`；
-- no-T2 exact anchor identity；
-- 两真实病例100-step fixed overfit，loss下降至少30%，预测非空；
-- 逐loss gradient authority；
-- checkpoint roundtrip `<=1e-6`；
-- known-bad真实拒绝旧模块、静态beta、PENDING、空预测完成和伪matched实验。
-
-## 保留门
-
-Clean BR2只有全部满足才保留：
-
-```text
-每seed BR2 positive Dice delta >= +0.002
-两seed平均 BR2 positive Dice delta >= +0.003
-每seed BR2-minus-minimal >= +0.0005
-两seed平均 BR2-minus-minimal >= +0.001
-CenterB和CenterC平均delta均>=0
-combined help>=harm
-HD95 non-worse
-remote-FP relative worsening<=5%
-no-T2 exact anchor identity
-无空预测
-所有机制字段来自selected checkpoint
-```
-
-终态只能是：
-
-```text
-EDEMA_CLEAN_BR2_RETAIN_PENDING_PLANNER
-或
-RETIRE_SRRMyoPS_PERFORMANCE_LINE_USE_NNUNET
-```
-
-Scar固定为 `SCAR_SRR_TRAINING_STOPPED_USE_NNUNET`。
-
-## 当前不授权
-
-```text
-SIP training
-refiner training
-scar training
-source arbiter / production gate
-Batch9
-fold expansion
-Cine
-backbone replacement
-external data or weights
-validation packaging/upload
-hosted metric claim
-route promotion
-```
+这些图在Batch 9实现前仍属于历史实现视图。Mapper终态必须从真实代码和runtime重新生成，不得仅改标题。
 
 ## 入口
 
