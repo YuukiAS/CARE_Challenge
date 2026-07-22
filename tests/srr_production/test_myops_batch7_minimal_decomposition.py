@@ -2,6 +2,8 @@ from __future__ import annotations
 
 import csv
 import shutil
+import subprocess
+import sys
 from types import SimpleNamespace
 
 import numpy as np
@@ -539,6 +541,24 @@ def test_minimal_decomposition_validator_rejects_static_packet_as_final_completi
 
     assert any(error.startswith("missing_or_empty:scar_casewise_metrics.csv") for error in errors)
     assert not any(error == "known_bad_packet_not_rejected" for error in errors)
+
+
+def test_minimal_decomposition_validator_strict_cli_is_final_fail_closed() -> None:
+    result = subprocess.run(
+        [
+            sys.executable,
+            str(REPO_ROOT / "scripts/evaluation/validate_srr_batch7_minimal_decomposition_packet.py"),
+            "--strict",
+        ],
+        cwd=REPO_ROOT,
+        check=False,
+        text=True,
+        capture_output=True,
+    )
+
+    assert result.returncode == 1
+    assert "unrecognized arguments" not in result.stderr
+    assert "missing_or_empty:scar_casewise_metrics.csv" in result.stderr
 
 
 def test_minimal_decomposition_validator_rejects_known_bad_source_and_loss(tmp_path) -> None:

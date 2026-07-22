@@ -429,12 +429,15 @@ def main() -> int:
     parser.add_argument("--result-root", default=str(DEFAULT_RESULT_ROOT.relative_to(REPO_ROOT)))
     parser.add_argument("--known-bad-root", default="")
     parser.add_argument("--preflight", action="store_true", help="Validate static/preflight gates but allow pending formal runs.")
+    parser.add_argument("--strict", action="store_true", help="Validate final completion gates explicitly.")
     parser.add_argument("--write-status", action="store_true")
     args = parser.parse_args()
+    if args.preflight and args.strict:
+        parser.error("--preflight and --strict are mutually exclusive")
 
     cfg = yaml.safe_load(repo_path(args.config).read_text(encoding="utf-8"))
     result_root = repo_path(args.result_root)
-    final = not bool(args.preflight)
+    final = bool(args.strict) or not bool(args.preflight)
     errors = validate_packet(result_root, cfg, final=final)
 
     known_bad_errors: list[str] = []

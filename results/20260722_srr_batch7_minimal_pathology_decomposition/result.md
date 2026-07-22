@@ -46,7 +46,9 @@ SIP 权重校准脚本已补上：正式 driver 会在 BR2 warmup 第50步 check
 
 ## Slurm monitor state
 
-- 2026-07-22T00:03:34-0400: scar GPU preflight htzhulab job `59977481` remains `PENDING(Resources)` with no node/start time; formal_training_credit=0.
-- 2026-07-22T00:03:34-0400: scar GPU preflight a100 mirror job `59979732` remains `PENDING(Priority)` with no node/start time; formal_training_credit=0.
-- Current controller head `1adbc6a0e6e8a2b8e921d350aacf5384b3a6b487`; `origin/main` remains `b55c193bbb00af903338bcd9a66037243539647b`.
+- 2026-07-22T00:03:34-0400: scar GPU preflight htzhulab job `59977481` remained `PENDING(Resources)` with no node/start time; formal_training_credit=0.
+- 2026-07-22T00:03:34-0400: scar GPU preflight a100 mirror job `59979732` remained `PENDING(Priority)` with no node/start time; formal_training_credit=0.
+- 2026-07-22T00:18:18-0400: scar GPU preflight htzhulab job `59977481` remains `PENDING(Resources)`, `sacct=PENDING`, elapsed `00:00:00`, no allocated node; formal_training_credit=0.
+- 2026-07-22T00:18:18-0400: scar GPU preflight a100 mirror job `59979732` remains `PENDING(Priority)`, `sacct=PENDING`, elapsed `00:00:00`, no allocated node; formal_training_credit=0.
+- Current controller head and `origin/main` are both `206edaecc2f5c1895fed25680f9eedda85d80fd9`.
 - No preflight has started; no formal 400-step Batch7 training has started. Next action is to keep monitoring, cancel the still-pending mirror when one partition starts, and submit formal scar only after preflight terminal PASS.
