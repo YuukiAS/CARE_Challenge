@@ -2,14 +2,15 @@
 
 task_key: 20260722_srr_batch7_minimal_pathology_decomposition
 role: executor_only
-git_head: e2c1007d5cf5012e6ba7d5129c63221cea32d942
+git_head: 666db538ab3a05a7bb73e9773575dd72616c19c5
 git_status: `## main...origin/main
- M configs/srr_production/myops_batch7_minimal_decomposition.yaml
+ M results/20260722_srr_batch7_minimal_pathology_decomposition/sip_weight_calibration.csv
+ M scripts/evaluation/prepare_srr_batch7_minimal_decomposition_packet.py
  M scripts/training/run_srr_propref_myops_fold0.py
- M src/care_myocardium/losses/srr_losses.py
- M src/care_myocardium/models/srr_propref.py
-?? scripts/evaluation/prepare_srr_batch7_minimal_decomposition_packet.py
-?? tests/srr_production/test_myops_batch7_minimal_decomposition.py`
+ M tests/srr_production/test_myops_batch7_minimal_decomposition.py
+?? jobs/srr_production/run_myops_batch7_minimal_decomposition_a100.sh
+?? jobs/srr_production/run_myops_batch7_minimal_decomposition_htzhulab.sh
+?? scripts/training/run_srr_batch7_minimal_decomposition.py`
 source_checkpoint_path: `results/20260721_srr_batch7_upstream_candidate_quality/runtime/attempts/batch7_formal300_htzhulab_59789651/variants/batch7_formal300_htzhulab_59789651/checkpoints/fold_0/propref_config/checkpoint_validation_step_300.pt`
 source_checkpoint_sha256: `d34ad65890cbb6a12aac3fc35bcab71709d680bff5a3aae2d93e010db1cc0e0d`
 expected_checkpoint_sha256: `d34ad65890cbb6a12aac3fc35bcab71709d680bff5a3aae2d93e010db1cc0e0d`

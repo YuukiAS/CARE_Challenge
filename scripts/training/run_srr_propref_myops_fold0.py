@@ -2431,6 +2431,117 @@ def trainable_parameters_for_optimizer(model: SRRProposeRefineMyoPS) -> list[tor
     return params
 
 
+def batch7_decomposition_schedule_enabled(args: argparse.Namespace) -> bool:
+    return str(getattr(args, "batch7_decomposition_schedule", "") or "") == "center_hierarchical_br2_400"
+
+
+def batch7_decomposition_schedule_phase(step: int) -> str:
+    if step <= 50:
+        return "warmup_coefficients_and_target_heads_representers_frozen"
+    if step <= 350:
+        return "alternate_coefficients" if step % 2 == 1 else "alternate_representers_and_target_heads"
+    return "calibration_coefficients_and_target_heads_representers_frozen"
+
+
+def _batch7_target_prefixes(pathology: str) -> tuple[str, ...]:
+    if pathology == "scar":
+        return ("evidence_heads.scar.", "scar_dictionary.")
+    if pathology == "edema":
+        return ("evidence_heads.edema.", "edema_dictionary.")
+    raise ValueError(f"unknown Batch7 pathology for schedule: {pathology!r}")
+
+
+def _batch7_br2_prefix(pathology: str) -> str:
+    if pathology == "scar":
+        return "scar_lightweight_br2."
+    if pathology == "edema":
+        return "edema_lightweight_br2."
+    raise ValueError(f"unknown Batch7 pathology for BR2 schedule: {pathology!r}")
+
+
+def apply_batch7_decomposition_schedule(
+    model: SRRProposeRefineMyoPS,
+    *,
+    pathology: str,
+    step: int,
+    br2_enabled: bool,
+) -> dict[str, object]:
+    """Apply the Batch7 signed-BR2 schedule without changing optimizer state."""
+
+    target_prefixes = _batch7_target_prefixes(pathology)
+    br2_prefix = _batch7_br2_prefix(pathology)
+    coefficient_prefixes = (f"{br2_prefix}beta_pattern", f"{br2_prefix}center_deviation_raw")
+    representer_prefixes = (f"{br2_prefix}representers.", f"{br2_prefix}pathology_projection.")
+    phase = batch7_decomposition_schedule_phase(int(step))
+    trainable_names: list[str] = []
+    frozen_authorized_names: list[str] = []
+    unauthorized_trainable_names: list[str] = []
+    for name, param in model.named_parameters():
+        is_target = any(name.startswith(prefix) for prefix in target_prefixes)
+        is_coefficient = any(name.startswith(prefix) for prefix in coefficient_prefixes)
+        is_representer = any(name.startswith(prefix) for prefix in representer_prefixes)
+        keep = False
+        if not br2_enabled:
+            keep = is_target
+        elif phase in {
+            "warmup_coefficients_and_target_heads_representers_frozen",
+            "calibration_coefficients_and_target_heads_representers_frozen",
+        }:
+            keep = is_target or is_coefficient
+        elif phase == "alternate_coefficients":
+            keep = is_coefficient
+        elif phase == "alternate_representers_and_target_heads":
+            keep = is_target or is_representer
+        param.requires_grad_(keep)
+        if keep:
+            trainable_names.append(name)
+            if not (is_target or is_coefficient or is_representer):
+                unauthorized_trainable_names.append(name)
+        elif is_target or is_coefficient or is_representer:
+            frozen_authorized_names.append(name)
+    if unauthorized_trainable_names:
+        raise RuntimeError(f"Batch7 schedule enabled unauthorized trainable parameters: {unauthorized_trainable_names[:8]}")
+    if not trainable_names:
+        raise RuntimeError(f"Batch7 schedule selected no trainable parameters for pathology={pathology} step={step}")
+    return {
+        "step": int(step),
+        "pathology": pathology,
+        "phase": phase,
+        "br2_enabled": bool(br2_enabled),
+        "trainable_parameter_count": len(trainable_names),
+        "frozen_authorized_parameter_count": len(frozen_authorized_names),
+        "trainable_parameter_names_sample": trainable_names[:32],
+        "frozen_authorized_parameter_names_sample": frozen_authorized_names[:32],
+    }
+
+
+def advance_batch7_sampler_rng(
+    *,
+    pools: dict[str, list[AnchoredCaseData]],
+    through_step: int,
+    patch_shape: tuple[int, int, int],
+    rng: np.random.Generator,
+    pathology: str,
+    oversample_foreground: float,
+    center_sequence: list[str],
+) -> list[dict[str, object]]:
+    skipped: list[dict[str, object]] = []
+    for skipped_step in range(1, int(through_step) + 1):
+        *_unused, manifest = batch_from_source_balanced_case(
+            pools=pools,
+            step=skipped_step,
+            patch_shape=patch_shape,
+            rng=rng,
+            pathology=pathology,
+            oversample_foreground=oversample_foreground,
+            center_sequence=center_sequence,
+        )
+        row = dict(manifest)
+        row["resume_skip_replay"] = True
+        skipped.append(row)
+    return skipped
+
+
 def _load_external_fixed_overfit_receipt(args: argparse.Namespace) -> dict[str, object] | None:
     path = _repo_path(getattr(args, "external_fixed_overfit_receipt", ""))
     if path is None:
@@ -2741,8 +2852,44 @@ def train_variant(args: argparse.Namespace) -> None:
     model_param_count = parameter_count(model)
     optimizer = torch.optim.AdamW(trainable_parameters_for_optimizer(model), lr=args.lr, weight_decay=args.weight_decay)
     warm_start_payload: dict[str, object] = {}
+    resume_payload: dict[str, object] = {}
+    resume_start_step = 0
     warm_start_path = _repo_path(getattr(args, "warm_start_checkpoint", ""))
-    if warm_start_path is not None:
+    resume_path = _repo_path(getattr(args, "resume_training_checkpoint", ""))
+    if warm_start_path is not None and resume_path is not None:
+        raise ValueError("--warm-start-checkpoint and --resume-training-checkpoint are mutually exclusive")
+    if resume_path is not None:
+        expected_sha = str(getattr(args, "resume_training_checkpoint_sha256", "") or "").strip()
+        actual_sha = sha256_file(resume_path)
+        if expected_sha and actual_sha != expected_sha:
+            raise ValueError(f"resume checkpoint sha mismatch: {actual_sha} != {expected_sha}")
+        resume_payload = load_srr_checkpoint(
+            path=resume_path,
+            model=model,
+            optimizer=optimizer,
+            scheduler=None,
+            amp_scaler=None,
+            map_location=device,
+            restore_rng=True,
+            restore_optimizer=True,
+            strict_model_state=True,
+        )
+        resume_start_step = int(resume_payload.get("global_step", 0))
+        prototype_bank_summary = dict(resume_payload.get("prototype_memory_provenance", {}))
+        prototype_bank_summary.setdefault("status", "RESTORED_FROM_BATCH7_RESUME_CHECKPOINT")
+        prototype_bank_summary["resume_checkpoint_path"] = str(resume_path)
+        prototype_bank_summary["resume_checkpoint_sha256"] = actual_sha
+        prototype_bank_summary["resume_start_global_step"] = resume_start_step
+        prototype_bank_summary["prototype_memory_mutable"] = False
+        (variant_dir / "prototype_bank_summary.json").write_text(json.dumps(prototype_bank_summary, indent=2, sort_keys=True), encoding="utf-8")
+        frozen_prototype_manifest = {
+            "status": "RESTORED_FROM_BATCH7_RESUME_CHECKPOINT",
+            "asset_path": str(resume_path),
+            "asset_sha256": actual_sha,
+            "prototype_memory_mutable": False,
+            "source_checkpoint_global_step": resume_payload.get("global_step"),
+        }
+    elif warm_start_path is not None:
         expected_sha = str(getattr(args, "warm_start_checkpoint_sha256", "") or "").strip()
         actual_sha = sha256_file(warm_start_path)
         if expected_sha and actual_sha != expected_sha:
@@ -2822,9 +2969,11 @@ def train_variant(args: argparse.Namespace) -> None:
     source_balanced_rows: list[dict[str, object]] = []
     validation_rows: list[dict[str, object]] = []
     validation_events: list[dict[str, object]] = []
+    batch7_schedule_rows: list[dict[str, object]] = []
     batch7_source_pathology = str(getattr(args, "batch7_source_balanced_pathology", "") or "").strip()
     source_balanced_pools: dict[str, list[AnchoredCaseData]] = {}
     source_balanced_center_sequence: list[str] = []
+    source_balanced_resume_skip_rows: list[dict[str, object]] = []
     if batch7_source_pathology:
         if args.batch_size != 1:
             raise ValueError("Batch7 source-balanced decomposition requires --batch-size 1")
@@ -2834,6 +2983,17 @@ def train_variant(args: argparse.Namespace) -> None:
             steps=int(args.max_steps),
             rng=np.random.default_rng(int(args.seed)),
         )
+        if resume_start_step > 0:
+            source_balanced_resume_skip_rows = advance_batch7_sampler_rng(
+                pools=source_balanced_pools,
+                through_step=resume_start_step,
+                patch_shape=patch_shape,
+                rng=rng,
+                pathology=batch7_source_pathology,
+                oversample_foreground=args.oversample_foreground,
+                center_sequence=source_balanced_center_sequence,
+            )
+            source_balanced_rows.extend(source_balanced_resume_skip_rows)
     full_volume_eval_steps = parse_int_set(args.full_volume_eval_steps)
     first_train_loss: float | None = None
     last_train_loss: float | None = None
@@ -2843,7 +3003,7 @@ def train_variant(args: argparse.Namespace) -> None:
     process_start = time.process_time()
     post_optimizer_wait_seconds = 0.0
     model.train()
-    step = 1
+    step = resume_start_step + 1
     while True:
         if time.monotonic() - start > args.max_runtime_seconds:
             stop_reason = "max_runtime_seconds"
@@ -2858,6 +3018,17 @@ def train_variant(args: argparse.Namespace) -> None:
             )
             break
         stage = stage_for_step(step, args.max_steps)
+        if batch7_decomposition_schedule_enabled(args):
+            if not batch7_source_pathology:
+                raise ValueError("Batch7 decomposition schedule requires --batch7-source-balanced-pathology")
+            batch7_schedule_rows.append(
+                apply_batch7_decomposition_schedule(
+                    model,
+                    pathology=batch7_source_pathology,
+                    step=step,
+                    br2_enabled=bool(getattr(args, "enable_batch7_decomposition_br2", False)),
+                )
+            )
         if stage == "low_lr_calibration":
             for group in optimizer.param_groups:
                 group["lr"] = args.lr * 0.20
@@ -3130,12 +3301,13 @@ def train_variant(args: argparse.Namespace) -> None:
     elapsed = time.monotonic() - start
     process_elapsed = time.process_time() - process_start
     actual_steps = optimizer_steps
+    completed_global_step = max(resume_start_step, step - 1)
     save_training_checkpoint(
         path=checkpoint_dir / "checkpoint_final.pt",
         model=model,
         optimizer=optimizer,
         args=args,
-        global_step=actual_steps,
+        global_step=completed_global_step,
         epoch=0,
         anchor_manifest_hash=anchor_manifest_hash,
         prototype_memory_provenance=prototype_bank_summary,
@@ -3147,7 +3319,7 @@ def train_variant(args: argparse.Namespace) -> None:
     best_path = checkpoint_dir / "checkpoint_best.pt"
     if not best_path.is_file():
         best_path = checkpoint_dir / "checkpoint_final.pt"
-        best_step = actual_steps
+        best_step = completed_global_step
     if not args.skip_export:
         eval_source_cases = eval_cases_override if eval_cases_override else val_cases
         eval_cases = eval_source_cases[: args.max_eval_cases] if args.max_eval_cases > 0 else eval_source_cases
@@ -3179,6 +3351,7 @@ def train_variant(args: argparse.Namespace) -> None:
     write_csv(variant_dir / "loss_component_gradient_sanity.csv", gradient_rows)
     write_csv(variant_dir / "batch_composition.csv", batch_composition_rows)
     write_csv(variant_dir / "source_balanced_sampler_manifest.csv", source_balanced_rows)
+    write_csv(variant_dir / "batch7_decomposition_schedule.csv", batch7_schedule_rows)
     source_balanced_summary = source_balanced_count_summary(source_balanced_rows)
     source_balanced_summary.update(
         {
@@ -3188,6 +3361,8 @@ def train_variant(args: argparse.Namespace) -> None:
             "sampler_manifest_path": str(variant_dir / "source_balanced_sampler_manifest.csv"),
             "sampler_seed": int(args.seed) if batch7_source_pathology else None,
             "center_sequence_policy": "seeded_shuffled_cycles_count_balanced" if batch7_source_pathology else "",
+            "resume_start_global_step": resume_start_step,
+            "resume_skip_replay_row_count": len(source_balanced_resume_skip_rows),
         }
     )
     (variant_dir / "source_balanced_sampler_summary.json").write_text(
@@ -3232,6 +3407,14 @@ def train_variant(args: argparse.Namespace) -> None:
         "no_improve_validation_events": no_improve_validation_events,
         "actual_optimizer_steps": actual_steps,
         "optimizer_steps": optimizer_steps,
+        "resume_start_global_step": resume_start_step,
+        "completed_global_step": completed_global_step,
+        "total_optimizer_steps_in_series": resume_start_step + optimizer_steps,
+        "resume_training_checkpoint": str(resume_path) if resume_path is not None else "",
+        "resume_training_checkpoint_sha256": sha256_file(resume_path) if resume_path is not None else "",
+        "resume_optimizer_restored": True if resume_payload else None,
+        "batch7_decomposition_schedule": str(getattr(args, "batch7_decomposition_schedule", "") or ""),
+        "batch7_decomposition_schedule_path": str(variant_dir / "batch7_decomposition_schedule.csv"),
         "validation_events": validation_events,
         "validation_event_count": len(validation_events),
         "validation_schedule": sorted(validation_schedule),
@@ -3246,6 +3429,10 @@ def train_variant(args: argparse.Namespace) -> None:
             )
         ),
         "stage_step_counts": stage_counts(actual_steps, args.max_steps),
+        "global_stage_step_counts": {
+            name: sum(1 for global_step in range(resume_start_step + 1, completed_global_step + 1) if stage_for_step(global_step, args.max_steps) == name)
+            for name in ("evidence_warmup", "proposal_dictionary", "soft_roi_refinement", "low_lr_calibration")
+        },
         "first_train_loss": first_train_loss,
         "last_train_loss": last_train_loss,
         "loss_decrease": loss_decrease,
@@ -3418,6 +3605,14 @@ def main() -> None:
     parser.add_argument("--warm-start-checkpoint", default="", help="SRR production checkpoint used as model-state warm start for Batch6 fine-tuning.")
     parser.add_argument("--warm-start-checkpoint-sha256", default="", help="Expected SHA256 for --warm-start-checkpoint.")
     parser.add_argument("--warm-start-allow-architecture-extension", action="store_true", help="Allow missing new Batch7 architecture keys when warm-starting from an older checkpoint.")
+    parser.add_argument("--resume-training-checkpoint", default="", help="Full SRR checkpoint for true optimizer/RNG resume inside Batch7 matched decomposition branches.")
+    parser.add_argument("--resume-training-checkpoint-sha256", default="", help="Expected SHA256 for --resume-training-checkpoint.")
+    parser.add_argument(
+        "--batch7-decomposition-schedule",
+        choices=("", "center_hierarchical_br2_400"),
+        default="",
+        help="Apply the fixed Batch7 BR2 1-50/51-350/351-400 global-step trainability schedule.",
+    )
     parser.add_argument(
         "--batch6-trainable-groups",
         default="",

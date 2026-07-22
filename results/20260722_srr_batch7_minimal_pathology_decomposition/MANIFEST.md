@@ -11,4 +11,6 @@ task: `prompts/tasks/20260722_srr_batch7_minimal_pathology_decomposition_control
 - `br2_staged_gradient_checks.json`: projection-zero staged BR2 gradient chain checks.
 - `availability_mask_checks.csv`: hard modality availability masks by representer.
 - `matched_run_manifest.csv`: static matching contract; runtime rows still pending Slurm execution.
-- `result.md`: executor partial result; not a completion packet.
+- `result.md`: controller-maintained partial result; not a completion packet.
+- `scripts/training/run_srr_batch7_minimal_decomposition.py`: thin orchestration driver for minimal/warmup/no-SIP/SIP branch execution.
+- `jobs/srr_production/run_myops_batch7_minimal_decomposition_{htzhulab,a100}.sh`: Slurm entrypoints for pathology arms.

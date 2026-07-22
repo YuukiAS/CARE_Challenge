@@ -467,15 +467,21 @@ def integrativeness_diagnostic_rows() -> list[dict[str, Any]]:
 def sip_weight_calibration_rows(cfg: dict[str, Any]) -> list[dict[str, Any]]:
     rows: list[dict[str, Any]] = []
     candidates = cfg["sip"].get("lambda_sip_candidates", [])
-    for candidate in candidates:
-        rows.append(
-            {
-                "candidate_lambda_sip": candidate,
-                "calibration_status": "PENDING_RUNTIME_TRAIN_ONLY_CENTER_BALANCED_GRADIENT_RATIO",
-                "target_gradient_ratio": cfg["sip"]["lambda_selection"]["target_gradient_ratio"],
-                "selected": "PENDING",
-            }
-        )
+    target = cfg["sip"]["lambda_selection"]["target_gradient_ratio"]
+    for pathology in ("scar", "edema"):
+        for candidate in candidates:
+            rows.append(
+                {
+                    "pathology": pathology,
+                    "candidate_lambda_sip": candidate,
+                    "selected_lambda": "",
+                    "target_gradient_ratio": target,
+                    "observed_gradient_ratio": "",
+                    "status": "BLOCKING_PENDING_RUNTIME_TRAIN_ONLY_CENTER_BALANCED_GRADIENT_RATIO",
+                    "selected": "PENDING",
+                    "formal_sip_run_allowed": 0,
+                }
+            )
     return rows
 
 
@@ -593,6 +599,52 @@ def write_markdown_files(cfg: dict[str, Any], train_cases: list[str], val_cases:
     )
 
 
+def write_result_markdown() -> None:
+    lines = [
+        f"# Result {TASK_KEY}",
+        "",
+        "status: partial_complete",
+        "self_assessed_status: NEEDS_CONTINUED_EXECUTION",
+        "",
+        "## 执行摘要",
+        "",
+        "当前代码已补上 Batch7 minimal decomposition 的关键 runtime 缺口：现有 MyoPS runner 支持 true resume，恢复 optimizer/RNG 并从 checkpoint global_step+1 继续；Batch7 BR2 schedule 会按 global step 执行 1-50 coefficient/head warmup、51-350 coefficient 与 representer/pathology block 交替、351-400 coefficient/head calibration。",
+        "",
+        "新增 `scripts/training/run_srr_batch7_minimal_decomposition.py` 作为薄 orchestration driver：同一病种先跑 minimal 400，再跑 BR2 warmup 50，然后 no-SIP 与 SIP 从同一个第50步 checkpoint 分叉到 global step 400。source-balanced sampler resume replay 会重放 1-50 的随机消耗，使分叉后的 step 51+ case/patch 序列可匹配。",
+        "",
+        "SIP 权重仍未通过 train-only center-balanced gradient-ratio calibration；driver 会在 `sip_weight_calibration.csv` 没有病种 PASS 行时 fail closed。正式 scar/edema 六组 400-step Slurm、post-completion aggregation、strict validator、mapper final、wiki/CURRENT 终态更新和本地轻量完成提交尚未完成。本文件不是 completion packet。",
+        "",
+        "## 当前新增运行入口",
+        "",
+        "- `scripts/training/run_srr_batch7_minimal_decomposition.py`",
+        "- `jobs/srr_production/run_myops_batch7_minimal_decomposition_htzhulab.sh`",
+        "- `jobs/srr_production/run_myops_batch7_minimal_decomposition_a100.sh`",
+        "",
+        "## 当前硬门状态",
+        "",
+        "- source=metadata.center sampler: implemented and unit-tested",
+        "- availability as observation set: implemented and unit-tested",
+        "- BR2 zero-projection staged gradient: implemented and unit-tested",
+        "- no-SIP/SIP step50 shared-state driver: implemented, print-contract reaches SIP calibration gate",
+        "- SIP train-only calibration: BLOCKING_PENDING_RUNTIME_TRAIN_ONLY_CENTER_BALANCED_GRADIENT_RATIO",
+        "- formal Slurm training: NOT_SUBMITTED",
+        "",
+        "## 验证",
+        "",
+        "- `python -m pytest -q tests/srr_production/test_myops_batch7_minimal_decomposition.py` -> 17 passed",
+        "- `python scripts/srr_production/audit_formal_entrypoints.py --strict` -> failure_count 0",
+        "- `python scripts/training/run_srr_batch7_minimal_decomposition.py --pathology scar --print-contract` -> nonzero at expected SIP calibration hard gate",
+        "",
+        "## 未完成事项",
+        "",
+        "- Generate PASS SIP calibration rows from real train-only center-balanced gradient-ratio checks.",
+        "- Run scar/edema matched Slurm jobs through terminal accounting.",
+        "- Aggregate all 44-case metrics at step 200/400 and apply complete-trimodal/worst-center gates.",
+        "- Run strict validator/known-bad, mapper final, wiki/CURRENT update, and final local commit.",
+    ]
+    (RESULT_ROOT / "result.md").write_text("\n".join(lines) + "\n", encoding="utf-8")
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--config", default="configs/srr_production/myops_batch7_minimal_decomposition.yaml")
@@ -623,6 +675,7 @@ def main() -> int:
     write_csv(RESULT_ROOT / "matched_run_manifest.csv", matched_manifest_rows(cfg))
     (RESULT_ROOT / "sip_formula_unit_tests.json").write_text(json.dumps(sip_unit_tests(), indent=2, sort_keys=True), encoding="utf-8")
     write_markdown_files(cfg, train_cases, val_cases)
+    write_result_markdown()
 
     manifest = [
         "# Manifest",
@@ -638,7 +691,9 @@ def main() -> int:
         "- `br2_staged_gradient_checks.json`: projection-zero staged BR2 gradient chain checks.",
         "- `availability_mask_checks.csv`: hard modality availability masks by representer.",
         "- `matched_run_manifest.csv`: static matching contract; runtime rows still pending Slurm execution.",
-        "- `result.md`: executor partial result; not a completion packet.",
+        "- `result.md`: controller-maintained partial result; not a completion packet.",
+        "- `scripts/training/run_srr_batch7_minimal_decomposition.py`: thin orchestration driver for minimal/warmup/no-SIP/SIP branch execution.",
+        "- `jobs/srr_production/run_myops_batch7_minimal_decomposition_{htzhulab,a100}.sh`: Slurm entrypoints for pathology arms.",
     ]
     (RESULT_ROOT / "MANIFEST.md").write_text("\n".join(manifest) + "\n", encoding="utf-8")
     return 0

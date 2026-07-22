@@ -8,6 +8,8 @@ import torch.nn.functional as F
 
 from scripts.training.run_srr_propref_myops_fold0 import (
     AnchoredCaseData,
+    advance_batch7_sampler_rng,
+    apply_batch7_decomposition_schedule,
     batch_from_source_balanced_case,
     build_source_balanced_center_sequence,
     source_balanced_case_pools,
@@ -25,6 +27,7 @@ from src.care_myocardium.models.srr_propref import (
     BR2_REPRESENTER_SPECS,
     LightweightCenterHierarchicalBR2,
     ProposalDictionary,
+    SRRProposeRefineMyoPS,
 )
 from scripts.evaluation.prepare_srr_batch7_minimal_decomposition_packet import validate_resolved_loss_rows
 
@@ -409,3 +412,96 @@ def test_source_balanced_count_gate_rejects_availability_pattern_manifest_proxy(
 
     assert summary["status"] == "FAIL"
     assert summary["bad_training_source_rows"]
+
+
+
+def _trainable_parameter_names(model: torch.nn.Module) -> set[str]:
+    return {name for name, param in model.named_parameters() if param.requires_grad}
+
+
+def test_batch7_decomposition_schedule_authorizes_only_target_blocks_by_phase() -> None:
+    model = SRRProposeRefineMyoPS(
+        base_channels=4,
+        variant="m10_d3_hierarchical_memory_propref",
+        encoder_profile="tiny_3scale",
+        final_output_mode="anchor_bounded_srr_correction",
+        enable_batch7_decomposition_br2=True,
+    )
+
+    warmup = apply_batch7_decomposition_schedule(model, pathology="scar", step=1, br2_enabled=True)
+    names = _trainable_parameter_names(model)
+    assert warmup["phase"] == "warmup_coefficients_and_target_heads_representers_frozen"
+    assert any(name.startswith("scar_lightweight_br2.beta_pattern") for name in names)
+    assert any(name.startswith("scar_dictionary.") for name in names)
+    assert not any(name.startswith("scar_lightweight_br2.representers.") for name in names)
+    assert not any(name.startswith("edema_dictionary.") for name in names)
+
+    coeff = apply_batch7_decomposition_schedule(model, pathology="scar", step=51, br2_enabled=True)
+    names = _trainable_parameter_names(model)
+    assert coeff["phase"] == "alternate_coefficients"
+    assert names == {"scar_lightweight_br2.beta_pattern", "scar_lightweight_br2.center_deviation_raw"}
+
+    representer = apply_batch7_decomposition_schedule(model, pathology="scar", step=52, br2_enabled=True)
+    names = _trainable_parameter_names(model)
+    assert representer["phase"] == "alternate_representers_and_target_heads"
+    assert any(name.startswith("scar_lightweight_br2.representers.") for name in names)
+    assert any(name.startswith("scar_lightweight_br2.pathology_projection.") for name in names)
+    assert any(name.startswith("scar_dictionary.") for name in names)
+    assert not any(name.startswith("scar_lightweight_br2.beta_pattern") for name in names)
+
+    calibration = apply_batch7_decomposition_schedule(model, pathology="scar", step=351, br2_enabled=True)
+    names = _trainable_parameter_names(model)
+    assert calibration["phase"] == "calibration_coefficients_and_target_heads_representers_frozen"
+    assert any(name.startswith("scar_lightweight_br2.center_deviation_raw") for name in names)
+    assert not any(name.startswith("scar_lightweight_br2.representers.") for name in names)
+
+
+def test_resume_replay_preserves_source_balanced_step_51_case_and_patch() -> None:
+    cases = [
+        _fake_anchored_case("A001", center="CenterA", t2_present=False, c0_present=False, scar=True),
+        _fake_anchored_case("B001", center="CenterB", t2_present=True, c0_present=True, scar=True),
+        _fake_anchored_case("E001", center="CenterE", t2_present=False, c0_present=True, scar=True),
+    ]
+    pools = source_balanced_case_pools(cases, "scar")
+    center_sequence = build_source_balanced_center_sequence(sorted(pools), steps=400, rng=np.random.default_rng(20260722))
+    full_rng = np.random.default_rng(77)
+    replay_rng = np.random.default_rng(77)
+    full_rows = []
+    for step in range(1, 52):
+        *_batch, manifest = batch_from_source_balanced_case(
+            pools=pools,
+            step=step,
+            patch_shape=(3, 3, 3),
+            rng=full_rng,
+            pathology="scar",
+            oversample_foreground=1.0,
+            center_sequence=center_sequence,
+        )
+        full_rows.append(manifest)
+    replay_rows = advance_batch7_sampler_rng(
+        pools=pools,
+        through_step=50,
+        patch_shape=(3, 3, 3),
+        rng=replay_rng,
+        pathology="scar",
+        oversample_foreground=1.0,
+        center_sequence=center_sequence,
+    )
+    *_batch, resumed_manifest = batch_from_source_balanced_case(
+        pools=pools,
+        step=51,
+        patch_shape=(3, 3, 3),
+        rng=replay_rng,
+        pathology="scar",
+        oversample_foreground=1.0,
+        center_sequence=center_sequence,
+    )
+
+    assert len(replay_rows) == 50
+    assert replay_rows[-1]["resume_skip_replay"] is True
+    assert resumed_manifest["selected_case_id"] == full_rows[-1]["selected_case_id"]
+    assert resumed_manifest["selected_center"] == full_rows[-1]["selected_center"]
+    assert resumed_manifest["patch_source"] == full_rows[-1]["patch_source"]
+    assert resumed_manifest["patch_center_z"] == full_rows[-1]["patch_center_z"]
+    assert resumed_manifest["patch_center_y"] == full_rows[-1]["patch_center_y"]
+    assert resumed_manifest["patch_center_x"] == full_rows[-1]["patch_center_x"]
