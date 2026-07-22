@@ -1,8 +1,9 @@
-current_milestone_id: Batch7_lightweight_BR2_SIP_decomposition_ready
+current_milestone_id: Batch7_center_hierarchical_BR2_SIP_decomposition_ready
 current_task_key: 20260722_srr_batch7_minimal_pathology_decomposition
 current_plan_path: docs/plans/laneB_round04_active_srr_batch7_minimal_pathology_decomposition_execution.md
 current_controller_path: prompts/tasks/20260722_srr_batch7_minimal_pathology_decomposition_controller.md
 current_config_path: configs/srr_production/myops_batch7_minimal_decomposition.yaml
+current_comprehensive_audit_path: results/srr_production/code_maturity/batch7_br2_sip_comprehensive_architecture_audit_20260722.md
 current_result_root: results/20260722_srr_batch7_minimal_pathology_decomposition
 current_review_path: null
 current_review_token: NOT_REVIEWED_CONTROLLER_READY
@@ -11,7 +12,7 @@ source_terminal_commit: 0fcc3ff605112a0efeab73f3df2f83249793d321
 source_checkpoint_sha256: d34ad65890cbb6a12aac3fc35bcab71709d680bff5a3aae2d93e010db1cc0e0d
 architecture_path: wiki/architecture.yaml
 component_table_path: wiki/COMPONENTS.csv
-wiki_fingerprint_status: CURRENT_STATE_UPDATED_DIAGRAMS_REMAIN_IMPLEMENTATION_VIEW
+wiki_fingerprint_status: PLAN_UPDATED_DIAGRAMS_AND_COMPONENT_FINGERPRINT_PENDING_IMPLEMENTATION
 updated_at: '2026-07-22'
 
 batch7_repair_terminal:
@@ -41,7 +42,7 @@ batch7_repair_terminal:
     - anchor_free_coverage_missing_t2_and_center_c_complete_cases
 
 r2_br2_sip_decision:
-  representation_retrieval_paper_line: RETAIN
+  representation_retrieval_paper_line: RETAIN_AS_CANDIDATE
   current_m10_spatial_dictionary: DO_NOT_USE_IN_FORMAL_DECOMPOSITION
   current_prototype_maps: DO_NOT_USE_IN_FORMAL_DECOMPOSITION
   current_semantic_negative_memory: DO_NOT_USE_IN_FORMAL_DECOMPOSITION
@@ -49,13 +50,23 @@ r2_br2_sip_decision:
   legacy_pattern_sip_integrativeness: HISTORICAL_ONLY_WEIGHT_ZERO
   new_lightweight_br2: REQUIRED_MATCHED_ABLATION
   new_br2_sip: REQUIRED_NO_SIP_VS_SIP_ABLATION
-  source_definition: availability_pattern_only
-  source_patterns: [lge_only, lge_c0, lge_t2_c0]
-  center_router_input: FORBIDDEN
-  no_cross_source_representer_sip_policy: EXCLUDE_IF_OBSERVATION_SET_SIZE_AT_MOST_ONE
+  paper_source_semantics: acquisition_center
+  source_observation_set: availability_vector
+  training_source_index: metadata_center
+  deployment_source_index: availability_pattern_pooled
+  center_network_input: FORBIDDEN
+  validation_center_specific_beta: FORBIDDEN
+  coefficient_type: SIGNED_SPATIALLY_GLOBAL
+  softmax_simplex_topk_coefficient: FORBIDDEN
+  image_conditioned_coefficient_residual: FORBIDDEN
+  representer_rms_normalization: REQUIRED
+  beta_hierarchy: beta_center_equals_beta_pattern_plus_center_deviation
+  no_t2_edema_beta_sip_loss_membership: FORBIDDEN
+  original_dense_segmentation_theory_claim: FORBIDDEN
+  causal_center_missingness_separation_claim: FORBIDDEN
 
 batch7_minimal_decomposition:
-  status: READY_FOR_CONTROLLER_AMENDED_TO_LIGHTWEIGHT_BR2_SIP
+  status: READY_FOR_CONTROLLER_COMPREHENSIVE_CENTER_HIERARCHICAL_BR2_SIP
   objective: final_retain_or_retire_decision_for_minimal_BR2_and_SIP
   experiments:
     - scar_minimal
@@ -66,6 +77,9 @@ batch7_minimal_decomposition:
     - edema_br2_sip
   optimizer_steps_each: 400
   eval_steps: [200, 400]
+  source_balanced_sampling: true
+  complete_trimodal_safety_gate: true
+  worst_positive_center_safety_gate: true
   required_terminal_decisions:
     - scar_minimal
     - scar_br2
