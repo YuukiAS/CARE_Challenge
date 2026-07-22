@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
+import pytest
 import torch
 
 from scripts.training.run_srr_propref_myops_fold0 import (
@@ -11,7 +12,13 @@ from scripts.training.run_srr_propref_myops_fold0 import (
 )
 from src.care_myocardium.models.srr_dictionary_memory import deterministic_memory_shard
 from src.care_myocardium.models.srr_propref import SRRProposeRefineMyoPS
-from src.care_myocardium.srr_production.checkpoint import load_srr_checkpoint, save_srr_checkpoint
+from src.care_myocardium.srr_production.checkpoint import (
+    _rng_byte_tensor_on_cpu,
+    capture_rng_state,
+    load_srr_checkpoint,
+    restore_rng_state,
+    save_srr_checkpoint,
+)
 
 
 def test_memory_query_policy_training_vs_inference_shards() -> None:
@@ -118,3 +125,18 @@ def test_schema_v2_checkpoint_loads_model_memory_and_optimizer(tmp_path: Path) -
     assert int(payload["global_step"]) == 0
     assert int(reloaded.cross_fitted_memory.positive_counts[0, 0, 0]) == 1
     assert float(reloaded.cross_fitted_memory.positive_mu[0, 0, 0, 0]) == 0.25
+
+
+def test_rng_restore_normalizes_cuda_mapped_cpu_rng_state() -> None:
+    state = capture_rng_state()
+    if torch.cuda.is_available():
+        state["torch_cpu"] = state["torch_cpu"].cuda()
+        with pytest.raises(TypeError, match="RNG state must be a torch.ByteTensor"):
+            torch.random.set_rng_state(state["torch_cpu"])
+    else:
+        state["torch_cpu"] = state["torch_cpu"].clone()
+
+    normalized = _rng_byte_tensor_on_cpu(state["torch_cpu"], name="torch_cpu")
+    assert normalized.device.type == "cpu"
+    assert normalized.dtype == torch.uint8
+    restore_rng_state(state)

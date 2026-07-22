@@ -25,12 +25,27 @@ def capture_rng_state() -> dict[str, Any]:
     return state
 
 
+def _rng_byte_tensor_on_cpu(value: Any, *, name: str) -> torch.ByteTensor:
+    if isinstance(value, torch.Tensor):
+        tensor = value.detach().to(device="cpu")
+    else:
+        tensor = torch.as_tensor(value, dtype=torch.uint8, device="cpu")
+    if tensor.dtype != torch.uint8:
+        raise TypeError(f"{name} RNG state must be torch.uint8, got {tensor.dtype}")
+    return tensor.contiguous()
+
+
 def restore_rng_state(state: dict[str, Any]) -> None:
     random.setstate(state["python"])
     np.random.set_state(state["numpy"])
-    torch.random.set_rng_state(state["torch_cpu"])
+    torch.random.set_rng_state(_rng_byte_tensor_on_cpu(state["torch_cpu"], name="torch_cpu"))
     if torch.cuda.is_available() and state.get("torch_cuda"):
-        torch.cuda.set_rng_state_all(state["torch_cuda"])
+        torch.cuda.set_rng_state_all(
+            [
+                _rng_byte_tensor_on_cpu(cuda_state, name=f"torch_cuda[{index}]")
+                for index, cuda_state in enumerate(state["torch_cuda"])
+            ]
+        )
 
 
 def save_srr_checkpoint(
