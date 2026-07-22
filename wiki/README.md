@@ -1,12 +1,29 @@
 # CARE 架构 Wiki
 
-architecture_version: `care-srr-batch7-center-hierarchical-br2-sip-decomposition-ready`
-latest_verified_runtime: `Batch7 repair stopped at proposal gate`
-latest_scientific_status: `truthful repair evidence; current complex dictionary low leverage; deployable BR2/SIP ablation ready`
+architecture_version: `care-srr-batch7-minimal-decomposition-terminal-negative-signal`
+latest_verified_runtime: `Batch7 minimal decomposition six matched runs complete`
+latest_scientific_status: `six-run minimal BR2 SIP ablation complete; MyoPS SRR signal negative; return to Planner`
 latest_controller_task: `20260722_srr_batch7_minimal_pathology_decomposition`
 route_status: `MAIN_ONLY_FINAL_CENTER_HIERARCHICAL_BR2_SIP_DECOMPOSITION_NO_PROMOTION`
 
 本页是 GPT、Controller、Executor、Mapper 和 Planner 读取当前架构状态的根入口。Batch7 repair 已经补齐真实独立干预、语义记忆、anchor-free discovery代码路径和strict validator，但600步proposal stage仍继承历史混合M10 loss，不能作为纯proposal或R2/BR2的最终否定。
+
+
+## Batch7 minimal decomposition terminal result
+
+```text
+scar_minimal: RETIRE
+scar_br2: NOT_APPLICABLE
+scar_sip: NOT_APPLICABLE
+edema_minimal: RETIRE
+edema_br2: NOT_APPLICABLE
+edema_sip: NOT_APPLICABLE
+scar job: 59992434 COMPLETED 0:0
+edema job: 59994167 COMPLETED 0:0
+aggregation: PASS
+```
+
+Batch7 completed the six matched 400-step fold0 MyoPS experiments. The result is negative for retaining this minimal/BR2/SIP SRR path: minimal did not pass the retain gate for scar or edema, so BR2 and SIP are not applicable as retained components. Return to Planner; do not proceed to Batch8, refiner, arbiter, gate, Cine, fold expansion, upload, or hosted metric claims from this packet.
 
 ## 当前图
 

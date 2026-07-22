@@ -382,7 +382,10 @@ def validate_slurm_and_completion(result_root: Path, *, final: bool) -> list[str
     if not attempts:
         errors.append("empty_slurm_attempts")
     if final:
+        latest_attempts: dict[tuple[str, str], dict[str, str]] = {}
         for row in attempts:
+            latest_attempts[(row.get("job_id", ""), row.get("attempt_label", ""))] = row
+        for row in latest_attempts.values():
             state = row.get("state_at_record", "")
             evidence = row.get("completion_evidence", "")
             if state not in {"COMPLETED", "FAILED", "CANCELLED", "TIMEOUT", "PREEMPTED"}:

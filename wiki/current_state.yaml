@@ -1,19 +1,19 @@
-current_milestone_id: Batch7_center_hierarchical_BR2_SIP_decomposition_ready
+current_milestone_id: Batch7_minimal_decomposition_terminal_negative_signal
 current_task_key: 20260722_srr_batch7_minimal_pathology_decomposition
 current_plan_path: docs/plans/laneB_round04_active_srr_batch7_minimal_pathology_decomposition_execution.md
 current_controller_path: prompts/tasks/20260722_srr_batch7_minimal_pathology_decomposition_controller.md
 current_config_path: configs/srr_production/myops_batch7_minimal_decomposition.yaml
 current_comprehensive_audit_path: results/srr_production/code_maturity/batch7_br2_sip_comprehensive_architecture_audit_20260722.md
 current_result_root: results/20260722_srr_batch7_minimal_pathology_decomposition
-current_review_path: null
-current_review_token: NOT_REVIEWED_CONTROLLER_READY
+current_review_path: results/20260722_srr_batch7_minimal_pathology_decomposition/mapper_report_final.md
+current_review_token: BATCH7_MINIMAL_DECOMPOSITION_CONTROLLER_VERIFIED
 controller_bind_latest_main: true
 source_terminal_commit: 0fcc3ff605112a0efeab73f3df2f83249793d321
 source_checkpoint_sha256: d34ad65890cbb6a12aac3fc35bcab71709d680bff5a3aae2d93e010db1cc0e0d
 architecture_path: wiki/architecture.yaml
 component_table_path: wiki/COMPONENTS.csv
-wiki_fingerprint_status: PLAN_UPDATED_DIAGRAMS_AND_COMPONENT_FINGERPRINT_PENDING_IMPLEMENTATION
-updated_at: '2026-07-22'
+wiki_fingerprint_status: BATCH7_TERMINAL_PACKET_VERIFIED
+updated_at: '2026-07-22T05:30:00-04:00'
 
 batch7_repair_terminal:
   result_root: results/20260721_srr_batch7_mechanism_closure_repair
@@ -66,7 +66,7 @@ r2_br2_sip_decision:
   causal_center_missingness_separation_claim: FORBIDDEN
 
 batch7_minimal_decomposition:
-  status: READY_FOR_CONTROLLER_COMPREHENSIVE_CENTER_HIERARCHICAL_BR2_SIP
+  status: VERIFIED_COMPLETE_NEGATIVE_SIGNAL
   objective: final_retain_or_retire_decision_for_minimal_BR2_and_SIP
   experiments:
     - scar_minimal
@@ -96,3 +96,13 @@ batch7_minimal_decomposition:
   fold_expansion_authorized: false
   cine_authorized: false
   validation_upload_authorized: false
+
+  terminal_result:
+    scar_minimal: RETIRE
+    scar_br2: NOT_APPLICABLE
+    scar_sip: NOT_APPLICABLE
+    edema_minimal: RETIRE
+    edema_br2: NOT_APPLICABLE
+    edema_sip: NOT_APPLICABLE
+    aggregation_status: PASS
+    next_required_action: RETURN_TO_PLANNER

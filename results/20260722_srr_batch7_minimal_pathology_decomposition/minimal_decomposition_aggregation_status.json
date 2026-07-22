@@ -1,6 +1,7 @@
 {
   "completed_pathologies": [
+    "edema",
     "scar"
   ],
-  "status": "PARTIAL"
+  "status": "PASS"
 }

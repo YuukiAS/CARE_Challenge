@@ -610,15 +610,23 @@ def test_minimal_decomposition_validator_accepts_static_preflight_packet() -> No
     assert errors == []
 
 
-def test_minimal_decomposition_validator_rejects_static_packet_as_final_completion() -> None:
+def test_minimal_decomposition_validator_accepts_final_packet() -> None:
     errors = validate_packet(BATCH7_RESULT_ROOT, _batch7_cfg(), final=True)
+
+    assert errors == []
+
+
+def test_minimal_decomposition_validator_rejects_incomplete_final_packet(tmp_path) -> None:
+    packet = _copy_batch7_packet(tmp_path)
+    (packet / "edema_casewise_metrics.csv").unlink()
+    errors = validate_packet(packet, _batch7_cfg(), final=True)
 
     assert any(error.startswith("missing_or_empty:edema_casewise_metrics.csv") for error in errors)
     assert not any(error.startswith("missing_or_empty:scar_casewise_metrics.csv") for error in errors)
     assert not any(error == "known_bad_packet_not_rejected" for error in errors)
 
 
-def test_minimal_decomposition_validator_strict_cli_is_final_fail_closed() -> None:
+def test_minimal_decomposition_validator_strict_cli_accepts_final_packet() -> None:
     result = subprocess.run(
         [
             sys.executable,
@@ -631,8 +639,29 @@ def test_minimal_decomposition_validator_strict_cli_is_final_fail_closed() -> No
         capture_output=True,
     )
 
-    assert result.returncode == 1
+    assert result.returncode == 0
     assert "unrecognized arguments" not in result.stderr
+    assert "Batch7 minimal decomposition validator passed (final)" in result.stdout
+
+
+def test_minimal_decomposition_validator_strict_cli_rejects_incomplete_final_packet(tmp_path) -> None:
+    packet = _copy_batch7_packet(tmp_path)
+    (packet / "edema_casewise_metrics.csv").unlink()
+    result = subprocess.run(
+        [
+            sys.executable,
+            str(REPO_ROOT / "scripts/evaluation/validate_srr_batch7_minimal_decomposition_packet.py"),
+            "--strict",
+            "--result-root",
+            str(packet),
+        ],
+        cwd=REPO_ROOT,
+        check=False,
+        text=True,
+        capture_output=True,
+    )
+
+    assert result.returncode == 1
     assert "missing_or_empty:edema_casewise_metrics.csv" in result.stderr
     assert "missing_or_empty:scar_casewise_metrics.csv" not in result.stderr
 

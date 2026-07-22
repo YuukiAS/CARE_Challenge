@@ -18,3 +18,12 @@ task: `prompts/tasks/20260722_srr_batch7_minimal_pathology_decomposition_control
 - `scripts/evaluation/aggregate_srr_batch7_minimal_decomposition.py`: post-runtime aggregator for six matched 400-step runs and 44-case step200/400 metrics.
 - `scripts/evaluation/validate_srr_batch7_minimal_decomposition_packet.py`: fail-closed preflight/final validator with known-bad support.
 - `slurm_attempts.csv`: Slurm routing ledger; pending/preflight rows are monitor-only and never completion evidence.
+## Terminal packet additions
+
+- `scar_casewise_metrics.csv`, `edema_casewise_metrics.csv`: 44-case step 200/400 metric rows.
+- `deployment_subgroup_metrics.csv`: complete-trimodal, CenterB/CenterC, positive-center and worst-center summaries.
+- `pathology_decision_matrix.csv`: terminal retain/remove decisions.
+- `claim_boundary.md`: allowed and forbidden claim boundary.
+- `controller_report.md`: executor evidence report for controller verification.
+- `completion_check.md`: terminal completion check.
+- `mapper_report_final.md`: mapper final architecture/evidence pass.

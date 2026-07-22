@@ -1,7 +1,7 @@
-architecture_version: care-srr-batch6-final-objective-alignment-stop300
-verified_at_utc: '2026-07-21T06:45:00-04:00'
-verified_milestone: Batch6 final objective alignment controller packet
-review_token: NOT_REVIEWED_CONTROLLER_VERIFIED
+architecture_version: care-srr-batch7-minimal-decomposition-terminal-negative-signal
+verified_at_utc: '2026-07-22T05:30:00-04:00'
+verified_milestone: Batch7 minimal pathology decomposition controller packet
+review_token: BATCH7_MINIMAL_DECOMPOSITION_CONTROLLER_VERIFIED
 verification_base_commit: f700ee5f739f8291532b35df7a6c99a56b54d9e6
 code_fingerprint: srr_propref=8b98ac43;srr_losses=eaabe101;run_myops=e9f531b0;infer_myops=df3922d7;batch6_formal=8619856a;batch6_validator=635f0157;batch6_config=9922ba2c
 evidence_fingerprint: batch6_packet=results/20260721_srr_batch6_final_objective_alignment/MANIFEST.md;formal300=results/20260721_srr_batch6_final_objective_alignment/training_adequacy.json

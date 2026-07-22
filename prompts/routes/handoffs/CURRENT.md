@@ -17,8 +17,8 @@ batch6_scientific_status: FINAL_OBJECTIVE_REPAIRED_BUT_BELOW_USABLE_SIGNAL
 batch7_operational_status: FORMAL300_COMPLETE_STOP_GATE
 batch7_repair_operational_status: VERIFIED_COMPLETE_STOPPED_AT_PROPOSAL_GATE
 batch7_repair_scientific_status: TRUTHFUL_EVIDENCE_BUT_PROPOSAL_STAGE_LOSS_AUTHORITY_IMPURE
-batch7_minimal_decomposition_status: READY_FOR_CONTROLLER_COMPREHENSIVE_CENTER_HIERARCHICAL_BR2_SIP
-next_required_action: RUN_BATCH7_MINIMAL_PATHOLOGY_DECOMPOSITION
+batch7_minimal_decomposition_status: VERIFIED_COMPLETE_NEGATIVE_SIGNAL
+next_required_action: RETURN_TO_PLANNER_FOR_SRRMyoPS_STOP_OR_NEW_DIRECTION_DECISION
 planning_review_required: false
 review_required: false
 controller_is_coordinator: true
@@ -122,6 +122,24 @@ remote-FP relative worsening max: 0.0530525167
 ```
 
 它真实补齐独立干预、identity零变化、真实category memory、anchor-free discovery代码路径和strict validator。但Planner复核发现proposal stage传入空loss JSON，历史混合M10 loss继续参与，不能作为纯proposal或R2/BR2的最终否定。
+
+
+### Batch 7 minimal pathology decomposition terminal packet
+
+```text
+terminal local commit: recorded_by_this_local_packet_commit
+scar job: 59992434 COMPLETED 0:0
+edema job: 59994167 COMPLETED 0:0
+aggregation status: PASS
+scar_minimal: RETIRE
+scar_br2: NOT_APPLICABLE
+scar_sip: NOT_APPLICABLE
+edema_minimal: RETIRE
+edema_br2: NOT_APPLICABLE
+edema_sip: NOT_APPLICABLE
+```
+
+Minimal proposal did not meet the retain gate for either scar or edema. BR2 and SIP are therefore not retained for this MyoPS SRR line. This does not authorize Batch8, refiner, arbiter, gate, Cine, fold expansion, upload, hosted metric claims, or route promotion.
 
 ## 论文与数据适配审计
 
