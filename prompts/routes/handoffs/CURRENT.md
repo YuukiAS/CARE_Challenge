@@ -1,32 +1,31 @@
 # CARE 当前开发状态
 
-本文件是当前 CARE 主线工作的机器真值。任何新的规划、实现、训练、推理、评价或状态判断都必须先读取本文件。
+本文件是当前 CARE 主线工作的机器真值。新的规划、执行、训练、评价和状态判断必须先读取本文件。
 
 ## 当前状态
 
 ```text
-state_id: srr_mainline_batch7_mechanism_closure_repair_terminal_20260721
+state_id: srr_mainline_batch7_minimal_pathology_decomposition_ready_20260722
 round_id: post_round04_main_only
-state_updated_date: 2026-07-21
+state_updated_date: 2026-07-22
 active_development_branch: main
 active_worktree: /users/a/e/aereinh/CARE
 portfolio_mode: SUSPENDED
 route_worktree_development_authorized: false
 single_active_scientific_line: SRR_MyoPS_from_historical_Route_B_lineage
-batch4_operational_status: VERIFIED_COMPLETE
-batch4_scientific_status: TRAINED_BUT_NEAR_BASELINE
-batch5_operational_status: CONTROLLER_VERIFIED_COMPLETE
-batch5_scientific_status: DIAGNOSTIC_PACKET_REQUIRED_REPAIR
-batch6_operational_status: CONTROLLER_VERIFIED_COMPLETE_STOP_AT_300
 batch6_scientific_status: FINAL_OBJECTIVE_REPAIRED_BUT_BELOW_USABLE_SIGNAL
-batch7_operational_status: FORMAL300_COMPLETED_STOP_GATE
-batch7_scientific_status: MECHANISM_REPAIR_CONNECTED_BUT_PROPOSAL_CHAIN_INADEQUATE
-batch7_repair_status: VERIFIED_COMPLETE_STOPPED_AT_PROPOSAL_GATE
-next_required_action: PLANNER_DECIDE_POST_PROPOSAL_CHAIN_INADEQUATE
+batch7_operational_status: FORMAL300_COMPLETE_STOP_GATE
+batch7_repair_operational_status: VERIFIED_COMPLETE_STOPPED_AT_PROPOSAL_GATE
+batch7_repair_scientific_status: TRUTHFUL_EVIDENCE_BUT_PROPOSAL_STAGE_LOSS_AUTHORITY_IMPURE
+batch7_minimal_decomposition_status: READY_FOR_CONTROLLER
+next_required_action: RUN_BATCH7_MINIMAL_PATHOLOGY_DECOMPOSITION
 planning_review_required: false
 review_required: false
 controller_is_coordinator: true
 batch8_authorized: false
+refiner_training_authorized: false
+source_arbiter_training_authorized: false
+production_gate_training_authorized: false
 fold_expansion_authorized: false
 cine_training_authorized: false
 backbone_replacement_authorized: false
@@ -36,7 +35,7 @@ route_promotion_authorized: false
 final_scientific_decision_authorized: false
 ```
 
-## 当前开发边界
+## 开发边界
 
 只允许在：
 
@@ -45,18 +44,9 @@ final_scientific_decision_authorized: false
 main
 ```
 
-开发。不得写入：
+开发。不得写入 `/overflow/htzhu/CARE` 或历史 Route A/B/C worktree。Route A/B/C 只保留 lineage 和历史证据。
 
-```text
-/overflow/htzhu/CARE
-/users/a/e/aereinh/CARE_worktrees/route_A
-/users/a/e/aereinh/CARE_worktrees/route_B
-/users/a/e/aereinh/CARE_worktrees/route_C
-```
-
-Route A/B/C 仅保留历史证据和 lineage，不是 active development branches。
-
-## 当前默认 Agent Flow
+## 当前流程
 
 ```text
 Planner
@@ -69,45 +59,33 @@ Planner
 -> Planner
 ```
 
-Controller 是 coordinator 和 acceptance owner。Executor 不能自行宣布任务完成。Controller 必须检查真实 diff、模型运行、独立 prediction roots、hash、测试、semantic memory、Slurm、aggregation、CURRENT/wiki/fingerprint，并在同范围内要求 Executor 修复。
+Controller 必须检查真实 diff、resolved loss、loss-specific gradient、训练冻结范围、匹配实验、Slurm、aggregation、CURRENT/wiki/fingerprint。普通实现和证据问题必须在当前任务内修复，不得直接退回用户。
 
-## SRR 图与路线目标
+## SRR 图与仍保留的目标
 
-Planner 已视觉读取 ChatGPT Project 材料中的：
+Planner 已视觉读取 ChatGPT Project 材料中的 SRR-v2、SRR-v2.5、SRR-v3。
 
-```text
-SRR-v2
-SRR-v2.5
-SRR-v3
-visual_read_status: COMPLETE
-```
-
-当前仍保留的路线目标：
+仍保留的高层目标是：
 
 ```text
-[LGE,T2,C0] + availability
--> modality-specific multi-scale encoding
--> availability-aware shared/private/interaction retrieval
--> real prototype and semantic negative memory
--> anatomy-guided anchor-free discovery + anchor-confirmation proposals
--> pathology-specific scar/edema soft-ROI refinement
--> source selection
--> directly supervised bounded nnU-Net correction
+observed-modality-only encoding
+-> availability-aware retrieval
+-> pathology proposal
+-> optional evidence-proven dictionary
+-> pathology-specific refinement only after proposal success
+-> bounded nnU-Net correction
 ```
 
-nnU-Net 只能作为 baseline、anchor、context、error signal 和 safety source，不能替代 SRR。
+高层思想尚未被当前证据否定，但复杂 dictionary、memory、refiner 和 arbiter 不再默认保留，必须分别证明增量价值。
 
-## 已确认结果
+## 已确认的历史结果
 
 ### Batch 6
 
 ```text
-selected checkpoint SHA256: 729c81e49bf846339ed2f39ef0f2656319befd2b9cfe73268d7cf501e6b40fbd
-formal300: COMPLETED
 edema positive Dice delta: +0.0027247487
 scar positive Dice delta: +0.0006739682
 mean positive Dice delta: +0.0016993584
-formal900: skipped after gate fail
 ```
 
 Batch 6 修通 final pathology supervision 和 production gate，但收益不足。
@@ -116,78 +94,19 @@ Batch 6 修通 final pathology supervision 和 production gate，但收益不足
 
 ```text
 terminal commit: 4c79554de785030ed59081ce3ae233711efc062a
-selected checkpoint SHA256: d34ad65890cbb6a12aac3fc35bcab71709d680bff5a3aae2d93e010db1cc0e0d
-job: 59789651 COMPLETED 0:0
-optimizer steps: 300
-full-volume eval: 100,200,300
 edema positive Dice delta: +0.0054302188
 scar positive Dice delta: -0.0048258512
 mean positive Dice delta: +0.0003021838
 help/harm: 23/35
-formal1200: skipped after gate fail
-no-T2 edema exact zero: true
 ```
 
-这证明当前联合模型未达到继续门，但不能作为完整 SRR 设计的有效否定，因为机制证据没有闭环。
+原 Batch 7 机制表因复制指标、identity 非零和 placeholder 已被 supersede。
 
-## Batch 7 机制证据失效原因
-
-以下原 Batch7 文件不得用于机制结论：
+### Batch 7 mechanism closure repair
 
 ```text
-results/20260721_srr_batch7_upstream_candidate_quality/final_mechanism_interventions.csv
-results/20260721_srr_batch7_upstream_candidate_quality/proposal_refiner_metrics.csv
-results/20260721_srr_batch7_upstream_candidate_quality/source_arbiter_metrics.csv
-```
-
-原因：
-
-1. 所有 intervention mode 被写入同一组 formal300 指标；
-2. identity 相对 anchor 不为零；
-3. proposal-only 和 scar refiner-only 正式指标为空；
-4. source arbiter 只有 softmax 单元测试，没有 44 例效果；
-5. validator 没有拒绝 placeholder、复制指标和复用预测；
-6. named semantic negative memory 没有逐类替换真实 bank；
-7. discovery retrieval 仍间接读取 nnU-Net context；
-8. CURRENT 和 root wiki 没有在 terminal packet 后正确收尾。
-
-原 Batch7 的 `controller_verification_decision: VERIFIED_COMPLETE` 只保留为 formal300 操作流程完成，不代表 mechanism closure 完成。
-
-## 当前唯一任务
-
-```text
-BATCH7_MECHANISM_CLOSURE_REPAIR_TERMINAL_PACKET_REVIEW
-```
-
-权威文件顺序：
-
-```text
-1. results/srr_production/code_maturity/batch7_planner_audit_and_mechanism_closure_decision.md
-2. docs/plans/laneB_round04_active_srr_batch7_mechanism_closure_repair_execution.md
-3. configs/srr_production/myops_batch7_repair.yaml
-4. prompts/tasks/20260721_srr_batch7_mechanism_closure_repair_controller.md
-5. prompts/tasks/20260721_srr_batch7_mechanism_closure_repair_executor_plan.yaml
-6. results/20260721_srr_batch7_upstream_candidate_quality/
-7. results/20260721_srr_batch6_final_objective_alignment/
-```
-
-## Batch7 repair 执行结果
-
-```text
-B7R-00 COMPLETE
-B7R-01 COMPLETE
-B7R-02 COMPLETE
-B7R-03 COMPLETE
-B7R-04 COMPLETE_STOPPED_AT_PROPOSAL_GATE
-B7R-05 NOT_RUN_PROPOSAL_GATE_FAILED
-B7R-06 NOT_RUN_PROPOSAL_GATE_FAILED
-B7R-07 COMPLETE_TERMINAL_PACKET_WRITTEN
-```
-
-Proposal gate evidence:
-
-```text
-job: 59828884 FAILED 2:0 as encoded continuation-gate stop
+terminal commit: 0fcc3ff605112a0efeab73f3df2f83249793d321
+proposal job: 59828884
 optimizer steps: 600
 selected checkpoint SHA256: a2412889d55a0e3eee0ca2d57a77f34db0f10f0a069193cc906785f49fae97f1
 mean positive Dice delta: +0.0012229660
@@ -197,58 +116,112 @@ help/harm: 25/27
 remote-FP relative worsening max: 0.0530525167
 ```
 
-## 关键执行门
-
-在任何新训练前必须满足：
+本轮真实补齐了：
 
 ```text
-each intervention has its own 44-case prediction root and manifest
-identity and gate-closed changed voxels = 0 for every case
-identity softmax max abs delta <= 1e-6
-no placeholder or copied metrics
-old Batch7 copied table rejected by known-bad test
-named semantic memory real by category or valid-mask disabled
-discovery logits invariant to anchor confirmation context <=1e-6
-confirmation logits change under zeroed anchor context >1e-5
+independent 44-case interventions
+identity and gate-closed exact zero
+real category semantic memory with hashes and valid masks
+anchor-free discovery implementation check
+600-step proposal stage
+strict known-bad validator
 ```
 
-Proposal-only 阶段继续门：
+因此它不是原 Batch 7 那种全面占位失败。
+
+## Planner 复核发现的剩余问题
+
+### 1. Proposal stage loss authority 不纯
+
+Stage wrapper 传入空 `--loss-weight-json {}`。M10 variant 因此继续使用历史默认混合 loss：refiner、anchor preservation、correction opportunity、branch arbitration、bounded correction、dictionary regularization、prototype/memory 和 refiner-effect 等仍可能参与；新的 discovery/confirmation direct loss默认却为零。
+
+因此 600 步结果不是“纯 proposal 训练后的充分负结果”。
+
+### 2. Gradient authority 只证明连接
+
+当前检查对 proposal logits 均值 backward，而不是对正式非零 loss逐项 backward。它不能证明训练目标方向正确，也没有证明梯度只进入授权模块。
+
+### 3. Anchor-free discovery 测试覆盖不足
+
+当前只检查验证集前两个 LGE-only 病例，没有覆盖 T2-present edema 和 CenterC完整多模态病例。
+
+### 4. 具体组件已经出现负证据
+
+真实 intervention 显示：
 
 ```text
-mean positive Dice delta >= +0.003
-scar Dice delta >= -0.001
-edema Dice delta >= +0.003
+semantic negative memory off 后 edema 更好，scar几乎不变
+prototype maps 对 edema贡献约 +0.0007，对 scar无稳定收益
+scar proposal/refiner/learned-source/gate-one均为负
+no-anchor仍严重崩溃
+```
+
+这说明当前 semantic memory 和复杂 dictionary 的杠杆很低，scar 与 edema 共享 proposal/dictionary训练存在明显冲突。
+
+## 当前唯一任务
+
+```text
+BATCH7_FINAL_MINIMAL_PATHOLOGY_DECOMPOSITION
+```
+
+权威文件顺序：
+
+```text
+1. results/srr_production/code_maturity/batch7_repair_planner_audit_and_minimal_decomposition_decision_20260722.md
+2. docs/plans/laneB_round04_active_srr_batch7_minimal_pathology_decomposition_execution.md
+3. configs/srr_production/myops_batch7_minimal_decomposition.yaml
+4. prompts/tasks/20260722_srr_batch7_minimal_pathology_decomposition_controller.md
+5. prompts/tasks/20260722_srr_batch7_minimal_pathology_decomposition_executor_plan.yaml
+6. results/20260721_srr_batch7_mechanism_closure_repair/
+```
+
+## 执行阶段
+
+```text
+B7D-00 bind latest evidence and source checkpoint
+B7D-01 implement explicit loss authority and matched variant gates
+B7D-02 train scar_minimal and scar_dictionary, 400 steps each
+B7D-03 train edema_minimal and edema_dictionary, 400 steps each
+B7D-04 write final RETAIN/RETIRE decisions and update state
+```
+
+四个实验必须从相同 checkpoint 开始、使用相同 seed、病例顺序、patch centers、optimizer、步数、评价和 decode。Dictionary pair只允许 prototype maps/spatial dictionary开关不同；semantic negative memory不得进入正式训练。
+
+## 最终保留或删除门
+
+Minimal proposal 保留：
+
+```text
+positive-case Dice delta >= +0.003
 help >= harm
-HD95 and remote-FP worsening <=5%
+HD95 relative worsening <=5%
+remote-FP relative worsening <=5%
 no-T2 edema exact zero
 ```
 
-Proposal 阶段已经失败，downstream refiner、source arbiter 和 production gate 训练均未运行。
+Dictionary 只有相对同病种 minimal额外提高 `>=+0.001` 且安全不恶化才保留。
 
-Scar/edema refiner 必须分别优于本病种 proposal 至少 `+0.001` 才允许进入正式 source；失败 refiner 必须 hard-disable，不能继续平均。
-
-最终 production gate 候选门：
+终态必须写出：
 
 ```text
-mean positive Dice delta >= +0.005
-each pathology Dice delta >= 0
-help >= harm
-HD95 and remote-FP worsening <=5%
-no-T2 edema exact zero
+scar_minimal: RETAIN | RETIRE
+scar_dictionary: RETAIN | RETIRE | NOT_APPLICABLE
+edema_minimal: RETAIN | RETIRE
+edema_dictionary: RETAIN | RETIRE | NOT_APPLICABLE
 ```
+
+Minimal失败后不得继续该病种的 dictionary/refiner/arbiter/gate修复。本任务后不允许再用“组件仍需完善”延长同一复杂路线。
 
 ## 已授权
 
 ```text
-truthful independent intervention infrastructure
-semantic validator and known-bad repair
-real category semantic memory with valid masks
-anchor-free discovery routing repair
-same-checkpoint 44-case intervention replay
-proposal-only 600-step training
-conditional pathology-specific refiner stages
-conditional source-arbiter and production-gate stages
-mapper/wiki/fingerprint repair
+explicit proposal-stage loss authority
+loss-specific gradient verification
+expanded anchor-free discovery coverage
+scar minimal/dictionary matched runs
+edema minimal/dictionary matched runs
+strict validator and known-bad
+mapper/wiki/fingerprint update
 local lightweight result commit
 ```
 
@@ -256,25 +229,19 @@ local lightweight result commit
 
 ```text
 Batch8
-monolithic Batch7 1200-step continuation
+refiner training
+source-arbiter training
+production-gate training
+monolithic continuation
 backbone replacement
-encoder/base retrieval redesign
+encoder redesign
 fold expansion
 Cine
 external data or weights
 validation packaging/upload
 hosted metric claim
 route promotion
-M11
 final scientific stop
 ```
 
-## 完成语义
-
-Controller 已在真实干预、semantic memory、anchor-free discovery、proposal-stage terminal accounting、post-completion aggregation、strict validator、known-bad、mapper final、CURRENT/wiki/fingerprint 和本地轻量 commit 完成后写入：
-
-```text
-controller_verification_decision: VERIFIED_COMPLETE
-```
-
-这只表示当前修复合同完成。下一步仍由 Planner/用户决定。
+Controller 的 `VERIFIED_COMPLETE` 只表示本次最终分解合同完成，下一步仍返回 Planner。
