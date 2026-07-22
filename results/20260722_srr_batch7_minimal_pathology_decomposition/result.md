@@ -50,5 +50,7 @@ SIP 权重校准脚本已补上：正式 driver 会在 BR2 warmup 第50步 check
 - 2026-07-22T00:03:34-0400: scar GPU preflight a100 mirror job `59979732` remained `PENDING(Priority)` with no node/start time; formal_training_credit=0.
 - 2026-07-22T00:18:18-0400: scar GPU preflight htzhulab job `59977481` remains `PENDING(Resources)`, `sacct=PENDING`, elapsed `00:00:00`, no allocated node; formal_training_credit=0.
 - 2026-07-22T00:18:18-0400: scar GPU preflight a100 mirror job `59979732` remains `PENDING(Priority)`, `sacct=PENDING`, elapsed `00:00:00`, no allocated node; formal_training_credit=0.
-- Current controller head and `origin/main` are both `206edaecc2f5c1895fed25680f9eedda85d80fd9`.
-- No preflight has started; no formal 400-step Batch7 training has started. Next action is to keep monitoring, cancel the still-pending mirror when one partition starts, and submit formal scar only after preflight terminal PASS.
+- 2026-07-22T00:48:46-0400: scar GPU preflight htzhulab job `59977481` completed on `g180702` with `sacct=COMPLETED`, exit code `0:0`, elapsed `00:00:14`; log evidence: `logs/srr_batch7_minimal_decomposition/B7MinDec_scar_59977481_20260722_004722.log`, `status=CONTRACT_VALID`, formal_training_credit=0.
+- 2026-07-22T00:48:46-0400: scar GPU preflight a100 mirror job `59979732` was cancelled by controller after htzhulab terminal PASS; `sacct=CANCELLED`, no allocated node, formal_training_credit=0.
+- Current controller head and `origin/main` are both `2b700d073258c7c88cd483f0ec3e5caa4d0a25ae`.
+- Scar GPU preflight terminal PASS is now recorded; no formal 400-step Batch7 training has started yet. Next action is to resume executor for the formal scar wave, then aggregate terminal runtime evidence before edema submission.
