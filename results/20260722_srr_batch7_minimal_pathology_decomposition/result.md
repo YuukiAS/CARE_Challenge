@@ -32,7 +32,7 @@ SIP 权重校准脚本已补上：正式 driver 会在 BR2 warmup 第50步 check
 
 ## 验证
 
-- `python -m pytest -q tests/srr_production/test_myops_batch7_minimal_decomposition.py` -> 17 passed
+- `python -m pytest -q tests/srr_production/test_myops_batch7_minimal_decomposition.py` -> 20 passed
 - `python scripts/srr_production/audit_formal_entrypoints.py --strict` -> failure_count 0
 - `python scripts/training/run_srr_batch7_minimal_decomposition.py --pathology scar --print-contract` -> exit 0, prints calibration command and all branch contracts
 - `python scripts/evaluation/validate_srr_batch7_minimal_decomposition_packet.py --preflight` -> exit 0; final mode intentionally fails until six 400-step runs and aggregation finish
@@ -43,3 +43,10 @@ SIP 权重校准脚本已补上：正式 driver 会在 BR2 warmup 第50步 check
 - Run scar/edema matched Slurm jobs through terminal accounting.
 - Aggregate all 44-case metrics at step 200/400 and apply complete-trimodal/worst-center gates.
 - Run strict validator/known-bad, mapper final, wiki/CURRENT update, and final local commit.
+
+## Slurm monitor state
+
+- 2026-07-22T00:03:34-0400: scar GPU preflight htzhulab job `59977481` remains `PENDING(Resources)` with no node/start time; formal_training_credit=0.
+- 2026-07-22T00:03:34-0400: scar GPU preflight a100 mirror job `59979732` remains `PENDING(Priority)` with no node/start time; formal_training_credit=0.
+- Current controller head `1adbc6a0e6e8a2b8e921d350aacf5384b3a6b487`; `origin/main` remains `b55c193bbb00af903338bcd9a66037243539647b`.
+- No preflight has started; no formal 400-step Batch7 training has started. Next action is to keep monitoring, cancel the still-pending mirror when one partition starts, and submit formal scar only after preflight terminal PASS.
