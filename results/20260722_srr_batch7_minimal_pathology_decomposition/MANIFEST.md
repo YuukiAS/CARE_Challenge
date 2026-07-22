@@ -15,3 +15,4 @@ task: `prompts/tasks/20260722_srr_batch7_minimal_pathology_decomposition_control
 - `scripts/training/run_srr_batch7_minimal_decomposition.py`: thin orchestration driver for minimal/warmup/no-SIP/SIP branch execution.
 - `jobs/srr_production/run_myops_batch7_minimal_decomposition_{htzhulab,a100}.sh`: Slurm entrypoints for pathology arms.
 - `scripts/evaluation/calibrate_srr_batch7_sip_weight.py`: warmup-checkpoint SIP lambda calibration helper.
+- `slurm_attempts.csv`: pending preflight mirror jobs; monitor-only, not completion evidence.

@@ -39,3 +39,9 @@ SIP 权重校准脚本已补上：正式 driver 会在 BR2 warmup 第50步 check
 - Run scar/edema matched Slurm jobs through terminal accounting.
 - Aggregate all 44-case metrics at step 200/400 and apply complete-trimodal/worst-center gates.
 - Run strict validator/known-bad, mapper final, wiki/CURRENT update, and final local commit.
+
+## Slurm monitor state
+
+- scar GPU preflight htzhulab job `59977481`: pending monitor only, formal_training_credit=0.
+- scar GPU preflight a100 mirror job `59979732`: pending monitor only, formal_training_credit=0.
+- No formal 400-step Batch7 training has started.
