@@ -1,26 +1,27 @@
-schema_version: 9
+schema_version: 10
 authority_name: srr_production_mainline_authority
 reviewed_from_head: 0fcc3ff605112a0efeab73f3df2f83249793d321
-formal_training_status: BATCH7_LIGHTWEIGHT_BR2_SIP_DECOMPOSITION_READY_FOR_CONTROLLER
+formal_training_status: BATCH7_CENTER_HIERARCHICAL_BR2_SIP_DECOMPOSITION_READY_FOR_CONTROLLER
 status_reason: >-
-  Batch7 mechanism-closure repair produced truthful interventions and completed a
-  600-step proposal stage, but Planner review found that the stage still used an
-  empty loss-weight JSON and therefore inherited mixed M10 losses rather than a
-  pure proposal objective. The current 16-slot spatial dictionary, prototype maps,
-  and semantic negative memory show weak or negative leverage. Representation
-  Retrieval Learning remains scientifically relevant, so the only authorized next
-  action is a six-run matched decomposition of minimal proposal, lightweight BR2
-  retrieval without SIP, and the same BR2 retrieval with faithful source-pattern SIP.
+  Batch7 repair produced truthful interventions but its proposal stage inherited mixed
+  M10 losses. The current 16-slot spatial dictionary, prototype maps and semantic negative
+  memory show weak or negative leverage. A comprehensive paper/data/code audit found that
+  the initial lightweight amendment also misdefined source as availability pattern and
+  allowed coefficient bypasses. The only authorized next action is now a six-run matched
+  comparison of minimal proposal, deployable center-hierarchical BR2 without SIP, and the
+  same BR2 with supervision-aware SIP.
+
 current_scientific_status:
   batch6: FINAL_OBJECTIVE_REPAIRED_BELOW_USABLE_SIGNAL
   batch7_operational: FORMAL300_COMPLETE_STOP_GATE
   batch7_repair_operational: VERIFIED_COMPLETE_STOPPED_AT_PROPOSAL_GATE
   batch7_repair_scientific: TRUTHFUL_BUT_PROPOSAL_LOSS_AUTHORITY_IMPURE
   current_complex_dictionary: LOW_LEVERAGE_NOT_FORMAL_CANDIDATE
-  representation_retrieval_paper_line: RETAIN_PENDING_LIGHTWEIGHT_ABLATION
+  representation_retrieval_paper_line: RETAIN_PENDING_CENTER_HIERARCHICAL_ABLATION
   legacy_pattern_sip: HISTORICAL_ONLY_FORMAL_WEIGHT_ZERO
-  batch7_minimal_decomposition: READY_FOR_CONTROLLER_AMENDED_TO_LIGHTWEIGHT_BR2_SIP
+  batch7_minimal_decomposition: READY_FOR_CONTROLLER_COMPREHENSIVE_BR2_AMENDMENT
   significantly_better_than_nnunet: false
+
 selected_model:
   class_name: SRRProposeRefineMyoPS
   path: src/care_myocardium/models/srr_propref.py
@@ -28,6 +29,7 @@ selected_model:
   encoder_profile: full_4scale
   base_channels: 32
   final_output_mode: anchor_bounded_srr_correction
+
 batch7_repair_evidence:
   terminal_commit: 0fcc3ff605112a0efeab73f3df2f83249793d321
   result_root: results/20260721_srr_batch7_mechanism_closure_repair
@@ -58,18 +60,20 @@ batch7_repair_evidence:
     - prototype maps added only about 0.0007 edema Dice and no stable scar gain
     - scar candidate modes remained negative
     - edema retained a small positive signal
+
 formal_entrypoints: []
+
 candidate_entrypoints:
   - id: srr_batch7_minimal_pathology_decomposition
-    role: authorized_final_matched_minimal_vs_lightweight_BR2_and_SIP_decomposition
+    role: authorized_final_minimal_vs_center_hierarchical_BR2_and_supervision_aware_SIP_decomposition
     path: prompts/tasks/20260722_srr_batch7_minimal_pathology_decomposition_controller.md
     config_path: configs/srr_production/myops_batch7_minimal_decomposition.yaml
     plan_path: docs/plans/laneB_round04_active_srr_batch7_minimal_pathology_decomposition_execution.md
     executor_plan_path: prompts/tasks/20260722_srr_batch7_minimal_pathology_decomposition_executor_plan.yaml
-    planner_audit_path: results/srr_production/code_maturity/batch7_repair_planner_audit_and_minimal_decomposition_decision_20260722.md
+    comprehensive_audit_path: results/srr_production/code_maturity/batch7_br2_sip_comprehensive_architecture_audit_20260722.md
     result_root: results/20260722_srr_batch7_minimal_pathology_decomposition
     formal_authority: true
-    audit_status: READY_FOR_CONTROLLER_AMENDED_TO_LIGHTWEIGHT_BR2_SIP
+    audit_status: READY_FOR_CONTROLLER_COMPREHENSIVE_BR2_AMENDMENT
     source_terminal_commit: 0fcc3ff605112a0efeab73f3df2f83249793d321
     source_checkpoint_sha256: d34ad65890cbb6a12aac3fc35bcab71709d680bff5a3aae2d93e010db1cc0e0d
     experiments:
@@ -81,7 +85,19 @@ candidate_entrypoints:
       - edema_br2_sip
     optimizer_steps_each: 400
     full_volume_eval_steps: [200, 400]
-    source_patterns: [lge_only, lge_c0, lge_t2_c0]
+    source_semantics:
+      training_source: metadata_center
+      observation_set: availability
+      deployment_source: availability_pattern_pooled
+      center_network_input: forbidden
+      validation_center_specific_beta: forbidden
+    br2_semantics:
+      signed_spatially_global_coefficients: true
+      softmax_simplex_topk: forbidden
+      image_conditioned_coefficient_residual: forbidden
+      representer_rms_normalization: required
+      beta_center_equals_pattern_plus_deviation: true
+      no_t2_edema_source_membership: forbidden
     required_terminal_decisions:
       - scar_minimal_RETAIN_or_RETIRE
       - scar_br2_RETAIN_RETIRE_or_NOT_APPLICABLE
@@ -90,14 +106,15 @@ candidate_entrypoints:
       - edema_br2_RETAIN_RETIRE_or_NOT_APPLICABLE
       - edema_sip_RETAIN_REMOVE_or_NOT_APPLICABLE
     allowed_actions:
-      - explicit stage loss authority
-      - loss-specific gradient verification
-      - lightweight availability-masked representer dictionary
-      - source-pattern learner coefficients
-      - faithful BR2 SIP formula and unit tests
+      - explicit pathology proposal loss authority
+      - center modality inventory and supervision eligibility
+      - source-balanced sampler
+      - lightweight normalized shared private interaction representers
+      - hierarchical signed source coefficients
+      - deployment pattern coefficient separation
+      - supervision-aware BR2 SIP formula and unit tests
       - no-SIP versus SIP matched ablation
-      - expanded anchor-free coverage
-      - six matched pathology proposal runs
+      - complete-trimodal and worst-center evaluation
       - strict validator and known-bad
       - mapper wiki fingerprint repair
       - local lightweight result commit
@@ -106,7 +123,12 @@ candidate_entrypoints:
       - prototype maps formal use
       - semantic negative memory formal use
       - legacy Pattern-SIP formal use
-      - center-conditioned router
+      - availability pattern as only training source
+      - center-conditioned network or router
+      - validation center-specific beta
+      - softmax simplex topk beta
+      - image-conditioned coefficient residual
+      - no-T2 source in edema coefficient SIP or loss
       - Batch8
       - refiner training
       - source arbiter training
@@ -120,8 +142,12 @@ candidate_entrypoints:
       - hosted metric claim
       - route promotion
       - final scientific stop
+
 publication_boundary:
+  allowed_method_description: R2_BR2_SIP_inspired_medical_imaging_adaptation
   claim_original_sip_equivalence_without_formula_tests: false
+  claim_original_excess_risk_theory_for_dense_segmentation: false
+  claim_missingness_effect_separated_from_center_causally: false
   claim_sip_performance_gain_without_ablation_gate: false
   batch8_authorized: false
   validation_upload_authorized: false
