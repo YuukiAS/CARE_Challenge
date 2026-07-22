@@ -1,0 +1,385 @@
+schema_version: 1
+task_key: 20260722_care_myops_batch9_reliable_label_distillation
+status: READY_FOR_CONTROLLER
+execution_mode: controller_supervised
+controller_is_coordinator: true
+executor_slots: 1
+executor_count: 1
+parallel_execution_allowed: false
+result_root: results/20260722_care_myops_batch9_reliable_label_distillation
+controller_task_path: prompts/tasks/20260722_care_myops_batch9_reliable_label_distillation_controller.md
+planning_review_required: false
+review_required: false
+
+waves:
+  - wave_id: B9_WAVE0_BIND_AND_SUPERSEDE
+    executor_id: batch9_reliable_distill_executor
+    blocking: true
+    dependencies: []
+    read_required:
+      - AGENTS.md
+      - START_HERE_FOR_GPT.md
+      - GPT_PLANNER_CARE_PROTOCOL.md
+      - prompts/FINAL_OUTPUT_READABILITY_POLICY.md
+      - prompts/AGENT_FLOW_V2_PROTOCOL.md
+      - prompts/HANDOFF_GATE_POLICY.md
+      - prompts/GPT_HARD_GATE_PROMPT.md
+      - prompts/routes/ROUTE_ANTI_LAZINESS_PROTOCOL.md
+      - prompts/routes/ROUTE_HARD_REQUIREMENTS_MATRIX.md
+      - prompts/routes/handoffs/CURRENT.md
+      - wiki/README.md
+      - .agents/skills/slurm-routing-partition/SKILL.md
+      - .agents/skills/care-mapper/SKILL.md
+      - results/srr_production/code_maturity/batch9_reliable_label_distillation_planner_synthesis_20260722.md
+      - docs/plans/laneB_round04_active_srr_batch9_reliable_label_distillation_execution.md
+      - configs/care_mm/batch9_reliable_label_distillation.yaml
+      - results/metrics/nnUNet.md
+    write_scope:
+      - results/20260722_care_myops_batch9_reliable_label_distillation/
+    required_outputs:
+      - results/20260722_care_myops_batch9_reliable_label_distillation/controller_context.json
+      - results/20260722_care_myops_batch9_reliable_label_distillation/controller_ledger.csv
+      - results/20260722_care_myops_batch9_reliable_label_distillation/controller_bootstrap_snapshot.md
+      - results/20260722_care_myops_batch9_reliable_label_distillation/batch8_supersession.md
+    completion_conditions:
+      - latest_remote_main_bound
+      - planner_task_config_executor_hashes_recorded
+      - batch8_not_running_or_runtime_preserved_and_stopped
+      - batch8_formal_authority_superseded
+      - batch7_runtime_preserved_historical_only
+      - worktree_clean_or_only_authorized_changes
+    failure_action: NEEDS_REPAIR_NO_IMPLEMENTATION
+
+  - wave_id: B9_WAVE1_DATA_LABEL_AND_ENVIRONMENT_AUDIT
+    executor_id: batch9_reliable_distill_executor
+    blocking: true
+    dependencies: [B9_WAVE0_BIND_AND_SUPERSEDE]
+    write_scope:
+      - scripts/evaluation/
+      - tests/care_mm/
+      - results/20260722_care_myops_batch9_reliable_label_distillation/
+    implementation_contract:
+      split: fold0
+      expected_train_cases: 176
+      expected_validation_cases: 44
+      derive_inventory_from_runtime: true
+      no_t2_edema_as_negative: forbidden
+      center_as_network_input: forbidden
+      official_resenc_symbol_required: true
+      external_pretrained_weights: forbidden
+    required_outputs:
+      - results/20260722_care_myops_batch9_reliable_label_distillation/fold0_case_manifest.csv
+      - results/20260722_care_myops_batch9_reliable_label_distillation/center_modality_label_inventory.csv
+      - results/20260722_care_myops_batch9_reliable_label_distillation/reliable_supervision_inventory.csv
+      - results/20260722_care_myops_batch9_reliable_label_distillation/resenc_environment_contract.json
+      - results/20260722_care_myops_batch9_reliable_label_distillation/standard_nnunet_baseline_contract.json
+    completion_conditions:
+      - all_220_fold_scope_cases_accounted
+      - train_count_exact_176
+      - validation_count_exact_44
+      - natural_availability_recorded_per_case
+      - reliable_anatomy_scar_edema_flags_recorded_per_case
+      - no_t2_edema_reliable_count_zero
+      - ResidualEncoderUNet_import_and_versions_recorded
+      - nnUNetResEncUNetM_equivalent_configuration_resolved
+      - standard_nnunet_fold0_baseline_paths_and_metrics_bound
+    failure_action: controller_returns_to_same_executor_for_audit_repair
+
+  - wave_id: B9_WAVE2_MODEL_LOSS_TRAINER_IMPLEMENTATION
+    executor_id: batch9_reliable_distill_executor
+    blocking: true
+    dependencies: [B9_WAVE1_DATA_LABEL_AND_ENVIRONMENT_AUDIT]
+    write_scope:
+      - src/care_myocardium/models/care_mm_reliable_distill.py
+      - src/care_myocardium/losses/care_mm_losses.py
+      - src/care_myocardium/training/
+      - src/care_myocardium/data/
+      - scripts/training/
+      - scripts/evaluation/
+      - tests/care_mm/
+      - jobs/care_mm/
+      - configs/care_mm/batch9_reliable_label_distillation.yaml
+      - results/20260722_care_myops_batch9_reliable_label_distillation/
+    implementation_contract:
+      model_class: CAREMMReliableDistillResEnc
+      independent_modality_stems: 3
+      modality_stem_channels_each: 8
+      availability_hard_mask_immediately_after_stem: true
+      fused_input_channels: 27
+      backbone: official_ResidualEncoderUNet_M_level
+      anatomy_head_channels: 4
+      scar_head_channels: 1
+      edema_head_channels: 1
+      six_class_logit_compose_required: true
+      no_t2_edema_logit: -20.0
+      old_srr_import_or_object_reuse: forbidden
+      old_srr_loss_reuse: forbidden
+      center_tensor_or_normalization_input: forbidden
+      teacher_and_student_same_model_class: true
+    required_outputs:
+      - results/20260722_care_myops_batch9_reliable_label_distillation/clean_model_import_graph.json
+      - results/20260722_care_myops_batch9_reliable_label_distillation/legacy_module_call_counters.csv
+      - results/20260722_care_myops_batch9_reliable_label_distillation/availability_hard_mask_checks.csv
+      - results/20260722_care_myops_batch9_reliable_label_distillation/reliable_supervision_mask_checks.csv
+      - results/20260722_care_myops_batch9_reliable_label_distillation/resolved_loss_contract.json
+      - results/20260722_care_myops_batch9_reliable_label_distillation/loss_gradient_matrix.csv
+      - results/20260722_care_myops_batch9_reliable_label_distillation/checkpoint_roundtrip.json
+      - results/20260722_care_myops_batch9_reliable_label_distillation/known_bad_report.json
+    completion_conditions:
+      - legacy_module_import_instance_forward_counts_all_zero
+      - missing_modality_stem_output_exact_zero
+      - center_absent_from_model_tensor_graph
+      - six_class_logits_match_contract
+      - no_t2_edema_logit_and_gradient_contract_pass
+      - every_nonzero_loss_runtime_resolved_summed_and_backward_verified
+      - forbidden_or_frozen_gradients_zero
+      - checkpoint_roundtrip_max_abs_delta_at_most_1e_6
+      - all_known_bad_fixtures_rejected
+      - unit_tests_exit_zero
+    failure_action: controller_returns_to_same_executor_for_implementation_repair
+
+  - wave_id: B9_WAVE3_REAL_CASE_PREFLIGHT
+    executor_id: batch9_reliable_distill_executor
+    blocking: true
+    dependencies: [B9_WAVE2_MODEL_LOSS_TRAINER_IMPLEMENTATION]
+    write_scope:
+      - scripts/training/
+      - scripts/evaluation/
+      - tests/care_mm/
+      - jobs/care_mm/
+      - results/20260722_care_myops_batch9_reliable_label_distillation/
+      - logs/care_myops_batch9_reliable_label_distillation/preflight/
+    implementation_contract:
+      fixed_overfit_steps: 100
+      formal_training_credit: 0
+      required_case_patterns: [natural_complete_trimodal, natural_lge_c0, natural_lge_only]
+      minimum_supervised_loss_reduction_fraction: 0.30
+      complete_case_scar_prediction_nonempty: true
+      complete_case_edema_prediction_nonempty: true
+      no_t2_edema_supervised_voxel_count: 0
+      same_partition_gpu_preflight_required: true
+    required_outputs:
+      - results/20260722_care_myops_batch9_reliable_label_distillation/fixed_real_case_overfit.json
+      - results/20260722_care_myops_batch9_reliable_label_distillation/gpu_preflight_attempts.csv
+      - results/20260722_care_myops_batch9_reliable_label_distillation/preflight_prediction_sanity.csv
+      - results/20260722_care_myops_batch9_reliable_label_distillation/matched_schedule_template.json
+    completion_conditions:
+      - full_lge_c0_lge_only_real_forward_pass
+      - supervised_loss_reduction_at_least_30_percent_each_pattern
+      - full_case_scar_and_edema_predictions_nonempty
+      - no_t2_edema_supervised_voxels_exact_zero
+      - checkpoint_save_reload_pass
+      - htzhulab_and_a100_environment_preflight_pass
+      - formal_training_command_contract_print_pass
+    failure_action: controller_returns_to_same_executor_no_formal_training
+
+  - wave_id: B9_WAVE4_TWO_SEED_DIRECT_BASELINES
+    executor_id: batch9_reliable_distill_executor
+    blocking: true
+    dependencies: [B9_WAVE3_REAL_CASE_PREFLIGHT]
+    write_scope:
+      - jobs/care_mm/
+      - logs/care_myops_batch9_reliable_label_distillation/
+      - results/20260722_care_myops_batch9_reliable_label_distillation/
+    formal_jobs:
+      - logical_run_id: batch9_seed20260723_direct
+        seed: 20260723
+        partition: htzhulab
+        variant: student_direct_reliable
+        epochs: 500
+        optimizer_steps_per_epoch: 250
+        total_optimizer_steps: 125000
+        validation_every_epochs: 25
+        selected_checkpoint_epoch: 500
+        runtime_root: results/20260722_care_myops_batch9_reliable_label_distillation/runtime/seed20260723/direct
+        log_root: logs/care_myops_batch9_reliable_label_distillation/seed20260723/direct
+        lock_root: results/20260722_care_myops_batch9_reliable_label_distillation/runtime/locks/seed20260723_direct
+      - logical_run_id: batch9_seed20260724_direct
+        seed: 20260724
+        partition: a100-gpu
+        variant: student_direct_reliable
+        epochs: 500
+        optimizer_steps_per_epoch: 250
+        total_optimizer_steps: 125000
+        validation_every_epochs: 25
+        selected_checkpoint_epoch: 500
+        runtime_root: results/20260722_care_myops_batch9_reliable_label_distillation/runtime/seed20260724/direct
+        log_root: logs/care_myops_batch9_reliable_label_distillation/seed20260724/direct
+        lock_root: results/20260722_care_myops_batch9_reliable_label_distillation/runtime/locks/seed20260724_direct
+    slurm_contract:
+      python_executable: /users/a/e/aereinh/CARE/envs/env_CARE/bin/python
+      same_partition_gpu_preflight_required: true
+      seed_pipelines_independent: true
+      isolated_roots_required: true
+      routing_race_allowed_under_slurm_skill: true
+      v100_requires_same_scientific_semantics: true
+      model_or_budget_reduction_for_v100: forbidden
+      failed_startup_credit: 0
+      selected_checkpoint_reload_required: true
+    required_outputs:
+      - results/20260722_care_myops_batch9_reliable_label_distillation/direct_training_adequacy.csv
+      - results/20260722_care_myops_batch9_reliable_label_distillation/direct_checkpoint_selection.csv
+      - results/20260722_care_myops_batch9_reliable_label_distillation/direct_prediction_manifest.csv
+      - results/20260722_care_myops_batch9_reliable_label_distillation/direct_casewise_metrics.csv
+      - results/20260722_care_myops_batch9_reliable_label_distillation/direct_subgroup_metrics.csv
+    completion_conditions:
+      - both_direct_jobs_terminal_accounted
+      - both_direct_runs_exact_500_epochs_125000_steps
+      - validation_events_exactly_recorded
+      - epoch500_checkpoints_reloaded
+      - all_44_cases_evaluated_per_seed
+      - independent_prediction_roots_and_hashes
+      - no_empty_pathology_predictions
+      - post_completion_direct_aggregation_exit_zero
+    failure_action: same_scope_operational_repair_or_NEEDS_REPAIR
+
+  - wave_id: B9_WAVE5_TWO_SEED_TEACHERS
+    executor_id: batch9_reliable_distill_executor
+    blocking: true
+    dependencies: [B9_WAVE4_TWO_SEED_DIRECT_BASELINES]
+    write_scope:
+      - jobs/care_mm/
+      - logs/care_myops_batch9_reliable_label_distillation/
+      - results/20260722_care_myops_batch9_reliable_label_distillation/
+    formal_jobs:
+      - logical_run_id: batch9_seed20260723_teacher
+        seed: 20260723
+        partition: htzhulab
+        variant: teacher_full_view
+        dependency: afterok_seed20260723_direct
+        warm_start: seed20260723_direct_epoch500
+        epochs: 100
+        total_optimizer_steps: 25000
+        training_population: natural_complete_trimodal_reliable_only
+      - logical_run_id: batch9_seed20260724_teacher
+        seed: 20260724
+        partition: a100-gpu
+        variant: teacher_full_view
+        dependency: afterok_seed20260724_direct
+        warm_start: seed20260724_direct_epoch500
+        epochs: 100
+        total_optimizer_steps: 25000
+        training_population: natural_complete_trimodal_reliable_only
+    required_outputs:
+      - results/20260722_care_myops_batch9_reliable_label_distillation/teacher_initialization_checks.csv
+      - results/20260722_care_myops_batch9_reliable_label_distillation/teacher_training_adequacy.csv
+      - results/20260722_care_myops_batch9_reliable_label_distillation/teacher_checkpoint_selection.csv
+      - results/20260722_care_myops_batch9_reliable_label_distillation/teacher_complete_view_metrics.csv
+    completion_conditions:
+      - teacher_initial_state_matches_same_seed_direct_checkpoint
+      - teacher_not_random_init
+      - teacher_training_uses_only_natural_complete_reliable_cases
+      - no_validation_gt_or_external_weights
+      - both_teacher_jobs_exact_100_epochs_25000_steps
+      - teacher_epoch100_checkpoints_reloaded
+      - teacher_predictions_nonempty
+    failure_action: same_scope_operational_or_initialization_repair
+
+  - wave_id: B9_WAVE6_MATCHED_MODDROP_AND_DISTILL
+    executor_id: batch9_reliable_distill_executor
+    blocking: true
+    dependencies: [B9_WAVE5_TWO_SEED_TEACHERS]
+    write_scope:
+      - jobs/care_mm/
+      - logs/care_myops_batch9_reliable_label_distillation/
+      - results/20260722_care_myops_batch9_reliable_label_distillation/
+    formal_jobs:
+      - logical_run_id: batch9_seed20260723_moddrop_control
+        seed: 20260723
+        partition: htzhulab
+        variant: student_moddrop_control
+        warm_start: seed20260723_direct_epoch500
+        frozen_teacher: seed20260723_teacher_epoch100
+        epochs: 100
+        total_optimizer_steps: 25000
+      - logical_run_id: batch9_seed20260723_reliable_distill
+        seed: 20260723
+        partition: htzhulab
+        variant: student_reliable_distill
+        warm_start: seed20260723_direct_epoch500
+        frozen_teacher: seed20260723_teacher_epoch100
+        epochs: 100
+        total_optimizer_steps: 25000
+      - logical_run_id: batch9_seed20260724_moddrop_control
+        seed: 20260724
+        partition: a100-gpu
+        variant: student_moddrop_control
+        warm_start: seed20260724_direct_epoch500
+        frozen_teacher: seed20260724_teacher_epoch100
+        epochs: 100
+        total_optimizer_steps: 25000
+      - logical_run_id: batch9_seed20260724_reliable_distill
+        seed: 20260724
+        partition: a100-gpu
+        variant: student_reliable_distill
+        warm_start: seed20260724_direct_epoch500
+        frozen_teacher: seed20260724_teacher_epoch100
+        epochs: 100
+        total_optimizer_steps: 25000
+    matching:
+      same_student_initial_checkpoint_within_seed: true
+      same_student_initial_state_hash_within_seed: true
+      same_case_sequence_within_seed: true
+      same_patch_centers_within_seed: true
+      same_student_availability_masks_within_seed: true
+      same_augmentation_manifest_within_seed: true
+      same_optimizer_and_budget_within_seed: true
+      same_frozen_teacher_forward_within_seed: true
+      only_difference: distillation_loss_weights
+    required_outputs:
+      - results/20260722_care_myops_batch9_reliable_label_distillation/matched_run_manifest.csv
+      - results/20260722_care_myops_batch9_reliable_label_distillation/student_view_manifest.csv
+      - results/20260722_care_myops_batch9_reliable_label_distillation/distillation_mechanism.csv
+      - results/20260722_care_myops_batch9_reliable_label_distillation/training_adequacy.csv
+      - results/20260722_care_myops_batch9_reliable_label_distillation/checkpoint_selection.csv
+      - results/20260722_care_myops_batch9_reliable_label_distillation/prediction_manifest.csv
+      - results/20260722_care_myops_batch9_reliable_label_distillation/casewise_metrics.csv
+      - results/20260722_care_myops_batch9_reliable_label_distillation/subgroup_metrics.csv
+      - results/20260722_care_myops_batch9_reliable_label_distillation/help_harm.csv
+      - results/20260722_care_myops_batch9_reliable_label_distillation/supervision_audit.csv
+    completion_conditions:
+      - all_four_student_continuation_jobs_terminal_accounted
+      - all_four_runs_exact_100_epochs_25000_steps
+      - matched_manifests_and_initial_state_hashes_pass
+      - teacher_forward_executed_in_control_and_distill
+      - only_distillation_weights_differ
+      - selected_epoch100_checkpoints_reloaded
+      - all_44_cases_evaluated_per_variant_seed
+      - independent_prediction_roots_and_hashes
+      - no_empty_predictions
+      - all_primary_subgroups_and_metrics_present
+      - no_t2_edema_supervised_or_distilled_voxels_zero
+      - post_completion_aggregation_exit_zero
+    failure_action: same_scope_operational_repair_or_NEEDS_REPAIR
+
+  - wave_id: B9_WAVE7_FINALIZER_MAPPER_AND_STATE
+    executor_id: batch9_reliable_distill_executor
+    blocking: true
+    dependencies: [B9_WAVE6_MATCHED_MODDROP_AND_DISTILL]
+    write_scope:
+      - scripts/evaluation/
+      - prompts/routes/handoffs/CURRENT.md
+      - configs/srr_production/entrypoints.yaml
+      - wiki/
+      - results/20260722_care_myops_batch9_reliable_label_distillation/
+    required_outputs:
+      - results/20260722_care_myops_batch9_reliable_label_distillation/finalizer_state.json
+      - results/20260722_care_myops_batch9_reliable_label_distillation/mapper_report_draft.md
+      - results/20260722_care_myops_batch9_reliable_label_distillation/architecture_delta_draft.md
+      - results/20260722_care_myops_batch9_reliable_label_distillation/mapper_report_final.md
+      - results/20260722_care_myops_batch9_reliable_label_distillation/architecture_delta_final.md
+      - results/20260722_care_myops_batch9_reliable_label_distillation/decision_matrix.csv
+      - results/20260722_care_myops_batch9_reliable_label_distillation/controller_report.md
+      - results/20260722_care_myops_batch9_reliable_label_distillation/completion_check.md
+      - results/20260722_care_myops_batch9_reliable_label_distillation/MANIFEST.md
+    completion_conditions:
+      - all_jobs_terminal_and_accounted
+      - post_completion_aggregation_complete
+      - strict_validator_and_known_bad_exit_zero
+      - all_direct_moddrop_distill_gate_fields_evaluated
+      - final_token_exactly_one_allowed_value
+      - no_PENDING_PLACEHOLDER_STATIC_INITIAL_tokens
+      - mapper_wiki_current_fingerprint_consistent
+      - local_lightweight_commit_complete
+      - no_Batch8_BR2_SIP_refiner_Batch10_Cine_fold_upload_actions
+    failure_action: controller_returns_to_same_executor_or_finalizer_for_repair
