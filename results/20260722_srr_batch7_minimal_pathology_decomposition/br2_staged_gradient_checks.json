@@ -1,0 +1,12 @@
+{
+  "after_projection_step_beta_grad_max": 4.438281848706538e-06,
+  "after_projection_step_representer_grad_max": 2.8340416680094904e-09,
+  "initial_beta_max": 0.0010000000474974513,
+  "initial_delta_max": 0.0,
+  "initial_output_matches_minimal": true,
+  "initial_projection_bias_max": 0.0,
+  "initial_projection_weight_max": 0.0,
+  "interpretation": "projection is zero-initialized; signed beta seeds a step0 projection gradient; after projection warmup, proposal loss reaches beta and representers.",
+  "status": "PASS",
+  "step0_projection_grad_max": 0.00014267957885749638
+}

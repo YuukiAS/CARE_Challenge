@@ -1,0 +1,5 @@
+check,pattern,max_abs_sum,status,train_center_beta_max_abs,deploy_pattern_beta_max_abs
+center_deviation_zero_sum_within_pattern,lge_only,0.0,PASS,,
+center_deviation_zero_sum_within_pattern,lge_c0,0.0,PASS,,
+center_deviation_zero_sum_within_pattern,lge_t2_c0,0.0,PASS,,
+deployment_uses_pattern_beta_only,lge_t2_c0,,PASS,0.0010000000474974513,0.0010000000474974513

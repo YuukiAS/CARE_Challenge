@@ -1,0 +1,21 @@
+{
+  "batch_average_gate_proxy": "REJECTED",
+  "batch_size_one_not_batch_proxy": {
+    "batch_size": 1,
+    "reason": "SIP reads all_center_beta/source_eligibility_mask, not current batch effective_beta.",
+    "scar_sip_terms_from_full_center_table": 7.0,
+    "scar_sip_value": 0.0
+  },
+  "eligible_source_count_one_excluded": true,
+  "known_bad_availability_pattern_training_source": "REJECTED_BY_validate_batch7_training_source_AND_source_balanced_count_summary",
+  "known_bad_no_t2_edema_loss_nonzero": "REJECTED_BY_validate_resolved_loss_rows",
+  "known_bad_zero_initialized_representer_output": "REJECTED_BY_representer_scale_checks_pre_beta_rms",
+  "no_t2_excluded_from_edema_source_set": {
+    "edema_sip_terms": 7.0,
+    "edema_sip_value": 0.0,
+    "edema_source_eligibility_entries": 14,
+    "reason": "Only CenterB/CenterC T2-present sources enter edema O_{p,d}."
+  },
+  "signed_coefficient_absolute_value_used": true,
+  "status": "PASS"
+}

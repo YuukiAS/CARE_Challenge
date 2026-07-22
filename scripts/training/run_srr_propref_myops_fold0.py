@@ -246,6 +246,9 @@ EXPANDED_SRR_LOSS_COMPONENT_KEYS = (
     "loss_prototype_diversity_margin",
     "loss_memory_bank_update_or_alignment",
     "loss_refiner_final_label_effect",
+    "loss_br2_source_l1_sparsity",
+    "loss_br2_center_deviation_shrinkage",
+    "loss_br2_selective_integration_penalty",
     "loss_cine_temporal_consistency",
     "loss_cine_reference_warp_consistency",
     "m6_expanded_total_loss",
@@ -784,6 +787,173 @@ def batch_from_anchored_cases(
     )
 
 
+def validate_batch7_training_source(training_source: str) -> None:
+    if str(training_source) != "metadata.center":
+        raise ValueError("Batch7 decomposition training source must be metadata.center; availability-pattern source is forbidden")
+
+
+def source_balanced_case_pools(
+    cases: list[AnchoredCaseData],
+    pathology: str,
+    *,
+    training_source: str = "metadata.center",
+) -> dict[str, list[AnchoredCaseData]]:
+    validate_batch7_training_source(training_source)
+    pools: dict[str, list[AnchoredCaseData]] = {}
+    for case in cases:
+        center = str(getattr(case.metadata, "center", ""))
+        if pathology == "edema" and not bool(getattr(case.metadata, "t2_present", bool(case.availability[1] > 0))):
+            continue
+        pools.setdefault(center, []).append(case)
+    return {center: rows for center, rows in sorted(pools.items()) if rows}
+
+
+def _batch7_patch_center(
+    case: AnchoredCaseData,
+    *,
+    pathology: str,
+    rng: np.random.Generator,
+) -> tuple[tuple[int, int, int], dict[str, object]]:
+    class_id = 5 if pathology == "scar" else 4
+    lesion = np.argwhere(case.label_arr == class_id)
+    raw_anchor = case.raw_anchor_probabilities if case.raw_anchor_probabilities is not None else case.anchor_probabilities
+    anchor_pred = np.argmax(raw_anchor, axis=0) if raw_anchor.size else np.zeros_like(case.label_arr)
+    anchor_error = np.argwhere(((case.label_arr == class_id) & (anchor_pred != class_id)) | ((case.label_arr != class_id) & (anchor_pred == class_id)))
+    valid = np.argwhere(case.label_arr >= 0)
+    prefer_anchor_error = bool(len(anchor_error) and (not len(lesion) or rng.random() < 0.5))
+    if prefer_anchor_error:
+        coords = anchor_error
+        patch_source = "anchor_error"
+    elif len(lesion):
+        coords = lesion
+        patch_source = "lesion"
+    elif len(anchor_error):
+        coords = anchor_error
+        patch_source = "anchor_error"
+    else:
+        coords = valid if len(valid) else np.asarray(case.label_arr.shape, dtype=np.int64).reshape(1, 3) // 2
+        patch_source = "fallback_valid_voxel_no_lesion_or_anchor_error"
+    center = tuple(int(x) for x in coords[int(rng.integers(0, len(coords)))])
+    return center, {
+        "patch_source": patch_source,
+        "target_class": class_id,
+        "lesion_voxel_count": int(len(lesion)),
+        "anchor_error_voxel_count": int(len(anchor_error)),
+        "patch_center_z": center[0],
+        "patch_center_y": center[1],
+        "patch_center_x": center[2],
+    }
+
+
+def build_source_balanced_center_sequence(
+    centers: Iterable[str],
+    *,
+    steps: int,
+    rng: np.random.Generator,
+) -> list[str]:
+    ordered = [str(center) for center in centers]
+    if not ordered:
+        raise ValueError("Batch7 source-balanced sampler needs at least one eligible center")
+    sequence: list[str] = []
+    while len(sequence) < int(steps):
+        cycle = list(ordered)
+        rng.shuffle(cycle)
+        sequence.extend(cycle)
+    return sequence[: int(steps)]
+
+
+def batch_from_source_balanced_case(
+    *,
+    pools: dict[str, list[AnchoredCaseData]],
+    step: int,
+    patch_shape: tuple[int, int, int],
+    rng: np.random.Generator,
+    pathology: str,
+    oversample_foreground: float,
+    center_sequence: list[str] | None = None,
+) -> tuple[torch.Tensor, torch.Tensor, torch.Tensor, dict[str, torch.Tensor], dict[str, torch.Tensor], list[str], dict[str, object]]:
+    if not pools:
+        raise ValueError(f"no source-balanced eligible centers for pathology={pathology}")
+    centers = sorted(pools)
+    if center_sequence is not None:
+        center = str(center_sequence[step - 1])
+        if center not in pools:
+            raise ValueError(f"source-balanced center sequence selected ineligible center {center!r}")
+    else:
+        center = centers[(step - 1) % len(centers)]
+    rows = pools[center]
+    case = rows[int(rng.integers(0, len(rows)))]
+    focus_classes = (5,) if pathology == "scar" else (4,)
+    patch_center, patch_manifest = _batch7_patch_center(case, pathology=pathology, rng=rng)
+    x, y, av, anchor, component = sample_patch_with_anchor(
+        case,
+        patch_shape,
+        rng,
+        oversample_foreground,
+        modality_dropout=False,
+        focus_classes=focus_classes,
+        forced_center_zyx=patch_center,
+    )
+    anchor_t = torch.from_numpy(anchor[None]).float()
+    component_t = torch.from_numpy(component[None]).float()
+    manifest = {
+        "step": step,
+        "pathology": pathology,
+        "selected_center": center,
+        "selected_case_id": case.case_id,
+        "center_case_pool_size": len(rows),
+        "eligible_center_count": len(centers),
+        "training_source": "metadata.center",
+        "observation_set": str(getattr(case.metadata, "modality_group", "EVIDENCE_NOT_FOUND")),
+        "availability_is_observation_set_not_source": True,
+        "selection_rule": "seeded_uniform_eligible_center_balanced_shuffle_cycle_then_uniform_random_case_then_lesion_or_anchor_error_patch",
+        "center_sequence_policy": "seeded_shuffled_cycles_count_balanced",
+        "focus_class": focus_classes[0],
+        "modality_dropout": False,
+    }
+    manifest.update(patch_manifest)
+    return (
+        torch.from_numpy(x[None]).float(),
+        torch.from_numpy(y[None]).long(),
+        torch.from_numpy(av[None]).float(),
+        anchor_dict_from_tensor(anchor_t),
+        component_dict_from_tensor(component_t),
+        [case.case_id],
+        manifest,
+    )
+
+
+def source_balanced_count_summary(rows: list[dict[str, object]], *, max_deviation_fraction: float = 0.15) -> dict[str, object]:
+    counts: dict[str, int] = {}
+    bad_training_sources: list[str] = []
+    for row in rows:
+        center = str(row.get("selected_center", ""))
+        if center:
+            counts[center] = counts.get(center, 0) + 1
+        if str(row.get("training_source", "")) != "metadata.center":
+            bad_training_sources.append(f"step={row.get('step', '')}:training_source={row.get('training_source', '')}")
+        if str(row.get("availability_is_observation_set_not_source", "")).lower() not in {"true", "1"}:
+            bad_training_sources.append(f"step={row.get('step', '')}:availability_pattern_used_as_source")
+    if not counts:
+        return {
+            "status": "NOT_APPLICABLE",
+            "center_counts": {},
+            "max_deviation_fraction": 0.0,
+            "allowed_max_deviation_fraction": float(max_deviation_fraction),
+        }
+    values = list(counts.values())
+    mean = float(sum(values)) / float(len(values))
+    observed = 0.0 if mean == 0.0 else float(max(values) - min(values)) / mean
+    status = "PASS" if observed <= float(max_deviation_fraction) and not bad_training_sources else "FAIL"
+    return {
+        "status": status,
+        "center_counts": counts,
+        "max_deviation_fraction": observed,
+        "allowed_max_deviation_fraction": float(max_deviation_fraction),
+        "bad_training_source_rows": bad_training_sources,
+    }
+
+
 def full_case_anchor_tensors(case: AnchoredCaseData, device: torch.device) -> tuple[dict[str, torch.Tensor], dict[str, torch.Tensor]]:
     anchor = (case.raw_anchor_probabilities if case.raw_anchor_probabilities is not None else case.anchor_probabilities).copy()
     component = (case.raw_component_features if case.raw_component_features is not None else case.component_features).copy()
@@ -805,6 +975,8 @@ def model_kwargs_from_args(args: argparse.Namespace) -> dict[str, object]:
         "disable_local_refinement": bool(getattr(args, "disable_local_refinement", False)),
         "disable_anatomy_roi_prior": bool(getattr(args, "disable_anatomy_roi_prior", False)),
         "final_output_mode": str(getattr(args, "final_output_mode", "legacy_variant")),
+        "enable_batch7_decomposition_br2": bool(getattr(args, "enable_batch7_decomposition_br2", False)),
+        "batch7_decomposition_use_sip": bool(getattr(args, "batch7_decomposition_use_sip", False)),
     }
 
 
@@ -824,6 +996,8 @@ def architecture_config_from_args(args: argparse.Namespace) -> dict[str, object]
         "encoder_profile": str(cfg["encoder_profile"]),
         "disable_local_refinement": bool(cfg["disable_local_refinement"]),
         "disable_anatomy_roi_prior": bool(cfg["disable_anatomy_roi_prior"]),
+        "enable_batch7_decomposition_br2": bool(cfg["enable_batch7_decomposition_br2"]),
+        "batch7_decomposition_use_sip": bool(cfg["batch7_decomposition_use_sip"]),
         "runtime_final_output_modes_supported": [
             "anchor_identity_control",
             "anchor_bounded_srr_correction",
@@ -1793,6 +1967,11 @@ def print_contract(args: argparse.Namespace) -> None:
     if args.limit_val_cases > 0:
         val_ids = val_ids[: args.limit_val_cases]
     enforce_batch4_contract(args, len(train_ids), len(val_ids))
+    batch7_source_pathology = str(getattr(args, "batch7_source_balanced_pathology", "") or "").strip()
+    if batch7_source_pathology:
+        if int(args.batch_size) != 1:
+            raise ValueError("Batch7 source-balanced decomposition requires --batch-size 1")
+        validate_batch7_training_source("metadata.center")
     contract = {
         "status": "CONTRACT_VALID",
         "batch4_production_contract": bool(getattr(args, "batch4_production_contract", False)),
@@ -1816,6 +1995,18 @@ def print_contract(args: argparse.Namespace) -> None:
         "batch6_unfreeze_at_step": int(getattr(args, "batch6_unfreeze_at_step", 0) or 0),
         "batch6_additional_trainable_groups": parse_case_id_list(str(getattr(args, "batch6_additional_trainable_groups", "") or "")),
         "external_fixed_overfit_receipt": str(getattr(args, "external_fixed_overfit_receipt", "")),
+        "batch7_source_balanced_sampler": {
+            "enabled": bool(batch7_source_pathology),
+            "pathology": batch7_source_pathology,
+            "training_source": "metadata.center" if batch7_source_pathology else "",
+            "availability_pattern_as_training_source": "forbidden",
+            "selection_rule": "seeded_uniform_eligible_center_balanced_shuffle_cycle_then_uniform_random_case_then_lesion_or_anchor_error_patch"
+            if batch7_source_pathology
+            else "",
+            "max_source_count_deviation_fraction": 0.15 if batch7_source_pathology else None,
+            "manifest": "source_balanced_sampler_manifest.csv" if batch7_source_pathology else "",
+            "summary": "source_balanced_sampler_summary.json" if batch7_source_pathology else "",
+        },
         "source_commit": git_head(),
     }
     print(json.dumps(contract, indent=2, sort_keys=True))
@@ -2139,6 +2330,10 @@ def _batch6_group_prefixes(groups: Iterable[str]) -> list[str]:
         "scar_source_arbiter": ("scar_source_arbiter.",),
         "edema_source_arbiter": ("edema_source_arbiter.",),
         "accepted_pathology_source_arbiters_only": ("scar_source_arbiter.", "edema_source_arbiter."),
+        "scar_lightweight_br2": ("scar_lightweight_br2.",),
+        "edema_lightweight_br2": ("edema_lightweight_br2.",),
+        "scar_br2_coefficients": ("scar_lightweight_br2.beta_pattern", "scar_lightweight_br2.center_deviation_raw"),
+        "edema_br2_coefficients": ("edema_lightweight_br2.beta_pattern", "edema_lightweight_br2.center_deviation_raw"),
     }
     for group in groups:
         key = str(group).strip()
@@ -2624,8 +2819,21 @@ def train_variant(args: argparse.Namespace) -> None:
     proto_rows: list[dict[str, object]] = []
     gradient_rows: list[dict[str, object]] = []
     batch_composition_rows: list[dict[str, object]] = []
+    source_balanced_rows: list[dict[str, object]] = []
     validation_rows: list[dict[str, object]] = []
     validation_events: list[dict[str, object]] = []
+    batch7_source_pathology = str(getattr(args, "batch7_source_balanced_pathology", "") or "").strip()
+    source_balanced_pools: dict[str, list[AnchoredCaseData]] = {}
+    source_balanced_center_sequence: list[str] = []
+    if batch7_source_pathology:
+        if args.batch_size != 1:
+            raise ValueError("Batch7 source-balanced decomposition requires --batch-size 1")
+        source_balanced_pools = source_balanced_case_pools(train_cases, batch7_source_pathology)
+        source_balanced_center_sequence = build_source_balanced_center_sequence(
+            sorted(source_balanced_pools),
+            steps=int(args.max_steps),
+            rng=np.random.default_rng(int(args.seed)),
+        )
     full_volume_eval_steps = parse_int_set(args.full_volume_eval_steps)
     first_train_loss: float | None = None
     last_train_loss: float | None = None
@@ -2666,22 +2874,34 @@ def train_variant(args: argparse.Namespace) -> None:
             new_params = [param for name, param in model.named_parameters() if name in new_names]
             if new_params:
                 optimizer.add_param_group({"params": new_params, "lr": optimizer.param_groups[0]["lr"], "weight_decay": args.weight_decay})
-        x_cpu, y_cpu, av_cpu, anchor_cpu, component_cpu, keys = batch_from_anchored_cases(
-            train_cases,
-            complete_cases,
-            scar_cases,
-            lge_only_scar_cases,
-            edema_t2_cases,
-            center_c_t2_edema_cases,
-            args.batch_size,
-            patch_shape,
-            rng,
-            args.complete_oversample,
-            args.oversample_foreground,
-            modality_dropout=True,
-            hardneg_targets=hardneg_targets,
-            hardneg_sample_prob=float(args.hardneg_sample_prob),
-        )
+        if batch7_source_pathology:
+            x_cpu, y_cpu, av_cpu, anchor_cpu, component_cpu, keys, source_manifest = batch_from_source_balanced_case(
+                pools=source_balanced_pools,
+                step=step,
+                patch_shape=patch_shape,
+                rng=rng,
+                pathology=batch7_source_pathology,
+                oversample_foreground=args.oversample_foreground,
+                center_sequence=source_balanced_center_sequence,
+            )
+            source_balanced_rows.append(source_manifest)
+        else:
+            x_cpu, y_cpu, av_cpu, anchor_cpu, component_cpu, keys = batch_from_anchored_cases(
+                train_cases,
+                complete_cases,
+                scar_cases,
+                lge_only_scar_cases,
+                edema_t2_cases,
+                center_c_t2_edema_cases,
+                args.batch_size,
+                patch_shape,
+                rng,
+                args.complete_oversample,
+                args.oversample_foreground,
+                modality_dropout=True,
+                hardneg_targets=hardneg_targets,
+                hardneg_sample_prob=float(args.hardneg_sample_prob),
+            )
         x = x_cpu.to(device)
         y = y_cpu.to(device)
         av = av_cpu.to(device)
@@ -2710,6 +2930,8 @@ def train_variant(args: argparse.Namespace) -> None:
             safety_component_features=safety_component_features,
             case_ids=keys,
             production_intervention_mode=args.production_intervention_mode,
+            center_ids=[str(case_lookup[key].metadata.center) for key in keys],
+            use_center_beta=bool(getattr(args, "enable_batch7_decomposition_br2", False)),
         )
         loss, metrics = propref_loss(outputs, y, av, stage, args)
         if step == 1:
@@ -2956,6 +3178,24 @@ def train_variant(args: argparse.Namespace) -> None:
     write_csv(variant_dir / "retrieval_usage.csv", usage_rows)
     write_csv(variant_dir / "loss_component_gradient_sanity.csv", gradient_rows)
     write_csv(variant_dir / "batch_composition.csv", batch_composition_rows)
+    write_csv(variant_dir / "source_balanced_sampler_manifest.csv", source_balanced_rows)
+    source_balanced_summary = source_balanced_count_summary(source_balanced_rows)
+    source_balanced_summary.update(
+        {
+            "enabled": bool(batch7_source_pathology),
+            "pathology": batch7_source_pathology,
+            "training_source": "metadata.center" if batch7_source_pathology else "",
+            "sampler_manifest_path": str(variant_dir / "source_balanced_sampler_manifest.csv"),
+            "sampler_seed": int(args.seed) if batch7_source_pathology else None,
+            "center_sequence_policy": "seeded_shuffled_cycles_count_balanced" if batch7_source_pathology else "",
+        }
+    )
+    (variant_dir / "source_balanced_sampler_summary.json").write_text(
+        json.dumps(source_balanced_summary, indent=2, sort_keys=True),
+        encoding="utf-8",
+    )
+    if batch7_source_pathology and source_balanced_summary.get("status") != "PASS":
+        raise RuntimeError(f"Batch7 source-balanced sampler hard gate failed: {source_balanced_summary}")
     write_csv(variant_dir / "prototype_update_sanity_formal.csv", proto_rows)
     write_csv(variant_dir / "hardneg_memory.csv", memory_rows(output_variant, hardneg_path, len(hardneg_targets), sum(len(v) for v in hardneg_targets.values())))
     loss_decrease = None if first_train_loss is None or last_train_loss is None else first_train_loss - last_train_loss
@@ -3067,6 +3307,8 @@ def train_variant(args: argparse.Namespace) -> None:
         "production_gate_migration": warm_start_payload.get("production_gate_migration") if warm_start_payload else {"applied": False},
         "batch6_trainable_contract": trainable_contract,
         "batch6_unfreeze_events": unfreeze_events,
+        "batch7_source_balanced_pathology": batch7_source_pathology,
+        "source_balanced_sampler_summary": source_balanced_summary,
         "skip_export": bool(args.skip_export),
     }
     (variant_dir / "summary.json").write_text(json.dumps(summary, indent=2, sort_keys=True), encoding="utf-8")
@@ -3196,6 +3438,9 @@ def main() -> None:
     parser.add_argument("--disable-local-refinement", action="store_true", help="Bypass crop ROI refinement and use proposal logits for pathology heads.")
     parser.add_argument("--disable-anatomy-roi-prior", action="store_true", help="Replace P_union/P_LV/P_RV distance gates with neutral ROI context.")
     parser.add_argument("--disable-nnunet-anchor", action="store_true", help="Remove nnU-Net anchor/component context from training, prototype fitting, and evaluation.")
+    parser.add_argument("--enable-batch7-decomposition-br2", action="store_true", help="Enable center-hierarchical signed lightweight BR2 for Batch7 decomposition.")
+    parser.add_argument("--batch7-decomposition-use-sip", action="store_true", help="Mark Batch7 decomposition run as the explicit SIP ablation.")
+    parser.add_argument("--batch7-source-balanced-pathology", choices=("", "scar", "edema"), default="", help="Use Batch7 center-balanced sampler for one target pathology.")
     parser.add_argument("--batch4-production-contract", action="store_true", help="Fail closed unless CLI values match the approved Batch4 MyoPS fold0 contract.")
     parser.add_argument("--print-contract", action="store_true", help="Validate and print the resolved training contract without loading images or training.")
     parser.add_argument("--preflight-only", action="store_true", help="Run contract and one-batch overfit preflight, then stop before formal optimizer training.")

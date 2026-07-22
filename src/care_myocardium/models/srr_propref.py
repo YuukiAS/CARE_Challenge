@@ -15,6 +15,239 @@ from src.care_myocardium.models.srr_spatial_dictionary import M10TwoPassSpatialD
 from src.care_myocardium.models.srr_v2_unet import FlexibleTaskDecoder, ScaleRetrieval, build_modality_encoder, encoder_profile_scale_channels
 
 
+BR2_CENTER_ORDER = ("CenterA", "CenterB", "CenterC", "CenterE", "CenterF", "CenterG", "CenterH")
+BR2_PATTERN_ORDER = ("lge_only", "lge_c0", "lge_t2_c0")
+BR2_REPRESENTER_SPECS = (
+    ("shared_anatomy", (0,)),
+    ("lge_private", (0,)),
+    ("c0_private", (2,)),
+    ("t2_private", (1,)),
+    ("interaction_lge_c0", (0, 2)),
+    ("interaction_lge_t2", (0, 1)),
+    ("interaction_t2_c0", (1, 2)),
+)
+BR2_CENTER_TO_PATTERN = {
+    "CenterA": "lge_only",
+    "CenterH": "lge_only",
+    "CenterB": "lge_t2_c0",
+    "CenterC": "lge_t2_c0",
+    "CenterE": "lge_c0",
+    "CenterF": "lge_c0",
+    "CenterG": "lge_c0",
+}
+BR2_PATTERN_TO_AVAILABILITY = {
+    "lge_only": (1.0, 0.0, 0.0),
+    "lge_c0": (1.0, 0.0, 1.0),
+    "lge_t2_c0": (1.0, 1.0, 1.0),
+}
+BR2_INITIAL_BETA_SCALE = 1.0e-3
+
+
+def _availability_pattern_from_tensor(availability: torch.Tensor) -> torch.Tensor:
+    """Return fixed deployment availability-pattern indices for LGE/T2/C0."""
+
+    lge = availability[:, 0] > 0.5
+    t2 = availability[:, 1] > 0.5
+    c0 = availability[:, 2] > 0.5
+    pattern = torch.full((availability.shape[0],), -1, dtype=torch.long, device=availability.device)
+    pattern = torch.where(lge & ~t2 & ~c0, torch.zeros_like(pattern), pattern)
+    pattern = torch.where(lge & ~t2 & c0, torch.ones_like(pattern), pattern)
+    pattern = torch.where(lge & t2 & c0, torch.full_like(pattern, 2), pattern)
+    if bool((pattern < 0).any()):
+        raise ValueError("unsupported Batch7 BR2 availability pattern; expected LGE-only, LGE+C0, or LGE+T2+C0")
+    return pattern
+
+
+class _BR2Representer(nn.Module):
+    def __init__(self, channels: int, required_modalities: tuple[int, ...]) -> None:
+        super().__init__()
+        self.required_modalities = tuple(int(idx) for idx in required_modalities)
+        in_channels = channels if len(self.required_modalities) == 1 else channels * 2
+        self.adapter = nn.Sequential(
+            nn.Conv3d(in_channels, channels, kernel_size=3, padding=1, groups=max(1, channels), bias=False)
+            if in_channels == channels
+            else nn.Conv3d(in_channels, channels, kernel_size=1, bias=False),
+            nn.GroupNorm(_groups(channels), channels),
+            nn.SiLU(inplace=True),
+            nn.Conv3d(channels, channels, kernel_size=1),
+        )
+        nn.init.zeros_(self.adapter[-1].weight)
+        nn.init.zeros_(self.adapter[-1].bias)
+
+    @staticmethod
+    def _normalize_feature(value: torch.Tensor, eps: float) -> torch.Tensor:
+        rms = value.square().mean(dim=(1, 2, 3, 4), keepdim=True).sqrt().clamp_min(eps)
+        return value / rms
+
+    def _basis(self, per_modality_scale0: list[torch.Tensor], eps: float) -> torch.Tensor:
+        if len(self.required_modalities) == 1:
+            return self._normalize_feature(per_modality_scale0[self.required_modalities[0]], eps)
+        a = self._normalize_feature(per_modality_scale0[self.required_modalities[0]], eps)
+        b = self._normalize_feature(per_modality_scale0[self.required_modalities[1]], eps)
+        return self._normalize_feature(0.5 * (a * b + (a - b).abs()), eps)
+
+    def forward(
+        self,
+        per_modality_scale0: list[torch.Tensor],
+        *,
+        eps: float,
+    ) -> torch.Tensor:
+        basis = self._basis(per_modality_scale0, eps)
+        if len(self.required_modalities) == 1:
+            x = self._normalize_feature(per_modality_scale0[self.required_modalities[0]], eps)
+        else:
+            a = self._normalize_feature(per_modality_scale0[self.required_modalities[0]], eps)
+            b = self._normalize_feature(per_modality_scale0[self.required_modalities[1]], eps)
+            x = torch.cat([a * b, (a - b).abs()], dim=1)
+        out = basis + self.adapter(x)
+        rms = out.square().mean(dim=(1, 2, 3, 4), keepdim=True).sqrt()
+        return out / rms.clamp_min(eps)
+
+
+class LightweightCenterHierarchicalBR2(nn.Module):
+    """Deployable center-hierarchical signed BR2 block for Batch7 decomposition."""
+
+    def __init__(self, channels: int, *, rms_eps: float = 1e-6) -> None:
+        super().__init__()
+        self.rms_eps = float(rms_eps)
+        self.representer_names = tuple(name for name, _modalities in BR2_REPRESENTER_SPECS)
+        self.representers = nn.ModuleDict(
+            {name: _BR2Representer(channels, modalities) for name, modalities in BR2_REPRESENTER_SPECS}
+        )
+        self.beta_pattern = nn.Parameter(torch.zeros(len(BR2_PATTERN_ORDER), len(BR2_REPRESENTER_SPECS)))
+        self.center_deviation_raw = nn.Parameter(torch.zeros(len(BR2_CENTER_ORDER), len(BR2_REPRESENTER_SPECS)))
+        self.pathology_projection = nn.Conv3d(channels, channels, kernel_size=1)
+        self._initialize_trainable_zero_delta_path()
+
+    def _initialize_trainable_zero_delta_path(self) -> None:
+        with torch.no_grad():
+            beta = torch.tensor(
+                [
+                    [1.0, -0.5, 0.0, 0.0, 0.0, 0.0, 0.0],
+                    [1.0, -0.5, 0.6, 0.0, -0.4, 0.0, 0.0],
+                    [1.0, -0.5, 0.6, -0.7, -0.4, 0.8, -0.3],
+                ],
+                dtype=self.beta_pattern.dtype,
+                device=self.beta_pattern.device,
+            )
+            self.beta_pattern.copy_(float(BR2_INITIAL_BETA_SCALE) * beta)
+            self.center_deviation_raw.zero_()
+            self.pathology_projection.weight.zero_()
+        nn.init.zeros_(self.pathology_projection.bias)
+
+    @staticmethod
+    def center_indices(center_ids: list[str] | tuple[str, ...], device: torch.device) -> torch.Tensor:
+        index = {name: idx for idx, name in enumerate(BR2_CENTER_ORDER)}
+        missing = sorted({str(center) for center in center_ids if str(center) not in index})
+        if missing:
+            raise ValueError(f"unknown Batch7 BR2 centers: {missing}")
+        return torch.tensor([index[str(center)] for center in center_ids], dtype=torch.long, device=device)
+
+    def center_deviation_zero_sum(self) -> torch.Tensor:
+        raw = self.center_deviation_raw
+        adjusted = raw.clone()
+        for pattern_idx, pattern in enumerate(BR2_PATTERN_ORDER):
+            centers = [idx for idx, center in enumerate(BR2_CENTER_ORDER) if BR2_CENTER_TO_PATTERN[center] == pattern]
+            values = raw[centers]
+            adjusted[centers] = values - values.mean(dim=0, keepdim=True)
+        return adjusted
+
+    @staticmethod
+    def availability_mask(availability: torch.Tensor) -> torch.Tensor:
+        masks = []
+        for _name, required in BR2_REPRESENTER_SPECS:
+            mask = torch.ones((availability.shape[0],), dtype=availability.dtype, device=availability.device)
+            for idx in required:
+                mask = mask * (availability[:, idx] > 0.5).to(dtype=availability.dtype)
+            masks.append(mask)
+        return torch.stack(masks, dim=1)
+
+    @staticmethod
+    def source_eligibility_mask(*, pathology: str, device: torch.device, dtype: torch.dtype) -> torch.Tensor:
+        rows = []
+        for center in BR2_CENTER_ORDER:
+            pattern = BR2_CENTER_TO_PATTERN[center]
+            availability = torch.tensor(BR2_PATTERN_TO_AVAILABILITY[pattern], dtype=dtype, device=device).view(1, 3)
+            mask = LightweightCenterHierarchicalBR2.availability_mask(availability)[0]
+            if pathology == "edema" and pattern != "lge_t2_c0":
+                mask = torch.zeros_like(mask)
+            rows.append(mask)
+        return torch.stack(rows, dim=0)
+
+    def beta_for_batch(
+        self,
+        availability: torch.Tensor,
+        *,
+        center_ids: list[str] | tuple[str, ...] | None,
+        use_center_beta: bool,
+        pathology: str,
+    ) -> dict[str, torch.Tensor]:
+        pattern_idx = _availability_pattern_from_tensor(availability)
+        beta_pattern = self.beta_pattern[pattern_idx]
+        center_deviation = self.center_deviation_zero_sum()
+        center_pattern_idx = torch.tensor(
+            [BR2_PATTERN_ORDER.index(BR2_CENTER_TO_PATTERN[center]) for center in BR2_CENTER_ORDER],
+            dtype=torch.long,
+            device=availability.device,
+        )
+        all_center_beta = self.beta_pattern[center_pattern_idx] + center_deviation
+        source_mask = self.source_eligibility_mask(pathology=pathology, device=availability.device, dtype=availability.dtype)
+        if use_center_beta:
+            if center_ids is None:
+                raise ValueError("training center beta requires center_ids")
+            center_idx = self.center_indices(center_ids, availability.device)
+            selected_deviation = center_deviation[center_idx]
+        else:
+            selected_deviation = torch.zeros_like(beta_pattern)
+        beta_center = beta_pattern + selected_deviation
+        mask = self.availability_mask(availability)
+        if pathology == "edema":
+            t2_present = (availability[:, 1] > 0.5).to(dtype=mask.dtype).view(-1, 1)
+            mask = mask * t2_present
+        effective = beta_center * mask
+        return {
+            "beta_pattern": beta_pattern,
+            "beta_center": beta_center,
+            "center_deviation": selected_deviation,
+            "all_center_deviation": center_deviation,
+            "all_center_beta": all_center_beta,
+            "source_eligibility_mask": source_mask,
+            "availability_mask": mask,
+            "effective_beta": effective,
+        }
+
+    def forward(
+        self,
+        base_feature: torch.Tensor,
+        per_modality_scale0: list[torch.Tensor],
+        availability: torch.Tensor,
+        *,
+        pathology: str,
+        center_ids: list[str] | tuple[str, ...] | None,
+        use_center_beta: bool,
+    ) -> tuple[torch.Tensor, dict[str, torch.Tensor]]:
+        beta = self.beta_for_batch(availability, center_ids=center_ids, use_center_beta=use_center_beta, pathology=pathology)
+        reps = []
+        pre_beta_rms_rows = []
+        contribution_rms_rows = []
+        for ridx, (name, _required) in enumerate(BR2_REPRESENTER_SPECS):
+            rep = self.representers[name](per_modality_scale0, eps=self.rms_eps)
+            masked = rep * beta["availability_mask"][:, ridx].view(-1, 1, 1, 1, 1)
+            reps.append(masked)
+            pre_beta_rms_rows.append(rep.square().mean(dim=(1, 2, 3, 4)).sqrt())
+            contribution_rms_rows.append(masked.square().mean(dim=(1, 2, 3, 4)).sqrt())
+        stacked = torch.stack(reps, dim=1)
+        mixed = (stacked * beta["effective_beta"].view(-1, len(BR2_REPRESENTER_SPECS), 1, 1, 1, 1)).sum(dim=1)
+        projected = self.pathology_projection(mixed)
+        return base_feature + projected, {
+            **beta,
+            "representer_pre_beta_rms": torch.stack(pre_beta_rms_rows, dim=1),
+            "representer_contribution_rms": torch.stack(contribution_rms_rows, dim=1),
+            "representer_rms": torch.stack(contribution_rms_rows, dim=1),
+            "br2_delta_rms": projected.square().mean(dim=(1, 2, 3, 4)).sqrt(),
+        }
+
+
 def _groups(channels: int) -> int:
     return max(1, min(8, channels // 4))
 
@@ -1363,6 +1596,8 @@ class SRRProposeRefineMyoPS(nn.Module):
         disable_local_refinement: bool = False,
         disable_anatomy_roi_prior: bool = False,
         final_output_mode: str = "legacy_variant",
+        enable_batch7_decomposition_br2: bool = False,
+        batch7_decomposition_use_sip: bool = False,
     ) -> None:
         super().__init__()
         if variant not in {
@@ -1383,6 +1618,8 @@ class SRRProposeRefineMyoPS(nn.Module):
         self.encoder_profile = str(encoder_profile)
         self.disable_local_refinement = bool(disable_local_refinement)
         self.disable_anatomy_roi_prior = bool(disable_anatomy_roi_prior)
+        self.enable_batch7_decomposition_br2 = bool(enable_batch7_decomposition_br2)
+        self.batch7_decomposition_use_sip = bool(batch7_decomposition_use_sip)
         self.final_output_mode = str(final_output_mode or "legacy_variant")
         if self.final_output_mode not in {"legacy_variant", "anchor_bounded_srr_correction", "srr_no_anchor_control"}:
             raise ValueError(f"unknown final_output_mode: {self.final_output_mode}")
@@ -1466,6 +1703,16 @@ class SRRProposeRefineMyoPS(nn.Module):
                 enable_memory=bool(self.m6_config.get("m10_memory", False)),
             )
             if bool(self.m6_config.get("m10_spatial_dictionary", False))
+            else None
+        )
+        self.scar_lightweight_br2 = (
+            LightweightCenterHierarchicalBR2(self.feature_channels)
+            if self.enable_batch7_decomposition_br2
+            else None
+        )
+        self.edema_lightweight_br2 = (
+            LightweightCenterHierarchicalBR2(self.feature_channels)
+            if self.enable_batch7_decomposition_br2
             else None
         )
 
@@ -1618,6 +1865,8 @@ class SRRProposeRefineMyoPS(nn.Module):
         case_ids: list[str] | tuple[str, ...] | None = None,
         anchor_identity_control: bool = False,
         production_intervention_mode: str = "full",
+        center_ids: list[str] | tuple[str, ...] | None = None,
+        use_center_beta: bool = False,
     ) -> dict[str, torch.Tensor]:
         if production_intervention_mode not in {
             "full",
@@ -1739,6 +1988,33 @@ class SRRProposeRefineMyoPS(nn.Module):
             gates = {**gates, **spatial_gates}  # type: ignore[arg-type]
             gate_metadata = {**gate_metadata, **spatial_metadata}  # type: ignore[arg-type]
             gate_valid_masks = {**gate_valid_masks, **spatial_valid}  # type: ignore[arg-type]
+        batch7_br2_outputs: dict[str, torch.Tensor] = {}
+        if self.enable_batch7_decomposition_br2:
+            if self.m10_spatial_dictionary is not None:
+                raise ValueError("Batch7 minimal decomposition forbids formal M10 spatial dictionary use")
+            if self.scar_lightweight_br2 is None or self.edema_lightweight_br2 is None:
+                raise RuntimeError("Batch7 lightweight BR2 modules were not initialized")
+            features["scar"], scar_br2 = self.scar_lightweight_br2(
+                features["scar"],
+                [features_by_scale[0] for features_by_scale in per_modality],
+                availability,
+                pathology="scar",
+                center_ids=center_ids,
+                use_center_beta=bool(use_center_beta),
+            )
+            features["edema"], edema_br2 = self.edema_lightweight_br2(
+                features["edema"],
+                [features_by_scale[0] for features_by_scale in per_modality],
+                availability,
+                pathology="edema",
+                center_ids=center_ids,
+                use_center_beta=bool(use_center_beta),
+            )
+            batch7_br2_outputs = {
+                f"scar_br2_{key}": value for key, value in scar_br2.items()
+            } | {
+                f"edema_br2_{key}": value for key, value in edema_br2.items()
+            }
         scar_anatomy_prior = anatomy_context["scar_soft_gate_logits"]
         edema_anatomy_prior = anatomy_context["edema_soft_gate_logits"]
         confirmation_anchor_features = context_anchor_features
@@ -2186,4 +2462,16 @@ class SRRProposeRefineMyoPS(nn.Module):
                 outputs["m10_prototype_maps"] = prototype_maps  # type: ignore[assignment]
         else:
             outputs["m10_spatial_dictionary_status"] = "disabled_for_static_or_legacy_design"
+        if self.enable_batch7_decomposition_br2:
+            outputs.update(batch7_br2_outputs)
+            outputs["batch7_minimal_decomposition_br2_status"] = "enabled_center_hierarchical_signed_br2"
+            outputs["batch7_minimal_decomposition_sip_status"] = (
+                "enabled_explicit_ablation_loss" if self.batch7_decomposition_use_sip else "disabled_no_sip_or_minimal"
+            )
+            outputs["batch7_deployment_beta_policy"] = (
+                "training_center_beta" if bool(use_center_beta) else "deployment_availability_pattern_beta"
+            )
+            outputs["batch7_center_as_network_input"] = torch.tensor(False, device=final_logits.device)
+        else:
+            outputs["batch7_minimal_decomposition_br2_status"] = "disabled"
         return outputs

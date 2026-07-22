@@ -1,0 +1,8 @@
+representer,required_modalities,parameter_tensor_count,trainable_parameter_count,distinct_storage_status,final_adapter_zero_initialized
+shared_anatomy,LGE,5,136,PASS,1
+lge_private,LGE,5,136,PASS,1
+c0_private,C0,5,136,PASS,1
+t2_private,T2,5,136,PASS,1
+interaction_lge_c0,"LGE,C0",5,60,PASS,1
+interaction_lge_t2,"LGE,T2",5,60,PASS,1
+interaction_t2_c0,"T2,C0",5,60,PASS,1

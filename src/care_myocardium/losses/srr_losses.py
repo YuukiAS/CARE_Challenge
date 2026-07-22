@@ -884,6 +884,74 @@ def _source_arbiter_loss(
     return (torch.stack(losses).mean() if losses else outputs["logits"].sum() * 0.0), metrics
 
 
+def _zero_like_output(outputs: dict[str, torch.Tensor]) -> torch.Tensor:
+    ref = outputs.get("logits")
+    if not isinstance(ref, torch.Tensor):
+        raise KeyError("outputs must contain logits")
+    return ref.sum() * 0.0
+
+
+def br2_source_l1_sparsity_loss(outputs: dict[str, torch.Tensor], pathology: str) -> torch.Tensor:
+    beta = outputs.get(f"{pathology}_br2_all_center_beta")
+    mask = outputs.get(f"{pathology}_br2_source_eligibility_mask")
+    if not isinstance(beta, torch.Tensor):
+        beta = outputs.get(f"{pathology}_br2_effective_beta")
+        mask = outputs.get(f"{pathology}_br2_availability_mask")
+    if not isinstance(beta, torch.Tensor):
+        return _zero_like_output(outputs)
+    if isinstance(mask, torch.Tensor):
+        denom = mask.to(device=beta.device, dtype=beta.dtype).sum().clamp_min(1.0)
+        return (beta.abs() * mask.to(device=beta.device, dtype=beta.dtype)).sum() / denom
+    return beta.abs().mean()
+
+
+def br2_center_deviation_shrinkage_loss(outputs: dict[str, torch.Tensor], pathology: str) -> torch.Tensor:
+    deviation = outputs.get(f"{pathology}_br2_all_center_deviation")
+    if not isinstance(deviation, torch.Tensor):
+        return _zero_like_output(outputs)
+    return deviation.square().mean()
+
+
+def br2_selective_integration_penalty(
+    outputs: dict[str, torch.Tensor],
+    pathology: str,
+    *,
+    tau: float = 0.10,
+) -> tuple[torch.Tensor, dict[str, torch.Tensor]]:
+    """SIP penalty over signed center-specific BR2 coefficients.
+
+    The formal Batch7 decomposition uses the full training-center coefficient
+    table, not the current batch's effective beta. Batch size is 1 in the formal
+    runs, so using batch beta would make every eligible source set have size at
+    most one and would silently turn SIP into a zero-valued batch proxy.
+    """
+
+    beta = outputs.get(f"{pathology}_br2_all_center_beta")
+    mask = outputs.get(f"{pathology}_br2_source_eligibility_mask")
+    if not isinstance(beta, torch.Tensor) or not isinstance(mask, torch.Tensor):
+        zero = _zero_like_output(outputs)
+        return zero, {f"{pathology}_br2_sip_terms": zero.detach()}
+    mask_f = mask.to(device=beta.device, dtype=beta.dtype)
+    terms = []
+    tau_t = beta.new_tensor(float(tau))
+    for ridx in range(beta.shape[1]):
+        eligible = mask_f[:, ridx] > 0.5
+        count = int(eligible.sum().detach().cpu().item())
+        if count <= 1:
+            continue
+        selected = beta[eligible, ridx].abs()
+        gamma = torch.minimum(torch.ones_like(selected), selected / tau_t).sum()
+        terms.append(torch.minimum(torch.ones((), dtype=beta.dtype, device=beta.device), (count - gamma) / float(count - 1)))
+    if not terms:
+        zero = _zero_like_output(outputs)
+        return zero, {f"{pathology}_br2_sip_terms": zero.detach()}
+    loss = torch.stack(terms).sum()
+    return loss, {
+        f"{pathology}_br2_sip_terms": beta.new_tensor(float(len(terms))),
+        f"{pathology}_br2_sip_tau": tau_t,
+    }
+
+
 def srr_m10_loss_component_contract(
     metrics: dict[str, torch.Tensor],
     weights: dict[str, float] | None = None,
@@ -1025,6 +1093,15 @@ def srr_m6_expanded_total_loss(
     loss_proto = _prototype_margin_loss(outputs, labels, availability)
     loss_memory = _memory_alignment_loss(outputs, labels, availability)
     loss_source_arbiter, source_arbiter_metrics = _source_arbiter_loss(outputs, labels, availability)
+    loss_br2_l1 = 0.5 * (
+        br2_source_l1_sparsity_loss(outputs, "scar") + br2_source_l1_sparsity_loss(outputs, "edema")
+    )
+    loss_br2_center = 0.5 * (
+        br2_center_deviation_shrinkage_loss(outputs, "scar") + br2_center_deviation_shrinkage_loss(outputs, "edema")
+    )
+    loss_scar_br2_sip, scar_br2_sip_metrics = br2_selective_integration_penalty(outputs, "scar")
+    loss_edema_br2_sip, edema_br2_sip_metrics = br2_selective_integration_penalty(outputs, "edema")
+    loss_br2_sip = 0.5 * (loss_scar_br2_sip + loss_edema_br2_sip)
 
     scar_refiner_residual = outputs.get("scar_refiner_residual", outputs.get("scar_refinement_residual", outputs["logits"][:, :1] * 0.0))
     edema_refiner_residual = outputs.get("edema_refiner_residual", outputs.get("edema_refinement_residual", outputs["logits"][:, :1] * 0.0))
@@ -1069,6 +1146,9 @@ def srr_m6_expanded_total_loss(
         "loss_memory_bank_update_or_alignment": component_weight("loss_memory_bank_update_or_alignment", 0.05),
         "loss_source_arbiter": component_weight("loss_source_arbiter", 0.0),
         "loss_refiner_final_label_effect": component_weight("loss_refiner_final_label_effect", 0.02),
+        "loss_br2_source_l1_sparsity": component_weight("loss_br2_source_l1_sparsity", 0.0),
+        "loss_br2_center_deviation_shrinkage": component_weight("loss_br2_center_deviation_shrinkage", 0.0),
+        "loss_br2_selective_integration_penalty": component_weight("loss_br2_selective_integration_penalty", 0.0),
         "loss_cine_temporal_consistency": component_weight("loss_cine_temporal_consistency", 0.0),
         "loss_cine_reference_warp_consistency": component_weight("loss_cine_reference_warp_consistency", 0.0),
     }
@@ -1100,6 +1180,9 @@ def srr_m6_expanded_total_loss(
         "loss_memory_bank_update_or_alignment": loss_memory,
         "loss_source_arbiter": loss_source_arbiter,
         "loss_refiner_final_label_effect": loss_refiner_final_label_effect,
+        "loss_br2_source_l1_sparsity": loss_br2_l1,
+        "loss_br2_center_deviation_shrinkage": loss_br2_center,
+        "loss_br2_selective_integration_penalty": loss_br2_sip,
         "loss_cine_temporal_consistency": outputs["logits"].sum() * 0.0,
         "loss_cine_reference_warp_consistency": outputs["logits"].sum() * 0.0,
     }
@@ -1114,6 +1197,8 @@ def srr_m6_expanded_total_loss(
     )
     metrics.update(dict_metrics)
     metrics.update(psip_metrics)
+    metrics.update(scar_br2_sip_metrics)
+    metrics.update(edema_br2_sip_metrics)
     metrics.update(gate_repair_metrics)
     metrics.update(source_arbiter_metrics)
     metrics.update(scar_directionality_metrics)

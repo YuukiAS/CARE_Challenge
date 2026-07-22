@@ -1,0 +1,8 @@
+center,case_count_all_fold0_scope,train_case_count,val_case_count,modality_group_counts,lge_present,t2_present,c0_present,observation_set,expected_observation_set,status,source_semantics,availability_semantics
+CenterA,81,64,17,"{""LGE-only"": 81}",1,0,0,lge_only,lge_only,PASS,metadata.center,observation_set_not_training_source
+CenterB,35,28,7,"{""C0+LGE+T2"": 35}",1,1,1,lge_t2_c0,lge_t2_c0,PASS,metadata.center,observation_set_not_training_source
+CenterC,45,36,9,"{""C0+LGE+T2"": 45}",1,1,1,lge_t2_c0,lge_t2_c0,PASS,metadata.center,observation_set_not_training_source
+CenterE,7,6,1,"{""C0+LGE"": 7}",1,0,1,lge_c0,lge_c0,PASS,metadata.center,observation_set_not_training_source
+CenterF,9,7,2,"{""C0+LGE"": 9}",1,0,1,lge_c0,lge_c0,PASS,metadata.center,observation_set_not_training_source
+CenterG,8,7,1,"{""C0+LGE"": 8}",1,0,1,lge_c0,lge_c0,PASS,metadata.center,observation_set_not_training_source
+CenterH,35,28,7,"{""LGE-only"": 35}",1,0,0,lge_only,lge_only,PASS,metadata.center,observation_set_not_training_source

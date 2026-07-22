@@ -1,0 +1,18 @@
+# Executor Bootstrap Snapshot
+
+task_key: 20260722_srr_batch7_minimal_pathology_decomposition
+role: executor_only
+git_head: e2c1007d5cf5012e6ba7d5129c63221cea32d942
+git_status: `## main...origin/main
+ M configs/srr_production/myops_batch7_minimal_decomposition.yaml
+ M scripts/training/run_srr_propref_myops_fold0.py
+ M src/care_myocardium/losses/srr_losses.py
+ M src/care_myocardium/models/srr_propref.py
+?? scripts/evaluation/prepare_srr_batch7_minimal_decomposition_packet.py
+?? tests/srr_production/test_myops_batch7_minimal_decomposition.py`
+source_checkpoint_path: `results/20260721_srr_batch7_upstream_candidate_quality/runtime/attempts/batch7_formal300_htzhulab_59789651/variants/batch7_formal300_htzhulab_59789651/checkpoints/fold_0/propref_config/checkpoint_validation_step_300.pt`
+source_checkpoint_sha256: `d34ad65890cbb6a12aac3fc35bcab71709d680bff5a3aae2d93e010db1cc0e0d`
+expected_checkpoint_sha256: `d34ad65890cbb6a12aac3fc35bcab71709d680bff5a3aae2d93e010db1cc0e0d`
+fold0_train_cases: 176
+fold0_validation_cases: 44
+batch8_refiner_arbiter_gate_cine_fold_upload: not_authorized

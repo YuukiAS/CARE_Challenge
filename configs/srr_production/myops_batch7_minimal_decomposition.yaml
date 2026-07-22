@@ -281,7 +281,7 @@ loss_weights:
     loss_edema_confirmation_proposal_t2_present: 0.5
     loss_edema_anchor_missed_lesion_recovery_t2_present: 1.0
     loss_edema_anchor_false_positive_suppression_t2_present: 0.10
-    loss_no_t2_edema_safety: 0.50
+    loss_no_t2_edema_safety: 0.0
   br2_no_sip:
     loss_br2_source_l1_sparsity: 0.01
     loss_br2_center_deviation_shrinkage: 0.01
