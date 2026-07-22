@@ -1,158 +1,139 @@
-schema_version: 10
+schema_version: 11
 authority_name: srr_production_mainline_authority
-reviewed_from_head: 0fcc3ff605112a0efeab73f3df2f83249793d321
-formal_training_status: BATCH7_CENTER_HIERARCHICAL_BR2_SIP_DECOMPOSITION_READY_FOR_CONTROLLER
+formal_training_status: BATCH8_CLEAN_EDEMA_BR2_READY_FOR_CONTROLLER
 status_reason: >-
-  Batch7 repair produced truthful interventions but its proposal stage inherited mixed
-  M10 losses. The current 16-slot spatial dictionary, prototype maps and semantic negative
-  memory show weak or negative leverage. A comprehensive paper/data/code audit found that
-  the initial lightweight amendment also misdefined source as availability pattern and
-  allowed coefficient bypasses. The only authorized next action is now a six-run matched
-  comparison of minimal proposal, deployable center-hierarchical BR2 without SIP, and the
-  same BR2 with supervision-aware SIP.
+  Batch7 six-run execution is operationally complete but its BR2/SIP scientific packet is
+  incomplete: scar BR2 collapsed to empty predictions, SIP/no-SIP predictions were identical,
+  final coefficient exports were static or pending, and the validator did not require
+  checkpoint-derived mechanism evidence. The user explicitly authorized Batch8. The only
+  authorized next action is a clean two-seed edema minimal-versus-BR2 confirmation after
+  repairing the Batch7 checkpoint evidence.
 
 current_scientific_status:
   batch6: FINAL_OBJECTIVE_REPAIRED_BELOW_USABLE_SIGNAL
-  batch7_operational: FORMAL300_COMPLETE_STOP_GATE
-  batch7_repair_operational: VERIFIED_COMPLETE_STOPPED_AT_PROPOSAL_GATE
-  batch7_repair_scientific: TRUTHFUL_BUT_PROPOSAL_LOSS_AUTHORITY_IMPURE
-  current_complex_dictionary: LOW_LEVERAGE_NOT_FORMAL_CANDIDATE
-  representation_retrieval_paper_line: RETAIN_PENDING_CENTER_HIERARCHICAL_ABLATION
-  legacy_pattern_sip: HISTORICAL_ONLY_FORMAL_WEIGHT_ZERO
-  batch7_minimal_decomposition: READY_FOR_CONTROLLER_COMPREHENSIVE_BR2_AMENDMENT
+  batch7_operational: SIX_MATCHED_RUNS_COMPLETE
+  batch7_scientific_packet: NEEDS_EVIDENCE_REPAIR_NOT_VALID_BR2_SIP_CLOSURE
+  scar_srr: TRAINING_STOPPED_USE_NNUNET
+  edema_br2_signal: SMALL_POSITIVE_REQUIRES_CLEAN_TWO_SEED_CONFIRMATION
+  sip: PAUSED_NOT_AUTHORIZED
+  refiner: PAUSED_NOT_AUTHORIZED
   significantly_better_than_nnunet: false
 
-selected_model:
-  class_name: SRRProposeRefineMyoPS
-  path: src/care_myocardium/models/srr_propref.py
-  source_variant: m10_d3_hierarchical_memory_propref
-  encoder_profile: full_4scale
-  base_channels: 32
-  final_output_mode: anchor_bounded_srr_correction
-
-batch7_repair_evidence:
-  terminal_commit: 0fcc3ff605112a0efeab73f3df2f83249793d321
-  result_root: results/20260721_srr_batch7_mechanism_closure_repair
-  controller_verification_decision: VERIFIED_COMPLETE
-  proposal_job_id: '59828884'
-  proposal_optimizer_steps: 600
-  proposal_selected_checkpoint_sha256: a2412889d55a0e3eee0ca2d57a77f34db0f10f0a069193cc906785f49fae97f1
-  mean_positive_dice_delta: 0.0012229660043303135
-  scar_positive_dice_delta: -0.0019961365973601626
-  edema_positive_dice_delta: 0.0044420686060207895
-  help_count: 25
-  harm_count: 27
-  remote_fp_relative_worsening_max: 0.053052516728197975
-  accepted_repairs:
-    - truthful independent 44-case interventions
-    - anchor identity and gate closed exact zero
-    - real category semantic memory with valid masks and hashes
-    - anchor-free discovery code path
-    - strict known-bad validator
-  planner_gaps:
-    - proposal wrapper passed empty loss weight JSON
-    - M10 mixed default losses remained active
-    - discovery and confirmation direct losses were not explicitly activated
-    - gradient authority backpropagated proposal-logit mean rather than formal losses
-    - anchor-free coverage omitted T2-present edema and CenterC complete cases
-  design_findings:
-    - semantic negative memory did not improve scar and slightly harmed edema
-    - prototype maps added only about 0.0007 edema Dice and no stable scar gain
-    - scar candidate modes remained negative
-    - edema retained a small positive signal
+historical_entrypoints:
+  - id: srr_batch7_minimal_pathology_decomposition
+    role: historical_six_run_packet_with_incomplete_BR2_SIP_mechanism_closure
+    path: prompts/tasks/20260722_srr_batch7_minimal_pathology_decomposition_controller.md
+    config_path: configs/srr_production/myops_batch7_minimal_decomposition.yaml
+    result_root: results/20260722_srr_batch7_minimal_pathology_decomposition
+    formal_authority: false
+    operational_status: COMPLETE
+    scientific_status: SUPERSEDED_PENDING_BATCH8_EVIDENCE_REPAIR
+    retained_findings:
+      scar_minimal_positive_dice_delta: -0.004992862041668997
+      edema_minimal_positive_dice_delta: 0.0013426793445873494
+      edema_br2_positive_dice_delta: 0.0029631723979889144
+      edema_br2_increment_over_minimal: 0.001620493053401617
+    invalid_or_incomplete_evidence:
+      - controller_report_not_final_verified
+      - source_coefficients_static_or_pending
+      - integrativeness_static_initial_coefficients
+      - scar_BR2_empty_prediction_collapse_not_diagnosed
+      - SIP_noSIP_identical_prediction_not_explained
+      - legacy_ProposalDictionary_present_in_both_minimal_and_BR2
+      - validator_did_not_require_checkpoint_derived_mechanisms
+      - decision_code_did_not_apply_all_safety_gates
 
 formal_entrypoints: []
 
 candidate_entrypoints:
-  - id: srr_batch7_minimal_pathology_decomposition
-    role: authorized_final_minimal_vs_center_hierarchical_BR2_and_supervision_aware_SIP_decomposition
-    path: prompts/tasks/20260722_srr_batch7_minimal_pathology_decomposition_controller.md
-    config_path: configs/srr_production/myops_batch7_minimal_decomposition.yaml
-    plan_path: docs/plans/laneB_round04_active_srr_batch7_minimal_pathology_decomposition_execution.md
-    executor_plan_path: prompts/tasks/20260722_srr_batch7_minimal_pathology_decomposition_executor_plan.yaml
-    comprehensive_audit_path: results/srr_production/code_maturity/batch7_br2_sip_comprehensive_architecture_audit_20260722.md
-    result_root: results/20260722_srr_batch7_minimal_pathology_decomposition
+  - id: srr_batch8_clean_edema_br2_confirmation
+    role: authorized_clean_two_seed_edema_minimal_vs_BR2_confirmation
+    path: prompts/tasks/20260722_srr_batch8_clean_edema_br2_controller.md
+    config_path: configs/srr_production/myops_batch8_clean_edema_br2.yaml
+    plan_path: docs/plans/laneB_round04_active_srr_batch8_clean_edema_br2_confirmation_execution.md
+    executor_plan_path: prompts/tasks/20260722_srr_batch8_clean_edema_br2_executor_plan.yaml
+    planner_audit_path: results/srr_production/code_maturity/batch8_clean_edema_br2_planner_decision_20260722.md
+    result_root: results/20260722_srr_batch8_clean_edema_br2_confirmation
     formal_authority: true
-    audit_status: READY_FOR_CONTROLLER_COMPREHENSIVE_BR2_AMENDMENT
-    source_terminal_commit: 0fcc3ff605112a0efeab73f3df2f83249793d321
+    audit_status: READY_FOR_CONTROLLER
     source_checkpoint_sha256: d34ad65890cbb6a12aac3fc35bcab71709d680bff5a3aae2d93e010db1cc0e0d
-    experiments:
-      - scar_minimal
-      - scar_br2_no_sip
-      - scar_br2_sip
-      - edema_minimal
-      - edema_br2_no_sip
-      - edema_br2_sip
-    optimizer_steps_each: 400
-    full_volume_eval_steps: [200, 400]
-    source_semantics:
-      training_source: metadata_center
-      observation_set: availability
-      deployment_source: availability_pattern_pooled
-      center_network_input: forbidden
-      validation_center_specific_beta: forbidden
-    br2_semantics:
-      signed_spatially_global_coefficients: true
-      softmax_simplex_topk: forbidden
-      image_conditioned_coefficient_residual: forbidden
-      representer_rms_normalization: required
-      beta_center_equals_pattern_plus_deviation: true
-      no_t2_edema_source_membership: forbidden
-    required_terminal_decisions:
-      - scar_minimal_RETAIN_or_RETIRE
-      - scar_br2_RETAIN_RETIRE_or_NOT_APPLICABLE
-      - scar_sip_RETAIN_REMOVE_or_NOT_APPLICABLE
-      - edema_minimal_RETAIN_or_RETIRE
-      - edema_br2_RETAIN_RETIRE_or_NOT_APPLICABLE
-      - edema_sip_RETAIN_REMOVE_or_NOT_APPLICABLE
+    pathology: edema_only
+    seeds: [20260722, 20260723]
+    variants:
+      - edema_clean_minimal_seed20260722
+      - edema_clean_br2_seed20260722
+      - edema_clean_minimal_seed20260723
+      - edema_clean_br2_seed20260723
+    optimizer_steps_each: 800
+    full_volume_eval_steps: [200, 400, 800]
+    model_semantics:
+      new_class: CleanEdemaBR2Corrector
+      full_SRRProposeRefineMyoPS_reuse: forbidden
+      raw_nnunet_anchor_base: true
+      modified_class_channel: edema_only
+      no_t2_exact_anchor_identity: true
+      clean_br2_representers: [shared_anatomy, lge_private, t2_private, interaction_lge_t2]
+      sip_enabled: false
+      refiner_enabled: false
+      scar_enabled: false
+    required_pretraining_gates:
+      - Batch7_selected_checkpoint_mechanism_export
+      - scar_empty_prediction_onset_diagnosis
+      - clean_import_graph
+      - checkpoint_prefix_whitelist
+      - legacy_module_call_count_zero
+      - minimal_BR2_initial_equivalence
+      - no_T2_exact_anchor_identity
+      - fixed_real_case_overfit
+      - loss_specific_gradient_authority
+      - checkpoint_roundtrip
+      - real_known_bad_fail_closed
+    retain_gate:
+      each_seed_br2_positive_dice_delta_min: 0.002
+      mean_br2_positive_dice_delta_min: 0.003
+      each_seed_br2_minus_minimal_min: 0.0005
+      mean_br2_minus_minimal_min: 0.001
+      center_b_mean_delta_min: 0.0
+      center_c_mean_delta_min: 0.0
+      combined_help_not_less_than_harm: true
+      hd95_non_worse: true
+      maximum_remote_fp_relative_worsening: 0.05
+      no_t2_exact_anchor_identity: true
     allowed_actions:
-      - explicit pathology proposal loss authority
-      - center modality inventory and supervision eligibility
-      - source-balanced sampler
-      - lightweight normalized shared private interaction representers
-      - hierarchical signed source coefficients
-      - deployment pattern coefficient separation
-      - supervision-aware BR2 SIP formula and unit tests
-      - no-SIP versus SIP matched ablation
-      - complete-trimodal and worst-center evaluation
-      - strict validator and known-bad
-      - mapper wiki fingerprint repair
-      - local lightweight result commit
+      - repair_Batch7_checkpoint_mechanism_evidence
+      - implement_clean_edema_corrector
+      - implement_four_representer_clean_BR2
+      - run_real_preflight_and_known_bad
+      - run_two_independent_matched_seed_jobs
+      - post_completion_aggregation
+      - mapper_wiki_fingerprint_update
+      - local_lightweight_result_commit
     forbidden_actions:
-      - current M10 spatial dictionary formal continuation
-      - prototype maps formal use
-      - semantic negative memory formal use
-      - legacy Pattern-SIP formal use
-      - availability pattern as only training source
-      - center-conditioned network or router
-      - validation center-specific beta
-      - softmax simplex topk beta
-      - image-conditioned coefficient residual
-      - no-T2 source in edema coefficient SIP or loss
-      - Batch8
-      - refiner training
-      - source arbiter training
-      - production gate training
-      - backbone replacement
-      - encoder redesign
-      - fold expansion
+      - scar_training
+      - SIP_training
+      - refiner_training
+      - source_arbiter_training
+      - production_gate_training
+      - old_M10_dictionary_prototype_memory_formal_use
+      - full_SRRProposeRefineMyoPS_flag_only_bypass
+      - Batch9
+      - backbone_replacement
+      - encoder_redesign
+      - fold_expansion
       - Cine
-      - external data or weights
-      - validation upload
-      - hosted metric claim
-      - route promotion
-      - final scientific stop
+      - external_data_or_weights
+      - validation_upload
+      - hosted_metric_claim
+      - route_promotion
 
 publication_boundary:
-  allowed_method_description: R2_BR2_SIP_inspired_medical_imaging_adaptation
-  claim_original_sip_equivalence_without_formula_tests: false
-  claim_original_excess_risk_theory_for_dense_segmentation: false
-  claim_missingness_effect_separated_from_center_causally: false
-  claim_sip_performance_gain_without_ablation_gate: false
-  batch8_authorized: false
+  allowed_method_description: clean_edema_R2_BR2_inspired_confirmation
+  sip_performance_claim_authorized: false
+  refiner_performance_claim_authorized: false
+  scar_retrieval_claim_authorized: false
+  batch9_authorized: false
   validation_upload_authorized: false
   hosted_metric_claim_authorized: false
   fold_expansion_authorized: false
   cine_authorized: false
   route_promotion_authorized: false
-  final_scientific_decision_authorized: false
