@@ -1,12 +1,15 @@
-schema_version: 2
+schema_version: 3
 authority_name: srr_batch7_minimal_pathology_decomposition
-status: READY_FOR_CONTROLLER
-planner_amendment_base: c99aeb937e45ac01d87782ada35cac5c60aa6a54
+status: READY_FOR_CONTROLLER_COMPREHENSIVE_BR2_AMENDMENT
+planner_amendment_base: 12f1eca3482741a45bd0f440941791a42a2e581c
 controller_bind_latest_main: true
+comprehensive_audit_path: results/srr_production/code_maturity/batch7_br2_sip_comprehensive_architecture_audit_20260722.md
+
 source_checkpoint:
   path: results/20260721_srr_batch7_upstream_candidate_quality/runtime/attempts/batch7_formal300_htzhulab_59789651/variants/batch7_formal300_htzhulab_59789651/checkpoints/fold_0/propref_config/checkpoint_validation_step_300.pt
   sha256: d34ad65890cbb6a12aac3fc35bcab71709d680bff5a3aae2d93e010db1cc0e0d
   global_step: 300
+
 paths:
   split_path: data/benchmarks/protocol/splits_MyoPS.json
   anchor_root: data/nnUNet/nnUNet_results/Dataset501_CAREMyoPS/nnUNetTrainer_500epochs__nnUNetPlans__3d_fullres
@@ -14,6 +17,7 @@ paths:
   runtime_root: results/20260722_srr_batch7_minimal_pathology_decomposition/runtime
   log_root: logs/srr_batch7_minimal_decomposition
   lock_root: results/20260722_srr_batch7_minimal_pathology_decomposition/runtime/locks
+
 model:
   class_name: SRRProposeRefineMyoPS
   source_variant: m10_d3_hierarchical_memory_propref
@@ -26,25 +30,57 @@ model:
   current_m10_spatial_dictionary_formal_use: false
   prototype_maps_formal_use: false
   semantic_negative_memory_formal_use: false
+
 training_data:
   fold: 0
   train_case_count: 176
   validation_case_count: 44
-  no_t2_edema_supervision: forbidden
-  source_pattern_definition: availability_only
-  source_patterns:
-    - id: lge_only
-      availability: [1, 0, 0]
-    - id: lge_c0
-      availability: [1, 0, 1]
-    - id: lge_t2_c0
-      availability: [1, 1, 1]
-  center_as_router_input: forbidden
-  center_reporting_only: true
+  full_dataset_inventory:
+    lge_t2_c0: 80
+    lge_c0: 24
+    lge_only: 116
+    lge_t2_without_c0: 0
+  expected_center_observation_patterns:
+    CenterA: lge_only
+    CenterH: lge_only
+    CenterB: lge_t2_c0
+    CenterC: lge_t2_c0
+    CenterE: lge_c0
+    CenterF: lge_c0
+    CenterG: lge_c0
+  source_definition:
+    paper_source_semantics: acquisition_center
+    training_source_id: metadata_center
+    observation_set: availability_vector
+    deployment_source_id: availability_pattern_pooled
+    availability_patterns:
+      lge_only: [1, 0, 0]
+      lge_c0: [1, 0, 1]
+      lge_t2_c0: [1, 1, 1]
+    center_as_network_input: forbidden
+    center_as_router_feature: forbidden
+    center_as_training_coefficient_index: allowed
+    validation_inference_uses_center_specific_coefficient: false
+    derive_and_verify_fold0_center_counts: true
+  pathology_supervision:
+    scar:
+      eligible_source_rule: reliable_scar_label
+      source_balanced_sampling: true
+    edema:
+      eligible_source_rule: t2_present_and_reliable_edema_label
+      no_t2_source_coefficient: forbidden
+      no_t2_source_sip_membership: forbidden
+      no_t2_edema_supervision: forbidden
+      source_balanced_sampling: true
+
 output_semantics:
   decode_rule: outputs_logits_argmax
   primary_population: positive_gt_cases
   same_split_anchor_required: true
+  primary_deployment_subgroup: complete_trimodal
+  report_all_case_empty_safe_separately: true
+  validation_must_use_deployment_pattern_coefficient: true
+
 common_training:
   optimizer: AdamW
   learning_rate: 0.0001
@@ -60,8 +96,20 @@ common_training:
   source_arbiter_frozen: true
   production_gate_frozen: true
   production_gate_mode: fixed_one_for_matched_anchor_relative_evaluation
+  source_balanced_sampler:
+    enabled: true
+    selection_order: uniform_eligible_center_then_uniform_case_then_pathology_or_anchor_error_patch
+    require_exact_sampling_manifest: true
+    max_source_count_deviation_fraction: 0.15
+  br2_optimization_schedule:
+    steps_1_50: train_pattern_and_center_coefficients_plus_target_pathology_heads_representers_frozen
+    steps_51_350: alternate_coefficient_block_and_representer_pathology_block
+    steps_351_400: freeze_representers_calibrate_coefficients_and_target_pathology_heads
+    no_sip_and_sip_schedule_identical: true
+
 lightweight_br2:
   enabled_variants: [scar_br2_no_sip, scar_br2_sip, edema_br2_no_sip, edema_br2_sip]
+  feature_stage: full_resolution_pathology_feature_before_proposal
   representers:
     - id: shared_anatomy
       required_modalities: [LGE]
@@ -84,28 +132,40 @@ lightweight_br2:
     - id: interaction_t2_c0
       required_modalities: [T2, C0]
       kind: interaction
-  implementation:
-    independent_parameterized_modules_required: true
+  representer_architecture:
+    one_module_per_representer: true
+    private_adapter: groupnorm_depthwise3x3_pointwise1x1_residual
+    shared_input: availability_masked_mean_of_normalized_observed_modality_features
+    interaction_input: concat_normalized_pair_product_and_absolute_difference
+    final_projection_zero_initialized: true
+    pathology_output_projection_zero_initialized: true
+    output_normalization: per_case_per_representer_rms
+    output_rms_target: 1.0
+    output_rms_epsilon: 0.000001
     duplicate_tensor_alias_forbidden: true
-    source_level_learner_coefficients_required: true
-    source_index_from_availability_only: true
-    image_conditioned_residual_allowed: true
-    output_source_coefficients_separately: true
-    output_image_residual_separately: true
-    output_final_retrieval_weights_separately: true
-    hard_mask_before_normalization: true
-    invalid_representer_final_weight_exact_zero: true
-    prototype_bank_forbidden: true
-    prototype_maps_forbidden: true
-    semantic_negative_memory_forbidden: true
-  source_observation_sets:
-    shared_anatomy: [lge_only, lge_c0, lge_t2_c0]
-    lge_private: [lge_only, lge_c0, lge_t2_c0]
-    c0_private: [lge_c0, lge_t2_c0]
-    t2_private: [lge_t2_c0]
-    interaction_lge_c0: [lge_c0, lge_t2_c0]
-    interaction_lge_t2: [lge_t2_c0]
-    interaction_t2_c0: [lge_t2_c0]
+  coefficients:
+    pathology_specific: true
+    spatially_global: true
+    signed_unconstrained: true
+    softmax_or_simplex_normalization: forbidden
+    topk_normalization: forbidden
+    image_conditioned_coefficient_residual: forbidden
+    hard_availability_mask_by_multiplication: true
+    invalid_coefficient_exact_zero: true
+    hierarchical_form: beta_center_equals_beta_pattern_plus_center_deviation
+    center_deviation_zero_sum_within_pattern: true
+    training_forward_uses_center_beta: true
+    validation_and_deployment_forward_uses_pattern_beta_only: true
+    output_beta_pattern_separately: true
+    output_beta_center_separately_for_training_diagnostics: true
+    output_center_deviation_separately: true
+    output_effective_masked_beta_separately: true
+  prohibited_legacy_assets:
+    prototype_bank: true
+    prototype_maps: true
+    semantic_negative_memory: true
+    m10_16slot_spatial_dictionary: true
+
 sip:
   decision: MODIFY_AND_RETAIN_AS_EXPLICIT_ABLATION
   legacy_semantic_retrieval_regularization_formal_weight: 0.0
@@ -113,24 +173,37 @@ sip:
   legacy_classification: legacy_heuristic_not_paper_sip
   new_loss_name: loss_br2_selective_integration_penalty
   sparsity_loss_name: loss_br2_source_l1_sparsity
+  center_deviation_loss_name: loss_br2_center_deviation_shrinkage
+  coefficient_domain: signed_center_specific_beta_after_representer_rms_normalization
+  eligible_source_rule:
+    scar: centers_with_required_modalities_and_reliable_scar_supervision
+    edema: centers_with_required_modalities_and_t2_present_reliable_edema_supervision
+  exclude_no_pathology_supervision_sources: true
+  exclude_representers_with_eligible_source_count_at_most: 1
   tau: 0.10
-  source_patterns: [lge_only, lge_c0, lge_t2_c0]
-  exclude_representers_with_observation_set_size_at_most: 1
+  tau_requires_fixed_representer_rms: true
   formula_unit_tests_required:
     - gamma_at_most_one_equal_penalty
     - fully_shared_penalty_zero
-    - no_cross_source_representer_excluded
-    - unavailable_source_not_counted
+    - eligible_source_count_one_excluded
+    - unavailable_modality_source_not_counted
+    - unsupervised_edema_source_not_counted
     - smooth_truncated_l1_matches_formula
+    - signed_coefficient_absolute_value_used
   lambda_sparse: 0.01
+  lambda_center_deviation: 0.01
   lambda_sip_candidates: [0.005, 0.01, 0.02]
   lambda_selection:
-    calibration_data: fixed_train_only_cohort
+    calibration_data: fixed_train_only_center_balanced_cohort
     target_gradient_ratio: 0.10
     preferred_ratio_range: [0.03, 0.20]
     absolute_allowed_ratio_range: [0.01, 0.30]
     deterministic_rule: select_candidate_closest_to_target_with_preferred_range_then_absolute_range
     subjective_selection_forbidden: true
+  theoretical_claim_boundary:
+    original_excess_risk_bound_applies_to_this_dense_model: false
+    allowed_claim: R2_BR2_SIP_inspired_medical_imaging_adaptation
+
 experiments:
   scar_minimal:
     pathology: scar
@@ -141,12 +214,12 @@ experiments:
     pathology: scar
     br2_enabled: true
     sip_enabled: false
-    trainable_groups: [scar_evidence_head, scar_discovery_head, scar_confirmation_head, scar_proposal_reliability, scar_lightweight_br2]
+    trainable_groups: [scar_evidence_head, scar_discovery_head, scar_confirmation_head, scar_proposal_reliability, scar_lightweight_br2, scar_br2_coefficients]
   scar_br2_sip:
     pathology: scar
     br2_enabled: true
     sip_enabled: true
-    trainable_groups: [scar_evidence_head, scar_discovery_head, scar_confirmation_head, scar_proposal_reliability, scar_lightweight_br2]
+    trainable_groups: [scar_evidence_head, scar_discovery_head, scar_confirmation_head, scar_proposal_reliability, scar_lightweight_br2, scar_br2_coefficients]
   edema_minimal:
     pathology: edema
     br2_enabled: false
@@ -158,13 +231,14 @@ experiments:
     br2_enabled: true
     sip_enabled: false
     t2_present_training_only: true
-    trainable_groups: [edema_evidence_head, edema_discovery_head, edema_confirmation_head, edema_proposal_reliability, edema_lightweight_br2]
+    trainable_groups: [edema_evidence_head, edema_discovery_head, edema_confirmation_head, edema_proposal_reliability, edema_lightweight_br2, edema_br2_coefficients]
   edema_br2_sip:
     pathology: edema
     br2_enabled: true
     sip_enabled: true
     t2_present_training_only: true
-    trainable_groups: [edema_evidence_head, edema_discovery_head, edema_confirmation_head, edema_proposal_reliability, edema_lightweight_br2]
+    trainable_groups: [edema_evidence_head, edema_discovery_head, edema_confirmation_head, edema_proposal_reliability, edema_lightweight_br2, edema_br2_coefficients]
+
 loss_weights:
   common_zero:
     loss_anatomy_union_lv_rv: 0.0
@@ -188,20 +262,35 @@ loss_weights:
     loss_source_arbiter: 0.0
     loss_refiner_final_label_effect: 0.0
     loss_spatial_prototype_conditioning: 0.0
-  pathology_common:
-    proposal: 1.0
-    discovery: 1.0
-    confirmation: 0.5
-    anchor_missed_lesion_recovery: 1.0
-    anchor_false_positive_suppression: 0.10
-  edema_only:
-    no_t2_edema_safety: 0.50
+  scar_common:
+    loss_scar_proposal: 1.0
+    loss_scar_discovery_proposal: 1.0
+    loss_scar_confirmation_proposal: 0.5
+    loss_scar_anchor_missed_lesion_recovery: 1.0
+    loss_scar_anchor_false_positive_suppression: 0.10
+    loss_edema_proposal_t2_present_only: 0.0
+    loss_edema_discovery_proposal_t2_present: 0.0
+    loss_edema_confirmation_proposal_t2_present: 0.0
+    loss_no_t2_edema_safety: 0.0
+  edema_common:
+    loss_scar_proposal: 0.0
+    loss_scar_discovery_proposal: 0.0
+    loss_scar_confirmation_proposal: 0.0
+    loss_edema_proposal_t2_present_only: 1.0
+    loss_edema_discovery_proposal_t2_present: 1.0
+    loss_edema_confirmation_proposal_t2_present: 0.5
+    loss_edema_anchor_missed_lesion_recovery_t2_present: 1.0
+    loss_edema_anchor_false_positive_suppression_t2_present: 0.10
+    loss_no_t2_edema_safety: 0.50
   br2_no_sip:
     loss_br2_source_l1_sparsity: 0.01
+    loss_br2_center_deviation_shrinkage: 0.01
     loss_br2_selective_integration_penalty: 0.0
   br2_sip:
     loss_br2_source_l1_sparsity: 0.01
+    loss_br2_center_deviation_shrinkage: 0.01
     loss_br2_selective_integration_penalty: calibrated_from_candidates
+
 implementation_gate:
   require_resolved_loss_weights: true
   reject_empty_loss_json: true
@@ -209,42 +298,82 @@ implementation_gate:
   reject_nonzero_refiner_final_gate_arbiter_losses: true
   loss_specific_gradient_required: true
   minimal_must_not_instantiate_or_consume_br2: true
-  br2_pair_architecture_and_initialization_equal: true
-  center_conditioned_router_forbidden: true
+  br2_pair_architecture_initialization_and_warmup_state_equal: true
+  center_as_training_source_index_required: true
+  availability_pattern_as_only_training_source_forbidden: true
+  center_conditioned_network_input_forbidden: true
+  source_balanced_sampler_required: true
+  signed_global_coefficients_required: true
+  softmax_or_simplex_coefficient_known_bad_required: true
+  image_conditioned_residual_known_bad_required: true
+  representer_rms_normalization_required: true
+  representer_beta_scale_escape_known_bad_required: true
+  deployment_pattern_beta_required: true
+  validation_center_beta_usage_known_bad_required: true
+  edema_no_t2_beta_or_sip_membership_known_bad_required: true
   availability_hard_mask_required: true
-  source_coefficients_and_residuals_separate_outputs_required: true
   paper_sip_formula_unit_tests_required: true
   legacy_pattern_sip_as_new_sip_known_bad_required: true
   duplicate_representer_known_bad_required: true
   anchor_free_coverage:
     require_lge_only_scar: true
-    require_t2_present: true
+    require_t2_present_edema: true
     require_center_c_complete_multimodal: true
   checkpoint_reload_max_abs_delta: 0.000001
+
+required_diagnostics:
+  - center_modality_inventory.csv
+  - pathology_source_eligibility.csv
+  - source_balanced_sampler_manifest.csv
+  - resolved_stage_loss_weights.csv
+  - loss_specific_gradient_matrix.csv
+  - sip_formula_unit_tests.json
+  - sip_weight_calibration.csv
+  - representer_parameter_manifest.csv
+  - representer_scale_checks.csv
+  - beta_hierarchy_checks.csv
+  - availability_mask_checks.csv
+  - source_learner_coefficients.csv
+  - integrativeness_diagnostics.csv
+  - proposal_mechanism_metrics.csv
+  - anchor_free_discovery_coverage.csv
+  - matched_run_manifest.csv
+
 minimal_retain_gate:
   minimum_positive_dice_delta: 0.003
   require_help_not_less_than_harm: true
   maximum_hd95_relative_worsening: 0.05
   maximum_remote_fp_relative_worsening: 0.05
+  require_complete_trimodal_dice_delta_nonnegative: true
   require_no_t2_edema_exact_zero: true
+
 br2_increment_gate:
   minimum_additional_positive_dice_over_minimal: 0.001
   require_help_harm_not_worse: true
   maximum_hd95_relative_worsening_vs_minimal: 0.02
   maximum_remote_fp_relative_worsening_vs_minimal: 0.02
+  require_complete_trimodal_not_worse: true
+  maximum_worst_positive_center_dice_drop: 0.003
+
 sip_increment_gate:
   minimum_additional_positive_dice_over_no_sip: 0.0005
   maximum_allowed_dice_drop_for_safety_win: 0.0005
   minimum_hd95_or_remote_fp_improvement_for_safety_win: 0.02
   require_help_harm_not_worse: true
+  require_complete_trimodal_not_worse: true
+  maximum_worst_positive_center_dice_drop: 0.003
+
 terminal_decisions:
   required: [scar_minimal, scar_br2, scar_sip, edema_minimal, edema_br2, edema_sip]
   values:
     minimal: [RETAIN, RETIRE]
     br2: [RETAIN, RETIRE, NOT_APPLICABLE]
     sip: [RETAIN, REMOVE, NOT_APPLICABLE]
+
 publication_boundary:
   claim_original_sip_equivalence_without_formula_tests: false
+  claim_original_excess_risk_theory_for_dense_segmentation: false
+  claim_missingness_effect_separated_from_center_causally: false
   claim_sip_performance_gain_without_ablation_gate: false
   batch8_authorized: false
   refiner_training_authorized: false
@@ -255,6 +384,7 @@ publication_boundary:
   validation_upload_authorized: false
   hosted_metric_claim_authorized: false
   final_scientific_stop_authorized: false
+
 slurm:
   python_executable: /users/a/e/aereinh/CARE/envs/env_CARE/bin/python
   primary_partition: htzhulab
