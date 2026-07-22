@@ -1,0 +1,225 @@
+schema_version: 2
+task_key: 20260722_srr_batch7_minimal_pathology_decomposition
+status: READY_FOR_CONTROLLER
+execution_mode: controller_supervised
+controller_is_coordinator: true
+executor_slots: 1
+executor_count: 1
+parallel_execution_allowed: false
+result_root: results/20260722_srr_batch7_minimal_pathology_decomposition
+controller_task_path: prompts/tasks/20260722_srr_batch7_minimal_pathology_decomposition_controller.md
+planning_review_required: false
+review_required: false
+waves:
+  - wave_id: B7D_WAVE0_BIND_AND_AUDIT
+    executor_id: batch7_decomposition_executor
+    blocking: true
+    dependencies: []
+    write_scope:
+      - results/20260722_srr_batch7_minimal_pathology_decomposition/
+    read_required:
+      - AGENTS.md
+      - START_HERE_FOR_GPT.md
+      - GPT_PLANNER_CARE_PROTOCOL.md
+      - prompts/AGENT_FLOW_V2_PROTOCOL.md
+      - prompts/HANDOFF_GATE_POLICY.md
+      - prompts/GPT_HARD_GATE_PROMPT.md
+      - prompts/routes/handoffs/CURRENT.md
+      - wiki/README.md
+      - .agents/skills/slurm-routing-partition/SKILL.md
+      - .agents/skills/care-mapper/SKILL.md
+      - results/srr_production/code_maturity/batch7_repair_planner_audit_and_minimal_decomposition_decision_20260722.md
+      - docs/plans/laneB_round04_active_srr_batch7_minimal_pathology_decomposition_execution.md
+      - configs/srr_production/myops_batch7_minimal_decomposition.yaml
+      - results/20260721_srr_batch7_mechanism_closure_repair/
+    scientific_inputs:
+      source_main_commit: 0fcc3ff605112a0efeab73f3df2f83249793d321
+      source_checkpoint_sha256: d34ad65890cbb6a12aac3fc35bcab71709d680bff5a3aae2d93e010db1cc0e0d
+      fold: 0
+      train_cases: 176
+      validation_cases: 44
+    required_outputs:
+      - results/20260722_srr_batch7_minimal_pathology_decomposition/controller_bootstrap_snapshot.md
+      - results/20260722_srr_batch7_minimal_pathology_decomposition/implementation_snapshot.md
+    completion_conditions:
+      - current_main_and_source_checkpoint_bound
+      - worktree_clean_or_only_authorized_changes
+      - split_decode_metric_and_case_counts_frozen
+      - prior_batch7_repair_results_immutable
+    failure_action: NEEDS_REPAIR_NO_IMPLEMENTATION
+
+  - wave_id: B7D_WAVE1_LOSS_AND_VARIANT_AUTHORITY
+    executor_id: batch7_decomposition_executor
+    blocking: true
+    dependencies: [B7D_WAVE0_BIND_AND_AUDIT]
+    write_scope:
+      - scripts/training/
+      - scripts/evaluation/
+      - src/care_myocardium/models/srr_propref.py
+      - src/care_myocardium/losses/srr_losses.py
+      - tests/srr_production/
+      - jobs/srr_production/
+      - configs/srr_production/myops_batch7_minimal_decomposition.yaml
+      - results/20260722_srr_batch7_minimal_pathology_decomposition/
+    implementation_contract:
+      experiments: [scar_minimal, scar_dictionary, edema_minimal, edema_dictionary]
+      reject_empty_loss_json: true
+      explicit_loss_weights_required: true
+      loss_specific_backward_required: true
+      logits_mean_backward_for_authority_forbidden: true
+      refiner_arbiter_gate_training_forbidden: true
+      semantic_negative_memory_formal_use: false
+      matched_seed_sampling_optimizer_budget_decode: true
+      anchor_free_coverage_types: [lge_only_scar_positive, t2_present_edema_positive, center_c_complete_trimodal]
+    required_outputs:
+      - results/20260722_srr_batch7_minimal_pathology_decomposition/resolved_stage_loss_weights.csv
+      - results/20260722_srr_batch7_minimal_pathology_decomposition/loss_specific_gradient_matrix.csv
+      - results/20260722_srr_batch7_minimal_pathology_decomposition/anchor_free_discovery_coverage.csv
+      - results/20260722_srr_batch7_minimal_pathology_decomposition/matched_run_manifest.csv
+    completion_conditions:
+      - all_four_experiments_have_complete_resolved_loss_rows
+      - all_unauthorized_losses_exact_zero
+      - each_nonzero_loss_has_target_gradient
+      - no_gradient_to_frozen_or_other_pathology_modules
+      - empty_loss_json_known_bad_rejected
+      - mixed_m10_default_loss_known_bad_rejected
+      - three_required_anchor_free_case_types_pass
+      - checkpoint_roundtrip_max_abs_delta_at_most_1e_6
+      - tests_and_preflight_exit_zero
+    failure_action: controller_returns_to_same_executor_for_repair_no_training
+
+  - wave_id: B7D_WAVE2_SCAR_MATCHED_RUNS
+    executor_id: batch7_decomposition_executor
+    blocking: true
+    dependencies: [B7D_WAVE1_LOSS_AND_VARIANT_AUTHORITY]
+    write_scope:
+      - jobs/srr_production/
+      - logs/srr_batch7_minimal_decomposition/
+      - results/20260722_srr_batch7_minimal_pathology_decomposition/
+    experiments:
+      - id: scar_minimal
+        optimizer_steps: 400
+        eval_steps: [200, 400]
+        dictionary_enabled: false
+        semantic_negative_memory_enabled: false
+      - id: scar_dictionary
+        optimizer_steps: 400
+        eval_steps: [200, 400]
+        dictionary_enabled: true
+        semantic_negative_memory_enabled: false
+    matching:
+      source_checkpoint_equal: true
+      seed_equal: true
+      case_sequence_equal: true
+      patch_centers_equal: true
+      optimizer_equal: true
+      budget_equal: true
+      decode_equal: true
+    routing:
+      primary_partition: htzhulab
+      mirror_partition: a100-gpu
+      mirror_after_pending_seconds: 900
+      require_isolated_attempt_directories: true
+      require_atomic_winner_lock: true
+      cancel_pending_losers: true
+    required_outputs:
+      - results/20260722_srr_batch7_minimal_pathology_decomposition/scar_casewise_metrics.csv
+      - results/20260722_srr_batch7_minimal_pathology_decomposition/scar_checkpoint_selection.csv
+      - results/20260722_srr_batch7_minimal_pathology_decomposition/scar_help_harm.csv
+    completion_conditions:
+      - both_runs_exact_400_steps
+      - both_runs_eval_all_44_cases_at_200_and_400
+      - selected_checkpoints_reloaded
+      - all_attempts_terminal_accounted
+      - aggregation_exit_zero
+    decision_rules:
+      minimal_retain_positive_dice_minimum: 0.003
+      dictionary_increment_over_minimal_minimum: 0.001
+      safety_from_config: true
+    failure_action: same_scope_operational_repair_or_NEEDS_REPAIR
+
+  - wave_id: B7D_WAVE3_EDEMA_MATCHED_RUNS
+    executor_id: batch7_decomposition_executor
+    blocking: true
+    dependencies: [B7D_WAVE2_SCAR_MATCHED_RUNS]
+    write_scope:
+      - jobs/srr_production/
+      - logs/srr_batch7_minimal_decomposition/
+      - results/20260722_srr_batch7_minimal_pathology_decomposition/
+    experiments:
+      - id: edema_minimal
+        optimizer_steps: 400
+        eval_steps: [200, 400]
+        dictionary_enabled: false
+        semantic_negative_memory_enabled: false
+        t2_present_training_only: true
+      - id: edema_dictionary
+        optimizer_steps: 400
+        eval_steps: [200, 400]
+        dictionary_enabled: true
+        semantic_negative_memory_enabled: false
+        t2_present_training_only: true
+    matching:
+      source_checkpoint_equal: true
+      seed_equal: true
+      case_sequence_equal: true
+      patch_centers_equal: true
+      optimizer_equal: true
+      budget_equal: true
+      decode_equal: true
+    routing:
+      primary_partition: htzhulab
+      mirror_partition: a100-gpu
+      mirror_after_pending_seconds: 900
+      require_isolated_attempt_directories: true
+      require_atomic_winner_lock: true
+      cancel_pending_losers: true
+    required_outputs:
+      - results/20260722_srr_batch7_minimal_pathology_decomposition/edema_casewise_metrics.csv
+      - results/20260722_srr_batch7_minimal_pathology_decomposition/edema_checkpoint_selection.csv
+      - results/20260722_srr_batch7_minimal_pathology_decomposition/edema_help_harm.csv
+    completion_conditions:
+      - both_runs_exact_400_steps
+      - both_runs_eval_all_44_cases_at_200_and_400
+      - no_t2_edema_exact_zero
+      - selected_checkpoints_reloaded
+      - all_attempts_terminal_accounted
+      - aggregation_exit_zero
+    decision_rules:
+      minimal_retain_positive_dice_minimum: 0.003
+      dictionary_increment_over_minimal_minimum: 0.001
+      safety_from_config: true
+    failure_action: same_scope_operational_repair_or_NEEDS_REPAIR
+
+  - wave_id: B7D_WAVE4_DECISION_AND_STATE
+    executor_id: batch7_decomposition_executor
+    blocking: true
+    dependencies: [B7D_WAVE3_EDEMA_MATCHED_RUNS]
+    write_scope:
+      - scripts/evaluation/
+      - prompts/routes/handoffs/CURRENT.md
+      - configs/srr_production/entrypoints.yaml
+      - wiki/
+      - results/20260722_srr_batch7_minimal_pathology_decomposition/
+    required_outputs:
+      - results/20260722_srr_batch7_minimal_pathology_decomposition/pathology_decision_matrix.csv
+      - results/20260722_srr_batch7_minimal_pathology_decomposition/dictionary_increment_matrix.csv
+      - results/20260722_srr_batch7_minimal_pathology_decomposition/casewise_metrics.csv
+      - results/20260722_srr_batch7_minimal_pathology_decomposition/subgroup_metrics.csv
+      - results/20260722_srr_batch7_minimal_pathology_decomposition/help_harm.csv
+      - results/20260722_srr_batch7_minimal_pathology_decomposition/slurm_attempts.csv
+      - results/20260722_srr_batch7_minimal_pathology_decomposition/mapper_report_final.md
+      - results/20260722_srr_batch7_minimal_pathology_decomposition/controller_report.md
+      - results/20260722_srr_batch7_minimal_pathology_decomposition/completion_check.md
+      - results/20260722_srr_batch7_minimal_pathology_decomposition/MANIFEST.md
+    completion_conditions:
+      - scar_minimal_decision_is_RETAIN_or_RETIRE
+      - scar_dictionary_decision_is_RETAIN_RETIRE_or_NOT_APPLICABLE
+      - edema_minimal_decision_is_RETAIN_or_RETIRE
+      - edema_dictionary_decision_is_RETAIN_RETIRE_or_NOT_APPLICABLE
+      - no_component_left_as_needs_more_repair
+      - strict_validator_and_known_bad_exit_zero
+      - mapper_wiki_current_fingerprint_consistent
+      - lightweight_local_commit_complete
+      - no_refiner_arbiter_gate_Batch8_Cine_upload_actions
+    failure_action: controller_returns_to_same_executor_or_finalizer_for_repair
