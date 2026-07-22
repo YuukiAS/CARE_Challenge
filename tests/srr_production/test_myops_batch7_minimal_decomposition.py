@@ -457,6 +457,7 @@ def test_batch7_decomposition_schedule_authorizes_only_target_blocks_by_phase() 
     names = _trainable_parameter_names(model)
     assert warmup["phase"] == "warmup_coefficients_and_target_heads_representers_frozen"
     assert any(name.startswith("scar_lightweight_br2.beta_pattern") for name in names)
+    assert any(name.startswith("scar_lightweight_br2.pathology_projection.") for name in names)
     assert any(name.startswith("scar_dictionary.") for name in names)
     assert not any(name.startswith("scar_lightweight_br2.representers.") for name in names)
     assert not any(name.startswith("edema_dictionary.") for name in names)

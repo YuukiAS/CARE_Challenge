@@ -2473,7 +2473,8 @@ def apply_batch7_decomposition_schedule(
     target_prefixes = _batch7_target_prefixes(pathology)
     br2_prefix = _batch7_br2_prefix(pathology)
     coefficient_prefixes = (f"{br2_prefix}beta_pattern", f"{br2_prefix}center_deviation_raw")
-    representer_prefixes = (f"{br2_prefix}representers.", f"{br2_prefix}pathology_projection.")
+    representer_prefixes = (f"{br2_prefix}representers.",)
+    projection_prefixes = (f"{br2_prefix}pathology_projection.",)
     phase = batch7_decomposition_schedule_phase(int(step))
     trainable_names: list[str] = []
     frozen_authorized_names: list[str] = []
@@ -2482,24 +2483,24 @@ def apply_batch7_decomposition_schedule(
         is_target = any(name.startswith(prefix) for prefix in target_prefixes)
         is_coefficient = any(name.startswith(prefix) for prefix in coefficient_prefixes)
         is_representer = any(name.startswith(prefix) for prefix in representer_prefixes)
+        is_projection = any(name.startswith(prefix) for prefix in projection_prefixes)
         keep = False
         if not br2_enabled:
             keep = is_target
-        elif phase in {
-            "warmup_coefficients_and_target_heads_representers_frozen",
-            "calibration_coefficients_and_target_heads_representers_frozen",
-        }:
+        elif phase == "warmup_coefficients_and_target_heads_representers_frozen":
+            keep = is_target or is_coefficient or is_projection
+        elif phase == "calibration_coefficients_and_target_heads_representers_frozen":
             keep = is_target or is_coefficient
         elif phase == "alternate_coefficients":
             keep = is_coefficient
         elif phase == "alternate_representers_and_target_heads":
-            keep = is_target or is_representer
+            keep = is_target or is_representer or is_projection
         param.requires_grad_(keep)
         if keep:
             trainable_names.append(name)
-            if not (is_target or is_coefficient or is_representer):
+            if not (is_target or is_coefficient or is_representer or is_projection):
                 unauthorized_trainable_names.append(name)
-        elif is_target or is_coefficient or is_representer:
+        elif is_target or is_coefficient or is_representer or is_projection:
             frozen_authorized_names.append(name)
     if unauthorized_trainable_names:
         raise RuntimeError(f"Batch7 schedule enabled unauthorized trainable parameters: {unauthorized_trainable_names[:8]}")
