@@ -1,108 +1,101 @@
-current_milestone_id: Batch7_minimal_decomposition_terminal_negative_signal
-current_task_key: 20260722_srr_batch7_minimal_pathology_decomposition
-current_plan_path: docs/plans/laneB_round04_active_srr_batch7_minimal_pathology_decomposition_execution.md
-current_controller_path: prompts/tasks/20260722_srr_batch7_minimal_pathology_decomposition_controller.md
-current_config_path: configs/srr_production/myops_batch7_minimal_decomposition.yaml
-current_comprehensive_audit_path: results/srr_production/code_maturity/batch7_br2_sip_comprehensive_architecture_audit_20260722.md
-current_result_root: results/20260722_srr_batch7_minimal_pathology_decomposition
-current_review_path: results/20260722_srr_batch7_minimal_pathology_decomposition/mapper_report_final.md
-current_review_token: BATCH7_MINIMAL_DECOMPOSITION_CONTROLLER_VERIFIED
+current_milestone_id: Batch8_clean_edema_BR2_ready
+current_task_key: 20260722_srr_batch8_clean_edema_br2_confirmation
+current_plan_path: docs/plans/laneB_round04_active_srr_batch8_clean_edema_br2_confirmation_execution.md
+current_controller_path: prompts/tasks/20260722_srr_batch8_clean_edema_br2_controller.md
+current_config_path: configs/srr_production/myops_batch8_clean_edema_br2.yaml
+current_executor_plan_path: prompts/tasks/20260722_srr_batch8_clean_edema_br2_executor_plan.yaml
+current_planner_audit_path: results/srr_production/code_maturity/batch8_clean_edema_br2_planner_decision_20260722.md
+current_result_root: results/20260722_srr_batch8_clean_edema_br2_confirmation
+current_review_path: null
+current_review_token: NOT_REVIEWED_CONTROLLER_READY
 controller_bind_latest_main: true
-source_terminal_commit: 0fcc3ff605112a0efeab73f3df2f83249793d321
 source_checkpoint_sha256: d34ad65890cbb6a12aac3fc35bcab71709d680bff5a3aae2d93e010db1cc0e0d
 architecture_path: wiki/architecture.yaml
 component_table_path: wiki/COMPONENTS.csv
-wiki_fingerprint_status: BATCH7_TERMINAL_PACKET_VERIFIED
-updated_at: '2026-07-22T05:30:00-04:00'
+wiki_fingerprint_status: BATCH8_PLAN_READY_DIAGRAMS_REMAIN_BATCH7_IMPLEMENTATION_VIEW
+updated_at: '2026-07-22'
 
-batch7_repair_terminal:
-  result_root: results/20260721_srr_batch7_mechanism_closure_repair
-  controller_verification_decision: VERIFIED_COMPLETE
-  proposal_job_id: '59828884'
-  optimizer_steps: 600
-  mean_positive_dice_delta: 0.0012229660043303135
-  scar_positive_dice_delta: -0.0019961365973601626
-  edema_positive_dice_delta: 0.0044420686060207895
-  help_count: 25
-  harm_count: 27
-  remote_fp_relative_worsening_max: 0.053052516728197975
-  operational_status: COMPLETE
-  scientific_status: TRUTHFUL_EVIDENCE_BUT_PROPOSAL_LOSS_AUTHORITY_IMPURE
-  confirmed_repairs:
-    - independent_intervention_predictions
-    - exact_identity_and_gate_closed
-    - real_category_semantic_memory
-    - anchor_free_discovery_code_path
-    - strict_known_bad_validator
-  planner_gaps:
-    - empty_loss_weight_json_in_proposal_stage
-    - mixed_m10_default_losses_remained_active
-    - discovery_confirmation_direct_losses_not_explicitly_enabled
-    - gradient_authority_used_logits_mean_not_formal_loss
-    - anchor_free_coverage_missing_t2_and_center_c_complete_cases
+diagram_evidence:
+  diagram_versions_read: [SRR-v2, SRR-v2.5, SRR-v3]
+  visual_read_status: PASS_PROJECT_BACKGROUND_IMAGES_VISUALLY_READ
 
-r2_br2_sip_decision:
-  representation_retrieval_paper_line: RETAIN_AS_CANDIDATE
-  current_m10_spatial_dictionary: DO_NOT_USE_IN_FORMAL_DECOMPOSITION
-  current_prototype_maps: DO_NOT_USE_IN_FORMAL_DECOMPOSITION
-  current_semantic_negative_memory: DO_NOT_USE_IN_FORMAL_DECOMPOSITION
-  legacy_semantic_retrieval_regularization: HISTORICAL_ONLY_WEIGHT_ZERO
-  legacy_pattern_sip_integrativeness: HISTORICAL_ONLY_WEIGHT_ZERO
-  new_lightweight_br2: REQUIRED_MATCHED_ABLATION
-  new_br2_sip: REQUIRED_NO_SIP_VS_SIP_ABLATION
-  paper_source_semantics: acquisition_center
-  source_observation_set: availability_vector
-  training_source_index: metadata_center
-  deployment_source_index: availability_pattern_pooled
-  center_network_input: FORBIDDEN
-  validation_center_specific_beta: FORBIDDEN
-  coefficient_type: SIGNED_SPATIALLY_GLOBAL
-  softmax_simplex_topk_coefficient: FORBIDDEN
-  image_conditioned_coefficient_residual: FORBIDDEN
-  representer_rms_normalization: REQUIRED
-  beta_hierarchy: beta_center_equals_beta_pattern_plus_center_deviation
-  no_t2_edema_beta_sip_loss_membership: FORBIDDEN
-  original_dense_segmentation_theory_claim: FORBIDDEN
-  causal_center_missingness_separation_claim: FORBIDDEN
+batch7_terminal_reassessment:
+  operational_status: SIX_MATCHED_RUNS_COMPLETE
+  scientific_packet_status: NEEDS_EVIDENCE_REPAIR_NOT_VALID_BR2_SIP_CLOSURE
+  scar_minimal_positive_dice_delta: -0.004992862041668997
+  edema_minimal_positive_dice_delta: 0.0013426793445873494
+  edema_br2_positive_dice_delta: 0.0029631723979889144
+  edema_br2_increment_over_minimal: 0.001620493053401617
+  retained_runtime_jobs:
+    scar: '59992434'
+    edema: '59994167'
+  gaps:
+    - controller_report_not_final_verified
+    - source_coefficients_static_or_pending
+    - integrativeness_static_initial_coefficients
+    - scar_BR2_empty_prediction_collapse_not_diagnosed
+    - SIP_noSIP_identical_prediction_not_explained
+    - legacy_ProposalDictionary_present_in_both_variants
+    - validator_did_not_require_checkpoint_derived_mechanisms
+    - decision_code_did_not_apply_all_safety_gates
 
-batch7_minimal_decomposition:
-  status: VERIFIED_COMPLETE_NEGATIVE_SIGNAL
-  objective: final_retain_or_retire_decision_for_minimal_BR2_and_SIP
+scar_status:
+  training: STOPPED
+  challenge_path: NNUNET_ANCHOR
+  batch8_scope: DIAGNOSE_BATCH7_COLLAPSE_ONLY
+
+batch8_clean_edema_br2:
+  status: READY_FOR_CONTROLLER
+  objective: repair_Batch7_mechanism_evidence_and_confirm_clean_edema_BR2_across_two_seeds
+  model_file: src/care_myocardium/models/srr_batch8_clean_edema.py
+  model_class: CleanEdemaBR2Corrector
+  clean_model_not_yet_implemented: true
+  full_SRRProposeRefineMyoPS_reuse: FORBIDDEN
+  old_module_call_count_required: 0
+  representers:
+    - shared_anatomy
+    - lge_private
+    - t2_private
+    - interaction_lge_t2
+  sip_enabled: false
+  refiner_enabled: false
+  scar_enabled: false
+  seeds: [20260722, 20260723]
   experiments:
-    - scar_minimal
-    - scar_br2_no_sip
-    - scar_br2_sip
-    - edema_minimal
-    - edema_br2_no_sip
-    - edema_br2_sip
-  optimizer_steps_each: 400
-  eval_steps: [200, 400]
-  source_balanced_sampling: true
-  complete_trimodal_safety_gate: true
-  worst_positive_center_safety_gate: true
-  required_terminal_decisions:
-    - scar_minimal
-    - scar_br2
-    - scar_sip
-    - edema_minimal
-    - edema_br2
-    - edema_sip
+    - edema_clean_minimal_seed20260722
+    - edema_clean_br2_seed20260722
+    - edema_clean_minimal_seed20260723
+    - edema_clean_br2_seed20260723
+  optimizer_steps_each: 800
+  eval_steps: [200, 400, 800]
+  selected_checkpoint_step: 800
+  training_centers: [CenterB, CenterC]
+  no_t2_training: FORBIDDEN
+  no_t2_final_anchor_identity: REQUIRED
+  required_preflight:
+    - batch7_real_checkpoint_mechanism_export
+    - scar_empty_prediction_onset_diagnosis
+    - clean_model_import_graph
+    - checkpoint_prefix_whitelist
+    - legacy_module_call_count_zero
+    - minimal_BR2_initial_equivalence
+    - no_T2_exact_anchor_identity
+    - fixed_real_case_overfit
+    - loss_specific_gradient_authority
+    - checkpoint_roundtrip
+    - real_known_bad_fail_closed
+  terminal_tokens:
+    pass: EDEMA_CLEAN_BR2_RETAIN_PENDING_PLANNER
+    fail: RETIRE_SRRMyoPS_PERFORMANCE_LINE_USE_NNUNET
   planning_review_required: false
   review_required: false
-  batch8_authorized: false
+  batch8_authorized: true
+  batch9_authorized: false
+  scar_training_authorized: false
+  sip_training_authorized: false
   refiner_training_authorized: false
   source_arbiter_training_authorized: false
   production_gate_training_authorized: false
   fold_expansion_authorized: false
   cine_authorized: false
   validation_upload_authorized: false
-
-  terminal_result:
-    scar_minimal: RETIRE
-    scar_br2: NOT_APPLICABLE
-    scar_sip: NOT_APPLICABLE
-    edema_minimal: RETIRE
-    edema_br2: NOT_APPLICABLE
-    edema_sip: NOT_APPLICABLE
-    aggregation_status: PASS
-    next_required_action: RETURN_TO_PLANNER
