@@ -36,6 +36,17 @@ def make_config(tmp_path: Path) -> dict:
             "subject_prefix": "[CARE]",
         },
         "routes": {
+            "main": {
+                "label": "Main",
+                "tmux_target": "",
+                "runtime_home_candidates": [
+                    "CARE__codex-controller",
+                    "CARE__codex-care",
+                ],
+                "packet_paths": [],
+                "notification_brief_paths": ["results/*/notification_brief.json"],
+                "require_notification_brief": True,
+            },
             "route_B": {
                 "tmux_target": "care_route_B:RouteB-Controller",
                 "runtime_home_candidates": [
@@ -140,6 +151,32 @@ def write_route_packet_fixture(config: dict, tmp_path: Path, route: str = "route
     return root
 
 
+def write_notification_brief(repo: Path, task: str = "batch99", *, slurm_status: str = "TERMINAL_ACCOUNTED") -> Path:
+    brief = repo / "results" / task / "notification_brief.json"
+    brief.parent.mkdir(parents=True, exist_ok=True)
+    brief.write_text(
+        json.dumps(
+            {
+                "task_name": task,
+                "final_status": "VERIFIED_COMPLETE",
+                "commit_status": "committed",
+                "push_status": "not_pushed",
+                "key_conclusion": "Batch 已彻底结束，validator 与聚合证据均已完成。",
+                "blocked_or_failure_reason": "none",
+                "slurm_terminal_status": slurm_status,
+                "evidence_paths": [
+                    f"results/{task}/controller_report.md",
+                    f"results/{task}/completion_check.md",
+                ],
+                "next_step": "等待用户或 planner 决定下一批任务。",
+            },
+            ensure_ascii=False,
+        ),
+        encoding="utf-8",
+    )
+    return brief
+
+
 def test_active_to_complete_sends_once(tmp_path):
     config = make_config(tmp_path)
     db = tmp_path / "runtime" / "route_B_tmux_care_route_B__care_route_B" / "goals_1.sqlite"
@@ -202,6 +239,69 @@ def test_discovers_old_and_new_runtime_home_paths(tmp_path):
     discovered = notify.route_runtime_goal_dbs(config, "route_B")
     assert new_db in discovered
     assert old_db in discovered
+
+
+
+
+def test_discovers_main_codex_home_and_runtime_goal_dbs(tmp_path):
+    config = make_config(tmp_path)
+    config["enabled_routes"] = ["main"]
+    codex_home = tmp_path / "codex-home" / "CARE"
+    runtime_db = Path(config["codex_runtime_root"]) / "CARE__codex-controller" / "goals_1.sqlite"
+    home_db = codex_home / "goals_1.sqlite"
+    config["codex_home_root"] = str(codex_home)
+    write_goal_db(runtime_db, "active", updated_at_ms=1)
+    write_goal_db(home_db, "active", updated_at_ms=1)
+
+    discovered = notify.route_runtime_goal_dbs(config, "main")
+    assert home_db in discovered
+    assert runtime_db in discovered
+
+
+def test_main_complete_requires_terminal_notification_brief(tmp_path):
+    config = make_config(tmp_path)
+    config["enabled_routes"] = ["main"]
+    state_path = Path(config["state_path"])
+    db = Path(config["codex_runtime_root"]) / "CARE__codex-controller" / "goals_1.sqlite"
+    sender = Sender()
+
+    write_goal_db(db, "active", updated_at_ms=1)
+    notify.run_once(config, state_path=state_path, env={}, sender=sender)
+    write_goal_db(db, "complete", updated_at_ms=2)
+
+    assert notify.run_once(config, state_path=state_path, env={}, sender=sender) == []
+    assert sender.events == []
+    status = json.loads((tmp_path / "repo" / "controller_notifications" / "state" / "notify_goal_watcher_status.json").read_text())
+    assert status["last_email_status"] == "blocked_notification_brief"
+    assert status["suppressed_notification_count"] == 1
+
+    write_notification_brief(tmp_path / "repo")
+    events = notify.run_once(config, state_path=state_path, env={}, sender=sender)
+    assert len(events) == 1
+    assert events[0].route == "main"
+    assert len(sender.events) == 1
+    assert notify.run_once(config, state_path=state_path, env={}, sender=sender) == []
+
+
+def test_main_rejects_pending_notification_brief(tmp_path):
+    config = make_config(tmp_path)
+    config["enabled_routes"] = ["main"]
+    state_path = Path(config["state_path"])
+    db = Path(config["codex_runtime_root"]) / "CARE__codex-controller" / "goals_1.sqlite"
+    sender = Sender()
+
+    write_goal_db(db, "active", updated_at_ms=1)
+    notify.run_once(config, state_path=state_path, env={}, sender=sender)
+    brief = write_notification_brief(tmp_path / "repo", slurm_status="PENDING_MONITOR")
+    write_goal_db(db, "complete", updated_at_ms=2)
+
+    events = notify.run_once(config, state_path=state_path, env={}, sender=sender)
+    assert events == []
+    assert sender.events == []
+    status = json.loads((tmp_path / "repo" / "controller_notifications" / "state" / "notify_goal_watcher_status.json").read_text())
+    assert status["suppressed_notification_count"] == 1
+    assert status["suppressed_notifications"][0]["brief_path"] == str(brief)
+    assert "PENDING" in status["suppressed_notifications"][0]["reason"]
 
 
 def test_parse_pane_goal_status_markers():
@@ -298,19 +398,21 @@ def test_send_email_uses_starttls_login_and_recipient(monkeypatch, tmp_path):
     assert "Slurm 作业概览" in plain
     assert "结果：COMPLETED 2；FAILED 1；CANCELLED 1" in plain
     assert "计入结果：2" in plain
-    assert "可得总运行时长：4分40秒" in plain
-    assert "Route 总览" in plain
+    assert "运行时长：4分40秒" in plain
+    assert "Route 总览" not in plain
     assert "Watchboard" in plain
     assert "https://watchboard.httpwwwcardiacnexus-ukb.com/index.html" in plain
     assert "http://127.0.0.1:8766/index.html" in plain
     assert "| --- |" not in plain
     assert "##" not in plain
+    assert "tokens" not in plain.lower()
+    assert "目标摘要" not in plain
     assert "event signature" not in plain
     assert "app-password" not in plain
     assert "tunnel secret" not in plain.lower()
     assert str(root) not in plain
     assert "results/route_B/result.md" in plain
-    assert "<table" in html_body
+    assert "<table" not in html_body
     assert "结论" in html_body
     assert "app-password" not in html_body
 
@@ -338,14 +440,16 @@ def test_send_test_dry_run_uses_summary_email_format(tmp_path):
     assert "结论：Route B controller goal 已完成" in payload["plain_body"]
     assert "Slurm 作业概览" in payload["plain_body"]
     assert "结果：COMPLETED 2；FAILED 1；CANCELLED 1" in payload["plain_body"]
-    assert "Route 总览" in payload["plain_body"]
-    assert "Route B：" in payload["plain_body"]
+    assert "Route 总览" not in payload["plain_body"]
+    assert "Route B：" not in payload["plain_body"]
     assert "Route C：" not in payload["plain_body"]
     assert "Watchboard" in payload["plain_body"]
     assert "| --- |" not in payload["plain_body"]
     assert "##" not in payload["plain_body"]
+    assert "tokens" not in payload["plain_body"].lower()
+    assert "目标摘要" not in payload["plain_body"]
     assert "event signature" not in payload["plain_body"]
-    assert "<table" in payload["html_body"]
+    assert "<table" not in payload["html_body"]
     assert "https://watchboard.httpwwwcardiacnexus-ukb.com/index.html" in payload["plain_body"]
     assert "CARE_NOTIFY_SMTP_PASSWORD" not in payload["plain_body"]
     assert "app-password" not in payload["plain_body"]
@@ -626,11 +730,13 @@ def test_route_summary_uses_watchboard_dynamic_status(monkeypatch, tmp_path):
     }
     monkeypatch.setattr(notify, "collect_watchboard_status", lambda cfg: status)
     event = notify.build_test_event(config)
+    route_summary = notify.route_summary_table(config, event.route)
     plain = notify.render_plain_email(config, event)
 
-    assert "Route A：branch fae8a73 / origin fae8a73" in plain
-    assert "Dormant fallback / inactive unless explicitly reauthorized" in plain
-    assert "Round04 planning needs revision / controller blocked" in plain
-    assert "Reviewed evidence-complete / waiting portfolio reconciliation" in plain
-    assert "terminal event observed / 等待 independent reviewer" not in plain
-    assert "not triggered / 按 route packet 判定" not in plain
+    assert "Route A：branch fae8a73 / origin fae8a73" in route_summary
+    assert "Dormant fallback / inactive unless explicitly reauthorized" in route_summary
+    assert "Round04 planning needs revision / controller blocked" in route_summary
+    assert "Reviewed evidence-complete / waiting portfolio reconciliation" in route_summary
+    assert "terminal event observed / 等待 independent reviewer" not in route_summary
+    assert "not triggered / 按 route packet 判定" not in route_summary
+    assert "Route 总览" not in plain

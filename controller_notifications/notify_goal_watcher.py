@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
-"""Email on Route B/C Codex controller goal terminal transitions."""
+"""Email concise controller goal terminal notifications."""
 
 from __future__ import annotations
 
 import argparse
 import csv
+import glob
 from dataclasses import asdict, dataclass
 from datetime import datetime, timezone
 from email.message import EmailMessage
@@ -28,6 +29,24 @@ DEFAULT_REPO_ROOT = Path("/users/a/e/aereinh/CARE")
 DEFAULT_STATE_PATH = Path("controller_notifications/state/notified_goals.json")
 DEFAULT_STATUS_PATH = Path("controller_notifications/state/notify_goal_watcher_status.json")
 DEFAULT_LOG_PATH = Path("controller_notifications/logs/notify_goal_watcher.log")
+FORBIDDEN_NOTIFICATION_BRIEF_TOKENS = (
+    "PENDING",
+    "RUNNING",
+    "NEEDS_MONITOR",
+    "JOB_SUBMITTED",
+    "AWAITING_SACCT",
+)
+REQUIRED_NOTIFICATION_BRIEF_FIELDS = {
+    "task_name",
+    "final_status",
+    "commit_status",
+    "push_status",
+    "key_conclusion",
+    "blocked_or_failure_reason",
+    "slurm_terminal_status",
+    "evidence_paths",
+    "next_step",
+}
 
 
 @dataclass(frozen=True)
@@ -108,6 +127,7 @@ def load_config(path: Path) -> dict[str, Any]:
     config.setdefault("enabled_routes", [])
     config.setdefault("repo_root", str(DEFAULT_REPO_ROOT))
     config.setdefault("codex_runtime_root", "/users/a/e/aereinh/.codex-runtime-homes")
+    config.setdefault("codex_home_root", "/users/a/e/aereinh/.codex-homes/CARE")
     config.setdefault("state_path", str(DEFAULT_STATE_PATH))
     config.setdefault("status_path", str(DEFAULT_STATUS_PATH))
     config.setdefault("log_path", str(DEFAULT_LOG_PATH))
@@ -198,25 +218,29 @@ def route_config(config: dict[str, Any], route: str) -> dict[str, Any]:
 
 def route_runtime_goal_dbs(config: dict[str, Any], route: str) -> list[Path]:
     runtime_root = Path(config.get("codex_runtime_root") or "/users/a/e/aereinh/.codex-runtime-homes")
+    codex_home_root = Path(config.get("codex_home_root") or "/users/a/e/aereinh/.codex-homes/CARE")
     candidates: list[Path] = []
     seen: set[Path] = set()
+
+    def add_db(path: Path) -> None:
+        db = path if path.name == "goals_1.sqlite" else path / "goals_1.sqlite"
+        if db.is_file() and db not in seen:
+            candidates.append(db)
+            seen.add(db)
+
+    if route == "main":
+        add_db(codex_home_root)
 
     for raw in route_config(config, route).get("runtime_home_candidates", []):
         home = Path(raw)
         if not home.is_absolute():
             home = runtime_root / home
-        db = home / "goals_1.sqlite"
-        if db.is_file() and db not in seen:
-            candidates.append(db)
-            seen.add(db)
+        add_db(home)
 
     if runtime_root.is_dir():
         for home in sorted(runtime_root.iterdir()):
-            if route in home.name:
-                db = home / "goals_1.sqlite"
-                if db.is_file() and db not in seen:
-                    candidates.append(db)
-                    seen.add(db)
+            if route in home.name or (route == "main" and home.name.startswith("CARE__codex-")):
+                add_db(home)
     return candidates
 
 
@@ -713,6 +737,126 @@ def brief_file_status(path: Path, *, config: dict[str, Any] | None = None, route
     return f"{label}: {summary}"
 
 
+def notification_brief_required(config: dict[str, Any], event: NotificationEvent) -> bool:
+    return bool(route_config(config, event.route).get("require_notification_brief", False))
+
+
+def configured_brief_patterns(config: dict[str, Any], event: NotificationEvent) -> list[str]:
+    patterns = list(route_config(config, event.route).get("notification_brief_paths", []))
+    for packet_path in event.packet_paths:
+        path = Path(packet_path)
+        if path.name == "notification_brief.json":
+            patterns.append(str(path))
+        elif path.name in {"controller_report.md", "completion_check.md", "result.md", "MANIFEST.md"}:
+            patterns.append(str(path.parent / "notification_brief.json"))
+    return patterns
+
+
+def notification_brief_candidates(config: dict[str, Any], event: NotificationEvent) -> list[Path]:
+    repo_root = repo_root_from_config(config)
+    candidates: list[Path] = []
+    seen: set[Path] = set()
+    for raw in configured_brief_patterns(config, event):
+        pattern = Path(str(raw))
+        pattern_text = str(pattern if pattern.is_absolute() else repo_root / pattern)
+        matches = [Path(match) for match in glob.glob(pattern_text)] if any(ch in pattern_text for ch in "*?[") else [Path(pattern_text)]
+        for candidate in matches:
+            if candidate.is_file() and candidate not in seen:
+                candidates.append(candidate)
+                seen.add(candidate)
+    candidates.sort(key=lambda item: item.stat().st_mtime, reverse=True)
+    return candidates
+
+
+def iter_json_strings(value: Any):
+    if isinstance(value, str):
+        yield value
+    elif isinstance(value, dict):
+        for item in value.values():
+            yield from iter_json_strings(item)
+    elif isinstance(value, list):
+        for item in value:
+            yield from iter_json_strings(item)
+
+
+def notification_brief_error(payload: dict[str, Any]) -> str:
+    missing = sorted(REQUIRED_NOTIFICATION_BRIEF_FIELDS - set(payload))
+    if missing:
+        return "notification_brief missing fields: " + ",".join(missing)
+    for value in iter_json_strings(payload):
+        upper = value.upper()
+        for token in FORBIDDEN_NOTIFICATION_BRIEF_TOKENS:
+            if token in upper:
+                return f"notification_brief contains forbidden token: {token}"
+    evidence_paths = payload.get("evidence_paths")
+    if not isinstance(evidence_paths, list) or not evidence_paths:
+        return "notification_brief evidence_paths must be a non-empty list"
+    return ""
+
+
+def load_notification_brief(config: dict[str, Any], event: NotificationEvent) -> tuple[dict[str, Any] | None, Path | None, str]:
+    candidates = notification_brief_candidates(config, event)
+    if not candidates:
+        if notification_brief_required(config, event):
+            return None, None, "notification_brief.json missing"
+        return None, None, ""
+    path = candidates[0]
+    try:
+        payload = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError) as exc:
+        return None, path, f"notification_brief unreadable: {type(exc).__name__}: {exc}"
+    if not isinstance(payload, dict):
+        return None, path, "notification_brief must be a JSON object"
+    error = notification_brief_error(payload)
+    if error:
+        return None, path, error
+    return payload, path, ""
+
+
+def event_observed_key(event: NotificationEvent) -> str:
+    return "|".join([event.route, event.source, event.thread_id])
+
+
+def notification_ready_events(config: dict[str, Any], events: list[NotificationEvent]) -> tuple[list[NotificationEvent], list[dict[str, Any]]]:
+    ready: list[NotificationEvent] = []
+    suppressed: list[dict[str, Any]] = []
+    for event in events:
+        _, path, error = load_notification_brief(config, event)
+        if error:
+            suppressed.append({
+                "event": event_summary(event),
+                "reason": error,
+                "brief_path": str(path) if path else "",
+                "observed_key": event_observed_key(event),
+            })
+        else:
+            ready.append(event)
+    return ready, suppressed
+
+
+def brief_text(brief: dict[str, Any] | None, key: str, default: str = "未记录") -> str:
+    if not brief:
+        return default
+    value = brief.get(key, default)
+    if isinstance(value, str):
+        return value.strip() or default
+    return str(value)
+
+
+def evidence_lines_from_brief(brief: dict[str, Any] | None) -> list[str]:
+    if not brief:
+        return []
+    values = brief.get("evidence_paths")
+    if not isinstance(values, list):
+        return []
+    lines = []
+    for item in values[:8]:
+        text = str(item).strip()
+        if text:
+            lines.append(text)
+    return lines
+
+
 def terminal_intent(config: dict[str, Any], event: NotificationEvent) -> str:
     if event.status == "blocked":
         return "needs controller repair"
@@ -729,7 +873,9 @@ def subject_for_event(config: dict[str, Any], event: NotificationEvent) -> str:
     prefix = config.get("email", {}).get("subject_prefix", "[CARE]")
     route = route_label(config, event.route)
     if event.status == "blocked":
-        intent = "需要 controller 修复"
+        intent = "需要处理"
+    elif event.route == "main":
+        intent = "Batch 完成"
     else:
         intent = "等待 reviewer"
     return f"{prefix}[{route}][{event.subject_status}][{intent}]"
@@ -1053,20 +1199,27 @@ def build_email_context(config: dict[str, Any], event: NotificationEvent) -> dic
     watchboard_urls = config.get("watchboard_urls", {})
     public_url = str(watchboard_urls.get("public") or "https://watchboard.httpwwwcardiacnexus-ukb.com/index.html")
     local_url = str(watchboard_urls.get("local") or "http://127.0.0.1:8766/index.html")
-    if event.status == "complete":
-        conclusion = f"{label} controller goal 已完成；终端包已准备给 independent reviewer，不需要 main/controller 介入。"
+    brief, brief_path, _ = load_notification_brief(config, event)
+    if brief:
+        conclusion = brief_text(brief, "key_conclusion")
+        action = brief_text(brief, "next_step")
+        packet_lines = evidence_lines_from_brief(brief)
+    elif event.status == "complete":
+        conclusion = f"{label} controller goal 已完成；终端包已准备给 independent reviewer。"
         action = f"交 {label} independent reviewer 审 {route_head}。"
+        packet_lines = [brief_file_status(path, config=config, route=event.route) for path in packet_target_paths(config, event)]
     else:
-        conclusion = f"{label} controller goal 已 blocked；当前需要 controller/main 介入修复，暂不交 reviewer。"
+        conclusion = f"{label} controller goal 已 blocked；当前需要 controller/main 介入修复。"
         action = f"{label} controller 修复后继续 goal。"
+        packet_lines = [brief_file_status(path, config=config, route=event.route) for path in packet_target_paths(config, event)]
     return {
         "label": label,
         "route_head": route_head,
         "conclusion": conclusion,
         "action": action,
-        "route_rows": route_summary_rows(config, event.route, watchboard_status),
-        "route_summary_source": "watchboard" if watchboard_status.get("routes") else "fallback",
-        "packet_lines": [brief_file_status(path, config=config, route=event.route) for path in packet_target_paths(config, event)],
+        "brief": brief,
+        "brief_path": str(brief_path) if brief_path else "",
+        "packet_lines": packet_lines,
         "slurm": summarize_slurm(config, event),
         "public_url": public_url,
         "local_url": local_url,
@@ -1076,37 +1229,31 @@ def build_email_context(config: dict[str, Any], event: NotificationEvent) -> dic
 def render_plain_email(config: dict[str, Any], event: NotificationEvent) -> str:
     ctx = build_email_context(config, event)
     slurm: SlurmRunSummary = ctx["slurm"]
+    brief = ctx.get("brief")
     lines = [
         f"结论：{ctx['conclusion']}",
         f"下一步：{ctx['action']}",
         "",
-        "Controller 状态",
-        f"状态：{event.status}",
-        f"上一状态：{event.previous_status}",
-        f"thread：{event.thread_id}",
-        f"目标摘要：{event.objective[:500]}",
-        f"用量：{event.tokens_used} tokens / {event.time_used_seconds} 秒",
+        "状态",
+        f"controller goal：{event.status}（上一状态：{event.previous_status}）",
+        f"batch：{brief_text(brief, 'final_status', event.status)}",
+        f"commit：{brief_text(brief, 'commit_status')}；push：{brief_text(brief, 'push_status')}",
         f"检测时间：{event.detected_at_utc}",
-        f"来源：{event.source} ({event.source_path})",
-        f"tmux：{event.tmux_target or '未记录'}",
         "",
         "Slurm 作业概览",
-        f"总 job：{slurm.total_jobs if slurm.total_jobs else '未记录'}",
-        f"结果：{summarize_counts(slurm.state_counts)}",
-        f"可得总运行时长：{slurm.total_elapsed}",
-        f"计入结果：{slurm.credited_jobs if slurm.total_jobs else '未记录'}",
+        f"终态：{brief_text(brief, 'slurm_terminal_status')}",
+        f"结果：{summarize_counts(slurm.state_counts)}；计入结果：{slurm.credited_jobs if slurm.total_jobs else '未记录'}；运行时长：{slurm.total_elapsed}",
     ]
     if slurm.important_jobs:
         lines.append("关键 job：")
-        lines.extend(f"- {format_job_line(job)}" for job in slurm.important_jobs)
+        lines.extend(f"- {format_job_line(job)}" for job in slurm.important_jobs[:3])
     if slurm.warnings:
         lines.append("备注：")
-        lines.extend(f"- {warning}" for warning in slurm.warnings)
-    if ctx.get("route_summary_source") != "watchboard":
-        lines.extend(["", "Route 总览", "watchboard 动态状态暂不可用，以下为只读 fallback 摘要。", render_route_summary_text(ctx["route_rows"]), "", "关键证据"])
-    else:
-        lines.extend(["", "Route 总览", render_route_summary_text(ctx["route_rows"]), "", "关键证据"])
-    lines.extend(f"- {line}" for line in ctx["packet_lines"])
+        lines.extend(f"- {warning}" for warning in slurm.warnings[:3])
+    lines.extend(["", "关键证据"])
+    lines.extend(f"- {line}" for line in ctx["packet_lines"][:8])
+    if ctx.get("brief_path"):
+        lines.append(f"- notification brief：{ctx['brief_path']}")
     lines.extend(["", "Watchboard", f"public：{ctx['public_url']}", f"local：{ctx['local_url']}", ""])
     return "\n".join(lines)
 
@@ -1131,9 +1278,13 @@ def render_route_rows_html(rows: list[dict[str, str]]) -> str:
 def render_html_email(config: dict[str, Any], event: NotificationEvent) -> str:
     ctx = build_email_context(config, event)
     slurm: SlurmRunSummary = ctx["slurm"]
-    job_items = "".join(f"<li>{html.escape(format_job_line(job))}</li>" for job in slurm.important_jobs)
-    warning_items = "".join(f"<li>{html.escape(warning)}</li>" for warning in slurm.warnings)
-    packet_items = "".join(f"<li>{html.escape(line)}</li>" for line in ctx["packet_lines"])
+    brief = ctx.get("brief")
+    job_items = "".join(f"<li>{html.escape(format_job_line(job))}</li>" for job in slurm.important_jobs[:3])
+    warning_items = "".join(f"<li>{html.escape(warning)}</li>" for warning in slurm.warnings[:3])
+    evidence = list(ctx["packet_lines"][:8])
+    if ctx.get("brief_path"):
+        evidence.append(f"notification brief：{ctx['brief_path']}")
+    packet_items = "".join(f"<li>{html.escape(line)}</li>" for line in evidence)
     return f"""<!doctype html>
 <html>
   <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; color: #111827; line-height: 1.45;">
@@ -1141,33 +1292,23 @@ def render_html_email(config: dict[str, Any], event: NotificationEvent) -> str:
     <p>{html.escape(ctx['conclusion'])}</p>
     <p><strong>下一步：</strong>{html.escape(ctx['action'])}</p>
 
-    <h2>Controller 状态</h2>
+    <h2>状态</h2>
     <ul>
-      <li>状态：{html.escape(event.status)}</li>
-      <li>上一状态：{html.escape(event.previous_status)}</li>
-      <li>thread：{html.escape(event.thread_id)}</li>
-      <li>目标摘要：{html.escape(event.objective[:500])}</li>
-      <li>用量：{event.tokens_used} tokens / {event.time_used_seconds} 秒</li>
+      <li>controller goal：{html.escape(event.status)}（上一状态：{html.escape(event.previous_status)}）</li>
+      <li>batch：{html.escape(brief_text(brief, 'final_status', event.status))}</li>
+      <li>commit：{html.escape(brief_text(brief, 'commit_status'))}；push：{html.escape(brief_text(brief, 'push_status'))}</li>
       <li>检测时间：{html.escape(event.detected_at_utc)}</li>
-      <li>来源：{html.escape(event.source)} ({html.escape(event.source_path)})</li>
-      <li>tmux：{html.escape(event.tmux_target or '未记录')}</li>
     </ul>
 
     <h2>Slurm 作业概览</h2>
     <ul>
-      <li>总 job：{html.escape(str(slurm.total_jobs if slurm.total_jobs else '未记录'))}</li>
+      <li>终态：{html.escape(brief_text(brief, 'slurm_terminal_status'))}</li>
       <li>结果：{html.escape(summarize_counts(slurm.state_counts))}</li>
-      <li>可得总运行时长：{html.escape(slurm.total_elapsed)}</li>
       <li>计入结果：{html.escape(str(slurm.credited_jobs if slurm.total_jobs else '未记录'))}</li>
+      <li>运行时长：{html.escape(slurm.total_elapsed)}</li>
     </ul>
     {('<p><strong>关键 job：</strong></p><ul>' + job_items + '</ul>') if job_items else ''}
     {('<p><strong>备注：</strong></p><ul>' + warning_items + '</ul>') if warning_items else ''}
-
-    <h2>Route 总览</h2>
-    <table border="1" cellspacing="0" cellpadding="6" style="border-collapse: collapse;">
-      <thead><tr><th>route</th><th>branch</th><th>origin</th><th>dirty/ahead</th><th>状态</th><th>next action</th></tr></thead>
-      <tbody>{render_route_rows_html(ctx['route_rows'])}</tbody>
-    </table>
 
     <h2>关键证据</h2>
     <ul>{packet_items}</ul>
@@ -1226,7 +1367,8 @@ def run_once(
     status_path = status_path or status_path_from_config(config)
     state = load_state(state_path)
     facts = collect_goal_facts(config, capture_func=capture_func)
-    events = pending_events_from_facts(config, state, facts)
+    raw_events = pending_events_from_facts(config, state, facts)
+    events, suppressed_notifications = notification_ready_events(config, raw_events)
     health = base_health_status(
         config,
         state_path=state_path,
@@ -1236,11 +1378,15 @@ def run_once(
         facts=facts,
         events=events,
     )
+    health["suppressed_notification_count"] = len(suppressed_notifications)
+    health["suppressed_notifications"] = suppressed_notifications
+    if suppressed_notifications and health["last_email_status"] == "idle":
+        health["last_email_status"] = "blocked_notification_brief"
     if dry_run:
         write_status(status_path, health)
         return events
 
-    failed_observed_keys: set[str] = set()
+    failed_observed_keys: set[str] = {item["observed_key"] for item in suppressed_notifications}
     for event in events:
         try:
             sender(config, env, event)
@@ -1285,19 +1431,22 @@ def run_once(
 
 
 def build_test_event(config: dict[str, Any]) -> NotificationEvent:
+    enabled_routes = list(config.get("enabled_routes") or [])
+    route = enabled_routes[0] if enabled_routes else ("main" if "main" in config.get("routes", {}) else "route_B")
+    rcfg = route_config(config, route)
     return NotificationEvent(
-        route="route_B",
+        route=route,
         status="complete",
         subject_status="GOAL_COMPLETE",
         thread_id="test-email",
-        objective="CARE controller notification test: terminal packet ready for reviewer",
+        objective="CARE controller notification test",
         updated_at_ms=str(int(time.time() * 1000)),
         source="manual_test",
         source_path="--send-test",
-        tmux_target=route_config(config, "route_B").get("tmux_target", ""),
+        tmux_target=rcfg.get("tmux_target", ""),
         tokens_used=0,
         time_used_seconds=0,
-        packet_paths=route_config(config, "route_B").get("packet_paths", []),
+        packet_paths=rcfg.get("packet_paths", []),
         git_head=git_head(repo_root_from_config(config)),
         detected_at_utc=utc_now(),
         previous_status="manual_test",

@@ -1,5 +1,7 @@
 {
-  "enabled_routes": [],
+  "enabled_routes": [
+    "main"
+  ],
   "poll_seconds": 60,
   "repo_root": "/users/a/e/aereinh/CARE",
   "codex_runtime_root": "/users/a/e/aereinh/.codex-runtime-homes",
@@ -22,9 +24,15 @@
       "label": "Main",
       "tmux_target": "",
       "runtime_home_candidates": [
-        "CARE__codex-controller"
+        "CARE__codex-controller",
+        "CARE__codex-care",
+        "/users/a/e/aereinh/.codex-homes/CARE"
       ],
-      "packet_paths": []
+      "packet_paths": [],
+      "notification_brief_paths": [
+        "results/*/notification_brief.json"
+      ],
+      "require_notification_brief": true
     },
     "route_A": {
       "label": "Route A",

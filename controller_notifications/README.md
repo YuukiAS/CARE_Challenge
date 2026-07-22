@@ -11,7 +11,17 @@ CARE_NOTIFY_SMTP_USER=humc2013@gmail.com
 CARE_NOTIFY_SMTP_PASSWORD=<gmail_app_password>
 ```
 
-The default recipient and SMTP settings are in `config.example.json`. The default monitored route list is empty in the current main-only posture; the config keeps `main`, `route_A`, `route_B`, and `route_C` sections so an explicit `enabled_routes` override can opt into historical or future routes. Email is sent as `plain_plus_html`: a Chinese plain-text decision brief plus an HTML alternative for clients that render tables. `email.max_important_slurm_jobs` limits how many Slurm jobs are expanded in the body, but credited `COMPLETED` jobs with elapsed runtime are always included before failed/cancelled attempts are truncated.
+The default recipient and SMTP settings are in `config.example.json`. The default monitored route list is now `main` only; historical `route_A`, `route_B`, and `route_C` remain configured but disabled unless a future handoff explicitly reactivates a route controller. Email is sent as `plain_plus_html`: a short Chinese decision brief plus an HTML alternative. The body intentionally omits token counts, long goal prompts, and Markdown tables. `email.max_important_slurm_jobs` limits how many Slurm jobs are expanded in the body, but credited `COMPLETED` jobs with elapsed runtime are always included before failed/cancelled attempts are truncated.
+
+## Controller completion brief
+
+For main-controller batches, the controller must write a concise terminal brief before marking the goal complete or blocked:
+
+```text
+results/<task>/notification_brief.json
+```
+
+Required fields are `task_name`, `final_status`, `commit_status`, `push_status`, `key_conclusion`, `blocked_or_failure_reason`, `slurm_terminal_status`, `evidence_paths`, and `next_step`. The watcher refuses to send a main completion email if this file is missing or if any brief value still contains `PENDING`, `RUNNING`, `NEEDS_MONITOR`, `JOB_SUBMITTED`, or `AWAITING_SACCT`. This keeps submitted-only and monitor packets from producing completion emails.
 
 ## Checks
 

@@ -100,6 +100,12 @@ Route planners and critics must also preserve the M9/M10 inherited gates now rec
 
 All Route A/B/C controller work must run as a Codex goal or explicit goal resume, not as a one-off interactive continuation. If a controller submits or inherits Slurm work, the goal must remain responsible through terminal accounting, same-scope operational retry when allowed, post-completion aggregation, local lightweight packet update, and verified terminal result. A controller must not exit at `NEEDS_MONITOR`, submitted-only, pending, running, or awaiting-accounting state unless a durable watcher/finalizer is already running and recorded in the packet.
 
+### Controller completion email notification
+
+Future main-controller goal prompts must include this completion boundary exactly in substance: Batch 完全结束、validator/aggregation/commit 状态确认后，写 `results/<task>/notification_brief.json`，并由既有 `controller_notifications/notify_goal_watcher.py` / `care_watchboard:Notify` notifier 向 `1155246312@link.cuhk.edu.hk` 发送一封中文短邮件；不得为单个任务另开 notifier，不得在 submitted、pending、running、monitor 包、`NEEDS_MONITOR` 或未完成 aggregation 阶段通知。
+
+The notification is an operational completion/blocked reminder, not a scientific report. It should summarize conclusion, terminal status, commit/push state, Slurm terminal accounting, key evidence paths, and next action. It must not include long goal prompts, large Markdown tables, token accounting, SMTP secrets, tunnel secrets, or hosted/performance claims not authorized by the controller packet.
+
 ## MONITOR_PACKET_IS_NOT_COMPLETION
 
 This rule applies to every CARE milestone and follow-up.
