@@ -1,26 +1,30 @@
-schema_version: 8
+schema_version: 9
 authority_name: srr_production_mainline_authority
 reviewed_from_head: 0fcc3ff605112a0efeab73f3df2f83249793d321
-formal_training_status: BATCH7_MINIMAL_PATHOLOGY_DECOMPOSITION_READY_FOR_CONTROLLER
+formal_training_status: BATCH7_LIGHTWEIGHT_BR2_SIP_DECOMPOSITION_READY_FOR_CONTROLLER
 status_reason: >-
   Batch7 mechanism-closure repair produced truthful interventions and completed a
   600-step proposal stage, but Planner review found that the stage still used an
   empty loss-weight JSON and therefore inherited mixed M10 losses rather than a
-  pure proposal objective. Real interventions also show weak prototype-map leverage,
-  non-beneficial semantic negative memory, persistent harmful scar candidates, and
-  a small positive edema signal. The only authorized next action is a final matched
-  four-run decomposition of minimal versus dictionary proposals for scar and edema.
+  pure proposal objective. The current 16-slot spatial dictionary, prototype maps,
+  and semantic negative memory show weak or negative leverage. Representation
+  Retrieval Learning remains scientifically relevant, so the only authorized next
+  action is a six-run matched decomposition of minimal proposal, lightweight BR2
+  retrieval without SIP, and the same BR2 retrieval with faithful source-pattern SIP.
 current_scientific_status:
   batch6: FINAL_OBJECTIVE_REPAIRED_BELOW_USABLE_SIGNAL
   batch7_operational: FORMAL300_COMPLETE_STOP_GATE
   batch7_repair_operational: VERIFIED_COMPLETE_STOPPED_AT_PROPOSAL_GATE
   batch7_repair_scientific: TRUTHFUL_BUT_PROPOSAL_LOSS_AUTHORITY_IMPURE
-  batch7_minimal_decomposition: READY_FOR_CONTROLLER
+  current_complex_dictionary: LOW_LEVERAGE_NOT_FORMAL_CANDIDATE
+  representation_retrieval_paper_line: RETAIN_PENDING_LIGHTWEIGHT_ABLATION
+  legacy_pattern_sip: HISTORICAL_ONLY_FORMAL_WEIGHT_ZERO
+  batch7_minimal_decomposition: READY_FOR_CONTROLLER_AMENDED_TO_LIGHTWEIGHT_BR2_SIP
   significantly_better_than_nnunet: false
 selected_model:
   class_name: SRRProposeRefineMyoPS
   path: src/care_myocardium/models/srr_propref.py
-  variant: m10_d3_hierarchical_memory_propref
+  source_variant: m10_d3_hierarchical_memory_propref
   encoder_profile: full_4scale
   base_channels: 32
   final_output_mode: anchor_bounded_srr_correction
@@ -57,7 +61,7 @@ batch7_repair_evidence:
 formal_entrypoints: []
 candidate_entrypoints:
   - id: srr_batch7_minimal_pathology_decomposition
-    role: authorized_final_matched_minimal_vs_dictionary_proposal_decomposition
+    role: authorized_final_matched_minimal_vs_lightweight_BR2_and_SIP_decomposition
     path: prompts/tasks/20260722_srr_batch7_minimal_pathology_decomposition_controller.md
     config_path: configs/srr_production/myops_batch7_minimal_decomposition.yaml
     plan_path: docs/plans/laneB_round04_active_srr_batch7_minimal_pathology_decomposition_execution.md
@@ -65,30 +69,44 @@ candidate_entrypoints:
     planner_audit_path: results/srr_production/code_maturity/batch7_repair_planner_audit_and_minimal_decomposition_decision_20260722.md
     result_root: results/20260722_srr_batch7_minimal_pathology_decomposition
     formal_authority: true
-    audit_status: READY_FOR_CONTROLLER
+    audit_status: READY_FOR_CONTROLLER_AMENDED_TO_LIGHTWEIGHT_BR2_SIP
     source_terminal_commit: 0fcc3ff605112a0efeab73f3df2f83249793d321
     source_checkpoint_sha256: d34ad65890cbb6a12aac3fc35bcab71709d680bff5a3aae2d93e010db1cc0e0d
     experiments:
       - scar_minimal
-      - scar_dictionary
+      - scar_br2_no_sip
+      - scar_br2_sip
       - edema_minimal
-      - edema_dictionary
+      - edema_br2_no_sip
+      - edema_br2_sip
     optimizer_steps_each: 400
     full_volume_eval_steps: [200, 400]
+    source_patterns: [lge_only, lge_c0, lge_t2_c0]
     required_terminal_decisions:
       - scar_minimal_RETAIN_or_RETIRE
-      - scar_dictionary_RETAIN_RETIRE_or_NOT_APPLICABLE
+      - scar_br2_RETAIN_RETIRE_or_NOT_APPLICABLE
+      - scar_sip_RETAIN_REMOVE_or_NOT_APPLICABLE
       - edema_minimal_RETAIN_or_RETIRE
-      - edema_dictionary_RETAIN_RETIRE_or_NOT_APPLICABLE
+      - edema_br2_RETAIN_RETIRE_or_NOT_APPLICABLE
+      - edema_sip_RETAIN_REMOVE_or_NOT_APPLICABLE
     allowed_actions:
       - explicit stage loss authority
       - loss-specific gradient verification
+      - lightweight availability-masked representer dictionary
+      - source-pattern learner coefficients
+      - faithful BR2 SIP formula and unit tests
+      - no-SIP versus SIP matched ablation
       - expanded anchor-free coverage
-      - four matched pathology proposal runs
+      - six matched pathology proposal runs
       - strict validator and known-bad
       - mapper wiki fingerprint repair
       - local lightweight result commit
     forbidden_actions:
+      - current M10 spatial dictionary formal continuation
+      - prototype maps formal use
+      - semantic negative memory formal use
+      - legacy Pattern-SIP formal use
+      - center-conditioned router
       - Batch8
       - refiner training
       - source arbiter training
@@ -103,6 +121,8 @@ candidate_entrypoints:
       - route promotion
       - final scientific stop
 publication_boundary:
+  claim_original_sip_equivalence_without_formula_tests: false
+  claim_sip_performance_gain_without_ablation_gate: false
   batch8_authorized: false
   validation_upload_authorized: false
   hosted_metric_claim_authorized: false
