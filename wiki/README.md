@@ -1,29 +1,46 @@
 # CARE 架构 Wiki
 
-architecture_version: `care-srr-batch7-minimal-decomposition-terminal-negative-signal`
-latest_verified_runtime: `Batch7 minimal decomposition six matched runs complete`
-latest_scientific_status: `six-run minimal BR2 SIP ablation complete; MyoPS SRR signal negative; return to Planner`
-latest_controller_task: `20260722_srr_batch7_minimal_pathology_decomposition`
-route_status: `MAIN_ONLY_FINAL_CENTER_HIERARCHICAL_BR2_SIP_DECOMPOSITION_NO_PROMOTION`
+architecture_version: `care-srr-batch8-clean-edema-br2-ready`
+latest_verified_runtime: `Batch7 six-run execution complete but BR2/SIP mechanism packet incomplete`
+latest_scientific_status: `scar SRR stopped; edema clean BR2 requires two-seed confirmation`
+latest_controller_task: `20260722_srr_batch8_clean_edema_br2_confirmation`
+route_status: `MAIN_ONLY_BATCH8_CLEAN_EDEMA_BR2_NO_PROMOTION`
 
-本页是 GPT、Controller、Executor、Mapper 和 Planner 读取当前架构状态的根入口。Batch7 repair 已经补齐真实独立干预、语义记忆、anchor-free discovery代码路径和strict validator，但600步proposal stage仍继承历史混合M10 loss，不能作为纯proposal或R2/BR2的最终否定。
+本页是 GPT、Controller、Executor、Mapper 和 Planner 读取当前架构状态的根入口。Batch 7 的六组运行在操作层面完成，但原终态不能被当作 BR2/SIP 的充分科学闭环：scar BR2 清空、SIP/no-SIP完全相同、训练后 beta 未真实导出，终态机制文件仍有静态初值和 `PENDING`，validator没有拒绝这些问题。
 
-
-## Batch7 minimal decomposition terminal result
+## 当前判断
 
 ```text
-scar_minimal: RETIRE
-scar_br2: NOT_APPLICABLE
-scar_sip: NOT_APPLICABLE
-edema_minimal: RETIRE
-edema_br2: NOT_APPLICABLE
-edema_sip: NOT_APPLICABLE
-scar job: 59992434 COMPLETED 0:0
-edema job: 59994167 COMPLETED 0:0
-aggregation: PASS
+scar SRR: stop training, use nnU-Net anchor
+edema minimal: small positive signal
+edema BR2: +0.00162 over minimal in one seed, requires clean two-seed confirmation
+SIP: paused, not evaluated faithfully
+refiner: paused, proposal precondition not established
 ```
 
-Batch7 completed the six matched 400-step fold0 MyoPS experiments. The result is negative for retaining this minimal/BR2/SIP SRR path: minimal did not pass the retain gate for scar or edema, so BR2 and SIP are not applicable as retained components. Return to Planner; do not proceed to Batch8, refiner, arbiter, gate, Cine, fold expansion, upload, or hosted metric claims from this packet.
+Batch 7 关键数字：
+
+```text
+scar minimal positive Dice delta: -0.0049928620
+edema minimal positive Dice delta: +0.0013426793
+edema BR2 positive Dice delta: +0.0029631724
+edema BR2 minus minimal: +0.0016204931
+```
+
+这些数值保留为假设生成证据，但 Batch 7 的 BR2/SIP科学结论已被 Batch 8 Planner 审计 supersede。
+
+## Batch 7 证据缺口
+
+- `controller_report.md` 仍是 `READY_FOR_CONTROLLER_VERIFICATION`，不是 Controller 最终验收；
+- `source_learner_coefficients.csv` 由新建模型导出初始系数；
+- 病种系数文件仍有 `PENDING_DETAILED_BETA_EXPORT`；
+- `integrativeness_diagnostics.csv` 仅为 `STATIC_INITIAL_COEFFICIENTS`；
+- scar BR2 no-SIP/SIP均为空预测，没有定位塌缩阶段；
+- SIP/no-SIP预测完全相同，没有checkpoint-derived解释；
+- minimal与BR2均继续走旧 `ProposalDictionary`；
+- validator没有检查checkpoint-derived beta、空预测、PENDING或完整安全门。
+
+Batch 8 首先修这些证据，不删除历史runtime。
 
 ## 当前图
 
@@ -33,193 +50,144 @@ Batch7 completed the six matched 400-step fold0 MyoPS experiments. The result is
 
 ![执行流程](figures/execution-flow.png)
 
-图仍表示当前已实现代码，不表示待实现的轻量BR2已经存在。轻量中心分层BR2必须由本任务实现、Mapper复核并在终态更新架构图与fingerprint。
+当前图仍表示仓库中已实现的历史完整架构，不表示 Batch 8 clean model 已完成。Batch 8 Mapper 必须在终态区分：legacy完整SRR、disabled旧组件、clean edema corrector 和 clean BR2候选。
 
-## 已确认的 Batch7 repair 结果
-
-```text
-terminal commit: 0fcc3ff605112a0efeab73f3df2f83249793d321
-proposal job: 59828884
-optimizer steps: 600
-mean positive Dice delta: +0.0012229660
-scar positive Dice delta: -0.0019961366
-edema positive Dice delta: +0.0044420686
-help/harm: 25/27
-remote-FP relative worsening max: 0.0530525167
-```
-
-真实完成：
+## Batch 8 唯一任务
 
 ```text
-independent 44-case intervention predictions
-identity and gate-closed exact zero
-real category semantic memory with valid masks and hashes
-anchor-free discovery implementation path
-strict known-bad validator
-```
-
-Planner复核仍发现：
-
-- proposal stage使用空loss JSON，M10历史混合loss继续参与；
-- discovery/confirmation direct loss未显式开启；
-- gradient authority对proposal logits均值反向传播；
-- anchor-free检查没有覆盖T2-present edema和CenterC完整多模态病例。
-
-## 旧复杂组件的当前结论
-
-```text
-M10 16-slot spatial dictionary: 不进入本次正式实验
-prototype maps: 不进入本次正式实验
-semantic negative memory: 不进入本次正式实验
-legacy semantic_retrieval_regularization: 正式权重0
-legacy pattern_sip_integrativeness_loss: 正式权重0
-refiner / source arbiter / production gate训练: 未授权
-```
-
-真实干预显示semantic negative memory对edema略有伤害，prototype maps对edema仅约`+0.0007` Dice、对scar无稳定收益，scar候选链持续为负。因此旧组件不再作为论文核心。
-
-## 保留的论文思想
-
-当前仍保留 Representation Retrieval Learning 的核心：
-
-```text
-共享但可选择的representers
-+ source-specific sparse learner coefficients
-+ observation-set hard masking
-+ 部分共享而非全部共享
-+ 可单独消融的SIP
-```
-
-但全面审计修正了上一版计划的三处概念错误：
-
-1. 训练source应是采集中心，availability是source的observation set；
-2. learner coefficient是signed全局标量，不是softmax概率；
-3. image-conditioned residual会绕开source coefficient，正式实验禁止；
-4. neural representer必须固定RMS，防止通过缩放representer与反缩放beta绕开L1/SIP；
-5. no-T2中心没有可靠edema监督，不进入edema beta、SIP或loss；
-6. validation不能依赖center ID，只能使用availability-pattern pooled coefficient。
-
-权威审计：
-
-```text
-results/srr_production/code_maturity/batch7_br2_sip_comprehensive_architecture_audit_20260722.md
-```
-
-## 待实现的轻量中心分层 BR2
-
-训练期：
-
-```text
-source = metadata.center
-observation set = availability
-beta_center = beta_pattern + center_deviation
-同pattern内center_deviation和为零并做L2收缩
-```
-
-验证与部署：
-
-```text
-只使用beta_pattern
-center不得进入图像网络、router或推理输入
-```
-
-只允许7个全分辨率病种representers：
-
-```text
-shared anatomy
-LGE private
-C0 private
-T2 private
-LGE-C0 interaction
-LGE-T2 interaction
-T2-C0 interaction
-```
-
-每个representer独立参数化、末层零初始化、乘beta前固定per-case RMS。Private只读本模态；interaction读取归一化双模态特征、乘积和绝对差。
-
-Learner coefficient必须：
-
-```text
-pathology-specific
-spatially global
-signed and unconstrained
-no softmax/simplex/top-k
-no image-conditioned residual
-hard availability mask
-invalid effective beta exact zero
-```
-
-## SIP 当前决定
-
-SIP保留为严格消融，而不是默认卖点。
-
-新增正式loss：
-
-```text
-loss_br2_source_l1_sparsity
-loss_br2_center_deviation_shrinkage
-loss_br2_selective_integration_penalty
-```
-
-SIP只作用于同时观察到所需模态并拥有可靠目标病种监督的训练中心系数。No-T2中心不得进入edema SIP。`|O|<=1` 的representer排除。
-
-论文表述只能是：
-
-```text
-R2/BR2/SIP-inspired medical imaging adaptation
-```
-
-不得声称原论文理论界直接适用于3D分割，也不得声称已因果消除center与missingness混杂。
-
-## 当前唯一任务
-
-```text
-BATCH7_FINAL_CENTER_HIERARCHICAL_BR2_SIP_PATHOLOGY_DECOMPOSITION
+BATCH8_CLEAN_EDEMA_BR2_CONFIRMATION
 ```
 
 合同入口：
 
 ```text
-results/srr_production/code_maturity/batch7_br2_sip_comprehensive_architecture_audit_20260722.md
-docs/plans/laneB_round04_active_srr_batch7_minimal_pathology_decomposition_execution.md
-configs/srr_production/myops_batch7_minimal_decomposition.yaml
-prompts/tasks/20260722_srr_batch7_minimal_pathology_decomposition_controller.md
-prompts/tasks/20260722_srr_batch7_minimal_pathology_decomposition_executor_plan.yaml
+results/srr_production/code_maturity/batch8_clean_edema_br2_planner_decision_20260722.md
+docs/plans/laneB_round04_active_srr_batch8_clean_edema_br2_confirmation_execution.md
+configs/srr_production/myops_batch8_clean_edema_br2.yaml
+prompts/tasks/20260722_srr_batch8_clean_edema_br2_controller.md
+prompts/tasks/20260722_srr_batch8_clean_edema_br2_executor_plan.yaml
 ```
 
-六个实验：
+结果目录：
 
 ```text
-scar_minimal
-scar_br2_no_sip
-scar_br2_sip
-edema_minimal
-edema_br2_no_sip
-edema_br2_sip
+results/20260722_srr_batch8_clean_edema_br2_confirmation/
 ```
 
-每个400步、200/400评价全部44例。同病种三组必须使用相同source-balanced病例和patch序列；BR2 no-SIP/SIP还必须共享全部初始化与第50步warmup状态。
+## Clean 模型
 
-## 评价和保留门
-
-除总体正例Dice、HD95、远端假阳性和help/harm外，必须报告complete-trimodal、CenterB/CenterC、所有有正例中心、worst-center、proposal precision/recall/lesion recall、beta和representer尺度。
+Batch 8 必须新增独立薄模型：
 
 ```text
-Minimal: Dice >= +0.003，安全门通过，complete-trimodal不下降
-BR2: 相对minimal额外 >= +0.001，worst-center与complete-trimodal不恶化
-SIP: 相对no-SIP额外 >= +0.0005，或小幅Dice代价换取明确安全改善
+src/care_myocardium/models/srr_batch8_clean_edema.py
+CleanEdemaBR2Corrector
 ```
 
-终态必须分别决定scar/edema的minimal、BR2和SIP是否保留。Scar minimal仍为负时停止scar SRR，不得再用BR2/refiner/gate补救。
+它只持有并冻结 source checkpoint 中必要的 modality encoders、base retrieval、anatomy decoder、edema decoder和anatomy-union上下文。不得实例化完整 `SRRProposeRefineMyoPS` 后仅靠 flags 关闭旧模块。
+
+旧组件调用计数必须为0：
+
+```text
+ProposalDictionary
+M10TwoPassSpatialDictionary
+M10CrossFittedPrototypeMemory
+prototype maps / semantic negative memory
+refiner
+source arbiter
+branch arbitration
+learned production gate
+legacy Pattern-SIP
+```
+
+### Clean minimal
+
+```text
+frozen edema feature
++ T2 image
++ frozen anatomy-union probability
+-> clean edema delta head
+-> raw nnU-Net edema logit + 2*tanh(delta)
+```
+
+其余五类logits保持原始anchor。No-T2时delta、logit变化和label变化必须精确为0。
+
+### Clean BR2
+
+只增加四个病种特异representer：
+
+```text
+shared anatomy
+LGE private
+T2 private
+LGE-T2 interaction
+```
+
+每个独立参数化、输出固定per-case RMS。Beta为signed、spatially-global，不使用softmax/simplex/top-k，不允许逐病例beta residual。训练使用CenterB/CenterC beta，验证只使用pooled beta，center不得进入图像网络。
+
+## Batch 8 实验
+
+```text
+seed 20260722:
+  edema_clean_minimal_seed20260722
+  edema_clean_br2_seed20260722
+seed 20260723:
+  edema_clean_minimal_seed20260723
+  edema_clean_br2_seed20260723
+```
+
+每组800 optimizer steps，在200/400/800评价全部44例；step800固定为正式checkpoint并reload。同seed minimal/BR2必须共享common-head初始化、病例/patch序列、augmentation、optimizer模板、预算、评价和decode。
+
+训练仅使用T2-present、可靠edema监督的CenterB/CenterC病例；no-T2病例不进入训练、beta、loss或negative。
+
+## 训练前硬门
+
+- 从Batch7真实checkpoint导出机制，禁止静态新建模型和PENDING；
+- 定位scar空预测发生阶段；
+- clean import graph证明旧模块调用计数为0；
+- checkpoint只加载白名单key；
+- minimal/BR2初始logits差 `<=1e-6`；
+- no-T2 exact anchor identity；
+- 两真实病例100-step fixed overfit，loss下降至少30%，预测非空；
+- 逐loss gradient authority；
+- checkpoint roundtrip `<=1e-6`；
+- known-bad真实拒绝旧模块、静态beta、PENDING、空预测完成和伪matched实验。
+
+## 保留门
+
+Clean BR2只有全部满足才保留：
+
+```text
+每seed BR2 positive Dice delta >= +0.002
+两seed平均 BR2 positive Dice delta >= +0.003
+每seed BR2-minus-minimal >= +0.0005
+两seed平均 BR2-minus-minimal >= +0.001
+CenterB和CenterC平均delta均>=0
+combined help>=harm
+HD95 non-worse
+remote-FP relative worsening<=5%
+no-T2 exact anchor identity
+无空预测
+所有机制字段来自selected checkpoint
+```
+
+终态只能是：
+
+```text
+EDEMA_CLEAN_BR2_RETAIN_PENDING_PLANNER
+或
+RETIRE_SRRMyoPS_PERFORMANCE_LINE_USE_NNUNET
+```
+
+Scar固定为 `SCAR_SRR_TRAINING_STOPPED_USE_NNUNET`。
 
 ## 当前不授权
 
 ```text
-Batch8
-旧M10 dictionary/prototype/memory继续训练
+SIP training
 refiner training
-source arbiter training
-production gate training
+scar training
+source arbiter / production gate
+Batch9
 fold expansion
 Cine
 backbone replacement
@@ -227,7 +195,6 @@ external data or weights
 validation packaging/upload
 hosted metric claim
 route promotion
-final scientific stop
 ```
 
 ## 入口
