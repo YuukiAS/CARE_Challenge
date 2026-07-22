@@ -32,6 +32,7 @@ model = SRRProposeRefineMyoPS(
     encoder_profile="tiny_3scale",
     final_output_mode="anchor_bounded_srr_correction",
     enable_batch7_decomposition_br2=True,
+    batch7_minimal_decomposition_mode=True,
 )
 optimizer = torch.optim.AdamW(model.parameters(), lr=1e-4)
 print({"cuda_available": torch.cuda.is_available(), "cuda_device_count": torch.cuda.device_count(), "optimizer_param_groups": len(optimizer.param_groups)})

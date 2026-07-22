@@ -524,6 +524,16 @@ def test_batch7_br2_requires_formal_minimal_decomposition_mode() -> None:
         )
 
 
+def test_batch7_slurm_wrappers_precheck_uses_formal_minimal_decomposition_mode() -> None:
+    for script in (
+        REPO_ROOT / "jobs/srr_production/run_myops_batch7_minimal_decomposition_htzhulab.sh",
+        REPO_ROOT / "jobs/srr_production/run_myops_batch7_minimal_decomposition_a100.sh",
+    ):
+        text = script.read_text(encoding="utf-8")
+        assert "enable_batch7_decomposition_br2=True" in text
+        assert "batch7_minimal_decomposition_mode=True" in text
+
+
 def test_resume_replay_preserves_source_balanced_step_51_case_and_patch() -> None:
     cases = [
         _fake_anchored_case("A001", center="CenterA", t2_present=False, c0_present=False, scar=True),
