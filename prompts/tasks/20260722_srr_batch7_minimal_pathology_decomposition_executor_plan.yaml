@@ -1,4 +1,4 @@
-schema_version: 2
+schema_version: 3
 task_key: 20260722_srr_batch7_minimal_pathology_decomposition
 status: READY_FOR_CONTROLLER
 execution_mode: controller_supervised
@@ -33,7 +33,7 @@ waves:
       - configs/srr_production/myops_batch7_minimal_decomposition.yaml
       - results/20260721_srr_batch7_mechanism_closure_repair/
     scientific_inputs:
-      source_main_commit: 0fcc3ff605112a0efeab73f3df2f83249793d321
+      controller_bind_latest_main: true
       source_checkpoint_sha256: d34ad65890cbb6a12aac3fc35bcab71709d680bff5a3aae2d93e010db1cc0e0d
       fold: 0
       train_cases: 176
@@ -42,13 +42,13 @@ waves:
       - results/20260722_srr_batch7_minimal_pathology_decomposition/controller_bootstrap_snapshot.md
       - results/20260722_srr_batch7_minimal_pathology_decomposition/implementation_snapshot.md
     completion_conditions:
-      - current_main_and_source_checkpoint_bound
+      - latest_remote_main_and_source_checkpoint_bound
       - worktree_clean_or_only_authorized_changes
       - split_decode_metric_and_case_counts_frozen
-      - prior_batch7_repair_results_immutable
+      - prior_batch7_results_immutable
     failure_action: NEEDS_REPAIR_NO_IMPLEMENTATION
 
-  - wave_id: B7D_WAVE1_LOSS_AND_VARIANT_AUTHORITY
+  - wave_id: B7D_WAVE1_LIGHTWEIGHT_BR2_SIP_AND_LOSS_AUTHORITY
     executor_id: batch7_decomposition_executor
     blocking: true
     dependencies: [B7D_WAVE0_BIND_AND_AUDIT]
@@ -62,27 +62,70 @@ waves:
       - configs/srr_production/myops_batch7_minimal_decomposition.yaml
       - results/20260722_srr_batch7_minimal_pathology_decomposition/
     implementation_contract:
-      experiments: [scar_minimal, scar_dictionary, edema_minimal, edema_dictionary]
-      reject_empty_loss_json: true
+      experiments:
+        - scar_minimal
+        - scar_br2_no_sip
+        - scar_br2_sip
+        - edema_minimal
+        - edema_br2_no_sip
+        - edema_br2_sip
+      current_m10_spatial_dictionary_formal_use: false
+      prototype_maps_formal_use: false
+      semantic_negative_memory_formal_use: false
+      lightweight_representers:
+        - shared_anatomy
+        - lge_private
+        - c0_private
+        - t2_private
+        - interaction_lge_c0
+        - interaction_lge_t2
+        - interaction_t2_c0
+      source_patterns: [lge_only, lge_c0, lge_t2_c0]
+      source_from_availability_only: true
+      center_router_input_forbidden: true
+      independent_representer_parameters_required: true
+      hard_availability_mask_before_normalization: true
+      source_coefficients_residual_final_weights_separate_outputs: true
+      minimal_does_not_instantiate_or_consume_br2: true
+      br2_no_sip_and_sip_same_architecture_initialization_data: true
       explicit_loss_weights_required: true
+      reject_empty_loss_json: true
       loss_specific_backward_required: true
       logits_mean_backward_for_authority_forbidden: true
+      legacy_semantic_retrieval_weight: 0.0
+      legacy_pattern_sip_weight: 0.0
+      paper_sip_loss_name: loss_br2_selective_integration_penalty
+      source_l1_loss_name: loss_br2_source_l1_sparsity
+      sip_formula_exact_from_config: true
+      sip_weight_selection_deterministic: true
       refiner_arbiter_gate_training_forbidden: true
-      semantic_negative_memory_formal_use: false
-      matched_seed_sampling_optimizer_budget_decode: true
       anchor_free_coverage_types: [lge_only_scar_positive, t2_present_edema_positive, center_c_complete_trimodal]
     required_outputs:
       - results/20260722_srr_batch7_minimal_pathology_decomposition/resolved_stage_loss_weights.csv
       - results/20260722_srr_batch7_minimal_pathology_decomposition/loss_specific_gradient_matrix.csv
+      - results/20260722_srr_batch7_minimal_pathology_decomposition/sip_formula_unit_tests.json
+      - results/20260722_srr_batch7_minimal_pathology_decomposition/sip_weight_calibration.csv
+      - results/20260722_srr_batch7_minimal_pathology_decomposition/representer_parameter_manifest.csv
+      - results/20260722_srr_batch7_minimal_pathology_decomposition/availability_mask_checks.csv
+      - results/20260722_srr_batch7_minimal_pathology_decomposition/source_learner_coefficients.csv
+      - results/20260722_srr_batch7_minimal_pathology_decomposition/retrieval_weight_diagnostics.csv
       - results/20260722_srr_batch7_minimal_pathology_decomposition/anchor_free_discovery_coverage.csv
       - results/20260722_srr_batch7_minimal_pathology_decomposition/matched_run_manifest.csv
     completion_conditions:
-      - all_four_experiments_have_complete_resolved_loss_rows
+      - all_six_experiments_have_complete_resolved_loss_rows
       - all_unauthorized_losses_exact_zero
+      - legacy_pattern_sip_and_semantic_regularization_exact_zero
       - each_nonzero_loss_has_target_gradient
       - no_gradient_to_frozen_or_other_pathology_modules
       - empty_loss_json_known_bad_rejected
       - mixed_m10_default_loss_known_bad_rejected
+      - legacy_pattern_sip_renamed_as_new_sip_known_bad_rejected
+      - batch_average_gate_proxy_known_bad_rejected
+      - center_conditioned_router_known_bad_rejected
+      - duplicate_representer_known_bad_rejected
+      - unavailable_representer_nonzero_weight_known_bad_rejected
+      - sip_formula_unit_tests_pass
+      - sip_gradient_ratio_calibration_pass
       - three_required_anchor_free_case_types_pass
       - checkpoint_roundtrip_max_abs_delta_at_most_1e_6
       - tests_and_preflight_exit_zero
@@ -91,7 +134,7 @@ waves:
   - wave_id: B7D_WAVE2_SCAR_MATCHED_RUNS
     executor_id: batch7_decomposition_executor
     blocking: true
-    dependencies: [B7D_WAVE1_LOSS_AND_VARIANT_AUTHORITY]
+    dependencies: [B7D_WAVE1_LIGHTWEIGHT_BR2_SIP_AND_LOSS_AUTHORITY]
     write_scope:
       - jobs/srr_production/
       - logs/srr_batch7_minimal_decomposition/
@@ -100,13 +143,18 @@ waves:
       - id: scar_minimal
         optimizer_steps: 400
         eval_steps: [200, 400]
-        dictionary_enabled: false
-        semantic_negative_memory_enabled: false
-      - id: scar_dictionary
+        br2_enabled: false
+        sip_enabled: false
+      - id: scar_br2_no_sip
         optimizer_steps: 400
         eval_steps: [200, 400]
-        dictionary_enabled: true
-        semantic_negative_memory_enabled: false
+        br2_enabled: true
+        sip_enabled: false
+      - id: scar_br2_sip
+        optimizer_steps: 400
+        eval_steps: [200, 400]
+        br2_enabled: true
+        sip_enabled: true
     matching:
       source_checkpoint_equal: true
       seed_equal: true
@@ -115,6 +163,8 @@ waves:
       optimizer_equal: true
       budget_equal: true
       decode_equal: true
+      common_module_initialization_equal: true
+      br2_pair_parameter_initialization_equal: true
     routing:
       primary_partition: htzhulab
       mirror_partition: a100-gpu
@@ -126,16 +176,18 @@ waves:
       - results/20260722_srr_batch7_minimal_pathology_decomposition/scar_casewise_metrics.csv
       - results/20260722_srr_batch7_minimal_pathology_decomposition/scar_checkpoint_selection.csv
       - results/20260722_srr_batch7_minimal_pathology_decomposition/scar_help_harm.csv
+      - results/20260722_srr_batch7_minimal_pathology_decomposition/scar_source_learner_coefficients.csv
     completion_conditions:
-      - both_runs_exact_400_steps
-      - both_runs_eval_all_44_cases_at_200_and_400
+      - all_three_runs_exact_400_steps
+      - all_three_runs_eval_all_44_cases_at_200_and_400
       - selected_checkpoints_reloaded
       - all_attempts_terminal_accounted
       - aggregation_exit_zero
+      - matched_run_manifest_pass
     decision_rules:
       minimal_retain_positive_dice_minimum: 0.003
-      dictionary_increment_over_minimal_minimum: 0.001
-      safety_from_config: true
+      br2_increment_over_minimal_minimum: 0.001
+      sip_increment_or_safety_gate_from_config: true
     failure_action: same_scope_operational_repair_or_NEEDS_REPAIR
 
   - wave_id: B7D_WAVE3_EDEMA_MATCHED_RUNS
@@ -150,14 +202,20 @@ waves:
       - id: edema_minimal
         optimizer_steps: 400
         eval_steps: [200, 400]
-        dictionary_enabled: false
-        semantic_negative_memory_enabled: false
+        br2_enabled: false
+        sip_enabled: false
         t2_present_training_only: true
-      - id: edema_dictionary
+      - id: edema_br2_no_sip
         optimizer_steps: 400
         eval_steps: [200, 400]
-        dictionary_enabled: true
-        semantic_negative_memory_enabled: false
+        br2_enabled: true
+        sip_enabled: false
+        t2_present_training_only: true
+      - id: edema_br2_sip
+        optimizer_steps: 400
+        eval_steps: [200, 400]
+        br2_enabled: true
+        sip_enabled: true
         t2_present_training_only: true
     matching:
       source_checkpoint_equal: true
@@ -167,6 +225,8 @@ waves:
       optimizer_equal: true
       budget_equal: true
       decode_equal: true
+      common_module_initialization_equal: true
+      br2_pair_parameter_initialization_equal: true
     routing:
       primary_partition: htzhulab
       mirror_partition: a100-gpu
@@ -178,17 +238,19 @@ waves:
       - results/20260722_srr_batch7_minimal_pathology_decomposition/edema_casewise_metrics.csv
       - results/20260722_srr_batch7_minimal_pathology_decomposition/edema_checkpoint_selection.csv
       - results/20260722_srr_batch7_minimal_pathology_decomposition/edema_help_harm.csv
+      - results/20260722_srr_batch7_minimal_pathology_decomposition/edema_source_learner_coefficients.csv
     completion_conditions:
-      - both_runs_exact_400_steps
-      - both_runs_eval_all_44_cases_at_200_and_400
+      - all_three_runs_exact_400_steps
+      - all_three_runs_eval_all_44_cases_at_200_and_400
       - no_t2_edema_exact_zero
       - selected_checkpoints_reloaded
       - all_attempts_terminal_accounted
       - aggregation_exit_zero
+      - matched_run_manifest_pass
     decision_rules:
       minimal_retain_positive_dice_minimum: 0.003
-      dictionary_increment_over_minimal_minimum: 0.001
-      safety_from_config: true
+      br2_increment_over_minimal_minimum: 0.001
+      sip_increment_or_safety_gate_from_config: true
     failure_action: same_scope_operational_repair_or_NEEDS_REPAIR
 
   - wave_id: B7D_WAVE4_DECISION_AND_STATE
@@ -203,7 +265,8 @@ waves:
       - results/20260722_srr_batch7_minimal_pathology_decomposition/
     required_outputs:
       - results/20260722_srr_batch7_minimal_pathology_decomposition/pathology_decision_matrix.csv
-      - results/20260722_srr_batch7_minimal_pathology_decomposition/dictionary_increment_matrix.csv
+      - results/20260722_srr_batch7_minimal_pathology_decomposition/br2_increment_matrix.csv
+      - results/20260722_srr_batch7_minimal_pathology_decomposition/sip_increment_matrix.csv
       - results/20260722_srr_batch7_minimal_pathology_decomposition/casewise_metrics.csv
       - results/20260722_srr_batch7_minimal_pathology_decomposition/subgroup_metrics.csv
       - results/20260722_srr_batch7_minimal_pathology_decomposition/help_harm.csv
@@ -214,9 +277,11 @@ waves:
       - results/20260722_srr_batch7_minimal_pathology_decomposition/MANIFEST.md
     completion_conditions:
       - scar_minimal_decision_is_RETAIN_or_RETIRE
-      - scar_dictionary_decision_is_RETAIN_RETIRE_or_NOT_APPLICABLE
+      - scar_br2_decision_is_RETAIN_RETIRE_or_NOT_APPLICABLE
+      - scar_sip_decision_is_RETAIN_REMOVE_or_NOT_APPLICABLE
       - edema_minimal_decision_is_RETAIN_or_RETIRE
-      - edema_dictionary_decision_is_RETAIN_RETIRE_or_NOT_APPLICABLE
+      - edema_br2_decision_is_RETAIN_RETIRE_or_NOT_APPLICABLE
+      - edema_sip_decision_is_RETAIN_REMOVE_or_NOT_APPLICABLE
       - no_component_left_as_needs_more_repair
       - strict_validator_and_known_bad_exit_zero
       - mapper_wiki_current_fingerprint_consistent
