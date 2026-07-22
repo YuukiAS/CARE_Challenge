@@ -933,6 +933,7 @@ def br2_selective_integration_penalty(
         return zero, {f"{pathology}_br2_sip_terms": zero.detach()}
     mask_f = mask.to(device=beta.device, dtype=beta.dtype)
     terms = []
+    eligible_counts: list[int] = []
     tau_t = beta.new_tensor(float(tau))
     for ridx in range(beta.shape[1]):
         eligible = mask_f[:, ridx] > 0.5
@@ -942,12 +943,18 @@ def br2_selective_integration_penalty(
         selected = beta[eligible, ridx].abs()
         gamma = torch.minimum(torch.ones_like(selected), selected / tau_t).sum()
         terms.append(torch.minimum(torch.ones((), dtype=beta.dtype, device=beta.device), (count - gamma) / float(count - 1)))
+        eligible_counts.append(count)
     if not terms:
         zero = _zero_like_output(outputs)
         return zero, {f"{pathology}_br2_sip_terms": zero.detach()}
-    loss = torch.stack(terms).sum()
+    raw_formula = torch.stack(terms).sum()
+    # Optimize the mean source-opportunity penalty while preserving the raw paper-formula diagnostic.
+    normalizer = beta.new_tensor(float(max(1, sum(eligible_counts))))
+    loss = raw_formula / normalizer
     return loss, {
         f"{pathology}_br2_sip_terms": beta.new_tensor(float(len(terms))),
+        f"{pathology}_br2_sip_raw_formula": raw_formula.detach() if raw_formula.requires_grad else raw_formula,
+        f"{pathology}_br2_sip_source_count_normalizer": normalizer,
         f"{pathology}_br2_sip_tau": tau_t,
     }
 

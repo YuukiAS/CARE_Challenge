@@ -320,8 +320,10 @@ def test_br2_losses_use_full_center_table_not_batch_proxy() -> None:
     assert torch.isclose(br2_source_l1_sparsity_loss(outputs, "scar"), torch.tensor(0.10833333))
     assert torch.isclose(br2_center_deviation_shrinkage_loss(outputs, "scar"), torch.tensor(0.25))
     sip, metrics = br2_selective_integration_penalty(outputs, "scar", tau=0.10)
-    assert torch.isclose(sip, torch.tensor(1.0))
+    assert torch.isclose(metrics["scar_br2_sip_raw_formula"], torch.tensor(1.0))
+    assert torch.isclose(sip, torch.tensor(1.0 / 6.0))
     assert float(metrics["scar_br2_sip_terms"]) == 2.0
+    assert float(metrics["scar_br2_sip_source_count_normalizer"]) == 6.0
 
 
 def test_default_br2_initial_beta_keeps_sip_gradient_live() -> None:
