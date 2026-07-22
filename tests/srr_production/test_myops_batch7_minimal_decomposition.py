@@ -324,6 +324,21 @@ def test_br2_losses_use_full_center_table_not_batch_proxy() -> None:
     assert float(metrics["scar_br2_sip_terms"]) == 2.0
 
 
+def test_default_br2_initial_beta_keeps_sip_gradient_live() -> None:
+    block = LightweightCenterHierarchicalBR2(4)
+    availability = torch.tensor([[1.0, 1.0, 1.0]], dtype=torch.float32)
+    beta = block.beta_for_batch(availability, center_ids=["CenterB"], use_center_beta=True, pathology="scar")
+    outputs = {"logits": torch.zeros((1, 6, 1, 1, 1)), **{f"scar_br2_{k}": v for k, v in beta.items()}}
+
+    sip, metrics = br2_selective_integration_penalty(outputs, "scar", tau=0.10)
+    sip.backward()
+
+    assert float(metrics["scar_br2_sip_terms"]) > 0.0
+    assert float(sip.detach().cpu()) > 0.0
+    assert block.beta_pattern.grad is not None
+    assert float(block.beta_pattern.grad.detach().abs().sum().cpu()) > 0.0
+
+
 def test_edema_sip_source_set_excludes_no_t2_centers() -> None:
     block = LightweightCenterHierarchicalBR2(4)
     with torch.no_grad():

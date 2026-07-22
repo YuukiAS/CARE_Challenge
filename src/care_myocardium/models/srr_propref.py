@@ -40,7 +40,7 @@ BR2_PATTERN_TO_AVAILABILITY = {
     "lge_c0": (1.0, 0.0, 1.0),
     "lge_t2_c0": (1.0, 1.0, 1.0),
 }
-BR2_INITIAL_BETA_SCALE = 1.0e-3
+BR2_INITIAL_BETA_SCALE = 5.0e-2
 
 
 def _availability_pattern_from_tensor(availability: torch.Tensor) -> torch.Tensor:
