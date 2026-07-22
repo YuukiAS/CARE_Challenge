@@ -2,7 +2,7 @@
 task_key: 20260722_care_myops_batch9_reliable_label_distillation
 task_kind: scientific_milestone
 task_type: batch9_reliable_label_distillation_mainline
-task_status: READY_FOR_CONTROLLER
+status: READY_FOR_CONTROLLER
 controller_mode: coordinator_acceptance_owner
 milestone_number: null
 milestone_id: null
