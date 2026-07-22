@@ -1,0 +1,348 @@
+schema_version: 1
+authority_name: care_myops_batch9_reliable_label_distillation
+status: READY_FOR_CONTROLLER
+planner_base_head: a75ca09cf589e744123cd085db6f483f9b0ec8cd
+controller_bind_latest_main: true
+
+paths:
+  split_path: data/benchmarks/protocol/splits_MyoPS.json
+  dataset_json: data/nnUNet/nnUNet_raw/Dataset501_CAREMyoPS/dataset.json
+  nnunet_preprocessed_root: data/nnUNet/nnUNet_preprocessed/Dataset501_CAREMyoPS
+  standard_nnunet_result_root: data/nnUNet/nnUNet_results/Dataset501_CAREMyoPS/nnUNetTrainer_500epochs__nnUNetPlans__3d_fullres
+  result_root: results/20260722_care_myops_batch9_reliable_label_distillation
+  runtime_root: results/20260722_care_myops_batch9_reliable_label_distillation/runtime
+  log_root: logs/care_myops_batch9_reliable_label_distillation
+  lock_root: results/20260722_care_myops_batch9_reliable_label_distillation/runtime/locks
+
+model:
+  module_path: src/care_myocardium/models/care_mm_reliable_distill.py
+  class_name: CAREMMReliableDistillResEnc
+  input_channel_order: [LGE, T2, C0]
+  modality_stem_channels: 8
+  modality_stem:
+    conv_kernel: [3, 3, 3]
+    padding: [1, 1, 1]
+    normalization: InstanceNorm3d_affine
+    activation: GELU
+    hard_mask_immediately_after_stem: true
+  fused_input_channels: 27
+  availability_broadcast_channels: 3
+  backbone:
+    family: nnunet_v2_residual_encoder_unet
+    preset: nnUNetResEncUNetMPlans
+    required_symbol: dynamic_network_architectures.architectures.unet.ResidualEncoderUNet
+    external_pretrained_weights: forbidden
+    old_srr_encoder_fallback: forbidden
+    tiny_network_fallback: forbidden
+  outputs:
+    anatomy_channels: 4
+    scar_residual_channels: 1
+    edema_residual_channels: 1
+    six_class_logit_composition:
+      class_0: anatomy_background
+      class_1: anatomy_healthy_myocardium
+      class_2: anatomy_lv
+      class_3: anatomy_rv
+      class_4: anatomy_healthy_myocardium_plus_edema_residual
+      class_5: anatomy_healthy_myocardium_plus_scar_residual
+    decode_rule: six_class_logits_argmax
+    no_t2_edema_logit: -20.0
+  forbidden_imports_or_instantiations:
+    - SRRProposeRefineMyoPS
+    - ProposalDictionary
+    - M10TwoPassSpatialDictionary
+    - M10CrossFittedPrototypeMemory
+    - CropSoftROIRefinementHead
+    - DifferentiableSoftROIRefinementHead
+    - PathologySourceArbiter
+    - BranchArbitrationGate
+    - BaselinePreservingResidualGate
+
+training_data:
+  dataset_id: 501
+  fold: 0
+  expected_train_case_count: 176
+  expected_validation_case_count: 44
+  derive_center_modality_label_inventory_from_runtime: true
+  center_as_network_input: forbidden
+  center_as_normalization_selector: forbidden
+  center_as_sampler_group: allowed
+  reliable_supervision:
+    anatomy:
+      rule: label_valid
+      remap_scar_and_edema_to_myocardium: true
+    scar:
+      rule: metadata_scar_reliable
+    edema:
+      rule: t2_present_and_metadata_edema_reliable
+      no_t2_as_negative: forbidden
+      no_t2_supervised_voxel_count_required: 0
+  sampler:
+    edema_eligible_pool_probability: 0.50
+    anatomy_scar_pool_probability: 0.50
+    center_balanced_within_pool: true
+    case_balanced_within_center: true
+    exact_manifest_required: true
+  structured_modality_dropout:
+    lge_always_present: true
+    natural_missing_modalities_never_synthesized: true
+    complete_trimodal:
+      lge_t2_c0: 0.50
+      lge_c0: 0.25
+      lge_only: 0.25
+    lge_c0:
+      lge_c0: 0.75
+      lge_only: 0.25
+    lge_only:
+      lge_only: 1.00
+    manifest_fields: [case_id, center, natural_availability, student_availability, rng_state, patch_center]
+
+losses:
+  direct_reliable:
+    loss_anatomy_ce_dice: 1.0
+    loss_scar_bce_dice: 1.0
+    loss_edema_bce_dice_reliable_only: 1.0
+    loss_moddrop_consistency: 0.0
+    loss_distill_logits: 0.0
+    loss_distill_feature: 0.0
+    loss_distill_anatomy: 0.0
+  teacher_full_view:
+    loss_anatomy_ce_dice: 1.0
+    loss_scar_bce_dice: 1.0
+    loss_edema_bce_dice_reliable_only: 1.0
+    loss_moddrop_consistency: 0.0
+    loss_distill_logits: 0.0
+    loss_distill_feature: 0.0
+    loss_distill_anatomy: 0.0
+  moddrop_control:
+    loss_anatomy_ce_dice: 1.0
+    loss_scar_bce_dice: 1.0
+    loss_edema_bce_dice_reliable_only: 1.0
+    loss_moddrop_consistency: 0.1
+    loss_distill_logits: 0.0
+    loss_distill_feature: 0.0
+    loss_distill_anatomy: 0.0
+  reliable_distill:
+    loss_anatomy_ce_dice: 1.0
+    loss_scar_bce_dice: 1.0
+    loss_edema_bce_dice_reliable_only: 1.0
+    loss_moddrop_consistency: 0.1
+    loss_distill_logits: 0.5
+    loss_distill_feature: 0.1
+    loss_distill_anatomy: 0.1
+    distillation_temperature: 2.0
+    teacher_confidence_threshold: 0.60
+    natural_complete_trimodal_cases_only: true
+    edema_distillation_requires_reliable_edema: true
+    pseudo_t2_generation: forbidden
+    incomplete_case_edema_pseudo_label: forbidden
+  authority_checks:
+    resolved_runtime_contract_required: true
+    every_nonzero_loss_in_total_required: true
+    every_nonzero_loss_independent_backward_required: true
+    declared_but_not_summed_known_bad_required: true
+    no_t2_edema_gradient_exact_zero_required: true
+
+training_schedule:
+  iterations_per_epoch: 250
+  validation_every_epochs: 25
+  seeds: [20260723, 20260724]
+  stages:
+    student_direct_reliable:
+      epochs: 500
+      optimizer_steps: 125000
+      selected_checkpoint_epoch: 500
+      intermediate_checkpoint_epochs: [250, 500]
+      warm_start: none
+    teacher_full_view:
+      epochs: 100
+      optimizer_steps: 25000
+      selected_checkpoint_epoch: 100
+      warm_start: student_direct_reliable_epoch500_same_seed
+      training_population: natural_complete_trimodal_reliable_only
+      all_parameters_trainable: true
+    student_moddrop_control:
+      epochs: 100
+      optimizer_steps: 25000
+      selected_checkpoint_epoch: 100
+      warm_start: student_direct_reliable_epoch500_same_seed
+      frozen_teacher_forward_executed: true
+      distillation_weights_zero: true
+    student_reliable_distill:
+      epochs: 100
+      optimizer_steps: 25000
+      selected_checkpoint_epoch: 100
+      warm_start: student_direct_reliable_epoch500_same_seed
+      teacher_checkpoint: teacher_full_view_epoch100_same_seed
+      teacher_frozen: true
+      student_all_parameters_trainable: true
+  formal_credit_zero:
+    - syntax_or_import_smoke
+    - fixed_overfit
+    - failed_startup
+    - partial_checkpoint
+    - routing_race_loser
+    - submitted_pending_or_running
+
+matched_control:
+  pair: [student_moddrop_control, student_reliable_distill]
+  same_seed_required: true
+  same_student_initial_checkpoint_required: true
+  same_student_initial_state_hash_required: true
+  same_case_sequence_required: true
+  same_patch_centers_required: true
+  same_student_availability_masks_required: true
+  same_augmentation_manifest_required: true
+  same_optimizer_template_required: true
+  same_epoch_and_step_budget_required: true
+  same_teacher_forward_required: true
+  only_allowed_difference: nonzero_distillation_loss_weights
+
+preflight:
+  fixed_overfit_steps: 100
+  fixed_overfit_formal_credit: 0
+  fixed_overfit_required_cases:
+    - one_natural_complete_trimodal_case
+    - one_natural_lge_c0_case
+    - one_natural_lge_only_case
+  minimum_supervised_loss_reduction_fraction: 0.30
+  complete_case_scar_prediction_nonempty: true
+  complete_case_edema_prediction_nonempty: true
+  no_t2_edema_supervised_voxels_exact_zero: true
+  checkpoint_roundtrip_max_abs_delta: 0.000001
+  required_files:
+    - center_modality_label_inventory.csv
+    - clean_model_import_graph.json
+    - legacy_module_call_counters.csv
+    - resenc_environment_contract.json
+    - availability_hard_mask_checks.csv
+    - reliable_supervision_mask_checks.csv
+    - resolved_loss_contract.json
+    - loss_gradient_matrix.csv
+    - fixed_real_case_overfit.json
+    - checkpoint_roundtrip.json
+    - known_bad_report.json
+
+known_bad:
+  reject_legacy_srr_instantiation: true
+  reject_missing_stem_nonzero: true
+  reject_center_tensor_input: true
+  reject_center_specific_validation_path: true
+  reject_no_t2_edema_supervision: true
+  reject_no_t2_edema_distillation: true
+  reject_declared_loss_not_in_total: true
+  reject_static_config_as_runtime_loss_contract: true
+  reject_matched_sampler_mismatch: true
+  reject_checkpoint_not_reloaded: true
+  reject_prediction_root_or_hash_reuse: true
+  reject_empty_scar_or_edema_completion: true
+  reject_pending_placeholder_static_initial_tokens: true
+  reject_short_training_as_formal: true
+
+slurm:
+  python_executable: /users/a/e/aereinh/CARE/envs/env_CARE/bin/python
+  primary_seed_routing:
+    seed_20260723: htzhulab
+    seed_20260724: a100-gpu
+  fallback_order: [htzhulab, a100-gpu, volta-gpu]
+  v100_same_semantics_preflight_required: true
+  model_or_batch_reduction_for_v100: forbidden
+  training_dependency: afterok
+  finalizer_dependency: afterany
+  same_partition_gpu_preflight_required: true
+  maximum_startup_retries: 2
+  maximum_preemption_retries: 2
+  isolated_runtime_log_lock_prediction_roots: true
+
+baseline:
+  trainer: nnUNetTrainer_500epochs
+  plans: nnUNetPlans
+  configuration: 3d_fullres
+  fold0_class_dice:
+    edema: 0.3944
+    scar: 0.5602
+  use_as_network_anchor: false
+  use_as_evaluation_baseline: true
+
+formal_evaluation:
+  case_count: 44
+  selected_checkpoint_must_reload: true
+  decode_rule: six_class_logits_argmax
+  metrics:
+    - dice
+    - hd95
+    - precision
+    - recall
+    - component_count
+    - remote_false_positive_volume
+    - prediction_volume_ratio
+    - empty_prediction_rate
+    - changed_voxels_vs_standard_nnunet
+  subgroups:
+    - all_cases
+    - positive_gt
+    - complete_trimodal
+    - CenterB
+    - CenterC
+    - lge_only
+    - lge_c0
+    - small_scar
+    - large_scar
+    - low_baseline
+    - high_baseline
+  required_outputs:
+    - training_adequacy.csv
+    - checkpoint_selection.csv
+    - prediction_manifest.csv
+    - casewise_metrics.csv
+    - subgroup_metrics.csv
+    - help_harm.csv
+    - supervision_audit.csv
+    - distillation_mechanism.csv
+    - matched_run_manifest.csv
+
+retain_gates:
+  direct_reliable:
+    complete_trimodal_scar_non_worse_than_standard_nnunet: true
+    complete_trimodal_edema_non_worse_than_standard_nnunet: true
+    at_least_one_pathology_absolute_gain_min: 0.005
+  moddrop_control:
+    maximum_mean_drop_per_pathology_vs_direct: 0.002
+    empty_prediction_rate_must_not_increase: true
+  reliable_distill_vs_moddrop:
+    each_seed_scar_delta_min: 0.0
+    each_seed_edema_delta_min: 0.0
+    mean_scar_delta_min: 0.003
+    mean_edema_delta_min: 0.005
+    alternative_mean_pathology_delta_min: 0.005
+    alternative_weaker_pathology_nonnegative: true
+    combined_help_not_less_than_harm: true
+    maximum_hd95_relative_worsening: 0.02
+    empty_prediction_rate_must_not_increase: true
+  allowed_terminal_tokens:
+    - BATCH9_RELIABLE_DISTILL_RETAIN_PENDING_PLANNER
+    - BATCH9_DIRECT_RESENC_ONLY_PENDING_PLANNER
+    - BATCH9_MAINLINE_NO_USABLE_SIGNAL_RETURN_TO_PLANNER
+
+publication_boundary:
+  allowed_story: reliable_label_distillation_for_partially_observed_multisequence_cardiac_mr_segmentation
+  unseen_center_d_generalization_proven_locally: false
+  center_missingness_causally_separated: false
+  r2_br2_sip_claim_authorized: false
+  prototype_memory_refiner_claim_authorized: false
+
+forbidden_actions:
+  - run_batch8
+  - implement_or_train_br2_lite
+  - sip_training
+  - prototype_or_memory_training
+  - proposal_or_refiner_training
+  - source_arbiter_or_production_gate_training
+  - batch10
+  - fold_expansion
+  - cine
+  - external_data_or_pretrained_weights
+  - validation_upload
+  - hosted_metric_claim
+  - route_promotion
+  - final_scientific_stop
