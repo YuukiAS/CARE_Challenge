@@ -1,0 +1,25 @@
+{
+  "code_sha256": {
+    "configs/care_mm/batch9_reliable_label_distillation.yaml": "1f2409281fed77015c2596975ff28de30a3f896a57f22aa1d31ff7d5b306a87e",
+    "scripts/evaluation/aggregate_care_mm_batch9.py": "84182a5f835d7cfe26be3bf7ab2d057c61311a612357df119432d621c37f8ddf",
+    "scripts/evaluation/evaluate_care_mm_batch9.py": "29d2a1a33dcf126d6094c76bbbda65ad4892e75a784cdc3c91c2cfe857a218e1",
+    "scripts/evaluation/finalize_care_mm_batch9.py": "aaf596c9e3dfde1038f0f9f20447007176ad88bb026b5bd74f7d88b59c88c10d",
+    "scripts/evaluation/validate_care_mm_batch9_packet.py": "314a31ef2ee0ea3bc1e64f86c1b604a8b38664150daaa44b73d96e21c2e397a7",
+    "scripts/training/run_care_mm_batch9_reliable_distill.py": "62ce99f50e24c003123286c3851c71b6e3c011a9e58b08d24eb960a39c1ed328",
+    "src/care_myocardium/data/care_mm_batch9.py": "265deeb8d438ae63a47345aa7ab02dcc85f5f08b03a415174bff2152dc4304f0",
+    "src/care_myocardium/losses/care_mm_losses.py": "eb3f106dcb293c3811bd4fae9b349a69477030c4d39f77be7d7884876969dfd6",
+    "src/care_myocardium/models/care_mm_reliable_distill.py": "5db67db766428c48e02cce8da518044e91dd487db3701abeff8739d37c70aa66"
+  },
+  "evidence_sha256": {
+    "results/20260722_care_myops_batch9_reliable_label_distillation/casewise_metrics.csv": "bd03d3dea194246d7d44a2e6d21950517632569a58ea4293a9b9f0ec7fc3892c",
+    "results/20260722_care_myops_batch9_reliable_label_distillation/completion_check.md": "1938afdb5ac24c255a56e1e5194328619cc0d261fce068cfdfb8f472a3da25b6",
+    "results/20260722_care_myops_batch9_reliable_label_distillation/decision_matrix.csv": "8a92950d28304c4cc1c8761b4f9e021f7218465791da4944ae4b87fc9fc0716e",
+    "results/20260722_care_myops_batch9_reliable_label_distillation/slurm_formal_chain.json": "2bf81b99f7d3bf6ae729b4aaba22e311ec5d26972fc01eeb06dc982ac020dd38",
+    "results/20260722_care_myops_batch9_reliable_label_distillation/slurm_race_events.csv": "66b613ffaf8d34478a841cc8eded38bd323636594ee374b89ac3786b15a38422",
+    "results/20260722_care_myops_batch9_reliable_label_distillation/strict_validator_report.json": "06875958a5bc8e6a6819141d408daed161ec8590e9c1d8dd9a8aa9847c42e384",
+    "results/20260722_care_myops_batch9_reliable_label_distillation/subgroup_metrics.csv": "ac79e31858304a0565e5794fc1f57d89f48fc140ef90265672ef655ac48f1fab"
+  },
+  "generated_at": "2026-07-22T18:40:00",
+  "schema_version": 1,
+  "terminal_token": "BATCH9_MAINLINE_NO_USABLE_SIGNAL_RETURN_TO_PLANNER"
+}

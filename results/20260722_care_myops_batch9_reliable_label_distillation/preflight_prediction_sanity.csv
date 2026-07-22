@@ -1,0 +1,4 @@
+case_id,first_loss,last_loss,loss_reduction_fraction,pattern,status
+Case2001,36529.51953125,5159.4013671875,0.8587607657206174,natural_complete_trimodal,PASS
+Case5001,5427.10986328125,487.1750793457031,0.9102330537581645,natural_lge_c0,PASS
+Case1001,8904.716796875,1063.462890625,0.880573081111551,natural_lge_only,PASS

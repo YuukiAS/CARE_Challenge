@@ -1,0 +1,41 @@
+{
+  "formal_training_credit": 0,
+  "no_t2_edema_supervised_voxel_count": 0,
+  "patterns": [
+    {
+      "case_id": "Case2001",
+      "first_loss": 36529.51953125,
+      "last_loss": 5159.4013671875,
+      "loss_reduction_fraction": 0.8587607657206174,
+      "pattern": "natural_complete_trimodal",
+      "status": "PASS"
+    },
+    {
+      "case_id": "Case5001",
+      "first_loss": 5427.10986328125,
+      "last_loss": 487.1750793457031,
+      "loss_reduction_fraction": 0.9102330537581645,
+      "pattern": "natural_lge_c0",
+      "status": "PASS"
+    },
+    {
+      "case_id": "Case1001",
+      "first_loss": 8904.716796875,
+      "last_loss": 1063.462890625,
+      "loss_reduction_fraction": 0.880573081111551,
+      "pattern": "natural_lge_only",
+      "status": "PASS"
+    }
+  ],
+  "prediction_nonempty": {
+    "natural_complete_trimodal_edema": true,
+    "natural_complete_trimodal_scar": true,
+    "natural_lge_c0_edema": false,
+    "natural_lge_c0_scar": false,
+    "natural_lge_only_edema": false,
+    "natural_lge_only_scar": true
+  },
+  "schema_version": 1,
+  "status": "PASS",
+  "steps_per_pattern": 100
+}

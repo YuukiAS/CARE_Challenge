@@ -1,0 +1,19 @@
+{
+  "blocked_or_failure_reason": "",
+  "commit_status": "local_lightweight_commit_complete",
+  "evidence_paths": [
+    "results/20260722_care_myops_batch9_reliable_label_distillation/controller_report.md",
+    "results/20260722_care_myops_batch9_reliable_label_distillation/decision_matrix.csv",
+    "results/20260722_care_myops_batch9_reliable_label_distillation/subgroup_metrics.csv",
+    "results/20260722_care_myops_batch9_reliable_label_distillation/strict_validator_report.json",
+    "results/20260722_care_myops_batch9_reliable_label_distillation/mapper_report_final.md",
+    "results/20260722_care_myops_batch9_reliable_label_distillation/architecture_delta_final.md",
+    "results/20260722_care_myops_batch9_reliable_label_distillation/batch9_code_evidence_fingerprint.json"
+  ],
+  "final_status": "Batch9 completed and returned to Planner",
+  "key_conclusion": "Batch9 operational evidence is complete; fixed-endpoint local evaluation shows no usable signal if the final token returned to Planner is the no-usable-signal decision.",
+  "next_step": "Planner decides whether to retain reliable distillation direct segmentation or revise the mainline.",
+  "push_status": "not_pushed",
+  "slurm_terminal_status": "all required jobs terminal accounted",
+  "task_name": "20260722_care_myops_batch9_reliable_label_distillation"
+}

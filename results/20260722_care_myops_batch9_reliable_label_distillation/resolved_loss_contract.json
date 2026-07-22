@@ -1,0 +1,21 @@
+{
+  "every_nonzero_loss_in_total": true,
+  "nonzero_loss_weights": {
+    "distillation_temperature": 2.0,
+    "edema_distillation_requires_reliable_edema": 1.0,
+    "loss_anatomy_ce_dice": 1.0,
+    "loss_distill_anatomy": 0.1,
+    "loss_distill_feature": 0.1,
+    "loss_distill_logits": 0.5,
+    "loss_edema_final_margin_bce_dice_reliable_only": 1.0,
+    "loss_final_six_class_reliable": 0.5,
+    "loss_moddrop_consistency": 0.1,
+    "loss_scar_final_margin_bce_dice": 1.0,
+    "natural_complete_trimodal_cases_only": 1.0,
+    "teacher_confidence_threshold": 0.6
+  },
+  "pathology_losses_use_composed_final_logit_margins": true,
+  "raw_residual_only_pathology_supervision": "forbidden",
+  "schema_version": 1,
+  "status": "PASS"
+}

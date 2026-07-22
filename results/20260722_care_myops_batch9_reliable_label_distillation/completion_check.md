@@ -1,0 +1,7 @@
+Batch9 completion check
+
+controller_verification_decision: VERIFIED_COMPLETE
+final_scientific_token: BATCH9_MAINLINE_NO_USABLE_SIGNAL_RETURN_TO_PLANNER
+all_jobs_terminal: true
+aggregation_complete: true
+validators_passed: true

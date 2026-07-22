@@ -1,0 +1,2 @@
+cuda_available,device,job_id,partition,status
+True,cuda,60003113,htzhulab,PASS

@@ -1,0 +1,3 @@
+case_id,center,center_enters_network,distillation_eligible,edema_reliable,no_t2_edema_supervised_voxel_count,status,t2_present
+Case2030,CenterB,0,1,1,NA,PASS,1
+Case2034,CenterB,0,1,1,NA,PASS,1

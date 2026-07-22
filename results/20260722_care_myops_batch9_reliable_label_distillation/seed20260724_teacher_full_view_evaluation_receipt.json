@@ -1,0 +1,10 @@
+{
+  "case_count": 44,
+  "checkpoint": "results/20260722_care_myops_batch9_reliable_label_distillation/runtime/seed20260724/teacher_full_view/checkpoint_epoch100.pt",
+  "checkpoint_reloaded": true,
+  "prediction_dir": "results/20260722_care_myops_batch9_reliable_label_distillation/runtime/seed20260724/teacher_full_view/predictions",
+  "schema_version": 1,
+  "seed": "20260724",
+  "status": "PASS",
+  "variant": "teacher_full_view"
+}

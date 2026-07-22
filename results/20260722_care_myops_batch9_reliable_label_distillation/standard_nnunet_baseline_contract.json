@@ -1,0 +1,14 @@
+{
+  "baseline_root": "data/nnUNet/nnUNet_results/Dataset501_CAREMyoPS/nnUNetTrainer_500epochs__nnUNetPlans__3d_fullres",
+  "fold0_checkpoint_final": "data/nnUNet/nnUNet_results/Dataset501_CAREMyoPS/nnUNetTrainer_500epochs__nnUNetPlans__3d_fullres/fold_0/checkpoint_final.pth",
+  "fold0_class_dice": {
+    "edema": 0.3944,
+    "scar": 0.5602
+  },
+  "fold0_summary": "data/nnUNet/nnUNet_results/Dataset501_CAREMyoPS/nnUNetTrainer_500epochs__nnUNetPlans__3d_fullres/fold_0/validation/summary.json",
+  "fold0_validation_dir": "data/nnUNet/nnUNet_results/Dataset501_CAREMyoPS/nnUNetTrainer_500epochs__nnUNetPlans__3d_fullres/fold_0/validation",
+  "schema_version": 1,
+  "status": "PASS",
+  "use_as_evaluation_baseline": true,
+  "use_as_network_anchor": false
+}

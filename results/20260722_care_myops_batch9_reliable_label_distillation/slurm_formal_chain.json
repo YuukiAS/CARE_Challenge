@@ -1,0 +1,39 @@
+{
+  "finalizer_afterany": "60012411",
+  "finalizer_dependency": "afterany over all formal jobs",
+  "initial_preflight_dependency": "",
+  "resource_override": {
+    "authorized_by_user_in_controller_thread": true,
+    "enabled": true,
+    "forbidden_changes_still_forbidden": [
+      "model",
+      "loss",
+      "seed",
+      "epoch_budget",
+      "step_budget",
+      "data_scope",
+      "validation_upload",
+      "hosted_claim"
+    ],
+    "reason": "user_authorized_after_a100_preflight_pending_over_one_hour; keep Batch9 seeds/model/loss/budget/data unchanged",
+    "seed20260723_partition": "htzhulab",
+    "seed20260724_partition": "htzhulab"
+  },
+  "schema_version": 1,
+  "seed20260723": {
+    "direct": "60012399",
+    "moddrop_control": "60012402",
+    "reliable_distill": "60012404",
+    "seed": "20260723",
+    "teacher": "60012401"
+  },
+  "seed20260724": {
+    "direct": "60012405",
+    "moddrop_control": "60012408",
+    "reliable_distill": "60012410",
+    "seed": "20260724",
+    "teacher": "60012407"
+  },
+  "status": "SUBMITTED_FORMAL_CHAIN",
+  "training_dependencies": "afterok within seed"
+}

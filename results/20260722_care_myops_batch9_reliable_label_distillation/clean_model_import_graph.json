@@ -1,0 +1,132 @@
+{
+  "center_in_forward_signature": false,
+  "legacy_module_import_instance_forward_counts_all_zero": true,
+  "model_contract": {
+    "backbone_symbol": "dynamic_network_architectures.architectures.unet.ResidualEncoderUNet",
+    "center_in_forward_signature": false,
+    "feature_channels": 32,
+    "features_per_stage": [
+      32,
+      64,
+      128,
+      256,
+      320,
+      320,
+      320
+    ],
+    "forbidden_legacy_components": [
+      "SRRProposeRefineMyoPS",
+      "ProposalDictionary",
+      "M10TwoPassSpatialDictionary",
+      "M10CrossFittedPrototypeMemory",
+      "CropSoftROIRefinementHead",
+      "DifferentiableSoftROIRefinementHead",
+      "PathologySourceArbiter",
+      "BranchArbitrationGate",
+      "BaselinePreservingResidualGate"
+    ],
+    "fused_input_channels": 27,
+    "input_channel_order": [
+      "LGE",
+      "T2",
+      "C0"
+    ],
+    "kernel_sizes": [
+      [
+        1,
+        3,
+        3
+      ],
+      [
+        3,
+        3,
+        3
+      ],
+      [
+        3,
+        3,
+        3
+      ],
+      [
+        3,
+        3,
+        3
+      ],
+      [
+        3,
+        3,
+        3
+      ],
+      [
+        3,
+        3,
+        3
+      ],
+      [
+        3,
+        3,
+        3
+      ]
+    ],
+    "modality_stem_channels_each": 8,
+    "model_class": "CAREMMReliableDistillResEnc",
+    "n_blocks_per_stage": [
+      1,
+      3,
+      4,
+      6,
+      6,
+      6,
+      6
+    ],
+    "n_conv_per_stage_decoder": [
+      1,
+      1,
+      1,
+      1,
+      1,
+      1
+    ],
+    "parameter_count": 140702398,
+    "plans_equivalent": "nnUNetResEncUNetMPlans",
+    "strides": [
+      [
+        1,
+        1,
+        1
+      ],
+      [
+        1,
+        2,
+        2
+      ],
+      [
+        2,
+        2,
+        2
+      ],
+      [
+        2,
+        2,
+        2
+      ],
+      [
+        1,
+        2,
+        2
+      ],
+      [
+        1,
+        2,
+        2
+      ],
+      [
+        1,
+        2,
+        2
+      ]
+    ]
+  },
+  "schema_version": 1,
+  "status": "PASS"
+}

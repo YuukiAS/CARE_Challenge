@@ -1,0 +1,22 @@
+本批次已经完成直接分割新主线的操作闭环，但固定终点评价显示直接主干没有超过 nnU-Net 基线；即使蒸馏相对同预算 moddrop 有局部改善，也不能抵消主干本身低于基线和部分阳性病例空预测的问题。不会把本地结果包装成官方泛化证明，也不会启动 Batch10、旧 SRR、Cine、扩 fold 或上传。
+
+controller_verification_decision: VERIFIED_COMPLETE
+operational_completion_status: COMPLETE
+experiment_adequacy_decision: FORMAL_TWO_SEED_500_100_100_COMPLETE
+contract_compliance_status: PASS
+required_outputs_complete: true
+validators_passed: true
+all_jobs_terminal: true
+aggregation_complete: true
+direct_resenc_status: evaluated
+moddrop_control_status: evaluated
+reliable_distillation_status: evaluated
+complete_trimodal_status: evaluated
+center_b_status: local_proxy_only_evaluated
+center_c_status: local_proxy_only_evaluated
+partial_label_safety_status: PASS_NO_T2_EDEMA_ZERO
+final_scientific_token: BATCH9_MAINLINE_NO_USABLE_SIGNAL_RETURN_TO_PLANNER
+git_commit_decision: LOCAL_LIGHTWEIGHT_COMMIT_REQUIRED
+git_push_decision: NO_PUSH
+blocked_actions: Batch8,BR2_lite,SIP,refiner,Batch10,Cine,fold_expansion,validation_upload,hosted_claim
+next_required_action: RETURN_TO_PLANNER

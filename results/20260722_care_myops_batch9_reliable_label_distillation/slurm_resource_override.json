@@ -1,0 +1,18 @@
+{
+  "authorized_by_user_in_controller_thread": true,
+  "enabled": true,
+  "forbidden_changes_still_forbidden": [
+    "model",
+    "loss",
+    "seed",
+    "epoch_budget",
+    "step_budget",
+    "data_scope",
+    "validation_upload",
+    "hosted_claim"
+  ],
+  "reason": "user_authorized_after_a100_preflight_pending_over_one_hour; keep Batch9 seeds/model/loss/budget/data unchanged",
+  "schema_version": 1,
+  "seed20260723_partition": "htzhulab",
+  "seed20260724_partition": "htzhulab"
+}

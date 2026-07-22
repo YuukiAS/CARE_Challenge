@@ -5,19 +5,19 @@
 ## 当前状态
 
 ```text
-state_id: care_myops_batch9_reliable_label_distillation_ready_20260722
+state_id: care_myops_batch9_reliable_label_distillation_terminal_no_usable_signal_20260722
 round_id: post_round04_main_only
 state_updated_date: 2026-07-22
 active_development_branch: main
 active_worktree: /users/a/e/aereinh/CARE
 portfolio_mode: SUSPENDED
 route_worktree_development_authorized: false
-single_active_scientific_line: CARE_MyoPS_reliable_label_distillation_direct_segmentation
+single_active_scientific_line: NONE_RETAINED_AFTER_BATCH9_NO_USABLE_SIGNAL
 batch7_operational_status: SIX_MATCHED_RUNS_COMPLETE
 batch7_scientific_packet_status: INCOMPLETE_BR2_SIP_MECHANISM_CLOSURE
 batch8_status: SUPERSEDED_UNEXECUTED_DIAGNOSTIC_CONTRACT
-batch9_status: READY_FOR_CONTROLLER
-next_required_action: RUN_BATCH9_RELIABLE_LABEL_DISTILLATION_MAINLINE
+batch9_status: COMPLETE_NO_USABLE_SIGNAL_RETURN_TO_PLANNER
+next_required_action: PLANNER_REVIEW_BATCH9_NO_USABLE_SIGNAL_PACKET
 controller_is_coordinator: true
 planning_review_required: false
 review_required: false
@@ -313,3 +313,14 @@ final scientific stop
 ```
 
 Controller的`VERIFIED_COMPLETE`只表示Batch 9合同完成，下一步返回Planner。
+## Batch 9 terminal update (2026-07-22)
+
+```text
+batch9_terminal_token: BATCH9_MAINLINE_NO_USABLE_SIGNAL_RETURN_TO_PLANNER
+controller_verification_decision: VERIFIED_COMPLETE
+strict_validator_status: PASS
+resource_override: user_authorized_htzhulab_switch_and_race_for_long_pending_jobs
+slurm_summary: direct/teacher/control/distill jobs completed; failed finalizer rerun repaired evaluator shape alignment and validator logic
+scientific_conclusion: direct ResEnc mainline did not beat nnU-Net baseline and had GT-positive empty predictions in continuation variants; no promotion/upload/fold expansion/Batch10 authorized
+evidence_root: results/20260722_care_myops_batch9_reliable_label_distillation
+```

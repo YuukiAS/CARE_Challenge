@@ -1,0 +1,87 @@
+{
+  "completion_validator_checks_content_not_existence_only": true,
+  "known_bad_cases": [
+    {
+      "case": "legacy_srr_instantiation",
+      "injected": true,
+      "rejected": true
+    },
+    {
+      "case": "missing_stem_nonzero",
+      "injected": true,
+      "rejected": true
+    },
+    {
+      "case": "center_tensor_input",
+      "injected": true,
+      "rejected": true
+    },
+    {
+      "case": "center_specific_validation_path",
+      "injected": true,
+      "rejected": true
+    },
+    {
+      "case": "no_t2_edema_supervision",
+      "injected": true,
+      "rejected": true
+    },
+    {
+      "case": "no_t2_edema_distillation",
+      "injected": true,
+      "rejected": true
+    },
+    {
+      "case": "declared_loss_not_in_total",
+      "injected": true,
+      "rejected": true
+    },
+    {
+      "case": "raw_residual_only_pathology_supervision",
+      "injected": true,
+      "rejected": true
+    },
+    {
+      "case": "final_six_class_loss_on_no_t2",
+      "injected": true,
+      "rejected": true
+    },
+    {
+      "case": "static_config_as_runtime_loss_contract",
+      "injected": true,
+      "rejected": true
+    },
+    {
+      "case": "matched_sampler_mismatch",
+      "injected": true,
+      "rejected": true
+    },
+    {
+      "case": "checkpoint_not_reloaded",
+      "injected": true,
+      "rejected": true
+    },
+    {
+      "case": "prediction_root_or_hash_reuse",
+      "injected": true,
+      "rejected": true
+    },
+    {
+      "case": "empty_scar_or_edema_completion",
+      "injected": true,
+      "rejected": true
+    },
+    {
+      "case": "pending_placeholder_static_initial_tokens",
+      "injected": true,
+      "rejected": true
+    },
+    {
+      "case": "short_training_as_formal",
+      "injected": true,
+      "rejected": true
+    }
+  ],
+  "schema_version": 1,
+  "status": "PASS"
+}

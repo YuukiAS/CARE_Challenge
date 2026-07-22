@@ -1,4 +1,4 @@
-current_milestone_id: Batch9_reliable_label_distillation_ready
+current_milestone_id: Batch9_reliable_label_distillation_terminal_no_usable_signal
 current_task_key: 20260722_care_myops_batch9_reliable_label_distillation
 current_plan_path: docs/plans/laneB_round04_active_srr_batch9_reliable_label_distillation_execution.md
 current_controller_path: prompts/tasks/20260722_care_myops_batch9_reliable_label_distillation_controller.md
@@ -7,141 +7,57 @@ current_executor_plan_path: prompts/tasks/20260722_care_myops_batch9_reliable_la
 current_planner_audit_path: results/srr_production/code_maturity/batch9_reliable_label_distillation_planner_synthesis_20260722.md
 current_result_root: results/20260722_care_myops_batch9_reliable_label_distillation
 current_review_path: null
-current_review_token: NOT_REVIEWED_CONTROLLER_READY
+current_review_token: NOT_REVIEWED_NOT_REQUIRED
 controller_bind_latest_main: true
 architecture_path: wiki/architecture.yaml
 component_table_path: wiki/COMPONENTS.csv
-wiki_fingerprint_status: BATCH9_PLAN_READY_DIAGRAMS_REMAIN_HISTORICAL_IMPLEMENTATION_VIEW
+wiki_fingerprint_status: BATCH9_TERMINAL_NO_USABLE_SIGNAL_FINGERPRINTED
 updated_at: '2026-07-22'
 
-diagram_evidence:
-  diagram_versions_read: [SRR-v2, SRR-v2.5, SRR-v3]
-  visual_read_status: PASS_PROJECT_BACKGROUND_IMAGES_VISUALLY_READ
-
-method_reselection:
-  deep_research_direction: strong_backbone_reliable_label_distillation_direct_segmentation
-  planner_decision: ACCEPT_WITH_MATERIAL_REVISIONS
-  accepted:
-    - modality_specific_stems
-    - official_residual_encoder_backbone
-    - reliable_edema_supervision
-    - structured_modality_dropout
-    - complete_view_teacher_distillation
-    - anatomy_scar_edema_specific_heads
-  revised:
-    - short_1200_1600_step_budget_replaced_by_epoch_matched_long_training
-    - teacher_random_init_replaced_by_same_seed_direct_checkpoint_init
-    - no_pseudo_t2_or_pseudo_edema_for_natural_incomplete_cases
-    - br2_lite_sip_refiner_deferred_out_of_batch9
-
-historical_state:
-  batch7:
-    operational_status: SIX_MATCHED_RUNS_COMPLETE
-    scientific_packet_status: INCOMPLETE_BR2_SIP_MECHANISM_CLOSURE
-    scar_minimal_positive_dice_delta: -0.004992862041668997
-    edema_minimal_positive_dice_delta: 0.0013426793445873494
-    edema_br2_positive_dice_delta: 0.0029631723979889144
-    edema_br2_increment_over_minimal: 0.001620493053401617
-  batch8:
-    status: SUPERSEDED_UNEXECUTED_DIAGNOSTIC_CONTRACT
-    formal_authority: false
-    runtime_authorized: false
-    files_preserved: true
-
 batch9_reliable_label_distillation:
-  status: READY_FOR_CONTROLLER
-  objective: establish_direct_reliable_label_resenc_and_test_complete_view_teacher_distillation
+  status: COMPLETE_NO_USABLE_SIGNAL_RETURN_TO_PLANNER
+  terminal_token: BATCH9_MAINLINE_NO_USABLE_SIGNAL_RETURN_TO_PLANNER
+  controller_verification_decision: VERIFIED_COMPLETE
+  strict_validator_status: PASS
   model_file: src/care_myocardium/models/care_mm_reliable_distill.py
   model_class: CAREMMReliableDistillResEnc
-  model_not_yet_implemented: true
-  old_srr_forward_reuse: FORBIDDEN
-  nnunet_anchor_in_model_forward: FORBIDDEN
-  external_pretrained_weights: FORBIDDEN
-  input_channel_order: [LGE, T2, C0]
-  modality_stem_channels_each: 8
-  fused_input_channels: 27
   backbone: nnUNet_v2_ResidualEncoderUNet_M_level
-  outputs:
-    anatomy_channels: 4
-    scar_residual_channels: 1
-    edema_residual_channels: 1
-    decode: direct_six_class_logits_argmax
-  supervision:
-    anatomy: all_valid_pathology_remapped_to_myocardium
-    scar: metadata_reliable
-    edema: t2_present_and_metadata_reliable_only
-    no_t2_edema_negative: FORBIDDEN
-    no_t2_edema_pseudo_label: FORBIDDEN
-  center_policy:
-    sampler_and_diagnostics: ALLOWED
-    network_input: FORBIDDEN
-    normalization_selector: FORBIDDEN
-    validation_source_selector: FORBIDDEN
+  parameter_count: 140702398
+  external_pretrained_weights: FORBIDDEN
+  old_srr_forward_reuse: FORBIDDEN
+  center_enters_network: false
+  no_t2_edema_supervision: false
   seeds: [20260723, 20260724]
-  stages:
-    student_direct_reliable:
-      epochs: 500
-      optimizer_steps: 125000
-      selected_checkpoint_epoch: 500
-    teacher_full_view:
-      epochs: 100
-      optimizer_steps: 25000
-      warm_start: same_seed_direct_epoch500
-      random_initialization: FORBIDDEN
-      population: natural_complete_trimodal_reliable_only
-    student_moddrop_control:
-      epochs: 100
-      optimizer_steps: 25000
-      warm_start: same_seed_direct_epoch500
-      frozen_teacher_forward: REQUIRED
-      distillation_weights: ZERO
-    student_reliable_distill:
-      epochs: 100
-      optimizer_steps: 25000
-      warm_start: same_seed_direct_epoch500
-      frozen_teacher: same_seed_teacher_epoch100
-  structured_modality_dropout:
-    full: {lge_t2_c0: 0.50, lge_c0: 0.25, lge_only: 0.25}
-    lge_c0: {lge_c0: 0.75, lge_only: 0.25}
-    lge_only: {lge_only: 1.00}
-    lge_always_present: true
-  losses:
-    anatomy_ce_dice: 1.0
-    scar_bce_dice: 1.0
-    edema_bce_dice_reliable_only: 1.0
-    moddrop_consistency: 0.1
-    distill_logits: 0.5
-    distill_feature: 0.1
-    distill_anatomy: 0.1
-    distill_temperature: 2.0
-    teacher_confidence_threshold: 0.60
-  required_preflight:
-    - runtime_center_modality_label_inventory
-    - official_resenc_environment_contract
-    - clean_import_graph_and_legacy_call_count_zero
-    - availability_hard_mask
-    - reliable_supervision_mask
-    - runtime_resolved_loss_and_gradient_authority
-    - real_case_overfit_full_lge_c0_lge_only
-    - checkpoint_roundtrip
-    - semantic_known_bad_fail_closed
-  formal_evaluation:
-    case_count: 44
-    selected_checkpoints_must_reload: true
-    primary_subgroups: [complete_trimodal, CenterB, CenterC, lge_only, lge_c0]
-    center_d_generalization_proven_locally: false
-  terminal_tokens:
-    - BATCH9_RELIABLE_DISTILL_RETAIN_PENDING_PLANNER
-    - BATCH9_DIRECT_RESENC_ONLY_PENDING_PLANNER
-    - BATCH9_MAINLINE_NO_USABLE_SIGNAL_RETURN_TO_PLANNER
-  planning_review_required: false
-  review_required: false
-  batch8_authorized: false
-  batch9_authorized: true
-  batch10_authorized: false
-  br2_lite_authorized: false
-  sip_training_authorized: false
-  proposal_refiner_training_authorized: false
-  fold_expansion_authorized: false
-  cine_authorized: false
-  validation_upload_authorized: false
+  completed_stages:
+    student_direct_reliable: {epochs: 500, optimizer_steps: 125000}
+    teacher_full_view: {epochs: 100, optimizer_steps: 25000, warm_start: same_seed_direct_epoch500}
+    student_moddrop_control: {epochs: 100, optimizer_steps: 25000}
+    student_reliable_distill: {epochs: 100, optimizer_steps: 25000}
+  resource_override:
+    user_authorized_partition_switch_or_race_for_long_pending: true
+    seed20260724_temporarily_ran_on_htzhulab: true
+    a100_race_mirror_submitted_and_cancelled_loser: true
+  scientific_conclusion:
+    direct_complete_trimodal_delta_vs_standard_scar: -0.3116789519910585
+    direct_complete_trimodal_delta_vs_standard_edema: -0.1513070896576621
+    distill_minus_moddrop_complete_trimodal_scar: 0.04545157007673445
+    distill_minus_moddrop_complete_trimodal_edema: 0.019905346666823698
+    interpretation: distill improved over a weak moddrop continuation but direct mainline underperformed standard nnU-Net and GT-positive empty predictions remain; no usable signal.
+  evidence:
+    completion_check: results/20260722_care_myops_batch9_reliable_label_distillation/completion_check.md
+    controller_report: results/20260722_care_myops_batch9_reliable_label_distillation/controller_report.md
+    strict_validator: results/20260722_care_myops_batch9_reliable_label_distillation/strict_validator_report.json
+    decision_matrix: results/20260722_care_myops_batch9_reliable_label_distillation/decision_matrix.csv
+    fingerprint: results/20260722_care_myops_batch9_reliable_label_distillation/batch9_code_evidence_fingerprint.json
+
+unauthorized_after_batch9:
+  batch8: false
+  batch10: false
+  br2_lite: false
+  sip_training: false
+  proposal_refiner_training: false
+  cine_training: false
+  fold_expansion: false
+  validation_upload: false
+  hosted_metric_claim: false
+  route_promotion: false

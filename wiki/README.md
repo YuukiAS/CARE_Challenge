@@ -1,19 +1,19 @@
 # CARE 架构 Wiki
 
-architecture_version: `care-myops-batch9-reliable-label-distillation-planned`
-latest_verified_runtime: `Batch7 six-run runtime complete; Batch8 unexecuted`
-latest_scientific_status: `direct reliable-label distillation mainline selected; implementation pending`
+architecture_version: `care-myops-batch9-reliable-label-distillation-terminal-no-usable-signal`
+latest_verified_runtime: `Batch9 two-seed direct/teacher/control/distill runtime complete`
+latest_scientific_status: `Batch9 local fixed-endpoint evidence returned no usable signal; no promotion/upload authorized`
 latest_controller_task: `20260722_care_myops_batch9_reliable_label_distillation`
-route_status: `MAIN_ONLY_BATCH9_RELIABLE_LABEL_DISTILLATION_NO_PROMOTION`
+route_status: `MAIN_ONLY_BATCH9_NO_USABLE_SIGNAL_RETURN_TO_PLANNER`
 
-本页是 GPT、Controller、Executor、Mapper 和 Planner 读取当前架构状态的根入口。当前正式主线已经从旧 SRR/BR2 anchor correction 切换为直接分割，但 Batch 9 代码和训练尚未执行；当前图仍表示仓库中已实现的历史架构，不能把规划中的新模型标成 implemented 或 verified。
+本页是 GPT、Controller、Executor、Mapper 和 Planner 读取当前架构状态的根入口。当前正式主线已经从旧 SRR/BR2 anchor correction 切换为直接分割并完成 Batch 9 两个 seed 的固定预算训练/评价；结果没有形成可用科学信号，不能 promotion、upload、扩 fold 或授权 Batch10。
 
 ## 当前判断
 
 ```text
 Batch7: 操作完成，BR2/SIP机制闭环不完整
 Batch8: 未执行，已被方法重选降级为历史诊断合同
-Batch9: 唯一正式Controller入口
+Batch9: 已完成操作闭环，终态为 BATCH9_MAINLINE_NO_USABLE_SIGNAL_RETURN_TO_PLANNER
 旧完整SRR: 历史实现，不进入Batch9 forward
 nnU-Net: 评价基线，不进入Batch9模型forward
 ```
@@ -89,14 +89,16 @@ prompts/tasks/20260722_care_myops_batch9_reliable_label_distillation_executor_pl
 results/20260722_care_myops_batch9_reliable_label_distillation/
 ```
 
-## 规划中的新模型
+## Batch 9 已实现/已评价的新模型
 
 ```text
 src/care_myocardium/models/care_mm_reliable_distill.py
 CAREMMReliableDistillResEnc
 ```
 
-数据流：
+运行证据：`results/20260722_care_myops_batch9_reliable_label_distillation/strict_validator_report.json` 为 PASS；`completion_check.md` 返回 no-usable-signal。
+
+数据流:
 
 ```text
 [LGE,T2,C0] + availability

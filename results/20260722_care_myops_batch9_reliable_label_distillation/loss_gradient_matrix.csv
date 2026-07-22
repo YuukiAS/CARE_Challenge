@@ -1,0 +1,9 @@
+authorized_parameter_grad_abs_sum,declared_weight,in_total_loss,loss_name,status
+487.05960090233197,1.0,True,loss_anatomy_ce_dice,PASS
+8583004.206635762,1.0,True,loss_scar_final_margin_bce_dice,PASS
+759475.3229845959,1.0,True,loss_edema_final_margin_bce_dice_reliable_only,PASS
+481.9541294623277,0.5,True,loss_final_six_class_reliable,PASS
+3787095.7599444436,0.1,True,loss_moddrop_consistency,PASS
+114.11793153975128,0.5,True,loss_distill_logits,PASS
+10196895.323266927,0.1,True,loss_distill_feature,PASS
+108.63902873320848,0.1,True,loss_distill_anatomy,PASS

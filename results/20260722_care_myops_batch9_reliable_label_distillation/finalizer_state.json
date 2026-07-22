@@ -1,0 +1,11 @@
+{
+  "aggregation_complete": true,
+  "all_training_receipts_present": true,
+  "schema_version": 1,
+  "status": "READY_FOR_VALIDATION",
+  "terminal_token_candidates": [
+    "BATCH9_RELIABLE_DISTILL_RETAIN_PENDING_PLANNER",
+    "BATCH9_DIRECT_RESENC_ONLY_PENDING_PLANNER",
+    "BATCH9_MAINLINE_NO_USABLE_SIGNAL_RETURN_TO_PLANNER"
+  ]
+}

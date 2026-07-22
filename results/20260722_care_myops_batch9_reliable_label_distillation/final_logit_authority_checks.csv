@@ -1,0 +1,3 @@
+check,edema_margin,evidence,scar_margin,status
+scar_edema_losses_use_final_margin,class4_minus_logsumexp_classes0_1_2_3_5,,class5_minus_logsumexp_classes0_to4,PASS
+no_logits_mean_gradient_proxy,,loss_gradient_matrix uses named runtime losses,,PASS

@@ -1,0 +1,7 @@
+{
+  "checkpoint_path": "results/20260722_care_myops_batch9_reliable_label_distillation/runtime/preflight/checkpoint_roundtrip.pt",
+  "max_abs_delta": 0.0,
+  "schema_version": 1,
+  "status": "PASS",
+  "threshold": 1e-06
+}

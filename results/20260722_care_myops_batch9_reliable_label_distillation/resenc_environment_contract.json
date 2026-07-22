@@ -1,0 +1,116 @@
+{
+  "ResidualEncoderUNet_import_path": "dynamic_network_architectures.architectures.unet.ResidualEncoderUNet",
+  "center_enters_network": false,
+  "cuda_available": false,
+  "dataset501_existing_preprocessed_plans": "nnUNetPlans",
+  "dynamic_network_architectures_file": "/users/a/e/aereinh/CARE/envs/env_CARE/lib/python3.12/site-packages/dynamic_network_architectures/__init__.py",
+  "inventory_status": {
+    "fold": 0,
+    "natural_availability_source": "data/CARE_Challenge/MyoPS_train center/case modality files",
+    "no_t2_edema_reliable_count": 0,
+    "schema_version": 1,
+    "status": "PASS",
+    "total_count": 220,
+    "train_count": 176,
+    "validation_count": 44
+  },
+  "kernel_sizes": [
+    [
+      1,
+      3,
+      3
+    ],
+    [
+      3,
+      3,
+      3
+    ],
+    [
+      3,
+      3,
+      3
+    ],
+    [
+      3,
+      3,
+      3
+    ],
+    [
+      3,
+      3,
+      3
+    ],
+    [
+      3,
+      3,
+      3
+    ],
+    [
+      3,
+      3,
+      3
+    ]
+  ],
+  "nnunet_reference_patch_size": [
+    20,
+    256,
+    256
+  ],
+  "nnunetv2_file": "/users/a/e/aereinh/CARE/envs/env_CARE/lib/python3.12/site-packages/nnunetv2/__init__.py",
+  "parameter_count": 140702398,
+  "patch_size_training_default": [
+    20,
+    128,
+    128
+  ],
+  "plans_identifier": "nnUNetResEncUNetMPlans",
+  "schema_version": 1,
+  "stage_channels": [
+    32,
+    64,
+    128,
+    256,
+    320,
+    320,
+    320
+  ],
+  "status": "PASS",
+  "strides": [
+    [
+      1,
+      1,
+      1
+    ],
+    [
+      1,
+      2,
+      2
+    ],
+    [
+      2,
+      2,
+      2
+    ],
+    [
+      2,
+      2,
+      2
+    ],
+    [
+      1,
+      2,
+      2
+    ],
+    [
+      1,
+      2,
+      2
+    ],
+    [
+      1,
+      2,
+      2
+    ]
+  ],
+  "torch_version": "2.11.0+cu130"
+}

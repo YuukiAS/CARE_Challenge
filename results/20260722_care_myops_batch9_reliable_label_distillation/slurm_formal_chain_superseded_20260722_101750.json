@@ -1,0 +1,24 @@
+{
+  "finalizer_afterany": "60003680",
+  "finalizer_dependency": "afterany over all formal jobs",
+  "initial_preflight_dependency": "afterok:60003112",
+  "schema_version": 1,
+  "seed20260723": {
+    "direct": "60003672",
+    "moddrop_control": "60003674",
+    "reliable_distill": "60003675",
+    "seed": "20260723",
+    "teacher": "60003673"
+  },
+  "seed20260724": {
+    "direct": "60003676",
+    "moddrop_control": "60003678",
+    "reliable_distill": "60003679",
+    "seed": "20260724",
+    "teacher": "60003677"
+  },
+  "status": "SUBMITTED_FORMAL_CHAIN",
+  "superseded_at": "20260722_101750",
+  "superseded_reason": "user_authorized_after_a100_preflight_pending_over_one_hour; keep Batch9 seeds/model/loss/budget/data unchanged",
+  "training_dependencies": "afterok within seed"
+}

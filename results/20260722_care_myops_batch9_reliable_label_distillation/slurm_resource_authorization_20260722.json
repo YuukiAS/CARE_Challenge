@@ -1,0 +1,24 @@
+{
+  "canceled_pending_jobs": [
+    "60003112",
+    "60003672",
+    "60003673",
+    "60003674",
+    "60003675",
+    "60003676",
+    "60003677",
+    "60003678",
+    "60003679",
+    "60003680"
+  ],
+  "recorded_at": "2026-07-22T10:17:22",
+  "schema_version": 1,
+  "unchanged_contract": [
+    "two seeds 20260723 and 20260724",
+    "500+100 epoch budget",
+    "125000/25000 optimizer steps",
+    "official ResidualEncoderUNet M-level backbone",
+    "Batch9 direct/distill scope only"
+  ],
+  "user_authorization": "For the rest of Batch9, jobs pending too long may switch partition or start race; current a100 pending path may run temporarily on htzhulab."
+}

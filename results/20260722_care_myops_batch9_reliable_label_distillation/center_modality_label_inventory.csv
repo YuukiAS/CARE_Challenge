@@ -1,0 +1,15 @@
+split,center,modality_group,case_count,scar_positive_cases,edema_positive_cases,edema_reliable_cases,no_t2_cases
+train,CenterA,LGE-only,64,64,0,0,64
+val,CenterA,LGE-only,17,17,0,0,17
+train,CenterB,C0+LGE+T2,28,28,28,28,0
+val,CenterB,C0+LGE+T2,7,7,7,7,0
+train,CenterC,C0+LGE+T2,36,35,36,36,0
+val,CenterC,C0+LGE+T2,9,9,9,9,0
+train,CenterE,C0+LGE,6,4,0,0,6
+val,CenterE,C0+LGE,1,1,0,0,1
+val,CenterF,C0+LGE,2,2,0,0,2
+train,CenterF,C0+LGE,7,6,0,0,7
+train,CenterG,C0+LGE,7,5,0,0,7
+val,CenterG,C0+LGE,1,0,0,0,1
+train,CenterH,LGE-only,28,27,0,0,28
+val,CenterH,LGE-only,7,7,0,0,7
