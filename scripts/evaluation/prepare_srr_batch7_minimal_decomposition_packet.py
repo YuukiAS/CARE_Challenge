@@ -620,6 +620,8 @@ def write_result_markdown() -> None:
         "- `jobs/srr_production/run_myops_batch7_minimal_decomposition_htzhulab.sh`",
         "- `jobs/srr_production/run_myops_batch7_minimal_decomposition_a100.sh`",
         "- `scripts/evaluation/calibrate_srr_batch7_sip_weight.py`",
+        "- `scripts/evaluation/aggregate_srr_batch7_minimal_decomposition.py`",
+        "- `scripts/evaluation/validate_srr_batch7_minimal_decomposition_packet.py`",
         "",
         "## 当前硬门状态",
         "",
@@ -629,12 +631,14 @@ def write_result_markdown() -> None:
         "- no-SIP/SIP step50 shared-state driver: implemented, print-contract reaches SIP calibration gate",
         "- SIP train-only calibration: implemented as warmup-checkpoint backward script; runtime PASS rows pending Slurm execution",
         "- formal Slurm training: NOT_SUBMITTED",
+        "- post-runtime aggregation: implemented; intentionally fails if required variant summaries/eval artifacts are missing",
         "",
         "## 验证",
         "",
         "- `python -m pytest -q tests/srr_production/test_myops_batch7_minimal_decomposition.py` -> 17 passed",
         "- `python scripts/srr_production/audit_formal_entrypoints.py --strict` -> failure_count 0",
         "- `python scripts/training/run_srr_batch7_minimal_decomposition.py --pathology scar --print-contract` -> exit 0, prints calibration command and all branch contracts",
+        "- `python scripts/evaluation/validate_srr_batch7_minimal_decomposition_packet.py --preflight` -> exit 0; final mode intentionally fails until six 400-step runs and aggregation finish",
         "",
         "## 未完成事项",
         "",
@@ -696,6 +700,9 @@ def main() -> int:
         "- `scripts/training/run_srr_batch7_minimal_decomposition.py`: thin orchestration driver for minimal/warmup/no-SIP/SIP branch execution.",
         "- `jobs/srr_production/run_myops_batch7_minimal_decomposition_{htzhulab,a100}.sh`: Slurm entrypoints for pathology arms.",
         "- `scripts/evaluation/calibrate_srr_batch7_sip_weight.py`: warmup-checkpoint SIP lambda calibration helper.",
+        "- `scripts/evaluation/aggregate_srr_batch7_minimal_decomposition.py`: post-runtime aggregator for six matched 400-step runs and 44-case step200/400 metrics.",
+        "- `scripts/evaluation/validate_srr_batch7_minimal_decomposition_packet.py`: fail-closed preflight/final validator with known-bad support.",
+        "- `slurm_attempts.csv`: Slurm routing ledger; pending/preflight rows are monitor-only and never completion evidence.",
     ]
     (RESULT_ROOT / "MANIFEST.md").write_text("\n".join(manifest) + "\n", encoding="utf-8")
     return 0

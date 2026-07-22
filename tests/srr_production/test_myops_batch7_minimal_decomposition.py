@@ -1,11 +1,18 @@
 from __future__ import annotations
 
+import csv
+import shutil
 from types import SimpleNamespace
 
 import numpy as np
 import torch
 import torch.nn.functional as F
+import yaml
 
+from scripts.evaluation.validate_srr_batch7_minimal_decomposition_packet import (
+    REPO_ROOT,
+    validate_packet,
+)
 from scripts.training.run_srr_propref_myops_fold0 import (
     AnchoredCaseData,
     advance_batch7_sampler_rng,
@@ -30,6 +37,20 @@ from src.care_myocardium.models.srr_propref import (
     SRRProposeRefineMyoPS,
 )
 from scripts.evaluation.prepare_srr_batch7_minimal_decomposition_packet import validate_resolved_loss_rows
+
+
+BATCH7_CONFIG_PATH = REPO_ROOT / "configs/srr_production/myops_batch7_minimal_decomposition.yaml"
+BATCH7_RESULT_ROOT = REPO_ROOT / "results/20260722_srr_batch7_minimal_pathology_decomposition"
+
+
+def _batch7_cfg() -> dict:
+    return yaml.safe_load(BATCH7_CONFIG_PATH.read_text(encoding="utf-8"))
+
+
+def _copy_batch7_packet(tmp_path):
+    packet = tmp_path / "packet"
+    shutil.copytree(BATCH7_RESULT_ROOT, packet)
+    return packet
 
 
 def _fake_anchored_case(
@@ -505,3 +526,41 @@ def test_resume_replay_preserves_source_balanced_step_51_case_and_patch() -> Non
     assert resumed_manifest["patch_center_z"] == full_rows[-1]["patch_center_z"]
     assert resumed_manifest["patch_center_y"] == full_rows[-1]["patch_center_y"]
     assert resumed_manifest["patch_center_x"] == full_rows[-1]["patch_center_x"]
+
+
+def test_minimal_decomposition_validator_accepts_static_preflight_packet() -> None:
+    errors = validate_packet(BATCH7_RESULT_ROOT, _batch7_cfg(), final=False)
+
+    assert errors == []
+
+
+def test_minimal_decomposition_validator_rejects_static_packet_as_final_completion() -> None:
+    errors = validate_packet(BATCH7_RESULT_ROOT, _batch7_cfg(), final=True)
+
+    assert any(error.startswith("missing_or_empty:scar_casewise_metrics.csv") for error in errors)
+    assert not any(error == "known_bad_packet_not_rejected" for error in errors)
+
+
+def test_minimal_decomposition_validator_rejects_known_bad_source_and_loss(tmp_path) -> None:
+    packet = _copy_batch7_packet(tmp_path)
+    inventory_path = packet / "center_modality_inventory.csv"
+    rows = list(csv.DictReader(inventory_path.open(newline="", encoding="utf-8")))
+    rows[0]["source_semantics"] = "availability_pattern"
+    with inventory_path.open("w", newline="", encoding="utf-8") as handle:
+        writer = csv.DictWriter(handle, fieldnames=list(rows[0]))
+        writer.writeheader()
+        writer.writerows(rows)
+
+    loss_path = packet / "resolved_stage_loss_weights.csv"
+    loss_rows = list(csv.DictReader(loss_path.open(newline="", encoding="utf-8")))
+    loss_rows[0]["loss_name"] = "loss_pattern_sip_integrativeness"
+    loss_rows[0]["resolved_weight"] = "0.1"
+    with loss_path.open("w", newline="", encoding="utf-8") as handle:
+        writer = csv.DictWriter(handle, fieldnames=list(loss_rows[0]))
+        writer.writeheader()
+        writer.writerows(loss_rows)
+
+    errors = validate_packet(packet, _batch7_cfg(), final=False)
+
+    assert any(error.startswith("center_source_not_metadata_center") for error in errors)
+    assert any(error.startswith("legacy_sip_or_dictionary_nonzero") for error in errors)

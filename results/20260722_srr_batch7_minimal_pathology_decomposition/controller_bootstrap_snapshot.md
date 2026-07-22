@@ -2,11 +2,15 @@
 
 task_key: 20260722_srr_batch7_minimal_pathology_decomposition
 role: executor_only
-git_head: d607315d9cacb131e1ebffd80a0d6b579b91845c
-git_status: `## main...origin/main [ahead 1]
+git_head: b55c193bbb00af903338bcd9a66037243539647b
+git_status: `## main...origin/main
+ M results/20260722_srr_batch7_minimal_pathology_decomposition/MANIFEST.md
+ M results/20260722_srr_batch7_minimal_pathology_decomposition/controller_bootstrap_snapshot.md
+ M results/20260722_srr_batch7_minimal_pathology_decomposition/result.md
  M scripts/evaluation/prepare_srr_batch7_minimal_decomposition_packet.py
- M scripts/training/run_srr_batch7_minimal_decomposition.py
-?? scripts/evaluation/calibrate_srr_batch7_sip_weight.py`
+ M tests/srr_production/test_myops_batch7_minimal_decomposition.py
+?? scripts/evaluation/aggregate_srr_batch7_minimal_decomposition.py
+?? scripts/evaluation/validate_srr_batch7_minimal_decomposition_packet.py`
 source_checkpoint_path: `results/20260721_srr_batch7_upstream_candidate_quality/runtime/attempts/batch7_formal300_htzhulab_59789651/variants/batch7_formal300_htzhulab_59789651/checkpoints/fold_0/propref_config/checkpoint_validation_step_300.pt`
 source_checkpoint_sha256: `d34ad65890cbb6a12aac3fc35bcab71709d680bff5a3aae2d93e010db1cc0e0d`
 expected_checkpoint_sha256: `d34ad65890cbb6a12aac3fc35bcab71709d680bff5a3aae2d93e010db1cc0e0d`

@@ -15,4 +15,6 @@ task: `prompts/tasks/20260722_srr_batch7_minimal_pathology_decomposition_control
 - `scripts/training/run_srr_batch7_minimal_decomposition.py`: thin orchestration driver for minimal/warmup/no-SIP/SIP branch execution.
 - `jobs/srr_production/run_myops_batch7_minimal_decomposition_{htzhulab,a100}.sh`: Slurm entrypoints for pathology arms.
 - `scripts/evaluation/calibrate_srr_batch7_sip_weight.py`: warmup-checkpoint SIP lambda calibration helper.
-- `slurm_attempts.csv`: pending preflight mirror jobs; monitor-only, not completion evidence.
+- `scripts/evaluation/aggregate_srr_batch7_minimal_decomposition.py`: post-runtime aggregator for six matched 400-step runs and 44-case step200/400 metrics.
+- `scripts/evaluation/validate_srr_batch7_minimal_decomposition_packet.py`: fail-closed preflight/final validator with known-bad support.
+- `slurm_attempts.csv`: Slurm routing ledger; pending/preflight rows are monitor-only and never completion evidence.

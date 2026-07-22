@@ -17,6 +17,8 @@ SIP 权重校准脚本已补上：正式 driver 会在 BR2 warmup 第50步 check
 - `jobs/srr_production/run_myops_batch7_minimal_decomposition_htzhulab.sh`
 - `jobs/srr_production/run_myops_batch7_minimal_decomposition_a100.sh`
 - `scripts/evaluation/calibrate_srr_batch7_sip_weight.py`
+- `scripts/evaluation/aggregate_srr_batch7_minimal_decomposition.py`
+- `scripts/evaluation/validate_srr_batch7_minimal_decomposition_packet.py`
 
 ## 当前硬门状态
 
@@ -26,12 +28,14 @@ SIP 权重校准脚本已补上：正式 driver 会在 BR2 warmup 第50步 check
 - no-SIP/SIP step50 shared-state driver: implemented, print-contract reaches SIP calibration gate
 - SIP train-only calibration: implemented as warmup-checkpoint backward script; runtime PASS rows pending Slurm execution
 - formal Slurm training: NOT_SUBMITTED
+- post-runtime aggregation: implemented; intentionally fails if required variant summaries/eval artifacts are missing
 
 ## 验证
 
 - `python -m pytest -q tests/srr_production/test_myops_batch7_minimal_decomposition.py` -> 17 passed
 - `python scripts/srr_production/audit_formal_entrypoints.py --strict` -> failure_count 0
 - `python scripts/training/run_srr_batch7_minimal_decomposition.py --pathology scar --print-contract` -> exit 0, prints calibration command and all branch contracts
+- `python scripts/evaluation/validate_srr_batch7_minimal_decomposition_packet.py --preflight` -> exit 0; final mode intentionally fails until six 400-step runs and aggregation finish
 
 ## 未完成事项
 
@@ -39,9 +43,3 @@ SIP 权重校准脚本已补上：正式 driver 会在 BR2 warmup 第50步 check
 - Run scar/edema matched Slurm jobs through terminal accounting.
 - Aggregate all 44-case metrics at step 200/400 and apply complete-trimodal/worst-center gates.
 - Run strict validator/known-bad, mapper final, wiki/CURRENT update, and final local commit.
-
-## Slurm monitor state
-
-- scar GPU preflight htzhulab job `59977481`: pending monitor only, formal_training_credit=0.
-- scar GPU preflight a100 mirror job `59979732`: pending monitor only, formal_training_credit=0.
-- No formal 400-step Batch7 training has started.
