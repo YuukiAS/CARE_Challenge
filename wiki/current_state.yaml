@@ -1,60 +1,74 @@
-current_milestone_id: Batch9_reliable_label_distillation_terminal_no_usable_signal
-current_task_key: 20260722_care_myops_batch9_reliable_label_distillation
-current_plan_path: docs/plans/laneB_round04_active_srr_batch9_reliable_label_distillation_execution.md
-current_controller_path: prompts/tasks/20260722_care_myops_batch9_reliable_label_distillation_controller.md
-current_config_path: configs/care_mm/batch9_reliable_label_distillation.yaml
-current_executor_plan_path: prompts/tasks/20260722_care_myops_batch9_reliable_label_distillation_executor_plan.yaml
-current_planner_audit_path: results/srr_production/code_maturity/batch9_reliable_label_distillation_planner_synthesis_20260722.md
-current_result_root: results/20260722_care_myops_batch9_reliable_label_distillation
+current_milestone_id: Batch9_exposed_issues_repair_ready
+current_task_key: 20260723_care_myops_batch9_exposed_issues_repair
+current_plan_path: results/srr_production/code_maturity/batch9_exposed_issues_repair_planner_decision_20260723.md
+current_controller_path: prompts/tasks/20260723_care_myops_batch9_exposed_issues_repair_controller.md
+current_config_path: configs/care_mm/batch9_exposed_issues_repair.yaml
+current_executor_plan_path: prompts/tasks/20260723_care_myops_batch9_exposed_issues_repair_executor_plan.yaml
+current_planner_audit_path: results/srr_production/code_maturity/batch9_exposed_issues_repair_planner_decision_20260723.md
+current_result_root: results/20260723_care_myops_batch9_exposed_issues_repair
 current_review_path: null
 current_review_token: NOT_REVIEWED_NOT_REQUIRED
 controller_bind_latest_main: true
 architecture_path: wiki/architecture.yaml
 component_table_path: wiki/COMPONENTS.csv
-wiki_fingerprint_status: BATCH9_TERMINAL_NO_USABLE_SIGNAL_FINGERPRINTED
-updated_at: '2026-07-22'
+wiki_fingerprint_status: BATCH9_REPAIR_PLANNED_ARCHITECTURE_UNCHANGED
+updated_at: '2026-07-23'
 
-batch9_reliable_label_distillation:
-  status: COMPLETE_NO_USABLE_SIGNAL_RETURN_TO_PLANNER
+batch9_original:
+  status: COMPLETE_WITH_EXPOSED_IMPLEMENTATION_DEFECTS
+  task_key: 20260722_care_myops_batch9_reliable_label_distillation
+  result_root: results/20260722_care_myops_batch9_reliable_label_distillation
   terminal_token: BATCH9_MAINLINE_NO_USABLE_SIGNAL_RETURN_TO_PLANNER
-  controller_verification_decision: VERIFIED_COMPLETE
-  strict_validator_status: PASS
+  operational_completion: true
+  clean_scientific_negative: false
+  exposed_defects:
+    - loss_divided_by_case_count_not_valid_voxel_count
+    - constant_high_learning_rate_continuation
+    - fixed_class_priority_sampler
+    - no_t2_minus20_not_hard_decode_block
+    - missing_periodic_full_validation_and_best_checkpoint_selection
+    - self_reported_known_bad_receipts
+    - cross_seed_average_masked_seed_failure
+    - hardcoded_terminal_receipts
+
+batch9_exposed_issues_repair:
+  status: READY_FOR_CONTROLLER
+  architecture_change: false
   model_file: src/care_myocardium/models/care_mm_reliable_distill.py
   model_class: CAREMMReliableDistillResEnc
-  backbone: nnUNet_v2_ResidualEncoderUNet_M_level
-  parameter_count: 140702398
-  external_pretrained_weights: FORBIDDEN
+  nnunet_anchor_or_logits: FORBIDDEN
+  baseline_fallback: FORBIDDEN
   old_srr_forward_reuse: FORBIDDEN
+  external_pretrained_weights: FORBIDDEN
   center_enters_network: false
-  no_t2_edema_supervision: false
+  required_repairs:
+    loss_normalization: valid_voxel_count
+    direct_lr: polynomial_decay_from_0.01
+    continuation_lr: polynomial_decay_from_0.001
+    sampler: balanced_scar_edema_anatomy_background
+    no_t2_decode: hard_mask_class4_before_argmax
+    validation_interval_epochs: 25
+    checkpoint_selection: reload_selected_checkpoint
+    known_bad: real_error_injection
+    decision: per_seed_fail_closed
+    finalizer: runtime_derived_receipts
   seeds: [20260723, 20260724]
-  completed_stages:
-    student_direct_reliable: {epochs: 500, optimizer_steps: 125000}
-    teacher_full_view: {epochs: 100, optimizer_steps: 25000, warm_start: same_seed_direct_epoch500}
-    student_moddrop_control: {epochs: 100, optimizer_steps: 25000}
-    student_reliable_distill: {epochs: 100, optimizer_steps: 25000}
-  resource_override:
-    user_authorized_partition_switch_or_race_for_long_pending: true
-    seed20260724_temporarily_ran_on_htzhulab: true
-    a100_race_mirror_submitted_and_cancelled_loser: true
-  scientific_conclusion:
-    direct_complete_trimodal_delta_vs_standard_scar: -0.3116789519910585
-    direct_complete_trimodal_delta_vs_standard_edema: -0.1513070896576621
-    distill_minus_moddrop_complete_trimodal_scar: 0.04545157007673445
-    distill_minus_moddrop_complete_trimodal_edema: 0.019905346666823698
-    interpretation: distill improved over a weak moddrop continuation but direct mainline underperformed standard nnU-Net and GT-positive empty predictions remain; no usable signal.
-  evidence:
-    completion_check: results/20260722_care_myops_batch9_reliable_label_distillation/completion_check.md
-    controller_report: results/20260722_care_myops_batch9_reliable_label_distillation/controller_report.md
-    strict_validator: results/20260722_care_myops_batch9_reliable_label_distillation/strict_validator_report.json
-    decision_matrix: results/20260722_care_myops_batch9_reliable_label_distillation/decision_matrix.csv
-    fingerprint: results/20260722_care_myops_batch9_reliable_label_distillation/batch9_code_evidence_fingerprint.json
+  direct_budget: {epochs: 500, optimizer_steps: 125000}
+  continuation_budget: {epochs: 100, optimizer_steps: 25000, gated: true}
+  continuation_gate:
+    zero_gt_positive_empty_predictions: true
+    no_t2_edema_voxels_exact_zero: true
+    each_pathology_improves_over_original_batch9_same_seed: true
+    cross_seed_average_cannot_override_seed_failure: true
 
-unauthorized_after_batch9:
+unauthorized_during_repair:
   batch8: false
   batch10: false
+  nnunet_anchor_or_fallback: false
+  old_srr: false
   br2_lite: false
   sip_training: false
+  prototype_memory: false
   proposal_refiner_training: false
   cine_training: false
   fold_expansion: false
