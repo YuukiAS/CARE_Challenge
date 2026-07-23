@@ -7,6 +7,7 @@ import argparse
 import csv
 import json
 import math
+import os
 import sys
 from pathlib import Path
 from typing import Any
@@ -25,7 +26,6 @@ from scripts.evaluation.evaluate_predictions import dice_per_class, hd95_class  
 from src.care_myocardium.data.care_mm_batch9 import (  # noqa: E402
     PREPROCESSED,
     RAW_LABEL_DIR,
-    STANDARD_NNUNET_VAL,
     build_case_records,
     load_fold_cases,
     sha256_file,
@@ -35,11 +35,12 @@ from src.care_myocardium.data.care_mm_batch9 import (  # noqa: E402
 from src.care_myocardium.models.care_mm_reliable_distill import (  # noqa: E402
     CAREMMReliableDistillResEnc,
     crop_from_pad,
+    decode_six_class_logits,
     pad_to_stride,
 )
 
 
-TASK_KEY = "20260722_care_myops_batch9_reliable_label_distillation"
+TASK_KEY = os.environ.get("CARE_MM_TASK_KEY", "20260723_care_myops_batch9_exposed_issues_repair")
 RESULT_ROOT = REPO_ROOT / "results" / TASK_KEY
 LABELS = {"edema": 4, "scar": 5}
 
@@ -123,7 +124,7 @@ def predict_case(model: CAREMMReliableDistillResEnc, case_id: str, availability:
     with torch.no_grad():
         logits = model(x, avail)["six_class_logits"]
         logits = crop_from_pad(logits, added)
-        pred = logits.argmax(1)[0].detach().cpu().numpy().astype(np.uint8)
+        pred = decode_six_class_logits(logits, avail, no_t2_edema_hard_mask=True)[0].detach().cpu().numpy().astype(np.uint8)
     return pred
 
 
@@ -138,7 +139,6 @@ def evaluate(args: argparse.Namespace) -> dict[str, Any]:
     _train, val = load_fold_cases(0)
     pred_dir = REPO_ROOT / args.prediction_dir
     pred_dir.mkdir(parents=True, exist_ok=True)
-    baseline_dir = STANDARD_NNUNET_VAL
     case_rows: list[dict[str, Any]] = []
     help_rows: list[dict[str, Any]] = []
     manifest_rows: list[dict[str, Any]] = []
@@ -152,7 +152,6 @@ def evaluate(args: argparse.Namespace) -> dict[str, Any]:
         out_img.CopyInformation(ref_img)
         out_path = pred_dir / f"{case_id}.nii.gz"
         sitk.WriteImage(out_img, str(out_path))
-        _base_img, base = read_label(baseline_dir / f"{case_id}.nii.gz", gt_img)
         spacing = tuple(float(x) for x in gt_img.GetSpacing()[::-1])
         myocardium = (gt >= 1) & (gt <= 5)
         manifest_rows.append(
@@ -164,11 +163,14 @@ def evaluate(args: argparse.Namespace) -> dict[str, Any]:
                 "checkpoint_sha256": sha256_file(ckpt_path),
                 "center": record.center,
                 "modality_group": record.modality_group,
+                "variant": args.variant,
+                "seed": args.seed,
+                "source_prefix": args.prefix,
             }
         )
         for pathology, class_id in LABELS.items():
             dice = dice_per_class(pred, gt, class_id, skip_if_gt_empty=True)
-            base_dice = dice_per_class(base, gt, class_id, skip_if_gt_empty=True)
+            base_dice = None
             prec, rec = precision_recall(pred, gt, class_id)
             row = {
                 "variant": args.variant,
@@ -178,11 +180,11 @@ def evaluate(args: argparse.Namespace) -> dict[str, Any]:
                 "class_id": class_id,
                 "dice": dice,
                 "baseline_dice": base_dice,
-                "dice_delta_vs_standard_nnunet": None if dice is None or base_dice is None else float(dice - base_dice),
+                "dice_delta_vs_forbidden_standard_nnunet": None,
                 "hd95": hd95_class(pred, gt, class_id, spacing),
                 "precision": prec,
                 "recall": rec,
-                "changed_voxels_vs_standard_nnunet": int(np.count_nonzero((pred == class_id) != (base == class_id))),
+                "changed_voxels_vs_forbidden_standard_nnunet": None,
                 "gt_positive": int(bool(np.any(gt == class_id))),
                 "prediction_positive": int(bool(np.any(pred == class_id))),
                 "center": record.center,
@@ -190,6 +192,8 @@ def evaluate(args: argparse.Namespace) -> dict[str, Any]:
                 "complete_trimodal": int(record.t2_present and record.c0_present),
                 "scar_positive": int(record.scar_positive),
                 "edema_positive": int(record.edema_positive),
+                "no_t2_edema_predicted_voxels": int(np.count_nonzero(pred == 4)) if not record.t2_present else 0,
+                "source_prefix": args.prefix,
             }
             row.update(component_stats(pred, gt, myocardium, class_id, spacing))
             case_rows.append(row)
@@ -199,9 +203,9 @@ def evaluate(args: argparse.Namespace) -> dict[str, Any]:
                     "seed": args.seed,
                     "case_id": case_id,
                     "pathology": pathology,
-                    "dice_delta_vs_standard_nnunet": row["dice_delta_vs_standard_nnunet"],
-                    "changed_voxels_vs_standard_nnunet": row["changed_voxels_vs_standard_nnunet"],
-                    "help_harm": "identity" if row["changed_voxels_vs_standard_nnunet"] == 0 else ("help" if (row["dice_delta_vs_standard_nnunet"] or 0) > 0 else "harm_or_neutral"),
+                    "dice_delta_vs_forbidden_standard_nnunet": row["dice_delta_vs_forbidden_standard_nnunet"],
+                    "changed_voxels_vs_forbidden_standard_nnunet": row["changed_voxels_vs_forbidden_standard_nnunet"],
+                    "help_harm": "not_computed_standard_nnunet_predictions_forbidden",
                 }
             )
     subgroup_defs = {
@@ -214,8 +218,6 @@ def evaluate(args: argparse.Namespace) -> dict[str, Any]:
         "lge_c0": lambda r: r["modality_group"] == "C0+LGE",
         "small_scar": lambda r: r["pathology"] == "scar" and bool(r["gt_positive"]) and float(r["gt_volume_mm3"]) < 500,
         "large_scar": lambda r: r["pathology"] == "scar" and bool(r["gt_positive"]) and float(r["gt_volume_mm3"]) >= 500,
-        "low_baseline": lambda r: r["baseline_dice"] is not None and float(r["baseline_dice"]) < 0.5,
-        "high_baseline": lambda r: r["baseline_dice"] is not None and float(r["baseline_dice"]) >= 0.5,
     }
     subgroup_rows: list[dict[str, Any]] = []
     for pathology in LABELS:
@@ -231,10 +233,12 @@ def evaluate(args: argparse.Namespace) -> dict[str, Any]:
                     "case_rows": len(rows_s),
                     "mean_dice": mean(rows_s, "dice"),
                     "mean_baseline_dice": mean(rows_s, "baseline_dice"),
-                    "mean_dice_delta_vs_standard_nnunet": mean(rows_s, "dice_delta_vs_standard_nnunet"),
+                    "standard_nnunet_predictions_loaded": 0,
                     "mean_hd95": mean(rows_s, "hd95"),
                     "mean_remote_fp_volume_mm3": mean(rows_s, "remote_fp_volume_mm3"),
                     "empty_prediction_rate": mean(rows_s, "empty_prediction"),
+                    "no_t2_edema_predicted_voxels": sum(int(r.get("no_t2_edema_predicted_voxels") or 0) for r in rows_s),
+                    "source_prefix": args.prefix,
                 }
             )
     out_dir = REPO_ROOT / args.output_dir
@@ -252,6 +256,7 @@ def evaluate(args: argparse.Namespace) -> dict[str, Any]:
         "checkpoint_reloaded": True,
         "prediction_dir": str(pred_dir.relative_to(REPO_ROOT)),
         "checkpoint": str(ckpt_path.relative_to(REPO_ROOT)),
+        "standard_nnunet_checkpoint_logits_or_predictions_loaded": False,
     }
     write_json(out_dir / f"{args.prefix}_evaluation_receipt.json", receipt)
     print(json.dumps(receipt, indent=2, sort_keys=True))

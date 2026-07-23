@@ -31,19 +31,24 @@ def binary_target(seg: torch.Tensor, class_id: int) -> torch.Tensor:
     return (seg == class_id).float()
 
 
-def masked_mean(values: torch.Tensor, mask: torch.Tensor) -> torch.Tensor:
+def _broadcast_case_mask(mask: torch.Tensor, values: torch.Tensor) -> torch.Tensor:
     mask = mask.to(device=values.device, dtype=values.dtype)
+    if mask.ndim == 1:
+        mask = mask.view(mask.shape[0], *([1] * (values.ndim - 1)))
     while mask.ndim < values.ndim:
-        mask = mask[..., None]
+        mask = mask[:, None]
+    return mask.expand_as(values)
+
+
+def masked_mean(values: torch.Tensor, mask: torch.Tensor) -> torch.Tensor:
+    mask = _broadcast_case_mask(mask, values)
     denom = mask.sum().clamp_min(1.0)
     return (values * mask).sum() / denom
 
 
 def soft_dice_loss_binary(logits: torch.Tensor, target: torch.Tensor, mask: torch.Tensor) -> torch.Tensor:
     probs = torch.sigmoid(logits)
-    mask = mask.to(device=logits.device, dtype=logits.dtype)
-    while mask.ndim < logits.ndim:
-        mask = mask[..., None]
+    mask = _broadcast_case_mask(mask, logits)
     probs = probs * mask
     target = target.to(device=logits.device, dtype=logits.dtype) * mask
     inter = (probs * target).sum(dim=(1, 2, 3, 4))
@@ -66,7 +71,9 @@ def soft_dice_loss_multiclass(logits: torch.Tensor, target: torch.Tensor, case_m
     dims = (0, 2, 3, 4)
     inter = (probs * one_hot).sum(dims)
     denom = probs.sum(dims) + one_hot.sum(dims)
-    return (1.0 - ((2 * inter + 1.0) / (denom + 1.0))).mean()
+    class_start = 1 if logits.shape[1] > 1 else 0
+    dice = (2 * inter[class_start:] + 1.0) / (denom[class_start:] + 1.0)
+    return (1.0 - dice).mean()
 
 
 def ce_dice_anatomy(anatomy_logits: torch.Tensor, seg: torch.Tensor, case_mask: torch.Tensor) -> torch.Tensor:
@@ -198,6 +205,24 @@ def compute_care_mm_loss(
     return total, terms
 
 
+def weighted_loss_report(terms: dict[str, torch.Tensor], weights: dict[str, float]) -> dict[str, float]:
+    report: dict[str, float] = {}
+    total = 0.0
+    for key, term in terms.items():
+        if key == "total_loss":
+            continue
+        raw = float(term.detach().cpu())
+        weight = float(weights.get(key, 0.0))
+        weighted = raw * weight
+        report[f"{key}_raw"] = raw
+        report[f"{key}_weight"] = weight
+        report[f"{key}_weighted"] = weighted
+        total += weighted
+    report["raw_total_loss"] = float(terms["total_loss"].detach().cpu()) if "total_loss" in terms else total
+    report["weighted_terms_sum"] = total
+    return report
+
+
 def runtime_loss_contract(weights: dict[str, float]) -> dict[str, Any]:
     nonzero = {k: float(v) for k, v in sorted(weights.items()) if float(v) != 0.0}
     return {
@@ -206,5 +231,7 @@ def runtime_loss_contract(weights: dict[str, float]) -> dict[str, Any]:
         "pathology_losses_use_composed_final_logit_margins": True,
         "raw_residual_only_pathology_supervision": "forbidden",
         "every_nonzero_loss_in_total": True,
+        "masked_loss_denominator": "valid_voxel_count",
+        "anatomy_dice_excludes_background": True,
         "nonzero_loss_weights": nonzero,
     }

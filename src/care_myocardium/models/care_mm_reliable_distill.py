@@ -17,6 +17,7 @@ class ResEncMConfig:
     feature_channels: int = 32
     stem_channels: int = 8
     no_t2_edema_logit: float = -20.0
+    deep_supervision: bool = False
     n_stages: int = 7
     features_per_stage: tuple[int, ...] = (32, 64, 128, 256, 320, 320, 320)
     kernel_sizes: tuple[tuple[int, int, int], ...] = (
@@ -97,7 +98,7 @@ class CAREMMReliableDistillResEnc(nn.Module):
             dropout_op_kwargs=None,
             nonlin=nn.LeakyReLU,
             nonlin_kwargs={"inplace": True},
-            deep_supervision=False,
+            deep_supervision=bool(c.deep_supervision),
         )
         self.anatomy_head = nn.Conv3d(c.feature_channels, 4, kernel_size=1)
         self.scar_head = nn.Conv3d(c.feature_channels, 1, kernel_size=1)
@@ -125,6 +126,8 @@ class CAREMMReliableDistillResEnc(nn.Module):
         avail_channels = availability.expand(-1, -1, *x.shape[2:]).to(dtype=x.dtype)
         fused = torch.cat([*stem_features, avail_channels], dim=1)
         features = self.feature_backbone(fused)
+        deep_features = list(features) if isinstance(features, (list, tuple)) else []
+        features = deep_features[0] if deep_features else features
         anatomy_logits = self.anatomy_head(features)
         scar_residual = self.scar_head(features)
         edema_residual = self.edema_head(features)
@@ -148,6 +151,24 @@ class CAREMMReliableDistillResEnc(nn.Module):
         }
         if return_features:
             out["features"] = features
+        if deep_features:
+            out["deep_supervision"] = [
+                {
+                    "anatomy_logits": self.anatomy_head(feat),
+                    "scar_residual": self.scar_head(feat),
+                    "edema_residual": self.edema_head(feat),
+                    "features": feat,
+                    "six_class_logits": compose_six_class_logits(
+                        self.anatomy_head(feat),
+                        self.scar_head(feat),
+                        self.edema_head(feat),
+                        availability=availability,
+                        no_t2_edema_logit=self.config.no_t2_edema_logit,
+                        force_no_t2_edema_logit=force_no_t2_edema_logit,
+                    ),
+                }
+                for feat in deep_features[1:]
+            ]
         return out
 
     def contract(self) -> dict[str, Any]:
@@ -165,6 +186,7 @@ class CAREMMReliableDistillResEnc(nn.Module):
             "n_blocks_per_stage": list(c.n_blocks_per_stage),
             "n_conv_per_stage_decoder": list(c.n_conv_per_stage_decoder),
             "feature_channels": c.feature_channels,
+            "deep_supervision": c.deep_supervision,
             "parameter_count": self.parameter_count,
             "center_in_forward_signature": False,
             "forbidden_legacy_components": list(self.forbidden_legacy_components),
@@ -219,6 +241,28 @@ def final_margin_logits(six_class_logits: torch.Tensor) -> dict[str, torch.Tenso
         "scar": six_class_logits[:, 5:6] - scar_negative,
         "edema": six_class_logits[:, 4:5] - edema_negative,
     }
+
+
+
+
+def decode_six_class_logits(
+    six_class_logits: torch.Tensor,
+    availability: torch.Tensor | None = None,
+    *,
+    no_t2_edema_hard_mask: bool = True,
+) -> torch.Tensor:
+    logits = six_class_logits
+    if no_t2_edema_hard_mask and availability is not None:
+        availability = _availability_5d(availability, six_class_logits)
+        no_t2 = availability[:, 1:2] <= 0.5
+        if bool(no_t2.any()):
+            logits = logits.clone()
+            logits[:, 4:5] = torch.where(
+                no_t2,
+                torch.full_like(logits[:, 4:5], -torch.finfo(logits.dtype).max),
+                logits[:, 4:5],
+            )
+    return logits.argmax(1)
 
 
 def pad_to_stride(x: torch.Tensor, divisibility: tuple[int, int, int] = (4, 64, 64)) -> tuple[torch.Tensor, tuple[int, int, int]]:

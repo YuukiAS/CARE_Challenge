@@ -22,12 +22,6 @@ REPO_ROOT = Path(__file__).resolve().parents[3]
 PREPROCESSED = REPO_ROOT / "data/nnUNet/nnUNet_preprocessed/Dataset501_CAREMyoPS/nnUNetPlans_3d_fullres"
 SPLIT_PATH = REPO_ROOT / "data/nnUNet/nnUNet_preprocessed/Dataset501_CAREMyoPS/splits_final.json"
 RAW_LABEL_DIR = REPO_ROOT / "data/nnUNet/nnUNet_raw/Dataset501_CAREMyoPS/labelsTr"
-STANDARD_NNUNET_VAL = (
-    REPO_ROOT
-    / "data/nnUNet/nnUNet_results/Dataset501_CAREMyoPS/nnUNetTrainer_500epochs__nnUNetPlans__3d_fullres/fold_0/validation"
-)
-
-
 @dataclass(frozen=True)
 class CaseRecord:
     case_id: str
@@ -206,6 +200,7 @@ class Batch9PatchSampler:
         seed: int = 0,
         complete_only: bool = False,
         edema_pool_probability: float = 0.5,
+        target_probabilities: dict[str, float] | None = None,
     ) -> None:
         self.records = [r for r in records if r.split == "train"]
         if complete_only:
@@ -215,20 +210,37 @@ class Batch9PatchSampler:
         self.patch_size = patch_size
         self.rng = random.Random(seed)
         self.np_rng = np.random.default_rng(seed)
-        self.edema_pool_probability = float(edema_pool_probability)
         self.by_id = {r.case_id: r for r in self.records}
-        self.center_cases: dict[str, list[CaseRecord]] = {}
-        self.edema_center_cases: dict[str, list[CaseRecord]] = {}
-        for r in self.records:
-            self.center_cases.setdefault(r.center, []).append(r)
-            if r.edema_reliable:
-                self.edema_center_cases.setdefault(r.center, []).append(r)
+        self.target_probabilities = target_probabilities or {
+            "scar": 0.35,
+            "edema_reliable": float(edema_pool_probability),
+            "anatomy": 0.20,
+            "background": 0.10,
+        }
+        self.target_pools: dict[str, list[CaseRecord]] = {
+            "scar": [r for r in self.records if r.scar_reliable and r.scar_positive],
+            "edema_reliable": [r for r in self.records if r.edema_reliable and r.t2_present and r.edema_positive],
+            "anatomy": list(self.records),
+            "background": list(self.records),
+        }
 
-    def sample_record(self) -> CaseRecord:
-        use_edema = bool(self.edema_center_cases) and self.rng.random() < self.edema_pool_probability
-        pool = self.edema_center_cases if use_edema else self.center_cases
-        center = self.rng.choice(sorted(pool))
-        return self.rng.choice(pool[center])
+    def sample_target(self) -> str:
+        available = [(k, float(v)) for k, v in self.target_probabilities.items() if self.target_pools.get(k) and float(v) > 0]
+        if not available:
+            return "anatomy"
+        total = sum(v for _, v in available)
+        draw = self.rng.random() * total
+        running = 0.0
+        for key, prob in available:
+            running += prob
+            if draw <= running:
+                return key
+        return available[-1][0]
+
+    def sample_record(self, target: str | None = None) -> CaseRecord:
+        target = target or self.sample_target()
+        pool = self.target_pools.get(target) or self.records
+        return self.rng.choice(pool)
 
     def load_case(self, case_id: str) -> tuple[np.ndarray, np.ndarray, dict[str, Any]]:
         data = np.asarray(blosc2.open(urlpath=str(PREPROCESSED / f"{case_id}.b2nd"), mode="r", dparams={"nthreads": 1}))
@@ -237,16 +249,22 @@ class Batch9PatchSampler:
             props = pickle.load(f)
         return data, seg[0], props
 
-    def _patch_bounds(self, shape: tuple[int, int, int], props: dict[str, Any]) -> tuple[tuple[int, int], ...]:
-        candidates: list[np.ndarray] = []
-        for key in (4, 5, 1, 2, 3):
+    def _class_location(self, props: dict[str, Any], class_ids: tuple[int, ...]) -> np.ndarray | None:
+        for key in class_ids:
             loc = props.get("class_locations", {}).get(key, [])
             if len(loc):
-                candidates.append(loc[self.np_rng.integers(0, len(loc))][1:])
-                break
-        if candidates:
-            center = candidates[0].astype(int)
-        else:
+                return loc[self.np_rng.integers(0, len(loc))][1:].astype(int)
+        return None
+
+    def _patch_bounds(self, shape: tuple[int, int, int], props: dict[str, Any], target: str = "anatomy") -> tuple[tuple[int, int], ...]:
+        class_ids = {
+            "scar": (5,),
+            "edema_reliable": (4,),
+            "anatomy": (1, 2, 3, 4, 5),
+            "background": (0,),
+        }.get(target, (4, 5, 1, 2, 3))
+        center = self._class_location(props, class_ids)
+        if center is None:
             center = np.array([self.np_rng.integers(0, max(1, s)) for s in shape], dtype=int)
         bounds = []
         for c, size, patch in zip(center, shape, self.patch_size):
@@ -271,9 +289,10 @@ class Batch9PatchSampler:
         records: list[CaseRecord] = []
         forced = list(force_case_ids or [])
         for b in range(batch_size):
-            record = self.by_id[forced[b % len(forced)]] if forced else self.sample_record()
+            target = "forced" if forced else self.sample_target()
+            record = self.by_id[forced[b % len(forced)]] if forced else self.sample_record(target)
             data, seg, props = self.load_case(record.case_id)
-            bounds = self._patch_bounds(tuple(seg.shape), props)
+            bounds = self._patch_bounds(tuple(seg.shape), props, target=target)
             slices = tuple(slice(lo, hi) for lo, hi in bounds)
             x = data[(slice(None), *slices)]
             y = seg[slices]
@@ -304,6 +323,8 @@ class Batch9PatchSampler:
                     "student_availability": "".join(str(int(v)) for v in student),
                     "rng_state": str(matched_seed + step * 1009 + b),
                     "variant": variant,
+                    "sample_target": target,
+                    "patch_bounds": ";".join(f"{lo}:{hi}" for lo, hi in bounds),
                 }
             )
         return (

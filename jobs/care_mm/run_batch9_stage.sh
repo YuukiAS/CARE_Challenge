@@ -5,7 +5,7 @@
 #SBATCH --output=/dev/null
 #SBATCH --error=/dev/null
 #SBATCH --mem=64G
-#SBATCH --time=08:00:00
+#SBATCH --time=12:00:00
 #SBATCH --gres=gpu:1
 #SBATCH --partition=htzhulab
 #SBATCH --qos=gpu_access
@@ -16,9 +16,11 @@ CARE_ROOT="${CARE_ROOT:-/users/a/e/aereinh/CARE}"
 PYTHON="${PYTHON:-${CARE_ROOT}/envs/env_CARE/bin/python}"
 cd "${CARE_ROOT}"
 
-mkdir -p logs/care_myops_batch9_reliable_label_distillation
+export CARE_MM_TASK_KEY="${CARE_MM_TASK_KEY:-20260723_care_myops_batch9_exposed_issues_repair}"
+export CARE_MM_CONFIG_PATH="${CARE_MM_CONFIG_PATH:-configs/care_mm/batch9_exposed_issues_repair.yaml}"
+mkdir -p "logs/${CARE_MM_TASK_KEY}"
 TS="$(date +%Y%m%d_%H%M%S)"
-LOG_FILE="${LOG_FILE:-${CARE_ROOT}/logs/care_myops_batch9_reliable_label_distillation/Batch9Stage_${SLURM_JOB_ID:-local}_${TS}.log}"
+LOG_FILE="${LOG_FILE:-${CARE_ROOT}/logs/${CARE_MM_TASK_KEY}/Batch9Stage_${SLURM_JOB_ID:-local}_${TS}.log}"
 exec > >(tee -a "${LOG_FILE}") 2>&1
 
 echo "care_root=${CARE_ROOT}"
@@ -48,9 +50,9 @@ ARGS=(
   --total-steps "${BATCH9_TOTAL_STEPS}"
   --steps-per-epoch "${BATCH9_STEPS_PER_EPOCH:-250}"
   --batch-size "${BATCH9_BATCH_SIZE:-1}"
-  --patch-size ${BATCH9_PATCH_SIZE:-20 128 128}
   --lr "${BATCH9_LR:-0.01}"
   --device cuda
+  --validation-interval-epochs "${BATCH9_VALIDATION_INTERVAL_EPOCHS:-25}"
   --runtime-root "${BATCH9_RUNTIME_ROOT}"
 )
 
