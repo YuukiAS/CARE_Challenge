@@ -1,4 +1,4 @@
-schema_version: 1
+schema_version: 2
 task_key: 20260723_care_myops_batch9_exposed_issues_repair
 status: READY_FOR_CONTROLLER
 base_task: 20260722_care_myops_batch9_reliable_label_distillation
@@ -6,18 +6,76 @@ result_root: results/20260723_care_myops_batch9_exposed_issues_repair
 
 model:
   class_name: CAREMMReliableDistillResEnc
-  forward_architecture_change: false
+  deployed_forward_contract_unchanged: true
   nnunet_anchor_or_logits: forbidden
+  nnunet_checkpoint_or_prediction: forbidden
   baseline_fallback: forbidden
   old_srr_or_br2_components: forbidden
   external_data_or_weights: forbidden
+
+formal_trainer:
+  file: src/care_myocardium/training/nnUNetTrainerCAREMMReliableDistill.py
+  class_name: nnUNetTrainerCAREMMReliableDistill
+  inherit_nnunet_v2_training_infrastructure: true
+  formal_optimizer_loop_owner: nnUNetTrainerCAREMMReliableDistill
+  old_runner_formal_optimizer_loop: forbidden
+  old_runner_allowed_roles: [orchestration, preflight, evidence_collection]
+  standard_nnunet_model_weights_or_outputs: forbidden
+
+plans:
+  plans_identifier: nnUNetResEncUNetMPlans
+  resolve_with: [PlansManager, ConfigurationManager]
+  configuration: 3d_fullres
+  patch_size: from_resolved_plans
+  kernel_sizes: from_resolved_plans
+  strides: from_resolved_plans
+  features_per_stage: from_resolved_plans
+  deep_supervision_scales: from_resolved_plans
+  hardcoded_architecture_or_patch_fallback: forbidden
+  fail_if_official_resenc_m_plans_unavailable: true
+
+augmentation:
+  source: nnunet_v2_training_transforms
+  required_families:
+    - spatial_rotation_and_scaling
+    - mirroring
+    - gaussian_noise
+    - gaussian_blur
+    - brightness_and_contrast
+    - gamma
+    - low_resolution_simulation
+  transform_config_hash_required: true
+  per_step_augmentation_seed_required: true
+  matched_control_distill_same_parameters: true
+
+deep_supervision:
+  enabled: true
+  use_resolved_decoder_scales: true
+  reliable_masks_applied_at_every_scale: true
+  target_downsampling: nearest_neighbor
+  weight_normalization: sum_to_one
+  inference_uses_highest_resolution_only: true
+  deployed_output_contract_unchanged: true
 
 repairs:
   loss_normalization:
     expand_case_mask_to_loss_tensor: true
     denominator: valid_voxel_count
-    record_raw_and_weighted_terms: true
-    fail_on_nonfinite_or_scale_mismatch: true
+    record_raw_terms: true
+    record_weighted_contributions: true
+    record_per_term_gradient_norms: true
+    fail_on_nonfinite_or_patch_volume_dependence: true
+  anatomy_loss:
+    cross_entropy_includes_background: true
+    dice_excludes_background: true
+  loss_conflict_audit:
+    real_batches: 32
+    cosine_conflict_threshold: -0.25
+    conflict_batch_fraction_threshold: 0.25
+    weighted_gradient_norm_ratio_max: 10.0
+    if_final_six_conflicts_with_scar_or_edema: set_loss_final_six_class_reliable_weight_zero
+    otherwise: retain_declared_weight
+    fail_if_other_conflict_or_domination_persists: true
   optimizer:
     direct:
       type: SGD
@@ -44,6 +102,7 @@ repairs:
       anatomy: 0.20
       background: 0.10
     fixed_class_priority: forbidden
+    probability_absolute_tolerance: 0.02
     manifest_required: true
   no_t2_decode:
     training_supervision: zero
@@ -61,6 +120,36 @@ repairs:
       reject_gt_positive_empty: true
       reject_no_t2_edema_nonzero: true
       reload_selected_checkpoint: true
+  fixed_overfit:
+    patterns: [natural_complete_trimodal, natural_lge_c0, natural_lge_only]
+    fresh_model_per_pattern: true
+    fresh_optimizer_per_pattern: true
+    fresh_scheduler_per_pattern: true
+    formal_direct_loss_optimizer_scheduler_required: true
+    cross_pattern_state_reuse: forbidden
+  full_step_matched_manifest:
+    runtime_row_every_optimizer_step: true
+    tracked_streaming_hash_required: true
+    fields:
+      - step
+      - case_id
+      - patch_bounds
+      - augmentation_seed
+      - augmentation_parameters_hash
+      - student_availability_mask
+      - learning_rate
+      - teacher_checkpoint_sha256
+      - teacher_input_hash
+    mismatch_count_required: 0
+  distillation_coverage:
+    eligible_batches_minimum: 32
+    feature_nonzero_batch_fraction_min: 0.95
+    logits_nonzero_batch_fraction_min: 0.50
+    anatomy_nonzero_batch_fraction_min: 0.50
+    scar_gt_confident_voxel_fraction_min: 0.05
+    edema_gt_confident_voxel_fraction_min: 0.05
+    natural_incomplete_distillation_count_required: 0
+    fail_before_control_distill_if_not_met: true
   validators:
     real_error_injection_required: true
     self_reported_injected_rejected_rows_forbidden: true
@@ -74,7 +163,7 @@ training:
     epochs: 500
     steps_per_epoch: 250
     total_optimizer_steps: 125000
-    patch_size: [20, 128, 128]
+    patch_size: from_resolved_plans
     batch_size: 1
   continuation_gate:
     both_seeds_required: true
@@ -110,6 +199,7 @@ slurm:
 forbidden_actions:
   - Batch10
   - nnunet_anchor_or_prediction_fallback
+  - standard_nnunet_checkpoint_or_logits
   - old_SRR_forward_or_loss
   - BR2_lite
   - SIP
