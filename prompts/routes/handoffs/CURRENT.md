@@ -5,24 +5,26 @@
 ## 当前状态
 
 ```text
-state_id: care_myops_batch9_reliable_label_distillation_terminal_no_usable_signal_20260722
+state_id: care_myops_batch9_exposed_issues_repair_ready_20260723
 round_id: post_round04_main_only
-state_updated_date: 2026-07-22
+state_updated_date: 2026-07-23
 active_development_branch: main
 active_worktree: /users/a/e/aereinh/CARE
 portfolio_mode: SUSPENDED
 route_worktree_development_authorized: false
-single_active_scientific_line: NONE_RETAINED_AFTER_BATCH9_NO_USABLE_SIGNAL
+single_active_scientific_line: CARE_MMRD_BATCH9_EXPOSED_ISSUES_REPAIR
 batch7_operational_status: SIX_MATCHED_RUNS_COMPLETE
 batch7_scientific_packet_status: INCOMPLETE_BR2_SIP_MECHANISM_CLOSURE
 batch8_status: SUPERSEDED_UNEXECUTED_DIAGNOSTIC_CONTRACT
-batch9_status: COMPLETE_NO_USABLE_SIGNAL_RETURN_TO_PLANNER
-next_required_action: PLANNER_REVIEW_BATCH9_NO_USABLE_SIGNAL_PACKET
+batch9_status: COMPLETE_NO_USABLE_SIGNAL_REPAIR_AUTHORIZED
+batch9_repair_status: READY_FOR_CONTROLLER
+next_required_action: RUN_BATCH9_EXPOSED_ISSUES_REPAIR
 controller_is_coordinator: true
 planning_review_required: false
 review_required: false
 batch8_authorized: false
 batch9_authorized: true
+batch9_repair_authorized: true
 batch10_authorized: false
 br2_lite_authorized: false
 sip_training_authorized: false
@@ -32,6 +34,8 @@ cine_training_authorized: false
 validation_upload_authorized: false
 hosted_metric_claim_authorized: false
 route_promotion_authorized: false
+nnunet_anchor_authorized: false
+baseline_fallback_authorized: false
 ```
 
 ## 开发边界
@@ -48,13 +52,43 @@ main
 ## 图视觉门
 
 ```text
-diagram_versions_read: SRR-v2, SRR-v2.5, SRR-v3
+diagram_versions_read: SRR-v2, SRR-v2.5, SRR-v3, CARE-MMRD
 visual_read_status: PASS_PROJECT_BACKGROUND_IMAGES_VISUALLY_READ
 ```
 
-从旧图保留的是科学原则，而不是旧类：模态特异编码、只消费已观测模态、anatomy-first、scar/edema病种分治和小病灶保护。Batch 9 不再实现 prototype/memory/proposal/refiner/gate 长链。
+从旧图保留的是科学原则，而不是旧类：模态特异编码、只消费已观测模态、anatomy-first、scar/edema病种分治和小病灶保护。Batch 9 repair 保持 CARE-MMRD 直接分割架构，不恢复 prototype/memory/proposal/refiner/gate 长链，也不接入 nnU-Net anchor。
 
-## 方法重选结论
+## 当前唯一授权任务：Batch 9 暴露问题修复
+
+```text
+task_key: 20260723_care_myops_batch9_exposed_issues_repair
+status: READY_FOR_CONTROLLER
+result_root: results/20260723_care_myops_batch9_exposed_issues_repair
+controller_task: prompts/tasks/20260723_care_myops_batch9_exposed_issues_repair_controller.md
+executor_plan: prompts/tasks/20260723_care_myops_batch9_exposed_issues_repair_executor_plan.yaml
+config: configs/care_mm/batch9_exposed_issues_repair.yaml
+planner_decision: results/srr_production/code_maturity/batch9_exposed_issues_repair_planner_decision_20260723.md
+architecture_change: false
+```
+
+这不是 Batch 10，也不是接回 nnU-Net。`CAREMMReliableDistillResEnc` 的 forward、三模态独立 stem、availability hard mask、anatomy/scar/edema 分头和可靠标签边界保持不变。标准 nnU-Net 只允许作为同划分评价基线；禁止加载其 logits、checkpoint、预测或作为 fallback。
+
+本任务只修复已暴露的问题：
+
+```text
+masked loss按真实有效体素归一化
+直接训练与continuation使用显式多项式学习率衰减
+scar/可靠edema/anatomy/background平衡采样
+no-T2在argmax前hard mask edema类
+每25 epoch固定44例验证与selected checkpoint reload
+真实known-bad错误注入
+逐seed fail-closed gate
+Slurm/aggregation/validator驱动的真实finalizer receipts
+```
+
+两个 repaired direct seed 均通过空预测、no-T2 安全和同 seed 改善门后，才允许执行 teacher/control/distill continuation。不得用跨 seed 平均掩盖任一 seed 或病种失败。
+
+## 方法重选历史
 
 用户提供的 Deep Research 报告建议暂停 Batch 8，改为强主干、可靠标签掩码、完整到不完整蒸馏和病种特异直分割。Planner结合仓库历史后接受主方向，但修正了四点：
 
@@ -104,49 +138,29 @@ runtime_authorized: false
 
 不得删除这些历史计划，也不得启动其Controller。
 
-## Batch 9 唯一任务
+## 原 Batch 9 任务与终态
 
-```text
-BATCH9_RELIABLE_LABEL_DISTILLATION_DIRECT_SEGMENTATION
-```
-
-权威文件顺序：
-
-```text
-1. results/srr_production/code_maturity/batch9_reliable_label_distillation_planner_synthesis_20260722.md
-2. docs/plans/laneB_round04_active_srr_batch9_reliable_label_distillation_execution.md
-3. configs/care_mm/batch9_reliable_label_distillation.yaml
-4. prompts/tasks/20260722_care_myops_batch9_reliable_label_distillation_controller.md
-5. prompts/tasks/20260722_care_myops_batch9_reliable_label_distillation_executor_plan.yaml
-6. results/metrics/nnUNet.md
-```
-
-任务路径：
+原任务：
 
 ```text
 task_key: 20260722_care_myops_batch9_reliable_label_distillation
 result_root: results/20260722_care_myops_batch9_reliable_label_distillation
+terminal_token: BATCH9_MAINLINE_NO_USABLE_SIGNAL_RETURN_TO_PLANNER
+controller_verification_decision: VERIFIED_COMPLETE
 ```
 
-## Batch 9 模型
+原 Batch 9 完成了两个 seed 的 direct/teacher/control/distill 运行，但出现直接主干显著低于基线、continuation 阳性空预测、跨 seed 不稳定和巨量远端假阳性。Planner 进一步审计确认，原 packet 还暴露出 loss 体素归一化、恒定高学习率 continuation、固定类优先采样、no-T2 decode、周期性验证、known-bad 与 per-seed final gate 缺陷。因此原终态只作为当前实现不可用的证据，不作为干净科学否定。
 
-必须新增：
+## Batch 9 模型边界
 
-```text
-src/care_myocardium/models/care_mm_reliable_distill.py
-CAREMMReliableDistillResEnc
-src/care_myocardium/losses/care_mm_losses.py
-src/care_myocardium/training/nnUNetTrainerCAREMMReliableDistill.py
-```
-
-数据流：
+数据流保持：
 
 ```text
 [LGE,T2,C0] + availability
 -> 3 independent stems, 8 channels each
 -> hard mask immediately after stem
 -> concatenate 24 features + 3 availability channels
--> official nnU-Net v2 ResidualEncoderUNet M-level backbone
+-> ResidualEncoderUNet M-level feature backbone
 -> shared decoder feature
 -> 4-class anatomy head
 -> scar residual head
@@ -161,7 +175,7 @@ src/care_myocardium/training/nnUNetTrainerCAREMMReliableDistill.py
 [background, myocardium, LV, RV, myocardium+edema, myocardium+scar]
 ```
 
-No-T2时edema logit为-20。Center不得进入network tensor、normalization、router或validation inference。
+No-T2病例不得参与 edema segmentation、distillation 或 consistency 监督。Repair 后 inference/evaluation 必须在 argmax 前 hard mask class 4，预测 edema 体素精确为0。Center不得进入network tensor、normalization、router或validation inference。
 
 旧组件调用计数必须为0：
 
@@ -187,9 +201,9 @@ scar: metadata-scar-reliable cases
 edema: T2-present and metadata-edema-reliable cases only
 ```
 
-No-T2病例的edema segmentation、distillation和consistency supervised voxel count必须为0。No-T2不得作为edema negative。
+No-T2不得作为edema negative。
 
-## 训练矩阵
+## Repair 训练矩阵
 
 固定seeds：
 
@@ -201,41 +215,13 @@ No-T2病例的edema segmentation、distillation和consistency supervised voxel c
 每seed：
 
 ```text
-student_direct_reliable: 500 epochs x 250 = 125000 steps
-teacher_full_view: 100 epochs x 250 = 25000 steps
-student_moddrop_control: 100 epochs x 250 = 25000 steps
-student_reliable_distill: 100 epochs x 250 = 25000 steps
+repaired student_direct_reliable: 500 epochs x 250 = 125000 steps
+teacher_full_view: 100 epochs x 250 = 25000 steps, gated
+student_moddrop_control: 100 epochs x 250 = 25000 steps, gated
+student_reliable_distill: 100 epochs x 250 = 25000 steps, gated
 ```
 
-Teacher从同seed direct epoch500复制，不从头训练；只在天然完整三模态可靠训练病例上fine-tune。
-
-Moddrop control与distill从同一student checkpoint开始，使用相同病例、patch、student mask、augmentation、optimizer、teacher forward和预算，唯一差异是distillation loss权重。
-
-结构化student view：
-
-```text
-full -> full 0.50 / LGE+C0 0.25 / LGE-only 0.25
-LGE+C0 -> LGE+C0 0.75 / LGE-only 0.25
-LGE-only -> LGE-only 1.00
-```
-
-Distillation只在天然完整病例上启用。自然缺失病例不得获得伪T2或伪edema监督。
-
-## Loss
-
-```text
-loss_anatomy_ce_dice: 1.0
-loss_scar_bce_dice: 1.0
-loss_edema_bce_dice_reliable_only: 1.0
-loss_moddrop_consistency: 0.1 in control/distill
-loss_distill_logits: 0.5 in distill only
-loss_distill_feature: 0.1 in distill only
-loss_distill_anatomy: 0.1 in distill only
-temperature: 2.0
-teacher_confidence_threshold: 0.60
-```
-
-每个非零loss必须来自实际runtime resolved contract、进入total并单独backward到授权参数。
+Direct 初始学习率 0.01，使用 polynomial decay。Continuation 从 repaired direct selected checkpoint warm-start，初始学习率 0.001，使用 polynomial decay。每25 epoch固定评价44例并保存 checkpoint；选择规则以两个病种的最低 Dice、平均 Dice 和正例 HD95 词典序决定，禁止固定只选 epoch500。
 
 ## Slurm
 
@@ -249,54 +235,18 @@ finalizer/accounting -> afterany all attempts
 
 V100只在完全相同模型、patch、batch、AMP、预算和采样语义通过preflight时允许fallback。Submitted/pending/running不是完成。
 
-## 训练前硬门
-
-必须通过：
-
-```text
-runtime center/modality/label inventory
-clean import graph and legacy call count zero
-official ResEnc environment contract
-availability hard-mask checks
-reliable supervision mask checks
-resolved loss and loss-gradient authority
-full/LGE+C0/LGE-only real-case fixed overfit
-checkpoint roundtrip
-semantic known-bad fixtures
-```
-
-Fixed overfit 100 steps、formal credit 0，不能替代正式500/100 epoch运行。
-
 ## 评价与终态
 
-每个selected checkpoint reload后评价44例，报告scar/edema Dice、HD95、precision、recall、components、remote-FP、volume ratio、empty rate、changed voxels、help/harm及：
+每个 selected checkpoint reload 后评价44例，报告 scar/edema Dice、HD95、precision、recall、components、remote-FP、volume ratio、empty rate、changed voxels、help/harm以及完整三模态、CenterB、CenterC、LGE-only、LGE+C0等分组。
 
-```text
-positive-GT
-all cases
-complete-trimodal
-CenterB
-CenterC
-LGE-only
-LGE+C0
-small/large scar
-low/high baseline
-```
-
-本地B/C只能作为CenterD代理，不得声称已证明unseen-center泛化。
-
-终态只允许：
-
-```text
-BATCH9_RELIABLE_DISTILL_RETAIN_PENDING_PLANNER
-BATCH9_DIRECT_RESENC_ONLY_PENDING_PLANNER
-BATCH9_MAINLINE_NO_USABLE_SIGNAL_RETURN_TO_PLANNER
-```
+Repair Controller 必须按每个 seed 独立判断。任一 seed 的任一病种出现 GT-positive 空预测、no-T2 edema 非零、相对原 Batch 9 direct 未改善，均阻止 continuation。任一 distill seed 相对 matched control 下降也必须明确失败，不能用跨 seed 平均覆盖。
 
 ## 未授权
 
 ```text
 Batch8 runtime
+nnU-Net anchor/logits/checkpoint/prediction fallback
+旧SRR forward/loss
 BR2-lite
 SIP
 prototype/memory
@@ -312,15 +262,4 @@ route promotion
 final scientific stop
 ```
 
-Controller的`VERIFIED_COMPLETE`只表示Batch 9合同完成，下一步返回Planner。
-## Batch 9 terminal update (2026-07-22)
-
-```text
-batch9_terminal_token: BATCH9_MAINLINE_NO_USABLE_SIGNAL_RETURN_TO_PLANNER
-controller_verification_decision: VERIFIED_COMPLETE
-strict_validator_status: PASS
-resource_override: user_authorized_htzhulab_switch_and_race_for_long_pending_jobs
-slurm_summary: direct/teacher/control/distill jobs completed; failed finalizer rerun repaired evaluator shape alignment and validator logic
-scientific_conclusion: direct ResEnc mainline did not beat nnU-Net baseline and had GT-positive empty predictions in continuation variants; no promotion/upload/fold expansion/Batch10 authorized
-evidence_root: results/20260722_care_myops_batch9_reliable_label_distillation
-```
+Controller的`VERIFIED_COMPLETE`只表示本 repair 合同完成，下一步返回Planner。
