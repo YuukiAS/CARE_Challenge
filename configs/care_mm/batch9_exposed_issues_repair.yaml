@@ -1,0 +1,123 @@
+schema_version: 1
+task_key: 20260723_care_myops_batch9_exposed_issues_repair
+status: READY_FOR_CONTROLLER
+base_task: 20260722_care_myops_batch9_reliable_label_distillation
+result_root: results/20260723_care_myops_batch9_exposed_issues_repair
+
+model:
+  class_name: CAREMMReliableDistillResEnc
+  forward_architecture_change: false
+  nnunet_anchor_or_logits: forbidden
+  baseline_fallback: forbidden
+  old_srr_or_br2_components: forbidden
+  external_data_or_weights: forbidden
+
+repairs:
+  loss_normalization:
+    expand_case_mask_to_loss_tensor: true
+    denominator: valid_voxel_count
+    record_raw_and_weighted_terms: true
+    fail_on_nonfinite_or_scale_mismatch: true
+  optimizer:
+    direct:
+      type: SGD
+      initial_lr: 0.01
+      momentum: 0.99
+      nesterov: true
+      weight_decay: 0.00003
+      schedule: polynomial
+      poly_power: 0.9
+      final_lr: 0.0
+    continuation:
+      type: SGD
+      initial_lr: 0.001
+      momentum: 0.99
+      nesterov: true
+      weight_decay: 0.00003
+      schedule: polynomial
+      poly_power: 0.9
+      final_lr: 0.0
+  sampler:
+    target_probabilities:
+      scar: 0.35
+      edema_reliable: 0.35
+      anatomy: 0.20
+      background: 0.10
+    fixed_class_priority: forbidden
+    manifest_required: true
+  no_t2_decode:
+    training_supervision: zero
+    distillation_supervision: zero
+    inference_class4_hard_mask_before_argmax: true
+    required_predicted_edema_voxels: 0
+  validation:
+    interval_epochs: 25
+    eval_cases: 44
+    save_every_validation: true
+    checkpoint_selection:
+      primary: maximize_min_complete_trimodal_scar_edema_dice
+      secondary: maximize_mean_complete_trimodal_scar_edema_dice
+      tertiary: minimize_sum_positive_gt_hd95
+      reject_gt_positive_empty: true
+      reject_no_t2_edema_nonzero: true
+      reload_selected_checkpoint: true
+  validators:
+    real_error_injection_required: true
+    self_reported_injected_rejected_rows_forbidden: true
+    per_seed_decision_required: true
+    cross_seed_average_cannot_override_seed_failure: true
+    finalizer_fields_derived_from_runtime: true
+
+training:
+  seeds: [20260723, 20260724]
+  direct:
+    epochs: 500
+    steps_per_epoch: 250
+    total_optimizer_steps: 125000
+    patch_size: [20, 128, 128]
+    batch_size: 1
+  continuation_gate:
+    both_seeds_required: true
+    zero_gt_positive_empty_predictions: true
+    no_t2_edema_voxels_exact_zero: true
+    each_pathology_improves_over_original_batch9_same_seed: true
+  teacher:
+    epochs: 100
+    steps_per_epoch: 250
+    total_optimizer_steps: 25000
+    warm_start: repaired_direct_selected_checkpoint_same_seed
+  moddrop_control:
+    epochs: 100
+    steps_per_epoch: 250
+    total_optimizer_steps: 25000
+    warm_start: repaired_direct_selected_checkpoint_same_seed
+  reliable_distill:
+    epochs: 100
+    steps_per_epoch: 250
+    total_optimizer_steps: 25000
+    warm_start: repaired_direct_selected_checkpoint_same_seed
+    per_seed_noninferiority_required: true
+
+slurm:
+  python: /users/a/e/aereinh/CARE/envs/env_CARE/bin/python
+  seed20260723_partition: htzhulab
+  seed20260724_partition: a100-gpu
+  training_dependencies: afterok
+  finalizer_dependency: afterany
+  routing_race_allowed_by_skill: true
+  semantic_or_budget_change_for_race: forbidden
+
+forbidden_actions:
+  - Batch10
+  - nnunet_anchor_or_prediction_fallback
+  - old_SRR_forward_or_loss
+  - BR2_lite
+  - SIP
+  - prototype_or_memory
+  - proposal_or_refiner
+  - Cine
+  - fold_expansion
+  - external_data_or_pretrained_weights
+  - validation_upload
+  - hosted_metric_claim
+  - route_promotion
