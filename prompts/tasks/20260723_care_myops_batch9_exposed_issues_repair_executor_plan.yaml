@@ -1,0 +1,177 @@
+schema_version: 1
+task_key: 20260723_care_myops_batch9_exposed_issues_repair
+status: READY_FOR_CONTROLLER
+execution_mode: controller_supervised
+controller_is_coordinator: true
+executor_slots: 1
+executor_count: 1
+parallel_execution_allowed: false
+result_root: results/20260723_care_myops_batch9_exposed_issues_repair
+controller_task_path: prompts/tasks/20260723_care_myops_batch9_exposed_issues_repair_controller.md
+planning_review_required: false
+review_required: false
+
+waves:
+  - wave_id: B9R_WAVE0_BIND_AND_AUDIT
+    executor_id: batch9_repair_executor
+    blocking: true
+    dependencies: []
+    read_required:
+      - AGENTS.md
+      - START_HERE_FOR_GPT.md
+      - GPT_PLANNER_CARE_PROTOCOL.md
+      - prompts/FINAL_OUTPUT_READABILITY_POLICY.md
+      - prompts/AGENT_FLOW_V2_PROTOCOL.md
+      - prompts/HANDOFF_GATE_POLICY.md
+      - prompts/GPT_HARD_GATE_PROMPT.md
+      - prompts/routes/ROUTE_ANTI_LAZINESS_PROTOCOL.md
+      - prompts/routes/ROUTE_HARD_REQUIREMENTS_MATRIX.md
+      - prompts/routes/handoffs/CURRENT.md
+      - wiki/README.md
+      - .agents/skills/slurm-routing-partition/SKILL.md
+      - .agents/skills/care-mapper/SKILL.md
+      - results/srr_production/code_maturity/batch9_exposed_issues_repair_planner_decision_20260723.md
+      - configs/care_mm/batch9_exposed_issues_repair.yaml
+      - results/20260722_care_myops_batch9_reliable_label_distillation/
+    write_scope:
+      - results/20260723_care_myops_batch9_exposed_issues_repair/
+    required_outputs:
+      - results/20260723_care_myops_batch9_exposed_issues_repair/controller_context.json
+      - results/20260723_care_myops_batch9_exposed_issues_repair/original_batch9_failure_audit.md
+      - results/20260723_care_myops_batch9_exposed_issues_repair/controller_ledger.csv
+    completion_conditions:
+      - latest_remote_main_bound
+      - original_batch9_checkpoints_metrics_and_code_hashes_bound
+      - no_nnunet_model_anchor_or_fallback_authorized
+    failure_action: NEEDS_REPAIR
+
+  - wave_id: B9R_WAVE1_EXPLICIT_CODE_REPAIRS
+    executor_id: batch9_repair_executor
+    blocking: true
+    dependencies: [B9R_WAVE0_BIND_AND_AUDIT]
+    write_scope:
+      - src/care_myocardium/losses/care_mm_losses.py
+      - src/care_myocardium/data/care_mm_batch9.py
+      - src/care_myocardium/models/care_mm_reliable_distill.py
+      - scripts/training/run_care_mm_batch9_reliable_distill.py
+      - scripts/evaluation/
+      - tests/care_mm/
+      - jobs/care_mm/
+      - configs/care_mm/batch9_exposed_issues_repair.yaml
+      - results/20260723_care_myops_batch9_exposed_issues_repair/
+    required_repairs:
+      - voxel_count_loss_normalization
+      - polynomial_lr_schedule_direct_and_lower_lr_continuation
+      - balanced_scar_edema_anatomy_background_sampler
+      - no_t2_edema_hard_decode_mask
+      - periodic_full_validation_and_selected_checkpoint_reload
+      - real_known_bad_injection
+      - per_seed_fail_closed_decision
+      - runtime_derived_finalizer_receipts
+    required_outputs:
+      - results/20260723_care_myops_batch9_exposed_issues_repair/loss_scale_checks.csv
+      - results/20260723_care_myops_batch9_exposed_issues_repair/sampler_distribution_checks.csv
+      - results/20260723_care_myops_batch9_exposed_issues_repair/no_t2_decode_checks.csv
+      - results/20260723_care_myops_batch9_exposed_issues_repair/real_known_bad_report.json
+      - results/20260723_care_myops_batch9_exposed_issues_repair/unit_test_report.md
+    completion_conditions:
+      - all_required_repairs_have_real_tests
+      - no_forward_architecture_change
+      - no_nnunet_anchor_logits_checkpoint_or_prediction_loaded
+      - tests_exit_zero
+    failure_action: controller_returns_to_same_executor
+
+  - wave_id: B9R_WAVE2_PREFLIGHT
+    executor_id: batch9_repair_executor
+    blocking: true
+    dependencies: [B9R_WAVE1_EXPLICIT_CODE_REPAIRS]
+    write_scope:
+      - results/20260723_care_myops_batch9_exposed_issues_repair/
+      - logs/care_myops_batch9_exposed_issues_repair/preflight/
+    required_outputs:
+      - results/20260723_care_myops_batch9_exposed_issues_repair/fixed_real_case_overfit.json
+      - results/20260723_care_myops_batch9_exposed_issues_repair/lr_schedule_checks.csv
+      - results/20260723_care_myops_batch9_exposed_issues_repair/checkpoint_roundtrip.json
+      - results/20260723_care_myops_batch9_exposed_issues_repair/preflight_prediction_sanity.csv
+    completion_conditions:
+      - finite_voxel_normalized_losses
+      - full_lge_c0_lge_only_overfit_pass
+      - no_t2_edema_predicted_voxels_zero
+      - checkpoint_roundtrip_pass
+      - formal_command_contract_pass
+    failure_action: controller_returns_to_same_executor_no_formal_training
+
+  - wave_id: B9R_WAVE3_TWO_SEED_DIRECT_RETRAIN
+    executor_id: batch9_repair_executor
+    blocking: true
+    dependencies: [B9R_WAVE2_PREFLIGHT]
+    write_scope:
+      - results/20260723_care_myops_batch9_exposed_issues_repair/
+      - logs/care_myops_batch9_exposed_issues_repair/
+    formal_jobs:
+      - {seed: 20260723, partition: htzhulab, epochs: 500, total_optimizer_steps: 125000}
+      - {seed: 20260724, partition: a100-gpu, epochs: 500, total_optimizer_steps: 125000}
+    required_outputs:
+      - results/20260723_care_myops_batch9_exposed_issues_repair/direct_training_adequacy.csv
+      - results/20260723_care_myops_batch9_exposed_issues_repair/direct_validation_history.csv
+      - results/20260723_care_myops_batch9_exposed_issues_repair/direct_checkpoint_selection.csv
+      - results/20260723_care_myops_batch9_exposed_issues_repair/direct_casewise_metrics.csv
+      - results/20260723_care_myops_batch9_exposed_issues_repair/direct_subgroup_metrics.csv
+      - results/20260723_care_myops_batch9_exposed_issues_repair/direct_gate.json
+    completion_conditions:
+      - both_jobs_terminal_accounted
+      - exact_budget_complete
+      - validation_every_25_epochs_recorded
+      - selected_checkpoints_reloaded
+      - no_gt_positive_empty_predictions
+      - no_t2_edema_predicted_voxels_zero
+      - each_seed_scar_and_edema_improve_over_original_batch9_same_seed
+    failure_action: STOP_BEFORE_CONTINUATION_RETURN_TO_PLANNER
+
+  - wave_id: B9R_WAVE4_MATCHED_CONTINUATION
+    executor_id: batch9_repair_executor
+    blocking: true
+    dependencies: [B9R_WAVE3_TWO_SEED_DIRECT_RETRAIN]
+    write_scope:
+      - results/20260723_care_myops_batch9_exposed_issues_repair/
+      - logs/care_myops_batch9_exposed_issues_repair/
+    formal_jobs_per_seed:
+      teacher_full_view: {epochs: 100, total_optimizer_steps: 25000, initial_lr: 0.001}
+      student_moddrop_control: {epochs: 100, total_optimizer_steps: 25000, initial_lr: 0.001}
+      student_reliable_distill: {epochs: 100, total_optimizer_steps: 25000, initial_lr: 0.001}
+    required_outputs:
+      - results/20260723_care_myops_batch9_exposed_issues_repair/matched_run_manifest.csv
+      - results/20260723_care_myops_batch9_exposed_issues_repair/training_adequacy.csv
+      - results/20260723_care_myops_batch9_exposed_issues_repair/casewise_metrics.csv
+      - results/20260723_care_myops_batch9_exposed_issues_repair/subgroup_metrics.csv
+      - results/20260723_care_myops_batch9_exposed_issues_repair/per_seed_decision_matrix.csv
+    completion_conditions:
+      - all_jobs_terminal_accounted
+      - control_and_distill_manifests_match_per_seed
+      - no_cross_seed_average_overrides_seed_failure
+      - no_gt_positive_empty_predictions
+      - no_t2_edema_predicted_voxels_zero
+      - distill_noninferior_to_control_for_both_pathologies_in_each_seed
+    failure_action: RETURN_TO_PLANNER_WITH_EXACT_FAILED_SEED_AND_PATHOLOGY
+
+  - wave_id: B9R_WAVE5_FINALIZE
+    executor_id: batch9_repair_executor
+    blocking: true
+    dependencies: [B9R_WAVE3_TWO_SEED_DIRECT_RETRAIN]
+    write_scope:
+      - results/20260723_care_myops_batch9_exposed_issues_repair/
+      - prompts/routes/handoffs/CURRENT.md
+      - wiki/
+    required_outputs:
+      - results/20260723_care_myops_batch9_exposed_issues_repair/finalizer_state.json
+      - results/20260723_care_myops_batch9_exposed_issues_repair/strict_validator_report.json
+      - results/20260723_care_myops_batch9_exposed_issues_repair/controller_report.md
+      - results/20260723_care_myops_batch9_exposed_issues_repair/completion_check.md
+      - results/20260723_care_myops_batch9_exposed_issues_repair/MANIFEST.md
+    completion_conditions:
+      - terminal_fields_derived_from_runtime_evidence
+      - validators_recompute_not_trust_self_reported_status
+      - current_and_wiki_consistent
+      - local_lightweight_commit_created
+      - no_push_by_controller
+    failure_action: NEEDS_REPAIR
