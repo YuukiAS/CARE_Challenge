@@ -1,91 +1,116 @@
-current_milestone_id: Batch9_exposed_issues_repair_ready_v2
-current_task_key: 20260723_care_myops_batch9_exposed_issues_repair
-current_plan_path: results/srr_production/code_maturity/batch9_exposed_issues_repair_planner_decision_20260723.md
-current_controller_path: prompts/tasks/20260723_care_myops_batch9_exposed_issues_repair_controller.md
-current_config_path: configs/care_mm/batch9_exposed_issues_repair.yaml
-current_executor_plan_path: prompts/tasks/20260723_care_myops_batch9_exposed_issues_repair_executor_plan_v2.yaml
-current_planner_audit_path: results/srr_production/code_maturity/batch9_exposed_issues_repair_planner_decision_20260723.md
-current_result_root: results/20260723_care_myops_batch9_exposed_issues_repair
+current_milestone_id: Batch10_deadline_rescue_ready
+current_task_key: 20260724_care_myops_batch10_deadline_rescue
+current_plan_path: results/srr_production/code_maturity/batch10_deadline_rescue_planner_decision_20260724.md
+current_controller_path: prompts/tasks/20260724_care_myops_batch10_deadline_rescue_controller.md
+current_config_path: configs/care_mm/batch10_deadline_rescue.yaml
+current_executor_plan_path: prompts/tasks/20260724_care_myops_batch10_deadline_rescue_executor_plan.yaml
+current_planner_audit_path: results/srr_production/code_maturity/batch10_deadline_rescue_planner_decision_20260724.md
+current_result_root: results/20260724_care_myops_batch10_deadline_rescue
 current_review_path: null
 current_review_token: NOT_REVIEWED_NOT_REQUIRED
 controller_bind_latest_main: true
 architecture_path: wiki/architecture.yaml
 component_table_path: wiki/COMPONENTS.csv
-wiki_fingerprint_status: BATCH9_REPAIR_V2_PLANNED_NOT_IMPLEMENTED
-updated_at: '2026-07-23'
+wiki_fingerprint_status: BATCH10_PLANNED_BATCH9_RUNTIME_NOT_YET_REBOUND
+entrypoints_authority_status: STALE_BATCH9_PENDING_BATCH10_WAVE0_REPAIR
+updated_at: '2026-07-24'
+
+batch7:
+  status: HISTORICAL_NO_RESCUE_AUTHORITY
+  operational_status: SIX_MATCHED_RUNS_COMPLETE
+  scientific_status: INCOMPLETE_BR2_SIP_MECHANISM_CLOSURE
+  scar_minimal_dice_delta: -0.0049928620
+  edema_minimal_dice_delta: 0.0013426793
+  edema_br2_dice_delta: 0.0029631724
 
 batch9_original:
   status: COMPLETE_CURRENT_IMPLEMENTATION_UNUSABLE_NOT_CLEAN_SCIENTIFIC_NEGATIVE
   result_root: results/20260722_care_myops_batch9_reliable_label_distillation
-  retained_problem_evidence:
-    - voxel_loss_normalization_error
-    - constant_high_lr_continuation
-    - biased_patch_sampling
-    - incomplete_no_t2_decode_block
-    - missing_periodic_full_validation
-    - self_reported_known_bad
-    - cross_seed_average_masked_failure
-    - hardcoded_terminal_fields
-    - missing_formal_care_mm_trainer
-    - missing_mature_augmentation_and_deep_supervision
-    - non_independent_fixed_overfit
-    - incomplete_matched_step_receipts
-    - hardcoded_plans_and_patch
-    - unmeasured_distillation_effective_coverage
-    - unaudited_loss_gradient_conflict
 
-batch9_exposed_issues_repair:
+batch9_repair:
+  status: WAVE0_5_CODE_PUSHED_WAVE6_HUMAN_STOPPED_AT_EPOCH25
+  source_commit: 3705a37bf4519144ea52155a2a7a3d2d118e3776
+  source_result_root: results/20260723_care_myops_batch9_exposed_issues_repair
+  resume_old_wave6: forbidden
+  human_supplied_epoch25_metrics:
+    seed20260723:
+      control: {scar: 0.4743, edema: 0.3188}
+      distill: {scar: 0.4754, edema: 0.3316}
+    seed20260724:
+      control: {scar: 0.4291, edema: 0.3354}
+      distill: {scar: 0.4221, edema: 0.3576}
+  exposed_remaining_defects:
+    - whole_volume_inference_instead_of_plans_sliding_window
+    - shape_only_zoom_instead_of_official_inverse_export
+    - default_model_constructor_on_checkpoint_eval
+    - plans_preprocessed_data_identifier_not_bound
+    - student_teacher_spatial_augmentation_mismatch
+    - any_class_confidence_used_as_pathology_coverage
+    - center_first_sampling_not_implemented
+    - possible_untracked_case_metadata_dependency
+    - runtime_and_state_evidence_not_closed
+
+batch10:
   status: READY_FOR_CONTROLLER
   architecture_change: deployed_forward_unchanged
   model_file: src/care_myocardium/models/care_mm_reliable_distill.py
   model_class: CAREMMReliableDistillResEnc
-  formal_trainer_file: src/care_myocardium/training/nnUNetTrainerCAREMMReliableDistill.py
-  formal_trainer_required: true
-  formal_optimizer_loop_in_old_runner: forbidden
-  plans_identifier: nnUNetResEncUNetMPlans
-  plans_manager_resolution_required: true
-  hardcoded_patch_or_architecture_fallback: forbidden
-  augmentation: nnunet_v2_training_transforms_required
-  deep_supervision: required_training_only
-  highest_resolution_inference_only: true
-  anatomy_dice_background_excluded: true
-  loss_conflict_audit_batches: 32
-  fixed_overfit_independent_state_per_pattern: true
-  matched_manifest_every_step: true
-  distillation_coverage_gate_required: true
-  nnunet_model_checkpoint_logits_or_prediction: FORBIDDEN
-  nnunet_anchor_or_baseline_fallback: FORBIDDEN
-  old_srr_forward_reuse: FORBIDDEN
-  center_enters_network: false
-  no_t2_edema_supervision: false
-  no_t2_edema_decode_hard_mask_required: true
-  seeds: [20260723, 20260724]
-  direct_budget: {epochs: 500, optimizer_steps: 125000, validation_interval_epochs: 25}
-  continuation_budget: {epochs: 100, optimizer_steps: 25000}
-  continuation_requires_both_direct_seeds_pass: true
-  teacher_coverage_gate:
-    feature_nonzero_batch_fraction_min: 0.95
-    logits_nonzero_batch_fraction_min: 0.50
-    anatomy_nonzero_batch_fraction_min: 0.50
-    scar_gt_confident_voxel_fraction_min: 0.05
-    edema_gt_confident_voxel_fraction_min: 0.05
-  authority_files:
-    planner: results/srr_production/code_maturity/batch9_exposed_issues_repair_planner_decision_20260723.md
-    config: configs/care_mm/batch9_exposed_issues_repair.yaml
-    controller: prompts/tasks/20260723_care_myops_batch9_exposed_issues_repair_controller.md
-    executor_plan: prompts/tasks/20260723_care_myops_batch9_exposed_issues_repair_executor_plan_v2.yaml
+  objective: FAIR_REEVALUATION_CONDITIONAL_SHORT_RESCUE_AND_SUBMISSION_DECISION
+  required_existing_candidates: 8
+  clean_checkout_import_audit: required
+  fair_inference:
+    sliding_window: required
+    tile_step_size: 0.5
+    gaussian: true
+    mirror_tta_top_candidates: true
+    official_inverse_preprocessing_export: required
+    shape_only_zoom: forbidden
+  nnunet_boundary:
+    read_prediction_and_metrics_for_evaluation_only: true
+    checkpoint_in_model: forbidden
+    logits_or_probability_in_model: forbidden
+    ensemble_source: forbidden
+    fallback: forbidden
+  ensemble_candidate_count: 6
+  calibration_audit_split: required
+  conditional_training:
+    near_baseline_gate_required: true
+    epochs: 25
+    optimizer_steps: 6250
+    initial_lr: 0.0002
+    paired_spatial_augmentation: required
+    center_first_sampling: required
+    pathology_specific_teacher_confidence: required
+  paper_gate_required: true
+  docker_gate_required: true
+  docker_local_build_authorized: true
+  docker_upload_authorized: false
+  validation_upload_authorized: false
+  hosted_metric_claim_authorized: false
+  terminal_stop_if_after_rescue_gap:
+    scar_greater_than: 0.03
+    edema_greater_than: 0.02
 
-unauthorized_during_repair:
-  batch10: false
-  nnunet_anchor_or_fallback: false
-  standard_nnunet_checkpoint_or_logits: false
-  old_srr: false
+schedule:
+  paper_deadline: '2026-07-27'
+  docker_deadline: '2026-08-03'
+  scientific_method_freeze: '2026-07-26'
+
+unauthorized_during_batch10:
+  resume_old_wave6: false
+  batch7_runtime: false
+  batch8_runtime: false
+  batch11: false
+  nnunet_model_anchor_or_fallback: false
   br2_lite: false
   sip_training: false
   prototype_memory: false
   proposal_refiner: false
-  cine_training: false
+  new_backbone: false
+  external_data_or_pretrained_weights: false
   fold_expansion: false
+  cine_training: false
   validation_upload: false
+  docker_upload: false
   hosted_metric_claim: false
   route_promotion: false
