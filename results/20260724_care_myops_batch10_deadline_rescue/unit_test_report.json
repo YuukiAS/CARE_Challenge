@@ -1,0 +1,4 @@
+{
+  "source": "scripts/inference/run_care_mm_batch10_fair_inference.py --self-test",
+  "status": "PASS"
+}

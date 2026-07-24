@@ -1,139 +1,166 @@
-schema_version: 13
-authority_name: care_myops_mainline_authority
-formal_training_status: BATCH9_EXPOSED_ISSUES_REPAIR_READY_FOR_CONTROLLER
-status_reason: >-
-  Original Batch9 completed its formal runs but exposed loss normalization, learning-rate,
-  sampling, no-T2 decode, checkpoint-selection, validator and finalizer defects. The sole
-  authorized next action is an in-place CARE-MMRD/Batch9 repair. This does not reconnect
-  nnU-Net as a model, anchor, checkpoint, logits source, prediction source or fallback.
-  The CAREMMReliableDistillResEnc forward architecture remains unchanged.
-
+schema_version: 14
+authority_name: care_myops_batch10_deadline_rescue_authority
+formal_training_status: BATCH10_DEADLINE_RESCUE_TERMINAL_STOP
+status_reason: Batch10 deadline rescue completed with near-baseline gate failure. Batch9 runtime/checkpoints remain frozen input evidence only; old Wave6 must not be resumed. nnU-Net remains evaluation-only baseline and forbidden as CARE-MMRD model, ensemble source, anchor, or fallback.
 current_scientific_status:
   batch6: FINAL_OBJECTIVE_REPAIRED_BELOW_USABLE_SIGNAL
   batch7_operational: SIX_MATCHED_RUNS_COMPLETE
   batch7_scientific_packet: INCOMPLETE_BR2_SIP_MECHANISM_CLOSURE
   batch8: SUPERSEDED_UNEXECUTED_DIAGNOSTIC_CONTRACT
   batch9_original: COMPLETE_NO_USABLE_SIGNAL_WITH_EXPOSED_IMPLEMENTATION_DEFECTS
-  batch9_repair: READY_FOR_CONTROLLER
+  batch9_repair: FROZEN_INPUT_ONLY_NOT_CURRENT_AUTHORITY
   direct_segmentation_mainline: AUTHORIZED_REPAIR_ONLY
   nnunet_in_model: FORBIDDEN
   baseline_fallback: FORBIDDEN
   r2_br2_line: NOT_AUTHORIZED
   sip: NOT_AUTHORIZED
   refiner: NOT_AUTHORIZED
-
+  batch10_deadline_rescue: TERMINAL_STOP_NEAR_BASELINE_GATE_FAIL
+  batch11: NOT_AUTHORIZED
 historical_entrypoints:
-  - id: srr_batch7_minimal_pathology_decomposition
-    role: historical_six_run_packet_with_incomplete_BR2_SIP_mechanism_closure
-    path: prompts/tasks/20260722_srr_batch7_minimal_pathology_decomposition_controller.md
-    config_path: configs/srr_production/myops_batch7_minimal_decomposition.yaml
-    result_root: results/20260722_srr_batch7_minimal_pathology_decomposition
-    formal_authority: false
-    operational_status: COMPLETE
-    scientific_status: INCOMPLETE_MECHANISM_CLOSURE
-  - id: srr_batch8_clean_edema_br2_confirmation
-    role: historical_unexecuted_clean_edema_BR2_diagnostic_contract
-    path: prompts/tasks/20260722_srr_batch8_clean_edema_br2_controller.md
-    config_path: configs/srr_production/myops_batch8_clean_edema_br2.yaml
-    result_root: results/20260722_srr_batch8_clean_edema_br2_confirmation
-    formal_authority: false
-    runtime_authorized: false
-    status: SUPERSEDED_UNEXECUTED_DIAGNOSTIC_CONTRACT
-  - id: care_myops_batch9_reliable_label_distillation
-    role: completed_original_batch9_with_exposed_training_and_validation_defects
-    path: prompts/tasks/20260722_care_myops_batch9_reliable_label_distillation_controller.md
-    config_path: configs/care_mm/batch9_reliable_label_distillation.yaml
-    result_root: results/20260722_care_myops_batch9_reliable_label_distillation
-    formal_authority: false
-    runtime_authorized: false
-    operational_status: COMPLETE
-    scientific_status: CURRENT_IMPLEMENTATION_UNUSABLE_NOT_CLEAN_SCIENTIFIC_NEGATIVE
-
-formal_entrypoints: []
-
+- id: srr_batch7_minimal_pathology_decomposition
+  role: historical_six_run_packet_with_incomplete_BR2_SIP_mechanism_closure
+  path: prompts/tasks/20260722_srr_batch7_minimal_pathology_decomposition_controller.md
+  config_path: configs/srr_production/myops_batch7_minimal_decomposition.yaml
+  result_root: results/20260722_srr_batch7_minimal_pathology_decomposition
+  formal_authority: false
+  operational_status: COMPLETE
+  scientific_status: INCOMPLETE_MECHANISM_CLOSURE
+- id: srr_batch8_clean_edema_br2_confirmation
+  role: historical_unexecuted_clean_edema_BR2_diagnostic_contract
+  path: prompts/tasks/20260722_srr_batch8_clean_edema_br2_controller.md
+  config_path: configs/srr_production/myops_batch8_clean_edema_br2.yaml
+  result_root: results/20260722_srr_batch8_clean_edema_br2_confirmation
+  formal_authority: false
+  runtime_authorized: false
+  status: SUPERSEDED_UNEXECUTED_DIAGNOSTIC_CONTRACT
+- id: care_myops_batch9_reliable_label_distillation
+  role: completed_original_batch9_with_exposed_training_and_validation_defects
+  path: prompts/tasks/20260722_care_myops_batch9_reliable_label_distillation_controller.md
+  config_path: configs/care_mm/batch9_reliable_label_distillation.yaml
+  result_root: results/20260722_care_myops_batch9_reliable_label_distillation
+  formal_authority: false
+  runtime_authorized: false
+  operational_status: COMPLETE
+  scientific_status: CURRENT_IMPLEMENTATION_UNUSABLE_NOT_CLEAN_SCIENTIFIC_NEGATIVE
+formal_entrypoints:
+- id: care_myops_batch10_deadline_rescue
+  role: current_amended_deadline_rescue_controller_authority
+  task_key: 20260724_care_myops_batch10_deadline_rescue
+  path: prompts/tasks/20260724_care_myops_batch10_deadline_rescue_controller.md
+  config_path: configs/care_mm/batch10_deadline_rescue.yaml
+  executor_plan_path: prompts/tasks/20260724_care_myops_batch10_deadline_rescue_executor_plan.yaml
+  planner_audit_path: results/srr_production/code_maturity/batch10_deadline_rescue_planner_decision_20260724.md
+  result_root: results/20260724_care_myops_batch10_deadline_rescue
+  formal_authority: true
+  runtime_authorized: false
+  audit_status: TERMINAL_STOP_VERIFIED_COMPLETE
+  dataset: Dataset501_CAREMyoPS
+  fold: 0
+  parallel_executor: false
+  independent_slurm_jobs_can_run_in_parallel: true
+  old_batch9_wave6_resume_authorized: false
+  nnunet_model_or_ensemble_source_authorized: false
+  validation_upload_authorized: false
+  hosted_metric_claim_authorized: false
+  batch11_authorized: false
+  required_current_outputs:
+  - controller_amendment_receipt.md
+  - gap_register.csv
+  - selection_provenance.json
+  - checkpoint_screening_manifest.csv
+  - near_baseline_gate.json
+  - strict_validator_report.json
+  - controller_report.md
+  - wave4_training_skip.json
 candidate_entrypoints:
-  - id: care_myops_batch9_exposed_issues_repair
-    role: authorized_in_place_CARE_MMRD_training_semantics_and_validator_repair
-    task_key: 20260723_care_myops_batch9_exposed_issues_repair
-    path: prompts/tasks/20260723_care_myops_batch9_exposed_issues_repair_controller.md
-    config_path: configs/care_mm/batch9_exposed_issues_repair.yaml
-    executor_plan_path: prompts/tasks/20260723_care_myops_batch9_exposed_issues_repair_executor_plan.yaml
-    planner_audit_path: results/srr_production/code_maturity/batch9_exposed_issues_repair_planner_decision_20260723.md
-    result_root: results/20260723_care_myops_batch9_exposed_issues_repair
-    formal_authority: true
-    audit_status: READY_FOR_CONTROLLER
-    dataset: Dataset501_CAREMyoPS
-    fold: 0
-    seeds: [20260723, 20260724]
-    architecture:
-      class_name: CAREMMReliableDistillResEnc
-      forward_architecture_change: false
-      modality_stems: 3
-      availability_hard_mask: true
-      anatomy_scar_edema_heads: true
-      nnunet_anchor_in_forward: false
-      nnunet_logits_or_prediction_input: false
-      baseline_fallback: false
-      old_srr_forward_reuse: false
-    explicit_repairs:
-      - valid_voxel_loss_normalization
-      - polynomial_lr_direct_and_lower_lr_continuation
-      - balanced_scar_edema_anatomy_background_sampling
-      - no_t2_edema_hard_decode_mask
-      - validation_every_25_epochs
-      - selected_checkpoint_reload
-      - real_known_bad_error_injection
-      - per_seed_fail_closed_decision
-      - runtime_derived_finalizer_receipts
-    schedule:
-      direct_epochs: 500
-      direct_steps: 125000
-      direct_initial_lr: 0.01
-      continuation_epochs: 100
-      continuation_steps: 25000
-      continuation_initial_lr: 0.001
-      validation_interval_epochs: 25
-    continuation_gate:
-      both_seeds_required: true
-      zero_gt_positive_empty_predictions: true
-      no_t2_edema_voxels_exact_zero: true
-      each_pathology_improves_over_original_batch9_same_seed: true
-      cross_seed_average_cannot_override_seed_failure: true
-    allowed_actions:
-      - repair_existing_batch9_training_loss_sampler_decode_and_validator
-      - run_two_seed_repaired_direct_training
-      - conditionally_run_matched_teacher_control_distill
-      - terminal_slurm_accounting
-      - post_completion_aggregation
-      - mapper_wiki_current_fingerprint_update
-      - local_lightweight_result_commit
-    forbidden_actions:
-      - nnunet_anchor
-      - nnunet_checkpoint_logits_prediction_or_fallback
-      - run_batch8
-      - old_SRR_forward_or_loss_reuse
-      - BR2_lite
-      - SIP_training
-      - prototype_or_memory
-      - proposal_or_refiner
-      - source_arbiter_or_production_gate
-      - external_data_or_pretrained_weights
-      - Batch10
-      - fold_expansion
-      - Cine
-      - validation_upload
-      - hosted_metric_claim
-      - route_promotion
-
+- id: care_myops_batch9_exposed_issues_repair
+  role: authorized_in_place_CARE_MMRD_training_semantics_and_validator_repair
+  task_key: 20260723_care_myops_batch9_exposed_issues_repair
+  path: prompts/tasks/20260723_care_myops_batch9_exposed_issues_repair_controller.md
+  config_path: configs/care_mm/batch9_exposed_issues_repair.yaml
+  executor_plan_path: prompts/tasks/20260723_care_myops_batch9_exposed_issues_repair_executor_plan.yaml
+  planner_audit_path: results/srr_production/code_maturity/batch9_exposed_issues_repair_planner_decision_20260723.md
+  result_root: results/20260723_care_myops_batch9_exposed_issues_repair
+  formal_authority: false
+  audit_status: SUPERSEDED_BY_BATCH10_DEADLINE_RESCUE
+  dataset: Dataset501_CAREMyoPS
+  fold: 0
+  seeds:
+  - 20260723
+  - 20260724
+  architecture:
+    class_name: CAREMMReliableDistillResEnc
+    forward_architecture_change: false
+    modality_stems: 3
+    availability_hard_mask: true
+    anatomy_scar_edema_heads: true
+    nnunet_anchor_in_forward: false
+    nnunet_logits_or_prediction_input: false
+    baseline_fallback: false
+    old_srr_forward_reuse: false
+  explicit_repairs:
+  - valid_voxel_loss_normalization
+  - polynomial_lr_direct_and_lower_lr_continuation
+  - balanced_scar_edema_anatomy_background_sampling
+  - no_t2_edema_hard_decode_mask
+  - validation_every_25_epochs
+  - selected_checkpoint_reload
+  - real_known_bad_error_injection
+  - per_seed_fail_closed_decision
+  - runtime_derived_finalizer_receipts
+  schedule:
+    direct_epochs: 500
+    direct_steps: 125000
+    direct_initial_lr: 0.01
+    continuation_epochs: 100
+    continuation_steps: 25000
+    continuation_initial_lr: 0.001
+    validation_interval_epochs: 25
+  continuation_gate:
+    both_seeds_required: true
+    zero_gt_positive_empty_predictions: true
+    no_t2_edema_voxels_exact_zero: true
+    each_pathology_improves_over_original_batch9_same_seed: true
+    cross_seed_average_cannot_override_seed_failure: true
+  allowed_actions:
+  - repair_existing_batch9_training_loss_sampler_decode_and_validator
+  - run_two_seed_repaired_direct_training
+  - conditionally_run_matched_teacher_control_distill
+  - terminal_slurm_accounting
+  - post_completion_aggregation
+  - mapper_wiki_current_fingerprint_update
+  - local_lightweight_result_commit
+  forbidden_actions:
+  - nnunet_anchor
+  - nnunet_checkpoint_logits_prediction_or_fallback
+  - run_batch8
+  - old_SRR_forward_or_loss_reuse
+  - BR2_lite
+  - SIP_training
+  - prototype_or_memory
+  - proposal_or_refiner
+  - source_arbiter_or_production_gate
+  - external_data_or_pretrained_weights
+  - Batch10
+  - fold_expansion
+  - Cine
+  - validation_upload
+  - hosted_metric_claim
+  - route_promotion
+  - resume_old_wave6_to_epoch100
+  runtime_authorized: false
+  scientific_status: FROZEN_INPUT_ONLY_WITH_KNOWN_EVALUATION_DEFECTS
 publication_boundary:
   allowed_method_description: CARE_MMRD_reliable_label_distillation_after_explicit_training_semantics_repair
   unseen_center_d_generalization_proven_locally: false
   nnunet_model_or_fallback_authorized: false
   r2_br2_sip_performance_claim_authorized: false
   prototype_memory_refiner_claim_authorized: false
-  batch10_authorized: false
+  batch10_authorized: true
   validation_upload_authorized: false
   hosted_metric_claim_authorized: false
   fold_expansion_authorized: false
   cine_authorized: false
   route_promotion_authorized: false
+  batch11_authorized: false

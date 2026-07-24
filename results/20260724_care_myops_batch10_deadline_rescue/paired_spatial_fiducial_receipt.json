@@ -1,0 +1,13 @@
+{
+  "case_count": 4,
+  "checked_unix": 1784882578,
+  "failures": [],
+  "matched_seed": 20260724,
+  "row_count": 36,
+  "schema_version": 1,
+  "spatial_transform_kind": "shared_patch_crop_then_channel_mask_only",
+  "status": "PASS",
+  "step": 3,
+  "variant_count": 3,
+  "wave4_authorization_context": "near_baseline_gate_failed_training_not_authorized"
+}

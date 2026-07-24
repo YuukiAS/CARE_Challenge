@@ -1,0 +1,17 @@
+{
+  "case_count": 1,
+  "checkpoint": "results/20260723_care_myops_batch9_exposed_issues_repair/runtime/seed20260723/student_moddrop_control/checkpoint_epoch25.pt",
+  "checkpoint_payload_plans_name": "nnUNetResEncUNetMPlans",
+  "checkpoint_reloaded_from_plans_contract": true,
+  "checkpoint_sha256": "d8d22dc3e2c275c2e40625ac80c825d52e870d29ab5b02332d286c97f73c67f2",
+  "entrypoint": "scripts/inference/run_care_mm_batch10_fair_inference.py",
+  "nnunet_v2_sliding_window": true,
+  "official_inverse_preprocessing_export": true,
+  "prediction_dir": "results/20260724_care_myops_batch10_deadline_rescue/runtime/smoke_student_moddrop_control_seed20260723_epoch25",
+  "schema_version": 1,
+  "seed": "20260723",
+  "shape_only_zoom_forbidden": true,
+  "standard_nnunet_checkpoint_logits_or_predictions_loaded": false,
+  "status": "PASS",
+  "variant": "student_moddrop_control"
+}

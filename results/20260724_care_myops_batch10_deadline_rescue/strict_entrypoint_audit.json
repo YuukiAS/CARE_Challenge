@@ -1,0 +1,42 @@
+{
+  "entrypoint_path": "configs/srr_production/entrypoints.yaml",
+  "errors": [],
+  "formal_entrypoints": [
+    {
+      "audit_status": "TERMINAL_STOP_VERIFIED_COMPLETE",
+      "batch11_authorized": false,
+      "config_path": "configs/care_mm/batch10_deadline_rescue.yaml",
+      "dataset": "Dataset501_CAREMyoPS",
+      "executor_plan_path": "prompts/tasks/20260724_care_myops_batch10_deadline_rescue_executor_plan.yaml",
+      "fold": 0,
+      "formal_authority": true,
+      "hosted_metric_claim_authorized": false,
+      "id": "care_myops_batch10_deadline_rescue",
+      "independent_slurm_jobs_can_run_in_parallel": true,
+      "nnunet_model_or_ensemble_source_authorized": false,
+      "old_batch9_wave6_resume_authorized": false,
+      "parallel_executor": false,
+      "path": "prompts/tasks/20260724_care_myops_batch10_deadline_rescue_controller.md",
+      "planner_audit_path": "results/srr_production/code_maturity/batch10_deadline_rescue_planner_decision_20260724.md",
+      "required_current_outputs": [
+        "controller_amendment_receipt.md",
+        "gap_register.csv",
+        "selection_provenance.json",
+        "checkpoint_screening_manifest.csv",
+        "near_baseline_gate.json",
+        "strict_validator_report.json",
+        "controller_report.md",
+        "wave4_training_skip.json"
+      ],
+      "result_root": "results/20260724_care_myops_batch10_deadline_rescue",
+      "role": "current_amended_deadline_rescue_controller_authority",
+      "runtime_authorized": false,
+      "task_key": "20260724_care_myops_batch10_deadline_rescue",
+      "validation_upload_authorized": false
+    }
+  ],
+  "independent_slurm_jobs_can_run_in_parallel": true,
+  "parallel_executor": false,
+  "schema_version": 1,
+  "status": "PASS"
+}

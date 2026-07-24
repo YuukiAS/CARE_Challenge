@@ -1,0 +1,21 @@
+{
+  "entrypoint": "scripts/inference/run_care_mm_batch10_fair_inference.py",
+  "gt_copy_information_as_geometry_reconstruction_forbidden": true,
+  "mirror_tta_axes_source": "trainer_declared_axes_or_cli",
+  "no_t2_class4_hard_mask_before_argmax": true,
+  "official_inverse_preprocessing_required": true,
+  "patch_size": [
+    20,
+    256,
+    256
+  ],
+  "perform_everything_on_device": false,
+  "predictor_engine": "nnunet_v2_sliding_window",
+  "properties_dict_required": true,
+  "schema_version": 1,
+  "shape_only_zoom_forbidden": true,
+  "standard_nnunet_checkpoint_logits_or_predictions_loaded": false,
+  "status": "PASS",
+  "tile_step_size": 0.5,
+  "use_gaussian": true
+}

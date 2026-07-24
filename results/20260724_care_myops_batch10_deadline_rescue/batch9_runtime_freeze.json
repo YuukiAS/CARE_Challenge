@@ -1,0 +1,53 @@
+{
+  "batch9_controller_report_first_lines": [
+    "Teacher \u5df2\u5b8c\u6210\uff0c\u4e14\u84b8\u998f\u8986\u76d6\u95e8\u901a\u8fc7\uff1b\u672c\u4efb\u52a1\u5c1a\u672a\u5b8c\u6210\uff0c\u56e0\u4e3a\u8fd8\u5fc5\u987b\u63d0\u4ea4 matched moddrop control \u548c reliable distill\u3002Controller \u4e0b\u4e00\u6b65\u5e94\u63d0\u4ea4 matched-only continuation\uff0c\u4e0d\u5f97\u5728\u6b64\u9636\u6bb5\u901a\u77e5\u5b8c\u6210\u6216\u5199\u79d1\u5b66\u7ed3\u8bba\u3002",
+    "",
+    "controller_verification_decision: NEEDS_REPAIR",
+    "operational_completion_status: COVERAGE_ALLOWED_NOT_COMPLETE",
+    "next_required_action: SUBMIT_MATCHED_CONTROL_DISTILL"
+  ],
+  "batch9_controller_verification_decision": "NEEDS_REPAIR",
+  "batch9_finalizer_status": "COVERAGE_ALLOWED_NOT_COMPLETE",
+  "batch9_result_root": "results/20260723_care_myops_batch9_exposed_issues_repair",
+  "checkpoint_inventory_status": {
+    "missing_rows": 0,
+    "row_count": 8,
+    "selection_conflict_rows": 2
+  },
+  "epoch25_control_distill_is_input_only_not_completion": true,
+  "human_stopped_wave6_after_epoch25": true,
+  "job_ids": [
+    "60125026",
+    "60125027",
+    "60125424",
+    "60125710",
+    "60125859",
+    "60126114",
+    "60126115",
+    "60154625",
+    "60157739",
+    "60157918",
+    "60158089",
+    "60158090",
+    "60158583",
+    "60158584",
+    "60158585",
+    "60242195",
+    "60243797",
+    "60243798",
+    "60243799",
+    "60243800",
+    "60243801",
+    "60260402",
+    "60260403",
+    "60260404",
+    "60260405",
+    "60260406"
+  ],
+  "resume_old_wave6_to_epoch100_forbidden": true,
+  "schema_version": 1,
+  "screenshot_is_human_supplied_not_terminal_packet": true,
+  "slurm_accounting_status": "PASS",
+  "slurm_all_parent_jobs_terminal": true,
+  "status": "FROZEN_WITH_STALE_RECEIPT_CONFLICTS_RECORDED"
+}

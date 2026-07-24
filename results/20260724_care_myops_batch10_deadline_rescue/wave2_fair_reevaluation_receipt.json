@@ -1,0 +1,19 @@
+{
+  "baseline_evaluation_only": true,
+  "baseline_prediction_root": "data/nnUNet/nnUNet_results/Dataset501_CAREMyoPS/nnUNetTrainer_500epochs__nnUNetPlans__3d_fullres/fold_0/validation",
+  "detail": {
+    "baseline_rows": 88,
+    "single_model_casewise_rows": 1408,
+    "single_model_summary_rows": 336,
+    "tta_selected_candidates": 4,
+    "tta_summary_rows": 84
+  },
+  "fixed_control_candidates": 4,
+  "same_metric_implementation": true,
+  "schema_version": 1,
+  "screening_promoted_candidates": 12,
+  "single_model_candidates_required": 16,
+  "standard_nnunet_checkpoint_logits_or_probabilities_loaded": false,
+  "status": "PASS",
+  "validation_case_count": 44
+}

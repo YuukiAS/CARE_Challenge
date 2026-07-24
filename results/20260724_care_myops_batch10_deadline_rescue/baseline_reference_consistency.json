@@ -1,0 +1,12 @@
+{
+  "case_count": 44,
+  "checked_unix": 1784859479,
+  "errors": [],
+  "population_warning": "full44/all-case empty-safe scar dice differs from positive-GT scar dice and must not be cross-compared",
+  "recomputed_summary": "results/20260724_care_myops_batch10_deadline_rescue/baseline_recomputed_summary.csv",
+  "reference_case_count": 44,
+  "reference_path": "results/srr_production/evaluation/nnunet_fold0_reproduction.json",
+  "reference_scope": "full_fold0_44case",
+  "schema_version": 1,
+  "status": "PASS"
+}

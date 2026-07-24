@@ -1,0 +1,17 @@
+{
+  "case_count": 44,
+  "checkpoint": "results/20260723_care_myops_batch9_exposed_issues_repair/runtime/seed20260723/teacher_full_view/checkpoint_epoch50.pt",
+  "checkpoint_payload_plans_name": "nnUNetResEncUNetMPlans",
+  "checkpoint_reloaded_from_plans_contract": true,
+  "checkpoint_sha256": "e92521fccec92d0066f3fa5c076fce16aea3bb02330b940c85321ab4726d1474",
+  "entrypoint": "scripts/inference/run_care_mm_batch10_fair_inference.py",
+  "nnunet_v2_sliding_window": true,
+  "official_inverse_preprocessing_export": true,
+  "prediction_dir": "results/20260724_care_myops_batch10_deadline_rescue/runtime/phase1/teacher_full_view_seed20260723",
+  "schema_version": 1,
+  "seed": "20260723",
+  "shape_only_zoom_forbidden": true,
+  "standard_nnunet_checkpoint_logits_or_predictions_loaded": false,
+  "status": "PASS",
+  "variant": "teacher_full_view"
+}

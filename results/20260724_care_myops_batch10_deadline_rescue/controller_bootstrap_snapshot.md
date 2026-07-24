@@ -1,0 +1,9 @@
+# Batch10 Wave0 Bootstrap Snapshot
+
+task_key: 20260724_care_myops_batch10_deadline_rescue
+git_head: d90628cf7fb7f98cb17838e3d370c34b3ccecd2e
+git_branch: main
+batch9_freeze_status: FROZEN_WITH_STALE_RECEIPT_CONFLICTS_RECORDED
+batch9_controller_verification_decision: NEEDS_REPAIR
+human_stopped_wave6_after_epoch25: true
+resume_old_wave6_to_epoch100_forbidden: true

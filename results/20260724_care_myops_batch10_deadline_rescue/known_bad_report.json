@@ -1,0 +1,37 @@
+{
+  "errors": [],
+  "fixtures": [
+    {
+      "evidence": "sacct terminal accounting required and checked for 60342779/60366356",
+      "fixture": "submitted_or_running_as_completion",
+      "status": "PASS_REJECTED"
+    },
+    {
+      "evidence": "checkpoint_screening_manifest.csv has 78 screened and 12 calibration-only promoted checkpoints",
+      "fixture": "old_checkpoint_selection_inherited",
+      "status": "PASS_REJECTED"
+    },
+    {
+      "evidence": "selection_provenance_audit.json PASS with zero audit case usage",
+      "fixture": "audit_case_used_for_selection",
+      "status": "PASS_REJECTED"
+    },
+    {
+      "evidence": "ensemble_manifest.csv has nnunet_probability_source false for all 264 rows",
+      "fixture": "nnunet_as_ensemble_source",
+      "status": "PASS_REJECTED"
+    },
+    {
+      "evidence": "near_baseline_gate training_authorized=false and no Wave4 Slurm jobs were submitted",
+      "fixture": "wave4_started_after_gate_fail",
+      "status": "PASS_REJECTED"
+    },
+    {
+      "evidence": "docker_feasibility_probe.json records no advanced complex candidate and no Docker candidate claim",
+      "fixture": "docker_candidate_without_probe",
+      "status": "PASS_REJECTED"
+    }
+  ],
+  "schema_version": 2,
+  "status": "PASS"
+}

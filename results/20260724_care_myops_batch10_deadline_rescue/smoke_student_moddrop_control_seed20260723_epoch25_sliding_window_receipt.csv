@@ -1,0 +1,2 @@
+case_id,formal_inference_never_calls_whole_volume_shortcut,input_shape,mirror_axes,padded_shape,patch_size,steps,tile_count,tile_step_size,use_gaussian
+Case1002,True,"[18, 256, 256]",[],"[20, 256, 256]","[20, 256, 256]","[[0], [0], [0]]",1,0.5,True

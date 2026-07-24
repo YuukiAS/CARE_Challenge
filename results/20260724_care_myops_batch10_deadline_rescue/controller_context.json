@@ -1,0 +1,125 @@
+{
+  "AGENTS_sha256": "9e41eb124868681f7176ac96befb72df5f8fb32e8f6b17d241d1c8586ae9011f",
+  "care_mapper_skill_sha256": "2c41516189001ec7be94d9981a69fcd5544ad5ebd244c93cdc58488f4b535d0e",
+  "cwd": "/users/a/e/aereinh/CARE",
+  "executor_plan_path": "prompts/tasks/20260724_care_myops_batch10_deadline_rescue_executor_plan.yaml",
+  "executor_plan_sha256": "0ec3dc3e36d28456d157c9b5cb10b772130d8515c0327d33e532d12b16ff59c1",
+  "files_read": [
+    {
+      "exists": true,
+      "path": "AGENTS.md",
+      "sha256": "9e41eb124868681f7176ac96befb72df5f8fb32e8f6b17d241d1c8586ae9011f",
+      "tracked": true
+    },
+    {
+      "exists": true,
+      "path": "START_HERE_FOR_GPT.md",
+      "sha256": "83a11ac74d130cfd1df2064fdd52b642e06d1b13eb3af677b02819dcad4274fe",
+      "tracked": true
+    },
+    {
+      "exists": true,
+      "path": "GPT_PLANNER_CARE_PROTOCOL.md",
+      "sha256": "6e9f234de0be18674dc195fe1de830982ddbc5d3201e068eb6a2ed6ac9f9c195",
+      "tracked": true
+    },
+    {
+      "exists": true,
+      "path": "prompts/FINAL_OUTPUT_READABILITY_POLICY.md",
+      "sha256": "1d1dd49a03f2bb9c22b20e17168125abd5c5a78d6c68d675f3052c03526e069b",
+      "tracked": true
+    },
+    {
+      "exists": true,
+      "path": "prompts/AGENT_FLOW_V2_PROTOCOL.md",
+      "sha256": "29b417ef95e5b54d046e9fafb6cede016d74e74c88426756546b507fb09a22a1",
+      "tracked": true
+    },
+    {
+      "exists": true,
+      "path": "prompts/HANDOFF_GATE_POLICY.md",
+      "sha256": "668765a296b5789d1560cdbd710316fcd7b93544f9195f7eaf3ebcbe263ccb1a",
+      "tracked": true
+    },
+    {
+      "exists": true,
+      "path": "prompts/GPT_HARD_GATE_PROMPT.md",
+      "sha256": "afb068852d40a04500e818b2d53acabb811a090920042b711b34dcc55416de9b",
+      "tracked": true
+    },
+    {
+      "exists": true,
+      "path": "prompts/routes/ROUTE_ANTI_LAZINESS_PROTOCOL.md",
+      "sha256": "a0dce70c97ef9711dbdc76a213d26419513fa5c28478accbec0dd8288a91674a",
+      "tracked": true
+    },
+    {
+      "exists": true,
+      "path": "prompts/routes/ROUTE_HARD_REQUIREMENTS_MATRIX.md",
+      "sha256": "a225f46868eda817a0d2b2f3e33d444ffc88b683664dfc3a0dd6eb25881475d9",
+      "tracked": true
+    },
+    {
+      "exists": true,
+      "path": "prompts/routes/handoffs/CURRENT.md",
+      "sha256": "5a6be9b2adc83f40be12b0f77419bd7831cdb852cce8c07f6aee39afc4d222b4",
+      "tracked": true
+    },
+    {
+      "exists": true,
+      "path": "wiki/README.md",
+      "sha256": "68928806c63c68fdfb473608befe419abc9471aec80eefe78f9bf71bc08524a0",
+      "tracked": true
+    },
+    {
+      "exists": true,
+      "path": ".agents/skills/slurm-routing-partition/SKILL.md",
+      "sha256": "2b7e87f58b275b50dc9d4a9377f4e2518c3a390c806e400cb32e07ebac3f83a6",
+      "tracked": true
+    },
+    {
+      "exists": true,
+      "path": ".agents/skills/care-mapper/SKILL.md",
+      "sha256": "2c41516189001ec7be94d9981a69fcd5544ad5ebd244c93cdc58488f4b535d0e",
+      "tracked": true
+    },
+    {
+      "exists": true,
+      "path": "results/srr_production/code_maturity/batch10_deadline_rescue_planner_decision_20260724.md",
+      "sha256": "ee6923f5aba4a47083623cede06d29c64d39a9532cfcbe7296da5607ef1edf2e",
+      "tracked": true
+    },
+    {
+      "exists": true,
+      "path": "configs/care_mm/batch10_deadline_rescue.yaml",
+      "sha256": "b6b21d99f3fe1fba868dcd7d934e5724bdabdf8905f43e87312a7807b8925284",
+      "tracked": true
+    },
+    {
+      "exists": true,
+      "path": "prompts/tasks/20260724_care_myops_batch10_deadline_rescue_controller.md",
+      "sha256": "89214f046dee2e45f9a05c7237749b3585dbfa1fa07cf9385e78cceb5cd94c9e",
+      "tracked": true
+    },
+    {
+      "exists": true,
+      "path": "prompts/tasks/20260724_care_myops_batch10_deadline_rescue_executor_plan.yaml",
+      "sha256": "0ec3dc3e36d28456d157c9b5cb10b772130d8515c0327d33e532d12b16ff59c1",
+      "tracked": true
+    }
+  ],
+  "git_branch": "main",
+  "git_head": "d90628cf7fb7f98cb17838e3d370c34b3ccecd2e",
+  "git_status_short": [
+    "## main...origin/main",
+    " M .gitignore",
+    " A scripts/evaluation/batch10_wave0_audit.py",
+    " A src/care_myocardium/data/case_metadata.py"
+  ],
+  "phase": "B10_W0_BIND_FREEZE_AND_CLEAN_CHECKOUT",
+  "schema_version": 1,
+  "slurm_skill_sha256": "2b7e87f58b275b50dc9d4a9377f4e2518c3a390c806e400cb32e07ebac3f83a6",
+  "task_key": "20260724_care_myops_batch10_deadline_rescue",
+  "task_prompt_path": "prompts/tasks/20260724_care_myops_batch10_deadline_rescue_controller.md",
+  "task_prompt_sha256": "89214f046dee2e45f9a05c7237749b3585dbfa1fa07cf9385e78cceb5cd94c9e"
+}

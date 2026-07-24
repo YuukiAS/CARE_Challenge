@@ -1,0 +1,729 @@
+{
+  "audit_case_ids_forbidden_in_selection": true,
+  "created_unix": 1784858914,
+  "invalidated_prior_selections": [
+    {
+      "reason": "old flawed evaluator lineage; must screen periodic checkpoints on Batch10 calibration cases",
+      "selection": "batch9_direct_teacher_selected_checkpoints"
+    },
+    {
+      "reason": "selected before amendment with full44 positive_gt summary; must rerun calibration-only after checkpoint screening",
+      "selection": "wave2_tta_candidate_selection"
+    },
+    {
+      "reason": "process interrupted; compositor/postprocess/anatomy/provenance rules amended",
+      "selection": "wave3_ensemble_source_and_postprocess"
+    }
+  ],
+  "schema_version": 1,
+  "selection_events": [
+    {
+      "audit_case_ids": [
+        "Case1002",
+        "Case1007",
+        "Case1009",
+        "Case1010",
+        "Case1023",
+        "Case1040",
+        "Case1042",
+        "Case1070",
+        "Case2002",
+        "Case2008",
+        "Case2017",
+        "Case2031",
+        "Case3012",
+        "Case3026",
+        "Case3034",
+        "Case3044",
+        "Case5005",
+        "Case6010",
+        "Case8003",
+        "Case8011",
+        "Case8019",
+        "Case8022"
+      ],
+      "audit_case_ids_used_for_selection": [],
+      "event": "checkpoint_screening_top2_per_seed_variant",
+      "promoted_checkpoints": [
+        {
+          "checkpoint_path": "results/20260723_care_myops_batch9_exposed_issues_repair/runtime/seed20260723/student_direct_reliable__official_aug_restart2/checkpoint_epoch125.pt",
+          "checkpoint_sha256": "7fc1fcf4d1b1ee41f6238cc1eb3b2a4d3b8d252e92f374e91547035e85913e79",
+          "epoch": 125,
+          "rank": 2,
+          "screen_variant": "student_direct_reliable",
+          "seed": "20260723"
+        },
+        {
+          "checkpoint_path": "results/20260723_care_myops_batch9_exposed_issues_repair/runtime/seed20260723/student_direct_reliable__official_aug_restart2/checkpoint_epoch150.pt",
+          "checkpoint_sha256": "e29829d4d0cc2c290a946cee666ec74d8b44ae2dbe33d0fbb9d64e9baebf22c5",
+          "epoch": 150,
+          "rank": 1,
+          "screen_variant": "student_direct_reliable",
+          "seed": "20260723"
+        },
+        {
+          "checkpoint_path": "results/20260723_care_myops_batch9_exposed_issues_repair/runtime/seed20260723/student_direct_reliable/checkpoint_epoch150.pt",
+          "checkpoint_sha256": "928c13164470b623660cdd7c08c3c4cb823ce310d40770555f649f0252e29c42",
+          "epoch": 150,
+          "rank": 1,
+          "screen_variant": "student_direct_reliable_legacy",
+          "seed": "20260723"
+        },
+        {
+          "checkpoint_path": "results/20260723_care_myops_batch9_exposed_issues_repair/runtime/seed20260723/student_direct_reliable/checkpoint_epoch225.pt",
+          "checkpoint_sha256": "94793fe93c447f1202ff60abcadb18f63eaa69bbb26cb7029dd18d562c5b7cda",
+          "epoch": 225,
+          "rank": 2,
+          "screen_variant": "student_direct_reliable_legacy",
+          "seed": "20260723"
+        },
+        {
+          "checkpoint_path": "results/20260723_care_myops_batch9_exposed_issues_repair/runtime/seed20260723/teacher_full_view/checkpoint_epoch50.pt",
+          "checkpoint_sha256": "e92521fccec92d0066f3fa5c076fce16aea3bb02330b940c85321ab4726d1474",
+          "epoch": 50,
+          "rank": 1,
+          "screen_variant": "teacher_full_view",
+          "seed": "20260723"
+        },
+        {
+          "checkpoint_path": "results/20260723_care_myops_batch9_exposed_issues_repair/runtime/seed20260723/teacher_full_view/checkpoint_epoch75.pt",
+          "checkpoint_sha256": "06e792334ca60a1b2e43da1875cd7fc2daf2d5ba7e20532768a9dbe416520e67",
+          "epoch": 75,
+          "rank": 2,
+          "screen_variant": "teacher_full_view",
+          "seed": "20260723"
+        },
+        {
+          "checkpoint_path": "results/20260723_care_myops_batch9_exposed_issues_repair/runtime/seed20260724/student_direct_reliable__official_aug_restart2/checkpoint_epoch50.pt",
+          "checkpoint_sha256": "fe9ca2b95daa2afe0bb2aa8db513d6e1023672cc8db7a8a2f858b1356649d68e",
+          "epoch": 50,
+          "rank": 1,
+          "screen_variant": "student_direct_reliable",
+          "seed": "20260724"
+        },
+        {
+          "checkpoint_path": "results/20260723_care_myops_batch9_exposed_issues_repair/runtime/seed20260724/student_direct_reliable__official_aug_restart2/checkpoint_epoch250.pt",
+          "checkpoint_sha256": "dfaf49e5e00faadd06e3a98f354873ccef5a1340fdf37eb0de03774f158347a2",
+          "epoch": 250,
+          "rank": 2,
+          "screen_variant": "student_direct_reliable",
+          "seed": "20260724"
+        },
+        {
+          "checkpoint_path": "results/20260723_care_myops_batch9_exposed_issues_repair/runtime/seed20260724/student_direct_reliable/checkpoint_epoch150.pt",
+          "checkpoint_sha256": "774477210062a85103eaf569d04c94a8d5be7e85c8bfa930287abf299b476a5b",
+          "epoch": 150,
+          "rank": 1,
+          "screen_variant": "student_direct_reliable_legacy",
+          "seed": "20260724"
+        },
+        {
+          "checkpoint_path": "results/20260723_care_myops_batch9_exposed_issues_repair/runtime/seed20260724/student_direct_reliable/checkpoint_epoch200.pt",
+          "checkpoint_sha256": "733ec26160e72f3bbc5f94016f88b5a4d988f5d526f1838060c25208ec3f9261",
+          "epoch": 200,
+          "rank": 2,
+          "screen_variant": "student_direct_reliable_legacy",
+          "seed": "20260724"
+        },
+        {
+          "checkpoint_path": "results/20260723_care_myops_batch9_exposed_issues_repair/runtime/seed20260724/teacher_full_view/checkpoint_epoch50.pt",
+          "checkpoint_sha256": "016ad000ce195605942ac646250c90a768f8491c8308ece297b19efc6072ea72",
+          "epoch": 50,
+          "rank": 2,
+          "screen_variant": "teacher_full_view",
+          "seed": "20260724"
+        },
+        {
+          "checkpoint_path": "results/20260723_care_myops_batch9_exposed_issues_repair/runtime/seed20260724/teacher_full_view/checkpoint_epoch100.pt",
+          "checkpoint_sha256": "9e6891028ad7561edbeac0b3bd33a1c9cda5b384371d9ba506f66c6ff44a12fc",
+          "epoch": 100,
+          "rank": 1,
+          "screen_variant": "teacher_full_view",
+          "seed": "20260724"
+        }
+      ],
+      "selection_read_case_ids": [
+        "Case1021",
+        "Case1029",
+        "Case1033",
+        "Case1045",
+        "Case1047",
+        "Case1053",
+        "Case1062",
+        "Case1073",
+        "Case1080",
+        "Case2007",
+        "Case2020",
+        "Case2033",
+        "Case3004",
+        "Case3011",
+        "Case3023",
+        "Case3038",
+        "Case3040",
+        "Case6001",
+        "Case7005",
+        "Case8015",
+        "Case8021",
+        "Case8023"
+      ],
+      "selection_rule": "calibration_only_no_tta_batch10_sliding_window_official_inverse_export_top2_by_min_then_mean_pathology_dice",
+      "timestamp_unix": 1784861881
+    },
+    {
+      "audit_case_ids": [
+        "Case1002",
+        "Case1007",
+        "Case1009",
+        "Case1010",
+        "Case1023",
+        "Case1040",
+        "Case1042",
+        "Case1070",
+        "Case2002",
+        "Case2008",
+        "Case2017",
+        "Case2031",
+        "Case3012",
+        "Case3026",
+        "Case3034",
+        "Case3044",
+        "Case5005",
+        "Case6010",
+        "Case8003",
+        "Case8011",
+        "Case8019",
+        "Case8022"
+      ],
+      "audit_case_ids_used_for_selection": [],
+      "event": "checkpoint_screening_top2_per_seed_variant",
+      "promoted_checkpoints": [
+        {
+          "checkpoint_path": "results/20260723_care_myops_batch9_exposed_issues_repair/runtime/seed20260723/student_direct_reliable__official_aug_restart2/checkpoint_epoch125.pt",
+          "checkpoint_sha256": "7fc1fcf4d1b1ee41f6238cc1eb3b2a4d3b8d252e92f374e91547035e85913e79",
+          "epoch": 125,
+          "rank": 2,
+          "screen_variant": "student_direct_reliable",
+          "seed": "20260723"
+        },
+        {
+          "checkpoint_path": "results/20260723_care_myops_batch9_exposed_issues_repair/runtime/seed20260723/student_direct_reliable__official_aug_restart2/checkpoint_epoch150.pt",
+          "checkpoint_sha256": "e29829d4d0cc2c290a946cee666ec74d8b44ae2dbe33d0fbb9d64e9baebf22c5",
+          "epoch": 150,
+          "rank": 1,
+          "screen_variant": "student_direct_reliable",
+          "seed": "20260723"
+        },
+        {
+          "checkpoint_path": "results/20260723_care_myops_batch9_exposed_issues_repair/runtime/seed20260723/student_direct_reliable/checkpoint_epoch150.pt",
+          "checkpoint_sha256": "928c13164470b623660cdd7c08c3c4cb823ce310d40770555f649f0252e29c42",
+          "epoch": 150,
+          "rank": 1,
+          "screen_variant": "student_direct_reliable_legacy",
+          "seed": "20260723"
+        },
+        {
+          "checkpoint_path": "results/20260723_care_myops_batch9_exposed_issues_repair/runtime/seed20260723/student_direct_reliable/checkpoint_epoch225.pt",
+          "checkpoint_sha256": "94793fe93c447f1202ff60abcadb18f63eaa69bbb26cb7029dd18d562c5b7cda",
+          "epoch": 225,
+          "rank": 2,
+          "screen_variant": "student_direct_reliable_legacy",
+          "seed": "20260723"
+        },
+        {
+          "checkpoint_path": "results/20260723_care_myops_batch9_exposed_issues_repair/runtime/seed20260723/teacher_full_view/checkpoint_epoch50.pt",
+          "checkpoint_sha256": "e92521fccec92d0066f3fa5c076fce16aea3bb02330b940c85321ab4726d1474",
+          "epoch": 50,
+          "rank": 1,
+          "screen_variant": "teacher_full_view",
+          "seed": "20260723"
+        },
+        {
+          "checkpoint_path": "results/20260723_care_myops_batch9_exposed_issues_repair/runtime/seed20260723/teacher_full_view/checkpoint_epoch75.pt",
+          "checkpoint_sha256": "06e792334ca60a1b2e43da1875cd7fc2daf2d5ba7e20532768a9dbe416520e67",
+          "epoch": 75,
+          "rank": 2,
+          "screen_variant": "teacher_full_view",
+          "seed": "20260723"
+        },
+        {
+          "checkpoint_path": "results/20260723_care_myops_batch9_exposed_issues_repair/runtime/seed20260724/student_direct_reliable__official_aug_restart2/checkpoint_epoch50.pt",
+          "checkpoint_sha256": "fe9ca2b95daa2afe0bb2aa8db513d6e1023672cc8db7a8a2f858b1356649d68e",
+          "epoch": 50,
+          "rank": 1,
+          "screen_variant": "student_direct_reliable",
+          "seed": "20260724"
+        },
+        {
+          "checkpoint_path": "results/20260723_care_myops_batch9_exposed_issues_repair/runtime/seed20260724/student_direct_reliable__official_aug_restart2/checkpoint_epoch250.pt",
+          "checkpoint_sha256": "dfaf49e5e00faadd06e3a98f354873ccef5a1340fdf37eb0de03774f158347a2",
+          "epoch": 250,
+          "rank": 2,
+          "screen_variant": "student_direct_reliable",
+          "seed": "20260724"
+        },
+        {
+          "checkpoint_path": "results/20260723_care_myops_batch9_exposed_issues_repair/runtime/seed20260724/student_direct_reliable/checkpoint_epoch150.pt",
+          "checkpoint_sha256": "774477210062a85103eaf569d04c94a8d5be7e85c8bfa930287abf299b476a5b",
+          "epoch": 150,
+          "rank": 1,
+          "screen_variant": "student_direct_reliable_legacy",
+          "seed": "20260724"
+        },
+        {
+          "checkpoint_path": "results/20260723_care_myops_batch9_exposed_issues_repair/runtime/seed20260724/student_direct_reliable/checkpoint_epoch200.pt",
+          "checkpoint_sha256": "733ec26160e72f3bbc5f94016f88b5a4d988f5d526f1838060c25208ec3f9261",
+          "epoch": 200,
+          "rank": 2,
+          "screen_variant": "student_direct_reliable_legacy",
+          "seed": "20260724"
+        },
+        {
+          "checkpoint_path": "results/20260723_care_myops_batch9_exposed_issues_repair/runtime/seed20260724/teacher_full_view/checkpoint_epoch50.pt",
+          "checkpoint_sha256": "016ad000ce195605942ac646250c90a768f8491c8308ece297b19efc6072ea72",
+          "epoch": 50,
+          "rank": 2,
+          "screen_variant": "teacher_full_view",
+          "seed": "20260724"
+        },
+        {
+          "checkpoint_path": "results/20260723_care_myops_batch9_exposed_issues_repair/runtime/seed20260724/teacher_full_view/checkpoint_epoch100.pt",
+          "checkpoint_sha256": "9e6891028ad7561edbeac0b3bd33a1c9cda5b384371d9ba506f66c6ff44a12fc",
+          "epoch": 100,
+          "rank": 1,
+          "screen_variant": "teacher_full_view",
+          "seed": "20260724"
+        }
+      ],
+      "selection_read_case_ids": [
+        "Case1021",
+        "Case1029",
+        "Case1033",
+        "Case1045",
+        "Case1047",
+        "Case1053",
+        "Case1062",
+        "Case1073",
+        "Case1080",
+        "Case2007",
+        "Case2020",
+        "Case2033",
+        "Case3004",
+        "Case3011",
+        "Case3023",
+        "Case3038",
+        "Case3040",
+        "Case6001",
+        "Case7005",
+        "Case8015",
+        "Case8021",
+        "Case8023"
+      ],
+      "selection_rule": "calibration_only_no_tta_batch10_sliding_window_official_inverse_export_top2_by_min_then_mean_pathology_dice",
+      "timestamp_unix": 1784872948
+    },
+    {
+      "audit_case_ids": [
+        "Case1002",
+        "Case1007",
+        "Case1009",
+        "Case1010",
+        "Case1023",
+        "Case1040",
+        "Case1042",
+        "Case1070",
+        "Case2002",
+        "Case2008",
+        "Case2017",
+        "Case2031",
+        "Case3012",
+        "Case3026",
+        "Case3034",
+        "Case3044",
+        "Case5005",
+        "Case6010",
+        "Case8003",
+        "Case8011",
+        "Case8019",
+        "Case8022"
+      ],
+      "audit_case_ids_used_for_selection": [],
+      "event": "wave2_calibration_only_tta_candidate_selection",
+      "selected_tta_candidates": [
+        {
+          "candidate_source": "checkpoint_screening_calibration_top2",
+          "checkpoint_path": "results/20260723_care_myops_batch9_exposed_issues_repair/runtime/seed20260723/student_direct_reliable__official_aug_restart2/checkpoint_epoch150.pt",
+          "checkpoint_sha256": "e29829d4d0cc2c290a946cee666ec74d8b44ae2dbe33d0fbb9d64e9baebf22c5",
+          "epoch": "150",
+          "seed": "20260723",
+          "tta_selected_for_pathologies": "edema",
+          "variant": "student_direct_reliable"
+        },
+        {
+          "candidate_source": "checkpoint_screening_calibration_top2",
+          "checkpoint_path": "results/20260723_care_myops_batch9_exposed_issues_repair/runtime/seed20260723/student_direct_reliable/checkpoint_epoch150.pt",
+          "checkpoint_sha256": "928c13164470b623660cdd7c08c3c4cb823ce310d40770555f649f0252e29c42",
+          "epoch": "150",
+          "seed": "20260723",
+          "tta_selected_for_pathologies": "edema",
+          "variant": "student_direct_reliable_legacy"
+        },
+        {
+          "candidate_source": "fixed_epoch25_from_batch9_freeze",
+          "checkpoint_path": "results/20260723_care_myops_batch9_exposed_issues_repair/runtime/seed20260723/student_moddrop_control/checkpoint_epoch25.pt",
+          "checkpoint_sha256": "d8d22dc3e2c275c2e40625ac80c825d52e870d29ab5b02332d286c97f73c67f2",
+          "epoch": "25",
+          "seed": "20260723",
+          "tta_selected_for_pathologies": "scar",
+          "variant": "student_moddrop_control"
+        },
+        {
+          "candidate_source": "fixed_epoch25_from_batch9_freeze",
+          "checkpoint_path": "results/20260723_care_myops_batch9_exposed_issues_repair/runtime/seed20260723/student_reliable_distill/checkpoint_epoch25.pt",
+          "checkpoint_sha256": "366722497a47f292e07a0d1c1a3da57c2502b61042bc89b5cfc56b5a89e6a3a0",
+          "epoch": "25",
+          "seed": "20260723",
+          "tta_selected_for_pathologies": "scar",
+          "variant": "student_reliable_distill"
+        }
+      ],
+      "selection_read_case_ids": [
+        "Case1021",
+        "Case1029",
+        "Case1033",
+        "Case1045",
+        "Case1047",
+        "Case1053",
+        "Case1062",
+        "Case1073",
+        "Case1080",
+        "Case2007",
+        "Case2020",
+        "Case2033",
+        "Case3004",
+        "Case3011",
+        "Case3023",
+        "Case3038",
+        "Case3040",
+        "Case6001",
+        "Case7005",
+        "Case8015",
+        "Case8021",
+        "Case8023"
+      ],
+      "selection_rule": "calibration_positive_gt_top2_per_pathology_by_dice_then_hd95_no_audit_case_ids",
+      "timestamp_unix": 1784875935
+    },
+    {
+      "audit_case_ids": [
+        "Case1002",
+        "Case1007",
+        "Case1009",
+        "Case1010",
+        "Case1023",
+        "Case1040",
+        "Case1042",
+        "Case1070",
+        "Case2002",
+        "Case2008",
+        "Case2017",
+        "Case2031",
+        "Case3012",
+        "Case3026",
+        "Case3034",
+        "Case3044",
+        "Case5005",
+        "Case6010",
+        "Case8003",
+        "Case8011",
+        "Case8019",
+        "Case8022"
+      ],
+      "audit_case_ids_used_for_selection": [],
+      "audit_ranking_rule": "audit_only_after_frozen_calibration_selection_min_delta_then_mean_delta_then_harm_hd95_remote_fp",
+      "audit_top_candidate_after_freeze": {
+        "audit_harm_total": 21,
+        "audit_hd95_sum": 35.42497274857376,
+        "audit_remote_fp_sum": 808.1831359620261,
+        "candidate": "distill_epoch25_two_seed_mean",
+        "edema_audit_delta_vs_nnunet": -0.028956446629086696,
+        "edema_audit_dice": 0.3904422236744306,
+        "edema_audit_harm": 6,
+        "edema_audit_hd95": 21.032770157922695,
+        "edema_audit_remote_fp": 0.0,
+        "edema_full44_dice": 0.3762172836028407,
+        "mean_audit_delta_vs_nnunet": -0.02551159570428785,
+        "minimum_audit_delta_vs_nnunet": -0.028956446629086696,
+        "postprocess_id": "raw_argmax",
+        "rank": 1,
+        "scar_audit_delta_vs_nnunet": -0.022066744779489,
+        "scar_audit_dice": 0.608330071483723,
+        "scar_audit_harm": 15,
+        "scar_audit_hd95": 14.392202590651062,
+        "scar_audit_remote_fp": 808.1831359620261,
+        "scar_full44_dice": 0.5455527512230987
+      },
+      "best_anatomy_source": {
+        "checkpoint_path": "results/20260723_care_myops_batch9_exposed_issues_repair/runtime/seed20260723/teacher_full_view/checkpoint_epoch50.pt",
+        "checkpoint_sha256": "e92521fccec92d0066f3fa5c076fce16aea3bb02330b940c85321ab4726d1474",
+        "class_1_calibration_dice": 0.6611941289808202,
+        "class_2_calibration_dice": 0.9036596774887561,
+        "class_3_calibration_dice": 0.9050100848894257,
+        "mean_anatomy_class_dice": 0.823287963786334,
+        "min_anatomy_class_dice": 0.6611941289808202,
+        "myocardium_hd95": 7.861438840069646,
+        "seed": "20260723",
+        "source_prefix": "phase1_teacher_full_view_seed20260723_epoch050_e92521fc",
+        "variant": "teacher_full_view"
+      },
+      "best_edema_source": {
+        "calibration_positive_gt_dice": 0.3822409111077999,
+        "checkpoint_path": "results/20260723_care_myops_batch9_exposed_issues_repair/runtime/seed20260723/student_direct_reliable__official_aug_restart2/checkpoint_epoch150.pt",
+        "checkpoint_sha256": "e29829d4d0cc2c290a946cee666ec74d8b44ae2dbe33d0fbb9d64e9baebf22c5",
+        "seed": "20260723",
+        "source_prefix": "phase1_student_direct_reliable_seed20260723_epoch150_e29829d4",
+        "variant": "student_direct_reliable"
+      },
+      "best_scar_source": {
+        "calibration_positive_gt_dice": 0.5125368164211129,
+        "checkpoint_path": "results/20260723_care_myops_batch9_exposed_issues_repair/runtime/seed20260723/student_reliable_distill/checkpoint_epoch25.pt",
+        "checkpoint_sha256": "366722497a47f292e07a0d1c1a3da57c2502b61042bc89b5cfc56b5a89e6a3a0",
+        "seed": "20260723",
+        "source_prefix": "phase1_student_reliable_distill_seed20260723_epoch025_36672249",
+        "variant": "student_reliable_distill"
+      },
+      "best_two_individual_sources": [
+        {
+          "calibration_mean_pathology_dice": 0.41944989040385916,
+          "calibration_min_pathology_dice": 0.3822409111077999,
+          "checkpoint_path": "results/20260723_care_myops_batch9_exposed_issues_repair/runtime/seed20260723/student_direct_reliable__official_aug_restart2/checkpoint_epoch150.pt",
+          "checkpoint_sha256": "e29829d4d0cc2c290a946cee666ec74d8b44ae2dbe33d0fbb9d64e9baebf22c5",
+          "seed": "20260723",
+          "source_prefix": "phase1_student_direct_reliable_seed20260723_epoch150_e29829d4",
+          "variant": "student_direct_reliable"
+        },
+        {
+          "calibration_mean_pathology_dice": 0.4256441633657977,
+          "calibration_min_pathology_dice": 0.3774075997983787,
+          "checkpoint_path": "results/20260723_care_myops_batch9_exposed_issues_repair/runtime/seed20260723/student_direct_reliable/checkpoint_epoch150.pt",
+          "checkpoint_sha256": "928c13164470b623660cdd7c08c3c4cb823ce310d40770555f649f0252e29c42",
+          "seed": "20260723",
+          "source_prefix": "phase1_student_direct_reliable_legacy_seed20260723_epoch150_928c1316",
+          "variant": "student_direct_reliable_legacy"
+        }
+      ],
+      "event": "wave3_calibration_only_source_and_postprocess_selection",
+      "pathology_compositor_calibration": {
+        "audit_used_for_selection": false,
+        "fixed_grid": {
+          "edema_margin": [
+            -0.25,
+            0.0,
+            0.25
+          ],
+          "scar_margin": [
+            -0.25,
+            0.0,
+            0.25
+          ],
+          "temperature": [
+            0.75,
+            1.0,
+            1.25
+          ]
+        },
+        "schema_version": 1,
+        "selected": {
+          "edema_calibration_empty_prediction_count": 0,
+          "edema_calibration_harm_count": 3,
+          "edema_calibration_positive_gt_delta_vs_nnunet": 0.025003229836937813,
+          "edema_calibration_positive_gt_dice": 0.3944763548913979,
+          "edema_calibration_positive_gt_hd95": null,
+          "edema_calibration_remote_fp_volume_mm3": null,
+          "edema_margin": -0.25,
+          "empty_prediction_count_total": 0,
+          "harm_count_total": 15,
+          "hd95_sum": 0.0,
+          "mean_pathology_delta_vs_nnunet": 0.005404602813872145,
+          "minimum_pathology_delta_vs_nnunet": -0.014194024209193523,
+          "postprocess_id": "temp1.25_scar0.25_edema-0.25",
+          "remote_fp_sum": 0.0,
+          "scar_calibration_empty_prediction_count": 0,
+          "scar_calibration_harm_count": 12,
+          "scar_calibration_positive_gt_delta_vs_nnunet": -0.014194024209193523,
+          "scar_calibration_positive_gt_dice": 0.4990781700652592,
+          "scar_calibration_positive_gt_hd95": null,
+          "scar_calibration_remote_fp_volume_mm3": null,
+          "scar_margin": 0.25,
+          "temperature": 1.25
+        },
+        "selection_uses": "calibration_only",
+        "source_bundle": {
+          "anatomy_0_to_3": {
+            "checkpoint_path": "results/20260723_care_myops_batch9_exposed_issues_repair/runtime/seed20260723/teacher_full_view/checkpoint_epoch50.pt",
+            "checkpoint_sha256": "e92521fccec92d0066f3fa5c076fce16aea3bb02330b940c85321ab4726d1474",
+            "class_1_calibration_dice": 0.6611941289808202,
+            "class_2_calibration_dice": 0.9036596774887561,
+            "class_3_calibration_dice": 0.9050100848894257,
+            "mean_anatomy_class_dice": 0.823287963786334,
+            "min_anatomy_class_dice": 0.6611941289808202,
+            "myocardium_hd95": 7.861438840069646,
+            "seed": "20260723",
+            "source_prefix": "phase1_teacher_full_view_seed20260723_epoch050_e92521fc",
+            "variant": "teacher_full_view"
+          },
+          "edema_class4": {
+            "calibration_positive_gt_dice": 0.3822409111077999,
+            "checkpoint_path": "results/20260723_care_myops_batch9_exposed_issues_repair/runtime/seed20260723/student_direct_reliable__official_aug_restart2/checkpoint_epoch150.pt",
+            "checkpoint_sha256": "e29829d4d0cc2c290a946cee666ec74d8b44ae2dbe33d0fbb9d64e9baebf22c5",
+            "seed": "20260723",
+            "source_prefix": "phase1_student_direct_reliable_seed20260723_epoch150_e29829d4",
+            "variant": "student_direct_reliable"
+          },
+          "scar_class5": {
+            "calibration_positive_gt_dice": 0.5125368164211129,
+            "checkpoint_path": "results/20260723_care_myops_batch9_exposed_issues_repair/runtime/seed20260723/student_reliable_distill/checkpoint_epoch25.pt",
+            "checkpoint_sha256": "366722497a47f292e07a0d1c1a3da57c2502b61042bc89b5cfc56b5a89e6a3a0",
+            "seed": "20260723",
+            "source_prefix": "phase1_student_reliable_distill_seed20260723_epoch025_36672249",
+            "variant": "student_reliable_distill"
+          }
+        },
+        "status": "PASS"
+      },
+      "postprocess_selected": {
+        "allowed_distance_mm": 1000000000.0,
+        "anatomy_probability_threshold": 0.0,
+        "candidate": "pathology_specific_compositor",
+        "edema_calibration_empty_prediction_count": 0,
+        "edema_calibration_harm_count": 3,
+        "edema_calibration_positive_gt_delta_vs_nnunet": 0.025003229836937813,
+        "edema_calibration_positive_gt_dice": 0.3944763548913979,
+        "edema_calibration_positive_gt_hd95": null,
+        "edema_calibration_remote_fp_volume_mm3": null,
+        "edema_min_component_mm3": 0,
+        "empty_prediction_count_total": 0,
+        "fallback_reasons": "minimum_pathology_delta_gain_below_0.005",
+        "harm_count_total": 15,
+        "hd95_sum": 0.0,
+        "mean_pathology_delta_vs_nnunet": 0.005404602813872145,
+        "minimum_pathology_delta_vs_nnunet": -0.014194024209193523,
+        "postprocess_id": "raw_argmax",
+        "postprocess_selected": "raw_argmax",
+        "remote_fp_sum": 0.0,
+        "scar_calibration_empty_prediction_count": 0,
+        "scar_calibration_harm_count": 12,
+        "scar_calibration_positive_gt_delta_vs_nnunet": -0.014194024209193523,
+        "scar_calibration_positive_gt_dice": 0.4990781700652592,
+        "scar_calibration_positive_gt_hd95": null,
+        "scar_calibration_remote_fp_volume_mm3": null,
+        "scar_min_component_mm3": 0,
+        "stage": "raw_no_postprocess"
+      },
+      "selection_read_case_ids": [
+        "Case1021",
+        "Case1029",
+        "Case1033",
+        "Case1045",
+        "Case1047",
+        "Case1053",
+        "Case1062",
+        "Case1073",
+        "Case1080",
+        "Case2007",
+        "Case2020",
+        "Case2033",
+        "Case3004",
+        "Case3011",
+        "Case3023",
+        "Case3038",
+        "Case3040",
+        "Case6001",
+        "Case7005",
+        "Case8015",
+        "Case8021",
+        "Case8023"
+      ],
+      "selection_rule": "anatomy_classes_1_3_fixed_order_pathology_sources_calibrated_logit_residual_compositor_two_stage_postprocess_with_raw_fallback",
+      "selection_uses": "calibration_only",
+      "timestamp_unix": 1784882178,
+      "two_seed_variant_sources": {
+        "student_direct_reliable": [
+          {
+            "checkpoint_path": "results/20260723_care_myops_batch9_exposed_issues_repair/runtime/seed20260723/student_direct_reliable__official_aug_restart2/checkpoint_epoch150.pt",
+            "checkpoint_sha256": "e29829d4d0cc2c290a946cee666ec74d8b44ae2dbe33d0fbb9d64e9baebf22c5",
+            "seed": "20260723",
+            "source_prefix": "phase1_student_direct_reliable_seed20260723_epoch150_e29829d4",
+            "variant": "student_direct_reliable"
+          },
+          {
+            "checkpoint_path": "results/20260723_care_myops_batch9_exposed_issues_repair/runtime/seed20260724/student_direct_reliable__official_aug_restart2/checkpoint_epoch50.pt",
+            "checkpoint_sha256": "fe9ca2b95daa2afe0bb2aa8db513d6e1023672cc8db7a8a2f858b1356649d68e",
+            "seed": "20260724",
+            "source_prefix": "phase1_student_direct_reliable_seed20260724_epoch050_fe9ca2b9",
+            "variant": "student_direct_reliable"
+          }
+        ],
+        "student_moddrop_control": [
+          {
+            "checkpoint_path": "results/20260723_care_myops_batch9_exposed_issues_repair/runtime/seed20260723/student_moddrop_control/checkpoint_epoch25.pt",
+            "checkpoint_sha256": "d8d22dc3e2c275c2e40625ac80c825d52e870d29ab5b02332d286c97f73c67f2",
+            "seed": "20260723",
+            "source_prefix": "phase1_student_moddrop_control_seed20260723_epoch025_d8d22dc3",
+            "variant": "student_moddrop_control"
+          },
+          {
+            "checkpoint_path": "results/20260723_care_myops_batch9_exposed_issues_repair/runtime/seed20260724/student_moddrop_control/checkpoint_epoch25.pt",
+            "checkpoint_sha256": "591281878cb8317e2698c0065df19c89125060720d1eccf312c8ffbe1f704885",
+            "seed": "20260724",
+            "source_prefix": "phase1_student_moddrop_control_seed20260724_epoch025_59128187",
+            "variant": "student_moddrop_control"
+          }
+        ],
+        "student_reliable_distill": [
+          {
+            "checkpoint_path": "results/20260723_care_myops_batch9_exposed_issues_repair/runtime/seed20260723/student_reliable_distill/checkpoint_epoch25.pt",
+            "checkpoint_sha256": "366722497a47f292e07a0d1c1a3da57c2502b61042bc89b5cfc56b5a89e6a3a0",
+            "seed": "20260723",
+            "source_prefix": "phase1_student_reliable_distill_seed20260723_epoch025_36672249",
+            "variant": "student_reliable_distill"
+          },
+          {
+            "checkpoint_path": "results/20260723_care_myops_batch9_exposed_issues_repair/runtime/seed20260724/student_reliable_distill/checkpoint_epoch25.pt",
+            "checkpoint_sha256": "f68849c8ded87dc31c310a5b78ef308eca49e3149419b9f3f564c2b3e1e90900",
+            "seed": "20260724",
+            "source_prefix": "phase1_student_reliable_distill_seed20260724_epoch025_f68849c8",
+            "variant": "student_reliable_distill"
+          }
+        ],
+        "teacher_full_view": [
+          {
+            "checkpoint_path": "results/20260723_care_myops_batch9_exposed_issues_repair/runtime/seed20260723/teacher_full_view/checkpoint_epoch50.pt",
+            "checkpoint_sha256": "e92521fccec92d0066f3fa5c076fce16aea3bb02330b940c85321ab4726d1474",
+            "seed": "20260723",
+            "source_prefix": "phase1_teacher_full_view_seed20260723_epoch050_e92521fc",
+            "variant": "teacher_full_view"
+          },
+          {
+            "checkpoint_path": "results/20260723_care_myops_batch9_exposed_issues_repair/runtime/seed20260724/teacher_full_view/checkpoint_epoch100.pt",
+            "checkpoint_sha256": "9e6891028ad7561edbeac0b3bd33a1c9cda5b384371d9ba506f66c6ff44a12fc",
+            "seed": "20260724",
+            "source_prefix": "phase1_teacher_full_view_seed20260724_epoch100_9e689102",
+            "variant": "teacher_full_view"
+          }
+        ]
+      }
+    }
+  ],
+  "selection_policy": {
+    "anatomy_source": "calibration_anatomy_classes_fixed_order",
+    "audit_usage": "frozen_rule_evaluation_only",
+    "best_two_ensemble_source": "calibration_only",
+    "checkpoint_epoch": "calibration_only",
+    "edema_source": "calibration_only",
+    "postprocess_parameters": "calibration_only_two_stage",
+    "scar_source": "calibration_only",
+    "temperature_margin_calibration": "calibration_only",
+    "tta_candidates": "calibration_only"
+  },
+  "status": "WAVE3_SELECTION_RECORDED"
+}

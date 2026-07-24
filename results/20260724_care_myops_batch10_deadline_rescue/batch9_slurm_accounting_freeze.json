@@ -1,0 +1,798 @@
+{
+  "all_parent_jobs_terminal": true,
+  "command": "sacct -j 60125026,60125027,60125424,60125710,60125859,60126114,60126115,60154625,60157739,60157918,60158089,60158090,60158583,60158584,60158585,60242195,60243797,60243798,60243799,60243800,60243801,60260402,60260403,60260404,60260405,60260406 --format=JobIDRaw,JobID,JobName,Partition,State,ExitCode,Elapsed,NodeList%40 -P -n",
+  "errors": [],
+  "queried_at_unix": 1784854191,
+  "query_job_ids": [
+    "60125026",
+    "60125027",
+    "60125424",
+    "60125710",
+    "60125859",
+    "60126114",
+    "60126115",
+    "60154625",
+    "60157739",
+    "60157918",
+    "60158089",
+    "60158090",
+    "60158583",
+    "60158584",
+    "60158585",
+    "60242195",
+    "60243797",
+    "60243798",
+    "60243799",
+    "60243800",
+    "60243801",
+    "60260402",
+    "60260403",
+    "60260404",
+    "60260405",
+    "60260406"
+  ],
+  "records": [
+    {
+      "Elapsed": "00:02:15",
+      "ExitCode": "0:0",
+      "JobID": "60125026",
+      "JobIDRaw": "60125026",
+      "JobName": "CareB9Pre",
+      "NodeList": "g180702",
+      "Partition": "htzhulab",
+      "State": "COMPLETED"
+    },
+    {
+      "Elapsed": "00:02:15",
+      "ExitCode": "0:0",
+      "JobID": "60125026.batch",
+      "JobIDRaw": "60125026.batch",
+      "JobName": "batch",
+      "NodeList": "g180702",
+      "Partition": "",
+      "State": "COMPLETED"
+    },
+    {
+      "Elapsed": "00:02:15",
+      "ExitCode": "0:0",
+      "JobID": "60125026.extern",
+      "JobIDRaw": "60125026.extern",
+      "JobName": "extern",
+      "NodeList": "g180702",
+      "Partition": "",
+      "State": "COMPLETED"
+    },
+    {
+      "Elapsed": "00:02:19",
+      "ExitCode": "0:0",
+      "JobID": "60125027",
+      "JobIDRaw": "60125027",
+      "JobName": "CareB9PreA",
+      "NodeList": "g141603",
+      "Partition": "a100-gpu",
+      "State": "COMPLETED"
+    },
+    {
+      "Elapsed": "00:02:19",
+      "ExitCode": "0:0",
+      "JobID": "60125027.batch",
+      "JobIDRaw": "60125027.batch",
+      "JobName": "batch",
+      "NodeList": "g141603",
+      "Partition": "",
+      "State": "COMPLETED"
+    },
+    {
+      "Elapsed": "00:02:20",
+      "ExitCode": "0:0",
+      "JobID": "60125027.extern",
+      "JobIDRaw": "60125027.extern",
+      "JobName": "extern",
+      "NodeList": "g141603",
+      "Partition": "",
+      "State": "COMPLETED"
+    },
+    {
+      "Elapsed": "00:00:11",
+      "ExitCode": "1:0",
+      "JobID": "60125424",
+      "JobIDRaw": "60125424",
+      "JobName": "CareB9Stage",
+      "NodeList": "g180702",
+      "Partition": "htzhulab",
+      "State": "FAILED"
+    },
+    {
+      "Elapsed": "00:00:11",
+      "ExitCode": "1:0",
+      "JobID": "60125424.batch",
+      "JobIDRaw": "60125424.batch",
+      "JobName": "batch",
+      "NodeList": "g180702",
+      "Partition": "",
+      "State": "FAILED"
+    },
+    {
+      "Elapsed": "00:00:11",
+      "ExitCode": "0:0",
+      "JobID": "60125424.extern",
+      "JobIDRaw": "60125424.extern",
+      "JobName": "extern",
+      "NodeList": "g180702",
+      "Partition": "",
+      "State": "COMPLETED"
+    },
+    {
+      "Elapsed": "00:05:31",
+      "ExitCode": "0:0",
+      "JobID": "60125710",
+      "JobIDRaw": "60125710",
+      "JobName": "CareB9Stage",
+      "NodeList": "g180702",
+      "Partition": "htzhulab",
+      "State": "CANCELLED by 397557"
+    },
+    {
+      "Elapsed": "00:05:32",
+      "ExitCode": "0:15",
+      "JobID": "60125710.batch",
+      "JobIDRaw": "60125710.batch",
+      "JobName": "batch",
+      "NodeList": "g180702",
+      "Partition": "",
+      "State": "CANCELLED"
+    },
+    {
+      "Elapsed": "00:05:32",
+      "ExitCode": "0:0",
+      "JobID": "60125710.extern",
+      "JobIDRaw": "60125710.extern",
+      "JobName": "extern",
+      "NodeList": "g180702",
+      "Partition": "",
+      "State": "COMPLETED"
+    },
+    {
+      "Elapsed": "00:03:30",
+      "ExitCode": "0:0",
+      "JobID": "60125859",
+      "JobIDRaw": "60125859",
+      "JobName": "CareB9Stage",
+      "NodeList": "g180702",
+      "Partition": "htzhulab",
+      "State": "CANCELLED by 397557"
+    },
+    {
+      "Elapsed": "00:03:31",
+      "ExitCode": "0:15",
+      "JobID": "60125859.batch",
+      "JobIDRaw": "60125859.batch",
+      "JobName": "batch",
+      "NodeList": "g180702",
+      "Partition": "",
+      "State": "CANCELLED"
+    },
+    {
+      "Elapsed": "00:03:31",
+      "ExitCode": "0:0",
+      "JobID": "60125859.extern",
+      "JobIDRaw": "60125859.extern",
+      "JobName": "extern",
+      "NodeList": "g180702",
+      "Partition": "",
+      "State": "COMPLETED"
+    },
+    {
+      "Elapsed": "07:23:19",
+      "ExitCode": "0:0",
+      "JobID": "60126114",
+      "JobIDRaw": "60126114",
+      "JobName": "CareB9Stage",
+      "NodeList": "g180702",
+      "Partition": "htzhulab",
+      "State": "CANCELLED by 397557"
+    },
+    {
+      "Elapsed": "07:23:21",
+      "ExitCode": "0:15",
+      "JobID": "60126114.batch",
+      "JobIDRaw": "60126114.batch",
+      "JobName": "batch",
+      "NodeList": "g180702",
+      "Partition": "",
+      "State": "CANCELLED"
+    },
+    {
+      "Elapsed": "07:23:22",
+      "ExitCode": "0:0",
+      "JobID": "60126114.extern",
+      "JobIDRaw": "60126114.extern",
+      "JobName": "extern",
+      "NodeList": "g180702",
+      "Partition": "",
+      "State": "COMPLETED"
+    },
+    {
+      "Elapsed": "07:23:20",
+      "ExitCode": "0:0",
+      "JobID": "60126115",
+      "JobIDRaw": "60126115",
+      "JobName": "CareB9Stage",
+      "NodeList": "g180702",
+      "Partition": "htzhulab",
+      "State": "CANCELLED by 397557"
+    },
+    {
+      "Elapsed": "07:23:21",
+      "ExitCode": "0:15",
+      "JobID": "60126115.batch",
+      "JobIDRaw": "60126115.batch",
+      "JobName": "batch",
+      "NodeList": "g180702",
+      "Partition": "",
+      "State": "CANCELLED"
+    },
+    {
+      "Elapsed": "07:23:22",
+      "ExitCode": "0:0",
+      "JobID": "60126115.extern",
+      "JobIDRaw": "60126115.extern",
+      "JobName": "extern",
+      "NodeList": "g180702",
+      "Partition": "",
+      "State": "COMPLETED"
+    },
+    {
+      "Elapsed": "00:02:27",
+      "ExitCode": "0:0",
+      "JobID": "60154625",
+      "JobIDRaw": "60154625",
+      "JobName": "CareB9Pre",
+      "NodeList": "g1807htzh01",
+      "Partition": "htzhulab",
+      "State": "COMPLETED"
+    },
+    {
+      "Elapsed": "00:02:27",
+      "ExitCode": "0:0",
+      "JobID": "60154625.batch",
+      "JobIDRaw": "60154625.batch",
+      "JobName": "batch",
+      "NodeList": "g1807htzh01",
+      "Partition": "",
+      "State": "COMPLETED"
+    },
+    {
+      "Elapsed": "00:02:27",
+      "ExitCode": "0:0",
+      "JobID": "60154625.extern",
+      "JobIDRaw": "60154625.extern",
+      "JobName": "extern",
+      "NodeList": "g1807htzh01",
+      "Partition": "",
+      "State": "COMPLETED"
+    },
+    {
+      "Elapsed": "00:01:45",
+      "ExitCode": "1:0",
+      "JobID": "60157739",
+      "JobIDRaw": "60157739",
+      "JobName": "CareB9Pre",
+      "NodeList": "g1807htzh01",
+      "Partition": "htzhulab",
+      "State": "FAILED"
+    },
+    {
+      "Elapsed": "00:01:45",
+      "ExitCode": "1:0",
+      "JobID": "60157739.batch",
+      "JobIDRaw": "60157739.batch",
+      "JobName": "batch",
+      "NodeList": "g1807htzh01",
+      "Partition": "",
+      "State": "FAILED"
+    },
+    {
+      "Elapsed": "00:01:45",
+      "ExitCode": "0:0",
+      "JobID": "60157739.extern",
+      "JobIDRaw": "60157739.extern",
+      "JobName": "extern",
+      "NodeList": "g1807htzh01",
+      "Partition": "",
+      "State": "COMPLETED"
+    },
+    {
+      "Elapsed": "00:02:34",
+      "ExitCode": "0:0",
+      "JobID": "60157918",
+      "JobIDRaw": "60157918",
+      "JobName": "CareB9Pre",
+      "NodeList": "g1807htzh01",
+      "Partition": "htzhulab",
+      "State": "COMPLETED"
+    },
+    {
+      "Elapsed": "00:02:34",
+      "ExitCode": "0:0",
+      "JobID": "60157918.batch",
+      "JobIDRaw": "60157918.batch",
+      "JobName": "batch",
+      "NodeList": "g1807htzh01",
+      "Partition": "",
+      "State": "COMPLETED"
+    },
+    {
+      "Elapsed": "00:02:34",
+      "ExitCode": "0:0",
+      "JobID": "60157918.extern",
+      "JobIDRaw": "60157918.extern",
+      "JobName": "extern",
+      "NodeList": "g1807htzh01",
+      "Partition": "",
+      "State": "COMPLETED"
+    },
+    {
+      "Elapsed": "00:10:44",
+      "ExitCode": "0:0",
+      "JobID": "60158089",
+      "JobIDRaw": "60158089",
+      "JobName": "CareB9Stage",
+      "NodeList": "g1807htzh01",
+      "Partition": "htzhulab",
+      "State": "CANCELLED by 397557"
+    },
+    {
+      "Elapsed": "00:10:45",
+      "ExitCode": "0:15",
+      "JobID": "60158089.batch",
+      "JobIDRaw": "60158089.batch",
+      "JobName": "batch",
+      "NodeList": "g1807htzh01",
+      "Partition": "",
+      "State": "CANCELLED"
+    },
+    {
+      "Elapsed": "00:10:45",
+      "ExitCode": "0:0",
+      "JobID": "60158089.extern",
+      "JobIDRaw": "60158089.extern",
+      "JobName": "extern",
+      "NodeList": "g1807htzh01",
+      "Partition": "",
+      "State": "COMPLETED"
+    },
+    {
+      "Elapsed": "00:10:44",
+      "ExitCode": "0:0",
+      "JobID": "60158090",
+      "JobIDRaw": "60158090",
+      "JobName": "CareB9Stage",
+      "NodeList": "g1807htzh01",
+      "Partition": "htzhulab",
+      "State": "CANCELLED by 397557"
+    },
+    {
+      "Elapsed": "00:10:45",
+      "ExitCode": "0:15",
+      "JobID": "60158090.batch",
+      "JobIDRaw": "60158090.batch",
+      "JobName": "batch",
+      "NodeList": "g1807htzh01",
+      "Partition": "",
+      "State": "CANCELLED"
+    },
+    {
+      "Elapsed": "00:10:45",
+      "ExitCode": "0:0",
+      "JobID": "60158090.extern",
+      "JobIDRaw": "60158090.extern",
+      "JobName": "extern",
+      "NodeList": "g1807htzh01",
+      "Partition": "",
+      "State": "COMPLETED"
+    },
+    {
+      "Elapsed": "09:55:55",
+      "ExitCode": "0:0",
+      "JobID": "60158583",
+      "JobIDRaw": "60158583",
+      "JobName": "CareB9Stage",
+      "NodeList": "g1807htzh01",
+      "Partition": "htzhulab",
+      "State": "COMPLETED"
+    },
+    {
+      "Elapsed": "09:55:55",
+      "ExitCode": "0:0",
+      "JobID": "60158583.batch",
+      "JobIDRaw": "60158583.batch",
+      "JobName": "batch",
+      "NodeList": "g1807htzh01",
+      "Partition": "",
+      "State": "COMPLETED"
+    },
+    {
+      "Elapsed": "09:55:55",
+      "ExitCode": "0:0",
+      "JobID": "60158583.extern",
+      "JobIDRaw": "60158583.extern",
+      "JobName": "extern",
+      "NodeList": "g1807htzh01",
+      "Partition": "",
+      "State": "COMPLETED"
+    },
+    {
+      "Elapsed": "09:24:47",
+      "ExitCode": "0:0",
+      "JobID": "60158584",
+      "JobIDRaw": "60158584",
+      "JobName": "CareB9Stage",
+      "NodeList": "g1807htzh01",
+      "Partition": "htzhulab",
+      "State": "COMPLETED"
+    },
+    {
+      "Elapsed": "09:24:47",
+      "ExitCode": "0:0",
+      "JobID": "60158584.batch",
+      "JobIDRaw": "60158584.batch",
+      "JobName": "batch",
+      "NodeList": "g1807htzh01",
+      "Partition": "",
+      "State": "COMPLETED"
+    },
+    {
+      "Elapsed": "09:24:48",
+      "ExitCode": "0:0",
+      "JobID": "60158584.extern",
+      "JobIDRaw": "60158584.extern",
+      "JobName": "extern",
+      "NodeList": "g1807htzh01",
+      "Partition": "",
+      "State": "COMPLETED"
+    },
+    {
+      "Elapsed": "00:00:16",
+      "ExitCode": "1:0",
+      "JobID": "60158585",
+      "JobIDRaw": "60158585",
+      "JobName": "CareB9Final",
+      "NodeList": "g1807htzh01",
+      "Partition": "htzhulab",
+      "State": "FAILED"
+    },
+    {
+      "Elapsed": "00:00:16",
+      "ExitCode": "1:0",
+      "JobID": "60158585.batch",
+      "JobIDRaw": "60158585.batch",
+      "JobName": "batch",
+      "NodeList": "g1807htzh01",
+      "Partition": "",
+      "State": "FAILED"
+    },
+    {
+      "Elapsed": "00:00:16",
+      "ExitCode": "0:0",
+      "JobID": "60158585.extern",
+      "JobIDRaw": "60158585.extern",
+      "JobName": "extern",
+      "NodeList": "g1807htzh01",
+      "Partition": "",
+      "State": "COMPLETED"
+    },
+    {
+      "Elapsed": "00:01:28",
+      "ExitCode": "2:0",
+      "JobID": "60242195",
+      "JobIDRaw": "60242195",
+      "JobName": "CareB9Final",
+      "NodeList": "g1807htzh01",
+      "Partition": "htzhulab",
+      "State": "FAILED"
+    },
+    {
+      "Elapsed": "00:01:28",
+      "ExitCode": "2:0",
+      "JobID": "60242195.batch",
+      "JobIDRaw": "60242195.batch",
+      "JobName": "batch",
+      "NodeList": "g1807htzh01",
+      "Partition": "",
+      "State": "FAILED"
+    },
+    {
+      "Elapsed": "00:01:28",
+      "ExitCode": "0:0",
+      "JobID": "60242195.extern",
+      "JobIDRaw": "60242195.extern",
+      "JobName": "extern",
+      "NodeList": "g1807htzh01",
+      "Partition": "",
+      "State": "COMPLETED"
+    },
+    {
+      "Elapsed": "01:46:35",
+      "ExitCode": "0:0",
+      "JobID": "60243797",
+      "JobIDRaw": "60243797",
+      "JobName": "CareB9Stage",
+      "NodeList": "g1807htzh01",
+      "Partition": "htzhulab",
+      "State": "COMPLETED"
+    },
+    {
+      "Elapsed": "01:46:35",
+      "ExitCode": "0:0",
+      "JobID": "60243797.batch",
+      "JobIDRaw": "60243797.batch",
+      "JobName": "batch",
+      "NodeList": "g1807htzh01",
+      "Partition": "",
+      "State": "COMPLETED"
+    },
+    {
+      "Elapsed": "01:46:35",
+      "ExitCode": "0:0",
+      "JobID": "60243797.extern",
+      "JobIDRaw": "60243797.extern",
+      "JobName": "extern",
+      "NodeList": "g1807htzh01",
+      "Partition": "",
+      "State": "COMPLETED"
+    },
+    {
+      "Elapsed": "00:00:32",
+      "ExitCode": "0:0",
+      "JobID": "60243798",
+      "JobIDRaw": "60243798",
+      "JobName": "CareB9Cov",
+      "NodeList": "g1807htzh01",
+      "Partition": "htzhulab",
+      "State": "COMPLETED"
+    },
+    {
+      "Elapsed": "00:00:32",
+      "ExitCode": "0:0",
+      "JobID": "60243798.batch",
+      "JobIDRaw": "60243798.batch",
+      "JobName": "batch",
+      "NodeList": "g1807htzh01",
+      "Partition": "",
+      "State": "COMPLETED"
+    },
+    {
+      "Elapsed": "00:00:32",
+      "ExitCode": "0:0",
+      "JobID": "60243798.extern",
+      "JobIDRaw": "60243798.extern",
+      "JobName": "extern",
+      "NodeList": "g1807htzh01",
+      "Partition": "",
+      "State": "COMPLETED"
+    },
+    {
+      "Elapsed": "01:46:49",
+      "ExitCode": "0:0",
+      "JobID": "60243799",
+      "JobIDRaw": "60243799",
+      "JobName": "CareB9Stage",
+      "NodeList": "g1807htzh01",
+      "Partition": "htzhulab",
+      "State": "COMPLETED"
+    },
+    {
+      "Elapsed": "01:46:49",
+      "ExitCode": "0:0",
+      "JobID": "60243799.batch",
+      "JobIDRaw": "60243799.batch",
+      "JobName": "batch",
+      "NodeList": "g1807htzh01",
+      "Partition": "",
+      "State": "COMPLETED"
+    },
+    {
+      "Elapsed": "01:46:49",
+      "ExitCode": "0:0",
+      "JobID": "60243799.extern",
+      "JobIDRaw": "60243799.extern",
+      "JobName": "extern",
+      "NodeList": "g1807htzh01",
+      "Partition": "",
+      "State": "COMPLETED"
+    },
+    {
+      "Elapsed": "00:00:27",
+      "ExitCode": "0:0",
+      "JobID": "60243800",
+      "JobIDRaw": "60243800",
+      "JobName": "CareB9Cov",
+      "NodeList": "g1807htzh01",
+      "Partition": "htzhulab",
+      "State": "COMPLETED"
+    },
+    {
+      "Elapsed": "00:00:27",
+      "ExitCode": "0:0",
+      "JobID": "60243800.batch",
+      "JobIDRaw": "60243800.batch",
+      "JobName": "batch",
+      "NodeList": "g1807htzh01",
+      "Partition": "",
+      "State": "COMPLETED"
+    },
+    {
+      "Elapsed": "00:00:27",
+      "ExitCode": "0:0",
+      "JobID": "60243800.extern",
+      "JobIDRaw": "60243800.extern",
+      "JobName": "extern",
+      "NodeList": "g1807htzh01",
+      "Partition": "",
+      "State": "COMPLETED"
+    },
+    {
+      "Elapsed": "00:00:12",
+      "ExitCode": "2:0",
+      "JobID": "60243801",
+      "JobIDRaw": "60243801",
+      "JobName": "CareB9Final",
+      "NodeList": "g1807htzh01",
+      "Partition": "htzhulab",
+      "State": "FAILED"
+    },
+    {
+      "Elapsed": "00:00:12",
+      "ExitCode": "2:0",
+      "JobID": "60243801.batch",
+      "JobIDRaw": "60243801.batch",
+      "JobName": "batch",
+      "NodeList": "g1807htzh01",
+      "Partition": "",
+      "State": "FAILED"
+    },
+    {
+      "Elapsed": "00:00:12",
+      "ExitCode": "0:0",
+      "JobID": "60243801.extern",
+      "JobIDRaw": "60243801.extern",
+      "JobName": "extern",
+      "NodeList": "g1807htzh01",
+      "Partition": "",
+      "State": "COMPLETED"
+    },
+    {
+      "Elapsed": "03:20:14",
+      "ExitCode": "0:0",
+      "JobID": "60260402",
+      "JobIDRaw": "60260402",
+      "JobName": "CareB9Stage",
+      "NodeList": "g1807htzh01",
+      "Partition": "htzhulab",
+      "State": "CANCELLED by 397557"
+    },
+    {
+      "Elapsed": "03:20:15",
+      "ExitCode": "0:15",
+      "JobID": "60260402.batch",
+      "JobIDRaw": "60260402.batch",
+      "JobName": "batch",
+      "NodeList": "g1807htzh01",
+      "Partition": "",
+      "State": "CANCELLED"
+    },
+    {
+      "Elapsed": "03:20:16",
+      "ExitCode": "0:0",
+      "JobID": "60260402.extern",
+      "JobIDRaw": "60260402.extern",
+      "JobName": "extern",
+      "NodeList": "g1807htzh01",
+      "Partition": "",
+      "State": "COMPLETED"
+    },
+    {
+      "Elapsed": "03:20:14",
+      "ExitCode": "0:0",
+      "JobID": "60260403",
+      "JobIDRaw": "60260403",
+      "JobName": "CareB9Stage",
+      "NodeList": "g1807htzh01",
+      "Partition": "htzhulab",
+      "State": "CANCELLED by 397557"
+    },
+    {
+      "Elapsed": "03:20:15",
+      "ExitCode": "0:15",
+      "JobID": "60260403.batch",
+      "JobIDRaw": "60260403.batch",
+      "JobName": "batch",
+      "NodeList": "g1807htzh01",
+      "Partition": "",
+      "State": "CANCELLED"
+    },
+    {
+      "Elapsed": "03:20:16",
+      "ExitCode": "0:0",
+      "JobID": "60260403.extern",
+      "JobIDRaw": "60260403.extern",
+      "JobName": "extern",
+      "NodeList": "g1807htzh01",
+      "Partition": "",
+      "State": "COMPLETED"
+    },
+    {
+      "Elapsed": "03:20:14",
+      "ExitCode": "0:0",
+      "JobID": "60260404",
+      "JobIDRaw": "60260404",
+      "JobName": "CareB9Stage",
+      "NodeList": "g180702",
+      "Partition": "htzhulab",
+      "State": "CANCELLED by 397557"
+    },
+    {
+      "Elapsed": "03:20:15",
+      "ExitCode": "0:15",
+      "JobID": "60260404.batch",
+      "JobIDRaw": "60260404.batch",
+      "JobName": "batch",
+      "NodeList": "g180702",
+      "Partition": "",
+      "State": "CANCELLED"
+    },
+    {
+      "Elapsed": "03:20:16",
+      "ExitCode": "0:0",
+      "JobID": "60260404.extern",
+      "JobIDRaw": "60260404.extern",
+      "JobName": "extern",
+      "NodeList": "g180702",
+      "Partition": "",
+      "State": "COMPLETED"
+    },
+    {
+      "Elapsed": "03:20:14",
+      "ExitCode": "0:0",
+      "JobID": "60260405",
+      "JobIDRaw": "60260405",
+      "JobName": "CareB9Stage",
+      "NodeList": "g180702",
+      "Partition": "htzhulab",
+      "State": "CANCELLED by 397557"
+    },
+    {
+      "Elapsed": "03:20:15",
+      "ExitCode": "0:15",
+      "JobID": "60260405.batch",
+      "JobIDRaw": "60260405.batch",
+      "JobName": "batch",
+      "NodeList": "g180702",
+      "Partition": "",
+      "State": "CANCELLED"
+    },
+    {
+      "Elapsed": "03:20:16",
+      "ExitCode": "0:0",
+      "JobID": "60260405.extern",
+      "JobIDRaw": "60260405.extern",
+      "JobName": "extern",
+      "NodeList": "g180702",
+      "Partition": "",
+      "State": "COMPLETED"
+    },
+    {
+      "Elapsed": "00:00:00",
+      "ExitCode": "0:0",
+      "JobID": "60260406",
+      "JobIDRaw": "60260406",
+      "JobName": "CareB9Final",
+      "NodeList": "None assigned",
+      "Partition": "htzhulab",
+      "State": "CANCELLED by 397557"
+    }
+  ],
+  "returncode": 0,
+  "status": "PASS"
+}

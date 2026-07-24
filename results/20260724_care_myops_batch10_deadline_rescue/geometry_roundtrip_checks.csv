@@ -1,0 +1,2 @@
+bbox_used_for_cropping,case_id,properties_validated,shape_after_cropping_and_before_resampling,shape_before_cropping,status,transpose_backward,transpose_forward
+"[[0, 9], [0, 256], [0, 256]]",Case1002,1,"[9, 256, 256]","[9, 256, 256]",PASS,"[0, 1, 2]","[0, 1, 2]"

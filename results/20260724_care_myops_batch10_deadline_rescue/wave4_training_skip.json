@@ -1,0 +1,35 @@
+{
+  "batch11_authorized": false,
+  "gate_checks": {
+    "edema_near_baseline": false,
+    "no_t2_safety": true,
+    "scar_near_baseline": false
+  },
+  "gate_metrics": {
+    "edema": {
+      "baseline_dice": 0.4193986703035173,
+      "baseline_hd95": 19.65365399725183,
+      "dice": 0.3836061814628097,
+      "dice_gap_to_nnunet": 0.03579248884070757,
+      "gt_positive_empty_count": 0,
+      "hd95": 21.197258756146798,
+      "hd95_relative_worsening": 0.07854034466622901
+    },
+    "no_t2_edema_predicted_voxels": 0,
+    "scar": {
+      "baseline_dice": 0.630396816263212,
+      "baseline_hd95": 10.09070189349089,
+      "dice": 0.603342043749358,
+      "dice_gap_to_nnunet": 0.02705477251385402,
+      "gt_positive_empty_count": 0,
+      "hd95": 14.091349467402663,
+      "hd95_relative_worsening": 0.39646871111041665
+    }
+  },
+  "near_baseline_gate_path": "results/20260724_care_myops_batch10_deadline_rescue/near_baseline_gate.json",
+  "old_wave6_resume_authorized": false,
+  "reason": "near_baseline_gate failed before conditional matched 25-epoch training authorization",
+  "schema_version": 1,
+  "status": "SKIPPED_NEAR_BASELINE_GATE_FAIL",
+  "training_jobs_submitted": false
+}

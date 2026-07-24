@@ -5,7 +5,7 @@
 ## 当前状态
 
 ```text
-state_id: care_myops_batch10_deadline_rescue_ready_20260724
+state_id: care_myops_batch10_deadline_rescue_terminal_stop_20260724
 round_id: post_round04_main_only
 state_updated_date: 2026-07-24
 active_development_branch: main
@@ -18,8 +18,8 @@ batch7_scientific_packet_status: INCOMPLETE_BR2_SIP_MECHANISM_CLOSURE
 batch8_status: SUPERSEDED_UNEXECUTED_DIAGNOSTIC_CONTRACT
 batch9_original_status: COMPLETE_NO_USABLE_SIGNAL_WITH_IMPLEMENTATION_DEFECTS
 batch9_repair_status: WAVE0_5_CODE_PUSHED_WAVE6_HUMAN_STOPPED_AT_EPOCH25
-batch10_status: READY_FOR_CONTROLLER
-next_required_action: RUN_BATCH10_DEADLINE_RESCUE
+batch10_status: TERMINAL_STOP_NEAR_BASELINE_GATE_FAIL
+next_required_action: STOP_CARE_MMRD_COMPETITION_ROUTE_NO_BATCH11
 controller_is_coordinator: true
 planning_review_required: false
 review_required: false
@@ -102,18 +102,21 @@ CURRENT/wiki与真实Wave6 runtime不同步
 
 因此 Batch 10 不是再次无边界训练，而是一次限时的公平重评与提交决策。
 
-## 当前唯一授权任务：Batch 10 截止日前救援
+## 当前终态任务：Batch 10 截止日前救援
 
 ```text
 task_key: 20260724_care_myops_batch10_deadline_rescue
-status: READY_FOR_CONTROLLER
+status: TERMINAL_STOP_NEAR_BASELINE_GATE_FAIL
 result_root: results/20260724_care_myops_batch10_deadline_rescue
 planner_decision: results/srr_production/code_maturity/batch10_deadline_rescue_planner_decision_20260724.md
 config: configs/care_mm/batch10_deadline_rescue.yaml
 controller_task: prompts/tasks/20260724_care_myops_batch10_deadline_rescue_controller.md
 executor_plan: prompts/tasks/20260724_care_myops_batch10_deadline_rescue_executor_plan.yaml
 architecture_change: false
-training_semantics_change: conditional_component_repair
+training_semantics_change: not_executed_near_baseline_gate_failed
+terminal_decision: STOP_CARE_MMRD_COMPETITION_ROUTE
+selected_candidate: distill_epoch25_two_seed_mean/raw_argmax
+near_baseline_gate: FAIL
 ```
 
 执行顺序固定为：
@@ -124,9 +127,9 @@ freeze Batch9 runtime and clean-checkout audit
 -> nnU-Net v2 sliding-window + official inverse export
 -> fair re-evaluation of 8 existing checkpoints and baseline
 -> bounded ensemble and calibration/audit postprocessing
--> near-baseline gate
--> conditional synchronized 25-epoch matched rescue
--> paper/Docker go-no-go and terminal packet
+-> near-baseline gate FAIL
+-> conditional synchronized 25-epoch matched rescue SKIPPED
+-> paper/Docker go-no-go and terminal STOP packet
 ```
 
 ## nnU-Net 边界
@@ -175,6 +178,27 @@ Docker候选允许更接近基线，但必须是有实质意义的非 nnU-Net CA
 
 完成正确推理、teacher/ensemble、固定后处理以及允许的25 epoch短续训后，若 scar 仍低于baseline超过0.03或edema低超过0.02，停止CARE-MMRD竞赛路线，不启动Batch11，不恢复Batch7或旧SRR长链。
 
+
+## Batch 10 终态结果
+
+```text
+final_decision: STOP_CARE_MMRD_COMPETITION_ROUTE
+controller_verification_decision: VERIFIED_COMPLETE
+near_baseline_gate: FAIL
+selected_candidate: distill_epoch25_two_seed_mean/raw_argmax
+audit_scar_dice_delta_vs_nnunet: -0.0270547725
+audit_edema_dice_delta_vs_nnunet: -0.0357924888
+audit_scar_hd95_relative_worsening: 0.3964687111
+audit_edema_hd95_relative_worsening: 0.0785403447
+no_t2_edema_predicted_voxels: 0
+wave4_training_jobs_submitted: false
+validation_upload_authorized: false
+hosted_metric_claim_authorized: false
+batch11_authorized: false
+```
+
+Batch10 已完成无训练救援、八checkpoint公平重评、teacher独立报告、冻结ensemble和calibration/audit后处理。near-baseline gate 未通过，因此25 epoch matched训练、paper候选、Docker候选和Batch11均不授权。
+
 ## 当前未授权
 
 ```text
@@ -192,7 +216,7 @@ validation upload
 Docker upload
 hosted metric claim
 route promotion
-final scientific claim before Batch10 terminal packet
+Batch11 or validation/Docker upload after terminal STOP packet
 ```
 
 `configs/srr_production/entrypoints.yaml` 仍记录旧 Batch9 authority，当前标记为 stale；Batch10 Wave0 必须在实现入口和strict audit准备完成后同步修复，不得把旧 authority 当作当前科学状态。

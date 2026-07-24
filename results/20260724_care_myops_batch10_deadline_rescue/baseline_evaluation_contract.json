@@ -1,0 +1,11 @@
+{
+  "enter_model_forward": false,
+  "fallback_or_compositor_source": false,
+  "metrics_reference": "results/srr_production/evaluation/nnunet_fold0_reproduction.json",
+  "prediction_root": "data/nnUNet/nnUNet_results/Dataset501_CAREMyoPS/nnUNetTrainer_500epochs__nnUNetPlans__3d_fullres/fold_0/validation",
+  "read_checkpoint": false,
+  "read_logits_or_probabilities": false,
+  "recompute_with_same_evaluator": true,
+  "schema_version": 1,
+  "status": "PASS"
+}

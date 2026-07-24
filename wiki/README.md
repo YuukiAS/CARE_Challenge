@@ -1,10 +1,10 @@
 # CARE 架构 Wiki
 
-architecture_version: `care-myops-batch10-deadline-rescue-ready`
+architecture_version: `care-myops-batch10-deadline-rescue-terminal-stop`
 latest_verified_runtime: `Batch9 repair direct and teacher complete; Wave6 control/distill stopped by user after epoch25`
-latest_scientific_status: `CARE-MMRD remains below nnU-Net under current evaluator; fair inference/export and training semantics still require repair before final judgment`
+latest_scientific_status: `Batch10 fair rescue completed; best CARE-MMRD ensemble failed near-baseline gate, so CARE-MMRD competition route stops`
 latest_controller_task: `20260724_care_myops_batch10_deadline_rescue`
-route_status: `MAIN_ONLY_BATCH10_READY_FOR_CONTROLLER`
+route_status: `MAIN_ONLY_BATCH10_TERMINAL_STOP_NO_BATCH11`
 
 本页是 GPT、Controller、Executor、Mapper 和 Planner 读取当前架构状态的根入口。当前任务不是再增加模型复杂度，而是在两到三天内确认 CARE-MMRD 是否还有真实提交价值：先修复公平推理和空间恢复，重评全部现有 checkpoint，再决定是否允许一次25 epoch定向续训以及是否形成paper或Docker候选。
 
@@ -15,7 +15,7 @@ Batch7: 操作完成，scar失败、edema小增益，BR2/SIP机制闭环不完�
 Batch8: 未执行，历史诊断合同
 Original Batch9: 运行完成，因实现缺陷不能作为干净科学否定
 Batch9 repair: Wave0–5代码已推送，Wave6由用户在epoch25后终止
-Batch10: READY_FOR_CONTROLLER
+Batch10: TERMINAL_STOP_NEAR_BASELINE_GATE_FAIL
 旧SRR/BR2/SIP: 不进入Batch10
 nnU-Net: 只作同划分评价基线，不进入CARE-MMRD forward或fallback
 ```
@@ -178,6 +178,13 @@ docker deadline: 2026-08-03
 ![执行流程](figures/execution-flow.png)
 
 部署forward未改变，因此Batch10不重画模型主图。Mapper需要更新真实推理/export、训练语义、runtime和状态证据。
+
+
+## Batch 10 终态 Mapper 摘要
+
+Batch10 已完成正式 nnU-Net v2 滑窗/export、8个现有checkpoint公平重评、teacher独立候选、六个冻结 probability ensemble、calibration/audit 后处理和 strict validator。最佳候选为 `distill_epoch25_two_seed_mean/raw_argmax`，audit scar Dice 比同划分 nnU-Net 低 `0.0270547725`，audit edema Dice 低 `0.0357924888`；scar HD95 相对恶化 `0.3964687111`，edema HD95 相对恶化 `0.0785403447`。no-T2 edema 体素为 `0`，GT-positive 空预测为 `0`，但 near-baseline gate 失败。
+
+因此 Wave4 训练被跳过，未提交任何25 epoch matched jobs；不启动 Batch11，不做 validation upload，不做 hosted metric claim，不构成 paper 或 Docker 候选。终态 evidence 位于 `results/20260724_care_myops_batch10_deadline_rescue/strict_validator_report.json`、`near_baseline_gate.json`、`controller_report.md`。
 
 ## 入口
 

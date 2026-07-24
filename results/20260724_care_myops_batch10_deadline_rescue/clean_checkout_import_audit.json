@@ -1,0 +1,52 @@
+{
+  "imports": [
+    {
+      "module": "src.care_myocardium.data.care_mm_batch9",
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "ok"
+    },
+    {
+      "module": "src.care_myocardium.losses.care_mm_losses",
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "ok"
+    },
+    {
+      "module": "src.care_myocardium.models.care_mm_reliable_distill",
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "ok"
+    },
+    {
+      "module": "src.care_myocardium.training.nnUNetTrainerCAREMMReliableDistill",
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "nnUNet_raw is not defined and nnU-Net can only be used on data for which preprocessed files are already present on your system. nnU-Net cannot be used for experiment planning and preprocessing like this. If this is not intended, please read documentation/setting_up_paths.md for information on how to set this up properly.\nnnUNet_preprocessed is not defined and nnU-Net can not be used for preprocessing or training. If this is not intended, please read documentation/setting_up_paths.md for information on how to set this up.\nnnUNet_results is not defined and nnU-Net cannot be used for training or inference. If this is not intended behavior, please read documentation/setting_up_paths.md for information on how to set this up.\nok"
+    },
+    {
+      "module": "scripts.evaluation.evaluate_care_mm_batch9",
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "ok"
+    }
+  ],
+  "method": "git_archive_to_tmp_then_import_with_current_environment",
+  "required_imports": [
+    "src.care_myocardium.data.care_mm_batch9",
+    "src.care_myocardium.losses.care_mm_losses",
+    "src.care_myocardium.models.care_mm_reliable_distill",
+    "src.care_myocardium.training.nnUNetTrainerCAREMMReliableDistill",
+    "scripts.evaluation.evaluate_care_mm_batch9"
+  ],
+  "schema_version": 1,
+  "status": "PASS",
+  "tracked_dependency_status": {
+    "scripts/evaluation/evaluate_care_mm_batch9.py": true,
+    "src/care_myocardium/data/care_mm_batch9.py": true,
+    "src/care_myocardium/data/case_metadata.py": true,
+    "src/care_myocardium/losses/care_mm_losses.py": true,
+    "src/care_myocardium/models/care_mm_reliable_distill.py": true,
+    "src/care_myocardium/training/nnUNetTrainerCAREMMReliableDistill.py": true
+  }
+}

@@ -1,0 +1,78 @@
+{
+  "audit_used_for_selection": false,
+  "fixed_grid": {
+    "edema_margin": [
+      -0.25,
+      0.0,
+      0.25
+    ],
+    "scar_margin": [
+      -0.25,
+      0.0,
+      0.25
+    ],
+    "temperature": [
+      0.75,
+      1.0,
+      1.25
+    ]
+  },
+  "schema_version": 1,
+  "selected": {
+    "edema_calibration_empty_prediction_count": 0,
+    "edema_calibration_harm_count": 3,
+    "edema_calibration_positive_gt_delta_vs_nnunet": 0.025003229836937813,
+    "edema_calibration_positive_gt_dice": 0.3944763548913979,
+    "edema_calibration_positive_gt_hd95": null,
+    "edema_calibration_remote_fp_volume_mm3": null,
+    "edema_margin": -0.25,
+    "empty_prediction_count_total": 0,
+    "harm_count_total": 15,
+    "hd95_sum": 0.0,
+    "mean_pathology_delta_vs_nnunet": 0.005404602813872145,
+    "minimum_pathology_delta_vs_nnunet": -0.014194024209193523,
+    "postprocess_id": "temp1.25_scar0.25_edema-0.25",
+    "remote_fp_sum": 0.0,
+    "scar_calibration_empty_prediction_count": 0,
+    "scar_calibration_harm_count": 12,
+    "scar_calibration_positive_gt_delta_vs_nnunet": -0.014194024209193523,
+    "scar_calibration_positive_gt_dice": 0.4990781700652592,
+    "scar_calibration_positive_gt_hd95": null,
+    "scar_calibration_remote_fp_volume_mm3": null,
+    "scar_margin": 0.25,
+    "temperature": 1.25
+  },
+  "selection_uses": "calibration_only",
+  "source_bundle": {
+    "anatomy_0_to_3": {
+      "checkpoint_path": "results/20260723_care_myops_batch9_exposed_issues_repair/runtime/seed20260723/teacher_full_view/checkpoint_epoch50.pt",
+      "checkpoint_sha256": "e92521fccec92d0066f3fa5c076fce16aea3bb02330b940c85321ab4726d1474",
+      "class_1_calibration_dice": 0.6611941289808202,
+      "class_2_calibration_dice": 0.9036596774887561,
+      "class_3_calibration_dice": 0.9050100848894257,
+      "mean_anatomy_class_dice": 0.823287963786334,
+      "min_anatomy_class_dice": 0.6611941289808202,
+      "myocardium_hd95": 7.861438840069646,
+      "seed": "20260723",
+      "source_prefix": "phase1_teacher_full_view_seed20260723_epoch050_e92521fc",
+      "variant": "teacher_full_view"
+    },
+    "edema_class4": {
+      "calibration_positive_gt_dice": 0.3822409111077999,
+      "checkpoint_path": "results/20260723_care_myops_batch9_exposed_issues_repair/runtime/seed20260723/student_direct_reliable__official_aug_restart2/checkpoint_epoch150.pt",
+      "checkpoint_sha256": "e29829d4d0cc2c290a946cee666ec74d8b44ae2dbe33d0fbb9d64e9baebf22c5",
+      "seed": "20260723",
+      "source_prefix": "phase1_student_direct_reliable_seed20260723_epoch150_e29829d4",
+      "variant": "student_direct_reliable"
+    },
+    "scar_class5": {
+      "calibration_positive_gt_dice": 0.5125368164211129,
+      "checkpoint_path": "results/20260723_care_myops_batch9_exposed_issues_repair/runtime/seed20260723/student_reliable_distill/checkpoint_epoch25.pt",
+      "checkpoint_sha256": "366722497a47f292e07a0d1c1a3da57c2502b61042bc89b5cfc56b5a89e6a3a0",
+      "seed": "20260723",
+      "source_prefix": "phase1_student_reliable_distill_seed20260723_epoch025_36672249",
+      "variant": "student_reliable_distill"
+    }
+  },
+  "status": "PASS"
+}

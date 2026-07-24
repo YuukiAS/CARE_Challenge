@@ -3,6 +3,10 @@
 # ------------------------------------------------------------------------------
 archive/
 data/
+!src/care_myocardium/data/
+src/care_myocardium/data/*
+!src/care_myocardium/data/care_mm_batch9.py
+!src/care_myocardium/data/case_metadata.py
 logs/
 /models/
 temp/

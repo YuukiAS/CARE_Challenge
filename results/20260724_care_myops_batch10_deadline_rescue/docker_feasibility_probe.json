@@ -1,0 +1,13 @@
+{
+  "candidate_claim_authorized": false,
+  "checked_unix": 1784882666,
+  "docker_image_built": false,
+  "docker_upload_run": false,
+  "final_decision_implication": "STOP_CARE_MMRD_COMPETITION_ROUTE",
+  "hosted_validation_run": false,
+  "near_baseline_gate_path": "results/20260724_care_myops_batch10_deadline_rescue/near_baseline_gate.json",
+  "reason": "near_baseline_gate failed and no complex TTA/multi-model candidate advanced; Docker feasibility one-case probe is required only before advancing a final complex candidate, so no Docker candidate may be claimed.",
+  "schema_version": 1,
+  "status": "SKIPPED_NO_ADVANCED_COMPLEX_CANDIDATE",
+  "validation_upload_run": false
+}

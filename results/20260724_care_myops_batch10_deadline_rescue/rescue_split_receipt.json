@@ -1,0 +1,18 @@
+{
+  "assignment": "alternating_calibration_audit",
+  "case_count": 44,
+  "counts": {
+    "audit": 22,
+    "calibration": 22
+  },
+  "parameter_selection_uses_audit": false,
+  "schema_version": 1,
+  "source_cases": "fold0_validation_44",
+  "status": "PASS",
+  "strata": [
+    "center",
+    "scar_positive",
+    "edema_positive"
+  ],
+  "within_stratum_order": "sha256_case_id"
+}

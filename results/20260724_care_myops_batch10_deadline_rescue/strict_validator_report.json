@@ -1,0 +1,102 @@
+{
+  "checked_unix": 1784882808,
+  "controller_verification_decision": "VERIFIED_COMPLETE",
+  "errors": [],
+  "final_decision": "STOP_CARE_MMRD_COMPETITION_ROUTE",
+  "final_metrics": {
+    "near_baseline_gate_status": "FAIL",
+    "no_t2_edema_predicted_voxels": 0,
+    "pathologies": {
+      "edema": {
+        "audit_delta_vs_nnunet": -0.028956446629086696,
+        "audit_dice": 0.3904422236744306,
+        "audit_empty_prediction_count": 0,
+        "audit_harm": 6,
+        "audit_hd95": 21.032770157922695,
+        "audit_remote_fp": 0.0,
+        "full44_dice": 0.3762172836028407,
+        "gate_metric": {
+          "baseline_dice": 0.4193986703035173,
+          "baseline_hd95": 19.65365399725183,
+          "dice": 0.3904422236744306,
+          "dice_gap_to_nnunet": 0.028956446629086696,
+          "gt_positive_empty_count": 0,
+          "hd95": 21.032770157922695,
+          "hd95_relative_worsening": 0.07017097995434877
+        }
+      },
+      "scar": {
+        "audit_delta_vs_nnunet": -0.022066744779489,
+        "audit_dice": 0.608330071483723,
+        "audit_empty_prediction_count": 0,
+        "audit_harm": 15,
+        "audit_hd95": 14.392202590651062,
+        "audit_remote_fp": 808.1831359620261,
+        "full44_dice": 0.5455527512230987,
+        "gate_metric": {
+          "baseline_dice": 0.630396816263212,
+          "baseline_hd95": 10.09070189349089,
+          "dice": 0.608330071483723,
+          "dice_gap_to_nnunet": 0.022066744779489,
+          "gt_positive_empty_count": 0,
+          "hd95": 14.392202590651062,
+          "hd95_relative_worsening": 0.4262835967768406
+        }
+      }
+    },
+    "selected_candidate": "distill_epoch25_two_seed_mean",
+    "selected_postprocess_id": "raw_argmax",
+    "training_authorized": false
+  },
+  "forbidden_actions_confirmed": {
+    "batch11_started": false,
+    "batch9_wave6_resumed": false,
+    "docker_upload_run": false,
+    "hosted_metrics_claimed": false,
+    "hosted_validation_run": false,
+    "nnunet_used_as_model_ensemble_anchor_fallback": false,
+    "validation_upload_run": false
+  },
+  "required_job_evidence": {
+    "60342779_completed": true,
+    "60365241_cancelled": true,
+    "60365708_cancelled": true,
+    "60366356_completed": true
+  },
+  "schema_version": 2,
+  "slurm_accounting": {
+    "command": "sacct -j 60342779,60365241,60365708,60366356 -P -n -o JobID,JobName,Partition,State,ExitCode,Elapsed,Start,End",
+    "lines": [
+      "60342779|B10CkptScreen|htzhulab|COMPLETED|0:0|00:41:48|2026-07-23T22:16:15|2026-07-23T22:58:03",
+      "60342779.batch|batch||COMPLETED|0:0|00:41:48|2026-07-23T22:16:15|2026-07-23T22:58:03",
+      "60342779.extern|extern||COMPLETED|0:0|00:41:48|2026-07-23T22:16:15|2026-07-23T22:58:03",
+      "60365241|B10W2Fair|htzhulab|CANCELLED by 397557|0:0|00:04:10|2026-07-24T02:08:18|2026-07-24T02:12:28",
+      "60365241.batch|batch||CANCELLED|0:15|00:04:11|2026-07-24T02:08:18|2026-07-24T02:12:29",
+      "60365241.extern|extern||COMPLETED|0:0|00:04:11|2026-07-24T02:08:18|2026-07-24T02:12:29",
+      "60365708|B10W2Fair|htzhulab|CANCELLED by 397557|0:0|00:03:56|2026-07-24T02:15:24|2026-07-24T02:19:20",
+      "60365708.batch|batch||CANCELLED|0:15|00:03:57|2026-07-24T02:15:24|2026-07-24T02:19:21",
+      "60365708.extern|extern||COMPLETED|0:0|00:03:57|2026-07-24T02:15:24|2026-07-24T02:19:21",
+      "60366356|B10W2Fair|htzhulab|COMPLETED|0:0|00:44:08|2026-07-24T02:20:23|2026-07-24T03:04:31",
+      "60366356.batch|batch||COMPLETED|0:0|00:44:08|2026-07-24T02:20:23|2026-07-24T03:04:31",
+      "60366356.extern|extern||COMPLETED|0:0|00:44:08|2026-07-24T02:20:23|2026-07-24T03:04:31"
+    ],
+    "returncode": 0,
+    "stderr": "",
+    "stdout": "60342779|B10CkptScreen|htzhulab|COMPLETED|0:0|00:41:48|2026-07-23T22:16:15|2026-07-23T22:58:03\n60342779.batch|batch||COMPLETED|0:0|00:41:48|2026-07-23T22:16:15|2026-07-23T22:58:03\n60342779.extern|extern||COMPLETED|0:0|00:41:48|2026-07-23T22:16:15|2026-07-23T22:58:03\n60365241|B10W2Fair|htzhulab|CANCELLED by 397557|0:0|00:04:10|2026-07-24T02:08:18|2026-07-24T02:12:28\n60365241.batch|batch||CANCELLED|0:15|00:04:11|2026-07-24T02:08:18|2026-07-24T02:12:29\n60365241.extern|extern||COMPLETED|0:0|00:04:11|2026-07-24T02:08:18|2026-07-24T02:12:29\n60365708|B10W2Fair|htzhulab|CANCELLED by 397557|0:0|00:03:56|2026-07-24T02:15:24|2026-07-24T02:19:20\n60365708.batch|batch||CANCELLED|0:15|00:03:57|2026-07-24T02:15:24|2026-07-24T02:19:21\n60365708.extern|extern||COMPLETED|0:0|00:03:57|2026-07-24T02:15:24|2026-07-24T02:19:21\n60366356|B10W2Fair|htzhulab|COMPLETED|0:0|00:44:08|2026-07-24T02:20:23|2026-07-24T03:04:31\n60366356.batch|batch||COMPLETED|0:0|00:44:08|2026-07-24T02:20:23|2026-07-24T03:04:31\n60366356.extern|extern||COMPLETED|0:0|00:44:08|2026-07-24T02:20:23|2026-07-24T03:04:31\n"
+  },
+  "status": "PASS",
+  "validated_artifacts": [
+    "checkpoint_screening_manifest.csv",
+    "checkpoint_screening_receipt.json",
+    "selection_provenance.json",
+    "selection_provenance_audit.json",
+    "wave2_fair_reevaluation_receipt.json",
+    "wave3_ensemble_postprocess_receipt.json",
+    "pathology_compositor_calibration.json",
+    "paired_spatial_fiducial_checks.csv",
+    "docker_feasibility_probe.json",
+    "near_baseline_gate.json",
+    "gap_register.csv",
+    "controller_ledger.csv"
+  ]
+}

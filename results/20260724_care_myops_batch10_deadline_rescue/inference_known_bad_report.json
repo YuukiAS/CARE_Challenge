@@ -1,0 +1,26 @@
+{
+  "fixtures": [
+    {
+      "error": "missing nnU-Net properties: ['bbox_used_for_cropping']",
+      "fixture": "reject_missing_properties",
+      "status": "PASS_FAILED_AS_EXPECTED"
+    },
+    {
+      "error": "invalid crop bbox for axis 0: [[0, 1], [0, 1], [0, 1]] vs (9, 256, 256)/(9, 256, 256)",
+      "fixture": "reject_wrong_crop_bbox",
+      "status": "PASS_FAILED_AS_EXPECTED"
+    },
+    {
+      "evidence": "no old Batch9 evaluator import; no scipy.ndimage zoom import; export_prediction_from_logits is used",
+      "fixture": "reject_shape_only_resample",
+      "status": "PASS_STATIC_FORBIDDEN"
+    },
+    {
+      "evidence": "load_model_from_checkpoint calls config_from_checkpoint_or_plans before load_state_dict(strict=True)",
+      "fixture": "reject_default_model_config_reload",
+      "status": "PASS_STATIC_FORBIDDEN"
+    }
+  ],
+  "schema_version": 1,
+  "status": "PASS"
+}

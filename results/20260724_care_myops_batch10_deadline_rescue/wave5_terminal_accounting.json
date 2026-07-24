@@ -1,0 +1,16 @@
+{
+  "afterany_finalizer_required_for_training": false,
+  "afterok_training_dependencies_submitted": false,
+  "near_baseline_gate_status": "FAIL",
+  "post_completion_aggregation_rerun": "scripts/evaluation/batch10_wave2_fair_reevaluation.py --phase aggregate",
+  "schema_version": 1,
+  "status": "PASS_NO_TRAINING_JOBS_ALLOWED_AFTER_GATE_FAIL",
+  "wave2_sacct_returncode": 0,
+  "wave2_slurm_job_id": "60336934",
+  "wave2_terminal_accounting": [
+    "60336934|60336934|B10W2Fair|htzhulab|COMPLETED|0:0|00:17:42|g1807htzh01",
+    "60336934.batch|60336934.batch|batch||COMPLETED|0:0|00:17:42|g1807htzh01",
+    "60336934.extern|60336934.extern|extern||COMPLETED|0:0|00:17:42|g1807htzh01"
+  ],
+  "wave4_training_jobs": []
+}
