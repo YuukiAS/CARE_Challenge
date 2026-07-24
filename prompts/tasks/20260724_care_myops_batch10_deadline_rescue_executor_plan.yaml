@@ -1,0 +1,290 @@
+schema_version: 2
+task_key: 20260724_care_myops_batch10_deadline_rescue
+status: READY_FOR_CONTROLLER
+execution_mode: controller_supervised
+controller_is_coordinator: true
+executor_slots: 1
+executor_count: 1
+parallel_execution_allowed: false
+result_root: results/20260724_care_myops_batch10_deadline_rescue
+controller_task_path: prompts/tasks/20260724_care_myops_batch10_deadline_rescue_controller.md
+planner_decision_path: results/srr_production/code_maturity/batch10_deadline_rescue_planner_decision_20260724.md
+config_path: configs/care_mm/batch10_deadline_rescue.yaml
+planning_review_required: false
+review_required: false
+slurm_runtime_continuity_required: true
+continuity_backend: slurm_dependency
+
+waves:
+  - wave_id: B10_W0_BIND_FREEZE_AND_CLEAN_CHECKOUT
+    executor_id: batch10_executor
+    blocking: true
+    dependencies: []
+    read_required:
+      - AGENTS.md
+      - START_HERE_FOR_GPT.md
+      - GPT_PLANNER_CARE_PROTOCOL.md
+      - prompts/FINAL_OUTPUT_READABILITY_POLICY.md
+      - prompts/AGENT_FLOW_V2_PROTOCOL.md
+      - prompts/HANDOFF_GATE_POLICY.md
+      - prompts/GPT_HARD_GATE_PROMPT.md
+      - prompts/routes/ROUTE_ANTI_LAZINESS_PROTOCOL.md
+      - prompts/routes/ROUTE_HARD_REQUIREMENTS_MATRIX.md
+      - prompts/routes/handoffs/CURRENT.md
+      - wiki/README.md
+      - .agents/skills/slurm-routing-partition/SKILL.md
+      - .agents/skills/care-mapper/SKILL.md
+      - results/srr_production/code_maturity/batch10_deadline_rescue_planner_decision_20260724.md
+      - configs/care_mm/batch10_deadline_rescue.yaml
+      - results/20260723_care_myops_batch9_exposed_issues_repair/
+    write_scope:
+      - results/20260724_care_myops_batch10_deadline_rescue/
+      - src/care_myocardium/data/
+      - tests/care_mm/
+    required_outputs:
+      - results/20260724_care_myops_batch10_deadline_rescue/controller_context.json
+      - results/20260724_care_myops_batch10_deadline_rescue/controller_ledger.csv
+      - results/20260724_care_myops_batch10_deadline_rescue/batch9_runtime_freeze.json
+      - results/20260724_care_myops_batch10_deadline_rescue/existing_checkpoint_inventory.csv
+      - results/20260724_care_myops_batch10_deadline_rescue/clean_checkout_import_audit.json
+      - results/20260724_care_myops_batch10_deadline_rescue/preprocessing_fingerprint_audit.json
+    completion_conditions:
+      - latest_remote_main_bound
+      - human_stopped_wave6_not_resumed
+      - all_batch9_job_ids_and_terminal_states_recorded
+      - eight_required_checkpoint_candidates_found_and_hashed_or_explicitly_blocked
+      - all_first_party_imports_work_from_git_archive_clean_checkout
+      - case_metadata_dependency_tracked_or_removed
+      - plans_data_identifier_and_preprocessed_root_match
+    failure_action: controller_returns_same_scope_gap_to_executor_no_inference
+
+  - wave_id: B10_W1_FAIR_INFERENCE_EXPORT_IMPLEMENTATION
+    executor_id: batch10_executor
+    blocking: true
+    dependencies: [B10_W0_BIND_FREEZE_AND_CLEAN_CHECKOUT]
+    write_scope:
+      - scripts/inference/
+      - scripts/evaluation/
+      - src/care_myocardium/models/care_mm_reliable_distill.py
+      - src/care_myocardium/data/
+      - tests/care_mm/
+      - jobs/care_mm/
+      - results/20260724_care_myops_batch10_deadline_rescue/
+    required_repairs:
+      - checkpoint_plans_and_contract_reconstruct_model
+      - plans_derived_preprocessed_data_identifier
+      - nnunet_v2_sliding_window_step_0_5_gaussian
+      - trainer_declared_mirror_tta
+      - official_inverse_preprocessing_export
+      - remove_shape_only_zoom_and_gt_geometry_copy_shortcuts
+      - no_t2_class4_hard_mask_before_argmax
+      - baseline_predictions_read_for_evaluation_only
+    required_outputs:
+      - results/20260724_care_myops_batch10_deadline_rescue/fair_inference_contract.json
+      - results/20260724_care_myops_batch10_deadline_rescue/geometry_roundtrip_checks.csv
+      - results/20260724_care_myops_batch10_deadline_rescue/sliding_window_parity_checks.csv
+      - results/20260724_care_myops_batch10_deadline_rescue/checkpoint_reconstruction_checks.csv
+      - results/20260724_care_myops_batch10_deadline_rescue/baseline_evaluation_contract.json
+      - results/20260724_care_myops_batch10_deadline_rescue/inference_known_bad_report.json
+      - results/20260724_care_myops_batch10_deadline_rescue/unit_test_report.md
+    completion_conditions:
+      - formal_inference_never_calls_whole_volume_shortcut
+      - official_export_uses_case_properties_and_inverse_preprocessing
+      - output_shape_spacing_origin_direction_match_reference
+      - wrong_crop_transpose_properties_and_zoom_fixtures_fail
+      - model_reloads_from_checkpoint_plans_not_default_constructor
+      - standard_nnunet_never_enters_care_model_or_compositor
+    failure_action: controller_returns_same_scope_gap_to_executor_no_checkpoint_scoring
+
+  - wave_id: B10_W2_EXISTING_CHECKPOINT_FAIR_REEVALUATION
+    executor_id: batch10_executor
+    blocking: true
+    dependencies: [B10_W1_FAIR_INFERENCE_EXPORT_IMPLEMENTATION]
+    write_scope:
+      - results/20260724_care_myops_batch10_deadline_rescue/
+      - logs/care_myops_batch10_deadline_rescue/inference/
+      - jobs/care_mm/
+    slurm_jobs:
+      phase1:
+        partitions: [htzhulab, a100-gpu]
+        candidates: all_8_required_single_models
+        mirror_tta: false
+        validation_cases: 44
+      phase2:
+        conditional_on_phase1: true
+        candidates: top_2_individual_models_per_pathology
+        mirror_tta: true
+        validation_cases: 44
+    required_outputs:
+      - results/20260724_care_myops_batch10_deadline_rescue/rescue_split_manifest.csv
+      - results/20260724_care_myops_batch10_deadline_rescue/baseline_recomputed_casewise.csv
+      - results/20260724_care_myops_batch10_deadline_rescue/baseline_recomputed_summary.csv
+      - results/20260724_care_myops_batch10_deadline_rescue/single_model_candidate_manifest.csv
+      - results/20260724_care_myops_batch10_deadline_rescue/single_model_casewise_metrics.csv
+      - results/20260724_care_myops_batch10_deadline_rescue/single_model_summary.csv
+      - results/20260724_care_myops_batch10_deadline_rescue/tta_candidate_summary.csv
+      - results/20260724_care_myops_batch10_deadline_rescue/teacher_candidate_summary.csv
+      - results/20260724_care_myops_batch10_deadline_rescue/inference_slurm_attempts.csv
+    completion_conditions:
+      - all_phase1_jobs_terminal_accounted
+      - all_8_candidates_have_44_predictions_or_fail_closed
+      - baseline_and_candidates_use_same_metric_implementation
+      - positive_gt_all_case_complete_trimodal_populations_separate
+      - teacher_reported_as_independent_candidate
+      - only_top_two_per_pathology_receive_tta
+      - post_completion_aggregation_exit_zero
+    failure_action: controller_repairs_or_marks_exact_candidate_unavailable_no_silent_drop
+
+  - wave_id: B10_W3_BOUNDED_ENSEMBLE_POSTPROCESS_AUDIT
+    executor_id: batch10_executor
+    blocking: true
+    dependencies: [B10_W2_EXISTING_CHECKPOINT_FAIR_REEVALUATION]
+    write_scope:
+      - scripts/evaluation/
+      - tests/care_mm/
+      - results/20260724_care_myops_batch10_deadline_rescue/
+    exact_candidates:
+      - direct_two_seed_mean
+      - teacher_two_seed_mean
+      - control_epoch25_two_seed_mean
+      - distill_epoch25_two_seed_mean
+      - best_two_individual_mean
+      - pathology_specific_compositor
+    exact_postprocess_grid:
+      anatomy_probability_threshold: [0.20, 0.30, 0.40]
+      allowed_distance_mm: [5, 10]
+      scar_min_component_mm3: [0, 5, 10]
+      edema_min_component_mm3: [0, 20, 50]
+    required_outputs:
+      - results/20260724_care_myops_batch10_deadline_rescue/ensemble_manifest.csv
+      - results/20260724_care_myops_batch10_deadline_rescue/ensemble_casewise_metrics.csv
+      - results/20260724_care_myops_batch10_deadline_rescue/ensemble_summary.csv
+      - results/20260724_care_myops_batch10_deadline_rescue/postprocess_calibration_grid.csv
+      - results/20260724_care_myops_batch10_deadline_rescue/postprocess_selected.json
+      - results/20260724_care_myops_batch10_deadline_rescue/audit_split_metrics.csv
+      - results/20260724_care_myops_batch10_deadline_rescue/full44_candidate_ranking.csv
+      - results/20260724_care_myops_batch10_deadline_rescue/near_baseline_gate.json
+    completion_conditions:
+      - probability_ensemble_only
+      - no_nnunet_probability_in_ensemble
+      - only_fixed_candidate_set_evaluated
+      - calibration_only_selects_postprocess
+      - audit_split_never_selects_parameters
+      - ranking_uses_dice_help_harm_hd95_remote_fp
+      - near_baseline_gate_recomputed_from_audit_metrics
+    failure_action: controller_returns_ensemble_or_metric_bug_to_executor
+
+  - wave_id: B10_W4_CONDITIONAL_TRAINING_SEMANTICS_REPAIR
+    executor_id: batch10_executor
+    blocking: true
+    dependencies: [B10_W3_BOUNDED_ENSEMBLE_POSTPROCESS_AUDIT]
+    condition: near_baseline_gate_pass
+    skip_is_valid_when: near_baseline_gate_fail
+    write_scope:
+      - src/care_myocardium/data/care_mm_batch9.py
+      - src/care_myocardium/losses/care_mm_losses.py
+      - src/care_myocardium/training/nnUNetTrainerCAREMMReliableDistill.py
+      - scripts/training/
+      - scripts/evaluation/
+      - tests/care_mm/
+      - jobs/care_mm/
+      - results/20260724_care_myops_batch10_deadline_rescue/
+    required_repairs:
+      - shared_student_natural_teacher_spatial_transform
+      - separately_recorded_intensity_augmentation_seeds
+      - target_then_center_then_case_then_patch_sampling
+      - pathology_specific_teacher_margin_confidence
+      - training_only_threshold_calibration
+      - disable_pathology_distill_when_coverage_precision_gate_fails
+      - matched_control_distill_full_step_hash
+    required_outputs:
+      - results/20260724_care_myops_batch10_deadline_rescue/paired_spatial_augmentation_checks.csv
+      - results/20260724_care_myops_batch10_deadline_rescue/center_balanced_sampler_checks.csv
+      - results/20260724_care_myops_batch10_deadline_rescue/pathology_confidence_calibration.csv
+      - results/20260724_care_myops_batch10_deadline_rescue/resolved_batch10_distillation_contract.json
+      - results/20260724_care_myops_batch10_deadline_rescue/matched_short_run_preflight.json
+      - results/20260724_care_myops_batch10_deadline_rescue/training_known_bad_report.json
+    completion_conditions:
+      - student_teacher_voxel_correspondence_exact_after_spatial_transform
+      - eligible_center_sampling_within_tolerance
+      - scar_and_edema_confidence_masks_use_corresponding_class_margin
+      - any_class_max_confidence_path_forbidden
+      - control_and_distill_differ_only_by_distillation_weights
+      - all_known_bad_fixtures_nonzero_exit
+    failure_action: controller_returns_same_scope_gap_to_executor_no_short_training
+
+  - wave_id: B10_W5_CONDITIONAL_25EPOCH_MATCHED_RESCUE
+    executor_id: batch10_executor
+    blocking: true
+    dependencies: [B10_W4_CONDITIONAL_TRAINING_SEMANTICS_REPAIR]
+    condition: near_baseline_gate_pass_and_wave4_pass
+    skip_is_valid_when: near_baseline_gate_fail
+    write_scope:
+      - results/20260724_care_myops_batch10_deadline_rescue/
+      - logs/care_myops_batch10_deadline_rescue/training/
+      - jobs/care_mm/
+    formal_jobs:
+      - {seed: 20260723, variant: batch10_sync_control, partition: htzhulab, epochs: 25, optimizer_steps: 6250, initial_lr: 0.0002}
+      - {seed: 20260723, variant: batch10_pathology_distill, partition: htzhulab, epochs: 25, optimizer_steps: 6250, initial_lr: 0.0002}
+      - {seed: 20260724, variant: batch10_sync_control, partition: a100-gpu, epochs: 25, optimizer_steps: 6250, initial_lr: 0.0002}
+      - {seed: 20260724, variant: batch10_pathology_distill, partition: a100-gpu, epochs: 25, optimizer_steps: 6250, initial_lr: 0.0002}
+    dependency_policy:
+      same_seed_control_and_distill_start_after_shared_preflight: afterok
+      finalizer_and_accounting: afterany_all_attempts
+    required_outputs:
+      - results/20260724_care_myops_batch10_deadline_rescue/short_run_training_adequacy.csv
+      - results/20260724_care_myops_batch10_deadline_rescue/short_run_matched_hashes.json
+      - results/20260724_care_myops_batch10_deadline_rescue/short_run_checkpoint_selection.csv
+      - results/20260724_care_myops_batch10_deadline_rescue/short_run_casewise_metrics.csv
+      - results/20260724_care_myops_batch10_deadline_rescue/short_run_subgroup_metrics.csv
+      - results/20260724_care_myops_batch10_deadline_rescue/short_run_distill_minus_control.csv
+      - results/20260724_care_myops_batch10_deadline_rescue/training_slurm_attempts.csv
+    completion_conditions:
+      - all_submitted_jobs_terminal_accounted
+      - exact_6250_steps_per_job
+      - epoch10_and_epoch25_fair_validation_complete
+      - selected_checkpoints_reloaded
+      - matched_manifest_mismatch_count_zero
+      - each_seed_each_pathology_distill_noninferior_to_control
+      - no_gt_positive_empty_predictions
+      - no_t2_edema_exact_zero
+    failure_action: return_to_planner_with_exact_seed_pathology_failure_no_new_training
+
+  - wave_id: B10_W6_FINAL_CANDIDATE_DOCKER_AND_DECISION
+    executor_id: batch10_executor
+    blocking: true
+    dependencies: [B10_W3_BOUNDED_ENSEMBLE_POSTPROCESS_AUDIT]
+    conditional_dependency: B10_W5_CONDITIONAL_25EPOCH_MATCHED_RESCUE_if_executed
+    write_scope:
+      - scripts/evaluation/
+      - scripts/submission/
+      - docker/
+      - Dockerfile
+      - tests/care_mm/
+      - results/20260724_care_myops_batch10_deadline_rescue/
+      - prompts/routes/handoffs/CURRENT.md
+      - wiki/
+    required_outputs:
+      - results/20260724_care_myops_batch10_deadline_rescue/final_candidate_manifest.json
+      - results/20260724_care_myops_batch10_deadline_rescue/final_candidate_casewise_metrics.csv
+      - results/20260724_care_myops_batch10_deadline_rescue/paper_decision.md
+      - results/20260724_care_myops_batch10_deadline_rescue/docker_decision.md
+      - results/20260724_care_myops_batch10_deadline_rescue/docker_dry_run.json
+      - results/20260724_care_myops_batch10_deadline_rescue/strict_validator_report.json
+      - results/20260724_care_myops_batch10_deadline_rescue/finalizer_state.json
+      - results/20260724_care_myops_batch10_deadline_rescue/mapper_report_final.md
+      - results/20260724_care_myops_batch10_deadline_rescue/architecture_delta_final.md
+      - results/20260724_care_myops_batch10_deadline_rescue/controller_report.md
+      - results/20260724_care_myops_batch10_deadline_rescue/completion_check.md
+      - results/20260724_care_myops_batch10_deadline_rescue/MANIFEST.md
+    completion_conditions:
+      - final_candidate_reloaded_and_recomputed
+      - paper_gate_and_docker_gate_evaluated_separately
+      - docker_build_only_if_docker_gate_pass
+      - deterministic_repeat_hash_match
+      - no_hosted_upload_or_claim
+      - current_and_wiki_match_terminal_packet
+      - strict_validator_and_known_bad_pass
+      - all_jobs_terminal_and_aggregation_complete
+      - local_lightweight_result_commit_created
+    failure_action: controller_repairs_same_scope_or_returns_operation_block_with_exact_evidence
