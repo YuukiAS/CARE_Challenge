@@ -5,37 +5,36 @@
 ## 当前状态
 
 ```text
-state_id: care_myops_batch9_exposed_issues_repair_ready_20260723
+state_id: care_myops_batch10_deadline_rescue_ready_20260724
 round_id: post_round04_main_only
-state_updated_date: 2026-07-23
+state_updated_date: 2026-07-24
 active_development_branch: main
 active_worktree: /users/a/e/aereinh/CARE
 portfolio_mode: SUSPENDED
 route_worktree_development_authorized: false
-single_active_scientific_line: CARE_MMRD_BATCH9_EXPOSED_ISSUES_REPAIR
+single_active_scientific_line: CARE_MMRD_BATCH10_DEADLINE_RESCUE
 batch7_operational_status: SIX_MATCHED_RUNS_COMPLETE
 batch7_scientific_packet_status: INCOMPLETE_BR2_SIP_MECHANISM_CLOSURE
 batch8_status: SUPERSEDED_UNEXECUTED_DIAGNOSTIC_CONTRACT
-batch9_status: COMPLETE_NO_USABLE_SIGNAL_REPAIR_AUTHORIZED
-batch9_repair_status: READY_FOR_CONTROLLER
-next_required_action: RUN_BATCH9_EXPOSED_ISSUES_REPAIR
+batch9_original_status: COMPLETE_NO_USABLE_SIGNAL_WITH_IMPLEMENTATION_DEFECTS
+batch9_repair_status: WAVE0_5_CODE_PUSHED_WAVE6_HUMAN_STOPPED_AT_EPOCH25
+batch10_status: READY_FOR_CONTROLLER
+next_required_action: RUN_BATCH10_DEADLINE_RESCUE
 controller_is_coordinator: true
 planning_review_required: false
 review_required: false
-batch8_authorized: false
-batch9_authorized: true
-batch9_repair_authorized: true
-batch10_authorized: false
-br2_lite_authorized: false
-sip_training_authorized: false
-proposal_refiner_training_authorized: false
+batch10_authorized: true
+batch11_authorized: false
+nnunet_evaluation_baseline_read_authorized: true
+nnunet_model_anchor_or_fallback_authorized: false
+validation_packaging_authorized: false
+validation_upload_authorized: false
+docker_local_build_authorized: true
+docker_upload_authorized: false
+hosted_metric_claim_authorized: false
 fold_expansion_authorized: false
 cine_training_authorized: false
-validation_upload_authorized: false
-hosted_metric_claim_authorized: false
 route_promotion_authorized: false
-nnunet_anchor_authorized: false
-baseline_fallback_authorized: false
 ```
 
 ## 开发边界
@@ -56,210 +55,144 @@ diagram_versions_read: SRR-v2, SRR-v2.5, SRR-v3, CARE-MMRD
 visual_read_status: PASS_PROJECT_BACKGROUND_IMAGES_VISUALLY_READ
 ```
 
-从旧图保留的是科学原则，而不是旧类：模态特异编码、只消费已观测模态、anatomy-first、scar/edema病种分治和小病灶保护。Batch 9 repair 保持 CARE-MMRD 直接分割架构，不恢复 prototype/memory/proposal/refiner/gate 长链，也不接入 nnU-Net anchor。
+Batch 10 保留 CARE-MMRD 的三模态独立 stem、availability hard mask、ResidualEncoderUNet、anatomy/scar/edema 分头和六类直接输出。旧 SRR 的 prototype、memory、BR2、SIP、proposal、refiner、source arbiter、production gate 和 nnU-Net anchor 不进入 Batch 10。
 
-## 当前唯一授权任务：Batch 9 暴露问题修复
+## 用户终止的 Batch 9 repair 状态
+
+用户已终止原 Wave 6 在 epoch 25 之后的继续运行。不得自动恢复原 control/distill 到 epoch100。
+
+当前人工提供的 epoch25 轻量结果：
 
 ```text
-task_key: 20260723_care_myops_batch9_exposed_issues_repair
+seed20260723 control: scar 0.4743, edema 0.3188
+seed20260723 distill: scar 0.4754, edema 0.3316
+seed20260724 control: scar 0.4291, edema 0.3354
+seed20260724 distill: scar 0.4221, edema 0.3576
+
+matched distill-control:
+seed20260723 scar +0.0011, edema +0.0128
+seed20260724 scar -0.0070, edema +0.0223
+```
+
+这些数字说明蒸馏对 edema 有信号，但对 scar 不稳定，并且仍不能证明超过 nnU-Net。截图不是终态 packet；Batch 10 Wave0 必须绑定本地 checkpoint、job、runtime receipt 和 hash。
+
+最新代码提交：
+
+```text
+3705a37bf4519144ea52155a2a7a3d2d118e3776
+```
+
+该提交只声明 Wave0–5 部分实现和 Wave6 runtime support，不是 Batch9 terminal scientific packet。
+
+## 为什么启动 Batch 10
+
+进一步代码审计发现以下问题仍会改变当前分数的可信度：
+
+```text
+全体积单次forward代替plans滑窗推理
+shape-only nearest-neighbor zoom代替正式inverse preprocessing/export
+checkpoint评价使用默认模型构造而非checkpoint plans/config
+ResEnc M plans与硬编码preprocessed目录可能不一致
+student空间增强未同步到natural/teacher view
+病理覆盖gate只检查任意类别confidence
+sampler没有先按center均衡
+远端代码可能依赖未提交case_metadata.py
+CURRENT/wiki与真实Wave6 runtime不同步
+```
+
+因此 Batch 10 不是再次无边界训练，而是一次限时的公平重评与提交决策。
+
+## 当前唯一授权任务：Batch 10 截止日前救援
+
+```text
+task_key: 20260724_care_myops_batch10_deadline_rescue
 status: READY_FOR_CONTROLLER
-result_root: results/20260723_care_myops_batch9_exposed_issues_repair
-controller_task: prompts/tasks/20260723_care_myops_batch9_exposed_issues_repair_controller.md
-executor_plan: prompts/tasks/20260723_care_myops_batch9_exposed_issues_repair_executor_plan.yaml
-config: configs/care_mm/batch9_exposed_issues_repair.yaml
-planner_decision: results/srr_production/code_maturity/batch9_exposed_issues_repair_planner_decision_20260723.md
+result_root: results/20260724_care_myops_batch10_deadline_rescue
+planner_decision: results/srr_production/code_maturity/batch10_deadline_rescue_planner_decision_20260724.md
+config: configs/care_mm/batch10_deadline_rescue.yaml
+controller_task: prompts/tasks/20260724_care_myops_batch10_deadline_rescue_controller.md
+executor_plan: prompts/tasks/20260724_care_myops_batch10_deadline_rescue_executor_plan.yaml
 architecture_change: false
+training_semantics_change: conditional_component_repair
 ```
 
-这不是 Batch 10，也不是接回 nnU-Net。`CAREMMReliableDistillResEnc` 的 forward、三模态独立 stem、availability hard mask、anatomy/scar/edema 分头和可靠标签边界保持不变。标准 nnU-Net 只允许作为同划分评价基线；禁止加载其 logits、checkpoint、预测或作为 fallback。
-
-本任务只修复已暴露的问题：
+执行顺序固定为：
 
 ```text
-masked loss按真实有效体素归一化
-直接训练与continuation使用显式多项式学习率衰减
-scar/可靠edema/anatomy/background平衡采样
-no-T2在argmax前hard mask edema类
-每25 epoch固定44例验证与selected checkpoint reload
-真实known-bad错误注入
-逐seed fail-closed gate
-Slurm/aggregation/validator驱动的真实finalizer receipts
+freeze Batch9 runtime and clean-checkout audit
+-> plans/preprocessing fingerprint
+-> nnU-Net v2 sliding-window + official inverse export
+-> fair re-evaluation of 8 existing checkpoints and baseline
+-> bounded ensemble and calibration/audit postprocessing
+-> near-baseline gate
+-> conditional synchronized 25-epoch matched rescue
+-> paper/Docker go-no-go and terminal packet
 ```
 
-两个 repaired direct seed 均通过空预测、no-T2 安全和同 seed 改善门后，才允许执行 teacher/control/distill continuation。不得用跨 seed 平均掩盖任一 seed 或病种失败。
+## nnU-Net 边界
 
-## 方法重选历史
+允许只读现有 fold0 nnU-Net NIfTI prediction和metrics，使用同一 evaluator重算 baseline、case-wise help/harm、HD95和remote FP。
 
-用户提供的 Deep Research 报告建议暂停 Batch 8，改为强主干、可靠标签掩码、完整到不完整蒸馏和病种特异直分割。Planner结合仓库历史后接受主方向，但修正了四点：
+禁止：
 
 ```text
-不接受1200-1600 step作为强3D主干正式证据
-teacher不从少量B/C病例随机初始化
-自然缺失病例不生成伪T2或伪edema监督
-首轮不同时加入BR2-lite、SIP或refiner
+加载标准nnU-Net checkpoint进入CARE-MMRD
+把nnU-Net logits/probabilities作为模型输入
+anchor correction
+ensemble source
+prediction fallback
+Docker fallback
 ```
 
-权威综合判断：
+## 条件式训练门
+
+只有正确重评后的最佳非 nnU-Net 候选在独立 audit 半集满足：
 
 ```text
-results/srr_production/code_maturity/batch9_reliable_label_distillation_planner_synthesis_20260722.md
+scar gap to nnU-Net <= 0.04
+edema gap to nnU-Net <= 0.03
+GT-positive empty = 0
+no-T2 edema voxels = 0
+HD95 relative worsening <= 10%
 ```
 
-## Batch 7 与 Batch 8 状态
+才允许从 repaired direct selected checkpoint重新运行两个 seed 的 matched control/distill，各25 epoch、6250 steps。训练必须修复共享空间增强、center-first sampling和scar/edema病种特异confidence mask。任一 seed、任一病种下降不得被平均掩盖。
 
-Batch 7 的操作证据继续保留：
+## Paper 与 Docker 决策
+
+用户提供的时间边界：
 
 ```text
-scar minimal positive Dice delta: -0.0049928620
-edema minimal positive Dice delta: +0.0013426793
-edema BR2 positive Dice delta: +0.0029631724
-edema BR2 minus minimal: +0.0016204931
+paper deadline: 2026-07-27
+docker submission deadline: 2026-08-03
 ```
 
-但 Batch 7 的 BR2/SIP 科学闭环不完整：scar BR2清空、SIP/no-SIP预测完全相同、训练后系数没有真实导出、终态仍含静态/PENDING证据、validator未检查语义。
+Batch 10 必须分别生成 `paper_decision.md` 和 `docker_decision.md`。Paper候选要求audit split两病种基本不低于同划分nnU-Net、完整44例至少一个病种提高0.005、另一个非负，并满足HD95/help-harm/remote-FP安全门。
 
-Batch 8 文件保留：
+Docker候选允许更接近基线，但必须是有实质意义的非 nnU-Net CARE-MMRD候选并通过端到端本地dry-run。Controller只可构建本地image和submission-ready manifest；上传仍需用户确认。
 
-```text
-results/srr_production/code_maturity/batch8_clean_edema_br2_planner_decision_20260722.md
-docs/plans/laneB_round04_active_srr_batch8_clean_edema_br2_confirmation_execution.md
-configs/srr_production/myops_batch8_clean_edema_br2.yaml
-prompts/tasks/20260722_srr_batch8_clean_edema_br2_controller.md
-prompts/tasks/20260722_srr_batch8_clean_edema_br2_executor_plan.yaml
-```
+## 终止边界
 
-其状态固定为：
+完成正确推理、teacher/ensemble、固定后处理以及允许的25 epoch短续训后，若 scar 仍低于baseline超过0.03或edema低超过0.02，停止CARE-MMRD竞赛路线，不启动Batch11，不恢复Batch7或旧SRR长链。
+
+## 当前未授权
 
 ```text
-SUPERSEDED_UNEXECUTED_DIAGNOSTIC_CONTRACT
-formal_authority: false
-runtime_authorized: false
-```
-
-不得删除这些历史计划，也不得启动其Controller。
-
-## 原 Batch 9 任务与终态
-
-原任务：
-
-```text
-task_key: 20260722_care_myops_batch9_reliable_label_distillation
-result_root: results/20260722_care_myops_batch9_reliable_label_distillation
-terminal_token: BATCH9_MAINLINE_NO_USABLE_SIGNAL_RETURN_TO_PLANNER
-controller_verification_decision: VERIFIED_COMPLETE
-```
-
-原 Batch 9 完成了两个 seed 的 direct/teacher/control/distill 运行，但出现直接主干显著低于基线、continuation 阳性空预测、跨 seed 不稳定和巨量远端假阳性。Planner 进一步审计确认，原 packet 还暴露出 loss 体素归一化、恒定高学习率 continuation、固定类优先采样、no-T2 decode、周期性验证、known-bad 与 per-seed final gate 缺陷。因此原终态只作为当前实现不可用的证据，不作为干净科学否定。
-
-## Batch 9 模型边界
-
-数据流保持：
-
-```text
-[LGE,T2,C0] + availability
--> 3 independent stems, 8 channels each
--> hard mask immediately after stem
--> concatenate 24 features + 3 availability channels
--> ResidualEncoderUNet M-level feature backbone
--> shared decoder feature
--> 4-class anatomy head
--> scar residual head
--> edema residual head
--> direct six-class logits
--> argmax
-```
-
-六类logits：
-
-```text
-[background, myocardium, LV, RV, myocardium+edema, myocardium+scar]
-```
-
-No-T2病例不得参与 edema segmentation、distillation 或 consistency 监督。Repair 后 inference/evaluation 必须在 argmax 前 hard mask class 4，预测 edema 体素精确为0。Center不得进入network tensor、normalization、router或validation inference。
-
-旧组件调用计数必须为0：
-
-```text
-SRRProposeRefineMyoPS
-ProposalDictionary
-M10TwoPassSpatialDictionary
-M10CrossFittedPrototypeMemory
-prototype/semantic memory
-refiner
-source arbiter
-branch arbitration
-bounded anchor correction
-production gate
-legacy Pattern-SIP
-```
-
-## 可靠监督
-
-```text
-anatomy: all valid labels, pathology remap to myocardium
-scar: metadata-scar-reliable cases
-edema: T2-present and metadata-edema-reliable cases only
-```
-
-No-T2不得作为edema negative。
-
-## Repair 训练矩阵
-
-固定seeds：
-
-```text
-20260723
-20260724
-```
-
-每seed：
-
-```text
-repaired student_direct_reliable: 500 epochs x 250 = 125000 steps
-teacher_full_view: 100 epochs x 250 = 25000 steps, gated
-student_moddrop_control: 100 epochs x 250 = 25000 steps, gated
-student_reliable_distill: 100 epochs x 250 = 25000 steps, gated
-```
-
-Direct 初始学习率 0.01，使用 polynomial decay。Continuation 从 repaired direct selected checkpoint warm-start，初始学习率 0.001，使用 polynomial decay。每25 epoch固定评价44例并保存 checkpoint；选择规则以两个病种的最低 Dice、平均 Dice 和正例 HD95 词典序决定，禁止固定只选 epoch500。
-
-## Slurm
-
-```text
-seed20260723 -> htzhulab
-seed20260724 -> a100-gpu
-python -> /users/a/e/aereinh/CARE/envs/env_CARE/bin/python
-training dependencies -> afterok
-finalizer/accounting -> afterany all attempts
-```
-
-V100只在完全相同模型、patch、batch、AMP、预算和采样语义通过preflight时允许fallback。Submitted/pending/running不是完成。
-
-## 评价与终态
-
-每个 selected checkpoint reload 后评价44例，报告 scar/edema Dice、HD95、precision、recall、components、remote-FP、volume ratio、empty rate、changed voxels、help/harm以及完整三模态、CenterB、CenterC、LGE-only、LGE+C0等分组。
-
-Repair Controller 必须按每个 seed 独立判断。任一 seed 的任一病种出现 GT-positive 空预测、no-T2 edema 非零、相对原 Batch 9 direct 未改善，均阻止 continuation。任一 distill seed 相对 matched control 下降也必须明确失败，不能用跨 seed 平均覆盖。
-
-## 未授权
-
-```text
+resume old Wave6 to epoch100
+Batch7 runtime
 Batch8 runtime
-nnU-Net anchor/logits/checkpoint/prediction fallback
-旧SRR forward/loss
-BR2-lite
-SIP
-prototype/memory
-proposal/refiner
-source arbiter/production gate
-Batch10
-fold expansion
-Cine
+Batch11
+nnU-Net model/anchor/logits/probability/fallback
+BR2/SIP/prototype/memory/proposal/refiner
+new backbone
 external data/pretrained weights
-validation packaging/upload
+fold expansion
+Cine training
+validation upload
+Docker upload
 hosted metric claim
 route promotion
-final scientific stop
+final scientific claim before Batch10 terminal packet
 ```
 
-Controller的`VERIFIED_COMPLETE`只表示本 repair 合同完成，下一步返回Planner。
+`configs/srr_production/entrypoints.yaml` 仍记录旧 Batch9 authority，当前标记为 stale；Batch10 Wave0 必须在实现入口和strict audit准备完成后同步修复，不得把旧 authority 当作当前科学状态。
