@@ -1,0 +1,332 @@
+schema_version: 1
+task_key: 20260724_care_myops_batch10_deadline_rescue
+authority_name: care_myops_batch10_deadline_rescue
+status: READY_FOR_CONTROLLER
+planner_decision: results/srr_production/code_maturity/batch10_deadline_rescue_planner_decision_20260724.md
+source_main_commit_audited: 3705a37bf4519144ea52155a2a7a3d2d118e3776
+result_root: results/20260724_care_myops_batch10_deadline_rescue
+
+human_runtime_boundary:
+  batch9_wave6_human_stopped: true
+  resume_old_wave6_forbidden: true
+  last_required_existing_checkpoint_epoch: 25
+  screenshot_metrics:
+    seed20260723:
+      control: {scar_dice_all: 0.4743, edema_dice_all: 0.3188}
+      distill: {scar_dice_all: 0.4754, edema_dice_all: 0.3316}
+      distill_minus_control: {scar_dice: 0.0011, edema_dice: 0.0128, scar_hd95: 0.42, edema_hd95: -1.27}
+    seed20260724:
+      control: {scar_dice_all: 0.4291, edema_dice_all: 0.3354}
+      distill: {scar_dice_all: 0.4221, edema_dice_all: 0.3576}
+      distill_minus_control: {scar_dice: -0.0070, edema_dice: 0.0223, scar_hd95: 0.58, edema_hd95: -4.13}
+  screenshot_is_human_supplied_not_terminal_packet: true
+
+model_boundary:
+  class_name: CAREMMReliableDistillResEnc
+  forward_architecture_change: false
+  modality_stems: 3
+  availability_hard_mask: true
+  anatomy_scar_edema_heads: true
+  six_class_direct_output: true
+  standard_nnunet_checkpoint_in_model: forbidden
+  standard_nnunet_logits_or_probabilities_in_model: forbidden
+  standard_nnunet_prediction_fallback: forbidden
+  old_srr_br2_sip_prototype_memory_proposal_refiner: forbidden
+  external_data_or_pretrained_weights: forbidden
+
+batch9_runtime_binding:
+  source_result_root: results/20260723_care_myops_batch9_exposed_issues_repair
+  source_code_commit: 3705a37bf4519144ea52155a2a7a3d2d118e3776
+  required_existing_candidates:
+    - {seed: 20260723, variant: student_direct_reliable, checkpoint: selected_from_runtime_receipt}
+    - {seed: 20260724, variant: student_direct_reliable, checkpoint: selected_from_runtime_receipt}
+    - {seed: 20260723, variant: teacher_full_view, checkpoint: selected_from_runtime_receipt}
+    - {seed: 20260724, variant: teacher_full_view, checkpoint: selected_from_runtime_receipt}
+    - {seed: 20260723, variant: student_moddrop_control, checkpoint_epoch: 25}
+    - {seed: 20260724, variant: student_moddrop_control, checkpoint_epoch: 25}
+    - {seed: 20260723, variant: student_reliable_distill, checkpoint_epoch: 25}
+    - {seed: 20260724, variant: student_reliable_distill, checkpoint_epoch: 25}
+  missing_candidate_action: fail_closed_and_return_to_controller
+  checkpoint_hash_required: true
+  runtime_job_accounting_required: true
+
+clean_checkout_audit:
+  enabled: true
+  method: git_archive_to_tmp_then_import_with_current_environment
+  required_imports:
+    - src.care_myocardium.data.care_mm_batch9
+    - src.care_myocardium.losses.care_mm_losses
+    - src.care_myocardium.models.care_mm_reliable_distill
+    - src.care_myocardium.training.nnUNetTrainerCAREMMReliableDistill
+    - scripts.evaluation.evaluate_care_mm_batch9
+  tracked_first_party_dependency_required: true
+  case_metadata_dependency_must_be_tracked_or_removed: true
+  local_untracked_import_dependency_forbidden: true
+
+preprocessing_and_plans:
+  plans_identifier: nnUNetResEncUNetMPlans
+  configuration: 3d_fullres
+  resolve_with: [PlansManager, ConfigurationManager]
+  data_identifier_source: configuration_manager_data_identifier
+  hardcoded_preprocessed_directory_forbidden: true
+  checkpoint_model_config_source: checkpoint_plans_and_contract
+  default_model_constructor_for_checkpoint_eval_forbidden: true
+  verify_fields:
+    - plans_sha256
+    - dataset_json_sha256
+    - split_sha256
+    - data_identifier
+    - target_spacing
+    - transpose_forward
+    - transpose_backward
+    - normalization_schemes
+    - patch_size
+    - mirror_axes
+  all_44_case_properties_required: true
+
+fair_inference:
+  entrypoint: scripts/inference/run_care_mm_batch10_fair_inference.py
+  predictor_engine: nnunet_v2_sliding_window
+  patch_size: from_checkpoint_plans
+  tile_step_size: 0.5
+  use_gaussian: true
+  perform_everything_on_device: false
+  mirror_tta:
+    phase1_all_models: false
+    phase2_top_two_per_pathology: true
+    axes: from_trainer_contract
+  checkpoint_reload: required
+  no_t2_class4_hard_mask_before_argmax: true
+  export:
+    helper_family: nnunetv2.inference.export_prediction
+    official_inverse_preprocessing_required: true
+    properties_dict_required: true
+    shape_only_zoom_forbidden: true
+    gt_copy_information_as_geometry_reconstruction_forbidden: true
+    exact_output_geometry_fields: [shape, spacing, origin, direction]
+  known_bad:
+    reject_wrong_crop_bbox: true
+    reject_wrong_transpose: true
+    reject_missing_properties: true
+    reject_shape_only_zoom: true
+    reject_default_model_config_reload: true
+
+baseline_evaluation_only:
+  allowed: true
+  prediction_root: data/nnUNet/nnUNet_results/Dataset501_CAREMyoPS/nnUNetTrainer_500epochs__nnUNetPlans__3d_fullres/fold_0/validation
+  metrics_reference: results/srr_production/evaluation/nnunet_fold0_reproduction.json
+  read_checkpoint: false
+  read_logits_or_probabilities: false
+  enter_model_forward: false
+  fallback_or_compositor_source: false
+  recompute_with_same_evaluator: true
+  report_population_separately: [positive_gt, all_cases_empty_safe, complete_trimodal]
+
+candidate_evaluation:
+  validation_case_count: 44
+  phase1_single_model_no_tta: all_8_required_candidates
+  phase2_tta: top_2_individual_candidates_per_pathology
+  required_metrics:
+    - dice
+    - hd95
+    - precision
+    - recall
+    - component_count
+    - remote_fp_volume_mm3
+    - volume_ratio
+    - empty_prediction_rate
+    - no_t2_edema_predicted_voxels
+    - casewise_help_harm_vs_nnunet
+  subgroups:
+    - positive_gt
+    - all_cases_empty_safe
+    - complete_trimodal
+    - CenterB
+    - CenterC
+    - lge_only
+    - lge_c0
+    - small_scar
+    - large_scar
+
+rescue_split:
+  source_cases: fold0_validation_44
+  strata: [center, scar_positive, edema_positive]
+  within_stratum_order: sha256_case_id
+  assignment: alternating_calibration_audit
+  manifest_required: true
+  expected_approximate_counts: {calibration: 22, audit: 22}
+  parameter_selection_uses_audit: forbidden
+
+ensemble_candidates:
+  probability_space_only: true
+  candidates:
+    - direct_two_seed_mean
+    - teacher_two_seed_mean
+    - control_epoch25_two_seed_mean
+    - distill_epoch25_two_seed_mean
+    - best_two_individual_mean
+    - pathology_specific_compositor
+  pathology_specific_compositor:
+    anatomy_classes_0_to_3_source: best_anatomy_candidate_on_calibration
+    class4_source: best_edema_candidate_on_calibration
+    class5_source: best_scar_candidate_on_calibration
+    concatenate_then_renormalize: true
+    standard_nnunet_probability_source: forbidden
+  unbounded_subset_search: forbidden
+
+postprocessing:
+  use_original_space_probability_maps: true
+  anatomy_support_source: anatomy_head_myocardium_probability
+  fixed_grid:
+    anatomy_probability_threshold: [0.20, 0.30, 0.40]
+    allowed_distance_from_anatomy_support_mm: [5, 10]
+    scar_min_component_mm3: [0, 5, 10]
+    edema_min_component_mm3: [0, 20, 50]
+  select_on: rescue_calibration_only
+  rank:
+    - maximize_minimum_pathology_dice_delta_vs_nnunet
+    - maximize_mean_pathology_dice_delta_vs_nnunet
+    - minimize_harm_count
+    - minimize_sum_positive_gt_hd95
+    - minimize_remote_fp
+    - choose_simpler_postprocess
+  audit_nonworse_required: true
+
+near_baseline_training_gate:
+  evaluated_on: rescue_audit
+  scar_dice_gap_to_nnunet_max: 0.04
+  edema_dice_gap_to_nnunet_max: 0.03
+  gt_positive_empty_count_max: 0
+  no_t2_edema_voxels_max: 0
+  hd95_relative_worsening_max: 0.10
+  if_fail: skip_all_batch10_training_and_finalize_stop_or_docker_decision
+
+conditional_short_continuation:
+  enabled_only_after_near_baseline_gate: true
+  resume_old_wave6_optimizer_state: forbidden
+  initialization:
+    student: repaired_direct_selected_checkpoint_same_seed
+    teacher: teacher_full_view_selected_checkpoint_same_seed
+  matched_variants: [batch10_sync_control, batch10_pathology_distill]
+  seeds: [20260723, 20260724]
+  epochs: 25
+  steps_per_epoch: 250
+  optimizer_steps: 6250
+  optimizer:
+    type: SGD
+    initial_lr: 0.0002
+    momentum: 0.99
+    nesterov: true
+    weight_decay: 0.00003
+    schedule: polynomial
+    poly_power: 0.9
+  validation_epochs: [10, 25]
+  selected_checkpoint_reload: true
+  paired_augmentation:
+    student_and_natural_share_spatial_transform: true
+    concatenate_views_for_shared_geometry_or_equivalent_receipt: required
+    independent_intensity_augmentation_allowed: true
+    student_intensity_seed_recorded: true
+    natural_teacher_intensity_seed_recorded: true
+    voxel_correspondence_after_spatial_transform_required: true
+  center_balanced_sampler:
+    order: target_then_uniform_eligible_center_then_uniform_case_then_patch
+    scar_target_probability: 0.35
+    edema_reliable_target_probability: 0.35
+    anatomy_target_probability: 0.20
+    background_target_probability: 0.10
+    observed_center_fraction_absolute_tolerance: 0.05
+    exact_manifest_required: true
+  pathology_specific_distillation:
+    use_teacher_class_specific_margin_probability: true
+    threshold_candidates: [0.20, 0.30, 0.40, 0.50, 0.60]
+    threshold_selection_population: complete_trimodal_reliable_training_cases_only
+    select_largest_threshold_satisfying:
+      gt_positive_coverage_min: 0.20
+      confident_positive_precision_min: 0.50
+    if_pathology_fails_threshold_gate: set_that_pathology_distillation_weight_zero
+    any_class_max_confidence_as_pathology_mask: forbidden
+    anatomy_distillation_separate: true
+  matched_contract:
+    same_student_initial_checkpoint: true
+    same_case_sequence: true
+    same_patch_bounds: true
+    same_spatial_augmentation: true
+    same_intensity_seeds: true
+    same_student_availability_masks: true
+    same_optimizer_schedule: true
+    same_teacher_forward: true
+    only_difference: pathology_and_anatomy_distillation_weights
+    manifest_mismatch_count_required: 0
+  acceptance:
+    each_seed_each_pathology_distill_minus_control_min: 0.0
+    help_not_less_than_harm: true
+    hd95_relative_worsening_max: 0.05
+    remote_fp_relative_worsening_max: 0.05
+    gt_positive_empty_count_max: 0
+    no_t2_edema_voxels_max: 0
+
+paper_candidate_gate:
+  audit_scar_dice_delta_vs_nnunet_min: -0.002
+  audit_edema_dice_delta_vs_nnunet_min: -0.002
+  full44_at_least_one_pathology_delta_min: 0.005
+  full44_other_pathology_delta_min: 0.0
+  help_not_less_than_harm: true
+  hd95_relative_worsening_max: 0.05
+  remote_fp_relative_worsening_max: 0.05
+  gt_positive_empty_count_max: 0
+  no_t2_edema_voxels_max: 0
+
+docker_candidate_gate:
+  full44_scar_dice_delta_vs_nnunet_min: -0.01
+  full44_edema_dice_delta_vs_nnunet_min: -0.01
+  at_least_one_pathology_delta_min: 0.0
+  audit_no_major_regression: true
+  deterministic_repeat_prediction_hash_match: true
+  end_to_end_container_dry_run_required: true
+  build_local_image_authorized: true
+  hosted_upload_authorized: false
+
+final_stop_gate:
+  after_all_authorized_rescue:
+    scar_gap_to_nnunet_stop_if_greater_than: 0.03
+    edema_gap_to_nnunet_stop_if_greater_than: 0.02
+  action: stop_care_mm_competition_route_no_batch11
+
+paper_and_docker_schedule:
+  paper_deadline: 2026-07-27
+  docker_deadline: 2026-08-03
+  freeze_scientific_method_by: 2026-07-26
+  paper_writing_must_run_in_parallel: true
+  batch10_does_not_auto_submit_paper_or_docker: true
+
+allowed_actions:
+  - bind_and_freeze_batch9_runtime
+  - clean_checkout_import_repair
+  - plans_preprocessing_fingerprint_repair
+  - fair_sliding_window_inference_and_official_export
+  - evaluation_only_nnunet_baseline_recompute
+  - existing_checkpoint_re_evaluation
+  - bounded_probability_ensemble
+  - bounded_calibration_only_postprocessing
+  - conditional_25_epoch_matched_continuation
+  - local_docker_build_and_dry_run
+  - paper_and_docker_go_no_go_packet
+  - local_lightweight_result_commit
+
+forbidden_actions:
+  - resume_old_wave6_to_epoch100
+  - standard_nnunet_model_anchor_logits_prediction_or_fallback
+  - old_srr
+  - br2
+  - sip
+  - prototype_memory
+  - proposal_refiner
+  - new_backbone
+  - external_data_or_pretrained_weights
+  - fold_expansion
+  - cine_training
+  - validation_upload
+  - docker_upload
+  - hosted_metric_claim
+  - batch11
