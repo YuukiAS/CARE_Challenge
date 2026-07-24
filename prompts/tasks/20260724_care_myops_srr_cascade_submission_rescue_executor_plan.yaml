@@ -1,0 +1,324 @@
+schema_version: 2
+task_key: 20260724_care_myops_srr_cascade_submission_rescue
+status: READY_FOR_CONTROLLER
+execution_mode: controller_supervised
+controller_is_coordinator: true
+executor_slots: 1
+executor_count: 1
+parallel_execution_allowed: false
+result_root: results/20260724_care_myops_srr_cascade_submission_rescue
+controller_task_path: prompts/tasks/20260724_care_myops_srr_cascade_submission_rescue_controller.md
+planner_decision_path: results/srr_production/code_maturity/srr_cascade_submission_rescue_planner_decision_20260724.md
+config_path: configs/care_mm/srr_cascade_submission_rescue.yaml
+planning_review_required: false
+review_required: false
+slurm_runtime_continuity_required: true
+continuity_backend: slurm_dependency
+
+waves:
+  - wave_id: RESCUE_W0_BIND_FREEZE_AND_ASSET_AUDIT
+    executor_id: srr_cascade_rescue_executor
+    blocking: true
+    dependencies: []
+    read_required:
+      - AGENTS.md
+      - START_HERE_FOR_GPT.md
+      - GPT_PLANNER_CARE_PROTOCOL.md
+      - prompts/FINAL_OUTPUT_READABILITY_POLICY.md
+      - prompts/AGENT_FLOW_V2_PROTOCOL.md
+      - prompts/HANDOFF_GATE_POLICY.md
+      - prompts/GPT_HARD_GATE_PROMPT.md
+      - prompts/routes/ROUTE_ANTI_LAZINESS_PROTOCOL.md
+      - prompts/routes/ROUTE_HARD_REQUIREMENTS_MATRIX.md
+      - prompts/routes/handoffs/CURRENT.md
+      - wiki/README.md
+      - .agents/skills/slurm-routing-partition/SKILL.md
+      - .agents/skills/care-mapper/SKILL.md
+      - results/srr_production/code_maturity/srr_cascade_submission_rescue_planner_decision_20260724.md
+      - configs/care_mm/srr_cascade_submission_rescue.yaml
+      - results/20260724_care_myops_batch10_deadline_rescue/
+    write_scope:
+      - results/20260724_care_myops_srr_cascade_submission_rescue/
+    required_outputs:
+      - results/20260724_care_myops_srr_cascade_submission_rescue/controller_context.json
+      - results/20260724_care_myops_srr_cascade_submission_rescue/controller_ledger.csv
+      - results/20260724_care_myops_srr_cascade_submission_rescue/controller_bootstrap_snapshot.md
+      - results/20260724_care_myops_srr_cascade_submission_rescue/source_asset_inventory.csv
+      - results/20260724_care_myops_srr_cascade_submission_rescue/anchor_oof_audit.json
+      - results/20260724_care_myops_srr_cascade_submission_rescue/calibration_audit_split_freeze.json
+      - results/20260724_care_myops_srr_cascade_submission_rescue/plans_preprocessing_fingerprint.json
+      - results/20260724_care_myops_srr_cascade_submission_rescue/clean_checkout_import_audit.json
+    completion_conditions:
+      - latest_remote_main_bound
+      - planner_config_executor_hashes_recorded
+      - two_source_checkpoint_paths_and_sha256_exact
+      - five_fold_oof_anchor_manifest_complete_and_no_validation_leakage
+      - batch10_rescue_split_hash_frozen_22_22_and_audit_not_used_for_selection
+      - plans_configuration_manager_data_identifier_and_patch_resolved
+      - clean_checkout_imports_pass
+    failure_action: controller_returns_same_scope_asset_or_binding_gap_no_implementation
+
+  - wave_id: RESCUE_W1_CLEAN_MODEL_PROTOTYPE_AND_DATAFLOW_IMPLEMENTATION
+    executor_id: srr_cascade_rescue_executor
+    blocking: true
+    dependencies: [RESCUE_W0_BIND_FREEZE_AND_ASSET_AUDIT]
+    write_scope:
+      - src/care_myocardium/models/care_srr_cascade_rescue.py
+      - src/care_myocardium/srr_production/
+      - src/care_myocardium/data/
+      - src/care_myocardium/losses/
+      - scripts/training/
+      - scripts/inference/
+      - scripts/evaluation/
+      - jobs/care_mm/
+      - tests/care_mm/
+      - results/20260724_care_myops_srr_cascade_submission_rescue/
+    implementation_contract:
+      model_class: CARESRRCascadeRescue
+      final_base: frozen_nnunet_anchor_logits
+      anatomy_channels_exact_anchor: [0, 1, 2, 3]
+      pathology_channels: [4, 5]
+      correction_bound: 2.0
+      scar_support_mm: 10
+      edema_support_mm: 15
+      no_t2_edema_exact_identity: true
+      source_models_frozen: true
+      prototype_shards: 4
+      training_query_excludes_own_shard: true
+      validation_query_uses_all_train_shards: true
+      old_full_srr_objects_call_count_zero: true
+      selection_and_deployment_decode: six_class_argmax_of_same_composed_logits
+    required_outputs:
+      - results/20260724_care_myops_srr_cascade_submission_rescue/implementation_snapshot.md
+      - results/20260724_care_myops_srr_cascade_submission_rescue/model_import_graph.json
+      - results/20260724_care_myops_srr_cascade_submission_rescue/legacy_module_call_counters.csv
+      - results/20260724_care_myops_srr_cascade_submission_rescue/source_checkpoint_load_report.csv
+      - results/20260724_care_myops_srr_cascade_submission_rescue/prototype_provenance.json
+      - results/20260724_care_myops_srr_cascade_submission_rescue/prototype_crossfit_checks.csv
+      - results/20260724_care_myops_srr_cascade_submission_rescue/resolved_model_contract.json
+      - results/20260724_care_myops_srr_cascade_submission_rescue/resolved_loss_contract.json
+      - results/20260724_care_myops_srr_cascade_submission_rescue/resolved_sampler_augmentation_contract.json
+    completion_conditions:
+      - source_parameters_and_norm_state_frozen
+      - old_srr_propref_dictionary_br2_sip_arbiter_calls_zero
+      - anatomy_channels_never_modified
+      - no_t2_edema_correction_exact_zero
+      - prototype_no_self_shard_and_no_t2_negative_leakage
+      - all_spatial_tensors_share_transform
+      - losses_attach_to_final_composed_logits_or_declared_zone_aux
+    failure_action: controller_returns_same_scope_implementation_gap_no_preflight
+
+  - wave_id: RESCUE_W2_PREFLIGHT_OVERFIT_GRADIENT_ROUNDTRIP_AND_KNOWN_BAD
+    executor_id: srr_cascade_rescue_executor
+    blocking: true
+    dependencies: [RESCUE_W1_CLEAN_MODEL_PROTOTYPE_AND_DATAFLOW_IMPLEMENTATION]
+    write_scope:
+      - scripts/training/
+      - scripts/inference/
+      - scripts/evaluation/
+      - jobs/care_mm/
+      - tests/care_mm/
+      - results/20260724_care_myops_srr_cascade_submission_rescue/
+    preflight:
+      required: true
+      command: /users/a/e/aereinh/CARE/envs/env_CARE/bin/python scripts/training/run_care_srr_cascade_rescue.py --config configs/care_mm/srr_cascade_submission_rescue.yaml --preflight
+      receipt_path: results/20260724_care_myops_srr_cascade_submission_rescue/preflight_receipt.json
+    required_outputs:
+      - results/20260724_care_myops_srr_cascade_submission_rescue/initial_anchor_equivalence.json
+      - results/20260724_care_myops_srr_cascade_submission_rescue/no_t2_identity_checks.csv
+      - results/20260724_care_myops_srr_cascade_submission_rescue/anatomy_channel_identity_checks.csv
+      - results/20260724_care_myops_srr_cascade_submission_rescue/shared_spatial_fiducial_checks.csv
+      - results/20260724_care_myops_srr_cascade_submission_rescue/fixed_overfit_scar.json
+      - results/20260724_care_myops_srr_cascade_submission_rescue/fixed_overfit_edema.json
+      - results/20260724_care_myops_srr_cascade_submission_rescue/loss_gradient_matrix.csv
+      - results/20260724_care_myops_srr_cascade_submission_rescue/prototype_intervention_checks.csv
+      - results/20260724_care_myops_srr_cascade_submission_rescue/checkpoint_roundtrip.json
+      - results/20260724_care_myops_srr_cascade_submission_rescue/known_bad_report.json
+      - results/20260724_care_myops_srr_cascade_submission_rescue/unit_test_report.md
+      - results/20260724_care_myops_srr_cascade_submission_rescue/preflight_receipt.json
+    completion_conditions:
+      - initial_final_logits_anchor_max_delta_at_most_1e_6
+      - no_t2_logits_and_labels_exact_anchor_identity
+      - anatomy_channels_exact_anchor_identity
+      - scar_and_edema_200_step_overfit_each_loss_reduction_at_least_0_30
+      - overfit_predictions_nonempty_and_correction_nonzero
+      - every_nonzero_loss_has_declared_trainable_gradient
+      - source_anchor_and_forbidden_gradients_zero
+      - spatial_fiducial_error_zero
+      - prototype_active_zero_and_bank_swap_interventions_nonzero
+      - checkpoint_roundtrip_at_most_1e_6
+      - all_known_bad_fixtures_real_and_rejected
+      - same_partition_gpu_preflights_exit_zero
+    failure_action: controller_returns_same_scope_preflight_gap_no_formal_training
+
+  - wave_id: RESCUE_W3_TWO_SEED_MATCHED_FORMAL_TRAINING
+    executor_id: srr_cascade_rescue_executor
+    blocking: true
+    dependencies: [RESCUE_W2_PREFLIGHT_OVERFIT_GRADIENT_ROUNDTRIP_AND_KNOWN_BAD]
+    write_scope:
+      - jobs/care_mm/
+      - logs/care_myops_srr_cascade_submission_rescue/
+      - results/20260724_care_myops_srr_cascade_submission_rescue/
+    formal_jobs:
+      - logical_run_id: srr_cascade_seed20260724
+        seed: 20260724
+        partition: htzhulab
+        variants: [scar_cascade_control, scar_srr_cascade, edema_zone_control, edema_srr_zone_cascade]
+        optimizer_steps_each: 6250
+        validation_steps: [1250, 2500, 3750, 5000, 6250]
+        runtime_root: results/20260724_care_myops_srr_cascade_submission_rescue/runtime/seed20260724
+        log_root: logs/care_myops_srr_cascade_submission_rescue/seed20260724
+        lock_root: results/20260724_care_myops_srr_cascade_submission_rescue/runtime/locks/seed20260724
+      - logical_run_id: srr_cascade_seed20260725
+        seed: 20260725
+        partition: a100-gpu
+        variants: [scar_cascade_control, scar_srr_cascade, edema_zone_control, edema_srr_zone_cascade]
+        optimizer_steps_each: 6250
+        validation_steps: [1250, 2500, 3750, 5000, 6250]
+        runtime_root: results/20260724_care_myops_srr_cascade_submission_rescue/runtime/seed20260725
+        log_root: logs/care_myops_srr_cascade_submission_rescue/seed20260725
+        lock_root: results/20260724_care_myops_srr_cascade_submission_rescue/runtime/locks/seed20260725
+    matching:
+      same_source_checkpoints: true
+      same_common_head_initialization_within_seed: true
+      same_case_and_patch_sequence_within_pathology: true
+      same_spatial_and_intensity_augmentation_within_pathology: true
+      same_optimizer_budget_decode_evaluator: true
+      audit_not_run_until_selected_checkpoint_reload: true
+    retry_policy:
+      operational_retry_allowed: true
+      same_executor_attempt: true
+      max_startup_retries: 2
+      max_preemption_retries: 1
+      max_unknown_retries: 0
+      require_same_code_hash: true
+      require_same_config_hash: true
+      require_same_split_hash: true
+      failed_attempt_training_credit: 0
+    slurm_dependency_policy:
+      training_dependency: afterok
+      finalizer_dependency: afterany
+    required_outputs:
+      - results/20260724_care_myops_srr_cascade_submission_rescue/slurm_attempts.csv
+      - results/20260724_care_myops_srr_cascade_submission_rescue/training_adequacy.csv
+      - results/20260724_care_myops_srr_cascade_submission_rescue/matched_run_hashes.json
+      - results/20260724_care_myops_srr_cascade_submission_rescue/calibration_checkpoint_selection.csv
+      - results/20260724_care_myops_srr_cascade_submission_rescue/calibration_casewise_metrics.csv
+      - results/20260724_care_myops_srr_cascade_submission_rescue/source_freeze_runtime_checks.csv
+    completion_conditions:
+      - both_seed_jobs_terminal_accounted
+      - all_eight_variants_exact_6250_steps
+      - all_validation_events_complete_on_calibration_22
+      - control_and_srr_matched_hashes_pass
+      - selected_checkpoint_reload_recorded
+      - source_checkpoint_and_parameter_hash_unchanged
+      - post_completion_aggregation_exit_zero
+    failure_action: same_scope_operational_repair_or_NEEDS_REPAIR
+
+  - wave_id: RESCUE_W4_FROZEN_AUDIT_PATHOLOGY_SELECTION_AND_COMPOSITION
+    executor_id: srr_cascade_rescue_executor
+    blocking: true
+    dependencies: [RESCUE_W3_TWO_SEED_MATCHED_FORMAL_TRAINING]
+    write_scope:
+      - scripts/evaluation/
+      - tests/care_mm/
+      - results/20260724_care_myops_srr_cascade_submission_rescue/
+    selection_contract:
+      calibration_selects_custom_checkpoint_and_control_vs_srr: true
+      audit_selects_no_parameters: true
+      pathology_outcomes: [USE_SRR_CASCADE, USE_CASCADE_CONTROL, FALLBACK_TO_NNUNET]
+      final_decode: same_composed_six_class_logits_argmax
+      official_exact_hd_required: true
+      at_least_one_custom_required_for_package: true
+    required_outputs:
+      - results/20260724_care_myops_srr_cascade_submission_rescue/audit_prediction_manifest.csv
+      - results/20260724_care_myops_srr_cascade_submission_rescue/audit_casewise_metrics.csv
+      - results/20260724_care_myops_srr_cascade_submission_rescue/audit_subgroup_metrics.csv
+      - results/20260724_care_myops_srr_cascade_submission_rescue/audit_help_harm.csv
+      - results/20260724_care_myops_srr_cascade_submission_rescue/exact_hd_and_hd95_checks.csv
+      - results/20260724_care_myops_srr_cascade_submission_rescue/pathology_branch_decision.json
+      - results/20260724_care_myops_srr_cascade_submission_rescue/final_composition_contract.json
+      - results/20260724_care_myops_srr_cascade_submission_rescue/full44_final_candidate_metrics.csv
+      - results/20260724_care_myops_srr_cascade_submission_rescue/scientific_gate.json
+    completion_conditions:
+      - audit_22_used_once_after_freeze
+      - scar_and_edema_reported_separately_by_seed_and_subgroup
+      - Dice_exact_HD_HD95_help_harm_remote_FP_component_empty_and_changed_voxels_present
+      - CenterB_CenterC_and_noT2_safety_present
+      - each_pathology_outcome_mechanically_matches_config_gate
+      - final_composition_uses_anchor_fallback_for_failed_pathology
+      - no_average_or_all_case_metric_overrides_pathology_failure
+    failure_action: controller_returns_metric_selection_or_composition_bug_to_executor
+
+  - wave_id: RESCUE_W5_CONDITIONAL_LOCAL_PACKAGE_AND_DOCKER_DRY_RUN
+    executor_id: srr_cascade_rescue_executor
+    blocking: true
+    dependencies: [RESCUE_W4_FROZEN_AUDIT_PATHOLOGY_SELECTION_AND_COMPOSITION]
+    condition: at_least_one_custom_pathology_passes_audit
+    skip_is_valid_when: both_pathologies_fallback_to_nnunet
+    write_scope:
+      - scripts/submission/
+      - scripts/inference/
+      - jobs/care_mm/
+      - tests/submission/
+      - results/20260724_care_myops_srr_cascade_submission_rescue/
+    package_contract:
+      myops_cases: 15
+      cine_cases: 15
+      myops_source: fold0_nnunet_anchor_plus_selected_pathology_corrections
+      cine_source: Dataset502_existing_nnunet_five_fold_ensemble
+      new_cine_training: false
+      deterministic_runs: 2
+      upload: false
+    required_outputs:
+      - results/20260724_care_myops_srr_cascade_submission_rescue/submission_model_manifest.json
+      - results/20260724_care_myops_srr_cascade_submission_rescue/submission_case_manifest.csv
+      - results/20260724_care_myops_srr_cascade_submission_rescue/submission_label_geometry_checks.csv
+      - results/20260724_care_myops_srr_cascade_submission_rescue/submission_determinism_checks.csv
+      - results/20260724_care_myops_srr_cascade_submission_rescue/docker_feasibility_probe.json
+      - results/20260724_care_myops_srr_cascade_submission_rescue/local_package_receipt.json
+    completion_conditions:
+      - exact_15_myops_and_15_cine_cases
+      - official_raw_labels_only
+      - shape_spacing_origin_direction_match_inputs
+      - required_zip_layout_and_names
+      - two_runs_prediction_and_package_hashes_equal
+      - container_or_local_equivalent_dry_run_exit_zero
+      - no_GT_access
+      - no_validation_or_docker_upload
+    failure_action: controller_returns_same_scope_export_packaging_or_docker_gap
+
+  - wave_id: RESCUE_W6_FINALIZER_MAPPER_STATE_COMMIT_AND_NOTIFICATION
+    executor_id: srr_cascade_rescue_executor
+    blocking: true
+    dependencies:
+      - RESCUE_W4_FROZEN_AUDIT_PATHOLOGY_SELECTION_AND_COMPOSITION
+      - RESCUE_W5_CONDITIONAL_LOCAL_PACKAGE_AND_DOCKER_DRY_RUN
+    write_scope:
+      - scripts/evaluation/
+      - prompts/routes/handoffs/CURRENT.md
+      - configs/srr_production/entrypoints.yaml
+      - wiki/
+      - results/20260724_care_myops_srr_cascade_submission_rescue/
+    required_outputs:
+      - results/20260724_care_myops_srr_cascade_submission_rescue/finalizer_state.json
+      - results/20260724_care_myops_srr_cascade_submission_rescue/mapper_report_draft.md
+      - results/20260724_care_myops_srr_cascade_submission_rescue/architecture_delta_draft.md
+      - results/20260724_care_myops_srr_cascade_submission_rescue/mapper_report_final.md
+      - results/20260724_care_myops_srr_cascade_submission_rescue/architecture_delta_final.md
+      - results/20260724_care_myops_srr_cascade_submission_rescue/strict_validator_report.json
+      - results/20260724_care_myops_srr_cascade_submission_rescue/controller_report.md
+      - results/20260724_care_myops_srr_cascade_submission_rescue/completion_check.md
+      - results/20260724_care_myops_srr_cascade_submission_rescue/MANIFEST.md
+      - results/20260724_care_myops_srr_cascade_submission_rescue/notification_brief.json
+    completion_conditions:
+      - all_jobs_terminal_and_aggregation_complete
+      - strict_validator_and_known_bad_exit_zero
+      - exactly_one_allowed_scientific_token
+      - mapper_wiki_current_entrypoints_fingerprint_consistent
+      - local_lightweight_commit_complete
+      - no_runtime_heavy_artifacts_tracked
+      - git_diff_check_pass
+      - git_push_false
+      - completion_email_sent_only_after_terminal_commit_status
+    failure_action: controller_returns_same_scope_executor_or_finalizer_gap_or_OPERATIONALLY_BLOCKED

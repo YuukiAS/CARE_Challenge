@@ -1,166 +1,122 @@
-schema_version: 14
-authority_name: care_myops_batch10_deadline_rescue_authority
-formal_training_status: BATCH10_DEADLINE_RESCUE_TERMINAL_STOP
-status_reason: Batch10 deadline rescue completed with near-baseline gate failure. Batch9 runtime/checkpoints remain frozen input evidence only; old Wave6 must not be resumed. nnU-Net remains evaluation-only baseline and forbidden as CARE-MMRD model, ensemble source, anchor, or fallback.
+schema_version: 15
+authority_name: care_myops_srr_cascade_submission_rescue_authority
+formal_training_status: READY_FOR_CONTROLLER
+status_reason: >-
+  Batch10 CARE-MMRD terminal stop remains valid. The user explicitly authorized a new
+  main-only submission-rescue task that restores frozen nnU-Net OOF logits as the
+  final segmentation base, anatomy context, and pathology fallback, while frozen
+  CARE-MMRD checkpoints provide evidence to new narrow scar/edema bounded correction
+  heads. This is not Batch11 and does not resume Batch9 Wave6 or old SRR runtime.
 current_scientific_status:
-  batch6: FINAL_OBJECTIVE_REPAIRED_BELOW_USABLE_SIGNAL
-  batch7_operational: SIX_MATCHED_RUNS_COMPLETE
-  batch7_scientific_packet: INCOMPLETE_BR2_SIP_MECHANISM_CLOSURE
+  batch7_operational: SIX_MATCHED_RUNS_COMPLETE_HISTORICAL
+  batch7_scientific_packet: INCOMPLETE_BR2_SIP_MECHANISM_CLOSURE_HISTORICAL
   batch8: SUPERSEDED_UNEXECUTED_DIAGNOSTIC_CONTRACT
-  batch9_original: COMPLETE_NO_USABLE_SIGNAL_WITH_EXPOSED_IMPLEMENTATION_DEFECTS
-  batch9_repair: FROZEN_INPUT_ONLY_NOT_CURRENT_AUTHORITY
-  direct_segmentation_mainline: AUTHORIZED_REPAIR_ONLY
-  nnunet_in_model: FORBIDDEN
-  baseline_fallback: FORBIDDEN
-  r2_br2_line: NOT_AUTHORIZED
-  sip: NOT_AUTHORIZED
-  refiner: NOT_AUTHORIZED
-  batch10_deadline_rescue: TERMINAL_STOP_NEAR_BASELINE_GATE_FAIL
+  batch9_repair: FROZEN_EVIDENCE_SOURCE_ONLY
+  batch10_deadline_rescue: TERMINAL_STOP_RETAINED_AS_HISTORY
+  care_mmrd_direct_segmentation: STOPPED
+  srr_cascade_submission_rescue: READY_FOR_CONTROLLER
   batch11: NOT_AUTHORIZED
-historical_entrypoints:
-- id: srr_batch7_minimal_pathology_decomposition
-  role: historical_six_run_packet_with_incomplete_BR2_SIP_mechanism_closure
-  path: prompts/tasks/20260722_srr_batch7_minimal_pathology_decomposition_controller.md
-  config_path: configs/srr_production/myops_batch7_minimal_decomposition.yaml
-  result_root: results/20260722_srr_batch7_minimal_pathology_decomposition
-  formal_authority: false
-  operational_status: COMPLETE
-  scientific_status: INCOMPLETE_MECHANISM_CLOSURE
-- id: srr_batch8_clean_edema_br2_confirmation
-  role: historical_unexecuted_clean_edema_BR2_diagnostic_contract
-  path: prompts/tasks/20260722_srr_batch8_clean_edema_br2_controller.md
-  config_path: configs/srr_production/myops_batch8_clean_edema_br2.yaml
-  result_root: results/20260722_srr_batch8_clean_edema_br2_confirmation
-  formal_authority: false
-  runtime_authorized: false
-  status: SUPERSEDED_UNEXECUTED_DIAGNOSTIC_CONTRACT
-- id: care_myops_batch9_reliable_label_distillation
-  role: completed_original_batch9_with_exposed_training_and_validation_defects
-  path: prompts/tasks/20260722_care_myops_batch9_reliable_label_distillation_controller.md
-  config_path: configs/care_mm/batch9_reliable_label_distillation.yaml
-  result_root: results/20260722_care_myops_batch9_reliable_label_distillation
-  formal_authority: false
-  runtime_authorized: false
-  operational_status: COMPLETE
-  scientific_status: CURRENT_IMPLEMENTATION_UNUSABLE_NOT_CLEAN_SCIENTIFIC_NEGATIVE
+  route_worktree_development: NOT_AUTHORIZED
 formal_entrypoints:
-- id: care_myops_batch10_deadline_rescue
-  role: current_amended_deadline_rescue_controller_authority
-  task_key: 20260724_care_myops_batch10_deadline_rescue
-  path: prompts/tasks/20260724_care_myops_batch10_deadline_rescue_controller.md
-  config_path: configs/care_mm/batch10_deadline_rescue.yaml
-  executor_plan_path: prompts/tasks/20260724_care_myops_batch10_deadline_rescue_executor_plan.yaml
-  planner_audit_path: results/srr_production/code_maturity/batch10_deadline_rescue_planner_decision_20260724.md
-  result_root: results/20260724_care_myops_batch10_deadline_rescue
-  formal_authority: true
-  runtime_authorized: false
-  audit_status: TERMINAL_STOP_VERIFIED_COMPLETE
-  dataset: Dataset501_CAREMyoPS
-  fold: 0
-  parallel_executor: false
-  independent_slurm_jobs_can_run_in_parallel: true
-  old_batch9_wave6_resume_authorized: false
-  nnunet_model_or_ensemble_source_authorized: false
-  validation_upload_authorized: false
-  hosted_metric_claim_authorized: false
-  batch11_authorized: false
-  required_current_outputs:
-  - controller_amendment_receipt.md
-  - gap_register.csv
-  - selection_provenance.json
-  - checkpoint_screening_manifest.csv
-  - near_baseline_gate.json
-  - strict_validator_report.json
-  - controller_report.md
-  - wave4_training_skip.json
-candidate_entrypoints:
-- id: care_myops_batch9_exposed_issues_repair
-  role: authorized_in_place_CARE_MMRD_training_semantics_and_validator_repair
-  task_key: 20260723_care_myops_batch9_exposed_issues_repair
-  path: prompts/tasks/20260723_care_myops_batch9_exposed_issues_repair_controller.md
-  config_path: configs/care_mm/batch9_exposed_issues_repair.yaml
-  executor_plan_path: prompts/tasks/20260723_care_myops_batch9_exposed_issues_repair_executor_plan.yaml
-  planner_audit_path: results/srr_production/code_maturity/batch9_exposed_issues_repair_planner_decision_20260723.md
-  result_root: results/20260723_care_myops_batch9_exposed_issues_repair
-  formal_authority: false
-  audit_status: SUPERSEDED_BY_BATCH10_DEADLINE_RESCUE
-  dataset: Dataset501_CAREMyoPS
-  fold: 0
-  seeds:
-  - 20260723
-  - 20260724
-  architecture:
-    class_name: CAREMMReliableDistillResEnc
-    forward_architecture_change: false
-    modality_stems: 3
-    availability_hard_mask: true
-    anatomy_scar_edema_heads: true
-    nnunet_anchor_in_forward: false
-    nnunet_logits_or_prediction_input: false
-    baseline_fallback: false
-    old_srr_forward_reuse: false
-  explicit_repairs:
-  - valid_voxel_loss_normalization
-  - polynomial_lr_direct_and_lower_lr_continuation
-  - balanced_scar_edema_anatomy_background_sampling
-  - no_t2_edema_hard_decode_mask
-  - validation_every_25_epochs
-  - selected_checkpoint_reload
-  - real_known_bad_error_injection
-  - per_seed_fail_closed_decision
-  - runtime_derived_finalizer_receipts
-  schedule:
-    direct_epochs: 500
-    direct_steps: 125000
-    direct_initial_lr: 0.01
-    continuation_epochs: 100
-    continuation_steps: 25000
-    continuation_initial_lr: 0.001
-    validation_interval_epochs: 25
-  continuation_gate:
-    both_seeds_required: true
-    zero_gt_positive_empty_predictions: true
-    no_t2_edema_voxels_exact_zero: true
-    each_pathology_improves_over_original_batch9_same_seed: true
-    cross_seed_average_cannot_override_seed_failure: true
-  allowed_actions:
-  - repair_existing_batch9_training_loss_sampler_decode_and_validator
-  - run_two_seed_repaired_direct_training
-  - conditionally_run_matched_teacher_control_distill
-  - terminal_slurm_accounting
-  - post_completion_aggregation
-  - mapper_wiki_current_fingerprint_update
-  - local_lightweight_result_commit
-  forbidden_actions:
-  - nnunet_anchor
-  - nnunet_checkpoint_logits_prediction_or_fallback
-  - run_batch8
-  - old_SRR_forward_or_loss_reuse
-  - BR2_lite
-  - SIP_training
-  - prototype_or_memory
-  - proposal_or_refiner
-  - source_arbiter_or_production_gate
-  - external_data_or_pretrained_weights
-  - Batch10
-  - fold_expansion
-  - Cine
-  - validation_upload
-  - hosted_metric_claim
-  - route_promotion
-  - resume_old_wave6_to_epoch100
-  runtime_authorized: false
-  scientific_status: FROZEN_INPUT_ONLY_WITH_KNOWN_EVALUATION_DEFECTS
+  - id: care_myops_srr_cascade_submission_rescue
+    role: current_main_only_anchor_bounded_pathology_specific_submission_rescue
+    task_key: 20260724_care_myops_srr_cascade_submission_rescue
+    path: prompts/tasks/20260724_care_myops_srr_cascade_submission_rescue_controller.md
+    config_path: configs/care_mm/srr_cascade_submission_rescue.yaml
+    executor_plan_path: prompts/tasks/20260724_care_myops_srr_cascade_submission_rescue_executor_plan.yaml
+    planner_audit_path: results/srr_production/code_maturity/srr_cascade_submission_rescue_planner_decision_20260724.md
+    result_root: results/20260724_care_myops_srr_cascade_submission_rescue
+    formal_authority: true
+    runtime_authorized: true
+    dataset: Dataset501_CAREMyoPS
+    fold: 0
+    branch: main
+    worktree: /users/a/e/aereinh/CARE
+    executor_count: 1
+    mapper_required: true
+    nnunet_scope:
+      five_fold_oof_anchor_for_training: authorized
+      fold0_oof_anchor_for_local_evaluation: authorized
+      final_logit_base: authorized
+      anatomy_and_uncertainty_context: authorized
+      pathology_specific_fallback: authorized
+      counted_as_custom_gain: forbidden
+    frozen_care_mmrd_scope:
+      feature_anatomy_edema_source: authorized_hash_bound
+      scar_evidence_source: authorized_hash_bound
+      source_parameter_update: forbidden
+    custom_model_scope:
+      architecture: CARESRRCascadeRescue
+      anatomy_channel_modification: forbidden
+      pathology_correction_channels: [4, 5]
+      correction_bound: 2*tanh_delta
+      no_t2_edema_change: forbidden
+      pathology_independent_fallback: required
+    cine_scope:
+      new_training: forbidden
+      fixed_existing_dataset502_nnunet_five_fold_source_for_local_package: conditional_authorized
+    upload_scope:
+      local_package_and_docker_dry_run: conditional_authorized
+      validation_upload: forbidden
+      docker_upload: forbidden
+      hosted_metric_claim: forbidden
+historical_entrypoints:
+  - id: care_myops_batch10_deadline_rescue
+    role: terminal_fair_reevaluation_and_stop_packet
+    task_key: 20260724_care_myops_batch10_deadline_rescue
+    path: prompts/tasks/20260724_care_myops_batch10_deadline_rescue_controller.md
+    config_path: configs/care_mm/batch10_deadline_rescue.yaml
+    result_root: results/20260724_care_myops_batch10_deadline_rescue
+    formal_authority: false
+    runtime_authorized: false
+    audit_status: TERMINAL_STOP_VERIFIED_COMPLETE
+  - id: care_myops_batch9_exposed_issues_repair
+    role: frozen_checkpoint_and_runtime_evidence_source
+    task_key: 20260723_care_myops_batch9_exposed_issues_repair
+    path: prompts/tasks/20260723_care_myops_batch9_exposed_issues_repair_controller.md
+    config_path: configs/care_mm/batch9_exposed_issues_repair.yaml
+    result_root: results/20260723_care_myops_batch9_exposed_issues_repair
+    formal_authority: false
+    runtime_authorized: false
+    old_wave6_resume_authorized: false
+  - id: srr_batch7_minimal_pathology_decomposition
+    role: historical_mechanism_evidence_only
+    path: prompts/tasks/20260722_srr_batch7_minimal_pathology_decomposition_controller.md
+    result_root: results/20260722_srr_batch7_minimal_pathology_decomposition
+    formal_authority: false
+    runtime_authorized: false
+  - id: srr_batch8_clean_edema_br2_confirmation
+    role: historical_unexecuted_contract_only
+    path: prompts/tasks/20260722_srr_batch8_clean_edema_br2_controller.md
+    result_root: results/20260722_srr_batch8_clean_edema_br2_confirmation
+    formal_authority: false
+    runtime_authorized: false
 publication_boundary:
-  allowed_method_description: CARE_MMRD_reliable_label_distillation_after_explicit_training_semantics_repair
-  unseen_center_d_generalization_proven_locally: false
-  nnunet_model_or_fallback_authorized: false
-  r2_br2_sip_performance_claim_authorized: false
-  prototype_memory_refiner_claim_authorized: false
-  batch10_authorized: true
+  allowed_method_description: >-
+    frozen-baseline anchored, pathology-specific bounded refinement using first-party
+    CARE evidence and clean cross-fitted prototype similarities
+  care_mmrd_direct_route_continues: false
+  r2_br2_theory_directly_proven_for_dense_segmentation: false
+  third_party_mosaic_code_or_weights_used: false
+  unseen_center_generalization_proven: false
   validation_upload_authorized: false
+  docker_upload_authorized: false
   hosted_metric_claim_authorized: false
   fold_expansion_authorized: false
-  cine_authorized: false
+  new_cine_training_authorized: false
   route_promotion_authorized: false
   batch11_authorized: false
+blocked_actions:
+  - resume_batch9_wave6
+  - start_batch11
+  - run_old_batch7_or_batch8
+  - use_old_srr_propref_dictionary_br2_sip_arbiter_as_production_path
+  - copy_or_depend_on_mosaic_code_or_weights
+  - external_data_or_external_pretrained_weights
+  - change_calibration_audit_split
+  - use_audit_for_selection
+  - new_cine_training
+  - validation_upload
+  - docker_upload
+  - hosted_metric_claim
+  - route_promotion

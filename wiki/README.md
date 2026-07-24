@@ -1,190 +1,140 @@
 # CARE 架构 Wiki
 
-architecture_version: `care-myops-batch10-deadline-rescue-terminal-stop`
-latest_verified_runtime: `Batch9 repair direct and teacher complete; Wave6 control/distill stopped by user after epoch25`
-latest_scientific_status: `Batch10 fair rescue completed; best CARE-MMRD ensemble failed near-baseline gate, so CARE-MMRD competition route stops`
-latest_controller_task: `20260724_care_myops_batch10_deadline_rescue`
-route_status: `MAIN_ONLY_BATCH10_TERMINAL_STOP_NO_BATCH11`
+architecture_version: `care-srr-cascade-submission-rescue-planned`
+latest_verified_runtime: `Batch10 fair rescue terminal packet; no new rescue runtime yet`
+latest_scientific_status: `CARE-MMRD direct route stopped; user-authorized anchor-bounded pathology-specific rescue ready for Controller`
+latest_controller_task: `20260724_care_myops_srr_cascade_submission_rescue`
+route_status: `MAIN_ONLY_SRR_CASCADE_SUBMISSION_RESCUE_READY`
 
-本页是 GPT、Controller、Executor、Mapper 和 Planner 读取当前架构状态的根入口。当前任务不是再增加模型复杂度，而是在两到三天内确认 CARE-MMRD 是否还有真实提交价值：先修复公平推理和空间恢复，重评全部现有 checkpoint，再决定是否允许一次25 epoch定向续训以及是否形成paper或Docker候选。
+本页是 GPT、Controller、Executor、Mapper 和 Planner 读取当前架构状态的根入口。当前代码仍以 Batch10 终态为最近已验证实现；新的目标架构尚未由 Controller 实现。下一步不是继续 CARE-MMRD，也不是恢复旧 SRR 全链，而是以现有 nnU-Net 为最终安全底座，分别训练 scar 与 edema 的窄纠错模块，并让任何未通过独立审计的病种自动回退基线。
 
 ## 当前判断
 
 ```text
-Batch7: 操作完成，scar失败、edema小增益，BR2/SIP机制闭环不完整
-Batch8: 未执行，历史诊断合同
-Original Batch9: 运行完成，因实现缺陷不能作为干净科学否定
-Batch9 repair: Wave0–5代码已推送，Wave6由用户在epoch25后终止
-Batch10: TERMINAL_STOP_NEAR_BASELINE_GATE_FAIL
-旧SRR/BR2/SIP: 不进入Batch10
-nnU-Net: 只作同划分评价基线，不进入CARE-MMRD forward或fallback
+Batch10 CARE-MMRD: 终止，保留为历史公平负结果
+新主线: CARE-SRR-Cascade submission rescue
+开发位置: /users/a/e/aereinh/CARE, main
+旧 Route A/B/C: 历史证据，不恢复
+validation/Docker upload: 未授权
 ```
 
 当前任务入口：
 
 ```text
-results/srr_production/code_maturity/batch10_deadline_rescue_planner_decision_20260724.md
-configs/care_mm/batch10_deadline_rescue.yaml
-prompts/tasks/20260724_care_myops_batch10_deadline_rescue_controller.md
-prompts/tasks/20260724_care_myops_batch10_deadline_rescue_executor_plan.yaml
-results/20260724_care_myops_batch10_deadline_rescue/
+results/srr_production/code_maturity/srr_cascade_submission_rescue_planner_decision_20260724.md
+configs/care_mm/srr_cascade_submission_rescue.yaml
+prompts/tasks/20260724_care_myops_srr_cascade_submission_rescue_controller.md
+prompts/tasks/20260724_care_myops_srr_cascade_submission_rescue_executor_plan.yaml
+results/20260724_care_myops_srr_cascade_submission_rescue/
 ```
 
-## CARE-MMRD 部署前向保持不变
+## 为什么不再做直接六类替换
+
+Batch10 已修复滑窗推理、checkpoint-plans 恢复、正式 inverse preprocessing 和同评价基线比较。最佳非 nnU-Net 候选仍在 audit 上低于基线，scar 的主要问题是边界和远端假阳性，edema 则已有接近基线的完整三模态信号。继续让一个共享网络重新生成 anatomy、scar 和 edema，风险大于剩余时间内的潜在收益。
+
+新任务保留 Batch10 有价值的 frozen feature/evidence，同时恢复 SRR-v3 的安全原则：强基线拥有最终输出权，创新模块只在有证据时做病种特异、有界的局部修改。
+
+## 目标数据流
 
 ```text
 [LGE,T2,C0] + availability
--> 3 independent modality stems
--> hard mask immediately after each stem
--> concatenate stem features and availability channels
--> ResidualEncoderUNet M-level backbone
--> shared decoder feature
--> anatomy head + scar head + edema head
--> direct six-class logits
--> argmax
+-> frozen five-fold OOF nnU-Net logits/probabilities
+-> frozen CARE-MMRD full-view feature/anatomy/edema evidence
+-> frozen CARE-MMRD scar margin evidence
+-> clean four-shard cross-fitted pathology prototype similarity
+-> soft myocardium-union, uncertainty, physical distance support
+-> scar control / scar SRR correction
+-> edema-zone control / edema SRR-zone correction
+-> bounded pathology-channel composition
+-> per-pathology calibration selection
+-> frozen audit retain-or-fallback decision
 ```
 
-模型类仍为：
+目标类：
 
 ```text
-src/care_myocardium/models/care_mm_reliable_distill.py
-CAREMMReliableDistillResEnc
+src/care_myocardium/models/care_srr_cascade_rescue.py
+CARESRRCascadeRescue
 ```
 
-Batch10不恢复：
+固定最终语义：
 
 ```text
-SRRProposeRefineMyoPS
-prototype / semantic memory
-BR2 / SIP
-proposal / refiner
-source arbiter / production gate
-bounded nnU-Net correction
+background, myocardium, LV, RV logits: exact anchor
+scar: anchor + support * 2*tanh(delta_scar)
+edema: anchor + T2_presence * support * 2*tanh(delta_edema)
+no-T2 edema: exact anchor
 ```
 
-## Batch 9 repair 到 epoch25 的真实含义
+## 冻结 source 与 prototype
 
-人工提供的 Wave6 epoch25 结果：
+新头不重新训练 source backbone。规划绑定两个已有 checkpoint，但 Wave0 必须重新核验路径、SHA256 和 clean-checkout load：
 
 ```text
-seed20260723 control: scar 0.4743, edema 0.3188
-seed20260723 distill: scar 0.4754, edema 0.3316
-seed20260724 control: scar 0.4291, edema 0.3354
-seed20260724 distill: scar 0.4221, edema 0.3576
+teacher full-view epoch50 e92521fc...: features, anatomy, edema evidence
+reliable-distill epoch25 36672249...: scar final-margin evidence
 ```
 
-蒸馏相对control平均约为 scar `-0.0030`、edema `+0.0175`。因此完整视图蒸馏对edema有可重复信号，但对scar不稳定；当前仍没有超过nnU-Net的证据。用户已终止原Wave6后续运行，Batch10不得自动恢复到epoch100。
+Prototype evidence 是新的一方窄实现，不得调用旧 `ProposalDictionary` 或旧 BR2/SIP production path。训练病例只能查询其他 shard；验证和推理只查询全部训练 shard。Edema 安全负样本必须来自 T2-present 可靠标注病例，no-T2 myocardium 不能成为 edema negative。
 
-## 为什么当前分数还不能作为最终结论
+## 训练前硬门
 
-远端提交 `3705a37bf4519144ea52155a2a7a3d2d118e3776` 已补正式Trainer、plans、augmentation、deep supervision、loss归一化和周期性验证，但进一步审计发现：
+正式 Slurm 前必须通过：
 
 ```text
-1. evaluator使用一次全体积forward，不是plans滑窗推理；
-2. prediction只做shape-only nearest-neighbor zoom；
-3. 没有使用nnU-Net v2正式crop/transpose/resampling逆变换；
-4. checkpoint评价用默认模型构造，不从checkpoint plans重建；
-5. ResEnc M plans与硬编码preprocessed目录可能不一致；
-6. student空间增强未同步到natural/teacher view；
-7. pathology coverage只检查任意类别confidence；
-8. sampler没有落实center-first均衡；
-9. clean checkout可能缺少被import的case_metadata.py；
-10. Wave0–5轻量证据和CURRENT/wiki未与本地runtime闭合。
+anchor identity <=1e-6
+channels 0-3 exact identity
+no-T2 edema exact identity
+source parameter/normalization freeze
+shared spatial transform across image, label, anchor, source, prototype, distance maps
+200-step scar and edema fixed overfit, loss decrease >=30%, zero formal credit
+single-loss backward reaches declared outputs
+prototype on/off and bank-swap change final output
+checkpoint roundtrip <=1e-6
+real known-bad fixtures fail closed
 ```
 
-这些问题既可能压低checkpoint的真实分数，也可能让distillation接受错误的逐体素监督。因此Batch10先修评价和数据语义，再决定是否训练。
+任何 gate 失败都由 Controller 在同一范围内退回 Executor 修复；不能提交训练后再解释。
 
-## Batch 10 数据流
+## 正式运行与评价
+
+固定两个 seed：`20260724`、`20260725`。每个 seed job 内按顺序运行四个 matched variants，每组 6250 optimizer steps。Calibration 只用于 checkpoint 和病种候选冻结；audit 只用于最终 retain/fallback。
+
+评价必须同时报告：Dice、官方 exact HD、HD95、precision/recall、remote FP、component、volume ratio、help/harm、empty prediction、changed voxels、CenterB/CenterC、no-T2 safety。Positive-GT 与 all-case-empty-safe 指标分开，selection 与 deployment 必须使用同一 composed-logit argmax。
+
+## 病种独立 fallback
+
+每个病种只能选择：
 
 ```text
-freeze Batch9 runtime and checkpoint lineage
--> clean-checkout import audit
--> plans / preprocessing fingerprint
--> checkpoint-plans model reconstruction
--> nnU-Net v2 sliding-window + Gaussian + mirror TTA
--> official inverse preprocessing and NIfTI export
--> 8 existing checkpoints + same-evaluator nnU-Net baseline
--> bounded ensemble and calibration/audit postprocessing
--> near-baseline gate
--> optional synchronized 25-epoch matched continuation
--> paper / Docker go-no-go
+USE_SRR_CASCADE
+USE_CASCADE_CONTROL
+FALLBACK_TO_NNUNET
 ```
 
-## 公平评价边界
+一个病种失败不允许拖垮另一个，也不允许通过平均值掩盖。至少一个 custom 病种通过 audit，才允许本地构建 submission-ready package。否则终态是 baseline-only，不得包装成 custom success。
 
-标准nnU-Net只允许读取现有fold0 prediction NIfTI和轻量metrics，用同一评价器重算baseline、HD95、remote FP和case-wise help/harm。禁止将nnU-Net checkpoint、logits、概率或预测作为CARE-MMRD输入、ensemble source、anchor或fallback。
+## Cine 与提交边界
 
-必须重评：
+本任务不训练 Cine。只有 MyoPS 至少一个 custom 病种通过，才允许把现有 Dataset502 nnU-Net 五折链作为固定 Cine 来源做本地 package/Docker dry-run。必须检查 15+15 病例、官方标签值、几何、目录结构、两次确定性 hash 和无 GT 访问。
+
+本地构建不等于上传。Validation upload、Docker upload 和 hosted 成绩声明仍需用户明确授权。
+
+## 当前图与后续 Mapper 责任
+
+现有 `wiki/figures/` 仍描述 Batch10 已验证实现，不代表目标模型已落地。任务设置 `diagram_update_required: true`；实现完成后 Mapper 必须更新：
 
 ```text
-2 direct selected checkpoints
-2 complete-view teacher selected checkpoints
-2 control epoch25 checkpoints
-2 distill epoch25 checkpoints
+wiki/MODEL.md
+wiki/EXECUTION.md
+wiki/COMPONENTS.csv
+wiki/LINEAGE.md
+wiki/architecture.yaml
+wiki/current_state.yaml
+wiki/figures/
 ```
 
-完整三模态teacher必须作为独立候选，因为官方validation/test输入为完整三模态。
-
-## 有限 ensemble 与后处理
-
-只允许六个冻结候选：direct、teacher、control、distill各自two-seed probability mean，best-two mean，以及一个pathology-specific probability compositor。不得做无界子集搜索，不得混入nnU-Net概率。
-
-44例按center和病种阳性状态分层，再按case hash交替分成calibration/audit。后处理只在calibration选择，audit只用于独立检验。允许的小网格仅包含anatomy support阈值、5/10 mm物理距离限制和scar/edema最小连通域阈值。
-
-## 条件式短续训
-
-只有最佳非nnU-Net候选在audit半集满足：scar距baseline不超过0.04、edema不超过0.03、无阳性空预测、no-T2 edema为0、HD95恶化不超过10%，才允许短续训。
-
-短续训从repaired direct selected checkpoint重新开始，不恢复旧Wave6 optimizer。两个seed各运行matched control/distill 25 epoch、6250 steps。必须先修复：
-
-```text
-student/natural/teacher共享空间变换
-独立强度增强但完整记录seed
-先target、再eligible center、再case、再patch的采样
-scar/edema各自teacher margin confidence mask
-训练集阈值校准
-无法满足coverage/precision的病种distillation权重置0
-```
-
-任一seed、任一病种distill低于matched control都必须明确失败。
-
-## Paper 与 Docker 门
-
-Paper候选要求audit split两病种基本不低于nnU-Net，完整44例至少一项提高0.005、另一项非负，同时通过help/harm、HD95、remote FP、空预测和no-T2安全门。
-
-Docker候选可以略宽，但必须是非nnU-Net CARE-MMRD，完整44例两病种均不低于baseline超过0.01，至少一项不低于baseline，并通过确定性重复推理和端到端容器dry-run。Batch10只允许本地构建和submission-ready manifest；上传仍由用户决定。
-
-若完成全部授权救援后scar仍低于baseline超过0.03或edema低超过0.02，停止本次CARE-MMRD竞赛路线，不启动Batch11。
-
-## 时间边界
-
-```text
-paper deadline: 2026-07-27
-docker deadline: 2026-08-03
-7月24–25日: 正确推理、重评、ensemble、后处理
-7月25日晚: go/no-go
-7月25–26日: 仅在near-baseline时短续训
-7月26日: 冻结paper科学内容
-7月27日: 只提交paper
-7月28日–8月3日: 仅对通过Docker门的候选做容器QA
-```
-
-## 当前图
-
-![当前模型](figures/model-current.png)
-
-![当前差距](figures/model-gap.png)
-
-![执行流程](figures/execution-flow.png)
-
-部署forward未改变，因此Batch10不重画模型主图。Mapper需要更新真实推理/export、训练语义、runtime和状态证据。
-
-
-## Batch 10 终态 Mapper 摘要
-
-Batch10 已完成正式 nnU-Net v2 滑窗/export、8个现有checkpoint公平重评、teacher独立候选、六个冻结 probability ensemble、calibration/audit 后处理和 strict validator。最佳候选为 `distill_epoch25_two_seed_mean/raw_argmax`，audit scar Dice 比同划分 nnU-Net 低 `0.0270547725`，audit edema Dice 低 `0.0357924888`；scar HD95 相对恶化 `0.3964687111`，edema HD95 相对恶化 `0.0785403447`。no-T2 edema 体素为 `0`，GT-positive 空预测为 `0`，但 near-baseline gate 失败。
-
-因此 Wave4 训练被跳过，未提交任何25 epoch matched jobs；不启动 Batch11，不做 validation upload，不做 hosted metric claim，不构成 paper 或 Docker 候选。终态 evidence 位于 `results/20260724_care_myops_batch10_deadline_rescue/strict_validator_report.json`、`near_baseline_gate.json`、`controller_report.md`。
+未实现前不得把目标架构写成“已验证”。
 
 ## 入口
 

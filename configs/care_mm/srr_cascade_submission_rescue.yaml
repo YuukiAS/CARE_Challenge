@@ -1,0 +1,289 @@
+schema_version: 1
+task_key: 20260724_care_myops_srr_cascade_submission_rescue
+authority_name: care_myops_srr_cascade_submission_rescue
+status: READY_FOR_CONTROLLER
+source_main_commit_audited: cf65a109e06eeabec2a900bd789c431b03c985dc
+result_root: results/20260724_care_myops_srr_cascade_submission_rescue
+planner_decision: results/srr_production/code_maturity/srr_cascade_submission_rescue_planner_decision_20260724.md
+
+execution:
+  branch: main
+  worktree: /users/a/e/aereinh/CARE
+  controller_supervised: true
+  executor_count: 1
+  mapper_required: true
+  slurm_continuity: slurm_dependency
+  runtime_push: false
+
+diagram_evidence:
+  versions_read: [SRR-v2, SRR-v2.5, SRR-v3, CARE-MMRD]
+  status: PASS_PROJECT_BACKGROUND_IMAGES_VISUALLY_READ
+  recovered_objective: observed-modality encoding -> clean pathology evidence retrieval -> anatomy-guided proposal -> bounded nnU-Net correction with pathology fallback
+
+data:
+  dataset: Dataset501_CAREMyoPS
+  fold: 0
+  train_cases: 176
+  validation_cases: 44
+  plans_path: data/nnUNet/nnUNet_preprocessed/Dataset501_CAREMyoPS/nnUNetResEncUNetMPlans.json
+  configuration: 3d_fullres
+  resolve_patch_and_data_identifier_with_configuration_manager: true
+  hardcoded_preprocessed_root_forbidden: true
+  calibration_audit_manifest: results/20260724_care_myops_batch10_deadline_rescue/rescue_split_manifest.csv
+  calibration_cases: 22
+  audit_cases: 22
+  audit_parameter_selection_forbidden: true
+  compact_label_order: [background, myocardium, LV_blood, RV_blood, edema, scar]
+  official_labels:
+    background: 0
+    myocardium: 200
+    LV_blood: 500
+    RV_blood: 600
+    edema: 1220
+    scar: 2221
+
+frozen_sources:
+  nnunet_anchor:
+    roles: [final_logit_base, anatomy_context, uncertainty_context, pathology_fallback]
+    training_cases: five_fold_OOF_only
+    fold0_validation: fold0_validation_probability_and_logits
+    in_fold_or_gt_generated_anchor: forbidden
+    identity_max_abs_delta: 1.0e-6
+  teacher_feature_edema:
+    model_class: CAREMMReliableDistillResEnc
+    checkpoint: results/20260723_care_myops_batch9_exposed_issues_repair/runtime/seed20260723/teacher_full_view/checkpoint_epoch50.pt
+    sha256: e92521fccec92d0066f3fa5c076fce16aea3bb02330b940c85321ab4726d1474
+    outputs: [full_resolution_feature, anatomy_logits, edema_logit]
+    trainable: false
+  scar_evidence:
+    model_class: CAREMMReliableDistillResEnc
+    checkpoint: results/20260723_care_myops_batch9_exposed_issues_repair/runtime/seed20260723/student_reliable_distill/checkpoint_epoch25.pt
+    sha256: 366722497a47f292e07a0d1c1a3da57c2502b61042bc89b5cfc56b5a89e6a3a0
+    outputs: [scar_final_margin]
+    trainable: false
+
+model:
+  file: src/care_myocardium/models/care_srr_cascade_rescue.py
+  class_name: CARESRRCascadeRescue
+  final_anatomy_channels_exact_anchor: [0, 1, 2, 3]
+  pathology_channels_corrected:
+    edema: 4
+    scar: 5
+  correction_bound_logit: 2.0
+  scar_support_distance_mm: 10.0
+  edema_support_distance_mm: 15.0
+  no_t2_edema_exact_anchor_identity: true
+  correction_projection_zero_init: true
+  scar_head:
+    blocks: 2
+    conv_kernel: [3, 3, 3]
+    normalization: GroupNorm
+    activation: SiLU
+    inputs:
+      - teacher_full_resolution_feature
+      - normalized_LGE
+      - anchor_probabilities_6
+      - teacher_anatomy_probabilities
+      - scar_source_margin
+      - anchor_uncertainty
+      - soft_union_probability
+      - distance_to_union
+      - scar_positive_similarity
+      - scar_safe_negative_similarity
+  edema_head:
+    blocks: 2
+    conv_kernel: [3, 3, 3]
+    normalization: GroupNorm
+    activation: SiLU
+    outputs: [zone_aux_logit, pure_edema_delta]
+    inputs:
+      - teacher_full_resolution_feature
+      - normalized_T2
+      - normalized_LGE
+      - anchor_probabilities_6
+      - teacher_edema_probability
+      - teacher_anatomy_probabilities
+      - anchor_uncertainty
+      - soft_union_probability
+      - distance_to_union
+      - edema_zone_positive_similarity
+      - edema_safe_negative_similarity
+  forbidden_import_or_call:
+    - SRRProposeRefineMyoPS
+    - ProposalDictionary
+    - M10TwoPassSpatialDictionary
+    - legacy_BR2
+    - legacy_SIP
+    - PathologySourceArbiter
+    - BranchArbitrationGate
+    - production_correction_gate
+    - old_propref_loss
+
+prototype_evidence:
+  new_helper_required: true
+  feature_source: teacher_full_resolution_feature
+  shards: 4
+  training_query_excludes_own_shard: true
+  validation_inference_uses_all_train_shards: true
+  scar_positive: GT_scar
+  scar_safe_negative: [healthy_myocardium, LV_RV_blood, outside_union, nnunet_remote_FP]
+  edema_positive: GT_edema_union_scar
+  edema_safe_negative: [T2_present_outside_union, T2_present_blood, T2_present_myo_at_least_10mm_from_zone]
+  no_t2_myocardium_as_edema_negative: false
+  similarity: cosine_max_over_bank
+  bank_trainable: false
+  provenance_required: [source_cases, shard, feature_checkpoint_sha256, split_sha256, preprocess_sha256, positive_count, negative_count, seed]
+
+losses:
+  scar:
+    final_margin_bce_dice: 1.0
+    anchor_error_directional: 0.5
+    confident_anchor_preserve: 0.1
+    remote_fp_suppression: 0.25
+    surface_distance_surrogate: 0.1
+  edema:
+    final_margin_bce_dice: 1.0
+    edema_zone_aux_bce_dice: 0.5
+    anchor_error_directional: 0.35
+    confident_anchor_preserve: 0.1
+    surface_distance_surrogate: 0.05
+  all_nonzero_losses_must_reach_declared_output: true
+  raw_residual_only_supervision_forbidden: true
+
+sampling:
+  order: [target, eligible_center_uniform, case_uniform, patch]
+  scar:
+    scar_positive: 0.40
+    anchor_error_hard_negative: 0.30
+    anatomy: 0.20
+    background: 0.10
+  edema:
+    edema_zone_positive: 0.45
+    anchor_error: 0.35
+    anatomy: 0.15
+    background: 0.05
+  edema_centers: [CenterB, CenterC]
+  edema_requires_t2_and_reliable_label: true
+  center_id_in_model_forward: false
+
+augmentation:
+  one_shared_spatial_transform_for_all_spatial_tensors: true
+  spatial_tensors: [raw_images, labels, anchor_logits, source_logits_features, prototype_similarity_maps, distance_maps]
+  intensity_aug_raw_modalities_only: true
+  record_spatial_and_intensity_seeds: true
+
+preflight:
+  fixed_overfit_steps_each_pathology: 200
+  fixed_overfit_min_loss_reduction_fraction: 0.30
+  fixed_overfit_formal_credit: 0
+  checkpoint_roundtrip_max_abs_delta: 1.0e-6
+  initial_anchor_equivalence_max_abs_delta: 1.0e-6
+  shared_spatial_fiducial_max_error: 0.0
+  source_grad_norm_max: 0.0
+  anatomy_channel_delta_max: 0.0
+
+formal_training:
+  seeds: [20260724, 20260725]
+  variants: [scar_cascade_control, scar_srr_cascade, edema_zone_control, edema_srr_zone_cascade]
+  one_isolated_job_per_seed: true
+  within_seed_variant_order: [scar_cascade_control, scar_srr_cascade, edema_zone_control, edema_srr_zone_cascade]
+  batch_size: 1
+  gradient_accumulation: 2
+  optimizer: AdamW
+  initial_lr: 0.0001
+  weight_decay: 0.0001
+  scheduler: cosine
+  minimum_lr: 1.0e-6
+  optimizer_steps_each: 6250
+  validation_steps: [1250, 2500, 3750, 5000, 6250]
+  checkpoint_selection_population: calibration_positive_gt
+  audit_run_only_after_selected_checkpoint_reload: true
+  same_seed_matching: [source_checkpoint, common_head_initialization, case_sequence, patch_sequence, spatial_augmentation, intensity_augmentation, optimizer_template, budget, decode, evaluator]
+
+metrics:
+  required: [Dice, exact_HD, HD95, precision, recall, remote_FP_mm3, component_count, volume_ratio, help_harm, empty_prediction, changed_voxels]
+  populations: [positive_gt, all_cases_empty_safe, calibration, audit, CenterB, CenterC, small_scar, large_scar, no_T2]
+  official_exact_hd_required: true
+  all_case_empty_safe_cannot_replace_positive_gt: true
+  selection_decode_equals_deployment_decode: true
+
+retention_gates:
+  scar:
+    audit_positive_gt_dice_delta_min: 0.0
+    audit_exact_hd_delta_max: 0.0
+    audit_hd95_relative_worsening_max: 0.05
+    audit_remote_fp_ratio_max: 1.0
+    audit_help_minus_harm_min: 0
+    positive_gt_empty_max: 0
+  edema:
+    audit_positive_gt_dice_delta_min: 0.0
+    audit_exact_hd_delta_max: 0.0
+    audit_hd95_relative_worsening_max: 0.05
+    audit_remote_fp_ratio_max: 1.05
+    audit_help_minus_harm_min: 0
+    positive_gt_empty_max: 0
+    no_t2_edema_voxels_max: 0
+    centerB_dice_delta_min: -0.005
+    centerC_dice_delta_min: -0.005
+  pathology_outcomes: [USE_SRR_CASCADE, USE_CASCADE_CONTROL, FALLBACK_TO_NNUNET]
+  submission_tokens:
+    - CUSTOM_SUBMISSION_CANDIDATE_READY_PENDING_USER_UPLOAD
+    - PARTIAL_CUSTOM_SUBMISSION_CANDIDATE_READY_PENDING_USER_UPLOAD
+    - NO_CUSTOM_RESCUE_USE_BASELINE_ONLY
+    - OPERATIONALLY_BLOCKED
+
+packaging:
+  allowed_only_if_at_least_one_custom_pathology_passes: true
+  myops_anchor: Dataset501_fold0_nnUNet
+  cine_source: Dataset502_nnUNet_five_fold_ensemble_existing_models
+  new_cine_training: false
+  myops_validation_cases: 15
+  cine_validation_cases: 15
+  deterministic_runs: 2
+  exact_hash_match_required: true
+  local_docker_build_authorized: true
+  validation_upload_authorized: false
+  docker_upload_authorized: false
+  hosted_metric_claim_authorized: false
+
+slurm:
+  python_executable: /users/a/e/aereinh/CARE/envs/env_CARE/bin/python
+  seed20260724_partition: htzhulab
+  seed20260725_partition: a100-gpu
+  same_partition_gpu_preflight_required: true
+  training_dependency: afterok
+  finalizer_dependency: afterany
+  failed_attempt_training_credit: 0
+
+known_bad_required:
+  - in_fold_or_gt_anchor
+  - self_shard_prototype_leakage
+  - no_t2_edema_nonzero
+  - anatomy_channel_modified
+  - source_hash_mismatch
+  - source_trainable
+  - spatial_transform_mismatch
+  - prototype_zero_claimed_active
+  - audit_used_for_selection
+  - selected_checkpoint_not_reloaded
+  - selection_deployment_decode_mismatch
+  - positive_gt_empty_marked_ready
+  - exact_hd_missing_marked_ready
+  - legacy_srr_module_enters_forward
+  - monitor_packet_marked_complete
+  - package_label_geometry_case_count_or_layout_wrong
+
+forbidden_actions:
+  - resume_batch9_wave6
+  - start_batch11
+  - run_old_batch7_or_batch8
+  - train_BR2_or_SIP_or_source_arbiter
+  - copy_or_depend_on_MoSAIC_code_or_weights
+  - external_data_or_pretrained_weights
+  - change_calibration_audit_split
+  - use_audit_for_selection
+  - new_cine_training
+  - validation_upload
+  - docker_upload
+  - hosted_metric_claim
+  - route_promotion
