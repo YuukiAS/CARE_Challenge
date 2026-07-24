@@ -1,18 +1,26 @@
-current_milestone_id: SRR_cascade_submission_rescue_ready
+current_milestone_id: SRR_cascade_rescue_round1_amended_ready
 current_task_key: 20260724_care_myops_srr_cascade_submission_rescue
+method_name: CARE-SRR-Cascade
+short_method_name: SRR-Cascade
+execution_label: SRR-Cascade Rescue Round 1
+execution_code: SCR-R1
+numbering_policy: not_Batch11_not_legacy_milestone
 current_plan_path: results/srr_production/code_maturity/srr_cascade_submission_rescue_planner_decision_20260724.md
 current_controller_path: prompts/tasks/20260724_care_myops_srr_cascade_submission_rescue_controller.md
 current_config_path: configs/care_mm/srr_cascade_submission_rescue.yaml
+binding_amendment_path: configs/care_mm/srr_cascade_submission_rescue_preexecution_amendment.yaml
 current_executor_plan_path: prompts/tasks/20260724_care_myops_srr_cascade_submission_rescue_executor_plan.yaml
 current_planner_audit_path: results/srr_production/code_maturity/srr_cascade_submission_rescue_planner_decision_20260724.md
 current_result_root: results/20260724_care_myops_srr_cascade_submission_rescue
 current_review_path: null
 current_review_token: NOT_REVIEWED_NOT_REQUIRED
 controller_bind_latest_main: true
+amendment_wins_on_conflict: true
+resolved_contract_required_before_executor: true
 architecture_path: wiki/architecture.yaml
 component_table_path: wiki/COMPONENTS.csv
-wiki_fingerprint_status: PLANNED_SYSTEM_CHANGE_PENDING_CONTROLLER_IMPLEMENTATION
-entrypoints_authority_status: SRR_CASCADE_RESCUE_READY_FOR_CONTROLLER
+wiki_fingerprint_status: PLANNED_SYSTEM_CHANGE_AMENDED_PENDING_CONTROLLER_IMPLEMENTATION
+entrypoints_authority_status: SRR_CASCADE_RESCUE_ROUND1_AMENDED_READY
 updated_at: '2026-07-24'
 main_only:
   branch: main
@@ -29,11 +37,12 @@ batch10:
   no_t2_edema_predicted_voxels: 0
   scientific_meaning: CARE_MMRD_direct_six_class_route_stopped_not_reopened
 submission_rescue:
-  status: READY_FOR_CONTROLLER
+  status: READY_FOR_CONTROLLER_WITH_BINDING_AMENDMENT
   user_authorized_new_line: true
   is_batch11: false
   resumes_batch9_wave6: false
   architecture_change: system
+  diagram_update_required: false
   model_file: src/care_myocardium/models/care_srr_cascade_rescue.py
   model_class: CARESRRCascadeRescue
   dataset: Dataset501_CAREMyoPS
@@ -42,13 +51,14 @@ submission_rescue:
   calibration_cases: 22
   audit_cases: 22
   audit_used_for_selection: false
-  nnunet_scope:
-    five_fold_oof_anchor_training: true
-    fold0_oof_anchor_local_eval: true
-    final_logit_base: true
-    anatomy_context: true
-    pathology_fallback: true
-    custom_gain_credit: false
+  anchor:
+    train: five_fold_OOF_probabilities
+    local_eval: fold0_validation_probabilities
+    canonical_logit_formula: log(normalize(clip(probability,1e-6,1)))
+    canonical_grid: nnUNetResEncUNetMPlans_3d_fullres
+    physical_grid_roundtrip_required: true
+    official_package: Dataset501_existing_nnunet_five_fold_probability_ensemble
+    fold0_single_package_anchor: false
   frozen_sources:
     feature_anatomy_edema:
       checkpoint: results/20260723_care_myops_batch9_exposed_issues_repair/runtime/seed20260723/teacher_full_view/checkpoint_epoch50.pt
@@ -56,6 +66,8 @@ submission_rescue:
     scar_evidence:
       checkpoint: results/20260723_care_myops_batch9_exposed_issues_repair/runtime/seed20260723/student_reliable_distill/checkpoint_epoch25.pt
       sha256: 366722497a47f292e07a0d1c1a3da57c2502b61042bc89b5cfc56b5a89e6a3a0
+    deterministic_source_cache_required: true
+    source_cache_runtime_only: true
   target_forward:
     anatomy_channels_exact_anchor: [0, 1, 2, 3]
     edema_channel: 4
@@ -63,17 +75,24 @@ submission_rescue:
     correction_bound_logit: 2.0
     no_t2_edema_exact_anchor_identity: true
     per_pathology_fallback: true
+    support_formula_source: binding_amendment
+    head_hidden_channels: 32
+    groupnorm_groups: 8
   prototype_evidence:
     shards: 4
+    representation: deterministic_case_level_mean_prototypes
     training_query_excludes_own_shard: true
     validation_uses_all_train_shards: true
     no_t2_myocardium_as_edema_negative: false
   formal_training:
     seeds: [20260724, 20260725]
+    job_topology: one_job_per_seed_pathology
+    job_count: 4
     variants: [scar_cascade_control, scar_srr_cascade, edema_zone_control, edema_srr_zone_cascade]
     optimizer_steps_each: 6250
+    job_walltime: '08:00:00'
     validation_steps: [1250, 2500, 3750, 5000, 6250]
-    positive_gt_calibration_selection: true
+    calibration_candidate_count_per_pathology: 6
     selected_checkpoint_reload: true
     audit_after_freeze_only: true
   metrics:
@@ -97,6 +116,7 @@ submission_rescue:
     conditional_fixed_source: existing_Dataset502_nnunet_five_fold
   local_packaging:
     authorized_only_if_custom_pathology_passes: true
+    myops_anchor: existing_Dataset501_nnunet_five_fold_probability_ensemble
     deterministic_runs: 2
     docker_local_build: true
     validation_upload: false

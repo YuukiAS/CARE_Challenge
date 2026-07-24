@@ -1,0 +1,220 @@
+schema_version: 1
+task_key: 20260724_care_myops_srr_cascade_submission_rescue
+status: BINDING_PREEXECUTION_AMENDMENT
+amendment_id: srr_cascade_rescue_round1_preexecution_20260724
+base_planner_commit: 61b56ed318e9fc169e0a28ae30c360b82f0ebad6
+base_config: configs/care_mm/srr_cascade_submission_rescue.yaml
+base_executor_plan: prompts/tasks/20260724_care_myops_srr_cascade_submission_rescue_executor_plan.yaml
+resolution_rule: this_amendment_wins_on_every_conflict
+controller_requirements:
+  - bind_latest_remote_main_before_execution
+  - write_results_resolved_execution_contract_json_before_executor_launch
+  - record_base_and_amendment_sha256
+  - no_wave1_implementation_until_resolved_contract_is_complete
+
+naming:
+  paper_method_name: CARE-SRR-Cascade
+  short_method_name: SRR-Cascade
+  execution_label: SRR-Cascade Rescue Round 1
+  execution_code: SCR-R1
+  numbering_policy: not_Batch11_and_not_legacy_milestone
+  future_followup_pattern: SCR-R2_SCR-R3
+
+anchor_contract:
+  local_train_and_audit_source: five_fold_OOF_probabilities
+  fold0_validation_source: fold0_validation_probabilities
+  canonical_probability_epsilon: 1.0e-6
+  canonicalization:
+    formula: p=clip(p_raw,epsilon,1);p=p/sum_channels(p);z=log(p)
+    arbitrary_logit_offset_forbidden: true
+  canonical_grid: nnUNetResEncUNetMPlans_3d_fullres_preprocessed_grid
+  grid_mapping: physical_geometry_crop_transpose_and_resampling_from_case_properties
+  shape_only_resize_forbidden: true
+  anchor_roundtrip_required:
+    inverse_export_argmax_changed_voxels_max: 0
+    output_geometry_exact: true
+    probability_sum_tolerance: 1.0e-5
+  official_validation_package_anchor: Dataset501_existing_nnunet_five_fold_probability_ensemble
+  fold0_single_model_as_official_package_anchor: forbidden
+  package_anchor_compatibility_check:
+    uses_GT_or_metrics_for_selection: false
+    required_checks: [finite_logits, deterministic_hash, anatomy_channel_identity, no_t2_identity, correction_bound, output_geometry]
+
+frozen_source_cache:
+  required: true
+  purpose: prevent_repeated_frozen_backbone_forward_and_preserve_spatial_correspondence
+  cases: all_220_internal_cases_plus_official_cases_when_packaging
+  predictor:
+    tile_step_size: 0.5
+    gaussian: true
+    mirror_tta: false
+    checkpoint_reloaded_from_contract: true
+  cached_teacher_fields: [full_resolution_feature, anatomy_logits, edema_logit]
+  cached_scar_fields: [scar_final_margin]
+  feature_dtype: float16
+  logit_dtype: float32
+  anchor_dtype: float32
+  runtime_only_untracked: true
+  cache_direct_parity:
+    feature_max_abs_delta: 0.002
+    logit_max_abs_delta: 1.0e-5
+  required_receipts: [source_cache_manifest.csv, source_cache_parity_checks.csv, source_cache_hashes.json]
+
+resolved_feature_definitions:
+  anchor_probabilities: softmax(canonical_anchor_logits)
+  anchor_uncertainty: negative_sum_p_log_p_div_log_6
+  soft_union_probability: clip(anchor_p_myo+anchor_p_edema+anchor_p_scar,0,1)
+  union_binary_for_distance: soft_union_probability>=0.5
+  distance_to_union_mm: physical_euclidean_distance_to_union_binary
+  normalized_distance_input: min(distance_to_union_mm/pathology_support_distance_mm,1)
+  scar_support:
+    max_distance_mm: 10.0
+    sigma_mm: 5.0
+    formula: I(distance<=10)*max(soft_union_probability,exp(-0.5*(distance/5)^2))
+  edema_support:
+    max_distance_mm: 15.0
+    sigma_mm: 7.5
+    formula: I(distance<=15)*max(soft_union_probability,exp(-0.5*(distance/7.5)^2))
+  learned_support_or_gate: forbidden
+
+resolved_head_architecture:
+  hidden_channels: 32
+  input_projection: Conv3d_1x1_to_32
+  normalization: GroupNorm
+  groupnorm_groups: 8
+  activation: SiLU
+  residual_blocks: 2
+  residual_block: Conv3d_3x3_GN_SiLU_Conv3d_3x3_GN_residual_SiLU
+  scar_output_projection: Conv3d_1x1_one_channel_zero_initialized
+  edema_output_projection: Conv3d_1x1_two_channels_zone_and_delta_zero_initialized
+  dropout: none
+  anatomy_decoder_or_anatomy_trainable_path: forbidden
+
+prototype_contract:
+  representation: deterministic_case_level_mean_prototypes
+  source_feature: cached_teacher_full_resolution_feature
+  voxel_feature_l2_normalization: true
+  deterministic_voxel_sample_cap_per_case_category: 4096
+  minimum_voxels_per_case_category: 32
+  case_contribution:
+    positive: at_most_one_prototype_per_case_pathology
+    negative: at_most_one_prototype_per_case_negative_category
+  prototype_vector: l2_normalized_mean_of_sampled_voxel_features
+  similarity: cosine_max_over_allowed_case_prototypes
+  training_query: exclude_entire_query_case_shard
+  validation_and_official_query: use_all_fold0_training_shards
+  minimum_allowed_positive_prototypes_after_exclusion: 4
+  minimum_allowed_negative_prototypes_after_exclusion: 8
+  insufficient_bank_action: fail_closed
+  scar_negative_categories: [healthy_myo_excluding_scar_and_edema, LV_RV_blood, outside_GT_union, OOF_nnunet_scar_remote_FP]
+  scar_remote_FP_definition: OOF_anchor_pred_scar_and_not_GT_scar_and_distance_to_GT_union_gt_10mm
+  edema_positive_definition: GT_edema_union_GT_scar_on_T2_reliable_cases
+  edema_negative_categories: [outside_GT_union, LV_RV_blood, GT_myo_distance_to_edema_zone_ge_10mm]
+  no_t2_case_contribution_to_edema_bank: forbidden
+
+loss_contract:
+  pathology_margin: z_final_k-logsumexp(z_final_all_other_channels)
+  final_margin_bce_dice:
+    formula: BCEWithLogits(pathology_margin,binary_target)+SoftDice(sigmoid(pathology_margin),binary_target)
+  anchor_error_directional:
+    anchor_prediction: argmax(anchor_logits)
+    false_negative_mask: target_is_pathology_and_anchor_prediction_is_not_pathology
+    false_positive_mask: target_is_not_pathology_and_anchor_prediction_is_pathology
+    formula: mean_FN(softplus(-pathology_margin))+mean_FP(softplus(pathology_margin))
+    empty_mask_term: zero
+  confident_anchor_preserve:
+    mask: anchor_prediction_equals_GT_and_anchor_max_probability_ge_0.80
+    formula: SmoothL1(z_final_pathology,z_anchor_pathology)_on_mask
+  scar_remote_fp_suppression:
+    mask: target_not_scar_and_distance_to_GT_union_gt_10mm
+    formula: mean_mask(softplus(scar_final_margin))
+  surface_distance_surrogate:
+    distance_cap_mm: 20.0
+    formula: mean(abs(sigmoid(pathology_margin)-binary_target)*clip(distance_to_GT_pathology_surface_mm/20,0,1))
+  edema_zone_aux:
+    target: GT_edema_union_GT_scar
+    formula: BCEWithLogits(zone_aux_logit,zone_target)+SoftDice(sigmoid(zone_aux_logit),zone_target)
+  reliability:
+    scar: scar_label_reliable
+    edema_and_zone: T2_present_and_edema_label_reliable
+    no_t2_edema_owned_losses: exact_zero
+  each_nonzero_term_independent_backward_required: true
+  raw_delta_only_supervision: forbidden
+
+selection_contract:
+  checkpoint_steps: [1250,2500,3750,5000,6250]
+  per_seed_variant_calibration_eligibility:
+    positive_gt_empty_count_max: 0
+    no_t2_edema_voxels_max: 0
+    selected_checkpoint_reload_required: true
+    source_hash_unchanged_required: true
+    exact_HD_relative_worsening_max: 0.10
+    HD95_relative_worsening_max: 0.10
+    remote_FP_ratio_max: 1.10
+    help_minus_harm_min: -2
+  per_seed_variant_lexicographic_order:
+    - maximize_positive_gt_Dice_delta
+    - minimize_exact_HD_delta
+    - minimize_HD95_relative_worsening
+    - minimize_remote_FP_ratio
+    - maximize_help_minus_harm
+    - prefer_earlier_checkpoint_step
+  final_calibration_candidates_per_pathology:
+    - control_seed20260724
+    - control_seed20260725
+    - srr_seed20260724
+    - srr_seed20260725
+    - control_two_seed_probability_mean
+    - srr_two_seed_probability_mean
+  two_seed_mean_requires_both_constituent_candidates_eligible: true
+  control_and_srr_cross_blend: forbidden
+  final_candidate_selection_order: same_as_per_seed_variant_lexicographic_order
+  no_eligible_custom_candidate_action: FALLBACK_TO_NNUNET_without_audit_selection
+  audit_parameter_or_candidate_selection: forbidden
+  audit_reports_selected_candidate_and_constituent_seeds: true
+
+formal_job_topology:
+  replaces_one_job_per_seed: true
+  one_job_per_seed_pathology: true
+  job_count: 4
+  job_walltime: 08:00:00
+  jobs:
+    - {logical_run_id: scar_seed20260724, seed: 20260724, pathology: scar, partition: htzhulab, variants: [scar_cascade_control, scar_srr_cascade], optimizer_steps_each: 6250}
+    - {logical_run_id: edema_seed20260724, seed: 20260724, pathology: edema, partition: htzhulab, variants: [edema_zone_control, edema_srr_zone_cascade], optimizer_steps_each: 6250}
+    - {logical_run_id: scar_seed20260725, seed: 20260725, pathology: scar, partition: a100-gpu, variants: [scar_cascade_control, scar_srr_cascade], optimizer_steps_each: 6250}
+    - {logical_run_id: edema_seed20260725, seed: 20260725, pathology: edema, partition: a100-gpu, variants: [edema_zone_control, edema_srr_zone_cascade], optimizer_steps_each: 6250}
+  within_job_order: control_then_srr
+  control_and_srr_common_initialization: exact
+  failed_or_partial_job_formal_credit: 0
+  finalizer_dependency: afterany_all_four_jobs
+
+packaging_contract:
+  internal_performance_authority: fold0_OOF_audit_only
+  official_MyoPS_anchor: Dataset501_existing_nnunet_five_fold_probability_ensemble
+  official_Cine_anchor: Dataset502_existing_nnunet_five_fold_probability_ensemble
+  custom_heads_and_prototypes: frozen_selected_fold0_assets
+  anchor_ensemble_not_counted_as_custom_gain: true
+  no_GT_or_audit_metrics_in_package_anchor_compatibility: true
+
+mapper_and_diagram:
+  diagram_update_required: false
+  exact_wiki_files_required: [wiki/README.md,wiki/current_state.yaml,wiki/architecture.yaml,wiki/COMPONENTS.csv]
+  architecture_figure_deferred_until_scientific_result: true
+
+additional_known_bad:
+  - anchor_probability_to_preprocessed_grid_roundtrip_mismatch
+  - noncanonical_anchor_logit_conversion
+  - source_cache_direct_parity_failure
+  - arbitrary_head_hidden_channels_or_groupnorm_groups
+  - learned_or_undefined_support_gate
+  - prototype_voxel_pool_dominated_without_case_level_cap
+  - undefined_or_alias_loss_formula
+  - ambiguous_checkpoint_or_seed_ensemble_selection
+  - four_variants_in_one_overlong_seed_job
+  - fold0_single_anchor_used_for_official_package
+
+required_new_wave0_outputs:
+  - results/20260724_care_myops_srr_cascade_submission_rescue/preexecution_amendment_receipt.json
+  - results/20260724_care_myops_srr_cascade_submission_rescue/resolved_execution_contract.json
+  - results/20260724_care_myops_srr_cascade_submission_rescue/anchor_grid_roundtrip_checks.csv
+  - results/20260724_care_myops_srr_cascade_submission_rescue/source_cache_plan.json
