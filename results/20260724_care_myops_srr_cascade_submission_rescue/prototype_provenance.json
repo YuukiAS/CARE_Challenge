@@ -1,0 +1,14 @@
+{
+  "case_level_cap_semantics": "deterministic_case_mean selects the first cap flattened voxels per case/category, then writes one L2-normalized mean vector per case/category if min_voxels is met",
+  "contract_representation": "deterministic_case_level_mean_prototypes",
+  "decision": "PASS",
+  "fail_closed_insufficient_bank": "select_crossfit_prototype_bank raises ValueError when positive or negative counts are below required minima",
+  "generated_utc": "2026-07-24T15:30:28.404885+00:00",
+  "helper_file": "src/care_myocardium/srr_production/case_prototypes.py",
+  "helper_sha256": "2ea341e31e9a50de5a306de106df7392b436ae72151ffc7ce1c6f8814bae89bd",
+  "no_t2_edema_negative_contribution": "build_case_prototype_record emits empty edema positive and negative vectors when t2_present is false",
+  "own_shard_exclusion": "select_crossfit_prototype_bank(mode=train) excludes records matching query_case_id or query_shard",
+  "status": "PASS_W1_SYNTHETIC_CASE_LEVEL_PROTOTYPE_EVIDENCE",
+  "synthetic_test_evidence": "tests/care_mm/test_care_srr_cascade_rescue.py::test_case_level_prototypes_crossfit_cap_no_t2_and_fail_closed",
+  "validation_policy": "select_crossfit_prototype_bank(mode=validation) uses all supplied training records"
+}

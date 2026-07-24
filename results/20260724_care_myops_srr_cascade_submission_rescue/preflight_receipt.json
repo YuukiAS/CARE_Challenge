@@ -1,0 +1,75 @@
+{
+  "blockers": [],
+  "checks": {
+    "checkpoint_roundtrip": "PASS",
+    "fixed_overfit_edema": "PASS",
+    "fixed_overfit_scar": "PASS",
+    "initial_anchor_equivalence": "PASS",
+    "known_bad_report": "PASS",
+    "prototype_intervention_checks": "PASS"
+  },
+  "config_path": "configs/care_mm/srr_cascade_submission_rescue.yaml",
+  "csv_checks": {
+    "anatomy_channel_identity_checks": "PASS",
+    "loss_gradient_matrix": "PASS",
+    "no_t2_identity_checks": "PASS",
+    "shared_spatial_fiducial_checks": "PASS"
+  },
+  "decision": "PASS_READY_FOR_CONTROLLER_VERIFICATION",
+  "elapsed_sec": 7.82,
+  "formal_training_credit": 0,
+  "git_head": "6b9834c6f20416392a540535056c7196a4c429f3",
+  "origin_main": "6b9834c6f20416392a540535056c7196a4c429f3",
+  "slurm_submitted": false,
+  "source_cache_all_220_generated": false,
+  "source_cache_all_220_note": "W2 generated real cache-vs-direct parity receipts on one bounded real Dataset501 preprocessed crop; full all-220 runtime cache remains W3/formal-runtime work and has zero formal training credit here.",
+  "source_cache_direct_parity_required_receipts": [
+    "results/20260724_care_myops_srr_cascade_submission_rescue/source_cache_manifest.csv",
+    "results/20260724_care_myops_srr_cascade_submission_rescue/source_cache_parity_checks.csv",
+    "results/20260724_care_myops_srr_cascade_submission_rescue/source_cache_hashes.json"
+  ],
+  "source_cache_direct_parity_scope": "bounded_real_w2_preflight_subset_one_case_crop",
+  "source_cache_direct_parity_status": "PASS",
+  "source_checkpoint_load_freeze_hash_status": "PASS",
+  "source_checkpoint_rows": [
+    {
+      "checkpoint_role": "teacher_full_view",
+      "decision": "PASS",
+      "exists": true,
+      "expected_sha256": "e92521fccec92d0066f3fa5c076fce16aea3bb02330b940c85321ab4726d1474",
+      "load_elapsed_sec": 0.614,
+      "object_type": "dict",
+      "path": "results/20260723_care_myops_batch9_exposed_issues_repair/runtime/seed20260723/teacher_full_view/checkpoint_epoch50.pt",
+      "sha256": "e92521fccec92d0066f3fa5c076fce16aea3bb02330b940c85321ab4726d1474",
+      "sha256_matches_contract": true,
+      "size_bytes": 563172424,
+      "source_forward_run": false,
+      "source_trainable_in_w2": false,
+      "top_level_keys": "model|variant|seed|epochs|total_optimizer_steps|contract|plans|loss_contract|git_head",
+      "torch_load_mode": "torch.load(map_location=cpu, weights_only=True)",
+      "torch_load_status": "PASS_WEIGHTS_ONLY_CPU_LOAD"
+    },
+    {
+      "checkpoint_role": "student_reliable_distill",
+      "decision": "PASS",
+      "exists": true,
+      "expected_sha256": "366722497a47f292e07a0d1c1a3da57c2502b61042bc89b5cfc56b5a89e6a3a0",
+      "load_elapsed_sec": 0.531,
+      "object_type": "dict",
+      "path": "results/20260723_care_myops_batch9_exposed_issues_repair/runtime/seed20260723/student_reliable_distill/checkpoint_epoch25.pt",
+      "sha256": "366722497a47f292e07a0d1c1a3da57c2502b61042bc89b5cfc56b5a89e6a3a0",
+      "sha256_matches_contract": true,
+      "size_bytes": 563172808,
+      "source_forward_run": false,
+      "source_trainable_in_w2": false,
+      "top_level_keys": "model|variant|seed|epochs|total_optimizer_steps|contract|plans|loss_contract|git_head",
+      "torch_load_mode": "torch.load(map_location=cpu, weights_only=True)",
+      "torch_load_status": "PASS_WEIGHTS_ONLY_CPU_LOAD"
+    }
+  ],
+  "status": "PASS_READY_FOR_CONTROLLER_VERIFICATION",
+  "w2_pending_allowed_only_after_repair": [
+    "real source-cache direct parity"
+  ],
+  "wave_id": "RESCUE_W2_PREFLIGHT_OVERFIT_GRADIENT_ROUNDTRIP_AND_KNOWN_BAD"
+}

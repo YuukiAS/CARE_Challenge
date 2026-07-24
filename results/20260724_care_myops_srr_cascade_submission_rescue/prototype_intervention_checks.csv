@@ -1,0 +1,3 @@
+check,max_abs_final_output_delta,expected,decision
+prototype_zero_to_active,0.36720865964889526,greater_than_0,PASS
+prototype_active_to_bank_swap,0.4813000559806824,greater_than_0,PASS

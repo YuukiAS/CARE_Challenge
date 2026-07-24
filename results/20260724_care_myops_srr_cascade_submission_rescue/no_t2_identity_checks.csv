@@ -1,0 +1,3 @@
+case_index,t2_present,edema_logit_max_abs_delta,label_has_edema,decision
+0,True,1.9999998807907104,True,PASS
+1,False,0.0,False,PASS

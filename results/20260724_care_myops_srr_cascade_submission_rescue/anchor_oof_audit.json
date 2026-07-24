@@ -1,0 +1,42 @@
+{
+  "all_entries_is_oof": true,
+  "anchor_root": "data/nnUNet/nnUNet_results/Dataset501_CAREMyoPS/nnUNetTrainer_500epochs__nnUNetPlans__3d_fullres",
+  "canonicalization_bound_by_amendment": {
+    "arbitrary_logit_offset_forbidden": true,
+    "formula": "p=clip(p_raw,epsilon,1);p=p/sum_channels(p);z=log(p)"
+  },
+  "case_count_declared": 220,
+  "class_orders": [
+    [
+      "background",
+      "myocardium",
+      "LV_blood",
+      "RV_blood",
+      "edema",
+      "scar"
+    ]
+  ],
+  "entry_count": 220,
+  "fold_counts": {
+    "0": 44,
+    "1": 44,
+    "2": 44,
+    "3": 44,
+    "4": 44
+  },
+  "generated_at_utc": "2026-07-24T15:11:30.479308+00:00",
+  "grid_mapping_bound_by_amendment": "physical_geometry_crop_transpose_and_resampling_from_case_properties",
+  "manifest_path": "results/srr_production/code_maturity/batch2a_raw_oof_anchor_manifest.json",
+  "manifest_sha256": "08da96c13c404d3c8796b5fc701751fda6affc83618ace4e3e629b4d343c07a0",
+  "missing_prediction_paths": 0,
+  "missing_probability_paths": 0,
+  "note": "Manifest proves OOF probability assets and geometry metadata availability; actual canonical probability-to-logit tensor roundtrip remains a W2 preflight/runtime check.",
+  "probability_keys": [
+    "probabilities"
+  ],
+  "schema_version": 1,
+  "source_fold_matches_validation_fold_for_all_entries": true,
+  "splits_final_exists": true,
+  "splits_final_path": "data/nnUNet/nnUNet_preprocessed/Dataset501_CAREMyoPS/splits_final.json",
+  "status": "PASS"
+}

@@ -1,0 +1,47 @@
+{
+  "environment_warnings": [
+    "nnUNet_raw/preprocessed/results warnings appear when env vars are not sourced; formal wrappers must set env explicitly.",
+    "MPLCONFIGDIR may fall back to /users temp if /nas config is not writable."
+  ],
+  "generated_at_utc": "2026-07-24T15:11:30.479308+00:00",
+  "import_checks": [
+    {
+      "module": "yaml",
+      "returncode": 0,
+      "status": "PASS",
+      "stderr": "",
+      "stdout": "PASS"
+    },
+    {
+      "module": "torch",
+      "returncode": 0,
+      "status": "PASS",
+      "stderr": "",
+      "stdout": "PASS"
+    },
+    {
+      "module": "numpy",
+      "returncode": 0,
+      "status": "PASS",
+      "stderr": "",
+      "stdout": "PASS"
+    },
+    {
+      "module": "src.care_myocardium.training.nnUNetTrainerCAREMMReliableDistill",
+      "returncode": 0,
+      "status": "PASS",
+      "stderr": "/nas/longleaf/home/aereinh/.config/matplotlib is not a writable directory\nMatplotlib created a temporary cache directory at /users/a/e/aereinh/.tmp/codex-aereinh/matplotlib-xzm9b7o7 because there was an issue with the default path (/nas/longleaf/home/aereinh/.config/matplotlib); it is highly recommended to set the MPLCONFIGDIR environment variable to a writable directory, in particular to speed up the import of Matplotlib and to better support multiprocessing.",
+      "stdout": "e read documentation/setting_up_paths.md for information on how to set this up properly.\nnnUNet_preprocessed is not defined and nnU-Net can not be used for preprocessing or training. If this is not intended, please read documentation/setting_up_paths.md for information on how to set this up.\nnnUNet_results is not defined and nnU-Net cannot be used for training or inference. If this is not intended behavior, please read documentation/setting_up_paths.md for information on how to set this up.\nPASS"
+    },
+    {
+      "module": "src.care_myocardium.srr_production.anchor_manifest",
+      "returncode": 0,
+      "status": "PASS",
+      "stderr": "",
+      "stdout": "PASS"
+    }
+  ],
+  "python_executable": "/users/a/e/aereinh/CARE/envs/env_CARE/bin/python",
+  "schema_version": 1,
+  "status": "PASS"
+}

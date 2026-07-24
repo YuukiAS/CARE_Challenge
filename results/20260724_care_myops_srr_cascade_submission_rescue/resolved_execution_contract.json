@@ -1,0 +1,1061 @@
+{
+  "authority": {
+    "allow_git_push": false,
+    "amendment_wins_on_conflict": true,
+    "base_config_path": "configs/care_mm/srr_cascade_submission_rescue.yaml",
+    "base_executor_plan_path": "prompts/tasks/20260724_care_myops_srr_cascade_submission_rescue_executor_plan.yaml",
+    "controller_task_path": "prompts/tasks/20260724_care_myops_srr_cascade_submission_rescue_controller.md",
+    "executor_count": 1,
+    "executor_slots": 1,
+    "parallel_execution_allowed": false,
+    "planner_decision_path": "results/srr_production/code_maturity/srr_cascade_submission_rescue_planner_decision_20260724.md",
+    "preexecution_amendment_path": "configs/care_mm/srr_cascade_submission_rescue_preexecution_amendment.yaml",
+    "review_required": false
+  },
+  "branch": "main",
+  "controller_gate_decision_after_wave_minus1": "READY_FOR_W0_EXECUTOR",
+  "execution_code": "SCR-R1",
+  "forbidden_actions": [
+    "resume_batch9_wave6",
+    "start_batch11",
+    "run_old_batch7_or_batch8",
+    "train_BR2_or_SIP_or_source_arbiter",
+    "copy_or_depend_on_MoSAIC_code_or_weights",
+    "external_data_or_pretrained_weights",
+    "change_calibration_audit_split",
+    "use_audit_for_selection",
+    "new_cine_training",
+    "validation_upload",
+    "docker_upload",
+    "hosted_metric_claim",
+    "route_promotion"
+  ],
+  "generated_at_utc": "2026-07-24T15:00:59.059122+00:00",
+  "head_commit": "6b9834c6f20416392a540535056c7196a4c429f3",
+  "mapper_and_diagram_contract": {
+    "architecture_figure_deferred_until_scientific_result": true,
+    "diagram_update_required": false,
+    "exact_wiki_files_required": [
+      "wiki/README.md",
+      "wiki/current_state.yaml",
+      "wiki/architecture.yaml",
+      "wiki/COMPONENTS.csv"
+    ]
+  },
+  "method_name": "CARE-SRR-Cascade",
+  "numbering_policy": "not_Batch11_and_not_legacy_milestone",
+  "origin_main_commit": "6b9834c6f20416392a540535056c7196a4c429f3",
+  "remote_binding": {
+    "head_equals_origin_main": true,
+    "status_short_branch": "## main...origin/main",
+    "target_commit_is_ancestor_of_origin_main": true,
+    "target_commit_type": "commit"
+  },
+  "repo": "/users/a/e/aereinh/CARE",
+  "required_origin_main_commit": "6b9834c6f20416392a540535056c7196a4c429f3",
+  "resolved_anchor_contract": {
+    "anchor_roundtrip_required": {
+      "inverse_export_argmax_changed_voxels_max": 0,
+      "output_geometry_exact": true,
+      "probability_sum_tolerance": 1e-05
+    },
+    "canonical_grid": "nnUNetResEncUNetMPlans_3d_fullres_preprocessed_grid",
+    "canonical_probability_epsilon": 1e-06,
+    "canonicalization": {
+      "arbitrary_logit_offset_forbidden": true,
+      "formula": "p=clip(p_raw,epsilon,1);p=p/sum_channels(p);z=log(p)"
+    },
+    "fold0_single_model_as_official_package_anchor": "forbidden",
+    "fold0_validation_source": "fold0_validation_probabilities",
+    "grid_mapping": "physical_geometry_crop_transpose_and_resampling_from_case_properties",
+    "local_train_and_audit_source": "five_fold_OOF_probabilities",
+    "official_validation_package_anchor": "Dataset501_existing_nnunet_five_fold_probability_ensemble",
+    "package_anchor_compatibility_check": {
+      "required_checks": [
+        "finite_logits",
+        "deterministic_hash",
+        "anatomy_channel_identity",
+        "no_t2_identity",
+        "correction_bound",
+        "output_geometry"
+      ],
+      "uses_GT_or_metrics_for_selection": false
+    },
+    "shape_only_resize_forbidden": true
+  },
+  "resolved_augmentation_contract": {
+    "intensity_aug_raw_modalities_only": true,
+    "one_shared_spatial_transform_for_all_spatial_tensors": true,
+    "record_spatial_and_intensity_seeds": true,
+    "spatial_tensors": [
+      "raw_images",
+      "labels",
+      "anchor_logits",
+      "source_logits_features",
+      "prototype_similarity_maps",
+      "distance_maps"
+    ]
+  },
+  "resolved_feature_definitions": {
+    "anchor_probabilities": "softmax(canonical_anchor_logits)",
+    "anchor_uncertainty": "negative_sum_p_log_p_div_log_6",
+    "distance_to_union_mm": "physical_euclidean_distance_to_union_binary",
+    "edema_support": {
+      "formula": "I(distance<=15)*max(soft_union_probability,exp(-0.5*(distance/7.5)^2))",
+      "max_distance_mm": 15.0,
+      "sigma_mm": 7.5
+    },
+    "learned_support_or_gate": "forbidden",
+    "normalized_distance_input": "min(distance_to_union_mm/pathology_support_distance_mm,1)",
+    "scar_support": {
+      "formula": "I(distance<=10)*max(soft_union_probability,exp(-0.5*(distance/5)^2))",
+      "max_distance_mm": 10.0,
+      "sigma_mm": 5.0
+    },
+    "soft_union_probability": "clip(anchor_p_myo+anchor_p_edema+anchor_p_scar,0,1)",
+    "union_binary_for_distance": "soft_union_probability>=0.5"
+  },
+  "resolved_formal_training_contract": {
+    "optimizer": {
+      "batch_size": 1,
+      "gradient_accumulation": 2,
+      "initial_lr": 0.0001,
+      "minimum_lr": 1e-06,
+      "optimizer": "AdamW",
+      "scheduler": "cosine",
+      "validation_steps": [
+        1250,
+        2500,
+        3750,
+        5000,
+        6250
+      ],
+      "weight_decay": 0.0001
+    },
+    "slurm": {
+      "failed_attempt_training_credit": 0,
+      "finalizer_dependency": "afterany",
+      "python_executable": "/users/a/e/aereinh/CARE/envs/env_CARE/bin/python",
+      "same_partition_gpu_preflight_required": true,
+      "seed20260724_partition": "htzhulab",
+      "seed20260725_partition": "a100-gpu",
+      "training_dependency": "afterok"
+    },
+    "topology": {
+      "control_and_srr_common_initialization": "exact",
+      "failed_or_partial_job_formal_credit": 0,
+      "finalizer_dependency": "afterany_all_four_jobs",
+      "job_count": 4,
+      "job_walltime": "08:00:00",
+      "jobs": [
+        {
+          "logical_run_id": "scar_seed20260724",
+          "optimizer_steps_each": 6250,
+          "partition": "htzhulab",
+          "pathology": "scar",
+          "seed": 20260724,
+          "variants": [
+            "scar_cascade_control",
+            "scar_srr_cascade"
+          ]
+        },
+        {
+          "logical_run_id": "edema_seed20260724",
+          "optimizer_steps_each": 6250,
+          "partition": "htzhulab",
+          "pathology": "edema",
+          "seed": 20260724,
+          "variants": [
+            "edema_zone_control",
+            "edema_srr_zone_cascade"
+          ]
+        },
+        {
+          "logical_run_id": "scar_seed20260725",
+          "optimizer_steps_each": 6250,
+          "partition": "a100-gpu",
+          "pathology": "scar",
+          "seed": 20260725,
+          "variants": [
+            "scar_cascade_control",
+            "scar_srr_cascade"
+          ]
+        },
+        {
+          "logical_run_id": "edema_seed20260725",
+          "optimizer_steps_each": 6250,
+          "partition": "a100-gpu",
+          "pathology": "edema",
+          "seed": 20260725,
+          "variants": [
+            "edema_zone_control",
+            "edema_srr_zone_cascade"
+          ]
+        }
+      ],
+      "one_job_per_seed_pathology": true,
+      "replaces_one_job_per_seed": true,
+      "within_job_order": "control_then_srr"
+    }
+  },
+  "resolved_loss_contract": {
+    "anchor_error_directional": {
+      "anchor_prediction": "argmax(anchor_logits)",
+      "empty_mask_term": "zero",
+      "false_negative_mask": "target_is_pathology_and_anchor_prediction_is_not_pathology",
+      "false_positive_mask": "target_is_not_pathology_and_anchor_prediction_is_pathology",
+      "formula": "mean_FN(softplus(-pathology_margin))+mean_FP(softplus(pathology_margin))"
+    },
+    "confident_anchor_preserve": {
+      "formula": "SmoothL1(z_final_pathology,z_anchor_pathology)_on_mask",
+      "mask": "anchor_prediction_equals_GT_and_anchor_max_probability_ge_0.80"
+    },
+    "each_nonzero_term_independent_backward_required": true,
+    "edema_zone_aux": {
+      "formula": "BCEWithLogits(zone_aux_logit,zone_target)+SoftDice(sigmoid(zone_aux_logit),zone_target)",
+      "target": "GT_edema_union_GT_scar"
+    },
+    "final_margin_bce_dice": {
+      "formula": "BCEWithLogits(pathology_margin,binary_target)+SoftDice(sigmoid(pathology_margin),binary_target)"
+    },
+    "pathology_margin": "z_final_k-logsumexp(z_final_all_other_channels)",
+    "raw_delta_only_supervision": "forbidden",
+    "reliability": {
+      "edema_and_zone": "T2_present_and_edema_label_reliable",
+      "no_t2_edema_owned_losses": "exact_zero",
+      "scar": "scar_label_reliable"
+    },
+    "scar_remote_fp_suppression": {
+      "formula": "mean_mask(softplus(scar_final_margin))",
+      "mask": "target_not_scar_and_distance_to_GT_union_gt_10mm"
+    },
+    "surface_distance_surrogate": {
+      "distance_cap_mm": 20.0,
+      "formula": "mean(abs(sigmoid(pathology_margin)-binary_target)*clip(distance_to_GT_pathology_surface_mm/20,0,1))"
+    }
+  },
+  "resolved_metrics_contract": {
+    "all_case_empty_safe_cannot_replace_positive_gt": true,
+    "official_exact_hd_required": true,
+    "populations": [
+      "positive_gt",
+      "all_cases_empty_safe",
+      "calibration",
+      "audit",
+      "CenterB",
+      "CenterC",
+      "small_scar",
+      "large_scar",
+      "no_T2"
+    ],
+    "required": [
+      "Dice",
+      "exact_HD",
+      "HD95",
+      "precision",
+      "recall",
+      "remote_FP_mm3",
+      "component_count",
+      "volume_ratio",
+      "help_harm",
+      "empty_prediction",
+      "changed_voxels"
+    ],
+    "selection_decode_equals_deployment_decode": true
+  },
+  "resolved_model_contract": {
+    "class_file": "src/care_myocardium/models/care_srr_cascade_rescue.py",
+    "class_name": "CARESRRCascadeRescue",
+    "correction_bound_logit": 2.0,
+    "final_anatomy_channels_exact_anchor": [
+      0,
+      1,
+      2,
+      3
+    ],
+    "forbidden_import_or_call": [
+      "SRRProposeRefineMyoPS",
+      "ProposalDictionary",
+      "M10TwoPassSpatialDictionary",
+      "legacy_BR2",
+      "legacy_SIP",
+      "PathologySourceArbiter",
+      "BranchArbitrationGate",
+      "production_correction_gate",
+      "old_propref_loss"
+    ],
+    "head_architecture": {
+      "activation": "SiLU",
+      "anatomy_decoder_or_anatomy_trainable_path": "forbidden",
+      "dropout": "none",
+      "edema_output_projection": "Conv3d_1x1_two_channels_zone_and_delta_zero_initialized",
+      "groupnorm_groups": 8,
+      "hidden_channels": 32,
+      "input_projection": "Conv3d_1x1_to_32",
+      "normalization": "GroupNorm",
+      "residual_block": "Conv3d_3x3_GN_SiLU_Conv3d_3x3_GN_residual_SiLU",
+      "residual_blocks": 2,
+      "scar_output_projection": "Conv3d_1x1_one_channel_zero_initialized"
+    },
+    "pathology_channels_corrected": {
+      "edema": 4,
+      "scar": 5
+    },
+    "support_definitions": {
+      "edema_support": {
+        "formula": "I(distance<=15)*max(soft_union_probability,exp(-0.5*(distance/7.5)^2))",
+        "max_distance_mm": 15.0,
+        "sigma_mm": 7.5
+      },
+      "learned_support_or_gate": "forbidden",
+      "scar_support": {
+        "formula": "I(distance<=10)*max(soft_union_probability,exp(-0.5*(distance/5)^2))",
+        "max_distance_mm": 10.0,
+        "sigma_mm": 5.0
+      }
+    }
+  },
+  "resolved_packaging_contract": {
+    "allowed_only_if_at_least_one_custom_pathology_passes": true,
+    "anchor_ensemble_not_counted_as_custom_gain": true,
+    "cine_source": "Dataset502_nnUNet_five_fold_ensemble_existing_models",
+    "cine_validation_cases": 15,
+    "custom_heads_and_prototypes": "frozen_selected_fold0_assets",
+    "deterministic_runs": 2,
+    "docker_upload_authorized": false,
+    "exact_hash_match_required": true,
+    "hosted_metric_claim_authorized": false,
+    "internal_performance_authority": "fold0_OOF_audit_only",
+    "local_docker_build_authorized": true,
+    "myops_anchor": "Dataset501_fold0_nnUNet",
+    "myops_validation_cases": 15,
+    "new_cine_training": false,
+    "no_GT_or_audit_metrics_in_package_anchor_compatibility": true,
+    "official_Cine_anchor": "Dataset502_existing_nnunet_five_fold_probability_ensemble",
+    "official_MyoPS_anchor": "Dataset501_existing_nnunet_five_fold_probability_ensemble",
+    "validation_upload_authorized": false
+  },
+  "resolved_preflight_contract": {
+    "additional_known_bad": [
+      "anchor_probability_to_preprocessed_grid_roundtrip_mismatch",
+      "noncanonical_anchor_logit_conversion",
+      "source_cache_direct_parity_failure",
+      "arbitrary_head_hidden_channels_or_groupnorm_groups",
+      "learned_or_undefined_support_gate",
+      "prototype_voxel_pool_dominated_without_case_level_cap",
+      "undefined_or_alias_loss_formula",
+      "ambiguous_checkpoint_or_seed_ensemble_selection",
+      "four_variants_in_one_overlong_seed_job",
+      "fold0_single_anchor_used_for_official_package"
+    ],
+    "anatomy_channel_delta_max": 0.0,
+    "checkpoint_roundtrip_max_abs_delta": 1e-06,
+    "fixed_overfit_formal_credit": 0,
+    "fixed_overfit_min_loss_reduction_fraction": 0.3,
+    "fixed_overfit_steps_each_pathology": 200,
+    "initial_anchor_equivalence_max_abs_delta": 1e-06,
+    "required_before_formal_training": true,
+    "shared_spatial_fiducial_max_error": 0.0,
+    "source_grad_norm_max": 0.0
+  },
+  "resolved_prototype_contract": {
+    "case_contribution": {
+      "negative": "at_most_one_prototype_per_case_negative_category",
+      "positive": "at_most_one_prototype_per_case_pathology"
+    },
+    "deterministic_voxel_sample_cap_per_case_category": 4096,
+    "edema_negative_categories": [
+      "outside_GT_union",
+      "LV_RV_blood",
+      "GT_myo_distance_to_edema_zone_ge_10mm"
+    ],
+    "edema_positive_definition": "GT_edema_union_GT_scar_on_T2_reliable_cases",
+    "insufficient_bank_action": "fail_closed",
+    "minimum_allowed_negative_prototypes_after_exclusion": 8,
+    "minimum_allowed_positive_prototypes_after_exclusion": 4,
+    "minimum_voxels_per_case_category": 32,
+    "no_t2_case_contribution_to_edema_bank": "forbidden",
+    "prototype_vector": "l2_normalized_mean_of_sampled_voxel_features",
+    "representation": "deterministic_case_level_mean_prototypes",
+    "scar_negative_categories": [
+      "healthy_myo_excluding_scar_and_edema",
+      "LV_RV_blood",
+      "outside_GT_union",
+      "OOF_nnunet_scar_remote_FP"
+    ],
+    "scar_remote_FP_definition": "OOF_anchor_pred_scar_and_not_GT_scar_and_distance_to_GT_union_gt_10mm",
+    "similarity": "cosine_max_over_allowed_case_prototypes",
+    "source_feature": "cached_teacher_full_resolution_feature",
+    "training_query": "exclude_entire_query_case_shard",
+    "validation_and_official_query": "use_all_fold0_training_shards",
+    "voxel_feature_l2_normalization": true
+  },
+  "resolved_retention_gates": {
+    "edema": {
+      "audit_exact_hd_delta_max": 0.0,
+      "audit_hd95_relative_worsening_max": 0.05,
+      "audit_help_minus_harm_min": 0,
+      "audit_positive_gt_dice_delta_min": 0.0,
+      "audit_remote_fp_ratio_max": 1.05,
+      "centerB_dice_delta_min": -0.005,
+      "centerC_dice_delta_min": -0.005,
+      "no_t2_edema_voxels_max": 0,
+      "positive_gt_empty_max": 0
+    },
+    "pathology_outcomes": [
+      "USE_SRR_CASCADE",
+      "USE_CASCADE_CONTROL",
+      "FALLBACK_TO_NNUNET"
+    ],
+    "scar": {
+      "audit_exact_hd_delta_max": 0.0,
+      "audit_hd95_relative_worsening_max": 0.05,
+      "audit_help_minus_harm_min": 0,
+      "audit_positive_gt_dice_delta_min": 0.0,
+      "audit_remote_fp_ratio_max": 1.0,
+      "positive_gt_empty_max": 0
+    },
+    "submission_tokens": [
+      "CUSTOM_SUBMISSION_CANDIDATE_READY_PENDING_USER_UPLOAD",
+      "PARTIAL_CUSTOM_SUBMISSION_CANDIDATE_READY_PENDING_USER_UPLOAD",
+      "NO_CUSTOM_RESCUE_USE_BASELINE_ONLY",
+      "OPERATIONALLY_BLOCKED"
+    ]
+  },
+  "resolved_sampling_contract": {
+    "center_id_in_model_forward": false,
+    "edema": {
+      "anatomy": 0.15,
+      "anchor_error": 0.35,
+      "background": 0.05,
+      "edema_zone_positive": 0.45
+    },
+    "edema_centers": [
+      "CenterB",
+      "CenterC"
+    ],
+    "edema_requires_t2_and_reliable_label": true,
+    "order": [
+      "target",
+      "eligible_center_uniform",
+      "case_uniform",
+      "patch"
+    ],
+    "scar": {
+      "anatomy": 0.2,
+      "anchor_error_hard_negative": 0.3,
+      "background": 0.1,
+      "scar_positive": 0.4
+    }
+  },
+  "resolved_selection_contract": {
+    "audit_parameter_or_candidate_selection": "forbidden",
+    "audit_reports_selected_candidate_and_constituent_seeds": true,
+    "checkpoint_steps": [
+      1250,
+      2500,
+      3750,
+      5000,
+      6250
+    ],
+    "control_and_srr_cross_blend": "forbidden",
+    "final_calibration_candidates_per_pathology": [
+      "control_seed20260724",
+      "control_seed20260725",
+      "srr_seed20260724",
+      "srr_seed20260725",
+      "control_two_seed_probability_mean",
+      "srr_two_seed_probability_mean"
+    ],
+    "final_candidate_selection_order": "same_as_per_seed_variant_lexicographic_order",
+    "no_eligible_custom_candidate_action": "FALLBACK_TO_NNUNET_without_audit_selection",
+    "per_seed_variant_calibration_eligibility": {
+      "HD95_relative_worsening_max": 0.1,
+      "exact_HD_relative_worsening_max": 0.1,
+      "help_minus_harm_min": -2,
+      "no_t2_edema_voxels_max": 0,
+      "positive_gt_empty_count_max": 0,
+      "remote_FP_ratio_max": 1.1,
+      "selected_checkpoint_reload_required": true,
+      "source_hash_unchanged_required": true
+    },
+    "per_seed_variant_lexicographic_order": [
+      "maximize_positive_gt_Dice_delta",
+      "minimize_exact_HD_delta",
+      "minimize_HD95_relative_worsening",
+      "minimize_remote_FP_ratio",
+      "maximize_help_minus_harm",
+      "prefer_earlier_checkpoint_step"
+    ],
+    "two_seed_mean_requires_both_constituent_candidates_eligible": true
+  },
+  "resolved_source_cache_contract": {
+    "anchor_dtype": "float32",
+    "cache_direct_parity": {
+      "feature_max_abs_delta": 0.002,
+      "logit_max_abs_delta": 1e-05
+    },
+    "cached_scar_fields": [
+      "scar_final_margin"
+    ],
+    "cached_teacher_fields": [
+      "full_resolution_feature",
+      "anatomy_logits",
+      "edema_logit"
+    ],
+    "cases": "all_220_internal_cases_plus_official_cases_when_packaging",
+    "feature_dtype": "float16",
+    "logit_dtype": "float32",
+    "predictor": {
+      "checkpoint_reloaded_from_contract": true,
+      "gaussian": true,
+      "mirror_tta": false,
+      "tile_step_size": 0.5
+    },
+    "purpose": "prevent_repeated_frozen_backbone_forward_and_preserve_spatial_correspondence",
+    "required": true,
+    "required_receipts": [
+      "source_cache_manifest.csv",
+      "source_cache_parity_checks.csv",
+      "source_cache_hashes.json"
+    ],
+    "runtime_only_untracked": true
+  },
+  "schema_version": 1,
+  "short_method_name": "SRR-Cascade",
+  "source_files": [
+    {
+      "exists": true,
+      "path": "AGENTS.md",
+      "sha256": "9e41eb124868681f7176ac96befb72df5f8fb32e8f6b17d241d1c8586ae9011f"
+    },
+    {
+      "exists": true,
+      "path": "START_HERE_FOR_GPT.md",
+      "sha256": "83a11ac74d130cfd1df2064fdd52b642e06d1b13eb3af677b02819dcad4274fe"
+    },
+    {
+      "exists": true,
+      "path": "GPT_PLANNER_CARE_PROTOCOL.md",
+      "sha256": "6e9f234de0be18674dc195fe1de830982ddbc5d3201e068eb6a2ed6ac9f9c195"
+    },
+    {
+      "exists": true,
+      "path": "prompts/FINAL_OUTPUT_READABILITY_POLICY.md",
+      "sha256": "1d1dd49a03f2bb9c22b20e17168125abd5c5a78d6c68d675f3052c03526e069b"
+    },
+    {
+      "exists": true,
+      "path": "prompts/AGENT_FLOW_V2_PROTOCOL.md",
+      "sha256": "29b417ef95e5b54d046e9fafb6cede016d74e74c88426756546b507fb09a22a1"
+    },
+    {
+      "exists": true,
+      "path": "prompts/HANDOFF_GATE_POLICY.md",
+      "sha256": "668765a296b5789d1560cdbd710316fcd7b93544f9195f7eaf3ebcbe263ccb1a"
+    },
+    {
+      "exists": true,
+      "path": "prompts/GPT_HARD_GATE_PROMPT.md",
+      "sha256": "afb068852d40a04500e818b2d53acabb811a090920042b711b34dcc55416de9b"
+    },
+    {
+      "exists": true,
+      "path": "prompts/routes/ROUTE_ANTI_LAZINESS_PROTOCOL.md",
+      "sha256": "a0dce70c97ef9711dbdc76a213d26419513fa5c28478accbec0dd8288a91674a"
+    },
+    {
+      "exists": true,
+      "path": "prompts/routes/ROUTE_HARD_REQUIREMENTS_MATRIX.md",
+      "sha256": "a225f46868eda817a0d2b2f3e33d444ffc88b683664dfc3a0dd6eb25881475d9"
+    },
+    {
+      "exists": true,
+      "path": "prompts/routes/handoffs/CURRENT.md",
+      "sha256": "fb53d752a8c1eb04c226175fffb023feb98a2bb61c18b7aeb775c80d7c92ab79"
+    },
+    {
+      "exists": true,
+      "path": "routes/README.md",
+      "sha256": "46cf19fabc1a6d8806643a9f5d0e4f61bd6816820c5eefe5d2e108d625db9771"
+    },
+    {
+      "exists": true,
+      "path": "wiki/README.md",
+      "sha256": "f93808c7765770407fcf86d3d7ab9627e99ebbeace258d39be819918210a2f44"
+    },
+    {
+      "exists": true,
+      "path": ".agents/skills/slurm-routing-partition/SKILL.md",
+      "sha256": "2b7e87f58b275b50dc9d4a9377f4e2518c3a390c806e400cb32e07ebac3f83a6"
+    },
+    {
+      "exists": true,
+      "path": ".agents/skills/care-mapper/SKILL.md",
+      "sha256": "2c41516189001ec7be94d9981a69fcd5544ad5ebd244c93cdc58488f4b535d0e"
+    },
+    {
+      "exists": true,
+      "path": ".agents/skills/codex-workflow-protocol/SKILL.md",
+      "sha256": "828fd6ed7c86ff4b22fc5b601e73f4639fa6462006a626eb99e2d37d938089f2"
+    },
+    {
+      "exists": true,
+      "path": ".agents/skills/codex-workflow-protocol/references/live-state-delegation.md",
+      "sha256": "09eb15773e35211b0d491317a350e339e7b6a76bd983044ee52474182a27a0bc"
+    },
+    {
+      "exists": true,
+      "path": "results/srr_production/code_maturity/srr_cascade_submission_rescue_planner_decision_20260724.md",
+      "sha256": "275930b55a7e2f27a0834b66ee420fa36e472fe4061944b04c60d0dfb6854bdc"
+    },
+    {
+      "exists": true,
+      "path": "configs/care_mm/srr_cascade_submission_rescue.yaml",
+      "sha256": "37b514e4fdb68eda50c2c5d9f0ae2332411ef41c1e81151333aafcf623783cb4"
+    },
+    {
+      "exists": true,
+      "path": "prompts/tasks/20260724_care_myops_srr_cascade_submission_rescue_executor_plan.yaml",
+      "sha256": "dd82e1d832d6f794ed4876e91b60cfd3528fd0314ccac986e7b3c65a175cbe47"
+    },
+    {
+      "exists": true,
+      "path": "configs/care_mm/srr_cascade_submission_rescue_preexecution_amendment.yaml",
+      "sha256": "028e2fce36480d205932b5f091053f10357f90ee243e32dd1e0e112618f6ab54"
+    },
+    {
+      "exists": true,
+      "path": "prompts/tasks/20260724_care_myops_srr_cascade_submission_rescue_controller.md",
+      "sha256": "d2d89fe7792b1c901d99fc33db8c5505c4dafe02169cbf16aa433922b4efffbf"
+    },
+    {
+      "exists": true,
+      "path": "results/20260724_care_myops_batch10_deadline_rescue/controller_report.md",
+      "sha256": "8afb1b0f44c0081c54bdd05441de010f1aeb2297eeeb1dd800b30b70ea503c47"
+    },
+    {
+      "exists": true,
+      "path": "results/20260724_care_myops_batch10_deadline_rescue/wave5_terminal_accounting.json",
+      "sha256": "ade4581c54de65094a0d43ca646d4d8e57cbf08af7e5df95adf312dac5641899"
+    },
+    {
+      "exists": true,
+      "path": "results/20260724_care_myops_batch10_deadline_rescue/near_baseline_gate.json",
+      "sha256": "d3b9c2f15936af1d0ebf2060e9043cdd01be53a4f460b1e027359a5bc07bc786"
+    },
+    {
+      "exists": true,
+      "path": "results/20260724_care_myops_batch10_deadline_rescue/rescue_split_receipt.json",
+      "sha256": "7f1ab3b1f061c3f5de830421cf79838ad53203a16cb811bf9684e46cc236a19b"
+    }
+  ],
+  "task_key": "20260724_care_myops_srr_cascade_submission_rescue",
+  "unresolved_conflicts": [],
+  "waves": [
+    {
+      "blocking": true,
+      "completion_conditions": [
+        "latest_remote_main_bound",
+        "planner_config_executor_hashes_recorded",
+        "two_source_checkpoint_paths_and_sha256_exact",
+        "five_fold_oof_anchor_manifest_complete_and_no_validation_leakage",
+        "batch10_rescue_split_hash_frozen_22_22_and_audit_not_used_for_selection",
+        "plans_configuration_manager_data_identifier_and_patch_resolved",
+        "clean_checkout_imports_pass",
+        "preexecution_amendment_receipt_written",
+        "resolved_execution_contract_written",
+        "anchor_canonicalization_and_grid_roundtrip_plan_bound",
+        "source_cache_plan_bound"
+      ],
+      "dependencies": [],
+      "executor_id": "srr_cascade_rescue_executor",
+      "failure_action": "controller_returns_same_scope_asset_or_binding_gap_no_implementation",
+      "read_required": [
+        "AGENTS.md",
+        "START_HERE_FOR_GPT.md",
+        "GPT_PLANNER_CARE_PROTOCOL.md",
+        "prompts/FINAL_OUTPUT_READABILITY_POLICY.md",
+        "prompts/AGENT_FLOW_V2_PROTOCOL.md",
+        "prompts/HANDOFF_GATE_POLICY.md",
+        "prompts/GPT_HARD_GATE_PROMPT.md",
+        "prompts/routes/ROUTE_ANTI_LAZINESS_PROTOCOL.md",
+        "prompts/routes/ROUTE_HARD_REQUIREMENTS_MATRIX.md",
+        "prompts/routes/handoffs/CURRENT.md",
+        "wiki/README.md",
+        ".agents/skills/slurm-routing-partition/SKILL.md",
+        ".agents/skills/care-mapper/SKILL.md",
+        "results/srr_production/code_maturity/srr_cascade_submission_rescue_planner_decision_20260724.md",
+        "configs/care_mm/srr_cascade_submission_rescue.yaml",
+        "results/20260724_care_myops_batch10_deadline_rescue/"
+      ],
+      "required_outputs": [
+        "results/20260724_care_myops_srr_cascade_submission_rescue/anchor_grid_roundtrip_checks.csv",
+        "results/20260724_care_myops_srr_cascade_submission_rescue/anchor_oof_audit.json",
+        "results/20260724_care_myops_srr_cascade_submission_rescue/calibration_audit_split_freeze.json",
+        "results/20260724_care_myops_srr_cascade_submission_rescue/clean_checkout_import_audit.json",
+        "results/20260724_care_myops_srr_cascade_submission_rescue/controller_bootstrap_snapshot.md",
+        "results/20260724_care_myops_srr_cascade_submission_rescue/controller_context.json",
+        "results/20260724_care_myops_srr_cascade_submission_rescue/controller_ledger.csv",
+        "results/20260724_care_myops_srr_cascade_submission_rescue/plans_preprocessing_fingerprint.json",
+        "results/20260724_care_myops_srr_cascade_submission_rescue/preexecution_amendment_receipt.json",
+        "results/20260724_care_myops_srr_cascade_submission_rescue/resolved_execution_contract.json",
+        "results/20260724_care_myops_srr_cascade_submission_rescue/source_asset_inventory.csv",
+        "results/20260724_care_myops_srr_cascade_submission_rescue/source_cache_plan.json"
+      ],
+      "wave_id": "RESCUE_W0_BIND_FREEZE_AND_ASSET_AUDIT",
+      "write_scope": [
+        "results/20260724_care_myops_srr_cascade_submission_rescue/"
+      ]
+    },
+    {
+      "blocking": true,
+      "completion_conditions": [
+        "source_parameters_and_norm_state_frozen",
+        "old_srr_propref_dictionary_br2_sip_arbiter_calls_zero",
+        "anatomy_channels_never_modified",
+        "no_t2_edema_correction_exact_zero",
+        "prototype_no_self_shard_and_no_t2_negative_leakage",
+        "all_spatial_tensors_share_transform",
+        "losses_attach_to_final_composed_logits_or_declared_zone_aux"
+      ],
+      "dependencies": [
+        "RESCUE_W0_BIND_FREEZE_AND_ASSET_AUDIT"
+      ],
+      "executor_id": "srr_cascade_rescue_executor",
+      "failure_action": "controller_returns_same_scope_implementation_gap_no_preflight",
+      "implementation_contract": {
+        "anatomy_channels_exact_anchor": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "correction_bound": 2.0,
+        "edema_support_mm": 15,
+        "final_base": "frozen_nnunet_anchor_logits",
+        "model_class": "CARESRRCascadeRescue",
+        "no_t2_edema_exact_identity": true,
+        "old_full_srr_objects_call_count_zero": true,
+        "pathology_channels": [
+          4,
+          5
+        ],
+        "prototype_shards": 4,
+        "scar_support_mm": 10,
+        "selection_and_deployment_decode": "six_class_argmax_of_same_composed_logits",
+        "source_models_frozen": true,
+        "training_query_excludes_own_shard": true,
+        "validation_query_uses_all_train_shards": true
+      },
+      "required_outputs": [
+        "results/20260724_care_myops_srr_cascade_submission_rescue/implementation_snapshot.md",
+        "results/20260724_care_myops_srr_cascade_submission_rescue/model_import_graph.json",
+        "results/20260724_care_myops_srr_cascade_submission_rescue/legacy_module_call_counters.csv",
+        "results/20260724_care_myops_srr_cascade_submission_rescue/source_checkpoint_load_report.csv",
+        "results/20260724_care_myops_srr_cascade_submission_rescue/prototype_provenance.json",
+        "results/20260724_care_myops_srr_cascade_submission_rescue/prototype_crossfit_checks.csv",
+        "results/20260724_care_myops_srr_cascade_submission_rescue/resolved_model_contract.json",
+        "results/20260724_care_myops_srr_cascade_submission_rescue/resolved_loss_contract.json",
+        "results/20260724_care_myops_srr_cascade_submission_rescue/resolved_sampler_augmentation_contract.json"
+      ],
+      "wave_id": "RESCUE_W1_CLEAN_MODEL_PROTOTYPE_AND_DATAFLOW_IMPLEMENTATION",
+      "write_scope": [
+        "src/care_myocardium/models/care_srr_cascade_rescue.py",
+        "src/care_myocardium/srr_production/",
+        "src/care_myocardium/data/",
+        "src/care_myocardium/losses/",
+        "scripts/training/",
+        "scripts/inference/",
+        "scripts/evaluation/",
+        "jobs/care_mm/",
+        "tests/care_mm/",
+        "results/20260724_care_myops_srr_cascade_submission_rescue/"
+      ]
+    },
+    {
+      "blocking": true,
+      "completion_conditions": [
+        "initial_final_logits_anchor_max_delta_at_most_1e_6",
+        "no_t2_logits_and_labels_exact_anchor_identity",
+        "anatomy_channels_exact_anchor_identity",
+        "scar_and_edema_200_step_overfit_each_loss_reduction_at_least_0_30",
+        "overfit_predictions_nonempty_and_correction_nonzero",
+        "every_nonzero_loss_has_declared_trainable_gradient",
+        "source_anchor_and_forbidden_gradients_zero",
+        "spatial_fiducial_error_zero",
+        "prototype_active_zero_and_bank_swap_interventions_nonzero",
+        "checkpoint_roundtrip_at_most_1e_6",
+        "all_known_bad_fixtures_real_and_rejected",
+        "same_partition_gpu_preflights_exit_zero"
+      ],
+      "dependencies": [
+        "RESCUE_W1_CLEAN_MODEL_PROTOTYPE_AND_DATAFLOW_IMPLEMENTATION"
+      ],
+      "executor_id": "srr_cascade_rescue_executor",
+      "failure_action": "controller_returns_same_scope_preflight_gap_no_formal_training",
+      "preflight": {
+        "command": "/users/a/e/aereinh/CARE/envs/env_CARE/bin/python scripts/training/run_care_srr_cascade_rescue.py --config configs/care_mm/srr_cascade_submission_rescue.yaml --preflight",
+        "receipt_path": "results/20260724_care_myops_srr_cascade_submission_rescue/preflight_receipt.json",
+        "required": true
+      },
+      "required_outputs": [
+        "results/20260724_care_myops_srr_cascade_submission_rescue/initial_anchor_equivalence.json",
+        "results/20260724_care_myops_srr_cascade_submission_rescue/no_t2_identity_checks.csv",
+        "results/20260724_care_myops_srr_cascade_submission_rescue/anatomy_channel_identity_checks.csv",
+        "results/20260724_care_myops_srr_cascade_submission_rescue/shared_spatial_fiducial_checks.csv",
+        "results/20260724_care_myops_srr_cascade_submission_rescue/fixed_overfit_scar.json",
+        "results/20260724_care_myops_srr_cascade_submission_rescue/fixed_overfit_edema.json",
+        "results/20260724_care_myops_srr_cascade_submission_rescue/loss_gradient_matrix.csv",
+        "results/20260724_care_myops_srr_cascade_submission_rescue/prototype_intervention_checks.csv",
+        "results/20260724_care_myops_srr_cascade_submission_rescue/checkpoint_roundtrip.json",
+        "results/20260724_care_myops_srr_cascade_submission_rescue/known_bad_report.json",
+        "results/20260724_care_myops_srr_cascade_submission_rescue/unit_test_report.md",
+        "results/20260724_care_myops_srr_cascade_submission_rescue/preflight_receipt.json"
+      ],
+      "wave_id": "RESCUE_W2_PREFLIGHT_OVERFIT_GRADIENT_ROUNDTRIP_AND_KNOWN_BAD",
+      "write_scope": [
+        "scripts/training/",
+        "scripts/inference/",
+        "scripts/evaluation/",
+        "jobs/care_mm/",
+        "tests/care_mm/",
+        "results/20260724_care_myops_srr_cascade_submission_rescue/"
+      ]
+    },
+    {
+      "blocking": true,
+      "completion_conditions": [
+        "all_four_seed_pathology_jobs_terminal_accounted",
+        "all_eight_variants_exact_6250_steps",
+        "all_validation_events_complete_on_calibration_22",
+        "within_pathology_control_and_srr_matched_hashes_pass",
+        "selected_checkpoint_reload_recorded_for_all_candidates",
+        "source_checkpoint_parameter_and_cache_hash_unchanged",
+        "post_completion_aggregation_exit_zero"
+      ],
+      "dependencies": [
+        "RESCUE_W2_PREFLIGHT_OVERFIT_GRADIENT_ROUNDTRIP_AND_KNOWN_BAD"
+      ],
+      "executor_id": "srr_cascade_rescue_executor",
+      "failure_action": "same_scope_operational_repair_or_NEEDS_REPAIR",
+      "formal_jobs": [
+        {
+          "logical_run_id": "scar_seed20260724",
+          "optimizer_steps_each": 6250,
+          "partition": "htzhulab",
+          "pathology": "scar",
+          "seed": 20260724,
+          "variants": [
+            "scar_cascade_control",
+            "scar_srr_cascade"
+          ]
+        },
+        {
+          "logical_run_id": "edema_seed20260724",
+          "optimizer_steps_each": 6250,
+          "partition": "htzhulab",
+          "pathology": "edema",
+          "seed": 20260724,
+          "variants": [
+            "edema_zone_control",
+            "edema_srr_zone_cascade"
+          ]
+        },
+        {
+          "logical_run_id": "scar_seed20260725",
+          "optimizer_steps_each": 6250,
+          "partition": "a100-gpu",
+          "pathology": "scar",
+          "seed": 20260725,
+          "variants": [
+            "scar_cascade_control",
+            "scar_srr_cascade"
+          ]
+        },
+        {
+          "logical_run_id": "edema_seed20260725",
+          "optimizer_steps_each": 6250,
+          "partition": "a100-gpu",
+          "pathology": "edema",
+          "seed": 20260725,
+          "variants": [
+            "edema_zone_control",
+            "edema_srr_zone_cascade"
+          ]
+        }
+      ],
+      "matching": {
+        "audit_not_run_until_selected_checkpoint_reload": true,
+        "same_case_and_patch_sequence_within_pathology": true,
+        "same_common_head_initialization_within_seed": true,
+        "same_optimizer_budget_decode_evaluator": true,
+        "same_source_checkpoints": true,
+        "same_spatial_and_intensity_augmentation_within_pathology": true
+      },
+      "required_outputs": [
+        "results/20260724_care_myops_srr_cascade_submission_rescue/slurm_attempts.csv",
+        "results/20260724_care_myops_srr_cascade_submission_rescue/training_adequacy.csv",
+        "results/20260724_care_myops_srr_cascade_submission_rescue/matched_run_hashes.json",
+        "results/20260724_care_myops_srr_cascade_submission_rescue/calibration_checkpoint_selection.csv",
+        "results/20260724_care_myops_srr_cascade_submission_rescue/calibration_casewise_metrics.csv",
+        "results/20260724_care_myops_srr_cascade_submission_rescue/source_freeze_runtime_checks.csv"
+      ],
+      "retry_policy": {
+        "failed_attempt_training_credit": 0,
+        "max_preemption_retries": 1,
+        "max_startup_retries": 2,
+        "max_unknown_retries": 0,
+        "operational_retry_allowed": true,
+        "require_same_code_hash": true,
+        "require_same_config_hash": true,
+        "require_same_split_hash": true,
+        "same_executor_attempt": true
+      },
+      "slurm_dependency_policy": {
+        "finalizer_dependency": "afterany_all_four_jobs",
+        "finalizer_scope": "afterany_all_four_jobs",
+        "training_dependency": "afterok"
+      },
+      "wave_id": "RESCUE_W3_FOUR_SEED_PATHOLOGY_MATCHED_FORMAL_TRAINING",
+      "write_scope": [
+        "jobs/care_mm/",
+        "logs/care_myops_srr_cascade_submission_rescue/",
+        "results/20260724_care_myops_srr_cascade_submission_rescue/"
+      ]
+    },
+    {
+      "blocking": true,
+      "completion_conditions": [
+        "audit_22_used_once_after_freeze",
+        "scar_and_edema_reported_separately_by_seed_and_subgroup",
+        "Dice_exact_HD_HD95_help_harm_remote_FP_component_empty_and_changed_voxels_present",
+        "CenterB_CenterC_and_noT2_safety_present",
+        "each_pathology_outcome_mechanically_matches_config_gate",
+        "final_composition_uses_anchor_fallback_for_failed_pathology",
+        "no_average_or_all_case_metric_overrides_pathology_failure"
+      ],
+      "dependencies": [
+        "RESCUE_W3_TWO_SEED_MATCHED_FORMAL_TRAINING"
+      ],
+      "executor_id": "srr_cascade_rescue_executor",
+      "failure_action": "controller_returns_metric_selection_or_composition_bug_to_executor",
+      "required_outputs": [
+        "results/20260724_care_myops_srr_cascade_submission_rescue/audit_prediction_manifest.csv",
+        "results/20260724_care_myops_srr_cascade_submission_rescue/audit_casewise_metrics.csv",
+        "results/20260724_care_myops_srr_cascade_submission_rescue/audit_subgroup_metrics.csv",
+        "results/20260724_care_myops_srr_cascade_submission_rescue/audit_help_harm.csv",
+        "results/20260724_care_myops_srr_cascade_submission_rescue/exact_hd_and_hd95_checks.csv",
+        "results/20260724_care_myops_srr_cascade_submission_rescue/pathology_branch_decision.json",
+        "results/20260724_care_myops_srr_cascade_submission_rescue/final_composition_contract.json",
+        "results/20260724_care_myops_srr_cascade_submission_rescue/full44_final_candidate_metrics.csv",
+        "results/20260724_care_myops_srr_cascade_submission_rescue/scientific_gate.json"
+      ],
+      "selection_contract": {
+        "at_least_one_custom_required_for_package": true,
+        "audit_selects_no_parameters": true,
+        "calibration_selects_custom_checkpoint_and_control_vs_srr": true,
+        "final_decode": "same_composed_six_class_logits_argmax",
+        "official_exact_hd_required": true,
+        "pathology_outcomes": [
+          "USE_SRR_CASCADE",
+          "USE_CASCADE_CONTROL",
+          "FALLBACK_TO_NNUNET"
+        ]
+      },
+      "wave_id": "RESCUE_W4_FROZEN_AUDIT_PATHOLOGY_SELECTION_AND_COMPOSITION",
+      "write_scope": [
+        "scripts/evaluation/",
+        "tests/care_mm/",
+        "results/20260724_care_myops_srr_cascade_submission_rescue/"
+      ]
+    },
+    {
+      "blocking": true,
+      "completion_conditions": [
+        "exact_15_myops_and_15_cine_cases",
+        "official_raw_labels_only",
+        "shape_spacing_origin_direction_match_inputs",
+        "required_zip_layout_and_names",
+        "two_runs_prediction_and_package_hashes_equal",
+        "container_or_local_equivalent_dry_run_exit_zero",
+        "no_GT_access",
+        "no_validation_or_docker_upload",
+        "fold0_single_model_not_used_as_official_package_anchor"
+      ],
+      "condition": "at_least_one_custom_pathology_passes_audit",
+      "dependencies": [
+        "RESCUE_W4_FROZEN_AUDIT_PATHOLOGY_SELECTION_AND_COMPOSITION"
+      ],
+      "executor_id": "srr_cascade_rescue_executor",
+      "failure_action": "controller_returns_same_scope_export_packaging_or_docker_gap",
+      "package_contract": {
+        "cine_cases": 15,
+        "cine_source": "Dataset502_existing_nnunet_five_fold_probability_ensemble",
+        "deterministic_runs": 2,
+        "myops_cases": 15,
+        "myops_source": "Dataset501_existing_nnunet_five_fold_probability_ensemble_plus_selected_pathology_corrections",
+        "new_cine_training": false,
+        "upload": false
+      },
+      "required_outputs": [
+        "results/20260724_care_myops_srr_cascade_submission_rescue/submission_model_manifest.json",
+        "results/20260724_care_myops_srr_cascade_submission_rescue/submission_case_manifest.csv",
+        "results/20260724_care_myops_srr_cascade_submission_rescue/submission_label_geometry_checks.csv",
+        "results/20260724_care_myops_srr_cascade_submission_rescue/submission_determinism_checks.csv",
+        "results/20260724_care_myops_srr_cascade_submission_rescue/docker_feasibility_probe.json",
+        "results/20260724_care_myops_srr_cascade_submission_rescue/local_package_receipt.json"
+      ],
+      "skip_is_valid_when": "both_pathologies_fallback_to_nnunet",
+      "wave_id": "RESCUE_W5_CONDITIONAL_LOCAL_PACKAGE_AND_DOCKER_DRY_RUN",
+      "write_scope": [
+        "scripts/submission/",
+        "scripts/inference/",
+        "jobs/care_mm/",
+        "tests/submission/",
+        "results/20260724_care_myops_srr_cascade_submission_rescue/"
+      ]
+    },
+    {
+      "blocking": true,
+      "completion_conditions": [
+        "all_jobs_terminal_and_aggregation_complete",
+        "strict_validator_and_known_bad_exit_zero",
+        "exactly_one_allowed_scientific_token",
+        "mapper_wiki_current_entrypoints_fingerprint_consistent",
+        "local_lightweight_commit_complete",
+        "no_runtime_heavy_artifacts_tracked",
+        "git_diff_check_pass",
+        "git_push_false",
+        "completion_email_sent_only_after_terminal_commit_status",
+        "notification_brief_sent_after_local_commit_only"
+      ],
+      "dependencies": [
+        "RESCUE_W4_FROZEN_AUDIT_PATHOLOGY_SELECTION_AND_COMPOSITION",
+        "RESCUE_W5_CONDITIONAL_LOCAL_PACKAGE_AND_DOCKER_DRY_RUN"
+      ],
+      "executor_id": "srr_cascade_rescue_executor",
+      "failure_action": "controller_returns_same_scope_executor_or_finalizer_gap_or_OPERATIONALLY_BLOCKED",
+      "required_outputs": [
+        "results/20260724_care_myops_srr_cascade_submission_rescue/finalizer_state.json",
+        "results/20260724_care_myops_srr_cascade_submission_rescue/mapper_report_draft.md",
+        "results/20260724_care_myops_srr_cascade_submission_rescue/architecture_delta_draft.md",
+        "results/20260724_care_myops_srr_cascade_submission_rescue/mapper_report_final.md",
+        "results/20260724_care_myops_srr_cascade_submission_rescue/architecture_delta_final.md",
+        "results/20260724_care_myops_srr_cascade_submission_rescue/strict_validator_report.json",
+        "results/20260724_care_myops_srr_cascade_submission_rescue/controller_report.md",
+        "results/20260724_care_myops_srr_cascade_submission_rescue/completion_check.md",
+        "results/20260724_care_myops_srr_cascade_submission_rescue/MANIFEST.md",
+        "results/20260724_care_myops_srr_cascade_submission_rescue/notification_brief.json"
+      ],
+      "wave_id": "RESCUE_W6_FINALIZER_MAPPER_STATE_COMMIT_AND_NOTIFICATION",
+      "write_scope": [
+        "scripts/evaluation/",
+        "prompts/routes/handoffs/CURRENT.md",
+        "configs/srr_production/entrypoints.yaml",
+        "wiki/",
+        "results/20260724_care_myops_srr_cascade_submission_rescue/"
+      ]
+    }
+  ]
+}

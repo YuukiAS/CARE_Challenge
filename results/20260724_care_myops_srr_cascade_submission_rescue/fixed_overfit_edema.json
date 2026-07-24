@@ -1,0 +1,14 @@
+{
+  "correction_nonzero": true,
+  "decision": "PASS",
+  "final_loss": 0.2162926346063614,
+  "formal_training_credit": 0,
+  "initial_loss": 0.7645083665847778,
+  "loss_reduction_fraction": 0.7170827108503903,
+  "max_abs_correction": 2.0,
+  "pathology": "edema",
+  "prediction_nonempty": true,
+  "required_reduction_fraction": 0.3,
+  "status": "PASS",
+  "steps": 200
+}

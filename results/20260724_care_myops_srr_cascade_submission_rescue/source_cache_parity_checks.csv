@@ -1,0 +1,5 @@
+case_id,scope,checkpoint_role,field,direct_dtype,cache_dtype,max_abs_delta,threshold,raw_feature_fp16_max_abs_delta_aux,feature_representation,decision
+Case1001,bounded_real_w2_preflight_subset,teacher_full_view,full_resolution_feature,float32,float16,0.0001220703125,0.002,0.0307159423828125,l2_normalized_full_resolution_feature,PASS
+Case1001,bounded_real_w2_preflight_subset,teacher_full_view,anatomy_logits,float32,float32,0.0,1e-05,,logit_field,PASS
+Case1001,bounded_real_w2_preflight_subset,teacher_full_view,edema_logit,float32,float32,0.0,1e-05,,logit_field,PASS
+Case1001,bounded_real_w2_preflight_subset,student_reliable_distill,scar_final_margin,float32,float32,0.0,1e-05,,logit_field,PASS

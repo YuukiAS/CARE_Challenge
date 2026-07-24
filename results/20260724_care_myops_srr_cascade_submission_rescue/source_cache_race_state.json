@@ -1,0 +1,115 @@
+{
+  "accounting": {
+    "60450660": {
+      "Account": "rc_htzhu_pi",
+      "Elapsed": "00:00:00",
+      "End": "2026-07-24T11:54:17",
+      "ExitCode": "0:0",
+      "JobID": "60450660",
+      "JobName": "CareSRRCache",
+      "Partition": "htzhulab",
+      "QOS": "gpu_access",
+      "Start": "None",
+      "State": "CANCELLED by 397557"
+    },
+    "60451021": {
+      "Account": "rc_htzhu_pi",
+      "Elapsed": "00:00:00",
+      "End": "Unknown",
+      "ExitCode": "0:0",
+      "JobID": "60451021",
+      "JobName": "CareSRRCacheH",
+      "Partition": "htzhulab",
+      "QOS": "gpu_access",
+      "Start": "Unknown",
+      "State": "PENDING"
+    },
+    "60451022": {
+      "Account": "rc_htzhu_pi",
+      "Elapsed": "00:00:00",
+      "End": "Unknown",
+      "ExitCode": "0:0",
+      "JobID": "60451022",
+      "JobName": "CareSRRCacheA",
+      "Partition": "a100-gpu",
+      "QOS": "gpu_access",
+      "Start": "Unknown",
+      "State": "PENDING"
+    }
+  },
+  "cache_jobs": {
+    "60451021": {
+      "attempt_id": "cache_htzhulab_20260724a",
+      "job_name": "CareSRRCacheH",
+      "partition": "htzhulab"
+    },
+    "60451022": {
+      "attempt_id": "cache_a100_20260724a",
+      "job_name": "CareSRRCacheA",
+      "partition": "a100-gpu"
+    }
+  },
+  "cache_receipts": {
+    "case_count_observed": null,
+    "decision": "NEEDS_MONITOR",
+    "final_cache_dir_exists": false,
+    "hashes_decision": "PASS",
+    "hashes_exists": true,
+    "hashes_scope": "bounded_real_w2_preflight_subset_one_case_crop",
+    "hashes_status": "PASS",
+    "manifest_exists": true,
+    "manifest_row_count": 4,
+    "parity_decisions": [
+      "PASS"
+    ],
+    "parity_exists": true,
+    "parity_row_count": 4
+  },
+  "cancel_actions": [],
+  "decision": "NEEDS_MONITOR",
+  "finalizer_submission": null,
+  "formal_entrypoint_notes": "Formal topology is specified, but no real W3 formal training runtime is implemented. The orchestrator must not submit formal jobs until this is repaired.",
+  "formal_entrypoint_status": "NEEDS_REPAIR_FORMAL_ENTRYPOINT_MISSING",
+  "formal_script_sha256": "43195fa7764c7c375826bdc7005779881569b5045e0dd3a75b1297e255aef9d4",
+  "formal_submissions": [],
+  "formal_training_submitted": false,
+  "generated_utc": "2026-07-24T16:21:29.015413+00:00",
+  "live_states": {
+    "60451021": {
+      "elapsed": "0:00",
+      "job_id": "60451021",
+      "job_name": "CareSRRCacheH",
+      "partition": "htzhulab",
+      "reason": "(Resources)",
+      "state": "PENDING",
+      "time_limit": "8:00:00"
+    },
+    "60451022": {
+      "elapsed": "0:00",
+      "job_id": "60451022",
+      "job_name": "CareSRRCacheA",
+      "partition": "a100-gpu",
+      "reason": "(None)",
+      "state": "PENDING",
+      "time_limit": "8:00:00"
+    }
+  },
+  "race_group": "care_srr_cache_full_all220_20260724_locked",
+  "script_sha256": "7878e115ac7e861096c9468b53ee29a5cb23945941eba1dbe22f167069669e28",
+  "source_cache_monitor_decision": "NEEDS_MONITOR",
+  "status": "NEEDS_MONITOR",
+  "w3_blockers": [
+    "NEEDS_REPAIR_FORMAL_ENTRYPOINT_MISSING"
+  ],
+  "watcher": {
+    "job_id": "60469088",
+    "log_path_glob": "logs/care_myops_srr_cascade_submission_rescue/SRRW3Watch_*.log",
+    "notes": "Watcher wrapper is durable; this receipt may be produced by local --once execution without submitting the watcher.",
+    "script": "jobs/care_mm/watch_care_srr_cascade_w3.sh",
+    "script_sha256": "0338a6845bd978396d796ce500a8595dfabf4c66ae79cd6932111a49597fdb93",
+    "state": "RUNNING_SLURM_WATCHER",
+    "submit_command": "sbatch --parsable jobs/care_mm/watch_care_srr_cascade_w3.sh"
+  },
+  "winner": null,
+  "winner_lock_path": "results/20260724_care_myops_srr_cascade_submission_rescue/source_cache_full_runtime.winner.lock"
+}

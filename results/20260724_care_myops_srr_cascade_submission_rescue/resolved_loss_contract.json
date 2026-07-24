@@ -1,0 +1,73 @@
+{
+  "confident_anchor_preserve_semantics": "mask is anchor_prediction_equals_GT_and_anchor_max_probability_ge_0.80; it does not require target == pathology class, so confidently correct non-pathology voxels preserve the pathology-channel anchor logit too",
+  "contract": {
+    "anchor_error_directional": {
+      "anchor_prediction": "argmax(anchor_logits)",
+      "empty_mask_term": "zero",
+      "false_negative_mask": "target_is_pathology_and_anchor_prediction_is_not_pathology",
+      "false_positive_mask": "target_is_not_pathology_and_anchor_prediction_is_pathology",
+      "formula": "mean_FN(softplus(-pathology_margin))+mean_FP(softplus(pathology_margin))"
+    },
+    "confident_anchor_preserve": {
+      "formula": "SmoothL1(z_final_pathology,z_anchor_pathology)_on_mask",
+      "mask": "anchor_prediction_equals_GT_and_anchor_max_probability_ge_0.80"
+    },
+    "each_nonzero_term_independent_backward_required": true,
+    "edema_zone_aux": {
+      "formula": "BCEWithLogits(zone_aux_logit,zone_target)+SoftDice(sigmoid(zone_aux_logit),zone_target)",
+      "target": "GT_edema_union_GT_scar"
+    },
+    "final_margin_bce_dice": {
+      "formula": "BCEWithLogits(pathology_margin,binary_target)+SoftDice(sigmoid(pathology_margin),binary_target)"
+    },
+    "pathology_margin": "z_final_k-logsumexp(z_final_all_other_channels)",
+    "raw_delta_only_supervision": "forbidden",
+    "reliability": {
+      "edema_and_zone": "T2_present_and_edema_label_reliable",
+      "no_t2_edema_owned_losses": "exact_zero",
+      "scar": "scar_label_reliable"
+    },
+    "scar_remote_fp_suppression": {
+      "formula": "mean_mask(softplus(scar_final_margin))",
+      "mask": "target_not_scar_and_distance_to_GT_union_gt_10mm"
+    },
+    "surface_distance_surrogate": {
+      "distance_cap_mm": 20.0,
+      "formula": "mean(abs(sigmoid(pathology_margin)-binary_target)*clip(distance_to_GT_pathology_surface_mm/20,0,1))"
+    }
+  },
+  "decision": "PASS",
+  "focused_pytest_result": "8 passed",
+  "generated_utc": "2026-07-24T15:33:02.433496+00:00",
+  "implementation_file": "src/care_myocardium/losses/care_srr_cascade_rescue_losses.py",
+  "implementation_sha256": "ed3c9bfb9719693cc21c079e243d79425cecc018dafd7b8d4cd26498b605d945",
+  "implemented_terms": [
+    "final_margin_bce_dice",
+    "anchor_error_directional",
+    "confident_anchor_preserve",
+    "scar_remote_fp_suppression",
+    "surface_distance_surrogate",
+    "edema_zone_aux"
+  ],
+  "raw_delta_only_supervision_check": {
+    "decision": "PASS_ZERO_RAW_DELTA_REFERENCES",
+    "edema_delta_occurrences_in_loss_file": 0,
+    "scar_delta_occurrences_in_loss_file": 0
+  },
+  "status": "PASS_W1_IMPLEMENTED_SYNTHETIC_BACKWARD_TESTED",
+  "supervision_binding": "care_srr_cascade_rescue_loss_terms consumes outputs[final_logits/logits], outputs[anchor_logits], outputs[edema_zone_aux_logit], labels, masks, and distance maps",
+  "synthetic_backward_evidence": [
+    {
+      "evidence": "all implemented terms finite/nonzero and backward reaches scar/edema output projection biases",
+      "test": "tests/care_mm/test_care_srr_cascade_rescue.py::test_resolved_loss_terms_are_final_logit_or_zone_aux_and_backprop_to_heads"
+    },
+    {
+      "evidence": "confidently correct background voxel contributes nonzero gradient to the scar pathology-channel preserve term",
+      "test": "tests/care_mm/test_care_srr_cascade_rescue.py::test_confident_anchor_preserve_includes_correct_background_voxel"
+    }
+  ],
+  "w2_pending": [
+    "200-step overfit loss reduction",
+    "full gradient matrix receipt on real fixtures"
+  ]
+}

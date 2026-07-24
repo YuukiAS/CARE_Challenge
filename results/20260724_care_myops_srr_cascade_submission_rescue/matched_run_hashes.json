@@ -1,0 +1,86 @@
+{
+  "decision": "NEEDS_MONITOR",
+  "finalizer_submission": null,
+  "formal_entrypoint_notes": "Formal topology is specified, but no real W3 formal training runtime is implemented. The orchestrator must not submit formal jobs until this is repaired.",
+  "formal_entrypoint_status": "NEEDS_REPAIR_FORMAL_ENTRYPOINT_MISSING",
+  "formal_submissions": [],
+  "formal_topology": [
+    {
+      "gres": "gpu:1",
+      "job_name": "SRRScar24",
+      "logical_run_id": "scar_seed20260724",
+      "partition": "htzhulab",
+      "pathology": "scar",
+      "seed": 20260724,
+      "variants": [
+        "scar_cascade_control",
+        "scar_srr_cascade"
+      ]
+    },
+    {
+      "gres": "gpu:1",
+      "job_name": "SRREdema24",
+      "logical_run_id": "edema_seed20260724",
+      "partition": "htzhulab",
+      "pathology": "edema",
+      "seed": 20260724,
+      "variants": [
+        "edema_zone_control",
+        "edema_srr_zone_cascade"
+      ]
+    },
+    {
+      "gres": "gpu:nvidia_a100-pcie-40gb:1",
+      "job_name": "SRRScar25",
+      "logical_run_id": "scar_seed20260725",
+      "partition": "a100-gpu",
+      "pathology": "scar",
+      "seed": 20260725,
+      "variants": [
+        "scar_cascade_control",
+        "scar_srr_cascade"
+      ]
+    },
+    {
+      "gres": "gpu:nvidia_a100-pcie-40gb:1",
+      "job_name": "SRREdema25",
+      "logical_run_id": "edema_seed20260725",
+      "partition": "a100-gpu",
+      "pathology": "edema",
+      "seed": 20260725,
+      "variants": [
+        "edema_zone_control",
+        "edema_srr_zone_cascade"
+      ]
+    }
+  ],
+  "generated_utc": "2026-07-24T16:21:29.022416+00:00",
+  "matching_contract": {
+    "same_case_and_patch_sequence_within_pathology": "BOUND_BY_FORMAL_ENTRYPOINT_CASE_SEQUENCE_HASH",
+    "same_common_head_initialization_within_seed": "BOUND_BY_FORMAL_ENTRYPOINT_INITIAL_STATE_HASH",
+    "same_optimizer_budget_decode_evaluator": true,
+    "same_source_checkpoints": true,
+    "same_spatial_and_intensity_augmentation_within_pathology": "BOUND_BY_FORMAL_ENTRYPOINT_AUGMENTATION_SEED_HASH"
+  },
+  "source_cache_race_state": "results/20260724_care_myops_srr_cascade_submission_rescue/source_cache_race_state.json",
+  "source_cache_status": {
+    "case_count_observed": null,
+    "decision": "NEEDS_MONITOR",
+    "final_cache_dir_exists": false,
+    "hashes_decision": "PASS",
+    "hashes_exists": true,
+    "hashes_scope": "bounded_real_w2_preflight_subset_one_case_crop",
+    "hashes_status": "PASS",
+    "manifest_exists": true,
+    "manifest_row_count": 4,
+    "parity_decisions": [
+      "PASS"
+    ],
+    "parity_exists": true,
+    "parity_row_count": 4
+  },
+  "status": "NEEDS_MONITOR",
+  "w3_blockers": [
+    "NEEDS_REPAIR_FORMAL_ENTRYPOINT_MISSING"
+  ]
+}

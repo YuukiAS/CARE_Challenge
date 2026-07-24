@@ -1,0 +1,61 @@
+{
+  "augmentation_contract": {
+    "intensity_aug_raw_modalities_only": true,
+    "one_shared_spatial_transform_for_all_spatial_tensors": true,
+    "record_spatial_and_intensity_seeds": true,
+    "spatial_tensors": [
+      "raw_images",
+      "labels",
+      "anchor_logits",
+      "source_logits_features",
+      "prototype_similarity_maps",
+      "distance_maps"
+    ]
+  },
+  "decision": "PASS",
+  "sampling_contract": {
+    "center_id_in_model_forward": false,
+    "edema": {
+      "anatomy": 0.15,
+      "anchor_error": 0.35,
+      "background": 0.05,
+      "edema_zone_positive": 0.45
+    },
+    "edema_centers": [
+      "CenterB",
+      "CenterC"
+    ],
+    "edema_requires_t2_and_reliable_label": true,
+    "order": [
+      "target",
+      "eligible_center_uniform",
+      "case_uniform",
+      "patch"
+    ],
+    "scar": {
+      "anatomy": 0.2,
+      "anchor_error_hard_negative": 0.3,
+      "background": 0.1,
+      "scar_positive": 0.4
+    }
+  },
+  "status": "PASS_W1_STATIC_CONTRACT_BOUND_FOR_REPAIRED_MODEL_INPUTS",
+  "w1_evidence": {
+    "edema_missing_modality_boundary": "edema correction and edema losses are multiplied/masked by t2_present",
+    "intensity_aug_boundary": "model accepts normalized raw modalities separately from anchor/source/prototype/distance tensors; no augmentation runtime built in W1",
+    "model_forward_requires_or_accepts_all_spatial_tensor_inputs": [
+      "raw modality tensors normalized_lge and normalized_t2",
+      "anchor_logits",
+      "explicit_anchor_probabilities",
+      "source_features",
+      "prototype similarity maps",
+      "distance_to_union_mm",
+      "normalized_distance_to_union"
+    ],
+    "same_grid_enforced": "model helper checks all supplied spatial tensors share anchor batch and spatial shape"
+  },
+  "w2_pending": [
+    "real dataloader transform-seed receipt",
+    "all spatial tensor shared-transform runtime proof"
+  ]
+}

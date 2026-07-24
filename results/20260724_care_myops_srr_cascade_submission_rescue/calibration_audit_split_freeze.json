@@ -1,0 +1,29 @@
+{
+  "all_rows_split_field": [
+    "val"
+  ],
+  "audit_parameter_selection_forbidden": true,
+  "fieldnames": [
+    "case_id",
+    "center",
+    "complete_trimodal",
+    "edema_positive",
+    "modality_group",
+    "rescue_split",
+    "scar_positive",
+    "split",
+    "stratum",
+    "t2_present",
+    "within_stratum_key"
+  ],
+  "generated_at_utc": "2026-07-24T15:11:30.479308+00:00",
+  "path": "results/20260724_care_myops_batch10_deadline_rescue/rescue_split_manifest.csv",
+  "rescue_split_counts": {
+    "audit": 22,
+    "calibration": 22
+  },
+  "row_count": 44,
+  "schema_version": 1,
+  "sha256": "cf7d96189fe532f6ca5acb735a35d17fa5016f008d99f34242c0a1266124c5cf",
+  "status": "PASS"
+}

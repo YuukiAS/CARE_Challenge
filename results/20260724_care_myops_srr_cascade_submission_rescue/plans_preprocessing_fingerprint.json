@@ -1,0 +1,33 @@
+{
+  "configuration": "3d_fullres",
+  "configuration_exists": true,
+  "data_identifier": "nnUNetPlans_3d_fullres",
+  "dataset_fingerprint_path": "data/nnUNet/nnUNet_preprocessed/Dataset501_CAREMyoPS/dataset_fingerprint.json",
+  "dataset_fingerprint_sha256": "5b9bfaaaa0ca168f9e77039f228b355f148f1acdcc5928988335e7954642d0a7",
+  "generated_at_utc": "2026-07-24T15:11:30.479308+00:00",
+  "patch_size": [
+    20,
+    256,
+    256
+  ],
+  "plans_path": "data/nnUNet/nnUNet_preprocessed/Dataset501_CAREMyoPS/nnUNetResEncUNetMPlans.json",
+  "plans_sha256": "86f68fb738255ec7afe70a3894bfe5348f326792f14aeb74182b40023dd9f9bb",
+  "resolver": "nnUNet ConfigurationManager required by contract; this receipt records plan fields only",
+  "schema_version": 1,
+  "spacing": [
+    5.0,
+    1.3672000169754028,
+    1.3672000169754028
+  ],
+  "status": "PASS",
+  "transpose_backward": [
+    0,
+    1,
+    2
+  ],
+  "transpose_forward": [
+    0,
+    1,
+    2
+  ]
+}

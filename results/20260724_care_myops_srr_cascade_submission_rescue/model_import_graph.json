@@ -1,0 +1,192 @@
+{
+  "contract_required_model_class": "CARESRRCascadeRescue",
+  "decision": "PASS",
+  "explicit_forward_inputs": [
+    "anchor_logits",
+    "source_features",
+    "distance_to_union_mm",
+    "t2_present",
+    "normalized_lge",
+    "normalized_t2",
+    "teacher_anatomy_logits",
+    "teacher_anatomy_probabilities",
+    "teacher_edema_logit",
+    "teacher_edema_probability",
+    "scar_source_margin",
+    "explicit_anchor_probabilities",
+    "explicit_anchor_uncertainty",
+    "explicit_soft_union_probability",
+    "normalized_distance_to_union",
+    "prototype_scar_positive_similarity",
+    "prototype_scar_negative_similarity",
+    "prototype_edema_positive_similarity",
+    "prototype_edema_negative_similarity"
+  ],
+  "files": {
+    "src/care_myocardium/losses/care_srr_cascade_rescue_losses.py": {
+      "classes": [],
+      "functions": [
+        "_masked_mean",
+        "_target",
+        "_valid",
+        "anchor_error_directional",
+        "care_srr_cascade_rescue_loss_terms",
+        "confident_anchor_preserve",
+        "edema_zone_aux",
+        "final_margin_bce_dice",
+        "pathology_margin",
+        "scar_remote_fp_suppression",
+        "soft_dice_loss",
+        "surface_distance_surrogate"
+      ],
+      "imports": [
+        {
+          "module": "__future__",
+          "name": "annotations",
+          "type": "from"
+        },
+        {
+          "module": "torch",
+          "name": "torch",
+          "type": "import"
+        },
+        {
+          "module": "torch.nn",
+          "name": "functional",
+          "type": "from"
+        }
+      ],
+      "sha256": "844d377407de603979585badd8c3e9d825da7acbf1da4a218b95ef18bacb4672"
+    },
+    "src/care_myocardium/models/care_srr_cascade_rescue.py": {
+      "classes": [
+        "CARESRRCascadeRescue",
+        "_ResidualBlock"
+      ],
+      "functions": [
+        "_check_anchor",
+        "_expand_binary_case_mask",
+        "_four_channels",
+        "_single_channel",
+        "_six_channels",
+        "anchor_probabilities",
+        "anchor_uncertainty",
+        "fixed_support_map",
+        "soft_union_probability"
+      ],
+      "imports": [
+        {
+          "module": "__future__",
+          "name": "annotations",
+          "type": "from"
+        },
+        {
+          "module": "math",
+          "name": "math",
+          "type": "import"
+        },
+        {
+          "module": "torch",
+          "name": "torch",
+          "type": "import"
+        },
+        {
+          "module": "torch",
+          "name": "nn",
+          "type": "from"
+        },
+        {
+          "module": "torch.nn",
+          "name": "functional",
+          "type": "from"
+        }
+      ],
+      "sha256": "934b77a61b5d29f805084697934a7be60a32f95ab38c33dfcfc118f644ee3e92"
+    },
+    "src/care_myocardium/srr_production/case_prototypes.py": {
+      "classes": [
+        "CasePrototypeRecord"
+      ],
+      "functions": [
+        "build_case_prototype_record",
+        "deterministic_case_mean",
+        "select_crossfit_prototype_bank"
+      ],
+      "imports": [
+        {
+          "module": "__future__",
+          "name": "annotations",
+          "type": "from"
+        },
+        {
+          "module": "dataclasses",
+          "name": "dataclass",
+          "type": "from"
+        },
+        {
+          "module": "torch",
+          "name": "torch",
+          "type": "import"
+        },
+        {
+          "module": "torch.nn",
+          "name": "functional",
+          "type": "from"
+        }
+      ],
+      "sha256": "2ea341e31e9a50de5a306de106df7392b436ae72151ffc7ce1c6f8814bae89bd"
+    }
+  },
+  "forbidden_import_or_call": [
+    "SRRProposeRefineMyoPS",
+    "ProposalDictionary",
+    "M10TwoPassSpatialDictionary",
+    "legacy_BR2",
+    "legacy_SIP",
+    "PathologySourceArbiter",
+    "BranchArbitrationGate",
+    "production_correction_gate",
+    "old_propref_loss"
+  ],
+  "forbidden_occurrences_in_w1_source_files": {
+    "src/care_myocardium/losses/care_srr_cascade_rescue_losses.py": {
+      "BranchArbitrationGate": 0,
+      "M10TwoPassSpatialDictionary": 0,
+      "PathologySourceArbiter": 0,
+      "ProposalDictionary": 0,
+      "SRRProposeRefineMyoPS": 0,
+      "legacy_BR2": 0,
+      "legacy_SIP": 0,
+      "old_propref_loss": 0,
+      "production_correction_gate": 0
+    },
+    "src/care_myocardium/models/care_srr_cascade_rescue.py": {
+      "BranchArbitrationGate": 0,
+      "M10TwoPassSpatialDictionary": 0,
+      "PathologySourceArbiter": 0,
+      "ProposalDictionary": 0,
+      "SRRProposeRefineMyoPS": 0,
+      "legacy_BR2": 0,
+      "legacy_SIP": 0,
+      "old_propref_loss": 0,
+      "production_correction_gate": 0
+    },
+    "src/care_myocardium/srr_production/case_prototypes.py": {
+      "BranchArbitrationGate": 0,
+      "M10TwoPassSpatialDictionary": 0,
+      "PathologySourceArbiter": 0,
+      "ProposalDictionary": 0,
+      "SRRProposeRefineMyoPS": 0,
+      "legacy_BR2": 0,
+      "legacy_SIP": 0,
+      "old_propref_loss": 0,
+      "production_correction_gate": 0
+    }
+  },
+  "generated_utc": "2026-07-24T15:30:28.404885+00:00",
+  "git_head": "6b9834c6f20416392a540535056c7196a4c429f3",
+  "origin_main": "6b9834c6f20416392a540535056c7196a4c429f3",
+  "scope": "RESCUE_W1_CLEAN_MODEL_PROTOTYPE_AND_DATAFLOW_IMPLEMENTATION_REPAIR",
+  "status": "PASS_W1_STATIC_AND_SYNTHETIC_TESTED",
+  "synthetic_test_evidence": "tests/care_mm/test_care_srr_cascade_rescue.py::test_explicit_inputs_are_wired_into_head_deltas perturbs every explicit feature input and observes scar_delta or edema_delta change with nonzero output projection"
+}

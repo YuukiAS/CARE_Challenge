@@ -1,0 +1,242 @@
+{
+  "all_read_file_sha256": [
+    {
+      "exists": true,
+      "path": "AGENTS.md",
+      "sha256": "9e41eb124868681f7176ac96befb72df5f8fb32e8f6b17d241d1c8586ae9011f"
+    },
+    {
+      "exists": true,
+      "path": "START_HERE_FOR_GPT.md",
+      "sha256": "83a11ac74d130cfd1df2064fdd52b642e06d1b13eb3af677b02819dcad4274fe"
+    },
+    {
+      "exists": true,
+      "path": "GPT_PLANNER_CARE_PROTOCOL.md",
+      "sha256": "6e9f234de0be18674dc195fe1de830982ddbc5d3201e068eb6a2ed6ac9f9c195"
+    },
+    {
+      "exists": true,
+      "path": "prompts/FINAL_OUTPUT_READABILITY_POLICY.md",
+      "sha256": "1d1dd49a03f2bb9c22b20e17168125abd5c5a78d6c68d675f3052c03526e069b"
+    },
+    {
+      "exists": true,
+      "path": "prompts/AGENT_FLOW_V2_PROTOCOL.md",
+      "sha256": "29b417ef95e5b54d046e9fafb6cede016d74e74c88426756546b507fb09a22a1"
+    },
+    {
+      "exists": true,
+      "path": "prompts/HANDOFF_GATE_POLICY.md",
+      "sha256": "668765a296b5789d1560cdbd710316fcd7b93544f9195f7eaf3ebcbe263ccb1a"
+    },
+    {
+      "exists": true,
+      "path": "prompts/GPT_HARD_GATE_PROMPT.md",
+      "sha256": "afb068852d40a04500e818b2d53acabb811a090920042b711b34dcc55416de9b"
+    },
+    {
+      "exists": true,
+      "path": "prompts/routes/ROUTE_ANTI_LAZINESS_PROTOCOL.md",
+      "sha256": "a0dce70c97ef9711dbdc76a213d26419513fa5c28478accbec0dd8288a91674a"
+    },
+    {
+      "exists": true,
+      "path": "prompts/routes/ROUTE_HARD_REQUIREMENTS_MATRIX.md",
+      "sha256": "a225f46868eda817a0d2b2f3e33d444ffc88b683664dfc3a0dd6eb25881475d9"
+    },
+    {
+      "exists": true,
+      "path": "prompts/routes/handoffs/CURRENT.md",
+      "sha256": "fb53d752a8c1eb04c226175fffb023feb98a2bb61c18b7aeb775c80d7c92ab79"
+    },
+    {
+      "exists": true,
+      "path": "routes/README.md",
+      "sha256": "46cf19fabc1a6d8806643a9f5d0e4f61bd6816820c5eefe5d2e108d625db9771"
+    },
+    {
+      "exists": true,
+      "path": "wiki/README.md",
+      "sha256": "f93808c7765770407fcf86d3d7ab9627e99ebbeace258d39be819918210a2f44"
+    },
+    {
+      "exists": true,
+      "path": ".agents/skills/slurm-routing-partition/SKILL.md",
+      "sha256": "2b7e87f58b275b50dc9d4a9377f4e2518c3a390c806e400cb32e07ebac3f83a6"
+    },
+    {
+      "exists": true,
+      "path": ".agents/skills/care-mapper/SKILL.md",
+      "sha256": "2c41516189001ec7be94d9981a69fcd5544ad5ebd244c93cdc58488f4b535d0e"
+    },
+    {
+      "exists": true,
+      "path": ".agents/skills/codex-workflow-protocol/SKILL.md",
+      "sha256": "828fd6ed7c86ff4b22fc5b601e73f4639fa6462006a626eb99e2d37d938089f2"
+    },
+    {
+      "exists": true,
+      "path": ".agents/skills/codex-workflow-protocol/references/live-state-delegation.md",
+      "sha256": "09eb15773e35211b0d491317a350e339e7b6a76bd983044ee52474182a27a0bc"
+    },
+    {
+      "exists": true,
+      "path": "results/srr_production/code_maturity/srr_cascade_submission_rescue_planner_decision_20260724.md",
+      "sha256": "275930b55a7e2f27a0834b66ee420fa36e472fe4061944b04c60d0dfb6854bdc"
+    },
+    {
+      "exists": true,
+      "path": "configs/care_mm/srr_cascade_submission_rescue.yaml",
+      "sha256": "37b514e4fdb68eda50c2c5d9f0ae2332411ef41c1e81151333aafcf623783cb4"
+    },
+    {
+      "exists": true,
+      "path": "prompts/tasks/20260724_care_myops_srr_cascade_submission_rescue_executor_plan.yaml",
+      "sha256": "dd82e1d832d6f794ed4876e91b60cfd3528fd0314ccac986e7b3c65a175cbe47"
+    },
+    {
+      "exists": true,
+      "path": "configs/care_mm/srr_cascade_submission_rescue_preexecution_amendment.yaml",
+      "sha256": "028e2fce36480d205932b5f091053f10357f90ee243e32dd1e0e112618f6ab54"
+    },
+    {
+      "exists": true,
+      "path": "prompts/tasks/20260724_care_myops_srr_cascade_submission_rescue_controller.md",
+      "sha256": "d2d89fe7792b1c901d99fc33db8c5505c4dafe02169cbf16aa433922b4efffbf"
+    },
+    {
+      "exists": true,
+      "path": "results/20260724_care_myops_batch10_deadline_rescue/controller_report.md",
+      "sha256": "8afb1b0f44c0081c54bdd05441de010f1aeb2297eeeb1dd800b30b70ea503c47"
+    },
+    {
+      "exists": true,
+      "path": "results/20260724_care_myops_batch10_deadline_rescue/wave5_terminal_accounting.json",
+      "sha256": "ade4581c54de65094a0d43ca646d4d8e57cbf08af7e5df95adf312dac5641899"
+    },
+    {
+      "exists": true,
+      "path": "results/20260724_care_myops_batch10_deadline_rescue/near_baseline_gate.json",
+      "sha256": "d3b9c2f15936af1d0ebf2060e9043cdd01be53a4f460b1e027359a5bc07bc786"
+    },
+    {
+      "exists": true,
+      "path": "results/20260724_care_myops_batch10_deadline_rescue/rescue_split_receipt.json",
+      "sha256": "7f1ab3b1f061c3f5de830421cf79838ad53203a16cb811bf9684e46cc236a19b"
+    }
+  ],
+  "amendment_id": "srr_cascade_rescue_round1_preexecution_20260724",
+  "amendment_wins_on_conflict": true,
+  "contract_files": [
+    {
+      "exists": true,
+      "path": "results/srr_production/code_maturity/srr_cascade_submission_rescue_planner_decision_20260724.md",
+      "sha256": "275930b55a7e2f27a0834b66ee420fa36e472fe4061944b04c60d0dfb6854bdc"
+    },
+    {
+      "exists": true,
+      "path": "configs/care_mm/srr_cascade_submission_rescue.yaml",
+      "sha256": "37b514e4fdb68eda50c2c5d9f0ae2332411ef41c1e81151333aafcf623783cb4"
+    },
+    {
+      "exists": true,
+      "path": "prompts/tasks/20260724_care_myops_srr_cascade_submission_rescue_executor_plan.yaml",
+      "sha256": "dd82e1d832d6f794ed4876e91b60cfd3528fd0314ccac986e7b3c65a175cbe47"
+    },
+    {
+      "exists": true,
+      "path": "configs/care_mm/srr_cascade_submission_rescue_preexecution_amendment.yaml",
+      "sha256": "028e2fce36480d205932b5f091053f10357f90ee243e32dd1e0e112618f6ab54"
+    },
+    {
+      "exists": true,
+      "path": "prompts/tasks/20260724_care_myops_srr_cascade_submission_rescue_controller.md",
+      "sha256": "d2d89fe7792b1c901d99fc33db8c5505c4dafe02169cbf16aa433922b4efffbf"
+    }
+  ],
+  "generated_at_utc": "2026-07-24T15:00:59.059122+00:00",
+  "next_action": "START_SINGLE_EXECUTOR_W0",
+  "remote_binding": {
+    "head_equals_origin_main": true,
+    "status_short_branch": "## main...origin/main",
+    "target_commit_is_ancestor_of_origin_main": true,
+    "target_commit_type": "commit"
+  },
+  "resolved_conflict_overrides": [
+    {
+      "base": "one_job_per_seed_with_four_variants",
+      "field": "formal_training.job_topology",
+      "resolved": "four_seed_pathology_jobs_control_then_srr"
+    },
+    {
+      "base": "Dataset501_fold0_nnUNet",
+      "field": "packaging.myops_anchor",
+      "resolved": "Dataset501_existing_nnunet_five_fold_probability_ensemble"
+    },
+    {
+      "base": "not_fully_defined",
+      "field": "anchor.logit_conversion",
+      "resolved": "p=clip(p_raw,epsilon,1);p=p/sum_channels(p);z=log(p)"
+    },
+    {
+      "base": "configuration_manager_patch_identifier_only",
+      "field": "anchor.grid_mapping",
+      "resolved": "physical_geometry_crop_transpose_and_resampling_from_case_properties"
+    },
+    {
+      "base": "not_required",
+      "field": "source_cache",
+      "resolved": "required_with_direct_parity_receipts"
+    },
+    {
+      "base": "two_blocks_without_hidden_channel_details",
+      "field": "head_architecture",
+      "resolved": {
+        "activation": "SiLU",
+        "anatomy_decoder_or_anatomy_trainable_path": "forbidden",
+        "dropout": "none",
+        "edema_output_projection": "Conv3d_1x1_two_channels_zone_and_delta_zero_initialized",
+        "groupnorm_groups": 8,
+        "hidden_channels": 32,
+        "input_projection": "Conv3d_1x1_to_32",
+        "normalization": "GroupNorm",
+        "residual_block": "Conv3d_3x3_GN_SiLU_Conv3d_3x3_GN_residual_SiLU",
+        "residual_blocks": 2,
+        "scar_output_projection": "Conv3d_1x1_one_channel_zero_initialized"
+      }
+    },
+    {
+      "base": "voxel_bank_four_shards",
+      "field": "prototype_evidence",
+      "resolved": "deterministic_case_level_mean_prototypes_with_case_caps"
+    },
+    {
+      "base": "weighted_terms_named",
+      "field": "loss_formula_authority",
+      "resolved": "explicit_formula_per_nonzero_term"
+    },
+    {
+      "base": "per_seed_selection_plus_mean_implicit",
+      "field": "selection_candidates",
+      "resolved": [
+        "control_seed20260724",
+        "control_seed20260725",
+        "srr_seed20260724",
+        "srr_seed20260725",
+        "control_two_seed_probability_mean",
+        "srr_two_seed_probability_mean"
+      ]
+    },
+    {
+      "base": false,
+      "field": "diagram_update_required",
+      "resolved": false
+    }
+  ],
+  "resolved_execution_contract_path": "results/20260724_care_myops_srr_cascade_submission_rescue/resolved_execution_contract.json",
+  "schema_version": 1,
+  "status": "PASS_RESOLVED_CONTRACT_WRITTEN",
+  "task_key": "20260724_care_myops_srr_cascade_submission_rescue",
+  "unresolved_conflicts": []
+}

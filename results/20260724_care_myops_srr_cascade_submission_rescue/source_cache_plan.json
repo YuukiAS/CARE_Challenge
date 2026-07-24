@@ -1,0 +1,37 @@
+{
+  "cache_cases": "all_220_internal_cases_plus_official_cases_when_packaging",
+  "cached_scar_fields": [
+    "scar_final_margin"
+  ],
+  "cached_teacher_fields": [
+    "full_resolution_feature",
+    "anatomy_logits",
+    "edema_logit"
+  ],
+  "dtypes": {
+    "anchor": "float32",
+    "feature": "float16",
+    "logit": "float32"
+  },
+  "generated_at_utc": "2026-07-24T15:11:30.479308+00:00",
+  "intended_runtime_root": "results/20260724_care_myops_srr_cascade_submission_rescue/runtime/source_cache",
+  "note": "No cache generated in W0; W1/W2 must implement/generate cache and prove direct parity before formal training.",
+  "predictor": {
+    "checkpoint_reloaded_from_contract": true,
+    "gaussian": true,
+    "mirror_tta": false,
+    "tile_step_size": 0.5
+  },
+  "required_parity": {
+    "feature_max_abs_delta": 0.002,
+    "logit_max_abs_delta": 1e-05
+  },
+  "required_receipts": [
+    "source_cache_manifest.csv",
+    "source_cache_parity_checks.csv",
+    "source_cache_hashes.json"
+  ],
+  "runtime_only_untracked": true,
+  "schema_version": 1,
+  "status": "PLAN_BOUND_PARITY_PENDING_W1_W2"
+}

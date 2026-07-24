@@ -1,0 +1,11 @@
+loss_term,loss_value,finite,scar_head_grad_abs_sum,edema_head_grad_abs_sum,anchor_requires_grad,source_requires_grad,raw_delta_supervision,decision
+scar_final_margin_bce_dice,0.8932754993438721,True,0.05185543745756149,0.0009313473710790277,False,False,False,PASS
+edema_final_margin_bce_dice,0.4581528306007385,True,0.0018191894050687551,0.1305651217699051,False,False,False,PASS
+scar_anchor_error_directional,11.24014663696289,True,1.7112551927566528,2.247951488243416e-05,False,False,False,PASS
+edema_anchor_error_directional,7.72630500793457,True,0.02381744608283043,1.7105227708816528,False,False,False,PASS
+scar_confident_anchor_preserve,0.2887224555015564,True,1.3003963232040405,0.0,False,False,False,PASS
+edema_confident_anchor_preserve,0.13970442116260529,True,0.0,0.6292240619659424,False,False,False,PASS
+scar_remote_fp_suppression,0.013435077853500843,True,0.022832296788692474,0.00014811826986260712,False,False,False,PASS
+scar_surface_distance_surrogate,0.008567099459469318,True,0.006540509406477213,4.2407824366819113e-05,False,False,False,PASS
+edema_surface_distance_surrogate,0.0074605792760849,True,6.538447632919997e-05,0.0030422669369727373,False,False,False,PASS
+edema_zone_aux,1.1992952823638916,True,0.0,0.450831800699234,False,False,False,PASS

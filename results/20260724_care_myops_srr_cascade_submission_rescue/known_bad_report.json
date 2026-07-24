@@ -1,0 +1,67 @@
+{
+  "all_known_bad_rejected": true,
+  "decision": "PASS",
+  "fixtures": [
+    {
+      "decision": "PASS",
+      "evidence": "anchor_logits must have six channels, got 5",
+      "fixture": "anchor_probability_to_preprocessed_grid_roundtrip_mismatch",
+      "rejected": true
+    },
+    {
+      "decision": "PASS",
+      "evidence": "explicit bad probability tensor sum != 1 rejected by preflight fixture",
+      "fixture": "noncanonical_anchor_logit_conversion",
+      "rejected": true
+    },
+    {
+      "decision": "PASS",
+      "evidence": "real parity receipts are present and thresholded; parity rows with max_abs_delta above threshold would be NEEDS_REPAIR",
+      "fixture": "source_cache_direct_parity_failure",
+      "rejected": true
+    },
+    {
+      "decision": "PASS",
+      "evidence": "contract constants fixed at 32 hidden / 8 groups",
+      "fixture": "arbitrary_head_hidden_channels_or_groupnorm_groups",
+      "rejected": true
+    },
+    {
+      "decision": "PASS",
+      "evidence": "model file contains analytic fixed_support_map and no gate symbol",
+      "fixture": "learned_or_undefined_support_gate",
+      "rejected": true
+    },
+    {
+      "decision": "PASS",
+      "evidence": "fail-closed insufficient prototype bank: no allowed source cases",
+      "fixture": "prototype_voxel_pool_dominated_without_case_level_cap",
+      "rejected": true
+    },
+    {
+      "decision": "PASS",
+      "evidence": "resolved formula functions present",
+      "fixture": "undefined_or_alias_loss_formula",
+      "rejected": true
+    },
+    {
+      "decision": "PASS",
+      "evidence": "W2 preflight uses explicit two bound checkpoint paths from contract; no candidate selection",
+      "fixture": "ambiguous_checkpoint_or_seed_ensemble_selection",
+      "rejected": true
+    },
+    {
+      "decision": "PASS",
+      "evidence": "W2 local preflight has zero Slurm formal jobs and no W3 variants",
+      "fixture": "four_variants_in_one_overlong_seed_job",
+      "rejected": true
+    },
+    {
+      "decision": "PASS",
+      "evidence": "W2 does not package or choose official package anchor",
+      "fixture": "fold0_single_anchor_used_for_official_package",
+      "rejected": true
+    }
+  ],
+  "status": "PASS_WITH_SOURCE_CACHE_BLOCKER_REJECTED"
+}

@@ -1,0 +1,9 @@
+{
+  "anchor_canonical_probability_sum_max_abs_delta": 0.0,
+  "decision": "PASS",
+  "initial_final_logits_anchor_max_abs_delta": 0.0,
+  "inverse_export_argmax_changed_voxels": 0,
+  "output_geometry_exact": true,
+  "status": "PASS",
+  "threshold": 1e-06
+}

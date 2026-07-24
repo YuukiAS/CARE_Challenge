@@ -1,0 +1,87 @@
+{
+  "contract": {
+    "class_file": "src/care_myocardium/models/care_srr_cascade_rescue.py",
+    "class_name": "CARESRRCascadeRescue",
+    "correction_bound_logit": 2.0,
+    "final_anatomy_channels_exact_anchor": [
+      0,
+      1,
+      2,
+      3
+    ],
+    "forbidden_import_or_call": [
+      "SRRProposeRefineMyoPS",
+      "ProposalDictionary",
+      "M10TwoPassSpatialDictionary",
+      "legacy_BR2",
+      "legacy_SIP",
+      "PathologySourceArbiter",
+      "BranchArbitrationGate",
+      "production_correction_gate",
+      "old_propref_loss"
+    ],
+    "head_architecture": {
+      "activation": "SiLU",
+      "anatomy_decoder_or_anatomy_trainable_path": "forbidden",
+      "dropout": "none",
+      "edema_output_projection": "Conv3d_1x1_two_channels_zone_and_delta_zero_initialized",
+      "groupnorm_groups": 8,
+      "hidden_channels": 32,
+      "input_projection": "Conv3d_1x1_to_32",
+      "normalization": "GroupNorm",
+      "residual_block": "Conv3d_3x3_GN_SiLU_Conv3d_3x3_GN_residual_SiLU",
+      "residual_blocks": 2,
+      "scar_output_projection": "Conv3d_1x1_one_channel_zero_initialized"
+    },
+    "pathology_channels_corrected": {
+      "edema": 4,
+      "scar": 5
+    },
+    "support_definitions": {
+      "edema_support": {
+        "formula": "I(distance<=15)*max(soft_union_probability,exp(-0.5*(distance/7.5)^2))",
+        "max_distance_mm": 15.0,
+        "sigma_mm": 7.5
+      },
+      "learned_support_or_gate": "forbidden",
+      "scar_support": {
+        "formula": "I(distance<=10)*max(soft_union_probability,exp(-0.5*(distance/5)^2))",
+        "max_distance_mm": 10.0,
+        "sigma_mm": 5.0
+      }
+    }
+  },
+  "decision": "PASS",
+  "implementation": {
+    "anatomy_channels_exact_anchor": true,
+    "class_file": "src/care_myocardium/models/care_srr_cascade_rescue.py",
+    "class_name": "CARESRRCascadeRescue",
+    "correction_formula": "scar: anchor + fixed_support * 2*tanh(delta); edema: anchor + t2_present * fixed_support * 2*tanh(delta)",
+    "explicit_inputs_wired": true,
+    "fixed_supports": {
+      "edema_support": {
+        "formula": "I(distance<=15)*max(soft_union_probability,exp(-0.5*(distance/7.5)^2))",
+        "max_distance_mm": 15.0,
+        "sigma_mm": 7.5
+      },
+      "learned_support_or_gate": "forbidden",
+      "scar_support": {
+        "formula": "I(distance<=10)*max(soft_union_probability,exp(-0.5*(distance/5)^2))",
+        "max_distance_mm": 10.0,
+        "sigma_mm": 5.0
+      }
+    },
+    "groupnorm_groups": 8,
+    "head_hidden_channels": 32,
+    "legacy_import_or_call_count": 0,
+    "model_sha256": "934b77a61b5d29f805084697934a7be60a32f95ab38c33dfcfc118f644ee3e92",
+    "no_t2_edema_exact_identity": true,
+    "residual_blocks": 2,
+    "zero_init_output_projections": true
+  },
+  "status": "PASS_W1_IMPLEMENTED_STATIC_AND_SYNTHETIC_TESTED",
+  "test_evidence": {
+    "pytest_file": "tests/care_mm/test_care_srr_cascade_rescue.py",
+    "result": "7 passed"
+  }
+}

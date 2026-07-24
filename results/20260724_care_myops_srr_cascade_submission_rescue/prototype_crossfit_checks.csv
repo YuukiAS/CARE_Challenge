@@ -1,0 +1,6 @@
+check,contract_requirement,w1_synthetic_evidence,decision
+training_query_excludes_own_shard,exclude_entire_query_case_shard,helper filters case_id != query_case_id and shard != query_shard; pytest exercised query case005/shard1,PASS
+case_level_cap_semantics,at_most_one_prototype_per_case_category and cap 4096,"deterministic_case_mean returns one mean vector per case/category after accepting min(available, cap) voxels; pytest used cap=16",PASS
+no_t2_edema_negative_leakage,no_t2_case_contribution_to_edema_bank forbidden,pytest record case000 has t2_present false and edema_negative.numel()==0 despite an edema_negative mask,PASS
+minimum_positive_negative_fail_closed,positive>=4 negative>=8 by contract unless overridden in synthetic unit test,helper raises ValueError on insufficient allowed vectors; pytest asserts fail-closed error,PASS
+validation_uses_all_train_shards,validation_and_official_query use all fold0 training shards,helper mode=validation does not exclude case or shard; static path in helper,PASS_STATIC
