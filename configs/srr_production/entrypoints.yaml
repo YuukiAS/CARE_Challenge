@@ -1,13 +1,12 @@
-schema_version: 16
-authority_name: care_myops_srr_cascade_submission_rescue_authority
-formal_training_status: READY_FOR_CONTROLLER_WITH_BINDING_PREEXECUTION_AMENDMENT
+schema_version: 17
+authority_name: care_myops_srr_cascade_submission_rescue_runtime_closure_authority
+formal_training_status: READY_FOR_CONTROLLER_RUNTIME_CLOSURE_REPAIR
 status_reason: >-
-  Batch10 CARE-MMRD terminal stop remains valid. The user explicitly authorized a new
-  main-only submission-rescue task. The method is CARE-SRR-Cascade and the current
-  execution is SRR-Cascade Rescue Round 1 (SCR-R1), not Batch11 or a legacy milestone.
-  The binding preexecution amendment fixes anchor canonicalization/grid mapping, source
-  cache, head/support/prototype/loss definitions, seed candidate selection, Slurm topology,
-  and five-fold package anchor semantics.
+  SCR-R1 Controller correctly blocked before formal W3 because the repository only had a
+  dry-run formal entrypoint and a monitor-only orchestrator. The user authorized SCR-R1-RC1,
+  a same-science runtime-closure repair that specifies the production anchor/cache/model/
+  prototype/data/trainer/evaluation/selection/package/validator chain and requires real W0-W2
+  revalidation before any formal job. This is not SCR-R2, Batch11, or a legacy milestone.
 current_scientific_status:
   batch7_operational: SIX_MATCHED_RUNS_COMPLETE_HISTORICAL
   batch7_scientific_packet: INCOMPLETE_BR2_SIP_MECHANISM_CLOSURE_HISTORICAL
@@ -15,77 +14,124 @@ current_scientific_status:
   batch9_repair: FROZEN_EVIDENCE_SOURCE_ONLY
   batch10_deadline_rescue: TERMINAL_STOP_RETAINED_AS_HISTORY
   care_mmrd_direct_segmentation: STOPPED
-  srr_cascade_submission_rescue: READY_FOR_CONTROLLER_WITH_BINDING_AMENDMENT
+  srr_cascade_submission_rescue: RUNTIME_CLOSURE_REPAIR_READY
+  scr_r1_formal_training: NOT_STARTED_ZERO_CREDIT
+  scr_r1_rc1: READY_FOR_CONTROLLER
   batch11: NOT_AUTHORIZED
   route_worktree_development: NOT_AUTHORIZED
+
 formal_entrypoints:
+  - id: care_myops_srr_cascade_runtime_closure_repair
+    method_name: CARE-SRR-Cascade
+    parent_execution: SRR-Cascade Rescue Round 1
+    execution_code: SCR-R1
+    repair_code: SCR-R1-RC1
+    numbering_policy: SAME_SCIENTIFIC_ROUND_RUNTIME_REPAIR
+    role: binding_runtime_closure_repair_before_formal_W3
+    task_key: 20260725_care_myops_srr_cascade_runtime_closure_repair
+    parent_task_key: 20260724_care_myops_srr_cascade_submission_rescue
+    path: prompts/tasks/20260725_care_myops_srr_cascade_runtime_closure_repair_controller.md
+    config_path: configs/care_mm/srr_cascade_runtime_closure_repair.yaml
+    executor_plan_path: prompts/tasks/20260725_care_myops_srr_cascade_runtime_closure_repair_executor_plan.yaml
+    critic_report_path: results/srr_production/code_maturity/scr_r1_runtime_block_critic_and_repair_20260725.md
+    result_root: results/20260724_care_myops_srr_cascade_submission_rescue
+    repair_result_root: results/20260724_care_myops_srr_cascade_submission_rescue/runtime_closure_repair_rc1
+    formal_authority: true
+    runtime_authorized: true
+    repair_wins_on_conflict: true
+    branch: main
+    worktree: /users/a/e/aereinh/CARE
+    executor_count: 1
+    mapper_required: true
+    scientific_hypothesis_change: false
+    seeds_budget_split_gates_change: false
+    prior_wave_status:
+      wave_minus1: RETAIN_PASS
+      wave0: CONDITIONAL_PASS_REVALIDATE_RUNTIME_FIELDS
+      wave1: IN_PLACE_REPAIR_REQUIRED
+      wave2: REVALIDATE_BEFORE_FORMAL
+      wave3: BLOCKED_ZERO_FORMAL_CREDIT
+    formal_authorization_requires:
+      - all_220_anchor_roundtrip_v2_PASS
+      - all_220_source_cache_880_fields_v2_PASS
+      - category_aware_prototype_cache_v2_PASS
+      - real_32_channel_overfit_both_pathologies_PASS
+      - actual_augmentation_fiducial_PASS
+      - active_loss_gradient_PASS
+      - checkpoint_resume_roundtrip_PASS
+      - both_partition_GPU_preflight_PASS
+      - formal_dry_run_and_orchestrator_idempotence_PASS
+      - real_known_bad_PASS
+      - formal_authorization_gate_PASS
+    runtime_closure_scope:
+      anchor_builder: authorized_exact_config
+      source_cache_adoption_or_rebuild: authorized_exact_config
+      independent_pathology_trunks: required
+      category_aware_prototypes: required
+      matched_schedule_and_augmentation: required
+      real_formal_trainer_and_resume: required
+      W4_selection_and_audit_entrypoints: required_before_W3
+      W5_package_entrypoint: required_before_W3
+      W6_validator_entrypoint: required_before_W3
+    upload_scope:
+      local_package_and_docker_dry_run: conditional_authorized
+      validation_upload: forbidden
+      docker_upload: forbidden
+      hosted_metric_claim: forbidden
+
+parent_entrypoints:
   - id: care_myops_srr_cascade_submission_rescue
     method_name: CARE-SRR-Cascade
     short_method_name: SRR-Cascade
     execution_label: SRR-Cascade Rescue Round 1
     execution_code: SCR-R1
     numbering_policy: NOT_BATCH11_NOT_LEGACY_MILESTONE
-    role: current_main_only_anchor_bounded_pathology_specific_submission_rescue
+    role: parent_scientific_contract_requiring_runtime_closure_repair
     task_key: 20260724_care_myops_srr_cascade_submission_rescue
     path: prompts/tasks/20260724_care_myops_srr_cascade_submission_rescue_controller.md
     config_path: configs/care_mm/srr_cascade_submission_rescue.yaml
     binding_amendment_path: configs/care_mm/srr_cascade_submission_rescue_preexecution_amendment.yaml
+    binding_runtime_repair_path: configs/care_mm/srr_cascade_runtime_closure_repair.yaml
     executor_plan_path: prompts/tasks/20260724_care_myops_srr_cascade_submission_rescue_executor_plan.yaml
-    planner_audit_path: results/srr_production/code_maturity/srr_cascade_submission_rescue_planner_decision_20260724.md
+    runtime_repair_executor_plan_path: prompts/tasks/20260725_care_myops_srr_cascade_runtime_closure_repair_executor_plan.yaml
     result_root: results/20260724_care_myops_srr_cascade_submission_rescue
-    formal_authority: true
-    runtime_authorized: true
-    amendment_wins_on_conflict: true
-    resolved_contract_required_before_executor: true
-    dataset: Dataset501_CAREMyoPS
-    fold: 0
-    branch: main
-    worktree: /users/a/e/aereinh/CARE
-    executor_count: 1
-    mapper_required: true
-    diagram_update_required: false
-    nnunet_scope:
-      five_fold_oof_anchor_for_training: authorized
-      fold0_oof_anchor_for_local_evaluation: authorized
-      final_logit_base: authorized
-      anatomy_and_uncertainty_context: authorized
-      pathology_specific_fallback: authorized
-      official_package_five_fold_ensemble_anchor: authorized
-      fold0_single_model_official_package_anchor: forbidden
-      counted_as_custom_gain: forbidden
-    frozen_care_mmrd_scope:
-      feature_anatomy_edema_source: authorized_hash_bound
-      scar_evidence_source: authorized_hash_bound
-      deterministic_runtime_source_cache: required
-      source_parameter_update: forbidden
-    custom_model_scope:
-      architecture: CARESRRCascadeRescue
-      anatomy_channel_modification: forbidden
-      pathology_correction_channels: [4, 5]
-      correction_bound: 2*tanh_delta
-      no_t2_edema_change: forbidden
-      pathology_independent_fallback: required
-      exact_formulas_source: configs/care_mm/srr_cascade_submission_rescue_preexecution_amendment.yaml
-    formal_job_scope:
-      job_count: 4
-      topology: one_job_per_seed_pathology
-      within_job: matched_control_then_srr
-      optimizer_steps_each_variant: 6250
-      job_walltime: 08:00:00
-    cine_scope:
-      new_training: forbidden
-      fixed_existing_dataset502_nnunet_five_fold_source_for_local_package: conditional_authorized
-    upload_scope:
-      local_package_and_docker_dry_run: conditional_authorized
-      validation_upload: forbidden
-      docker_upload: forbidden
-      hosted_metric_claim: forbidden
+    formal_authority: false
+    authority_restored_after_RC1_completion: true
+    runtime_authorized: false
+    prior_controller_block_valid: true
+
+scientific_contract:
+  dataset: Dataset501_CAREMyoPS
+  fold: 0
+  calibration_audit_split: frozen_22_22
+  method:
+    architecture: CARESRRCascadeRescue
+    anchor: five_fold_OOF_nnunet
+    frozen_sources: hash_bound_CARE_MMRD_teacher_and_scar_source
+    prototype: four_shard_category_aware_crossfit
+    independent_pathology_trunks: true
+    anatomy_channels_exact_anchor: [0, 1, 2, 3]
+    pathology_correction_channels: [4, 5]
+    correction_bound: 2*tanh_delta
+    no_t2_edema_change: forbidden
+    pathology_independent_fallback: required
+  formal_training:
+    job_count: 4
+    topology: one_job_per_seed_pathology
+    within_job: matched_control_then_srr
+    optimizer_steps_each_variant: 6250
+    validation_steps: [1250, 2500, 3750, 5000, 6250]
+    resume: exact_hash_bound_logical_run_only
+  package:
+    myops_anchor: Dataset501_existing_five_fold_probability_ensemble
+    cine_anchor: Dataset502_existing_five_fold_probability_ensemble
+    custom_assets: frozen_selected_fold0
+
 historical_entrypoints:
   - id: care_myops_batch10_deadline_rescue
     role: terminal_fair_reevaluation_and_stop_packet
     task_key: 20260724_care_myops_batch10_deadline_rescue
     path: prompts/tasks/20260724_care_myops_batch10_deadline_rescue_controller.md
-    config_path: configs/care_mm/batch10_deadline_rescue.yaml
     result_root: results/20260724_care_myops_batch10_deadline_rescue
     formal_authority: false
     runtime_authorized: false
@@ -94,11 +140,9 @@ historical_entrypoints:
     role: frozen_checkpoint_and_runtime_evidence_source
     task_key: 20260723_care_myops_batch9_exposed_issues_repair
     path: prompts/tasks/20260723_care_myops_batch9_exposed_issues_repair_controller.md
-    config_path: configs/care_mm/batch9_exposed_issues_repair.yaml
     result_root: results/20260723_care_myops_batch9_exposed_issues_repair
     formal_authority: false
     runtime_authorized: false
-    old_wave6_resume_authorized: false
   - id: srr_batch7_minimal_pathology_decomposition
     role: historical_mechanism_evidence_only
     path: prompts/tasks/20260722_srr_batch7_minimal_pathology_decomposition_controller.md
@@ -111,10 +155,11 @@ historical_entrypoints:
     result_root: results/20260722_srr_batch8_clean_edema_br2_confirmation
     formal_authority: false
     runtime_authorized: false
+
 publication_boundary:
   allowed_method_description: >-
     frozen-baseline anchored, pathology-specific bounded refinement using first-party
-    CARE evidence and clean cross-fitted case-level prototype similarities
+    CARE evidence and category-aware clean cross-fitted case-level prototype similarities
   care_mmrd_direct_route_continues: false
   r2_br2_theory_directly_proven_for_dense_segmentation: false
   third_party_mosaic_code_or_weights_used: false
@@ -126,17 +171,22 @@ publication_boundary:
   new_cine_training_authorized: false
   route_promotion_authorized: false
   batch11_authorized: false
+
 blocked_actions:
+  - run_old_formal_entrypoint_before_RC1_gate
   - resume_batch9_wave6
-  - start_batch11
+  - start_batch11_or_SCR_R2
   - run_old_batch7_or_batch8
   - use_old_srr_propref_dictionary_br2_sip_arbiter_as_production_path
   - copy_or_depend_on_mosaic_code_or_weights
   - external_data_or_external_pretrained_weights
   - change_calibration_audit_split
   - use_audit_for_selection
+  - add_seed_variant_or_change_budget
   - new_cine_training
+  - fold_expansion
   - validation_upload
   - docker_upload
   - hosted_metric_claim
   - route_promotion
+  - runtime_git_push

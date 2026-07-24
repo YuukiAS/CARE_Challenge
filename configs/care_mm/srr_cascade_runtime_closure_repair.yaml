@@ -1,0 +1,580 @@
+schema_version: 1
+repair_id: SCR-R1-RC1
+task_key: 20260725_care_myops_srr_cascade_runtime_closure_repair
+parent_task_key: 20260724_care_myops_srr_cascade_submission_rescue
+status: READY_FOR_CONTROLLER_RUNTIME_CLOSURE_REPAIR
+authority_name: care_myops_srr_cascade_runtime_closure_repair
+source_main_commit_audited: a1b55ba3525cdca0578ec6fbee59f392e27fdde0
+result_root: results/20260724_care_myops_srr_cascade_submission_rescue
+repair_result_root: results/20260724_care_myops_srr_cascade_submission_rescue/runtime_closure_repair_rc1
+critic_report: results/srr_production/code_maturity/scr_r1_runtime_block_critic_and_repair_20260725.md
+controller_task: prompts/tasks/20260725_care_myops_srr_cascade_runtime_closure_repair_controller.md
+executor_plan: prompts/tasks/20260725_care_myops_srr_cascade_runtime_closure_repair_executor_plan.yaml
+
+precedence:
+  resolution_rule: runtime_closure_repair_wins_on_every_conflict
+  ordered_authorities:
+    - configs/care_mm/srr_cascade_runtime_closure_repair.yaml
+    - configs/care_mm/srr_cascade_submission_rescue_preexecution_amendment.yaml
+    - prompts/tasks/20260724_care_myops_srr_cascade_submission_rescue_executor_plan.yaml
+    - configs/care_mm/srr_cascade_submission_rescue.yaml
+    - results/srr_production/code_maturity/srr_cascade_submission_rescue_planner_decision_20260724.md
+  old_resolved_execution_contract_authority: historical_controller_receipt_only
+  no_executor_design_discretion: true
+
+scope:
+  method_name: CARE-SRR-Cascade
+  execution_label: SRR-Cascade Rescue Round 1
+  execution_code: SCR-R1
+  repair_label: SCR-R1 Runtime Closure Repair 1
+  is_new_scientific_round: false
+  is_batch11: false
+  scientific_hypothesis_change: false
+  seeds_change: false
+  budget_change: false
+  split_change: false
+  retention_gate_change: false
+  upload_authority_change: false
+  branch: main
+  worktree: /users/a/e/aereinh/CARE
+  executor_count: 1
+  mapper_required: true
+  runtime_push: false
+
+prior_wave_status:
+  wave_minus1:
+    decision: RETAIN_PASS
+    required_action: append_repair_authority_hashes
+  wave0:
+    decision: CONDITIONAL_PASS_REVALIDATE_RUNTIME_FIELDS
+    retained: [OOF_manifest_220, checkpoint_paths_and_sha256, calibration_audit_split_22_22, plans_fingerprint]
+    repair_required: [clean_worktree_classification, real_anchor_tensor_roundtrip, dynamic_job_state]
+  wave1:
+    decision: IN_PLACE_REPAIR_REQUIRED
+    retained: [bounded_composition, anatomy_identity, no_t2_identity, base_loss_formulas]
+    repair_required: [independent_pathology_trunks, active_pathology_forward, category_aware_prototypes, production_data_runtime]
+  wave2:
+    decision: REVALIDATE_BEFORE_FORMAL
+    retained_as_diagnostic_only: [synthetic_unit_tests, bounded_one_case_cache_parity]
+    formal_authorization_revoked_until_repair_pass: true
+  wave3:
+    decision: EXPECTED_BLOCK_NO_FORMAL_CREDIT
+    reason: real_formal_runtime_missing
+
+worktree_policy:
+  allowed_preexisting_untracked:
+    - .codex_runtime/
+    - scripts/evaluation/batch10_baseline_reference_consistency.py
+    - scripts/evaluation/batch10_strict_entrypoint_audit.py
+    - tests/care_mm/test_batch10_fair_inference.py
+  action_for_allowed_preexisting_untracked: record_sha256_and_exclude_from_repair_commit_unless_explicitly_imported
+  any_other_untracked_source_or_test: NEEDS_REPAIR_BEFORE_IMPLEMENTATION
+  required_receipt: results/20260724_care_myops_srr_cascade_submission_rescue/runtime_closure_repair_rc1/preexisting_worktree_manifest.json
+
+paths:
+  dataset_root: data/nnUNet/nnUNet_preprocessed/Dataset501_CAREMyoPS
+  resenc_plans: data/nnUNet/nnUNet_preprocessed/Dataset501_CAREMyoPS/nnUNetResEncUNetMPlans.json
+  standard_plans: data/nnUNet/nnUNet_results/Dataset501_CAREMyoPS/nnUNetTrainer_500epochs__nnUNetPlans__3d_fullres/plans.json
+  dataset_json: data/nnUNet/nnUNet_preprocessed/Dataset501_CAREMyoPS/dataset.json
+  preprocessed_data_identifier: nnUNetPlans_3d_fullres
+  preprocessed_dir: data/nnUNet/nnUNet_preprocessed/Dataset501_CAREMyoPS/nnUNetPlans_3d_fullres
+  splits_final: data/nnUNet/nnUNet_preprocessed/Dataset501_CAREMyoPS/splits_final.json
+  oof_manifest: results/srr_production/code_maturity/batch2a_raw_oof_anchor_manifest.json
+  rescue_split: results/20260724_care_myops_batch10_deadline_rescue/rescue_split_manifest.csv
+  source_cache_dir: results/20260724_care_myops_srr_cascade_submission_rescue/runtime/source_cache_v2
+  anchor_cache_dir: results/20260724_care_myops_srr_cascade_submission_rescue/runtime/anchor_cache_v2
+  prototype_cache_dir: results/20260724_care_myops_srr_cascade_submission_rescue/runtime/prototype_cache_v2
+  schedule_dir: results/20260724_care_myops_srr_cascade_submission_rescue/runtime/matched_schedules_v2
+  formal_runtime_dir: results/20260724_care_myops_srr_cascade_submission_rescue/runtime/formal_v2
+  formal_log_dir: logs/care_myops_srr_cascade_submission_rescue/formal_v2
+
+required_implementation:
+  anchor_runtime: src/care_myocardium/srr_production/anchor_runtime.py
+  runtime_data: src/care_myocardium/data/care_srr_cascade_runtime.py
+  trainer: src/care_myocardium/training/care_srr_cascade_trainer.py
+  formal_cli: scripts/training/run_care_srr_cascade_formal.py
+  inference_cli: scripts/inference/run_care_srr_cascade_inference.py
+  evaluator: scripts/evaluation/evaluate_care_srr_cascade.py
+  selector: scripts/evaluation/select_care_srr_cascade.py
+  strict_validator: scripts/evaluation/validate_care_srr_cascade_packet.py
+  model_to_repair: src/care_myocardium/models/care_srr_cascade_rescue.py
+  prototype_to_repair: src/care_myocardium/srr_production/case_prototypes.py
+  source_cache_job_to_repair: jobs/care_mm/precompute_care_srr_cascade_source_cache.sh
+  formal_job_to_repair: jobs/care_mm/run_care_srr_cascade_formal_training.sh
+  orchestrator_to_repair: scripts/evaluation/orchestrate_care_srr_cascade_w3.py
+
+asset_preflight:
+  minimum_free_space_gib: 45
+  free_space_path: results/20260724_care_myops_srr_cascade_submission_rescue/runtime
+  insufficient_space_action: OPERATIONALLY_BLOCKED_STORAGE_WITH_MEASURED_BYTES
+  checkpoint_sha256_required: true
+  plans_configuration_manager_required: true
+  hardcoded_patch_or_data_identifier_forbidden: true
+
+anchor_runtime:
+  cases: all_220_internal_cases
+  source_semantics: five_fold_OOF_only
+  output_dtype: float32
+  epsilon: 1.0e-6
+  canonical_formula: p=clip(p,epsilon,1);p=p/sum_channels(p);z=log(p)
+  output_grid: resolved_ResEncM_3d_fullres_preprocessed_grid
+  primary_builder:
+    mode: reverse_existing_oof_probabilities
+    steps:
+      - verify_probability_sha256_from_manifest
+      - verify_finite_nonnegative_six_channels
+      - normalize_original_space_probabilities
+      - apply_plans_transpose_forward
+      - crop_with_bbox_used_for_cropping
+      - resample_probabilities_to_preprocessed_shape_with_configuration_manager
+      - renormalize_and_log
+      - official_inverse_export_roundtrip
+  fallback_builder:
+    trigger: primary_roundtrip_changed_voxels_nonzero
+    mode: direct_oof_checkpoint_inference_on_preprocessed_grid
+    fixed_inference_candidates: [trainer_allowed_mirroring_axes, no_mirroring]
+    selection_rule: unique_mode_whose_official_export_argmax_sha256_equals_frozen_oof_prediction_sha256
+    metric_or_GT_selection_forbidden: true
+    no_unique_match_action: fail_closed
+  roundtrip:
+    cases_required: 220
+    stored_oof_prediction_changed_voxels_max_per_case: 0
+    geometry_exact: true
+    probability_sum_max_abs_error: 1.0e-5
+  cache_fields: [canonical_anchor_logits, canonical_anchor_probabilities, anchor_uncertainty, soft_union_probability, distance_to_union_mm]
+  cache_manifest: results/20260724_care_myops_srr_cascade_submission_rescue/anchor_cache_manifest_v2.csv
+  cache_checks: results/20260724_care_myops_srr_cascade_submission_rescue/anchor_cache_roundtrip_v2.csv
+
+source_runtime:
+  checkpoints:
+    teacher:
+      path: results/20260723_care_myops_batch9_exposed_issues_repair/runtime/seed20260723/teacher_full_view/checkpoint_epoch50.pt
+      sha256: e92521fccec92d0066f3fa5c076fce16aea3bb02330b940c85321ab4726d1474
+      fields: [full_resolution_feature, anatomy_logits, edema_logit]
+    scar_source:
+      path: results/20260723_care_myops_batch9_exposed_issues_repair/runtime/seed20260723/student_reliable_distill/checkpoint_epoch25.pt
+      sha256: 366722497a47f292e07a0d1c1a3da57c2502b61042bc89b5cfc56b5a89e6a3a0
+      fields: [scar_final_margin]
+  model_config_source: checkpoint_payload_plus_ResEncM_ConfigurationManager
+  default_constructor_without_fingerprint_match: forbidden
+  inference:
+    mode: sliding_window
+    patch_size_source: ResEncM_ConfigurationManager
+    tile_step_size: 0.5
+    gaussian: true
+    mirror_axes: []
+    whole_volume_forward: forbidden_except_explicit_small_volume_parity_case
+  feature_representation: voxelwise_l2_normalized_teacher_full_resolution_feature
+  feature_channels: 32
+  feature_dtype: float16
+  logit_dtype: float32
+  cache_fields_per_case: 4
+  expected_manifest_rows: 880
+  direct_parity:
+    minimum_cases: 8
+    include_modality_patterns: [trimodal, LGE_C0, LGE_only]
+    feature_max_abs_delta: 0.002
+    logit_max_abs_delta: 1.0e-5
+  adoption_of_existing_cache:
+    allowed: true
+    required_conditions:
+      - case_count_220
+      - manifest_rows_880
+      - all_field_hashes_exist
+      - checkpoint_sha256_exact
+      - feature_channels_32
+      - feature_representation_voxelwise_l2_normalized
+      - all_tensor_shapes_match_preprocessed_grid
+      - parity_cases_and_thresholds_pass
+    failure_action: rebuild_cache_v2
+  stale_lock_policy:
+    remove_only_when_recorded_job_terminal_and_no_PASS_cache_hashes: true
+    running_winner_may_finish_then_adoption_check: true
+    pending_legacy_jobs_may_be_cancelled: true
+
+model_runtime:
+  class_name: CARESRRCascadeRescue
+  source_feature_channels: 32
+  hidden_channels: 32
+  groupnorm_groups: 8
+  residual_blocks_each_pathology: 2
+  correction_bound_logit: 2.0
+  independent_trunks_required: true
+  shared_trainable_trunk_between_pathologies: forbidden
+  forward_argument: active_pathology
+  active_pathology_values: [scar, edema]
+  inactive_pathology_output: exact_anchor_channel
+  anatomy_channels: [0, 1, 2, 3]
+  anatomy_channel_change: forbidden
+  scar_channel: 5
+  edema_channel: 4
+  no_t2_edema_change: forbidden
+  scar_inputs:
+    - source_feature_32
+    - normalized_LGE_1
+    - anchor_probabilities_6
+    - teacher_anatomy_probabilities_4
+    - scar_source_margin_1
+    - anchor_uncertainty_1
+    - soft_union_probability_1
+    - normalized_distance_to_union_1
+    - scar_positive_similarity_1
+    - scar_safe_negative_similarity_1
+  edema_inputs:
+    - source_feature_32
+    - normalized_T2_1
+    - normalized_LGE_1
+    - anchor_probabilities_6
+    - teacher_edema_probability_1
+    - teacher_anatomy_probabilities_4
+    - anchor_uncertainty_1
+    - soft_union_probability_1
+    - normalized_distance_to_union_1
+    - edema_zone_positive_similarity_1
+    - edema_safe_negative_similarity_1
+  support:
+    learned_gate: forbidden
+    scar: {max_distance_mm: 10.0, sigma_mm: 5.0}
+    edema: {max_distance_mm: 15.0, sigma_mm: 7.5}
+
+prototype_runtime:
+  shards: 4
+  shard_assignment: sha256(case_id|SCR-R1-RC1)%4
+  source_feature: cached_voxelwise_l2_normalized_teacher_feature
+  case_category_vector: l2_normalized_mean
+  deterministic_sampling:
+    max_voxels_per_case_category: 4096
+    minimum_voxels_per_case_category: 32
+    method: no_replacement_torch_generator_seeded_by_sha256_case_category_global_seed
+    first_N_flat_indices: forbidden
+  records:
+    preserve_negative_categories_separately: true
+    scar_positive_categories: [GT_scar]
+    scar_negative_categories: [healthy_myo_excluding_scar_edema, LV_blood, RV_blood, outside_GT_union, OOF_anchor_remote_scar_FP]
+    edema_positive_categories: [GT_edema_union_GT_scar]
+    edema_negative_categories: [outside_GT_union, LV_blood, RV_blood, GT_myo_distance_to_edema_zone_ge_10mm]
+    no_t2_case_edema_contribution: forbidden
+  query:
+    train: exclude_entire_query_shard
+    calibration_audit_official: all_fold0_train_shards
+    similarity: cosine_max_across_all_allowed_case_category_vectors
+    minimum_positive_vectors: 4
+    minimum_negative_vectors: 8
+    insufficient_action: fail_closed
+  control_maps: exact_zero
+  srr_maps: real_similarity
+
+augmentation_runtime:
+  spatial:
+    schedule_owned: true
+    operations:
+      rotate_HW_k: [0, 1, 2, 3]
+      flip_D: [false, true]
+      flip_H: [false, true]
+      flip_W: [false, true]
+    probabilities:
+      rotate_HW_each_k: 0.25
+      flip_D: 0.5
+      flip_H: 0.5
+      flip_W: 0.5
+    applies_identically_to:
+      - raw_modalities
+      - label
+      - anchor_logits
+      - source_features
+      - teacher_anatomy_logits
+      - teacher_edema_logit
+      - scar_source_margin
+      - prototype_similarity_maps
+      - distance_maps
+    interpolation: none_exact_index_transform
+  intensity:
+    applies_to: present_raw_modalities_only
+    multiplicative_scale_uniform: [0.9, 1.1]
+    gaussian_noise_std_uniform: [0.0, 0.05]
+    missing_modalities_remain_exact_zero: true
+  actual_fiducial_test_required: true
+  clone_only_fiducial_test_forbidden: true
+
+sampling_runtime:
+  batch_size: 1
+  gradient_accumulation_microbatches: 2
+  deterministic_schedule_rows_per_variant: 12500
+  schedule_reused_by_matched_control_and_srr: true
+  order: [target, eligible_center_uniform, case_uniform, patch]
+  center_id_enters_model: false
+  retry_empty_pool_max: 8
+  scar:
+    eligible_cases: all_fold0_train_scar_reliable
+    target_probabilities:
+      scar_positive: 0.40
+      anchor_error_hard_negative: 0.30
+      anatomy_union: 0.20
+      background: 0.10
+    fallback_order:
+      scar_positive: [anatomy_union, background]
+      anchor_error_hard_negative: [scar_positive, anatomy_union, background]
+      anatomy_union: [background]
+      background: [anatomy_union]
+  edema:
+    eligible_cases: fold0_train_T2_present_edema_reliable_only
+    eligible_centers: [CenterB, CenterC]
+    target_probabilities:
+      edema_zone_positive: 0.45
+      anchor_error: 0.35
+      anatomy_union: 0.15
+      background: 0.05
+    fallback_order:
+      edema_zone_positive: [anchor_error, anatomy_union, background]
+      anchor_error: [edema_zone_positive, anatomy_union, background]
+      anatomy_union: [background]
+      background: [anatomy_union]
+  patch_size_source: ResEncM_ConfigurationManager
+  patch_pad_value_raw: 0.0
+  patch_pad_value_label: 0
+
+loss_runtime:
+  active_pathology_only: true
+  inactive_pathology_loss_terms: exact_zero_not_in_total
+  scar_weights:
+    final_margin_bce_dice: 1.0
+    anchor_error_directional: 0.5
+    confident_anchor_preserve: 0.1
+    remote_fp_suppression: 0.25
+    surface_distance_surrogate: 0.1
+  edema_weights:
+    final_margin_bce_dice: 1.0
+    edema_zone_aux_bce_dice: 0.5
+    anchor_error_directional: 0.35
+    confident_anchor_preserve: 0.1
+    surface_distance_surrogate: 0.05
+  no_t2_edema_owned_losses: exact_zero
+  raw_delta_supervision: forbidden
+  each_nonzero_term_independent_backward_required: true
+
+formal_training:
+  seeds: [20260724, 20260725]
+  pathologies: [scar, edema]
+  logical_jobs:
+    - {logical_run_id: scar_seed20260724, pathology: scar, seed: 20260724, partition: htzhulab, variants: [scar_cascade_control, scar_srr_cascade]}
+    - {logical_run_id: edema_seed20260724, pathology: edema, seed: 20260724, partition: htzhulab, variants: [edema_zone_control, edema_srr_zone_cascade]}
+    - {logical_run_id: scar_seed20260725, pathology: scar, seed: 20260725, partition: a100-gpu, variants: [scar_cascade_control, scar_srr_cascade]}
+    - {logical_run_id: edema_seed20260725, pathology: edema, seed: 20260725, partition: a100-gpu, variants: [edema_zone_control, edema_srr_zone_cascade]}
+  within_job_order: control_then_srr
+  shared_initial_state:
+    one_state_per_seed_pathology: true
+    saved_before_first_variant: true
+    reloaded_before_each_variant: true
+    exact_state_hash_match: true
+  optimizer:
+    name: AdamW
+    initial_lr: 0.0001
+    weight_decay: 0.0001
+    scheduler: cosine
+    minimum_lr: 1.0e-6
+  optimizer_steps_each_variant: 6250
+  gradient_accumulation: 2
+  validation_optimizer_steps: [1250, 2500, 3750, 5000, 6250]
+  checkpoint_optimizer_steps: [1250, 2500, 3750, 5000, 6250]
+  checkpoint_payload_required:
+    - model_state
+    - optimizer_state
+    - scheduler_state
+    - scaler_state
+    - optimizer_step
+    - microbatch_cursor
+    - schedule_sha256
+    - initial_state_sha256
+    - code_sha256
+    - config_sha256
+    - source_cache_sha256
+    - anchor_cache_sha256
+    - prototype_cache_sha256
+    - RNG_states
+  walltime: '08:00:00'
+  signal: USR1_300_seconds_before_end
+  resume:
+    allowed_operational_attempts_per_logical_run: 3
+    valid_resume_checkpoint_required: true
+    same_code_config_schedule_asset_hashes_required: true
+    logical_run_formal_credit_only_after_both_variants_exactly_6250: true
+    partial_attempt_formal_credit: 0
+  mixed_precision: true
+  grad_clip_norm: 12.0
+  nonfinite_loss_action: save_failure_receipt_and_exit_nonzero
+
+calibration_inference:
+  cases: frozen_calibration_22
+  checkpoint_count_per_variant: 5
+  mode: sliding_window_correction
+  patch_size_source: ResEncM_ConfigurationManager
+  tile_step_size: 0.5
+  gaussian: true
+  mirror_axes: []
+  accumulation: bounded_correction_field_then_add_to_anchor
+  prototype_mode: all_fold0_train_shards
+  decode: six_class_argmax_same_as_deployment
+  official_inverse_export: true
+
+metrics:
+  required: [Dice, exact_HD, HD95, precision, recall, remote_FP_mm3, component_count, volume_ratio, help_harm, empty_prediction, changed_voxels]
+  surface_connectivity: 1
+  component_connectivity: 1
+  remote_fp_distance_from_GT_union_mm: 10.0
+  empty_rules:
+    GT_positive_prediction_empty: {Dice: 0.0, exact_HD: inf, HD95: inf, candidate_eligible: false}
+    GT_empty_prediction_empty: {Dice: 1.0, exact_HD: 0.0, HD95: 0.0}
+    GT_empty_prediction_nonempty: {Dice: 0.0, exact_HD: inf, HD95: inf}
+  help_harm_epsilon: 1.0e-6
+  positive_GT_population_primary: true
+  all_case_empty_safe_cannot_replace_primary: true
+
+selection:
+  calibration_only: true
+  audit_used_for_selection: false
+  per_seed_checkpoint_eligibility:
+    positive_gt_empty_count_max: 0
+    no_t2_edema_voxels_max: 0
+    source_and_asset_hashes_exact: true
+    exact_HD_relative_worsening_max: 0.10
+    HD95_relative_worsening_max: 0.10
+    remote_FP_ratio_max: 1.10
+    help_minus_harm_min: -2
+  lexicographic_order:
+    - maximize_positive_GT_Dice_delta
+    - minimize_exact_HD_delta
+    - minimize_HD95_relative_worsening
+    - minimize_remote_FP_ratio
+    - maximize_help_minus_harm
+    - prefer_earlier_optimizer_step
+  six_candidates_per_pathology:
+    - control_seed20260724
+    - control_seed20260725
+    - srr_seed20260724
+    - srr_seed20260725
+    - control_two_seed_probability_mean_derived_bounded_channel_correction
+    - srr_two_seed_probability_mean_derived_bounded_channel_correction
+  two_seed_candidate:
+    both_constituents_eligible_required: true
+    probability_mean: true
+    canonicalize_mean_probability_to_log: true
+    pathology_channel_delta_vs_anchor_clipped: [-2.0, 2.0]
+    apply_only_selected_pathology_channel: true
+  control_srr_cross_blend: forbidden
+  no_eligible_custom_candidate: FALLBACK_TO_NNUNET_without_audit_selection
+  selected_checkpoint_reload_required: true
+
+frozen_audit:
+  cases: frozen_audit_22
+  run_once_after_calibration_freeze: true
+  no_parameter_or_candidate_change_after_read: true
+  scar_gate:
+    positive_GT_Dice_delta_min: 0.0
+    exact_HD_delta_max: 0.0
+    HD95_relative_worsening_max: 0.05
+    remote_FP_ratio_max: 1.0
+    help_minus_harm_min: 0
+    positive_GT_empty_max: 0
+  edema_gate:
+    positive_GT_Dice_delta_min: 0.0
+    exact_HD_delta_max: 0.0
+    HD95_relative_worsening_max: 0.05
+    remote_FP_ratio_max: 1.05
+    help_minus_harm_min: 0
+    positive_GT_empty_max: 0
+    no_t2_edema_voxels_max: 0
+    CenterB_Dice_delta_min: -0.005
+    CenterC_Dice_delta_min: -0.005
+  outcomes: [USE_SRR_CASCADE, USE_CASCADE_CONTROL, FALLBACK_TO_NNUNET]
+
+orchestration:
+  state_file: results/20260724_care_myops_srr_cascade_submission_rescue/w3_orchestrator_state_v2.json
+  hardcoded_job_ids: forbidden
+  discover_jobs_from_state_file_only: true
+  source_cache_dependency: afterok
+  formal_finalizer_dependency: afterany_all_logical_runs
+  submitted_pending_running_is_complete: false
+  idempotent_submission_required: true
+  duplicate_live_logical_run_forbidden: true
+  retry_classes:
+    startup_or_preemption_with_valid_resume: retry_same_logical_run
+    deterministic_code_data_validator_failure: NEEDS_REPAIR_same_executor
+    resource_unavailable_after_all_authorized_attempts: OPERATIONALLY_BLOCKED
+
+future_wave_entrypoints:
+  evaluation: scripts/evaluation/evaluate_care_srr_cascade.py
+  selection_and_audit: scripts/evaluation/select_care_srr_cascade.py
+  official_inference: scripts/inference/run_care_srr_cascade_inference.py
+  strict_validator: scripts/evaluation/validate_care_srr_cascade_packet.py
+
+packaging:
+  condition: at_least_one_custom_pathology_passes_frozen_audit
+  myops_cases: 15
+  cine_cases: 15
+  myops_anchor: existing_Dataset501_five_fold_probability_ensemble
+  cine_anchor: existing_Dataset502_five_fold_probability_ensemble
+  custom_head_assets: frozen_selected_fold0_assets
+  official_case_source_cache: generate_on_demand_with_same_frozen_checkpoints_and_tiled_runtime
+  official_case_prototypes: all_fold0_training_shards
+  no_GT_access: true
+  official_raw_labels: [0, 200, 500, 600, 1220, 2221]
+  deterministic_runs: 2
+  prediction_and_package_hash_match_required: true
+  local_docker_build: true
+  validation_upload: false
+  docker_upload: false
+
+strict_validator:
+  required_real_known_bad:
+    - OOF_case_uses_wrong_fold
+    - anchor_roundtrip_changed_voxel
+    - source_cache_hash_or_shape_mismatch
+    - stale_source_cache_lock_adopted
+    - shared_trainable_pathology_trunk
+    - inactive_pathology_channel_modified
+    - no_t2_edema_modified
+    - prototype_query_uses_same_shard
+    - prototype_negative_categories_collapsed
+    - first_N_voxel_sampling
+    - spatial_tensor_augmentation_mismatch
+    - control_and_srr_schedule_or_initial_state_mismatch
+    - inactive_pathology_loss_nonzero
+    - partial_or_resumed_run_counted_complete
+    - missing_validation_checkpoint
+    - audit_used_for_selection
+    - selected_checkpoint_not_reloaded
+    - selection_deployment_decode_mismatch
+    - exact_HD_missing_or_replaced_by_HD95
+    - single_fold_anchor_used_for_official_package
+    - package_accesses_GT
+    - monitor_packet_marked_complete
+  fixture_acceptance: validator_nonzero_and_expected_error_substring_match
+
+completion:
+  repair_completion_receipt: results/20260724_care_myops_srr_cascade_submission_rescue/runtime_closure_repair_rc1/repair_completion.json
+  final_controller_report: results/20260724_care_myops_srr_cascade_submission_rescue/controller_report.md
+  local_lightweight_commit_required: true
+  git_push: false
+  final_tokens:
+    - CUSTOM_SUBMISSION_CANDIDATE_READY_PENDING_USER_UPLOAD
+    - PARTIAL_CUSTOM_SUBMISSION_CANDIDATE_READY_PENDING_USER_UPLOAD
+    - NO_CUSTOM_RESCUE_USE_BASELINE_ONLY
+    - OPERATIONALLY_BLOCKED
+
+forbidden_actions:
+  - change_scientific_hypothesis
+  - add_variants_or_seeds
+  - change_6250_step_budget
+  - change_calibration_audit_split
+  - use_audit_for_any_selection
+  - resume_batch9_wave6
+  - start_batch11_or_SCR_R2
+  - old_full_SRR_or_BR2_or_SIP_or_arbiter_forward
+  - MoSAIC_code_or_weights
+  - external_data_or_pretrained_weights
+  - new_Cine_training
+  - fold_expansion
+  - validation_upload
+  - docker_upload
+  - hosted_metric_claim
+  - runtime_git_push

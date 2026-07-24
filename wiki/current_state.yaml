@@ -1,31 +1,36 @@
-current_milestone_id: SRR_cascade_rescue_round1_amended_ready
-current_task_key: 20260724_care_myops_srr_cascade_submission_rescue
+current_milestone_id: SRR_cascade_rescue_round1_runtime_closure_repair_ready
+current_task_key: 20260725_care_myops_srr_cascade_runtime_closure_repair
+parent_task_key: 20260724_care_myops_srr_cascade_submission_rescue
 method_name: CARE-SRR-Cascade
 short_method_name: SRR-Cascade
 execution_label: SRR-Cascade Rescue Round 1
 execution_code: SCR-R1
-numbering_policy: not_Batch11_not_legacy_milestone
-current_plan_path: results/srr_production/code_maturity/srr_cascade_submission_rescue_planner_decision_20260724.md
-current_controller_path: prompts/tasks/20260724_care_myops_srr_cascade_submission_rescue_controller.md
-current_config_path: configs/care_mm/srr_cascade_submission_rescue.yaml
+runtime_repair_code: SCR-R1-RC1
+numbering_policy: same_scientific_round_runtime_closure_not_Batch11_not_SCR_R2
+current_plan_path: results/srr_production/code_maturity/scr_r1_runtime_block_critic_and_repair_20260725.md
+current_controller_path: prompts/tasks/20260725_care_myops_srr_cascade_runtime_closure_repair_controller.md
+current_config_path: configs/care_mm/srr_cascade_runtime_closure_repair.yaml
+current_executor_plan_path: prompts/tasks/20260725_care_myops_srr_cascade_runtime_closure_repair_executor_plan.yaml
+parent_controller_path: prompts/tasks/20260724_care_myops_srr_cascade_submission_rescue_controller.md
+parent_config_path: configs/care_mm/srr_cascade_submission_rescue.yaml
 binding_amendment_path: configs/care_mm/srr_cascade_submission_rescue_preexecution_amendment.yaml
-current_executor_plan_path: prompts/tasks/20260724_care_myops_srr_cascade_submission_rescue_executor_plan.yaml
-current_planner_audit_path: results/srr_production/code_maturity/srr_cascade_submission_rescue_planner_decision_20260724.md
 current_result_root: results/20260724_care_myops_srr_cascade_submission_rescue
+repair_result_root: results/20260724_care_myops_srr_cascade_submission_rescue/runtime_closure_repair_rc1
 current_review_path: null
 current_review_token: NOT_REVIEWED_NOT_REQUIRED
 controller_bind_latest_main: true
-amendment_wins_on_conflict: true
-resolved_contract_required_before_executor: true
+runtime_repair_wins_on_conflict: true
 architecture_path: wiki/architecture.yaml
 component_table_path: wiki/COMPONENTS.csv
-wiki_fingerprint_status: PLANNED_SYSTEM_CHANGE_AMENDED_PENDING_CONTROLLER_IMPLEMENTATION
-entrypoints_authority_status: SRR_CASCADE_RESCUE_ROUND1_AMENDED_READY
-updated_at: '2026-07-24'
+wiki_fingerprint_status: RUNTIME_CLOSURE_REPAIR_PENDING_IMPLEMENTATION
+entrypoints_authority_status: SCR_R1_RC1_READY_FOR_CONTROLLER
+updated_at: '2026-07-25'
+
 main_only:
   branch: main
   worktree: /users/a/e/aereinh/CARE
   route_worktree_development_authorized: false
+
 batch10:
   status: TERMINAL_STOP_RETAINED_AS_HISTORY
   result_root: results/20260724_care_myops_batch10_deadline_rescue
@@ -36,15 +41,38 @@ batch10:
   audit_edema_delta_vs_nnunet_approx: -0.0290
   no_t2_edema_predicted_voxels: 0
   scientific_meaning: CARE_MMRD_direct_six_class_route_stopped_not_reopened
+
+scr_r1:
+  scientific_status: ACTIVE_SCIENTIFIC_CONTRACT
+  runtime_status: READY_FOR_RUNTIME_CLOSURE_REPAIR
+  prior_controller_block:
+    decision: VALID_NEEDS_REPAIR
+    reason: real_W3_formal_runtime_missing
+    formal_training_credit: 0
+  repair:
+    repair_id: SCR-R1-RC1
+    status: READY_FOR_CONTROLLER
+    is_new_scientific_round: false
+    changes_scientific_hypothesis: false
+    changes_seed_budget_split_gates: false
+    precedence: repair_config_over_preexecution_amendment_over_base_contract
+  prior_waves:
+    wave_minus1: RETAIN_PASS
+    wave0: CONDITIONAL_PASS_REVALIDATE_RUNTIME_FIELDS
+    wave1: IN_PLACE_REPAIR_REQUIRED
+    wave2: REVALIDATE_BEFORE_FORMAL
+    wave3: BLOCKED_ZERO_FORMAL_CREDIT
+  last_recorded_cache_attempts:
+    superseded_no_lock: '60450660'
+    locked_attempts: ['60451021', '60451022']
+    authority: historical_receipt_only_refresh_live_state_required
+
 submission_rescue:
-  status: READY_FOR_CONTROLLER_WITH_BINDING_AMENDMENT
   user_authorized_new_line: true
   is_batch11: false
   resumes_batch9_wave6: false
   architecture_change: system
   diagram_update_required: false
-  model_file: src/care_myocardium/models/care_srr_cascade_rescue.py
-  model_class: CARESRRCascadeRescue
   dataset: Dataset501_CAREMyoPS
   fold: 0
   calibration_audit_manifest: results/20260724_care_myops_batch10_deadline_rescue/rescue_split_manifest.csv
@@ -52,11 +80,12 @@ submission_rescue:
   audit_cases: 22
   audit_used_for_selection: false
   anchor:
-    train: five_fold_OOF_probabilities
-    local_eval: fold0_validation_probabilities
+    train: five_fold_OOF_only
+    primary_builder: reverse_existing_OOF_probabilities_with_official_roundtrip
+    fallback_builder: direct_OOF_checkpoint_preprocessed_inference_unique_hash_match
     canonical_logit_formula: log(normalize(clip(probability,1e-6,1)))
-    canonical_grid: nnUNetResEncUNetMPlans_3d_fullres
-    physical_grid_roundtrip_required: true
+    output_grid: ResEncM_3d_fullres_preprocessed
+    all_220_roundtrip_required: true
     official_package: Dataset501_existing_nnunet_five_fold_probability_ensemble
     fold0_single_package_anchor: false
   frozen_sources:
@@ -66,33 +95,53 @@ submission_rescue:
     scar_evidence:
       checkpoint: results/20260723_care_myops_batch9_exposed_issues_repair/runtime/seed20260723/student_reliable_distill/checkpoint_epoch25.pt
       sha256: 366722497a47f292e07a0d1c1a3da57c2502b61042bc89b5cfc56b5a89e6a3a0
-    deterministic_source_cache_required: true
-    source_cache_runtime_only: true
+    inference: tiled_ConfigurationManager_resolved_no_mirror_gaussian_step_0_5
+    source_feature: voxelwise_l2_normalized_32_channels
+    all_220_cache_fields_required: 880
   target_forward:
+    model_class: CARESRRCascadeRescue
+    independent_scar_and_edema_trunks: true
+    active_pathology_forward: true
+    inactive_pathology_exact_anchor: true
     anatomy_channels_exact_anchor: [0, 1, 2, 3]
     edema_channel: 4
     scar_channel: 5
     correction_bound_logit: 2.0
     no_t2_edema_exact_anchor_identity: true
-    per_pathology_fallback: true
-    support_formula_source: binding_amendment
+    support_learned_gate: false
     head_hidden_channels: 32
     groupnorm_groups: 8
   prototype_evidence:
     shards: 4
-    representation: deterministic_case_level_mean_prototypes
+    representation: deterministic_case_category_mean_prototypes
+    hash_seeded_no_replacement_voxel_sampling: true
+    preserve_negative_categories: true
     training_query_excludes_own_shard: true
     validation_uses_all_train_shards: true
     no_t2_myocardium_as_edema_negative: false
+  formal_preflight:
+    old_preflight_authorizes_W3: false
+    required_gate: results/20260724_care_myops_srr_cascade_submission_rescue/runtime_closure_repair_rc1/formal_authorization_gate.json
+    real_32_channel_overfit: true
+    actual_augmentation_fiducial: true
+    both_partition_GPU_preflight: true
+    formal_dry_run_all_four_jobs: true
+    real_known_bad: true
   formal_training:
     seeds: [20260724, 20260725]
     job_topology: one_job_per_seed_pathology
     job_count: 4
     variants: [scar_cascade_control, scar_srr_cascade, edema_zone_control, edema_srr_zone_cascade]
     optimizer_steps_each: 6250
+    gradient_accumulation: 2
     job_walltime: '08:00:00'
     validation_steps: [1250, 2500, 3750, 5000, 6250]
+    exact_resume_authorized: true
+    partial_attempt_formal_credit: 0
+  selection:
     calibration_candidate_count_per_pathology: 6
+    two_seed_mean: same_variant_probability_mean_derived_bounded_channel_correction
+    control_srr_cross_blend: false
     selected_checkpoint_reload: true
     audit_after_freeze_only: true
   metrics:
@@ -121,18 +170,22 @@ submission_rescue:
     docker_local_build: true
     validation_upload: false
     docker_upload: false
+
 unauthorized:
+  run_old_formal_entrypoint_before_RC1_gate: false
   resume_old_wave6: false
-  batch11: false
+  batch11_or_SCR_R2: false
   old_batch7_batch8_runtime: false
   old_srr_propref_dictionary_br2_sip_arbiter_production_path: false
   mosaic_code_or_weights: false
   external_data_or_pretrained_weights: false
   change_calibration_audit_split: false
   use_audit_for_selection: false
+  add_seed_variant_or_change_budget: false
   fold_expansion: false
   new_cine_training: false
   validation_upload: false
   docker_upload: false
   hosted_metric_claim: false
   route_promotion: false
+  runtime_git_push: false
