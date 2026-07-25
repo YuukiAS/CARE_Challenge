@@ -1,7 +1,7 @@
 {
   "task_name": "CARE-SRR-Cascade SCR-R1 runtime closure",
   "final_status": "VERIFIED_COMPLETE_LOCAL_BASELINE_FALLBACK",
-  "commit_status": "runtime_closure_commit_31d4ffed30d0a0caa775cb064d5c5945847c5c51",
+  "commit_status": "local_commits_31d4ffed30d0a0caa775cb064d5c5945847c5c51_and_cdea98f_terminal_report",
   "push_status": "not_pushed_user_forbidden",
   "key_conclusion": "SCR-R1 completed local training, aggregation, audit, strict validation, and Mapper checks; scar and edema both fall back to nnU-Net because custom candidates failed the exact-HD audit gate.",
   "blocked_or_failure_reason": "none_for_operations; scientific outcome is baseline fallback after audit gate failure",
