@@ -1,0 +1,18 @@
+{
+  "task_name": "CARE-SRR-Cascade SCR-R1 runtime closure",
+  "final_status": "VERIFIED_COMPLETE_LOCAL_BASELINE_FALLBACK",
+  "commit_status": "runtime_closure_commit_31d4ffed30d0a0caa775cb064d5c5945847c5c51",
+  "push_status": "not_pushed_user_forbidden",
+  "key_conclusion": "SCR-R1 completed local training, aggregation, audit, strict validation, and Mapper checks; scar and edema both fall back to nnU-Net because custom candidates failed the exact-HD audit gate.",
+  "blocked_or_failure_reason": "none_for_operations; scientific outcome is baseline fallback after audit gate failure",
+  "slurm_terminal_status": "all_accounted_terminal_completed_or_controller_cancelled",
+  "evidence_paths": [
+    "results/20260724_care_myops_srr_cascade_submission_rescue/controller_report.md",
+    "results/20260724_care_myops_srr_cascade_submission_rescue/finalizer_state.json",
+    "results/20260724_care_myops_srr_cascade_submission_rescue/runtime_closure_repair_rc1/formal_terminal_accounting_v2.json",
+    "results/20260724_care_myops_srr_cascade_submission_rescue/runtime_closure_repair_rc1/w4_aggregation_status_v2.json",
+    "results/20260724_care_myops_srr_cascade_submission_rescue/strict_validator_report_v2.json",
+    "results/20260724_care_myops_srr_cascade_submission_rescue/mapper_report_final.md"
+  ],
+  "next_step": "Planner reviews baseline fallback evidence and decides any future scientific strategy."
+}
