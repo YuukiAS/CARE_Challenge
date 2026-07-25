@@ -1,0 +1,10 @@
+tensor,case_id,asset_backed,fiducial_index_before_zyx,fiducial_index_after_zyx,max_abs_fiducial_mismatch,error,decision
+raw_modalities,Case1001,True,1x5x7,1x7x5,0.0,,PASS
+label,Case1001,True,1x5x7,1x7x5,0.0,,PASS
+anchor_logits,Case1001,True,1x5x7,1x7x5,0.0,,PASS
+source_features,Case1001,True,1x5x7,1x7x5,0.0,,PASS
+teacher_anatomy_logits,Case1001,True,1x5x7,1x7x5,0.0,,PASS
+teacher_edema_logit,Case1001,True,1x5x7,1x7x5,0.0,,PASS
+scar_source_margin,Case1001,True,1x5x7,1x7x5,0.0,,PASS
+prototype_similarity_maps,Case1001,True,1x5x7,1x7x5,0.0,,PASS
+distance_maps,Case1001,True,1x5x7,1x7x5,0.0,,PASS

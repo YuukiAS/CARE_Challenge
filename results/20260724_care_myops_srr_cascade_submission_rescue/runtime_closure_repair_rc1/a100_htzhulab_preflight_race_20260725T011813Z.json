@@ -1,0 +1,20 @@
+{
+  "a100_job_id": "60539496",
+  "a100_partition": "a100-gpu",
+  "a100_pending_reason": "Priority",
+  "a100_observed_start_time": "2026-07-26T05:30:00",
+  "decision": "NEEDS_MONITOR",
+  "formal_jobs_authorized": false,
+  "formal_gate_after_htzhulab_completion": "NEEDS_REPAIR",
+  "formal_gate_blockers_after_htzhulab_completion": [
+    "gpu_preflight"
+  ],
+  "htzhulab_job_id": "60570357",
+  "htzhulab_partition": "htzhulab",
+  "htzhulab_state_after_completion_check": "COMPLETED",
+  "htzhulab_state_at_submission_check": "PENDING",
+  "htzhulab_submission_exit_code": "0:0",
+  "notes": "htzhulab mirror submitted and completed for the long-pending A100 GPU preflight. This is monitor evidence only and does not authorize formal W3 submission because the gate still requires an a100-gpu preflight PASS row.",
+  "regenerated_gate_utc": "2026-07-25T01:19:47+00:00",
+  "submitted_utc": "2026-07-25T01:18:13+00:00"
+}

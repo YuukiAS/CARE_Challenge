@@ -1,0 +1,11 @@
+{
+  "task": "SCR-R1-RC1",
+  "checked_path": "results/20260724_care_myops_srr_cascade_submission_rescue/runtime",
+  "filesystem": "rc-isilon2-ll.its.unc.edu:/ifs/rcisilon/users",
+  "total_gb": 10240,
+  "used_gb": 927,
+  "available_gb": 9314,
+  "use_percent": 10,
+  "required_available_gib": 45,
+  "decision": "PASS"
+}

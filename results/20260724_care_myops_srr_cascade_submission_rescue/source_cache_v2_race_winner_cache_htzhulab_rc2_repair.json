@@ -1,0 +1,12 @@
+{
+  "attempt_cache_dir": "results/20260724_care_myops_srr_cascade_submission_rescue/runtime/source_cache_v2_attempt_cache_htzhulab_rc2_repair",
+  "attempt_id": "cache_htzhulab_rc2_repair",
+  "decision": "NEEDS_MONITOR",
+  "final_cache_dir": "results/20260724_care_myops_srr_cascade_submission_rescue/runtime/source_cache_v2",
+  "log_file": "/users/a/e/aereinh/CARE/logs/care_myops_srr_cascade_submission_rescue/CareSRRCache_cache_htzhulab_rc2_repair_60539519_20260724_151228.log",
+  "partition": "htzhulab",
+  "race_group": "care_srr_cache_full_all220_20260725_rc2_v3",
+  "slurm_job_id": "60539519",
+  "status": "WINNER_RUNNING",
+  "winner_lock_dir": "results/20260724_care_myops_srr_cascade_submission_rescue/runtime/source_cache_v2.care_srr_cache_full_all220_20260725_rc2_v3.winner.lock"
+}

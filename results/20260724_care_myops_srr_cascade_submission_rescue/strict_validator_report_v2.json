@@ -1,0 +1,31 @@
+{
+  "decision": "PASS",
+  "failures": [],
+  "packet_root": "results/20260724_care_myops_srr_cascade_submission_rescue/runtime_closure_repair_rc1",
+  "required_known_bad": [
+    "OOF_case_uses_wrong_fold",
+    "anchor_roundtrip_changed_voxel",
+    "source_cache_hash_or_shape_mismatch",
+    "stale_source_cache_lock_adopted",
+    "shared_trainable_pathology_trunk",
+    "inactive_pathology_channel_modified",
+    "no_t2_edema_modified",
+    "prototype_query_uses_same_shard",
+    "prototype_negative_categories_collapsed",
+    "first_N_voxel_sampling",
+    "spatial_tensor_augmentation_mismatch",
+    "control_and_srr_schedule_or_initial_state_mismatch",
+    "inactive_pathology_loss_nonzero",
+    "partial_or_resumed_run_counted_complete",
+    "missing_validation_checkpoint",
+    "audit_used_for_selection",
+    "selected_checkpoint_not_reloaded",
+    "selection_deployment_decode_mismatch",
+    "exact_HD_missing_or_replaced_by_HD95",
+    "single_fold_anchor_used_for_official_package",
+    "package_accesses_GT",
+    "monitor_packet_marked_complete"
+  ],
+  "timestamp_utc": "2026-07-25T07:26:59.255351+00:00",
+  "validator_command": "scripts/evaluation/validate_care_srr_cascade_packet.py --packet-root results/20260724_care_myops_srr_cascade_submission_rescue/runtime_closure_repair_rc1"
+}

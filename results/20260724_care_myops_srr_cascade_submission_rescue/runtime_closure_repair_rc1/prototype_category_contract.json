@@ -1,0 +1,42 @@
+{
+  "case_level_cap": "deterministic_case_category_mean uses per_case_cap_voxels before category mean",
+  "categories": {
+    "all_categories": [
+      "GT_scar",
+      "healthy_myo_excluding_scar_edema",
+      "LV_blood",
+      "RV_blood",
+      "outside_GT_union",
+      "OOF_anchor_remote_scar_FP",
+      "GT_edema_union_GT_scar",
+      "outside_GT_union",
+      "LV_blood",
+      "RV_blood",
+      "GT_myo_distance_to_edema_zone_ge_10mm"
+    ],
+    "edema_negative": [
+      "outside_GT_union",
+      "LV_blood",
+      "RV_blood",
+      "GT_myo_distance_to_edema_zone_ge_10mm"
+    ],
+    "edema_positive": [
+      "GT_edema_union_GT_scar"
+    ],
+    "scar_negative": [
+      "healthy_myo_excluding_scar_edema",
+      "LV_blood",
+      "RV_blood",
+      "outside_GT_union",
+      "OOF_anchor_remote_scar_FP"
+    ],
+    "scar_positive": [
+      "GT_scar"
+    ]
+  },
+  "decision": "PASS",
+  "fail_closed": "missing crossfit positive bank raises PrototypeBankError/ValueError",
+  "no_t2_edema_negative": "t2_present=false records expose empty edema positive/negative compatibility tensors and no edema-negative category contribution",
+  "own_shard_exclusion": "select_crossfit_prototype_bank rejects records whose shard_id equals query_shard_id",
+  "sampling": "sha256 deterministic no-replacement order over voxel indices; first-N sampling forbidden"
+}

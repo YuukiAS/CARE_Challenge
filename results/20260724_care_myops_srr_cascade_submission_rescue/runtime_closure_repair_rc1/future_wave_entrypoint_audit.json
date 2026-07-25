@@ -1,0 +1,59 @@
+{
+  "decision": "PASS",
+  "entrypoint_results": [
+    {
+      "command": "./envs/env_CARE/bin/python scripts/training/run_care_srr_cascade_formal.py --print-contract",
+      "exit_code": 0,
+      "stderr_head": "",
+      "stdout_head": "{\n  \"checkpoint_schema\": {\n    \"partial_attempt_formal_credit\": 0,\n    \"required_fields\": [\n      \"model_state\",\n      \"optimizer_state\",\n      \"scheduler_state\",\n      \"scaler_state\",\n      \"optimizer_step\",\n      \"microbatch_cursor\",\n      \"schedule_sha256\",\n      \"initial_state_sha256\",\n      \"code_sha256\",\n      \"config_sha256\",\n      \"source_cache_sha256\",\n      \"anchor_cache_sha256\",\n      \"prototype_cache_sha256\",\n      \"RNG_states\"\n    ],\n    \"resume_requires_same_hashes\": true,\n    \"schema_version\": 1\n  },\n  \"control_then_srr\": true,\n  \"dry_run_has_formal_training_credit\": 0,\n  \"entrypoint\": \"scripts/training/run_care_srr_cascade_formal.py\",\n  \"formal_authorization_gate_required\": true,\n  \"logical_jobs\": {\n    \"edema_seed20260724\": {\n      \"pathology\": \"edema\",\n      \"seed\": 20260724,\n      \"variants\": [\n        \"edema_zone_control\",\n        \"edema_srr_zone_cascade\"\n      ]\n    },\n    \"edema_seed20260725\": {\n      \"pathology\": \"edema\",\n      \"seed\": 20260725,\n      \"variants\": [\n        \"edema_zone_control\",\n        \"edema_srr_zone_cascade\"\n      ]\n    },\n    \"scar_seed20260724\": {\n      \"pathology\": \"scar\",\n      \"seed\": 20260724,\n      \"variants\": [\n        \"scar_cascade"
+    },
+    {
+      "command": "./envs/env_CARE/bin/python scripts/inference/run_care_srr_cascade_inference.py --print-contract",
+      "exit_code": 0,
+      "stderr_head": "",
+      "stdout_head": "{\n  \"accumulation\": \"bounded_correction_field_then_add_to_anchor\",\n  \"entrypoint\": \"scripts/inference/run_care_srr_cascade_inference.py\",\n  \"gt_access_forbidden\": true,\n  \"mode\": \"sliding_window_correction_or_prebuilt_tensor_batch\",\n  \"official_inverse_export_required_in_RC5\": true\n}\n"
+    },
+    {
+      "command": "./envs/env_CARE/bin/python scripts/evaluation/evaluate_care_srr_cascade.py --print-contract",
+      "exit_code": 0,
+      "stderr_head": "",
+      "stdout_head": "{\n  \"audit_used_for_selection\": false,\n  \"empty_rules\": \"contract_exact_empty_prediction_rules\",\n  \"entrypoint\": \"scripts/evaluation/evaluate_care_srr_cascade.py\",\n  \"metrics\": [\n    \"Dice\",\n    \"exact_HD\",\n    \"HD95\",\n    \"precision\",\n    \"recall\",\n    \"remote_FP_mm3\",\n    \"component_count\",\n    \"volume_ratio\",\n    \"help_harm\",\n    \"empty_prediction\",\n    \"changed_voxels\"\n  ]\n}\n"
+    },
+    {
+      "command": "./envs/env_CARE/bin/python scripts/evaluation/select_care_srr_cascade.py --print-contract",
+      "exit_code": 0,
+      "stderr_head": "",
+      "stdout_head": "{\n  \"audit_used_for_selection\": false,\n  \"calibration_only\": true,\n  \"entrypoint\": \"scripts/evaluation/select_care_srr_cascade.py\",\n  \"lexicographic_order\": [\n    \"maximize_positive_GT_Dice_delta\",\n    \"minimize_exact_HD_delta\",\n    \"minimize_HD95_relative_worsening\",\n    \"minimize_remote_FP_ratio\",\n    \"maximize_help_minus_harm\",\n    \"prefer_earlier_optimizer_step\"\n  ],\n  \"six_candidates\": [\n    \"control_seed20260724\",\n    \"control_seed20260725\",\n    \"srr_seed20260724\",\n    \"srr_seed20260725\",\n    \"control_two_seed_probability_mean_derived_bounded_channel_correction\",\n    \"srr_two_seed_probability_mean_derived_bounded_channel_correction\"\n  ]\n}\n"
+    },
+    {
+      "command": "./envs/env_CARE/bin/python scripts/evaluation/validate_care_srr_cascade_packet.py --print-contract",
+      "exit_code": 0,
+      "stderr_head": "",
+      "stdout_head": "{\n  \"entrypoint\": \"scripts/evaluation/validate_care_srr_cascade_packet.py\",\n  \"fixture_acceptance\": \"validator_nonzero_and_expected_error_substring_match\",\n  \"known_bad_count\": 22,\n  \"monitor_packet_marked_complete_forbidden\": true\n}\n"
+    },
+    {
+      "command": "./envs/env_CARE/bin/python scripts/evaluation/orchestrate_care_srr_cascade_w3.py --print-contract",
+      "exit_code": 0,
+      "stderr_head": "",
+      "stdout_head": "{\n  \"state_file\": \"results/20260724_care_myops_srr_cascade_submission_rescue/w3_orchestrator_state_v2.json\",\n  \"hardcoded_job_ids\": false,\n  \"formal_gate\": \"results/20260724_care_myops_srr_cascade_submission_rescue/runtime_closure_repair_rc1/formal_authorization_gate.json\"\n}\n"
+    },
+    {
+      "command": "./envs/env_CARE/bin/python scripts/training/run_care_srr_cascade_formal.py --dry-run --logical-run-id scar_seed20260724 --pathology scar --seed 20260724 --variants scar_cascade_control|scar_srr_cascade --optimizer-steps-each 6250 --validation-steps 1250|2500|3750|5000|6250",
+      "exit_code": 0,
+      "stderr_head": "",
+      "stdout_head": "{\n  \"asset_status\": {\n    \"assets\": {\n      \"anchor_cache_manifest\": {\n        \"exists\": false,\n        \"path\": \"results/20260724_care_myops_srr_cascade_submission_rescue/anchor_cache_manifest_v2.csv\"\n      },\n      \"formal_authorization_gate\": {\n        \"exists\": false,\n        \"path\": \"results/20260724_care_myops_srr_cascade_submission_rescue/runtime_closure_repair_rc1/formal_authorization_gate.json\"\n      },\n      \"matched_schedule_hashes\": {\n        \"exists\": false,\n        \"path\": \"results/20260724_care_myops_srr_cascade_submission_rescue/matched_schedule_hashes_v2.json\"\n      },\n      \"prototype_cache_manifest\": {\n        \"exists\": false,\n        \"path\": \"results/20260724_care_myops_srr_cascade_submission_rescue/prototype_cache_manifest_v2.csv\"\n      },\n      \"source_cache_hashes\": {\n        \"exists\": false,\n        \"path\": \"results/20260724_care_myops_srr_cascade_submission_rescue/source_cache_hashes_v2.json\"\n      }\n    },\n    \"decision\": \"NEEDS_REPAIR_PREFORMAL_ASSETS\"\n  },\n  \"control_then_srr\": true,\n  \"decision\": \"PASS_DRY_RUN\",\n  \"formal_training_credit\": 0,\n  \"logical_run_id\": \"scar_seed20260724\",\n  \"optimizer_steps_each\": 6250,\n  \"pathology\": \"scar\",\n  \"schedule_rows_"
+    }
+  ],
+  "formal_authorization_gate": {
+    "decision": "NOT_PASS_RC1_NO_FORMAL_SUBMISSION",
+    "exists": false,
+    "path": "results/20260724_care_myops_srr_cascade_submission_rescue/runtime_closure_repair_rc1/formal_authorization_gate.json"
+  },
+  "formal_shell_old_guard_absent": true,
+  "formal_shell_wires_new_entrypoint": true,
+  "source_cache_v2_locking": {
+    "isolated_attempt_mentions": 1,
+    "v2_receipt_names": true,
+    "winner_lock_mentions": 1
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "attempt_id": "preflight_htzhulab_race_a100_20260725T011800Z",
+  "cuda_available": true,
+  "cuda_device_count": 1,
+  "decision": "PASS",
+  "device": "cuda",
+  "error": "",
+  "exit_code": 0,
+  "log_file": "",
+  "partition": "htzhulab",
+  "python": "/users/a/e/aereinh/CARE/envs/env_CARE/bin/python",
+  "slurm_job_id": "60570357",
+  "torch_version": "2.11.0+cu130"
+}

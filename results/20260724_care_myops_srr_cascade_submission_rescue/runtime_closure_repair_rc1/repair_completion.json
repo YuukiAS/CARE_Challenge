@@ -1,0 +1,18 @@
+{
+  "decision": "PASS_READY_FOR_TERMINAL_COMMIT",
+  "execution_code": "SCR-R1",
+  "method_name": "CARE-SRR-Cascade",
+  "remaining_before_goal_complete": [
+    "local_lightweight_commit",
+    "controller_terminal_report",
+    "notification_email"
+  ],
+  "repair_code": "SCR-R1-RC1",
+  "schema_version": 2,
+  "scientific_token": "NO_CUSTOM_RESCUE_USE_BASELINE_ONLY",
+  "strict_validator": "PASS",
+  "timestamp_utc": "2026-07-25T07:26:59.295542+00:00",
+  "w3_formal_training": "PASS_TERMINAL_TRAINING_READY_FOR_AGGREGATION",
+  "w4_aggregation": "PASS_READY_FOR_STRICT_VALIDATOR",
+  "w5_package": "SKIPPED_BOTH_PATHOLOGIES_FALLBACK_TO_NNUNET"
+}

@@ -1,0 +1,11 @@
+active_pathology,loss_term,raw_loss_value,configured_weight,weighted_loss_value,scar_branch_grad_sum,edema_branch_grad_sum,asset_backed,error,decision
+scar,scar_final_margin_bce_dice,0.2891312539577484,1.0,0.2891312539577484,67.91779458336532,0,True,,PASS
+scar,scar_anchor_error_directional,6.4444122314453125,0.5,3.2222061157226562,1017.1517743170261,0,True,,PASS
+scar,scar_confident_anchor_preserve,0.018495889380574226,0.1,0.0018495889380574226,11.799456367851235,0,True,,PASS
+scar,scar_remote_fp_suppression,1.0193299431193736e-06,0.25,2.548324857798434e-07,1.4202333583623883e-05,0,True,,PASS
+scar,scar_surface_distance_surrogate,0.0002241589390905574,0.1,2.241589390905574e-05,0.014585503791636256,0,True,,PASS
+edema,edema_final_margin_bce_dice,0.7992011904716492,1.0,0.7992011904716492,0,126.53803821373731,True,,PASS
+edema,edema_anchor_error_directional,11.228124618530273,0.35,3.9298436641693115,0,936.9907619357109,True,,PASS
+edema,edema_confident_anchor_preserve,0.059410255402326584,0.1,0.005941025447100401,0,21.27750111767091,True,,PASS
+edema,edema_surface_distance_surrogate,6.128941458882764e-05,0.05,3.064470774916117e-06,0,0.0015982793310769239,True,,PASS
+edema,edema_zone_aux_bce_dice,1.3887526988983154,0.5,0.6943763494491577,0,138.76746477279812,True,,PASS

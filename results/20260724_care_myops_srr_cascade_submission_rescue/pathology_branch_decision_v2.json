@@ -1,0 +1,61 @@
+{
+  "audit_used_for_selection": false,
+  "decision": "PASS",
+  "pathology_decisions": {
+    "edema": {
+      "audit_gate": {
+        "blockers": [
+          "exact_HD_delta_max"
+        ],
+        "checks": {
+          "CenterB_Dice_delta_min": true,
+          "CenterC_Dice_delta_min": true,
+          "HD95_relative_worsening_max": true,
+          "candidate_eligible": true,
+          "exact_HD_delta_max": false,
+          "help_minus_harm_min": true,
+          "no_t2_edema_voxels_max": true,
+          "positive_GT_Dice_delta_min": true,
+          "positive_GT_empty_max": true,
+          "remote_FP_ratio_max": true
+        },
+        "decision": "FAIL"
+      },
+      "audit_pass": false,
+      "audit_used_for_selection": false,
+      "decision": "FALLBACK_TO_NNUNET",
+      "decode": "six_class_argmax_same_as_deployment",
+      "pathology": "edema",
+      "prototype_bank_record_count": 176,
+      "prototype_bank_source": "fold0_train_only",
+      "selected_candidate": "control_seed20260724",
+      "selection_split": "calibration"
+    },
+    "scar": {
+      "audit_gate": {
+        "blockers": [
+          "exact_HD_delta_max"
+        ],
+        "checks": {
+          "HD95_relative_worsening_max": true,
+          "candidate_eligible": true,
+          "exact_HD_delta_max": false,
+          "help_minus_harm_min": true,
+          "positive_GT_Dice_delta_min": true,
+          "positive_GT_empty_max": true,
+          "remote_FP_ratio_max": true
+        },
+        "decision": "FAIL"
+      },
+      "audit_pass": false,
+      "audit_used_for_selection": false,
+      "decision": "FALLBACK_TO_NNUNET",
+      "decode": "six_class_argmax_same_as_deployment",
+      "pathology": "scar",
+      "prototype_bank_record_count": 176,
+      "prototype_bank_source": "fold0_train_only",
+      "selected_candidate": "control_two_seed_probability_mean_derived_bounded_channel_correction",
+      "selection_split": "calibration"
+    }
+  }
+}

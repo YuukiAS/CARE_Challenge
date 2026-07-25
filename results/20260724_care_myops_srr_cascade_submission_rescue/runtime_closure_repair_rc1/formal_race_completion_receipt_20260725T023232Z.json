@@ -1,0 +1,66 @@
+{
+  "all_attempt_job_ids": [
+    "60570582",
+    "60570583",
+    "60570584",
+    "60570585",
+    "60571937",
+    "60571938",
+    "60570648",
+    "60570649"
+  ],
+  "decision": "NEEDS_MONITOR_RACE_COMPLETED_ALL_LOGICAL_RUNS",
+  "formal_training_credit": 0,
+  "new_afterany_finalizer": "60571939",
+  "new_tmux_session": "care_srr_w3_race_watch_v2",
+  "new_watcher_job_id": "60571940",
+  "old_finalizer_cancelled": "60570670",
+  "old_watcher_cancelled": "60570975",
+  "policy": "htzhulab_pending_a100_race_with_per_logical_run_lock",
+  "race_pairs": [
+    "scar_seed20260724:60571937:60570582",
+    "edema_seed20260724:60571938:60570583",
+    "scar_seed20260725:60570584:60570648",
+    "edema_seed20260725:60570585:60570649"
+  ],
+  "scancel_results": [
+    {
+      "exit_code": 0,
+      "job_id": "60570670",
+      "label": "old_finalizer",
+      "stderr": "",
+      "stdout": ""
+    },
+    {
+      "exit_code": 0,
+      "job_id": "60570975",
+      "label": "old_watcher",
+      "stderr": "",
+      "stdout": ""
+    },
+    {
+      "exit_code": 0,
+      "label": "old_tmux_watcher",
+      "session": "care_srr_w3_race_watch",
+      "stderr": "",
+      "stdout": ""
+    }
+  ],
+  "schema_version": 1,
+  "submitted_a100_mirrors": [
+    {
+      "command": "sbatch --parsable --job-name=SCRR1A_scar_seed20260724 --partition=a100-gpu --qos=gpu_access --gres=gpu:nvidia_a100-pcie-40gb:1 --export=ALL,CARE_FORMAL_LOGICAL_RUN_ID=scar_seed20260724,CARE_FORMAL_PATHOLOGY=scar,CARE_FORMAL_SEED=20260724,CARE_FORMAL_VARIANTS=scar_cascade_control|scar_srr_cascade,CARE_FORMAL_STEPS=6250,CARE_FORMAL_VALIDATION_STEPS=1250|2500|3750|5000|6250 jobs/care_mm/run_care_srr_cascade_formal_training.sh",
+      "job_id": "60571937",
+      "logical_run_id": "scar_seed20260724",
+      "skipped_existing": false
+    },
+    {
+      "command": "sbatch --parsable --job-name=SCRR1A_edema_seed20260724 --partition=a100-gpu --qos=gpu_access --gres=gpu:nvidia_a100-pcie-40gb:1 --export=ALL,CARE_FORMAL_LOGICAL_RUN_ID=edema_seed20260724,CARE_FORMAL_PATHOLOGY=edema,CARE_FORMAL_SEED=20260724,CARE_FORMAL_VARIANTS=edema_zone_control|edema_srr_zone_cascade,CARE_FORMAL_STEPS=6250,CARE_FORMAL_VALIDATION_STEPS=1250|2500|3750|5000|6250 jobs/care_mm/run_care_srr_cascade_formal_training.sh",
+      "job_id": "60571938",
+      "logical_run_id": "edema_seed20260724",
+      "skipped_existing": false
+    }
+  ],
+  "tmux_log_file": "/users/a/e/aereinh/CARE/logs/care_myops_srr_cascade_submission_rescue/SRRW3TmuxWatchV2_20260725_023232.log",
+  "updated_utc": "2026-07-25T02:32:32.186566+00:00"
+}

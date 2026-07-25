@@ -1,0 +1,44 @@
+{
+  "blockers": [],
+  "completion_claim": false,
+  "decision": "PASS_READY_FOR_STRICT_VALIDATOR",
+  "formal_terminal_accounting_decision": "PASS_TERMINAL_TRAINING_READY_FOR_AGGREGATION",
+  "pathology_results": [
+    {
+      "blockers": [],
+      "decision": "PASS",
+      "exists": {
+        "audit_metrics": true,
+        "calibration_metrics": true,
+        "final_decision": true,
+        "selection": true
+      },
+      "pathology": "scar",
+      "paths": {
+        "audit_metrics": "results/20260724_care_myops_srr_cascade_submission_rescue/w4_audit_metrics_scar_v2.csv",
+        "calibration_metrics": "results/20260724_care_myops_srr_cascade_submission_rescue/w4_calibration_metrics_scar_v2.csv",
+        "final_decision": "results/20260724_care_myops_srr_cascade_submission_rescue/w4_final_decision_scar_v2.json",
+        "selection": "results/20260724_care_myops_srr_cascade_submission_rescue/w4_selection_scar_v2.json"
+      }
+    },
+    {
+      "blockers": [],
+      "decision": "PASS",
+      "exists": {
+        "audit_metrics": true,
+        "calibration_metrics": true,
+        "final_decision": true,
+        "selection": true
+      },
+      "pathology": "edema",
+      "paths": {
+        "audit_metrics": "results/20260724_care_myops_srr_cascade_submission_rescue/w4_audit_metrics_edema_v2.csv",
+        "calibration_metrics": "results/20260724_care_myops_srr_cascade_submission_rescue/w4_calibration_metrics_edema_v2.csv",
+        "final_decision": "results/20260724_care_myops_srr_cascade_submission_rescue/w4_final_decision_edema_v2.json",
+        "selection": "results/20260724_care_myops_srr_cascade_submission_rescue/w4_selection_edema_v2.json"
+      }
+    }
+  ],
+  "schema_version": 1,
+  "timestamp_utc": "2026-07-25T07:39:08.202910+00:00"
+}

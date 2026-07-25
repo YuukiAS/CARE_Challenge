@@ -1,0 +1,17 @@
+{
+  "audit_used_for_selection": false,
+  "checkpoint_count_per_variant": 1,
+  "decision": "PASS",
+  "pathologies": [
+    "scar",
+    "edema"
+  ],
+  "six_candidates": [
+    "control_seed20260724",
+    "control_seed20260725",
+    "srr_seed20260724",
+    "srr_seed20260725",
+    "control_two_seed_probability_mean_derived_bounded_channel_correction",
+    "srr_two_seed_probability_mean_derived_bounded_channel_correction"
+  ]
+}

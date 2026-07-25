@@ -1,0 +1,61 @@
+{
+  "decision": "PASS_SELECTOR_READY_FOR_V6_SUBMISSION",
+  "feature_max_abs_delta": 0.002,
+  "inventory_counts": {
+    "LGE_C0": 24,
+    "LGE_only": 116,
+    "trimodal": 80
+  },
+  "logit_max_abs_delta": 1e-05,
+  "minimum_cases": 8,
+  "required_modality_patterns": [
+    "trimodal",
+    "LGE_C0",
+    "LGE_only"
+  ],
+  "selected_cases": [
+    {
+      "availability_lge_t2_c0": "111",
+      "case_id": "Case2001",
+      "pattern": "trimodal"
+    },
+    {
+      "availability_lge_t2_c0": "101",
+      "case_id": "Case5001",
+      "pattern": "LGE_C0"
+    },
+    {
+      "availability_lge_t2_c0": "100",
+      "case_id": "Case1001",
+      "pattern": "LGE_only"
+    },
+    {
+      "availability_lge_t2_c0": "100",
+      "case_id": "Case1002",
+      "pattern": "LGE_only"
+    },
+    {
+      "availability_lge_t2_c0": "100",
+      "case_id": "Case1003",
+      "pattern": "LGE_only"
+    },
+    {
+      "availability_lge_t2_c0": "100",
+      "case_id": "Case1004",
+      "pattern": "LGE_only"
+    },
+    {
+      "availability_lge_t2_c0": "100",
+      "case_id": "Case1005",
+      "pattern": "LGE_only"
+    },
+    {
+      "availability_lge_t2_c0": "100",
+      "case_id": "Case1006",
+      "pattern": "LGE_only"
+    }
+  ],
+  "selected_count": 8,
+  "source": "configs/care_mm/srr_cascade_runtime_closure_repair.yaml:direct_parity",
+  "updated_utc": "2026-07-24T20:24:59.544073+00:00"
+}

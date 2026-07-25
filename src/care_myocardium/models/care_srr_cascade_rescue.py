@@ -106,6 +106,23 @@ class _ResidualBlock(nn.Module):
         return self.activation(x + residual)
 
 
+class _PathologyBranch(nn.Module):
+    def __init__(self, in_channels: int, out_channels: int, hidden_channels: int, groups: int, residual_blocks: int) -> None:
+        super().__init__()
+        self.input_projection = nn.Sequential(
+            nn.Conv3d(in_channels, hidden_channels, kernel_size=1, bias=False),
+            nn.GroupNorm(groups, hidden_channels),
+            nn.SiLU(inplace=True),
+        )
+        self.residual_blocks = nn.Sequential(*[_ResidualBlock(hidden_channels, groups) for _ in range(int(residual_blocks))])
+        self.output_projection = nn.Conv3d(hidden_channels, out_channels, kernel_size=1)
+        nn.init.zeros_(self.output_projection.weight)
+        nn.init.zeros_(self.output_projection.bias)
+
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
+        return self.output_projection(self.residual_blocks(self.input_projection(x)))
+
+
 class CARESRRCascadeRescue(nn.Module):
     """Composes bounded pathology corrections onto frozen six-class anchor logits."""
 
@@ -138,26 +155,30 @@ class CARESRRCascadeRescue(nn.Module):
         if self.source_feature_channels <= 0:
             raise ValueError("source_feature_channels must be positive")
 
-        derived_channels = 21
-        in_channels = self.source_feature_channels + derived_channels
-        self.input_projection = nn.Sequential(
-            nn.Conv3d(in_channels, self.hidden_channels, kernel_size=1, bias=False),
-            nn.GroupNorm(self.groupnorm_groups, self.hidden_channels),
-            nn.SiLU(inplace=True),
+        scar_in_channels = self.source_feature_channels + 17
+        edema_in_channels = self.source_feature_channels + 18
+        self.scar_branch = _PathologyBranch(
+            scar_in_channels,
+            1,
+            self.hidden_channels,
+            self.groupnorm_groups,
+            self.residual_block_count,
         )
-        self.residual_blocks = nn.Sequential(
-            _ResidualBlock(self.hidden_channels, self.groupnorm_groups),
-            _ResidualBlock(self.hidden_channels, self.groupnorm_groups),
+        self.edema_branch = _PathologyBranch(
+            edema_in_channels,
+            2,
+            self.hidden_channels,
+            self.groupnorm_groups,
+            self.residual_block_count,
         )
-        self.scar_output_projection = nn.Conv3d(self.hidden_channels, 1, kernel_size=1)
-        self.edema_output_projection = nn.Conv3d(self.hidden_channels, 2, kernel_size=1)
-        self._zero_init_output_projections()
 
-    def _zero_init_output_projections(self) -> None:
-        nn.init.zeros_(self.scar_output_projection.weight)
-        nn.init.zeros_(self.scar_output_projection.bias)
-        nn.init.zeros_(self.edema_output_projection.weight)
-        nn.init.zeros_(self.edema_output_projection.bias)
+    @property
+    def scar_output_projection(self) -> nn.Conv3d:
+        return self.scar_branch.output_projection
+
+    @property
+    def edema_output_projection(self) -> nn.Conv3d:
+        return self.edema_branch.output_projection
 
     def forward(
         self,
@@ -181,7 +202,10 @@ class CARESRRCascadeRescue(nn.Module):
         prototype_scar_negative_similarity: torch.Tensor | None = None,
         prototype_edema_positive_similarity: torch.Tensor | None = None,
         prototype_edema_negative_similarity: torch.Tensor | None = None,
+        active_pathology: str = "both",
     ) -> dict[str, torch.Tensor]:
+        if active_pathology not in {"scar", "edema", "both"}:
+            raise ValueError("active_pathology must be one of scar, edema, both")
         _check_anchor(anchor_logits)
         if source_features.ndim != 5:
             raise ValueError("source_features must be [B, C, D, H, W]")
@@ -221,42 +245,74 @@ class CARESRRCascadeRescue(nn.Module):
             sigma_mm=7.5,
         )
 
-        features = torch.cat(
+        source = source_features.to(device=anchor_logits.device, dtype=anchor_logits.dtype)
+        normalized_lge_1 = _single_channel(normalized_lge, anchor_logits)
+        normalized_t2_1 = _single_channel(normalized_t2, anchor_logits)
+        scar_positive = _single_channel(prototype_scar_positive_similarity, anchor_logits)
+        scar_negative = _single_channel(prototype_scar_negative_similarity, anchor_logits)
+        edema_positive = _single_channel(prototype_edema_positive_similarity, anchor_logits)
+        edema_negative = _single_channel(prototype_edema_negative_similarity, anchor_logits)
+        scar_features = torch.cat(
             [
-                source_features.to(device=anchor_logits.device, dtype=anchor_logits.dtype),
-                _single_channel(normalized_lge, anchor_logits),
-                _single_channel(normalized_t2, anchor_logits),
+                source,
+                normalized_lge_1,
                 probs,
                 teacher_anatomy,
-                teacher_edema,
                 _single_channel(scar_source_margin, anchor_logits),
                 uncertainty,
                 union,
                 norm_dist,
-                _single_channel(prototype_scar_positive_similarity, anchor_logits),
-                _single_channel(prototype_scar_negative_similarity, anchor_logits),
-                _single_channel(prototype_edema_positive_similarity, anchor_logits),
-                _single_channel(prototype_edema_negative_similarity, anchor_logits),
+                scar_positive,
+                scar_negative,
             ],
             dim=1,
         )
-        hidden = self.residual_blocks(self.input_projection(features))
-        scar_delta = self.scar_output_projection(hidden)
-        edema_outputs = self.edema_output_projection(hidden)
-        edema_zone_aux_logit = edema_outputs[:, 0:1]
-        edema_delta = edema_outputs[:, 1:2]
+        edema_features = torch.cat(
+            [
+                source,
+                normalized_t2_1,
+                normalized_lge_1,
+                probs,
+                teacher_edema,
+                teacher_anatomy,
+                uncertainty,
+                union,
+                norm_dist,
+                edema_positive,
+                edema_negative,
+            ],
+            dim=1,
+        )
+        zero_pathology = anchor_logits.new_zeros((anchor_logits.shape[0], 1, *anchor_logits.shape[2:]))
+        if active_pathology in {"scar", "both"}:
+            scar_delta = self.scar_branch(scar_features)
+        else:
+            scar_delta = zero_pathology
+        if active_pathology in {"edema", "both"}:
+            edema_outputs = self.edema_branch(edema_features)
+            edema_zone_aux_logit = edema_outputs[:, 0:1]
+            edema_delta = edema_outputs[:, 1:2]
+        else:
+            edema_zone_aux_logit = zero_pathology
+            edema_delta = zero_pathology
 
         scar_correction = scar_support * self.correction_bound_logit * torch.tanh(scar_delta)
         edema_correction = t2_mask * edema_support * self.correction_bound_logit * torch.tanh(edema_delta)
 
         final_logits = anchor_logits.clone()
         final_logits[:, 0:4] = anchor_logits[:, 0:4]
-        final_logits[:, EDEMA_CHANNEL : EDEMA_CHANNEL + 1] = (
-            anchor_logits[:, EDEMA_CHANNEL : EDEMA_CHANNEL + 1] + edema_correction
-        )
-        final_logits[:, SCAR_CHANNEL : SCAR_CHANNEL + 1] = (
-            anchor_logits[:, SCAR_CHANNEL : SCAR_CHANNEL + 1] + scar_correction
-        )
+        if active_pathology in {"edema", "both"}:
+            final_logits[:, EDEMA_CHANNEL : EDEMA_CHANNEL + 1] = (
+                anchor_logits[:, EDEMA_CHANNEL : EDEMA_CHANNEL + 1] + edema_correction
+            )
+        else:
+            final_logits[:, EDEMA_CHANNEL : EDEMA_CHANNEL + 1] = anchor_logits[:, EDEMA_CHANNEL : EDEMA_CHANNEL + 1]
+        if active_pathology in {"scar", "both"}:
+            final_logits[:, SCAR_CHANNEL : SCAR_CHANNEL + 1] = (
+                anchor_logits[:, SCAR_CHANNEL : SCAR_CHANNEL + 1] + scar_correction
+            )
+        else:
+            final_logits[:, SCAR_CHANNEL : SCAR_CHANNEL + 1] = anchor_logits[:, SCAR_CHANNEL : SCAR_CHANNEL + 1]
 
         return {
             "logits": final_logits,
@@ -276,4 +332,5 @@ class CARESRRCascadeRescue(nn.Module):
             "edema_correction": edema_correction,
             "edema_zone_aux_logit": edema_zone_aux_logit,
             "t2_present_mask": t2_mask,
+            "active_pathology": active_pathology,
         }

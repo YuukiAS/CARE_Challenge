@@ -1,0 +1,225 @@
+{
+  "decision": "PASS",
+  "fixtures": [
+    {
+      "command_or_function": "anchor_runtime.verify_oof_fold",
+      "decision": "PASS",
+      "exception": "OOF_case_uses_wrong_fold: case=CaseX manifest_fold=1 expected=0",
+      "exit_code": "",
+      "expected_substring": "OOF_case_uses_wrong_fold",
+      "expected_substring_matched": true,
+      "fixture": "OOF_case_uses_wrong_fold",
+      "rejected": true
+    },
+    {
+      "command_or_function": "run_care_srr_cascade_rc2_preflight.reject_changed_roundtrip",
+      "decision": "PASS",
+      "exception": "anchor_roundtrip_changed_voxel",
+      "exit_code": "",
+      "expected_substring": "anchor_roundtrip_changed_voxel",
+      "expected_substring_matched": true,
+      "fixture": "anchor_roundtrip_changed_voxel",
+      "rejected": true
+    },
+    {
+      "command_or_function": "run_care_srr_cascade_rc2_preflight.source_cache_status",
+      "decision": "PASS",
+      "exception": "source_cache_hash_or_shape_mismatch: injected mismatch",
+      "exit_code": "",
+      "expected_substring": "source_cache_hash_or_shape_mismatch",
+      "expected_substring_matched": true,
+      "fixture": "source_cache_hash_or_shape_mismatch",
+      "rejected": true
+    },
+    {
+      "command_or_function": "source-cache lock validator",
+      "decision": "PASS",
+      "exception": "stale_source_cache_lock_adopted",
+      "exit_code": "",
+      "expected_substring": "stale_source_cache_lock_adopted",
+      "expected_substring_matched": true,
+      "fixture": "stale_source_cache_lock_adopted",
+      "rejected": true
+    },
+    {
+      "command_or_function": "model_branch_validator(shared_bad_model)",
+      "decision": "PASS",
+      "exception": "shared_trainable_pathology_trunk",
+      "exit_code": "",
+      "expected_substring": "shared_trainable_pathology_trunk",
+      "expected_substring_matched": true,
+      "fixture": "shared_trainable_pathology_trunk",
+      "rejected": true
+    },
+    {
+      "command_or_function": "inactive_channel_identity_validator(bad_logits)",
+      "decision": "PASS",
+      "exception": "inactive_pathology_channel_modified",
+      "exit_code": "",
+      "expected_substring": "inactive_pathology_channel_modified",
+      "expected_substring_matched": true,
+      "fixture": "inactive_pathology_channel_modified",
+      "rejected": true
+    },
+    {
+      "command_or_function": "no_t2_identity_validator(bad_logits)",
+      "decision": "PASS",
+      "exception": "no_t2_edema_modified",
+      "exit_code": "",
+      "expected_substring": "no_t2_edema_modified",
+      "expected_substring_matched": true,
+      "fixture": "no_t2_edema_modified",
+      "rejected": true
+    },
+    {
+      "command_or_function": "select_crossfit_prototype_bank",
+      "decision": "PASS",
+      "exception": "fail-closed insufficient prototype bank: no allowed source cases",
+      "exit_code": "",
+      "expected_substring": "fail-closed insufficient prototype bank",
+      "expected_substring_matched": true,
+      "fixture": "prototype_query_uses_same_shard",
+      "rejected": true
+    },
+    {
+      "command_or_function": "prototype_category_validator(bad_meta)",
+      "decision": "PASS",
+      "exception": "prototype_negative_categories_collapsed",
+      "exit_code": "",
+      "expected_substring": "prototype_negative_categories_collapsed",
+      "expected_substring_matched": true,
+      "fixture": "prototype_negative_categories_collapsed",
+      "rejected": true
+    },
+    {
+      "command_or_function": "prototype_sampling_validator(bad_meta)",
+      "decision": "PASS",
+      "exception": "first_N_voxel_sampling",
+      "exit_code": "",
+      "expected_substring": "first_N_voxel_sampling",
+      "expected_substring_matched": true,
+      "fixture": "first_N_voxel_sampling",
+      "rejected": true
+    },
+    {
+      "command_or_function": "apply_shared_spatial_augmentation validator",
+      "decision": "PASS",
+      "exception": "spatial_tensor_augmentation_mismatch",
+      "exit_code": "",
+      "expected_substring": "spatial_tensor_augmentation_mismatch",
+      "expected_substring_matched": true,
+      "fixture": "spatial_tensor_augmentation_mismatch",
+      "rejected": true
+    },
+    {
+      "command_or_function": "schedule_pair_validator(bad_schedule_pair)",
+      "decision": "PASS",
+      "exception": "control_and_srr_schedule_or_initial_state_mismatch",
+      "exit_code": "",
+      "expected_substring": "control_and_srr_schedule_or_initial_state_mismatch",
+      "expected_substring_matched": true,
+      "fixture": "control_and_srr_schedule_or_initial_state_mismatch",
+      "rejected": true
+    },
+    {
+      "command_or_function": "loss_activity_validator(bad_loss_meta)",
+      "decision": "PASS",
+      "exception": "inactive_pathology_loss_nonzero",
+      "exit_code": "",
+      "expected_substring": "inactive_pathology_loss_nonzero",
+      "expected_substring_matched": true,
+      "fixture": "inactive_pathology_loss_nonzero",
+      "rejected": true
+    },
+    {
+      "command_or_function": "completion_packet_validator(bad_packet)",
+      "decision": "PASS",
+      "exception": "partial_or_resumed_run_counted_complete",
+      "exit_code": "",
+      "expected_substring": "partial_or_resumed_run_counted_complete",
+      "expected_substring_matched": true,
+      "fixture": "partial_or_resumed_run_counted_complete",
+      "rejected": true
+    },
+    {
+      "command_or_function": "selection_packet_validator(bad_packet)",
+      "decision": "PASS",
+      "exception": "missing_validation_checkpoint",
+      "exit_code": "",
+      "expected_substring": "missing_validation_checkpoint",
+      "expected_substring_matched": true,
+      "fixture": "missing_validation_checkpoint",
+      "rejected": true
+    },
+    {
+      "command_or_function": "selection_packet_validator(bad_packet)",
+      "decision": "PASS",
+      "exception": "audit_used_for_selection",
+      "exit_code": "",
+      "expected_substring": "audit_used_for_selection",
+      "expected_substring_matched": true,
+      "fixture": "audit_used_for_selection",
+      "rejected": true
+    },
+    {
+      "command_or_function": "selection_packet_validator(bad_packet)",
+      "decision": "PASS",
+      "exception": "selected_checkpoint_not_reloaded",
+      "exit_code": "",
+      "expected_substring": "selected_checkpoint_not_reloaded",
+      "expected_substring_matched": true,
+      "fixture": "selected_checkpoint_not_reloaded",
+      "rejected": true
+    },
+    {
+      "command_or_function": "inference_packet_validator(bad_packet)",
+      "decision": "PASS",
+      "exception": "selection_deployment_decode_mismatch",
+      "exit_code": "",
+      "expected_substring": "selection_deployment_decode_mismatch",
+      "expected_substring_matched": true,
+      "fixture": "selection_deployment_decode_mismatch",
+      "rejected": true
+    },
+    {
+      "command_or_function": "evaluation_packet_validator(bad_packet)",
+      "decision": "PASS",
+      "exception": "exact_HD_missing_or_replaced_by_HD95",
+      "exit_code": "",
+      "expected_substring": "exact_HD_missing_or_replaced_by_HD95",
+      "expected_substring_matched": true,
+      "fixture": "exact_HD_missing_or_replaced_by_HD95",
+      "rejected": true
+    },
+    {
+      "command_or_function": "package_packet_validator(bad_packet)",
+      "decision": "PASS",
+      "exception": "single_fold_anchor_used_for_official_package",
+      "exit_code": "",
+      "expected_substring": "single_fold_anchor_used_for_official_package",
+      "expected_substring_matched": true,
+      "fixture": "single_fold_anchor_used_for_official_package",
+      "rejected": true
+    },
+    {
+      "command_or_function": "package_packet_validator(bad_packet)",
+      "decision": "PASS",
+      "exception": "package_accesses_GT",
+      "exit_code": "",
+      "expected_substring": "package_accesses_GT",
+      "expected_substring_matched": true,
+      "fixture": "package_accesses_GT",
+      "rejected": true
+    },
+    {
+      "command_or_function": "completion_packet_validator(bad_packet)",
+      "decision": "PASS",
+      "exception": "monitor_packet_marked_complete",
+      "exit_code": "",
+      "expected_substring": "monitor_packet_marked_complete",
+      "expected_substring_matched": true,
+      "fixture": "monitor_packet_marked_complete",
+      "rejected": true
+    }
+  ]
+}

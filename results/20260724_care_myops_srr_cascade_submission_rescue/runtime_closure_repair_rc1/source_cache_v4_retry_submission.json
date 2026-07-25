@@ -1,0 +1,34 @@
+{
+  "decision": "NEEDS_MONITOR",
+  "default_race_group_after_repair": "care_srr_cache_full_all220_20260725_rc2_v4",
+  "formal_jobs_submitted": false,
+  "lock_path": "results/20260724_care_myops_srr_cascade_submission_rescue/runtime/source_cache_v2.care_srr_cache_full_all220_20260725_rc2_v4.winner.lock",
+  "new_jobs": [
+    {
+      "job_id": "60546764",
+      "partition": "htzhulab",
+      "state": "PENDING"
+    },
+    {
+      "job_id": "60546773",
+      "partition": "a100-gpu",
+      "state": "PENDING"
+    }
+  ],
+  "new_race_group": "care_srr_cache_full_all220_20260725_rc2_v4",
+  "old_cancelled_mirror": {
+    "cancelled_by": "Controller/397557",
+    "exit_code": "0:0",
+    "job_id": "60539522",
+    "state": "CANCELLED"
+  },
+  "old_failed_job": {
+    "exit_code": "1:0",
+    "job_id": "60539519",
+    "log": "logs/care_myops_srr_cascade_submission_rescue/CareSRRCache_cache_htzhulab_rc2_repair_60539519_20260724_151228.log",
+    "state": "FAILED"
+  },
+  "rc2_preflight_sha256": "eb7a4883f168cf0b39af66ce155bada8929779267766e88acdff8953aaa3e84f",
+  "script_sha256": "e33df71837850d4ad837e558030f41e68459a4d463a34cba8ce1e60c33384cdf",
+  "updated_utc": "2026-07-24T19:36:21.390783+00:00"
+}

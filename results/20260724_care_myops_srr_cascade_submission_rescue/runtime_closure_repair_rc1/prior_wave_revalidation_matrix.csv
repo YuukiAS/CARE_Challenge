@@ -1,0 +1,9 @@
+wave,prior_state,current_rc1_credit,required_rc1_action,decision
+W-1,preexecution contract/resolution PASS retained,credit retained,bind authority hashes and conflict order in RC0 receipts,PASS
+W0,prior tests exist but require current real evidence,conditional only,rerun anchor canonicalization/grid/export roundtrip on all 220 internal cases before formal auth,CONDITIONAL_REVALIDATE
+W1,implementation incomplete by W3 critic,zero completion credit,repair production runtime/model/cache/prototype/training/inference/evaluation/selection/validator in place,NEEDS_REPAIR
+W2,diagnostic/synthetic evidence exists,zero formal credit,rerun real 220 anchor roundtrip 220/880 source cache 32ch overfit augmentation fiducial backward checkpoint known-bad and GPU preflight,NEEDS_REAL_RERUN
+W3,old formal shell blocked and missing entrypoints,zero formal credit,do not rerun old formal shell; submit only after formal_authorization_gate PASS and dry-run/orchestrator/idempotence pass,NO_FORMAL_CREDIT
+W4,not reached under repaired authority,none,run calibration from fixed six candidates only after terminal W3 aggregation,PENDING
+W5,not reached under repaired authority,none,conditional package only if at least one custom pathology passes frozen audit; no upload,PENDING
+W6,not reached under repaired authority,none,strict validator Mapper CURRENT/wiki/fingerprint and local lightweight commit only after all upstream evidence,PENDING

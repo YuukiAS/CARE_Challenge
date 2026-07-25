@@ -1,0 +1,27 @@
+{
+  "accounting": [
+    {
+      "elapsed": "00:00:00",
+      "exit_code": "0:0",
+      "job_id": "60552238",
+      "partition": "htzhulab",
+      "state": "CANCELLED by 397557"
+    },
+    {
+      "elapsed": "00:00:00",
+      "exit_code": "0:0",
+      "job_id": "60552252",
+      "partition": "a100-gpu",
+      "state": "CANCELLED by 397557"
+    }
+  ],
+  "decision": "CANCELLED_NONCOMPLIANT_BY_CONTROLLER",
+  "formal_jobs_submitted": false,
+  "job_ids": [
+    "60552238",
+    "60552252"
+  ],
+  "reason": "v5 was submitted with CARE_SOURCE_CACHE_PARITY_CASE_COUNT=4, violating config direct_parity.minimum_cases=8 and required modality pattern selector",
+  "updated_utc": "2026-07-24T20:24:59.544073+00:00",
+  "used_as_source_cache_evidence": false
+}

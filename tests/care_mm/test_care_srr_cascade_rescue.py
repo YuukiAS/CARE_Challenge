@@ -6,6 +6,9 @@ from pathlib import Path
 import torch
 
 from src.care_myocardium.losses.care_srr_cascade_rescue_losses import (
+    LOSS_WEIGHTS,
+    care_srr_cascade_rescue_loss_audit_terms,
+    care_srr_cascade_rescue_raw_loss_terms,
     care_srr_cascade_rescue_loss_terms,
     confident_anchor_preserve,
 )
@@ -201,6 +204,82 @@ def test_confident_anchor_preserve_includes_correct_background_voxel() -> None:
     assert final_logits.grad[:, 5].abs().sum().item() > 0.0
 
 
+def test_configured_loss_weights_are_applied_to_weighted_terms() -> None:
+    model = CARESRRCascadeRescue(source_feature_channels=8)
+    inputs = _inputs()
+    with torch.no_grad():
+        model.scar_output_projection.weight.fill_(0.01)
+        model.edema_output_projection.weight.fill_(0.01)
+    labels = torch.zeros(2, 3, 5, 4, dtype=torch.long)
+    labels[0, 0, 0, 0] = 5
+    labels[0, 0, 0, 1] = 4
+    distance_union = torch.full((2, 1, 3, 5, 4), 12.0)
+    distance_surface = torch.full((2, 1, 3, 5, 4), 6.0)
+    outputs = model(**inputs)
+
+    raw = care_srr_cascade_rescue_raw_loss_terms(
+        outputs,
+        labels,
+        distance_to_gt_union_mm=distance_union,
+        distance_to_gt_pathology_surface_mm=distance_surface,
+        active_pathology="edema",
+    )
+    audit = care_srr_cascade_rescue_loss_audit_terms(
+        outputs,
+        labels,
+        distance_to_gt_union_mm=distance_union,
+        distance_to_gt_pathology_surface_mm=distance_surface,
+        active_pathology="edema",
+    )
+    weighted = care_srr_cascade_rescue_loss_terms(
+        outputs,
+        labels,
+        distance_to_gt_union_mm=distance_union,
+        distance_to_gt_pathology_surface_mm=distance_surface,
+        active_pathology="edema",
+    )
+
+    expected = LOSS_WEIGHTS["edema"]
+    assert set(raw) == set(expected)
+    assert set(weighted) == set(expected)
+    for name, weight in expected.items():
+        assert audit[name]["weight"] == weight
+        assert torch.allclose(audit[name]["raw"], raw[name])
+        assert torch.allclose(weighted[name], raw[name] * weight)
+        assert torch.allclose(audit[name]["weighted"], weighted[name])
+
+
+def test_active_pathology_weighted_terms_isolate_inactive_branch_gradients() -> None:
+    model = CARESRRCascadeRescue(source_feature_channels=8)
+    inputs = _inputs()
+    labels = torch.zeros(2, 3, 5, 4, dtype=torch.long)
+    labels[0, 0, 0, 0] = 5
+    labels[0, 0, 0, 1] = 4
+    distance_union = torch.full((2, 1, 3, 5, 4), 12.0)
+    distance_surface = torch.full((2, 1, 3, 5, 4), 6.0)
+
+    for pathology, active_branch, inactive_branch in (
+        ("scar", model.scar_branch, model.edema_branch),
+        ("edema", model.edema_branch, model.scar_branch),
+    ):
+        model.zero_grad(set_to_none=True)
+        outputs = model(**inputs, active_pathology=pathology)
+        terms = care_srr_cascade_rescue_loss_terms(
+            outputs,
+            labels,
+            distance_to_gt_union_mm=distance_union,
+            distance_to_gt_pathology_surface_mm=distance_surface,
+            active_pathology=pathology,
+        )
+        assert terms
+        assert all(name.startswith(f"{pathology}_") for name in terms)
+        sum(terms.values()).backward()
+        active_grad = sum(float(p.grad.abs().sum()) for p in active_branch.parameters() if p.grad is not None)
+        inactive_grad = sum(float(p.grad.abs().sum()) for p in inactive_branch.parameters() if p.grad is not None)
+        assert active_grad > 0.0
+        assert inactive_grad == 0.0
+
+
 def _prototype_masks() -> dict[str, torch.Tensor]:
     mask = torch.zeros(3, 5, 4, dtype=torch.bool)
     mask.reshape(-1)[:40] = True
@@ -241,6 +320,24 @@ def test_case_level_prototypes_crossfit_cap_no_t2_and_fail_closed() -> None:
     assert bank["positive"].shape[0] >= 4
     assert provenance["excluded_query_case"] is True
     assert provenance["excluded_query_shard"] is True
+    assert provenance["source_eligibility_rule"] == "scar_all_crossfit_allowed_sources"
+    assert provenance["allowed_case_count_before_source_filter"] == provenance["allowed_case_count_after_source_filter"]
+    edema_bank, edema_provenance = select_crossfit_prototype_bank(
+        records,
+        query_case_id="case005",
+        query_shard=1,
+        pathology="edema",
+        minimum_positive=4,
+        minimum_negative=4,
+    )
+    assert edema_bank["positive"].shape[0] >= 4
+    assert edema_bank["negative"].shape[0] >= 4
+    assert edema_provenance["source_eligibility_rule"] == "edema_requires_t2_present_sources"
+    assert edema_provenance["excluded_no_t2_source_count"] == 1
+    assert edema_provenance["excluded_no_t2_source_case_ids"] == "case000"
+    assert edema_provenance["allowed_case_count_before_source_filter"] == 9
+    assert edema_provenance["allowed_case_count_after_source_filter"] == 8
+    assert edema_provenance["no_t2_source_records_in_bank"] is False
     try:
         select_crossfit_prototype_bank(
             records[:2],

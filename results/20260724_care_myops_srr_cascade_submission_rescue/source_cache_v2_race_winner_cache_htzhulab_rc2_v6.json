@@ -1,0 +1,13 @@
+{
+  "attempt_id": "cache_htzhulab_rc2_v6",
+  "decision": "PASS",
+  "final_cache_dir": "results/20260724_care_myops_srr_cascade_submission_rescue/runtime/source_cache_v2",
+  "log_file": "/users/a/e/aereinh/CARE/logs/care_myops_srr_cascade_submission_rescue/CareSRRCache_cache_htzhulab_rc2_v6_60552895_20260724_182859.log",
+  "manifest_sha256": "83aaab460070062c05438b78ad0b516d6c927c396a0f9bb0821502af0370a55a",
+  "parity_checks_sha256": "55f1ac804f63dfa7c03ed06a812199dd47b8e2ca0701a4543623bac961bd953c",
+  "partition": "htzhulab",
+  "race_group": "care_srr_cache_full_all220_20260725_rc2_v6",
+  "slurm_job_id": "60552895",
+  "status": "WINNER_COMPLETED",
+  "winner_lock_dir": "results/20260724_care_myops_srr_cascade_submission_rescue/runtime/source_cache_v2.care_srr_cache_full_all220_20260725_rc2_v6.winner.lock"
+}

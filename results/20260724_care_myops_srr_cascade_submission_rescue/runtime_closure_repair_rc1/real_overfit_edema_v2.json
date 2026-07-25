@@ -1,0 +1,34 @@
+{
+  "asset_fixture_selector": {
+    "candidate_case_id": "Case2003",
+    "candidate_center_zyx": [
+      4,
+      129,
+      101
+    ],
+    "candidate_label_counts": {
+      "0": 1720,
+      "1": 246,
+      "2": 462,
+      "4": 618,
+      "5": 26
+    },
+    "candidate_patch_shape": [
+      3,
+      32,
+      32
+    ],
+    "fallback_used": false,
+    "selector": "first_t2_edema_patch_without_rv_and_low_scar_contamination"
+  },
+  "case_id": "Case2003",
+  "decision": "PASS",
+  "final_loss": 3.378628969192505,
+  "formal_training_credit": 0,
+  "initial_loss": 5.508957862854004,
+  "loss_reduction_fraction": 0.38670270252491057,
+  "nonzero_correction": true,
+  "optimizer_steps": 200,
+  "pathology": "edema",
+  "source_feature_channels": 32
+}

@@ -2,7 +2,7 @@ schema_version: 1
 repair_id: SCR-R1-RC1
 task_key: 20260725_care_myops_srr_cascade_runtime_closure_repair
 parent_task_key: 20260724_care_myops_srr_cascade_submission_rescue
-status: READY_FOR_CONTROLLER_RUNTIME_CLOSURE_REPAIR
+status: TERMINAL_LOCAL_EVALUATED_BASELINE_FALLBACK
 authority_name: care_myops_srr_cascade_runtime_closure_repair
 source_main_commit_audited: a1b55ba3525cdca0578ec6fbee59f392e27fdde0
 result_root: results/20260724_care_myops_srr_cascade_submission_rescue
@@ -110,6 +110,15 @@ asset_preflight:
   checkpoint_sha256_required: true
   plans_configuration_manager_required: true
   hardcoded_patch_or_data_identifier_forbidden: true
+
+gpu_preflight:
+  policy: any_compatible_partition_pass
+  human_readable_rule: "任一兼容 GPU partition preflight PASS 即可"
+  compatible_partitions: [htzhulab, a100-gpu, volta-gpu]
+  pass_condition: at_least_one_compatible_partition_attempt_exit_zero_and_decision_PASS
+  incompatible_partition_pass_does_not_authorize_formal: true
+  failed_compatible_partition_does_not_block_if_another_compatible_partition_passes: true
+  formal_authorization_gate_field: gpu_preflight_status
 
 anchor_runtime:
   cases: all_220_internal_cases
@@ -461,7 +470,7 @@ selection:
     pathology_channel_delta_vs_anchor_clipped: [-2.0, 2.0]
     apply_only_selected_pathology_channel: true
   control_srr_cross_blend: forbidden
-  no_eligible_custom_candidate: FALLBACK_TO_NNUNET_without_audit_selection
+  no_eligible_custom_candidate: select_best_calibration_candidate_for_audit_evidence_then_FALLBACK_TO_NNUNET_if_audit_fails
   selected_checkpoint_reload_required: true
 
 frozen_audit:

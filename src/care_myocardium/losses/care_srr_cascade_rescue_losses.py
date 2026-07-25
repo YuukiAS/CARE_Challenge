@@ -10,6 +10,23 @@ IGNORE_LABEL = -1
 EDEMA_CHANNEL = 4
 SCAR_CHANNEL = 5
 
+LOSS_WEIGHTS: dict[str, dict[str, float]] = {
+    "scar": {
+        "scar_final_margin_bce_dice": 1.0,
+        "scar_anchor_error_directional": 0.5,
+        "scar_confident_anchor_preserve": 0.1,
+        "scar_remote_fp_suppression": 0.25,
+        "scar_surface_distance_surrogate": 0.1,
+    },
+    "edema": {
+        "edema_final_margin_bce_dice": 1.0,
+        "edema_zone_aux_bce_dice": 0.5,
+        "edema_anchor_error_directional": 0.35,
+        "edema_confident_anchor_preserve": 0.1,
+        "edema_surface_distance_surrogate": 0.05,
+    },
+}
+
 
 def pathology_margin(final_logits: torch.Tensor, class_index: int) -> torch.Tensor:
     keep = [idx for idx in range(final_logits.shape[1]) if idx != int(class_index)]
@@ -132,7 +149,7 @@ def edema_zone_aux(
     return _masked_mean(bce, valid) + soft_dice_loss(torch.sigmoid(edema_zone_aux_logit), target, valid)
 
 
-def care_srr_cascade_rescue_loss_terms(
+def care_srr_cascade_rescue_raw_loss_terms(
     outputs: dict[str, torch.Tensor],
     labels: torch.Tensor,
     *,
@@ -140,11 +157,14 @@ def care_srr_cascade_rescue_loss_terms(
     distance_to_gt_union_mm: torch.Tensor,
     distance_to_gt_pathology_surface_mm: torch.Tensor,
     t2_present_mask: torch.Tensor | None = None,
+    active_pathology: str = "both",
 ) -> dict[str, torch.Tensor]:
+    if active_pathology not in {"scar", "edema", "both"}:
+        raise ValueError("active_pathology must be scar, edema, or both")
     final_logits = outputs["final_logits"] if "final_logits" in outputs else outputs["logits"]
     anchor = anchor_logits if anchor_logits is not None else outputs["anchor_logits"]
     edema_mask = t2_present_mask if t2_present_mask is not None else outputs.get("t2_present_mask")
-    return {
+    terms = {
         "scar_final_margin_bce_dice": final_margin_bce_dice(final_logits, labels, SCAR_CHANNEL),
         "edema_final_margin_bce_dice": final_margin_bce_dice(final_logits, labels, EDEMA_CHANNEL, edema_mask),
         "scar_anchor_error_directional": anchor_error_directional(final_logits, anchor, labels, SCAR_CHANNEL),
@@ -154,5 +174,68 @@ def care_srr_cascade_rescue_loss_terms(
         "scar_remote_fp_suppression": scar_remote_fp_suppression(final_logits, labels, distance_to_gt_union_mm),
         "scar_surface_distance_surrogate": surface_distance_surrogate(final_logits, labels, SCAR_CHANNEL, distance_to_gt_pathology_surface_mm),
         "edema_surface_distance_surrogate": surface_distance_surrogate(final_logits, labels, EDEMA_CHANNEL, distance_to_gt_pathology_surface_mm),
-        "edema_zone_aux": edema_zone_aux(outputs["edema_zone_aux_logit"], labels, edema_mask),
+        "edema_zone_aux_bce_dice": edema_zone_aux(outputs["edema_zone_aux_logit"], labels, edema_mask),
     }
+    if active_pathology == "scar":
+        return {name: value for name, value in terms.items() if name.startswith("scar_")}
+    if active_pathology == "edema":
+        return {name: value for name, value in terms.items() if name.startswith("edema_")}
+    return terms
+
+
+def configured_loss_weight(term_name: str) -> float:
+    for weights in LOSS_WEIGHTS.values():
+        if term_name in weights:
+            return float(weights[term_name])
+    raise KeyError(f"unknown CARE-SRR-Cascade loss term: {term_name}")
+
+
+def care_srr_cascade_rescue_loss_audit_terms(
+    outputs: dict[str, torch.Tensor],
+    labels: torch.Tensor,
+    *,
+    anchor_logits: torch.Tensor | None = None,
+    distance_to_gt_union_mm: torch.Tensor,
+    distance_to_gt_pathology_surface_mm: torch.Tensor,
+    t2_present_mask: torch.Tensor | None = None,
+    active_pathology: str = "both",
+) -> dict[str, dict[str, torch.Tensor | float]]:
+    raw = care_srr_cascade_rescue_raw_loss_terms(
+        outputs,
+        labels,
+        anchor_logits=anchor_logits,
+        distance_to_gt_union_mm=distance_to_gt_union_mm,
+        distance_to_gt_pathology_surface_mm=distance_to_gt_pathology_surface_mm,
+        t2_present_mask=t2_present_mask,
+        active_pathology=active_pathology,
+    )
+    return {
+        name: {
+            "raw": value,
+            "weight": configured_loss_weight(name),
+            "weighted": value * configured_loss_weight(name),
+        }
+        for name, value in raw.items()
+    }
+
+
+def care_srr_cascade_rescue_loss_terms(
+    outputs: dict[str, torch.Tensor],
+    labels: torch.Tensor,
+    *,
+    anchor_logits: torch.Tensor | None = None,
+    distance_to_gt_union_mm: torch.Tensor,
+    distance_to_gt_pathology_surface_mm: torch.Tensor,
+    t2_present_mask: torch.Tensor | None = None,
+    active_pathology: str = "both",
+) -> dict[str, torch.Tensor]:
+    audit = care_srr_cascade_rescue_loss_audit_terms(
+        outputs,
+        labels,
+        anchor_logits=anchor_logits,
+        distance_to_gt_union_mm=distance_to_gt_union_mm,
+        distance_to_gt_pathology_surface_mm=distance_to_gt_pathology_surface_mm,
+        t2_present_mask=t2_present_mask,
+        active_pathology=active_pathology,
+    )
+    return {name: item["weighted"] for name, item in audit.items()}  # type: ignore[return-value]

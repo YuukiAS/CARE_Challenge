@@ -1,0 +1,25 @@
+{
+  "contract": {
+    "partial_attempt_formal_credit": 0,
+    "required_fields": [
+      "model_state",
+      "optimizer_state",
+      "scheduler_state",
+      "scaler_state",
+      "optimizer_step",
+      "microbatch_cursor",
+      "schedule_sha256",
+      "initial_state_sha256",
+      "code_sha256",
+      "config_sha256",
+      "source_cache_sha256",
+      "anchor_cache_sha256",
+      "prototype_cache_sha256",
+      "RNG_states"
+    ],
+    "resume_requires_same_hashes": true,
+    "schema_version": 1
+  },
+  "decision": "PASS",
+  "resume_rule": "resume requires same schedule/source/anchor/prototype/config/code hashes and continues from microbatch_cursor without formal credit for partial attempts"
+}

@@ -136,7 +136,15 @@
       "failed_attempt_training_credit": 0,
       "finalizer_dependency": "afterany",
       "python_executable": "/users/a/e/aereinh/CARE/envs/env_CARE/bin/python",
-      "same_partition_gpu_preflight_required": true,
+      "same_partition_gpu_preflight_required": false,
+      "gpu_preflight_policy": "any_compatible_partition_pass",
+      "gpu_preflight_human_readable_rule": "任一兼容 GPU partition preflight PASS 即可",
+      "compatible_gpu_partitions": [
+        "htzhulab",
+        "a100-gpu",
+        "volta-gpu"
+      ],
+      "gpu_preflight_pass_condition": "at_least_one_compatible_partition_attempt_exit_zero_and_decision_PASS",
       "seed20260724_partition": "htzhulab",
       "seed20260725_partition": "a100-gpu",
       "training_dependency": "afterok"
@@ -787,7 +795,7 @@
         "prototype_active_zero_and_bank_swap_interventions_nonzero",
         "checkpoint_roundtrip_at_most_1e_6",
         "all_known_bad_fixtures_real_and_rejected",
-        "same_partition_gpu_preflights_exit_zero"
+        "any_compatible_GPU_partition_preflight_exit_zero_and_PASS"
       ],
       "dependencies": [
         "RESCUE_W1_CLEAN_MODEL_PROTOTYPE_AND_DATAFLOW_IMPLEMENTATION"

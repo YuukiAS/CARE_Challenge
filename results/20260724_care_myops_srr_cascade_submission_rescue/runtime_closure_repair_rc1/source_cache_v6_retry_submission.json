@@ -1,0 +1,82 @@
+{
+  "decision": "NEEDS_MONITOR",
+  "formal_jobs_submitted": false,
+  "lock_path": "results/20260724_care_myops_srr_cascade_submission_rescue/runtime/source_cache_v2.care_srr_cache_full_all220_20260725_rc2_v6.winner.lock",
+  "new_jobs": [
+    {
+      "job_id": "60552895",
+      "partition": "htzhulab",
+      "state": "PENDING(Resources)"
+    },
+    {
+      "job_id": "60552903",
+      "partition": "a100-gpu",
+      "state": "PENDING(Priority)"
+    }
+  ],
+  "new_race_group": "care_srr_cache_full_all220_20260725_rc2_v6",
+  "parity_selector": {
+    "decision": "PASS_SELECTOR_READY_FOR_V6_SUBMISSION",
+    "feature_max_abs_delta": 0.002,
+    "inventory_counts": {
+      "LGE_C0": 24,
+      "LGE_only": 116,
+      "trimodal": 80
+    },
+    "logit_max_abs_delta": 1e-05,
+    "minimum_cases": 8,
+    "required_modality_patterns": [
+      "trimodal",
+      "LGE_C0",
+      "LGE_only"
+    ],
+    "selected_cases": [
+      {
+        "availability_lge_t2_c0": "111",
+        "case_id": "Case2001",
+        "pattern": "trimodal"
+      },
+      {
+        "availability_lge_t2_c0": "101",
+        "case_id": "Case5001",
+        "pattern": "LGE_C0"
+      },
+      {
+        "availability_lge_t2_c0": "100",
+        "case_id": "Case1001",
+        "pattern": "LGE_only"
+      },
+      {
+        "availability_lge_t2_c0": "100",
+        "case_id": "Case1002",
+        "pattern": "LGE_only"
+      },
+      {
+        "availability_lge_t2_c0": "100",
+        "case_id": "Case1003",
+        "pattern": "LGE_only"
+      },
+      {
+        "availability_lge_t2_c0": "100",
+        "case_id": "Case1004",
+        "pattern": "LGE_only"
+      },
+      {
+        "availability_lge_t2_c0": "100",
+        "case_id": "Case1005",
+        "pattern": "LGE_only"
+      },
+      {
+        "availability_lge_t2_c0": "100",
+        "case_id": "Case1006",
+        "pattern": "LGE_only"
+      }
+    ],
+    "selected_count": 8,
+    "source": "configs/care_mm/srr_cascade_runtime_closure_repair.yaml:direct_parity",
+    "updated_utc": "2026-07-24T20:24:59.544073+00:00"
+  },
+  "rc2_preflight_sha256": "031d8946f747a19386006da3cd47f8ae013d9f0299910f2da4d6b256a8141241",
+  "script_sha256": "81fce5791c055035d36eae0fe684415c446ecf86bd152ca7082390fa54204422",
+  "updated_utc": "2026-07-24T20:24:59.544073+00:00"
+}

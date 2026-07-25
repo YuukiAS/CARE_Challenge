@@ -1,0 +1,2 @@
+attempt_id,partition,slurm_job_id,python,torch_version,cuda_available,cuda_device_count,device,log_file,exit_code,decision,error
+preflight_htzhulab_race_a100_20260725T011800Z,htzhulab,60570357,/users/a/e/aereinh/CARE/envs/env_CARE/bin/python,2.11.0+cu130,True,1,cuda,,0,PASS,

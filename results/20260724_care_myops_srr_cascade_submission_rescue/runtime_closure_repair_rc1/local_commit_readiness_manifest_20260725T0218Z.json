@@ -1,0 +1,81 @@
+{
+  "decision": "NEEDS_MONITOR_COMMIT_NOT_READY_RESULTS_PENDING",
+  "exclude_patterns": [
+    "results/20260724_care_myops_srr_cascade_submission_rescue/runtime/**/*.pt",
+    "results/20260724_care_myops_srr_cascade_submission_rescue/runtime/source_cache_v2_attempt_*",
+    "results/20260724_care_myops_srr_cascade_submission_rescue/runtime/formal_v2/*/*/checkpoints/*.pt",
+    "logs/care_myops_srr_cascade_submission_rescue/*",
+    ".codex_runtime/*"
+  ],
+  "force_add_candidates_when_terminal": [
+    {
+      "exists": true,
+      "gitignored": false,
+      "path": "results/20260724_care_myops_srr_cascade_submission_rescue/controller_ledger.csv",
+      "size_bytes": 16462
+    },
+    {
+      "exists": true,
+      "gitignored": true,
+      "path": "results/20260724_care_myops_srr_cascade_submission_rescue/w3_orchestrator_state_v2.json",
+      "size_bytes": 11549
+    },
+    {
+      "exists": true,
+      "gitignored": true,
+      "path": "results/20260724_care_myops_srr_cascade_submission_rescue/slurm_attempts_v2.csv",
+      "size_bytes": 6858
+    },
+    {
+      "exists": true,
+      "gitignored": true,
+      "path": "results/20260724_care_myops_srr_cascade_submission_rescue/training_adequacy_v2.csv",
+      "size_bytes": 582
+    },
+    {
+      "exists": true,
+      "gitignored": true,
+      "path": "results/20260724_care_myops_srr_cascade_submission_rescue/formal_terminal_training_variants_v2.csv",
+      "size_bytes": 3024
+    },
+    {
+      "exists": true,
+      "gitignored": true,
+      "path": "results/20260724_care_myops_srr_cascade_submission_rescue/runtime_closure_repair_rc1/formal_authorization_gate.json",
+      "size_bytes": 1468
+    },
+    {
+      "exists": true,
+      "gitignored": true,
+      "path": "results/20260724_care_myops_srr_cascade_submission_rescue/runtime_closure_repair_rc1/formal_terminal_accounting_v2.json",
+      "size_bytes": 7307
+    },
+    {
+      "exists": true,
+      "gitignored": true,
+      "path": "results/20260724_care_myops_srr_cascade_submission_rescue/runtime_closure_repair_rc1/w4_aggregation_status_v2.json",
+      "size_bytes": 310
+    },
+    {
+      "exists": true,
+      "gitignored": true,
+      "path": "results/20260724_care_myops_srr_cascade_submission_rescue/runtime_closure_repair_rc1/formal_race_watcher_history_v2.jsonl",
+      "size_bytes": 4077
+    },
+    {
+      "exists": true,
+      "gitignored": true,
+      "path": "results/20260724_care_myops_srr_cascade_submission_rescue/runtime_closure_repair_rc1/w4_aggregation_gate_receipt_20260725T0216Z.json",
+      "size_bytes": 627
+    },
+    {
+      "exists": true,
+      "gitignored": true,
+      "path": "results/20260724_care_myops_srr_cascade_submission_rescue/runtime_closure_repair_rc1/formal_terminal_accounting_finalizer_repair_20260725T0210Z.json",
+      "size_bytes": 792
+    }
+  ],
+  "notes": "Prepared for final local lightweight commit only after W3-W6 terminal validation; do not commit runtime tensors or logs.",
+  "schema_version": 1,
+  "timestamp_utc": "2026-07-25T02:18:24.167143+00:00"
+}

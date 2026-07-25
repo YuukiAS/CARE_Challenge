@@ -1,0 +1,11 @@
+{
+  "decision": "STALE_FAILED_LOCK_CLEARED_FOR_PENDING_RETRY",
+  "failed_exit_code": "1:0",
+  "failed_job_id": "60539519",
+  "failed_state": "FAILED",
+  "old_lock_path": "results/20260724_care_myops_srr_cascade_submission_rescue/runtime/source_cache_v2.care_srr_cache_full_all220_20260725_rc2_v3.winner.lock",
+  "pending_retry_job_id": "60539522",
+  "preserved_failed_lock_path": "results/20260724_care_myops_srr_cascade_submission_rescue/runtime/source_cache_v2.care_srr_cache_full_all220_20260725_rc2_v3.failed_60539519.winner.lock",
+  "reason": "htzhulab source-cache attempt failed after claiming lock before publishing source_cache_hashes_v2.json; pending a100 retry would otherwise exit as RACE_LOST",
+  "timestamp_utc": "2026-07-24T19:15:29.179396+00:00"
+}

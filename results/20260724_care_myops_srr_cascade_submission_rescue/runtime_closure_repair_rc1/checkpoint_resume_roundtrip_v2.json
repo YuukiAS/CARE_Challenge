@@ -1,0 +1,17 @@
+{
+  "bound_hashes": {
+    "anchor_cache_sha256": "79b0287304257afe8989942db11840f68b4db1f944cb295e986214965b926471",
+    "code_sha256": "8da7c1629a96abf84fb52ecb321eddce19eebc81f9275ba1621c1f4899fcaf29",
+    "config_sha256": "7cd2f408725fcc59c73bf8425996e4aaf77484b6d5cb1b107bab0ad06cf83fce",
+    "initial_state_sha256": "8c7b08c68182a4388b804e90f7889cf6f5cf16d6d0d1bbece6b5352128488833",
+    "prototype_cache_sha256": "7f07dd8a5031523699f3eed4f65dea692f3fb1d3a74f0387a0fa97bb3992fce0",
+    "schedule_sha256": "a054b2f443d227bc16094fb050ec4e32a53c8da0138f8510d7f67f5747975d9f",
+    "source_cache_sha256": "9e3448e194e29c7fae17592ab4352b1c448f5b8655b88e32d0f28ad0e0fdcaaf"
+  },
+  "checkpoint_sha256": "a7f0ea03c93ea7ef720f8b5bca8ef5f7498a4c2db998b7e985e48ea1f10da441",
+  "decision": "PASS",
+  "formal_training_credit": 0,
+  "max_abs_model_delta": 0.0,
+  "microbatch_cursor": 2,
+  "optimizer_step": 1
+}

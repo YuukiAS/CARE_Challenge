@@ -1,0 +1,152 @@
+{
+  "actions": [
+    {
+      "a100_job": "60571937",
+      "a100_state": "CANCELLED",
+      "action": "NO_CANCEL",
+      "htzhulab_job": "60570582",
+      "htzhulab_state": "COMPLETED",
+      "logical_run_id": "scar_seed20260724"
+    },
+    {
+      "a100_job": "60571938",
+      "a100_state": "CANCELLED",
+      "action": "NO_CANCEL",
+      "htzhulab_job": "60570583",
+      "htzhulab_state": "COMPLETED",
+      "logical_run_id": "edema_seed20260724"
+    },
+    {
+      "a100_job": "60570584",
+      "a100_state": "CANCELLED",
+      "action": "NO_CANCEL",
+      "htzhulab_job": "60570648",
+      "htzhulab_state": "COMPLETED",
+      "logical_run_id": "scar_seed20260725"
+    },
+    {
+      "a100_job": "60570585",
+      "a100_state": "CANCELLED",
+      "action": "NO_CANCEL",
+      "htzhulab_job": "60570649",
+      "htzhulab_state": "COMPLETED",
+      "logical_run_id": "edema_seed20260725"
+    }
+  ],
+  "decision": "TERMINAL_NEEDS_ACCOUNTING",
+  "dry_run": false,
+  "iteration": 38,
+  "pairs": [
+    {
+      "a100_job": "60571937",
+      "htzhulab_job": "60570582",
+      "logical_run_id": "scar_seed20260724"
+    },
+    {
+      "a100_job": "60571938",
+      "htzhulab_job": "60570583",
+      "logical_run_id": "edema_seed20260724"
+    },
+    {
+      "a100_job": "60570584",
+      "htzhulab_job": "60570648",
+      "logical_run_id": "scar_seed20260725"
+    },
+    {
+      "a100_job": "60570585",
+      "htzhulab_job": "60570649",
+      "logical_run_id": "edema_seed20260725"
+    }
+  ],
+  "snapshot": {
+    "60570582": {
+      "elapsed": "01:28:05",
+      "end": "2026-07-25T00:17:04",
+      "exit_code": "0:0",
+      "job_id": "60570582",
+      "job_name": "SCRR1_scar_seed20260724",
+      "partition": "htzhulab",
+      "source": "sacct",
+      "start": "2026-07-24T22:48:59",
+      "state": "COMPLETED"
+    },
+    "60570583": {
+      "elapsed": "01:34:45",
+      "end": "2026-07-25T01:19:02",
+      "exit_code": "0:0",
+      "job_id": "60570583",
+      "job_name": "SCRR1_edema_seed20260724",
+      "partition": "htzhulab",
+      "source": "sacct",
+      "start": "2026-07-24T23:44:17",
+      "state": "COMPLETED"
+    },
+    "60570584": {
+      "elapsed": "00:00:00",
+      "end": "2026-07-24T23:52:25",
+      "exit_code": "0:0",
+      "job_id": "60570584",
+      "job_name": "SCRR1_scar_seed20260725",
+      "partition": "a100-gpu",
+      "source": "sacct",
+      "start": "None",
+      "state": "CANCELLED"
+    },
+    "60570585": {
+      "elapsed": "00:00:00",
+      "end": "2026-07-25T00:17:24",
+      "exit_code": "0:0",
+      "job_id": "60570585",
+      "job_name": "SCRR1_edema_seed20260725",
+      "partition": "a100-gpu",
+      "source": "sacct",
+      "start": "None",
+      "state": "CANCELLED"
+    },
+    "60570648": {
+      "elapsed": "01:25:18",
+      "end": "2026-07-25T01:17:18",
+      "exit_code": "0:0",
+      "job_id": "60570648",
+      "job_name": "SCRR1R_scar_seed20260725",
+      "partition": "htzhulab",
+      "source": "sacct",
+      "start": "2026-07-24T23:52:00",
+      "state": "COMPLETED"
+    },
+    "60570649": {
+      "elapsed": "01:16:04",
+      "end": "2026-07-25T01:33:20",
+      "exit_code": "0:0",
+      "job_id": "60570649",
+      "job_name": "SCRR1R_edema_seed20260725",
+      "partition": "htzhulab",
+      "source": "sacct",
+      "start": "2026-07-25T00:17:16",
+      "state": "COMPLETED"
+    },
+    "60571937": {
+      "elapsed": "00:00:00",
+      "end": "2026-07-24T22:50:26",
+      "exit_code": "0:0",
+      "job_id": "60571937",
+      "job_name": "SCRR1A_scar_seed20260724",
+      "partition": "a100-gpu",
+      "source": "sacct",
+      "start": "None",
+      "state": "CANCELLED"
+    },
+    "60571938": {
+      "elapsed": "00:00:00",
+      "end": "2026-07-24T23:45:49",
+      "exit_code": "0:0",
+      "job_id": "60571938",
+      "job_name": "SCRR1A_edema_seed20260724",
+      "partition": "a100-gpu",
+      "source": "sacct",
+      "start": "None",
+      "state": "CANCELLED"
+    }
+  },
+  "timestamp_utc": "2026-07-25T05:37:48.978016+00:00"
+}

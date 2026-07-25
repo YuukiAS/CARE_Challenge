@@ -1,0 +1,7 @@
+{
+  "all_rejected": true,
+  "decision": "PASS",
+  "fixture_count": 22,
+  "source_path": "results/20260724_care_myops_srr_cascade_submission_rescue/runtime_closure_repair_rc1/real_known_bad_report_v2.json",
+  "source_sha256": "d44e58352c157c48f4e851eccc7bc77d3e3a753536356bda7971cc2999e2dabf"
+}

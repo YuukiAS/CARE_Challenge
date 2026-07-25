@@ -1,0 +1,64 @@
+{
+  "task": "SCR-R1-RC1",
+  "wave": "RC1_RUNTIME_FOUNDATION_AND_MODEL_REPAIR",
+  "controller_decision": "PASS_CONTINUE_RC2",
+  "head": "c0b6b5b0fe2000b3b7b19e5d4c5dc0838df8b4e2",
+  "executor_id": "019f94a6-fc42-71b1-8940-5ac7ea4cce72",
+  "required_outputs_present": [
+    "runtime_import_graph.json",
+    "runtime_api_contract.json",
+    "model_branch_independence_checks.csv",
+    "prototype_category_contract.json",
+    "schedule_schema.json",
+    "checkpoint_resume_schema.json",
+    "future_wave_entrypoint_audit.json",
+    "unit_test_report_rc1.md"
+  ],
+  "independent_controller_checks": [
+    {
+      "command": "./envs/env_CARE/bin/python -m pytest tests/care_mm/test_care_srr_cascade_rescue.py tests/care_mm/test_care_srr_cascade_runtime_rc1.py -q",
+      "exit_code": 0,
+      "result": "14 passed, 1 warning"
+    },
+    {
+      "command": "./envs/env_CARE/bin/python scripts/evaluation/validate_care_srr_cascade_packet.py --packet-root results/20260724_care_myops_srr_cascade_submission_rescue/runtime_closure_repair_rc1",
+      "exit_code": 0,
+      "result": "decision PASS, failures []"
+    },
+    {
+      "command": "./envs/env_CARE/bin/python scripts/evaluation/orchestrate_care_srr_cascade_w3.py --dry-run",
+      "exit_code": 2,
+      "result": "fail-closed because formal_authorization_gate.json is missing; no formal job submitted"
+    },
+    {
+      "command": "./envs/env_CARE/bin/python scripts/training/run_care_srr_cascade_formal.py --dry-run --logical-run-id edema_seed20260725 --pathology edema --seed 20260725 --variants edema_zone_control|edema_srr_zone_cascade --optimizer-steps-each 6250 --validation-steps 1250|2500|3750|5000|6250",
+      "exit_code": 0,
+      "result": "PASS_DRY_RUN with formal_training_credit 0 and preformal assets fail-closed"
+    }
+  ],
+  "semantic_checks": {
+    "model_branch_independence": "PASS: independent scar/edema branches, inactive pathology channel remains exact anchor, anatomy channels exact anchor",
+    "prototype_contract": "PASS: category negatives preserved, query case/shard excluded in train mode, hash-seeded no-replacement sampling, no-T2 edema contribution excluded",
+    "schedule_contract": "PASS: 12500 microbatch rows per variant, grad accumulation 2, shared spatial augmentation keys include raw/label/anchor/source/prototype/distance",
+    "orchestrator_contract": "PASS: v2 state file driven, old hardcoded job ids removed, formal gate required before submit",
+    "source_cache_contract": "PASS_FOR_RC1: v2 cache paths, isolated attempt dir, winner lock, manifest/parity/hash outputs; RC2 must execute real all-220 build/adoption",
+    "formal_credit": "ZERO for all RC1 dry-runs and old W3 attempts"
+  },
+  "known_remaining_gates_for_RC2": [
+    "all-220 real OOF anchor cache and physical grid/export roundtrip",
+    "all-220 source cache with 880 fields and parity",
+    "category-aware prototype cache and crossfit checks",
+    "matched schedule hashes for all four logical jobs",
+    "real 32-channel scar and edema 200-step overfit",
+    "actual shared spatial augmentation fiducial",
+    "active loss backward matrix",
+    "checkpoint resume roundtrip",
+    "htzhulab and a100-gpu GPU preflight",
+    "four formal dry-runs",
+    "orchestrator idempotence",
+    "real known-bad suite",
+    "formal_authorization_gate.json PASS"
+  ],
+  "git_tracking_note": "Several task files are ignored or untracked by repository patterns and must be force-added at the terminal lightweight commit; no commit is made at RC1.",
+  "push_or_upload": false
+}

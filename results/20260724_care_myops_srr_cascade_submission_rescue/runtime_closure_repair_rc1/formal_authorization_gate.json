@@ -1,0 +1,57 @@
+{
+  "blockers": [],
+  "decision": "PASS",
+  "formal_jobs_authorized": true,
+  "gate_aggregation_mode": "receipt_aware_current_files",
+  "gpu_preflight_status": {
+    "attempt_count": 1,
+    "blockers": [],
+    "compatible_partitions": [
+      "htzhulab",
+      "a100-gpu",
+      "volta-gpu"
+    ],
+    "decision": "PASS",
+    "passed_partitions": [
+      "htzhulab"
+    ],
+    "policy": "any_compatible_partition_pass",
+    "selected_attempt": {
+      "attempt_id": "preflight_htzhulab_race_a100_20260725T011800Z",
+      "cuda_available": "True",
+      "cuda_device_count": "1",
+      "decision": "PASS",
+      "device": "cuda",
+      "error": "",
+      "exit_code": "0",
+      "log_file": "",
+      "partition": "htzhulab",
+      "python": "/users/a/e/aereinh/CARE/envs/env_CARE/bin/python",
+      "slurm_job_id": "60570357",
+      "torch_version": "2.11.0+cu130"
+    }
+  },
+  "preformal_gates": {
+    "anchor": "PASS",
+    "augmentation": "PASS",
+    "checkpoint": "PASS",
+    "edema_overfit": "PASS",
+    "formal_dry_runs": "PASS",
+    "gpu_preflight": "PASS",
+    "known_bad": "PASS",
+    "loss_gradients": "PASS",
+    "orchestrator": "PASS",
+    "prototype": "PASS",
+    "scar_overfit": "PASS",
+    "schedules": "PASS",
+    "source_cache": "PASS"
+  },
+  "prototype_receipt_status": {
+    "blockers": [],
+    "crossfit_decision": "PASS",
+    "decision": "PASS",
+    "manifest_decision": "PASS",
+    "prototype_file_count": 220,
+    "status_decision": "PASS"
+  }
+}

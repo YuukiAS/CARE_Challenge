@@ -1,20 +1,21 @@
 # CARE 架构 Wiki
 
-architecture_version: `care-srr-cascade-scr-r1-runtime-closure-repair-pending`
-latest_verified_runtime: `Batch10 fair rescue terminal packet; SCR-R1 W3 formal training has not started`
-latest_scientific_status: `CARE-MMRD direct route stopped; CARE-SRR-Cascade SCR-R1 scientific contract active; runtime closure repair ready`
+architecture_version: `care-srr-cascade-scr-r1-runtime-closure-terminal`
+latest_verified_runtime: `SCR-R1 W3 formal training terminal; W4 audit aggregation PASS; W5 package skipped by dual fallback`
+latest_scientific_status: `CARE-SRR-Cascade SCR-R1 completed locally with NO_CUSTOM_RESCUE_USE_BASELINE_ONLY`
 latest_controller_task: `20260725_care_myops_srr_cascade_runtime_closure_repair`
-route_status: `MAIN_ONLY_SCR_R1_RC1_READY`
+route_status: `MAIN_ONLY_SCR_R1_RC1_TERMINAL_LOCAL_ONLY`
 
-本页是 GPT、Controller、Executor、Mapper 和 Planner 读取当前架构状态的根入口。当前最重要的事实不是“新模型已完成”，而是 Controller 在正式 W3 前正确发现：仓库已有模型骨架、preflight、cache shell 和 monitor，但真实 formal trainer 尚不存在。用户已授权同一 SCR-R1 内的运行闭环修复（SCR-R1-RC1），先修复和复验，再训练；不得用 dry-run、source-cache job 或 monitor packet替代正式结果。
+本页是 GPT、Controller、Executor、Mapper 和 Planner 读取当前架构状态的根入口。当前最重要的事实是：SCR-R1-RC1 已把缺失的正式训练、评价、selection/audit 和 validator 运行闭环补齐，并完成本地 terminal evaluation；scar 和 edema 均因 audit exact-HD gate 失败回退到 nnU-Net baseline，因此没有生成 custom validation package，也没有上传或 push。
 
 ## 当前判断
 
 ```text
 Batch10 CARE-MMRD: 终止，保留历史公平负结果
 科学主线: CARE-SRR-Cascade / SCR-R1
-当前动作: SCR-R1-RC1 runtime closure repair
-正式W3 credit: 0
+当前动作: SCR-R1-RC1 terminal local closure
+正式W3 credit: 8/8 variants terminal PASS
+W4科学结果: NO_CUSTOM_RESCUE_USE_BASELINE_ONLY
 开发位置: /users/a/e/aereinh/CARE, main
 旧Route A/B/C: 历史证据，不恢复
 validation/Docker upload: 未授权
@@ -29,6 +30,12 @@ prompts/tasks/20260725_care_myops_srr_cascade_runtime_closure_repair_controller.
 prompts/tasks/20260725_care_myops_srr_cascade_runtime_closure_repair_executor_plan.yaml
 results/20260724_care_myops_srr_cascade_submission_rescue/
 ```
+
+当前架构图：
+
+- `figures/model-current.png`
+- `figures/model-gap.png`
+- `figures/execution-flow.png`
 
 修复 config 在冲突时覆盖 preexecution amendment、base config、旧 executor plan 和旧 Controller 生成的 resolved contract。它不改变科学假设、seed、budget、22/22 split、audit gate、Cine 边界或上传权限。
 
@@ -103,12 +110,12 @@ category-aware prototype cross-fit PASS
 真实augmentation function fiducial零错位
 active-pathology losses独立backward
 checkpoint/resume精确roundtrip
-htzhulab与a100-gpu GPU preflight PASS
+任一兼容GPU partition preflight PASS
 四个formal dry-run与orchestrator idempotence PASS
 真实known-bad全部被validator拒绝
 ```
 
-任何普通实现问题由Controller退回同一Executor修复；只有不可生成资产、实测存储低于45GiB、两个授权partition完成所有尝试后均不可用或外部集群故障，才允许写`OPERATIONALLY_BLOCKED`。
+任何普通实现问题由Controller退回同一Executor修复；只有不可生成资产、实测存储低于45GiB、所有兼容GPU partition完成所有尝试后均无preflight PASS或外部集群故障，才允许写`OPERATIONALLY_BLOCKED`。
 
 ## 正式运行与评价
 

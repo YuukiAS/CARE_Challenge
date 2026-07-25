@@ -1,4 +1,4 @@
-current_milestone_id: SRR_cascade_rescue_round1_runtime_closure_repair_ready
+current_milestone_id: SRR_cascade_rescue_round1_runtime_closure_terminal
 current_task_key: 20260725_care_myops_srr_cascade_runtime_closure_repair
 parent_task_key: 20260724_care_myops_srr_cascade_submission_rescue
 method_name: CARE-SRR-Cascade
@@ -16,14 +16,14 @@ parent_config_path: configs/care_mm/srr_cascade_submission_rescue.yaml
 binding_amendment_path: configs/care_mm/srr_cascade_submission_rescue_preexecution_amendment.yaml
 current_result_root: results/20260724_care_myops_srr_cascade_submission_rescue
 repair_result_root: results/20260724_care_myops_srr_cascade_submission_rescue/runtime_closure_repair_rc1
-current_review_path: null
+current_review_path: results/20260724_care_myops_srr_cascade_submission_rescue/mapper_report_final.md
 current_review_token: NOT_REVIEWED_NOT_REQUIRED
 controller_bind_latest_main: true
 runtime_repair_wins_on_conflict: true
 architecture_path: wiki/architecture.yaml
 component_table_path: wiki/COMPONENTS.csv
-wiki_fingerprint_status: RUNTIME_CLOSURE_REPAIR_PENDING_IMPLEMENTATION
-entrypoints_authority_status: SCR_R1_RC1_READY_FOR_CONTROLLER
+wiki_fingerprint_status: SCR_R1_RC1_TERMINAL_LOCAL_ONLY
+entrypoints_authority_status: SCR_R1_RC1_TERMINAL_BASELINE_FALLBACK
 updated_at: '2026-07-25'
 
 main_only:
@@ -43,15 +43,15 @@ batch10:
   scientific_meaning: CARE_MMRD_direct_six_class_route_stopped_not_reopened
 
 scr_r1:
-  scientific_status: ACTIVE_SCIENTIFIC_CONTRACT
-  runtime_status: READY_FOR_RUNTIME_CLOSURE_REPAIR
+  scientific_status: TERMINAL_LOCAL_EVALUATED_BASELINE_FALLBACK
+  runtime_status: W3_W4_W6_TERMINAL_W5_SKIPPED_BY_CONDITION
   prior_controller_block:
     decision: VALID_NEEDS_REPAIR
     reason: real_W3_formal_runtime_missing
     formal_training_credit: 0
   repair:
     repair_id: SCR-R1-RC1
-    status: READY_FOR_CONTROLLER
+    status: TERMINAL_LOCAL_ONLY
     is_new_scientific_round: false
     changes_scientific_hypothesis: false
     changes_seed_budget_split_gates: false
@@ -124,7 +124,7 @@ submission_rescue:
     required_gate: results/20260724_care_myops_srr_cascade_submission_rescue/runtime_closure_repair_rc1/formal_authorization_gate.json
     real_32_channel_overfit: true
     actual_augmentation_fiducial: true
-    both_partition_GPU_preflight: true
+    any_compatible_GPU_preflight: true
     formal_dry_run_all_four_jobs: true
     real_known_bad: true
   formal_training:
@@ -138,12 +138,17 @@ submission_rescue:
     validation_steps: [1250, 2500, 3750, 5000, 6250]
     exact_resume_authorized: true
     partial_attempt_formal_credit: 0
+    terminal_accounting: PASS_TERMINAL_TRAINING_READY_FOR_AGGREGATION
+    variants_pass: 8
   selection:
     calibration_candidate_count_per_pathology: 6
     two_seed_mean: same_variant_probability_mean_derived_bounded_channel_correction
     control_srr_cross_blend: false
     selected_checkpoint_reload: true
     audit_after_freeze_only: true
+    final_scar_decision: FALLBACK_TO_NNUNET
+    final_edema_decision: FALLBACK_TO_NNUNET
+    scientific_token: NO_CUSTOM_RESCUE_USE_BASELINE_ONLY
   metrics:
     dice: true
     exact_hd: true
@@ -165,6 +170,7 @@ submission_rescue:
     conditional_fixed_source: existing_Dataset502_nnunet_five_fold
   local_packaging:
     authorized_only_if_custom_pathology_passes: true
+    status: SKIPPED_BOTH_PATHOLOGIES_FALLBACK_TO_NNUNET
     myops_anchor: existing_Dataset501_nnunet_five_fold_probability_ensemble
     deterministic_runs: 2
     docker_local_build: true

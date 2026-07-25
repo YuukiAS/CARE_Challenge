@@ -29,8 +29,7 @@ TS="$(date +%Y%m%d_%H%M%S)"
 LOG_FILE="${LOG_FILE:-${CARE_ROOT}/logs/care_myops_srr_cascade_submission_rescue/${LOGICAL_RUN_ID}_${SLURM_JOB_ID:-local}_${TS}.log}"
 exec > >(tee -a "${LOG_FILE}") 2>&1
 
-"${CARE_ROOT}/envs/env_CARE/bin/python" scripts/training/run_care_srr_cascade_rescue.py \
-  --formal-job \
+"${CARE_ROOT}/envs/env_CARE/bin/python" scripts/training/run_care_srr_cascade_formal.py \
   --logical-run-id "${LOGICAL_RUN_ID}" \
   --pathology "${PATHOLOGY}" \
   --seed "${SEED}" \

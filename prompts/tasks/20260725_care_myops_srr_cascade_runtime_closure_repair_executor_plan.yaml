@@ -176,7 +176,7 @@ waves:
       - run_actual_augmentation_fiducial
       - run_each_active_loss_independent_backward
       - run_checkpoint_resume_roundtrip
-      - run_same_partition_GPU_preflight_on_htzhulab_and_a100_gpu
+      - run_GPU_preflight_until_any_compatible_partition_PASS
       - run_formal_cli_dry_run_for_all_four_logical_jobs
       - run_orchestrator_dry_run_from_empty_state_and_resume_state
       - run_real_known_bad_suite
@@ -208,11 +208,12 @@ waves:
       - actual_fiducial_zero_mismatch
       - each_active_loss_has_trainable_gradient_and_inactive_terms_absent
       - checkpoint_resume_exact_hash_and_cursor
-      - both_partition_GPU_preflights_exit_zero
+      - any_compatible_GPU_partition_preflight_exit_zero_and_PASS
       - four_formal_dry_runs_resolve_exact_assets_and_commands
       - orchestrator_dry_run_submits_each_logical_run_once
       - all_real_known_bad_rejected
       - formal_authorization_gate_PASS
+    gpu_preflight_gate_policy: "任一兼容 GPU partition preflight PASS 即可"
     failure_action: controller_returns_same_scope_real_asset_runtime_or_validator_gap_no_formal_submission
 
   - wave_id: RC3_W3_FOUR_LOGICAL_FORMAL_RUNS

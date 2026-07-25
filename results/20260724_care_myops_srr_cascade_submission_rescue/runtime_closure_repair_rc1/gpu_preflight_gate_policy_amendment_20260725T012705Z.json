@@ -1,0 +1,36 @@
+{
+  "amended_utc": "2026-07-25T01:27:05+00:00",
+  "compatible_partitions": [
+    "htzhulab",
+    "a100-gpu",
+    "volta-gpu"
+  ],
+  "decision": "PASS",
+  "formal_authorization_gate_after_amendment": "PASS",
+  "formal_jobs_authorized": true,
+  "contract_files_updated": [
+    "configs/care_mm/srr_cascade_runtime_closure_repair.yaml",
+    "prompts/tasks/20260725_care_myops_srr_cascade_runtime_closure_repair_executor_plan.yaml",
+    "results/20260724_care_myops_srr_cascade_submission_rescue/resolved_execution_contract.json",
+    "results/20260724_care_myops_srr_cascade_submission_rescue/runtime_closure_repair_rc1/resolved_runtime_closure_contract.json"
+  ],
+  "policy": "any_compatible_partition_pass",
+  "selected_gpu_preflight_attempt": {
+    "attempt_id": "preflight_htzhulab_race_a100_20260725T011800Z",
+    "partition": "htzhulab",
+    "slurm_job_id": "60570357"
+  },
+  "stale_jobs_cancelled": [
+    {
+      "job_id": "60539496",
+      "reason": "a100 preflight superseded by any-compatible GPU policy"
+    },
+    {
+      "job_id": "60570391",
+      "reason": "dependent gate-regenerator superseded by immediate gate PASS"
+    }
+  ],
+  "tests": [
+    "./envs/env_CARE/bin/python -m pytest tests/care_mm/test_care_srr_cascade_runtime_rc1.py::test_gpu_preflight_gate_accepts_any_compatible_pass tests/care_mm/test_care_srr_cascade_runtime_rc1.py::test_cli_contracts_and_orchestrator_no_hardcoded_job_ids -q"
+  ]
+}

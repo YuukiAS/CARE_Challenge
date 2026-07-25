@@ -1,0 +1,76 @@
+{
+  "task": "SCR-R1-RC1",
+  "method": "CARE-SRR-Cascade",
+  "execution": "SCR-R1",
+  "controller_role": "controller",
+  "executor_policy": {
+    "executor_count": 1,
+    "same_executor_repair_loop_required": true,
+    "push_allowed": false,
+    "upload_allowed": false
+  },
+  "repo": {
+    "path": "/users/a/e/aereinh/CARE",
+    "branch": "main",
+    "remote": "origin",
+    "remote_branch": "origin/main",
+    "head": "c0b6b5b0fe2000b3b7b19e5d4c5dc0838df8b4e2",
+    "required_commit": "c0b6b5b0fe2000b3b7b19e5d4c5dc0838df8b4e2",
+    "required_commit_is_ancestor_of_head": true,
+    "fetch_rebind_action": "git fetch --all --prune followed by fast-forward to origin/main before RC0 receipt generation",
+    "status_after_rebind": "main matched origin/main with only pre-authorized preexisting untracked files"
+  },
+  "authority": {
+    "highest_authority_files": [
+      {
+        "path": "results/srr_production/code_maturity/scr_r1_runtime_block_critic_and_repair_20260725.md",
+        "sha256": "15cc6fcfecb03d5faecb7c58ce3f2d4259a3187fa8a97b33ab3e648643490f24"
+      },
+      {
+        "path": "configs/care_mm/srr_cascade_runtime_closure_repair.yaml",
+        "sha256": "7cd2f408725fcc59c73bf8425996e4aaf77484b6d5cb1b107bab0ad06cf83fce"
+      },
+      {
+        "path": "prompts/tasks/20260725_care_myops_srr_cascade_runtime_closure_repair_controller.md",
+        "sha256": "f5d7a0b931c84dbfe3fcdba4d5074ee2538b5a9d3baef01b5817380cd08a201b"
+      },
+      {
+        "path": "prompts/tasks/20260725_care_myops_srr_cascade_runtime_closure_repair_executor_plan.yaml",
+        "sha256": "4e8aa0a47d390f8a7baa5ff61c3ed272e1ba715296d36a6f1d9e7453f84ca40e"
+      }
+    ],
+    "retained_lower_authority_files": [
+      {
+        "path": "configs/care_mm/srr_cascade_submission_rescue.yaml",
+        "sha256": "37b514e4fdb68eda50c2c5d9f0ae2332411ef41c1e81151333aafcf623783cb4"
+      },
+      {
+        "path": "configs/care_mm/srr_cascade_submission_rescue_preexecution_amendment.yaml",
+        "sha256": "028e2fce36480d205932b5f091053f10357f90ee243e32dd1e0e112618f6ab54"
+      },
+      {
+        "path": "prompts/tasks/20260724_care_myops_srr_cascade_submission_rescue_executor_plan.yaml",
+        "sha256": "dd82e1d832d6f794ed4876e91b60cfd3528fd0314ccac986e7b3c65a175cbe47"
+      },
+      {
+        "path": "prompts/tasks/20260724_care_myops_srr_cascade_submission_rescue_controller.md",
+        "sha256": "40ae32e314b350afa4747e64730147166aa18b8295dbda32a4ce6a2e4775837d"
+      }
+    ],
+    "conflict_order": [
+      "configs/care_mm/srr_cascade_runtime_closure_repair.yaml",
+      "configs/care_mm/srr_cascade_submission_rescue_preexecution_amendment.yaml",
+      "configs/care_mm/srr_cascade_submission_rescue.yaml and 20260724 executor plan",
+      "old controller resolved contract"
+    ],
+    "authority_decision": "PASS"
+  },
+  "rc0_decision": "PASS_CONTINUE_RC1",
+  "notes": [
+    "The prior W3 block remains valid historical evidence but is not the current terminal state.",
+    "W0 is conditionally retained pending required real revalidation gates.",
+    "W1 must be repaired in place.",
+    "W2 diagnostic evidence receives no formal credit until real rerun.",
+    "W3 receives zero formal credit and old formal shell must not be rerun directly."
+  ]
+}

@@ -21,20 +21,12 @@ LOG_FILE="${LOG_FILE:-${CARE_ROOT}/logs/care_myops_srr_cascade_submission_rescue
 exec > >(tee -a "${LOG_FILE}") 2>&1
 export CARE_W3_WATCHER_ACTIVE=1
 
-while true; do
-  "${CARE_ROOT}/envs/env_CARE/bin/python" \
-    scripts/evaluation/orchestrate_care_srr_cascade_w3.py \
-    --once \
-    --cache-monitor-only || true
-  DECISION="$("${CARE_ROOT}/envs/env_CARE/bin/python" - <<'PY'
-import json
-from pathlib import Path
-p=Path("results/20260724_care_myops_srr_cascade_submission_rescue/source_cache_race_state.json")
-print(json.loads(p.read_text()).get("decision", "NEEDS_MONITOR") if p.exists() else "NEEDS_MONITOR")
-PY
-)"
-  if [[ "${DECISION}" == "NEEDS_REPAIR" ]]; then
-    exit 2
-  fi
-  sleep "${WATCH_INTERVAL_SECONDS:-7200}"
-done
+PAIRS="${CARE_FORMAL_RACE_PAIRS:?missing CARE_FORMAL_RACE_PAIRS}"
+STATE_FILE="${CARE_FORMAL_RACE_WATCH_STATE_FILE:-${CARE_ROOT}/results/20260724_care_myops_srr_cascade_submission_rescue/runtime_closure_repair_rc1/formal_race_watcher_state_v2.json}"
+
+"${CARE_ROOT}/envs/env_CARE/bin/python" \
+  scripts/evaluation/watch_care_srr_cascade_formal_race.py \
+  --pairs "${PAIRS}" \
+  --interval-seconds "${WATCH_INTERVAL_SECONDS:-300}" \
+  --max-iterations "${WATCH_MAX_ITERATIONS:-288}" \
+  --state-file "${STATE_FILE}"

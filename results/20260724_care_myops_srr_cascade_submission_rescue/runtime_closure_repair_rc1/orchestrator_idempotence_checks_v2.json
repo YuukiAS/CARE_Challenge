@@ -1,0 +1,31 @@
+{
+  "attempt_rows_unchanged_on_resume": true,
+  "decision": "PASS",
+  "dry_run_from_empty_state_exit": 0,
+  "dry_run_from_empty_state_generated_four_logical_runs": true,
+  "empty_state_hash_before": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "formal_gate_nonpass_blocks_submit": true,
+  "hardcoded_job_ids_forbidden": true,
+  "job_id_set_after_first": {
+    "edema_seed20260724": "DRY_RUN",
+    "edema_seed20260725": "DRY_RUN",
+    "scar_seed20260724": "DRY_RUN",
+    "scar_seed20260725": "DRY_RUN"
+  },
+  "job_id_set_after_resume": {
+    "edema_seed20260724": "DRY_RUN",
+    "edema_seed20260725": "DRY_RUN",
+    "scar_seed20260724": "DRY_RUN",
+    "scar_seed20260725": "DRY_RUN"
+  },
+  "logical_runs": [
+    "scar_seed20260724",
+    "edema_seed20260724",
+    "scar_seed20260725",
+    "edema_seed20260725"
+  ],
+  "resume_state_exit": 0,
+  "resume_state_no_duplicate_submit": true,
+  "state_hash_after_first": "06f8dc98237c565553d0c50449730ed859417442ede882a2c8145e23fb5ff768",
+  "state_hash_after_resume": "be031963bc4973366c9a55931a9f786cb86fd114cb0c28f111199ea7328f0e43"
+}

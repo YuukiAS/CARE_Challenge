@@ -1,6 +1,6 @@
 schema_version: 17
 authority_name: care_myops_srr_cascade_submission_rescue_runtime_closure_authority
-formal_training_status: READY_FOR_CONTROLLER_RUNTIME_CLOSURE_REPAIR
+formal_training_status: SCR_R1_RC1_TERMINAL_LOCAL_ONLY
 status_reason: >-
   SCR-R1 Controller correctly blocked before formal W3 because the repository only had a
   dry-run formal entrypoint and a monitor-only orchestrator. The user authorized SCR-R1-RC1,
@@ -14,9 +14,9 @@ current_scientific_status:
   batch9_repair: FROZEN_EVIDENCE_SOURCE_ONLY
   batch10_deadline_rescue: TERMINAL_STOP_RETAINED_AS_HISTORY
   care_mmrd_direct_segmentation: STOPPED
-  srr_cascade_submission_rescue: RUNTIME_CLOSURE_REPAIR_READY
-  scr_r1_formal_training: NOT_STARTED_ZERO_CREDIT
-  scr_r1_rc1: READY_FOR_CONTROLLER
+  srr_cascade_submission_rescue: TERMINAL_LOCAL_EVALUATED_BASELINE_FALLBACK
+  scr_r1_formal_training: TERMINAL_8_OF_8_VARIANTS_PASS
+  scr_r1_rc1: TERMINAL_LOCAL_ONLY
   batch11: NOT_AUTHORIZED
   route_worktree_development: NOT_AUTHORIZED
 
@@ -59,7 +59,7 @@ formal_entrypoints:
       - actual_augmentation_fiducial_PASS
       - active_loss_gradient_PASS
       - checkpoint_resume_roundtrip_PASS
-      - both_partition_GPU_preflight_PASS
+      - any_compatible_GPU_preflight_PASS
       - formal_dry_run_and_orchestrator_idempotence_PASS
       - real_known_bad_PASS
       - formal_authorization_gate_PASS

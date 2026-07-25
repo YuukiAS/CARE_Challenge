@@ -1,0 +1,111 @@
+{
+  "decision": "PASS",
+  "forbidden_legacy_tokens": [
+    "SRRProposeRefineMyoPS",
+    "ProposalDictionary",
+    "M10TwoPassSpatialDictionary",
+    "BR2",
+    "SIP",
+    "arbiter",
+    "production_correction_gate"
+  ],
+  "head": "c0b6b5b0fe2000b3b7b19e5d4c5dc0838df8b4e2",
+  "nodes": [
+    {
+      "file": "src/care_myocardium/models/care_srr_cascade_rescue.py",
+      "forbidden_hits": {},
+      "label": "model",
+      "module": "src.care_myocardium.models.care_srr_cascade_rescue",
+      "sha256": "0d5c15a68811a43d7205d39b2bbf956ddd94477ea148f144fa3d865e05b886f8",
+      "status": "PASS"
+    },
+    {
+      "file": "src/care_myocardium/losses/care_srr_cascade_rescue_losses.py",
+      "forbidden_hits": {},
+      "label": "losses",
+      "module": "src.care_myocardium.losses.care_srr_cascade_rescue_losses",
+      "sha256": "621b0214f1f5d743c9dadb5571e7b8ebd1210818b965352ee2f6a1a866a3d1a8",
+      "status": "PASS"
+    },
+    {
+      "file": "src/care_myocardium/srr_production/anchor_runtime.py",
+      "forbidden_hits": {},
+      "label": "anchor_runtime",
+      "module": "src.care_myocardium.srr_production.anchor_runtime",
+      "sha256": "60e9695b0865229aae75f6735482dde3432d0b73709d85436a4fba705f9aafcf",
+      "status": "PASS"
+    },
+    {
+      "file": "src/care_myocardium/srr_production/case_prototypes.py",
+      "forbidden_hits": {},
+      "label": "case_prototypes",
+      "module": "src.care_myocardium.srr_production.case_prototypes",
+      "sha256": "52f9988e50696eea617ac551f073b5e380af6d678d6b2a82ad1c3159863b5e3b",
+      "status": "PASS"
+    },
+    {
+      "file": "src/care_myocardium/data/care_srr_cascade_runtime.py",
+      "forbidden_hits": {},
+      "label": "runtime_data",
+      "module": "src.care_myocardium.data.care_srr_cascade_runtime",
+      "sha256": "fae13f3498314d3631f25cc2d4b3c05559df517032e3e05fe0467500a75b331b",
+      "status": "PASS"
+    },
+    {
+      "file": "src/care_myocardium/training/care_srr_cascade_trainer.py",
+      "forbidden_hits": {},
+      "label": "formal_trainer",
+      "module": "src.care_myocardium.training.care_srr_cascade_trainer",
+      "sha256": "5a43af33ec883cac8f1cde614434f59b1354249b5a059eaadc15460a9f5b12b4",
+      "status": "PASS"
+    },
+    {
+      "file": "scripts/training/run_care_srr_cascade_formal.py",
+      "forbidden_hits": {},
+      "label": "run_care_srr_cascade_formal",
+      "module": "scripts/training/run_care_srr_cascade_formal.py",
+      "sha256": "976eb260a2fd80f7720ce26bb80cb896627620009e56d647a862cfade1f844ff",
+      "status": "PASS"
+    },
+    {
+      "file": "scripts/inference/run_care_srr_cascade_inference.py",
+      "forbidden_hits": {},
+      "label": "run_care_srr_cascade_inference",
+      "module": "scripts/inference/run_care_srr_cascade_inference.py",
+      "sha256": "2990a03393ca95cead2fc69b1b21ef65f1b10eac20e9b9833e24825f79ad0e31",
+      "status": "PASS"
+    },
+    {
+      "file": "scripts/evaluation/evaluate_care_srr_cascade.py",
+      "forbidden_hits": {},
+      "label": "evaluate_care_srr_cascade",
+      "module": "scripts/evaluation/evaluate_care_srr_cascade.py",
+      "sha256": "8999a229858bba5e0d83b82a8f196e5e8bd6e9cd2d05302b446eda10f855e5e3",
+      "status": "PASS"
+    },
+    {
+      "file": "scripts/evaluation/select_care_srr_cascade.py",
+      "forbidden_hits": {},
+      "label": "select_care_srr_cascade",
+      "module": "scripts/evaluation/select_care_srr_cascade.py",
+      "sha256": "a040405ba687b0bcddb50f681af6b9b7576a1537ccc7048e32c3ff0a7c8109e7",
+      "status": "PASS"
+    },
+    {
+      "file": "scripts/evaluation/validate_care_srr_cascade_packet.py",
+      "forbidden_hits": {},
+      "label": "validate_care_srr_cascade_packet",
+      "module": "scripts/evaluation/validate_care_srr_cascade_packet.py",
+      "sha256": "9b8ee48bfbf9b2cf9858a17f7f43b6f8fecfce8c197a21a17581936cb8ef0093",
+      "status": "PASS"
+    },
+    {
+      "file": "scripts/evaluation/orchestrate_care_srr_cascade_w3.py",
+      "forbidden_hits": {},
+      "label": "orchestrate_care_srr_cascade_w3",
+      "module": "scripts/evaluation/orchestrate_care_srr_cascade_w3.py",
+      "sha256": "6e6b2c488aa3eed130f0b1d22139a6db911ba2cbf098432aa13fea043da8d32c",
+      "status": "PASS"
+    }
+  ]
+}

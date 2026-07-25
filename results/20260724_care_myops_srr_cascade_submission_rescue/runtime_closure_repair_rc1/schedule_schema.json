@@ -1,0 +1,69 @@
+{
+  "contract": {
+    "deterministic_schedule_rows_per_variant": 12500,
+    "gradient_accumulation_microbatches": 2,
+    "intensity_missing_modalities_remain_zero": true,
+    "schedule_reused_by_matched_control_and_srr": true,
+    "spatial_augmentation_keys": [
+      "raw_modalities",
+      "label",
+      "anchor_logits",
+      "source_features",
+      "teacher_anatomy_logits",
+      "teacher_edema_logit",
+      "scar_source_margin",
+      "prototype_similarity_maps",
+      "distance_maps"
+    ],
+    "spatial_transform": "rotate_HW_k_then_flip_DHW_exact_index_transform"
+  },
+  "decision": "PASS",
+  "formal_topology": {
+    "edema_seed20260724": {
+      "partition": "htzhulab",
+      "pathology": "edema",
+      "seed": 20260724,
+      "variants": [
+        "edema_zone_control",
+        "edema_srr_zone_cascade"
+      ]
+    },
+    "edema_seed20260725": {
+      "partition": "a100-gpu",
+      "pathology": "edema",
+      "seed": 20260725,
+      "variants": [
+        "edema_zone_control",
+        "edema_srr_zone_cascade"
+      ]
+    },
+    "scar_seed20260724": {
+      "partition": "htzhulab",
+      "pathology": "scar",
+      "seed": 20260724,
+      "variants": [
+        "scar_cascade_control",
+        "scar_srr_cascade"
+      ]
+    },
+    "scar_seed20260725": {
+      "partition": "a100-gpu",
+      "pathology": "scar",
+      "seed": 20260725,
+      "variants": [
+        "scar_cascade_control",
+        "scar_srr_cascade"
+      ]
+    }
+  },
+  "gradient_accumulation": 2,
+  "optimizer_steps_each": 6250,
+  "schedule_rows_per_variant": 12500,
+  "validation_steps": [
+    1250,
+    2500,
+    3750,
+    5000,
+    6250
+  ]
+}

@@ -1,0 +1,39 @@
+{
+  "task": "SCR-R1-RC1",
+  "refreshed_job_ids": [
+    "60450660",
+    "60451021",
+    "60451022",
+    "60469088"
+  ],
+  "refresh_commands": {
+    "squeue": "squeue -j 60450660,60451021,60451022,60469088 -o '%i|%j|%T|%M|%l|%R|%P'",
+    "sacct": "sacct -j 60450660,60451021,60451022,60469088 --format=JobID,JobName,Partition,State,ExitCode,Elapsed,Start,End,NodeList -P"
+  },
+  "squeue_after_cleanup": [
+    "JOBID|NAME|STATE|TIME|TIME_LIMIT|NODELIST(REASON)|PARTITION"
+  ],
+  "sacct_after_cleanup": [
+    "60450660|CareSRRCache|htzhulab|CANCELLED by 397557|0:0|00:00:00|None|2026-07-24T11:54:17|None assigned",
+    "60451021|CareSRRCacheH|htzhulab|FAILED|1:0|00:00:11|2026-07-24T13:06:09|2026-07-24T13:06:20|g1807htzh01",
+    "60451021.batch|batch||FAILED|1:0|00:00:11|2026-07-24T13:06:09|2026-07-24T13:06:20|g1807htzh01",
+    "60451021.extern|extern||COMPLETED|0:0|00:00:11|2026-07-24T13:06:09|2026-07-24T13:06:20|g1807htzh01",
+    "60451022|CareSRRCacheA|a100-gpu|CANCELLED by 397557|0:0|00:00:00|None|2026-07-24T13:12:27|None assigned",
+    "60469088|SRRW3Watch|spill|CANCELLED by 397557|0:0|00:51:08|2026-07-24T12:21:19|2026-07-24T13:12:27|c151601",
+    "60469088.batch|batch||CANCELLED|0:15|00:51:09|2026-07-24T12:21:19|2026-07-24T13:12:28|c151601",
+    "60469088.extern|extern||COMPLETED|0:0|00:51:10|2026-07-24T12:21:19|2026-07-24T13:12:29|c151601"
+  ],
+  "cleanup_actions": [
+    {
+      "job_id": "60451022",
+      "action": "scancel",
+      "reason": "old pending cache attempt used pre-RC1 hardcoded entrypoint and must not be inherited into repaired orchestrator state"
+    },
+    {
+      "job_id": "60469088",
+      "action": "scancel",
+      "reason": "old W3 watcher used stale hardcoded state and reported missing formal entrypoint; RC1 orchestrator must own state from a clean v2 state file"
+    }
+  ],
+  "decision": "PASS_OLD_ATTEMPTS_TERMINAL_NO_FORMAL_CREDIT"
+}

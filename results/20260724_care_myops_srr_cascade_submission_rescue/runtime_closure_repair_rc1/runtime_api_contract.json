@@ -1,0 +1,49 @@
+{
+  "anchor_runtime": {
+    "canonical_formula": "p=clip(p,epsilon,1);p=p/sum_channels(p);z=log(p)",
+    "channels": 6,
+    "gt_anchor_forbidden": true,
+    "hard_label_anchor_forbidden": true,
+    "module": "src.care_myocardium.srr_production.anchor_runtime",
+    "output_grid": "resolved_ResEncM_3d_fullres_preprocessed_grid",
+    "rc2_real_all_220_required": true,
+    "source_semantics": "five_fold_OOF_only"
+  },
+  "decision": "PASS",
+  "formal_runtime": {
+    "asset_backed_batches_required_for_real_training": true,
+    "dry_run_formal_credit": 0,
+    "entrypoint": "scripts/training/run_care_srr_cascade_formal.py",
+    "formal_authorization_gate_required": true,
+    "missing_preformal_assets_fail_closed": "NEEDS_REPAIR_PREFORMAL_ASSETS"
+  },
+  "model": {
+    "active_pathology_modes": [
+      "scar",
+      "edema",
+      "both"
+    ],
+    "anatomy_channels": [
+      0,
+      1,
+      2,
+      3
+    ],
+    "branch_independence": "separate scar_branch and edema_branch; inactive pathology branch is not executed",
+    "class": "CARESRRCascadeRescue",
+    "correction": "anchor_pathology_logit + support * 2 * tanh(delta); edema additionally multiplied by t2_present",
+    "edema_channel": 4,
+    "forbidden_legacy_imports": [
+      "SRRProposeRefineMyoPS",
+      "ProposalDictionary",
+      "M10TwoPassSpatialDictionary",
+      "BR2",
+      "SIP",
+      "arbiter",
+      "production_correction_gate"
+    ],
+    "scar_channel": 5,
+    "support_gate": "fixed formula only; no learned gate",
+    "zero_init_output_projections": true
+  }
+}

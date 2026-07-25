@@ -1,0 +1,24 @@
+{
+  "a100_jobs": [
+    "60570584",
+    "60570585"
+  ],
+  "afterany_finalizer": "60570670",
+  "decision": "NEEDS_MONITOR_RACE_SUBMITTED",
+  "dependency_job_ids": [
+    "60570582",
+    "60570583",
+    "60570584",
+    "60570585",
+    "60570648",
+    "60570649"
+  ],
+  "formal_training_credit": 0,
+  "htzhulab_mirror_jobs": [
+    "60570648",
+    "60570649"
+  ],
+  "old_finalizer_cancelled": "60570590",
+  "policy": "a100_pending_htzhulab_race_with_per_logical_run_lock",
+  "updated_utc": "2026-07-25T01:50:30.598090+00:00"
+}

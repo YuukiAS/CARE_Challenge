@@ -78,7 +78,9 @@ prompts/tasks/20260725_care_myops_srr_cascade_runtime_closure_repair_executor_pl
 - 训练支持signal/resume，但只有完整6250+6250 steps才有formal credit；
 - W4六候选、audit、W5五折anchor package与W6 validator入口在W3前就已存在并通过dry-run。
 
-只有以下情况可写 `OPERATIONALLY_BLOCKED`：服务器资产确实不存在且不能由授权代码生成；45 GiB存储门无法满足；两个授权GPU partition均在记录所有允许尝试后不可用；或外部集群故障阻止任何运行。普通代码缺陷不得写成 operational block。
+GPU preflight gate 改为：任一兼容 GPU partition preflight PASS 即可。
+
+只有以下情况可写 `OPERATIONALLY_BLOCKED`：服务器资产确实不存在且不能由授权代码生成；45 GiB存储门无法满足；所有兼容GPU partition均在记录所有允许尝试后无 preflight PASS；或外部集群故障阻止任何运行。普通代码缺陷不得写成 operational block。
 
 Controller 必须持续负责到四个 logical run 全部 terminal、post-completion aggregation、calibration freeze、audit、条件式本地package、strict validator、Mapper/wiki/CURRENT/fingerprint和本地轻量commit完成。Submitted、pending、running、resume checkpoint和monitor packet均不是完成。
 

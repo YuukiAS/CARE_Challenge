@@ -1,82 +1,273 @@
-architecture_version: care-myops-batch9-reliable-label-distillation-terminal-no-usable-signal
-verified_at_utc: '2026-07-22T18:40:00-04:00'
-verified_milestone: Batch9 reliable label distillation direct segmentation controller packet
+architecture_version: SCR_R1_RC1_TERMINAL_LOCAL_ONLY
+verified_at_utc: '2026-07-25T03:45:00-04:00'
+verified_milestone: SRR_cascade_rescue_round1_runtime_closure_terminal
 review_token: NOT_REVIEWED_NOT_REQUIRED
 verification_base_commit: pending_local_commit
-code_fingerprint: "care_mm_reliable_distill.py=5db67db7;care_mm_losses.py=eb3f106d;care_mm_batch9.py=265deeb8;run_care_mm_batch9_reliable_distill.py=62ce99f5;evaluate_care_mm_batch9.py=29d2a1a3;aggregate_care_mm_batch9.py=84182a5f;finalize_care_mm_batch9.py=aaf596c9;validate_care_mm_batch9_packet.py=314a31ef;batch9_reliable_label_distillation.yaml=1f240928"
-evidence_fingerprint: "completion_check.md=1938afdb;decision_matrix.csv=8a92950d;strict_validator_report.json=06875958;subgroup_metrics.csv=ac79e318;casewise_metrics.csv=bd03d3de;slurm_formal_chain.json=2bf81b99;slurm_race_events.csv=66b613ff"
+code_fingerprint: care_mm_reliable_distill.py=5db67db7;care_mm_losses.py=eb3f106d;care_mm_batch9.py=265deeb8;run_care_mm_batch9_reliable_distill.py=62ce99f5;evaluate_care_mm_batch9.py=29d2a1a3;aggregate_care_mm_batch9.py=84182a5f;finalize_care_mm_batch9.py=aaf596c9;validate_care_mm_batch9_packet.py=314a31ef;batch9_reliable_label_distillation.yaml=1f240928
+evidence_fingerprint: SCR-R1-W3-W4-W6-terminal-local;see results/20260724_care_myops_srr_cascade_submission_rescue/finalizer_state.json
 nodes:
-- id: batch9_inputs_availability
-  label: Batch9 LGE/T2/C0 input plus availability hard mask
+- id: batch6_final_objective_alignment
+  label: final objective and production gate alignment
+  branch: MyoPS
+  current_status: partial
+  target_status: implemented
+  source_file: src/care_myocardium/losses/srr_losses.py
+  symbol: srr_m6_expanded_total_loss
+- id: batch5_post_batch4_diagnostic
+  label: post-Batch4 checkpoint/loss/gate diagnostic
+  branch: MyoPS
+  current_status: partial
+  target_status: implemented
+  source_file: scripts/evaluation/audit_srr_batch4_selection_semantics.py
+  symbol: Batch5
+- id: inputs_availability
+  label: 输入与 availability mask
+  branch: MyoPS
+  current_status: implemented
+  target_status: implemented
+  source_file: src/care_myocardium/models/srr_propref.py
+  symbol: availability
+- id: modality_stems_encoders
+  label: 模态 stems/encoders
+  branch: MyoPS
+  current_status: implemented
+  target_status: implemented
+  source_file: src/care_myocardium/models/srr_propref.py
+  symbol: self.encoders
+- id: retrieval_dictionary
+  label: 检索 dictionary 与表示槽
+  branch: MyoPS
+  current_status: partial
+  target_status: implemented
+  source_file: src/care_myocardium/models/srr_blocks.py
+  symbol: dictionary_slot_config
+- id: router_pattern_sip
+  label: router / Pattern-SIP 状态
+  branch: MyoPS
+  current_status: partial
+  target_status: implemented
+  source_file: src/care_myocardium/models/srr_blocks.py
+  symbol: RetrievalRouter
+- id: prototype_memory
+  label: prototype memory 与 hard-negative
+  branch: MyoPS
+  current_status: partial
+  target_status: implemented
+  source_file: src/care_myocardium/models/srr_propref.py
+  symbol: ProposalDictionary
+- id: anatomy_prior
+  label: 解剖先验
+  branch: MyoPS
+  current_status: partial
+  target_status: implemented
+  source_file: src/care_myocardium/models/srr_propref.py
+  symbol: AnatomyDistanceROIPrior
+- id: scar_proposal
+  label: scar proposal
+  branch: MyoPS
+  current_status: partial
+  target_status: implemented
+  source_file: src/care_myocardium/models/srr_propref.py
+  symbol: scar_dictionary
+- id: edema_proposal
+  label: edema proposal
+  branch: MyoPS
+  current_status: partial
+  target_status: implemented
+  source_file: src/care_myocardium/models/srr_propref.py
+  symbol: edema_dictionary
+- id: scar_refiner
+  label: scar soft-ROI refiner
+  branch: MyoPS
+  current_status: partial
+  target_status: implemented
+  source_file: src/care_myocardium/models/srr_propref.py
+  symbol: scar_refiner
+- id: edema_refiner
+  label: edema soft-ROI refiner
+  branch: MyoPS
+  current_status: partial
+  target_status: implemented
+  source_file: src/care_myocardium/models/srr_propref.py
+  symbol: edema_refiner
+- id: no_t2_safety
+  label: no-T2 edema 安全门
+  branch: MyoPS
+  current_status: implemented
+  target_status: implemented
+  source_file: src/care_myocardium/models/srr_propref.py
+  symbol: canonical_t2_present
+- id: arbitration_final_output
+  label: arbitration 与 final output
+  branch: MyoPS
+  current_status: partial
+  target_status: implemented
+  source_file: src/care_myocardium/models/srr_propref.py
+  symbol: BranchArbitrationGate
+- id: losses
+  label: loss 与优化目标
+  branch: MyoPS
+  current_status: implemented
+  target_status: implemented
+  source_file: src/care_myocardium/losses/srr_losses.py
+  symbol: srr_m6_expanded_total_loss
+- id: checkpoint_selection
+  label: checkpoint 选择
+  branch: MyoPS
+  current_status: partial
+  target_status: implemented
+  source_file: scripts/evaluation/aggregate_srr_v3_m9_dictionary_fidelity_packet.py
+  symbol: select_metric_checkpoint
+- id: cine_temporal
+  label: Cine temporal 次线
+  branch: Cine
+  current_status: partial
+  target_status: implemented
+  source_file: scripts/evaluation/aggregate_srr_v3_m9_dictionary_fidelity_packet.py
+  symbol: REQUIRED_OUTPUT_DIR
+- id: controller_continuity
+  label: controller continuity 与 finalizer
+  branch: AgentFlow
+  current_status: partial
+  target_status: implemented
+  source_file: prompts/CONTROLLER_TASK_PROTOCOL.md
+  symbol: controller_supervised
+- id: mapper_wiki_observability
+  label: mapper/wiki observability
+  branch: AgentFlow
+  current_status: partial
+  target_status: implemented
+  source_file: .agents/skills/care-mapper/SKILL.md
+  symbol: care-mapper
+- id: m10_followup_wave2_reconciliation
+  label: M10 inherited Wave2 checkpoint/intervention reconciliation
+  branch: MyoPS
+  current_status: partial
+  target_status: implemented
+  source_file: scripts/evaluation/aggregate_srr_v3_m10_followup_wave2.py
+  symbol: aggregate
+- id: cine_followup_fidelity_contracts
+  label: CineMA/registration/temporal fail-closed fidelity contracts
+  branch: Cine
+  current_status: implemented
+  target_status: implemented
+  source_file: src/care_myocardium/cine/followup/contracts.py
+  symbol: RegistrationGateEvidence
+- id: cine_followup_adapter_control
+  label: CineMA adapted model versus capacity-matched random-init control
+  branch: Cine
+  current_status: partial
+  target_status: implemented
+  source_file: scripts/training/run_cinema_adapter_m10.py
+  symbol: CONTRACT
+- id: cine_followup_registration
+  label: learned registration plus gate and SyN control requirement
+  branch: Cine
+  current_status: partial
+  target_status: implemented
+  source_file: scripts/training/run_cine_registration_m10.py
+  symbol: registration_gate_passed
+- id: cine_followup_temporal_dictionary
+  label: learned temporal dictionary/model after registration gate
+  branch: Cine
+  current_status: partial
+  target_status: implemented
+  source_file: scripts/training/run_cine_temporal_model_m10.py
+  symbol: CineTemporalModel
+- id: m10_followup_controller_finalizer
+  label: M10 follow-up controller finalizer and packet publication boundary
+  branch: AgentFlow
+  current_status: partial
+  target_status: implemented
+  source_file: prompts/CONTROLLER_TASK_PROTOCOL.md
+  symbol: FINALIZER_A
+- id: batch9_reliable_distill_resenc
+  label: direct reliable-label distillation segmentation backbone
   branch: MyoPS
   current_status: implemented
   target_status: implemented
   source_file: src/care_myocardium/models/care_mm_reliable_distill.py
-  symbol: CAREMMReliableDistillResEnc.forward
-- id: batch9_modality_stems
-  label: Three modality-specific stems with hard masking
-  branch: MyoPS
-  current_status: implemented
-  target_status: implemented
-  source_file: src/care_myocardium/models/care_mm_reliable_distill.py
-  symbol: stems
-- id: batch9_resenc_backbone
-  label: Official ResidualEncoderUNet M-level backbone
-  branch: MyoPS
-  current_status: implemented
-  target_status: implemented
-  source_file: src/care_myocardium/models/care_mm_reliable_distill.py
-  symbol: ResidualEncoderUNet
-- id: batch9_final_six_logits
-  label: Direct six-class anatomy/scar/edema logits
-  branch: MyoPS
-  current_status: implemented
-  target_status: implemented
-  source_file: src/care_myocardium/models/care_mm_reliable_distill.py
-  symbol: six_class_logits
-- id: batch9_reliable_losses
-  label: Reliable-label final-logit losses and distillation terms
+  symbol: CAREMMReliableDistillResEnc
+- id: batch9_reliable_loss_authority
+  label: reliable partial-label and distillation loss authority
   branch: MyoPS
   current_status: implemented
   target_status: implemented
   source_file: src/care_myocardium/losses/care_mm_losses.py
   symbol: compute_care_mm_loss
-- id: batch9_terminal_evaluation
-  label: Fixed-checkpoint reload and 44-case local evaluation
-  branch: MyoPS
+- id: batch9_finalizer_validator
+  label: terminal aggregation, validator, resource race accounting
+  branch: AgentFlow
   current_status: implemented
   target_status: implemented
   source_file: scripts/evaluation/finalize_care_mm_batch9.py
   symbol: BATCH9_MAINLINE_NO_USABLE_SIGNAL_RETURN_TO_PLANNER
-- id: historical_srr_batch7_batch8
-  label: Historical SRR/BR2/SIP/prototype/refiner/gate path disabled for Batch9
-  branch: MyoPS
-  current_status: historical_disabled
-  target_status: disabled
-  source_file: results/20260722_care_myops_batch9_reliable_label_distillation/batch8_supersession.md
-  symbol: Batch8_superseded
 edges:
-- from: batch9_inputs_availability
-  to: batch9_modality_stems
+- from: inputs_availability
+  to: modality_stems_encoders
   kind: data
-  condition: only observed modalities pass nonzero stem features
-- from: batch9_modality_stems
-  to: batch9_resenc_backbone
-  kind: data
-  condition: concatenated stem features plus availability channels
-- from: batch9_resenc_backbone
-  to: batch9_final_six_logits
-  kind: data
-  condition: shared decoder feature feeds anatomy/scar/edema heads
-- from: batch9_final_six_logits
-  to: batch9_reliable_losses
-  kind: loss
-  condition: scar/edema supervised on composed final-logit margins; no-T2 edema excluded
-- from: batch9_reliable_losses
-  to: batch9_terminal_evaluation
+  condition: observed modalities plus availability mask
+- from: modality_stems_encoders
+  to: retrieval_dictionary
+  kind: feature
+  condition: modality features feed retrieval components
+- from: retrieval_dictionary
+  to: router_pattern_sip
+  kind: routing
+  condition: dictionary slots routed for proposal/refiner evidence
+- from: router_pattern_sip
+  to: prototype_memory
   kind: evidence
-  condition: two seeds completed fixed 500+100+100+100 budget
-- from: historical_srr_batch7_batch8
-  to: batch9_terminal_evaluation
-  kind: boundary
-  condition: old SRR/BR2/SIP/refiner/gate not authorized or called
+  condition: historical SRR prototype/proposal context
+- from: prototype_memory
+  to: scar_proposal
+  kind: proposal
+  condition: scar evidence path
+- from: prototype_memory
+  to: edema_proposal
+  kind: proposal
+  condition: edema evidence path
+- from: scar_proposal
+  to: scar_refiner
+  kind: refine
+  condition: scar ROI refinement path
+- from: edema_proposal
+  to: edema_refiner
+  kind: refine
+  condition: edema ROI refinement path
+- from: scar_refiner
+  to: arbitration_final_output
+  kind: logit
+  condition: scar final-output contribution
+- from: edema_refiner
+  to: no_t2_safety
+  kind: safety
+  condition: T2-present guard
+- from: no_t2_safety
+  to: arbitration_final_output
+  kind: logit
+  condition: edema final-output contribution only when safe
+- from: losses
+  to: checkpoint_selection
+  kind: training
+  condition: loss evidence constrains checkpoint choice
+- from: checkpoint_selection
+  to: arbitration_final_output
+  kind: selection
+  condition: deploy/evaluation candidate boundary
+- from: controller_continuity
+  to: mapper_wiki_observability
+  kind: governance
+  condition: controller hands terminal evidence to mapper
+- from: mapper_wiki_observability
+  to: m10_followup_controller_finalizer
+  kind: governance
+  condition: wiki evidence supports finalizer packets
+- from: batch9_reliable_distill_resenc
+  to: batch9_reliable_loss_authority
+  kind: history
+  condition: Batch9 direct route evidence
+- from: batch9_reliable_loss_authority
+  to: batch9_finalizer_validator
+  kind: history
+  condition: Batch9 terminal no-usable-signal packet

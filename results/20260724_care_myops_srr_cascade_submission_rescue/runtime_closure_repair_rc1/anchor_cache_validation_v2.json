@@ -1,0 +1,11 @@
+{
+  "blockers": [],
+  "builder_counts": {
+    "direct_oof_checkpoint_fallback": 220
+  },
+  "cache_file_count": 220,
+  "case_count": 220,
+  "decision": "PASS",
+  "manifest_rows": 220,
+  "roundtrip_rows": 220
+}

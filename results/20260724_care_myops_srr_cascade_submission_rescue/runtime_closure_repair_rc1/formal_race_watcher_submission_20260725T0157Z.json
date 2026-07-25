@@ -1,0 +1,24 @@
+{
+  "afterany_finalizer": "60570670",
+  "completion_claim": false,
+  "decision": "NEEDS_MONITOR",
+  "formal_jobs": [
+    "60570582",
+    "60570583",
+    "60570584",
+    "60570585"
+  ],
+  "pairs": [
+    "scar_seed20260725:60570584:60570648",
+    "edema_seed20260725:60570585:60570649"
+  ],
+  "partition": "spill",
+  "purpose": "cancel_pending_race_loser_when_counterpart_starts_or_completes",
+  "race_mirrors": [
+    "60570648",
+    "60570649"
+  ],
+  "updated_utc": "2026-07-25T01:57:29.476047+00:00",
+  "watcher_job_id": "60570975",
+  "watcher_state": "PENDING"
+}

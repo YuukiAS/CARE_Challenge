@@ -1,0 +1,33 @@
+{
+  "asset_fixture_selector": {
+    "candidate_case_id": "Case1001",
+    "candidate_center_zyx": [
+      10,
+      149,
+      125
+    ],
+    "candidate_label_counts": {
+      "0": 1387,
+      "1": 78,
+      "2": 1361,
+      "5": 246
+    },
+    "candidate_patch_shape": [
+      3,
+      32,
+      32
+    ],
+    "fallback_used": false,
+    "selector": "first_positive_case"
+  },
+  "case_id": "Case1001",
+  "decision": "PASS",
+  "final_loss": 1.8567683696746826,
+  "formal_training_credit": 0,
+  "initial_loss": 3.394066333770752,
+  "loss_reduction_fraction": 0.45293692371302496,
+  "nonzero_correction": true,
+  "optimizer_steps": 200,
+  "pathology": "scar",
+  "source_feature_channels": 32
+}

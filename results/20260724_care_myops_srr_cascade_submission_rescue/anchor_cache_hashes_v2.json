@@ -1,0 +1,18 @@
+{
+  "attempt_id": "anchor_htzhulab_rc2_repair",
+  "builder": "direct_oof_checkpoint_fallback",
+  "cache_file_count": 220,
+  "case_count": 220,
+  "decision": "PASS",
+  "log_file": "/users/a/e/aereinh/CARE/logs/care_myops_srr_cascade_submission_rescue/CareSRRAnchor_anchor_htzhulab_rc2_repair_60539497_20260724_150602.log",
+  "manifest_rows": 220,
+  "manifest_sha256": "79b0287304257afe8989942db11840f68b4db1f944cb295e986214965b926471",
+  "partition": "htzhulab",
+  "race_group": "care_srr_anchor_direct_all220_20260725_rc2_v1",
+  "roundtrip_changed_voxels_max": 0,
+  "roundtrip_rows": 220,
+  "roundtrip_sha256": "b99ac41639bf8e15a79e5633ca4c823c1df3504f0a328092c143e2b8cd9d32ad",
+  "slurm_job_id": "60539497",
+  "superseded_previous_final_cache_dir": "results/20260724_care_myops_srr_cascade_submission_rescue/runtime/anchor_cache_v2_superseded_by_anchor_htzhulab_rc2_repair",
+  "winner_lock_dir": "results/20260724_care_myops_srr_cascade_submission_rescue/runtime/anchor_cache_v2.care_srr_anchor_direct_all220_20260725_rc2_v1.winner.lock"
+}

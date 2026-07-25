@@ -1,0 +1,85 @@
+{
+  "decision": "PASS",
+  "logical_jobs": {
+    "edema_seed20260724": {
+      "control_srr_shared_schedule": true,
+      "decision": "PASS",
+      "file_sha256": {
+        "edema_srr_zone_cascade": "47835dfc951d7dbf7ee659b21c3cf6dbfe8ab028c0b55031be9ffbbe26c47127",
+        "edema_zone_control": "47835dfc951d7dbf7ee659b21c3cf6dbfe8ab028c0b55031be9ffbbe26c47127"
+      },
+      "pathology": "edema",
+      "paths": {
+        "edema_srr_zone_cascade": "results/20260724_care_myops_srr_cascade_submission_rescue/runtime/matched_schedules_v2/edema_seed20260724__edema_srr_zone_cascade.csv",
+        "edema_zone_control": "results/20260724_care_myops_srr_cascade_submission_rescue/runtime/matched_schedules_v2/edema_seed20260724__edema_zone_control.csv"
+      },
+      "rows_per_variant": 12500,
+      "schedule_semantic_sha256": "12be353d7c5b74be30ee06731830e9ea23e7b7d1fbafcf80601e1faf1ade123c",
+      "seed": 20260724,
+      "variants": [
+        "edema_zone_control",
+        "edema_srr_zone_cascade"
+      ]
+    },
+    "edema_seed20260725": {
+      "control_srr_shared_schedule": true,
+      "decision": "PASS",
+      "file_sha256": {
+        "edema_srr_zone_cascade": "ff9519f98642d16d092e52ffc6f070e0a5e83dcd122de7793c8a1b3e455ed243",
+        "edema_zone_control": "ff9519f98642d16d092e52ffc6f070e0a5e83dcd122de7793c8a1b3e455ed243"
+      },
+      "pathology": "edema",
+      "paths": {
+        "edema_srr_zone_cascade": "results/20260724_care_myops_srr_cascade_submission_rescue/runtime/matched_schedules_v2/edema_seed20260725__edema_srr_zone_cascade.csv",
+        "edema_zone_control": "results/20260724_care_myops_srr_cascade_submission_rescue/runtime/matched_schedules_v2/edema_seed20260725__edema_zone_control.csv"
+      },
+      "rows_per_variant": 12500,
+      "schedule_semantic_sha256": "2b9bc0b056ee2d7e01720d7f44badbbec74f15d8adcf35af747ddcede3f4413f",
+      "seed": 20260725,
+      "variants": [
+        "edema_zone_control",
+        "edema_srr_zone_cascade"
+      ]
+    },
+    "scar_seed20260724": {
+      "control_srr_shared_schedule": true,
+      "decision": "PASS",
+      "file_sha256": {
+        "scar_cascade_control": "02af9a85b1d0e41d4bb890e69c6fd5698f2a95a5aba75487f1eee1ea2e7caf3e",
+        "scar_srr_cascade": "02af9a85b1d0e41d4bb890e69c6fd5698f2a95a5aba75487f1eee1ea2e7caf3e"
+      },
+      "pathology": "scar",
+      "paths": {
+        "scar_cascade_control": "results/20260724_care_myops_srr_cascade_submission_rescue/runtime/matched_schedules_v2/scar_seed20260724__scar_cascade_control.csv",
+        "scar_srr_cascade": "results/20260724_care_myops_srr_cascade_submission_rescue/runtime/matched_schedules_v2/scar_seed20260724__scar_srr_cascade.csv"
+      },
+      "rows_per_variant": 12500,
+      "schedule_semantic_sha256": "a0931594d415ef8fe0da53276d0fd248cd9a9d2b7b220ee0b95ea3c8bf37e9c1",
+      "seed": 20260724,
+      "variants": [
+        "scar_cascade_control",
+        "scar_srr_cascade"
+      ]
+    },
+    "scar_seed20260725": {
+      "control_srr_shared_schedule": true,
+      "decision": "PASS",
+      "file_sha256": {
+        "scar_cascade_control": "6be8b6c6a081112d0acd994a37188050d4d1cbe897beedbf634040900bf5e368",
+        "scar_srr_cascade": "6be8b6c6a081112d0acd994a37188050d4d1cbe897beedbf634040900bf5e368"
+      },
+      "pathology": "scar",
+      "paths": {
+        "scar_cascade_control": "results/20260724_care_myops_srr_cascade_submission_rescue/runtime/matched_schedules_v2/scar_seed20260725__scar_cascade_control.csv",
+        "scar_srr_cascade": "results/20260724_care_myops_srr_cascade_submission_rescue/runtime/matched_schedules_v2/scar_seed20260725__scar_srr_cascade.csv"
+      },
+      "rows_per_variant": 12500,
+      "schedule_semantic_sha256": "7848d0b75f9d5c4f5cf5d8bc7fc44406bbe5dd8b37c0a041990f4948c0ff449a",
+      "seed": 20260725,
+      "variants": [
+        "scar_cascade_control",
+        "scar_srr_cascade"
+      ]
+    }
+  }
+}

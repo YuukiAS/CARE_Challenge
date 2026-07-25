@@ -1,0 +1,47 @@
+{
+  "decision": "NEEDS_MONITOR",
+  "timestamp_utc": "2026-07-25T00:57:55Z",
+  "git_head": "c0b6b5b0fe2000b3b7b19e5d4c5dc0838df8b4e2",
+  "origin_main": "c0b6b5b0fe2000b3b7b19e5d4c5dc0838df8b4e2",
+  "formal_jobs_authorized": false,
+  "formal_jobs_submitted": false,
+  "formal_gate_path": "results/20260724_care_myops_srr_cascade_submission_rescue/runtime_closure_repair_rc1/formal_authorization_gate.json",
+  "formal_gate_decision": "NEEDS_REPAIR",
+  "formal_gate_blockers": [
+    "gpu_preflight"
+  ],
+  "preformal_gates": {
+    "anchor": "PASS",
+    "source_cache": "PASS",
+    "prototype": "PASS",
+    "schedules": "PASS",
+    "scar_overfit": "PASS",
+    "edema_overfit": "PASS",
+    "augmentation": "PASS",
+    "loss_gradients": "PASS",
+    "checkpoint": "PASS",
+    "formal_dry_runs": "PASS",
+    "orchestrator": "PASS",
+    "known_bad": "PASS",
+    "gpu_preflight": "NEEDS_MONITOR_GPU_PREFLIGHT"
+  },
+  "a100_preflight_job": {
+    "job_id": "60539496",
+    "job_name": "CareSRRPre2A",
+    "partition": "a100-gpu",
+    "account": "rc_htzhu_pi",
+    "qos": "gpu_access",
+    "state": "PENDING",
+    "reason": "Priority",
+    "exit_code": "0:0",
+    "elapsed": "00:00:00",
+    "submit_time": "2026-07-24T14:35:39",
+    "eligible_time": "2026-07-24T14:35:39",
+    "scontrol_estimated_start_time": "2026-07-26T09:35:00",
+    "sched_node_list": "g141608",
+    "command": "/users/a/e/aereinh/CARE/jobs/care_mm/preflight_care_srr_cascade_rc2.sh",
+    "submit_line": "sbatch --parsable --job-name=CareSRRPre2A --partition=a100-gpu --qos=gpu_access --gres=gpu:nvidia_a100-pcie-40gb:1 --export=ALL,CARE_PREFLIGHT_PARTITION=a100-gpu,CARE_PREFLIGHT_ATTEMPT_ID=preflight_a100_rc2_repair jobs/care_mm/preflight_care_srr_cascade_rc2.sh"
+  },
+  "controller_next_action": "MONITOR_A100_PREFLIGHT_THEN_REGENERATE_GATE_NO_FORMAL_SUBMIT",
+  "notes": "Existing a100 preflight is the contract-required remaining dual-partition GPU preflight. Shorter a100 and volta test-only probes did not provide an earlier authorized replacement for this gate."
+}

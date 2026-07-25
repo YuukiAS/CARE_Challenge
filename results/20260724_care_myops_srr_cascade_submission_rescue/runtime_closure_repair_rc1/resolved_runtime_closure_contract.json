@@ -1,0 +1,111 @@
+{
+  "task": "SCR-R1-RC1",
+  "method": "CARE-SRR-Cascade",
+  "execution": "SCR-R1",
+  "highest_authority": "configs/care_mm/srr_cascade_runtime_closure_repair.yaml",
+  "source_head": "c0b6b5b0fe2000b3b7b19e5d4c5dc0838df8b4e2",
+  "repair_result_root": "results/20260724_care_myops_srr_cascade_submission_rescue/runtime_closure_repair_rc1",
+  "result_root": "results/20260724_care_myops_srr_cascade_submission_rescue",
+  "runtime_roots": {
+    "anchor_cache": "results/20260724_care_myops_srr_cascade_submission_rescue/runtime/anchor_cache_v2",
+    "source_cache": "results/20260724_care_myops_srr_cascade_submission_rescue/runtime/source_cache_v2",
+    "prototype_cache": "results/20260724_care_myops_srr_cascade_submission_rescue/runtime/prototype_cache_v2",
+    "schedule": "results/20260724_care_myops_srr_cascade_submission_rescue/runtime/matched_schedules_v2",
+    "formal": "results/20260724_care_myops_srr_cascade_submission_rescue/runtime/formal_v2",
+    "orchestrator_state": "results/20260724_care_myops_srr_cascade_submission_rescue/w3_orchestrator_state_v2.json"
+  },
+  "production_entrypoints_required": [
+    "src/care_myocardium/srr_production/anchor_runtime.py",
+    "src/care_myocardium/data/care_srr_cascade_runtime.py",
+    "src/care_myocardium/training/care_srr_cascade_trainer.py",
+    "scripts/training/run_care_srr_cascade_formal.py",
+    "scripts/inference/run_care_srr_cascade_inference.py",
+    "scripts/evaluation/evaluate_care_srr_cascade.py",
+    "scripts/evaluation/select_care_srr_cascade.py",
+    "scripts/evaluation/validate_care_srr_cascade_packet.py"
+  ],
+  "preformal_authorization_gates": [
+    "formal_authorization_gate.json decision PASS",
+    "220-case OOF anchor canonicalization and physical grid/export roundtrip",
+    "220-case source cache with 880 fields and checkpoint/source/prototype hash parity",
+    "real 32-channel dual-pathology overfit for scar and edema",
+    "real augmentation fiducial proving shared spatial transform across raw label anchor source teacher logits prototype and distance maps",
+    "single loss backward with nonzero gradients for intended trainable branches",
+    "checkpoint roundtrip reload equality",
+    "any compatible GPU partition preflight PASS authorizes the formal gate; incompatible partition PASS does not authorize, and failed compatible attempts do not block if another compatible partition PASS exists",
+    "four formal dry-runs covering the four logical jobs",
+    "orchestrator idempotence with hardcoded job IDs forbidden",
+    "strict real known-bad failures"
+  ],
+  "formal_training_plan": [
+    {
+      "logical_job": "scar_seed20260724",
+      "partition": "htzhulab",
+      "variants": [
+        "scar_cascade_control",
+        "scar_srr_cascade"
+      ],
+      "order": "matched control before SRR",
+      "optimizer_steps_per_variant": 6250,
+      "time_limit_hours": 8
+    },
+    {
+      "logical_job": "edema_seed20260724",
+      "partition": "htzhulab",
+      "variants": [
+        "edema_zone_control",
+        "edema_srr_zone_cascade"
+      ],
+      "order": "matched control before SRR",
+      "optimizer_steps_per_variant": 6250,
+      "time_limit_hours": 8
+    },
+    {
+      "logical_job": "scar_seed20260725",
+      "partition": "a100-gpu",
+      "variants": [
+        "scar_cascade_control",
+        "scar_srr_cascade"
+      ],
+      "order": "matched control before SRR",
+      "optimizer_steps_per_variant": 6250,
+      "time_limit_hours": 8
+    },
+    {
+      "logical_job": "edema_seed20260725",
+      "partition": "a100-gpu",
+      "variants": [
+        "edema_zone_control",
+        "edema_srr_zone_cascade"
+      ],
+      "order": "matched control before SRR",
+      "optimizer_steps_per_variant": 6250,
+      "time_limit_hours": 8
+    }
+  ],
+  "hard_boundaries": {
+    "old_formal_shell_direct_rerun_allowed": false,
+    "w3_prior_formal_credit": "ZERO",
+    "calibration_candidates_only": 6,
+    "audit_can_select_parameters": false,
+    "package_condition": "at least one custom pathology passes frozen audit",
+    "myops_package_anchor": "existing Dataset501 five-fold nnU-Net probability ensemble",
+    "cine_package_anchor": "existing Dataset502 five-fold chain",
+    "push_allowed": false,
+    "upload_allowed": false,
+    "new_cine_training_allowed": false,
+    "batch11_allowed": false
+  },
+  "completion_scope": [
+    "RC3 terminal accounting",
+    "aggregation",
+    "frozen calibration selection",
+    "audit",
+    "conditional package and Docker dry-run",
+    "strict validator",
+    "Mapper update",
+    "CURRENT/wiki/fingerprint update",
+    "local lightweight commit"
+  ],
+  "contract_decision": "PASS_UNAMBIGUOUS_CONTINUE"
+}

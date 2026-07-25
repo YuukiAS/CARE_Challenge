@@ -1,0 +1,296 @@
+{
+  "afterany_finalizer": {
+    "command": "sbatch --parsable --dependency=afterany:60570582:60570583:60570584:60570585:60571937:60571938:60570648:60570649 --job-name=SRRW3FinalR2 --export=ALL,CARE_SRR_PREFLIGHT_DEPENDENCY_JOB_ID=60570582,60570583,60570584,60570585,60571937,60571938,60570648,60570649 jobs/care_mm/finalize_care_srr_cascade_w3.sh",
+    "dependency_job_ids": [
+      "60570582",
+      "60570583",
+      "60570584",
+      "60570585",
+      "60571937",
+      "60571938",
+      "60570648",
+      "60570649"
+    ],
+    "job_id": "60571939",
+    "replaced_finalizer_job_id": "60570670",
+    "state": "SUBMITTED_AFTERANY",
+    "submitted_utc": "2026-07-25T02:32:32.180965+00:00"
+  },
+  "decision": "NEEDS_MONITOR",
+  "discovered_job_ids": [
+    "60570583",
+    "60570585",
+    "60570582",
+    "60570584"
+  ],
+  "formal_authorization_gate": "PASS",
+  "formal_race_watcher": {
+    "command": "sbatch --parsable --job-name=SRRW3WatchR2 --export=ALL,CARE_FORMAL_RACE_PAIRS=scar_seed20260724:60571937:60570582;edema_seed20260724:60571938:60570583;scar_seed20260725:60570584:60570648;edema_seed20260725:60570585:60570649,CARE_FORMAL_RACE_WATCH_STATE_FILE=/users/a/e/aereinh/CARE/results/20260724_care_myops_srr_cascade_submission_rescue/runtime_closure_repair_rc1/formal_race_watcher_state_v2.json,WATCH_INTERVAL_SECONDS=300,WATCH_MAX_ITERATIONS=288 jobs/care_mm/watch_care_srr_cascade_w3.sh",
+    "decision": "NEEDS_MONITOR",
+    "history_file": "/users/a/e/aereinh/CARE/results/20260724_care_myops_srr_cascade_submission_rescue/runtime_closure_repair_rc1/formal_race_watcher_history_v2.jsonl",
+    "interval_seconds": 300,
+    "job_id": "60571940",
+    "last_actions": [
+      "NO_CANCEL",
+      "NO_CANCEL",
+      "NO_CANCEL",
+      "SCANCEL_PENDING_LOSER"
+    ],
+    "last_verified_utc": "2026-07-25T04:17:24.770958+00:00",
+    "local_decision": "NEEDS_MONITOR",
+    "local_started_utc": "2026-07-25T02:32:32.180983+00:00",
+    "max_iterations": 288,
+    "pairs": [
+      "scar_seed20260724:60571937:60570582",
+      "edema_seed20260724:60571938:60570583",
+      "scar_seed20260725:60570584:60570648",
+      "edema_seed20260725:60570585:60570649"
+    ],
+    "partition": "spill_or_general",
+    "replaced_tmux_session": "care_srr_w3_race_watch",
+    "replaced_watcher_job_id": "60570975",
+    "state": "SUBMITTED",
+    "state_file": "/users/a/e/aereinh/CARE/results/20260724_care_myops_srr_cascade_submission_rescue/runtime_closure_repair_rc1/formal_race_watcher_state_v2.json",
+    "submitted_utc": "2026-07-25T02:32:32.180989+00:00",
+    "tmux_log_file": "/users/a/e/aereinh/CARE/logs/care_myops_srr_cascade_submission_rescue/SRRW3TmuxWatchV2_20260725_023232.log",
+    "tmux_session": "care_srr_w3_race_watch_v2"
+  },
+  "hardcoded_job_ids": false,
+  "local_commit_readiness": {
+    "decision": "NEEDS_MONITOR_COMMIT_NOT_READY_RESULTS_PENDING",
+    "force_add_ignored_lightweight_receipts_after_terminal": true,
+    "last_probe_utc": "2026-07-25T02:18:43.046232+00:00",
+    "manifest": "results/20260724_care_myops_srr_cascade_submission_rescue/runtime_closure_repair_rc1/local_commit_readiness_manifest_20260725T0218Z.json",
+    "runtime_tensors_excluded": true
+  },
+  "logical_runs": {
+    "edema_seed20260724": {
+      "attempt_history": [
+        {
+          "archived_utc": "2026-07-25T01:47:16.554154+00:00",
+          "command": "sbatch --parsable --job-name=SCRR1_edema_seed20260724 --partition=htzhulab --qos=gpu_access --gres=gpu:1 --export=ALL,CARE_FORMAL_LOGICAL_RUN_ID=edema_seed20260724,CARE_FORMAL_PATHOLOGY=edema,CARE_FORMAL_SEED=20260724,CARE_FORMAL_VARIANTS=edema_zone_control|edema_srr_zone_cascade,CARE_FORMAL_STEPS=6250,CARE_FORMAL_VALIDATION_STEPS=1250|2500|3750|5000|6250 jobs/care_mm/run_care_srr_cascade_formal_training.sh",
+          "formal_training_credit": 0,
+          "job_id": "60570408",
+          "partition": "htzhulab",
+          "replacement_reason": "terminal_slurm_state:CANCELLED",
+          "state": "SUBMITTED_NEEDS_MONITOR"
+        }
+      ],
+      "attempt_number": 2,
+      "command": "sbatch --parsable --job-name=SCRR1_edema_seed20260724 --partition=htzhulab --qos=gpu_access --gres=gpu:1 --export=ALL,CARE_FORMAL_LOGICAL_RUN_ID=edema_seed20260724,CARE_FORMAL_PATHOLOGY=edema,CARE_FORMAL_SEED=20260724,CARE_FORMAL_VARIANTS=edema_zone_control|edema_srr_zone_cascade,CARE_FORMAL_STEPS=6250,CARE_FORMAL_VALIDATION_STEPS=1250|2500|3750|5000|6250 jobs/care_mm/run_care_srr_cascade_formal_training.sh",
+      "gres": "gpu:1",
+      "job_id": "60570583",
+      "logical_run_id": "edema_seed20260724",
+      "partition": "htzhulab",
+      "pathology": "edema",
+      "race_mirrors": [
+        {
+          "command": "sbatch --parsable --job-name=SCRR1A_edema_seed20260724 --partition=a100-gpu --qos=gpu_access --gres=gpu:nvidia_a100-pcie-40gb:1 --export=ALL,CARE_FORMAL_LOGICAL_RUN_ID=edema_seed20260724,CARE_FORMAL_PATHOLOGY=edema,CARE_FORMAL_SEED=20260724,CARE_FORMAL_VARIANTS=edema_zone_control|edema_srr_zone_cascade,CARE_FORMAL_STEPS=6250,CARE_FORMAL_VALIDATION_STEPS=1250|2500|3750|5000|6250 jobs/care_mm/run_care_srr_cascade_formal_training.sh",
+          "gres": "gpu:nvidia_a100-pcie-40gb:1",
+          "job_id": "60571938",
+          "logical_run_id": "edema_seed20260724",
+          "partition": "a100-gpu",
+          "pathology": "edema",
+          "replacement_reason": "htzhulab_pending_a100_race",
+          "seed": 20260724,
+          "state": "SUBMITTED_RACE_MIRROR_NEEDS_MONITOR",
+          "submitted_utc": "2026-07-25T02:32:32.113721+00:00",
+          "variants": [
+            "edema_zone_control",
+            "edema_srr_zone_cascade"
+          ]
+        }
+      ],
+      "replacement_reason": "terminal_slurm_state:CANCELLED",
+      "seed": 20260724,
+      "state": "SUBMITTED_NEEDS_MONITOR",
+      "variants": [
+        "edema_zone_control",
+        "edema_srr_zone_cascade"
+      ]
+    },
+    "edema_seed20260725": {
+      "attempt_history": [
+        {
+          "archived_utc": "2026-07-25T01:47:16.647757+00:00",
+          "command": "sbatch --parsable --job-name=SCRR1_edema_seed20260725 --partition=a100-gpu --qos=gpu_access --gres=gpu:nvidia_a100-pcie-40gb:1 --export=ALL,CARE_FORMAL_LOGICAL_RUN_ID=edema_seed20260725,CARE_FORMAL_PATHOLOGY=edema,CARE_FORMAL_SEED=20260725,CARE_FORMAL_VARIANTS=edema_zone_control|edema_srr_zone_cascade,CARE_FORMAL_STEPS=6250,CARE_FORMAL_VALIDATION_STEPS=1250|2500|3750|5000|6250 jobs/care_mm/run_care_srr_cascade_formal_training.sh",
+          "formal_training_credit": 0,
+          "job_id": "60570410",
+          "partition": "a100-gpu",
+          "replacement_reason": "terminal_slurm_state:CANCELLED",
+          "state": "SUBMITTED_NEEDS_MONITOR"
+        }
+      ],
+      "attempt_number": 2,
+      "command": "sbatch --parsable --job-name=SCRR1_edema_seed20260725 --partition=a100-gpu --qos=gpu_access --gres=gpu:nvidia_a100-pcie-40gb:1 --export=ALL,CARE_FORMAL_LOGICAL_RUN_ID=edema_seed20260725,CARE_FORMAL_PATHOLOGY=edema,CARE_FORMAL_SEED=20260725,CARE_FORMAL_VARIANTS=edema_zone_control|edema_srr_zone_cascade,CARE_FORMAL_STEPS=6250,CARE_FORMAL_VALIDATION_STEPS=1250|2500|3750|5000|6250 jobs/care_mm/run_care_srr_cascade_formal_training.sh",
+      "gres": "gpu:nvidia_a100-pcie-40gb:1",
+      "job_id": "60570585",
+      "logical_run_id": "edema_seed20260725",
+      "partition": "a100-gpu",
+      "pathology": "edema",
+      "race_mirrors": [
+        {
+          "command": "sbatch --parsable --job-name=SCRR1R_edema_seed20260725 --partition=htzhulab --qos=gpu_access --gres=gpu:1 --export=ALL,CARE_FORMAL_LOGICAL_RUN_ID=edema_seed20260725,CARE_FORMAL_PATHOLOGY=edema,CARE_FORMAL_SEED=20260725,CARE_FORMAL_VARIANTS=edema_zone_control|edema_srr_zone_cascade,CARE_FORMAL_STEPS=6250,CARE_FORMAL_VALIDATION_STEPS=1250|2500|3750|5000|6250 jobs/care_mm/run_care_srr_cascade_formal_training.sh",
+          "gres": "gpu:1",
+          "job_id": "60570649",
+          "logical_run_id": "edema_seed20260725",
+          "partition": "htzhulab",
+          "pathology": "edema",
+          "replacement_reason": "a100_pending_htzhulab_race",
+          "seed": 20260725,
+          "state": "SUBMITTED_RACE_MIRROR_NEEDS_MONITOR",
+          "submitted_utc": "2026-07-25T01:50:30.598090+00:00",
+          "variants": [
+            "edema_zone_control",
+            "edema_srr_zone_cascade"
+          ]
+        }
+      ],
+      "replacement_reason": "terminal_slurm_state:CANCELLED",
+      "seed": 20260725,
+      "state": "SUBMITTED_NEEDS_MONITOR",
+      "variants": [
+        "edema_zone_control",
+        "edema_srr_zone_cascade"
+      ]
+    },
+    "scar_seed20260724": {
+      "attempt_history": [
+        {
+          "archived_utc": "2026-07-25T01:47:16.494598+00:00",
+          "command": "sbatch --parsable --job-name=SCRR1_scar_seed20260724 --partition=htzhulab --qos=gpu_access --gres=gpu:1 --export=ALL,CARE_FORMAL_LOGICAL_RUN_ID=scar_seed20260724,CARE_FORMAL_PATHOLOGY=scar,CARE_FORMAL_SEED=20260724,CARE_FORMAL_VARIANTS=scar_cascade_control|scar_srr_cascade,CARE_FORMAL_STEPS=6250,CARE_FORMAL_VALIDATION_STEPS=1250|2500|3750|5000|6250 jobs/care_mm/run_care_srr_cascade_formal_training.sh",
+          "formal_training_credit": 0,
+          "job_id": "60570407",
+          "partition": "htzhulab",
+          "replacement_reason": "terminal_slurm_state:CANCELLED",
+          "state": "SUBMITTED_NEEDS_MONITOR"
+        }
+      ],
+      "attempt_number": 2,
+      "command": "sbatch --parsable --job-name=SCRR1_scar_seed20260724 --partition=htzhulab --qos=gpu_access --gres=gpu:1 --export=ALL,CARE_FORMAL_LOGICAL_RUN_ID=scar_seed20260724,CARE_FORMAL_PATHOLOGY=scar,CARE_FORMAL_SEED=20260724,CARE_FORMAL_VARIANTS=scar_cascade_control|scar_srr_cascade,CARE_FORMAL_STEPS=6250,CARE_FORMAL_VALIDATION_STEPS=1250|2500|3750|5000|6250 jobs/care_mm/run_care_srr_cascade_formal_training.sh",
+      "gres": "gpu:1",
+      "job_id": "60570582",
+      "logical_run_id": "scar_seed20260724",
+      "partition": "htzhulab",
+      "pathology": "scar",
+      "race_mirrors": [
+        {
+          "command": "sbatch --parsable --job-name=SCRR1A_scar_seed20260724 --partition=a100-gpu --qos=gpu_access --gres=gpu:nvidia_a100-pcie-40gb:1 --export=ALL,CARE_FORMAL_LOGICAL_RUN_ID=scar_seed20260724,CARE_FORMAL_PATHOLOGY=scar,CARE_FORMAL_SEED=20260724,CARE_FORMAL_VARIANTS=scar_cascade_control|scar_srr_cascade,CARE_FORMAL_STEPS=6250,CARE_FORMAL_VALIDATION_STEPS=1250|2500|3750|5000|6250 jobs/care_mm/run_care_srr_cascade_formal_training.sh",
+          "gres": "gpu:nvidia_a100-pcie-40gb:1",
+          "job_id": "60571937",
+          "logical_run_id": "scar_seed20260724",
+          "partition": "a100-gpu",
+          "pathology": "scar",
+          "replacement_reason": "htzhulab_pending_a100_race",
+          "seed": 20260724,
+          "state": "SUBMITTED_RACE_MIRROR_NEEDS_MONITOR",
+          "submitted_utc": "2026-07-25T02:32:32.060775+00:00",
+          "variants": [
+            "scar_cascade_control",
+            "scar_srr_cascade"
+          ]
+        }
+      ],
+      "replacement_reason": "terminal_slurm_state:CANCELLED",
+      "seed": 20260724,
+      "state": "SUBMITTED_NEEDS_MONITOR",
+      "variants": [
+        "scar_cascade_control",
+        "scar_srr_cascade"
+      ]
+    },
+    "scar_seed20260725": {
+      "attempt_history": [
+        {
+          "archived_utc": "2026-07-25T01:47:16.621809+00:00",
+          "command": "sbatch --parsable --job-name=SCRR1_scar_seed20260725 --partition=a100-gpu --qos=gpu_access --gres=gpu:nvidia_a100-pcie-40gb:1 --export=ALL,CARE_FORMAL_LOGICAL_RUN_ID=scar_seed20260725,CARE_FORMAL_PATHOLOGY=scar,CARE_FORMAL_SEED=20260725,CARE_FORMAL_VARIANTS=scar_cascade_control|scar_srr_cascade,CARE_FORMAL_STEPS=6250,CARE_FORMAL_VALIDATION_STEPS=1250|2500|3750|5000|6250 jobs/care_mm/run_care_srr_cascade_formal_training.sh",
+          "formal_training_credit": 0,
+          "job_id": "60570409",
+          "partition": "a100-gpu",
+          "replacement_reason": "terminal_slurm_state:CANCELLED",
+          "state": "SUBMITTED_NEEDS_MONITOR"
+        }
+      ],
+      "attempt_number": 2,
+      "command": "sbatch --parsable --job-name=SCRR1_scar_seed20260725 --partition=a100-gpu --qos=gpu_access --gres=gpu:nvidia_a100-pcie-40gb:1 --export=ALL,CARE_FORMAL_LOGICAL_RUN_ID=scar_seed20260725,CARE_FORMAL_PATHOLOGY=scar,CARE_FORMAL_SEED=20260725,CARE_FORMAL_VARIANTS=scar_cascade_control|scar_srr_cascade,CARE_FORMAL_STEPS=6250,CARE_FORMAL_VALIDATION_STEPS=1250|2500|3750|5000|6250 jobs/care_mm/run_care_srr_cascade_formal_training.sh",
+      "gres": "gpu:nvidia_a100-pcie-40gb:1",
+      "job_id": "60570584",
+      "logical_run_id": "scar_seed20260725",
+      "partition": "a100-gpu",
+      "pathology": "scar",
+      "race_mirrors": [
+        {
+          "command": "sbatch --parsable --job-name=SCRR1R_scar_seed20260725 --partition=htzhulab --qos=gpu_access --gres=gpu:1 --export=ALL,CARE_FORMAL_LOGICAL_RUN_ID=scar_seed20260725,CARE_FORMAL_PATHOLOGY=scar,CARE_FORMAL_SEED=20260725,CARE_FORMAL_VARIANTS=scar_cascade_control|scar_srr_cascade,CARE_FORMAL_STEPS=6250,CARE_FORMAL_VALIDATION_STEPS=1250|2500|3750|5000|6250 jobs/care_mm/run_care_srr_cascade_formal_training.sh",
+          "gres": "gpu:1",
+          "job_id": "60570648",
+          "logical_run_id": "scar_seed20260725",
+          "partition": "htzhulab",
+          "pathology": "scar",
+          "replacement_reason": "a100_pending_htzhulab_race",
+          "seed": 20260725,
+          "state": "SUBMITTED_RACE_MIRROR_NEEDS_MONITOR",
+          "submitted_utc": "2026-07-25T01:50:30.598090+00:00",
+          "variants": [
+            "scar_cascade_control",
+            "scar_srr_cascade"
+          ]
+        }
+      ],
+      "replacement_reason": "terminal_slurm_state:CANCELLED",
+      "seed": 20260725,
+      "state": "SUBMITTED_NEEDS_MONITOR",
+      "variants": [
+        "scar_cascade_control",
+        "scar_srr_cascade"
+      ]
+    }
+  },
+  "notes": "Formal authorization gate PASS; logical jobs submitted or already registered and require terminal accounting before completion.",
+  "schema_version": 2,
+  "terminal_accounting": {
+    "accounting_json": "results/20260724_care_myops_srr_cascade_submission_rescue/runtime_closure_repair_rc1/formal_terminal_accounting_v2.json",
+    "active_or_nonterminal_job_ids": [
+      "60570583",
+      "60570648",
+      "60570649"
+    ],
+    "auxiliary_jobs_do_not_block_training_accounting": true,
+    "completion_claim": false,
+    "decision": "NEEDS_MONITOR",
+    "finalizer_job_id": "60571939",
+    "finalizer_shell": "jobs/care_mm/finalize_care_srr_cascade_w3.sh",
+    "job_ids": [
+      "60570407",
+      "60570408",
+      "60570409",
+      "60570410",
+      "60570582",
+      "60570583",
+      "60570584",
+      "60570585",
+      "60570648",
+      "60570649",
+      "60571937",
+      "60571938"
+    ],
+    "last_probe_utc": "2026-07-25T04:45:43.883774+00:00",
+    "script": "scripts/evaluation/finalize_care_srr_cascade_w3_accounting.py",
+    "variant_csv": "results/20260724_care_myops_srr_cascade_submission_rescue/formal_terminal_training_variants_v2.csv"
+  },
+  "updated_utc": "2026-07-25T07:20:52.759226+00:00",
+  "w4_aggregation": {
+    "audit_used_for_selection": false,
+    "calibration_candidates_limited_to_six": true,
+    "completion_claim": false,
+    "decision": "NEEDS_MONITOR_W3_NOT_TERMINAL",
+    "final_decisions": [
+      "USE_SRR_CASCADE",
+      "USE_CASCADE_CONTROL",
+      "FALLBACK_TO_NNUNET"
+    ],
+    "finalizer_shell_integrated": true,
+    "last_probe_utc": "2026-07-25T04:45:48.222331+00:00",
+    "script": "scripts/evaluation/aggregate_care_srr_cascade_w4.py",
+    "status_json": "results/20260724_care_myops_srr_cascade_submission_rescue/runtime_closure_repair_rc1/w4_aggregation_status_v2.json"
+  }
+}

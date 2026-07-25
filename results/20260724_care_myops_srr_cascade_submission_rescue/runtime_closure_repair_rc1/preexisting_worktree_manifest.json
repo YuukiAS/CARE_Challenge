@@ -1,0 +1,21 @@
+{
+  "task": "SCR-R1-RC1",
+  "repo": "/users/a/e/aereinh/CARE",
+  "head": "c0b6b5b0fe2000b3b7b19e5d4c5dc0838df8b4e2",
+  "git_status_short_branch": [
+    "## main...origin/main",
+    "?? .codex_runtime/",
+    "?? scripts/evaluation/batch10_baseline_reference_consistency.py",
+    "?? scripts/evaluation/batch10_strict_entrypoint_audit.py",
+    "?? tests/care_mm/test_batch10_fair_inference.py"
+  ],
+  "preexisting_untracked_allowed_by_contract": [
+    ".codex_runtime/rclone/rclone.conf",
+    "scripts/evaluation/batch10_baseline_reference_consistency.py",
+    "scripts/evaluation/batch10_strict_entrypoint_audit.py",
+    "tests/care_mm/test_batch10_fair_inference.py"
+  ],
+  "unknown_untracked_source_or_test_files": [],
+  "decision": "PASS",
+  "policy": "Do not stage, modify, delete, or rely on these preexisting untracked files for SCR-R1-RC1 unless a later explicit contract imports them."
+}

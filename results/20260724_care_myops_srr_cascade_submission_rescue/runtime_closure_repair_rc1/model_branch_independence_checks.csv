@@ -1,0 +1,3 @@
+active_pathology,perturbed_input,active_pathology_delta_gt_0,active_pathology_max_delta,anatomy_anchor_max_delta,inactive_pathology_anchor_max_delta,scar_branch_grad_sum,edema_branch_grad_sum,expected_trainable_branch,decision
+scar,normalized_lge,True,0.13653827,0,0,31328.284,0,scar_branch,PASS
+edema,normalized_t2,True,0.14906764,0,0,0,22330.329,edema_branch,PASS

@@ -1,0 +1,15 @@
+{
+  "dependency_job_id": "60570582",
+  "formal_submit_attempted": false,
+  "formal_submit_mode": "0",
+  "gate_decision": "PASS",
+  "gate_exit_code": 0,
+  "log_file": "/users/a/e/aereinh/CARE/logs/care_myops_srr_cascade_submission_rescue/SRRW3Final_60575515_20260725_023428.log",
+  "orchestrator_exit": "0",
+  "schema_version": 1,
+  "slurm_job_id": "60575515",
+  "terminal_accounting_exit": 0,
+  "terminal_accounting_path": "results/20260724_care_myops_srr_cascade_submission_rescue/runtime_closure_repair_rc1/formal_terminal_accounting_v2.json",
+  "w4_aggregation_exit": 2,
+  "w4_aggregation_path": "results/20260724_care_myops_srr_cascade_submission_rescue/runtime_closure_repair_rc1/w4_aggregation_status_v2.json"
+}

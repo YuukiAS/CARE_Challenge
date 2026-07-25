@@ -1,0 +1,36 @@
+{
+  "decision": "NEEDS_MONITOR",
+  "diagnosis": "v4 failed because parity compared non-contract direct single-tile forward with tiled sliding-window cache; v5 comparator uses equivalent tiled sliding-window recompute for sampled cases and write/load integrity for all 880 fields",
+  "formal_jobs_submitted": false,
+  "lock_path": "results/20260724_care_myops_srr_cascade_submission_rescue/runtime/source_cache_v2.care_srr_cache_full_all220_20260725_rc2_v5.winner.lock",
+  "new_jobs": [
+    {
+      "job_id": "60552238",
+      "partition": "htzhulab",
+      "state": "PENDING"
+    },
+    {
+      "job_id": "60552252",
+      "partition": "a100-gpu",
+      "state": "PENDING"
+    }
+  ],
+  "new_race_group": "care_srr_cache_full_all220_20260725_rc2_v5",
+  "old_cancelled_mirror": {
+    "exit_code": "0:0",
+    "job_id": "60546773",
+    "state": "CANCELLED by 397557"
+  },
+  "old_failed_job": {
+    "elapsed": "00:07:44",
+    "exit_code": "1:0",
+    "failed_lock_archived": "results/20260724_care_myops_srr_cascade_submission_rescue/runtime/source_cache_v2.care_srr_cache_full_all220_20260725_rc2_v4.failed_60546764.winner.lock",
+    "failed_manifest": "results/20260724_care_myops_srr_cascade_submission_rescue/source_cache_manifest_v2.failed.csv",
+    "failed_parity": "results/20260724_care_myops_srr_cascade_submission_rescue/source_cache_parity_v2.failed.csv",
+    "job_id": "60546764",
+    "state": "FAILED"
+  },
+  "rc2_preflight_sha256": "eb7a4883f168cf0b39af66ce155bada8929779267766e88acdff8953aaa3e84f",
+  "script_sha256": "a959c38286cd0bb4909349d8772ecdb51a2c666882730f39c6ef045b22d76280",
+  "updated_utc": "2026-07-24T20:16:01.452614+00:00"
+}

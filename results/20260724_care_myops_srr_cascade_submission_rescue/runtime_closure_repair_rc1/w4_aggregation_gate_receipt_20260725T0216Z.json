@@ -1,0 +1,14 @@
+{
+  "completion_claim": false,
+  "decision": "NEEDS_MONITOR_W3_NOT_TERMINAL",
+  "finalizer_shell_integrated": true,
+  "focused_tests": [
+    "test_w4_aggregation_waits_for_w3_terminal_accounting",
+    "test_w4_aggregation_rejects_candidate_outside_six",
+    "test_w3_accounting_excludes_auxiliary_jobs_from_training_attempts"
+  ],
+  "status_json": "results/20260724_care_myops_srr_cascade_submission_rescue/runtime_closure_repair_rc1/w4_aggregation_status_v2.json",
+  "test_result": "PASS",
+  "updated_utc": "2026-07-25T02:16:17.610448+00:00",
+  "w4_aggregation_script": "scripts/evaluation/aggregate_care_srr_cascade_w4.py"
+}

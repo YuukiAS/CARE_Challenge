@@ -5,7 +5,7 @@
 ## 当前状态
 
 ```text
-state_id: care_myops_srr_cascade_scr_r1_runtime_closure_repair_ready_20260725
+state_id: care_myops_srr_cascade_scr_r1_runtime_closure_terminal_20260725
 round_id: post_round04_main_only_submission_rescue
 state_updated_date: 2026-07-25
 active_development_branch: main
@@ -17,9 +17,9 @@ method_name: CARE-SRR-Cascade
 execution_code: SCR-R1
 runtime_repair_code: SCR-R1-RC1
 batch10_status: TERMINAL_STOP_RETAINED_AS_HISTORY
-submission_rescue_status: READY_FOR_CONTROLLER_RUNTIME_CLOSURE_REPAIR
+submission_rescue_status: TERMINAL_LOCAL_EVALUATED_BASELINE_FALLBACK
 prior_controller_block: VALID_REAL_W3_RUNTIME_MISSING
-next_required_action: RESUME_CONTROLLER_WITH_SCR_R1_RC1
+next_required_action: REVIEW_TERMINAL_LOCAL_RESULTS_AND_DECIDE_FUTURE_STRATEGY
 controller_is_coordinator: true
 planning_review_required: false
 review_required: false
