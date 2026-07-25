@@ -14,7 +14,7 @@ import yaml
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_CONFIG = REPO_ROOT / "configs/baselines/mosaic_fold0_fair.yaml"
-DEFAULT_RESULT_ROOT = REPO_ROOT / "results/20260725_care_m0_mosaic_fold0_fair_repro"
+DEFAULT_RESULT_ROOT = REPO_ROOT / "results/20260725_care_myops_mosaic_fold0_reproduction"
 DEFAULT_MOSAIC_ROOT = Path(os.environ.get("MOSAIC_ROOT", "/users/a/e/aereinh/MoSAIC"))
 DEFAULT_MOSAIC_SOURCE_ROOT = REPO_ROOT / "third_party/MoSAIC/source"
 MOSAIC_SOURCE_COMMIT = "d334bd1fb2a99dbbc230510590cd8e3ee08cc377"
@@ -67,6 +67,18 @@ def load_fold_val_cases(split_path: Path, fold: int) -> list[str]:
     if fold < 0 or fold >= len(folds):
         raise ValueError(f"fold {fold} out of range for {split_path}")
     return sorted(folds[fold]["val"])
+
+
+def load_fold_train_cases(split_path: Path, fold: int) -> list[str]:
+    data = json.loads(split_path.read_text(encoding="utf-8"))
+    folds = data.get("folds", data)
+    if fold < 0 or fold >= len(folds):
+        raise ValueError(f"fold {fold} out of range for {split_path}")
+    return sorted(folds[fold]["train"])
+
+
+def load_fold_case_sets(split_path: Path, fold: int) -> tuple[set[str], set[str]]:
+    return set(load_fold_train_cases(split_path, fold)), set(load_fold_val_cases(split_path, fold))
 
 
 def reorder_channels(image: np.ndarray, source_order: Iterable[str], target_order: Iterable[str]) -> np.ndarray:
@@ -187,21 +199,28 @@ def label_mapping_audit_rows() -> list[dict[str, Any]]:
 
 def protocol_receipt(config: dict[str, Any], *, result_status: str, reason: str) -> dict[str, Any]:
     split_path = REPO_ROOT / config["dataset"]["split_path"]
+    train_cases = load_fold_train_cases(split_path, int(config["dataset"]["fold"]))
     val_cases = load_fold_val_cases(split_path, int(config["dataset"]["fold"]))
+    guardrails = config.get("guardrails", {})
+    expected_train = int(config["dataset"].get("expected_train_count", len(train_cases)))
+    expected_val = int(config["dataset"]["expected_val_count"])
     return {
         "schema_version": 1,
         "task_key": config["task_key"],
         "status": result_status,
         "reason": reason,
-        "evaluation_only": True,
-        "training_authorized": False,
+        "evaluation_only": bool(guardrails.get("evaluation_only", False)),
+        "training_authorized": bool(guardrails.get("training_authorized", False)),
         "validation_upload_authorized": False,
         "production_path_dependency_authorized": False,
         "split_path": config["dataset"]["split_path"],
         "fold": int(config["dataset"]["fold"]),
+        "train_count": len(train_cases),
         "val_count": len(val_cases),
-        "expected_val_count": int(config["dataset"]["expected_val_count"]),
-        "val_count_status": "PASS" if len(val_cases) == int(config["dataset"]["expected_val_count"]) else "FAIL",
+        "expected_train_count": expected_train,
+        "expected_val_count": expected_val,
+        "train_count_status": "PASS" if len(train_cases) == expected_train else "FAIL",
+        "val_count_status": "PASS" if len(val_cases) == expected_val else "FAIL",
         "care_input_order": list(CARE_INPUT_ORDER),
         "mosaic_input_order": list(MOSAIC_INPUT_ORDER),
         "compact_to_official_labels": {str(k): v for k, v in COMPACT_TO_OFFICIAL.items()},

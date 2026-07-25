@@ -1,0 +1,111 @@
+{
+  "diff_check_latest": "PASS",
+  "entrypoint_contract_latest": "PASS",
+  "fair_audit_known_bad_direct_check_latest": "PASS: missing fair audit, stale source fingerprint, and false fair audit all fail strict validator",
+  "fair_comparison_audit_latest": "PASS_PRETERMINAL_CONTRACT: exact_fold0=True, random_init=True, full_data_used=False, same_evaluator=True",
+  "files_read_or_verified_this_turn": [
+    ".agents/skills/codex-workflow-protocol/SKILL.md",
+    ".agents/skills/slurm-routing-partition/SKILL.md",
+    ".agents/skills/care-mapper/SKILL.md",
+    "results/20260725_care_myops_mosaic_fold0_reproduction/finalizer_state.json",
+    "results/20260725_care_myops_mosaic_fold0_reproduction/controller_report.md",
+    "results/20260725_care_myops_mosaic_fold0_reproduction/completion_check.md",
+    "results/20260725_care_myops_mosaic_fold0_reproduction/controller_context.json",
+    "results/20260725_care_myops_mosaic_fold0_reproduction/slurm_attempts.csv",
+    "scripts/evaluation/finalize_mosaic_fold0_reproduction.py",
+    "tests/baselines/test_mosaic_fold0_reproduction_contract.py",
+    "jobs/evaluation/mosaic_fold0_reproduction_finalizer.sh",
+    "scripts/evaluation/submit_mosaic_fold0_reproduction.py",
+    "configs/baselines/mosaic_fold0_fair.yaml",
+    "jobs/evaluation/mosaic_fold0_reproduction_stage.sh",
+    "scripts/training/run_mosaic_fold0_reproduction.py",
+    "results/20260725_care_myops_mosaic_fold0_reproduction/fair_comparison_audit.json"
+  ],
+  "focused_tests_latest": "3 passed targeted fair-audit known-bad tests; full focused suite latest remains 59 passed",
+  "future_submission_explicit_export_latest": "PASS",
+  "git_head": "1b1b1bcba998ae8b3b918493a486cebc252441bf",
+  "git_status": "## main...origin/main [ahead 1]\n M code/MoSAIC/mosaic_fair_protocol.py\n M configs/baselines/mosaic_fold0_fair.yaml\n M scripts/evaluation/evaluate_mosaic_fold0_fair_comparison.py\n?? .codex_runtime/\n?? jobs/evaluation/mosaic_fold0_reproduction_finalizer.sh\n?? jobs/evaluation/mosaic_fold0_reproduction_stage.sh\n?? scripts/evaluation/finalize_mosaic_fold0_reproduction.py\n?? scripts/evaluation/submit_mosaic_fold0_reproduction.py\n?? scripts/training/run_mosaic_fold0_reproduction.py\n?? tests/baselines/test_mosaic_fold0_reproduction_contract.py",
+  "job_ids": {
+    "coarse": "60589655",
+    "edema": "60589657",
+    "finalizer": "60589658",
+    "scar": "60589656"
+  },
+  "job_state_summary": {
+    "coarse": "PENDING Resources",
+    "edema": "PENDING Dependency",
+    "existing_start": "2026-07-26T01:09:07",
+    "finalizer": "PENDING Dependency",
+    "scar": "PENDING Dependency"
+  },
+  "notification_send_boundary": "closed_until_terminal_commit_confirmed",
+  "notifier_schema_preaudit_latest": "PASS",
+  "offline_repair_latest": {
+    "fair_audit_known_bad_direct_check": "3 passed",
+    "fair_comparison_audit": "PASS_PRETERMINAL_CONTRACT",
+    "focused_pytest": "59 passed",
+    "git_diff_check": "PASS",
+    "pairwise_metadata_robustness": "PASS",
+    "pairwise_row_count_gate": "PASS",
+    "py_compile": "PASS",
+    "runtime_adapter_audit_gate": "PASS",
+    "secondary_canonical_integration": "PASS",
+    "single_finalizer_all_comparisons": "PASS",
+    "source_bound_fair_audit": "PASS_PRETERMINAL_CONTRACT",
+    "subgroup_casewise_validator_gate": "PASS"
+  },
+  "origin_main": "22099372799b1281c6ed631fc3b64853148d64ff",
+  "pairwise_row_count_gate_latest": "PASS",
+  "phase": "offline_validation_pending_slurm",
+  "py_compile_latest": "PASS",
+  "replacement_decision_latest": "KEEP_CURRENT_CHAIN_RETRY_IF_STARTUP_FAILS",
+  "required_origin_commit": "22099372799b1281c6ed631fc3b64853148d64ff",
+  "required_origin_commit_confirmed": true,
+  "required_terminal_artifacts_missing": [
+    "runtime_adapter_audit.json",
+    "canonical_casewise_metrics.csv",
+    "canonical_model_summary.csv",
+    "historical_attempt_summary.csv",
+    "pairwise_help_harm.csv",
+    "complementarity_report.md",
+    "strict_validator_report.json"
+  ],
+  "routing": {
+    "a100_mirror_submitted": false,
+    "a100_test_only": "2026-08-05T16:29:47",
+    "decision": "KEEP_CURRENT_HTZHULAB_CHAIN_A100_NOT_EARLIER",
+    "htzhulab_existing_reservation": "2026-07-26T01:09:07"
+  },
+  "secondary_canonical_integration_latest": "PASS",
+  "single_finalizer_all_comparisons_latest": "PASS",
+  "source_bound_fair_audit_latest": "PASS_PRETERMINAL_CONTRACT: runtime_source_fingerprints=7, stale_source_mismatch_blocks_validator=True",
+  "spooled_batch_script_audit": {
+    "60589655": {
+      "has_finalizer_job_ids_fallback": false,
+      "has_receipt_fallback": false,
+      "path": "/tmp/mosaic_60589655.batch",
+      "requires_mosaic_stage": true
+    },
+    "60589656": {
+      "has_finalizer_job_ids_fallback": false,
+      "has_receipt_fallback": false,
+      "path": "/tmp/mosaic_60589656.batch",
+      "requires_mosaic_stage": true
+    },
+    "60589657": {
+      "has_finalizer_job_ids_fallback": false,
+      "has_receipt_fallback": false,
+      "path": "/tmp/mosaic_60589657.batch",
+      "requires_mosaic_stage": true
+    },
+    "60589658": {
+      "has_finalizer_job_ids_fallback": false,
+      "has_receipt_fallback": false,
+      "path": "/tmp/mosaic_60589658.batch",
+      "requires_mosaic_stage": false
+    }
+  },
+  "subgroup_casewise_validator_gate_latest": "PASS",
+  "timestamp": "2026-07-25T16:27:15.334726+00:00",
+  "wrapper_environment_fallback_latest": "PASS"
+}

@@ -1,0 +1,116 @@
+{
+  "config_path": "configs/baselines/mosaic_fold0_fair.yaml",
+  "config_sha256": "162f56a3ef834dd96f17f82ac6e427c4f7b6ffaa3fab42f348381f915a494642",
+  "dependency_semantics": {
+    "edema": "afterok coarse",
+    "finalizer": "afterany coarse/scar/edema",
+    "scar": "afterok coarse"
+  },
+  "docker_build_performed": false,
+  "exact_fold0_split": true,
+  "expected_spooled_job_ids": {
+    "finalizer_job_id": "60607636",
+    "stage_job_ids": [
+      "60589655",
+      "60589656",
+      "60589657"
+    ]
+  },
+  "forbidden_actions": [
+    "validation_upload",
+    "docker_build",
+    "git_push",
+    "new_hybrid_training",
+    "full_data_weight_fold0_initialization",
+    "full_data_weight_fold0_performance_comparison"
+  ],
+  "full_data_mosaic_weight_root": "/users/a/e/aereinh/MoSAIC",
+  "full_data_weights_forbidden_for_fold0": true,
+  "full_data_weights_used_for_fold0": false,
+  "git_push_performed": false,
+  "guardrail_summary": {
+    "configured_extra_model_entries_not_used_for_primary_fair_comparison": [
+      "nnunet_anatomy_prior_mosaic_experts",
+      "care_candidate"
+    ],
+    "geometry_audit_before_standardization_required": true,
+    "native_wrapper_must_be_myops_only": true,
+    "nested_output_normalization_required": true,
+    "production_path_dependency_authorized": false,
+    "validation_upload_authorized": false
+  },
+  "mosaic_random_init_required": true,
+  "notes": "This audit proves the source-bound comparison contract. It is not terminal metric evidence; final metrics require Slurm completion and finalizer aggregation.",
+  "primary_comparison": [
+    "nnunet_fold0",
+    "mosaic_fold0_random_init"
+  ],
+  "runtime_source_fingerprints": {
+    "code/MoSAIC/mosaic_fair_protocol.py": "a7743d1270f56b2bc5ad5dfc8cce160b2cdd7854bf82d15ffa3db22d28ae395e",
+    "configs/baselines/mosaic_fold0_fair.yaml": "162f56a3ef834dd96f17f82ac6e427c4f7b6ffaa3fab42f348381f915a494642",
+    "jobs/evaluation/mosaic_fold0_reproduction_finalizer.sh": "b5cb087ee4d1c1a56faec4845d76aae6eef3e11c2d5c48f5cf2e3446346ee1bf",
+    "jobs/evaluation/mosaic_fold0_reproduction_stage.sh": "b257642b8d67fafcb60cf238cde8df23d62b6f5b79b65ffdf56c171ee182d9f8",
+    "scripts/evaluation/evaluate_mosaic_fold0_fair_comparison.py": "0c2cf4d431a9b900701f7730c39fa8b5f13454502990e385d94984ab0e7eb035",
+    "scripts/evaluation/finalize_mosaic_fold0_reproduction.py": "245d9895b448faaf2888739537945ab35a3f9c9abc606400cb7ef67a1559c8d1",
+    "scripts/training/run_mosaic_fold0_reproduction.py": "3e55db9c5b2d8916d70bb3e346366cda733ff93b6fa7b58bbc47faeb19f2a5bf"
+  },
+  "same_canonical_evaluator": true,
+  "scope": "runtime_contract_and_source_fingerprint_audit",
+  "secondary_canonical_if_predictions_exist": [
+    "Batch10_MMRD::distill_epoch25_two_seed_mean",
+    "Batch7_minimal"
+  ],
+  "secondary_historical_noncanonical_without_prediction_paths": [
+    "SCR_R1_generic_cascade_control"
+  ],
+  "single_finalizer_job_for_all_comparisons": true,
+  "split_path": "data/benchmarks/protocol/splits_MyoPS.json",
+  "split_sha256": "6165caeb5b47feb0d24f20380898037b7e6cead4db1eeba398a3c5a57faf9a1b",
+  "spooled_scripts": {
+    "60589655": {
+      "calls_finalizer": false,
+      "calls_stage_runner": true,
+      "contains_external_full_data_root": false,
+      "path": "/tmp/mosaic_fair_live_60589655.sh",
+      "sha256": "4628912de50c6b7dcd0f0467dee1f2cfaeac59840cf430b19ccc6e676f796050"
+    },
+    "60589656": {
+      "calls_finalizer": false,
+      "calls_stage_runner": true,
+      "contains_external_full_data_root": false,
+      "path": "/tmp/mosaic_fair_live_60589656.sh",
+      "sha256": "4628912de50c6b7dcd0f0467dee1f2cfaeac59840cf430b19ccc6e676f796050"
+    },
+    "60589657": {
+      "calls_finalizer": false,
+      "calls_stage_runner": true,
+      "contains_external_full_data_root": false,
+      "path": "/tmp/mosaic_fair_live_60589657.sh",
+      "sha256": "4628912de50c6b7dcd0f0467dee1f2cfaeac59840cf430b19ccc6e676f796050"
+    },
+    "60589658": {
+      "calls_finalizer": true,
+      "calls_stage_runner": false,
+      "contains_external_full_data_root": false,
+      "path": "/tmp/mosaic_fair_live_60589658.sh",
+      "sha256": "b89bb19e52a575b56c83a17f445b35c909401bc7b827092ec8d2f4eb939a4a75"
+    },
+    "60607636": {
+      "calls_finalizer": true,
+      "calls_stage_runner": false,
+      "contains_external_full_data_root": false,
+      "path": "/tmp/mosaic_fair_live_60607636.sh",
+      "sha256": "b5cb087ee4d1c1a56faec4845d76aae6eef3e11c2d5c48f5cf2e3446346ee1bf"
+    }
+  },
+  "status": "PASS_TERMINAL_CONTRACT",
+  "submitted_job_ids": {
+    "coarse": "60589655",
+    "edema": "60589657",
+    "finalizer": "60589658",
+    "scar": "60589656"
+  },
+  "train_count": 176,
+  "val_count": 44,
+  "validation_upload_performed": false
+}

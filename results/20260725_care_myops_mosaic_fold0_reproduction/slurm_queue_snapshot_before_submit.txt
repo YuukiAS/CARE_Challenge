@@ -1,0 +1,129 @@
+$ squeue -p htzhulab
+             JOBID PARTITION     NAME     USER ST       TIME  NODES NODELIST(REASON)
+          60445776  htzhulab elig_el_  shangao PD       0:00      1 (Resources)
+  60586494_[0-3%2]  htzhulab intv_inf  shangao PD       0:00      1 (Priority)
+          59232988  htzhulab ehr-foun  jiangyk  R 6-23:02:18      1 g180702
+          59287016  htzhulab Downstre   zzhaoy  R 6-23:02:18      1 g180702
+          60343564  htzhulab interact xiaoyuqi  R 1-11:34:46      1 g180702
+       60381369_24  htzhulab elv2_mdk  shangao  R       3:46      1 g1807htzh01
+       60381369_23  htzhulab elv2_mdk  shangao  R       5:08      1 g1807htzh01
+       60381369_22  htzhulab elv2_mdk  shangao  R    1:01:54      1 g180702
+
+
+$ squeue -p a100-gpu
+             JOBID PARTITION     NAME     USER ST       TIME  NODES NODELIST(REASON)
+          60569213  a100-gpu qwen32b_  xuejun1 PD       0:00      1 (Resources)
+          54185547  a100-gpu gridsear harrisbl PD       0:00      1 (Priority)
+          54185546  a100-gpu gridsear harrisbl PD       0:00      1 (Priority)
+          54185545  a100-gpu gridsear harrisbl PD       0:00      1 (Priority)
+          54185544  a100-gpu gridsear harrisbl PD       0:00      1 (Priority)
+          54185543  a100-gpu gridsear harrisbl PD       0:00      1 (Priority)
+          54185542  a100-gpu gridsear harrisbl PD       0:00      1 (Priority)
+          54185541  a100-gpu gridsear harrisbl PD       0:00      1 (Priority)
+          54185540  a100-gpu gridsear harrisbl PD       0:00      1 (Priority)
+          60342843  a100-gpu gridsear    gsonw PD       0:00      1 (Priority)
+          60342842  a100-gpu gridsear    gsonw PD       0:00      1 (Priority)
+          60342841  a100-gpu gridsear    gsonw PD       0:00      1 (Priority)
+          60342840  a100-gpu gridsear    gsonw PD       0:00      1 (Priority)
+          60342839  a100-gpu gridsear    gsonw PD       0:00      1 (Priority)
+          60342838  a100-gpu gridsear    gsonw PD       0:00      1 (Priority)
+          60342837  a100-gpu gridsear    gsonw PD       0:00      1 (Priority)
+          60342836  a100-gpu gridsear    gsonw PD       0:00      1 (Priority)
+          60342835  a100-gpu gridsear    gsonw PD       0:00      1 (Priority)
+          60342834  a100-gpu gridsear    gsonw PD       0:00      1 (Priority)
+          60342833  a100-gpu gridsear    gsonw PD       0:00      1 (Priority)
+          60342832  a100-gpu gridsear    gsonw PD       0:00      1 (Priority)
+          60342831  a100-gpu gridsear    gsonw PD       0:00      1 (Priority)
+          60342830  a100-gpu gridsear    gsonw PD       0:00      1 (Priority)
+          60342829  a100-gpu gridsear    gsonw PD       0:00      1 (Priority)
+          60342828  a100-gpu gridsear    gsonw PD       0:00      1 (Priority)
+          60342827  a100-gpu gridsear    gsonw PD       0:00      1 (Priority)
+          60342826  a100-gpu gridsear    gsonw PD       0:00      1 (Priority)
+          60342825  a100-gpu gridsear    gsonw PD       0:00      1 (Priority)
+          60342869  a100-gpu gridsear    gsonw PD       0:00      1 (Priority)
+          60342868  a100-gpu gridsear    gsonw PD       0:00      1 (Priority)
+          60342867  a100-gpu gridsear    gsonw PD       0:00      1 (Priority)
+          60342866  a100-gpu gridsear    gsonw PD       0:00      1 (Priority)
+          60342865  a100-gpu gridsear    gsonw PD       0:00      1 (Priority)
+          60342864  a100-gpu gridsear    gsonw PD       0:00      1 (Priority)
+          60342863  a100-gpu gridsear    gsonw PD       0:00      1 (Priority)
+          60342862  a100-gpu gridsear    gsonw PD       0:00      1 (Priority)
+          60342861  a100-gpu gridsear    gsonw PD       0:00      1 (Priority)
+          60342860  a100-gpu gridsear    gsonw PD       0:00      1 (Priority)
+          60342859  a100-gpu gridsear    gsonw PD       0:00      1 (Priority)
+          60342858  a100-gpu gridsear    gsonw PD       0:00      1 (Priority)
+          60342857  a100-gpu gridsear    gsonw PD       0:00      1 (Priority)
+          60342856  a100-gpu gridsear    gsonw PD       0:00      1 (Priority)
+          60342855  a100-gpu gridsear    gsonw PD       0:00      1 (Priority)
+          60342854  a100-gpu gridsear    gsonw PD       0:00      1 (Priority)
+          60342853  a100-gpu gridsear    gsonw PD       0:00      1 (Priority)
+          60342852  a100-gpu gridsear    gsonw PD       0:00      1 (Priority)
+          60342851  a100-gpu gridsear    gsonw PD       0:00      1 (Priority)
+          60342850  a100-gpu gridsear    gsonw PD       0:00      1 (Priority)
+          60342849  a100-gpu gridsear    gsonw PD       0:00      1 (Priority)
+          60342848  a100-gpu gridsear    gsonw PD       0:00      1 (Priority)
+          60342847  a100-gpu gridsear    gsonw PD       0:00      1 (Priority)
+          60342846  a100-gpu gridsear    gsonw PD       0:00      1 (Priority)
+          60342845  a100-gpu gridsear    gsonw PD       0:00      1 (Priority)
+          60342844  a100-gpu gridsear    gsonw PD       0:00      1 (Priority)
+          60580893  a100-gpu seamtrai   pawagh  R    2:19:41      1 g141602
+          60469301  a100-gpu dualcycl  mayayin  R   21:39:26      1 g141606
+          60545970  a100-gpu dualcycl  mayayin  R   18:39:11      1 g141607
+          60387602  a100-gpu      PIA cbaykara  R    8:05:50      1 g141603
+          54185539  a100-gpu gridsear harrisbl  R       4:22      1 g141607
+          54185538  a100-gpu gridsear harrisbl  R      25:23      1 g141605
+          54185537  a100-gpu gridsear harrisbl  R    1:27:39      1 g141606
+          54185536  a100-gpu gridsear harrisbl  R    4:48:20      1 g141606
+          54185535  a100-gpu gridsear harrisbl  R    7:04:38      1 g141605
+          54185534  a100-gpu gridsear harrisbl  R    7:52:00      1 g141604
+          54185533  a100-gpu gridsear harrisbl  R 1-02:15:39      1 g141603
+          54185532  a100-gpu gridsear harrisbl  R 1-02:17:19      1 g141607
+          54185531  a100-gpu gridsear harrisbl  R 1-02:40:44      1 g141603
+          54185530  a100-gpu gridsear harrisbl  R 1-03:01:17      1 g141602
+          54185529  a100-gpu gridsear harrisbl  R 1-03:34:25      1 g141602
+          54185528  a100-gpu gridsear harrisbl  R 1-03:53:43      1 g141608
+          54185526  a100-gpu gridsear harrisbl  R 1-06:10:23      1 g141608
+          54185525  a100-gpu gridsear harrisbl  R 1-08:30:12      1 g141601
+          54185524  a100-gpu gridsear harrisbl  R 1-08:49:38      1 g141604
+          60342824  a100-gpu gridsear    gsonw  R 1-02:38:31      1 g141608
+          60342822  a100-gpu gridsear    gsonw  R 1-02:41:52      1 g141601
+          60342823  a100-gpu gridsear    gsonw  R 1-
+
+$ sinfo -o %P|%a|%l|%D|%t|%G
+PARTITION|AVAIL|TIMELIMIT|NODES|STATE|GRES
+general*|up|11-00:00:00|1|comp|(null)
+general*|up|11-00:00:00|35|mix-|(null)
+general*|up|11-00:00:00|2|drain|(null)
+general*|up|11-00:00:00|100|mix|(null)
+general*|up|11-00:00:00|52|alloc|(null)
+general*|up|11-00:00:00|74|idle|(null)
+general_big|up|11-00:00:00|31|mix|(null)
+bigmem|up|11-00:00:00|2|mix|(null)
+volta-gpu|up|11-00:00:00|12|mix-|gpu:tesla_v100-sxm2-16gb:4(S:0),myJob:1
+volta-gpu|up|11-00:00:00|4|resv|gpu:tesla_v100-sxm2-16gb:4(S:0),myJob:1
+gpu|up|11-00:00:00|3|idle|gpu:nvidia_geforce_gtx_1080:8(S:0-1)
+a100-gpu|up|6-00:00:00|8|mix-|gpu:nvidia_a100-pcie-40gb:3
+l40-gpu|up|11-00:00:00|5|mix-|gpu:nvidia_l40:4
+l40-gpu|up|11-00:00:00|13|mix-|gpu:nvidia_l40s:8(S:0-1)
+datamover|up|11-00:00:00|1|mix|(null)
+datamover|up|11-00:00:00|3|idle|(null)
+interact|up|8:00:00|1|comp|(null)
+interact|up|8:00:00|35|mix-|(null)
+interact|up|8:00:00|2|drain|(null)
+interact|up|8:00:00|100|mix|(null)
+interact|up|8:00:00|52|alloc|(null)
+interact|up|8:00:00|74|idle|(null)
+hov|up|11-00:00:00|39|mix|(null)
+hov|up|11-00:00:00|4|alloc|(null)
+hov|up|11-00:00:00|6|idle|(null)
+spill|up|11-00:00:00|1|comp|(null)
+spill|up|11-00:00:00|35|mix-|(null)
+spill|up|11-00:00:00|1|drain|(null)
+spill|up|11-00:00:00|5|mix|(null)
+spill|up|11-00:00:00|48|alloc|(null)
+webportal|up|10:00:00|1|mix|(null)
+webportal|up|10:00:00|5|idle|(null)
+webportal|up|10:00:00|1|idle|gpu:nvidia_a100-pcie-40gb:3(S:0-1)
+webportal_gpu|up|10:00:00|1|mix|gpu:nvidia_a100_2g.10gb:9,gpu:nvidia_a100_1g.5gb:3
+webportal_big|up|10:00:00|4|mix|(null)
+webportal_big|up|10:00:00|4|idle|(null)

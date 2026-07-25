@@ -1,0 +1,11 @@
+{
+  "cuda_available": false,
+  "manifest": "results/20260725_care_myops_mosaic_fold0_reproduction/runtime/fold0/manifest_fold0_exact.jsonl",
+  "mosaic_source": "third_party/MoSAIC/source",
+  "python_executable": "/users/a/e/aereinh/CARE/envs/env_CARE/bin/python",
+  "record_count": 220,
+  "status": "PASS",
+  "torch_version": "2.11.0+cu130",
+  "train_count": 176,
+  "val_count": 44
+}

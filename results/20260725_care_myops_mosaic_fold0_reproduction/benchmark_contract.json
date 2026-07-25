@@ -1,0 +1,23 @@
+{
+  "expected_train_count": 176,
+  "expected_val_count": 44,
+  "fold": 0,
+  "forbidden_actions": [
+    "validation_upload",
+    "docker_build",
+    "git_push",
+    "new_hybrid_training"
+  ],
+  "full_data_mosaic_weights_policy": "forbidden_for_fold0_training_or_fold0_performance_comparison",
+  "primary_comparison": [
+    "nnunet_fold0",
+    "mosaic_fold0_random_init"
+  ],
+  "secondary_comparison_policy": "canonical_if_existing_predictions_else_historical_noncanonical",
+  "split_path": "data/benchmarks/protocol/splits_MyoPS.json",
+  "task_key": "20260725_care_myops_mosaic_fold0_reproduction",
+  "train_count": 176,
+  "train_count_status": "PASS",
+  "val_count": 44,
+  "val_count_status": "PASS"
+}

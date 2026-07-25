@@ -1,0 +1,23 @@
+{
+  "blocked_or_failure_reason": "none",
+  "commit_state": "local_commit_created",
+  "commit_status": "local_commit_created",
+  "evidence_paths": [
+    "results/20260725_care_myops_mosaic_fold0_reproduction/controller_report.md",
+    "results/20260725_care_myops_mosaic_fold0_reproduction/completion_check.md",
+    "results/20260725_care_myops_mosaic_fold0_reproduction/canonical_model_summary.csv",
+    "results/20260725_care_myops_mosaic_fold0_reproduction/pairwise_help_harm.csv",
+    "results/20260725_care_myops_mosaic_fold0_reproduction/slurm_attempts.csv"
+  ],
+  "final_status": "VERIFIED_COMPLETE",
+  "git_push_performed": false,
+  "key_conclusion": "MoSAIC fold0 random-init underperformed nnU-Net on same canonical fold0 comparison; full-data MoSAIC weights were not used for fold0 training/comparison.",
+  "local_commit_created": true,
+  "local_commit_note": "Local lightweight commit created; no push was performed. Current git HEAD is reported by controller final status.",
+  "next_step": "等待用户决定是否基于公平fold0结果进行下一步；不上传、不Docker、不push。",
+  "push_status": "not_pushed_not_authorized",
+  "slurm_terminal_accounting": "60589655/60589656/60589657/60589658/60607636 terminal; replacement finalizer 60607636 completed",
+  "slurm_terminal_status": "TERMINAL_ACCOUNTED",
+  "task_name": "20260725_care_myops_mosaic_fold0_reproduction",
+  "terminal_status": "VERIFIED_COMPLETE_LOCAL_ONLY"
+}

@@ -1,0 +1,1 @@
+MoSAIC fold0 fair reproduction did not introduce a new CARE production architecture. The architecture/wiki delta is an evidence-boundary update: MoSAIC full-data submission weights are separated from newly trained fold0 random-init MoSAIC evidence; historical Batch10/Batch7/SCR rows are bounded by canonical prediction availability.

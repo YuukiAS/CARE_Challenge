@@ -1,10 +1,11 @@
-task_key: 20260725_care_m0_mosaic_fold0_fair_repro
-scope: evaluation_only_baseline_comparison
+task_key: 20260725_care_myops_mosaic_fold0_reproduction
+scope: fold0_fair_reproduction_training_and_comparison
 
 dataset:
   name: CARE_MyoPS
   split_path: data/benchmarks/protocol/splits_MyoPS.json
   fold: 0
+  expected_train_count: 176
   expected_val_count: 44
   raw_label_dir: data/nnUNet/nnUNet_raw/Dataset501_CAREMyoPS/labelsTr
 
@@ -70,21 +71,28 @@ evaluation:
       label_space: compact
     - model_id: native_mosaic
       role: external_native_baseline
-      prediction_dir: results/20260725_care_m0_mosaic_fold0_fair_repro/native_mosaic_predictions
+      prediction_dir: results/20260725_care_myops_mosaic_fold0_reproduction/native_mosaic_predictions
       label_space: official
     - model_id: nnunet_anatomy_prior_mosaic_experts
       role: hybrid_diagnostic
-      prediction_dir: results/20260725_care_m0_mosaic_fold0_fair_repro/hybrid_mosaic_predictions
+      prediction_dir: results/20260725_care_myops_mosaic_fold0_reproduction/hybrid_mosaic_predictions
       label_space: official
     - model_id: care_candidate
       role: first_party_candidate
-      prediction_dir: results/20260725_care_m0_mosaic_fold0_fair_repro/care_candidate_predictions
+      prediction_dir: results/20260725_care_myops_mosaic_fold0_reproduction/care_candidate_predictions
       label_space: compact
 
 guardrails:
-  training_authorized: false
+  evaluation_only: false
+  training_authorized: true
+  fold0_training_from_random_init_required: true
+  full_data_weights_forbidden_for_fold0_training_or_comparison: true
+  full_data_weights_allowed_only_for_load_or_validation_deploy_smoke: true
   validation_upload_authorized: false
   production_path_dependency_authorized: false
   old_batch10_production_mosaic_block_preserved: true
+  native_wrapper_must_be_myops_only: true
+  nested_output_normalization_required: true
+  geometry_audit_before_standardization_required: true
   missing_native_source_status: NEEDS_MOSAIC_SOURCE
-  source_present_preflight_status: READY_TO_START_INFERENCE
+  source_present_preflight_status: READY_TO_START_TRAINING

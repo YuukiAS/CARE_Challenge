@@ -1,0 +1,91 @@
+{
+  "errors": [],
+  "known_bad_checks": [
+    "full_data_weight_for_fold0_forbidden",
+    "edema_zone_not_primary",
+    "geometry_audit_before_standardization",
+    "missing_prediction_fails_case_count",
+    "nested_output_requires_normalization",
+    "pending_slurm_jobs_fail_strict_validator",
+    "slurm_attempt_ledger_preserves_submit_fields",
+    "first_run_required_output_order",
+    "pairwise_disagreement_fields",
+    "pairwise_help_harm_row_count",
+    "runtime_adapter_audit_pass_required",
+    "casewise_required_metric_fields",
+    "canonical_required_subgroups",
+    "preexisting_required_outputs",
+    "fair_comparison_audit_required",
+    "slurm_spooled_script_runtime_binding",
+    "canonical_casewise_primary_key_count",
+    "secondary_canonical_summary_rows",
+    "historical_noncanonical_boundary"
+  ],
+  "required_casewise_fields": [
+    "Dice",
+    "HD95",
+    "case_id",
+    "center",
+    "component_count",
+    "empty_prediction",
+    "exact_HD",
+    "modality_group",
+    "model_id",
+    "pathology",
+    "precision",
+    "recall",
+    "remote_FP_mm3",
+    "t2_present",
+    "volume_ratio"
+  ],
+  "required_outputs": [
+    "benchmark_contract.json",
+    "weight_provenance.json",
+    "fold0_split_audit.csv",
+    "runtime_adapter_audit.json",
+    "slurm_attempts.csv",
+    "fair_comparison_audit.json",
+    "canonical_casewise_metrics.csv",
+    "canonical_model_summary.csv",
+    "historical_attempt_summary.csv",
+    "pairwise_help_harm.csv",
+    "complementarity_report.md",
+    "strict_validator_report.json",
+    "finalizer_state.json",
+    "controller_report.md",
+    "completion_check.md"
+  ],
+  "required_secondary_canonical_model_ids": [
+    "Batch10_MMRD::distill_epoch25_two_seed_mean",
+    "Batch7_minimal"
+  ],
+  "required_summary_subgroups": [
+    "all",
+    "CenterB",
+    "CenterC",
+    "T2-present",
+    "modality:C0+LGE",
+    "modality:C0+LGE+T2",
+    "modality:LGE-only"
+  ],
+  "status": "PASS",
+  "terminal_accounting": {
+    "all_expected_terminal": true,
+    "expected_job_ids": [
+      "60589655",
+      "60589656",
+      "60589657",
+      "60589658",
+      "60607636"
+    ],
+    "missing_job_ids": [],
+    "nonterminal_jobs": [],
+    "terminal_job_ids": [
+      "60589655",
+      "60589656",
+      "60589657",
+      "60589658",
+      "60607636"
+    ]
+  }
+}

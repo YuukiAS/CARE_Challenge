@@ -1,0 +1,1684 @@
+{
+  "cine_called": false,
+  "compact_prediction_dir": "results/20260725_care_myops_mosaic_fold0_reproduction/native_mosaic_predictions_compact",
+  "expected_case_count": 44,
+  "flat_prediction_dir": "results/20260725_care_myops_mosaic_fold0_reproduction/native_mosaic_predictions",
+  "myops_only": true,
+  "normalized_case_count": 44,
+  "raw_nested_prediction_dir": "results/20260725_care_myops_mosaic_fold0_reproduction/native_mosaic_raw_nested/MyoPS/Anonymous Center",
+  "rows": [
+    {
+      "canonical_eval_prediction_path": "results/20260725_care_myops_mosaic_fold0_reproduction/native_mosaic_predictions/Case1002.nii.gz",
+      "case_id": "Case1002",
+      "gt_size_xyz": [
+        256,
+        256,
+        9
+      ],
+      "gt_spacing_xyz": [
+        1.3672000169754028,
+        1.3672000169754028,
+        10.0
+      ],
+      "label_space": "official",
+      "nested_output_normalized": 1,
+      "normalized_prediction_path": "results/20260725_care_myops_mosaic_fold0_reproduction/native_mosaic_predictions/Case1002.nii.gz",
+      "raw_geometry_status": "PASS",
+      "raw_prediction_path": "results/20260725_care_myops_mosaic_fold0_reproduction/native_mosaic_raw_nested/MyoPS/Anonymous Center/Case1002/Case1002_pred.nii.gz",
+      "raw_size_xyz": [
+        256,
+        256,
+        9
+      ],
+      "raw_spacing_xyz": [
+        1.3672000169754028,
+        1.3672000169754028,
+        10.0
+      ],
+      "raw_unique_labels": [
+        0,
+        200,
+        500,
+        600,
+        1220,
+        2221
+      ],
+      "standardized_geometry_status": "PASS"
+    },
+    {
+      "canonical_eval_prediction_path": "results/20260725_care_myops_mosaic_fold0_reproduction/native_mosaic_predictions/Case1007.nii.gz",
+      "case_id": "Case1007",
+      "gt_size_xyz": [
+        256,
+        256,
+        24
+      ],
+      "gt_spacing_xyz": [
+        1.3672000169754028,
+        1.3672000169754028,
+        4.0
+      ],
+      "label_space": "official",
+      "nested_output_normalized": 1,
+      "normalized_prediction_path": "results/20260725_care_myops_mosaic_fold0_reproduction/native_mosaic_predictions/Case1007.nii.gz",
+      "raw_geometry_status": "PASS",
+      "raw_prediction_path": "results/20260725_care_myops_mosaic_fold0_reproduction/native_mosaic_raw_nested/MyoPS/Anonymous Center/Case1007/Case1007_pred.nii.gz",
+      "raw_size_xyz": [
+        256,
+        256,
+        24
+      ],
+      "raw_spacing_xyz": [
+        1.3672000169754028,
+        1.3672000169754028,
+        4.0
+      ],
+      "raw_unique_labels": [
+        0,
+        200,
+        500,
+        600,
+        1220,
+        2221
+      ],
+      "standardized_geometry_status": "PASS"
+    },
+    {
+      "canonical_eval_prediction_path": "results/20260725_care_myops_mosaic_fold0_reproduction/native_mosaic_predictions/Case1009.nii.gz",
+      "case_id": "Case1009",
+      "gt_size_xyz": [
+        256,
+        256,
+        16
+      ],
+      "gt_spacing_xyz": [
+        1.3672000169754028,
+        1.3672000169754028,
+        5.0
+      ],
+      "label_space": "official",
+      "nested_output_normalized": 1,
+      "normalized_prediction_path": "results/20260725_care_myops_mosaic_fold0_reproduction/native_mosaic_predictions/Case1009.nii.gz",
+      "raw_geometry_status": "PASS",
+      "raw_prediction_path": "results/20260725_care_myops_mosaic_fold0_reproduction/native_mosaic_raw_nested/MyoPS/Anonymous Center/Case1009/Case1009_pred.nii.gz",
+      "raw_size_xyz": [
+        256,
+        256,
+        16
+      ],
+      "raw_spacing_xyz": [
+        1.3672000169754028,
+        1.3672000169754028,
+        5.0
+      ],
+      "raw_unique_labels": [
+        0,
+        200,
+        500,
+        600,
+        1220,
+        2221
+      ],
+      "standardized_geometry_status": "PASS"
+    },
+    {
+      "canonical_eval_prediction_path": "results/20260725_care_myops_mosaic_fold0_reproduction/native_mosaic_predictions/Case1010.nii.gz",
+      "case_id": "Case1010",
+      "gt_size_xyz": [
+        256,
+        256,
+        12
+      ],
+      "gt_spacing_xyz": [
+        1.3672000169754028,
+        1.3672000169754028,
+        9.0
+      ],
+      "label_space": "official",
+      "nested_output_normalized": 1,
+      "normalized_prediction_path": "results/20260725_care_myops_mosaic_fold0_reproduction/native_mosaic_predictions/Case1010.nii.gz",
+      "raw_geometry_status": "PASS",
+      "raw_prediction_path": "results/20260725_care_myops_mosaic_fold0_reproduction/native_mosaic_raw_nested/MyoPS/Anonymous Center/Case1010/Case1010_pred.nii.gz",
+      "raw_size_xyz": [
+        256,
+        256,
+        12
+      ],
+      "raw_spacing_xyz": [
+        1.3672000169754028,
+        1.3672000169754028,
+        9.0
+      ],
+      "raw_unique_labels": [
+        0,
+        200,
+        500,
+        600,
+        1220,
+        2221
+      ],
+      "standardized_geometry_status": "PASS"
+    },
+    {
+      "canonical_eval_prediction_path": "results/20260725_care_myops_mosaic_fold0_reproduction/native_mosaic_predictions/Case1021.nii.gz",
+      "case_id": "Case1021",
+      "gt_size_xyz": [
+        256,
+        256,
+        12
+      ],
+      "gt_spacing_xyz": [
+        1.3672000169754028,
+        1.3672000169754028,
+        9.0
+      ],
+      "label_space": "official",
+      "nested_output_normalized": 1,
+      "normalized_prediction_path": "results/20260725_care_myops_mosaic_fold0_reproduction/native_mosaic_predictions/Case1021.nii.gz",
+      "raw_geometry_status": "PASS",
+      "raw_prediction_path": "results/20260725_care_myops_mosaic_fold0_reproduction/native_mosaic_raw_nested/MyoPS/Anonymous Center/Case1021/Case1021_pred.nii.gz",
+      "raw_size_xyz": [
+        256,
+        256,
+        12
+      ],
+      "raw_spacing_xyz": [
+        1.3672000169754028,
+        1.3672000169754028,
+        9.0
+      ],
+      "raw_unique_labels": [
+        0,
+        200,
+        500,
+        600,
+        1220,
+        2221
+      ],
+      "standardized_geometry_status": "PASS"
+    },
+    {
+      "canonical_eval_prediction_path": "results/20260725_care_myops_mosaic_fold0_reproduction/native_mosaic_predictions/Case1023.nii.gz",
+      "case_id": "Case1023",
+      "gt_size_xyz": [
+        256,
+        256,
+        21
+      ],
+      "gt_spacing_xyz": [
+        1.6405999660491943,
+        1.6405999660491943,
+        5.0
+      ],
+      "label_space": "official",
+      "nested_output_normalized": 1,
+      "normalized_prediction_path": "results/20260725_care_myops_mosaic_fold0_reproduction/native_mosaic_predictions/Case1023.nii.gz",
+      "raw_geometry_status": "PASS",
+      "raw_prediction_path": "results/20260725_care_myops_mosaic_fold0_reproduction/native_mosaic_raw_nested/MyoPS/Anonymous Center/Case1023/Case1023_pred.nii.gz",
+      "raw_size_xyz": [
+        256,
+        256,
+        21
+      ],
+      "raw_spacing_xyz": [
+        1.6405999660491943,
+        1.6405999660491943,
+        5.0
+      ],
+      "raw_unique_labels": [
+        0,
+        200,
+        500,
+        600,
+        1220,
+        2221
+      ],
+      "standardized_geometry_status": "PASS"
+    },
+    {
+      "canonical_eval_prediction_path": "results/20260725_care_myops_mosaic_fold0_reproduction/native_mosaic_predictions/Case1029.nii.gz",
+      "case_id": "Case1029",
+      "gt_size_xyz": [
+        256,
+        256,
+        19
+      ],
+      "gt_spacing_xyz": [
+        1.3280999660491943,
+        1.3280999660491943,
+        5.0
+      ],
+      "label_space": "official",
+      "nested_output_normalized": 1,
+      "normalized_prediction_path": "results/20260725_care_myops_mosaic_fold0_reproduction/native_mosaic_predictions/Case1029.nii.gz",
+      "raw_geometry_status": "PASS",
+      "raw_prediction_path": "results/20260725_care_myops_mosaic_fold0_reproduction/native_mosaic_raw_nested/MyoPS/Anonymous Center/Case1029/Case1029_pred.nii.gz",
+      "raw_size_xyz": [
+        256,
+        256,
+        19
+      ],
+      "raw_spacing_xyz": [
+        1.3280999660491943,
+        1.3280999660491943,
+        5.0
+      ],
+      "raw_unique_labels": [
+        0,
+        200,
+        500,
+        600,
+        1220,
+        2221
+      ],
+      "standardized_geometry_status": "PASS"
+    },
+    {
+      "canonical_eval_prediction_path": "results/20260725_care_myops_mosaic_fold0_reproduction/native_mosaic_predictions/Case1033.nii.gz",
+      "case_id": "Case1033",
+      "gt_size_xyz": [
+        256,
+        256,
+        20
+      ],
+      "gt_spacing_xyz": [
+        1.3280999660491943,
+        1.3280999660491943,
+        5.0
+      ],
+      "label_space": "official",
+      "nested_output_normalized": 1,
+      "normalized_prediction_path": "results/20260725_care_myops_mosaic_fold0_reproduction/native_mosaic_predictions/Case1033.nii.gz",
+      "raw_geometry_status": "PASS",
+      "raw_prediction_path": "results/20260725_care_myops_mosaic_fold0_reproduction/native_mosaic_raw_nested/MyoPS/Anonymous Center/Case1033/Case1033_pred.nii.gz",
+      "raw_size_xyz": [
+        256,
+        256,
+        20
+      ],
+      "raw_spacing_xyz": [
+        1.3280999660491943,
+        1.3280999660491943,
+        5.0
+      ],
+      "raw_unique_labels": [
+        0,
+        200,
+        500,
+        600,
+        1220,
+        2221
+      ],
+      "standardized_geometry_status": "PASS"
+    },
+    {
+      "canonical_eval_prediction_path": "results/20260725_care_myops_mosaic_fold0_reproduction/native_mosaic_predictions/Case1040.nii.gz",
+      "case_id": "Case1040",
+      "gt_size_xyz": [
+        256,
+        256,
+        12
+      ],
+      "gt_spacing_xyz": [
+        1.3672000169754028,
+        1.3672000169754028,
+        8.5
+      ],
+      "label_space": "official",
+      "nested_output_normalized": 1,
+      "normalized_prediction_path": "results/20260725_care_myops_mosaic_fold0_reproduction/native_mosaic_predictions/Case1040.nii.gz",
+      "raw_geometry_status": "PASS",
+      "raw_prediction_path": "results/20260725_care_myops_mosaic_fold0_reproduction/native_mosaic_raw_nested/MyoPS/Anonymous Center/Case1040/Case1040_pred.nii.gz",
+      "raw_size_xyz": [
+        256,
+        256,
+        12
+      ],
+      "raw_spacing_xyz": [
+        1.3672000169754028,
+        1.3672000169754028,
+        8.5
+      ],
+      "raw_unique_labels": [
+        0,
+        200,
+        500,
+        600,
+        1220,
+        2221
+      ],
+      "standardized_geometry_status": "PASS"
+    },
+    {
+      "canonical_eval_prediction_path": "results/20260725_care_myops_mosaic_fold0_reproduction/native_mosaic_predictions/Case1042.nii.gz",
+      "case_id": "Case1042",
+      "gt_size_xyz": [
+        256,
+        256,
+        7
+      ],
+      "gt_spacing_xyz": [
+        1.3672000169754028,
+        1.3672000169754028,
+        16.5
+      ],
+      "label_space": "official",
+      "nested_output_normalized": 1,
+      "normalized_prediction_path": "results/20260725_care_myops_mosaic_fold0_reproduction/native_mosaic_predictions/Case1042.nii.gz",
+      "raw_geometry_status": "PASS",
+      "raw_prediction_path": "results/20260725_care_myops_mosaic_fold0_reproduction/native_mosaic_raw_nested/MyoPS/Anonymous Center/Case1042/Case1042_pred.nii.gz",
+      "raw_size_xyz": [
+        256,
+        256,
+        7
+      ],
+      "raw_spacing_xyz": [
+        1.3672000169754028,
+        1.3672000169754028,
+        16.5
+      ],
+      "raw_unique_labels": [
+        0,
+        200,
+        500,
+        600,
+        1220,
+        2221
+      ],
+      "standardized_geometry_status": "PASS"
+    },
+    {
+      "canonical_eval_prediction_path": "results/20260725_care_myops_mosaic_fold0_reproduction/native_mosaic_predictions/Case1045.nii.gz",
+      "case_id": "Case1045",
+      "gt_size_xyz": [
+        256,
+        256,
+        9
+      ],
+      "gt_spacing_xyz": [
+        1.4844000339508057,
+        1.4844000339508057,
+        12.5
+      ],
+      "label_space": "official",
+      "nested_output_normalized": 1,
+      "normalized_prediction_path": "results/20260725_care_myops_mosaic_fold0_reproduction/native_mosaic_predictions/Case1045.nii.gz",
+      "raw_geometry_status": "PASS",
+      "raw_prediction_path": "results/20260725_care_myops_mosaic_fold0_reproduction/native_mosaic_raw_nested/MyoPS/Anonymous Center/Case1045/Case1045_pred.nii.gz",
+      "raw_size_xyz": [
+        256,
+        256,
+        9
+      ],
+      "raw_spacing_xyz": [
+        1.4844000339508057,
+        1.4844000339508057,
+        12.5
+      ],
+      "raw_unique_labels": [
+        0,
+        200,
+        500,
+        600,
+        1220,
+        2221
+      ],
+      "standardized_geometry_status": "PASS"
+    },
+    {
+      "canonical_eval_prediction_path": "results/20260725_care_myops_mosaic_fold0_reproduction/native_mosaic_predictions/Case1047.nii.gz",
+      "case_id": "Case1047",
+      "gt_size_xyz": [
+        256,
+        256,
+        24
+      ],
+      "gt_spacing_xyz": [
+        1.4452999830245972,
+        1.4452999830245972,
+        5.0
+      ],
+      "label_space": "official",
+      "nested_output_normalized": 1,
+      "normalized_prediction_path": "results/20260725_care_myops_mosaic_fold0_reproduction/native_mosaic_predictions/Case1047.nii.gz",
+      "raw_geometry_status": "PASS",
+      "raw_prediction_path": "results/20260725_care_myops_mosaic_fold0_reproduction/native_mosaic_raw_nested/MyoPS/Anonymous Center/Case1047/Case1047_pred.nii.gz",
+      "raw_size_xyz": [
+        256,
+        256,
+        24
+      ],
+      "raw_spacing_xyz": [
+        1.4452999830245972,
+        1.4452999830245972,
+        5.0
+      ],
+      "raw_unique_labels": [
+        0,
+        200,
+        500,
+        600,
+        1220,
+        2221
+      ],
+      "standardized_geometry_status": "PASS"
+    },
+    {
+      "canonical_eval_prediction_path": "results/20260725_care_myops_mosaic_fold0_reproduction/native_mosaic_predictions/Case1053.nii.gz",
+      "case_id": "Case1053",
+      "gt_size_xyz": [
+        256,
+        256,
+        9
+      ],
+      "gt_spacing_xyz": [
+        1.5625,
+        1.5625,
+        13.0
+      ],
+      "label_space": "official",
+      "nested_output_normalized": 1,
+      "normalized_prediction_path": "results/20260725_care_myops_mosaic_fold0_reproduction/native_mosaic_predictions/Case1053.nii.gz",
+      "raw_geometry_status": "PASS",
+      "raw_prediction_path": "results/20260725_care_myops_mosaic_fold0_reproduction/native_mosaic_raw_nested/MyoPS/Anonymous Center/Case1053/Case1053_pred.nii.gz",
+      "raw_size_xyz": [
+        256,
+        256,
+        9
+      ],
+      "raw_spacing_xyz": [
+        1.5625,
+        1.5625,
+        13.0
+      ],
+      "raw_unique_labels": [
+        0,
+        200,
+        500,
+        600,
+        1220,
+        2221
+      ],
+      "standardized_geometry_status": "PASS"
+    },
+    {
+      "canonical_eval_prediction_path": "results/20260725_care_myops_mosaic_fold0_reproduction/native_mosaic_predictions/Case1062.nii.gz",
+      "case_id": "Case1062",
+      "gt_size_xyz": [
+        256,
+        256,
+        20
+      ],
+      "gt_spacing_xyz": [
+        1.3280999660491943,
+        1.3280999660491943,
+        5.0
+      ],
+      "label_space": "official",
+      "nested_output_normalized": 1,
+      "normalized_prediction_path": "results/20260725_care_myops_mosaic_fold0_reproduction/native_mosaic_predictions/Case1062.nii.gz",
+      "raw_geometry_status": "PASS",
+      "raw_prediction_path": "results/20260725_care_myops_mosaic_fold0_reproduction/native_mosaic_raw_nested/MyoPS/Anonymous Center/Case1062/Case1062_pred.nii.gz",
+      "raw_size_xyz": [
+        256,
+        256,
+        20
+      ],
+      "raw_spacing_xyz": [
+        1.3280999660491943,
+        1.3280999660491943,
+        5.0
+      ],
+      "raw_unique_labels": [
+        0,
+        200,
+        500,
+        600,
+        1220,
+        2221
+      ],
+      "standardized_geometry_status": "PASS"
+    },
+    {
+      "canonical_eval_prediction_path": "results/20260725_care_myops_mosaic_fold0_reproduction/native_mosaic_predictions/Case1070.nii.gz",
+      "case_id": "Case1070",
+      "gt_size_xyz": [
+        256,
+        256,
+        20
+      ],
+      "gt_spacing_xyz": [
+        1.25,
+        1.25,
+        4.5
+      ],
+      "label_space": "official",
+      "nested_output_normalized": 1,
+      "normalized_prediction_path": "results/20260725_care_myops_mosaic_fold0_reproduction/native_mosaic_predictions/Case1070.nii.gz",
+      "raw_geometry_status": "PASS",
+      "raw_prediction_path": "results/20260725_care_myops_mosaic_fold0_reproduction/native_mosaic_raw_nested/MyoPS/Anonymous Center/Case1070/Case1070_pred.nii.gz",
+      "raw_size_xyz": [
+        256,
+        256,
+        20
+      ],
+      "raw_spacing_xyz": [
+        1.25,
+        1.25,
+        4.5
+      ],
+      "raw_unique_labels": [
+        0,
+        200,
+        500,
+        600,
+        1220,
+        2221
+      ],
+      "standardized_geometry_status": "PASS"
+    },
+    {
+      "canonical_eval_prediction_path": "results/20260725_care_myops_mosaic_fold0_reproduction/native_mosaic_predictions/Case1073.nii.gz",
+      "case_id": "Case1073",
+      "gt_size_xyz": [
+        256,
+        256,
+        10
+      ],
+      "gt_spacing_xyz": [
+        1.3672000169754028,
+        1.3672000169754028,
+        10.5
+      ],
+      "label_space": "official",
+      "nested_output_normalized": 1,
+      "normalized_prediction_path": "results/20260725_care_myops_mosaic_fold0_reproduction/native_mosaic_predictions/Case1073.nii.gz",
+      "raw_geometry_status": "PASS",
+      "raw_prediction_path": "results/20260725_care_myops_mosaic_fold0_reproduction/native_mosaic_raw_nested/MyoPS/Anonymous Center/Case1073/Case1073_pred.nii.gz",
+      "raw_size_xyz": [
+        256,
+        256,
+        10
+      ],
+      "raw_spacing_xyz": [
+        1.3672000169754028,
+        1.3672000169754028,
+        10.5
+      ],
+      "raw_unique_labels": [
+        0,
+        200,
+        500,
+        600,
+        1220,
+        2221
+      ],
+      "standardized_geometry_status": "PASS"
+    },
+    {
+      "canonical_eval_prediction_path": "results/20260725_care_myops_mosaic_fold0_reproduction/native_mosaic_predictions/Case1080.nii.gz",
+      "case_id": "Case1080",
+      "gt_size_xyz": [
+        256,
+        256,
+        9
+      ],
+      "gt_spacing_xyz": [
+        1.4844000339508057,
+        1.4844000339508057,
+        11.0
+      ],
+      "label_space": "official",
+      "nested_output_normalized": 1,
+      "normalized_prediction_path": "results/20260725_care_myops_mosaic_fold0_reproduction/native_mosaic_predictions/Case1080.nii.gz",
+      "raw_geometry_status": "PASS",
+      "raw_prediction_path": "results/20260725_care_myops_mosaic_fold0_reproduction/native_mosaic_raw_nested/MyoPS/Anonymous Center/Case1080/Case1080_pred.nii.gz",
+      "raw_size_xyz": [
+        256,
+        256,
+        9
+      ],
+      "raw_spacing_xyz": [
+        1.4844000339508057,
+        1.4844000339508057,
+        11.0
+      ],
+      "raw_unique_labels": [
+        0,
+        200,
+        500,
+        600,
+        1220,
+        2221
+      ],
+      "standardized_geometry_status": "PASS"
+    },
+    {
+      "canonical_eval_prediction_path": "results/20260725_care_myops_mosaic_fold0_reproduction/native_mosaic_predictions/Case2002.nii.gz",
+      "case_id": "Case2002",
+      "gt_size_xyz": [
+        264,
+        251,
+        6
+      ],
+      "gt_spacing_xyz": [
+        1.328125,
+        1.328125,
+        10.0
+      ],
+      "label_space": "official",
+      "nested_output_normalized": 1,
+      "normalized_prediction_path": "results/20260725_care_myops_mosaic_fold0_reproduction/native_mosaic_predictions/Case2002.nii.gz",
+      "raw_geometry_status": "PASS",
+      "raw_prediction_path": "results/20260725_care_myops_mosaic_fold0_reproduction/native_mosaic_raw_nested/MyoPS/Anonymous Center/Case2002/Case2002_pred.nii.gz",
+      "raw_size_xyz": [
+        264,
+        251,
+        6
+      ],
+      "raw_spacing_xyz": [
+        1.328125,
+        1.328125,
+        10.0
+      ],
+      "raw_unique_labels": [
+        0,
+        200,
+        500,
+        600,
+        1220,
+        2221
+      ],
+      "standardized_geometry_status": "PASS"
+    },
+    {
+      "canonical_eval_prediction_path": "results/20260725_care_myops_mosaic_fold0_reproduction/native_mosaic_predictions/Case2007.nii.gz",
+      "case_id": "Case2007",
+      "gt_size_xyz": [
+        160,
+        166,
+        6
+      ],
+      "gt_spacing_xyz": [
+        1.7708333730697632,
+        1.7708333730697632,
+        10.0
+      ],
+      "label_space": "official",
+      "nested_output_normalized": 1,
+      "normalized_prediction_path": "results/20260725_care_myops_mosaic_fold0_reproduction/native_mosaic_predictions/Case2007.nii.gz",
+      "raw_geometry_status": "PASS",
+      "raw_prediction_path": "results/20260725_care_myops_mosaic_fold0_reproduction/native_mosaic_raw_nested/MyoPS/Anonymous Center/Case2007/Case2007_pred.nii.gz",
+      "raw_size_xyz": [
+        160,
+        166,
+        6
+      ],
+      "raw_spacing_xyz": [
+        1.7708333730697632,
+        1.7708333730697632,
+        10.0
+      ],
+      "raw_unique_labels": [
+        0,
+        200,
+        500,
+        600,
+        1220,
+        2221
+      ],
+      "standardized_geometry_status": "PASS"
+    },
+    {
+      "canonical_eval_prediction_path": "results/20260725_care_myops_mosaic_fold0_reproduction/native_mosaic_predictions/Case2008.nii.gz",
+      "case_id": "Case2008",
+      "gt_size_xyz": [
+        225,
+        257,
+        5
+      ],
+      "gt_spacing_xyz": [
+        1.328125,
+        1.328125,
+        10.0
+      ],
+      "label_space": "official",
+      "nested_output_normalized": 1,
+      "normalized_prediction_path": "results/20260725_care_myops_mosaic_fold0_reproduction/native_mosaic_predictions/Case2008.nii.gz",
+      "raw_geometry_status": "PASS",
+      "raw_prediction_path": "results/20260725_care_myops_mosaic_fold0_reproduction/native_mosaic_raw_nested/MyoPS/Anonymous Center/Case2008/Case2008_pred.nii.gz",
+      "raw_size_xyz": [
+        225,
+        257,
+        5
+      ],
+      "raw_spacing_xyz": [
+        1.328125,
+        1.328125,
+        10.0
+      ],
+      "raw_unique_labels": [
+        0,
+        200,
+        500,
+        600,
+        1220,
+        2221
+      ],
+      "standardized_geometry_status": "PASS"
+    },
+    {
+      "canonical_eval_prediction_path": "results/20260725_care_myops_mosaic_fold0_reproduction/native_mosaic_predictions/Case2017.nii.gz",
+      "case_id": "Case2017",
+      "gt_size_xyz": [
+        248,
+        257,
+        5
+      ],
+      "gt_spacing_xyz": [
+        1.7708333730697632,
+        1.7708333730697632,
+        10.0
+      ],
+      "label_space": "official",
+      "nested_output_normalized": 1,
+      "normalized_prediction_path": "results/20260725_care_myops_mosaic_fold0_reproduction/native_mosaic_predictions/Case2017.nii.gz",
+      "raw_geometry_status": "PASS",
+      "raw_prediction_path": "results/20260725_care_myops_mosaic_fold0_reproduction/native_mosaic_raw_nested/MyoPS/Anonymous Center/Case2017/Case2017_pred.nii.gz",
+      "raw_size_xyz": [
+        248,
+        257,
+        5
+      ],
+      "raw_spacing_xyz": [
+        1.7708333730697632,
+        1.7708333730697632,
+        10.0
+      ],
+      "raw_unique_labels": [
+        0,
+        200,
+        500,
+        600,
+        1220,
+        2221
+      ],
+      "standardized_geometry_status": "PASS"
+    },
+    {
+      "canonical_eval_prediction_path": "results/20260725_care_myops_mosaic_fold0_reproduction/native_mosaic_predictions/Case2020.nii.gz",
+      "case_id": "Case2020",
+      "gt_size_xyz": [
+        160,
+        160,
+        6
+      ],
+      "gt_spacing_xyz": [
+        1.7708333730697632,
+        1.7708333730697632,
+        10.0
+      ],
+      "label_space": "official",
+      "nested_output_normalized": 1,
+      "normalized_prediction_path": "results/20260725_care_myops_mosaic_fold0_reproduction/native_mosaic_predictions/Case2020.nii.gz",
+      "raw_geometry_status": "PASS",
+      "raw_prediction_path": "results/20260725_care_myops_mosaic_fold0_reproduction/native_mosaic_raw_nested/MyoPS/Anonymous Center/Case2020/Case2020_pred.nii.gz",
+      "raw_size_xyz": [
+        160,
+        160,
+        6
+      ],
+      "raw_spacing_xyz": [
+        1.7708333730697632,
+        1.7708333730697632,
+        10.0
+      ],
+      "raw_unique_labels": [
+        0,
+        200,
+        500,
+        600,
+        1220,
+        2221
+      ],
+      "standardized_geometry_status": "PASS"
+    },
+    {
+      "canonical_eval_prediction_path": "results/20260725_care_myops_mosaic_fold0_reproduction/native_mosaic_predictions/Case2031.nii.gz",
+      "case_id": "Case2031",
+      "gt_size_xyz": [
+        247,
+        255,
+        3
+      ],
+      "gt_spacing_xyz": [
+        1.7708333730697632,
+        1.7708333730697632,
+        10.0
+      ],
+      "label_space": "official",
+      "nested_output_normalized": 1,
+      "normalized_prediction_path": "results/20260725_care_myops_mosaic_fold0_reproduction/native_mosaic_predictions/Case2031.nii.gz",
+      "raw_geometry_status": "PASS",
+      "raw_prediction_path": "results/20260725_care_myops_mosaic_fold0_reproduction/native_mosaic_raw_nested/MyoPS/Anonymous Center/Case2031/Case2031_pred.nii.gz",
+      "raw_size_xyz": [
+        247,
+        255,
+        3
+      ],
+      "raw_spacing_xyz": [
+        1.7708333730697632,
+        1.7708333730697632,
+        10.0
+      ],
+      "raw_unique_labels": [
+        0,
+        200,
+        500,
+        600,
+        1220,
+        2221
+      ],
+      "standardized_geometry_status": "PASS"
+    },
+    {
+      "canonical_eval_prediction_path": "results/20260725_care_myops_mosaic_fold0_reproduction/native_mosaic_predictions/Case2033.nii.gz",
+      "case_id": "Case2033",
+      "gt_size_xyz": [
+        225,
+        247,
+        7
+      ],
+      "gt_spacing_xyz": [
+        1.328125,
+        1.328125,
+        10.0
+      ],
+      "label_space": "official",
+      "nested_output_normalized": 1,
+      "normalized_prediction_path": "results/20260725_care_myops_mosaic_fold0_reproduction/native_mosaic_predictions/Case2033.nii.gz",
+      "raw_geometry_status": "PASS",
+      "raw_prediction_path": "results/20260725_care_myops_mosaic_fold0_reproduction/native_mosaic_raw_nested/MyoPS/Anonymous Center/Case2033/Case2033_pred.nii.gz",
+      "raw_size_xyz": [
+        225,
+        247,
+        7
+      ],
+      "raw_spacing_xyz": [
+        1.328125,
+        1.328125,
+        10.0
+      ],
+      "raw_unique_labels": [
+        0,
+        200,
+        500,
+        600,
+        1220,
+        2221
+      ],
+      "standardized_geometry_status": "PASS"
+    },
+    {
+      "canonical_eval_prediction_path": "results/20260725_care_myops_mosaic_fold0_reproduction/native_mosaic_predictions/Case3004.nii.gz",
+      "case_id": "Case3004",
+      "gt_size_xyz": [
+        481,
+        478,
+        6
+      ],
+      "gt_spacing_xyz": [
+        0.7290666699409485,
+        0.7290666699409485,
+        12.000001907348633
+      ],
+      "label_space": "official",
+      "nested_output_normalized": 1,
+      "normalized_prediction_path": "results/20260725_care_myops_mosaic_fold0_reproduction/native_mosaic_predictions/Case3004.nii.gz",
+      "raw_geometry_status": "PASS",
+      "raw_prediction_path": "results/20260725_care_myops_mosaic_fold0_reproduction/native_mosaic_raw_nested/MyoPS/Anonymous Center/Case3004/Case3004_pred.nii.gz",
+      "raw_size_xyz": [
+        481,
+        478,
+        6
+      ],
+      "raw_spacing_xyz": [
+        0.7290666699409485,
+        0.7290666699409485,
+        12.000001907348633
+      ],
+      "raw_unique_labels": [
+        0,
+        200,
+        500,
+        600,
+        1220,
+        2221
+      ],
+      "standardized_geometry_status": "PASS"
+    },
+    {
+      "canonical_eval_prediction_path": "results/20260725_care_myops_mosaic_fold0_reproduction/native_mosaic_predictions/Case3011.nii.gz",
+      "case_id": "Case3011",
+      "gt_size_xyz": [
+        489,
+        498,
+        2
+      ],
+      "gt_spacing_xyz": [
+        0.7290666699409485,
+        0.7290666699409485,
+        23.000001907348633
+      ],
+      "label_space": "official",
+      "nested_output_normalized": 1,
+      "normalized_prediction_path": "results/20260725_care_myops_mosaic_fold0_reproduction/native_mosaic_predictions/Case3011.nii.gz",
+      "raw_geometry_status": "PASS",
+      "raw_prediction_path": "results/20260725_care_myops_mosaic_fold0_reproduction/native_mosaic_raw_nested/MyoPS/Anonymous Center/Case3011/Case3011_pred.nii.gz",
+      "raw_size_xyz": [
+        489,
+        498,
+        2
+      ],
+      "raw_spacing_xyz": [
+        0.7290666699409485,
+        0.7290666699409485,
+        23.000001907348633
+      ],
+      "raw_unique_labels": [
+        0,
+        200,
+        500,
+        600,
+        1220,
+        2221
+      ],
+      "standardized_geometry_status": "PASS"
+    },
+    {
+      "canonical_eval_prediction_path": "results/20260725_care_myops_mosaic_fold0_reproduction/native_mosaic_predictions/Case3012.nii.gz",
+      "case_id": "Case3012",
+      "gt_size_xyz": [
+        477,
+        477,
+        5
+      ],
+      "gt_spacing_xyz": [
+        0.7290666699409485,
+        0.7290666699409485,
+        13.999999046325684
+      ],
+      "label_space": "official",
+      "nested_output_normalized": 1,
+      "normalized_prediction_path": "results/20260725_care_myops_mosaic_fold0_reproduction/native_mosaic_predictions/Case3012.nii.gz",
+      "raw_geometry_status": "PASS",
+      "raw_prediction_path": "results/20260725_care_myops_mosaic_fold0_reproduction/native_mosaic_raw_nested/MyoPS/Anonymous Center/Case3012/Case3012_pred.nii.gz",
+      "raw_size_xyz": [
+        477,
+        477,
+        5
+      ],
+      "raw_spacing_xyz": [
+        0.7290666699409485,
+        0.7290666699409485,
+        13.999999046325684
+      ],
+      "raw_unique_labels": [
+        0,
+        200,
+        500,
+        600,
+        1220,
+        2221
+      ],
+      "standardized_geometry_status": "PASS"
+    },
+    {
+      "canonical_eval_prediction_path": "results/20260725_care_myops_mosaic_fold0_reproduction/native_mosaic_predictions/Case3023.nii.gz",
+      "case_id": "Case3023",
+      "gt_size_xyz": [
+        481,
+        479,
+        3
+      ],
+      "gt_spacing_xyz": [
+        0.7291666865348816,
+        0.7291666865348816,
+        23.0
+      ],
+      "label_space": "official",
+      "nested_output_normalized": 1,
+      "normalized_prediction_path": "results/20260725_care_myops_mosaic_fold0_reproduction/native_mosaic_predictions/Case3023.nii.gz",
+      "raw_geometry_status": "PASS",
+      "raw_prediction_path": "results/20260725_care_myops_mosaic_fold0_reproduction/native_mosaic_raw_nested/MyoPS/Anonymous Center/Case3023/Case3023_pred.nii.gz",
+      "raw_size_xyz": [
+        481,
+        479,
+        3
+      ],
+      "raw_spacing_xyz": [
+        0.7291666865348816,
+        0.7291666865348816,
+        23.0
+      ],
+      "raw_unique_labels": [
+        0,
+        200,
+        500,
+        600,
+        1220,
+        2221
+      ],
+      "standardized_geometry_status": "PASS"
+    },
+    {
+      "canonical_eval_prediction_path": "results/20260725_care_myops_mosaic_fold0_reproduction/native_mosaic_predictions/Case3026.nii.gz",
+      "case_id": "Case3026",
+      "gt_size_xyz": [
+        474,
+        471,
+        5
+      ],
+      "gt_spacing_xyz": [
+        0.7290666699409485,
+        0.7290666699409485,
+        14.00000286102295
+      ],
+      "label_space": "official",
+      "nested_output_normalized": 1,
+      "normalized_prediction_path": "results/20260725_care_myops_mosaic_fold0_reproduction/native_mosaic_predictions/Case3026.nii.gz",
+      "raw_geometry_status": "PASS",
+      "raw_prediction_path": "results/20260725_care_myops_mosaic_fold0_reproduction/native_mosaic_raw_nested/MyoPS/Anonymous Center/Case3026/Case3026_pred.nii.gz",
+      "raw_size_xyz": [
+        474,
+        471,
+        5
+      ],
+      "raw_spacing_xyz": [
+        0.7290666699409485,
+        0.7290666699409485,
+        14.00000286102295
+      ],
+      "raw_unique_labels": [
+        0,
+        200,
+        500,
+        600,
+        1220,
+        2221
+      ],
+      "standardized_geometry_status": "PASS"
+    },
+    {
+      "canonical_eval_prediction_path": "results/20260725_care_myops_mosaic_fold0_reproduction/native_mosaic_predictions/Case3034.nii.gz",
+      "case_id": "Case3034",
+      "gt_size_xyz": [
+        462,
+        458,
+        4
+      ],
+      "gt_spacing_xyz": [
+        0.7290666699409485,
+        0.7290666699409485,
+        23.000001907348633
+      ],
+      "label_space": "official",
+      "nested_output_normalized": 1,
+      "normalized_prediction_path": "results/20260725_care_myops_mosaic_fold0_reproduction/native_mosaic_predictions/Case3034.nii.gz",
+      "raw_geometry_status": "PASS",
+      "raw_prediction_path": "results/20260725_care_myops_mosaic_fold0_reproduction/native_mosaic_raw_nested/MyoPS/Anonymous Center/Case3034/Case3034_pred.nii.gz",
+      "raw_size_xyz": [
+        462,
+        458,
+        4
+      ],
+      "raw_spacing_xyz": [
+        0.7290666699409485,
+        0.7290666699409485,
+        23.000001907348633
+      ],
+      "raw_unique_labels": [
+        0,
+        200,
+        500,
+        600,
+        1220,
+        2221
+      ],
+      "standardized_geometry_status": "PASS"
+    },
+    {
+      "canonical_eval_prediction_path": "results/20260725_care_myops_mosaic_fold0_reproduction/native_mosaic_predictions/Case3038.nii.gz",
+      "case_id": "Case3038",
+      "gt_size_xyz": [
+        506,
+        508,
+        3
+      ],
+      "gt_spacing_xyz": [
+        0.7421875,
+        0.7421875,
+        13.999996185302734
+      ],
+      "label_space": "official",
+      "nested_output_normalized": 1,
+      "normalized_prediction_path": "results/20260725_care_myops_mosaic_fold0_reproduction/native_mosaic_predictions/Case3038.nii.gz",
+      "raw_geometry_status": "PASS",
+      "raw_prediction_path": "results/20260725_care_myops_mosaic_fold0_reproduction/native_mosaic_raw_nested/MyoPS/Anonymous Center/Case3038/Case3038_pred.nii.gz",
+      "raw_size_xyz": [
+        506,
+        508,
+        3
+      ],
+      "raw_spacing_xyz": [
+        0.7421875,
+        0.7421875,
+        13.999996185302734
+      ],
+      "raw_unique_labels": [
+        0,
+        200,
+        500,
+        600,
+        1220,
+        2221
+      ],
+      "standardized_geometry_status": "PASS"
+    },
+    {
+      "canonical_eval_prediction_path": "results/20260725_care_myops_mosaic_fold0_reproduction/native_mosaic_predictions/Case3040.nii.gz",
+      "case_id": "Case3040",
+      "gt_size_xyz": [
+        498,
+        495,
+        3
+      ],
+      "gt_spacing_xyz": [
+        0.7290666699409485,
+        0.7290666699409485,
+        22.999998092651367
+      ],
+      "label_space": "official",
+      "nested_output_normalized": 1,
+      "normalized_prediction_path": "results/20260725_care_myops_mosaic_fold0_reproduction/native_mosaic_predictions/Case3040.nii.gz",
+      "raw_geometry_status": "PASS",
+      "raw_prediction_path": "results/20260725_care_myops_mosaic_fold0_reproduction/native_mosaic_raw_nested/MyoPS/Anonymous Center/Case3040/Case3040_pred.nii.gz",
+      "raw_size_xyz": [
+        498,
+        495,
+        3
+      ],
+      "raw_spacing_xyz": [
+        0.7290666699409485,
+        0.7290666699409485,
+        22.999998092651367
+      ],
+      "raw_unique_labels": [
+        0,
+        200,
+        500,
+        600,
+        1220,
+        2221
+      ],
+      "standardized_geometry_status": "PASS"
+    },
+    {
+      "canonical_eval_prediction_path": "results/20260725_care_myops_mosaic_fold0_reproduction/native_mosaic_predictions/Case3044.nii.gz",
+      "case_id": "Case3044",
+      "gt_size_xyz": [
+        501,
+        499,
+        3
+      ],
+      "gt_spacing_xyz": [
+        0.7290666699409485,
+        0.7290666699409485,
+        23.000001907348633
+      ],
+      "label_space": "official",
+      "nested_output_normalized": 1,
+      "normalized_prediction_path": "results/20260725_care_myops_mosaic_fold0_reproduction/native_mosaic_predictions/Case3044.nii.gz",
+      "raw_geometry_status": "PASS",
+      "raw_prediction_path": "results/20260725_care_myops_mosaic_fold0_reproduction/native_mosaic_raw_nested/MyoPS/Anonymous Center/Case3044/Case3044_pred.nii.gz",
+      "raw_size_xyz": [
+        501,
+        499,
+        3
+      ],
+      "raw_spacing_xyz": [
+        0.7290666699409485,
+        0.7290666699409485,
+        23.000001907348633
+      ],
+      "raw_unique_labels": [
+        0,
+        200,
+        500,
+        600,
+        1220,
+        2221
+      ],
+      "standardized_geometry_status": "PASS"
+    },
+    {
+      "canonical_eval_prediction_path": "results/20260725_care_myops_mosaic_fold0_reproduction/native_mosaic_predictions/Case5005.nii.gz",
+      "case_id": "Case5005",
+      "gt_size_xyz": [
+        256,
+        256,
+        6
+      ],
+      "gt_spacing_xyz": [
+        1.3671875,
+        1.3671875,
+        10.0
+      ],
+      "label_space": "official",
+      "nested_output_normalized": 1,
+      "normalized_prediction_path": "results/20260725_care_myops_mosaic_fold0_reproduction/native_mosaic_predictions/Case5005.nii.gz",
+      "raw_geometry_status": "PASS",
+      "raw_prediction_path": "results/20260725_care_myops_mosaic_fold0_reproduction/native_mosaic_raw_nested/MyoPS/Anonymous Center/Case5005/Case5005_pred.nii.gz",
+      "raw_size_xyz": [
+        256,
+        256,
+        6
+      ],
+      "raw_spacing_xyz": [
+        1.3671875,
+        1.3671875,
+        10.0
+      ],
+      "raw_unique_labels": [
+        0,
+        200,
+        500,
+        600,
+        1220,
+        2221
+      ],
+      "standardized_geometry_status": "PASS"
+    },
+    {
+      "canonical_eval_prediction_path": "results/20260725_care_myops_mosaic_fold0_reproduction/native_mosaic_predictions/Case6001.nii.gz",
+      "case_id": "Case6001",
+      "gt_size_xyz": [
+        288,
+        288,
+        8
+      ],
+      "gt_spacing_xyz": [
+        1.25,
+        1.25,
+        10.0
+      ],
+      "label_space": "official",
+      "nested_output_normalized": 1,
+      "normalized_prediction_path": "results/20260725_care_myops_mosaic_fold0_reproduction/native_mosaic_predictions/Case6001.nii.gz",
+      "raw_geometry_status": "PASS",
+      "raw_prediction_path": "results/20260725_care_myops_mosaic_fold0_reproduction/native_mosaic_raw_nested/MyoPS/Anonymous Center/Case6001/Case6001_pred.nii.gz",
+      "raw_size_xyz": [
+        288,
+        288,
+        8
+      ],
+      "raw_spacing_xyz": [
+        1.25,
+        1.25,
+        10.0
+      ],
+      "raw_unique_labels": [
+        0,
+        200,
+        500,
+        600,
+        1220,
+        2221
+      ],
+      "standardized_geometry_status": "PASS"
+    },
+    {
+      "canonical_eval_prediction_path": "results/20260725_care_myops_mosaic_fold0_reproduction/native_mosaic_predictions/Case6010.nii.gz",
+      "case_id": "Case6010",
+      "gt_size_xyz": [
+        288,
+        288,
+        7
+      ],
+      "gt_spacing_xyz": [
+        1.25,
+        1.25,
+        10.0
+      ],
+      "label_space": "official",
+      "nested_output_normalized": 1,
+      "normalized_prediction_path": "results/20260725_care_myops_mosaic_fold0_reproduction/native_mosaic_predictions/Case6010.nii.gz",
+      "raw_geometry_status": "PASS",
+      "raw_prediction_path": "results/20260725_care_myops_mosaic_fold0_reproduction/native_mosaic_raw_nested/MyoPS/Anonymous Center/Case6010/Case6010_pred.nii.gz",
+      "raw_size_xyz": [
+        288,
+        288,
+        7
+      ],
+      "raw_spacing_xyz": [
+        1.25,
+        1.25,
+        10.0
+      ],
+      "raw_unique_labels": [
+        0,
+        200,
+        500,
+        600,
+        1220,
+        2221
+      ],
+      "standardized_geometry_status": "PASS"
+    },
+    {
+      "canonical_eval_prediction_path": "results/20260725_care_myops_mosaic_fold0_reproduction/native_mosaic_predictions/Case7005.nii.gz",
+      "case_id": "Case7005",
+      "gt_size_xyz": [
+        200,
+        256,
+        6
+      ],
+      "gt_spacing_xyz": [
+        1.40625,
+        1.40625,
+        8.0
+      ],
+      "label_space": "official",
+      "nested_output_normalized": 1,
+      "normalized_prediction_path": "results/20260725_care_myops_mosaic_fold0_reproduction/native_mosaic_predictions/Case7005.nii.gz",
+      "raw_geometry_status": "PASS",
+      "raw_prediction_path": "results/20260725_care_myops_mosaic_fold0_reproduction/native_mosaic_raw_nested/MyoPS/Anonymous Center/Case7005/Case7005_pred.nii.gz",
+      "raw_size_xyz": [
+        200,
+        256,
+        6
+      ],
+      "raw_spacing_xyz": [
+        1.40625,
+        1.40625,
+        8.0
+      ],
+      "raw_unique_labels": [
+        0,
+        200,
+        500,
+        600,
+        1220,
+        2221
+      ],
+      "standardized_geometry_status": "PASS"
+    },
+    {
+      "canonical_eval_prediction_path": "results/20260725_care_myops_mosaic_fold0_reproduction/native_mosaic_predictions/Case8003.nii.gz",
+      "case_id": "Case8003",
+      "gt_size_xyz": [
+        192,
+        256,
+        8
+      ],
+      "gt_spacing_xyz": [
+        1.3671875,
+        1.3671875,
+        11.250004768371582
+      ],
+      "label_space": "official",
+      "nested_output_normalized": 1,
+      "normalized_prediction_path": "results/20260725_care_myops_mosaic_fold0_reproduction/native_mosaic_predictions/Case8003.nii.gz",
+      "raw_geometry_status": "PASS",
+      "raw_prediction_path": "results/20260725_care_myops_mosaic_fold0_reproduction/native_mosaic_raw_nested/MyoPS/Anonymous Center/Case8003/Case8003_pred.nii.gz",
+      "raw_size_xyz": [
+        192,
+        256,
+        8
+      ],
+      "raw_spacing_xyz": [
+        1.3671875,
+        1.3671875,
+        11.250004768371582
+      ],
+      "raw_unique_labels": [
+        0,
+        200,
+        500,
+        600,
+        1220,
+        2221
+      ],
+      "standardized_geometry_status": "PASS"
+    },
+    {
+      "canonical_eval_prediction_path": "results/20260725_care_myops_mosaic_fold0_reproduction/native_mosaic_predictions/Case8011.nii.gz",
+      "case_id": "Case8011",
+      "gt_size_xyz": [
+        192,
+        256,
+        8
+      ],
+      "gt_spacing_xyz": [
+        1.484375,
+        1.484375,
+        11.249999046325684
+      ],
+      "label_space": "official",
+      "nested_output_normalized": 1,
+      "normalized_prediction_path": "results/20260725_care_myops_mosaic_fold0_reproduction/native_mosaic_predictions/Case8011.nii.gz",
+      "raw_geometry_status": "PASS",
+      "raw_prediction_path": "results/20260725_care_myops_mosaic_fold0_reproduction/native_mosaic_raw_nested/MyoPS/Anonymous Center/Case8011/Case8011_pred.nii.gz",
+      "raw_size_xyz": [
+        192,
+        256,
+        8
+      ],
+      "raw_spacing_xyz": [
+        1.484375,
+        1.484375,
+        11.249999046325684
+      ],
+      "raw_unique_labels": [
+        0,
+        200,
+        500,
+        600,
+        1220,
+        2221
+      ],
+      "standardized_geometry_status": "PASS"
+    },
+    {
+      "canonical_eval_prediction_path": "results/20260725_care_myops_mosaic_fold0_reproduction/native_mosaic_predictions/Case8015.nii.gz",
+      "case_id": "Case8015",
+      "gt_size_xyz": [
+        206,
+        256,
+        8
+      ],
+      "gt_spacing_xyz": [
+        1.3671875,
+        1.3671875,
+        10.0
+      ],
+      "label_space": "official",
+      "nested_output_normalized": 1,
+      "normalized_prediction_path": "results/20260725_care_myops_mosaic_fold0_reproduction/native_mosaic_predictions/Case8015.nii.gz",
+      "raw_geometry_status": "PASS",
+      "raw_prediction_path": "results/20260725_care_myops_mosaic_fold0_reproduction/native_mosaic_raw_nested/MyoPS/Anonymous Center/Case8015/Case8015_pred.nii.gz",
+      "raw_size_xyz": [
+        206,
+        256,
+        8
+      ],
+      "raw_spacing_xyz": [
+        1.3671875,
+        1.3671875,
+        10.0
+      ],
+      "raw_unique_labels": [
+        0,
+        200,
+        500,
+        600,
+        1220,
+        2221
+      ],
+      "standardized_geometry_status": "PASS"
+    },
+    {
+      "canonical_eval_prediction_path": "results/20260725_care_myops_mosaic_fold0_reproduction/native_mosaic_predictions/Case8019.nii.gz",
+      "case_id": "Case8019",
+      "gt_size_xyz": [
+        192,
+        256,
+        8
+      ],
+      "gt_spacing_xyz": [
+        1.484375,
+        1.484375,
+        11.25
+      ],
+      "label_space": "official",
+      "nested_output_normalized": 1,
+      "normalized_prediction_path": "results/20260725_care_myops_mosaic_fold0_reproduction/native_mosaic_predictions/Case8019.nii.gz",
+      "raw_geometry_status": "PASS",
+      "raw_prediction_path": "results/20260725_care_myops_mosaic_fold0_reproduction/native_mosaic_raw_nested/MyoPS/Anonymous Center/Case8019/Case8019_pred.nii.gz",
+      "raw_size_xyz": [
+        192,
+        256,
+        8
+      ],
+      "raw_spacing_xyz": [
+        1.484375,
+        1.484375,
+        11.25
+      ],
+      "raw_unique_labels": [
+        0,
+        200,
+        500,
+        600,
+        1220,
+        2221
+      ],
+      "standardized_geometry_status": "PASS"
+    },
+    {
+      "canonical_eval_prediction_path": "results/20260725_care_myops_mosaic_fold0_reproduction/native_mosaic_predictions/Case8021.nii.gz",
+      "case_id": "Case8021",
+      "gt_size_xyz": [
+        192,
+        256,
+        8
+      ],
+      "gt_spacing_xyz": [
+        1.484375,
+        1.484375,
+        11.699999809265137
+      ],
+      "label_space": "official",
+      "nested_output_normalized": 1,
+      "normalized_prediction_path": "results/20260725_care_myops_mosaic_fold0_reproduction/native_mosaic_predictions/Case8021.nii.gz",
+      "raw_geometry_status": "PASS",
+      "raw_prediction_path": "results/20260725_care_myops_mosaic_fold0_reproduction/native_mosaic_raw_nested/MyoPS/Anonymous Center/Case8021/Case8021_pred.nii.gz",
+      "raw_size_xyz": [
+        192,
+        256,
+        8
+      ],
+      "raw_spacing_xyz": [
+        1.484375,
+        1.484375,
+        11.699999809265137
+      ],
+      "raw_unique_labels": [
+        0,
+        200,
+        500,
+        600,
+        1220,
+        2221
+      ],
+      "standardized_geometry_status": "PASS"
+    },
+    {
+      "canonical_eval_prediction_path": "results/20260725_care_myops_mosaic_fold0_reproduction/native_mosaic_predictions/Case8022.nii.gz",
+      "case_id": "Case8022",
+      "gt_size_xyz": [
+        192,
+        256,
+        8
+      ],
+      "gt_spacing_xyz": [
+        1.3671875,
+        1.3671875,
+        9.999998092651367
+      ],
+      "label_space": "official",
+      "nested_output_normalized": 1,
+      "normalized_prediction_path": "results/20260725_care_myops_mosaic_fold0_reproduction/native_mosaic_predictions/Case8022.nii.gz",
+      "raw_geometry_status": "PASS",
+      "raw_prediction_path": "results/20260725_care_myops_mosaic_fold0_reproduction/native_mosaic_raw_nested/MyoPS/Anonymous Center/Case8022/Case8022_pred.nii.gz",
+      "raw_size_xyz": [
+        192,
+        256,
+        8
+      ],
+      "raw_spacing_xyz": [
+        1.3671875,
+        1.3671875,
+        9.999998092651367
+      ],
+      "raw_unique_labels": [
+        0,
+        200,
+        500,
+        600,
+        1220,
+        2221
+      ],
+      "standardized_geometry_status": "PASS"
+    },
+    {
+      "canonical_eval_prediction_path": "results/20260725_care_myops_mosaic_fold0_reproduction/native_mosaic_predictions/Case8023.nii.gz",
+      "case_id": "Case8023",
+      "gt_size_xyz": [
+        192,
+        256,
+        8
+      ],
+      "gt_spacing_xyz": [
+        1.484375,
+        1.484375,
+        11.699999809265137
+      ],
+      "label_space": "official",
+      "nested_output_normalized": 1,
+      "normalized_prediction_path": "results/20260725_care_myops_mosaic_fold0_reproduction/native_mosaic_predictions/Case8023.nii.gz",
+      "raw_geometry_status": "PASS",
+      "raw_prediction_path": "results/20260725_care_myops_mosaic_fold0_reproduction/native_mosaic_raw_nested/MyoPS/Anonymous Center/Case8023/Case8023_pred.nii.gz",
+      "raw_size_xyz": [
+        192,
+        256,
+        8
+      ],
+      "raw_spacing_xyz": [
+        1.484375,
+        1.484375,
+        11.699999809265137
+      ],
+      "raw_unique_labels": [
+        0,
+        200,
+        500,
+        600,
+        1220,
+        2221
+      ],
+      "standardized_geometry_status": "PASS"
+    }
+  ],
+  "status": "PASS"
+}

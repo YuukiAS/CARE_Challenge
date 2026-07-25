@@ -1,0 +1,46 @@
+{
+  "fold0_checkpoint_root": "results/20260725_care_myops_mosaic_fold0_reproduction/runtime/fold0",
+  "mosaic_submission_weight_root": "/users/a/e/aereinh/MoSAIC",
+  "source_files": [
+    {
+      "exists": true,
+      "path": "configs/baselines/mosaic_fold0_fair.yaml",
+      "sha256": "162f56a3ef834dd96f17f82ac6e427c4f7b6ffaa3fab42f348381f915a494642"
+    },
+    {
+      "exists": true,
+      "path": "data/benchmarks/protocol/splits_MyoPS.json",
+      "sha256": "6165caeb5b47feb0d24f20380898037b7e6cead4db1eeba398a3c5a57faf9a1b"
+    },
+    {
+      "exists": true,
+      "path": "third_party/MoSAIC/source/configs/myops_coarse.yaml",
+      "sha256": "aa6aa3c0eea54006b5c56f6d3fd0ebe364ad6a14958bfcaca3991c15fa2b250f"
+    },
+    {
+      "exists": true,
+      "path": "third_party/MoSAIC/source/configs/myops_fine.yaml",
+      "sha256": "1b67b429c792082c294bb12cb65a82047ddda05114840e479f0c1b4c8f0256cc"
+    },
+    {
+      "exists": true,
+      "path": "third_party/MoSAIC/source/configs/myops_edema.yaml",
+      "sha256": "7a8adcb8b623b6faed23a614a7dbb7b0f8ea49133e8c34f724ec7659be1869ca"
+    },
+    {
+      "exists": true,
+      "path": "third_party/MoSAIC/source/configs/myops_edema_fine.yaml",
+      "sha256": "eb244b41d136bf8e4b160187170bf4248f40ac96fcc466603e8c59f86b2b8853"
+    },
+    {
+      "exists": true,
+      "path": "results/20260725_care_myops_mosaic_fold0_reproduction/runtime/fold0/manifest_fold0_exact.jsonl",
+      "sha256": "36d3104ece00a573b08cd5788f4dc99ee3691e6f3a9ea0f83a941cd81deae45b"
+    }
+  ],
+  "status": "PASS_RANDOM_INIT_FOLD0_ONLY",
+  "submission_weights_allowed_scope": "model-load or official-validation deployment smoke only",
+  "submission_weights_used_for_fold0_comparison": false,
+  "submission_weights_used_for_fold0_initialization": false,
+  "submission_weights_used_for_fold0_training": false
+}

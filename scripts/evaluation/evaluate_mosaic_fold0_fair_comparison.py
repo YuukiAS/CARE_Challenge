@@ -73,15 +73,17 @@ def model_specs(config: dict[str, Any], args: argparse.Namespace) -> list[dict[s
     return specs
 
 
-def load_label_array(path: Path, reference: sitk.Image | None = None) -> tuple[sitk.Image, np.ndarray]:
+def load_label_array(path: Path) -> tuple[sitk.Image, np.ndarray]:
     img = sitk.ReadImage(str(path))
-    if reference is not None:
-        resampler = sitk.ResampleImageFilter()
-        resampler.SetReferenceImage(reference)
-        resampler.SetInterpolator(sitk.sitkNearestNeighbor)
-        resampler.SetDefaultPixelValue(0)
-        img = resampler.Execute(img)
     return img, sitk.GetArrayFromImage(img).astype(np.int32, copy=False)
+
+
+def resample_label_to_reference(img: sitk.Image, reference: sitk.Image) -> sitk.Image:
+    resampler = sitk.ResampleImageFilter()
+    resampler.SetReferenceImage(reference)
+    resampler.SetInterpolator(sitk.sitkNearestNeighbor)
+    resampler.SetDefaultPixelValue(0)
+    return resampler.Execute(img)
 
 
 def evaluate_predictions(config: dict[str, Any], cases: list[str], specs: list[dict[str, Any]]) -> tuple[list[dict[str, Any]], list[dict[str, Any]], list[dict[str, Any]]]:
@@ -105,18 +107,22 @@ def evaluate_predictions(config: dict[str, Any], cases: list[str], specs: list[d
             if not pred_dir_exists or not pred_path.is_file():
                 geometry_rows.append({"model_id": model_id, "case_id": case_id, "status": "MISSING_PRED", "prediction_dir": str(pred_dir)})
                 continue
-            pred_img, pred = load_label_array(pred_path, reference=gt_img)
+            pred_img_raw, pred_raw = load_label_array(pred_path)
+            pred_sig = geometry_signature(pred_img_raw)
+            gt_sig = geometry_signature(gt_img)
+            raw_layout = classify_spatial_layout(tuple(pred_raw.shape), tuple(gt.shape))
+            raw_geometry_match = geometry_matches(pred_sig, gt_sig) and raw_layout == "ZHW"
+            pred_img = pred_img_raw if raw_geometry_match else resample_label_to_reference(pred_img_raw, gt_img)
+            pred = sitk.GetArrayFromImage(pred_img).astype(np.int32, copy=False)
             if spec.get("label_space") == "official":
                 pred = remap_labels(pred, OFFICIAL_TO_COMPACT)
-            pred_sig = geometry_signature(pred_img)
-            gt_sig = geometry_signature(gt_img)
-            layout = classify_spatial_layout(tuple(pred.shape), tuple(gt.shape))
             geometry_rows.append(
                 {
                     "model_id": model_id,
                     "case_id": case_id,
-                    "status": "PASS" if geometry_matches(pred_sig, gt_sig) and layout == "ZHW" else "FAIL",
-                    "layout": layout,
+                    "status": "PASS" if geometry_matches(geometry_signature(pred_img), gt_sig) else "FAIL",
+                    "raw_geometry_status": "PASS" if raw_geometry_match else "FAIL_STANDARDIZED_AFTER_AUDIT",
+                    "layout": raw_layout,
                     "prediction_dir": str(pred_dir),
                     "size_xyz_match": int(pred_sig["size_xyz"] == gt_sig["size_xyz"]),
                     "spacing_origin_direction_match": int(geometry_matches(pred_sig, gt_sig)),

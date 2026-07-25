@@ -1,197 +1,87 @@
-current_milestone_id: SRR_cascade_rescue_round1_runtime_closure_terminal
-current_task_key: 20260725_care_myops_srr_cascade_runtime_closure_repair
-parent_task_key: 20260724_care_myops_srr_cascade_submission_rescue
-method_name: CARE-SRR-Cascade
-short_method_name: SRR-Cascade
-execution_label: SRR-Cascade Rescue Round 1
-execution_code: SCR-R1
-runtime_repair_code: SCR-R1-RC1
-numbering_policy: same_scientific_round_runtime_closure_not_Batch11_not_SCR_R2
-current_plan_path: results/srr_production/code_maturity/scr_r1_runtime_block_critic_and_repair_20260725.md
-current_controller_path: prompts/tasks/20260725_care_myops_srr_cascade_runtime_closure_repair_controller.md
-current_config_path: configs/care_mm/srr_cascade_runtime_closure_repair.yaml
-current_executor_plan_path: prompts/tasks/20260725_care_myops_srr_cascade_runtime_closure_repair_executor_plan.yaml
-parent_controller_path: prompts/tasks/20260724_care_myops_srr_cascade_submission_rescue_controller.md
-parent_config_path: configs/care_mm/srr_cascade_submission_rescue.yaml
-binding_amendment_path: configs/care_mm/srr_cascade_submission_rescue_preexecution_amendment.yaml
-current_result_root: results/20260724_care_myops_srr_cascade_submission_rescue
-repair_result_root: results/20260724_care_myops_srr_cascade_submission_rescue/runtime_closure_repair_rc1
-current_review_path: results/20260724_care_myops_srr_cascade_submission_rescue/mapper_report_final.md
-current_review_token: NOT_REVIEWED_NOT_REQUIRED
-controller_bind_latest_main: true
-runtime_repair_wins_on_conflict: true
-architecture_path: wiki/architecture.yaml
-component_table_path: wiki/COMPONENTS.csv
-wiki_fingerprint_status: SCR_R1_RC1_TERMINAL_LOCAL_ONLY
-entrypoints_authority_status: SCR_R1_RC1_TERMINAL_BASELINE_FALLBACK
+current_milestone_id: mosaic_fold0_fair_reproduction_terminal
+current_task_key: 20260725_care_myops_mosaic_fold0_reproduction
+method_name: MoSAIC fold0 fair reproduction
+short_method_name: MoSAIC-fold0
+execution_label: MoSAIC MyoPS exact fold0 random-init reproduction
+execution_code: MoSAIC-F0
 updated_at: '2026-07-25'
+current_result_root: results/20260725_care_myops_mosaic_fold0_reproduction
+current_review_path: results/20260725_care_myops_mosaic_fold0_reproduction/mapper_report_final.md
+current_review_token: NOT_REVIEWED_NOT_REQUIRED
+wiki_fingerprint_status: MOSAIC_FOLD0_TERMINAL_LOCAL_ONLY
+entrypoints_authority_status: MOSAIC_FOLD0_RANDOM_INIT_PUBLIC_CONFIG
 
 main_only:
   branch: main
   worktree: /users/a/e/aereinh/CARE
   route_worktree_development_authorized: false
 
+mosaic_fold0_reproduction:
+  status: TERMINAL_LOCAL_AGGREGATED
+  result_root: results/20260725_care_myops_mosaic_fold0_reproduction
+  split_path: data/benchmarks/protocol/splits_MyoPS.json
+  fold: 0
+  train_cases: 176
+  val_cases: 44
+  strict_validator_status: PASS
+  finalizer_state: READY_FOR_LOCAL_PACKET_COMMIT
+  runtime_adapter_status: PASS_MYOPS_ONLY_CINE_NOT_CALLED
+  trained_from_random_init: true
+  full_data_mosaic_weights_used_for_fold0_training_or_comparison: false
+  full_data_mosaic_weights_allowed_scope: model_load_or_official_validation_deploy_smoke_only
+  full_data_weight_root: /users/a/e/aereinh/MoSAIC
+  primary_comparison:
+    - nnunet_fold0
+    - mosaic_fold0_random_init
+  secondary_canonical_recomputed:
+    - Batch10_MMRD::distill_epoch25_two_seed_mean
+    - Batch7_minimal
+  secondary_historical_noncanonical:
+    - SCR_R1_generic_cascade_control
+  validation_upload: false
+  docker_build: false
+  git_push: false
+  slurm_jobs:
+    coarse: '60589655 COMPLETED 0:0'
+    scar: '60589656 COMPLETED 0:0'
+    edema: '60589657 COMPLETED 0:0'
+    failed_finalizer_retained: '60589658 FAILED 1:0'
+    replacement_finalizer: '60607636 COMPLETED 0:0'
+  primary_all_summary:
+    nnunet_fold0:
+      scar_mean_dice: 0.5601692281262312
+      pure_edema_mean_dice: 0.3944358976789887
+    mosaic_fold0_random_init:
+      scar_mean_dice: 0.33921744791147623
+      pure_edema_mean_dice: 0.08860604065364053
+  key_outputs:
+    - canonical_casewise_metrics.csv
+    - canonical_model_summary.csv
+    - historical_attempt_summary.csv
+    - pairwise_help_harm.csv
+    - complementarity_report.md
+    - strict_validator_report.json
+
+previous_scr_r1_state:
+  task_key: 20260725_care_myops_srr_cascade_runtime_closure_repair
+  scientific_status: TERMINAL_LOCAL_EVALUATED_BASELINE_FALLBACK
+  runtime_status: W3_W4_W6_TERMINAL_W5_SKIPPED_BY_CONDITION
+  scientific_token: NO_CUSTOM_RESCUE_USE_BASELINE_ONLY
+  result_root: results/20260724_care_myops_srr_cascade_submission_rescue
+  note: Previous terminal local evidence retained for provenance; not a MoSAIC fold0 weight source or current same-protocol comparison result.
+
 batch10:
   status: TERMINAL_STOP_RETAINED_AS_HISTORY
   result_root: results/20260724_care_myops_batch10_deadline_rescue
   selected_candidate: distill_epoch25_two_seed_mean
-  selected_postprocess: raw_argmax
-  near_baseline_gate: FAIL
-  audit_scar_delta_vs_nnunet_approx: -0.0221
-  audit_edema_delta_vs_nnunet_approx: -0.0290
-  no_t2_edema_predicted_voxels: 0
-  scientific_meaning: CARE_MMRD_direct_six_class_route_stopped_not_reopened
-
-scr_r1:
-  scientific_status: TERMINAL_LOCAL_EVALUATED_BASELINE_FALLBACK
-  runtime_status: W3_W4_W6_TERMINAL_W5_SKIPPED_BY_CONDITION
-  prior_controller_block:
-    decision: VALID_NEEDS_REPAIR
-    reason: real_W3_formal_runtime_missing
-    formal_training_credit: 0
-  repair:
-    repair_id: SCR-R1-RC1
-    status: TERMINAL_LOCAL_ONLY
-    is_new_scientific_round: false
-    changes_scientific_hypothesis: false
-    changes_seed_budget_split_gates: false
-    precedence: repair_config_over_preexecution_amendment_over_base_contract
-  prior_waves:
-    wave_minus1: RETAIN_PASS
-    wave0: CONDITIONAL_PASS_REVALIDATE_RUNTIME_FIELDS
-    wave1: IN_PLACE_REPAIR_REQUIRED
-    wave2: REVALIDATE_BEFORE_FORMAL
-    wave3: BLOCKED_ZERO_FORMAL_CREDIT
-  last_recorded_cache_attempts:
-    superseded_no_lock: '60450660'
-    locked_attempts: ['60451021', '60451022']
-    authority: historical_receipt_only_refresh_live_state_required
-
-submission_rescue:
-  user_authorized_new_line: true
-  is_batch11: false
-  resumes_batch9_wave6: false
-  architecture_change: system
-  diagram_update_required: false
-  dataset: Dataset501_CAREMyoPS
-  fold: 0
-  calibration_audit_manifest: results/20260724_care_myops_batch10_deadline_rescue/rescue_split_manifest.csv
-  calibration_cases: 22
-  audit_cases: 22
-  audit_used_for_selection: false
-  anchor:
-    train: five_fold_OOF_only
-    primary_builder: reverse_existing_OOF_probabilities_with_official_roundtrip
-    fallback_builder: direct_OOF_checkpoint_preprocessed_inference_unique_hash_match
-    canonical_logit_formula: log(normalize(clip(probability,1e-6,1)))
-    output_grid: ResEncM_3d_fullres_preprocessed
-    all_220_roundtrip_required: true
-    official_package: Dataset501_existing_nnunet_five_fold_probability_ensemble
-    fold0_single_package_anchor: false
-  frozen_sources:
-    feature_anatomy_edema:
-      checkpoint: results/20260723_care_myops_batch9_exposed_issues_repair/runtime/seed20260723/teacher_full_view/checkpoint_epoch50.pt
-      sha256: e92521fccec92d0066f3fa5c076fce16aea3bb02330b940c85321ab4726d1474
-    scar_evidence:
-      checkpoint: results/20260723_care_myops_batch9_exposed_issues_repair/runtime/seed20260723/student_reliable_distill/checkpoint_epoch25.pt
-      sha256: 366722497a47f292e07a0d1c1a3da57c2502b61042bc89b5cfc56b5a89e6a3a0
-    inference: tiled_ConfigurationManager_resolved_no_mirror_gaussian_step_0_5
-    source_feature: voxelwise_l2_normalized_32_channels
-    all_220_cache_fields_required: 880
-  target_forward:
-    model_class: CARESRRCascadeRescue
-    independent_scar_and_edema_trunks: true
-    active_pathology_forward: true
-    inactive_pathology_exact_anchor: true
-    anatomy_channels_exact_anchor: [0, 1, 2, 3]
-    edema_channel: 4
-    scar_channel: 5
-    correction_bound_logit: 2.0
-    no_t2_edema_exact_anchor_identity: true
-    support_learned_gate: false
-    head_hidden_channels: 32
-    groupnorm_groups: 8
-  prototype_evidence:
-    shards: 4
-    representation: deterministic_case_category_mean_prototypes
-    hash_seeded_no_replacement_voxel_sampling: true
-    preserve_negative_categories: true
-    training_query_excludes_own_shard: true
-    validation_uses_all_train_shards: true
-    no_t2_myocardium_as_edema_negative: false
-  formal_preflight:
-    old_preflight_authorizes_W3: false
-    required_gate: results/20260724_care_myops_srr_cascade_submission_rescue/runtime_closure_repair_rc1/formal_authorization_gate.json
-    real_32_channel_overfit: true
-    actual_augmentation_fiducial: true
-    any_compatible_GPU_preflight: true
-    formal_dry_run_all_four_jobs: true
-    real_known_bad: true
-  formal_training:
-    seeds: [20260724, 20260725]
-    job_topology: one_job_per_seed_pathology
-    job_count: 4
-    variants: [scar_cascade_control, scar_srr_cascade, edema_zone_control, edema_srr_zone_cascade]
-    optimizer_steps_each: 6250
-    gradient_accumulation: 2
-    job_walltime: '08:00:00'
-    validation_steps: [1250, 2500, 3750, 5000, 6250]
-    exact_resume_authorized: true
-    partial_attempt_formal_credit: 0
-    terminal_accounting: PASS_TERMINAL_TRAINING_READY_FOR_AGGREGATION
-    variants_pass: 8
-  selection:
-    calibration_candidate_count_per_pathology: 6
-    two_seed_mean: same_variant_probability_mean_derived_bounded_channel_correction
-    control_srr_cross_blend: false
-    selected_checkpoint_reload: true
-    audit_after_freeze_only: true
-    final_scar_decision: FALLBACK_TO_NNUNET
-    final_edema_decision: FALLBACK_TO_NNUNET
-    scientific_token: NO_CUSTOM_RESCUE_USE_BASELINE_ONLY
-  metrics:
-    dice: true
-    exact_hd: true
-    hd95: true
-    help_harm: true
-    remote_fp: true
-    component_count: true
-    empty_prediction: true
-    center_b_c: true
-    no_t2_safety: true
-  pathology_outcomes: [USE_SRR_CASCADE, USE_CASCADE_CONTROL, FALLBACK_TO_NNUNET]
-  completion_tokens:
-    - CUSTOM_SUBMISSION_CANDIDATE_READY_PENDING_USER_UPLOAD
-    - PARTIAL_CUSTOM_SUBMISSION_CANDIDATE_READY_PENDING_USER_UPLOAD
-    - NO_CUSTOM_RESCUE_USE_BASELINE_ONLY
-    - OPERATIONALLY_BLOCKED
-  cine:
-    new_training: false
-    conditional_fixed_source: existing_Dataset502_nnunet_five_fold
-  local_packaging:
-    authorized_only_if_custom_pathology_passes: true
-    status: SKIPPED_BOTH_PATHOLOGIES_FALLBACK_TO_NNUNET
-    myops_anchor: existing_Dataset501_nnunet_five_fold_probability_ensemble
-    deterministic_runs: 2
-    docker_local_build: true
-    validation_upload: false
-    docker_upload: false
+  current_mosaic_task_role: secondary_canonical_recomputed_from_existing_predictions
 
 unauthorized:
-  run_old_formal_entrypoint_before_RC1_gate: false
-  resume_old_wave6: false
-  batch11_or_SCR_R2: false
-  old_batch7_batch8_runtime: false
-  old_srr_propref_dictionary_br2_sip_arbiter_production_path: false
-  mosaic_code_or_weights: false
-  external_data_or_pretrained_weights: false
-  change_calibration_audit_split: false
-  use_audit_for_selection: false
-  add_seed_variant_or_change_budget: false
-  fold_expansion: false
-  new_cine_training: false
   validation_upload: false
   docker_upload: false
+  docker_build_for_mosaic_task: false
   hosted_metric_claim: false
   route_promotion: false
+  fold_expansion: false
+  new_hybrid_training: false
   runtime_git_push: false

@@ -2,6 +2,31 @@
 
 本文件是当前 CARE 主线工作的机器真值。新的规划、执行、训练、评价和状态判断必须先读取本文件。
 
+
+## 2026-07-25 MoSAIC fold0 公平复现终态更新
+
+本次最新已验证运行不是 validation 上传或新混合模型训练，而是 MoSAIC 在 MyoPS exact fold0 上的本地公平复现与同口径比较。结果根目录：
+
+```text
+results/20260725_care_myops_mosaic_fold0_reproduction
+```
+
+终态证据：
+
+```text
+strict_validator_report.json: PASS
+finalizer_state.json: READY_FOR_LOCAL_PACKET_COMMIT
+Slurm: 60589655 coarse COMPLETED 0:0; 60589656 scar COMPLETED 0:0; 60589657 edema COMPLETED 0:0; 60589658 finalizer FAILED 1:0 and retained; 60607636 replacement finalizer COMPLETED 0:0
+exact split: data/benchmarks/protocol/splits_MyoPS.json fold0, 176 train / 44 val
+runtime_adapter_audit.json: PASS, MyoPS-only, Cine not called, 44 normalized predictions
+```
+
+证据边界：`/users/a/e/aereinh/MoSAIC` 中的 checkpoint 仍然只代表 full-data submission 权重，可用于模型加载或官方 validation 部署 smoke；它们没有用于本次 fold0 训练、初始化或 44 例性能比较。本次 `mosaic_fold0_random_init` 的证据只来自 `results/20260725_care_myops_mosaic_fold0_reproduction/runtime/fold0/` 下新训练的 CoarseNet、FinePathNet scar expert 和 EdemaNet。
+
+当前主比较固定为 `nnunet_fold0` vs `mosaic_fold0_random_init`，同一 canonical evaluator 输出 `canonical_casewise_metrics.csv`、`canonical_model_summary.csv`、`pairwise_help_harm.csv` 和 `complementarity_report.md`。Batch10 MMRD 与 Batch7 minimal 只因已有 fold0 预测而进入 secondary canonical recompute；SCR-R1 generic cascade control 没有当前可复算预测路径，只保留在 `historical_attempt_summary.csv` 的 historical_noncanonical 边界内。
+
+本任务仍不授权 validation upload、Docker build、git push、新混合模型训练或 fold expansion。
+
 ## 当前状态
 
 ```text

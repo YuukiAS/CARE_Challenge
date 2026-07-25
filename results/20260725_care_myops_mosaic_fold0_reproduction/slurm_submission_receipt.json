@@ -1,0 +1,20 @@
+{
+  "a100_mirror_reason": "a100 queue was not shorter at submission; snapshot recorded",
+  "a100_mirror_submitted": false,
+  "coarse_job_id": "60589655",
+  "dependency_semantics": {
+    "edema": "afterok coarse",
+    "finalizer": "afterany coarse/scar/edema",
+    "scar": "afterok coarse"
+  },
+  "edema_job_id": "60589657",
+  "failed_finalizer_job_ids": [
+    "60589658"
+  ],
+  "finalizer_job_id": "60607636",
+  "partition": "htzhulab",
+  "replacement_finalizer_dependency": "afterany:60589655:60589656:60589657:60589658",
+  "replacement_finalizer_reason": "60589658 failed in inference writer x/y shape normalization; repaired sitk_write_like and resubmitted same-scope finalizer only",
+  "scar_job_id": "60589656",
+  "status": "REPLACEMENT_FINALIZER_SUBMITTED"
+}

@@ -1,12 +1,27 @@
 # CARE 架构 Wiki
 
-architecture_version: `care-srr-cascade-scr-r1-runtime-closure-terminal`
-latest_verified_runtime: `SCR-R1 W3 formal training terminal; W4 audit aggregation PASS; W5 package skipped by dual fallback`
-latest_scientific_status: `CARE-SRR-Cascade SCR-R1 completed locally with NO_CUSTOM_RESCUE_USE_BASELINE_ONLY`
-latest_controller_task: `20260725_care_myops_srr_cascade_runtime_closure_repair`
-route_status: `MAIN_ONLY_SCR_R1_RC1_TERMINAL_LOCAL_ONLY`
+architecture_version: `care-myops-mosaic-fold0-fair-reproduction-terminal`
+latest_verified_runtime: `MoSAIC fold0 random-init fair reproduction terminal; strict validator PASS; replacement finalizer 60607636 COMPLETED`
+latest_scientific_status: `MoSAIC fold0 underperforms nnU-Net in same-protocol local comparison; historical candidates bounded by canonical availability`
+latest_controller_task: `20260725_care_myops_mosaic_fold0_reproduction`
+route_status: `MAIN_ONLY_MOSAIC_FOLD0_TERMINAL_LOCAL_ONLY`
 
-本页是 GPT、Controller、Executor、Mapper 和 Planner 读取当前架构状态的根入口。当前最重要的事实是：SCR-R1-RC1 已把缺失的正式训练、评价、selection/audit 和 validator 运行闭环补齐，并完成本地 terminal evaluation；scar 和 edema 均因 audit exact-HD gate 失败回退到 nnU-Net baseline，因此没有生成 custom validation package，也没有上传或 push。
+本页是 GPT、Controller、Executor、Mapper 和 Planner 读取当前架构状态的根入口。当前最新终态事实是：MoSAIC 已完成 MyoPS exact fold0 随机初始化公平复现、本地 canonical 主比较、历史候选边界比较和病例互补性分析；结果显示本轮 fold0 MoSAIC 不优于 fold0 nnU-Net。SCR-R1-RC1 仍保留为前一条已终止本地证据线，但不是本次 MoSAIC fold0 结果的权重来源或性能证据。
+
+
+## MoSAIC fold0 证据边界
+
+```text
+result_root: results/20260725_care_myops_mosaic_fold0_reproduction
+strict_validator: PASS
+finalizer_state: READY_FOR_LOCAL_PACKET_COMMIT
+slurm_terminal_accounting: 60589655/60589656/60589657/60589658/60607636 terminal, replacement finalizer success
+fold0_split: data/benchmarks/protocol/splits_MyoPS.json, 176 train / 44 val
+```
+
+`/users/a/e/aereinh/MoSAIC` 下的 checkpoint 是 full-data submission 权重，只允许作为模型加载或官方 validation 部署 smoke 的边界证据；不得用来解释本次 fold0 44 例性能，也不得作为 fold0 模型初始化。本次 `mosaic_fold0_random_init` 仅由 `runtime/fold0/` 下新训练权重支持。
+
+主比较：`nnunet_fold0` vs `mosaic_fold0_random_init`。secondary canonical recompute 只包括已有预测可复算的 Batch10 MMRD rank1 和 Batch7 minimal；SCR-R1 generic cascade control 只保留 historical_noncanonical 边界。未上传 validation，未构建 Docker，未 push。
 
 ## 当前判断
 
