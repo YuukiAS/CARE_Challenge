@@ -1,0 +1,9 @@
+case_count_evaluated,case_count_expected,gt_positive_cases,mean_dice,mean_exact_hd,model_id,pathology,population,role,status
+0,44,0,,,nnunet_fold0,pure_edema,positive_gt,operational_baseline,MISSING_PREDICTIONS
+0,44,0,,,nnunet_fold0,scar,positive_gt,operational_baseline,MISSING_PREDICTIONS
+0,44,0,,,native_mosaic,pure_edema,positive_gt,external_native_baseline,MISSING_PREDICTIONS
+0,44,0,,,native_mosaic,scar,positive_gt,external_native_baseline,MISSING_PREDICTIONS
+0,44,0,,,nnunet_anatomy_prior_mosaic_experts,pure_edema,positive_gt,hybrid_diagnostic,MISSING_PREDICTIONS
+0,44,0,,,nnunet_anatomy_prior_mosaic_experts,scar,positive_gt,hybrid_diagnostic,MISSING_PREDICTIONS
+0,44,0,,,care_candidate,pure_edema,positive_gt,first_party_candidate,MISSING_PREDICTIONS
+0,44,0,,,care_candidate,scar,positive_gt,first_party_candidate,MISSING_PREDICTIONS

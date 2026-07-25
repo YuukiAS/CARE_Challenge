@@ -1,0 +1,4 @@
+compact_label,official_label,pathology,status
+4,1220,pure_edema,PASS
+5,2221,scar,PASS
+4+5,1220+2221,edema_zone,PASS_SEPARATE_FROM_PURE_EDEMA

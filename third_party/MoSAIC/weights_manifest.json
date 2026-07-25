@@ -1,0 +1,51 @@
+{
+  "asset_root_default": "/users/a/e/aereinh/MoSAIC",
+  "copy_weights_into_repo": false,
+  "created_for_task": "20260725_care_m0_mosaic_fold0_fair_repro",
+  "entries": [
+    {
+      "bytes": 4339573,
+      "drive_id": "1rBQKfRIMkRxfBgKgWGKm_FrQY2EsrKWh",
+      "path": "cinemyops/coarse.pt",
+      "sha256": "225dedc45271216f5718391af9e0131e996c432df89b61240bef5e52ee451f4c"
+    },
+    {
+      "bytes": 6594857,
+      "drive_id": "1KP_t55C7aPI7H3V1AwyRd-p6O0QUcQoe",
+      "path": "cinemyops/fine_v1.pt",
+      "sha256": "05b31f649befeef8dd2003a0816310d03ee0385626c5c536db80faac9edacdab"
+    },
+    {
+      "bytes": 6594857,
+      "drive_id": "1w_0eTZEh6KMc_8syEroAhp1khnFG0Hxm",
+      "path": "cinemyops/fine_v2.pt",
+      "sha256": "0f102c08c6d3374bd12e9d4d45585aa2017ffbf96192a0cdda1fb8653cc714fa"
+    },
+    {
+      "bytes": 4345269,
+      "drive_id": "1vyOMgWJezMYXf-DWOmYGeBqSbyRFv_9w",
+      "path": "myops/coarse_edema.pt",
+      "sha256": "b9b596f1f5475ac852bf2c0be38a72c59e538dd3199f1f4989983433506ed9d4"
+    },
+    {
+      "bytes": 4343733,
+      "drive_id": "16kil-3VLVUqUKrz4wGvv3erFWMUS0O9P",
+      "path": "myops/coarse.pt",
+      "sha256": "aae815c3dd50d6776e2af769551e8d6918a5dee4f83f29309a254051e067080c"
+    },
+    {
+      "bytes": 320526339,
+      "drive_id": "1NKqYtcuIOgIugGUh613rsSkZWm50Q4iY",
+      "path": "myops/edema.pt",
+      "sha256": "14a6a53f643bdbbac4c8234af2aa86e8a43423b761013f7b7f580965e1ed503c"
+    },
+    {
+      "bytes": 29381835,
+      "drive_id": "1F460jMGGWkDCx2OAOxfQGQh7QekY18sF",
+      "path": "myops/fine_scar.pt",
+      "sha256": "94c54de3321000eabbc3c3a42a5d838410fb859a1c5b2460e6c2f6d773622ded"
+    }
+  ],
+  "native_source_status": "NEEDS_MOSAIC_SOURCE",
+  "notes": "This manifest records the external MoSAIC cache. Do not copy checkpoint files into the CARE repo."
+}

@@ -1,0 +1,80 @@
+task_key: 20260725_care_m0_mosaic_fold0_fair_repro
+scope: evaluation_only_baseline_comparison
+
+dataset:
+  name: CARE_MyoPS
+  split_path: data/benchmarks/protocol/splits_MyoPS.json
+  fold: 0
+  expected_val_count: 44
+  raw_label_dir: data/nnUNet/nnUNet_raw/Dataset501_CAREMyoPS/labelsTr
+
+external_assets:
+  mosaic_root_default: /users/a/e/aereinh/MoSAIC
+  weights_manifest: third_party/MoSAIC/weights_manifest.json
+  copy_weights_into_repo: false
+  native_source_required_for_native_mosaic: true
+
+required_weights:
+  - path: myops/coarse.pt
+  - path: myops/coarse_edema.pt
+  - path: myops/edema.pt
+  - path: myops/fine_scar.pt
+
+channel_order:
+  care_historical: [LGE, T2, C0]
+  mosaic_native: [LGE, C0, T2]
+  required_adapter: care_historical_to_mosaic_native
+
+label_semantics:
+  compact_to_official:
+    4: 1220
+    5: 2221
+  official_to_compact:
+    1220: 4
+    2221: 5
+  pathologies:
+    pure_edema:
+      compact: 4
+      official: 1220
+    scar:
+      compact: 5
+      official: 2221
+    edema_zone:
+      compact: [4, 5]
+      official: [1220, 2221]
+  edema_zone_must_not_replace_pure_edema: true
+
+geometry_audit:
+  numpy_layout: ZHW
+  known_bad_transposes: [HWZ, HZW, WZH, WHZ, ZWH]
+  required_fields: [affine, spacing, origin, direction, size]
+  output_geometry_reference: care_official_raw_case_geometry
+
+evaluation:
+  population: same_positive_gt_population
+  metric_implementation: scripts/evaluation/evaluate_predictions.py::dice_per_class_and_exact_hd
+  geometry_export: CARE official geometry export
+  allowed_models:
+    - model_id: nnunet_fold0
+      role: operational_baseline
+      prediction_dir: data/nnUNet/nnUNet_results/Dataset501_CAREMyoPS/nnUNetTrainer_500epochs__nnUNetPlans__3d_fullres/fold_0/validation
+      label_space: compact
+    - model_id: native_mosaic
+      role: external_native_baseline
+      prediction_dir: results/20260725_care_m0_mosaic_fold0_fair_repro/native_mosaic_predictions
+      label_space: official
+    - model_id: nnunet_anatomy_prior_mosaic_experts
+      role: hybrid_diagnostic
+      prediction_dir: results/20260725_care_m0_mosaic_fold0_fair_repro/hybrid_mosaic_predictions
+      label_space: official
+    - model_id: care_candidate
+      role: first_party_candidate
+      prediction_dir: results/20260725_care_m0_mosaic_fold0_fair_repro/care_candidate_predictions
+      label_space: compact
+
+guardrails:
+  training_authorized: false
+  validation_upload_authorized: false
+  production_path_dependency_authorized: false
+  old_batch10_production_mosaic_block_preserved: true
+  missing_native_source_status: NEEDS_MOSAIC_SOURCE

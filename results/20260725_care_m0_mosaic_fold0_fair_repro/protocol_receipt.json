@@ -1,0 +1,42 @@
+{
+  "care_input_order": [
+    "LGE",
+    "T2",
+    "C0"
+  ],
+  "compact_to_official_labels": {
+    "4": 1220,
+    "5": 2221
+  },
+  "config_path": "configs/baselines/mosaic_fold0_fair.yaml",
+  "declared_models": [
+    "nnunet_fold0",
+    "native_mosaic",
+    "nnunet_anatomy_prior_mosaic_experts",
+    "care_candidate"
+  ],
+  "dry_run": true,
+  "evaluated_case_count": 44,
+  "evaluation_only": true,
+  "expected_val_count": 44,
+  "fold": 0,
+  "geometry_export": "CARE official geometry export",
+  "metric_implementation": "scripts/evaluation/evaluate_predictions.py::dice_per_class_and_exact_hd",
+  "metric_population": "same_positive_gt_population",
+  "mosaic_input_order": [
+    "LGE",
+    "C0",
+    "T2"
+  ],
+  "production_path_dependency_authorized": false,
+  "reason": "dry run only; native MoSAIC source/predictions not yet available",
+  "result_root": "results/20260725_care_m0_mosaic_fold0_fair_repro",
+  "schema_version": 1,
+  "split_path": "data/benchmarks/protocol/splits_MyoPS.json",
+  "status": "NEEDS_MOSAIC_SOURCE",
+  "task_key": "20260725_care_m0_mosaic_fold0_fair_repro",
+  "training_authorized": false,
+  "val_count": 44,
+  "val_count_status": "PASS",
+  "validation_upload_authorized": false
+}

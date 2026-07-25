@@ -166,6 +166,14 @@ __MACOSX/
 results/checkpoints/
 results/predictions/
 results/srr_production/inference/*/predictions/
+third_party/MoSAIC/**/*.pt
+third_party/MoSAIC/**/predictions/
+third_party/MoSAIC/**/runtime/
+third_party/MoSAIC/**/cache/
+results/**/mosaic_runtime/
+results/**/mosaic_predictions/
+results/**/native_mosaic_predictions/
+results/**/hybrid_mosaic_predictions/
 
 # Large task/pilot output trees. Keep lightweight task-scoped bridge artifacts
 # under results/<task_key>/ tracked, but ignore bulky domain outputs.
