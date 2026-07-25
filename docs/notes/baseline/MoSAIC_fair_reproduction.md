@@ -1,10 +1,13 @@
 # MoSAIC fair reproduction
 
-MoSAIC 权重已经下载到 `/users/a/e/aereinh/MoSAIC`，public source 已 vendored 到 `third_party/MoSAIC/source`（IndeedLiu/MoSAIC commit `d334bd1fb2a99dbbc230510590cd8e3ee08cc377`）。当前允许做的是公平复现协议、runtime preflight、native inference 启动检查、通道/label/几何审计和同口径评价；仍然不能训练、不能上传 validation、不能把 MoSAIC 接进生产路径。clone、import、model-load 或 dry-run 只能算 `PREFLIGHT_SMOKE_ONLY`，44 例 fold0 预测和同一 evaluator 完成后才可写 `VERIFIED_EVALUATION_COMPLETE`。
+MoSAIC workspace 已升级为 `/users/a/e/aereinh/MoSAIC`：canonical 权重位于 `/users/a/e/aereinh/MoSAIC/code/weights`，root 下 `myops/` 和 `cinemyops/` 是兼容 symlink；public source 同时位于 `/users/a/e/aereinh/MoSAIC/code/source`，并 vendored 到 CARE 的 `third_party/MoSAIC/source`（IndeedLiu/MoSAIC commit `d334bd1fb2a99dbbc230510590cd8e3ee08cc377`）。当前允许做的是公平复现协议、runtime preflight、native inference 启动检查、通道/label/几何审计和同口径评价；仍然不能训练、不能上传 validation、不能把 MoSAIC 接进生产路径。clone、import、model-load 或 dry-run 只能算 `PREFLIGHT_SMOKE_ONLY`，44 例 fold0 预测和同一 evaluator 完成后才可写 `VERIFIED_EVALUATION_COMPLETE`。
 
 ## GPT entrypoints
 
-- `MOSAIC_ROOT=/users/a/e/aereinh/MoSAIC`
+- `MOSAIC_ROOT=/users/a/e/aereinh/MoSAIC`，兼容旧权重根目录
+- Canonical weights: `/users/a/e/aereinh/MoSAIC/code/weights`
+- Canonical source: `/users/a/e/aereinh/MoSAIC/code/source`
+- Paper truth workspace: `/users/a/e/aereinh/MoSAIC/paper`
 - Weights manifest: `third_party/MoSAIC/weights_manifest.json`
 - Vendored source: `third_party/MoSAIC/source`
 - Native entrypoint: `third_party/MoSAIC/source/scripts/infer_and_submit.py`

@@ -47,9 +47,18 @@
     }
   ],
   "native_source_status": "FOUND",
-  "notes": "This manifest records the external MoSAIC cache and the vendored public source. Do not copy checkpoint files into the CARE repo.",
+  "notes": "Weights now live canonically under /users/a/e/aereinh/MoSAIC/code/weights; /users/a/e/aereinh/MoSAIC/myops and cinemyops remain compatibility symlinks for existing CARE MOSAIC_ROOT paths. Do not copy checkpoint files into the CARE repo.",
   "source_repository": "https://github.com/IndeedLiu/MoSAIC",
   "source_path": "third_party/MoSAIC/source",
   "source_commit": "d334bd1fb2a99dbbc230510590cd8e3ee08cc377",
-  "native_entrypoint": "third_party/MoSAIC/source/scripts/infer_and_submit.py"
+  "native_entrypoint": "third_party/MoSAIC/source/scripts/infer_and_submit.py",
+  "canonical_workspace_root": "/users/a/e/aereinh/MoSAIC",
+  "canonical_weights_root": "/users/a/e/aereinh/MoSAIC/code/weights",
+  "compatibility_weight_root": "/users/a/e/aereinh/MoSAIC",
+  "compatibility_symlinks": {
+    "/users/a/e/aereinh/MoSAIC/myops": "code/weights/myops",
+    "/users/a/e/aereinh/MoSAIC/cinemyops": "code/weights/cinemyops"
+  },
+  "canonical_source_path": "/users/a/e/aereinh/MoSAIC/code/source",
+  "paper_workspace": "/users/a/e/aereinh/MoSAIC/paper"
 }

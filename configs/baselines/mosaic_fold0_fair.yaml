@@ -10,6 +10,11 @@ dataset:
 
 external_assets:
   mosaic_root_default: /users/a/e/aereinh/MoSAIC
+  canonical_workspace_root: /users/a/e/aereinh/MoSAIC
+  canonical_weights_root: /users/a/e/aereinh/MoSAIC/code/weights
+  canonical_source_root: /users/a/e/aereinh/MoSAIC/code/source
+  paper_workspace: /users/a/e/aereinh/MoSAIC/paper
+  compatibility_symlinks_preserved: true
   weights_manifest: third_party/MoSAIC/weights_manifest.json
   copy_weights_into_repo: false
   native_source_required_for_native_mosaic: true

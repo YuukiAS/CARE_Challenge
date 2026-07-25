@@ -4,7 +4,11 @@ MoSAIC is registered here as an external baseline candidate for CARE fold0 fair
 reproduction. This directory keeps a lightweight repo-visible index plus a
 vendored copy of the public MoSAIC source, not the checkpoint store.
 
-- Default asset cache: `/users/a/e/aereinh/MoSAIC`
+- Compatibility asset root: `/users/a/e/aereinh/MoSAIC`
+- Canonical workspace: `/users/a/e/aereinh/MoSAIC`
+- Canonical weights: `/users/a/e/aereinh/MoSAIC/code/weights`
+- Canonical source clone: `/users/a/e/aereinh/MoSAIC/code/source`
+- Paper truth workspace: `/users/a/e/aereinh/MoSAIC/paper`
 - Public source: `https://github.com/IndeedLiu/MoSAIC`
 - Vendored source path: `third_party/MoSAIC/source`
 - Vendored source commit: `d334bd1fb2a99dbbc230510590cd8e3ee08cc377`
@@ -23,8 +27,6 @@ Boundaries:
 - no production-path dependency
 - no `.pt`, `.nii.gz`, prediction tree, or runtime cache in git
 
-The `/users/a/e/aereinh/MoSAIC` cache contains downloaded weights and download
-manifests. The public source is now vendored under `third_party/MoSAIC/source`,
-while checkpoint symlinks and predictions stay ignored. Native MoSAIC inference
+The canonical `/users/a/e/aereinh/MoSAIC` workspace now separates paper and code. Downloaded weights live under `/users/a/e/aereinh/MoSAIC/code/weights`; root `myops/` and `cinemyops/` are compatibility symlinks so the existing CARE `MOSAIC_ROOT=/users/a/e/aereinh/MoSAIC` path still works. CARE also keeps a vendored public-source copy under `third_party/MoSAIC/source` for repo-visible fair reproduction. Native MoSAIC inference
 may be started only through the explicit evaluation/preflight path; a clone or
 model-load smoke test is not a completed fair comparison metric.
