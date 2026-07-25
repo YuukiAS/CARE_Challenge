@@ -29,11 +29,11 @@
     "T2"
   ],
   "production_path_dependency_authorized": false,
-  "reason": "dry run only; native MoSAIC source/predictions not yet available",
+  "reason": "native MoSAIC source, entrypoint, and weights are ready; predictions have not been generated",
   "result_root": "results/20260725_care_m0_mosaic_fold0_fair_repro",
   "schema_version": 1,
   "split_path": "data/benchmarks/protocol/splits_MyoPS.json",
-  "status": "NEEDS_MOSAIC_SOURCE",
+  "status": "NEEDS_PREDICTIONS",
   "task_key": "20260725_care_m0_mosaic_fold0_fair_repro",
   "training_authorized": false,
   "val_count": 44,

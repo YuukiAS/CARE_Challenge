@@ -1,0 +1,24 @@
+training:
+  batch_size: 8
+  learning_rate: 0.0001
+  weight_decay: 0.0005
+  max_epochs: 200
+  scheduler:
+    type: cosine
+    T_max: 50
+    min_lr: 0.000001
+  deep_supervision: true
+  deep_supervision_weights: [0.3, 0.15]
+  weighted_sampling: true
+  sampling_weights:
+    has_edema: 12.0
+    has_myo: 2.0
+    background: 1.0
+
+model:
+  use_c0: true
+  base_channels: 64
+
+data:
+  image_size: 192
+  edema_centers: ["CenterB", "CenterC"]

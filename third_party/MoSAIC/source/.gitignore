@@ -1,0 +1,47 @@
+# Data & caches
+cache/
+cache_val/
+*.nii.gz
+*.jsonl
+
+# Model checkpoints & experiment outputs
+*.pt
+checkpoints/
+full_train/
+grid_output/
+grid_output_cine/
+ablations/
+edema_backup/
+
+# Docker weights (download separately)
+docker/*/weights/
+
+# Submission outputs
+outputs/
+
+# Paper source (kept private)
+paper/
+
+# Training logs
+logs/
+*.out
+*.err
+*.lock
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+dist/
+build/
+*.egg
+
+# IDE / OS
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db

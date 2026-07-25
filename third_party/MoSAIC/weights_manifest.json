@@ -46,6 +46,10 @@
       "sha256": "94c54de3321000eabbc3c3a42a5d838410fb859a1c5b2460e6c2f6d773622ded"
     }
   ],
-  "native_source_status": "NEEDS_MOSAIC_SOURCE",
-  "notes": "This manifest records the external MoSAIC cache. Do not copy checkpoint files into the CARE repo."
+  "native_source_status": "FOUND",
+  "notes": "This manifest records the external MoSAIC cache and the vendored public source. Do not copy checkpoint files into the CARE repo.",
+  "source_repository": "https://github.com/IndeedLiu/MoSAIC",
+  "source_path": "third_party/MoSAIC/source",
+  "source_commit": "d334bd1fb2a99dbbc230510590cd8e3ee08cc377",
+  "native_entrypoint": "third_party/MoSAIC/source/scripts/infer_and_submit.py"
 }

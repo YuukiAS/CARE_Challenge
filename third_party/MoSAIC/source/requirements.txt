@@ -1,0 +1,10 @@
+torch>=2.0
+nibabel>=4.0
+numpy>=1.24
+scipy>=1.10
+scikit-learn>=1.2
+matplotlib>=3.7
+SimpleITK>=2.2
+einops>=0.6
+tqdm>=4.65
+pyyaml>=6.0

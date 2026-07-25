@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import argparse
 import csv
+import json
 import sys
 from collections import defaultdict
 from pathlib import Path
@@ -179,12 +180,14 @@ def summarize(casewise: list[dict[str, Any]], specs: list[dict[str, Any]], cases
 
 
 def write_result_md(path: Path, receipt: dict[str, Any], metrics: list[dict[str, Any]]) -> None:
-    complete = receipt["status"] == "VERIFIED_EVALUATION_COMPLETE"
-    first = (
-        "MoSAIC fold0 公平复现已经形成完整评价闭环，可以和 nnU-Net 及 CARE 候选在同一口径下比较；下一步仍需由 Planner 决定是否进入机制筛查或训练。"
-        if complete
-        else "MoSAIC 权重已经登记，但 native MoSAIC 复现还没有闭环；当前只能确认协议、通道、label 和几何审计框架，不能训练、不能上传，也不能把 MoSAIC 当成已完成 baseline。"
-    )
+    status = receipt["status"]
+    complete = status == "VERIFIED_EVALUATION_COMPLETE"
+    if complete:
+        first = "MoSAIC fold0 公平复现已经形成完整评价闭环，可以和 nnU-Net 及 CARE 候选在同一口径下比较；下一步仍需由 Planner 决定是否进入机制筛查或训练。"
+    elif status == "NEEDS_PREDICTIONS":
+        first = "MoSAIC 源码、权重路径和启动前检查已经就绪，但 native MoSAIC 的 fold0 预测还没有生成；当前可以开始正式 GPU inference，不能训练、不能上传，也不能把 MoSAIC 当成已完成 baseline。"
+    else:
+        first = "MoSAIC 权重已经登记，但 native MoSAIC 复现还没有闭环；当前只能确认协议、通道、label 和几何审计框架，不能训练、不能上传，也不能把 MoSAIC 当成已完成 baseline。"
     lines = [
         first,
         "",
@@ -227,8 +230,16 @@ def main() -> int:
         ]
         label_rows = label_mapping_audit_rows()
         metrics = summarize(casewise, specs, cases)
-        status = "NEEDS_MOSAIC_SOURCE"
-        reason = "dry run only; native MoSAIC source/predictions not yet available"
+        inference_receipt_path = args.result_root / "mosaic_inference_receipt.json"
+        inference_status = None
+        if inference_receipt_path.is_file():
+            inference_status = json.loads(inference_receipt_path.read_text(encoding="utf-8")).get("status")
+        if inference_status == "READY_TO_START_INFERENCE":
+            status = "NEEDS_PREDICTIONS"
+            reason = "native MoSAIC source, entrypoint, and weights are ready; predictions have not been generated"
+        else:
+            status = "NEEDS_MOSAIC_SOURCE"
+            reason = "dry run only; native MoSAIC source/predictions not yet available"
     else:
         casewise, geometry_rows, label_rows = evaluate_predictions(config, cases, specs)
         metrics = summarize(casewise, specs, cases)

@@ -24,6 +24,7 @@ from mosaic_fair_protocol import (  # noqa: E402
     CARE_INPUT_ORDER,
     DEFAULT_CONFIG,
     DEFAULT_MOSAIC_ROOT,
+    DEFAULT_MOSAIC_SOURCE_ROOT,
     DEFAULT_RESULT_ROOT,
     MOSAIC_INPUT_ORDER,
     find_native_mosaic_source,
@@ -42,7 +43,10 @@ def parse_args() -> argparse.Namespace:
     ap.add_argument("--config", type=Path, default=DEFAULT_CONFIG)
     ap.add_argument("--mosaic-root", type=Path, default=Path(os.environ.get("MOSAIC_ROOT", str(DEFAULT_MOSAIC_ROOT))))
     ap.add_argument("--result-root", type=Path, default=DEFAULT_RESULT_ROOT)
+    ap.add_argument("--source-root", type=Path, default=DEFAULT_MOSAIC_SOURCE_ROOT)
     ap.add_argument("--native-entrypoint", type=Path, default=None)
+    ap.add_argument("--val-dir", type=Path, default=None, help="MoSAIC validation-style root containing MyoPS_val and optionally CineMyoPS_val.")
+    ap.add_argument("--gpu", type=int, default=0)
     ap.add_argument("--dry-run", action="store_true", help="Write receipts only; do not run native inference.")
     ap.add_argument("--limit-cases", type=int, default=None)
     ap.add_argument("--print-contract", action="store_true")
@@ -86,7 +90,9 @@ def main() -> int:
     if args.limit_cases is not None:
         cases = cases[: args.limit_cases]
 
-    native = find_native_mosaic_source(args.mosaic_root)
+    native = find_native_mosaic_source(args.mosaic_root, args.source_root)
+    native_entrypoint = args.native_entrypoint or (args.source_root / "scripts/infer_and_submit.py")
+    val_dir = args.val_dir or (args.result_root / "mosaic_runtime/fold0_val")
     weights = weight_inventory(args.mosaic_root) if args.mosaic_root.is_dir() else []
     missing_weights = [
         entry["path"]
@@ -94,8 +100,8 @@ def main() -> int:
         if not (args.mosaic_root / entry["path"]).is_file()
     ]
 
-    status = "DRY_RUN"
-    reason = "dry_run_receipt_only"
+    status = "READY_TO_START_INFERENCE" if args.dry_run else "RUN_NATIVE_INFERENCE"
+    reason = "native source, entrypoint, and weights are present; dry run did not write predictions" if args.dry_run else "running upstream MoSAIC native inference"
     exit_code = 0
     if missing_weights:
         status = "NEEDS_MOSAIC_WEIGHTS"
@@ -105,10 +111,14 @@ def main() -> int:
         status = "NEEDS_MOSAIC_SOURCE"
         reason = "MoSAIC weights are present but native source code was not found"
         exit_code = 0 if args.dry_run else 2
-    elif args.native_entrypoint is None:
+    elif not native_entrypoint.is_file():
         status = "NEEDS_NATIVE_ENTRYPOINT"
-        reason = "native source exists but no --native-entrypoint was provided"
+        reason = f"native entrypoint not found: {native_entrypoint}"
         exit_code = 0 if args.dry_run else 2
+    elif not args.dry_run and not (val_dir / "MyoPS_val" / "AnonymousCenter").is_dir():
+        status = "NEEDS_MOSAIC_INPUT"
+        reason = f"MoSAIC validation-style MyoPS input not found under {val_dir}"
+        exit_code = 2
 
     receipt = protocol_receipt(config, result_status=status, reason=reason)
     receipt.update(
@@ -120,6 +130,9 @@ def main() -> int:
             "case_count_requested": len(cases),
             "case_ids": cases,
             "native_source": native,
+            "native_entrypoint": str(native_entrypoint),
+            "val_dir": str(val_dir),
+            "gpu": int(args.gpu),
             "missing_weights": missing_weights,
             "weight_count": len(weights),
             "weight_bytes": sum(int(row["bytes"]) for row in weights),
@@ -131,21 +144,11 @@ def main() -> int:
     if args.print_contract:
         print(json.dumps(receipt, indent=2, sort_keys=True))
 
-    if status in {"DRY_RUN", "NEEDS_MOSAIC_SOURCE", "NEEDS_NATIVE_ENTRYPOINT", "NEEDS_MOSAIC_WEIGHTS"}:
+    if status in {"READY_TO_START_INFERENCE", "NEEDS_MOSAIC_SOURCE", "NEEDS_NATIVE_ENTRYPOINT", "NEEDS_MOSAIC_WEIGHTS", "NEEDS_MOSAIC_INPUT"}:
         return exit_code
 
-    assert args.native_entrypoint is not None
-    cmd = [
-        sys.executable,
-        str(args.native_entrypoint),
-        "--mosaic-root",
-        str(args.mosaic_root),
-        "--result-root",
-        str(args.result_root / "native_mosaic_predictions"),
-        "--cases",
-        ",".join(cases),
-    ]
-    completed = subprocess.run(cmd, cwd=REPO_ROOT, check=False)
+    cmd = [sys.executable, str(native_entrypoint), "--val-dir", str(val_dir), "--gpu", str(args.gpu)]
+    completed = subprocess.run(cmd, cwd=args.source_root, check=False)
     return int(completed.returncode)
 
 

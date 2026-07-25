@@ -10,7 +10,7 @@ Plan metadata:
 - Function: make MoSAIC fold0 baseline comparison visible and auditable before any training or integration
 - Do not: train, upload validation, depend on MoSAIC in production paths, or commit MoSAIC checkpoints/predictions
 
-MoSAIC 当前只作为外部 baseline 候选进入公平复现闭环。第一阶段的科学目标不是提高分数，而是证明比较条件一致：同一 fold0 44 例、同一输入通道语义、同一 CARE 几何导出、同一 label 映射、同一 positive-GT population、同一 Dice/exact-HD 实现。若 native MoSAIC 源码不可用，任务必须停在 `NEEDS_MOSAIC_SOURCE`，不能用权重存在来替代 native 复现。
+MoSAIC 当前只作为外部 baseline 候选进入公平复现闭环。第一阶段的科学目标不是提高分数，而是证明比较条件一致：同一 fold0 44 例、同一输入通道语义、同一 CARE 几何导出、同一 label 映射、同一 positive-GT population、同一 Dice/exact-HD 实现。若 native MoSAIC 源码不可用，任务必须停在 `NEEDS_MOSAIC_SOURCE`，不能用权重存在来替代 native 复现。2026-07-25 已将 public source `IndeedLiu/MoSAIC` vendored 到 `third_party/MoSAIC/source`，固定 commit `d334bd1fb2a99dbbc230510590cd8e3ee08cc377`；这只解除源码缺失问题，不等于完成 fold0 预测或公平评价。
 
 ## Repository-visible artifacts
 
@@ -28,7 +28,7 @@ MoSAIC 当前只作为外部 baseline 候选进入公平复现闭环。第一阶
 - `MOSAIC_ROOT` defaults to `/users/a/e/aereinh/MoSAIC`; do not move the cache into the repo.
 - `.pt`, `.nii.gz`, prediction trees, checkpoints, and runtime caches remain ignored.
 - Old Batch10 production-path restrictions on MoSAIC remain unchanged. This plan creates a separate baseline-comparison task only.
-- Native MoSAIC requires native source code or an explicitly validated native entrypoint. Without that, write `NEEDS_MOSAIC_SOURCE`.
+- Native MoSAIC requires native source code or an explicitly validated native entrypoint. Source is currently vendored at `third_party/MoSAIC/source`; if it is absent in a future checkout, write `NEEDS_MOSAIC_SOURCE`.
 - Training, fold expansion, validation upload, hosted metric claims, and production dependency are out of scope.
 
 ## Acceptance gate

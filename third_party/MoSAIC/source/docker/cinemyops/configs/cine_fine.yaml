@@ -1,0 +1,78 @@
+data:
+  cine_target_spacing: [1.25, 1.25, 8.0]
+  image_size: [192, 192]
+  crop_margin: [1, 18, 18]
+  cine_frame_fraction: 0.667
+  max_cine_frames: 20
+  sampling:
+    fine_class_quota:
+      scar: 0.45
+      anatomy: 0.35
+      background: 0.20
+    seed: 3407
+
+model:
+  arch: cine_hybrid
+  base_channels: 16
+  deep_supervision: false
+  num_frames: 20
+  max_displacement: 0.25
+
+training:
+  batch_size: 2
+  learning_rate: 0.0004
+  weight_decay: 0.0001
+  max_epochs: 300
+  val_every: 5
+  num_workers: 0
+  weighted_sampling: true
+  use_amp: true
+  gradient_clip_norm: 0.1
+  tps_warmup_epochs: 0
+  scheduler:
+    type: cosine
+    min_lr: 0.000001
+
+loss:
+  class_weights: [1.0, 1.0, 3.0]
+  deep_supervision_weights: []
+  pathology_tversky_weight: 0.0
+  pathology_focal_weight: 0.0
+  class_specific_pathology:
+    cine_scar:
+      tversky_weight: 0.75
+      focal_weight: 0.30
+      alpha: 0.3
+      beta: 0.7
+      gamma: 2.0
+  consistency_weight: 0.0
+  registration_weight: 0.0
+  cine_aux_weights:
+    pathology: 1.0
+    anatomy: 1.0
+    consistency: 2.0
+    motion: 1.0
+    smooth: 100.0
+
+inference:
+  tta:
+    enabled: true
+    flips: [horizontal, vertical]
+  thresholds:
+    myo: 0.5
+    lv: 0.5
+    scar: 0.3
+
+postprocess:
+  min_component_sizes:
+    3: 2
+  pathology_dilation_iterations: 2
+
+selection:
+  metric: cine_scar_dice
+  metrics_to_save:
+    - mean_dice
+    - myo_dice
+    - lv_dice
+    - scar_dice
+    - cine_scar_dice

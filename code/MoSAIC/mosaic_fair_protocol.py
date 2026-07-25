@@ -16,6 +16,8 @@ REPO_ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_CONFIG = REPO_ROOT / "configs/baselines/mosaic_fold0_fair.yaml"
 DEFAULT_RESULT_ROOT = REPO_ROOT / "results/20260725_care_m0_mosaic_fold0_fair_repro"
 DEFAULT_MOSAIC_ROOT = Path(os.environ.get("MOSAIC_ROOT", "/users/a/e/aereinh/MoSAIC"))
+DEFAULT_MOSAIC_SOURCE_ROOT = REPO_ROOT / "third_party/MoSAIC/source"
+MOSAIC_SOURCE_COMMIT = "d334bd1fb2a99dbbc230510590cd8e3ee08cc377"
 
 CARE_INPUT_ORDER = ("LGE", "T2", "C0")
 MOSAIC_INPUT_ORDER = ("LGE", "C0", "T2")
@@ -133,15 +135,18 @@ def geometry_matches(left: dict[str, Any], right: dict[str, Any], *, tol: float 
     return True
 
 
-def find_native_mosaic_source(mosaic_root: Path) -> dict[str, Any]:
-    root = mosaic_root.resolve()
+def find_native_mosaic_source(mosaic_root: Path, source_root: Path | None = None) -> dict[str, Any]:
+    root = source_root.resolve() if source_root is not None else mosaic_root.resolve()
     candidates = [root, root / "code", root / "src", root / "MoSAIC", root / "mosaic"]
     py_files: list[str] = []
     for candidate in candidates:
         if candidate.is_dir():
             py_files.extend(str(path.relative_to(root)) for path in candidate.rglob("*.py"))
+    default_source = DEFAULT_MOSAIC_SOURCE_ROOT.resolve()
     return {
-        "mosaic_root": str(root),
+        "mosaic_root": str(mosaic_root.resolve()),
+        "source_root": str(root),
+        "source_commit": MOSAIC_SOURCE_COMMIT if root == default_source else None,
         "source_status": "FOUND" if py_files else "NEEDS_MOSAIC_SOURCE",
         "python_file_count": len(py_files),
         "sample_python_files": sorted(py_files)[:20],

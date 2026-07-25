@@ -1,0 +1,1291 @@
+{
+  "mosaic_root": "/users/a/e/aereinh/MoSAIC",
+  "next_inference_command_fold0_staged": "cd third_party/MoSAIC/source && ../../../envs/env_CARE/bin/python scripts/infer_and_submit.py --val-dir ../../../results/20260725_care_m0_mosaic_fold0_fair_repro/mosaic_runtime/fold0_val --gpu 0",
+  "next_inference_command_official_val": "cd third_party/MoSAIC/source && ../../../envs/env_CARE/bin/python scripts/infer_and_submit.py --val-dir ../../../data/CARE_Challenge --gpu 0",
+  "production_path_dependency_authorized": false,
+  "schema_version": 1,
+  "source_commit": "d334bd1fb2a99dbbc230510590cd8e3ee08cc377",
+  "source_repository": "https://github.com/IndeedLiu/MoSAIC",
+  "source_root": "/users/a/e/aereinh/CARE/third_party/MoSAIC/source",
+  "stage_fold0": true,
+  "staged_rows": [
+    {
+      "case_id": "Case1002",
+      "dest": "/users/a/e/aereinh/CARE/results/20260725_care_m0_mosaic_fold0_fair_repro/mosaic_runtime/fold0_val/MyoPS_val/AnonymousCenter/Case1002/Case1002_LGE.nii.gz",
+      "link": "/users/a/e/aereinh/CARE/results/20260725_care_m0_mosaic_fold0_fair_repro/mosaic_runtime/fold0_val/MyoPS_val/AnonymousCenter/Case1002/Case1002_LGE.nii.gz",
+      "modality": "LGE",
+      "source": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterA/Case1002/Case1002_LGE.nii.gz",
+      "source_exists": true,
+      "status": "EXISTS",
+      "target": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterA/Case1002/Case1002_LGE.nii.gz"
+    },
+    {
+      "case_id": "Case1002",
+      "dest": "/users/a/e/aereinh/CARE/results/20260725_care_m0_mosaic_fold0_fair_repro/mosaic_runtime/fold0_val/MyoPS_val/AnonymousCenter/Case1002/Case1002_C0.nii.gz",
+      "modality": "C0",
+      "source": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterA/Case1002/Case1002_C0.nii.gz",
+      "source_exists": false,
+      "status": "MISSING_MODALITY"
+    },
+    {
+      "case_id": "Case1002",
+      "dest": "/users/a/e/aereinh/CARE/results/20260725_care_m0_mosaic_fold0_fair_repro/mosaic_runtime/fold0_val/MyoPS_val/AnonymousCenter/Case1002/Case1002_T2.nii.gz",
+      "modality": "T2",
+      "source": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterA/Case1002/Case1002_T2.nii.gz",
+      "source_exists": false,
+      "status": "MISSING_MODALITY"
+    },
+    {
+      "case_id": "Case1007",
+      "dest": "/users/a/e/aereinh/CARE/results/20260725_care_m0_mosaic_fold0_fair_repro/mosaic_runtime/fold0_val/MyoPS_val/AnonymousCenter/Case1007/Case1007_LGE.nii.gz",
+      "link": "/users/a/e/aereinh/CARE/results/20260725_care_m0_mosaic_fold0_fair_repro/mosaic_runtime/fold0_val/MyoPS_val/AnonymousCenter/Case1007/Case1007_LGE.nii.gz",
+      "modality": "LGE",
+      "source": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterA/Case1007/Case1007_LGE.nii.gz",
+      "source_exists": true,
+      "status": "EXISTS",
+      "target": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterA/Case1007/Case1007_LGE.nii.gz"
+    },
+    {
+      "case_id": "Case1007",
+      "dest": "/users/a/e/aereinh/CARE/results/20260725_care_m0_mosaic_fold0_fair_repro/mosaic_runtime/fold0_val/MyoPS_val/AnonymousCenter/Case1007/Case1007_C0.nii.gz",
+      "modality": "C0",
+      "source": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterA/Case1007/Case1007_C0.nii.gz",
+      "source_exists": false,
+      "status": "MISSING_MODALITY"
+    },
+    {
+      "case_id": "Case1007",
+      "dest": "/users/a/e/aereinh/CARE/results/20260725_care_m0_mosaic_fold0_fair_repro/mosaic_runtime/fold0_val/MyoPS_val/AnonymousCenter/Case1007/Case1007_T2.nii.gz",
+      "modality": "T2",
+      "source": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterA/Case1007/Case1007_T2.nii.gz",
+      "source_exists": false,
+      "status": "MISSING_MODALITY"
+    },
+    {
+      "case_id": "Case1009",
+      "dest": "/users/a/e/aereinh/CARE/results/20260725_care_m0_mosaic_fold0_fair_repro/mosaic_runtime/fold0_val/MyoPS_val/AnonymousCenter/Case1009/Case1009_LGE.nii.gz",
+      "link": "/users/a/e/aereinh/CARE/results/20260725_care_m0_mosaic_fold0_fair_repro/mosaic_runtime/fold0_val/MyoPS_val/AnonymousCenter/Case1009/Case1009_LGE.nii.gz",
+      "modality": "LGE",
+      "source": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterA/Case1009/Case1009_LGE.nii.gz",
+      "source_exists": true,
+      "status": "EXISTS",
+      "target": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterA/Case1009/Case1009_LGE.nii.gz"
+    },
+    {
+      "case_id": "Case1009",
+      "dest": "/users/a/e/aereinh/CARE/results/20260725_care_m0_mosaic_fold0_fair_repro/mosaic_runtime/fold0_val/MyoPS_val/AnonymousCenter/Case1009/Case1009_C0.nii.gz",
+      "modality": "C0",
+      "source": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterA/Case1009/Case1009_C0.nii.gz",
+      "source_exists": false,
+      "status": "MISSING_MODALITY"
+    },
+    {
+      "case_id": "Case1009",
+      "dest": "/users/a/e/aereinh/CARE/results/20260725_care_m0_mosaic_fold0_fair_repro/mosaic_runtime/fold0_val/MyoPS_val/AnonymousCenter/Case1009/Case1009_T2.nii.gz",
+      "modality": "T2",
+      "source": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterA/Case1009/Case1009_T2.nii.gz",
+      "source_exists": false,
+      "status": "MISSING_MODALITY"
+    },
+    {
+      "case_id": "Case1010",
+      "dest": "/users/a/e/aereinh/CARE/results/20260725_care_m0_mosaic_fold0_fair_repro/mosaic_runtime/fold0_val/MyoPS_val/AnonymousCenter/Case1010/Case1010_LGE.nii.gz",
+      "link": "/users/a/e/aereinh/CARE/results/20260725_care_m0_mosaic_fold0_fair_repro/mosaic_runtime/fold0_val/MyoPS_val/AnonymousCenter/Case1010/Case1010_LGE.nii.gz",
+      "modality": "LGE",
+      "source": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterA/Case1010/Case1010_LGE.nii.gz",
+      "source_exists": true,
+      "status": "EXISTS",
+      "target": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterA/Case1010/Case1010_LGE.nii.gz"
+    },
+    {
+      "case_id": "Case1010",
+      "dest": "/users/a/e/aereinh/CARE/results/20260725_care_m0_mosaic_fold0_fair_repro/mosaic_runtime/fold0_val/MyoPS_val/AnonymousCenter/Case1010/Case1010_C0.nii.gz",
+      "modality": "C0",
+      "source": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterA/Case1010/Case1010_C0.nii.gz",
+      "source_exists": false,
+      "status": "MISSING_MODALITY"
+    },
+    {
+      "case_id": "Case1010",
+      "dest": "/users/a/e/aereinh/CARE/results/20260725_care_m0_mosaic_fold0_fair_repro/mosaic_runtime/fold0_val/MyoPS_val/AnonymousCenter/Case1010/Case1010_T2.nii.gz",
+      "modality": "T2",
+      "source": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterA/Case1010/Case1010_T2.nii.gz",
+      "source_exists": false,
+      "status": "MISSING_MODALITY"
+    },
+    {
+      "case_id": "Case1021",
+      "dest": "/users/a/e/aereinh/CARE/results/20260725_care_m0_mosaic_fold0_fair_repro/mosaic_runtime/fold0_val/MyoPS_val/AnonymousCenter/Case1021/Case1021_LGE.nii.gz",
+      "link": "/users/a/e/aereinh/CARE/results/20260725_care_m0_mosaic_fold0_fair_repro/mosaic_runtime/fold0_val/MyoPS_val/AnonymousCenter/Case1021/Case1021_LGE.nii.gz",
+      "modality": "LGE",
+      "source": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterA/Case1021/Case1021_LGE.nii.gz",
+      "source_exists": true,
+      "status": "EXISTS",
+      "target": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterA/Case1021/Case1021_LGE.nii.gz"
+    },
+    {
+      "case_id": "Case1021",
+      "dest": "/users/a/e/aereinh/CARE/results/20260725_care_m0_mosaic_fold0_fair_repro/mosaic_runtime/fold0_val/MyoPS_val/AnonymousCenter/Case1021/Case1021_C0.nii.gz",
+      "modality": "C0",
+      "source": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterA/Case1021/Case1021_C0.nii.gz",
+      "source_exists": false,
+      "status": "MISSING_MODALITY"
+    },
+    {
+      "case_id": "Case1021",
+      "dest": "/users/a/e/aereinh/CARE/results/20260725_care_m0_mosaic_fold0_fair_repro/mosaic_runtime/fold0_val/MyoPS_val/AnonymousCenter/Case1021/Case1021_T2.nii.gz",
+      "modality": "T2",
+      "source": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterA/Case1021/Case1021_T2.nii.gz",
+      "source_exists": false,
+      "status": "MISSING_MODALITY"
+    },
+    {
+      "case_id": "Case1023",
+      "dest": "/users/a/e/aereinh/CARE/results/20260725_care_m0_mosaic_fold0_fair_repro/mosaic_runtime/fold0_val/MyoPS_val/AnonymousCenter/Case1023/Case1023_LGE.nii.gz",
+      "link": "/users/a/e/aereinh/CARE/results/20260725_care_m0_mosaic_fold0_fair_repro/mosaic_runtime/fold0_val/MyoPS_val/AnonymousCenter/Case1023/Case1023_LGE.nii.gz",
+      "modality": "LGE",
+      "source": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterA/Case1023/Case1023_LGE.nii.gz",
+      "source_exists": true,
+      "status": "EXISTS",
+      "target": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterA/Case1023/Case1023_LGE.nii.gz"
+    },
+    {
+      "case_id": "Case1023",
+      "dest": "/users/a/e/aereinh/CARE/results/20260725_care_m0_mosaic_fold0_fair_repro/mosaic_runtime/fold0_val/MyoPS_val/AnonymousCenter/Case1023/Case1023_C0.nii.gz",
+      "modality": "C0",
+      "source": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterA/Case1023/Case1023_C0.nii.gz",
+      "source_exists": false,
+      "status": "MISSING_MODALITY"
+    },
+    {
+      "case_id": "Case1023",
+      "dest": "/users/a/e/aereinh/CARE/results/20260725_care_m0_mosaic_fold0_fair_repro/mosaic_runtime/fold0_val/MyoPS_val/AnonymousCenter/Case1023/Case1023_T2.nii.gz",
+      "modality": "T2",
+      "source": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterA/Case1023/Case1023_T2.nii.gz",
+      "source_exists": false,
+      "status": "MISSING_MODALITY"
+    },
+    {
+      "case_id": "Case1029",
+      "dest": "/users/a/e/aereinh/CARE/results/20260725_care_m0_mosaic_fold0_fair_repro/mosaic_runtime/fold0_val/MyoPS_val/AnonymousCenter/Case1029/Case1029_LGE.nii.gz",
+      "link": "/users/a/e/aereinh/CARE/results/20260725_care_m0_mosaic_fold0_fair_repro/mosaic_runtime/fold0_val/MyoPS_val/AnonymousCenter/Case1029/Case1029_LGE.nii.gz",
+      "modality": "LGE",
+      "source": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterA/Case1029/Case1029_LGE.nii.gz",
+      "source_exists": true,
+      "status": "EXISTS",
+      "target": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterA/Case1029/Case1029_LGE.nii.gz"
+    },
+    {
+      "case_id": "Case1029",
+      "dest": "/users/a/e/aereinh/CARE/results/20260725_care_m0_mosaic_fold0_fair_repro/mosaic_runtime/fold0_val/MyoPS_val/AnonymousCenter/Case1029/Case1029_C0.nii.gz",
+      "modality": "C0",
+      "source": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterA/Case1029/Case1029_C0.nii.gz",
+      "source_exists": false,
+      "status": "MISSING_MODALITY"
+    },
+    {
+      "case_id": "Case1029",
+      "dest": "/users/a/e/aereinh/CARE/results/20260725_care_m0_mosaic_fold0_fair_repro/mosaic_runtime/fold0_val/MyoPS_val/AnonymousCenter/Case1029/Case1029_T2.nii.gz",
+      "modality": "T2",
+      "source": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterA/Case1029/Case1029_T2.nii.gz",
+      "source_exists": false,
+      "status": "MISSING_MODALITY"
+    },
+    {
+      "case_id": "Case1033",
+      "dest": "/users/a/e/aereinh/CARE/results/20260725_care_m0_mosaic_fold0_fair_repro/mosaic_runtime/fold0_val/MyoPS_val/AnonymousCenter/Case1033/Case1033_LGE.nii.gz",
+      "link": "/users/a/e/aereinh/CARE/results/20260725_care_m0_mosaic_fold0_fair_repro/mosaic_runtime/fold0_val/MyoPS_val/AnonymousCenter/Case1033/Case1033_LGE.nii.gz",
+      "modality": "LGE",
+      "source": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterA/Case1033/Case1033_LGE.nii.gz",
+      "source_exists": true,
+      "status": "EXISTS",
+      "target": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterA/Case1033/Case1033_LGE.nii.gz"
+    },
+    {
+      "case_id": "Case1033",
+      "dest": "/users/a/e/aereinh/CARE/results/20260725_care_m0_mosaic_fold0_fair_repro/mosaic_runtime/fold0_val/MyoPS_val/AnonymousCenter/Case1033/Case1033_C0.nii.gz",
+      "modality": "C0",
+      "source": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterA/Case1033/Case1033_C0.nii.gz",
+      "source_exists": false,
+      "status": "MISSING_MODALITY"
+    },
+    {
+      "case_id": "Case1033",
+      "dest": "/users/a/e/aereinh/CARE/results/20260725_care_m0_mosaic_fold0_fair_repro/mosaic_runtime/fold0_val/MyoPS_val/AnonymousCenter/Case1033/Case1033_T2.nii.gz",
+      "modality": "T2",
+      "source": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterA/Case1033/Case1033_T2.nii.gz",
+      "source_exists": false,
+      "status": "MISSING_MODALITY"
+    },
+    {
+      "case_id": "Case1040",
+      "dest": "/users/a/e/aereinh/CARE/results/20260725_care_m0_mosaic_fold0_fair_repro/mosaic_runtime/fold0_val/MyoPS_val/AnonymousCenter/Case1040/Case1040_LGE.nii.gz",
+      "link": "/users/a/e/aereinh/CARE/results/20260725_care_m0_mosaic_fold0_fair_repro/mosaic_runtime/fold0_val/MyoPS_val/AnonymousCenter/Case1040/Case1040_LGE.nii.gz",
+      "modality": "LGE",
+      "source": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterA/Case1040/Case1040_LGE.nii.gz",
+      "source_exists": true,
+      "status": "EXISTS",
+      "target": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterA/Case1040/Case1040_LGE.nii.gz"
+    },
+    {
+      "case_id": "Case1040",
+      "dest": "/users/a/e/aereinh/CARE/results/20260725_care_m0_mosaic_fold0_fair_repro/mosaic_runtime/fold0_val/MyoPS_val/AnonymousCenter/Case1040/Case1040_C0.nii.gz",
+      "modality": "C0",
+      "source": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterA/Case1040/Case1040_C0.nii.gz",
+      "source_exists": false,
+      "status": "MISSING_MODALITY"
+    },
+    {
+      "case_id": "Case1040",
+      "dest": "/users/a/e/aereinh/CARE/results/20260725_care_m0_mosaic_fold0_fair_repro/mosaic_runtime/fold0_val/MyoPS_val/AnonymousCenter/Case1040/Case1040_T2.nii.gz",
+      "modality": "T2",
+      "source": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterA/Case1040/Case1040_T2.nii.gz",
+      "source_exists": false,
+      "status": "MISSING_MODALITY"
+    },
+    {
+      "case_id": "Case1042",
+      "dest": "/users/a/e/aereinh/CARE/results/20260725_care_m0_mosaic_fold0_fair_repro/mosaic_runtime/fold0_val/MyoPS_val/AnonymousCenter/Case1042/Case1042_LGE.nii.gz",
+      "link": "/users/a/e/aereinh/CARE/results/20260725_care_m0_mosaic_fold0_fair_repro/mosaic_runtime/fold0_val/MyoPS_val/AnonymousCenter/Case1042/Case1042_LGE.nii.gz",
+      "modality": "LGE",
+      "source": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterA/Case1042/Case1042_LGE.nii.gz",
+      "source_exists": true,
+      "status": "EXISTS",
+      "target": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterA/Case1042/Case1042_LGE.nii.gz"
+    },
+    {
+      "case_id": "Case1042",
+      "dest": "/users/a/e/aereinh/CARE/results/20260725_care_m0_mosaic_fold0_fair_repro/mosaic_runtime/fold0_val/MyoPS_val/AnonymousCenter/Case1042/Case1042_C0.nii.gz",
+      "modality": "C0",
+      "source": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterA/Case1042/Case1042_C0.nii.gz",
+      "source_exists": false,
+      "status": "MISSING_MODALITY"
+    },
+    {
+      "case_id": "Case1042",
+      "dest": "/users/a/e/aereinh/CARE/results/20260725_care_m0_mosaic_fold0_fair_repro/mosaic_runtime/fold0_val/MyoPS_val/AnonymousCenter/Case1042/Case1042_T2.nii.gz",
+      "modality": "T2",
+      "source": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterA/Case1042/Case1042_T2.nii.gz",
+      "source_exists": false,
+      "status": "MISSING_MODALITY"
+    },
+    {
+      "case_id": "Case1045",
+      "dest": "/users/a/e/aereinh/CARE/results/20260725_care_m0_mosaic_fold0_fair_repro/mosaic_runtime/fold0_val/MyoPS_val/AnonymousCenter/Case1045/Case1045_LGE.nii.gz",
+      "link": "/users/a/e/aereinh/CARE/results/20260725_care_m0_mosaic_fold0_fair_repro/mosaic_runtime/fold0_val/MyoPS_val/AnonymousCenter/Case1045/Case1045_LGE.nii.gz",
+      "modality": "LGE",
+      "source": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterA/Case1045/Case1045_LGE.nii.gz",
+      "source_exists": true,
+      "status": "EXISTS",
+      "target": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterA/Case1045/Case1045_LGE.nii.gz"
+    },
+    {
+      "case_id": "Case1045",
+      "dest": "/users/a/e/aereinh/CARE/results/20260725_care_m0_mosaic_fold0_fair_repro/mosaic_runtime/fold0_val/MyoPS_val/AnonymousCenter/Case1045/Case1045_C0.nii.gz",
+      "modality": "C0",
+      "source": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterA/Case1045/Case1045_C0.nii.gz",
+      "source_exists": false,
+      "status": "MISSING_MODALITY"
+    },
+    {
+      "case_id": "Case1045",
+      "dest": "/users/a/e/aereinh/CARE/results/20260725_care_m0_mosaic_fold0_fair_repro/mosaic_runtime/fold0_val/MyoPS_val/AnonymousCenter/Case1045/Case1045_T2.nii.gz",
+      "modality": "T2",
+      "source": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterA/Case1045/Case1045_T2.nii.gz",
+      "source_exists": false,
+      "status": "MISSING_MODALITY"
+    },
+    {
+      "case_id": "Case1047",
+      "dest": "/users/a/e/aereinh/CARE/results/20260725_care_m0_mosaic_fold0_fair_repro/mosaic_runtime/fold0_val/MyoPS_val/AnonymousCenter/Case1047/Case1047_LGE.nii.gz",
+      "link": "/users/a/e/aereinh/CARE/results/20260725_care_m0_mosaic_fold0_fair_repro/mosaic_runtime/fold0_val/MyoPS_val/AnonymousCenter/Case1047/Case1047_LGE.nii.gz",
+      "modality": "LGE",
+      "source": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterA/Case1047/Case1047_LGE.nii.gz",
+      "source_exists": true,
+      "status": "EXISTS",
+      "target": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterA/Case1047/Case1047_LGE.nii.gz"
+    },
+    {
+      "case_id": "Case1047",
+      "dest": "/users/a/e/aereinh/CARE/results/20260725_care_m0_mosaic_fold0_fair_repro/mosaic_runtime/fold0_val/MyoPS_val/AnonymousCenter/Case1047/Case1047_C0.nii.gz",
+      "modality": "C0",
+      "source": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterA/Case1047/Case1047_C0.nii.gz",
+      "source_exists": false,
+      "status": "MISSING_MODALITY"
+    },
+    {
+      "case_id": "Case1047",
+      "dest": "/users/a/e/aereinh/CARE/results/20260725_care_m0_mosaic_fold0_fair_repro/mosaic_runtime/fold0_val/MyoPS_val/AnonymousCenter/Case1047/Case1047_T2.nii.gz",
+      "modality": "T2",
+      "source": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterA/Case1047/Case1047_T2.nii.gz",
+      "source_exists": false,
+      "status": "MISSING_MODALITY"
+    },
+    {
+      "case_id": "Case1053",
+      "dest": "/users/a/e/aereinh/CARE/results/20260725_care_m0_mosaic_fold0_fair_repro/mosaic_runtime/fold0_val/MyoPS_val/AnonymousCenter/Case1053/Case1053_LGE.nii.gz",
+      "link": "/users/a/e/aereinh/CARE/results/20260725_care_m0_mosaic_fold0_fair_repro/mosaic_runtime/fold0_val/MyoPS_val/AnonymousCenter/Case1053/Case1053_LGE.nii.gz",
+      "modality": "LGE",
+      "source": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterA/Case1053/Case1053_LGE.nii.gz",
+      "source_exists": true,
+      "status": "EXISTS",
+      "target": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterA/Case1053/Case1053_LGE.nii.gz"
+    },
+    {
+      "case_id": "Case1053",
+      "dest": "/users/a/e/aereinh/CARE/results/20260725_care_m0_mosaic_fold0_fair_repro/mosaic_runtime/fold0_val/MyoPS_val/AnonymousCenter/Case1053/Case1053_C0.nii.gz",
+      "modality": "C0",
+      "source": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterA/Case1053/Case1053_C0.nii.gz",
+      "source_exists": false,
+      "status": "MISSING_MODALITY"
+    },
+    {
+      "case_id": "Case1053",
+      "dest": "/users/a/e/aereinh/CARE/results/20260725_care_m0_mosaic_fold0_fair_repro/mosaic_runtime/fold0_val/MyoPS_val/AnonymousCenter/Case1053/Case1053_T2.nii.gz",
+      "modality": "T2",
+      "source": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterA/Case1053/Case1053_T2.nii.gz",
+      "source_exists": false,
+      "status": "MISSING_MODALITY"
+    },
+    {
+      "case_id": "Case1062",
+      "dest": "/users/a/e/aereinh/CARE/results/20260725_care_m0_mosaic_fold0_fair_repro/mosaic_runtime/fold0_val/MyoPS_val/AnonymousCenter/Case1062/Case1062_LGE.nii.gz",
+      "link": "/users/a/e/aereinh/CARE/results/20260725_care_m0_mosaic_fold0_fair_repro/mosaic_runtime/fold0_val/MyoPS_val/AnonymousCenter/Case1062/Case1062_LGE.nii.gz",
+      "modality": "LGE",
+      "source": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterA/Case1062/Case1062_LGE.nii.gz",
+      "source_exists": true,
+      "status": "EXISTS",
+      "target": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterA/Case1062/Case1062_LGE.nii.gz"
+    },
+    {
+      "case_id": "Case1062",
+      "dest": "/users/a/e/aereinh/CARE/results/20260725_care_m0_mosaic_fold0_fair_repro/mosaic_runtime/fold0_val/MyoPS_val/AnonymousCenter/Case1062/Case1062_C0.nii.gz",
+      "modality": "C0",
+      "source": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterA/Case1062/Case1062_C0.nii.gz",
+      "source_exists": false,
+      "status": "MISSING_MODALITY"
+    },
+    {
+      "case_id": "Case1062",
+      "dest": "/users/a/e/aereinh/CARE/results/20260725_care_m0_mosaic_fold0_fair_repro/mosaic_runtime/fold0_val/MyoPS_val/AnonymousCenter/Case1062/Case1062_T2.nii.gz",
+      "modality": "T2",
+      "source": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterA/Case1062/Case1062_T2.nii.gz",
+      "source_exists": false,
+      "status": "MISSING_MODALITY"
+    },
+    {
+      "case_id": "Case1070",
+      "dest": "/users/a/e/aereinh/CARE/results/20260725_care_m0_mosaic_fold0_fair_repro/mosaic_runtime/fold0_val/MyoPS_val/AnonymousCenter/Case1070/Case1070_LGE.nii.gz",
+      "link": "/users/a/e/aereinh/CARE/results/20260725_care_m0_mosaic_fold0_fair_repro/mosaic_runtime/fold0_val/MyoPS_val/AnonymousCenter/Case1070/Case1070_LGE.nii.gz",
+      "modality": "LGE",
+      "source": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterA/Case1070/Case1070_LGE.nii.gz",
+      "source_exists": true,
+      "status": "EXISTS",
+      "target": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterA/Case1070/Case1070_LGE.nii.gz"
+    },
+    {
+      "case_id": "Case1070",
+      "dest": "/users/a/e/aereinh/CARE/results/20260725_care_m0_mosaic_fold0_fair_repro/mosaic_runtime/fold0_val/MyoPS_val/AnonymousCenter/Case1070/Case1070_C0.nii.gz",
+      "modality": "C0",
+      "source": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterA/Case1070/Case1070_C0.nii.gz",
+      "source_exists": false,
+      "status": "MISSING_MODALITY"
+    },
+    {
+      "case_id": "Case1070",
+      "dest": "/users/a/e/aereinh/CARE/results/20260725_care_m0_mosaic_fold0_fair_repro/mosaic_runtime/fold0_val/MyoPS_val/AnonymousCenter/Case1070/Case1070_T2.nii.gz",
+      "modality": "T2",
+      "source": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterA/Case1070/Case1070_T2.nii.gz",
+      "source_exists": false,
+      "status": "MISSING_MODALITY"
+    },
+    {
+      "case_id": "Case1073",
+      "dest": "/users/a/e/aereinh/CARE/results/20260725_care_m0_mosaic_fold0_fair_repro/mosaic_runtime/fold0_val/MyoPS_val/AnonymousCenter/Case1073/Case1073_LGE.nii.gz",
+      "link": "/users/a/e/aereinh/CARE/results/20260725_care_m0_mosaic_fold0_fair_repro/mosaic_runtime/fold0_val/MyoPS_val/AnonymousCenter/Case1073/Case1073_LGE.nii.gz",
+      "modality": "LGE",
+      "source": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterA/Case1073/Case1073_LGE.nii.gz",
+      "source_exists": true,
+      "status": "EXISTS",
+      "target": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterA/Case1073/Case1073_LGE.nii.gz"
+    },
+    {
+      "case_id": "Case1073",
+      "dest": "/users/a/e/aereinh/CARE/results/20260725_care_m0_mosaic_fold0_fair_repro/mosaic_runtime/fold0_val/MyoPS_val/AnonymousCenter/Case1073/Case1073_C0.nii.gz",
+      "modality": "C0",
+      "source": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterA/Case1073/Case1073_C0.nii.gz",
+      "source_exists": false,
+      "status": "MISSING_MODALITY"
+    },
+    {
+      "case_id": "Case1073",
+      "dest": "/users/a/e/aereinh/CARE/results/20260725_care_m0_mosaic_fold0_fair_repro/mosaic_runtime/fold0_val/MyoPS_val/AnonymousCenter/Case1073/Case1073_T2.nii.gz",
+      "modality": "T2",
+      "source": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterA/Case1073/Case1073_T2.nii.gz",
+      "source_exists": false,
+      "status": "MISSING_MODALITY"
+    },
+    {
+      "case_id": "Case1080",
+      "dest": "/users/a/e/aereinh/CARE/results/20260725_care_m0_mosaic_fold0_fair_repro/mosaic_runtime/fold0_val/MyoPS_val/AnonymousCenter/Case1080/Case1080_LGE.nii.gz",
+      "link": "/users/a/e/aereinh/CARE/results/20260725_care_m0_mosaic_fold0_fair_repro/mosaic_runtime/fold0_val/MyoPS_val/AnonymousCenter/Case1080/Case1080_LGE.nii.gz",
+      "modality": "LGE",
+      "source": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterA/Case1080/Case1080_LGE.nii.gz",
+      "source_exists": true,
+      "status": "EXISTS",
+      "target": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterA/Case1080/Case1080_LGE.nii.gz"
+    },
+    {
+      "case_id": "Case1080",
+      "dest": "/users/a/e/aereinh/CARE/results/20260725_care_m0_mosaic_fold0_fair_repro/mosaic_runtime/fold0_val/MyoPS_val/AnonymousCenter/Case1080/Case1080_C0.nii.gz",
+      "modality": "C0",
+      "source": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterA/Case1080/Case1080_C0.nii.gz",
+      "source_exists": false,
+      "status": "MISSING_MODALITY"
+    },
+    {
+      "case_id": "Case1080",
+      "dest": "/users/a/e/aereinh/CARE/results/20260725_care_m0_mosaic_fold0_fair_repro/mosaic_runtime/fold0_val/MyoPS_val/AnonymousCenter/Case1080/Case1080_T2.nii.gz",
+      "modality": "T2",
+      "source": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterA/Case1080/Case1080_T2.nii.gz",
+      "source_exists": false,
+      "status": "MISSING_MODALITY"
+    },
+    {
+      "case_id": "Case2002",
+      "dest": "/users/a/e/aereinh/CARE/results/20260725_care_m0_mosaic_fold0_fair_repro/mosaic_runtime/fold0_val/MyoPS_val/AnonymousCenter/Case2002/Case2002_LGE.nii.gz",
+      "link": "/users/a/e/aereinh/CARE/results/20260725_care_m0_mosaic_fold0_fair_repro/mosaic_runtime/fold0_val/MyoPS_val/AnonymousCenter/Case2002/Case2002_LGE.nii.gz",
+      "modality": "LGE",
+      "source": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterB/Case2002/Case2002_LGE.nii.gz",
+      "source_exists": true,
+      "status": "EXISTS",
+      "target": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterB/Case2002/Case2002_LGE.nii.gz"
+    },
+    {
+      "case_id": "Case2002",
+      "dest": "/users/a/e/aereinh/CARE/results/20260725_care_m0_mosaic_fold0_fair_repro/mosaic_runtime/fold0_val/MyoPS_val/AnonymousCenter/Case2002/Case2002_C0.nii.gz",
+      "link": "/users/a/e/aereinh/CARE/results/20260725_care_m0_mosaic_fold0_fair_repro/mosaic_runtime/fold0_val/MyoPS_val/AnonymousCenter/Case2002/Case2002_C0.nii.gz",
+      "modality": "C0",
+      "source": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterB/Case2002/Case2002_C0.nii.gz",
+      "source_exists": true,
+      "status": "EXISTS",
+      "target": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterB/Case2002/Case2002_C0.nii.gz"
+    },
+    {
+      "case_id": "Case2002",
+      "dest": "/users/a/e/aereinh/CARE/results/20260725_care_m0_mosaic_fold0_fair_repro/mosaic_runtime/fold0_val/MyoPS_val/AnonymousCenter/Case2002/Case2002_T2.nii.gz",
+      "link": "/users/a/e/aereinh/CARE/results/20260725_care_m0_mosaic_fold0_fair_repro/mosaic_runtime/fold0_val/MyoPS_val/AnonymousCenter/Case2002/Case2002_T2.nii.gz",
+      "modality": "T2",
+      "source": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterB/Case2002/Case2002_T2.nii.gz",
+      "source_exists": true,
+      "status": "EXISTS",
+      "target": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterB/Case2002/Case2002_T2.nii.gz"
+    },
+    {
+      "case_id": "Case2007",
+      "dest": "/users/a/e/aereinh/CARE/results/20260725_care_m0_mosaic_fold0_fair_repro/mosaic_runtime/fold0_val/MyoPS_val/AnonymousCenter/Case2007/Case2007_LGE.nii.gz",
+      "link": "/users/a/e/aereinh/CARE/results/20260725_care_m0_mosaic_fold0_fair_repro/mosaic_runtime/fold0_val/MyoPS_val/AnonymousCenter/Case2007/Case2007_LGE.nii.gz",
+      "modality": "LGE",
+      "source": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterB/Case2007/Case2007_LGE.nii.gz",
+      "source_exists": true,
+      "status": "EXISTS",
+      "target": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterB/Case2007/Case2007_LGE.nii.gz"
+    },
+    {
+      "case_id": "Case2007",
+      "dest": "/users/a/e/aereinh/CARE/results/20260725_care_m0_mosaic_fold0_fair_repro/mosaic_runtime/fold0_val/MyoPS_val/AnonymousCenter/Case2007/Case2007_C0.nii.gz",
+      "link": "/users/a/e/aereinh/CARE/results/20260725_care_m0_mosaic_fold0_fair_repro/mosaic_runtime/fold0_val/MyoPS_val/AnonymousCenter/Case2007/Case2007_C0.nii.gz",
+      "modality": "C0",
+      "source": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterB/Case2007/Case2007_C0.nii.gz",
+      "source_exists": true,
+      "status": "EXISTS",
+      "target": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterB/Case2007/Case2007_C0.nii.gz"
+    },
+    {
+      "case_id": "Case2007",
+      "dest": "/users/a/e/aereinh/CARE/results/20260725_care_m0_mosaic_fold0_fair_repro/mosaic_runtime/fold0_val/MyoPS_val/AnonymousCenter/Case2007/Case2007_T2.nii.gz",
+      "link": "/users/a/e/aereinh/CARE/results/20260725_care_m0_mosaic_fold0_fair_repro/mosaic_runtime/fold0_val/MyoPS_val/AnonymousCenter/Case2007/Case2007_T2.nii.gz",
+      "modality": "T2",
+      "source": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterB/Case2007/Case2007_T2.nii.gz",
+      "source_exists": true,
+      "status": "EXISTS",
+      "target": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterB/Case2007/Case2007_T2.nii.gz"
+    },
+    {
+      "case_id": "Case2008",
+      "dest": "/users/a/e/aereinh/CARE/results/20260725_care_m0_mosaic_fold0_fair_repro/mosaic_runtime/fold0_val/MyoPS_val/AnonymousCenter/Case2008/Case2008_LGE.nii.gz",
+      "link": "/users/a/e/aereinh/CARE/results/20260725_care_m0_mosaic_fold0_fair_repro/mosaic_runtime/fold0_val/MyoPS_val/AnonymousCenter/Case2008/Case2008_LGE.nii.gz",
+      "modality": "LGE",
+      "source": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterB/Case2008/Case2008_LGE.nii.gz",
+      "source_exists": true,
+      "status": "EXISTS",
+      "target": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterB/Case2008/Case2008_LGE.nii.gz"
+    },
+    {
+      "case_id": "Case2008",
+      "dest": "/users/a/e/aereinh/CARE/results/20260725_care_m0_mosaic_fold0_fair_repro/mosaic_runtime/fold0_val/MyoPS_val/AnonymousCenter/Case2008/Case2008_C0.nii.gz",
+      "link": "/users/a/e/aereinh/CARE/results/20260725_care_m0_mosaic_fold0_fair_repro/mosaic_runtime/fold0_val/MyoPS_val/AnonymousCenter/Case2008/Case2008_C0.nii.gz",
+      "modality": "C0",
+      "source": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterB/Case2008/Case2008_C0.nii.gz",
+      "source_exists": true,
+      "status": "EXISTS",
+      "target": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterB/Case2008/Case2008_C0.nii.gz"
+    },
+    {
+      "case_id": "Case2008",
+      "dest": "/users/a/e/aereinh/CARE/results/20260725_care_m0_mosaic_fold0_fair_repro/mosaic_runtime/fold0_val/MyoPS_val/AnonymousCenter/Case2008/Case2008_T2.nii.gz",
+      "link": "/users/a/e/aereinh/CARE/results/20260725_care_m0_mosaic_fold0_fair_repro/mosaic_runtime/fold0_val/MyoPS_val/AnonymousCenter/Case2008/Case2008_T2.nii.gz",
+      "modality": "T2",
+      "source": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterB/Case2008/Case2008_T2.nii.gz",
+      "source_exists": true,
+      "status": "EXISTS",
+      "target": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterB/Case2008/Case2008_T2.nii.gz"
+    },
+    {
+      "case_id": "Case2017",
+      "dest": "/users/a/e/aereinh/CARE/results/20260725_care_m0_mosaic_fold0_fair_repro/mosaic_runtime/fold0_val/MyoPS_val/AnonymousCenter/Case2017/Case2017_LGE.nii.gz",
+      "link": "/users/a/e/aereinh/CARE/results/20260725_care_m0_mosaic_fold0_fair_repro/mosaic_runtime/fold0_val/MyoPS_val/AnonymousCenter/Case2017/Case2017_LGE.nii.gz",
+      "modality": "LGE",
+      "source": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterB/Case2017/Case2017_LGE.nii.gz",
+      "source_exists": true,
+      "status": "EXISTS",
+      "target": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterB/Case2017/Case2017_LGE.nii.gz"
+    },
+    {
+      "case_id": "Case2017",
+      "dest": "/users/a/e/aereinh/CARE/results/20260725_care_m0_mosaic_fold0_fair_repro/mosaic_runtime/fold0_val/MyoPS_val/AnonymousCenter/Case2017/Case2017_C0.nii.gz",
+      "link": "/users/a/e/aereinh/CARE/results/20260725_care_m0_mosaic_fold0_fair_repro/mosaic_runtime/fold0_val/MyoPS_val/AnonymousCenter/Case2017/Case2017_C0.nii.gz",
+      "modality": "C0",
+      "source": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterB/Case2017/Case2017_C0.nii.gz",
+      "source_exists": true,
+      "status": "EXISTS",
+      "target": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterB/Case2017/Case2017_C0.nii.gz"
+    },
+    {
+      "case_id": "Case2017",
+      "dest": "/users/a/e/aereinh/CARE/results/20260725_care_m0_mosaic_fold0_fair_repro/mosaic_runtime/fold0_val/MyoPS_val/AnonymousCenter/Case2017/Case2017_T2.nii.gz",
+      "link": "/users/a/e/aereinh/CARE/results/20260725_care_m0_mosaic_fold0_fair_repro/mosaic_runtime/fold0_val/MyoPS_val/AnonymousCenter/Case2017/Case2017_T2.nii.gz",
+      "modality": "T2",
+      "source": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterB/Case2017/Case2017_T2.nii.gz",
+      "source_exists": true,
+      "status": "EXISTS",
+      "target": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterB/Case2017/Case2017_T2.nii.gz"
+    },
+    {
+      "case_id": "Case2020",
+      "dest": "/users/a/e/aereinh/CARE/results/20260725_care_m0_mosaic_fold0_fair_repro/mosaic_runtime/fold0_val/MyoPS_val/AnonymousCenter/Case2020/Case2020_LGE.nii.gz",
+      "link": "/users/a/e/aereinh/CARE/results/20260725_care_m0_mosaic_fold0_fair_repro/mosaic_runtime/fold0_val/MyoPS_val/AnonymousCenter/Case2020/Case2020_LGE.nii.gz",
+      "modality": "LGE",
+      "source": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterB/Case2020/Case2020_LGE.nii.gz",
+      "source_exists": true,
+      "status": "EXISTS",
+      "target": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterB/Case2020/Case2020_LGE.nii.gz"
+    },
+    {
+      "case_id": "Case2020",
+      "dest": "/users/a/e/aereinh/CARE/results/20260725_care_m0_mosaic_fold0_fair_repro/mosaic_runtime/fold0_val/MyoPS_val/AnonymousCenter/Case2020/Case2020_C0.nii.gz",
+      "link": "/users/a/e/aereinh/CARE/results/20260725_care_m0_mosaic_fold0_fair_repro/mosaic_runtime/fold0_val/MyoPS_val/AnonymousCenter/Case2020/Case2020_C0.nii.gz",
+      "modality": "C0",
+      "source": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterB/Case2020/Case2020_C0.nii.gz",
+      "source_exists": true,
+      "status": "EXISTS",
+      "target": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterB/Case2020/Case2020_C0.nii.gz"
+    },
+    {
+      "case_id": "Case2020",
+      "dest": "/users/a/e/aereinh/CARE/results/20260725_care_m0_mosaic_fold0_fair_repro/mosaic_runtime/fold0_val/MyoPS_val/AnonymousCenter/Case2020/Case2020_T2.nii.gz",
+      "link": "/users/a/e/aereinh/CARE/results/20260725_care_m0_mosaic_fold0_fair_repro/mosaic_runtime/fold0_val/MyoPS_val/AnonymousCenter/Case2020/Case2020_T2.nii.gz",
+      "modality": "T2",
+      "source": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterB/Case2020/Case2020_T2.nii.gz",
+      "source_exists": true,
+      "status": "EXISTS",
+      "target": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterB/Case2020/Case2020_T2.nii.gz"
+    },
+    {
+      "case_id": "Case2031",
+      "dest": "/users/a/e/aereinh/CARE/results/20260725_care_m0_mosaic_fold0_fair_repro/mosaic_runtime/fold0_val/MyoPS_val/AnonymousCenter/Case2031/Case2031_LGE.nii.gz",
+      "link": "/users/a/e/aereinh/CARE/results/20260725_care_m0_mosaic_fold0_fair_repro/mosaic_runtime/fold0_val/MyoPS_val/AnonymousCenter/Case2031/Case2031_LGE.nii.gz",
+      "modality": "LGE",
+      "source": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterB/Case2031/Case2031_LGE.nii.gz",
+      "source_exists": true,
+      "status": "EXISTS",
+      "target": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterB/Case2031/Case2031_LGE.nii.gz"
+    },
+    {
+      "case_id": "Case2031",
+      "dest": "/users/a/e/aereinh/CARE/results/20260725_care_m0_mosaic_fold0_fair_repro/mosaic_runtime/fold0_val/MyoPS_val/AnonymousCenter/Case2031/Case2031_C0.nii.gz",
+      "link": "/users/a/e/aereinh/CARE/results/20260725_care_m0_mosaic_fold0_fair_repro/mosaic_runtime/fold0_val/MyoPS_val/AnonymousCenter/Case2031/Case2031_C0.nii.gz",
+      "modality": "C0",
+      "source": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterB/Case2031/Case2031_C0.nii.gz",
+      "source_exists": true,
+      "status": "EXISTS",
+      "target": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterB/Case2031/Case2031_C0.nii.gz"
+    },
+    {
+      "case_id": "Case2031",
+      "dest": "/users/a/e/aereinh/CARE/results/20260725_care_m0_mosaic_fold0_fair_repro/mosaic_runtime/fold0_val/MyoPS_val/AnonymousCenter/Case2031/Case2031_T2.nii.gz",
+      "link": "/users/a/e/aereinh/CARE/results/20260725_care_m0_mosaic_fold0_fair_repro/mosaic_runtime/fold0_val/MyoPS_val/AnonymousCenter/Case2031/Case2031_T2.nii.gz",
+      "modality": "T2",
+      "source": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterB/Case2031/Case2031_T2.nii.gz",
+      "source_exists": true,
+      "status": "EXISTS",
+      "target": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterB/Case2031/Case2031_T2.nii.gz"
+    },
+    {
+      "case_id": "Case2033",
+      "dest": "/users/a/e/aereinh/CARE/results/20260725_care_m0_mosaic_fold0_fair_repro/mosaic_runtime/fold0_val/MyoPS_val/AnonymousCenter/Case2033/Case2033_LGE.nii.gz",
+      "link": "/users/a/e/aereinh/CARE/results/20260725_care_m0_mosaic_fold0_fair_repro/mosaic_runtime/fold0_val/MyoPS_val/AnonymousCenter/Case2033/Case2033_LGE.nii.gz",
+      "modality": "LGE",
+      "source": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterB/Case2033/Case2033_LGE.nii.gz",
+      "source_exists": true,
+      "status": "EXISTS",
+      "target": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterB/Case2033/Case2033_LGE.nii.gz"
+    },
+    {
+      "case_id": "Case2033",
+      "dest": "/users/a/e/aereinh/CARE/results/20260725_care_m0_mosaic_fold0_fair_repro/mosaic_runtime/fold0_val/MyoPS_val/AnonymousCenter/Case2033/Case2033_C0.nii.gz",
+      "link": "/users/a/e/aereinh/CARE/results/20260725_care_m0_mosaic_fold0_fair_repro/mosaic_runtime/fold0_val/MyoPS_val/AnonymousCenter/Case2033/Case2033_C0.nii.gz",
+      "modality": "C0",
+      "source": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterB/Case2033/Case2033_C0.nii.gz",
+      "source_exists": true,
+      "status": "EXISTS",
+      "target": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterB/Case2033/Case2033_C0.nii.gz"
+    },
+    {
+      "case_id": "Case2033",
+      "dest": "/users/a/e/aereinh/CARE/results/20260725_care_m0_mosaic_fold0_fair_repro/mosaic_runtime/fold0_val/MyoPS_val/AnonymousCenter/Case2033/Case2033_T2.nii.gz",
+      "link": "/users/a/e/aereinh/CARE/results/20260725_care_m0_mosaic_fold0_fair_repro/mosaic_runtime/fold0_val/MyoPS_val/AnonymousCenter/Case2033/Case2033_T2.nii.gz",
+      "modality": "T2",
+      "source": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterB/Case2033/Case2033_T2.nii.gz",
+      "source_exists": true,
+      "status": "EXISTS",
+      "target": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterB/Case2033/Case2033_T2.nii.gz"
+    },
+    {
+      "case_id": "Case3004",
+      "dest": "/users/a/e/aereinh/CARE/results/20260725_care_m0_mosaic_fold0_fair_repro/mosaic_runtime/fold0_val/MyoPS_val/AnonymousCenter/Case3004/Case3004_LGE.nii.gz",
+      "link": "/users/a/e/aereinh/CARE/results/20260725_care_m0_mosaic_fold0_fair_repro/mosaic_runtime/fold0_val/MyoPS_val/AnonymousCenter/Case3004/Case3004_LGE.nii.gz",
+      "modality": "LGE",
+      "source": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterC/Case3004/Case3004_LGE.nii.gz",
+      "source_exists": true,
+      "status": "EXISTS",
+      "target": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterC/Case3004/Case3004_LGE.nii.gz"
+    },
+    {
+      "case_id": "Case3004",
+      "dest": "/users/a/e/aereinh/CARE/results/20260725_care_m0_mosaic_fold0_fair_repro/mosaic_runtime/fold0_val/MyoPS_val/AnonymousCenter/Case3004/Case3004_C0.nii.gz",
+      "link": "/users/a/e/aereinh/CARE/results/20260725_care_m0_mosaic_fold0_fair_repro/mosaic_runtime/fold0_val/MyoPS_val/AnonymousCenter/Case3004/Case3004_C0.nii.gz",
+      "modality": "C0",
+      "source": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterC/Case3004/Case3004_C0.nii.gz",
+      "source_exists": true,
+      "status": "EXISTS",
+      "target": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterC/Case3004/Case3004_C0.nii.gz"
+    },
+    {
+      "case_id": "Case3004",
+      "dest": "/users/a/e/aereinh/CARE/results/20260725_care_m0_mosaic_fold0_fair_repro/mosaic_runtime/fold0_val/MyoPS_val/AnonymousCenter/Case3004/Case3004_T2.nii.gz",
+      "link": "/users/a/e/aereinh/CARE/results/20260725_care_m0_mosaic_fold0_fair_repro/mosaic_runtime/fold0_val/MyoPS_val/AnonymousCenter/Case3004/Case3004_T2.nii.gz",
+      "modality": "T2",
+      "source": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterC/Case3004/Case3004_T2.nii.gz",
+      "source_exists": true,
+      "status": "EXISTS",
+      "target": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterC/Case3004/Case3004_T2.nii.gz"
+    },
+    {
+      "case_id": "Case3011",
+      "dest": "/users/a/e/aereinh/CARE/results/20260725_care_m0_mosaic_fold0_fair_repro/mosaic_runtime/fold0_val/MyoPS_val/AnonymousCenter/Case3011/Case3011_LGE.nii.gz",
+      "link": "/users/a/e/aereinh/CARE/results/20260725_care_m0_mosaic_fold0_fair_repro/mosaic_runtime/fold0_val/MyoPS_val/AnonymousCenter/Case3011/Case3011_LGE.nii.gz",
+      "modality": "LGE",
+      "source": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterC/Case3011/Case3011_LGE.nii.gz",
+      "source_exists": true,
+      "status": "EXISTS",
+      "target": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterC/Case3011/Case3011_LGE.nii.gz"
+    },
+    {
+      "case_id": "Case3011",
+      "dest": "/users/a/e/aereinh/CARE/results/20260725_care_m0_mosaic_fold0_fair_repro/mosaic_runtime/fold0_val/MyoPS_val/AnonymousCenter/Case3011/Case3011_C0.nii.gz",
+      "link": "/users/a/e/aereinh/CARE/results/20260725_care_m0_mosaic_fold0_fair_repro/mosaic_runtime/fold0_val/MyoPS_val/AnonymousCenter/Case3011/Case3011_C0.nii.gz",
+      "modality": "C0",
+      "source": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterC/Case3011/Case3011_C0.nii.gz",
+      "source_exists": true,
+      "status": "EXISTS",
+      "target": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterC/Case3011/Case3011_C0.nii.gz"
+    },
+    {
+      "case_id": "Case3011",
+      "dest": "/users/a/e/aereinh/CARE/results/20260725_care_m0_mosaic_fold0_fair_repro/mosaic_runtime/fold0_val/MyoPS_val/AnonymousCenter/Case3011/Case3011_T2.nii.gz",
+      "link": "/users/a/e/aereinh/CARE/results/20260725_care_m0_mosaic_fold0_fair_repro/mosaic_runtime/fold0_val/MyoPS_val/AnonymousCenter/Case3011/Case3011_T2.nii.gz",
+      "modality": "T2",
+      "source": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterC/Case3011/Case3011_T2.nii.gz",
+      "source_exists": true,
+      "status": "EXISTS",
+      "target": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterC/Case3011/Case3011_T2.nii.gz"
+    },
+    {
+      "case_id": "Case3012",
+      "dest": "/users/a/e/aereinh/CARE/results/20260725_care_m0_mosaic_fold0_fair_repro/mosaic_runtime/fold0_val/MyoPS_val/AnonymousCenter/Case3012/Case3012_LGE.nii.gz",
+      "link": "/users/a/e/aereinh/CARE/results/20260725_care_m0_mosaic_fold0_fair_repro/mosaic_runtime/fold0_val/MyoPS_val/AnonymousCenter/Case3012/Case3012_LGE.nii.gz",
+      "modality": "LGE",
+      "source": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterC/Case3012/Case3012_LGE.nii.gz",
+      "source_exists": true,
+      "status": "EXISTS",
+      "target": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterC/Case3012/Case3012_LGE.nii.gz"
+    },
+    {
+      "case_id": "Case3012",
+      "dest": "/users/a/e/aereinh/CARE/results/20260725_care_m0_mosaic_fold0_fair_repro/mosaic_runtime/fold0_val/MyoPS_val/AnonymousCenter/Case3012/Case3012_C0.nii.gz",
+      "link": "/users/a/e/aereinh/CARE/results/20260725_care_m0_mosaic_fold0_fair_repro/mosaic_runtime/fold0_val/MyoPS_val/AnonymousCenter/Case3012/Case3012_C0.nii.gz",
+      "modality": "C0",
+      "source": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterC/Case3012/Case3012_C0.nii.gz",
+      "source_exists": true,
+      "status": "EXISTS",
+      "target": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterC/Case3012/Case3012_C0.nii.gz"
+    },
+    {
+      "case_id": "Case3012",
+      "dest": "/users/a/e/aereinh/CARE/results/20260725_care_m0_mosaic_fold0_fair_repro/mosaic_runtime/fold0_val/MyoPS_val/AnonymousCenter/Case3012/Case3012_T2.nii.gz",
+      "link": "/users/a/e/aereinh/CARE/results/20260725_care_m0_mosaic_fold0_fair_repro/mosaic_runtime/fold0_val/MyoPS_val/AnonymousCenter/Case3012/Case3012_T2.nii.gz",
+      "modality": "T2",
+      "source": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterC/Case3012/Case3012_T2.nii.gz",
+      "source_exists": true,
+      "status": "EXISTS",
+      "target": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterC/Case3012/Case3012_T2.nii.gz"
+    },
+    {
+      "case_id": "Case3023",
+      "dest": "/users/a/e/aereinh/CARE/results/20260725_care_m0_mosaic_fold0_fair_repro/mosaic_runtime/fold0_val/MyoPS_val/AnonymousCenter/Case3023/Case3023_LGE.nii.gz",
+      "link": "/users/a/e/aereinh/CARE/results/20260725_care_m0_mosaic_fold0_fair_repro/mosaic_runtime/fold0_val/MyoPS_val/AnonymousCenter/Case3023/Case3023_LGE.nii.gz",
+      "modality": "LGE",
+      "source": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterC/Case3023/Case3023_LGE.nii.gz",
+      "source_exists": true,
+      "status": "EXISTS",
+      "target": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterC/Case3023/Case3023_LGE.nii.gz"
+    },
+    {
+      "case_id": "Case3023",
+      "dest": "/users/a/e/aereinh/CARE/results/20260725_care_m0_mosaic_fold0_fair_repro/mosaic_runtime/fold0_val/MyoPS_val/AnonymousCenter/Case3023/Case3023_C0.nii.gz",
+      "link": "/users/a/e/aereinh/CARE/results/20260725_care_m0_mosaic_fold0_fair_repro/mosaic_runtime/fold0_val/MyoPS_val/AnonymousCenter/Case3023/Case3023_C0.nii.gz",
+      "modality": "C0",
+      "source": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterC/Case3023/Case3023_C0.nii.gz",
+      "source_exists": true,
+      "status": "EXISTS",
+      "target": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterC/Case3023/Case3023_C0.nii.gz"
+    },
+    {
+      "case_id": "Case3023",
+      "dest": "/users/a/e/aereinh/CARE/results/20260725_care_m0_mosaic_fold0_fair_repro/mosaic_runtime/fold0_val/MyoPS_val/AnonymousCenter/Case3023/Case3023_T2.nii.gz",
+      "link": "/users/a/e/aereinh/CARE/results/20260725_care_m0_mosaic_fold0_fair_repro/mosaic_runtime/fold0_val/MyoPS_val/AnonymousCenter/Case3023/Case3023_T2.nii.gz",
+      "modality": "T2",
+      "source": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterC/Case3023/Case3023_T2.nii.gz",
+      "source_exists": true,
+      "status": "EXISTS",
+      "target": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterC/Case3023/Case3023_T2.nii.gz"
+    },
+    {
+      "case_id": "Case3026",
+      "dest": "/users/a/e/aereinh/CARE/results/20260725_care_m0_mosaic_fold0_fair_repro/mosaic_runtime/fold0_val/MyoPS_val/AnonymousCenter/Case3026/Case3026_LGE.nii.gz",
+      "link": "/users/a/e/aereinh/CARE/results/20260725_care_m0_mosaic_fold0_fair_repro/mosaic_runtime/fold0_val/MyoPS_val/AnonymousCenter/Case3026/Case3026_LGE.nii.gz",
+      "modality": "LGE",
+      "source": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterC/Case3026/Case3026_LGE.nii.gz",
+      "source_exists": true,
+      "status": "EXISTS",
+      "target": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterC/Case3026/Case3026_LGE.nii.gz"
+    },
+    {
+      "case_id": "Case3026",
+      "dest": "/users/a/e/aereinh/CARE/results/20260725_care_m0_mosaic_fold0_fair_repro/mosaic_runtime/fold0_val/MyoPS_val/AnonymousCenter/Case3026/Case3026_C0.nii.gz",
+      "link": "/users/a/e/aereinh/CARE/results/20260725_care_m0_mosaic_fold0_fair_repro/mosaic_runtime/fold0_val/MyoPS_val/AnonymousCenter/Case3026/Case3026_C0.nii.gz",
+      "modality": "C0",
+      "source": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterC/Case3026/Case3026_C0.nii.gz",
+      "source_exists": true,
+      "status": "EXISTS",
+      "target": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterC/Case3026/Case3026_C0.nii.gz"
+    },
+    {
+      "case_id": "Case3026",
+      "dest": "/users/a/e/aereinh/CARE/results/20260725_care_m0_mosaic_fold0_fair_repro/mosaic_runtime/fold0_val/MyoPS_val/AnonymousCenter/Case3026/Case3026_T2.nii.gz",
+      "link": "/users/a/e/aereinh/CARE/results/20260725_care_m0_mosaic_fold0_fair_repro/mosaic_runtime/fold0_val/MyoPS_val/AnonymousCenter/Case3026/Case3026_T2.nii.gz",
+      "modality": "T2",
+      "source": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterC/Case3026/Case3026_T2.nii.gz",
+      "source_exists": true,
+      "status": "EXISTS",
+      "target": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterC/Case3026/Case3026_T2.nii.gz"
+    },
+    {
+      "case_id": "Case3034",
+      "dest": "/users/a/e/aereinh/CARE/results/20260725_care_m0_mosaic_fold0_fair_repro/mosaic_runtime/fold0_val/MyoPS_val/AnonymousCenter/Case3034/Case3034_LGE.nii.gz",
+      "link": "/users/a/e/aereinh/CARE/results/20260725_care_m0_mosaic_fold0_fair_repro/mosaic_runtime/fold0_val/MyoPS_val/AnonymousCenter/Case3034/Case3034_LGE.nii.gz",
+      "modality": "LGE",
+      "source": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterC/Case3034/Case3034_LGE.nii.gz",
+      "source_exists": true,
+      "status": "EXISTS",
+      "target": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterC/Case3034/Case3034_LGE.nii.gz"
+    },
+    {
+      "case_id": "Case3034",
+      "dest": "/users/a/e/aereinh/CARE/results/20260725_care_m0_mosaic_fold0_fair_repro/mosaic_runtime/fold0_val/MyoPS_val/AnonymousCenter/Case3034/Case3034_C0.nii.gz",
+      "link": "/users/a/e/aereinh/CARE/results/20260725_care_m0_mosaic_fold0_fair_repro/mosaic_runtime/fold0_val/MyoPS_val/AnonymousCenter/Case3034/Case3034_C0.nii.gz",
+      "modality": "C0",
+      "source": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterC/Case3034/Case3034_C0.nii.gz",
+      "source_exists": true,
+      "status": "EXISTS",
+      "target": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterC/Case3034/Case3034_C0.nii.gz"
+    },
+    {
+      "case_id": "Case3034",
+      "dest": "/users/a/e/aereinh/CARE/results/20260725_care_m0_mosaic_fold0_fair_repro/mosaic_runtime/fold0_val/MyoPS_val/AnonymousCenter/Case3034/Case3034_T2.nii.gz",
+      "link": "/users/a/e/aereinh/CARE/results/20260725_care_m0_mosaic_fold0_fair_repro/mosaic_runtime/fold0_val/MyoPS_val/AnonymousCenter/Case3034/Case3034_T2.nii.gz",
+      "modality": "T2",
+      "source": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterC/Case3034/Case3034_T2.nii.gz",
+      "source_exists": true,
+      "status": "EXISTS",
+      "target": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterC/Case3034/Case3034_T2.nii.gz"
+    },
+    {
+      "case_id": "Case3038",
+      "dest": "/users/a/e/aereinh/CARE/results/20260725_care_m0_mosaic_fold0_fair_repro/mosaic_runtime/fold0_val/MyoPS_val/AnonymousCenter/Case3038/Case3038_LGE.nii.gz",
+      "link": "/users/a/e/aereinh/CARE/results/20260725_care_m0_mosaic_fold0_fair_repro/mosaic_runtime/fold0_val/MyoPS_val/AnonymousCenter/Case3038/Case3038_LGE.nii.gz",
+      "modality": "LGE",
+      "source": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterC/Case3038/Case3038_LGE.nii.gz",
+      "source_exists": true,
+      "status": "EXISTS",
+      "target": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterC/Case3038/Case3038_LGE.nii.gz"
+    },
+    {
+      "case_id": "Case3038",
+      "dest": "/users/a/e/aereinh/CARE/results/20260725_care_m0_mosaic_fold0_fair_repro/mosaic_runtime/fold0_val/MyoPS_val/AnonymousCenter/Case3038/Case3038_C0.nii.gz",
+      "link": "/users/a/e/aereinh/CARE/results/20260725_care_m0_mosaic_fold0_fair_repro/mosaic_runtime/fold0_val/MyoPS_val/AnonymousCenter/Case3038/Case3038_C0.nii.gz",
+      "modality": "C0",
+      "source": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterC/Case3038/Case3038_C0.nii.gz",
+      "source_exists": true,
+      "status": "EXISTS",
+      "target": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterC/Case3038/Case3038_C0.nii.gz"
+    },
+    {
+      "case_id": "Case3038",
+      "dest": "/users/a/e/aereinh/CARE/results/20260725_care_m0_mosaic_fold0_fair_repro/mosaic_runtime/fold0_val/MyoPS_val/AnonymousCenter/Case3038/Case3038_T2.nii.gz",
+      "link": "/users/a/e/aereinh/CARE/results/20260725_care_m0_mosaic_fold0_fair_repro/mosaic_runtime/fold0_val/MyoPS_val/AnonymousCenter/Case3038/Case3038_T2.nii.gz",
+      "modality": "T2",
+      "source": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterC/Case3038/Case3038_T2.nii.gz",
+      "source_exists": true,
+      "status": "EXISTS",
+      "target": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterC/Case3038/Case3038_T2.nii.gz"
+    },
+    {
+      "case_id": "Case3040",
+      "dest": "/users/a/e/aereinh/CARE/results/20260725_care_m0_mosaic_fold0_fair_repro/mosaic_runtime/fold0_val/MyoPS_val/AnonymousCenter/Case3040/Case3040_LGE.nii.gz",
+      "link": "/users/a/e/aereinh/CARE/results/20260725_care_m0_mosaic_fold0_fair_repro/mosaic_runtime/fold0_val/MyoPS_val/AnonymousCenter/Case3040/Case3040_LGE.nii.gz",
+      "modality": "LGE",
+      "source": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterC/Case3040/Case3040_LGE.nii.gz",
+      "source_exists": true,
+      "status": "EXISTS",
+      "target": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterC/Case3040/Case3040_LGE.nii.gz"
+    },
+    {
+      "case_id": "Case3040",
+      "dest": "/users/a/e/aereinh/CARE/results/20260725_care_m0_mosaic_fold0_fair_repro/mosaic_runtime/fold0_val/MyoPS_val/AnonymousCenter/Case3040/Case3040_C0.nii.gz",
+      "link": "/users/a/e/aereinh/CARE/results/20260725_care_m0_mosaic_fold0_fair_repro/mosaic_runtime/fold0_val/MyoPS_val/AnonymousCenter/Case3040/Case3040_C0.nii.gz",
+      "modality": "C0",
+      "source": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterC/Case3040/Case3040_C0.nii.gz",
+      "source_exists": true,
+      "status": "EXISTS",
+      "target": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterC/Case3040/Case3040_C0.nii.gz"
+    },
+    {
+      "case_id": "Case3040",
+      "dest": "/users/a/e/aereinh/CARE/results/20260725_care_m0_mosaic_fold0_fair_repro/mosaic_runtime/fold0_val/MyoPS_val/AnonymousCenter/Case3040/Case3040_T2.nii.gz",
+      "link": "/users/a/e/aereinh/CARE/results/20260725_care_m0_mosaic_fold0_fair_repro/mosaic_runtime/fold0_val/MyoPS_val/AnonymousCenter/Case3040/Case3040_T2.nii.gz",
+      "modality": "T2",
+      "source": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterC/Case3040/Case3040_T2.nii.gz",
+      "source_exists": true,
+      "status": "EXISTS",
+      "target": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterC/Case3040/Case3040_T2.nii.gz"
+    },
+    {
+      "case_id": "Case3044",
+      "dest": "/users/a/e/aereinh/CARE/results/20260725_care_m0_mosaic_fold0_fair_repro/mosaic_runtime/fold0_val/MyoPS_val/AnonymousCenter/Case3044/Case3044_LGE.nii.gz",
+      "link": "/users/a/e/aereinh/CARE/results/20260725_care_m0_mosaic_fold0_fair_repro/mosaic_runtime/fold0_val/MyoPS_val/AnonymousCenter/Case3044/Case3044_LGE.nii.gz",
+      "modality": "LGE",
+      "source": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterC/Case3044/Case3044_LGE.nii.gz",
+      "source_exists": true,
+      "status": "EXISTS",
+      "target": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterC/Case3044/Case3044_LGE.nii.gz"
+    },
+    {
+      "case_id": "Case3044",
+      "dest": "/users/a/e/aereinh/CARE/results/20260725_care_m0_mosaic_fold0_fair_repro/mosaic_runtime/fold0_val/MyoPS_val/AnonymousCenter/Case3044/Case3044_C0.nii.gz",
+      "link": "/users/a/e/aereinh/CARE/results/20260725_care_m0_mosaic_fold0_fair_repro/mosaic_runtime/fold0_val/MyoPS_val/AnonymousCenter/Case3044/Case3044_C0.nii.gz",
+      "modality": "C0",
+      "source": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterC/Case3044/Case3044_C0.nii.gz",
+      "source_exists": true,
+      "status": "EXISTS",
+      "target": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterC/Case3044/Case3044_C0.nii.gz"
+    },
+    {
+      "case_id": "Case3044",
+      "dest": "/users/a/e/aereinh/CARE/results/20260725_care_m0_mosaic_fold0_fair_repro/mosaic_runtime/fold0_val/MyoPS_val/AnonymousCenter/Case3044/Case3044_T2.nii.gz",
+      "link": "/users/a/e/aereinh/CARE/results/20260725_care_m0_mosaic_fold0_fair_repro/mosaic_runtime/fold0_val/MyoPS_val/AnonymousCenter/Case3044/Case3044_T2.nii.gz",
+      "modality": "T2",
+      "source": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterC/Case3044/Case3044_T2.nii.gz",
+      "source_exists": true,
+      "status": "EXISTS",
+      "target": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterC/Case3044/Case3044_T2.nii.gz"
+    },
+    {
+      "case_id": "Case5005",
+      "dest": "/users/a/e/aereinh/CARE/results/20260725_care_m0_mosaic_fold0_fair_repro/mosaic_runtime/fold0_val/MyoPS_val/AnonymousCenter/Case5005/Case5005_LGE.nii.gz",
+      "link": "/users/a/e/aereinh/CARE/results/20260725_care_m0_mosaic_fold0_fair_repro/mosaic_runtime/fold0_val/MyoPS_val/AnonymousCenter/Case5005/Case5005_LGE.nii.gz",
+      "modality": "LGE",
+      "source": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterE/Case5005/Case5005_LGE.nii.gz",
+      "source_exists": true,
+      "status": "EXISTS",
+      "target": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterE/Case5005/Case5005_LGE.nii.gz"
+    },
+    {
+      "case_id": "Case5005",
+      "dest": "/users/a/e/aereinh/CARE/results/20260725_care_m0_mosaic_fold0_fair_repro/mosaic_runtime/fold0_val/MyoPS_val/AnonymousCenter/Case5005/Case5005_C0.nii.gz",
+      "link": "/users/a/e/aereinh/CARE/results/20260725_care_m0_mosaic_fold0_fair_repro/mosaic_runtime/fold0_val/MyoPS_val/AnonymousCenter/Case5005/Case5005_C0.nii.gz",
+      "modality": "C0",
+      "source": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterE/Case5005/Case5005_C0.nii.gz",
+      "source_exists": true,
+      "status": "EXISTS",
+      "target": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterE/Case5005/Case5005_C0.nii.gz"
+    },
+    {
+      "case_id": "Case5005",
+      "dest": "/users/a/e/aereinh/CARE/results/20260725_care_m0_mosaic_fold0_fair_repro/mosaic_runtime/fold0_val/MyoPS_val/AnonymousCenter/Case5005/Case5005_T2.nii.gz",
+      "modality": "T2",
+      "source": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterE/Case5005/Case5005_T2.nii.gz",
+      "source_exists": false,
+      "status": "MISSING_MODALITY"
+    },
+    {
+      "case_id": "Case6001",
+      "dest": "/users/a/e/aereinh/CARE/results/20260725_care_m0_mosaic_fold0_fair_repro/mosaic_runtime/fold0_val/MyoPS_val/AnonymousCenter/Case6001/Case6001_LGE.nii.gz",
+      "link": "/users/a/e/aereinh/CARE/results/20260725_care_m0_mosaic_fold0_fair_repro/mosaic_runtime/fold0_val/MyoPS_val/AnonymousCenter/Case6001/Case6001_LGE.nii.gz",
+      "modality": "LGE",
+      "source": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterF/Case6001/Case6001_LGE.nii.gz",
+      "source_exists": true,
+      "status": "EXISTS",
+      "target": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterF/Case6001/Case6001_LGE.nii.gz"
+    },
+    {
+      "case_id": "Case6001",
+      "dest": "/users/a/e/aereinh/CARE/results/20260725_care_m0_mosaic_fold0_fair_repro/mosaic_runtime/fold0_val/MyoPS_val/AnonymousCenter/Case6001/Case6001_C0.nii.gz",
+      "link": "/users/a/e/aereinh/CARE/results/20260725_care_m0_mosaic_fold0_fair_repro/mosaic_runtime/fold0_val/MyoPS_val/AnonymousCenter/Case6001/Case6001_C0.nii.gz",
+      "modality": "C0",
+      "source": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterF/Case6001/Case6001_C0.nii.gz",
+      "source_exists": true,
+      "status": "EXISTS",
+      "target": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterF/Case6001/Case6001_C0.nii.gz"
+    },
+    {
+      "case_id": "Case6001",
+      "dest": "/users/a/e/aereinh/CARE/results/20260725_care_m0_mosaic_fold0_fair_repro/mosaic_runtime/fold0_val/MyoPS_val/AnonymousCenter/Case6001/Case6001_T2.nii.gz",
+      "modality": "T2",
+      "source": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterF/Case6001/Case6001_T2.nii.gz",
+      "source_exists": false,
+      "status": "MISSING_MODALITY"
+    },
+    {
+      "case_id": "Case6010",
+      "dest": "/users/a/e/aereinh/CARE/results/20260725_care_m0_mosaic_fold0_fair_repro/mosaic_runtime/fold0_val/MyoPS_val/AnonymousCenter/Case6010/Case6010_LGE.nii.gz",
+      "link": "/users/a/e/aereinh/CARE/results/20260725_care_m0_mosaic_fold0_fair_repro/mosaic_runtime/fold0_val/MyoPS_val/AnonymousCenter/Case6010/Case6010_LGE.nii.gz",
+      "modality": "LGE",
+      "source": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterF/Case6010/Case6010_LGE.nii.gz",
+      "source_exists": true,
+      "status": "EXISTS",
+      "target": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterF/Case6010/Case6010_LGE.nii.gz"
+    },
+    {
+      "case_id": "Case6010",
+      "dest": "/users/a/e/aereinh/CARE/results/20260725_care_m0_mosaic_fold0_fair_repro/mosaic_runtime/fold0_val/MyoPS_val/AnonymousCenter/Case6010/Case6010_C0.nii.gz",
+      "link": "/users/a/e/aereinh/CARE/results/20260725_care_m0_mosaic_fold0_fair_repro/mosaic_runtime/fold0_val/MyoPS_val/AnonymousCenter/Case6010/Case6010_C0.nii.gz",
+      "modality": "C0",
+      "source": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterF/Case6010/Case6010_C0.nii.gz",
+      "source_exists": true,
+      "status": "EXISTS",
+      "target": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterF/Case6010/Case6010_C0.nii.gz"
+    },
+    {
+      "case_id": "Case6010",
+      "dest": "/users/a/e/aereinh/CARE/results/20260725_care_m0_mosaic_fold0_fair_repro/mosaic_runtime/fold0_val/MyoPS_val/AnonymousCenter/Case6010/Case6010_T2.nii.gz",
+      "modality": "T2",
+      "source": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterF/Case6010/Case6010_T2.nii.gz",
+      "source_exists": false,
+      "status": "MISSING_MODALITY"
+    },
+    {
+      "case_id": "Case7005",
+      "dest": "/users/a/e/aereinh/CARE/results/20260725_care_m0_mosaic_fold0_fair_repro/mosaic_runtime/fold0_val/MyoPS_val/AnonymousCenter/Case7005/Case7005_LGE.nii.gz",
+      "link": "/users/a/e/aereinh/CARE/results/20260725_care_m0_mosaic_fold0_fair_repro/mosaic_runtime/fold0_val/MyoPS_val/AnonymousCenter/Case7005/Case7005_LGE.nii.gz",
+      "modality": "LGE",
+      "source": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterG/Case7005/Case7005_LGE.nii.gz",
+      "source_exists": true,
+      "status": "EXISTS",
+      "target": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterG/Case7005/Case7005_LGE.nii.gz"
+    },
+    {
+      "case_id": "Case7005",
+      "dest": "/users/a/e/aereinh/CARE/results/20260725_care_m0_mosaic_fold0_fair_repro/mosaic_runtime/fold0_val/MyoPS_val/AnonymousCenter/Case7005/Case7005_C0.nii.gz",
+      "link": "/users/a/e/aereinh/CARE/results/20260725_care_m0_mosaic_fold0_fair_repro/mosaic_runtime/fold0_val/MyoPS_val/AnonymousCenter/Case7005/Case7005_C0.nii.gz",
+      "modality": "C0",
+      "source": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterG/Case7005/Case7005_C0.nii.gz",
+      "source_exists": true,
+      "status": "EXISTS",
+      "target": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterG/Case7005/Case7005_C0.nii.gz"
+    },
+    {
+      "case_id": "Case7005",
+      "dest": "/users/a/e/aereinh/CARE/results/20260725_care_m0_mosaic_fold0_fair_repro/mosaic_runtime/fold0_val/MyoPS_val/AnonymousCenter/Case7005/Case7005_T2.nii.gz",
+      "modality": "T2",
+      "source": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterG/Case7005/Case7005_T2.nii.gz",
+      "source_exists": false,
+      "status": "MISSING_MODALITY"
+    },
+    {
+      "case_id": "Case8003",
+      "dest": "/users/a/e/aereinh/CARE/results/20260725_care_m0_mosaic_fold0_fair_repro/mosaic_runtime/fold0_val/MyoPS_val/AnonymousCenter/Case8003/Case8003_LGE.nii.gz",
+      "link": "/users/a/e/aereinh/CARE/results/20260725_care_m0_mosaic_fold0_fair_repro/mosaic_runtime/fold0_val/MyoPS_val/AnonymousCenter/Case8003/Case8003_LGE.nii.gz",
+      "modality": "LGE",
+      "source": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterH/Case8003/Case8003_LGE.nii.gz",
+      "source_exists": true,
+      "status": "EXISTS",
+      "target": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterH/Case8003/Case8003_LGE.nii.gz"
+    },
+    {
+      "case_id": "Case8003",
+      "dest": "/users/a/e/aereinh/CARE/results/20260725_care_m0_mosaic_fold0_fair_repro/mosaic_runtime/fold0_val/MyoPS_val/AnonymousCenter/Case8003/Case8003_C0.nii.gz",
+      "modality": "C0",
+      "source": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterH/Case8003/Case8003_C0.nii.gz",
+      "source_exists": false,
+      "status": "MISSING_MODALITY"
+    },
+    {
+      "case_id": "Case8003",
+      "dest": "/users/a/e/aereinh/CARE/results/20260725_care_m0_mosaic_fold0_fair_repro/mosaic_runtime/fold0_val/MyoPS_val/AnonymousCenter/Case8003/Case8003_T2.nii.gz",
+      "modality": "T2",
+      "source": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterH/Case8003/Case8003_T2.nii.gz",
+      "source_exists": false,
+      "status": "MISSING_MODALITY"
+    },
+    {
+      "case_id": "Case8011",
+      "dest": "/users/a/e/aereinh/CARE/results/20260725_care_m0_mosaic_fold0_fair_repro/mosaic_runtime/fold0_val/MyoPS_val/AnonymousCenter/Case8011/Case8011_LGE.nii.gz",
+      "link": "/users/a/e/aereinh/CARE/results/20260725_care_m0_mosaic_fold0_fair_repro/mosaic_runtime/fold0_val/MyoPS_val/AnonymousCenter/Case8011/Case8011_LGE.nii.gz",
+      "modality": "LGE",
+      "source": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterH/Case8011/Case8011_LGE.nii.gz",
+      "source_exists": true,
+      "status": "EXISTS",
+      "target": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterH/Case8011/Case8011_LGE.nii.gz"
+    },
+    {
+      "case_id": "Case8011",
+      "dest": "/users/a/e/aereinh/CARE/results/20260725_care_m0_mosaic_fold0_fair_repro/mosaic_runtime/fold0_val/MyoPS_val/AnonymousCenter/Case8011/Case8011_C0.nii.gz",
+      "modality": "C0",
+      "source": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterH/Case8011/Case8011_C0.nii.gz",
+      "source_exists": false,
+      "status": "MISSING_MODALITY"
+    },
+    {
+      "case_id": "Case8011",
+      "dest": "/users/a/e/aereinh/CARE/results/20260725_care_m0_mosaic_fold0_fair_repro/mosaic_runtime/fold0_val/MyoPS_val/AnonymousCenter/Case8011/Case8011_T2.nii.gz",
+      "modality": "T2",
+      "source": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterH/Case8011/Case8011_T2.nii.gz",
+      "source_exists": false,
+      "status": "MISSING_MODALITY"
+    },
+    {
+      "case_id": "Case8015",
+      "dest": "/users/a/e/aereinh/CARE/results/20260725_care_m0_mosaic_fold0_fair_repro/mosaic_runtime/fold0_val/MyoPS_val/AnonymousCenter/Case8015/Case8015_LGE.nii.gz",
+      "link": "/users/a/e/aereinh/CARE/results/20260725_care_m0_mosaic_fold0_fair_repro/mosaic_runtime/fold0_val/MyoPS_val/AnonymousCenter/Case8015/Case8015_LGE.nii.gz",
+      "modality": "LGE",
+      "source": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterH/Case8015/Case8015_LGE.nii.gz",
+      "source_exists": true,
+      "status": "EXISTS",
+      "target": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterH/Case8015/Case8015_LGE.nii.gz"
+    },
+    {
+      "case_id": "Case8015",
+      "dest": "/users/a/e/aereinh/CARE/results/20260725_care_m0_mosaic_fold0_fair_repro/mosaic_runtime/fold0_val/MyoPS_val/AnonymousCenter/Case8015/Case8015_C0.nii.gz",
+      "modality": "C0",
+      "source": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterH/Case8015/Case8015_C0.nii.gz",
+      "source_exists": false,
+      "status": "MISSING_MODALITY"
+    },
+    {
+      "case_id": "Case8015",
+      "dest": "/users/a/e/aereinh/CARE/results/20260725_care_m0_mosaic_fold0_fair_repro/mosaic_runtime/fold0_val/MyoPS_val/AnonymousCenter/Case8015/Case8015_T2.nii.gz",
+      "modality": "T2",
+      "source": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterH/Case8015/Case8015_T2.nii.gz",
+      "source_exists": false,
+      "status": "MISSING_MODALITY"
+    },
+    {
+      "case_id": "Case8019",
+      "dest": "/users/a/e/aereinh/CARE/results/20260725_care_m0_mosaic_fold0_fair_repro/mosaic_runtime/fold0_val/MyoPS_val/AnonymousCenter/Case8019/Case8019_LGE.nii.gz",
+      "link": "/users/a/e/aereinh/CARE/results/20260725_care_m0_mosaic_fold0_fair_repro/mosaic_runtime/fold0_val/MyoPS_val/AnonymousCenter/Case8019/Case8019_LGE.nii.gz",
+      "modality": "LGE",
+      "source": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterH/Case8019/Case8019_LGE.nii.gz",
+      "source_exists": true,
+      "status": "EXISTS",
+      "target": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterH/Case8019/Case8019_LGE.nii.gz"
+    },
+    {
+      "case_id": "Case8019",
+      "dest": "/users/a/e/aereinh/CARE/results/20260725_care_m0_mosaic_fold0_fair_repro/mosaic_runtime/fold0_val/MyoPS_val/AnonymousCenter/Case8019/Case8019_C0.nii.gz",
+      "modality": "C0",
+      "source": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterH/Case8019/Case8019_C0.nii.gz",
+      "source_exists": false,
+      "status": "MISSING_MODALITY"
+    },
+    {
+      "case_id": "Case8019",
+      "dest": "/users/a/e/aereinh/CARE/results/20260725_care_m0_mosaic_fold0_fair_repro/mosaic_runtime/fold0_val/MyoPS_val/AnonymousCenter/Case8019/Case8019_T2.nii.gz",
+      "modality": "T2",
+      "source": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterH/Case8019/Case8019_T2.nii.gz",
+      "source_exists": false,
+      "status": "MISSING_MODALITY"
+    },
+    {
+      "case_id": "Case8021",
+      "dest": "/users/a/e/aereinh/CARE/results/20260725_care_m0_mosaic_fold0_fair_repro/mosaic_runtime/fold0_val/MyoPS_val/AnonymousCenter/Case8021/Case8021_LGE.nii.gz",
+      "link": "/users/a/e/aereinh/CARE/results/20260725_care_m0_mosaic_fold0_fair_repro/mosaic_runtime/fold0_val/MyoPS_val/AnonymousCenter/Case8021/Case8021_LGE.nii.gz",
+      "modality": "LGE",
+      "source": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterH/Case8021/Case8021_LGE.nii.gz",
+      "source_exists": true,
+      "status": "EXISTS",
+      "target": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterH/Case8021/Case8021_LGE.nii.gz"
+    },
+    {
+      "case_id": "Case8021",
+      "dest": "/users/a/e/aereinh/CARE/results/20260725_care_m0_mosaic_fold0_fair_repro/mosaic_runtime/fold0_val/MyoPS_val/AnonymousCenter/Case8021/Case8021_C0.nii.gz",
+      "modality": "C0",
+      "source": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterH/Case8021/Case8021_C0.nii.gz",
+      "source_exists": false,
+      "status": "MISSING_MODALITY"
+    },
+    {
+      "case_id": "Case8021",
+      "dest": "/users/a/e/aereinh/CARE/results/20260725_care_m0_mosaic_fold0_fair_repro/mosaic_runtime/fold0_val/MyoPS_val/AnonymousCenter/Case8021/Case8021_T2.nii.gz",
+      "modality": "T2",
+      "source": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterH/Case8021/Case8021_T2.nii.gz",
+      "source_exists": false,
+      "status": "MISSING_MODALITY"
+    },
+    {
+      "case_id": "Case8022",
+      "dest": "/users/a/e/aereinh/CARE/results/20260725_care_m0_mosaic_fold0_fair_repro/mosaic_runtime/fold0_val/MyoPS_val/AnonymousCenter/Case8022/Case8022_LGE.nii.gz",
+      "link": "/users/a/e/aereinh/CARE/results/20260725_care_m0_mosaic_fold0_fair_repro/mosaic_runtime/fold0_val/MyoPS_val/AnonymousCenter/Case8022/Case8022_LGE.nii.gz",
+      "modality": "LGE",
+      "source": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterH/Case8022/Case8022_LGE.nii.gz",
+      "source_exists": true,
+      "status": "EXISTS",
+      "target": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterH/Case8022/Case8022_LGE.nii.gz"
+    },
+    {
+      "case_id": "Case8022",
+      "dest": "/users/a/e/aereinh/CARE/results/20260725_care_m0_mosaic_fold0_fair_repro/mosaic_runtime/fold0_val/MyoPS_val/AnonymousCenter/Case8022/Case8022_C0.nii.gz",
+      "modality": "C0",
+      "source": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterH/Case8022/Case8022_C0.nii.gz",
+      "source_exists": false,
+      "status": "MISSING_MODALITY"
+    },
+    {
+      "case_id": "Case8022",
+      "dest": "/users/a/e/aereinh/CARE/results/20260725_care_m0_mosaic_fold0_fair_repro/mosaic_runtime/fold0_val/MyoPS_val/AnonymousCenter/Case8022/Case8022_T2.nii.gz",
+      "modality": "T2",
+      "source": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterH/Case8022/Case8022_T2.nii.gz",
+      "source_exists": false,
+      "status": "MISSING_MODALITY"
+    },
+    {
+      "case_id": "Case8023",
+      "dest": "/users/a/e/aereinh/CARE/results/20260725_care_m0_mosaic_fold0_fair_repro/mosaic_runtime/fold0_val/MyoPS_val/AnonymousCenter/Case8023/Case8023_LGE.nii.gz",
+      "link": "/users/a/e/aereinh/CARE/results/20260725_care_m0_mosaic_fold0_fair_repro/mosaic_runtime/fold0_val/MyoPS_val/AnonymousCenter/Case8023/Case8023_LGE.nii.gz",
+      "modality": "LGE",
+      "source": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterH/Case8023/Case8023_LGE.nii.gz",
+      "source_exists": true,
+      "status": "EXISTS",
+      "target": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterH/Case8023/Case8023_LGE.nii.gz"
+    },
+    {
+      "case_id": "Case8023",
+      "dest": "/users/a/e/aereinh/CARE/results/20260725_care_m0_mosaic_fold0_fair_repro/mosaic_runtime/fold0_val/MyoPS_val/AnonymousCenter/Case8023/Case8023_C0.nii.gz",
+      "modality": "C0",
+      "source": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterH/Case8023/Case8023_C0.nii.gz",
+      "source_exists": false,
+      "status": "MISSING_MODALITY"
+    },
+    {
+      "case_id": "Case8023",
+      "dest": "/users/a/e/aereinh/CARE/results/20260725_care_m0_mosaic_fold0_fair_repro/mosaic_runtime/fold0_val/MyoPS_val/AnonymousCenter/Case8023/Case8023_T2.nii.gz",
+      "modality": "T2",
+      "source": "/users/a/e/aereinh/CARE/data/CARE_Challenge/MyoPS_train/CenterH/Case8023/Case8023_T2.nii.gz",
+      "source_exists": false,
+      "status": "MISSING_MODALITY"
+    }
+  ],
+  "staged_val_dir": "/users/a/e/aereinh/CARE/results/20260725_care_m0_mosaic_fold0_fair_repro/mosaic_runtime",
+  "status": "READY_TO_START_INFERENCE",
+  "training_authorized": false,
+  "validation_upload_authorized": false,
+  "weight_links": [
+    {
+      "expected_path": "checkpoints/myopsf/cine_coarse_full_v2/best.pt",
+      "link": "/users/a/e/aereinh/CARE/third_party/MoSAIC/source/checkpoints/myopsf/cine_coarse_full_v2/best.pt",
+      "source_weight": "cinemyops/coarse.pt",
+      "status": "EXISTS",
+      "target": "/users/a/e/aereinh/MoSAIC/cinemyops/coarse.pt",
+      "target_exists": true
+    },
+    {
+      "expected_path": "checkpoints/myopsf/cine_scar_full/best_pathology.pt",
+      "link": "/users/a/e/aereinh/CARE/third_party/MoSAIC/source/checkpoints/myopsf/cine_scar_full/best_pathology.pt",
+      "source_weight": "cinemyops/fine_v1.pt",
+      "status": "EXISTS",
+      "target": "/users/a/e/aereinh/MoSAIC/cinemyops/fine_v1.pt",
+      "target_exists": true
+    },
+    {
+      "expected_path": "checkpoints/myopsf/cine_scar_full_v2/best_pathology.pt",
+      "link": "/users/a/e/aereinh/CARE/third_party/MoSAIC/source/checkpoints/myopsf/cine_scar_full_v2/best_pathology.pt",
+      "source_weight": "cinemyops/fine_v2.pt",
+      "status": "EXISTS",
+      "target": "/users/a/e/aereinh/MoSAIC/cinemyops/fine_v2.pt",
+      "target_exists": true
+    },
+    {
+      "expected_path": "full_train/myops/fold-1/coarse/best.pt",
+      "link": "/users/a/e/aereinh/CARE/third_party/MoSAIC/source/full_train/myops/fold-1/coarse/best.pt",
+      "source_weight": "myops/coarse.pt",
+      "status": "EXISTS",
+      "target": "/users/a/e/aereinh/MoSAIC/myops/coarse.pt",
+      "target_exists": true
+    },
+    {
+      "expected_path": "checkpoints/myopsf/myops_coarse_full/best.pt",
+      "link": "/users/a/e/aereinh/CARE/third_party/MoSAIC/source/checkpoints/myopsf/myops_coarse_full/best.pt",
+      "source_weight": "myops/coarse_edema.pt",
+      "status": "EXISTS",
+      "target": "/users/a/e/aereinh/MoSAIC/myops/coarse_edema.pt",
+      "target_exists": true
+    },
+    {
+      "expected_path": "checkpoints/myopsf/myops_edema_full/last.pt",
+      "link": "/users/a/e/aereinh/CARE/third_party/MoSAIC/source/checkpoints/myopsf/myops_edema_full/last.pt",
+      "source_weight": "myops/edema.pt",
+      "status": "EXISTS",
+      "target": "/users/a/e/aereinh/MoSAIC/myops/edema.pt",
+      "target_exists": true
+    },
+    {
+      "expected_path": "full_train/myops/fold-1/fine/best_scar.pt",
+      "link": "/users/a/e/aereinh/CARE/third_party/MoSAIC/source/full_train/myops/fold-1/fine/best_scar.pt",
+      "source_weight": "myops/fine_scar.pt",
+      "status": "EXISTS",
+      "target": "/users/a/e/aereinh/MoSAIC/myops/fine_scar.pt",
+      "target_exists": true
+    }
+  ]
+}

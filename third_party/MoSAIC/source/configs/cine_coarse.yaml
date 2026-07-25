@@ -1,0 +1,45 @@
+data:
+  cine_target_spacing: [1.25, 1.25, 8.0]
+  image_size: [192, 192]
+  crop_margin: [1, 16, 16]
+  cine_frame_fraction: 0.667
+  max_cine_frames: 20
+
+model:
+  arch: 2d_coarse
+  base_channels: 24
+  deep_supervision: true
+
+training:
+  batch_size: 8
+  learning_rate: 0.0003
+  weight_decay: 0.0001
+  max_epochs: 40
+  val_every: 5
+  num_workers: 0
+  use_amp: false
+  gradient_clip_norm: 0.0
+  tps_warmup_epochs: 0
+  scheduler:
+    type: none
+
+loss:
+  class_weights: [1.2, 1.0]
+  deep_supervision_weights: [0.3, 0.15]
+  pathology_tversky_weight: 0.0
+  pathology_focal_weight: 0.0
+  consistency_weight: 0.0
+  registration_weight: 0.0
+  class_specific_pathology: null
+
+postprocess:
+  min_component_sizes:
+    1: 8
+    2: 8
+
+selection:
+  metric: mean_dice
+  metrics_to_save:
+    - mean_dice
+    - ring_myo_dice
+    - lv_dice

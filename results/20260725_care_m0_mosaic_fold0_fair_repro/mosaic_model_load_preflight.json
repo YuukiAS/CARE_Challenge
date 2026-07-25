@@ -1,0 +1,19 @@
+{
+  "cine_models_loaded": 3,
+  "cuda_available_on_login_preflight": false,
+  "domain_evidence_stage": "PREFLIGHT_SMOKE_ONLY",
+  "mosaic_root": "/users/a/e/aereinh/MoSAIC",
+  "myops_models_loaded": 4,
+  "next_formal_inference": "sbatch jobs/evaluation/mosaic_fold0_fair.sh with MOSAIC_RUN_NATIVE=1, or run the upstream command on a GPU allocation",
+  "predictions_written": false,
+  "production_path_dependency_authorized": false,
+  "python": "/users/a/e/aereinh/CARE/envs/env_CARE/bin/python",
+  "schema_version": 1,
+  "source_commit": "d334bd1fb2a99dbbc230510590cd8e3ee08cc377",
+  "source_repository": "https://github.com/IndeedLiu/MoSAIC",
+  "source_root": "third_party/MoSAIC/source",
+  "status": "MODEL_LOAD_PREFLIGHT_OK",
+  "torch": "2.11.0+cu130",
+  "training_authorized": false,
+  "validation_upload_authorized": false
+}

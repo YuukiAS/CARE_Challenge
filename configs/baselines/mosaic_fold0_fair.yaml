@@ -13,6 +13,10 @@ external_assets:
   weights_manifest: third_party/MoSAIC/weights_manifest.json
   copy_weights_into_repo: false
   native_source_required_for_native_mosaic: true
+  native_source_path: third_party/MoSAIC/source
+  native_source_repository: https://github.com/IndeedLiu/MoSAIC
+  native_source_commit: d334bd1fb2a99dbbc230510590cd8e3ee08cc377
+  native_entrypoint: third_party/MoSAIC/source/scripts/infer_and_submit.py
 
 required_weights:
   - path: myops/coarse.pt
@@ -78,3 +82,4 @@ guardrails:
   production_path_dependency_authorized: false
   old_batch10_production_mosaic_block_preserved: true
   missing_native_source_status: NEEDS_MOSAIC_SOURCE
+  source_present_preflight_status: READY_TO_START_INFERENCE

@@ -1,0 +1,30 @@
+model:
+  arch: edema_net
+  base_channels: 64
+  use_c0: true
+  deep_supervision: true
+
+training:
+  batch_size: 8
+  learning_rate: 0.0001
+  weight_decay: 0.0005
+  max_epochs: 200
+  val_every: 5
+  num_workers: 0
+  scheduler:
+    type: cosine
+    T_max: 50
+    min_lr: 0.000001
+
+loss:
+  deep_supervision_weights: [0.3, 0.15]
+
+data:
+  image_size: [192, 192]
+  sampling:
+    edema_weight: 12.0
+    myo_weight: 2.0
+    background_weight: 1.0
+
+selection:
+  metric: edema_dice
