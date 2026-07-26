@@ -1,0 +1,21 @@
+{
+  "docker_authorized": false,
+  "expected_train_count": 176,
+  "expected_val_count": 44,
+  "fold": 0,
+  "full_data_weight_policy": "diagnostic_only_leakage_contaminated",
+  "new_slurm_jobs_authorized": false,
+  "primary_clean_comparison": [
+    "nnunet_fold0",
+    "clean_pathology_checkpoint",
+    "clean_pathology_scar_terminal_edema",
+    "clean_terminal_budget"
+  ],
+  "push_authorized": false,
+  "split_path": "data/benchmarks/protocol/splits_MyoPS.json",
+  "task": "mosaic_fold0_fairness_reaudit",
+  "train_count": 176,
+  "training_authorized": false,
+  "val_count": 44,
+  "validation_upload_authorized": false
+}

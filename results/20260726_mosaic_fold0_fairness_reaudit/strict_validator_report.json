@@ -1,0 +1,19 @@
+{
+  "banned_slurm_commands_detected": [],
+  "clean_variants_no_full_data_weights": true,
+  "corrected_clean_variants_complete": true,
+  "full_data_marked_contaminated": true,
+  "geometry_pass": true,
+  "missing_required_files": [],
+  "no_new_slurm_jobs": true,
+  "prediction_counts": {
+    "clean_current_bug": 44,
+    "clean_pathology_checkpoint": 44,
+    "clean_pathology_scar_terminal_edema": 44,
+    "clean_terminal_budget": 44,
+    "full_data_submission_recipe": 44
+  },
+  "predictions_complete": true,
+  "required_files_present": true,
+  "status": "PASS"
+}

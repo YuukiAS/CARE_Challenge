@@ -1,0 +1,21 @@
+{
+  "cuda_visible_devices": "0",
+  "expected_job_name": "CAREInteractive3d",
+  "gpu_query_exit_code": 0,
+  "gpu_query_stderr": "",
+  "gpu_query_stdout": "NVIDIA H100 NVL, 95830 MiB, 0 MiB\n",
+  "hostname": "g1807htzh01.ll.unc.edu",
+  "job_id": "60657290",
+  "new_slurm_jobs_submitted": false,
+  "node": "g1807htzh01",
+  "partition": "htzhulab",
+  "salloc_used": false,
+  "sbatch_used": false,
+  "slurm_job_id": "60657290",
+  "squeue_command": "squeue -j 60657290 -o %.18i %.12P %.32j %.8u %.2t %.10M %.10l %.4D %R",
+  "squeue_exit_code": 0,
+  "squeue_stderr": "",
+  "squeue_stdout": "             JOBID    PARTITION                             NAME     USER ST       TIME TIME_LIMIT NODE NODELIST(REASON)\n          60657290     htzhulab                CAREInteractive3d  aereinh  R    7:21:43 3-00:00:00    1 g1807htzh01\n",
+  "srun_reuse_command_required_from_controller_shell": false,
+  "time_utc": "2026-07-26T08:26:39.314072+00:00"
+}
