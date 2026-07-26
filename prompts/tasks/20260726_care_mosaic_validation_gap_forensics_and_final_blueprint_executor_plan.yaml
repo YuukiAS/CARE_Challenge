@@ -1,0 +1,254 @@
+schema_version: 1
+task_key: 20260726_care_mosaic_validation_gap_forensics_and_final_blueprint
+status: READY_FOR_CONTROLLER
+execution_mode: controller_supervised
+controller_is_coordinator: true
+executor_slots: 1
+executor_count: 1
+parallel_execution_allowed: false
+result_root: results/20260726_care_mosaic_validation_gap_forensics_and_final_blueprint
+planning_review_required: false
+review_required: false
+slurm_runtime_continuity_required: true
+continuity_backend: tmux_watcher
+existing_allocation:
+  job_id: 60657290
+  partition: htzhulab
+  node: g1807htzh01
+  job_name: CAREInteractive3d
+  new_slurm_allocations_forbidden: true
+  gpu_process_parallelism: 1
+finalizer:
+  dependency: afterany
+  required_state_file: results/20260726_care_mosaic_validation_gap_forensics_and_final_blueprint/finalizer_state.json
+waves:
+- wave_id: GAP_W0_BOOTSTRAP_AND_EXISTING_ALLOCATION_BINDING
+  executor_id: care_mosaic_gap_forensics_executor
+  blocking: true
+  dependencies: []
+  write_scope:
+  - results/20260726_care_mosaic_validation_gap_forensics_and_final_blueprint/
+  required_outputs:
+  - results/20260726_care_mosaic_validation_gap_forensics_and_final_blueprint/controller_context.json
+  - results/20260726_care_mosaic_validation_gap_forensics_and_final_blueprint/controller_ledger.csv
+  - results/20260726_care_mosaic_validation_gap_forensics_and_final_blueprint/controller_bootstrap_snapshot.md
+  - results/20260726_care_mosaic_validation_gap_forensics_and_final_blueprint/existing_allocation_receipt.json
+  - results/20260726_care_mosaic_validation_gap_forensics_and_final_blueprint/stale_state_audit.md
+  - results/20260726_care_mosaic_validation_gap_forensics_and_final_blueprint/input_asset_manifest.json
+  completion_conditions:
+  - origin_main_synced_and_start_sha_recorded
+  - job_60657290_RUNNING_on_htzhulab_g1807htzh01_or_exact_operational_gap_recorded
+  - no_sbatch_no_salloc_no_new_slurm_job
+  - python_torch_cuda_disk_and_write_preflight_recorded
+  - splits_cases_checkpoints_metrics_and_blueprint_hashes_frozen
+  - SafeScar_step3_scientific_boundary_recorded
+  failure_action: same_scope_bootstrap_or_receipt_repair; if existing allocation is terminal, preserve completed waves and stop OPERATIONALLY_BLOCKED_NO_REPLACEMENT_JOB
+- wave_id: GAP_W1_HOSTED_SUBMISSION_LINEAGE_FORENSICS
+  executor_id: care_mosaic_gap_forensics_executor
+  blocking: true
+  dependencies:
+  - GAP_W0_BOOTSTRAP_AND_EXISTING_ALLOCATION_BINDING
+  write_scope:
+  - results/20260726_care_mosaic_validation_gap_forensics_and_final_blueprint/
+  - scripts/evaluation/
+  - tests/
+  required_outputs:
+  - results/20260726_care_mosaic_validation_gap_forensics_and_final_blueprint/submission_lineage_ledger.csv
+  - results/20260726_care_mosaic_validation_gap_forensics_and_final_blueprint/submission_lineage_evidence.json
+  - results/20260726_care_mosaic_validation_gap_forensics_and_final_blueprint/hosted_row_claim_boundary.md
+  - results/20260726_care_mosaic_validation_gap_forensics_and_final_blueprint/package_prediction_hash_matrix.csv
+  completion_conditions:
+  - 20260706_and_20260708_rows_assigned_evidence_grade
+  - unresolved_rows_not_named_MoSAIC
+  - zip_prediction_tree_command_timestamp_evidence_separated
+  - sensitive_values_redacted
+  failure_action: repair_search_index_hash_tooling_in_scope; if exact lineage is absent, continue with UNRESOLVED boundary rather than inventing attribution
+- wave_id: GAP_W2_CANONICAL_220_CASE_OOF_AND_TARGET_SUBGROUPS
+  executor_id: care_mosaic_gap_forensics_executor
+  blocking: true
+  dependencies:
+  - GAP_W1_HOSTED_SUBMISSION_LINEAGE_FORENSICS
+  write_scope:
+  - scripts/evaluation/
+  - scripts/inference/
+  - tests/
+  - results/20260726_care_mosaic_validation_gap_forensics_and_final_blueprint/
+  - logs/
+  required_outputs:
+  - results/20260726_care_mosaic_validation_gap_forensics_and_final_blueprint/oof_casewise_metrics.csv
+  - results/20260726_care_mosaic_validation_gap_forensics_and_final_blueprint/oof_model_summary.csv
+  - results/20260726_care_mosaic_validation_gap_forensics_and_final_blueprint/oof_subgroup_summary.csv
+  - results/20260726_care_mosaic_validation_gap_forensics_and_final_blueprint/oof_fold_stability.csv
+  - results/20260726_care_mosaic_validation_gap_forensics_and_final_blueprint/oof_pairwise_help_harm.csv
+  - results/20260726_care_mosaic_validation_gap_forensics_and_final_blueprint/metric_semantics_audit.md
+  - results/20260726_care_mosaic_validation_gap_forensics_and_final_blueprint/label_export_roundtrip_audit.json
+  - results/20260726_care_mosaic_validation_gap_forensics_and_final_blueprint/complete_case_primary_report.md
+  - results/20260726_care_mosaic_validation_gap_forensics_and_final_blueprint/mosaic_edema_oof_availability_audit.json
+  completion_conditions:
+  - all_220_MoSAIC_scar_OOF_cases_evaluated_once_without_leakage
+  - nnunet_MoSAIC_raw_preLCC_final_and_historical_available_models_use_same_canonical_evaluator
+  - all_case_GT_positive_complete_modal_center_fold_and_reliable_T2_populations_separated
+  - raw_pre_cleanup_pre_largest_component_and_final_recipe_separated
+  - edema_OOF_exported_only_if_full_budget_receipts_exist_otherwise_exact_gap_recorded
+  - casewise_help_harm_HD95_exactHD_remoteFP_component_volume_metrics_present
+  failure_action: same_scope_evaluator_export_geometry_label_repair; never replace missing full-budget edema with short training
+- wave_id: GAP_W3_RANK_REVERSAL_ATTRIBUTION
+  executor_id: care_mosaic_gap_forensics_executor
+  blocking: true
+  dependencies:
+  - GAP_W2_CANONICAL_220_CASE_OOF_AND_TARGET_SUBGROUPS
+  write_scope:
+  - scripts/evaluation/
+  - scripts/inference/
+  - scripts/training/
+  - third_party/MoSAIC/source/
+  - tests/
+  - results/20260726_care_mosaic_validation_gap_forensics_and_final_blueprint/
+  - logs/
+  required_outputs:
+  - results/20260726_care_mosaic_validation_gap_forensics_and_final_blueprint/inference_recipe_casewise.csv
+  - results/20260726_care_mosaic_validation_gap_forensics_and_final_blueprint/inference_recipe_summary.csv
+  - results/20260726_care_mosaic_validation_gap_forensics_and_final_blueprint/inference_recipe_factor_effects.csv
+  - results/20260726_care_mosaic_validation_gap_forensics_and_final_blueprint/inference_recipe_attribution.md
+  - results/20260726_care_mosaic_validation_gap_forensics_and_final_blueprint/target_domain_feature_manifest.csv
+  - results/20260726_care_mosaic_validation_gap_forensics_and_final_blueprint/validation_nearest_training_cases.csv
+  - results/20260726_care_mosaic_validation_gap_forensics_and_final_blueprint/domain_classifier_cv.csv
+  - results/20260726_care_mosaic_validation_gap_forensics_and_final_blueprint/domain_similarity_report.md
+  - results/20260726_care_mosaic_validation_gap_forensics_and_final_blueprint/domain_weighted_oof_summary.csv
+  - results/20260726_care_mosaic_validation_gap_forensics_and_final_blueprint/rank_reversal_bootstrap.csv
+  - results/20260726_care_mosaic_validation_gap_forensics_and_final_blueprint/rank_reversal_summary.json
+  - results/20260726_care_mosaic_validation_gap_forensics_and_final_blueprint/rank_reversal_interpretation.md
+  - results/20260726_care_mosaic_validation_gap_forensics_and_final_blueprint/target_weighted_training_contract.json
+  - results/20260726_care_mosaic_validation_gap_forensics_and_final_blueprint/target_weighted_training_attempts.csv
+  - results/20260726_care_mosaic_validation_gap_forensics_and_final_blueprint/target_weighted_training_summary.csv
+  - results/20260726_care_mosaic_validation_gap_forensics_and_final_blueprint/target_weighted_casewise_metrics.csv
+  - results/20260726_care_mosaic_validation_gap_forensics_and_final_blueprint/target_weighted_training_interpretation.md
+  completion_conditions:
+  - R0_to_R5_recipe_variants_pre_registered_and_run_on_same_OOF_cases
+  - R6_run_only_when_lineage_resolved
+  - validation_domain_analysis_uses_images_predictions_and_embeddings_without_validation_GT_or_scores
+  - uniform_and_domain_weighted_15_case_rank_reversal_bootstrap_at_least_10000_each
+  - matched_T0_T1_runs_use_same_initial_state_budget_split_optimizer_augmentation_and_decode_or_NOT_RUN_guard
+  - all_GPU_commands_use_only_job_60657290_sequentially
+  - no_partial_training_credit
+  failure_action: same_scope_inference_training_tooling_repair; if resource guard fails record NOT_RUN_RESOURCE_OR_ASSET_GUARD and continue attribution without short-run substitution
+- wave_id: GAP_W4_HISTORICAL_CARE_MECHANISM_AUDIT
+  executor_id: care_mosaic_gap_forensics_executor
+  blocking: true
+  dependencies:
+  - GAP_W3_RANK_REVERSAL_ATTRIBUTION
+  write_scope:
+  - scripts/evaluation/
+  - tests/
+  - results/20260726_care_mosaic_validation_gap_forensics_and_final_blueprint/
+  required_outputs:
+  - results/20260726_care_mosaic_validation_gap_forensics_and_final_blueprint/historical_component_code_audit.md
+  - results/20260726_care_mosaic_validation_gap_forensics_and_final_blueprint/historical_component_runtime_matrix.csv
+  - results/20260726_care_mosaic_validation_gap_forensics_and_final_blueprint/historical_model_casewise_complementarity.csv
+  - results/20260726_care_mosaic_validation_gap_forensics_and_final_blueprint/historical_error_correlation_matrix.csv
+  - results/20260726_care_mosaic_validation_gap_forensics_and_final_blueprint/historical_component_keep_delete_table.md
+  - results/20260726_care_mosaic_validation_gap_forensics_and_final_blueprint/historical_feature_probe_nested_cv.csv
+  - results/20260726_care_mosaic_validation_gap_forensics_and_final_blueprint/historical_feature_probe_final_mask_metrics.csv
+  - results/20260726_care_mosaic_validation_gap_forensics_and_final_blueprint/historical_feature_incremental_value.md
+  completion_conditions:
+  - Batch7_MMRD_SCR_components_mapped_from_code_to_final_output_evidence
+  - known_control_SRR_prototype_input_confound_recorded
+  - reliable_label_semantics_separated_from_backbone_performance
+  - historical_results_labeled_primary_secondary_or_noncanonical
+  - feature_probes_use_case_grouped_nested_CV_and_reconstructed_final_mask_metrics
+  - component_keep_delete_recommendations_have_evidence_and_limits
+  failure_action: same_scope_audit_probe_repair; missing historical assets remain explicit missing evidence and cannot be reconstructed by guess
+- wave_id: GAP_W5_CANDIDATE_DATASET_V2_AND_GATE_SCIENTIFIC_TEST
+  executor_id: care_mosaic_gap_forensics_executor
+  blocking: true
+  dependencies:
+  - GAP_W4_HISTORICAL_CARE_MECHANISM_AUDIT
+  write_scope:
+  - src/care_myocardium/
+  - scripts/evaluation/
+  - scripts/inference/
+  - configs/
+  - tests/
+  - results/20260726_care_mosaic_validation_gap_forensics_and_final_blueprint/
+  - logs/
+  required_outputs:
+  - results/20260726_care_mosaic_validation_gap_forensics_and_final_blueprint/current_step3_scientific_validity_audit.md
+  - results/20260726_care_mosaic_validation_gap_forensics_and_final_blueprint/candidate_dataset_v2_receipt.json
+  - results/20260726_care_mosaic_validation_gap_forensics_and_final_blueprint/candidate_components_v2.csv
+  - results/20260726_care_mosaic_validation_gap_forensics_and_final_blueprint/candidate_counterfactual_metrics.csv
+  - results/20260726_care_mosaic_validation_gap_forensics_and_final_blueprint/gate_nested_cv_summary.csv
+  - results/20260726_care_mosaic_validation_gap_forensics_and_final_blueprint/gate_ablation_summary.csv
+  - results/20260726_care_mosaic_validation_gap_forensics_and_final_blueprint/gate_reconstructed_casewise_metrics.csv
+  - results/20260726_care_mosaic_validation_gap_forensics_and_final_blueprint/gate_reconstructed_model_summary.csv
+  - results/20260726_care_mosaic_validation_gap_forensics_and_final_blueprint/gate_help_harm.csv
+  - results/20260726_care_mosaic_validation_gap_forensics_and_final_blueprint/gate_scientific_decision.md
+  - results/20260726_care_mosaic_validation_gap_forensics_and_final_blueprint/edema_error_predictability_and_feasibility.md
+  completion_conditions:
+  - old_one_component_any_overlap_gate_classified_as_smoke_or_scientific_evidence_from_code
+  - candidate_v2_uses_multi_source_multi_threshold_raw_preLCC_and_anchor_components
+  - same_case_candidates_deterministically_merged_with_source_bitmask
+  - remove_add_replace_counterfactuals_evaluated_on_final_masks
+  - gate_actions_and_utility_not_defined_by_any_GT_overlap_only
+  - G0_global_G1_complete_modal_G2_domain_weighted_nested_CV_run
+  - prototype_ablation_distinguishes_handcrafted_feature_prototype_from_real_frozen_embedding
+  - final_mask_Dice_HD95_exactHD_remoteFP_help_harm_reported
+  - scar_and_edema_blueprint_gates_decided_without_hosted_threshold_tuning
+  failure_action: same_scope_candidate_gate_evaluator_repair_with_pre_registered_thresholds_only; if final-mask gate fails record fail and do not package
+- wave_id: GAP_W6_BLUEPRINT_ADJUDICATION_AND_FINAL_CONTROLLER_DRAFT
+  executor_id: care_mosaic_gap_forensics_executor
+  blocking: true
+  dependencies:
+  - GAP_W5_CANDIDATE_DATASET_V2_AND_GATE_SCIENTIFIC_TEST
+  write_scope:
+  - results/20260726_care_mosaic_validation_gap_forensics_and_final_blueprint/
+  - prompts/tasks/
+  required_outputs:
+  - results/20260726_care_mosaic_validation_gap_forensics_and_final_blueprint/blueprint_module_adjudication.csv
+  - results/20260726_care_mosaic_validation_gap_forensics_and_final_blueprint/blueprint_adjudication.md
+  - results/20260726_care_mosaic_validation_gap_forensics_and_final_blueprint/final_submission_blueprint.md
+  - results/20260726_care_mosaic_validation_gap_forensics_and_final_blueprint/final_submission_controller_draft.md
+  - results/20260726_care_mosaic_validation_gap_forensics_and_final_blueprint/final_submission_executor_plan_draft.yaml
+  completion_conditions:
+  - Lite_and_full_dual_blueprints_reviewed_module_by_module
+  - hosted_lineage_calibration_candidate_source_edema_capacity_pure_edema_coupling_exactHD_and_Docker_costs_addressed
+  - one_deterministic_architecture_status_selected_by_frozen_rules
+  - final_controller_draft_is_nonexecuted_and_contains_no_choose_best_or_if_needed_design_blank
+  - final_controller_draft_does_not_upload_or_package
+  failure_action: repair_adjudication_draft_schema_gaps_in_scope; scientific failure selects nnU-Net fallback rather than inventing a new method
+- wave_id: GAP_W7_FINAL_ATTRIBUTION_VALIDATOR_MAPPER_AND_LOCAL_COMMIT
+  executor_id: care_mosaic_gap_forensics_executor
+  blocking: true
+  dependencies:
+  - GAP_W6_BLUEPRINT_ADJUDICATION_AND_FINAL_CONTROLLER_DRAFT
+  write_scope:
+  - scripts/evaluation/
+  - tests/
+  - results/20260726_care_mosaic_validation_gap_forensics_and_final_blueprint/
+  - wiki/
+  - prompts/routes/handoffs/CURRENT.md
+  required_outputs:
+  - results/20260726_care_mosaic_validation_gap_forensics_and_final_blueprint/hypothesis_attribution_matrix.csv
+  - results/20260726_care_mosaic_validation_gap_forensics_and_final_blueprint/mosaic_hosted_gap_root_cause_report.md
+  - results/20260726_care_mosaic_validation_gap_forensics_and_final_blueprint/scientific_conclusion.md
+  - results/20260726_care_mosaic_validation_gap_forensics_and_final_blueprint/implementation_snapshot.md
+  - results/20260726_care_mosaic_validation_gap_forensics_and_final_blueprint/mapper_report_draft.md
+  - results/20260726_care_mosaic_validation_gap_forensics_and_final_blueprint/architecture_delta_draft.md
+  - results/20260726_care_mosaic_validation_gap_forensics_and_final_blueprint/mapper_report_final.md
+  - results/20260726_care_mosaic_validation_gap_forensics_and_final_blueprint/architecture_delta_final.md
+  - results/20260726_care_mosaic_validation_gap_forensics_and_final_blueprint/finalizer_state.json
+  - results/20260726_care_mosaic_validation_gap_forensics_and_final_blueprint/strict_validator_report.json
+  - results/20260726_care_mosaic_validation_gap_forensics_and_final_blueprint/controller_report.md
+  - results/20260726_care_mosaic_validation_gap_forensics_and_final_blueprint/completion_check.md
+  - results/20260726_care_mosaic_validation_gap_forensics_and_final_blueprint/MANIFEST.md
+  - results/20260726_care_mosaic_validation_gap_forensics_and_final_blueprint/notification_brief.json
+  completion_conditions:
+  - H1_to_H7_each_have_status_effect_evidence_counterevidence_uncertainty_and_Docker_impact
+  - root_cause_report_answers_lineage_target_domain_full_data_recipe_sampling_metric_and_residual_uncertainty
+  - strict_validator_rejects_all_declared_known_bad_cases
+  - CURRENT_and_wiki_reflect_latest_local_only_evidence_without_hosted_success_claim
+  - all_commands_in_existing_allocation_terminal_and_aggregated
+  - controller_verification_decision_is_machine_valid
+  - local_lightweight_commit_created
+  - git_push_skipped_by_runtime_controller
+  - notification_written_only_after_terminal_validation_and_commit
+  failure_action: controller_returns_same_scope_validator_mapper_finalizer_gap_for_repair; if allocation ended after evidence generation, finish CPU aggregation locally without new Slurm job
