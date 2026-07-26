@@ -1,0 +1,477 @@
+{
+  "record_created_at_utc": "2026-07-26T15:20:03Z",
+  "leaderboard_fetch": {
+    "fetched_at_utc": "20260726T151647Z",
+    "source_latest_json": "results/leaderboard/care2026_myocardium_latest.json",
+    "source_latest_csv": {
+      "myops_scar": "results/leaderboard/care2026_myocardium_myops_scar_latest.csv",
+      "myops_edema": "results/leaderboard/care2026_myocardium_myops_edema_latest.csv",
+      "myocardium_cinemyops": "results/leaderboard/care2026_myocardium_myocardium_cinemyops_latest.csv"
+    },
+    "task_row_counts": {
+      "myops_scar": 85,
+      "myops_edema": 85,
+      "myocardium_cinemyops": 62
+    }
+  },
+  "organagent_best_by_task": {
+    "myops_scar": {
+      "rank": "13",
+      "user": "OrganAgent",
+      "time": "2026-07-06 09:13:49",
+      "Dice": "0.6965",
+      "HD": "13.7827",
+      "PRE": "0.7",
+      "SEN": "0.7478",
+      "score": "0.6965"
+    },
+    "myops_edema": {
+      "rank": "52",
+      "user": "OrganAgent",
+      "time": "2026-05-21 00:23:31",
+      "Dice": "0.6691",
+      "HD": "21.0898",
+      "PRE": "0.6698",
+      "SEN": "0.7351",
+      "score": "0.6691"
+    },
+    "myocardium_cinemyops": {
+      "rank": "22",
+      "user": "OrganAgent",
+      "time": "2026-06-27 22:35:12",
+      "Dice": "0.2069",
+      "HD": "48.7463",
+      "score": "0.2069"
+    }
+  },
+  "organagent_rows_by_time": [
+    {
+      "leaderboard_time": "2026-05-18 15:45:41",
+      "myops_scar": {
+        "rank": "74",
+        "dice": "0.5969",
+        "hd": "16.2536",
+        "pre": "0.5675",
+        "sen": "0.713",
+        "score": "0.5969"
+      },
+      "myops_edema": {
+        "rank": "64",
+        "dice": "0.6496",
+        "hd": "22.0125",
+        "pre": "0.6392",
+        "sen": "0.7256",
+        "score": "0.6496"
+      },
+      "myocardium_cinemyops": {
+        "rank": "36",
+        "dice": "0.1748",
+        "hd": "75.213",
+        "pre": null,
+        "sen": null,
+        "score": "0.1748"
+      }
+    },
+    {
+      "leaderboard_time": "2026-05-21 00:23:31",
+      "myops_scar": {
+        "rank": "63",
+        "dice": "0.6258",
+        "hd": "14.9844",
+        "pre": "0.6043",
+        "sen": "0.7193",
+        "score": "0.6258"
+      },
+      "myops_edema": {
+        "rank": "52",
+        "dice": "0.6691",
+        "hd": "21.0898",
+        "pre": "0.6698",
+        "sen": "0.7351",
+        "score": "0.6691"
+      },
+      "myocardium_cinemyops": {
+        "rank": "35",
+        "dice": "0.1816",
+        "hd": "52.9706",
+        "pre": null,
+        "sen": null,
+        "score": "0.1816"
+      }
+    },
+    {
+      "leaderboard_time": "2026-06-03 23:04:15",
+      "myops_scar": {
+        "rank": "22",
+        "dice": "0.6833",
+        "hd": "25.7857",
+        "pre": "0.7331",
+        "sen": "0.6669",
+        "score": "0.6833"
+      },
+      "myops_edema": {
+        "rank": "77",
+        "dice": "0.5897",
+        "hd": "32.6491",
+        "pre": "0.7885",
+        "sen": "0.526",
+        "score": "0.5897"
+      },
+      "myocardium_cinemyops": {
+        "rank": "43",
+        "dice": "0.1596",
+        "hd": "49.9538",
+        "pre": null,
+        "sen": null,
+        "score": "0.1596"
+      }
+    },
+    {
+      "leaderboard_time": "2026-06-10 04:46:23",
+      "myops_scar": {
+        "rank": "20",
+        "dice": "0.6841",
+        "hd": "25.8151",
+        "pre": "0.7492",
+        "sen": "0.6554",
+        "score": "0.6841"
+      },
+      "myops_edema": {
+        "rank": "71",
+        "dice": "0.6255",
+        "hd": "30.2965",
+        "pre": "0.7557",
+        "sen": "0.576",
+        "score": "0.6255"
+      },
+      "myocardium_cinemyops": {
+        "rank": "25",
+        "dice": "0.1996",
+        "hd": "49.3764",
+        "pre": null,
+        "sen": null,
+        "score": "0.1996"
+      }
+    },
+    {
+      "leaderboard_time": "2026-06-23 12:20:22",
+      "myops_scar": {
+        "rank": "69",
+        "dice": "0.6189",
+        "hd": "17.5332",
+        "pre": "0.6235",
+        "sen": "0.6594",
+        "score": "0.6189"
+      },
+      "myops_edema": {
+        "rank": "83",
+        "dice": "0.5532",
+        "hd": "23.5024",
+        "pre": "0.6096",
+        "sen": "0.5564",
+        "score": "0.5532"
+      },
+      "myocardium_cinemyops": {
+        "rank": "24",
+        "dice": "0.2053",
+        "hd": "49.0281",
+        "pre": null,
+        "sen": null,
+        "score": "0.2053"
+      }
+    },
+    {
+      "leaderboard_time": "2026-06-27 22:35:12",
+      "myops_scar": {
+        "rank": "50",
+        "dice": "0.6475",
+        "hd": "15.5541",
+        "pre": "0.6524",
+        "sen": "0.7376",
+        "score": "0.6475"
+      },
+      "myops_edema": {
+        "rank": "79",
+        "dice": "0.5676",
+        "hd": "24.9973",
+        "pre": "0.5844",
+        "sen": "0.6346",
+        "score": "0.5676"
+      },
+      "myocardium_cinemyops": {
+        "rank": "22",
+        "dice": "0.2069",
+        "hd": "48.7463",
+        "pre": null,
+        "sen": null,
+        "score": "0.2069"
+      }
+    },
+    {
+      "leaderboard_time": "2026-07-06 09:13:49",
+      "myops_scar": {
+        "rank": "13",
+        "dice": "0.6965",
+        "hd": "13.7827",
+        "pre": "0.7",
+        "sen": "0.7478",
+        "score": "0.6965"
+      },
+      "myops_edema": {
+        "rank": "74",
+        "dice": "0.5983",
+        "hd": "26.7067",
+        "pre": "0.738",
+        "sen": "0.5748",
+        "score": "0.5983"
+      },
+      "myocardium_cinemyops": {
+        "rank": "32",
+        "dice": "0.1878",
+        "hd": "48.8241",
+        "pre": null,
+        "sen": null,
+        "score": "0.1878"
+      }
+    },
+    {
+      "leaderboard_time": "2026-07-08 19:08:16",
+      "myops_scar": {
+        "rank": "14",
+        "dice": "0.6965",
+        "hd": "13.7827",
+        "pre": "0.7",
+        "sen": "0.7478",
+        "score": "0.6965"
+      },
+      "myops_edema": {
+        "rank": "75",
+        "dice": "0.5963",
+        "hd": "25.2403",
+        "pre": "0.7775",
+        "sen": "0.5639",
+        "score": "0.5963"
+      },
+      "myocardium_cinemyops": {
+        "rank": "23",
+        "dice": "0.2058",
+        "hd": "46.6586",
+        "pre": null,
+        "sen": null,
+        "score": "0.2058"
+      }
+    }
+  ],
+  "local_upload_ready_packages": [
+    {
+      "folder": "20260517_reviewtest__nnUNet_reviewtest",
+      "submission_id": "20260517_reviewtest__nnUNet_reviewtest",
+      "manifest_path": "results/submissions/care_myocardium_validation/upload_ready/20260517_reviewtest__nnUNet_reviewtest/manifest.json",
+      "zip_path": "results/submissions/care_myocardium_validation/upload_ready/20260517_reviewtest__nnUNet_reviewtest/CARE-Myocardium-OrganAgent.zip",
+      "zip_sha256": "054a3fdbf83709ba6c7a73cdf2657fa898d39c145bf033542f61c57137a3acc2",
+      "zip_size_bytes": 88289,
+      "myops": {
+        "source": "explicit",
+        "pred_dir": "results/submissions/care_myocardium_validation/nnunet_5fold_best/nnunet_predictions/Dataset501_CAREMyoPS"
+      },
+      "cine": {
+        "source": "explicit",
+        "pred_dir": "results/submissions/care_myocardium_validation/nnunet_5fold_best/nnunet_predictions/Dataset502_CARECineMyoPS"
+      },
+      "models": {}
+    },
+    {
+      "folder": "20260518_030921__nnUNet_MyoPS+CineMyoPS_pathology_direct",
+      "submission_id": "20260518_030921__nnUNet_MyoPS+CineMyoPS_pathology_direct",
+      "manifest_path": "results/submissions/care_myocardium_validation/upload_ready/20260518_030921__nnUNet_MyoPS+CineMyoPS_pathology_direct/manifest.json",
+      "zip_path": "results/submissions/care_myocardium_validation/upload_ready/20260518_030921__nnUNet_MyoPS+CineMyoPS_pathology_direct/CARE-Myocardium-OrganAgent.zip",
+      "zip_sha256": "4907f1a39950f564367db273682561cb5b8b573a153a1c0b7c42d916d70b3443",
+      "zip_size_bytes": 109262,
+      "myops": {
+        "source": "nnUNetv2_predict",
+        "folds": [
+          "0"
+        ],
+        "checkpoint": "checkpoint_best.pth"
+      },
+      "cine": {
+        "source": "CineMyoPS",
+        "requested_folds": [
+          "0"
+        ],
+        "used_folds": [
+          "0"
+        ],
+        "policy": "hard-label majority vote; single fold if only one checkpoint exists",
+        "task": "Task026_Cine_4D",
+        "trainer": "CARECineMyoPSTrainerBNCalib",
+        "dim": "2d",
+        "checkpoint": "model_final_checkpoint",
+        "num_frames": 4,
+        "combine_mode": "pathology_direct"
+      },
+      "models": {}
+    },
+    {
+      "folder": "20260519_083839__nnUNet_MyoPS+CineMyoPS_pathology_direct_lcc_hd_repair",
+      "submission_id": "20260519_083839__nnUNet_MyoPS+CineMyoPS_pathology_direct_lcc_hd_repair",
+      "manifest_path": "results/submissions/care_myocardium_validation/upload_ready/20260519_083839__nnUNet_MyoPS+CineMyoPS_pathology_direct_lcc_hd_repair/manifest.json",
+      "zip_path": "results/submissions/care_myocardium_validation/upload_ready/20260519_083839__nnUNet_MyoPS+CineMyoPS_pathology_direct_lcc_hd_repair/CARE-Myocardium-OrganAgent.zip",
+      "zip_sha256": "dc9eb7b503181f4f4b661cbd73a96ef5d0b5e36e8bd6ebd6489b8748db926419",
+      "zip_size_bytes": 108078,
+      "myops": {
+        "source": "explicit",
+        "pred_dir": "results/submissions/care_myocardium_validation/workspaces/nnUNet_MyoPS+CineMyoPS_pathology_direct_20260518_030921/predictions/MyoPS/nnUNet/ensemble"
+      },
+      "cine": {
+        "source": "explicit",
+        "pred_dir": "results/predictions/CineMyoPS_R8_validation_hd_repair/pathology_largest_component/fold_0",
+        "postprocess_mode": "pathology_largest_component"
+      },
+      "models": {}
+    },
+    {
+      "folder": "20260519_084057__nnUNet_MyoPS+nnUNet_CineMyoPS_5fold_baseline_round8",
+      "submission_id": "20260519_084057__nnUNet_MyoPS+nnUNet_CineMyoPS_5fold_baseline_round8",
+      "manifest_path": "results/submissions/care_myocardium_validation/upload_ready/20260519_084057__nnUNet_MyoPS+nnUNet_CineMyoPS_5fold_baseline_round8/manifest.json",
+      "zip_path": "results/submissions/care_myocardium_validation/upload_ready/20260519_084057__nnUNet_MyoPS+nnUNet_CineMyoPS_5fold_baseline_round8/CARE-Myocardium-OrganAgent.zip",
+      "zip_sha256": "d594a763577d235bdc1ccbb41479de22c647bcbecc1ef6e9a3125fc66d543e24",
+      "zip_size_bytes": 88289,
+      "myops": {
+        "source": "explicit",
+        "pred_dir": "results/submissions/care_myocardium_validation/nnunet_5fold_best/nnunet_predictions/Dataset501_CAREMyoPS"
+      },
+      "cine": {
+        "source": "explicit",
+        "pred_dir": "results/submissions/care_myocardium_validation/nnunet_5fold_best/nnunet_predictions/Dataset502_CARECineMyoPS",
+        "postprocess_mode": "none"
+      },
+      "models": {}
+    },
+    {
+      "folder": "20260520_113408__nnUNet5fold_MyoPS+Cine_topology_lcc_round03_RECOMMENDED",
+      "submission_id": "20260520_113408__nnUNet5fold_MyoPS+Cine_topology_lcc_round03_RECOMMENDED",
+      "manifest_path": "results/submissions/care_myocardium_validation/upload_ready/20260520_113408__nnUNet5fold_MyoPS+Cine_topology_lcc_round03_RECOMMENDED/manifest.json",
+      "zip_path": "results/submissions/care_myocardium_validation/upload_ready/20260520_113408__nnUNet5fold_MyoPS+Cine_topology_lcc_round03_RECOMMENDED/CARE-Myocardium-OrganAgent.zip",
+      "zip_sha256": "5b0d4143e451bba9177f937f02102f14676cfe699a1f1e027636ecf78b73abb3",
+      "zip_size_bytes": 115913,
+      "myops": {
+        "source": "copied_submission_tree",
+        "model_source": "unchanged MyoPS branch from previous nnUNet_MyoPS+nnUNet_CineMyoPS_5fold_baseline_round8 package",
+        "source_tree": "results/submissions/care_myocardium_validation/upload_ready/20260519_084057__nnUNet_MyoPS+nnUNet_CineMyoPS_5fold_baseline_round8/submission_tree/MyoPS",
+        "source_manifest": "results/submissions/care_myocardium_validation/upload_ready/20260519_084057__nnUNet_MyoPS+nnUNet_CineMyoPS_5fold_baseline_round8/manifest.json"
+      },
+      "cine": {
+        "source": "staged_from_compact_predictions",
+        "candidate": "topology_lcc",
+        "compact_pred_dir": "results/predictions/CineMyoPS_R8_validation_hd_repair/pathology_largest_component/fold_0",
+        "compact_labels": {
+          "0": "background",
+          "1": "myocardium",
+          "2": "LV",
+          "3": "scar"
+        },
+        "raw_mapping": {
+          "0": 0,
+          "1": 200,
+          "2": 500,
+          "3": 2221
+        },
+        "postprocess_mode": "pathology_largest_component"
+      },
+      "models": {}
+    },
+    {
+      "folder": "20260726_nnunet5f_control__nnUNet5F-control",
+      "submission_id": "20260726_nnunet5f_control__nnUNet5F-control",
+      "manifest_path": "results/submissions/care_myocardium_validation/upload_ready/20260726_nnunet5f_control__nnUNet5F-control/manifest.json",
+      "zip_path": "results/submissions/care_myocardium_validation/upload_ready/20260726_nnunet5f_control__nnUNet5F-control/CARE-Myocardium-OrganAgent.zip",
+      "zip_sha256": "155b1997afc0ccdea77b210e880c7405db49be0bfc64f5331f86e97047238e62",
+      "zip_size_bytes": 109013,
+      "myops": {
+        "source": "explicit",
+        "pred_dir": "results/submissions/care_myocardium_validation/nnunet_5fold_best/nnunet_predictions/Dataset501_CAREMyoPS"
+      },
+      "cine": {
+        "source": "explicit",
+        "pred_dir": "results/submissions/care_myocardium_validation/workspaces/nnUNet_MyoPS+CineMyoPS_pathology_direct_20260518_030921/predictions/CineMyoPS/CineMyoPS/ensemble",
+        "postprocess_mode": "none"
+      },
+      "models": {}
+    }
+  ],
+  "alignment_notes": [
+    {
+      "leaderboard_time": "2026-05-18 15:45:41",
+      "local_evidence": "upload_ready/README.md records this as the visible OrganAgent row for 20260518_030921; manifest uses nnUNet fold0 for MyoPS and CineMyoPS pathology_direct fold0 for Cine.",
+      "local_package_candidate": "results/submissions/care_myocardium_validation/upload_ready/20260518_030921__nnUNet_MyoPS+CineMyoPS_pathology_direct/manifest.json",
+      "model_family_assignment": "nnUNet MyoPS + CineMyoPS pathology_direct",
+      "confidence": "confirmed_by_local_readme"
+    },
+    {
+      "leaderboard_time": "2026-05-21 00:23:31",
+      "local_evidence": "Chronologically follows 20260520_113408 recommended package; manifest keeps nnUNet 5-fold MyoPS and swaps Cine to topology_lcc. No local hosted-upload receipt found in upload_ready manifests.",
+      "local_package_candidate": "results/submissions/care_myocardium_validation/upload_ready/20260520_113408__nnUNet5fold_MyoPS+Cine_topology_lcc_round03_RECOMMENDED/manifest.json",
+      "model_family_assignment": "likely nnUNet 5-fold MyoPS + Cine topology_lcc calibration",
+      "confidence": "likely_by_time_and_local_readme_not_direct_upload_receipt"
+    },
+    {
+      "leaderboard_time": "2026-06-03 23:04:15",
+      "local_evidence": "No matching upload_ready manifest found; local records around this period contain SRR/autopilot work, not a top-level MoSAIC validation package.",
+      "local_package_candidate": null,
+      "model_family_assignment": "unresolved; possible ensemble/SRR lineage, not provably MoSAIC from current local package records",
+      "confidence": "unresolved"
+    },
+    {
+      "leaderboard_time": "2026-06-10 04:46:23",
+      "local_evidence": "No matching upload_ready manifest found; local records around this period contain route/SRR experiments. MoSAIC native fold0 work appears later on 2026-07-25/26.",
+      "local_package_candidate": null,
+      "model_family_assignment": "unresolved; cannot confirm MoSAIC from current local records",
+      "confidence": "unresolved"
+    },
+    {
+      "leaderboard_time": "2026-06-23 12:20:22",
+      "local_evidence": "No matching upload_ready manifest found. Current repo has no validation upload-ready MoSAIC package for this date.",
+      "local_package_candidate": null,
+      "model_family_assignment": "unresolved; cannot confirm MoSAIC from current local records",
+      "confidence": "unresolved"
+    },
+    {
+      "leaderboard_time": "2026-06-27 22:35:12",
+      "local_evidence": "No matching upload_ready manifest found. This is current best OrganAgent cine row, but package lineage is not directly recoverable from local upload manifests.",
+      "local_package_candidate": null,
+      "model_family_assignment": "unresolved; cannot confirm MoSAIC from current local records",
+      "confidence": "unresolved"
+    },
+    {
+      "leaderboard_time": "2026-07-06 09:13:49",
+      "local_evidence": "No matching upload_ready manifest found. MoSAIC fold0 fair reproduction was planned/executed later, so this should not be labelled MoSAIC without an external upload log.",
+      "local_package_candidate": null,
+      "model_family_assignment": "unresolved; not locally confirmed as MoSAIC",
+      "confidence": "unresolved"
+    },
+    {
+      "leaderboard_time": "2026-07-08 19:08:16",
+      "local_evidence": "No matching upload_ready manifest found. Local 20260708 artifacts are SRR/M9, not a MoSAIC validation package in upload_ready.",
+      "local_package_candidate": null,
+      "model_family_assignment": "unresolved; not locally confirmed as MoSAIC",
+      "confidence": "unresolved"
+    }
+  ],
+  "interpretation": {
+    "validated_facts": [
+      "All three current CARE2026 myocardium leaderboard task tables were fetched on 2026-07-26 UTC.",
+      "OrganAgent has eight visible hosted rows across the three tasks in the latest fetch.",
+      "The local upload_ready package manifests currently visible in this checkout are nnUNet/Cine calibration packages; no top-level upload_ready MoSAIC validation package was found.",
+      "Local records confirm the 2026-05-18 hosted row as 20260518_030921 nnUNet MyoPS plus CineMyoPS pathology_direct through upload_ready/README.md."
+    ],
+    "unresolved_points_for_gpt_or_human_upload_log": [
+      "Whether 2026-05-21 corresponds to the 20260520_113408 recommended nnUNet5fold+Cine topology_lcc package is likely but not proven by a hosted upload receipt.",
+      "The 2026-06-03, 2026-06-10, 2026-06-23, 2026-06-27, 2026-07-06, and 2026-07-08 OrganAgent rows cannot be mapped to concrete local upload_ready package manifests in this checkout.",
+      "Do not label later rows as MoSAIC unless an external hosted-upload log or missing local package record confirms that lineage."
+    ],
+    "validation_upload_performed_by_this_record": false,
+    "docker_upload_performed_by_this_record": false,
+    "new_slurm_allocation_submitted_by_this_record": false
+  }
+}
