@@ -1,0 +1,26 @@
+{
+  "source_manifest": "results/submissions/care_myocardium_validation/upload_ready/20260518_030921__nnUNet_MyoPS+CineMyoPS_pathology_direct/manifest.json",
+  "source_submission_id": "20260518_030921__nnUNet_MyoPS+CineMyoPS_pathology_direct",
+  "source_cine_manifest": {
+    "source": "CineMyoPS",
+    "requested_folds": [
+      "0"
+    ],
+    "used_folds": [
+      "0"
+    ],
+    "policy": "hard-label majority vote; single fold if only one checkpoint exists",
+    "task": "Task026_Cine_4D",
+    "trainer": "CARECineMyoPSTrainerBNCalib",
+    "dim": "2d",
+    "checkpoint": "model_final_checkpoint",
+    "num_frames": 4,
+    "combine_mode": "pathology_direct"
+  },
+  "selected_cine_prediction_tree": "results/submissions/care_myocardium_validation/workspaces/nnUNet_MyoPS+CineMyoPS_pathology_direct_20260518_030921/predictions/CineMyoPS/CineMyoPS/ensemble",
+  "case_count": 15,
+  "selection_reason": "User requested the prior trusted Cine pathology-direct branch; this is the non-LCC 20260518 pathology_direct CineMyoPS fold0 tree.",
+  "same_cine_branch_for_control": true,
+  "rebuild_performed": false,
+  "created_at_local": "2026-07-25T23:27:00-0400"
+}

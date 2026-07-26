@@ -1,0 +1,145 @@
+schema_version: 1
+task_key: 20260726_care_scf_v2_docker_alignment
+status: BLOCKED_UNTIL_CARE_SCF_V1_HOSTED_RESULT_RECORDED
+execution_mode: controller_supervised
+controller_is_coordinator: true
+executor_slots: 1
+executor_count: 1
+parallel_execution_allowed: false
+result_root: results/20260726_care_fullinfo_nnunet_and_care_scf/care_scf_v2
+upload_ready_label: CARE-SCF-v2
+planning_review_required: false
+review_required: false
+slurm_runtime_continuity_required: true
+continuity_backend: slurm_dependency
+finalizer:
+  dependency: afterany
+  required_state_file: results/20260726_care_fullinfo_nnunet_and_care_scf/care_scf_v2/finalizer_state.json
+
+waves:
+  - wave_id: SCF_V2_W0_HOSTED_RESULT_BINDING
+    executor_id: care_scf_v2_executor
+    blocking: true
+    dependencies: []
+    write_scope:
+      - results/20260726_care_fullinfo_nnunet_and_care_scf/care_scf_v2/
+    required_outputs:
+      - results/20260726_care_fullinfo_nnunet_and_care_scf/care_scf_v2/controller_bootstrap_snapshot.md
+      - results/20260726_care_fullinfo_nnunet_and_care_scf/care_scf_v2/hosted_v1_result_binding.json
+    completion_conditions:
+      - care_scf_v1_packet_complete
+      - hosted_validation_attempt_2_json_exists
+      - myops_scar_myops_edema_myocardium_cinemyops_fields_present
+      - hosted_results_not_replaced_by_local_OOF_metrics
+    failure_action: stop_BLOCKED_HOSTED_RESULT_REQUIRED_FOR_V2
+
+  - wave_id: SCF_V2_W1_DISEASE_DIRECTED_RULE_FREEZE
+    executor_id: care_scf_v2_executor
+    blocking: true
+    dependencies: [SCF_V2_W0_HOSTED_RESULT_BINDING]
+    write_scope:
+      - src/care_myocardium/
+      - scripts/inference/
+      - scripts/evaluation/
+      - configs/care_scf/
+      - tests/
+      - results/20260726_care_fullinfo_nnunet_and_care_scf/care_scf_v2/
+    required_outputs:
+      - results/20260726_care_fullinfo_nnunet_and_care_scf/care_scf_v2/care_scf_v2_config.yaml
+      - results/20260726_care_fullinfo_nnunet_and_care_scf/care_scf_v2/disease_directed_change_log.md
+      - results/20260726_care_fullinfo_nnunet_and_care_scf/care_scf_v2/unit_test_report.md
+      - results/20260726_care_fullinfo_nnunet_and_care_scf/care_scf_v2/known_bad_report.json
+    completion_conditions:
+      - v2_changes_limited_to_deterministic_thresholds_prototype_selection_or_postprocess
+      - disease_direction_explained_from_hosted_v1_scar_edema_results
+      - no_validation_case_GT_used
+      - fake_anchor_only_CARE_rejected
+      - no_new_large_training_or_deep_gate
+    failure_action: stop_BLOCKED_CARE_SCF_V1_HOSTED_UNSAFE_or_return_same_scope_rule_gap
+
+  - wave_id: SCF_V2_W2_LOCAL_EVAL_PACKAGE_AND_SAFETY
+    executor_id: care_scf_v2_executor
+    blocking: true
+    dependencies: [SCF_V2_W1_DISEASE_DIRECTED_RULE_FREEZE]
+    write_scope:
+      - results/20260726_care_fullinfo_nnunet_and_care_scf/care_scf_v2/
+      - results/submissions/care_myocardium_validation/workspaces/
+      - results/submissions/care_myocardium_validation/upload_ready/
+      - logs/
+    routing:
+      primary_partition: htzhulab
+      partitions: [htzhulab, a100-gpu]
+      require_atomic_winner_lock: true
+      require_isolated_attempt_directories: true
+    retry_policy:
+      max_startup_retries: 2
+      max_preemption_retries: 2
+      max_unknown_retries: 0
+    required_outputs:
+      - results/20260726_care_fullinfo_nnunet_and_care_scf/care_scf_v2/mechanism_activation_audit.csv
+      - results/20260726_care_fullinfo_nnunet_and_care_scf/care_scf_v2/component_decisions.csv
+      - results/20260726_care_fullinfo_nnunet_and_care_scf/care_scf_v2/oof_casewise_metrics.csv
+      - results/20260726_care_fullinfo_nnunet_and_care_scf/care_scf_v2/oof_model_summary.csv
+      - results/20260726_care_fullinfo_nnunet_and_care_scf/care_scf_v2/help_harm.csv
+      - results/20260726_care_fullinfo_nnunet_and_care_scf/care_scf_v2/geometry_audit.csv
+      - results/20260726_care_fullinfo_nnunet_and_care_scf/care_scf_v2/label_audit.json
+      - results/20260726_care_fullinfo_nnunet_and_care_scf/care_scf_v2/care_scf_v2_package_manifest.json
+      - results/20260726_care_fullinfo_nnunet_and_care_scf/care_scf_v2/care_scf_v2_zip_sha256.txt
+      - results/submissions/care_myocardium_validation/upload_ready/<timestamp>__CARE-SCF-v2/CARE-Myocardium-OrganAgent.zip
+    completion_conditions:
+      - CARE_SCF_v2_mechanism_activated_nonzero
+      - v2_predictions_differ_from_anchor_when_mechanism_accepts_components
+      - pathology_specific_safety_gates_pass
+      - official_zip_layout_valid
+      - validation_upload_performed_false
+    failure_action: repair_allowed_v2_rules_or_stop_BLOCKED_CARE_SCF_NOT_SAFE_FOR_VALIDATION
+
+  - wave_id: SCF_V2_W3_DOCKER_BUILD_SMOKE_AND_EQUIVALENCE
+    executor_id: care_scf_v2_executor
+    blocking: true
+    dependencies: [SCF_V2_W2_LOCAL_EVAL_PACKAGE_AND_SAFETY]
+    write_scope:
+      - docker/CARE-SCF/
+      - results/20260726_care_fullinfo_nnunet_and_care_scf/care_scf_v2/
+      - tests/
+    required_outputs:
+      - docker/CARE-SCF/
+      - results/20260726_care_fullinfo_nnunet_and_care_scf/care_scf_v2/docker_build_receipt.json
+      - results/20260726_care_fullinfo_nnunet_and_care_scf/care_scf_v2/docker_runtime_benchmark.csv
+      - results/20260726_care_fullinfo_nnunet_and_care_scf/care_scf_v2/docker_prediction_equivalence.csv
+      - results/20260726_care_fullinfo_nnunet_and_care_scf/care_scf_v2/docker_smoke_report.md
+    completion_conditions:
+      - docker_predict_sh_defaults_to_CARE_SCF_v2
+      - no_users_or_overflow_absolute_runtime_dependency
+      - weights_and_paths_resolve_by_official_allowed_method
+      - GPU_CPU_fallback_behavior_documented
+      - docker_output_voxel_equal_or_hash_equal_to_non_docker_v2
+      - docker_upload_performed_false
+    failure_action: repair_Docker_packaging_or_entrypoint_gap_without_upload
+
+  - wave_id: SCF_V2_W4_FINALIZER_MAPPER_AND_LOCAL_PACKET
+    executor_id: care_scf_v2_executor
+    blocking: true
+    dependencies: [SCF_V2_W3_DOCKER_BUILD_SMOKE_AND_EQUIVALENCE]
+    write_scope:
+      - results/20260726_care_fullinfo_nnunet_and_care_scf/care_scf_v2/
+      - results/20260726_care_fullinfo_nnunet_and_care_scf/MANIFEST.md
+      - wiki/
+      - prompts/routes/handoffs/CURRENT.md
+    required_outputs:
+      - results/20260726_care_fullinfo_nnunet_and_care_scf/care_scf_v2/mapper_report_final.md
+      - results/20260726_care_fullinfo_nnunet_and_care_scf/care_scf_v2/architecture_delta_final.md
+      - results/20260726_care_fullinfo_nnunet_and_care_scf/care_scf_v2/finalizer_state.json
+      - results/20260726_care_fullinfo_nnunet_and_care_scf/care_scf_v2/strict_validator_report.json
+      - results/20260726_care_fullinfo_nnunet_and_care_scf/care_scf_v2/controller_report.md
+      - results/20260726_care_fullinfo_nnunet_and_care_scf/care_scf_v2/completion_check.md
+      - results/20260726_care_fullinfo_nnunet_and_care_scf/care_scf_v2/notification_brief.json
+    completion_conditions:
+      - all_slurm_attempts_terminal_or_not_applicable
+      - aggregation_complete
+      - mapper_final_complete
+      - strict_validator_PASS
+      - controller_report_starts_with_natural_chinese_judgment
+      - local_lightweight_commit_created_if_authorized
+      - git_push_skipped
+    failure_action: repair_same_scope_finalizer_mapper_or_validator_gap_or_stop_NEEDS_REPAIR

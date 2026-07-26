@@ -1,0 +1,51 @@
+{
+  "created_at_local": "2026-07-25T23:33:00-0400",
+  "task_key": "20260726_care_nnunet5f_control",
+  "decision": "PASS",
+  "checks": {
+    "five_checkpoint_audit_pass": true,
+    "folds_0_4_recorded": true,
+    "checkpoint_best_recorded": true,
+    "single_all_data_model_false": true,
+    "fold_all_checkpoint_absent": true,
+    "split_176_44_all_folds": true,
+    "native_probability_ensemble_not_majority_vote": true,
+    "current_task_submitted_no_slurm": true,
+    "validation_upload_false": true,
+    "zip_exists": true,
+    "zip_layout_ok": true,
+    "label_audit_pass": true,
+    "myops_cases_15": true,
+    "cine_cases_15": true,
+    "fresh_gpu_rerun_not_performed_due_no_cuda": true
+  },
+  "zip_roots": [
+    "CineMyoPS/",
+    "MyoPS/"
+  ],
+  "zip_prediction_file_count": 30,
+  "layout_problems": [],
+  "zip_sha256": "155b1997afc0ccdea77b210e880c7405db49be0bfc64f5331f86e97047238e62",
+  "git_diff_check": {
+    "cmd": [
+      "git",
+      "diff",
+      "--check"
+    ],
+    "returncode": 0,
+    "stdout": "",
+    "stderr": ""
+  },
+  "git_diff_check_cached": {
+    "cmd": [
+      "git",
+      "diff",
+      "--check",
+      "--cached"
+    ],
+    "returncode": 0,
+    "stdout": "",
+    "stderr": "",
+    "checked_at_local": "2026-07-25T23:36:39-0400"
+  }
+}

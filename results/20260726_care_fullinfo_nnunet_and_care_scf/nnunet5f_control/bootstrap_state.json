@@ -1,0 +1,59 @@
+{
+  "created_at_local": "2026-07-25T23:24:52-0400",
+  "task_key": "20260726_care_nnunet5f_control",
+  "host": "c151604.ll.unc.edu",
+  "slurm_job_id": "59620870",
+  "cuda_visible_devices": null,
+  "torch_cuda_available_checked": false,
+  "git": {
+    "status_short_branch": {
+      "cmd": [
+        "git",
+        "status",
+        "--short",
+        "--branch"
+      ],
+      "returncode": 0,
+      "stdout": "## main...origin/main\n?? .codex_runtime/\n?? prompts/tasks/20260726_care_nnunet5f_control_controller.md\n?? prompts/tasks/20260726_care_nnunet5f_control_executor_plan.yaml\n?? prompts/tasks/20260726_care_scf_v1_controller.md\n?? prompts/tasks/20260726_care_scf_v1_executor_plan.yaml\n?? prompts/tasks/20260726_care_scf_v2_docker_alignment_controller.md\n?? prompts/tasks/20260726_care_scf_v2_docker_alignment_executor_plan.yaml\n?? prompts/tasks/20260726_care_submission_sequence_index.md",
+      "stderr": ""
+    },
+    "head": {
+      "cmd": [
+        "git",
+        "rev-parse",
+        "HEAD"
+      ],
+      "returncode": 0,
+      "stdout": "348b4d9201890d2841b9d6061355ba51cb0a4d9e",
+      "stderr": ""
+    },
+    "origin_main": {
+      "cmd": [
+        "git",
+        "rev-parse",
+        "origin/main"
+      ],
+      "returncode": 0,
+      "stdout": "348b4d9201890d2841b9d6061355ba51cb0a4d9e",
+      "stderr": ""
+    },
+    "origin_main_log5": {
+      "cmd": [
+        "git",
+        "log",
+        "-5",
+        "--oneline",
+        "origin/main"
+      ],
+      "returncode": 0,
+      "stdout": "348b4d9 Expand MoSAIC fold0 fair comparison\n0a405b5 Add MoSAIC fold0 fair reproduction packet\n1b1b1bc Record canonical MoSAIC workspace paths\n2209937 Vendor MoSAIC source and inference preflight\n0cd2b21 Add MoSAIC fair reproduction scaffolding",
+      "stderr": ""
+    }
+  },
+  "execution_boundary": {
+    "slurm_submission_performed": false,
+    "use_current_interactive_job_only": true,
+    "validation_upload_authorized": false,
+    "git_push_authorized": false
+  }
+}

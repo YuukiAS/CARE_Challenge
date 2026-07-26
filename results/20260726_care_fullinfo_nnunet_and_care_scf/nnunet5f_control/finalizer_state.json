@@ -1,0 +1,13 @@
+{
+  "created_at_local": "2026-07-25T23:33:00-0400",
+  "task_key": "20260726_care_nnunet5f_control",
+  "state": "READY_FOR_LOCAL_PACKET_COMMIT",
+  "all_jobs_terminal": "not_applicable_no_new_slurm_submitted",
+  "slurm_submission_performed": false,
+  "aggregation_complete": true,
+  "required_outputs_checked": true,
+  "zip": "results/submissions/care_myocardium_validation/upload_ready/20260726_nnunet5f_control__nnUNet5F-control/CARE-Myocardium-OrganAgent.zip",
+  "zip_sha256": "155b1997afc0ccdea77b210e880c7405db49be0bfc64f5331f86e97047238e62",
+  "validation_upload_performed": false,
+  "docker_upload_performed": false
+}

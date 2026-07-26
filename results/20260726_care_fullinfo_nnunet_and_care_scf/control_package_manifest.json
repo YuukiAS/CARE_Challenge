@@ -1,0 +1,21 @@
+{
+  "task_key": "20260726_care_nnunet5f_control",
+  "status": "READY_FOR_LOCAL_PACKET_COMMIT",
+  "model_role": "calibration_control",
+  "myops_model": "nnUNet_5fold_probability_ensemble",
+  "folds": [
+    0,
+    1,
+    2,
+    3,
+    4
+  ],
+  "checkpoint": "checkpoint_best.pth",
+  "single_all_data_model": false,
+  "fresh_inference_in_this_run": false,
+  "fresh_inference_reason": "Current interactive job has torch.cuda.is_available() false and nvidia-smi unavailable; user prohibited submitting another Slurm job.",
+  "package_manifest": "results/20260726_care_fullinfo_nnunet_and_care_scf/nnunet5f_control/nnunet5f_package_manifest.json",
+  "zip": "results/submissions/care_myocardium_validation/upload_ready/20260726_nnunet5f_control__nnUNet5F-control/CARE-Myocardium-OrganAgent.zip",
+  "zip_sha256": "155b1997afc0ccdea77b210e880c7405db49be0bfc64f5331f86e97047238e62",
+  "validation_upload_performed": false
+}

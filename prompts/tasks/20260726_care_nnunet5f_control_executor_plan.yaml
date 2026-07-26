@@ -1,0 +1,110 @@
+schema_version: 1
+task_key: 20260726_care_nnunet5f_control
+status: READY_FOR_CONTROLLER
+execution_mode: controller_supervised
+controller_is_coordinator: true
+executor_slots: 1
+executor_count: 1
+parallel_execution_allowed: false
+result_root: results/20260726_care_fullinfo_nnunet_and_care_scf/nnunet5f_control
+upload_ready_label: nnUNet5F-control
+planning_review_required: false
+review_required: false
+slurm_runtime_continuity_required: true
+continuity_backend: slurm_dependency
+finalizer:
+  dependency: afterany
+  required_state_file: results/20260726_care_fullinfo_nnunet_and_care_scf/nnunet5f_control/finalizer_state.json
+
+waves:
+  - wave_id: CONTROL_W0_BOOTSTRAP_AND_PROVENANCE
+    executor_id: nnunet5f_control_executor
+    blocking: true
+    dependencies: []
+    write_scope:
+      - results/20260726_care_fullinfo_nnunet_and_care_scf/nnunet5f_control/
+    required_outputs:
+      - results/20260726_care_fullinfo_nnunet_and_care_scf/nnunet5f_control/controller_bootstrap_snapshot.md
+      - results/20260726_care_fullinfo_nnunet_and_care_scf/nnunet5f_control/checkpoint_provenance.json
+      - results/20260726_care_fullinfo_nnunet_and_care_scf/nnunet5f_control/nnunet5f_checkpoint_manifest.json
+    completion_conditions:
+      - latest_origin_main_bound
+      - dirty_tree_classified_without_overwrite
+      - five_dataset501_checkpoint_best_files_exist_or_missing_reported
+      - trainer_plans_configuration_dataset_channels_labels_match
+      - fold_split_176_train_44_val_verified_or_blocked
+      - fold_all_existence_audited_without_training
+    failure_action: report_missing_or_inconsistent_checkpoint_provenance_without_generating_control_package
+
+  - wave_id: CONTROL_W1_CINE_FIXED_BRANCH_AUDIT
+    executor_id: nnunet5f_control_executor
+    blocking: true
+    dependencies: [CONTROL_W0_BOOTSTRAP_AND_PROVENANCE]
+    write_scope:
+      - results/20260726_care_fullinfo_nnunet_and_care_scf/nnunet5f_control/
+      - results/submissions/care_myocardium_validation/workspaces/
+    required_outputs:
+      - results/20260726_care_fullinfo_nnunet_and_care_scf/nnunet5f_control/cine_fixed_branch_manifest.json
+      - results/20260726_care_fullinfo_nnunet_and_care_scf/nnunet5f_control/cine_prediction_sha256.csv
+    completion_conditions:
+      - cine_model_checkpoint_prediction_postprocess_match_prior_trusted_submission
+      - cine_nifti_hashes_match_reused_tree_or_rebuild_manifest
+      - no_cine_model_change
+    failure_action: rebuild_cine_from_prior_manifest_if_available_or_stop_NEEDS_EVIDENCE
+
+  - wave_id: CONTROL_W2_MYOPS_5FOLD_ENSEMBLE_AND_PACKAGE
+    executor_id: nnunet5f_control_executor
+    blocking: true
+    dependencies: [CONTROL_W1_CINE_FIXED_BRANCH_AUDIT]
+    write_scope:
+      - results/20260726_care_fullinfo_nnunet_and_care_scf/nnunet5f_control/
+      - results/submissions/care_myocardium_validation/workspaces/
+      - results/submissions/care_myocardium_validation/upload_ready/
+      - logs/
+    routing:
+      primary_partition: htzhulab
+      partitions: [htzhulab, a100-gpu]
+      require_atomic_winner_lock: true
+      require_isolated_attempt_directories: true
+    retry_policy:
+      max_startup_retries: 2
+      max_preemption_retries: 2
+      max_unknown_retries: 0
+    required_outputs:
+      - results/20260726_care_fullinfo_nnunet_and_care_scf/nnunet5f_control/nnunet5f_inference_receipt.json
+      - results/20260726_care_fullinfo_nnunet_and_care_scf/nnunet5f_control/nnunet5f_geometry_audit.csv
+      - results/20260726_care_fullinfo_nnunet_and_care_scf/nnunet5f_control/nnunet5f_label_audit.json
+      - results/20260726_care_fullinfo_nnunet_and_care_scf/nnunet5f_control/nnunet5f_package_manifest.json
+      - results/20260726_care_fullinfo_nnunet_and_care_scf/nnunet5f_control/nnunet5f_zip_sha256.txt
+      - results/20260726_care_fullinfo_nnunet_and_care_scf/nnunet5f_control/control_vs_previous_submission_delta.md
+      - results/submissions/care_myocardium_validation/upload_ready/<timestamp>__nnUNet5F-control/CARE-Myocardium-OrganAgent.zip
+    completion_conditions:
+      - nnUNetv2_predict_invoked_with_folds_0_1_2_3_4
+      - native_probability_ensemble_used_not_hard_label_majority_vote
+      - official_zip_layout_valid
+      - myops_and_cine_labels_pass_allowed_label_audit
+      - zip_sha256_recorded
+      - validation_upload_performed_false
+    failure_action: same_scope_packaging_or_inference_repair_until_terminal_or_NEEDS_EVIDENCE
+
+  - wave_id: CONTROL_W3_FINALIZER_VALIDATOR_AND_LOCAL_PACKET
+    executor_id: nnunet5f_control_executor
+    blocking: true
+    dependencies: [CONTROL_W2_MYOPS_5FOLD_ENSEMBLE_AND_PACKAGE]
+    write_scope:
+      - results/20260726_care_fullinfo_nnunet_and_care_scf/nnunet5f_control/
+      - results/20260726_care_fullinfo_nnunet_and_care_scf/MANIFEST.md
+    required_outputs:
+      - results/20260726_care_fullinfo_nnunet_and_care_scf/nnunet5f_control/finalizer_state.json
+      - results/20260726_care_fullinfo_nnunet_and_care_scf/nnunet5f_control/strict_validator_report.json
+      - results/20260726_care_fullinfo_nnunet_and_care_scf/nnunet5f_control/controller_report.md
+      - results/20260726_care_fullinfo_nnunet_and_care_scf/nnunet5f_control/completion_check.md
+      - results/20260726_care_fullinfo_nnunet_and_care_scf/nnunet5f_control/notification_brief.json
+    completion_conditions:
+      - all_slurm_attempts_terminal_or_not_applicable
+      - aggregation_complete
+      - strict_validator_PASS
+      - controller_report_starts_with_natural_chinese_judgment
+      - local_lightweight_commit_created_if_authorized
+      - git_push_skipped
+    failure_action: repair_same_scope_evidence_or_stop_NEEDS_REPAIR

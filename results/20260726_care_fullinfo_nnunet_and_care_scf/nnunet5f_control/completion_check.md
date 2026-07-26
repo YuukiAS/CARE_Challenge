@@ -1,0 +1,18 @@
+# Completion check
+
+这次只完成 5-fold nnU-Net control 包。本地证据证明五折 checkpoint 和 split 审计通过，新的 upload-ready ZIP 已生成，标签和目录校验通过；当前没有上传 validation，也没有提交新的 Slurm job。
+
+controller_verification_decision: VERIFIED_COMPLETE
+operational_completion_status: COMPLETE
+experiment_adequacy_decision: PASS
+contract_compliance_status: PASS
+required_outputs_complete: true
+validators_passed: true
+all_jobs_terminal: not_applicable_no_new_slurm_submitted
+aggregation_complete: true
+git_commit_decision: COMMIT_LOCAL_PACKET
+git_push_decision: SKIP_PUSH
+route_promotion_decision: NOT_AUTHORIZED
+route_negative_decision: NOT_AUTHORIZED
+scientific_resolution_status: PLANNER_DECISION_REQUIRED
+next_required_action: RETURN_TO_PLANNER_FOR_MANUAL_UPLOAD_DECISION

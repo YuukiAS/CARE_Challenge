@@ -1,0 +1,140 @@
+{
+  "model_role": "calibration_control",
+  "myops_model": "nnUNet_5fold_probability_ensemble",
+  "dataset": "Dataset501_CAREMyoPS",
+  "trainer": "nnUNetTrainer_500epochs",
+  "plans": "nnUNetPlans",
+  "configuration": "3d_fullres",
+  "folds": [
+    0,
+    1,
+    2,
+    3,
+    4
+  ],
+  "checkpoint": "checkpoint_best.pth",
+  "single_all_data_model": false,
+  "validation_upload_performed": false,
+  "base_dir": "data/nnUNet/nnUNet_results/Dataset501_CAREMyoPS/nnUNetTrainer_500epochs__nnUNetPlans__3d_fullres",
+  "plans_json": "data/nnUNet/nnUNet_results/Dataset501_CAREMyoPS/nnUNetTrainer_500epochs__nnUNetPlans__3d_fullres/plans.json",
+  "dataset_json": "data/nnUNet/nnUNet_results/Dataset501_CAREMyoPS/nnUNetTrainer_500epochs__nnUNetPlans__3d_fullres/dataset.json",
+  "preprocessed_dataset_json": "data/nnUNet/nnUNet_preprocessed/Dataset501_CAREMyoPS/dataset.json",
+  "splits_final_json": "data/nnUNet/nnUNet_preprocessed/Dataset501_CAREMyoPS/splits_final.json",
+  "fold_all_checkpoint_exists": false,
+  "checkpoint_records": [
+    {
+      "path": "data/nnUNet/nnUNet_results/Dataset501_CAREMyoPS/nnUNetTrainer_500epochs__nnUNetPlans__3d_fullres/fold_0/checkpoint_best.pth",
+      "exists": true,
+      "size_bytes": 357374639,
+      "mtime": "2026-04-18T16:30:50-0400",
+      "sha256": "f139ca5525322d340a0284c6562a9bcb9cb9cae0a512e14ef40ce85a66f53278"
+    },
+    {
+      "path": "data/nnUNet/nnUNet_results/Dataset501_CAREMyoPS/nnUNetTrainer_500epochs__nnUNetPlans__3d_fullres/fold_1/checkpoint_best.pth",
+      "exists": true,
+      "size_bytes": 357341103,
+      "mtime": "2026-04-19T04:42:20-0400",
+      "sha256": "b92d56b1e24ce826081671acc4e048e5d48b191f6dcb9836747ae82d93acd1e2"
+    },
+    {
+      "path": "data/nnUNet/nnUNet_results/Dataset501_CAREMyoPS/nnUNetTrainer_500epochs__nnUNetPlans__3d_fullres/fold_2/checkpoint_best.pth",
+      "exists": true,
+      "size_bytes": 357327215,
+      "mtime": "2026-04-19T09:15:04-0400",
+      "sha256": "9e328bf4bd6ed9eeadac6f41c5de303c69dfc078dfeac3e64b26e18d3e09d38d"
+    },
+    {
+      "path": "data/nnUNet/nnUNet_results/Dataset501_CAREMyoPS/nnUNetTrainer_500epochs__nnUNetPlans__3d_fullres/fold_3/checkpoint_best.pth",
+      "exists": true,
+      "size_bytes": 357354799,
+      "mtime": "2026-04-19T12:19:10-0400",
+      "sha256": "9c2c2cf0dea4eb8a691c6680fabc66f6456233ba83867466a06ffd5abda3462b"
+    },
+    {
+      "path": "data/nnUNet/nnUNet_results/Dataset501_CAREMyoPS/nnUNetTrainer_500epochs__nnUNetPlans__3d_fullres/fold_4/checkpoint_best.pth",
+      "exists": true,
+      "size_bytes": 357367855,
+      "mtime": "2026-04-19T14:57:34-0400",
+      "sha256": "11c6ccfec5dc51be7c08f1713058412694e1b7def1c5d8cd5520f7f7568aeff2"
+    }
+  ],
+  "result_dataset": {
+    "channel_names": {
+      "0": "LGE",
+      "1": "T2",
+      "2": "C0"
+    },
+    "labels": {
+      "background": 0,
+      "myocardium": 1,
+      "LV_blood": 2,
+      "RV_blood": 3,
+      "edema": 4,
+      "scar": 5
+    },
+    "file_ending": ".nii.gz",
+    "num_training": 220,
+    "sha256": "8437262d92fb898c8d16a89150efd4629602dd71e0fa5bbcf1c6c80cc3b535ae"
+  },
+  "preprocessed_dataset": {
+    "channel_names": {
+      "0": "LGE",
+      "1": "T2",
+      "2": "C0"
+    },
+    "labels": {
+      "background": 0,
+      "myocardium": 1,
+      "LV_blood": 2,
+      "RV_blood": 3,
+      "edema": 4,
+      "scar": 5
+    },
+    "file_ending": ".nii.gz",
+    "num_training": 220,
+    "sha256": "8437262d92fb898c8d16a89150efd4629602dd71e0fa5bbcf1c6c80cc3b535ae"
+  },
+  "plans_json_summary": {
+    "sha256": "06492f8fc75b5de383a28006f76b7f1099f305422953cf9d4f89ae1ec38d3e2f",
+    "plans_name": "nnUNetPlans",
+    "configurations": [
+      "2d",
+      "3d_fullres"
+    ],
+    "dataset_name": "Dataset501_CAREMyoPS"
+  },
+  "split_summary": [
+    {
+      "fold": 0,
+      "train_count": 176,
+      "val_count": 44,
+      "train_176_val_44": true
+    },
+    {
+      "fold": 1,
+      "train_count": 176,
+      "val_count": 44,
+      "train_176_val_44": true
+    },
+    {
+      "fold": 2,
+      "train_count": 176,
+      "val_count": 44,
+      "train_176_val_44": true
+    },
+    {
+      "fold": 3,
+      "train_count": 176,
+      "val_count": 44,
+      "train_176_val_44": true
+    },
+    {
+      "fold": 4,
+      "train_count": 176,
+      "val_count": 44,
+      "train_176_val_44": true
+    }
+  ],
+  "all_folds_176_train_44_val": true,
+  "audit_pass": true
+}

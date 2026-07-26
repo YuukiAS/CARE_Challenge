@@ -1,0 +1,15 @@
+{
+  "created_at_local": "2026-07-25T23:31:43-0400",
+  "task_key": "20260726_care_nnunet5f_control",
+  "command_mode": "explicit prediction dirs copied into new package; no fresh nnUNet inference because current interactive job has no CUDA",
+  "slurm_submission_performed": false,
+  "source_myoPS_prediction_case_count": 15,
+  "source_cine_prediction_case_count": 15,
+  "package_case_counts": {
+    "MyoPS": 15,
+    "CineMyoPS": 15
+  },
+  "nnunet_predict_command_required_for_fresh_gpu_rerun": "./envs/env_CARE/bin/nnUNetv2_predict -d 501 -i <input_dir> -o <output_dir> -c 3d_fullres -tr nnUNetTrainer_500epochs -p nnUNetPlans -f 0 1 2 3 4 -chk checkpoint_best.pth -device cuda -npp 1 -nps 1 --disable_progress_bar",
+  "fresh_gpu_rerun_performed": false,
+  "reuse_reason": "Current interactive job has torch.cuda.is_available() false and nvidia-smi unavailable; user prohibited submitting another Slurm job."
+}

@@ -1,0 +1,104 @@
+{
+  "created_at_local": "2026-07-25T23:31:43-0400",
+  "model_role": "calibration_control",
+  "myops_model": "nnUNet_5fold_probability_ensemble",
+  "folds": [
+    0,
+    1,
+    2,
+    3,
+    4
+  ],
+  "checkpoint": "checkpoint_best.pth",
+  "single_all_data_model": false,
+  "validation_upload_performed": false,
+  "slurm_submission_performed": false,
+  "current_interactive_job_only": true,
+  "cuda_available_in_current_job": false,
+  "inference_policy": "Reused existing validated CUDA-produced MyoPS nnU-Net 5-fold prediction tree because current interactive job has no visible CUDA; no new Slurm job was submitted.",
+  "native_probability_ensemble_evidence": {
+    "source_manifest": "results/submissions/care_myocardium_validation/nnunet_5fold_best/manifest.json",
+    "source_manifest_folds": [
+      "0",
+      "1",
+      "2",
+      "3",
+      "4"
+    ],
+    "source_manifest_checkpoint": "checkpoint_best.pth",
+    "source_predict_args": "results/submissions/care_myocardium_validation/nnunet_5fold_best/nnunet_predictions/Dataset501_CAREMyoPS/predict_from_raw_data_args.json",
+    "majority_vote_used": false
+  },
+  "myops_prediction_source": "results/submissions/care_myocardium_validation/nnunet_5fold_best/nnunet_predictions/Dataset501_CAREMyoPS",
+  "cine_prediction_source": "results/submissions/care_myocardium_validation/workspaces/nnUNet_MyoPS+CineMyoPS_pathology_direct_20260518_030921/predictions/CineMyoPS/CineMyoPS/ensemble",
+  "cine_branch": "CineMyoPS pathology_direct fold0, 20260518_030921; unchanged and hash-audited",
+  "workspace": "results/submissions/care_myocardium_validation/workspaces/20260726_nnunet5f_control__nnUNet5F-control",
+  "upload_dir": "results/submissions/care_myocardium_validation/upload_ready/20260726_nnunet5f_control__nnUNet5F-control",
+  "zip": "results/submissions/care_myocardium_validation/upload_ready/20260726_nnunet5f_control__nnUNet5F-control/CARE-Myocardium-OrganAgent.zip",
+  "zip_sha256": "155b1997afc0ccdea77b210e880c7405db49be0bfc64f5331f86e97047238e62",
+  "script_manifest": {
+    "created_at_local": "2026-07-25T23:30:37",
+    "official_format": "https://zmic.org.cn/care_2026/valid_submission/",
+    "team_name": "OrganAgent",
+    "submission_id": "20260726_nnunet5f_control__nnUNet5F-control",
+    "combo": {
+      "myops_model": "nnUNet",
+      "cine_model": "CineMyoPS"
+    },
+    "timestamp": "20260726_nnunet5f_control",
+    "workspace": "/users/a/e/aereinh/CARE/results/submissions/care_myocardium_validation/workspaces/20260726_nnunet5f_control__nnUNet5F-control",
+    "upload_dir": "/users/a/e/aereinh/CARE/results/submissions/care_myocardium_validation/upload_ready/20260726_nnunet5f_control__nnUNet5F-control",
+    "zip": "/users/a/e/aereinh/CARE/results/submissions/care_myocardium_validation/upload_ready/20260726_nnunet5f_control__nnUNet5F-control/CARE-Myocardium-OrganAgent.zip",
+    "directory_name_policy": "timestamp-first folder: <YYYYMMDD_HHMMSS>__<run_label>; official upload zip name intentionally has no timestamp",
+    "zip_name_policy": "official upload zip name intentionally has no timestamp; timestamp is on parent folder",
+    "myops_cases": 15,
+    "cine_cases": 15,
+    "myops": {
+      "source": "explicit",
+      "pred_dir": "results/submissions/care_myocardium_validation/nnunet_5fold_best/nnunet_predictions/Dataset501_CAREMyoPS"
+    },
+    "cine": {
+      "source": "explicit",
+      "pred_dir": "results/submissions/care_myocardium_validation/workspaces/nnUNet_MyoPS+CineMyoPS_pathology_direct_20260518_030921/predictions/CineMyoPS/CineMyoPS/ensemble",
+      "postprocess_mode": "none"
+    },
+    "pathology_label_fallback": {
+      "raw_label": 2221,
+      "cases": []
+    },
+    "zip_check": {
+      "files": 30,
+      "roots": [
+        "CineMyoPS/",
+        "MyoPS/"
+      ],
+      "branches": {
+        "MyoPS": {
+          "files": 15,
+          "cases": 15,
+          "aggregate_labels": {
+            "0": 4017243,
+            "200": 40578,
+            "500": 56385,
+            "600": 56088,
+            "1220": 21084,
+            "2221": 13615
+          },
+          "missing_pathology_cases": []
+        },
+        "CineMyoPS": {
+          "files": 15,
+          "cases": 15,
+          "aggregate_labels": {
+            "0": 14965592,
+            "200": 115603,
+            "500": 217577,
+            "2221": 58952
+          },
+          "missing_pathology_cases": []
+        }
+      }
+    }
+  },
+  "label_audit_pass": true
+}

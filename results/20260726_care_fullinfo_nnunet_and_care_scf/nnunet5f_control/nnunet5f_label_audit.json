@@ -1,0 +1,90 @@
+{
+  "created_at_local": "2026-07-25T23:31:43-0400",
+  "submission_zip": "results/submissions/care_myocardium_validation/upload_ready/20260726_nnunet5f_control__nnUNet5F-control/CARE-Myocardium-OrganAgent.zip",
+  "branches": {
+    "MyoPS": {
+      "case_count": 15,
+      "cases": [
+        "Case1001",
+        "Case1002",
+        "Case1003",
+        "Case1004",
+        "Case1005",
+        "Case1006",
+        "Case1007",
+        "Case1008",
+        "Case1009",
+        "Case1010",
+        "Case1011",
+        "Case1012",
+        "Case1013",
+        "Case1014",
+        "Case1015"
+      ],
+      "aggregate_labels": {
+        "0": 4017243,
+        "200": 40578,
+        "500": 56385,
+        "600": 56088,
+        "1220": 21084,
+        "2221": 13615
+      },
+      "missing_pathology_cases": [],
+      "extra_labels": {}
+    },
+    "CineMyoPS": {
+      "case_count": 15,
+      "cases": [
+        "Case1001",
+        "Case1002",
+        "Case1003",
+        "Case1004",
+        "Case1005",
+        "Case1006",
+        "Case1007",
+        "Case1008",
+        "Case1009",
+        "Case1010",
+        "Case1011",
+        "Case1012",
+        "Case1013",
+        "Case1014",
+        "Case1015"
+      ],
+      "aggregate_labels": {
+        "0": 14965592,
+        "200": 115603,
+        "500": 217577,
+        "2221": 58952
+      },
+      "missing_pathology_cases": [],
+      "extra_labels": {}
+    }
+  },
+  "allowed_raw_labels": {
+    "MyoPS": [
+      0,
+      200,
+      500,
+      600,
+      1220,
+      2221
+    ],
+    "CineMyoPS": [
+      0,
+      200,
+      500,
+      2221
+    ]
+  },
+  "required_pathology_raw_labels": {
+    "MyoPS": [
+      1220,
+      2221
+    ],
+    "CineMyoPS": [
+      2221
+    ]
+  },
+  "pass": true
+}

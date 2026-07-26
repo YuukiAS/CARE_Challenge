@@ -1,0 +1,151 @@
+schema_version: 1
+task_key: 20260726_care_scf_v1
+status: READY_FOR_CONTROLLER_AFTER_NNUNET5F_CONTROL
+execution_mode: controller_supervised
+controller_is_coordinator: true
+executor_slots: 1
+executor_count: 1
+parallel_execution_allowed: false
+result_root: results/20260726_care_fullinfo_nnunet_and_care_scf/care_scf_v1
+upload_ready_label: CARE-SCF-v1
+planning_review_required: false
+review_required: false
+slurm_runtime_continuity_required: true
+continuity_backend: slurm_dependency
+finalizer:
+  dependency: afterany
+  required_state_file: results/20260726_care_fullinfo_nnunet_and_care_scf/care_scf_v1/finalizer_state.json
+
+waves:
+  - wave_id: SCF_V1_W0_BOOTSTRAP_AND_CONTROL_BINDING
+    executor_id: care_scf_v1_executor
+    blocking: true
+    dependencies: []
+    write_scope:
+      - results/20260726_care_fullinfo_nnunet_and_care_scf/care_scf_v1/
+      - results/20260726_care_fullinfo_nnunet_and_care_scf/MANIFEST.md
+    required_outputs:
+      - results/20260726_care_fullinfo_nnunet_and_care_scf/care_scf_v1/controller_bootstrap_snapshot.md
+      - results/20260726_care_fullinfo_nnunet_and_care_scf/care_scf_v1/control_binding_receipt.json
+      - results/20260726_care_fullinfo_nnunet_and_care_scf/care_scf_v1/mosaic_source_binding_receipt.json
+    completion_conditions:
+      - nnunet5f_control_packet_exists_and_is_COMPLETE
+      - control_cine_prediction_tree_hashes_available
+      - mosaic_full_data_proposal_source_audited_without_score_ownership
+      - no_validation_gt_or_hosted_metric_used_for_thresholds
+    failure_action: stop_BLOCKED_NNUNET5F_CONTROL_REQUIRED_or_NEEDS_EVIDENCE
+
+  - wave_id: SCF_V1_W1_IMPLEMENTATION_AND_UNIT_GATES
+    executor_id: care_scf_v1_executor
+    blocking: true
+    dependencies: [SCF_V1_W0_BOOTSTRAP_AND_CONTROL_BINDING]
+    write_scope:
+      - src/care_myocardium/
+      - scripts/inference/
+      - scripts/evaluation/
+      - scripts/submission/
+      - tests/
+      - configs/care_scf/
+      - results/20260726_care_fullinfo_nnunet_and_care_scf/care_scf_v1/
+    required_outputs:
+      - results/20260726_care_fullinfo_nnunet_and_care_scf/care_scf_v1/runtime_api_contract.json
+      - results/20260726_care_fullinfo_nnunet_and_care_scf/care_scf_v1/unit_test_report.md
+      - results/20260726_care_fullinfo_nnunet_and_care_scf/care_scf_v1/known_bad_report.json
+    completion_conditions:
+      - component_connected_component_decision_unit_implemented
+      - dense_voxelwise_retrieval_segmentation_forbidden_by_tests
+      - pathology_specific_exact_fallback_implemented_with_receipts
+      - no_T2_edema_safety_tests_pass
+      - fake_CARE_anchor_only_outputs_rejected_by_known_bad
+      - new_deep_gate_or_large_training_absent
+    failure_action: controller_returns_source_or_test_gap_to_same_executor
+
+  - wave_id: SCF_V1_W2_CROSSFIT_PROTOTYPES_AND_OOF_GRID
+    executor_id: care_scf_v1_executor
+    blocking: true
+    dependencies: [SCF_V1_W1_IMPLEMENTATION_AND_UNIT_GATES]
+    write_scope:
+      - results/20260726_care_fullinfo_nnunet_and_care_scf/care_scf_v1/
+      - logs/
+    routing:
+      primary_partition: htzhulab
+      partitions: [htzhulab, a100-gpu]
+      require_atomic_winner_lock: true
+      require_isolated_attempt_directories: true
+    retry_policy:
+      max_startup_retries: 2
+      max_preemption_retries: 2
+      max_unknown_retries: 0
+    required_outputs:
+      - results/20260726_care_fullinfo_nnunet_and_care_scf/care_scf_v1/care_scf_config.yaml
+      - results/20260726_care_fullinfo_nnunet_and_care_scf/care_scf_v1/care_scf_prototype_manifest.json
+      - results/20260726_care_fullinfo_nnunet_and_care_scf/care_scf_v1/prototype_embedding_hashes.csv
+      - results/20260726_care_fullinfo_nnunet_and_care_scf/care_scf_v1/oof_threshold_grid.csv
+      - results/20260726_care_fullinfo_nnunet_and_care_scf/care_scf_v1/oof_casewise_metrics.csv
+      - results/20260726_care_fullinfo_nnunet_and_care_scf/care_scf_v1/oof_model_summary.csv
+    completion_conditions:
+      - all_220_training_cases_have_heldout_fold_OOF_predictions
+      - feature_embeddings_from_frozen_network_recorded
+      - scar_positive_negative_banks_have_traceable_components
+      - edema_banks_use_only_T2_present_reliable_label_cases
+      - threshold_grid_selected_only_from_train_OOF
+      - no_official_validation_metric_used
+    failure_action: same_scope_feature_or_prototype_repair_until_PASS_or_NEEDS_EVIDENCE
+
+  - wave_id: SCF_V1_W3_COMPONENT_DECISION_AND_SAFETY_AUDIT
+    executor_id: care_scf_v1_executor
+    blocking: true
+    dependencies: [SCF_V1_W2_CROSSFIT_PROTOTYPES_AND_OOF_GRID]
+    write_scope:
+      - results/20260726_care_fullinfo_nnunet_and_care_scf/care_scf_v1/
+    required_outputs:
+      - results/20260726_care_fullinfo_nnunet_and_care_scf/care_scf_v1/care_scf_component_decisions.csv
+      - results/20260726_care_fullinfo_nnunet_and_care_scf/care_scf_v1/mechanism_activation_audit.csv
+      - results/20260726_care_fullinfo_nnunet_and_care_scf/care_scf_v1/care_scf_casewise_audit.csv
+      - results/20260726_care_fullinfo_nnunet_and_care_scf/care_scf_v1/help_harm.csv
+      - results/20260726_care_fullinfo_nnunet_and_care_scf/care_scf_v1/care_scf_vs_nnunet5f_local_report.md
+      - results/20260726_care_fullinfo_nnunet_and_care_scf/care_scf_v1/care_scf_vs_mosaic_local_report.md
+    completion_conditions:
+      - retain_suppress_replace_decisions_nonzero_when_evidence_supports
+      - final_predictions_differ_from_nnunet_and_mosaic_for_some_cases
+      - scar_safety_gate_pass_or_repair_recorded
+      - edema_safety_gate_pass_or_repair_recorded
+      - max_two_repair_rounds_not_exceeded
+      - anchor_exact_fallbacks_are_explicit_not_silent
+    failure_action: repair_thresholds_prototype_selection_or_deterministic_postprocess_up_to_two_rounds_then_BLOCKED_CARE_SCF_NOT_SAFE_FOR_VALIDATION
+
+  - wave_id: SCF_V1_W4_VALIDATION_PACKAGE_AND_FINAL_PACKET
+    executor_id: care_scf_v1_executor
+    blocking: true
+    dependencies: [SCF_V1_W3_COMPONENT_DECISION_AND_SAFETY_AUDIT]
+    write_scope:
+      - results/20260726_care_fullinfo_nnunet_and_care_scf/care_scf_v1/
+      - results/submissions/care_myocardium_validation/workspaces/
+      - results/submissions/care_myocardium_validation/upload_ready/
+      - wiki/
+      - prompts/routes/handoffs/CURRENT.md
+    required_outputs:
+      - results/submissions/care_myocardium_validation/upload_ready/<timestamp>__CARE-SCF-v1/CARE-Myocardium-OrganAgent.zip
+      - results/20260726_care_fullinfo_nnunet_and_care_scf/care_scf_v1/care_scf_geometry_audit.csv
+      - results/20260726_care_fullinfo_nnunet_and_care_scf/care_scf_v1/care_scf_label_audit.json
+      - results/20260726_care_fullinfo_nnunet_and_care_scf/care_scf_v1/care_scf_package_manifest.json
+      - results/20260726_care_fullinfo_nnunet_and_care_scf/care_scf_v1/care_scf_zip_sha256.txt
+      - results/20260726_care_fullinfo_nnunet_and_care_scf/care_scf_v1/validation_upload_instruction.md
+      - results/20260726_care_fullinfo_nnunet_and_care_scf/care_scf_v1/mapper_report_final.md
+      - results/20260726_care_fullinfo_nnunet_and_care_scf/care_scf_v1/architecture_delta_final.md
+      - results/20260726_care_fullinfo_nnunet_and_care_scf/care_scf_v1/finalizer_state.json
+      - results/20260726_care_fullinfo_nnunet_and_care_scf/care_scf_v1/strict_validator_report.json
+      - results/20260726_care_fullinfo_nnunet_and_care_scf/care_scf_v1/controller_report.md
+      - results/20260726_care_fullinfo_nnunet_and_care_scf/care_scf_v1/completion_check.md
+      - results/20260726_care_fullinfo_nnunet_and_care_scf/care_scf_v1/notification_brief.json
+    completion_conditions:
+      - safety_gate_passed
+      - official_zip_layout_valid
+      - same_cine_tree_as_control
+      - validation_upload_performed_false
+      - docker_upload_performed_false
+      - mapper_final_complete
+      - strict_validator_PASS
+      - local_lightweight_commit_created_if_authorized
+      - git_push_skipped
+    failure_action: repair_same_scope_package_mapper_or_validator_gap_or_stop_NEEDS_REPAIR
