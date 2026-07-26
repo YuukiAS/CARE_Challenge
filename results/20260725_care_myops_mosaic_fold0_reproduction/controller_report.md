@@ -1,4 +1,4 @@
-MoSAIC 的 fold0 公平复现已经完成本地同口径评价：新训练的 MoSAIC fold0 模型和同一划分 nnU-Net baseline 都在 44 个验证病例上按相同 evaluator 计算，历史 Batch10、SCR-R1 和 Batch7 只作为可追溯背景，不被冒充为本轮同口径新训练结果。当前不上传 validation、不构建 Docker、不 push；下一步应由 Planner 根据病例互补性和主指标差距决定是否值得继续做方法修复。
+MoSAIC 的 fold0 公平复现已经完成本地同口径评价：新训练的 MoSAIC fold0、nnU-Net baseline、Batch10 MMRD、Batch7 minimal 和 SCR-R1 generic cascade control 都在 exact fold0 44 个验证病例上按同一 canonical evaluator 计算；Batch10/Batch7 来自现存预测复算，SCR-R1 已从现有 SCR cache 重新导出 raw-space NIfTI 后复算。当前不上传 validation、不构建 Docker、不 push；下一步应由 Planner 根据全量病例级 help/harm 和主指标差距决定是否继续做方法修复。
 
 ## Controller Decision
 controller_verification_decision: VERIFIED_COMPLETE
@@ -16,13 +16,6 @@ next_required_action: RETURN_TO_PLANNER
 ## Key Evidence
 - canonical casewise: `results/20260725_care_myops_mosaic_fold0_reproduction/canonical_casewise_metrics.csv`
 - model summary: `results/20260725_care_myops_mosaic_fold0_reproduction/canonical_model_summary.csv`
-- complementarity: `results/20260725_care_myops_mosaic_fold0_reproduction/pairwise_help_harm.csv`
-- historical boundary: `results/20260725_care_myops_mosaic_fold0_reproduction/historical_attempt_summary.csv`
-## Post-Finalizer Controller Verification
-
-- Replacement repair: original finalizer `60589658` failed on SimpleITK x/y geometry mismatch; `sitk_write_like` was repaired with reference-shape orientation and replacement finalizer `60607636` completed `0:0`.
-- Terminal accounting: `60589655`, `60589656`, `60589657`, `60589658`, and `60607636` are all terminal in `slurm_attempts.csv`; failed finalizer is retained.
-- Strict validator: `strict_validator_report.json` is `PASS` after post-finalizer self-accounting.
-- Focused tests: `63 passed, 18 warnings` for MoSAIC contract/protocol, Batch10 fair inference, and controller notifier tests.
-- Mapper: `prompts/routes/handoffs/CURRENT.md`, `wiki/README.md`, and `wiki/current_state.yaml` updated; `validate_care_architecture_wiki.py --strict` and `generate_care_architecture_wiki.py --check` passed.
-
+- MoSAIC/nnU-Net complementarity: `results/20260725_care_myops_mosaic_fold0_reproduction/pairwise_help_harm.csv`
+- all candidates vs nnU-Net: `results/20260725_care_myops_mosaic_fold0_reproduction/all_model_pairwise_vs_nnunet.csv`
+- historical/export boundary: `results/20260725_care_myops_mosaic_fold0_reproduction/historical_attempt_summary.csv`

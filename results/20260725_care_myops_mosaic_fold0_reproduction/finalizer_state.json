@@ -3,11 +3,8 @@
   "aggregation_ran": true,
   "all_required_present_or_planned_before_state_write": true,
   "docker_build_performed": false,
-  "focused_tests": "63 passed, 18 warnings",
   "git_push_performed": false,
-  "mapper_update": "PASS",
-  "post_finalizer_self_accounting_complete": true,
-  "post_finalizer_self_accounting_required": false,
+  "post_finalizer_self_accounting_required": true,
   "status": "READY_FOR_LOCAL_PACKET_COMMIT",
   "terminal_accounting": {
     "all_expected_terminal": true,

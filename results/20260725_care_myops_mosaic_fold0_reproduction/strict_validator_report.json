@@ -57,7 +57,8 @@
   ],
   "required_secondary_canonical_model_ids": [
     "Batch10_MMRD::distill_epoch25_two_seed_mean",
-    "Batch7_minimal"
+    "Batch7_minimal",
+    "SCR_R1_generic_cascade_control"
   ],
   "required_summary_subgroups": [
     "all",

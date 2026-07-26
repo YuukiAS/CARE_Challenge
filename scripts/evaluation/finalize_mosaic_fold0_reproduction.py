@@ -503,6 +503,65 @@ def pairwise(casewise: list[dict[str, Any]]) -> tuple[list[dict[str, Any]], dict
     return out, report
 
 
+def pairwise_all_vs_nnunet(casewise: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    by_key = {(row["model_id"], row["case_id"], row["pathology"]): row for row in casewise}
+    rows: list[dict[str, Any]] = []
+    model_ids = sorted({row["model_id"] for row in casewise if row["model_id"] != "nnunet_fold0"})
+    case_ids = sorted({row["case_id"] for row in casewise})
+    for model_id in model_ids:
+        for case_id in case_ids:
+            for pathology in sorted(PATHOLOGIES):
+                candidate = by_key.get((model_id, case_id, pathology))
+                baseline = by_key.get(("nnunet_fold0", case_id, pathology))
+                if not candidate or not baseline:
+                    continue
+                dice_delta = numeric_delta(candidate.get("Dice"), baseline.get("Dice"))
+                if dice_delta is None:
+                    help_harm = "not_applicable_empty_gt"
+                elif dice_delta > 1e-8:
+                    help_harm = "help"
+                elif dice_delta < -1e-8:
+                    help_harm = "harm"
+                else:
+                    help_harm = "tie"
+                rows.append({
+                    "model_id": model_id,
+                    "case_id": case_id,
+                    "center": candidate.get("center", baseline.get("center", "")),
+                    "modality_group": candidate.get("modality_group", baseline.get("modality_group", "")),
+                    "t2_present": candidate.get("t2_present", baseline.get("t2_present", "")),
+                    "pathology": pathology,
+                    "gt_positive": candidate.get("gt_positive"),
+                    "nnunet_Dice": baseline.get("Dice"),
+                    "candidate_Dice": candidate.get("Dice"),
+                    "dice_delta_candidate_minus_nnunet": dice_delta,
+                    "nnunet_exact_HD": baseline.get("exact_HD"),
+                    "candidate_exact_HD": candidate.get("exact_HD"),
+                    "exact_HD_delta_candidate_minus_nnunet": numeric_delta(candidate.get("exact_HD"), baseline.get("exact_HD")),
+                    "nnunet_HD95": baseline.get("HD95"),
+                    "candidate_HD95": candidate.get("HD95"),
+                    "HD95_delta_candidate_minus_nnunet": numeric_delta(candidate.get("HD95"), baseline.get("HD95")),
+                    "nnunet_precision": baseline.get("precision"),
+                    "candidate_precision": candidate.get("precision"),
+                    "precision_delta_candidate_minus_nnunet": numeric_delta(candidate.get("precision"), baseline.get("precision")),
+                    "nnunet_recall": baseline.get("recall"),
+                    "candidate_recall": candidate.get("recall"),
+                    "recall_delta_candidate_minus_nnunet": numeric_delta(candidate.get("recall"), baseline.get("recall")),
+                    "nnunet_remote_FP_mm3": baseline.get("remote_FP_mm3"),
+                    "candidate_remote_FP_mm3": candidate.get("remote_FP_mm3"),
+                    "remote_FP_delta_candidate_minus_nnunet": numeric_delta(candidate.get("remote_FP_mm3"), baseline.get("remote_FP_mm3")),
+                    "nnunet_component_count": baseline.get("component_count"),
+                    "candidate_component_count": candidate.get("component_count"),
+                    "component_count_delta_candidate_minus_nnunet": numeric_delta(candidate.get("component_count"), baseline.get("component_count")),
+                    "nnunet_empty_prediction": baseline.get("empty_prediction"),
+                    "candidate_empty_prediction": candidate.get("empty_prediction"),
+                    "empty_prediction_disagreement": int(str(candidate.get("empty_prediction")) != str(baseline.get("empty_prediction"))),
+                    "prediction_presence_disagreement": int(str(candidate.get("prediction_positive")) != str(baseline.get("prediction_positive"))),
+                    "help_harm": help_harm,
+                })
+    return rows
+
+
 def build_fair_comparison_audit(config: dict[str, Any], result_root: Path, *, status: str) -> dict[str, Any]:
     split_path = REPO_ROOT / config["dataset"]["split_path"]
     fold = int(config["dataset"]["fold"])
@@ -696,6 +755,22 @@ def find_batch7_minimal_prediction_rows(cases: list[str]) -> tuple[dict[tuple[st
     return by_key, missing
 
 
+def find_scr_r1_prediction_rows(result_root: Path, cases: list[str]) -> tuple[dict[tuple[str, str], Path], list[str], Path]:
+    manifest_path = result_root / "scr_r1_predictions" / "prediction_manifest.csv"
+    rows = read_csv_rows(manifest_path)
+    by_key: dict[tuple[str, str], Path] = {}
+    pathology_map = {"scar": "scar", "edema": "pure_edema", "pure_edema": "pure_edema"}
+    for row in rows:
+        case_id = str(row.get("case_id", ""))
+        pathology = pathology_map.get(str(row.get("pathology", "")), "")
+        pred = row.get("prediction_path") or ""
+        pred_path = REPO_ROOT / pred if pred and not Path(pred).is_absolute() else Path(pred)
+        if case_id in cases and pathology in PATHOLOGIES and pred_path.is_file():
+            by_key[(case_id, pathology)] = pred_path
+    missing = [f"{case_id}/{pathology}" for case_id in cases for pathology in sorted(PATHOLOGIES) if (case_id, pathology) not in by_key]
+    return by_key, missing, manifest_path
+
+
 def canonical_summary_from_pathology_prediction_map(config: dict[str, Any], model_id: str, prediction_map: dict[tuple[str, str], Path], *, source_path: Path, source_status: str) -> list[dict[str, Any]]:
     cases = load_fold_val_cases(REPO_ROOT / config["dataset"]["split_path"], int(config["dataset"]["fold"]))
     metadata = load_myops_case_metadata(REPO_ROOT)
@@ -740,6 +815,128 @@ def canonical_summary_from_pathology_prediction_map(config: dict[str, Any], mode
     return decorate_secondary_rows(summarize(casewise), source_path=source_path, source_status=source_status)
 
 
+def casewise_from_prediction_map(config: dict[str, Any], model_id: str, prediction_map: dict[str, Path], *, source_path: Path, source_status: str) -> tuple[list[dict[str, Any]], list[dict[str, Any]]]:
+    cases = load_fold_val_cases(REPO_ROOT / config["dataset"]["split_path"], int(config["dataset"]["fold"]))
+    metadata = load_myops_case_metadata(REPO_ROOT)
+    gt_dir = REPO_ROOT / config["dataset"]["raw_label_dir"]
+    casewise: list[dict[str, Any]] = []
+    geometry_rows: list[dict[str, Any]] = []
+    for case_id in cases:
+        gt_img = sitk.ReadImage(str(gt_dir / f"{case_id}.nii.gz"))
+        gt = sitk.GetArrayFromImage(gt_img).astype(np.int32, copy=False)
+        pred_path = prediction_map[case_id]
+        pred, audit = load_prediction_for_metrics(pred_path, gt_img, "compact")
+        geometry_rows.append({"model_id": model_id, "case_id": case_id, "status": "PASS" if audit["standardized_geometry_match"] else "FAIL", **audit})
+        spacing = tuple(float(x) for x in gt_img.GetSpacing()[::-1])
+        meta = metadata[case_id]
+        for pathology, class_id in PATHOLOGIES.items():
+            p_mask = pred == class_id
+            g_mask = gt == class_id
+            dists = surface_distances(p_mask, g_mask, spacing)
+            exact_hd = float(np.max(dists)) if dists.size else math.inf
+            hd95 = float(np.percentile(dists, 95)) if dists.size else math.inf
+            prec, rec = precision_recall(pred, gt, class_id)
+            comp = component_stats(pred, gt, class_id, spacing)
+            casewise.append({
+                "model_id": model_id,
+                "comparison_tier": "secondary_canonical",
+                "status": "canonical_recomputed_from_existing_predictions",
+                "source_status": source_status,
+                "source_path": rel(source_path),
+                "case_id": case_id,
+                "center": meta.center,
+                "modality_group": meta.modality_group,
+                "t2_present": int(meta.t2_present),
+                "pathology": pathology,
+                "gt_positive": int(g_mask.any()),
+                "prediction_positive": int(p_mask.any()),
+                "Dice": dice_per_class(pred, gt, class_id, skip_if_gt_empty=True),
+                "exact_HD": exact_hd,
+                "HD95": hd95,
+                "precision": prec,
+                "recall": rec,
+                "empty_prediction": int(not p_mask.any()),
+                **comp,
+            })
+    return casewise, geometry_rows
+
+
+def casewise_from_pathology_prediction_map(config: dict[str, Any], model_id: str, prediction_map: dict[tuple[str, str], Path], *, source_path: Path, source_status: str) -> tuple[list[dict[str, Any]], list[dict[str, Any]]]:
+    cases = load_fold_val_cases(REPO_ROOT / config["dataset"]["split_path"], int(config["dataset"]["fold"]))
+    metadata = load_myops_case_metadata(REPO_ROOT)
+    gt_dir = REPO_ROOT / config["dataset"]["raw_label_dir"]
+    casewise: list[dict[str, Any]] = []
+    geometry_rows: list[dict[str, Any]] = []
+    for case_id in cases:
+        gt_img = sitk.ReadImage(str(gt_dir / f"{case_id}.nii.gz"))
+        gt = sitk.GetArrayFromImage(gt_img).astype(np.int32, copy=False)
+        spacing = tuple(float(x) for x in gt_img.GetSpacing()[::-1])
+        meta = metadata[case_id]
+        for pathology, class_id in PATHOLOGIES.items():
+            pred_path = prediction_map[(case_id, pathology)]
+            pred, audit = load_prediction_for_metrics(pred_path, gt_img, "compact")
+            geometry_rows.append({"model_id": model_id, "case_id": case_id, "pathology": pathology, "status": "PASS" if audit["standardized_geometry_match"] else "FAIL", **audit})
+            p_mask = pred == class_id
+            g_mask = gt == class_id
+            dists = surface_distances(p_mask, g_mask, spacing)
+            exact_hd = float(np.max(dists)) if dists.size else math.inf
+            hd95 = float(np.percentile(dists, 95)) if dists.size else math.inf
+            prec, rec = precision_recall(pred, gt, class_id)
+            comp = component_stats(pred, gt, class_id, spacing)
+            casewise.append({
+                "model_id": model_id,
+                "comparison_tier": "secondary_canonical",
+                "status": "canonical_recomputed_from_existing_predictions",
+                "source_status": source_status,
+                "source_path": rel(source_path),
+                "case_id": case_id,
+                "center": meta.center,
+                "modality_group": meta.modality_group,
+                "t2_present": int(meta.t2_present),
+                "pathology": pathology,
+                "gt_positive": int(g_mask.any()),
+                "prediction_positive": int(p_mask.any()),
+                "Dice": dice_per_class(pred, gt, class_id, skip_if_gt_empty=True),
+                "exact_HD": exact_hd,
+                "HD95": hd95,
+                "precision": prec,
+                "recall": rec,
+                "empty_prediction": int(not p_mask.any()),
+                **comp,
+            })
+    return casewise, geometry_rows
+
+
+def secondary_casewise_metrics(config: dict[str, Any], result_root: Path) -> tuple[list[dict[str, Any]], list[dict[str, Any]]]:
+    cases = load_fold_val_cases(REPO_ROOT / config["dataset"]["split_path"], int(config["dataset"]["fold"]))
+    casewise: list[dict[str, Any]] = []
+    geometry: list[dict[str, Any]] = []
+    batch10_manifest = RESULT_BATCH10 / "ensemble_manifest.csv"
+    batch10_rank = RESULT_BATCH10 / "full44_candidate_ranking.csv"
+    batch10_candidate = ""
+    ranked = read_csv_rows(batch10_rank)
+    if ranked:
+        batch10_candidate = ranked[0].get("candidate", "")
+    if batch10_manifest.is_file() and batch10_candidate:
+        pred_map, missing = find_manifest_prediction_rows(batch10_manifest, batch10_candidate, cases)
+        if not missing:
+            rows, geom = casewise_from_prediction_map(config, f"Batch10_MMRD::{batch10_candidate}", pred_map, source_path=batch10_manifest, source_status="rank1_manifest_44_predictions_present")
+            casewise.extend(rows)
+            geometry.extend(geom)
+    batch7_path = RESULT_BATCH7_MIN / "casewise_metrics.csv"
+    batch7_map, batch7_missing = find_batch7_minimal_prediction_rows(cases)
+    if batch7_path.is_file() and not batch7_missing:
+        rows, geom = casewise_from_pathology_prediction_map(config, "Batch7_minimal", batch7_map, source_path=batch7_path, source_status="formal_400_minimal_pathology_predictions_present")
+        casewise.extend(rows)
+        geometry.extend(geom)
+    scr_map, scr_missing, scr_manifest = find_scr_r1_prediction_rows(result_root, cases)
+    if scr_manifest.is_file() and not scr_missing:
+        rows, geom = casewise_from_pathology_prediction_map(config, "SCR_R1_generic_cascade_control", scr_map, source_path=scr_manifest, source_status="selected_control_candidates_exported_44x2_from_existing_scr_cache")
+        casewise.extend(rows)
+        geometry.extend(geom)
+    return casewise, geometry
+
+
 def secondary_comparison_summary(config: dict[str, Any], result_root: Path) -> tuple[list[dict[str, Any]], list[dict[str, Any]]]:
     canonical_rows: list[dict[str, Any]] = []
     history_rows: list[dict[str, Any]] = []
@@ -770,9 +967,16 @@ def secondary_comparison_summary(config: dict[str, Any], result_root: Path) -> t
     else:
         history_rows.append({"model_id": "Batch7_minimal", "status": "historical_noncanonical_missing_prediction_files", "source_path": rel(batch7_path), "missing_case_pathology_count": len(batch7_missing), "missing_case_pathologies": ";".join(batch7_missing[:10])})
 
+    scr_map, scr_missing, scr_manifest = find_scr_r1_prediction_rows(result_root, cases)
+    if scr_manifest.is_file() and not scr_missing:
+        canonical_rows.extend(canonical_summary_from_pathology_prediction_map(config, "SCR_R1_generic_cascade_control", scr_map, source_path=scr_manifest, source_status="selected_control_candidates_exported_44x2_from_existing_scr_cache"))
+        history_rows.append({"model_id": "SCR_R1_generic_cascade_control", "status": "canonical_recomputed_in_canonical_model_summary", "source_path": rel(scr_manifest), "case_pathology_count": len(scr_map)})
+    else:
+        history_rows.append({"model_id": "SCR_R1_generic_cascade_control", "status": "historical_noncanonical_missing_exported_prediction_files", "source_path": rel(scr_manifest), "missing_case_pathology_count": len(scr_missing), "missing_case_pathologies": ";".join(scr_missing[:10])})
+
     sources = [
         ("Batch10_MMRD_baseline", RESULT_BATCH10 / "baseline_recomputed_summary.csv", "historical_reference_not_current_candidate"),
-        ("SCR_R1_generic_cascade_control", RESULT_SCR / "full44_final_candidate_metrics_v2.csv", "historical_noncanonical_existing_casewise_no_prediction_paths_for_recompute"),
+        ("SCR_R1_preexport_metrics", RESULT_SCR / "full44_final_candidate_metrics_v2.csv", "historical_preexport_metrics_not_used_for_canonical_table"),
         ("SCR_R1_calibration_casewise", RESULT_SCR / "calibration_casewise_metrics_v2.csv", "historical_noncanonical_calibration_not_current_primary"),
     ]
     for model_id, path, status in sources:
@@ -803,6 +1007,9 @@ def expected_secondary_canonical_model_ids(config: dict[str, Any]) -> list[str]:
     batch7_map, batch7_missing = find_batch7_minimal_prediction_rows(cases)
     if (RESULT_BATCH7_MIN / "casewise_metrics.csv").is_file() and not batch7_missing and len(batch7_map) == len(cases) * len(PATHOLOGIES):
         expected.append("Batch7_minimal")
+    scr_map, scr_missing, _ = find_scr_r1_prediction_rows(DEFAULT_RESULT_ROOT, cases)
+    if not scr_missing and len(scr_map) == len(cases) * len(PATHOLOGIES):
+        expected.append("SCR_R1_generic_cascade_control")
     return expected
 
 
@@ -881,6 +1088,7 @@ def write_reports(config: dict[str, Any], result_root: Path, casewise: list[dict
     write_csv(result_root / "canonical_casewise_metrics.csv", casewise)
     write_csv(result_root / "canonical_model_summary.csv", summary)
     write_csv(result_root / "pairwise_help_harm.csv", pairs)
+    write_csv(result_root / "all_model_pairwise_vs_nnunet.csv", pairwise_all_vs_nnunet(casewise))
     write_csv(result_root / "historical_attempt_summary.csv", history_rows)
     write_csv(result_root / "geometry_audit.csv", geometry_rows)
     write_csv(result_root / "label_mapping_audit.csv", label_mapping_audit_rows())
@@ -934,8 +1142,9 @@ def write_reports(config: dict[str, Any], result_root: Path, casewise: list[dict
         if missing_secondary_keys:
             errors.append("secondary_canonical_summary_required_rows_missing:" + ";".join(missing_secondary_keys[:20]))
     history_by_model = {str(row.get("model_id")): str(row.get("status")) for row in history_rows}
-    if not history_by_model.get("SCR_R1_generic_cascade_control", "").startswith("historical_noncanonical"):
-        errors.append("scr_r1_historical_noncanonical_boundary_missing")
+    scr_status = history_by_model.get("SCR_R1_generic_cascade_control", "")
+    if scr_status not in {"canonical_recomputed_in_canonical_model_summary", "historical_noncanonical_missing_exported_prediction_files"}:
+        errors.append("scr_r1_canonical_or_missing_export_boundary_invalid")
     for secondary_model_id in expected_secondary_canonical_model_ids(config):
         if history_by_model.get(secondary_model_id) != "canonical_recomputed_in_canonical_model_summary":
             errors.append(f"secondary_history_boundary_missing:{secondary_model_id}")
@@ -1060,7 +1269,7 @@ def write_reports(config: dict[str, Any], result_root: Path, casewise: list[dict
     }
     write_json(result_root / "finalizer_state.json", finalizer_state)
     if verified_complete:
-        report_intro = "MoSAIC 的 fold0 公平复现已经完成本地同口径评价：新训练的 MoSAIC fold0 模型和同一划分 nnU-Net baseline 都在 44 个验证病例上按相同 evaluator 计算，历史 Batch10、SCR-R1 和 Batch7 只作为可追溯背景，不被冒充为本轮同口径新训练结果。当前不上传 validation、不构建 Docker、不 push；下一步应由 Planner 根据病例互补性和主指标差距决定是否值得继续做方法修复。"
+        report_intro = "MoSAIC 的 fold0 公平复现已经完成本地同口径评价：新训练的 MoSAIC fold0、nnU-Net baseline、Batch10 MMRD、Batch7 minimal 和 SCR-R1 generic cascade control 都在 exact fold0 44 个验证病例上按同一 canonical evaluator 计算；Batch10/Batch7 来自现存预测复算，SCR-R1 已从现有 SCR cache 重新导出 raw-space NIfTI 后复算。当前不上传 validation、不构建 Docker、不 push；下一步应由 Planner 根据全量病例级 help/harm 和主指标差距决定是否继续做方法修复。"
         operational_status = "TERMINAL_LOCAL_AGGREGATED"
         next_action = "RETURN_TO_PLANNER"
     else:
@@ -1086,8 +1295,9 @@ def write_reports(config: dict[str, Any], result_root: Path, casewise: list[dict
         "## Key Evidence",
         f"- canonical casewise: `{rel(result_root / 'canonical_casewise_metrics.csv')}`",
         f"- model summary: `{rel(result_root / 'canonical_model_summary.csv')}`",
-        f"- complementarity: `{rel(result_root / 'pairwise_help_harm.csv')}`",
-        f"- historical boundary: `{rel(result_root / 'historical_attempt_summary.csv')}`",
+        f"- MoSAIC/nnU-Net complementarity: `{rel(result_root / 'pairwise_help_harm.csv')}`",
+        f"- all candidates vs nnU-Net: `{rel(result_root / 'all_model_pairwise_vs_nnunet.csv')}`",
+        f"- historical/export boundary: `{rel(result_root / 'historical_attempt_summary.csv')}`",
     ]
     (result_root / "controller_report.md").write_text("\n".join(report_lines) + "\n", encoding="utf-8")
     comp_lines = [
@@ -1147,11 +1357,13 @@ def main() -> int:
             return completed.returncode
     write_json(result_root / "fair_comparison_audit.json", build_fair_comparison_audit(config, result_root, status="PASS_TERMINAL_CONTRACT"))
     casewise, geometry_rows = evaluate_models(config, result_root)
+    secondary_casewise, secondary_geometry_rows = secondary_casewise_metrics(config, result_root)
+    all_casewise = casewise + secondary_casewise
     primary_summary = summarize(casewise)
     secondary_canonical_rows, history_rows = secondary_comparison_summary(config, result_root)
     summary = primary_summary + secondary_canonical_rows
     pairs, oracle = pairwise(casewise)
-    write_reports(config, result_root, casewise, summary, pairs, oracle, geometry_rows, history_rows, terminal_accounting)
+    write_reports(config, result_root, all_casewise, summary, pairs, oracle, geometry_rows + secondary_geometry_rows, history_rows, terminal_accounting)
     status = json.loads((result_root / "strict_validator_report.json").read_text(encoding="utf-8"))["status"]
     return 0 if status == "PASS" else 2
 

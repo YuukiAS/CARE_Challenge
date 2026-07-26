@@ -1,7 +1,6 @@
 {
   "blocked_or_failure_reason": "none",
-  "commit_state": "local_commit_created",
-  "commit_status": "local_commit_created",
+  "commit_status": "local_commit_not_yet_recorded",
   "evidence_paths": [
     "results/20260725_care_myops_mosaic_fold0_reproduction/controller_report.md",
     "results/20260725_care_myops_mosaic_fold0_reproduction/completion_check.md",
@@ -10,14 +9,9 @@
     "results/20260725_care_myops_mosaic_fold0_reproduction/slurm_attempts.csv"
   ],
   "final_status": "VERIFIED_COMPLETE",
-  "git_push_performed": false,
-  "key_conclusion": "MoSAIC fold0 random-init underperformed nnU-Net on same canonical fold0 comparison; full-data MoSAIC weights were not used for fold0 training/comparison.",
-  "local_commit_created": true,
-  "local_commit_note": "Local lightweight commit created; no push was performed. Current git HEAD is reported by controller final status.",
-  "next_step": "等待用户决定是否基于公平fold0结果进行下一步；不上传、不Docker、不push。",
+  "key_conclusion": "MoSAIC fold0\u968f\u673a\u521d\u59cb\u5316\u516c\u5e73\u590d\u73b0\u4e0ennU-Net\u540c\u53e3\u5f84\u6bd4\u8f83\u5df2\u5b8c\u6210\u672c\u5730\u805a\u5408\u3002",
+  "next_step": "\u5b8c\u6210\u672c\u5730\u8f7b\u91cfcommit\u540e\u7531\u65e2\u6709notify_goal_watcher\u53d1\u9001\u4e2d\u6587\u77ed\u90ae\u4ef6\uff1b\u4e0d\u4e0a\u4f20\u3001\u4e0dDocker\u3001\u4e0dpush\u3002",
   "push_status": "not_pushed_not_authorized",
-  "slurm_terminal_accounting": "60589655/60589656/60589657/60589658/60607636 terminal; replacement finalizer 60607636 completed",
   "slurm_terminal_status": "TERMINAL_ACCOUNTED",
-  "task_name": "20260725_care_myops_mosaic_fold0_reproduction",
-  "terminal_status": "VERIFIED_COMPLETE_LOCAL_ONLY"
+  "task_name": "20260725_care_myops_mosaic_fold0_reproduction"
 }

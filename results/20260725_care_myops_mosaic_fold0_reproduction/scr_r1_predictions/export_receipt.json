@@ -1,0 +1,150 @@
+{
+  "case_count": 44,
+  "decisions": [
+    {
+      "checkpoint_rows": [
+        {
+          "checkpoint_path": "results/20260724_care_myops_srr_cascade_submission_rescue/runtime/formal_v2/scar_seed20260724/scar_cascade_control/checkpoints/checkpoint_final.pt",
+          "checkpoint_sha256": "83bd88e50321607a50790cf94171cc07135cc23b26dbdcfd28ea7c4e28ba7dd1",
+          "kind": "control",
+          "optimizer_step": 6250,
+          "pathology": "scar",
+          "seed": 20260724,
+          "selected_for_candidate_set": true
+        },
+        {
+          "checkpoint_path": "results/20260724_care_myops_srr_cascade_submission_rescue/runtime/formal_v2/scar_seed20260724/scar_srr_cascade/checkpoints/checkpoint_final.pt",
+          "checkpoint_sha256": "7bd1d57fbfac02e261defe1cd3faa9604a8078757d55921dd5e65764ef499c79",
+          "kind": "srr",
+          "optimizer_step": 6250,
+          "pathology": "scar",
+          "seed": 20260724,
+          "selected_for_candidate_set": true
+        },
+        {
+          "checkpoint_path": "results/20260724_care_myops_srr_cascade_submission_rescue/runtime/formal_v2/scar_seed20260725/scar_cascade_control/checkpoints/checkpoint_final.pt",
+          "checkpoint_sha256": "2692b86db1cd5a85fcfe7870f5478f029f384bea89543fa4cd7339e28ab9bb11",
+          "kind": "control",
+          "optimizer_step": 6250,
+          "pathology": "scar",
+          "seed": 20260725,
+          "selected_for_candidate_set": true
+        },
+        {
+          "checkpoint_path": "results/20260724_care_myops_srr_cascade_submission_rescue/runtime/formal_v2/scar_seed20260725/scar_srr_cascade/checkpoints/checkpoint_final.pt",
+          "checkpoint_sha256": "e6ccbee507f67748f7a1b0bd41a98f1deb3f71a8323cf2699e394a30bf0f3806",
+          "kind": "srr",
+          "optimizer_step": 6250,
+          "pathology": "scar",
+          "seed": 20260725,
+          "selected_for_candidate_set": true
+        }
+      ],
+      "decision": {
+        "audit_gate": {
+          "blockers": [
+            "exact_HD_delta_max"
+          ],
+          "checks": {
+            "HD95_relative_worsening_max": true,
+            "candidate_eligible": true,
+            "exact_HD_delta_max": false,
+            "help_minus_harm_min": true,
+            "positive_GT_Dice_delta_min": true,
+            "positive_GT_empty_max": true,
+            "remote_FP_ratio_max": true
+          },
+          "decision": "FAIL"
+        },
+        "audit_pass": false,
+        "audit_used_for_selection": false,
+        "decision": "FALLBACK_TO_NNUNET",
+        "decode": "six_class_argmax_same_as_deployment",
+        "pathology": "scar",
+        "prototype_bank_record_count": 176,
+        "prototype_bank_source": "fold0_train_only",
+        "selected_candidate": "control_two_seed_probability_mean_derived_bounded_channel_correction",
+        "selection_split": "calibration"
+      },
+      "pathology": "scar",
+      "selected_candidate": "control_two_seed_probability_mean_derived_bounded_channel_correction"
+    },
+    {
+      "checkpoint_rows": [
+        {
+          "checkpoint_path": "results/20260724_care_myops_srr_cascade_submission_rescue/runtime/formal_v2/edema_seed20260724/edema_zone_control/checkpoints/checkpoint_final.pt",
+          "checkpoint_sha256": "fd1bab769737d7e85102d27b562cc7229bb8f3ade53e1d82ccd39c4a863e7a90",
+          "kind": "control",
+          "optimizer_step": 6250,
+          "pathology": "edema",
+          "seed": 20260724,
+          "selected_for_candidate_set": true
+        },
+        {
+          "checkpoint_path": "results/20260724_care_myops_srr_cascade_submission_rescue/runtime/formal_v2/edema_seed20260724/edema_srr_zone_cascade/checkpoints/checkpoint_final.pt",
+          "checkpoint_sha256": "c24e0e35262e9da1d65734d4b896519bd71e19562589b4ee743c43ecfde301ed",
+          "kind": "srr",
+          "optimizer_step": 6250,
+          "pathology": "edema",
+          "seed": 20260724,
+          "selected_for_candidate_set": true
+        },
+        {
+          "checkpoint_path": "results/20260724_care_myops_srr_cascade_submission_rescue/runtime/formal_v2/edema_seed20260725/edema_zone_control/checkpoints/checkpoint_final.pt",
+          "checkpoint_sha256": "52f71659c9c37ab576d60ff0fe832a773bfe1a0a7d12155fdbd464497f79613e",
+          "kind": "control",
+          "optimizer_step": 6250,
+          "pathology": "edema",
+          "seed": 20260725,
+          "selected_for_candidate_set": true
+        },
+        {
+          "checkpoint_path": "results/20260724_care_myops_srr_cascade_submission_rescue/runtime/formal_v2/edema_seed20260725/edema_srr_zone_cascade/checkpoints/checkpoint_final.pt",
+          "checkpoint_sha256": "dd2699ef744f6e49eb4100ea3e020c4b54b0e2c37c34930225da1f3ce0a1cb55",
+          "kind": "srr",
+          "optimizer_step": 6250,
+          "pathology": "edema",
+          "seed": 20260725,
+          "selected_for_candidate_set": true
+        }
+      ],
+      "decision": {
+        "audit_gate": {
+          "blockers": [
+            "exact_HD_delta_max"
+          ],
+          "checks": {
+            "CenterB_Dice_delta_min": true,
+            "CenterC_Dice_delta_min": true,
+            "HD95_relative_worsening_max": true,
+            "candidate_eligible": true,
+            "exact_HD_delta_max": false,
+            "help_minus_harm_min": true,
+            "no_t2_edema_voxels_max": true,
+            "positive_GT_Dice_delta_min": true,
+            "positive_GT_empty_max": true,
+            "remote_FP_ratio_max": true
+          },
+          "decision": "FAIL"
+        },
+        "audit_pass": false,
+        "audit_used_for_selection": false,
+        "decision": "FALLBACK_TO_NNUNET",
+        "decode": "six_class_argmax_same_as_deployment",
+        "pathology": "edema",
+        "prototype_bank_record_count": 176,
+        "prototype_bank_source": "fold0_train_only",
+        "selected_candidate": "control_seed20260724",
+        "selection_split": "calibration"
+      },
+      "pathology": "edema",
+      "selected_candidate": "control_seed20260724"
+    }
+  ],
+  "device": "cuda",
+  "notes": "Exports SCR-R1 selected candidates for fold0 canonical comparison only; no training, validation upload, Docker, or push.",
+  "output_root": "results/20260725_care_myops_mosaic_fold0_reproduction/scr_r1_predictions",
+  "pathology_count": 2,
+  "prediction_rows": 88,
+  "status": "PASS"
+}
