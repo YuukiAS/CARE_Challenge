@@ -10,6 +10,38 @@
 - myops_edema: `results/leaderboard/care2026_myocardium_myops_edema_latest.csv` (85 rows)
 - myocardium_cinemyops: `results/leaderboard/care2026_myocardium_myocardium_cinemyops_latest.csv` (62 rows)
 
+## Current Leaderboard Top 5
+
+### myops_scar
+
+| rank | user | time | Dice | HD | PRE | SEN | score |
+|---:|---|---|---:|---:|---:|---:|---:|
+| 1 | ZQH | `2026-05-06 12:52:15` | 0.839 | 6.2775 | 0.8252 | 0.8563 | 0.839 |
+| 2 | Monster | `2026-07-11 20:31:08` | 0.7323 | 14.7812 | 0.7148 | 0.7694 | 0.7323 |
+| 3 | Monster | `2026-07-14 12:08:38` | 0.7322 | 14.7812 | 0.7147 | 0.7693 | 0.7322 |
+| 4 | Monster | `2026-06-23 15:01:55` | 0.7239 | 15.3081 | 0.7195 | 0.7451 | 0.7239 |
+| 5 | Monster | `2026-06-24 23:55:07` | 0.7237 | 15.3081 | 0.7192 | 0.7451 | 0.7237 |
+
+### myops_edema
+
+| rank | user | time | Dice | HD | PRE | SEN | score |
+|---:|---|---|---:|---:|---:|---:|---:|
+| 1 | ZQH | `2026-05-06 12:52:15` | 0.8536 | 8.6853 | 0.8575 | 0.8591 | 0.8536 |
+| 2 | ZQH | `2026-06-09 16:51:25` | 0.7324 | 20.4347 | 0.7826 | 0.7229 | 0.7324 |
+| 3 | ZQH | `2026-07-12 23:29:35` | 0.7322 | 19.7994 | 0.7887 | 0.7199 | 0.7322 |
+| 4 | Monster | `2026-07-14 12:08:38` | 0.7217 | 21.5463 | 0.7174 | 0.7603 | 0.7217 |
+| 5 | Sheffield_Heart | `2026-07-23 09:04:08` | 0.7215 | 22.5339 | 0.7687 | 0.7064 | 0.7215 |
+
+### myocardium_cinemyops
+
+| rank | user | time | Dice | HD | score |
+|---:|---|---|---:|---:|---:|
+| 1 | NCC1H | `2026-07-06 19:43:32` | 0.2634 | 40.1938 | 0.2634 |
+| 2 | NCC1H | `2026-05-14 16:16:23` | 0.2594 | 38.1004 | 0.2594 |
+| 3 | NCC1H | `2026-05-13 17:44:57` | 0.256 | 40.1528 | 0.256 |
+| 4 | NCC1H | `2026-06-30 18:46:00` | 0.2533 | 40.0949 | 0.2533 |
+| 5 | NCC1H | `2026-05-28 23:08:34` | 0.2533 | 40.1827 | 0.2533 |
+
 ## OrganAgent Hosted Rows
 
 | leaderboard time | scar Dice/HD/rank | edema Dice/HD/rank | cine Dice/HD/rank | local assignment | confidence |
