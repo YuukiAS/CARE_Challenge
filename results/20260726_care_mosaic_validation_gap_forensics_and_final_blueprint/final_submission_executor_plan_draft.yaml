@@ -1,0 +1,4 @@
+architecture: NNUNET_ONLY_DOCKER
+fallback: pathology_independent_identity_to_nnunet
+validation_upload_allowed: false
+docker_upload_allowed: false

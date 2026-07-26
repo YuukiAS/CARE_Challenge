@@ -1,0 +1,47 @@
+{
+  "constraints": {
+    "allowed_allocation": "60657290",
+    "docker_upload_forbidden": true,
+    "model_family_attribution_reopen": false,
+    "new_slurm_job_forbidden": true,
+    "runtime_git_push_forbidden": true,
+    "validation_upload_forbidden": true
+  },
+  "created_at_utc": "2026-07-26T17:26:20Z",
+  "cwd": "/users/a/e/aereinh/CARE",
+  "git_branch": {
+    "cmd": [
+      "git",
+      "branch",
+      "--show-current"
+    ],
+    "elapsed_seconds": 0.005,
+    "returncode": 0,
+    "stderr": "",
+    "stdout": "main"
+  },
+  "git_head": {
+    "cmd": [
+      "git",
+      "rev-parse",
+      "HEAD"
+    ],
+    "elapsed_seconds": 0.006,
+    "returncode": 0,
+    "stderr": "",
+    "stdout": "cd8b22a4cc3c9849f2f5893de7899c347f6b1751"
+  },
+  "git_status": {
+    "cmd": [
+      "git",
+      "status",
+      "--short",
+      "--branch"
+    ],
+    "elapsed_seconds": 0.067,
+    "returncode": 0,
+    "stderr": "",
+    "stdout": "## main...origin/main\n M results/20260724_care_myops_srr_cascade_submission_rescue/runtime_closure_repair_rc1/formal_race_watcher_history_v2.jsonl\n M results/20260724_care_myops_srr_cascade_submission_rescue/runtime_closure_repair_rc1/formal_race_watcher_state_v2.json\n?? .codex_runtime/\n?? results/care_scf/canonical_model_summary_fold0.csv\n?? results/care_scf/care_gate_training_receipt.json\n?? results/care_scf/care_prediction_status.csv\n?? results/care_scf/casewise_metrics_fold0.csv\n?? results/care_scf/completion_audit.csv\n?? results/care_scf/component_dataset_feature_status.csv\n?? results/care_scf/component_dataset_fold0_diagnostic.csv\n?? results/care_scf/component_decisions.csv\n?? results/care_scf/controller_report.md\n?? results/care_scf/final_manifest.json\n?? results/care_scf/geometry_audit.csv\n?? results/care_scf/help_harm.csv\n?? results/care_scf/help_harm_summary.csv\n?? results/care_scf/mosaic_oof_status.csv\n?? results/care_scf/nnunet_oof_status.csv\n?? results/care_scf/provenance.json\n?? scripts/evaluation/build_care_mosaic_gap_forensics_packet.py\n?? scripts/evaluation/build_care_scf_controller_packet.py\n?? scripts/evaluation/build_mosaic_paper_results_completion.py"
+  },
+  "role": "controller/coordinator/acceptance_owner"
+}

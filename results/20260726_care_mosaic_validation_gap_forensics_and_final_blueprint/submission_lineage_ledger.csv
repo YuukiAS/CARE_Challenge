@@ -1,0 +1,4 @@
+claim,evidence_grade,decision,evidence
+hosted_scar_0.6965_model_family,USER_ATTESTED_LINEAGE,BOUND_TO_MOSAIC_FAMILY_DO_NOT_REOPEN,User confirmed scar Dice 0.6965 belongs to MoSAIC submission.
+exact_hosted_zip_hash_for_2026_07_06_or_2026_07_08,UNRESOLVED,NOT_BOUND,"Local MoSAIC zips are paper/material archives; CARE upload_ready zips found locally are nnU-Net/Cine control packages, not MoSAIC hosted packages."
+exact_checkpoint_recipe_for_hosted_0.6965,UNRESOLVED,NOT_BOUND,"Full-data MoSAIC checkpoint hashes exist, but no manifest ties a specific zip upload and inference command to the leaderboard timestamps."

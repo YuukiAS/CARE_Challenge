@@ -1,0 +1,2 @@
+model,feature_set,status,train_cases,validation_cases,interpretation
+geometry_nearest_neighbor_proxy,"size_x,size_y,size_z,spacing_x,spacing_y,spacing_z",DIAGNOSTIC_ONLY_NO_VALIDATION_GT,220,15,Validation geometry is compared to training geometry; no hosted GT or image-label pairing is used.

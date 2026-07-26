@@ -1,0 +1,8 @@
+{
+  "reasons": [
+    "component dataset had one scar component per case in the observed packet",
+    "labels were derived from GT overlap and evaluated as retain/suppress component F1",
+    "no strict final segmentation Dice lift over nnU-Net was demonstrated"
+  ],
+  "status": "INSUFFICIENT_FINAL_SEGMENTATION_EVIDENCE"
+}

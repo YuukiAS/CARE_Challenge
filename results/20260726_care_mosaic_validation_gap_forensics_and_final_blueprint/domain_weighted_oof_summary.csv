@@ -1,0 +1,2 @@
+weighting,case_count,complete_trimodal_cases,mosaic_weighted_mean_dice,nnunet_weighted_mean_dice,notes
+complete_trirnodal_x4_proxy,220,80,0.5070595714843431,0.6230345452692833,Proxy for target modality emphasis; not a trained model and not a validation score.

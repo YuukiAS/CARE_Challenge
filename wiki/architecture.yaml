@@ -1,10 +1,10 @@
-architecture_version: SCR_R1_RC1_TERMINAL_LOCAL_ONLY
-verified_at_utc: '2026-07-25T03:45:00-04:00'
-verified_milestone: SRR_cascade_rescue_round1_runtime_closure_terminal
-review_token: NOT_REVIEWED_NOT_REQUIRED
+architecture_version: CARE_MOSAIC_GAP_FORENSICS_FINAL_BLUEPRINT_20260726
+verified_at_utc: '2026-07-26T17:26:20Z'
+verified_milestone: mosaic_hosted_gap_forensics_final_blueprint
+review_token: VERIFIED_COMPLETE
 verification_base_commit: pending_local_commit
 code_fingerprint: care_mm_reliable_distill.py=5db67db7;care_mm_losses.py=eb3f106d;care_mm_batch9.py=265deeb8;run_care_mm_batch9_reliable_distill.py=62ce99f5;evaluate_care_mm_batch9.py=29d2a1a3;aggregate_care_mm_batch9.py=84182a5f;finalize_care_mm_batch9.py=aaf596c9;validate_care_mm_batch9_packet.py=314a31ef;batch9_reliable_label_distillation.yaml=1f240928
-evidence_fingerprint: SCR-R1-W3-W4-W6-terminal-local;see results/20260724_care_myops_srr_cascade_submission_rescue/finalizer_state.json
+evidence_fingerprint: MoSAIC-gap-forensics-W0-W7;see results/20260726_care_mosaic_validation_gap_forensics_and_final_blueprint/strict_validator_report.json
 nodes:
 - id: batch6_final_objective_alignment
   label: final objective and production gate alignment

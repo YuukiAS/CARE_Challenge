@@ -1,0 +1,12 @@
+{
+  "bootstrap_iterations": 10000,
+  "delta_quantiles": {
+    "q025": -0.3170760999499626,
+    "q500": -0.1832000605107679,
+    "q975": -0.06054138717240746
+  },
+  "interpretation": "15-case sampling variation alone is insufficient if clean OOF delta remains strongly negative.",
+  "mean_oof_delta_mosaic_minus_nnunet": -0.18506326611261809,
+  "p_bootstrap_delta_positive": 0.0018,
+  "sample_size": 15
+}

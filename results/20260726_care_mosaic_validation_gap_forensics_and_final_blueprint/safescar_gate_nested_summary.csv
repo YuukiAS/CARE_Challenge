@@ -1,0 +1,2 @@
+status,decision
+INSUFFICIENT_FINAL_SEGMENTATION_EVIDENCE,do_not_use_gate_in_final_docker

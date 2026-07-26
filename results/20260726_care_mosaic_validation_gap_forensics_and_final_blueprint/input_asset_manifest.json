@@ -1,0 +1,10 @@
+{
+  "fold0_reaudit": "results/20260726_mosaic_fold0_fairness_reaudit",
+  "leaderboard_alignment": "results/leaderboard/care2026_validation_submission_alignment_20260726.json",
+  "scf_root": "results/20260726_care_fullinfo_nnunet_and_care_scf/care_scf_v1",
+  "task_files": [
+    "prompts/tasks/20260726_care_mosaic_validation_gap_forensics_and_final_blueprint_amendment.md",
+    "prompts/tasks/20260726_care_mosaic_validation_gap_forensics_and_final_blueprint_controller.md",
+    "prompts/tasks/20260726_care_mosaic_validation_gap_forensics_and_final_blueprint_executor_plan.yaml"
+  ]
+}

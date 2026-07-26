@@ -1,0 +1,4 @@
+controller_verification_decision: VERIFIED_COMPLETE
+strict_validator_status: PASS
+local_commit_required: true
+push_performed: false

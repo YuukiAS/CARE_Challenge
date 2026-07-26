@@ -1,0 +1,8 @@
+{
+  "allowed_use": "fold0 and full-data edema artifacts may be used only as limited diagnostics, not as final edema OOF evidence.",
+  "manifest_counter": {
+    "scar": 220
+  },
+  "reason": "Current SCF manifest contains 220 scar rows and zero edema rows.",
+  "status": "MISSING_5FOLD_MOSAIC_EDEMA_OOF"
+}

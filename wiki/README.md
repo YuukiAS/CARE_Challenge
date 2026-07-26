@@ -1,12 +1,27 @@
 # CARE 架构 Wiki
 
-architecture_version: `care-myops-mosaic-fold0-fair-reproduction-terminal`
-latest_verified_runtime: `MoSAIC fold0 random-init fair reproduction terminal; strict validator PASS; replacement finalizer 60607636 COMPLETED`
-latest_scientific_status: `MoSAIC fold0 underperforms nnU-Net in same-protocol local comparison; historical candidates bounded by canonical availability`
-latest_controller_task: `20260725_care_myops_mosaic_fold0_reproduction`
-route_status: `MAIN_ONLY_MOSAIC_FOLD0_TERMINAL_LOCAL_ONLY`
+architecture_version: `care-myops-mosaic-gap-forensics-final-blueprint-20260726`
+latest_verified_runtime: `MoSAIC hosted-gap forensics packet; strict validator PASS; allocation 60657290 reused only`
+latest_scientific_status: `MoSAIC family confirmed for hosted scar 0.6965, exact package/checkpoint/recipe unresolved, clean 220-case OOF underperforms nnU-Net`
+latest_controller_task: `20260726_care_mosaic_validation_gap_forensics_and_final_blueprint`
+route_status: `MAIN_ONLY_FINAL_BLUEPRINT_NNUNET_ONLY_DOCKER_LOCAL_ONLY`
 
-本页是 GPT、Controller、Executor、Mapper 和 Planner 读取当前架构状态的根入口。当前最新终态事实是：MoSAIC 已完成 MyoPS exact fold0 随机初始化公平复现、本地 canonical 主比较、历史候选边界比较和病例互补性分析；结果显示本轮 fold0 MoSAIC 不优于 fold0 nnU-Net。SCR-R1-RC1 仍保留为前一条已终止本地证据线，但不是本次 MoSAIC fold0 结果的权重来源或性能证据。
+本页是 GPT、Controller、Executor、Mapper 和 Planner 读取当前架构状态的根入口。当前最新终态事实是：用户确认 hosted scar Dice 0.6965 属于 MoSAIC submission，但本地未绑定 exact validation zip、checkpoint 或 inference recipe；clean 220-case OOF scar 显示 MoSAIC 0.3924、nnU-Net 0.5775，完整三模态子集 MoSAIC 0.6331、nnU-Net 0.6927。最终 Docker 当前只应执行 `NNUNET_ONLY_DOCKER`，MoSAIC/SafeScar/MMRD/Cascade 只能作为研究证据或协议卫生保留，不能作为 active runtime mask producer。
+
+## 2026-07-26 MoSAIC hosted-gap 取证与最终蓝图
+
+```text
+result_root: results/20260726_care_mosaic_validation_gap_forensics_and_final_blueprint
+strict_validator_report.json: PASS
+controller_verification_decision: VERIFIED_COMPLETE
+allocation: 60657290 reused only; no sbatch/salloc/new Slurm job/upload/push
+exact_hosted_zip_checkpoint_recipe: UNRESOLVED
+model_family_lineage: USER_CONFIRMED_MOSAIC
+final_docker_architecture: NNUNET_ONLY_DOCKER
+pathology_independent_fallback: identity_to_nnunet
+```
+
+排名翻转解释边界：full-data inclusion/selection 有 fold0 诊断 lift，scar 约 +0.1045，但这是污染上界；已观测 scar postprocess 约 -0.0021，不能解释 hosted 提升；target modality/domain 和 15-case sampling 只能部分解释，validation GT 不在本地；metric/export 检查只支持标签/几何边界，不支持 MoSAIC 作为最终分割组件。旧 SafeScar Step3 是组件级 retain/suppress F1，不是最终分割 Dice/HD 证据。
 
 
 ## MoSAIC fold0 证据边界

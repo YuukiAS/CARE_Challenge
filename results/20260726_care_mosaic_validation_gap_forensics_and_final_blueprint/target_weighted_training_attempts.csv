@@ -1,0 +1,2 @@
+attempt,status,reason,new_slurm_job,gpu_command_started
+W3D,NOT_RUN_RESOURCE_OR_ASSET_GUARD,"No explicit same saved initial FinePathNet state file was found; existing files are trained checkpoints, not a frozen pre-training initial state.",False,False

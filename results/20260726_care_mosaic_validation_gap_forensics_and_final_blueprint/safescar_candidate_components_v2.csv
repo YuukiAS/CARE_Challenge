@@ -1,0 +1,3 @@
+candidate_source,pathology,eligible_for_final_docker,reason
+nnunet_identity,scar,True,only strict 5-fold baseline with complete validation-ready export path
+mosaic_proposal,scar,False,clean OOF underperforms and exact hosted recipe unresolved

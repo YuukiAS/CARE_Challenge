@@ -1,0 +1,7 @@
+{
+  "blueprints": [
+    "docs/plans/care_ser_lite_final_blueprint.md",
+    "docs/plans/care_ser_dual_pathology_final_blueprint.md"
+  ],
+  "decision": "retain_protocol_context_delete_unproven_mosaic_safescar_final_architecture"
+}

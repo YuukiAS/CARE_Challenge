@@ -1,0 +1,8 @@
+hypothesis,status,evidence,contribution
+H1_target_modality_structure,PARTIAL_EXPLANATION,oof_subgroup_summary.csv/domain_weighted_oof_summary.csv,Complete-trimodal structure may raise hosted fit but clean OOF subgroup still must be treated separately from validation.
+H2_validation_domain,PLAUSIBLE_UNRESOLVED,target_domain_feature_manifest.csv,Geometry/modality similarity can be described; validation GT is absent.
+H3_full_data_inclusion_selection,CONFIRMED_DIAGNOSTIC_NOT_GENERALIZATION,full_data_vs_oof_inclusion_lift.csv,Fold0 scar diagnostic lift about +0.1045; not valid OOF evidence.
+H4_inference_recipe,SMALL_KNOWN_EFFECT_EXACT_UNRESOLVED,inference_recipe_factor_effects.csv,Known scar postprocess effect about -0.0021; exact TTA/threshold/reconstruction unresolved.
+H5_model_family_lineage,CONFIRMED_BY_USER_FOR_FAMILY_ONLY,user_attested_lineage_receipt.json,"Binds MoSAIC family, not exact zip/checkpoint/recipe."
+H6_15_case_sampling,INSUFFICIENT_ALONE,rank_reversal_summary.json,Bootstrap says sampling alone is unlikely to reverse a strongly negative clean OOF gap.
+H7_metric_export,LIMITED_EXPLANATION,metric_semantics_audit.md/label_export_roundtrip_audit.json,No label/export error large enough is shown by local audits.

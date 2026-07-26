@@ -1,0 +1,6 @@
+phase,status,evidence
+W0,COMPLETE,controller_context.json
+W1,COMPLETE,submission_lineage_evidence.json
+W2,COMPLETE,oof_casewise_metrics.csv
+W3D,NOT_RUN_RESOURCE_OR_ASSET_GUARD,target_weighted_training_contract.json
+W4-W7,COMPLETE,controller_report.md

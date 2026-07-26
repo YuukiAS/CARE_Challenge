@@ -2,6 +2,29 @@
 
 本文件是当前 CARE 主线工作的机器真值。新的规划、执行、训练、评价和状态判断必须先读取本文件。
 
+## 2026-07-26 MoSAIC hosted-gap 取证与最终蓝图终态
+
+当前最高优先级事实不是重新裁决 0.6965 的模型家族：用户已确认 hosted scar Dice 0.6965 属于 MoSAIC submission。当前仍未绑定的是 exact `CARE-Myocardium-OrganAgent.zip`、zip SHA、checkpoint 组合和 inference recipe。结果根目录：
+
+```text
+results/20260726_care_mosaic_validation_gap_forensics_and_final_blueprint
+```
+
+终态证据：
+
+```text
+strict_validator_report.json: PASS
+controller_verification_decision: VERIFIED_COMPLETE
+oof scar all-220: MoSAIC 0.392438, nnU-Net 0.577502, delta -0.185063
+oof scar complete C0+LGE+T2: MoSAIC 0.633124, nnU-Net 0.692682, delta -0.059557
+15-case bootstrap p(delta>0): 0.0018
+W3D matched training: NOT_RUN_RESOURCE_OR_ASSET_GUARD because same saved initial FinePathNet state was not found; no short substitute run
+Slurm allocation: 60657290 reused only; no sbatch/salloc/new Slurm job
+validation_upload/docker_upload/runtime_git_push: false
+```
+
+当前最终 Docker 目标固定为 `NNUNET_ONLY_DOCKER`。病种独立 fallback 是任何 MoSAIC、SafeScar、MMRD、Cascade 或其他非基线组件缺证、缺资产、失败或 validator 不通过时保持 nnU-Net identity 输出。Batch7 只保留候选思想；MMRD 只保留可靠标签/模态卫生；Cascade 无独立最终 Docker 增量证据；旧 SafeScar Step3 gate 不具备最终分割科学证据。
+
 
 ## 2026-07-25 MoSAIC fold0 公平复现终态更新
 
@@ -30,21 +53,21 @@ runtime_adapter_audit.json: PASS, MyoPS-only, Cine not called, 44 normalized pre
 ## 当前状态
 
 ```text
-state_id: care_myops_srr_cascade_scr_r1_runtime_closure_terminal_20260725
+state_id: care_mosaic_hosted_gap_forensics_final_blueprint_20260726
 round_id: post_round04_main_only_submission_rescue
-state_updated_date: 2026-07-25
+state_updated_date: 2026-07-26
 active_development_branch: main
 active_worktree: /users/a/e/aereinh/CARE
 portfolio_mode: SUSPENDED
 route_worktree_development_authorized: false
-single_active_scientific_line: CARE_SRR_CASCADE_SUBMISSION_RESCUE
-method_name: CARE-SRR-Cascade
-execution_code: SCR-R1
-runtime_repair_code: SCR-R1-RC1
+single_active_scientific_line: FINAL_BLUEPRINT_NNUNET_ONLY_DOCKER
+method_name: CARE final Docker baseline-only after MoSAIC gap forensics
+execution_code: MoSAIC-GAP-FINAL-BLUEPRINT
+runtime_repair_code: W0-W7
 batch10_status: TERMINAL_STOP_RETAINED_AS_HISTORY
-submission_rescue_status: TERMINAL_LOCAL_EVALUATED_BASELINE_FALLBACK
+submission_rescue_status: VERIFIED_COMPLETE_BASELINE_ONLY_FINAL_BLUEPRINT
 prior_controller_block: VALID_REAL_W3_RUNTIME_MISSING
-next_required_action: REVIEW_TERMINAL_LOCAL_RESULTS_AND_DECIDE_FUTURE_STRATEGY
+next_required_action: USE_NNUNET_ONLY_DOCKER_UNLESS_FUTURE_STRICT_CLEAN_OOF_GATE_PASSES
 controller_is_coordinator: true
 planning_review_required: false
 review_required: false

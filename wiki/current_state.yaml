@@ -1,87 +1,56 @@
-current_milestone_id: mosaic_fold0_fair_reproduction_terminal
-current_task_key: 20260725_care_myops_mosaic_fold0_reproduction
-method_name: MoSAIC fold0 fair reproduction
-short_method_name: MoSAIC-fold0
-execution_label: MoSAIC MyoPS exact fold0 random-init reproduction
-execution_code: MoSAIC-F0
-updated_at: '2026-07-25'
-current_result_root: results/20260725_care_myops_mosaic_fold0_reproduction
-current_review_path: results/20260725_care_myops_mosaic_fold0_reproduction/mapper_report_final.md
-current_review_token: NOT_REVIEWED_NOT_REQUIRED
-wiki_fingerprint_status: MOSAIC_FOLD0_TERMINAL_LOCAL_ONLY
-entrypoints_authority_status: MOSAIC_FOLD0_RANDOM_INIT_PUBLIC_CONFIG
+current_milestone_id: mosaic_hosted_gap_forensics_final_blueprint
+current_task_key: 20260726_care_mosaic_validation_gap_forensics_and_final_blueprint
+method_name: CARE final Docker baseline-only after MoSAIC hosted-gap forensics
+short_method_name: NNUNET_ONLY_DOCKER
+execution_label: MoSAIC hosted-gap forensics and final blueprint amendment
+execution_code: MoSAIC-GAP-FINAL-BLUEPRINT
+updated_at: '2026-07-26'
+current_result_root: results/20260726_care_mosaic_validation_gap_forensics_and_final_blueprint
+current_review_path: results/20260726_care_mosaic_validation_gap_forensics_and_final_blueprint/controller_report.md
+current_review_token: VERIFIED_COMPLETE
+wiki_fingerprint_status: MOSAIC_GAP_FORENSICS_FINAL_BLUEPRINT_VALIDATED
+entrypoints_authority_status: FINAL_DOCKER_NNUNET_ONLY
 
 main_only:
   branch: main
   worktree: /users/a/e/aereinh/CARE
   route_worktree_development_authorized: false
 
-mosaic_fold0_reproduction:
-  status: TERMINAL_LOCAL_AGGREGATED
-  result_root: results/20260725_care_myops_mosaic_fold0_reproduction
-  split_path: data/benchmarks/protocol/splits_MyoPS.json
-  fold: 0
-  train_cases: 176
-  val_cases: 44
+mosaic_hosted_gap_forensics:
+  status: VERIFIED_COMPLETE
+  result_root: results/20260726_care_mosaic_validation_gap_forensics_and_final_blueprint
   strict_validator_status: PASS
-  finalizer_state: READY_FOR_LOCAL_PACKET_COMMIT
-  runtime_adapter_status: PASS_MYOPS_ONLY_CINE_NOT_CALLED
-  trained_from_random_init: true
-  full_data_mosaic_weights_used_for_fold0_training_or_comparison: false
-  full_data_mosaic_weights_allowed_scope: model_load_or_official_validation_deploy_smoke_only
-  full_data_weight_root: /users/a/e/aereinh/MoSAIC
-  primary_comparison:
-    - nnunet_fold0
-    - mosaic_fold0_random_init
-  secondary_canonical_recomputed:
-    - Batch10_MMRD::distill_epoch25_two_seed_mean
-    - Batch7_minimal
-  secondary_historical_noncanonical:
-    - SCR_R1_generic_cascade_control
-  validation_upload: false
-  docker_build: false
-  git_push: false
-  slurm_jobs:
-    coarse: '60589655 COMPLETED 0:0'
-    scar: '60589656 COMPLETED 0:0'
-    edema: '60589657 COMPLETED 0:0'
-    failed_finalizer_retained: '60589658 FAILED 1:0'
-    replacement_finalizer: '60607636 COMPLETED 0:0'
-  primary_all_summary:
-    nnunet_fold0:
-      scar_mean_dice: 0.5601692281262312
-      pure_edema_mean_dice: 0.3944358976789887
-    mosaic_fold0_random_init:
-      scar_mean_dice: 0.33921744791147623
-      pure_edema_mean_dice: 0.08860604065364053
-  key_outputs:
-    - canonical_casewise_metrics.csv
-    - canonical_model_summary.csv
-    - historical_attempt_summary.csv
-    - pairwise_help_harm.csv
-    - complementarity_report.md
-    - strict_validator_report.json
+  hosted_scar_dice: 0.6965
+  model_family_lineage: USER_CONFIRMED_MOSAIC
+  model_family_attribution_reopen: false
+  exact_hosted_package_checkpoint_recipe: UNRESOLVED
+  clean_oof_scar_all220:
+    mosaic_mean_dice: 0.3924384341856133
+    nnunet_mean_dice: 0.5775017002982313
+    delta_mosaic_minus_nnunet: -0.18506326611261809
+  clean_oof_scar_complete_trimodal:
+    case_count: 80
+    mosaic_mean_dice: 0.6331242820061089
+    nnunet_mean_dice: 0.6926815627031446
+    delta_mosaic_minus_nnunet: -0.05955728069703578
+  rank_reversal_bootstrap:
+    sample_size: 15
+    p_delta_positive: 0.0018
+  w3d_matched_training:
+    status: NOT_RUN_RESOURCE_OR_ASSET_GUARD
+    reason: same saved initial FinePathNet state not found; no short substitute run
+  final_docker_architecture: NNUNET_ONLY_DOCKER
+  pathology_independent_fallback: identity_to_nnunet
 
-previous_scr_r1_state:
-  task_key: 20260725_care_myops_srr_cascade_runtime_closure_repair
-  scientific_status: TERMINAL_LOCAL_EVALUATED_BASELINE_FALLBACK
-  runtime_status: W3_W4_W6_TERMINAL_W5_SKIPPED_BY_CONDITION
-  scientific_token: NO_CUSTOM_RESCUE_USE_BASELINE_ONLY
-  result_root: results/20260724_care_myops_srr_cascade_submission_rescue
-  note: Previous terminal local evidence retained for provenance; not a MoSAIC fold0 weight source or current same-protocol comparison result.
-
-batch10:
-  status: TERMINAL_STOP_RETAINED_AS_HISTORY
-  result_root: results/20260724_care_myops_batch10_deadline_rescue
-  selected_candidate: distill_epoch25_two_seed_mean
-  current_mosaic_task_role: secondary_canonical_recomputed_from_existing_predictions
+historical_components:
+  Batch7: retain_as_candidate_idea_only
+  MMRD: retain_protocol_hygiene_delete_as_primary_model
+  Cascade: no_independent_final_docker_increment
+  SafeScar_Step3: insufficient_final_segmentation_evidence
 
 unauthorized:
   validation_upload: false
   docker_upload: false
-  docker_build_for_mosaic_task: false
   hosted_metric_claim: false
   route_promotion: false
-  fold_expansion: false
-  new_hybrid_training: false
   runtime_git_push: false

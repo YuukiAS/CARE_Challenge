@@ -1,0 +1,4 @@
+factor,pathology,estimated_dice_effect,evidence,interpretation
+full_data_training_inclusion_fold0_diagnostic,scar,0.1045,results/20260726_mosaic_fold0_fairness_reaudit/fairness_verdict.md,contaminated diagnostic lift; cannot be used as generalization evidence
+scar_postprocess_final_minus_raw,scar,-0.0021,results/20260726_mosaic_fold0_fairness_reaudit/fairness_verdict.md,available fold0 ablation says postprocess does not explain hosted scar gap
+exact_tta_threshold_reconstruction,scar,,UNRESOLVED_EXACT_RECIPE,no local command/manifest binds this to the 2026-07-06 or 2026-07-08 hosted row

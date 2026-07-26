@@ -1,0 +1,7 @@
+{
+  "boundary": "This receipt confirms model family only; it does not bind exact zip, checkpoint, or inference recipe.",
+  "hosted_scar_dice": 0.6965,
+  "model_family_attribution_reopen": false,
+  "model_family_lineage": "USER_CONFIRMED_MOSAIC",
+  "status": "RECORDED"
+}

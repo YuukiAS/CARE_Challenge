@@ -1,0 +1,4 @@
+component,independent_incremental_value,evidence,keep_delete_modify
+Batch7,LIMITED,"Historical candidate/proposal signal, but no current strict final-mask OOF lift over nnU-Net.",modify_keep_only_as_non-authoritative_candidate_idea
+MMRD,PARTIAL,Reliable label/modality-safety ideas help protocol hygiene; teacher/direct segmentation value is not independently proven for final scar.,keep_protocol_hygiene_delete_as_primary_pathology_model
+Cascade,NOT_PROVEN,Prior cascade/rescue evidence did not establish custom final-mask gain; fallback behavior should remain identity to nnU-Net.,delete_from_final_docker_keep_as_research_only

@@ -1,0 +1,5 @@
+blueprint_item,decision,reason
+nnU-Net 5-fold baseline,RETAIN,strict OOF/export baseline
+MoSAIC primary scar/edema,DELETE_FROM_FINAL_DOCKER,clean OOF gap and exact hosted recipe unresolved
+SafeScar Step3 gate,DELETE_FROM_FINAL_DOCKER,component F1 is not final segmentation evidence
+MMRD reliable label/modality hygiene,MODIFY_RETAIN_AS_PROTOCOL_RULE,useful independent safety constraint

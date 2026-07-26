@@ -1,0 +1,55 @@
+{
+  "guard_result": {
+    "allocation_id": "60657290",
+    "asset_guard_failed": "No explicit same saved initial FinePathNet state file was found; existing files are trained checkpoints, not a frozen pre-training initial state.",
+    "controller_policy": "W3D cannot displace W4-W7; no short training substitute was run.",
+    "disk": {
+      "cmd": [
+        "df",
+        "-BG",
+        "/users/a/e/aereinh/CARE"
+      ],
+      "elapsed_seconds": 0.005,
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "Filesystem                                    1G-blocks  Used Available Use% Mounted on\nrc-isilon2-ll.its.unc.edu:/ifs/rcisilon/users    10240G 1047G     9194G  11% /users"
+    },
+    "fold0_cache_coarse_checkpoint_present": true,
+    "gpu_commands_serial_required": true,
+    "guard_decision": "NOT_RUN_RESOURCE_OR_ASSET_GUARD",
+    "minimum_remaining_seconds_required": 64800,
+    "new_slurm_jobs_forbidden": true,
+    "nvidia_smi": {
+      "cmd": [
+        "srun",
+        "--jobid=60657290",
+        "--overlap",
+        "--ntasks=1",
+        "nvidia-smi",
+        "--query-gpu=name,memory.used,memory.total",
+        "--format=csv,noheader"
+      ],
+      "elapsed_seconds": 0.393,
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "NVIDIA H100 NVL, 0 MiB, 95830 MiB"
+    },
+    "p90_reference_fine_scar_full_run_seconds_estimate": 3600,
+    "same_saved_initial_state_candidates": [],
+    "squeue": {
+      "cmd": [
+        "squeue",
+        "-j",
+        "60657290",
+        "-o",
+        "%i|%T|%P|%N|%M|%L|%j"
+      ],
+      "elapsed_seconds": 0.023,
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "JOBID|STATE|PARTITION|NODELIST|TIME|TIME_LEFT|NAME\n60657290|RUNNING|htzhulab|g1807htzh01|16:21:22|2-07:38:38|CAREInteractive3d"
+    }
+  },
+  "required_comparison": "T0 uniform complete-trimodal vs T1 complete-trimodal weight=4 from same saved initial FinePathNet state",
+  "status": "NOT_RUN_RESOURCE_OR_ASSET_GUARD"
+}

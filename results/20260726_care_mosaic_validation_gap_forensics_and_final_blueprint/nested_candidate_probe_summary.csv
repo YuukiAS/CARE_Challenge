@@ -1,0 +1,2 @@
+subgroup,case_count,gt_positive_cases,mosaic_mean_dice,nnunet_mean_dice,delta_mosaic_minus_nnunet,delta_stdev,mosaic_prediction_positive_cases,nnunet_prediction_positive_cases
+all,220,212,0.3924384341856133,0.5775017002982313,-0.18506326611261809,0.2527098462414386,220,217

@@ -1,0 +1,3 @@
+counterfactual,status,evidence
+nnunet_identity_primary,PASS_BASELINE,oof_model_summary.csv
+replace_with_mosaic,FAIL_NEGATIVE_OOF_DELTA,oof_model_summary.csv

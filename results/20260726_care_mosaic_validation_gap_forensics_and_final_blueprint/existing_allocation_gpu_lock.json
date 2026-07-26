@@ -1,0 +1,38 @@
+{
+  "allocation_id": "60657290",
+  "docker_upload_performed": false,
+  "lock_scope": "controller_serial_gpu_commands",
+  "new_slurm_jobs_submitted": false,
+  "observations": {
+    "nvidia_smi": {
+      "cmd": [
+        "srun",
+        "--jobid=60657290",
+        "--overlap",
+        "--ntasks=1",
+        "nvidia-smi",
+        "--query-gpu=name,memory.used,memory.total",
+        "--format=csv,noheader"
+      ],
+      "elapsed_seconds": 0.393,
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "NVIDIA H100 NVL, 0 MiB, 95830 MiB"
+    },
+    "squeue": {
+      "cmd": [
+        "squeue",
+        "-j",
+        "60657290",
+        "-o",
+        "%i|%T|%P|%N|%M|%L|%j"
+      ],
+      "elapsed_seconds": 0.023,
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "JOBID|STATE|PARTITION|NODELIST|TIME|TIME_LEFT|NAME\n60657290|RUNNING|htzhulab|g1807htzh01|16:21:22|2-07:38:38|CAREInteractive3d"
+    }
+  },
+  "runtime_git_push_performed": false,
+  "validation_upload_performed": false
+}
