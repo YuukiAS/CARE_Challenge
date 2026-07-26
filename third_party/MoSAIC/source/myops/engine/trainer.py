@@ -140,6 +140,7 @@ class SegmentationTrainer:
             self.scheduler = None
 
         self.scaler = GradScaler(enabled=self.use_amp)
+        self.global_step = 0
 
         self.selection_metric = str(config.get("selection", {}).get("metric", "pathology_mean_dice"))
         self.metrics_to_save = list(config.get("selection", {}).get(
@@ -167,7 +168,14 @@ class SegmentationTrainer:
         torch.save({
             "model_state": self.model.state_dict(),
             "optimizer_state": self.optimizer.state_dict(),
+            "scheduler_state": self.scheduler.state_dict() if self.scheduler is not None else None,
+            "scaler_state": self.scaler.state_dict(),
             "epoch": int(epoch), "metrics": metrics, "train_metrics": train_metrics,
+            "global_step": int(self.global_step),
+            "batches_per_epoch": int(len(self.loader)),
+            "max_epochs": int(self.max_epochs),
+            "val_every": int(self.val_every),
+            "max_batches_per_epoch": int(self.max_batches_per_epoch),
             "config": self.config, "track": self.track, "stage": self.stage,
             "arch": self.arch, "fold": self.fold,
         }, destination)
@@ -191,6 +199,7 @@ class SegmentationTrainer:
                 self._unfreeze_tps()
 
         meter: dict[str, list[float]] = {}
+        optimizer_steps = 0
         for batch_idx, batch in enumerate(self.loader):
             image = batch["image"].to(self.device, non_blocking=True)
             batch_gpu = {
@@ -213,6 +222,8 @@ class SegmentationTrainer:
 
             self.scaler.step(self.optimizer)
             self.scaler.update()
+            optimizer_steps += 1
+            self.global_step += 1
 
             for key, value in losses.items():
                 meter.setdefault(key, []).append(float(value.detach().cpu().item()))
@@ -223,7 +234,10 @@ class SegmentationTrainer:
         if self.scheduler is not None:
             self.scheduler.step()
 
-        return {key: float(np.mean(values)) if values else 0.0 for key, values in meter.items()}
+        metrics = {key: float(np.mean(values)) if values else 0.0 for key, values in meter.items()}
+        metrics["optimizer_steps"] = int(optimizer_steps)
+        metrics["global_step"] = int(self.global_step)
+        return metrics
 
     def validate(self) -> dict[str, float]:
         if not self.val_records:
@@ -334,6 +348,11 @@ class SegmentationTrainer:
             "best_pathology_metric": self.selection_metric,
             "best_pathology_value": best_pathology,
             "best_metrics": best_by_metric, "output_dir": str(self.output_dir),
+            "completed_epochs": int(self.max_epochs),
+            "total_optimizer_steps": int(self.global_step),
+            "batches_per_epoch": int(len(self.loader)),
+            "max_batches_per_epoch": int(self.max_batches_per_epoch),
+            "val_every": int(self.val_every),
         }
         self._save_json(summary, self.output_dir / "summary.json")
         self._save_json({"history": history}, self.output_dir / "history.json")

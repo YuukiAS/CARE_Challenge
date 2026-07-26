@@ -17,6 +17,7 @@ from __future__ import annotations
 import argparse
 import json
 import os
+import random
 import subprocess
 import sys
 import time
@@ -251,10 +252,61 @@ def train_edema_net(train_records: list, val_records: list,
     best_edema_dice = -1.0
     best_epoch = 0
     epochs = 200
+    global_step = 0
+    history = []
+    start_epoch = 1
+    last_path = output_dir / "last.pt"
+    best_path = output_dir / "best.pt"
 
-    for epoch in range(1, epochs + 1):
+    def checkpoint_payload(epoch: int, metric: float | None, mean_loss: float):
+        payload = {
+            "model_state": model.state_dict(),
+            "optimizer_state": optimizer.state_dict(),
+            "scheduler_state": scheduler.state_dict(),
+            "scaler_state": None,
+            "epoch": int(epoch),
+            "global_step": int(global_step),
+            "batches_per_epoch": int(len(train_loader)),
+            "max_epochs": int(epochs),
+            "val_every": 5,
+            "max_batches_per_epoch": 0,
+            "mean_loss": float(mean_loss),
+            "rng_state": {
+                "python": random.getstate(),
+                "numpy": np.random.get_state(),
+                "torch_cpu": torch.get_rng_state(),
+                "torch_cuda": torch.cuda.get_rng_state_all() if torch.cuda.is_available() else [],
+            },
+        }
+        if metric is not None:
+            payload["edema_dice"] = float(metric)
+        return payload
+
+    if last_path.exists():
+        ckpt = torch.load(last_path, map_location="cpu", weights_only=False)
+        last_epoch = int(ckpt.get("epoch", 0) or 0)
+        if last_epoch >= epochs and best_path.exists():
+            print(f"  EdemaNet already complete at epoch {last_epoch}; using existing best.pt")
+            return best_path
+        model.load_state_dict(ckpt["model_state"])
+        if "optimizer_state" not in ckpt or "scheduler_state" not in ckpt:
+            raise RuntimeError(f"Cannot strictly resume EdemaNet without optimizer/scheduler state: {last_path}")
+        optimizer.load_state_dict(ckpt["optimizer_state"])
+        scheduler.load_state_dict(ckpt["scheduler_state"])
+        global_step = int(ckpt.get("global_step", last_epoch * len(train_loader)))
+        start_epoch = last_epoch + 1
+        if best_path.exists():
+            best_ckpt = torch.load(best_path, map_location="cpu", weights_only=False)
+            best_edema_dice = float(best_ckpt.get("edema_dice", -1.0))
+            best_epoch = int(best_ckpt.get("epoch", 0) or 0)
+        history_path = output_dir / "history.json"
+        if history_path.exists():
+            history = json.loads(history_path.read_text(encoding="utf-8")).get("history", [])
+
+    for epoch in range(start_epoch, epochs + 1):
         model.train()
         losses = []
+        epoch_steps = 0
         for batch in train_loader:
             lge = batch["lge"].to(device)
             c0 = batch["c0"].to(device)
@@ -274,12 +326,15 @@ def train_edema_net(train_records: list, val_records: list,
                 loss = loss_fn(pred, target)
             loss.backward()
             optimizer.step()
+            global_step += 1
+            epoch_steps += 1
             losses.append(float(loss.item()))
 
         scheduler.step()
         mean_loss = float(np.mean(losses))
 
         val_str = ""
+        edema_dice = None
         if has_val and (epoch % 5 == 0 or epoch == epochs):
             edema_dice = _validate_edema(
                 model, val_edema, cache_dir, coarse_pred_dir, device, dim=192)
@@ -288,25 +343,50 @@ def train_edema_net(train_records: list, val_records: list,
             if edema_dice > best_edema_dice:
                 best_edema_dice = edema_dice
                 best_epoch = epoch
-                torch.save({"model_state": model.state_dict(), "epoch": epoch,
-                             "edema_dice": edema_dice}, output_dir / "best.pt")
-
-            torch.save({"model_state": model.state_dict(), "epoch": epoch,
-                         "edema_dice": edema_dice}, output_dir / "last.pt")
+                torch.save(checkpoint_payload(epoch, edema_dice, mean_loss), best_path)
 
         if not has_val:
             if mean_loss < best_edema_dice or best_edema_dice < 0:
                 best_edema_dice = mean_loss
                 best_epoch = epoch
-                torch.save({"model_state": model.state_dict(), "epoch": epoch},
-                           output_dir / "best.pt")
-            torch.save({"model_state": model.state_dict(), "epoch": epoch},
-                       output_dir / "last.pt")
+                torch.save(checkpoint_payload(epoch, None, mean_loss), best_path)
+
+        torch.save(checkpoint_payload(epoch, edema_dice, mean_loss), last_path)
+        history.append({
+            "epoch": int(epoch),
+            "train": {
+                "loss": float(mean_loss),
+                "optimizer_steps": int(epoch_steps),
+            },
+            "val": {"edema_dice": float(edema_dice)} if edema_dice is not None else None,
+            "lr": float(optimizer.param_groups[0]["lr"]),
+        })
+        with open(output_dir / "history.json", "w", encoding="utf-8") as f:
+            json.dump({"history": history}, f, indent=2, sort_keys=True)
 
         lr = optimizer.param_groups[0]["lr"]
         if epoch % 10 == 0 or epoch == epochs:
             print(f"  Epoch {epoch}/{epochs}  loss={mean_loss:.4f}  lr={lr:.6f}{val_str}")
 
+    with open(output_dir / "summary.json", "w", encoding="utf-8") as f:
+        json.dump({
+            "completed_epochs": int(epochs),
+            "total_optimizer_steps": int(global_step),
+            "batches_per_epoch": int(len(train_loader)),
+            "max_batches_per_epoch": 0,
+            "val_every": 5,
+            "best_epoch": int(best_epoch),
+            "best_edema_dice": float(best_edema_dice),
+        }, f, indent=2, sort_keys=True)
+    with open(output_dir / "experiment_result.json", "w", encoding="utf-8") as f:
+        json.dump({
+            "stage": "edema",
+            "completed_epochs": int(epochs),
+            "best_checkpoint": str(best_path),
+            "last_checkpoint": str(last_path),
+            "best_epoch": int(best_epoch),
+            "best_edema_dice": float(best_edema_dice),
+        }, f, indent=2, sort_keys=True)
     print(f"  EdemaNet done. Best edema_dice={best_edema_dice:.4f} at epoch {best_epoch}")
     del model
     torch.cuda.empty_cache()

@@ -1,0 +1,6 @@
+{
+  "controller_verification_decision": "OPERATIONALLY_PAUSED_BY_USER_AFTER_STEP3",
+  "current_packet": "results/care_scf/step3_safescar_gate_pause",
+  "goal_complete": false,
+  "step4_step5_paused_by_user": true
+}

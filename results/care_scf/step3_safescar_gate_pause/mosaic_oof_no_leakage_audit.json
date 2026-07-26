@@ -1,0 +1,19 @@
+{
+  "covered_once": true,
+  "covered_prediction_rows": 220,
+  "covered_unique_cases": 220,
+  "duplicate_cases": [],
+  "expected_case_count": 220,
+  "folds": [
+    0,
+    1,
+    2,
+    3,
+    4
+  ],
+  "full_data_checkpoint_used": false,
+  "geometry_pass": true,
+  "leakage_errors": [],
+  "source_commit": "d334bd1fb2a99dbbc230510590cd8e3ee08cc377",
+  "status": "PASS"
+}

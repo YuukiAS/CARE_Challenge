@@ -1,0 +1,120 @@
+{
+  "component_dataset_status": {
+    "edema_dataset_status": "NOT_BUILT_IN_SCAR_ONLY_STAGE",
+    "feature_columns": [
+      "nnunet_probability_mean",
+      "mosaic_probability_mean",
+      "nnunet_uncertainty_mean",
+      "anatomy_overlap",
+      "size_voxels",
+      "surface_to_volume",
+      "fill_fraction",
+      "positive_prototype_similarity",
+      "negative_prototype_similarity"
+    ],
+    "no_t2_as_edema_negative": true,
+    "oof_audit_status": "PASS",
+    "oof_case_count": 220,
+    "scar_component_count": 220,
+    "status": "PASS"
+  },
+  "controller_verification_decision": "OPERATIONALLY_PAUSED_BY_USER_AFTER_STEP3",
+  "decision_counts": {
+    "retain": 188,
+    "suppress": 32
+  },
+  "docker_upload_performed": false,
+  "evidence_root": "results/20260726_care_fullinfo_nnunet_and_care_scf/care_scf_v1",
+  "gate_training_status": {
+    "actions": [
+      "retain",
+      "suppress"
+    ],
+    "case_count": 220,
+    "component_count": 220,
+    "edema_fallback": true,
+    "feature_columns": [
+      "nnunet_probability_mean",
+      "nnunet_uncertainty_mean",
+      "mosaic_probability_mean",
+      "anatomy_overlap",
+      "log_size",
+      "surface_to_volume",
+      "fill_fraction",
+      "elongation",
+      "positive_prototype_similarity",
+      "negative_prototype_similarity"
+    ],
+    "gate_training_case_grouped": true,
+    "hyperparameter_grid_size": 54,
+    "model_type": "regularized_logistic_regression",
+    "oof_audit_status": "PASS",
+    "oof_metrics": {
+      "f1": 0.9427083333333334,
+      "fn": 15,
+      "fp": 7,
+      "harmful_retained_fp": 7,
+      "helpful_retained_tp": 181,
+      "precision": 0.9627659574468085,
+      "recall": 0.923469387755102,
+      "tn": 17,
+      "tp": 181
+    },
+    "replace_allowed": false,
+    "selected_C": 2.0,
+    "selected_score": 163.25,
+    "selected_threshold": 0.3,
+    "status": "PASS",
+    "validation_upload_performed": false
+  },
+  "git_push_authorized_by_latest_user_message": true,
+  "goal_blocked_tool_status_applied": false,
+  "goal_blocked_tool_status_reason": "not an impasse; user requested pause after step3, while step4/5 remain intentionally unexecuted",
+  "goal_blocked_tool_status_requested_by_user": true,
+  "goal_complete": false,
+  "large_local_artifacts_referenced_not_copied": [
+    "results/20260726_care_fullinfo_nnunet_and_care_scf/care_scf_v1/mosaic_oof",
+    "results/20260726_care_fullinfo_nnunet_and_care_scf/care_scf_v1/component_masks"
+  ],
+  "major_step3_status": "PASS",
+  "major_step4_status": "PAUSED_NOT_STARTED_BY_USER_REQUEST",
+  "major_step5_status": "PAUSED_NOT_STARTED_BY_USER_REQUEST",
+  "mosaic_oof_status": {
+    "covered_once": true,
+    "covered_prediction_rows": 220,
+    "covered_unique_cases": 220,
+    "duplicate_cases": [],
+    "expected_case_count": 220,
+    "folds": [
+      0,
+      1,
+      2,
+      3,
+      4
+    ],
+    "full_data_checkpoint_used": false,
+    "geometry_pass": true,
+    "leakage_errors": [],
+    "source_commit": "d334bd1fb2a99dbbc230510590cd8e3ee08cc377",
+    "status": "PASS"
+  },
+  "new_slurm_allocations_submitted": false,
+  "oof_help_harm_counts": {
+    "harm_false_suppression": 15,
+    "harm_retained_fp": 7,
+    "help_retained_tp": 181,
+    "help_suppressed_fp": 17
+  },
+  "packet_root": "results/care_scf/step3_safescar_gate_pause",
+  "requested_pause": {
+    "reason": "user_requested_pause_after_major_step3",
+    "step4": true,
+    "step5": true
+  },
+  "salloc_used": false,
+  "sbatch_used": false,
+  "schema_version": 1,
+  "slurm_allocation_used": "60657290",
+  "time_utc": "2026-07-26T15:05:05.549575+00:00",
+  "validation_upload_performed": false
+}

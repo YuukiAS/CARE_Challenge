@@ -1,0 +1,19 @@
+{
+  "edema_dataset_status": "NOT_BUILT_IN_SCAR_ONLY_STAGE",
+  "feature_columns": [
+    "nnunet_probability_mean",
+    "mosaic_probability_mean",
+    "nnunet_uncertainty_mean",
+    "anatomy_overlap",
+    "size_voxels",
+    "surface_to_volume",
+    "fill_fraction",
+    "positive_prototype_similarity",
+    "negative_prototype_similarity"
+  ],
+  "no_t2_as_edema_negative": true,
+  "oof_audit_status": "PASS",
+  "oof_case_count": 220,
+  "scar_component_count": 220,
+  "status": "PASS"
+}

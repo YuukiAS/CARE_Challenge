@@ -1,0 +1,42 @@
+{
+  "actions": [
+    "retain",
+    "suppress"
+  ],
+  "case_count": 220,
+  "component_count": 220,
+  "edema_fallback": true,
+  "feature_columns": [
+    "nnunet_probability_mean",
+    "nnunet_uncertainty_mean",
+    "mosaic_probability_mean",
+    "anatomy_overlap",
+    "log_size",
+    "surface_to_volume",
+    "fill_fraction",
+    "elongation",
+    "positive_prototype_similarity",
+    "negative_prototype_similarity"
+  ],
+  "gate_training_case_grouped": true,
+  "hyperparameter_grid_size": 54,
+  "model_type": "regularized_logistic_regression",
+  "oof_audit_status": "PASS",
+  "oof_metrics": {
+    "f1": 0.9427083333333334,
+    "fn": 15,
+    "fp": 7,
+    "harmful_retained_fp": 7,
+    "helpful_retained_tp": 181,
+    "precision": 0.9627659574468085,
+    "recall": 0.923469387755102,
+    "tn": 17,
+    "tp": 181
+  },
+  "replace_allowed": false,
+  "selected_C": 2.0,
+  "selected_score": 163.25,
+  "selected_threshold": 0.3,
+  "status": "PASS",
+  "validation_upload_performed": false
+}
