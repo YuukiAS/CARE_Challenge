@@ -2,7 +2,7 @@
 task_key: 20260727_care_dg_dual_pathology_validation
 task_kind: scientific_milestone
 task_type: care_dg_dual_pathology_error_correction_validation
-task_status: READY_FOR_CONTROLLER
+status: READY_FOR_CONTROLLER
 risk_level: high
 route_change: false
 scientific_decision_scope: promotion_candidate
