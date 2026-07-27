@@ -1,0 +1,19 @@
+{
+  "config": {
+    "anchor_channels": 6,
+    "context_channels": 16,
+    "edema_margin_cap": 4.0,
+    "encoder_channels": [
+      32,
+      64,
+      96
+    ],
+    "image_channels": 3,
+    "scar_margin_cap": 4.0,
+    "stem_channels": 8
+  },
+  "created_at_utc": "2026-07-27T04:23:15Z",
+  "model": "CARE-DG",
+  "total_parameters": 1580304,
+  "trainable_parameters": 1580304
+}

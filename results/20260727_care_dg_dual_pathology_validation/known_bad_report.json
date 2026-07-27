@@ -1,0 +1,31 @@
+{
+  "created_at_utc": "2026-07-27T04:23:15Z",
+  "fixtures": [
+    {
+      "evidence": "test_zero_correction_exact_anchor_identity verifies identity and validator still NEEDS_REPAIR",
+      "fixture": "zero_correction_promoted",
+      "rejected": true
+    },
+    {
+      "evidence": "test_no_t2_edema_decoder_gradient_zero",
+      "fixture": "no_t2_edema_modified",
+      "rejected": true
+    },
+    {
+      "evidence": "separate scar_decoder and edema_decoder modules",
+      "fixture": "shared_final_pathology_head",
+      "rejected": true
+    },
+    {
+      "evidence": "core source scan in validate_care_dg_packet.py",
+      "fixture": "forbidden_external_runtime_dependency",
+      "rejected": true
+    },
+    {
+      "evidence": "soft support multiplies correction magnitude; no hard crop in model core",
+      "fixture": "hard_support_crop",
+      "rejected": true
+    }
+  ],
+  "status": "PARTIAL_PASS"
+}

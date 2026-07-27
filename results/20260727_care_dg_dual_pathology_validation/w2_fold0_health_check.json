@@ -1,0 +1,142 @@
+{
+  "actual_optimizer_steps": 8000,
+  "best_checkpoint": "/users/a/e/aereinh/CARE/results/20260727_care_dg_dual_pathology_validation/runtime/formal/fold0/checkpoints/checkpoint_best.pt",
+  "best_inner_loss": 0.967534676194191,
+  "checkpoint_rows": 10,
+  "controller_interpretation": "Fold0 completed the requested 5000 Stage A plus 3000 Stage B optimizer steps with finite losses, nonzero scar/edema gates, nonzero changed voxels, and nonzero correction amplitudes in Stage B. This is a training health check only; folds 1-4 and W3 metrics remain required.",
+  "curve_rows": 82,
+  "expected_stage_a_steps": 5000,
+  "expected_stage_b_steps": 3000,
+  "fold": 0,
+  "health_flags": {
+    "changed_voxels_any_nonzero": true,
+    "edema_delta_std_any_nonzero": true,
+    "edema_gate_any_nonzero": true,
+    "loss_all_finite": true,
+    "scar_delta_std_any_nonzero": true,
+    "scar_gate_any_nonzero": true,
+    "stage_b_entered": true,
+    "stage_b_last_changed_voxels_nonzero": true,
+    "stage_b_last_edema_gate_nonzero": true,
+    "stage_b_last_scar_gate_nonzero": true
+  },
+  "last_checkpoint": "/users/a/e/aereinh/CARE/results/20260727_care_dg_dual_pathology_validation/runtime/formal/fold0/checkpoints/checkpoint_last.pt",
+  "last_logged": {
+    "changed_voxels": 6562,
+    "edema_delta_std": 1.4147628545761108,
+    "edema_gate": 0.006549793761223555,
+    "elapsed_seconds": 8235.3,
+    "fold": 0,
+    "local_step": 3000,
+    "loss": 1.404244065284729,
+    "scar_delta_std": 1.2547416687011719,
+    "scar_gate": 0.006314593367278576,
+    "stage": "B",
+    "total_step": 8000
+  },
+  "preflight_only": false,
+  "receipt_status": "PASS",
+  "scope": "W2_FOLD0_TRAINING_HEALTH_CHECK_ONLY_NOT_SCIENTIFIC_CONCLUSION",
+  "source_files": {
+    "checkpoint_manifest": "results/20260727_care_dg_dual_pathology_validation/runtime/formal/fold0/checkpoint_manifest.csv",
+    "fold_training_receipt": "results/20260727_care_dg_dual_pathology_validation/runtime/formal/fold0/fold_training_receipt.json",
+    "training_curve": "results/20260727_care_dg_dual_pathology_validation/runtime/formal/fold0/training_curve.csv"
+  },
+  "stage_stats": {
+    "A": {
+      "changed_voxels": {
+        "last": 4831,
+        "max": 429683,
+        "mean": 17514.725490196077,
+        "min": 3301,
+        "n": 51
+      },
+      "edema_delta_std": {
+        "last": 0.9834474325180054,
+        "max": 1.4080084562301636,
+        "mean": 1.1334125300248463,
+        "min": 0.24133029580116272,
+        "n": 51
+      },
+      "edema_gate": {
+        "last": 0.0007353066466748714,
+        "max": 0.3261537551879883,
+        "mean": 0.019943412338547847,
+        "min": 0.0007353066466748714,
+        "n": 51
+      },
+      "first_total_step": 1,
+      "last_total_step": 5000,
+      "loss": {
+        "last": 0.9347742795944214,
+        "max": 2.685375690460205,
+        "mean": 1.2407764488575506,
+        "min": 0.7977452278137207,
+        "n": 51
+      },
+      "rows": 51,
+      "scar_delta_std": {
+        "last": 1.8716657161712646,
+        "max": 1.8716657161712646,
+        "mean": 1.4997705846440559,
+        "min": 0.26339462399482727,
+        "n": 51
+      },
+      "scar_gate": {
+        "last": 0.007238978520035744,
+        "max": 0.48710888624191284,
+        "mean": 0.04389047936773768,
+        "min": 0.004512941464781761,
+        "n": 51
+      }
+    },
+    "B": {
+      "changed_voxels": {
+        "last": 6562,
+        "max": 19054,
+        "mean": 11436.483870967742,
+        "min": 6292,
+        "n": 31
+      },
+      "edema_delta_std": {
+        "last": 1.4147628545761108,
+        "max": 1.6186027526855469,
+        "mean": 1.4496908072502381,
+        "min": 1.2996209859848022,
+        "n": 31
+      },
+      "edema_gate": {
+        "last": 0.006549793761223555,
+        "max": 0.011843276210129261,
+        "mean": 0.0057645857995075565,
+        "min": 0.0029780128970742226,
+        "n": 31
+      },
+      "first_total_step": 5001,
+      "last_total_step": 8000,
+      "loss": {
+        "last": 1.404244065284729,
+        "max": 1.5966671705245972,
+        "mean": 1.151208471867346,
+        "min": 0.7522878646850586,
+        "n": 31
+      },
+      "rows": 31,
+      "scar_delta_std": {
+        "last": 1.2547416687011719,
+        "max": 1.4994810819625854,
+        "mean": 1.3410334625551779,
+        "min": 1.0789707899093628,
+        "n": 31
+      },
+      "scar_gate": {
+        "last": 0.006314593367278576,
+        "max": 0.012702183797955513,
+        "mean": 0.00444728733160563,
+        "min": 0.0020537409000098705,
+        "n": 31
+      }
+    }
+  },
+  "terminal_time_utc": "2026-07-27T07:14:51Z"
+}

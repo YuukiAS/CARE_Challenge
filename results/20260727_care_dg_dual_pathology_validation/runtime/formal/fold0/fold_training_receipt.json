@@ -1,0 +1,22 @@
+{
+  "actual_optimizer_steps": 8000,
+  "best_checkpoint": "/users/a/e/aereinh/CARE/results/20260727_care_dg_dual_pathology_validation/runtime/formal/fold0/checkpoints/checkpoint_best.pt",
+  "best_inner_loss": 0.967534676194191,
+  "checkpoint_rows": 10,
+  "complete_trimodal_train_cases": 64,
+  "curve_rows": 82,
+  "elapsed_seconds": 8236.1,
+  "expected_stage_a_steps": 5000,
+  "expected_stage_b_steps": 3000,
+  "fold": 0,
+  "inner_selection_cases": 35,
+  "inner_train_cases": 141,
+  "last_checkpoint": "/users/a/e/aereinh/CARE/results/20260727_care_dg_dual_pathology_validation/runtime/formal/fold0/checkpoints/checkpoint_last.pt",
+  "outer_train_cases": 176,
+  "outer_val_cases": 44,
+  "outer_val_used_for_checkpoint_selection": false,
+  "preflight_only": false,
+  "status": "PASS",
+  "t2_reliable_train_cases": 64,
+  "terminal_time_utc": "2026-07-27T07:14:51Z"
+}

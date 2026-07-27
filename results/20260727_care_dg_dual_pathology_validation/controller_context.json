@@ -1,0 +1,72 @@
+{
+  "allowed_allocation": {
+    "job_id": "60657290",
+    "job_name": "CAREInteractive3d",
+    "node": "g1807htzh01",
+    "partition": "htzhulab"
+  },
+  "controller_role": "Controller/Coordinator acceptance owner",
+  "created_at_utc": "2026-07-27T04:13:10Z",
+  "current_and_wiki_staleness": {
+    "CURRENT.md": "STALE_BASELINE_ONLY_TRUTH_OVERRIDDEN_BY_20260727_CARE_DG_TASK_UNTIL_TERMINAL_PACKET",
+    "wiki": "STALE_BASELINE_ONLY_TRUTH_OVERRIDDEN_BY_20260727_CARE_DG_TASK_UNTIL_TERMINAL_PACKET"
+  },
+  "executor_count": 1,
+  "forbidden_actions": {
+    "docker_upload": true,
+    "new_slurm_job": true,
+    "runtime_git_push": true,
+    "salloc": true,
+    "sbatch": true,
+    "validation_upload": true,
+    "write_overflow_htzhu_CARE": true
+  },
+  "git_head": {
+    "cmd": [
+      "git",
+      "rev-parse",
+      "HEAD"
+    ],
+    "elapsed_seconds": 0.006,
+    "returncode": 0,
+    "stderr": "",
+    "stdout": "387248a5e6d49acee0d90e5a0118593d2a8819b6"
+  },
+  "git_status": {
+    "cmd": [
+      "git",
+      "status",
+      "--short",
+      "--branch"
+    ],
+    "elapsed_seconds": 0.078,
+    "returncode": 0,
+    "stderr": "",
+    "stdout": "## main...origin/main\n M results/20260724_care_myops_srr_cascade_submission_rescue/runtime_closure_repair_rc1/formal_race_watcher_history_v2.jsonl\n M results/20260724_care_myops_srr_cascade_submission_rescue/runtime_closure_repair_rc1/formal_race_watcher_state_v2.json\n?? .codex_runtime/\n?? results/care_scf/canonical_model_summary_fold0.csv\n?? results/care_scf/care_gate_training_receipt.json\n?? results/care_scf/care_prediction_status.csv\n?? results/care_scf/casewise_metrics_fold0.csv\n?? results/care_scf/completion_audit.csv\n?? results/care_scf/component_dataset_feature_status.csv\n?? results/care_scf/component_dataset_fold0_diagnostic.csv\n?? results/care_scf/component_decisions.csv\n?? results/care_scf/controller_report.md\n?? results/care_scf/final_manifest.json\n?? results/care_scf/geometry_audit.csv\n?? results/care_scf/help_harm.csv\n?? results/care_scf/help_harm_summary.csv\n?? results/care_scf/mosaic_oof_status.csv\n?? results/care_scf/nnunet_oof_status.csv\n?? results/care_scf/provenance.json\n?? scripts/evaluation/build_care_dg_validation_packet.py\n?? scripts/evaluation/build_care_scf_controller_packet.py\n?? scripts/evaluation/build_mosaic_paper_results_completion.py\n?? scripts/evaluation/validate_care_dg_packet.py"
+  },
+  "origin_main": {
+    "cmd": [
+      "git",
+      "rev-parse",
+      "origin/main"
+    ],
+    "elapsed_seconds": 0.005,
+    "returncode": 0,
+    "stderr": "",
+    "stdout": "387248a5e6d49acee0d90e5a0118593d2a8819b6"
+  },
+  "parallel_execution_allowed": false,
+  "phase": "W0_BOOTSTRAP_AND_PARITY",
+  "prompt_hashes": {
+    ".agents/skills/care-mapper/SKILL.md": "2c41516189001ec7be94d9981a69fcd5544ad5ebd244c93cdc58488f4b535d0e",
+    ".agents/skills/slurm-routing-partition/SKILL.md": "2b7e87f58b275b50dc9d4a9377f4e2518c3a390c806e400cb32e07ebac3f83a6",
+    "AGENTS.md": "9e41eb124868681f7176ac96befb72df5f8fb32e8f6b17d241d1c8586ae9011f",
+    "prompts/blueprints/CARE_DG_dual_pathology_blueprint_20260727.md": "4637032287c2738ad78bd5faac3534b2fed52deebee955a12e6d6bd79a42f021",
+    "prompts/routes/handoffs/CURRENT.md": "b5a41804a5d4fdafdd64095faa049e9c23ef98c485c155b1d9edf2a988691178",
+    "prompts/tasks/20260727_care_dg_dual_pathology_validation_controller.md": "557bc9c10cd43c089b1b26accc634527e3091d6022c5a2c2f41a2f67dbe47ba6",
+    "prompts/tasks/20260727_care_dg_dual_pathology_validation_executor_plan.yaml": "dd3a032ad978da8037952432ea02440d428618c5ab0f1b137e22cc6305e19aea",
+    "wiki/README.md": "983c619213257fbe41ed19b596d10df6a532e8e4eb37dbbf0115b64b26cf63b7",
+    "wiki/current_state.yaml": "f7998150bb8fa0b92d96e54dbfa0162c316148d0109f5248cde9c8528658db03"
+  },
+  "task_key": "20260727_care_dg_dual_pathology_validation"
+}

@@ -1,0 +1,71 @@
+{
+  "created_at_utc": "2026-07-27T04:36:39Z",
+  "device": "NVIDIA H100 NVL",
+  "formal_training_credit": 0,
+  "grid": "raw_label_oof_probability",
+  "receipts": [
+    {
+      "availability": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "case_id": "Case3004",
+      "changed_voxels": 117,
+      "edema_decoder_grad_abs_sum": 180.55308045260608,
+      "edema_delta_std": 0.29383134841918945,
+      "loss": 2.1595680713653564,
+      "loss_finite": true,
+      "metrics": {
+        "ce": 0.790633499622345,
+        "edema_gate": 0.39163094758987427,
+        "edema_seg": 0.5502365231513977,
+        "identity": 0.23550204932689667,
+        "loss": 2.1595680713653564,
+        "remote": 0.0,
+        "scar_gate": 0.4122237265110016,
+        "scar_seg": 0.3781970143318176
+      },
+      "no_t2_edema_grad_exact_zero": false,
+      "scar_decoder_grad_abs_sum": 217.99397200159729,
+      "scar_delta_std": 0.34561750292778015,
+      "spatial_shape": [
+        6,
+        128,
+        128
+      ]
+    },
+    {
+      "availability": [
+        1.0,
+        0.0,
+        0.0
+      ],
+      "case_id": "Case1002",
+      "changed_voxels": 25,
+      "edema_decoder_grad_abs_sum": 0.0,
+      "edema_delta_std": 0.0,
+      "loss": 0.7210682034492493,
+      "loss_finite": true,
+      "metrics": {
+        "ce": 0.11708775162696838,
+        "edema_gate": 0.0,
+        "edema_seg": 0.0,
+        "identity": 0.12370620667934418,
+        "loss": 0.7210682034492493,
+        "remote": 0.0,
+        "scar_gate": 0.41131770610809326,
+        "scar_seg": 0.3835052251815796
+      },
+      "no_t2_edema_grad_exact_zero": true,
+      "scar_decoder_grad_abs_sum": 226.40637566708028,
+      "scar_delta_std": 0.4701761305332184,
+      "spatial_shape": [
+        8,
+        128,
+        128
+      ]
+    }
+  ],
+  "status": "PASS"
+}

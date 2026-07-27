@@ -1,0 +1,89 @@
+{
+  "anchor": {
+    "anchor_root": "data/nnUNet/nnUNet_results/Dataset501_CAREMyoPS/nnUNetTrainer_500epochs__nnUNetPlans__3d_fullres",
+    "fold_counts": {
+      "0": 44,
+      "1": 44,
+      "2": 44,
+      "3": 44,
+      "4": 44
+    },
+    "hash_completeness": "COMPLETE_FULL_SHA256",
+    "oof_anchor_manifest_path": "results/20260727_care_dg_dual_pathology_validation/nnunet_oof_anchor_manifest.json",
+    "oof_anchor_manifest_status": "COMPLETE_FULL_SHA256_LIGHTWEIGHT_HEADER",
+    "oof_case_count": 220
+  },
+  "case_lists": {
+    "cine_validation_cases": 0,
+    "complete_trimodal_case_ids_sha256": "022341f7576f1e0f028f9c7399d63d6058104784ceffca9fab6e3bb6f867e123",
+    "complete_trimodal_cases": 80,
+    "myops_train_cases": 220,
+    "myops_validation_cases": 15
+  },
+  "created_at_utc": "2026-07-27T04:13:31Z",
+  "labels": {
+    "compact_labels": {
+      "0": "background",
+      "1": "myocardium",
+      "2": "LV_blood",
+      "3": "RV_blood",
+      "4": "edema",
+      "5": "scar"
+    },
+    "official_myops_labels": {
+      "0": 0,
+      "1": 200,
+      "2": 500,
+      "3": 600,
+      "4": 1220,
+      "5": 2221
+    }
+  },
+  "metric_contract": {
+    "parity_tolerance": {
+      "dice_precision_recall": 1e-06,
+      "distance_mm": 0.0001
+    },
+    "required": [
+      "Dice",
+      "leaderboard_HD",
+      "HD95",
+      "exact_HD",
+      "precision",
+      "recall",
+      "remote_FP",
+      "component_count",
+      "volume_ratio",
+      "help_harm"
+    ]
+  },
+  "splits": {
+    "fold_counts": {
+      "0": {
+        "train": 176,
+        "val": 44
+      },
+      "1": {
+        "train": 176,
+        "val": 44
+      },
+      "2": {
+        "train": 176,
+        "val": 44
+      },
+      "3": {
+        "train": 176,
+        "val": 44
+      },
+      "4": {
+        "train": 176,
+        "val": 44
+      }
+    },
+    "nnunet_split_path": "data/nnUNet/nnUNet_preprocessed/Dataset501_CAREMyoPS/splits_final.json",
+    "nnunet_split_sha256": "9c3e9f3b7e4565a5c3c2589ddbb913c78c0ad423f4265370585841c93c6f880a",
+    "protocol_split_path": "data/benchmarks/protocol/splits_MyoPS.json",
+    "protocol_split_sha256": "6165caeb5b47feb0d24f20380898037b7e6cead4db1eeba398a3c5a57faf9a1b"
+  },
+  "task_key": "20260727_care_dg_dual_pathology_validation"
+}

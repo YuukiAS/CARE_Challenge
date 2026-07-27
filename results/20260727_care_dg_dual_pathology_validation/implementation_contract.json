@@ -1,0 +1,36 @@
+{
+  "blocking_pending_gates": [
+    "W2 five-fold formal OOF training",
+    "W3 aggregation/ablation",
+    "W4 all-data deployment",
+    "W5 validation package",
+    "W6 mapper/validator/email"
+  ],
+  "created_at_utc": "2026-07-27T04:23:15Z",
+  "implemented_contract": {
+    "compact_shared_three_scale_encoder": true,
+    "competitive_logit_correction": true,
+    "explicit_fn_fp_gates_and_magnitudes": true,
+    "forbidden_external_runtime_dependencies_absent_in_core_sources": true,
+    "independent_scar_edema_decoders": true,
+    "modality_specific_stems": true,
+    "no_t2_edema_identity": true,
+    "protected_anatomy_by_zero_support": true,
+    "scar_priority_pure_edema_decode": true,
+    "soft_support": true
+  },
+  "implemented_files": {
+    "configs/care_dg/care_dg_v1.yaml": "fb5c87ab26c3a9001b05dc23045939e9bc9cd269101e3dafd807e44aea32d225",
+    "scripts/evaluation/evaluate_care_dg.py": "aae033a503189bf75cf100c087a65568940370ec4c010b9f7f0a680b3c399651",
+    "scripts/evaluation/select_care_dg_candidate.py": "d319535426cb49800710e8a9e8056ae97cf4abae99bd342dfd2df09b153f5080",
+    "scripts/evaluation/validate_care_dg_packet.py": "d02ef03752072a97d72301bf42338d11e851442b67e403a5e8cd2a6875fcb48b",
+    "scripts/inference/run_care_dg_inference.py": "ceef29361a4ce6eb2224e315ca800381944b2a9c624aa7b8017dab80d54ee771",
+    "scripts/training/run_care_dg.py": "964602d6acf497da4bf793048fdf099bafdf6e53746d059920f58d8c2468a6af",
+    "src/care_myocardium/data/care_dg_dataset.py": "96d18e1914b7e08fc029a77c0e7c21467809fa0a5e9e12ad4f1ef2208eba803a",
+    "src/care_myocardium/inference/care_dg_predictor.py": "4630243295c202783c95dea4795df5b4c5ae3e3a37fb091fcd0fc29df68bfa2b",
+    "src/care_myocardium/models/care_dg.py": "496d8bc090b14e2bed72d1a3b18dd10e7e6270eaaf670c490887d3d711bcd457",
+    "src/care_myocardium/training/care_dg_trainer.py": "ef7f7037a0f508faf09ed68b76ebe46d5d880b4b013ed3d033635114d76da7b7",
+    "tests/care_dg/test_care_dg_model.py": "e58075c9a5fd89c91afb0a0736147ba3ed6d77bc04b97d56d64c98f7889370a9"
+  },
+  "status": "W1_IMPLEMENTATION_AND_REAL_CASE_GATES_PASS_FORMAL_TRAINING_NOT_STARTED"
+}

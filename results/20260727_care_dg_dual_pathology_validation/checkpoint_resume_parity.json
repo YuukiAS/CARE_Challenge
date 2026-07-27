@@ -1,0 +1,5 @@
+{
+  "created_at_utc": "2026-07-27T04:23:15Z",
+  "evidence": "tests/care_dg/test_care_dg_model.py::test_checkpoint_reload_exact",
+  "status": "PASS_CPU_UNIT"
+}

@@ -1,0 +1,22 @@
+{
+  "checked_at_utc": "2026-07-27T04:13:12Z",
+  "gpu_available_for_next_serial_command": true,
+  "gpu_probe": {
+    "cmd": [
+      "srun",
+      "--jobid=60657290",
+      "--overlap",
+      "--ntasks=1",
+      "bash",
+      "-lc",
+      "hostname; date -Is; nvidia-smi --query-gpu=name,memory.total,memory.used,utilization.gpu --format=csv,noheader"
+    ],
+    "elapsed_seconds": 1.941,
+    "returncode": 0,
+    "stderr": "",
+    "stdout": "g1807htzh01.ll.unc.edu\n2026-07-27T00:13:12-04:00\nNVIDIA H100 NVL, 95830 MiB, 0 MiB, 0 %"
+  },
+  "job_id": "60657290",
+  "lock_scope": "CARE_DG_GPU_SERIAL_ONLY",
+  "parallel_gpu_processes_allowed": 0
+}

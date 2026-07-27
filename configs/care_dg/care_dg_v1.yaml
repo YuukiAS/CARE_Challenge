@@ -1,0 +1,26 @@
+schema_version: 1
+method: CARE-DG
+full_name: "CARE-DG: Dual-Gated Residual Correction for Myocardial Scar and Edema Segmentation"
+seed: 20260727
+input_contract:
+  images: LGE,T2,C0 on frozen nnU-Net preprocessed grid
+  availability_channels: LGE,T2,C0
+  anchor_logits: six-class frozen nnU-Net OOF or ensemble logits
+  support: soft myocardium and edema-zone support, not hard crop
+model:
+  stem_channels: 8
+  context_channels: 16
+  encoder_channels: [32, 64, 96]
+  scar_decoder: independent_FN_FP_gate_and_magnitude
+  edema_decoder: independent_FN_FP_gate_and_magnitude
+  forbidden_runtime: [MoSAIC, full_MMRD, prototype_dictionary, SIP, multi_expert, old_Cascade]
+training:
+  folds: [0, 1, 2, 3, 4]
+  stage_a_optimizer_steps: 5000
+  stage_b_optimizer_steps: 3000
+  batch_size: 8
+  complete_trimodal_sampling_weight: 4
+  no_t2_edema_loss_weight: 0
+candidate_gate:
+  primary_estimand: complete80
+  robustness_estimand: all220
