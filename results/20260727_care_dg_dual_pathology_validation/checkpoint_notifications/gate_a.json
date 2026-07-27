@@ -1,0 +1,81 @@
+{
+  "approval_token": "APPROVE_GATE_A",
+  "body_preview": "结论：CARE-DG Gate A 已完成修复实现验收前证据，当前状态进入 AWAITING_HUMAN_ACCEPTANCE_GATE_A。请回复精确 token：APPROVE_GATE_A，才会开始 repaired fold0 的 5000+3000 steps。\n\n状态：AWAITING_HUMAN_ACCEPTANCE_GATE_A\nApproval token: APPROVE_GATE_A\n\n修复提交：5e00456 Repair CARE-DG Gate A semantics\n推送状态：runtime push 未执行。\n旧 fold0/fold1：PRE_REPAIR_INVALID_SEMANTICS_DIAGNOSTIC_ONLY，scientific_credit=0。\n\n关键修复证据：\n- edema-zone 目标已改为 scar union edema；pure edema = zone minus scar。\n- FN/FP margin 方向测试已通过：FN 提高 margin，FP 降低 pathology/zone margin。\n- magnitude 已改为 fold cap * sigmoid(raw)，zero gate 无法被 magnitude 绕过。\n- scar competitor 包含 edema，可将 anchor edema voxel 转为 scar。\n- T2/reliable label masking 在 reduction 前逐病例应用；no-T2 edema gradient 和 delta 均为 0。\n- remote penalty 使用 pre-support raw delta。\n- formal runner 明确 anchor_value_kind=log_probabilities，并在 strict mode 拒绝缺失 uncertainty/support/distance。\n\n测试与 Gate A 证据：\n- pytest: ...............                                                          [100%]\n15 passed in 3.44s\n- strict validator: PASS\n- known-bad: PASS，fixtures=8\n- real-case forward/backward: PASS\n- checkpoint/resume: PASS，max_abs_delta=0.0\n- 300-step overfit: PASS，scar_drop=0.3265，edema_drop=0.4460\n- changed_voxels=1091，correct_direction_fraction=1.0\n- scar q_FN true/non=0.9804/0.1323，scar q_FP true/non=0.9640/0.1216\n- edema q_FN true/non=0.9882/0.1239，edema q_FP true/non=0.9602/0.1224\n- saturation: scar=0.0155，edema=0.0233\n\n关键证据路径：\n- results/20260727_care_dg_dual_pathology_validation/implementation_contract.json sha256=1d6a6bc29043c2ca3ac9de0a6b8ab48bdde35017cc1220858f729cc5dbd96286\n- results/20260727_care_dg_dual_pathology_validation/model_parameter_report.json sha256=f3f0431c300e714b46ecdc1264525f4f06759d5de08f0279791604e52168e1f1\n- results/20260727_care_dg_dual_pathology_validation/unit_test_report.md sha256=d2b597c7d93d8ef2769a3b29d742d666ee52dafb97f468fb384f56214565f943\n- results/20260727_care_dg_dual_pathology_validation/known_bad_report.json sha256=2115556bdd11c56fa1ffd2a18da74d1977123e78750386a955f09b15123804ae\n- results/20260727_care_dg_dual_pathology_validation/real_case_forward_backward_receipt.json sha256=16f402b2020904b6175279bdea218242db4d0f9e639004420c09a43c436645c2\n- results/20260727_care_dg_dual_pathology_validation/implementation_overfit_receipt.json sha256=8259b34e3e9879e58fc5523121941852e329447b7daca51acacc690fb435497f\n- results/20260727_care_dg_dual_pathology_validation/checkpoint_resume_parity.json sha256=908957e8971c14080a310ce54cb9265aab0bcf6cc45ba6e20393251fd7ad4098\n- results/20260727_care_dg_dual_pathology_validation/augmentation_alignment_audit.json sha256=a4d15b467ef4f8c7765a062863ae0c0fd0e7c5a98424240e745ce06e3f6d9183\n- results/20260727_care_dg_dual_pathology_validation/strict_validator_report.json sha256=f0230535005f21ca46e2a69650bd4800590df92142c3c72c8c4aa23eaaa2bc2d\n- results/20260727_care_dg_dual_pathology_validation/gate_a_repaired_semantics/gate_a_static_test_receipt.json sha256=288aac1fd89bf26a1e238480651e9e95e14de378890bcb3976b04980377c70e2\n- results/20260727_care_dg_dual_pathology_validation/gate_a_repaired_semantics/gate_a_summary.json sha256=94f8254635bc9a5f2ab59698773a3e0ebac7d8be631a086bad2569c3020f24cb\n- results/20260727_care_dg_dual_pathology_validation/gate_a_repaired_semantics/implementation_overfit_curve.csv sha256=e88a3c5e1c3bfde6257d89b017978f4d4aadfe2f735d987e2e36f78153c8a40b\n\n注意：这不是科学结论；repaired fold0 尚未开始。未经 APPROVE_GATE_A，不会启动正式 fold0。\n",
+  "commit": "5e004560f4fbe44175c8e4f1b2a5a3dadf7c33cf",
+  "commit_summary": "5e00456 Repair CARE-DG Gate A semantics",
+  "created_at_utc": "2026-07-27T10:00:13Z",
+  "docker_upload_performed": false,
+  "evidence": [
+    {
+      "exists": true,
+      "path": "results/20260727_care_dg_dual_pathology_validation/implementation_contract.json",
+      "sha256": "1d6a6bc29043c2ca3ac9de0a6b8ab48bdde35017cc1220858f729cc5dbd96286"
+    },
+    {
+      "exists": true,
+      "path": "results/20260727_care_dg_dual_pathology_validation/model_parameter_report.json",
+      "sha256": "f3f0431c300e714b46ecdc1264525f4f06759d5de08f0279791604e52168e1f1"
+    },
+    {
+      "exists": true,
+      "path": "results/20260727_care_dg_dual_pathology_validation/unit_test_report.md",
+      "sha256": "d2b597c7d93d8ef2769a3b29d742d666ee52dafb97f468fb384f56214565f943"
+    },
+    {
+      "exists": true,
+      "path": "results/20260727_care_dg_dual_pathology_validation/known_bad_report.json",
+      "sha256": "2115556bdd11c56fa1ffd2a18da74d1977123e78750386a955f09b15123804ae"
+    },
+    {
+      "exists": true,
+      "path": "results/20260727_care_dg_dual_pathology_validation/real_case_forward_backward_receipt.json",
+      "sha256": "16f402b2020904b6175279bdea218242db4d0f9e639004420c09a43c436645c2"
+    },
+    {
+      "exists": true,
+      "path": "results/20260727_care_dg_dual_pathology_validation/implementation_overfit_receipt.json",
+      "sha256": "8259b34e3e9879e58fc5523121941852e329447b7daca51acacc690fb435497f"
+    },
+    {
+      "exists": true,
+      "path": "results/20260727_care_dg_dual_pathology_validation/checkpoint_resume_parity.json",
+      "sha256": "908957e8971c14080a310ce54cb9265aab0bcf6cc45ba6e20393251fd7ad4098"
+    },
+    {
+      "exists": true,
+      "path": "results/20260727_care_dg_dual_pathology_validation/augmentation_alignment_audit.json",
+      "sha256": "a4d15b467ef4f8c7765a062863ae0c0fd0e7c5a98424240e745ce06e3f6d9183"
+    },
+    {
+      "exists": true,
+      "path": "results/20260727_care_dg_dual_pathology_validation/strict_validator_report.json",
+      "sha256": "f0230535005f21ca46e2a69650bd4800590df92142c3c72c8c4aa23eaaa2bc2d"
+    },
+    {
+      "exists": true,
+      "path": "results/20260727_care_dg_dual_pathology_validation/gate_a_repaired_semantics/gate_a_static_test_receipt.json",
+      "sha256": "288aac1fd89bf26a1e238480651e9e95e14de378890bcb3976b04980377c70e2"
+    },
+    {
+      "exists": true,
+      "path": "results/20260727_care_dg_dual_pathology_validation/gate_a_repaired_semantics/gate_a_summary.json",
+      "sha256": "94f8254635bc9a5f2ab59698773a3e0ebac7d8be631a086bad2569c3020f24cb"
+    },
+    {
+      "exists": true,
+      "path": "results/20260727_care_dg_dual_pathology_validation/gate_a_repaired_semantics/implementation_overfit_curve.csv",
+      "sha256": "e88a3c5e1c3bfde6257d89b017978f4d4aadfe2f735d987e2e36f78153c8a40b"
+    },
+    {
+      "exists": true,
+      "path": "results/20260727_care_dg_dual_pathology_validation/pre_repair_invalid_semantics_manifest.json",
+      "sha256": "e82a33d2c4a21d451c76ba4268a601c183a56eb99bfd3c0d06518297707db731"
+    }
+  ],
+  "gate": "A",
+  "push_performed": false,
+  "recipient": "1155246312@link.cuhk.edu.hk",
+  "state": "AWAITING_HUMAN_ACCEPTANCE_GATE_A",
+  "subject": "[CARE-DG][A/4] 修复实现完成，等待正式 Fold0 验收",
+  "validation_upload_performed": false
+}

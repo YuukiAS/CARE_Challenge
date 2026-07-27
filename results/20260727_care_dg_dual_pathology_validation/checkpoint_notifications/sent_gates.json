@@ -1,0 +1,13 @@
+{
+  "gate_a": {
+    "commit": "5e004560f4fbe44175c8e4f1b2a5a3dadf7c33cf",
+    "evidence_count": 13,
+    "gate": "A",
+    "node_json": "results/20260727_care_dg_dual_pathology_validation/checkpoint_notifications/gate_a.json",
+    "notifier_reuse": "controller_notifications.notify_goal_watcher.load_env_file plus same SMTP configuration; no new notifier service created",
+    "recipient": "1155246312@link.cuhk.edu.hk",
+    "sent_at_utc": "2026-07-27T10:00:17Z",
+    "status": "SENT",
+    "subject": "[CARE-DG][A/4] 修复实现完成，等待正式 Fold0 验收"
+  }
+}
