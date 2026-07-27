@@ -23,7 +23,10 @@ mosaic_hosted_gap_forensics:
   hosted_scar_dice: 0.6965
   model_family_lineage: USER_CONFIRMED_MOSAIC
   model_family_attribution_reopen: false
-  exact_hosted_package_checkpoint_recipe: UNRESOLVED
+  final_repo_weights_recipe: BOUND
+  exact_historical_upload_zip_bytes: UNRESOLVED
+  github_commit: d334bd1fb2a99dbbc230510590cd8e3ee08cc377
+  final_weights_manifest: /users/a/e/aereinh/MoSAIC/code/weights/download_summary.json
   clean_oof_scar_all220:
     mosaic_mean_dice: 0.3924384341856133
     nnunet_mean_dice: 0.5775017002982313

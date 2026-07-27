@@ -433,9 +433,9 @@ def build_lineage(repair_rows: list[dict[str, Any]]) -> dict[str, Any]:
         },
         {
             "claim": "exact_checkpoint_recipe_for_hosted_0.6965",
-            "evidence_grade": "UNRESOLVED",
-            "decision": "NOT_BOUND",
-            "evidence": "Full-data MoSAIC checkpoint hashes exist, but no manifest ties a specific zip upload and inference command to the leaderboard timestamps.",
+            "evidence_grade": "CONFIRMED_FINAL_REPO_WEIGHTS_RECIPE_PARTIAL_HOSTED_BIND",
+            "decision": "FINAL_VERSION_BOUND_HISTORICAL_ZIP_NOT_BOUND",
+            "evidence": "GitHub IndeedLiu/MoSAIC commit d334bd1fb2a99dbbc230510590cd8e3ee08cc377, local source /users/a/e/aereinh/MoSAIC/code/source at same commit, final downloaded weights in /users/a/e/aereinh/MoSAIC/code/weights/download_summary.json, and final recipe scripts/infer_and_submit.py plus Docker predict.py files are bound. Historical upload ZIP bytes remain unbound.",
         },
     ]
     write_csv(RESULT_ROOT / "submission_lineage_ledger.csv", lineage_rows)
@@ -458,7 +458,7 @@ def build_lineage(repair_rows: list[dict[str, Any]]) -> dict[str, Any]:
             "model_family_lineage": "USER_CONFIRMED_MOSAIC",
             "hosted_scar_dice": 0.6965,
             "model_family_attribution_reopen": False,
-            "boundary": "This receipt confirms model family only; it does not bind exact zip, checkpoint, or inference recipe.",
+            "boundary": "This receipt confirms model family. After GitHub/source/weights inspection, final repo + final checkpoint hashes + final inference recipe are bound; exact historical upload ZIP bytes remain unbound.",
         },
     )
     write_text(
@@ -466,7 +466,7 @@ def build_lineage(repair_rows: list[dict[str, Any]]) -> dict[str, Any]:
         """
 用户确认的事实是：leaderboard scar Dice 0.6965 属于 MoSAIC submission。本任务不重新裁决模型家族。
 
-未被本地证据绑定的事实是：2026-07-06 09:13:49 或 2026-07-08 19:08:16 具体上传的 `CARE-Myocardium-OrganAgent.zip`、zip SHA256、checkpoint 组合、TTA/threshold/postprocess/reconstruction 命令。现有本地 MoSAIC zip 是论文/材料包，不是 validation submission；CARE `upload_ready/` 下可找到的 validation zip 不是 MoSAIC hosted 包。因此 exact hosted package/checkpoint/recipe 结论为 `UNRESOLVED`，不能作为 Docker 架构选择依据。
+已绑定的事实是：final public repo 为 `IndeedLiu/MoSAIC` commit `d334bd1fb2a99dbbc230510590cd8e3ee08cc377`，本地 source 为同一 commit，final pretrained weights 的 7 个 SHA 见 `/users/a/e/aereinh/MoSAIC/code/weights/download_summary.json`，final inference recipe 由 `scripts/infer_and_submit.py` 与 Docker `predict.py` 文件绑定。仍未绑定的是两次历史上传的原始 ZIP bytes/SHA。7/8 更接近 final recipe；7/6 很可能 MyoPS scar 分支相同但 Cine 分支较弱。
 """,
     )
     return {"leaderboard": leaderboard, "target_rows": target_rows, "zips": zips, "checkpoints": checkpoints}
@@ -1013,15 +1013,15 @@ def build_final_reports(oof: dict[str, Any], lineage: dict[str, Any], repair_row
     write_text(
         RESULT_ROOT / "root_cause_report.md",
         """
-Clean OOF 与 hosted 排名翻转不是单一原因。可实证解释的是 full-data inclusion/selection 的污染上界、目标模态结构偏移和 15-case 抽样放大；可排除为主因的是已观测 scar 后处理；仍未绑定的是 exact hosted zip、checkpoint、TTA/threshold/reconstruction 命令。由于 clean 220-case OOF 仍不支持 MoSAIC 替代 nnU-Net，最终 Docker 不能基于 hosted row 反向推断引入 MoSAIC。
+Clean OOF 与 hosted 排名翻转不是模型家族未绑定造成的。现在可绑定 MoSAIC final GitHub commit、final checkpoint hashes 和 final inference recipe；不可绑定的是历史 upload ZIP bytes。主要解释是 final/full-data submission 权重、validation 域差异、目标模态结构、15-case 小样本放大，以及 Cine 分支从 7/6 到 7/8 的 recipe 回滚/ensemble 调整。已观测 scar postprocess 不是主因。
 """,
     )
     write_text(
         RESULT_ROOT / "scientific_conclusion.md",
         f"""
-220-case clean OOF scar 的 MoSAIC 均值为 {fmt(summary.get('mosaic_mean_dice'))}，nnU-Net 均值为 {fmt(summary.get('nnunet_mean_dice'))}，差值为 {fmt(summary.get('delta_mosaic_minus_nnunet'))}。这与 hosted scar 0.6965 排名相反，最合理解释是 hosted row 结合了 full-data/selection、validation 域偏移、15-case 抽样和未绑定 exact recipe，而不是 clean MoSAIC 架构本身已被证明优于 nnU-Net。
+220-case clean OOF scar 的 MoSAIC 均值为 {fmt(summary.get('mosaic_mean_dice'))}，nnU-Net 均值为 {fmt(summary.get('nnunet_mean_dice'))}，差值为 {fmt(summary.get('delta_mosaic_minus_nnunet'))}。这个 clean OOF 与 hosted scar 0.6965 的反差，不能再解释为“MoSAIC lineage 未绑定”：现在 final repo、final weights 和 final recipe 已绑定；真正未绑定的是当时上传 ZIP 的 bytes/SHA。
 
-因此最终科学结论是：MoSAIC 家族归属已确认，但 exact hosted package/checkpoint/recipe 未绑定；MoSAIC、SafeScar、MMRD、Cascade 均不能作为最终 Docker 的主动分割组件。唯一可执行架构是 `NNUNET_ONLY_DOCKER`，病种独立 fallback 为保持 nnU-Net identity 输出。
+更合理的解释是：hosted row 使用 MoSAIC final/full-data submission 权重和 final/near-final inference recipe，和 clean OOF 的训练域不同；7/8 相比 7/6 的主要可见变化在 Cine 分支，符合 repo 中 V1/V2 previous-best ensemble 从 0.1878 提升到约 0.2069 的注释。即便如此，clean 220-case OOF 仍不支持 MoSAIC、SafeScar、MMRD 或 Cascade 作为最终 Docker 主动分割组件。唯一可执行架构仍是 `NNUNET_ONLY_DOCKER`，病种独立 fallback 为保持 nnU-Net identity 输出。
 """,
     )
     impl = {
@@ -1064,12 +1064,12 @@ Mapper finding: final runtime architecture should be narrowed, not expanded. The
     write_text(
         RESULT_ROOT / "controller_report.md",
         f"""
-这次结论很直接：0.6965 的 hosted scar 行按用户确认归入 MoSAIC，但本地没有找到能绑定该行的 exact validation zip、checkpoint 和 inference command；clean 220-case OOF 不支持 MoSAIC 替代 nnU-Net。排名翻转主要应解释为 full-data inclusion/selection、validation 域与 15 例抽样共同作用，再叠加未解析的 exact recipe，而不是 SafeScar、Cascade 或 MMRD 已经有最终分割科学证据。
+这次修正后的结论是：0.6965 的 hosted scar 行按用户确认归入 MoSAIC，而且 final MoSAIC repo、final pretrained checkpoint hashes 和 final inference recipe 已经能绑定；不能绑定的是两次历史上传的 exact ZIP bytes/SHA。clean 220-case OOF 仍不支持把 MoSAIC 放进最终 Docker 替代 nnU-Net，排名翻转主要来自 full-data/final-weight submission、validation 域、15 例抽样以及 7/6 到 7/8 的 Cine recipe 调整，而不是 SafeScar、Cascade 或 MMRD 已经有最终分割科学证据。
 
 controller_verification_decision: {decision}
 
-1. exact hosted package/checkpoint/recipe 是否已绑定：未绑定。模型家族已按用户确认固定为 MoSAIC；exact zip SHA、checkpoint 组合、TTA/threshold/postprocess/reconstruction 命令仍为 `UNRESOLVED`。
-2. 各因素解释多少：full-data inclusion/selection 有 fold0 诊断 lift，scar 约 +0.1045；已观测 scar postprocess 约 -0.0021，不能解释提升；target modality/domain 和 15-case 波动是部分解释但没有 validation GT；metric/export 只解释边界，不解释大幅提升；exact recipe 未解析。
+1. exact hosted package/checkpoint/recipe 是否已绑定：final code + final weights + final inference recipe 已绑定到 `IndeedLiu/MoSAIC` commit `d334bd1fb2a99dbbc230510590cd8e3ee08cc377` 和 `/users/a/e/aereinh/MoSAIC/code/weights/download_summary.json` 的 7 个 checkpoint；历史 exact upload ZIP bytes/SHA 仍未绑定。
+2. 各因素解释多少：full-data/final-weight inclusion 是主要解释之一；fold0 诊断 lift scar 约 +0.1045 只能当污染/包含效应上界；目标模态结构和 validation 域可部分解释；15-case bootstrap 单独翻正概率 0.0018，不足以单独解释；已观测 scar postprocess 约 -0.0021，不是主因；metric/export 只解释标签/几何边界。
 3. Batch7、MMRD、Cascade 独立增量价值：Batch7 只保留候选思想；MMRD 只保留可靠标签/模态卫生；Cascade 无最终 Docker 增量证据。
 4. 旧 SafeScar Step3 gate 是否有最终分割科学证据：没有。它是组件级分类证据，不是 final-mask Dice/HD 或 hosted export 证据。
 5. 两份 CARE-SER 蓝图保留、删除和修改：保留 nnU-Net baseline、协议卫生和 fallback 原则；删除 MoSAIC/SafeScar/MMRD/Cascade 作为 active runtime mask producer；修改为研究分支需先过 strict clean OOF final-mask gate。
@@ -1091,7 +1091,7 @@ controller_verification_decision: {decision}
             "final_status": decision,
             "commit_status": "local_commit_created_by_controller",
             "push_status": "not_pushed_not_authorized",
-            "key_conclusion": "0.6965 belongs to MoSAIC by user confirmation, exact hosted package/checkpoint/recipe is unresolved, and final Docker should be NNUNET_ONLY_DOCKER.",
+            "key_conclusion": "MoSAIC final repo, final weights, and final inference recipe are bound; historical uploaded ZIP bytes remain unbound; final Docker should remain NNUNET_ONLY_DOCKER.",
             "blocked_or_failure_reason": "none",
             "slurm_terminal_status": "allocation_60657290_reused_no_new_slurm_job",
             "evidence_paths": [

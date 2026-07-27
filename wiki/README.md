@@ -2,11 +2,11 @@
 
 architecture_version: `care-myops-mosaic-gap-forensics-final-blueprint-20260726`
 latest_verified_runtime: `MoSAIC hosted-gap forensics packet; strict validator PASS; allocation 60657290 reused only`
-latest_scientific_status: `MoSAIC family confirmed for hosted scar 0.6965, exact package/checkpoint/recipe unresolved, clean 220-case OOF underperforms nnU-Net`
+latest_scientific_status: `MoSAIC family confirmed for hosted scar 0.6965, final package recipe/checkpoint hashes bound; exact historical ZIP bytes unresolved, clean 220-case OOF underperforms nnU-Net`
 latest_controller_task: `20260726_care_mosaic_validation_gap_forensics_and_final_blueprint`
 route_status: `MAIN_ONLY_FINAL_BLUEPRINT_NNUNET_ONLY_DOCKER_LOCAL_ONLY`
 
-本页是 GPT、Controller、Executor、Mapper 和 Planner 读取当前架构状态的根入口。当前最新终态事实是：用户确认 hosted scar Dice 0.6965 属于 MoSAIC submission，但本地未绑定 exact validation zip、checkpoint 或 inference recipe；clean 220-case OOF scar 显示 MoSAIC 0.3924、nnU-Net 0.5775，完整三模态子集 MoSAIC 0.6331、nnU-Net 0.6927。最终 Docker 当前只应执行 `NNUNET_ONLY_DOCKER`，MoSAIC/SafeScar/MMRD/Cascade 只能作为研究证据或协议卫生保留，不能作为 active runtime mask producer。
+本页是 GPT、Controller、Executor、Mapper 和 Planner 读取当前架构状态的根入口。当前最新终态事实是：用户确认 hosted scar Dice 0.6965 属于 MoSAIC submission，但已绑定 final repo、final pretrained weights 和 final inference recipe，但未绑定历史 upload ZIP bytes/SHA；clean 220-case OOF scar 显示 MoSAIC 0.3924、nnU-Net 0.5775，完整三模态子集 MoSAIC 0.6331、nnU-Net 0.6927。最终 Docker 当前只应执行 `NNUNET_ONLY_DOCKER`，MoSAIC/SafeScar/MMRD/Cascade 只能作为研究证据或协议卫生保留，不能作为 active runtime mask producer。
 
 ## 2026-07-26 MoSAIC hosted-gap 取证与最终蓝图
 
@@ -15,7 +15,8 @@ result_root: results/20260726_care_mosaic_validation_gap_forensics_and_final_blu
 strict_validator_report.json: PASS
 controller_verification_decision: VERIFIED_COMPLETE
 allocation: 60657290 reused only; no sbatch/salloc/new Slurm job/upload/push
-exact_hosted_zip_checkpoint_recipe: UNRESOLVED
+final_repo_weights_recipe: BOUND
+exact_historical_upload_zip_bytes: UNRESOLVED
 model_family_lineage: USER_CONFIRMED_MOSAIC
 final_docker_architecture: NNUNET_ONLY_DOCKER
 pathology_independent_fallback: identity_to_nnunet

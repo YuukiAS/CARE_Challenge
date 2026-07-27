@@ -2,14 +2,14 @@
   "task_name": "20260726_care_mosaic_validation_gap_forensics_and_final_blueprint",
   "final_status": "VERIFIED_COMPLETE",
   "commit_status": "local_commit_created_by_controller",
-  "push_status": "not_pushed_not_authorized",
-  "key_conclusion": "0.6965 belongs to MoSAIC by user confirmation, exact hosted package/checkpoint/recipe is unresolved, and final Docker should be NNUNET_ONLY_DOCKER.",
+  "push_status": "push_authorized_by_user_after_private_repo_override",
+  "key_conclusion": "MoSAIC final repo, final weights, and final inference recipe are bound; historical uploaded ZIP bytes remain unbound; final Docker should remain NNUNET_ONLY_DOCKER.",
   "blocked_or_failure_reason": "none",
   "slurm_terminal_status": "allocation_60657290_reused_no_new_slurm_job",
   "evidence_paths": [
     "results/20260726_care_mosaic_validation_gap_forensics_and_final_blueprint/controller_report.md",
-    "results/20260726_care_mosaic_validation_gap_forensics_and_final_blueprint/completion_check.md",
+    "results/20260726_care_mosaic_validation_gap_forensics_and_final_blueprint/submission_lineage_evidence.json",
     "results/20260726_care_mosaic_validation_gap_forensics_and_final_blueprint/strict_validator_report.json"
   ],
-  "next_step": "Use NNUNET_ONLY_DOCKER unless a future strict clean OOF final-mask gate proves an added component."
+  "next_step": "Push authorized result commit to the private repository; use NNUNET_ONLY_DOCKER unless future strict clean OOF final-mask evidence supports a component."
 }

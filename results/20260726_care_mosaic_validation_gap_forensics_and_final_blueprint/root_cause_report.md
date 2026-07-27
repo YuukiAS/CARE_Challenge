@@ -1,2 +1,1 @@
-
-Clean OOF 与 hosted 排名翻转不是单一原因。可实证解释的是 full-data inclusion/selection 的污染上界、目标模态结构偏移和 15-case 抽样放大；可排除为主因的是已观测 scar 后处理；仍未绑定的是 exact hosted zip、checkpoint、TTA/threshold/reconstruction 命令。由于 clean 220-case OOF 仍不支持 MoSAIC 替代 nnU-Net，最终 Docker 不能基于 hosted row 反向推断引入 MoSAIC。
+Clean OOF 与 hosted 排名翻转不是模型家族未绑定造成的。现在可绑定 MoSAIC final GitHub commit、final checkpoint hashes 和 final inference recipe；不可绑定的是历史 upload ZIP bytes。主要解释是 final/full-data submission 权重、validation 域差异、目标模态结构、15-case 小样本放大，以及 Cine 分支从 7/6 到 7/8 的 recipe 回滚/ensemble 调整。已观测 scar postprocess 不是主因。

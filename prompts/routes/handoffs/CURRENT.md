@@ -4,7 +4,7 @@
 
 ## 2026-07-26 MoSAIC hosted-gap 取证与最终蓝图终态
 
-当前最高优先级事实不是重新裁决 0.6965 的模型家族：用户已确认 hosted scar Dice 0.6965 属于 MoSAIC submission。当前仍未绑定的是 exact `CARE-Myocardium-OrganAgent.zip`、zip SHA、checkpoint 组合和 inference recipe。结果根目录：
+当前最高优先级事实不是重新裁决 0.6965 的模型家族：用户已确认 hosted scar Dice 0.6965 属于 MoSAIC submission。当前已绑定 final `IndeedLiu/MoSAIC` repo、final checkpoint hashes 和 final inference recipe；仍未绑定的是历史 `CARE-Myocardium-OrganAgent.zip` upload bytes/SHA。结果根目录：
 
 ```text
 results/20260726_care_mosaic_validation_gap_forensics_and_final_blueprint

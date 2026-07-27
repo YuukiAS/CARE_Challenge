@@ -109,6 +109,37 @@
     }
   ],
   "created_at_utc": "2026-07-26T17:26:11Z",
+  "final_recipe_binding": {
+    "cine_recipe": "coarse.pt plus fine_v1.pt/fine_v2.pt ensemble at z spacings 4/8/16 with TTA; repo comments state previous-best cine about 0.2069 vs 0.1878 for newer single model.",
+    "docker_cinemyops_recipe": "docker/cinemyops/predict.py",
+    "docker_myops_recipe": "docker/myops/predict.py",
+    "myops_recipe": "coarse.pt drives scar/myo mask; coarse_edema.pt feeds edema branch; fine_scar.pt; edema.pt; TTA horizontal+vertical; scar thresholds [0.5,0.5,0.5,0.3,0.3]; edema_zone threshold 0.35; final raw export labels via train_to_official_labels.",
+    "remaining_gap": "No original hosted ZIP bytes or upload receipt was found, so exact ZIP SHA remains unbound.",
+    "repo_inference_script": "scripts/infer_and_submit.py",
+    "timestamp_interpretation": "2026-07-08 row is closest to final repo recipe because Cine improved from 0.1878 to 0.2058/0.2069 while MyoPS scar stayed 0.6965; 2026-07-06 likely shares the final MyoPS branch but used a weaker Cine branch."
+  },
+  "final_weight_binding": {
+    "cinemyops": {
+      "coarse.pt": "225dedc45271216f5718391af9e0131e996c432df89b61240bef5e52ee451f4c",
+      "fine_v1.pt": "05b31f649befeef8dd2003a0816310d03ee0385626c5c536db80faac9edacdab",
+      "fine_v2.pt": "0f102c08c6d3374bd12e9d4d45585aa2017ffbf96192a0cdda1fb8653cc714fa"
+    },
+    "manifest": "/users/a/e/aereinh/MoSAIC/code/weights/download_summary.json",
+    "myops": {
+      "coarse.pt": "aae815c3dd50d6776e2af769551e8d6918a5dee4f83f29309a254051e067080c",
+      "coarse_edema.pt": "b9b596f1f5475ac852bf2c0be38a72c59e538dd3199f1f4989983433506ed9d4",
+      "edema.pt": "14a6a53f643bdbbac4c8234af2aa86e8a43423b761013f7b7f580965e1ed503c",
+      "fine_scar.pt": "94c54de3321000eabbc3c3a42a5d838410fb859a1c5b2460e6c2f6d773622ded"
+    },
+    "weights_root": "/users/a/e/aereinh/MoSAIC/code/weights"
+  },
+  "github_binding": {
+    "commit": "d334bd1fb2a99dbbc230510590cd8e3ee08cc377",
+    "local_source": "/users/a/e/aereinh/MoSAIC/code/source",
+    "local_source_status_at_inspection": "main...origin/main clean",
+    "ls_remote_head": "d334bd1fb2a99dbbc230510590cd8e3ee08cc377",
+    "repository": "https://github.com/IndeedLiu/MoSAIC"
+  },
   "leaderboard_target_rows": [
     {
       "leaderboard_time": "2026-07-06 09:13:49",
