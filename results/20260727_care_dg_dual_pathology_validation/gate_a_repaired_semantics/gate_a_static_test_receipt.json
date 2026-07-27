@@ -1,0 +1,54 @@
+{
+  "created_at_utc": "2026-07-27T09:53:41Z",
+  "py_compile": {
+    "cmd": [
+      "/users/a/e/aereinh/CARE/envs/env_CARE/bin/python",
+      "-m",
+      "py_compile",
+      "src/care_myocardium/models/care_dg.py",
+      "src/care_myocardium/training/care_dg_trainer.py",
+      "src/care_myocardium/inference/care_dg_predictor.py",
+      "scripts/training/run_care_dg.py",
+      "scripts/evaluation/run_care_dg_gate_a_checks.py"
+    ],
+    "elapsed_seconds": 0.105,
+    "returncode": 0,
+    "stderr": "",
+    "stdout": ""
+  },
+  "pytest": {
+    "cmd": [
+      "/users/a/e/aereinh/CARE/envs/env_CARE/bin/python",
+      "-m",
+      "pytest",
+      "tests/care_dg",
+      "-q"
+    ],
+    "elapsed_seconds": 8.966,
+    "returncode": 0,
+    "stderr": "",
+    "stdout": "...............                                                          [100%]\n15 passed in 3.44s"
+  },
+  "status": "PASS",
+  "strict_validator": {
+    "cmd": [
+      "/users/a/e/aereinh/CARE/envs/env_CARE/bin/python",
+      "scripts/evaluation/validate_care_dg_packet.py"
+    ],
+    "elapsed_seconds": 0.167,
+    "returncode": 0,
+    "stderr": "",
+    "stdout": "{\n  \"checked_at_utc\": \"2026-07-27T09:53:41Z\",\n  \"failures\": [],\n  \"known_bad_failures\": [],\n  \"status\": \"PASS\",\n  \"task_key\": \"20260727_care_dg_dual_pathology_validation\"\n}"
+  },
+  "unit_smoke": {
+    "cmd": [
+      "/users/a/e/aereinh/CARE/envs/env_CARE/bin/python",
+      "scripts/training/run_care_dg.py",
+      "--unit-smoke"
+    ],
+    "elapsed_seconds": 1.55,
+    "returncode": 0,
+    "stderr": "",
+    "stdout": "{\n  \"edema_delta_nonconstant\": true,\n  \"final_logits_shape\": [\n    1,\n    6,\n    4,\n    16,\n    16\n  ],\n  \"scar_delta_nonconstant\": true,\n  \"status\": \"PASS\"\n}"
+  }
+}

@@ -1,15 +1,16 @@
-timestamp_utc,wave,issue,severity,action,old_hash,new_hash,status
-2026-07-27T04:13:31Z,W0,full_oof_anchor_sha256_deferred_after_npz_full_read_timeout,formal_training_blocking_repairable,replace lightweight manifest with full SHA256 manifest before formal training credit,,,OPEN
-2026-07-27T04:13:31Z,W0,evaluator_parity_not_yet_recomputed,formal_training_blocking_repairable,"implement and run canonical evaluator parity for fold0 nnU-Net, Batch7, MMRD, and SCR metrics before W1/W2 formal training",,,OPEN
-2026-07-27T04:15:30Z,W0,builder_import_path_missing_repo_root,repairable,inserted repo root into sys.path for build_care_dg_validation_packet.py,,,REPAIRED_RERUN_PENDING
-2026-07-27T04:15:30Z,W0,validator_import_path_missing_repo_root,repairable,inserted repo root into sys.path for validate_care_dg_packet.py,,,REPAIRED_RERUN_PENDING
-2026-07-27T04:15:30Z,W0,npz_full_probability_read_timeout,repairable,replaced shape read with npz header parser and deferred full sha256 as blocking repair,,,REPAIRED_RERUN_PENDING
-2026-07-27T04:25:52Z,W0,full_oof_anchor_sha256_deferred_after_npz_full_read_timeout,formal_training_blocking_repairable,computed file-level sha256 for all anchor probabilities/predictions/checkpoints without npz decompression,DEFERRED_FULL_HASH_BLOCKING_REPAIR,COMPLETE_FULL_SHA256,REPAIRED_RERUN_PENDING
-2026-07-27T04:31:45Z,W0,evaluator_parity_not_yet_recomputed,formal_training_blocking_repairable,reran canonical fold0 evaluator in isolated parity directory and compared casewise/summary/help-harm tables to original canonical packet,NEEDS_REPAIR,PASS,REPAIRED_RERUN_PENDING
-2026-07-27T04:34:29Z,W1,real_case_gate_selected_case_not_in_fold0_anchor,repairable,replace Case3001 with fold0 manifest complete-trimodal Case3004 and rerun real-case forward/backward,Case3001_missing_fold0_npz,Case3004_manifest_fold0,REPAIRED_RERUN_PENDING
-2026-07-27T04:35:55Z,W1,real_case_gate_preprocessed_grid_mismatch_anchor_grid,repairable,switch real-case gate loader to raw label / OOF probability grid with raw modalities resampled to label grid,preprocessed_b2nd_grid,raw_label_oof_probability_grid,REPAIRED_RERUN_PENDING
-2026-07-27T04:36:39Z,W1,real_case_forward_backward_gate,evidence,ran Case3004 complete and Case1002 no-T2 real patch forward/backward on raw label/probability grid inside allocation 60657290,PENDING,PASS,PASS
-2026-07-27T04:37:31Z,W1,real_300_step_anti_identity_overfit,evidence,ran 300 optimizer-step implementation overfit on real Case3004 patch inside allocation 60657290,PENDING,PASS,PASS
-2026-07-27T04:44:53Z,W2,preflight_nonfinite_loss_marked_pass,repairable_blocking,stabilized focal_bce in float32 and made formal runner fail closed on nonfinite loss/metrics,preflight_PASS_with_NaN_INF,loss_stability_repair,REPAIRED_RERUN_PENDING
-2026-07-27T04:46:00Z,W2,preflight_runtime_path_mixed_with_formal_path,repairable_blocking,isolated CARE-DG runtime outputs into runtime/preflight/fold* and runtime/formal/fold* before formal training,runtime/fold0_preflight,runtime_preflight_vs_formal_isolated,REPAIRED_RERUN_PENDING
-2026-07-27T08:55:25Z,W2,formal_training_srun_step_killed_and_runner_resume_not_loading_checkpoint,repairable_blocking,added skip-completed and checkpoint_step resume semantics; truncate partial curve to checkpoint boundary before continuing,step60657290.153_cancelled_at_fold1_B100,runner_resume_loads_checkpoint_step,REPAIRED_RERUN_PENDING
+timestamp_utc,wave,issue,severity,repair_action,old_evidence,new_evidence,status
+2026-07-27T04:13:31Z,W0,full_oof_anchor_sha256_deferred_after_npz_full_read_timeout,formal_training_blocking_repairable,,,,OPEN
+2026-07-27T04:13:31Z,W0,evaluator_parity_not_yet_recomputed,formal_training_blocking_repairable,,,,OPEN
+2026-07-27T04:15:30Z,W0,builder_import_path_missing_repo_root,repairable,,,,REPAIRED_RERUN_PENDING
+2026-07-27T04:15:30Z,W0,validator_import_path_missing_repo_root,repairable,,,,REPAIRED_RERUN_PENDING
+2026-07-27T04:15:30Z,W0,npz_full_probability_read_timeout,repairable,,,,REPAIRED_RERUN_PENDING
+2026-07-27T04:25:52Z,W0,full_oof_anchor_sha256_deferred_after_npz_full_read_timeout,formal_training_blocking_repairable,,,,REPAIRED_RERUN_PENDING
+2026-07-27T04:31:45Z,W0,evaluator_parity_not_yet_recomputed,formal_training_blocking_repairable,,,,REPAIRED_RERUN_PENDING
+2026-07-27T04:34:29Z,W1,real_case_gate_selected_case_not_in_fold0_anchor,repairable,,,,REPAIRED_RERUN_PENDING
+2026-07-27T04:35:55Z,W1,real_case_gate_preprocessed_grid_mismatch_anchor_grid,repairable,,,,REPAIRED_RERUN_PENDING
+2026-07-27T04:36:39Z,W1,real_case_forward_backward_gate,evidence,,,,PASS
+2026-07-27T04:37:31Z,W1,real_300_step_anti_identity_overfit,evidence,,,,PASS
+2026-07-27T04:44:53Z,W2,preflight_nonfinite_loss_marked_pass,repairable_blocking,,,,REPAIRED_RERUN_PENDING
+2026-07-27T04:46:00Z,W2,preflight_runtime_path_mixed_with_formal_path,repairable_blocking,,,,REPAIRED_RERUN_PENDING
+2026-07-27T08:55:25Z,W2,formal_training_srun_step_killed_and_runner_resume_not_loading_checkpoint,repairable_blocking,,,,REPAIRED_RERUN_PENDING
+2026-07-27T09:35:07Z,W2_AMENDMENT,pre_repair_fold0_fold1_invalid_semantics_and_training_paused,blocking_repair_required,stopped active CARE-DG training PID after latest fold1 checkpoint_step06000; marked pre-repair formal artifacts diagnostic-only; repair edema-zone FP margin bounded magnitude partial-label remote support provenance sampler before repaired fold0 rerun,runtime/formal/fold0 PASS receipt and fold1 partial curve/checkpoint_step06000,pre_repair_invalid_semantics_manifest.json,REPAIR_SCOPE_OPEN

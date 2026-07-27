@@ -1,0 +1,42 @@
+{
+  "allocation_preserved": "60657290",
+  "applies_to": "all pre-repair CARE-DG formal runtime artifacts before amendment 20260727_care_dg_w2_fold0_critic_repair_amendment.md",
+  "care_dg_training_process_stopped": true,
+  "created_at_utc": "2026-07-27T09:35:07Z",
+  "entries": [
+    {
+      "checkpoint_count": 10,
+      "checkpoint_manifest": "results/20260727_care_dg_dual_pathology_validation/runtime/formal/fold0/checkpoint_manifest.csv",
+      "checkpoint_manifest_sha256": "8ea1bffe04294d862ccf09741b9481ecaabb206e0f678eb27bb0bc524994fe36",
+      "fold": 0,
+      "fold_training_receipt": "results/20260727_care_dg_dual_pathology_validation/runtime/formal/fold0/fold_training_receipt.json",
+      "fold_training_receipt_sha256": "8825d531e3c2225815b97269b5c2ff184493ba9bf0328f51ea61afec788bc24c",
+      "latest_checkpoint": "results/20260727_care_dg_dual_pathology_validation/runtime/formal/fold0/checkpoints/checkpoint_step08000.pt",
+      "latest_checkpoint_sha256": "200b19873e8819f713aafa07be4b28934bba57fd3b4f57380c53775c0634e6cf",
+      "reason": "critic amendment identified invalid edema-zone, FP margin, gate/magnitude, partial-label, remote penalty, formal source/provenance, and support semantics; pre-repair outputs preserved for provenance only",
+      "runtime_dir": "results/20260727_care_dg_dual_pathology_validation/runtime/formal/fold0",
+      "scientific_credit": 0,
+      "status": "PRE_REPAIR_INVALID_SEMANTICS_DIAGNOSTIC_ONLY",
+      "training_curve": "results/20260727_care_dg_dual_pathology_validation/runtime/formal/fold0/training_curve.csv",
+      "training_curve_sha256": "a465d5c487e0a0c8b9d1630837a3ae8044e594513e5006f1a762171922d1a80e"
+    },
+    {
+      "checkpoint_count": 6,
+      "checkpoint_manifest": null,
+      "checkpoint_manifest_sha256": null,
+      "fold": 1,
+      "fold_training_receipt": null,
+      "fold_training_receipt_sha256": null,
+      "latest_checkpoint": "results/20260727_care_dg_dual_pathology_validation/runtime/formal/fold1/checkpoints/checkpoint_step06000.pt",
+      "latest_checkpoint_sha256": "13f44b86700d53a8d4498f30ce779f3335991780ba080a58893a4e7d71bdc00d",
+      "reason": "critic amendment identified invalid edema-zone, FP margin, gate/magnitude, partial-label, remote penalty, formal source/provenance, and support semantics; pre-repair outputs preserved for provenance only",
+      "runtime_dir": "results/20260727_care_dg_dual_pathology_validation/runtime/formal/fold1",
+      "scientific_credit": 0,
+      "status": "PRE_REPAIR_INVALID_SEMANTICS_DIAGNOSTIC_ONLY",
+      "training_curve": "results/20260727_care_dg_dual_pathology_validation/runtime/formal/fold1/training_curve.csv",
+      "training_curve_sha256": "2d216e663f1b2bbc696182d3674166e571ecad702276cd922e7c55df11872394"
+    }
+  ],
+  "scientific_credit": 0,
+  "status": "PRE_REPAIR_INVALID_SEMANTICS_DIAGNOSTIC_ONLY"
+}

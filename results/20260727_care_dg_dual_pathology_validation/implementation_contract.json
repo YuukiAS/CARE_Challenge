@@ -1,36 +1,82 @@
 {
-  "blocking_pending_gates": [
-    "W2 five-fold formal OOF training",
-    "W3 aggregation/ablation",
-    "W4 all-data deployment",
-    "W5 validation package",
-    "W6 mapper/validator/email"
-  ],
-  "created_at_utc": "2026-07-27T04:23:15Z",
-  "implemented_contract": {
-    "compact_shared_three_scale_encoder": true,
-    "competitive_logit_correction": true,
-    "explicit_fn_fp_gates_and_magnitudes": true,
-    "forbidden_external_runtime_dependencies_absent_in_core_sources": true,
-    "independent_scar_edema_decoders": true,
-    "modality_specific_stems": true,
-    "no_t2_edema_identity": true,
-    "protected_anatomy_by_zero_support": true,
-    "scar_priority_pure_edema_decode": true,
-    "soft_support": true
+  "created_at_utc": "2026-07-27T09:55:34Z",
+  "gate_a_overfit_curve": "results/20260727_care_dg_dual_pathology_validation/gate_a_repaired_semantics/implementation_overfit_curve.csv",
+  "gate_a_static_test_receipt": "results/20260727_care_dg_dual_pathology_validation/gate_a_repaired_semantics/gate_a_static_test_receipt.json",
+  "git_state": {
+    "diff_name_only": {
+      "cmd": [
+        "git",
+        "diff",
+        "--name-only"
+      ],
+      "elapsed_seconds": 0.362,
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "results/20260724_care_myops_srr_cascade_submission_rescue/runtime_closure_repair_rc1/formal_race_watcher_history_v2.jsonl\nresults/20260724_care_myops_srr_cascade_submission_rescue/runtime_closure_repair_rc1/formal_race_watcher_state_v2.json\nresults/20260727_care_dg_dual_pathology_validation/augmentation_alignment_audit.json\nresults/20260727_care_dg_dual_pathology_validation/checkpoint_resume_parity.json\nresults/20260727_care_dg_dual_pathology_validation/implementation_contract.json\nresults/20260727_care_dg_dual_pathology_validation/implementation_overfit_receipt.json\nresults/20260727_care_dg_dual_pathology_validation/known_bad_report.json\nresults/20260727_care_dg_dual_pathology_validation/model_parameter_report.json\nresults/20260727_care_dg_dual_pathology_validation/real_case_forward_backward_receipt.json\nresults/20260727_care_dg_dual_pathology_validation/repair_ledger.csv\nresults/20260727_care_dg_dual_pathology_validation/strict_validator_report.json\nresults/20260727_care_dg_dual_pathology_validation/unit_test_report.md\nsrc/care_myocardium/inference/care_dg_predictor.py\nsrc/care_myocardium/models/care_dg.py\nsrc/care_myocardium/training/care_dg_trainer.py\ntests/care_dg/test_care_dg_model.py"
+    },
+    "head": {
+      "cmd": [
+        "git",
+        "rev-parse",
+        "HEAD"
+      ],
+      "elapsed_seconds": 0.036,
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "00a01778eacc4b41d97bebf25fddcbe9385a4b36"
+    },
+    "origin_main": {
+      "cmd": [
+        "git",
+        "rev-parse",
+        "origin/main"
+      ],
+      "elapsed_seconds": 0.008,
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "00a01778eacc4b41d97bebf25fddcbe9385a4b36"
+    },
+    "status_short": {
+      "cmd": [
+        "git",
+        "status",
+        "--short",
+        "--branch"
+      ],
+      "elapsed_seconds": 0.914,
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "## main...origin/main\n M results/20260724_care_myops_srr_cascade_submission_rescue/runtime_closure_repair_rc1/formal_race_watcher_history_v2.jsonl\n M results/20260724_care_myops_srr_cascade_submission_rescue/runtime_closure_repair_rc1/formal_race_watcher_state_v2.json\n M results/20260727_care_dg_dual_pathology_validation/augmentation_alignment_audit.json\n M results/20260727_care_dg_dual_pathology_validation/checkpoint_resume_parity.json\n M results/20260727_care_dg_dual_pathology_validation/implementation_contract.json\n M results/20260727_care_dg_dual_pathology_validation/implementation_overfit_receipt.json\n M results/20260727_care_dg_dual_pathology_validation/known_bad_report.json\n M results/20260727_care_dg_dual_pathology_validation/model_parameter_report.json\n M results/20260727_care_dg_dual_pathology_validation/real_case_forward_backward_receipt.json\n M results/20260727_care_dg_dual_pathology_validation/repair_ledger.csv\n M results/20260727_care_dg_dual_pathology_validation/strict_validator_report.json\n M results/20260727_care_dg_dual_pathology_validation/unit_test_report.md\n M src/care_myocardium/inference/care_dg_predictor.py\n M src/care_myocardium/models/care_dg.py\n M src/care_myocardium/training/care_dg_trainer.py\n M tests/care_dg/test_care_dg_model.py\n?? .codex_runtime/\n?? results/care_scf/canonical_model_summary_fold0.csv\n?? results/care_scf/care_gate_training_receipt.json\n?? results/care_scf/care_prediction_status.csv\n?? results/care_scf/casewise_metrics_fold0.csv\n?? results/care_scf/completion_audit.csv\n?? results/care_scf/component_dataset_feature_status.csv\n?? results/care_scf/component_dataset_fold0_diagnostic.csv\n?? results/care_scf/component_decisions.csv\n?? results/care_scf/controller_report.md\n?? results/care_scf/final_manifest.json\n?? results/care_scf/geometry_audit.csv\n?? results/care_scf/help_harm.csv\n?? results/care_scf/help_harm_summary.csv\n?? results/care_scf/mosaic_oof_status.csv\n?? results/care_scf/nnunet_oof_status.csv\n?? results/care_scf/provenance.json\n?? scripts/evaluation/build_care_dg_validation_packet.py\n?? scripts/evaluation/build_care_scf_controller_packet.py\n?? scripts/evaluation/build_mosaic_paper_results_completion.py\n?? scripts/evaluation/evaluate_care_dg.py\n?? scripts/evaluation/run_care_dg_gate_a_checks.py\n?? scripts/evaluation/select_care_dg_candidate.py\n?? scripts/evaluation/validate_care_dg_packet.py\n?? scripts/inference/run_care_dg_inference.py\n?? scripts/training/run_care_dg.py"
+    }
   },
-  "implemented_files": {
+  "implemented_contract": {
+    "anchor_probability_converted_to_log_probabilities": true,
+    "bounded_magnitude_gate_cannot_be_bypassed_by_zero_gate": true,
+    "cine_validation_tree_binding_pending_w5": true,
+    "edema_decoder_targets_scar_union_edema_zone": true,
+    "formal_mode_rejects_missing_support_uncertainty_distance": true,
+    "formal_sampler_quota_auditable": true,
+    "fp_margin_direction_lowers_pathology_margin": true,
+    "partial_label_t2_masking_per_case_before_reduction": true,
+    "pure_edema_is_zone_minus_scar": true,
+    "remote_penalty_uses_raw_pre_support_delta": true,
+    "scar_competitor_includes_edema": true
+  },
+  "pre_repair_formal_credit_invalidated": true,
+  "scientific_credit": 0,
+  "source_hashes": {
     "configs/care_dg/care_dg_v1.yaml": "fb5c87ab26c3a9001b05dc23045939e9bc9cd269101e3dafd807e44aea32d225",
     "scripts/evaluation/evaluate_care_dg.py": "aae033a503189bf75cf100c087a65568940370ec4c010b9f7f0a680b3c399651",
+    "scripts/evaluation/run_care_dg_gate_a_checks.py": "4e8426fb6bd61b212cafaf61704f1d4fd02ba8e5426603ec306bcdbc2a35d5dc",
     "scripts/evaluation/select_care_dg_candidate.py": "d319535426cb49800710e8a9e8056ae97cf4abae99bd342dfd2df09b153f5080",
     "scripts/evaluation/validate_care_dg_packet.py": "d02ef03752072a97d72301bf42338d11e851442b67e403a5e8cd2a6875fcb48b",
     "scripts/inference/run_care_dg_inference.py": "ceef29361a4ce6eb2224e315ca800381944b2a9c624aa7b8017dab80d54ee771",
-    "scripts/training/run_care_dg.py": "964602d6acf497da4bf793048fdf099bafdf6e53746d059920f58d8c2468a6af",
+    "scripts/training/run_care_dg.py": "b242a09591b265a50490549e8c53ed5ca8dd7e36d57ee650d182a444ac8d5a0c",
     "src/care_myocardium/data/care_dg_dataset.py": "96d18e1914b7e08fc029a77c0e7c21467809fa0a5e9e12ad4f1ef2208eba803a",
-    "src/care_myocardium/inference/care_dg_predictor.py": "4630243295c202783c95dea4795df5b4c5ae3e3a37fb091fcd0fc29df68bfa2b",
-    "src/care_myocardium/models/care_dg.py": "496d8bc090b14e2bed72d1a3b18dd10e7e6270eaaf670c490887d3d711bcd457",
-    "src/care_myocardium/training/care_dg_trainer.py": "ef7f7037a0f508faf09ed68b76ebe46d5d880b4b013ed3d033635114d76da7b7",
-    "tests/care_dg/test_care_dg_model.py": "e58075c9a5fd89c91afb0a0736147ba3ed6d77bc04b97d56d64c98f7889370a9"
+    "src/care_myocardium/inference/care_dg_predictor.py": "71b3f935617b42a1190aa6937165ee09ce1a3c52e8a05ad4f6d4e53f9dcacf7c",
+    "src/care_myocardium/models/care_dg.py": "c417404ec469acec3e6ca8adb17a225dc6dddd85776791d50c6edfb35f5a2a03",
+    "src/care_myocardium/training/care_dg_trainer.py": "c9f98a1e302cb3395d55b474c3d3f9929470f5de47956e972968982c529f8dc6",
+    "tests/care_dg/test_care_dg_model.py": "673a35152ab5a8141aea6591a327fe2f6a1f6d73b325766372afa590396109ee"
   },
-  "status": "W1_IMPLEMENTATION_AND_REAL_CASE_GATES_PASS_FORMAL_TRAINING_NOT_STARTED"
+  "status": "GATE_A_REPAIRED_IMPLEMENTATION_PASS"
 }
