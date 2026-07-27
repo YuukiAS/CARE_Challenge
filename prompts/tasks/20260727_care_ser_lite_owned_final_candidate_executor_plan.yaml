@@ -1,0 +1,253 @@
+schema_version: 1
+task_key: 20260727_care_ser_lite_owned_final_candidate
+status: READY_FOR_CONTROLLER
+execution_mode: controller_supervised
+controller_is_coordinator: true
+executor_slots: 1
+executor_count: 1
+parallel_execution_allowed: false
+result_root: results/20260727_care_ser_lite_owned_final_candidate
+planning_review_required: false
+review_required: false
+slurm_runtime_continuity_required: true
+continuity_backend: tmux_watcher
+existing_allocation:
+  job_id: 60657290
+  partition: htzhulab
+  node: g1807htzh01
+  new_slurm_allocations_forbidden: true
+  gpu_process_parallelism: 1
+finalizer:
+  dependency: afterany
+  required_state_file: results/20260727_care_ser_lite_owned_final_candidate/finalizer_state.json
+
+waves:
+  - wave_id: SER_W0_BOOTSTRAP_PARITY_AND_ASSET_BINDING
+    executor_id: care_ser_lite_owned_executor
+    blocking: true
+    dependencies: []
+    write_scope:
+      - results/20260727_care_ser_lite_owned_final_candidate/
+      - tests/
+    required_outputs:
+      - results/20260727_care_ser_lite_owned_final_candidate/controller_context.json
+      - results/20260727_care_ser_lite_owned_final_candidate/controller_ledger.csv
+      - results/20260727_care_ser_lite_owned_final_candidate/controller_bootstrap_snapshot.md
+      - results/20260727_care_ser_lite_owned_final_candidate/existing_allocation_receipt.json
+      - results/20260727_care_ser_lite_owned_final_candidate/existing_allocation_gpu_lock.json
+      - results/20260727_care_ser_lite_owned_final_candidate/input_asset_manifest.json
+      - results/20260727_care_ser_lite_owned_final_candidate/evaluator_parity_report.json
+      - results/20260727_care_ser_lite_owned_final_candidate/repair_ledger.csv
+    completion_conditions:
+      - origin_main_synced_and_start_sha_recorded
+      - user_forbids_pure_external_submission_recorded
+      - job_60657290_bound_or_exact_terminal_gap_recorded
+      - no_sbatch_no_salloc_no_new_job
+      - fold0_metric_label_geometry_parity_PASS
+      - split_case_checkpoint_config_hashes_frozen
+    failure_action: repair_same_scope_bootstrap_evaluator_or_asset_gap; do_not_continue_bulk_evaluation_until_parity_PASS
+
+  - wave_id: SER_W1_MULTI_SOURCE_CANDIDATE_DATASET_V2
+    executor_id: care_ser_lite_owned_executor
+    blocking: true
+    dependencies: [SER_W0_BOOTSTRAP_PARITY_AND_ASSET_BINDING]
+    write_scope:
+      - src/care_myocardium/
+      - scripts/evaluation/
+      - scripts/inference/
+      - tests/
+      - results/20260727_care_ser_lite_owned_final_candidate/
+    required_outputs:
+      - results/20260727_care_ser_lite_owned_final_candidate/candidate_dataset_v2_contract.json
+      - results/20260727_care_ser_lite_owned_final_candidate/scar_candidates_v2.csv
+      - results/20260727_care_ser_lite_owned_final_candidate/edema_zone_candidates_v2.csv
+      - results/20260727_care_ser_lite_owned_final_candidate/candidate_source_manifest.csv
+      - results/20260727_care_ser_lite_owned_final_candidate/candidate_merge_audit.csv
+      - results/20260727_care_ser_lite_owned_final_candidate/candidate_generation_gt_blind_audit.json
+      - results/20260727_care_ser_lite_owned_final_candidate/candidate_counterfactual_metrics.csv
+    completion_conditions:
+      - scar_candidates_include_nnunet_multithreshold_and_mosaic_raw_preLCC_final_sources
+      - edema_candidates_include_nnunet_zone_and_T2_supported_regions_without_mosaic_edema
+      - multiple_candidates_per_case_exist_where_source_masks_support_them
+      - deterministic_IoU_merge_with_source_bitmask_and_mask_hash
+      - candidate_generation_and_merge_are_GT_blind
+      - counterfactual_remove_add_metrics_reconstruct_final_masks
+    failure_action: controller_returns_candidate_generation_merge_or_counterfactual_gap_to_same_executor
+
+  - wave_id: SER_W2_MMRD_FEATURES_AND_SRR_RETRIEVAL
+    executor_id: care_ser_lite_owned_executor
+    blocking: true
+    dependencies: [SER_W1_MULTI_SOURCE_CANDIDATE_DATASET_V2]
+    write_scope:
+      - src/care_myocardium/
+      - scripts/inference/
+      - scripts/evaluation/
+      - tests/
+      - results/20260727_care_ser_lite_owned_final_candidate/
+      - logs/
+    required_outputs:
+      - results/20260727_care_ser_lite_owned_final_candidate/mmrd_feature_source_receipt.json
+      - results/20260727_care_ser_lite_owned_final_candidate/component_embedding_manifest.csv
+      - results/20260727_care_ser_lite_owned_final_candidate/prototype_bank_manifest.csv
+      - results/20260727_care_ser_lite_owned_final_candidate/prototype_same_case_exclusion_audit.json
+      - results/20260727_care_ser_lite_owned_final_candidate/retrieval_feature_table.csv
+      - results/20260727_care_ser_lite_owned_final_candidate/no_t2_edema_bank_audit.json
+      - results/20260727_care_ser_lite_owned_final_candidate/retrieval_zero_vs_real_contract.json
+    completion_conditions:
+      - real_frozen_CARE_MMRD_feature_map_consumed
+      - component_embeddings_have_feature_hashes_and_are_not_handcrafted_only
+      - positive_and_negative_banks_are_outer_fold_cross_fitted
+      - top5_positive_negative_cosine_and_margin_present
+      - no_T2_cases_absent_from_edema_positive_and_negative_banks
+      - matched_zero_vs_real_retrieval_ablation_frozen
+    failure_action: repair_feature_extraction_cache_geometry_or_prototype_leakage_in_scope; do_not_silently_replace_with_handcrafted_prototypes
+
+  - wave_id: SER_W3_SCAR_GATE_NESTED_OOF
+    executor_id: care_ser_lite_owned_executor
+    blocking: true
+    dependencies: [SER_W2_MMRD_FEATURES_AND_SRR_RETRIEVAL]
+    write_scope:
+      - src/care_myocardium/
+      - scripts/training/
+      - scripts/evaluation/
+      - configs/care_ser/
+      - tests/
+      - results/20260727_care_ser_lite_owned_final_candidate/
+      - logs/
+    required_outputs:
+      - results/20260727_care_ser_lite_owned_final_candidate/scar_gate_config.yaml
+      - results/20260727_care_ser_lite_owned_final_candidate/scar_ablation_contract.json
+      - results/20260727_care_ser_lite_owned_final_candidate/scar_nested_cv_grid.csv
+      - results/20260727_care_ser_lite_owned_final_candidate/scar_component_actions_oof.csv
+      - results/20260727_care_ser_lite_owned_final_candidate/scar_reconstructed_casewise_metrics.csv
+      - results/20260727_care_ser_lite_owned_final_candidate/scar_reconstructed_model_summary.csv
+      - results/20260727_care_ser_lite_owned_final_candidate/scar_help_harm.csv
+      - results/20260727_care_ser_lite_owned_final_candidate/scar_mechanism_ablation.csv
+      - results/20260727_care_ser_lite_owned_final_candidate/scar_local_gate_decision.md
+    completion_conditions:
+      - suppress_and_recover_models_use_case_grouped_nested_CV
+      - preprocessing_feature_selection_prototypes_and_calibration_fit_inside_outer_train
+      - A0_to_A5_ablation_complete_with_real_final_masks
+      - component_F1_not_used_as_promotion_metric
+      - complete_trimodal_and_all220_Dice_HD95_exactHD_remoteFP_help_harm_reported
+      - scar_PASS_or_FAIL_decided_by_frozen_contract
+    failure_action: repair_nested_split_leakage_model_evaluation_or_mask_reconstruction; negative_result_still_requires_complete_ablation
+
+  - wave_id: SER_W4_EDEMA_GATE_RELIABLE_LABEL_OOF
+    executor_id: care_ser_lite_owned_executor
+    blocking: true
+    dependencies: [SER_W3_SCAR_GATE_NESTED_OOF]
+    write_scope:
+      - src/care_myocardium/
+      - scripts/training/
+      - scripts/evaluation/
+      - configs/care_ser/
+      - tests/
+      - results/20260727_care_ser_lite_owned_final_candidate/
+      - logs/
+    required_outputs:
+      - results/20260727_care_ser_lite_owned_final_candidate/edema_gate_config.yaml
+      - results/20260727_care_ser_lite_owned_final_candidate/edema_reliable_label_contract.json
+      - results/20260727_care_ser_lite_owned_final_candidate/edema_nested_cv_grid.csv
+      - results/20260727_care_ser_lite_owned_final_candidate/edema_region_actions_oof.csv
+      - results/20260727_care_ser_lite_owned_final_candidate/edema_reconstructed_casewise_metrics.csv
+      - results/20260727_care_ser_lite_owned_final_candidate/edema_reconstructed_model_summary.csv
+      - results/20260727_care_ser_lite_owned_final_candidate/edema_help_harm.csv
+      - results/20260727_care_ser_lite_owned_final_candidate/edema_no_t2_identity_audit.csv
+      - results/20260727_care_ser_lite_owned_final_candidate/scar_edema_subtraction_coupling_audit.csv
+      - results/20260727_care_ser_lite_owned_final_candidate/edema_local_gate_decision.md
+    completion_conditions:
+      - no_mosaic_edema_used
+      - only_T2_present_reliable_cases_used_for_training_selection_and_prototypes
+      - no_T2_final_edema_changed_voxels_zero
+      - pure_edema_and_edema_zone_final_mask_metrics_reported
+      - edema_PASS_or_FAIL_decided_by_frozen_contract
+    failure_action: repair_reliable_label_masking_region_generation_nested_CV_or_final_mask_composition; no_T2_violation_is_hard_failure
+
+  - wave_id: SER_W5_FINAL_GATE_FREEZE_AND_PROPOSAL_SOURCE_STRESS
+    executor_id: care_ser_lite_owned_executor
+    blocking: true
+    dependencies: [SER_W4_EDEMA_GATE_RELIABLE_LABEL_OOF]
+    write_scope:
+      - src/care_myocardium/
+      - scripts/inference/
+      - scripts/evaluation/
+      - configs/care_ser/
+      - tests/
+      - results/20260727_care_ser_lite_owned_final_candidate/
+      - logs/
+    required_outputs:
+      - results/20260727_care_ser_lite_owned_final_candidate/final_gate_selection.json
+      - results/20260727_care_ser_lite_owned_final_candidate/final_gate_model_manifest.json
+      - results/20260727_care_ser_lite_owned_final_candidate/proposal_source_CF_stress.csv
+      - results/20260727_care_ser_lite_owned_final_candidate/proposal_source_FD_stress.csv
+      - results/20260727_care_ser_lite_owned_final_candidate/deployment_calibration_shift_audit.md
+      - results/20260727_care_ser_lite_owned_final_candidate/mechanism_activation_audit.csv
+    completion_conditions:
+      - selected_model_is_not_A0_and_contains_CARE_owned_gate
+      - OOF_selected_structure_features_hyperparameters_thresholds_frozen
+      - CF_and_FD_sources_both_pass_through_same_CARE_gate
+      - FD_allowed_only_when_action_volume_confidence_shift_within_frozen_envelope
+      - final_masks_differ_from_pure_nnunet_and_pure_mosaic_for_some_cases
+    failure_action: repair_deployment_feature_mapping_or_calibration_stress; if_no_CARE_pathology_passes_set_NO_CARE_OWNED_CANDIDATE_DO_NOT_UPLOAD
+
+  - wave_id: SER_W6_VALIDATION_INFERENCE_AND_LOCAL_PACKAGE
+    executor_id: care_ser_lite_owned_executor
+    blocking: true
+    dependencies: [SER_W5_FINAL_GATE_FREEZE_AND_PROPOSAL_SOURCE_STRESS]
+    write_scope:
+      - src/care_myocardium/
+      - scripts/inference/
+      - scripts/submission/
+      - tests/
+      - results/20260727_care_ser_lite_owned_final_candidate/
+      - results/submissions/care_myocardium_validation/workspaces/
+      - results/submissions/care_myocardium_validation/upload_ready/
+      - logs/
+    required_outputs:
+      - results/20260727_care_ser_lite_owned_final_candidate/validation_candidate_decision.json
+      - results/20260727_care_ser_lite_owned_final_candidate/validation_casewise_mechanism_audit.csv
+      - results/20260727_care_ser_lite_owned_final_candidate/validation_geometry_audit.csv
+      - results/20260727_care_ser_lite_owned_final_candidate/validation_label_audit.json
+      - results/20260727_care_ser_lite_owned_final_candidate/validation_determinism_hashes.csv
+      - results/20260727_care_ser_lite_owned_final_candidate/runtime_benchmark.json
+      - results/20260727_care_ser_lite_owned_final_candidate/package_manifest.json
+      - results/20260727_care_ser_lite_owned_final_candidate/validation_upload_instruction.md
+    completion_conditions:
+      - at_least_one_CARE_owned_pathology_PASS_before_package
+      - package_never_pure_nnunet_pure_mosaic_or_deterministic_external_hybrid
+      - CARE_actions_nonzero_on_validation_predictions
+      - Cine_tree_frozen_and_hash_bound
+      - official_labels_geometry_layout_and_two_run_hash_equality_PASS
+      - validation_upload_performed_false
+    failure_action: repair_inference_composition_geometry_label_determinism_or_packaging; if_no_CARE_owned_PASS_do_not_create_upload_ready_zip
+
+  - wave_id: SER_W7_MAPPER_VALIDATOR_AND_TERMINAL_PACKET
+    executor_id: care_ser_lite_owned_executor
+    blocking: true
+    dependencies: [SER_W6_VALIDATION_INFERENCE_AND_LOCAL_PACKAGE]
+    write_scope:
+      - results/20260727_care_ser_lite_owned_final_candidate/
+      - wiki/
+      - prompts/routes/handoffs/CURRENT.md
+      - tests/
+    required_outputs:
+      - results/20260727_care_ser_lite_owned_final_candidate/scientific_conclusion.md
+      - results/20260727_care_ser_lite_owned_final_candidate/controller_report.md
+      - results/20260727_care_ser_lite_owned_final_candidate/completion_check.md
+      - results/20260727_care_ser_lite_owned_final_candidate/mapper_report_draft.md
+      - results/20260727_care_ser_lite_owned_final_candidate/architecture_delta_draft.md
+      - results/20260727_care_ser_lite_owned_final_candidate/mapper_report_final.md
+      - results/20260727_care_ser_lite_owned_final_candidate/architecture_delta_final.md
+      - results/20260727_care_ser_lite_owned_final_candidate/finalizer_state.json
+      - results/20260727_care_ser_lite_owned_final_candidate/strict_validator_report.json
+      - results/20260727_care_ser_lite_owned_final_candidate/MANIFEST.md
+      - results/20260727_care_ser_lite_owned_final_candidate/notification_brief.json
+    completion_conditions:
+      - strict_validator_checks_required_row_counts_metrics_and_known_bad_not_file_presence_only
+      - mapper_records_external_models_as_evidence_and_CARE_gate_as_final_pathology_authority
+      - CURRENT_no_longer_treats_NNUNET_ONLY_as_user_accepted_goal
+      - all_GPU_commands_terminal_and_aggregation_complete
+      - local_lightweight_commit_created
+      - runtime_roles_do_not_push
+    failure_action: controller_repairs_same_scope_mapper_validator_packet_or_state_gap_until_PASS_or_exact_operational_block
