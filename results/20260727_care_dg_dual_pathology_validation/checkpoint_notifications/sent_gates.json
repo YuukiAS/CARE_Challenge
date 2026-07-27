@@ -36,11 +36,24 @@
     "prepared_at_utc": "2026-07-27T12:21:09Z"
   },
   "gate_a_r2_status": "SUPERSEDED_BY_GATE_A_R3",
+  "gate_a_r3": {
+    "approval_token": "APPROVE_GATE_A_R3",
+    "commit": "be56ad8580ab0eb066918c0914f6bcf7f5e2ab59",
+    "dedupe_key": "gate_a_r3",
+    "node_json": "results/20260727_care_dg_dual_pathology_validation/checkpoint_notifications/gate_a_r3.json",
+    "node_sha256": "65dfd4d9c8004083ae0713043fd533e4c386c243974ced1b24119225a5e8c9ac",
+    "notifier_reuse": "controller_notifications.notify_goal_watcher.load_config/load_env_file plus existing CARE notify SMTP configuration; no new notifier service created",
+    "sent_at_utc": "2026-07-27T13:34:40Z",
+    "status": "SENT",
+    "subject": "[CARE-DG][A/4-R3] Stage B 分组优化与完整训练合同已冻结，等待正式 Fold0 验收",
+    "to": "1155246312@link.cuhk.edu.hk"
+  },
   "gate_a_r3_prepared": {
     "approval_token": "APPROVE_GATE_A_R3",
     "node_json": "results/20260727_care_dg_dual_pathology_validation/checkpoint_notifications/gate_a_r3.json",
-    "node_sha256": "65dfd4d9c8004083ae0713043fd533e4c386c243974ced1b24119225a5e8c9ac",
+    "node_sha256": "1d11c5cce18b95ad10929199538e4178efcd9f065d1f3d526a95e05d5d201948",
     "prepared_at_utc": "2026-07-27T13:30:24Z",
-    "status": "PREPARED_NOT_SENT"
+    "sent_at_utc": "2026-07-27T13:34:40Z",
+    "status": "SENT"
   }
 }

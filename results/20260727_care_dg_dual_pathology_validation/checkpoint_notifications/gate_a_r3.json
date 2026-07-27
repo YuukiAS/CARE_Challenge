@@ -116,6 +116,7 @@
     "resolved_training_contract_sha256": "3438ce48232fbde7a804de60ec3e8cfdd5b99220c9e1ce2018839ba529f4c90b",
     "status": "PASS"
   },
+  "sent_at_utc": "2026-07-27T13:34:40Z",
   "source_hashes": {
     "configs/care_dg/care_dg_v1.yaml": "36882e46bbfb4b0c60a293906fb895bad5cdc2d861d29a94466409b7d947a345",
     "scripts/evaluation/build_care_dg_validation_packet.py": "880fec4d30bb96d324122d2114a7a02dbca26287e7eebb8a434af56234253fdd",
@@ -134,7 +135,7 @@
     "tests/care_dg/test_care_dg_model.py": "f5d10ec8e0917881a2a376614e0668ede1366b0f01e557ac849ed7ff6eb0883c"
   },
   "state": "AWAITING_HUMAN_ACCEPTANCE_GATE_A_R3",
-  "status": "PREPARED_NOT_SENT",
+  "status": "SENT",
   "subject": "[CARE-DG][A/4-R3] Stage B 分组优化与完整训练合同已冻结，等待正式 Fold0 验收",
   "supersedes": "APPROVE_GATE_A_R2",
   "to": "1155246312@link.cuhk.edu.hk"

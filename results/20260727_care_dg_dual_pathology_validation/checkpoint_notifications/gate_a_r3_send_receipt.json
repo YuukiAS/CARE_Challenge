@@ -1,0 +1,12 @@
+{
+  "approval_token": "APPROVE_GATE_A_R3",
+  "commit": "be56ad8580ab0eb066918c0914f6bcf7f5e2ab59",
+  "dedupe_key": "gate_a_r3",
+  "node_json": "results/20260727_care_dg_dual_pathology_validation/checkpoint_notifications/gate_a_r3.json",
+  "node_sha256": "65dfd4d9c8004083ae0713043fd533e4c386c243974ced1b24119225a5e8c9ac",
+  "notifier_reuse": "controller_notifications.notify_goal_watcher.load_config/load_env_file plus existing CARE notify SMTP configuration; no new notifier service created",
+  "sent_at_utc": "2026-07-27T13:34:40Z",
+  "status": "SENT",
+  "subject": "[CARE-DG][A/4-R3] Stage B 分组优化与完整训练合同已冻结，等待正式 Fold0 验收",
+  "to": "1155246312@link.cuhk.edu.hk"
+}
