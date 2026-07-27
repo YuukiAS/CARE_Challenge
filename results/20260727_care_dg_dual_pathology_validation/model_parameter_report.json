@@ -13,7 +13,7 @@
     "scar_margin_cap": 4.0,
     "stem_channels": 8
   },
-  "created_at_utc": "2026-07-27T10:35:35Z",
+  "created_at_utc": "2026-07-27T12:19:28Z",
   "model": "CARE-DG",
   "total_parameters": 1580304,
   "trainable_parameters": 1580304

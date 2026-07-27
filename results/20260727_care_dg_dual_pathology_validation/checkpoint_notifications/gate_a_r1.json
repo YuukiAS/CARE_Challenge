@@ -101,6 +101,9 @@
   "implementation_status": "GATE_A_REPAIRED_IMPLEMENTATION_PASS",
   "recipient": "1155246312@link.cuhk.edu.hk",
   "state": "AWAITING_HUMAN_ACCEPTANCE_GATE_A_R1",
+  "status": "SUPERSEDED_BY_GATE_A_R2",
   "subject": "[CARE-DG][A/4-R1] Runner、inner split 与 support 修复完成，等待正式 Fold0 验收",
+  "superseded_at_utc": "2026-07-27T12:21:09Z",
+  "superseded_by": "results/20260727_care_dg_dual_pathology_validation/checkpoint_notifications/gate_a_r2.json",
   "validation_upload_performed": false
 }

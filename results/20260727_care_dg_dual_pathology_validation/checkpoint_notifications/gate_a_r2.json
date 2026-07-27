@@ -1,0 +1,364 @@
+{
+  "approval_token": "APPROVE_GATE_A_R2",
+  "body_preview": "结论：CARE-DG Gate A-R2 的固定内层评价、真实错误采样和 checkpoint 精确续跑修复已经完成，当前状态进入 AWAITING_HUMAN_ACCEPTANCE_GATE_A_R2。请只在同一 Controller 会话中回复精确 token：APPROVE_GATE_A_R2，才会开始 repaired fold0 的 5000+3000 steps。旧 Gate A-R1 请求已标记为 SUPERSEDED_BY_GATE_A_R2，不再有效。\n\n状态：AWAITING_HUMAN_ACCEPTANCE_GATE_A_R2\nApproval token: APPROVE_GATE_A_R2\n\nR2 验收要点：\n- fixed inner evaluation plan：case_count=12，patch_count=72，plan_sha256=3e5996edefdfbddcd2466c71cae0ee6425e7a2ce0c3c069349ffd1ea5ee6f6e9。\n- 同一 checkpoint 两次 inner evaluation exact equality：PASS；receipt inner_evaluation_repeat_exact=True。\n- nominal requested quota={'error_fn': 250, 'error_fp': 250, 'pathology': 250, 'random': 250}；effective quota={'error_fn': 250, 'error_fp': 250, 'pathology': 250, 'random': 250}；effective fractions={'error_fn': 0.25, 'error_fp': 0.25, 'pathology': 0.25, 'random': 0.25}。\n- target hit rates={'error_fn': 1.0, 'error_fp': 1.0, 'pathology': 1.0}；silent_fallback_count=0；jitter recenter count=4。\n- interrupted/resume CPU parity：pytest 覆盖 test_checkpoint_interrupted_resume_cpu_exact；checkpoint write/reload max_abs_delta=0.0。\n- Stage A 1 step + Stage B 1 step preflight PASS；actual_optimizer_steps=2，formal_training_credit=0。\n- 300-step overfit PASS：scar_drop=0.3271，edema_drop=0.4433，changed_voxels=992，correct_direction_fraction=1.0。\n- no-T2 safety：True grad exact zero；True delta exact zero。\n- strict validator：PASS，failures=[]。\n- old runtime/formal/fold0、fold1 仍只读 provenance；R2 preflight runtime=runtime/gate_a_r2_preflight/fold0。\n\n关键证据路径与 SHA256：\n- results/20260727_care_dg_dual_pathology_validation/implementation_contract.json sha256=4d20e4524eceee9df6836f87c1d7b2103c63765d724d228ee36b55b2018ab48c\n- results/20260727_care_dg_dual_pathology_validation/model_parameter_report.json sha256=5c98256e567486d1bc6a4cae36f49aabd3e6db078a73fb8f23489adc4f65acd5\n- results/20260727_care_dg_dual_pathology_validation/unit_test_report.md sha256=083f7d794f7b55ce646ec3bfccea78d52bbd0afaad64fcb4e21ef74a91ecd3d3\n- results/20260727_care_dg_dual_pathology_validation/known_bad_report.json sha256=b0e65317eba93e1b98d7a23b7210cccdf0d73dbe5c2659baf690e21fc2d2fbde\n- results/20260727_care_dg_dual_pathology_validation/real_case_forward_backward_receipt.json sha256=36fafe9e331fe6cfe1ffbab63a22cddf2794ee579bd85b2f52e9e96bfcdb948c\n- results/20260727_care_dg_dual_pathology_validation/implementation_overfit_receipt.json sha256=93a7d6908a19787f4fb9efd1e33445765b8c4501b0a295e8e64c9576dfba5ba8\n- results/20260727_care_dg_dual_pathology_validation/checkpoint_resume_parity.json sha256=3847f091eb8f8694b8677903cd7759b80deac01bbdf73c0a4a60a035cd26c178\n- results/20260727_care_dg_dual_pathology_validation/augmentation_alignment_audit.json sha256=034a35628659c247a0b46493628d296143de40fe54c2a54285c59aa7a1784753\n- results/20260727_care_dg_dual_pathology_validation/strict_validator_report.json sha256=5e683de59450c9baa6db8ec42609e425fc42a5fe4cf84324d3d234072fa21579\n- results/20260727_care_dg_dual_pathology_validation/repair_ledger.csv sha256=813e9af6acf5908b6f91efb59130ad0dc11111a523b64b3009b266775fd9d8b7\n- results/20260727_care_dg_dual_pathology_validation/gate_a_repaired_semantics/gate_a_static_test_receipt.json sha256=78ea2ab31c2614364c1e8d6c7da9e86cd2721a6ba470e679875b05a96722d872\n- results/20260727_care_dg_dual_pathology_validation/gate_a_repaired_semantics/gate_a_summary.json sha256=096278e97ca30722d1bdc36acbf4a1fc5a2379bf5fcd656a5a80832418b0ffe6\n- results/20260727_care_dg_dual_pathology_validation/gate_a_repaired_semantics/implementation_overfit_curve.csv sha256=c0522272ae308c62f0538786338fc849b8f4357450c8051b2a489003276fee9e\n- results/20260727_care_dg_dual_pathology_validation/runtime/gate_a_r2_preflight/fold0/fold_training_receipt.json sha256=76bc5f5df4cb46953456900a7f5a844d0ab346cfb4829d878f0081178802275e\n- results/20260727_care_dg_dual_pathology_validation/runtime/gate_a_r2_preflight/fold0/preflight_validator_report.json sha256=558f7e1e77c259e63a9b683a1ddb3f63228313650107f28bbf0e06e9751b8f88\n- results/20260727_care_dg_dual_pathology_validation/runtime/gate_a_r2_preflight/fold0/inner_split_manifest.json sha256=c5b9db7da156a840e31fc7c2639653215ee615be89fe688f68d94d11f1523e24\n- results/20260727_care_dg_dual_pathology_validation/runtime/gate_a_r2_preflight/fold0/inner_evaluation_plan.json sha256=c2a8aef01258872bdf91259a330323257633d4da4021fafb0abd287406b28ec4\n- results/20260727_care_dg_dual_pathology_validation/runtime/gate_a_r2_preflight/fold0/inner_evaluation_repeat_receipt.json sha256=7fabb8cbf846928eab9f0856456a31e054b03002698880f04e8e6ab6ffe4b2c5\n- results/20260727_care_dg_dual_pathology_validation/runtime/gate_a_r2_preflight/fold0/margin_cap_audit.json sha256=b450af41aaf086c3f5cc80a3367b425bf649f3725653f5da1386d91536bb921b\n- results/20260727_care_dg_dual_pathology_validation/runtime/gate_a_r2_preflight/fold0/sampler_quota_audit.json sha256=999bdf6a89d9ed0f0d1931592cca5b9344efb2c3b1201535f58cb6040f3da50c\n- results/20260727_care_dg_dual_pathology_validation/runtime/gate_a_r2_preflight/fold0/checkpoint_manifest.csv sha256=d50748519ae41a5ef5662ed3997e6a64d9f8d0b8e673fe7c4159abd9fa9153ee\n- results/20260727_care_dg_dual_pathology_validation/runtime/gate_a_r2_preflight/fold0/training_curve.csv sha256=9a91359c105257a39ac0186909d3cfffcffb8e472ea2e572700aa88d5c5aaf73\n\n注意：这仍不是科学结论；repaired fold0 尚未开始。未经 APPROVE_GATE_A_R2，不会启动 formal fold0，也不会启动 folds 1-4。",
+  "created_at_utc": "2026-07-27T12:21:09Z",
+  "evidence": [
+    {
+      "path": "results/20260727_care_dg_dual_pathology_validation/implementation_contract.json",
+      "sha256": "4d20e4524eceee9df6836f87c1d7b2103c63765d724d228ee36b55b2018ab48c",
+      "size_bytes": 9665
+    },
+    {
+      "path": "results/20260727_care_dg_dual_pathology_validation/model_parameter_report.json",
+      "sha256": "5c98256e567486d1bc6a4cae36f49aabd3e6db078a73fb8f23489adc4f65acd5",
+      "size_bytes": 404
+    },
+    {
+      "path": "results/20260727_care_dg_dual_pathology_validation/unit_test_report.md",
+      "sha256": "083f7d794f7b55ce646ec3bfccea78d52bbd0afaad64fcb4e21ef74a91ecd3d3",
+      "size_bytes": 183
+    },
+    {
+      "path": "results/20260727_care_dg_dual_pathology_validation/known_bad_report.json",
+      "sha256": "b0e65317eba93e1b98d7a23b7210cccdf0d73dbe5c2659baf690e21fc2d2fbde",
+      "size_bytes": 2833
+    },
+    {
+      "path": "results/20260727_care_dg_dual_pathology_validation/real_case_forward_backward_receipt.json",
+      "sha256": "36fafe9e331fe6cfe1ffbab63a22cddf2794ee579bd85b2f52e9e96bfcdb948c",
+      "size_bytes": 1824
+    },
+    {
+      "path": "results/20260727_care_dg_dual_pathology_validation/implementation_overfit_receipt.json",
+      "sha256": "93a7d6908a19787f4fb9efd1e33445765b8c4501b0a295e8e64c9576dfba5ba8",
+      "size_bytes": 1716
+    },
+    {
+      "path": "results/20260727_care_dg_dual_pathology_validation/checkpoint_resume_parity.json",
+      "sha256": "3847f091eb8f8694b8677903cd7759b80deac01bbdf73c0a4a60a035cd26c178",
+      "size_bytes": 339
+    },
+    {
+      "path": "results/20260727_care_dg_dual_pathology_validation/augmentation_alignment_audit.json",
+      "sha256": "034a35628659c247a0b46493628d296143de40fe54c2a54285c59aa7a1784753",
+      "size_bytes": 231
+    },
+    {
+      "path": "results/20260727_care_dg_dual_pathology_validation/strict_validator_report.json",
+      "sha256": "5e683de59450c9baa6db8ec42609e425fc42a5fe4cf84324d3d234072fa21579",
+      "size_bytes": 173
+    },
+    {
+      "path": "results/20260727_care_dg_dual_pathology_validation/repair_ledger.csv",
+      "sha256": "813e9af6acf5908b6f91efb59130ad0dc11111a523b64b3009b266775fd9d8b7",
+      "size_bytes": 2835
+    },
+    {
+      "path": "results/20260727_care_dg_dual_pathology_validation/gate_a_repaired_semantics/gate_a_static_test_receipt.json",
+      "sha256": "78ea2ab31c2614364c1e8d6c7da9e86cd2721a6ba470e679875b05a96722d872",
+      "size_bytes": 2120
+    },
+    {
+      "path": "results/20260727_care_dg_dual_pathology_validation/gate_a_repaired_semantics/gate_a_summary.json",
+      "sha256": "096278e97ca30722d1bdc36acbf4a1fc5a2379bf5fcd656a5a80832418b0ffe6",
+      "size_bytes": 8798
+    },
+    {
+      "path": "results/20260727_care_dg_dual_pathology_validation/gate_a_repaired_semantics/implementation_overfit_curve.csv",
+      "sha256": "c0522272ae308c62f0538786338fc849b8f4357450c8051b2a489003276fee9e",
+      "size_bytes": 2810
+    },
+    {
+      "path": "results/20260727_care_dg_dual_pathology_validation/runtime/gate_a_r2_preflight/fold0/fold_training_receipt.json",
+      "sha256": "76bc5f5df4cb46953456900a7f5a844d0ab346cfb4829d878f0081178802275e",
+      "size_bytes": 11315
+    },
+    {
+      "path": "results/20260727_care_dg_dual_pathology_validation/runtime/gate_a_r2_preflight/fold0/preflight_validator_report.json",
+      "sha256": "558f7e1e77c259e63a9b683a1ddb3f63228313650107f28bbf0e06e9751b8f88",
+      "size_bytes": 610
+    },
+    {
+      "path": "results/20260727_care_dg_dual_pathology_validation/runtime/gate_a_r2_preflight/fold0/inner_split_manifest.json",
+      "sha256": "c5b9db7da156a840e31fc7c2639653215ee615be89fe688f68d94d11f1523e24",
+      "size_bytes": 7693
+    },
+    {
+      "path": "results/20260727_care_dg_dual_pathology_validation/runtime/gate_a_r2_preflight/fold0/inner_evaluation_plan.json",
+      "sha256": "c2a8aef01258872bdf91259a330323257633d4da4021fafb0abd287406b28ec4",
+      "size_bytes": 27644
+    },
+    {
+      "path": "results/20260727_care_dg_dual_pathology_validation/runtime/gate_a_r2_preflight/fold0/inner_evaluation_repeat_receipt.json",
+      "sha256": "7fabb8cbf846928eab9f0856456a31e054b03002698880f04e8e6ab6ffe4b2c5",
+      "size_bytes": 51388
+    },
+    {
+      "path": "results/20260727_care_dg_dual_pathology_validation/runtime/gate_a_r2_preflight/fold0/margin_cap_audit.json",
+      "sha256": "b450af41aaf086c3f5cc80a3367b425bf649f3725653f5da1386d91536bb921b",
+      "size_bytes": 428
+    },
+    {
+      "path": "results/20260727_care_dg_dual_pathology_validation/runtime/gate_a_r2_preflight/fold0/sampler_quota_audit.json",
+      "sha256": "999bdf6a89d9ed0f0d1931592cca5b9344efb2c3b1201535f58cb6040f3da50c",
+      "size_bytes": 4287
+    },
+    {
+      "path": "results/20260727_care_dg_dual_pathology_validation/runtime/gate_a_r2_preflight/fold0/checkpoint_manifest.csv",
+      "sha256": "d50748519ae41a5ef5662ed3997e6a64d9f8d0b8e673fe7c4159abd9fa9153ee",
+      "size_bytes": 1513
+    },
+    {
+      "path": "results/20260727_care_dg_dual_pathology_validation/runtime/gate_a_r2_preflight/fold0/training_curve.csv",
+      "sha256": "9a91359c105257a39ac0186909d3cfffcffb8e472ea2e572700aa88d5c5aaf73",
+      "size_bytes": 1038
+    }
+  ],
+  "preflight": {
+    "case_count": 12,
+    "patch_count": 72,
+    "plan_sha256": "3e5996edefdfbddcd2466c71cae0ee6425e7a2ce0c3c069349ffd1ea5ee6f6e9",
+    "receipt_path": "results/20260727_care_dg_dual_pathology_validation/runtime/gate_a_r2_preflight/fold0/fold_training_receipt.json",
+    "sampler": {
+      "batch_size": 8,
+      "effective_counts": {
+        "error_fn": 250,
+        "error_fp": 250,
+        "pathology": 250,
+        "random": 250
+      },
+      "effective_fractions": {
+        "error_fn": 0.25,
+        "error_fp": 0.25,
+        "pathology": 0.25,
+        "random": 0.25
+      },
+      "eligible_counts": {
+        "error_fn": 158,
+        "error_fp": 162,
+        "pathology": 158,
+        "random": 164
+      },
+      "fallback_reasons": {
+        "jitter_recentered_to_original_target": 4
+      },
+      "requested_counts": {
+        "error_fn": 250,
+        "error_fp": 250,
+        "pathology": 250,
+        "random": 250
+      },
+      "sampler_index": {
+        "case_ids": [
+          "Case1001",
+          "Case1003",
+          "Case1004",
+          "Case1005",
+          "Case1006",
+          "Case1008",
+          "Case1011",
+          "Case1012",
+          "Case1013",
+          "Case1014",
+          "Case1015",
+          "Case1016",
+          "Case1017",
+          "Case1018",
+          "Case1019",
+          "Case1020",
+          "Case1022",
+          "Case1024",
+          "Case1025",
+          "Case1026",
+          "Case1027",
+          "Case1028",
+          "Case1030",
+          "Case1031",
+          "Case1032",
+          "Case1034",
+          "Case1035",
+          "Case1036",
+          "Case1037",
+          "Case1038",
+          "Case1039",
+          "Case1041",
+          "Case1043",
+          "Case1044",
+          "Case1046",
+          "Case1048",
+          "Case1049",
+          "Case1050",
+          "Case1051",
+          "Case1052",
+          "Case1054",
+          "Case1055",
+          "Case1056",
+          "Case1057",
+          "Case1058",
+          "Case1059",
+          "Case1060",
+          "Case1061",
+          "Case1063",
+          "Case1064",
+          "Case1065",
+          "Case1066",
+          "Case1067",
+          "Case1068",
+          "Case1069",
+          "Case1071",
+          "Case1072",
+          "Case1074",
+          "Case1075",
+          "Case1076",
+          "Case1077",
+          "Case1078",
+          "Case1079",
+          "Case1081",
+          "Case2001",
+          "Case2005",
+          "Case2006",
+          "Case2009",
+          "Case2011",
+          "Case2013",
+          "Case2014",
+          "Case2016",
+          "Case2018",
+          "Case2019",
+          "Case2022",
+          "Case2023",
+          "Case2025",
+          "Case2026",
+          "Case2028",
+          "Case2029",
+          "Case2030",
+          "Case2032",
+          "Case2034",
+          "Case2035",
+          "Case3001",
+          "Case3002",
+          "Case3003",
+          "Case3005",
+          "Case3006",
+          "Case3007",
+          "Case3010",
+          "Case3013",
+          "Case3014",
+          "Case3015",
+          "Case3016",
+          "Case3017",
+          "Case3018",
+          "Case3019",
+          "Case3020",
+          "Case3021",
+          "Case3022",
+          "Case3025",
+          "Case3027",
+          "Case3029",
+          "Case3030",
+          "Case3031",
+          "Case3032",
+          "Case3033",
+          "Case3035",
+          "Case3036",
+          "Case3037",
+          "Case3039",
+          "Case3041",
+          "Case3042",
+          "Case3043",
+          "Case3045",
+          "Case5001",
+          "Case5002",
+          "Case5003",
+          "Case5006",
+          "Case5007",
+          "Case5010",
+          "Case6002",
+          "Case6003",
+          "Case6004",
+          "Case6005",
+          "Case6006",
+          "Case6008",
+          "Case6009",
+          "Case7001",
+          "Case7002",
+          "Case7004",
+          "Case7006",
+          "Case7008",
+          "Case7009",
+          "Case7010",
+          "Case8001",
+          "Case8002",
+          "Case8004",
+          "Case8005",
+          "Case8006",
+          "Case8007",
+          "Case8008",
+          "Case8009",
+          "Case8010",
+          "Case8012",
+          "Case8013",
+          "Case8014",
+          "Case8016",
+          "Case8017",
+          "Case8018",
+          "Case8020",
+          "Case8024",
+          "Case8025",
+          "Case8026",
+          "Case8027",
+          "Case8028",
+          "Case8029",
+          "Case8030",
+          "Case8031",
+          "Case8032",
+          "Case8033",
+          "Case8034",
+          "Case8035"
+        ],
+        "case_ids_sha256": "6c9664c525ca17e9d0591a62302f143dc7881307d94a4e49aa685f98ac60e7e9",
+        "eligible_counts": {
+          "error_fn": 158,
+          "error_fp": 162,
+          "pathology": 158,
+          "random": 164
+        },
+        "sampler_index_sha256": "f9fb26c703f4261a64edf3c172133ef83a62445fce8c886b6b567f8b058bd846",
+        "stage": "A",
+        "target_count_totals": {
+          "error_fn": 222092,
+          "error_fp": 142176,
+          "pathology": 501574,
+          "random": 132116701
+        }
+      },
+      "sampler_index_sha256": "f9fb26c703f4261a64edf3c172133ef83a62445fce8c886b6b567f8b058bd846",
+      "samples": 1000,
+      "silent_fallback_count": 0,
+      "stage": "A",
+      "status": "PASS",
+      "target_hit_rates": {
+        "error_fn": 1.0,
+        "error_fp": 1.0,
+        "pathology": 1.0
+      }
+    }
+  },
+  "source_hashes": {
+    "configs/care_dg/care_dg_v1.yaml": "fb5c87ab26c3a9001b05dc23045939e9bc9cd269101e3dafd807e44aea32d225",
+    "scripts/evaluation/build_care_dg_validation_packet.py": "a203061b648935d0f44992f06054f6c52949665c2c48fd6c7f4d6b70e9b95236",
+    "scripts/evaluation/evaluate_care_dg.py": "aae033a503189bf75cf100c087a65568940370ec4c010b9f7f0a680b3c399651",
+    "scripts/evaluation/run_care_dg_gate_a_checks.py": "c7f626e3a3f84486338624c6d65ffdbe7d851c92e459349961656869d61684c5",
+    "scripts/evaluation/select_care_dg_candidate.py": "d319535426cb49800710e8a9e8056ae97cf4abae99bd342dfd2df09b153f5080",
+    "scripts/evaluation/validate_care_dg_packet.py": "d02ef03752072a97d72301bf42338d11e851442b67e403a5e8cd2a6875fcb48b",
+    "scripts/inference/run_care_dg_inference.py": "ceef29361a4ce6eb2224e315ca800381944b2a9c624aa7b8017dab80d54ee771",
+    "scripts/training/run_care_dg.py": "60da878f872a4b3bbe1f0ad14c0aa2fb5c6760be35fb745fd73b2a351bc575a2",
+    "src/care_myocardium/data/care_dg_dataset.py": "96d18e1914b7e08fc029a77c0e7c21467809fa0a5e9e12ad4f1ef2208eba803a",
+    "src/care_myocardium/inference/care_dg_predictor.py": "71b3f935617b42a1190aa6937165ee09ce1a3c52e8a05ad4f6d4e53f9dcacf7c",
+    "src/care_myocardium/models/care_dg.py": "c417404ec469acec3e6ca8adb17a225dc6dddd85776791d50c6edfb35f5a2a03",
+    "src/care_myocardium/training/care_dg_trainer.py": "0b1da4a75f1f4e4bb59367ac381cf1522ab8a62e229ccd1e62037f8580a1c1f7",
+    "tests/care_dg/test_care_dg_model.py": "0a9eea2091b6c5d1453e25e0c1d87be3718892c2f6df048cd31a5e4195b0bc9e"
+  },
+  "state": "AWAITING_HUMAN_ACCEPTANCE_GATE_A_R2",
+  "subject": "[CARE-DG][A/4-R2] 固定内层评价、真实错误采样与精确续跑完成，等待正式 Fold0 验收",
+  "to": "1155246312@link.cuhk.edu.hk"
+}

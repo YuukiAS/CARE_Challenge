@@ -1,6 +1,8 @@
 from __future__ import annotations
 
 from pathlib import Path
+from types import SimpleNamespace
+import random
 
 import numpy as np
 import pytest
@@ -9,6 +11,7 @@ import torch
 
 from src.care_myocardium.data.care_dg_dataset import validate_care_dg_batch
 from src.care_myocardium.models.care_dg import EDEMA_CHANNEL, SCAR_CHANNEL, apply_competitive_correction, build_care_dg
+import scripts.training.run_care_dg as run_dg
 from scripts.training.run_care_dg import deterministic_inner_split, support_maps, validate_inner_split_contract, validate_w0
 from src.care_myocardium.training.care_dg_trainer import (
     care_dg_loss,
@@ -337,3 +340,151 @@ def test_zero_correction_identity_with_soft_support_inputs() -> None:
         force_zero_correction=True,
     )
     torch.testing.assert_close(out["final_logits"], batch["anchor_logits"])
+
+
+
+def _fake_case_record() -> dict[str, np.ndarray]:
+    labels = np.zeros((4, 16, 16), dtype=np.int64)
+    anchor_mask = np.zeros_like(labels)
+    labels[1, 2, 2] = SCAR_CHANNEL
+    anchor_mask[1, 3, 3] = SCAR_CHANNEL
+    labels[2, 4, 4] = EDEMA_CHANNEL
+    anchor_mask[2, 5, 5] = EDEMA_CHANNEL
+    anchor_logits = np.full((6, 4, 16, 16), -4.0, dtype=np.float32)
+    for c in range(6):
+        anchor_logits[c][anchor_mask == c] = 2.0
+    return {
+        "images": np.zeros((3, 4, 16, 16), dtype=np.float32),
+        "labels": labels,
+        "anchor_logits": anchor_logits,
+        "anchor_mask": anchor_mask,
+        "availability": np.asarray((1.0, 1.0, 1.0), dtype=np.float32),
+        "uncertainty": np.zeros((1, 4, 16, 16), dtype=np.float32),
+        "myocardium_support": np.ones((1, 4, 16, 16), dtype=np.float32),
+        "edema_support": np.ones((1, 4, 16, 16), dtype=np.float32),
+        "distance_to_myocardium": np.zeros((1, 4, 16, 16), dtype=np.float32),
+    }
+
+
+class _FakeCache:
+    def __init__(self, record: dict[str, np.ndarray]) -> None:
+        self.record = record
+
+    def get(self, case_id: str, fold: int, availability: tuple[float, float, float]) -> dict[str, np.ndarray]:
+        return self.record
+
+
+def test_fixed_inner_evaluation_plan_repeat_exact(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setattr(run_dg, "PATCH_SHAPE", (4, 16, 16))
+    record = _fake_case_record()
+    metadata = {"Case0001": SimpleNamespace(modality_group="C0+LGE+T2", t2_present=True, availability=(1.0, 1.0, 1.0))}
+    case_to_fold = {"Case0001": 0}
+    split = {"sha256": {"inner_select": "abc", "actual_train": "def"}}
+    plan = run_dg.build_inner_evaluation_plan(["Case0001"], case_to_fold, metadata, _FakeCache(record), fold=0, split_contract=split)
+    assert plan["case_count"] == 1
+    assert plan["mode_counts"]["scar_fn"] == 1
+    assert plan["mode_counts"]["scar_fp"] == 1
+    assert plan["mode_counts"]["edema_zone_fn"] == 1
+    assert plan["mode_counts"]["edema_zone_fp"] == 1
+    model = build_care_dg({"encoder_channels": (8, 12, 16), "context_channels": 4})
+    first = run_dg.evaluate_inner(model, plan, case_to_fold, metadata, _FakeCache(record), torch.device("cpu"), batch_size=2)
+    second = run_dg.evaluate_inner(model, plan, case_to_fold, metadata, _FakeCache(record), torch.device("cpu"), batch_size=2)
+    assert first == second
+
+
+def test_effective_sampler_reports_real_hits_and_zero_silent_fallback(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setattr(run_dg, "PATCH_SHAPE", (4, 16, 16))
+    record = _fake_case_record()
+    metadata = {"Case0001": SimpleNamespace(modality_group="C0+LGE+T2", t2_present=True, availability=(1.0, 1.0, 1.0))}
+    case_to_fold = {"Case0001": 0}
+    audit = run_dg.sampler_quota_audit(["Case0001"], case_to_fold, metadata, _FakeCache(record), stage="A", batch_size=8, samples=64, seed=7)
+    assert audit["status"] == "PASS"
+    assert audit["target_hit_rates"] == {"error_fn": 1.0, "error_fp": 1.0, "pathology": 1.0}
+    assert audit["silent_fallback_count"] == 0
+    assert audit["effective_fractions"] == {"error_fn": 0.25, "error_fp": 0.25, "pathology": 0.25, "random": 0.25}
+
+
+def test_known_bad_error_fn_without_fn_voxels_is_rejected(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setattr(run_dg, "PATCH_SHAPE", (4, 16, 16))
+    record = _fake_case_record()
+    record["labels"].fill(0)
+    record["anchor_mask"].fill(0)
+    metadata = {"Case0001": SimpleNamespace(modality_group="C0+LGE+T2", t2_present=True, availability=(1.0, 1.0, 1.0))}
+    case_to_fold = {"Case0001": 0}
+    bad_index = {
+        "eligible": {"error_fn": ["Case0001"], "error_fp": ["Case0001"], "pathology": ["Case0001"], "random": ["Case0001"]},
+        "weights": {"Case0001": 1.0},
+    }
+    with pytest.raises(ValueError, match="CARE_DG_EFFECTIVE_SAMPLER_EMPTY_TARGET"):
+        run_dg.build_batch(["Case0001"], case_to_fold, metadata, _FakeCache(record), random.Random(1), stage="A", batch_size=1, sampler_index=bad_index)
+
+
+def test_checkpoint_interrupted_resume_cpu_exact(tmp_path: Path) -> None:
+    torch.manual_seed(123)
+    batches = [_batch(batch=1, t2=(1.0,)) for _ in range(4)]
+    model_u = build_care_dg({"encoder_channels": (8, 12, 16), "context_channels": 4})
+    model_r = build_care_dg({"encoder_channels": (8, 12, 16), "context_channels": 4})
+    model_r.load_state_dict(model_u.state_dict())
+    opt_u = torch.optim.AdamW(model_u.parameters(), lr=1e-4)
+    opt_r = torch.optim.AdamW(model_r.parameters(), lr=1e-4)
+    scaler_u = torch.amp.GradScaler("cpu", enabled=False)
+    scaler_r = torch.amp.GradScaler("cpu", enabled=False)
+    rng_u = random.Random(55)
+    rng_r = random.Random(55)
+    contract = {"fixed_inner_evaluation_plan_sha256": "plan", "source": "test"}
+
+    def one_step(model: torch.nn.Module, opt: torch.optim.Optimizer, batch: dict[str, torch.Tensor]) -> torch.Tensor:
+        opt.zero_grad(set_to_none=True)
+        out = model(batch["images"], batch["availability"], batch["anchor_logits"])
+        loss, _ = care_dg_loss(out, batch["labels"], batch["anchor_mask"], t2_present=batch["t2_present"])
+        loss.backward(); opt.step()
+        return out["final_logits"].detach().clone()
+
+    for i in range(4):
+        rng_u.random()
+        final_u = one_step(model_u, opt_u, batches[i])
+
+    for i in range(2):
+        rng_r.random()
+        one_step(model_r, opt_r, batches[i])
+    ckpt = tmp_path / "resume.pt"
+    save_care_dg_checkpoint(
+        ckpt,
+        model_r,
+        opt_r,
+        step=2,
+        extra={"hash_contract": contract},
+        scaler=scaler_r,
+        local_rng=rng_r,
+        stage="A",
+        local_step=2,
+        total_step=2,
+        fixed_inner_plan_hash="plan",
+        hash_contract=contract,
+    )
+    reloaded_model = build_care_dg({"encoder_channels": (8, 12, 16), "context_channels": 4})
+    reloaded_opt = torch.optim.AdamW(reloaded_model.parameters(), lr=1e-4)
+    reloaded_scaler = torch.amp.GradScaler("cpu", enabled=False)
+    reloaded_rng = random.Random(0)
+    reloaded_model, step, extra = load_care_dg_checkpoint(
+        ckpt,
+        model=reloaded_model,
+        optimizer=reloaded_opt,
+        scaler=reloaded_scaler,
+        local_rng=reloaded_rng,
+        restore_rng=True,
+        expected_hash_contract=contract,
+    )
+    assert step == 2
+    assert extra["runtime_state"]["stage"] == "A"
+    for i in range(2, 4):
+        reloaded_rng.random()
+        final_r = one_step(reloaded_model, reloaded_opt, batches[i])
+    for key, value in model_u.state_dict().items():
+        torch.testing.assert_close(value, reloaded_model.state_dict()[key], atol=0, rtol=0)
+    assert opt_u.state_dict()["state"].keys() == reloaded_opt.state_dict()["state"].keys()
+    assert scaler_u.state_dict() == reloaded_scaler.state_dict()
+    assert rng_u.random() == reloaded_rng.random()
+    torch.testing.assert_close(final_u, final_r, atol=0, rtol=0)
+    with pytest.raises(ValueError, match="CHECKPOINT_HASH_CONTRACT_MISMATCH"):
+        load_care_dg_checkpoint(ckpt, expected_hash_contract={"fixed_inner_evaluation_plan_sha256": "wrong"})

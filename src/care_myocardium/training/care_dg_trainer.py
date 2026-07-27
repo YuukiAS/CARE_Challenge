@@ -5,6 +5,8 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Any
 
+import random
+import numpy as np
 import torch
 import torch.nn.functional as F
 
@@ -173,25 +175,101 @@ def care_dg_loss(
     return total, metrics
 
 
-def save_care_dg_checkpoint(path: Path, model: CAREDG, optimizer: torch.optim.Optimizer, step: int, extra: dict[str, Any] | None = None) -> None:
+def _rng_payload(local_rng: random.Random | None = None) -> dict[str, Any]:
+    return {
+        "python_random_state": random.getstate(),
+        "local_random_state": local_rng.getstate() if local_rng is not None else None,
+        "numpy_random_state": np.random.get_state(),
+        "torch_cpu_rng_state": torch.get_rng_state(),
+        "torch_cuda_rng_states": torch.cuda.get_rng_state_all() if torch.cuda.is_available() else [],
+    }
+
+
+def _restore_rng_payload(payload: dict[str, Any], local_rng: random.Random | None = None) -> None:
+    if payload.get("python_random_state") is not None:
+        random.setstate(payload["python_random_state"])
+    if payload.get("local_random_state") is not None and local_rng is not None:
+        local_rng.setstate(payload["local_random_state"])
+    if payload.get("numpy_random_state") is not None:
+        np.random.set_state(payload["numpy_random_state"])
+    if payload.get("torch_cpu_rng_state") is not None:
+        torch.set_rng_state(payload["torch_cpu_rng_state"])
+    cuda_states = payload.get("torch_cuda_rng_states") or []
+    if cuda_states and torch.cuda.is_available():
+        torch.cuda.set_rng_state_all(cuda_states)
+
+
+def _validate_hash_contract(extra: dict[str, Any], expected_hash_contract: dict[str, Any] | None) -> None:
+    if expected_hash_contract is None:
+        return
+    actual = dict(extra.get("hash_contract") or {})
+    for key, expected in expected_hash_contract.items():
+        if actual.get(key) != expected:
+            raise ValueError(f"CARE_DG_CHECKPOINT_HASH_CONTRACT_MISMATCH:{key}")
+
+
+def save_care_dg_checkpoint(
+    path: Path,
+    model: CAREDG,
+    optimizer: torch.optim.Optimizer,
+    step: int,
+    extra: dict[str, Any] | None = None,
+    *,
+    scaler: Any | None = None,
+    local_rng: random.Random | None = None,
+    stage: str | None = None,
+    local_step: int | None = None,
+    total_step: int | None = None,
+    fixed_inner_plan_hash: str | None = None,
+    hash_contract: dict[str, Any] | None = None,
+) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
+    runtime_state = {
+        **_rng_payload(local_rng),
+        "amp_grad_scaler_state": scaler.state_dict() if scaler is not None else None,
+        "stage": stage,
+        "local_step": local_step,
+        "total_step": int(total_step if total_step is not None else step),
+        "fixed_inner_evaluation_plan_sha256": fixed_inner_plan_hash,
+    }
+    merged_extra = dict(extra or {})
+    if hash_contract is not None:
+        merged_extra["hash_contract"] = hash_contract
     torch.save(
         {
             "model_state": model.state_dict(),
             "optimizer_state": optimizer.state_dict(),
             "step": int(step),
             "config": model.config.__dict__,
-            "extra": extra or {},
+            "extra": merged_extra,
+            "runtime_state": runtime_state,
         },
         path,
     )
 
 
-def load_care_dg_checkpoint(path: Path, model: CAREDG | None = None, optimizer: torch.optim.Optimizer | None = None) -> tuple[CAREDG, int, dict[str, Any]]:
+def load_care_dg_checkpoint(
+    path: Path,
+    model: CAREDG | None = None,
+    optimizer: torch.optim.Optimizer | None = None,
+    *,
+    scaler: Any | None = None,
+    local_rng: random.Random | None = None,
+    restore_rng: bool = False,
+    expected_hash_contract: dict[str, Any] | None = None,
+) -> tuple[CAREDG, int, dict[str, Any]]:
     payload = torch.load(path, map_location="cpu", weights_only=False)
+    extra = dict(payload.get("extra", {}))
+    _validate_hash_contract(extra, expected_hash_contract)
     if model is None:
         model = CAREDG(CAREDGConfig(**payload["config"]))
     model.load_state_dict(payload["model_state"])
     if optimizer is not None and "optimizer_state" in payload:
         optimizer.load_state_dict(payload["optimizer_state"])
-    return model, int(payload.get("step", 0)), dict(payload.get("extra", {}))
+    runtime_state = dict(payload.get("runtime_state") or {})
+    if scaler is not None and runtime_state.get("amp_grad_scaler_state") is not None:
+        scaler.load_state_dict(runtime_state["amp_grad_scaler_state"])
+    if restore_rng:
+        _restore_rng_payload(runtime_state, local_rng)
+    extra["runtime_state"] = runtime_state
+    return model, int(payload.get("step", 0)), extra

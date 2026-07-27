@@ -1,12 +1,15 @@
 {
-  "approval_token_required": "APPROVE_GATE_A_R1",
-  "created_at_utc": "2026-07-27T10:35:35Z",
+  "approval_token_required": "APPROVE_GATE_A_R2",
+  "created_at_utc": "2026-07-27T12:19:28Z",
   "gate_a_overfit_curve": "results/20260727_care_dg_dual_pathology_validation/gate_a_repaired_semantics/implementation_overfit_curve.csv",
-  "gate_a_r1_inner_split_manifest": "results/20260727_care_dg_dual_pathology_validation/runtime/gate_a_r1_preflight/fold0/inner_split_manifest.json",
-  "gate_a_r1_preflight_receipt": "results/20260727_care_dg_dual_pathology_validation/runtime/gate_a_r1_preflight/fold0/fold_training_receipt.json",
-  "gate_a_r1_preflight_validator": "results/20260727_care_dg_dual_pathology_validation/runtime/gate_a_r1_preflight/fold0/preflight_validator_report.json",
+  "gate_a_r2_inner_eval_repeat": "results/20260727_care_dg_dual_pathology_validation/runtime/gate_a_r2_preflight/fold0/inner_evaluation_repeat_receipt.json",
+  "gate_a_r2_inner_evaluation_plan": "results/20260727_care_dg_dual_pathology_validation/runtime/gate_a_r2_preflight/fold0/inner_evaluation_plan.json",
+  "gate_a_r2_inner_split_manifest": "results/20260727_care_dg_dual_pathology_validation/runtime/gate_a_r2_preflight/fold0/inner_split_manifest.json",
+  "gate_a_r2_preflight_receipt": "results/20260727_care_dg_dual_pathology_validation/runtime/gate_a_r2_preflight/fold0/fold_training_receipt.json",
+  "gate_a_r2_preflight_validator": "results/20260727_care_dg_dual_pathology_validation/runtime/gate_a_r2_preflight/fold0/preflight_validator_report.json",
+  "gate_a_r2_sampler_quota_audit": "results/20260727_care_dg_dual_pathology_validation/runtime/gate_a_r2_preflight/fold0/sampler_quota_audit.json",
   "gate_a_static_test_receipt": "results/20260727_care_dg_dual_pathology_validation/gate_a_repaired_semantics/gate_a_static_test_receipt.json",
-  "gate_revision": "A-R1",
+  "gate_revision": "A-R2",
   "git_state": {
     "diff_name_only": {
       "cmd": [
@@ -14,10 +17,10 @@
         "diff",
         "--name-only"
       ],
-      "elapsed_seconds": 0.137,
+      "elapsed_seconds": 0.117,
       "returncode": 0,
       "stderr": "",
-      "stdout": "results/20260724_care_myops_srr_cascade_submission_rescue/runtime_closure_repair_rc1/formal_race_watcher_history_v2.jsonl\nresults/20260724_care_myops_srr_cascade_submission_rescue/runtime_closure_repair_rc1/formal_race_watcher_state_v2.json\nresults/20260727_care_dg_dual_pathology_validation/augmentation_alignment_audit.json\nresults/20260727_care_dg_dual_pathology_validation/checkpoint_resume_parity.json\nresults/20260727_care_dg_dual_pathology_validation/gate_a_repaired_semantics/gate_a_static_test_receipt.json\nresults/20260727_care_dg_dual_pathology_validation/gate_a_repaired_semantics/gate_a_summary.json\nresults/20260727_care_dg_dual_pathology_validation/gate_a_repaired_semantics/implementation_overfit_curve.csv\nresults/20260727_care_dg_dual_pathology_validation/implementation_contract.json\nresults/20260727_care_dg_dual_pathology_validation/implementation_overfit_receipt.json\nresults/20260727_care_dg_dual_pathology_validation/known_bad_report.json\nresults/20260727_care_dg_dual_pathology_validation/model_parameter_report.json\nresults/20260727_care_dg_dual_pathology_validation/real_case_forward_backward_receipt.json\nresults/20260727_care_dg_dual_pathology_validation/repair_ledger.csv\nresults/20260727_care_dg_dual_pathology_validation/strict_validator_report.json\nresults/20260727_care_dg_dual_pathology_validation/unit_test_report.md\nscripts/evaluation/run_care_dg_gate_a_checks.py\nscripts/training/run_care_dg.py\ntests/care_dg/test_care_dg_model.py"
+      "stdout": "results/20260724_care_myops_srr_cascade_submission_rescue/runtime_closure_repair_rc1/formal_race_watcher_history_v2.jsonl\nresults/20260724_care_myops_srr_cascade_submission_rescue/runtime_closure_repair_rc1/formal_race_watcher_state_v2.json\nresults/20260727_care_dg_dual_pathology_validation/augmentation_alignment_audit.json\nresults/20260727_care_dg_dual_pathology_validation/checkpoint_resume_parity.json\nresults/20260727_care_dg_dual_pathology_validation/gate_a_repaired_semantics/gate_a_static_test_receipt.json\nresults/20260727_care_dg_dual_pathology_validation/gate_a_repaired_semantics/gate_a_summary.json\nresults/20260727_care_dg_dual_pathology_validation/gate_a_repaired_semantics/implementation_overfit_curve.csv\nresults/20260727_care_dg_dual_pathology_validation/implementation_contract.json\nresults/20260727_care_dg_dual_pathology_validation/implementation_overfit_receipt.json\nresults/20260727_care_dg_dual_pathology_validation/known_bad_report.json\nresults/20260727_care_dg_dual_pathology_validation/model_parameter_report.json\nresults/20260727_care_dg_dual_pathology_validation/real_case_forward_backward_receipt.json\nresults/20260727_care_dg_dual_pathology_validation/repair_ledger.csv\nresults/20260727_care_dg_dual_pathology_validation/unit_test_report.md\nscripts/evaluation/build_care_dg_validation_packet.py\nscripts/evaluation/run_care_dg_gate_a_checks.py\nscripts/training/run_care_dg.py\nsrc/care_myocardium/training/care_dg_trainer.py\ntests/care_dg/test_care_dg_model.py"
     },
     "head": {
       "cmd": [
@@ -25,10 +28,10 @@
         "rev-parse",
         "HEAD"
       ],
-      "elapsed_seconds": 0.024,
+      "elapsed_seconds": 0.014,
       "returncode": 0,
       "stderr": "",
-      "stdout": "074dc89e0f7a9e50765e8e7d6290f77b36864a44"
+      "stdout": "0e23a957ea88367ad7b317beb68948905078a4d1"
     },
     "origin_main": {
       "cmd": [
@@ -36,10 +39,10 @@
         "rev-parse",
         "origin/main"
       ],
-      "elapsed_seconds": 0.008,
+      "elapsed_seconds": 0.005,
       "returncode": 0,
       "stderr": "",
-      "stdout": "074dc89e0f7a9e50765e8e7d6290f77b36864a44"
+      "stdout": "0e23a957ea88367ad7b317beb68948905078a4d1"
     },
     "status_short": {
       "cmd": [
@@ -48,21 +51,29 @@
         "--short",
         "--branch"
       ],
-      "elapsed_seconds": 0.411,
+      "elapsed_seconds": 0.217,
       "returncode": 0,
       "stderr": "",
-      "stdout": "## main...origin/main\n M results/20260724_care_myops_srr_cascade_submission_rescue/runtime_closure_repair_rc1/formal_race_watcher_history_v2.jsonl\n M results/20260724_care_myops_srr_cascade_submission_rescue/runtime_closure_repair_rc1/formal_race_watcher_state_v2.json\n M results/20260727_care_dg_dual_pathology_validation/augmentation_alignment_audit.json\n M results/20260727_care_dg_dual_pathology_validation/checkpoint_resume_parity.json\n M results/20260727_care_dg_dual_pathology_validation/gate_a_repaired_semantics/gate_a_static_test_receipt.json\n M results/20260727_care_dg_dual_pathology_validation/gate_a_repaired_semantics/gate_a_summary.json\n M results/20260727_care_dg_dual_pathology_validation/gate_a_repaired_semantics/implementation_overfit_curve.csv\n M results/20260727_care_dg_dual_pathology_validation/implementation_contract.json\n M results/20260727_care_dg_dual_pathology_validation/implementation_overfit_receipt.json\n M results/20260727_care_dg_dual_pathology_validation/known_bad_report.json\n M results/20260727_care_dg_dual_pathology_validation/model_parameter_report.json\n M results/20260727_care_dg_dual_pathology_validation/real_case_forward_backward_receipt.json\n M results/20260727_care_dg_dual_pathology_validation/repair_ledger.csv\n M results/20260727_care_dg_dual_pathology_validation/strict_validator_report.json\n M results/20260727_care_dg_dual_pathology_validation/unit_test_report.md\n M scripts/evaluation/run_care_dg_gate_a_checks.py\n M scripts/training/run_care_dg.py\n M tests/care_dg/test_care_dg_model.py\n?? .codex_runtime/\n?? results/care_scf/canonical_model_summary_fold0.csv\n?? results/care_scf/care_gate_training_receipt.json\n?? results/care_scf/care_prediction_status.csv\n?? results/care_scf/casewise_metrics_fold0.csv\n?? results/care_scf/completion_audit.csv\n?? results/care_scf/component_dataset_feature_status.csv\n?? results/care_scf/component_dataset_fold0_diagnostic.csv\n?? results/care_scf/component_decisions.csv\n?? results/care_scf/controller_report.md\n?? results/care_scf/final_manifest.json\n?? results/care_scf/geometry_audit.csv\n?? results/care_scf/help_harm.csv\n?? results/care_scf/help_harm_summary.csv\n?? results/care_scf/mosaic_oof_status.csv\n?? results/care_scf/nnunet_oof_status.csv\n?? results/care_scf/provenance.json\n?? scripts/evaluation/build_care_dg_validation_packet.py\n?? scripts/evaluation/build_care_scf_controller_packet.py\n?? scripts/evaluation/build_mosaic_paper_results_completion.py"
+      "stdout": "## main...origin/main\n M results/20260724_care_myops_srr_cascade_submission_rescue/runtime_closure_repair_rc1/formal_race_watcher_history_v2.jsonl\n M results/20260724_care_myops_srr_cascade_submission_rescue/runtime_closure_repair_rc1/formal_race_watcher_state_v2.json\n M results/20260727_care_dg_dual_pathology_validation/augmentation_alignment_audit.json\n M results/20260727_care_dg_dual_pathology_validation/checkpoint_resume_parity.json\n M results/20260727_care_dg_dual_pathology_validation/gate_a_repaired_semantics/gate_a_static_test_receipt.json\n M results/20260727_care_dg_dual_pathology_validation/gate_a_repaired_semantics/gate_a_summary.json\n M results/20260727_care_dg_dual_pathology_validation/gate_a_repaired_semantics/implementation_overfit_curve.csv\n M results/20260727_care_dg_dual_pathology_validation/implementation_contract.json\n M results/20260727_care_dg_dual_pathology_validation/implementation_overfit_receipt.json\n M results/20260727_care_dg_dual_pathology_validation/known_bad_report.json\n M results/20260727_care_dg_dual_pathology_validation/model_parameter_report.json\n M results/20260727_care_dg_dual_pathology_validation/real_case_forward_backward_receipt.json\n M results/20260727_care_dg_dual_pathology_validation/repair_ledger.csv\n M results/20260727_care_dg_dual_pathology_validation/unit_test_report.md\n M scripts/evaluation/build_care_dg_validation_packet.py\n M scripts/evaluation/run_care_dg_gate_a_checks.py\n M scripts/training/run_care_dg.py\n M src/care_myocardium/training/care_dg_trainer.py\n M tests/care_dg/test_care_dg_model.py\n?? .codex_runtime/\n?? results/care_scf/canonical_model_summary_fold0.csv\n?? results/care_scf/care_gate_training_receipt.json\n?? results/care_scf/care_prediction_status.csv\n?? results/care_scf/casewise_metrics_fold0.csv\n?? results/care_scf/completion_audit.csv\n?? results/care_scf/component_dataset_feature_status.csv\n?? results/care_scf/component_dataset_fold0_diagnostic.csv\n?? results/care_scf/component_decisions.csv\n?? results/care_scf/controller_report.md\n?? results/care_scf/final_manifest.json\n?? results/care_scf/geometry_audit.csv\n?? results/care_scf/help_harm.csv\n?? results/care_scf/help_harm_summary.csv\n?? results/care_scf/mosaic_oof_status.csv\n?? results/care_scf/nnunet_oof_status.csv\n?? results/care_scf/provenance.json\n?? scripts/evaluation/build_care_scf_controller_packet.py\n?? scripts/evaluation/build_mosaic_paper_results_completion.py"
     }
   },
   "implemented_contract": {
     "anchor_probability_converted_to_log_probabilities": true,
     "bounded_magnitude_gate_cannot_be_bypassed_by_zero_gate": true,
+    "checkpoint_resume_validates_hash_contract_before_restore": true,
+    "checkpoint_saves_python_numpy_torch_cuda_scaler_and_local_rng": true,
     "checkpoint_selection_fixed_complete_inner_objective": true,
     "cine_validation_tree_binding_pending_w5": true,
     "edema_decoder_targets_scar_union_edema_zone": true,
+    "effective_sampler_eligible_pools_precomputed": true,
+    "effective_sampler_target_hit_verified_after_jitter": true,
+    "evaluate_inner_independent_of_training_rng": true,
+    "fixed_inner_evaluation_covers_complete_inner_select": true,
+    "fixed_inner_evaluation_plan_generated_before_training": true,
     "formal_mode_rejects_missing_support_uncertainty_distance": true,
     "formal_sampler_quota_auditable": true,
     "fp_margin_direction_lowers_pathology_margin": true,
+    "gate_a_r2_preflight_runs_stage_A_and_stage_B": true,
     "inner_select_excluded_from_stage_a_and_stage_b": true,
     "margin_caps_fit_actual_train_only": true,
     "partial_label_t2_masking_per_case_before_reduction": true,
@@ -70,9 +81,11 @@
     "pure_edema_is_zone_minus_scar": true,
     "remote_penalty_uses_raw_pre_support_delta": true,
     "repaired_runtime_label_isolated": true,
+    "sampler_audit_reports_effective_not_nominal_quota": true,
     "scar_competitor_includes_edema": true,
     "soft_support_shells_scar_6mm_edema_zone_10mm": true,
     "soft_support_union_labels_1_4_5_excludes_lv_rv": true,
+    "stage_A_and_stage_B_use_same_fixed_inner_objective": true,
     "validate_w0_accepts_preregistered_status_only": true
   },
   "pre_repair_formal_credit_invalidated": true,
@@ -80,18 +93,18 @@
   "scientific_credit": 0,
   "source_hashes": {
     "configs/care_dg/care_dg_v1.yaml": "fb5c87ab26c3a9001b05dc23045939e9bc9cd269101e3dafd807e44aea32d225",
-    "scripts/evaluation/build_care_dg_validation_packet.py": "40e5d3f7c131cc97ea400ffa4992d7918e2e9c0b2ad6e45a4fe446680114c4a5",
+    "scripts/evaluation/build_care_dg_validation_packet.py": "a203061b648935d0f44992f06054f6c52949665c2c48fd6c7f4d6b70e9b95236",
     "scripts/evaluation/evaluate_care_dg.py": "aae033a503189bf75cf100c087a65568940370ec4c010b9f7f0a680b3c399651",
-    "scripts/evaluation/run_care_dg_gate_a_checks.py": "a2921e7685931a4cf594e7082deeed3222f6a35f7be4ea6a18d69046349bf614",
+    "scripts/evaluation/run_care_dg_gate_a_checks.py": "c7f626e3a3f84486338624c6d65ffdbe7d851c92e459349961656869d61684c5",
     "scripts/evaluation/select_care_dg_candidate.py": "d319535426cb49800710e8a9e8056ae97cf4abae99bd342dfd2df09b153f5080",
     "scripts/evaluation/validate_care_dg_packet.py": "d02ef03752072a97d72301bf42338d11e851442b67e403a5e8cd2a6875fcb48b",
     "scripts/inference/run_care_dg_inference.py": "ceef29361a4ce6eb2224e315ca800381944b2a9c624aa7b8017dab80d54ee771",
-    "scripts/training/run_care_dg.py": "27fa936b5d9f3e72118ad0fcee0f4384ecfec32be489bf9dbdf54389c1328055",
+    "scripts/training/run_care_dg.py": "60da878f872a4b3bbe1f0ad14c0aa2fb5c6760be35fb745fd73b2a351bc575a2",
     "src/care_myocardium/data/care_dg_dataset.py": "96d18e1914b7e08fc029a77c0e7c21467809fa0a5e9e12ad4f1ef2208eba803a",
     "src/care_myocardium/inference/care_dg_predictor.py": "71b3f935617b42a1190aa6937165ee09ce1a3c52e8a05ad4f6d4e53f9dcacf7c",
     "src/care_myocardium/models/care_dg.py": "c417404ec469acec3e6ca8adb17a225dc6dddd85776791d50c6edfb35f5a2a03",
-    "src/care_myocardium/training/care_dg_trainer.py": "c9f98a1e302cb3395d55b474c3d3f9929470f5de47956e972968982c529f8dc6",
-    "tests/care_dg/test_care_dg_model.py": "e715af436daea5a664ff5f6c0fc695fd9064e19cbc3d573d603f9faf3e537d8e"
+    "src/care_myocardium/training/care_dg_trainer.py": "0b1da4a75f1f4e4bb59367ac381cf1522ab8a62e229ccd1e62037f8580a1c1f7",
+    "tests/care_dg/test_care_dg_model.py": "0a9eea2091b6c5d1453e25e0c1d87be3718892c2f6df048cd31a5e4195b0bc9e"
   },
   "status": "GATE_A_REPAIRED_IMPLEMENTATION_PASS"
 }

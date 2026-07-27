@@ -1,5 +1,5 @@
 {
-  "created_at_utc": "2026-07-27T10:35:36Z",
+  "created_at_utc": "2026-07-27T12:19:29Z",
   "fixtures": [
     {
       "evidence": "test_fn_and_fp_margin_directions_are_opposite",
@@ -59,6 +59,26 @@
     {
       "evidence": "test_zero_correction_identity_with_soft_support_inputs",
       "fixture": "soft_support_breaks_zero_correction_identity",
+      "rejected": true
+    },
+    {
+      "evidence": "test_fixed_inner_evaluation_plan_repeat_exact",
+      "fixture": "inner_evaluation_uses_training_rng",
+      "rejected": true
+    },
+    {
+      "evidence": "test_known_bad_error_fn_without_fn_voxels_is_rejected",
+      "fixture": "nominal_error_fn_patch_without_fn_voxels",
+      "rejected": true
+    },
+    {
+      "evidence": "test_effective_sampler_reports_real_hits_and_zero_silent_fallback",
+      "fixture": "sampler_audit_counts_requested_instead_of_effective",
+      "rejected": true
+    },
+    {
+      "evidence": "test_checkpoint_interrupted_resume_cpu_exact",
+      "fixture": "checkpoint_resume_without_rng_or_hash_contract",
       "rejected": true
     }
   ],

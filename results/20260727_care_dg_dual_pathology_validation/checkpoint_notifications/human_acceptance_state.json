@@ -2,19 +2,19 @@
   "allowed_during_pause": [
     "read_only_audit",
     "evidence整理",
-    "等待用户精确APPROVE_GATE_A_R1"
+    "等待用户精确APPROVE_GATE_A_R2"
   ],
-  "approval_token_required": "APPROVE_GATE_A_R1",
+  "approval_token_required": "APPROVE_GATE_A_R2",
   "forbidden_during_pause": [
     "repaired_fold0_training",
     "folds_1_4_training",
     "all_data_fit",
     "validation_package"
   ],
-  "gate_a_r1_email_json": "results/20260727_care_dg_dual_pathology_validation/checkpoint_notifications/gate_a_r1.json",
-  "gate_a_r1_email_receipt": "results/20260727_care_dg_dual_pathology_validation/checkpoint_notifications/gate_a_r1_send_receipt.json",
+  "gate_a_r2_email_json": "results/20260727_care_dg_dual_pathology_validation/checkpoint_notifications/gate_a_r2.json",
+  "gate_a_r2_email_receipt": "results/20260727_care_dg_dual_pathology_validation/checkpoint_notifications/gate_a_r2_send_receipt.json",
   "next_high_cost_stage_paused": "repaired_fold0_5000_plus_3000",
-  "state": "AWAITING_HUMAN_ACCEPTANCE_GATE_A_R1",
-  "supersedes": "APPROVE_GATE_A",
-  "updated_at_utc": "2026-07-27T10:42:03Z"
+  "state": "AWAITING_HUMAN_ACCEPTANCE_GATE_A_R2",
+  "supersedes": "APPROVE_GATE_A_R1",
+  "updated_at_utc": "2026-07-27T12:21:09Z"
 }

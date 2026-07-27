@@ -1,0 +1,1426 @@
+{
+  "case_accounting": {
+    "Case2003": {
+      "modality_group": "C0+LGE+T2",
+      "modes": [
+        "scar_fn",
+        "scar_fp",
+        "edema_zone_fn",
+        "edema_zone_fp",
+        "pathology",
+        "background"
+      ],
+      "patches": 6,
+      "t2_present": true
+    },
+    "Case2004": {
+      "modality_group": "C0+LGE+T2",
+      "modes": [
+        "scar_fn",
+        "scar_fp",
+        "edema_zone_fn",
+        "edema_zone_fp",
+        "pathology",
+        "background"
+      ],
+      "patches": 6,
+      "t2_present": true
+    },
+    "Case2010": {
+      "modality_group": "C0+LGE+T2",
+      "modes": [
+        "scar_fn",
+        "scar_fp",
+        "edema_zone_fn",
+        "edema_zone_fp",
+        "pathology",
+        "background"
+      ],
+      "patches": 6,
+      "t2_present": true
+    },
+    "Case2012": {
+      "modality_group": "C0+LGE+T2",
+      "modes": [
+        "scar_fn",
+        "scar_fp",
+        "edema_zone_fn",
+        "edema_zone_fp",
+        "pathology",
+        "background"
+      ],
+      "patches": 6,
+      "t2_present": true
+    },
+    "Case2015": {
+      "modality_group": "C0+LGE+T2",
+      "modes": [
+        "scar_fn",
+        "scar_fp",
+        "edema_zone_fn",
+        "edema_zone_fp",
+        "pathology",
+        "background"
+      ],
+      "patches": 6,
+      "t2_present": true
+    },
+    "Case2021": {
+      "modality_group": "C0+LGE+T2",
+      "modes": [
+        "scar_fn",
+        "scar_fp",
+        "edema_zone_fn",
+        "edema_zone_fp",
+        "pathology",
+        "background"
+      ],
+      "patches": 6,
+      "t2_present": true
+    },
+    "Case2024": {
+      "modality_group": "C0+LGE+T2",
+      "modes": [
+        "scar_fn",
+        "scar_fp",
+        "edema_zone_fn",
+        "edema_zone_fp",
+        "pathology",
+        "background"
+      ],
+      "patches": 6,
+      "t2_present": true
+    },
+    "Case2027": {
+      "modality_group": "C0+LGE+T2",
+      "modes": [
+        "scar_fn",
+        "scar_fp",
+        "edema_zone_fn",
+        "edema_zone_fp",
+        "pathology",
+        "background"
+      ],
+      "patches": 6,
+      "t2_present": true
+    },
+    "Case3008": {
+      "modality_group": "C0+LGE+T2",
+      "modes": [
+        "scar_fn",
+        "scar_fp",
+        "edema_zone_fn",
+        "edema_zone_fp",
+        "pathology",
+        "background"
+      ],
+      "patches": 6,
+      "t2_present": true
+    },
+    "Case3009": {
+      "modality_group": "C0+LGE+T2",
+      "modes": [
+        "scar_fn",
+        "scar_fp",
+        "edema_zone_fn",
+        "edema_zone_fp",
+        "pathology",
+        "background"
+      ],
+      "patches": 6,
+      "t2_present": true
+    },
+    "Case3024": {
+      "modality_group": "C0+LGE+T2",
+      "modes": [
+        "scar_fn",
+        "scar_fp",
+        "edema_zone_fn",
+        "edema_zone_fp",
+        "pathology",
+        "background"
+      ],
+      "patches": 6,
+      "t2_present": true
+    },
+    "Case3028": {
+      "modality_group": "C0+LGE+T2",
+      "modes": [
+        "scar_fn",
+        "scar_fp",
+        "edema_zone_fn",
+        "edema_zone_fp",
+        "pathology",
+        "background"
+      ],
+      "patches": 6,
+      "t2_present": true
+    }
+  },
+  "case_count": 12,
+  "case_ids_sha256": "1669a7f65553180f806dcf3810e73bdd17b5632fc7e4f8e546a18097a40081cf",
+  "config_sha256": "fb5c87ab26c3a9001b05dc23045939e9bc9cd269101e3dafd807e44aea32d225",
+  "created_at_utc": "2026-07-27T12:13:54Z",
+  "entries": [
+    {
+      "augmentation": "none",
+      "case_id": "Case2003",
+      "center_zyx": [
+        2,
+        146,
+        60
+      ],
+      "entry_index": 0,
+      "mode": "scar_fn",
+      "patch_shape_zyx": [
+        8,
+        128,
+        128
+      ],
+      "target_voxel_count_in_patch": 430
+    },
+    {
+      "augmentation": "none",
+      "case_id": "Case2003",
+      "center_zyx": [
+        4,
+        149,
+        76
+      ],
+      "entry_index": 1,
+      "mode": "scar_fp",
+      "patch_shape_zyx": [
+        8,
+        128,
+        128
+      ],
+      "target_voxel_count_in_patch": 201
+    },
+    {
+      "augmentation": "none",
+      "case_id": "Case2003",
+      "center_zyx": [
+        2,
+        118,
+        80
+      ],
+      "entry_index": 2,
+      "mode": "edema_zone_fn",
+      "patch_shape_zyx": [
+        8,
+        128,
+        128
+      ],
+      "target_voxel_count_in_patch": 969
+    },
+    {
+      "augmentation": "none",
+      "case_id": "Case2003",
+      "center_zyx": [
+        3,
+        114,
+        88
+      ],
+      "entry_index": 3,
+      "mode": "edema_zone_fp",
+      "patch_shape_zyx": [
+        8,
+        128,
+        128
+      ],
+      "target_voxel_count_in_patch": 191
+    },
+    {
+      "augmentation": "none",
+      "case_id": "Case2003",
+      "center_zyx": [
+        3,
+        147,
+        62
+      ],
+      "entry_index": 4,
+      "mode": "pathology",
+      "patch_shape_zyx": [
+        8,
+        128,
+        128
+      ],
+      "target_voxel_count_in_patch": 3302
+    },
+    {
+      "augmentation": "none",
+      "case_id": "Case2003",
+      "center_zyx": [
+        2,
+        98,
+        91
+      ],
+      "entry_index": 5,
+      "mode": "background",
+      "patch_shape_zyx": [
+        8,
+        128,
+        128
+      ],
+      "target_voxel_count_in_patch": 78427
+    },
+    {
+      "augmentation": "none",
+      "case_id": "Case2004",
+      "center_zyx": [
+        0,
+        145,
+        133
+      ],
+      "entry_index": 6,
+      "mode": "scar_fn",
+      "patch_shape_zyx": [
+        8,
+        128,
+        128
+      ],
+      "target_voxel_count_in_patch": 565
+    },
+    {
+      "augmentation": "none",
+      "case_id": "Case2004",
+      "center_zyx": [
+        4,
+        152,
+        79
+      ],
+      "entry_index": 7,
+      "mode": "scar_fp",
+      "patch_shape_zyx": [
+        8,
+        128,
+        128
+      ],
+      "target_voxel_count_in_patch": 615
+    },
+    {
+      "augmentation": "none",
+      "case_id": "Case2004",
+      "center_zyx": [
+        2,
+        115,
+        106
+      ],
+      "entry_index": 8,
+      "mode": "edema_zone_fn",
+      "patch_shape_zyx": [
+        8,
+        128,
+        128
+      ],
+      "target_voxel_count_in_patch": 2645
+    },
+    {
+      "augmentation": "none",
+      "case_id": "Case2004",
+      "center_zyx": [
+        2,
+        129,
+        87
+      ],
+      "entry_index": 9,
+      "mode": "edema_zone_fp",
+      "patch_shape_zyx": [
+        8,
+        128,
+        128
+      ],
+      "target_voxel_count_in_patch": 619
+    },
+    {
+      "augmentation": "none",
+      "case_id": "Case2004",
+      "center_zyx": [
+        1,
+        116,
+        99
+      ],
+      "entry_index": 10,
+      "mode": "pathology",
+      "patch_shape_zyx": [
+        8,
+        128,
+        128
+      ],
+      "target_voxel_count_in_patch": 5350
+    },
+    {
+      "augmentation": "none",
+      "case_id": "Case2004",
+      "center_zyx": [
+        3,
+        149,
+        238
+      ],
+      "entry_index": 11,
+      "mode": "background",
+      "patch_shape_zyx": [
+        8,
+        128,
+        128
+      ],
+      "target_voxel_count_in_patch": 57600
+    },
+    {
+      "augmentation": "none",
+      "case_id": "Case2010",
+      "center_zyx": [
+        0,
+        122,
+        117
+      ],
+      "entry_index": 12,
+      "mode": "scar_fn",
+      "patch_shape_zyx": [
+        8,
+        128,
+        128
+      ],
+      "target_voxel_count_in_patch": 250
+    },
+    {
+      "augmentation": "none",
+      "case_id": "Case2010",
+      "center_zyx": [
+        3,
+        111,
+        123
+      ],
+      "entry_index": 13,
+      "mode": "scar_fp",
+      "patch_shape_zyx": [
+        8,
+        128,
+        128
+      ],
+      "target_voxel_count_in_patch": 86
+    },
+    {
+      "augmentation": "none",
+      "case_id": "Case2010",
+      "center_zyx": [
+        1,
+        110,
+        127
+      ],
+      "entry_index": 14,
+      "mode": "edema_zone_fn",
+      "patch_shape_zyx": [
+        8,
+        128,
+        128
+      ],
+      "target_voxel_count_in_patch": 290
+    },
+    {
+      "augmentation": "none",
+      "case_id": "Case2010",
+      "center_zyx": [
+        5,
+        113,
+        122
+      ],
+      "entry_index": 15,
+      "mode": "edema_zone_fp",
+      "patch_shape_zyx": [
+        8,
+        128,
+        128
+      ],
+      "target_voxel_count_in_patch": 270
+    },
+    {
+      "augmentation": "none",
+      "case_id": "Case2010",
+      "center_zyx": [
+        2,
+        129,
+        127
+      ],
+      "entry_index": 16,
+      "mode": "pathology",
+      "patch_shape_zyx": [
+        8,
+        128,
+        128
+      ],
+      "target_voxel_count_in_patch": 2809
+    },
+    {
+      "augmentation": "none",
+      "case_id": "Case2010",
+      "center_zyx": [
+        2,
+        225,
+        33
+      ],
+      "entry_index": 17,
+      "mode": "background",
+      "patch_shape_zyx": [
+        8,
+        128,
+        128
+      ],
+      "target_voxel_count_in_patch": 58782
+    },
+    {
+      "augmentation": "none",
+      "case_id": "Case2012",
+      "center_zyx": [
+        0,
+        133,
+        147
+      ],
+      "entry_index": 18,
+      "mode": "scar_fn",
+      "patch_shape_zyx": [
+        8,
+        128,
+        128
+      ],
+      "target_voxel_count_in_patch": 143
+    },
+    {
+      "augmentation": "none",
+      "case_id": "Case2012",
+      "center_zyx": [
+        0,
+        141,
+        135
+      ],
+      "entry_index": 19,
+      "mode": "scar_fp",
+      "patch_shape_zyx": [
+        8,
+        128,
+        128
+      ],
+      "target_voxel_count_in_patch": 7
+    },
+    {
+      "augmentation": "none",
+      "case_id": "Case2012",
+      "center_zyx": [
+        0,
+        135,
+        145
+      ],
+      "entry_index": 20,
+      "mode": "edema_zone_fn",
+      "patch_shape_zyx": [
+        8,
+        128,
+        128
+      ],
+      "target_voxel_count_in_patch": 257
+    },
+    {
+      "augmentation": "none",
+      "case_id": "Case2012",
+      "center_zyx": [
+        0,
+        108,
+        130
+      ],
+      "entry_index": 21,
+      "mode": "edema_zone_fp",
+      "patch_shape_zyx": [
+        8,
+        128,
+        128
+      ],
+      "target_voxel_count_in_patch": 107
+    },
+    {
+      "augmentation": "none",
+      "case_id": "Case2012",
+      "center_zyx": [
+        0,
+        118,
+        142
+      ],
+      "entry_index": 22,
+      "mode": "pathology",
+      "patch_shape_zyx": [
+        8,
+        128,
+        128
+      ],
+      "target_voxel_count_in_patch": 509
+    },
+    {
+      "augmentation": "none",
+      "case_id": "Case2012",
+      "center_zyx": [
+        0,
+        165,
+        247
+      ],
+      "entry_index": 23,
+      "mode": "background",
+      "patch_shape_zyx": [
+        8,
+        128,
+        128
+      ],
+      "target_voxel_count_in_patch": 9216
+    },
+    {
+      "augmentation": "none",
+      "case_id": "Case2015",
+      "center_zyx": [
+        3,
+        158,
+        84
+      ],
+      "entry_index": 24,
+      "mode": "scar_fn",
+      "patch_shape_zyx": [
+        8,
+        128,
+        128
+      ],
+      "target_voxel_count_in_patch": 660
+    },
+    {
+      "augmentation": "none",
+      "case_id": "Case2015",
+      "center_zyx": [
+        3,
+        119,
+        93
+      ],
+      "entry_index": 25,
+      "mode": "scar_fp",
+      "patch_shape_zyx": [
+        8,
+        128,
+        128
+      ],
+      "target_voxel_count_in_patch": 285
+    },
+    {
+      "augmentation": "none",
+      "case_id": "Case2015",
+      "center_zyx": [
+        3,
+        110,
+        79
+      ],
+      "entry_index": 26,
+      "mode": "edema_zone_fn",
+      "patch_shape_zyx": [
+        8,
+        128,
+        128
+      ],
+      "target_voxel_count_in_patch": 522
+    },
+    {
+      "augmentation": "none",
+      "case_id": "Case2015",
+      "center_zyx": [
+        3,
+        114,
+        104
+      ],
+      "entry_index": 27,
+      "mode": "edema_zone_fp",
+      "patch_shape_zyx": [
+        8,
+        128,
+        128
+      ],
+      "target_voxel_count_in_patch": 453
+    },
+    {
+      "augmentation": "none",
+      "case_id": "Case2015",
+      "center_zyx": [
+        1,
+        126,
+        79
+      ],
+      "entry_index": 28,
+      "mode": "pathology",
+      "patch_shape_zyx": [
+        8,
+        128,
+        128
+      ],
+      "target_voxel_count_in_patch": 3975
+    },
+    {
+      "augmentation": "none",
+      "case_id": "Case2015",
+      "center_zyx": [
+        3,
+        252,
+        14
+      ],
+      "entry_index": 29,
+      "mode": "background",
+      "patch_shape_zyx": [
+        8,
+        128,
+        128
+      ],
+      "target_voxel_count_in_patch": 26910
+    },
+    {
+      "augmentation": "none",
+      "case_id": "Case2021",
+      "center_zyx": [
+        1,
+        112,
+        85
+      ],
+      "entry_index": 30,
+      "mode": "scar_fn",
+      "patch_shape_zyx": [
+        8,
+        128,
+        128
+      ],
+      "target_voxel_count_in_patch": 344
+    },
+    {
+      "augmentation": "none",
+      "case_id": "Case2021",
+      "center_zyx": [
+        4,
+        118,
+        85
+      ],
+      "entry_index": 31,
+      "mode": "scar_fp",
+      "patch_shape_zyx": [
+        8,
+        128,
+        128
+      ],
+      "target_voxel_count_in_patch": 52
+    },
+    {
+      "augmentation": "none",
+      "case_id": "Case2021",
+      "center_zyx": [
+        3,
+        136,
+        116
+      ],
+      "entry_index": 32,
+      "mode": "edema_zone_fn",
+      "patch_shape_zyx": [
+        8,
+        128,
+        128
+      ],
+      "target_voxel_count_in_patch": 374
+    },
+    {
+      "augmentation": "none",
+      "case_id": "Case2021",
+      "center_zyx": [
+        4,
+        109,
+        95
+      ],
+      "entry_index": 33,
+      "mode": "edema_zone_fp",
+      "patch_shape_zyx": [
+        8,
+        128,
+        128
+      ],
+      "target_voxel_count_in_patch": 482
+    },
+    {
+      "augmentation": "none",
+      "case_id": "Case2021",
+      "center_zyx": [
+        4,
+        134,
+        91
+      ],
+      "entry_index": 34,
+      "mode": "pathology",
+      "patch_shape_zyx": [
+        8,
+        128,
+        128
+      ],
+      "target_voxel_count_in_patch": 2216
+    },
+    {
+      "augmentation": "none",
+      "case_id": "Case2021",
+      "center_zyx": [
+        0,
+        13,
+        58
+      ],
+      "entry_index": 35,
+      "mode": "background",
+      "patch_shape_zyx": [
+        8,
+        128,
+        128
+      ],
+      "target_voxel_count_in_patch": 37576
+    },
+    {
+      "augmentation": "none",
+      "case_id": "Case2024",
+      "center_zyx": [
+        3,
+        114,
+        92
+      ],
+      "entry_index": 36,
+      "mode": "scar_fn",
+      "patch_shape_zyx": [
+        8,
+        128,
+        128
+      ],
+      "target_voxel_count_in_patch": 346
+    },
+    {
+      "augmentation": "none",
+      "case_id": "Case2024",
+      "center_zyx": [
+        2,
+        115,
+        97
+      ],
+      "entry_index": 37,
+      "mode": "scar_fp",
+      "patch_shape_zyx": [
+        8,
+        128,
+        128
+      ],
+      "target_voxel_count_in_patch": 390
+    },
+    {
+      "augmentation": "none",
+      "case_id": "Case2024",
+      "center_zyx": [
+        5,
+        115,
+        112
+      ],
+      "entry_index": 38,
+      "mode": "edema_zone_fn",
+      "patch_shape_zyx": [
+        8,
+        128,
+        128
+      ],
+      "target_voxel_count_in_patch": 537
+    },
+    {
+      "augmentation": "none",
+      "case_id": "Case2024",
+      "center_zyx": [
+        2,
+        110,
+        99
+      ],
+      "entry_index": 39,
+      "mode": "edema_zone_fp",
+      "patch_shape_zyx": [
+        8,
+        128,
+        128
+      ],
+      "target_voxel_count_in_patch": 713
+    },
+    {
+      "augmentation": "none",
+      "case_id": "Case2024",
+      "center_zyx": [
+        3,
+        119,
+        92
+      ],
+      "entry_index": 40,
+      "mode": "pathology",
+      "patch_shape_zyx": [
+        8,
+        128,
+        128
+      ],
+      "target_voxel_count_in_patch": 3627
+    },
+    {
+      "augmentation": "none",
+      "case_id": "Case2024",
+      "center_zyx": [
+        0,
+        236,
+        28
+      ],
+      "entry_index": 41,
+      "mode": "background",
+      "patch_shape_zyx": [
+        8,
+        128,
+        128
+      ],
+      "target_voxel_count_in_patch": 30544
+    },
+    {
+      "augmentation": "none",
+      "case_id": "Case2027",
+      "center_zyx": [
+        1,
+        123,
+        103
+      ],
+      "entry_index": 42,
+      "mode": "scar_fn",
+      "patch_shape_zyx": [
+        8,
+        128,
+        128
+      ],
+      "target_voxel_count_in_patch": 287
+    },
+    {
+      "augmentation": "none",
+      "case_id": "Case2027",
+      "center_zyx": [
+        5,
+        115,
+        96
+      ],
+      "entry_index": 43,
+      "mode": "scar_fp",
+      "patch_shape_zyx": [
+        8,
+        128,
+        128
+      ],
+      "target_voxel_count_in_patch": 614
+    },
+    {
+      "augmentation": "none",
+      "case_id": "Case2027",
+      "center_zyx": [
+        0,
+        109,
+        116
+      ],
+      "entry_index": 44,
+      "mode": "edema_zone_fn",
+      "patch_shape_zyx": [
+        8,
+        128,
+        128
+      ],
+      "target_voxel_count_in_patch": 373
+    },
+    {
+      "augmentation": "none",
+      "case_id": "Case2027",
+      "center_zyx": [
+        4,
+        116,
+        88
+      ],
+      "entry_index": 45,
+      "mode": "edema_zone_fp",
+      "patch_shape_zyx": [
+        8,
+        128,
+        128
+      ],
+      "target_voxel_count_in_patch": 1031
+    },
+    {
+      "augmentation": "none",
+      "case_id": "Case2027",
+      "center_zyx": [
+        5,
+        111,
+        100
+      ],
+      "entry_index": 46,
+      "mode": "pathology",
+      "patch_shape_zyx": [
+        8,
+        128,
+        128
+      ],
+      "target_voxel_count_in_patch": 2813
+    },
+    {
+      "augmentation": "none",
+      "case_id": "Case2027",
+      "center_zyx": [
+        5,
+        99,
+        43
+      ],
+      "entry_index": 47,
+      "mode": "background",
+      "patch_shape_zyx": [
+        8,
+        128,
+        128
+      ],
+      "target_voxel_count_in_patch": 65896
+    },
+    {
+      "augmentation": "none",
+      "case_id": "Case3008",
+      "center_zyx": [
+        0,
+        203,
+        301
+      ],
+      "entry_index": 48,
+      "mode": "scar_fn",
+      "patch_shape_zyx": [
+        8,
+        128,
+        128
+      ],
+      "target_voxel_count_in_patch": 1456
+    },
+    {
+      "augmentation": "none",
+      "case_id": "Case3008",
+      "center_zyx": [
+        2,
+        218,
+        310
+      ],
+      "entry_index": 49,
+      "mode": "scar_fp",
+      "patch_shape_zyx": [
+        8,
+        128,
+        128
+      ],
+      "target_voxel_count_in_patch": 1753
+    },
+    {
+      "augmentation": "none",
+      "case_id": "Case3008",
+      "center_zyx": [
+        2,
+        208,
+        253
+      ],
+      "entry_index": 50,
+      "mode": "edema_zone_fn",
+      "patch_shape_zyx": [
+        8,
+        128,
+        128
+      ],
+      "target_voxel_count_in_patch": 2031
+    },
+    {
+      "augmentation": "none",
+      "case_id": "Case3008",
+      "center_zyx": [
+        0,
+        289,
+        266
+      ],
+      "entry_index": 51,
+      "mode": "edema_zone_fp",
+      "patch_shape_zyx": [
+        8,
+        128,
+        128
+      ],
+      "target_voxel_count_in_patch": 368
+    },
+    {
+      "augmentation": "none",
+      "case_id": "Case3008",
+      "center_zyx": [
+        2,
+        205,
+        253
+      ],
+      "entry_index": 52,
+      "mode": "pathology",
+      "patch_shape_zyx": [
+        8,
+        128,
+        128
+      ],
+      "target_voxel_count_in_patch": 4756
+    },
+    {
+      "augmentation": "none",
+      "case_id": "Case3008",
+      "center_zyx": [
+        2,
+        311,
+        41
+      ],
+      "entry_index": 53,
+      "mode": "background",
+      "patch_shape_zyx": [
+        8,
+        128,
+        128
+      ],
+      "target_voxel_count_in_patch": 40320
+    },
+    {
+      "augmentation": "none",
+      "case_id": "Case3009",
+      "center_zyx": [
+        0,
+        269,
+        254
+      ],
+      "entry_index": 54,
+      "mode": "scar_fn",
+      "patch_shape_zyx": [
+        8,
+        128,
+        128
+      ],
+      "target_voxel_count_in_patch": 322
+    },
+    {
+      "augmentation": "none",
+      "case_id": "Case3009",
+      "center_zyx": [
+        0,
+        279,
+        241
+      ],
+      "entry_index": 55,
+      "mode": "scar_fp",
+      "patch_shape_zyx": [
+        8,
+        128,
+        128
+      ],
+      "target_voxel_count_in_patch": 139
+    },
+    {
+      "augmentation": "none",
+      "case_id": "Case3009",
+      "center_zyx": [
+        2,
+        274,
+        248
+      ],
+      "entry_index": 56,
+      "mode": "edema_zone_fn",
+      "patch_shape_zyx": [
+        8,
+        128,
+        128
+      ],
+      "target_voxel_count_in_patch": 506
+    },
+    {
+      "augmentation": "none",
+      "case_id": "Case3009",
+      "center_zyx": [
+        0,
+        274,
+        234
+      ],
+      "entry_index": 57,
+      "mode": "edema_zone_fp",
+      "patch_shape_zyx": [
+        8,
+        128,
+        128
+      ],
+      "target_voxel_count_in_patch": 856
+    },
+    {
+      "augmentation": "none",
+      "case_id": "Case3009",
+      "center_zyx": [
+        1,
+        282,
+        234
+      ],
+      "entry_index": 58,
+      "mode": "pathology",
+      "patch_shape_zyx": [
+        8,
+        128,
+        128
+      ],
+      "target_voxel_count_in_patch": 1898
+    },
+    {
+      "augmentation": "none",
+      "case_id": "Case3009",
+      "center_zyx": [
+        3,
+        98,
+        453
+      ],
+      "entry_index": 59,
+      "mode": "background",
+      "patch_shape_zyx": [
+        8,
+        128,
+        128
+      ],
+      "target_voxel_count_in_patch": 61440
+    },
+    {
+      "augmentation": "none",
+      "case_id": "Case3024",
+      "center_zyx": [
+        0,
+        183,
+        207
+      ],
+      "entry_index": 60,
+      "mode": "scar_fn",
+      "patch_shape_zyx": [
+        8,
+        128,
+        128
+      ],
+      "target_voxel_count_in_patch": 524
+    },
+    {
+      "augmentation": "none",
+      "case_id": "Case3024",
+      "center_zyx": [
+        3,
+        193,
+        178
+      ],
+      "entry_index": 61,
+      "mode": "scar_fp",
+      "patch_shape_zyx": [
+        8,
+        128,
+        128
+      ],
+      "target_voxel_count_in_patch": 632
+    },
+    {
+      "augmentation": "none",
+      "case_id": "Case3024",
+      "center_zyx": [
+        3,
+        230,
+        171
+      ],
+      "entry_index": 62,
+      "mode": "edema_zone_fn",
+      "patch_shape_zyx": [
+        8,
+        128,
+        128
+      ],
+      "target_voxel_count_in_patch": 2855
+    },
+    {
+      "augmentation": "none",
+      "case_id": "Case3024",
+      "center_zyx": [
+        0,
+        185,
+        226
+      ],
+      "entry_index": 63,
+      "mode": "edema_zone_fp",
+      "patch_shape_zyx": [
+        8,
+        128,
+        128
+      ],
+      "target_voxel_count_in_patch": 656
+    },
+    {
+      "augmentation": "none",
+      "case_id": "Case3024",
+      "center_zyx": [
+        3,
+        236,
+        193
+      ],
+      "entry_index": 64,
+      "mode": "pathology",
+      "patch_shape_zyx": [
+        8,
+        128,
+        128
+      ],
+      "target_voxel_count_in_patch": 7709
+    },
+    {
+      "augmentation": "none",
+      "case_id": "Case3024",
+      "center_zyx": [
+        2,
+        25,
+        368
+      ],
+      "entry_index": 65,
+      "mode": "background",
+      "patch_shape_zyx": [
+        8,
+        128,
+        128
+      ],
+      "target_voxel_count_in_patch": 37024
+    },
+    {
+      "augmentation": "none",
+      "case_id": "Case3028",
+      "center_zyx": [
+        2,
+        229,
+        311
+      ],
+      "entry_index": 66,
+      "mode": "scar_fn",
+      "patch_shape_zyx": [
+        8,
+        128,
+        128
+      ],
+      "target_voxel_count_in_patch": 529
+    },
+    {
+      "augmentation": "none",
+      "case_id": "Case3028",
+      "center_zyx": [
+        1,
+        232,
+        242
+      ],
+      "entry_index": 67,
+      "mode": "scar_fp",
+      "patch_shape_zyx": [
+        8,
+        128,
+        128
+      ],
+      "target_voxel_count_in_patch": 1293
+    },
+    {
+      "augmentation": "none",
+      "case_id": "Case3028",
+      "center_zyx": [
+        1,
+        299,
+        235
+      ],
+      "entry_index": 68,
+      "mode": "edema_zone_fn",
+      "patch_shape_zyx": [
+        8,
+        128,
+        128
+      ],
+      "target_voxel_count_in_patch": 1053
+    },
+    {
+      "augmentation": "none",
+      "case_id": "Case3028",
+      "center_zyx": [
+        0,
+        255,
+        297
+      ],
+      "entry_index": 69,
+      "mode": "edema_zone_fp",
+      "patch_shape_zyx": [
+        8,
+        128,
+        128
+      ],
+      "target_voxel_count_in_patch": 1656
+    },
+    {
+      "augmentation": "none",
+      "case_id": "Case3028",
+      "center_zyx": [
+        0,
+        281,
+        306
+      ],
+      "entry_index": 70,
+      "mode": "pathology",
+      "patch_shape_zyx": [
+        8,
+        128,
+        128
+      ],
+      "target_voxel_count_in_patch": 4812
+    },
+    {
+      "augmentation": "none",
+      "case_id": "Case3028",
+      "center_zyx": [
+        2,
+        280,
+        77
+      ],
+      "entry_index": 71,
+      "mode": "background",
+      "patch_shape_zyx": [
+        8,
+        128,
+        128
+      ],
+      "target_voxel_count_in_patch": 49152
+    }
+  ],
+  "fold": 0,
+  "gate_revision": "A-R2",
+  "mode_counts": {
+    "background": 12,
+    "edema_zone_fn": 12,
+    "edema_zone_fp": 12,
+    "pathology": 12,
+    "scar_fn": 12,
+    "scar_fp": 12
+  },
+  "objective": "fixed_complete_inner_select_no_aug_patch_loss",
+  "patch_count": 72,
+  "plan_sha256": "3e5996edefdfbddcd2466c71cae0ee6425e7a2ce0c3c069349ffd1ea5ee6f6e9",
+  "schema_version": 2,
+  "source_hashes": {
+    "configs/care_dg/care_dg_v1.yaml": "fb5c87ab26c3a9001b05dc23045939e9bc9cd269101e3dafd807e44aea32d225",
+    "scripts/evaluation/evaluate_care_dg.py": "aae033a503189bf75cf100c087a65568940370ec4c010b9f7f0a680b3c399651",
+    "scripts/evaluation/select_care_dg_candidate.py": "d319535426cb49800710e8a9e8056ae97cf4abae99bd342dfd2df09b153f5080",
+    "scripts/evaluation/validate_care_dg_packet.py": "d02ef03752072a97d72301bf42338d11e851442b67e403a5e8cd2a6875fcb48b",
+    "scripts/inference/run_care_dg_inference.py": "ceef29361a4ce6eb2224e315ca800381944b2a9c624aa7b8017dab80d54ee771",
+    "scripts/training/run_care_dg.py": "60da878f872a4b3bbe1f0ad14c0aa2fb5c6760be35fb745fd73b2a351bc575a2",
+    "src/care_myocardium/data/care_dg_dataset.py": "96d18e1914b7e08fc029a77c0e7c21467809fa0a5e9e12ad4f1ef2208eba803a",
+    "src/care_myocardium/inference/care_dg_predictor.py": "71b3f935617b42a1190aa6937165ee09ce1a3c52e8a05ad4f6d4e53f9dcacf7c",
+    "src/care_myocardium/models/care_dg.py": "c417404ec469acec3e6ca8adb17a225dc6dddd85776791d50c6edfb35f5a2a03",
+    "src/care_myocardium/training/care_dg_trainer.py": "0b1da4a75f1f4e4bb59367ac381cf1522ab8a62e229ccd1e62037f8580a1c1f7",
+    "tests/care_dg/test_care_dg_model.py": "0a9eea2091b6c5d1453e25e0c1d87be3718892c2f6df048cd31a5e4195b0bc9e"
+  },
+  "split_sha256": {
+    "actual_train": "6c9664c525ca17e9d0591a62302f143dc7881307d94a4e49aa685f98ac60e7e9",
+    "complete_actual_train": "29e89d51f45d206739da06a40108f7697d6dae183d9183f1a95b55c12fc4c4f7",
+    "complete_inner_select": "1669a7f65553180f806dcf3810e73bdd17b5632fc7e4f8e546a18097a40081cf",
+    "inner_select": "1669a7f65553180f806dcf3810e73bdd17b5632fc7e4f8e546a18097a40081cf",
+    "outer_train": "127d03972f57429fe62999636a651a2b67e1892e80f252071c8c6f90a7ea57b2"
+  },
+  "stage_a_and_stage_b_share_objective": true,
+  "training_rng_dependency": false
+}

@@ -45,6 +45,8 @@ ALLOWED_W0_CONTRACT_STATUSES = {
     "GATE_A_REPAIRED_IMPLEMENTATION_PASS",
 }
 PROTECTED_RUNTIME_LABELS = {"formal"}
+SAMPLER_PATTERN = ["error_fn", "error_fp", "error_fn", "error_fp", "pathology", "pathology", "random", "random"]
+INNER_EVAL_MODES = ("scar_fn", "scar_fp", "edema_zone_fn", "edema_zone_fp", "pathology", "background")
 
 
 def now_utc() -> str:
@@ -206,6 +208,87 @@ def choose_center(record: dict[str, np.ndarray], rng: random.Random, mode: str, 
     )
 
 
+
+
+
+def stable_json_sha256(payload: Any) -> str:
+    return hashlib.sha256(json.dumps(payload, sort_keys=True, separators=(",", ":"), default=str).encode("utf-8")).hexdigest()
+
+
+def case_target_masks(record: dict[str, np.ndarray], t2_present: bool) -> dict[str, np.ndarray]:
+    labels = record["labels"]
+    anchor = record["anchor_mask"]
+    scar_fn = (labels == SCAR) & (anchor != SCAR)
+    scar_fp = (labels != SCAR) & (anchor == SCAR)
+    zone_gt = (labels == SCAR) | (labels == EDEMA)
+    zone_pred = (anchor == SCAR) | (anchor == EDEMA)
+    edema_fn = (zone_gt & ~zone_pred) if t2_present else np.zeros_like(labels, dtype=bool)
+    edema_fp = (~zone_gt & zone_pred) if t2_present else np.zeros_like(labels, dtype=bool)
+    pathology = (labels == SCAR) | ((labels == EDEMA) if t2_present else np.zeros_like(labels, dtype=bool))
+    background = (labels < EDEMA) & (anchor < EDEMA)
+    return {
+        "scar_fn": scar_fn,
+        "scar_fp": scar_fp,
+        "edema_zone_fn": edema_fn,
+        "edema_zone_fp": edema_fp,
+        "error_fn": scar_fn | edema_fn,
+        "error_fp": scar_fp | edema_fp,
+        "pathology": pathology,
+        "random": np.ones_like(labels, dtype=bool),
+        "background": background,
+    }
+
+
+def deterministic_center(mask: np.ndarray, case_id: str, mode: str, salt: str) -> tuple[int, int, int] | None:
+    coords = np.argwhere(mask)
+    if not coords.size:
+        return None
+    idx = int(hashlib.sha256(f"{case_id}:{mode}:{salt}:r2".encode("utf-8")).hexdigest()[:16], 16) % len(coords)
+    return tuple(int(v) for v in coords[idx])
+
+
+def target_voxels_in_patch(record: dict[str, np.ndarray], center: tuple[int, int, int], mode: str, t2_present: bool) -> int:
+    masks = case_target_masks(record, t2_present)
+    mask = masks.get(mode)
+    if mask is None:
+        raise ValueError(f"unknown sampler target mode: {mode}")
+    return int(crop_pad(mask.astype(np.uint8)[None], center, PATCH_SHAPE, fill=0)[0].sum())
+
+
+def choose_effective_center(
+    record: dict[str, np.ndarray],
+    rng: random.Random,
+    *,
+    case_id: str,
+    mode: str,
+    t2_present: bool,
+) -> tuple[tuple[int, int, int], int, str]:
+    labels = record["labels"]
+    if mode == "random":
+        center = (rng.randrange(labels.shape[0]), rng.randrange(labels.shape[1]), rng.randrange(labels.shape[2]))
+        return center, 0, ""
+    masks = case_target_masks(record, t2_present)
+    target = masks.get(mode)
+    if target is None or not np.any(target):
+        raise ValueError(f"CARE_DG_EFFECTIVE_SAMPLER_EMPTY_TARGET:{case_id}:{mode}")
+    coords = np.argwhere(target)
+    z, y, x = coords[rng.randrange(len(coords))]
+    original = (int(z), int(y), int(x))
+    jitter = (rng.randint(-16, 16), rng.randint(-32, 32), rng.randint(-32, 32))
+    jittered = (
+        max(0, min(labels.shape[0] - 1, original[0] + jitter[0])),
+        max(0, min(labels.shape[1] - 1, original[1] + jitter[1])),
+        max(0, min(labels.shape[2] - 1, original[2] + jitter[2])),
+    )
+    count = target_voxels_in_patch(record, jittered, mode, t2_present)
+    if count > 0:
+        return jittered, count, ""
+    count = target_voxels_in_patch(record, original, mode, t2_present)
+    if count <= 0:
+        raise ValueError(f"CARE_DG_EFFECTIVE_SAMPLER_TARGET_LEFT_PATCH:{case_id}:{mode}")
+    return original, count, "jitter_recentered_to_original_target"
+
+
 def sha256_case_ids(case_ids: list[str]) -> str:
     return hashlib.sha256("\n".join(sorted(case_ids)).encode("utf-8")).hexdigest()
 
@@ -286,32 +369,50 @@ def inner_split(cases: list[str], fold: int) -> tuple[list[str], list[str]]:
 
 
 def sampler_modes(batch_size: int) -> list[str]:
-    pattern = ["error_fn", "error_fp", "error_fn", "error_fp", "pathology", "pathology", "random", "random"]
-    return [pattern[i % len(pattern)] for i in range(batch_size)]
+    return [SAMPLER_PATTERN[i % len(SAMPLER_PATTERN)] for i in range(batch_size)]
 
 
-def build_batch(case_ids: list[str], case_to_fold: dict[str, int], metadata: Any, cache: CaseCache, rng: random.Random, *, stage: str, batch_size: int) -> dict[str, Any]:
-    weights = []
-    for case_id in case_ids:
+def build_sampler_index(case_ids: list[str], case_to_fold: dict[str, int], metadata: Any, cache: CaseCache, *, stage: str) -> dict[str, Any]:
+    active_cases: list[str] = []
+    weights: dict[str, float] = {}
+    eligible: dict[str, list[str]] = {"error_fn": [], "error_fp": [], "pathology": [], "random": []}
+    target_counts: dict[str, dict[str, int]] = {}
+    for case_id in sorted(case_ids):
         meta = metadata[case_id]
         if stage == "B" and meta.modality_group != "C0+LGE+T2":
-            weights.append(0.0)
-        else:
-            weights.append(4.0 if meta.modality_group == "C0+LGE+T2" else 1.0)
-    active = [(c, w) for c, w in zip(case_ids, weights) if w > 0]
-    if not active:
+            continue
+        rec = cache.get(case_id, case_to_fold[case_id], tuple(meta.availability))
+        masks = case_target_masks(rec, bool(meta.t2_present))
+        active_cases.append(case_id)
+        weights[case_id] = 4.0 if meta.modality_group == "C0+LGE+T2" else 1.0
+        target_counts[case_id] = {mode: int(np.count_nonzero(masks[mode])) for mode in eligible}
+        for mode in eligible:
+            if mode == "random" or target_counts[case_id][mode] > 0:
+                eligible[mode].append(case_id)
+    if not active_cases:
         raise ValueError(f"no active cases for stage {stage}")
-    population = [c for c, _w in active]
-    pop_weights = [w for _c, w in active]
+    empty = [mode for mode, pool in eligible.items() if not pool]
+    if empty:
+        raise ValueError(f"CARE_DG_EFFECTIVE_SAMPLER_EMPTY_ELIGIBLE_POOL:{stage}:{','.join(empty)}")
+    payload = {
+        "stage": stage,
+        "case_ids": active_cases,
+        "case_ids_sha256": sha256_case_ids(active_cases),
+        "eligible_counts": {mode: len(pool) for mode, pool in eligible.items()},
+        "target_count_totals": {mode: sum(target_counts[c][mode] for c in active_cases) for mode in eligible},
+    }
+    payload["sampler_index_sha256"] = stable_json_sha256(payload)
+    return {**payload, "weights": weights, "eligible": eligible, "target_counts_by_case": target_counts}
+
+
+def _batch_from_centers(samples: list[dict[str, Any]], case_to_fold: dict[str, int], metadata: Any, cache: CaseCache) -> dict[str, Any]:
     images = []; labels = []; anchors = []; availability = []; t2 = []
     uncertainty = []; myocardium_support = []; edema_support = []; distance = []
-    modes = []
-    case_trace = []
-    for mode in sampler_modes(batch_size):
-        case_id = rng.choices(population, weights=pop_weights, k=1)[0]
+    for sample in samples:
+        case_id = str(sample["case_id"])
+        center = tuple(int(v) for v in sample["center_zyx"])
         meta = metadata[case_id]
         record = cache.get(case_id, case_to_fold[case_id], tuple(meta.availability))
-        center = choose_center(record, rng, mode, bool(meta.t2_present))
         images.append(crop_pad(record["images"], center, PATCH_SHAPE, fill=0.0))
         labels.append(crop_pad(record["labels"][None], center, PATCH_SHAPE, fill=0)[0])
         anchors.append(crop_pad(record["anchor_logits"], center, PATCH_SHAPE, fill=-12.0))
@@ -321,8 +422,6 @@ def build_batch(case_ids: list[str], case_to_fold: dict[str, int], metadata: Any
         distance.append(crop_pad(record["distance_to_myocardium"], center, PATCH_SHAPE, fill=99.0))
         availability.append(record["availability"])
         t2.append(1.0 if meta.t2_present else 0.0)
-        modes.append(mode)
-        case_trace.append(case_id)
     return {
         "images": torch.from_numpy(np.stack(images)).float(),
         "labels": torch.from_numpy(np.stack(labels)).long(),
@@ -334,10 +433,47 @@ def build_batch(case_ids: list[str], case_to_fold: dict[str, int], metadata: Any
         "edema_support": torch.from_numpy(np.stack(edema_support)).float(),
         "distance_to_myocardium": torch.from_numpy(np.stack(distance)).float(),
         "anchor_value_kind": "log_probabilities",
-        "sample_modes": modes,
-        "case_trace": case_trace,
+        "sample_modes": [sample.get("requested_mode", sample.get("mode", "fixed")) for sample in samples],
+        "effective_modes": [sample.get("effective_mode", sample.get("mode", "fixed")) for sample in samples],
+        "case_trace": [str(sample["case_id"]) for sample in samples],
+        "sample_accounting": samples,
     }
 
+
+def build_batch(
+    case_ids: list[str],
+    case_to_fold: dict[str, int],
+    metadata: Any,
+    cache: CaseCache,
+    rng: random.Random,
+    *,
+    stage: str,
+    batch_size: int,
+    sampler_index: dict[str, Any] | None = None,
+) -> dict[str, Any]:
+    index = sampler_index or build_sampler_index(case_ids, case_to_fold, metadata, cache, stage=stage)
+    samples: list[dict[str, Any]] = []
+    for requested_mode in sampler_modes(batch_size):
+        pool = list(index["eligible"][requested_mode])
+        if not pool:
+            raise ValueError(f"CARE_DG_EFFECTIVE_SAMPLER_EMPTY_ELIGIBLE_POOL:{stage}:{requested_mode}")
+        pool_weights = [float(index["weights"][case_id]) for case_id in pool]
+        case_id = rng.choices(pool, weights=pool_weights, k=1)[0]
+        meta = metadata[case_id]
+        record = cache.get(case_id, case_to_fold[case_id], tuple(meta.availability))
+        center, target_count, fallback_reason = choose_effective_center(record, rng, case_id=case_id, mode=requested_mode, t2_present=bool(meta.t2_present))
+        effective_mode = requested_mode if requested_mode == "random" or target_count > 0 else "random"
+        if requested_mode != "random" and effective_mode != requested_mode:
+            raise ValueError(f"CARE_DG_EFFECTIVE_SAMPLER_SILENT_FALLBACK:{case_id}:{requested_mode}")
+        samples.append({
+            "requested_mode": requested_mode,
+            "effective_mode": effective_mode,
+            "case_id": case_id,
+            "center_zyx": list(center),
+            "target_voxel_count_in_patch": int(target_count),
+            "fallback_reason": fallback_reason,
+        })
+    return _batch_from_centers(samples, case_to_fold, metadata, cache)
 
 def move_tensors(batch: dict[str, Any], device: torch.device) -> dict[str, Any]:
     return {k: (v.to(device, non_blocking=True) if torch.is_tensor(v) else v) for k, v in batch.items()}
@@ -370,22 +506,180 @@ def margin_caps_for_cases(case_ids: list[str], case_to_fold: dict[str, int], met
     return {"scar": bound(scar_values), "edema_zone": bound(edema_values), "fit_population": "actual_train_cases_only", "case_count": len(case_ids), "case_ids_sha256": sha256_case_ids(case_ids)}
 
 
-def sampler_quota_audit(case_ids: list[str], case_to_fold: dict[str, int], metadata: Any, cache: CaseCache, *, stage: str, batch_size: int, samples: int = 1000, seed: int = 20260727) -> dict[str, Any]:
+def sampler_quota_audit(
+    case_ids: list[str],
+    case_to_fold: dict[str, int],
+    metadata: Any,
+    cache: CaseCache,
+    *,
+    stage: str,
+    batch_size: int,
+    samples: int = 1000,
+    seed: int = 20260727,
+) -> dict[str, Any]:
     rng = random.Random(seed)
-    counts = {"error_fn": 0, "error_fp": 0, "pathology": 0, "random": 0}
+    sampler_index = build_sampler_index(case_ids, case_to_fold, metadata, cache, stage=stage)
+    effective_counts = {"error_fn": 0, "error_fp": 0, "pathology": 0, "random": 0}
+    requested_counts = {"error_fn": 0, "error_fp": 0, "pathology": 0, "random": 0}
+    hit = {"error_fn": 0, "error_fp": 0, "pathology": 0}
+    denom = {"error_fn": 0, "error_fp": 0, "pathology": 0}
+    fallback_reasons: dict[str, int] = {}
+    silent_fallback = 0
     batches = math.ceil(samples / batch_size)
     seen = 0
     for _ in range(batches):
-        batch = build_batch(case_ids, case_to_fold, metadata, cache, rng, stage=stage, batch_size=batch_size)
-        for mode in batch["sample_modes"]:
+        batch = build_batch(case_ids, case_to_fold, metadata, cache, rng, stage=stage, batch_size=batch_size, sampler_index=sampler_index)
+        for item in batch["sample_accounting"]:
             if seen >= samples:
                 break
-            counts[mode] += 1
+            requested = str(item["requested_mode"])
+            effective = str(item["effective_mode"])
+            requested_counts[requested] += 1
+            effective_counts[effective] += 1
+            if requested in denom:
+                denom[requested] += 1
+                if int(item.get("target_voxel_count_in_patch", 0)) > 0 and effective == requested:
+                    hit[requested] += 1
+            reason = str(item.get("fallback_reason") or "")
+            if reason:
+                fallback_reasons[reason] = fallback_reasons.get(reason, 0) + 1
+            if requested != effective:
+                silent_fallback += 1
             seen += 1
-    fractions = {k: v / float(samples) for k, v in counts.items()}
-    status = "PASS" if abs((fractions["error_fn"] + fractions["error_fp"]) - 0.5) <= 0.02 and abs(fractions["pathology"] - 0.25) <= 0.02 and abs(fractions["random"] - 0.25) <= 0.02 and abs(fractions["error_fn"] - fractions["error_fp"]) <= 0.02 else "NEEDS_REPAIR"
-    return {"status": status, "samples": samples, "counts": counts, "fractions": fractions, "stage": stage, "batch_size": batch_size}
+    fractions = {k: v / float(samples) for k, v in effective_counts.items()}
+    hit_rates = {k: hit[k] / float(max(1, denom[k])) for k in hit}
+    status = "PASS" if (
+        hit_rates["error_fn"] == 1.0
+        and hit_rates["error_fp"] == 1.0
+        and hit_rates["pathology"] == 1.0
+        and silent_fallback == 0
+        and abs((fractions["error_fn"] + fractions["error_fp"]) - 0.5) <= 0.02
+        and abs(fractions["pathology"] - 0.25) <= 0.02
+        and abs(fractions["random"] - 0.25) <= 0.02
+    ) else "NEEDS_REPAIR"
+    return {
+        "status": status,
+        "samples": samples,
+        "requested_counts": requested_counts,
+        "effective_counts": effective_counts,
+        "effective_fractions": fractions,
+        "target_hit_rates": hit_rates,
+        "silent_fallback_count": silent_fallback,
+        "fallback_reasons": fallback_reasons,
+        "stage": stage,
+        "batch_size": batch_size,
+        "sampler_index": {k: v for k, v in sampler_index.items() if k not in {"weights", "eligible", "target_counts_by_case"}},
+        "eligible_counts": sampler_index["eligible_counts"],
+        "sampler_index_sha256": sampler_index["sampler_index_sha256"],
+    }
 
+
+def build_inner_evaluation_plan(
+    case_ids: list[str],
+    case_to_fold: dict[str, int],
+    metadata: Any,
+    cache: CaseCache,
+    *,
+    fold: int,
+    split_contract: dict[str, Any],
+) -> dict[str, Any]:
+    entries: list[dict[str, Any]] = []
+    mode_counts = {mode: 0 for mode in INNER_EVAL_MODES}
+    case_accounting: dict[str, dict[str, Any]] = {}
+    for case_id in sorted(case_ids):
+        meta = metadata[case_id]
+        rec = cache.get(case_id, case_to_fold[case_id], tuple(meta.availability))
+        masks = case_target_masks(rec, bool(meta.t2_present))
+        per_case_modes: list[str] = []
+        for mode in INNER_EVAL_MODES:
+            if mode.startswith("edema_zone") and not bool(meta.t2_present):
+                continue
+            center = deterministic_center(masks[mode], case_id, mode, "inner_eval")
+            if center is None:
+                continue
+            target_count = target_voxels_in_patch(rec, center, mode, bool(meta.t2_present))
+            if target_count <= 0:
+                continue
+            entries.append({
+                "entry_index": len(entries),
+                "case_id": case_id,
+                "center_zyx": list(center),
+                "mode": mode,
+                "target_voxel_count_in_patch": int(target_count),
+                "augmentation": "none",
+                "patch_shape_zyx": list(PATCH_SHAPE),
+            })
+            mode_counts[mode] += 1
+            per_case_modes.append(mode)
+        case_accounting[case_id] = {"modality_group": str(meta.modality_group), "t2_present": bool(meta.t2_present), "modes": per_case_modes, "patches": len(per_case_modes)}
+    missing_cases = [case_id for case_id, row in case_accounting.items() if int(row["patches"]) == 0]
+    if missing_cases:
+        raise ValueError(f"CARE_DG_INNER_EVAL_PLAN_CASE_WITHOUT_PATCH:{missing_cases[:5]}")
+    payload = {
+        "schema_version": 2,
+        "gate_revision": "A-R2",
+        "fold": fold,
+        "created_at_utc": now_utc(),
+        "case_count": len(case_ids),
+        "case_ids_sha256": sha256_case_ids(case_ids),
+        "patch_count": len(entries),
+        "mode_counts": mode_counts,
+        "case_accounting": case_accounting,
+        "entries": entries,
+        "objective": "fixed_complete_inner_select_no_aug_patch_loss",
+        "stage_a_and_stage_b_share_objective": True,
+        "training_rng_dependency": False,
+        "split_sha256": split_contract.get("sha256", {}),
+        "config_sha256": sha256_file(CONFIG_PATH) if CONFIG_PATH.exists() else "missing",
+        "source_hashes": source_hashes(),
+    }
+    payload["plan_sha256"] = stable_json_sha256({k: v for k, v in payload.items() if k not in {"plan_sha256", "created_at_utc"}})
+    return payload
+
+
+def evaluate_inner(model: torch.nn.Module, plan: dict[str, Any], case_to_fold: dict[str, int], metadata: Any, cache: CaseCache, device: torch.device, batch_size: int) -> dict[str, Any]:
+    model.eval()
+    losses: list[float] = []
+    items: list[dict[str, Any]] = []
+    entries = list(plan.get("entries") or [])
+    with torch.no_grad():
+        for offset in range(0, len(entries), max(1, batch_size)):
+            chunk = entries[offset : offset + max(1, batch_size)]
+            batch = move_tensors(_batch_from_centers(chunk, case_to_fold, metadata, cache), device)
+            out = model(
+                batch["images"],
+                batch["availability"],
+                batch["anchor_logits"],
+                uncertainty=batch["uncertainty"],
+                myocardium_support=batch["myocardium_support"],
+                edema_support=batch["edema_support"],
+                distance_to_myocardium=batch["distance_to_myocardium"],
+                t2_present=batch["t2_present"],
+                strict_inputs=True,
+                anchor_value_kind=batch["anchor_value_kind"],
+            )
+            anchor_mask = batch["anchor_logits"].argmax(dim=1)
+            loss, metrics = care_dg_loss(out, batch["labels"], anchor_mask, t2_present=batch["t2_present"], edema_reliable=batch["t2_present"])
+            loss_value = float(loss.detach().cpu())
+            losses.append(loss_value)
+            items.append({
+                "offset": offset,
+                "batch_entries": [int(item["entry_index"]) for item in chunk],
+                "case_ids": [str(item["case_id"]) for item in chunk],
+                "modes": [str(item["mode"]) for item in chunk],
+                "loss": loss_value,
+                "metrics": metrics,
+            })
+    model.train()
+    return {
+        "status": "PASS" if losses else "NEEDS_REPAIR",
+        "plan_sha256": plan.get("plan_sha256"),
+        "loss": float(np.mean(losses)) if losses else math.inf,
+        "loss_items": items,
+        "case_count": plan.get("case_count"),
+        "patch_count": plan.get("patch_count"),
+        "mode_counts": plan.get("mode_counts"),
+    }
 
 def source_hashes() -> dict[str, str]:
     paths = [
@@ -403,6 +697,26 @@ def source_hashes() -> dict[str, str]:
     ]
     return {p: sha256_file(REPO_ROOT / p) for p in paths if (REPO_ROOT / p).exists()}
 
+
+
+
+def checkpoint_extra_summary(extra: dict[str, Any]) -> dict[str, Any]:
+    runtime_state = dict(extra.get("runtime_state") or {})
+    return {
+        "extra_keys": sorted(str(k) for k in extra.keys()),
+        "hash_contract": extra.get("hash_contract"),
+        "runtime_state_keys": sorted(str(k) for k in runtime_state.keys()),
+        "stage": runtime_state.get("stage"),
+        "local_step": runtime_state.get("local_step"),
+        "total_step": runtime_state.get("total_step"),
+        "fixed_inner_evaluation_plan_sha256": runtime_state.get("fixed_inner_evaluation_plan_sha256"),
+        "has_python_random_state": runtime_state.get("python_random_state") is not None,
+        "has_local_random_state": runtime_state.get("local_random_state") is not None,
+        "has_numpy_random_state": runtime_state.get("numpy_random_state") is not None,
+        "has_torch_cpu_rng_state": runtime_state.get("torch_cpu_rng_state") is not None,
+        "torch_cuda_rng_state_count": len(runtime_state.get("torch_cuda_rng_states") or []),
+        "has_amp_grad_scaler_state": runtime_state.get("amp_grad_scaler_state") is not None,
+    }
 
 def activation_stats(out: dict[str, torch.Tensor], labels: torch.Tensor, anchor_mask: torch.Tensor, t2_present: torch.Tensor) -> dict[str, float]:
     if labels.ndim == 5:
@@ -438,32 +752,6 @@ def activation_stats(out: dict[str, torch.Tensor], labels: torch.Tensor, anchor_
         "scar_saturation_fraction": frac(out["scar_m_fn"] >= 0.95 * float(out["scar_m_fn"].detach().max().clamp_min(1e-6))),
         "edema_saturation_fraction": frac(out["edema_m_fn"] >= 0.95 * float(out["edema_m_fn"].detach().max().clamp_min(1e-6))),
     }
-
-
-def evaluate_inner(model: torch.nn.Module, case_ids: list[str], case_to_fold: dict[str, int], metadata: Any, cache: CaseCache, rng: random.Random, device: torch.device, batch_size: int) -> float:
-    model.eval()
-    losses = []
-    with torch.no_grad():
-        for _ in range(4):
-            batch = build_batch(case_ids, case_to_fold, metadata, cache, rng, stage="A", batch_size=batch_size)
-            batch = move_tensors(batch, device)
-            out = model(
-                batch["images"],
-                batch["availability"],
-                batch["anchor_logits"],
-                uncertainty=batch["uncertainty"],
-                myocardium_support=batch["myocardium_support"],
-                edema_support=batch["edema_support"],
-                distance_to_myocardium=batch["distance_to_myocardium"],
-                t2_present=batch["t2_present"],
-                strict_inputs=True,
-                anchor_value_kind=batch["anchor_value_kind"],
-            )
-            anchor_mask = batch["anchor_logits"].argmax(dim=1)
-            loss, _ = care_dg_loss(out, batch["labels"], anchor_mask, t2_present=batch["t2_present"], edema_reliable=batch["t2_present"])
-            losses.append(float(loss.detach().cpu()))
-    model.train()
-    return float(np.mean(losses)) if losses else math.inf
 
 
 def contract() -> dict[str, object]:
@@ -511,7 +799,10 @@ def train_fold(fold: int, args: argparse.Namespace, result_root: Path) -> dict[s
     train_cases = list(split_contract["actual_train_cases"])
     inner_select = list(split_contract["complete_inner_select_cases"] or split_contract["inner_select_cases"])
     complete_train_cases = list(split_contract["complete_actual_train_cases"])
-    if args.preflight_steps:
+    preflight_only = bool(args.preflight_steps or args.gate_a_r2_preflight)
+    if args.gate_a_r2_preflight:
+        stage_a_steps = 1; stage_b_steps = 1; batch_size = min(2, args.batch_size)
+    elif args.preflight_steps:
         stage_a_steps = int(args.preflight_steps); stage_b_steps = 0; batch_size = min(2, args.batch_size)
     else:
         stage_a_steps = args.stage_a_steps; stage_b_steps = args.stage_b_steps; batch_size = args.batch_size
@@ -525,7 +816,7 @@ def train_fold(fold: int, args: argparse.Namespace, result_root: Path) -> dict[s
         expected_steps = stage_a_steps + stage_b_steps
         if (
             receipt.get("status") == "PASS"
-            and bool(receipt.get("preflight_only")) == bool(args.preflight_steps)
+            and bool(receipt.get("preflight_only")) == preflight_only
             and int(receipt.get("actual_optimizer_steps", -1)) == int(expected_steps)
         ):
             print(json.dumps({"fold": fold, "status": "SKIP_COMPLETED_ON_RESUME", "actual_optimizer_steps": expected_steps}), flush=True)
@@ -541,12 +832,25 @@ def train_fold(fold: int, args: argparse.Namespace, result_root: Path) -> dict[s
     for row in json.loads((result_root / "nnunet_oof_anchor_manifest.json").read_text(encoding="utf-8"))["entries"]:
         case_to_fold[str(row["case_id"])] = int(row["source_fold"])
     cap_audit = margin_caps_for_cases(train_cases, case_to_fold, metadata, cache)
+    inner_plan = build_inner_evaluation_plan(inner_select, case_to_fold, metadata, cache, fold=fold, split_contract=split_contract)
+    sampler_index_a = build_sampler_index(train_cases, case_to_fold, metadata, cache, stage="A")
+    sampler_index_b = build_sampler_index(complete_train_cases, case_to_fold, metadata, cache, stage="B") if complete_train_cases else None
     sampler_audit = sampler_quota_audit(train_cases, case_to_fold, metadata, cache, stage="A", batch_size=max(8, batch_size), samples=1000, seed=args.seed + fold)
     write_json(runtime_root / "inner_split_manifest.json", split_contract)
+    write_json(runtime_root / "inner_evaluation_plan.json", inner_plan)
     write_json(runtime_root / "sampler_quota_audit.json", sampler_audit)
     write_json(runtime_root / "margin_cap_audit.json", cap_audit)
     if sampler_audit.get("status") != "PASS":
         raise RuntimeError(f"sampler quota audit failed for fold={fold}: {sampler_audit}")
+    hash_contract = {
+        "fixed_inner_evaluation_plan_sha256": inner_plan["plan_sha256"],
+        "stage_a_sampler_index_sha256": sampler_index_a["sampler_index_sha256"],
+        "stage_b_sampler_index_sha256": sampler_index_b["sampler_index_sha256"] if sampler_index_b else "none",
+        "config_sha256": sha256_file(CONFIG_PATH) if CONFIG_PATH.exists() else "missing",
+        "split_actual_train_sha256": split_contract["sha256"]["actual_train"],
+        "split_inner_select_sha256": split_contract["sha256"]["inner_select"],
+        "source_hash_run_care_dg": source_hashes().get("scripts/training/run_care_dg.py", "missing"),
+    }
     model = build_care_dg({
         "encoder_channels": tuple(args.encoder_channels),
         "context_channels": args.context_channels,
@@ -558,11 +862,11 @@ def train_fold(fold: int, args: argparse.Namespace, result_root: Path) -> dict[s
     best_inner = math.inf; best_path = None
     started = time.time(); total_steps = 0
     resume_step = 0
-    if args.resume and not args.preflight_steps:
+    if args.resume and not preflight_only:
         step_ckpts = sorted(ckpt_dir.glob("checkpoint_step*.pt"))
         if step_ckpts:
             resume_ckpt = step_ckpts[-1]
-            model, resume_step, _extra = load_care_dg_checkpoint(resume_ckpt, model=model, optimizer=optimizer)
+            model, resume_step, _extra = load_care_dg_checkpoint(resume_ckpt, model=model, optimizer=optimizer, scaler=scaler, local_rng=rng, restore_rng=True, expected_hash_contract=hash_contract)
             model = model.to(device)
             total_steps = int(resume_step)
             curve_path = runtime_root / "training_curve.csv"
@@ -602,7 +906,8 @@ def train_fold(fold: int, args: argparse.Namespace, result_root: Path) -> dict[s
             group["lr"] = lr
         for local_step in range(start_local_step, steps + 1):
             total_steps += 1
-            batch = build_batch(cases, case_to_fold, metadata, cache, rng, stage=stage, batch_size=batch_size)
+            sampler_index = sampler_index_a if stage == "A" else sampler_index_b
+            batch = build_batch(cases, case_to_fold, metadata, cache, rng, stage=stage, batch_size=batch_size, sampler_index=sampler_index)
             batch = move_tensors(batch, device)
             optimizer.zero_grad(set_to_none=True)
             with autocast("cuda", enabled=bool(args.amp and device.type == "cuda")):
@@ -633,19 +938,52 @@ def train_fold(fold: int, args: argparse.Namespace, result_root: Path) -> dict[s
                 log_rows.append(row)
                 append_csv(runtime_root / "training_curve.csv", row, list(row.keys()))
                 print(json.dumps(row), flush=True)
-            if (not args.preflight_steps) and (total_steps % 1000 == 0 or (stage == "B" and local_step == steps)):
-                inner_loss = evaluate_inner(model, inner_select, case_to_fold, metadata, cache, rng, device, batch_size=min(2, batch_size))
-                path = ckpt_dir / f"checkpoint_step{total_steps:05d}.pt"
-                save_care_dg_checkpoint(path, model, optimizer, total_steps, {"fold": fold, "stage": stage, "inner_loss": inner_loss, "outer_val_used_for_selection": False})
-                row = {"fold": fold, "stage": stage, "step": total_steps, "checkpoint_path": str(path), "checkpoint_sha256": sha256_file(path), "inner_loss": inner_loss, "selection_population": "train_side_inner_split", "outer_val_used": False}
+            should_checkpoint = ((not preflight_only) and (total_steps % 1000 == 0 or (stage == "B" and local_step == steps))) or (preflight_only and local_step == steps)
+            if should_checkpoint:
+                inner_eval = evaluate_inner(model, inner_plan, case_to_fold, metadata, cache, device, batch_size=min(2, batch_size))
+                inner_loss = float(inner_eval["loss"])
+                name = f"checkpoint_step{total_steps:05d}.pt" if not preflight_only else f"checkpoint_preflight_stage_{stage}_step{total_steps:05d}.pt"
+                path = ckpt_dir / name
+                save_care_dg_checkpoint(
+                    path,
+                    model,
+                    optimizer,
+                    total_steps,
+                    {"fold": fold, "stage": stage, "inner_loss": inner_loss, "inner_eval": inner_eval, "outer_val_used_for_selection": False},
+                    scaler=scaler,
+                    local_rng=rng,
+                    stage=stage,
+                    local_step=local_step,
+                    total_step=total_steps,
+                    fixed_inner_plan_hash=str(inner_plan["plan_sha256"]),
+                    hash_contract=hash_contract,
+                )
+                row = {"fold": fold, "stage": stage, "step": total_steps, "checkpoint_path": str(path), "checkpoint_sha256": sha256_file(path), "inner_loss": inner_loss, "inner_plan_sha256": inner_plan["plan_sha256"], "selection_population": "fixed_train_side_complete_inner_plan", "outer_val_used": False}
                 ckpt_rows.append(row)
                 if inner_loss < best_inner:
                     best_inner = inner_loss; best_path = path
     last_path = ckpt_dir / "checkpoint_last.pt"
-    save_care_dg_checkpoint(last_path, model, optimizer, total_steps, {"fold": fold, "stage": "terminal", "outer_val_used_for_selection": False})
-    reload_model, reload_step, reload_extra = load_care_dg_checkpoint(last_path)
+    terminal_inner_eval = evaluate_inner(model, inner_plan, case_to_fold, metadata, cache, device, batch_size=min(2, batch_size))
+    repeat_inner_eval = evaluate_inner(model, inner_plan, case_to_fold, metadata, cache, device, batch_size=min(2, batch_size))
+    inner_repeat_exact = terminal_inner_eval == repeat_inner_eval
+    write_json(runtime_root / "inner_evaluation_repeat_receipt.json", {"status": "PASS" if inner_repeat_exact else "NEEDS_REPAIR", "first": terminal_inner_eval, "second": repeat_inner_eval})
+    save_care_dg_checkpoint(
+        last_path,
+        model,
+        optimizer,
+        total_steps,
+        {"fold": fold, "stage": "terminal", "inner_loss": float(terminal_inner_eval["loss"]), "inner_eval": terminal_inner_eval, "outer_val_used_for_selection": False},
+        scaler=scaler,
+        local_rng=rng,
+        stage="terminal",
+        local_step=0,
+        total_step=total_steps,
+        fixed_inner_plan_hash=str(inner_plan["plan_sha256"]),
+        hash_contract=hash_contract,
+    )
+    reload_model, reload_step, reload_extra = load_care_dg_checkpoint(last_path, expected_hash_contract=hash_contract)
     reload_model = reload_model.to(device)
-    reload_batch = move_tensors(build_batch(train_cases, case_to_fold, metadata, cache, rng, stage="A", batch_size=min(1, batch_size)), device)
+    reload_batch = move_tensors(build_batch(train_cases, case_to_fold, metadata, cache, rng, stage="A", batch_size=min(1, batch_size), sampler_index=sampler_index_a), device)
     with torch.no_grad():
         before_reload = model(
             reload_batch["images"],
@@ -672,26 +1010,28 @@ def train_fold(fold: int, args: argparse.Namespace, result_root: Path) -> dict[s
             anchor_value_kind=reload_batch["anchor_value_kind"],
         )["final_logits"].detach().cpu()
     checkpoint_reload = {
-        "status": "PASS" if reload_step == total_steps and float((before_reload - after_reload).abs().max()) <= 1e-6 else "NEEDS_REPAIR",
+        "status": "PASS" if reload_step == total_steps and float((before_reload - after_reload).abs().max()) <= 1e-6 and inner_repeat_exact else "NEEDS_REPAIR",
         "reload_step": reload_step,
         "expected_step": total_steps,
-        "extra": reload_extra,
+        "extra": checkpoint_extra_summary(reload_extra),
         "max_abs_final_logits_delta": float((before_reload - after_reload).abs().max()),
+        "inner_evaluation_repeat_exact": bool(inner_repeat_exact),
+        "fixed_inner_evaluation_plan_sha256": inner_plan["plan_sha256"],
     }
     if checkpoint_reload["status"] != "PASS":
         raise RuntimeError(f"checkpoint write/reload parity failed for fold={fold}: {checkpoint_reload}")
-    last_row = {"fold": fold, "stage": "last", "step": total_steps, "checkpoint_path": str(last_path), "checkpoint_sha256": sha256_file(last_path), "inner_loss": best_inner, "selection_population": "terminal_last", "outer_val_used": False}
+    last_row = {"fold": fold, "stage": "last", "step": total_steps, "checkpoint_path": str(last_path), "checkpoint_sha256": sha256_file(last_path), "inner_loss": float(terminal_inner_eval["loss"]), "inner_plan_sha256": inner_plan["plan_sha256"], "selection_population": "terminal_last_fixed_inner_plan", "outer_val_used": False}
     ckpt_rows.append(last_row)
     if best_path is None:
         best_path = last_path; best_inner = float(log_rows[-1]["loss"]) if log_rows else math.inf
     best_alias = ckpt_dir / "checkpoint_best.pt"
     best_alias.write_bytes(best_path.read_bytes())
-    best_row = {"fold": fold, "stage": "best", "step": total_steps, "checkpoint_path": str(best_alias), "checkpoint_sha256": sha256_file(best_alias), "inner_loss": best_inner, "selection_population": "train_side_inner_split", "outer_val_used": False}
+    best_row = {"fold": fold, "stage": "best", "step": total_steps, "checkpoint_path": str(best_alias), "checkpoint_sha256": sha256_file(best_alias), "inner_loss": best_inner, "inner_plan_sha256": inner_plan["plan_sha256"], "selection_population": "fixed_train_side_complete_inner_plan", "outer_val_used": False}
     ckpt_rows.append(best_row)
     write_csv(runtime_root / "checkpoint_manifest.csv", ckpt_rows)
-    receipt = {"fold": fold, "status": "PASS", "runtime_kind": runtime_kind, "preflight_only": bool(args.preflight_steps), "formal_training_credit": 0 if args.preflight_steps else total_steps, "validate_w0_status": "PASS", "expected_stage_a_steps": stage_a_steps, "expected_stage_b_steps": stage_b_steps, "actual_optimizer_steps": total_steps, "outer_train_cases": len(outer_train), "outer_val_cases": len(outer_val), "actual_train_cases": len(train_cases), "inner_train_cases": len(train_cases), "inner_selection_cases": len(inner_select), "complete_trimodal_train_cases": len(complete_train_cases), "complete_inner_selection_cases": len(split_contract["complete_inner_select_cases"]), "t2_reliable_train_cases": sum(bool(metadata[c].t2_present) for c in train_cases), "best_checkpoint": str(best_alias), "last_checkpoint": str(last_path), "best_inner_loss": best_inner, "outer_val_used_for_checkpoint_selection": False, "stage_a_case_ids_sha256": split_contract["sha256"]["actual_train"], "stage_b_case_ids_sha256": split_contract["sha256"]["complete_actual_train"], "inner_select_case_ids_sha256": split_contract["sha256"]["inner_select"], "complete_inner_select_case_ids_sha256": split_contract["sha256"]["complete_inner_select"], "fixed_inner_objective": split_contract["fixed_inner_objective"], "anchor_value_kind": "log_probabilities", "support_map_contract": "myocardium_union_labels_1_4_5_excludes_lv_rv_2_3_soft_shells_6mm_10mm", "checkpoint_write_reload": checkpoint_reload, "margin_cap_audit": cap_audit, "sampler_quota_audit": sampler_audit, "source_hashes": source_hashes(), "elapsed_seconds": round(time.time() - started, 1), "terminal_time_utc": now_utc(), "curve_rows": len(log_rows), "checkpoint_rows": len(ckpt_rows)}
+    receipt = {"fold": fold, "status": "PASS", "runtime_kind": runtime_kind, "preflight_only": preflight_only, "formal_training_credit": 0 if preflight_only else total_steps, "validate_w0_status": "PASS", "expected_stage_a_steps": stage_a_steps, "expected_stage_b_steps": stage_b_steps, "actual_optimizer_steps": total_steps, "outer_train_cases": len(outer_train), "outer_val_cases": len(outer_val), "actual_train_cases": len(train_cases), "inner_train_cases": len(train_cases), "inner_selection_cases": len(inner_select), "complete_trimodal_train_cases": len(complete_train_cases), "complete_inner_selection_cases": len(split_contract["complete_inner_select_cases"]), "t2_reliable_train_cases": sum(bool(metadata[c].t2_present) for c in train_cases), "best_checkpoint": str(best_alias), "last_checkpoint": str(last_path), "best_inner_loss": best_inner, "outer_val_used_for_checkpoint_selection": False, "stage_a_case_ids_sha256": split_contract["sha256"]["actual_train"], "stage_b_case_ids_sha256": split_contract["sha256"]["complete_actual_train"], "inner_select_case_ids_sha256": split_contract["sha256"]["inner_select"], "complete_inner_select_case_ids_sha256": split_contract["sha256"]["complete_inner_select"], "fixed_inner_objective": "fixed_complete_inner_select_no_aug_patch_loss", "fixed_inner_evaluation_plan_path": str(runtime_root / "inner_evaluation_plan.json"), "fixed_inner_evaluation_plan_sha256": inner_plan["plan_sha256"], "inner_evaluation_repeat_exact": bool(inner_repeat_exact), "anchor_value_kind": "log_probabilities", "support_map_contract": "myocardium_union_labels_1_4_5_excludes_lv_rv_2_3_soft_shells_6mm_10mm", "checkpoint_write_reload": checkpoint_reload, "margin_cap_audit": cap_audit, "sampler_quota_audit": sampler_audit, "hash_contract": hash_contract, "source_hashes": source_hashes(), "elapsed_seconds": round(time.time() - started, 1), "terminal_time_utc": now_utc(), "curve_rows": len(log_rows), "checkpoint_rows": len(ckpt_rows)}
     write_json(runtime_root / "fold_training_receipt.json", receipt)
-    if args.preflight_steps:
+    if preflight_only:
         write_json(runtime_root / "preflight_validator_report.json", {
             "created_at_utc": now_utc(),
             "status": "PASS",
@@ -701,10 +1041,12 @@ def train_fold(fold: int, args: argparse.Namespace, result_root: Path) -> dict[s
                 "oof_anchor_loading",
                 "probability_to_log_probability",
                 "soft_support_maps",
-                "sampler",
+                "effective_sampler_audit",
+                "fixed_inner_checkpoint_evaluation",
                 "margin_cap_train_only",
-                "forward_backward",
-                "checkpoint_write_reload",
+                "stage_A_one_optimizer_step",
+                "stage_B_one_optimizer_step",
+                "checkpoint_write_reload_resume_state",
                 "receipt",
             ],
             "receipt_path": str(receipt_path),
@@ -750,6 +1092,7 @@ def main() -> int:
     parser.add_argument("--stage-b-steps", type=int, default=3000)
     parser.add_argument("--batch-size", type=int, default=8)
     parser.add_argument("--preflight-steps", type=int, default=0)
+    parser.add_argument("--gate-a-r2-preflight", action="store_true")
     parser.add_argument("--runtime-label", default="repaired_formal")
     parser.add_argument("--resume", action="store_true")
     parser.add_argument("--allow-cpu", action="store_true")
@@ -775,7 +1118,7 @@ def main() -> int:
     for fold in args.folds:
         receipts.append(train_fold(int(fold), args, result_root))
     write_training_manifests(result_root, receipts)
-    print(json.dumps({"status": "PASS", "folds": args.folds, "preflight_only": bool(args.preflight_steps), "receipts": receipts}, indent=2, sort_keys=True))
+    print(json.dumps({"status": "PASS", "folds": args.folds, "preflight_only": bool(args.preflight_steps or args.gate_a_r2_preflight), "receipts": receipts}, indent=2, sort_keys=True))
     return 0
 
 
