@@ -1,0 +1,106 @@
+{
+  "approval_token": "APPROVE_GATE_A_R1",
+  "body_preview": "结论：CARE-DG Gate A-R1 的 runner、inner split 与 soft support 修复已经完成，当前状态进入 AWAITING_HUMAN_ACCEPTANCE_GATE_A_R1。请只在同一 Controller 会话中回复精确 token：APPROVE_GATE_A_R1，才会开始 repaired fold0 的 5000+3000 steps。旧 Gate A 请求已标记为 SUPERSEDED_BY_GATE_A_R1，不再有效。\n\n状态：AWAITING_HUMAN_ACCEPTANCE_GATE_A_R1\nApproval token: APPROVE_GATE_A_R1\n\nR1 修复与验收要点：\n- validate_w0 CLI preflight PASS；implementation_contract.status 只允许预注册状态，不接受任意 PASS 字符串。\n- actual_train / inner_select 无交集：actual_train=164，inner_select=12，complete_inner_select=12。\n- Stage B 使用 complete actual-train，Stage B 与 inner_select 无交集；complete_actual_train=52.\n- checkpoint selection 使用固定 complete inner objective：complete_inner_select_binary_care_dg_loss_stage_A_mode。\n- margin cap 仅从 actual_train 拟合：case_count=164，case_hash=6c9664c525ca17e9d0591a62302f143dc7881307d94a4e49aa685f98ac60e7e9。\n- myocardium support union 仅含 label 1/4/5，明确排除 LV/RV label 2/3；scar soft shell=6mm，edema-zone soft shell=10mm，无 hard crop。\n- repaired runtime 隔离：preflight runtime=runtime/gate_a_r1_preflight/fold0；旧 runtime/formal/fold0 和 fold1 只读 provenance，未删除、未覆盖、未 resume。\n- 两步正式入口 preflight PASS，actual_optimizer_steps=2，formal_training_credit=0，checkpoint write/reload PASS max_abs_delta=0.0.\n- sampler quota PASS：FN/FP/pathology/random = {'error_fn': 250, 'error_fp': 250, 'pathology': 250, 'random': 250}.\n- strict validator PASS：failures=[].\n\nGate A-R1 测试与真实病例证据：\n- pytest tests/care_dg -q：19 passed。\n- known-bad PASS，新增覆盖 validate_w0 任意 PASS 字符串、inner_select 泄漏、LV/RV support、soft-support zero identity。\n- real-case forward/backward PASS；no-T2 edema grad 和 delta exact zero。\n- checkpoint/resume PASS。\n- 300-step overfit PASS：scar_drop=0.3275，edema_drop=0.4434，changed_voxels=996，correct_direction_fraction=1.0.\n- q 分离：scar q_FN true/non=0.9774/0.1247，scar q_FP true/non=0.9700/0.1170；edema q_FN true/non=0.9914/0.1189，edema q_FP true/non=0.9713/0.1155。\n- saturation：scar=0.0140，edema=0.0218。\n\n关键证据路径与 SHA256：\n- results/20260727_care_dg_dual_pathology_validation/implementation_contract.json sha256=c5102c2c88de21640b86f77d1a50e2afb9f02c972f406d084c5c268084c54a82\n- results/20260727_care_dg_dual_pathology_validation/model_parameter_report.json sha256=7d8620648f3bb0d3cd92f70ad05573b6255b289a0adbf3ed8866a4d78f5a06c9\n- results/20260727_care_dg_dual_pathology_validation/unit_test_report.md sha256=0bb2783b0ec4a86e22504f5178b2c5a683888bd7ca113a047b17ba07b57cff40\n- results/20260727_care_dg_dual_pathology_validation/known_bad_report.json sha256=1e09939f5be6ea2cbd5d0762da5e5e0c52f5b554d625908928882d6854c0779b\n- results/20260727_care_dg_dual_pathology_validation/real_case_forward_backward_receipt.json sha256=b596d6a733f6ae7f70e2f73011a24b559250a2a095439e13d77cf5ae85845566\n- results/20260727_care_dg_dual_pathology_validation/implementation_overfit_receipt.json sha256=d3f216de02a165da4f2c07ab0dde132802d0831fd7ccf6cd848ebee7e40e14ea\n- results/20260727_care_dg_dual_pathology_validation/checkpoint_resume_parity.json sha256=4f28c087f14dc973936077dcdd6d6d2e4a4ced1d5fcfaddad4800072b95c741f\n- results/20260727_care_dg_dual_pathology_validation/augmentation_alignment_audit.json sha256=19f7f329a06ae03b5355e7cf6d4bb0bb2d75f5e20d42ca7333cf9ffed8706e79\n- results/20260727_care_dg_dual_pathology_validation/strict_validator_report.json sha256=b363760936004de87ced4653271840dc200cdb9bc3e535d2d22bcab83d1418c8\n- results/20260727_care_dg_dual_pathology_validation/repair_ledger.csv sha256=994c5c2b5aa95681331f1bf2485486c1824c8dc91c4de36c7254df8d86248bff\n- results/20260727_care_dg_dual_pathology_validation/gate_a_repaired_semantics/gate_a_static_test_receipt.json sha256=f2c9b39ee7380c148a9e736600b5c76eb92bb2d0c36662a5b0db5fb5554c209e\n- results/20260727_care_dg_dual_pathology_validation/gate_a_repaired_semantics/gate_a_summary.json sha256=88908e9a4a5abc7f46f4b49bb968d04cf9cee732f46a7cd7e1e42df8bc89512f\n- results/20260727_care_dg_dual_pathology_validation/gate_a_repaired_semantics/implementation_overfit_curve.csv sha256=ac241b4e9a85d1221613af4cf535c67eff5fcffbd73c6670cc1901e799258dd2\n- results/20260727_care_dg_dual_pathology_validation/runtime/gate_a_r1_preflight/fold0/fold_training_receipt.json sha256=1ec1652d1328579313e71157d2c3090fed491cd932ca82d74f7466117432804f\n- results/20260727_care_dg_dual_pathology_validation/runtime/gate_a_r1_preflight/fold0/preflight_validator_report.json sha256=f5bdd3f4f84d0b708741174280ca34dc2c59131e6ad85a2723abc554764ad3b4\n- results/20260727_care_dg_dual_pathology_validation/runtime/gate_a_r1_preflight/fold0/inner_split_manifest.json sha256=c5b9db7da156a840e31fc7c2639653215ee615be89fe688f68d94d11f1523e24\n- results/20260727_care_dg_dual_pathology_validation/runtime/gate_a_r1_preflight/fold0/margin_cap_audit.json sha256=b450af41aaf086c3f5cc80a3367b425bf649f3725653f5da1386d91536bb921b\n- results/20260727_care_dg_dual_pathology_validation/runtime/gate_a_r1_preflight/fold0/sampler_quota_audit.json sha256=328194f05c790ef17eb4f2817120f89d4ca7d1dd798a90dc9a40f10d51e3240e\n\n注意：这仍不是科学结论；repaired fold0 尚未开始。未经 APPROVE_GATE_A_R1，不会启动 formal fold0，也不会启动 folds 1-4。\n",
+  "created_at_utc": "2026-07-27T10:42:01Z",
+  "docker_upload_performed": false,
+  "evidence": [
+    {
+      "exists": true,
+      "path": "results/20260727_care_dg_dual_pathology_validation/implementation_contract.json",
+      "sha256": "c5102c2c88de21640b86f77d1a50e2afb9f02c972f406d084c5c268084c54a82"
+    },
+    {
+      "exists": true,
+      "path": "results/20260727_care_dg_dual_pathology_validation/model_parameter_report.json",
+      "sha256": "7d8620648f3bb0d3cd92f70ad05573b6255b289a0adbf3ed8866a4d78f5a06c9"
+    },
+    {
+      "exists": true,
+      "path": "results/20260727_care_dg_dual_pathology_validation/unit_test_report.md",
+      "sha256": "0bb2783b0ec4a86e22504f5178b2c5a683888bd7ca113a047b17ba07b57cff40"
+    },
+    {
+      "exists": true,
+      "path": "results/20260727_care_dg_dual_pathology_validation/known_bad_report.json",
+      "sha256": "1e09939f5be6ea2cbd5d0762da5e5e0c52f5b554d625908928882d6854c0779b"
+    },
+    {
+      "exists": true,
+      "path": "results/20260727_care_dg_dual_pathology_validation/real_case_forward_backward_receipt.json",
+      "sha256": "b596d6a733f6ae7f70e2f73011a24b559250a2a095439e13d77cf5ae85845566"
+    },
+    {
+      "exists": true,
+      "path": "results/20260727_care_dg_dual_pathology_validation/implementation_overfit_receipt.json",
+      "sha256": "d3f216de02a165da4f2c07ab0dde132802d0831fd7ccf6cd848ebee7e40e14ea"
+    },
+    {
+      "exists": true,
+      "path": "results/20260727_care_dg_dual_pathology_validation/checkpoint_resume_parity.json",
+      "sha256": "4f28c087f14dc973936077dcdd6d6d2e4a4ced1d5fcfaddad4800072b95c741f"
+    },
+    {
+      "exists": true,
+      "path": "results/20260727_care_dg_dual_pathology_validation/augmentation_alignment_audit.json",
+      "sha256": "19f7f329a06ae03b5355e7cf6d4bb0bb2d75f5e20d42ca7333cf9ffed8706e79"
+    },
+    {
+      "exists": true,
+      "path": "results/20260727_care_dg_dual_pathology_validation/strict_validator_report.json",
+      "sha256": "b363760936004de87ced4653271840dc200cdb9bc3e535d2d22bcab83d1418c8"
+    },
+    {
+      "exists": true,
+      "path": "results/20260727_care_dg_dual_pathology_validation/repair_ledger.csv",
+      "sha256": "994c5c2b5aa95681331f1bf2485486c1824c8dc91c4de36c7254df8d86248bff"
+    },
+    {
+      "exists": true,
+      "path": "results/20260727_care_dg_dual_pathology_validation/gate_a_repaired_semantics/gate_a_static_test_receipt.json",
+      "sha256": "f2c9b39ee7380c148a9e736600b5c76eb92bb2d0c36662a5b0db5fb5554c209e"
+    },
+    {
+      "exists": true,
+      "path": "results/20260727_care_dg_dual_pathology_validation/gate_a_repaired_semantics/gate_a_summary.json",
+      "sha256": "88908e9a4a5abc7f46f4b49bb968d04cf9cee732f46a7cd7e1e42df8bc89512f"
+    },
+    {
+      "exists": true,
+      "path": "results/20260727_care_dg_dual_pathology_validation/gate_a_repaired_semantics/implementation_overfit_curve.csv",
+      "sha256": "ac241b4e9a85d1221613af4cf535c67eff5fcffbd73c6670cc1901e799258dd2"
+    },
+    {
+      "exists": true,
+      "path": "results/20260727_care_dg_dual_pathology_validation/runtime/gate_a_r1_preflight/fold0/fold_training_receipt.json",
+      "sha256": "1ec1652d1328579313e71157d2c3090fed491cd932ca82d74f7466117432804f"
+    },
+    {
+      "exists": true,
+      "path": "results/20260727_care_dg_dual_pathology_validation/runtime/gate_a_r1_preflight/fold0/preflight_validator_report.json",
+      "sha256": "f5bdd3f4f84d0b708741174280ca34dc2c59131e6ad85a2723abc554764ad3b4"
+    },
+    {
+      "exists": true,
+      "path": "results/20260727_care_dg_dual_pathology_validation/runtime/gate_a_r1_preflight/fold0/inner_split_manifest.json",
+      "sha256": "c5b9db7da156a840e31fc7c2639653215ee615be89fe688f68d94d11f1523e24"
+    },
+    {
+      "exists": true,
+      "path": "results/20260727_care_dg_dual_pathology_validation/runtime/gate_a_r1_preflight/fold0/margin_cap_audit.json",
+      "sha256": "b450af41aaf086c3f5cc80a3367b425bf649f3725653f5da1386d91536bb921b"
+    },
+    {
+      "exists": true,
+      "path": "results/20260727_care_dg_dual_pathology_validation/runtime/gate_a_r1_preflight/fold0/sampler_quota_audit.json",
+      "sha256": "328194f05c790ef17eb4f2817120f89d4ca7d1dd798a90dc9a40f10d51e3240e"
+    }
+  ],
+  "formal_fold0_started": false,
+  "gate": "A-R1",
+  "gate_revision": "A-R1",
+  "implementation_status": "GATE_A_REPAIRED_IMPLEMENTATION_PASS",
+  "recipient": "1155246312@link.cuhk.edu.hk",
+  "state": "AWAITING_HUMAN_ACCEPTANCE_GATE_A_R1",
+  "subject": "[CARE-DG][A/4-R1] Runner、inner split 与 support 修复完成，等待正式 Fold0 验收",
+  "validation_upload_performed": false
+}

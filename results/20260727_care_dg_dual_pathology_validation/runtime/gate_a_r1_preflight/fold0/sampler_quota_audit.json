@@ -1,0 +1,18 @@
+{
+  "batch_size": 8,
+  "counts": {
+    "error_fn": 250,
+    "error_fp": 250,
+    "pathology": 250,
+    "random": 250
+  },
+  "fractions": {
+    "error_fn": 0.25,
+    "error_fp": 0.25,
+    "pathology": 0.25,
+    "random": 0.25
+  },
+  "samples": 1000,
+  "stage": "A",
+  "status": "PASS"
+}

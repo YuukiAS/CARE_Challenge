@@ -7,7 +7,15 @@
     "notifier_reuse": "controller_notifications.notify_goal_watcher.load_env_file plus same SMTP configuration; no new notifier service created",
     "recipient": "1155246312@link.cuhk.edu.hk",
     "sent_at_utc": "2026-07-27T10:00:17Z",
-    "status": "SENT",
+    "status": "SUPERSEDED_BY_GATE_A_R1",
     "subject": "[CARE-DG][A/4] 修复实现完成，等待正式 Fold0 验收"
+  },
+  "gate_a_r1": {
+    "node_json": "results/20260727_care_dg_dual_pathology_validation/checkpoint_notifications/gate_a_r1.json",
+    "notifier_reuse": "controller_notifications.notify_goal_watcher.load_env_file plus existing CARE notify SMTP configuration; no new notifier service created",
+    "recipient": "1155246312@link.cuhk.edu.hk",
+    "sent_at_utc": "2026-07-27T10:42:03Z",
+    "status": "SENT",
+    "subject": "[CARE-DG][A/4-R1] Runner、inner split 与 support 修复完成，等待正式 Fold0 验收"
   }
 }

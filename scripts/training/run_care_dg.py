@@ -40,6 +40,11 @@ CONFIG_PATH = REPO_ROOT / "configs/care_dg/care_dg_v1.yaml"
 SCAR = 5
 EDEMA = 4
 PATCH_SHAPE = (8, 128, 128)
+ALLOWED_W0_CONTRACT_STATUSES = {
+    "W1_IMPLEMENTATION_AND_REAL_CASE_GATES_PASS_FORMAL_TRAINING_NOT_STARTED",
+    "GATE_A_REPAIRED_IMPLEMENTATION_PASS",
+}
+PROTECTED_RUNTIME_LABELS = {"formal"}
 
 
 def now_utc() -> str:
@@ -103,13 +108,13 @@ def read_resampled(path: Path | None, ref: sitk.Image) -> np.ndarray:
 
 
 def support_maps(anchor_mask: np.ndarray, ref: sitk.Image) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
-    tissue = np.isin(anchor_mask, [1, 2, 3, 4, 5]).astype(np.uint8)
+    tissue = np.isin(anchor_mask, [1, 4, 5]).astype(np.uint8)
     img = sitk.GetImageFromArray(tissue)
     img.CopyInformation(ref)
     dist_img = sitk.SignedMaurerDistanceMap(img, insideIsPositive=False, squaredDistance=False, useImageSpacing=True)
     dist = sitk.GetArrayFromImage(dist_img).astype(np.float32)
-    myocardium_support = (1.0 / (1.0 + np.exp((dist - 6.0) / 2.0))).astype(np.float32)
-    edema_support = (1.0 / (1.0 + np.exp((dist - 10.0) / 2.0))).astype(np.float32)
+    myocardium_support = (1.0 / (1.0 + np.exp(np.clip((dist - 6.0) / 2.0, -60.0, 60.0)))).astype(np.float32)
+    edema_support = (1.0 / (1.0 + np.exp(np.clip((dist - 10.0) / 2.0, -60.0, 60.0)))).astype(np.float32)
     return myocardium_support[None], edema_support[None], dist[None]
 
 
@@ -199,6 +204,77 @@ def choose_center(record: dict[str, np.ndarray], rng: random.Random, mode: str, 
         max(0, min(labels.shape[1] - 1, int(y) + jitter[1])),
         max(0, min(labels.shape[2] - 1, int(x) + jitter[2])),
     )
+
+
+def sha256_case_ids(case_ids: list[str]) -> str:
+    return hashlib.sha256("\n".join(sorted(case_ids)).encode("utf-8")).hexdigest()
+
+
+def validate_inner_split_contract(split_payload: dict[str, Any]) -> None:
+    actual_train = set(split_payload.get("actual_train_cases") or [])
+    inner_select = set(split_payload.get("inner_select_cases") or [])
+    complete_actual = set(split_payload.get("complete_actual_train_cases") or [])
+    complete_inner = set(split_payload.get("complete_inner_select_cases") or [])
+    if actual_train & inner_select:
+        raise ValueError("CARE_DG_INNER_SELECT_LEAKS_INTO_STAGE_A_TRAINING")
+    if complete_actual & inner_select:
+        raise ValueError("CARE_DG_INNER_SELECT_LEAKS_INTO_STAGE_B_TRAINING")
+    if complete_inner and complete_inner != inner_select:
+        raise ValueError("CARE_DG_INNER_OBJECTIVE_NOT_FIXED_COMPLETE_TRIMODAL_SUBSET")
+    if split_payload.get("outer_val_used") is not False:
+        raise ValueError("CARE_DG_OUTER_VAL_USED_FOR_INNER_SELECTION")
+
+
+def deterministic_inner_split(outer_train: list[str], fold: int, metadata: Any) -> dict[str, Any]:
+    ranked = sorted(outer_train, key=lambda c: hashlib.sha256(f"{fold}:{c}:inner:r1".encode()).hexdigest())
+    complete = [c for c in ranked if metadata[c].modality_group == "C0+LGE+T2"]
+    target_complete = max(8, len(complete) // 5)
+    if len(complete) >= target_complete:
+        inner_select = sorted(complete[:target_complete])
+        policy = "complete_trimodal_train_side_inner_split"
+    else:
+        by_group: dict[str, list[str]] = {}
+        for case_id in ranked:
+            by_group.setdefault(str(metadata[case_id].modality_group), []).append(case_id)
+        target = max(8, len(ranked) // 5)
+        selected: list[str] = []
+        while len(selected) < target and any(by_group.values()):
+            for group in sorted(by_group):
+                if by_group[group] and len(selected) < target:
+                    selected.append(by_group[group].pop(0))
+        inner_select = sorted(selected)
+        policy = "stratified_modality_group_train_side_inner_split_complete_insufficient"
+    actual_train = sorted(c for c in outer_train if c not in set(inner_select))
+    complete_actual_train = sorted(c for c in actual_train if metadata[c].modality_group == "C0+LGE+T2")
+    complete_inner_select = sorted(c for c in inner_select if metadata[c].modality_group == "C0+LGE+T2")
+    payload = {
+        "fold": fold,
+        "policy": policy,
+        "outer_train_cases": sorted(outer_train),
+        "actual_train_cases": actual_train,
+        "inner_select_cases": inner_select,
+        "complete_actual_train_cases": complete_actual_train,
+        "complete_inner_select_cases": complete_inner_select,
+        "counts": {
+            "outer_train": len(outer_train),
+            "actual_train": len(actual_train),
+            "inner_select": len(inner_select),
+            "complete_actual_train": len(complete_actual_train),
+            "complete_inner_select": len(complete_inner_select),
+        },
+        "sha256": {
+            "outer_train": sha256_case_ids(outer_train),
+            "actual_train": sha256_case_ids(actual_train),
+            "inner_select": sha256_case_ids(inner_select),
+            "complete_actual_train": sha256_case_ids(complete_actual_train),
+            "complete_inner_select": sha256_case_ids(complete_inner_select),
+        },
+        "fixed_inner_objective": "complete_inner_select_binary_care_dg_loss_stage_A_mode",
+        "outer_val_used": False,
+        "margin_cap_population": "actual_train_cases_only",
+    }
+    validate_inner_split_contract(payload)
+    return payload
 
 
 def inner_split(cases: list[str], fold: int) -> tuple[list[str], list[str]]:
@@ -291,7 +367,7 @@ def margin_caps_for_cases(case_ids: list[str], case_to_fold: dict[str, int], met
             cap = float(np.clip(q95 + 1.0, 2.0, 8.0))
             return {"status": "PASS", "error_voxels": len(values), "q95_abs_anchor_margin": q95, "cap": cap}
         return {"status": "NO_ERROR_VOXELS_FALLBACK_MIN_CAP", "error_voxels": 0, "q95_abs_anchor_margin": 1.0, "cap": 2.0}
-    return {"scar": bound(scar_values), "edema_zone": bound(edema_values)}
+    return {"scar": bound(scar_values), "edema_zone": bound(edema_values), "fit_population": "actual_train_cases_only", "case_count": len(case_ids), "case_ids_sha256": sha256_case_ids(case_ids)}
 
 
 def sampler_quota_audit(case_ids: list[str], case_to_fold: dict[str, int], metadata: Any, cache: CaseCache, *, stage: str, batch_size: int, samples: int = 1000, seed: int = 20260727) -> dict[str, Any]:
@@ -333,7 +409,7 @@ def activation_stats(out: dict[str, torch.Tensor], labels: torch.Tensor, anchor_
         labels = labels[:, 0]
     if anchor_mask.ndim == 5:
         anchor_mask = anchor_mask[:, 0]
-    t2 = t2_present.to(labels.device).view(-1, 1, 1, 1)
+    t2 = t2_present.to(labels.device).view(-1, 1, 1, 1, 1)
     scar_fn = ((labels == SCAR) & (anchor_mask != SCAR)).unsqueeze(1)
     scar_fp = ((labels != SCAR) & (anchor_mask == SCAR)).unsqueeze(1)
     zone_gt = (labels == SCAR) | (labels == EDEMA)
@@ -352,13 +428,13 @@ def activation_stats(out: dict[str, torch.Tensor], labels: torch.Tensor, anchor_
         "scar_q_fp_true_fp_median": med(out["scar_q_fp"], scar_fp),
         "scar_q_fp_correct_median": med(out["scar_q_fp"], correct),
         "edema_q_fn_true_fn_median": med(out["edema_q_fn"], edema_fn),
-        "edema_q_fn_correct_median": med(out["edema_q_fn"], correct & (t2 > 0).unsqueeze(1)),
+        "edema_q_fn_correct_median": med(out["edema_q_fn"], correct & (t2 > 0)),
         "edema_q_fp_true_fp_median": med(out["edema_q_fp"], edema_fp),
-        "edema_q_fp_correct_median": med(out["edema_q_fp"], correct & (t2 > 0).unsqueeze(1)),
+        "edema_q_fp_correct_median": med(out["edema_q_fp"], correct & (t2 > 0)),
         "scar_m_fn_median": float(out["scar_m_fn"].detach().median().cpu()),
         "scar_m_fp_median": float(out["scar_m_fp"].detach().median().cpu()),
-        "edema_m_fn_median": float(out["edema_m_fn"].detach()[(t2 > 0).unsqueeze(1).expand_as(out["edema_m_fn"])].median().cpu()) if (t2 > 0).any() else 0.0,
-        "edema_m_fp_median": float(out["edema_m_fp"].detach()[(t2 > 0).unsqueeze(1).expand_as(out["edema_m_fp"])].median().cpu()) if (t2 > 0).any() else 0.0,
+        "edema_m_fn_median": float(out["edema_m_fn"].detach()[(t2 > 0).expand_as(out["edema_m_fn"])].median().cpu()) if (t2 > 0).any() else 0.0,
+        "edema_m_fp_median": float(out["edema_m_fp"].detach()[(t2 > 0).expand_as(out["edema_m_fp"])].median().cpu()) if (t2 > 0).any() else 0.0,
         "scar_saturation_fraction": frac(out["scar_m_fn"] >= 0.95 * float(out["scar_m_fn"].detach().max().clamp_min(1e-6))),
         "edema_saturation_fraction": frac(out["edema_m_fn"] >= 0.95 * float(out["edema_m_fn"].detach().max().clamp_min(1e-6))),
     }
@@ -419,7 +495,7 @@ def validate_w0(result_root: Path) -> None:
     if report.get("status") != "PASS":
         raise SystemExit("CARE_DG_FORMAL_TRAINING_BLOCKED_W0_VALIDATOR_NOT_PASS")
     impl = json.loads((result_root / "implementation_contract.json").read_text(encoding="utf-8"))
-    if not str(impl.get("status", "")).startswith("W1_IMPLEMENTATION"):
+    if str(impl.get("status", "")).strip() not in ALLOWED_W0_CONTRACT_STATUSES:
         raise SystemExit("CARE_DG_FORMAL_TRAINING_BLOCKED_W1_NOT_PASS")
 
 
@@ -431,13 +507,18 @@ def train_fold(fold: int, args: argparse.Namespace, result_root: Path) -> dict[s
     splits = load_splits(); split = next(row for row in splits if int(row["fold"]) == fold)
     outer_train = sorted(split["train"]); outer_val = sorted(split["val"])
     metadata = load_myops_case_metadata(REPO_ROOT)
-    train_cases, inner_select = inner_split(outer_train, fold)
+    split_contract = deterministic_inner_split(outer_train, fold, metadata)
+    train_cases = list(split_contract["actual_train_cases"])
+    inner_select = list(split_contract["complete_inner_select_cases"] or split_contract["inner_select_cases"])
+    complete_train_cases = list(split_contract["complete_actual_train_cases"])
     if args.preflight_steps:
         stage_a_steps = int(args.preflight_steps); stage_b_steps = 0; batch_size = min(2, args.batch_size)
     else:
         stage_a_steps = args.stage_a_steps; stage_b_steps = args.stage_b_steps; batch_size = args.batch_size
-    runtime_kind = "preflight" if args.preflight_steps else args.runtime_label
+    runtime_kind = args.runtime_label
     runtime_root = result_root / "runtime" / runtime_kind / f"fold{fold}"
+    if runtime_kind in PROTECTED_RUNTIME_LABELS:
+        raise SystemExit(f"CARE_DG_RUNTIME_LABEL_PROTECTED_READ_ONLY:{runtime_kind}")
     receipt_path = runtime_root / "fold_training_receipt.json"
     if args.resume and receipt_path.exists():
         receipt = json.loads(receipt_path.read_text(encoding="utf-8"))
@@ -459,8 +540,9 @@ def train_fold(fold: int, args: argparse.Namespace, result_root: Path) -> dict[s
     case_to_fold: dict[str, int] = {}
     for row in json.loads((result_root / "nnunet_oof_anchor_manifest.json").read_text(encoding="utf-8"))["entries"]:
         case_to_fold[str(row["case_id"])] = int(row["source_fold"])
-    cap_audit = margin_caps_for_cases(outer_train, case_to_fold, metadata, cache)
-    sampler_audit = sampler_quota_audit(train_cases, case_to_fold, metadata, cache, stage="A", batch_size=batch_size, samples=1000, seed=args.seed + fold)
+    cap_audit = margin_caps_for_cases(train_cases, case_to_fold, metadata, cache)
+    sampler_audit = sampler_quota_audit(train_cases, case_to_fold, metadata, cache, stage="A", batch_size=max(8, batch_size), samples=1000, seed=args.seed + fold)
+    write_json(runtime_root / "inner_split_manifest.json", split_contract)
     write_json(runtime_root / "sampler_quota_audit.json", sampler_audit)
     write_json(runtime_root / "margin_cap_audit.json", cap_audit)
     if sampler_audit.get("status") != "PASS":
@@ -508,7 +590,7 @@ def train_fold(fold: int, args: argparse.Namespace, result_root: Path) -> dict[s
                             best_inner = inner
                             best_path = path
             print(json.dumps({"fold": fold, "status": "RESUME_FROM_CHECKPOINT", "checkpoint": str(resume_ckpt), "resume_step": resume_step}), flush=True)
-    stage_specs = [("A", stage_a_steps, train_cases, args.lr_stage_a), ("B", stage_b_steps, [c for c in outer_train if metadata[c].modality_group == "C0+LGE+T2"], args.lr_stage_b)]
+    stage_specs = [("A", stage_a_steps, train_cases, args.lr_stage_a), ("B", stage_b_steps, complete_train_cases, args.lr_stage_b)]
     for stage, steps, cases, lr in stage_specs:
         if steps <= 0:
             continue
@@ -561,6 +643,43 @@ def train_fold(fold: int, args: argparse.Namespace, result_root: Path) -> dict[s
                     best_inner = inner_loss; best_path = path
     last_path = ckpt_dir / "checkpoint_last.pt"
     save_care_dg_checkpoint(last_path, model, optimizer, total_steps, {"fold": fold, "stage": "terminal", "outer_val_used_for_selection": False})
+    reload_model, reload_step, reload_extra = load_care_dg_checkpoint(last_path)
+    reload_model = reload_model.to(device)
+    reload_batch = move_tensors(build_batch(train_cases, case_to_fold, metadata, cache, rng, stage="A", batch_size=min(1, batch_size)), device)
+    with torch.no_grad():
+        before_reload = model(
+            reload_batch["images"],
+            reload_batch["availability"],
+            reload_batch["anchor_logits"],
+            uncertainty=reload_batch["uncertainty"],
+            myocardium_support=reload_batch["myocardium_support"],
+            edema_support=reload_batch["edema_support"],
+            distance_to_myocardium=reload_batch["distance_to_myocardium"],
+            t2_present=reload_batch["t2_present"],
+            strict_inputs=True,
+            anchor_value_kind=reload_batch["anchor_value_kind"],
+        )["final_logits"].detach().cpu()
+        after_reload = reload_model(
+            reload_batch["images"],
+            reload_batch["availability"],
+            reload_batch["anchor_logits"],
+            uncertainty=reload_batch["uncertainty"],
+            myocardium_support=reload_batch["myocardium_support"],
+            edema_support=reload_batch["edema_support"],
+            distance_to_myocardium=reload_batch["distance_to_myocardium"],
+            t2_present=reload_batch["t2_present"],
+            strict_inputs=True,
+            anchor_value_kind=reload_batch["anchor_value_kind"],
+        )["final_logits"].detach().cpu()
+    checkpoint_reload = {
+        "status": "PASS" if reload_step == total_steps and float((before_reload - after_reload).abs().max()) <= 1e-6 else "NEEDS_REPAIR",
+        "reload_step": reload_step,
+        "expected_step": total_steps,
+        "extra": reload_extra,
+        "max_abs_final_logits_delta": float((before_reload - after_reload).abs().max()),
+    }
+    if checkpoint_reload["status"] != "PASS":
+        raise RuntimeError(f"checkpoint write/reload parity failed for fold={fold}: {checkpoint_reload}")
     last_row = {"fold": fold, "stage": "last", "step": total_steps, "checkpoint_path": str(last_path), "checkpoint_sha256": sha256_file(last_path), "inner_loss": best_inner, "selection_population": "terminal_last", "outer_val_used": False}
     ckpt_rows.append(last_row)
     if best_path is None:
@@ -570,8 +689,26 @@ def train_fold(fold: int, args: argparse.Namespace, result_root: Path) -> dict[s
     best_row = {"fold": fold, "stage": "best", "step": total_steps, "checkpoint_path": str(best_alias), "checkpoint_sha256": sha256_file(best_alias), "inner_loss": best_inner, "selection_population": "train_side_inner_split", "outer_val_used": False}
     ckpt_rows.append(best_row)
     write_csv(runtime_root / "checkpoint_manifest.csv", ckpt_rows)
-    receipt = {"fold": fold, "status": "PASS", "runtime_kind": runtime_kind, "preflight_only": bool(args.preflight_steps), "expected_stage_a_steps": stage_a_steps, "expected_stage_b_steps": stage_b_steps, "actual_optimizer_steps": total_steps, "outer_train_cases": len(outer_train), "outer_val_cases": len(outer_val), "inner_train_cases": len(train_cases), "inner_selection_cases": len(inner_select), "complete_trimodal_train_cases": sum(metadata[c].modality_group == "C0+LGE+T2" for c in outer_train), "t2_reliable_train_cases": sum(bool(metadata[c].t2_present) for c in outer_train), "best_checkpoint": str(best_alias), "last_checkpoint": str(last_path), "best_inner_loss": best_inner, "outer_val_used_for_checkpoint_selection": False, "anchor_value_kind": "log_probabilities", "margin_cap_audit": cap_audit, "sampler_quota_audit": sampler_audit, "source_hashes": source_hashes(), "elapsed_seconds": round(time.time() - started, 1), "terminal_time_utc": now_utc(), "curve_rows": len(log_rows), "checkpoint_rows": len(ckpt_rows)}
+    receipt = {"fold": fold, "status": "PASS", "runtime_kind": runtime_kind, "preflight_only": bool(args.preflight_steps), "formal_training_credit": 0 if args.preflight_steps else total_steps, "validate_w0_status": "PASS", "expected_stage_a_steps": stage_a_steps, "expected_stage_b_steps": stage_b_steps, "actual_optimizer_steps": total_steps, "outer_train_cases": len(outer_train), "outer_val_cases": len(outer_val), "actual_train_cases": len(train_cases), "inner_train_cases": len(train_cases), "inner_selection_cases": len(inner_select), "complete_trimodal_train_cases": len(complete_train_cases), "complete_inner_selection_cases": len(split_contract["complete_inner_select_cases"]), "t2_reliable_train_cases": sum(bool(metadata[c].t2_present) for c in train_cases), "best_checkpoint": str(best_alias), "last_checkpoint": str(last_path), "best_inner_loss": best_inner, "outer_val_used_for_checkpoint_selection": False, "stage_a_case_ids_sha256": split_contract["sha256"]["actual_train"], "stage_b_case_ids_sha256": split_contract["sha256"]["complete_actual_train"], "inner_select_case_ids_sha256": split_contract["sha256"]["inner_select"], "complete_inner_select_case_ids_sha256": split_contract["sha256"]["complete_inner_select"], "fixed_inner_objective": split_contract["fixed_inner_objective"], "anchor_value_kind": "log_probabilities", "support_map_contract": "myocardium_union_labels_1_4_5_excludes_lv_rv_2_3_soft_shells_6mm_10mm", "checkpoint_write_reload": checkpoint_reload, "margin_cap_audit": cap_audit, "sampler_quota_audit": sampler_audit, "source_hashes": source_hashes(), "elapsed_seconds": round(time.time() - started, 1), "terminal_time_utc": now_utc(), "curve_rows": len(log_rows), "checkpoint_rows": len(ckpt_rows)}
     write_json(runtime_root / "fold_training_receipt.json", receipt)
+    if args.preflight_steps:
+        write_json(runtime_root / "preflight_validator_report.json", {
+            "created_at_utc": now_utc(),
+            "status": "PASS",
+            "formal_training_credit": 0,
+            "checked": [
+                "validate_w0",
+                "oof_anchor_loading",
+                "probability_to_log_probability",
+                "soft_support_maps",
+                "sampler",
+                "margin_cap_train_only",
+                "forward_backward",
+                "checkpoint_write_reload",
+                "receipt",
+            ],
+            "receipt_path": str(receipt_path),
+        })
     return receipt
 
 
@@ -613,7 +750,7 @@ def main() -> int:
     parser.add_argument("--stage-b-steps", type=int, default=3000)
     parser.add_argument("--batch-size", type=int, default=8)
     parser.add_argument("--preflight-steps", type=int, default=0)
-    parser.add_argument("--runtime-label", default="formal")
+    parser.add_argument("--runtime-label", default="repaired_formal")
     parser.add_argument("--resume", action="store_true")
     parser.add_argument("--allow-cpu", action="store_true")
     parser.add_argument("--amp", action="store_true", default=True)

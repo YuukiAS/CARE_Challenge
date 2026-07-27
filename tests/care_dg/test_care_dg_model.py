@@ -2,11 +2,14 @@ from __future__ import annotations
 
 from pathlib import Path
 
+import numpy as np
 import pytest
+import SimpleITK as sitk
 import torch
 
 from src.care_myocardium.data.care_dg_dataset import validate_care_dg_batch
 from src.care_myocardium.models.care_dg import EDEMA_CHANNEL, SCAR_CHANNEL, apply_competitive_correction, build_care_dg
+from scripts.training.run_care_dg import deterministic_inner_split, support_maps, validate_inner_split_contract, validate_w0
 from src.care_myocardium.training.care_dg_trainer import (
     care_dg_loss,
     load_care_dg_checkpoint,
@@ -256,3 +259,81 @@ def test_formal_mode_rejects_missing_inputs_and_anchor_kind() -> None:
             strict_inputs=True,
             anchor_value_kind="log_probabilities",
         )
+
+
+def test_validate_w0_accepts_only_preregistered_pass_statuses(tmp_path: Path) -> None:
+    (tmp_path / "strict_validator_report.json").write_text('{"status":"PASS"}\n', encoding="utf-8")
+    for status in [
+        "W1_IMPLEMENTATION_AND_REAL_CASE_GATES_PASS_FORMAL_TRAINING_NOT_STARTED",
+        "GATE_A_REPAIRED_IMPLEMENTATION_PASS",
+    ]:
+        (tmp_path / "implementation_contract.json").write_text(f'{{"status":"{status}"}}\n', encoding="utf-8")
+        validate_w0(tmp_path)
+    for status in ["", "NEEDS_REPAIR", "GATE_A_REPAIRED_IMPLEMENTATION_PASS_EXTRA", "SOME_PASS_STRING"]:
+        (tmp_path / "implementation_contract.json").write_text(f'{{"status":"{status}"}}\n', encoding="utf-8")
+        with pytest.raises(SystemExit, match="CARE_DG_FORMAL_TRAINING_BLOCKED_W1_NOT_PASS"):
+            validate_w0(tmp_path)
+
+
+def test_inner_split_excludes_selection_from_stage_a_stage_b_and_records_hashes() -> None:
+    class Meta:
+        def __init__(self, group: str) -> None:
+            self.modality_group = group
+
+    cases = [f"Case{i:04d}" for i in range(30)]
+    metadata = {case: Meta("C0+LGE+T2" if i < 15 else "C0+LGE") for i, case in enumerate(cases)}
+    split = deterministic_inner_split(cases, fold=0, metadata=metadata)
+    assert split["counts"]["inner_select"] >= 8
+    assert split["counts"]["complete_inner_select"] == split["counts"]["inner_select"]
+    assert not (set(split["actual_train_cases"]) & set(split["inner_select_cases"]))
+    assert not (set(split["complete_actual_train_cases"]) & set(split["inner_select_cases"]))
+    assert split["sha256"]["actual_train"]
+    assert split["sha256"]["inner_select"]
+    bad = dict(split)
+    bad["actual_train_cases"] = list(split["actual_train_cases"]) + [split["inner_select_cases"][0]]
+    with pytest.raises(ValueError, match="INNER_SELECT_LEAKS_INTO_STAGE_A"):
+        validate_inner_split_contract(bad)
+    bad = dict(split)
+    bad["complete_actual_train_cases"] = list(split["complete_actual_train_cases"]) + [split["inner_select_cases"][0]]
+    with pytest.raises(ValueError, match="INNER_SELECT_LEAKS_INTO_STAGE_B"):
+        validate_inner_split_contract(bad)
+
+
+def test_soft_myocardium_support_excludes_lv_rv_and_decays_continuously() -> None:
+    anchor = np.zeros((21, 64, 64), dtype=np.int16)
+    anchor[10, 10:15, 10:15] = 1
+    anchor[10, 22, 22] = SCAR_CHANNEL
+    anchor[10, 30, 30] = EDEMA_CHANNEL
+    anchor[10, 52, 52] = 2
+    anchor[10, 56, 56] = 3
+    ref = sitk.GetImageFromArray(anchor.astype(np.float32))
+    ref.SetSpacing((1.0, 1.0, 1.0))
+    scar_support, edema_support, dist = support_maps(anchor, ref)
+    assert float(scar_support[0, 10, 12, 12]) > 0.90
+    assert float(scar_support[0, 10, 22, 22]) > 0.90
+    assert float(edema_support[0, 10, 30, 30]) > 0.90
+    assert float(dist[0, 10, 52, 52]) > 6.0
+    assert float(scar_support[0, 10, 52, 52]) < 0.10
+    assert float(scar_support[0, 10, 56, 56]) < 0.10
+    near_shell = float(scar_support[0, 10, 17, 12])
+    far_background = float(scar_support[0, 10, 35, 12])
+    assert 0.0 < far_background < near_shell < 1.0
+
+
+def test_zero_correction_identity_with_soft_support_inputs() -> None:
+    batch = _batch(batch=1, t2=(1.0,))
+    batch["myocardium_support"].fill_(0.25)
+    batch["edema_support"].fill_(0.5)
+    batch["distance_to_myocardium"] = torch.ones(1, 1, 4, 16, 16)
+    model = build_care_dg({"encoder_channels": (8, 12, 16), "context_channels": 4})
+    out = model(
+        batch["images"],
+        batch["availability"],
+        batch["anchor_logits"],
+        myocardium_support=batch["myocardium_support"],
+        edema_support=batch["edema_support"],
+        distance_to_myocardium=batch["distance_to_myocardium"],
+        t2_present=batch["t2_present"],
+        force_zero_correction=True,
+    )
+    torch.testing.assert_close(out["final_logits"], batch["anchor_logits"])

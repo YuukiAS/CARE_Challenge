@@ -1,5 +1,5 @@
 {
-  "created_at_utc": "2026-07-27T09:53:41Z",
+  "created_at_utc": "2026-07-27T10:34:28Z",
   "py_compile": {
     "cmd": [
       "/users/a/e/aereinh/CARE/envs/env_CARE/bin/python",
@@ -9,9 +9,10 @@
       "src/care_myocardium/training/care_dg_trainer.py",
       "src/care_myocardium/inference/care_dg_predictor.py",
       "scripts/training/run_care_dg.py",
-      "scripts/evaluation/run_care_dg_gate_a_checks.py"
+      "scripts/evaluation/run_care_dg_gate_a_checks.py",
+      "scripts/evaluation/build_care_dg_validation_packet.py"
     ],
-    "elapsed_seconds": 0.105,
+    "elapsed_seconds": 0.144,
     "returncode": 0,
     "stderr": "",
     "stdout": ""
@@ -24,10 +25,10 @@
       "tests/care_dg",
       "-q"
     ],
-    "elapsed_seconds": 8.966,
+    "elapsed_seconds": 4.171,
     "returncode": 0,
     "stderr": "",
-    "stdout": "...............                                                          [100%]\n15 passed in 3.44s"
+    "stdout": "...................                                                      [100%]\n=============================== warnings summary ===============================\n<frozen importlib._bootstrap>:488\n  <frozen importlib._bootstrap>:488: DeprecationWarning: builtin type SwigPyPacked has no __module__ attribute\n\n<frozen importlib._bootstrap>:488\n  <frozen importlib._bootstrap>:488: DeprecationWarning: builtin type SwigPyObject has no __module__ attribute\n\n<frozen importlib._bootstrap>:488\n  <frozen importlib._bootstrap>:488: DeprecationWarning: builtin type swigvarlink has no __module__ attribute\n\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n19 passed, 3 warnings in 2.83s"
   },
   "status": "PASS",
   "strict_validator": {
@@ -35,10 +36,10 @@
       "/users/a/e/aereinh/CARE/envs/env_CARE/bin/python",
       "scripts/evaluation/validate_care_dg_packet.py"
     ],
-    "elapsed_seconds": 0.167,
+    "elapsed_seconds": 0.084,
     "returncode": 0,
     "stderr": "",
-    "stdout": "{\n  \"checked_at_utc\": \"2026-07-27T09:53:41Z\",\n  \"failures\": [],\n  \"known_bad_failures\": [],\n  \"status\": \"PASS\",\n  \"task_key\": \"20260727_care_dg_dual_pathology_validation\"\n}"
+    "stdout": "{\n  \"checked_at_utc\": \"2026-07-27T10:34:28Z\",\n  \"failures\": [],\n  \"known_bad_failures\": [],\n  \"status\": \"PASS\",\n  \"task_key\": \"20260727_care_dg_dual_pathology_validation\"\n}"
   },
   "unit_smoke": {
     "cmd": [
@@ -46,7 +47,7 @@
       "scripts/training/run_care_dg.py",
       "--unit-smoke"
     ],
-    "elapsed_seconds": 1.55,
+    "elapsed_seconds": 1.547,
     "returncode": 0,
     "stderr": "",
     "stdout": "{\n  \"edema_delta_nonconstant\": true,\n  \"final_logits_shape\": [\n    1,\n    6,\n    4,\n    16,\n    16\n  ],\n  \"scar_delta_nonconstant\": true,\n  \"status\": \"PASS\"\n}"

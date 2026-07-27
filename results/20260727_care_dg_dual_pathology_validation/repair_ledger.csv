@@ -1,4 +1,4 @@
-timestamp_utc,wave,issue,severity,repair_action,old_evidence,new_evidence,status
+timestamp_utc,wave,issue,severity,action,old_hash,new_hash,status
 2026-07-27T04:13:31Z,W0,full_oof_anchor_sha256_deferred_after_npz_full_read_timeout,formal_training_blocking_repairable,,,,OPEN
 2026-07-27T04:13:31Z,W0,evaluator_parity_not_yet_recomputed,formal_training_blocking_repairable,,,,OPEN
 2026-07-27T04:15:30Z,W0,builder_import_path_missing_repo_root,repairable,,,,REPAIRED_RERUN_PENDING
@@ -13,4 +13,6 @@ timestamp_utc,wave,issue,severity,repair_action,old_evidence,new_evidence,status
 2026-07-27T04:44:53Z,W2,preflight_nonfinite_loss_marked_pass,repairable_blocking,,,,REPAIRED_RERUN_PENDING
 2026-07-27T04:46:00Z,W2,preflight_runtime_path_mixed_with_formal_path,repairable_blocking,,,,REPAIRED_RERUN_PENDING
 2026-07-27T08:55:25Z,W2,formal_training_srun_step_killed_and_runner_resume_not_loading_checkpoint,repairable_blocking,,,,REPAIRED_RERUN_PENDING
-2026-07-27T09:35:07Z,W2_AMENDMENT,pre_repair_fold0_fold1_invalid_semantics_and_training_paused,blocking_repair_required,stopped active CARE-DG training PID after latest fold1 checkpoint_step06000; marked pre-repair formal artifacts diagnostic-only; repair edema-zone FP margin bounded magnitude partial-label remote support provenance sampler before repaired fold0 rerun,runtime/formal/fold0 PASS receipt and fold1 partial curve/checkpoint_step06000,pre_repair_invalid_semantics_manifest.json,REPAIR_SCOPE_OPEN
+2026-07-27T09:35:07Z,W2_AMENDMENT,pre_repair_fold0_fold1_invalid_semantics_and_training_paused,blocking_repair_required,,,,REPAIR_SCOPE_OPEN
+2026-07-27T10:26:44Z,GateA-R1,preflight_sampler_quota_audit_batch2_reset_pattern_false_fail,repairable_blocking,audit sampler quota with full 8-slot pattern while keeping two-step preflight optimizer batch small and zero formal credit,see_git_diff_pre_repair_runner_hash_unrecorded_before_minimal_fix,27fa936b5d9f3e72118ad0fcee0f4384ecfec32be489bf9dbdf54389c1328055,PASS_AFTER_RERUN
+2026-07-27T10:30:38Z,GateA-R1,preflight_activation_stats_t2_mask_broadcast_batch2_failure,repairable_blocking,reshape t2 mask to Bx1x1x1x1 for activation stats and clip soft-support sigmoid exponent to avoid overflow warnings,18dd8027c35662f148b4f911e8eb2cd02e6a6b72a597163d49215a3ae0ec35b6,27fa936b5d9f3e72118ad0fcee0f4384ecfec32be489bf9dbdf54389c1328055,PASS_AFTER_RERUN

@@ -1,0 +1,93 @@
+{
+  "actual_optimizer_steps": 2,
+  "actual_train_cases": 164,
+  "anchor_value_kind": "log_probabilities",
+  "best_checkpoint": "/users/a/e/aereinh/CARE/results/20260727_care_dg_dual_pathology_validation/runtime/gate_a_r1_preflight/fold0/checkpoints/checkpoint_best.pt",
+  "best_inner_loss": 5.502810955047607,
+  "checkpoint_rows": 2,
+  "checkpoint_write_reload": {
+    "expected_step": 2,
+    "extra": {
+      "fold": 0,
+      "outer_val_used_for_selection": false,
+      "stage": "terminal"
+    },
+    "max_abs_final_logits_delta": 0.0,
+    "reload_step": 2,
+    "status": "PASS"
+  },
+  "complete_inner_select_case_ids_sha256": "1669a7f65553180f806dcf3810e73bdd17b5632fc7e4f8e546a18097a40081cf",
+  "complete_inner_selection_cases": 12,
+  "complete_trimodal_train_cases": 52,
+  "curve_rows": 2,
+  "elapsed_seconds": 4.9,
+  "expected_stage_a_steps": 2,
+  "expected_stage_b_steps": 0,
+  "fixed_inner_objective": "complete_inner_select_binary_care_dg_loss_stage_A_mode",
+  "fold": 0,
+  "formal_training_credit": 0,
+  "inner_select_case_ids_sha256": "1669a7f65553180f806dcf3810e73bdd17b5632fc7e4f8e546a18097a40081cf",
+  "inner_selection_cases": 12,
+  "inner_train_cases": 164,
+  "last_checkpoint": "/users/a/e/aereinh/CARE/results/20260727_care_dg_dual_pathology_validation/runtime/gate_a_r1_preflight/fold0/checkpoints/checkpoint_last.pt",
+  "margin_cap_audit": {
+    "case_count": 164,
+    "case_ids_sha256": "6c9664c525ca17e9d0591a62302f143dc7881307d94a4e49aa685f98ac60e7e9",
+    "edema_zone": {
+      "cap": 8.0,
+      "error_voxels": 121751,
+      "q95_abs_anchor_margin": 11.512924194335938,
+      "status": "PASS"
+    },
+    "fit_population": "actual_train_cases_only",
+    "scar": {
+      "cap": 8.0,
+      "error_voxels": 285206,
+      "q95_abs_anchor_margin": 11.512917518615723,
+      "status": "PASS"
+    }
+  },
+  "outer_train_cases": 176,
+  "outer_val_cases": 44,
+  "outer_val_used_for_checkpoint_selection": false,
+  "preflight_only": true,
+  "runtime_kind": "gate_a_r1_preflight",
+  "sampler_quota_audit": {
+    "batch_size": 8,
+    "counts": {
+      "error_fn": 250,
+      "error_fp": 250,
+      "pathology": 250,
+      "random": 250
+    },
+    "fractions": {
+      "error_fn": 0.25,
+      "error_fp": 0.25,
+      "pathology": 0.25,
+      "random": 0.25
+    },
+    "samples": 1000,
+    "stage": "A",
+    "status": "PASS"
+  },
+  "source_hashes": {
+    "configs/care_dg/care_dg_v1.yaml": "fb5c87ab26c3a9001b05dc23045939e9bc9cd269101e3dafd807e44aea32d225",
+    "scripts/evaluation/evaluate_care_dg.py": "aae033a503189bf75cf100c087a65568940370ec4c010b9f7f0a680b3c399651",
+    "scripts/evaluation/select_care_dg_candidate.py": "d319535426cb49800710e8a9e8056ae97cf4abae99bd342dfd2df09b153f5080",
+    "scripts/evaluation/validate_care_dg_packet.py": "d02ef03752072a97d72301bf42338d11e851442b67e403a5e8cd2a6875fcb48b",
+    "scripts/inference/run_care_dg_inference.py": "ceef29361a4ce6eb2224e315ca800381944b2a9c624aa7b8017dab80d54ee771",
+    "scripts/training/run_care_dg.py": "27fa936b5d9f3e72118ad0fcee0f4384ecfec32be489bf9dbdf54389c1328055",
+    "src/care_myocardium/data/care_dg_dataset.py": "96d18e1914b7e08fc029a77c0e7c21467809fa0a5e9e12ad4f1ef2208eba803a",
+    "src/care_myocardium/inference/care_dg_predictor.py": "71b3f935617b42a1190aa6937165ee09ce1a3c52e8a05ad4f6d4e53f9dcacf7c",
+    "src/care_myocardium/models/care_dg.py": "c417404ec469acec3e6ca8adb17a225dc6dddd85776791d50c6edfb35f5a2a03",
+    "src/care_myocardium/training/care_dg_trainer.py": "c9f98a1e302cb3395d55b474c3d3f9929470f5de47956e972968982c529f8dc6",
+    "tests/care_dg/test_care_dg_model.py": "e715af436daea5a664ff5f6c0fc695fd9064e19cbc3d573d603f9faf3e537d8e"
+  },
+  "stage_a_case_ids_sha256": "6c9664c525ca17e9d0591a62302f143dc7881307d94a4e49aa685f98ac60e7e9",
+  "stage_b_case_ids_sha256": "29e89d51f45d206739da06a40108f7697d6dae183d9183f1a95b55c12fc4c4f7",
+  "status": "PASS",
+  "support_map_contract": "myocardium_union_labels_1_4_5_excludes_lv_rv_2_3_soft_shells_6mm_10mm",
+  "t2_reliable_train_cases": 52,
+  "terminal_time_utc": "2026-07-27T10:33:56Z",
+  "validate_w0_status": "PASS"
+}

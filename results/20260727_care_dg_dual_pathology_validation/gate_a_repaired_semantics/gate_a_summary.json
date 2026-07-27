@@ -1,16 +1,40 @@
 {
+  "approval_token_required": "APPROVE_GATE_A_R1",
+  "gate_revision": "A-R1",
   "implementation_contract": "results/20260727_care_dg_dual_pathology_validation/implementation_contract.json",
+  "r1_preflight": {
+    "inner_split_manifest": {
+      "exists": true,
+      "path": "results/20260727_care_dg_dual_pathology_validation/runtime/gate_a_r1_preflight/fold0/inner_split_manifest.json",
+      "sha256": "c5b9db7da156a840e31fc7c2639653215ee615be89fe688f68d94d11f1523e24"
+    },
+    "margin_cap_audit": {
+      "exists": true,
+      "path": "results/20260727_care_dg_dual_pathology_validation/runtime/gate_a_r1_preflight/fold0/margin_cap_audit.json",
+      "sha256": "b450af41aaf086c3f5cc80a3367b425bf649f3725653f5da1386d91536bb921b"
+    },
+    "preflight_receipt": {
+      "exists": true,
+      "path": "results/20260727_care_dg_dual_pathology_validation/runtime/gate_a_r1_preflight/fold0/fold_training_receipt.json",
+      "sha256": "1ec1652d1328579313e71157d2c3090fed491cd932ca82d74f7466117432804f"
+    },
+    "preflight_validator": {
+      "exists": true,
+      "path": "results/20260727_care_dg_dual_pathology_validation/runtime/gate_a_r1_preflight/fold0/preflight_validator_report.json",
+      "sha256": "f5bdd3f4f84d0b708741174280ca34dc2c59131e6ad85a2723abc554764ad3b4"
+    }
+  },
   "real": {
     "checkpoint_resume": {
       "checkpoint": "results/20260727_care_dg_dual_pathology_validation/gate_a_repaired_semantics/checkpoint_resume_parity.pt",
       "checkpoint_sha256": "78e7b0a20c1b0da70dd599e14d7c3504b5465366a182607cd7787bc2e63d874c",
-      "created_at_utc": "2026-07-27T09:53:50Z",
+      "created_at_utc": "2026-07-27T10:34:34Z",
       "max_abs_final_logits_delta": 0.0,
       "resume_step": 0,
       "status": "PASS"
     },
     "forward": {
-      "created_at_utc": "2026-07-27T09:53:49Z",
+      "created_at_utc": "2026-07-27T10:34:33Z",
       "device": "NVIDIA H100 NVL",
       "formal_training_credit": 0,
       "receipts": [
@@ -22,25 +46,25 @@
             105,
             124
           ],
-          "changed_voxels": 224,
-          "edema_decoder_grad_abs_sum": 4789.1753323972225,
-          "edema_delta_abs_sum": 12227.7939453125,
-          "loss": 4.114871978759766,
+          "changed_voxels": 198,
+          "edema_decoder_grad_abs_sum": 4380.736281961203,
+          "edema_delta_abs_sum": 9513.1640625,
+          "loss": 3.9995839595794678,
           "loss_finite": true,
           "metrics": {
-            "edema_gate": 0.6364920139312744,
-            "edema_margin": 3.3812365531921387,
-            "edema_seg": 0.9803305864334106,
-            "identity": 0.15586580336093903,
-            "loss": 4.114871978759766,
-            "remote": 0.5139222145080566,
-            "scar_gate": 0.4886423349380493,
-            "scar_margin": 2.214324951171875,
-            "scar_seg": 1.1061053276062012
+            "edema_gate": 0.6346961259841919,
+            "edema_margin": 3.15447735786438,
+            "edema_seg": 0.9790999293327332,
+            "identity": 0.10895521193742752,
+            "loss": 3.9995839595794678,
+            "remote": 0.5311723947525024,
+            "scar_gate": 0.48889780044555664,
+            "scar_margin": 2.0008156299591064,
+            "scar_seg": 1.1058512926101685
           },
           "no_t2_edema_delta_exact_zero": true,
           "no_t2_edema_grad_exact_zero": true,
-          "scar_decoder_grad_abs_sum": 11969.207743614912
+          "scar_decoder_grad_abs_sum": 9303.265067279339
         },
         {
           "case_id": "Case1001",
@@ -50,25 +74,25 @@
             150,
             125
           ],
-          "changed_voxels": 93,
+          "changed_voxels": 85,
           "edema_decoder_grad_abs_sum": 0.0,
           "edema_delta_abs_sum": 0.0,
-          "loss": 1.328323483467102,
+          "loss": 1.3213624954223633,
           "loss_finite": true,
           "metrics": {
             "edema_gate": 0.0,
             "edema_margin": 0.0,
             "edema_seg": 0.0,
-            "identity": 0.045862335711717606,
-            "loss": 1.328323483467102,
-            "remote": 0.2730120122432709,
-            "scar_gate": 0.49083995819091797,
-            "scar_margin": 2.295668601989746,
-            "scar_seg": 0.4770990014076233
+            "identity": 0.03288767859339714,
+            "loss": 1.3213624954223633,
+            "remote": 0.27105090022087097,
+            "scar_gate": 0.49032360315322876,
+            "scar_margin": 2.2924633026123047,
+            "scar_seg": 0.47269105911254883
           },
           "no_t2_edema_delta_exact_zero": true,
           "no_t2_edema_grad_exact_zero": true,
-          "scar_decoder_grad_abs_sum": 4739.133509248495
+          "scar_decoder_grad_abs_sum": 4189.4315742999315
         }
       ],
       "schema_version": 1,
@@ -76,10 +100,10 @@
     },
     "overfit": {
       "case_id": "Case2001",
-      "created_at_utc": "2026-07-27T09:55:34Z",
+      "created_at_utc": "2026-07-27T10:35:35Z",
       "curve_path": "results/20260727_care_dg_dual_pathology_validation/gate_a_repaired_semantics/implementation_overfit_curve.csv",
-      "edema_active_loss_drop_fraction": 0.4459538582380777,
-      "first_loss": 4.114871978759766,
+      "edema_active_loss_drop_fraction": 0.4434198315475842,
+      "first_loss": 3.9995839595794678,
       "formal_training_credit": 0,
       "gate_requirements": {
         "correct_direction_fraction_min": 0.1,
@@ -89,38 +113,38 @@
         "scar_active_loss_drop_fraction_min": 0.3
       },
       "last_gate_magnitude_stats": {
-        "changed_voxels": 1091,
+        "changed_voxels": 996,
         "correct_direction_fraction": 1.0,
-        "edema_active_loss": 0.8957943236455321,
-        "edema_m_fn_mean": 2.3058953285217285,
-        "edema_m_fp_mean": 2.3890833854675293,
-        "edema_m_saturation_fraction": 0.02329254150390625,
-        "edema_q_fn_non_fn_median": 0.12391576915979385,
-        "edema_q_fn_true_fn_median": 0.9881911277770996,
-        "edema_q_fp_non_fp_median": 0.12235872447490692,
-        "edema_q_fp_true_fp_median": 0.9602471590042114,
-        "elapsed_seconds": 103.6,
-        "loss": 1.965519666671753,
-        "scar_active_loss": 1.0739923594519496,
-        "scar_m_fn_mean": 2.0374996662139893,
-        "scar_m_fp_mean": 2.142366647720337,
-        "scar_m_saturation_fraction": 0.0155029296875,
-        "scar_q_fn_non_fn_median": 0.13231097161769867,
-        "scar_q_fn_true_fn_median": 0.9804161190986633,
-        "scar_q_fp_non_fp_median": 0.12159384787082672,
-        "scar_q_fp_true_fp_median": 0.964047908782959,
+        "edema_active_loss": 0.8982068803161383,
+        "edema_m_fn_mean": 2.315481185913086,
+        "edema_m_fp_mean": 2.310903549194336,
+        "edema_m_saturation_fraction": 0.02176666259765625,
+        "edema_q_fn_non_fn_median": 0.11892203241586685,
+        "edema_q_fn_true_fn_median": 0.99137282371521,
+        "edema_q_fp_non_fp_median": 0.11545216292142868,
+        "edema_q_fp_true_fp_median": 0.9713016748428345,
+        "elapsed_seconds": 61.6,
+        "loss": 1.9671379327774048,
+        "scar_active_loss": 1.0724575584754348,
+        "scar_m_fn_mean": 2.044034481048584,
+        "scar_m_fp_mean": 2.104827404022217,
+        "scar_m_saturation_fraction": 0.0139923095703125,
+        "scar_q_fn_non_fn_median": 0.12474893033504486,
+        "scar_q_fn_true_fn_median": 0.9774138927459717,
+        "scar_q_fp_non_fp_median": 0.11703173071146011,
+        "scar_q_fp_true_fp_median": 0.9700040817260742,
         "step": 300
       },
-      "last_loss": 1.965519666671753,
+      "last_loss": 1.9671379327774048,
       "learning_rate": 0.001,
-      "scar_active_loss_drop_fraction": 0.3265440140300887,
+      "scar_active_loss_drop_fraction": 0.3275070271897875,
       "schema_version": 1,
       "status": "PASS",
       "steps": 300
     }
   },
   "static": {
-    "created_at_utc": "2026-07-27T09:53:41Z",
+    "created_at_utc": "2026-07-27T10:34:28Z",
     "py_compile": {
       "cmd": [
         "/users/a/e/aereinh/CARE/envs/env_CARE/bin/python",
@@ -130,9 +154,10 @@
         "src/care_myocardium/training/care_dg_trainer.py",
         "src/care_myocardium/inference/care_dg_predictor.py",
         "scripts/training/run_care_dg.py",
-        "scripts/evaluation/run_care_dg_gate_a_checks.py"
+        "scripts/evaluation/run_care_dg_gate_a_checks.py",
+        "scripts/evaluation/build_care_dg_validation_packet.py"
       ],
-      "elapsed_seconds": 0.105,
+      "elapsed_seconds": 0.144,
       "returncode": 0,
       "stderr": "",
       "stdout": ""
@@ -145,10 +170,10 @@
         "tests/care_dg",
         "-q"
       ],
-      "elapsed_seconds": 8.966,
+      "elapsed_seconds": 4.171,
       "returncode": 0,
       "stderr": "",
-      "stdout": "...............                                                          [100%]\n15 passed in 3.44s"
+      "stdout": "...................                                                      [100%]\n=============================== warnings summary ===============================\n<frozen importlib._bootstrap>:488\n  <frozen importlib._bootstrap>:488: DeprecationWarning: builtin type SwigPyPacked has no __module__ attribute\n\n<frozen importlib._bootstrap>:488\n  <frozen importlib._bootstrap>:488: DeprecationWarning: builtin type SwigPyObject has no __module__ attribute\n\n<frozen importlib._bootstrap>:488\n  <frozen importlib._bootstrap>:488: DeprecationWarning: builtin type swigvarlink has no __module__ attribute\n\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n19 passed, 3 warnings in 2.83s"
     },
     "status": "PASS",
     "strict_validator": {
@@ -156,10 +181,10 @@
         "/users/a/e/aereinh/CARE/envs/env_CARE/bin/python",
         "scripts/evaluation/validate_care_dg_packet.py"
       ],
-      "elapsed_seconds": 0.167,
+      "elapsed_seconds": 0.084,
       "returncode": 0,
       "stderr": "",
-      "stdout": "{\n  \"checked_at_utc\": \"2026-07-27T09:53:41Z\",\n  \"failures\": [],\n  \"known_bad_failures\": [],\n  \"status\": \"PASS\",\n  \"task_key\": \"20260727_care_dg_dual_pathology_validation\"\n}"
+      "stdout": "{\n  \"checked_at_utc\": \"2026-07-27T10:34:28Z\",\n  \"failures\": [],\n  \"known_bad_failures\": [],\n  \"status\": \"PASS\",\n  \"task_key\": \"20260727_care_dg_dual_pathology_validation\"\n}"
     },
     "unit_smoke": {
       "cmd": [
@@ -167,7 +192,7 @@
         "scripts/training/run_care_dg.py",
         "--unit-smoke"
       ],
-      "elapsed_seconds": 1.55,
+      "elapsed_seconds": 1.547,
       "returncode": 0,
       "stderr": "",
       "stdout": "{\n  \"edema_delta_nonconstant\": true,\n  \"final_logits_shape\": [\n    1,\n    6,\n    4,\n    16,\n    16\n  ],\n  \"scar_delta_nonconstant\": true,\n  \"status\": \"PASS\"\n}"

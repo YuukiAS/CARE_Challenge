@@ -1,0 +1,17 @@
+{
+  "case_count": 164,
+  "case_ids_sha256": "6c9664c525ca17e9d0591a62302f143dc7881307d94a4e49aa685f98ac60e7e9",
+  "edema_zone": {
+    "cap": 8.0,
+    "error_voxels": 121751,
+    "q95_abs_anchor_margin": 11.512924194335938,
+    "status": "PASS"
+  },
+  "fit_population": "actual_train_cases_only",
+  "scar": {
+    "cap": 8.0,
+    "error_voxels": 285206,
+    "q95_abs_anchor_margin": 11.512917518615723,
+    "status": "PASS"
+  }
+}

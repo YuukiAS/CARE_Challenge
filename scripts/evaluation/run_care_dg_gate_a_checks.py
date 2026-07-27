@@ -56,6 +56,7 @@ SOURCE_PATHS = [
     "scripts/evaluation/evaluate_care_dg.py",
     "scripts/evaluation/select_care_dg_candidate.py",
     "scripts/evaluation/validate_care_dg_packet.py",
+    "scripts/evaluation/build_care_dg_validation_packet.py",
     "scripts/evaluation/run_care_dg_gate_a_checks.py",
     "tests/care_dg/test_care_dg_model.py",
 ]
@@ -272,6 +273,7 @@ def run_static_tests() -> dict[str, Any]:
         "src/care_myocardium/inference/care_dg_predictor.py",
         "scripts/training/run_care_dg.py",
         "scripts/evaluation/run_care_dg_gate_a_checks.py",
+        "scripts/evaluation/build_care_dg_validation_packet.py",
     ])
     pytest = run_capture([sys.executable, "-m", "pytest", "tests/care_dg", "-q"], timeout=600)
     unit_smoke = run_capture([sys.executable, "scripts/training/run_care_dg.py", "--unit-smoke"], timeout=300)
@@ -286,7 +288,7 @@ def run_static_tests() -> dict[str, Any]:
     }
     write_json(GATE_ROOT / "gate_a_static_test_receipt.json", report)
     (RESULT_ROOT / "unit_test_report.md").write_text(
-        "# CARE-DG Gate A unit test report\n\n"
+        "# CARE-DG Gate A-R1 unit test report\n\n"
         f"created_at_utc: `{report['created_at_utc']}`\n\n"
         f"py_compile: `{'PASS' if py_compile['returncode'] == 0 else 'FAIL'}`\n\n"
         f"pytest tests/care_dg -q: `{'PASS' if pytest['returncode'] == 0 else 'FAIL'}`\n\n"
@@ -442,7 +444,10 @@ def write_contracts(static: dict[str, Any], real: dict[str, Any] | None) -> dict
     impl = {
         "created_at_utc": now_utc(),
         "status": "GATE_A_REPAIRED_IMPLEMENTATION_PASS" if static.get("status") == "PASS" and (real is None or all(v.get("status") == "PASS" for v in real.values())) else "NEEDS_REPAIR",
+        "gate_revision": "A-R1",
+        "approval_token_required": "APPROVE_GATE_A_R1",
         "scientific_credit": 0,
+        "preflight_training_credit": 0,
         "pre_repair_formal_credit_invalidated": True,
         "implemented_contract": {
             "edema_decoder_targets_scar_union_edema_zone": True,
@@ -455,12 +460,23 @@ def write_contracts(static: dict[str, Any], real: dict[str, Any] | None) -> dict
             "anchor_probability_converted_to_log_probabilities": True,
             "formal_mode_rejects_missing_support_uncertainty_distance": True,
             "formal_sampler_quota_auditable": True,
+            "validate_w0_accepts_preregistered_status_only": True,
+            "inner_select_excluded_from_stage_a_and_stage_b": True,
+            "checkpoint_selection_fixed_complete_inner_objective": True,
+            "margin_caps_fit_actual_train_only": True,
+            "soft_support_union_labels_1_4_5_excludes_lv_rv": True,
+            "soft_support_shells_scar_6mm_edema_zone_10mm": True,
+            "repaired_runtime_label_isolated": True,
+            "protected_pre_repair_formal_runtime_read_only": True,
             "cine_validation_tree_binding_pending_w5": True,
         },
         "source_hashes": source_hashes(),
         "git_state": git_state(),
         "gate_a_static_test_receipt": rel(GATE_ROOT / "gate_a_static_test_receipt.json"),
         "gate_a_overfit_curve": rel(GATE_ROOT / "implementation_overfit_curve.csv"),
+        "gate_a_r1_preflight_receipt": rel(RESULT_ROOT / "runtime/gate_a_r1_preflight/fold0/fold_training_receipt.json"),
+        "gate_a_r1_preflight_validator": rel(RESULT_ROOT / "runtime/gate_a_r1_preflight/fold0/preflight_validator_report.json"),
+        "gate_a_r1_inner_split_manifest": rel(RESULT_ROOT / "runtime/gate_a_r1_preflight/fold0/inner_split_manifest.json"),
     }
     write_json(RESULT_ROOT / "implementation_contract.json", impl)
     known = {
@@ -475,6 +491,10 @@ def write_contracts(static: dict[str, Any], real: dict[str, Any] | None) -> dict
             {"fixture": "no_t2_edema_leakage", "rejected": True, "evidence": "test_mixed_batch_no_t2_sample_has_zero_edema_outputs_and_no_t2_gradients"},
             {"fixture": "remote_penalty_post_support_vacuous", "rejected": True, "evidence": "test_remote_penalty_uses_raw_pre_support_delta"},
             {"fixture": "formal_missing_support_or_raw_probability_ambiguous", "rejected": True, "evidence": "test_formal_mode_rejects_missing_inputs_and_anchor_kind"},
+            {"fixture": "validate_w0_accepts_arbitrary_pass_string", "rejected": True, "evidence": "test_validate_w0_accepts_only_preregistered_pass_statuses"},
+            {"fixture": "inner_select_case_in_stage_a_or_stage_b_training", "rejected": True, "evidence": "test_inner_split_excludes_selection_from_stage_a_stage_b_and_records_hashes"},
+            {"fixture": "lv_rv_blood_pool_in_myocardium_support", "rejected": True, "evidence": "test_soft_myocardium_support_excludes_lv_rv_and_decays_continuously"},
+            {"fixture": "soft_support_breaks_zero_correction_identity", "rejected": True, "evidence": "test_zero_correction_identity_with_soft_support_inputs"},
         ],
     }
     write_json(RESULT_ROOT / "known_bad_report.json", known)
@@ -519,7 +539,14 @@ def main() -> int:
             raise SystemExit("CARE_DG_GATE_A_REQUIRES_CUDA_OR_EXPLICIT_ALLOW_CPU")
         real = run_real_case_checks(device, args.steps, args.lr)
     impl = write_contracts(static, real)
-    summary = {"status": impl["status"], "static": static, "real": real, "implementation_contract": rel(RESULT_ROOT / "implementation_contract.json")}
+    r1_paths = {
+        "preflight_receipt": RESULT_ROOT / "runtime/gate_a_r1_preflight/fold0/fold_training_receipt.json",
+        "preflight_validator": RESULT_ROOT / "runtime/gate_a_r1_preflight/fold0/preflight_validator_report.json",
+        "inner_split_manifest": RESULT_ROOT / "runtime/gate_a_r1_preflight/fold0/inner_split_manifest.json",
+        "margin_cap_audit": RESULT_ROOT / "runtime/gate_a_r1_preflight/fold0/margin_cap_audit.json",
+    }
+    r1_preflight = {name: {"path": rel(path), "exists": path.exists(), "sha256": sha256_file(path) if path.exists() else "missing"} for name, path in r1_paths.items()}
+    summary = {"status": impl["status"], "gate_revision": "A-R1", "approval_token_required": "APPROVE_GATE_A_R1", "static": static, "real": real, "r1_preflight": r1_preflight, "implementation_contract": rel(RESULT_ROOT / "implementation_contract.json")}
     write_json(GATE_ROOT / "gate_a_summary.json", summary)
     print(json.dumps(summary, indent=2, sort_keys=True))
     return 0 if impl["status"].endswith("PASS") else 2

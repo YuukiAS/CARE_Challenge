@@ -1,5 +1,5 @@
 {
-  "created_at_utc": "2026-07-27T09:53:49Z",
+  "created_at_utc": "2026-07-27T10:34:33Z",
   "device": "NVIDIA H100 NVL",
   "formal_training_credit": 0,
   "receipts": [
@@ -11,25 +11,25 @@
         105,
         124
       ],
-      "changed_voxels": 224,
-      "edema_decoder_grad_abs_sum": 4789.1753323972225,
-      "edema_delta_abs_sum": 12227.7939453125,
-      "loss": 4.114871978759766,
+      "changed_voxels": 198,
+      "edema_decoder_grad_abs_sum": 4380.736281961203,
+      "edema_delta_abs_sum": 9513.1640625,
+      "loss": 3.9995839595794678,
       "loss_finite": true,
       "metrics": {
-        "edema_gate": 0.6364920139312744,
-        "edema_margin": 3.3812365531921387,
-        "edema_seg": 0.9803305864334106,
-        "identity": 0.15586580336093903,
-        "loss": 4.114871978759766,
-        "remote": 0.5139222145080566,
-        "scar_gate": 0.4886423349380493,
-        "scar_margin": 2.214324951171875,
-        "scar_seg": 1.1061053276062012
+        "edema_gate": 0.6346961259841919,
+        "edema_margin": 3.15447735786438,
+        "edema_seg": 0.9790999293327332,
+        "identity": 0.10895521193742752,
+        "loss": 3.9995839595794678,
+        "remote": 0.5311723947525024,
+        "scar_gate": 0.48889780044555664,
+        "scar_margin": 2.0008156299591064,
+        "scar_seg": 1.1058512926101685
       },
       "no_t2_edema_delta_exact_zero": true,
       "no_t2_edema_grad_exact_zero": true,
-      "scar_decoder_grad_abs_sum": 11969.207743614912
+      "scar_decoder_grad_abs_sum": 9303.265067279339
     },
     {
       "case_id": "Case1001",
@@ -39,25 +39,25 @@
         150,
         125
       ],
-      "changed_voxels": 93,
+      "changed_voxels": 85,
       "edema_decoder_grad_abs_sum": 0.0,
       "edema_delta_abs_sum": 0.0,
-      "loss": 1.328323483467102,
+      "loss": 1.3213624954223633,
       "loss_finite": true,
       "metrics": {
         "edema_gate": 0.0,
         "edema_margin": 0.0,
         "edema_seg": 0.0,
-        "identity": 0.045862335711717606,
-        "loss": 1.328323483467102,
-        "remote": 0.2730120122432709,
-        "scar_gate": 0.49083995819091797,
-        "scar_margin": 2.295668601989746,
-        "scar_seg": 0.4770990014076233
+        "identity": 0.03288767859339714,
+        "loss": 1.3213624954223633,
+        "remote": 0.27105090022087097,
+        "scar_gate": 0.49032360315322876,
+        "scar_margin": 2.2924633026123047,
+        "scar_seg": 0.47269105911254883
       },
       "no_t2_edema_delta_exact_zero": true,
       "no_t2_edema_grad_exact_zero": true,
-      "scar_decoder_grad_abs_sum": 4739.133509248495
+      "scar_decoder_grad_abs_sum": 4189.4315742999315
     }
   ],
   "schema_version": 1,

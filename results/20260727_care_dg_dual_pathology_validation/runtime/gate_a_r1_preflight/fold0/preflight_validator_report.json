@@ -1,0 +1,17 @@
+{
+  "checked": [
+    "validate_w0",
+    "oof_anchor_loading",
+    "probability_to_log_probability",
+    "soft_support_maps",
+    "sampler",
+    "margin_cap_train_only",
+    "forward_backward",
+    "checkpoint_write_reload",
+    "receipt"
+  ],
+  "created_at_utc": "2026-07-27T10:33:56Z",
+  "formal_training_credit": 0,
+  "receipt_path": "/users/a/e/aereinh/CARE/results/20260727_care_dg_dual_pathology_validation/runtime/gate_a_r1_preflight/fold0/fold_training_receipt.json",
+  "status": "PASS"
+}

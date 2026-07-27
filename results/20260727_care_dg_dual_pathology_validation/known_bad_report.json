@@ -1,5 +1,5 @@
 {
-  "created_at_utc": "2026-07-27T09:55:35Z",
+  "created_at_utc": "2026-07-27T10:35:36Z",
   "fixtures": [
     {
       "evidence": "test_fn_and_fp_margin_directions_are_opposite",
@@ -39,6 +39,26 @@
     {
       "evidence": "test_formal_mode_rejects_missing_inputs_and_anchor_kind",
       "fixture": "formal_missing_support_or_raw_probability_ambiguous",
+      "rejected": true
+    },
+    {
+      "evidence": "test_validate_w0_accepts_only_preregistered_pass_statuses",
+      "fixture": "validate_w0_accepts_arbitrary_pass_string",
+      "rejected": true
+    },
+    {
+      "evidence": "test_inner_split_excludes_selection_from_stage_a_stage_b_and_records_hashes",
+      "fixture": "inner_select_case_in_stage_a_or_stage_b_training",
+      "rejected": true
+    },
+    {
+      "evidence": "test_soft_myocardium_support_excludes_lv_rv_and_decays_continuously",
+      "fixture": "lv_rv_blood_pool_in_myocardium_support",
+      "rejected": true
+    },
+    {
+      "evidence": "test_zero_correction_identity_with_soft_support_inputs",
+      "fixture": "soft_support_breaks_zero_correction_identity",
       "rejected": true
     }
   ],
