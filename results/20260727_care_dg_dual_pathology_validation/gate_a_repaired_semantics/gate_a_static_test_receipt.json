@@ -1,5 +1,5 @@
 {
-  "created_at_utc": "2026-07-27T12:18:21Z",
+  "created_at_utc": "2026-07-27T13:27:08Z",
   "py_compile": {
     "cmd": [
       "/users/a/e/aereinh/CARE/envs/env_CARE/bin/python",
@@ -10,9 +10,11 @@
       "src/care_myocardium/inference/care_dg_predictor.py",
       "scripts/training/run_care_dg.py",
       "scripts/evaluation/run_care_dg_gate_a_checks.py",
-      "scripts/evaluation/build_care_dg_validation_packet.py"
+      "scripts/evaluation/build_care_dg_validation_packet.py",
+      "scripts/evaluation/finalize_care_dg_gate_a_r3_evidence.py",
+      "scripts/evaluation/validate_care_dg_gate_a_consistency.py"
     ],
-    "elapsed_seconds": 0.097,
+    "elapsed_seconds": 0.117,
     "returncode": 0,
     "stderr": "",
     "stdout": ""
@@ -25,15 +27,15 @@
       "tests/care_dg",
       "-q"
     ],
-    "elapsed_seconds": 4.607,
+    "elapsed_seconds": 4.709,
     "returncode": 0,
     "stderr": "",
-    "stdout": ".......................                                                  [100%]\n=============================== warnings summary ===============================\n<frozen importlib._bootstrap>:488\n  <frozen importlib._bootstrap>:488: DeprecationWarning: builtin type SwigPyPacked has no __module__ attribute\n\n<frozen importlib._bootstrap>:488\n  <frozen importlib._bootstrap>:488: DeprecationWarning: builtin type SwigPyObject has no __module__ attribute\n\n<frozen importlib._bootstrap>:488\n  <frozen importlib._bootstrap>:488: DeprecationWarning: builtin type swigvarlink has no __module__ attribute\n\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n23 passed, 3 warnings in 3.32s"
+    "stdout": "..........................                                               [100%]\n=============================== warnings summary ===============================\n<frozen importlib._bootstrap>:488\n  <frozen importlib._bootstrap>:488: DeprecationWarning: builtin type SwigPyPacked has no __module__ attribute\n\n<frozen importlib._bootstrap>:488\n  <frozen importlib._bootstrap>:488: DeprecationWarning: builtin type SwigPyObject has no __module__ attribute\n\n<frozen importlib._bootstrap>:488\n  <frozen importlib._bootstrap>:488: DeprecationWarning: builtin type swigvarlink has no __module__ attribute\n\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n26 passed, 3 warnings in 3.52s"
   },
   "status": "PASS",
   "strict_validator": {
     "returncode": null,
-    "status": "DEFERRED_UNTIL_GATE_A_R2_CONTRACT_AND_PREFLIGHT_WRITTEN"
+    "status": "DEFERRED_UNTIL_GATE_A_R3_PREFLIGHT_AND_STRICT_VALIDATOR"
   },
   "unit_smoke": {
     "cmd": [
@@ -41,7 +43,7 @@
       "scripts/training/run_care_dg.py",
       "--unit-smoke"
     ],
-    "elapsed_seconds": 1.545,
+    "elapsed_seconds": 1.454,
     "returncode": 0,
     "stderr": "",
     "stdout": "{\n  \"edema_delta_nonconstant\": true,\n  \"final_logits_shape\": [\n    1,\n    6,\n    4,\n    16,\n    16\n  ],\n  \"scar_delta_nonconstant\": true,\n  \"status\": \"PASS\"\n}"

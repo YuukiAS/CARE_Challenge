@@ -1,7 +1,7 @@
 {
   "checkpoint": "results/20260727_care_dg_dual_pathology_validation/gate_a_repaired_semantics/checkpoint_resume_parity.pt",
-  "checkpoint_sha256": "69f47151b9b142d5e886c51f431867f4eb37a2563eb5630cfc530ea5078d8c1e",
-  "created_at_utc": "2026-07-27T12:18:27Z",
+  "checkpoint_sha256": "dfd9473ffdc51f57c157cf96123ad7ee480c302dc19dbe4bf622e7b3d417a6a7",
+  "created_at_utc": "2026-07-27T13:27:11Z",
   "max_abs_final_logits_delta": 0.0,
   "resume_step": 0,
   "status": "PASS"

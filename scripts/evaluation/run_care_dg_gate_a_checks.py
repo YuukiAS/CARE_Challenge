@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Gate A-R2 evidence runner for repaired CARE-DG semantics.
+"""Gate A-R3 evidence runner for repaired CARE-DG semantics.
 
 This script does not submit Slurm jobs or start formal fold training. GPU use, when
 requested by the controller, must be through the existing allocation wrapper.
@@ -26,6 +26,7 @@ REPO_ROOT = Path(__file__).resolve().parents[2]
 if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
 
+import scripts.training.run_care_dg as run_dg  # noqa: E402
 from scripts.training.run_care_dg import CaseCache, PATCH_SHAPE, crop_pad, load_splits  # noqa: E402
 from src.care_myocardium.data.case_metadata import load_myops_case_metadata  # noqa: E402
 from src.care_myocardium.data.care_dg_dataset import aligned_spatial_crop  # noqa: E402
@@ -58,6 +59,8 @@ SOURCE_PATHS = [
     "scripts/evaluation/validate_care_dg_packet.py",
     "scripts/evaluation/build_care_dg_validation_packet.py",
     "scripts/evaluation/run_care_dg_gate_a_checks.py",
+    "scripts/evaluation/finalize_care_dg_gate_a_r3_evidence.py",
+    "scripts/evaluation/validate_care_dg_gate_a_consistency.py",
     "tests/care_dg/test_care_dg_model.py",
 ]
 
@@ -274,10 +277,12 @@ def run_static_tests() -> dict[str, Any]:
         "scripts/training/run_care_dg.py",
         "scripts/evaluation/run_care_dg_gate_a_checks.py",
         "scripts/evaluation/build_care_dg_validation_packet.py",
+        "scripts/evaluation/finalize_care_dg_gate_a_r3_evidence.py",
+        "scripts/evaluation/validate_care_dg_gate_a_consistency.py",
     ])
     pytest = run_capture([sys.executable, "-m", "pytest", "tests/care_dg", "-q"], timeout=600)
     unit_smoke = run_capture([sys.executable, "scripts/training/run_care_dg.py", "--unit-smoke"], timeout=300)
-    validator = {"status": "DEFERRED_UNTIL_GATE_A_R2_CONTRACT_AND_PREFLIGHT_WRITTEN", "returncode": None}
+    validator = {"status": "DEFERRED_UNTIL_GATE_A_R3_PREFLIGHT_AND_STRICT_VALIDATOR", "returncode": None}
     report = {
         "created_at_utc": now_utc(),
         "status": "PASS" if all(x["returncode"] == 0 for x in (py_compile, pytest, unit_smoke)) else "NEEDS_REPAIR",
@@ -288,7 +293,7 @@ def run_static_tests() -> dict[str, Any]:
     }
     write_json(GATE_ROOT / "gate_a_static_test_receipt.json", report)
     (RESULT_ROOT / "unit_test_report.md").write_text(
-        "# CARE-DG Gate A-R2 unit test report\n\n"
+        "# CARE-DG Gate A-R3 unit test report\n\n"
         f"created_at_utc: `{report['created_at_utc']}`\n\n"
         f"py_compile: `{'PASS' if py_compile['returncode'] == 0 else 'FAIL'}`\n\n"
         f"pytest tests/care_dg -q: `{'PASS' if pytest['returncode'] == 0 else 'FAIL'}`\n\n"
@@ -309,7 +314,7 @@ def run_real_case_checks(device: torch.device, steps: int, lr: float) -> dict[st
     complete = to_device(make_patch(complete_case, cache, case_to_fold, metadata), device)
     no_t2 = to_device(make_patch(no_t2_case, cache, case_to_fold, metadata), device)
     model = build_care_dg().to(device)
-    opt = torch.optim.AdamW(model.parameters(), lr=lr, weight_decay=1e-4)
+    opt = run_dg.build_care_dg_optimizer(model, representation_lr=3e-4, pathology_lr=3e-4, weight_decay=1e-4)
 
     receipts: list[dict[str, Any]] = []
     for label, batch in [("complete", complete), ("no_t2", no_t2)]:
@@ -359,7 +364,7 @@ def run_real_case_checks(device: torch.device, steps: int, lr: float) -> dict[st
     }
     write_json(RESULT_ROOT / "checkpoint_resume_parity.json", parity)
 
-    opt = torch.optim.AdamW(model.parameters(), lr=lr, weight_decay=1e-4)
+    opt = run_dg.build_care_dg_optimizer(model, representation_lr=3e-4, pathology_lr=3e-4, weight_decay=1e-4)
     curve: list[dict[str, Any]] = []
     first_loss = None
     first_scar = None
@@ -444,8 +449,8 @@ def write_contracts(static: dict[str, Any], real: dict[str, Any] | None) -> dict
     impl = {
         "created_at_utc": now_utc(),
         "status": "GATE_A_REPAIRED_IMPLEMENTATION_PASS" if static.get("status") == "PASS" and real is not None and all(v.get("status") == "PASS" for v in real.values()) else "NEEDS_REPAIR",
-        "gate_revision": "A-R2",
-        "approval_token_required": "APPROVE_GATE_A_R2",
+        "gate_revision": "A-R3",
+        "approval_token_required": "APPROVE_GATE_A_R3",
         "scientific_credit": 0,
         "preflight_training_credit": 0,
         "pre_repair_formal_credit_invalidated": True,
@@ -469,7 +474,15 @@ def write_contracts(static: dict[str, Any], real: dict[str, Any] | None) -> dict
             "sampler_audit_reports_effective_not_nominal_quota": True,
             "checkpoint_saves_python_numpy_torch_cuda_scaler_and_local_rng": True,
             "checkpoint_resume_validates_hash_contract_before_restore": True,
-            "gate_a_r2_preflight_runs_stage_A_and_stage_B": True,
+            "gate_a_r3_preflight_runs_stage_A_and_stage_B": True,
+            "stage_A_optimizer_two_groups_3e_minus_4": True,
+            "stage_B_optimizer_representation_2e_minus_5_pathology_1e_minus_4": True,
+            "every_trainable_parameter_exactly_one_optimizer_group": True,
+            "checkpoint_reload_preserves_optimizer_groups_and_lrs": True,
+            "resolved_training_contract_sha256_written_to_checkpoint_receipt_manifest": True,
+            "checkpoint_resume_rejects_resolved_contract_mismatch": True,
+            "stage_A_and_stage_B_effective_sampler_audits_written": True,
+            "consistency_validator_rejects_fail_deferred_mismatch": True,
             "validate_w0_accepts_preregistered_status_only": True,
             "inner_select_excluded_from_stage_a_and_stage_b": True,
             "checkpoint_selection_fixed_complete_inner_objective": True,
@@ -484,12 +497,14 @@ def write_contracts(static: dict[str, Any], real: dict[str, Any] | None) -> dict
         "git_state": git_state(),
         "gate_a_static_test_receipt": rel(GATE_ROOT / "gate_a_static_test_receipt.json"),
         "gate_a_overfit_curve": rel(GATE_ROOT / "implementation_overfit_curve.csv"),
-        "gate_a_r2_preflight_receipt": rel(RESULT_ROOT / "runtime/gate_a_r2_preflight/fold0/fold_training_receipt.json"),
-        "gate_a_r2_preflight_validator": rel(RESULT_ROOT / "runtime/gate_a_r2_preflight/fold0/preflight_validator_report.json"),
-        "gate_a_r2_inner_split_manifest": rel(RESULT_ROOT / "runtime/gate_a_r2_preflight/fold0/inner_split_manifest.json"),
-        "gate_a_r2_inner_evaluation_plan": rel(RESULT_ROOT / "runtime/gate_a_r2_preflight/fold0/inner_evaluation_plan.json"),
-        "gate_a_r2_sampler_quota_audit": rel(RESULT_ROOT / "runtime/gate_a_r2_preflight/fold0/sampler_quota_audit.json"),
-        "gate_a_r2_inner_eval_repeat": rel(RESULT_ROOT / "runtime/gate_a_r2_preflight/fold0/inner_evaluation_repeat_receipt.json"),
+        "gate_a_r3_preflight_receipt": rel(RESULT_ROOT / "runtime/gate_a_r3_preflight/fold0/fold_training_receipt.json"),
+        "gate_a_r3_preflight_validator": rel(RESULT_ROOT / "runtime/gate_a_r3_preflight/fold0/preflight_validator_report.json"),
+        "gate_a_r3_inner_split_manifest": rel(RESULT_ROOT / "runtime/gate_a_r3_preflight/fold0/inner_split_manifest.json"),
+        "gate_a_r3_inner_evaluation_plan": rel(RESULT_ROOT / "runtime/gate_a_r3_preflight/fold0/inner_evaluation_plan.json"),
+        "gate_a_r3_sampler_quota_audit_stage_a": rel(RESULT_ROOT / "runtime/gate_a_r3_preflight/fold0/sampler_quota_audit_stage_a.json"),
+        "gate_a_r3_sampler_quota_audit_stage_b": rel(RESULT_ROOT / "runtime/gate_a_r3_preflight/fold0/sampler_quota_audit_stage_b.json"),
+        "gate_a_r3_resolved_training_contract": rel(RESULT_ROOT / "runtime/gate_a_r3_preflight/fold0/resolved_training_contract.json"),
+        "gate_a_r3_inner_eval_repeat": rel(RESULT_ROOT / "runtime/gate_a_r3_preflight/fold0/inner_evaluation_repeat_receipt.json"),
     }
     write_json(RESULT_ROOT / "implementation_contract.json", impl)
     known = {
@@ -512,6 +527,9 @@ def write_contracts(static: dict[str, Any], real: dict[str, Any] | None) -> dict
             {"fixture": "nominal_error_fn_patch_without_fn_voxels", "rejected": True, "evidence": "test_known_bad_error_fn_without_fn_voxels_is_rejected"},
             {"fixture": "sampler_audit_counts_requested_instead_of_effective", "rejected": True, "evidence": "test_effective_sampler_reports_real_hits_and_zero_silent_fallback"},
             {"fixture": "checkpoint_resume_without_rng_or_hash_contract", "rejected": True, "evidence": "test_checkpoint_interrupted_resume_cpu_exact"},
+            {"fixture": "stage_b_encoder_lr_changed_after_checkpoint", "rejected": True, "evidence": "test_resolved_contract_mismatch_known_bad_rejected"},
+            {"fixture": "batch_size_or_steps_changed_after_checkpoint", "rejected": True, "evidence": "test_resolved_contract_mismatch_known_bad_rejected"},
+            {"fixture": "support_or_loss_contract_changed_after_checkpoint", "rejected": True, "evidence": "test_resolved_contract_mismatch_known_bad_rejected"},
         ],
     }
     write_json(RESULT_ROOT / "known_bad_report.json", known)
@@ -556,17 +574,19 @@ def main() -> int:
             raise SystemExit("CARE_DG_GATE_A_REQUIRES_CUDA_OR_EXPLICIT_ALLOW_CPU")
         real = run_real_case_checks(device, args.steps, args.lr)
     impl = write_contracts(static, real)
-    r2_paths = {
-        "preflight_receipt": RESULT_ROOT / "runtime/gate_a_r2_preflight/fold0/fold_training_receipt.json",
-        "preflight_validator": RESULT_ROOT / "runtime/gate_a_r2_preflight/fold0/preflight_validator_report.json",
-        "inner_split_manifest": RESULT_ROOT / "runtime/gate_a_r2_preflight/fold0/inner_split_manifest.json",
-        "inner_evaluation_plan": RESULT_ROOT / "runtime/gate_a_r2_preflight/fold0/inner_evaluation_plan.json",
-        "inner_eval_repeat": RESULT_ROOT / "runtime/gate_a_r2_preflight/fold0/inner_evaluation_repeat_receipt.json",
-        "sampler_quota_audit": RESULT_ROOT / "runtime/gate_a_r2_preflight/fold0/sampler_quota_audit.json",
-        "margin_cap_audit": RESULT_ROOT / "runtime/gate_a_r2_preflight/fold0/margin_cap_audit.json",
+    r3_paths = {
+        "preflight_receipt": RESULT_ROOT / "runtime/gate_a_r3_preflight/fold0/fold_training_receipt.json",
+        "preflight_validator": RESULT_ROOT / "runtime/gate_a_r3_preflight/fold0/preflight_validator_report.json",
+        "inner_split_manifest": RESULT_ROOT / "runtime/gate_a_r3_preflight/fold0/inner_split_manifest.json",
+        "inner_evaluation_plan": RESULT_ROOT / "runtime/gate_a_r3_preflight/fold0/inner_evaluation_plan.json",
+        "inner_eval_repeat": RESULT_ROOT / "runtime/gate_a_r3_preflight/fold0/inner_evaluation_repeat_receipt.json",
+        "sampler_quota_audit_stage_a": RESULT_ROOT / "runtime/gate_a_r3_preflight/fold0/sampler_quota_audit_stage_a.json",
+        "sampler_quota_audit_stage_b": RESULT_ROOT / "runtime/gate_a_r3_preflight/fold0/sampler_quota_audit_stage_b.json",
+        "resolved_training_contract": RESULT_ROOT / "runtime/gate_a_r3_preflight/fold0/resolved_training_contract.json",
+        "margin_cap_audit": RESULT_ROOT / "runtime/gate_a_r3_preflight/fold0/margin_cap_audit.json",
     }
-    r2_preflight = {name: {"path": rel(path), "exists": path.exists(), "sha256": sha256_file(path) if path.exists() else "missing"} for name, path in r2_paths.items()}
-    summary = {"status": impl["status"], "gate_revision": "A-R2", "approval_token_required": "APPROVE_GATE_A_R2", "static": static, "real": real, "r2_preflight": r2_preflight, "implementation_contract": rel(RESULT_ROOT / "implementation_contract.json")}
+    r3_preflight = {name: {"path": rel(path), "exists": path.exists(), "sha256": sha256_file(path) if path.exists() else "missing"} for name, path in r3_paths.items()}
+    summary = {"status": impl["status"], "gate_revision": "A-R3", "approval_token_required": "APPROVE_GATE_A_R3", "static": static, "real": real, "r3_preflight": r3_preflight, "implementation_contract": rel(RESULT_ROOT / "implementation_contract.json"), "strict_validator_status": "DEFERRED_UNTIL_FINAL_R3_VALIDATOR"}
     write_json(GATE_ROOT / "gate_a_summary.json", summary)
     write_json(RESULT_ROOT / "gate_a_summary.json", summary)
     print(json.dumps(summary, indent=2, sort_keys=True))

@@ -1,0 +1,1981 @@
+{
+  "first": {
+    "case_count": 12,
+    "loss": 4.9781932433446245,
+    "loss_items": [
+      {
+        "batch_entries": [
+          0,
+          1
+        ],
+        "case_ids": [
+          "Case2003",
+          "Case2003"
+        ],
+        "loss": 4.439235210418701,
+        "metrics": {
+          "edema_gate": 0.6183048486709595,
+          "edema_margin": 3.1847712993621826,
+          "edema_seg": 1.203758955001831,
+          "identity": 0.12030427902936935,
+          "loss": 4.439235210418701,
+          "remote": 1.077087640762329,
+          "scar_gate": 0.4928428828716278,
+          "scar_margin": 2.012990951538086,
+          "scar_seg": 1.2607221603393555
+        },
+        "modes": [
+          "scar_fn",
+          "scar_fp"
+        ],
+        "offset": 0
+      },
+      {
+        "batch_entries": [
+          2,
+          3
+        ],
+        "case_ids": [
+          "Case2003",
+          "Case2003"
+        ],
+        "loss": 4.520074844360352,
+        "metrics": {
+          "edema_gate": 0.626129150390625,
+          "edema_margin": 3.328202724456787,
+          "edema_seg": 1.197613000869751,
+          "identity": 0.12204225361347198,
+          "loss": 4.520074844360352,
+          "remote": 1.0853569507598877,
+          "scar_gate": 0.4883900582790375,
+          "scar_margin": 2.238311290740967,
+          "scar_seg": 1.2528334856033325
+        },
+        "modes": [
+          "edema_zone_fn",
+          "edema_zone_fp"
+        ],
+        "offset": 2
+      },
+      {
+        "batch_entries": [
+          4,
+          5
+        ],
+        "case_ids": [
+          "Case2003",
+          "Case2003"
+        ],
+        "loss": 4.350334644317627,
+        "metrics": {
+          "edema_gate": 0.6281121969223022,
+          "edema_margin": 2.910123348236084,
+          "edema_seg": 1.1963282823562622,
+          "identity": 0.11152075976133347,
+          "loss": 4.350334644317627,
+          "remote": 1.052834153175354,
+          "scar_gate": 0.4902133643627167,
+          "scar_margin": 1.9804099798202515,
+          "scar_seg": 1.255774974822998
+        },
+        "modes": [
+          "pathology",
+          "background"
+        ],
+        "offset": 4
+      },
+      {
+        "batch_entries": [
+          6,
+          7
+        ],
+        "case_ids": [
+          "Case2004",
+          "Case2004"
+        ],
+        "loss": 4.916131496429443,
+        "metrics": {
+          "edema_gate": 0.617580771446228,
+          "edema_margin": 4.359251022338867,
+          "edema_seg": 1.2895071506500244,
+          "identity": 0.17794692516326904,
+          "loss": 4.916131496429443,
+          "remote": 1.0647220611572266,
+          "scar_gate": 0.4936172068119049,
+          "scar_margin": 2.531820774078369,
+          "scar_seg": 1.2239906787872314
+        },
+        "modes": [
+          "scar_fn",
+          "scar_fp"
+        ],
+        "offset": 6
+      },
+      {
+        "batch_entries": [
+          8,
+          9
+        ],
+        "case_ids": [
+          "Case2004",
+          "Case2004"
+        ],
+        "loss": 4.479905605316162,
+        "metrics": {
+          "edema_gate": 0.623621940612793,
+          "edema_margin": 3.7075257301330566,
+          "edema_seg": 1.1490733623504639,
+          "identity": 0.1904456466436386,
+          "loss": 4.479905605316162,
+          "remote": 1.0825457572937012,
+          "scar_gate": 0.4943723976612091,
+          "scar_margin": 2.4544906616210938,
+          "scar_seg": 1.1040323972702026
+        },
+        "modes": [
+          "edema_zone_fn",
+          "edema_zone_fp"
+        ],
+        "offset": 8
+      },
+      {
+        "batch_entries": [
+          10,
+          11
+        ],
+        "case_ids": [
+          "Case2004",
+          "Case2004"
+        ],
+        "loss": 4.985894680023193,
+        "metrics": {
+          "edema_gate": 0.6150392293930054,
+          "edema_margin": 4.003902435302734,
+          "edema_seg": 1.339189052581787,
+          "identity": 0.0825672447681427,
+          "loss": 4.985894680023193,
+          "remote": 1.1623830795288086,
+          "scar_gate": 0.49770182371139526,
+          "scar_margin": 2.619750499725342,
+          "scar_seg": 1.3099267482757568
+        },
+        "modes": [
+          "pathology",
+          "background"
+        ],
+        "offset": 10
+      },
+      {
+        "batch_entries": [
+          12,
+          13
+        ],
+        "case_ids": [
+          "Case2010",
+          "Case2010"
+        ],
+        "loss": 5.022924423217773,
+        "metrics": {
+          "edema_gate": 0.631166934967041,
+          "edema_margin": 4.485346794128418,
+          "edema_seg": 1.1412324905395508,
+          "identity": 0.19599542021751404,
+          "loss": 5.022924423217773,
+          "remote": 1.0820724964141846,
+          "scar_gate": 0.4932202696800232,
+          "scar_margin": 3.399454355239868,
+          "scar_seg": 1.2204915285110474
+        },
+        "modes": [
+          "scar_fn",
+          "scar_fp"
+        ],
+        "offset": 12
+      },
+      {
+        "batch_entries": [
+          14,
+          15
+        ],
+        "case_ids": [
+          "Case2010",
+          "Case2010"
+        ],
+        "loss": 5.148674488067627,
+        "metrics": {
+          "edema_gate": 0.6309797763824463,
+          "edema_margin": 4.665030002593994,
+          "edema_seg": 1.1549490690231323,
+          "identity": 0.1854381412267685,
+          "loss": 5.148674488067627,
+          "remote": 1.0913913249969482,
+          "scar_gate": 0.49342694878578186,
+          "scar_margin": 3.6298041343688965,
+          "scar_seg": 1.2301307916641235
+        },
+        "modes": [
+          "edema_zone_fn",
+          "edema_zone_fp"
+        ],
+        "offset": 14
+      },
+      {
+        "batch_entries": [
+          16,
+          17
+        ],
+        "case_ids": [
+          "Case2010",
+          "Case2010"
+        ],
+        "loss": 4.913174152374268,
+        "metrics": {
+          "edema_gate": 0.6138744354248047,
+          "edema_margin": 4.172903537750244,
+          "edema_seg": 1.1900075674057007,
+          "identity": 0.09229481220245361,
+          "loss": 4.913174152374268,
+          "remote": 1.091933250427246,
+          "scar_gate": 0.48455092310905457,
+          "scar_margin": 3.0586907863616943,
+          "scar_seg": 1.2476322650909424
+        },
+        "modes": [
+          "pathology",
+          "background"
+        ],
+        "offset": 16
+      },
+      {
+        "batch_entries": [
+          18,
+          19
+        ],
+        "case_ids": [
+          "Case2012",
+          "Case2012"
+        ],
+        "loss": 5.954241752624512,
+        "metrics": {
+          "edema_gate": 0.5983028411865234,
+          "edema_margin": 4.970073699951172,
+          "edema_seg": 1.624131202697754,
+          "identity": 0.02963181957602501,
+          "loss": 5.954241752624512,
+          "remote": 1.040717363357544,
+          "scar_gate": 0.5079745650291443,
+          "scar_margin": 3.248246192932129,
+          "scar_seg": 1.6153573989868164
+        },
+        "modes": [
+          "scar_fn",
+          "scar_fp"
+        ],
+        "offset": 18
+      },
+      {
+        "batch_entries": [
+          20,
+          21
+        ],
+        "case_ids": [
+          "Case2012",
+          "Case2012"
+        ],
+        "loss": 6.173434734344482,
+        "metrics": {
+          "edema_gate": 0.5963200330734253,
+          "edema_margin": 5.381309986114502,
+          "edema_seg": 1.624289870262146,
+          "identity": 0.02995975874364376,
+          "loss": 6.173434734344482,
+          "remote": 1.0337929725646973,
+          "scar_gate": 0.5039134621620178,
+          "scar_margin": 3.7292189598083496,
+          "scar_seg": 1.615020513534546
+        },
+        "modes": [
+          "edema_zone_fn",
+          "edema_zone_fp"
+        ],
+        "offset": 20
+      },
+      {
+        "batch_entries": [
+          22,
+          23
+        ],
+        "case_ids": [
+          "Case2012",
+          "Case2012"
+        ],
+        "loss": 5.722716808319092,
+        "metrics": {
+          "edema_gate": 0.5869947671890259,
+          "edema_margin": 4.470067501068115,
+          "edema_seg": 1.6339269876480103,
+          "identity": 0.015590758062899113,
+          "loss": 5.722716808319092,
+          "remote": 1.0181959867477417,
+          "scar_gate": 0.50441575050354,
+          "scar_margin": 2.7694058418273926,
+          "scar_seg": 1.6298375129699707
+        },
+        "modes": [
+          "pathology",
+          "background"
+        ],
+        "offset": 22
+      },
+      {
+        "batch_entries": [
+          24,
+          25
+        ],
+        "case_ids": [
+          "Case2015",
+          "Case2015"
+        ],
+        "loss": 4.6961188316345215,
+        "metrics": {
+          "edema_gate": 0.6258820295333862,
+          "edema_margin": 3.612713098526001,
+          "edema_seg": 1.1050753593444824,
+          "identity": 0.18803952634334564,
+          "loss": 4.6961188316345215,
+          "remote": 1.0771502256393433,
+          "scar_gate": 0.4930439591407776,
+          "scar_margin": 3.0230653285980225,
+          "scar_seg": 1.2461166381835938
+        },
+        "modes": [
+          "scar_fn",
+          "scar_fp"
+        ],
+        "offset": 24
+      },
+      {
+        "batch_entries": [
+          26,
+          27
+        ],
+        "case_ids": [
+          "Case2015",
+          "Case2015"
+        ],
+        "loss": 4.585710525512695,
+        "metrics": {
+          "edema_gate": 0.6235895156860352,
+          "edema_margin": 3.881267547607422,
+          "edema_seg": 1.1071938276290894,
+          "identity": 0.18894369900226593,
+          "loss": 4.585710525512695,
+          "remote": 1.0591886043548584,
+          "scar_gate": 0.49011126160621643,
+          "scar_margin": 2.3457303047180176,
+          "scar_seg": 1.2401039600372314
+        },
+        "modes": [
+          "edema_zone_fn",
+          "edema_zone_fp"
+        ],
+        "offset": 26
+      },
+      {
+        "batch_entries": [
+          28,
+          29
+        ],
+        "case_ids": [
+          "Case2015",
+          "Case2015"
+        ],
+        "loss": 4.978883743286133,
+        "metrics": {
+          "edema_gate": 0.6088452339172363,
+          "edema_margin": 4.182653427124023,
+          "edema_seg": 1.3301435708999634,
+          "identity": 0.0986335426568985,
+          "loss": 4.978883743286133,
+          "remote": 1.0636118650436401,
+          "scar_gate": 0.496886283159256,
+          "scar_margin": 2.1534857749938965,
+          "scar_seg": 1.3956148624420166
+        },
+        "modes": [
+          "pathology",
+          "background"
+        ],
+        "offset": 28
+      },
+      {
+        "batch_entries": [
+          30,
+          31
+        ],
+        "case_ids": [
+          "Case2021",
+          "Case2021"
+        ],
+        "loss": 4.2774882316589355,
+        "metrics": {
+          "edema_gate": 0.6077233552932739,
+          "edema_margin": 2.735034704208374,
+          "edema_seg": 1.1831902265548706,
+          "identity": 0.1556328386068344,
+          "loss": 4.2774882316589355,
+          "remote": 0.9888349771499634,
+          "scar_gate": 0.48507726192474365,
+          "scar_margin": 2.1155776977539062,
+          "scar_seg": 1.2207973003387451
+        },
+        "modes": [
+          "scar_fn",
+          "scar_fp"
+        ],
+        "offset": 30
+      },
+      {
+        "batch_entries": [
+          32,
+          33
+        ],
+        "case_ids": [
+          "Case2021",
+          "Case2021"
+        ],
+        "loss": 4.365239143371582,
+        "metrics": {
+          "edema_gate": 0.6103636026382446,
+          "edema_margin": 2.847233295440674,
+          "edema_seg": 1.184462070465088,
+          "identity": 0.14635811746120453,
+          "loss": 4.365239143371582,
+          "remote": 0.999147891998291,
+          "scar_gate": 0.4850330054759979,
+          "scar_margin": 2.334359645843506,
+          "scar_seg": 1.2231299877166748
+        },
+        "modes": [
+          "edema_zone_fn",
+          "edema_zone_fp"
+        ],
+        "offset": 32
+      },
+      {
+        "batch_entries": [
+          34,
+          35
+        ],
+        "case_ids": [
+          "Case2021",
+          "Case2021"
+        ],
+        "loss": 4.626842021942139,
+        "metrics": {
+          "edema_gate": 0.5910060405731201,
+          "edema_margin": 2.811800718307495,
+          "edema_seg": 1.3388997316360474,
+          "identity": 0.07966704666614532,
+          "loss": 4.626842021942139,
+          "remote": 0.9991151094436646,
+          "scar_gate": 0.48469409346580505,
+          "scar_margin": 2.3219056129455566,
+          "scar_seg": 1.3587872982025146
+        },
+        "modes": [
+          "pathology",
+          "background"
+        ],
+        "offset": 34
+      },
+      {
+        "batch_entries": [
+          36,
+          37
+        ],
+        "case_ids": [
+          "Case2024",
+          "Case2024"
+        ],
+        "loss": 4.664594650268555,
+        "metrics": {
+          "edema_gate": 0.6352896690368652,
+          "edema_margin": 4.144045352935791,
+          "edema_seg": 1.0095257759094238,
+          "identity": 0.19335846602916718,
+          "loss": 4.664594650268555,
+          "remote": 1.0920755863189697,
+          "scar_gate": 0.487255334854126,
+          "scar_margin": 3.187304735183716,
+          "scar_seg": 1.1324154138565063
+        },
+        "modes": [
+          "scar_fn",
+          "scar_fp"
+        ],
+        "offset": 36
+      },
+      {
+        "batch_entries": [
+          38,
+          39
+        ],
+        "case_ids": [
+          "Case2024",
+          "Case2024"
+        ],
+        "loss": 4.656910419464111,
+        "metrics": {
+          "edema_gate": 0.6341371536254883,
+          "edema_margin": 3.8964033126831055,
+          "edema_seg": 1.0764415264129639,
+          "identity": 0.17740242183208466,
+          "loss": 4.656910419464111,
+          "remote": 1.106048822402954,
+          "scar_gate": 0.49217063188552856,
+          "scar_margin": 2.9056830406188965,
+          "scar_seg": 1.1884486675262451
+        },
+        "modes": [
+          "edema_zone_fn",
+          "edema_zone_fp"
+        ],
+        "offset": 38
+      },
+      {
+        "batch_entries": [
+          40,
+          41
+        ],
+        "case_ids": [
+          "Case2024",
+          "Case2024"
+        ],
+        "loss": 4.91625452041626,
+        "metrics": {
+          "edema_gate": 0.6153944730758667,
+          "edema_margin": 3.842514991760254,
+          "edema_seg": 1.2697898149490356,
+          "identity": 0.09343502670526505,
+          "loss": 4.91625452041626,
+          "remote": 1.0859487056732178,
+          "scar_gate": 0.4934016466140747,
+          "scar_margin": 2.733611822128296,
+          "scar_seg": 1.3300966024398804
+        },
+        "modes": [
+          "pathology",
+          "background"
+        ],
+        "offset": 40
+      },
+      {
+        "batch_entries": [
+          42,
+          43
+        ],
+        "case_ids": [
+          "Case2027",
+          "Case2027"
+        ],
+        "loss": 4.874320030212402,
+        "metrics": {
+          "edema_gate": 0.6238030195236206,
+          "edema_margin": 3.648646831512451,
+          "edema_seg": 1.2136013507843018,
+          "identity": 0.19249440729618073,
+          "loss": 4.874320030212402,
+          "remote": 1.0485960245132446,
+          "scar_gate": 0.4924805760383606,
+          "scar_margin": 3.20143985748291,
+          "scar_seg": 1.2659461498260498
+        },
+        "modes": [
+          "scar_fn",
+          "scar_fp"
+        ],
+        "offset": 42
+      },
+      {
+        "batch_entries": [
+          44,
+          45
+        ],
+        "case_ids": [
+          "Case2027",
+          "Case2027"
+        ],
+        "loss": 4.719472885131836,
+        "metrics": {
+          "edema_gate": 0.6194403767585754,
+          "edema_margin": 3.4500627517700195,
+          "edema_seg": 1.1904635429382324,
+          "identity": 0.18684658408164978,
+          "loss": 4.719472885131836,
+          "remote": 1.045680284500122,
+          "scar_gate": 0.49395623803138733,
+          "scar_margin": 2.9293417930603027,
+          "scar_seg": 1.2542071342468262
+        },
+        "modes": [
+          "edema_zone_fn",
+          "edema_zone_fp"
+        ],
+        "offset": 44
+      },
+      {
+        "batch_entries": [
+          46,
+          47
+        ],
+        "case_ids": [
+          "Case2027",
+          "Case2027"
+        ],
+        "loss": 4.930172920227051,
+        "metrics": {
+          "edema_gate": 0.6119214296340942,
+          "edema_margin": 3.6019463539123535,
+          "edema_seg": 1.2560309171676636,
+          "identity": 0.14544391632080078,
+          "loss": 4.930172920227051,
+          "remote": 1.0244419574737549,
+          "scar_gate": 0.49518874287605286,
+          "scar_margin": 3.202631950378418,
+          "scar_seg": 1.3024537563323975
+        },
+        "modes": [
+          "pathology",
+          "background"
+        ],
+        "offset": 46
+      },
+      {
+        "batch_entries": [
+          48,
+          49
+        ],
+        "case_ids": [
+          "Case3008",
+          "Case3008"
+        ],
+        "loss": 5.656072616577148,
+        "metrics": {
+          "edema_gate": 0.6106693148612976,
+          "edema_margin": 3.4740285873413086,
+          "edema_seg": 1.6858025789260864,
+          "identity": 0.24172985553741455,
+          "loss": 5.656072616577148,
+          "remote": 0.9570242762565613,
+          "scar_gate": 0.4907480478286743,
+          "scar_margin": 3.56162166595459,
+          "scar_seg": 1.5407731533050537
+        },
+        "modes": [
+          "scar_fn",
+          "scar_fp"
+        ],
+        "offset": 48
+      },
+      {
+        "batch_entries": [
+          50,
+          51
+        ],
+        "case_ids": [
+          "Case3008",
+          "Case3008"
+        ],
+        "loss": 5.667087078094482,
+        "metrics": {
+          "edema_gate": 0.61553555727005,
+          "edema_margin": 3.6544580459594727,
+          "edema_seg": 1.6212046146392822,
+          "identity": 0.24087022244930267,
+          "loss": 5.667087078094482,
+          "remote": 1.0195320844650269,
+          "scar_gate": 0.4972047209739685,
+          "scar_margin": 3.8323535919189453,
+          "scar_seg": 1.491769552230835
+        },
+        "modes": [
+          "edema_zone_fn",
+          "edema_zone_fp"
+        ],
+        "offset": 50
+      },
+      {
+        "batch_entries": [
+          52,
+          53
+        ],
+        "case_ids": [
+          "Case3008",
+          "Case3008"
+        ],
+        "loss": 5.689698219299316,
+        "metrics": {
+          "edema_gate": 0.6012248992919922,
+          "edema_margin": 3.8856420516967773,
+          "edema_seg": 1.519883632659912,
+          "identity": 0.10286732017993927,
+          "loss": 5.689698219299316,
+          "remote": 1.0719950199127197,
+          "scar_gate": 0.4972993731498718,
+          "scar_margin": 4.080358028411865,
+          "scar_seg": 1.511565923690796
+        },
+        "modes": [
+          "pathology",
+          "background"
+        ],
+        "offset": 52
+      },
+      {
+        "batch_entries": [
+          54,
+          55
+        ],
+        "case_ids": [
+          "Case3009",
+          "Case3009"
+        ],
+        "loss": 4.718993663787842,
+        "metrics": {
+          "edema_gate": 0.6101232171058655,
+          "edema_margin": 2.7845375537872314,
+          "edema_seg": 1.344705581665039,
+          "identity": 0.3223767578601837,
+          "loss": 4.718993663787842,
+          "remote": 1.0286633968353271,
+          "scar_gate": 0.5079975724220276,
+          "scar_margin": 2.579728126525879,
+          "scar_seg": 1.3390580415725708
+        },
+        "modes": [
+          "scar_fn",
+          "scar_fp"
+        ],
+        "offset": 54
+      },
+      {
+        "batch_entries": [
+          56,
+          57
+        ],
+        "case_ids": [
+          "Case3009",
+          "Case3009"
+        ],
+        "loss": 4.606132984161377,
+        "metrics": {
+          "edema_gate": 0.612473726272583,
+          "edema_margin": 2.5802931785583496,
+          "edema_seg": 1.29105806350708,
+          "identity": 0.31854090094566345,
+          "loss": 4.606132984161377,
+          "remote": 1.0288259983062744,
+          "scar_gate": 0.506790041923523,
+          "scar_margin": 2.7385385036468506,
+          "scar_seg": 1.2909984588623047
+        },
+        "modes": [
+          "edema_zone_fn",
+          "edema_zone_fp"
+        ],
+        "offset": 56
+      },
+      {
+        "batch_entries": [
+          58,
+          59
+        ],
+        "case_ids": [
+          "Case3009",
+          "Case3009"
+        ],
+        "loss": 4.5736165046691895,
+        "metrics": {
+          "edema_gate": 0.6084129810333252,
+          "edema_margin": 2.429729461669922,
+          "edema_seg": 1.3028180599212646,
+          "identity": 0.15315674245357513,
+          "loss": 4.5736165046691895,
+          "remote": 1.0915583372116089,
+          "scar_gate": 0.5015529990196228,
+          "scar_margin": 2.714784622192383,
+          "scar_seg": 1.3052154779434204
+        },
+        "modes": [
+          "pathology",
+          "background"
+        ],
+        "offset": 58
+      },
+      {
+        "batch_entries": [
+          60,
+          61
+        ],
+        "case_ids": [
+          "Case3024",
+          "Case3024"
+        ],
+        "loss": 4.735732078552246,
+        "metrics": {
+          "edema_gate": 0.6130530834197998,
+          "edema_margin": 2.9297266006469727,
+          "edema_seg": 1.4048397541046143,
+          "identity": 0.3077496588230133,
+          "loss": 4.735732078552246,
+          "remote": 0.97353196144104,
+          "scar_gate": 0.49207520484924316,
+          "scar_margin": 2.669752597808838,
+          "scar_seg": 1.2503300905227661
+        },
+        "modes": [
+          "scar_fn",
+          "scar_fp"
+        ],
+        "offset": 60
+      },
+      {
+        "batch_entries": [
+          62,
+          63
+        ],
+        "case_ids": [
+          "Case3024",
+          "Case3024"
+        ],
+        "loss": 4.814506530761719,
+        "metrics": {
+          "edema_gate": 0.6132935285568237,
+          "edema_margin": 3.038763999938965,
+          "edema_seg": 1.4004298448562622,
+          "identity": 0.29383331537246704,
+          "loss": 4.814506530761719,
+          "remote": 0.985907793045044,
+          "scar_gate": 0.49355143308639526,
+          "scar_margin": 2.8826394081115723,
+          "scar_seg": 1.2523291110992432
+        },
+        "modes": [
+          "edema_zone_fn",
+          "edema_zone_fp"
+        ],
+        "offset": 62
+      },
+      {
+        "batch_entries": [
+          64,
+          65
+        ],
+        "case_ids": [
+          "Case3024",
+          "Case3024"
+        ],
+        "loss": 4.924736976623535,
+        "metrics": {
+          "edema_gate": 0.6026351451873779,
+          "edema_margin": 2.995117664337158,
+          "edema_seg": 1.434310793876648,
+          "identity": 0.13081499934196472,
+          "loss": 4.924736976623535,
+          "remote": 1.048156976699829,
+          "scar_gate": 0.4943994879722595,
+          "scar_margin": 2.8046107292175293,
+          "scar_seg": 1.3740798234939575
+        },
+        "modes": [
+          "pathology",
+          "background"
+        ],
+        "offset": 64
+      },
+      {
+        "batch_entries": [
+          66,
+          67
+        ],
+        "case_ids": [
+          "Case3028",
+          "Case3028"
+        ],
+        "loss": 5.7294135093688965,
+        "metrics": {
+          "edema_gate": 0.623887300491333,
+          "edema_margin": 3.9027035236358643,
+          "edema_seg": 1.4792053699493408,
+          "identity": 0.22200530767440796,
+          "loss": 5.7294135093688965,
+          "remote": 1.0601956844329834,
+          "scar_gate": 0.49900558590888977,
+          "scar_margin": 4.437584400177002,
+          "scar_seg": 1.4754693508148193
+        },
+        "modes": [
+          "scar_fn",
+          "scar_fp"
+        ],
+        "offset": 66
+      },
+      {
+        "batch_entries": [
+          68,
+          69
+        ],
+        "case_ids": [
+          "Case3028",
+          "Case3028"
+        ],
+        "loss": 5.579145908355713,
+        "metrics": {
+          "edema_gate": 0.6183136701583862,
+          "edema_margin": 3.5051984786987305,
+          "edema_seg": 1.5161606073379517,
+          "identity": 0.28677088022232056,
+          "loss": 5.579145908355713,
+          "remote": 1.0050023794174194,
+          "scar_gate": 0.49984100461006165,
+          "scar_margin": 4.185022354125977,
+          "scar_seg": 1.4521757364273071
+        },
+        "modes": [
+          "edema_zone_fn",
+          "edema_zone_fp"
+        ],
+        "offset": 68
+      },
+      {
+        "batch_entries": [
+          70,
+          71
+        ],
+        "case_ids": [
+          "Case3028",
+          "Case3028"
+        ],
+        "loss": 5.601069927215576,
+        "metrics": {
+          "edema_gate": 0.6000738143920898,
+          "edema_margin": 3.639526128768921,
+          "edema_seg": 1.4940404891967773,
+          "identity": 0.1529093235731125,
+          "loss": 5.601069927215576,
+          "remote": 0.9798047542572021,
+          "scar_gate": 0.49283307790756226,
+          "scar_margin": 4.336812496185303,
+          "scar_seg": 1.4532203674316406
+        },
+        "modes": [
+          "pathology",
+          "background"
+        ],
+        "offset": 70
+      }
+    ],
+    "mode_counts": {
+      "background": 12,
+      "edema_zone_fn": 12,
+      "edema_zone_fp": 12,
+      "pathology": 12,
+      "scar_fn": 12,
+      "scar_fp": 12
+    },
+    "patch_count": 72,
+    "plan_sha256": "50f8b471f5db128dde8c88f7fe15c0cdf0d15f3a0d9a720bb5606b44d84bff42",
+    "status": "PASS"
+  },
+  "second": {
+    "case_count": 12,
+    "loss": 4.9781932433446245,
+    "loss_items": [
+      {
+        "batch_entries": [
+          0,
+          1
+        ],
+        "case_ids": [
+          "Case2003",
+          "Case2003"
+        ],
+        "loss": 4.439235210418701,
+        "metrics": {
+          "edema_gate": 0.6183048486709595,
+          "edema_margin": 3.1847712993621826,
+          "edema_seg": 1.203758955001831,
+          "identity": 0.12030427902936935,
+          "loss": 4.439235210418701,
+          "remote": 1.077087640762329,
+          "scar_gate": 0.4928428828716278,
+          "scar_margin": 2.012990951538086,
+          "scar_seg": 1.2607221603393555
+        },
+        "modes": [
+          "scar_fn",
+          "scar_fp"
+        ],
+        "offset": 0
+      },
+      {
+        "batch_entries": [
+          2,
+          3
+        ],
+        "case_ids": [
+          "Case2003",
+          "Case2003"
+        ],
+        "loss": 4.520074844360352,
+        "metrics": {
+          "edema_gate": 0.626129150390625,
+          "edema_margin": 3.328202724456787,
+          "edema_seg": 1.197613000869751,
+          "identity": 0.12204225361347198,
+          "loss": 4.520074844360352,
+          "remote": 1.0853569507598877,
+          "scar_gate": 0.4883900582790375,
+          "scar_margin": 2.238311290740967,
+          "scar_seg": 1.2528334856033325
+        },
+        "modes": [
+          "edema_zone_fn",
+          "edema_zone_fp"
+        ],
+        "offset": 2
+      },
+      {
+        "batch_entries": [
+          4,
+          5
+        ],
+        "case_ids": [
+          "Case2003",
+          "Case2003"
+        ],
+        "loss": 4.350334644317627,
+        "metrics": {
+          "edema_gate": 0.6281121969223022,
+          "edema_margin": 2.910123348236084,
+          "edema_seg": 1.1963282823562622,
+          "identity": 0.11152075976133347,
+          "loss": 4.350334644317627,
+          "remote": 1.052834153175354,
+          "scar_gate": 0.4902133643627167,
+          "scar_margin": 1.9804099798202515,
+          "scar_seg": 1.255774974822998
+        },
+        "modes": [
+          "pathology",
+          "background"
+        ],
+        "offset": 4
+      },
+      {
+        "batch_entries": [
+          6,
+          7
+        ],
+        "case_ids": [
+          "Case2004",
+          "Case2004"
+        ],
+        "loss": 4.916131496429443,
+        "metrics": {
+          "edema_gate": 0.617580771446228,
+          "edema_margin": 4.359251022338867,
+          "edema_seg": 1.2895071506500244,
+          "identity": 0.17794692516326904,
+          "loss": 4.916131496429443,
+          "remote": 1.0647220611572266,
+          "scar_gate": 0.4936172068119049,
+          "scar_margin": 2.531820774078369,
+          "scar_seg": 1.2239906787872314
+        },
+        "modes": [
+          "scar_fn",
+          "scar_fp"
+        ],
+        "offset": 6
+      },
+      {
+        "batch_entries": [
+          8,
+          9
+        ],
+        "case_ids": [
+          "Case2004",
+          "Case2004"
+        ],
+        "loss": 4.479905605316162,
+        "metrics": {
+          "edema_gate": 0.623621940612793,
+          "edema_margin": 3.7075257301330566,
+          "edema_seg": 1.1490733623504639,
+          "identity": 0.1904456466436386,
+          "loss": 4.479905605316162,
+          "remote": 1.0825457572937012,
+          "scar_gate": 0.4943723976612091,
+          "scar_margin": 2.4544906616210938,
+          "scar_seg": 1.1040323972702026
+        },
+        "modes": [
+          "edema_zone_fn",
+          "edema_zone_fp"
+        ],
+        "offset": 8
+      },
+      {
+        "batch_entries": [
+          10,
+          11
+        ],
+        "case_ids": [
+          "Case2004",
+          "Case2004"
+        ],
+        "loss": 4.985894680023193,
+        "metrics": {
+          "edema_gate": 0.6150392293930054,
+          "edema_margin": 4.003902435302734,
+          "edema_seg": 1.339189052581787,
+          "identity": 0.0825672447681427,
+          "loss": 4.985894680023193,
+          "remote": 1.1623830795288086,
+          "scar_gate": 0.49770182371139526,
+          "scar_margin": 2.619750499725342,
+          "scar_seg": 1.3099267482757568
+        },
+        "modes": [
+          "pathology",
+          "background"
+        ],
+        "offset": 10
+      },
+      {
+        "batch_entries": [
+          12,
+          13
+        ],
+        "case_ids": [
+          "Case2010",
+          "Case2010"
+        ],
+        "loss": 5.022924423217773,
+        "metrics": {
+          "edema_gate": 0.631166934967041,
+          "edema_margin": 4.485346794128418,
+          "edema_seg": 1.1412324905395508,
+          "identity": 0.19599542021751404,
+          "loss": 5.022924423217773,
+          "remote": 1.0820724964141846,
+          "scar_gate": 0.4932202696800232,
+          "scar_margin": 3.399454355239868,
+          "scar_seg": 1.2204915285110474
+        },
+        "modes": [
+          "scar_fn",
+          "scar_fp"
+        ],
+        "offset": 12
+      },
+      {
+        "batch_entries": [
+          14,
+          15
+        ],
+        "case_ids": [
+          "Case2010",
+          "Case2010"
+        ],
+        "loss": 5.148674488067627,
+        "metrics": {
+          "edema_gate": 0.6309797763824463,
+          "edema_margin": 4.665030002593994,
+          "edema_seg": 1.1549490690231323,
+          "identity": 0.1854381412267685,
+          "loss": 5.148674488067627,
+          "remote": 1.0913913249969482,
+          "scar_gate": 0.49342694878578186,
+          "scar_margin": 3.6298041343688965,
+          "scar_seg": 1.2301307916641235
+        },
+        "modes": [
+          "edema_zone_fn",
+          "edema_zone_fp"
+        ],
+        "offset": 14
+      },
+      {
+        "batch_entries": [
+          16,
+          17
+        ],
+        "case_ids": [
+          "Case2010",
+          "Case2010"
+        ],
+        "loss": 4.913174152374268,
+        "metrics": {
+          "edema_gate": 0.6138744354248047,
+          "edema_margin": 4.172903537750244,
+          "edema_seg": 1.1900075674057007,
+          "identity": 0.09229481220245361,
+          "loss": 4.913174152374268,
+          "remote": 1.091933250427246,
+          "scar_gate": 0.48455092310905457,
+          "scar_margin": 3.0586907863616943,
+          "scar_seg": 1.2476322650909424
+        },
+        "modes": [
+          "pathology",
+          "background"
+        ],
+        "offset": 16
+      },
+      {
+        "batch_entries": [
+          18,
+          19
+        ],
+        "case_ids": [
+          "Case2012",
+          "Case2012"
+        ],
+        "loss": 5.954241752624512,
+        "metrics": {
+          "edema_gate": 0.5983028411865234,
+          "edema_margin": 4.970073699951172,
+          "edema_seg": 1.624131202697754,
+          "identity": 0.02963181957602501,
+          "loss": 5.954241752624512,
+          "remote": 1.040717363357544,
+          "scar_gate": 0.5079745650291443,
+          "scar_margin": 3.248246192932129,
+          "scar_seg": 1.6153573989868164
+        },
+        "modes": [
+          "scar_fn",
+          "scar_fp"
+        ],
+        "offset": 18
+      },
+      {
+        "batch_entries": [
+          20,
+          21
+        ],
+        "case_ids": [
+          "Case2012",
+          "Case2012"
+        ],
+        "loss": 6.173434734344482,
+        "metrics": {
+          "edema_gate": 0.5963200330734253,
+          "edema_margin": 5.381309986114502,
+          "edema_seg": 1.624289870262146,
+          "identity": 0.02995975874364376,
+          "loss": 6.173434734344482,
+          "remote": 1.0337929725646973,
+          "scar_gate": 0.5039134621620178,
+          "scar_margin": 3.7292189598083496,
+          "scar_seg": 1.615020513534546
+        },
+        "modes": [
+          "edema_zone_fn",
+          "edema_zone_fp"
+        ],
+        "offset": 20
+      },
+      {
+        "batch_entries": [
+          22,
+          23
+        ],
+        "case_ids": [
+          "Case2012",
+          "Case2012"
+        ],
+        "loss": 5.722716808319092,
+        "metrics": {
+          "edema_gate": 0.5869947671890259,
+          "edema_margin": 4.470067501068115,
+          "edema_seg": 1.6339269876480103,
+          "identity": 0.015590758062899113,
+          "loss": 5.722716808319092,
+          "remote": 1.0181959867477417,
+          "scar_gate": 0.50441575050354,
+          "scar_margin": 2.7694058418273926,
+          "scar_seg": 1.6298375129699707
+        },
+        "modes": [
+          "pathology",
+          "background"
+        ],
+        "offset": 22
+      },
+      {
+        "batch_entries": [
+          24,
+          25
+        ],
+        "case_ids": [
+          "Case2015",
+          "Case2015"
+        ],
+        "loss": 4.6961188316345215,
+        "metrics": {
+          "edema_gate": 0.6258820295333862,
+          "edema_margin": 3.612713098526001,
+          "edema_seg": 1.1050753593444824,
+          "identity": 0.18803952634334564,
+          "loss": 4.6961188316345215,
+          "remote": 1.0771502256393433,
+          "scar_gate": 0.4930439591407776,
+          "scar_margin": 3.0230653285980225,
+          "scar_seg": 1.2461166381835938
+        },
+        "modes": [
+          "scar_fn",
+          "scar_fp"
+        ],
+        "offset": 24
+      },
+      {
+        "batch_entries": [
+          26,
+          27
+        ],
+        "case_ids": [
+          "Case2015",
+          "Case2015"
+        ],
+        "loss": 4.585710525512695,
+        "metrics": {
+          "edema_gate": 0.6235895156860352,
+          "edema_margin": 3.881267547607422,
+          "edema_seg": 1.1071938276290894,
+          "identity": 0.18894369900226593,
+          "loss": 4.585710525512695,
+          "remote": 1.0591886043548584,
+          "scar_gate": 0.49011126160621643,
+          "scar_margin": 2.3457303047180176,
+          "scar_seg": 1.2401039600372314
+        },
+        "modes": [
+          "edema_zone_fn",
+          "edema_zone_fp"
+        ],
+        "offset": 26
+      },
+      {
+        "batch_entries": [
+          28,
+          29
+        ],
+        "case_ids": [
+          "Case2015",
+          "Case2015"
+        ],
+        "loss": 4.978883743286133,
+        "metrics": {
+          "edema_gate": 0.6088452339172363,
+          "edema_margin": 4.182653427124023,
+          "edema_seg": 1.3301435708999634,
+          "identity": 0.0986335426568985,
+          "loss": 4.978883743286133,
+          "remote": 1.0636118650436401,
+          "scar_gate": 0.496886283159256,
+          "scar_margin": 2.1534857749938965,
+          "scar_seg": 1.3956148624420166
+        },
+        "modes": [
+          "pathology",
+          "background"
+        ],
+        "offset": 28
+      },
+      {
+        "batch_entries": [
+          30,
+          31
+        ],
+        "case_ids": [
+          "Case2021",
+          "Case2021"
+        ],
+        "loss": 4.2774882316589355,
+        "metrics": {
+          "edema_gate": 0.6077233552932739,
+          "edema_margin": 2.735034704208374,
+          "edema_seg": 1.1831902265548706,
+          "identity": 0.1556328386068344,
+          "loss": 4.2774882316589355,
+          "remote": 0.9888349771499634,
+          "scar_gate": 0.48507726192474365,
+          "scar_margin": 2.1155776977539062,
+          "scar_seg": 1.2207973003387451
+        },
+        "modes": [
+          "scar_fn",
+          "scar_fp"
+        ],
+        "offset": 30
+      },
+      {
+        "batch_entries": [
+          32,
+          33
+        ],
+        "case_ids": [
+          "Case2021",
+          "Case2021"
+        ],
+        "loss": 4.365239143371582,
+        "metrics": {
+          "edema_gate": 0.6103636026382446,
+          "edema_margin": 2.847233295440674,
+          "edema_seg": 1.184462070465088,
+          "identity": 0.14635811746120453,
+          "loss": 4.365239143371582,
+          "remote": 0.999147891998291,
+          "scar_gate": 0.4850330054759979,
+          "scar_margin": 2.334359645843506,
+          "scar_seg": 1.2231299877166748
+        },
+        "modes": [
+          "edema_zone_fn",
+          "edema_zone_fp"
+        ],
+        "offset": 32
+      },
+      {
+        "batch_entries": [
+          34,
+          35
+        ],
+        "case_ids": [
+          "Case2021",
+          "Case2021"
+        ],
+        "loss": 4.626842021942139,
+        "metrics": {
+          "edema_gate": 0.5910060405731201,
+          "edema_margin": 2.811800718307495,
+          "edema_seg": 1.3388997316360474,
+          "identity": 0.07966704666614532,
+          "loss": 4.626842021942139,
+          "remote": 0.9991151094436646,
+          "scar_gate": 0.48469409346580505,
+          "scar_margin": 2.3219056129455566,
+          "scar_seg": 1.3587872982025146
+        },
+        "modes": [
+          "pathology",
+          "background"
+        ],
+        "offset": 34
+      },
+      {
+        "batch_entries": [
+          36,
+          37
+        ],
+        "case_ids": [
+          "Case2024",
+          "Case2024"
+        ],
+        "loss": 4.664594650268555,
+        "metrics": {
+          "edema_gate": 0.6352896690368652,
+          "edema_margin": 4.144045352935791,
+          "edema_seg": 1.0095257759094238,
+          "identity": 0.19335846602916718,
+          "loss": 4.664594650268555,
+          "remote": 1.0920755863189697,
+          "scar_gate": 0.487255334854126,
+          "scar_margin": 3.187304735183716,
+          "scar_seg": 1.1324154138565063
+        },
+        "modes": [
+          "scar_fn",
+          "scar_fp"
+        ],
+        "offset": 36
+      },
+      {
+        "batch_entries": [
+          38,
+          39
+        ],
+        "case_ids": [
+          "Case2024",
+          "Case2024"
+        ],
+        "loss": 4.656910419464111,
+        "metrics": {
+          "edema_gate": 0.6341371536254883,
+          "edema_margin": 3.8964033126831055,
+          "edema_seg": 1.0764415264129639,
+          "identity": 0.17740242183208466,
+          "loss": 4.656910419464111,
+          "remote": 1.106048822402954,
+          "scar_gate": 0.49217063188552856,
+          "scar_margin": 2.9056830406188965,
+          "scar_seg": 1.1884486675262451
+        },
+        "modes": [
+          "edema_zone_fn",
+          "edema_zone_fp"
+        ],
+        "offset": 38
+      },
+      {
+        "batch_entries": [
+          40,
+          41
+        ],
+        "case_ids": [
+          "Case2024",
+          "Case2024"
+        ],
+        "loss": 4.91625452041626,
+        "metrics": {
+          "edema_gate": 0.6153944730758667,
+          "edema_margin": 3.842514991760254,
+          "edema_seg": 1.2697898149490356,
+          "identity": 0.09343502670526505,
+          "loss": 4.91625452041626,
+          "remote": 1.0859487056732178,
+          "scar_gate": 0.4934016466140747,
+          "scar_margin": 2.733611822128296,
+          "scar_seg": 1.3300966024398804
+        },
+        "modes": [
+          "pathology",
+          "background"
+        ],
+        "offset": 40
+      },
+      {
+        "batch_entries": [
+          42,
+          43
+        ],
+        "case_ids": [
+          "Case2027",
+          "Case2027"
+        ],
+        "loss": 4.874320030212402,
+        "metrics": {
+          "edema_gate": 0.6238030195236206,
+          "edema_margin": 3.648646831512451,
+          "edema_seg": 1.2136013507843018,
+          "identity": 0.19249440729618073,
+          "loss": 4.874320030212402,
+          "remote": 1.0485960245132446,
+          "scar_gate": 0.4924805760383606,
+          "scar_margin": 3.20143985748291,
+          "scar_seg": 1.2659461498260498
+        },
+        "modes": [
+          "scar_fn",
+          "scar_fp"
+        ],
+        "offset": 42
+      },
+      {
+        "batch_entries": [
+          44,
+          45
+        ],
+        "case_ids": [
+          "Case2027",
+          "Case2027"
+        ],
+        "loss": 4.719472885131836,
+        "metrics": {
+          "edema_gate": 0.6194403767585754,
+          "edema_margin": 3.4500627517700195,
+          "edema_seg": 1.1904635429382324,
+          "identity": 0.18684658408164978,
+          "loss": 4.719472885131836,
+          "remote": 1.045680284500122,
+          "scar_gate": 0.49395623803138733,
+          "scar_margin": 2.9293417930603027,
+          "scar_seg": 1.2542071342468262
+        },
+        "modes": [
+          "edema_zone_fn",
+          "edema_zone_fp"
+        ],
+        "offset": 44
+      },
+      {
+        "batch_entries": [
+          46,
+          47
+        ],
+        "case_ids": [
+          "Case2027",
+          "Case2027"
+        ],
+        "loss": 4.930172920227051,
+        "metrics": {
+          "edema_gate": 0.6119214296340942,
+          "edema_margin": 3.6019463539123535,
+          "edema_seg": 1.2560309171676636,
+          "identity": 0.14544391632080078,
+          "loss": 4.930172920227051,
+          "remote": 1.0244419574737549,
+          "scar_gate": 0.49518874287605286,
+          "scar_margin": 3.202631950378418,
+          "scar_seg": 1.3024537563323975
+        },
+        "modes": [
+          "pathology",
+          "background"
+        ],
+        "offset": 46
+      },
+      {
+        "batch_entries": [
+          48,
+          49
+        ],
+        "case_ids": [
+          "Case3008",
+          "Case3008"
+        ],
+        "loss": 5.656072616577148,
+        "metrics": {
+          "edema_gate": 0.6106693148612976,
+          "edema_margin": 3.4740285873413086,
+          "edema_seg": 1.6858025789260864,
+          "identity": 0.24172985553741455,
+          "loss": 5.656072616577148,
+          "remote": 0.9570242762565613,
+          "scar_gate": 0.4907480478286743,
+          "scar_margin": 3.56162166595459,
+          "scar_seg": 1.5407731533050537
+        },
+        "modes": [
+          "scar_fn",
+          "scar_fp"
+        ],
+        "offset": 48
+      },
+      {
+        "batch_entries": [
+          50,
+          51
+        ],
+        "case_ids": [
+          "Case3008",
+          "Case3008"
+        ],
+        "loss": 5.667087078094482,
+        "metrics": {
+          "edema_gate": 0.61553555727005,
+          "edema_margin": 3.6544580459594727,
+          "edema_seg": 1.6212046146392822,
+          "identity": 0.24087022244930267,
+          "loss": 5.667087078094482,
+          "remote": 1.0195320844650269,
+          "scar_gate": 0.4972047209739685,
+          "scar_margin": 3.8323535919189453,
+          "scar_seg": 1.491769552230835
+        },
+        "modes": [
+          "edema_zone_fn",
+          "edema_zone_fp"
+        ],
+        "offset": 50
+      },
+      {
+        "batch_entries": [
+          52,
+          53
+        ],
+        "case_ids": [
+          "Case3008",
+          "Case3008"
+        ],
+        "loss": 5.689698219299316,
+        "metrics": {
+          "edema_gate": 0.6012248992919922,
+          "edema_margin": 3.8856420516967773,
+          "edema_seg": 1.519883632659912,
+          "identity": 0.10286732017993927,
+          "loss": 5.689698219299316,
+          "remote": 1.0719950199127197,
+          "scar_gate": 0.4972993731498718,
+          "scar_margin": 4.080358028411865,
+          "scar_seg": 1.511565923690796
+        },
+        "modes": [
+          "pathology",
+          "background"
+        ],
+        "offset": 52
+      },
+      {
+        "batch_entries": [
+          54,
+          55
+        ],
+        "case_ids": [
+          "Case3009",
+          "Case3009"
+        ],
+        "loss": 4.718993663787842,
+        "metrics": {
+          "edema_gate": 0.6101232171058655,
+          "edema_margin": 2.7845375537872314,
+          "edema_seg": 1.344705581665039,
+          "identity": 0.3223767578601837,
+          "loss": 4.718993663787842,
+          "remote": 1.0286633968353271,
+          "scar_gate": 0.5079975724220276,
+          "scar_margin": 2.579728126525879,
+          "scar_seg": 1.3390580415725708
+        },
+        "modes": [
+          "scar_fn",
+          "scar_fp"
+        ],
+        "offset": 54
+      },
+      {
+        "batch_entries": [
+          56,
+          57
+        ],
+        "case_ids": [
+          "Case3009",
+          "Case3009"
+        ],
+        "loss": 4.606132984161377,
+        "metrics": {
+          "edema_gate": 0.612473726272583,
+          "edema_margin": 2.5802931785583496,
+          "edema_seg": 1.29105806350708,
+          "identity": 0.31854090094566345,
+          "loss": 4.606132984161377,
+          "remote": 1.0288259983062744,
+          "scar_gate": 0.506790041923523,
+          "scar_margin": 2.7385385036468506,
+          "scar_seg": 1.2909984588623047
+        },
+        "modes": [
+          "edema_zone_fn",
+          "edema_zone_fp"
+        ],
+        "offset": 56
+      },
+      {
+        "batch_entries": [
+          58,
+          59
+        ],
+        "case_ids": [
+          "Case3009",
+          "Case3009"
+        ],
+        "loss": 4.5736165046691895,
+        "metrics": {
+          "edema_gate": 0.6084129810333252,
+          "edema_margin": 2.429729461669922,
+          "edema_seg": 1.3028180599212646,
+          "identity": 0.15315674245357513,
+          "loss": 4.5736165046691895,
+          "remote": 1.0915583372116089,
+          "scar_gate": 0.5015529990196228,
+          "scar_margin": 2.714784622192383,
+          "scar_seg": 1.3052154779434204
+        },
+        "modes": [
+          "pathology",
+          "background"
+        ],
+        "offset": 58
+      },
+      {
+        "batch_entries": [
+          60,
+          61
+        ],
+        "case_ids": [
+          "Case3024",
+          "Case3024"
+        ],
+        "loss": 4.735732078552246,
+        "metrics": {
+          "edema_gate": 0.6130530834197998,
+          "edema_margin": 2.9297266006469727,
+          "edema_seg": 1.4048397541046143,
+          "identity": 0.3077496588230133,
+          "loss": 4.735732078552246,
+          "remote": 0.97353196144104,
+          "scar_gate": 0.49207520484924316,
+          "scar_margin": 2.669752597808838,
+          "scar_seg": 1.2503300905227661
+        },
+        "modes": [
+          "scar_fn",
+          "scar_fp"
+        ],
+        "offset": 60
+      },
+      {
+        "batch_entries": [
+          62,
+          63
+        ],
+        "case_ids": [
+          "Case3024",
+          "Case3024"
+        ],
+        "loss": 4.814506530761719,
+        "metrics": {
+          "edema_gate": 0.6132935285568237,
+          "edema_margin": 3.038763999938965,
+          "edema_seg": 1.4004298448562622,
+          "identity": 0.29383331537246704,
+          "loss": 4.814506530761719,
+          "remote": 0.985907793045044,
+          "scar_gate": 0.49355143308639526,
+          "scar_margin": 2.8826394081115723,
+          "scar_seg": 1.2523291110992432
+        },
+        "modes": [
+          "edema_zone_fn",
+          "edema_zone_fp"
+        ],
+        "offset": 62
+      },
+      {
+        "batch_entries": [
+          64,
+          65
+        ],
+        "case_ids": [
+          "Case3024",
+          "Case3024"
+        ],
+        "loss": 4.924736976623535,
+        "metrics": {
+          "edema_gate": 0.6026351451873779,
+          "edema_margin": 2.995117664337158,
+          "edema_seg": 1.434310793876648,
+          "identity": 0.13081499934196472,
+          "loss": 4.924736976623535,
+          "remote": 1.048156976699829,
+          "scar_gate": 0.4943994879722595,
+          "scar_margin": 2.8046107292175293,
+          "scar_seg": 1.3740798234939575
+        },
+        "modes": [
+          "pathology",
+          "background"
+        ],
+        "offset": 64
+      },
+      {
+        "batch_entries": [
+          66,
+          67
+        ],
+        "case_ids": [
+          "Case3028",
+          "Case3028"
+        ],
+        "loss": 5.7294135093688965,
+        "metrics": {
+          "edema_gate": 0.623887300491333,
+          "edema_margin": 3.9027035236358643,
+          "edema_seg": 1.4792053699493408,
+          "identity": 0.22200530767440796,
+          "loss": 5.7294135093688965,
+          "remote": 1.0601956844329834,
+          "scar_gate": 0.49900558590888977,
+          "scar_margin": 4.437584400177002,
+          "scar_seg": 1.4754693508148193
+        },
+        "modes": [
+          "scar_fn",
+          "scar_fp"
+        ],
+        "offset": 66
+      },
+      {
+        "batch_entries": [
+          68,
+          69
+        ],
+        "case_ids": [
+          "Case3028",
+          "Case3028"
+        ],
+        "loss": 5.579145908355713,
+        "metrics": {
+          "edema_gate": 0.6183136701583862,
+          "edema_margin": 3.5051984786987305,
+          "edema_seg": 1.5161606073379517,
+          "identity": 0.28677088022232056,
+          "loss": 5.579145908355713,
+          "remote": 1.0050023794174194,
+          "scar_gate": 0.49984100461006165,
+          "scar_margin": 4.185022354125977,
+          "scar_seg": 1.4521757364273071
+        },
+        "modes": [
+          "edema_zone_fn",
+          "edema_zone_fp"
+        ],
+        "offset": 68
+      },
+      {
+        "batch_entries": [
+          70,
+          71
+        ],
+        "case_ids": [
+          "Case3028",
+          "Case3028"
+        ],
+        "loss": 5.601069927215576,
+        "metrics": {
+          "edema_gate": 0.6000738143920898,
+          "edema_margin": 3.639526128768921,
+          "edema_seg": 1.4940404891967773,
+          "identity": 0.1529093235731125,
+          "loss": 5.601069927215576,
+          "remote": 0.9798047542572021,
+          "scar_gate": 0.49283307790756226,
+          "scar_margin": 4.336812496185303,
+          "scar_seg": 1.4532203674316406
+        },
+        "modes": [
+          "pathology",
+          "background"
+        ],
+        "offset": 70
+      }
+    ],
+    "mode_counts": {
+      "background": 12,
+      "edema_zone_fn": 12,
+      "edema_zone_fp": 12,
+      "pathology": 12,
+      "scar_fn": 12,
+      "scar_fp": 12
+    },
+    "patch_count": 72,
+    "plan_sha256": "50f8b471f5db128dde8c88f7fe15c0cdf0d15f3a0d9a720bb5606b44d84bff42",
+    "status": "PASS"
+  },
+  "status": "PASS"
+}

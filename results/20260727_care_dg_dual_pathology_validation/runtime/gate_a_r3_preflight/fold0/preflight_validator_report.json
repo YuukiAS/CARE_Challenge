@@ -1,0 +1,22 @@
+{
+  "checked": [
+    "validate_w0",
+    "oof_anchor_loading",
+    "probability_to_log_probability",
+    "soft_support_maps",
+    "effective_sampler_audit_stage_A",
+    "effective_sampler_audit_stage_B",
+    "fixed_inner_checkpoint_evaluation",
+    "margin_cap_train_only",
+    "stage_A_one_optimizer_step",
+    "stage_B_one_optimizer_step",
+    "stage_B_group_learning_rates",
+    "resolved_training_contract_hash_bound",
+    "checkpoint_write_reload_resume_state",
+    "receipt"
+  ],
+  "created_at_utc": "2026-07-27T13:26:45Z",
+  "formal_training_credit": 0,
+  "receipt_path": "/users/a/e/aereinh/CARE/results/20260727_care_dg_dual_pathology_validation/runtime/gate_a_r3_preflight/fold0/fold_training_receipt.json",
+  "status": "PASS"
+}

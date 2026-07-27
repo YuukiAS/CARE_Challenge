@@ -359,6 +359,9 @@
     "tests/care_dg/test_care_dg_model.py": "0a9eea2091b6c5d1453e25e0c1d87be3718892c2f6df048cd31a5e4195b0bc9e"
   },
   "state": "AWAITING_HUMAN_ACCEPTANCE_GATE_A_R2",
+  "status": "SUPERSEDED_BY_GATE_A_R3",
   "subject": "[CARE-DG][A/4-R2] 固定内层评价、真实错误采样与精确续跑完成，等待正式 Fold0 验收",
+  "superseded_at_utc": "2026-07-27T13:30:24Z",
+  "superseded_by": "APPROVE_GATE_A_R3",
   "to": "1155246312@link.cuhk.edu.hk"
 }

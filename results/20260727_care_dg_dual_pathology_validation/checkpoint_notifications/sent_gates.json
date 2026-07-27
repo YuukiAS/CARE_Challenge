@@ -34,5 +34,13 @@
     "approval_token": "APPROVE_GATE_A_R2",
     "node_json": "results/20260727_care_dg_dual_pathology_validation/checkpoint_notifications/gate_a_r2.json",
     "prepared_at_utc": "2026-07-27T12:21:09Z"
+  },
+  "gate_a_r2_status": "SUPERSEDED_BY_GATE_A_R3",
+  "gate_a_r3_prepared": {
+    "approval_token": "APPROVE_GATE_A_R3",
+    "node_json": "results/20260727_care_dg_dual_pathology_validation/checkpoint_notifications/gate_a_r3.json",
+    "node_sha256": "65dfd4d9c8004083ae0713043fd533e4c386c243974ced1b24119225a5e8c9ac",
+    "prepared_at_utc": "2026-07-27T13:30:24Z",
+    "status": "PREPARED_NOT_SENT"
   }
 }

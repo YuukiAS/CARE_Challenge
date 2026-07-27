@@ -47,6 +47,13 @@ ALLOWED_W0_CONTRACT_STATUSES = {
 PROTECTED_RUNTIME_LABELS = {"formal"}
 SAMPLER_PATTERN = ["error_fn", "error_fp", "error_fn", "error_fp", "pathology", "pathology", "random", "random"]
 INNER_EVAL_MODES = ("scar_fn", "scar_fp", "edema_zone_fn", "edema_zone_fp", "pathology", "background")
+REPRESENTATION_MODULES = ("lge_stem", "t2_stem", "c0_stem", "anchor_context", "encoder")
+PATHOLOGY_MODULES = ("scar_decoder", "edema_decoder")
+STAGE_A_REPRESENTATION_LR = 3e-4
+STAGE_A_PATHOLOGY_LR = 3e-4
+STAGE_B_REPRESENTATION_LR = 2e-5
+STAGE_B_PATHOLOGY_LR = 1e-4
+WEIGHT_DECAY = 1e-4
 
 
 def now_utc() -> str:
@@ -617,7 +624,7 @@ def build_inner_evaluation_plan(
         raise ValueError(f"CARE_DG_INNER_EVAL_PLAN_CASE_WITHOUT_PATCH:{missing_cases[:5]}")
     payload = {
         "schema_version": 2,
-        "gate_revision": "A-R2",
+        "gate_revision": "A-R3",
         "fold": fold,
         "created_at_utc": now_utc(),
         "case_count": len(case_ids),
@@ -693,11 +700,214 @@ def source_hashes() -> dict[str, str]:
         "scripts/evaluation/evaluate_care_dg.py",
         "scripts/evaluation/select_care_dg_candidate.py",
         "scripts/evaluation/validate_care_dg_packet.py",
+        "scripts/evaluation/build_care_dg_validation_packet.py",
+        "scripts/evaluation/run_care_dg_gate_a_checks.py",
+        "scripts/evaluation/finalize_care_dg_gate_a_r3_evidence.py",
+        "scripts/evaluation/validate_care_dg_gate_a_consistency.py",
         "tests/care_dg/test_care_dg_model.py",
     ]
     return {p: sha256_file(REPO_ROOT / p) for p in paths if (REPO_ROOT / p).exists()}
 
 
+
+
+
+def care_dg_trainable_parameter_groups(model: torch.nn.Module) -> dict[str, Any]:
+    groups: dict[str, list[tuple[str, torch.nn.Parameter]]] = {
+        "representation_group": [],
+        "pathology_group": [],
+    }
+    unknown: list[str] = []
+    seen: dict[int, str] = {}
+    duplicates: list[str] = []
+    for name, param in model.named_parameters():
+        if not param.requires_grad:
+            continue
+        root = name.split(".", 1)[0]
+        if root in REPRESENTATION_MODULES:
+            group = "representation_group"
+        elif root in PATHOLOGY_MODULES:
+            group = "pathology_group"
+        else:
+            unknown.append(name)
+            continue
+        param_id = id(param)
+        if param_id in seen:
+            duplicates.append(f"{name}|{seen[param_id]}")
+        seen[param_id] = name
+        groups[group].append((name, param))
+    if unknown:
+        raise ValueError(f"CARE_DG_OPTIMIZER_PARAMETER_GROUP_UNKNOWN:{unknown[:8]}")
+    if duplicates:
+        raise ValueError(f"CARE_DG_OPTIMIZER_PARAMETER_GROUP_DUPLICATE:{duplicates[:8]}")
+    if not groups["representation_group"] or not groups["pathology_group"]:
+        raise ValueError("CARE_DG_OPTIMIZER_PARAMETER_GROUP_EMPTY")
+    trainable_ids = {id(p) for _, p in model.named_parameters() if p.requires_grad}
+    grouped_ids = {id(param) for rows in groups.values() for _, param in rows}
+    if trainable_ids != grouped_ids:
+        raise ValueError("CARE_DG_OPTIMIZER_PARAMETER_GROUP_COVERAGE_MISMATCH")
+    return {
+        "representation_group": groups["representation_group"],
+        "pathology_group": groups["pathology_group"],
+        "parameter_names": {key: [name for name, _ in rows] for key, rows in groups.items()},
+        "parameter_count": {key: int(sum(param.numel() for _, param in rows)) for key, rows in groups.items()},
+        "parameter_names_sha256": {
+            key: hashlib.sha256("\n".join(name for name, _ in rows).encode("utf-8")).hexdigest()
+            for key, rows in groups.items()
+        },
+    }
+
+
+def build_care_dg_optimizer(
+    model: torch.nn.Module,
+    *,
+    representation_lr: float,
+    pathology_lr: float,
+    weight_decay: float,
+) -> torch.optim.Optimizer:
+    grouped = care_dg_trainable_parameter_groups(model)
+    return torch.optim.AdamW(
+        [
+            {
+                "name": "representation_group",
+                "params": [param for _, param in grouped["representation_group"]],
+                "lr": float(representation_lr),
+                "weight_decay": float(weight_decay),
+            },
+            {
+                "name": "pathology_group",
+                "params": [param for _, param in grouped["pathology_group"]],
+                "lr": float(pathology_lr),
+                "weight_decay": float(weight_decay),
+            },
+        ]
+    )
+
+
+def set_stage_learning_rates(optimizer: torch.optim.Optimizer, *, stage: str, args: argparse.Namespace) -> dict[str, float]:
+    if stage == "A":
+        target = {
+            "representation_group": float(args.lr_stage_a_representation),
+            "pathology_group": float(args.lr_stage_a_pathology),
+        }
+    elif stage == "B":
+        target = {
+            "representation_group": float(args.lr_stage_b_representation),
+            "pathology_group": float(args.lr_stage_b_pathology),
+        }
+    else:
+        raise ValueError(f"unknown CARE-DG training stage: {stage}")
+    seen: set[str] = set()
+    for group in optimizer.param_groups:
+        name = str(group.get("name", ""))
+        if name not in target:
+            raise ValueError(f"CARE_DG_OPTIMIZER_UNKNOWN_PARAM_GROUP:{name}")
+        group["lr"] = target[name]
+        group["weight_decay"] = float(args.weight_decay)
+        seen.add(name)
+    missing = set(target) - seen
+    if missing:
+        raise ValueError(f"CARE_DG_OPTIMIZER_MISSING_PARAM_GROUP:{sorted(missing)}")
+    return target
+
+
+def current_group_lrs(optimizer: torch.optim.Optimizer) -> dict[str, float]:
+    return {str(group.get("name", f"group{idx}")): float(group["lr"]) for idx, group in enumerate(optimizer.param_groups)}
+
+
+def current_group_weight_decays(optimizer: torch.optim.Optimizer) -> dict[str, float]:
+    return {str(group.get("name", f"group{idx}")): float(group.get("weight_decay", 0.0)) for idx, group in enumerate(optimizer.param_groups)}
+
+
+def resolved_training_contract(
+    *,
+    fold: int,
+    args: argparse.Namespace,
+    stage_a_steps: int,
+    stage_b_steps: int,
+    batch_size: int,
+    cap_audit: dict[str, Any],
+    inner_plan: dict[str, Any],
+    split_contract: dict[str, Any],
+    sampler_index_a: dict[str, Any],
+    sampler_index_b: dict[str, Any] | None,
+    sampler_audit_a: dict[str, Any],
+    sampler_audit_b: dict[str, Any] | None,
+    model_config: dict[str, Any],
+    optimizer_group_report: dict[str, Any],
+    device: torch.device,
+) -> dict[str, Any]:
+    payload: dict[str, Any] = {
+        "schema_version": 1,
+        "method": "CARE-DG",
+        "gate_revision": "A-R3",
+        "fold": int(fold),
+        "seed": int(args.seed),
+        "stage_a_optimizer_steps": int(stage_a_steps),
+        "stage_b_optimizer_steps": int(stage_b_steps),
+        "batch_size": int(batch_size),
+        "patch_shape_zyx": list(PATCH_SHAPE),
+        "sampler_pattern": list(SAMPLER_PATTERN),
+        "learning_rates": {
+            "stage_a": {
+                "representation_group": float(args.lr_stage_a_representation),
+                "pathology_group": float(args.lr_stage_a_pathology),
+            },
+            "stage_b": {
+                "representation_group": float(args.lr_stage_b_representation),
+                "pathology_group": float(args.lr_stage_b_pathology),
+            },
+        },
+        "weight_decay": float(args.weight_decay),
+        "amp": {"requested": bool(args.amp), "enabled": bool(args.amp and device.type == "cuda")},
+        "model_channels": {
+            "stem_channels": int(model_config["stem_channels"]),
+            "context_channels": int(model_config["context_channels"]),
+            "encoder_channels": list(model_config["encoder_channels"]),
+            "anchor_channels": int(model_config["anchor_channels"]),
+        },
+        "optimizer_groups": {
+            "representation_group": list(REPRESENTATION_MODULES),
+            "pathology_group": list(PATHOLOGY_MODULES),
+            "parameter_count": optimizer_group_report["parameter_count"],
+            "parameter_names_sha256": optimizer_group_report["parameter_names_sha256"],
+        },
+        "scar_margin_cap_rule": "clip(Q0.95_abs_anchor_error_margin_actual_train+1,2,8)",
+        "edema_zone_margin_cap_rule": "clip(Q0.95_abs_anchor_error_margin_actual_train+1,2,8)",
+        "actual_margin_caps": {
+            "scar": float(cap_audit["scar"]["cap"]),
+            "edema_zone": float(cap_audit["edema_zone"]["cap"]),
+            "fit_population": str(cap_audit.get("fit_population")),
+            "case_ids_sha256": str(cap_audit.get("case_ids_sha256")),
+        },
+        "loss_weights": {
+            "segmentation_dice_plus_bce": 1.0,
+            "fn_fp_focal_bce": 0.5,
+            "error_margin_improvement": 0.25,
+            "identity_anchor_correct": 0.10,
+            "remote_positive_pre_support_raw_delta": 0.10,
+            "no_t2_edema_loss_weight": 0.0,
+        },
+        "support_semantics": {
+            "support_labels": [1, 4, 5],
+            "excluded_labels": [2, 3],
+            "scar_shell_mm": 6,
+            "edema_zone_shell_mm": 10,
+            "hard_crop": False,
+        },
+        "fixed_inner_evaluation_plan_sha256": str(inner_plan["plan_sha256"]),
+        "split_hashes": dict(split_contract.get("sha256") or {}),
+        "sampler_hashes": {
+            "stage_a_sampler_index_sha256": str(sampler_index_a["sampler_index_sha256"]),
+            "stage_b_sampler_index_sha256": str(sampler_index_b["sampler_index_sha256"]) if sampler_index_b else "none",
+            "stage_a_audit_status": str(sampler_audit_a.get("status")),
+            "stage_b_audit_status": str(sampler_audit_b.get("status")) if sampler_audit_b else "none",
+        },
+        "source_hashes": source_hashes(),
+        "config_sha256": sha256_file(CONFIG_PATH) if CONFIG_PATH.exists() else "missing",
+    }
+    payload["resolved_training_contract_sha256"] = stable_json_sha256(payload)
+    return payload
 
 
 def checkpoint_extra_summary(extra: dict[str, Any]) -> dict[str, Any]:
@@ -763,6 +973,15 @@ def contract() -> dict[str, object]:
         "stage_b_optimizer_steps": 3000,
         "batch_size": 8,
         "patch_shape_zyx": list(PATCH_SHAPE),
+        "stage_a_representation_lr": STAGE_A_REPRESENTATION_LR,
+        "stage_a_pathology_lr": STAGE_A_PATHOLOGY_LR,
+        "stage_b_representation_lr": STAGE_B_REPRESENTATION_LR,
+        "stage_b_pathology_lr": STAGE_B_PATHOLOGY_LR,
+        "weight_decay": WEIGHT_DECAY,
+        "optimizer_groups": {
+            "representation_group": list(REPRESENTATION_MODULES),
+            "pathology_group": list(PATHOLOGY_MODULES),
+        },
         "runtime_forbidden": ["MoSAIC", "full_MMRD", "prototype_dictionary", "SIP", "multi_expert", "old_Cascade"],
         "gpu_execution": "srun --jobid=60657290 --overlap only; serial GPU commands",
     }
@@ -799,8 +1018,8 @@ def train_fold(fold: int, args: argparse.Namespace, result_root: Path) -> dict[s
     train_cases = list(split_contract["actual_train_cases"])
     inner_select = list(split_contract["complete_inner_select_cases"] or split_contract["inner_select_cases"])
     complete_train_cases = list(split_contract["complete_actual_train_cases"])
-    preflight_only = bool(args.preflight_steps or args.gate_a_r2_preflight)
-    if args.gate_a_r2_preflight:
+    preflight_only = bool(args.preflight_steps or args.gate_a_r2_preflight or args.gate_a_r3_preflight)
+    if args.gate_a_r2_preflight or args.gate_a_r3_preflight:
         stage_a_steps = 1; stage_b_steps = 1; batch_size = min(2, args.batch_size)
     elif args.preflight_steps:
         stage_a_steps = int(args.preflight_steps); stage_b_steps = 0; batch_size = min(2, args.batch_size)
@@ -835,29 +1054,58 @@ def train_fold(fold: int, args: argparse.Namespace, result_root: Path) -> dict[s
     inner_plan = build_inner_evaluation_plan(inner_select, case_to_fold, metadata, cache, fold=fold, split_contract=split_contract)
     sampler_index_a = build_sampler_index(train_cases, case_to_fold, metadata, cache, stage="A")
     sampler_index_b = build_sampler_index(complete_train_cases, case_to_fold, metadata, cache, stage="B") if complete_train_cases else None
-    sampler_audit = sampler_quota_audit(train_cases, case_to_fold, metadata, cache, stage="A", batch_size=max(8, batch_size), samples=1000, seed=args.seed + fold)
+    sampler_audit_a = sampler_quota_audit(train_cases, case_to_fold, metadata, cache, stage="A", batch_size=max(8, batch_size), samples=1000, seed=args.seed + fold)
+    sampler_audit_b = sampler_quota_audit(complete_train_cases, case_to_fold, metadata, cache, stage="B", batch_size=max(8, batch_size), samples=1000, seed=args.seed + fold + 100000) if sampler_index_b else None
     write_json(runtime_root / "inner_split_manifest.json", split_contract)
     write_json(runtime_root / "inner_evaluation_plan.json", inner_plan)
-    write_json(runtime_root / "sampler_quota_audit.json", sampler_audit)
+    write_json(runtime_root / "sampler_quota_audit_stage_a.json", sampler_audit_a)
+    if sampler_audit_b is not None:
+        write_json(runtime_root / "sampler_quota_audit_stage_b.json", sampler_audit_b)
+    write_json(runtime_root / "sampler_quota_audit.json", sampler_audit_a)
     write_json(runtime_root / "margin_cap_audit.json", cap_audit)
-    if sampler_audit.get("status") != "PASS":
-        raise RuntimeError(f"sampler quota audit failed for fold={fold}: {sampler_audit}")
-    hash_contract = {
-        "fixed_inner_evaluation_plan_sha256": inner_plan["plan_sha256"],
-        "stage_a_sampler_index_sha256": sampler_index_a["sampler_index_sha256"],
-        "stage_b_sampler_index_sha256": sampler_index_b["sampler_index_sha256"] if sampler_index_b else "none",
-        "config_sha256": sha256_file(CONFIG_PATH) if CONFIG_PATH.exists() else "missing",
-        "split_actual_train_sha256": split_contract["sha256"]["actual_train"],
-        "split_inner_select_sha256": split_contract["sha256"]["inner_select"],
-        "source_hash_run_care_dg": source_hashes().get("scripts/training/run_care_dg.py", "missing"),
-    }
-    model = build_care_dg({
+    for audit_name, audit in [("stage_a", sampler_audit_a), ("stage_b", sampler_audit_b)]:
+        if audit is None:
+            if stage_b_steps > 0 and audit_name == "stage_b":
+                raise RuntimeError(f"sampler quota audit missing for fold={fold} stage=B")
+            continue
+        if audit.get("status") != "PASS":
+            raise RuntimeError(f"sampler quota audit failed for fold={fold} {audit_name}: {audit}")
+    model_config = {
         "encoder_channels": tuple(args.encoder_channels),
         "context_channels": args.context_channels,
         "scar_margin_cap": float(cap_audit["scar"]["cap"]),
         "edema_margin_cap": float(cap_audit["edema_zone"]["cap"]),
-    }).to(device)
-    optimizer = torch.optim.AdamW(model.parameters(), lr=args.lr_stage_a, weight_decay=args.weight_decay)
+    }
+    model = build_care_dg(model_config).to(device)
+    optimizer_group_report = care_dg_trainable_parameter_groups(model)
+    resolved_contract = resolved_training_contract(
+        fold=fold,
+        args=args,
+        stage_a_steps=stage_a_steps,
+        stage_b_steps=stage_b_steps,
+        batch_size=batch_size,
+        cap_audit=cap_audit,
+        inner_plan=inner_plan,
+        split_contract=split_contract,
+        sampler_index_a=sampler_index_a,
+        sampler_index_b=sampler_index_b,
+        sampler_audit_a=sampler_audit_a,
+        sampler_audit_b=sampler_audit_b,
+        model_config=model.config.__dict__,
+        optimizer_group_report=optimizer_group_report,
+        device=device,
+    )
+    write_json(runtime_root / "resolved_training_contract.json", resolved_contract)
+    hash_contract = {
+        "resolved_training_contract_sha256": resolved_contract["resolved_training_contract_sha256"],
+        "resolved_training_contract": resolved_contract,
+    }
+    optimizer = build_care_dg_optimizer(
+        model,
+        representation_lr=args.lr_stage_a_representation,
+        pathology_lr=args.lr_stage_a_pathology,
+        weight_decay=args.weight_decay,
+    )
     scaler = GradScaler("cuda", enabled=bool(args.amp and device.type == "cuda"))
     best_inner = math.inf; best_path = None
     started = time.time(); total_steps = 0
@@ -894,16 +1142,15 @@ def train_fold(fold: int, args: argparse.Namespace, result_root: Path) -> dict[s
                             best_inner = inner
                             best_path = path
             print(json.dumps({"fold": fold, "status": "RESUME_FROM_CHECKPOINT", "checkpoint": str(resume_ckpt), "resume_step": resume_step}), flush=True)
-    stage_specs = [("A", stage_a_steps, train_cases, args.lr_stage_a), ("B", stage_b_steps, complete_train_cases, args.lr_stage_b)]
-    for stage, steps, cases, lr in stage_specs:
+    stage_specs = [("A", stage_a_steps, train_cases), ("B", stage_b_steps, complete_train_cases)]
+    for stage, steps, cases in stage_specs:
         if steps <= 0:
             continue
         stage_offset = 0 if stage == "A" else stage_a_steps
         if total_steps >= stage_offset + steps:
             continue
         start_local_step = max(1, total_steps - stage_offset + 1)
-        for group in optimizer.param_groups:
-            group["lr"] = lr
+        stage_lrs = set_stage_learning_rates(optimizer, stage=stage, args=args)
         for local_step in range(start_local_step, steps + 1):
             total_steps += 1
             sampler_index = sampler_index_a if stage == "A" else sampler_index_b
@@ -933,7 +1180,7 @@ def train_fold(fold: int, args: argparse.Namespace, result_root: Path) -> dict[s
             scaler.scale(loss).backward(); scaler.step(optimizer); scaler.update()
             if local_step == 1 or local_step % args.log_every == 0 or local_step == steps:
                 changed = int((out["final_mask"] != anchor_mask).detach().sum().cpu())
-                row = {"fold": fold, "stage": stage, "local_step": local_step, "total_step": total_steps, "loss": metrics["loss"], "scar_gate": metrics["scar_gate"], "edema_gate": metrics["edema_gate"], "changed_voxels": changed, "scar_delta_std": float(out["scar_delta"].detach().std().cpu()), "edema_delta_std": float(out["edema_delta"].detach().std().cpu()), "elapsed_seconds": round(time.time() - started, 1)}
+                row = {"fold": fold, "stage": stage, "local_step": local_step, "total_step": total_steps, "representation_lr": stage_lrs["representation_group"], "pathology_lr": stage_lrs["pathology_group"], "loss": metrics["loss"], "scar_gate": metrics["scar_gate"], "edema_gate": metrics["edema_gate"], "changed_voxels": changed, "scar_delta_std": float(out["scar_delta"].detach().std().cpu()), "edema_delta_std": float(out["edema_delta"].detach().std().cpu()), "elapsed_seconds": round(time.time() - started, 1)}
                 row.update(activation_stats(out, batch["labels"], anchor_mask, batch["t2_present"]))
                 log_rows.append(row)
                 append_csv(runtime_root / "training_curve.csv", row, list(row.keys()))
@@ -958,7 +1205,7 @@ def train_fold(fold: int, args: argparse.Namespace, result_root: Path) -> dict[s
                     fixed_inner_plan_hash=str(inner_plan["plan_sha256"]),
                     hash_contract=hash_contract,
                 )
-                row = {"fold": fold, "stage": stage, "step": total_steps, "checkpoint_path": str(path), "checkpoint_sha256": sha256_file(path), "inner_loss": inner_loss, "inner_plan_sha256": inner_plan["plan_sha256"], "selection_population": "fixed_train_side_complete_inner_plan", "outer_val_used": False}
+                row = {"fold": fold, "stage": stage, "step": total_steps, "local_step": local_step, "representation_lr": stage_lrs["representation_group"], "pathology_lr": stage_lrs["pathology_group"], "weight_decay": args.weight_decay, "resolved_training_contract_sha256": resolved_contract["resolved_training_contract_sha256"], "checkpoint_path": str(path), "checkpoint_sha256": sha256_file(path), "inner_loss": inner_loss, "inner_plan_sha256": inner_plan["plan_sha256"], "selection_population": "fixed_train_side_complete_inner_plan", "outer_val_used": False}
                 ckpt_rows.append(row)
                 if inner_loss < best_inner:
                     best_inner = inner_loss; best_path = path
@@ -1020,16 +1267,17 @@ def train_fold(fold: int, args: argparse.Namespace, result_root: Path) -> dict[s
     }
     if checkpoint_reload["status"] != "PASS":
         raise RuntimeError(f"checkpoint write/reload parity failed for fold={fold}: {checkpoint_reload}")
-    last_row = {"fold": fold, "stage": "last", "step": total_steps, "checkpoint_path": str(last_path), "checkpoint_sha256": sha256_file(last_path), "inner_loss": float(terminal_inner_eval["loss"]), "inner_plan_sha256": inner_plan["plan_sha256"], "selection_population": "terminal_last_fixed_inner_plan", "outer_val_used": False}
+    terminal_lrs = current_group_lrs(optimizer)
+    last_row = {"fold": fold, "stage": "last", "step": total_steps, "local_step": 0, "representation_lr": terminal_lrs.get("representation_group"), "pathology_lr": terminal_lrs.get("pathology_group"), "weight_decay": args.weight_decay, "resolved_training_contract_sha256": resolved_contract["resolved_training_contract_sha256"], "checkpoint_path": str(last_path), "checkpoint_sha256": sha256_file(last_path), "inner_loss": float(terminal_inner_eval["loss"]), "inner_plan_sha256": inner_plan["plan_sha256"], "selection_population": "terminal_last_fixed_inner_plan", "outer_val_used": False}
     ckpt_rows.append(last_row)
     if best_path is None:
         best_path = last_path; best_inner = float(log_rows[-1]["loss"]) if log_rows else math.inf
     best_alias = ckpt_dir / "checkpoint_best.pt"
     best_alias.write_bytes(best_path.read_bytes())
-    best_row = {"fold": fold, "stage": "best", "step": total_steps, "checkpoint_path": str(best_alias), "checkpoint_sha256": sha256_file(best_alias), "inner_loss": best_inner, "inner_plan_sha256": inner_plan["plan_sha256"], "selection_population": "fixed_train_side_complete_inner_plan", "outer_val_used": False}
+    best_row = {"fold": fold, "stage": "best", "step": total_steps, "local_step": 0, "representation_lr": terminal_lrs.get("representation_group"), "pathology_lr": terminal_lrs.get("pathology_group"), "weight_decay": args.weight_decay, "resolved_training_contract_sha256": resolved_contract["resolved_training_contract_sha256"], "checkpoint_path": str(best_alias), "checkpoint_sha256": sha256_file(best_alias), "inner_loss": best_inner, "inner_plan_sha256": inner_plan["plan_sha256"], "selection_population": "fixed_train_side_complete_inner_plan", "outer_val_used": False}
     ckpt_rows.append(best_row)
     write_csv(runtime_root / "checkpoint_manifest.csv", ckpt_rows)
-    receipt = {"fold": fold, "status": "PASS", "runtime_kind": runtime_kind, "preflight_only": preflight_only, "formal_training_credit": 0 if preflight_only else total_steps, "validate_w0_status": "PASS", "expected_stage_a_steps": stage_a_steps, "expected_stage_b_steps": stage_b_steps, "actual_optimizer_steps": total_steps, "outer_train_cases": len(outer_train), "outer_val_cases": len(outer_val), "actual_train_cases": len(train_cases), "inner_train_cases": len(train_cases), "inner_selection_cases": len(inner_select), "complete_trimodal_train_cases": len(complete_train_cases), "complete_inner_selection_cases": len(split_contract["complete_inner_select_cases"]), "t2_reliable_train_cases": sum(bool(metadata[c].t2_present) for c in train_cases), "best_checkpoint": str(best_alias), "last_checkpoint": str(last_path), "best_inner_loss": best_inner, "outer_val_used_for_checkpoint_selection": False, "stage_a_case_ids_sha256": split_contract["sha256"]["actual_train"], "stage_b_case_ids_sha256": split_contract["sha256"]["complete_actual_train"], "inner_select_case_ids_sha256": split_contract["sha256"]["inner_select"], "complete_inner_select_case_ids_sha256": split_contract["sha256"]["complete_inner_select"], "fixed_inner_objective": "fixed_complete_inner_select_no_aug_patch_loss", "fixed_inner_evaluation_plan_path": str(runtime_root / "inner_evaluation_plan.json"), "fixed_inner_evaluation_plan_sha256": inner_plan["plan_sha256"], "inner_evaluation_repeat_exact": bool(inner_repeat_exact), "anchor_value_kind": "log_probabilities", "support_map_contract": "myocardium_union_labels_1_4_5_excludes_lv_rv_2_3_soft_shells_6mm_10mm", "checkpoint_write_reload": checkpoint_reload, "margin_cap_audit": cap_audit, "sampler_quota_audit": sampler_audit, "hash_contract": hash_contract, "source_hashes": source_hashes(), "elapsed_seconds": round(time.time() - started, 1), "terminal_time_utc": now_utc(), "curve_rows": len(log_rows), "checkpoint_rows": len(ckpt_rows)}
+    receipt = {"fold": fold, "status": "PASS", "runtime_kind": runtime_kind, "preflight_only": preflight_only, "formal_training_credit": 0 if preflight_only else total_steps, "validate_w0_status": "PASS", "expected_stage_a_steps": stage_a_steps, "expected_stage_b_steps": stage_b_steps, "actual_optimizer_steps": total_steps, "stage_a_representation_lr": args.lr_stage_a_representation, "stage_a_pathology_lr": args.lr_stage_a_pathology, "stage_b_representation_lr": args.lr_stage_b_representation, "stage_b_pathology_lr": args.lr_stage_b_pathology, "optimizer_group_lrs_terminal": current_group_lrs(optimizer), "optimizer_group_weight_decays_terminal": current_group_weight_decays(optimizer), "outer_train_cases": len(outer_train), "outer_val_cases": len(outer_val), "actual_train_cases": len(train_cases), "inner_train_cases": len(train_cases), "inner_selection_cases": len(inner_select), "complete_trimodal_train_cases": len(complete_train_cases), "complete_inner_selection_cases": len(split_contract["complete_inner_select_cases"]), "t2_reliable_train_cases": sum(bool(metadata[c].t2_present) for c in train_cases), "best_checkpoint": str(best_alias), "last_checkpoint": str(last_path), "best_inner_loss": best_inner, "outer_val_used_for_checkpoint_selection": False, "stage_a_case_ids_sha256": split_contract["sha256"]["actual_train"], "stage_b_case_ids_sha256": split_contract["sha256"]["complete_actual_train"], "inner_select_case_ids_sha256": split_contract["sha256"]["inner_select"], "complete_inner_select_case_ids_sha256": split_contract["sha256"]["complete_inner_select"], "fixed_inner_objective": "fixed_complete_inner_select_no_aug_patch_loss", "fixed_inner_evaluation_plan_path": str(runtime_root / "inner_evaluation_plan.json"), "fixed_inner_evaluation_plan_sha256": inner_plan["plan_sha256"], "inner_evaluation_repeat_exact": bool(inner_repeat_exact), "resolved_training_contract_path": str(runtime_root / "resolved_training_contract.json"), "resolved_training_contract_sha256": resolved_contract["resolved_training_contract_sha256"], "anchor_value_kind": "log_probabilities", "support_map_contract": "myocardium_union_labels_1_4_5_excludes_lv_rv_2_3_soft_shells_6mm_10mm", "checkpoint_write_reload": checkpoint_reload, "margin_cap_audit": cap_audit, "sampler_quota_audit_stage_a": sampler_audit_a, "sampler_quota_audit_stage_b": sampler_audit_b, "sampler_quota_audit": sampler_audit_a, "hash_contract": hash_contract, "source_hashes": source_hashes(), "elapsed_seconds": round(time.time() - started, 1), "terminal_time_utc": now_utc(), "curve_rows": len(log_rows), "checkpoint_rows": len(ckpt_rows)}
     write_json(runtime_root / "fold_training_receipt.json", receipt)
     if preflight_only:
         write_json(runtime_root / "preflight_validator_report.json", {
@@ -1041,11 +1289,14 @@ def train_fold(fold: int, args: argparse.Namespace, result_root: Path) -> dict[s
                 "oof_anchor_loading",
                 "probability_to_log_probability",
                 "soft_support_maps",
-                "effective_sampler_audit",
+                "effective_sampler_audit_stage_A",
+                "effective_sampler_audit_stage_B",
                 "fixed_inner_checkpoint_evaluation",
                 "margin_cap_train_only",
                 "stage_A_one_optimizer_step",
                 "stage_B_one_optimizer_step",
+                "stage_B_group_learning_rates",
+                "resolved_training_contract_hash_bound",
                 "checkpoint_write_reload_resume_state",
                 "receipt",
             ],
@@ -1093,18 +1344,23 @@ def main() -> int:
     parser.add_argument("--batch-size", type=int, default=8)
     parser.add_argument("--preflight-steps", type=int, default=0)
     parser.add_argument("--gate-a-r2-preflight", action="store_true")
+    parser.add_argument("--gate-a-r3-preflight", action="store_true")
     parser.add_argument("--runtime-label", default="repaired_formal")
     parser.add_argument("--resume", action="store_true")
     parser.add_argument("--allow-cpu", action="store_true")
     parser.add_argument("--amp", action="store_true", default=True)
     parser.add_argument("--cache-cases", type=int, default=48)
     parser.add_argument("--log-every", type=int, default=100)
-    parser.add_argument("--lr-stage-a", type=float, default=3e-4)
-    parser.add_argument("--lr-stage-b", type=float, default=1e-4)
-    parser.add_argument("--weight-decay", type=float, default=1e-4)
+    parser.add_argument("--lr-stage-a-representation", type=float, default=STAGE_A_REPRESENTATION_LR)
+    parser.add_argument("--lr-stage-a-pathology", type=float, default=STAGE_A_PATHOLOGY_LR)
+    parser.add_argument("--lr-stage-b-representation", type=float, default=STAGE_B_REPRESENTATION_LR)
+    parser.add_argument("--lr-stage-b-pathology", type=float, default=STAGE_B_PATHOLOGY_LR)
+    parser.add_argument("--weight-decay", type=float, default=WEIGHT_DECAY)
     parser.add_argument("--encoder-channels", nargs=3, type=int, default=[32, 64, 96])
     parser.add_argument("--context-channels", type=int, default=16)
     args = parser.parse_args()
+    if args.gate_a_r3_preflight and args.runtime_label != "gate_a_r3_preflight":
+        parser.error("--gate-a-r3-preflight requires --runtime-label gate_a_r3_preflight")
     if args.print_contract:
         print(json.dumps(contract(), indent=2, sort_keys=True)); return 0
     if args.unit_smoke:
@@ -1118,7 +1374,7 @@ def main() -> int:
     for fold in args.folds:
         receipts.append(train_fold(int(fold), args, result_root))
     write_training_manifests(result_root, receipts)
-    print(json.dumps({"status": "PASS", "folds": args.folds, "preflight_only": bool(args.preflight_steps or args.gate_a_r2_preflight), "receipts": receipts}, indent=2, sort_keys=True))
+    print(json.dumps({"status": "PASS", "folds": args.folds, "preflight_only": bool(args.preflight_steps or args.gate_a_r2_preflight or args.gate_a_r3_preflight), "receipts": receipts}, indent=2, sort_keys=True))
     return 0
 
 

@@ -427,26 +427,28 @@ are intentionally not rewritten as CARE-DG verified until W6 terminal evidence.
 
 
 
-def validate_gate_a_r2(failures: list[str]) -> None:
+def validate_gate_a_r3(failures: list[str]) -> None:
     contract_path = RESULT_ROOT / "implementation_contract.json"
-    preflight_root = RESULT_ROOT / "runtime/gate_a_r2_preflight/fold0"
+    preflight_root = RESULT_ROOT / "runtime/gate_a_r3_preflight/fold0"
     receipt_path = preflight_root / "fold_training_receipt.json"
     split_path = preflight_root / "inner_split_manifest.json"
     plan_path = preflight_root / "inner_evaluation_plan.json"
-    sampler_path = preflight_root / "sampler_quota_audit.json"
+    sampler_stage_a_path = preflight_root / "sampler_quota_audit_stage_a.json"
+    sampler_stage_b_path = preflight_root / "sampler_quota_audit_stage_b.json"
+    resolved_contract_path = preflight_root / "resolved_training_contract.json"
     repeat_path = preflight_root / "inner_evaluation_repeat_receipt.json"
     preflight_validator_path = preflight_root / "preflight_validator_report.json"
     checkpoint_manifest_path = preflight_root / "checkpoint_manifest.csv"
     if not contract_path.exists():
-        failures.append("gate_a_r2_missing_implementation_contract")
+        failures.append("gate_a_r3_missing_implementation_contract")
         return
     contract = load_json(contract_path)
     if contract.get("status") != "GATE_A_REPAIRED_IMPLEMENTATION_PASS":
-        failures.append("gate_a_r2_contract_status_not_allowed")
-    if contract.get("gate_revision") != "A-R2":
-        failures.append("gate_a_r2_contract_revision_missing")
-    if contract.get("approval_token_required") != "APPROVE_GATE_A_R2":
-        failures.append("gate_a_r2_approval_token_wrong")
+        failures.append("gate_a_r3_contract_status_not_allowed")
+    if contract.get("gate_revision") != "A-R3":
+        failures.append("gate_a_r3_contract_revision_missing")
+    if contract.get("approval_token_required") != "APPROVE_GATE_A_R3":
+        failures.append("gate_a_r3_approval_token_wrong")
     implemented = contract.get("implemented_contract", {})
     for key in [
         "validate_w0_accepts_preregistered_status_only",
@@ -461,85 +463,96 @@ def validate_gate_a_r2(failures: list[str]) -> None:
         "sampler_audit_reports_effective_not_nominal_quota",
         "checkpoint_saves_python_numpy_torch_cuda_scaler_and_local_rng",
         "checkpoint_resume_validates_hash_contract_before_restore",
-        "gate_a_r2_preflight_runs_stage_A_and_stage_B",
+        "gate_a_r3_preflight_runs_stage_A_and_stage_B",
+        "stage_A_optimizer_two_groups_3e_minus_4",
+        "stage_B_optimizer_representation_2e_minus_5_pathology_1e_minus_4",
+        "every_trainable_parameter_exactly_one_optimizer_group",
+        "checkpoint_reload_preserves_optimizer_groups_and_lrs",
+        "resolved_training_contract_sha256_written_to_checkpoint_receipt_manifest",
+        "checkpoint_resume_rejects_resolved_contract_mismatch",
+        "stage_A_and_stage_B_effective_sampler_audits_written",
+        "consistency_validator_rejects_fail_deferred_mismatch",
         "margin_caps_fit_actual_train_only",
         "soft_support_union_labels_1_4_5_excludes_lv_rv",
         "repaired_runtime_label_isolated",
     ]:
         if implemented.get(key) is not True:
-            failures.append(f"gate_a_r2_contract_missing:{key}")
+            failures.append(f"gate_a_r3_contract_missing:{key}")
     for path, name in [
         (receipt_path, "preflight_receipt"),
         (split_path, "inner_split_manifest"),
         (plan_path, "inner_evaluation_plan"),
-        (sampler_path, "sampler_quota_audit"),
+        (sampler_stage_a_path, "sampler_quota_audit_stage_a"),
+        (sampler_stage_b_path, "sampler_quota_audit_stage_b"),
+        (resolved_contract_path, "resolved_training_contract"),
         (repeat_path, "inner_evaluation_repeat"),
         (preflight_validator_path, "preflight_validator"),
         (checkpoint_manifest_path, "checkpoint_manifest"),
     ]:
         if not path.exists():
-            failures.append(f"gate_a_r2_{name}_missing")
+            failures.append(f"gate_a_r3_{name}_missing")
     if not receipt_path.exists():
         return
     receipt = load_json(receipt_path)
     if receipt.get("status") != "PASS":
-        failures.append("gate_a_r2_preflight_receipt_not_PASS")
+        failures.append("gate_a_r3_preflight_receipt_not_PASS")
     if receipt.get("preflight_only") is not True:
-        failures.append("gate_a_r2_preflight_not_marked_preflight_only")
+        failures.append("gate_a_r3_preflight_not_marked_preflight_only")
     if int(receipt.get("expected_stage_a_steps", -1)) != 1:
-        failures.append("gate_a_r2_stage_A_not_one_step")
+        failures.append("gate_a_r3_stage_A_not_one_step")
     if int(receipt.get("expected_stage_b_steps", -1)) != 1:
-        failures.append("gate_a_r2_stage_B_not_one_step")
+        failures.append("gate_a_r3_stage_B_not_one_step")
     if int(receipt.get("actual_optimizer_steps", -1)) != 2:
-        failures.append("gate_a_r2_preflight_step_count_not_2")
+        failures.append("gate_a_r3_preflight_step_count_not_2")
     if int(receipt.get("formal_training_credit", -1)) != 0:
-        failures.append("gate_a_r2_preflight_has_formal_training_credit")
+        failures.append("gate_a_r3_preflight_has_formal_training_credit")
     if receipt.get("validate_w0_status") != "PASS":
-        failures.append("gate_a_r2_validate_w0_not_PASS")
-    if receipt.get("runtime_kind") != "gate_a_r2_preflight":
-        failures.append("gate_a_r2_runtime_label_not_isolated")
+        failures.append("gate_a_r3_validate_w0_not_PASS")
+    if receipt.get("runtime_kind") != "gate_a_r3_preflight":
+        failures.append("gate_a_r3_runtime_label_not_isolated")
     if receipt.get("fixed_inner_objective") != "fixed_complete_inner_select_no_aug_patch_loss":
-        failures.append("gate_a_r2_inner_objective_not_fixed_r2")
+        failures.append("gate_a_r3_inner_objective_not_fixed")
     if receipt.get("outer_val_used_for_checkpoint_selection") is not False:
-        failures.append("gate_a_r2_outer_val_used_for_checkpoint_selection")
+        failures.append("gate_a_r3_outer_val_used_for_checkpoint_selection")
     if receipt.get("margin_cap_audit", {}).get("fit_population") != "actual_train_cases_only":
-        failures.append("gate_a_r2_margin_cap_not_train_only")
+        failures.append("gate_a_r3_margin_cap_not_train_only")
     if receipt.get("checkpoint_write_reload", {}).get("status") != "PASS":
-        failures.append("gate_a_r2_checkpoint_reload_not_PASS")
+        failures.append("gate_a_r3_checkpoint_reload_not_PASS")
     if receipt.get("checkpoint_write_reload", {}).get("inner_evaluation_repeat_exact") is not True:
-        failures.append("gate_a_r2_inner_evaluation_repeat_not_exact")
-    sampler = load_json(sampler_path) if sampler_path.exists() else {}
-    if sampler.get("status") != "PASS":
-        failures.append("gate_a_r2_effective_sampler_audit_not_PASS")
-    if int(sampler.get("silent_fallback_count", -1)) != 0:
-        failures.append("gate_a_r2_sampler_silent_fallback_nonzero")
-    hit_rates = sampler.get("target_hit_rates", {})
-    for key in ("error_fn", "error_fp", "pathology"):
-        if float(hit_rates.get(key, -1.0)) != 1.0:
-            failures.append(f"gate_a_r2_sampler_hit_rate_not_100:{key}")
-    fractions = sampler.get("effective_fractions", {})
-    if abs(float(fractions.get("error_fn", 0.0)) + float(fractions.get("error_fp", 0.0)) - 0.5) > 0.02:
-        failures.append("gate_a_r2_sampler_fn_fp_fraction_bad")
-    if abs(float(fractions.get("pathology", 0.0)) - 0.25) > 0.02:
-        failures.append("gate_a_r2_sampler_pathology_fraction_bad")
-    if abs(float(fractions.get("random", 0.0)) - 0.25) > 0.02:
-        failures.append("gate_a_r2_sampler_random_fraction_bad")
+        failures.append("gate_a_r3_inner_evaluation_repeat_not_exact")
+    for sampler_path, stage_name in [(sampler_stage_a_path, "stage_a"), (sampler_stage_b_path, "stage_b")]:
+        sampler = load_json(sampler_path) if sampler_path.exists() else {}
+        if sampler.get("status") != "PASS":
+            failures.append(f"gate_a_r3_effective_sampler_audit_not_PASS:{stage_name}")
+        if int(sampler.get("silent_fallback_count", -1)) != 0:
+            failures.append(f"gate_a_r3_sampler_silent_fallback_nonzero:{stage_name}")
+        hit_rates = sampler.get("target_hit_rates", {})
+        for key in ("error_fn", "error_fp", "pathology"):
+            if float(hit_rates.get(key, -1.0)) != 1.0:
+                failures.append(f"gate_a_r3_sampler_hit_rate_not_100:{stage_name}:{key}")
+        fractions = sampler.get("effective_fractions", {})
+        if abs(float(fractions.get("error_fn", 0.0)) + float(fractions.get("error_fp", 0.0)) - 0.5) > 0.02:
+            failures.append(f"gate_a_r3_sampler_fn_fp_fraction_bad:{stage_name}")
+        if abs(float(fractions.get("pathology", 0.0)) - 0.25) > 0.02:
+            failures.append(f"gate_a_r3_sampler_pathology_fraction_bad:{stage_name}")
+        if abs(float(fractions.get("random", 0.0)) - 0.25) > 0.02:
+            failures.append(f"gate_a_r3_sampler_random_fraction_bad:{stage_name}")
     if plan_path.exists():
         plan = load_json(plan_path)
         if plan.get("plan_sha256") != receipt.get("fixed_inner_evaluation_plan_sha256"):
-            failures.append("gate_a_r2_inner_plan_hash_mismatch")
+            failures.append("gate_a_r3_inner_plan_hash_mismatch")
         if int(plan.get("case_count", -1)) != int(receipt.get("complete_inner_selection_cases", -2)):
-            failures.append("gate_a_r2_inner_plan_case_count_not_complete_inner_select")
+            failures.append("gate_a_r3_inner_plan_case_count_not_complete_inner_select")
         if int(plan.get("patch_count", 0)) < int(plan.get("case_count", 0)):
-            failures.append("gate_a_r2_inner_plan_does_not_cover_all_cases")
+            failures.append("gate_a_r3_inner_plan_does_not_cover_all_cases")
         if plan.get("training_rng_dependency") is not False:
-            failures.append("gate_a_r2_inner_plan_training_rng_dependency")
+            failures.append("gate_a_r3_inner_plan_training_rng_dependency")
         if plan.get("stage_a_and_stage_b_share_objective") is not True:
-            failures.append("gate_a_r2_inner_plan_not_shared_by_stage_A_B")
+            failures.append("gate_a_r3_inner_plan_not_shared_by_stage_A_B")
     if repeat_path.exists():
         repeat = load_json(repeat_path)
         if repeat.get("status") != "PASS":
-            failures.append("gate_a_r2_inner_evaluation_repeat_receipt_not_PASS")
+            failures.append("gate_a_r3_inner_evaluation_repeat_receipt_not_PASS")
     if split_path.exists():
         split = load_json(split_path)
         actual = set(split.get("actual_train_cases") or [])
@@ -547,40 +560,74 @@ def validate_gate_a_r2(failures: list[str]) -> None:
         complete_actual = set(split.get("complete_actual_train_cases") or [])
         complete_inner = set(split.get("complete_inner_select_cases") or [])
         if actual & inner:
-            failures.append("gate_a_r2_inner_select_in_stage_a_cases")
+            failures.append("gate_a_r3_inner_select_in_stage_a_cases")
         if complete_actual & inner:
-            failures.append("gate_a_r2_inner_select_in_stage_b_cases")
+            failures.append("gate_a_r3_inner_select_in_stage_b_cases")
         if not complete_inner:
-            failures.append("gate_a_r2_complete_inner_select_empty")
+            failures.append("gate_a_r3_complete_inner_select_empty")
         if complete_inner != inner:
-            failures.append("gate_a_r2_inner_select_not_complete_trimodal")
+            failures.append("gate_a_r3_inner_select_not_complete_trimodal")
         if split.get("outer_val_used") is not False:
-            failures.append("gate_a_r2_split_outer_val_used")
+            failures.append("gate_a_r3_split_outer_val_used")
         if receipt.get("stage_a_case_ids_sha256") != split.get("sha256", {}).get("actual_train"):
-            failures.append("gate_a_r2_stage_a_hash_mismatch")
+            failures.append("gate_a_r3_stage_a_hash_mismatch")
         if receipt.get("stage_b_case_ids_sha256") != split.get("sha256", {}).get("complete_actual_train"):
-            failures.append("gate_a_r2_stage_b_hash_mismatch")
+            failures.append("gate_a_r3_stage_b_hash_mismatch")
         if receipt.get("inner_select_case_ids_sha256") != split.get("sha256", {}).get("inner_select"):
-            failures.append("gate_a_r2_inner_select_hash_mismatch")
+            failures.append("gate_a_r3_inner_select_hash_mismatch")
         if receipt.get("margin_cap_audit", {}).get("case_ids_sha256") != split.get("sha256", {}).get("actual_train"):
-            failures.append("gate_a_r2_margin_cap_case_hash_mismatch")
+            failures.append("gate_a_r3_margin_cap_case_hash_mismatch")
+    if resolved_contract_path.exists():
+        resolved = load_json(resolved_contract_path)
+        if resolved.get("resolved_training_contract_sha256") != receipt.get("resolved_training_contract_sha256"):
+            failures.append("gate_a_r3_resolved_contract_hash_mismatch")
+        lr = resolved.get("learning_rates", {})
+        if float(lr.get("stage_a", {}).get("representation_group", -1.0)) != 3e-4:
+            failures.append("gate_a_r3_stage_a_representation_lr_bad")
+        if float(lr.get("stage_a", {}).get("pathology_group", -1.0)) != 3e-4:
+            failures.append("gate_a_r3_stage_a_pathology_lr_bad")
+        if float(lr.get("stage_b", {}).get("representation_group", -1.0)) != 2e-5:
+            failures.append("gate_a_r3_stage_b_representation_lr_bad")
+        if float(lr.get("stage_b", {}).get("pathology_group", -1.0)) != 1e-4:
+            failures.append("gate_a_r3_stage_b_pathology_lr_bad")
+        if float(resolved.get("weight_decay", -1.0)) != 1e-4:
+            failures.append("gate_a_r3_weight_decay_bad")
+        support = resolved.get("support_semantics", {})
+        if support.get("support_labels") != [1, 4, 5] or support.get("excluded_labels") != [2, 3]:
+            failures.append("gate_a_r3_support_semantics_bad")
+        if resolved.get("sampler_hashes", {}).get("stage_a_sampler_index_sha256") != (load_json(sampler_stage_a_path).get("sampler_index_sha256") if sampler_stage_a_path.exists() else None):
+            failures.append("gate_a_r3_stage_a_sampler_hash_missing_from_resolved_contract")
+        if resolved.get("sampler_hashes", {}).get("stage_b_sampler_index_sha256") != (load_json(sampler_stage_b_path).get("sampler_index_sha256") if sampler_stage_b_path.exists() else None):
+            failures.append("gate_a_r3_stage_b_sampler_hash_missing_from_resolved_contract")
+    if receipt.get("stage_a_representation_lr") != 3e-4 or receipt.get("stage_a_pathology_lr") != 3e-4:
+        failures.append("gate_a_r3_receipt_stage_a_lrs_bad")
+    if receipt.get("stage_b_representation_lr") != 2e-5 or receipt.get("stage_b_pathology_lr") != 1e-4:
+        failures.append("gate_a_r3_receipt_stage_b_lrs_bad")
+    if receipt.get("hash_contract", {}).get("resolved_training_contract_sha256") != receipt.get("resolved_training_contract_sha256"):
+        failures.append("gate_a_r3_checkpoint_hash_contract_missing_resolved_sha")
     if checkpoint_manifest_path.exists():
         with checkpoint_manifest_path.open(newline="", encoding="utf-8") as f:
             rows = list(csv.DictReader(f))
         stages = {str(row.get("stage")) for row in rows}
         if "A" not in stages or "B" not in stages:
-            failures.append("gate_a_r2_preflight_checkpoint_manifest_missing_stage_A_or_B")
+            failures.append("gate_a_r3_preflight_checkpoint_manifest_missing_stage_A_or_B")
         for row in rows:
             if row.get("outer_val_used") not in {False, "False", "false", "0", 0}:
-                failures.append("gate_a_r2_checkpoint_manifest_outer_val_used")
+                failures.append("gate_a_r3_checkpoint_manifest_outer_val_used")
             if row.get("inner_plan_sha256") and row.get("inner_plan_sha256") != receipt.get("fixed_inner_evaluation_plan_sha256"):
-                failures.append("gate_a_r2_checkpoint_inner_plan_hash_mismatch")
+                failures.append("gate_a_r3_checkpoint_inner_plan_hash_mismatch")
+            if row.get("resolved_training_contract_sha256") and row.get("resolved_training_contract_sha256") != receipt.get("resolved_training_contract_sha256"):
+                failures.append("gate_a_r3_checkpoint_resolved_contract_hash_mismatch")
+            if str(row.get("stage")) == "A" and (float(row.get("representation_lr", -1.0)) != 3e-4 or float(row.get("pathology_lr", -1.0)) != 3e-4):
+                failures.append("gate_a_r3_checkpoint_manifest_stage_a_lrs_bad")
+            if str(row.get("stage")) == "B" and (float(row.get("representation_lr", -1.0)) != 2e-5 or float(row.get("pathology_lr", -1.0)) != 1e-4):
+                failures.append("gate_a_r3_checkpoint_manifest_stage_b_lrs_bad")
     if preflight_validator_path.exists():
         preflight_validator = load_json(preflight_validator_path)
         if preflight_validator.get("status") != "PASS":
-            failures.append("gate_a_r2_preflight_validator_not_PASS")
+            failures.append("gate_a_r3_preflight_validator_not_PASS")
         if int(preflight_validator.get("formal_training_credit", -1)) != 0:
-            failures.append("gate_a_r2_preflight_validator_has_training_credit")
+            failures.append("gate_a_r3_preflight_validator_has_training_credit")
 
 
 def validate_packet() -> dict[str, Any]:
@@ -618,7 +665,7 @@ def validate_packet() -> dict[str, Any]:
     for token in FORBIDDEN_RUNTIME_TOKENS:
         if token in source_text:
             failures.append(f"forbidden_runtime_token:{token}")
-    validate_gate_a_r2(failures)
+    validate_gate_a_r3(failures)
     status = "PASS" if not failures else "NEEDS_REPAIR"
     report = {
         "checked_at_utc": now_utc(),

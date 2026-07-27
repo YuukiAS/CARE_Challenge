@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from pathlib import Path
 from types import SimpleNamespace
+import json
 import random
 
 import numpy as np
@@ -103,6 +104,88 @@ def test_checkpoint_reload_exact(tmp_path: Path) -> None:
     after = loaded(batch["images"], batch["availability"], batch["anchor_logits"])["final_logits"]
     assert step == 3
     torch.testing.assert_close(before, after)
+
+
+def _r3_args() -> SimpleNamespace:
+    return SimpleNamespace(
+        lr_stage_a_representation=3e-4,
+        lr_stage_a_pathology=3e-4,
+        lr_stage_b_representation=2e-5,
+        lr_stage_b_pathology=1e-4,
+        weight_decay=1e-4,
+    )
+
+
+def test_stage_a_b_optimizer_group_lrs_and_complete_parameter_coverage() -> None:
+    model = build_care_dg({"encoder_channels": (8, 12, 16), "context_channels": 4})
+    grouped = run_dg.care_dg_trainable_parameter_groups(model)
+    trainable = {name for name, param in model.named_parameters() if param.requires_grad}
+    grouped_names = set(grouped["parameter_names"]["representation_group"]) | set(grouped["parameter_names"]["pathology_group"])
+    assert grouped_names == trainable
+    assert not (set(grouped["parameter_names"]["representation_group"]) & set(grouped["parameter_names"]["pathology_group"]))
+    assert all(name.split(".", 1)[0] in run_dg.REPRESENTATION_MODULES for name in grouped["parameter_names"]["representation_group"])
+    assert all(name.split(".", 1)[0] in run_dg.PATHOLOGY_MODULES for name in grouped["parameter_names"]["pathology_group"])
+
+    args = _r3_args()
+    opt = run_dg.build_care_dg_optimizer(model, representation_lr=0.0, pathology_lr=0.0, weight_decay=args.weight_decay)
+    lrs_a = run_dg.set_stage_learning_rates(opt, stage="A", args=args)
+    assert lrs_a == {"representation_group": 3e-4, "pathology_group": 3e-4}
+    assert run_dg.current_group_lrs(opt) == lrs_a
+    lrs_b = run_dg.set_stage_learning_rates(opt, stage="B", args=args)
+    assert lrs_b == {"representation_group": 2e-5, "pathology_group": 1e-4}
+    assert run_dg.current_group_lrs(opt) == lrs_b
+    assert run_dg.current_group_weight_decays(opt) == {"representation_group": 1e-4, "pathology_group": 1e-4}
+
+
+def test_grouped_optimizer_checkpoint_reload_preserves_group_lrs(tmp_path: Path) -> None:
+    model = build_care_dg({"encoder_channels": (8, 12, 16), "context_channels": 4})
+    args = _r3_args()
+    opt = run_dg.build_care_dg_optimizer(model, representation_lr=3e-4, pathology_lr=3e-4, weight_decay=args.weight_decay)
+    run_dg.set_stage_learning_rates(opt, stage="B", args=args)
+    contract = {
+        "resolved_training_contract_sha256": "abc",
+        "resolved_training_contract": {"batch_size": 8, "learning_rates": {"stage_b": {"representation_group": 2e-5, "pathology_group": 1e-4}}},
+    }
+    ckpt = tmp_path / "grouped_optimizer.pt"
+    save_care_dg_checkpoint(ckpt, model, opt, step=2, extra={"hash_contract": contract}, hash_contract=contract, stage="B", local_step=1, total_step=2)
+    reloaded_model = build_care_dg({"encoder_channels": (8, 12, 16), "context_channels": 4})
+    reloaded_opt = run_dg.build_care_dg_optimizer(reloaded_model, representation_lr=3e-4, pathology_lr=3e-4, weight_decay=args.weight_decay)
+    _model, step, extra = load_care_dg_checkpoint(ckpt, model=reloaded_model, optimizer=reloaded_opt, expected_hash_contract=contract)
+    assert step == 2
+    assert extra["runtime_state"]["stage"] == "B"
+    assert run_dg.current_group_lrs(reloaded_opt) == {"representation_group": 2e-5, "pathology_group": 1e-4}
+
+
+def test_resolved_contract_mismatch_known_bad_rejected(tmp_path: Path) -> None:
+    model = build_care_dg({"encoder_channels": (8, 12, 16), "context_channels": 4})
+    args = _r3_args()
+    opt = run_dg.build_care_dg_optimizer(model, representation_lr=3e-4, pathology_lr=3e-4, weight_decay=args.weight_decay)
+    resolved = {
+        "batch_size": 8,
+        "stage_a_optimizer_steps": 5000,
+        "stage_b_optimizer_steps": 3000,
+        "learning_rates": {
+            "stage_b": {"representation_group": 2e-5, "pathology_group": 1e-4},
+        },
+        "weight_decay": 1e-4,
+        "support_semantics": {"support_labels": [1, 4, 5]},
+        "loss_weights": {"no_t2_edema_loss_weight": 0.0},
+    }
+    contract = {"resolved_training_contract_sha256": "good", "resolved_training_contract": resolved}
+    ckpt = tmp_path / "resolved_contract.pt"
+    save_care_dg_checkpoint(ckpt, model, opt, step=1, extra={"hash_contract": contract}, hash_contract=contract)
+
+    for mutation in [
+        ("stage_b_lr", lambda c: c["resolved_training_contract"]["learning_rates"]["stage_b"].__setitem__("representation_group", 3e-5)),
+        ("batch_size", lambda c: c["resolved_training_contract"].__setitem__("batch_size", 4)),
+        ("steps", lambda c: c["resolved_training_contract"].__setitem__("stage_b_optimizer_steps", 2999)),
+        ("support", lambda c: c["resolved_training_contract"].__setitem__("support_semantics", {"support_labels": [1, 2, 3, 4, 5]})),
+        ("loss", lambda c: c["resolved_training_contract"]["loss_weights"].__setitem__("no_t2_edema_loss_weight", 1.0)),
+    ]:
+        bad = json.loads(json.dumps(contract))
+        mutation[1](bad)
+        with pytest.raises(ValueError, match="CHECKPOINT_HASH_CONTRACT_MISMATCH"):
+            load_care_dg_checkpoint(ckpt, expected_hash_contract=bad)
 
 
 def test_aligned_crop_preserves_image_label_error_map_coordinates() -> None:

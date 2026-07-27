@@ -19,7 +19,25 @@ training:
   stage_a_optimizer_steps: 5000
   stage_b_optimizer_steps: 3000
   batch_size: 8
+  patch_shape_zyx: [8, 128, 128]
+  sampler_pattern: [error_fn, error_fp, error_fn, error_fp, pathology, pathology, random, random]
   complete_trimodal_sampling_weight: 4
+  optimizer:
+    type: AdamW
+    weight_decay: 0.0001
+    parameter_groups:
+      representation_group: [lge_stem, t2_stem, c0_stem, anchor_context, encoder]
+      pathology_group: [scar_decoder, edema_decoder]
+    stage_a:
+      representation_lr: 0.0003
+      pathology_lr: 0.0003
+    stage_b:
+      representation_lr: 0.00002
+      pathology_lr: 0.0001
+  amp: true
+  support_labels: [1, 4, 5]
+  scar_shell_mm: 6
+  edema_zone_shell_mm: 10
   no_t2_edema_loss_weight: 0
 candidate_gate:
   primary_estimand: complete80

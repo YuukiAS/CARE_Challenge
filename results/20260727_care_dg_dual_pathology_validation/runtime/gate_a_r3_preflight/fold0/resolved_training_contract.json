@@ -1,0 +1,134 @@
+{
+  "actual_margin_caps": {
+    "case_ids_sha256": "6c9664c525ca17e9d0591a62302f143dc7881307d94a4e49aa685f98ac60e7e9",
+    "edema_zone": 8.0,
+    "fit_population": "actual_train_cases_only",
+    "scar": 8.0
+  },
+  "amp": {
+    "enabled": true,
+    "requested": true
+  },
+  "batch_size": 2,
+  "config_sha256": "36882e46bbfb4b0c60a293906fb895bad5cdc2d861d29a94466409b7d947a345",
+  "edema_zone_margin_cap_rule": "clip(Q0.95_abs_anchor_error_margin_actual_train+1,2,8)",
+  "fixed_inner_evaluation_plan_sha256": "50f8b471f5db128dde8c88f7fe15c0cdf0d15f3a0d9a720bb5606b44d84bff42",
+  "fold": 0,
+  "gate_revision": "A-R3",
+  "learning_rates": {
+    "stage_a": {
+      "pathology_group": 0.0003,
+      "representation_group": 0.0003
+    },
+    "stage_b": {
+      "pathology_group": 0.0001,
+      "representation_group": 2e-05
+    }
+  },
+  "loss_weights": {
+    "error_margin_improvement": 0.25,
+    "fn_fp_focal_bce": 0.5,
+    "identity_anchor_correct": 0.1,
+    "no_t2_edema_loss_weight": 0.0,
+    "remote_positive_pre_support_raw_delta": 0.1,
+    "segmentation_dice_plus_bce": 1.0
+  },
+  "method": "CARE-DG",
+  "model_channels": {
+    "anchor_channels": 6,
+    "context_channels": 16,
+    "encoder_channels": [
+      32,
+      64,
+      96
+    ],
+    "stem_channels": 8
+  },
+  "optimizer_groups": {
+    "parameter_count": {
+      "pathology_group": 793992,
+      "representation_group": 786312
+    },
+    "parameter_names_sha256": {
+      "pathology_group": "f8de28f102ce0bac6082627ec5f5774840d6eaf4a00a8668780e2f87b985df9e",
+      "representation_group": "e260f073f877bfa756b29008cea7a2d8ec429383797cf0ef4bcdaea69dafce31"
+    },
+    "pathology_group": [
+      "scar_decoder",
+      "edema_decoder"
+    ],
+    "representation_group": [
+      "lge_stem",
+      "t2_stem",
+      "c0_stem",
+      "anchor_context",
+      "encoder"
+    ]
+  },
+  "patch_shape_zyx": [
+    8,
+    128,
+    128
+  ],
+  "resolved_training_contract_sha256": "3438ce48232fbde7a804de60ec3e8cfdd5b99220c9e1ce2018839ba529f4c90b",
+  "sampler_hashes": {
+    "stage_a_audit_status": "PASS",
+    "stage_a_sampler_index_sha256": "f9fb26c703f4261a64edf3c172133ef83a62445fce8c886b6b567f8b058bd846",
+    "stage_b_audit_status": "PASS",
+    "stage_b_sampler_index_sha256": "b25a0e4d275e860fb7fe8de02c717f5ce1caf148b501dac81bf42c8d2e4a84d1"
+  },
+  "sampler_pattern": [
+    "error_fn",
+    "error_fp",
+    "error_fn",
+    "error_fp",
+    "pathology",
+    "pathology",
+    "random",
+    "random"
+  ],
+  "scar_margin_cap_rule": "clip(Q0.95_abs_anchor_error_margin_actual_train+1,2,8)",
+  "schema_version": 1,
+  "seed": 20260727,
+  "source_hashes": {
+    "configs/care_dg/care_dg_v1.yaml": "36882e46bbfb4b0c60a293906fb895bad5cdc2d861d29a94466409b7d947a345",
+    "scripts/evaluation/build_care_dg_validation_packet.py": "880fec4d30bb96d324122d2114a7a02dbca26287e7eebb8a434af56234253fdd",
+    "scripts/evaluation/evaluate_care_dg.py": "aae033a503189bf75cf100c087a65568940370ec4c010b9f7f0a680b3c399651",
+    "scripts/evaluation/finalize_care_dg_gate_a_r3_evidence.py": "ce107777806c299382240abc9eeb83193f6f70158c1842526107a98b25b95c29",
+    "scripts/evaluation/run_care_dg_gate_a_checks.py": "8e0eb638fef2cd7ccde60a869c0d1cfacb4c439a1127303cf4525b1fd7ba88bd",
+    "scripts/evaluation/select_care_dg_candidate.py": "d319535426cb49800710e8a9e8056ae97cf4abae99bd342dfd2df09b153f5080",
+    "scripts/evaluation/validate_care_dg_gate_a_consistency.py": "daaca1668a995aa2efd7f449938e88025808c89831b2b88e8a9a662d35081b10",
+    "scripts/evaluation/validate_care_dg_packet.py": "d02ef03752072a97d72301bf42338d11e851442b67e403a5e8cd2a6875fcb48b",
+    "scripts/inference/run_care_dg_inference.py": "ceef29361a4ce6eb2224e315ca800381944b2a9c624aa7b8017dab80d54ee771",
+    "scripts/training/run_care_dg.py": "7032528f8cc2f387faa671a14b6cf43cd42e10999b956ca917f2137e66e2a6db",
+    "src/care_myocardium/data/care_dg_dataset.py": "96d18e1914b7e08fc029a77c0e7c21467809fa0a5e9e12ad4f1ef2208eba803a",
+    "src/care_myocardium/inference/care_dg_predictor.py": "71b3f935617b42a1190aa6937165ee09ce1a3c52e8a05ad4f6d4e53f9dcacf7c",
+    "src/care_myocardium/models/care_dg.py": "c417404ec469acec3e6ca8adb17a225dc6dddd85776791d50c6edfb35f5a2a03",
+    "src/care_myocardium/training/care_dg_trainer.py": "0b1da4a75f1f4e4bb59367ac381cf1522ab8a62e229ccd1e62037f8580a1c1f7",
+    "tests/care_dg/test_care_dg_model.py": "f5d10ec8e0917881a2a376614e0668ede1366b0f01e557ac849ed7ff6eb0883c"
+  },
+  "split_hashes": {
+    "actual_train": "6c9664c525ca17e9d0591a62302f143dc7881307d94a4e49aa685f98ac60e7e9",
+    "complete_actual_train": "29e89d51f45d206739da06a40108f7697d6dae183d9183f1a95b55c12fc4c4f7",
+    "complete_inner_select": "1669a7f65553180f806dcf3810e73bdd17b5632fc7e4f8e546a18097a40081cf",
+    "inner_select": "1669a7f65553180f806dcf3810e73bdd17b5632fc7e4f8e546a18097a40081cf",
+    "outer_train": "127d03972f57429fe62999636a651a2b67e1892e80f252071c8c6f90a7ea57b2"
+  },
+  "stage_a_optimizer_steps": 1,
+  "stage_b_optimizer_steps": 1,
+  "support_semantics": {
+    "edema_zone_shell_mm": 10,
+    "excluded_labels": [
+      2,
+      3
+    ],
+    "hard_crop": false,
+    "scar_shell_mm": 6,
+    "support_labels": [
+      1,
+      4,
+      5
+    ]
+  },
+  "weight_decay": 0.0001
+}
