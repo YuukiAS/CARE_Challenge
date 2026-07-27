@@ -19,6 +19,17 @@
     "subject": "[CARE-DG][A/4-R1] Runner、inner split 与 support 修复完成，等待正式 Fold0 验收"
   },
   "gate_a_r1_status": "SUPERSEDED_BY_GATE_A_R2",
+  "gate_a_r2": {
+    "approval_token": "APPROVE_GATE_A_R2",
+    "dedupe_key": "gate_a_r2",
+    "node_json": "results/20260727_care_dg_dual_pathology_validation/checkpoint_notifications/gate_a_r2.json",
+    "node_sha256": "377ff9b0210f45fc5faa9ce49e94f1c4fd47701f0ffe01b13c5eb320f259b95c",
+    "notifier_reuse": "controller_notifications.notify_goal_watcher.load_env_file plus existing CARE notify SMTP configuration; no new notifier service created",
+    "sent_at_utc": "2026-07-27T12:26:07Z",
+    "status": "SENT",
+    "subject": "[CARE-DG][A/4-R2] 固定内层评价、真实错误采样与精确续跑完成，等待正式 Fold0 验收",
+    "to": "1155246312@link.cuhk.edu.hk"
+  },
   "gate_a_r2_prepared": {
     "approval_token": "APPROVE_GATE_A_R2",
     "node_json": "results/20260727_care_dg_dual_pathology_validation/checkpoint_notifications/gate_a_r2.json",
