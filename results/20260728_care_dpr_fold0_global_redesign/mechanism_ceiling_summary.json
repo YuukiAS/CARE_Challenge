@@ -1,0 +1,23 @@
+{
+  "analysis_population": "fixed_train_side_inner_cases_only",
+  "checkpoint": "/users/a/e/aereinh/CARE/results/20260727_care_dg_dual_pathology_validation/runtime/repaired_formal_scar_priority/fold0/checkpoints/checkpoint_step04000.pt",
+  "checkpoint_sha256": "1378795ba262807d045f7c9a7d72fa45adb9730c29c9baa58ad2a07752161312",
+  "checkpoint_step": 4000,
+  "current_realized_gain": 7388,
+  "edema_fn_component_recall": 0.4057971014492754,
+  "edema_fn_q_aupr": 0.006875785613526115,
+  "edema_fp_component_recall": 0.37,
+  "edema_fp_q_aupr": 0.0036038991747079285,
+  "generated_at_utc": "2026-07-28T04:24:18Z",
+  "inner_case_count": 12,
+  "inner_cases_sha256": "1669a7f65553180f806dcf3810e73bdd17b5632fc7e4f8e546a18097a40081cf",
+  "oracle_component_acceptor_gain": 38123,
+  "oracle_local_replacement_gain": 38123,
+  "outer_fold0_used": false,
+  "scar_fn_component_recall": 0.32941176470588235,
+  "scar_fn_q_aupr": 0.0028901998047177182,
+  "scar_fp_component_recall": 0.37681159420289856,
+  "scar_fp_q_aupr": 0.0070241999460292,
+  "soft_roi_gt_coverage": 0.37090558766859344,
+  "status": "PASS"
+}

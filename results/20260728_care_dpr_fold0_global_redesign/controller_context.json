@@ -1,0 +1,14 @@
+{
+  "files_read": [
+    "prompts/blueprints/CARE_DPR_dual_pathology_proposal_refine_arbitrate_20260728.md",
+    "prompts/tasks/20260728_care_dpr_fold0_global_redesign_executor_plan.yaml"
+  ],
+  "git_head": "e586e20ae9cb5ba754a78626ea40165fd699d3c81d66a1f8e9dd5265a00e3b75",
+  "outer_state_files_stale": [
+    "prompts/routes/handoffs/CURRENT.md",
+    "wiki/README.md"
+  ],
+  "phase": "W0_FORENSIC_CEILING",
+  "slurm_allocation_id": "60657290",
+  "task_key": "20260728_care_dpr_fold0_global_redesign"
+}

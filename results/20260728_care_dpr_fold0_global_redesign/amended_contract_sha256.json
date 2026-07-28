@@ -1,0 +1,17 @@
+{
+  "contract_hashes_sha256": {
+    "amendment": "4ca30e7dff1e0d76b67098574b18716203dbf0dd601cf8685c94883d5a6d9a08",
+    "amendment_executor_plan": "ba736c18cc8ef028b01bef451db3fc13fbca119a9b2fab99ec8a901d3e4224a4",
+    "old_blueprint": "f52643c70e5dbd467c4f3a0d893e01e578999d3ac23c45cab58e797befd39261",
+    "old_controller": "e586e20ae9cb5ba754a78626ea40165fd699d3c81d66a1f8e9dd5265a00e3b75",
+    "old_executor_plan": "cc494b4180c0ffd270118fcf674e3b6f5eb47820cc14350a65ec06c3f6467e89"
+  },
+  "generated_at_utc": "2026-07-28T04:27:09Z",
+  "precedence": [
+    "preexecution_amendment",
+    "original_blueprint",
+    "original_controller_prompt",
+    "original_executor_plan"
+  ],
+  "task_key": "20260728_care_dpr_fold0_global_redesign"
+}

@@ -1,0 +1,8 @@
+{
+  "fold": 0,
+  "inner_cases_sha256": "1669a7f65553180f806dcf3810e73bdd17b5632fc7e4f8e546a18097a40081cf",
+  "outer_fold0_used_for_design_or_selection": false,
+  "source_checkpoint": "/users/a/e/aereinh/CARE/results/20260727_care_dg_dual_pathology_validation/runtime/repaired_formal_scar_priority/fold0/checkpoints/checkpoint_step04000.pt",
+  "source_checkpoint_sha256": "1378795ba262807d045f7c9a7d72fa45adb9730c29c9baa58ad2a07752161312",
+  "train_side_inner_only": true
+}

@@ -1,0 +1,69 @@
+{
+  "coverage": [
+    {
+      "check": "direct_p_coarse_both_pathologies",
+      "status": "PASS"
+    },
+    {
+      "check": "five_outputs_present",
+      "status": "PASS"
+    },
+    {
+      "check": "q_fn_q_fp_not_only_proposal",
+      "status": "PASS"
+    },
+    {
+      "check": "teacher_roi_forbidden_guard",
+      "status": "PASS"
+    },
+    {
+      "check": "curriculum_a1_a2_b_exact",
+      "status": "PASS"
+    },
+    {
+      "check": "stage_b_freezes_encoder_and_proposals",
+      "status": "PASS"
+    },
+    {
+      "check": "full_volume_aggregation_before_components",
+      "status": "PASS"
+    },
+    {
+      "check": "candidate_types_distinct",
+      "status": "PASS"
+    },
+    {
+      "check": "legal_actions_only",
+      "status": "PASS"
+    },
+    {
+      "check": "threshold_candidates_fixed",
+      "status": "PASS"
+    },
+    {
+      "check": "no_t2_zero_tests",
+      "status": "PASS"
+    },
+    {
+      "check": "zero_accept_anchor_test",
+      "status": "PASS"
+    },
+    {
+      "check": "teacher_roi_leak_known_bad",
+      "status": "PASS"
+    }
+  ],
+  "fixtures": [
+    "missing_p_coarse_direct_proposal",
+    "teacher_roi_used_in_inner_outer_inference",
+    "patch_final_label_averaging",
+    "patch_local_component_arbitration",
+    "outer_fold0_utility_target_leakage",
+    "add_revise_candidate_action_collapse",
+    "unaccepted_candidate_partial_writeback",
+    "no_t2_edema_candidate_constructed_or_accepted",
+    "missing_scar_or_edema_branch_gradients",
+    "scar_pass_edema_empty_false_pass"
+  ],
+  "status": "PASS"
+}

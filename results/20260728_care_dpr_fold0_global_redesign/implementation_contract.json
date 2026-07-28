@@ -1,0 +1,43 @@
+{
+  "amendment_precedence": true,
+  "candidate_types": [
+    "ADD_FN",
+    "REVISE_FP"
+  ],
+  "formal_fold0_guard": "APPROVE_DPR_GATE_A required",
+  "full_volume_inference": {
+    "aggregate_before_components": true,
+    "gaussian_blending": true,
+    "overlap": 0.5,
+    "patch_final_label_averaging": false,
+    "patch_local_component_arbitration": false
+  },
+  "legal_actions": [
+    "KEEP_ANCHOR_LOCAL_MASK",
+    "REPLACE_WITH_REFINED_LOCAL_MASK"
+  ],
+  "pathology_branches": [
+    "scar",
+    "edema_zone"
+  ],
+  "required_branch_outputs": [
+    "p_coarse",
+    "q_fn",
+    "q_fp",
+    "p_refined",
+    "component_utility"
+  ],
+  "shared_backbone_count": 1,
+  "source_hashes_sha256": {
+    "scripts/evaluation/analyze_care_dpr_mechanism_ceiling.py": "9ef1e32614342c7bdab12bd47b8d5cee76473a42cc604ca04a2801c784176668",
+    "scripts/evaluation/validate_care_dpr_packet.py": "2daeee1638c009fb047667be2c90ba0928e51961e1635fa4555220a5f5c94526",
+    "scripts/training/run_care_dpr.py": "09cc3a8e33956784bf1d24794653ca7b5a9e7d2b44ca81e3cfe05709e56b2b46",
+    "src/care_myocardium/data/care_dpr_dataset.py": "9c2dbe95eafcf94f10a740a354763a60e810ffcb1d8768a6315ce5bdc5f5e2d7",
+    "src/care_myocardium/inference/care_dpr_predictor.py": "6aedcca95496297004ecc4d206868385061cbbb0fff7fa4704629b6a9621cffb",
+    "src/care_myocardium/models/care_dpr.py": "96935b479f62add9db8c715a8130c7ec843046389a64c950f18f97177e1eb34a",
+    "src/care_myocardium/training/care_dpr_trainer.py": "3010d2d0009149131fc4090ca291062f93d08e9685333665dbe9c5fcf7838a1e",
+    "tests/care_dpr/test_care_dpr_model.py": "d370e1bd69c0eb896db989bb92f20524c6098faa1efe942b00fc2bce7e530520"
+  },
+  "status": "PASS",
+  "task_key": "20260728_care_dpr_fold0_global_redesign"
+}

@@ -1,0 +1,14 @@
+{
+  "approval_token": "APPROVE_DPR_GATE_A",
+  "commit_status": "NOT_COMMITTED_LOCAL_DIRTY",
+  "human_external_send_approval": "User explicitly approved sending internal evidence email in chat before send.",
+  "node_json": "results/20260728_care_dpr_fold0_global_redesign/checkpoint_notifications/dpr_gate_a.json",
+  "node_sha256": "2aa1a0d6bb0c9e074e676dd6488b03139249384a5c121ef754182f0af882101c",
+  "notifier_reuse": "controller_notifications.notify_goal_watcher.load_config/load_env_file plus existing CARE notify SMTP configuration; no new notifier service created",
+  "push_status": "NOT_PUSHED",
+  "sent_at_utc": "2026-07-28T05:01:52.447211Z",
+  "state": "AWAITING_HUMAN_ACCEPTANCE_DPR_GATE_A",
+  "status": "SENT",
+  "subject": "[CARE-DPR][A/2] 双病理 proposal-refine-arbitrate 实现完成，等待 Fold0 正式训练验收",
+  "to": "1155246312@link.cuhk.edu.hk"
+}

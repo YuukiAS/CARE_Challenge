@@ -1,0 +1,20 @@
+method: CARE-DPR
+amendment: CARE_DPR_PREEXECUTION_ARCHITECTURE_AMENDMENT
+fold: 0
+seed: 20260728
+batch_size: 4
+patch_shape_zyx: [8, 128, 128]
+shared_backbone_count: 1
+branch_outputs: [p_coarse, q_fn, q_fp, p_refined, component_utility]
+stages:
+  A1: {steps: 500, teacher_roi_start_fraction: 0.75, teacher_roi_end_fraction: 0.75}
+  A2: {steps: 2000, teacher_roi_start_fraction: 0.75, teacher_roi_end_fraction: 0.0, final_predicted_only_steps: 500}
+  B: {steps: 1500, teacher_roi_fraction: 0.0, freeze: [modality_stems, shared_encoder, p_coarse, q_fn, q_fp]}
+full_volume_inference:
+  overlap: 0.5
+  gaussian_blending: true
+  aggregate_before_components: true
+  patch_final_label_averaging: false
+  patch_local_component_arbitration: false
+utility_threshold_candidates: [0.30, 0.40, 0.50, 0.60, 0.70]
+formal_fold0_requires: APPROVE_DPR_GATE_A

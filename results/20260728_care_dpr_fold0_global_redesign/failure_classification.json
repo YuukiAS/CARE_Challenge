@@ -1,0 +1,12 @@
+{
+  "architecture_ceiling_low": false,
+  "execution_failure": false,
+  "failure_classification": "PROPOSAL_LIMITED",
+  "limited_recall_fields": [
+    "scar_fn_component_recall",
+    "scar_fp_component_recall",
+    "edema_fn_component_recall",
+    "edema_fp_component_recall"
+  ],
+  "outer_fold0_used": false
+}
