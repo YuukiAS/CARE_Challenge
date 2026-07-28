@@ -42,6 +42,7 @@ PROPOSAL_THRESHOLD_FOR_TRAINING = 0.50
 UTILITY_THRESHOLD_CANDIDATES = (0.00, 0.02, 0.05, 0.10, 0.20)
 PROPOSAL_THRESHOLD_CANDIDATES = {"scar": (0.30, 0.40, 0.50), "edema_zone": (0.20, 0.30, 0.40, 0.50)}
 C2_TARGET_INDEX_LIMIT_PER_POOL = 8
+C2_CASE_SEARCH_WINDOW = 3
 
 
 def now_utc() -> str:
@@ -221,7 +222,7 @@ def choose_case_candidate(*, model: torch.nn.Module, train_cases: list[str], cas
     sign_mismatch: tuple[str, dict[str, Any], tuple[Any, np.ndarray, np.ndarray, np.ndarray], str, dict[str, Any]] | None = None
     shuffled = list(train_cases)
     rng.shuffle(shuffled)
-    case_window = shuffled[: min(len(shuffled), 12)]
+    case_window = shuffled[: min(len(shuffled), C2_CASE_SEARCH_WINDOW)]
     for ctype in candidate_types:
         for case_id in case_window:
             if pathology == "edema_zone" and not bool(metadata[case_id].t2_present):
@@ -467,6 +468,8 @@ def run(args: argparse.Namespace) -> dict[str, Any]:
         "train_cases_sha256": stable_json_sha256(sorted(train_cases)),
         "proposal_threshold_candidates": PROPOSAL_THRESHOLD_CANDIDATES,
         "utility_threshold_candidates": list(UTILITY_THRESHOLD_CANDIDATES),
+        "c2_target_index_limit_per_pool": C2_TARGET_INDEX_LIMIT_PER_POOL,
+        "c2_case_search_window": C2_CASE_SEARCH_WINDOW,
         "final_arbitration_score": "predicted_signed_utility",
         "accept_probability_threshold_forbidden": True,
         "utility_regression_min_forbidden": True,
