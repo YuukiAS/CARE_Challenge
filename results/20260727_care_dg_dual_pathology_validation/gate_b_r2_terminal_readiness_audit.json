@@ -1,0 +1,57 @@
+{
+  "allocation": {
+    "job_id": "60657290",
+    "preserved": true,
+    "state_last_observed": "RUNNING"
+  },
+  "allowed_terminal_states_assessment": {
+    "CARE_DG_LOCAL_PAPER_READY_AND_VALIDATION_CANDIDATE_READY": "not_eligible_no_w3_w6_completion_and_no_candidate",
+    "CARE_DG_VALIDATION_CANDIDATE_READY_PENDING_USER_UPLOAD": "not_eligible_no_all_data_fit_validation_package_or_candidate_gate_pass",
+    "NO_CARE_DG_CANDIDATE_SAFE_FOR_VALIDATION": "scientifically_plausible_from_gate_b_r2_no_candidate_but_not_declared_without_explicit_gpt_user_terminalization_decision_and_mapper_current_wiki_final_packet",
+    "OPERATIONALLY_BLOCKED_EXISTING_ALLOCATION_OR_REQUIRED_ASSET": "not_applicable_allocation_preserved_and_no_required_asset_block_identified"
+  },
+  "care_dg_processes_running": [],
+  "created_at_utc": "2026-07-28T03:38:11Z",
+  "current_state": "GATE_B_R2_REVIEW_READY_NO_INNER_ELIGIBLE_CANDIDATE",
+  "git": {
+    "base_head": "557f09c0a6bbb0a6f228f9b06b6180604369e1cf",
+    "origin_main": "557f09c0a6bbb0a6f228f9b06b6180604369e1cf"
+  },
+  "goal_complete": false,
+  "latest_validators": {
+    "gate_b_consistency_validator": "PASS",
+    "gate_b_r2_validator": "PASS",
+    "strict_validator": "PASS"
+  },
+  "may_send_completion_email": false,
+  "may_update_goal_complete": false,
+  "missing_terminal_outputs": [
+    "scientific_conclusion.md",
+    "controller_report.md",
+    "completion_check.md",
+    "mapper_report_draft.md",
+    "architecture_delta_draft.md",
+    "mapper_report_final.md",
+    "architecture_delta_final.md",
+    "finalizer_state.json",
+    "MANIFEST.md",
+    "notification_brief.json",
+    "validation_candidate_decision.json"
+  ],
+  "next_review_checkpoint": "GPT/user review of origin/main evidence; decide terminalize NO_CARE_DG, authorize a new same-scope repair, or explicitly override expansion gate.",
+  "present_review_outputs": {
+    "candidate_gate_decision": "results/20260727_care_dg_dual_pathology_validation/candidate_gate_decision.json",
+    "candidate_selection_report": "results/20260727_care_dg_dual_pathology_validation/candidate_selection_report.md",
+    "gate_b_consistency_validator_report": "results/20260727_care_dg_dual_pathology_validation/gate_b_consistency_validator_report.json",
+    "gate_b_r2_controller_review_packet": "results/20260727_care_dg_dual_pathology_validation/gate_b_r2_controller_review_packet.json",
+    "gate_b_r2_diagnostic_report": "results/20260727_care_dg_dual_pathology_validation/gate_b_r2_diagnostic_report.md",
+    "strict_validator_report": "results/20260727_care_dg_dual_pathology_validation/strict_validator_report.json"
+  },
+  "reason_not_goal_complete": [
+    "Latest Gate B repair gate found no fold0-safe expansion candidate, so folds 1-4 remain paused.",
+    "Original W3-W6 outputs are not complete: five-fold OOF aggregation, all-data fit, validation inference/package, Docker-equivalent smoke, Mapper final, CURRENT/wiki finalization and notification are absent.",
+    "Terminal NO_CARE_DG_CANDIDATE_SAFE_FOR_VALIDATION requires explicit GPT/user decision or a completed terminalization packet; this audit only makes the current evidence reviewable."
+  ],
+  "review_ready_for_gpt": true,
+  "scope": "controller_readiness_audit_after_gate_b_r2_review_packet"
+}
