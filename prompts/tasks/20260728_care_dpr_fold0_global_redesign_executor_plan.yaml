@@ -1,0 +1,152 @@
+task_key: 20260728_care_dpr_fold0_global_redesign
+execution_mode: controller_supervised
+executor_count: 1
+executor_slots: 1
+parallel_execution_allowed: false
+mapper_slots: 1
+mapper_required: true
+continuity_backend: tmux_watcher
+allowed_allocation_id: 60657290
+allow_new_slurm_job: false
+allow_sbatch: false
+allow_salloc: false
+allow_runtime_push: false
+allow_validation_upload: false
+allow_docker_upload: false
+waves:
+  - id: W0_FORENSIC_CEILING
+    dependencies: []
+    write_scope:
+      - results/20260728_care_dpr_fold0_global_redesign/
+      - scripts/evaluation/analyze_care_dpr_mechanism_ceiling.py
+      - tests/care_dpr/
+    gpu_required: true
+    command_mode: srun_existing_allocation_serial
+    required_outputs:
+      - results/20260728_care_dpr_fold0_global_redesign/controller_context.json
+      - results/20260728_care_dpr_fold0_global_redesign/frozen_input_contract.json
+      - results/20260728_care_dpr_fold0_global_redesign/mechanism_ceiling_casewise.csv
+      - results/20260728_care_dpr_fold0_global_redesign/mechanism_ceiling_summary.json
+      - results/20260728_care_dpr_fold0_global_redesign/failure_classification.json
+    completion_conditions:
+      - fixed_train_side_inner_only_for_design
+      - fn_fp_component_recall_reported_for_scar_and_edema
+      - oracle_component_and_local_refinement_gain_reported
+      - no_outer_fold0_selection
+  - id: W1_IMPLEMENTATION
+    dependencies: [W0_FORENSIC_CEILING]
+    write_scope:
+      - src/care_myocardium/models/care_dpr.py
+      - src/care_myocardium/data/care_dpr_dataset.py
+      - src/care_myocardium/training/care_dpr_trainer.py
+      - src/care_myocardium/inference/care_dpr_predictor.py
+      - scripts/training/run_care_dpr.py
+      - scripts/inference/run_care_dpr_inference.py
+      - scripts/evaluation/evaluate_care_dpr.py
+      - scripts/evaluation/validate_care_dpr_packet.py
+      - configs/care_dpr/care_dpr_v1.yaml
+      - tests/care_dpr/
+      - results/20260728_care_dpr_fold0_global_redesign/
+    gpu_required: false
+    required_outputs:
+      - results/20260728_care_dpr_fold0_global_redesign/implementation_contract.json
+      - results/20260728_care_dpr_fold0_global_redesign/model_parameter_report.json
+      - results/20260728_care_dpr_fold0_global_redesign/unit_test_report.md
+      - results/20260728_care_dpr_fold0_global_redesign/known_bad_report.json
+    completion_conditions:
+      - one_shared_encoder_only
+      - independent_scar_and_edema_branches
+      - proposal_refiner_component_utility_all_real_forward_paths
+      - no_t2_edema_exact_zero
+      - scar_priority_exact
+      - exact_per_pathology_fallback
+      - no_mosaic_mmrd_teacher_prototype_dictionary_runtime
+  - id: W2_REAL_CASE_PREFLIGHT
+    dependencies: [W1_IMPLEMENTATION]
+    write_scope:
+      - results/20260728_care_dpr_fold0_global_redesign/runtime/preflight/
+      - results/20260728_care_dpr_fold0_global_redesign/
+      - tests/care_dpr/
+    gpu_required: true
+    command_mode: srun_existing_allocation_serial
+    required_outputs:
+      - results/20260728_care_dpr_fold0_global_redesign/runtime/preflight/preflight_receipt.json
+      - results/20260728_care_dpr_fold0_global_redesign/runtime/preflight/checkpoint_resume_parity.json
+      - results/20260728_care_dpr_fold0_global_redesign/runtime/preflight/real_case_overfit_curve.csv
+      - results/20260728_care_dpr_fold0_global_redesign/preflight_validator_report.json
+    completion_conditions:
+      - scar_and_edema_active_losses_decrease_at_least_30_percent
+      - proposal_refiner_utility_all_receive_nonzero_gradients
+      - no_t2_edema_gradients_zero
+      - component_targets_nonempty_and_aligned
+      - save_reload_resume_exact
+      - finite_bfloat16_training
+  - id: W3_FOLD0_TRAIN
+    dependencies: [W2_REAL_CASE_PREFLIGHT]
+    write_scope:
+      - results/20260728_care_dpr_fold0_global_redesign/runtime/formal_fold0/
+      - results/20260728_care_dpr_fold0_global_redesign/
+    gpu_required: true
+    command_mode: srun_existing_allocation_serial
+    required_outputs:
+      - results/20260728_care_dpr_fold0_global_redesign/runtime/formal_fold0/fold_training_receipt.json
+      - results/20260728_care_dpr_fold0_global_redesign/runtime/formal_fold0/checkpoint_manifest.csv
+      - results/20260728_care_dpr_fold0_global_redesign/runtime/formal_fold0/training_curve.csv
+      - results/20260728_care_dpr_fold0_global_redesign/runtime/formal_fold0/inner_selection.csv
+    completion_conditions:
+      - stage_a_2500_steps
+      - stage_b_1500_steps
+      - total_4000_optimizer_steps
+      - original_seed_20260728
+      - outer_fold0_not_used_for_selection
+      - all_gpu_processes_terminal_before_evaluation
+  - id: W4_FOLD0_EVALUATION
+    dependencies: [W3_FOLD0_TRAIN]
+    write_scope:
+      - results/20260728_care_dpr_fold0_global_redesign/runtime/formal_fold0/evaluation/
+      - results/20260728_care_dpr_fold0_global_redesign/
+    gpu_required: true
+    command_mode: srun_existing_allocation_serial
+    required_outputs:
+      - results/20260728_care_dpr_fold0_global_redesign/runtime/formal_fold0/evaluation/casewise_metrics.csv
+      - results/20260728_care_dpr_fold0_global_redesign/runtime/formal_fold0/evaluation/complete16_summary.csv
+      - results/20260728_care_dpr_fold0_global_redesign/runtime/formal_fold0/evaluation/outer44_summary.csv
+      - results/20260728_care_dpr_fold0_global_redesign/runtime/formal_fold0/evaluation/per_pathology_help_harm.csv
+      - results/20260728_care_dpr_fold0_global_redesign/runtime/formal_fold0/evaluation/mechanism_activation.csv
+      - results/20260728_care_dpr_fold0_global_redesign/runtime/formal_fold0/evaluation/component_utility_audit.csv
+      - results/20260728_care_dpr_fold0_global_redesign/runtime/formal_fold0/evaluation/exact_hd_tail.csv
+      - results/20260728_care_dpr_fold0_global_redesign/runtime/formal_fold0/evaluation/remote_fp_audit.csv
+      - results/20260728_care_dpr_fold0_global_redesign/fold0_scientific_decision.json
+    completion_conditions:
+      - same_split_nnunet_anchor_comparison
+      - scar_edema_zone_pure_edema_reported_separately
+      - help_harm_reported_per_pathology
+      - oracle_vs_realized_gap_reported
+      - execution_vs_proposal_vs_refinement_vs_arbitration_classification
+  - id: W5_PACKET_AND_MAPPER
+    dependencies: [W4_FOLD0_EVALUATION]
+    write_scope:
+      - results/20260728_care_dpr_fold0_global_redesign/
+      - wiki/
+      - prompts/routes/handoffs/CURRENT.md
+    gpu_required: false
+    required_outputs:
+      - results/20260728_care_dpr_fold0_global_redesign/controller_report.md
+      - results/20260728_care_dpr_fold0_global_redesign/completion_check.md
+      - results/20260728_care_dpr_fold0_global_redesign/MANIFEST.md
+      - results/20260728_care_dpr_fold0_global_redesign/strict_validator_report.json
+      - results/20260728_care_dpr_fold0_global_redesign/notification_brief.json
+      - results/20260728_care_dpr_fold0_global_redesign/mapper_report_final.md
+    completion_conditions:
+      - all_jobs_terminal
+      - aggregation_complete
+      - validators_pass
+      - lightweight_local_commit_only
+      - no_validation_or_docker_upload
+      - failure_never_terminalized_as_project_abandonment
+failure_policy:
+  execution_failure: repair_in_place_and_rerun_same_wave
+  proposal_limited: complete_fold0_and_report_proposal_repair_target
+  refinement_limited: complete_fold0_and_report_refinement_utility_repair_target
+  architecture_ceiling_low: return_to_planner_for_global_redesign_not_no_candidate_terminal
+  allocation_expired: operational_block_with_exact_resume_point_no_scientific_failure
