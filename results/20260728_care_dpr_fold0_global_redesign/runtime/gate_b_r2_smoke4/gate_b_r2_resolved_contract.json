@@ -1,0 +1,58 @@
+{
+  "accept_probability_threshold_forbidden": true,
+  "actual_train_excludes_inner12": true,
+  "candidate_source": "model_self_pass1_full_volume_candidates",
+  "final_arbitration_score": "predicted_signed_utility",
+  "fold": 0,
+  "gate": "DPR_GATE_B_R2",
+  "inner12_sha256": "4f47372c6de844c85f9852981e5849bb817bf02032ae3900e7b31411fe5aaed3",
+  "proposal_threshold_candidates": {
+    "edema_zone": [
+      0.2,
+      0.3,
+      0.4,
+      0.5
+    ],
+    "scar": [
+      0.3,
+      0.4,
+      0.5
+    ]
+  },
+  "seed": 20260728,
+  "source_hashes": {
+    "scripts/evaluation/evaluate_care_dpr.py": "33ac0562fd1367bda822a7a9e0bdde8a15363dfaa5ce155f72ffa08651e4baf3",
+    "scripts/evaluation/validate_care_dpr_gate_a_r2_consistency.py": "bcc7da6b7db133a2b5c70ed44c742cf346e66e3f793eea7c9b0db1e5cac8a711",
+    "scripts/evaluation/validate_care_dpr_packet.py": "a3bf12ca82a73901bc67ccf8e6d50e9b1ec4a55b9fa0c010f108b0071e05822d",
+    "scripts/training/run_care_dpr.py": "186ee3097fdd16f802fca2cc97977f0a59f7100ec9fac5941820228e70ee7c43",
+    "src/care_myocardium/data/care_dpr_dataset.py": "a4588ee49b165303c97610255cdaa92c0cb9320b25c46ca7ec1df2132c39bd02",
+    "src/care_myocardium/inference/care_dpr_predictor.py": "216888b432ad4388889b5327cdad92d5fd4247ac05f980fd96b870a319d4b9b8",
+    "src/care_myocardium/models/care_dpr.py": "5ba6b423af109d6a49df5267a4d04554fd17835926099db1169f53863cdf96f4",
+    "src/care_myocardium/training/care_dpr_trainer.py": "247c81f44be4ff0486cf13280e5a6c5c791e4c35271c896908deac96264d7f70",
+    "tests/care_dpr/test_care_dpr_model.py": "ed6dad359c00d027fd12665c767847719f99cff41d222fe04cd59ea697b97920"
+  },
+  "stage_c1_freeze": "stems_encoder_proposal_heads_utility_heads_frozen; local_refiners_only_trainable",
+  "stage_c1_steps": 4,
+  "stage_c2_freeze": "proposal_and_refiner_frozen; component_utility_heads_only_trainable",
+  "stage_c2_steps": 4,
+  "start_checkpoint": "/users/a/e/aereinh/CARE/results/20260728_care_dpr_fold0_global_redesign/runtime/formal_fold0_r1/checkpoints/checkpoint_step02000.pt",
+  "start_checkpoint_sha256": "4122586a7fb03a05963775b37450045f62bcf75660ef803e3ae9e5e276fb2e38",
+  "start_checkpoint_step": 2000,
+  "task_key": "20260728_care_dpr_fold0_global_redesign",
+  "train_case_count": 164,
+  "train_cases_sha256": "db0eb6c374737b5b702fad9c6d34e986eff8265feb76be58387ebc64ba085509",
+  "two_pass_full_volume_contract": {
+    "gaussian_blending": true,
+    "overlap": 0.5,
+    "pass1_candidate_construction": true,
+    "patch_final_label_averaging": false
+  },
+  "utility_regression_min_forbidden": true,
+  "utility_threshold_candidates": [
+    0.0,
+    0.02,
+    0.05,
+    0.1,
+    0.2
+  ]
+}

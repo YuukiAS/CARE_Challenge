@@ -1,0 +1,2 @@
+stage,local_step,total_step,case_id,pathology,requested_pathology,candidate_type,requested_candidate_type,fallback_reason,loss,grad_norm,candidate_voxels,component_truncation_flag,elapsed_seconds,utility_target,accept_target,target_reason,predicted_signed_utility
+C2,1,2002,Case3043,scar,scar,ADD_FN,ADD_FN,,0.0026111602783203125,0.24649961292743683,1,True,4.2,0.4891304347826087,1,candidate_roi_formula,0.416015625

@@ -1,0 +1,95 @@
+{
+  "accept_probability_threshold_used": false,
+  "c1_summary": {
+    "add_revise_counts": {
+      "ADD_FN": 1,
+      "REVISE_FP": 0
+    },
+    "candidate_counts": {
+      "scar_ADD_FN": 1
+    },
+    "fallback_count": 0,
+    "pathology_fraction": {
+      "edema_zone": 0.0,
+      "scar": 1.0
+    },
+    "roi_gt_coverage_mean": {
+      "scar": 0.0
+    },
+    "sample_count": 1,
+    "utility_target_balance": {}
+  },
+  "c2_summary": {
+    "add_revise_counts": {
+      "ADD_FN": 1,
+      "REVISE_FP": 0
+    },
+    "candidate_counts": {
+      "scar_ADD_FN": 1
+    },
+    "fallback_count": 0,
+    "pathology_fraction": {
+      "edema_zone": 0.0,
+      "scar": 1.0
+    },
+    "roi_gt_coverage_mean": {},
+    "sample_count": 1,
+    "utility_target_balance": {
+      "scar": {
+        "negative": 0,
+        "positive": 1
+      }
+    }
+  },
+  "checkpoint_every": 1,
+  "completed_at_utc": "2026-07-28T17:29:28Z",
+  "device": "cuda",
+  "final_arbitration_score": "predicted_signed_utility",
+  "fold": 0,
+  "full_volume_candidate_source": "model_self_pass1_full_volume_candidates",
+  "gate": "DPR_GATE_B_R2_C1_C2",
+  "last_checkpoint": "/users/a/e/aereinh/CARE/results/20260728_care_dpr_fold0_global_redesign/runtime/gate_b_r2_smoke/checkpoints/checkpoint_last.pt",
+  "last_checkpoint_sha256": "45741aebcc666e8283deb465b62e1e3298c2d644ea1b8330ad8a56daad4564ee",
+  "no_t2_edema_candidates_excluded": true,
+  "stage_c1_optimizer_steps": 1,
+  "stage_c1_trainable_parameter_names": [
+    "scar_branch.local_refiner.net.0.weight",
+    "scar_branch.local_refiner.net.1.weight",
+    "scar_branch.local_refiner.net.1.bias",
+    "scar_branch.local_refiner.net.3.block.0.weight",
+    "scar_branch.local_refiner.net.3.block.1.weight",
+    "scar_branch.local_refiner.net.3.block.1.bias",
+    "scar_branch.local_refiner.net.3.block.3.weight",
+    "scar_branch.local_refiner.net.3.block.4.weight",
+    "scar_branch.local_refiner.net.3.block.4.bias",
+    "scar_branch.local_refiner.net.4.weight",
+    "scar_branch.local_refiner.net.4.bias",
+    "edema_branch.local_refiner.net.0.weight",
+    "edema_branch.local_refiner.net.1.weight",
+    "edema_branch.local_refiner.net.1.bias",
+    "edema_branch.local_refiner.net.3.block.0.weight",
+    "edema_branch.local_refiner.net.3.block.1.weight",
+    "edema_branch.local_refiner.net.3.block.1.bias",
+    "edema_branch.local_refiner.net.3.block.3.weight",
+    "edema_branch.local_refiner.net.3.block.4.weight",
+    "edema_branch.local_refiner.net.3.block.4.bias",
+    "edema_branch.local_refiner.net.4.weight",
+    "edema_branch.local_refiner.net.4.bias"
+  ],
+  "stage_c2_optimizer_steps": 1,
+  "stage_c2_trainable_parameter_names": [
+    "scar_branch.component_utility.net.0.weight",
+    "scar_branch.component_utility.net.0.bias",
+    "scar_branch.component_utility.net.2.weight",
+    "scar_branch.component_utility.net.2.bias",
+    "edema_branch.component_utility.net.0.weight",
+    "edema_branch.component_utility.net.0.bias",
+    "edema_branch.component_utility.net.2.weight",
+    "edema_branch.component_utility.net.2.bias"
+  ],
+  "start_step": 2000,
+  "status": "PASS",
+  "task_key": "20260728_care_dpr_fold0_global_redesign",
+  "terminal_step": 2002,
+  "utility_regression_min_used": false
+}

@@ -278,12 +278,13 @@ def _refine_and_score_candidate(model: torch.nn.Module, maps: dict[str, np.ndarr
         "component_descriptor_uses_aggregated_shared_feature": True,
         "utility_accept_logit": accept_logit,
         "utility_regression": utility_reg,
+        "predicted_signed_utility": utility_reg,
         "utility_score": float(1.0 / (1.0 + np.exp(-accept_logit))),
     }
     return refined_mask, accept_logit, utility_reg, audit
 
 
-def run_two_pass_full_volume_dpr(model: torch.nn.Module, batch_np: dict[str, np.ndarray], *, patch_shape: tuple[int, int, int] = (8, 128, 128), overlap: float = 0.5, proposal_threshold: float = 0.5, refined_threshold: float = 0.5, utility_threshold: float = 0.5, scar_utility_threshold: float | None = None, edema_utility_threshold: float | None = None, utility_regression_min: float | None = None, scar_utility_regression_min: float | None = None, edema_utility_regression_min: float | None = None, device: torch.device | None = None) -> dict[str, Any]:
+def run_two_pass_full_volume_dpr(model: torch.nn.Module, batch_np: dict[str, np.ndarray], *, patch_shape: tuple[int, int, int] = (8, 128, 128), overlap: float = 0.5, proposal_threshold: float = 0.5, scar_proposal_threshold: float | None = None, edema_proposal_threshold: float | None = None, refined_threshold: float = 0.5, utility_threshold: float = 0.5, scar_utility_threshold: float | None = None, edema_utility_threshold: float | None = None, utility_regression_min: float | None = None, scar_utility_regression_min: float | None = None, edema_utility_regression_min: float | None = None, device: torch.device | None = None) -> dict[str, Any]:
     """Formal R2 two-pass full-volume DPR inference.
 
     Pass 1 aggregates full-resolution shared features and proposal maps. Pass 2
@@ -306,17 +307,21 @@ def run_two_pass_full_volume_dpr(model: torch.nn.Module, batch_np: dict[str, np.
     for pathology, pfx in (("edema_zone", "edema"), ("scar", "scar")):
         anchor_local = ((anchor_mask == SCAR_CHANNEL) | (anchor_mask == EDEMA_CHANNEL)) if pathology == "edema_zone" else (anchor_mask == SCAR_CHANNEL)
         result = anchor_local.copy().astype(bool)
-        candidates = build_candidate_rois(anchor_mask, pass1, pathology=pathology, threshold=proposal_threshold, t2_present=bool(batch_np.get("t2_present", True)))
+        threshold_for_proposal = float(edema_proposal_threshold if pathology == "edema_zone" and edema_proposal_threshold is not None else scar_proposal_threshold if pathology == "scar" and scar_proposal_threshold is not None else proposal_threshold)
+        candidates = build_candidate_rois(anchor_mask, pass1, pathology=pathology, threshold=threshold_for_proposal, t2_present=bool(batch_np.get("t2_present", True)))
         p_refined_full = np.zeros_like(anchor_mask, dtype=np.float32)
         for cand, cand_anchor, seed, roi in candidates:
             refined_mask, accept_logit, utility_reg, audit = _refine_and_score_candidate(model, pass1, batch_np, cand, cand_anchor, seed, roi, device=device, threshold=refined_threshold)
             p_refined_full[roi] = np.maximum(p_refined_full[roi], refined_mask[roi].astype(np.float32))
             score_region = (cand_anchor | refined_mask | seed)
             threshold_for_pathology = float(edema_utility_threshold if pathology == "edema_zone" and edema_utility_threshold is not None else scar_utility_threshold if pathology == "scar" and scar_utility_threshold is not None else utility_threshold)
-            score_accept = float(audit["utility_score"]) >= threshold_for_pathology
             regression_floor = edema_utility_regression_min if pathology == "edema_zone" and edema_utility_regression_min is not None else scar_utility_regression_min if pathology == "scar" and scar_utility_regression_min is not None else utility_regression_min
-            regression_accept = True if regression_floor is None else float(utility_reg) >= float(regression_floor)
-            accepted = bool(score_accept and regression_accept)
+            if regression_floor is not None:
+                raise ValueError("CARE_DPR_UTILITY_REGRESSION_MIN_FORBIDDEN_IN_FINAL_ARBITRATION")
+            predicted_signed_utility = float(utility_reg)
+            score_accept = predicted_signed_utility >= threshold_for_pathology
+            regression_accept = True
+            accepted = bool(score_accept)
             if cand.candidate_type == "ADD_FN":
                 if accepted:
                     result[refined_mask] = True
@@ -333,13 +338,16 @@ def run_two_pass_full_volume_dpr(model: torch.nn.Module, batch_np: dict[str, np.
                 "accepted": bool(accepted),
                 "action": action,
                 "legal_action": action in LEGAL_ACTIONS,
+                "proposal_threshold": threshold_for_proposal,
                 "utility_threshold": threshold_for_pathology,
                 "utility_regression_min": regression_floor,
+                "predicted_signed_utility": predicted_signed_utility,
+                "arbitration_score_kind": "predicted_signed_utility",
                 "score_accepts_candidate": bool(score_accept),
                 "regression_accepts_candidate": bool(regression_accept),
             })
             all_audit.append(audit)
-            candidate_records.append({"pathology": pathology, "candidate_type": cand.candidate_type, "accepted": bool(accepted), "utility_score": audit["utility_score"], "utility_regression": utility_reg})
+            candidate_records.append({"pathology": pathology, "candidate_type": cand.candidate_type, "accepted": bool(accepted), "utility_score": predicted_signed_utility, "utility_accept_probability": audit["utility_score"], "utility_regression": utility_reg, "predicted_signed_utility": predicted_signed_utility})
             candidate_evidence.append({
                 "candidate": cand,
                 "pathology": pathology,
@@ -348,9 +356,13 @@ def run_two_pass_full_volume_dpr(model: torch.nn.Module, batch_np: dict[str, np.
                 "seed_mask": seed.copy(),
                 "roi_mask": roi.copy(),
                 "refined_local_mask": refined_mask.copy(),
-                "utility_score": float(audit["utility_score"]),
+                "utility_score": predicted_signed_utility,
+                "utility_accept_probability": float(audit["utility_score"]),
                 "utility_regression": float(utility_reg),
+                "predicted_signed_utility": predicted_signed_utility,
+                "proposal_threshold": threshold_for_proposal,
                 "utility_regression_min": regression_floor,
+                "arbitration_score_kind": "predicted_signed_utility",
                 "score_accepts_candidate": bool(score_accept),
                 "regression_accepts_candidate": bool(regression_accept),
                 "accepted": bool(accepted),
