@@ -221,8 +221,9 @@ def choose_case_candidate(*, model: torch.nn.Module, train_cases: list[str], cas
     sign_mismatch: tuple[str, dict[str, Any], tuple[Any, np.ndarray, np.ndarray, np.ndarray], str, dict[str, Any]] | None = None
     shuffled = list(train_cases)
     rng.shuffle(shuffled)
+    case_window = shuffled[: min(len(shuffled), 12)]
     for ctype in candidate_types:
-        for case_id in shuffled:
+        for case_id in case_window:
             if pathology == "edema_zone" and not bool(metadata[case_id].t2_present):
                 continue
             item = fv_cache.get(case_id=case_id, model=model, case_to_fold=case_to_fold, metadata=metadata, cache=cache, device=device)

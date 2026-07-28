@@ -1,0 +1,5 @@
+stage,local_step,total_step,case_id,pathology,requested_pathology,candidate_type,requested_candidate_type,fallback_reason,loss,grad_norm,candidate_voxels,component_truncation_flag,elapsed_seconds,p_refined_positive_voxels,roi_gt_coverage,branch_prefix
+C1,1,2001,Case8028,scar,scar,ADD_FN,ADD_FN,,3.356720447540283,200.47947692871094,1,True,1.1,43,0.0,scar
+C1,2,2002,Case3043,edema_zone,edema_zone,ADD_FN,ADD_FN,,1.409549355506897,125.23269653320312,3,True,4.5,21,0.0,edema
+C1,3,2003,Case1046,scar,scar,REVISE_FP,REVISE_FP,,1.3219687938690186,25.25830841064453,912,True,7.1,2636,0.9536679536679536,scar
+C1,4,2004,Case3019,edema_zone,edema_zone,REVISE_FP,REVISE_FP,,0.48853978514671326,39.79305648803711,4861,True,16.3,6440,0.892150285139215,edema

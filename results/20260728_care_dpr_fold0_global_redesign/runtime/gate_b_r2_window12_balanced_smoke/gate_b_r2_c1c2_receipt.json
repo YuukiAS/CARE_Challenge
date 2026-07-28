@@ -1,0 +1,123 @@
+{
+  "accept_probability_threshold_used": false,
+  "c1_summary": {
+    "add_revise_counts": {
+      "ADD_FN": 2,
+      "REVISE_FP": 2
+    },
+    "candidate_counts": {
+      "edema_zone_ADD_FN": 1,
+      "edema_zone_REVISE_FP": 1,
+      "scar_ADD_FN": 1,
+      "scar_REVISE_FP": 1
+    },
+    "fallback_count": 0,
+    "pathology_fraction": {
+      "edema_zone": 0.5,
+      "scar": 0.5
+    },
+    "roi_gt_coverage_mean": {
+      "edema_zone": 0.4460751425696075,
+      "scar": 0.4768339768339768
+    },
+    "sample_count": 4,
+    "utility_target_balance": {},
+    "utility_target_sign_fallback_count": 0,
+    "utility_target_sign_match_count": {},
+    "utility_target_sign_requested": {}
+  },
+  "c2_summary": {
+    "add_revise_counts": {
+      "ADD_FN": 3,
+      "REVISE_FP": 1
+    },
+    "candidate_counts": {
+      "edema_zone_ADD_FN": 2,
+      "scar_ADD_FN": 1,
+      "scar_REVISE_FP": 1
+    },
+    "fallback_count": 1,
+    "pathology_fraction": {
+      "edema_zone": 0.5,
+      "scar": 0.5
+    },
+    "roi_gt_coverage_mean": {},
+    "sample_count": 4,
+    "utility_target_balance": {
+      "edema_zone": {
+        "negative": 1,
+        "positive": 1
+      },
+      "scar": {
+        "negative": 1,
+        "positive": 1
+      }
+    },
+    "utility_target_sign_fallback_count": 0,
+    "utility_target_sign_match_count": {
+      "edema_zone": 2,
+      "scar": 2
+    },
+    "utility_target_sign_requested": {
+      "edema_zone": {
+        "negative": 1,
+        "positive": 1
+      },
+      "scar": {
+        "negative": 1,
+        "positive": 1
+      }
+    }
+  },
+  "checkpoint_every": 4,
+  "completed_at_utc": "2026-07-28T21:03:30Z",
+  "device": "cuda",
+  "final_arbitration_score": "predicted_signed_utility",
+  "fold": 0,
+  "full_volume_candidate_source": "model_self_pass1_full_volume_candidates",
+  "gate": "DPR_GATE_B_R2_C1_C2",
+  "last_checkpoint": "/users/a/e/aereinh/CARE/results/20260728_care_dpr_fold0_global_redesign/runtime/gate_b_r2_window12_balanced_smoke/checkpoints/checkpoint_last.pt",
+  "last_checkpoint_sha256": "6cc7454d745130e9edf03306b745cbac4ee1a56441576c7465e4950521c11a3b",
+  "no_t2_edema_candidates_excluded": true,
+  "stage_c1_optimizer_steps": 4,
+  "stage_c1_trainable_parameter_names": [
+    "scar_branch.local_refiner.net.0.weight",
+    "scar_branch.local_refiner.net.1.weight",
+    "scar_branch.local_refiner.net.1.bias",
+    "scar_branch.local_refiner.net.3.block.0.weight",
+    "scar_branch.local_refiner.net.3.block.1.weight",
+    "scar_branch.local_refiner.net.3.block.1.bias",
+    "scar_branch.local_refiner.net.3.block.3.weight",
+    "scar_branch.local_refiner.net.3.block.4.weight",
+    "scar_branch.local_refiner.net.3.block.4.bias",
+    "scar_branch.local_refiner.net.4.weight",
+    "scar_branch.local_refiner.net.4.bias",
+    "edema_branch.local_refiner.net.0.weight",
+    "edema_branch.local_refiner.net.1.weight",
+    "edema_branch.local_refiner.net.1.bias",
+    "edema_branch.local_refiner.net.3.block.0.weight",
+    "edema_branch.local_refiner.net.3.block.1.weight",
+    "edema_branch.local_refiner.net.3.block.1.bias",
+    "edema_branch.local_refiner.net.3.block.3.weight",
+    "edema_branch.local_refiner.net.3.block.4.weight",
+    "edema_branch.local_refiner.net.3.block.4.bias",
+    "edema_branch.local_refiner.net.4.weight",
+    "edema_branch.local_refiner.net.4.bias"
+  ],
+  "stage_c2_optimizer_steps": 4,
+  "stage_c2_trainable_parameter_names": [
+    "scar_branch.component_utility.net.0.weight",
+    "scar_branch.component_utility.net.0.bias",
+    "scar_branch.component_utility.net.2.weight",
+    "scar_branch.component_utility.net.2.bias",
+    "edema_branch.component_utility.net.0.weight",
+    "edema_branch.component_utility.net.0.bias",
+    "edema_branch.component_utility.net.2.weight",
+    "edema_branch.component_utility.net.2.bias"
+  ],
+  "start_step": 2000,
+  "status": "PASS",
+  "task_key": "20260728_care_dpr_fold0_global_redesign",
+  "terminal_step": 2008,
+  "utility_regression_min_used": false
+}
