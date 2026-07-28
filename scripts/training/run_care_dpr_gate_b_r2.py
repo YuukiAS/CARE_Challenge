@@ -248,6 +248,19 @@ def choose_case_candidate(*, model: torch.nn.Module, train_cases: list[str], cas
         sign = "positive" if desired_utility_positive else "negative"
         reason = f"utility_target_sign_fallback:{sign}"
         return case_id, item, cand_tuple, ";".join([x for x in (fallback, reason) if x]), target_info
+    for ctype in candidate_types:
+        for case_id in shuffled[: min(len(shuffled), 12)]:
+            if pathology == "edema_zone" and not bool(metadata[case_id].t2_present):
+                continue
+            item = fv_cache.get(case_id=case_id, model=model, case_to_fold=case_to_fold, metadata=metadata, cache=cache, device=device)
+            pool = item["candidates"].get((pathology, ctype), [])
+            if not pool:
+                continue
+            cand_tuple = rng.choice(list(pool))
+            target_info = c2_target_info(model, item, cand_tuple, device=device) if desired_utility_positive is not None else None
+            fallback = "" if ctype == requested_type else f"candidate_type_fallback:{requested_type}->{ctype}"
+            reason = "candidate_search_window_fallback"
+            return case_id, item, cand_tuple, ";".join([x for x in (fallback, reason) if x]), target_info
     raise RuntimeError(f"CARE_DPR_R2_NO_FULL_VOLUME_CANDIDATE:{pathology}:{candidate_type}")
 
 
