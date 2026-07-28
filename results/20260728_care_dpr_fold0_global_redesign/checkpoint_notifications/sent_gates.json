@@ -57,9 +57,12 @@
   "dpr_gate_a_r2_prepared": {
     "approval_token": "APPROVE_DPR_GATE_A_R2",
     "formal_fold0_authorized": false,
+    "git_head_evidence_commit": "70ae7240fa43a252079be36448ab4a522a1d604e",
     "node_json": "results/20260728_care_dpr_fold0_global_redesign/checkpoint_notifications/dpr_gate_a_r2.json",
-    "node_sha256": "7c55f86d7ecc16199624e9b4a01e08eab11533dd771bfc59991d0d0096f1b2b0",
+    "node_sha256": "5816961518d70c5e3f84b9a6cf0cb6546efbdfc50eae9effa3574e1aef7fa465",
+    "origin_main_after_evidence_push": "70ae7240fa43a252079be36448ab4a522a1d604e",
     "prepared_at_utc": "2026-07-28T09:20:07Z",
+    "pushed_at_utc": "2026-07-28T09:22:46Z",
     "scientific_credit": 0,
     "send_status": "PENDING_EMAIL_SEND_AFTER_REMOTE_PUSH",
     "state": "AWAITING_HUMAN_ACCEPTANCE_DPR_GATE_A_R2",

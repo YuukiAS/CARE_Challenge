@@ -14,6 +14,7 @@
   "formal_fold0_authorized": false,
   "gate": "DPR_GATE_A_R2",
   "git_head_before_evidence_commit": "c6633661f2d6fd46cff422e4e09268aac84a1055",
+  "git_head_evidence_commit": "70ae7240fa43a252079be36448ab4a522a1d604e",
   "mechanism_summary": {
     "checkpoint_resume_exact": {
       "a2_boundary_resume_exact_test": "tests/care_dpr/test_care_dpr_model.py::test_stage_boundary_resume_rebuilds_b_optimizer_without_loading_a2_state",
@@ -176,8 +177,11 @@
     }
   },
   "notifier_reuse": "controller_notifications.notify_goal_watcher/load_config/load_env_file plus existing CARE notify SMTP configuration; no new notifier service created",
+  "origin_main_after_evidence_push": "70ae7240fa43a252079be36448ab4a522a1d604e",
   "origin_main_before_evidence_commit": "c6633661f2d6fd46cff422e4e09268aac84a1055",
   "prepared_at_utc": "2026-07-28T09:20:07Z",
+  "push_status": "PUSHED_REMOTE_MAIN",
+  "pushed_at_utc": "2026-07-28T09:22:46Z",
   "scientific_credit": 0,
   "send_order": "commit_and_push_lightweight_evidence_before_email_send",
   "source_hashes_sha256": {
