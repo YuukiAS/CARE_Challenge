@@ -142,18 +142,20 @@ def run_gate_b_r1(args: argparse.Namespace) -> dict[str, Any]:
     split_payload = deterministic_inner_split(sorted(fold["train"]), int(args.fold), metadata)
     inner_cases = list(split_payload["complete_inner_select_cases"])
     case_to_fold = {case_id: int(row["fold"]) for row in splits for case_id in row["val"]}
-    receipt = read_json(RUNTIME_ROOT / "fold_training_receipt.json")
+    result_root = Path(args.result_root)
+    runtime_root = Path(args.runtime_root) if args.runtime_root else result_root / "runtime" / args.runtime_name
+    receipt = read_json(runtime_root / "fold_training_receipt.json")
     if receipt.get("status") != "PASS" or int(receipt.get("actual_optimizer_steps", -1)) != 4000:
         raise RuntimeError("CARE_DPR_GATE_B_R1_FORMAL_RECEIPT_NOT_PASS_4000")
     device = torch.device(args.device if args.device else ("cuda" if torch.cuda.is_available() and not args.cpu else "cpu"))
     cache = CaseCache(max_cases=int(args.cache_cases))
-    out_root = RUNTIME_ROOT / "gate_b_r1_evaluation"
+    out_root = runtime_root / "gate_b_r1_evaluation"
     selection_rows: list[dict[str, Any]] = []
     threshold_rows: list[dict[str, Any]] = []
     inner_candidate_rows: list[dict[str, Any]] = []
     inner_casewise_all: list[dict[str, Any]] = []
     eligible: list[dict[str, Any]] = []
-    for ckpt in checkpoint_paths(RUNTIME_ROOT):
+    for ckpt in checkpoint_paths(runtime_root):
         if not ckpt.is_file():
             raise FileNotFoundError(ckpt)
         model, step, _ = load_care_dpr_checkpoint(ckpt)
@@ -319,8 +321,8 @@ def run_gate_b_r1(args: argparse.Namespace) -> dict[str, Any]:
     write_json(out_root / "gate_b_r1_mechanism_report.json", mechanism)
     write_json(out_root / "gate_b_r1_scientific_gate.json", gate)
     write_json(out_root / "gate_b_r1_summary.json", gate_summary)
-    write_json(RESULT_ROOT / "gate_b_r1_summary.json", {**gate_summary, "evidence_root": str(out_root.relative_to(REPO_ROOT))})
-    write_json(RESULT_ROOT / "checkpoint_notifications/dpr_gate_b_r1.json", {**notification, "gate_summary": gate_summary})
+    write_json(result_root / "gate_b_r1_summary.json", {**gate_summary, "evidence_root": str(out_root.relative_to(REPO_ROOT))})
+    write_json(result_root / "checkpoint_notifications/dpr_gate_b_r1.json", {**notification, "gate_summary": gate_summary})
     return gate_summary
 
 
@@ -328,6 +330,9 @@ def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--fold", type=int, default=0)
     parser.add_argument("--cache-cases", type=int, default=16)
+    parser.add_argument("--result-root", default=str(RESULT_ROOT))
+    parser.add_argument("--runtime-name", default="formal_fold0")
+    parser.add_argument("--runtime-root", default="")
     parser.add_argument("--device", default="")
     parser.add_argument("--cpu", action="store_true")
     args = parser.parse_args()

@@ -332,7 +332,7 @@ def train_fold(args: argparse.Namespace) -> dict[str, Any]:
     random.seed(args.seed); np.random.seed(args.seed); torch.manual_seed(args.seed)
     device = torch.device("cuda" if torch.cuda.is_available() and not args.cpu else "cpu")
     result_root = Path(args.result_root)
-    runtime_root = result_root / ("runtime/preflight" if args.preflight_steps else "runtime/formal_fold0")
+    runtime_root = result_root / ("runtime/preflight" if args.preflight_steps else f"runtime/{args.runtime_name}")
     runtime_root.mkdir(parents=True, exist_ok=True)
 
     metadata = load_myops_case_metadata()
@@ -477,6 +477,7 @@ def main() -> int:
     parser.add_argument("--preflight-steps", type=int, default=0)
     parser.add_argument("--approval-token", default="")
     parser.add_argument("--resume-checkpoint", default="")
+    parser.add_argument("--runtime-name", default="formal_fold0")
     parser.add_argument("--lr-stage-a-encoder", type=float, default=2e-5)
     parser.add_argument("--lr-stage-a-branch", type=float, default=1e-4)
     parser.add_argument("--lr-stage-b-branch", type=float, default=5e-5)

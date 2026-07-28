@@ -39,8 +39,9 @@ def as_bool(value: Any) -> bool:
     return str(value).lower() == "true"
 
 
-def validate(result_root: Path) -> dict[str, Any]:
-    eval_root = result_root / "runtime/formal_fold0/gate_b_r1_evaluation"
+def validate(result_root: Path, runtime_root: Path | None = None) -> dict[str, Any]:
+    runtime_root = runtime_root or result_root / "runtime/formal_fold0"
+    eval_root = runtime_root / "gate_b_r1_evaluation"
     summary = read_json(eval_root / "gate_b_r1_summary.json")
     selection = read_json(eval_root / "gate_b_r1_checkpoint_threshold_selection.json")
     mechanism = read_json(eval_root / "gate_b_r1_mechanism_report.json")
@@ -96,8 +97,12 @@ def validate(result_root: Path) -> dict[str, Any]:
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--result-root", default=str(RESULT_ROOT))
+    parser.add_argument("--runtime-root", default="")
+    parser.add_argument("--runtime-name", default="formal_fold0")
     args = parser.parse_args()
-    report = validate(Path(args.result_root))
+    result_root = Path(args.result_root)
+    runtime_root = Path(args.runtime_root) if args.runtime_root else result_root / "runtime" / args.runtime_name
+    report = validate(result_root, runtime_root)
     print(json.dumps(report, indent=2, sort_keys=True, ensure_ascii=False))
     return 0 if report["status"] == "PASS" else 1
 
