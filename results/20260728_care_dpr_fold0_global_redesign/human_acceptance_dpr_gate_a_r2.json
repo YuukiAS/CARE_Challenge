@@ -1,0 +1,27 @@
+{
+  "accepted_at_utc": "2026-07-28T09:45:50Z",
+  "all_data_fit_authorized": false,
+  "allocation": "60657290",
+  "approval_token": "APPROVE_DPR_GATE_A_R2",
+  "authorized_scope": "DPR fold0 W3 + W4 only",
+  "current_git_head": "25408a08bdff38ef25c62ad60123a174d1c66af0",
+  "docker_upload_authorized": false,
+  "fold_expansion_authorized": false,
+  "formal_fold0_authorized": true,
+  "formal_initialization": "fresh CARE-DPR from frozen CARE-DG fold0 checkpoint_step04000.pt; do not resume 300-step preflight checkpoint",
+  "gate": "DPR_GATE_A_R2",
+  "gpu_command_contract": "srun --jobid=60657290 --overlap --ntasks=1 bash -lc '<command>'",
+  "latest_remote_main": "25408a08bdff38ef25c62ad60123a174d1c66af0",
+  "preflight_scientific_credit": 0,
+  "reviewed_evidence_commit": "70ae7240fa43a252079be36448ab4a522a1d604e",
+  "runtime_push_authorized": false,
+  "seed": 20260728,
+  "status": "APPROVED_FOR_FORMAL_FOLD0_W3_W4_ONLY",
+  "superseded_tokens": [
+    "APPROVE_DPR_GATE_A",
+    "APPROVE_DPR_GATE_A_R1"
+  ],
+  "task_key": "20260728_care_dpr_fold0_global_redesign",
+  "validation_packaging_authorized": false,
+  "validation_upload_authorized": false
+}
