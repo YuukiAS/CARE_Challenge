@@ -1,0 +1,113 @@
+{
+  "case8034_anchor": {
+    "argmax_counts": {
+      "0": 393216
+    },
+    "shape_zyx": [
+      8,
+      256,
+      192
+    ],
+    "source_fold": 3,
+    "tissue_1_4_5_voxels": 0
+  },
+  "created_at_utc": "2026-07-27T15:29:24Z",
+  "failure": "formal fold0 Stage A local_step 199 nonfinite CARE-DG loss",
+  "fold0_scope": {
+    "actual_train": {
+      "empty_anchor_tissue_cases": [
+        "Case8034"
+      ],
+      "n": 164,
+      "tiny_anchor_tissue_lt500_cases": {
+        "Case8004": 320,
+        "Case8010": 65,
+        "Case8014": 194,
+        "Case8016": 206,
+        "Case8017": 499,
+        "Case8028": 81,
+        "Case8029": 34
+      }
+    },
+    "complete_actual_train": {
+      "empty_anchor_tissue_cases": [],
+      "n": 52,
+      "tiny_anchor_tissue_lt500_cases": {}
+    },
+    "inner_select": {
+      "empty_anchor_tissue_cases": [],
+      "n": 12,
+      "tiny_anchor_tissue_lt500_cases": {}
+    },
+    "outer_val": {
+      "empty_anchor_tissue_cases": [
+        "Case8021"
+      ],
+      "n": 44,
+      "tiny_anchor_tissue_lt500_cases": {
+        "Case8011": 135
+      }
+    }
+  },
+  "repair": {
+    "distance_to_myocardium_clip_mm": [
+      -64.0,
+      128.0
+    ],
+    "sampler": "error_fn/error_fp/pathology eligible pools require target voxels inside support>0.1; empty-support cases remain eligible for random only",
+    "support_maps": "sanitize nan/inf and finite max-float-like empty-mask distances via explicit physical clipping",
+    "unchanged": [
+      "architecture",
+      "loss weights",
+      "data split",
+      "training budget",
+      "sampler requested proportions"
+    ]
+  },
+  "required_reruns": [
+    "pytest tests/care_dg -q",
+    "Gate A checks",
+    "Gate B scar-priority preflight",
+    "strict validator",
+    "consistency validator",
+    "formal fold0 from scratch"
+  ],
+  "root_cause_chain": [
+    "step199 deterministic batch included Case8034 in error_fn mode",
+    "Case8034 OOF anchor argmax was all background, so support tissue labels {1,4,5} were empty",
+    "SimpleITK SignedMaurerDistanceMap on an all-zero binary mask returns finite max-float distance 1.8446742974197924e19 across the volume",
+    "the finite but nonphysical distance escaped NaN/Inf checks and entered anchor_context as a feature",
+    "large context activation caused loss/gradient numerical instability by Stage A step199"
+  ],
+  "simpleitk_empty_mask_observation": {
+    "finite": true,
+    "max": 1.8446742974197924e+19,
+    "min": 1.8446742974197924e+19
+  },
+  "source_hashes": {
+    "configs/care_dg/care_dg_v1.yaml": "69c276d66ffa1328da7a1e06ee446280981cac1fe3ed3d497327ad714fe757b4",
+    "scripts/evaluation/build_care_dg_validation_packet.py": "3d48ffee26b89c609a41e7414b74d4c101913ec890fac82eaa5370353c1f9ad4",
+    "scripts/evaluation/run_care_dg_gate_a_checks.py": "d6e31d9e00bd256bb78cdf99f29bf07ee62ee7546fc79fee51325ef9a699fef3",
+    "scripts/training/run_care_dg.py": "0c8a25353a758f43c5d7979a285de2eda8ff85c06158390d99c85f1ca7f51a84",
+    "tests/care_dg/test_care_dg_model.py": "664c965d47c208be0b51107162ab2a53e298c37712ca263db94187572aeb39ff"
+  },
+  "status": "ROOT_CAUSE_IDENTIFIED_REPAIRED_AND_VALIDATED",
+  "step199_cases": [
+    "Case8034",
+    "Case3007",
+    "Case3042",
+    "Case1001",
+    "Case3031",
+    "Case3014",
+    "Case1054",
+    "Case3039"
+  ],
+  "updated_at_utc": "2026-07-27T15:39:22Z",
+  "validated_by": [
+    "pytest tests/care_dg -q",
+    "run_care_dg_gate_a_checks.py --gate-a --steps 300",
+    "gate_b_scar_priority_preflight",
+    "strict_validator PASS",
+    "consistency_validator PASS"
+  ]
+}

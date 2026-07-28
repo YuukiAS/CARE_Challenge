@@ -12,7 +12,8 @@ from typing import Any
 REPO_ROOT = Path(__file__).resolve().parents[2]
 TASK_KEY = "20260727_care_dg_dual_pathology_validation"
 RESULT_ROOT = REPO_ROOT / "results" / TASK_KEY
-RUNTIME_ROOT = RESULT_ROOT / "runtime/gate_a_r3_preflight/fold0"
+SCAR_PRIORITY_RUNTIME_ROOT = RESULT_ROOT / "runtime/gate_b_scar_priority_preflight/fold0"
+RUNTIME_ROOT = SCAR_PRIORITY_RUNTIME_ROOT if SCAR_PRIORITY_RUNTIME_ROOT.exists() else RESULT_ROOT / "runtime/gate_a_r3_preflight/fold0"
 GATE_ROOT = RESULT_ROOT / "gate_a_repaired_semantics"
 
 
@@ -91,6 +92,7 @@ def main() -> int:
         "updated_at_utc": now_utc(),
         "status": impl.get("status"),
         "gate_revision": "A-R3",
+        "active_preflight_runtime_label": RUNTIME_ROOT.parent.name,
         "state": "AWAITING_HUMAN_ACCEPTANCE_GATE_A_R3",
         "approval_token_required": "APPROVE_GATE_A_R3",
         "approval_token": "APPROVE_GATE_A_R3",
@@ -134,7 +136,8 @@ def main() -> int:
         f"resolved_training_contract_sha256: `{resolved.get('resolved_training_contract_sha256')}`",
     ]
     (RESULT_ROOT / "unit_test_report.md").write_text("\n".join(lines) + "\n", encoding="utf-8")
-    print(json.dumps({"status": "PASS", "gate_revision": "A-R3", "strict_validator_status": "PASS", "summary": rel(RESULT_ROOT / "gate_a_summary.json")}, indent=2, sort_keys=True))
+    print(json.dumps({"status": "PASS", "gate_revision": "A-R3",
+        "active_preflight_runtime_label": RUNTIME_ROOT.parent.name, "strict_validator_status": "PASS", "summary": rel(RESULT_ROOT / "gate_a_summary.json")}, indent=2, sort_keys=True))
     return 0
 
 

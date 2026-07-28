@@ -4,8 +4,14 @@
     "evidence整理",
     "等待用户精确APPROVE_GATE_A_R3"
   ],
+  "approval_token_received": "APPROVE_GATE_A_R3",
   "approval_token_required": "APPROVE_GATE_A_R3",
+  "approved_at_utc": "2026-07-27T13:48:16Z",
+  "authorized_next_stage": "repaired_formal_scar_priority_fold0_5000_plus_3000_only",
   "consistency_validator_status": "PASS",
+  "current_wave": "DG_W2_REPAIRED_FOLD0_FORMAL_TRAINING_SCAR_PRIORITY",
+  "folds_1_4_authorized_after_gate_b_email_once": true,
+  "folds_1_4_forbidden_until_gate_b": false,
   "forbidden_during_pause": [
     "repaired_fold0_training",
     "folds_1_4_training",
@@ -14,9 +20,29 @@
   ],
   "gate_a_r3_email_json": "results/20260727_care_dg_dual_pathology_validation/checkpoint_notifications/gate_a_r3.json",
   "gate_a_r3_email_receipt": "results/20260727_care_dg_dual_pathology_validation/checkpoint_notifications/gate_a_r3_send_receipt.json",
+  "gate_b": {
+    "approval_token_required": false,
+    "email_receipt": "results/20260727_care_dg_dual_pathology_validation/checkpoint_notifications/gate_b_send_receipt.json",
+    "sent_at_utc": "2026-07-27T18:55:48Z",
+    "state": "GATE_B_PASS_EMAIL_SENT_CONTINUATION_PREAUTHORIZED_ONCE",
+    "user_one_time_authorization_used_for_continuation": true
+  },
+  "gate_b_one_time_conditional_continuation_authorization": {
+    "authorization": "continue to folds_1_4 once without waiting for a separate APPROVE_GATE_B message",
+    "does_not_authorize_validation_or_docker_upload": true,
+    "does_not_override_repair_gates": true,
+    "email_still_required": true,
+    "gpu_constraint": "allocation_60657290_serial_only",
+    "recorded_at_utc": "2026-07-27T16:42:42Z",
+    "scope": "after Gate B evidence, strict validator, consistency validator, and Gate B email receipt are complete",
+    "source": "user_message_current_thread"
+  },
   "next_high_cost_stage_paused": "repaired_fold0_5000_plus_3000",
-  "state": "AWAITING_HUMAN_ACCEPTANCE_GATE_A_R3",
+  "runtime_label": "repaired_formal_scar_priority",
+  "scar_priority_preflight_contract_sha256": "177b275fcc7debf3a454f51ac193702f73e84d50be2d39c1513a2043293c80a4",
+  "scar_priority_preflight_status": "PASS",
+  "state": "APPROVE_GATE_A_R3_RECEIVED_GATE_B_SCAR_PRIORITY_HOTFIX_PASS_FOLD0_AUTHORIZED",
   "strict_validator_status": "PASS",
   "supersedes": "APPROVE_GATE_A_R2",
-  "updated_at_utc": "2026-07-27T13:30:24Z"
+  "updated_at_utc": "2026-07-27T14:42:12Z"
 }

@@ -44,7 +44,7 @@ ALLOWED_W0_CONTRACT_STATUSES = {
     "W1_IMPLEMENTATION_AND_REAL_CASE_GATES_PASS_FORMAL_TRAINING_NOT_STARTED",
     "GATE_A_REPAIRED_IMPLEMENTATION_PASS",
 }
-PROTECTED_RUNTIME_LABELS = {"formal"}
+PROTECTED_RUNTIME_LABELS = {"formal", "repaired_formal"}
 SAMPLER_PATTERN = ["error_fn", "error_fp", "error_fn", "error_fp", "pathology", "pathology", "random", "random"]
 INNER_EVAL_MODES = ("scar_fn", "scar_fp", "edema_zone_fn", "edema_zone_fp", "pathology", "background")
 REPRESENTATION_MODULES = ("lge_stem", "t2_stem", "c0_stem", "anchor_context", "encoder")
@@ -54,6 +54,9 @@ STAGE_A_PATHOLOGY_LR = 3e-4
 STAGE_B_REPRESENTATION_LR = 2e-5
 STAGE_B_PATHOLOGY_LR = 1e-4
 WEIGHT_DECAY = 1e-4
+GRAD_CLIP_NORM = 1.0
+AMP_DTYPE = "bfloat16"
+DISTANCE_CLIP_MM = (-64.0, 128.0)
 
 
 def now_utc() -> str:
@@ -122,6 +125,8 @@ def support_maps(anchor_mask: np.ndarray, ref: sitk.Image) -> tuple[np.ndarray, 
     img.CopyInformation(ref)
     dist_img = sitk.SignedMaurerDistanceMap(img, insideIsPositive=False, squaredDistance=False, useImageSpacing=True)
     dist = sitk.GetArrayFromImage(dist_img).astype(np.float32)
+    dist = np.nan_to_num(dist, nan=DISTANCE_CLIP_MM[1], posinf=DISTANCE_CLIP_MM[1], neginf=DISTANCE_CLIP_MM[0])
+    dist = np.clip(dist, DISTANCE_CLIP_MM[0], DISTANCE_CLIP_MM[1]).astype(np.float32)
     myocardium_support = (1.0 / (1.0 + np.exp(np.clip((dist - 6.0) / 2.0, -60.0, 60.0)))).astype(np.float32)
     edema_support = (1.0 / (1.0 + np.exp(np.clip((dist - 10.0) / 2.0, -60.0, 60.0)))).astype(np.float32)
     return myocardium_support[None], edema_support[None], dist[None]
@@ -246,6 +251,40 @@ def case_target_masks(record: dict[str, np.ndarray], t2_present: bool) -> dict[s
     }
 
 
+def actionable_target_mask(record: dict[str, np.ndarray], t2_present: bool, mode: str) -> np.ndarray:
+    masks = case_target_masks(record, t2_present)
+    labels = record["labels"]
+    scar_support = record.get("myocardium_support", np.ones((1, *labels.shape), dtype=np.float32))[0] > 0.1
+    edema_support = record.get("edema_support", np.ones((1, *labels.shape), dtype=np.float32))[0] > 0.1
+    if mode == "error_fn":
+        return ((masks["scar_fn"] & scar_support) | (masks["edema_zone_fn"] & edema_support)).astype(bool)
+    if mode == "error_fp":
+        return ((masks["scar_fp"] & scar_support) | (masks["edema_zone_fp"] & edema_support)).astype(bool)
+    if mode == "pathology":
+        scar_pathology = (labels == SCAR) & scar_support
+        edema_pathology = (labels == EDEMA) & edema_support if t2_present else np.zeros_like(labels, dtype=bool)
+        return (scar_pathology | edema_pathology).astype(bool)
+    if mode == "random":
+        return masks["random"]
+    return masks.get(mode, np.zeros_like(labels, dtype=bool))
+
+
+def support_actionability_summary(record: dict[str, np.ndarray], t2_present: bool) -> dict[str, Any]:
+    raw = case_target_masks(record, t2_present)
+    actionable = {mode: actionable_target_mask(record, t2_present, mode) for mode in ("error_fn", "error_fp", "pathology", "random")}
+    labels = record["labels"]
+    scar_support = record.get("myocardium_support", np.ones((1, *labels.shape), dtype=np.float32))[0]
+    edema_support = record.get("edema_support", np.ones((1, *labels.shape), dtype=np.float32))[0]
+    return {
+        "anchor_tissue_voxels_1_4_5": int(np.count_nonzero(np.isin(record["anchor_mask"], [1, 4, 5]))),
+        "max_distance_to_myocardium": float(np.max(record.get("distance_to_myocardium", np.zeros((1, *labels.shape), dtype=np.float32)))),
+        "scar_support_gt_0_1_voxels": int(np.count_nonzero(scar_support > 0.1)),
+        "edema_support_gt_0_1_voxels": int(np.count_nonzero(edema_support > 0.1)),
+        "raw_target_counts": {mode: int(np.count_nonzero(raw[mode])) for mode in ("error_fn", "error_fp", "pathology", "random")},
+        "actionable_target_counts": {mode: int(np.count_nonzero(actionable[mode])) for mode in actionable},
+    }
+
+
 def deterministic_center(mask: np.ndarray, case_id: str, mode: str, salt: str) -> tuple[int, int, int] | None:
     coords = np.argwhere(mask)
     if not coords.size:
@@ -255,8 +294,7 @@ def deterministic_center(mask: np.ndarray, case_id: str, mode: str, salt: str) -
 
 
 def target_voxels_in_patch(record: dict[str, np.ndarray], center: tuple[int, int, int], mode: str, t2_present: bool) -> int:
-    masks = case_target_masks(record, t2_present)
-    mask = masks.get(mode)
+    mask = actionable_target_mask(record, t2_present, mode)
     if mask is None:
         raise ValueError(f"unknown sampler target mode: {mode}")
     return int(crop_pad(mask.astype(np.uint8)[None], center, PATCH_SHAPE, fill=0)[0].sum())
@@ -274,8 +312,7 @@ def choose_effective_center(
     if mode == "random":
         center = (rng.randrange(labels.shape[0]), rng.randrange(labels.shape[1]), rng.randrange(labels.shape[2]))
         return center, 0, ""
-    masks = case_target_masks(record, t2_present)
-    target = masks.get(mode)
+    target = actionable_target_mask(record, t2_present, mode)
     if target is None or not np.any(target):
         raise ValueError(f"CARE_DG_EFFECTIVE_SAMPLER_EMPTY_TARGET:{case_id}:{mode}")
     coords = np.argwhere(target)
@@ -384,18 +421,23 @@ def build_sampler_index(case_ids: list[str], case_to_fold: dict[str, int], metad
     weights: dict[str, float] = {}
     eligible: dict[str, list[str]] = {"error_fn": [], "error_fp": [], "pathology": [], "random": []}
     target_counts: dict[str, dict[str, int]] = {}
+    support_actionability: dict[str, dict[str, Any]] = {}
+    excluded_unactionable: dict[str, list[str]] = {"error_fn": [], "error_fp": [], "pathology": []}
     for case_id in sorted(case_ids):
         meta = metadata[case_id]
         if stage == "B" and meta.modality_group != "C0+LGE+T2":
             continue
         rec = cache.get(case_id, case_to_fold[case_id], tuple(meta.availability))
-        masks = case_target_masks(rec, bool(meta.t2_present))
+        summary = support_actionability_summary(rec, bool(meta.t2_present))
+        support_actionability[case_id] = summary
         active_cases.append(case_id)
         weights[case_id] = 4.0 if meta.modality_group == "C0+LGE+T2" else 1.0
-        target_counts[case_id] = {mode: int(np.count_nonzero(masks[mode])) for mode in eligible}
+        target_counts[case_id] = dict(summary["actionable_target_counts"])
         for mode in eligible:
             if mode == "random" or target_counts[case_id][mode] > 0:
                 eligible[mode].append(case_id)
+            elif int(summary["raw_target_counts"].get(mode, 0)) > 0 and mode in excluded_unactionable:
+                excluded_unactionable[mode].append(case_id)
     if not active_cases:
         raise ValueError(f"no active cases for stage {stage}")
     empty = [mode for mode, pool in eligible.items() if not pool]
@@ -407,6 +449,12 @@ def build_sampler_index(case_ids: list[str], case_to_fold: dict[str, int], metad
         "case_ids_sha256": sha256_case_ids(active_cases),
         "eligible_counts": {mode: len(pool) for mode, pool in eligible.items()},
         "target_count_totals": {mode: sum(target_counts[c][mode] for c in active_cases) for mode in eligible},
+        "support_actionability": {
+            "empty_anchor_tissue_cases": [case_id for case_id, row in support_actionability.items() if int(row["anchor_tissue_voxels_1_4_5"]) == 0],
+            "tiny_anchor_tissue_lt500_cases": {case_id: int(row["anchor_tissue_voxels_1_4_5"]) for case_id, row in support_actionability.items() if 0 < int(row["anchor_tissue_voxels_1_4_5"]) < 500},
+            "excluded_unactionable_cases": excluded_unactionable,
+            "distance_clip_mm": list(DISTANCE_CLIP_MM),
+        },
     }
     payload["sampler_index_sha256"] = stable_json_sha256(payload)
     return {**payload, "weights": weights, "eligible": eligible, "target_counts_by_case": target_counts}
@@ -579,6 +627,88 @@ def sampler_quota_audit(
         "eligible_counts": sampler_index["eligible_counts"],
         "sampler_index_sha256": sampler_index["sampler_index_sha256"],
     }
+
+
+def random_negative_semantics_audit(
+    case_ids: list[str],
+    case_to_fold: dict[str, int],
+    metadata: Any,
+    cache: CaseCache,
+    *,
+    stage: str,
+    samples: int = 1000,
+    seed: int = 20260727,
+) -> dict[str, Any]:
+    active_cases = [case_id for case_id in sorted(case_ids) if stage != "B" or metadata[case_id].modality_group == "C0+LGE+T2"]
+    if not active_cases:
+        raise ValueError(f"CARE_DG_RANDOM_NEGATIVE_AUDIT_EMPTY_STAGE:{stage}")
+    rng = random.Random(seed)
+    rows: list[dict[str, Any]] = []
+    category_counts = {"blood_pool": 0, "remote_background": 0, "historical_anchor_fp": 0, "bright_remote_lge_island": 0, "ordinary_random": 0}
+    for idx in range(int(samples)):
+        case_id = active_cases[rng.randrange(len(active_cases))]
+        meta = metadata[case_id]
+        rec = cache.get(case_id, case_to_fold[case_id], tuple(meta.availability))
+        labels = rec["labels"]
+        center = (rng.randrange(labels.shape[0]), rng.randrange(labels.shape[1]), rng.randrange(labels.shape[2]))
+        anchor_patch = crop_pad(rec["anchor_mask"][None], center, PATCH_SHAPE, fill=0)[0]
+        label_patch = crop_pad(rec["labels"][None], center, PATCH_SHAPE, fill=0)[0]
+        lge_patch = crop_pad(rec["images"][0:1], center, PATCH_SHAPE, fill=0.0)[0]
+        support_patch = crop_pad(rec["myocardium_support"], center, PATCH_SHAPE, fill=0.0)[0]
+        blood_pool_voxels = int(np.count_nonzero(np.isin(anchor_patch, [2, 3])))
+        support_outside_voxels = int(np.count_nonzero(support_patch < 0.1))
+        anchor_scar_fp_voxels = int(np.count_nonzero((anchor_patch == SCAR) & (label_patch != SCAR)))
+        zone_anchor = (anchor_patch == SCAR) | (anchor_patch == EDEMA)
+        zone_label = (label_patch == SCAR) | (label_patch == EDEMA)
+        anchor_edema_zone_fp_voxels = int(np.count_nonzero(zone_anchor & ~zone_label)) if bool(meta.t2_present) else 0
+        bright_remote_lge_voxels = int(np.count_nonzero((lge_patch >= 2.5) & (support_patch < 0.1)))
+        hits = {
+            "blood_pool": blood_pool_voxels > 0,
+            "remote_background": support_outside_voxels > 0,
+            "historical_anchor_fp": (anchor_scar_fp_voxels + anchor_edema_zone_fp_voxels) > 0,
+            "bright_remote_lge_island": bright_remote_lge_voxels > 0,
+        }
+        ordinary = not any(hits.values())
+        for key, value in hits.items():
+            if value:
+                category_counts[key] += 1
+        if ordinary:
+            category_counts["ordinary_random"] += 1
+        patch_hash = hashlib.sha256(
+            f"{case_id}:{stage}:{idx}:{center}".encode("utf-8")
+            + anchor_patch.astype(np.int16, copy=False).tobytes()
+            + label_patch.astype(np.int16, copy=False).tobytes()
+        ).hexdigest()
+        rows.append({
+            "sample_index": idx,
+            "case_id": case_id,
+            "center_zyx": list(center),
+            "patch_hash": patch_hash,
+            "center_anchor_class": int(rec["anchor_mask"][center]),
+            "lv_rv_blood_pool_voxel_count": blood_pool_voxels,
+            "scar_support_lt_0_1_voxel_count": support_outside_voxels,
+            "anchor_scar_fp_voxel_count": anchor_scar_fp_voxels,
+            "anchor_edema_zone_fp_voxel_count": anchor_edema_zone_fp_voxels,
+            "lge_z_ge_2_5_and_scar_support_lt_0_1_voxel_count": bright_remote_lge_voxels,
+            "hits_blood_pool": hits["blood_pool"],
+            "hits_remote_background": hits["remote_background"],
+            "hits_historical_anchor_fp": hits["historical_anchor_fp"],
+            "hits_bright_remote_lge_island": hits["bright_remote_lge_island"],
+            "ordinary_random": ordinary,
+            "t2_present": bool(meta.t2_present),
+        })
+    summary = {
+        "status": "PASS" if len(rows) == int(samples) else "NEEDS_REPAIR",
+        "stage": stage,
+        "samples": int(samples),
+        "case_count": len(active_cases),
+        "case_ids_sha256": sha256_case_ids(active_cases),
+        "category_counts": category_counts,
+        "category_patch_fractions": {key: value / float(samples) for key, value in category_counts.items()},
+        "records": rows,
+    }
+    summary["audit_sha256"] = stable_json_sha256({k: v for k, v in summary.items() if k != "audit_sha256"})
+    return summary
 
 
 def build_inner_evaluation_plan(
@@ -819,6 +949,14 @@ def current_group_weight_decays(optimizer: torch.optim.Optimizer) -> dict[str, f
     return {str(group.get("name", f"group{idx}")): float(group.get("weight_decay", 0.0)) for idx, group in enumerate(optimizer.param_groups)}
 
 
+def amp_autocast_dtype(name: str) -> torch.dtype:
+    if name == "bfloat16":
+        return torch.bfloat16
+    if name == "float16":
+        return torch.float16
+    raise ValueError(f"unsupported CARE-DG AMP dtype: {name}")
+
+
 def resolved_training_contract(
     *,
     fold: int,
@@ -833,6 +971,8 @@ def resolved_training_contract(
     sampler_index_b: dict[str, Any] | None,
     sampler_audit_a: dict[str, Any],
     sampler_audit_b: dict[str, Any] | None,
+    random_negative_audit_a: dict[str, Any],
+    random_negative_audit_b: dict[str, Any] | None,
     model_config: dict[str, Any],
     optimizer_group_report: dict[str, Any],
     device: torch.device,
@@ -859,7 +999,9 @@ def resolved_training_contract(
             },
         },
         "weight_decay": float(args.weight_decay),
-        "amp": {"requested": bool(args.amp), "enabled": bool(args.amp and device.type == "cuda")},
+        "grad_clip_norm": float(args.grad_clip_norm),
+        "gradient_clipping": {"enabled": float(args.grad_clip_norm) > 0.0, "max_norm": float(args.grad_clip_norm)},
+        "amp": {"requested": bool(args.amp), "enabled": bool(args.amp and device.type == "cuda"), "dtype": str(args.amp_dtype)},
         "model_channels": {
             "stem_channels": int(model_config["stem_channels"]),
             "context_channels": int(model_config["context_channels"]),
@@ -893,6 +1035,7 @@ def resolved_training_contract(
             "excluded_labels": [2, 3],
             "scar_shell_mm": 6,
             "edema_zone_shell_mm": 10,
+            "distance_to_myocardium_clip_mm": list(DISTANCE_CLIP_MM),
             "hard_crop": False,
         },
         "fixed_inner_evaluation_plan_sha256": str(inner_plan["plan_sha256"]),
@@ -902,6 +1045,20 @@ def resolved_training_contract(
             "stage_b_sampler_index_sha256": str(sampler_index_b["sampler_index_sha256"]) if sampler_index_b else "none",
             "stage_a_audit_status": str(sampler_audit_a.get("status")),
             "stage_b_audit_status": str(sampler_audit_b.get("status")) if sampler_audit_b else "none",
+        },
+        "composition_semantics": {
+            "revision": "GateB_scar_priority_hotfix",
+            "order": ["anchor_logits", "bounded_edema_zone_correction", "bounded_scar_correction", "final_six_class_argmax"],
+            "required_outputs": ["after_edema_logits", "final_logits_after_scar_priority"],
+            "post_scar_overwrite_allowed": False,
+            "edema_zone": "final_scar_union_final_pure_edema",
+            "pure_edema": "edema_zone_minus_final_scar",
+        },
+        "random_negative_semantics_audit_hashes": {
+            "stage_a_status": str(random_negative_audit_a.get("status")),
+            "stage_a_sha256": str(random_negative_audit_a.get("audit_sha256")),
+            "stage_b_status": str(random_negative_audit_b.get("status")) if random_negative_audit_b else "none",
+            "stage_b_sha256": str(random_negative_audit_b.get("audit_sha256")) if random_negative_audit_b else "none",
         },
         "source_hashes": source_hashes(),
         "config_sha256": sha256_file(CONFIG_PATH) if CONFIG_PATH.exists() else "missing",
@@ -978,10 +1135,17 @@ def contract() -> dict[str, object]:
         "stage_b_representation_lr": STAGE_B_REPRESENTATION_LR,
         "stage_b_pathology_lr": STAGE_B_PATHOLOGY_LR,
         "weight_decay": WEIGHT_DECAY,
+        "grad_clip_norm": GRAD_CLIP_NORM,
+        "amp_dtype": AMP_DTYPE,
+        "distance_to_myocardium_clip_mm": list(DISTANCE_CLIP_MM),
         "optimizer_groups": {
             "representation_group": list(REPRESENTATION_MODULES),
             "pathology_group": list(PATHOLOGY_MODULES),
         },
+        "composition_order": ["anchor_logits", "bounded_edema_zone_correction", "bounded_scar_correction", "final_six_class_argmax"],
+        "required_outputs": ["after_edema_logits", "final_logits_after_scar_priority"],
+        "runtime_label_formal": "repaired_formal_scar_priority",
+        "runtime_labels_protected": sorted(PROTECTED_RUNTIME_LABELS),
         "runtime_forbidden": ["MoSAIC", "full_MMRD", "prototype_dictionary", "SIP", "multi_expert", "old_Cascade"],
         "gpu_execution": "srun --jobid=60657290 --overlap only; serial GPU commands",
     }
@@ -994,7 +1158,7 @@ def unit_smoke() -> dict[str, object]:
     anchor = torch.randn(1, 6, 4, 16, 16)
     availability = torch.ones(1, 3)
     out = model(images, availability, anchor)
-    return {"status": "PASS", "final_logits_shape": list(out["final_logits"].shape), "scar_delta_nonconstant": bool(out["scar_delta"].std().item() > 0), "edema_delta_nonconstant": bool(out["edema_delta"].std().item() > 0)}
+    return {"status": "PASS", "final_logits_shape": list(out["final_logits"].shape), "has_after_edema_logits": "after_edema_logits" in out, "has_final_logits_after_scar_priority": "final_logits_after_scar_priority" in out, "scar_delta_nonconstant": bool(out["scar_delta"].std().item() > 0), "edema_delta_nonconstant": bool(out["edema_delta"].std().item() > 0)}
 
 
 def validate_w0(result_root: Path) -> None:
@@ -1018,8 +1182,8 @@ def train_fold(fold: int, args: argparse.Namespace, result_root: Path) -> dict[s
     train_cases = list(split_contract["actual_train_cases"])
     inner_select = list(split_contract["complete_inner_select_cases"] or split_contract["inner_select_cases"])
     complete_train_cases = list(split_contract["complete_actual_train_cases"])
-    preflight_only = bool(args.preflight_steps or args.gate_a_r2_preflight or args.gate_a_r3_preflight)
-    if args.gate_a_r2_preflight or args.gate_a_r3_preflight:
+    preflight_only = bool(args.preflight_steps or args.gate_a_r2_preflight or args.gate_a_r3_preflight or args.gate_b_scar_priority_preflight)
+    if args.gate_a_r2_preflight or args.gate_a_r3_preflight or args.gate_b_scar_priority_preflight:
         stage_a_steps = 1; stage_b_steps = 1; batch_size = min(2, args.batch_size)
     elif args.preflight_steps:
         stage_a_steps = int(args.preflight_steps); stage_b_steps = 0; batch_size = min(2, args.batch_size)
@@ -1056,12 +1220,17 @@ def train_fold(fold: int, args: argparse.Namespace, result_root: Path) -> dict[s
     sampler_index_b = build_sampler_index(complete_train_cases, case_to_fold, metadata, cache, stage="B") if complete_train_cases else None
     sampler_audit_a = sampler_quota_audit(train_cases, case_to_fold, metadata, cache, stage="A", batch_size=max(8, batch_size), samples=1000, seed=args.seed + fold)
     sampler_audit_b = sampler_quota_audit(complete_train_cases, case_to_fold, metadata, cache, stage="B", batch_size=max(8, batch_size), samples=1000, seed=args.seed + fold + 100000) if sampler_index_b else None
+    random_negative_audit_a = random_negative_semantics_audit(train_cases, case_to_fold, metadata, cache, stage="A", samples=1000, seed=args.seed + fold + 200000)
+    random_negative_audit_b = random_negative_semantics_audit(complete_train_cases, case_to_fold, metadata, cache, stage="B", samples=1000, seed=args.seed + fold + 300000) if sampler_index_b else None
     write_json(runtime_root / "inner_split_manifest.json", split_contract)
     write_json(runtime_root / "inner_evaluation_plan.json", inner_plan)
     write_json(runtime_root / "sampler_quota_audit_stage_a.json", sampler_audit_a)
     if sampler_audit_b is not None:
         write_json(runtime_root / "sampler_quota_audit_stage_b.json", sampler_audit_b)
     write_json(runtime_root / "sampler_quota_audit.json", sampler_audit_a)
+    write_json(runtime_root / "random_negative_semantics_audit_stage_a.json", random_negative_audit_a)
+    if random_negative_audit_b is not None:
+        write_json(runtime_root / "random_negative_semantics_audit_stage_b.json", random_negative_audit_b)
     write_json(runtime_root / "margin_cap_audit.json", cap_audit)
     for audit_name, audit in [("stage_a", sampler_audit_a), ("stage_b", sampler_audit_b)]:
         if audit is None:
@@ -1091,6 +1260,8 @@ def train_fold(fold: int, args: argparse.Namespace, result_root: Path) -> dict[s
         sampler_index_b=sampler_index_b,
         sampler_audit_a=sampler_audit_a,
         sampler_audit_b=sampler_audit_b,
+        random_negative_audit_a=random_negative_audit_a,
+        random_negative_audit_b=random_negative_audit_b,
         model_config=model.config.__dict__,
         optimizer_group_report=optimizer_group_report,
         device=device,
@@ -1106,7 +1277,8 @@ def train_fold(fold: int, args: argparse.Namespace, result_root: Path) -> dict[s
         pathology_lr=args.lr_stage_a_pathology,
         weight_decay=args.weight_decay,
     )
-    scaler = GradScaler("cuda", enabled=bool(args.amp and device.type == "cuda"))
+    autocast_dtype = amp_autocast_dtype(str(args.amp_dtype))
+    scaler = GradScaler("cuda", enabled=bool(args.amp and device.type == "cuda" and str(args.amp_dtype) == "float16"))
     best_inner = math.inf; best_path = None
     started = time.time(); total_steps = 0
     resume_step = 0
@@ -1157,7 +1329,7 @@ def train_fold(fold: int, args: argparse.Namespace, result_root: Path) -> dict[s
             batch = build_batch(cases, case_to_fold, metadata, cache, rng, stage=stage, batch_size=batch_size, sampler_index=sampler_index)
             batch = move_tensors(batch, device)
             optimizer.zero_grad(set_to_none=True)
-            with autocast("cuda", enabled=bool(args.amp and device.type == "cuda")):
+            with autocast("cuda", enabled=bool(args.amp and device.type == "cuda"), dtype=autocast_dtype):
                 out = model(
                     batch["images"],
                     batch["availability"],
@@ -1177,10 +1349,17 @@ def train_fold(fold: int, args: argparse.Namespace, result_root: Path) -> dict[s
             for metric_name, metric_value in metrics.items():
                 if not math.isfinite(float(metric_value)):
                     raise RuntimeError(f"nonfinite CARE-DG metric {metric_name} at fold={fold} stage={stage} local_step={local_step}: {metric_value}")
-            scaler.scale(loss).backward(); scaler.step(optimizer); scaler.update()
+            scaler.scale(loss).backward()
+            scaler.unscale_(optimizer)
+            grad_norm = torch.nn.utils.clip_grad_norm_(
+                model.parameters(),
+                max_norm=float(args.grad_clip_norm),
+                error_if_nonfinite=True,
+            ) if float(args.grad_clip_norm) > 0.0 else torch.tensor(0.0, device=device)
+            scaler.step(optimizer); scaler.update()
             if local_step == 1 or local_step % args.log_every == 0 or local_step == steps:
                 changed = int((out["final_mask"] != anchor_mask).detach().sum().cpu())
-                row = {"fold": fold, "stage": stage, "local_step": local_step, "total_step": total_steps, "representation_lr": stage_lrs["representation_group"], "pathology_lr": stage_lrs["pathology_group"], "loss": metrics["loss"], "scar_gate": metrics["scar_gate"], "edema_gate": metrics["edema_gate"], "changed_voxels": changed, "scar_delta_std": float(out["scar_delta"].detach().std().cpu()), "edema_delta_std": float(out["edema_delta"].detach().std().cpu()), "elapsed_seconds": round(time.time() - started, 1)}
+                row = {"fold": fold, "stage": stage, "local_step": local_step, "total_step": total_steps, "representation_lr": stage_lrs["representation_group"], "pathology_lr": stage_lrs["pathology_group"], "loss": metrics["loss"], "grad_norm": float(grad_norm.detach().cpu()), "grad_clip_norm": float(args.grad_clip_norm), "amp_dtype": str(args.amp_dtype), "scar_gate": metrics["scar_gate"], "edema_gate": metrics["edema_gate"], "changed_voxels": changed, "scar_delta_std": float(out["scar_delta"].detach().std().cpu()), "edema_delta_std": float(out["edema_delta"].detach().std().cpu()), "elapsed_seconds": round(time.time() - started, 1)}
                 row.update(activation_stats(out, batch["labels"], anchor_mask, batch["t2_present"]))
                 log_rows.append(row)
                 append_csv(runtime_root / "training_curve.csv", row, list(row.keys()))
@@ -1205,7 +1384,7 @@ def train_fold(fold: int, args: argparse.Namespace, result_root: Path) -> dict[s
                     fixed_inner_plan_hash=str(inner_plan["plan_sha256"]),
                     hash_contract=hash_contract,
                 )
-                row = {"fold": fold, "stage": stage, "step": total_steps, "local_step": local_step, "representation_lr": stage_lrs["representation_group"], "pathology_lr": stage_lrs["pathology_group"], "weight_decay": args.weight_decay, "resolved_training_contract_sha256": resolved_contract["resolved_training_contract_sha256"], "checkpoint_path": str(path), "checkpoint_sha256": sha256_file(path), "inner_loss": inner_loss, "inner_plan_sha256": inner_plan["plan_sha256"], "selection_population": "fixed_train_side_complete_inner_plan", "outer_val_used": False}
+                row = {"fold": fold, "stage": stage, "step": total_steps, "local_step": local_step, "representation_lr": stage_lrs["representation_group"], "pathology_lr": stage_lrs["pathology_group"], "weight_decay": args.weight_decay, "grad_clip_norm": float(args.grad_clip_norm), "amp_dtype": str(args.amp_dtype), "resolved_training_contract_sha256": resolved_contract["resolved_training_contract_sha256"], "checkpoint_path": str(path), "checkpoint_sha256": sha256_file(path), "inner_loss": inner_loss, "inner_plan_sha256": inner_plan["plan_sha256"], "selection_population": "fixed_train_side_complete_inner_plan", "outer_val_used": False}
                 ckpt_rows.append(row)
                 if inner_loss < best_inner:
                     best_inner = inner_loss; best_path = path
@@ -1277,7 +1456,7 @@ def train_fold(fold: int, args: argparse.Namespace, result_root: Path) -> dict[s
     best_row = {"fold": fold, "stage": "best", "step": total_steps, "local_step": 0, "representation_lr": terminal_lrs.get("representation_group"), "pathology_lr": terminal_lrs.get("pathology_group"), "weight_decay": args.weight_decay, "resolved_training_contract_sha256": resolved_contract["resolved_training_contract_sha256"], "checkpoint_path": str(best_alias), "checkpoint_sha256": sha256_file(best_alias), "inner_loss": best_inner, "inner_plan_sha256": inner_plan["plan_sha256"], "selection_population": "fixed_train_side_complete_inner_plan", "outer_val_used": False}
     ckpt_rows.append(best_row)
     write_csv(runtime_root / "checkpoint_manifest.csv", ckpt_rows)
-    receipt = {"fold": fold, "status": "PASS", "runtime_kind": runtime_kind, "preflight_only": preflight_only, "formal_training_credit": 0 if preflight_only else total_steps, "validate_w0_status": "PASS", "expected_stage_a_steps": stage_a_steps, "expected_stage_b_steps": stage_b_steps, "actual_optimizer_steps": total_steps, "stage_a_representation_lr": args.lr_stage_a_representation, "stage_a_pathology_lr": args.lr_stage_a_pathology, "stage_b_representation_lr": args.lr_stage_b_representation, "stage_b_pathology_lr": args.lr_stage_b_pathology, "optimizer_group_lrs_terminal": current_group_lrs(optimizer), "optimizer_group_weight_decays_terminal": current_group_weight_decays(optimizer), "outer_train_cases": len(outer_train), "outer_val_cases": len(outer_val), "actual_train_cases": len(train_cases), "inner_train_cases": len(train_cases), "inner_selection_cases": len(inner_select), "complete_trimodal_train_cases": len(complete_train_cases), "complete_inner_selection_cases": len(split_contract["complete_inner_select_cases"]), "t2_reliable_train_cases": sum(bool(metadata[c].t2_present) for c in train_cases), "best_checkpoint": str(best_alias), "last_checkpoint": str(last_path), "best_inner_loss": best_inner, "outer_val_used_for_checkpoint_selection": False, "stage_a_case_ids_sha256": split_contract["sha256"]["actual_train"], "stage_b_case_ids_sha256": split_contract["sha256"]["complete_actual_train"], "inner_select_case_ids_sha256": split_contract["sha256"]["inner_select"], "complete_inner_select_case_ids_sha256": split_contract["sha256"]["complete_inner_select"], "fixed_inner_objective": "fixed_complete_inner_select_no_aug_patch_loss", "fixed_inner_evaluation_plan_path": str(runtime_root / "inner_evaluation_plan.json"), "fixed_inner_evaluation_plan_sha256": inner_plan["plan_sha256"], "inner_evaluation_repeat_exact": bool(inner_repeat_exact), "resolved_training_contract_path": str(runtime_root / "resolved_training_contract.json"), "resolved_training_contract_sha256": resolved_contract["resolved_training_contract_sha256"], "anchor_value_kind": "log_probabilities", "support_map_contract": "myocardium_union_labels_1_4_5_excludes_lv_rv_2_3_soft_shells_6mm_10mm", "checkpoint_write_reload": checkpoint_reload, "margin_cap_audit": cap_audit, "sampler_quota_audit_stage_a": sampler_audit_a, "sampler_quota_audit_stage_b": sampler_audit_b, "sampler_quota_audit": sampler_audit_a, "hash_contract": hash_contract, "source_hashes": source_hashes(), "elapsed_seconds": round(time.time() - started, 1), "terminal_time_utc": now_utc(), "curve_rows": len(log_rows), "checkpoint_rows": len(ckpt_rows)}
+    receipt = {"fold": fold, "status": "PASS", "runtime_kind": runtime_kind, "runtime_label": runtime_kind, "preflight_only": preflight_only, "formal_training_credit": 0 if preflight_only else total_steps, "validate_w0_status": "PASS", "expected_stage_a_steps": stage_a_steps, "expected_stage_b_steps": stage_b_steps, "actual_optimizer_steps": total_steps, "stage_a_representation_lr": args.lr_stage_a_representation, "stage_a_pathology_lr": args.lr_stage_a_pathology, "stage_b_representation_lr": args.lr_stage_b_representation, "stage_b_pathology_lr": args.lr_stage_b_pathology, "grad_clip_norm": float(args.grad_clip_norm), "amp_dtype": str(args.amp_dtype), "optimizer_group_lrs_terminal": current_group_lrs(optimizer), "optimizer_group_weight_decays_terminal": current_group_weight_decays(optimizer), "outer_train_cases": len(outer_train), "outer_val_cases": len(outer_val), "actual_train_cases": len(train_cases), "inner_train_cases": len(train_cases), "inner_selection_cases": len(inner_select), "complete_trimodal_train_cases": len(complete_train_cases), "complete_inner_selection_cases": len(split_contract["complete_inner_select_cases"]), "t2_reliable_train_cases": sum(bool(metadata[c].t2_present) for c in train_cases), "best_checkpoint": str(best_alias), "last_checkpoint": str(last_path), "best_inner_loss": best_inner, "outer_val_used_for_checkpoint_selection": False, "stage_a_case_ids_sha256": split_contract["sha256"]["actual_train"], "stage_b_case_ids_sha256": split_contract["sha256"]["complete_actual_train"], "inner_select_case_ids_sha256": split_contract["sha256"]["inner_select"], "complete_inner_select_case_ids_sha256": split_contract["sha256"]["complete_inner_select"], "fixed_inner_objective": "fixed_complete_inner_select_no_aug_patch_loss", "fixed_inner_evaluation_plan_path": str(runtime_root / "inner_evaluation_plan.json"), "fixed_inner_evaluation_plan_sha256": inner_plan["plan_sha256"], "inner_evaluation_repeat_exact": bool(inner_repeat_exact), "resolved_training_contract_path": str(runtime_root / "resolved_training_contract.json"), "resolved_training_contract_sha256": resolved_contract["resolved_training_contract_sha256"], "anchor_value_kind": "log_probabilities", "support_map_contract": "myocardium_union_labels_1_4_5_excludes_lv_rv_2_3_soft_shells_6mm_10mm", "checkpoint_write_reload": checkpoint_reload, "margin_cap_audit": cap_audit, "sampler_quota_audit_stage_a": sampler_audit_a, "sampler_quota_audit_stage_b": sampler_audit_b, "sampler_quota_audit": sampler_audit_a, "random_negative_semantics_audit_stage_a": {k: v for k, v in random_negative_audit_a.items() if k != "records"}, "random_negative_semantics_audit_stage_b": ({k: v for k, v in random_negative_audit_b.items() if k != "records"} if random_negative_audit_b else None), "hash_contract": hash_contract, "source_hashes": source_hashes(), "elapsed_seconds": round(time.time() - started, 1), "terminal_time_utc": now_utc(), "curve_rows": len(log_rows), "checkpoint_rows": len(ckpt_rows)}
     write_json(runtime_root / "fold_training_receipt.json", receipt)
     if preflight_only:
         write_json(runtime_root / "preflight_validator_report.json", {
@@ -1296,6 +1475,9 @@ def train_fold(fold: int, args: argparse.Namespace, result_root: Path) -> dict[s
                 "stage_A_one_optimizer_step",
                 "stage_B_one_optimizer_step",
                 "stage_B_group_learning_rates",
+                "scar_priority_composition_anchor_edema_scar_argmax",
+                "random_negative_semantics_audit_stage_A",
+                "random_negative_semantics_audit_stage_B",
                 "resolved_training_contract_hash_bound",
                 "checkpoint_write_reload_resume_state",
                 "receipt",
@@ -1345,7 +1527,8 @@ def main() -> int:
     parser.add_argument("--preflight-steps", type=int, default=0)
     parser.add_argument("--gate-a-r2-preflight", action="store_true")
     parser.add_argument("--gate-a-r3-preflight", action="store_true")
-    parser.add_argument("--runtime-label", default="repaired_formal")
+    parser.add_argument("--gate-b-scar-priority-preflight", action="store_true")
+    parser.add_argument("--runtime-label", default="repaired_formal_scar_priority")
     parser.add_argument("--resume", action="store_true")
     parser.add_argument("--allow-cpu", action="store_true")
     parser.add_argument("--amp", action="store_true", default=True)
@@ -1356,11 +1539,15 @@ def main() -> int:
     parser.add_argument("--lr-stage-b-representation", type=float, default=STAGE_B_REPRESENTATION_LR)
     parser.add_argument("--lr-stage-b-pathology", type=float, default=STAGE_B_PATHOLOGY_LR)
     parser.add_argument("--weight-decay", type=float, default=WEIGHT_DECAY)
+    parser.add_argument("--grad-clip-norm", type=float, default=GRAD_CLIP_NORM)
+    parser.add_argument("--amp-dtype", choices=["bfloat16", "float16"], default=AMP_DTYPE)
     parser.add_argument("--encoder-channels", nargs=3, type=int, default=[32, 64, 96])
     parser.add_argument("--context-channels", type=int, default=16)
     args = parser.parse_args()
     if args.gate_a_r3_preflight and args.runtime_label != "gate_a_r3_preflight":
         parser.error("--gate-a-r3-preflight requires --runtime-label gate_a_r3_preflight")
+    if args.gate_b_scar_priority_preflight and args.runtime_label != "gate_b_scar_priority_preflight":
+        parser.error("--gate-b-scar-priority-preflight requires --runtime-label gate_b_scar_priority_preflight")
     if args.print_contract:
         print(json.dumps(contract(), indent=2, sort_keys=True)); return 0
     if args.unit_smoke:
@@ -1374,7 +1561,7 @@ def main() -> int:
     for fold in args.folds:
         receipts.append(train_fold(int(fold), args, result_root))
     write_training_manifests(result_root, receipts)
-    print(json.dumps({"status": "PASS", "folds": args.folds, "preflight_only": bool(args.preflight_steps or args.gate_a_r2_preflight or args.gate_a_r3_preflight), "receipts": receipts}, indent=2, sort_keys=True))
+    print(json.dumps({"status": "PASS", "folds": args.folds, "preflight_only": bool(args.preflight_steps or args.gate_a_r2_preflight or args.gate_a_r3_preflight or args.gate_b_scar_priority_preflight), "receipts": receipts}, indent=2, sort_keys=True))
     return 0
 
 

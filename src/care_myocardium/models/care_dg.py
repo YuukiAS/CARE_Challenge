@@ -188,6 +188,36 @@ def apply_competitive_correction(
     return final
 
 
+def apply_scar_priority_composition(
+    anchor_logits: torch.Tensor,
+    *,
+    scar_delta: torch.Tensor,
+    edema_delta: torch.Tensor,
+    scar_support: torch.Tensor,
+    edema_support: torch.Tensor,
+    scar_margin_cap: float,
+    edema_margin_cap: float,
+    t2_mask: torch.Tensor,
+) -> tuple[torch.Tensor, torch.Tensor]:
+    after_edema = apply_competitive_correction(
+        anchor_logits,
+        edema_delta,
+        edema_support * t2_mask,
+        EDEMA_CHANNEL,
+        edema_margin_cap,
+        competitor_channels=ANATOMY_CHANNELS,
+    )
+    final_logits = apply_competitive_correction(
+        after_edema,
+        scar_delta,
+        scar_support,
+        SCAR_CHANNEL,
+        scar_margin_cap,
+        competitor_channels=tuple(c for c in range(anchor_logits.shape[1]) if c != SCAR_CHANNEL),
+    )
+    return after_edema, final_logits
+
+
 class CAREDG(nn.Module):
     """Dual-gated residual correction over frozen six-class nnU-Net anchors."""
 
@@ -262,21 +292,15 @@ class CAREDG(nn.Module):
             scar = {**scar, "q_fn": scar["q_fn"] * 0, "q_fp": scar["q_fp"] * 0, "m_fn": scar["m_fn"] * 0, "m_fp": scar["m_fp"] * 0}
             edema = {**edema, "q_fn": edema["q_fn"] * 0, "q_fp": edema["q_fp"] * 0, "m_fn": edema["m_fn"] * 0, "m_fp": edema["m_fp"] * 0}
 
-        after_scar = apply_competitive_correction(
+        after_edema, final_logits = apply_scar_priority_composition(
             anchor_logits,
-            scar_delta,
-            scar_support,
-            SCAR_CHANNEL,
-            self.config.scar_margin_cap,
-            competitor_channels=tuple(c for c in range(self.config.anchor_channels) if c != SCAR_CHANNEL),
-        )
-        final_logits = apply_competitive_correction(
-            after_scar,
-            edema_delta,
-            edema_zone_support * t2_mask,
-            EDEMA_CHANNEL,
-            self.config.edema_margin_cap,
-            competitor_channels=ANATOMY_CHANNELS,
+            scar_delta=scar_delta,
+            edema_delta=edema_delta,
+            scar_support=scar_support,
+            edema_support=edema_zone_support,
+            scar_margin_cap=self.config.scar_margin_cap,
+            edema_margin_cap=self.config.edema_margin_cap,
+            t2_mask=t2_mask,
         )
         final_mask = final_logits.argmax(dim=1)
         scar_mask = final_mask == SCAR_CHANNEL
@@ -284,7 +308,9 @@ class CAREDG(nn.Module):
         pure_edema_mask = edema_zone_mask & ~scar_mask
         return {
             "anchor_logits": anchor_logits,
+            "after_edema_logits": after_edema,
             "final_logits": final_logits,
+            "final_logits_after_scar_priority": final_logits,
             "final_mask": final_mask,
             "scar_mask": scar_mask,
             "edema_zone_mask": edema_zone_mask,

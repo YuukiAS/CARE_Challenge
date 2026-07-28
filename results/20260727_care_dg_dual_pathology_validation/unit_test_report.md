@@ -1,6 +1,6 @@
 # CARE-DG Gate A-R3 unit test report
 
-created_at_utc: `2026-07-27T13:27:39Z`
+created_at_utc: `2026-07-27T15:38:36Z`
 
 py_compile: `PASS`
 
@@ -14,4 +14,4 @@ strict_validator_report: `results/20260727_care_dg_dual_pathology_validation/str
 
 known_bad: `PASS`
 
-resolved_training_contract_sha256: `3438ce48232fbde7a804de60ec3e8cfdd5b99220c9e1ce2018839ba529f4c90b`
+resolved_training_contract_sha256: `54c13e59230f62bb174796275a27733f21bdbb423948d68ca1faefab4c588505`

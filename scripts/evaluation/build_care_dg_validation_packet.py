@@ -429,7 +429,8 @@ are intentionally not rewritten as CARE-DG verified until W6 terminal evidence.
 
 def validate_gate_a_r3(failures: list[str]) -> None:
     contract_path = RESULT_ROOT / "implementation_contract.json"
-    preflight_root = RESULT_ROOT / "runtime/gate_a_r3_preflight/fold0"
+    scar_priority_root = RESULT_ROOT / "runtime/gate_b_scar_priority_preflight/fold0"
+    preflight_root = scar_priority_root if scar_priority_root.exists() else RESULT_ROOT / "runtime/gate_a_r3_preflight/fold0"
     receipt_path = preflight_root / "fold_training_receipt.json"
     split_path = preflight_root / "inner_split_manifest.json"
     plan_path = preflight_root / "inner_evaluation_plan.json"
@@ -439,6 +440,8 @@ def validate_gate_a_r3(failures: list[str]) -> None:
     repeat_path = preflight_root / "inner_evaluation_repeat_receipt.json"
     preflight_validator_path = preflight_root / "preflight_validator_report.json"
     checkpoint_manifest_path = preflight_root / "checkpoint_manifest.csv"
+    random_negative_stage_a_path = preflight_root / "random_negative_semantics_audit_stage_a.json"
+    random_negative_stage_b_path = preflight_root / "random_negative_semantics_audit_stage_b.json"
     if not contract_path.exists():
         failures.append("gate_a_r3_missing_implementation_contract")
         return
@@ -475,6 +478,13 @@ def validate_gate_a_r3(failures: list[str]) -> None:
         "margin_caps_fit_actual_train_only",
         "soft_support_union_labels_1_4_5_excludes_lv_rv",
         "repaired_runtime_label_isolated",
+        "scar_priority_composition_anchor_edema_scar_argmax",
+        "scar_priority_outputs_after_edema_and_final_after_scar",
+        "post_scar_decision_not_overwritten_by_later_edema",
+        "negative_scar_correction_can_release_false_scar",
+        "random_negative_semantics_audit_stage_A_and_B_written_without_sampler_change",
+        "support_distance_clips_empty_anchor_simpleitk_max_float",
+        "support_actionable_sampler_excludes_empty_anchor_error_pathology_pools",
     ]:
         if implemented.get(key) is not True:
             failures.append(f"gate_a_r3_contract_missing:{key}")
@@ -488,6 +498,8 @@ def validate_gate_a_r3(failures: list[str]) -> None:
         (repeat_path, "inner_evaluation_repeat"),
         (preflight_validator_path, "preflight_validator"),
         (checkpoint_manifest_path, "checkpoint_manifest"),
+        (random_negative_stage_a_path, "random_negative_semantics_audit_stage_a"),
+        (random_negative_stage_b_path, "random_negative_semantics_audit_stage_b"),
     ]:
         if not path.exists():
             failures.append(f"gate_a_r3_{name}_missing")
@@ -508,7 +520,7 @@ def validate_gate_a_r3(failures: list[str]) -> None:
         failures.append("gate_a_r3_preflight_has_formal_training_credit")
     if receipt.get("validate_w0_status") != "PASS":
         failures.append("gate_a_r3_validate_w0_not_PASS")
-    if receipt.get("runtime_kind") != "gate_a_r3_preflight":
+    if receipt.get("runtime_kind") not in {"gate_a_r3_preflight", "gate_b_scar_priority_preflight"}:
         failures.append("gate_a_r3_runtime_label_not_isolated")
     if receipt.get("fixed_inner_objective") != "fixed_complete_inner_select_no_aug_patch_loss":
         failures.append("gate_a_r3_inner_objective_not_fixed")
@@ -592,13 +604,50 @@ def validate_gate_a_r3(failures: list[str]) -> None:
             failures.append("gate_a_r3_stage_b_pathology_lr_bad")
         if float(resolved.get("weight_decay", -1.0)) != 1e-4:
             failures.append("gate_a_r3_weight_decay_bad")
+        if float(resolved.get("grad_clip_norm", -1.0)) != 1.0:
+            failures.append("gate_a_r3_grad_clip_norm_bad")
+        if resolved.get("amp", {}).get("dtype") != "bfloat16":
+            failures.append("gate_a_r3_amp_dtype_not_bfloat16")
+        gradient_clipping = resolved.get("gradient_clipping", {})
+        if gradient_clipping.get("enabled") is not True or float(gradient_clipping.get("max_norm", -1.0)) != 1.0:
+            failures.append("gate_a_r3_gradient_clipping_contract_bad")
         support = resolved.get("support_semantics", {})
         if support.get("support_labels") != [1, 4, 5] or support.get("excluded_labels") != [2, 3]:
             failures.append("gate_a_r3_support_semantics_bad")
+        if support.get("distance_to_myocardium_clip_mm") != [-64.0, 128.0]:
+            failures.append("gate_b_support_distance_clip_contract_bad")
         if resolved.get("sampler_hashes", {}).get("stage_a_sampler_index_sha256") != (load_json(sampler_stage_a_path).get("sampler_index_sha256") if sampler_stage_a_path.exists() else None):
             failures.append("gate_a_r3_stage_a_sampler_hash_missing_from_resolved_contract")
         if resolved.get("sampler_hashes", {}).get("stage_b_sampler_index_sha256") != (load_json(sampler_stage_b_path).get("sampler_index_sha256") if sampler_stage_b_path.exists() else None):
             failures.append("gate_a_r3_stage_b_sampler_hash_missing_from_resolved_contract")
+        comp = resolved.get("composition_semantics", {})
+        if comp.get("order") != ["anchor_logits", "bounded_edema_zone_correction", "bounded_scar_correction", "final_six_class_argmax"] or comp.get("post_scar_overwrite_allowed") is not False:
+            failures.append("gate_b_scar_priority_composition_contract_bad")
+        if "after_edema_logits" not in comp.get("required_outputs", []) or "final_logits_after_scar_priority" not in comp.get("required_outputs", []):
+            failures.append("gate_b_scar_priority_required_outputs_missing")
+        random_hashes = resolved.get("random_negative_semantics_audit_hashes", {})
+        if random_hashes.get("stage_a_sha256") != (load_json(random_negative_stage_a_path).get("audit_sha256") if random_negative_stage_a_path.exists() else None):
+            failures.append("gate_b_random_negative_stage_a_hash_mismatch")
+        if random_hashes.get("stage_b_sha256") != (load_json(random_negative_stage_b_path).get("audit_sha256") if random_negative_stage_b_path.exists() else None):
+            failures.append("gate_b_random_negative_stage_b_hash_mismatch")
+        for sampler_path, stage_name in [(sampler_stage_a_path, "stage_a"), (sampler_stage_b_path, "stage_b")]:
+            sampler = load_json(sampler_path) if sampler_path.exists() else {}
+            actionability = sampler.get("sampler_index", {}).get("support_actionability", {})
+            if actionability.get("distance_clip_mm") != [-64.0, 128.0]:
+                failures.append(f"gate_b_sampler_actionability_distance_clip_missing:{stage_name}")
+            if "empty_anchor_tissue_cases" not in actionability or "excluded_unactionable_cases" not in actionability:
+                failures.append(f"gate_b_sampler_actionability_summary_missing:{stage_name}")
+    for audit_path, stage_name in [(random_negative_stage_a_path, "stage_a"), (random_negative_stage_b_path, "stage_b")]:
+        audit = load_json(audit_path) if audit_path.exists() else {}
+        if audit.get("status") != "PASS":
+            failures.append(f"gate_b_random_negative_audit_not_PASS:{stage_name}")
+        if int(audit.get("samples", -1)) != 1000:
+            failures.append(f"gate_b_random_negative_audit_sample_count_bad:{stage_name}")
+        records = audit.get("records") or []
+        if len(records) != 1000:
+            failures.append(f"gate_b_random_negative_audit_records_missing:{stage_name}")
+        if any(str(row.get("patch_hash", "")) == "" for row in records[:20]):
+            failures.append(f"gate_b_random_negative_audit_patch_hash_missing:{stage_name}")
     if receipt.get("stage_a_representation_lr") != 3e-4 or receipt.get("stage_a_pathology_lr") != 3e-4:
         failures.append("gate_a_r3_receipt_stage_a_lrs_bad")
     if receipt.get("stage_b_representation_lr") != 2e-5 or receipt.get("stage_b_pathology_lr") != 1e-4:
@@ -628,6 +677,110 @@ def validate_gate_a_r3(failures: list[str]) -> None:
             failures.append("gate_a_r3_preflight_validator_not_PASS")
         if int(preflight_validator.get("formal_training_credit", -1)) != 0:
             failures.append("gate_a_r3_preflight_validator_has_training_credit")
+
+
+def read_csv_rows(path: Path) -> list[dict[str, Any]]:
+    with path.open(newline="", encoding="utf-8") as f:
+        return list(csv.DictReader(f))
+
+
+def validate_gate_b_fold0(failures: list[str]) -> None:
+    runtime_root = RESULT_ROOT / "runtime/repaired_formal_scar_priority/fold0"
+    eval_root = runtime_root / "gate_b_evaluation"
+    receipt_path = runtime_root / "fold_training_receipt.json"
+    summary_path = eval_root / "gate_b_summary.json"
+    validator_path = eval_root / "gate_b_validator_report.json"
+    overwrite_path = eval_root / "gate_b_post_scar_overwrite_audit.json"
+    required_csvs = {
+        "casewise": eval_root / "gate_b_fold0_casewise_metrics.csv",
+        "summary": eval_root / "gate_b_fold0_model_summary.csv",
+        "complete16": eval_root / "gate_b_complete16_summary.csv",
+        "help_harm": eval_root / "gate_b_help_harm.csv",
+        "exact_hd_tail": eval_root / "gate_b_exact_hd_tail_audit.csv",
+        "remote_fp": eval_root / "gate_b_remote_fp_audit.csv",
+        "conflict_transition": eval_root / "gate_b_scar_edema_conflict_transition_matrix.csv",
+        "component": eval_root / "gate_b_component_audit.csv",
+        "mechanism": eval_root / "gate_b_mechanism_activation_audit.csv",
+        "no_t2": eval_root / "gate_b_no_t2_safety_audit.csv",
+        "prediction_hashes": eval_root / "gate_b_prediction_hashes.csv",
+    }
+    for name, csv_path in required_csvs.items():
+        if not csv_path.exists():
+            failures.append(f"gate_b_missing_output:{name}")
+        elif not read_csv_rows(csv_path):
+            failures.append(f"gate_b_empty_output:{name}")
+    for json_path, name in [
+        (receipt_path, "fold_training_receipt"),
+        (summary_path, "summary"),
+        (validator_path, "validator"),
+        (overwrite_path, "post_scar_overwrite"),
+    ]:
+        if not json_path.exists():
+            failures.append(f"gate_b_missing_output:{name}")
+    if not receipt_path.exists() or not summary_path.exists() or not validator_path.exists() or not overwrite_path.exists():
+        return
+
+    receipt = load_json(receipt_path)
+    summary = load_json(summary_path)
+    validator = load_json(validator_path)
+    overwrite = load_json(overwrite_path)
+    if receipt.get("status") != "PASS":
+        failures.append("gate_b_fold0_training_receipt_not_PASS")
+    if int(receipt.get("actual_optimizer_steps", -1)) != 8000:
+        failures.append("gate_b_fold0_training_not_8000_steps")
+    if int(receipt.get("formal_training_credit", -1)) != 8000:
+        failures.append("gate_b_fold0_formal_training_credit_not_8000")
+    if receipt.get("runtime_label") != "repaired_formal_scar_priority":
+        failures.append("gate_b_runtime_label_not_repaired_formal_scar_priority")
+    if receipt.get("stage_a_representation_lr") != 3e-4 or receipt.get("stage_b_representation_lr") != 2e-5:
+        failures.append("gate_b_fold0_representation_lr_bad")
+    if receipt.get("stage_a_pathology_lr") != 3e-4 or receipt.get("stage_b_pathology_lr") != 1e-4:
+        failures.append("gate_b_fold0_pathology_lr_bad")
+    if summary.get("status") != "PASS" or summary.get("receipt_status") != "PASS":
+        failures.append("gate_b_summary_not_PASS")
+    if validator.get("status") != "PASS" or validator.get("failures") not in ([], None):
+        failures.append("gate_b_evaluator_validator_not_PASS")
+    if int(summary.get("outer_heldout_cases", -1)) != 44 or int(summary.get("prediction_count", -1)) != 44:
+        failures.append("gate_b_outer44_count_bad")
+    if int(summary.get("complete_trimodal_heldout_cases", -1)) != 16:
+        failures.append("gate_b_complete16_count_bad")
+    if summary.get("runtime_label") != "repaired_formal_scar_priority":
+        failures.append("gate_b_summary_runtime_label_bad")
+    selected_ckpt = runtime_root / "checkpoints/checkpoint_best.pt"
+    if not selected_ckpt.exists() or summary.get("checkpoint_sha256") != sha256_file(selected_ckpt):
+        failures.append("gate_b_selected_checkpoint_hash_mismatch")
+    if int(summary.get("post_scar_decision_overwritten_voxels", -1)) != 0:
+        failures.append("gate_b_post_scar_overwrite_nonzero")
+    if int(overwrite.get("post_scar_decision_overwritten_voxels", -1)) != 0:
+        failures.append("gate_b_post_scar_overwrite_audit_nonzero")
+    if summary.get("no_t2_edema_delta_exact_zero") is not True:
+        failures.append("gate_b_no_t2_edema_not_exact_zero")
+    if int(summary.get("scar_activated_cases", 0)) <= 0:
+        failures.append("gate_b_scar_activation_missing")
+    if int(summary.get("edema_activated_t2_cases", 0)) <= 0:
+        failures.append("gate_b_edema_activation_missing")
+    if float(summary.get("changed_case_fraction_complete16", 0.0)) <= 0.0:
+        failures.append("gate_b_complete16_identity_collapse")
+
+    expected_models = {"A0_nnunet_anchor", "A2_care_dg"}
+    expected_pathologies = {"scar", "edema_zone", "pure_edema"}
+    for population, csv_path, expected_n in [
+        ("fold0_outer44", required_csvs["summary"], 44),
+        ("fold0_complete_trimodal16", required_csvs["complete16"], 16),
+    ]:
+        rows = read_csv_rows(csv_path) if csv_path.exists() else []
+        seen = {(row.get("model"), row.get("pathology")) for row in rows if row.get("population") == population}
+        for model in expected_models:
+            for pathology in expected_pathologies:
+                if (model, pathology) not in seen:
+                    failures.append(f"gate_b_missing_summary_row:{population}:{model}:{pathology}")
+        for row in rows:
+            if row.get("population") == population and int(float(row.get("n_cases", -1))) != expected_n:
+                failures.append(f"gate_b_summary_n_cases_bad:{population}")
+
+    no_t2_rows = read_csv_rows(required_csvs["no_t2"]) if required_csvs["no_t2"].exists() else []
+    if any(row.get("status") != "PASS" or float(row.get("edema_delta_abs_max", -1.0)) != 0.0 for row in no_t2_rows):
+        failures.append("gate_b_no_t2_safety_audit_not_exact_PASS")
 
 
 def validate_packet() -> dict[str, Any]:
@@ -666,6 +819,7 @@ def validate_packet() -> dict[str, Any]:
         if token in source_text:
             failures.append(f"forbidden_runtime_token:{token}")
     validate_gate_a_r3(failures)
+    validate_gate_b_fold0(failures)
     status = "PASS" if not failures else "NEEDS_REPAIR"
     report = {
         "checked_at_utc": now_utc(),

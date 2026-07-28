@@ -53,8 +53,36 @@ def main() -> int:
         failures.append("known_bad_not_PASS")
     if impl.get("status") != "GATE_A_REPAIRED_IMPLEMENTATION_PASS" or impl.get("gate_revision") != "A-R3":
         failures.append("implementation_contract_not_gate_A_R3_PASS")
-    if summary.get("resolved_training_contract_sha256") != load_json(RESULT_ROOT / "runtime/gate_a_r3_preflight/fold0/resolved_training_contract.json").get("resolved_training_contract_sha256"):
+    preflight_label = str(summary.get("active_preflight_runtime_label") or "gate_a_r3_preflight")
+    preflight_contract = RESULT_ROOT / "runtime" / preflight_label / "fold0/resolved_training_contract.json"
+    if summary.get("resolved_training_contract_sha256") != load_json(preflight_contract).get("resolved_training_contract_sha256"):
         failures.append("resolved_contract_sha_mismatch")
+
+    gate_b_summary_path = RESULT_ROOT / "gate_b_summary.json"
+    gate_b_validator_path = RESULT_ROOT / "runtime/repaired_formal_scar_priority/fold0/gate_b_evaluation/gate_b_validator_report.json"
+    gate_b_failures: list[str] = []
+    gate_b_summary = load_json(gate_b_summary_path) if gate_b_summary_path.exists() else None
+    gate_b_validator = load_json(gate_b_validator_path) if gate_b_validator_path.exists() else None
+    if gate_b_summary is not None or gate_b_validator is not None:
+        if gate_b_summary is None:
+            gate_b_failures.append("gate_b_summary_missing")
+        elif gate_b_summary.get("status") != "PASS":
+            gate_b_failures.append("gate_b_summary_not_PASS")
+        if gate_b_validator is None:
+            gate_b_failures.append("gate_b_validator_missing")
+        elif gate_b_validator.get("status") != "PASS" or gate_b_validator.get("failures") not in ([], None):
+            gate_b_failures.append("gate_b_validator_not_PASS")
+        if strict.get("status") != "PASS" or strict.get("failures") not in ([], None):
+            gate_b_failures.append("strict_validator_not_PASS_for_gate_b")
+        if gate_b_summary is not None:
+            if gate_b_summary.get("outer_heldout_cases") != 44:
+                gate_b_failures.append("gate_b_outer44_count_bad")
+            if gate_b_summary.get("complete_trimodal_heldout_cases") != 16:
+                gate_b_failures.append("gate_b_complete16_count_bad")
+            if gate_b_summary.get("post_scar_decision_overwritten_voxels") != 0:
+                gate_b_failures.append("gate_b_post_scar_overwrite_nonzero")
+            if gate_b_summary.get("no_t2_edema_delta_exact_zero") is not True:
+                gate_b_failures.append("gate_b_no_t2_not_exact_zero")
 
     report = {
         "checked_at_utc": now_utc(),
@@ -68,12 +96,28 @@ def main() -> int:
             "results/20260727_care_dg_dual_pathology_validation/implementation_contract.json",
         ],
     }
+    gate_b_report = {
+        "checked_at_utc": report["checked_at_utc"],
+        "status": "PASS" if not gate_b_failures else "NEEDS_REPAIR",
+        "failures": gate_b_failures,
+        "checked_files": [
+            "results/20260727_care_dg_dual_pathology_validation/gate_b_summary.json",
+            "results/20260727_care_dg_dual_pathology_validation/runtime/repaired_formal_scar_priority/fold0/gate_b_evaluation/gate_b_validator_report.json",
+            "results/20260727_care_dg_dual_pathology_validation/strict_validator_report.json",
+        ],
+    }
     write_json(RESULT_ROOT / "gate_a_consistency_validator_report.json", report)
+    write_json(RESULT_ROOT / "gate_b_consistency_validator_report.json", gate_b_report)
     summary["consistency_validator_status"] = report["status"]
     summary["consistency_validator_checked_at_utc"] = report["checked_at_utc"]
     write_json(RESULT_ROOT / "gate_a_summary.json", summary)
-    print(json.dumps(report, indent=2, sort_keys=True))
-    return 0 if report["status"] == "PASS" else 2
+    if gate_b_summary is not None:
+        gate_b_summary["strict_validator_status"] = strict.get("status")
+        gate_b_summary["consistency_validator_status"] = gate_b_report["status"]
+        gate_b_summary["consistency_validator_checked_at_utc"] = gate_b_report["checked_at_utc"]
+        write_json(gate_b_summary_path, gate_b_summary)
+    print(json.dumps({"gate_a": report, "gate_b": gate_b_report}, indent=2, sort_keys=True))
+    return 0 if report["status"] == "PASS" and gate_b_report["status"] == "PASS" else 2
 
 
 if __name__ == "__main__":

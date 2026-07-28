@@ -1,13 +1,13 @@
 {
-  "actual_optimizer_steps": 2,
+  "actual_optimizer_steps": 8000,
   "actual_train_cases": 164,
   "amp_dtype": "bfloat16",
   "anchor_value_kind": "log_probabilities",
-  "best_checkpoint": "/users/a/e/aereinh/CARE/results/20260727_care_dg_dual_pathology_validation/runtime/gate_a_r3_preflight/fold0/checkpoints/checkpoint_best.pt",
-  "best_inner_loss": 4.567175163163079,
-  "checkpoint_rows": 4,
+  "best_checkpoint": "/users/a/e/aereinh/CARE/results/20260727_care_dg_dual_pathology_validation/runtime/repaired_formal_scar_priority/fold0/checkpoints/checkpoint_best.pt",
+  "best_inner_loss": 2.8730093836784363,
+  "checkpoint_rows": 10,
   "checkpoint_write_reload": {
-    "expected_step": 2,
+    "expected_step": 8000,
     "extra": {
       "extra_keys": [
         "fold",
@@ -18,7 +18,7 @@
         "runtime_state",
         "stage"
       ],
-      "fixed_inner_evaluation_plan_sha256": "e812665014725f601cfa8c87743b827224152bd3de0f67c96fd7af64ff9c190d",
+      "fixed_inner_evaluation_plan_sha256": "ca70193d3c9f6c0d2dd81dfc6e38952b953bb4b16228d7cfa4ca2352d5f15828",
       "has_amp_grad_scaler_state": true,
       "has_local_random_state": true,
       "has_numpy_random_state": true,
@@ -37,10 +37,26 @@
             "enabled": true,
             "requested": true
           },
-          "batch_size": 2,
-          "config_sha256": "87704c0f1d51ebd1a1101690f4c985545ea5216c8b0bbacdd530859cbc648d3f",
+          "batch_size": 8,
+          "composition_semantics": {
+            "edema_zone": "final_scar_union_final_pure_edema",
+            "order": [
+              "anchor_logits",
+              "bounded_edema_zone_correction",
+              "bounded_scar_correction",
+              "final_six_class_argmax"
+            ],
+            "post_scar_overwrite_allowed": false,
+            "pure_edema": "edema_zone_minus_final_scar",
+            "required_outputs": [
+              "after_edema_logits",
+              "final_logits_after_scar_priority"
+            ],
+            "revision": "GateB_scar_priority_hotfix"
+          },
+          "config_sha256": "69c276d66ffa1328da7a1e06ee446280981cac1fe3ed3d497327ad714fe757b4",
           "edema_zone_margin_cap_rule": "clip(Q0.95_abs_anchor_error_margin_actual_train+1,2,8)",
-          "fixed_inner_evaluation_plan_sha256": "e812665014725f601cfa8c87743b827224152bd3de0f67c96fd7af64ff9c190d",
+          "fixed_inner_evaluation_plan_sha256": "ca70193d3c9f6c0d2dd81dfc6e38952b953bb4b16228d7cfa4ca2352d5f15828",
           "fold": 0,
           "gate_revision": "A-R3",
           "grad_clip_norm": 1.0,
@@ -103,12 +119,18 @@
             128,
             128
           ],
-          "resolved_training_contract_sha256": "d584ac8ed65ff674ce58fa5b3a87d80c5ab867dce5b60f7624329290a754f422",
+          "random_negative_semantics_audit_hashes": {
+            "stage_a_sha256": "b0b54919dda4cb1dc39951e82455736b1bfe41e329e741cff9574311d9bbc25d",
+            "stage_a_status": "PASS",
+            "stage_b_sha256": "ea0385e7415f13c086d6c34a8c7ea16654552205fe9d6908f7d6be147634157e",
+            "stage_b_status": "PASS"
+          },
+          "resolved_training_contract_sha256": "1e108ccf0695b501162667c1b6b45c7f8308ef831acc51baa75a478a86b476f6",
           "sampler_hashes": {
             "stage_a_audit_status": "PASS",
-            "stage_a_sampler_index_sha256": "f9fb26c703f4261a64edf3c172133ef83a62445fce8c886b6b567f8b058bd846",
+            "stage_a_sampler_index_sha256": "d4f237f850ab0175d4462d18f393583947fa9c41577d0014f193d37cb5dafcde",
             "stage_b_audit_status": "PASS",
-            "stage_b_sampler_index_sha256": "b25a0e4d275e860fb7fe8de02c717f5ce1caf148b501dac81bf42c8d2e4a84d1"
+            "stage_b_sampler_index_sha256": "72157b65e57c4ead08d72641ee25d3c1c25d142ee654031a219ad92909af5b1f"
           },
           "sampler_pattern": [
             "error_fn",
@@ -124,21 +146,21 @@
           "schema_version": 1,
           "seed": 20260727,
           "source_hashes": {
-            "configs/care_dg/care_dg_v1.yaml": "87704c0f1d51ebd1a1101690f4c985545ea5216c8b0bbacdd530859cbc648d3f",
-            "scripts/evaluation/build_care_dg_validation_packet.py": "1e469a46affeb06cd3d5fc55a9b06f3e1e6c1cbb18ce0e15e9cfc75c9af24225",
+            "configs/care_dg/care_dg_v1.yaml": "69c276d66ffa1328da7a1e06ee446280981cac1fe3ed3d497327ad714fe757b4",
+            "scripts/evaluation/build_care_dg_validation_packet.py": "3d48ffee26b89c609a41e7414b74d4c101913ec890fac82eaa5370353c1f9ad4",
             "scripts/evaluation/evaluate_care_dg.py": "aae033a503189bf75cf100c087a65568940370ec4c010b9f7f0a680b3c399651",
-            "scripts/evaluation/finalize_care_dg_gate_a_r3_evidence.py": "ce107777806c299382240abc9eeb83193f6f70158c1842526107a98b25b95c29",
-            "scripts/evaluation/run_care_dg_gate_a_checks.py": "353df59aabe70c8f0f0e7e2742a32bdfc0461e67c7dd2d0def5977acf791fe36",
+            "scripts/evaluation/finalize_care_dg_gate_a_r3_evidence.py": "5733b59eba513bb7b8663b80c6e401637cae5f2e3d910e9a61b28bae0e04b5e5",
+            "scripts/evaluation/run_care_dg_gate_a_checks.py": "d6e31d9e00bd256bb78cdf99f29bf07ee62ee7546fc79fee51325ef9a699fef3",
             "scripts/evaluation/select_care_dg_candidate.py": "d319535426cb49800710e8a9e8056ae97cf4abae99bd342dfd2df09b153f5080",
-            "scripts/evaluation/validate_care_dg_gate_a_consistency.py": "daaca1668a995aa2efd7f449938e88025808c89831b2b88e8a9a662d35081b10",
+            "scripts/evaluation/validate_care_dg_gate_a_consistency.py": "987a07195ad826314b4f6284f36231a9b3a7a2645c2c236f162765b18a50d736",
             "scripts/evaluation/validate_care_dg_packet.py": "d02ef03752072a97d72301bf42338d11e851442b67e403a5e8cd2a6875fcb48b",
             "scripts/inference/run_care_dg_inference.py": "ceef29361a4ce6eb2224e315ca800381944b2a9c624aa7b8017dab80d54ee771",
-            "scripts/training/run_care_dg.py": "2e355ad3dcddc7db5b2920c34469ae4fc5a7582a27474535bf66e45816c417b7",
+            "scripts/training/run_care_dg.py": "0c8a25353a758f43c5d7979a285de2eda8ff85c06158390d99c85f1ca7f51a84",
             "src/care_myocardium/data/care_dg_dataset.py": "96d18e1914b7e08fc029a77c0e7c21467809fa0a5e9e12ad4f1ef2208eba803a",
             "src/care_myocardium/inference/care_dg_predictor.py": "71b3f935617b42a1190aa6937165ee09ce1a3c52e8a05ad4f6d4e53f9dcacf7c",
-            "src/care_myocardium/models/care_dg.py": "c417404ec469acec3e6ca8adb17a225dc6dddd85776791d50c6edfb35f5a2a03",
+            "src/care_myocardium/models/care_dg.py": "ee38bd7d86ca37944ef4108fa4d5904d9ead1f7ae2dc4b7ec518d784acb71d55",
             "src/care_myocardium/training/care_dg_trainer.py": "009b5f8f0d38622a958774c808600cb7c90f9d8c9b2b6064088fc9df9b3532b1",
-            "tests/care_dg/test_care_dg_model.py": "f9cc9bf71677e3e2301d8e0e2106cbbc9230e324135ecc074150699d2b00fbdb"
+            "tests/care_dg/test_care_dg_model.py": "664c965d47c208be0b51107162ab2a53e298c37712ca263db94187572aeb39ff"
           },
           "split_hashes": {
             "actual_train": "6c9664c525ca17e9d0591a62302f143dc7881307d94a4e49aa685f98ac60e7e9",
@@ -147,9 +169,13 @@
             "inner_select": "1669a7f65553180f806dcf3810e73bdd17b5632fc7e4f8e546a18097a40081cf",
             "outer_train": "127d03972f57429fe62999636a651a2b67e1892e80f252071c8c6f90a7ea57b2"
           },
-          "stage_a_optimizer_steps": 1,
-          "stage_b_optimizer_steps": 1,
+          "stage_a_optimizer_steps": 5000,
+          "stage_b_optimizer_steps": 3000,
           "support_semantics": {
+            "distance_to_myocardium_clip_mm": [
+              -64.0,
+              128.0
+            ],
             "edema_zone_shell_mm": 10,
             "excluded_labels": [
               2,
@@ -165,7 +191,7 @@
           },
           "weight_decay": 0.0001
         },
-        "resolved_training_contract_sha256": "d584ac8ed65ff674ce58fa5b3a87d80c5ab867dce5b60f7624329290a754f422"
+        "resolved_training_contract_sha256": "1e108ccf0695b501162667c1b6b45c7f8308ef831acc51baa75a478a86b476f6"
       },
       "local_step": 0,
       "runtime_state_keys": [
@@ -182,26 +208,26 @@
       ],
       "stage": "terminal",
       "torch_cuda_rng_state_count": 1,
-      "total_step": 2
+      "total_step": 8000
     },
-    "fixed_inner_evaluation_plan_sha256": "e812665014725f601cfa8c87743b827224152bd3de0f67c96fd7af64ff9c190d",
+    "fixed_inner_evaluation_plan_sha256": "ca70193d3c9f6c0d2dd81dfc6e38952b953bb4b16228d7cfa4ca2352d5f15828",
     "inner_evaluation_repeat_exact": true,
     "max_abs_final_logits_delta": 0.0,
-    "reload_step": 2,
+    "reload_step": 8000,
     "status": "PASS"
   },
   "complete_inner_select_case_ids_sha256": "1669a7f65553180f806dcf3810e73bdd17b5632fc7e4f8e546a18097a40081cf",
   "complete_inner_selection_cases": 12,
   "complete_trimodal_train_cases": 52,
-  "curve_rows": 2,
-  "elapsed_seconds": 7.8,
-  "expected_stage_a_steps": 1,
-  "expected_stage_b_steps": 1,
-  "fixed_inner_evaluation_plan_path": "/users/a/e/aereinh/CARE/results/20260727_care_dg_dual_pathology_validation/runtime/gate_a_r3_preflight/fold0/inner_evaluation_plan.json",
-  "fixed_inner_evaluation_plan_sha256": "e812665014725f601cfa8c87743b827224152bd3de0f67c96fd7af64ff9c190d",
+  "curve_rows": 82,
+  "elapsed_seconds": 7912.9,
+  "expected_stage_a_steps": 5000,
+  "expected_stage_b_steps": 3000,
+  "fixed_inner_evaluation_plan_path": "/users/a/e/aereinh/CARE/results/20260727_care_dg_dual_pathology_validation/runtime/repaired_formal_scar_priority/fold0/inner_evaluation_plan.json",
+  "fixed_inner_evaluation_plan_sha256": "ca70193d3c9f6c0d2dd81dfc6e38952b953bb4b16228d7cfa4ca2352d5f15828",
   "fixed_inner_objective": "fixed_complete_inner_select_no_aug_patch_loss",
   "fold": 0,
-  "formal_training_credit": 0,
+  "formal_training_credit": 8000,
   "grad_clip_norm": 1.0,
   "hash_contract": {
     "resolved_training_contract": {
@@ -216,10 +242,26 @@
         "enabled": true,
         "requested": true
       },
-      "batch_size": 2,
-      "config_sha256": "87704c0f1d51ebd1a1101690f4c985545ea5216c8b0bbacdd530859cbc648d3f",
+      "batch_size": 8,
+      "composition_semantics": {
+        "edema_zone": "final_scar_union_final_pure_edema",
+        "order": [
+          "anchor_logits",
+          "bounded_edema_zone_correction",
+          "bounded_scar_correction",
+          "final_six_class_argmax"
+        ],
+        "post_scar_overwrite_allowed": false,
+        "pure_edema": "edema_zone_minus_final_scar",
+        "required_outputs": [
+          "after_edema_logits",
+          "final_logits_after_scar_priority"
+        ],
+        "revision": "GateB_scar_priority_hotfix"
+      },
+      "config_sha256": "69c276d66ffa1328da7a1e06ee446280981cac1fe3ed3d497327ad714fe757b4",
       "edema_zone_margin_cap_rule": "clip(Q0.95_abs_anchor_error_margin_actual_train+1,2,8)",
-      "fixed_inner_evaluation_plan_sha256": "e812665014725f601cfa8c87743b827224152bd3de0f67c96fd7af64ff9c190d",
+      "fixed_inner_evaluation_plan_sha256": "ca70193d3c9f6c0d2dd81dfc6e38952b953bb4b16228d7cfa4ca2352d5f15828",
       "fold": 0,
       "gate_revision": "A-R3",
       "grad_clip_norm": 1.0,
@@ -282,12 +324,18 @@
         128,
         128
       ],
-      "resolved_training_contract_sha256": "d584ac8ed65ff674ce58fa5b3a87d80c5ab867dce5b60f7624329290a754f422",
+      "random_negative_semantics_audit_hashes": {
+        "stage_a_sha256": "b0b54919dda4cb1dc39951e82455736b1bfe41e329e741cff9574311d9bbc25d",
+        "stage_a_status": "PASS",
+        "stage_b_sha256": "ea0385e7415f13c086d6c34a8c7ea16654552205fe9d6908f7d6be147634157e",
+        "stage_b_status": "PASS"
+      },
+      "resolved_training_contract_sha256": "1e108ccf0695b501162667c1b6b45c7f8308ef831acc51baa75a478a86b476f6",
       "sampler_hashes": {
         "stage_a_audit_status": "PASS",
-        "stage_a_sampler_index_sha256": "f9fb26c703f4261a64edf3c172133ef83a62445fce8c886b6b567f8b058bd846",
+        "stage_a_sampler_index_sha256": "d4f237f850ab0175d4462d18f393583947fa9c41577d0014f193d37cb5dafcde",
         "stage_b_audit_status": "PASS",
-        "stage_b_sampler_index_sha256": "b25a0e4d275e860fb7fe8de02c717f5ce1caf148b501dac81bf42c8d2e4a84d1"
+        "stage_b_sampler_index_sha256": "72157b65e57c4ead08d72641ee25d3c1c25d142ee654031a219ad92909af5b1f"
       },
       "sampler_pattern": [
         "error_fn",
@@ -303,21 +351,21 @@
       "schema_version": 1,
       "seed": 20260727,
       "source_hashes": {
-        "configs/care_dg/care_dg_v1.yaml": "87704c0f1d51ebd1a1101690f4c985545ea5216c8b0bbacdd530859cbc648d3f",
-        "scripts/evaluation/build_care_dg_validation_packet.py": "1e469a46affeb06cd3d5fc55a9b06f3e1e6c1cbb18ce0e15e9cfc75c9af24225",
+        "configs/care_dg/care_dg_v1.yaml": "69c276d66ffa1328da7a1e06ee446280981cac1fe3ed3d497327ad714fe757b4",
+        "scripts/evaluation/build_care_dg_validation_packet.py": "3d48ffee26b89c609a41e7414b74d4c101913ec890fac82eaa5370353c1f9ad4",
         "scripts/evaluation/evaluate_care_dg.py": "aae033a503189bf75cf100c087a65568940370ec4c010b9f7f0a680b3c399651",
-        "scripts/evaluation/finalize_care_dg_gate_a_r3_evidence.py": "ce107777806c299382240abc9eeb83193f6f70158c1842526107a98b25b95c29",
-        "scripts/evaluation/run_care_dg_gate_a_checks.py": "353df59aabe70c8f0f0e7e2742a32bdfc0461e67c7dd2d0def5977acf791fe36",
+        "scripts/evaluation/finalize_care_dg_gate_a_r3_evidence.py": "5733b59eba513bb7b8663b80c6e401637cae5f2e3d910e9a61b28bae0e04b5e5",
+        "scripts/evaluation/run_care_dg_gate_a_checks.py": "d6e31d9e00bd256bb78cdf99f29bf07ee62ee7546fc79fee51325ef9a699fef3",
         "scripts/evaluation/select_care_dg_candidate.py": "d319535426cb49800710e8a9e8056ae97cf4abae99bd342dfd2df09b153f5080",
-        "scripts/evaluation/validate_care_dg_gate_a_consistency.py": "daaca1668a995aa2efd7f449938e88025808c89831b2b88e8a9a662d35081b10",
+        "scripts/evaluation/validate_care_dg_gate_a_consistency.py": "987a07195ad826314b4f6284f36231a9b3a7a2645c2c236f162765b18a50d736",
         "scripts/evaluation/validate_care_dg_packet.py": "d02ef03752072a97d72301bf42338d11e851442b67e403a5e8cd2a6875fcb48b",
         "scripts/inference/run_care_dg_inference.py": "ceef29361a4ce6eb2224e315ca800381944b2a9c624aa7b8017dab80d54ee771",
-        "scripts/training/run_care_dg.py": "2e355ad3dcddc7db5b2920c34469ae4fc5a7582a27474535bf66e45816c417b7",
+        "scripts/training/run_care_dg.py": "0c8a25353a758f43c5d7979a285de2eda8ff85c06158390d99c85f1ca7f51a84",
         "src/care_myocardium/data/care_dg_dataset.py": "96d18e1914b7e08fc029a77c0e7c21467809fa0a5e9e12ad4f1ef2208eba803a",
         "src/care_myocardium/inference/care_dg_predictor.py": "71b3f935617b42a1190aa6937165ee09ce1a3c52e8a05ad4f6d4e53f9dcacf7c",
-        "src/care_myocardium/models/care_dg.py": "c417404ec469acec3e6ca8adb17a225dc6dddd85776791d50c6edfb35f5a2a03",
+        "src/care_myocardium/models/care_dg.py": "ee38bd7d86ca37944ef4108fa4d5904d9ead1f7ae2dc4b7ec518d784acb71d55",
         "src/care_myocardium/training/care_dg_trainer.py": "009b5f8f0d38622a958774c808600cb7c90f9d8c9b2b6064088fc9df9b3532b1",
-        "tests/care_dg/test_care_dg_model.py": "f9cc9bf71677e3e2301d8e0e2106cbbc9230e324135ecc074150699d2b00fbdb"
+        "tests/care_dg/test_care_dg_model.py": "664c965d47c208be0b51107162ab2a53e298c37712ca263db94187572aeb39ff"
       },
       "split_hashes": {
         "actual_train": "6c9664c525ca17e9d0591a62302f143dc7881307d94a4e49aa685f98ac60e7e9",
@@ -326,9 +374,13 @@
         "inner_select": "1669a7f65553180f806dcf3810e73bdd17b5632fc7e4f8e546a18097a40081cf",
         "outer_train": "127d03972f57429fe62999636a651a2b67e1892e80f252071c8c6f90a7ea57b2"
       },
-      "stage_a_optimizer_steps": 1,
-      "stage_b_optimizer_steps": 1,
+      "stage_a_optimizer_steps": 5000,
+      "stage_b_optimizer_steps": 3000,
       "support_semantics": {
+        "distance_to_myocardium_clip_mm": [
+          -64.0,
+          128.0
+        ],
         "edema_zone_shell_mm": 10,
         "excluded_labels": [
           2,
@@ -344,13 +396,13 @@
       },
       "weight_decay": 0.0001
     },
-    "resolved_training_contract_sha256": "d584ac8ed65ff674ce58fa5b3a87d80c5ab867dce5b60f7624329290a754f422"
+    "resolved_training_contract_sha256": "1e108ccf0695b501162667c1b6b45c7f8308ef831acc51baa75a478a86b476f6"
   },
   "inner_evaluation_repeat_exact": true,
   "inner_select_case_ids_sha256": "1669a7f65553180f806dcf3810e73bdd17b5632fc7e4f8e546a18097a40081cf",
   "inner_selection_cases": 12,
   "inner_train_cases": 164,
-  "last_checkpoint": "/users/a/e/aereinh/CARE/results/20260727_care_dg_dual_pathology_validation/runtime/gate_a_r3_preflight/fold0/checkpoints/checkpoint_last.pt",
+  "last_checkpoint": "/users/a/e/aereinh/CARE/results/20260727_care_dg_dual_pathology_validation/runtime/repaired_formal_scar_priority/fold0/checkpoints/checkpoint_last.pt",
   "margin_cap_audit": {
     "case_count": 164,
     "case_ids_sha256": "6c9664c525ca17e9d0591a62302f143dc7881307d94a4e49aa685f98ac60e7e9",
@@ -379,10 +431,55 @@
   "outer_train_cases": 176,
   "outer_val_cases": 44,
   "outer_val_used_for_checkpoint_selection": false,
-  "preflight_only": true,
-  "resolved_training_contract_path": "/users/a/e/aereinh/CARE/results/20260727_care_dg_dual_pathology_validation/runtime/gate_a_r3_preflight/fold0/resolved_training_contract.json",
-  "resolved_training_contract_sha256": "d584ac8ed65ff674ce58fa5b3a87d80c5ab867dce5b60f7624329290a754f422",
-  "runtime_kind": "gate_a_r3_preflight",
+  "preflight_only": false,
+  "random_negative_semantics_audit_stage_a": {
+    "audit_sha256": "b0b54919dda4cb1dc39951e82455736b1bfe41e329e741cff9574311d9bbc25d",
+    "case_count": 164,
+    "case_ids_sha256": "6c9664c525ca17e9d0591a62302f143dc7881307d94a4e49aa685f98ac60e7e9",
+    "category_counts": {
+      "blood_pool": 357,
+      "bright_remote_lge_island": 866,
+      "historical_anchor_fp": 378,
+      "ordinary_random": 0,
+      "remote_background": 1000
+    },
+    "category_patch_fractions": {
+      "blood_pool": 0.357,
+      "bright_remote_lge_island": 0.866,
+      "historical_anchor_fp": 0.378,
+      "ordinary_random": 0.0,
+      "remote_background": 1.0
+    },
+    "samples": 1000,
+    "stage": "A",
+    "status": "PASS"
+  },
+  "random_negative_semantics_audit_stage_b": {
+    "audit_sha256": "ea0385e7415f13c086d6c34a8c7ea16654552205fe9d6908f7d6be147634157e",
+    "case_count": 52,
+    "case_ids_sha256": "29e89d51f45d206739da06a40108f7697d6dae183d9183f1a95b55c12fc4c4f7",
+    "category_counts": {
+      "blood_pool": 367,
+      "bright_remote_lge_island": 740,
+      "historical_anchor_fp": 274,
+      "ordinary_random": 0,
+      "remote_background": 1000
+    },
+    "category_patch_fractions": {
+      "blood_pool": 0.367,
+      "bright_remote_lge_island": 0.74,
+      "historical_anchor_fp": 0.274,
+      "ordinary_random": 0.0,
+      "remote_background": 1.0
+    },
+    "samples": 1000,
+    "stage": "B",
+    "status": "PASS"
+  },
+  "resolved_training_contract_path": "/users/a/e/aereinh/CARE/results/20260727_care_dg_dual_pathology_validation/runtime/repaired_formal_scar_priority/fold0/resolved_training_contract.json",
+  "resolved_training_contract_sha256": "1e108ccf0695b501162667c1b6b45c7f8308ef831acc51baa75a478a86b476f6",
+  "runtime_kind": "repaired_formal_scar_priority",
+  "runtime_label": "repaired_formal_scar_priority",
   "sampler_quota_audit": {
     "batch_size": 8,
     "effective_counts": {
@@ -398,13 +495,13 @@
       "random": 0.25
     },
     "eligible_counts": {
-      "error_fn": 158,
+      "error_fn": 157,
       "error_fp": 162,
-      "pathology": 158,
+      "pathology": 157,
       "random": 164
     },
     "fallback_reasons": {
-      "jitter_recentered_to_original_target": 4
+      "jitter_recentered_to_original_target": 7
     },
     "requested_counts": {
       "error_fn": 250,
@@ -581,21 +678,48 @@
       ],
       "case_ids_sha256": "6c9664c525ca17e9d0591a62302f143dc7881307d94a4e49aa685f98ac60e7e9",
       "eligible_counts": {
-        "error_fn": 158,
+        "error_fn": 157,
         "error_fp": 162,
-        "pathology": 158,
+        "pathology": 157,
         "random": 164
       },
-      "sampler_index_sha256": "f9fb26c703f4261a64edf3c172133ef83a62445fce8c886b6b567f8b058bd846",
+      "sampler_index_sha256": "d4f237f850ab0175d4462d18f393583947fa9c41577d0014f193d37cb5dafcde",
       "stage": "A",
+      "support_actionability": {
+        "distance_clip_mm": [
+          -64.0,
+          128.0
+        ],
+        "empty_anchor_tissue_cases": [
+          "Case8034"
+        ],
+        "excluded_unactionable_cases": {
+          "error_fn": [
+            "Case8034"
+          ],
+          "error_fp": [],
+          "pathology": [
+            "Case8034"
+          ]
+        },
+        "tiny_anchor_tissue_lt500_cases": {
+          "Case8004": 320,
+          "Case8010": 65,
+          "Case8014": 194,
+          "Case8016": 206,
+          "Case8017": 499,
+          "Case8028": 81,
+          "Case8029": 34
+        }
+      },
       "target_count_totals": {
-        "error_fn": 222092,
+        "error_fn": 215267,
         "error_fp": 142176,
-        "pathology": 501574,
+        "pathology": 494671,
         "random": 132116701
       }
     },
-    "sampler_index_sha256": "f9fb26c703f4261a64edf3c172133ef83a62445fce8c886b6b567f8b058bd846",
+    "sampler_index_sha256": "d4f237f850ab0175d4462d18f393583947fa9c41577d0014f193d37cb5dafcde",
     "samples": 1000,
     "silent_fallback_count": 0,
     "stage": "A",
@@ -621,13 +745,13 @@
       "random": 0.25
     },
     "eligible_counts": {
-      "error_fn": 158,
+      "error_fn": 157,
       "error_fp": 162,
-      "pathology": 158,
+      "pathology": 157,
       "random": 164
     },
     "fallback_reasons": {
-      "jitter_recentered_to_original_target": 4
+      "jitter_recentered_to_original_target": 7
     },
     "requested_counts": {
       "error_fn": 250,
@@ -804,21 +928,48 @@
       ],
       "case_ids_sha256": "6c9664c525ca17e9d0591a62302f143dc7881307d94a4e49aa685f98ac60e7e9",
       "eligible_counts": {
-        "error_fn": 158,
+        "error_fn": 157,
         "error_fp": 162,
-        "pathology": 158,
+        "pathology": 157,
         "random": 164
       },
-      "sampler_index_sha256": "f9fb26c703f4261a64edf3c172133ef83a62445fce8c886b6b567f8b058bd846",
+      "sampler_index_sha256": "d4f237f850ab0175d4462d18f393583947fa9c41577d0014f193d37cb5dafcde",
       "stage": "A",
+      "support_actionability": {
+        "distance_clip_mm": [
+          -64.0,
+          128.0
+        ],
+        "empty_anchor_tissue_cases": [
+          "Case8034"
+        ],
+        "excluded_unactionable_cases": {
+          "error_fn": [
+            "Case8034"
+          ],
+          "error_fp": [],
+          "pathology": [
+            "Case8034"
+          ]
+        },
+        "tiny_anchor_tissue_lt500_cases": {
+          "Case8004": 320,
+          "Case8010": 65,
+          "Case8014": 194,
+          "Case8016": 206,
+          "Case8017": 499,
+          "Case8028": 81,
+          "Case8029": 34
+        }
+      },
       "target_count_totals": {
-        "error_fn": 222092,
+        "error_fn": 215267,
         "error_fp": 142176,
-        "pathology": 501574,
+        "pathology": 494671,
         "random": 132116701
       }
     },
-    "sampler_index_sha256": "f9fb26c703f4261a64edf3c172133ef83a62445fce8c886b6b567f8b058bd846",
+    "sampler_index_sha256": "d4f237f850ab0175d4462d18f393583947fa9c41577d0014f193d37cb5dafcde",
     "samples": 1000,
     "silent_fallback_count": 0,
     "stage": "A",
@@ -918,16 +1069,29 @@
         "pathology": 52,
         "random": 52
       },
-      "sampler_index_sha256": "b25a0e4d275e860fb7fe8de02c717f5ce1caf148b501dac81bf42c8d2e4a84d1",
+      "sampler_index_sha256": "72157b65e57c4ead08d72641ee25d3c1c25d142ee654031a219ad92909af5b1f",
       "stage": "B",
+      "support_actionability": {
+        "distance_clip_mm": [
+          -64.0,
+          128.0
+        ],
+        "empty_anchor_tissue_cases": [],
+        "excluded_unactionable_cases": {
+          "error_fn": [],
+          "error_fp": [],
+          "pathology": []
+        },
+        "tiny_anchor_tissue_lt500_cases": {}
+      },
       "target_count_totals": {
         "error_fn": 92911,
         "error_fp": 56995,
-        "pathology": 234895,
+        "pathology": 234817,
         "random": 35268829
       }
     },
-    "sampler_index_sha256": "b25a0e4d275e860fb7fe8de02c717f5ce1caf148b501dac81bf42c8d2e4a84d1",
+    "sampler_index_sha256": "72157b65e57c4ead08d72641ee25d3c1c25d142ee654031a219ad92909af5b1f",
     "samples": 1000,
     "silent_fallback_count": 0,
     "stage": "B",
@@ -939,21 +1103,21 @@
     }
   },
   "source_hashes": {
-    "configs/care_dg/care_dg_v1.yaml": "87704c0f1d51ebd1a1101690f4c985545ea5216c8b0bbacdd530859cbc648d3f",
-    "scripts/evaluation/build_care_dg_validation_packet.py": "1e469a46affeb06cd3d5fc55a9b06f3e1e6c1cbb18ce0e15e9cfc75c9af24225",
+    "configs/care_dg/care_dg_v1.yaml": "69c276d66ffa1328da7a1e06ee446280981cac1fe3ed3d497327ad714fe757b4",
+    "scripts/evaluation/build_care_dg_validation_packet.py": "3d48ffee26b89c609a41e7414b74d4c101913ec890fac82eaa5370353c1f9ad4",
     "scripts/evaluation/evaluate_care_dg.py": "aae033a503189bf75cf100c087a65568940370ec4c010b9f7f0a680b3c399651",
-    "scripts/evaluation/finalize_care_dg_gate_a_r3_evidence.py": "ce107777806c299382240abc9eeb83193f6f70158c1842526107a98b25b95c29",
-    "scripts/evaluation/run_care_dg_gate_a_checks.py": "353df59aabe70c8f0f0e7e2742a32bdfc0461e67c7dd2d0def5977acf791fe36",
+    "scripts/evaluation/finalize_care_dg_gate_a_r3_evidence.py": "5733b59eba513bb7b8663b80c6e401637cae5f2e3d910e9a61b28bae0e04b5e5",
+    "scripts/evaluation/run_care_dg_gate_a_checks.py": "d6e31d9e00bd256bb78cdf99f29bf07ee62ee7546fc79fee51325ef9a699fef3",
     "scripts/evaluation/select_care_dg_candidate.py": "d319535426cb49800710e8a9e8056ae97cf4abae99bd342dfd2df09b153f5080",
-    "scripts/evaluation/validate_care_dg_gate_a_consistency.py": "daaca1668a995aa2efd7f449938e88025808c89831b2b88e8a9a662d35081b10",
+    "scripts/evaluation/validate_care_dg_gate_a_consistency.py": "987a07195ad826314b4f6284f36231a9b3a7a2645c2c236f162765b18a50d736",
     "scripts/evaluation/validate_care_dg_packet.py": "d02ef03752072a97d72301bf42338d11e851442b67e403a5e8cd2a6875fcb48b",
     "scripts/inference/run_care_dg_inference.py": "ceef29361a4ce6eb2224e315ca800381944b2a9c624aa7b8017dab80d54ee771",
-    "scripts/training/run_care_dg.py": "2e355ad3dcddc7db5b2920c34469ae4fc5a7582a27474535bf66e45816c417b7",
+    "scripts/training/run_care_dg.py": "0c8a25353a758f43c5d7979a285de2eda8ff85c06158390d99c85f1ca7f51a84",
     "src/care_myocardium/data/care_dg_dataset.py": "96d18e1914b7e08fc029a77c0e7c21467809fa0a5e9e12ad4f1ef2208eba803a",
     "src/care_myocardium/inference/care_dg_predictor.py": "71b3f935617b42a1190aa6937165ee09ce1a3c52e8a05ad4f6d4e53f9dcacf7c",
-    "src/care_myocardium/models/care_dg.py": "c417404ec469acec3e6ca8adb17a225dc6dddd85776791d50c6edfb35f5a2a03",
+    "src/care_myocardium/models/care_dg.py": "ee38bd7d86ca37944ef4108fa4d5904d9ead1f7ae2dc4b7ec518d784acb71d55",
     "src/care_myocardium/training/care_dg_trainer.py": "009b5f8f0d38622a958774c808600cb7c90f9d8c9b2b6064088fc9df9b3532b1",
-    "tests/care_dg/test_care_dg_model.py": "f9cc9bf71677e3e2301d8e0e2106cbbc9230e324135ecc074150699d2b00fbdb"
+    "tests/care_dg/test_care_dg_model.py": "664c965d47c208be0b51107162ab2a53e298c37712ca263db94187572aeb39ff"
   },
   "stage_a_case_ids_sha256": "6c9664c525ca17e9d0591a62302f143dc7881307d94a4e49aa685f98ac60e7e9",
   "stage_a_pathology_lr": 0.0003,
@@ -964,6 +1128,6 @@
   "status": "PASS",
   "support_map_contract": "myocardium_union_labels_1_4_5_excludes_lv_rv_2_3_soft_shells_6mm_10mm",
   "t2_reliable_train_cases": 52,
-  "terminal_time_utc": "2026-07-27T14:16:06Z",
+  "terminal_time_utc": "2026-07-27T18:27:21Z",
   "validate_w0_status": "PASS"
 }

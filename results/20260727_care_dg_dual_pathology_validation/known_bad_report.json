@@ -1,5 +1,5 @@
 {
-  "created_at_utc": "2026-07-27T13:27:18Z",
+  "created_at_utc": "2026-07-27T15:30:36Z",
   "fixtures": [
     {
       "evidence": "test_fn_and_fp_margin_directions_are_opposite",
@@ -94,6 +94,56 @@
     {
       "evidence": "test_resolved_contract_mismatch_known_bad_rejected",
       "fixture": "support_or_loss_contract_changed_after_checkpoint",
+      "rejected": true
+    },
+    {
+      "evidence": "test_resolved_contract_mismatch_known_bad_rejected",
+      "fixture": "grad_clip_contract_changed_after_checkpoint",
+      "rejected": true
+    },
+    {
+      "evidence": "test_loss_reductions_cast_amp_outputs_to_fp32_and_remain_finite",
+      "fixture": "amp_half_precision_loss_nan_regression",
+      "rejected": true
+    },
+    {
+      "evidence": "test_resolved_contract_mismatch_known_bad_rejected",
+      "fixture": "amp_dtype_changed_after_checkpoint",
+      "rejected": true
+    },
+    {
+      "evidence": "test_strong_edema_correction_cannot_overwrite_post_scar_decision",
+      "fixture": "edema_last_overwrites_post_scar_decision",
+      "rejected": true
+    },
+    {
+      "evidence": "test_negative_scar_correction_can_release_false_scar_to_edema",
+      "fixture": "scar_priority_freezes_false_scar",
+      "rejected": true
+    },
+    {
+      "evidence": "test_scar_priority_preserves_edema_zone_union_semantics",
+      "fixture": "edema_zone_excludes_scar_after_priority_reorder",
+      "rejected": true
+    },
+    {
+      "evidence": "test_zero_correction_identity_after_priority_reorder",
+      "fixture": "priority_reorder_breaks_zero_correction_identity",
+      "rejected": true
+    },
+    {
+      "evidence": "test_no_t2_identity_after_priority_reorder",
+      "fixture": "no_t2_edema_changes_logits_after_priority_reorder",
+      "rejected": true
+    },
+    {
+      "evidence": "test_empty_anchor_support_distance_is_clipped_not_max_float",
+      "fixture": "empty_anchor_simpleitk_distance_max_float_enters_context",
+      "rejected": true
+    },
+    {
+      "evidence": "test_support_actionable_sampler_excludes_empty_anchor_from_error_pools",
+      "fixture": "empty_support_case_selected_as_error_fn_or_pathology",
       "rejected": true
     }
   ],

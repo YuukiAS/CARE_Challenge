@@ -491,6 +491,14 @@ def write_contracts(static: dict[str, Any], real: dict[str, Any] | None) -> dict
             "soft_support_shells_scar_6mm_edema_zone_10mm": True,
             "repaired_runtime_label_isolated": True,
             "protected_pre_repair_formal_runtime_read_only": True,
+            "scar_priority_composition_anchor_edema_scar_argmax": True,
+            "scar_priority_outputs_after_edema_and_final_after_scar": True,
+            "post_scar_decision_not_overwritten_by_later_edema": True,
+            "negative_scar_correction_can_release_false_scar": True,
+            "random_negative_semantics_audit_stage_A_and_B_written_without_sampler_change": True,
+            "support_distance_clips_empty_anchor_simpleitk_max_float": True,
+            "support_actionable_sampler_excludes_empty_anchor_error_pathology_pools": True,
+            "pre_scar_priority_runtime_zero_scientific_credit": True,
             "cine_validation_tree_binding_pending_w5": True,
         },
         "source_hashes": source_hashes(),
@@ -505,6 +513,9 @@ def write_contracts(static: dict[str, Any], real: dict[str, Any] | None) -> dict
         "gate_a_r3_sampler_quota_audit_stage_b": rel(RESULT_ROOT / "runtime/gate_a_r3_preflight/fold0/sampler_quota_audit_stage_b.json"),
         "gate_a_r3_resolved_training_contract": rel(RESULT_ROOT / "runtime/gate_a_r3_preflight/fold0/resolved_training_contract.json"),
         "gate_a_r3_inner_eval_repeat": rel(RESULT_ROOT / "runtime/gate_a_r3_preflight/fold0/inner_evaluation_repeat_receipt.json"),
+        "gate_b_scar_priority_preflight_receipt": rel(RESULT_ROOT / "runtime/gate_b_scar_priority_preflight/fold0/fold_training_receipt.json"),
+        "gate_b_scar_priority_random_negative_audit_stage_a": rel(RESULT_ROOT / "runtime/gate_b_scar_priority_preflight/fold0/random_negative_semantics_audit_stage_a.json"),
+        "gate_b_scar_priority_random_negative_audit_stage_b": rel(RESULT_ROOT / "runtime/gate_b_scar_priority_preflight/fold0/random_negative_semantics_audit_stage_b.json"),
     }
     write_json(RESULT_ROOT / "implementation_contract.json", impl)
     known = {
@@ -530,6 +541,16 @@ def write_contracts(static: dict[str, Any], real: dict[str, Any] | None) -> dict
             {"fixture": "stage_b_encoder_lr_changed_after_checkpoint", "rejected": True, "evidence": "test_resolved_contract_mismatch_known_bad_rejected"},
             {"fixture": "batch_size_or_steps_changed_after_checkpoint", "rejected": True, "evidence": "test_resolved_contract_mismatch_known_bad_rejected"},
             {"fixture": "support_or_loss_contract_changed_after_checkpoint", "rejected": True, "evidence": "test_resolved_contract_mismatch_known_bad_rejected"},
+            {"fixture": "grad_clip_contract_changed_after_checkpoint", "rejected": True, "evidence": "test_resolved_contract_mismatch_known_bad_rejected"},
+            {"fixture": "amp_half_precision_loss_nan_regression", "rejected": True, "evidence": "test_loss_reductions_cast_amp_outputs_to_fp32_and_remain_finite"},
+            {"fixture": "amp_dtype_changed_after_checkpoint", "rejected": True, "evidence": "test_resolved_contract_mismatch_known_bad_rejected"},
+            {"fixture": "edema_last_overwrites_post_scar_decision", "rejected": True, "evidence": "test_strong_edema_correction_cannot_overwrite_post_scar_decision"},
+            {"fixture": "scar_priority_freezes_false_scar", "rejected": True, "evidence": "test_negative_scar_correction_can_release_false_scar_to_edema"},
+            {"fixture": "edema_zone_excludes_scar_after_priority_reorder", "rejected": True, "evidence": "test_scar_priority_preserves_edema_zone_union_semantics"},
+            {"fixture": "priority_reorder_breaks_zero_correction_identity", "rejected": True, "evidence": "test_zero_correction_identity_after_priority_reorder"},
+            {"fixture": "no_t2_edema_changes_logits_after_priority_reorder", "rejected": True, "evidence": "test_no_t2_identity_after_priority_reorder"},
+            {"fixture": "empty_anchor_simpleitk_distance_max_float_enters_context", "rejected": True, "evidence": "test_empty_anchor_support_distance_is_clipped_not_max_float"},
+            {"fixture": "empty_support_case_selected_as_error_fn_or_pathology", "rejected": True, "evidence": "test_support_actionable_sampler_excludes_empty_anchor_from_error_pools"},
         ],
     }
     write_json(RESULT_ROOT / "known_bad_report.json", known)

@@ -1,0 +1,6 @@
+{
+  "checked_at_utc": "2026-07-27T18:45:55Z",
+  "evidence_root": "results/20260727_care_dg_dual_pathology_validation/runtime/repaired_formal_scar_priority/fold0/gate_b_evaluation",
+  "failures": [],
+  "status": "PASS"
+}

@@ -55,5 +55,27 @@
     "prepared_at_utc": "2026-07-27T13:30:24Z",
     "sent_at_utc": "2026-07-27T13:34:40Z",
     "status": "SENT"
+  },
+  "gate_b": {
+    "commit": "e0ff2f821392fe8ad03fbdaf630494313d96d115",
+    "continuation_authorized_once_after_gate_b_email": true,
+    "dedupe_key": "gate_b",
+    "node_json": "results/20260727_care_dg_dual_pathology_validation/checkpoint_notifications/gate_b.json",
+    "node_sha256": "0f10e4ca7e03c6e65e96386f858ef58b007a19ed7a9c31c8d0d4b53449cbdd2a",
+    "notifier_reuse": "controller_notifications.notify_goal_watcher.load_config/load_env_file plus existing CARE notify SMTP configuration; no new notifier service created",
+    "sent_at_utc": "2026-07-27T18:55:48Z",
+    "status": "SENT",
+    "subject": "[CARE-DG][B/4] Fold0 scar-priority Gate B PASS，邮件后按一次授权继续 folds 1-4",
+    "to": [
+      "1155246312@link.cuhk.edu.hk"
+    ]
+  },
+  "gate_b_prepared": {
+    "approval_token": "APPROVE_GATE_B_NOT_REQUIRED_THIS_ONCE_USER_PREAUTHORIZED_AFTER_GATE_B",
+    "node_json": "results/20260727_care_dg_dual_pathology_validation/checkpoint_notifications/gate_b.json",
+    "node_sha256": "0f10e4ca7e03c6e65e96386f858ef58b007a19ed7a9c31c8d0d4b53449cbdd2a",
+    "prepared_at_utc": "2026-07-27T18:55:46Z",
+    "sent_at_utc": "2026-07-27T18:55:48Z",
+    "status": "SENT"
   }
 }

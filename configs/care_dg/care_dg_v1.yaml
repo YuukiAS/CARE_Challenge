@@ -14,6 +14,18 @@ model:
   scar_decoder: independent_FN_FP_gate_and_magnitude
   edema_decoder: independent_FN_FP_gate_and_magnitude
   forbidden_runtime: [MoSAIC, full_MMRD, prototype_dictionary, SIP, multi_expert, old_Cascade]
+composition:
+  revision: GateB_scar_priority_hotfix
+  order: [anchor_logits, bounded_edema_zone_correction, bounded_scar_correction, final_six_class_argmax]
+  required_outputs: [after_edema_logits, final_logits_after_scar_priority]
+  post_scar_overwrite_allowed: false
+  edema_zone: final_scar_union_final_pure_edema
+  pure_edema: edema_zone_minus_final_scar
+runtime:
+  formal_label: repaired_formal_scar_priority
+  scar_priority_preflight_label: gate_b_scar_priority_preflight
+  protected_legacy_labels: [formal, repaired_formal]
+
 training:
   folds: [0, 1, 2, 3, 4]
   stage_a_optimizer_steps: 5000
@@ -25,6 +37,7 @@ training:
   optimizer:
     type: AdamW
     weight_decay: 0.0001
+    grad_clip_norm: 1.0
     parameter_groups:
       representation_group: [lge_stem, t2_stem, c0_stem, anchor_context, encoder]
       pathology_group: [scar_decoder, edema_decoder]
@@ -35,9 +48,11 @@ training:
       representation_lr: 0.00002
       pathology_lr: 0.0001
   amp: true
+  amp_dtype: bfloat16
   support_labels: [1, 4, 5]
   scar_shell_mm: 6
   edema_zone_shell_mm: 10
+  distance_to_myocardium_clip_mm: [-64, 128]
   no_t2_edema_loss_weight: 0
 candidate_gate:
   primary_estimand: complete80

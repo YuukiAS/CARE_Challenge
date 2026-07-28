@@ -126,8 +126,15 @@ def care_dg_loss(
 ) -> tuple[torch.Tensor, dict[str, float]]:
     labels = _squeeze_labels(labels)
     anchor_mask = _squeeze_labels(anchor_mask)
-    final_logits = outputs["final_logits"]
-    anchor_logits = outputs["anchor_logits"].detach()
+    # AMP is useful for the compact 3D model, but the margin/BCE reductions are
+    # train-critical. Keep these scalar losses in fp32 so fp16 saturation cannot
+    # turn a recoverable large margin into NaN.
+    final_logits = outputs["final_logits"].float()
+    anchor_logits = outputs["anchor_logits"].detach().float()
+    loss_outputs = {
+        key: value.float() if torch.is_tensor(value) and torch.is_floating_point(value) else value
+        for key, value in outputs.items()
+    }
     if scar_reliable is None:
         scar_reliable = torch.ones_like(t2_present)
     if edema_reliable is None:
@@ -149,15 +156,15 @@ def care_dg_loss(
     edema_seg = binary_dice_loss(edema_final_margin, edema_targets["gt"], edema_mask) + masked_bce_with_logits(
         edema_final_margin, edema_targets["gt"], edema_mask
     )
-    scar_gate = focal_bce(outputs["scar_q_fn"], scar_targets["fn"], scar_mask) + focal_bce(outputs["scar_q_fp"], scar_targets["fp"], scar_mask)
-    edema_gate = focal_bce(outputs["edema_q_fn"], edema_targets["fn"], edema_mask) + focal_bce(outputs["edema_q_fp"], edema_targets["fp"], edema_mask)
+    scar_gate = focal_bce(loss_outputs["scar_q_fn"], scar_targets["fn"], scar_mask) + focal_bce(loss_outputs["scar_q_fp"], scar_targets["fp"], scar_mask)
+    edema_gate = focal_bce(loss_outputs["edema_q_fn"], edema_targets["fn"], edema_mask) + focal_bce(loss_outputs["edema_q_fp"], edema_targets["fp"], edema_mask)
 
     scar_margin_loss = margin_improvement_loss(scar_final_margin, scar_anchor_margin, scar_targets, scar_mask, margin)
     edema_margin_loss = margin_improvement_loss(edema_final_margin, edema_anchor_margin, edema_targets, edema_mask, margin)
     correct = ((labels == anchor_mask).float().unsqueeze(1)).detach()
-    identity = masked_mean(outputs["scar_delta"].abs() + outputs["edema_delta"].abs(), correct)
-    remote = masked_mean(outputs["scar_delta_raw"].abs(), (1.0 - outputs["scar_support"]) * scar_mask) + masked_mean(
-        outputs["edema_delta_raw"].abs(), (1.0 - outputs["edema_support"]) * edema_mask
+    identity = masked_mean(loss_outputs["scar_delta"].abs() + loss_outputs["edema_delta"].abs(), correct)
+    remote = masked_mean(loss_outputs["scar_delta_raw"].abs(), (1.0 - loss_outputs["scar_support"]) * scar_mask) + masked_mean(
+        loss_outputs["edema_delta_raw"].abs(), (1.0 - loss_outputs["edema_support"]) * edema_mask
     )
 
     total = scar_seg + edema_seg + 0.5 * (scar_gate + edema_gate) + 0.25 * (scar_margin_loss + edema_margin_loss) + 0.10 * identity + 0.10 * remote

@@ -1,5 +1,5 @@
 {
-  "created_at_utc": "2026-07-27T13:27:10Z",
+  "created_at_utc": "2026-07-27T15:30:28Z",
   "device": "NVIDIA H100 NVL",
   "formal_training_credit": 0,
   "receipts": [
@@ -11,25 +11,25 @@
         105,
         124
       ],
-      "changed_voxels": 198,
-      "edema_decoder_grad_abs_sum": 4380.734267696738,
+      "changed_voxels": 186,
+      "edema_decoder_grad_abs_sum": 4380.912661485374,
       "edema_delta_abs_sum": 9513.1640625,
-      "loss": 3.9995839595794678,
+      "loss": 4.005250453948975,
       "loss_finite": true,
       "metrics": {
         "edema_gate": 0.6346961259841919,
-        "edema_margin": 3.15447735786438,
-        "edema_seg": 0.9790999293327332,
+        "edema_margin": 3.1542563438415527,
+        "edema_seg": 0.9798439741134644,
         "identity": 0.10895521193742752,
-        "loss": 3.9995839595794678,
+        "loss": 4.005250453948975,
         "remote": 0.5311723947525024,
         "scar_gate": 0.48889780044555664,
-        "scar_margin": 2.0008156299591064,
-        "scar_seg": 1.1058512926101685
+        "scar_margin": 2.020937442779541,
+        "scar_seg": 1.1057982444763184
       },
       "no_t2_edema_delta_exact_zero": true,
       "no_t2_edema_grad_exact_zero": true,
-      "scar_decoder_grad_abs_sum": 9303.266899943352
+      "scar_decoder_grad_abs_sum": 9204.039110422134
     },
     {
       "case_id": "Case1001",
@@ -57,7 +57,7 @@
       },
       "no_t2_edema_delta_exact_zero": true,
       "no_t2_edema_grad_exact_zero": true,
-      "scar_decoder_grad_abs_sum": 4189.429560780525
+      "scar_decoder_grad_abs_sum": 4189.431147277355
     }
   ],
   "schema_version": 1,

@@ -1,0 +1,6 @@
+{
+  "post_scar_decision_overwritten_voxels": 0,
+  "reason": "CARE-DG composition terminates immediately after scar-priority correction and final argmax; no later edema/anatomy operation exists in runtime evaluator.",
+  "status": "PASS",
+  "transition_rows": 2212
+}

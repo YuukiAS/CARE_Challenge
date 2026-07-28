@@ -1,0 +1,145 @@
+{
+  "approval_token": "APPROVE_GATE_B_NOT_REQUIRED_THIS_ONCE_USER_PREAUTHORIZED_AFTER_GATE_B",
+  "body_preview": "结论：CARE-DG Gate B 已完成。repaired fold0 使用 repaired_formal_scar_priority runtime 从原 seed 完成 Stage A 5000 + Stage B 3000 optimizer steps，并完成 44 例 held-out 与 16 例 complete-trimodal 评价；strict validator 和 consistency validator 均为 PASS。\n\n状态：GATE_B_PASS_EMAIL_SENT_CONTINUATION_PREAUTHORIZED_ONCE\n说明：用户已在当前 Controller 会话中明确授权“这个 gate 完成后继续运行，仅这一次”，因此本邮件 receipt 落盘后将继续 folds 1-4；邮件门仍已执行，不等待额外 APPROVE_GATE_B。\n\nruntime_label: repaired_formal_scar_priority\nformal fold0 steps: 8000 (scientific_credit=8000)\nselected checkpoint: results/20260727_care_dg_dual_pathology_validation/runtime/repaired_formal_scar_priority/fold0/checkpoints/checkpoint_best.pt ; step=1000 ; sha256=49343e740b2ad28e0c85c65b5f73724d751671e2a9e66c2c608534cafc0a1f46\nbest_inner_loss: 2.8730093836784363\nouter held-out cases: 44 ; complete-trimodal cases: 16 ; predictions: 44\nstrict validator: PASS ; consistency validator: PASS ; evaluator validator: PASS\npost-scar decision overwritten voxels: 0\nno-T2 edema delta exact zero: True\nscar activated cases: 44 ; edema activated T2 cases: 16 ; complete16 changed-case fraction: 1.0\n\nA2 CARE-DG Gate B metrics:\n- fold0_outer44 / scar: Dice=0.5452, HD95=14.87mm, remoteFP=2325.2mm3, infinite exact-HD cases=2\n- fold0_outer44 / edema_zone: Dice=0.5570, HD95=16.64mm, remoteFP=3381.3mm3, infinite exact-HD cases=2\n- fold0_outer44 / pure_edema: Dice=0.7616, HD95=8.34mm, remoteFP=2009.7mm3, infinite exact-HD cases=0\n- fold0_complete_trimodal16 / scar: Dice=0.6713, HD95=11.08mm, remoteFP=1040.3mm3, infinite exact-HD cases=0\n- fold0_complete_trimodal16 / edema_zone: Dice=0.7038, HD95=15.72mm, remoteFP=3944.5mm3, infinite exact-HD cases=0\n- fold0_complete_trimodal16 / pure_edema: Dice=0.3444, HD95=22.92mm, remoteFP=5526.6mm3, infinite exact-HD cases=0\n\nGate B package includes: scar/edema conflict transition matrix, post-scar overwrite audit, component count, remote FP, new infinite exact-HD cases, exact-HD tail, random-negative semantics audits, and help/harm changed components/farthest new component distance.\n\nEvidence hashes:\n- results/20260727_care_dg_dual_pathology_validation/gate_b_summary.json sha256=42ce1e30e7e80e69ea2381d4eb9839d1235287d9279187c9d30f6d0494913351 size=1560\n- results/20260727_care_dg_dual_pathology_validation/gate_b_validator_report.json sha256=1bd70e77557c202b1692eff2671a2612187743a019fb3fac15aa16511bd1b74f size=220\n- results/20260727_care_dg_dual_pathology_validation/gate_b_consistency_validator_report.json sha256=dd18ade56504e003dd8e9e6faea73b4cb785aebc0ddbd8c6dad72444ef5d8925 size=424\n- results/20260727_care_dg_dual_pathology_validation/strict_validator_report.json sha256=e128d0c2fc25d288f2ea99d5fbeb834439e7c7d0378e19250a637b7d3fa6cdd1 size=173\n- results/20260727_care_dg_dual_pathology_validation/repair_ledger.csv sha256=9e33afb6875533f1362c8188d9a526a2f8b5ce4f2768116b7e9d3c0d5274dc85 size=6860\n- results/20260727_care_dg_dual_pathology_validation/runtime/repaired_formal_scar_priority/fold0/fold_training_receipt.json sha256=06c06baae0e65e7ebd55ac1c0af86292c74eaf741033458cd80433aad711f52f size=36031\n- results/20260727_care_dg_dual_pathology_validation/runtime/repaired_formal_scar_priority/fold0/checkpoint_manifest.csv sha256=2e8c6725a88a1b754d9a3084ebd51d1e0ac63c5d1600f562669cf51f088af451 size=4780\n- results/20260727_care_dg_dual_pathology_validation/runtime/repaired_formal_scar_priority/fold0/gate_b_evaluation/gate_b_fold0_model_summary.csv sha256=87fbde9d1214aa7cd1ec54705995d9501d66a679bf75184fbd05b7847bc5f6f4 size=2319\n- results/20260727_care_dg_dual_pathology_validation/runtime/repaired_formal_scar_priority/fold0/gate_b_evaluation/gate_b_complete16_summary.csv sha256=a51090f2b3428b90a1b634a6658867e19de6957ebe58d21252b190d0b3d86a8a size=1263\n- results/20260727_care_dg_dual_pathology_validation/runtime/repaired_formal_scar_priority/fold0/gate_b_evaluation/gate_b_scar_edema_conflict_transition_matrix.csv sha256=a1ea97f813b5eb63e13357ff5afeaccd1ebbcbd30cf7382fe003808c8fc5bfdb size=91942\n- results/20260727_care_dg_dual_pathology_validation/runtime/repaired_formal_scar_priority/fold0/gate_b_evaluation/gate_b_post_scar_overwrite_audit.json sha256=62d6d4f6e6e416631e276afc899bde2b961cc03230d2ffbe6fba82a6f2cf491c size=265\n- results/20260727_care_dg_dual_pathology_validation/runtime/repaired_formal_scar_priority/fold0/gate_b_evaluation/gate_b_remote_fp_audit.csv sha256=6600861a7847dbf2706e7c2140bc8bc11bd107430132816cb9b06dcee07be59e size=28284\n- results/20260727_care_dg_dual_pathology_validation/runtime/repaired_formal_scar_priority/fold0/gate_b_evaluation/gate_b_exact_hd_tail_audit.csv sha256=2005c16988f0df7e69e88d104ec2004bf8ef84265f5c40d2ac59c0af00c3f9c0 size=13088\n- results/20260727_care_dg_dual_pathology_validation/runtime/repaired_formal_scar_priority/fold0/gate_b_evaluation/gate_b_help_harm.csv sha256=5d881df8932dad68968d5850dc9e0908be80ef449a008513f28afca14049e35c size=19841\n- results/20260727_care_dg_dual_pathology_validation/runtime/repaired_formal_scar_priority/fold0/gate_b_evaluation/gate_b_component_audit.csv sha256=b029ca4f3d3bbcb0adc7d3d4a5b4d1bff11ac17b63ab677ecff3579b6a03951c size=42872\n- results/20260727_care_dg_dual_pathology_validation/runtime/repaired_formal_scar_priority/fold0/gate_b_evaluation/gate_b_mechanism_activation_audit.csv sha256=e0fd9df86f3097b98478464dae28df08f4443b46890b59537e8023ddcbea5741 size=5230\n- results/20260727_care_dg_dual_pathology_validation/runtime/gate_b_scar_priority_preflight/fold0/random_negative_semantics_audit_stage_a.json sha256=feb798c30ce43dec2a35a18172c33bd9354cd23c1d37b3514c2a2cbd60277a3a size=708673\n- results/20260727_care_dg_dual_pathology_validation/runtime/gate_b_scar_priority_preflight/fold0/random_negative_semantics_audit_stage_b.json sha256=372f6e5c88da467efe16f30bf3bbfd06e7909aacfc603942e52e358a632cacde size=707784\n\nSource hashes:\n- scripts/training/run_care_dg.py sha256=8c8432ee844b956c13230be6235e82b6fce4b4d65cd4849b7b140c1113cd7623\n- scripts/evaluation/evaluate_care_dg.py sha256=474e8f64bfa3ea9925448a0f6516626c0c96b3003e4677501f6c9faaa97256d3\n- scripts/evaluation/build_care_dg_validation_packet.py sha256=22642c7e2bcbe8fc1305d2093605e6110c7fec1570bd34caacab174302d837e3\n- scripts/evaluation/validate_care_dg_gate_a_consistency.py sha256=6423088da0fdc324ae78de74b269cf84b393fd1e04b338bc67099ef7785394e1\n- src/care_myocardium/models/care_dg.py sha256=ee38bd7d86ca37944ef4108fa4d5904d9ead1f7ae2dc4b7ec518d784acb71d55\n- src/care_myocardium/training/care_dg_trainer.py sha256=009b5f8f0d38622a958774c808600cb7c90f9d8c9b2b6064088fc9df9b3532b1\n\ngit_head: e0ff2f821392fe8ad03fbdaf630494313d96d115\npush_status: runtime push not performed by controller because active goal also forbids runtime git push; evidence is local in the CARE worktree.",
+  "consistency_validator_status": "PASS",
+  "continue_after_email_receipt": true,
+  "created_at_utc": "2026-07-27T18:55:46Z",
+  "evidence": [
+    {
+      "path": "results/20260727_care_dg_dual_pathology_validation/gate_b_summary.json",
+      "sha256": "42ce1e30e7e80e69ea2381d4eb9839d1235287d9279187c9d30f6d0494913351",
+      "size_bytes": 1560
+    },
+    {
+      "path": "results/20260727_care_dg_dual_pathology_validation/gate_b_validator_report.json",
+      "sha256": "1bd70e77557c202b1692eff2671a2612187743a019fb3fac15aa16511bd1b74f",
+      "size_bytes": 220
+    },
+    {
+      "path": "results/20260727_care_dg_dual_pathology_validation/gate_b_consistency_validator_report.json",
+      "sha256": "dd18ade56504e003dd8e9e6faea73b4cb785aebc0ddbd8c6dad72444ef5d8925",
+      "size_bytes": 424
+    },
+    {
+      "path": "results/20260727_care_dg_dual_pathology_validation/strict_validator_report.json",
+      "sha256": "e128d0c2fc25d288f2ea99d5fbeb834439e7c7d0378e19250a637b7d3fa6cdd1",
+      "size_bytes": 173
+    },
+    {
+      "path": "results/20260727_care_dg_dual_pathology_validation/repair_ledger.csv",
+      "sha256": "9e33afb6875533f1362c8188d9a526a2f8b5ce4f2768116b7e9d3c0d5274dc85",
+      "size_bytes": 6860
+    },
+    {
+      "path": "results/20260727_care_dg_dual_pathology_validation/runtime/repaired_formal_scar_priority/fold0/fold_training_receipt.json",
+      "sha256": "06c06baae0e65e7ebd55ac1c0af86292c74eaf741033458cd80433aad711f52f",
+      "size_bytes": 36031
+    },
+    {
+      "path": "results/20260727_care_dg_dual_pathology_validation/runtime/repaired_formal_scar_priority/fold0/checkpoint_manifest.csv",
+      "sha256": "2e8c6725a88a1b754d9a3084ebd51d1e0ac63c5d1600f562669cf51f088af451",
+      "size_bytes": 4780
+    },
+    {
+      "path": "results/20260727_care_dg_dual_pathology_validation/runtime/repaired_formal_scar_priority/fold0/gate_b_evaluation/gate_b_fold0_model_summary.csv",
+      "sha256": "87fbde9d1214aa7cd1ec54705995d9501d66a679bf75184fbd05b7847bc5f6f4",
+      "size_bytes": 2319
+    },
+    {
+      "path": "results/20260727_care_dg_dual_pathology_validation/runtime/repaired_formal_scar_priority/fold0/gate_b_evaluation/gate_b_complete16_summary.csv",
+      "sha256": "a51090f2b3428b90a1b634a6658867e19de6957ebe58d21252b190d0b3d86a8a",
+      "size_bytes": 1263
+    },
+    {
+      "path": "results/20260727_care_dg_dual_pathology_validation/runtime/repaired_formal_scar_priority/fold0/gate_b_evaluation/gate_b_scar_edema_conflict_transition_matrix.csv",
+      "sha256": "a1ea97f813b5eb63e13357ff5afeaccd1ebbcbd30cf7382fe003808c8fc5bfdb",
+      "size_bytes": 91942
+    },
+    {
+      "path": "results/20260727_care_dg_dual_pathology_validation/runtime/repaired_formal_scar_priority/fold0/gate_b_evaluation/gate_b_post_scar_overwrite_audit.json",
+      "sha256": "62d6d4f6e6e416631e276afc899bde2b961cc03230d2ffbe6fba82a6f2cf491c",
+      "size_bytes": 265
+    },
+    {
+      "path": "results/20260727_care_dg_dual_pathology_validation/runtime/repaired_formal_scar_priority/fold0/gate_b_evaluation/gate_b_remote_fp_audit.csv",
+      "sha256": "6600861a7847dbf2706e7c2140bc8bc11bd107430132816cb9b06dcee07be59e",
+      "size_bytes": 28284
+    },
+    {
+      "path": "results/20260727_care_dg_dual_pathology_validation/runtime/repaired_formal_scar_priority/fold0/gate_b_evaluation/gate_b_exact_hd_tail_audit.csv",
+      "sha256": "2005c16988f0df7e69e88d104ec2004bf8ef84265f5c40d2ac59c0af00c3f9c0",
+      "size_bytes": 13088
+    },
+    {
+      "path": "results/20260727_care_dg_dual_pathology_validation/runtime/repaired_formal_scar_priority/fold0/gate_b_evaluation/gate_b_help_harm.csv",
+      "sha256": "5d881df8932dad68968d5850dc9e0908be80ef449a008513f28afca14049e35c",
+      "size_bytes": 19841
+    },
+    {
+      "path": "results/20260727_care_dg_dual_pathology_validation/runtime/repaired_formal_scar_priority/fold0/gate_b_evaluation/gate_b_component_audit.csv",
+      "sha256": "b029ca4f3d3bbcb0adc7d3d4a5b4d1bff11ac17b63ab677ecff3579b6a03951c",
+      "size_bytes": 42872
+    },
+    {
+      "path": "results/20260727_care_dg_dual_pathology_validation/runtime/repaired_formal_scar_priority/fold0/gate_b_evaluation/gate_b_mechanism_activation_audit.csv",
+      "sha256": "e0fd9df86f3097b98478464dae28df08f4443b46890b59537e8023ddcbea5741",
+      "size_bytes": 5230
+    },
+    {
+      "path": "results/20260727_care_dg_dual_pathology_validation/runtime/gate_b_scar_priority_preflight/fold0/random_negative_semantics_audit_stage_a.json",
+      "sha256": "feb798c30ce43dec2a35a18172c33bd9354cd23c1d37b3514c2a2cbd60277a3a",
+      "size_bytes": 708673
+    },
+    {
+      "path": "results/20260727_care_dg_dual_pathology_validation/runtime/gate_b_scar_priority_preflight/fold0/random_negative_semantics_audit_stage_b.json",
+      "sha256": "372f6e5c88da467efe16f30bf3bbfd06e7909aacfc603942e52e358a632cacde",
+      "size_bytes": 707784
+    }
+  ],
+  "gate_b_summary": {
+    "case_ids_sha256": "bf8d6e46c88a07e34500a77857db79e44699e567568b14373ea951c525177daa",
+    "changed_case_fraction_complete16": 1.0,
+    "checkpoint": "results/20260727_care_dg_dual_pathology_validation/runtime/repaired_formal_scar_priority/fold0/checkpoints/checkpoint_best.pt",
+    "checkpoint_sha256": "49343e740b2ad28e0c85c65b5f73724d751671e2a9e66c2c608534cafc0a1f46",
+    "checkpoint_step": 1000,
+    "complete_case_ids_sha256": "8155d0e8709b62ed6b1e3203728519cc8ee7ac14aae40d7e6cdb97b68d8212c4",
+    "complete_trimodal_heldout_cases": 16,
+    "consistency_validator_checked_at_utc": "2026-07-27T18:52:17Z",
+    "consistency_validator_status": "PASS",
+    "created_at_utc": "2026-07-27T18:45:38Z",
+    "edema_activated_t2_cases": 16,
+    "evidence_root": "results/20260727_care_dg_dual_pathology_validation/runtime/repaired_formal_scar_priority/fold0/gate_b_evaluation",
+    "fold": 0,
+    "no_t2_edema_delta_exact_zero": true,
+    "outer_heldout_cases": 44,
+    "post_scar_decision_overwritten_voxels": 0,
+    "prediction_count": 44,
+    "receipt_status": "PASS",
+    "runtime_label": "repaired_formal_scar_priority",
+    "scar_activated_cases": 44,
+    "source_hashes": {
+      "scripts/evaluation/evaluate_care_dg.py": "474e8f64bfa3ea9925448a0f6516626c0c96b3003e4677501f6c9faaa97256d3",
+      "scripts/training/run_care_dg.py": "0c8a25353a758f43c5d7979a285de2eda8ff85c06158390d99c85f1ca7f51a84",
+      "src/care_myocardium/models/care_dg.py": "ee38bd7d86ca37944ef4108fa4d5904d9ead1f7ae2dc4b7ec518d784acb71d55"
+    },
+    "status": "PASS",
+    "strict_validator_status": "PASS",
+    "summary_rows": 12
+  },
+  "no_validation_or_docker_upload_authorized": true,
+  "sent_at_utc": "2026-07-27T18:55:48Z",
+  "source_hashes": {
+    "scripts/evaluation/build_care_dg_validation_packet.py": "22642c7e2bcbe8fc1305d2093605e6110c7fec1570bd34caacab174302d837e3",
+    "scripts/evaluation/evaluate_care_dg.py": "474e8f64bfa3ea9925448a0f6516626c0c96b3003e4677501f6c9faaa97256d3",
+    "scripts/evaluation/validate_care_dg_gate_a_consistency.py": "6423088da0fdc324ae78de74b269cf84b393fd1e04b338bc67099ef7785394e1",
+    "scripts/training/run_care_dg.py": "8c8432ee844b956c13230be6235e82b6fce4b4d65cd4849b7b140c1113cd7623",
+    "src/care_myocardium/models/care_dg.py": "ee38bd7d86ca37944ef4108fa4d5904d9ead1f7ae2dc4b7ec518d784acb71d55",
+    "src/care_myocardium/training/care_dg_trainer.py": "009b5f8f0d38622a958774c808600cb7c90f9d8c9b2b6064088fc9df9b3532b1"
+  },
+  "state": "GATE_B_PASS_EMAIL_SENT_CONTINUATION_PREAUTHORIZED_ONCE",
+  "status": "SENT",
+  "strict_validator_status": "PASS",
+  "subject": "[CARE-DG][B/4] Fold0 scar-priority Gate B PASS，邮件后按一次授权继续 folds 1-4",
+  "to": "1155246312@link.cuhk.edu.hk",
+  "user_one_time_authorization": true
+}

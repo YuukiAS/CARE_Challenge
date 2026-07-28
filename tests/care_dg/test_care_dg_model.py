@@ -11,9 +11,9 @@ import SimpleITK as sitk
 import torch
 
 from src.care_myocardium.data.care_dg_dataset import validate_care_dg_batch
-from src.care_myocardium.models.care_dg import EDEMA_CHANNEL, SCAR_CHANNEL, apply_competitive_correction, build_care_dg
+from src.care_myocardium.models.care_dg import EDEMA_CHANNEL, SCAR_CHANNEL, apply_competitive_correction, apply_scar_priority_composition, build_care_dg
 import scripts.training.run_care_dg as run_dg
-from scripts.training.run_care_dg import deterministic_inner_split, support_maps, validate_inner_split_contract, validate_w0
+from scripts.training.run_care_dg import DISTANCE_CLIP_MM, deterministic_inner_split, support_maps, validate_inner_split_contract, validate_w0
 from src.care_myocardium.training.care_dg_trainer import (
     care_dg_loss,
     load_care_dg_checkpoint,
@@ -113,7 +113,41 @@ def _r3_args() -> SimpleNamespace:
         lr_stage_b_representation=2e-5,
         lr_stage_b_pathology=1e-4,
         weight_decay=1e-4,
+        grad_clip_norm=1.0,
     )
+
+
+def test_loss_reductions_cast_amp_outputs_to_fp32_and_remain_finite() -> None:
+    logits = torch.full((1, 6, 1, 2, 2), 24.0, dtype=torch.float16)
+    outputs = {
+        "final_logits": logits.clone(),
+        "anchor_logits": torch.zeros_like(logits),
+        "scar_q_fn": torch.full((1, 1, 1, 2, 2), 0.999, dtype=torch.float16),
+        "scar_q_fp": torch.full((1, 1, 1, 2, 2), 0.001, dtype=torch.float16),
+        "edema_q_fn": torch.full((1, 1, 1, 2, 2), 0.999, dtype=torch.float16),
+        "edema_q_fp": torch.full((1, 1, 1, 2, 2), 0.001, dtype=torch.float16),
+        "scar_delta": torch.full((1, 1, 1, 2, 2), 8.0, dtype=torch.float16),
+        "edema_delta": torch.full((1, 1, 1, 2, 2), 8.0, dtype=torch.float16),
+        "scar_delta_raw": torch.full((1, 1, 1, 2, 2), 8.0, dtype=torch.float16),
+        "edema_delta_raw": torch.full((1, 1, 1, 2, 2), 8.0, dtype=torch.float16),
+        "scar_support": torch.ones(1, 1, 1, 2, 2, dtype=torch.float16),
+        "edema_support": torch.ones(1, 1, 1, 2, 2, dtype=torch.float16),
+    }
+    labels = torch.full((1, 1, 2, 2), SCAR_CHANNEL, dtype=torch.long)
+    anchor = torch.zeros_like(labels)
+    loss, metrics = care_dg_loss(outputs, labels, anchor, t2_present=torch.ones(1))
+    assert loss.dtype == torch.float32
+    assert torch.isfinite(loss)
+    assert all(np.isfinite(float(v)) for v in metrics.values())
+
+
+def test_training_contract_records_gradient_clipping() -> None:
+    printed = run_dg.contract()
+    assert printed["grad_clip_norm"] == 1.0
+    assert printed["amp_dtype"] == "bfloat16"
+    assert run_dg.GRAD_CLIP_NORM == 1.0
+    assert run_dg.AMP_DTYPE == "bfloat16"
+    assert run_dg.amp_autocast_dtype("bfloat16") is torch.bfloat16
 
 
 def test_stage_a_b_optimizer_group_lrs_and_complete_parameter_coverage() -> None:
@@ -168,6 +202,8 @@ def test_resolved_contract_mismatch_known_bad_rejected(tmp_path: Path) -> None:
             "stage_b": {"representation_group": 2e-5, "pathology_group": 1e-4},
         },
         "weight_decay": 1e-4,
+        "grad_clip_norm": 1.0,
+        "amp": {"dtype": "bfloat16"},
         "support_semantics": {"support_labels": [1, 4, 5]},
         "loss_weights": {"no_t2_edema_loss_weight": 0.0},
     }
@@ -179,6 +215,8 @@ def test_resolved_contract_mismatch_known_bad_rejected(tmp_path: Path) -> None:
         ("stage_b_lr", lambda c: c["resolved_training_contract"]["learning_rates"]["stage_b"].__setitem__("representation_group", 3e-5)),
         ("batch_size", lambda c: c["resolved_training_contract"].__setitem__("batch_size", 4)),
         ("steps", lambda c: c["resolved_training_contract"].__setitem__("stage_b_optimizer_steps", 2999)),
+        ("grad_clip", lambda c: c["resolved_training_contract"].__setitem__("grad_clip_norm", 0.0)),
+        ("amp_dtype", lambda c: c["resolved_training_contract"].__setitem__("amp", {"dtype": "float16"})),
         ("support", lambda c: c["resolved_training_contract"].__setitem__("support_semantics", {"support_labels": [1, 2, 3, 4, 5]})),
         ("loss", lambda c: c["resolved_training_contract"]["loss_weights"].__setitem__("no_t2_edema_loss_weight", 1.0)),
     ]:
@@ -261,6 +299,113 @@ def test_decode_edema_zone_includes_scar_and_pure_edema_excludes_scar() -> None:
     scar_voxels = out["scar_mask"]
     assert torch.equal(out["edema_zone_mask"] & scar_voxels, scar_voxels)
     assert torch.count_nonzero(out["pure_edema_mask"] & scar_voxels) == 0
+
+
+def _single_voxel_logits() -> torch.Tensor:
+    logits = torch.zeros(1, 6, 1, 1, 1)
+    logits[:, 0] = 2.0
+    return logits
+
+
+def _old_edema_last_composition(anchor: torch.Tensor, scar_delta: torch.Tensor, edema_delta: torch.Tensor) -> torch.Tensor:
+    after_scar = apply_competitive_correction(
+        anchor,
+        scar_delta,
+        torch.ones_like(scar_delta),
+        SCAR_CHANNEL,
+        8.0,
+        competitor_channels=tuple(c for c in range(6) if c != SCAR_CHANNEL),
+    )
+    return apply_competitive_correction(
+        after_scar,
+        edema_delta,
+        torch.ones_like(edema_delta),
+        EDEMA_CHANNEL,
+        8.0,
+        competitor_channels=(0, 1, 2, 3),
+    )
+
+
+def test_strong_edema_correction_cannot_overwrite_post_scar_decision() -> None:
+    anchor = _single_voxel_logits()
+    scar_delta = torch.full((1, 1, 1, 1, 1), 8.0)
+    edema_delta = torch.full((1, 1, 1, 1, 1), 8.0)
+    old_final = _old_edema_last_composition(anchor, scar_delta, edema_delta)
+    _after_edema, final = apply_scar_priority_composition(
+        anchor,
+        scar_delta=scar_delta,
+        edema_delta=edema_delta,
+        scar_support=torch.ones_like(scar_delta),
+        edema_support=torch.ones_like(edema_delta),
+        scar_margin_cap=8.0,
+        edema_margin_cap=8.0,
+        t2_mask=torch.ones_like(edema_delta),
+    )
+    assert old_final.argmax(dim=1).item() == EDEMA_CHANNEL
+    assert final.argmax(dim=1).item() == SCAR_CHANNEL
+
+
+def test_negative_scar_correction_can_release_false_scar_to_edema() -> None:
+    anchor = torch.zeros(1, 6, 1, 1, 1)
+    anchor[:, SCAR_CHANNEL] = 4.0
+    anchor[:, EDEMA_CHANNEL] = 2.0
+    scar_delta = torch.full((1, 1, 1, 1, 1), -6.0)
+    edema_delta = torch.full((1, 1, 1, 1, 1), 3.0)
+    _after_edema, final = apply_scar_priority_composition(
+        anchor,
+        scar_delta=scar_delta,
+        edema_delta=edema_delta,
+        scar_support=torch.ones_like(scar_delta),
+        edema_support=torch.ones_like(edema_delta),
+        scar_margin_cap=8.0,
+        edema_margin_cap=8.0,
+        t2_mask=torch.ones_like(edema_delta),
+    )
+    assert final.argmax(dim=1).item() == EDEMA_CHANNEL
+
+
+def test_scar_priority_preserves_edema_zone_union_semantics() -> None:
+    final_mask = torch.tensor([[[[SCAR_CHANNEL, EDEMA_CHANNEL, 1]]]])
+    scar_mask = final_mask == SCAR_CHANNEL
+    edema_zone = (final_mask == EDEMA_CHANNEL) | scar_mask
+    pure_edema = edema_zone & ~scar_mask
+    assert torch.equal(edema_zone & scar_mask, scar_mask)
+    assert torch.count_nonzero(pure_edema & scar_mask) == 0
+
+
+def test_zero_correction_identity_after_priority_reorder() -> None:
+    anchor = torch.randn(1, 6, 1, 2, 2)
+    zero = torch.zeros(1, 1, 1, 2, 2)
+    after_edema, final = apply_scar_priority_composition(
+        anchor,
+        scar_delta=zero,
+        edema_delta=zero,
+        scar_support=torch.ones_like(zero),
+        edema_support=torch.ones_like(zero),
+        scar_margin_cap=8.0,
+        edema_margin_cap=8.0,
+        t2_mask=torch.ones_like(zero),
+    )
+    torch.testing.assert_close(after_edema, anchor)
+    torch.testing.assert_close(final, anchor)
+
+
+def test_no_t2_identity_after_priority_reorder() -> None:
+    anchor = torch.randn(1, 6, 1, 2, 2)
+    zero = torch.zeros(1, 1, 1, 2, 2)
+    edema_delta = torch.full_like(zero, 8.0)
+    after_edema, final = apply_scar_priority_composition(
+        anchor,
+        scar_delta=zero,
+        edema_delta=edema_delta,
+        scar_support=torch.ones_like(zero),
+        edema_support=torch.ones_like(zero),
+        scar_margin_cap=8.0,
+        edema_margin_cap=8.0,
+        t2_mask=torch.zeros_like(zero),
+    )
+    torch.testing.assert_close(after_edema, anchor)
+    torch.testing.assert_close(final, anchor)
 
 
 def test_bounded_magnitude_and_zero_gate_cannot_change_logits() -> None:
@@ -406,6 +551,53 @@ def test_soft_myocardium_support_excludes_lv_rv_and_decays_continuously() -> Non
     assert 0.0 < far_background < near_shell < 1.0
 
 
+def test_support_distance_map_clips_nonphysical_large_values() -> None:
+    anchor = np.zeros((5, 32, 32), dtype=np.int16)
+    anchor[2, 16, 16] = 1
+    ref = sitk.GetImageFromArray(anchor.astype(np.float32))
+    ref.SetSpacing((1.0, 1.0, 1.0))
+    _scar_support, _edema_support, dist = support_maps(anchor, ref)
+    assert np.isfinite(dist).all()
+    assert float(dist.max()) <= DISTANCE_CLIP_MM[1]
+    assert float(dist.min()) >= DISTANCE_CLIP_MM[0]
+
+
+def test_empty_anchor_support_distance_is_clipped_not_max_float() -> None:
+    anchor = np.zeros((4, 32, 32), dtype=np.int16)
+    ref = sitk.GetImageFromArray(anchor.astype(np.float32))
+    ref.SetSpacing((1.0, 1.0, 1.0))
+    scar_support, edema_support, dist = support_maps(anchor, ref)
+    assert np.isfinite(dist).all()
+    assert float(dist.max()) <= DISTANCE_CLIP_MM[1]
+    assert float(dist.min()) >= DISTANCE_CLIP_MM[0]
+    assert float(scar_support.max()) < 1e-20
+    assert float(edema_support.max()) < 1e-20
+
+
+def test_support_actionable_sampler_excludes_empty_anchor_from_error_pools(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setattr(run_dg, "PATCH_SHAPE", (4, 16, 16))
+    empty = _fake_case_record()
+    empty["anchor_mask"].fill(0)
+    empty["labels"].fill(0)
+    empty["labels"][1, 2, 2] = SCAR_CHANNEL
+    empty["myocardium_support"].fill(0.0)
+    empty["edema_support"].fill(0.0)
+    empty["distance_to_myocardium"].fill(DISTANCE_CLIP_MM[1])
+    actionable = _fake_case_record()
+    cache = _MappingCache({"EmptySupport": empty, "Actionable": actionable})
+    metadata = {
+        "EmptySupport": SimpleNamespace(modality_group="LGE", t2_present=False, availability=(1.0, 0.0, 0.0)),
+        "Actionable": SimpleNamespace(modality_group="LGE", t2_present=True, availability=(1.0, 1.0, 1.0)),
+    }
+    index = run_dg.build_sampler_index(["EmptySupport", "Actionable"], {"EmptySupport": 0, "Actionable": 0}, metadata, cache, stage="A")
+    assert "EmptySupport" not in index["eligible"]["error_fn"]
+    assert "EmptySupport" not in index["eligible"]["error_fp"]
+    assert "EmptySupport" not in index["eligible"]["pathology"]
+    assert "EmptySupport" in index["eligible"]["random"]
+    assert index["support_actionability"]["empty_anchor_tissue_cases"] == ["EmptySupport"]
+    assert index["support_actionability"]["excluded_unactionable_cases"]["error_fn"] == ["EmptySupport"]
+
+
 def test_zero_correction_identity_with_soft_support_inputs() -> None:
     batch = _batch(batch=1, t2=(1.0,))
     batch["myocardium_support"].fill_(0.25)
@@ -455,6 +647,14 @@ class _FakeCache:
 
     def get(self, case_id: str, fold: int, availability: tuple[float, float, float]) -> dict[str, np.ndarray]:
         return self.record
+
+
+class _MappingCache:
+    def __init__(self, records: dict[str, dict[str, np.ndarray]]) -> None:
+        self.records = records
+
+    def get(self, case_id: str, fold: int, availability: tuple[float, float, float]) -> dict[str, np.ndarray]:
+        return self.records[case_id]
 
 
 def test_fixed_inner_evaluation_plan_repeat_exact(monkeypatch: pytest.MonkeyPatch) -> None:

@@ -1,81 +1,82 @@
 {
+  "active_preflight_runtime_label": "gate_b_scar_priority_preflight",
   "approval_token": "APPROVE_GATE_A_R3",
   "approval_token_required": "APPROVE_GATE_A_R3",
   "consistency_validator_status": "PASS",
   "evidence_hashes": {
     "results/20260727_care_dg_dual_pathology_validation/augmentation_alignment_audit.json": {
       "exists": true,
-      "sha256": "a381c5c5e577dd43fca0a756f9441d4c47c40b00e8537e332b59a3d6c8e00b32"
+      "sha256": "658188d639d5cff9f3570d9ae10bebd2a0c0664bdd6294e47efdb80d6ceaec43"
     },
     "results/20260727_care_dg_dual_pathology_validation/checkpoint_resume_parity.json": {
       "exists": true,
-      "sha256": "40538678ee3fe8eb013ec67320227c64d16258b1375d3334672a91cad46dc281"
+      "sha256": "f48e1adb4550a37df0b9c17b112d1ba34a4da410b957907769718febd28b6489"
     },
     "results/20260727_care_dg_dual_pathology_validation/implementation_contract.json": {
       "exists": true,
-      "sha256": "a54dea178bea8e4f871042294c21fd7061bbf555813b6a23c72dc9199c512ea0"
+      "sha256": "25be32188e3e91b83ecb28ded753ec63bfc44f7372a47ef5a2b767934f5ab616"
     },
     "results/20260727_care_dg_dual_pathology_validation/implementation_overfit_receipt.json": {
       "exists": true,
-      "sha256": "7cc34629d61609e7529a112d9df05537fa2074606ea34faf016e53b73283277c"
+      "sha256": "13e314133a012d104bc255704dbd6b95707dd64d8e49f84875472130c313f428"
     },
     "results/20260727_care_dg_dual_pathology_validation/known_bad_report.json": {
       "exists": true,
-      "sha256": "5cfff19eeddc7a9754921cc6ba1a5c64e92802393f70cae20f97f25a82e37525"
+      "sha256": "78ba7ea032859560e37460fd1289226d77c22af781705d3e1434fc2366e21dbe"
     },
     "results/20260727_care_dg_dual_pathology_validation/model_parameter_report.json": {
       "exists": true,
-      "sha256": "2a3981ef6f64b92948cc9d574a97ecf2e484589a051bf15f91317a5641376eee"
+      "sha256": "c22933617c00cc4f2622b9aa8e403c4f677445b2a3f7a582e49759b3fabf53ad"
     },
     "results/20260727_care_dg_dual_pathology_validation/real_case_forward_backward_receipt.json": {
       "exists": true,
-      "sha256": "52f7c467fbf36d766067398890137322549422a74b9a789c7b0c86810d71b2d5"
+      "sha256": "b0a85e3402956c5cc4a0727faa75d19272d714f33df3988488cd088ae882788d"
     },
-    "results/20260727_care_dg_dual_pathology_validation/runtime/gate_a_r3_preflight/fold0/checkpoint_manifest.csv": {
+    "results/20260727_care_dg_dual_pathology_validation/runtime/gate_b_scar_priority_preflight/fold0/checkpoint_manifest.csv": {
       "exists": true,
-      "sha256": "735c363ca8edece5132a1735f0ae4589e30e8fcc98430c3b87077abe9c61fb33"
+      "sha256": "cba2bc7d18d53892fe4774bc33b3e47bcf75c4edb7a6fec022f925d753261117"
     },
-    "results/20260727_care_dg_dual_pathology_validation/runtime/gate_a_r3_preflight/fold0/fold_training_receipt.json": {
+    "results/20260727_care_dg_dual_pathology_validation/runtime/gate_b_scar_priority_preflight/fold0/fold_training_receipt.json": {
       "exists": true,
-      "sha256": "72ddb30f7cb0e07e61fcf061dea7612accc671264299198b0a56e97e15ec8800"
+      "sha256": "9e301463f64b206c3ae3d48762c5e95c97a82dc52a467d8cf5316d040a044e24"
     },
-    "results/20260727_care_dg_dual_pathology_validation/runtime/gate_a_r3_preflight/fold0/inner_evaluation_plan.json": {
+    "results/20260727_care_dg_dual_pathology_validation/runtime/gate_b_scar_priority_preflight/fold0/inner_evaluation_plan.json": {
       "exists": true,
-      "sha256": "67318c44340f57846ded178442c0a7e374997525e3b003ee5079f8b03c7b7b7f"
+      "sha256": "a0a02cea8d15d1a6f5686dc9cdd199588a51e64a8f9917fe8441a05aca3e09c5"
     },
-    "results/20260727_care_dg_dual_pathology_validation/runtime/gate_a_r3_preflight/fold0/inner_evaluation_repeat_receipt.json": {
+    "results/20260727_care_dg_dual_pathology_validation/runtime/gate_b_scar_priority_preflight/fold0/inner_evaluation_repeat_receipt.json": {
       "exists": true,
-      "sha256": "8f3290124d34d6534f8950e4e9a5a25b5f252c519403d84612a3911118159b32"
+      "sha256": "56e0e552ee563264795411d2cca2480ab894590426521f16fd8926180c936c9a"
     },
-    "results/20260727_care_dg_dual_pathology_validation/runtime/gate_a_r3_preflight/fold0/preflight_validator_report.json": {
+    "results/20260727_care_dg_dual_pathology_validation/runtime/gate_b_scar_priority_preflight/fold0/preflight_validator_report.json": {
       "exists": true,
-      "sha256": "8b45caf88a1523ad3d980de745941711704e267e02a9dd3f7b6949fe1601d8b4"
+      "sha256": "d0a311fbe7230d59d9e22ccb6f5b4ba08084b7e80efde891c198d90aa3d789b8"
     },
-    "results/20260727_care_dg_dual_pathology_validation/runtime/gate_a_r3_preflight/fold0/resolved_training_contract.json": {
+    "results/20260727_care_dg_dual_pathology_validation/runtime/gate_b_scar_priority_preflight/fold0/resolved_training_contract.json": {
       "exists": true,
-      "sha256": "016b51050b96b77c05f8db95f903b6ad5aa21df577c0c0e0f0a8aafe3400bffa"
+      "sha256": "f87ec6ccdee9ec98262ad17ba9b5fe8b3b3f7127501742a6a37cc9e2c3a834f2"
     },
-    "results/20260727_care_dg_dual_pathology_validation/runtime/gate_a_r3_preflight/fold0/sampler_quota_audit_stage_a.json": {
+    "results/20260727_care_dg_dual_pathology_validation/runtime/gate_b_scar_priority_preflight/fold0/sampler_quota_audit_stage_a.json": {
       "exists": true,
-      "sha256": "999bdf6a89d9ed0f0d1931592cca5b9344efb2c3b1201535f58cb6040f3da50c"
+      "sha256": "2d03eda910b9042af00c7fa558533f21de6d9b23dd290153160b38c37e66a6ee"
     },
-    "results/20260727_care_dg_dual_pathology_validation/runtime/gate_a_r3_preflight/fold0/sampler_quota_audit_stage_b.json": {
+    "results/20260727_care_dg_dual_pathology_validation/runtime/gate_b_scar_priority_preflight/fold0/sampler_quota_audit_stage_b.json": {
       "exists": true,
-      "sha256": "669ebc93fa16310a041a94fb4bab70a4344cb74012582f6eb8988e891b046ee7"
+      "sha256": "6f6d6e5b169b572302c2eff7f0494b2a29602f07775b1fcf4ef9639c4df5d934"
     },
-    "results/20260727_care_dg_dual_pathology_validation/runtime/gate_a_r3_preflight/fold0/training_curve.csv": {
+    "results/20260727_care_dg_dual_pathology_validation/runtime/gate_b_scar_priority_preflight/fold0/training_curve.csv": {
       "exists": true,
-      "sha256": "7676485b50e9f7c6e22df9ce46a0104d3e90923b16ebe5137e7516d4046054b1"
+      "sha256": "b2fd406d978d9cd05fbb303bdff8c1d86565e00844bb701e0ffc3e3791cecfbf"
     },
     "results/20260727_care_dg_dual_pathology_validation/strict_validator_report.json": {
       "exists": true,
-      "sha256": "30739829f18813ae120cd9b81e04f57e04685b3ae93c98c8bb326fac8fb44f17"
+      "sha256": "a25801e4d30cb348db0bfaba30fba97ea041f6db5e48840b4aff2daa95bcc2de"
     }
   },
   "fixed_inner_plan": {
     "case_count": 12,
     "patch_count": 72,
-    "plan_sha256": "50f8b471f5db128dde8c88f7fe15c0cdf0d15f3a0d9a720bb5606b44d84bff42"
+    "plan_sha256": "ca70193d3c9f6c0d2dd81dfc6e38952b953bb4b16228d7cfa4ca2352d5f15828"
   },
   "gate_revision": "A-R3",
   "implementation_contract": "results/20260727_care_dg_dual_pathology_validation/implementation_contract.json",
@@ -90,12 +91,12 @@
     "inner_eval_repeat": {
       "exists": true,
       "path": "results/20260727_care_dg_dual_pathology_validation/runtime/gate_a_r3_preflight/fold0/inner_evaluation_repeat_receipt.json",
-      "sha256": "8f3290124d34d6534f8950e4e9a5a25b5f252c519403d84612a3911118159b32"
+      "sha256": "f80f55f567bb2e72ea60c36969df9cb675f30c1f5414f1c00b971b12df0e86f4"
     },
     "inner_evaluation_plan": {
       "exists": true,
       "path": "results/20260727_care_dg_dual_pathology_validation/runtime/gate_a_r3_preflight/fold0/inner_evaluation_plan.json",
-      "sha256": "67318c44340f57846ded178442c0a7e374997525e3b003ee5079f8b03c7b7b7f"
+      "sha256": "546588d4b4641c062ece3e489bfbd178e310c9586647cc307f2933d145e853ba"
     },
     "inner_split_manifest": {
       "exists": true,
@@ -110,17 +111,17 @@
     "preflight_receipt": {
       "exists": true,
       "path": "results/20260727_care_dg_dual_pathology_validation/runtime/gate_a_r3_preflight/fold0/fold_training_receipt.json",
-      "sha256": "72ddb30f7cb0e07e61fcf061dea7612accc671264299198b0a56e97e15ec8800"
+      "sha256": "4d0f5fe0a3f0a5a381b216752a7ba4a7226d352bc6610683073f2611c690d1f2"
     },
     "preflight_validator": {
       "exists": true,
       "path": "results/20260727_care_dg_dual_pathology_validation/runtime/gate_a_r3_preflight/fold0/preflight_validator_report.json",
-      "sha256": "8b45caf88a1523ad3d980de745941711704e267e02a9dd3f7b6949fe1601d8b4"
+      "sha256": "41659df4ed3a17824c56a4d19ed79ef138008db769085b045e1d10415a952ac0"
     },
     "resolved_training_contract": {
       "exists": true,
       "path": "results/20260727_care_dg_dual_pathology_validation/runtime/gate_a_r3_preflight/fold0/resolved_training_contract.json",
-      "sha256": "016b51050b96b77c05f8db95f903b6ad5aa21df577c0c0e0f0a8aafe3400bffa"
+      "sha256": "4c8505758ce4f2065169c316898ae546258dba06588c1291a9fb14e6a6a12e50"
     },
     "sampler_quota_audit_stage_a": {
       "exists": true,
@@ -136,14 +137,14 @@
   "real": {
     "checkpoint_resume": {
       "checkpoint": "results/20260727_care_dg_dual_pathology_validation/gate_a_repaired_semantics/checkpoint_resume_parity.pt",
-      "checkpoint_sha256": "dfd9473ffdc51f57c157cf96123ad7ee480c302dc19dbe4bf622e7b3d417a6a7",
-      "created_at_utc": "2026-07-27T13:27:11Z",
+      "checkpoint_sha256": "51ee1be955acf276dc0b66bea1cde3782c8ae521c9aba7b540d451260a9445dc",
+      "created_at_utc": "2026-07-27T15:30:28Z",
       "max_abs_final_logits_delta": 0.0,
       "resume_step": 0,
       "status": "PASS"
     },
     "forward": {
-      "created_at_utc": "2026-07-27T13:27:10Z",
+      "created_at_utc": "2026-07-27T15:30:28Z",
       "device": "NVIDIA H100 NVL",
       "formal_training_credit": 0,
       "receipts": [
@@ -155,25 +156,25 @@
             105,
             124
           ],
-          "changed_voxels": 198,
-          "edema_decoder_grad_abs_sum": 4380.734267696738,
+          "changed_voxels": 186,
+          "edema_decoder_grad_abs_sum": 4380.912661485374,
           "edema_delta_abs_sum": 9513.1640625,
-          "loss": 3.9995839595794678,
+          "loss": 4.005250453948975,
           "loss_finite": true,
           "metrics": {
             "edema_gate": 0.6346961259841919,
-            "edema_margin": 3.15447735786438,
-            "edema_seg": 0.9790999293327332,
+            "edema_margin": 3.1542563438415527,
+            "edema_seg": 0.9798439741134644,
             "identity": 0.10895521193742752,
-            "loss": 3.9995839595794678,
+            "loss": 4.005250453948975,
             "remote": 0.5311723947525024,
             "scar_gate": 0.48889780044555664,
-            "scar_margin": 2.0008156299591064,
-            "scar_seg": 1.1058512926101685
+            "scar_margin": 2.020937442779541,
+            "scar_seg": 1.1057982444763184
           },
           "no_t2_edema_delta_exact_zero": true,
           "no_t2_edema_grad_exact_zero": true,
-          "scar_decoder_grad_abs_sum": 9303.266899943352
+          "scar_decoder_grad_abs_sum": 9204.039110422134
         },
         {
           "case_id": "Case1001",
@@ -201,7 +202,7 @@
           },
           "no_t2_edema_delta_exact_zero": true,
           "no_t2_edema_grad_exact_zero": true,
-          "scar_decoder_grad_abs_sum": 4189.429560780525
+          "scar_decoder_grad_abs_sum": 4189.431147277355
         }
       ],
       "schema_version": 1,
@@ -209,10 +210,10 @@
     },
     "overfit": {
       "case_id": "Case2001",
-      "created_at_utc": "2026-07-27T13:27:17Z",
+      "created_at_utc": "2026-07-27T15:30:35Z",
       "curve_path": "results/20260727_care_dg_dual_pathology_validation/gate_a_repaired_semantics/implementation_overfit_curve.csv",
-      "edema_active_loss_drop_fraction": 0.4252041250777239,
-      "first_loss": 3.9995839595794678,
+      "edema_active_loss_drop_fraction": 0.4248324563171011,
+      "first_loss": 4.005250453948975,
       "formal_training_credit": 0,
       "gate_requirements": {
         "correct_direction_fraction_min": 0.1,
@@ -222,38 +223,38 @@
         "scar_active_loss_drop_fraction_min": 0.3
       },
       "last_gate_magnitude_stats": {
-        "changed_voxels": 956,
+        "changed_voxels": 963,
         "correct_direction_fraction": 1.0,
-        "edema_active_loss": 0.9276033155620098,
-        "edema_m_fn_mean": 2.2501673698425293,
-        "edema_m_fp_mean": 2.440577983856201,
-        "edema_m_saturation_fraction": 0.013092041015625,
-        "edema_q_fn_non_fn_median": 0.24422599375247955,
-        "edema_q_fn_true_fn_median": 0.9684783816337585,
-        "edema_q_fp_non_fp_median": 0.22795145213603973,
-        "edema_q_fp_true_fp_median": 0.9279518723487854,
+        "edema_active_loss": 0.9286310635507107,
+        "edema_m_fn_mean": 2.3087501525878906,
+        "edema_m_fp_mean": 2.38824462890625,
+        "edema_m_saturation_fraction": 0.016265869140625,
+        "edema_q_fn_non_fn_median": 0.24056802690029144,
+        "edema_q_fn_true_fn_median": 0.9810556769371033,
+        "edema_q_fp_non_fp_median": 0.23159770667552948,
+        "edema_q_fp_true_fp_median": 0.9600238800048828,
         "elapsed_seconds": 6.8,
-        "loss": 1.9997875690460205,
-        "scar_active_loss": 1.1014984920620918,
-        "scar_m_fn_mean": 2.0558533668518066,
-        "scar_m_fp_mean": 2.155305862426758,
-        "scar_m_saturation_fraction": 0.01119232177734375,
-        "scar_q_fn_non_fn_median": 0.24691711366176605,
-        "scar_q_fn_true_fn_median": 0.9573251008987427,
-        "scar_q_fp_non_fp_median": 0.22749754786491394,
-        "scar_q_fp_true_fp_median": 0.9414588212966919,
+        "loss": 1.9969395399093628,
+        "scar_active_loss": 1.097300224006176,
+        "scar_m_fn_mean": 2.0399858951568604,
+        "scar_m_fp_mean": 2.168761968612671,
+        "scar_m_saturation_fraction": 0.00951385498046875,
+        "scar_q_fn_non_fn_median": 0.24680018424987793,
+        "scar_q_fn_true_fn_median": 0.9676584601402283,
+        "scar_q_fp_non_fp_median": 0.2285776287317276,
+        "scar_q_fp_true_fp_median": 0.9406119585037231,
         "step": 300
       },
-      "last_loss": 1.9997875690460205,
+      "last_loss": 1.9969395399093628,
       "learning_rate": 0.001,
-      "scar_active_loss_drop_fraction": 0.3092966806762734,
+      "scar_active_loss_drop_fraction": 0.31190634886165197,
       "schema_version": 1,
       "status": "PASS",
       "steps": 300
     }
   },
-  "resolved_training_contract_path": "results/20260727_care_dg_dual_pathology_validation/runtime/gate_a_r3_preflight/fold0/resolved_training_contract.json",
-  "resolved_training_contract_sha256": "3438ce48232fbde7a804de60ec3e8cfdd5b99220c9e1ce2018839ba529f4c90b",
+  "resolved_training_contract_path": "results/20260727_care_dg_dual_pathology_validation/runtime/gate_b_scar_priority_preflight/fold0/resolved_training_contract.json",
+  "resolved_training_contract_sha256": "54c13e59230f62bb174796275a27733f21bdbb423948d68ca1faefab4c588505",
   "stage_a_learning_rates": {
     "pathology_group": 0.0003,
     "representation_group": 0.0003
@@ -265,7 +266,7 @@
       "pathology": 0.25,
       "random": 0.25
     },
-    "sampler_index_sha256": "f9fb26c703f4261a64edf3c172133ef83a62445fce8c886b6b567f8b058bd846",
+    "sampler_index_sha256": "d4f237f850ab0175d4462d18f393583947fa9c41577d0014f193d37cb5dafcde",
     "silent_fallback_count": 0,
     "status": "PASS",
     "target_hit_rates": {
@@ -285,7 +286,7 @@
       "pathology": 0.25,
       "random": 0.25
     },
-    "sampler_index_sha256": "b25a0e4d275e860fb7fe8de02c717f5ce1caf148b501dac81bf42c8d2e4a84d1",
+    "sampler_index_sha256": "72157b65e57c4ead08d72641ee25d3c1c25d142ee654031a219ad92909af5b1f",
     "silent_fallback_count": 0,
     "status": "PASS",
     "target_hit_rates": {
@@ -296,7 +297,7 @@
   },
   "state": "AWAITING_HUMAN_ACCEPTANCE_GATE_A_R3",
   "static": {
-    "created_at_utc": "2026-07-27T13:27:08Z",
+    "created_at_utc": "2026-07-27T15:30:26Z",
     "py_compile": {
       "cmd": [
         "/users/a/e/aereinh/CARE/envs/env_CARE/bin/python",
@@ -311,7 +312,7 @@
         "scripts/evaluation/finalize_care_dg_gate_a_r3_evidence.py",
         "scripts/evaluation/validate_care_dg_gate_a_consistency.py"
       ],
-      "elapsed_seconds": 0.117,
+      "elapsed_seconds": 0.135,
       "returncode": 0,
       "stderr": "",
       "stdout": ""
@@ -324,10 +325,10 @@
         "tests/care_dg",
         "-q"
       ],
-      "elapsed_seconds": 4.709,
+      "elapsed_seconds": 5.667,
       "returncode": 0,
       "stderr": "",
-      "stdout": "..........................                                               [100%]\n=============================== warnings summary ===============================\n<frozen importlib._bootstrap>:488\n  <frozen importlib._bootstrap>:488: DeprecationWarning: builtin type SwigPyPacked has no __module__ attribute\n\n<frozen importlib._bootstrap>:488\n  <frozen importlib._bootstrap>:488: DeprecationWarning: builtin type SwigPyObject has no __module__ attribute\n\n<frozen importlib._bootstrap>:488\n  <frozen importlib._bootstrap>:488: DeprecationWarning: builtin type swigvarlink has no __module__ attribute\n\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n26 passed, 3 warnings in 3.52s"
+      "stdout": "....................................                                     [100%]\n=============================== warnings summary ===============================\n<frozen importlib._bootstrap>:488\n  <frozen importlib._bootstrap>:488: DeprecationWarning: builtin type SwigPyPacked has no __module__ attribute\n\n<frozen importlib._bootstrap>:488\n  <frozen importlib._bootstrap>:488: DeprecationWarning: builtin type SwigPyObject has no __module__ attribute\n\n<frozen importlib._bootstrap>:488\n  <frozen importlib._bootstrap>:488: DeprecationWarning: builtin type swigvarlink has no __module__ attribute\n\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n36 passed, 3 warnings in 3.94s"
     },
     "status": "PASS",
     "strict_validator": {
@@ -340,14 +341,14 @@
         "scripts/training/run_care_dg.py",
         "--unit-smoke"
       ],
-      "elapsed_seconds": 1.454,
+      "elapsed_seconds": 1.387,
       "returncode": 0,
       "stderr": "",
-      "stdout": "{\n  \"edema_delta_nonconstant\": true,\n  \"final_logits_shape\": [\n    1,\n    6,\n    4,\n    16,\n    16\n  ],\n  \"scar_delta_nonconstant\": true,\n  \"status\": \"PASS\"\n}"
+      "stdout": "{\n  \"edema_delta_nonconstant\": true,\n  \"final_logits_shape\": [\n    1,\n    6,\n    4,\n    16,\n    16\n  ],\n  \"has_after_edema_logits\": true,\n  \"has_final_logits_after_scar_priority\": true,\n  \"scar_delta_nonconstant\": true,\n  \"status\": \"PASS\"\n}"
     }
   },
   "status": "GATE_A_REPAIRED_IMPLEMENTATION_PASS",
   "strict_validator_failures": [],
   "strict_validator_status": "PASS",
-  "updated_at_utc": "2026-07-27T13:27:39Z"
+  "updated_at_utc": "2026-07-27T15:38:36Z"
 }
