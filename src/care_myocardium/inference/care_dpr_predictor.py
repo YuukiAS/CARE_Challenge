@@ -283,7 +283,7 @@ def _refine_and_score_candidate(model: torch.nn.Module, maps: dict[str, np.ndarr
     return refined_mask, accept_logit, utility_reg, audit
 
 
-def run_two_pass_full_volume_dpr(model: torch.nn.Module, batch_np: dict[str, np.ndarray], *, patch_shape: tuple[int, int, int] = (8, 128, 128), overlap: float = 0.5, proposal_threshold: float = 0.5, refined_threshold: float = 0.5, utility_threshold: float = 0.5, scar_utility_threshold: float | None = None, edema_utility_threshold: float | None = None, device: torch.device | None = None) -> dict[str, Any]:
+def run_two_pass_full_volume_dpr(model: torch.nn.Module, batch_np: dict[str, np.ndarray], *, patch_shape: tuple[int, int, int] = (8, 128, 128), overlap: float = 0.5, proposal_threshold: float = 0.5, refined_threshold: float = 0.5, utility_threshold: float = 0.5, scar_utility_threshold: float | None = None, edema_utility_threshold: float | None = None, utility_regression_min: float | None = None, scar_utility_regression_min: float | None = None, edema_utility_regression_min: float | None = None, device: torch.device | None = None) -> dict[str, Any]:
     """Formal R2 two-pass full-volume DPR inference.
 
     Pass 1 aggregates full-resolution shared features and proposal maps. Pass 2
@@ -313,7 +313,10 @@ def run_two_pass_full_volume_dpr(model: torch.nn.Module, batch_np: dict[str, np.
             p_refined_full[roi] = np.maximum(p_refined_full[roi], refined_mask[roi].astype(np.float32))
             score_region = (cand_anchor | refined_mask | seed)
             threshold_for_pathology = float(edema_utility_threshold if pathology == "edema_zone" and edema_utility_threshold is not None else scar_utility_threshold if pathology == "scar" and scar_utility_threshold is not None else utility_threshold)
-            accepted = float(audit["utility_score"]) >= threshold_for_pathology
+            score_accept = float(audit["utility_score"]) >= threshold_for_pathology
+            regression_floor = edema_utility_regression_min if pathology == "edema_zone" and edema_utility_regression_min is not None else scar_utility_regression_min if pathology == "scar" and scar_utility_regression_min is not None else utility_regression_min
+            regression_accept = True if regression_floor is None else float(utility_reg) >= float(regression_floor)
+            accepted = bool(score_accept and regression_accept)
             if cand.candidate_type == "ADD_FN":
                 if accepted:
                     result[refined_mask] = True
@@ -326,7 +329,15 @@ def run_two_pass_full_volume_dpr(model: torch.nn.Module, batch_np: dict[str, np.
             else:
                 result[cand_anchor] = True
                 action = cand.action_if_rejected
-            audit.update({"accepted": bool(accepted), "action": action, "legal_action": action in LEGAL_ACTIONS, "utility_threshold": threshold_for_pathology})
+            audit.update({
+                "accepted": bool(accepted),
+                "action": action,
+                "legal_action": action in LEGAL_ACTIONS,
+                "utility_threshold": threshold_for_pathology,
+                "utility_regression_min": regression_floor,
+                "score_accepts_candidate": bool(score_accept),
+                "regression_accepts_candidate": bool(regression_accept),
+            })
             all_audit.append(audit)
             candidate_records.append({"pathology": pathology, "candidate_type": cand.candidate_type, "accepted": bool(accepted), "utility_score": audit["utility_score"], "utility_regression": utility_reg})
             candidate_evidence.append({
@@ -339,6 +350,9 @@ def run_two_pass_full_volume_dpr(model: torch.nn.Module, batch_np: dict[str, np.
                 "refined_local_mask": refined_mask.copy(),
                 "utility_score": float(audit["utility_score"]),
                 "utility_regression": float(utility_reg),
+                "utility_regression_min": regression_floor,
+                "score_accepts_candidate": bool(score_accept),
+                "regression_accepts_candidate": bool(regression_accept),
                 "accepted": bool(accepted),
                 "action": action,
             })

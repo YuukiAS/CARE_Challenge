@@ -39,6 +39,8 @@ from src.care_myocardium.training.care_dpr_trainer import load_care_dpr_checkpoi
 TASK_KEY = "20260728_care_dpr_fold0_global_redesign"
 MODEL_NAME = "A2_care_dpr_gate_b_r1_selected"
 ANCHOR_NAME = "A0_nnunet_anchor"
+REGRESSION_MIN_CANDIDATES = (0.50, 0.75, 0.90, 0.95, 0.99)
+HELP_HARM_DICE_DELTA_THRESHOLD = 0.005
 
 
 def now_utc() -> str:
@@ -49,28 +51,40 @@ def read_json(path: Path) -> dict[str, Any]:
     return json.loads(path.read_text(encoding="utf-8"))
 
 
-def choose_pathology_threshold(rows: list[dict[str, Any]], pathology: str) -> dict[str, Any]:
+def regression_candidates(value: float | None) -> tuple[float | None, ...]:
+    if value is None or float(value) < 0.0:
+        return REGRESSION_MIN_CANDIDATES
+    return (float(value),)
+
+
+def choose_pathology_threshold(rows: list[dict[str, Any]], pathology: str, *, utility_regression_min_candidates: tuple[float | None, ...]) -> dict[str, Any]:
     subset = [r for r in rows if r.get("pathology") == pathology]
     scores = np.asarray([r["utility_score"] for r in subset], dtype=np.float64)
     utilities = np.asarray([r["utility_target"] for r in subset], dtype=np.float64)
+    regressions = np.asarray([r.get("utility_regression", 0.0) for r in subset], dtype=np.float64)
     out = []
-    for threshold in THRESHOLD_CANDIDATES:
-        accepted = scores >= float(threshold)
-        signed = float(utilities[accepted].sum()) if utilities.size else 0.0
-        row = {
-            "pathology": pathology,
-            "threshold": float(threshold),
-            "accepted": int(accepted.sum()),
-            "rejected": int((~accepted).sum()),
-            "signed_net_utility": signed,
-            "positive_accepted_utility": float(np.clip(utilities[accepted], 0, None).sum()) if utilities.size else 0.0,
-            "negative_accepted_utility": float(np.clip(utilities[accepted], None, 0).sum()) if utilities.size else 0.0,
-            "harmful_accepted_candidate_count": int((utilities[accepted] < 0).sum()) if utilities.size else 0,
-            "eligible": bool(accepted.any() and (~accepted).any() and signed > 0.0),
-        }
-        out.append(row)
+    for regression_min in utility_regression_min_candidates:
+        for threshold in THRESHOLD_CANDIDATES:
+            accepted = scores >= float(threshold)
+            if regression_min is not None:
+                accepted = accepted & (regressions >= float(regression_min))
+            signed = float(utilities[accepted].sum()) if utilities.size else 0.0
+            row = {
+                "pathology": pathology,
+                "threshold": float(threshold),
+                "accepted": int(accepted.sum()),
+                "rejected": int((~accepted).sum()),
+                "signed_net_utility": signed,
+                "positive_accepted_utility": float(np.clip(utilities[accepted], 0, None).sum()) if utilities.size else 0.0,
+                "negative_accepted_utility": float(np.clip(utilities[accepted], None, 0).sum()) if utilities.size else 0.0,
+                "harmful_accepted_candidate_count": int((utilities[accepted] < 0).sum()) if utilities.size else 0,
+                "utility_regression_min": regression_min,
+                "selection_uses_accept_logit_and_signed_regression_gate": regression_min is not None,
+                "eligible": bool(accepted.any() and (~accepted).any() and signed > 0.0),
+            }
+            out.append(row)
     eligible = [r for r in out if r["eligible"]]
-    selected = max(eligible or out, key=lambda r: (float(r["signed_net_utility"]), -abs(float(r["threshold"]) - 0.5))) if out else {"threshold": 0.5, "accepted": 0, "rejected": 0, "signed_net_utility": 0.0, "eligible": False}
+    selected = max(eligible, key=lambda r: (float(r.get("utility_regression_min") or -1.0), float(r["threshold"]), float(r["signed_net_utility"]))) if eligible else (max(out, key=lambda r: (float(r["signed_net_utility"]), float(r.get("utility_regression_min") or -1.0), float(r["threshold"]))) if out else {"threshold": 0.5, "accepted": 0, "rejected": 0, "signed_net_utility": 0.0, "eligible": False, "utility_regression_min": None})
     labels = np.asarray([r["accept_target"] for r in subset], dtype=np.uint8)
     return {
         "pathology": pathology,
@@ -84,6 +98,8 @@ def choose_pathology_threshold(rows: list[dict[str, Any]], pathology: str) -> di
         "utility_auroc": auroc(scores, labels) if labels.size else 0.5,
         "utility_auprc": aupr(scores, labels) if labels.size else 0.0,
         "positive_prevalence": float(labels.mean()) if labels.size else 0.0,
+        "utility_regression_min_candidates": list(utility_regression_min_candidates),
+        "selected_utility_regression_min": selected.get("utility_regression_min"),
     }
 
 
@@ -110,7 +126,8 @@ def delta_rows(casewise: list[dict[str, Any]], population: str, model_name: str)
             remote_pred = float(pred["remote_fp_volume_mm3"])
             comp_anchor = float(anchor["component_count"])
             comp_pred = float(pred["component_count"])
-            rows.append({"population": population, "case_id": case_id, "pathology": pathology, "anchor_dice": anchor["dice"], "dpr_dice": pred["dice"], "dice_delta": dice_delta, "help_harm": "help" if dice_delta > 1e-6 else "harm" if dice_delta < -1e-6 else "neutral"})
+            help_harm = "help" if dice_delta >= HELP_HARM_DICE_DELTA_THRESHOLD else "harm" if dice_delta <= -HELP_HARM_DICE_DELTA_THRESHOLD else "neutral"
+            rows.append({"population": population, "case_id": case_id, "pathology": pathology, "anchor_dice": anchor["dice"], "dpr_dice": pred["dice"], "dice_delta": dice_delta, "help_harm": help_harm, "help_harm_dice_delta_threshold": HELP_HARM_DICE_DELTA_THRESHOLD})
             deltas.append(dice_delta)
             hd_ratios.append(hd_pred / max(hd_anchor, 1e-6) if math.isfinite(hd_pred) and math.isfinite(hd_anchor) else math.inf)
             remote_ratios.append(remote_pred / max(remote_anchor, 1e-6))
@@ -150,6 +167,7 @@ def run_gate_b_r1(args: argparse.Namespace) -> dict[str, Any]:
     device = torch.device(args.device if args.device else ("cuda" if torch.cuda.is_available() and not args.cpu else "cpu"))
     cache = CaseCache(max_cases=int(args.cache_cases))
     out_root = runtime_root / "gate_b_r1_evaluation"
+    out_root.mkdir(parents=True, exist_ok=True)
     selection_rows: list[dict[str, Any]] = []
     threshold_rows: list[dict[str, Any]] = []
     inner_candidate_rows: list[dict[str, Any]] = []
@@ -166,8 +184,8 @@ def run_gate_b_r1(args: argparse.Namespace) -> dict[str, Any]:
             r["checkpoint_step"] = int(step)
             r["checkpoint"] = str(ckpt.relative_to(REPO_ROOT))
         inner_candidate_rows.extend(cand_rows)
-        scar_sel = choose_pathology_threshold(cand_rows, "scar")
-        edema_sel = choose_pathology_threshold(cand_rows, "edema_zone")
+        scar_sel = choose_pathology_threshold(cand_rows, "scar", utility_regression_min_candidates=regression_candidates(args.scar_utility_regression_min))
+        edema_sel = choose_pathology_threshold(cand_rows, "edema_zone", utility_regression_min_candidates=regression_candidates(args.edema_utility_regression_min))
         threshold_rows.extend([{**r, "checkpoint_step": int(step)} for r in scar_sel["threshold_rows"] + edema_sel["threshold_rows"]])
         selected_eval = evaluate_population(
             model=model,
@@ -181,6 +199,8 @@ def run_gate_b_r1(args: argparse.Namespace) -> dict[str, Any]:
             scar_utility_threshold=float(scar_sel["selected_threshold"]),
             edema_utility_threshold=float(edema_sel["selected_threshold"]),
             model_name=f"checkpoint_step{step:05d}_inner_selected",
+            scar_utility_regression_min=scar_sel["selected"].get("utility_regression_min"),
+            edema_utility_regression_min=edema_sel["selected"].get("utility_regression_min"),
         )
         inner_casewise = []
         inner_casewise.extend(anchor_rows_for_cases(inner_cases, "fold0_train_side_complete_inner12", case_to_fold, metadata, cache))
@@ -209,14 +229,40 @@ def run_gate_b_r1(args: argparse.Namespace) -> dict[str, Any]:
             "eligible": bool(eligibility),
             "eligibility_summary": inner_delta_summary,
             "outer_fold0_used": False,
+            "scar_utility_regression_min": scar_sel["selected"].get("utility_regression_min"),
+            "edema_utility_regression_min": edema_sel["selected"].get("utility_regression_min"),
+            "selection_uses_accept_logit_and_signed_regression_gate": True,
         }
         selection_rows.append(row)
+        write_csv(out_root / "gate_b_r1_checkpoint_selection_rows.csv", selection_rows)
+        write_csv(out_root / "gate_b_r1_threshold_rows.csv", threshold_rows)
+        write_csv(out_root / "gate_b_r1_inner_candidate_rows.csv", inner_candidate_rows)
+        write_csv(out_root / "gate_b_r1_inner_casewise_metrics.csv", inner_casewise_all)
+        write_json(out_root / "gate_b_r1_checkpoint_threshold_selection.json", {"status": "IN_PROGRESS", "rows": selection_rows, "threshold_rows": threshold_rows, "outer_fold0_used": False})
         if eligibility:
             eligible.append(row)
         del model
         if torch.cuda.is_available():
             torch.cuda.empty_cache()
     if not eligible:
+        failure = {
+            "task_key": TASK_KEY,
+            "gate": "DPR_GATE_B_R1",
+            "generated_at_utc": now_utc(),
+            "status": "GATE_B_R1_REPAIR_REQUIRED",
+            "failure": "CARE_DPR_GATE_B_R1_NO_ELIGIBLE_CHECKPOINT_INNER_ONLY",
+            "selection_rule": "inner12_all_8_checkpoints_independent_scar_edema_thresholds_with_candidate_signed_regression_gate",
+            "scar_utility_regression_min_candidates": list(regression_candidates(args.scar_utility_regression_min)),
+            "edema_utility_regression_min_candidates": list(regression_candidates(args.edema_utility_regression_min)),
+            "outer_fold0_used_for_checkpoint_or_threshold_selection": False,
+            "fold_expansion_authorized": False,
+            "scientific_final_output_credit": 0,
+            "rows": selection_rows,
+            "threshold_rows": threshold_rows,
+        }
+        write_json(out_root / "gate_b_r1_checkpoint_threshold_selection.json", {"status": "FAIL", "rows": selection_rows, "threshold_rows": threshold_rows, "outer_fold0_used": False})
+        write_json(out_root / "gate_b_r1_summary.json", failure)
+        write_json(result_root / "gate_b_r1_summary.json", {**failure, "evidence_root": str(out_root.relative_to(REPO_ROOT))})
         raise RuntimeError("CARE_DPR_GATE_B_R1_NO_ELIGIBLE_CHECKPOINT_INNER_ONLY")
     selected = max(eligible, key=lambda r: (float(r["avg_dice_delta"]), -float(r["avg_hd95_ratio"]), -float(r["avg_remote_fp_ratio"]), -int(r["checkpoint_step"])))
     checkpoint = REPO_ROOT / selected["checkpoint"]
@@ -225,8 +271,8 @@ def run_gate_b_r1(args: argparse.Namespace) -> dict[str, Any]:
     casewise: list[dict[str, Any]] = []
     casewise.extend(anchor_rows_for_cases(outer_val, "fold0_outer44", case_to_fold, metadata, cache))
     casewise.extend(anchor_rows_for_cases(complete_val, "fold0_complete_trimodal16", case_to_fold, metadata, cache))
-    outer_eval = evaluate_population(model=model, cases=outer_val, population="fold0_outer44", case_to_fold=case_to_fold, metadata=metadata, cache=cache, device=device, utility_threshold=0.5, scar_utility_threshold=float(selected["scar_utility_threshold"]), edema_utility_threshold=float(selected["edema_utility_threshold"]), model_name=MODEL_NAME)
-    complete_eval = evaluate_population(model=model, cases=complete_val, population="fold0_complete_trimodal16", case_to_fold=case_to_fold, metadata=metadata, cache=cache, device=device, utility_threshold=0.5, scar_utility_threshold=float(selected["scar_utility_threshold"]), edema_utility_threshold=float(selected["edema_utility_threshold"]), model_name=MODEL_NAME)
+    outer_eval = evaluate_population(model=model, cases=outer_val, population="fold0_outer44", case_to_fold=case_to_fold, metadata=metadata, cache=cache, device=device, utility_threshold=0.5, scar_utility_threshold=float(selected["scar_utility_threshold"]), edema_utility_threshold=float(selected["edema_utility_threshold"]), model_name=MODEL_NAME, scar_utility_regression_min=selected.get("scar_utility_regression_min"), edema_utility_regression_min=selected.get("edema_utility_regression_min"))
+    complete_eval = evaluate_population(model=model, cases=complete_val, population="fold0_complete_trimodal16", case_to_fold=case_to_fold, metadata=metadata, cache=cache, device=device, utility_threshold=0.5, scar_utility_threshold=float(selected["scar_utility_threshold"]), edema_utility_threshold=float(selected["edema_utility_threshold"]), model_name=MODEL_NAME, scar_utility_regression_min=selected.get("scar_utility_regression_min"), edema_utility_regression_min=selected.get("edema_utility_regression_min"))
     casewise.extend(outer_eval["casewise"]); casewise.extend(complete_eval["casewise"])
     summary = summarize(casewise)
     help_harm, help_harm_summary = delta_rows(casewise, "fold0_complete_trimodal16", MODEL_NAME)
@@ -236,7 +282,7 @@ def run_gate_b_r1(args: argparse.Namespace) -> dict[str, Any]:
         rows = [r for r in help_harm if r["pathology"] == pathology]
         help_count = sum(1 for r in rows if r["help_harm"] == "help")
         harm_count = sum(1 for r in rows if r["help_harm"] == "harm")
-        hh_by_path[pathology] = {"help": help_count, "harm": harm_count, "help_ge_harm_minus_1": help_count >= harm_count - 1}
+        hh_by_path[pathology] = {"help": help_count, "harm": harm_count, "help_ge_harm_minus_1": help_count >= harm_count - 1, "help_harm_dice_delta_threshold": HELP_HARM_DICE_DELTA_THRESHOLD}
         if help_count < harm_count - 1:
             failures.append(f"{pathology}_help_lt_harm_minus_1")
         if not help_harm_summary[pathology]["not_below_anchor_by_more_than_0.005"]:
@@ -274,7 +320,9 @@ def run_gate_b_r1(args: argparse.Namespace) -> dict[str, Any]:
         "selected_checkpoint": selected,
         "checkpoint_step": int(step),
         "checkpoint_sha256": sha256_file(checkpoint),
-        "selection_rule": "inner12_all_8_checkpoints_independent_scar_edema_signed_utility_thresholds",
+        "selection_rule": "inner12_all_8_checkpoints_independent_scar_edema_thresholds_with_candidate_signed_regression_gate",
+        "scar_utility_regression_min": selected.get("scar_utility_regression_min"),
+        "edema_utility_regression_min": selected.get("edema_utility_regression_min"),
         "outer_fold0_used_for_checkpoint_or_threshold_selection": False,
         "teacher_roi_inner_outer_inference": False,
         "predicted_roi_only_for_inner_outer_inference": True,
@@ -287,6 +335,9 @@ def run_gate_b_r1(args: argparse.Namespace) -> dict[str, Any]:
             "status": "PASS" if all(row["two_pass_full_volume_candidate_pipeline"] and not row["pass1_aggregates_patch_final_labels"] and not row["pass1_runs_component_decision"] and row["pass2_refines_each_candidate"] for row in outer_eval["activation"] + complete_eval["activation"]) else "FAIL",
             "scar_utility_threshold": float(selected["scar_utility_threshold"]),
             "edema_utility_threshold": float(selected["edema_utility_threshold"]),
+            "scar_utility_regression_min": selected.get("scar_utility_regression_min"),
+            "edema_utility_regression_min": selected.get("edema_utility_regression_min"),
+            "acceptance_rule": "accept_logit_probability_threshold_and_clipped_utility_regression_min",
             "overlap": 0.5,
             "gaussian_blending": True,
             "patch_final_label_averaging": False,
@@ -304,7 +355,6 @@ def run_gate_b_r1(args: argparse.Namespace) -> dict[str, Any]:
         },
         "notification": notification,
     }
-    out_root.mkdir(parents=True, exist_ok=True)
     write_csv(out_root / "gate_b_r1_checkpoint_selection_rows.csv", selection_rows)
     write_csv(out_root / "gate_b_r1_threshold_rows.csv", threshold_rows)
     write_csv(out_root / "gate_b_r1_inner_candidate_rows.csv", inner_candidate_rows)
@@ -334,6 +384,8 @@ def main() -> int:
     parser.add_argument("--runtime-name", default="formal_fold0")
     parser.add_argument("--runtime-root", default="")
     parser.add_argument("--device", default="")
+    parser.add_argument("--scar-utility-regression-min", type=float, default=-1.0)
+    parser.add_argument("--edema-utility-regression-min", type=float, default=-1.0)
     parser.add_argument("--cpu", action="store_true")
     args = parser.parse_args()
     result = run_gate_b_r1(args)

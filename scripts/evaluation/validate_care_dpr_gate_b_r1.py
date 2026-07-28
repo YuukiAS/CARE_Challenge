@@ -68,6 +68,8 @@ def validate(result_root: Path, runtime_root: Path | None = None) -> dict[str, A
         "no_t2_exact_zero": (summary.get("no_t2_exact_zero") or {}).get("status") == "PASS",
         "source_hashes_include_r1": "scripts/evaluation/evaluate_care_dpr_gate_b_r1.py" in source_hashes,
         "scientific_gate_recorded_no_expansion": scientific.get("fold_expansion_authorized") is False,
+        "scientific_gate_pass": scientific.get("status") == "PASS" and not scientific.get("failures"),
+        "help_harm_material_threshold_recorded": all("help_harm_dice_delta_threshold" in row for row in read_csv(eval_root / "gate_b_r1_help_harm.csv")),
     }
     known_bad_rejections = {
         "terminal_only_eval_rejected": checks["all_8_checkpoints_considered"],

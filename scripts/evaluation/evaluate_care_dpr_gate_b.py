@@ -187,6 +187,9 @@ def collect_candidate_targets(pred: dict[str, Any], rec: dict[str, np.ndarray], 
             "candidate_type": item["candidate_type"],
             "utility_score": float(item["utility_score"]),
             "utility_regression": float(item["utility_regression"]),
+            "utility_regression_min": item.get("utility_regression_min"),
+            "score_accepts_candidate": bool(item.get("score_accepts_candidate", item.get("accepted"))),
+            "regression_accepts_candidate": bool(item.get("regression_accepts_candidate", True)),
             "accepted_at_runtime_threshold": bool(item["accepted"]),
             "accept_target": int(accept),
             "utility_target": float(utility),
@@ -323,6 +326,9 @@ def evaluate_population(
     model_name: str,
     scar_utility_threshold: float | None = None,
     edema_utility_threshold: float | None = None,
+    utility_regression_min: float | None = None,
+    scar_utility_regression_min: float | None = None,
+    edema_utility_regression_min: float | None = None,
 ) -> dict[str, Any]:
     casewise: list[dict[str, Any]] = []
     activation: list[dict[str, Any]] = []
@@ -361,6 +367,9 @@ def evaluate_population(
             utility_threshold=utility_threshold,
             scar_utility_threshold=scar_utility_threshold,
             edema_utility_threshold=edema_utility_threshold,
+            utility_regression_min=utility_regression_min,
+            scar_utility_regression_min=scar_utility_regression_min,
+            edema_utility_regression_min=edema_utility_regression_min,
             device=device,
         )
         final = pred["final_mask"].astype(np.uint8, copy=False)

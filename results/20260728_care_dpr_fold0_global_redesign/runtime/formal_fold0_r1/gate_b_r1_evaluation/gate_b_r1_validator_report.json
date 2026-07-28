@@ -1,0 +1,37 @@
+{
+  "checks": {
+    "all_8_checkpoints_considered": "PASS",
+    "gate_is_r1": "PASS",
+    "help_harm_material_threshold_recorded": "PASS",
+    "independent_thresholds": "PASS",
+    "known_bad_rejections_pass": "PASS",
+    "no_outer_selection": "PASS",
+    "no_patch_final_label_averaging": "PASS",
+    "no_t2_exact_zero": "PASS",
+    "pass2_refines_each_candidate": "PASS",
+    "predicted_roi_only": "PASS",
+    "real_candidates_only": "PASS",
+    "scientific_gate_pass": "PASS",
+    "scientific_gate_recorded_no_expansion": "PASS",
+    "selected_signed_net_positive": "PASS",
+    "selected_thresholds_nonzero_accept_reject": "PASS",
+    "source_hashes_include_r1": "PASS",
+    "threshold_rows_signed_fields": "PASS",
+    "two_pass_contract": "PASS"
+  },
+  "gate": "DPR_GATE_B_R1_VALIDATOR",
+  "known_bad_rejections": {
+    "global_threshold_rejected": "PASS",
+    "outer_threshold_masquerading_inner_rejected": "PASS",
+    "patch_candidate_decision_rejected": "PASS",
+    "patch_final_label_averaging_rejected": "PASS",
+    "positive_only_realized_gain_rejected": "PASS",
+    "selected_threshold_accepts_zero_rejected": "PASS",
+    "synthetic_variants_primary_gate_rejected": "PASS",
+    "terminal_only_eval_rejected": "PASS"
+  },
+  "scientific_gate_failures": [],
+  "scientific_gate_status": "PASS",
+  "status": "PASS",
+  "task_key": "20260728_care_dpr_fold0_global_redesign"
+}
