@@ -2,7 +2,7 @@
   "active_preflight_runtime_label": "gate_b_scar_priority_preflight",
   "approval_token": "APPROVE_GATE_A_R3",
   "approval_token_required": "APPROVE_GATE_A_R3",
-  "consistency_validator_checked_at_utc": "2026-07-28T02:24:57Z",
+  "consistency_validator_checked_at_utc": "2026-07-28T03:16:36Z",
   "consistency_validator_status": "PASS",
   "evidence_hashes": {
     "results/20260727_care_dg_dual_pathology_validation/augmentation_alignment_audit.json": {
