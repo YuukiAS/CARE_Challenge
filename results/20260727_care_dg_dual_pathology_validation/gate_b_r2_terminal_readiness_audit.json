@@ -29,8 +29,6 @@
     "scientific_conclusion.md",
     "controller_report.md",
     "completion_check.md",
-    "mapper_report_draft.md",
-    "architecture_delta_draft.md",
     "mapper_report_final.md",
     "architecture_delta_final.md",
     "finalizer_state.json",
@@ -40,18 +38,22 @@
   ],
   "next_review_checkpoint": "GPT/user review of origin/main evidence; decide terminalize NO_CARE_DG, authorize a new same-scope repair, or explicitly override expansion gate.",
   "present_review_outputs": {
+    "architecture_delta_draft": "results/20260727_care_dg_dual_pathology_validation/architecture_delta_draft.md",
     "candidate_gate_decision": "results/20260727_care_dg_dual_pathology_validation/candidate_gate_decision.json",
     "candidate_selection_report": "results/20260727_care_dg_dual_pathology_validation/candidate_selection_report.md",
+    "fold_expansion_status_audit": "results/20260727_care_dg_dual_pathology_validation/fold_expansion_status_audit.json",
     "gate_b_consistency_validator_report": "results/20260727_care_dg_dual_pathology_validation/gate_b_consistency_validator_report.json",
     "gate_b_r2_controller_review_packet": "results/20260727_care_dg_dual_pathology_validation/gate_b_r2_controller_review_packet.json",
     "gate_b_r2_diagnostic_report": "results/20260727_care_dg_dual_pathology_validation/gate_b_r2_diagnostic_report.md",
+    "mapper_report_draft": "results/20260727_care_dg_dual_pathology_validation/mapper_report_draft.md",
     "strict_validator_report": "results/20260727_care_dg_dual_pathology_validation/strict_validator_report.json"
   },
   "reason_not_goal_complete": [
-    "Latest Gate B repair gate found no fold0-safe expansion candidate, so folds 1-4 remain paused.",
-    "Original W3-W6 outputs are not complete: five-fold OOF aggregation, all-data fit, validation inference/package, Docker-equivalent smoke, Mapper final, CURRENT/wiki finalization and notification are absent.",
-    "Terminal NO_CARE_DG_CANDIDATE_SAFE_FOR_VALIDATION requires explicit GPT/user decision or a completed terminalization packet; this audit only makes the current evidence reviewable."
+    "Gate B-R2 found no fold0-safe expansion candidate, so high-cost expansion remains paused.",
+    "Mapper draft and architecture delta draft now exist, but final Mapper/wiki/CURRENT/finalizer/notification are still absent.",
+    "Terminal NO_CARE_DG_CANDIDATE_SAFE_FOR_VALIDATION still requires GPT/user terminalization decision or explicit reauthorization for another repair."
   ],
   "review_ready_for_gpt": true,
-  "scope": "controller_readiness_audit_after_gate_b_r2_review_packet"
+  "scope": "controller_readiness_audit_after_gate_b_r2_review_packet",
+  "updated_at_utc": "2026-07-28T03:52:35Z"
 }

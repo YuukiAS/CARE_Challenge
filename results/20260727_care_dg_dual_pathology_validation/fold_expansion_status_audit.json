@@ -1,0 +1,152 @@
+{
+  "all_data_fit_currently_authorized": false,
+  "created_at_utc": "2026-07-28T03:52:35Z",
+  "fold_runtime_receipts": [
+    {
+      "actual_optimizer_steps": 8000,
+      "best_checkpoint": "/users/a/e/aereinh/CARE/results/20260727_care_dg_dual_pathology_validation/runtime/repaired_formal_scar_priority/fold0/checkpoints/checkpoint_best.pt",
+      "checkpoint_manifest.csv_exists": true,
+      "checkpoint_manifest.csv_rows": 10,
+      "checkpoint_manifest.csv_sha256": "2e8c6725a88a1b754d9a3084ebd51d1e0ac63c5d1600f562669cf51f088af451",
+      "current_scientific_credit_status": "GATE_B_R2_DIAGNOSTIC_SOURCE_ONLY; fold0 trained but failed expansion candidate gate",
+      "fixed_inner_evaluation_plan_sha256": "ca70193d3c9f6c0d2dd81dfc6e38952b953bb4b16228d7cfa4ca2352d5f15828",
+      "fold": 0,
+      "formal_training_credit_recorded_in_receipt": 8000,
+      "last_checkpoint": "/users/a/e/aereinh/CARE/results/20260727_care_dg_dual_pathology_validation/runtime/repaired_formal_scar_priority/fold0/checkpoints/checkpoint_last.pt",
+      "outer_val_used_for_checkpoint_selection": false,
+      "preflight_only": false,
+      "receipt_exists": true,
+      "resolved_training_contract_sha256": "1e108ccf0695b501162667c1b6b45c7f8308ef831acc51baa75a478a86b476f6",
+      "runtime_dir": "results/20260727_care_dg_dual_pathology_validation/runtime/repaired_formal_scar_priority/fold0",
+      "status": "PASS",
+      "terminal_time_utc": "2026-07-27T18:27:21Z",
+      "training_curve.csv_exists": true,
+      "training_curve.csv_rows": 82,
+      "training_curve.csv_sha256": "9e569dd4c3664dfdd7dd8f6f9bf2dfe3ceb922de6107d152c9b0c848bf11e880"
+    },
+    {
+      "actual_optimizer_steps": 8000,
+      "best_checkpoint": "/users/a/e/aereinh/CARE/results/20260727_care_dg_dual_pathology_validation/runtime/repaired_formal_scar_priority/fold1/checkpoints/checkpoint_best.pt",
+      "checkpoint_manifest.csv_exists": true,
+      "checkpoint_manifest.csv_rows": 10,
+      "checkpoint_manifest.csv_sha256": "db08d28fea9408130a50dcde4e3de242e9549f31b08093ec47c5c5643c00491f",
+      "current_scientific_credit_status": "PHYSICAL_RUNTIME_EXISTS_BUT_EXCLUDED_FROM_OOF_EXPANSION_AFTER_GATE_B_R2_NO_CANDIDATE_UNLESS_GPT_USER_REAUTHORIZES",
+      "fixed_inner_evaluation_plan_sha256": "ae33d13a499848f20a078b25b828c73ac3865c562160a6ffc7045facc7f07c5b",
+      "fold": 1,
+      "formal_training_credit_recorded_in_receipt": 8000,
+      "last_checkpoint": "/users/a/e/aereinh/CARE/results/20260727_care_dg_dual_pathology_validation/runtime/repaired_formal_scar_priority/fold1/checkpoints/checkpoint_last.pt",
+      "outer_val_used_for_checkpoint_selection": false,
+      "preflight_only": false,
+      "receipt_exists": true,
+      "resolved_training_contract_sha256": "e19360eef225f68e03e2a5c3173df98d35b9068fbe863e41b765b8a8fda0e94a",
+      "runtime_dir": "results/20260727_care_dg_dual_pathology_validation/runtime/repaired_formal_scar_priority/fold1",
+      "status": "PASS",
+      "terminal_time_utc": "2026-07-27T21:11:31Z",
+      "training_curve.csv_exists": true,
+      "training_curve.csv_rows": 82,
+      "training_curve.csv_sha256": "ee85427e334b45efe2544f8ac50d2b1691c90b640ee6e075d1806bea7ece67a4"
+    },
+    {
+      "actual_optimizer_steps": 8000,
+      "best_checkpoint": "/users/a/e/aereinh/CARE/results/20260727_care_dg_dual_pathology_validation/runtime/repaired_formal_scar_priority/fold2/checkpoints/checkpoint_best.pt",
+      "checkpoint_manifest.csv_exists": true,
+      "checkpoint_manifest.csv_rows": 10,
+      "checkpoint_manifest.csv_sha256": "ec9c01627f42f9072304203dbd0930475aebe827b23eb9f62c2a77d870cfe193",
+      "current_scientific_credit_status": "PHYSICAL_RUNTIME_EXISTS_BUT_EXCLUDED_FROM_OOF_EXPANSION_AFTER_GATE_B_R2_NO_CANDIDATE_UNLESS_GPT_USER_REAUTHORIZES",
+      "fixed_inner_evaluation_plan_sha256": "4212d5fbeb70c99ab26812565d481201b78162812624e94fe468f54e2ec99d1b",
+      "fold": 2,
+      "formal_training_credit_recorded_in_receipt": 8000,
+      "last_checkpoint": "/users/a/e/aereinh/CARE/results/20260727_care_dg_dual_pathology_validation/runtime/repaired_formal_scar_priority/fold2/checkpoints/checkpoint_last.pt",
+      "outer_val_used_for_checkpoint_selection": false,
+      "preflight_only": false,
+      "receipt_exists": true,
+      "resolved_training_contract_sha256": "1c530a90b43860893e6f3e79b82b45e27529e7497371b531d3b4b737ae06650e",
+      "runtime_dir": "results/20260727_care_dg_dual_pathology_validation/runtime/repaired_formal_scar_priority/fold2",
+      "status": "PASS",
+      "terminal_time_utc": "2026-07-27T23:28:36Z",
+      "training_curve.csv_exists": true,
+      "training_curve.csv_rows": 82,
+      "training_curve.csv_sha256": "824d79ddb8beb20991a097ef2f23ecb1038b8ce6a39e171cc9fbc406f902ef5c"
+    },
+    {
+      "actual_optimizer_steps": 8000,
+      "best_checkpoint": "/users/a/e/aereinh/CARE/results/20260727_care_dg_dual_pathology_validation/runtime/repaired_formal_scar_priority/fold3/checkpoints/checkpoint_best.pt",
+      "checkpoint_manifest.csv_exists": true,
+      "checkpoint_manifest.csv_rows": 10,
+      "checkpoint_manifest.csv_sha256": "eb4f84f0c1394c434930b1497748f4962a33a5dc4259665345fb2578bdcbd1b0",
+      "current_scientific_credit_status": "PHYSICAL_RUNTIME_EXISTS_BUT_EXCLUDED_FROM_OOF_EXPANSION_AFTER_GATE_B_R2_NO_CANDIDATE_UNLESS_GPT_USER_REAUTHORIZES",
+      "fixed_inner_evaluation_plan_sha256": "e201dd8b607bf20114066491ee55bd619801bff3741497ea4fd005f40645b7c5",
+      "fold": 3,
+      "formal_training_credit_recorded_in_receipt": 8000,
+      "last_checkpoint": "/users/a/e/aereinh/CARE/results/20260727_care_dg_dual_pathology_validation/runtime/repaired_formal_scar_priority/fold3/checkpoints/checkpoint_last.pt",
+      "outer_val_used_for_checkpoint_selection": false,
+      "preflight_only": false,
+      "receipt_exists": true,
+      "resolved_training_contract_sha256": "4180d47584b298ec0c10be22c34c66a26ed663138d4c3ad5e31cec2a62e3c4cf",
+      "runtime_dir": "results/20260727_care_dg_dual_pathology_validation/runtime/repaired_formal_scar_priority/fold3",
+      "status": "PASS",
+      "terminal_time_utc": "2026-07-28T01:45:01Z",
+      "training_curve.csv_exists": true,
+      "training_curve.csv_rows": 82,
+      "training_curve.csv_sha256": "702cca0d8ca371efdfc2ecaff0a3317e993e4e0e3870e7b9124ac14fd0cf4e4d"
+    },
+    {
+      "actual_optimizer_steps": 0,
+      "current_scientific_credit_status": "NOT_RUN_OR_NO_RECEIPT; DO_NOT_START_WITHOUT_APPROVAL",
+      "fold": 4,
+      "receipt_exists": false,
+      "runtime_dir": "results/20260727_care_dg_dual_pathology_validation/runtime/repaired_formal_scar_priority/fold4",
+      "status": "MISSING"
+    }
+  ],
+  "forbidden_without_explicit_new_approval": [
+    "start fold4",
+    "restart folds 1-3",
+    "aggregate fold1-3 into official W3 OOF",
+    "all-data deployment fit",
+    "validation inference/package",
+    "validation upload",
+    "Docker upload",
+    "runtime push",
+    "external model substitution"
+  ],
+  "gate_b_r2": {
+    "best_candidate_edema_zone_dice_delta": 0.0006300741557779821,
+    "best_candidate_failure": "no_pathology_improves_by_more_than_0.005",
+    "best_candidate_pure_edema_dice_delta": 0.0006070059027927233,
+    "best_candidate_scar_dice_delta": 0.004257834372836111,
+    "diagnostic_status": "NO_INNER_ELIGIBLE_CANDIDATE",
+    "eligible_count": 0,
+    "outer_val_used": false,
+    "row_count": 512,
+    "scientific_expansion_authorized": false,
+    "validator_status": "PASS"
+  },
+  "git": {
+    "head": "67dac96a22e6179e0a7fcc02815b36aab30a8bfc",
+    "origin_main": "67dac96a22e6179e0a7fcc02815b36aab30a8bfc"
+  },
+  "missing_or_incomplete_folds": [
+    4
+  ],
+  "oof_expansion_currently_authorized": false,
+  "physical_completed_folds_with_receipts": [
+    0,
+    1,
+    2,
+    3
+  ],
+  "scope": "post_gate_b_r2_runtime_receipt_and_credit_boundary_audit",
+  "state": "GATE_B_R2_FOLD_EXPANSION_PAUSED_NO_INNER_ELIGIBLE_CANDIDATE",
+  "validation_package_currently_authorized": false,
+  "validators": {
+    "gate_b_consistency_validator_report": "PASS",
+    "strict_validator_report": "PASS"
+  },
+  "why_excluded_from_oof": [
+    "Gate B-R1/R2 no-retraining repair found no fold0-safe eligible candidate.",
+    "Latest same-thread Gate B-R1/R2 instruction pauses folds 1-4 unless the repaired fold0 expansion gate passes.",
+    "R2 eligible_count is 0 over fixed train-side complete inner checkpoint x scale grid; outer fold0 was not used for R2 selection.",
+    "Any fold1-3 receipts already present are retained as provenance but must not be aggregated into official OOF without explicit GPT/user reauthorization."
+  ]
+}
