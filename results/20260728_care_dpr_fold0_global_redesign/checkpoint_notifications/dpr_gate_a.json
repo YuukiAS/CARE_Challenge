@@ -1,0 +1,445 @@
+{
+  "amendment_hashes": {
+    "contract_hashes_sha256": {
+      "amendment": "4ca30e7dff1e0d76b67098574b18716203dbf0dd601cf8685c94883d5a6d9a08",
+      "amendment_executor_plan": "ba736c18cc8ef028b01bef451db3fc13fbca119a9b2fab99ec8a901d3e4224a4",
+      "old_blueprint": "f52643c70e5dbd467c4f3a0d893e01e578999d3ac23c45cab58e797befd39261",
+      "old_controller": "e586e20ae9cb5ba754a78626ea40165fd699d3c81d66a1f8e9dd5265a00e3b75",
+      "old_executor_plan": "cc494b4180c0ffd270118fcf674e3b6f5eb47820cc14350a65ec06c3f6467e89"
+    },
+    "generated_at_utc": "2026-07-28T04:27:09Z",
+    "precedence": [
+      "preexecution_amendment",
+      "original_blueprint",
+      "original_controller_prompt",
+      "original_executor_plan"
+    ],
+    "task_key": "20260728_care_dpr_fold0_global_redesign"
+  },
+  "approval_token": "APPROVE_DPR_GATE_A",
+  "body_preview": "结论：CARE-DPR Gate A 实现与 preflight 机制证据已完成，当前只等待人工验收；formal fold0 尚未启动。未经精确回复 APPROVE_DPR_GATE_A，本任务不得启动 formal fold0、不得扩 folds、不得打 validation package、不得 push runtime。\n\nState: AWAITING_HUMAN_ACCEPTANCE_DPR_GATE_A\nApproval token: APPROVE_DPR_GATE_A\n\n合同与优先级：\n- 已按 preexecution amendment 覆盖原 CARE-DPR blueprint/controller/executor plan。\n- Stage A1=500 steps：75% teacher ROI + 25% predicted ROI；Stage A2=2000 steps：teacher ROI 75% 线性降到 0，最后 500 steps predicted-ROI only；Stage B=1500 steps：complete-trimodal actual-train only，冻结 stems/shared encoder/p_coarse/q_fn/q_fp，只训练 scar/edema refiners 与 utility heads；总预算固定 4000 steps。\n- Teacher ROI 只允许 actual-train 训练 curriculum；inner selection、outer fold0 evaluation 与 inference 均为 predicted-ROI only；formal fold0 入口已要求 APPROVE_DPR_GATE_A。\n\n单一 shared encoder 证明：\n- shared modules：lge_stem, t2_stem, c0_stem, anchor_context, encoder。\n- pathology branches：scar_branch, edema_branch；shared_parameter_count=recorded。\n\nscar/edema 五类输出：\n- scar：p_coarse、q_fn、q_fp、p_refined、component_utility。\n- edema-zone：p_coarse、q_fn、q_fp、p_refined、component_utility。\n- CARE-DG q_fn/q_fp 仅用于初始化 error proposal；p_coarse/refiner/utility 为 DPR 正式路径，不是唯一 lesion proposal。\n\nproposal/refiner/utility 梯度：\n- scar：p_coarse=0.205389，q_fn=0.00704035，q_fp=0.00583842，refiner=0.0367883，utility=0.175734。\n- edema-zone：p_coarse=0.263053，q_fn=0.0093423，q_fp=0.00471344，refiner=0.0309976，utility=0.178385。\n\nproposal recall 与 ROI coverage：\n- scar p_coarse recall=0.998219；q_fn AUPR=0.705674；q_fp AUPR=0.00314932；predicted ROI coverage=0.831553。\n- edema p_coarse recall=1；q_fn AUPR=0.356491；q_fp AUPR=0.000732845；predicted ROI coverage=1。\n\nrefiner teacher/predicted 差距：\n- scar teacher ROI Dice=0.910092；predicted ROI Dice=0.896775；gap=0.0133166。\n- edema teacher ROI Dice=0.992334；predicted ROI Dice=0.989904；gap=0.00243008。\n\nutility 与 gain：\n- scar utility AUROC=0.0205635；AUPRC=0.00207391。\n- edema utility AUROC=1；AUPRC=0.00169021。\n- oracle gain surrogate=3041；realized gain surrogate=900.056。这些是 preflight 机制读数，不是 validation leaderboard 声明。\n\nno-T2 exact-zero：\n- status=PASS；edema proposal/refiner/utility/loss/gradient/candidate/write-back 路径 exact zero 已由 known-bad 与机制报告覆盖。\n\ncomponent arbitration：\n- candidate types=['ADD_FN', 'REVISE_FP']；actions 仅为 KEEP_ANCHOR_LOCAL_MASK / REPLACE_WITH_REFINED_LOCAL_MASK；full-volume arbitration parity=PASS；zero accepted candidates exact anchor=True。\n- full-volume inference 固定 overlap=0.5 + Gaussian blending；先聚合 shared feature、p_coarse、q_fn、q_fp、p_refined，再形成完整体积组件；禁止平均 patch final labels 与 patch 内 component arbitration。\n\npreflight 与 validator：\n- preflight status=PASS；actual_optimizer_steps=300；formal_training_credit=0；checkpoint reload=PASS；last_checkpoint_sha256=9d6810fde68ac9aa98c4b0b084db8c2593fcbfca0312d072c9076dc1cd984214。\n- loss decline status=PASS；scar active loss drop=0.565461；edema active loss drop=0.611711。\n- tests/known-bad/strict validator/preflight validator status：known_bad=PASS；strict=PASS；preflight_validator=PASS；git diff check=PASS。\n\nallocation 与进程状态：\n- allocation 60657290：JOBID,STATE,TIME,TIME_LEFT,NODELIST(REASON),TRES_PER_NODE\n60657290,RUNNING,2-03:52:11,20:07:49,g1807htzh01,gres/gpu:1\n- 当前 GPU compute process scan：NONE_DETECTED_BY_NVIDIA_SMI\n\nsource/config/test hashes：\n- configs/care_dpr/care_dpr_v1.yaml sha256=22fa7396f7cebf28238a743b75ef846f419adcaeeb3b8d620cdc7b3a6efb7f7f\n- scripts/training/run_care_dpr.py sha256=09cc3a8e33956784bf1d24794653ca7b5a9e7d2b44ca81e3cfe05709e56b2b46\n- scripts/evaluation/analyze_care_dpr_mechanism_ceiling.py sha256=9ef1e32614342c7bdab12bd47b8d5cee76473a42cc604ca04a2801c784176668\n- scripts/evaluation/evaluate_care_dpr.py sha256=159dead6798ed7ba6c14851a92e8e6171fb8c0f7998a67dfe8bff12b7c5f0321\n- scripts/evaluation/validate_care_dpr_packet.py sha256=2daeee1638c009fb047667be2c90ba0928e51961e1635fa4555220a5f5c94526\n- src/care_myocardium/data/care_dpr_dataset.py sha256=9c2dbe95eafcf94f10a740a354763a60e810ffcb1d8768a6315ce5bdc5f5e2d7\n- src/care_myocardium/inference/care_dpr_predictor.py sha256=6aedcca95496297004ecc4d206868385061cbbb0fff7fa4704629b6a9621cffb\n- src/care_myocardium/models/care_dpr.py sha256=96935b479f62add9db8c715a8130c7ec843046389a64c950f18f97177e1eb34a\n- src/care_myocardium/training/care_dpr_trainer.py sha256=3010d2d0009149131fc4090ca291062f93d08e9685333665dbe9c5fcf7838a1e\n- tests/care_dpr/test_care_dpr_model.py sha256=d370e1bd69c0eb896db989bb92f20524c6098faa1efe942b00fc2bce7e530520\n\nevidence hashes：\n- prompts/tasks/20260728_care_dpr_preexecution_architecture_amendment.md sha256=4ca30e7dff1e0d76b67098574b18716203dbf0dd601cf8685c94883d5a6d9a08\n- prompts/tasks/20260728_care_dpr_preexecution_architecture_amendment_executor_plan.yaml sha256=ba736c18cc8ef028b01bef451db3fc13fbca119a9b2fab99ec8a901d3e4224a4\n- results/20260728_care_dpr_fold0_global_redesign/amendment_adoption_receipt.json sha256=3ab082afe27725e41ad4b70688cca7e49831db6f4ececf94582cc8eb5df437e8\n- results/20260728_care_dpr_fold0_global_redesign/amended_contract_sha256.json sha256=33d0b77b480747f41f07737052e28b50bf1f8b9692a4ecbf24ef3c89217dd5b9\n- results/20260728_care_dpr_fold0_global_redesign/implementation_contract.json sha256=dfdd72c8bbe686de8936c9bbefa9880420eda5e04e6ac953e417cfa8009bdacf\n- results/20260728_care_dpr_fold0_global_redesign/model_parameter_report.json sha256=d7833c11ec4dc8febb75f7f5cf5086539f8869630f21ef9baf993b76ea06b7a1\n- results/20260728_care_dpr_fold0_global_redesign/unit_test_report.md sha256=97465e9526ab87b88bea764afdde1f8fc6ef822fe0a761b8ef90fdb82384ea41\n- results/20260728_care_dpr_fold0_global_redesign/known_bad_report.json sha256=afb1cac91844d6fecebff1d6d937f612dcb3e6650aaef63a9a1d4ef5dc1ae7f1\n- results/20260728_care_dpr_fold0_global_redesign/implementation_validator_report.json sha256=f161156ab0ff28ed00b48c2ff07880960de30c9c5dbe21a7b0a0f40479ba2987\n- results/20260728_care_dpr_fold0_global_redesign/strict_validator_report.json sha256=d9e37299d81b50cf2bbd3292e7c7c2f826a4ea39d4be7a57f4a1688fbb5bb2c9\n- results/20260728_care_dpr_fold0_global_redesign/preflight_validator_report.json sha256=4cce75cb77317ee1c1eea2949bed132b24dc615bd6b2e087679521d50939e710\n- results/20260728_care_dpr_fold0_global_redesign/runtime/preflight/preflight_receipt.json sha256=2db0300932558a52350f19bc7572760c166c1f0afa788d2a3c088260ec8c620a\n- results/20260728_care_dpr_fold0_global_redesign/runtime/preflight/mechanism_report.json sha256=4cce75cb77317ee1c1eea2949bed132b24dc615bd6b2e087679521d50939e710\n- results/20260728_care_dpr_fold0_global_redesign/runtime/preflight/training_curve.csv sha256=41f492803cccf4fe2e5ec627be657cc6fc5f23feadc1cd0c26fd453bfc791c6d\n- results/20260728_care_dpr_fold0_global_redesign/runtime/preflight/checkpoint_manifest.csv sha256=2be088c4463b249fe13f3a7425a099b0af36c3701893438633ec06a28cbc49ab\n\ngit HEAD：203b1802ea4fcbf48c1f30a684da06bd8009ef4e\norigin/main：203b1802ea4fcbf48c1f30a684da06bd8009ef4e\n当前工作树状态摘要：\nM results/20260724_care_myops_srr_cascade_submission_rescue/runtime_closure_repair_rc1/formal_race_watcher_history_v2.jsonl\n M results/20260724_care_myops_srr_cascade_submission_rescue/runtime_closure_repair_rc1/formal_race_watcher_state_v2.json\n?? .codex_runtime/\n?? configs/care_dpr/\n?? results/care_scf/canonical_model_summary_fold0.csv\n?? results/care_scf/care_gate_training_receipt.json\n?? results/care_scf/care_prediction_status.csv\n?? results/care_scf/casewise_metrics_fold0.csv\n?? results/care_scf/completion_audit.csv\n?? results/care_scf/component_dataset_feature_status.csv\n?? results/care_scf/component_dataset_fold0_diagnostic.csv\n?? results/care_scf/component_decisions.csv\n?? results/care_scf/controller_report.md\n?? results/care_scf/final_manifest.json\n?? results/care_scf/geometry_audit.csv\n?? results/care_scf/help_harm.csv\n?? results/care_scf/help_harm_summary.csv\n?? results/care_scf/mosaic_oof_status.csv\n?? results/care_scf/nnunet_oof_status.csv\n?? results/care_scf/provenance.json\n?? scripts/evaluation/analyze_care_dpr_mechanism_ceiling.py\n?? scripts/evaluation/build_care_scf_controller_packet.py\n?? scripts/evaluation/build_mosaic_paper_results_completion.py\n?? scripts/evaluation/evaluate_care_dpr.py\n?? scripts/evaluation/validate_care_dpr_packet.py\n?? scripts/training/run_care_dpr.py\n?? src/care_myocardium/inference/care_dpr_predictor.py\n?? src/care_myocardium/models/care_dpr.py\n?? src/care_myocardium/training/care_dpr_trainer.py\n?? tests/care_dpr/\n\n下一步：等待人工在同一任务中回复精确 token：APPROVE_DPR_GATE_A。",
+  "completed_waves": [
+    "W0",
+    "W1",
+    "W2"
+  ],
+  "created_at_utc": "2026-07-28T04:57:07.968963Z",
+  "curriculum": {
+    "stage_a1_roi_mix": {
+      "predicted_roi": 0.25,
+      "teacher_roi": 0.75
+    },
+    "stage_a1_steps": 500,
+    "stage_a2_steps": 2000,
+    "stage_a2_teacher_roi_schedule": "linear 0.75 to 0.0; final 500 steps predicted ROI only",
+    "stage_b_freeze": [
+      "stems",
+      "shared_encoder",
+      "p_coarse",
+      "q_fn",
+      "q_fp"
+    ],
+    "stage_b_steps": 1500,
+    "total_formal_steps": 4000
+  },
+  "evidence": [
+    {
+      "path": "prompts/tasks/20260728_care_dpr_preexecution_architecture_amendment.md",
+      "sha256": "4ca30e7dff1e0d76b67098574b18716203dbf0dd601cf8685c94883d5a6d9a08",
+      "size_bytes": 9267
+    },
+    {
+      "path": "prompts/tasks/20260728_care_dpr_preexecution_architecture_amendment_executor_plan.yaml",
+      "sha256": "ba736c18cc8ef028b01bef451db3fc13fbca119a9b2fab99ec8a901d3e4224a4",
+      "size_bytes": 8268
+    },
+    {
+      "path": "results/20260728_care_dpr_fold0_global_redesign/amendment_adoption_receipt.json",
+      "sha256": "3ab082afe27725e41ad4b70688cca7e49831db6f4ececf94582cc8eb5df437e8",
+      "size_bytes": 20348
+    },
+    {
+      "path": "results/20260728_care_dpr_fold0_global_redesign/amended_contract_sha256.json",
+      "sha256": "33d0b77b480747f41f07737052e28b50bf1f8b9692a4ecbf24ef3c89217dd5b9",
+      "size_bytes": 738
+    },
+    {
+      "path": "results/20260728_care_dpr_fold0_global_redesign/implementation_contract.json",
+      "sha256": "dfdd72c8bbe686de8936c9bbefa9880420eda5e04e6ac953e417cfa8009bdacf",
+      "size_bytes": 1733
+    },
+    {
+      "path": "results/20260728_care_dpr_fold0_global_redesign/model_parameter_report.json",
+      "sha256": "d7833c11ec4dc8febb75f7f5cf5086539f8869630f21ef9baf993b76ea06b7a1",
+      "size_bytes": 1109
+    },
+    {
+      "path": "results/20260728_care_dpr_fold0_global_redesign/unit_test_report.md",
+      "sha256": "97465e9526ab87b88bea764afdde1f8fc6ef822fe0a761b8ef90fdb82384ea41",
+      "size_bytes": 56
+    },
+    {
+      "path": "results/20260728_care_dpr_fold0_global_redesign/known_bad_report.json",
+      "sha256": "afb1cac91844d6fecebff1d6d937f612dcb3e6650aaef63a9a1d4ef5dc1ae7f1",
+      "size_bytes": 1555
+    },
+    {
+      "path": "results/20260728_care_dpr_fold0_global_redesign/implementation_validator_report.json",
+      "sha256": "f161156ab0ff28ed00b48c2ff07880960de30c9c5dbe21a7b0a0f40479ba2987",
+      "size_bytes": 4207
+    },
+    {
+      "path": "results/20260728_care_dpr_fold0_global_redesign/strict_validator_report.json",
+      "sha256": "d9e37299d81b50cf2bbd3292e7c7c2f826a4ea39d4be7a57f4a1688fbb5bb2c9",
+      "size_bytes": 4030
+    },
+    {
+      "path": "results/20260728_care_dpr_fold0_global_redesign/preflight_validator_report.json",
+      "sha256": "4cce75cb77317ee1c1eea2949bed132b24dc615bd6b2e087679521d50939e710",
+      "size_bytes": 4729
+    },
+    {
+      "path": "results/20260728_care_dpr_fold0_global_redesign/runtime/preflight/preflight_receipt.json",
+      "sha256": "2db0300932558a52350f19bc7572760c166c1f0afa788d2a3c088260ec8c620a",
+      "size_bytes": 4264
+    },
+    {
+      "path": "results/20260728_care_dpr_fold0_global_redesign/runtime/preflight/mechanism_report.json",
+      "sha256": "4cce75cb77317ee1c1eea2949bed132b24dc615bd6b2e087679521d50939e710",
+      "size_bytes": 4729
+    },
+    {
+      "path": "results/20260728_care_dpr_fold0_global_redesign/runtime/preflight/training_curve.csv",
+      "sha256": "41f492803cccf4fe2e5ec627be657cc6fc5f23feadc1cd0c26fd453bfc791c6d",
+      "size_bytes": 4438
+    },
+    {
+      "path": "results/20260728_care_dpr_fold0_global_redesign/runtime/preflight/checkpoint_manifest.csv",
+      "sha256": "2be088c4463b249fe13f3a7425a099b0af36c3701893438633ec06a28cbc49ab",
+      "size_bytes": 312
+    }
+  ],
+  "formal_fold0_requires_token": "APPROVE_DPR_GATE_A",
+  "formal_fold0_started": false,
+  "git_head": "203b1802ea4fcbf48c1f30a684da06bd8009ef4e",
+  "git_status_short": [
+    "M results/20260724_care_myops_srr_cascade_submission_rescue/runtime_closure_repair_rc1/formal_race_watcher_history_v2.jsonl",
+    " M results/20260724_care_myops_srr_cascade_submission_rescue/runtime_closure_repair_rc1/formal_race_watcher_state_v2.json",
+    "?? .codex_runtime/",
+    "?? configs/care_dpr/",
+    "?? results/care_scf/canonical_model_summary_fold0.csv",
+    "?? results/care_scf/care_gate_training_receipt.json",
+    "?? results/care_scf/care_prediction_status.csv",
+    "?? results/care_scf/casewise_metrics_fold0.csv",
+    "?? results/care_scf/completion_audit.csv",
+    "?? results/care_scf/component_dataset_feature_status.csv",
+    "?? results/care_scf/component_dataset_fold0_diagnostic.csv",
+    "?? results/care_scf/component_decisions.csv",
+    "?? results/care_scf/controller_report.md",
+    "?? results/care_scf/final_manifest.json",
+    "?? results/care_scf/geometry_audit.csv",
+    "?? results/care_scf/help_harm.csv",
+    "?? results/care_scf/help_harm_summary.csv",
+    "?? results/care_scf/mosaic_oof_status.csv",
+    "?? results/care_scf/nnunet_oof_status.csv",
+    "?? results/care_scf/provenance.json",
+    "?? scripts/evaluation/analyze_care_dpr_mechanism_ceiling.py",
+    "?? scripts/evaluation/build_care_scf_controller_packet.py",
+    "?? scripts/evaluation/build_mosaic_paper_results_completion.py",
+    "?? scripts/evaluation/evaluate_care_dpr.py",
+    "?? scripts/evaluation/validate_care_dpr_packet.py",
+    "?? scripts/training/run_care_dpr.py",
+    "?? src/care_myocardium/inference/care_dpr_predictor.py",
+    "?? src/care_myocardium/models/care_dpr.py",
+    "?? src/care_myocardium/training/care_dpr_trainer.py",
+    "?? tests/care_dpr/"
+  ],
+  "gpu_process_scan": "NONE_DETECTED_BY_NVIDIA_SMI",
+  "human_external_send_approval": "User explicitly approved sending internal evidence email in chat before send.",
+  "implementation_contract_status": "PASS",
+  "known_bad_status": "PASS",
+  "mechanism": {
+    "checkpoint": "/users/a/e/aereinh/CARE/results/20260728_care_dpr_fold0_global_redesign/runtime/preflight/checkpoints/checkpoint_last.pt",
+    "checkpoint_step": 300,
+    "component_arbitration": {
+      "candidate_types_seen": [
+        "ADD_FN",
+        "REVISE_FP"
+      ],
+      "full_volume_arbitration_parity": "PASS",
+      "patch_final_label_averaging": false,
+      "patch_local_component_arbitration": false,
+      "zero_accepted_exact_anchor": true
+    },
+    "generated_at_utc": "2026-07-28T04:44:49Z",
+    "gradient_report": {
+      "edema_p_coarse_logit": 0.2630528211593628,
+      "edema_q_fn_logit": 0.009342295117676258,
+      "edema_q_fp_logit": 0.004713443107903004,
+      "edema_refined_logit": 0.030997589230537415,
+      "edema_utility_accept_logit": 0.1783851683139801,
+      "scar_p_coarse_logit": 0.20538926124572754,
+      "scar_q_fn_logit": 0.007040354423224926,
+      "scar_q_fp_logit": 0.005838415585458279,
+      "scar_refined_logit": 0.036788348108530045,
+      "scar_utility_accept_logit": 0.1757340431213379
+    },
+    "loss_decline": {
+      "edema_active_loss_decrease_fraction": 0.6117109877705366,
+      "first": {
+        "containment": "0.034420013427734375",
+        "edema_active_loss": "3.7950572967529297",
+        "edema_p_coarse": "1.7330877780914307",
+        "edema_proposal": "0.18298974633216858",
+        "edema_refiner": "1.579604148864746",
+        "edema_utility": "0.7817409634590149",
+        "elapsed_seconds": "1.4",
+        "grad_norm": "12.824325561523438",
+        "identity": "0.008311247453093529",
+        "local_step": "1",
+        "loss": "7.235749244689941",
+        "remote": "0.0010989138390868902",
+        "scar_active_loss": "3.289466381072998",
+        "scar_p_coarse": "1.6104991436004639",
+        "scar_proposal": "0.1309082806110382",
+        "scar_refiner": "1.1357345581054688",
+        "scar_utility": "0.9555567502975464",
+        "stage": "PREFLIGHT",
+        "teacher_roi_fraction": "0.75",
+        "total_step": "1"
+      },
+      "last": {
+        "containment": "0.011502956971526146",
+        "edema_active_loss": "1.4735790491104126",
+        "edema_p_coarse": "1.1745761632919312",
+        "edema_proposal": "0.013075826689600945",
+        "edema_refiner": "0.023712625727057457",
+        "edema_utility": "0.5375046730041504",
+        "elapsed_seconds": "92.1",
+        "grad_norm": "1.4434031248092651",
+        "identity": "0.00255588605068624",
+        "local_step": "300",
+        "loss": "2.9135496616363525",
+        "remote": "0.0002052841300610453",
+        "scar_active_loss": "1.4294021129608154",
+        "scar_p_coarse": "1.115411639213562",
+        "scar_proposal": "0.0135562215000391",
+        "scar_refiner": "0.02904423698782921",
+        "scar_utility": "0.5563362836837769",
+        "stage": "PREFLIGHT",
+        "teacher_roi_fraction": "0.75",
+        "total_step": "300"
+      },
+      "scar_active_loss_decrease_fraction": 0.5654607929160366,
+      "status": "PASS"
+    },
+    "no_t2_exact_zero": {
+      "edema_delta": 0,
+      "edema_p_coarse": 0,
+      "edema_p_refined": 0,
+      "edema_q_fn": 0,
+      "edema_q_fp": 0,
+      "edema_utility_accept_prob": 0,
+      "status": "PASS"
+    },
+    "outer_fold0_used": false,
+    "preflight_metrics": {
+      "containment": 0.011700660921633244,
+      "edema_active_loss": 1.4721730947494507,
+      "edema_p_coarse": 1.1737971305847168,
+      "edema_proposal": 0.01311170868575573,
+      "edema_refiner": 0.02386009879410267,
+      "edema_utility": 0.5359201431274414,
+      "identity": 0.0026051087770611048,
+      "loss": 2.9108035564422607,
+      "remote": 0.00020416580082383007,
+      "scar_active_loss": 1.4281105995178223,
+      "scar_p_coarse": 1.115625262260437,
+      "scar_proposal": 0.013391228392720222,
+      "scar_refiner": 0.028552960604429245,
+      "scar_utility": 0.5544734001159668
+    },
+    "proposal_metrics": {
+      "edema_p_coarse_recall": 1.0,
+      "edema_q_fn_aupr": 0.3564913230390484,
+      "edema_q_fp_aupr": 0.0007328453328007554,
+      "scar_p_coarse_recall": 0.99821937084198,
+      "scar_q_fn_aupr": 0.7056739695797941,
+      "scar_q_fp_aupr": 0.003149320995280566
+    },
+    "roi_metrics": {
+      "edema_predicted_roi_coverage": 1.0,
+      "edema_predicted_roi_refiner_dice": 0.9899038076400757,
+      "edema_teacher_roi_refiner_dice": 0.9923338890075684,
+      "scar_predicted_roi_coverage": 0.8315526843070984,
+      "scar_predicted_roi_refiner_dice": 0.8967751860618591,
+      "scar_teacher_roi_refiner_dice": 0.910091757774353
+    },
+    "status": "PASS",
+    "task_key": "20260728_care_dpr_fold0_global_redesign",
+    "teacher_roi_inner_outer_inference": false,
+    "utility_metrics": {
+      "edema_utility_aupr": 0.0016902054702549595,
+      "edema_utility_auroc": 1.0,
+      "oracle_utility_gain_surrogate": 3041.0,
+      "realized_gain_surrogate": 900.0560913085938,
+      "scar_utility_aupr": 0.002073914349541202,
+      "scar_utility_auroc": 0.020563450834879406
+    }
+  },
+  "origin_main": "203b1802ea4fcbf48c1f30a684da06bd8009ef4e",
+  "preflight_receipt": {
+    "actual_optimizer_steps": 300,
+    "actual_train_cases": 164,
+    "amp_dtype": "bfloat16",
+    "batch_size": 4,
+    "checkpoint_reload": {
+      "reload_step": 300,
+      "status": "PASS"
+    },
+    "complete_actual_train_cases": 52,
+    "device": "cuda",
+    "fold": 0,
+    "formal_training_credit": 0,
+    "grad_clip_norm": 1.0,
+    "init_receipt": {
+      "care_dg_q_fn_q_fp_initialize_error_proposal_only": true,
+      "copied_parameter_count": 66,
+      "copied_parameters": [
+        "anchor_context.net.0.weight",
+        "anchor_context.net.1.bias",
+        "anchor_context.net.1.weight",
+        "anchor_context.net.3.block.0.weight",
+        "anchor_context.net.3.block.1.bias",
+        "anchor_context.net.3.block.1.weight",
+        "anchor_context.net.3.block.3.weight",
+        "anchor_context.net.3.block.4.bias",
+        "anchor_context.net.3.block.4.weight",
+        "c0_stem.net.0.weight",
+        "c0_stem.net.1.bias",
+        "c0_stem.net.1.weight",
+        "c0_stem.net.3.block.0.weight",
+        "c0_stem.net.3.block.1.bias",
+        "c0_stem.net.3.block.1.weight",
+        "c0_stem.net.3.block.3.weight",
+        "c0_stem.net.3.block.4.bias",
+        "c0_stem.net.3.block.4.weight",
+        "edema_branch.proposal_head.bias",
+        "edema_branch.proposal_head.weight",
+        "encoder.down1.0.weight",
+        "encoder.down1.1.bias",
+        "encoder.down1.1.weight",
+        "encoder.down1.3.block.0.weight",
+        "encoder.down1.3.block.1.bias",
+        "encoder.down1.3.block.1.weight",
+        "encoder.down1.3.block.3.weight",
+        "encoder.down1.3.block.4.bias",
+        "encoder.down1.3.block.4.weight",
+        "encoder.down2.0.weight",
+        "encoder.down2.1.bias",
+        "encoder.down2.1.weight",
+        "encoder.down2.3.block.0.weight",
+        "encoder.down2.3.block.1.bias",
+        "encoder.down2.3.block.1.weight",
+        "encoder.down2.3.block.3.weight",
+        "encoder.down2.3.block.4.bias",
+        "encoder.down2.3.block.4.weight",
+        "encoder.level0.0.bias",
+        "encoder.level0.0.weight",
+        "encoder.level0.1.block.0.weight",
+        "encoder.level0.1.block.1.bias",
+        "encoder.level0.1.block.1.weight",
+        "encoder.level0.1.block.3.weight",
+        "encoder.level0.1.block.4.bias",
+        "encoder.level0.1.block.4.weight",
+        "lge_stem.net.0.weight",
+        "lge_stem.net.1.bias",
+        "lge_stem.net.1.weight",
+        "lge_stem.net.3.block.0.weight",
+        "lge_stem.net.3.block.1.bias",
+        "lge_stem.net.3.block.1.weight",
+        "lge_stem.net.3.block.3.weight",
+        "lge_stem.net.3.block.4.bias",
+        "lge_stem.net.3.block.4.weight",
+        "scar_branch.proposal_head.bias",
+        "scar_branch.proposal_head.weight",
+        "t2_stem.net.0.weight",
+        "t2_stem.net.1.bias",
+        "t2_stem.net.1.weight",
+        "t2_stem.net.3.block.0.weight",
+        "t2_stem.net.3.block.1.bias",
+        "t2_stem.net.3.block.1.weight",
+        "t2_stem.net.3.block.3.weight",
+        "t2_stem.net.3.block.4.bias",
+        "t2_stem.net.3.block.4.weight"
+      ],
+      "p_coarse_random_initialized": true,
+      "random_initialized_modules": [
+        "scar_branch.refiner_head",
+        "scar_branch.utility_head",
+        "edema_branch.refiner_head",
+        "edema_branch.utility_head",
+        "scar_branch.proposal_head.p_coarse",
+        "edema_branch.proposal_head.p_coarse"
+      ],
+      "skipped_source_parameter_count": 40,
+      "source_checkpoint_path": "/users/a/e/aereinh/CARE/results/20260727_care_dg_dual_pathology_validation/runtime/repaired_formal_scar_priority/fold0/checkpoints/checkpoint_step04000.pt",
+      "source_step": 4000
+    },
+    "inner_select_cases": 12,
+    "last_checkpoint": "/users/a/e/aereinh/CARE/results/20260728_care_dpr_fold0_global_redesign/runtime/preflight/checkpoints/checkpoint_last.pt",
+    "last_checkpoint_sha256": "9d6810fde68ac9aa98c4b0b084db8c2593fcbfca0312d072c9076dc1cd984214",
+    "outer_val_cases": 44,
+    "outer_val_used_for_selection": false,
+    "patch_shape_zyx": [
+      8,
+      128,
+      128
+    ],
+    "predicted_roi_only_for_inner_outer_inference": true,
+    "preflight_only": true,
+    "seed": 20260728,
+    "stage_a1_optimizer_steps": 0,
+    "stage_a2_optimizer_steps": 0,
+    "stage_b_optimizer_steps": 0,
+    "stage_plan": [
+      {
+        "stage": "PREFLIGHT",
+        "steps": 300
+      }
+    ],
+    "status": "PASS",
+    "teacher_roi_inner_outer_inference": false,
+    "terminal_time_utc": "2026-07-28T04:38:41Z"
+  },
+  "preflight_validator_status": "PASS",
+  "remote_sync_after_email": {
+    "branch": "main",
+    "note": "This node file is being added by the follow-up metadata/evidence commit because the first pushed commit included the send receipt but not the node body JSON.",
+    "origin_main_before_metadata_fix": "c0bc8390cbd4b26c111e2d0a4f51fbb63ac26e4c",
+    "pushed_commit_before_metadata_fix": "c0bc8390cbd4b26c111e2d0a4f51fbb63ac26e4c",
+    "remote_name": "origin",
+    "status": "PUSHED_REMOTE_MAIN_PRE_METADATA_FIX",
+    "verified_at_utc": "2026-07-28T05:10:02.952803Z"
+  },
+  "sent_at_utc": "2026-07-28T05:01:52.447211Z",
+  "source_hashes": {
+    "configs/care_dpr/care_dpr_v1.yaml": "22fa7396f7cebf28238a743b75ef846f419adcaeeb3b8d620cdc7b3a6efb7f7f",
+    "scripts/evaluation/analyze_care_dpr_mechanism_ceiling.py": "9ef1e32614342c7bdab12bd47b8d5cee76473a42cc604ca04a2801c784176668",
+    "scripts/evaluation/evaluate_care_dpr.py": "159dead6798ed7ba6c14851a92e8e6171fb8c0f7998a67dfe8bff12b7c5f0321",
+    "scripts/evaluation/validate_care_dpr_packet.py": "2daeee1638c009fb047667be2c90ba0928e51961e1635fa4555220a5f5c94526",
+    "scripts/training/run_care_dpr.py": "09cc3a8e33956784bf1d24794653ca7b5a9e7d2b44ca81e3cfe05709e56b2b46",
+    "src/care_myocardium/data/care_dpr_dataset.py": "9c2dbe95eafcf94f10a740a354763a60e810ffcb1d8768a6315ce5bdc5f5e2d7",
+    "src/care_myocardium/inference/care_dpr_predictor.py": "6aedcca95496297004ecc4d206868385061cbbb0fff7fa4704629b6a9621cffb",
+    "src/care_myocardium/models/care_dpr.py": "96935b479f62add9db8c715a8130c7ec843046389a64c950f18f97177e1eb34a",
+    "src/care_myocardium/training/care_dpr_trainer.py": "3010d2d0009149131fc4090ca291062f93d08e9685333665dbe9c5fcf7838a1e",
+    "tests/care_dpr/test_care_dpr_model.py": "d370e1bd69c0eb896db989bb92f20524c6098faa1efe942b00fc2bce7e530520"
+  },
+  "squeue_60657290": "JOBID,STATE,TIME,TIME_LEFT,NODELIST(REASON),TRES_PER_NODE\n60657290,RUNNING,2-03:52:11,20:07:49,g1807htzh01,gres/gpu:1",
+  "state": "AWAITING_HUMAN_ACCEPTANCE_DPR_GATE_A",
+  "status": "SENT",
+  "strict_validator_status": "PASS",
+  "subject": "[CARE-DPR][A/2] 双病理 proposal-refine-arbitrate 实现完成，等待 Fold0 正式训练验收",
+  "task_key": "20260728_care_dpr_fold0_global_redesign",
+  "to": "1155246312@link.cuhk.edu.hk"
+}
