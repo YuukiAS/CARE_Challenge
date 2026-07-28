@@ -216,16 +216,16 @@ def ensure_c2_target_index(model: torch.nn.Module, item: dict[str, Any], *, rng:
     item["c2_target_index_fallback"] = fallback
 
 
-def bank_c2_targets(item: dict[str, Any], bank: dict[tuple[str, str, bool], list[tuple[dict[str, Any], tuple[Any, np.ndarray, np.ndarray, np.ndarray], dict[str, Any]]]]) -> None:
+def bank_c2_targets(item: dict[str, Any], bank: dict[tuple[str, str, bool], list[tuple[str, tuple[Any, np.ndarray, np.ndarray, np.ndarray], dict[str, Any]]]]) -> None:
     if item.get("c2_target_index_banked"):
         return
     for key, values in item.get("c2_target_index", {}).items():
         for cand_tuple, target_info in values:
-            bank[key].append((item, cand_tuple, target_info))
+            bank[key].append((str(item.get("case_id")), cand_tuple, target_info))
     item["c2_target_index_banked"] = True
 
 
-def choose_case_candidate(*, model: torch.nn.Module, train_cases: list[str], case_to_fold: dict[str, int], metadata: Any, cache: CaseCache, fv_cache: FullVolumeCandidateCache, rng: random.Random, pathology: str, candidate_type: str, device: torch.device, desired_utility_positive: bool | None = None, c2_signed_bank: dict[tuple[str, str, bool], list[tuple[dict[str, Any], tuple[Any, np.ndarray, np.ndarray, np.ndarray], dict[str, Any]]]] | None = None) -> tuple[str, dict[str, Any], tuple[Any, np.ndarray, np.ndarray, np.ndarray], str, dict[str, Any] | None]:
+def choose_case_candidate(*, model: torch.nn.Module, train_cases: list[str], case_to_fold: dict[str, int], metadata: Any, cache: CaseCache, fv_cache: FullVolumeCandidateCache, rng: random.Random, pathology: str, candidate_type: str, device: torch.device, desired_utility_positive: bool | None = None, c2_signed_bank: dict[tuple[str, str, bool], list[tuple[str, tuple[Any, np.ndarray, np.ndarray, np.ndarray], dict[str, Any]]]] | None = None) -> tuple[str, dict[str, Any], tuple[Any, np.ndarray, np.ndarray, np.ndarray], str, dict[str, Any] | None]:
     requested_type = candidate_type
     candidate_types = [candidate_type] + [c for c in CANDIDATE_TYPES if c != candidate_type]
     sign_mismatch: tuple[str, dict[str, Any], tuple[Any, np.ndarray, np.ndarray, np.ndarray], str, dict[str, Any]] | None = None
@@ -258,9 +258,10 @@ def choose_case_candidate(*, model: torch.nn.Module, train_cases: list[str], cas
         for ctype in candidate_types:
             bank_pool = c2_signed_bank.get((pathology, ctype, bool(desired_utility_positive)), [])
             if bank_pool:
-                item, cand_tuple, target_info = rng.choice(bank_pool)
+                bank_case_id, cand_tuple, target_info = rng.choice(bank_pool)
+                item = fv_cache.get(case_id=bank_case_id, model=model, case_to_fold=case_to_fold, metadata=metadata, cache=cache, device=device)
                 fallback = "" if ctype == requested_type else f"candidate_type_fallback:{requested_type}->{ctype}"
-                return str(item.get("case_id", "BANK_REUSE")), item, cand_tuple, ";".join([x for x in (fallback, "utility_target_bank_reuse") if x]), target_info
+                return bank_case_id, item, cand_tuple, ";".join([x for x in (fallback, "utility_target_bank_reuse") if x]), target_info
     if sign_mismatch is not None:
         case_id, item, cand_tuple, fallback, target_info = sign_mismatch
         sign = "positive" if desired_utility_positive else "negative"
@@ -352,7 +353,7 @@ def run_stage(*, model: torch.nn.Module, stage: str, optimizer: torch.optim.Opti
     total_step = int(start_step)
     model.train()
     c2_sign_cursor = {p: 0 for p in PATHOLOGIES}
-    c2_signed_bank: dict[tuple[str, str, bool], list[tuple[dict[str, Any], tuple[Any, np.ndarray, np.ndarray, np.ndarray], dict[str, Any]]]] = defaultdict(list)
+    c2_signed_bank: dict[tuple[str, str, bool], list[tuple[str, tuple[Any, np.ndarray, np.ndarray, np.ndarray], dict[str, Any]]]] = defaultdict(list)
     for local_step in range(1, int(steps) + 1):
         pathology = "scar" if (local_step - 1) % 2 == 0 else "edema_zone"
         requested_type = CANDIDATE_TYPES[((local_step - 1) // 2) % len(CANDIDATE_TYPES)]
