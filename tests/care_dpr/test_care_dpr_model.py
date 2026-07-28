@@ -12,6 +12,7 @@ from src.care_myocardium.inference.care_dpr_predictor import aggregate_patch_out
 from src.care_myocardium.models.care_dpr import ComponentUtilityMLP, build_care_dpr
 from src.care_myocardium.training.care_dpr_trainer import care_dpr_loss, load_care_dpr_checkpoint, save_care_dpr_checkpoint
 from scripts.training.run_care_dpr import should_restore_optimizer_state
+from scripts.evaluation.evaluate_care_dpr import candidate_utility_target
 
 
 def _batch(t2: float = 1.0) -> dict[str, torch.Tensor]:
@@ -276,3 +277,52 @@ def test_stage_boundary_resume_rebuilds_b_optimizer_without_loading_a2_state() -
     assert should_restore_optimizer_state("A1", "A2", 500) is True
     assert should_restore_optimizer_state("A2", "B", 2500) is False
     assert should_restore_optimizer_state("B", "B", 2502) is True
+
+
+def test_forward_primary_candidate_mask_drives_component_utility_mask() -> None:
+    model = build_care_dpr()
+    batch = _batch(t2=1.0)
+    cmask = torch.zeros(2, 1, 4, 16, 16)
+    cmask[0, :, 1, 2:5, 2:5] = 1.0
+    cmask[1, :, 2, 9:12, 9:12] = 1.0
+    out = _forward(
+        model,
+        batch,
+        primary_candidate_mask=cmask,
+        primary_candidate_type=["ADD_FN", "REVISE_FP"],
+        primary_candidate_pathology=["scar", "edema_zone"],
+        distance_to_reliable_gt=batch["distance_to_myocardium"],
+    )
+    assert out["formal_primary_candidate_mask_received"].item() is True
+    assert torch.equal(out["scar_component_mask"][0:1], cmask[0:1])
+    assert torch.count_nonzero(out["scar_component_mask"][1]).item() == 0
+    assert torch.equal(out["edema_component_mask"][1:2], cmask[1:2])
+    assert torch.count_nonzero(out["edema_component_mask"][0]).item() == 0
+
+
+def test_candidate_utility_target_is_masked_to_candidate_roi() -> None:
+    anchor = np.zeros((2, 8, 8), dtype=bool)
+    refined = np.zeros_like(anchor)
+    gt = np.zeros_like(anchor)
+    roi = np.zeros_like(anchor)
+    roi[:, 1:3, 1:3] = True
+    gt[:, 1:3, 1:3] = True
+    gt[:, 6:8, 6:8] = True
+    refined[:, 1:3, 1:3] = True
+    dist = np.zeros(anchor.shape, dtype=np.float32)
+    accept, utility, reason = candidate_utility_target(anchor, refined, gt, dist, "ADD_FN", roi)
+    assert accept == 1
+    assert utility > 0.0
+    assert reason == "candidate_roi_formula"
+
+
+def test_signed_utility_gain_counts_harmful_accepted_candidates() -> None:
+    scores = np.asarray([0.9, 0.8, 0.1], dtype=np.float32)
+    utilities = np.asarray([0.2, -0.5, 0.3], dtype=np.float32)
+    accepted = scores >= 0.5
+    positive_only = float(np.clip(utilities[accepted], 0, None).sum())
+    signed = float(utilities[accepted].sum())
+    harmful = int((utilities[accepted] < 0).sum())
+    assert positive_only > 0.0
+    assert signed < 0.0
+    assert harmful == 1

@@ -74,23 +74,27 @@ def component_utility_target(anchor_local: torch.Tensor, refined_prob: torch.Ten
     refined = (refined_prob.detach() >= 0.5).to(gt.dtype)
     anchor = anchor_local.detach().to(gt.dtype)
     gt = gt.detach().to(gt.dtype)
-    candidate_support = ((anchor + refined + gt) > 0).to(gt.dtype)
     if candidate_mask is not None:
-        candidate_support = candidate_support * candidate_mask.detach().to(gt.dtype).clamp(0, 1)
+        candidate_support = candidate_mask.detach().to(gt.dtype).clamp(0, 1)
+    else:
+        candidate_support = ((anchor + refined + gt) > 0).to(gt.dtype)
     accept_map = torch.zeros_like(gt)
     utility_map = torch.zeros_like(gt)
     for b in range(gt.shape[0]):
         support = candidate_support[b : b + 1]
-        denom = support.sum().clamp_min(1.0)
-        a = anchor[b : b + 1]
-        r = refined[b : b + 1]
-        g = gt[b : b + 1]
-        fn_a = ((g > 0.5) & (a <= 0.5)).float().sum()
-        fp_a = ((g <= 0.5) & (a > 0.5)).float().sum()
-        fn_r = ((g > 0.5) & (r <= 0.5)).float().sum()
-        fp_r = ((g <= 0.5) & (r > 0.5)).float().sum()
-        boundary_a = (_binary_boundary(a) != _binary_boundary(g)).float().sum()
-        boundary_r = (_binary_boundary(r) != _binary_boundary(g)).float().sum()
+        if float(support.sum().detach().cpu()) <= 0.0:
+            continue
+        a = anchor[b : b + 1] * support
+        r = refined[b : b + 1] * support
+        g = gt[b : b + 1] * support
+        union_c = ((a + r + g) > 0).to(gt.dtype) * support
+        denom = union_c.sum().clamp_min(1.0)
+        fn_a = ((g > 0.5) & (a <= 0.5) & (support > 0.5)).float().sum()
+        fp_a = ((g <= 0.5) & (a > 0.5) & (support > 0.5)).float().sum()
+        fn_r = ((g > 0.5) & (r <= 0.5) & (support > 0.5)).float().sum()
+        fp_r = ((g <= 0.5) & (r > 0.5) & (support > 0.5)).float().sum()
+        boundary_a = ((_binary_boundary(a) != _binary_boundary(g)) & (support > 0.5)).float().sum()
+        boundary_r = ((_binary_boundary(r) != _binary_boundary(g)) & (support > 0.5)).float().sum()
         e_anchor = 2.0 * fn_a + fp_a + 0.25 * boundary_a
         e_refined = 2.0 * fn_r + fp_r + 0.25 * boundary_r
         utility = torch.clamp((e_anchor - e_refined) / denom, -1.0, 1.0)
@@ -101,7 +105,7 @@ def component_utility_target(anchor_local: torch.Tensor, refined_prob: torch.Ten
             utility = torch.full_like(utility, -1.0)
         if distance_to_reliable_gt is not None:
             dist = distance_to_reliable_gt[b : b + 1].detach().to(gt.dtype)
-            new_remote = ((r > 0.5) & (a <= 0.5) & (dist > REMOTE_REJECT_MM)).any()
+            new_remote = ((r > 0.5) & (a <= 0.5) & (support > 0.5) & (dist > REMOTE_REJECT_MM)).any()
             if bool(new_remote):
                 accept = torch.zeros_like(accept)
                 utility = torch.minimum(utility, torch.full_like(utility, -1.0))
@@ -152,6 +156,8 @@ def care_dpr_loss(
     distance_to_gt = outputs.get("distance_to_myocardium")
     if batch_candidates is not None and "primary_candidate_mask" in batch_candidates:
         cmask = batch_candidates["primary_candidate_mask"].to(device=final_logits.device, dtype=final_logits.dtype)
+        if cmask.ndim == 4:
+            cmask = cmask[:, None]
         pathologies = list(batch_candidates.get("primary_candidate_pathology", []))
         if pathologies:
             scar_case = torch.tensor([1.0 if p == "scar" else 0.0 for p in pathologies], device=final_logits.device, dtype=final_logits.dtype)[:, None, None, None, None]
@@ -163,8 +169,10 @@ def care_dpr_loss(
             distance_to_gt = distance_to_gt.to(device=final_logits.device, dtype=final_logits.dtype)
     scar_accept_target, scar_utility_target = component_utility_target(targets["scar_anchor"], outputs["scar_p_refined"], targets["scar_gt"], distance_to_gt, scar_candidate_mask)
     edema_accept_target, edema_utility_target = component_utility_target(targets["edema_anchor"], outputs["edema_p_refined"], targets["edema_gt"], distance_to_gt, edema_candidate_mask)
-    scar_util = masked_bce_with_logits(outputs["scar_utility_accept_logit"].float(), scar_accept_target, scar_mask) + F.huber_loss(outputs["scar_utility_regression"].float() * scar_mask, scar_utility_target * scar_mask, reduction="sum") / scar_mask.sum().clamp_min(1.0)
-    edema_util = masked_bce_with_logits(outputs["edema_utility_accept_logit"].float(), edema_accept_target, edema_mask) + F.huber_loss(outputs["edema_utility_regression"].float() * edema_mask, edema_utility_target * edema_mask, reduction="sum") / edema_mask.sum().clamp_min(1.0)
+    scar_util_mask = scar_mask * (scar_candidate_mask if scar_candidate_mask is not None else outputs["scar_component_mask"].detach().clamp(0, 1))
+    edema_util_mask = edema_mask * (edema_candidate_mask if edema_candidate_mask is not None else outputs["edema_component_mask"].detach().clamp(0, 1))
+    scar_util = masked_bce_with_logits(outputs["scar_utility_accept_logit"].float(), scar_accept_target, scar_util_mask) + F.huber_loss(outputs["scar_utility_regression"].float() * scar_util_mask, scar_utility_target * scar_util_mask, reduction="sum") / scar_util_mask.sum().clamp_min(1.0)
+    edema_util = masked_bce_with_logits(outputs["edema_utility_accept_logit"].float(), edema_accept_target, edema_util_mask) + F.huber_loss(outputs["edema_utility_regression"].float() * edema_util_mask, edema_utility_target * edema_util_mask, reduction="sum") / edema_util_mask.sum().clamp_min(1.0)
 
     scar_boundary = masked_mean((scar_final_margin - scar_anchor_margin).abs(), (targets["scar_fn"] + targets["scar_fp"]).clamp(0, 1) * scar_mask)
     edema_boundary = masked_mean((edema_final_margin - edema_anchor_margin).abs(), (targets["edema_fn"] + targets["edema_fp"]).clamp(0, 1) * edema_mask)

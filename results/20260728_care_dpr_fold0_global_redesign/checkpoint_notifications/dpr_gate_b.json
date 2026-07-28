@@ -1,6 +1,8 @@
 {
   "all_data_fit_authorized": false,
   "approval_token": "APPROVE_DPR_GATE_B",
+  "approve_dpr_gate_b_accepted": false,
+  "diagnostic_mechanism_credit": "retained",
   "email_body_plain": "结论：CARE-DPR fold0 formal 4000-step 训练和 Gate B outer evaluation 已完成；工程合同路径通过，但科学门未通过，因为 selected threshold 下所有候选均被拒绝，最终输出精确回落到 nnU-Net anchor，没有任何病理 Dice 改善超过 0.005。下一步只能人工决策是否返修 utility/threshold/curriculum，不能自动扩 folds、all-data fit、validation upload 或 Docker/runtime push。\n\nState: AWAITING_HUMAN_ACCEPTANCE_DPR_GATE_B\nApproval token: APPROVE_DPR_GATE_B\nFormal expansion authorized: false\n\n训练与恢复：\n- seed=20260728；formal_training_credit=4000；actual_optimizer_steps=4000。\n- Stage A1/A2/B steps=500/2000/1500；checkpoint reload=PASS；参数值与固定输出 exact=True/True。\n- selected checkpoint=checkpoint_step04000.pt；selected utility threshold=0.5；outer fold0 未用于 checkpoint/threshold selection。\n\n评估结果：\n- complete16 scar Dice anchor/DPR=0.6933/0.6933；edema-zone=0.7522/0.7522；pure-edema=0.3944/0.3944。\n- outer44 scar Dice anchor/DPR=0.5602/0.5602；edema-zone=0.5816/0.5816；pure-edema=0.7798/0.7798。\n- scientific_gate=FAIL；failures=['no_pathology_improves_by_more_than_0.005']；help/harm complete16=0/0。\n\n机制证据：\n- two-pass full-volume inference PASS：overlap=0.5，Gaussian blending，pass1 聚合 shared feature/p_coarse/q_fn/q_fp，pass2 per-candidate refiner+utility；禁止 patch final label averaging。\n- real candidates outer44=5652；scar ADD/REVISE=4708/90；edema ADD/REVISE=830/24。\n- accept targets positive/negative=1012/4640；utility AUROC/AUPRC=0.5162/0.2148；oracle/realized gain=16.7763/0.0538。\n- selected runtime accepted/rejected=0/5652；fixed threshold 0.3 would accept 5 and reject 5647 on outer44 mechanism audit, but train-side selected threshold remained 0.5.\n- proposal recall scar/edema=0.7748/0.9688；proposal precision scar/edema=0.7008/0.5953。\n- predicted ROI coverage scar/edema=0.6560/0.2907；predicted refiner Dice scar/edema=0.1930/0.3043。\n- no-T2 exact-zero PASS；zero accepted candidates exact anchor PASS；all GPU processes terminal。\n\n验证：\n- DPR unit tests: 18 passed。\n- A-R2 strict validator PASS；A-R2 consistency validator PASS；Gate B validator PASS。\n\n主要证据路径：\n- results/20260728_care_dpr_fold0_global_redesign/gate_b_summary.json\n- results/20260728_care_dpr_fold0_global_redesign/gate_b_validator_report.json\n- results/20260728_care_dpr_fold0_global_redesign/runtime/formal_fold0/gate_b_evaluation/gate_b_model_summary.csv\n- results/20260728_care_dpr_fold0_global_redesign/runtime/formal_fold0/gate_b_evaluation/gate_b_mechanism_report.json\n- results/20260728_care_dpr_fold0_global_redesign/runtime/formal_fold0/gate_b_evaluation/gate_b_scientific_gate.json\n\nsource/config/test/evidence hashes 已记录在 checkpoint_notifications/dpr_gate_b.json。\n",
   "evidence_hashes": {
     "results/20260728_care_dpr_fold0_global_redesign/gate_b_summary.json": "53c5cb539f8a842b4120552ea18329647f7e8e11539813eca8d5cbf7ce211f75",
@@ -18,6 +20,8 @@
   "fold_expansion_authorized": false,
   "formal_expansion_authorized": false,
   "gate_summary": {
+    "all_data_fit_authorized": false,
+    "approve_dpr_gate_b_accepted": false,
     "checkpoint": "results/20260728_care_dpr_fold0_global_redesign/runtime/formal_fold0/checkpoints/checkpoint_step04000.pt",
     "checkpoint_reload_exact": {
       "checked_output_keys": [
@@ -41,7 +45,10 @@
     "checkpoint_step": 4000,
     "complete16_case_ids_sha256": "34f3bccb3f10cb42e9be271c82cfbad399f13adf48f254fa29a0c3f67ee97bbd",
     "complete_trimodal_heldout_cases": 16,
+    "diagnostic_mechanism_credit": "retained",
     "fold": 0,
+    "fold_expansion_authorized": false,
+    "formal_expansion_authorized": false,
     "formal_training_credit": 4000,
     "gate": "DPR_GATE_B",
     "generated_at_utc": "2026-07-28T11:35:26Z",
@@ -369,6 +376,7 @@
     },
     "predicted_roi_only_for_inner_outer_inference": true,
     "preflight_credit": 0,
+    "reason": "Independent Gate B review found candidate-level training/runtime parity, checkpoint selection, and utility calibration require same-scope repair.",
     "resolved_training_contract_hash": "1123d3ea7e36ef44c103827356e274aea90e187e58bbc5594a7e38d5ce832f2a",
     "sampler_audit": {
       "stage_a1": {
@@ -537,6 +545,7 @@
         "status": "PASS"
       }
     },
+    "scientific_final_output_credit": 0,
     "scientific_gate": {
       "failures": [
         "no_pathology_improves_by_more_than_0.005"
@@ -626,7 +635,9 @@
       "src/care_myocardium/training/care_dpr_trainer.py": "8bf8d9aae94f699f09de1d92329bbec08d231b26a85f563c166f5b6d57a0f513",
       "tests/care_dpr/test_care_dpr_model.py": "e02dcf8bfe27a044d13bebb3c76b8676bf5d2244b4ed15865a3966cf470f2df5"
     },
-    "status": "GATE_B_SCIENTIFIC_REVIEW_REQUIRED",
+    "status": "SUPERSEDED_BY_DPR_GATE_B_R1",
+    "superseded_at_utc": "2026-07-28T12:03:36Z",
+    "superseded_by": "DPR_GATE_B_R1",
     "task_key": "20260728_care_dpr_fold0_global_redesign",
     "teacher_roi_inner_outer_inference": false,
     "train_side_inner12_case_ids_sha256": "4f47372c6de844c85f9852981e5849bb817bf02032ae3900e7b31411fe5aaed3",
@@ -643,12 +654,15 @@
       "patch_final_label_averaging": false,
       "patch_local_component_decision": false,
       "status": "PASS"
-    }
+    },
+    "validation_upload_authorized": false
   },
   "generated_at_utc": "2026-07-28T11:39:52Z",
   "git_head_before_evidence_commit": "e01a110f12591494f00b1704462f194b9384fa51",
   "notifier_reuse": "controller_notifications.notify_goal_watcher/load_config/load_env_file plus existing CARE notify SMTP configuration; no new notifier service created",
   "origin_main_before_evidence_commit": "e01a110f12591494f00b1704462f194b9384fa51",
+  "reason": "Independent Gate B review found candidate-level training/runtime parity, checkpoint selection, and utility calibration require same-scope repair.",
+  "scientific_final_output_credit": 0,
   "scientific_gate_failures": [
     "no_pathology_improves_by_more_than_0.005"
   ],
@@ -666,7 +680,10 @@
     "tests/care_dpr/test_care_dpr_model.py": "e02dcf8bfe27a044d13bebb3c76b8676bf5d2244b4ed15865a3966cf470f2df5"
   },
   "state": "AWAITING_HUMAN_ACCEPTANCE_DPR_GATE_B",
+  "status": "SUPERSEDED_BY_DPR_GATE_B_R1",
   "subject": "[CARE-DPR][B/2] Fold0双病理结果完成，等待下一轮决策",
+  "superseded_at_utc": "2026-07-28T12:03:36Z",
+  "superseded_by": "DPR_GATE_B_R1",
   "validation_upload_authorized": false,
   "validator": {
     "casewise_rows": 360,

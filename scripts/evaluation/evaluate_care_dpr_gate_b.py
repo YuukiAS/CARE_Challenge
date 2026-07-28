@@ -178,6 +178,7 @@ def collect_candidate_targets(pred: dict[str, Any], rec: dict[str, np.ndarray], 
             gt_maps[pathology],
             dist_maps[pathology],
             str(item["candidate_type"]),
+            item.get("roi_mask"),
         )
         rows.append({
             "case_id": case_id,

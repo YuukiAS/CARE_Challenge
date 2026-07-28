@@ -1,4 +1,6 @@
 {
+  "all_data_fit_authorized": false,
+  "approve_dpr_gate_b_accepted": false,
   "checkpoint": "results/20260728_care_dpr_fold0_global_redesign/runtime/formal_fold0/checkpoints/checkpoint_step04000.pt",
   "checkpoint_reload_exact": {
     "checked_output_keys": [
@@ -22,8 +24,11 @@
   "checkpoint_step": 4000,
   "complete16_case_ids_sha256": "34f3bccb3f10cb42e9be271c82cfbad399f13adf48f254fa29a0c3f67ee97bbd",
   "complete_trimodal_heldout_cases": 16,
+  "diagnostic_mechanism_credit": "retained",
   "evidence_root": "results/20260728_care_dpr_fold0_global_redesign/runtime/formal_fold0/gate_b_evaluation",
   "fold": 0,
+  "fold_expansion_authorized": false,
+  "formal_expansion_authorized": false,
   "formal_training_credit": 4000,
   "gate": "DPR_GATE_B",
   "generated_at_utc": "2026-07-28T11:35:26Z",
@@ -351,6 +356,7 @@
   },
   "predicted_roi_only_for_inner_outer_inference": true,
   "preflight_credit": 0,
+  "reason": "Independent Gate B review found candidate-level training/runtime parity, checkpoint selection, and utility calibration require same-scope repair.",
   "resolved_training_contract_hash": "1123d3ea7e36ef44c103827356e274aea90e187e58bbc5594a7e38d5ce832f2a",
   "sampler_audit": {
     "stage_a1": {
@@ -519,6 +525,7 @@
       "status": "PASS"
     }
   },
+  "scientific_final_output_credit": 0,
   "scientific_gate": {
     "failures": [
       "no_pathology_improves_by_more_than_0.005"
@@ -608,7 +615,9 @@
     "src/care_myocardium/training/care_dpr_trainer.py": "8bf8d9aae94f699f09de1d92329bbec08d231b26a85f563c166f5b6d57a0f513",
     "tests/care_dpr/test_care_dpr_model.py": "e02dcf8bfe27a044d13bebb3c76b8676bf5d2244b4ed15865a3966cf470f2df5"
   },
-  "status": "GATE_B_SCIENTIFIC_REVIEW_REQUIRED",
+  "status": "SUPERSEDED_BY_DPR_GATE_B_R1",
+  "superseded_at_utc": "2026-07-28T12:03:36Z",
+  "superseded_by": "DPR_GATE_B_R1",
   "task_key": "20260728_care_dpr_fold0_global_redesign",
   "teacher_roi_inner_outer_inference": false,
   "train_side_inner12_case_ids_sha256": "4f47372c6de844c85f9852981e5849bb817bf02032ae3900e7b31411fe5aaed3",
@@ -625,5 +634,6 @@
     "patch_final_label_averaging": false,
     "patch_local_component_decision": false,
     "status": "PASS"
-  }
+  },
+  "validation_upload_authorized": false
 }

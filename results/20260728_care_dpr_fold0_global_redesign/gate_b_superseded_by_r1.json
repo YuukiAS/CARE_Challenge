@@ -1,0 +1,24 @@
+{
+  "all_data_fit_authorized": false,
+  "approve_dpr_gate_b_accepted": false,
+  "created_at_utc": "2026-07-28T12:03:36Z",
+  "current_git_head": "3dda054ddc0ed3c9e22fbf2a1512104ba735e4e8",
+  "diagnostic_mechanism_credit": "retained",
+  "fold_expansion_authorized": false,
+  "formal_expansion_authorized": false,
+  "gate": "DPR_GATE_B",
+  "next_required_stage": "DPR_GATE_B_R1_SAME_SCOPE_REPAIR",
+  "origin_main": "3dda054ddc0ed3c9e22fbf2a1512104ba735e4e8",
+  "reason": "Independent Gate B review found candidate-level training/runtime parity, checkpoint selection, and utility calibration require same-scope repair.",
+  "retained_evidence_paths": [
+    "results/20260728_care_dpr_fold0_global_redesign/gate_b_summary.json",
+    "results/20260728_care_dpr_fold0_global_redesign/runtime/formal_fold0/gate_b_evaluation/gate_b_mechanism_report.json",
+    "results/20260728_care_dpr_fold0_global_redesign/runtime/formal_fold0/gate_b_evaluation/gate_b_model_summary.csv"
+  ],
+  "scientific_final_output_credit": 0,
+  "status": "SUPERSEDED_BY_DPR_GATE_B_R1",
+  "superseded_at_utc": "2026-07-28T12:03:36Z",
+  "superseded_by": "DPR_GATE_B_R1",
+  "task_key": "20260728_care_dpr_fold0_global_redesign",
+  "validation_upload_authorized": false
+}

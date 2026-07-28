@@ -134,18 +134,22 @@ def error_energy(mask: np.ndarray, gt: np.ndarray) -> float:
     return float(2.0 * fn + fp + 0.25 * boundary_error)
 
 
-def candidate_utility_target(anchor_local: np.ndarray, refined_local: np.ndarray, gt: np.ndarray, distance_to_gt_mm: np.ndarray, candidate_type: str) -> tuple[int, float, str]:
-    a = anchor_local.astype(bool)
-    r = refined_local.astype(bool)
-    g = gt.astype(bool)
-    union = a | r | g
+def candidate_utility_target(anchor_local: np.ndarray, refined_local: np.ndarray, gt: np.ndarray, distance_to_gt_mm: np.ndarray, candidate_type: str, candidate_roi: np.ndarray | None = None) -> tuple[int, float, str]:
+    if candidate_roi is None:
+        c = (anchor_local.astype(bool) | refined_local.astype(bool) | gt.astype(bool))
+    else:
+        c = candidate_roi.astype(bool)
+    a = anchor_local.astype(bool) & c
+    r = refined_local.astype(bool) & c
+    g = gt.astype(bool) & c
+    union = (a | r | g) & c
     denom = max(int(union.sum()), 1)
     utility = float(np.clip((error_energy(a, g) - error_energy(r, g)) / denom, -1.0, 1.0))
-    reason = "formula"
+    reason = "candidate_roi_formula"
     accept = int(utility > 0.0)
-    new_component = r & ~a
+    new_component = (r & ~a) & c
     if candidate_type == "ADD_FN":
-        new_component |= r
+        new_component = r & c
     if np.any(new_component) and float(distance_to_gt_mm[new_component].min(initial=99.0)) > 20.0:
         accept = 0
         utility = min(utility, 0.0)

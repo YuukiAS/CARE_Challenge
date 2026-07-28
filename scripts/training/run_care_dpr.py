@@ -231,6 +231,7 @@ def run_steps(*, model: torch.nn.Module, optimizer: torch.optim.Optimizer, cases
                 batch["images"], batch["availability"], batch["anchor_logits"],
                 uncertainty=batch["uncertainty"], myocardium_support=batch["myocardium_support"], edema_support=batch["edema_support"], distance_to_myocardium=batch["distance_to_myocardium"], t2_present=batch["t2_present"],
                 scar_teacher_roi=scar_teacher, edema_teacher_roi=edema_teacher, teacher_roi_fraction=teacher_fraction, allow_teacher_roi=teacher_fraction > 0,
+                primary_candidate_mask=batch.get("primary_candidate_mask"), primary_candidate_type=batch.get("primary_candidate_type"), primary_candidate_pathology=batch.get("primary_candidate_pathology"), distance_to_reliable_gt=batch.get("distance_to_reliable_gt"),
                 strict_inputs=True, anchor_value_kind=batch["anchor_value_kind"],
             )
             loss, metrics = care_dpr_loss(outputs, batch["labels"], batch_anchor_mask(batch), t2_present=batch["t2_present"], batch_candidates=batch)

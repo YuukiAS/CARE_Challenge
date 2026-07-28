@@ -68,6 +68,37 @@ def _center_from_score(score: torch.Tensor) -> tuple[int, int, int]:
     return int(z), int(y), int(x)
 
 
+def _center_from_mask(mask: torch.Tensor) -> tuple[int, int, int]:
+    arr = mask.detach()
+    coords = torch.nonzero(arr > 0.5, as_tuple=False)
+    if coords.numel() == 0:
+        return tuple(int(v // 2) for v in arr.shape[-3:])
+    if coords.shape[1] > 3:
+        coords = coords[:, -3:]
+    center = coords.to(torch.float32).mean(dim=0).round().to(torch.int64)
+    return int(center[0].cpu()), int(center[1].cpu()), int(center[2].cpu())
+
+
+def _candidate_type_hints(candidate_type: Any, batch_size: int, *, device: torch.device, dtype: torch.dtype) -> tuple[torch.Tensor, torch.Tensor]:
+    if isinstance(candidate_type, torch.Tensor):
+        values = candidate_type.detach().to(device=device).reshape(batch_size, -1)[:, 0]
+        add = (values <= 0.5).to(dtype).reshape(batch_size, 1)
+        revise = 1.0 - add
+        return add, revise
+    if isinstance(candidate_type, str) or candidate_type is None:
+        items = [candidate_type] * batch_size
+    else:
+        items = list(candidate_type)
+        if len(items) != batch_size:
+            items = (items + [None] * batch_size)[:batch_size]
+    add_vals = [1.0 if item == "ADD_FN" else 0.0 for item in items]
+    revise_vals = [1.0 if item == "REVISE_FP" else 0.0 for item in items]
+    return (
+        torch.tensor(add_vals, device=device, dtype=dtype).reshape(batch_size, 1),
+        torch.tensor(revise_vals, device=device, dtype=dtype).reshape(batch_size, 1),
+    )
+
+
 class LocalROIRefiner(nn.Module):
     """Candidate-centered local ROI refiner with explicit crop/paste alignment."""
 
@@ -93,6 +124,14 @@ class LocalROIRefiner(nn.Module):
         out = full_input.new_zeros((full_input.shape[0], 1, *full_input.shape[-3:]))
         for b in range(full_input.shape[0]):
             center = _center_from_score(center_score[b, 0])
+            pasted, src = self.forward_at_center(full_input[b : b + 1], center)
+            out[(b, slice(None), *src)] = pasted[(0, slice(None), *src)]
+        return out
+
+    def forward_on_masks(self, full_input: torch.Tensor, candidate_mask: torch.Tensor) -> torch.Tensor:
+        out = full_input.new_zeros((full_input.shape[0], 1, *full_input.shape[-3:]))
+        for b in range(full_input.shape[0]):
+            center = _center_from_mask(candidate_mask[b, 0])
             pasted, src = self.forward_at_center(full_input[b : b + 1], center)
             out[(b, slice(None), *src)] = pasted[(0, slice(None), *src)]
         return out
@@ -128,7 +167,7 @@ class ComponentUtilityMLP(nn.Module):
         distance_to_support: torch.Tensor,
         support: torch.Tensor,
         component_mask: torch.Tensor,
-        candidate_type: str | None = None,
+        candidate_type: Any | None = None,
         truncation_flag: torch.Tensor | None = None,
     ) -> torch.Tensor:
         component_weight = component_mask.to(device=feature.device, dtype=feature.dtype).clamp(0, 1)
@@ -151,22 +190,18 @@ class ComponentUtilityMLP(nn.Module):
                 denom = torch.tensor(component_weight.shape[-3:], device=feature.device, dtype=feature.dtype).clamp_min(1)
                 bbox_size.append(size / denom)
         bbox = torch.stack(bbox_size, dim=0)
-        if candidate_type == "ADD_FN":
-            add_hint = torch.ones((feature.shape[0], 1), device=feature.device, dtype=feature.dtype)
-            revise_hint = torch.zeros_like(add_hint)
-        elif candidate_type == "REVISE_FP":
-            add_hint = torch.zeros((feature.shape[0], 1), device=feature.device, dtype=feature.dtype)
-            revise_hint = torch.ones_like(add_hint)
-        else:
+        if candidate_type is None:
             add_hint = (q_fn.flatten(2).mean(dim=2) >= q_fp.flatten(2).mean(dim=2)).to(feature.dtype)
             revise_hint = 1.0 - add_hint
+        else:
+            add_hint, revise_hint = _candidate_type_hints(candidate_type, feature.shape[0], device=feature.device, dtype=feature.dtype)
         if truncation_flag is None:
             truncation = ((support * component_weight).flatten(2).sum(dim=2) < component_weight.flatten(2).sum(dim=2).clamp_min(1e-6)).to(feature.dtype)
         else:
             truncation = truncation_flag.to(device=feature.device, dtype=feature.dtype).reshape(feature.shape[0], 1)
         return torch.cat([feat_pool, scalar_pool, voxel_volume, compactness, bbox, add_hint, revise_hint, truncation], dim=1)
 
-    def score_candidate(self, feature: torch.Tensor, **kwargs: torch.Tensor | str) -> dict[str, torch.Tensor]:
+    def score_candidate(self, feature: torch.Tensor, **kwargs: Any) -> dict[str, torch.Tensor]:
         descriptor = self.descriptor_from_candidate(feature, **kwargs)  # type: ignore[arg-type]
         raw = self.net(descriptor)
         accept_logit = raw[:, 0:1]
@@ -190,9 +225,15 @@ class ComponentUtilityMLP(nn.Module):
         uncertainty: torch.Tensor,
         distance_to_support: torch.Tensor,
         support: torch.Tensor,
+        component_mask: torch.Tensor | None = None,
+        candidate_type: Any | None = None,
+        truncation_flag: torch.Tensor | None = None,
     ) -> dict[str, torch.Tensor]:
-        proposal_mass = torch.maximum(torch.maximum(p_coarse, q_fn), torch.maximum(q_fp, p_refined)).detach()
-        component_mask = torch.where(proposal_mass > 0.05, torch.ones_like(proposal_mass), torch.zeros_like(proposal_mass))
+        if component_mask is None:
+            proposal_mass = torch.maximum(torch.maximum(p_coarse, q_fn), torch.maximum(q_fp, p_refined)).detach()
+            component_mask = torch.where(proposal_mass > 0.05, torch.ones_like(proposal_mass), torch.zeros_like(proposal_mass))
+        else:
+            component_mask = component_mask.to(device=feature.device, dtype=feature.dtype).clamp(0.0, 1.0)
         scored = self.score_candidate(
             feature,
             p_coarse=p_coarse,
@@ -204,8 +245,8 @@ class ComponentUtilityMLP(nn.Module):
             distance_to_support=distance_to_support,
             support=support,
             component_mask=component_mask,
-            candidate_type=None,
-            truncation_flag=None,
+            candidate_type=candidate_type,
+            truncation_flag=truncation_flag,
         )
         accept_logit = scored["utility_accept_logit"][:, :, None, None, None].expand(-1, 1, *feature.shape[-3:])
         utility_regression = scored["utility_regression"][:, :, None, None, None].expand_as(accept_logit)
@@ -242,7 +283,7 @@ class DPRBranch(nn.Module):
         self.local_refiner = LocalROIRefiner(branch_channels + local_extra_channels, branch_channels, self.roi_context_zyx)
         self.component_utility = ComponentUtilityMLP(branch_channels)
 
-    def forward(self, scales: tuple[torch.Tensor, torch.Tensor, torch.Tensor], branch_context: torch.Tensor, local_context: torch.Tensor) -> dict[str, torch.Tensor]:
+    def forward(self, scales: tuple[torch.Tensor, torch.Tensor, torch.Tensor], branch_context: torch.Tensor, local_context: torch.Tensor, *, primary_candidate_mask: torch.Tensor | None = None, primary_candidate_type: Any | None = None, distance_to_reliable_gt: torch.Tensor | None = None) -> dict[str, torch.Tensor]:
         s0, s1, s2 = scales
         u1 = F.interpolate(s2, size=s1.shape[-3:], mode="trilinear", align_corners=False)
         u1 = self.up1(torch.cat([u1, s1], dim=1))
@@ -253,20 +294,31 @@ class DPRBranch(nn.Module):
         q_fn_logit = proposal_raw[:, 1:2]
         q_fp_logit = proposal_raw[:, 2:3]
         proposal_score = torch.maximum(torch.maximum(torch.sigmoid(p_coarse_logit), torch.sigmoid(q_fn_logit)), torch.sigmoid(q_fp_logit))
-        refined_logit = self.local_refiner(torch.cat([feat, local_context], dim=1), proposal_score)
+        local_input = torch.cat([s0, local_context], dim=1)
+        if primary_candidate_mask is not None:
+            center_score = primary_candidate_mask.to(device=feat.device, dtype=feat.dtype).clamp(0.0, 1.0)
+            refined_logit = self.local_refiner.forward_on_masks(local_input, center_score)
+            component_mask = center_score.detach()
+        else:
+            center_score = proposal_score
+            refined_logit = self.local_refiner(local_input, proposal_score)
+            component_mask = None
+        distance_for_utility = distance_to_reliable_gt.to(device=feat.device, dtype=feat.dtype) if distance_to_reliable_gt is not None else branch_context[:, 2:3]
         utility = self.component_utility(
-            feat,
+            s0,
             p_coarse=torch.sigmoid(p_coarse_logit),
             q_fn=torch.sigmoid(q_fn_logit),
             q_fp=torch.sigmoid(q_fp_logit),
             p_refined=torch.sigmoid(refined_logit),
             anchor_margin=branch_context[:, 6:7],
             uncertainty=branch_context[:, 0:1],
-            distance_to_support=branch_context[:, 2:3],
+            distance_to_support=distance_for_utility,
             support=branch_context[:, 1:2],
+            component_mask=component_mask,
+            candidate_type=primary_candidate_type,
         )
         return {
-            "feature": feat,
+            "feature": s0,
             "p_coarse_logit": p_coarse_logit,
             "q_fn_logit": q_fn_logit,
             "q_fp_logit": q_fp_logit,
@@ -280,6 +332,7 @@ class DPRBranch(nn.Module):
             "utility_accept_prob": utility["utility_accept_prob"],
             "component_descriptor": utility["component_descriptor"],
             "component_mask": utility["component_mask"],
+            "candidate_center_source": "primary_candidate_mask" if primary_candidate_mask is not None else "proposal_score",
         }
 
 
@@ -358,6 +411,10 @@ class CAREDPR(nn.Module):
         anchor_value_kind: str | None = None,
         hard_component_accept: bool = False,
         force_anchor_fallback: bool = False,
+        primary_candidate_mask: torch.Tensor | None = None,
+        primary_candidate_type: Any | None = None,
+        primary_candidate_pathology: Any | None = None,
+        distance_to_reliable_gt: torch.Tensor | None = None,
     ) -> dict[str, torch.Tensor]:
         if images.ndim != 5 or images.shape[1] != 3:
             raise ValueError("images must be [B,3,D,H,W] in LGE,T2,C0 order")
@@ -371,6 +428,7 @@ class CAREDPR(nn.Module):
         avail = _availability_map(availability, anchor_logits)
         unc = _ensure_map(uncertainty, anchor_logits, 0.0, name="uncertainty", strict=strict_inputs)
         dist = _ensure_map(distance_to_myocardium, anchor_logits, 0.0, name="distance_to_myocardium", strict=strict_inputs)
+        reliable_gt_dist = _ensure_map(distance_to_reliable_gt, anchor_logits, 99.0, name="distance_to_reliable_gt", strict=False) if distance_to_reliable_gt is not None else dist
         scar_support = _ensure_map(myocardium_support, anchor_logits, 1.0, name="myocardium_support", strict=strict_inputs).clamp(0.0, 1.0)
         edema_zone_support = _ensure_map(edema_support, anchor_logits, 1.0, name="edema_support", strict=strict_inputs).clamp(0.0, 1.0)
         if t2_present is None:
@@ -407,8 +465,29 @@ class CAREDPR(nn.Module):
         edema_context = _branch_context(unc, edema_train_roi, dist, edema0["p_coarse"], edema0["q_fn"], edema0["q_fp"], edema_anchor_margin)
         scar_local = torch.cat([images[:, 0:1], scar_anchor_margin, scar0["p_coarse"], scar0["q_fn"], scar0["q_fp"], unc, scar_train_roi, dist], dim=1)
         edema_local = torch.cat([images[:, 1:2], images[:, 0:1], edema_anchor_margin, edema0["p_coarse"], edema0["q_fn"], edema0["q_fp"], unc, edema_train_roi, dist], dim=1)
-        scar = self.scar_branch(scales, scar_context, scar_local)
-        edema = self.edema_branch(scales, edema_context, edema_local)
+        scar_primary_mask = None
+        edema_primary_mask = None
+        scar_candidate_type = primary_candidate_type
+        edema_candidate_type = primary_candidate_type
+        if primary_candidate_mask is not None:
+            cmask = primary_candidate_mask.to(device=anchor_logits.device, dtype=anchor_logits.dtype)
+            if cmask.ndim == 4:
+                cmask = cmask[:, None]
+            if cmask.shape[-3:] != anchor_logits.shape[-3:]:
+                raise ValueError("primary_candidate_mask must share spatial shape with anchor_logits")
+            if primary_candidate_pathology is None:
+                scar_primary_mask = cmask
+                edema_primary_mask = cmask * t2_mask
+            else:
+                pathologies = list(primary_candidate_pathology) if not isinstance(primary_candidate_pathology, str) else [primary_candidate_pathology] * cmask.shape[0]
+                if len(pathologies) != cmask.shape[0]:
+                    raise ValueError("primary_candidate_pathology length must match batch")
+                scar_case = torch.tensor([1.0 if p == "scar" else 0.0 for p in pathologies], device=anchor_logits.device, dtype=anchor_logits.dtype)[:, None, None, None, None]
+                edema_case = torch.tensor([1.0 if p == "edema_zone" else 0.0 for p in pathologies], device=anchor_logits.device, dtype=anchor_logits.dtype)[:, None, None, None, None]
+                scar_primary_mask = cmask * scar_case
+                edema_primary_mask = cmask * edema_case * t2_mask
+        scar = self.scar_branch(scales, scar_context, scar_local, primary_candidate_mask=scar_primary_mask, primary_candidate_type=scar_candidate_type, distance_to_reliable_gt=reliable_gt_dist)
+        edema = self.edema_branch(scales, edema_context, edema_local, primary_candidate_mask=edema_primary_mask, primary_candidate_type=edema_candidate_type, distance_to_reliable_gt=reliable_gt_dist)
 
         scar_delta = _delta_from_refiner(scar["refined_logit"], scar_anchor_margin, scar0["p_coarse"], scar0["q_fn"], scar0["q_fp"], scar["utility_accept_prob"], scar_train_roi, self.config.scar_margin_cap, hard_component_accept, self.config.utility_accept_threshold)
         edema_delta = _delta_from_refiner(edema["refined_logit"], edema_anchor_margin, edema0["p_coarse"], edema0["q_fn"], edema0["q_fp"], edema["utility_accept_prob"], edema_train_roi, self.config.edema_margin_cap, hard_component_accept, self.config.utility_accept_threshold) * t2_mask
@@ -487,6 +566,8 @@ class CAREDPR(nn.Module):
             "edema_utility_regression": edema_utility_regression,
             "edema_component_descriptor": edema["component_descriptor"] * t2_mask.flatten(1).amax(dim=1, keepdim=True),
             "edema_component_mask": edema["component_mask"] * t2_mask,
+            "formal_primary_candidate_mask_received": torch.as_tensor(primary_candidate_mask is not None, device=anchor_logits.device),
+            "formal_primary_candidate_pathology_received": torch.as_tensor(primary_candidate_pathology is not None, device=anchor_logits.device),
         }
 
 
