@@ -225,7 +225,10 @@ def summarize_mechanisms(score_rows: dict[str, list[tuple[np.ndarray, np.ndarray
             "threshold": float(threshold),
             "accepted": int(accepted.sum()),
             "rejected": int((~accepted).sum()),
-            "realized_gain": float(np.clip(utilities[accepted], 0, None).sum()) if utilities.size else 0.0,
+            "realized_gain": float(utilities[accepted].sum()) if utilities.size else 0.0,
+            "positive_accepted_utility": float(np.clip(utilities[accepted], 0, None).sum()) if utilities.size else 0.0,
+            "negative_accepted_utility": float(np.clip(utilities[accepted], None, 0).sum()) if utilities.size else 0.0,
+            "harmful_accepted_candidate_count": int((utilities[accepted] < 0).sum()) if utilities.size else 0,
             "has_nonzero_accepted_and_rejected": bool(accepted.any() and (~accepted).any()),
         })
     counts = defaultdict(int)
@@ -274,6 +277,7 @@ def summarize_mechanisms(score_rows: dict[str, list[tuple[np.ndarray, np.ndarray
             "threshold_candidates": threshold_rows,
             "oracle_gain": float(np.clip(utilities, 0, None).sum()) if utilities.size else 0.0,
             "realized_gain": max((row["realized_gain"] for row in threshold_rows), default=0.0),
+            "realized_gain_is_signed_net_utility": True,
         },
     }
 
@@ -288,7 +292,10 @@ def choose_threshold(inner_candidate_rows: list[dict[str, Any]]) -> dict[str, An
             "threshold": float(threshold),
             "accepted": int(accepted.sum()),
             "rejected": int((~accepted).sum()),
-            "realized_gain": float(np.clip(utilities[accepted], 0, None).sum()) if utilities.size else 0.0,
+            "realized_gain": float(utilities[accepted].sum()) if utilities.size else 0.0,
+            "positive_accepted_utility": float(np.clip(utilities[accepted], 0, None).sum()) if utilities.size else 0.0,
+            "negative_accepted_utility": float(np.clip(utilities[accepted], None, 0).sum()) if utilities.size else 0.0,
+            "harmful_accepted_candidate_count": int((utilities[accepted] < 0).sum()) if utilities.size else 0,
             "has_nonzero_accepted_and_rejected": bool(accepted.any() and (~accepted).any()),
         })
     eligible = [r for r in rows if r["has_nonzero_accepted_and_rejected"]]
@@ -314,6 +321,8 @@ def evaluate_population(
     device: torch.device,
     utility_threshold: float,
     model_name: str,
+    scar_utility_threshold: float | None = None,
+    edema_utility_threshold: float | None = None,
 ) -> dict[str, Any]:
     casewise: list[dict[str, Any]] = []
     activation: list[dict[str, Any]] = []
@@ -350,6 +359,8 @@ def evaluate_population(
             proposal_threshold=0.5,
             refined_threshold=0.5,
             utility_threshold=utility_threshold,
+            scar_utility_threshold=scar_utility_threshold,
+            edema_utility_threshold=edema_utility_threshold,
             device=device,
         )
         final = pred["final_mask"].astype(np.uint8, copy=False)
