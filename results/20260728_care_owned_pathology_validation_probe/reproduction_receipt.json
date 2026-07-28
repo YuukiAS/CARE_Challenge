@@ -1,0 +1,11 @@
+{
+  "edema_complete16_dice": 0.4012773405299326,
+  "edema_complete16_exact_hd": 31.553456966723598,
+  "edema_complete16_hd95": 18.02646484740704,
+  "edema_nnunet_complete16_dice": 0.3944358976789887,
+  "scar_checkpoint_sha256": "b59c7e1ade5cb987332de2a94f702b4aa60d1fcb042d9939736ba0f50854b0e7",
+  "scar_complete16_dice": 0.6958760054803399,
+  "scar_nnunet_complete16_dice": 0.6933346102422654,
+  "scr_checkpoint_sha256": "fd1bab769737d7e85102d27b562cc7229bb8f3ade53e1d82ccd39c4a863e7a90",
+  "source": "post-completion local evidence rechecked before validation inference"
+}

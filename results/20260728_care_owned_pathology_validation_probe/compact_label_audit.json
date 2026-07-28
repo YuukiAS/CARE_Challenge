@@ -1,0 +1,15 @@
+{
+  "allowed_compact_labels": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5
+  ],
+  "anatomy_label_count": 151697,
+  "anatomy_source": "Dataset501 nnU-Net five-fold anchor, restored for historical ZIP format compatibility",
+  "status": "PASS",
+  "total_edema_changed_voxels_vs_nnunet": 4339,
+  "total_scar_changed_voxels_vs_nnunet": 976
+}

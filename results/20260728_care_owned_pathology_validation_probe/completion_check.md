@@ -1,0 +1,4 @@
+status: VERIFIED_COMPLETE
+validation_upload_status: NOT_UPLOADED
+zip_class_contract: MATCHES_PRIOR_NNUNET_MYOPS_AND_FROZEN_CINE_REFERENCES
+slurm_execution_step: existing_allocation_60657290_srun_terminal_success

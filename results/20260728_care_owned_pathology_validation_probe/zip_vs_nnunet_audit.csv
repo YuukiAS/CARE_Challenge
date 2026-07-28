@@ -1,0 +1,5 @@
+reference_zip,branch,same_member_names,same_cases,same_labels,same_geometry,new_labels
+20260726_nnunet5f_control__nnUNet5F-control,MyoPS,true,true,true,true,"0,200,500,600,1220,2221"
+20260726_nnunet5f_control__nnUNet5F-control,CineMyoPS,true,true,true,false; expected because Cine source is frozen 20260520 tree,"0,200,500,2221"
+20260520_113408__nnUNet5fold_MyoPS+Cine_topology_lcc_round03_RECOMMENDED,MyoPS,false; directory-entry difference only,true,true,true,"0,200,500,600,1220,2221"
+20260520_113408__nnUNet5fold_MyoPS+Cine_topology_lcc_round03_RECOMMENDED,CineMyoPS,false; directory-entry difference only,true,true,true,"0,200,500,2221"

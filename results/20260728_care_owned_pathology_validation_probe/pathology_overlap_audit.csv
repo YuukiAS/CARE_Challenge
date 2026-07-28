@@ -1,0 +1,16 @@
+case_id,scar_equals_care_dg_scar,edema_equals_scr_class4_minus_scar_overlap,anatomy_equals_nnunet_anchor_minus_pathology,compact_labels,anatomy_label_voxels
+Case1001,True,True,True,"[0, 1, 2, 3, 4, 5]",13523
+Case1002,True,True,True,"[0, 1, 2, 3, 4, 5]",13774
+Case1003,True,True,True,"[0, 1, 2, 3, 4, 5]",12050
+Case1004,True,True,True,"[0, 1, 2, 3, 4, 5]",16958
+Case1005,True,True,True,"[0, 1, 2, 3, 4, 5]",8411
+Case1006,True,True,True,"[0, 1, 2, 3, 4, 5]",5634
+Case1007,True,True,True,"[0, 1, 2, 3, 4, 5]",11208
+Case1008,True,True,True,"[0, 1, 2, 3, 4, 5]",3234
+Case1009,True,True,True,"[0, 1, 2, 3, 4, 5]",6649
+Case1010,True,True,True,"[0, 1, 2, 3, 4, 5]",7750
+Case1011,True,True,True,"[0, 1, 2, 3, 4, 5]",18429
+Case1012,True,True,True,"[0, 1, 2, 3, 4, 5]",3907
+Case1013,True,True,True,"[0, 1, 2, 3, 4, 5]",4697
+Case1014,True,True,True,"[0, 1, 2, 3, 4]",12584
+Case1015,True,True,True,"[0, 1, 2, 3, 4, 5]",12889

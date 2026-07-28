@@ -1,0 +1,19 @@
+{
+  "care_dg_checkpoint": {
+    "path": "results/20260727_care_dg_dual_pathology_validation/runtime/repaired_formal_scar_priority/fold0/checkpoints/checkpoint_step05000.pt",
+    "sha256": "b59c7e1ade5cb987332de2a94f702b4aa60d1fcb042d9939736ba0f50854b0e7"
+  },
+  "cine_source": "results/submissions/care_myocardium_validation/upload_ready/20260520_113408__nnUNet5fold_MyoPS+Cine_topology_lcc_round03_RECOMMENDED/submission_tree/CineMyoPS/Anonymous Center",
+  "scr_checkpoint": {
+    "path": "results/20260724_care_myops_srr_cascade_submission_rescue/runtime/formal_v2/edema_seed20260724/edema_zone_control/checkpoints/checkpoint_final.pt",
+    "sha256": "fd1bab769737d7e85102d27b562cc7229bb8f3ade53e1d82ccd39c4a863e7a90"
+  },
+  "student_checkpoint": {
+    "path": "results/20260723_care_myops_batch9_exposed_issues_repair/runtime/seed20260723/student_reliable_distill/checkpoint_epoch25.pt",
+    "sha256": "366722497a47f292e07a0d1c1a3da57c2502b61042bc89b5cfc56b5a89e6a3a0"
+  },
+  "teacher_checkpoint": {
+    "path": "results/20260723_care_myops_batch9_exposed_issues_repair/runtime/seed20260723/teacher_full_view/checkpoint_epoch50.pt",
+    "sha256": "e92521fccec92d0066f3fa5c076fce16aea3bb02330b940c85321ab4726d1474"
+  }
+}

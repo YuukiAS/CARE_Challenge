@@ -1,0 +1,15 @@
+{
+  "cine_source": "20260520 frozen historical recommended tree",
+  "conclusion": "本地 validation probe ZIP 已修复为历史 ZIP 类别兼容格式，尚未上传。",
+  "git_commit_state": "COMMITTED_LOCAL_NO_PUSH_PENDING_AMEND",
+  "git_push_state": "NO_PUSH",
+  "myops_models": {
+    "anatomy": "Dataset501 nnU-Net five-fold anchor",
+    "edema": "SCR control_seed20260724 edema_zone_control checkpoint_final class 4",
+    "scar": "CARE-DG A3 step5000"
+  },
+  "next_action": "用户手动提交 validation ZIP。",
+  "zip": "/users/a/e/aereinh/CARE/results/submissions/care_myocardium_validation/upload_ready/20260728_care_owned_pathology_probe/CARE-Myocardium-OrganAgent.zip",
+  "zip_sha256": "300651b34e24483564e9f208ba9dc2a5857f0da68d8ca16ac6a08b002ce3144a",
+  "zip_size_bytes": 111160
+}

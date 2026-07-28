@@ -1,0 +1,6 @@
+command
+git fetch origin
+git status --short --branch
+git rev-parse HEAD
+read required protocols/evidence
+nnUNetv2_predict Dataset501 folds 0 1 2 3 4 checkpoint_best.pth --save_probabilities

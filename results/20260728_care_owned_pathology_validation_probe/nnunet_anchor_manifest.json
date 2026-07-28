@@ -1,0 +1,29 @@
+{
+  "cases": [
+    "Case1001",
+    "Case1002",
+    "Case1003",
+    "Case1004",
+    "Case1005",
+    "Case1006",
+    "Case1007",
+    "Case1008",
+    "Case1009",
+    "Case1010",
+    "Case1011",
+    "Case1012",
+    "Case1013",
+    "Case1014",
+    "Case1015"
+  ],
+  "checkpoint": "checkpoint_best.pth",
+  "folds": [
+    0,
+    1,
+    2,
+    3,
+    4
+  ],
+  "probability_dir": "results/20260728_care_owned_pathology_validation_probe/runtime/nnunet_anchor_probabilities",
+  "save_probabilities": true
+}

@@ -1,0 +1,10 @@
+{
+  "forbidden_markers": [
+    "labelsTr",
+    "validation_gt",
+    "val_gt",
+    "ground_truth"
+  ],
+  "status": "PASS",
+  "validation_gt_accessed": false
+}

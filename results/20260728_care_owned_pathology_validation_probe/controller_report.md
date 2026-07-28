@@ -1,0 +1,22 @@
+本次本地探针包已经生成，但尚未上传；修复后 MyoPS 分支已经恢复历史 nnU-Net ZIP 使用的 anatomy raw labels 200/500/600，同时 scar 和 edema 仍分别来自冻结的 CARE-DG A3 与 SCR control_seed20260724。本包只用于手动 validation probe，不代表最终路线晋级或 hosted 指标主张。实际执行没有训练、没有 Docker，推理和打包在既有 htzhulab allocation 60657290 的 terminal srun step 内完成。
+
+controller_verification_decision: VERIFIED_COMPLETE
+operational_completion_status: COMPLETE
+contract_compliance_status: PASS_LOCAL_PROBE_NO_UPLOAD_FORMAT_MATCHED_TO_PRIOR_ZIP
+required_outputs_complete: true
+validators_passed: true
+all_jobs_terminal: true_for_task_step; pending_job_61079609_cancelled_before_runtime; existing_allocation_60657290_left_running_by_design
+aggregation_complete: true
+scar_model: CARE-DG A3 step5000
+edema_model: SCR control_seed20260724 edema_zone_control checkpoint_final, final class 4 only
+anatomy_model: Dataset501 nnU-Net five-fold anchor, labels 200/500/600 restored for historical ZIP compatibility
+anatomy_labels_in_myops_output: PRESENT_FROM_NNUNET_ANCHOR
+cine_source: frozen historical implementation from 20260520 recommended tree
+validation_package_status: CREATED_LOCAL_ONLY
+validation_upload_status: NOT_UPLOADED
+zip_absolute_path: /users/a/e/aereinh/CARE/results/submissions/care_myocardium_validation/upload_ready/20260728_care_owned_pathology_probe/CARE-Myocardium-OrganAgent.zip
+zip_sha256: 300651b34e24483564e9f208ba9dc2a5857f0da68d8ca16ac6a08b002ce3144a
+zip_size_bytes: 111160
+git_commit_decision: COMMITTED_LOCAL_NO_PUSH_PENDING_AMEND
+git_push_decision: PENDING_USER_REQUESTED_PUSH
+next_required_action: USER_MANUAL_VALIDATION_SUBMISSION

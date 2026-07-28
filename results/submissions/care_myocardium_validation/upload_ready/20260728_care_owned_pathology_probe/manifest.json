@@ -1,0 +1,214 @@
+{
+  "cine": {
+    "rows": [
+      {
+        "case_id": "Case1001",
+        "labels": [
+          0,
+          200,
+          500,
+          2221
+        ],
+        "sha256": "c3581e86cf2b663fffd0ca04f54ad4bcb1dd931c5040d00065fd643711e0a59f",
+        "source_path": "results/submissions/care_myocardium_validation/upload_ready/20260520_113408__nnUNet5fold_MyoPS+Cine_topology_lcc_round03_RECOMMENDED/submission_tree/CineMyoPS/Anonymous Center/Case1001/Case1001_pred.nii.gz"
+      },
+      {
+        "case_id": "Case1002",
+        "labels": [
+          0,
+          200,
+          500,
+          2221
+        ],
+        "sha256": "9e914523f5ad28c1424d1cdfe5903960d87c61fa8e6ccfb58ac9a25e0bde1e9b",
+        "source_path": "results/submissions/care_myocardium_validation/upload_ready/20260520_113408__nnUNet5fold_MyoPS+Cine_topology_lcc_round03_RECOMMENDED/submission_tree/CineMyoPS/Anonymous Center/Case1002/Case1002_pred.nii.gz"
+      },
+      {
+        "case_id": "Case1003",
+        "labels": [
+          0,
+          200,
+          500,
+          2221
+        ],
+        "sha256": "87fcbfda2e5f8549c9d98d01dc6cc71ea160bbd8563411a0cd38e06bdef7b962",
+        "source_path": "results/submissions/care_myocardium_validation/upload_ready/20260520_113408__nnUNet5fold_MyoPS+Cine_topology_lcc_round03_RECOMMENDED/submission_tree/CineMyoPS/Anonymous Center/Case1003/Case1003_pred.nii.gz"
+      },
+      {
+        "case_id": "Case1004",
+        "labels": [
+          0,
+          200,
+          500,
+          2221
+        ],
+        "sha256": "627bdb7f3caeb5cd7827bb6daf72407e40fb7091509c547b8bce0c8ffbadcc67",
+        "source_path": "results/submissions/care_myocardium_validation/upload_ready/20260520_113408__nnUNet5fold_MyoPS+Cine_topology_lcc_round03_RECOMMENDED/submission_tree/CineMyoPS/Anonymous Center/Case1004/Case1004_pred.nii.gz"
+      },
+      {
+        "case_id": "Case1005",
+        "labels": [
+          0,
+          200,
+          500,
+          2221
+        ],
+        "sha256": "7c4db128d53a26df056525b2dc3aefa724bf67d3bce35c41795b5e44a5ff0589",
+        "source_path": "results/submissions/care_myocardium_validation/upload_ready/20260520_113408__nnUNet5fold_MyoPS+Cine_topology_lcc_round03_RECOMMENDED/submission_tree/CineMyoPS/Anonymous Center/Case1005/Case1005_pred.nii.gz"
+      },
+      {
+        "case_id": "Case1006",
+        "labels": [
+          0,
+          200,
+          500,
+          2221
+        ],
+        "sha256": "a1c33ae2b7046e358e4a1871cb4bb2cec733d09ae4e16ce296a722328193dd68",
+        "source_path": "results/submissions/care_myocardium_validation/upload_ready/20260520_113408__nnUNet5fold_MyoPS+Cine_topology_lcc_round03_RECOMMENDED/submission_tree/CineMyoPS/Anonymous Center/Case1006/Case1006_pred.nii.gz"
+      },
+      {
+        "case_id": "Case1007",
+        "labels": [
+          0,
+          200,
+          500,
+          2221
+        ],
+        "sha256": "b3cfe5911d9ccfa6ba37379182d851eb02e425b491d54a48f103a9ea8c299e0f",
+        "source_path": "results/submissions/care_myocardium_validation/upload_ready/20260520_113408__nnUNet5fold_MyoPS+Cine_topology_lcc_round03_RECOMMENDED/submission_tree/CineMyoPS/Anonymous Center/Case1007/Case1007_pred.nii.gz"
+      },
+      {
+        "case_id": "Case1008",
+        "labels": [
+          0,
+          200,
+          500,
+          2221
+        ],
+        "sha256": "aac960323fc87ea87436f0f3cb1814d1a7cf29baff1754972c02a240f1579f6f",
+        "source_path": "results/submissions/care_myocardium_validation/upload_ready/20260520_113408__nnUNet5fold_MyoPS+Cine_topology_lcc_round03_RECOMMENDED/submission_tree/CineMyoPS/Anonymous Center/Case1008/Case1008_pred.nii.gz"
+      },
+      {
+        "case_id": "Case1009",
+        "labels": [
+          0,
+          200,
+          500,
+          2221
+        ],
+        "sha256": "a7d3e54eec83addb5f1cd3adad6d3ef339ad1c889e48cb415859b695463e8ae2",
+        "source_path": "results/submissions/care_myocardium_validation/upload_ready/20260520_113408__nnUNet5fold_MyoPS+Cine_topology_lcc_round03_RECOMMENDED/submission_tree/CineMyoPS/Anonymous Center/Case1009/Case1009_pred.nii.gz"
+      },
+      {
+        "case_id": "Case1010",
+        "labels": [
+          0,
+          200,
+          500,
+          2221
+        ],
+        "sha256": "ffe31e2ab7180b43082729da5dc7e26814d47f71d1c567d7160de26bae9bc483",
+        "source_path": "results/submissions/care_myocardium_validation/upload_ready/20260520_113408__nnUNet5fold_MyoPS+Cine_topology_lcc_round03_RECOMMENDED/submission_tree/CineMyoPS/Anonymous Center/Case1010/Case1010_pred.nii.gz"
+      },
+      {
+        "case_id": "Case1011",
+        "labels": [
+          0,
+          200,
+          500,
+          2221
+        ],
+        "sha256": "20559d9af9da734afea905774116e8911393562035f8e727e4ed811e36b98cd8",
+        "source_path": "results/submissions/care_myocardium_validation/upload_ready/20260520_113408__nnUNet5fold_MyoPS+Cine_topology_lcc_round03_RECOMMENDED/submission_tree/CineMyoPS/Anonymous Center/Case1011/Case1011_pred.nii.gz"
+      },
+      {
+        "case_id": "Case1012",
+        "labels": [
+          0,
+          200,
+          500,
+          2221
+        ],
+        "sha256": "f8a6248eb9356b1291339d09bbc9877a92a34d57bbc8eada02b7ee349d93ecce",
+        "source_path": "results/submissions/care_myocardium_validation/upload_ready/20260520_113408__nnUNet5fold_MyoPS+Cine_topology_lcc_round03_RECOMMENDED/submission_tree/CineMyoPS/Anonymous Center/Case1012/Case1012_pred.nii.gz"
+      },
+      {
+        "case_id": "Case1013",
+        "labels": [
+          0,
+          200,
+          500,
+          2221
+        ],
+        "sha256": "af62d0b3c912bd7995d9acd6a3a09f19001e05d5e262d8c0a6fb1e415de31388",
+        "source_path": "results/submissions/care_myocardium_validation/upload_ready/20260520_113408__nnUNet5fold_MyoPS+Cine_topology_lcc_round03_RECOMMENDED/submission_tree/CineMyoPS/Anonymous Center/Case1013/Case1013_pred.nii.gz"
+      },
+      {
+        "case_id": "Case1014",
+        "labels": [
+          0,
+          200,
+          500,
+          2221
+        ],
+        "sha256": "78b101d5eaf97883a40454be51c4af9d482c5d1e86a12f5ec1b1839d8f7cb989",
+        "source_path": "results/submissions/care_myocardium_validation/upload_ready/20260520_113408__nnUNet5fold_MyoPS+Cine_topology_lcc_round03_RECOMMENDED/submission_tree/CineMyoPS/Anonymous Center/Case1014/Case1014_pred.nii.gz"
+      },
+      {
+        "case_id": "Case1015",
+        "labels": [
+          0,
+          200,
+          500,
+          2221
+        ],
+        "sha256": "d9a4697456c52a50959d8cf5d4508ff3a4acb729bf94d2d8fa95471b3f38b0e2",
+        "source_path": "results/submissions/care_myocardium_validation/upload_ready/20260520_113408__nnUNet5fold_MyoPS+Cine_topology_lcc_round03_RECOMMENDED/submission_tree/CineMyoPS/Anonymous Center/Case1015/Case1015_pred.nii.gz"
+      }
+    ],
+    "source": "frozen historical implementation"
+  },
+  "created_at_local": "2026-07-28T01:46:43",
+  "myops": {
+    "source": "nnU-Net anatomy + CARE-DG A3 scar + SCR control_seed20260724 class-4 edema"
+  },
+  "pathology_label_fallback": {
+    "cases": []
+  },
+  "submission_id": "20260728_care_owned_pathology_probe",
+  "zip": "/users/a/e/aereinh/CARE/results/submissions/care_myocardium_validation/upload_ready/20260728_care_owned_pathology_probe/CARE-Myocardium-OrganAgent.zip",
+  "zip_check": {
+    "branches": {
+      "CineMyoPS": {
+        "aggregate_labels": {
+          "0": 14975281,
+          "200": 115603,
+          "2221": 49263,
+          "500": 217577
+        },
+        "cases": 15,
+        "files": 15,
+        "missing_pathology_cases": []
+      },
+      "MyoPS": {
+        "aggregate_labels": {
+          "0": 4020102,
+          "1220": 19145,
+          "200": 39577,
+          "2221": 14049,
+          "500": 56043,
+          "600": 56077
+        },
+        "cases": 15,
+        "files": 15,
+        "missing_pathology_cases": []
+      }
+    },
+    "files": 30,
+    "roots": [
+      "CineMyoPS/",
+      "MyoPS/"
+    ]
+  }
+}
