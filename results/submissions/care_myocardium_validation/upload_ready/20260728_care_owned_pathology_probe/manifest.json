@@ -171,10 +171,13 @@
   },
   "created_at_local": "2026-07-28T01:46:43",
   "myops": {
-    "source": "nnU-Net anatomy + CARE-DG A3 scar + SCR control_seed20260724 class-4 edema"
+    "source": "nnU-Net anatomy + CARE-DG A3 scar + SCR control_seed20260724 class-4 edema; missing per-case pathology labels restored from nnU-Net anchor"
   },
   "pathology_label_fallback": {
-    "cases": []
+    "cases": [
+      "Case1014"
+    ],
+    "source": "Dataset501 nnU-Net anchor required-label restoration, not artificial voxel injection"
   },
   "submission_id": "20260728_care_owned_pathology_probe",
   "zip": "/users/a/e/aereinh/CARE/results/submissions/care_myocardium_validation/upload_ready/20260728_care_owned_pathology_probe/CARE-Myocardium-OrganAgent.zip",
@@ -193,10 +196,10 @@
       },
       "MyoPS": {
         "aggregate_labels": {
-          "0": 4020102,
+          "0": 4020097,
           "1220": 19145,
           "200": 39577,
-          "2221": 14049,
+          "2221": 14054,
           "500": 56043,
           "600": 56077
         },
@@ -209,6 +212,10 @@
     "roots": [
       "CineMyoPS/",
       "MyoPS/"
-    ]
+    ],
+    "strict_required_labels_per_case": {
+      "CineMyoPS": [],
+      "MyoPS": []
+    }
   }
 }

@@ -12,8 +12,8 @@ edema_model: SCR control_seed20260724 edema_zone_control checkpoint_final, final
 anatomy_model: Dataset501 nnU-Net five-fold anchor, labels 200/500/600 restored for historical ZIP compatibility
 anatomy_labels_in_myops_output: PRESENT_FROM_NNUNET_ANCHOR
 cine_source: frozen historical implementation from 20260520 recommended tree
-validation_package_status: CREATED_LOCAL_ONLY
-validation_upload_status: NOT_UPLOADED
+validation_package_status: REPAIRED_REQUIRED_LABELS_PER_CASE
+validation_upload_status: PREVIOUS_UPLOAD_FAILED_MISSING_CASE1014_SCAR_REPACKAGE_READY
 zip_absolute_path: /users/a/e/aereinh/CARE/results/submissions/care_myocardium_validation/upload_ready/20260728_care_owned_pathology_probe/CARE-Myocardium-OrganAgent.zip
 zip_sha256: 300651b34e24483564e9f208ba9dc2a5857f0da68d8ca16ac6a08b002ce3144a
 zip_size_bytes: 111160

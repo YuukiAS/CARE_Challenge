@@ -9,7 +9,10 @@
   ],
   "anatomy_label_count": 151697,
   "anatomy_source": "Dataset501 nnU-Net five-fold anchor, restored for historical ZIP format compatibility",
-  "status": "PASS",
+  "pathology_anchor_fallback_cases": [
+    "Case1014"
+  ],
+  "status": "PASS_REQUIRED_LABELS_PER_CASE",
   "total_edema_changed_voxels_vs_nnunet": 4339,
   "total_scar_changed_voxels_vs_nnunet": 976
 }

@@ -2,3 +2,6 @@ status: VERIFIED_COMPLETE
 validation_upload_status: NOT_UPLOADED
 zip_class_contract: MATCHES_PRIOR_NNUNET_MYOPS_AND_FROZEN_CINE_REFERENCES
 slurm_execution_step: existing_allocation_60657290_srun_terminal_success
+
+required_label_repair: PASS Case1014 scar restored from nnU-Net anchor
+repaired_zip_sha256: 5972413d088067c76e3101dfb7ce03808b5f575d462c566c08fff2aada3a02e0

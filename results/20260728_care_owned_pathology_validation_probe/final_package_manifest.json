@@ -167,7 +167,10 @@
     }
   ],
   "pathology_label_fallback": {
-    "cases": []
+    "cases": [
+      "Case1014"
+    ],
+    "source": "Dataset501 nnU-Net anchor required-label restoration, not artificial voxel injection"
   },
   "zip": "/users/a/e/aereinh/CARE/results/submissions/care_myocardium_validation/upload_ready/20260728_care_owned_pathology_probe/CARE-Myocardium-OrganAgent.zip",
   "zip_check": {
@@ -185,10 +188,10 @@
       },
       "MyoPS": {
         "aggregate_labels": {
-          "0": 4020102,
+          "0": 4020097,
           "1220": 19145,
           "200": 39577,
-          "2221": 14049,
+          "2221": 14054,
           "500": 56043,
           "600": 56077
         },
@@ -201,8 +204,12 @@
     "roots": [
       "CineMyoPS/",
       "MyoPS/"
-    ]
+    ],
+    "strict_required_labels_per_case": {
+      "CineMyoPS": [],
+      "MyoPS": []
+    }
   },
-  "zip_sha256": "300651b34e24483564e9f208ba9dc2a5857f0da68d8ca16ac6a08b002ce3144a",
-  "zip_size_bytes": 111160
+  "zip_sha256": "5972413d088067c76e3101dfb7ce03808b5f575d462c566c08fff2aada3a02e0",
+  "zip_size_bytes": 111188
 }
