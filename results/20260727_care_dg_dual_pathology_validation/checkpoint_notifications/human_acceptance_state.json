@@ -1,17 +1,18 @@
 {
   "allowed_during_pause": [
     "read_only_audit",
-    "evidence整理",
-    "等待用户精确APPROVE_GATE_A_R3"
+    "evidence\u6574\u7406",
+    "\u7b49\u5f85\u7528\u6237\u7cbe\u786eAPPROVE_GATE_A_R3"
   ],
   "approval_token_received": "APPROVE_GATE_A_R3",
   "approval_token_required": "APPROVE_GATE_A_R3",
   "approved_at_utc": "2026-07-27T13:48:16Z",
   "authorized_next_stage": "repaired_formal_scar_priority_fold0_5000_plus_3000_only",
   "consistency_validator_status": "PASS",
-  "current_wave": "DG_W2_REPAIRED_FOLD0_FORMAL_TRAINING_SCAR_PRIORITY",
-  "folds_1_4_authorized_after_gate_b_email_once": true,
+  "current_wave": "GATE_B_R1_COMPLETE_AWAITING_PLANNER_DECISION",
+  "folds_1_4_authorized_after_gate_b_email_once": false,
   "folds_1_4_forbidden_until_gate_b": false,
+  "folds_1_4_forbidden_until_gate_b_r1_scientific_gate": true,
   "forbidden_during_pause": [
     "repaired_fold0_training",
     "folds_1_4_training",
@@ -23,8 +24,11 @@
   "gate_b": {
     "approval_token_required": false,
     "email_receipt": "results/20260727_care_dg_dual_pathology_validation/checkpoint_notifications/gate_b_send_receipt.json",
+    "operational_email_received_by_user": true,
+    "scientific_expansion_authorized": false,
     "sent_at_utc": "2026-07-27T18:55:48Z",
-    "state": "GATE_B_PASS_EMAIL_SENT_CONTINUATION_PREAUTHORIZED_ONCE",
+    "state": "GATE_B_OVERACTIVE_FRAGMENTED_CORRECTION_DIAGNOSTIC",
+    "superseded_by": "GATE_B_R1_INFERENCE_SELECTION_REPAIR",
     "user_one_time_authorization_used_for_continuation": true
   },
   "gate_b_one_time_conditional_continuation_authorization": {
@@ -37,12 +41,47 @@
     "scope": "after Gate B evidence, strict validator, consistency validator, and Gate B email receipt are complete",
     "source": "user_message_current_thread"
   },
+  "gate_b_r1": {
+    "evidence_root": "results/20260727_care_dg_dual_pathology_validation/runtime/repaired_formal_scar_priority/fold0/gate_b_r1_evaluation",
+    "failures": [
+      "no_pathology_improves_by_more_than_0.005"
+    ],
+    "operational_validator_status": "PASS",
+    "scientific_expansion_authorized": false,
+    "scientific_gate_status": "FAIL",
+    "selected_checkpoint": {
+      "checkpoint": "results/20260727_care_dg_dual_pathology_validation/runtime/repaired_formal_scar_priority/fold0/checkpoints/checkpoint_step08000.pt",
+      "checkpoint_sha256": "d0a164c951f7ad8483c0796730d381b5216b8af367448edec4dbe97b3890f1c9",
+      "checkpoint_step": 8000,
+      "edema_zone_component_count_mean": 1.6666666666666667,
+      "edema_zone_dice_mean": 0.7344443961075063,
+      "edema_zone_exact_hd_infinite_cases": 0,
+      "edema_zone_hd95_mean_mm": 11.070316188082458,
+      "edema_zone_remote_fp_mean_mm3": 337.80053176097795,
+      "objective_score": 1.4932825632710265,
+      "outer_val_used": false,
+      "pure_edema_component_count_mean": 8.75,
+      "pure_edema_dice_mean": 0.5343185754136743,
+      "pure_edema_exact_hd_infinite_cases": 0,
+      "pure_edema_hd95_mean_mm": 13.395164143527461,
+      "pure_edema_remote_fp_mean_mm3": 376.48150507027367,
+      "scar_component_count_mean": 1.5,
+      "scar_dice_mean": 0.6991019399257473,
+      "scar_exact_hd_infinite_cases": 0,
+      "scar_hd95_mean_mm": 8.748203669339203,
+      "scar_remote_fp_mean_mm3": 270.1147673483992,
+      "selection_population": "fixed_train_side_complete_inner_select_full_volume"
+    },
+    "state": "GATE_B_R1_OPERATIONAL_PASS_SCIENTIFIC_FAIL",
+    "updated_at_utc": "2026-07-28T02:08:52Z"
+  },
   "next_high_cost_stage_paused": "repaired_fold0_5000_plus_3000",
   "runtime_label": "repaired_formal_scar_priority",
   "scar_priority_preflight_contract_sha256": "177b275fcc7debf3a454f51ac193702f73e84d50be2d39c1513a2043293c80a4",
   "scar_priority_preflight_status": "PASS",
-  "state": "APPROVE_GATE_A_R3_RECEIVED_GATE_B_SCAR_PRIORITY_HOTFIX_PASS_FOLD0_AUTHORIZED",
+  "scientific_expansion_authorized": false,
+  "state": "GATE_B_R1_OPERATIONAL_PASS_SCIENTIFIC_FAIL_EXPANSION_PAUSED",
   "strict_validator_status": "PASS",
   "supersedes": "APPROVE_GATE_A_R2",
-  "updated_at_utc": "2026-07-27T14:42:12Z"
+  "updated_at_utc": "2026-07-28T02:08:52Z"
 }

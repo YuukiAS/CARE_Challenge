@@ -1,0 +1,92 @@
+{
+  "complete_trimodal_heldout_cases": 16,
+  "created_at_utc": "2026-07-28T02:05:34Z",
+  "evidence_root": "results/20260727_care_dg_dual_pathology_validation/runtime/repaired_formal_scar_priority/fold0/gate_b_r1_evaluation",
+  "fold": 0,
+  "inner_case_count": 12,
+  "no_t2_edema_delta_exact_zero": true,
+  "operational_status": "PASS",
+  "outer_heldout_cases": 44,
+  "outer_val_used_for_selection": false,
+  "outputs": {
+    "casewise": "results/20260727_care_dg_dual_pathology_validation/runtime/repaired_formal_scar_priority/fold0/gate_b_r1_evaluation/gate_b_r1_casewise_metrics.csv",
+    "inner_selection": "results/20260727_care_dg_dual_pathology_validation/runtime/repaired_formal_scar_priority/fold0/gate_b_r1_evaluation/gate_b_r1_inner_checkpoint_selection.csv",
+    "seam_audit": "results/20260727_care_dg_dual_pathology_validation/runtime/repaired_formal_scar_priority/fold0/gate_b_r1_evaluation/gate_b_r1_seam_audit.csv",
+    "summary": "results/20260727_care_dg_dual_pathology_validation/runtime/repaired_formal_scar_priority/fold0/gate_b_r1_evaluation/gate_b_r1_model_summary.csv"
+  },
+  "post_scar_decision_overwritten_voxels": 0,
+  "r1_inference_contract": {
+    "aggregated_tensors": [
+      "scar_delta",
+      "edema_delta"
+    ],
+    "composition_once_on_full_anchor_logits": "anchor -> bounded edema correction -> bounded scar correction -> argmax",
+    "forbidden": "patch_final_logits_averaging",
+    "gaussian_blending": true,
+    "sliding_window_overlap": 0.5
+  },
+  "runtime_label": "repaired_formal_scar_priority",
+  "scientific_gate": {
+    "failures": [
+      "no_pathology_improves_by_more_than_0.005"
+    ],
+    "harm_count": 20,
+    "help_count": 28,
+    "help_ge_harm_minus_1": true,
+    "pathology_checks": [
+      {
+        "component_count_ok": true,
+        "dice_delta": 0.0014049883944654562,
+        "hd95_ok": true,
+        "pathology": "scar",
+        "remote_fp_ok": true
+      },
+      {
+        "component_count_ok": true,
+        "dice_delta": 0.0011683061055949295,
+        "hd95_ok": true,
+        "pathology": "edema_zone",
+        "remote_fp_ok": true
+      },
+      {
+        "component_count_ok": true,
+        "dice_delta": -0.0021025989378608,
+        "hd95_ok": true,
+        "pathology": "pure_edema",
+        "remote_fp_ok": true
+      }
+    ],
+    "scientific_expansion_authorized": false,
+    "status": "FAIL"
+  },
+  "selected_checkpoint": {
+    "checkpoint": "results/20260727_care_dg_dual_pathology_validation/runtime/repaired_formal_scar_priority/fold0/checkpoints/checkpoint_step08000.pt",
+    "checkpoint_sha256": "d0a164c951f7ad8483c0796730d381b5216b8af367448edec4dbe97b3890f1c9",
+    "checkpoint_step": 8000,
+    "edema_zone_component_count_mean": 1.6666666666666667,
+    "edema_zone_dice_mean": 0.7344443961075063,
+    "edema_zone_exact_hd_infinite_cases": 0,
+    "edema_zone_hd95_mean_mm": 11.070316188082458,
+    "edema_zone_remote_fp_mean_mm3": 337.80053176097795,
+    "objective_score": 1.4932825632710265,
+    "outer_val_used": false,
+    "pure_edema_component_count_mean": 8.75,
+    "pure_edema_dice_mean": 0.5343185754136743,
+    "pure_edema_exact_hd_infinite_cases": 0,
+    "pure_edema_hd95_mean_mm": 13.395164143527461,
+    "pure_edema_remote_fp_mean_mm3": 376.48150507027367,
+    "scar_component_count_mean": 1.5,
+    "scar_dice_mean": 0.6991019399257473,
+    "scar_exact_hd_infinite_cases": 0,
+    "scar_hd95_mean_mm": 8.748203669339203,
+    "scar_remote_fp_mean_mm3": 270.1147673483992,
+    "selection_population": "fixed_train_side_complete_inner_select_full_volume"
+  },
+  "selection_population": "fixed_train_side_complete_inner_select_full_volume",
+  "source_hashes": {
+    "scripts/evaluation/evaluate_care_dg.py": "a2cfb981d9d0e1d53b9d7aa883710c6f4c8b8079d6fd02b0d63f845562f3e969",
+    "src/care_myocardium/models/care_dg.py": "ee38bd7d86ca37944ef4108fa4d5904d9ead1f7ae2dc4b7ec518d784acb71d55"
+  },
+  "status": "GATE_B_R1_SCIENTIFIC_GATE_FAIL",
+  "updated_at_utc": "2026-07-28T02:14:51Z"
+}

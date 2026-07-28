@@ -736,8 +736,11 @@ def validate_gate_b_fold0(failures: list[str]) -> None:
         failures.append("gate_b_fold0_representation_lr_bad")
     if receipt.get("stage_a_pathology_lr") != 3e-4 or receipt.get("stage_b_pathology_lr") != 1e-4:
         failures.append("gate_b_fold0_pathology_lr_bad")
-    if summary.get("status") != "PASS" or summary.get("receipt_status") != "PASS":
-        failures.append("gate_b_summary_not_PASS")
+    allowed_gate_b_statuses = {"PASS", "GATE_B_OVERACTIVE_FRAGMENTED_CORRECTION_DIAGNOSTIC"}
+    if summary.get("status") not in allowed_gate_b_statuses or summary.get("receipt_status") != "PASS":
+        failures.append("gate_b_summary_status_inconsistent")
+    if summary.get("status") == "GATE_B_OVERACTIVE_FRAGMENTED_CORRECTION_DIAGNOSTIC" and summary.get("scientific_expansion_authorized") is not False:
+        failures.append("gate_b_diagnostic_scientific_expansion_not_false")
     if validator.get("status") != "PASS" or validator.get("failures") not in ([], None):
         failures.append("gate_b_evaluator_validator_not_PASS")
     if int(summary.get("outer_heldout_cases", -1)) != 44 or int(summary.get("prediction_count", -1)) != 44:
@@ -783,6 +786,70 @@ def validate_gate_b_fold0(failures: list[str]) -> None:
         failures.append("gate_b_no_t2_safety_audit_not_exact_PASS")
 
 
+
+def validate_gate_b_r1(failures: list[str]) -> None:
+    runtime_root = RESULT_ROOT / "runtime/repaired_formal_scar_priority/fold0"
+    eval_root = runtime_root / "gate_b_r1_evaluation"
+    summary_path = eval_root / "gate_b_r1_summary.json"
+    validator_path = eval_root / "gate_b_r1_validator_report.json"
+    required = {
+        "inner_selection": eval_root / "gate_b_r1_inner_checkpoint_selection.csv",
+        "inner_selection_json": eval_root / "gate_b_r1_inner_checkpoint_selection.json",
+        "casewise": eval_root / "gate_b_r1_casewise_metrics.csv",
+        "summary": eval_root / "gate_b_r1_model_summary.csv",
+        "complete16": eval_root / "gate_b_r1_complete16_summary.csv",
+        "help_harm": eval_root / "gate_b_r1_help_harm.csv",
+        "exact_hd_tail": eval_root / "gate_b_r1_exact_hd_tail_audit.csv",
+        "remote_fp": eval_root / "gate_b_r1_remote_fp_audit.csv",
+        "component": eval_root / "gate_b_r1_component_audit.csv",
+        "transition": eval_root / "gate_b_r1_scar_edema_conflict_transition_matrix.csv",
+        "mechanism": eval_root / "gate_b_r1_mechanism_activation_audit.csv",
+        "seam": eval_root / "gate_b_r1_seam_audit.csv",
+        "no_t2": eval_root / "gate_b_r1_no_t2_safety_audit.csv",
+        "post_scar_overwrite": eval_root / "gate_b_r1_post_scar_overwrite_audit.json",
+        "summary_json": summary_path,
+        "validator": validator_path,
+    }
+    if not eval_root.exists():
+        return
+    for name, path in required.items():
+        if not path.exists():
+            failures.append(f"gate_b_r1_missing_output:{name}")
+        elif path.suffix == ".csv" and not read_csv_rows(path):
+            failures.append(f"gate_b_r1_empty_output:{name}")
+    if not summary_path.exists() or not validator_path.exists():
+        return
+    summary = load_json(summary_path)
+    validator = load_json(validator_path)
+    if validator.get("status") != "PASS" or validator.get("failures") not in ([], None):
+        failures.append("gate_b_r1_validator_not_PASS")
+    if summary.get("outer_val_used_for_selection") is not False:
+        failures.append("gate_b_r1_outer_val_used_for_selection")
+    if summary.get("post_scar_decision_overwritten_voxels") != 0:
+        failures.append("gate_b_r1_post_scar_overwrite_nonzero")
+    if summary.get("no_t2_edema_delta_exact_zero") is not True:
+        failures.append("gate_b_r1_no_t2_not_exact_zero")
+    contract = summary.get("r1_inference_contract", {})
+    if contract.get("sliding_window_overlap") != 0.5 or contract.get("gaussian_blending") is not True:
+        failures.append("gate_b_r1_inference_contract_not_overlap_gaussian")
+    if contract.get("forbidden") != "patch_final_logits_averaging":
+        failures.append("gate_b_r1_forbidden_patch_final_average_not_recorded")
+    selection_rows = read_csv_rows(required["inner_selection"]) if required["inner_selection"].exists() else []
+    if len(selection_rows) != 8:
+        failures.append("gate_b_r1_inner_checkpoint_sweep_not_8")
+    if any(row.get("outer_val_used") != "False" for row in selection_rows):
+        failures.append("gate_b_r1_inner_selection_used_outer_val")
+    summary_rows = read_csv_rows(required["summary"]) if required["summary"].exists() else []
+    models = {row.get("model") for row in summary_rows}
+    for model in ["A0_nnunet_anchor", "A1_direct_residual_control", "A2_care_dg_r1_selected", "A3_no_stage_b_matched_control"]:
+        if model not in models:
+            failures.append(f"gate_b_r1_missing_ablation_model:{model}")
+    sci = summary.get("scientific_gate", {})
+    if sci.get("status") not in {"PASS", "FAIL"}:
+        failures.append("gate_b_r1_scientific_gate_status_bad")
+    if bool(sci.get("scientific_expansion_authorized", False)) != bool(validator.get("scientific_expansion_authorized", False)):
+        failures.append("gate_b_r1_scientific_authorization_mismatch")
+
 def validate_packet() -> dict[str, Any]:
     failures: list[str] = []
     missing = [name for name in REQUIRED_W0 if not (RESULT_ROOT / name).exists()]
@@ -820,6 +887,7 @@ def validate_packet() -> dict[str, Any]:
             failures.append(f"forbidden_runtime_token:{token}")
     validate_gate_a_r3(failures)
     validate_gate_b_fold0(failures)
+    validate_gate_b_r1(failures)
     status = "PASS" if not failures else "NEEDS_REPAIR"
     report = {
         "checked_at_utc": now_utc(),

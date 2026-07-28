@@ -1,0 +1,59 @@
+{
+  "allocation_preserved": "60657290",
+  "created_at_utc": "2026-07-28T01:51:54Z",
+  "fold0_scientific_status": "GATE_B_OVERACTIVE_FRAGMENTED_CORRECTION_DIAGNOSTIC",
+  "fold4_pause": {
+    "checkpoint_available": false,
+    "runtime_files": [],
+    "scientific_credit": 0,
+    "srun_step": "60657290.210",
+    "status": "STOPPED_BEFORE_RUNTIME_CHECKPOINT_OR_RECEIPT",
+    "stop_method": "scancel --signal=TERM 60657290.210"
+  },
+  "fold_receipts": {
+    "0": {
+      "actual_optimizer_steps": 8000,
+      "best_inner_loss": 2.8730093836784363,
+      "fold": 0,
+      "formal_training_credit": 8000,
+      "runtime_label": "repaired_formal_scar_priority",
+      "status": "PASS",
+      "terminal_time_utc": "2026-07-27T18:27:21Z"
+    },
+    "1": {
+      "actual_optimizer_steps": 8000,
+      "best_inner_loss": 2.665718230936262,
+      "fold": 1,
+      "formal_training_credit": 8000,
+      "runtime_label": "repaired_formal_scar_priority",
+      "status": "PASS",
+      "terminal_time_utc": "2026-07-27T21:11:31Z"
+    },
+    "2": {
+      "actual_optimizer_steps": 8000,
+      "best_inner_loss": 2.737945728831821,
+      "fold": 2,
+      "formal_training_credit": 8000,
+      "runtime_label": "repaired_formal_scar_priority",
+      "status": "PASS",
+      "terminal_time_utc": "2026-07-27T23:28:36Z"
+    },
+    "3": {
+      "actual_optimizer_steps": 8000,
+      "best_inner_loss": 2.7999089558919272,
+      "fold": 3,
+      "formal_training_credit": 8000,
+      "runtime_label": "repaired_formal_scar_priority",
+      "status": "PASS",
+      "terminal_time_utc": "2026-07-28T01:45:01Z"
+    }
+  },
+  "folds_completed_before_pause": [
+    1,
+    2,
+    3
+  ],
+  "next_required_action": "Gate B-R1 no-retraining inference/selection repair before any renewed folds_1_4 expansion request",
+  "scientific_expansion_authorized": false,
+  "state": "FOLDS_1_4_PAUSED_FOR_GATE_B_R1"
+}
