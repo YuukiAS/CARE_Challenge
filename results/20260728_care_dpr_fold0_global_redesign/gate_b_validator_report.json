@@ -1,0 +1,32 @@
+{
+  "casewise_rows": 360,
+  "checks": {
+    "casewise_contains_anchor_and_dpr": "PASS",
+    "checkpoint_reload_exact": "PASS",
+    "formal_receipt_pass_4000": "PASS",
+    "gate_a_r2_validators_passed": "PASS",
+    "no_patch_final_label_averaging": "PASS",
+    "no_t2_exact_zero": "PASS",
+    "notification_json_present": "PASS",
+    "outer44_complete16_counts": "PASS",
+    "outer_selection_forbidden": "PASS",
+    "pass2_refines_each_candidate": "PASS",
+    "predicted_roi_inner_outer_only": "PASS",
+    "preflight_credit_zero": "PASS",
+    "real_candidate_rows_nonzero": "PASS",
+    "sampler_stage_a2_b_pass": "PASS",
+    "scientific_gate_recorded": "PASS",
+    "threshold_has_accept_reject": "PASS",
+    "two_pass_contract_pass": "PASS",
+    "utility_targets_both_classes": "PASS"
+  },
+  "gate": "DPR_GATE_B_VALIDATOR",
+  "outer_candidate_rows": 5652,
+  "scientific_gate_failures": [
+    "no_pathology_improves_by_more_than_0.005"
+  ],
+  "scientific_gate_status": "FAIL",
+  "status": "PASS",
+  "summary_rows": 12,
+  "task_key": "20260728_care_dpr_fold0_global_redesign"
+}

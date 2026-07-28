@@ -293,7 +293,10 @@ def run_two_pass_full_volume_dpr(model: torch.nn.Module, batch_np: dict[str, np.
     """
     device = device or torch.device("cuda" if torch.cuda.is_available() else "cpu")
     pass1 = aggregate_patch_outputs(model, batch_np, patch_shape=patch_shape, overlap=overlap, device=device)
-    anchor_mask = np.asarray(batch_np["anchor_logits"]).argmax(axis=0).astype(np.uint8)
+    if "anchor_mask" in batch_np:
+        anchor_mask = np.asarray(batch_np["anchor_mask"]).astype(np.uint8, copy=False)
+    else:
+        anchor_mask = np.asarray(batch_np["anchor_logits"]).argmax(axis=0).astype(np.uint8)
     pass1["scar_p_refined"] = np.zeros_like(anchor_mask, dtype=np.float32)
     pass1["edema_p_refined"] = np.zeros_like(anchor_mask, dtype=np.float32)
     candidate_records = []
@@ -310,11 +313,17 @@ def run_two_pass_full_volume_dpr(model: torch.nn.Module, batch_np: dict[str, np.
             p_refined_full[roi] = np.maximum(p_refined_full[roi], refined_mask[roi].astype(np.float32))
             score_region = (cand_anchor | refined_mask | seed)
             accepted = float(audit["utility_score"]) >= float(utility_threshold)
-            if accepted:
+            if cand.candidate_type == "ADD_FN":
+                if accepted:
+                    result[refined_mask] = True
+                    action = cand.action_if_accepted
+                else:
+                    action = cand.action_if_rejected
+            elif accepted:
                 result[score_region] = refined_mask[score_region]
                 action = cand.action_if_accepted
             else:
-                result[score_region] = cand_anchor[score_region]
+                result[cand_anchor] = True
                 action = cand.action_if_rejected
             audit.update({"accepted": bool(accepted), "action": action, "legal_action": action in LEGAL_ACTIONS})
             all_audit.append(audit)

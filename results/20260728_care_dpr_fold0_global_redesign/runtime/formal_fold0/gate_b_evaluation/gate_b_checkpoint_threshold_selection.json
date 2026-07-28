@@ -1,0 +1,44 @@
+{
+  "checkpoint_selection_rule": "formal_terminal_step04000_only_fixed_by_training_contract",
+  "inner_real_candidate_count": 1163,
+  "outer_fold0_used_for_checkpoint_or_threshold_selection": false,
+  "selected_utility_threshold": 0.5,
+  "status": "PASS",
+  "threshold_rows": [
+    {
+      "accepted": 0,
+      "has_nonzero_accepted_and_rejected": false,
+      "realized_gain": 0.0,
+      "rejected": 1163,
+      "threshold": 0.3
+    },
+    {
+      "accepted": 0,
+      "has_nonzero_accepted_and_rejected": false,
+      "realized_gain": 0.0,
+      "rejected": 1163,
+      "threshold": 0.4
+    },
+    {
+      "accepted": 0,
+      "has_nonzero_accepted_and_rejected": false,
+      "realized_gain": 0.0,
+      "rejected": 1163,
+      "threshold": 0.5
+    },
+    {
+      "accepted": 0,
+      "has_nonzero_accepted_and_rejected": false,
+      "realized_gain": 0.0,
+      "rejected": 1163,
+      "threshold": 0.6
+    },
+    {
+      "accepted": 0,
+      "has_nonzero_accepted_and_rejected": false,
+      "realized_gain": 0.0,
+      "rejected": 1163,
+      "threshold": 0.7
+    }
+  ]
+}

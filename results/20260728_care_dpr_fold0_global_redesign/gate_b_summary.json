@@ -1,0 +1,629 @@
+{
+  "checkpoint": "results/20260728_care_dpr_fold0_global_redesign/runtime/formal_fold0/checkpoints/checkpoint_step04000.pt",
+  "checkpoint_reload_exact": {
+    "checked_output_keys": [
+      "scar_p_coarse",
+      "scar_q_fn",
+      "scar_q_fp",
+      "scar_p_refined",
+      "edema_p_coarse",
+      "edema_q_fn",
+      "edema_q_fp",
+      "edema_p_refined"
+    ],
+    "fixed_outputs_exact": true,
+    "outputs_exact": true,
+    "parameter_values_exact": true,
+    "parameters_exact": true,
+    "reload_step": 4000,
+    "status": "PASS"
+  },
+  "checkpoint_sha256": "64d93309a8fbfdf2522ffecefac23cf3cc14dc09f68a486e366050c56febf2ca",
+  "checkpoint_step": 4000,
+  "complete16_case_ids_sha256": "34f3bccb3f10cb42e9be271c82cfbad399f13adf48f254fa29a0c3f67ee97bbd",
+  "complete_trimodal_heldout_cases": 16,
+  "evidence_root": "results/20260728_care_dpr_fold0_global_redesign/runtime/formal_fold0/gate_b_evaluation",
+  "fold": 0,
+  "formal_training_credit": 4000,
+  "gate": "DPR_GATE_B",
+  "generated_at_utc": "2026-07-28T11:35:26Z",
+  "mechanism_report": {
+    "proposal_metrics": {
+      "edema_p_coarse_auprc": 0.7138944918471157,
+      "edema_p_coarse_positive_prevalence": 0.12155198277535605,
+      "edema_q_fn_auprc": 0.13906984597206565,
+      "edema_q_fn_positive_prevalence": 0.03325803434339869,
+      "edema_q_fp_auprc": 0.43094744161008475,
+      "edema_q_fp_positive_prevalence": 0.024820429557206643,
+      "edema_zone_p_coarse_component_precision": 0.5953124999999999,
+      "edema_zone_p_coarse_component_recall": 0.96875,
+      "scar_p_coarse_auprc": 0.5734499201809496,
+      "scar_p_coarse_component_precision": 0.7007992007992008,
+      "scar_p_coarse_component_recall": 0.7748081463990555,
+      "scar_p_coarse_positive_prevalence": 0.07572047481024785,
+      "scar_q_fn_auprc": 0.08185066581099758,
+      "scar_q_fn_positive_prevalence": 0.02783261894819582,
+      "scar_q_fp_auprc": 0.5050328897242423,
+      "scar_q_fp_positive_prevalence": 0.03036188008155044
+    },
+    "roi_metrics": {
+      "edema_coverage": 0.2906663552415099,
+      "edema_predicted_refiner_dice": 0.3043191928386092,
+      "edema_support_volume_ratio": 0.05276042913021841,
+      "edema_teacher_refiner_dice": 0.36363636363636365,
+      "scar_coverage": 0.6559909349621306,
+      "scar_predicted_refiner_dice": 0.19296385800586802,
+      "scar_support_volume_ratio": 0.6535641173224888,
+      "scar_teacher_refiner_dice": 1.0
+    },
+    "utility_metrics": {
+      "accept_target_negative_count": 4640,
+      "accept_target_positive_count": 1012,
+      "candidate_counts": {
+        "edema_zone_ADD_FN": 830,
+        "edema_zone_REVISE_FP": 24,
+        "scar_ADD_FN": 4708,
+        "scar_REVISE_FP": 90
+      },
+      "component_descriptor_fields": [
+        "pooled_aggregated_shared_full_resolution_feature",
+        "pooled_p_coarse",
+        "pooled_q_fn",
+        "pooled_q_fp",
+        "pooled_p_refined",
+        "anchor_margin",
+        "uncertainty",
+        "distance_to_support",
+        "voxel_volume",
+        "surface_compactness",
+        "bounding_box_size",
+        "candidate_type",
+        "component_truncation_flag"
+      ],
+      "component_utility_auprc": 0.21476971782170723,
+      "component_utility_auroc": 0.5161693301076734,
+      "oracle_gain": 16.776254933447397,
+      "positive_prevalence": 0.17905166312809626,
+      "primary_metric_source": "model_real_full_volume_candidates_only",
+      "realized_gain": 0.053754983243319066,
+      "synthetic_utility_variants_used_for_primary_gate": false,
+      "threshold_candidates": [
+        {
+          "accepted": 5,
+          "has_nonzero_accepted_and_rejected": true,
+          "realized_gain": 0.053754983243319066,
+          "rejected": 5647,
+          "threshold": 0.3
+        },
+        {
+          "accepted": 0,
+          "has_nonzero_accepted_and_rejected": false,
+          "realized_gain": 0.0,
+          "rejected": 5652,
+          "threshold": 0.4
+        },
+        {
+          "accepted": 0,
+          "has_nonzero_accepted_and_rejected": false,
+          "realized_gain": 0.0,
+          "rejected": 5652,
+          "threshold": 0.5
+        },
+        {
+          "accepted": 0,
+          "has_nonzero_accepted_and_rejected": false,
+          "realized_gain": 0.0,
+          "rejected": 5652,
+          "threshold": 0.6
+        },
+        {
+          "accepted": 0,
+          "has_nonzero_accepted_and_rejected": false,
+          "realized_gain": 0.0,
+          "rejected": 5652,
+          "threshold": 0.7
+        }
+      ],
+      "true_candidate_total_count": 5652
+    }
+  },
+  "no_t2_exact_zero": {
+    "rows": [
+      {
+        "case_id": "Case1002",
+        "edema_candidate_count": 0,
+        "edema_p_refined_voxels": 0,
+        "pure_edema_changed_voxels_vs_anchor": 0,
+        "status": "PASS"
+      },
+      {
+        "case_id": "Case1007",
+        "edema_candidate_count": 0,
+        "edema_p_refined_voxels": 0,
+        "pure_edema_changed_voxels_vs_anchor": 0,
+        "status": "PASS"
+      },
+      {
+        "case_id": "Case1009",
+        "edema_candidate_count": 0,
+        "edema_p_refined_voxels": 0,
+        "pure_edema_changed_voxels_vs_anchor": 0,
+        "status": "PASS"
+      },
+      {
+        "case_id": "Case1010",
+        "edema_candidate_count": 0,
+        "edema_p_refined_voxels": 0,
+        "pure_edema_changed_voxels_vs_anchor": 0,
+        "status": "PASS"
+      },
+      {
+        "case_id": "Case1021",
+        "edema_candidate_count": 0,
+        "edema_p_refined_voxels": 0,
+        "pure_edema_changed_voxels_vs_anchor": 0,
+        "status": "PASS"
+      },
+      {
+        "case_id": "Case1023",
+        "edema_candidate_count": 0,
+        "edema_p_refined_voxels": 0,
+        "pure_edema_changed_voxels_vs_anchor": 0,
+        "status": "PASS"
+      },
+      {
+        "case_id": "Case1029",
+        "edema_candidate_count": 0,
+        "edema_p_refined_voxels": 0,
+        "pure_edema_changed_voxels_vs_anchor": 0,
+        "status": "PASS"
+      },
+      {
+        "case_id": "Case1033",
+        "edema_candidate_count": 0,
+        "edema_p_refined_voxels": 0,
+        "pure_edema_changed_voxels_vs_anchor": 0,
+        "status": "PASS"
+      },
+      {
+        "case_id": "Case1040",
+        "edema_candidate_count": 0,
+        "edema_p_refined_voxels": 0,
+        "pure_edema_changed_voxels_vs_anchor": 0,
+        "status": "PASS"
+      },
+      {
+        "case_id": "Case1042",
+        "edema_candidate_count": 0,
+        "edema_p_refined_voxels": 0,
+        "pure_edema_changed_voxels_vs_anchor": 0,
+        "status": "PASS"
+      },
+      {
+        "case_id": "Case1045",
+        "edema_candidate_count": 0,
+        "edema_p_refined_voxels": 0,
+        "pure_edema_changed_voxels_vs_anchor": 0,
+        "status": "PASS"
+      },
+      {
+        "case_id": "Case1047",
+        "edema_candidate_count": 0,
+        "edema_p_refined_voxels": 0,
+        "pure_edema_changed_voxels_vs_anchor": 0,
+        "status": "PASS"
+      },
+      {
+        "case_id": "Case1053",
+        "edema_candidate_count": 0,
+        "edema_p_refined_voxels": 0,
+        "pure_edema_changed_voxels_vs_anchor": 0,
+        "status": "PASS"
+      },
+      {
+        "case_id": "Case1062",
+        "edema_candidate_count": 0,
+        "edema_p_refined_voxels": 0,
+        "pure_edema_changed_voxels_vs_anchor": 0,
+        "status": "PASS"
+      },
+      {
+        "case_id": "Case1070",
+        "edema_candidate_count": 0,
+        "edema_p_refined_voxels": 0,
+        "pure_edema_changed_voxels_vs_anchor": 0,
+        "status": "PASS"
+      },
+      {
+        "case_id": "Case1073",
+        "edema_candidate_count": 0,
+        "edema_p_refined_voxels": 0,
+        "pure_edema_changed_voxels_vs_anchor": 0,
+        "status": "PASS"
+      },
+      {
+        "case_id": "Case1080",
+        "edema_candidate_count": 0,
+        "edema_p_refined_voxels": 0,
+        "pure_edema_changed_voxels_vs_anchor": 0,
+        "status": "PASS"
+      },
+      {
+        "case_id": "Case5005",
+        "edema_candidate_count": 0,
+        "edema_p_refined_voxels": 0,
+        "pure_edema_changed_voxels_vs_anchor": 0,
+        "status": "PASS"
+      },
+      {
+        "case_id": "Case6001",
+        "edema_candidate_count": 0,
+        "edema_p_refined_voxels": 0,
+        "pure_edema_changed_voxels_vs_anchor": 0,
+        "status": "PASS"
+      },
+      {
+        "case_id": "Case6010",
+        "edema_candidate_count": 0,
+        "edema_p_refined_voxels": 0,
+        "pure_edema_changed_voxels_vs_anchor": 0,
+        "status": "PASS"
+      },
+      {
+        "case_id": "Case7005",
+        "edema_candidate_count": 0,
+        "edema_p_refined_voxels": 0,
+        "pure_edema_changed_voxels_vs_anchor": 0,
+        "status": "PASS"
+      },
+      {
+        "case_id": "Case8003",
+        "edema_candidate_count": 0,
+        "edema_p_refined_voxels": 0,
+        "pure_edema_changed_voxels_vs_anchor": 0,
+        "status": "PASS"
+      },
+      {
+        "case_id": "Case8011",
+        "edema_candidate_count": 0,
+        "edema_p_refined_voxels": 0,
+        "pure_edema_changed_voxels_vs_anchor": 0,
+        "status": "PASS"
+      },
+      {
+        "case_id": "Case8015",
+        "edema_candidate_count": 0,
+        "edema_p_refined_voxels": 0,
+        "pure_edema_changed_voxels_vs_anchor": 0,
+        "status": "PASS"
+      },
+      {
+        "case_id": "Case8019",
+        "edema_candidate_count": 0,
+        "edema_p_refined_voxels": 0,
+        "pure_edema_changed_voxels_vs_anchor": 0,
+        "status": "PASS"
+      },
+      {
+        "case_id": "Case8021",
+        "edema_candidate_count": 0,
+        "edema_p_refined_voxels": 0,
+        "pure_edema_changed_voxels_vs_anchor": 0,
+        "status": "PASS"
+      },
+      {
+        "case_id": "Case8022",
+        "edema_candidate_count": 0,
+        "edema_p_refined_voxels": 0,
+        "pure_edema_changed_voxels_vs_anchor": 0,
+        "status": "PASS"
+      },
+      {
+        "case_id": "Case8023",
+        "edema_candidate_count": 0,
+        "edema_p_refined_voxels": 0,
+        "pure_edema_changed_voxels_vs_anchor": 0,
+        "status": "PASS"
+      }
+    ],
+    "status": "PASS"
+  },
+  "notification": {
+    "all_data_fit_authorized": false,
+    "approval_token": "APPROVE_DPR_GATE_B",
+    "fold_expansion_authorized": false,
+    "formal_fold0_authorized_next": false,
+    "state": "AWAITING_HUMAN_ACCEPTANCE_DPR_GATE_B",
+    "subject": "[CARE-DPR][B/2] Fold0双病理结果完成，等待下一轮决策",
+    "validation_upload_authorized": false
+  },
+  "outer44_case_ids_sha256": "6023697eadeec1a4c58664d0d37eb63d66645324f93a249c68d70fc67bb20323",
+  "outer_fold0_used_for_checkpoint_or_threshold_selection": false,
+  "outer_heldout_cases": 44,
+  "outputs": {
+    "casewise": "results/20260728_care_dpr_fold0_global_redesign/runtime/formal_fold0/gate_b_evaluation/gate_b_casewise_metrics.csv",
+    "complete16_summary": "results/20260728_care_dpr_fold0_global_redesign/runtime/formal_fold0/gate_b_evaluation/gate_b_complete16_summary.csv",
+    "help_harm": "results/20260728_care_dpr_fold0_global_redesign/runtime/formal_fold0/gate_b_evaluation/gate_b_help_harm.csv",
+    "mechanism": "results/20260728_care_dpr_fold0_global_redesign/runtime/formal_fold0/gate_b_evaluation/gate_b_mechanism_report.json",
+    "outer44_summary": "results/20260728_care_dpr_fold0_global_redesign/runtime/formal_fold0/gate_b_evaluation/gate_b_outer44_summary.csv",
+    "selection": "results/20260728_care_dpr_fold0_global_redesign/runtime/formal_fold0/gate_b_evaluation/gate_b_checkpoint_threshold_selection.json",
+    "summary": "results/20260728_care_dpr_fold0_global_redesign/runtime/formal_fold0/gate_b_evaluation/gate_b_model_summary.csv"
+  },
+  "predicted_roi_only_for_inner_outer_inference": true,
+  "preflight_credit": 0,
+  "resolved_training_contract_hash": "1123d3ea7e36ef44c103827356e274aea90e187e58bbc5594a7e38d5ce832f2a",
+  "sampler_audit": {
+    "stage_a1": {
+      "hard_negative_subtype_audit_pass": true,
+      "hard_negative_subtype_counts": {
+        "edema_hard_negative": {
+          "blood_pool": 1649293,
+          "high_intensity_nonlesion": 2635430,
+          "outside_support_bright_island": 2104546,
+          "remote_anchor_fp": 81354
+        },
+        "scar_hard_negative": {
+          "blood_pool": 1391564,
+          "high_intensity_nonlesion": 2027711,
+          "outside_support_bright_island": 1622982,
+          "remote_anchor_fp": 62524
+        }
+      },
+      "long_cycle_each_slot_target_fraction": 0.125,
+      "long_cycle_fraction_ok": true,
+      "no_t2_edema_slot_violations": [],
+      "sampler_slot_cursor_end": 0,
+      "sampler_slot_cursor_start": 0,
+      "silent_fallback_count": 0,
+      "slot_counts": {
+        "edema_fn": 250,
+        "edema_fp": 250,
+        "edema_hard_negative": 250,
+        "edema_pathology": 250,
+        "scar_fn": 250,
+        "scar_fp": 250,
+        "scar_hard_negative": 250,
+        "scar_pathology": 250
+      },
+      "slot_fractions": {
+        "edema_fn": 0.125,
+        "edema_fp": 0.125,
+        "edema_hard_negative": 0.125,
+        "edema_pathology": 0.125,
+        "scar_fn": 0.125,
+        "scar_fp": 0.125,
+        "scar_hard_negative": 0.125,
+        "scar_pathology": 0.125
+      },
+      "slot_hit_rates": {
+        "edema_fn": 1.0,
+        "edema_fp": 1.0,
+        "edema_hard_negative": 1.0,
+        "edema_pathology": 1.0,
+        "scar_fn": 1.0,
+        "scar_fp": 1.0,
+        "scar_hard_negative": 1.0,
+        "scar_pathology": 1.0
+      },
+      "stage": "A1",
+      "status": "PASS"
+    },
+    "stage_a2": {
+      "hard_negative_subtype_audit_pass": true,
+      "hard_negative_subtype_counts": {
+        "edema_hard_negative": {
+          "blood_pool": 6267313,
+          "high_intensity_nonlesion": 10897036,
+          "outside_support_bright_island": 8710738,
+          "remote_anchor_fp": 352063
+        },
+        "scar_hard_negative": {
+          "blood_pool": 5325079,
+          "high_intensity_nonlesion": 8301390,
+          "outside_support_bright_island": 6626850,
+          "remote_anchor_fp": 248927
+        }
+      },
+      "long_cycle_each_slot_target_fraction": 0.125,
+      "long_cycle_fraction_ok": true,
+      "no_t2_edema_slot_violations": [],
+      "sampler_slot_cursor_end": 0,
+      "sampler_slot_cursor_start": 0,
+      "silent_fallback_count": 0,
+      "slot_counts": {
+        "edema_fn": 1000,
+        "edema_fp": 1000,
+        "edema_hard_negative": 1000,
+        "edema_pathology": 1000,
+        "scar_fn": 1000,
+        "scar_fp": 1000,
+        "scar_hard_negative": 1000,
+        "scar_pathology": 1000
+      },
+      "slot_fractions": {
+        "edema_fn": 0.125,
+        "edema_fp": 0.125,
+        "edema_hard_negative": 0.125,
+        "edema_pathology": 0.125,
+        "scar_fn": 0.125,
+        "scar_fp": 0.125,
+        "scar_hard_negative": 0.125,
+        "scar_pathology": 0.125
+      },
+      "slot_hit_rates": {
+        "edema_fn": 1.0,
+        "edema_fp": 1.0,
+        "edema_hard_negative": 1.0,
+        "edema_pathology": 1.0,
+        "scar_fn": 1.0,
+        "scar_fp": 1.0,
+        "scar_hard_negative": 1.0,
+        "scar_pathology": 1.0
+      },
+      "stage": "A2",
+      "status": "PASS"
+    },
+    "stage_b": {
+      "hard_negative_subtype_audit_pass": true,
+      "hard_negative_subtype_counts": {
+        "edema_hard_negative": {
+          "blood_pool": 4608094,
+          "high_intensity_nonlesion": 8230650,
+          "outside_support_bright_island": 6614234,
+          "remote_anchor_fp": 246159
+        },
+        "scar_hard_negative": {
+          "blood_pool": 4916734,
+          "high_intensity_nonlesion": 8191139,
+          "outside_support_bright_island": 6593621,
+          "remote_anchor_fp": 237018
+        }
+      },
+      "long_cycle_each_slot_target_fraction": 0.125,
+      "long_cycle_fraction_ok": true,
+      "no_t2_edema_slot_violations": [],
+      "sampler_slot_cursor_end": 0,
+      "sampler_slot_cursor_start": 0,
+      "silent_fallback_count": 0,
+      "slot_counts": {
+        "edema_fn": 750,
+        "edema_fp": 750,
+        "edema_hard_negative": 750,
+        "edema_pathology": 750,
+        "scar_fn": 750,
+        "scar_fp": 750,
+        "scar_hard_negative": 750,
+        "scar_pathology": 750
+      },
+      "slot_fractions": {
+        "edema_fn": 0.125,
+        "edema_fp": 0.125,
+        "edema_hard_negative": 0.125,
+        "edema_pathology": 0.125,
+        "scar_fn": 0.125,
+        "scar_fp": 0.125,
+        "scar_hard_negative": 0.125,
+        "scar_pathology": 0.125
+      },
+      "slot_hit_rates": {
+        "edema_fn": 1.0,
+        "edema_fp": 1.0,
+        "edema_hard_negative": 1.0,
+        "edema_pathology": 1.0,
+        "scar_fn": 1.0,
+        "scar_fp": 1.0,
+        "scar_hard_negative": 1.0,
+        "scar_pathology": 1.0
+      },
+      "stage": "B",
+      "status": "PASS"
+    }
+  },
+  "scientific_gate": {
+    "failures": [
+      "no_pathology_improves_by_more_than_0.005"
+    ],
+    "formal_gate_b_scientific_checks": [
+      {
+        "component_count_ok": true,
+        "dice_delta": 0.0,
+        "hd95_ok": true,
+        "pathology": "scar",
+        "remote_fp_ok": true
+      },
+      {
+        "component_count_ok": true,
+        "dice_delta": 0.0,
+        "hd95_ok": true,
+        "pathology": "edema_zone",
+        "remote_fp_ok": true
+      },
+      {
+        "component_count_ok": true,
+        "dice_delta": 0.0,
+        "hd95_ok": true,
+        "pathology": "pure_edema",
+        "remote_fp_ok": true
+      }
+    ],
+    "harm_count": 0,
+    "help_count": 0,
+    "help_ge_harm_minus_1": true,
+    "scientific_expansion_authorized": false,
+    "status": "FAIL"
+  },
+  "selection": {
+    "checkpoint_selection_rule": "formal_terminal_step04000_only_fixed_by_training_contract",
+    "inner_real_candidate_count": 1163,
+    "outer_fold0_used_for_checkpoint_or_threshold_selection": false,
+    "selected_utility_threshold": 0.5,
+    "status": "PASS",
+    "threshold_rows": [
+      {
+        "accepted": 0,
+        "has_nonzero_accepted_and_rejected": false,
+        "realized_gain": 0.0,
+        "rejected": 1163,
+        "threshold": 0.3
+      },
+      {
+        "accepted": 0,
+        "has_nonzero_accepted_and_rejected": false,
+        "realized_gain": 0.0,
+        "rejected": 1163,
+        "threshold": 0.4
+      },
+      {
+        "accepted": 0,
+        "has_nonzero_accepted_and_rejected": false,
+        "realized_gain": 0.0,
+        "rejected": 1163,
+        "threshold": 0.5
+      },
+      {
+        "accepted": 0,
+        "has_nonzero_accepted_and_rejected": false,
+        "realized_gain": 0.0,
+        "rejected": 1163,
+        "threshold": 0.6
+      },
+      {
+        "accepted": 0,
+        "has_nonzero_accepted_and_rejected": false,
+        "realized_gain": 0.0,
+        "rejected": 1163,
+        "threshold": 0.7
+      }
+    ]
+  },
+  "source_hashes": {
+    "scripts/evaluation/evaluate_care_dpr.py": "359d7339b3ab7e688693942abab08e48debc9ceaee54c5368f0896420101766c",
+    "scripts/evaluation/evaluate_care_dpr_gate_b.py": "7dbc9a492187c7b2db187ddefce945f15ed28f8fd9ecc5dc4705cfb2574a19bb",
+    "scripts/evaluation/validate_care_dpr_gate_a_r2_consistency.py": "bcc7da6b7db133a2b5c70ed44c742cf346e66e3f793eea7c9b0db1e5cac8a711",
+    "scripts/evaluation/validate_care_dpr_packet.py": "a3bf12ca82a73901bc67ccf8e6d50e9b1ec4a55b9fa0c010f108b0071e05822d",
+    "scripts/training/run_care_dpr.py": "541a9aa119fd3920a4e6af75c515e333b17c15ac9d5aeb89898bc99de6d89803",
+    "src/care_myocardium/data/care_dpr_dataset.py": "a4588ee49b165303c97610255cdaa92c0cb9320b25c46ca7ec1df2132c39bd02",
+    "src/care_myocardium/inference/care_dpr_predictor.py": "38037ffd317ef9855c4f87c8297449794c2c1abbb4dcd7ff7bb18264788c7e95",
+    "src/care_myocardium/models/care_dpr.py": "6c9861b5cd5ffae0ef177d649087f605443dcca50423e92153f4d2c5a6319a43",
+    "src/care_myocardium/training/care_dpr_trainer.py": "8bf8d9aae94f699f09de1d92329bbec08d231b26a85f563c166f5b6d57a0f513",
+    "tests/care_dpr/test_care_dpr_model.py": "e02dcf8bfe27a044d13bebb3c76b8676bf5d2244b4ed15865a3966cf470f2df5"
+  },
+  "status": "GATE_B_SCIENTIFIC_REVIEW_REQUIRED",
+  "task_key": "20260728_care_dpr_fold0_global_redesign",
+  "teacher_roi_inner_outer_inference": false,
+  "train_side_inner12_case_ids_sha256": "4f47372c6de844c85f9852981e5849bb817bf02032ae3900e7b31411fe5aaed3",
+  "two_pass_full_volume_inference_contract": {
+    "gaussian_blending": true,
+    "overlap": 0.5,
+    "pass1_aggregates": [
+      "shared_full_resolution_feature",
+      "p_coarse",
+      "q_fn",
+      "q_fp"
+    ],
+    "pass2_per_candidate_refinement": true,
+    "patch_final_label_averaging": false,
+    "patch_local_component_decision": false,
+    "status": "PASS"
+  }
+}

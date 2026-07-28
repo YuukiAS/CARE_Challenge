@@ -1,0 +1,100 @@
+{
+  "proposal_metrics": {
+    "edema_p_coarse_auprc": 0.7138944918471157,
+    "edema_p_coarse_positive_prevalence": 0.12155198277535605,
+    "edema_q_fn_auprc": 0.13906984597206565,
+    "edema_q_fn_positive_prevalence": 0.03325803434339869,
+    "edema_q_fp_auprc": 0.43094744161008475,
+    "edema_q_fp_positive_prevalence": 0.024820429557206643,
+    "edema_zone_p_coarse_component_precision": 0.5953124999999999,
+    "edema_zone_p_coarse_component_recall": 0.96875,
+    "scar_p_coarse_auprc": 0.5734499201809496,
+    "scar_p_coarse_component_precision": 0.7007992007992008,
+    "scar_p_coarse_component_recall": 0.7748081463990555,
+    "scar_p_coarse_positive_prevalence": 0.07572047481024785,
+    "scar_q_fn_auprc": 0.08185066581099758,
+    "scar_q_fn_positive_prevalence": 0.02783261894819582,
+    "scar_q_fp_auprc": 0.5050328897242423,
+    "scar_q_fp_positive_prevalence": 0.03036188008155044
+  },
+  "roi_metrics": {
+    "edema_coverage": 0.2906663552415099,
+    "edema_predicted_refiner_dice": 0.3043191928386092,
+    "edema_support_volume_ratio": 0.05276042913021841,
+    "edema_teacher_refiner_dice": 0.36363636363636365,
+    "scar_coverage": 0.6559909349621306,
+    "scar_predicted_refiner_dice": 0.19296385800586802,
+    "scar_support_volume_ratio": 0.6535641173224888,
+    "scar_teacher_refiner_dice": 1.0
+  },
+  "utility_metrics": {
+    "accept_target_negative_count": 4640,
+    "accept_target_positive_count": 1012,
+    "candidate_counts": {
+      "edema_zone_ADD_FN": 830,
+      "edema_zone_REVISE_FP": 24,
+      "scar_ADD_FN": 4708,
+      "scar_REVISE_FP": 90
+    },
+    "component_descriptor_fields": [
+      "pooled_aggregated_shared_full_resolution_feature",
+      "pooled_p_coarse",
+      "pooled_q_fn",
+      "pooled_q_fp",
+      "pooled_p_refined",
+      "anchor_margin",
+      "uncertainty",
+      "distance_to_support",
+      "voxel_volume",
+      "surface_compactness",
+      "bounding_box_size",
+      "candidate_type",
+      "component_truncation_flag"
+    ],
+    "component_utility_auprc": 0.21476971782170723,
+    "component_utility_auroc": 0.5161693301076734,
+    "oracle_gain": 16.776254933447397,
+    "positive_prevalence": 0.17905166312809626,
+    "primary_metric_source": "model_real_full_volume_candidates_only",
+    "realized_gain": 0.053754983243319066,
+    "synthetic_utility_variants_used_for_primary_gate": false,
+    "threshold_candidates": [
+      {
+        "accepted": 5,
+        "has_nonzero_accepted_and_rejected": true,
+        "realized_gain": 0.053754983243319066,
+        "rejected": 5647,
+        "threshold": 0.3
+      },
+      {
+        "accepted": 0,
+        "has_nonzero_accepted_and_rejected": false,
+        "realized_gain": 0.0,
+        "rejected": 5652,
+        "threshold": 0.4
+      },
+      {
+        "accepted": 0,
+        "has_nonzero_accepted_and_rejected": false,
+        "realized_gain": 0.0,
+        "rejected": 5652,
+        "threshold": 0.5
+      },
+      {
+        "accepted": 0,
+        "has_nonzero_accepted_and_rejected": false,
+        "realized_gain": 0.0,
+        "rejected": 5652,
+        "threshold": 0.6
+      },
+      {
+        "accepted": 0,
+        "has_nonzero_accepted_and_rejected": false,
+        "realized_gain": 0.0,
+        "rejected": 5652,
+        "threshold": 0.7
+      }
+    ],
+    "true_candidate_total_count": 5652
+  }
+}

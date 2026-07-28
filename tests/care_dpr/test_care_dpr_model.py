@@ -147,6 +147,31 @@ def test_unaccepted_candidate_does_not_partially_write_back() -> None:
     assert np.array_equal(out, anchor)
 
 
+def test_rejected_add_fn_cannot_clear_existing_anchor() -> None:
+    anchor = np.zeros((4, 16, 16), dtype=np.uint8)
+    anchor[:, 5:8, 5:8] = 5
+    maps = {k: np.zeros_like(anchor, dtype=np.float32) for k in ["scar_p_coarse", "scar_q_fn", "scar_q_fp", "scar_p_refined", "scar_utility_accept_prob", "edema_p_coarse", "edema_q_fn", "edema_q_fp", "edema_p_refined", "edema_utility_accept_prob"]}
+    maps["scar_p_coarse"][:, 10:12, 10:12] = 1.0
+    maps["scar_p_refined"][:, 5:8, 5:8] = 1.0
+    out, audit = compose_dual_pathology(anchor, maps, utility_threshold=0.99, t2_present=True)
+    assert audit and {item["candidate_type"] for item in audit} == {"ADD_FN"}
+    assert not any(item["accepted"] for item in audit)
+    assert np.array_equal(out, anchor)
+
+
+def test_rejected_revise_fp_cannot_clear_other_anchor_component() -> None:
+    anchor = np.zeros((4, 16, 16), dtype=np.uint8)
+    anchor[:, 1:3, 1:3] = 5
+    anchor[:, 8:10, 8:10] = 5
+    maps = {k: np.zeros_like(anchor, dtype=np.float32) for k in ["scar_p_coarse", "scar_q_fn", "scar_q_fp", "scar_p_refined", "scar_utility_accept_prob", "edema_p_coarse", "edema_q_fn", "edema_q_fp", "edema_p_refined", "edema_utility_accept_prob"]}
+    maps["scar_q_fp"][:, 1:2, 1:2] = 1.0
+    maps["scar_p_refined"][:, 8:10, 8:10] = 1.0
+    out, audit = compose_dual_pathology(anchor, maps, utility_threshold=0.99, t2_present=True)
+    assert audit and {item["candidate_type"] for item in audit} == {"REVISE_FP"}
+    assert not any(item["accepted"] for item in audit)
+    assert np.array_equal(out, anchor)
+
+
 def test_full_volume_aggregation_returns_shared_feature_before_components() -> None:
     model = build_care_dpr()
     batch = _batch(t2=1.0)

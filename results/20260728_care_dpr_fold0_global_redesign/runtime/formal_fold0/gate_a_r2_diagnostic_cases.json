@@ -1,0 +1,23 @@
+{
+  "case_ids": [
+    "Case1006",
+    "Case1016",
+    "Case1022",
+    "Case1038",
+    "Case1041",
+    "Case1067",
+    "Case1071",
+    "Case1078",
+    "Case2014",
+    "Case2035",
+    "Case3005",
+    "Case3043",
+    "Case7004",
+    "Case8016",
+    "Case8024",
+    "Case8033"
+  ],
+  "case_ids_sha256": "fe7fa768c14f4980b81d5ed6d2648f0d108c0e8ac147e3d582de0a98b093ea7b",
+  "disjoint_from_preflight_optimizer_cases": true,
+  "outer_fold0_used": false
+}

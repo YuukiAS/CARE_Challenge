@@ -1,0 +1,55 @@
+{
+  "hard_negative_subtype_audit_pass": true,
+  "hard_negative_subtype_counts": {
+    "edema_hard_negative": {
+      "blood_pool": 6267313,
+      "high_intensity_nonlesion": 10897036,
+      "outside_support_bright_island": 8710738,
+      "remote_anchor_fp": 352063
+    },
+    "scar_hard_negative": {
+      "blood_pool": 5325079,
+      "high_intensity_nonlesion": 8301390,
+      "outside_support_bright_island": 6626850,
+      "remote_anchor_fp": 248927
+    }
+  },
+  "long_cycle_each_slot_target_fraction": 0.125,
+  "long_cycle_fraction_ok": true,
+  "no_t2_edema_slot_violations": [],
+  "sampler_slot_cursor_end": 0,
+  "sampler_slot_cursor_start": 0,
+  "silent_fallback_count": 0,
+  "slot_counts": {
+    "edema_fn": 1000,
+    "edema_fp": 1000,
+    "edema_hard_negative": 1000,
+    "edema_pathology": 1000,
+    "scar_fn": 1000,
+    "scar_fp": 1000,
+    "scar_hard_negative": 1000,
+    "scar_pathology": 1000
+  },
+  "slot_fractions": {
+    "edema_fn": 0.125,
+    "edema_fp": 0.125,
+    "edema_hard_negative": 0.125,
+    "edema_pathology": 0.125,
+    "scar_fn": 0.125,
+    "scar_fp": 0.125,
+    "scar_hard_negative": 0.125,
+    "scar_pathology": 0.125
+  },
+  "slot_hit_rates": {
+    "edema_fn": 1.0,
+    "edema_fp": 1.0,
+    "edema_hard_negative": 1.0,
+    "edema_pathology": 1.0,
+    "scar_fn": 1.0,
+    "scar_fp": 1.0,
+    "scar_hard_negative": 1.0,
+    "scar_pathology": 1.0
+  },
+  "stage": "A2",
+  "status": "PASS"
+}
