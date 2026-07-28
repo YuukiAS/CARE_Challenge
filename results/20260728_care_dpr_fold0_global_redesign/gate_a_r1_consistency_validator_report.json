@@ -1,0 +1,23 @@
+{
+  "checked_at_utc": "2026-07-28T06:27:15Z",
+  "checks": {
+    "checkpoint_resume_exact": "PASS",
+    "formal_fold0_guard_new_token_only": "PASS",
+    "implementation_validator_pass": "PASS",
+    "mechanism_passes_r1_thresholds": "PASS",
+    "no_t2_exact_zero": "PASS",
+    "old_gate_superseded": "PASS",
+    "old_send_receipt_superseded": "PASS",
+    "preflight_receipt_zero_credit": "PASS",
+    "sampler_audit_pass": "PASS",
+    "sent_gate_entries_superseded": "PASS",
+    "strict_validator_pass": "PASS",
+    "teacher_inner_outer_forbidden": "PASS"
+  },
+  "failures": [],
+  "formal_fold0_authorized": false,
+  "status": "PASS",
+  "superseded_approval_token": "APPROVE_DPR_GATE_A",
+  "task_key": "20260728_care_dpr_fold0_global_redesign",
+  "valid_approval_token": "APPROVE_DPR_GATE_A_R1"
+}

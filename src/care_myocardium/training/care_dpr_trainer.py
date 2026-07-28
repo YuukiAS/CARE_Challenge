@@ -56,28 +56,60 @@ def dpr_targets(labels: torch.Tensor, anchor_mask: torch.Tensor) -> dict[str, to
     }
 
 
-def dense_utility_target(anchor_local: torch.Tensor, refined_prob: torch.Tensor, gt: torch.Tensor) -> tuple[torch.Tensor, torch.Tensor]:
-    """Dense surrogate for amendment utility target, bounded to [-1, 1].
+def _binary_boundary(mask: torch.Tensor) -> torch.Tensor:
+    mask = mask.float()
+    dil = F.max_pool3d(mask, 3, stride=1, padding=1)
+    ero = -F.max_pool3d(-mask, 3, stride=1, padding=1)
+    return (dil - ero).abs().clamp(0, 1)
 
-    The full component target is built during full-volume candidate arbitration.
-    For patch training this computes the same E(A)-E(R) semantics per voxel and
-    is used only on actual-train batches.
+
+def component_utility_target(anchor_local: torch.Tensor, refined_prob: torch.Tensor, gt: torch.Tensor, distance_to_support: torch.Tensor | None = None) -> tuple[torch.Tensor, torch.Tensor]:
+    """Component-level amendment utility target broadcast over candidate support.
+
+    E(M)=2*FN+1*FP+0.25*boundary_error and
+    U=clip((E(A)-E(R))/max(|A union R union G|,1),-1,1).
+    The returned maps are constant over the candidate support so training uses a
+    component descriptor MLP instead of a dense voxel utility surrogate.
     """
     refined = (refined_prob.detach() >= 0.5).to(gt.dtype)
     anchor = anchor_local.detach().to(gt.dtype)
     gt = gt.detach().to(gt.dtype)
-    fn_anchor = ((gt > 0.5) & (anchor <= 0.5)).float()
-    fp_anchor = ((gt <= 0.5) & (anchor > 0.5)).float()
-    fn_refined = ((gt > 0.5) & (refined <= 0.5)).float()
-    fp_refined = ((gt <= 0.5) & (refined > 0.5)).float()
-    e_anchor = 2.0 * fn_anchor + fp_anchor
-    e_refined = 2.0 * fn_refined + fp_refined
-    utility = torch.clamp(e_anchor - e_refined, -1.0, 1.0)
-    accept = (utility >= ACCEPT_MIN_UTILITY).float()
-    gt_positive_empty = ((gt.flatten(2).sum(dim=2) > 0) & (refined.flatten(2).sum(dim=2) == 0)).view(gt.shape[0], 1, 1, 1, 1)
-    accept = torch.where(gt_positive_empty, torch.zeros_like(accept), accept)
-    utility = torch.where(gt_positive_empty, torch.full_like(utility, -1.0), utility)
-    return accept.detach(), utility.detach()
+    candidate_support = ((anchor + refined + gt) > 0).to(gt.dtype)
+    accept_map = torch.zeros_like(gt)
+    utility_map = torch.zeros_like(gt)
+    for b in range(gt.shape[0]):
+        support = candidate_support[b : b + 1]
+        denom = support.sum().clamp_min(1.0)
+        a = anchor[b : b + 1]
+        r = refined[b : b + 1]
+        g = gt[b : b + 1]
+        fn_a = ((g > 0.5) & (a <= 0.5)).float().sum()
+        fp_a = ((g <= 0.5) & (a > 0.5)).float().sum()
+        fn_r = ((g > 0.5) & (r <= 0.5)).float().sum()
+        fp_r = ((g <= 0.5) & (r > 0.5)).float().sum()
+        boundary_a = (_binary_boundary(a) != _binary_boundary(g)).float().sum()
+        boundary_r = (_binary_boundary(r) != _binary_boundary(g)).float().sum()
+        e_anchor = 2.0 * fn_a + fp_a + 0.25 * boundary_a
+        e_refined = 2.0 * fn_r + fp_r + 0.25 * boundary_r
+        utility = torch.clamp((e_anchor - e_refined) / denom, -1.0, 1.0)
+        accept = (utility >= ACCEPT_MIN_UTILITY).float()
+        gt_positive_empty = bool((g.sum() > 0) and (r.sum() == 0))
+        if gt_positive_empty:
+            accept = torch.zeros_like(accept)
+            utility = torch.full_like(utility, -1.0)
+        if distance_to_support is not None:
+            dist = distance_to_support[b : b + 1].detach().to(gt.dtype)
+            new_remote = ((r > 0.5) & (a <= 0.5) & (dist > REMOTE_REJECT_MM)).any()
+            if bool(new_remote):
+                accept = torch.zeros_like(accept)
+                utility = torch.minimum(utility, torch.full_like(utility, -1.0))
+        accept_map[b : b + 1] = accept.view(1, 1, 1, 1, 1) * support
+        utility_map[b : b + 1] = utility.view(1, 1, 1, 1, 1) * support
+    return accept_map.detach(), utility_map.detach()
+
+
+# Backward-compatible alias used by earlier evidence scripts; implementation is component-level.
+dense_utility_target = component_utility_target
 
 
 def care_dpr_loss(
@@ -112,8 +144,8 @@ def care_dpr_loss(
     scar_prop = focal_bce(outputs["scar_q_fn"].float(), targets["scar_fn"], scar_mask) + focal_bce(outputs["scar_q_fp"].float(), targets["scar_fp"], scar_mask)
     edema_prop = focal_bce(outputs["edema_q_fn"].float(), targets["edema_fn"], edema_mask) + focal_bce(outputs["edema_q_fp"].float(), targets["edema_fp"], edema_mask)
 
-    scar_accept_target, scar_utility_target = dense_utility_target(targets["scar_anchor"], outputs["scar_p_refined"], targets["scar_gt"])
-    edema_accept_target, edema_utility_target = dense_utility_target(targets["edema_anchor"], outputs["edema_p_refined"], targets["edema_gt"])
+    scar_accept_target, scar_utility_target = component_utility_target(targets["scar_anchor"], outputs["scar_p_refined"], targets["scar_gt"], outputs.get("distance_to_myocardium"))
+    edema_accept_target, edema_utility_target = component_utility_target(targets["edema_anchor"], outputs["edema_p_refined"], targets["edema_gt"], outputs.get("distance_to_myocardium"))
     scar_util = masked_bce_with_logits(outputs["scar_utility_accept_logit"].float(), scar_accept_target, scar_mask) + F.huber_loss(outputs["scar_utility_regression"].float() * scar_mask, scar_utility_target * scar_mask, reduction="sum") / scar_mask.sum().clamp_min(1.0)
     edema_util = masked_bce_with_logits(outputs["edema_utility_accept_logit"].float(), edema_accept_target, edema_mask) + F.huber_loss(outputs["edema_utility_regression"].float() * edema_mask, edema_utility_target * edema_mask, reduction="sum") / edema_mask.sum().clamp_min(1.0)
 
@@ -146,7 +178,7 @@ def care_dpr_loss(
     return total, metrics
 
 
-def save_care_dpr_checkpoint(path: Path, model: CAREDPR, optimizer: torch.optim.Optimizer, step: int, extra: dict[str, Any] | None = None, *, local_rng: random.Random | None = None, stage: str | None = None, local_step: int | None = None) -> None:
+def save_care_dpr_checkpoint(path: Path, model: CAREDPR, optimizer: torch.optim.Optimizer, step: int, extra: dict[str, Any] | None = None, *, local_rng: random.Random | None = None, stage: str | None = None, local_step: int | None = None, sampler_slot_cursor: int = 0, teacher_roi_schedule_cursor: int = 0, resolved_training_contract_hash: str = "") -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     torch.save({
         "model_state": model.state_dict(),
@@ -163,6 +195,9 @@ def save_care_dpr_checkpoint(path: Path, model: CAREDPR, optimizer: torch.optim.
             "stage": stage,
             "local_step": local_step,
             "total_step": int(step),
+            "sampler_slot_cursor": int(sampler_slot_cursor),
+            "teacher_roi_schedule_cursor": int(teacher_roi_schedule_cursor),
+            "resolved_training_contract_hash": str(resolved_training_contract_hash),
         },
     }, path)
 
@@ -219,5 +254,5 @@ def initialize_from_care_dg(model: CAREDPR, checkpoint_path: Path) -> dict[str, 
         "skipped_source_parameter_count": len(skipped),
         "care_dg_q_fn_q_fp_initialize_error_proposal_only": True,
         "p_coarse_random_initialized": True,
-        "random_initialized_modules": ["scar_branch.refiner_head", "scar_branch.utility_head", "edema_branch.refiner_head", "edema_branch.utility_head", "scar_branch.proposal_head.p_coarse", "edema_branch.proposal_head.p_coarse"],
+        "random_initialized_modules": ["scar_branch.local_refiner", "scar_branch.component_utility", "edema_branch.local_refiner", "edema_branch.component_utility", "scar_branch.proposal_head.p_coarse", "edema_branch.proposal_head.p_coarse"],
     }

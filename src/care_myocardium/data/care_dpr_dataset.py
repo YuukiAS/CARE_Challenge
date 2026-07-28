@@ -33,6 +33,13 @@ DPR_SAMPLER_PATTERN = (
     "edema_pathology",
 )
 
+HARD_NEGATIVE_SUBTYPES = (
+    "blood_pool",
+    "outside_support_bright_island",
+    "remote_anchor_fp",
+    "high_intensity_nonlesion",
+)
+
 
 def dpr_target_masks(record: dict[str, np.ndarray], t2_present: bool) -> dict[str, np.ndarray]:
     labels = record["labels"]
@@ -49,10 +56,11 @@ def dpr_target_masks(record: dict[str, np.ndarray], t2_present: bool) -> dict[st
         bright |= image > np.quantile(image, 0.95)
     blood_pool = np.isin(anchor, [2, 3])
     outside_support = ~support
-    remote_fp = (scar_pred | zone_pred) & ~zone_gt & outside_support
+    outside_support_bright_island = outside_support & bright
+    remote_fp = (scar_pred | zone_pred) & ~zone_gt
     high_intensity_no_lesion = bright & ~zone_gt
-    scar_hard_negative = (blood_pool | outside_support | remote_fp | high_intensity_no_lesion) & ~scar_gt
-    edema_hard_negative = (blood_pool | outside_support | remote_fp | high_intensity_no_lesion) & ~zone_gt if t2_present else np.zeros_like(labels, dtype=bool)
+    scar_hard_negative = (blood_pool | outside_support_bright_island | remote_fp | high_intensity_no_lesion) & ~scar_gt
+    edema_hard_negative = (blood_pool | outside_support_bright_island | remote_fp | high_intensity_no_lesion) & ~zone_gt if t2_present else np.zeros_like(labels, dtype=bool)
     return {
         "scar_fn": scar_gt & ~scar_pred & support,
         "scar_fp": ~scar_gt & scar_pred & support,
@@ -62,6 +70,10 @@ def dpr_target_masks(record: dict[str, np.ndarray], t2_present: bool) -> dict[st
         "edema_fp": (~zone_gt & zone_pred & edema_support) if t2_present else np.zeros_like(labels, dtype=bool),
         "edema_hard_negative": edema_hard_negative,
         "edema_pathology": (zone_gt & edema_support) if t2_present else np.zeros_like(labels, dtype=bool),
+        "hard_negative_blood_pool": blood_pool & ~zone_gt,
+        "hard_negative_outside_support_bright_island": outside_support_bright_island & ~zone_gt,
+        "hard_negative_remote_anchor_fp": remote_fp & ~zone_gt,
+        "hard_negative_high_intensity_nonlesion": high_intensity_no_lesion & ~zone_gt,
     }
 
 
@@ -93,11 +105,31 @@ def build_dpr_sampler_index(case_ids: list[str], case_to_fold: dict[str, int], m
         "eligible_counts": {mode: len(pool) for mode, pool in eligible.items()},
         "target_count_totals": {mode: sum(target_counts[c][mode] for c in active_cases) for mode in DPR_SAMPLER_PATTERN},
         "no_t2_excluded_from_edema_slots": True,
-        "hard_negative_semantics": ["blood_pool", "outside_support_bright_islands", "remote_anchor_fp", "high_intensity_no_lesion"],
+        "hard_negative_semantics": list(HARD_NEGATIVE_SUBTYPES),
+        "outside_support_voxel_pool_is_not_primary_hard_negative": True,
     }
     payload["sampler_index_sha256"] = stable_json_sha256(payload)
     return {**payload, "eligible": eligible, "target_counts_by_case": target_counts}
 
+
+
+
+def sampler_slots_for_cursor(cursor: int, batch_size: int) -> tuple[list[str], int]:
+    start = int(cursor) % len(DPR_SAMPLER_PATTERN)
+    slots = [DPR_SAMPLER_PATTERN[(start + i) % len(DPR_SAMPLER_PATTERN)] for i in range(int(batch_size))]
+    return slots, (start + int(batch_size)) % len(DPR_SAMPLER_PATTERN)
+
+def hard_negative_subtype_counts(record: dict[str, np.ndarray], t2_present: bool, *, pathology: str, center: tuple[int, int, int]) -> dict[str, int]:
+    masks = dpr_target_masks(record, t2_present)
+    counts: dict[str, int] = {}
+    for subtype in HARD_NEGATIVE_SUBTYPES:
+        key = f"hard_negative_{subtype}"
+        cropped = crop_pad(masks[key].astype(np.uint8)[None], center, PATCH_SHAPE, fill=0)[0] > 0
+        if pathology == "scar":
+            scar_gt = crop_pad(masks["scar_pathology"].astype(np.uint8)[None], center, PATCH_SHAPE, fill=0)[0] > 0
+            cropped = cropped & ~scar_gt
+        counts[subtype] = int(np.count_nonzero(cropped))
+    return counts
 
 def choose_dpr_center(record: dict[str, np.ndarray], rng: random.Random, *, mode: str, t2_present: bool) -> tuple[tuple[int, int, int], int]:
     target = dpr_target_masks(record, t2_present)[mode]
@@ -128,27 +160,38 @@ def build_dpr_batch(
     stage: str,
     batch_size: int,
     sampler_index: dict[str, Any] | None = None,
+    sampler_slot_cursor: int = 0,
 ) -> dict[str, Any]:
     index = sampler_index or build_dpr_sampler_index(case_ids, case_to_fold, metadata, cache, stage=stage)
     samples: list[dict[str, Any]] = []
-    for mode in [DPR_SAMPLER_PATTERN[i % len(DPR_SAMPLER_PATTERN)] for i in range(batch_size)]:
+    cursor = int(sampler_slot_cursor) % len(DPR_SAMPLER_PATTERN)
+    for i in range(batch_size):
+        mode = sampler_slots_for_cursor(cursor, batch_size)[0][i]
         pool = list(index["eligible"][mode])
         case_id = rng.choice(pool)
         meta = metadata[case_id]
         record = cache.get(case_id, case_to_fold[case_id], tuple(meta.availability))
         center, count = choose_dpr_center(record, rng, mode=mode, t2_present=bool(meta.t2_present))
+        pathology = "edema_zone" if mode.startswith("edema_") else "scar"
+        hard_counts = hard_negative_subtype_counts(record, bool(meta.t2_present), pathology=pathology, center=center) if "hard_negative" in mode else {k: 0 for k in HARD_NEGATIVE_SUBTYPES}
         samples.append(
             {
+                "sampler_slot_index": (cursor + i) % len(DPR_SAMPLER_PATTERN),
                 "requested_mode": mode,
                 "effective_mode": mode,
                 "case_id": case_id,
                 "center_zyx": list(center),
                 "target_voxel_count_in_patch": int(count),
+                "t2_present": bool(meta.t2_present),
+                "hard_negative_subtype_counts": hard_counts,
                 "fallback_reason": "",
             }
         )
     batch = _batch_from_centers(samples, case_to_fold, metadata, cache)
     batch["dpr_sampler_pattern"] = list(DPR_SAMPLER_PATTERN)
+    batch["dpr_sampler_samples"] = samples
+    batch["sampler_slot_cursor_before"] = cursor
+    batch["sampler_slot_cursor_after"] = (cursor + int(batch_size)) % len(DPR_SAMPLER_PATTERN)
     return batch
 
 
@@ -156,11 +199,14 @@ __all__ = [
     "CaseCache",
     "PATCH_SHAPE",
     "DPR_SAMPLER_PATTERN",
+    "HARD_NEGATIVE_SUBTYPES",
     "actionable_target_mask",
     "build_dg_sampler_index",
     "build_dpr_batch",
     "build_dpr_sampler_index",
+    "hard_negative_subtype_counts",
     "deterministic_inner_split",
     "dpr_target_masks",
     "load_splits",
+    "sampler_slots_for_cursor",
 ]

@@ -22,6 +22,8 @@ class DPRCandidate:
     candidate_type: str
     component_index: int
     voxel_count: int
+    bbox_zyx: tuple[tuple[int, int], tuple[int, int], tuple[int, int]] = ((0, 0), (0, 0), (0, 0))
+    truncation_flag: bool = False
     action_if_rejected: str = "KEEP_ANCHOR_LOCAL_MASK"
     action_if_accepted: str = "REPLACE_WITH_REFINED_LOCAL_MASK"
 
@@ -71,6 +73,7 @@ def aggregate_patch_outputs(model: torch.nn.Module, batch_np: dict[str, np.ndarr
     spatial = tuple(int(v) for v in batch_np["anchor_logits"].shape[-3:])
     accum_keys = ["scar_p_coarse", "scar_q_fn", "scar_q_fp", "scar_p_refined", "scar_utility_accept_prob", "edema_p_coarse", "edema_q_fn", "edema_q_fp", "edema_p_refined", "edema_utility_accept_prob"]
     acc = {k: np.zeros(spatial, dtype=np.float32) for k in accum_keys}
+    shared_acc: np.ndarray | None = None
     weight = np.zeros(spatial, dtype=np.float32)
     g = gaussian_importance(patch_shape)
     starts = [(z, y, x) for z in starts_for(spatial[0], patch_shape[0], overlap) for y in starts_for(spatial[1], patch_shape[1], overlap) for x in starts_for(spatial[2], patch_shape[2], overlap)]
@@ -86,12 +89,34 @@ def aggregate_patch_outputs(model: torch.nn.Module, batch_np: dict[str, np.ndarr
             for key in accum_keys:
                 arr = out[key].detach().float().cpu().numpy()[0, 0][dst_slices]
                 acc[key][src] += arr * g[dst_slices]
+            shared = out["shared_feature"].detach().float().cpu().numpy()[0]
+            if shared_acc is None:
+                shared_acc = np.zeros((shared.shape[0], *spatial), dtype=np.float32)
+            shared_acc[(slice(None), *src)] += shared[(slice(None), *dst_slices)] * g[dst_slices]
             weight[src] += g[dst_slices]
     weight = np.maximum(weight, 1e-6)
-    return {k: v / weight for k, v in acc.items()} | {"aggregation_overlap": np.asarray(overlap), "gaussian_blending": np.asarray(True)}
+    result = {k: v / weight for k, v in acc.items()}
+    result["shared_full_resolution_feature"] = shared_acc / weight[None] if shared_acc is not None else np.zeros((0, *spatial), dtype=np.float32)
+    result["aggregate_before_components"] = np.asarray(True)
+    return result | {"aggregation_overlap": np.asarray(overlap), "gaussian_blending": np.asarray(True)}
 
 
-def build_candidates(anchor_mask: np.ndarray, maps: dict[str, np.ndarray], *, pathology: str, threshold: float = 0.5, t2_present: bool = True) -> list[tuple[DPRCandidate, np.ndarray, np.ndarray]]:
+def _bbox(mask: np.ndarray) -> tuple[tuple[int, int], tuple[int, int], tuple[int, int]]:
+    coords = np.argwhere(mask)
+    if coords.size == 0:
+        return ((0, 0), (0, 0), (0, 0))
+    lo = coords.min(axis=0); hi = coords.max(axis=0) + 1
+    return tuple((int(a), int(b)) for a, b in zip(lo, hi))  # type: ignore[return-value]
+
+
+def _expand(mask: np.ndarray, margin: int = 3) -> np.ndarray:
+    if margin <= 0 or not np.any(mask):
+        return mask.astype(bool)
+    structure = ndi.generate_binary_structure(3, 1)
+    return ndi.binary_dilation(mask.astype(bool), structure=structure, iterations=int(margin))
+
+
+def build_candidates(anchor_mask: np.ndarray, maps: dict[str, np.ndarray], *, pathology: str, threshold: float = 0.5, t2_present: bool = True, margin: int = 3) -> list[tuple[DPRCandidate, np.ndarray, np.ndarray]]:
     if pathology not in {"scar", "edema_zone"}:
         raise ValueError(pathology)
     if pathology == "edema_zone" and not t2_present:
@@ -108,18 +133,29 @@ def build_candidates(anchor_mask: np.ndarray, maps: dict[str, np.ndarray], *, pa
         q_fn = maps["edema_q_fn"] >= threshold
         q_fp = maps["edema_q_fp"] >= threshold
         refined = maps["edema_p_refined"] >= threshold
-    out = []
+    out: list[tuple[DPRCandidate, np.ndarray, np.ndarray]] = []
     structure = ndi.generate_binary_structure(3, 1)
     add_mask = (refined | coarse | q_fn) & ~anchor
     add_labeled, add_count = ndi.label(add_mask, structure=structure)
     for idx in range(1, int(add_count) + 1):
         comp = add_labeled == idx
-        out.append((DPRCandidate(pathology, "ADD_FN", idx, int(comp.sum())), np.zeros_like(comp, dtype=bool), refined & comp))
-    revise_mask = anchor & q_fp
-    revise_labeled, revise_count = ndi.label(revise_mask, structure=structure)
-    for idx in range(1, int(revise_count) + 1):
-        comp = revise_labeled == idx
-        out.append((DPRCandidate(pathology, "REVISE_FP", idx, int(comp.sum())), anchor & comp, refined & comp))
+        roi = _expand(comp, margin=margin)
+        trunc = bool(np.any(roi[[0, -1], :, :]) or np.any(roi[:, [0, -1], :]) or np.any(roi[:, :, [0, -1]]))
+        replacement = refined & roi
+        out.append((DPRCandidate(pathology, "ADD_FN", idx, int(comp.sum()), _bbox(roi), trunc), np.zeros_like(comp, dtype=bool), replacement))
+
+    anchor_labeled, anchor_count = ndi.label(anchor, structure=structure)
+    revise_idx = 0
+    for idx in range(1, int(anchor_count) + 1):
+        anchor_comp = anchor_labeled == idx
+        if not np.any(anchor_comp & q_fp):
+            continue
+        revise_idx += 1
+        roi = _expand(anchor_comp, margin=margin)
+        trunc = bool(np.any(roi[[0, -1], :, :]) or np.any(roi[:, [0, -1], :]) or np.any(roi[:, :, [0, -1]]))
+        replacement = refined & roi
+        out.append((DPRCandidate(pathology, "REVISE_FP", revise_idx, int(anchor_comp.sum()), _bbox(roi), trunc), anchor_comp, replacement))
+    out.sort(key=lambda item: (item[0].candidate_type, item[0].bbox_zyx, item[0].component_index))
     return out
 
 
@@ -140,7 +176,7 @@ def arbitrate_pathology(anchor_local: np.ndarray, candidates: list[tuple[DPRCand
             action = cand.action_if_rejected
         if action not in LEGAL_ACTIONS:
             raise ValueError(action)
-        audit.append({"pathology": cand.pathology, "candidate_type": cand.candidate_type, "component_index": cand.component_index, "voxel_count": cand.voxel_count, "utility_score": score, "accepted": bool(accepted), "action": action})
+        audit.append({"pathology": cand.pathology, "candidate_type": cand.candidate_type, "component_index": cand.component_index, "voxel_count": cand.voxel_count, "bbox_zyx": cand.bbox_zyx, "component_truncation_flag": cand.truncation_flag, "utility_score": score, "accepted": bool(accepted), "action": action})
     return result, audit
 
 

@@ -1,0 +1,23 @@
+{
+  "batch_size": 4,
+  "gate_token": "APPROVE_DPR_GATE_A_R1",
+  "resolved_training_contract_hash": "b3308fee9f046f08802a3d83cc3076cc1a929beee7e8d9cde79d4914ccb54102",
+  "sampler_pattern": [
+    "scar_fn",
+    "scar_fp",
+    "scar_hard_negative",
+    "scar_pathology",
+    "edema_fn",
+    "edema_fp",
+    "edema_hard_negative",
+    "edema_pathology"
+  ],
+  "seed": 20260728,
+  "stage_plan": [
+    "A1:500",
+    "A2:2000",
+    "B:1500"
+  ],
+  "task_key": "20260728_care_dpr_fold0_global_redesign",
+  "total_optimizer_steps": 4000
+}

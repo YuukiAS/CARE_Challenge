@@ -1,2 +1,2 @@
-stage,step,local_step,checkpoint_path,checkpoint_sha256,outer_val_used,teacher_roi_fraction
-PREFLIGHT,300,300,/users/a/e/aereinh/CARE/results/20260728_care_dpr_fold0_global_redesign/runtime/preflight/checkpoints/checkpoint_step00300.pt,a17888b446bcc05eb59aaaba37fb3e89a428f95369f3fa1f89e0222d3389916b,False,0.75
+stage,step,local_step,sampler_slot_cursor,checkpoint_path,checkpoint_sha256,outer_val_used,teacher_roi_fraction
+PREFLIGHT,300,300,0,/users/a/e/aereinh/CARE/results/20260728_care_dpr_fold0_global_redesign/runtime/preflight/checkpoints/checkpoint_step00300.pt,77fb036231b0d00d89710bb1bc1841bf53ddbdd2c0b071705cfb82a87228ace6,False,0.75

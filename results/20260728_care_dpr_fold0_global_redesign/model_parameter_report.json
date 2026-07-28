@@ -1,14 +1,26 @@
 {
-  "proof": "single CAREDPR.encoder object; independent scar_branch and edema_branch modules",
+  "edema_roi_context_zyx": [
+    8,
+    128,
+    128
+  ],
+  "proof": "single CAREDPR.encoder object; independent scar_branch and edema_branch modules; local ROI refiners have pathology-specific sizes",
+  "scar_roi_context_zyx": [
+    8,
+    96,
+    96
+  ],
   "source_hashes_sha256": {
     "scripts/evaluation/analyze_care_dpr_mechanism_ceiling.py": "9ef1e32614342c7bdab12bd47b8d5cee76473a42cc604ca04a2801c784176668",
-    "scripts/evaluation/validate_care_dpr_packet.py": "2daeee1638c009fb047667be2c90ba0928e51961e1635fa4555220a5f5c94526",
-    "scripts/training/run_care_dpr.py": "09cc3a8e33956784bf1d24794653ca7b5a9e7d2b44ca81e3cfe05709e56b2b46",
-    "src/care_myocardium/data/care_dpr_dataset.py": "9c2dbe95eafcf94f10a740a354763a60e810ffcb1d8768a6315ce5bdc5f5e2d7",
-    "src/care_myocardium/inference/care_dpr_predictor.py": "6aedcca95496297004ecc4d206868385061cbbb0fff7fa4704629b6a9621cffb",
-    "src/care_myocardium/models/care_dpr.py": "96935b479f62add9db8c715a8130c7ec843046389a64c950f18f97177e1eb34a",
-    "src/care_myocardium/training/care_dpr_trainer.py": "3010d2d0009149131fc4090ca291062f93d08e9685333665dbe9c5fcf7838a1e",
-    "tests/care_dpr/test_care_dpr_model.py": "d370e1bd69c0eb896db989bb92f20524c6098faa1efe942b00fc2bce7e530520"
+    "scripts/evaluation/evaluate_care_dpr.py": "814c7522fe20b7017ceb68958c8c24c5da1324e50f1d58d4f1409dc81508890f",
+    "scripts/evaluation/validate_care_dpr_gate_a_r1_consistency.py": "a139cf799e06e2086f4624236ab656ae68dbbc9bc0c20609cbbb826579de85bb",
+    "scripts/evaluation/validate_care_dpr_packet.py": "5e83742962651dd91d4921c5ae08832c260e18e2b6794c051d9b38e85f90b013",
+    "scripts/training/run_care_dpr.py": "55d19d246c9315e05b30c95fba9809eaa2c540ae916f8ea6a1fe104f23b15f4c",
+    "src/care_myocardium/data/care_dpr_dataset.py": "70b03ee54b1dce7400c054d06810685c82fab62fa1cac94f5357497dbbdd2436",
+    "src/care_myocardium/inference/care_dpr_predictor.py": "55aa506ca3071b401187e42c71f6b024dc85605cc59c4f792f7d46d3fc623295",
+    "src/care_myocardium/models/care_dpr.py": "cf94a3275953383bb58ea57b409d3a04d35fdead850f51a69ef8043d5cbc7cf7",
+    "src/care_myocardium/training/care_dpr_trainer.py": "2eb228a44310c53d6375cb3eb549330be98f2ea9706840e5620a315b78284e74",
+    "tests/care_dpr/test_care_dpr_model.py": "88f1c7287240cdc05c13962bc970959007fb9d81ea92deaf674e8ecd8965efcb"
   },
   "status": "PASS"
 }

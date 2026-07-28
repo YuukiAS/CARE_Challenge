@@ -178,12 +178,13 @@
   },
   "hard_negative_semantics": [
     "blood_pool",
-    "outside_support_bright_islands",
+    "outside_support_bright_island",
     "remote_anchor_fp",
-    "high_intensity_no_lesion"
+    "high_intensity_nonlesion"
   ],
   "no_t2_excluded_from_edema_slots": true,
-  "sampler_index_sha256": "96b3003b52706e894a037c78af4646ec136614bdf229d94eb32b34fe368b47e3",
+  "outside_support_voxel_pool_is_not_primary_hard_negative": true,
+  "sampler_index_sha256": "636afc3b29e2aaeef2ce08493c01908231e6d7e46781526ceb84fa0174537bf5",
   "sampler_pattern": [
     "scar_fn",
     "scar_fp",
@@ -198,11 +199,11 @@
   "target_count_totals": {
     "edema_fn": 81988,
     "edema_fp": 39763,
-    "edema_hard_negative": 34195304,
+    "edema_hard_negative": 4452186,
     "edema_pathology": 234895,
     "scar_fn": 162237,
     "scar_fp": 116066,
-    "scar_hard_negative": 128170780,
+    "scar_hard_negative": 10725828,
     "scar_pathology": 385708
   }
 }

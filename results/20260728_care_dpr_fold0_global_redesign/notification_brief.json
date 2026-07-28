@@ -1,0 +1,46 @@
+{
+  "approval_state": "AWAITING_HUMAN_ACCEPTANCE_DPR_GATE_A_R1",
+  "approval_token": "APPROVE_DPR_GATE_A_R1",
+  "blocked_or_failure_reason": "none",
+  "commit_status": "READY_FOR_LOCAL_COMMIT_BEFORE_EMAIL",
+  "created_at_utc": "2026-07-28T06:29:00Z",
+  "evidence_hashes_sha256": {
+    "results/20260728_care_dpr_fold0_global_redesign/gate_a_r1_consistency_validator_report.json": "e2748728645bdf0b1ef149a707da0c480706e438a5bd48038274f7957d89117a",
+    "results/20260728_care_dpr_fold0_global_redesign/implementation_validator_report.json": "a227f95856f83c93e9dc4ce89dbe22f0952a896b92425b9e1a8c97dddc86a936",
+    "results/20260728_care_dpr_fold0_global_redesign/known_bad_report.json": "c88c85f9dd51a2d9d1a54e9b9fca55b2d217288a9c797d6889a4c92e6a384bee",
+    "results/20260728_care_dpr_fold0_global_redesign/runtime/preflight/mechanism_report.json": "f5ef768693736fc1a54672bb18f182c98a0351e255f866288159b89a787e1151",
+    "results/20260728_care_dpr_fold0_global_redesign/runtime/preflight/preflight_receipt.json": "2a66b34ac3ec34d73c99264590d6519708bb1d3018e184d5adbefa7fc9104f8f",
+    "results/20260728_care_dpr_fold0_global_redesign/runtime/preflight/sampler_audit_stage_preflight.json": "a7b02fd2d343fe8600bcc52ea731d77c5922a171a9df5fc9163dfece8e8181c3",
+    "results/20260728_care_dpr_fold0_global_redesign/strict_validator_report.json": "ff2be3e59a0b7f471c9d63a94edded04a6ec2385cb475aa82a93da18e6022b30",
+    "results/20260728_care_dpr_fold0_global_redesign/unit_test_report.md": "69e4e2c00b62dd67b36079dbd19dc78d73f3597a8566fe66091e103f550d9cad"
+  },
+  "evidence_paths": [
+    "results/20260728_care_dpr_fold0_global_redesign/runtime/preflight/preflight_receipt.json",
+    "results/20260728_care_dpr_fold0_global_redesign/runtime/preflight/mechanism_report.json",
+    "results/20260728_care_dpr_fold0_global_redesign/runtime/preflight/sampler_audit_stage_preflight.json",
+    "results/20260728_care_dpr_fold0_global_redesign/strict_validator_report.json",
+    "results/20260728_care_dpr_fold0_global_redesign/implementation_validator_report.json",
+    "results/20260728_care_dpr_fold0_global_redesign/gate_a_r1_consistency_validator_report.json",
+    "results/20260728_care_dpr_fold0_global_redesign/known_bad_report.json",
+    "results/20260728_care_dpr_fold0_global_redesign/unit_test_report.md"
+  ],
+  "final_status": "AWAITING_HUMAN_ACCEPTANCE_DPR_GATE_A_R1",
+  "formal_fold0_authorized": false,
+  "key_conclusion": "Gate A-R1 修复和 300-step preflight 机制门均已通过；旧 Gate A 已作废，formal fold0 未授权。",
+  "next_step": "等待人工使用 APPROVE_DPR_GATE_A_R1 决定是否启动 formal fold0；未批准前不得启动。",
+  "push_status": "READY_FOR_REMOTE_PUSH_BEFORE_EMAIL",
+  "slurm_terminal_status": "allocation 60657290 retained; all CARE-DPR GPU commands completed; no active GPU compute process at pre-send check",
+  "source_hashes_sha256": {
+    "scripts/evaluation/analyze_care_dpr_mechanism_ceiling.py": "9ef1e32614342c7bdab12bd47b8d5cee76473a42cc604ca04a2801c784176668",
+    "scripts/evaluation/evaluate_care_dpr.py": "814c7522fe20b7017ceb68958c8c24c5da1324e50f1d58d4f1409dc81508890f",
+    "scripts/evaluation/validate_care_dpr_gate_a_r1_consistency.py": "a139cf799e06e2086f4624236ab656ae68dbbc9bc0c20609cbbb826579de85bb",
+    "scripts/evaluation/validate_care_dpr_packet.py": "5e83742962651dd91d4921c5ae08832c260e18e2b6794c051d9b38e85f90b013",
+    "scripts/training/run_care_dpr.py": "55d19d246c9315e05b30c95fba9809eaa2c540ae916f8ea6a1fe104f23b15f4c",
+    "src/care_myocardium/data/care_dpr_dataset.py": "70b03ee54b1dce7400c054d06810685c82fab62fa1cac94f5357497dbbdd2436",
+    "src/care_myocardium/inference/care_dpr_predictor.py": "55aa506ca3071b401187e42c71f6b024dc85605cc59c4f792f7d46d3fc623295",
+    "src/care_myocardium/models/care_dpr.py": "cf94a3275953383bb58ea57b409d3a04d35fdead850f51a69ef8043d5cbc7cf7",
+    "src/care_myocardium/training/care_dpr_trainer.py": "2eb228a44310c53d6375cb3eb549330be98f2ea9706840e5620a315b78284e74",
+    "tests/care_dpr/test_care_dpr_model.py": "88f1c7287240cdc05c13962bc970959007fb9d81ea92deaf674e8ecd8965efcb"
+  },
+  "task_name": "CARE-DPR Gate A-R1 双病理组件重建与仲裁修复"
+}

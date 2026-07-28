@@ -1,69 +1,93 @@
 {
   "coverage": [
     {
-      "check": "direct_p_coarse_both_pathologies",
+      "check": "local_roi_refiner_class_present",
       "status": "PASS"
     },
     {
-      "check": "five_outputs_present",
+      "check": "component_utility_mlp_present",
       "status": "PASS"
     },
     {
-      "check": "q_fn_q_fp_not_only_proposal",
+      "check": "dense_voxel_utility_not_primary",
       "status": "PASS"
     },
     {
-      "check": "teacher_roi_forbidden_guard",
+      "check": "sampler_cursor_persisted",
       "status": "PASS"
     },
     {
-      "check": "curriculum_a1_a2_b_exact",
+      "check": "a_r1_token_required_and_old_token_rejected",
       "status": "PASS"
     },
     {
-      "check": "stage_b_freezes_encoder_and_proposals",
+      "check": "component_utility_target_formula",
       "status": "PASS"
     },
     {
-      "check": "full_volume_aggregation_before_components",
+      "check": "full_volume_shared_feature_aggregated",
       "status": "PASS"
     },
     {
-      "check": "candidate_types_distinct",
+      "check": "candidate_builder_component_semantics",
       "status": "PASS"
     },
     {
-      "check": "legal_actions_only",
+      "check": "known_bad_tests_present",
       "status": "PASS"
     },
     {
-      "check": "threshold_candidates_fixed",
+      "check": "pytest_tests_execute_and_pass",
       "status": "PASS"
     },
     {
-      "check": "no_t2_zero_tests",
+      "check": "pytest_exit_pass",
       "status": "PASS"
     },
     {
-      "check": "zero_accept_anchor_test",
+      "check": "mechanism_report_pass",
       "status": "PASS"
     },
     {
-      "check": "teacher_roi_leak_known_bad",
+      "check": "preflight_receipt_pass_zero_credit",
+      "status": "PASS"
+    },
+    {
+      "check": "sampler_audit_pass",
+      "status": "PASS"
+    },
+    {
+      "check": "sampler_all_eight_slots_present",
+      "status": "PASS"
+    },
+    {
+      "check": "no_t2_exact_zero",
+      "status": "PASS"
+    },
+    {
+      "check": "component_arbitration_parity",
+      "status": "PASS"
+    },
+    {
+      "check": "resume_exact",
+      "status": "PASS"
+    },
+    {
+      "check": "thresholds_pass",
       "status": "PASS"
     }
   ],
   "fixtures": [
-    "missing_p_coarse_direct_proposal",
+    "sampler_cursor_stuck_on_scar_four_slots",
+    "dense_voxel_utility_map_used_as_component_utility",
+    "revise_qfp_intersection_instead_of_whole_anchor_component",
+    "scar_edema_roi_size_collapse",
+    "shared_feature_missing_from_full_volume_aggregation",
+    "resume_only_compares_state_dict_keys",
     "teacher_roi_used_in_inner_outer_inference",
-    "patch_final_label_averaging",
-    "patch_local_component_arbitration",
-    "outer_fold0_utility_target_leakage",
-    "add_revise_candidate_action_collapse",
-    "unaccepted_candidate_partial_writeback",
     "no_t2_edema_candidate_constructed_or_accepted",
-    "missing_scar_or_edema_branch_gradients",
-    "scar_pass_edema_empty_false_pass"
+    "unaccepted_candidate_partial_writeback"
   ],
+  "pytest_exit_code": 0,
   "status": "PASS"
 }
