@@ -1,0 +1,27 @@
+{
+  "all_data_fit_authorized": false,
+  "approval_token_recorded_in_node_json": true,
+  "attempts": [
+    {
+      "body_sha256": "26d63d831807657dbbcc90cc324383908f6041954c04e389c6f7db5a81cbe619",
+      "mode": "sanitized_only",
+      "status": "SENT"
+    }
+  ],
+  "detailed_email_blocked_by_policy": true,
+  "fold_expansion_authorized": false,
+  "formal_expansion_authorized": false,
+  "gate": "DPR_GATE_B",
+  "node_json": "results/20260728_care_dpr_fold0_global_redesign/checkpoint_notifications/dpr_gate_b.json",
+  "notifier_reuse": "controller_notifications.notify_goal_watcher/load_config/load_env_file plus existing CARE notify SMTP configuration; no new notifier service created",
+  "recipient_count": 1,
+  "recipients_sha256": "222fb7e7f12a038ba7bdf2c6775bca79f981d7530f8b3bfd18fedb2478e9f999",
+  "send_mode": "sanitized_only",
+  "send_status": "SENT_SANITIZED_ONLY",
+  "sender_present": true,
+  "sent_at_utc": "2026-07-28T11:45:21Z",
+  "state_recorded_in_node_json": "AWAITING_HUMAN_ACCEPTANCE_DPR_GATE_B",
+  "subject": "[CARE-DPR][B/2] Fold0双病理结果完成，等待下一轮决策",
+  "task_key": "20260728_care_dpr_fold0_global_redesign",
+  "validation_upload_authorized": false
+}

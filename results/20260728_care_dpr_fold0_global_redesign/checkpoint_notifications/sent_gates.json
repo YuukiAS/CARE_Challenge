@@ -88,5 +88,16 @@
     "status": "SENT_SANITIZED_AFTER_DETAILED_EMAIL_BLOCKED",
     "subject": "CARE task update ready",
     "to": "1155246312@link.cuhk.edu.hk"
-  }
+  },
+  "sent": [
+    {
+      "gate": "DPR_GATE_B",
+      "node_json": "results/20260728_care_dpr_fold0_global_redesign/checkpoint_notifications/dpr_gate_b.json",
+      "send_mode": "sanitized_only",
+      "send_status": "SENT_SANITIZED_ONLY",
+      "sent_at_utc": "2026-07-28T11:45:21Z",
+      "subject": "[CARE-DPR][B/2] Fold0双病理结果完成，等待下一轮决策",
+      "task_key": "20260728_care_dpr_fold0_global_redesign"
+    }
+  ]
 }
