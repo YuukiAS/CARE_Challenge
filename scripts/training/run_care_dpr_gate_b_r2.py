@@ -41,6 +41,7 @@ CANDIDATE_TYPES = ("ADD_FN", "REVISE_FP")
 PROPOSAL_THRESHOLD_FOR_TRAINING = 0.50
 UTILITY_THRESHOLD_CANDIDATES = (0.00, 0.02, 0.05, 0.10, 0.20)
 PROPOSAL_THRESHOLD_CANDIDATES = {"scar": (0.30, 0.40, 0.50), "edema_zone": (0.20, 0.30, 0.40, 0.50)}
+C2_TARGET_INDEX_LIMIT_PER_POOL = 8
 
 
 def now_utc() -> str:
@@ -197,33 +198,49 @@ def c2_target_info(model: torch.nn.Module, item: dict[str, Any], cand_tuple: tup
     }
 
 
+def ensure_c2_target_index(model: torch.nn.Module, item: dict[str, Any], *, rng: random.Random, device: torch.device) -> None:
+    if "c2_target_index" in item:
+        return
+    index: dict[tuple[str, str, bool], list[tuple[tuple[Any, np.ndarray, np.ndarray, np.ndarray], dict[str, Any]]]] = defaultdict(list)
+    fallback: dict[tuple[str, str], list[tuple[tuple[Any, np.ndarray, np.ndarray, np.ndarray], dict[str, Any]]]] = defaultdict(list)
+    for key, pool in item["candidates"].items():
+        candidates = list(pool)
+        rng.shuffle(candidates)
+        for cand_tuple in candidates[: min(len(candidates), C2_TARGET_INDEX_LIMIT_PER_POOL)]:
+            target_info = c2_target_info(model, item, cand_tuple, device=device)
+            is_positive = float(target_info["utility_target"]) > 0.0
+            index[(key[0], key[1], is_positive)].append((cand_tuple, target_info))
+            fallback[key].append((cand_tuple, target_info))
+    item["c2_target_index"] = index
+    item["c2_target_index_fallback"] = fallback
+
+
 def choose_case_candidate(*, model: torch.nn.Module, train_cases: list[str], case_to_fold: dict[str, int], metadata: Any, cache: CaseCache, fv_cache: FullVolumeCandidateCache, rng: random.Random, pathology: str, candidate_type: str, device: torch.device, desired_utility_positive: bool | None = None) -> tuple[str, dict[str, Any], tuple[Any, np.ndarray, np.ndarray, np.ndarray], str, dict[str, Any] | None]:
     requested_type = candidate_type
     candidate_types = [candidate_type] + [c for c in CANDIDATE_TYPES if c != candidate_type]
     sign_mismatch: tuple[str, dict[str, Any], tuple[Any, np.ndarray, np.ndarray, np.ndarray], str, dict[str, Any]] | None = None
+    shuffled = list(train_cases)
+    rng.shuffle(shuffled)
     for ctype in candidate_types:
-        shuffled = list(train_cases)
-        rng.shuffle(shuffled)
-        for case_id in shuffled[: min(len(shuffled), 32)]:
+        for case_id in shuffled:
             if pathology == "edema_zone" and not bool(metadata[case_id].t2_present):
                 continue
             item = fv_cache.get(case_id=case_id, model=model, case_to_fold=case_to_fold, metadata=metadata, cache=cache, device=device)
-            pool = item["candidates"].get((pathology, ctype), [])
-            if not pool:
+            fallback_reason = "" if ctype == requested_type else f"candidate_type_fallback:{requested_type}->{ctype}"
+            if desired_utility_positive is not None:
+                ensure_c2_target_index(model, item, rng=rng, device=device)
+                signed_pool = item["c2_target_index"].get((pathology, ctype, bool(desired_utility_positive)), [])
+                if signed_pool:
+                    cand_tuple, target_info = rng.choice(signed_pool)
+                    return case_id, item, cand_tuple, fallback_reason, target_info
+                any_pool = item["c2_target_index_fallback"].get((pathology, ctype), [])
+                if any_pool and sign_mismatch is None:
+                    cand_tuple, target_info = rng.choice(any_pool)
+                    sign_mismatch = (case_id, item, cand_tuple, fallback_reason, target_info)
                 continue
-            candidates = list(pool)
-            rng.shuffle(candidates)
-            for cand_tuple in candidates[: min(len(candidates), 32)]:
-                fallback = "" if ctype == requested_type else f"candidate_type_fallback:{requested_type}->{ctype}"
-                target_info = None
-                if desired_utility_positive is not None:
-                    target_info = c2_target_info(model, item, cand_tuple, device=device)
-                    is_positive = float(target_info["utility_target"]) > 0.0
-                    if is_positive != bool(desired_utility_positive):
-                        if sign_mismatch is None:
-                            sign_mismatch = (case_id, item, cand_tuple, fallback, target_info)
-                        continue
-                return case_id, item, cand_tuple, fallback, target_info
+            pool = item["candidates"].get((pathology, ctype), [])
+            if pool:
+                return case_id, item, rng.choice(pool), fallback_reason, None
     if sign_mismatch is not None:
         case_id, item, cand_tuple, fallback, target_info = sign_mismatch
         sign = "positive" if desired_utility_positive else "negative"
