@@ -1,22 +1,9 @@
 {
-  "checked_at_utc": "2026-07-28T03:18:20Z",
+  "checked_at_utc": "2026-07-28T03:25:50Z",
   "diagnostic_status": "NO_INNER_ELIGIBLE_CANDIDATE",
   "eligible_count": 0,
   "evidence_root": "results/20260727_care_dg_dual_pathology_validation/runtime/repaired_formal_scar_priority/fold0/gate_b_r2_scale_diagnostic",
   "failures": [],
-  "git_head": "666fd799f5b1d2c5c7107b0b7a7463851d586e75",
-  "hashes": {
-    "results/20260727_care_dg_dual_pathology_validation/gate_a_consistency_validator_report.json": "f90256d9f011b5dbeaf1ea74f6a325d1b214e73ba1ecd8d66b36123d9a113aed",
-    "results/20260727_care_dg_dual_pathology_validation/gate_b_consistency_validator_report.json": "830ceb4c7b1f3a3826e9ef2231f222538a80b9430ac161af1c16f3974f8c5326",
-    "results/20260727_care_dg_dual_pathology_validation/gate_b_r1_summary.json": "ac6dd0453ed3d9ccc4385772555ed8f06913fd457accc953adf389acb6d5815d",
-    "results/20260727_care_dg_dual_pathology_validation/gate_b_r1_validator_report.json": "66206607a46b8f3a375cbfdf7efeffbc11c698236eefd259cbfe55f33d7bf850",
-    "results/20260727_care_dg_dual_pathology_validation/gate_b_r2_diagnostic_report.md": "0d88087d4e54dc28cc253da5e8e7f05a11d1d251e44362b3690d3e81e3f3ec02",
-    "results/20260727_care_dg_dual_pathology_validation/gate_b_r2_scale_grid_selection.json": "4a71daa209193acd7532209ccf28178fb66b83cb51de065be0833220455df303",
-    "results/20260727_care_dg_dual_pathology_validation/gate_b_r2_summary.json": "2dbfc1555af5579f7cf5dd510ef4bc809c74074821f102a82be5e10e5ac3292a",
-    "results/20260727_care_dg_dual_pathology_validation/runtime/repaired_formal_scar_priority/fold0/gate_b_r2_scale_diagnostic/gate_b_r2_scale_grid_selection.csv": "f7a6305be0261c9a2b23e5b9bb7a0fdf4aed9c4129a075d0d78bbafaa12bbc67",
-    "results/20260727_care_dg_dual_pathology_validation/runtime/repaired_formal_scar_priority/fold0/gate_b_r2_scale_diagnostic/gate_b_r2_scale_grid_selection.json": "cdf3bfd18f1012d0f0ec4f3e4972669df81ffa14cdf5d4d4c29a50d8541c43e0",
-    "results/20260727_care_dg_dual_pathology_validation/strict_validator_report.json": "08630eccdc5a4c093bea089f4c06de83835db685352122ba619d5baf62ca7dfe"
-  },
   "outer_fold0_re_evaluated": false,
   "outer_val_used": false,
   "row_count": 512,

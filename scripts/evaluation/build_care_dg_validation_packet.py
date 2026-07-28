@@ -850,6 +850,70 @@ def validate_gate_b_r1(failures: list[str]) -> None:
     if bool(sci.get("scientific_expansion_authorized", False)) != bool(validator.get("scientific_expansion_authorized", False)):
         failures.append("gate_b_r1_scientific_authorization_mismatch")
 
+
+def validate_gate_b_r2(failures: list[str]) -> None:
+    runtime_root = RESULT_ROOT / "runtime/repaired_formal_scar_priority/fold0"
+    eval_root = runtime_root / "gate_b_r2_scale_diagnostic"
+    csv_path = eval_root / "gate_b_r2_scale_grid_selection.csv"
+    runtime_summary_path = eval_root / "gate_b_r2_scale_grid_selection.json"
+    runtime_validator_path = eval_root / "gate_b_r2_validator_report.json"
+    root_summary_path = RESULT_ROOT / "gate_b_r2_scale_grid_selection.json"
+    root_gate_summary_path = RESULT_ROOT / "gate_b_r2_summary.json"
+    root_validator_path = RESULT_ROOT / "gate_b_r2_validator_report.json"
+    diagnostic_report_path = RESULT_ROOT / "gate_b_r2_diagnostic_report.md"
+    required = {
+        "scale_grid_csv": csv_path,
+        "runtime_scale_grid_json": runtime_summary_path,
+        "runtime_validator": runtime_validator_path,
+        "root_scale_grid_json": root_summary_path,
+        "root_gate_summary": root_gate_summary_path,
+        "root_validator": root_validator_path,
+        "diagnostic_report": diagnostic_report_path,
+    }
+    if not eval_root.exists() and not root_gate_summary_path.exists():
+        return
+    for name, path in required.items():
+        if not path.exists():
+            failures.append(f"gate_b_r2_missing_output:{name}")
+    if not csv_path.exists() or not root_summary_path.exists() or not root_validator_path.exists() or not root_gate_summary_path.exists():
+        return
+    rows = read_csv_rows(csv_path)
+    summary = load_json(root_summary_path)
+    gate_summary = load_json(root_gate_summary_path)
+    validator = load_json(root_validator_path)
+    if len(rows) != 512:
+        failures.append(f"gate_b_r2_scale_grid_row_count_not_512:{len(rows)}")
+    if any(row.get("outer_val_used") != "False" for row in rows):
+        failures.append("gate_b_r2_scale_grid_used_outer_val")
+    if any(row.get("status") == "PASS" for row in rows):
+        failures.append("gate_b_r2_scale_grid_contains_PASS_candidate")
+    if summary.get("status") != "NO_INNER_ELIGIBLE_CANDIDATE" or gate_summary.get("status") != "GATE_B_R2_SCALE_GRID_NO_INNER_ELIGIBLE_CANDIDATE":
+        failures.append("gate_b_r2_status_bad")
+    if int(summary.get("eligible_count", -1)) != 0 or int(validator.get("eligible_count", -1)) != 0:
+        failures.append("gate_b_r2_eligible_count_not_zero")
+    if summary.get("outer_val_used") is not False or validator.get("outer_val_used") is not False:
+        failures.append("gate_b_r2_outer_val_used")
+    if gate_summary.get("outer_fold0_re_evaluated") is not False or validator.get("outer_fold0_re_evaluated") is not False:
+        failures.append("gate_b_r2_outer_fold0_re_evaluated")
+    if gate_summary.get("scientific_expansion_authorized") is not False:
+        failures.append("gate_b_r2_scientific_expansion_not_false")
+    if int(summary.get("checkpoint_count", -1)) != 8 or int(summary.get("inner_case_count", -1)) != 12:
+        failures.append("gate_b_r2_checkpoint_or_inner_case_count_bad")
+    if validator.get("status") != "PASS" or validator.get("failures") not in ([], None):
+        failures.append("gate_b_r2_validator_not_PASS")
+    selected = summary.get("selected", {})
+    if selected.get("status") != "FAIL":
+        failures.append("gate_b_r2_selected_not_FAIL")
+    if "no_pathology_improves_by_more_than_0.005" not in str(selected.get("failures", "")):
+        failures.append("gate_b_r2_selected_missing_scientific_failure")
+    if float(selected.get("scar_dice_delta", 0.0)) >= 0.005:
+        failures.append("gate_b_r2_selected_scar_delta_unexpectedly_passes_gate")
+    if float(selected.get("edema_zone_dice_delta", 0.0)) >= 0.005:
+        failures.append("gate_b_r2_selected_edema_zone_delta_unexpectedly_passes_gate")
+    if float(selected.get("pure_edema_dice_delta", 0.0)) >= 0.005:
+        failures.append("gate_b_r2_selected_pure_edema_delta_unexpectedly_passes_gate")
+
+
 def validate_packet() -> dict[str, Any]:
     failures: list[str] = []
     missing = [name for name in REQUIRED_W0 if not (RESULT_ROOT / name).exists()]
@@ -888,6 +952,7 @@ def validate_packet() -> dict[str, Any]:
     validate_gate_a_r3(failures)
     validate_gate_b_fold0(failures)
     validate_gate_b_r1(failures)
+    validate_gate_b_r2(failures)
     status = "PASS" if not failures else "NEEDS_REPAIR"
     report = {
         "checked_at_utc": now_utc(),

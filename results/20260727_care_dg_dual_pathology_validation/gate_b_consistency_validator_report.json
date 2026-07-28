@@ -1,10 +1,12 @@
 {
-  "checked_at_utc": "2026-07-28T03:16:36Z",
+  "checked_at_utc": "2026-07-28T03:26:01Z",
   "checked_files": [
     "results/20260727_care_dg_dual_pathology_validation/gate_b_summary.json",
     "results/20260727_care_dg_dual_pathology_validation/runtime/repaired_formal_scar_priority/fold0/gate_b_evaluation/gate_b_validator_report.json",
     "results/20260727_care_dg_dual_pathology_validation/gate_b_r1_summary.json",
     "results/20260727_care_dg_dual_pathology_validation/runtime/repaired_formal_scar_priority/fold0/gate_b_r1_evaluation/gate_b_r1_validator_report.json",
+    "results/20260727_care_dg_dual_pathology_validation/gate_b_r2_summary.json",
+    "results/20260727_care_dg_dual_pathology_validation/gate_b_r2_validator_report.json",
     "results/20260727_care_dg_dual_pathology_validation/strict_validator_report.json"
   ],
   "failures": [],

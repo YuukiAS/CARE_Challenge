@@ -1086,6 +1086,88 @@ def validate_gate_b_r1(args: argparse.Namespace) -> dict[str, Any]:
     write_json(RESULT_ROOT / "gate_b_r1_validator_report.json", report)
     return report
 
+
+def validate_gate_b_r2(args: argparse.Namespace) -> dict[str, Any]:
+    runtime = RUNTIME_ROOT / args.runtime_label / f"fold{args.fold}"
+    out_root = runtime / "gate_b_r2_scale_diagnostic"
+    csv_path = out_root / "gate_b_r2_scale_grid_selection.csv"
+    runtime_summary_path = out_root / "gate_b_r2_scale_grid_selection.json"
+    root_summary_path = RESULT_ROOT / "gate_b_r2_scale_grid_selection.json"
+    failures: list[str] = []
+    rows: list[dict[str, str]] = []
+    summary: dict[str, Any] = {}
+    runtime_summary: dict[str, Any] = {}
+
+    for path, name in [
+        (csv_path, "scale_grid_csv"),
+        (runtime_summary_path, "runtime_scale_grid_json"),
+        (root_summary_path, "root_scale_grid_json"),
+    ]:
+        if not path.exists():
+            failures.append(f"missing_gate_b_r2_output:{name}")
+    if csv_path.exists():
+        rows = read_csv(csv_path)
+        if len(rows) != 512:
+            failures.append(f"gate_b_r2_scale_grid_row_count_not_512:{len(rows)}")
+        if any(row.get("outer_val_used") != "False" for row in rows):
+            failures.append("gate_b_r2_scale_grid_used_outer_val")
+        if any(row.get("status") == "PASS" for row in rows):
+            failures.append("gate_b_r2_scale_grid_contains_PASS_candidate")
+    if root_summary_path.exists():
+        summary = json.loads(root_summary_path.read_text(encoding="utf-8"))
+        if summary.get("status") != "NO_INNER_ELIGIBLE_CANDIDATE":
+            failures.append("gate_b_r2_status_not_no_inner_eligible_candidate")
+        if int(summary.get("eligible_count", -1)) != 0:
+            failures.append("gate_b_r2_eligible_count_not_zero")
+        if summary.get("outer_val_used") is not False:
+            failures.append("gate_b_r2_root_summary_outer_val_used")
+        if int(summary.get("checkpoint_count", -1)) != 8:
+            failures.append("gate_b_r2_checkpoint_count_not_8")
+        if int(summary.get("inner_case_count", -1)) != 12:
+            failures.append("gate_b_r2_inner_case_count_not_12")
+        selected = summary.get("selected", {})
+        if selected.get("status") != "FAIL":
+            failures.append("gate_b_r2_selected_not_FAIL")
+        if selected.get("outer_val_used") is not False:
+            failures.append("gate_b_r2_selected_outer_val_used")
+        if "no_pathology_improves_by_more_than_0.005" not in str(selected.get("failures", "")):
+            failures.append("gate_b_r2_selected_missing_scientific_failure")
+        if float(selected.get("scar_dice_delta", 0.0)) >= 0.005:
+            failures.append("gate_b_r2_selected_scar_delta_unexpectedly_passes_gate")
+        if float(selected.get("edema_zone_dice_delta", 0.0)) >= 0.005:
+            failures.append("gate_b_r2_selected_edema_zone_delta_unexpectedly_passes_gate")
+        if float(selected.get("pure_edema_dice_delta", 0.0)) >= 0.005:
+            failures.append("gate_b_r2_selected_pure_edema_delta_unexpectedly_passes_gate")
+        if rows:
+            first = rows[0]
+            for key in ["checkpoint_step", "scar_scale", "edema_scale", "status", "failures"]:
+                if str(first.get(key)) != str(selected.get(key)):
+                    failures.append(f"gate_b_r2_selected_mismatch:{key}")
+    if runtime_summary_path.exists():
+        runtime_summary = json.loads(runtime_summary_path.read_text(encoding="utf-8"))
+        if runtime_summary.get("outer_val_used") is not False:
+            failures.append("gate_b_r2_runtime_summary_outer_val_used")
+        if runtime_summary.get("eligible_count") != summary.get("eligible_count"):
+            failures.append("gate_b_r2_runtime_root_eligible_count_mismatch")
+        if runtime_summary.get("status") != summary.get("status"):
+            failures.append("gate_b_r2_runtime_root_status_mismatch")
+
+    report = {
+        "checked_at_utc": now_utc(),
+        "status": "PASS" if not failures else "NEEDS_REPAIR",
+        "failures": failures,
+        "diagnostic_status": summary.get("status"),
+        "eligible_count": summary.get("eligible_count"),
+        "outer_val_used": summary.get("outer_val_used"),
+        "outer_fold0_re_evaluated": False,
+        "row_count": len(rows),
+        "selected": summary.get("selected", {}),
+        "evidence_root": str(out_root.relative_to(REPO_ROOT)),
+    }
+    write_json(out_root / "gate_b_r2_validator_report.json", report)
+    write_json(RESULT_ROOT / "gate_b_r2_validator_report.json", report)
+    return report
+
 def validate_gate_b(args: argparse.Namespace) -> dict[str, Any]:
     runtime = RUNTIME_ROOT / args.runtime_label / f"fold{args.fold}"
     out_root = runtime / "gate_b_evaluation"
@@ -1137,6 +1219,7 @@ def main() -> int:
     parser.add_argument("--validate-gate-b", action="store_true")
     parser.add_argument("--gate-b-r1", action="store_true")
     parser.add_argument("--validate-gate-b-r1", action="store_true")
+    parser.add_argument("--validate-gate-b-r2", action="store_true")
     parser.add_argument("--fold", type=int, default=0)
     parser.add_argument("--runtime-label", default="repaired_formal_scar_priority")
     parser.add_argument("--checkpoint", choices=["best", "last"], default="best")
@@ -1162,7 +1245,11 @@ def main() -> int:
         report = validate_gate_b_r1(args)
         print(json.dumps(report, indent=2, sort_keys=True))
         return 0 if report["status"] == "PASS" else 2
-    raise SystemExit("expected --print-contract, --gate-b, --validate-gate-b, --gate-b-r1, or --validate-gate-b-r1")
+    if args.validate_gate_b_r2:
+        report = validate_gate_b_r2(args)
+        print(json.dumps(report, indent=2, sort_keys=True))
+        return 0 if report["status"] == "PASS" else 2
+    raise SystemExit("expected --print-contract, --gate-b, --validate-gate-b, --gate-b-r1, --validate-gate-b-r1, or --validate-gate-b-r2")
 
 
 if __name__ == "__main__":

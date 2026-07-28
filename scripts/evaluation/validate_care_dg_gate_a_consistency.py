@@ -62,6 +62,8 @@ def main() -> int:
     gate_b_validator_path = RESULT_ROOT / "runtime/repaired_formal_scar_priority/fold0/gate_b_evaluation/gate_b_validator_report.json"
     gate_b_r1_summary_path = RESULT_ROOT / "gate_b_r1_summary.json"
     gate_b_r1_validator_path = RESULT_ROOT / "runtime/repaired_formal_scar_priority/fold0/gate_b_r1_evaluation/gate_b_r1_validator_report.json"
+    gate_b_r2_summary_path = RESULT_ROOT / "gate_b_r2_summary.json"
+    gate_b_r2_validator_path = RESULT_ROOT / "gate_b_r2_validator_report.json"
     gate_b_failures: list[str] = []
     gate_b_summary = load_json(gate_b_summary_path) if gate_b_summary_path.exists() else None
     gate_b_validator = load_json(gate_b_validator_path) if gate_b_validator_path.exists() else None
@@ -109,6 +111,8 @@ def main() -> int:
             "results/20260727_care_dg_dual_pathology_validation/runtime/repaired_formal_scar_priority/fold0/gate_b_evaluation/gate_b_validator_report.json",
             "results/20260727_care_dg_dual_pathology_validation/gate_b_r1_summary.json",
             "results/20260727_care_dg_dual_pathology_validation/runtime/repaired_formal_scar_priority/fold0/gate_b_r1_evaluation/gate_b_r1_validator_report.json",
+            "results/20260727_care_dg_dual_pathology_validation/gate_b_r2_summary.json",
+            "results/20260727_care_dg_dual_pathology_validation/gate_b_r2_validator_report.json",
             "results/20260727_care_dg_dual_pathology_validation/strict_validator_report.json",
         ],
     }
@@ -124,6 +128,24 @@ def main() -> int:
                 gate_b_failures.append("gate_b_r1_validator_not_PASS")
             if (r1_summary.get("scientific_gate") or {}).get("scientific_expansion_authorized") != r1_validator.get("scientific_expansion_authorized"):
                 gate_b_failures.append("gate_b_r1_scientific_authorization_mismatch")
+    if gate_b_r2_summary_path.exists() or gate_b_r2_validator_path.exists():
+        if not gate_b_r2_summary_path.exists():
+            gate_b_failures.append("gate_b_r2_summary_missing")
+        if not gate_b_r2_validator_path.exists():
+            gate_b_failures.append("gate_b_r2_validator_missing")
+        if gate_b_r2_summary_path.exists() and gate_b_r2_validator_path.exists():
+            r2_summary = load_json(gate_b_r2_summary_path)
+            r2_validator = load_json(gate_b_r2_validator_path)
+            if r2_validator.get("status") != "PASS" or r2_validator.get("failures") not in ([], None):
+                gate_b_failures.append("gate_b_r2_validator_not_PASS")
+            if r2_summary.get("scientific_expansion_authorized") is not False:
+                gate_b_failures.append("gate_b_r2_scientific_expansion_not_false")
+            if r2_validator.get("eligible_count") != 0:
+                gate_b_failures.append("gate_b_r2_eligible_count_not_zero")
+            if r2_validator.get("outer_val_used") is not False:
+                gate_b_failures.append("gate_b_r2_outer_val_used")
+    gate_b_report["status"] = "PASS" if not gate_b_failures else "NEEDS_REPAIR"
+    gate_b_report["failures"] = gate_b_failures
     write_json(RESULT_ROOT / "gate_a_consistency_validator_report.json", report)
     write_json(RESULT_ROOT / "gate_b_consistency_validator_report.json", gate_b_report)
     summary["consistency_validator_status"] = report["status"]
