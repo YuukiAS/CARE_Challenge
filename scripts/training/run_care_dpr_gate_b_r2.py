@@ -177,9 +177,30 @@ class FullVolumeCandidateCache:
         return payload
 
 
-def choose_case_candidate(*, model: torch.nn.Module, train_cases: list[str], case_to_fold: dict[str, int], metadata: Any, cache: CaseCache, fv_cache: FullVolumeCandidateCache, rng: random.Random, pathology: str, candidate_type: str, device: torch.device) -> tuple[str, dict[str, Any], tuple[Any, np.ndarray, np.ndarray, np.ndarray], str]:
+def c2_target_info(model: torch.nn.Module, item: dict[str, Any], cand_tuple: tuple[Any, np.ndarray, np.ndarray, np.ndarray], *, device: torch.device) -> dict[str, Any]:
+    cand, anchor_local, seed, roi = cand_tuple
+    rec = item["record"]
+    batch_np = item["batch_np"]
+    maps = item["maps"]
+    full_input, _, _ = make_full_input(maps, batch_np, cand.pathology, device)
+    branch = model.scar_branch if cand.pathology == "scar" else model.edema_branch
+    with torch.no_grad():
+        refined_logit, _ = branch.local_refiner.forward_at_center(full_input, _center_of(seed | anchor_local))
+        refined_prob_np = torch.sigmoid(refined_logit)[0, 0].detach().cpu().numpy() * roi.astype(np.float32)
+        refined_mask = refined_prob_np >= 0.5
+    dist = distance_to_reliable_gt(rec, pathology=cand.pathology, t2_present=bool(item["t2_present"]))[0]
+    accept_target, utility_target, reason = candidate_utility_target(anchor_local, refined_mask, gt_mask(rec, cand.pathology), dist, cand.candidate_type, roi)
+    return {
+        "accept_target": int(accept_target),
+        "utility_target": float(utility_target),
+        "target_reason": reason,
+    }
+
+
+def choose_case_candidate(*, model: torch.nn.Module, train_cases: list[str], case_to_fold: dict[str, int], metadata: Any, cache: CaseCache, fv_cache: FullVolumeCandidateCache, rng: random.Random, pathology: str, candidate_type: str, device: torch.device, desired_utility_positive: bool | None = None) -> tuple[str, dict[str, Any], tuple[Any, np.ndarray, np.ndarray, np.ndarray], str, dict[str, Any] | None]:
     requested_type = candidate_type
     candidate_types = [candidate_type] + [c for c in CANDIDATE_TYPES if c != candidate_type]
+    sign_mismatch: tuple[str, dict[str, Any], tuple[Any, np.ndarray, np.ndarray, np.ndarray], str, dict[str, Any]] | None = None
     for ctype in candidate_types:
         shuffled = list(train_cases)
         rng.shuffle(shuffled)
@@ -188,8 +209,26 @@ def choose_case_candidate(*, model: torch.nn.Module, train_cases: list[str], cas
                 continue
             item = fv_cache.get(case_id=case_id, model=model, case_to_fold=case_to_fold, metadata=metadata, cache=cache, device=device)
             pool = item["candidates"].get((pathology, ctype), [])
-            if pool:
-                return case_id, item, rng.choice(pool), "" if ctype == requested_type else f"candidate_type_fallback:{requested_type}->{ctype}"
+            if not pool:
+                continue
+            candidates = list(pool)
+            rng.shuffle(candidates)
+            for cand_tuple in candidates[: min(len(candidates), 32)]:
+                fallback = "" if ctype == requested_type else f"candidate_type_fallback:{requested_type}->{ctype}"
+                target_info = None
+                if desired_utility_positive is not None:
+                    target_info = c2_target_info(model, item, cand_tuple, device=device)
+                    is_positive = float(target_info["utility_target"]) > 0.0
+                    if is_positive != bool(desired_utility_positive):
+                        if sign_mismatch is None:
+                            sign_mismatch = (case_id, item, cand_tuple, fallback, target_info)
+                        continue
+                return case_id, item, cand_tuple, fallback, target_info
+    if sign_mismatch is not None:
+        case_id, item, cand_tuple, fallback, target_info = sign_mismatch
+        sign = "positive" if desired_utility_positive else "negative"
+        reason = f"utility_target_sign_fallback:{sign}"
+        return case_id, item, cand_tuple, ";".join([x for x in (fallback, reason) if x]), target_info
     raise RuntimeError(f"CARE_DPR_R2_NO_FULL_VOLUME_CANDIDATE:{pathology}:{candidate_type}")
 
 
@@ -262,10 +301,15 @@ def run_stage(*, model: torch.nn.Module, stage: str, optimizer: torch.optim.Opti
     start_time = time.time()
     total_step = int(start_step)
     model.train()
+    c2_sign_cursor = {p: 0 for p in PATHOLOGIES}
     for local_step in range(1, int(steps) + 1):
         pathology = "scar" if (local_step - 1) % 2 == 0 else "edema_zone"
         requested_type = CANDIDATE_TYPES[((local_step - 1) // 2) % len(CANDIDATE_TYPES)]
-        case_id, item, cand_tuple, fallback = choose_case_candidate(model=model, train_cases=train_cases, case_to_fold=case_to_fold, metadata=metadata, cache=cache, fv_cache=fv_cache, rng=rng, pathology=pathology, candidate_type=requested_type, device=device)
+        desired_positive = None
+        if stage == "C2":
+            desired_positive = (c2_sign_cursor[pathology] % 2) == 0
+            c2_sign_cursor[pathology] += 1
+        case_id, item, cand_tuple, fallback, precomputed_target = choose_case_candidate(model=model, train_cases=train_cases, case_to_fold=case_to_fold, metadata=metadata, cache=cache, fv_cache=fv_cache, rng=rng, pathology=pathology, candidate_type=requested_type, device=device, desired_utility_positive=desired_positive)
         cand = cand_tuple[0]
         optimizer.zero_grad(set_to_none=True)
         with autocast(device_type="cuda", dtype=torch.bfloat16, enabled=(device.type == "cuda" and amp_dtype == "bfloat16")):
@@ -293,6 +337,15 @@ def run_stage(*, model: torch.nn.Module, stage: str, optimizer: torch.optim.Opti
             "elapsed_seconds": round(time.time() - start_time, 1),
             **metrics,
         }
+        if desired_positive is not None:
+            actual_positive = float(metrics.get("utility_target", 0.0)) > 0.0
+            row.update(
+                {
+                    "requested_utility_target_sign": "positive" if desired_positive else "negative",
+                    "matched_requested_utility_target_sign": bool(actual_positive == desired_positive),
+                    "precomputed_utility_target": None if precomputed_target is None else float(precomputed_target["utility_target"]),
+                }
+            )
         rows.append(row)
         if local_step == 1 or local_step % 25 == 0 or local_step == steps:
             write_csv(runtime_root / f"stage_{stage.lower()}_training_curve.csv", rows)
@@ -321,10 +374,16 @@ def summarize_stage(rows: list[dict[str, Any]]) -> dict[str, Any]:
     fallbacks = 0
     roi_cov = defaultdict(list)
     utility_targets = defaultdict(lambda: {"positive": 0, "negative": 0})
+    utility_sign_requested = defaultdict(lambda: {"positive": 0, "negative": 0})
+    utility_sign_matched = defaultdict(int)
+    utility_sign_fallbacks = 0
     for row in rows:
         counts[f"{row.get('pathology')}_{row.get('candidate_type')}"] += 1
-        if row.get("fallback_reason"):
+        fallback_reason = str(row.get("fallback_reason") or "")
+        if fallback_reason:
             fallbacks += 1
+        if "utility_target_sign_fallback" in fallback_reason:
+            utility_sign_fallbacks += 1
         if "roi_gt_coverage" in row:
             roi_cov[str(row.get("pathology"))].append(float(row["roi_gt_coverage"]))
         if "utility_target" in row:
@@ -333,6 +392,12 @@ def summarize_stage(rows: list[dict[str, Any]]) -> dict[str, Any]:
                 utility_targets[key]["positive"] += 1
             else:
                 utility_targets[key]["negative"] += 1
+        if "requested_utility_target_sign" in row:
+            key = str(row.get("pathology"))
+            sign = str(row.get("requested_utility_target_sign"))
+            utility_sign_requested[key][sign] += 1
+            if bool(row.get("matched_requested_utility_target_sign")):
+                utility_sign_matched[key] += 1
     return {
         "sample_count": len(rows),
         "candidate_counts": dict(counts),
@@ -341,6 +406,9 @@ def summarize_stage(rows: list[dict[str, Any]]) -> dict[str, Any]:
         "add_revise_counts": {ctype: sum(v for k, v in counts.items() if k.endswith("_" + ctype)) for ctype in CANDIDATE_TYPES},
         "roi_gt_coverage_mean": {k: float(np.mean(v)) if v else 0.0 for k, v in roi_cov.items()},
         "utility_target_balance": dict(utility_targets),
+        "utility_target_sign_requested": dict(utility_sign_requested),
+        "utility_target_sign_match_count": dict(utility_sign_matched),
+        "utility_target_sign_fallback_count": utility_sign_fallbacks,
     }
 
 

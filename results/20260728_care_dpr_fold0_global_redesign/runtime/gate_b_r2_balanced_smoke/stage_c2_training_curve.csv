@@ -1,0 +1,5 @@
+stage,local_step,total_step,case_id,pathology,requested_pathology,candidate_type,requested_candidate_type,fallback_reason,loss,grad_norm,candidate_voxels,component_truncation_flag,elapsed_seconds,utility_target,accept_target,target_reason,predicted_signed_utility,requested_utility_target_sign,matched_requested_utility_target_sign,precomputed_utility_target
+C2,1,2005,Case3001,scar,scar,ADD_FN,ADD_FN,,0.180938720703125,2.088963031768799,513,True,5.1,1.0,1,candidate_roi_formula,0.3984375,positive,True,1.0
+C2,2,2006,Case2023,edema_zone,edema_zone,ADD_FN,ADD_FN,,0.046417236328125,1.0915693044662476,96,True,7.0,1.0,1,candidate_roi_formula,0.6953125,positive,True,1.0
+C2,3,2007,Case1075,scar,scar,REVISE_FP,REVISE_FP,,0.3966064453125,2.30283522605896,3282,True,24.9,-0.5223348348348348,0,candidate_roi_formula,0.3671875,negative,True,-0.5227592349521845
+C2,4,2008,Case3033,edema_zone,edema_zone,REVISE_FP,REVISE_FP,,0.10826694965362549,2.6318552494049072,80,True,65.8,-0.3896780303030303,0,candidate_roi_formula,0.07470703125,negative,True,-0.3896780303030303
