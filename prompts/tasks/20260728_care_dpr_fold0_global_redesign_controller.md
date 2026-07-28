@@ -288,7 +288,8 @@ Stage A：
 
 ```text
 2500 steps
-actual-train reliable cases\encoder lr 2e-5
+actual-train reliable cases
+encoder lr 2e-5
 proposal/refiner/utility lr 1e-4
 ```
 
