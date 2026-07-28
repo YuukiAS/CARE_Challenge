@@ -1,0 +1,14 @@
+{
+  "approval_token": "APPROVE_DPR_GATE_A_R1",
+  "approval_token_valid": false,
+  "formal_fold0_authorization_accepted": false,
+  "formal_fold0_authorized": false,
+  "scientific_credit": 0,
+  "send_receipt_status": "SUPERSEDED_RECORD_ONLY_NO_NEW_EMAIL_SENT",
+  "state": "SUPERSEDED_BY_DPR_GATE_A_R2",
+  "status": "SUPERSEDED_BY_DPR_GATE_A_R2",
+  "subject": "[CARE-DPR][A-R1/2] 双病理组件重建与仲裁修复完成，等待 Fold0 正式训练验收",
+  "superseded_by": "DPR_GATE_A_R2",
+  "to": "1155246312@link.cuhk.edu.hk",
+  "updated_at_utc": "2026-07-28T08:42:51Z"
+}

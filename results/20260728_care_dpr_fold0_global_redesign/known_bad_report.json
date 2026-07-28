@@ -5,31 +5,51 @@
       "status": "PASS"
     },
     {
-      "check": "component_utility_mlp_present",
+      "check": "component_utility_mlp_candidate_score_present",
       "status": "PASS"
     },
     {
-      "check": "dense_voxel_utility_not_primary",
+      "check": "formal_two_pass_inference_present",
       "status": "PASS"
     },
     {
-      "check": "sampler_cursor_persisted",
+      "check": "pass1_no_patch_final_label_average",
       "status": "PASS"
     },
     {
-      "check": "a_r1_token_required_and_old_token_rejected",
+      "check": "candidate_descriptor_uses_aggregated_shared_feature",
       "status": "PASS"
     },
     {
-      "check": "component_utility_target_formula",
+      "check": "candidate_target_not_patch_target",
       "status": "PASS"
     },
     {
-      "check": "full_volume_shared_feature_aggregated",
+      "check": "remote_forced_reject_uses_reliable_gt_distance",
       "status": "PASS"
     },
     {
-      "check": "candidate_builder_component_semantics",
+      "check": "diagnostic_cases_disjoint_and_frozen",
+      "status": "PASS"
+    },
+    {
+      "check": "synthetic_utility_variants_not_primary",
+      "status": "PASS"
+    },
+    {
+      "check": "hard_negative_subtype_cursor_no_generic_fallback",
+      "status": "PASS"
+    },
+    {
+      "check": "stage_boundary_resume_rule_present",
+      "status": "PASS"
+    },
+    {
+      "check": "runner_reload_compares_values_and_outputs",
+      "status": "PASS"
+    },
+    {
+      "check": "a_r2_token_required_and_old_tokens_rejected",
       "status": "PASS"
     },
     {
@@ -53,11 +73,35 @@
       "status": "PASS"
     },
     {
+      "check": "diagnostic_cases_disjoint",
+      "status": "PASS"
+    },
+    {
+      "check": "diagnostic_outer_fold0_not_used",
+      "status": "PASS"
+    },
+    {
+      "check": "two_pass_pipeline_pass",
+      "status": "PASS"
+    },
+    {
+      "check": "true_candidate_utility_source",
+      "status": "PASS"
+    },
+    {
+      "check": "utility_real_candidates_positive_and_negative",
+      "status": "PASS"
+    },
+    {
+      "check": "fixed_threshold_accept_reject_gain",
+      "status": "PASS"
+    },
+    {
       "check": "sampler_audit_pass",
       "status": "PASS"
     },
     {
-      "check": "sampler_all_eight_slots_present",
+      "check": "hard_negative_subtypes_all_nonzero",
       "status": "PASS"
     },
     {
@@ -69,24 +113,24 @@
       "status": "PASS"
     },
     {
-      "check": "resume_exact",
+      "check": "resume_exact_values_outputs",
       "status": "PASS"
     },
     {
-      "check": "thresholds_pass",
+      "check": "r2_thresholds_pass",
       "status": "PASS"
     }
   ],
   "fixtures": [
-    "sampler_cursor_stuck_on_scar_four_slots",
-    "dense_voxel_utility_map_used_as_component_utility",
-    "revise_qfp_intersection_instead_of_whole_anchor_component",
-    "scar_edema_roi_size_collapse",
-    "shared_feature_missing_from_full_volume_aggregation",
-    "resume_only_compares_state_dict_keys",
-    "teacher_roi_used_in_inner_outer_inference",
-    "no_t2_edema_candidate_constructed_or_accepted",
-    "unaccepted_candidate_partial_writeback"
+    "patch_level_utility_map_used_as_candidate_utility",
+    "full_volume_shared_feature_aggregated_but_not_used_by_utility_mlp",
+    "utility_target_computed_per_patch_not_per_candidate",
+    "diagnostic_cases_overlap_overfit_cases",
+    "synthetic_utility_variants_used_as_primary_metrics",
+    "scar_hard_negative_subtype_zero",
+    "a2_checkpoint_optimizer_loaded_directly_into_b_optimizer",
+    "runner_reload_only_compares_state_dict_keys",
+    "formal_runtime_refines_only_one_argmax_patch_center_without_candidate_pass2"
   ],
   "pytest_exit_code": 0,
   "status": "PASS"

@@ -5,31 +5,51 @@
       "status": "PASS"
     },
     {
-      "check": "component_utility_mlp_present",
+      "check": "component_utility_mlp_candidate_score_present",
       "status": "PASS"
     },
     {
-      "check": "dense_voxel_utility_not_primary",
+      "check": "formal_two_pass_inference_present",
       "status": "PASS"
     },
     {
-      "check": "sampler_cursor_persisted",
+      "check": "pass1_no_patch_final_label_average",
       "status": "PASS"
     },
     {
-      "check": "a_r1_token_required_and_old_token_rejected",
+      "check": "candidate_descriptor_uses_aggregated_shared_feature",
       "status": "PASS"
     },
     {
-      "check": "component_utility_target_formula",
+      "check": "candidate_target_not_patch_target",
       "status": "PASS"
     },
     {
-      "check": "full_volume_shared_feature_aggregated",
+      "check": "remote_forced_reject_uses_reliable_gt_distance",
       "status": "PASS"
     },
     {
-      "check": "candidate_builder_component_semantics",
+      "check": "diagnostic_cases_disjoint_and_frozen",
+      "status": "PASS"
+    },
+    {
+      "check": "synthetic_utility_variants_not_primary",
+      "status": "PASS"
+    },
+    {
+      "check": "hard_negative_subtype_cursor_no_generic_fallback",
+      "status": "PASS"
+    },
+    {
+      "check": "stage_boundary_resume_rule_present",
+      "status": "PASS"
+    },
+    {
+      "check": "runner_reload_compares_values_and_outputs",
+      "status": "PASS"
+    },
+    {
+      "check": "a_r2_token_required_and_old_tokens_rejected",
       "status": "PASS"
     },
     {
@@ -41,7 +61,8 @@
       "status": "PASS"
     }
   ],
-  "generated_at_utc": "2026-07-28T06:26:53Z",
+  "gate": "DPR_GATE_A_R2",
+  "generated_at_utc": "2026-07-28T09:09:43Z",
   "known_bad": {
     "coverage": [
       {
@@ -49,31 +70,51 @@
         "status": "PASS"
       },
       {
-        "check": "component_utility_mlp_present",
+        "check": "component_utility_mlp_candidate_score_present",
         "status": "PASS"
       },
       {
-        "check": "dense_voxel_utility_not_primary",
+        "check": "formal_two_pass_inference_present",
         "status": "PASS"
       },
       {
-        "check": "sampler_cursor_persisted",
+        "check": "pass1_no_patch_final_label_average",
         "status": "PASS"
       },
       {
-        "check": "a_r1_token_required_and_old_token_rejected",
+        "check": "candidate_descriptor_uses_aggregated_shared_feature",
         "status": "PASS"
       },
       {
-        "check": "component_utility_target_formula",
+        "check": "candidate_target_not_patch_target",
         "status": "PASS"
       },
       {
-        "check": "full_volume_shared_feature_aggregated",
+        "check": "remote_forced_reject_uses_reliable_gt_distance",
         "status": "PASS"
       },
       {
-        "check": "candidate_builder_component_semantics",
+        "check": "diagnostic_cases_disjoint_and_frozen",
+        "status": "PASS"
+      },
+      {
+        "check": "synthetic_utility_variants_not_primary",
+        "status": "PASS"
+      },
+      {
+        "check": "hard_negative_subtype_cursor_no_generic_fallback",
+        "status": "PASS"
+      },
+      {
+        "check": "stage_boundary_resume_rule_present",
+        "status": "PASS"
+      },
+      {
+        "check": "runner_reload_compares_values_and_outputs",
+        "status": "PASS"
+      },
+      {
+        "check": "a_r2_token_required_and_old_tokens_rejected",
         "status": "PASS"
       },
       {
@@ -86,15 +127,15 @@
       }
     ],
     "fixtures": [
-      "sampler_cursor_stuck_on_scar_four_slots",
-      "dense_voxel_utility_map_used_as_component_utility",
-      "revise_qfp_intersection_instead_of_whole_anchor_component",
-      "scar_edema_roi_size_collapse",
-      "shared_feature_missing_from_full_volume_aggregation",
-      "resume_only_compares_state_dict_keys",
-      "teacher_roi_used_in_inner_outer_inference",
-      "no_t2_edema_candidate_constructed_or_accepted",
-      "unaccepted_candidate_partial_writeback"
+      "patch_level_utility_map_used_as_candidate_utility",
+      "full_volume_shared_feature_aggregated_but_not_used_by_utility_mlp",
+      "utility_target_computed_per_patch_not_per_candidate",
+      "diagnostic_cases_overlap_overfit_cases",
+      "synthetic_utility_variants_used_as_primary_metrics",
+      "scar_hard_negative_subtype_zero",
+      "a2_checkpoint_optimizer_loaded_directly_into_b_optimizer",
+      "runner_reload_only_compares_state_dict_keys",
+      "formal_runtime_refines_only_one_argmax_patch_center_without_candidate_pass2"
     ],
     "pytest_exit_code": 0,
     "status": "PASS"
@@ -102,21 +143,21 @@
   "mode": "implementation",
   "source_hashes_sha256": {
     "scripts/evaluation/analyze_care_dpr_mechanism_ceiling.py": "9ef1e32614342c7bdab12bd47b8d5cee76473a42cc604ca04a2801c784176668",
-    "scripts/evaluation/evaluate_care_dpr.py": "814c7522fe20b7017ceb68958c8c24c5da1324e50f1d58d4f1409dc81508890f",
-    "scripts/evaluation/validate_care_dpr_gate_a_r1_consistency.py": "a139cf799e06e2086f4624236ab656ae68dbbc9bc0c20609cbbb826579de85bb",
-    "scripts/evaluation/validate_care_dpr_packet.py": "5e83742962651dd91d4921c5ae08832c260e18e2b6794c051d9b38e85f90b013",
-    "scripts/training/run_care_dpr.py": "55d19d246c9315e05b30c95fba9809eaa2c540ae916f8ea6a1fe104f23b15f4c",
-    "src/care_myocardium/data/care_dpr_dataset.py": "70b03ee54b1dce7400c054d06810685c82fab62fa1cac94f5357497dbbdd2436",
-    "src/care_myocardium/inference/care_dpr_predictor.py": "55aa506ca3071b401187e42c71f6b024dc85605cc59c4f792f7d46d3fc623295",
-    "src/care_myocardium/models/care_dpr.py": "cf94a3275953383bb58ea57b409d3a04d35fdead850f51a69ef8043d5cbc7cf7",
-    "src/care_myocardium/training/care_dpr_trainer.py": "2eb228a44310c53d6375cb3eb549330be98f2ea9706840e5620a315b78284e74",
-    "tests/care_dpr/test_care_dpr_model.py": "88f1c7287240cdc05c13962bc970959007fb9d81ea92deaf674e8ecd8965efcb"
+    "scripts/evaluation/evaluate_care_dpr.py": "359d7339b3ab7e688693942abab08e48debc9ceaee54c5368f0896420101766c",
+    "scripts/evaluation/validate_care_dpr_gate_a_r2_consistency.py": "bcc7da6b7db133a2b5c70ed44c742cf346e66e3f793eea7c9b0db1e5cac8a711",
+    "scripts/evaluation/validate_care_dpr_packet.py": "a3bf12ca82a73901bc67ccf8e6d50e9b1ec4a55b9fa0c010f108b0071e05822d",
+    "scripts/training/run_care_dpr.py": "541a9aa119fd3920a4e6af75c515e333b17c15ac9d5aeb89898bc99de6d89803",
+    "src/care_myocardium/data/care_dpr_dataset.py": "a4588ee49b165303c97610255cdaa92c0cb9320b25c46ca7ec1df2132c39bd02",
+    "src/care_myocardium/inference/care_dpr_predictor.py": "92e9f690972ad504e0ffe58d7f48c234b8cc93c9d1856b5b794f9e64bdd86b3f",
+    "src/care_myocardium/models/care_dpr.py": "6c9861b5cd5ffae0ef177d649087f605443dcca50423e92153f4d2c5a6319a43",
+    "src/care_myocardium/training/care_dpr_trainer.py": "8bf8d9aae94f699f09de1d92329bbec08d231b26a85f563c166f5b6d57a0f513",
+    "tests/care_dpr/test_care_dpr_model.py": "4326bc89f259e394a8dc9da288bc4cab51557fa2841487005ac0da3b5897dd64"
   },
   "status": "PASS",
   "task_key": "20260728_care_dpr_fold0_global_redesign",
   "unit_tests": {
     "command": "/users/a/e/aereinh/CARE/envs/env_CARE/bin/python -m pytest -q tests/care_dpr/test_care_dpr_model.py",
     "exit_code": 0,
-    "output": "............                                                             [100%]\n=============================== warnings summary ===============================\n<frozen importlib._bootstrap>:488\n  <frozen importlib._bootstrap>:488: DeprecationWarning: builtin type SwigPyPacked has no __module__ attribute\n\n<frozen importlib._bootstrap>:488\n  <frozen importlib._bootstrap>:488: DeprecationWarning: builtin type SwigPyObject has no __module__ attribute\n\n<frozen importlib._bootstrap>:488\n  <frozen importlib._bootstrap>:488: DeprecationWarning: builtin type swigvarlink has no __module__ attribute\n\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n12 passed, 3 warnings in 29.88s\n"
+    "output": "................                                                         [100%]\n=============================== warnings summary ===============================\n<frozen importlib._bootstrap>:488\n  <frozen importlib._bootstrap>:488: DeprecationWarning: builtin type SwigPyPacked has no __module__ attribute\n\n<frozen importlib._bootstrap>:488\n  <frozen importlib._bootstrap>:488: DeprecationWarning: builtin type SwigPyObject has no __module__ attribute\n\n<frozen importlib._bootstrap>:488\n  <frozen importlib._bootstrap>:488: DeprecationWarning: builtin type swigvarlink has no __module__ attribute\n\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n16 passed, 3 warnings in 21.82s\n"
   }
 }

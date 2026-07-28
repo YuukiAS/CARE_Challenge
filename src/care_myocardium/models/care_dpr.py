@@ -82,13 +82,19 @@ class LocalROIRefiner(nn.Module):
             nn.Conv3d(hidden_channels, 1, 1),
         )
 
+    def forward_at_center(self, full_input: torch.Tensor, center: tuple[int, int, int]) -> tuple[torch.Tensor, tuple[slice, slice, slice]]:
+        crop, src, dst = _crop_pad_tensor(full_input, center, self.roi_context_zyx)
+        refined_crop = self.net(crop)
+        pasted = full_input.new_zeros((full_input.shape[0], 1, *full_input.shape[-3:]))
+        pasted[(slice(None), slice(None), *src)] = refined_crop[(slice(None), slice(None), *dst)]
+        return pasted, src
+
     def forward(self, full_input: torch.Tensor, center_score: torch.Tensor) -> torch.Tensor:
         out = full_input.new_zeros((full_input.shape[0], 1, *full_input.shape[-3:]))
         for b in range(full_input.shape[0]):
             center = _center_from_score(center_score[b, 0])
-            crop, src, dst = _crop_pad_tensor(full_input[b : b + 1], center, self.roi_context_zyx)
-            refined_crop = self.net(crop)
-            out[(b, slice(None), *src)] = refined_crop[(0, slice(None), *dst)]
+            pasted, src = self.forward_at_center(full_input[b : b + 1], center)
+            out[(b, slice(None), *src)] = pasted[(0, slice(None), *src)]
         return out
 
 
@@ -109,7 +115,7 @@ class ComponentUtilityMLP(nn.Module):
         denom = weight.flatten(2).sum(dim=2).clamp_min(1e-6)
         return (x * weight).flatten(2).sum(dim=2) / denom
 
-    def forward(
+    def descriptor_from_candidate(
         self,
         feature: torch.Tensor,
         *,
@@ -121,9 +127,11 @@ class ComponentUtilityMLP(nn.Module):
         uncertainty: torch.Tensor,
         distance_to_support: torch.Tensor,
         support: torch.Tensor,
-    ) -> dict[str, torch.Tensor]:
-        proposal_mass = torch.maximum(torch.maximum(p_coarse, q_fn), torch.maximum(q_fp, p_refined)).detach()
-        component_weight = torch.where(proposal_mass > 0.05, proposal_mass, torch.zeros_like(proposal_mass))
+        component_mask: torch.Tensor,
+        candidate_type: str | None = None,
+        truncation_flag: torch.Tensor | None = None,
+    ) -> torch.Tensor:
+        component_weight = component_mask.to(device=feature.device, dtype=feature.dtype).clamp(0, 1)
         empty = component_weight.flatten(2).sum(dim=2, keepdim=True) <= 0
         if bool(empty.any()):
             component_weight = torch.where(empty.view(-1, 1, 1, 1, 1), torch.ones_like(component_weight), component_weight)
@@ -143,20 +151,70 @@ class ComponentUtilityMLP(nn.Module):
                 denom = torch.tensor(component_weight.shape[-3:], device=feature.device, dtype=feature.dtype).clamp_min(1)
                 bbox_size.append(size / denom)
         bbox = torch.stack(bbox_size, dim=0)
-        add_hint = (q_fn.flatten(2).mean(dim=2) >= q_fp.flatten(2).mean(dim=2)).to(feature.dtype)
-        revise_hint = 1.0 - add_hint
-        truncation = ((support * component_weight).flatten(2).sum(dim=2) < component_weight.flatten(2).sum(dim=2).clamp_min(1e-6)).to(feature.dtype)
-        descriptor = torch.cat([feat_pool, scalar_pool, voxel_volume, compactness, bbox, add_hint, revise_hint, truncation], dim=1)
+        if candidate_type == "ADD_FN":
+            add_hint = torch.ones((feature.shape[0], 1), device=feature.device, dtype=feature.dtype)
+            revise_hint = torch.zeros_like(add_hint)
+        elif candidate_type == "REVISE_FP":
+            add_hint = torch.zeros((feature.shape[0], 1), device=feature.device, dtype=feature.dtype)
+            revise_hint = torch.ones_like(add_hint)
+        else:
+            add_hint = (q_fn.flatten(2).mean(dim=2) >= q_fp.flatten(2).mean(dim=2)).to(feature.dtype)
+            revise_hint = 1.0 - add_hint
+        if truncation_flag is None:
+            truncation = ((support * component_weight).flatten(2).sum(dim=2) < component_weight.flatten(2).sum(dim=2).clamp_min(1e-6)).to(feature.dtype)
+        else:
+            truncation = truncation_flag.to(device=feature.device, dtype=feature.dtype).reshape(feature.shape[0], 1)
+        return torch.cat([feat_pool, scalar_pool, voxel_volume, compactness, bbox, add_hint, revise_hint, truncation], dim=1)
+
+    def score_candidate(self, feature: torch.Tensor, **kwargs: torch.Tensor | str) -> dict[str, torch.Tensor]:
+        descriptor = self.descriptor_from_candidate(feature, **kwargs)  # type: ignore[arg-type]
         raw = self.net(descriptor)
-        accept_logit = raw[:, 0:1, None, None, None].expand(-1, 1, *feature.shape[-3:])
-        utility_regression = torch.tanh(raw[:, 1:2, None, None, None]).expand_as(accept_logit)
-        component_mask = (component_weight > 0).to(feature.dtype)
+        accept_logit = raw[:, 0:1]
+        utility_regression = torch.tanh(raw[:, 1:2])
+        return {
+            "utility_accept_logit": accept_logit,
+            "utility_accept_prob": torch.sigmoid(accept_logit),
+            "utility_regression": utility_regression,
+            "component_descriptor": descriptor,
+        }
+
+    def forward(
+        self,
+        feature: torch.Tensor,
+        *,
+        p_coarse: torch.Tensor,
+        q_fn: torch.Tensor,
+        q_fp: torch.Tensor,
+        p_refined: torch.Tensor,
+        anchor_margin: torch.Tensor,
+        uncertainty: torch.Tensor,
+        distance_to_support: torch.Tensor,
+        support: torch.Tensor,
+    ) -> dict[str, torch.Tensor]:
+        proposal_mass = torch.maximum(torch.maximum(p_coarse, q_fn), torch.maximum(q_fp, p_refined)).detach()
+        component_mask = torch.where(proposal_mass > 0.05, torch.ones_like(proposal_mass), torch.zeros_like(proposal_mass))
+        scored = self.score_candidate(
+            feature,
+            p_coarse=p_coarse,
+            q_fn=q_fn,
+            q_fp=q_fp,
+            p_refined=p_refined,
+            anchor_margin=anchor_margin,
+            uncertainty=uncertainty,
+            distance_to_support=distance_to_support,
+            support=support,
+            component_mask=component_mask,
+            candidate_type=None,
+            truncation_flag=None,
+        )
+        accept_logit = scored["utility_accept_logit"][:, :, None, None, None].expand(-1, 1, *feature.shape[-3:])
+        utility_regression = scored["utility_regression"][:, :, None, None, None].expand_as(accept_logit)
         return {
             "utility_accept_logit": accept_logit * component_mask,
             "utility_accept_prob": torch.sigmoid(accept_logit) * component_mask,
             "utility_regression": utility_regression * component_mask,
-            "component_descriptor": descriptor,
-            "component_mask": component_mask,
+            "component_descriptor": scored["component_descriptor"],
+            "component_mask": component_mask.to(feature.dtype),
         }
 
 

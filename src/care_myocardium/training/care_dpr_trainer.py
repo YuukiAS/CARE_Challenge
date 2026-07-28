@@ -63,7 +63,7 @@ def _binary_boundary(mask: torch.Tensor) -> torch.Tensor:
     return (dil - ero).abs().clamp(0, 1)
 
 
-def component_utility_target(anchor_local: torch.Tensor, refined_prob: torch.Tensor, gt: torch.Tensor, distance_to_support: torch.Tensor | None = None) -> tuple[torch.Tensor, torch.Tensor]:
+def component_utility_target(anchor_local: torch.Tensor, refined_prob: torch.Tensor, gt: torch.Tensor, distance_to_reliable_gt: torch.Tensor | None = None, candidate_mask: torch.Tensor | None = None) -> tuple[torch.Tensor, torch.Tensor]:
     """Component-level amendment utility target broadcast over candidate support.
 
     E(M)=2*FN+1*FP+0.25*boundary_error and
@@ -75,6 +75,8 @@ def component_utility_target(anchor_local: torch.Tensor, refined_prob: torch.Ten
     anchor = anchor_local.detach().to(gt.dtype)
     gt = gt.detach().to(gt.dtype)
     candidate_support = ((anchor + refined + gt) > 0).to(gt.dtype)
+    if candidate_mask is not None:
+        candidate_support = candidate_support * candidate_mask.detach().to(gt.dtype).clamp(0, 1)
     accept_map = torch.zeros_like(gt)
     utility_map = torch.zeros_like(gt)
     for b in range(gt.shape[0]):
@@ -97,8 +99,8 @@ def component_utility_target(anchor_local: torch.Tensor, refined_prob: torch.Ten
         if gt_positive_empty:
             accept = torch.zeros_like(accept)
             utility = torch.full_like(utility, -1.0)
-        if distance_to_support is not None:
-            dist = distance_to_support[b : b + 1].detach().to(gt.dtype)
+        if distance_to_reliable_gt is not None:
+            dist = distance_to_reliable_gt[b : b + 1].detach().to(gt.dtype)
             new_remote = ((r > 0.5) & (a <= 0.5) & (dist > REMOTE_REJECT_MM)).any()
             if bool(new_remote):
                 accept = torch.zeros_like(accept)
@@ -121,6 +123,7 @@ def care_dpr_loss(
     scar_reliable: torch.Tensor | None = None,
     edema_reliable: torch.Tensor | None = None,
     containment_weight: float = 0.1,
+    batch_candidates: dict[str, Any] | None = None,
 ) -> tuple[torch.Tensor, dict[str, float]]:
     final_logits = outputs["final_logits"].float()
     anchor_logits = outputs["anchor_logits"].detach().float()
@@ -144,8 +147,22 @@ def care_dpr_loss(
     scar_prop = focal_bce(outputs["scar_q_fn"].float(), targets["scar_fn"], scar_mask) + focal_bce(outputs["scar_q_fp"].float(), targets["scar_fp"], scar_mask)
     edema_prop = focal_bce(outputs["edema_q_fn"].float(), targets["edema_fn"], edema_mask) + focal_bce(outputs["edema_q_fp"].float(), targets["edema_fp"], edema_mask)
 
-    scar_accept_target, scar_utility_target = component_utility_target(targets["scar_anchor"], outputs["scar_p_refined"], targets["scar_gt"], outputs.get("distance_to_myocardium"))
-    edema_accept_target, edema_utility_target = component_utility_target(targets["edema_anchor"], outputs["edema_p_refined"], targets["edema_gt"], outputs.get("distance_to_myocardium"))
+    scar_candidate_mask = None
+    edema_candidate_mask = None
+    distance_to_gt = outputs.get("distance_to_myocardium")
+    if batch_candidates is not None and "primary_candidate_mask" in batch_candidates:
+        cmask = batch_candidates["primary_candidate_mask"].to(device=final_logits.device, dtype=final_logits.dtype)
+        pathologies = list(batch_candidates.get("primary_candidate_pathology", []))
+        if pathologies:
+            scar_case = torch.tensor([1.0 if p == "scar" else 0.0 for p in pathologies], device=final_logits.device, dtype=final_logits.dtype)[:, None, None, None, None]
+            edema_case = torch.tensor([1.0 if p == "edema_zone" else 0.0 for p in pathologies], device=final_logits.device, dtype=final_logits.dtype)[:, None, None, None, None]
+            scar_candidate_mask = cmask * scar_case
+            edema_candidate_mask = cmask * edema_case
+        distance_to_gt = batch_candidates.get("distance_to_reliable_gt", distance_to_gt)
+        if isinstance(distance_to_gt, torch.Tensor):
+            distance_to_gt = distance_to_gt.to(device=final_logits.device, dtype=final_logits.dtype)
+    scar_accept_target, scar_utility_target = component_utility_target(targets["scar_anchor"], outputs["scar_p_refined"], targets["scar_gt"], distance_to_gt, scar_candidate_mask)
+    edema_accept_target, edema_utility_target = component_utility_target(targets["edema_anchor"], outputs["edema_p_refined"], targets["edema_gt"], distance_to_gt, edema_candidate_mask)
     scar_util = masked_bce_with_logits(outputs["scar_utility_accept_logit"].float(), scar_accept_target, scar_mask) + F.huber_loss(outputs["scar_utility_regression"].float() * scar_mask, scar_utility_target * scar_mask, reduction="sum") / scar_mask.sum().clamp_min(1.0)
     edema_util = masked_bce_with_logits(outputs["edema_utility_accept_logit"].float(), edema_accept_target, edema_mask) + F.huber_loss(outputs["edema_utility_regression"].float() * edema_mask, edema_utility_target * edema_mask, reduction="sum") / edema_mask.sum().clamp_min(1.0)
 
@@ -178,7 +195,7 @@ def care_dpr_loss(
     return total, metrics
 
 
-def save_care_dpr_checkpoint(path: Path, model: CAREDPR, optimizer: torch.optim.Optimizer, step: int, extra: dict[str, Any] | None = None, *, local_rng: random.Random | None = None, stage: str | None = None, local_step: int | None = None, sampler_slot_cursor: int = 0, teacher_roi_schedule_cursor: int = 0, resolved_training_contract_hash: str = "") -> None:
+def save_care_dpr_checkpoint(path: Path, model: CAREDPR, optimizer: torch.optim.Optimizer, step: int, extra: dict[str, Any] | None = None, *, local_rng: random.Random | None = None, stage: str | None = None, local_step: int | None = None, sampler_slot_cursor: int = 0, hard_negative_subtype_cursor: dict[str, int] | None = None, teacher_roi_schedule_cursor: int = 0, resolved_training_contract_hash: str = "") -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     torch.save({
         "model_state": model.state_dict(),
@@ -193,9 +210,11 @@ def save_care_dpr_checkpoint(path: Path, model: CAREDPR, optimizer: torch.optim.
             "torch_cpu_rng_state": torch.get_rng_state(),
             "torch_cuda_rng_states": torch.cuda.get_rng_state_all() if torch.cuda.is_available() else [],
             "stage": stage,
+            "optimizer_stage": stage,
             "local_step": local_step,
             "total_step": int(step),
             "sampler_slot_cursor": int(sampler_slot_cursor),
+            "hard_negative_subtype_cursor": dict(hard_negative_subtype_cursor or {"scar": 0, "edema_zone": 0}),
             "teacher_roi_schedule_cursor": int(teacher_roi_schedule_cursor),
             "resolved_training_contract_hash": str(resolved_training_contract_hash),
         },

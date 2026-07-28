@@ -1,5 +1,6 @@
 {
   "approval_token": "APPROVE_DPR_GATE_A_R1",
+  "approval_token_valid": false,
   "branch_outputs": {
     "edema_zone": [
       "p_coarse",
@@ -49,6 +50,7 @@
     "results/20260728_care_dpr_fold0_global_redesign/strict_validator_report.json": "ff2be3e59a0b7f471c9d63a94edded04a6ec2385cb475aa82a93da18e6022b30",
     "results/20260728_care_dpr_fold0_global_redesign/unit_test_report.md": "69e4e2c00b62dd67b36079dbd19dc78d73f3597a8566fe66091e103f550d9cad"
   },
+  "formal_fold0_authorization_accepted": false,
   "formal_fold0_authorized": false,
   "gpu_allocation": {
     "active_gpu_compute_processes": "none at pre-send check",
@@ -158,6 +160,7 @@
     },
     "status": "PASS"
   },
+  "scientific_credit": 0,
   "single_shared_encoder_proof": "CAREDPR has one encoder module shared by independent scar_branch and edema_branch; model_parameter_report.json records shared_backbone_count=1.",
   "source_hashes_sha256": {
     "scripts/evaluation/analyze_care_dpr_mechanism_ceiling.py": "9ef1e32614342c7bdab12bd47b8d5cee76473a42cc604ca04a2801c784176668",
@@ -171,14 +174,17 @@
     "src/care_myocardium/training/care_dpr_trainer.py": "2eb228a44310c53d6375cb3eb549330be98f2ea9706840e5620a315b78284e74",
     "tests/care_dpr/test_care_dpr_model.py": "88f1c7287240cdc05c13962bc970959007fb9d81ea92deaf674e8ecd8965efcb"
   },
-  "state": "AWAITING_HUMAN_ACCEPTANCE_DPR_GATE_A_R1",
+  "state": "SUPERSEDED_BY_DPR_GATE_A_R2",
+  "status": "SUPERSEDED_BY_DPR_GATE_A_R2",
   "subject": "[CARE-DPR][A-R1/2] 双病理组件重建与仲裁修复完成，等待 Fold0 正式训练验收",
+  "superseded_by": "DPR_GATE_A_R2",
   "supersedes": {
     "approval_token": "APPROVE_DPR_GATE_A",
     "formal_fold0_authorized": false,
     "scientific_credit": 0,
     "state": "SUPERSEDED_BY_DPR_GATE_A_R1"
   },
+  "updated_at_utc": "2026-07-28T08:42:51Z",
   "utility_metrics": {
     "accepted_candidate_count": 2,
     "component_descriptor_fields": [

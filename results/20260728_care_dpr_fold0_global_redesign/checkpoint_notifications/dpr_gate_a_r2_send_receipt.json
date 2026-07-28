@@ -1,0 +1,16 @@
+{
+  "approval_token": "APPROVE_DPR_GATE_A_R2",
+  "formal_fold0_authorized": false,
+  "gate": "DPR_GATE_A_R2",
+  "node_json": "results/20260728_care_dpr_fold0_global_redesign/checkpoint_notifications/dpr_gate_a_r2.json",
+  "node_sha256": "7c55f86d7ecc16199624e9b4a01e08eab11533dd771bfc59991d0d0096f1b2b0",
+  "notifier_reuse": "controller_notifications.notify_goal_watcher/load_config/load_env_file plus existing CARE notify SMTP configuration; no new notifier service created",
+  "prepared_at_utc": "2026-07-28T09:20:07Z",
+  "scientific_credit": 0,
+  "send_status": "PENDING_EMAIL_SEND_AFTER_REMOTE_PUSH",
+  "state": "AWAITING_HUMAN_ACCEPTANCE_DPR_GATE_A_R2",
+  "status": "READY_TO_SEND_AFTER_REMOTE_PUSH",
+  "subject": "[CARE-DPR][A-R2/2] 候选级局部重建与组件仲裁完成，等待Fold0正式训练验收",
+  "task_key": "20260728_care_dpr_fold0_global_redesign",
+  "to": "1155246312@link.cuhk.edu.hk"
+}

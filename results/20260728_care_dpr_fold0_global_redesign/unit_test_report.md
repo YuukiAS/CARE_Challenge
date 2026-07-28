@@ -3,7 +3,7 @@
 Status: PASS
 
 ```text
-............                                                             [100%]
+................                                                         [100%]
 =============================== warnings summary ===============================
 <frozen importlib._bootstrap>:488
   <frozen importlib._bootstrap>:488: DeprecationWarning: builtin type SwigPyPacked has no __module__ attribute
@@ -15,6 +15,6 @@ Status: PASS
   <frozen importlib._bootstrap>:488: DeprecationWarning: builtin type swigvarlink has no __module__ attribute
 
 -- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
-12 passed, 3 warnings in 29.49s
+16 passed, 3 warnings in 21.30s
 
 ```

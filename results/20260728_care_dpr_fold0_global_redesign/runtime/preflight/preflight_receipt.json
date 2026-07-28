@@ -4,14 +4,34 @@
   "amp_dtype": "bfloat16",
   "batch_size": 4,
   "checkpoint_reload": {
+    "checked_output_keys": [
+      "scar_p_coarse",
+      "scar_q_fn",
+      "scar_q_fp",
+      "scar_p_refined",
+      "edema_p_coarse",
+      "edema_q_fn",
+      "edema_q_fp",
+      "edema_p_refined"
+    ],
+    "fixed_outputs_exact": true,
+    "outputs_exact": true,
+    "parameter_values_exact": true,
+    "parameters_exact": true,
     "reload_step": 300,
     "status": "PASS"
   },
   "complete_actual_train_cases": 52,
   "device": "cuda",
+  "diagnostic_cases_overlap_optimizer_cases": false,
   "fold": 0,
   "formal_training_credit": 0,
+  "gate_a_r2_diagnostic_cases": 16,
   "grad_clip_norm": 1.0,
+  "hard_negative_subtype_cursor_terminal": {
+    "edema_zone": 1,
+    "scar": 0
+  },
   "init_receipt": {
     "care_dg_q_fn_q_fp_initialize_error_proposal_only": true,
     "copied_parameter_count": 66,
@@ -85,10 +105,10 @@
     ],
     "p_coarse_random_initialized": true,
     "random_initialized_modules": [
-      "scar_branch.refiner_head",
-      "scar_branch.utility_head",
-      "edema_branch.refiner_head",
-      "edema_branch.utility_head",
+      "scar_branch.local_refiner",
+      "scar_branch.component_utility",
+      "edema_branch.local_refiner",
+      "edema_branch.component_utility",
       "scar_branch.proposal_head.p_coarse",
       "edema_branch.proposal_head.p_coarse"
     ],
@@ -98,7 +118,7 @@
   },
   "inner_select_cases": 12,
   "last_checkpoint": "/users/a/e/aereinh/CARE/results/20260728_care_dpr_fold0_global_redesign/runtime/preflight/checkpoints/checkpoint_last.pt",
-  "last_checkpoint_sha256": "55016f279d46a71f886a8ddb78ac2d6deb3dcd16f52005e40e73cebc04b92d19",
+  "last_checkpoint_sha256": "3c1b1fa4678544c03ac4d929703fcd6c08a00f8f7672ad4e582df29ce755d436",
   "outer_val_cases": 44,
   "outer_val_used_for_selection": false,
   "patch_shape_zyx": [
@@ -108,7 +128,10 @@
   ],
   "predicted_roi_only_for_inner_outer_inference": true,
   "preflight_only": true,
-  "resolved_training_contract_hash": "b3308fee9f046f08802a3d83cc3076cc1a929beee7e8d9cde79d4914ccb54102",
+  "preflight_optimizer_cases": 32,
+  "resolved_training_contract_hash": "1123d3ea7e36ef44c103827356e274aea90e187e58bbc5594a7e38d5ce832f2a",
+  "resume_checkpoint": "",
+  "resume_optimizer_restored": false,
   "sampler_slot_cursor_terminal": 0,
   "seed": 20260728,
   "stage_a1_optimizer_steps": 0,
@@ -116,11 +139,12 @@
   "stage_b_optimizer_steps": 0,
   "stage_plan": [
     {
+      "local_step_offset": 0,
       "stage": "PREFLIGHT",
       "steps": 300
     }
   ],
   "status": "PASS",
   "teacher_roi_inner_outer_inference": false,
-  "terminal_time_utc": "2026-07-28T06:07:42Z"
+  "terminal_time_utc": "2026-07-28T09:12:02Z"
 }

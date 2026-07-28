@@ -1,0 +1,32 @@
+{
+  "checked_at_utc": "2026-07-28T09:20:19Z",
+  "checks": {
+    "checkpoint_resume_exact": "PASS",
+    "diagnostic_cases_disjoint": "PASS",
+    "diagnostic_outer_fold0_not_used": "PASS",
+    "formal_fold0_authorized_false": "PASS",
+    "formal_fold0_guard_r2_only": "PASS",
+    "implementation_validator_pass": "PASS",
+    "mechanism_passes_r2_thresholds": "PASS",
+    "no_t2_exact_zero": "PASS",
+    "preflight_receipt_zero_credit": "PASS",
+    "r1_gate_superseded": "PASS",
+    "r1_send_receipt_superseded": "PASS",
+    "r2_notification_prepared_or_sent": "PASS",
+    "real_candidate_utility_not_synthetic": "PASS",
+    "sampler_audit_pass": "PASS",
+    "sent_r1_entries_superseded": "PASS",
+    "strict_validator_pass": "PASS",
+    "two_pass_real_candidate_pipeline": "PASS"
+  },
+  "failures": [],
+  "formal_fold0_authorized": false,
+  "gate": "DPR_GATE_A_R2",
+  "status": "PASS",
+  "superseded_approval_tokens": [
+    "APPROVE_DPR_GATE_A",
+    "APPROVE_DPR_GATE_A_R1"
+  ],
+  "task_key": "20260728_care_dpr_fold0_global_redesign",
+  "valid_approval_token": "APPROVE_DPR_GATE_A_R2"
+}

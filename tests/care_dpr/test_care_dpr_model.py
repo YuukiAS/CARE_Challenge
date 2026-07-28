@@ -7,10 +7,11 @@ import numpy as np
 import pytest
 import torch
 
-from src.care_myocardium.data.care_dpr_dataset import DPR_SAMPLER_PATTERN, sampler_slots_for_cursor
-from src.care_myocardium.inference.care_dpr_predictor import aggregate_patch_outputs, build_candidates, compose_dual_pathology
-from src.care_myocardium.models.care_dpr import build_care_dpr
+from src.care_myocardium.data.care_dpr_dataset import DPR_SAMPLER_PATTERN, HARD_NEGATIVE_SUBTYPES, sampler_slots_for_cursor
+from src.care_myocardium.inference.care_dpr_predictor import aggregate_patch_outputs, build_candidates, compose_dual_pathology, run_two_pass_full_volume_dpr
+from src.care_myocardium.models.care_dpr import ComponentUtilityMLP, build_care_dpr
 from src.care_myocardium.training.care_dpr_trainer import care_dpr_loss, load_care_dpr_checkpoint, save_care_dpr_checkpoint
+from scripts.training.run_care_dpr import should_restore_optimizer_state
 
 
 def _batch(t2: float = 1.0) -> dict[str, torch.Tensor]:
@@ -198,3 +199,55 @@ def test_checkpoint_resume_restores_exact_runtime_state(tmp_path) -> None:
     assert opt_un.state_dict().keys() == opt_res.state_dict().keys()
     for key in out_un:
         assert torch.equal(out_un[key], out_res[key])
+
+
+
+def test_two_pass_full_volume_refines_each_candidate_and_scores_once() -> None:
+    model = build_care_dpr()
+    batch = _batch(t2=1.0)
+    anchor = batch["anchor_logits"][0].clone()
+    anchor *= 0.0
+    anchor[0] = 3.0
+    anchor[5, :, 1:4, 1:4] = 5.0
+    anchor[4, :, 10:13, 10:13] = 4.5
+    batch_np = {
+        "images": batch["images"][0].numpy(),
+        "availability": batch["availability"][0].numpy(),
+        "anchor_logits": anchor.numpy(),
+        "uncertainty": batch["uncertainty"][0].numpy(),
+        "myocardium_support": batch["myocardium_support"][0].numpy(),
+        "edema_support": batch["edema_support"][0].numpy(),
+        "distance_to_myocardium": batch["distance_to_myocardium"][0].numpy(),
+        "t2_present": True,
+    }
+    pred = run_two_pass_full_volume_dpr(model, batch_np, patch_shape=(4, 16, 16), proposal_threshold=0.0, refined_threshold=0.5, utility_threshold=0.5, device=torch.device("cpu"))
+    assert pred["two_pass_full_volume_candidate_pipeline"] is True
+    assert pred["pass1_runs_component_decision"] is False
+    assert pred["pass1_aggregates_patch_final_labels"] is False
+    assert "final_mask" not in pred["pass1"]
+    assert pred["component_utility_calls"] == len(pred["candidate_evidence"])
+    assert pred["component_utility_calls"] > 0
+    assert all("refined_local_mask" in row and "anchor_local_mask" in row for row in pred["candidate_evidence"])
+
+
+def test_component_utility_descriptor_pools_candidate_shared_feature() -> None:
+    torch.manual_seed(5)
+    mlp = ComponentUtilityMLP(feature_channels=4)
+    mask = torch.zeros(1, 1, 2, 4, 4)
+    mask[:, :, :, 1:3, 1:3] = 1.0
+    maps = {name: torch.ones(1, 1, 2, 4, 4) * 0.25 for name in ["p_coarse", "q_fn", "q_fp", "p_refined", "anchor_margin", "uncertainty", "distance_to_support", "support"]}
+    desc0 = mlp.descriptor_from_candidate(torch.zeros(1, 4, 2, 4, 4), component_mask=mask, candidate_type="ADD_FN", truncation_flag=torch.zeros(1, 1), **maps)
+    desc1 = mlp.descriptor_from_candidate(torch.ones(1, 4, 2, 4, 4), component_mask=mask, candidate_type="ADD_FN", truncation_flag=torch.zeros(1, 1), **maps)
+    assert not torch.equal(desc0[:, :4], desc1[:, :4])
+    assert torch.equal(desc0[:, 4:], desc1[:, 4:])
+
+
+def test_hard_negative_subtype_cursor_contract_names_all_required() -> None:
+    assert list(HARD_NEGATIVE_SUBTYPES) == ["blood_pool", "outside_support_bright_island", "remote_anchor_fp", "high_intensity_nonlesion"]
+
+
+def test_stage_boundary_resume_rebuilds_b_optimizer_without_loading_a2_state() -> None:
+    assert should_restore_optimizer_state("A2", "A2", 2498) is True
+    assert should_restore_optimizer_state("A1", "A2", 500) is True
+    assert should_restore_optimizer_state("A2", "B", 2500) is False
+    assert should_restore_optimizer_state("B", "B", 2502) is True

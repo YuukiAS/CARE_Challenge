@@ -1,2 +1,2 @@
-stage,step,local_step,sampler_slot_cursor,checkpoint_path,checkpoint_sha256,outer_val_used,teacher_roi_fraction
-PREFLIGHT,300,300,0,/users/a/e/aereinh/CARE/results/20260728_care_dpr_fold0_global_redesign/runtime/preflight/checkpoints/checkpoint_step00300.pt,77fb036231b0d00d89710bb1bc1841bf53ddbdd2c0b071705cfb82a87228ace6,False,0.75
+stage,optimizer_stage,step,local_step,sampler_slot_cursor,hard_negative_subtype_cursor,checkpoint_path,checkpoint_sha256,outer_val_used,teacher_roi_fraction
+PREFLIGHT,PREFLIGHT,300,300,0,"{""edema_zone"": 1, ""scar"": 0}",/users/a/e/aereinh/CARE/results/20260728_care_dpr_fold0_global_redesign/runtime/preflight/checkpoints/checkpoint_step00300.pt,119dc86b248480a305e9b194efc7a511314ed80a56f97fb8bab17a78eac3f9d0,False,0.75

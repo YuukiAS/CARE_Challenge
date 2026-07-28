@@ -71,7 +71,7 @@ def aggregate_patch_outputs(model: torch.nn.Module, batch_np: dict[str, np.ndarr
     """
     device = device or torch.device("cuda" if torch.cuda.is_available() else "cpu")
     spatial = tuple(int(v) for v in batch_np["anchor_logits"].shape[-3:])
-    accum_keys = ["scar_p_coarse", "scar_q_fn", "scar_q_fp", "scar_p_refined", "scar_utility_accept_prob", "edema_p_coarse", "edema_q_fn", "edema_q_fp", "edema_p_refined", "edema_utility_accept_prob"]
+    accum_keys = ["scar_p_coarse", "scar_q_fn", "scar_q_fp", "edema_p_coarse", "edema_q_fn", "edema_q_fp"]
     acc = {k: np.zeros(spatial, dtype=np.float32) for k in accum_keys}
     shared_acc: np.ndarray | None = None
     weight = np.zeros(spatial, dtype=np.float32)
@@ -116,7 +116,9 @@ def _expand(mask: np.ndarray, margin: int = 3) -> np.ndarray:
     return ndi.binary_dilation(mask.astype(bool), structure=structure, iterations=int(margin))
 
 
-def build_candidates(anchor_mask: np.ndarray, maps: dict[str, np.ndarray], *, pathology: str, threshold: float = 0.5, t2_present: bool = True, margin: int = 3) -> list[tuple[DPRCandidate, np.ndarray, np.ndarray]]:
+
+def build_candidate_rois(anchor_mask: np.ndarray, maps: dict[str, np.ndarray], *, pathology: str, threshold: float = 0.5, t2_present: bool = True, margin: int = 3) -> list[tuple[DPRCandidate, np.ndarray, np.ndarray, np.ndarray]]:
+    """Build full-volume candidates before any local refinement decision."""
     if pathology not in {"scar", "edema_zone"}:
         raise ValueError(pathology)
     if pathology == "edema_zone" and not t2_present:
@@ -126,24 +128,20 @@ def build_candidates(anchor_mask: np.ndarray, maps: dict[str, np.ndarray], *, pa
         coarse = maps["scar_p_coarse"] >= threshold
         q_fn = maps["scar_q_fn"] >= threshold
         q_fp = maps["scar_q_fp"] >= threshold
-        refined = maps["scar_p_refined"] >= threshold
     else:
         anchor = (anchor_mask == SCAR_CHANNEL) | (anchor_mask == EDEMA_CHANNEL)
         coarse = maps["edema_p_coarse"] >= threshold
         q_fn = maps["edema_q_fn"] >= threshold
         q_fp = maps["edema_q_fp"] >= threshold
-        refined = maps["edema_p_refined"] >= threshold
-    out: list[tuple[DPRCandidate, np.ndarray, np.ndarray]] = []
+    out: list[tuple[DPRCandidate, np.ndarray, np.ndarray, np.ndarray]] = []
     structure = ndi.generate_binary_structure(3, 1)
-    add_mask = (refined | coarse | q_fn) & ~anchor
+    add_mask = (coarse | q_fn) & ~anchor
     add_labeled, add_count = ndi.label(add_mask, structure=structure)
     for idx in range(1, int(add_count) + 1):
         comp = add_labeled == idx
         roi = _expand(comp, margin=margin)
         trunc = bool(np.any(roi[[0, -1], :, :]) or np.any(roi[:, [0, -1], :]) or np.any(roi[:, :, [0, -1]]))
-        replacement = refined & roi
-        out.append((DPRCandidate(pathology, "ADD_FN", idx, int(comp.sum()), _bbox(roi), trunc), np.zeros_like(comp, dtype=bool), replacement))
-
+        out.append((DPRCandidate(pathology, "ADD_FN", idx, int(comp.sum()), _bbox(roi), trunc), np.zeros_like(comp, dtype=bool), comp, roi))
     anchor_labeled, anchor_count = ndi.label(anchor, structure=structure)
     revise_idx = 0
     for idx in range(1, int(anchor_count) + 1):
@@ -153,9 +151,22 @@ def build_candidates(anchor_mask: np.ndarray, maps: dict[str, np.ndarray], *, pa
         revise_idx += 1
         roi = _expand(anchor_comp, margin=margin)
         trunc = bool(np.any(roi[[0, -1], :, :]) or np.any(roi[:, [0, -1], :]) or np.any(roi[:, :, [0, -1]]))
-        replacement = refined & roi
-        out.append((DPRCandidate(pathology, "REVISE_FP", revise_idx, int(anchor_comp.sum()), _bbox(roi), trunc), anchor_comp, replacement))
+        out.append((DPRCandidate(pathology, "REVISE_FP", revise_idx, int(anchor_comp.sum()), _bbox(roi), trunc), anchor_comp, anchor_comp, roi))
     out.sort(key=lambda item: (item[0].candidate_type, item[0].bbox_zyx, item[0].component_index))
+    return out
+
+def build_candidates(anchor_mask: np.ndarray, maps: dict[str, np.ndarray], *, pathology: str, threshold: float = 0.5, t2_present: bool = True, margin: int = 3) -> list[tuple[DPRCandidate, np.ndarray, np.ndarray]]:
+    refined_key = "scar_p_refined" if pathology == "scar" else "edema_p_refined"
+    refined = maps.get(refined_key, np.zeros_like(anchor_mask, dtype=np.float32)) >= threshold
+    out: list[tuple[DPRCandidate, np.ndarray, np.ndarray]] = []
+    for cand, anchor_local, seed, roi in build_candidate_rois(anchor_mask, maps, pathology=pathology, threshold=threshold, t2_present=t2_present, margin=margin):
+        if np.any(refined):
+            replacement = refined & roi
+        elif cand.candidate_type == "ADD_FN":
+            replacement = seed.astype(bool)
+        else:
+            replacement = np.zeros_like(anchor_local, dtype=bool)
+        out.append((cand, anchor_local, replacement))
     return out
 
 
@@ -193,6 +204,155 @@ def compose_dual_pathology(anchor_mask: np.ndarray, maps: dict[str, np.ndarray],
     final[pure_edema] = EDEMA_CHANNEL
     final[scar] = SCAR_CHANNEL
     return final, edema_audit + scar_audit
+
+
+
+def _center_of(mask: np.ndarray) -> tuple[int, int, int]:
+    coords = np.argwhere(mask)
+    if coords.size == 0:
+        return tuple(int(v // 2) for v in mask.shape)
+    return tuple(int(v) for v in np.round(coords.mean(axis=0)).astype(int))
+
+
+def _torch_map(arr: np.ndarray, device: torch.device) -> torch.Tensor:
+    return torch.from_numpy(arr[None, None].astype(np.float32)).to(device)
+
+
+def _anchor_margin_np(anchor_logits: np.ndarray, *, pathology: str) -> np.ndarray:
+    if pathology == "scar":
+        comp = np.max(np.concatenate([anchor_logits[:SCAR_CHANNEL], anchor_logits[SCAR_CHANNEL + 1 :]], axis=0), axis=0)
+        return (anchor_logits[SCAR_CHANNEL] - comp).astype(np.float32)
+    zone = np.maximum(anchor_logits[SCAR_CHANNEL], anchor_logits[EDEMA_CHANNEL])
+    anatomy = np.max(anchor_logits[list(c for c in range(anchor_logits.shape[0]) if c not in (SCAR_CHANNEL, EDEMA_CHANNEL))], axis=0)
+    return (zone - anatomy).astype(np.float32)
+
+
+def _refine_and_score_candidate(model: torch.nn.Module, maps: dict[str, np.ndarray], batch_np: dict[str, np.ndarray], cand: DPRCandidate, anchor_local: np.ndarray, seed_mask: np.ndarray, roi: np.ndarray, *, device: torch.device, threshold: float) -> tuple[np.ndarray, float, float, dict[str, Any]]:
+    pathology = cand.pathology
+    feature = torch.from_numpy(maps["shared_full_resolution_feature"][None].astype(np.float32)).to(device)
+    if pathology == "scar":
+        branch = model.scar_branch
+        extras = [batch_np["images"][0], _anchor_margin_np(batch_np["anchor_logits"], pathology="scar"), maps["scar_p_coarse"], maps["scar_q_fn"], maps["scar_q_fp"], batch_np["uncertainty"][0], batch_np["myocardium_support"][0], batch_np["distance_to_myocardium"][0]]
+        pfx = "scar"
+        support_np = batch_np["myocardium_support"][0]
+    else:
+        branch = model.edema_branch
+        extras = [batch_np["images"][1], batch_np["images"][0], _anchor_margin_np(batch_np["anchor_logits"], pathology="edema_zone"), maps["edema_p_coarse"], maps["edema_q_fn"], maps["edema_q_fp"], batch_np["uncertainty"][0], batch_np["edema_support"][0], batch_np["distance_to_myocardium"][0]]
+        pfx = "edema"
+        support_np = batch_np["edema_support"][0]
+    full_input = torch.cat([feature, torch.from_numpy(np.stack(extras, axis=0)[None].astype(np.float32)).to(device)], dim=1)
+    center = _center_of(seed_mask | anchor_local)
+    with torch.no_grad():
+        refined_logit, _ = branch.local_refiner.forward_at_center(full_input, center)
+        refined_prob = torch.sigmoid(refined_logit)[0, 0].detach().float().cpu().numpy()
+    refined_prob = refined_prob * roi.astype(np.float32)
+    refined_mask = refined_prob >= float(threshold)
+    component_mask_np = (seed_mask | anchor_local | refined_mask).astype(np.float32)
+    if not np.any(component_mask_np):
+        component_mask_np = roi.astype(np.float32)
+    scored = branch.component_utility.score_candidate(
+        feature,
+        p_coarse=_torch_map(maps[f"{pfx}_p_coarse"], device),
+        q_fn=_torch_map(maps[f"{pfx}_q_fn"], device),
+        q_fp=_torch_map(maps[f"{pfx}_q_fp"], device),
+        p_refined=_torch_map(refined_prob, device),
+        anchor_margin=_torch_map(_anchor_margin_np(batch_np["anchor_logits"], pathology=pathology), device),
+        uncertainty=_torch_map(batch_np["uncertainty"][0], device),
+        distance_to_support=_torch_map(batch_np["distance_to_myocardium"][0], device),
+        support=_torch_map(support_np, device),
+        component_mask=_torch_map(component_mask_np, device),
+        candidate_type=cand.candidate_type,
+        truncation_flag=torch.tensor([[float(cand.truncation_flag)]], device=device),
+    )
+    accept_logit = float(scored["utility_accept_logit"][0, 0].detach().cpu())
+    utility_reg = float(scored["utility_regression"][0, 0].detach().cpu())
+    audit = {
+        "pathology": cand.pathology,
+        "candidate_type": cand.candidate_type,
+        "component_index": cand.component_index,
+        "voxel_count": cand.voxel_count,
+        "bbox_zyx": cand.bbox_zyx,
+        "component_truncation_flag": cand.truncation_flag,
+        "pass2_candidate_center_zyx": center,
+        "pass2_roi_context_zyx": list(branch.local_refiner.roi_context_zyx),
+        "component_descriptor_uses_aggregated_shared_feature": True,
+        "utility_accept_logit": accept_logit,
+        "utility_regression": utility_reg,
+        "utility_score": float(1.0 / (1.0 + np.exp(-accept_logit))),
+    }
+    return refined_mask, accept_logit, utility_reg, audit
+
+
+def run_two_pass_full_volume_dpr(model: torch.nn.Module, batch_np: dict[str, np.ndarray], *, patch_shape: tuple[int, int, int] = (8, 128, 128), overlap: float = 0.5, proposal_threshold: float = 0.5, refined_threshold: float = 0.5, utility_threshold: float = 0.5, device: torch.device | None = None) -> dict[str, Any]:
+    """Formal R2 two-pass full-volume DPR inference.
+
+    Pass 1 aggregates full-resolution shared features and proposal maps. Pass 2
+    builds candidates in the complete volume, then refines and scores each
+    candidate independently with the pathology-specific local refiner and
+    ComponentUtilityMLP weights.
+    """
+    device = device or torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    pass1 = aggregate_patch_outputs(model, batch_np, patch_shape=patch_shape, overlap=overlap, device=device)
+    anchor_mask = np.asarray(batch_np["anchor_logits"]).argmax(axis=0).astype(np.uint8)
+    pass1["scar_p_refined"] = np.zeros_like(anchor_mask, dtype=np.float32)
+    pass1["edema_p_refined"] = np.zeros_like(anchor_mask, dtype=np.float32)
+    candidate_records = []
+    candidate_evidence: list[dict[str, Any]] = []
+    final_by_pathology: dict[str, np.ndarray] = {}
+    all_audit: list[dict[str, Any]] = []
+    for pathology, pfx in (("edema_zone", "edema"), ("scar", "scar")):
+        anchor_local = ((anchor_mask == SCAR_CHANNEL) | (anchor_mask == EDEMA_CHANNEL)) if pathology == "edema_zone" else (anchor_mask == SCAR_CHANNEL)
+        result = anchor_local.copy().astype(bool)
+        candidates = build_candidate_rois(anchor_mask, pass1, pathology=pathology, threshold=proposal_threshold, t2_present=bool(batch_np.get("t2_present", True)))
+        p_refined_full = np.zeros_like(anchor_mask, dtype=np.float32)
+        for cand, cand_anchor, seed, roi in candidates:
+            refined_mask, accept_logit, utility_reg, audit = _refine_and_score_candidate(model, pass1, batch_np, cand, cand_anchor, seed, roi, device=device, threshold=refined_threshold)
+            p_refined_full[roi] = np.maximum(p_refined_full[roi], refined_mask[roi].astype(np.float32))
+            score_region = (cand_anchor | refined_mask | seed)
+            accepted = float(audit["utility_score"]) >= float(utility_threshold)
+            if accepted:
+                result[score_region] = refined_mask[score_region]
+                action = cand.action_if_accepted
+            else:
+                result[score_region] = cand_anchor[score_region]
+                action = cand.action_if_rejected
+            audit.update({"accepted": bool(accepted), "action": action, "legal_action": action in LEGAL_ACTIONS})
+            all_audit.append(audit)
+            candidate_records.append({"pathology": pathology, "candidate_type": cand.candidate_type, "accepted": bool(accepted), "utility_score": audit["utility_score"], "utility_regression": utility_reg})
+            candidate_evidence.append({
+                "candidate": cand,
+                "pathology": pathology,
+                "candidate_type": cand.candidate_type,
+                "anchor_local_mask": cand_anchor.copy(),
+                "seed_mask": seed.copy(),
+                "roi_mask": roi.copy(),
+                "refined_local_mask": refined_mask.copy(),
+                "utility_score": float(audit["utility_score"]),
+                "utility_regression": float(utility_reg),
+                "accepted": bool(accepted),
+                "action": action,
+            })
+        pass1[f"{pfx}_p_refined"] = p_refined_full
+        final_by_pathology[pathology] = result
+    final = anchor_mask.copy()
+    final[(anchor_mask == EDEMA_CHANNEL) | (anchor_mask == SCAR_CHANNEL)] = 0
+    edema_zone = final_by_pathology.get("edema_zone", (anchor_mask == EDEMA_CHANNEL) | (anchor_mask == SCAR_CHANNEL))
+    scar = final_by_pathology.get("scar", anchor_mask == SCAR_CHANNEL)
+    final[edema_zone & ~scar] = EDEMA_CHANNEL
+    final[scar] = SCAR_CHANNEL
+    return {
+        "status": "PASS",
+        "pass1": pass1,
+        "final_mask": final,
+        "candidate_audit": all_audit,
+        "candidate_records": candidate_records,
+        "candidate_evidence": candidate_evidence,
+        "component_utility_calls": len(candidate_evidence),
+        "two_pass_full_volume_candidate_pipeline": True,
+        "pass1_aggregates_patch_final_labels": False,
+        "pass1_runs_component_decision": False,
+        "pass2_refines_each_candidate": True,
+    }
 
 
 def exact_anchor_when_zero_accepted(anchor_mask: np.ndarray) -> np.ndarray:
