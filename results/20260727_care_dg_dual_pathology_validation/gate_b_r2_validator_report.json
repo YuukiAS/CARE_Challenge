@@ -1,5 +1,5 @@
 {
-  "checked_at_utc": "2026-07-28T03:25:50Z",
+  "checked_at_utc": "2026-07-28T03:30:20Z",
   "diagnostic_status": "NO_INNER_ELIGIBLE_CANDIDATE",
   "eligible_count": 0,
   "evidence_root": "results/20260727_care_dg_dual_pathology_validation/runtime/repaired_formal_scar_priority/fold0/gate_b_r2_scale_diagnostic",

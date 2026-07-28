@@ -1,5 +1,5 @@
 {
-  "checked_at_utc": "2026-07-28T03:26:01Z",
+  "checked_at_utc": "2026-07-28T03:30:19Z",
   "checked_files": [
     "results/20260727_care_dg_dual_pathology_validation/gate_b_summary.json",
     "results/20260727_care_dg_dual_pathology_validation/runtime/repaired_formal_scar_priority/fold0/gate_b_evaluation/gate_b_validator_report.json",

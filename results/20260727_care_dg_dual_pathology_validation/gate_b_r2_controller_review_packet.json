@@ -1,0 +1,122 @@
+{
+  "active_care_training_or_eval_processes": [],
+  "allocation": {
+    "job_id": "60657290",
+    "preserved": true,
+    "squeue": "JOBID STATE TIME TIME_LEFT NODELIST NAME\n60657290 RUNNING 2-02:24:57 21:35:03 g1807htzh01 CAREInteractive3d",
+    "terminated": false
+  },
+  "allowed_next_actions": [
+    "GPT/user read-only review of Gate B-R2 evidence at origin/main acb1a2d9cb6ae3e47219e4ee59310d64601b46f9",
+    "GPT/user may authorize a new same-scope training-mechanism repair if the contract is amended explicitly",
+    "GPT/user may direct the controller to terminalize as NO_CARE_DG_CANDIDATE_SAFE_FOR_VALIDATION with Mapper/CURRENT/wiki/final email if no further repair is desired"
+  ],
+  "controller_judgment": [
+    "R1 fixed the major overactive fragmented inference error but failed the complete16 scientific expansion gate.",
+    "R2 tested the remaining no-retraining inference/selection space on fixed train-side complete inner cases only: 8 checkpoints x 64 scar/edema scales = 512 candidates.",
+    "R2 found zero eligible candidates. The best candidate is safe but too weak; its largest pathology gain is scar +0.004258, below the +0.005 gate.",
+    "Therefore folds 1-4, all-data fit, validation inference/package, validation upload, Docker upload, and runtime push remain unauthorized."
+  ],
+  "controller_state": "GATE_B_R2_REVIEW_READY_NO_INNER_ELIGIBLE_CANDIDATE",
+  "controller_verification_decision": "NEEDS_GPT_OR_USER_DECISION_BEFORE_ANY_HIGH_COST_STAGE",
+  "created_at_utc": "2026-07-28T03:29:53Z",
+  "current_git_head": "acb1a2d9cb6ae3e47219e4ee59310d64601b46f9",
+  "current_git_short": "acb1a2d",
+  "evidence_paths": {
+    "consistency_validator": "results/20260727_care_dg_dual_pathology_validation/gate_b_consistency_validator_report.json",
+    "r2_diagnostic_report": "results/20260727_care_dg_dual_pathology_validation/gate_b_r2_diagnostic_report.md",
+    "r2_summary": "results/20260727_care_dg_dual_pathology_validation/gate_b_r2_summary.json",
+    "r2_validator": "results/20260727_care_dg_dual_pathology_validation/gate_b_r2_validator_report.json",
+    "scale_grid_csv": "results/20260727_care_dg_dual_pathology_validation/runtime/repaired_formal_scar_priority/fold0/gate_b_r2_scale_diagnostic/gate_b_r2_scale_grid_selection.csv",
+    "strict_validator": "results/20260727_care_dg_dual_pathology_validation/strict_validator_report.json"
+  },
+  "forbidden_without_explicit_new_approval": [
+    "start folds 1-4",
+    "all-data deployment fit",
+    "validation inference/package",
+    "validation upload",
+    "Docker upload",
+    "new Slurm job",
+    "runtime push",
+    "outer-fold0 tuned selection",
+    "external model substitution"
+  ],
+  "gate_b_r1_context": {
+    "failure": [
+      "no_pathology_improves_by_more_than_0.005"
+    ],
+    "operational_status": "PASS",
+    "scientific_expansion_authorized": false,
+    "scientific_gate_status": "FAIL",
+    "status": "GATE_B_R1_SCIENTIFIC_GATE_FAIL"
+  },
+  "gate_b_r2": {
+    "best_train_side_candidate": {
+      "checkpoint": "results/20260727_care_dg_dual_pathology_validation/runtime/repaired_formal_scar_priority/fold0/checkpoints/checkpoint_step04000.pt",
+      "checkpoint_sha256": "1378795ba262807d045f7c9a7d72fa45adb9730c29c9baa58ad2a07752161312",
+      "checkpoint_step": 4000,
+      "edema_scale": 0.25,
+      "edema_zone_anchor_dice_mean": 0.7359732045435635,
+      "edema_zone_component_count_mean": 1.6666666666666667,
+      "edema_zone_component_count_ok": true,
+      "edema_zone_dice_delta": 0.0006300741557779821,
+      "edema_zone_dice_mean": 0.7366032786993415,
+      "edema_zone_hd95_mean_mm": 11.182901780064334,
+      "edema_zone_hd95_ok": true,
+      "edema_zone_remote_fp_mean_mm3": 280.9056308874876,
+      "edema_zone_remote_fp_ok": true,
+      "failures": "no_pathology_improves_by_more_than_0.005",
+      "harm_count": 7,
+      "help_count": 25,
+      "improvement_count": 0,
+      "min_dice_delta": 0.0006070059027927233,
+      "objective_score": -0.054949144314068166,
+      "outer_val_used": false,
+      "pure_edema_anchor_dice_mean": 0.5368480903802283,
+      "pure_edema_component_count_mean": 8.666666666666666,
+      "pure_edema_component_count_ok": true,
+      "pure_edema_dice_delta": 0.0006070059027927233,
+      "pure_edema_dice_mean": 0.537455096283021,
+      "pure_edema_hd95_mean_mm": 13.609999308388703,
+      "pure_edema_hd95_ok": true,
+      "pure_edema_remote_fp_mean_mm3": 308.58093705397505,
+      "pure_edema_remote_fp_ok": true,
+      "scar_anchor_dice_mean": 0.6967214494015085,
+      "scar_component_count_mean": 1.6666666666666667,
+      "scar_component_count_ok": true,
+      "scar_dice_delta": 0.004257834372836111,
+      "scar_dice_mean": 0.7009792837743446,
+      "scar_hd95_mean_mm": 8.657888414743237,
+      "scar_hd95_ok": true,
+      "scar_remote_fp_mean_mm3": 263.15578540475104,
+      "scar_remote_fp_ok": true,
+      "scar_scale": 1.0,
+      "selection_population": "fixed_train_side_complete_inner_select_full_volume_scale_grid",
+      "status": "FAIL",
+      "sum_dice_delta": 0.005494914431406817
+    },
+    "diagnostic_status": "NO_INNER_ELIGIBLE_CANDIDATE",
+    "eligible_count": 0,
+    "gate_b_consistency_status": "PASS",
+    "outer_fold0_re_evaluated": false,
+    "outer_val_used": false,
+    "row_count": 512,
+    "scientific_expansion_authorized": false,
+    "strict_validator_status": "PASS",
+    "validator_status": "PASS"
+  },
+  "hashes": {
+    "results/20260727_care_dg_dual_pathology_validation/gate_b_r2_diagnostic_report.md": "0d88087d4e54dc28cc253da5e8e7f05a11d1d251e44362b3690d3e81e3f3ec02",
+    "results/20260727_care_dg_dual_pathology_validation/gate_b_r2_scale_grid_selection.json": "4a71daa209193acd7532209ccf28178fb66b83cb51de065be0833220455df303",
+    "results/20260727_care_dg_dual_pathology_validation/gate_b_r2_summary.json": "2dbfc1555af5579f7cf5dd510ef4bc809c74074821f102a82be5e10e5ac3292a",
+    "results/20260727_care_dg_dual_pathology_validation/gate_b_r2_validator_report.json": "03f7b90caeff4a3089b4cd94ef23fb29e41adcfab677709b43654fbc0bd855e5",
+    "results/20260727_care_dg_dual_pathology_validation/runtime/repaired_formal_scar_priority/fold0/gate_b_r2_scale_diagnostic/gate_b_r2_scale_grid_selection.csv": "f7a6305be0261c9a2b23e5b9bb7a0fdf4aed9c4129a075d0d78bbafaa12bbc67",
+    "results/20260727_care_dg_dual_pathology_validation/runtime/repaired_formal_scar_priority/fold0/gate_b_r2_scale_diagnostic/gate_b_r2_scale_grid_selection.json": "cdf3bfd18f1012d0f0ec4f3e4972669df81ffa14cdf5d4d4c29a50d8541c43e0",
+    "results/20260727_care_dg_dual_pathology_validation/runtime/repaired_formal_scar_priority/fold0/gate_b_r2_scale_diagnostic/gate_b_r2_validator_report.json": "03f7b90caeff4a3089b4cd94ef23fb29e41adcfab677709b43654fbc0bd855e5",
+    "scripts/evaluation/build_care_dg_validation_packet.py": "254a0bc436aa584fd162126706a9702770475b6dc2632cde23545c74987e6f14",
+    "scripts/evaluation/evaluate_care_dg.py": "f1e32230fc1d40ce2d8680d27e9943fb633ae0c4db42b0a57f7690c4d4fad0dc",
+    "scripts/evaluation/validate_care_dg_gate_a_consistency.py": "f85369fa70fe735ad01a2d809e0e023cf74fb63dd8476de11e176edde4441615"
+  },
+  "remote_review_commit": "acb1a2d9cb6ae3e47219e4ee59310d64601b46f9",
+  "task": "20260727_care_dg_dual_pathology_validation"
+}
