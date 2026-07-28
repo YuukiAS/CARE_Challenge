@@ -1,0 +1,149 @@
+{
+  "active_care_training_or_eval_processes": [],
+  "allocation": {
+    "job_id": "60657290",
+    "preserved": true,
+    "squeue": "JOBID STATE TIME TIME_LEFT NODELIST NAME\n60657290 RUNNING 2-01:21:49 22:38:11 g1807htzh01 CAREInteractive3d",
+    "terminated": false
+  },
+  "controller_state": "GATE_B_R1_OPERATIONAL_PASS_SCIENTIFIC_FAIL_EXPANSION_PAUSED",
+  "controller_verification_decision": "NEEDS_REPAIR_OR_PLANNER_DECISION",
+  "created_at_utc": "2026-07-28T02:26:45Z",
+  "decision_rationale": [
+    "Gate B-R1 operational validator PASS confirms required R1 inference/selection evidence is present and internally consistent.",
+    "Scientific expansion is still false because no pathology improves by more than 0.005 Dice over the anchor on complete-trimodal fold0.",
+    "The repaired inference reduces the old fragmentation failure but does not establish independent efficacy; therefore folds 1-4 and all-data fit remain unauthorized."
+  ],
+  "folds": {
+    "fold0": {
+      "complete_trimodal_heldout_cases": 16,
+      "outer_heldout_cases": 44,
+      "runtime_label": "repaired_formal_scar_priority",
+      "selected_checkpoint": {
+        "checkpoint": "results/20260727_care_dg_dual_pathology_validation/runtime/repaired_formal_scar_priority/fold0/checkpoints/checkpoint_step08000.pt",
+        "checkpoint_sha256": "d0a164c951f7ad8483c0796730d381b5216b8af367448edec4dbe97b3890f1c9",
+        "checkpoint_step": 8000,
+        "edema_zone_component_count_mean": 1.6666666666666667,
+        "edema_zone_dice_mean": 0.7344443961075063,
+        "edema_zone_exact_hd_infinite_cases": 0,
+        "edema_zone_hd95_mean_mm": 11.070316188082458,
+        "edema_zone_remote_fp_mean_mm3": 337.80053176097795,
+        "objective_score": 1.4932825632710265,
+        "outer_val_used": false,
+        "pure_edema_component_count_mean": 8.75,
+        "pure_edema_dice_mean": 0.5343185754136743,
+        "pure_edema_exact_hd_infinite_cases": 0,
+        "pure_edema_hd95_mean_mm": 13.395164143527461,
+        "pure_edema_remote_fp_mean_mm3": 376.48150507027367,
+        "scar_component_count_mean": 1.5,
+        "scar_dice_mean": 0.6991019399257473,
+        "scar_exact_hd_infinite_cases": 0,
+        "scar_hd95_mean_mm": 8.748203669339203,
+        "scar_remote_fp_mean_mm3": 270.1147673483992,
+        "selection_population": "fixed_train_side_complete_inner_select_full_volume"
+      },
+      "status": "R1_EVALUATED_SCIENTIFIC_GATE_FAIL"
+    },
+    "fold1": {
+      "status": "PAUSED_FOR_EXPANSION_DECISION_DIAGNOSTIC_PROVENANCE_ONLY"
+    },
+    "fold2": {
+      "status": "PAUSED_FOR_EXPANSION_DECISION_DIAGNOSTIC_PROVENANCE_ONLY"
+    },
+    "fold3": {
+      "status": "PAUSED_FOR_EXPANSION_DECISION_DIAGNOSTIC_PROVENANCE_ONLY"
+    },
+    "fold4": {
+      "status": "STOPPED_BEFORE_CREDIT_NO_RUNTIME_CHECKPOINT_OBSERVED"
+    }
+  },
+  "forbidden_actions_until_authorized": [
+    "start folds 1-4",
+    "use fold0 outer validation to choose checkpoint or parameters",
+    "all-data fit",
+    "validation upload",
+    "Docker upload",
+    "new Slurm job",
+    "runtime push"
+  ],
+  "gate_b_diagnostic_status": "GATE_B_OVERACTIVE_FRAGMENTED_CORRECTION_DIAGNOSTIC",
+  "gate_b_r1": {
+    "harm_count": 20,
+    "help_count": 28,
+    "inference_contract": {
+      "aggregated_tensors": [
+        "scar_delta",
+        "edema_delta"
+      ],
+      "composition_once_on_full_anchor_logits": "anchor -> bounded edema correction -> bounded scar correction -> argmax",
+      "forbidden": "patch_final_logits_averaging",
+      "gaussian_blending": true,
+      "sliding_window_overlap": 0.5
+    },
+    "no_t2_edema_delta_exact_zero": true,
+    "operational_validator_failures": [],
+    "operational_validator_status": "PASS",
+    "outer_val_used_for_selection": false,
+    "pathology_checks": [
+      {
+        "component_count_ok": true,
+        "dice_delta": 0.0014049883944654562,
+        "hd95_ok": true,
+        "pathology": "scar",
+        "remote_fp_ok": true
+      },
+      {
+        "component_count_ok": true,
+        "dice_delta": 0.0011683061055949295,
+        "hd95_ok": true,
+        "pathology": "edema_zone",
+        "remote_fp_ok": true
+      },
+      {
+        "component_count_ok": true,
+        "dice_delta": -0.0021025989378608,
+        "hd95_ok": true,
+        "pathology": "pure_edema",
+        "remote_fp_ok": true
+      }
+    ],
+    "post_scar_decision_overwritten_voxels": 0,
+    "scientific_expansion_authorized": false,
+    "scientific_gate_failures": [
+      "no_pathology_improves_by_more_than_0.005"
+    ],
+    "scientific_gate_status": "FAIL",
+    "selection_population": "fixed_train_side_complete_inner_select_full_volume"
+  },
+  "git_head_before_packet_commit": "d59c5fa39b0c068c80b33e9fcf305c64891e15d9",
+  "git_short_before_packet_commit": "d59c5fa",
+  "latest_user_instruction": "pause folds 1-4; Gate B operational PASS is not scientific PASS; perform no-retraining Gate B-R1 inference/selection repair; do not start new jobs or push runtime",
+  "next_allowed_actions": [
+    "read-only review of Gate B-R1 evidence",
+    "planner/user-authorized same-scope inference/selection repair without retraining",
+    "planner/user-authorized terminalization as no safe CARE-DG candidate if no further same-scope repair is desired"
+  ],
+  "required_evidence": {
+    "casewise": "results/20260727_care_dg_dual_pathology_validation/runtime/repaired_formal_scar_priority/fold0/gate_b_r1_evaluation/gate_b_r1_casewise_metrics.csv",
+    "diagnostic_report": "results/20260727_care_dg_dual_pathology_validation/gate_b_r1_diagnostic_report.md",
+    "evaluation_root": "results/20260727_care_dg_dual_pathology_validation/runtime/repaired_formal_scar_priority/fold0/gate_b_r1_evaluation",
+    "inner_selection": "results/20260727_care_dg_dual_pathology_validation/runtime/repaired_formal_scar_priority/fold0/gate_b_r1_evaluation/gate_b_r1_inner_checkpoint_selection.csv",
+    "model_summary": "results/20260727_care_dg_dual_pathology_validation/runtime/repaired_formal_scar_priority/fold0/gate_b_r1_evaluation/gate_b_r1_model_summary.csv",
+    "seam_audit": "results/20260727_care_dg_dual_pathology_validation/runtime/repaired_formal_scar_priority/fold0/gate_b_r1_evaluation/gate_b_r1_seam_audit.csv",
+    "summary": "results/20260727_care_dg_dual_pathology_validation/gate_b_r1_summary.json",
+    "validator": "results/20260727_care_dg_dual_pathology_validation/gate_b_r1_validator_report.json"
+  },
+  "scientific_expansion_authorized": false,
+  "source_and_evidence_hashes": {
+    "results/20260727_care_dg_dual_pathology_validation/gate_a_consistency_validator_report.json": "4a19545d470397ad24f253e3d17ca98fecdca4258a00102c522884673557cd5f",
+    "results/20260727_care_dg_dual_pathology_validation/gate_b_consistency_validator_report.json": "8437e1983e7d1c610a3f46bc9231d32e3ce520a94595f0a1ac75f37109e0be3a",
+    "results/20260727_care_dg_dual_pathology_validation/gate_b_r1_diagnostic_report.md": "381bd90391ba97b8370ca06c4967545c8002a42dacac2edce69bb9cdd0432b0f",
+    "results/20260727_care_dg_dual_pathology_validation/gate_b_r1_summary.json": "ac6dd0453ed3d9ccc4385772555ed8f06913fd457accc953adf389acb6d5815d",
+    "results/20260727_care_dg_dual_pathology_validation/gate_b_r1_validator_report.json": "8c7a94b1713708601b1427459d95cd82759c44562fd9ce052f2389ed4ef7ee18",
+    "results/20260727_care_dg_dual_pathology_validation/strict_validator_report.json": "5085abb4f8b1de93e24a498bed86ad74166723b2a77737e857eb7f5188dbcbd1",
+    "scripts/evaluation/build_care_dg_validation_packet.py": "092474bf24c12584304cdb2dec0bed6d44e04a424da5ea9be551b8a087e56a75",
+    "scripts/evaluation/evaluate_care_dg.py": "0269ff2d76a42a839631d97e02183fad3ee2c73359391b7d4af0204d8e0e9417",
+    "scripts/evaluation/validate_care_dg_gate_a_consistency.py": "7cd65291f1081939c5e20a0056ef9ed3cbff0fd4965be2d5c90ba6cf70d284e8"
+  },
+  "task": "20260727_care_dg_dual_pathology_validation"
+}
