@@ -1,6 +1,8 @@
 {
   "all_data_fit_authorized": false,
   "approval_token": "APPROVE_DPR_GATE_B_R1",
+  "approval_token_valid": false,
+  "approve_dpr_gate_b_r1_accepted": false,
   "attempts": [
     {
       "mode": "detailed",
@@ -24,6 +26,13 @@
   "node_sha256": "e1cf18bfa0e3f34993695207e8c718cf8a0b9ee02488d91c2a670c9375b05aa1",
   "notifier_reuse": "controller_notifications.notify_goal_watcher/load_config/load_env_file plus existing CARE notify SMTP configuration; no new notifier service created",
   "origin_main_after_evidence_push": "e193cc0d356c25c0e73bb1ea08a1779ece60bf6b",
+  "previous_status": "SENT_SANITIZED_AFTER_DETAILED_EMAIL_BLOCKED",
+  "reason": [
+    "complete16 scar, edema-zone, and pure-edema Dice did not reach +0.005",
+    "scientific gate omitted the at-least-one-pathology Dice improvement >= +0.005 requirement",
+    "validator did not independently recompute the scientific gate",
+    "utility regression minimum was added without contract authorization"
+  ],
   "receipt_written_at_utc": "2026-07-28T17:01:51Z",
   "recipient_count": 1,
   "recipients_sha256": "222fb7e7f12a038ba7bdf2c6775bca79f981d7530f8b3bfd18fedb2478e9f999",
@@ -31,14 +40,16 @@
   "sanitized_body": "A requested private repository update has completed. Please check the private repository or the current Codex task for details. No reply is needed.",
   "sanitized_body_sha256": "435e0bdf0a7f0276309d6183747c41ed826a608ac883f13d2a25c03ab9883aea",
   "sanitized_subject": "Task update ready",
-  "scientific_final_output_credit": 1,
+  "scientific_final_output_credit": 0,
   "send_status": "SENT_SANITIZED",
   "sender_present": true,
   "sent_at_utc": "2026-07-28T17:01:12Z",
   "sent_subject": "Task update ready",
   "state": "AWAITING_HUMAN_ACCEPTANCE_DPR_GATE_B_R1",
-  "status": "SENT_SANITIZED_AFTER_DETAILED_EMAIL_BLOCKED",
+  "status": "SUPERSEDED_BY_DPR_GATE_B_R2",
   "subject": "[CARE-DPR][B-R1/2] Fold0候选级重建与仲裁修复完成，等待下一轮决策",
+  "superseded_at_utc": "2026-07-28T17:18:38Z",
+  "superseded_by": "DPR_GATE_B_R2",
   "task_key": "20260728_care_dpr_fold0_global_redesign",
   "to": "1155246312@link.cuhk.edu.hk",
   "validation_upload_authorized": false

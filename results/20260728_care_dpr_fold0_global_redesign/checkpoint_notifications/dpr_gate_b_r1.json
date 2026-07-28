@@ -1,14 +1,25 @@
 {
   "all_data_fit_authorized": false,
   "approval_token": "APPROVE_DPR_GATE_B_R1",
+  "approval_token_valid": false,
+  "approve_dpr_gate_b_r1_accepted": false,
   "fold_expansion_authorized": false,
+  "formal_expansion_authorized": false,
   "gate_summary": {
+    "all_data_fit_authorized": false,
+    "approval_token_valid": false,
+    "approve_dpr_gate_b_r1_accepted": false,
     "checkpoint_sha256": "4122586a7fb03a05963775b37450045f62bcf75660ef803e3ae9e5e276fb2e38",
     "checkpoint_step": 2000,
     "complete16_case_ids_sha256": "34f3bccb3f10cb42e9be271c82cfbad399f13adf48f254fa29a0c3f67ee97bbd",
     "complete_trimodal_heldout_cases": 16,
+    "development_evidence_only": true,
     "edema_utility_regression_min": 0.99,
+    "evidence_root": "results/20260728_care_dpr_fold0_global_redesign/runtime/formal_fold0_r1/gate_b_r1_evaluation",
+    "fold_expansion_authorized": false,
+    "formal_expansion_authorized": false,
     "gate": "DPR_GATE_B_R1",
+    "gate_b_r2_repair_required": true,
     "generated_at_utc": "2026-07-28T16:53:45Z",
     "mechanism_report": {
       "proposal_metrics": {
@@ -126,6 +137,7 @@
         "true_candidate_total_count": 4223
       }
     },
+    "model_summary_rows_read": 12,
     "no_t2_exact_zero": {
       "rows": [
         {
@@ -346,13 +358,30 @@
       "summary": "results/20260728_care_dpr_fold0_global_redesign/runtime/formal_fold0_r1/gate_b_r1_evaluation/gate_b_r1_model_summary.csv"
     },
     "predicted_roi_only_for_inner_outer_inference": true,
+    "previous_status": "GATE_B_R1_OPERATIONAL_PASS",
+    "r1_existing_evidence_files_reused": {
+      "casewise": "results/20260728_care_dpr_fold0_global_redesign/runtime/formal_fold0_r1/gate_b_r1_evaluation/gate_b_r1_casewise_metrics.csv",
+      "model_summary": "results/20260728_care_dpr_fold0_global_redesign/runtime/formal_fold0_r1/gate_b_r1_evaluation/gate_b_r1_model_summary.csv",
+      "no_t2": "results/20260728_care_dpr_fold0_global_redesign/runtime/formal_fold0_r1/gate_b_r1_evaluation/gate_b_r1_no_t2_safety_audit.csv"
+    },
+    "reason": [
+      "complete16 scar, edema-zone, and pure-edema Dice did not reach +0.005",
+      "scientific gate omitted the at-least-one-pathology Dice improvement >= +0.005 requirement",
+      "validator did not independently recompute the scientific gate",
+      "utility regression minimum was added without contract authorization"
+    ],
     "scar_utility_regression_min": 0.75,
+    "scientific_final_output_credit": 0,
     "scientific_gate": {
       "complete16_delta_summary": {
         "edema_zone": {
           "component_count_ratio_mean": 1.0,
           "dice_delta_mean": -8.990787621249857e-05,
+          "harm": 0,
+          "hd95_le_1.05x_anchor": true,
           "hd95_ratio_mean": 1.0018119694284409,
+          "help": 0,
+          "help_ge_harm_minus_1": true,
           "improves_by_ge_0.005": false,
           "no_component_count_explosion": true,
           "no_new_infinite_exact_hd": true,
@@ -363,7 +392,11 @@
         "pure_edema": {
           "component_count_ratio_mean": 1.0,
           "dice_delta_mean": -0.00026408900728283266,
+          "harm": 1,
+          "hd95_le_1.05x_anchor": true,
           "hd95_ratio_mean": 0.9983160277622531,
+          "help": 0,
+          "help_ge_harm_minus_1": true,
           "improves_by_ge_0.005": false,
           "no_component_count_explosion": true,
           "no_new_infinite_exact_hd": true,
@@ -374,7 +407,11 @@
         "scar": {
           "component_count_ratio_mean": 1.0,
           "dice_delta_mean": -0.0006920252646411065,
+          "harm": 0,
+          "hd95_le_1.05x_anchor": true,
           "hd95_ratio_mean": 1.0104736857416303,
+          "help": 0,
+          "help_ge_harm_minus_1": true,
           "improves_by_ge_0.005": false,
           "no_component_count_explosion": true,
           "no_new_infinite_exact_hd": true,
@@ -383,7 +420,19 @@
           "remote_fp_ratio_mean": 0.5
         }
       },
-      "failures": [],
+      "contract_checks": {
+        "at_least_one_pathology_dice_delta_ge_plus_0.005": false,
+        "component_count_no_order_explosion": true,
+        "no_new_infinite_exact_hd": true,
+        "no_t2_exact_zero": true,
+        "per_pathology_dice_delta_ge_minus_0.005": true,
+        "per_pathology_hd95_le_1.05x_anchor": true,
+        "per_pathology_help_ge_harm_minus_1": true,
+        "remote_fp_le_1.10x_anchor": true
+      },
+      "failures": [
+        "no_pathology_improves_by_at_least_0.005"
+      ],
       "fold_expansion_authorized": false,
       "help_harm_by_pathology": {
         "edema_zone": {
@@ -405,8 +454,10 @@
           "help_harm_dice_delta_threshold": 0.005
         }
       },
-      "scientific_final_output_credit": 1,
-      "status": "PASS"
+      "outer_fold0_rerun": false,
+      "recomputed_from_existing_r1_files_only": true,
+      "scientific_final_output_credit": 0,
+      "status": "FAIL"
     },
     "selected_checkpoint": {
       "avg_dice_delta": 0.0010497825538728401,
@@ -477,7 +528,9 @@
       "src/care_myocardium/training/care_dpr_trainer.py": "247c81f44be4ff0486cf13280e5a6c5c791e4c35271c896908deac96264d7f70",
       "tests/care_dpr/test_care_dpr_model.py": "ed6dad359c00d027fd12665c767847719f99cff41d222fe04cd59ea697b97920"
     },
-    "status": "GATE_B_R1_OPERATIONAL_PASS",
+    "status": "SUPERSEDED_BY_DPR_GATE_B_R2",
+    "superseded_at_utc": "2026-07-28T17:18:38Z",
+    "superseded_by": "DPR_GATE_B_R2",
     "task_key": "20260728_care_dpr_fold0_global_redesign",
     "teacher_roi_inner_outer_inference": false,
     "train_side_inner12_case_ids_sha256": "4f47372c6de844c85f9852981e5849bb817bf02032ae3900e7b31411fe5aaed3",
@@ -492,9 +545,21 @@
       "scar_utility_regression_min": 0.75,
       "scar_utility_threshold": 0.7,
       "status": "PASS"
-    }
+    },
+    "validation_upload_authorized": false
   },
+  "previous_status": null,
+  "reason": [
+    "complete16 scar, edema-zone, and pure-edema Dice did not reach +0.005",
+    "scientific gate omitted the at-least-one-pathology Dice improvement >= +0.005 requirement",
+    "validator did not independently recompute the scientific gate",
+    "utility regression minimum was added without contract authorization"
+  ],
+  "scientific_final_output_credit": 0,
   "state": "AWAITING_HUMAN_ACCEPTANCE_DPR_GATE_B_R1",
+  "status": "SUPERSEDED_BY_DPR_GATE_B_R2",
   "subject": "[CARE-DPR][B-R1/2] Fold0候选级重建与仲裁修复完成，等待下一轮决策",
+  "superseded_at_utc": "2026-07-28T17:18:38Z",
+  "superseded_by": "DPR_GATE_B_R2",
   "validation_upload_authorized": false
 }

@@ -21,6 +21,7 @@ import torch
 
 from scripts.evaluation.evaluate_care_dg import PATHOLOGIES, finite_mean, summarize
 from scripts.evaluation.evaluate_care_dpr import THRESHOLD_CANDIDATES, aupr, auroc
+from scripts.evaluation.care_dpr_gate_b_science import scientific_gate_from_casewise
 from scripts.evaluation.evaluate_care_dpr_gate_b import (
     RESULT_ROOT,
     RUNTIME_ROOT,
@@ -275,33 +276,21 @@ def run_gate_b_r1(args: argparse.Namespace) -> dict[str, Any]:
     complete_eval = evaluate_population(model=model, cases=complete_val, population="fold0_complete_trimodal16", case_to_fold=case_to_fold, metadata=metadata, cache=cache, device=device, utility_threshold=0.5, scar_utility_threshold=float(selected["scar_utility_threshold"]), edema_utility_threshold=float(selected["edema_utility_threshold"]), model_name=MODEL_NAME, scar_utility_regression_min=selected.get("scar_utility_regression_min"), edema_utility_regression_min=selected.get("edema_utility_regression_min"))
     casewise.extend(outer_eval["casewise"]); casewise.extend(complete_eval["casewise"])
     summary = summarize(casewise)
-    help_harm, help_harm_summary = delta_rows(casewise, "fold0_complete_trimodal16", MODEL_NAME)
-    hh_by_path = {}
-    failures = []
-    for pathology in PATHOLOGIES:
-        rows = [r for r in help_harm if r["pathology"] == pathology]
-        help_count = sum(1 for r in rows if r["help_harm"] == "help")
-        harm_count = sum(1 for r in rows if r["help_harm"] == "harm")
-        hh_by_path[pathology] = {"help": help_count, "harm": harm_count, "help_ge_harm_minus_1": help_count >= harm_count - 1, "help_harm_dice_delta_threshold": HELP_HARM_DICE_DELTA_THRESHOLD}
-        if help_count < harm_count - 1:
-            failures.append(f"{pathology}_help_lt_harm_minus_1")
-        if not help_harm_summary[pathology]["not_below_anchor_by_more_than_0.005"]:
-            failures.append(f"{pathology}_dice_delta_lt_-0.005")
     no_t2_rows = outer_eval["no_t2"] + complete_eval["no_t2"]
-    if not all(r.get("status") == "PASS" for r in no_t2_rows):
-        failures.append("no_t2_exact_zero_fail")
+    gate, help_harm = scientific_gate_from_casewise(
+        casewise,
+        no_t2_rows,
+        population="fold0_complete_trimodal16",
+        model_name=MODEL_NAME,
+    )
+    failures = list(gate["failures"])
     if selected["scar_accepted"] <= 0 or selected["scar_rejected"] <= 0 or selected["edema_accepted"] <= 0 or selected["edema_rejected"] <= 0:
         failures.append("selected_threshold_lacks_nonzero_accept_reject")
     if selected["scar_signed_net_utility"] <= 0 or selected["edema_signed_net_utility"] <= 0:
         failures.append("selected_signed_net_utility_not_positive")
-    gate = {
-        "status": "PASS" if not failures else "FAIL",
-        "failures": failures,
-        "scientific_final_output_credit": 0 if failures else 1,
-        "fold_expansion_authorized": False,
-        "help_harm_by_pathology": hh_by_path,
-        "complete16_delta_summary": help_harm_summary,
-    }
+    gate["failures"] = failures
+    gate["status"] = "PASS" if not failures else "FAIL"
+    gate["scientific_final_output_credit"] = 0 if failures else 1
     notification = {
         "subject": "[CARE-DPR][B-R1/2] Fold0候选级重建与仲裁修复完成，等待下一轮决策",
         "state": "AWAITING_HUMAN_ACCEPTANCE_DPR_GATE_B_R1",

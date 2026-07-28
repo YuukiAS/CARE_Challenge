@@ -1,0 +1,108 @@
+{
+  "fold_expansion_authorized": false,
+  "formal_expansion_authorized": false,
+  "gate": "DPR_GATE_B_R1",
+  "outer_fold0_rerun": false,
+  "reason": [
+    "complete16 scar, edema-zone, and pure-edema Dice did not reach +0.005",
+    "scientific gate omitted the at-least-one-pathology Dice improvement >= +0.005 requirement",
+    "validator did not independently recompute the scientific gate",
+    "utility regression minimum was added without contract authorization"
+  ],
+  "scientific_final_output_credit": 0,
+  "scientific_gate": {
+    "complete16_delta_summary": {
+      "edema_zone": {
+        "component_count_ratio_mean": 1.0,
+        "dice_delta_mean": -8.990787621249857e-05,
+        "harm": 0,
+        "hd95_le_1.05x_anchor": true,
+        "hd95_ratio_mean": 1.0018119694284409,
+        "help": 0,
+        "help_ge_harm_minus_1": true,
+        "improves_by_ge_0.005": false,
+        "no_component_count_explosion": true,
+        "no_new_infinite_exact_hd": true,
+        "not_below_anchor_by_more_than_0.005": true,
+        "remote_fp_le_1.10x_anchor": true,
+        "remote_fp_ratio_mean": 0.625
+      },
+      "pure_edema": {
+        "component_count_ratio_mean": 1.0,
+        "dice_delta_mean": -0.00026408900728283266,
+        "harm": 1,
+        "hd95_le_1.05x_anchor": true,
+        "hd95_ratio_mean": 0.9983160277622531,
+        "help": 0,
+        "help_ge_harm_minus_1": true,
+        "improves_by_ge_0.005": false,
+        "no_component_count_explosion": true,
+        "no_new_infinite_exact_hd": true,
+        "not_below_anchor_by_more_than_0.005": true,
+        "remote_fp_le_1.10x_anchor": true,
+        "remote_fp_ratio_mean": 0.6189903846153846
+      },
+      "scar": {
+        "component_count_ratio_mean": 1.0,
+        "dice_delta_mean": -0.0006920252646411065,
+        "harm": 0,
+        "hd95_le_1.05x_anchor": true,
+        "hd95_ratio_mean": 1.0104736857416303,
+        "help": 0,
+        "help_ge_harm_minus_1": true,
+        "improves_by_ge_0.005": false,
+        "no_component_count_explosion": true,
+        "no_new_infinite_exact_hd": true,
+        "not_below_anchor_by_more_than_0.005": true,
+        "remote_fp_le_1.10x_anchor": true,
+        "remote_fp_ratio_mean": 0.5
+      }
+    },
+    "contract_checks": {
+      "at_least_one_pathology_dice_delta_ge_plus_0.005": false,
+      "component_count_no_order_explosion": true,
+      "no_new_infinite_exact_hd": true,
+      "no_t2_exact_zero": true,
+      "per_pathology_dice_delta_ge_minus_0.005": true,
+      "per_pathology_hd95_le_1.05x_anchor": true,
+      "per_pathology_help_ge_harm_minus_1": true,
+      "remote_fp_le_1.10x_anchor": true
+    },
+    "failures": [
+      "no_pathology_improves_by_at_least_0.005"
+    ],
+    "fold_expansion_authorized": false,
+    "help_harm_by_pathology": {
+      "edema_zone": {
+        "harm": 0,
+        "help": 0,
+        "help_ge_harm_minus_1": true,
+        "help_harm_dice_delta_threshold": 0.005
+      },
+      "pure_edema": {
+        "harm": 1,
+        "help": 0,
+        "help_ge_harm_minus_1": true,
+        "help_harm_dice_delta_threshold": 0.005
+      },
+      "scar": {
+        "harm": 0,
+        "help": 0,
+        "help_ge_harm_minus_1": true,
+        "help_harm_dice_delta_threshold": 0.005
+      }
+    },
+    "outer_fold0_rerun": false,
+    "recomputed_from_existing_r1_files_only": true,
+    "scientific_final_output_credit": 0,
+    "status": "FAIL"
+  },
+  "source_evidence": {
+    "casewise": "results/20260728_care_dpr_fold0_global_redesign/runtime/formal_fold0_r1/gate_b_r1_evaluation/gate_b_r1_casewise_metrics.csv",
+    "model_summary": "results/20260728_care_dpr_fold0_global_redesign/runtime/formal_fold0_r1/gate_b_r1_evaluation/gate_b_r1_model_summary.csv",
+    "no_t2": "results/20260728_care_dpr_fold0_global_redesign/runtime/formal_fold0_r1/gate_b_r1_evaluation/gate_b_r1_no_t2_safety_audit.csv"
+  },
+  "status": "SUPERSEDED_BY_DPR_GATE_B_R2",
+  "superseded_at_utc": "2026-07-28T17:18:38Z",
+  "task_key": "20260728_care_dpr_fold0_global_redesign"
+}

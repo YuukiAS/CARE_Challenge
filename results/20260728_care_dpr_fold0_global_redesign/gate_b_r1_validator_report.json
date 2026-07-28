@@ -1,37 +1,73 @@
 {
   "checks": {
     "all_8_checkpoints_considered": "PASS",
+    "fold_expansion_false": "PASS",
     "gate_is_r1": "PASS",
-    "help_harm_material_threshold_recorded": "PASS",
-    "independent_thresholds": "PASS",
+    "independent_thresholds_recorded": "PASS",
     "known_bad_rejections_pass": "PASS",
+    "model_summary_all_three_present": "PASS",
+    "model_summary_confirms_no_plus005": "PASS",
     "no_outer_selection": "PASS",
     "no_patch_final_label_averaging": "PASS",
     "no_t2_exact_zero": "PASS",
     "pass2_refines_each_candidate": "PASS",
     "predicted_roi_only": "PASS",
     "real_candidates_only": "PASS",
-    "scientific_gate_pass": "PASS",
-    "scientific_gate_recorded_no_expansion": "PASS",
-    "selected_signed_net_positive": "PASS",
-    "selected_thresholds_nonzero_accept_reject": "PASS",
+    "recorded_scientific_matches_recompute": "PASS",
+    "scientific_credit_zero": "PASS",
+    "scientific_gate_independently_recomputed_fail": "PASS",
     "source_hashes_include_r1": "PASS",
+    "superseded_by_r2_recorded": "PASS",
     "threshold_rows_signed_fields": "PASS",
-    "two_pass_contract": "PASS"
+    "two_pass_contract": "PASS",
+    "unauthorized_regression_min_acknowledged": "PASS"
   },
   "gate": "DPR_GATE_B_R1_VALIDATOR",
   "known_bad_rejections": {
-    "global_threshold_rejected": "PASS",
-    "outer_threshold_masquerading_inner_rejected": "PASS",
-    "patch_candidate_decision_rejected": "PASS",
+    "missing_plus005_requirement_rejected": "PASS",
     "patch_final_label_averaging_rejected": "PASS",
-    "positive_only_realized_gain_rejected": "PASS",
-    "selected_threshold_accepts_zero_rejected": "PASS",
-    "synthetic_variants_primary_gate_rejected": "PASS",
-    "terminal_only_eval_rejected": "PASS"
+    "safety_noninferiority_as_scientific_gain_rejected": "PASS",
+    "terminal_only_eval_rejected": "PASS",
+    "three_improves_false_but_status_pass_rejected": "PASS",
+    "unauthorized_utility_regression_min_rejected": "PASS",
+    "validator_independent_of_scientific_json_status": "PASS"
   },
-  "scientific_gate_failures": [],
-  "scientific_gate_status": "PASS",
+  "model_summary_deltas": {
+    "edema_zone": {
+      "anchor_exact_hd_infinite_cases": 0.0,
+      "component_count_ratio_of_means": 1.0,
+      "dice_delta_mean": -8.990787621254714e-05,
+      "hd95_ratio_of_means": 1.001131016423854,
+      "pred_exact_hd_infinite_cases": 0.0,
+      "remote_fp_ratio_of_means": 1.0
+    },
+    "pure_edema": {
+      "anchor_exact_hd_infinite_cases": 0.0,
+      "component_count_ratio_of_means": 1.0,
+      "dice_delta_mean": -0.0002640890072828084,
+      "hd95_ratio_of_means": 0.9993057312026213,
+      "pred_exact_hd_infinite_cases": 0.0,
+      "remote_fp_ratio_of_means": 0.9954422425899893
+    },
+    "scar": {
+      "anchor_exact_hd_infinite_cases": 0.0,
+      "component_count_ratio_of_means": 1.0,
+      "dice_delta_mean": -0.0006920252646410718,
+      "hd95_ratio_of_means": 1.0068375025324652,
+      "pred_exact_hd_infinite_cases": 0.0,
+      "remote_fp_ratio_of_means": 1.0
+    }
+  },
+  "recomputed_help_harm_rows": 48,
+  "scientific_gate_recomputed_failures": [
+    "no_pathology_improves_by_at_least_0.005"
+  ],
+  "scientific_gate_recomputed_status": "FAIL",
+  "scientific_gate_recorded_failures": [
+    "no_pathology_improves_by_at_least_0.005"
+  ],
+  "scientific_gate_recorded_status": "FAIL",
   "status": "PASS",
-  "task_key": "20260728_care_dpr_fold0_global_redesign"
+  "task_key": "20260728_care_dpr_fold0_global_redesign",
+  "unauthorized_regression_gate_present": true
 }
