@@ -99,5 +99,20 @@
       "subject": "[CARE-DPR][B/2] Fold0双病理结果完成，等待下一轮决策",
       "task_key": "20260728_care_dpr_fold0_global_redesign"
     }
-  ]
+  ],
+  "dpr_gate_b_r1_sanitized_sent": {
+    "formal_expansion_authorized": false,
+    "fold_expansion_authorized": false,
+    "validation_upload_authorized": false,
+    "scientific_final_output_credit": 1,
+    "node_json": "results/20260728_care_dpr_fold0_global_redesign/checkpoint_notifications/dpr_gate_b_r1.json",
+    "receipt_json": "results/20260728_care_dpr_fold0_global_redesign/checkpoint_notifications/dpr_gate_b_r1_send_receipt.json",
+    "send_status": "SENT_SANITIZED",
+    "sent_at_utc": "2026-07-28T17:01:12Z",
+    "state": "AWAITING_HUMAN_ACCEPTANCE_DPR_GATE_B_R1",
+    "status": "SENT_SANITIZED_AFTER_DETAILED_EMAIL_BLOCKED",
+    "subject": "Task update ready",
+    "intended_subject": "[CARE-DPR][B-R1/2] Fold0候选级重建与仲裁修复完成，等待下一轮决策",
+    "to": "1155246312@link.cuhk.edu.hk"
+  }
 }
