@@ -1,0 +1,174 @@
+task_key: 20260728_care_dpr_fold0_global_redesign
+amendment: CARE_DPR_PREEXECUTION_ARCHITECTURE_AMENDMENT
+precedence: highest
+parent_controller: prompts/tasks/20260728_care_dpr_fold0_global_redesign_controller.md
+parent_blueprint: prompts/blueprints/CARE_DPR_dual_pathology_proposal_refine_arbitrate_20260728.md
+amendment_path: prompts/tasks/20260728_care_dpr_preexecution_architecture_amendment.md
+execution_mode: controller_supervised
+executor_count: 1
+executor_slots: 1
+parallel_execution_allowed: false
+mapper_slots: 1
+mapper_required: true
+allowed_allocation_id: 60657290
+allow_new_slurm_job: false
+allow_sbatch: false
+allow_salloc: false
+allow_runtime_push: false
+allow_validation_upload: false
+allow_docker_upload: false
+architecture_contract:
+  shared_backbone_count: 1
+  required_shared_modules: [lge_stem, t2_stem, c0_stem, availability_masked_fusion, anchor_context, shared_encoder]
+  forbidden_runtime: [MoSAIC, full_MMRD_teacher, prototype, dictionary, router, second_UNet, second_nnunet, multi_expert_backbone, ensemble]
+  pathology_branches: [scar, edema_zone]
+  required_branch_outputs: [p_coarse, q_fn, q_fp, p_refined, component_utility]
+  candidate_types: [ADD_FN, REVISE_FP]
+  legal_actions: [KEEP_ANCHOR_LOCAL_MASK, REPLACE_WITH_REFINED_LOCAL_MASK]
+  full_volume_inference:
+    overlap: 0.5
+    gaussian_blending: true
+    aggregate_before_components: [shared_full_resolution_feature, p_coarse, q_fn, q_fp, p_refined]
+    patch_final_label_averaging: false
+    patch_local_component_arbitration: false
+  roi_context_zyx:
+    scar: [8, 96, 96]
+    edema_zone: [8, 128, 128]
+training_contract:
+  total_optimizer_steps: 4000
+  seed: 20260728
+  batch_size: 4
+  patch_shape_zyx: [8, 128, 128]
+  optimizer: AdamW
+  weight_decay: 0.0001
+  amp_dtype: bfloat16
+  grad_clip_norm: 1.0
+  stages:
+    - id: A1
+      steps: 500
+      population: actual_train_reliable
+      encoder_lr: 0.00002
+      proposal_refiner_utility_lr: 0.0001
+      teacher_roi_start_fraction: 0.75
+      teacher_roi_end_fraction: 0.75
+    - id: A2
+      steps: 2000
+      population: actual_train_reliable
+      encoder_lr: 0.00002
+      proposal_refiner_utility_lr: 0.0001
+      teacher_roi_start_fraction: 0.75
+      teacher_roi_end_fraction: 0.0
+      final_predicted_only_steps: 500
+    - id: B
+      steps: 1500
+      population: complete_trimodal_actual_train
+      freeze: [modality_stems, shared_encoder, p_coarse, q_fn, q_fp]
+      train: [scar_refiner, scar_utility, edema_refiner, edema_utility]
+      lr: 0.00005
+      teacher_roi_fraction: 0.0
+  sampling_cycle: [scar_FN, scar_FP, scar_hard_negative, scar_pathology, edema_FN, edema_FP, edema_hard_negative, edema_pathology]
+  hard_negatives: [blood_pool, outside_support_bright_island, remote_anchor_FP, high_intensity_nonlesion]
+  no_t2_edema_slot_allowed: false
+utility_contract:
+  weighted_error: 2_FN_plus_1_FP_plus_0.25_boundary_error
+  utility_normalization: union_voxel_count
+  utility_clip: [-1.0, 1.0]
+  accept_min_utility: 0.02
+  forced_reject: [new_remote_component_gt20mm, gt_positive_empty_prediction]
+  threshold_candidates: [0.3, 0.4, 0.5, 0.6, 0.7]
+  threshold_selection_population: fixed_train_side_inner_only
+  outer_fold0_selection_forbidden: true
+hierarchy_contract:
+  edema_zone_target: scar_union_edema
+  containment_loss_weight: 0.1
+  containment_t2_reliable_only: true
+  composition_order: [edema_zone_arbitration, scar_arbitration, scar_priority, pure_edema_equals_zone_minus_scar]
+  no_t2_edema_exact_zero: true
+waves:
+  - id: A0_AMENDMENT_REGROUND
+    dependencies: []
+    required_outputs:
+      - results/20260728_care_dpr_fold0_global_redesign/amendment_adoption_receipt.json
+      - results/20260728_care_dpr_fold0_global_redesign/amended_contract_sha256.json
+    completion_conditions:
+      - controller_stopped_old_wave_before_contract_sensitive_execution
+      - latest_origin_main_contains_amendment
+      - old_and_new_contract_hashes_recorded
+  - id: A1_IMPLEMENTATION_REPAIR
+    dependencies: [A0_AMENDMENT_REGROUND]
+    required_outputs:
+      - results/20260728_care_dpr_fold0_global_redesign/implementation_contract.json
+      - results/20260728_care_dpr_fold0_global_redesign/unit_test_report.md
+      - results/20260728_care_dpr_fold0_global_redesign/known_bad_report.json
+    completion_conditions:
+      - direct_coarse_proposal_exists_for_both_pathologies
+      - teacher_roi_never_used_for_inner_outer_inference
+      - full_volume_component_arbitration_only
+      - add_and_revise_candidates_distinct
+      - utility_target_matches_amendment
+      - no_t2_edema_entire_path_zero
+  - id: A2_PREFLIGHT_AND_GATE_A
+    dependencies: [A1_IMPLEMENTATION_REPAIR]
+    required_outputs:
+      - results/20260728_care_dpr_fold0_global_redesign/runtime/preflight/preflight_receipt.json
+      - results/20260728_care_dpr_fold0_global_redesign/runtime/preflight/mechanism_report.json
+      - results/20260728_care_dpr_fold0_global_redesign/preflight_validator_report.json
+      - results/20260728_care_dpr_fold0_global_redesign/checkpoint_notifications/dpr_gate_a.json
+      - results/20260728_care_dpr_fold0_global_redesign/checkpoint_notifications/dpr_gate_a_send_receipt.json
+    completion_conditions:
+      - proposal_refiner_utility_gradients_nonzero_for_scar_and_edema
+      - teacher_and_predicted_roi_metrics_reported
+      - full_volume_arbitration_parity_pass
+      - zero_accept_exact_anchor
+      - tests_known_bad_strict_consistency_pass
+      - all_gpu_processes_terminal
+      - state_AWAITING_HUMAN_ACCEPTANCE_DPR_GATE_A
+    next_stage_requires_token: APPROVE_DPR_GATE_A
+  - id: A3_FORMAL_FOLD0
+    dependencies: [A2_PREFLIGHT_AND_GATE_A]
+    approval_token: APPROVE_DPR_GATE_A
+    required_outputs:
+      - results/20260728_care_dpr_fold0_global_redesign/runtime/formal_fold0/fold_training_receipt.json
+      - results/20260728_care_dpr_fold0_global_redesign/runtime/formal_fold0/checkpoint_manifest.csv
+      - results/20260728_care_dpr_fold0_global_redesign/runtime/formal_fold0/training_curve.csv
+      - results/20260728_care_dpr_fold0_global_redesign/runtime/formal_fold0/inner_selection.csv
+    completion_conditions:
+      - A1_500_steps
+      - A2_2000_steps
+      - B_1500_steps
+      - total_4000_steps
+      - predicted_only_inner_selection
+      - outer_fold0_unread
+  - id: A4_EVALUATION_AND_GATE_B
+    dependencies: [A3_FORMAL_FOLD0]
+    required_outputs:
+      - results/20260728_care_dpr_fold0_global_redesign/runtime/formal_fold0/evaluation/complete16_summary.csv
+      - results/20260728_care_dpr_fold0_global_redesign/runtime/formal_fold0/evaluation/outer44_summary.csv
+      - results/20260728_care_dpr_fold0_global_redesign/runtime/formal_fold0/evaluation/per_pathology_help_harm.csv
+      - results/20260728_care_dpr_fold0_global_redesign/runtime/formal_fold0/evaluation/proposal_refinement_utility_diagnosis.json
+      - results/20260728_care_dpr_fold0_global_redesign/fold0_scientific_decision.json
+      - results/20260728_care_dpr_fold0_global_redesign/checkpoint_notifications/dpr_gate_b.json
+      - results/20260728_care_dpr_fold0_global_redesign/checkpoint_notifications/dpr_gate_b_send_receipt.json
+    completion_conditions:
+      - complete16_and_outer44_reported
+      - scar_edema_zone_pure_edema_separate
+      - proposal_refinement_arbitration_gap_classified
+      - all_gpu_processes_terminal
+      - state_AWAITING_HUMAN_ACCEPTANCE_DPR_GATE_B
+    next_stage_requires_token: APPROVE_DPR_GATE_B
+email_gates:
+  gate_a:
+    subject: '[CARE-DPR][A/2] 双病理 proposal-refine-arbitrate 实现完成，等待 Fold0 正式训练验收'
+    token: APPROVE_DPR_GATE_A
+    pause_before: formal_fold0
+  gate_b:
+    subject: '[CARE-DPR][B/2] Fold0 双病理结果完成，等待下一轮决策'
+    token: APPROVE_DPR_GATE_B
+    pause_before: any_fold_expansion_all_data_or_validation
+failure_policy:
+  execution_failure: repair_in_place_same_wave
+  proposal_limited: return_to_planner_for_proposal_redesign_not_abandonment
+  refinement_limited: return_to_planner_for_reconstruction_redesign_not_abandonment
+  arbitration_limited: return_to_planner_for_utility_action_redesign_not_abandonment
+  architecture_ceiling_low: return_to_planner_for_global_redesign_not_abandonment
+  allocation_expired: operational_block_exact_resume_no_new_job
