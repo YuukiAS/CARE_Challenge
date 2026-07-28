@@ -64,9 +64,10 @@
     "prepared_at_utc": "2026-07-28T09:20:07Z",
     "pushed_at_utc": "2026-07-28T09:22:46Z",
     "scientific_credit": 0,
-    "send_status": "PENDING_EMAIL_SEND_AFTER_REMOTE_PUSH",
+    "send_status": "SENT_SANITIZED",
+    "sent_at_utc": "2026-07-28T09:27:52Z",
     "state": "AWAITING_HUMAN_ACCEPTANCE_DPR_GATE_A_R2",
-    "status": "READY_TO_SEND_AFTER_REMOTE_PUSH",
+    "status": "SENT_SANITIZED_AFTER_DETAILED_EMAIL_BLOCKED",
     "subject": "[CARE-DPR][A-R2/2] 候选级局部重建与组件仲裁完成，等待Fold0正式训练验收",
     "to": "1155246312@link.cuhk.edu.hk"
   },
@@ -76,5 +77,16 @@
     "scientific_credit": 0,
     "state": "DPR_GATE_A_R2_IMPLEMENTATION_REPAIR_IN_PROGRESS",
     "supersedes": "DPR_GATE_A_R1"
+  },
+  "dpr_gate_a_r2_sanitized_sent": {
+    "formal_fold0_authorized": false,
+    "node_json": "results/20260728_care_dpr_fold0_global_redesign/checkpoint_notifications/dpr_gate_a_r2.json",
+    "receipt_json": "results/20260728_care_dpr_fold0_global_redesign/checkpoint_notifications/dpr_gate_a_r2_send_receipt.json",
+    "scientific_credit": 0,
+    "send_status": "SENT_SANITIZED",
+    "sent_at_utc": "2026-07-28T09:27:52Z",
+    "status": "SENT_SANITIZED_AFTER_DETAILED_EMAIL_BLOCKED",
+    "subject": "CARE task update ready",
+    "to": "1155246312@link.cuhk.edu.hk"
   }
 }
