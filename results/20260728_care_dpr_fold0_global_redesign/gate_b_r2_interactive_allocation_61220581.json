@@ -1,0 +1,48 @@
+{
+  "allocated_tres": "cpu=8,mem=64G,node=1,billing=8,gres/gpu=1,gres/gpu:nvidia_h100_nvl=1",
+  "created_at_utc": "2026-07-29T04:27:44Z",
+  "end_time": "2026-08-03T00:26:41",
+  "explicit_user_override": "2026-07-29 user requested new 5-day interactive job",
+  "forbidden": [
+    "sbatch",
+    "salloc for additional allocations",
+    "parallel GPU processes",
+    "validation upload",
+    "Docker upload",
+    "runtime push"
+  ],
+  "gate": "DPR_GATE_B_R2",
+  "gpu_command_template": "srun --jobid=61220581 --overlap --ntasks=1 bash -lc '<command>'",
+  "holder": {
+    "log": "logs/slurm_interactive/care_dpr_alloc_5d_20260729_002624.log",
+    "tmux_session": "care_dpr_alloc_5d_20260729_002624",
+    "type": "tmux+salloc"
+  },
+  "job_name": "CareDPR5d",
+  "jobid": "61220581",
+  "node": "g1807htzh01",
+  "partition": "htzhulab",
+  "qos": "gpu_access",
+  "scontrol_excerpt": [
+    "JobId=61220581 JobName=CareDPR5d",
+    "   JobState=RUNNING Reason=None Dependency=(null)",
+    "   RunTime=00:01:03 TimeLimit=5-00:00:00 TimeMin=N/A",
+    "   SubmitTime=2026-07-29T00:26:39 EligibleTime=2026-07-29T00:26:39",
+    "   StartTime=2026-07-29T00:26:41 EndTime=2026-08-03T00:26:41 Deadline=N/A",
+    "   Partition=htzhulab AllocNode:Sid=c151604:2871630",
+    "   ReqNodeList=(null) ExcNodeList=(null)",
+    "   NodeList=g1807htzh01",
+    "   AllocTRES=cpu=8,mem=64G,node=1,billing=8,gres/gpu=1,gres/gpu:nvidia_h100_nvl=1",
+    "   SubmitLine=salloc --ntasks=1 --cpus-per-task=8 --mem=64G --time=5-00:00:00 --gres=gpu:1 --partition=htzhulab --qos=gpu_access --job-name=CareDPR5d bash -lc echo ALLOC_GRANTED job=$SLURM_JOB_ID host=c151604.ll.unc.edu start=2026-07-29T00:26:39-04:00; sleep 5d",
+    "   TresPerNode=gres/gpu:1"
+  ],
+  "squeue": [
+    "JOBID|STATE|TIME|TIME_LEFT|NODELIST|TRES_PER_NODE|NODELIST(REASON)",
+    "61220581|RUNNING|1:03|4-23:58:57|g1807htzh01|gres/gpu:1|g1807htzh01"
+  ],
+  "start_time": "2026-07-29T00:26:41",
+  "status": "INTERACTIVE_ALLOCATION_RUNNING",
+  "supersedes_terminal_allocation": "60657290",
+  "task_key": "20260728_care_dpr_fold0_global_redesign",
+  "time_limit": "5-00:00:00"
+}

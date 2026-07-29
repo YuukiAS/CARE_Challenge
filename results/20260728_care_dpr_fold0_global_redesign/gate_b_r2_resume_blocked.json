@@ -1,5 +1,10 @@
 {
   "allocation": {
+    "current_authorized_end_time": "2026-08-03T00:26:41",
+    "current_authorized_gpu_command_template": "srun --jobid=61220581 --overlap --ntasks=1 bash -lc '<command>'",
+    "current_authorized_jobid": "61220581",
+    "current_authorized_state": "RUNNING",
+    "current_authorized_time_limit": "5-00:00:00",
     "gpu_processes_after_c2": "none observed by pgrep run_care_dpr/evaluate_care_dpr/care_dpr",
     "gpu_processes_after_probe": "none observed by pgrep run_care_dpr/evaluate_care_dpr/care_dpr",
     "gpu_processes_after_terminal": "none observed by pgrep run_care_dpr/evaluate_care_dpr/care_dpr/python.*care",
@@ -11,6 +16,7 @@
     "last_relevant_step_meaning": "bounded fold0 development inner probe returned GATE_B_R2_REPAIR_REQUIRED_NO_INNER_ELIGIBLE_CHECKPOINT_THRESHOLD; fail-closed evaluator exit, not a Slurm infrastructure failure",
     "last_relevant_step_state": "FAILED",
     "new_slurm_job_authorized": false,
+    "previous_jobid": "60657290",
     "sacct_excerpt": [
       "JobID|State|ExitCode|Elapsed|Start|End|AllocTRES",
       "60657290|COMPLETED|0:0|3-00:00:00|2026-07-25T21:04:56|2026-07-28T21:04:56|billing=8,cpu=8,gres/gpu:nvidia_h100_nvl=1,gres/gpu=1,mem=64G,node=1",
@@ -88,10 +94,10 @@
   },
   "origin_main": "35094ff441c69ff71641492c40dcbf91db6ef274",
   "resume_point": {
-    "first_next_gpu_command": "srun --jobid=60657290 --overlap --ntasks=1 bash -lc 'cd /users/a/e/aereinh/CARE && ./envs/env_CARE/bin/python scripts/evaluation/evaluate_care_dpr_gate_b_r2.py --runtime-name formal_fold0_r2_balanced_c2_bank_lite --fold 0 --cache-cases 12'",
-    "note": "Allocation 60657290 is terminal and no new Slurm job is authorized. Fold0 limited development probe failed to find an inner-eligible threshold for checkpoint_step04000 at scar=0.30/edema=0.20. Full registered fold0 selection/evaluation and clean fold1 remain incomplete; no Gate B-R2 email is authorized."
+    "first_next_gpu_command": "srun --jobid=61220581 --overlap --ntasks=1 bash -lc 'cd /users/a/e/aereinh/CARE && ./envs/env_CARE/bin/python scripts/evaluation/evaluate_care_dpr_gate_b_r2.py --runtime-name formal_fold0_r2_balanced_c2_bank_lite --fold 0 --cache-cases 12'",
+    "note": "User explicitly authorized a new 5-day interactive allocation 61220581. Continue B-R2 from full registered fold0 inner checkpoint/proposal/utility selection; no Gate B-R2 email is authorized until clean fold1 evaluation is complete."
   },
-  "status": "OPERATIONALLY_BLOCKED_ALLOCATION_60657290_TERMINAL_REMAINING_GATE_B_R2_GPU_WORK_UNRUNNABLE_UNDER_CURRENT_CONSTRAINT",
+  "status": "READY_TO_RESUME_WITH_NEW_USER_AUTHORIZED_ALLOCATION_61220581",
   "task_key": "20260728_care_dpr_fold0_global_redesign",
   "unauthorized": {
     "docker_upload": true,
@@ -100,5 +106,5 @@
     "runtime_push": true,
     "validation_package_or_upload": true
   },
-  "updated_at_utc": "2026-07-29T01:10:27Z"
+  "updated_at_utc": "2026-07-29T04:27:44Z"
 }
