@@ -1,0 +1,275 @@
+{
+  "canonical_metadata_root": "/users/a/e/aereinh/CARE/data/benchmarks/U-MyoPS/gen_ZS_unaligned/data",
+  "center_sample_counts": {
+    "edema": {
+      "CenterB": 40,
+      "CenterC": 40
+    },
+    "scar": {
+      "CenterA": 12,
+      "CenterB": 12,
+      "CenterC": 12,
+      "CenterE": 11,
+      "CenterF": 11,
+      "CenterG": 11,
+      "CenterH": 11
+    }
+  },
+  "draw_count": 160,
+  "first_draws": [
+    {
+      "case_id": "Case1019",
+      "center": "CenterA",
+      "focus": "scar",
+      "positive": true,
+      "step": 1,
+      "t2_present": false
+    },
+    {
+      "case_id": "Case2029",
+      "center": "CenterB",
+      "focus": "edema",
+      "positive": true,
+      "step": 1,
+      "t2_present": true
+    },
+    {
+      "case_id": "Case2027",
+      "center": "CenterB",
+      "focus": "scar",
+      "positive": true,
+      "step": 2,
+      "t2_present": true
+    },
+    {
+      "case_id": "Case3039",
+      "center": "CenterC",
+      "focus": "edema",
+      "positive": true,
+      "step": 2,
+      "t2_present": true
+    },
+    {
+      "case_id": "Case3027",
+      "center": "CenterC",
+      "focus": "scar",
+      "positive": true,
+      "step": 3,
+      "t2_present": true
+    },
+    {
+      "case_id": "Case2013",
+      "center": "CenterB",
+      "focus": "edema",
+      "positive": true,
+      "step": 3,
+      "t2_present": true
+    },
+    {
+      "case_id": "Case5010",
+      "center": "CenterE",
+      "focus": "scar",
+      "positive": true,
+      "step": 4,
+      "t2_present": false
+    },
+    {
+      "case_id": "Case3015",
+      "center": "CenterC",
+      "focus": "edema",
+      "positive": true,
+      "step": 4,
+      "t2_present": true
+    },
+    {
+      "case_id": "Case6005",
+      "center": "CenterF",
+      "focus": "scar",
+      "positive": true,
+      "step": 5,
+      "t2_present": false
+    },
+    {
+      "case_id": "Case2022",
+      "center": "CenterB",
+      "focus": "edema",
+      "positive": true,
+      "step": 5,
+      "t2_present": true
+    },
+    {
+      "case_id": "Case7002",
+      "center": "CenterG",
+      "focus": "scar",
+      "positive": true,
+      "step": 6,
+      "t2_present": false
+    },
+    {
+      "case_id": "Case3030",
+      "center": "CenterC",
+      "focus": "edema",
+      "positive": true,
+      "step": 6,
+      "t2_present": true
+    },
+    {
+      "case_id": "Case8034",
+      "center": "CenterH",
+      "focus": "scar",
+      "positive": true,
+      "step": 7,
+      "t2_present": false
+    },
+    {
+      "case_id": "Case2026",
+      "center": "CenterB",
+      "focus": "edema",
+      "positive": true,
+      "step": 7,
+      "t2_present": true
+    },
+    {
+      "case_id": "Case1013",
+      "center": "CenterA",
+      "focus": "scar",
+      "positive": true,
+      "step": 8,
+      "t2_present": false
+    },
+    {
+      "case_id": "Case3013",
+      "center": "CenterC",
+      "focus": "edema",
+      "positive": true,
+      "step": 8,
+      "t2_present": true
+    },
+    {
+      "case_id": "Case2028",
+      "center": "CenterB",
+      "focus": "scar",
+      "positive": true,
+      "step": 9,
+      "t2_present": true
+    },
+    {
+      "case_id": "Case2032",
+      "center": "CenterB",
+      "focus": "edema",
+      "positive": true,
+      "step": 9,
+      "t2_present": true
+    },
+    {
+      "case_id": "Case3029",
+      "center": "CenterC",
+      "focus": "scar",
+      "positive": true,
+      "step": 10,
+      "t2_present": true
+    },
+    {
+      "case_id": "Case3020",
+      "center": "CenterC",
+      "focus": "edema",
+      "positive": true,
+      "step": 10,
+      "t2_present": true
+    }
+  ],
+  "max_center_count_deviation": {
+    "edema": 0.0,
+    "scar": 0.5714285714285712
+  },
+  "sampler_summary": {
+    "edema": {
+      "bins": {
+        "CenterB": {
+          "positive_burden3": 19
+        },
+        "CenterC": {
+          "positive_burden3": 29
+        }
+      },
+      "case_count": 48,
+      "center_count": 2,
+      "sample_counts": {
+        "CenterB": {
+          "positive_burden3": 40
+        },
+        "CenterC": {
+          "positive_burden3": 40
+        }
+      }
+    },
+    "scar": {
+      "bins": {
+        "CenterA": {
+          "positive_burden2": 2,
+          "positive_burden3": 49
+        },
+        "CenterB": {
+          "positive_burden3": 19
+        },
+        "CenterC": {
+          "positive_burden2": 2,
+          "positive_burden3": 27
+        },
+        "CenterE": {
+          "positive_burden2": 1,
+          "positive_burden3": 3,
+          "safe_negative": 2
+        },
+        "CenterF": {
+          "positive_burden2": 1,
+          "positive_burden3": 5,
+          "safe_negative": 1
+        },
+        "CenterG": {
+          "positive_burden3": 5,
+          "safe_negative": 1
+        },
+        "CenterH": {
+          "positive_burden3": 22,
+          "safe_negative": 1
+        }
+      },
+      "case_count": 141,
+      "center_count": 7,
+      "sample_counts": {
+        "CenterA": {
+          "positive_burden2": 6,
+          "positive_burden3": 6
+        },
+        "CenterB": {
+          "positive_burden3": 12
+        },
+        "CenterC": {
+          "positive_burden2": 6,
+          "positive_burden3": 6
+        },
+        "CenterE": {
+          "positive_burden2": 4,
+          "positive_burden3": 4,
+          "safe_negative": 3
+        },
+        "CenterF": {
+          "positive_burden2": 4,
+          "positive_burden3": 4,
+          "safe_negative": 3
+        },
+        "CenterG": {
+          "positive_burden3": 6,
+          "safe_negative": 5
+        },
+        "CenterH": {
+          "positive_burden3": 6,
+          "safe_negative": 5
+        }
+      }
+    }
+  },
+  "split": "actual_train",
+  "status": "PASS"
+}

@@ -6,7 +6,7 @@
     "T2",
     "C0"
   ],
-  "edema_negative_target_sum_t2_case": 775908.0,
+  "edema_negative_target_sum_t2_case": 797720.0,
   "edema_negative_target_t2_case": "Case2001",
   "first_case": "Case1001",
   "first_image_shape": [
@@ -25,7 +25,7 @@
     "fold",
     "split"
   ],
-  "scar_negative_target_sum_first_case": 1373063.0,
+  "scar_negative_target_sum_first_case": 1404308.0,
   "split": "train",
   "split_guard_overlap": 0,
   "status": "PASS",

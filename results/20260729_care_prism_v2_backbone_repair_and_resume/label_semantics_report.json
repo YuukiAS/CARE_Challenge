@@ -1,0 +1,277 @@
+{
+  "checked_case_count": 24,
+  "label_semantics": {
+    "edema_zone": "label==4 or label==5",
+    "myocardium_union": "label in {1,4,5}",
+    "pure_edema": "label==4",
+    "scar": "label==5"
+  },
+  "rows": [
+    {
+      "blood_voxels": 29726.0,
+      "case_id": "Case1001",
+      "center": "CenterA",
+      "edema_zone_matches_label4_or_5": true,
+      "edema_zone_voxels": 1792.0,
+      "pure_edema_voxels": 0.0,
+      "scar_voxels": 1792.0,
+      "union_excludes_blood_and_matches_1_4_5": true,
+      "union_voxels": 12169.0
+    },
+    {
+      "blood_voxels": 18264.0,
+      "case_id": "Case1003",
+      "center": "CenterA",
+      "edema_zone_matches_label4_or_5": true,
+      "edema_zone_voxels": 3627.0,
+      "pure_edema_voxels": 0.0,
+      "scar_voxels": 3627.0,
+      "union_excludes_blood_and_matches_1_4_5": true,
+      "union_voxels": 17489.0
+    },
+    {
+      "blood_voxels": 25669.0,
+      "case_id": "Case1005",
+      "center": "CenterA",
+      "edema_zone_matches_label4_or_5": true,
+      "edema_zone_voxels": 3381.0,
+      "pure_edema_voxels": 0.0,
+      "scar_voxels": 3381.0,
+      "union_excludes_blood_and_matches_1_4_5": true,
+      "union_voxels": 11341.0
+    },
+    {
+      "blood_voxels": 34257.0,
+      "case_id": "Case1006",
+      "center": "CenterA",
+      "edema_zone_matches_label4_or_5": true,
+      "edema_zone_voxels": 4346.0,
+      "pure_edema_voxels": 0.0,
+      "scar_voxels": 4346.0,
+      "union_excludes_blood_and_matches_1_4_5": true,
+      "union_voxels": 10810.0
+    },
+    {
+      "blood_voxels": 38335.0,
+      "case_id": "Case1011",
+      "center": "CenterA",
+      "edema_zone_matches_label4_or_5": true,
+      "edema_zone_voxels": 738.0,
+      "pure_edema_voxels": 0.0,
+      "scar_voxels": 738.0,
+      "union_excludes_blood_and_matches_1_4_5": true,
+      "union_voxels": 12738.0
+    },
+    {
+      "blood_voxels": 37370.0,
+      "case_id": "Case1012",
+      "center": "CenterA",
+      "edema_zone_matches_label4_or_5": true,
+      "edema_zone_voxels": 899.0,
+      "pure_edema_voxels": 0.0,
+      "scar_voxels": 899.0,
+      "union_excludes_blood_and_matches_1_4_5": true,
+      "union_voxels": 20134.0
+    },
+    {
+      "blood_voxels": 26615.0,
+      "case_id": "Case1013",
+      "center": "CenterA",
+      "edema_zone_matches_label4_or_5": true,
+      "edema_zone_voxels": 3410.0,
+      "pure_edema_voxels": 0.0,
+      "scar_voxels": 3410.0,
+      "union_excludes_blood_and_matches_1_4_5": true,
+      "union_voxels": 16511.0
+    },
+    {
+      "blood_voxels": 23764.0,
+      "case_id": "Case1014",
+      "center": "CenterA",
+      "edema_zone_matches_label4_or_5": true,
+      "edema_zone_voxels": 1000.0,
+      "pure_edema_voxels": 0.0,
+      "scar_voxels": 1000.0,
+      "union_excludes_blood_and_matches_1_4_5": true,
+      "union_voxels": 11582.0
+    },
+    {
+      "blood_voxels": 21537.0,
+      "case_id": "Case1015",
+      "center": "CenterA",
+      "edema_zone_matches_label4_or_5": true,
+      "edema_zone_voxels": 2931.0,
+      "pure_edema_voxels": 0.0,
+      "scar_voxels": 2931.0,
+      "union_excludes_blood_and_matches_1_4_5": true,
+      "union_voxels": 12528.0
+    },
+    {
+      "blood_voxels": 20279.0,
+      "case_id": "Case1016",
+      "center": "CenterA",
+      "edema_zone_matches_label4_or_5": true,
+      "edema_zone_voxels": 5337.0,
+      "pure_edema_voxels": 0.0,
+      "scar_voxels": 5337.0,
+      "union_excludes_blood_and_matches_1_4_5": true,
+      "union_voxels": 10296.0
+    },
+    {
+      "blood_voxels": 23858.0,
+      "case_id": "Case1017",
+      "center": "CenterA",
+      "edema_zone_matches_label4_or_5": true,
+      "edema_zone_voxels": 2604.0,
+      "pure_edema_voxels": 0.0,
+      "scar_voxels": 2604.0,
+      "union_excludes_blood_and_matches_1_4_5": true,
+      "union_voxels": 12470.0
+    },
+    {
+      "blood_voxels": 34104.0,
+      "case_id": "Case1018",
+      "center": "CenterA",
+      "edema_zone_matches_label4_or_5": true,
+      "edema_zone_voxels": 3770.0,
+      "pure_edema_voxels": 0.0,
+      "scar_voxels": 3770.0,
+      "union_excludes_blood_and_matches_1_4_5": true,
+      "union_voxels": 9986.0
+    },
+    {
+      "blood_voxels": 25354.0,
+      "case_id": "Case1019",
+      "center": "CenterA",
+      "edema_zone_matches_label4_or_5": true,
+      "edema_zone_voxels": 612.0,
+      "pure_edema_voxels": 0.0,
+      "scar_voxels": 612.0,
+      "union_excludes_blood_and_matches_1_4_5": true,
+      "union_voxels": 13982.0
+    },
+    {
+      "blood_voxels": 25646.0,
+      "case_id": "Case1022",
+      "center": "CenterA",
+      "edema_zone_matches_label4_or_5": true,
+      "edema_zone_voxels": 769.0,
+      "pure_edema_voxels": 0.0,
+      "scar_voxels": 769.0,
+      "union_excludes_blood_and_matches_1_4_5": true,
+      "union_voxels": 10503.0
+    },
+    {
+      "blood_voxels": 22027.0,
+      "case_id": "Case1024",
+      "center": "CenterA",
+      "edema_zone_matches_label4_or_5": true,
+      "edema_zone_voxels": 4907.0,
+      "pure_edema_voxels": 0.0,
+      "scar_voxels": 4907.0,
+      "union_excludes_blood_and_matches_1_4_5": true,
+      "union_voxels": 11091.0
+    },
+    {
+      "blood_voxels": 18812.0,
+      "case_id": "Case1025",
+      "center": "CenterA",
+      "edema_zone_matches_label4_or_5": true,
+      "edema_zone_voxels": 3230.0,
+      "pure_edema_voxels": 0.0,
+      "scar_voxels": 3230.0,
+      "union_excludes_blood_and_matches_1_4_5": true,
+      "union_voxels": 14712.0
+    },
+    {
+      "blood_voxels": 15458.0,
+      "case_id": "Case1027",
+      "center": "CenterA",
+      "edema_zone_matches_label4_or_5": true,
+      "edema_zone_voxels": 5410.0,
+      "pure_edema_voxels": 0.0,
+      "scar_voxels": 5410.0,
+      "union_excludes_blood_and_matches_1_4_5": true,
+      "union_voxels": 15571.0
+    },
+    {
+      "blood_voxels": 34312.0,
+      "case_id": "Case1028",
+      "center": "CenterA",
+      "edema_zone_matches_label4_or_5": true,
+      "edema_zone_voxels": 4358.0,
+      "pure_edema_voxels": 0.0,
+      "scar_voxels": 4358.0,
+      "union_excludes_blood_and_matches_1_4_5": true,
+      "union_voxels": 17891.0
+    },
+    {
+      "blood_voxels": 25590.0,
+      "case_id": "Case1030",
+      "center": "CenterA",
+      "edema_zone_matches_label4_or_5": true,
+      "edema_zone_voxels": 3502.0,
+      "pure_edema_voxels": 0.0,
+      "scar_voxels": 3502.0,
+      "union_excludes_blood_and_matches_1_4_5": true,
+      "union_voxels": 20026.0
+    },
+    {
+      "blood_voxels": 23389.0,
+      "case_id": "Case1031",
+      "center": "CenterA",
+      "edema_zone_matches_label4_or_5": true,
+      "edema_zone_voxels": 4756.0,
+      "pure_edema_voxels": 0.0,
+      "scar_voxels": 4756.0,
+      "union_excludes_blood_and_matches_1_4_5": true,
+      "union_voxels": 18737.0
+    },
+    {
+      "blood_voxels": 40903.0,
+      "case_id": "Case1034",
+      "center": "CenterA",
+      "edema_zone_matches_label4_or_5": true,
+      "edema_zone_voxels": 5228.0,
+      "pure_edema_voxels": 0.0,
+      "scar_voxels": 5228.0,
+      "union_excludes_blood_and_matches_1_4_5": true,
+      "union_voxels": 13281.0
+    },
+    {
+      "blood_voxels": 23345.0,
+      "case_id": "Case1036",
+      "center": "CenterA",
+      "edema_zone_matches_label4_or_5": true,
+      "edema_zone_voxels": 3367.0,
+      "pure_edema_voxels": 0.0,
+      "scar_voxels": 3367.0,
+      "union_excludes_blood_and_matches_1_4_5": true,
+      "union_voxels": 15279.0
+    },
+    {
+      "blood_voxels": 40615.0,
+      "case_id": "Case1037",
+      "center": "CenterA",
+      "edema_zone_matches_label4_or_5": true,
+      "edema_zone_voxels": 2425.0,
+      "pure_edema_voxels": 0.0,
+      "scar_voxels": 2425.0,
+      "union_excludes_blood_and_matches_1_4_5": true,
+      "union_voxels": 16444.0
+    },
+    {
+      "blood_voxels": 34122.0,
+      "case_id": "Case1038",
+      "center": "CenterA",
+      "edema_zone_matches_label4_or_5": true,
+      "edema_zone_voxels": 1657.0,
+      "pure_edema_voxels": 0.0,
+      "scar_voxels": 1657.0,
+      "union_excludes_blood_and_matches_1_4_5": true,
+      "union_voxels": 19578.0
+    }
+  ],
+  "split": "actual_train",
+  "status": "PASS"
+}

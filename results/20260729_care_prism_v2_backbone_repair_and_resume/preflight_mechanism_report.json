@@ -1,0 +1,60 @@
+{
+  "checkpoint": "results/20260729_care_prism_v2_backbone_repair_and_resume/runtime/fold0_w2_realcase_400_zero_credit_semantic_repair_v3/checkpoints/checkpoint_step00400.pt",
+  "edema_case_id": "Case2001",
+  "edema_case_t2_present": 1.0,
+  "gradient_abs_sums": {
+    "anatomy_decoder_grad_abs": 88.91306952873128,
+    "edema_refiner_grad_abs": 90.17254833248444,
+    "edema_router_grad_abs": 0.7955238786853442,
+    "scar_refiner_grad_abs": 263.4928437859344,
+    "scar_router_grad_abs": 3.520789437006897
+  },
+  "loss_metrics": {
+    "edema": {
+      "all_finite": true,
+      "all_nonnegative": true,
+      "anatomy": 0.026644045487046242,
+      "burden": 0.3004680275917053,
+      "edema_negative": 0.07298047095537186,
+      "edema_proposal": 0.2320471853017807,
+      "edema_refine": 0.36643266677856445,
+      "loss": 1.3656114339828491,
+      "router": 0.03903450816869736,
+      "scar_negative": 0.0856032520532608,
+      "scar_proposal": 0.4477115571498871,
+      "scar_refine": 0.6933132410049438,
+      "soft_relation": 0.0002584848552942276
+    },
+    "scar": {
+      "all_finite": true,
+      "all_nonnegative": true,
+      "anatomy": 0.04317965358495712,
+      "burden": 0.2760559320449829,
+      "edema_negative": 0.0,
+      "edema_proposal": 0.0,
+      "edema_refine": 0.0,
+      "loss": 1.3893933296203613,
+      "router": 0.04450198635458946,
+      "scar_negative": 0.15547476708889008,
+      "scar_proposal": 0.7013815641403198,
+      "scar_refine": 1.0705029964447021,
+      "soft_relation": 0.0
+    }
+  },
+  "matched_on_off_final_logit_deltas": {
+    "anatomy_guidance_edema_delta": 16.459522247314453,
+    "anatomy_guidance_scar_delta": 14.370279312133789,
+    "burden_edema_delta": 2.972952365875244,
+    "burden_scar_delta": 2.944014072418213,
+    "negative_edema_delta": 0.5959272384643555,
+    "negative_scar_delta": 2.3722569942474365,
+    "proposal_edema_delta": 0.22493243217468262,
+    "proposal_scar_delta": 0.19333982467651367,
+    "router_edema_delta": 10.156896591186523,
+    "router_scar_delta": 10.402917861938477
+  },
+  "prototype_enabled": false,
+  "scar_case_id": "Case1001",
+  "slice_correspondence_mode": "identity_disabled",
+  "status": "PASS"
+}

@@ -7,6 +7,50 @@
     {
       "case": "missing_negative_targets",
       "status": "PASS"
+    },
+    {
+      "case": "wrong_edema_zone_label4_only",
+      "status": "PASS"
+    },
+    {
+      "case": "wrong_myocardium_union_includes_blood",
+      "status": "PASS"
+    },
+    {
+      "case": "detached_direct_loss",
+      "status": "PASS"
+    },
+    {
+      "case": "dead_anatomy_exchange",
+      "status": "PASS"
+    },
+    {
+      "case": "unsafe_no_t2_edema_negative",
+      "status": "PASS"
+    },
+    {
+      "case": "fake_w2_pass_summary",
+      "status": "PASS"
+    },
+    {
+      "case": "missing_inner_outer_lock",
+      "status": "PASS"
+    },
+    {
+      "case": "round_robin_fake_balanced_sampling",
+      "status": "PASS"
+    },
+    {
+      "case": "checkpoint_key_presence_only",
+      "status": "PASS"
+    },
+    {
+      "case": "terminal_checkpoint_only_selection",
+      "status": "PASS"
+    },
+    {
+      "case": "unbound_evaluator_checkpoint",
+      "status": "PASS"
     }
   ],
   "status": "PASS"

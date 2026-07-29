@@ -1,0 +1,107 @@
+{
+  "balanced_sampler": {
+    "edema": {
+      "bins": {
+        "CenterB": {
+          "positive_burden3": 19
+        },
+        "CenterC": {
+          "positive_burden3": 29
+        }
+      },
+      "case_count": 48,
+      "center_count": 2,
+      "sample_counts": {
+        "CenterB": {
+          "positive_burden3": 3250
+        },
+        "CenterC": {
+          "positive_burden3": 3250
+        }
+      }
+    },
+    "scar": {
+      "bins": {
+        "CenterA": {
+          "positive_burden2": 2,
+          "positive_burden3": 49
+        },
+        "CenterB": {
+          "positive_burden3": 19
+        },
+        "CenterC": {
+          "positive_burden2": 2,
+          "positive_burden3": 27
+        },
+        "CenterE": {
+          "positive_burden2": 1,
+          "positive_burden3": 3,
+          "safe_negative": 2
+        },
+        "CenterF": {
+          "positive_burden2": 1,
+          "positive_burden3": 5,
+          "safe_negative": 1
+        },
+        "CenterG": {
+          "positive_burden3": 5,
+          "safe_negative": 1
+        },
+        "CenterH": {
+          "positive_burden3": 22,
+          "safe_negative": 1
+        }
+      },
+      "case_count": 141,
+      "center_count": 7,
+      "sample_counts": {
+        "CenterA": {
+          "positive_burden2": 465,
+          "positive_burden3": 464
+        },
+        "CenterB": {
+          "positive_burden3": 929
+        },
+        "CenterC": {
+          "positive_burden2": 465,
+          "positive_burden3": 464
+        },
+        "CenterE": {
+          "positive_burden2": 310,
+          "positive_burden3": 310,
+          "safe_negative": 309
+        },
+        "CenterF": {
+          "positive_burden2": 310,
+          "positive_burden3": 309,
+          "safe_negative": 309
+        },
+        "CenterG": {
+          "positive_burden3": 464,
+          "safe_negative": 464
+        },
+        "CenterH": {
+          "positive_burden3": 464,
+          "safe_negative": 464
+        }
+      }
+    }
+  },
+  "checkpoint_every": 500,
+  "final_checkpoint": "results/20260729_care_prism_v2_backbone_repair_and_resume/runtime/fold0_w3_fold0_6500_formal_v2/checkpoints/checkpoint_step06500.pt",
+  "fold": 0,
+  "learning_rate_multipliers": {
+    "encoder": 1.0,
+    "new": 1.0
+  },
+  "micro_batches_per_step": 2,
+  "optimizer_steps": 6500,
+  "resumed_from": null,
+  "runtime_dir": "results/20260729_care_prism_v2_backbone_repair_and_resume/runtime/fold0_w3_fold0_6500_formal_v2",
+  "stage": "W3",
+  "stage_schedule": "A:1-1000,B:1001-2500,C:2501-5000,D:5001-6500",
+  "status": "PASS",
+  "synthetic_credit_used": false,
+  "training_log": "results/20260729_care_prism_v2_backbone_repair_and_resume/runtime/fold0_w3_fold0_6500_formal_v2/training_log.csv",
+  "transplant_byte_coverage": 1.0
+}

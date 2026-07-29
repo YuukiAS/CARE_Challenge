@@ -1,0 +1,12 @@
+{
+  "case_id": "Case1001",
+  "exchange_gate_grad_after_step": 0.005283509701257572,
+  "exchange_gate_grad_before_step": 0.006390141701558605,
+  "exchange_projection_grad_after_step": 0.00023559999681310728,
+  "exchange_projection_grad_before_step": 0.0,
+  "initialization": "gate_zero_projection_kaiming_nonzero",
+  "pathology_only_anatomy_decoder_grad_abs": 0,
+  "post_step_edema_final_logit_delta_on_off": 0.0,
+  "post_step_scar_final_logit_delta_on_off": 0.007320955395698547,
+  "status": "PASS"
+}

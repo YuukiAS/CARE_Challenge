@@ -1,0 +1,18 @@
+{
+  "direct_losses": {
+    "edema_negative": 0.6902750730514526,
+    "edema_proposal": 1.7286441326141357,
+    "scar_negative": 0.7181662321090698,
+    "scar_proposal": 1.7682404518127441
+  },
+  "edema_case_id": "Case2001",
+  "edema_case_t2_present": 1.0,
+  "gradient_abs_sums": {
+    "edema_negative_head_grad_from_direct_negative_loss": 2.3886706829071045,
+    "edema_proposal_head_grad_from_direct_proposal_loss": 7.165652275085449,
+    "scar_negative_head_grad_from_direct_negative_loss": 1.3086285591125488,
+    "scar_proposal_head_grad_from_direct_proposal_loss": 7.198453903198242
+  },
+  "scar_case_id": "Case1001",
+  "status": "PASS"
+}

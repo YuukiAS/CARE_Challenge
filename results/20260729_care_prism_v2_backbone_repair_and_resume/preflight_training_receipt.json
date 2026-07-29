@@ -1,0 +1,109 @@
+{
+  "active_edema_window_end_loss": 1.2916923364003499,
+  "active_edema_window_loss_drop_fraction": 0.7570257898498236,
+  "active_edema_window_start_loss": 5.316170533498128,
+  "all_logged_losses_finite": true,
+  "balanced_sampler": {
+    "edema": {
+      "bins": {
+        "CenterB": {
+          "positive_burden3": 19
+        },
+        "CenterC": {
+          "positive_burden3": 29
+        }
+      },
+      "case_count": 48,
+      "center_count": 2,
+      "sample_counts": {
+        "CenterB": {
+          "positive_burden3": 200
+        },
+        "CenterC": {
+          "positive_burden3": 200
+        }
+      }
+    },
+    "scar": {
+      "bins": {
+        "CenterA": {
+          "positive_burden2": 2,
+          "positive_burden3": 49
+        },
+        "CenterB": {
+          "positive_burden3": 19
+        },
+        "CenterC": {
+          "positive_burden2": 2,
+          "positive_burden3": 27
+        },
+        "CenterE": {
+          "positive_burden2": 1,
+          "positive_burden3": 3,
+          "safe_negative": 2
+        },
+        "CenterF": {
+          "positive_burden2": 1,
+          "positive_burden3": 5,
+          "safe_negative": 1
+        },
+        "CenterG": {
+          "positive_burden3": 5,
+          "safe_negative": 1
+        },
+        "CenterH": {
+          "positive_burden3": 22,
+          "safe_negative": 1
+        }
+      },
+      "case_count": 141,
+      "center_count": 7,
+      "sample_counts": {
+        "CenterA": {
+          "positive_burden2": 29,
+          "positive_burden3": 29
+        },
+        "CenterB": {
+          "positive_burden3": 57
+        },
+        "CenterC": {
+          "positive_burden2": 29,
+          "positive_burden3": 28
+        },
+        "CenterE": {
+          "positive_burden2": 19,
+          "positive_burden3": 19,
+          "safe_negative": 19
+        },
+        "CenterF": {
+          "positive_burden2": 19,
+          "positive_burden3": 19,
+          "safe_negative": 19
+        },
+        "CenterG": {
+          "positive_burden3": 29,
+          "safe_negative": 28
+        },
+        "CenterH": {
+          "positive_burden3": 29,
+          "safe_negative": 28
+        }
+      }
+    }
+  },
+  "checkpoint_every": 100,
+  "final_checkpoint": "results/20260729_care_prism_v2_backbone_repair_and_resume/runtime/fold0_w2_realcase_400_zero_credit_semantic_repair_v3/checkpoints/checkpoint_step00400.pt",
+  "first_logged_loss": 4.13434362411499,
+  "fold": 0,
+  "last_logged_loss": 1.530515233675639,
+  "logged_loss_drop_fraction": 0.6298045414637575,
+  "micro_batches_per_step": 2,
+  "optimizer_steps": 400,
+  "required_loss_drop_fraction": 0.3,
+  "scar_window_end_loss": 1.7693381309509277,
+  "scar_window_loss_drop_fraction": 0.4007356090068336,
+  "scar_window_start_loss": 2.952516714731852,
+  "status": "PASS",
+  "synthetic_credit_used": false,
+  "training_log": "results/20260729_care_prism_v2_backbone_repair_and_resume/runtime/fold0_w2_realcase_400_zero_credit_semantic_repair_v3/training_log.csv"
+}

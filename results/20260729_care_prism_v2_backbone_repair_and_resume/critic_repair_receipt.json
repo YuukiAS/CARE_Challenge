@@ -1,0 +1,13 @@
+{
+  "fold": 0,
+  "fold0_outer_accessed": false,
+  "fold1_outer_accessed": false,
+  "highest_authority": "prompts/tasks/20260730_care_prism_w1_w2_critic_repair_amendment.md",
+  "old_interrupted_step": "61220581.23 cancelled after objective update; not eligible for W2/W3 credit",
+  "old_w2_checkpoint_credit": "ZERO_CREDIT_DIAGNOSTIC_ONLY",
+  "rerun_required_from_stock_checkpoint": true,
+  "runtime_push_authorized": false,
+  "status": "PASS",
+  "task_key": "20260729_care_prism_v2_backbone_repair_and_resume",
+  "w3_auto_continue_condition": "W1W2_STRICT_PASS"
+}

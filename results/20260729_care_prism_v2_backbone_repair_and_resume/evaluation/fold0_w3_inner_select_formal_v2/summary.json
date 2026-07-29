@@ -1,0 +1,109 @@
+{
+  "case_count": 35,
+  "checkpoint_count": 13,
+  "nnunet_comparator_bound": true,
+  "outer_accessed": false,
+  "row_count": 910,
+  "selected_checkpoint": {
+    "case_count": 35,
+    "checkpoint": "results/20260729_care_prism_v2_backbone_repair_and_resume/runtime/fold0_w3_fold0_6500_formal_v2/checkpoints/checkpoint_step03000.pt",
+    "checkpoint_sha256": "33ce3dc6fa72b5bda9eca7489d01ec2ae12acf90edbba46eda3456ef5e5504e6",
+    "mean_dice": 0.40624615003347236,
+    "row_count": 70
+  },
+  "split": "inner_select",
+  "status": "PASS",
+  "summaries": [
+    {
+      "case_count": 35,
+      "checkpoint": "results/20260729_care_prism_v2_backbone_repair_and_resume/runtime/fold0_w3_fold0_6500_formal_v2/checkpoints/checkpoint_step00500.pt",
+      "checkpoint_sha256": "48bcc46f2809c7cefaacbe6ceb44425a40931e72343dedb0bc3966316cdaa48b",
+      "mean_dice": 0.2991877725389368,
+      "row_count": 70
+    },
+    {
+      "case_count": 35,
+      "checkpoint": "results/20260729_care_prism_v2_backbone_repair_and_resume/runtime/fold0_w3_fold0_6500_formal_v2/checkpoints/checkpoint_step01000.pt",
+      "checkpoint_sha256": "493dc0b79fbd0de44b8c95942f3c5259345ea182c41542bea0aec60780ef1d73",
+      "mean_dice": 0.3179969817803126,
+      "row_count": 70
+    },
+    {
+      "case_count": 35,
+      "checkpoint": "results/20260729_care_prism_v2_backbone_repair_and_resume/runtime/fold0_w3_fold0_6500_formal_v2/checkpoints/checkpoint_step01500.pt",
+      "checkpoint_sha256": "a4eff78d76c21779b4ead4e323fae09c925b158776421f9ea119bdf5cedce288",
+      "mean_dice": 0.36557214985249054,
+      "row_count": 70
+    },
+    {
+      "case_count": 35,
+      "checkpoint": "results/20260729_care_prism_v2_backbone_repair_and_resume/runtime/fold0_w3_fold0_6500_formal_v2/checkpoints/checkpoint_step02000.pt",
+      "checkpoint_sha256": "43aafa0a80e85d5b8c91b814d32d25ff8e3bdacc01586f5a6f8504ae0364128f",
+      "mean_dice": 0.3521761700291243,
+      "row_count": 70
+    },
+    {
+      "case_count": 35,
+      "checkpoint": "results/20260729_care_prism_v2_backbone_repair_and_resume/runtime/fold0_w3_fold0_6500_formal_v2/checkpoints/checkpoint_step02500.pt",
+      "checkpoint_sha256": "6d38e8084f024395183e8154f7d545200cec9a3d7019207d08d0523467c2d1e6",
+      "mean_dice": 0.40472660056804377,
+      "row_count": 70
+    },
+    {
+      "case_count": 35,
+      "checkpoint": "results/20260729_care_prism_v2_backbone_repair_and_resume/runtime/fold0_w3_fold0_6500_formal_v2/checkpoints/checkpoint_step03000.pt",
+      "checkpoint_sha256": "33ce3dc6fa72b5bda9eca7489d01ec2ae12acf90edbba46eda3456ef5e5504e6",
+      "mean_dice": 0.40624615003347236,
+      "row_count": 70
+    },
+    {
+      "case_count": 35,
+      "checkpoint": "results/20260729_care_prism_v2_backbone_repair_and_resume/runtime/fold0_w3_fold0_6500_formal_v2/checkpoints/checkpoint_step03500.pt",
+      "checkpoint_sha256": "46c923ee341753019fd8a4e348ef5e1888fe16e912eaf2367a504a34d578182e",
+      "mean_dice": 0.398609480595198,
+      "row_count": 70
+    },
+    {
+      "case_count": 35,
+      "checkpoint": "results/20260729_care_prism_v2_backbone_repair_and_resume/runtime/fold0_w3_fold0_6500_formal_v2/checkpoints/checkpoint_step04000.pt",
+      "checkpoint_sha256": "d8e26f82269c341b18ac1dac9906f86f776a14499b6e5d91d6b1b616b574788d",
+      "mean_dice": 0.35355706353239097,
+      "row_count": 70
+    },
+    {
+      "case_count": 35,
+      "checkpoint": "results/20260729_care_prism_v2_backbone_repair_and_resume/runtime/fold0_w3_fold0_6500_formal_v2/checkpoints/checkpoint_step04500.pt",
+      "checkpoint_sha256": "495856369bac31a64e7d54e7f943ba1b1b3cac9bfbbe24441adcb1d52f5d28bc",
+      "mean_dice": 0.37934200247825006,
+      "row_count": 70
+    },
+    {
+      "case_count": 35,
+      "checkpoint": "results/20260729_care_prism_v2_backbone_repair_and_resume/runtime/fold0_w3_fold0_6500_formal_v2/checkpoints/checkpoint_step05000.pt",
+      "checkpoint_sha256": "1ab75cd5b46d5e1065d22322cce2ff458033bf4b7585db6b8bd71ddd2fd51c2e",
+      "mean_dice": 0.3896781291499238,
+      "row_count": 70
+    },
+    {
+      "case_count": 35,
+      "checkpoint": "results/20260729_care_prism_v2_backbone_repair_and_resume/runtime/fold0_w3_fold0_6500_formal_v2/checkpoints/checkpoint_step05500.pt",
+      "checkpoint_sha256": "8cf52e7f74e4a03e14cc88ee281e7cf57ceeb0e686062068185ee6037432c2cf",
+      "mean_dice": 0.4016573204977685,
+      "row_count": 70
+    },
+    {
+      "case_count": 35,
+      "checkpoint": "results/20260729_care_prism_v2_backbone_repair_and_resume/runtime/fold0_w3_fold0_6500_formal_v2/checkpoints/checkpoint_step06000.pt",
+      "checkpoint_sha256": "fb18808b7bffc787ab669ab32d94e62d29ad418af62bf3583a72baeb338cfe2a",
+      "mean_dice": 0.4005611396009942,
+      "row_count": 70
+    },
+    {
+      "case_count": 35,
+      "checkpoint": "results/20260729_care_prism_v2_backbone_repair_and_resume/runtime/fold0_w3_fold0_6500_formal_v2/checkpoints/checkpoint_step06500.pt",
+      "checkpoint_sha256": "56bf47cd6845fedbe87061f44f24c7ced4f101dcf8ac915eb14b60d7539888d0",
+      "mean_dice": 0.40060885158980275,
+      "row_count": 70
+    }
+  ]
+}

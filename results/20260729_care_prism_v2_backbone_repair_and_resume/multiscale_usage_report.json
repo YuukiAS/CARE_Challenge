@@ -7,32 +7,32 @@
   ],
   "interventions": [
     {
-      "final_logit_max_abs_delta": 0.6792901754379272,
+      "final_logit_max_abs_delta": 0.4582124948501587,
       "level_disabled": 1,
       "pathology": "scar"
     },
     {
-      "final_logit_max_abs_delta": 0.34961429238319397,
+      "final_logit_max_abs_delta": 0.1930904984474182,
       "level_disabled": 2,
       "pathology": "scar"
     },
     {
-      "final_logit_max_abs_delta": 0.22941645979881287,
+      "final_logit_max_abs_delta": 0.1314133107662201,
       "level_disabled": 3,
       "pathology": "scar"
     },
     {
-      "final_logit_max_abs_delta": 1.0273970365524292,
+      "final_logit_max_abs_delta": 0.830616295337677,
       "level_disabled": 1,
       "pathology": "edema"
     },
     {
-      "final_logit_max_abs_delta": 0.5317790508270264,
+      "final_logit_max_abs_delta": 0.4712337255477905,
       "level_disabled": 2,
       "pathology": "edema"
     },
     {
-      "final_logit_max_abs_delta": 0.3213985562324524,
+      "final_logit_max_abs_delta": 0.29857325553894043,
       "level_disabled": 3,
       "pathology": "edema"
     }

@@ -1,0 +1,14 @@
+{
+  "attempts": [
+    {
+      "action": "cancelled_and_zero_credit",
+      "contaminated_from_step": 2501,
+      "reason": "W3 state machine enabled component/surface loss during steps 2501-3000; contract requires component/surface only after step 3001.",
+      "repair": "W3 active loss now uses C_NO_SURFACE for C-stage steps before 3001 and C at step 3001 or later.",
+      "run_label": "fold0_6500_formal_v1",
+      "slurm_step": "61220581.33",
+      "status": "RECORDED_ZERO_CREDIT"
+    }
+  ],
+  "status": "NEEDS_RERUN_FROM_STOCK"
+}

@@ -1,0 +1,12 @@
+{
+  "decode_rule": "edema_zone direct, scar priority, pure edema = edema_zone - scar",
+  "outer_accessed_before_freeze": false,
+  "selected_checkpoint": "results/20260729_care_prism_v2_backbone_repair_and_resume/runtime/fold0_w3_fold0_6500_formal_v2/checkpoints/checkpoint_step03000.pt",
+  "selected_checkpoint_sha256": "33ce3dc6fa72b5bda9eca7489d01ec2ae12acf90edbba46eda3456ef5e5504e6",
+  "selection_split": "inner_select",
+  "status": "PASS",
+  "thresholds": {
+    "edema_zone": 0.5,
+    "scar": 0.5
+  }
+}

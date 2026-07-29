@@ -1,18 +1,313 @@
 {
-  "checkpoint_every": 100,
-  "eligible_case_counts": {
-    "edema": 64,
-    "safe_negative": 6,
-    "scar": 176
+  "balanced_sampler": {
+    "edema": {
+      "bins": {
+        "CenterB": {
+          "positive_burden3": 19
+        },
+        "CenterC": {
+          "positive_burden3": 29
+        }
+      },
+      "case_count": 48,
+      "center_count": 2,
+      "sample_counts": {
+        "CenterB": {
+          "positive_burden3": 200
+        },
+        "CenterC": {
+          "positive_burden3": 200
+        }
+      }
+    },
+    "scar": {
+      "bins": {
+        "CenterA": {
+          "positive_burden2": 2,
+          "positive_burden3": 49
+        },
+        "CenterB": {
+          "positive_burden3": 19
+        },
+        "CenterC": {
+          "positive_burden2": 2,
+          "positive_burden3": 27
+        },
+        "CenterE": {
+          "positive_burden2": 1,
+          "positive_burden3": 3,
+          "safe_negative": 2
+        },
+        "CenterF": {
+          "positive_burden2": 1,
+          "positive_burden3": 5,
+          "safe_negative": 1
+        },
+        "CenterG": {
+          "positive_burden3": 5,
+          "safe_negative": 1
+        },
+        "CenterH": {
+          "positive_burden3": 22,
+          "safe_negative": 1
+        }
+      },
+      "case_count": 141,
+      "center_count": 7,
+      "sample_counts": {
+        "CenterA": {
+          "positive_burden2": 29,
+          "positive_burden3": 29
+        },
+        "CenterB": {
+          "positive_burden3": 57
+        },
+        "CenterC": {
+          "positive_burden2": 29,
+          "positive_burden3": 28
+        },
+        "CenterE": {
+          "positive_burden2": 19,
+          "positive_burden3": 19,
+          "safe_negative": 19
+        },
+        "CenterF": {
+          "positive_burden2": 19,
+          "positive_burden3": 19,
+          "safe_negative": 19
+        },
+        "CenterG": {
+          "positive_burden3": 29,
+          "safe_negative": 28
+        },
+        "CenterH": {
+          "positive_burden3": 29,
+          "safe_negative": 28
+        }
+      }
+    }
   },
-  "final_checkpoint": "results/20260729_care_prism_v2_backbone_repair_and_resume/runtime/fold0_w2_realcase_400_zero_credit/checkpoints/checkpoint_step00400.pt",
+  "checkpoint_every": 100,
+  "correspondence_freeze_receipt": {
+    "prototype_enabled": false,
+    "reason": "Real slice correspondence has not passed an independent train-side gate; W2/W3 freeze identity mode.",
+    "slice_correspondence_mode": "identity_disabled",
+    "status": "PASS",
+    "train_deploy_mode_match": true
+  },
+  "final_checkpoint": "results/20260729_care_prism_v2_backbone_repair_and_resume/runtime/fold0_w2_realcase_400_zero_credit_semantic_repair_v3/checkpoints/checkpoint_step00400.pt",
   "fold": 0,
+  "learning_rate_multipliers": {
+    "encoder": 2.0,
+    "new": 10.0
+  },
   "micro_batches_per_step": 2,
   "optimizer_steps": 400,
-  "runtime_dir": "results/20260729_care_prism_v2_backbone_repair_and_resume/runtime/fold0_w2_realcase_400_zero_credit",
+  "preflight_mechanism_report": {
+    "checkpoint": "results/20260729_care_prism_v2_backbone_repair_and_resume/runtime/fold0_w2_realcase_400_zero_credit_semantic_repair_v3/checkpoints/checkpoint_step00400.pt",
+    "edema_case_id": "Case2001",
+    "edema_case_t2_present": 1.0,
+    "gradient_abs_sums": {
+      "anatomy_decoder_grad_abs": 88.91306952873128,
+      "edema_refiner_grad_abs": 90.17254833248444,
+      "edema_router_grad_abs": 0.7955238786853442,
+      "scar_refiner_grad_abs": 263.4928437859344,
+      "scar_router_grad_abs": 3.520789437006897
+    },
+    "loss_metrics": {
+      "edema": {
+        "all_finite": true,
+        "all_nonnegative": true,
+        "anatomy": 0.026644045487046242,
+        "burden": 0.3004680275917053,
+        "edema_negative": 0.07298047095537186,
+        "edema_proposal": 0.2320471853017807,
+        "edema_refine": 0.36643266677856445,
+        "loss": 1.3656114339828491,
+        "router": 0.03903450816869736,
+        "scar_negative": 0.0856032520532608,
+        "scar_proposal": 0.4477115571498871,
+        "scar_refine": 0.6933132410049438,
+        "soft_relation": 0.0002584848552942276
+      },
+      "scar": {
+        "all_finite": true,
+        "all_nonnegative": true,
+        "anatomy": 0.04317965358495712,
+        "burden": 0.2760559320449829,
+        "edema_negative": 0.0,
+        "edema_proposal": 0.0,
+        "edema_refine": 0.0,
+        "loss": 1.3893933296203613,
+        "router": 0.04450198635458946,
+        "scar_negative": 0.15547476708889008,
+        "scar_proposal": 0.7013815641403198,
+        "scar_refine": 1.0705029964447021,
+        "soft_relation": 0.0
+      }
+    },
+    "matched_on_off_final_logit_deltas": {
+      "anatomy_guidance_edema_delta": 16.459522247314453,
+      "anatomy_guidance_scar_delta": 14.370279312133789,
+      "burden_edema_delta": 2.972952365875244,
+      "burden_scar_delta": 2.944014072418213,
+      "negative_edema_delta": 0.5959272384643555,
+      "negative_scar_delta": 2.3722569942474365,
+      "proposal_edema_delta": 0.22493243217468262,
+      "proposal_scar_delta": 0.19333982467651367,
+      "router_edema_delta": 10.156896591186523,
+      "router_scar_delta": 10.402917861938477
+    },
+    "prototype_enabled": false,
+    "scar_case_id": "Case1001",
+    "slice_correspondence_mode": "identity_disabled",
+    "status": "PASS"
+  },
+  "preflight_resume_report": {
+    "checkpoint": "results/20260729_care_prism_v2_backbone_repair_and_resume/runtime/fold0_w2_realcase_400_zero_credit_semantic_repair_v3/checkpoints/checkpoint_step00400.pt",
+    "hard_negative_state": {
+      "bank_hash": "w2_preflight_safe_negative_targets_from_dataset"
+    },
+    "next_case_image_max_abs_delta_after_rng_restore": 0.0,
+    "next_scar_index_first_restore": 57,
+    "next_scar_index_second_restore": 57,
+    "prototype_state_present": true,
+    "required_keys_present": {
+      "augmentation_rng_state": true,
+      "hard_negative_state": true,
+      "model_state": true,
+      "optimizer_state": true,
+      "prototype_state": true,
+      "sampler_state": true,
+      "scaler_state": true,
+      "scheduler_state": true,
+      "stage": true,
+      "step": true
+    },
+    "restored_lr": [
+      0.0,
+      0.0
+    ],
+    "restored_stage": "W2",
+    "restored_step": 400,
+    "scheduler_last_epoch": 400,
+    "status": "PASS"
+  },
+  "preflight_training_receipt": {
+    "active_edema_window_end_loss": 1.2916923364003499,
+    "active_edema_window_loss_drop_fraction": 0.7570257898498236,
+    "active_edema_window_start_loss": 5.316170533498128,
+    "all_logged_losses_finite": true,
+    "balanced_sampler": {
+      "edema": {
+        "bins": {
+          "CenterB": {
+            "positive_burden3": 19
+          },
+          "CenterC": {
+            "positive_burden3": 29
+          }
+        },
+        "case_count": 48,
+        "center_count": 2,
+        "sample_counts": {
+          "CenterB": {
+            "positive_burden3": 200
+          },
+          "CenterC": {
+            "positive_burden3": 200
+          }
+        }
+      },
+      "scar": {
+        "bins": {
+          "CenterA": {
+            "positive_burden2": 2,
+            "positive_burden3": 49
+          },
+          "CenterB": {
+            "positive_burden3": 19
+          },
+          "CenterC": {
+            "positive_burden2": 2,
+            "positive_burden3": 27
+          },
+          "CenterE": {
+            "positive_burden2": 1,
+            "positive_burden3": 3,
+            "safe_negative": 2
+          },
+          "CenterF": {
+            "positive_burden2": 1,
+            "positive_burden3": 5,
+            "safe_negative": 1
+          },
+          "CenterG": {
+            "positive_burden3": 5,
+            "safe_negative": 1
+          },
+          "CenterH": {
+            "positive_burden3": 22,
+            "safe_negative": 1
+          }
+        },
+        "case_count": 141,
+        "center_count": 7,
+        "sample_counts": {
+          "CenterA": {
+            "positive_burden2": 29,
+            "positive_burden3": 29
+          },
+          "CenterB": {
+            "positive_burden3": 57
+          },
+          "CenterC": {
+            "positive_burden2": 29,
+            "positive_burden3": 28
+          },
+          "CenterE": {
+            "positive_burden2": 19,
+            "positive_burden3": 19,
+            "safe_negative": 19
+          },
+          "CenterF": {
+            "positive_burden2": 19,
+            "positive_burden3": 19,
+            "safe_negative": 19
+          },
+          "CenterG": {
+            "positive_burden3": 29,
+            "safe_negative": 28
+          },
+          "CenterH": {
+            "positive_burden3": 29,
+            "safe_negative": 28
+          }
+        }
+      }
+    },
+    "checkpoint_every": 100,
+    "final_checkpoint": "results/20260729_care_prism_v2_backbone_repair_and_resume/runtime/fold0_w2_realcase_400_zero_credit_semantic_repair_v3/checkpoints/checkpoint_step00400.pt",
+    "first_logged_loss": 4.13434362411499,
+    "fold": 0,
+    "last_logged_loss": 1.530515233675639,
+    "logged_loss_drop_fraction": 0.6298045414637575,
+    "micro_batches_per_step": 2,
+    "optimizer_steps": 400,
+    "required_loss_drop_fraction": 0.3,
+    "scar_window_end_loss": 1.7693381309509277,
+    "scar_window_loss_drop_fraction": 0.4007356090068336,
+    "scar_window_start_loss": 2.952516714731852,
+    "status": "PASS",
+    "synthetic_credit_used": false,
+    "training_log": "results/20260729_care_prism_v2_backbone_repair_and_resume/runtime/fold0_w2_realcase_400_zero_credit_semantic_repair_v3/training_log.csv"
+  },
+  "resumed_from": null,
+  "runtime_dir": "results/20260729_care_prism_v2_backbone_repair_and_resume/runtime/fold0_w2_realcase_400_zero_credit_semantic_repair_v3",
   "stage": "W2",
+  "stage_schedule": "W2",
   "status": "PASS",
   "synthetic_credit_used": false,
-  "training_log": "results/20260729_care_prism_v2_backbone_repair_and_resume/runtime/fold0_w2_realcase_400_zero_credit/training_log.csv",
+  "training_log": "results/20260729_care_prism_v2_backbone_repair_and_resume/runtime/fold0_w2_realcase_400_zero_credit_semantic_repair_v3/training_log.csv",
   "transplant_byte_coverage": 1.0
 }

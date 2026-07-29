@@ -1,12 +1,47 @@
 # CARE 架构 Wiki
 
-architecture_version: `care-prism-v2-stock-backbone-repair-20260729`  
-latest_verified_runtime: `PRISM v2 blocked before W2; no scientific training credit`  
-latest_scientific_status: `ResEnc-only asset contract superseded; stock same-fold nnU-Net backbone repair authorized`  
+architecture_version: `care-prism-v2-w3-gate-failed-20260729`  
+latest_verified_runtime: `PRISM v2 W1/W2 strict PASS; W3 fold0 6500-step formal v2 completed with one-time outer evaluation`  
+latest_scientific_status: `W3 fail-closed: selected checkpoint harms scar and edema-zone versus same-fold nnU-Net; W4 not authorized`  
 latest_controller_task: `20260729_care_prism_v2_backbone_repair_and_resume`  
-route_status: `MAIN_ONLY_PRISM_V2_W1_REPAIR_REQUIRED`
+route_status: `MAIN_ONLY_PRISM_V2_RETURN_TO_PLANNER`
 
-当前机器真值是 `prompts/routes/handoffs/CURRENT.md`。前一 Controller 正确地阻止了随机初始化训练，但“只能使用 ResidualEncoderUNet checkpoint”是过窄的规划约束。历史 manifest 已绑定 Dataset501 标准 nnU-Net fold0–4 checkpoint；该模型就是公平 baseline 的真实来源，因此当前改为从同折 `nnUNetPlans.json + checkpoint_final.pth` 动态恢复实际 stock network class，并使用其 encoder 作为 PRISM 唯一共享主干。
+当前机器真值是 `prompts/routes/handoffs/CURRENT.md`。CARE-PRISM v2 已完成 stock same-fold nnU-Net 主干修复、W1/W2 strict validation、W3 fold0 6500-step training、13 个 checkpoint 的 inner selection、freeze receipt 和 fold0 outer 一次性评价。W3 selected checkpoint 为 step3000，但 outer 上 scar Dice `0.4196441776` 低于同折 nnU-Net `0.5340911530`，edema-zone Dice `0.2471543848` 低于同折 nnU-Net `0.5592277699`，两项均有 `37/44` outer cases harm；因此 W3 strict validator 返回 `FAIL / CALIBRATION`，不得进入 W4/fold1。
+
+## 2026-07-29 W3 终态证据
+
+```text
+result_root:
+results/20260729_care_prism_v2_backbone_repair_and_resume
+
+W1/W2 validator:
+results/20260729_care_prism_v2_backbone_repair_and_resume/w1_w2_strict_validator_report.json
+
+W3 training:
+results/20260729_care_prism_v2_backbone_repair_and_resume/w3_training_summary.json
+optimizer_steps: 6500
+synthetic_credit_used: false
+
+W3 checkpoint audit:
+results/20260729_care_prism_v2_backbone_repair_and_resume/w3_checkpoint_audit_report.json
+audited_steps: 500,1000,1500,2000,2500,3000,3500,4000,4500,5000,5500,6000,6500
+
+Inner selection:
+results/20260729_care_prism_v2_backbone_repair_and_resume/evaluation/fold0_w3_inner_select_formal_v2/summary.json
+checkpoint_count: 13
+case_count: 35
+selected_checkpoint: checkpoint_step03000.pt
+
+Outer once:
+results/20260729_care_prism_v2_backbone_repair_and_resume/evaluation/fold0_w3_outer_once_formal_v2/summary.json
+case_count: 44
+outer_accessed: true
+
+Strict validator:
+results/20260729_care_prism_v2_backbone_repair_and_resume/w3_strict_validator_report.json
+status: FAIL
+failure_classification: CALIBRATION
+```
 
 ## 当前权威
 

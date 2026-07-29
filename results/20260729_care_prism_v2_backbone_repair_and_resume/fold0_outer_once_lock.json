@@ -1,0 +1,10 @@
+{
+  "authorized_outer_evaluation": "fold0_w3_formal_v2_once",
+  "created_utc": "2026-07-29T23:39:53Z",
+  "inner_selection_receipt": "results/20260729_care_prism_v2_backbone_repair_and_resume/evaluation/fold0_w3_inner_select_formal_v2/freeze_receipt.json",
+  "outer_accessed_before_freeze": false,
+  "selection_split": "inner_select",
+  "selected_checkpoint": "results/20260729_care_prism_v2_backbone_repair_and_resume/runtime/fold0_w3_fold0_6500_formal_v2/checkpoints/checkpoint_step03000.pt",
+  "selected_checkpoint_sha256": "33ce3dc6fa72b5bda9eca7489d01ec2ae12acf90edbba46eda3456ef5e5504e6",
+  "status": "PASS"
+}

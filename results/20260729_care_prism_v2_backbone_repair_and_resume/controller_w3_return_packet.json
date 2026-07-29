@@ -1,0 +1,47 @@
+{
+  "controller_verification_decision": "NEEDS_REPAIR",
+  "failure_classification": "CALIBRATION",
+  "fold": 0,
+  "next_authorized_stage": "Planner repair/replan required before W4",
+  "outer_evaluation": {
+    "case_count": 44,
+    "checkpoint": "results/20260729_care_prism_v2_backbone_repair_and_resume/runtime/fold0_w3_fold0_6500_formal_v2/checkpoints/checkpoint_step03000.pt",
+    "edema_zone_dice": 0.24715438479884141,
+    "edema_zone_mean_delta_vs_nnunet": -0.3120733851176322,
+    "edema_zone_outer_harm_cases": 37,
+    "nnunet_comparator_bound": true,
+    "scar_dice": 0.4196441775982677,
+    "scar_mean_delta_vs_nnunet": -0.1144469754068897,
+    "scar_outer_harm_cases": 37,
+    "split": "outer"
+  },
+  "result_root": "results/20260729_care_prism_v2_backbone_repair_and_resume",
+  "status": "W3_GATE_FAILED_NO_W4",
+  "w3_completed": {
+    "all_checkpoint_inner_selection": true,
+    "checkpoint_audit_steps": [
+      500,
+      1000,
+      1500,
+      2000,
+      2500,
+      3000,
+      3500,
+      4000,
+      4500,
+      5000,
+      5500,
+      6000,
+      6500
+    ],
+    "fold0_outer_accessed_once_after_freeze": true,
+    "inner_case_count": 35,
+    "optimizer_steps": 6500,
+    "outer_case_count": 44,
+    "selected_checkpoint": "results/20260729_care_prism_v2_backbone_repair_and_resume/runtime/fold0_w3_fold0_6500_formal_v2/checkpoints/checkpoint_step03000.pt",
+    "selected_checkpoint_sha256": "33ce3dc6fa72b5bda9eca7489d01ec2ae12acf90edbba46eda3456ef5e5504e6",
+    "synthetic_credit_used": false
+  },
+  "w3_strict_validator_report": "results/20260729_care_prism_v2_backbone_repair_and_resume/w3_strict_validator_report.json",
+  "w4_started": false
+}

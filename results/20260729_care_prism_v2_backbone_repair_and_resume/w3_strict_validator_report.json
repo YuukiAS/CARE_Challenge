@@ -1,7 +1,11 @@
 {
-  "errors": [],
-  "stage": "W1",
-  "status": "PASS",
+  "errors": [
+    "W3 selected model is worse than same-fold nnU-Net on outer: scar_delta=-0.114447, edema_delta=-0.312073",
+    "W3 outer help/harm gate failed: scar_harm=37, edema_harm=37"
+  ],
+  "failure_classification": "CALIBRATION",
+  "stage": "W3",
+  "status": "FAIL",
   "validated_files": [
     "adoption_receipt.json",
     "backbone_asset_resolution.json",
@@ -18,6 +22,9 @@
     "label_semantics_report.json",
     "direct_loss_gradient_report.json",
     "anatomy_exchange_report.json",
-    "sampler_balance_report.json"
+    "sampler_balance_report.json",
+    "w3_training_summary.json",
+    "w3_checkpoint_audit_report.json",
+    "fold0_outer_once_lock.json"
   ]
 }

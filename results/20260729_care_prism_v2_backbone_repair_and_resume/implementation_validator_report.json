@@ -1,4 +1,16 @@
 {
+  "anatomy_exchange": {
+    "case_id": "Case1001",
+    "exchange_gate_grad_after_step": 0.005283509701257572,
+    "exchange_gate_grad_before_step": 0.006390141701558605,
+    "exchange_projection_grad_after_step": 0.00023559999681310728,
+    "exchange_projection_grad_before_step": 0.0,
+    "initialization": "gate_zero_projection_kaiming_nonzero",
+    "pathology_only_anatomy_decoder_grad_abs": 0,
+    "post_step_edema_final_logit_delta_on_off": 0.0,
+    "post_step_scar_final_logit_delta_on_off": 0.007320955395698547,
+    "status": "PASS"
+  },
   "checkpoint_resume": {
     "checkpoint": "results/20260729_care_prism_v2_backbone_repair_and_resume/runtime/checkpoints/w1_resume_probe.pt",
     "model_probe_uses_synthetic_minimal_tensor_for_memory": true,
@@ -18,6 +30,19 @@
     },
     "status": "PASS"
   },
+  "critic_repair": {
+    "fold": 0,
+    "fold0_outer_accessed": false,
+    "fold1_outer_accessed": false,
+    "highest_authority": "prompts/tasks/20260730_care_prism_w1_w2_critic_repair_amendment.md",
+    "old_interrupted_step": "61220581.23 cancelled after objective update; not eligible for W2/W3 credit",
+    "old_w2_checkpoint_credit": "ZERO_CREDIT_DIAGNOSTIC_ONLY",
+    "rerun_required_from_stock_checkpoint": true,
+    "runtime_push_authorized": false,
+    "status": "PASS",
+    "task_key": "20260729_care_prism_v2_backbone_repair_and_resume",
+    "w3_auto_continue_condition": "W1W2_STRICT_PASS"
+  },
   "data_pipeline": {
     "augmentation_state_recorded": true,
     "case_count": 176,
@@ -26,7 +51,7 @@
       "T2",
       "C0"
     ],
-    "edema_negative_target_sum_t2_case": 775908.0,
+    "edema_negative_target_sum_t2_case": 797720.0,
     "edema_negative_target_t2_case": "Case2001",
     "first_case": "Case1001",
     "first_image_shape": [
@@ -45,11 +70,29 @@
       "fold",
       "split"
     ],
-    "scar_negative_target_sum_first_case": 1373063.0,
+    "scar_negative_target_sum_first_case": 1404308.0,
     "split": "train",
     "split_guard_overlap": 0,
     "status": "PASS",
     "synthetic_credit_allowed_for_w2": false
+  },
+  "direct_loss_gradient": {
+    "direct_losses": {
+      "edema_negative": 0.6902750730514526,
+      "edema_proposal": 1.7286441326141357,
+      "scar_negative": 0.7181662321090698,
+      "scar_proposal": 1.7682404518127441
+    },
+    "edema_case_id": "Case2001",
+    "edema_case_t2_present": 1.0,
+    "gradient_abs_sums": {
+      "edema_negative_head_grad_from_direct_negative_loss": 2.3886706829071045,
+      "edema_proposal_head_grad_from_direct_proposal_loss": 7.165652275085449,
+      "scar_negative_head_grad_from_direct_negative_loss": 1.3086285591125488,
+      "scar_proposal_head_grad_from_direct_proposal_loss": 7.198453903198242
+    },
+    "scar_case_id": "Case1001",
+    "status": "PASS"
   },
   "init_fold0": {
     "checkpoint_sha256": "8bceb20cae8920e87d43b14665a0db9dfd4f1204533d25a3cd6e40ad9de74111",
@@ -271,14 +314,14 @@
   },
   "intervention": {
     "checks": {
-      "anatomy_guidance_edema_delta": 3.9562089443206787,
-      "anatomy_guidance_scar_delta": 2.783294200897217,
-      "negative_edema_delta": 1.0552113056182861,
-      "negative_scar_delta": 0.3970384895801544,
-      "proposal_edema_delta": 0.0755927562713623,
-      "proposal_scar_delta": 0.052846819162368774,
-      "router_edema_delta": 1.8961341381072998,
-      "router_scar_delta": 1.4189732074737549
+      "anatomy_guidance_edema_delta": 1.9776686429977417,
+      "anatomy_guidance_scar_delta": 1.9325816631317139,
+      "negative_edema_delta": 0.7097715139389038,
+      "negative_scar_delta": 0.3017396330833435,
+      "proposal_edema_delta": 0.0691419243812561,
+      "proposal_scar_delta": 0.05063723027706146,
+      "router_edema_delta": 1.6899962425231934,
+      "router_scar_delta": 0.9673337936401367
     },
     "pathology_loss_anatomy_decoder_grad_abs": 0,
     "prototype_enabled": false,
@@ -294,13 +337,334 @@
       {
         "case": "missing_negative_targets",
         "status": "PASS"
+      },
+      {
+        "case": "wrong_edema_zone_label4_only",
+        "status": "PASS"
+      },
+      {
+        "case": "wrong_myocardium_union_includes_blood",
+        "status": "PASS"
+      },
+      {
+        "case": "detached_direct_loss",
+        "status": "PASS"
+      },
+      {
+        "case": "dead_anatomy_exchange",
+        "status": "PASS"
+      },
+      {
+        "case": "unsafe_no_t2_edema_negative",
+        "status": "PASS"
+      },
+      {
+        "case": "fake_w2_pass_summary",
+        "status": "PASS"
+      },
+      {
+        "case": "missing_inner_outer_lock",
+        "status": "PASS"
+      },
+      {
+        "case": "round_robin_fake_balanced_sampling",
+        "status": "PASS"
+      },
+      {
+        "case": "checkpoint_key_presence_only",
+        "status": "PASS"
+      },
+      {
+        "case": "terminal_checkpoint_only_selection",
+        "status": "PASS"
+      },
+      {
+        "case": "unbound_evaluator_checkpoint",
+        "status": "PASS"
       }
     ],
     "status": "PASS"
   },
+  "label_semantics": {
+    "checked_case_count": 24,
+    "label_semantics": {
+      "edema_zone": "label==4 or label==5",
+      "myocardium_union": "label in {1,4,5}",
+      "pure_edema": "label==4",
+      "scar": "label==5"
+    },
+    "rows": [
+      {
+        "blood_voxels": 29726.0,
+        "case_id": "Case1001",
+        "center": "CenterA",
+        "edema_zone_matches_label4_or_5": true,
+        "edema_zone_voxels": 1792.0,
+        "pure_edema_voxels": 0.0,
+        "scar_voxels": 1792.0,
+        "union_excludes_blood_and_matches_1_4_5": true,
+        "union_voxels": 12169.0
+      },
+      {
+        "blood_voxels": 18264.0,
+        "case_id": "Case1003",
+        "center": "CenterA",
+        "edema_zone_matches_label4_or_5": true,
+        "edema_zone_voxels": 3627.0,
+        "pure_edema_voxels": 0.0,
+        "scar_voxels": 3627.0,
+        "union_excludes_blood_and_matches_1_4_5": true,
+        "union_voxels": 17489.0
+      },
+      {
+        "blood_voxels": 25669.0,
+        "case_id": "Case1005",
+        "center": "CenterA",
+        "edema_zone_matches_label4_or_5": true,
+        "edema_zone_voxels": 3381.0,
+        "pure_edema_voxels": 0.0,
+        "scar_voxels": 3381.0,
+        "union_excludes_blood_and_matches_1_4_5": true,
+        "union_voxels": 11341.0
+      },
+      {
+        "blood_voxels": 34257.0,
+        "case_id": "Case1006",
+        "center": "CenterA",
+        "edema_zone_matches_label4_or_5": true,
+        "edema_zone_voxels": 4346.0,
+        "pure_edema_voxels": 0.0,
+        "scar_voxels": 4346.0,
+        "union_excludes_blood_and_matches_1_4_5": true,
+        "union_voxels": 10810.0
+      },
+      {
+        "blood_voxels": 38335.0,
+        "case_id": "Case1011",
+        "center": "CenterA",
+        "edema_zone_matches_label4_or_5": true,
+        "edema_zone_voxels": 738.0,
+        "pure_edema_voxels": 0.0,
+        "scar_voxels": 738.0,
+        "union_excludes_blood_and_matches_1_4_5": true,
+        "union_voxels": 12738.0
+      },
+      {
+        "blood_voxels": 37370.0,
+        "case_id": "Case1012",
+        "center": "CenterA",
+        "edema_zone_matches_label4_or_5": true,
+        "edema_zone_voxels": 899.0,
+        "pure_edema_voxels": 0.0,
+        "scar_voxels": 899.0,
+        "union_excludes_blood_and_matches_1_4_5": true,
+        "union_voxels": 20134.0
+      },
+      {
+        "blood_voxels": 26615.0,
+        "case_id": "Case1013",
+        "center": "CenterA",
+        "edema_zone_matches_label4_or_5": true,
+        "edema_zone_voxels": 3410.0,
+        "pure_edema_voxels": 0.0,
+        "scar_voxels": 3410.0,
+        "union_excludes_blood_and_matches_1_4_5": true,
+        "union_voxels": 16511.0
+      },
+      {
+        "blood_voxels": 23764.0,
+        "case_id": "Case1014",
+        "center": "CenterA",
+        "edema_zone_matches_label4_or_5": true,
+        "edema_zone_voxels": 1000.0,
+        "pure_edema_voxels": 0.0,
+        "scar_voxels": 1000.0,
+        "union_excludes_blood_and_matches_1_4_5": true,
+        "union_voxels": 11582.0
+      },
+      {
+        "blood_voxels": 21537.0,
+        "case_id": "Case1015",
+        "center": "CenterA",
+        "edema_zone_matches_label4_or_5": true,
+        "edema_zone_voxels": 2931.0,
+        "pure_edema_voxels": 0.0,
+        "scar_voxels": 2931.0,
+        "union_excludes_blood_and_matches_1_4_5": true,
+        "union_voxels": 12528.0
+      },
+      {
+        "blood_voxels": 20279.0,
+        "case_id": "Case1016",
+        "center": "CenterA",
+        "edema_zone_matches_label4_or_5": true,
+        "edema_zone_voxels": 5337.0,
+        "pure_edema_voxels": 0.0,
+        "scar_voxels": 5337.0,
+        "union_excludes_blood_and_matches_1_4_5": true,
+        "union_voxels": 10296.0
+      },
+      {
+        "blood_voxels": 23858.0,
+        "case_id": "Case1017",
+        "center": "CenterA",
+        "edema_zone_matches_label4_or_5": true,
+        "edema_zone_voxels": 2604.0,
+        "pure_edema_voxels": 0.0,
+        "scar_voxels": 2604.0,
+        "union_excludes_blood_and_matches_1_4_5": true,
+        "union_voxels": 12470.0
+      },
+      {
+        "blood_voxels": 34104.0,
+        "case_id": "Case1018",
+        "center": "CenterA",
+        "edema_zone_matches_label4_or_5": true,
+        "edema_zone_voxels": 3770.0,
+        "pure_edema_voxels": 0.0,
+        "scar_voxels": 3770.0,
+        "union_excludes_blood_and_matches_1_4_5": true,
+        "union_voxels": 9986.0
+      },
+      {
+        "blood_voxels": 25354.0,
+        "case_id": "Case1019",
+        "center": "CenterA",
+        "edema_zone_matches_label4_or_5": true,
+        "edema_zone_voxels": 612.0,
+        "pure_edema_voxels": 0.0,
+        "scar_voxels": 612.0,
+        "union_excludes_blood_and_matches_1_4_5": true,
+        "union_voxels": 13982.0
+      },
+      {
+        "blood_voxels": 25646.0,
+        "case_id": "Case1022",
+        "center": "CenterA",
+        "edema_zone_matches_label4_or_5": true,
+        "edema_zone_voxels": 769.0,
+        "pure_edema_voxels": 0.0,
+        "scar_voxels": 769.0,
+        "union_excludes_blood_and_matches_1_4_5": true,
+        "union_voxels": 10503.0
+      },
+      {
+        "blood_voxels": 22027.0,
+        "case_id": "Case1024",
+        "center": "CenterA",
+        "edema_zone_matches_label4_or_5": true,
+        "edema_zone_voxels": 4907.0,
+        "pure_edema_voxels": 0.0,
+        "scar_voxels": 4907.0,
+        "union_excludes_blood_and_matches_1_4_5": true,
+        "union_voxels": 11091.0
+      },
+      {
+        "blood_voxels": 18812.0,
+        "case_id": "Case1025",
+        "center": "CenterA",
+        "edema_zone_matches_label4_or_5": true,
+        "edema_zone_voxels": 3230.0,
+        "pure_edema_voxels": 0.0,
+        "scar_voxels": 3230.0,
+        "union_excludes_blood_and_matches_1_4_5": true,
+        "union_voxels": 14712.0
+      },
+      {
+        "blood_voxels": 15458.0,
+        "case_id": "Case1027",
+        "center": "CenterA",
+        "edema_zone_matches_label4_or_5": true,
+        "edema_zone_voxels": 5410.0,
+        "pure_edema_voxels": 0.0,
+        "scar_voxels": 5410.0,
+        "union_excludes_blood_and_matches_1_4_5": true,
+        "union_voxels": 15571.0
+      },
+      {
+        "blood_voxels": 34312.0,
+        "case_id": "Case1028",
+        "center": "CenterA",
+        "edema_zone_matches_label4_or_5": true,
+        "edema_zone_voxels": 4358.0,
+        "pure_edema_voxels": 0.0,
+        "scar_voxels": 4358.0,
+        "union_excludes_blood_and_matches_1_4_5": true,
+        "union_voxels": 17891.0
+      },
+      {
+        "blood_voxels": 25590.0,
+        "case_id": "Case1030",
+        "center": "CenterA",
+        "edema_zone_matches_label4_or_5": true,
+        "edema_zone_voxels": 3502.0,
+        "pure_edema_voxels": 0.0,
+        "scar_voxels": 3502.0,
+        "union_excludes_blood_and_matches_1_4_5": true,
+        "union_voxels": 20026.0
+      },
+      {
+        "blood_voxels": 23389.0,
+        "case_id": "Case1031",
+        "center": "CenterA",
+        "edema_zone_matches_label4_or_5": true,
+        "edema_zone_voxels": 4756.0,
+        "pure_edema_voxels": 0.0,
+        "scar_voxels": 4756.0,
+        "union_excludes_blood_and_matches_1_4_5": true,
+        "union_voxels": 18737.0
+      },
+      {
+        "blood_voxels": 40903.0,
+        "case_id": "Case1034",
+        "center": "CenterA",
+        "edema_zone_matches_label4_or_5": true,
+        "edema_zone_voxels": 5228.0,
+        "pure_edema_voxels": 0.0,
+        "scar_voxels": 5228.0,
+        "union_excludes_blood_and_matches_1_4_5": true,
+        "union_voxels": 13281.0
+      },
+      {
+        "blood_voxels": 23345.0,
+        "case_id": "Case1036",
+        "center": "CenterA",
+        "edema_zone_matches_label4_or_5": true,
+        "edema_zone_voxels": 3367.0,
+        "pure_edema_voxels": 0.0,
+        "scar_voxels": 3367.0,
+        "union_excludes_blood_and_matches_1_4_5": true,
+        "union_voxels": 15279.0
+      },
+      {
+        "blood_voxels": 40615.0,
+        "case_id": "Case1037",
+        "center": "CenterA",
+        "edema_zone_matches_label4_or_5": true,
+        "edema_zone_voxels": 2425.0,
+        "pure_edema_voxels": 0.0,
+        "scar_voxels": 2425.0,
+        "union_excludes_blood_and_matches_1_4_5": true,
+        "union_voxels": 16444.0
+      },
+      {
+        "blood_voxels": 34122.0,
+        "case_id": "Case1038",
+        "center": "CenterA",
+        "edema_zone_matches_label4_or_5": true,
+        "edema_zone_voxels": 1657.0,
+        "pure_edema_voxels": 0.0,
+        "scar_voxels": 1657.0,
+        "union_excludes_blood_and_matches_1_4_5": true,
+        "union_voxels": 19578.0
+      }
+    ],
+    "split": "actual_train",
+    "status": "PASS"
+  },
   "loss_negative": {
-    "edema_negative_head_grad_abs": 0.065632412355626,
-    "edema_negative_target_sum": 33382.0,
+    "edema_negative_head_grad_abs": 0.48877766728401184,
+    "edema_negative_target_sum": 37259.0,
     "lesion_loss_symbol": "lesion_mil_loss",
     "no_t2_edema_mask_sum": 0.0,
     "no_t2_edema_probability_max": 0.0,
@@ -309,35 +673,35 @@
       "all_finite": true,
       "all_nonnegative": true,
       "anatomy": 0.6666026711463928,
-      "burden": 1.4039374589920044,
+      "burden": 1.1604386568069458,
       "edema_negative": 0.0,
       "edema_proposal": 0.0,
       "edema_refine": 0.0,
-      "loss": 3.3886945247650146,
+      "loss": 3.25673770904541,
       "router": -0.0,
-      "scar_negative": 0.7025737762451172,
-      "scar_proposal": 1.7515294551849365,
-      "scar_refine": 2.196578025817871,
+      "scar_negative": 0.6561048030853271,
+      "scar_proposal": 1.6960875988006592,
+      "scar_refine": 2.1153461933135986,
       "soft_relation": 0.0
     },
-    "scar_negative_head_grad_abs": 0.1766693867975846,
-    "scar_negative_target_sum": 33382.0,
+    "scar_negative_head_grad_abs": 1.046820968389511,
+    "scar_negative_target_sum": 37259.0,
     "status": "PASS",
     "surface_loss_symbol": "generalized_surface_loss",
     "t2_metrics": {
       "all_finite": true,
       "all_nonnegative": true,
       "anatomy": 0.6718477010726929,
-      "burden": 2.849372625350952,
-      "edema_negative": 0.6953189373016357,
-      "edema_proposal": 1.7473704814910889,
-      "edema_refine": 2.159058094024658,
-      "loss": 6.412231922149658,
+      "burden": 2.7614245414733887,
+      "edema_negative": 0.7867149710655212,
+      "edema_proposal": 1.5361272096633911,
+      "edema_refine": 2.000044345855713,
+      "loss": 6.0739006996154785,
       "router": -0.0,
-      "scar_negative": 0.6948549747467041,
-      "scar_proposal": 1.7518807649612427,
-      "scar_refine": 2.1979663372039795,
-      "soft_relation": 0.021635444834828377
+      "scar_negative": 0.6509966254234314,
+      "scar_proposal": 1.695192575454712,
+      "scar_refine": 2.1146669387817383,
+      "soft_relation": 0.010076082311570644
     }
   },
   "multiscale": {
@@ -349,36 +713,311 @@
     ],
     "interventions": [
       {
-        "final_logit_max_abs_delta": 0.6792901754379272,
+        "final_logit_max_abs_delta": 0.4582124948501587,
         "level_disabled": 1,
         "pathology": "scar"
       },
       {
-        "final_logit_max_abs_delta": 0.34961429238319397,
+        "final_logit_max_abs_delta": 0.1930904984474182,
         "level_disabled": 2,
         "pathology": "scar"
       },
       {
-        "final_logit_max_abs_delta": 0.22941645979881287,
+        "final_logit_max_abs_delta": 0.1314133107662201,
         "level_disabled": 3,
         "pathology": "scar"
       },
       {
-        "final_logit_max_abs_delta": 1.0273970365524292,
+        "final_logit_max_abs_delta": 0.830616295337677,
         "level_disabled": 1,
         "pathology": "edema"
       },
       {
-        "final_logit_max_abs_delta": 0.5317790508270264,
+        "final_logit_max_abs_delta": 0.4712337255477905,
         "level_disabled": 2,
         "pathology": "edema"
       },
       {
-        "final_logit_max_abs_delta": 0.3213985562324524,
+        "final_logit_max_abs_delta": 0.29857325553894043,
         "level_disabled": 3,
         "pathology": "edema"
       }
     ],
+    "status": "PASS"
+  },
+  "sampler_balance": {
+    "canonical_metadata_root": "/users/a/e/aereinh/CARE/data/benchmarks/U-MyoPS/gen_ZS_unaligned/data",
+    "center_sample_counts": {
+      "edema": {
+        "CenterB": 40,
+        "CenterC": 40
+      },
+      "scar": {
+        "CenterA": 12,
+        "CenterB": 12,
+        "CenterC": 12,
+        "CenterE": 11,
+        "CenterF": 11,
+        "CenterG": 11,
+        "CenterH": 11
+      }
+    },
+    "draw_count": 160,
+    "first_draws": [
+      {
+        "case_id": "Case1019",
+        "center": "CenterA",
+        "focus": "scar",
+        "positive": true,
+        "step": 1,
+        "t2_present": false
+      },
+      {
+        "case_id": "Case2029",
+        "center": "CenterB",
+        "focus": "edema",
+        "positive": true,
+        "step": 1,
+        "t2_present": true
+      },
+      {
+        "case_id": "Case2027",
+        "center": "CenterB",
+        "focus": "scar",
+        "positive": true,
+        "step": 2,
+        "t2_present": true
+      },
+      {
+        "case_id": "Case3039",
+        "center": "CenterC",
+        "focus": "edema",
+        "positive": true,
+        "step": 2,
+        "t2_present": true
+      },
+      {
+        "case_id": "Case3027",
+        "center": "CenterC",
+        "focus": "scar",
+        "positive": true,
+        "step": 3,
+        "t2_present": true
+      },
+      {
+        "case_id": "Case2013",
+        "center": "CenterB",
+        "focus": "edema",
+        "positive": true,
+        "step": 3,
+        "t2_present": true
+      },
+      {
+        "case_id": "Case5010",
+        "center": "CenterE",
+        "focus": "scar",
+        "positive": true,
+        "step": 4,
+        "t2_present": false
+      },
+      {
+        "case_id": "Case3015",
+        "center": "CenterC",
+        "focus": "edema",
+        "positive": true,
+        "step": 4,
+        "t2_present": true
+      },
+      {
+        "case_id": "Case6005",
+        "center": "CenterF",
+        "focus": "scar",
+        "positive": true,
+        "step": 5,
+        "t2_present": false
+      },
+      {
+        "case_id": "Case2022",
+        "center": "CenterB",
+        "focus": "edema",
+        "positive": true,
+        "step": 5,
+        "t2_present": true
+      },
+      {
+        "case_id": "Case7002",
+        "center": "CenterG",
+        "focus": "scar",
+        "positive": true,
+        "step": 6,
+        "t2_present": false
+      },
+      {
+        "case_id": "Case3030",
+        "center": "CenterC",
+        "focus": "edema",
+        "positive": true,
+        "step": 6,
+        "t2_present": true
+      },
+      {
+        "case_id": "Case8034",
+        "center": "CenterH",
+        "focus": "scar",
+        "positive": true,
+        "step": 7,
+        "t2_present": false
+      },
+      {
+        "case_id": "Case2026",
+        "center": "CenterB",
+        "focus": "edema",
+        "positive": true,
+        "step": 7,
+        "t2_present": true
+      },
+      {
+        "case_id": "Case1013",
+        "center": "CenterA",
+        "focus": "scar",
+        "positive": true,
+        "step": 8,
+        "t2_present": false
+      },
+      {
+        "case_id": "Case3013",
+        "center": "CenterC",
+        "focus": "edema",
+        "positive": true,
+        "step": 8,
+        "t2_present": true
+      },
+      {
+        "case_id": "Case2028",
+        "center": "CenterB",
+        "focus": "scar",
+        "positive": true,
+        "step": 9,
+        "t2_present": true
+      },
+      {
+        "case_id": "Case2032",
+        "center": "CenterB",
+        "focus": "edema",
+        "positive": true,
+        "step": 9,
+        "t2_present": true
+      },
+      {
+        "case_id": "Case3029",
+        "center": "CenterC",
+        "focus": "scar",
+        "positive": true,
+        "step": 10,
+        "t2_present": true
+      },
+      {
+        "case_id": "Case3020",
+        "center": "CenterC",
+        "focus": "edema",
+        "positive": true,
+        "step": 10,
+        "t2_present": true
+      }
+    ],
+    "max_center_count_deviation": {
+      "edema": 0.0,
+      "scar": 0.5714285714285712
+    },
+    "sampler_summary": {
+      "edema": {
+        "bins": {
+          "CenterB": {
+            "positive_burden3": 19
+          },
+          "CenterC": {
+            "positive_burden3": 29
+          }
+        },
+        "case_count": 48,
+        "center_count": 2,
+        "sample_counts": {
+          "CenterB": {
+            "positive_burden3": 40
+          },
+          "CenterC": {
+            "positive_burden3": 40
+          }
+        }
+      },
+      "scar": {
+        "bins": {
+          "CenterA": {
+            "positive_burden2": 2,
+            "positive_burden3": 49
+          },
+          "CenterB": {
+            "positive_burden3": 19
+          },
+          "CenterC": {
+            "positive_burden2": 2,
+            "positive_burden3": 27
+          },
+          "CenterE": {
+            "positive_burden2": 1,
+            "positive_burden3": 3,
+            "safe_negative": 2
+          },
+          "CenterF": {
+            "positive_burden2": 1,
+            "positive_burden3": 5,
+            "safe_negative": 1
+          },
+          "CenterG": {
+            "positive_burden3": 5,
+            "safe_negative": 1
+          },
+          "CenterH": {
+            "positive_burden3": 22,
+            "safe_negative": 1
+          }
+        },
+        "case_count": 141,
+        "center_count": 7,
+        "sample_counts": {
+          "CenterA": {
+            "positive_burden2": 6,
+            "positive_burden3": 6
+          },
+          "CenterB": {
+            "positive_burden3": 12
+          },
+          "CenterC": {
+            "positive_burden2": 6,
+            "positive_burden3": 6
+          },
+          "CenterE": {
+            "positive_burden2": 4,
+            "positive_burden3": 4,
+            "safe_negative": 3
+          },
+          "CenterF": {
+            "positive_burden2": 4,
+            "positive_burden3": 4,
+            "safe_negative": 3
+          },
+          "CenterG": {
+            "positive_burden3": 6,
+            "safe_negative": 5
+          },
+          "CenterH": {
+            "positive_burden3": 6,
+            "safe_negative": 5
+          }
+        }
+      }
+    },
+    "split": "actual_train",
     "status": "PASS"
   },
   "status": "PASS"

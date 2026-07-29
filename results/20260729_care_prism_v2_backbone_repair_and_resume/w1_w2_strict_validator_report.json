@@ -1,6 +1,7 @@
 {
   "errors": [],
-  "stage": "W1",
+  "failure_classification": null,
+  "stage": "W1W2",
   "status": "PASS",
   "validated_files": [
     "adoption_receipt.json",
@@ -18,6 +19,18 @@
     "label_semantics_report.json",
     "direct_loss_gradient_report.json",
     "anatomy_exchange_report.json",
-    "sampler_balance_report.json"
+    "sampler_balance_report.json",
+    "w2_training_summary.json",
+    "preflight_training_receipt.json",
+    "preflight_mechanism_report.json",
+    "correspondence_freeze_receipt.json",
+    "preflight_resume_report.json",
+    "critic_repair_receipt.json",
+    "label_semantics_report.json",
+    "direct_loss_gradient_report.json",
+    "anatomy_exchange_report.json",
+    "sampler_balance_report.json",
+    "exact_resume_report.json",
+    "w2_adequacy_report.json"
   ]
 }

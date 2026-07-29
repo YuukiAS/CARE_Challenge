@@ -9,6 +9,7 @@ anatomy, burden, and safe-negative targets required by PRISM W1/W2.
 from __future__ import annotations
 
 from dataclasses import dataclass
+import hashlib
 import json
 from pathlib import Path
 import random
@@ -24,7 +25,9 @@ REPO_ROOT = Path(__file__).resolve().parents[3]
 DEFAULT_PREPROCESSED_ROOT = REPO_ROOT / "data/nnUNet/nnUNet_preprocessed/Dataset501_CAREMyoPS"
 DEFAULT_FULLRES_ROOT = DEFAULT_PREPROCESSED_ROOT / "nnUNetPlans_3d_fullres"
 DEFAULT_SPLITS = DEFAULT_PREPROCESSED_ROOT / "splits_final.json"
+DEFAULT_CENTER_METADATA_ROOT = REPO_ROOT / "data/benchmarks/U-MyoPS/gen_ZS_unaligned/data"
 MODALITY_ORDER = ("LGE", "T2", "C0")
+OUTER_LOCK_PATH = REPO_ROOT / "results/20260729_care_prism_v2_backbone_repair_and_resume/fold0_outer_once_lock.json"
 
 
 @dataclass(frozen=True)
@@ -97,7 +100,8 @@ class CAREPRISMAugmenter:
             x01 = ((x - lo) / (hi - lo).clamp_min(1.0e-6)).clamp(0, 1)
             x = torch.pow(x01, gamma) * contrast
             if noise > 0:
-                x = x + torch.randn_like(x) * noise
+                noise_arr = self._np.normal(0.0, noise, size=tuple(x.shape)).astype(np.float32)
+                x = x + torch.from_numpy(noise_arr).to(device=x.device, dtype=x.dtype)
             images[channel] = x
         if availability.sum() == 3 and self._py.random() < 0.10:
             images[1].zero_()
@@ -108,9 +112,20 @@ class CAREPRISMAugmenter:
         return images, seg, availability
 
 
-def _center_from_case(case_id: str) -> str:
-    digits = "".join(ch for ch in case_id if ch.isdigit())
-    return f"Center{digits[0]}" if digits else "CenterUnknown"
+def _center_from_case(case_id: str, metadata_root: Path = DEFAULT_CENTER_METADATA_ROOT) -> str:
+    matches = sorted(Path(metadata_root).glob(f"Center*_{case_id}/subject_meta.json"))
+    if matches:
+        meta = json.loads(matches[0].read_text(encoding="utf-8"))
+        return str(meta["center"])
+    raise FileNotFoundError(f"canonical center metadata not found for {case_id} under {metadata_root}")
+
+
+def deterministic_case_partitions(train_cases: list[str], *, fold: int, inner_fraction: float = 0.20) -> dict[str, list[str]]:
+    keyed = sorted((hashlib.sha256(f"care-prism-inner-v1:{fold}:{case_id}".encode("utf-8")).hexdigest(), case_id) for case_id in train_cases)
+    inner_n = max(1, int(round(len(keyed) * inner_fraction)))
+    inner = sorted(case for _key, case in keyed[:inner_n])
+    actual = sorted(case for _key, case in keyed[inner_n:])
+    return {"actual_train": actual, "inner_select": inner}
 
 
 def _load_b2nd(path: Path) -> torch.Tensor:
@@ -131,7 +146,7 @@ def _burden_class(pathology: torch.Tensor, union: torch.Tensor) -> tuple[torch.T
 
 
 def safe_negative_targets(images: torch.Tensor, seg: torch.Tensor, *, pathology: str, t2_present: bool) -> torch.Tensor:
-    union = seg > 0
+    union = (seg == 1) | (seg == 4) | (seg == 5)
     normal_myocardium = seg == 1
     blood = (seg == 2) | (seg == 3)
     outside_union = ~union
@@ -157,19 +172,35 @@ class CAREPRISMFullPatientDataset(torch.utils.data.Dataset[dict[str, Any]]):
         preprocessed_root: Path = DEFAULT_PREPROCESSED_ROOT,
         fullres_root: Path = DEFAULT_FULLRES_ROOT,
         splits_path: Path = DEFAULT_SPLITS,
+        center_metadata_root: Path = DEFAULT_CENTER_METADATA_ROOT,
         augmenter: CAREPRISMAugmenter | None = None,
+        outer_access_lock: Path | None = None,
     ) -> None:
         self.fold = int(fold)
         self.split = str(split)
         splits = json.loads(Path(splits_path).read_text(encoding="utf-8"))
         if self.fold < 0 or self.fold >= len(splits):
             raise ValueError(f"fold {self.fold} not available in {splits_path}")
-        if self.split not in splits[self.fold]:
+        fold_split = splits[self.fold]
+        partitioned = deterministic_case_partitions(list(fold_split["train"]), fold=self.fold)
+        split_cases = {
+            "train": list(fold_split["train"]),
+            "actual_train": partitioned["actual_train"],
+            "inner_select": partitioned["inner_select"],
+            "val": list(fold_split["val"]),
+            "outer": list(fold_split["val"]),
+        }
+        if self.split not in split_cases:
             raise ValueError(f"split {self.split!r} not available for fold {self.fold}")
-        other = "val" if self.split == "train" else "train"
-        overlap = set(splits[self.fold][self.split]) & set(splits[self.fold].get(other, []))
+        if self.split == "outer":
+            lock = Path(outer_access_lock or OUTER_LOCK_PATH)
+            if not lock.exists():
+                raise PermissionError(f"outer split access requires one-time lock receipt: {lock}")
+        overlap = set(partitioned["actual_train"]) & set(partitioned["inner_select"])
         if overlap:
-            raise ValueError(f"split guard failed; overlap between {self.split} and {other}: {sorted(overlap)[:5]}")
+            raise ValueError(f"split guard failed; actual_train and inner_select overlap: {sorted(overlap)[:5]}")
+        if set(fold_split["train"]) & set(fold_split["val"]):
+            raise ValueError("split guard failed; train and val/outer overlap")
         self.records = [
             CAREPRISMPatientRecord(
                 case_id=case_id,
@@ -177,9 +208,9 @@ class CAREPRISMFullPatientDataset(torch.utils.data.Dataset[dict[str, Any]]):
                 seg_path=Path(fullres_root) / f"{case_id}_seg.b2nd",
                 fold=self.fold,
                 split=self.split,
-                center=_center_from_case(case_id),
+                center=_center_from_case(case_id, center_metadata_root),
             )
-            for case_id in splits[self.fold][self.split]
+            for case_id in split_cases[self.split]
         ]
         missing = [r.case_id for r in self.records if not r.image_path.exists() or not r.seg_path.exists()]
         if missing:
@@ -217,9 +248,9 @@ class CAREPRISMFullPatientDataset(torch.utils.data.Dataset[dict[str, Any]]):
         if self.augmenter is not None:
             images, seg, availability = self.augmenter(images, seg, availability)
         t2_present = bool(float(availability[1]) > 0.5)
-        union = (seg > 0).float().unsqueeze(0)
+        union = ((seg == 1) | (seg == 4) | (seg == 5)).float().unsqueeze(0)
         scar = (seg == 5).float().unsqueeze(0)
-        edema = (seg == 4).float().unsqueeze(0)
+        edema = ((seg == 4) | (seg == 5)).float().unsqueeze(0)
         lv = (seg == 2).float().unsqueeze(0)
         rv = (seg == 3).float().unsqueeze(0)
         anatomy = torch.cat([union, lv, rv], dim=0)
@@ -242,6 +273,120 @@ class CAREPRISMFullPatientDataset(torch.utils.data.Dataset[dict[str, Any]]):
             "edema_burden_class": edema_class.view(1),
             "scar_log_ratio": scar_ratio.view(1, 1),
             "edema_log_ratio": edema_ratio.view(1, 1),
+        }
+
+
+class CAREPRISMBalancedSampler:
+    """Center x burden x positive/safe-negative case sampler for full patients."""
+
+    def __init__(self, dataset: CAREPRISMFullPatientDataset, *, seed: int = 20260729) -> None:
+        self.dataset = dataset
+        self.seed = int(seed)
+        self._py = random.Random(seed)
+        self.center_bins: dict[str, dict[str, dict[str, list[int]]]] = {"scar": {}, "edema": {}}
+        self.center_order: dict[str, list[str]] = {"scar": [], "edema": []}
+        self.stratum_order: dict[str, dict[str, list[str]]] = {"scar": {}, "edema": {}}
+        self.center_cursor: dict[str, int] = {"scar": 0, "edema": 0}
+        self.stratum_cursor: dict[str, dict[str, int]] = {"scar": {}, "edema": {}}
+        self.item_cursor: dict[str, int] = {}
+        self.sample_counts: dict[str, dict[str, dict[str, int]]] = {"scar": {}, "edema": {}}
+        self._build_bins()
+
+    def _bucket(self, item: dict[str, Any], focus: str) -> str | None:
+        if focus == "scar":
+            positive = float(item["scar_target"].sum()) > 0.0
+            negative = float(item["scar_negative_targets"].sum()) > 0.0
+            burden = int(item["scar_burden_class"][0])
+        else:
+            if float(item["t2_present"][0, 0]) <= 0.5:
+                return None
+            positive = float(item["edema_zone_target"].sum()) > 0.0
+            negative = float(item["edema_negative_targets"].sum()) > 0.0
+            burden = int(item["edema_burden_class"][0])
+        if positive:
+            return f"positive_burden{burden}"
+        if negative:
+            return "safe_negative"
+        return None
+
+    def _build_bins(self) -> None:
+        for idx in range(len(self.dataset)):
+            item = self.dataset[idx]
+            for focus in ("scar", "edema"):
+                bucket = self._bucket(item, focus)
+                if bucket is not None:
+                    center = item["center"][0]
+                    self.center_bins[focus].setdefault(center, {}).setdefault(bucket, []).append(idx)
+        for focus in ("scar", "edema"):
+            self.center_order[focus] = sorted(self.center_bins[focus])
+            if not self.center_order[focus]:
+                raise RuntimeError(f"no eligible {focus} bins for CARE-PRISM balanced sampling")
+            for center, strata in self.center_bins[focus].items():
+                self.stratum_order[focus][center] = sorted(strata)
+                self.stratum_cursor[focus][center] = 0
+                self.sample_counts[focus][center] = {stratum: 0 for stratum in self.stratum_order[focus][center]}
+                for stratum, indices in strata.items():
+                    self._py.shuffle(indices)
+                    self.item_cursor[f"{focus}:{center}:{stratum}"] = 0
+
+    def next_index(self, focus: str) -> int:
+        focus = str(focus)
+        centers = self.center_order[focus]
+        center = centers[self.center_cursor[focus] % len(centers)]
+        self.center_cursor[focus] += 1
+        strata = self.stratum_order[focus][center]
+        stratum = strata[self.stratum_cursor[focus][center] % len(strata)]
+        self.stratum_cursor[focus][center] += 1
+        key = f"{focus}:{center}:{stratum}"
+        indices = self.center_bins[focus][center][stratum]
+        cursor = self.item_cursor.get(key, 0)
+        index = indices[cursor % len(indices)]
+        self.item_cursor[key] = cursor + 1
+        self.sample_counts[focus][center][stratum] = self.sample_counts[focus][center].get(stratum, 0) + 1
+        return int(index)
+
+    def state_dict(self) -> dict[str, Any]:
+        return {
+            "seed": self.seed,
+            "center_bins": self.center_bins,
+            "center_order": self.center_order,
+            "stratum_order": self.stratum_order,
+            "center_cursor": self.center_cursor,
+            "stratum_cursor": self.stratum_cursor,
+            "item_cursor": self.item_cursor,
+            "sample_counts": self.sample_counts,
+        }
+
+    def load_state_dict(self, state: dict[str, Any]) -> None:
+        self.seed = int(state.get("seed", self.seed))
+        self.center_bins = {
+            focus: {center: {stratum: [int(v) for v in vals] for stratum, vals in strata.items()} for center, strata in centers.items()}
+            for focus, centers in state.get("center_bins", self.center_bins).items()
+        }
+        self.center_order = {focus: [str(v) for v in order] for focus, order in state.get("center_order", self.center_order).items()}
+        self.stratum_order = {
+            focus: {center: [str(v) for v in order] for center, order in centers.items()}
+            for focus, centers in state.get("stratum_order", self.stratum_order).items()
+        }
+        self.center_cursor = {focus: int(v) for focus, v in state.get("center_cursor", self.center_cursor).items()}
+        self.stratum_cursor = {
+            focus: {center: int(v) for center, v in centers.items()} for focus, centers in state.get("stratum_cursor", self.stratum_cursor).items()
+        }
+        self.item_cursor = {str(k): int(v) for k, v in state.get("item_cursor", self.item_cursor).items()}
+        self.sample_counts = {
+            focus: {center: {stratum: int(v) for stratum, v in strata.items()} for center, strata in centers.items()}
+            for focus, centers in state.get("sample_counts", self.sample_counts).items()
+        }
+
+    def summary(self) -> dict[str, Any]:
+        return {
+            focus: {
+                "center_count": len(self.center_order[focus]),
+                "case_count": int(sum(len(v) for strata in self.center_bins[focus].values() for v in strata.values())),
+                "bins": {center: {k: len(v) for k, v in sorted(strata.items())} for center, strata in sorted(self.center_bins[focus].items())},
+                "sample_counts": self.sample_counts[focus],
+            }
+            for focus in ("scar", "edema")
         }
 
 

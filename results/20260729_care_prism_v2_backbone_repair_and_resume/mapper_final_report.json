@@ -1,0 +1,33 @@
+{
+  "architecture_mapping_status": "FINAL_W3_FAIL_CLOSED",
+  "controller_packet": "results/20260729_care_prism_v2_backbone_repair_and_resume/controller_w3_return_packet.json",
+  "evidence": {
+    "anatomy_exchange": "results/20260729_care_prism_v2_backbone_repair_and_resume/anatomy_exchange_report.json",
+    "backbone_transplant_fold0": "results/20260729_care_prism_v2_backbone_repair_and_resume/init_transplant_report_fold0.json",
+    "backbone_transplant_fold1": "results/20260729_care_prism_v2_backbone_repair_and_resume/init_transplant_report_fold1.json",
+    "direct_loss_gradients": "results/20260729_care_prism_v2_backbone_repair_and_resume/direct_loss_gradient_report.json",
+    "inner_selection": "results/20260729_care_prism_v2_backbone_repair_and_resume/evaluation/fold0_w3_inner_select_formal_v2/summary.json",
+    "label_semantics": "results/20260729_care_prism_v2_backbone_repair_and_resume/label_semantics_report.json",
+    "outer_once": "results/20260729_care_prism_v2_backbone_repair_and_resume/evaluation/fold0_w3_outer_once_formal_v2/summary.json",
+    "resume": "results/20260729_care_prism_v2_backbone_repair_and_resume/exact_resume_report.json",
+    "sampler": "results/20260729_care_prism_v2_backbone_repair_and_resume/sampler_balance_report.json",
+    "w1_w2_validator": "results/20260729_care_prism_v2_backbone_repair_and_resume/w1_w2_strict_validator_report.json",
+    "w3_checkpoint_audit": "results/20260729_care_prism_v2_backbone_repair_and_resume/w3_checkpoint_audit_report.json",
+    "w3_strict_validator": "results/20260729_care_prism_v2_backbone_repair_and_resume/w3_strict_validator_report.json",
+    "w3_training": "results/20260729_care_prism_v2_backbone_repair_and_resume/w3_training_summary.json"
+  },
+  "inferred_failure_boundary": {
+    "mechanism_implementation": "W1/W2 gates pass and W3 training/audits complete",
+    "metric_failure": "outer selected checkpoint harms same-fold nnU-Net on scar and edema-zone",
+    "recommended_planner_focus": "calibration/refinement after proposal/refiner loss weighting and threshold selection; W4 remains unauthorized until a new W3 gate passes"
+  },
+  "source_files": [
+    "src/care_myocardium/data/care_prism_dataset.py",
+    "src/care_myocardium/models/care_prism.py",
+    "src/care_myocardium/training/care_prism_trainer.py",
+    "scripts/training/run_care_prism.py",
+    "scripts/evaluation/evaluate_care_prism.py",
+    "scripts/evaluation/validate_care_prism_packet.py"
+  ],
+  "status": "PASS"
+}

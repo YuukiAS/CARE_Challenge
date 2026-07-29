@@ -1,0 +1,7 @@
+{
+  "prototype_enabled": false,
+  "reason": "Real slice correspondence has not passed an independent train-side gate; W2/W3 freeze identity mode.",
+  "slice_correspondence_mode": "identity_disabled",
+  "status": "PASS",
+  "train_deploy_mode_match": true
+}

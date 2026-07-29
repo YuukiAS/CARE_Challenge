@@ -12,6 +12,7 @@ import numpy as np
 import torch
 from torch import nn
 import torch.nn.functional as F
+from scipy.ndimage import distance_transform_edt, label as connected_components
 
 from src.care_myocardium.models.care_prism import (
     CAREPRISM,
@@ -67,38 +68,49 @@ def dice_ce_loss(logits: torch.Tensor, target: torch.Tensor) -> torch.Tensor:
     return dice_loss_from_logits(logits, target) + F.binary_cross_entropy_with_logits(logits, target)
 
 
-def _approximate_surface_distance(target: torch.Tensor, max_radius: int = 12) -> torch.Tensor:
-    target_bool = target > 0.5
-    if not bool(target_bool.any()):
-        return torch.ones_like(target)
-    visited = target_bool.clone()
-    distance = torch.zeros_like(target)
-    frontier = target_bool.float()
-    for radius in range(1, max_radius + 1):
-        frontier = F.max_pool3d(frontier, kernel_size=3, stride=1, padding=1)
-        newly_seen = (frontier > 0.5) & (~visited)
-        distance = torch.where(newly_seen, distance.new_full((), float(radius) / float(max_radius)), distance)
-        visited = visited | newly_seen
-    distance = torch.where(visited, distance, torch.ones_like(distance))
-    boundary = F.max_pool3d(target.float(), 3, stride=1, padding=1) - (-F.max_pool3d(-target.float(), 3, stride=1, padding=1))
-    boundary = boundary > 0
-    return torch.where(boundary, torch.zeros_like(distance), distance).detach()
+def _bidirectional_distance_maps(target: torch.Tensor) -> tuple[torch.Tensor, torch.Tensor]:
+    target_np = (target.detach().cpu().numpy() > 0.5).astype(np.bool_)
+    outside = np.zeros_like(target_np, dtype=np.float32)
+    inside = np.zeros_like(target_np, dtype=np.float32)
+    for index in np.ndindex(target_np.shape[:2]):
+        mask = target_np[index]
+        if mask.any():
+            outside[index] = distance_transform_edt(~mask)
+            inside[index] = distance_transform_edt(mask)
+        else:
+            outside[index].fill(1.0)
+    outside_t = torch.from_numpy(outside).to(device=target.device, dtype=target.dtype)
+    inside_t = torch.from_numpy(inside).to(device=target.device, dtype=target.dtype)
+    norm = max(float(max(outside_t.max().item(), inside_t.max().item())), 1.0)
+    return outside_t / norm, inside_t / norm
 
 
 def generalized_surface_loss(logits: torch.Tensor, target: torch.Tensor, *, enabled: bool) -> torch.Tensor:
     if not enabled:
         return logits.sum() * 0.0
     probs = torch.sigmoid(logits)
-    distance = _approximate_surface_distance(target.to(probs))
-    return (probs * distance * (1.0 - target.to(probs)) + (1.0 - probs) * distance * target.to(probs)).mean().clamp_min(0)
+    target = target.to(probs)
+    outside_distance, inside_distance = _bidirectional_distance_maps(target)
+    return (probs * outside_distance * (1.0 - target) + (1.0 - probs) * inside_distance * target).mean().clamp_min(0)
 
 
 def lesion_mil_loss(logits: torch.Tensor, target: torch.Tensor, *, enabled: bool) -> torch.Tensor:
     if not enabled:
         return logits.sum() * 0.0
-    probs = torch.sigmoid(logits).flatten(1).amax(dim=1)
-    has_lesion = (target.flatten(1).sum(dim=1) > 0).to(dtype=logits.dtype)
-    return F.binary_cross_entropy(probs.clamp(1.0e-5, 1.0 - 1.0e-5), has_lesion)
+    probs = torch.sigmoid(logits)
+    losses: list[torch.Tensor] = []
+    target_np = (target.detach().cpu().numpy() > 0.5).astype(np.uint8)
+    for b in range(target_np.shape[0]):
+        labeled, count = connected_components(target_np[b, 0])
+        if count == 0:
+            max_prob = probs[b : b + 1].flatten().amax().clamp(1.0e-5, 1.0 - 1.0e-5)
+            losses.append(-torch.log1p(-max_prob))
+            continue
+        for component_id in range(1, int(count) + 1):
+            mask = torch.from_numpy(labeled == component_id).to(device=logits.device, dtype=torch.bool)
+            component_prob = probs[b, 0][mask].amax().clamp(1.0e-5, 1.0 - 1.0e-5)
+            losses.append(-torch.log(component_prob))
+    return torch.stack(losses).mean() if losses else logits.sum() * 0.0
 
 
 def resize_like(target: torch.Tensor, reference: torch.Tensor) -> torch.Tensor:
@@ -117,7 +129,19 @@ def negative_space_loss(logits: torch.Tensor, target: torch.Tensor) -> torch.Ten
     target = target.float()
     if target.shape != logits.shape:
         target = target.expand_as(logits)
-    return F.binary_cross_entropy_with_logits(logits, target)
+    per_class: list[torch.Tensor] = []
+    raw = F.binary_cross_entropy_with_logits(logits, target, reduction="none")
+    for channel in range(logits.shape[1]):
+        pos = target[:, channel : channel + 1] > 0.5
+        neg = ~pos
+        channel_loss = []
+        if bool(pos.any()):
+            channel_loss.append(raw[:, channel : channel + 1][pos].mean())
+        if bool(neg.any()):
+            channel_loss.append(raw[:, channel : channel + 1][neg].mean())
+        if channel_loss:
+            per_class.append(torch.stack(channel_loss).mean())
+    return torch.stack(per_class).mean() if per_class else logits.sum() * 0.0
 
 
 def pathology_refiner_loss(
@@ -142,12 +166,12 @@ def pathology_refiner_loss(
     else:
         total = refine + 0.35 * ft + 0.05 * surface
     return total, {
-        "refine": refine.detach(),
-        "focal_tversky": ft.detach(),
-        "mil": mil.detach(),
-        "surface": surface.detach(),
-        "proposal": proposal.detach(),
-        "negative": negative.detach(),
+        "refine": refine,
+        "focal_tversky": ft,
+        "mil": mil,
+        "surface": surface,
+        "proposal": proposal,
+        "negative": negative,
     }
 
 
@@ -187,21 +211,21 @@ def care_prism_loss(outputs: dict[str, Any], batch: dict[str, torch.Tensor], *, 
         + 0.02 * router
     )
     parts = {
-        "loss": total.detach(),
-        "anatomy": anatomy_loss.detach(),
-        "scar_refine": scar_ref.detach(),
-        "edema_refine": edema_ref.detach(),
-        "scar_proposal": proposal_scar.detach(),
-        "edema_proposal": proposal_edema.detach(),
-        "scar_negative": negative_scar.detach(),
-        "edema_negative": negative_edema.detach(),
-        "burden": burden.detach(),
-        "soft_relation": soft_relation.detach(),
-        "router": router.detach(),
+        "loss": total,
+        "anatomy": anatomy_loss,
+        "scar_refine": scar_ref,
+        "edema_refine": edema_ref,
+        "scar_proposal": proposal_scar,
+        "edema_proposal": proposal_edema,
+        "scar_negative": negative_scar,
+        "edema_negative": negative_edema,
+        "burden": burden,
+        "soft_relation": soft_relation,
+        "router": router,
     }
-    metrics = {k: float(v.cpu()) for k, v in parts.items()}
+    metrics = {k: float(v.detach().cpu()) for k, v in parts.items()}
     metrics["all_finite"] = bool(torch.isfinite(total).detach().cpu())
-    metrics["all_nonnegative"] = all(float(v.cpu()) >= 0.0 for v in parts.values())
+    metrics["all_nonnegative"] = all(float(v.detach().cpu()) >= 0.0 for v in parts.values())
     return total, metrics
 
 
@@ -407,6 +431,7 @@ def save_care_prism_checkpoint(
             "hard_negative_state": hard_negative_state or {},
             "contract_hash": contract_hash,
             "torch_rng_state": torch.random.get_rng_state(),
+            "cuda_rng_state_all": torch.cuda.get_rng_state_all() if torch.cuda.is_available() else [],
             "numpy_rng_state": np.random.get_state(),
             "python_rng_state": random.getstate(),
             "config": model.config.__dict__,

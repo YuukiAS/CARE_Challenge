@@ -1,13 +1,13 @@
 {
   "checks": {
-    "anatomy_guidance_edema_delta": 3.9562089443206787,
-    "anatomy_guidance_scar_delta": 2.783294200897217,
-    "negative_edema_delta": 1.0552113056182861,
-    "negative_scar_delta": 0.3970384895801544,
-    "proposal_edema_delta": 0.0755927562713623,
-    "proposal_scar_delta": 0.052846819162368774,
-    "router_edema_delta": 1.8961341381072998,
-    "router_scar_delta": 1.4189732074737549
+    "anatomy_guidance_edema_delta": 1.9776686429977417,
+    "anatomy_guidance_scar_delta": 1.9325816631317139,
+    "negative_edema_delta": 0.7097715139389038,
+    "negative_scar_delta": 0.3017396330833435,
+    "proposal_edema_delta": 0.0691419243812561,
+    "proposal_scar_delta": 0.05063723027706146,
+    "router_edema_delta": 1.6899962425231934,
+    "router_scar_delta": 0.9673337936401367
   },
   "pathology_loss_anatomy_decoder_grad_abs": 0,
   "prototype_enabled": false,

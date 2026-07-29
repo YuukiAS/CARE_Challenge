@@ -271,7 +271,7 @@ class AnatomyToPathologyExchange(nn.Module):
         super().__init__()
         self.proj = nn.Conv3d(channels, channels, 1)
         self.gate = nn.Parameter(torch.zeros(1))
-        nn.init.zeros_(self.proj.weight)
+        nn.init.kaiming_normal_(self.proj.weight, a=0.01)
         nn.init.zeros_(self.proj.bias)
 
     def forward(self, pathology: torch.Tensor, anatomy: torch.Tensor, *, enabled: bool = True) -> torch.Tensor:

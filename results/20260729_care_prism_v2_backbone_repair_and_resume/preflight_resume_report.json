@@ -1,0 +1,30 @@
+{
+  "checkpoint": "results/20260729_care_prism_v2_backbone_repair_and_resume/runtime/fold0_w2_realcase_400_zero_credit_semantic_repair_v3/checkpoints/checkpoint_step00400.pt",
+  "hard_negative_state": {
+    "bank_hash": "w2_preflight_safe_negative_targets_from_dataset"
+  },
+  "next_case_image_max_abs_delta_after_rng_restore": 0.0,
+  "next_scar_index_first_restore": 57,
+  "next_scar_index_second_restore": 57,
+  "prototype_state_present": true,
+  "required_keys_present": {
+    "augmentation_rng_state": true,
+    "hard_negative_state": true,
+    "model_state": true,
+    "optimizer_state": true,
+    "prototype_state": true,
+    "sampler_state": true,
+    "scaler_state": true,
+    "scheduler_state": true,
+    "stage": true,
+    "step": true
+  },
+  "restored_lr": [
+    0.0,
+    0.0
+  ],
+  "restored_stage": "W2",
+  "restored_step": 400,
+  "scheduler_last_epoch": 400,
+  "status": "PASS"
+}

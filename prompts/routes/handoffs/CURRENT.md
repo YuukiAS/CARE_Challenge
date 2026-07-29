@@ -1,5 +1,57 @@
 # CARE 当前开发状态
 
+## 2026-07-29 最新机器真值：CARE-PRISM v2 W3 足额完成，但 fold0 门失败，禁止进入 W4
+
+CARE-PRISM v2 已从修复后的 fold0 stock nnU-Net checkpoint 重新完成 W1/W2，并执行 W3 fold0 6500-step formal v2。W3 训练本身、每 500 step checkpoint 审计、all-checkpoint inner selection、freeze receipt 和 fold0 outer 一次性评价链路完整；但是 frozen selected checkpoint 在 outer 上同时伤害 scar 和 edema-zone，相对同折 nnU-Net 明显下降，因此 W3 strict validator fail-closed，W4/fold1 clean training 不得启动，需返回 Planner 重新规划 calibration/refinement。
+
+```text
+state_id: care_prism_v2_w3_gate_failed_20260729
+active_development_branch: main
+active_worktree: /users/a/e/aereinh/CARE
+single_active_scientific_line: CARE_PRISM_V2_W3_RETURN_TO_PLANNER
+method_name: CARE-PRISM v2
+controller_is_coordinator: true
+result_root: results/20260729_care_prism_v2_backbone_repair_and_resume
+w1_w2_status: STRICT_PASS
+w3_training_status: PASS_6500_STEPS
+w3_inner_selection: PASS_ALL_13_CHECKPOINTS
+w3_selected_checkpoint: results/20260729_care_prism_v2_backbone_repair_and_resume/runtime/fold0_w3_fold0_6500_formal_v2/checkpoints/checkpoint_step03000.pt
+w3_selected_checkpoint_sha256: 33ce3dc6fa72b5bda9eca7489d01ec2ae12acf90edbba46eda3456ef5e5504e6
+fold0_outer_accessed: true
+fold0_outer_access_semantics: one_time_after_freeze
+fold1_outer_accessed: false
+w4_started: false
+w3_strict_validator: FAIL
+failure_classification: CALIBRATION
+controller_verification_decision: NEEDS_REPAIR
+validation_upload_authorized: false
+docker_upload_authorized: false
+hosted_metric_claim_authorized: false
+```
+
+关键证据：
+
+```text
+results/20260729_care_prism_v2_backbone_repair_and_resume/w1_w2_strict_validator_report.json
+results/20260729_care_prism_v2_backbone_repair_and_resume/w3_training_summary.json
+results/20260729_care_prism_v2_backbone_repair_and_resume/w3_checkpoint_audit_report.json
+results/20260729_care_prism_v2_backbone_repair_and_resume/evaluation/fold0_w3_inner_select_formal_v2/summary.json
+results/20260729_care_prism_v2_backbone_repair_and_resume/evaluation/fold0_w3_outer_once_formal_v2/summary.json
+results/20260729_care_prism_v2_backbone_repair_and_resume/w3_strict_validator_report.json
+results/20260729_care_prism_v2_backbone_repair_and_resume/controller_w3_return_packet.json
+results/20260729_care_prism_v2_backbone_repair_and_resume/mapper_final_report.json
+```
+
+outer once selected checkpoint 结果：
+
+```text
+scar Dice: CARE-PRISM 0.4196441776 vs same-fold nnU-Net 0.5340911530, delta -0.1144469754, harm 37/44 cases
+edema-zone Dice: CARE-PRISM 0.2471543848 vs same-fold nnU-Net 0.5592277699, delta -0.3120733851, harm 37/44 cases
+remote_fp_count: 0 for scar and edema-zone
+```
+
+本状态覆盖下面旧的“自动继续 W3–W5”中间态。除非 Planner 明确授权新的 repair plan，不得继续 W4、不得访问 fold1 outer、不得重调 fold0 outer、不得上传 validation/Docker、不得作 hosted metric claim。
+
 ## 2026-07-30 最新机器真值：CARE-PRISM v2 持续 Controller，先修复 W1/W2，再自动继续 W3–W5
 
 最新中间提交 `71717f0d7c6232cb8b68dd4d6442f8a5223ce297` 已解决同折 stock nnU-Net 主干定位、完整移植和 FP32 奇偶校验，并完成一次 400-step 真实病例 zero-credit 循环。Planner/Critic 随后发现标签语义、proposal/negative 直接梯度、anatomy exchange、负空间平衡、正式采样、exact resume、阶段训练、inner/outer lock、评价和 validator 仍未闭环。

@@ -1,0 +1,72 @@
+{
+  "audits": [
+    {
+      "audit_path": "results/20260729_care_prism_v2_backbone_repair_and_resume/runtime/fold0_w3_fold0_6500_formal_v2/audits/checkpoint_step00500_audit.json",
+      "checkpoint_step": 500,
+      "status": "PASS"
+    },
+    {
+      "audit_path": "results/20260729_care_prism_v2_backbone_repair_and_resume/runtime/fold0_w3_fold0_6500_formal_v2/audits/checkpoint_step01000_audit.json",
+      "checkpoint_step": 1000,
+      "status": "PASS"
+    },
+    {
+      "audit_path": "results/20260729_care_prism_v2_backbone_repair_and_resume/runtime/fold0_w3_fold0_6500_formal_v2/audits/checkpoint_step01500_audit.json",
+      "checkpoint_step": 1500,
+      "status": "PASS"
+    },
+    {
+      "audit_path": "results/20260729_care_prism_v2_backbone_repair_and_resume/runtime/fold0_w3_fold0_6500_formal_v2/audits/checkpoint_step02000_audit.json",
+      "checkpoint_step": 2000,
+      "status": "PASS"
+    },
+    {
+      "audit_path": "results/20260729_care_prism_v2_backbone_repair_and_resume/runtime/fold0_w3_fold0_6500_formal_v2/audits/checkpoint_step02500_audit.json",
+      "checkpoint_step": 2500,
+      "status": "PASS"
+    },
+    {
+      "audit_path": "results/20260729_care_prism_v2_backbone_repair_and_resume/runtime/fold0_w3_fold0_6500_formal_v2/audits/checkpoint_step03000_audit.json",
+      "checkpoint_step": 3000,
+      "status": "PASS"
+    },
+    {
+      "audit_path": "results/20260729_care_prism_v2_backbone_repair_and_resume/runtime/fold0_w3_fold0_6500_formal_v2/audits/checkpoint_step03500_audit.json",
+      "checkpoint_step": 3500,
+      "status": "PASS"
+    },
+    {
+      "audit_path": "results/20260729_care_prism_v2_backbone_repair_and_resume/runtime/fold0_w3_fold0_6500_formal_v2/audits/checkpoint_step04000_audit.json",
+      "checkpoint_step": 4000,
+      "status": "PASS"
+    },
+    {
+      "audit_path": "results/20260729_care_prism_v2_backbone_repair_and_resume/runtime/fold0_w3_fold0_6500_formal_v2/audits/checkpoint_step04500_audit.json",
+      "checkpoint_step": 4500,
+      "status": "PASS"
+    },
+    {
+      "audit_path": "results/20260729_care_prism_v2_backbone_repair_and_resume/runtime/fold0_w3_fold0_6500_formal_v2/audits/checkpoint_step05000_audit.json",
+      "checkpoint_step": 5000,
+      "status": "PASS"
+    },
+    {
+      "audit_path": "results/20260729_care_prism_v2_backbone_repair_and_resume/runtime/fold0_w3_fold0_6500_formal_v2/audits/checkpoint_step05500_audit.json",
+      "checkpoint_step": 5500,
+      "status": "PASS"
+    },
+    {
+      "audit_path": "results/20260729_care_prism_v2_backbone_repair_and_resume/runtime/fold0_w3_fold0_6500_formal_v2/audits/checkpoint_step06000_audit.json",
+      "checkpoint_step": 6000,
+      "status": "PASS"
+    },
+    {
+      "audit_path": "results/20260729_care_prism_v2_backbone_repair_and_resume/runtime/fold0_w3_fold0_6500_formal_v2/audits/checkpoint_step06500_audit.json",
+      "checkpoint_step": 6500,
+      "status": "PASS"
+    }
+  ],
+  "runtime_dir": "results/20260729_care_prism_v2_backbone_repair_and_resume/runtime/fold0_w3_fold0_6500_formal_v2",
+  "stage": "W3",
+  "status": "PASS"
+}
