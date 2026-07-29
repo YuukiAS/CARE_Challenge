@@ -2,10 +2,42 @@
   "allocation": {
     "gpu_processes_after_c2": "none observed by pgrep run_care_dpr/evaluate_care_dpr/care_dpr",
     "gpu_processes_after_probe": "none observed by pgrep run_care_dpr/evaluate_care_dpr/care_dpr",
+    "gpu_processes_after_terminal": "none observed by pgrep run_care_dpr/evaluate_care_dpr/care_dpr/python.*care",
     "jobid": "60657290",
-    "last_observed_state": "RUNNING",
+    "last_observed_state": "NOT_IN_SQUEUE",
     "last_observed_time_left": "24:30",
-    "new_slurm_job_authorized": false
+    "last_relevant_step": "60657290.317",
+    "last_relevant_step_exit_code": "1:0",
+    "last_relevant_step_meaning": "bounded fold0 development inner probe returned GATE_B_R2_REPAIR_REQUIRED_NO_INNER_ELIGIBLE_CHECKPOINT_THRESHOLD; fail-closed evaluator exit, not a Slurm infrastructure failure",
+    "last_relevant_step_state": "FAILED",
+    "new_slurm_job_authorized": false,
+    "sacct_excerpt": [
+      "JobID|State|ExitCode|Elapsed|Start|End|AllocTRES",
+      "60657290|COMPLETED|0:0|3-00:00:00|2026-07-25T21:04:56|2026-07-28T21:04:56|billing=8,cpu=8,gres/gpu:nvidia_h100_nvl=1,gres/gpu=1,mem=64G,node=1",
+      "60657290.batch|COMPLETED|0:0|3-00:00:00|2026-07-25T21:04:56|2026-07-28T21:04:56|cpu=8,gres/gpu:nvidia_h100_nvl=1,gres/gpu=1,mem=64G,node=1",
+      "60657290.extern|COMPLETED|0:0|3-00:00:00|2026-07-25T21:04:56|2026-07-28T21:04:56|billing=8,cpu=8,gres/gpu:nvidia_h100_nvl=1,gres/gpu=1,mem=64G,node=1",
+      "60657290.0|COMPLETED|0:0|00:00:13|2026-07-25T21:08:00|2026-07-25T21:08:13|cpu=4,mem=64G,node=1",
+      "60657290.1|COMPLETED|0:0|00:00:01|2026-07-25T21:08:35|2026-07-25T21:08:36|cpu=2,mem=64G,node=1",
+      "60657290.2|FAILED|1:0|00:01:06|2026-07-25T21:11:53|2026-07-25T21:12:59|cpu=8,gres/gpu:nvidia_h100_nvl=1,gres/gpu=1,mem=64G,node=1",
+      "60657290.3|COMPLETED|0:0|00:03:02|2026-07-25T21:13:35|2026-07-25T21:16:37|cpu=8,gres/gpu:nvidia_h100_nvl=1,gres/gpu=1,mem=64G,node=1",
+      "60657290.4|COMPLETED|0:0|00:00:43|2026-07-25T21:17:01|2026-07-25T21:17:44|cpu=8,mem=64G,node=1",
+      "60657290.5|COMPLETED|0:0|00:01:08|2026-07-25T21:20:00|2026-07-25T21:21:08|cpu=8,mem=64G,node=1",
+      "60657290.6|COMPLETED|0:0|00:01:11|2026-07-25T21:22:57|2026-07-25T21:24:08|cpu=8,mem=64G,node=1",
+      "60657290.7|COMPLETED|0:0|00:00:02|2026-07-26T03:54:50|2026-07-26T03:54:52|cpu=8,gres/gpu:nvidia_h100_nvl=1,gres/gpu=1,mem=64G,node=1",
+      "60657290.8|COMPLETED|0:0|00:00:01|2026-07-26T04:04:55|2026-07-26T04:04:56|cpu=8,gres/gpu:nvidia_h100_nvl=1,gres/gpu=1,mem=64G,node=1",
+      "60657290.9|FAILED|1:0|00:00:14|2026-07-26T04:05:09|2026-07-26T04:05:23|cpu=8,gres/gpu:nvidia_h100_nvl=1,gres/gpu=1,mem=64G,node=1",
+      "60657290.10|FAILED|1:0|00:04:07|2026-07-26T04:06:34|2026-07-26T04:10:41|cpu=8,gres/gpu:nvidia_h100_nvl=1,gres/gpu=1,mem=64G,node=1",
+      "60657290.11|FAILED|1:0|00:03:16|2026-07-26T04:11:31|2026-07-26T04:14:47|cpu=8,gres/gpu:nvidia_h100_nvl=1,gres/gpu=1,mem=64G,node=1",
+      "60657290.12|FAILED|2:0|00:05:50|2026-07-26T04:15:50|2026-07-26T04:21:40|cpu=8,gres/gpu:nvidia_h100_nvl=1,gres/gpu=1,mem=64G,node=1",
+      "60657290.13|COMPLETED|0:0|00:04:35|2026-07-26T04:23:08|2026-07-26T04:27:43|cpu=8,gres/gpu:nvidia_h100_nvl=1,gres/gpu=1,mem=64G,node=1",
+      "60657290.14|COMPLETED|0:0|00:00:00|2026-07-26T05:24:06|2026-07-26T05:24:06|cpu=8,gres/gpu:nvidia_h100_nvl=1,gres/gpu=1,mem=64G,node=1",
+      "60657290.15|COMPLETED|0:0|00:00:00|2026-07-26T05:33:35|2026-07-26T05:33:35|cpu=8,gres/gpu:nvidia_h100_nvl=1,gres/gpu=1,mem=64G,node=1"
+    ],
+    "terminal_accounting_exit_code": "0:0",
+    "terminal_accounting_status": "COMPLETED",
+    "terminal_elapsed": "3-00:00:00",
+    "terminal_end": "2026-07-28T21:04:56",
+    "terminal_start": "2026-07-25T21:04:56"
   },
   "completed": {
     "fold0_balanced_c2_checkpoint_step04000": "results/20260728_care_dpr_fold0_global_redesign/runtime/formal_fold0_r2_balanced_c2_bank_lite/checkpoints/checkpoint_step04000.pt",
@@ -34,13 +66,17 @@
     "fold0_limited_inner_probe_status": "GATE_B_R2_REPAIR_REQUIRED_NO_INNER_ELIGIBLE_CHECKPOINT_THRESHOLD",
     "fold0_limited_inner_probe_summary": "results/20260728_care_dpr_fold0_global_redesign/runtime/formal_fold0_r2_balanced_c2_bank_lite/gate_b_r2_evaluation/gate_b_r2_summary.json",
     "fold0_limited_inner_probe_utility_grid_count": 25,
+    "non_gpu_verification_after_probe": {
+      "py_compile": "PASS",
+      "pytest_tests_care_dpr_model": "21 passed, 3 warnings"
+    },
     "r1_superseded_and_recomputed": true,
     "r2_predictor_final_arbitration_score": "predicted_signed_utility",
     "tests_last_passed": "pytest tests/care_dpr/test_care_dpr_model.py -q -> 21 passed, 3 warnings"
   },
   "created_at_utc": "2026-07-29T00:33:57Z",
   "gate": "DPR_GATE_B_R2",
-  "git_head": "26f6fced461f7547fa53ec0366fdef7b80e3b0d8",
+  "git_head": "35094ff441c69ff71641492c40dcbf91db6ef274",
   "not_completed": {
     "clean_fold1_ab_training": true,
     "clean_fold1_c1_c2_training": true,
@@ -50,12 +86,12 @@
     "full_fold0_r2_inner_selection_all_checkpoints_all_proposals": true,
     "gate_b_r2_notification_email": true
   },
-  "origin_main": "26f6fced461f7547fa53ec0366fdef7b80e3b0d8",
+  "origin_main": "35094ff441c69ff71641492c40dcbf91db6ef274",
   "resume_point": {
     "first_next_gpu_command": "srun --jobid=60657290 --overlap --ntasks=1 bash -lc 'cd /users/a/e/aereinh/CARE && ./envs/env_CARE/bin/python scripts/evaluation/evaluate_care_dpr_gate_b_r2.py --runtime-name formal_fold0_r2_balanced_c2_bank_lite --fold 0 --cache-cases 12'",
-    "note": "Latest checkpoint with proposal thresholds scar=0.30/edema=0.20 failed all 25 utility threshold combinations on fold0 inner12. Full registered checkpoint/proposal grid and clean fold1 remain incomplete; no Gate B-R2 email is authorized."
+    "note": "Allocation 60657290 is terminal and no new Slurm job is authorized. Fold0 limited development probe failed to find an inner-eligible threshold for checkpoint_step04000 at scar=0.30/edema=0.20. Full registered fold0 selection/evaluation and clean fold1 remain incomplete; no Gate B-R2 email is authorized."
   },
-  "status": "OPERATIONALLY_BLOCKED_ALLOCATION_TIME_INSUFFICIENT_FOR_REMAINING_REQUIRED_WORK",
+  "status": "OPERATIONALLY_BLOCKED_ALLOCATION_60657290_TERMINAL_REMAINING_GATE_B_R2_GPU_WORK_UNRUNNABLE_UNDER_CURRENT_CONSTRAINT",
   "task_key": "20260728_care_dpr_fold0_global_redesign",
   "unauthorized": {
     "docker_upload": true,
@@ -64,5 +100,5 @@
     "runtime_push": true,
     "validation_package_or_upload": true
   },
-  "updated_at_utc": "2026-07-29T00:40:54Z"
+  "updated_at_utc": "2026-07-29T01:10:27Z"
 }
