@@ -1,0 +1,41 @@
+{
+  "declared_scales": [
+    0,
+    1,
+    2,
+    3
+  ],
+  "interventions": [
+    {
+      "final_logit_max_abs_delta": 0.6792901754379272,
+      "level_disabled": 1,
+      "pathology": "scar"
+    },
+    {
+      "final_logit_max_abs_delta": 0.34961429238319397,
+      "level_disabled": 2,
+      "pathology": "scar"
+    },
+    {
+      "final_logit_max_abs_delta": 0.22941645979881287,
+      "level_disabled": 3,
+      "pathology": "scar"
+    },
+    {
+      "final_logit_max_abs_delta": 1.0273970365524292,
+      "level_disabled": 1,
+      "pathology": "edema"
+    },
+    {
+      "final_logit_max_abs_delta": 0.5317790508270264,
+      "level_disabled": 2,
+      "pathology": "edema"
+    },
+    {
+      "final_logit_max_abs_delta": 0.3213985562324524,
+      "level_disabled": 3,
+      "pathology": "edema"
+    }
+  ],
+  "status": "PASS"
+}

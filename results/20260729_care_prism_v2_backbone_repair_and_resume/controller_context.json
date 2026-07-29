@@ -1,0 +1,43 @@
+{
+  "allocation": {
+    "authorized_job_id": "61220581",
+    "node": "g1807htzh01",
+    "observed": "61220581|RUNNING|htzhulab|g1807htzh01|10:32:11|5-00:00:00|g1807htzh01",
+    "partition": "htzhulab",
+    "state": "RUNNING"
+  },
+  "branch": "main",
+  "files_read": [
+    "AGENTS.md",
+    ".agents/skills/codex-workflow-protocol/SKILL.md",
+    ".agents/skills/codex-workflow-protocol/references/live-state-delegation.md",
+    ".agents/skills/codex-workflow-protocol/references/verification-matrix.md",
+    ".agents/skills/slurm-routing-partition/SKILL.md",
+    ".agents/skills/care-mapper/SKILL.md",
+    "prompts/tasks/20260729_care_prism_v2_backbone_and_w1_repair_amendment.md",
+    "prompts/tasks/20260729_care_prism_v2_backbone_repair_executor_plan.yaml",
+    "prompts/tasks/20260729_care_prism_execution_hardening_amendment_v2.md",
+    "prompts/blueprints/CARE_PRISM_pathology_retrieval_soft_cascade_20260729.md",
+    "prompts/tasks/20260729_care_prism_fold0_fold1_executor_plan_v2.yaml",
+    "prompts/tasks/20260729_care_prism_controller_v2.md",
+    "prompts/routes/handoffs/CURRENT.md",
+    "wiki/README.md"
+  ],
+  "git": {
+    "head": "24a7b09 Merge remote-tracking branch 'origin/main'",
+    "origin_main_at_adoption": "1f1f39264cf248fb11d0322f41d4fe4c2aae021d",
+    "status_summary": "local main ahead of origin/main by local packet update plus merge commit; unrelated dirty files exist outside this task"
+  },
+  "highest_authority_sha256": "73528f3bb4e8a91acf64a71333de6372916ab8e323b377841f96379fad99552b",
+  "phase": "R0_ASSET_AND_AUTHORITY_REPAIR",
+  "required_commits": {
+    "1245ce5d2c1799f750b5cfa39f94047b76d1ef07": "present",
+    "7e659fd6f559cad464cfea31879970b273ce2993": "present",
+    "a446572241b5c80916d1fba21860aad1db39b9d2": "present",
+    "f5a2ebfc6d673d25021540c58ee98bf54329a757": "present",
+    "fa3fc6aa23976f26e1523d5c99c98470cdc43b7c": "present"
+  },
+  "result_root": "results/20260729_care_prism_v2_backbone_repair_and_resume",
+  "slurm_gpu_command_policy": "GPU commands must use serial srun --jobid=61220581 --overlap --ntasks=1 bash -lc '<command>'; no sbatch/salloc/new Slurm job.",
+  "task_key": "20260729_care_prism_v2_backbone_repair_and_resume"
+}

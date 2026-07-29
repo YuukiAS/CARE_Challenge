@@ -1,0 +1,33 @@
+{
+  "augmentation_state_recorded": true,
+  "case_count": 176,
+  "channel_order": [
+    "LGE",
+    "T2",
+    "C0"
+  ],
+  "edema_negative_target_sum_t2_case": 775908.0,
+  "edema_negative_target_t2_case": "Case2001",
+  "first_case": "Case1001",
+  "first_image_shape": [
+    1,
+    3,
+    20,
+    256,
+    256
+  ],
+  "fold": 0,
+  "resume_next_case_after_restore": "Case1003",
+  "resume_next_case_before": "Case1001",
+  "sampler_state_keys": [
+    "augmenter",
+    "cursor",
+    "fold",
+    "split"
+  ],
+  "scar_negative_target_sum_first_case": 1373063.0,
+  "split": "train",
+  "split_guard_overlap": 0,
+  "status": "PASS",
+  "synthetic_credit_allowed_for_w2": false
+}

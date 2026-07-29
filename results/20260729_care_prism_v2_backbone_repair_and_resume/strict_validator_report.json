@@ -1,0 +1,18 @@
+{
+  "errors": [],
+  "status": "PASS",
+  "validated_files": [
+    "adoption_receipt.json",
+    "backbone_asset_resolution.json",
+    "controller_context.json",
+    "init_transplant_report_fold0.json",
+    "init_transplant_report_fold1.json",
+    "multiscale_usage_report.json",
+    "data_pipeline_report.json",
+    "loss_and_negative_space_report.json",
+    "implementation_intervention_report.json",
+    "known_bad_report.json",
+    "checkpoint_resume_report.json",
+    "implementation_validator_report.json"
+  ]
+}

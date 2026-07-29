@@ -1,0 +1,12 @@
+{
+  "case_count": 1,
+  "rows": [
+    {
+      "case_id": "Case1001",
+      "edema_zone_dice": 1.0,
+      "no_t2_edema_exact_zero": true,
+      "scar_dice": 0.0022009778767824173,
+      "t2_present": 0.0
+    }
+  ]
+}

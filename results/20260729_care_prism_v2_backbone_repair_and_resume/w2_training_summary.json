@@ -1,0 +1,18 @@
+{
+  "checkpoint_every": 100,
+  "eligible_case_counts": {
+    "edema": 64,
+    "safe_negative": 6,
+    "scar": 176
+  },
+  "final_checkpoint": "results/20260729_care_prism_v2_backbone_repair_and_resume/runtime/fold0_w2_realcase_400_zero_credit/checkpoints/checkpoint_step00400.pt",
+  "fold": 0,
+  "micro_batches_per_step": 2,
+  "optimizer_steps": 400,
+  "runtime_dir": "results/20260729_care_prism_v2_backbone_repair_and_resume/runtime/fold0_w2_realcase_400_zero_credit",
+  "stage": "W2",
+  "status": "PASS",
+  "synthetic_credit_used": false,
+  "training_log": "results/20260729_care_prism_v2_backbone_repair_and_resume/runtime/fold0_w2_realcase_400_zero_credit/training_log.csv",
+  "transplant_byte_coverage": 1.0
+}

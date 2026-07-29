@@ -1,0 +1,42 @@
+{
+  "edema_negative_head_grad_abs": 0.065632412355626,
+  "edema_negative_target_sum": 33382.0,
+  "lesion_loss_symbol": "lesion_mil_loss",
+  "no_t2_edema_mask_sum": 0.0,
+  "no_t2_edema_probability_max": 0.0,
+  "no_t2_edema_refiner_grad_abs": 0.0,
+  "no_t2_metrics": {
+    "all_finite": true,
+    "all_nonnegative": true,
+    "anatomy": 0.6666026711463928,
+    "burden": 1.4039374589920044,
+    "edema_negative": 0.0,
+    "edema_proposal": 0.0,
+    "edema_refine": 0.0,
+    "loss": 3.3886945247650146,
+    "router": -0.0,
+    "scar_negative": 0.7025737762451172,
+    "scar_proposal": 1.7515294551849365,
+    "scar_refine": 2.196578025817871,
+    "soft_relation": 0.0
+  },
+  "scar_negative_head_grad_abs": 0.1766693867975846,
+  "scar_negative_target_sum": 33382.0,
+  "status": "PASS",
+  "surface_loss_symbol": "generalized_surface_loss",
+  "t2_metrics": {
+    "all_finite": true,
+    "all_nonnegative": true,
+    "anatomy": 0.6718477010726929,
+    "burden": 2.849372625350952,
+    "edema_negative": 0.6953189373016357,
+    "edema_proposal": 1.7473704814910889,
+    "edema_refine": 2.159058094024658,
+    "loss": 6.412231922149658,
+    "router": -0.0,
+    "scar_negative": 0.6948549747467041,
+    "scar_proposal": 1.7518807649612427,
+    "scar_refine": 2.1979663372039795,
+    "soft_relation": 0.021635444834828377
+  }
+}

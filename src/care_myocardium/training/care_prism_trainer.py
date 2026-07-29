@@ -16,14 +16,21 @@ import torch.nn.functional as F
 from src.care_myocardium.models.care_prism import (
     CAREPRISM,
     CAREPRISMConfig,
+    DEFAULT_NNUNET_PLANS,
     DEFAULT_RESENC_PLANS,
     build_care_prism,
+    build_source_nnunet,
     build_source_resenc,
 )
 
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
 DEFAULT_RESENC_RESULT_ROOT = REPO_ROOT / "data/nnUNet/nnUNet_results/Dataset501_CAREMyoPS"
+DEFAULT_STOCK_RESULT_ROOT = REPO_ROOT / "data/nnUNet/nnUNet_results/Dataset501_CAREMyoPS/nnUNetTrainer_500epochs__nnUNetPlans__3d_fullres"
+DEFAULT_STOCK_FOLD_SHA256 = {
+    0: "8bceb20cae8920e87d43b14665a0db9dfd4f1204533d25a3cd6e40ad9de74111",
+    1: "5310569ff62f2f9a6ff2bc7dd3754404140071427a2025caf5e25d2916cfe400",
+}
 
 
 def stable_json_sha256(payload: Any) -> str:
@@ -60,14 +67,33 @@ def dice_ce_loss(logits: torch.Tensor, target: torch.Tensor) -> torch.Tensor:
     return dice_loss_from_logits(logits, target) + F.binary_cross_entropy_with_logits(logits, target)
 
 
-def generalized_surface_placeholder(logits: torch.Tensor, target: torch.Tensor, *, enabled: bool) -> torch.Tensor:
+def _approximate_surface_distance(target: torch.Tensor, max_radius: int = 12) -> torch.Tensor:
+    target_bool = target > 0.5
+    if not bool(target_bool.any()):
+        return torch.ones_like(target)
+    visited = target_bool.clone()
+    distance = torch.zeros_like(target)
+    frontier = target_bool.float()
+    for radius in range(1, max_radius + 1):
+        frontier = F.max_pool3d(frontier, kernel_size=3, stride=1, padding=1)
+        newly_seen = (frontier > 0.5) & (~visited)
+        distance = torch.where(newly_seen, distance.new_full((), float(radius) / float(max_radius)), distance)
+        visited = visited | newly_seen
+    distance = torch.where(visited, distance, torch.ones_like(distance))
+    boundary = F.max_pool3d(target.float(), 3, stride=1, padding=1) - (-F.max_pool3d(-target.float(), 3, stride=1, padding=1))
+    boundary = boundary > 0
+    return torch.where(boundary, torch.zeros_like(distance), distance).detach()
+
+
+def generalized_surface_loss(logits: torch.Tensor, target: torch.Tensor, *, enabled: bool) -> torch.Tensor:
     if not enabled:
         return logits.sum() * 0.0
     probs = torch.sigmoid(logits)
-    return (probs - target).abs().mean().clamp_min(0)
+    distance = _approximate_surface_distance(target.to(probs))
+    return (probs * distance * (1.0 - target.to(probs)) + (1.0 - probs) * distance * target.to(probs)).mean().clamp_min(0)
 
 
-def lesion_mil_placeholder(logits: torch.Tensor, target: torch.Tensor, *, enabled: bool) -> torch.Tensor:
+def lesion_mil_loss(logits: torch.Tensor, target: torch.Tensor, *, enabled: bool) -> torch.Tensor:
     if not enabled:
         return logits.sum() * 0.0
     probs = torch.sigmoid(logits).flatten(1).amax(dim=1)
@@ -97,6 +123,7 @@ def negative_space_loss(logits: torch.Tensor, target: torch.Tensor) -> torch.Ten
 def pathology_refiner_loss(
     outputs: dict[str, torch.Tensor],
     target: torch.Tensor,
+    negative_target: torch.Tensor,
     *,
     scar_like: bool,
     stage: str,
@@ -104,11 +131,11 @@ def pathology_refiner_loss(
     surface_enabled = stage.upper() == "C"
     refine = dice_ce_loss(outputs["final_logit"], target)
     ft = focal_tversky_loss(outputs["final_logit"], target)
-    mil = lesion_mil_placeholder(outputs["final_logit"], target, enabled=surface_enabled)
-    surface = generalized_surface_placeholder(outputs["final_logit"], target, enabled=surface_enabled)
+    mil = lesion_mil_loss(outputs["final_logit"], target, enabled=surface_enabled)
+    surface = generalized_surface_loss(outputs["final_logit"], target, enabled=surface_enabled)
     proposal_target = resize_like(target, outputs["proposal_logit"])
     proposal = dice_ce_loss(outputs["proposal_logit"], proposal_target)
-    negative_target = torch.zeros_like(outputs["negative_logits"])
+    negative_target = resize_like(negative_target, outputs["negative_logits"])
     negative = negative_space_loss(outputs["negative_logits"], negative_target)
     if scar_like:
         total = refine + 0.50 * ft + 0.15 * mil + 0.05 * surface
@@ -128,10 +155,12 @@ def care_prism_loss(outputs: dict[str, Any], batch: dict[str, torch.Tensor], *, 
     scar_target = batch["scar_target"].to(outputs["scar_direct_logit"])
     edema_target = batch["edema_zone_target"].to(outputs["edema_zone_direct_logit"])
     anatomy_target = batch["anatomy_target"].to(device=outputs["anatomy_logits"].device, dtype=torch.float32)
+    scar_negative_target = batch["scar_negative_targets"].to(outputs["scar"]["negative_logits"])
+    edema_negative_target = batch["edema_negative_targets"].to(outputs["edema"]["negative_logits"])
     t2_present = batch["t2_present"].to(outputs["edema_zone_direct_logit"]).view(-1, 1, 1, 1, 1)
     anatomy_loss = F.binary_cross_entropy_with_logits(outputs["anatomy_logits"], anatomy_target)
-    scar_ref, scar_parts = pathology_refiner_loss(outputs["scar"], scar_target, scar_like=True, stage=stage)
-    edema_ref_raw, edema_parts = pathology_refiner_loss(outputs["edema"], edema_target, scar_like=False, stage=stage)
+    scar_ref, scar_parts = pathology_refiner_loss(outputs["scar"], scar_target, scar_negative_target, scar_like=True, stage=stage)
+    edema_ref_raw, edema_parts = pathology_refiner_loss(outputs["edema"], edema_target, edema_negative_target, scar_like=False, stage=stage)
     edema_active = t2_present.mean()
     edema_ref = edema_ref_raw * edema_active
     proposal_scar = scar_parts["proposal"]
@@ -216,7 +245,7 @@ def _candidate_encoder_keys(state: dict[str, torch.Tensor], target_key: str) -> 
     ]
 
 
-def load_same_fold_resenc_encoder(
+def load_same_fold_nnunet_encoder(
     model: CAREPRISM,
     checkpoint_path: Path,
     *,
@@ -238,12 +267,27 @@ def load_same_fold_resenc_encoder(
     model.shared_encoder.load_state_dict({**target, **matched})
     return {
         "checkpoint_path": str(checkpoint_path),
+        "source_network_class_name": model.config.network_class_name,
         "matched_tensors": len(matched),
         "target_tensors": len(target),
         "matched_parameter_bytes": int(matched_bytes),
         "target_parameter_bytes": int(total_bytes),
         "byte_coverage": float(matched_bytes / max(total_bytes, 1)),
     }
+
+
+def load_same_fold_resenc_encoder(
+    model: CAREPRISM,
+    checkpoint_path: Path,
+    *,
+    map_location: str | torch.device = "cpu",
+) -> dict[str, Any]:
+    return load_same_fold_nnunet_encoder(model, checkpoint_path, map_location=map_location)
+
+
+def find_same_fold_stock_checkpoints(root: Path = DEFAULT_STOCK_RESULT_ROOT, *, fold: int = 0) -> list[Path]:
+    ckpt = root / f"fold_{int(fold)}" / "checkpoint_final.pth"
+    return [ckpt] if ckpt.exists() else []
 
 
 def find_same_fold_resenc_checkpoints(root: Path = DEFAULT_RESENC_RESULT_ROOT, *, fold: int = 0) -> list[Path]:
@@ -265,10 +309,10 @@ def fp32_encoder_parity(
     *,
     config: CAREPRISMConfig,
 ) -> dict[str, Any]:
-    source = build_source_resenc(config)
+    source = build_source_nnunet(config)
     payload = torch.load(checkpoint_path, map_location="cpu", weights_only=False)
     state = _checkpoint_state_dict(payload)
-    source.load_state_dict(state, strict=False)
+    missing, unexpected = source.load_state_dict(state, strict=False)
     source.eval()
     model.shared_encoder.eval()
     with torch.no_grad():
@@ -277,36 +321,55 @@ def fp32_encoder_parity(
     per_scale = []
     for idx, (a, b) in enumerate(zip(source_scales, prism_scales)):
         per_scale.append({"scale": idx, "max_abs_error": float((a - b).abs().max().cpu()), "shape": list(a.shape)})
-    return {"per_scale": per_scale, "max_abs_error": max((row["max_abs_error"] for row in per_scale), default=None)}
+    return {
+        "per_scale": per_scale,
+        "max_abs_error": max((row["max_abs_error"] for row in per_scale), default=None),
+        "source_load_missing_keys": list(missing),
+        "source_load_unexpected_keys": list(unexpected),
+    }
 
 
 def write_init_transplant_report(
     output_path: Path,
     *,
     fold: int = 0,
-    plans_path: Path = DEFAULT_RESENC_PLANS,
-    checkpoint_root: Path = DEFAULT_RESENC_RESULT_ROOT,
+    plans_path: Path = DEFAULT_NNUNET_PLANS,
+    checkpoint_root: Path = DEFAULT_STOCK_RESULT_ROOT,
+    expected_sha256: str | None = None,
 ) -> dict[str, Any]:
-    config = CAREPRISMConfig.from_resenc_plans(plans_path)
-    candidates = find_same_fold_resenc_checkpoints(checkpoint_root, fold=fold)
+    config = CAREPRISMConfig.from_nnunet_plans(plans_path)
+    candidates = find_same_fold_stock_checkpoints(checkpoint_root, fold=fold)
+    expected = expected_sha256 or DEFAULT_STOCK_FOLD_SHA256.get(int(fold))
     report: dict[str, Any] = {
         "status": "FAIL",
         "failure_class": "EXECUTION_OR_INIT",
         "plans_path": str(plans_path.relative_to(REPO_ROOT) if plans_path.is_relative_to(REPO_ROOT) else plans_path),
         "plans_sha256": file_sha256(plans_path) if plans_path.exists() else None,
         "fold": int(fold),
-        "same_fold_resenc_checkpoint_candidates": [str(p.relative_to(REPO_ROOT) if p.is_relative_to(REPO_ROOT) else p) for p in candidates],
-        "plainconv_checkpoint_counted_for_resenc_gate": False,
-        "required_byte_coverage_min": 0.90,
+        "network_class_name": config.network_class_name,
+        "same_fold_stock_checkpoint_candidates": [str(p.relative_to(REPO_ROOT) if p.is_relative_to(REPO_ROOT) else p) for p in candidates],
+        "resenc_checkpoint_required": False,
+        "required_byte_coverage_min": 0.99,
         "required_fp32_parity_max_abs": 1.0e-6,
     }
     if not candidates:
-        report["blocking_reason"] = "No same-fold ResidualEncoderUNet checkpoint was found under Dataset501_CAREMyoPS nnUNet results; PlainConv checkpoints are not valid for this gate."
+        report["blocking_reason"] = "No frozen same-fold stock nnU-Net checkpoint was found under Dataset501_CAREMyoPS nnUNetTrainer_500epochs results."
     else:
         model = build_care_prism(config)
-        transplant = load_same_fold_resenc_encoder(model, candidates[0])
+        checkpoint_sha256 = file_sha256(candidates[0])
+        transplant = load_same_fold_nnunet_encoder(model, candidates[0])
         report["transplant"] = transplant
-        report["status"] = "PASS" if transplant["byte_coverage"] >= 0.90 else "FAIL"
+        report["checkpoint_sha256"] = checkpoint_sha256
+        report["expected_checkpoint_sha256"] = expected
+        sample = torch.randn(1, config.input_channels, 8, 32, 32, dtype=torch.float32)
+        report["fp32_encoder_parity"] = fp32_encoder_parity(model, candidates[0], sample, config=config)
+        report["status"] = (
+            "PASS"
+            if transplant["byte_coverage"] >= 0.99
+            and (expected is None or checkpoint_sha256 == expected)
+            and float(report["fp32_encoder_parity"]["max_abs_error"]) <= 1.0e-6
+            else "FAIL"
+        )
     output_path.parent.mkdir(parents=True, exist_ok=True)
     output_path.write_text(json.dumps(report, indent=2, sort_keys=True, ensure_ascii=False) + "\n", encoding="utf-8")
     return report

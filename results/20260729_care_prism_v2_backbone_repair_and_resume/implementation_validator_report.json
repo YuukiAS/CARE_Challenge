@@ -1,0 +1,385 @@
+{
+  "checkpoint_resume": {
+    "checkpoint": "results/20260729_care_prism_v2_backbone_repair_and_resume/runtime/checkpoints/w1_resume_probe.pt",
+    "model_probe_uses_synthetic_minimal_tensor_for_memory": true,
+    "next_case_after_save": "Case1003",
+    "real_dataset_sampler_state_case": "Case1001",
+    "required_keys_present": {
+      "augmentation_rng_state": true,
+      "hard_negative_state": true,
+      "model_state": true,
+      "optimizer_state": true,
+      "prototype_state": true,
+      "sampler_state": true,
+      "scaler_state": true,
+      "scheduler_state": true,
+      "stage": true,
+      "step": true
+    },
+    "status": "PASS"
+  },
+  "data_pipeline": {
+    "augmentation_state_recorded": true,
+    "case_count": 176,
+    "channel_order": [
+      "LGE",
+      "T2",
+      "C0"
+    ],
+    "edema_negative_target_sum_t2_case": 775908.0,
+    "edema_negative_target_t2_case": "Case2001",
+    "first_case": "Case1001",
+    "first_image_shape": [
+      1,
+      3,
+      20,
+      256,
+      256
+    ],
+    "fold": 0,
+    "resume_next_case_after_restore": "Case1003",
+    "resume_next_case_before": "Case1001",
+    "sampler_state_keys": [
+      "augmenter",
+      "cursor",
+      "fold",
+      "split"
+    ],
+    "scar_negative_target_sum_first_case": 1373063.0,
+    "split": "train",
+    "split_guard_overlap": 0,
+    "status": "PASS",
+    "synthetic_credit_allowed_for_w2": false
+  },
+  "init_fold0": {
+    "checkpoint_sha256": "8bceb20cae8920e87d43b14665a0db9dfd4f1204533d25a3cd6e40ad9de74111",
+    "expected_checkpoint_sha256": "8bceb20cae8920e87d43b14665a0db9dfd4f1204533d25a3cd6e40ad9de74111",
+    "failure_class": "EXECUTION_OR_INIT",
+    "fold": 0,
+    "fp32_encoder_parity": {
+      "max_abs_error": 0.0,
+      "per_scale": [
+        {
+          "max_abs_error": 0.0,
+          "scale": 0,
+          "shape": [
+            1,
+            32,
+            8,
+            32,
+            32
+          ]
+        },
+        {
+          "max_abs_error": 0.0,
+          "scale": 1,
+          "shape": [
+            1,
+            64,
+            8,
+            16,
+            16
+          ]
+        },
+        {
+          "max_abs_error": 0.0,
+          "scale": 2,
+          "shape": [
+            1,
+            128,
+            4,
+            8,
+            8
+          ]
+        },
+        {
+          "max_abs_error": 0.0,
+          "scale": 3,
+          "shape": [
+            1,
+            256,
+            2,
+            4,
+            4
+          ]
+        },
+        {
+          "max_abs_error": 0.0,
+          "scale": 4,
+          "shape": [
+            1,
+            320,
+            2,
+            2,
+            2
+          ]
+        },
+        {
+          "max_abs_error": 0.0,
+          "scale": 5,
+          "shape": [
+            1,
+            320,
+            2,
+            1,
+            1
+          ]
+        },
+        {
+          "max_abs_error": 0.0,
+          "scale": 6,
+          "shape": [
+            1,
+            320,
+            2,
+            1,
+            1
+          ]
+        }
+      ],
+      "source_load_missing_keys": [],
+      "source_load_unexpected_keys": []
+    },
+    "network_class_name": "dynamic_network_architectures.architectures.unet.PlainConvUNet",
+    "plans_path": "data/nnUNet/nnUNet_preprocessed/Dataset501_CAREMyoPS/nnUNetPlans.json",
+    "plans_sha256": "06492f8fc75b5de383a28006f76b7f1099f305422953cf9d4f89ae1ec38d3e2f",
+    "required_byte_coverage_min": 0.99,
+    "required_fp32_parity_max_abs": 1e-06,
+    "resenc_checkpoint_required": false,
+    "same_fold_stock_checkpoint_candidates": [
+      "data/nnUNet/nnUNet_results/Dataset501_CAREMyoPS/nnUNetTrainer_500epochs__nnUNetPlans__3d_fullres/fold_0/checkpoint_final.pth"
+    ],
+    "status": "PASS",
+    "transplant": {
+      "byte_coverage": 1.0,
+      "checkpoint_path": "/users/a/e/aereinh/CARE/data/nnUNet/nnUNet_results/Dataset501_CAREMyoPS/nnUNetTrainer_500epochs__nnUNetPlans__3d_fullres/fold_0/checkpoint_final.pth",
+      "matched_parameter_bytes": 156305664,
+      "matched_tensors": 112,
+      "source_network_class_name": "dynamic_network_architectures.architectures.unet.PlainConvUNet",
+      "target_parameter_bytes": 156305664,
+      "target_tensors": 112
+    }
+  },
+  "init_fold1": {
+    "checkpoint_sha256": "5310569ff62f2f9a6ff2bc7dd3754404140071427a2025caf5e25d2916cfe400",
+    "expected_checkpoint_sha256": "5310569ff62f2f9a6ff2bc7dd3754404140071427a2025caf5e25d2916cfe400",
+    "failure_class": "EXECUTION_OR_INIT",
+    "fold": 1,
+    "fp32_encoder_parity": {
+      "max_abs_error": 0.0,
+      "per_scale": [
+        {
+          "max_abs_error": 0.0,
+          "scale": 0,
+          "shape": [
+            1,
+            32,
+            8,
+            32,
+            32
+          ]
+        },
+        {
+          "max_abs_error": 0.0,
+          "scale": 1,
+          "shape": [
+            1,
+            64,
+            8,
+            16,
+            16
+          ]
+        },
+        {
+          "max_abs_error": 0.0,
+          "scale": 2,
+          "shape": [
+            1,
+            128,
+            4,
+            8,
+            8
+          ]
+        },
+        {
+          "max_abs_error": 0.0,
+          "scale": 3,
+          "shape": [
+            1,
+            256,
+            2,
+            4,
+            4
+          ]
+        },
+        {
+          "max_abs_error": 0.0,
+          "scale": 4,
+          "shape": [
+            1,
+            320,
+            2,
+            2,
+            2
+          ]
+        },
+        {
+          "max_abs_error": 0.0,
+          "scale": 5,
+          "shape": [
+            1,
+            320,
+            2,
+            1,
+            1
+          ]
+        },
+        {
+          "max_abs_error": 0.0,
+          "scale": 6,
+          "shape": [
+            1,
+            320,
+            2,
+            1,
+            1
+          ]
+        }
+      ],
+      "source_load_missing_keys": [],
+      "source_load_unexpected_keys": []
+    },
+    "network_class_name": "dynamic_network_architectures.architectures.unet.PlainConvUNet",
+    "plans_path": "data/nnUNet/nnUNet_preprocessed/Dataset501_CAREMyoPS/nnUNetPlans.json",
+    "plans_sha256": "06492f8fc75b5de383a28006f76b7f1099f305422953cf9d4f89ae1ec38d3e2f",
+    "required_byte_coverage_min": 0.99,
+    "required_fp32_parity_max_abs": 1e-06,
+    "resenc_checkpoint_required": false,
+    "same_fold_stock_checkpoint_candidates": [
+      "data/nnUNet/nnUNet_results/Dataset501_CAREMyoPS/nnUNetTrainer_500epochs__nnUNetPlans__3d_fullres/fold_1/checkpoint_final.pth"
+    ],
+    "status": "PASS",
+    "transplant": {
+      "byte_coverage": 1.0,
+      "checkpoint_path": "/users/a/e/aereinh/CARE/data/nnUNet/nnUNet_results/Dataset501_CAREMyoPS/nnUNetTrainer_500epochs__nnUNetPlans__3d_fullres/fold_1/checkpoint_final.pth",
+      "matched_parameter_bytes": 156305664,
+      "matched_tensors": 112,
+      "source_network_class_name": "dynamic_network_architectures.architectures.unet.PlainConvUNet",
+      "target_parameter_bytes": 156305664,
+      "target_tensors": 112
+    }
+  },
+  "intervention": {
+    "checks": {
+      "anatomy_guidance_edema_delta": 3.9562089443206787,
+      "anatomy_guidance_scar_delta": 2.783294200897217,
+      "negative_edema_delta": 1.0552113056182861,
+      "negative_scar_delta": 0.3970384895801544,
+      "proposal_edema_delta": 0.0755927562713623,
+      "proposal_scar_delta": 0.052846819162368774,
+      "router_edema_delta": 1.8961341381072998,
+      "router_scar_delta": 1.4189732074737549
+    },
+    "pathology_loss_anatomy_decoder_grad_abs": 0,
+    "prototype_enabled": false,
+    "slice_correspondence_mode": "identity_disabled",
+    "status": "PASS"
+  },
+  "known_bad": {
+    "known_bad_cases": [
+      {
+        "case": "four_channel_shared_encoder_input",
+        "status": "PASS"
+      },
+      {
+        "case": "missing_negative_targets",
+        "status": "PASS"
+      }
+    ],
+    "status": "PASS"
+  },
+  "loss_negative": {
+    "edema_negative_head_grad_abs": 0.065632412355626,
+    "edema_negative_target_sum": 33382.0,
+    "lesion_loss_symbol": "lesion_mil_loss",
+    "no_t2_edema_mask_sum": 0.0,
+    "no_t2_edema_probability_max": 0.0,
+    "no_t2_edema_refiner_grad_abs": 0.0,
+    "no_t2_metrics": {
+      "all_finite": true,
+      "all_nonnegative": true,
+      "anatomy": 0.6666026711463928,
+      "burden": 1.4039374589920044,
+      "edema_negative": 0.0,
+      "edema_proposal": 0.0,
+      "edema_refine": 0.0,
+      "loss": 3.3886945247650146,
+      "router": -0.0,
+      "scar_negative": 0.7025737762451172,
+      "scar_proposal": 1.7515294551849365,
+      "scar_refine": 2.196578025817871,
+      "soft_relation": 0.0
+    },
+    "scar_negative_head_grad_abs": 0.1766693867975846,
+    "scar_negative_target_sum": 33382.0,
+    "status": "PASS",
+    "surface_loss_symbol": "generalized_surface_loss",
+    "t2_metrics": {
+      "all_finite": true,
+      "all_nonnegative": true,
+      "anatomy": 0.6718477010726929,
+      "burden": 2.849372625350952,
+      "edema_negative": 0.6953189373016357,
+      "edema_proposal": 1.7473704814910889,
+      "edema_refine": 2.159058094024658,
+      "loss": 6.412231922149658,
+      "router": -0.0,
+      "scar_negative": 0.6948549747467041,
+      "scar_proposal": 1.7518807649612427,
+      "scar_refine": 2.1979663372039795,
+      "soft_relation": 0.021635444834828377
+    }
+  },
+  "multiscale": {
+    "declared_scales": [
+      0,
+      1,
+      2,
+      3
+    ],
+    "interventions": [
+      {
+        "final_logit_max_abs_delta": 0.6792901754379272,
+        "level_disabled": 1,
+        "pathology": "scar"
+      },
+      {
+        "final_logit_max_abs_delta": 0.34961429238319397,
+        "level_disabled": 2,
+        "pathology": "scar"
+      },
+      {
+        "final_logit_max_abs_delta": 0.22941645979881287,
+        "level_disabled": 3,
+        "pathology": "scar"
+      },
+      {
+        "final_logit_max_abs_delta": 1.0273970365524292,
+        "level_disabled": 1,
+        "pathology": "edema"
+      },
+      {
+        "final_logit_max_abs_delta": 0.5317790508270264,
+        "level_disabled": 2,
+        "pathology": "edema"
+      },
+      {
+        "final_logit_max_abs_delta": 0.3213985562324524,
+        "level_disabled": 3,
+        "pathology": "edema"
+      }
+    ],
+    "status": "PASS"
+  },
+  "status": "PASS"
+}

@@ -1,0 +1,16 @@
+{
+  "checks": {
+    "anatomy_guidance_edema_delta": 3.9562089443206787,
+    "anatomy_guidance_scar_delta": 2.783294200897217,
+    "negative_edema_delta": 1.0552113056182861,
+    "negative_scar_delta": 0.3970384895801544,
+    "proposal_edema_delta": 0.0755927562713623,
+    "proposal_scar_delta": 0.052846819162368774,
+    "router_edema_delta": 1.8961341381072998,
+    "router_scar_delta": 1.4189732074737549
+  },
+  "pathology_loss_anatomy_decoder_grad_abs": 0,
+  "prototype_enabled": false,
+  "slice_correspondence_mode": "identity_disabled",
+  "status": "PASS"
+}

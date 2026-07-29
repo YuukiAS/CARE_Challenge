@@ -1,0 +1,19 @@
+{
+  "checkpoint": "results/20260729_care_prism_v2_backbone_repair_and_resume/runtime/checkpoints/w1_resume_probe.pt",
+  "model_probe_uses_synthetic_minimal_tensor_for_memory": true,
+  "next_case_after_save": "Case1003",
+  "real_dataset_sampler_state_case": "Case1001",
+  "required_keys_present": {
+    "augmentation_rng_state": true,
+    "hard_negative_state": true,
+    "model_state": true,
+    "optimizer_state": true,
+    "prototype_state": true,
+    "sampler_state": true,
+    "scaler_state": true,
+    "scheduler_state": true,
+    "stage": true,
+    "step": true
+  },
+  "status": "PASS"
+}

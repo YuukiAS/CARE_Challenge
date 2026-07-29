@@ -1,0 +1,35 @@
+{
+  "adopted_at_utc": "2026-07-29T14:53:40Z",
+  "branch": "main",
+  "controller_role": "controller_coordinator",
+  "decision": "ADOPT_REPAIR_AND_RESUME",
+  "highest_authority": {
+    "path": "prompts/tasks/20260729_care_prism_v2_backbone_and_w1_repair_amendment.md",
+    "sha256": "73528f3bb4e8a91acf64a71333de6372916ab8e323b377841f96379fad99552b",
+    "status": "ACTIVE_HIGHEST_AUTHORITY"
+  },
+  "inherited_controller": {
+    "path": "prompts/tasks/20260729_care_prism_controller_v2.md",
+    "sha256": "ac5bf6069d519bec45cb0e6d735aeb535fa584e4aac8878931be81fad976bbc4"
+  },
+  "inherited_hardening": {
+    "path": "prompts/tasks/20260729_care_prism_execution_hardening_amendment_v2.md",
+    "sha256": "4c22b8e721b1e811ac176c5eac110657cf4fcf90773864ca0a4e010112deb8bb"
+  },
+  "inherited_plan": {
+    "path": "prompts/tasks/20260729_care_prism_fold0_fold1_executor_plan_v2.yaml",
+    "sha256": "aea72fa6153a4d75e97b3e47ef32ed01d5a48570f53ece1438ba62bdfbb31018"
+  },
+  "new_executor_plan": {
+    "path": "prompts/tasks/20260729_care_prism_v2_backbone_repair_executor_plan.yaml",
+    "sha256": "3ae9ab4320bf8a2d35d8fce2682109d239e5d41193720055aa223364c46d6d24"
+  },
+  "old_blocked_packet": {
+    "path": "results/20260729_care_prism_fold0_fold1_v2/controller_packet.json",
+    "status": "SUPERSEDED_BY_PLANNER_REPAIR",
+    "superseded_reason": "Planner authorized stock same-fold nnU-Net PlainConvUNet checkpoint initialization instead of the unavailable ResEnc checkpoint."
+  },
+  "remote": "YuukiAS/CARE_Challenge",
+  "repository_root": "/users/a/e/aereinh/CARE",
+  "task_key": "20260729_care_prism_v2_backbone_repair_and_resume"
+}

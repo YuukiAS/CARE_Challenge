@@ -1,0 +1,13 @@
+{
+  "known_bad_cases": [
+    {
+      "case": "four_channel_shared_encoder_input",
+      "status": "PASS"
+    },
+    {
+      "case": "missing_negative_targets",
+      "status": "PASS"
+    }
+  ],
+  "status": "PASS"
+}

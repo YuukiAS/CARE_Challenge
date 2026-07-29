@@ -1,8 +1,8 @@
 """CARE-PRISM v2 architecture primitives.
 
-The shared encoder is built from the real nnU-Net ``ResidualEncoderUNet`` plan
-kwargs and receives exactly ``[LGE, T2, C0]``. Availability is consumed only by
-private modality paths, routers, and loss masks.
+The shared encoder is built from the real same-fold nnU-Net plan/checkpoint and
+receives exactly ``[LGE, T2, C0]``. Availability is consumed only by private
+modality paths, routers, and loss masks.
 """
 
 from __future__ import annotations
@@ -17,12 +17,13 @@ import torch
 from torch import nn
 import torch.nn.functional as F
 
-from dynamic_network_architectures.architectures.unet import ResidualEncoderUNet
+from nnunetv2.utilities.get_network_from_plans import get_network_from_plans
 
 
 MODALITY_ORDER = ("LGE", "T2", "C0")
 PATHOLOGY_ORDER = ("scar", "edema")
 REPO_ROOT = Path(__file__).resolve().parents[3]
+DEFAULT_NNUNET_PLANS = REPO_ROOT / "data/nnUNet/nnUNet_preprocessed/Dataset501_CAREMyoPS/nnUNetPlans.json"
 DEFAULT_RESENC_PLANS = REPO_ROOT / "data/nnUNet/nnUNet_preprocessed/Dataset501_CAREMyoPS/nnUNetResEncUNetMPlans.json"
 
 
@@ -30,6 +31,8 @@ DEFAULT_RESENC_PLANS = REPO_ROOT / "data/nnUNet/nnUNet_preprocessed/Dataset501_C
 class CAREPRISMConfig:
     input_channels: int = 3
     num_classes: int = 6
+    network_class_name: str = "dynamic_network_architectures.architectures.unet.PlainConvUNet"
+    arch_kwargs_req_import: tuple[str, ...] = ("conv_op", "norm_op", "dropout_op", "nonlin")
     n_stages: int = 7
     features_per_stage: tuple[int, ...] = (32, 64, 128, 256, 320, 320, 320)
     kernel_sizes: tuple[tuple[int, ...], ...] = (
@@ -50,6 +53,7 @@ class CAREPRISMConfig:
         (1, 2, 2),
         (1, 2, 2),
     )
+    n_conv_per_stage: tuple[int, ...] = (2, 2, 2, 2, 2, 2, 2)
     n_blocks_per_stage: tuple[int, ...] = (1, 3, 4, 6, 6, 6, 6)
     n_conv_per_stage_decoder: tuple[int, ...] = (1, 1, 1, 1, 1, 1)
     conv_bias: bool = True
@@ -59,32 +63,39 @@ class CAREPRISMConfig:
     slice_correspondence_enabled: bool = False
 
     @classmethod
-    def from_resenc_plans(cls, plans_path: Path | str = DEFAULT_RESENC_PLANS, configuration: str = "3d_fullres") -> "CAREPRISMConfig":
+    def from_nnunet_plans(cls, plans_path: Path | str = DEFAULT_NNUNET_PLANS, configuration: str = "3d_fullres") -> "CAREPRISMConfig":
         plans_path = Path(plans_path)
         plans = json.loads(plans_path.read_text(encoding="utf-8"))
         arch = plans["configurations"][configuration]["architecture"]
-        if "ResidualEncoderUNet" not in str(arch.get("network_class_name", "")):
-            raise ValueError(f"{plans_path} does not describe ResidualEncoderUNet")
         kwargs = arch["arch_kwargs"]
         return cls(
+            network_class_name=str(arch["network_class_name"]),
+            arch_kwargs_req_import=tuple(str(v) for v in arch.get("_kw_requires_import", ())),
             n_stages=int(kwargs["n_stages"]),
             features_per_stage=tuple(int(v) for v in kwargs["features_per_stage"]),
             kernel_sizes=tuple(tuple(int(x) for x in v) for v in kwargs["kernel_sizes"]),
             strides=tuple(tuple(int(x) for x in v) for v in kwargs["strides"]),
-            n_blocks_per_stage=tuple(int(v) for v in kwargs["n_blocks_per_stage"]),
+            n_conv_per_stage=tuple(int(v) for v in kwargs.get("n_conv_per_stage", (2,) * int(kwargs["n_stages"]))),
+            n_blocks_per_stage=tuple(int(v) for v in kwargs.get("n_blocks_per_stage", (1,) * int(kwargs["n_stages"]))),
             n_conv_per_stage_decoder=tuple(int(v) for v in kwargs["n_conv_per_stage_decoder"]),
             conv_bias=bool(kwargs.get("conv_bias", True)),
         )
 
+    @classmethod
+    def from_resenc_plans(cls, plans_path: Path | str = DEFAULT_RESENC_PLANS, configuration: str = "3d_fullres") -> "CAREPRISMConfig":
+        config = cls.from_nnunet_plans(plans_path, configuration=configuration)
+        if "ResidualEncoderUNet" not in config.network_class_name:
+            raise ValueError(f"{plans_path} does not describe ResidualEncoderUNet")
+        return config
+
     def nnunet_arch_kwargs(self) -> dict[str, Any]:
-        return {
+        kwargs: dict[str, Any] = {
             "input_channels": self.input_channels,
             "n_stages": self.n_stages,
             "features_per_stage": list(self.features_per_stage),
             "conv_op": nn.Conv3d,
             "kernel_sizes": [list(v) for v in self.kernel_sizes],
             "strides": [list(v) for v in self.strides],
-            "n_blocks_per_stage": list(self.n_blocks_per_stage),
             "num_classes": self.num_classes,
             "n_conv_per_stage_decoder": list(self.n_conv_per_stage_decoder),
             "conv_bias": self.conv_bias,
@@ -96,6 +107,33 @@ class CAREPRISMConfig:
             "nonlin_kwargs": {"inplace": True},
             "deep_supervision": False,
         }
+        if "ResidualEncoderUNet" in self.network_class_name:
+            kwargs["n_blocks_per_stage"] = list(self.n_blocks_per_stage)
+        else:
+            kwargs["n_conv_per_stage"] = list(self.n_conv_per_stage)
+        return kwargs
+
+    def plan_arch_kwargs(self) -> dict[str, Any]:
+        kwargs: dict[str, Any] = {
+            "n_stages": self.n_stages,
+            "features_per_stage": list(self.features_per_stage),
+            "conv_op": "torch.nn.modules.conv.Conv3d",
+            "kernel_sizes": [list(v) for v in self.kernel_sizes],
+            "strides": [list(v) for v in self.strides],
+            "n_conv_per_stage_decoder": list(self.n_conv_per_stage_decoder),
+            "conv_bias": self.conv_bias,
+            "norm_op": "torch.nn.modules.instancenorm.InstanceNorm3d",
+            "norm_op_kwargs": {"eps": 1e-5, "affine": True},
+            "dropout_op": None,
+            "dropout_op_kwargs": None,
+            "nonlin": "torch.nn.LeakyReLU",
+            "nonlin_kwargs": {"inplace": True},
+        }
+        if "ResidualEncoderUNet" in self.network_class_name:
+            kwargs["n_blocks_per_stage"] = list(self.n_blocks_per_stage)
+        else:
+            kwargs["n_conv_per_stage"] = list(self.n_conv_per_stage)
+        return kwargs
 
 
 def _norm(channels: int) -> nn.Module:
@@ -210,11 +248,20 @@ class AnatomyDecoder(nn.Module):
     def __init__(self, config: CAREPRISMConfig) -> None:
         super().__init__()
         widths = list(config.features_per_stage[:4])
-        self.scale_projections = nn.ModuleList(nn.Conv3d(ch, ch, 1) for ch in widths)
+        self.lateral = nn.ModuleList(nn.Conv3d(ch, ch, 1) for ch in widths)
+        self.upsample_projections = nn.ModuleList(nn.Conv3d(widths[level + 1], widths[level], 1) for level in range(len(widths) - 1))
+        self.fusion = nn.ModuleList(ConvBlock(ch, ch, level=level, config=config) for level, ch in enumerate(widths))
         self.head = nn.Conv3d(widths[0], 3, 1)
 
     def forward(self, scales: list[torch.Tensor]) -> dict[str, Any]:
-        anatomy_scales = [proj(feat) for proj, feat in zip(self.scale_projections, scales[:4])]
+        lateral = [proj(feat) for proj, feat in zip(self.lateral, scales[:4])]
+        anatomy_scales: list[torch.Tensor] = [torch.empty(0, device=scales[0].device)] * len(lateral)
+        y = self.fusion[-1](lateral[-1])
+        anatomy_scales[-1] = y
+        for level in reversed(range(len(lateral) - 1)):
+            y_up = F.interpolate(y, size=lateral[level].shape[-3:], mode="trilinear", align_corners=False)
+            y = self.fusion[level](lateral[level] + self.upsample_projections[level](y_up))
+            anatomy_scales[level] = y
         logits = self.head(anatomy_scales[0])
         return {"logits": logits, "scales": anatomy_scales}
 
@@ -271,10 +318,23 @@ class PrototypeResidual(nn.Module):
 class PathologyRefiner(nn.Module):
     def __init__(self, channels: int, anatomy_channels: int, *, scar_like: bool, config: CAREPRISMConfig) -> None:
         super().__init__()
-        self.positive_head = nn.Conv3d(channels, 1, 1)
-        self.negative_head = nn.Conv3d(channels, 4, 1)
-        self.proposal_head = nn.Conv3d(channels + 1 + 4, 1, 1)
+        widths = list(config.features_per_stage[:4])
+        self.pathology_lateral = nn.ModuleList(
+            ConvBlock(ch + ch, ch, level=level, config=config) for level, ch in enumerate(widths)
+        )
+        self.upsample_projections = nn.ModuleList(nn.Conv3d(widths[level + 1], widths[level], 1) for level in range(len(widths) - 1))
+        self.topdown_fusion = nn.ModuleList(ConvBlock(ch, ch, level=level, config=config) for level, ch in enumerate(widths))
+        self.positive_head = nn.Conv3d(widths[0], 1, 1)
+        self.negative_head = nn.Conv3d(widths[0], 4, 1)
+        self.proposal_head = nn.Conv3d(widths[0] + 1 + 4, 1, 1)
         self.prototype = PrototypeResidual(channels)
+        self.burden_film = nn.Sequential(
+            nn.AdaptiveAvgPool3d(1),
+            nn.Flatten(),
+            nn.Linear(widths[0], widths[0] * 2),
+        )
+        nn.init.zeros_(self.burden_film[-1].weight)
+        nn.init.zeros_(self.burden_film[-1].bias)
         layers: list[nn.Module] = [
             ConvBlock(channels + anatomy_channels + 1 + 1 + 4, channels, level=0, config=config),
         ]
@@ -287,26 +347,44 @@ class PathologyRefiner(nn.Module):
 
     def forward(
         self,
-        routed0: torch.Tensor,
-        anatomy0: torch.Tensor,
+        routed_scales: list[torch.Tensor],
+        anatomy_scales: list[torch.Tensor],
         anatomy_band: torch.Tensor,
         *,
         prototype_enabled: bool,
         disable_proposal: bool = False,
         disable_negative: bool = False,
+        disable_burden: bool = False,
     ) -> dict[str, torch.Tensor]:
-        positive = self.positive_head(routed0)
-        negative = self.negative_head(routed0)
+        decoded: list[torch.Tensor] = [torch.empty(0, device=routed_scales[0].device)] * len(self.pathology_lateral)
+        y = self.pathology_lateral[-1](torch.cat([routed_scales[-1], anatomy_scales[-1].detach()], dim=1))
+        y = self.topdown_fusion[-1](y)
+        decoded[-1] = y
+        for level in reversed(range(len(self.pathology_lateral) - 1)):
+            lateral = self.pathology_lateral[level](torch.cat([routed_scales[level], anatomy_scales[level].detach()], dim=1))
+            y_up = F.interpolate(y, size=lateral.shape[-3:], mode="trilinear", align_corners=False)
+            y = self.topdown_fusion[level](lateral + self.upsample_projections[level](y_up))
+            decoded[level] = y
+        decoded0 = decoded[0]
+        if disable_burden:
+            gamma = torch.zeros(decoded0.shape[0], decoded0.shape[1], device=decoded0.device, dtype=decoded0.dtype)
+            beta = torch.zeros_like(gamma)
+        else:
+            gamma, beta = self.burden_film(decoded0).chunk(2, dim=1)
+        proposal_features = decoded0 * (1.0 + gamma.view(gamma.shape[0], -1, 1, 1, 1)) + beta.view(beta.shape[0], -1, 1, 1, 1)
+        positive = self.positive_head(proposal_features)
+        negative = self.negative_head(proposal_features)
         if disable_negative:
             negative = torch.zeros_like(negative)
-        proto = self.prototype(routed0, enabled=prototype_enabled)
-        proposal_input = torch.cat([routed0, positive + proto, negative], dim=1)
+        proto = self.prototype(proposal_features, enabled=prototype_enabled)
+        proposal_input = torch.cat([proposal_features, positive + proto, negative], dim=1)
         proposal_logit = self.proposal_head(proposal_input)
         if disable_proposal:
             proposal_attention = torch.ones_like(proposal_logit)
         else:
             proposal_attention = 0.25 + 0.75 * torch.sigmoid(proposal_logit)
-        refiner_input = torch.cat([routed0, anatomy0.detach(), anatomy_band.detach(), proposal_attention, negative], dim=1)
+        refiner_features = decoded0 * (1.0 + gamma.view(gamma.shape[0], -1, 1, 1, 1)) + beta.view(beta.shape[0], -1, 1, 1, 1)
+        refiner_input = torch.cat([refiner_features, anatomy_scales[0].detach(), anatomy_band.detach(), proposal_attention, negative], dim=1)
         refined = self.refiner(refiner_input)
         final = self.final_head(refined)
         return {
@@ -317,8 +395,11 @@ class PathologyRefiner(nn.Module):
             "proposal_attention": proposal_attention,
             "final_logit": final,
             "features": refined,
-            "burden_logits": self.burden_head(routed0),
-            "log_ratio": self.ratio_head(routed0),
+            "decoded_scales": decoded,
+            "burden_gamma": gamma,
+            "burden_beta": beta,
+            "burden_logits": self.burden_head(decoded0),
+            "log_ratio": self.ratio_head(decoded0),
         }
 
 
@@ -327,8 +408,8 @@ class CAREPRISM(nn.Module):
 
     def __init__(self, config: CAREPRISMConfig | None = None) -> None:
         super().__init__()
-        self.config = config or CAREPRISMConfig.from_resenc_plans()
-        source = ResidualEncoderUNet(**self.config.nnunet_arch_kwargs())
+        self.config = config or CAREPRISMConfig.from_nnunet_plans()
+        source = build_source_nnunet(self.config)
         self.shared_encoder = source.encoder
         self.private_pyramids = nn.ModuleList(PrivatePyramid(self.config) for _ in MODALITY_ORDER)
         widths = list(self.config.features_per_stage[:4])
@@ -351,8 +432,11 @@ class CAREPRISM(nn.Module):
         *,
         disable_router: bool = False,
         disable_anatomy_exchange: bool = False,
+        disable_anatomy_guidance: bool = False,
         disable_proposal: bool = False,
         disable_negative: bool = False,
+        disable_burden: bool = False,
+        disabled_levels: tuple[int, ...] | None = None,
         prototype_enabled: bool | None = None,
         slice_correspondence_enabled: bool | None = None,
     ) -> dict[str, Any]:
@@ -383,34 +467,44 @@ class CAREPRISM(nn.Module):
             edema_routed.append(edema)
             scar_weights.append(scar_w)
             edema_weights.append(edema_w)
+        if disabled_levels:
+            disabled = {int(v) for v in disabled_levels}
+            scar_routed = [torch.zeros_like(feat) if level in disabled else feat for level, feat in enumerate(scar_routed)]
+            edema_routed = [torch.zeros_like(feat) if level in disabled else feat for level, feat in enumerate(edema_routed)]
         anatomy = self.anatomy_decoder(shared_scales)
+        pathology_anatomy_scales = [torch.zeros_like(v) for v in anatomy["scales"]] if disable_anatomy_guidance else anatomy["scales"]
         scar_exchanged = [
-            exchange(feat, anatomy["scales"][level], enabled=not disable_anatomy_exchange)
+            exchange(feat, pathology_anatomy_scales[level], enabled=not disable_anatomy_exchange)
             for level, (exchange, feat) in enumerate(zip(self.scar_exchange, scar_routed))
         ]
         edema_exchanged = [
-            exchange(feat, anatomy["scales"][level], enabled=not disable_anatomy_exchange)
+            exchange(feat, pathology_anatomy_scales[level], enabled=not disable_anatomy_exchange)
             for level, (exchange, feat) in enumerate(zip(self.edema_exchange, edema_routed))
         ]
         union_probability = torch.sigmoid(anatomy["logits"][:, 0:1]).detach()
-        anatomy_band = 0.25 + 0.75 * F.max_pool3d(union_probability, kernel_size=3, stride=1, padding=1)
+        if disable_anatomy_guidance:
+            anatomy_band = torch.ones_like(union_probability)
+        else:
+            anatomy_band = 0.25 + 0.75 * F.max_pool3d(union_probability, kernel_size=3, stride=1, padding=1)
         use_proto = self.config.prototype_enabled if prototype_enabled is None else bool(prototype_enabled)
         _ = self.config.slice_correspondence_enabled if slice_correspondence_enabled is None else bool(slice_correspondence_enabled)
         scar = self.scar_refiner(
-            scar_exchanged[0],
-            anatomy["scales"][0],
+            scar_exchanged,
+            pathology_anatomy_scales,
             anatomy_band,
             prototype_enabled=use_proto,
             disable_proposal=disable_proposal,
             disable_negative=disable_negative,
+            disable_burden=disable_burden,
         )
         edema_raw = self.edema_refiner(
-            edema_exchanged[0],
-            anatomy["scales"][0],
+            edema_exchanged,
+            pathology_anatomy_scales,
             anatomy_band,
             prototype_enabled=use_proto,
             disable_proposal=disable_proposal,
             disable_negative=disable_negative,
+            disable_burden=disable_burden,
         )
         t2 = availability[:, 1:2].view(-1, 1, 1, 1, 1)
         edema = {k: (v * t2 if torch.is_tensor(v) and v.ndim == 5 else v * availability[:, 1:2] if torch.is_tensor(v) and v.ndim == 2 else v) for k, v in edema_raw.items()}
@@ -433,7 +527,8 @@ class CAREPRISM(nn.Module):
             "scar_router_weights": scar_weights,
             "edema_router_weights": edema_weights,
             "prototype_enabled": use_proto,
-            "slice_correspondence_enabled": bool(slice_correspondence_enabled or False),
+            "slice_correspondence_enabled": False,
+            "slice_correspondence_mode": "identity_disabled",
         }
 
 
@@ -441,8 +536,20 @@ def build_care_prism(config: CAREPRISMConfig | None = None) -> CAREPRISM:
     return CAREPRISM(config)
 
 
-def build_source_resenc(config: CAREPRISMConfig) -> ResidualEncoderUNet:
-    return ResidualEncoderUNet(**config.nnunet_arch_kwargs())
+def build_source_nnunet(config: CAREPRISMConfig) -> nn.Module:
+    return get_network_from_plans(
+        config.network_class_name,
+        config.plan_arch_kwargs(),
+        list(config.arch_kwargs_req_import),
+        config.input_channels,
+        config.num_classes,
+        allow_init=True,
+        deep_supervision=False,
+    )
+
+
+def build_source_resenc(config: CAREPRISMConfig) -> nn.Module:
+    return build_source_nnunet(config)
 
 
 def trainable_parameter_count(model: nn.Module) -> int:

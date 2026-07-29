@@ -1,0 +1,45 @@
+{
+  "checked_at_utc": "2026-07-29T14:53:40Z",
+  "channel_order": {
+    "dataset_json": "data/nnUNet/nnUNet_preprocessed/Dataset501_CAREMyoPS/dataset.json",
+    "observed": ["LGE", "T2", "C0"],
+    "required": ["LGE", "T2", "C0"],
+    "status": "PASS"
+  },
+  "fold0": {
+    "checkpoint": "data/nnUNet/nnUNet_results/Dataset501_CAREMyoPS/nnUNetTrainer_500epochs__nnUNetPlans__3d_fullres/fold_0/checkpoint_final.pth",
+    "expected_sha256": "8bceb20cae8920e87d43b14665a0db9dfd4f1204533d25a3cd6e40ad9de74111",
+    "observed_sha256": "8bceb20cae8920e87d43b14665a0db9dfd4f1204533d25a3cd6e40ad9de74111",
+    "sha256_status": "PASS",
+    "size_bytes": 357381749
+  },
+  "fold1": {
+    "checkpoint": "data/nnUNet/nnUNet_results/Dataset501_CAREMyoPS/nnUNetTrainer_500epochs__nnUNetPlans__3d_fullres/fold_1/checkpoint_final.pth",
+    "expected_sha256": "5310569ff62f2f9a6ff2bc7dd3754404140071427a2025caf5e25d2916cfe400",
+    "observed_sha256": "5310569ff62f2f9a6ff2bc7dd3754404140071427a2025caf5e25d2916cfe400",
+    "sha256_status": "PASS",
+    "size_bytes": 357381813
+  },
+  "historical_locator_evidence": {
+    "nnunet_oof_anchor_manifest": "results/20260727_care_dg_dual_pathology_validation/nnunet_oof_anchor_manifest.json",
+    "standard_nnunet_baseline_contract": "results/20260722_care_myops_batch9_reliable_label_distillation/standard_nnunet_baseline_contract.json",
+    "status": "PRESENT_JSON_VALID"
+  },
+  "network": {
+    "configuration": "3d_fullres",
+    "features_per_stage": [32, 64, 128, 256, 320, 320, 320],
+    "network_class_name": "dynamic_network_architectures.architectures.unet.PlainConvUNet",
+    "plans_name": "nnUNetPlans",
+    "status": "PASS_PLAN_DRIVEN_STOCK_NNUNET"
+  },
+  "outer_access_guard": {
+    "fold1_outer_predictions_or_metrics_read": false,
+    "status": "PASS"
+  },
+  "plans": {
+    "path": "data/nnUNet/nnUNet_preprocessed/Dataset501_CAREMyoPS/nnUNetPlans.json",
+    "sha256": "06492f8fc75b5de383a28006f76b7f1099f305422953cf9d4f89ae1ec38d3e2f",
+    "size_bytes": 11947
+  },
+  "task_key": "20260729_care_prism_v2_backbone_repair_and_resume"
+}
