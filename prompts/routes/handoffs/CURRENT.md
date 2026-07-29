@@ -95,7 +95,7 @@ prompts/tasks/20260730_care_prism_w1_w2_critic_repair_amendment.md
 ```text
 fold0 checkpoint:
 data/nnUNet/nnUNet_results/Dataset501_CAREMyoPS/nnUNetTrainer_500epochs__nnUNetPlans__3d_fullres/fold_0/checkpoint_final.pth
-sha256: 8bceb20cae8920e87d43b14665a0db9dfd4f1204533cd6e40ad9de74111
+sha256: 8bceb20cae8920e87d43b14665a0db9dfd4f1204533d25a3cd6e40ad9de74111
 size_bytes: 357381749
 
 fold1 checkpoint:
@@ -106,8 +106,6 @@ size_bytes: 357381813
 plans:
 data/nnUNet/nnUNet_preprocessed/Dataset501_CAREMyoPS/nnUNetPlans.json
 ```
-
-注意：fold0 SHA256 上一行若与 `backbone_asset_resolution.json` 不一致，以该 JSON 中完整值 `8bceb20cae8920e87d43b14665a0db9dfd4f1204533d25a3cd6e40ad9de74111` 为准；Controller修复CURRENT时必须消除该文本截断风险。
 
 ## 修复与继续执行图
 
