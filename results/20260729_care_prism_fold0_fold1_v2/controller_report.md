@@ -18,7 +18,7 @@ validators_passed: false
 all_jobs_terminal: NO_PRISM_GPU_PROCESSES_STARTED
 aggregation_complete: false
 git_commit_decision: LOCAL_LIGHTWEIGHT_COMMIT_COMPLETE
-git_push_decision: NOT_PUSHED_BLOCKED
+git_push_decision: TEMP_PUSH_AUTHORIZED_BY_USER_FOR_PLANNER_REPLAN
 local_commit: SELF_REFERENTIAL_COMMIT_SHA_NOT_EMBEDDED_SEE_GIT_LOG_HEAD
-next_required_action: HUMAN_INTERVENTION_REQUIRED
+next_required_action: RETURN_TO_PLANNER
 ```

@@ -6,15 +6,16 @@
   "local_commit_required": true,
   "local_commit_status": "complete",
   "mapper_final_report": "results/20260729_care_prism_fold0_fold1_v2/mapper_report_final.md",
-  "next_action": "Provide valid fold0/fold1 same-fold ResEnc checkpoints or revise transplant contract.",
+  "next_action": "Return to Planner for ResEnc checkpoint asset decision or transplant-contract revision.",
   "phase_reached": "W1_EXACT_IMPLEMENTATION",
   "prism_gpu_processes_started": false,
   "push_on_blocked_authorized": false,
+  "push_status": "TEMP_PUSH_AUTHORIZED_BY_USER_FOR_PLANNER_REPLAN",
   "slurm_attempts": [],
   "status": "OPERATIONALLY_BLOCKED",
   "strict_validator_report": "results/20260729_care_prism_fold0_fold1_v2/strict_validator_report.json",
   "task_key": "20260729_care_prism_fold0_fold1_v2",
   "terminal_reason": "same-fold ResidualEncoderUNet checkpoint missing; transplant/parity gate failed before training",
-  "updated_at_utc": "2026-07-29T14:40:45Z",
+  "updated_at_utc": "2026-07-29T14:45:36Z",
   "wiki_current_consistency": "kept planned/unverified; no wiki or CURRENT advancement performed"
 }
