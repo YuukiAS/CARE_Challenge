@@ -1,0 +1,113 @@
+task_key: 20260729_care_prism_v2_backbone_repair_and_resume
+schema_version: 1
+status: READY_FOR_CONTROLLER
+risk_level: high
+task_kind: scientific_milestone
+task_type: implementation_repair_and_resume
+route_change: false
+scientific_decision_scope: mechanism_signal
+execution_mode: controller_supervised
+requires_execution_controller: true
+controller_is_coordinator: true
+executor_slots: 1
+executor_count: 1
+parallel_execution_allowed: false
+mapper_slots: 1
+mapper_required: true
+architecture_impact: system
+wiki_update_required: true
+diagram_update_required: false
+slurm_runtime_continuity_required: true
+continuity_backend: tmux_watcher
+planning_review_required: false
+review_required: false
+allow_git_commit: true
+auto_git_commit: true
+allow_git_push: false
+auto_git_push: false
+allow_diagnostic_push: false
+repository_root: /users/a/e/aereinh/CARE
+branch: main
+highest_authority: prompts/tasks/20260729_care_prism_v2_backbone_and_w1_repair_amendment.md
+inherited_plan: prompts/tasks/20260729_care_prism_fold0_fold1_executor_plan_v2.yaml
+result_root: results/20260729_care_prism_v2_backbone_repair_and_resume
+
+frozen_assets:
+  plans: data/nnUNet/nnUNet_preprocessed/Dataset501_CAREMyoPS/nnUNetPlans.json
+  fold0_checkpoint: data/nnUNet/nnUNet_results/Dataset501_CAREMyoPS/nnUNetTrainer_500epochs__nnUNetPlans__3d_fullres/fold_0/checkpoint_final.pth
+  fold0_sha256: 8bceb20cae8920e87d43b14665a0db9dfd4f1204533d25a3cd6e40ad9de74111
+  fold1_checkpoint: data/nnUNet/nnUNet_results/Dataset501_CAREMyoPS/nnUNetTrainer_500epochs__nnUNetPlans__3d_fullres/fold_1/checkpoint_final.pth
+  fold1_sha256: 5310569ff62f2f9a6ff2bc7dd3754404140071427a2025caf5e25d2916cfe400
+
+waves:
+  - id: R0_ASSET_AND_AUTHORITY_REPAIR
+    actions:
+      - sync origin/main and adopt repair amendment as highest authority
+      - locate actual fold0/fold1 stock checkpoint files via repo path then nnUNet_results environment/symlink resolution
+      - verify stat, SHA256, plans hash, network class and channel order
+      - preserve v2 blocked packet as superseded provenance
+    required_outputs:
+      - results/20260729_care_prism_v2_backbone_repair_and_resume/adoption_receipt.json
+      - results/20260729_care_prism_v2_backbone_repair_and_resume/backbone_asset_resolution.json
+      - results/20260729_care_prism_v2_backbone_repair_and_resume/controller_context.json
+    completion:
+      - fold0 and fold1 actual checkpoint paths resolved and hashes match
+      - fold1 outer remains unread
+    failure_branch: OPERATIONALLY_BLOCKED_ASSET_MISSING_ONLY_AFTER_ALL_LEGAL_LOCATORS_FAIL
+
+  - id: R1_W1_IMPLEMENTATION_CLOSURE
+    dependencies: [R0_ASSET_AND_AUTHORITY_REPAIR]
+    actions:
+      - replace ResidualEncoderUNet hardcoding with plan-driven exact stock nnUNet network construction
+      - transplant source encoder with byte coverage at least 0.99 and FP32 per-scale parity at most 1e-6
+      - implement real top-down anatomy decoder and real multi-scale scar/edema pathology decoders using all declared scales
+      - freeze slice correspondence identity and remove deceptive no-op enabled state
+      - implement real Dataset501 full-patient loader, split guards, center/burden sampler and augmentations
+      - implement formal train, evaluate and packet validator scripts
+      - replace surface and lesion placeholders with real losses
+      - implement four-category safe-negative targets and T2-present-only edema negatives
+      - causally connect burden FiLM to proposal and refiner or remove burden from method
+      - keep prototype disabled unless full cross-case state contract is implemented
+      - run matched on/off interventions, no-T2 exact-zero, checkpoint/resume and known-bad tests
+    required_outputs:
+      - results/20260729_care_prism_v2_backbone_repair_and_resume/init_transplant_report.json
+      - results/20260729_care_prism_v2_backbone_repair_and_resume/multiscale_usage_report.json
+      - results/20260729_care_prism_v2_backbone_repair_and_resume/data_pipeline_report.json
+      - results/20260729_care_prism_v2_backbone_repair_and_resume/loss_and_negative_space_report.json
+      - results/20260729_care_prism_v2_backbone_repair_and_resume/implementation_intervention_report.json
+      - results/20260729_care_prism_v2_backbone_repair_and_resume/implementation_validator_report.json
+      - results/20260729_care_prism_v2_backbone_repair_and_resume/known_bad_report.json
+    completion:
+      - exact stock backbone parity pass
+      - all declared deep scales causally affect final logits
+      - anatomy exchange is one-way and causally active
+      - proposal and safe-negative heads causally affect final logits
+      - real data and formal scripts pass
+      - losses nonplaceholder finite nonnegative
+      - no_t2 exact zero and resume exact
+    failure_branch: SAME_SCOPE_REPAIR_UNTIL_PASS
+
+  - id: R2_W2_TO_W5_RESUME
+    dependencies: [R1_W1_IMPLEMENTATION_CLOSURE]
+    actions:
+      - execute inherited W2 400-step real-case zero-credit preflight
+      - if W2 passes execute inherited W3 fold0 6500-step development with all-checkpoint inner selection
+      - only if W3 passes execute inherited W4 fold1 clean 8000-step one-time outer evaluation
+      - execute inherited W5 terminal accounting, aggregation, validator, mapper, local commit and completion email
+    completion:
+      - all inherited W2-W5 gates and outputs satisfied
+    failure_branch:
+      execution_or_runtime: SAME_SCOPE_REPAIR
+      faithful_mechanism_failure: RETURN_TO_PLANNER_WITH_EXACT_CLASSIFICATION
+
+forbidden:
+  - random_or_newly_trained_resenc_substitute
+  - Batch9_or_MMRD_checkpoint_as_stock_backbone
+  - terminal_checkpoint_only_selection
+  - synthetic_data_as_W2_credit
+  - unused_deep_scales
+  - placeholder_losses
+  - all_zero_negative_targets
+  - runtime_push
+  - new_slurm_job
+  - validation_or_docker_upload
