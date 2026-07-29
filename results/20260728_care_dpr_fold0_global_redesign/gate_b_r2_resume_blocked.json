@@ -1,0 +1,57 @@
+{
+  "allocation": {
+    "gpu_processes_after_c2": "none observed by pgrep run_care_dpr/evaluate_care_dpr/care_dpr",
+    "jobid": "60657290",
+    "last_observed_state": "RUNNING",
+    "last_observed_time_left": "31:34",
+    "new_slurm_job_authorized": false
+  },
+  "completed": {
+    "fold0_balanced_c2_checkpoint_step04000": "results/20260728_care_dpr_fold0_global_redesign/runtime/formal_fold0_r2_balanced_c2_bank_lite/checkpoints/checkpoint_step04000.pt",
+    "fold0_balanced_c2_completed_runtime": "formal_fold0_r2_balanced_c2_bank_lite",
+    "fold0_balanced_c2_terminal_step": 4000,
+    "fold0_c1_checkpoint_step03000": "results/20260728_care_dpr_fold0_global_redesign/runtime/formal_fold0_r2/checkpoints/checkpoint_step03000.pt",
+    "fold0_c1_completed_runtime": "formal_fold0_r2",
+    "fold0_c2_candidate_type_fallback_count": 372,
+    "fold0_c2_sign_fallback_count": 0,
+    "fold0_c2_signed_target_balance": {
+      "edema_zone": {
+        "negative": 250,
+        "positive": 250
+      },
+      "scar": {
+        "negative": 250,
+        "positive": 250
+      }
+    },
+    "fold0_combined_receipt": "results/20260728_care_dpr_fold0_global_redesign/runtime/formal_fold0_r2_balanced_combined/gate_b_r2_c1_balanced_c2_combined_receipt.json",
+    "r1_superseded_and_recomputed": true,
+    "r2_predictor_final_arbitration_score": "predicted_signed_utility",
+    "tests_last_passed": "pytest tests/care_dpr/test_care_dpr_model.py -q -> 21 passed, 3 warnings"
+  },
+  "created_at_utc": "2026-07-29T00:33:57Z",
+  "gate": "DPR_GATE_B_R2",
+  "git_head": "0029ecfeb5fc87cd63c0b081e8cad50b56052929",
+  "not_completed": {
+    "clean_fold1_ab_training": true,
+    "clean_fold1_c1_c2_training": true,
+    "clean_fold1_inner_selection_and_outer_evaluation": true,
+    "fold0_r2_inner_checkpoint_threshold_selection": true,
+    "fold0_r2_outer_development_evaluation": true,
+    "gate_b_r2_notification_email": true
+  },
+  "origin_main": "0029ecfeb5fc87cd63c0b081e8cad50b56052929",
+  "resume_point": {
+    "first_next_gpu_command": "srun --jobid=60657290 --overlap --ntasks=1 bash -lc 'cd /users/a/e/aereinh/CARE && ./envs/env_CARE/bin/python scripts/evaluation/evaluate_care_dpr_gate_b_r2.py --runtime-name formal_fold0_r2_balanced_c2_bank_lite --fold 0 --max-checkpoints 1 --cache-cases 12'",
+    "note": "Fold0 remains development evidence only. Do not send Gate B-R2 email or start clean fold1 until a valid allocation is available; no new Slurm job is authorized by this packet."
+  },
+  "status": "OPERATIONALLY_BLOCKED_ALLOCATION_TIME_INSUFFICIENT_FOR_REMAINING_REQUIRED_WORK",
+  "task_key": "20260728_care_dpr_fold0_global_redesign",
+  "unauthorized": {
+    "docker_upload": true,
+    "folds1_4_expansion_without_gate": true,
+    "formal_fold0_start": true,
+    "runtime_push": true,
+    "validation_package_or_upload": true
+  }
+}
