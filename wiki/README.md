@@ -1,171 +1,117 @@
 # CARE 架构 Wiki
 
-architecture_version: `care-prism-v2-hardened-design-20260729`  
-latest_verified_runtime: `CARE-ARC W3 terminal diagnostic complete; PRISM v2 planned, unimplemented`  
-latest_scientific_status: `CARE-ARC W3 superseded by implementation+design root-cause audit; CARE-PRISM v2 is the only active scientific line`  
-latest_controller_task: `20260729_care_prism_fold0_fold1_v2`  
-route_status: `MAIN_ONLY_PRISM_V2_PLANNED_UNVERIFIED`
+architecture_version: `care-prism-v2-stock-backbone-repair-20260729`  
+latest_verified_runtime: `PRISM v2 blocked before W2; no scientific training credit`  
+latest_scientific_status: `ResEnc-only asset contract superseded; stock same-fold nnU-Net backbone repair authorized`  
+latest_controller_task: `20260729_care_prism_v2_backbone_repair_and_resume`  
+route_status: `MAIN_ONLY_PRISM_V2_W1_REPAIR_REQUIRED`
 
-本页是当前 CARE 架构根入口。最新判断不是“CARE-ARC 轮廓略差”，而是旧系统同时存在未接入的 router/anatomy/proposal、随机主干、负损失捷径、采样与增强不足、训练部署错位和小病灶负空间缺失。CARE-PRISM v2 因此不再修补普通 dense decoder，而是建立精确同折初始化、病种专属证据、单向解剖交换、proposal/negative-space 和全体积连续软级联的完整链路。
-
-当前机器真值：`prompts/routes/handoffs/CURRENT.md`。
+当前机器真值是 `prompts/routes/handoffs/CURRENT.md`。前一 Controller 正确地阻止了随机初始化训练，但“只能使用 ResidualEncoderUNet checkpoint”是过窄的规划约束。历史 manifest 已绑定 Dataset501 标准 nnU-Net fold0–4 checkpoint；该模型就是公平 baseline 的真实来源，因此当前改为从同折 `nnUNetPlans.json + checkpoint_final.pth` 动态恢复实际 stock network class，并使用其 encoder 作为 PRISM 唯一共享主干。
 
 ## 当前权威
 
 ```text
-highest authority:
+prompts/tasks/20260729_care_prism_v2_backbone_and_w1_repair_amendment.md
+prompts/tasks/20260729_care_prism_v2_backbone_repair_executor_plan.yaml
+prompts/tasks/20260729_care_prism_v2_backbone_repair_controller.md
 prompts/tasks/20260729_care_prism_execution_hardening_amendment_v2.md
-
-base blueprint:
 prompts/blueprints/CARE_PRISM_pathology_retrieval_soft_cascade_20260729.md
-
-executor plan:
-prompts/tasks/20260729_care_prism_fold0_fold1_executor_plan_v2.yaml
-
-controller:
-prompts/tasks/20260729_care_prism_controller_v2.md
 ```
 
 ```text
-fa3fc6aa23976f26e1523d5c99c98470cdc43b7c  hardening amendment v2
-1245ce5d2c1799f750b5cfa39f94047b76d1ef07  executor plan v2
-f5a2ebfc6d673d25021540c58ee98bf54329a757  controller v2
-a446572241b5c80916d1fba21860aad1db39b9d2  CURRENT v2
+549dc4aed1a74682f8d35932f3d4fc7b7d61f564  repair amendment
+1f1f39264cf248fb11d0322f41d4fe4c2aae021d  repair executor plan
+acbc44cea3c3d86882cd56e5faab5b1d72b642c6  repair controller
+5269f9b909c3a123e5e39db12532e61a2d633f74  CURRENT repair state
 ```
 
-## CARE-ARC W3 冻结负结果
+## 冻结主干资产
 
 ```text
-scar Dice:       0.392694 vs nnU-Net 0.573196, delta -0.180502
-edema-zone Dice: 0.439734 vs nnU-Net 0.595098, delta -0.155363
-scar HD95:       30.71 vs 13.60
-edema HD95:      32.73 vs 14.53
-scar remote FP:  1377.97 vs 645.67
-edema remote FP: 4073.88 vs 793.95
-fold1 outer accessed: NO
+fold0:
+data/nnUNet/nnUNet_results/Dataset501_CAREMyoPS/nnUNetTrainer_500epochs__nnUNetPlans__3d_fullres/fold_0/checkpoint_final.pth
+sha256 8bceb20cae8920e87d43b14665a0db9dfd4f1204533d25a3cd6e40ad9de74111
+
+fold1:
+data/nnUNet/nnUNet_results/Dataset501_CAREMyoPS/nnUNetTrainer_500epochs__nnUNetPlans__3d_fullres/fold_1/checkpoint_final.pth
+sha256 5310569ff62f2f9a6ff2bc7dd3754404140071427a2025caf5e25d2916cfe400
+
+plans:
+data/nnUNet/nnUNet_preprocessed/Dataset501_CAREMyoPS/nnUNetPlans.json
 ```
 
-该结果的操作闭环成立，但不是忠实 CARE-ARC 机制负结果。已确认：router未参与最终计算、anatomy与coarse head均是辅助-only、SDF与最终mask脱节、same-fold nnU-Net移植未执行、W3无正式增强与真实中心/负荷采样、alignment训练部署错位、只评价terminal checkpoint、no-T2 logit零不等于概率零。
-
-## CARE-PRISM v2 数据流
+来源：
 
 ```text
-LGE/T2/C0，缺失通道置零
-→ exact 3-channel shared ResEnc encoder
-   └─ same-fold Dataset501 nnU-Net initialization and FP32 scale parity
+results/20260727_care_dg_dual_pathology_validation/nnunet_oof_anchor_manifest.json
+results/20260722_care_myops_batch9_reliable_label_distillation/standard_nnunet_baseline_contract.json
+```
+
+Controller 必须重新验证当前文件的 stat/hash；历史 manifest 不是文件存在替代品。禁止只按目录名搜索 `resenc`，禁止用 MMRD/Batch9 checkpoint 或新训练 ResEnc 代替。
+
+## PRISM v2 目标结构
+
+```text
+[LGE,T2,C0] exact stock nnU-Net shared encoder
 → lightweight modality-private pyramids
 → scar/edema multi-scale soft retrieval
-→ optional reliable soft slice correspondence, identity default
-→ internal anatomy decoder
-→ stop-gradient, zero-initialized anatomy→pathology exchange
-→ learned positive evidence + four safe-negative categories
-→ optional zero-init gated cross-case prototype residual
-→ full-volume continuous anatomy/proposal attention
-→ scar high-resolution full-lesion refiner
-→ edema large-context full-lesion refiner
-→ direct edema-zone
-→ scar priority
-→ pure edema = edema-zone - scar
+→ real top-down internal anatomy decoder
+→ stop-gradient anatomy→pathology exchange
+→ learned positive proposal + four-category safe-negative logits
+→ full-volume continuous proposal/anatomy attention
+→ independent multi-scale scar and edema refiners
+→ direct edema-zone → scar priority → pure edema
 ```
 
-### 共享主干
+Prototype 与 slice correspondence 都不是核心强依赖：prototype 默认关闭；slice correspondence 当前冻结 identity，除非以后真实实现并通过独立门。
 
-- 输入保持源 nnU-Net 精确 `[LGE,T2,C0]` 三通道，availability 不得拼入 shared encoder；
-- 参数字节移植覆盖率 `>=0.90`；
-- CARE modules关闭、同一FP32病例时，各对应encoder尺度最大误差 `<=1e-6`；
-- nnU-Net只作同折初始化、最终非病理结构来源和审计，不提供病理概率或残差。
+## 当前部分实现的已知漏洞
 
-### 检索与解剖
+1. `CAREPRISM.forward` 只把 level0 routed/anatomy features送入 refiner；深层共享主干和 level1–3 router/exchange没有进入最终 mask。
+2. anatomy decoder只是逐尺度1×1 projection并从level0输出，不是真实 top-down decoder。
+3. slice correspondence flag当前是no-op。
+4. `care_prism_dataset.py`仍是synthetic-only，不能产生W2 real-case credit。
+5. 正式训练、评价和packet validator脚本缺失。
+6. surface与lesion/MIL仍是placeholder。
+7. 四通道negative logits的target被写成全零，没有病种安全负空间类别监督。
+8. burden heads仍是auxiliary-only，没有调制proposal或refiner。
+9. prototype cross-case排除与完整状态尚未实现，因此保持关闭。
 
-- router只读图像特征与availability，不读center ID；
-- missing modality权重严格为零，shared权重下限0.20；
-- matched modality ablation必须证明LGE对scar、T2对edema的病种特异贡献；
-- anatomy只单向进入病理，pathology gradient不得污染anatomy decoder；
-- 每尺度交换为零初始化residual gate，必须通过on/off最终logit干预。
+W1必须先修复这些问题，再进入W2。
 
-### Proposal、负空间与软级联
-
-- Proposal核心由learned positive evidence和category-specific negative logits构成，不依赖prototype才能工作；
-- scar安全负类：正常心肌、血池、union外背景、LGE亮伪影/历史远端FP；
-- edema安全负类：只来自T2-present病例；no-T2 myocardium永远不是负类；
-- 取消bbox/crop/paste与GT ROI curriculum；使用全体积连续attention，所有体素保留至少0.25信息底噪；
-- prototype为可降级增强：read-before-update、当前病例排除、零初始化gate；cross-case probe或matched control失败时固定关闭。
-
-### 损失
+## 执行门
 
 ```text
-0.50 anatomy
-+ 0.35 proposal
-+ 1.00 refinement
-+ 0.15 safe-negative discrimination
-+ 0.10 burden
-+ 0.05 soft scar-edema relation
-+ 0.02 router anti-collapse in Stage A/B
-+ optional 0.05 prototype when enabled
-```
-
-Scar固定使用 DiceCE + Focal-Tversky + component-adaptive Tversky/lesion-MIL + Generalized Surface Loss；edema固定使用 DiceCE + Focal-Tversky + Generalized Surface Loss。实例/表面项仅在 Stage C 后半启用，不能替代 proposal 机制。删除断开的 SDF uncertainty head。
-
-## 实现和训练门
-
-```text
-W0 root-cause, split and nnU-Net asset freeze
-→ W1 exact implementation, causal interventions and known-bad
+R0 actual stock checkpoint locate/stat/hash
+→ R1 plan-driven stock network restore + W1 implementation closure
 → W2 400-step real-case zero-credit preflight
-→ W3 fold0 6500-step development, all-checkpoint inner selection
-→ W4 only after W3 pass: fold1 8000-step clean atomic outer evaluation
-→ W5 terminal accounting, aggregation, validator, Mapper and local commit
+→ W3 fold0 6500-step all-checkpoint inner selection + one-time outer
+→ W4 only after W3 pass: fold1 8000-step clean one-time outer
+→ W5 terminal accounting / aggregation / validator / Mapper / local commit
 ```
 
-W3需同时满足：
+共享主干验收：
 
 ```text
-transplant coverage >=0.90; FP32 parity <=1e-6
-anatomy soft-band GT coverage >=0.98
-scar/edema proposal recall >=0.80/0.90
-scar/edema refiner gain >=0.03/0.02 Dice
-modality-causal ablations PASS
-anatomy exchange non-harm
-negative-space remote-FP reduction >=10%, recall loss <=0.02
-scar and edema-zone delta vs nnU-Net >=-0.02
-at least one main pathology delta >=+0.01
-HD95 and remote-FP ratio <=1.10
-no-T2 probability/mask/loss/gradient exact zero
-prototype evidence reported but not mandatory
+parameter-byte coverage >=0.99
+FP32 per-scale max_abs_error <=1e-6
+all declared deep scales causally affect final logits
 ```
 
-Controller必须监督普通实现、OOM、cache、sampler、augmentation、loss、resume、评价和validator问题在同一目标内修复。只有忠实实现、足额训练、全部checkpoint重载评价后仍失败，才允许按 routing、anatomy、proposal、negative-space、refinement 或 calibration 返回Planner。
+实现、数据、OOM、cache、sampler、loss、resume、evaluation和validator缺陷必须在同一Controller目标内修复，不能再次包装为科学失败。
+
+## 冻结历史结果
+
+CARE-ARC W3仍保留为诊断负结果：scar/edema-zone相对nnU-Net Dice delta为 `-0.1805/-0.1554`，HD95与remote FP显著恶化；但它不能作为忠实ARC机制负结果，因为router、anatomy、coarse proposal和同折初始化均未真实闭环。
+
+前一 blocked packet保留在：
+
+```text
+results/20260729_care_prism_fold0_fold1_v2
+```
+
+其训练credit为0，fold1 outer未访问。
 
 ## 资源与权限
 
-唯一已授权GPU allocation为 `61220581 / htzhulab / g1807htzh01 / H100 NVL`。若仍存活，只能串行使用：
-
-```bash
-srun --jobid=61220581 --overlap --ntasks=1 bash -lc '<command>'
-```
-
-Allocation终止时只记录resume point并返回operational block；禁止申请新job、写`/overflow/htzhu/CARE`、runtime push、validation/Docker upload或hosted claim。
-
-## 视觉与历史边界
-
-```text
-diagram_versions_read: SRR-v2, SRR-v2.5, SRR-v3, CARE-MMRD, CARE-SRR-Cascade, CARE-DG, CARE-ARC, MoSAIC
-visual_read_status: PASS_PROJECT_BACKGROUND_IMAGES_VISUALLY_READ
-recovered_objective: availability-aware evidence -> selective retrieval -> anatomy-guided proposal -> pathology-specific refinement -> negative-space safety
-```
-
-历史证据保留在：
-
-```text
-results/20260729_care_arc_clean_fold1
-results/20260728_care_dpr_fold0_global_redesign
-results/20260724_care_myops_srr_cascade_submission_rescue
-results/20260722_care_myops_batch9_reliable_label_distillation
-results/20260726_care_mosaic_validation_gap_forensics_and_final_blueprint
-results/20260725_care_myops_mosaic_fold0_reproduction
-results/route_B
-results/route_C
-wiki/history/
-```
-
-这些历史路线不再是active authority；当前不得恢复ARC/DPR、增加完整backbone/ensemble、使用MoSAIC/MMRD runtime、启动新Cine训练、读取fold1 outer调参、上传validation/Docker或runtime push。
+只允许复用既有 allocation `61220581 / htzhulab / g1807htzh01`；若仍运行，GPU命令必须串行。禁止新Slurm job、写`/overflow/htzhu/CARE`、runtime push、validation/Docker upload、fold1 outer调参或二次评价。
