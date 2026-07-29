@@ -1,0 +1,94 @@
+{
+  "accept_probability_threshold_used": false,
+  "c1_checkpoint_step03000": "results/20260728_care_dpr_fold0_global_redesign/runtime/formal_fold0_r2/checkpoints/checkpoint_step03000.pt",
+  "c1_optimizer_steps": 1000,
+  "c1_receipt": "results/20260728_care_dpr_fold0_global_redesign/runtime/formal_fold0_r2/gate_b_r2_c1c2_receipt.json",
+  "c1_receipt_sha256": "b75bf75836a97aed0707ba722c8986bf95b30e4d5dd870e8319d998ff6daa760",
+  "c1_source_runtime": "formal_fold0_r2",
+  "c1_summary": {
+    "add_revise_counts": {
+      "ADD_FN": 500,
+      "REVISE_FP": 500
+    },
+    "candidate_counts": {
+      "edema_zone_ADD_FN": 250,
+      "edema_zone_REVISE_FP": 250,
+      "scar_ADD_FN": 250,
+      "scar_REVISE_FP": 250
+    },
+    "fallback_count": 0,
+    "pathology_fraction": {
+      "edema_zone": 0.5,
+      "scar": 0.5
+    },
+    "roi_gt_coverage_mean": {
+      "edema_zone": 0.37803185522075833,
+      "scar": 0.40431139961531837
+    },
+    "sample_count": 1000,
+    "utility_target_balance": {}
+  },
+  "c2_candidate_type_fallback_count": 372,
+  "c2_last_checkpoint": "/users/a/e/aereinh/CARE/results/20260728_care_dpr_fold0_global_redesign/runtime/formal_fold0_r2_balanced_c2_bank_lite/checkpoints/checkpoint_last.pt",
+  "c2_last_checkpoint_sha256": "3254bd31c4c848401a48e6ec81b7285582939f9049990eeb9cc96ca5e009eb13",
+  "c2_optimizer_steps": 1000,
+  "c2_receipt": "results/20260728_care_dpr_fold0_global_redesign/runtime/formal_fold0_r2_balanced_c2_bank_lite/gate_b_r2_c1c2_receipt.json",
+  "c2_receipt_sha256": "ccd5604c5a88abadd5d5f6246369e80070ced3ac60e1bf4fbf6e13c3f3f5317d",
+  "c2_sign_fallback_count": 0,
+  "c2_signed_target_balance_pass": true,
+  "c2_source_runtime": "formal_fold0_r2_balanced_c2_bank_lite",
+  "c2_start_checkpoint": "results/20260728_care_dpr_fold0_global_redesign/runtime/formal_fold0_r2/checkpoints/checkpoint_step03000.pt",
+  "c2_summary": {
+    "add_revise_counts": {
+      "ADD_FN": 787,
+      "REVISE_FP": 213
+    },
+    "candidate_counts": {
+      "edema_zone_ADD_FN": 500,
+      "scar_ADD_FN": 287,
+      "scar_REVISE_FP": 213
+    },
+    "fallback_count": 372,
+    "pathology_fraction": {
+      "edema_zone": 0.5,
+      "scar": 0.5
+    },
+    "roi_gt_coverage_mean": {},
+    "sample_count": 1000,
+    "utility_target_balance": {
+      "edema_zone": {
+        "negative": 250,
+        "positive": 250
+      },
+      "scar": {
+        "negative": 250,
+        "positive": 250
+      }
+    },
+    "utility_target_sign_fallback_count": 0,
+    "utility_target_sign_match_count": {
+      "edema_zone": 500,
+      "scar": 500
+    },
+    "utility_target_sign_requested": {
+      "edema_zone": {
+        "negative": 250,
+        "positive": 250
+      },
+      "scar": {
+        "negative": 250,
+        "positive": 250
+      }
+    }
+  },
+  "c2_terminal_step": 4000,
+  "clean_scientific_gate": false,
+  "development_evidence_only": true,
+  "final_arbitration_score": "predicted_signed_utility",
+  "fold": 0,
+  "gate": "DPR_GATE_B_R2_C1_BALANCED_C2_COMBINED",
+  "note": "C1 was completed in formal_fold0_r2; C2 was rerun from C1 step03000 after signed utility target sampler repair. Fold0 remains development evidence only.",
+  "status": "PASS",
+  "task_key": "20260728_care_dpr_fold0_global_redesign",
+  "utility_regression_min_used": false
+}
