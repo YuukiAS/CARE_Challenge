@@ -1,234 +1,171 @@
 # CARE 架构 Wiki
 
-architecture_version: `care-arc-w3-contour-limited-stop-20260729`
-latest_verified_runtime: `CARE-ARC W0-W2 PASS; W3 fold0 zero-credit terminal FAIL at mechanism gate; allocation 61220581 reused only`
-latest_scientific_status: `CARE-ARC implementation/trainability verified, but fold0 outer mechanism gate failed as CONTOUR_LIMITED; fold1 clean fold not consumed`
-latest_controller_task: `20260729_care_arc_clean_fold1`
-route_status: `MAIN_ONLY_FINAL_BLUEPRINT_NNUNET_ONLY_DOCKER_LOCAL_ONLY`
+architecture_version: `care-prism-v2-hardened-design-20260729`  
+latest_verified_runtime: `CARE-ARC W3 terminal diagnostic complete; PRISM v2 planned, unimplemented`  
+latest_scientific_status: `CARE-ARC W3 superseded by implementation+design root-cause audit; CARE-PRISM v2 is the only active scientific line`  
+latest_controller_task: `20260729_care_prism_fold0_fold1_v2`  
+route_status: `MAIN_ONLY_PRISM_V2_PLANNED_UNVERIFIED`
 
-本页是 GPT、Controller、Executor、Mapper 和 Planner 读取当前架构状态的根入口。当前最新事实是：CARE-ARC 单一 encoder 已完成 W0-W2 严格实现和 300-step preflight，并完成 fold0 3000-step zero-credit development；fold0 outer 机制门未通过，原因是 raw direct scar 和 edema-zone 相对 nnU-Net 的 Dice 差距分别为 -0.1805 和 -0.1554，定位/轮廓质量不足。按 2026-07-29 amendment，禁止进入 fold1 clean training、禁止 fold1 outer 访问、禁止 full-data/W6、禁止上传或 push；下一步应返回 Planner 做架构修订，而不是在 fold1 调参。
+本页是当前 CARE 架构根入口。最新判断不是“CARE-ARC 轮廓略差”，而是旧系统同时存在未接入的 router/anatomy/proposal、随机主干、负损失捷径、采样与增强不足、训练部署错位和小病灶负空间缺失。CARE-PRISM v2 因此不再修补普通 dense decoder，而是建立精确同折初始化、病种专属证据、单向解剖交换、proposal/negative-space 和全体积连续软级联的完整链路。
 
-## 2026-07-29 CARE-ARC W3 机制门结论
+当前机器真值：`prompts/routes/handoffs/CURRENT.md`。
 
-```text
-result_root: results/20260729_care_arc_clean_fold1
-controller_verification_decision: OPERATIONALLY_BLOCKED_BY_W3_MECHANISM_GATE
-w0_status: PASS
-w1_implementation_validator: PASS
-w2_preflight_strict_validator: PASS
-w3_training: 3000 optimizer steps, zero credit, fold0 actual-train only
-w3_gate: FAIL
-failure_classification: CONTOUR_LIMITED
-frozen_alignment_mode: identity
-fold1_outer_access: NOT_ACCESSED
-clean_fold_training: NOT_STARTED
-validation_upload: FORBIDDEN_NOT_RUN
-runtime_push: FORBIDDEN_NOT_RUN
-```
-
-主要证据：`fold0_development_adequacy_gate.json` 记录 scar raw direct Dice delta `-0.1805`、edema-zone raw direct Dice delta `-0.1554`，均低于 `>= -0.05` 的 W3 进入 clean fold 最低机制条件；coarse/presence AUPRC、volume ratio、changed-mask、component safety、no-T2 exact-zero 和 anchor-context invariance 均通过，因此当前失败不是执行崩溃或完全无检测信号，而是外层病例轮廓/定位不足。架构图见 `wiki/figures/care-arc-w3-stop.svg` 和 `wiki/figures/care-arc-w3-stop.png`。
-
-当前最新终态事实是：用户确认 hosted scar Dice 0.6965 属于 MoSAIC submission，但已绑定 final repo、final pretrained weights 和 final inference recipe，但未绑定历史 upload ZIP bytes/SHA；clean 220-case OOF scar 显示 MoSAIC 0.3924、nnU-Net 0.5775，完整三模态子集 MoSAIC 0.6331、nnU-Net 0.6927。最终 Docker 当前只应执行 `NNUNET_ONLY_DOCKER`，MoSAIC/SafeScar/MMRD/Cascade 只能作为研究证据或协议卫生保留，不能作为 active runtime mask producer。
-
-## 2026-07-26 MoSAIC hosted-gap 取证与最终蓝图
+## 当前权威
 
 ```text
-result_root: results/20260726_care_mosaic_validation_gap_forensics_and_final_blueprint
-strict_validator_report.json: PASS
-controller_verification_decision: VERIFIED_COMPLETE
-allocation: 60657290 reused only; no sbatch/salloc/new Slurm job/upload/push
-final_repo_weights_recipe: BOUND
-exact_historical_upload_zip_bytes: UNRESOLVED
-model_family_lineage: USER_CONFIRMED_MOSAIC
-final_docker_architecture: NNUNET_ONLY_DOCKER
-pathology_independent_fallback: identity_to_nnunet
+highest authority:
+prompts/tasks/20260729_care_prism_execution_hardening_amendment_v2.md
+
+base blueprint:
+prompts/blueprints/CARE_PRISM_pathology_retrieval_soft_cascade_20260729.md
+
+executor plan:
+prompts/tasks/20260729_care_prism_fold0_fold1_executor_plan_v2.yaml
+
+controller:
+prompts/tasks/20260729_care_prism_controller_v2.md
 ```
-
-排名翻转解释边界：full-data inclusion/selection 有 fold0 诊断 lift，scar 约 +0.1045，但这是污染上界；已观测 scar postprocess 约 -0.0021，不能解释 hosted 提升；target modality/domain 和 15-case sampling 只能部分解释，validation GT 不在本地；metric/export 检查只支持标签/几何边界，不支持 MoSAIC 作为最终分割组件。旧 SafeScar Step3 是组件级 retain/suppress F1，不是最终分割 Dice/HD 证据。
-
-
-## MoSAIC fold0 证据边界
 
 ```text
-result_root: results/20260725_care_myops_mosaic_fold0_reproduction
-strict_validator: PASS
-finalizer_state: READY_FOR_LOCAL_PACKET_COMMIT
-slurm_terminal_accounting: 60589655/60589656/60589657/60589658/60607636 terminal, replacement finalizer success
-fold0_split: data/benchmarks/protocol/splits_MyoPS.json, 176 train / 44 val
+fa3fc6aa23976f26e1523d5c99c98470cdc43b7c  hardening amendment v2
+1245ce5d2c1799f750b5cfa39f94047b76d1ef07  executor plan v2
+f5a2ebfc6d673d25021540c58ee98bf54329a757  controller v2
+a446572241b5c80916d1fba21860aad1db39b9d2  CURRENT v2
 ```
 
-`/users/a/e/aereinh/MoSAIC` 下的 checkpoint 是 full-data submission 权重，只允许作为模型加载或官方 validation 部署 smoke 的边界证据；不得用来解释本次 fold0 44 例性能，也不得作为 fold0 模型初始化。本次 `mosaic_fold0_random_init` 仅由 `runtime/fold0/` 下新训练权重支持。
-
-主比较：`nnunet_fold0` vs `mosaic_fold0_random_init`。secondary canonical recompute 只包括已有预测可复算的 Batch10 MMRD rank1 和 Batch7 minimal；SCR-R1 generic cascade control 只保留 historical_noncanonical 边界。未上传 validation，未构建 Docker，未 push。
-
-## 当前判断
+## CARE-ARC W3 冻结负结果
 
 ```text
-Batch10 CARE-MMRD: 终止，保留历史公平负结果
-科学主线: CARE-SRR-Cascade / SCR-R1
-当前动作: SCR-R1-RC1 terminal local closure
-正式W3 credit: 8/8 variants terminal PASS
-W4科学结果: NO_CUSTOM_RESCUE_USE_BASELINE_ONLY
-开发位置: /users/a/e/aereinh/CARE, main
-旧Route A/B/C: 历史证据，不恢复
-validation/Docker upload: 未授权
+scar Dice:       0.392694 vs nnU-Net 0.573196, delta -0.180502
+edema-zone Dice: 0.439734 vs nnU-Net 0.595098, delta -0.155363
+scar HD95:       30.71 vs 13.60
+edema HD95:      32.73 vs 14.53
+scar remote FP:  1377.97 vs 645.67
+edema remote FP: 4073.88 vs 793.95
+fold1 outer accessed: NO
 ```
 
-当前最高优先级入口：
+该结果的操作闭环成立，但不是忠实 CARE-ARC 机制负结果。已确认：router未参与最终计算、anatomy与coarse head均是辅助-only、SDF与最终mask脱节、same-fold nnU-Net移植未执行、W3无正式增强与真实中心/负荷采样、alignment训练部署错位、只评价terminal checkpoint、no-T2 logit零不等于概率零。
+
+## CARE-PRISM v2 数据流
 
 ```text
-results/srr_production/code_maturity/scr_r1_runtime_block_critic_and_repair_20260725.md
-configs/care_mm/srr_cascade_runtime_closure_repair.yaml
-prompts/tasks/20260725_care_myops_srr_cascade_runtime_closure_repair_controller.md
-prompts/tasks/20260725_care_myops_srr_cascade_runtime_closure_repair_executor_plan.yaml
-results/20260724_care_myops_srr_cascade_submission_rescue/
+LGE/T2/C0，缺失通道置零
+→ exact 3-channel shared ResEnc encoder
+   └─ same-fold Dataset501 nnU-Net initialization and FP32 scale parity
+→ lightweight modality-private pyramids
+→ scar/edema multi-scale soft retrieval
+→ optional reliable soft slice correspondence, identity default
+→ internal anatomy decoder
+→ stop-gradient, zero-initialized anatomy→pathology exchange
+→ learned positive evidence + four safe-negative categories
+→ optional zero-init gated cross-case prototype residual
+→ full-volume continuous anatomy/proposal attention
+→ scar high-resolution full-lesion refiner
+→ edema large-context full-lesion refiner
+→ direct edema-zone
+→ scar priority
+→ pure edema = edema-zone - scar
 ```
 
-当前架构图：
+### 共享主干
 
-- `figures/model-current.png`
-- `figures/model-gap.png`
-- `figures/execution-flow.png`
+- 输入保持源 nnU-Net 精确 `[LGE,T2,C0]` 三通道，availability 不得拼入 shared encoder；
+- 参数字节移植覆盖率 `>=0.90`；
+- CARE modules关闭、同一FP32病例时，各对应encoder尺度最大误差 `<=1e-6`；
+- nnU-Net只作同折初始化、最终非病理结构来源和审计，不提供病理概率或残差。
 
-修复 config 在冲突时覆盖 preexecution amendment、base config、旧 executor plan 和旧 Controller 生成的 resolved contract。它不改变科学假设、seed、budget、22/22 split、audit gate、Cine 边界或上传权限。
+### 检索与解剖
 
-## 为什么需要运行闭环修复
+- router只读图像特征与availability，不读center ID；
+- missing modality权重严格为零，shared权重下限0.20；
+- matched modality ablation必须证明LGE对scar、T2对edema的病种特异贡献；
+- anatomy只单向进入病理，pathology gradient不得污染anatomy decoder；
+- 每尺度交换为零初始化residual gate，必须通过on/off最终logit干预。
 
-旧 W3 formal shell最终调用 `scripts/training/run_care_srr_cascade_rescue.py --formal-job`，而该入口只支持 dry-run，真实调用主动返回 `NEEDS_REPAIR_FORMAL_ENTRYPOINT_MISSING`。旧 orchestrator还硬编码source-cache job ID，并在cache PASS后仍拒绝formal submission。Controller因此block是正确的。
+### Proposal、负空间与软级联
 
-复核同时发现：
+- Proposal核心由learned positive evidence和category-specific negative logits构成，不依赖prototype才能工作；
+- scar安全负类：正常心肌、血池、union外背景、LGE亮伪影/历史远端FP；
+- edema安全负类：只来自T2-present病例；no-T2 myocardium永远不是负类；
+- 取消bbox/crop/paste与GT ROI curriculum；使用全体积连续attention，所有体素保留至少0.25信息底噪；
+- prototype为可降级增强：read-before-update、当前病例排除、零初始化gate；cross-case probe或matched control失败时固定关闭。
+
+### 损失
 
 ```text
-Wave -1: 合同绑定可保留
-Wave 0: OOF manifest/asset保留，但需真实anchor tensor roundtrip
-Wave 1: bounded公式可保留，但当前scar/edema共享trainable trunk需改成独立trunks
-Wave 2: synthetic overfit、clone-only fiducial和阶段缺省known-bad不能授权formal
-Wave 3: 尚无正式训练credit
+0.50 anatomy
++ 0.35 proposal
++ 1.00 refinement
++ 0.15 safe-negative discrimination
++ 0.10 burden
++ 0.05 soft scar-edema relation
++ 0.02 router anti-collapse in Stage A/B
++ optional 0.05 prototype when enabled
 ```
 
-SCR-R1-RC1要求在 W3 前同时补齐 production anchor/cache/data/trainer、W4 selection/audit、W5 package 和 W6 validator入口，避免训练后继续因后续入口未设计而block。
+Scar固定使用 DiceCE + Focal-Tversky + component-adaptive Tversky/lesion-MIL + Generalized Surface Loss；edema固定使用 DiceCE + Focal-Tversky + Generalized Surface Loss。实例/表面项仅在 Stage C 后半启用，不能替代 proposal 机制。删除断开的 SDF uncertainty head。
 
-## 冻结目标数据流
+## 实现和训练门
 
 ```text
-[LGE,T2,C0] + availability
--> five-fold OOF nnU-Net canonical anchor on ResEncM preprocessed grid
--> tiled frozen CARE-MMRD teacher feature/anatomy/edema cache
--> tiled frozen CARE-MMRD scar-margin cache
--> category-aware four-shard cross-fitted pathology prototypes
--> independent scar control / SRR correction trunk
--> independent edema-zone control / SRR correction trunk
--> bounded pathology-channel composition
--> per-pathology calibration six-candidate freeze
--> one-time audit retain-or-fallback
--> conditional five-fold-anchor official package dry-run
+W0 root-cause, split and nnU-Net asset freeze
+→ W1 exact implementation, causal interventions and known-bad
+→ W2 400-step real-case zero-credit preflight
+→ W3 fold0 6500-step development, all-checkpoint inner selection
+→ W4 only after W3 pass: fold1 8000-step clean atomic outer evaluation
+→ W5 terminal accounting, aggregation, validator, Mapper and local commit
 ```
 
-目标类保持：
+W3需同时满足：
 
 ```text
-src/care_myocardium/models/care_srr_cascade_rescue.py
-CARESRRCascadeRescue
+transplant coverage >=0.90; FP32 parity <=1e-6
+anatomy soft-band GT coverage >=0.98
+scar/edema proposal recall >=0.80/0.90
+scar/edema refiner gain >=0.03/0.02 Dice
+modality-causal ablations PASS
+anatomy exchange non-harm
+negative-space remote-FP reduction >=10%, recall loss <=0.02
+scar and edema-zone delta vs nnU-Net >=-0.02
+at least one main pathology delta >=+0.01
+HD95 and remote-FP ratio <=1.10
+no-T2 probability/mask/loss/gradient exact zero
+prototype evidence reported but not mandatory
 ```
 
-固定最终语义：
+Controller必须监督普通实现、OOM、cache、sampler、augmentation、loss、resume、评价和validator问题在同一目标内修复。只有忠实实现、足额训练、全部checkpoint重载评价后仍失败，才允许按 routing、anatomy、proposal、negative-space、refinement 或 calibration 返回Planner。
+
+## 资源与权限
+
+唯一已授权GPU allocation为 `61220581 / htzhulab / g1807htzh01 / H100 NVL`。若仍存活，只能串行使用：
+
+```bash
+srun --jobid=61220581 --overlap --ntasks=1 bash -lc '<command>'
+```
+
+Allocation终止时只记录resume point并返回operational block；禁止申请新job、写`/overflow/htzhu/CARE`、runtime push、validation/Docker upload或hosted claim。
+
+## 视觉与历史边界
 
 ```text
-background, myocardium, LV, RV: exact anchor
-scar: anchor + support * 2*tanh(delta_scar)
-edema: anchor + T2_presence * support * 2*tanh(delta_edema)
-scar job: edema exact anchor
-edema job: scar exact anchor
-no-T2 edema: exact anchor
+diagram_versions_read: SRR-v2, SRR-v2.5, SRR-v3, CARE-MMRD, CARE-SRR-Cascade, CARE-DG, CARE-ARC, MoSAIC
+visual_read_status: PASS_PROJECT_BACKGROUND_IMAGES_VISUALLY_READ
+recovered_objective: availability-aware evidence -> selective retrieval -> anatomy-guided proposal -> pathology-specific refinement -> negative-space safety
 ```
 
-## Anchor、source cache 与 prototype
-
-Anchor必须覆盖全部220例OOF病例。优先反向映射冻结OOF probabilities到预处理网格；若official-export roundtrip不是零体素差异，固定fallback是用病例对应OOF fold checkpoint在预处理网格重算，并仅按冻结prediction hash选择唯一兼容inference mode，禁止使用GT或metric。
-
-Frozen source必须从checkpoint payload和ResEncM `ConfigurationManager`恢复配置，采用滑窗、Gaussian、step 0.5、无mirror；整幅默认构造器捷径禁止。Cache要求220例×4 fields=880 entries，并进行真实direct parity。Feature固定为32通道voxelwise L2-normalized表示。
-
-Prototype按病例×病种×正/负类别保存，不再把所有negative合成一个病例均值。Voxel采样由case/category/seed hash驱动的无放回抽样，禁止取flatten mask前N个。训练query排除整个自身shard；no-T2病例不进入edema bank。
-
-## 正式训练前硬门
-
-旧 `preflight_receipt.json` 不再单独授权W3。新的 `formal_authorization_gate.json` 必须证明：
+历史证据保留在：
 
 ```text
-220例anchor official roundtrip每例0 changed voxels
-220例source cache / 880 fields / parity PASS
-category-aware prototype cross-fit PASS
-四份matched schedule hash冻结
-真实32通道scar/edema各200 optimizer-step overfit，loss下降>=30%
-真实augmentation function fiducial零错位
-active-pathology losses独立backward
-checkpoint/resume精确roundtrip
-任一兼容GPU partition preflight PASS
-四个formal dry-run与orchestrator idempotence PASS
-真实known-bad全部被validator拒绝
+results/20260729_care_arc_clean_fold1
+results/20260728_care_dpr_fold0_global_redesign
+results/20260724_care_myops_srr_cascade_submission_rescue
+results/20260722_care_myops_batch9_reliable_label_distillation
+results/20260726_care_mosaic_validation_gap_forensics_and_final_blueprint
+results/20260725_care_myops_mosaic_fold0_reproduction
+results/route_B
+results/route_C
+wiki/history/
 ```
 
-任何普通实现问题由Controller退回同一Executor修复；只有不可生成资产、实测存储低于45GiB、所有兼容GPU partition完成所有尝试后均无preflight PASS或外部集群故障，才允许写`OPERATIONALLY_BLOCKED`。
-
-## 正式运行与评价
-
-固定四个logical jobs，而不是“每seed一个job塞四个variants”：
-
-```text
-scar_seed20260724: htzhulab, control -> SRR
-edema_seed20260724: htzhulab, control -> SRR
-scar_seed20260725: a100-gpu, control -> SRR
-edema_seed20260725: a100-gpu, control -> SRR
-```
-
-每variant固定6250 optimizer steps、gradient accumulation 2，在1250/2500/3750/5000/6250保存checkpoint并评价calibration。允许signal/preemption后按相同code/config/schedule/asset hash精确resume；partial attempt为零credit。
-
-Control与SRR读取同一initial state、病例/patch schedule、spatial/intensity augmentation、optimizer、budget、decode和evaluator。唯一差别是prototype similarity maps为zero或real。
-
-评价同时报告Dice、official exact HD、HD95、precision/recall、remote FP、component、volume ratio、help/harm、empty prediction、changed voxels、CenterB/CenterC和no-T2 safety。GT-positive empty的HD/HD95为infinite并使candidate ineligible；不得用empty-safe平均替代positive-GT指标。
-
-## Calibration、audit 与 fallback
-
-每病种固定六候选：control seed1/seed2、SRR seed1/seed2、同variant两seed probability mean派生的bounded channel correction。禁止control/SRR交叉blend。Calibration冻结candidate后才允许读取audit；audit不得重选任何参数。
-
-每病种只能选择：
-
-```text
-USE_SRR_CASCADE
-USE_CASCADE_CONTROL
-FALLBACK_TO_NNUNET
-```
-
-一个病种失败不拖累另一个，也不能被平均值掩盖。至少一个custom病种通过audit，才允许W5本地package/Docker dry-run。
-
-## Cine 与提交边界
-
-本任务不训练Cine。W5 MyoPS anchor固定使用现有Dataset501五折probability ensemble；Cine固定使用现有Dataset502五折链。Custom head使用冻结fold0训练资产，official病例source evidence按同一frozen checkpoint和tiled runtime生成，prototype只读fold0 train bank，禁止GT访问。
-
-必须检查15+15病例、官方raw labels、shape/spacing/origin/direction、目录/文件名、两次确定性hash和container/local-equivalent exit 0。本地构建不等于上传；validation/Docker upload和hosted claim仍未授权。
-
-## Mapper 责任
-
-SCR-R1-RC1完成后，Mapper必须基于真实生产调用图更新：
-
-```text
-wiki/MODEL.md
-wiki/EXECUTION.md
-wiki/COMPONENTS.csv
-wiki/LINEAGE.md
-wiki/architecture.yaml
-wiki/current_state.yaml
-prompts/routes/handoffs/CURRENT.md
-```
-
-本轮不要求新架构PNG；未完成前不得把目标runtime写成已验证。
-
-## 入口
-
-- [MODEL.md](MODEL.md)
-- [EXECUTION.md](EXECUTION.md)
-- [COMPONENTS.csv](COMPONENTS.csv)
-- [LINEAGE.md](LINEAGE.md)
-- [architecture.yaml](architecture.yaml)
-- [current_state.yaml](current_state.yaml)
-- [history/README.md](history/README.md)
+这些历史路线不再是active authority；当前不得恢复ARC/DPR、增加完整backbone/ensemble、使用MoSAIC/MMRD runtime、启动新Cine训练、读取fold1 outer调参、上传validation/Docker或runtime push。
