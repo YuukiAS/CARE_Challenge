@@ -1,9 +1,10 @@
 {
   "allocation": {
     "gpu_processes_after_c2": "none observed by pgrep run_care_dpr/evaluate_care_dpr/care_dpr",
+    "gpu_processes_after_probe": "none observed by pgrep run_care_dpr/evaluate_care_dpr/care_dpr",
     "jobid": "60657290",
     "last_observed_state": "RUNNING",
-    "last_observed_time_left": "31:34",
+    "last_observed_time_left": "24:30",
     "new_slurm_job_authorized": false
   },
   "completed": {
@@ -25,25 +26,34 @@
       }
     },
     "fold0_combined_receipt": "results/20260728_care_dpr_fold0_global_redesign/runtime/formal_fold0_r2_balanced_combined/gate_b_r2_c1_balanced_c2_combined_receipt.json",
+    "fold0_limited_inner_probe_best_avg_inner_dice_delta": -0.05330002918783211,
+    "fold0_limited_inner_probe_checkpoint": "results/20260728_care_dpr_fold0_global_redesign/runtime/formal_fold0_r2_balanced_c2_bank_lite/checkpoints/checkpoint_step04000.pt",
+    "fold0_limited_inner_probe_eligible_count": 0,
+    "fold0_limited_inner_probe_proposal_grid_count": 1,
+    "fold0_limited_inner_probe_runtime": "formal_fold0_r2_balanced_c2_bank_lite",
+    "fold0_limited_inner_probe_status": "GATE_B_R2_REPAIR_REQUIRED_NO_INNER_ELIGIBLE_CHECKPOINT_THRESHOLD",
+    "fold0_limited_inner_probe_summary": "results/20260728_care_dpr_fold0_global_redesign/runtime/formal_fold0_r2_balanced_c2_bank_lite/gate_b_r2_evaluation/gate_b_r2_summary.json",
+    "fold0_limited_inner_probe_utility_grid_count": 25,
     "r1_superseded_and_recomputed": true,
     "r2_predictor_final_arbitration_score": "predicted_signed_utility",
     "tests_last_passed": "pytest tests/care_dpr/test_care_dpr_model.py -q -> 21 passed, 3 warnings"
   },
   "created_at_utc": "2026-07-29T00:33:57Z",
   "gate": "DPR_GATE_B_R2",
-  "git_head": "0029ecfeb5fc87cd63c0b081e8cad50b56052929",
+  "git_head": "26f6fced461f7547fa53ec0366fdef7b80e3b0d8",
   "not_completed": {
     "clean_fold1_ab_training": true,
     "clean_fold1_c1_c2_training": true,
     "clean_fold1_inner_selection_and_outer_evaluation": true,
     "fold0_r2_inner_checkpoint_threshold_selection": true,
     "fold0_r2_outer_development_evaluation": true,
+    "full_fold0_r2_inner_selection_all_checkpoints_all_proposals": true,
     "gate_b_r2_notification_email": true
   },
-  "origin_main": "0029ecfeb5fc87cd63c0b081e8cad50b56052929",
+  "origin_main": "26f6fced461f7547fa53ec0366fdef7b80e3b0d8",
   "resume_point": {
-    "first_next_gpu_command": "srun --jobid=60657290 --overlap --ntasks=1 bash -lc 'cd /users/a/e/aereinh/CARE && ./envs/env_CARE/bin/python scripts/evaluation/evaluate_care_dpr_gate_b_r2.py --runtime-name formal_fold0_r2_balanced_c2_bank_lite --fold 0 --max-checkpoints 1 --cache-cases 12'",
-    "note": "Fold0 remains development evidence only. Do not send Gate B-R2 email or start clean fold1 until a valid allocation is available; no new Slurm job is authorized by this packet."
+    "first_next_gpu_command": "srun --jobid=60657290 --overlap --ntasks=1 bash -lc 'cd /users/a/e/aereinh/CARE && ./envs/env_CARE/bin/python scripts/evaluation/evaluate_care_dpr_gate_b_r2.py --runtime-name formal_fold0_r2_balanced_c2_bank_lite --fold 0 --cache-cases 12'",
+    "note": "Latest checkpoint with proposal thresholds scar=0.30/edema=0.20 failed all 25 utility threshold combinations on fold0 inner12. Full registered checkpoint/proposal grid and clean fold1 remain incomplete; no Gate B-R2 email is authorized."
   },
   "status": "OPERATIONALLY_BLOCKED_ALLOCATION_TIME_INSUFFICIENT_FOR_REMAINING_REQUIRED_WORK",
   "task_key": "20260728_care_dpr_fold0_global_redesign",
@@ -53,5 +63,6 @@
     "formal_fold0_start": true,
     "runtime_push": true,
     "validation_package_or_upload": true
-  }
+  },
+  "updated_at_utc": "2026-07-29T00:40:54Z"
 }
