@@ -26,3 +26,4 @@ This lightweight packet records a fail-closed W1 stop before training.
 - `mapper_report_final.md`
 - `architecture_delta_final.md`
 - `notification_delivery_report.json`
+- `push_delivery_report.json`

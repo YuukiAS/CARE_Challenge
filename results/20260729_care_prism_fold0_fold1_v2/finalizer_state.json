@@ -9,13 +9,14 @@
   "next_action": "Return to Planner for ResEnc checkpoint asset decision or transplant-contract revision.",
   "phase_reached": "W1_EXACT_IMPLEMENTATION",
   "prism_gpu_processes_started": false,
+  "push_delivery_report": "results/20260729_care_prism_fold0_fold1_v2/push_delivery_report.json",
   "push_on_blocked_authorized": false,
-  "push_status": "TEMP_PUSH_AUTHORIZED_BY_USER_FOR_PLANNER_REPLAN",
+  "push_status": "NOT_PUSHED_BLOCKED_BY_EXECUTION_POLICY_AFTER_USER_AUTHORIZATION",
   "slurm_attempts": [],
   "status": "OPERATIONALLY_BLOCKED",
   "strict_validator_report": "results/20260729_care_prism_fold0_fold1_v2/strict_validator_report.json",
   "task_key": "20260729_care_prism_fold0_fold1_v2",
   "terminal_reason": "same-fold ResidualEncoderUNet checkpoint missing; transplant/parity gate failed before training",
-  "updated_at_utc": "2026-07-29T14:45:36Z",
+  "updated_at_utc": "2026-07-29T14:46:41Z",
   "wiki_current_consistency": "kept planned/unverified; no wiki or CURRENT advancement performed"
 }

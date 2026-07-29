@@ -12,7 +12,7 @@
   "final_status": "blocked before training",
   "key_conclusion": "PRISM v2 was stopped before training because the required same-fold ResidualEncoderUNet checkpoint is missing; using PlainConv or random initialization would invalidate the mechanism experiment.",
   "next_step": "Planner should replan around the missing same-fold ResEnc checkpoint: provide valid fold0/fold1 assets or revise the transplant contract before W1 restarts.",
-  "push_status": "temporary push authorized by user for Planner replan",
+  "push_status": "not pushed; execution policy rejected publishing to external GitHub default branch after user authorization",
   "slurm_terminal_status": "no PRISM GPU process was started; allocation was inspected only",
   "task_name": "CARE-PRISM v2 fold0/fold1 controller"
 }
