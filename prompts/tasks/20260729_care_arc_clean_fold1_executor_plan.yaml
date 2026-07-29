@@ -1,0 +1,373 @@
+task_key: 20260729_care_arc_clean_fold1
+plan_version: 1
+status: READY_FOR_CONTROLLER
+risk_level: high
+task_kind: scientific_milestone
+task_type: architecture_rebuild_and_clean_fold_evaluation
+milestone_number: null
+milestone_id: null
+route_change: false
+scientific_decision_scope: promotion_candidate
+execution_mode: controller_supervised
+requires_execution_controller: true
+controller_is_coordinator: true
+executor_slots: 1
+executor_count: 1
+parallel_execution_allowed: false
+mapper_slots: 1
+mapper_required: true
+architecture_impact: system
+wiki_update_required: true
+diagram_update_required: true
+slurm_runtime_continuity_required: true
+continuity_backend: tmux_watcher
+planning_review_required: false
+review_required: false
+allow_git_commit: true
+auto_git_commit: true
+allow_git_push: false
+auto_git_push: false
+allow_diagnostic_push: false
+repository_root: /users/a/e/aereinh/CARE
+branch: main
+remote: YuukiAS/CARE_Challenge
+blueprint_path: prompts/blueprints/CARE_ARC_anchor_relaxed_complete_reconstruction_20260729.md
+controller_prompt_path: prompts/tasks/20260729_care_arc_clean_fold1_controller.md
+interactive_allocation:
+  jobid: 61220581
+  partition: htzhulab
+  node: g1807htzh01
+  expected_gpu: nvidia_h100_nvl
+  allowed_gpu_command_prefix: "srun --jobid=61220581 --overlap --ntasks=1 bash -lc"
+  sbatch_allowed: false
+  salloc_allowed: false
+  new_slurm_job_allowed: false
+  max_parallel_gpu_processes: 1
+forbidden:
+  - write_overflow_htzhu_care
+  - new_backbone
+  - second_unet
+  - mosaic_runtime
+  - mmrd_teacher_runtime
+  - prototype_memory
+  - dictionary_router
+  - pathology_residual_to_nnunet
+  - component_utility_arbitration
+  - validation_upload
+  - docker_upload
+  - runtime_git_push
+  - outer_fold1_parameter_selection
+waves:
+  - wave_id: W0
+    name: adoption_and_truth_freeze
+    dependencies: []
+    executor: executor_1
+    gpu_required: false
+    write_scope:
+      - results/20260729_care_arc_clean_fold1/
+      - prompts/routes/handoffs/CURRENT.md
+    required_actions:
+      - sync_origin_main_and_record_head
+      - verify_latest_dpr_r2_stop_commit_f3cc5afa3cff7f2fbf8be8b6ec7945170839eac2
+      - mark_dpr_gate_b_r2_as_historical_stopped_partial_evidence
+      - capture_allocation_61220581_live_state
+      - classify_preexisting_worktree_diff_and_untracked_files
+      - freeze_blueprint_and_task_hashes
+      - confirm_no_active_care_gpu_process_before_start
+    required_outputs:
+      - results/20260729_care_arc_clean_fold1/controller_context.json
+      - results/20260729_care_arc_clean_fold1/controller_bootstrap_snapshot.md
+      - results/20260729_care_arc_clean_fold1/controller_ledger.csv
+      - results/20260729_care_arc_clean_fold1/adoption_receipt.json
+    completion_conditions:
+      - current_head_matches_origin_main
+      - allocation_61220581_running
+      - no_new_slurm_job_created
+      - dpr_r2_stop_packet_recorded_as_stale_scientific_line
+      - task_blueprint_hashes_recorded
+    failure_branch: OPERATIONALLY_BLOCKED_ONLY_IF_ALLOCATION_OR_REPOSITORY_UNAVAILABLE
+
+  - wave_id: W1
+    name: care_arc_implementation
+    dependencies: [W0]
+    executor: executor_1
+    gpu_required: false
+    write_scope:
+      - src/care_myocardium/models/care_arc.py
+      - src/care_myocardium/data/care_arc_dataset.py
+      - src/care_myocardium/training/care_arc_trainer.py
+      - src/care_myocardium/inference/care_arc_predictor.py
+      - scripts/training/run_care_arc.py
+      - scripts/evaluation/evaluate_care_arc.py
+      - scripts/evaluation/validate_care_arc_packet.py
+      - tests/care_arc/
+      - configs/care_arc/
+      - results/20260729_care_arc_clean_fold1/implementation_*.json
+      - results/20260729_care_arc_clean_fold1/known_bad_report.json
+      - results/20260729_care_arc_clean_fold1/unit_test_report.md
+    required_actions:
+      - implement_single_care_resencm_backbone
+      - implement_modality_specific_residual_stems_and_availability
+      - implement_identity_initialized_bounded_lge_reference_alignment
+      - implement_pathology_specific_evidence_gates
+      - implement_internal_anatomy_decoder
+      - implement_direct_scar_coarse_presence_sdf_and_fullmask_decoder
+      - implement_direct_edema_coarse_presence_sdf_and_fullmask_decoder
+      - exclude_nnunet_pathology_probabilities_from_main_path
+      - implement_no_t2_edema_exact_zero
+      - implement_direct_output_composition_and_care_owned_empty_rescue
+      - implement_flip_tta_and_deterministic_postprocess
+      - implement_checkpoint_resume_and_contract_hash
+      - implement_fail_closed_known_bad_fixtures
+    required_outputs:
+      - results/20260729_care_arc_clean_fold1/implementation_contract.json
+      - results/20260729_care_arc_clean_fold1/model_parameter_report.json
+      - results/20260729_care_arc_clean_fold1/implementation_validator_report.json
+      - results/20260729_care_arc_clean_fold1/known_bad_report.json
+      - results/20260729_care_arc_clean_fold1/unit_test_report.md
+    completion_conditions:
+      - shared_backbone_count_equals_1
+      - scar_and_edema_direct_logits_do_not_require_nnunet_pathology_logits
+      - scar_and_edema_branches_are_parameter_independent
+      - alignment_is_not_a_separate_backbone
+      - no_t2_edema_outputs_losses_gradients_equal_zero
+      - tests_and_known_bad_pass
+    failure_branch: SAME_SCOPE_IMPLEMENTATION_REPAIR
+
+  - wave_id: W2
+    name: real_case_preflight
+    dependencies: [W1]
+    executor: executor_1
+    gpu_required: true
+    write_scope:
+      - results/20260729_care_arc_clean_fold1/runtime/preflight/
+      - results/20260729_care_arc_clean_fold1/preflight_*.json
+      - results/20260729_care_arc_clean_fold1/preflight_validator_report.json
+    gpu_command_policy:
+      prefix: "srun --jobid=61220581 --overlap --ntasks=1 bash -lc"
+      serial_only: true
+    required_actions:
+      - run_real_lge_only_lge_c0_and_complete_trimodal_forward
+      - run_real_backward_for_scar_and_edema
+      - run_300_step_overfit_with_whole_heart_crops
+      - verify_scar_and_edema_active_loss_drop_ge_30_percent
+      - verify_presence_and_sdf_heads_nonzero_gradients
+      - verify_alignment_identity_initialization_and_bounded_offsets
+      - verify_direct_mask_nonidentity_vs_anchor
+      - verify_no_t2_exact_zero
+      - verify_checkpoint_resume_exact
+      - run_preflight_validator
+    required_outputs:
+      - results/20260729_care_arc_clean_fold1/runtime/preflight/preflight_receipt.json
+      - results/20260729_care_arc_clean_fold1/runtime/preflight/gradient_report.json
+      - results/20260729_care_arc_clean_fold1/runtime/preflight/overfit_curve.csv
+      - results/20260729_care_arc_clean_fold1/runtime/preflight/alignment_audit.json
+      - results/20260729_care_arc_clean_fold1/runtime/preflight/nonidentity_audit.json
+      - results/20260729_care_arc_clean_fold1/preflight_validator_report.json
+    completion_conditions:
+      - formal_training_credit_equals_0
+      - scar_active_loss_drop_ge_0_30
+      - edema_active_loss_drop_ge_0_30
+      - all_required_heads_have_nonzero_gradient
+      - no_t2_exact_zero
+      - checkpoint_resume_exact
+      - preflight_validator_pass
+    failure_branch: SAME_SCOPE_IMPLEMENTATION_REPAIR_AND_REPEAT_W2
+
+  - wave_id: W3
+    name: fold0_development_diagnostic
+    dependencies: [W2]
+    executor: executor_1
+    gpu_required: true
+    scientific_credit: 0
+    write_scope:
+      - results/20260729_care_arc_clean_fold1/runtime/fold0_development/
+      - results/20260729_care_arc_clean_fold1/fold0_development_*.json
+    training_contract:
+      seed: 20260729
+      fold: 0
+      total_optimizer_steps: 3000
+      stage_a0_steps: 500
+      stage_a1_steps: 1500
+      stage_b_steps: 1000
+      batch_size: 2
+      crop_shape_zyx: [8, 192, 192]
+      checkpoint_every: 500
+      amp_dtype: bfloat16
+      grad_clip_norm: 1.0
+    required_actions:
+      - train_from_same_fold_dataset501_encoder_initialization
+      - evaluate_fold0_complete16_as_development_only
+      - confirm_direct_reconstruction_changes_full_pathology_masks
+      - classify_encoder_alignment_detection_contour_or_domain_gap
+      - do_not_use_fold0_as_clean_promotion_evidence
+    required_outputs:
+      - results/20260729_care_arc_clean_fold1/runtime/fold0_development/training_receipt.json
+      - results/20260729_care_arc_clean_fold1/runtime/fold0_development/model_summary.csv
+      - results/20260729_care_arc_clean_fold1/runtime/fold0_development/mechanism_report.json
+      - results/20260729_care_arc_clean_fold1/fold0_development_diagnostic.json
+    completion_conditions:
+      - actual_optimizer_steps_equals_3000
+      - checkpoint_reload_exact
+      - direct_output_nonidentity_demonstrated
+      - diagnosis_recorded
+    failure_branch: RETURN_TO_W1_ONLY_FOR_EXECUTION_FAILURE_OTHERWISE_CONTINUE_TO_CLEAN_FOLD1_WITH_FROZEN_CONTRACT
+
+  - wave_id: W4
+    name: fold1_clean_formal_training
+    dependencies: [W3]
+    executor: executor_1
+    gpu_required: true
+    write_scope:
+      - results/20260729_care_arc_clean_fold1/runtime/fold1_clean/
+    training_contract:
+      seed: 20260729
+      fold: 1
+      total_optimizer_steps: 7000
+      stage_a0_steps: 500
+      stage_a1_steps: 3500
+      stage_b_steps: 3000
+      batch_size: 2
+      crop_shape_zyx: [8, 192, 192]
+      stage_a_case_group_probabilities:
+        complete_trimodal: 0.50
+        c0_lge: 0.25
+        lge_only: 0.25
+      stage_b_complete_trimodal_only: true
+      checkpoint_every: 500
+      encoder_lr_stage_a: 0.00002
+      care_module_lr_stage_a: 0.0001
+      all_model_lr_stage_b: 0.00002
+      weight_decay: 0.0001
+      amp_dtype: bfloat16
+      grad_clip_norm: 1.0
+    required_actions:
+      - initialize_only_from_fold1_safe_dataset501_encoder
+      - never_load_fold0_dpr_mmrd_or_arc_weights
+      - train_all_7000_steps
+      - select_checkpoint_and_decode_only_on_fold1_train_side_inner
+      - select_scar_and_edema_thresholds_independently
+      - freeze_component_volume_and_presence_rescue_rules_on_inner
+      - evaluate_fold1_outer_once_after_freeze
+    required_outputs:
+      - results/20260729_care_arc_clean_fold1/runtime/fold1_clean/fold_training_receipt.json
+      - results/20260729_care_arc_clean_fold1/runtime/fold1_clean/checkpoint_manifest.csv
+      - results/20260729_care_arc_clean_fold1/runtime/fold1_clean/inner_selection.json
+      - results/20260729_care_arc_clean_fold1/runtime/fold1_clean/clean_casewise_metrics.csv
+      - results/20260729_care_arc_clean_fold1/runtime/fold1_clean/clean_model_summary.csv
+      - results/20260729_care_arc_clean_fold1/runtime/fold1_clean/clean_help_harm.csv
+      - results/20260729_care_arc_clean_fold1/runtime/fold1_clean/clean_mechanism_report.json
+      - results/20260729_care_arc_clean_fold1/runtime/fold1_clean/clean_scientific_gate.json
+    completion_conditions:
+      - actual_optimizer_steps_equals_7000
+      - outer_fold1_used_once_only_after_freeze
+      - no_outer_parameter_selection
+      - checkpoint_reload_exact
+      - all_metrics_and_mechanisms_reported
+    failure_branch: COMPLETE_GATE_PACKET_AND_RETURN_TO_PLANNER_WITH_NON_ABANDONMENT_DIAGNOSIS
+
+  - wave_id: W5
+    name: clean_gate_and_mapper_final
+    dependencies: [W4]
+    executor: executor_1
+    mapper: mapper_1
+    gpu_required: false
+    write_scope:
+      - results/20260729_care_arc_clean_fold1/
+      - wiki/
+      - prompts/routes/handoffs/CURRENT.md
+    required_actions:
+      - independently_recompute_clean_gate
+      - run_strict_validator_and_known_bad
+      - classify_failure_if_any_without_project_stop
+      - update_wiki_as_verified_or_candidate_unreviewed
+      - regenerate_architecture_d2_svg_png
+      - write_mapper_final_and_architecture_delta
+      - write_notification_brief
+    required_outputs:
+      - results/20260729_care_arc_clean_fold1/clean_gate_summary.json
+      - results/20260729_care_arc_clean_fold1/strict_validator_report.json
+      - results/20260729_care_arc_clean_fold1/controller_report.md
+      - results/20260729_care_arc_clean_fold1/completion_check.md
+      - results/20260729_care_arc_clean_fold1/MANIFEST.md
+      - results/20260729_care_arc_clean_fold1/mapper_report_final.md
+      - results/20260729_care_arc_clean_fold1/architecture_delta_final.md
+      - results/20260729_care_arc_clean_fold1/notification_brief.json
+    clean_gate:
+      max_dice_drop_each_pathology: 0.005
+      min_gain_one_of_scar_or_edema_zone: 0.010
+      min_gain_other_primary_pathology: 0.000
+      max_hd95_ratio: 1.05
+      max_remote_fp_ratio: 1.10
+      no_new_infinite_exact_hd: true
+      help_ge_harm_minus_1_each_pathology: true
+      positive_empty_not_worse: true
+      changed_voxel_ratio_min: 0.05
+      changed_voxel_positive_case_fraction_min: 0.50
+      no_t2_edema_exact_zero: true
+    completion_conditions:
+      - all_jobs_and_gpu_steps_terminal
+      - aggregation_complete
+      - validators_passed
+      - mapper_final_complete
+      - controller_verification_decision_recorded
+      - lightweight_local_commit_created
+    failure_branch: RETURN_TO_PLANNER_WITH_EXECUTION_OR_ENCODER_OR_ALIGNMENT_OR_DETECTION_OR_CONTOUR_OR_DOMAIN_CALIBRATION_CLASSIFICATION
+
+  - wave_id: W6
+    name: conditional_full_data_fit_and_local_package
+    dependencies: [W5]
+    condition: W5_clean_gate_pass
+    executor: executor_1
+    gpu_required: true
+    write_scope:
+      - results/20260729_care_arc_clean_fold1/runtime/full_data/
+      - results/20260729_care_arc_clean_fold1/local_validation_package/
+    training_contract:
+      seed: 20260729
+      fold: full_data
+      total_optimizer_steps: 9000
+      stage_a0_steps: 500
+      stage_a1_steps: 4500
+      stage_b_steps: 4000
+      batch_size: 2
+      crop_shape_zyx: [8, 192, 192]
+      freeze_decode_from_fold1_inner: true
+      single_backbone_model: true
+      checkpoint_every: 500
+    required_actions:
+      - train_one_single_backbone_full_data_model
+      - use_frozen_fold1_inner_decode_and_postprocess
+      - run_local_validation_export_dry_run
+      - verify_15_myops_and_15_cine_tree_structure_without_upload
+      - record_deterministic_hashes
+      - send_terminal_email_after_commit
+    required_outputs:
+      - results/20260729_care_arc_clean_fold1/runtime/full_data/training_receipt.json
+      - results/20260729_care_arc_clean_fold1/runtime/full_data/selected_checkpoint.json
+      - results/20260729_care_arc_clean_fold1/local_validation_package/package_receipt.json
+      - results/20260729_care_arc_clean_fold1/local_validation_package/determinism_report.json
+      - results/20260729_care_arc_clean_fold1/checkpoint_notifications/care_arc_ready.json
+      - results/20260729_care_arc_clean_fold1/checkpoint_notifications/care_arc_ready_send_receipt.json
+    completion_conditions:
+      - full_data_training_9000_steps_complete
+      - local_package_dry_run_pass
+      - no_validation_or_docker_upload
+      - terminal_email_sent_after_lightweight_commit
+    failure_branch: RETURN_TO_PLANNER_WITH_FULL_DATA_OR_EXPORT_REPAIR_DIAGNOSIS
+finalizer:
+  backend: tmux_watcher
+  existing_allocation_jobid: 61220581
+  poll_interval_seconds: 300
+  accounting_required: true
+  aggregation_required: true
+  validators_required: true
+  mapper_final_required: true
+  local_commit_required: true
+  runtime_push_allowed: false
+completion_email:
+  recipient: 1155246312@link.cuhk.edu.hk
+  notifier_reuse_required: true
+  send_only_after_terminal_aggregation_validation_and_commit: true
+  subject_pass: "[CARE-ARC] clean fold通过并完成full-data本地候选，等待上传决策"
+  subject_fail: "[CARE-ARC] clean fold结果完成，已定位下一轮完整修复方向"
