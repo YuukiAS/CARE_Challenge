@@ -1,9 +1,12 @@
 {
   "created_at_utc": "2026-07-29T14:46:41Z",
-  "reason": "git push origin main was rejected by execution policy because it would publish local task-result/workspace data to the external GitHub default branch; the agent is not allowed to bypass this rejection.",
+  "final_pushed_head": "5b0b3ef2e828124564208a37068147d65a4d1f1b",
+  "first_attempt_reason": "git push origin main was initially rejected by execution policy because it would publish local task-result/workspace data to the external GitHub default branch.",
+  "reason": "The user authorized a temporary push for Planner replanning, and the exact retry command succeeded after manual approval.",
   "requested_command": "git push origin main",
-  "safe_alternative": "Local commits remain in the worktree for human-approved/manual push or Planner inspection from the same machine.",
-  "status": "NOT_PUSHED_BLOCKED_BY_EXECUTION_POLICY",
+  "safe_alternative": "Not applicable after the approved retry succeeded.",
+  "status": "PUSHED_AFTER_USER_AUTHORIZED_RETRY",
   "task_key": "20260729_care_prism_fold0_fold1_v2",
+  "updated_at_utc": "2026-07-29T14:53:40Z",
   "user_authorized_temporary_push": true
 }

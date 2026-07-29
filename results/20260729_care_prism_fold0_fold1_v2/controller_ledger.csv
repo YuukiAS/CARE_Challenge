@@ -1,3 +1,4 @@
 timestamp_utc,phase,git_head,allocation_state,decision,next_action
 2026-07-29T14:10:39Z,W0_AUTHORITY_ROOT_CAUSE_ASSETS,7e659fd6f559cad464cfea31879970b273ce2993,RUNNING,W0_PASS_TO_EXECUTOR_IMPLEMENTATION,Start single Executor for W1 exact implementation; no parallel GPU commands
 2026-07-29T14:29:12Z,W1_EXACT_IMPLEMENTATION,7e659fd6f559cad464cfea31879970b273ce2993,RUNNING_NOT_USED_FOR_PRISM_TRAINING,OPERATIONALLY_BLOCKED_FAIL_CLOSED,Human supplies same-fold ResEnc checkpoint or Planner revises contract
+2026-07-29T14:53:40Z,RESUMED_BLOCK_AUDIT,5b0b3ef2e828124564208a37068147d65a4d1f1b,RUNNING_NOT_USED_FOR_PRISM_TRAINING,OPERATIONALLY_BLOCKED_REPEATED,Planner must supply same-fold ResEnc checkpoints or revise transplant contract before W1 restart

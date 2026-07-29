@@ -7,11 +7,13 @@ contract_compliance_status: FAIL_CLOSED_ON_REQUIRED_TRANSPLANT_ASSET
 all_jobs_terminal: NO_PRISM_GPU_PROCESSES_STARTED
 aggregation_complete: false
 git_commit_decision: LOCAL_LIGHTWEIGHT_COMMIT_COMPLETE
-git_push_decision: NOT_PUSHED_BLOCKED_BY_EXECUTION_POLICY_AFTER_USER_AUTHORIZATION
+git_push_decision: PUSHED_AFTER_USER_AUTHORIZED_RETRY
 local_commit: SELF_REFERENTIAL_COMMIT_SHA_NOT_EMBEDDED_SEE_GIT_LOG_HEAD
+remote_head_after_retry: 5b0b3ef2e828124564208a37068147d65a4d1f1b
 next_required_action: RETURN_TO_PLANNER
 ```
 
 ```text
 push_delivery_report: results/20260729_care_prism_fold0_fold1_v2/push_delivery_report.json
+resumed_block_audit: results/20260729_care_prism_fold0_fold1_v2/resumed_block_audit.json
 ```

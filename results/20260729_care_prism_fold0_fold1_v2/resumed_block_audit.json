@@ -1,0 +1,29 @@
+{
+  "allocation_check": {
+    "authorized_job_id": "61220581",
+    "gpu_probe": "srun --jobid=61220581 --overlap --ntasks=1 bash -lc 'hostname; nvidia-smi --query-gpu=name,memory.used,memory.total,utilization.gpu --format=csv,noheader'",
+    "node": "g1807htzh01",
+    "observed_state": "RUNNING",
+    "partition": "htzhulab",
+    "probe_result": "g1807htzh01.ll.unc.edu; NVIDIA H100 NVL, 0 MiB / 95830 MiB, 0 percent utilization"
+  },
+  "blocked_audit_turn_count": 3,
+  "blocker_repeated": true,
+  "created_at_utc": "2026-07-29T14:53:40Z",
+  "current_git": {
+    "head": "5b0b3ef2e828124564208a37068147d65a4d1f1b",
+    "origin_main": "5b0b3ef2e828124564208a37068147d65a4d1f1b",
+    "sync_status": "origin/main up to date; no newer Planner replan commit present"
+  },
+  "decision": "OPERATIONALLY_BLOCKED",
+  "evidence": {
+    "checkpoint_metadata_probe": "Existing Dataset501 checkpoints report plans_name=nnUNetPlans and PlainConvUNet-style encoder keys.",
+    "local_search": "find /users/a/e/aereinh/CARE -path '*/nnUNet_results/*' ... found only nnUNetPlans checkpoints for Dataset501/Dataset502.",
+    "overflow_readonly_search": "find /overflow/htzhu/CARE/data/nnUNet/nnUNet_results/Dataset501_CAREMyoPS ... found only nnUNetPlans checkpoints.",
+    "plan_architecture_check": "data/nnUNet/nnUNet_preprocessed/Dataset501_CAREMyoPS/nnUNetResEncUNetMPlans.json declares ResidualEncoderUNet; default nnUNetPlans.json declares PlainConvUNet."
+  },
+  "next_required_action": "Planner must provide valid fold0/fold1 same-fold Dataset501 ResidualEncoderUNet checkpoints, authorize a separate asset-generation plan, or revise the transplant contract before W1 can restart.",
+  "reason": "The required same-fold ResidualEncoderUNet nnU-Net checkpoint remains absent, so the >=90 percent byte-transplant and FP32 per-scale parity gate cannot be proven without violating the CARE-PRISM v2 contract.",
+  "task_key": "20260729_care_prism_fold0_fold1_v2",
+  "training_started": false
+}
