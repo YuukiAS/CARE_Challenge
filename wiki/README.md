@@ -1,12 +1,34 @@
 # CARE 架构 Wiki
 
-architecture_version: `care-myops-mosaic-gap-forensics-final-blueprint-20260726`
-latest_verified_runtime: `MoSAIC hosted-gap forensics packet; strict validator PASS; allocation 60657290 reused only`
-latest_scientific_status: `MoSAIC family confirmed for hosted scar 0.6965, final package recipe/checkpoint hashes bound; exact historical ZIP bytes unresolved, clean 220-case OOF underperforms nnU-Net`
-latest_controller_task: `20260726_care_mosaic_validation_gap_forensics_and_final_blueprint`
+architecture_version: `care-arc-w3-contour-limited-stop-20260729`
+latest_verified_runtime: `CARE-ARC W0-W2 PASS; W3 fold0 zero-credit terminal FAIL at mechanism gate; allocation 61220581 reused only`
+latest_scientific_status: `CARE-ARC implementation/trainability verified, but fold0 outer mechanism gate failed as CONTOUR_LIMITED; fold1 clean fold not consumed`
+latest_controller_task: `20260729_care_arc_clean_fold1`
 route_status: `MAIN_ONLY_FINAL_BLUEPRINT_NNUNET_ONLY_DOCKER_LOCAL_ONLY`
 
-本页是 GPT、Controller、Executor、Mapper 和 Planner 读取当前架构状态的根入口。当前最新终态事实是：用户确认 hosted scar Dice 0.6965 属于 MoSAIC submission，但已绑定 final repo、final pretrained weights 和 final inference recipe，但未绑定历史 upload ZIP bytes/SHA；clean 220-case OOF scar 显示 MoSAIC 0.3924、nnU-Net 0.5775，完整三模态子集 MoSAIC 0.6331、nnU-Net 0.6927。最终 Docker 当前只应执行 `NNUNET_ONLY_DOCKER`，MoSAIC/SafeScar/MMRD/Cascade 只能作为研究证据或协议卫生保留，不能作为 active runtime mask producer。
+本页是 GPT、Controller、Executor、Mapper 和 Planner 读取当前架构状态的根入口。当前最新事实是：CARE-ARC 单一 encoder 已完成 W0-W2 严格实现和 300-step preflight，并完成 fold0 3000-step zero-credit development；fold0 outer 机制门未通过，原因是 raw direct scar 和 edema-zone 相对 nnU-Net 的 Dice 差距分别为 -0.1805 和 -0.1554，定位/轮廓质量不足。按 2026-07-29 amendment，禁止进入 fold1 clean training、禁止 fold1 outer 访问、禁止 full-data/W6、禁止上传或 push；下一步应返回 Planner 做架构修订，而不是在 fold1 调参。
+
+## 2026-07-29 CARE-ARC W3 机制门结论
+
+```text
+result_root: results/20260729_care_arc_clean_fold1
+controller_verification_decision: OPERATIONALLY_BLOCKED_BY_W3_MECHANISM_GATE
+w0_status: PASS
+w1_implementation_validator: PASS
+w2_preflight_strict_validator: PASS
+w3_training: 3000 optimizer steps, zero credit, fold0 actual-train only
+w3_gate: FAIL
+failure_classification: CONTOUR_LIMITED
+frozen_alignment_mode: identity
+fold1_outer_access: NOT_ACCESSED
+clean_fold_training: NOT_STARTED
+validation_upload: FORBIDDEN_NOT_RUN
+runtime_push: FORBIDDEN_NOT_RUN
+```
+
+主要证据：`fold0_development_adequacy_gate.json` 记录 scar raw direct Dice delta `-0.1805`、edema-zone raw direct Dice delta `-0.1554`，均低于 `>= -0.05` 的 W3 进入 clean fold 最低机制条件；coarse/presence AUPRC、volume ratio、changed-mask、component safety、no-T2 exact-zero 和 anchor-context invariance 均通过，因此当前失败不是执行崩溃或完全无检测信号，而是外层病例轮廓/定位不足。架构图见 `wiki/figures/care-arc-w3-stop.svg` 和 `wiki/figures/care-arc-w3-stop.png`。
+
+当前最新终态事实是：用户确认 hosted scar Dice 0.6965 属于 MoSAIC submission，但已绑定 final repo、final pretrained weights 和 final inference recipe，但未绑定历史 upload ZIP bytes/SHA；clean 220-case OOF scar 显示 MoSAIC 0.3924、nnU-Net 0.5775，完整三模态子集 MoSAIC 0.6331、nnU-Net 0.6927。最终 Docker 当前只应执行 `NNUNET_ONLY_DOCKER`，MoSAIC/SafeScar/MMRD/Cascade 只能作为研究证据或协议卫生保留，不能作为 active runtime mask producer。
 
 ## 2026-07-26 MoSAIC hosted-gap 取证与最终蓝图
 

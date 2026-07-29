@@ -1,0 +1,16 @@
+{
+  "aggregation_complete": true,
+  "controller_verification_decision": "OPERATIONALLY_BLOCKED_BY_W3_MECHANISM_GATE",
+  "local_commit_required": true,
+  "mapper_final": "UPDATED_WIKI_AND_DIAGRAM",
+  "notification_required_after_commit": true,
+  "runtime_children_terminal": true,
+  "state": "TERMINAL_PACKET_COMPLETE_W3_STOP",
+  "strict_validators": {
+    "implementation": "PASS",
+    "preflight": "PASS",
+    "w3_gate_evidence": "FAIL_EXPECTED_STOP"
+  },
+  "task_key": "20260729_care_arc_clean_fold1",
+  "updated_at_utc": "2026-07-29T10:44:54Z"
+}

@@ -1,0 +1,35 @@
+direction: right
+
+raw: "LGE/T2/C0 + availability\nfull D, crop_hw=256" {
+  shape: document
+}
+
+encoder: "CARE-ARC single encoder\n24.03M params" {
+  shape: rectangle
+}
+
+heads: "independent pathology heads\nscar + edema-zone\ncoarse/direct/presence/burden/SDF" {
+  shape: rectangle
+}
+
+preflight: "W2 preflight\n300 steps zero credit\nstrict PASS" {
+  shape: rectangle
+}
+
+dev: "W3 fold0 development\n3000 steps zero credit\nactual-train only" {
+  shape: rectangle
+}
+
+eval: "fold0 outer evaluation\nraw direct + postprocess + nnU-Net anchor\naligned and identity controls" {
+  shape: rectangle
+}
+
+gate: "mechanism gate\nFAIL: CONTOUR_LIMITED\nraw Dice delta scar -0.1805\nraw Dice delta edema-zone -0.1554" {
+  shape: hexagon
+}
+
+stop: "stop boundary\nno fold1 clean training\nno outer fold1 access\nno upload/push" {
+  shape: rectangle
+}
+
+raw -> encoder -> heads -> preflight -> dev -> eval -> gate -> stop

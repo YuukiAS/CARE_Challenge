@@ -1,0 +1,11 @@
+{
+  "confidence_ok": true,
+  "edema_zone_dice_gain_enabled_minus_identity": 0.003778161021795623,
+  "edema_zone_hd95_ratio_enabled_over_identity": 0.9403250254226742,
+  "frozen_alignment_mode": "identity",
+  "mean_dice_gain": 0.003946679426559546,
+  "offset_ok": false,
+  "scar_dice_gain_enabled_minus_identity": 0.004115197831323469,
+  "scar_hd95_ratio_enabled_over_identity": 0.9309064560087428,
+  "status": "PASS"
+}

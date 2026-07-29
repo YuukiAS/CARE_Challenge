@@ -1,0 +1,10 @@
+{
+  "created_at_utc": "2026-07-29T09:28:47Z",
+  "required_range": [
+    20000000,
+    45000000
+  ],
+  "status": "PASS",
+  "task_key": "20260729_care_arc_clean_fold1",
+  "trainable_parameter_count": 24027664
+}

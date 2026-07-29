@@ -1,0 +1,28 @@
+{
+  "burden_film_changes_direct_logits": true,
+  "created_at_utc": "2026-07-29T09:28:47Z",
+  "forbidden_context_fail_closed": true,
+  "formal_pathology_inputs": [
+    "LGE",
+    "T2",
+    "C0",
+    "availability"
+  ],
+  "independent_pathology_heads": [
+    "scar.coarse",
+    "scar.direct",
+    "scar.presence",
+    "scar.burden",
+    "scar.sdf_mean_logvar",
+    "edema_zone.coarse",
+    "edema_zone.direct",
+    "edema_zone.presence",
+    "edema_zone.burden",
+    "edema_zone.sdf_mean_logvar"
+  ],
+  "single_encoder": true,
+  "stage": "W1_IMPLEMENTATION",
+  "status": "PASS",
+  "task_key": "20260729_care_arc_clean_fold1",
+  "validator_report": "results/20260729_care_arc_clean_fold1/implementation_validator_report.json"
+}

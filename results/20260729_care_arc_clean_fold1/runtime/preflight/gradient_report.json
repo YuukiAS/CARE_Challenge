@@ -1,0 +1,61 @@
+{
+  "modules": {
+    "alignment": {
+      "has_gradient": true,
+      "max_abs_gradient": 0.002869055839255452
+    },
+    "edema_burden": {
+      "has_gradient": true,
+      "max_abs_gradient": 0.015364477410912514
+    },
+    "edema_coarse": {
+      "has_gradient": true,
+      "max_abs_gradient": 0.12554925680160522
+    },
+    "edema_direct": {
+      "has_gradient": true,
+      "max_abs_gradient": 0.18585407733917236
+    },
+    "edema_presence": {
+      "has_gradient": true,
+      "max_abs_gradient": 0.07886798679828644
+    },
+    "edema_sdf_logvar": {
+      "has_gradient": true,
+      "max_abs_gradient": 1.710874080657959
+    },
+    "edema_sdf_mean": {
+      "has_gradient": true,
+      "max_abs_gradient": 1.5491400957107544
+    },
+    "encoder": {
+      "has_gradient": true,
+      "max_abs_gradient": 0.5307580232620239
+    },
+    "scar_burden": {
+      "has_gradient": true,
+      "max_abs_gradient": 0.4805227518081665
+    },
+    "scar_coarse": {
+      "has_gradient": true,
+      "max_abs_gradient": 0.6598546504974365
+    },
+    "scar_direct": {
+      "has_gradient": true,
+      "max_abs_gradient": 1.1894947290420532
+    },
+    "scar_presence": {
+      "has_gradient": true,
+      "max_abs_gradient": 0.40639108419418335
+    },
+    "scar_sdf_logvar": {
+      "has_gradient": true,
+      "max_abs_gradient": 1.568848729133606
+    },
+    "scar_sdf_mean": {
+      "has_gradient": true,
+      "max_abs_gradient": 1.1419498920440674
+    }
+  },
+  "status": "PASS"
+}

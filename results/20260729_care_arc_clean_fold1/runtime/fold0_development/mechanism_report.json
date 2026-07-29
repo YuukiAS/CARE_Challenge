@@ -1,0 +1,90 @@
+{
+  "alignment_comparison": {
+    "confidence_ok": true,
+    "edema_zone_dice_gain_enabled_minus_identity": 0.003778161021795623,
+    "edema_zone_hd95_ratio_enabled_over_identity": 0.9403250254226742,
+    "frozen_alignment_mode": "identity",
+    "mean_dice_gain": 0.003946679426559546,
+    "offset_ok": false,
+    "scar_dice_gain_enabled_minus_identity": 0.004115197831323469,
+    "scar_hd95_ratio_enabled_over_identity": 0.9309064560087428,
+    "status": "PASS"
+  },
+  "ap_report": {
+    "enabled": {
+      "edema_zone_coarse_auprc": 0.24943575228503537,
+      "edema_zone_coarse_prevalence": 0.0040921017218496746,
+      "edema_zone_presence_auprc": 0.9960200076858735,
+      "edema_zone_presence_prevalence": 0.9772727272727273,
+      "scar_coarse_auprc": 0.3165372497849617,
+      "scar_coarse_prevalence": 0.003200464914578437,
+      "scar_presence_auprc": 0.998930625891145,
+      "scar_presence_prevalence": 0.9772727272727273
+    },
+    "identity": {
+      "edema_zone_coarse_auprc": 0.25461978318138917,
+      "edema_zone_coarse_prevalence": 0.0040921017218496746,
+      "edema_zone_presence_auprc": 0.9960200076858735,
+      "edema_zone_presence_prevalence": 0.9772727272727273,
+      "scar_coarse_auprc": 0.3183440360464531,
+      "scar_coarse_prevalence": 0.003200464914578437,
+      "scar_presence_auprc": 0.998930625891145,
+      "scar_presence_prevalence": 0.9772727272727273
+    }
+  },
+  "casewise_metrics_path": "results/20260729_care_arc_clean_fold1/runtime/fold0_development/casewise_metrics.csv",
+  "checkpoint_step": 3000,
+  "context_invariance": {
+    "checked_case": "Case1002",
+    "status": "PASS"
+  },
+  "created_at_utc": "2026-07-29T10:37:58Z",
+  "gate": {
+    "changed_mask": {
+      "edema_zone": {
+        "fraction_changed_at_least_5pct": 1.0,
+        "positive_cases": 43
+      },
+      "scar": {
+        "fraction_changed_at_least_5pct": 1.0,
+        "positive_cases": 43
+      }
+    },
+    "checkpoint": "results/20260729_care_arc_clean_fold1/runtime/fold0_development/checkpoint_step03000.pt",
+    "created_at_utc": "2026-07-29T10:37:58Z",
+    "failure_classification": "CONTOUR_LIMITED",
+    "fold": 0,
+    "formal_training_credit": 0,
+    "frozen_alignment_mode": "identity",
+    "mechanism_conditions": {
+      "anchor_context_invariance": true,
+      "component_no_order_explosion": true,
+      "edema_zone_changed_mask_fraction_ge_half": true,
+      "edema_zone_coarse_auprc_gt_prevalence": true,
+      "edema_zone_median_volume_ratio_in_range": true,
+      "edema_zone_presence_auprc_gt_prevalence": true,
+      "no_t2_exact_zero": true,
+      "raw_edema_zone_dice_delta_ge_minus_0_05": false,
+      "raw_scar_dice_delta_ge_minus_0_05": false,
+      "scar_changed_mask_fraction_ge_half": true,
+      "scar_coarse_auprc_gt_prevalence": true,
+      "scar_median_volume_ratio_in_range": true,
+      "scar_presence_auprc_gt_prevalence": true
+    },
+    "raw_direct_dice_delta_vs_nnunet": {
+      "edema_zone": -0.15536314250461647,
+      "scar": -0.18050215511656237
+    },
+    "raw_direct_median_volume_ratio": {
+      "edema_zone": 0.8963445167751627,
+      "scar": 0.7981818181818182
+    },
+    "role": "outer",
+    "stage": "W3_FOLD0_ZERO_CREDIT_DEVELOPMENT",
+    "status": "FAIL",
+    "task_key": "20260729_care_arc_clean_fold1"
+  },
+  "no_t2_failures": [],
+  "summary_rows_path": "results/20260729_care_arc_clean_fold1/runtime/fold0_development/raw_direct_summary.csv",
+  "task_key": "20260729_care_arc_clean_fold1"
+}

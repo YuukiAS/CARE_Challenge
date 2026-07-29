@@ -1,0 +1,9 @@
+{
+  "contract_hash_match": true,
+  "edema_direct_exact": true,
+  "optimizer_state_loaded": true,
+  "rng_state_present": true,
+  "scar_direct_exact": true,
+  "status": "PASS",
+  "step_match": true
+}

@@ -1,0 +1,45 @@
+{
+  "changed_mask": {
+    "edema_zone": {
+      "fraction_changed_at_least_5pct": 1.0,
+      "positive_cases": 43
+    },
+    "scar": {
+      "fraction_changed_at_least_5pct": 1.0,
+      "positive_cases": 43
+    }
+  },
+  "checkpoint": "results/20260729_care_arc_clean_fold1/runtime/fold0_development/checkpoint_step03000.pt",
+  "created_at_utc": "2026-07-29T10:37:58Z",
+  "failure_classification": "CONTOUR_LIMITED",
+  "fold": 0,
+  "formal_training_credit": 0,
+  "frozen_alignment_mode": "identity",
+  "mechanism_conditions": {
+    "anchor_context_invariance": true,
+    "component_no_order_explosion": true,
+    "edema_zone_changed_mask_fraction_ge_half": true,
+    "edema_zone_coarse_auprc_gt_prevalence": true,
+    "edema_zone_median_volume_ratio_in_range": true,
+    "edema_zone_presence_auprc_gt_prevalence": true,
+    "no_t2_exact_zero": true,
+    "raw_edema_zone_dice_delta_ge_minus_0_05": false,
+    "raw_scar_dice_delta_ge_minus_0_05": false,
+    "scar_changed_mask_fraction_ge_half": true,
+    "scar_coarse_auprc_gt_prevalence": true,
+    "scar_median_volume_ratio_in_range": true,
+    "scar_presence_auprc_gt_prevalence": true
+  },
+  "raw_direct_dice_delta_vs_nnunet": {
+    "edema_zone": -0.15536314250461647,
+    "scar": -0.18050215511656237
+  },
+  "raw_direct_median_volume_ratio": {
+    "edema_zone": 0.8963445167751627,
+    "scar": 0.7981818181818182
+  },
+  "role": "outer",
+  "stage": "W3_FOLD0_ZERO_CREDIT_DEVELOPMENT",
+  "status": "FAIL",
+  "task_key": "20260729_care_arc_clean_fold1"
+}

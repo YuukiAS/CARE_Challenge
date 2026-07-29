@@ -1,5 +1,29 @@
 # CARE 当前开发状态
 
+## 2026-07-29 Controller结果：CARE-ARC W3机制门停止
+
+CARE-ARC v2 已完成 W0 authority/split/crop freeze、W1 单 encoder 实现、W2 300-step zero-credit preflight 和 W3 fold0 3000-step zero-credit development。W3 fold0 outer 机制门未通过：scar raw direct Dice delta vs nnU-Net 为 `-0.1805021551`，edema-zone 为 `-0.1553631425`，均低于进入 fold1 的 `>= -0.05` 最低条件。失败分类为 `CONTOUR_LIMITED`。
+
+```text
+state_id: care_arc_w3_contour_limited_stop_20260729
+state_updated_date: 2026-07-29
+active_development_branch: main
+active_worktree: /users/a/e/aereinh/CARE
+portfolio_mode: SUSPENDED_MAIN_ONLY
+single_active_scientific_line: RETURN_TO_PLANNER_FOR_CARE_ARC_REPAIR
+fold1_clean_training_authorized: false
+fold1_outer_accessed: false
+full_data_training_authorized: false
+validation_upload_authorized: false
+docker_upload_authorized: false
+hosted_metric_claim_authorized: false
+runtime_git_push_authorized: false
+controller_verification_decision: OPERATIONALLY_BLOCKED_BY_W3_MECHANISM_GATE
+result_root: results/20260729_care_arc_clean_fold1
+```
+
+必须保持停止边界：不得在 fold1 上调参、不得读取 fold1 outer、不得启动 W4/W5/W6、不得把 nnU-Net-only 恢复成本研究终态。下一步只能由 Planner 基于 W3 证据修订 CARE-ARC 轮廓/定位机制后重新授权。
+
 本文件是当前 CARE 主线工作的机器真值。新的规划、执行、训练、评价和状态判断必须先读取本文件。
 
 ## 2026-07-29 当前最高优先级：CARE-ARC v2

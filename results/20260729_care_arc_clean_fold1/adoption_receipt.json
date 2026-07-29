@@ -1,0 +1,19 @@
+{
+  "active_authority": "CARE-ARC execution hardening amendment R1",
+  "created_at_utc": "2026-07-29T09:09:30Z",
+  "forbidden_actions": {
+    "new_slurm_job": false,
+    "runtime_git_push": false,
+    "validation_or_docker_upload": false,
+    "write_overflow_htzhu_care": false
+  },
+  "head_equals_origin_main": true,
+  "required_commits_present": {
+    "59a664bd15b936e9adc9774340ababce9a3a0323": true,
+    "5f9805e2a32edc1836299476eff3587dc395639e": true,
+    "6166cb26e701a6c37f27a6c231392c3883a28cd0": true,
+    "988477ef4175f47f514d41c18bcd113b6543589e": true
+  },
+  "status": "PASS",
+  "task_key": "20260729_care_arc_clean_fold1"
+}

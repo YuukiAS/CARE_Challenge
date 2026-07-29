@@ -1,0 +1,42 @@
+{
+  "candidate_results": [
+    {
+      "coverage": 0.9715639810426541,
+      "coverage_percent": 97.1563981042654,
+      "crop_hw": 192,
+      "failed_case_count": 6,
+      "failed_cases": [
+        "Case3012",
+        "Case3014",
+        "Case3015",
+        "Case3027",
+        "Case3031",
+        "Case3035"
+      ]
+    },
+    {
+      "coverage": 0.985781990521327,
+      "coverage_percent": 98.5781990521327,
+      "crop_hw": 224,
+      "failed_case_count": 3,
+      "failed_cases": [
+        "Case3015",
+        "Case3031",
+        "Case3035"
+      ]
+    },
+    {
+      "coverage": 1.0,
+      "coverage_percent": 100.0,
+      "crop_hw": 256,
+      "failed_case_count": 0,
+      "failed_cases": []
+    }
+  ],
+  "created_at_utc": "2026-07-29T09:09:30Z",
+  "selected_inplane_crop_hw": 256,
+  "selection_rule": "first of 192,224,256 with 100% actual-train GT coverage under image-center crop",
+  "status": "PASS",
+  "task_key": "20260729_care_arc_clean_fold1",
+  "z_crop_allowed": false
+}

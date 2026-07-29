@@ -1,0 +1,14 @@
+{
+  "created_at_utc": "2026-07-29T09:28:47Z",
+  "known_bad_cases": [
+    "source_forbidden_external_context_patterns",
+    "parameter_count_range",
+    "single_shared_encoder",
+    "external_context_invariance",
+    "no_t2_edema_exact_zero",
+    "burden_film_changes_logits"
+  ],
+  "status": "PASS",
+  "task_key": "20260729_care_arc_clean_fold1",
+  "validator_failures": []
+}

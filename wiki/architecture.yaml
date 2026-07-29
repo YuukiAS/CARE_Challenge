@@ -1,10 +1,10 @@
-architecture_version: CARE_MOSAIC_GAP_FORENSICS_FINAL_BLUEPRINT_20260726
-verified_at_utc: '2026-07-26T17:26:20Z'
-verified_milestone: mosaic_hosted_gap_forensics_final_blueprint
-review_token: VERIFIED_COMPLETE
-verification_base_commit: pending_local_commit
-code_fingerprint: care_mm_reliable_distill.py=5db67db7;care_mm_losses.py=eb3f106d;care_mm_batch9.py=265deeb8;run_care_mm_batch9_reliable_distill.py=62ce99f5;evaluate_care_mm_batch9.py=29d2a1a3;aggregate_care_mm_batch9.py=84182a5f;finalize_care_mm_batch9.py=aaf596c9;validate_care_mm_batch9_packet.py=314a31ef;batch9_reliable_label_distillation.yaml=1f240928
-evidence_fingerprint: MoSAIC-gap-forensics-W0-W7;see results/20260726_care_mosaic_validation_gap_forensics_and_final_blueprint/strict_validator_report.json
+architecture_version: CARE_ARC_W3_CONTOUR_LIMITED_STOP_20260729
+verified_at_utc: '2026-07-29T10:42:25Z'
+verified_milestone: care_arc_clean_fold1_w3_stop
+review_token: OPERATIONALLY_BLOCKED_BY_W3_MECHANISM_GATE
+verification_base_commit: 59a664bd15b936e9adc9774340ababce9a3a0323
+code_fingerprint: care_arc.py=8e891ff3;care_arc_dataset.py=4f4d3bf3;care_arc_trainer.py=b0017f68;care_arc_predictor.py=e805b311;run_care_arc.py=eb520ea0;run_care_arc_development.py=05c435f2;evaluate_care_arc.py=0e645490;validate_care_arc_packet.py=0a1960c2
+evidence_fingerprint: CARE-ARC-W0-W3;see results/20260729_care_arc_clean_fold1/fold0_development_adequacy_gate.json
 nodes:
 - id: batch6_final_objective_alignment
   label: final objective and production gate alignment
@@ -202,6 +202,27 @@ nodes:
   target_status: implemented
   source_file: scripts/evaluation/finalize_care_mm_batch9.py
   symbol: BATCH9_MAINLINE_NO_USABLE_SIGNAL_RETURN_TO_PLANNER
+- id: care_arc_single_encoder
+  label: CARE-ARC single shared encoder
+  branch: MyoPS
+  current_status: implemented
+  target_status: implemented
+  source_file: src/care_myocardium/models/care_arc.py
+  symbol: CAREARCEncoder
+- id: care_arc_pathology_heads
+  label: independent scar/edema coarse direct presence burden SDF heads
+  branch: MyoPS
+  current_status: implemented
+  target_status: implemented
+  source_file: src/care_myocardium/models/care_arc.py
+  symbol: PathologyDecoder
+- id: care_arc_w3_mechanism_gate
+  label: fold0 development mechanism gate
+  branch: MyoPS
+  current_status: failed_contour_limited
+  target_status: implemented
+  source_file: scripts/evaluation/evaluate_care_arc.py
+  symbol: W3_FOLD0_ZERO_CREDIT_DEVELOPMENT
 edges:
 - from: inputs_availability
   to: modality_stems_encoders
@@ -271,3 +292,11 @@ edges:
   to: batch9_finalizer_validator
   kind: history
   condition: Batch9 terminal no-usable-signal packet
+- from: care_arc_single_encoder
+  to: care_arc_pathology_heads
+  kind: feature
+  condition: raw modalities plus availability only
+- from: care_arc_pathology_heads
+  to: care_arc_w3_mechanism_gate
+  kind: evidence
+  condition: fold0 outer raw/postprocess/nnU-Net comparison

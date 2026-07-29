@@ -1,0 +1,74 @@
+{
+  "burden_film_max_abs_delta": 19.075599670410156,
+  "case_report": {
+    "case_ids": [
+      "Case2001",
+      "Case5001",
+      "Case1001",
+      "Case1004",
+      "Case1005",
+      "Case1006"
+    ],
+    "depths": {
+      "Case1001": 9,
+      "Case1004": 32,
+      "Case1005": 16,
+      "Case1006": 24,
+      "Case2001": 6,
+      "Case5001": 5
+    },
+    "present_wanted_depths": [
+      9,
+      16,
+      24,
+      32
+    ],
+    "selected_roles": {
+      "complete_trimodal": "Case2001",
+      "edema_positive": "Case2001",
+      "hard_negative": "Case5001",
+      "lge_c0": "Case5001",
+      "lge_only": "Case1001",
+      "no_t2": "Case1001",
+      "scar_positive": "Case1001"
+    },
+    "wanted_depths": [
+      9,
+      16,
+      24,
+      32
+    ]
+  },
+  "checkpoint": "results/20260729_care_arc_clean_fold1/runtime/preflight/checkpoint_step00300.pt",
+  "contract_hash": "ef5164e37703f431b173b0f21afbc29a51ff61f9da375f47c2a92f1abfb0973e",
+  "created_at_utc": "2026-07-29T09:39:44Z",
+  "cuda_available": true,
+  "device": "cuda",
+  "formal_training_credit": 0,
+  "gradient_accumulation": 2,
+  "loss_drop": {
+    "edema_active_observations": 100,
+    "edema_drop_fraction": 0.5899398453512524,
+    "edema_first_window_mean": 2.4152174949645997,
+    "edema_last_window_mean": 0.9903844594955444,
+    "scar_active_observations": 600,
+    "scar_drop_fraction": 0.5932518884470689,
+    "scar_first_window_mean": 2.629302906990051,
+    "scar_last_window_mean": 1.0694639921188354
+  },
+  "optimizer_steps": 300,
+  "resume_exact": {
+    "contract_hash_match": true,
+    "edema_direct_exact": true,
+    "optimizer_state_loaded": true,
+    "rng_state_present": true,
+    "scar_direct_exact": true,
+    "status": "PASS",
+    "step_match": true
+  },
+  "stage": "W2_PRELIGHT_ZERO_CREDIT",
+  "status": "PASS",
+  "task_key": "20260729_care_arc_clean_fold1",
+  "train_loop_seconds": 459.75222539901733,
+  "trainable_parameter_count": 24027664
+}

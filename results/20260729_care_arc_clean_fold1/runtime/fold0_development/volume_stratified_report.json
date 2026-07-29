@@ -1,0 +1,44 @@
+{
+  "edema_zone": {
+    "near": {
+      "mean_dice_delta_candidate_minus_nnunet": -0.2858570917385903,
+      "n": 17
+    },
+    "overseg": {
+      "mean_dice_delta_candidate_minus_nnunet": -0.12648260176348305,
+      "n": 10
+    },
+    "underseg": {
+      "mean_dice_delta_candidate_minus_nnunet": -0.18274218997055264,
+      "n": 16
+    }
+  },
+  "pure_edema": {
+    "near": {
+      "mean_dice_delta_candidate_minus_nnunet": -0.17274592815692916,
+      "n": 6
+    },
+    "overseg": {
+      "mean_dice_delta_candidate_minus_nnunet": -0.16035576090323028,
+      "n": 5
+    },
+    "underseg": {
+      "mean_dice_delta_candidate_minus_nnunet": -0.11884266708003306,
+      "n": 5
+    }
+  },
+  "scar": {
+    "near": {
+      "mean_dice_delta_candidate_minus_nnunet": -0.2976185640585588,
+      "n": 17
+    },
+    "overseg": {
+      "mean_dice_delta_candidate_minus_nnunet": -0.12277842430260034,
+      "n": 11
+    },
+    "underseg": {
+      "mean_dice_delta_candidate_minus_nnunet": -0.24007798282405998,
+      "n": 15
+    }
+  }
+}

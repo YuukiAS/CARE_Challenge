@@ -1,0 +1,111 @@
+{
+  "allocation_snapshot": {
+    "command": [
+      "squeue",
+      "-j",
+      "61220581",
+      "-o",
+      "%i|%P|%j|%u|%T|%M|%l|%D|%R"
+    ],
+    "returncode": 0,
+    "stderr": "",
+    "stdout": "JOBID|PARTITION|NAME|USER|STATE|TIME|TIME_LIMIT|NODES|NODELIST(REASON)\n61220581|htzhulab|CareDPR5d|aereinh|RUNNING|4:42:55|5-00:00:00|1|g1807htzh01"
+  },
+  "authority_priority": [
+    "prompts/tasks/20260729_care_arc_execution_hardening_amendment.md",
+    "prompts/blueprints/CARE_ARC_anchor_relaxed_complete_reconstruction_20260729.md",
+    "prompts/tasks/20260729_care_arc_clean_fold1_executor_plan_v2.yaml",
+    "prompts/tasks/20260729_care_arc_clean_fold1_controller_v2.md",
+    "prompts/routes/handoffs/CURRENT.md"
+  ],
+  "authority_sha256": {
+    ".agents/skills/care-mapper/SKILL.md": "2c41516189001ec7be94d9981a69fcd5544ad5ebd244c93cdc58488f4b535d0e",
+    ".agents/skills/codex-workflow-protocol/SKILL.md": "828fd6ed7c86ff4b22fc5b601e73f4639fa6462006a626eb99e2d37d938089f2",
+    ".agents/skills/domains-medical-imaging-medical-imaging-deep-learning/SKILL.md": "5975f953429f364525a2cbcd1f16752aa6337c4791792a61553a12e0a0d3d16b",
+    ".agents/skills/slurm-routing-partition/SKILL.md": "2b7e87f58b275b50dc9d4a9377f4e2518c3a390c806e400cb32e07ebac3f83a6",
+    "AGENTS.md": "9e41eb124868681f7176ac96befb72df5f8fb32e8f6b17d241d1c8586ae9011f",
+    "GPT_PLANNER_CARE_PROTOCOL.md": "6e9f234de0be18674dc195fe1de830982ddbc5d3201e068eb6a2ed6ac9f9c195",
+    "START_HERE_FOR_GPT.md": "83a11ac74d130cfd1df2064fdd52b642e06d1b13eb3af677b02819dcad4274fe",
+    "data/benchmarks/protocol/cases_MyoPS.json": "8e5191f0a595378ca6f3b0492dfe226b8ddd01a2d2be1f59889e82f581457f66",
+    "data/benchmarks/protocol/splits_MyoPS.json": "6165caeb5b47feb0d24f20380898037b7e6cead4db1eeba398a3c5a57faf9a1b",
+    "data/nnUNet/nnUNet_preprocessed/Dataset501_CAREMyoPS/splits_final.json": "9c3e9f3b7e4565a5c3c2589ddbb913c78c0ad423f4265370585841c93c6f880a",
+    "prompts/AGENT_FLOW_V2_PROTOCOL.md": "29b417ef95e5b54d046e9fafb6cede016d74e74c88426756546b507fb09a22a1",
+    "prompts/FINAL_OUTPUT_READABILITY_POLICY.md": "1d1dd49a03f2bb9c22b20e17168125abd5c5a78d6c68d675f3052c03526e069b",
+    "prompts/GPT_HARD_GATE_PROMPT.md": "afb068852d40a04500e818b2d53acabb811a090920042b711b34dcc55416de9b",
+    "prompts/HANDOFF_GATE_POLICY.md": "668765a296b5789d1560cdbd710316fcd7b93544f9195f7eaf3ebcbe263ccb1a",
+    "prompts/blueprints/CARE_ARC_anchor_relaxed_complete_reconstruction_20260729.md": "0aaa7caf571e74532f7604343cc932cd450b7ce13f90d46c7906bb85dacc4986",
+    "prompts/routes/ROUTE_ANTI_LAZINESS_PROTOCOL.md": "a0dce70c97ef9711dbdc76a213d26419513fa5c28478accbec0dd8288a91674a",
+    "prompts/routes/ROUTE_HARD_REQUIREMENTS_MATRIX.md": "a225f46868eda817a0d2b2f3e33d444ffc88b683664dfc3a0dd6eb25881475d9",
+    "prompts/routes/handoffs/CURRENT.md": "391b23321b1d5cae40999bc15e4d5a411826a23be92301f8f58cd9599329e39b",
+    "prompts/tasks/20260729_care_arc_clean_fold1_controller_v2.md": "12a536fe822a2244ef5aba31f8943a0ecb52775563315aff45e7ee7653e6bbe7",
+    "prompts/tasks/20260729_care_arc_clean_fold1_executor_plan_v2.yaml": "e76adcc92c2930b997e0a2cc4d305156593123507d9c1856e74d628ba924a5f2",
+    "prompts/tasks/20260729_care_arc_execution_hardening_amendment.md": "42f5a60091c9e6ea27183a3fb86956d18decc6eb9e6b7609838b512604e7acec",
+    "wiki/README.md": "983c619213257fbe41ed19b596d10df6a532e8e4eb37dbbf0115b64b26cf63b7"
+  },
+  "created_at_utc": "2026-07-29T09:09:30Z",
+  "executor_plan_validator_compatibility": {
+    "controller_interpretation": "single-executor task proceeds under explicit user/controller contract; recorded as compatibility finding",
+    "legacy_validator": "scripts/ops/validate_executor_plan.py",
+    "observed_status": "FAIL"
+  },
+  "files_read": [
+    "AGENTS.md",
+    "START_HERE_FOR_GPT.md",
+    "GPT_PLANNER_CARE_PROTOCOL.md",
+    "prompts/FINAL_OUTPUT_READABILITY_POLICY.md",
+    "prompts/AGENT_FLOW_V2_PROTOCOL.md",
+    "prompts/HANDOFF_GATE_POLICY.md",
+    "prompts/GPT_HARD_GATE_PROMPT.md",
+    "prompts/routes/ROUTE_ANTI_LAZINESS_PROTOCOL.md",
+    "prompts/routes/ROUTE_HARD_REQUIREMENTS_MATRIX.md",
+    "wiki/README.md",
+    ".agents/skills/slurm-routing-partition/SKILL.md",
+    ".agents/skills/care-mapper/SKILL.md",
+    ".agents/skills/codex-workflow-protocol/SKILL.md",
+    ".agents/skills/domains-medical-imaging-medical-imaging-deep-learning/SKILL.md",
+    "prompts/tasks/20260729_care_arc_execution_hardening_amendment.md",
+    "prompts/blueprints/CARE_ARC_anchor_relaxed_complete_reconstruction_20260729.md",
+    "prompts/tasks/20260729_care_arc_clean_fold1_executor_plan_v2.yaml",
+    "prompts/tasks/20260729_care_arc_clean_fold1_controller_v2.md",
+    "prompts/routes/handoffs/CURRENT.md",
+    "data/benchmarks/protocol/splits_MyoPS.json",
+    "data/benchmarks/protocol/cases_MyoPS.json",
+    "data/nnUNet/nnUNet_preprocessed/Dataset501_CAREMyoPS/splits_final.json"
+  ],
+  "git_head": "59a664bd15b936e9adc9774340ababce9a3a0323",
+  "git_status_short_branch": [
+    "## main...origin/main",
+    " M results/20260724_care_myops_srr_cascade_submission_rescue/runtime_closure_repair_rc1/formal_race_watcher_history_v2.jsonl",
+    " M results/20260724_care_myops_srr_cascade_submission_rescue/runtime_closure_repair_rc1/formal_race_watcher_state_v2.json",
+    "?? .codex_runtime/",
+    "?? results/care_scf/canonical_model_summary_fold0.csv",
+    "?? results/care_scf/care_gate_training_receipt.json",
+    "?? results/care_scf/care_prediction_status.csv",
+    "?? results/care_scf/casewise_metrics_fold0.csv",
+    "?? results/care_scf/completion_audit.csv",
+    "?? results/care_scf/component_dataset_feature_status.csv",
+    "?? results/care_scf/component_dataset_fold0_diagnostic.csv",
+    "?? results/care_scf/component_decisions.csv",
+    "?? results/care_scf/controller_report.md",
+    "?? results/care_scf/final_manifest.json",
+    "?? results/care_scf/geometry_audit.csv",
+    "?? results/care_scf/help_harm.csv",
+    "?? results/care_scf/help_harm_summary.csv",
+    "?? results/care_scf/mosaic_oof_status.csv",
+    "?? results/care_scf/nnunet_oof_status.csv",
+    "?? results/care_scf/provenance.json",
+    "?? scripts/evaluation/build_care_arc_w0_freeze.py",
+    "?? scripts/evaluation/build_care_scf_controller_packet.py",
+    "?? scripts/evaluation/build_mosaic_paper_results_completion.py"
+  ],
+  "phase": "W0",
+  "required_job_ids": [
+    "61220581"
+  ],
+  "required_runtime_paths": [
+    "results/20260729_care_arc_clean_fold1/runtime/preflight",
+    "results/20260729_care_arc_clean_fold1/runtime/fold0_development",
+    "results/20260729_care_arc_clean_fold1/runtime/fold1_clean"
+  ],
+  "task_key": "20260729_care_arc_clean_fold1"
+}

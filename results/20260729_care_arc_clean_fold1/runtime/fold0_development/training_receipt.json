@@ -1,0 +1,42 @@
+{
+  "batch_size": 1,
+  "case_count": 164,
+  "checkpoints": [
+    "results/20260729_care_arc_clean_fold1/runtime/fold0_development/checkpoint_step00500.pt",
+    "results/20260729_care_arc_clean_fold1/runtime/fold0_development/checkpoint_step01000.pt",
+    "results/20260729_care_arc_clean_fold1/runtime/fold0_development/checkpoint_step01500.pt",
+    "results/20260729_care_arc_clean_fold1/runtime/fold0_development/checkpoint_step02000.pt",
+    "results/20260729_care_arc_clean_fold1/runtime/fold0_development/checkpoint_step02500.pt",
+    "results/20260729_care_arc_clean_fold1/runtime/fold0_development/checkpoint_step03000.pt"
+  ],
+  "contract_hash": "ef8e934a5390dd867434af3f936d06e2930dbef24b41f90b145a5e5542ac0757",
+  "created_at_utc": "2026-07-29T10:31:34Z",
+  "crop_hw": 256,
+  "cuda_available": true,
+  "device": "cuda",
+  "final_checkpoint": "results/20260729_care_arc_clean_fold1/runtime/fold0_development/checkpoint_step03000.pt",
+  "fold": 0,
+  "formal_training_credit": 0,
+  "gradient_accumulation": 2,
+  "median_seconds_per_optimizer_step": 0.8474498647848765,
+  "optimizer_steps": 3000,
+  "role": "actual_train",
+  "stage_counts": {
+    "A0": 500,
+    "A1": 2500,
+    "B": 0
+  },
+  "status": "PASS",
+  "strata_counts": {
+    "all": 164,
+    "complete": 52,
+    "edema_positive": 52,
+    "hard_negative": 6,
+    "lge_c0": 20,
+    "lge_only": 92,
+    "scar_positive": 157
+  },
+  "task_key": "20260729_care_arc_clean_fold1",
+  "train_loop_seconds": 2542.3495943546295,
+  "trainable_parameter_count": 24027664
+}

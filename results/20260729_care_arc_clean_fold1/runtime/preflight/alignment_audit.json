@@ -1,0 +1,8 @@
+{
+  "c0_confidence_mean": 0.949465274810791,
+  "c0_offset_max_abs": 3.648411989212036,
+  "identity_toggle_max_abs_delta": 6.7335405349731445,
+  "status": "PASS",
+  "t2_confidence_mean": 0.7850370407104492,
+  "t2_offset_max_abs": 3.7754452228546143
+}

@@ -1,0 +1,17 @@
+{
+  "blocked_or_failure_reason": "CONTOUR_LIMITED：coarse/presence、volume、changed-mask、component、no-T2和context invariance均通过，但raw direct轮廓/定位不足。",
+  "commit_status": "local lightweight commit complete on main; final git head is included by notifier",
+  "created_at_utc": "2026-07-29T10:50:02Z",
+  "evidence_paths": [
+    "results/20260729_care_arc_clean_fold1/controller_report.md",
+    "results/20260729_care_arc_clean_fold1/fold0_development_adequacy_gate.json",
+    "results/20260729_care_arc_clean_fold1/runtime/fold0_development/mechanism_report.json",
+    "wiki/figures/care-arc-w3-stop.svg"
+  ],
+  "final_status": "blocked_by_w3_mechanism_gate",
+  "key_conclusion": "CARE-ARC W0-W2通过，fold0 3000-step开发完成；W3外层机制门失败，scar和edema-zone raw direct Dice明显低于nnU-Net，不能进入fold1 clean training。",
+  "next_step": "返回Planner修订CARE-ARC轮廓和定位机制；不得在fold1继续调参，不得上传或push。",
+  "push_status": "not authorized; not pushed",
+  "slurm_terminal_status": "使用既有allocation 61220581；W2和W3的srun子进程均已terminal；未提交新Slurm任务。",
+  "task_name": "20260729 CARE-ARC clean fold1 controller execution"
+}

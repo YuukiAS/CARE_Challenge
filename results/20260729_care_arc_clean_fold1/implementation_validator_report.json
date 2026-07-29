@@ -1,0 +1,23 @@
+{
+  "created_at_utc": "2026-07-29T10:45:54Z",
+  "failures": [],
+  "known_bad_coverage": [
+    "source_forbidden_external_context_patterns",
+    "parameter_count_range",
+    "single_shared_encoder",
+    "external_context_invariance",
+    "no_t2_edema_exact_zero",
+    "burden_film_changes_logits"
+  ],
+  "model_report": {
+    "burden_film_max_abs_delta": 0.3896176218986511,
+    "external_context_invariance_exact": true,
+    "no_t2_edema_max_abs": 0.0,
+    "shared_encoder_count": 1,
+    "trainable_parameter_count": 24027664
+  },
+  "preflight_report": null,
+  "stage": "implementation",
+  "status": "PASS",
+  "task_key": "20260729_care_arc_clean_fold1"
+}

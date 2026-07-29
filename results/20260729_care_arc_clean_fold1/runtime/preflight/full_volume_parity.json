@@ -1,0 +1,125 @@
+{
+  "rows": [
+    {
+      "case_id": "Case2001",
+      "edema_output_dhw": [
+        6,
+        256,
+        256
+      ],
+      "input_dhw": [
+        6,
+        256,
+        256
+      ],
+      "scar_output_dhw": [
+        6,
+        256,
+        256
+      ],
+      "shape_match": true,
+      "t2_present": 1.0
+    },
+    {
+      "case_id": "Case5001",
+      "edema_output_dhw": [
+        5,
+        256,
+        256
+      ],
+      "input_dhw": [
+        5,
+        256,
+        256
+      ],
+      "scar_output_dhw": [
+        5,
+        256,
+        256
+      ],
+      "shape_match": true,
+      "t2_present": 0.0
+    },
+    {
+      "case_id": "Case1001",
+      "edema_output_dhw": [
+        9,
+        256,
+        256
+      ],
+      "input_dhw": [
+        9,
+        256,
+        256
+      ],
+      "scar_output_dhw": [
+        9,
+        256,
+        256
+      ],
+      "shape_match": true,
+      "t2_present": 0.0
+    },
+    {
+      "case_id": "Case1004",
+      "edema_output_dhw": [
+        32,
+        256,
+        256
+      ],
+      "input_dhw": [
+        32,
+        256,
+        256
+      ],
+      "scar_output_dhw": [
+        32,
+        256,
+        256
+      ],
+      "shape_match": true,
+      "t2_present": 0.0
+    },
+    {
+      "case_id": "Case1005",
+      "edema_output_dhw": [
+        16,
+        256,
+        256
+      ],
+      "input_dhw": [
+        16,
+        256,
+        256
+      ],
+      "scar_output_dhw": [
+        16,
+        256,
+        256
+      ],
+      "shape_match": true,
+      "t2_present": 0.0
+    },
+    {
+      "case_id": "Case1006",
+      "edema_output_dhw": [
+        24,
+        256,
+        256
+      ],
+      "input_dhw": [
+        24,
+        256,
+        256
+      ],
+      "scar_output_dhw": [
+        24,
+        256,
+        256
+      ],
+      "shape_match": true,
+      "t2_present": 0.0
+    }
+  ],
+  "status": "PASS"
+}

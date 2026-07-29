@@ -1,0 +1,48 @@
+{
+  "controller_verification_decision": "OPERATIONALLY_BLOCKED_BY_W3_MECHANISM_GATE",
+  "created_at_utc": "2026-07-29T10:44:54Z",
+  "evidence": {
+    "w0_crop_freeze": "results/20260729_care_arc_clean_fold1/crop_freeze_receipt.json",
+    "w0_split_freeze": "results/20260729_care_arc_clean_fold1/split_freeze_receipt.json",
+    "w1_implementation_validator": "results/20260729_care_arc_clean_fold1/implementation_validator_report.json",
+    "w2_preflight_validator": "results/20260729_care_arc_clean_fold1/preflight_strict_validator_report.json",
+    "w3_gate": "results/20260729_care_arc_clean_fold1/fold0_development_adequacy_gate.json",
+    "w3_mechanism_report": "results/20260729_care_arc_clean_fold1/runtime/fold0_development/mechanism_report.json",
+    "w3_summary": "results/20260729_care_arc_clean_fold1/runtime/fold0_development/raw_direct_summary.csv",
+    "w3_training_receipt": "results/20260729_care_arc_clean_fold1/runtime/fold0_development/training_receipt.json",
+    "wiki_diagram_svg": "wiki/figures/care-arc-w3-stop.svg"
+  },
+  "failure_classification": "CONTOUR_LIMITED",
+  "frozen_alignment_mode": "identity",
+  "gpu_allocation": {
+    "child_processes_terminal": true,
+    "final_gpu_memory_used_mib": 0,
+    "jobid": 61220581,
+    "node": "g1807htzh01",
+    "partition": "htzhulab"
+  },
+  "next_action": "RETURN_TO_PLANNER_FOR_CARE_ARC_CONTOUR_LOCALIZATION_REPAIR",
+  "plain_conclusion": "CARE-ARC 实现和可训练性已通过，但 fold0 外层机制检查显示轮廓/定位不足，不能进入 fold1 clean training。",
+  "prohibitions_observed": {
+    "fold1_outer_access": false,
+    "new_slurm_job": false,
+    "overflow_write": false,
+    "parallel_gpu": false,
+    "runtime_push": false,
+    "salloc": false,
+    "sbatch": false,
+    "validation_or_docker_upload": false
+  },
+  "raw_direct_dice_delta_vs_nnunet": {
+    "edema_zone": -0.15536314250461647,
+    "scar": -0.18050215511656237
+  },
+  "task_key": "20260729_care_arc_clean_fold1",
+  "w0": "PASS",
+  "w1": "PASS",
+  "w2": "PASS",
+  "w3": "FAIL",
+  "w4": "SKIPPED_FORBIDDEN_BY_W3_GATE",
+  "w5": "SKIPPED_FORBIDDEN_BY_W3_GATE",
+  "w6": "SKIPPED_FORBIDDEN_BY_W3_GATE"
+}
