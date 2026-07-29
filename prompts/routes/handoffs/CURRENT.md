@@ -2,20 +2,20 @@
 
 本文件是当前 CARE 主线工作的机器真值。新的规划、执行、训练、评价和状态判断必须先读取本文件。
 
-## 2026-07-29 当前最高优先级：CARE-ARC
+## 2026-07-29 当前最高优先级：CARE-ARC v2
 
-当前主线已经从 nnU-Net 邻域内的 DG / DPR 局部修正，切换为 **CARE-ARC：单主干、双病理、直接完整重建**。
+当前主线已从 DG/DPR 的 nnU-Net 邻域修正切换为 **CARE-ARC：单主干、双病理、完整病例直接重建**。v2执行合同进一步移除了 external nnU-Net context 对病理forward的依赖，并将训练单位从固定z-slab修正为完整病例体积。
 
 ```text
-state_id: care_arc_anchor_relaxed_complete_reconstruction_20260729
+state_id: care_arc_anchor_relaxed_complete_reconstruction_v2_20260729
 state_updated_date: 2026-07-29
 active_development_branch: main
 active_worktree: /users/a/e/aereinh/CARE
 portfolio_mode: SUSPENDED_MAIN_ONLY
 route_worktree_development_authorized: false
-single_active_scientific_line: CARE_ARC_CLEAN_FOLD1
-method_name: CARE-ARC Anchor-Relaxed Complete Reconstruction
-execution_code: CARE-ARC-W0-W6
+single_active_scientific_line: CARE_ARC_V2_CLEAN_FOLD1
+method_name: CARE-ARC Anchor-Relaxed Complete Reconstruction v2
+execution_code: CARE-ARC-V2-W0-W6
 controller_is_coordinator: true
 planning_review_required: false
 review_required: false
@@ -25,42 +25,48 @@ hosted_metric_claim_authorized: false
 runtime_git_push_authorized: false
 ```
 
-### 当前权威入口
+## 当前权威入口
 
 ```text
+highest_authority_amendment:
+prompts/tasks/20260729_care_arc_execution_hardening_amendment.md
+
 blueprint:
 prompts/blueprints/CARE_ARC_anchor_relaxed_complete_reconstruction_20260729.md
 
 executor_plan:
-prompts/tasks/20260729_care_arc_clean_fold1_executor_plan.yaml
+prompts/tasks/20260729_care_arc_clean_fold1_executor_plan_v2.yaml
 
 controller:
-prompts/tasks/20260729_care_arc_clean_fold1_controller.md
+prompts/tasks/20260729_care_arc_clean_fold1_controller_v2.md
 ```
 
 规划提交：
 
 ```text
-e89d39528f9af0a0cb36a2694f651748847e4b41
-845c2dfcf508d7a06ba85487cdd96d933e47f115
-4801494ab62cca8b58ad10b7b8418fc705f222a8
+e89d39528f9af0a0cb36a2694f651748847e4b41  base blueprint
+6166cb26e701a6c37f27a6c231392c3883a28cd0  execution hardening amendment
+5f9805e2a32edc1836299476eff3587dc395639e  executor plan v2
+988477ef4175f47f514d41c18bcd113b6543589e  controller v2
 ```
 
 冲突优先级：
 
 ```text
-CARE-ARC blueprint
-> CARE-ARC executor plan
-> CARE-ARC controller prompt
-> 当前 CURRENT.md
+CARE-ARC execution hardening amendment
+> CARE-ARC blueprint
+> CARE-ARC executor plan v2
+> CARE-ARC controller v2
+> 本CURRENT.md
+> v1 CARE-ARC files
 > 历史 DPR / DG / Cascade / MMRD contracts
 ```
 
-## 为什么切换到完整重建
+## 为什么切换并加固
 
-### Hidden validation 新证据
+### Hidden validation新证据
 
-提交的 CARE 自研病理拼接探针不是统一端到端模型：
+CARE自研病理拼接探针：
 
 ```text
 scar: CARE-DG A3 step5000
@@ -69,18 +75,18 @@ myocardium/LV/RV: Dataset501 five-fold nnU-Net
 CineMyoPS: frozen historical prediction tree
 ```
 
-结果：
+Hosted结果：
 
 ```text
 CARE probe scar Dice / HD: 0.6211 / 15.1513
 MoSAIC scar Dice / HD: 0.6965 / 13.7827
 ```
 
-逐病例可视比较显示，CARE probe 的 scar 与 edema 几乎始终更接近 nnU-Net；MoSAIC 更倾向于完整、高召回、连续的病灶。该观察只用于架构动机，不能替代 hidden prediction tree 的逐体素审计。
+逐病例观察表明CARE probe几乎始终贴近nnU-Net；MoSAIC更倾向完整、高召回和少量连续病灶。历史MoSAIC prediction tree并未完整保留，因此该观察只用于架构动机，不冒充逐体素hidden审计。
 
-### DPR Gate B-R1
+### DG/DPR证据
 
-R1 修复了 candidate-level 训练/推理错位，但 complete16 仍为：
+DPR Gate B-R1修复candidate-level训练/推理错位后，complete16仍为：
 
 ```text
 scar:       0.693335 -> 0.692643
@@ -88,89 +94,95 @@ edema-zone: 0.752194 -> 0.752104
 pure edema: 0.394436 -> 0.394172
 ```
 
-三项均未达到原 `+0.005` 科学门。
-
-### DPR Gate B-R2 partial stop
-
-最新终态证据：
+DPR Gate B-R2终止证据：
 
 ```text
 commit: f3cc5afa3cff7f2fbf8be8b6ec7945170839eac2
 status: USER_STOPPED_BEFORE_GATE
-gate_reached: false
 rows_completed: 925 / 1200
 eligible_rows: 0
 best_avg_inner_dice_delta_so_far: -0.03193535188070074
 fold1_started: false
-validation_package_started: false
 scientific_final_output_credit: 0
 ```
 
-R2 接受更多 full-volume candidates 后，已完成的所有组合同时触发 Dice、HD95、remote FP 和 help/harm 失败。该证据说明不能继续通过 candidate utility 或 residual scale 把局部修补放大。
+这说明继续放大local candidates会同时破坏Dice、HD95、remote FP和help/harm，不能再依靠utility/threshold修补。
 
-DPR-R2 现在是历史诊断证据，不再是 active controller lane。
+### v1计划审计发现的执行漏洞
 
-## CARE-ARC 冻结科学目标
+1. 原`8×192×192`并非full volume；现有病例z深度可为9、12、16、20、24、32。
+2. 只删除nnU-Net病理通道仍不足；nnU-Net anatomy/uncertainty进入可学习路径会保留单折OOF到五折ensemble的输入漂移。
+3. 病例级病灶负荷没有真正进入direct decoder决策。
+4. inner排除、fold1 outer一次性访问和freeze顺序缺少机器锁。
+5. alignment、crop、checkpoint和decode存在留给Executor临时选择的空白。
+
+以上均由R1 amendment和v2 plan冻结修正。
+
+## CARE-ARC v2冻结结构
 
 ```text
 [LGE,T2,C0] + availability
 -> modality-specific residual stems
--> lightweight confidence-gated LGE-reference feature alignment
--> one CARE-owned ResEncM-style shared encoder
+-> optional identity-initialized bounded LGE-reference feature alignment
+-> one CARE-owned anisotropic ResEncM-style encoder
    -> internal anatomy decoder
-   -> scar evidence gate -> coarse extent -> direct full scar reconstruction
-      -> presence + contour mean/log variance
-   -> edema evidence gate -> coarse extent -> direct edema-zone reconstruction
-      -> presence + contour mean/log variance
+   -> scar evidence gate -> coarse extent -> direct full-volume scar
+      -> presence + global burden FiLM + SDF mean/logvar
+   -> edema evidence gate -> coarse extent -> direct full-volume edema-zone
+      -> presence + global burden FiLM + SDF mean/logvar
 -> scar priority
 -> pure edema = edema-zone minus scar
 ```
 
 强制边界：
 
-- 主体只有一个 shared backbone；
-- nnU-Net 只作为 same-fold encoder初始化、anatomy context、非病理输出和灾难性asset/grid fallback；
-- nnU-Net scar/edema probabilities不得定义 CARE pathology output邻域；
-- MoSAIC不得进入runtime、teacher、ensemble或初始化；
-- 不允许MMRD teacher、第二个U-Net、多backbone、prototype、dictionary、router、component utility、ADD/REVISE arbitration；
-- scar和edema结构对称、参数独立、分别训练和评价；
+- trainable pathology forward只读原始模态和availability；
+- nnU-Net只作same-fold encoder初始化、最终0–3类和灾难性asset/grid fallback；
+-任何nnU-Net pathology/anatomy probability、entropy或distance不得进入病理forward；
+- 主体只有一个20M–45M shared encoder；
+- 不允许MoSAIC、MMRD teacher、第二U-Net、多backbone、prototype、dictionary、router、component utility或ADD/REVISE；
+- scar/edema结构对称、参数独立、病例均衡；
 - no-T2 edema output/loss/gradient exact zero；
--三模态病例必须使用CARE direct pathology masks，不能因不同于nnU-Net而自动回退。
+- 完整病例保留全部z切片，batch1、gradient accumulation2；
+- 病例级burden head必须通过FiLM影响direct logits；
+- 三模态病例使用CARE direct pathology masks，不因不同于nnU-Net而常态回退。
 
 ## 执行图
 
 ```text
-W0 adoption and truth freeze
--> W1 implementation
--> W2 real-case preflight
--> W3 fold0 zero-credit development diagnostic
--> W4 fold1 clean 7000-step formal training
--> W5 clean gate / mapper final / packet
--> W6 only if clean gate passes: single-backbone full-data fit and local package dry-run
+W0 authority/split/shape/crop freeze
+-> W1 exact implementation
+-> W2 real-case full-volume preflight
+-> W3 fold0 zero-credit development adequacy and alignment freeze
+-> W4 fold1 clean 7000-step training + atomic one-time outer evaluation
+-> W5 independent clean gate / Mapper final / packet / local commit
+-> W6 only if clean gate and time guard pass: single-encoder full-data fit + local package dry-run
 ```
 
-Fold0只作开发诊断，不再具有clean scientific privilege。第一次clean gate固定为fold1 outer，并且只能在fold1 train-side inner冻结checkpoint、scar/edema threshold、minimum component volume和presence rescue后评价一次。
+W3必须先证明coarse/presence病例外信号、direct mask非identity、volume/component不过度失真；机制不足时返回Planner做完整修订，不能盲目消耗fold1 clean证据。
+
+Fold1 actual-train必须排除inner12和outer。Checkpoint及预注册decode grid只在inner12冻结；outer evaluator需要freeze receipt、atomic lock且只允许运行一次，之后禁止重选或重评。
 
 ## Clean fold1门
 
-必须全部满足：
+Primary population固定为complete-trimodal GT-positive病例；all-case只作robustness。必须全部满足：
 
 ```text
 scar / edema-zone / pure-edema Dice delta >= -0.005
 scar或edema-zone至少一个 Dice delta >= +0.010
 另一个主病理 Dice delta >= 0.000
-每病理 help >= harm - 1
+每病理 material help >= harm - 1，help/harm阈值为±0.005
 HD95 <= 1.05x anchor
 无新增 infinite exact-HD
 remote FP <= 1.10x anchor
 positive-GT empty rate不高于anchor
-scar和edema至少50% positive cases的changed pathology voxels ratio >=5%
-两病理direct/presence/contour/alignment真实激活
+scar和edema至少50% positive cases changed-mask ratio >=5%
+两病理coarse/direct/presence/burden/contour真实激活
 no-T2 edema exact-zero
-no-alignment control完整报告
+冻结alignment模式和no-alignment control完整报告
 ```
 
-未通过时不得在fold1上继续调参；必须分类为 execution、encoder、alignment、detection、contour 或 domain-calibration gap，返回Planner进行下一次完整修订。不得写项目放弃或将nnU-Net-only恢复为研究终态。
+未通过时不得在fold1继续调参；必须分类为execution、encoder、alignment、detection、contour或domain-calibration gap，完成terminal packet后返回Planner。不得写项目放弃或恢复nnU-Net-only为研究终态。
 
 ## 唯一计算资源
 
@@ -201,35 +213,22 @@ Docker upload
 runtime git push
 ```
 
-若allocation终止，只能记录精确resume point并返回 operationally blocked；不得新建job。
+若allocation终止，只能记录精确resume point并返回operationally blocked；不得新建job。
 
 ## 图视觉门
 
 ```text
 diagram_versions_read: SRR-v2, SRR-v2.5, SRR-v3, CARE-MMRD, CARE-SRR-Cascade, MoSAIC
 visual_read_status: PASS_PROJECT_BACKGROUND_IMAGES_VISUALLY_READ
-recovered_route_objective: availability-aware modality evidence -> anatomy-guided pathology localization -> scar/edema pathology-specific reconstruction -> safety supervision
-key_revision: remove baseline-preserving pathology residual as the primary output mechanism
+recovered_route_objective: availability-aware modality evidence -> anatomy-guided localization -> scar/edema pathology-specific complete reconstruction -> safety supervision
+key_revision: remove baseline-preserving residual and local candidate arbitration as primary pathology mechanisms
 ```
 
-## Wiki边界
+## Wiki和历史边界
 
-当前 root wiki仍主要描述 2026-07-26 baseline-only / SCR历史状态，视为 stale evidence。CARE-ARC实现完成前只能写 `planned/unverified`；W5 Mapper final 后才允许按真实代码和runtime证据更新：
+Root wiki仍主要描述2026-07-26历史状态，视为stale。实现完成前只能写planned/unverified；W5 Mapper final后才允许按真实代码和runtime更新wiki及图。
 
-```text
-wiki/README.md
-wiki/MODEL.md
-wiki/EXECUTION.md
-wiki/COMPONENTS.csv
-wiki/LINEAGE.md
-wiki/architecture.yaml
-wiki/current_state.yaml
-wiki/figures/*
-```
-
-## 历史状态保留
-
-以下仍是有效历史证据，但不再是当前执行authority：
+以下保留为历史证据，不再是active authority：
 
 ```text
 results/20260726_care_mosaic_validation_gap_forensics_and_final_blueprint
@@ -239,20 +238,17 @@ results/20260724_care_myops_srr_cascade_submission_rescue
 results/20260724_care_myops_batch10_deadline_rescue
 ```
 
-MoSAIC hosted scar `0.6965`、本地 clean OOF弱于nnU-Net、DG/DPR围绕anchor修正不足、MMRD可靠标签卫生和Cascade安全回退，均作为CARE-ARC设计背景保留。
-
 ## 当前未授权
 
 ```text
 恢复DPR Gate B-R2
-启动历史Route A/B/C controller
+历史Route A/B/C controller
 新Cine训练
 额外backbone或ensemble
 使用MoSAIC权重/代码
 外部数据
-fold1 outer调参
-validation upload
-Docker upload
+fold1 outer调参或第二次评价
+validation/Docker upload
 hosted metric claim
 route promotion
 runtime git push
