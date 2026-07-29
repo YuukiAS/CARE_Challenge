@@ -1,6 +1,6 @@
 # Controller Notifications
 
-Standalone controller goal notification service. It is intentionally separate from the watchboard renderer, but it now publishes lightweight health for the watchboard ops layer. `start_in_tmux.sh` opens or restarts a `Notify` window inside the existing `care_watchboard` session; it never creates a separate ops session.
+Standalone controller goal notification service. It no longer depends on the route watchboard renderer or tmux session. `start_in_tmux.sh` opens or restarts a `Notifier` window inside a dedicated `care_notifier` session, creating that session when needed.
 
 ## Configure Email
 
@@ -31,19 +31,14 @@ Required fields are `task_name`, `final_status`, `commit_status`, `push_status`,
 bash controller_notifications/start_in_tmux.sh --dry-run
 ```
 
-After `secrets/care_notify.env` is configured, send one real test email. The test uses the same Chinese summary-first format as live controller terminal notifications, including controller status, a route overview, watchboard links, and a Slurm job summary read from route-local packet evidence. It does not print SMTP passwords or tunnel secrets, and it does not imply Route C is active unless `enabled_routes` explicitly includes it.
+After `secrets/care_notify.env` is configured, send one real test email. The test uses the same Chinese summary-first format as live controller terminal notifications, including controller status, key evidence, and a Slurm job summary read from packet evidence. It does not print SMTP passwords or secrets, and it does not imply Route C is active unless `enabled_routes` explicitly includes it.
 
 ```bash
 ./envs/env_CARE/bin/python controller_notifications/notify_goal_watcher.py --send-test
 ```
 
 
-The default email body includes the public and local watchboard links. It avoids Markdown-only tables so plain-text email clients remain readable:
-
-```text
-https://watchboard.httpwwwcardiacnexus-ukb.com/index.html
-http://127.0.0.1:8766/index.html
-```
+The default email body avoids Markdown-only tables so plain-text email clients remain readable. It does not include watchboard links.
 
 Then start the persistent watcher:
 

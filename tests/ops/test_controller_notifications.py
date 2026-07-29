@@ -400,9 +400,9 @@ def test_send_email_uses_starttls_login_and_recipient(monkeypatch, tmp_path):
     assert "计入结果：2" in plain
     assert "运行时长：4分40秒" in plain
     assert "Route 总览" not in plain
-    assert "Watchboard" in plain
-    assert "https://watchboard.httpwwwcardiacnexus-ukb.com/index.html" in plain
-    assert "http://127.0.0.1:8766/index.html" in plain
+    assert "Watchboard" not in plain
+    assert "watchboard.httpwwwcardiacnexus-ukb.com" not in plain
+    assert "127.0.0.1:8766" not in plain
     assert "| --- |" not in plain
     assert "##" not in plain
     assert "tokens" not in plain.lower()
@@ -421,10 +421,6 @@ def test_send_test_dry_run_uses_summary_email_format(tmp_path):
     config_path = tmp_path / "config.json"
     config = make_config(tmp_path)
     write_route_packet_fixture(config, tmp_path)
-    config["watchboard_urls"] = {
-        "public": "https://watchboard.httpwwwcardiacnexus-ukb.com/index.html",
-        "local": "http://127.0.0.1:8766/index.html",
-    }
     config_path.write_text(json.dumps(config), encoding="utf-8")
 
     proc = subprocess.run(
@@ -443,14 +439,14 @@ def test_send_test_dry_run_uses_summary_email_format(tmp_path):
     assert "Route 总览" not in payload["plain_body"]
     assert "Route B：" not in payload["plain_body"]
     assert "Route C：" not in payload["plain_body"]
-    assert "Watchboard" in payload["plain_body"]
+    assert "Watchboard" not in payload["plain_body"]
     assert "| --- |" not in payload["plain_body"]
     assert "##" not in payload["plain_body"]
     assert "tokens" not in payload["plain_body"].lower()
     assert "目标摘要" not in payload["plain_body"]
     assert "event signature" not in payload["plain_body"]
     assert "<table" not in payload["html_body"]
-    assert "https://watchboard.httpwwwcardiacnexus-ukb.com/index.html" in payload["plain_body"]
+    assert "watchboard.httpwwwcardiacnexus-ukb.com" not in payload["plain_body"]
     assert "CARE_NOTIFY_SMTP_PASSWORD" not in payload["plain_body"]
     assert "app-password" not in payload["plain_body"]
 
@@ -645,7 +641,7 @@ def test_start_in_tmux_dry_run_no_duplicate_and_dead_restart(tmp_path):
     tmux.write_text(
         "#!/usr/bin/env bash\n"
         "if [[ \"$1\" == \"has-session\" ]]; then exit 0; fi\n"
-        "if [[ \"$1\" == \"list-windows\" ]]; then echo Notify; exit 0; fi\n"
+        "if [[ \"$1\" == \"list-windows\" ]]; then echo Notifier; exit 0; fi\n"
         "echo unexpected tmux $* >&2; exit 1\n",
         encoding="utf-8",
     )
@@ -674,69 +670,39 @@ def test_start_in_tmux_dry_run_no_duplicate_and_dead_restart(tmp_path):
     env["CARE_FAKE_WATCHER_RUNNING"] = "0"
     dead = subprocess.run(["bash", str(script), "--dry-run"], env=env, text=True, capture_output=True, check=False)
     assert dead.returncode == 0
-    assert "tmux respawn-window -k -t care_watchboard:Notify" in dead.stdout
+    assert "tmux respawn-window -k -t care_notifier:Notifier" in dead.stdout
 
 
+def test_start_in_tmux_dry_run_creates_independent_session(tmp_path):
+    fakebin = tmp_path / "bin"
+    fakebin.mkdir()
+    care_root = tmp_path / "CARE"
+    python_path = care_root / "envs" / "env_CARE" / "bin" / "python"
+    python_path.parent.mkdir(parents=True)
+    python_path.write_text("#!/usr/bin/env bash\nexit 0\n", encoding="utf-8")
+    python_path.chmod(0o755)
 
-def test_route_summary_defaults_to_enabled_route_b_only(tmp_path):
-    config = make_config(tmp_path)
-    rows = notify.route_summary_rows(config, "route_B", {"routes": []})
-    assert [row["route"] for row in rows] == ["Route B"]
-
-    config["enabled_routes"] = ["route_B", "route_C"]
-    rows = notify.route_summary_rows(config, "route_C", {"routes": []})
-    assert [row["route"] for row in rows] == ["Route B", "Route C"]
-
-
-def test_route_summary_uses_watchboard_dynamic_status(monkeypatch, tmp_path):
-    config = make_config(tmp_path)
-    config["enabled_routes"] = ["route_A", "route_B", "route_C"]
-    status = {
-        "routes": [
-            {
-                "id": "route_A",
-                "label": "Route A",
-                "sha": "fae8a732bbf625db367e0b68c04f1490d0c97be3",
-                "origin_sha": "fae8a732bbf625db367e0b68c04f1490d0c97be3",
-                "dirty_count": 0,
-                "ahead_behind_main": "0\t0",
-                "current_worker_zh": "非当前 active route",
-                "display_state_zh": "Dormant fallback / inactive unless explicitly reauthorized",
-                "next_action_zh": "保持只读观察",
-            },
-            {
-                "id": "route_B",
-                "label": "Route B",
-                "sha": "b9c7664da7cb1f1892fff37a4497722f31a0a96d",
-                "origin_sha": "b9c7664da7cb1f1892fff37a4497722f31a0a96d",
-                "dirty_count": 0,
-                "ahead_behind_main": "56\t58",
-                "current_worker_zh": "等待 coordinator receipt / Route B critic rereview",
-                "display_state_zh": "Round04 planning needs revision / controller blocked",
-                "next_action_zh": "GPT Planner / planner revision",
-            },
-            {
-                "id": "route_C",
-                "label": "Route C",
-                "sha": "17062b00edc3443aacefe8583568797a9f2655ba",
-                "origin_sha": "17062b00edc3443aacefe8583568797a9f2655ba",
-                "dirty_count": 0,
-                "ahead_behind_main": "56\t60",
-                "current_worker_zh": "当前不需要 critic/reviewer/controller",
-                "display_state_zh": "Reviewed evidence-complete / waiting portfolio reconciliation",
-                "next_action_zh": "等待 GPT Planner 做 portfolio reconciliation",
-            },
-        ]
+    tmux = fakebin / "tmux"
+    tmux.write_text(
+        "#!/usr/bin/env bash\n"
+        "if [[ \"$1\" == \"has-session\" ]]; then exit 1; fi\n"
+        "echo unexpected tmux $* >&2; exit 1\n",
+        encoding="utf-8",
+    )
+    tmux.chmod(0o755)
+    ps = fakebin / "ps"
+    ps.write_text("#!/usr/bin/env bash\nexit 0\n", encoding="utf-8")
+    ps.chmod(0o755)
+    env = {
+        **os.environ,
+        "PATH": f"{fakebin}:{os.environ['PATH']}",
+        "CARE_ROOT": str(care_root),
+        "USER": "aereinh",
     }
-    monkeypatch.setattr(notify, "collect_watchboard_status", lambda cfg: status)
-    event = notify.build_test_event(config)
-    route_summary = notify.route_summary_table(config, event.route)
-    plain = notify.render_plain_email(config, event)
+    script = Path(__file__).resolve().parents[2] / "controller_notifications" / "start_in_tmux.sh"
 
-    assert "Route A：branch fae8a73 / origin fae8a73" in route_summary
-    assert "Dormant fallback / inactive unless explicitly reauthorized" in route_summary
-    assert "Round04 planning needs revision / controller blocked" in route_summary
-    assert "Reviewed evidence-complete / waiting portfolio reconciliation" in route_summary
-    assert "terminal event observed / 等待 independent reviewer" not in route_summary
-    assert "not triggered / 按 route packet 判定" not in route_summary
-    assert "Route 总览" not in plain
+    proc = subprocess.run(["bash", str(script), "--dry-run"], env=env, text=True, capture_output=True, check=False)
+
+    assert proc.returncode == 0
+    assert "tmux new-session -d -s care_notifier -n Notifier" in proc.stdout
+    assert "care_watchboard" not in proc.stdout

@@ -131,15 +131,8 @@ def load_config(path: Path) -> dict[str, Any]:
     config.setdefault("state_path", str(DEFAULT_STATE_PATH))
     config.setdefault("status_path", str(DEFAULT_STATUS_PATH))
     config.setdefault("log_path", str(DEFAULT_LOG_PATH))
-    config.setdefault("tmux_session", "care_watchboard")
-    config.setdefault("tmux_window", "Notify")
-    config.setdefault(
-        "watchboard_urls",
-        {
-            "public": "https://watchboard.httpwwwcardiacnexus-ukb.com/index.html",
-            "local": "http://127.0.0.1:8766/index.html",
-        },
-    )
+    config.setdefault("tmux_session", "care_notifier")
+    config.setdefault("tmux_window", "Notifier")
     config.setdefault("routes", {})
     return config
 
@@ -511,8 +504,8 @@ def base_health_status(
         "state_path": str(state_path),
         "status_path": str(status_path),
         "log_path": str(log_path_from_config(config)),
-        "tmux_session": str(config.get("tmux_session", "care_watchboard")),
-        "tmux_window": str(config.get("tmux_window", "Notify")),
+        "tmux_session": str(config.get("tmux_session", "care_notifier")),
+        "tmux_window": str(config.get("tmux_window", "Notifier")),
         "dry_run": dry_run,
         "smtp": smtp_secret_status(env),
         "config_warnings": build_config_warnings(config, env),
@@ -575,98 +568,6 @@ def run_git_text(args: list[str], cwd: Path) -> str:
         return "unknown"
     return cp.stdout.strip() if cp.returncode == 0 and cp.stdout.strip() else "unknown"
 
-
-def collect_watchboard_status(config: dict[str, Any]) -> dict[str, Any]:
-    repo_root = repo_root_from_config(config)
-    module_path = repo_root / "scripts" / "ops" / "build_route_watchboard.py"
-    if not module_path.is_file():
-        return {}
-    try:
-        spec = importlib.util.spec_from_file_location("care_watchboard_status_for_notifier", module_path)
-        if spec is None or spec.loader is None:
-            return {}
-        module = importlib.util.module_from_spec(spec)
-        spec.loader.exec_module(module)
-        worktree_root = repo_root.parent / "CARE_worktrees"
-        user = str(config.get("user") or os.environ.get("USER") or "aereinh")
-        return module.collect_status(repo_root, worktree_root, user)
-    except Exception:
-        return {}
-
-
-def route_summary_from_watchboard(route: dict[str, Any]) -> dict[str, str]:
-    dirty_count = route.get("dirty_count")
-    dirty = "clean" if dirty_count in {0, None} else f"dirty {dirty_count}"
-    state = str(route.get("display_state_zh") or route.get("runtime_state", {}).get("label_zh") or "待判定")
-    controller = str(route.get("current_worker_zh") or route.get("controller_authority", {}).get("state") or "未判定")
-    next_action = str(route.get("next_action_zh") or route.get("next_action", {}).get("label_zh") or "等待下一步")
-    return {
-        "route": str(route.get("label") or route.get("id", "route")),
-        "branch_head": str(route.get("sha") or "unknown"),
-        "origin_head": str(route.get("origin_sha") or "unknown"),
-        "dirty_ahead": f"{dirty}; main delta {str(route.get('ahead_behind_main') or 'unknown').replace(chr(9), ' ')}",
-        "controller_state": controller,
-        "reviewer_state": state,
-        "next_action": next_action,
-        "source": "watchboard",
-    }
-
-
-def fallback_route_summary(config: dict[str, Any], route: str) -> dict[str, str]:
-    worktree = route_worktree(config, route)
-    branch = route_branch(route)
-    if worktree.exists():
-        head = run_git_text(["rev-parse", "--short=12", "HEAD"], worktree)
-        origin = run_git_text(["rev-parse", "--short=12", f"origin/{branch}"], worktree)
-        status = run_git_text(["status", "--porcelain"], worktree)
-        ahead = run_git_text(["rev-list", "--left-right", "--count", f"origin/{branch}...HEAD"], worktree)
-        dirty = "clean" if status == "unknown" or not status else f"dirty {len(status.splitlines())}"
-        sync = ahead if ahead != "unknown" else "unknown"
-    else:
-        head = origin = sync = "missing"
-        dirty = "missing"
-    return {
-        "route": route_label(config, route),
-        "branch_head": head,
-        "origin_head": origin,
-        "dirty_ahead": f"{dirty}; ahead/behind {sync}",
-        "controller_state": "watchboard summary unavailable",
-        "reviewer_state": "只读 git fallback",
-        "next_action": "查看 watchboard / route packet 后判断",
-        "source": "fallback",
-    }
-
-
-def route_summary(config: dict[str, Any], route: str, trigger_route: str = "", watchboard_status: dict[str, Any] | None = None) -> dict[str, str]:
-    status = watchboard_status if watchboard_status is not None else collect_watchboard_status(config)
-    for item in status.get("routes", []) if isinstance(status, dict) else []:
-        if item.get("id") == route:
-            return route_summary_from_watchboard(item)
-    return fallback_route_summary(config, route)
-
-
-def route_summary_rows(config: dict[str, Any], trigger_route: str, watchboard_status: dict[str, Any] | None = None) -> list[dict[str, str]]:
-    status = watchboard_status if watchboard_status is not None else collect_watchboard_status(config)
-    routes = [route for route in config.get("enabled_routes", []) if route in {"route_A", "route_B", "route_C"}]
-    if trigger_route in {"route_A", "route_B", "route_C"} and trigger_route not in routes:
-        routes.append(trigger_route)
-    return [route_summary(config, route, trigger_route, status) for route in routes]
-
-
-def render_route_summary_text(rows: list[dict[str, str]]) -> str:
-    rendered = []
-    for summary in rows:
-        state = f"{summary['controller_state']} / {summary['reviewer_state']}"
-        dirty_ahead = summary["dirty_ahead"].replace("\t", " ")
-        rendered.append(
-            f"{summary['route']}：branch {short_hash(summary['branch_head'])} / origin {short_hash(summary['origin_head'])}；"
-            f"{dirty_ahead}；{state}；下一步：{summary['next_action']}"
-        )
-    return "\n".join(rendered)
-
-
-def route_summary_table(config: dict[str, Any], trigger_route: str, watchboard_status: dict[str, Any] | None = None) -> str:
-    return render_route_summary_text(route_summary_rows(config, trigger_route, watchboard_status))
 
 
 def read_limited_text(path: Path, limit: int) -> str:
@@ -1193,12 +1094,7 @@ def format_job_line(job: SlurmJobSummary) -> str:
 
 def build_email_context(config: dict[str, Any], event: NotificationEvent) -> dict[str, Any]:
     label = route_label(config, event.route)
-    watchboard_status = collect_watchboard_status(config)
-    trigger_summary = route_summary(config, event.route, event.route, watchboard_status)
-    route_head = short_hash(trigger_summary["branch_head"])
-    watchboard_urls = config.get("watchboard_urls", {})
-    public_url = str(watchboard_urls.get("public") or "https://watchboard.httpwwwcardiacnexus-ukb.com/index.html")
-    local_url = str(watchboard_urls.get("local") or "http://127.0.0.1:8766/index.html")
+    route_head = short_hash(event.git_head)
     brief, brief_path, _ = load_notification_brief(config, event)
     if brief:
         conclusion = brief_text(brief, "key_conclusion")
@@ -1221,8 +1117,6 @@ def build_email_context(config: dict[str, Any], event: NotificationEvent) -> dic
         "brief_path": str(brief_path) if brief_path else "",
         "packet_lines": packet_lines,
         "slurm": summarize_slurm(config, event),
-        "public_url": public_url,
-        "local_url": local_url,
     }
 
 
@@ -1254,7 +1148,7 @@ def render_plain_email(config: dict[str, Any], event: NotificationEvent) -> str:
     lines.extend(f"- {line}" for line in ctx["packet_lines"][:8])
     if ctx.get("brief_path"):
         lines.append(f"- notification brief：{ctx['brief_path']}")
-    lines.extend(["", "Watchboard", f"public：{ctx['public_url']}", f"local：{ctx['local_url']}", ""])
+    lines.append("")
     return "\n".join(lines)
 
 
@@ -1313,9 +1207,6 @@ def render_html_email(config: dict[str, Any], event: NotificationEvent) -> str:
     <h2>关键证据</h2>
     <ul>{packet_items}</ul>
 
-    <h2>Watchboard</h2>
-    <p>public：<a href="{html.escape(ctx['public_url'])}">{html.escape(ctx['public_url'])}</a><br>
-       local：<a href="{html.escape(ctx['local_url'])}">{html.escape(ctx['local_url'])}</a></p>
   </body>
 </html>
 """

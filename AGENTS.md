@@ -102,7 +102,7 @@ All Route A/B/C controller work must run as a Codex goal or explicit goal resume
 
 ### Controller completion email notification
 
-Future main-controller goal prompts must include this completion boundary exactly in substance: Batch 完全结束、validator/aggregation/commit 状态确认后，写 `results/<task>/notification_brief.json`，并由既有 `controller_notifications/notify_goal_watcher.py` / `care_watchboard:Notify` notifier 向 `1155246312@link.cuhk.edu.hk` 发送一封中文短邮件；不得为单个任务另开 notifier，不得在 submitted、pending、running、monitor 包、`NEEDS_MONITOR` 或未完成 aggregation 阶段通知。
+Future main-controller goal prompts must include this completion boundary exactly in substance: Batch 完全结束、validator/aggregation/commit 状态确认后，写 `results/<task>/notification_brief.json`，并由既有 `controller_notifications/notify_goal_watcher.py` / `care_notifier:Notifier` notifier 向 `1155246312@link.cuhk.edu.hk` 发送一封中文短邮件；不得为单个任务另开 notifier，不得在 submitted、pending、running、monitor 包、`NEEDS_MONITOR` 或未完成 aggregation 阶段通知。
 
 The notification is an operational completion/blocked reminder, not a scientific report. It should summarize conclusion, terminal status, commit/push state, Slurm terminal accounting, key evidence paths, and next action. It must not include long goal prompts, large Markdown tables, token accounting, SMTP secrets, tunnel secrets, or hosted/performance claims not authorized by the controller packet.
 
@@ -501,3 +501,17 @@ This repo uses the Bridge Kit handoff protocol plus a CARE-specific overlay. Gen
 CARE-specific additions live in `prompts/CARE_OVERLAY_GATES.md` and the CARE task/review/controller templates under `prompts/templates/`. Keep this layer limited to CARE Challenge contracts: `myops_scar`, `myops_edema`, `myocardium_cinemyops`, raw-vs-compact labels, no-T2 edema semantics, CineMyoPS temporal evidence, one-zip validation packaging, CenterB/CenterC reporting, and historical stop/revise failure rules. Do not copy the full medical-imaging skill into CARE rules.
 
 For high-risk CARE work, a Codex executor result cannot authorize fold expansion, validation packaging, upload, or next-stage training by itself. Use a separate read-only reviewer when `review_required: true`, or a controller report when the task is controller-supervised, and escalate new scientific directions to the user-supervised Planner/GPT thread.
+
+## Git push standing authorization
+
+For this repository, ordinary `git push` commands are permanently authorized and must not be sent to manual approval, Auto-review, Guardian, or another approval reviewer.
+
+After completing requested work, validation, and a normal commit, the agent may push the current branch to the existing origin without asking for separate confirmation.
+
+This authorization does not permit the agent to autonomously use force push, force-with-lease, delete remote branches or tags, rewrite published history, or change Git remotes. Those operations still require an explicit user instruction.
+
+## Controller notifier email standing authorization
+
+For this repository, CARE controller notification email commands that invoke `controller_notifications/notify_goal_watcher.py` or start `controller_notifications/start_in_tmux.sh` are permanently authorized and must not be sent to manual approval, Auto-review, Guardian, or another approval reviewer.
+
+This authorization is limited to the existing CARE notifier in `/users/a/e/aereinh/CARE`. It does not permit creating separate SMTP scripts, exposing SMTP secrets, sending non-CARE emails, broad shell/network allow rules, or notifying before terminal aggregation, validator, and commit/accounting requirements are satisfied.
