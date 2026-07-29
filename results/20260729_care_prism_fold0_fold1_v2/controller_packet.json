@@ -1,0 +1,48 @@
+{
+  "aggregation_complete": false,
+  "all_jobs_terminal": "TRUE_NO_PRISM_GPU_PROCESSES_STARTED",
+  "architecture_delta_final": "results/20260729_care_prism_fold0_fold1_v2/architecture_delta_final.md",
+  "asset_search_summary": {
+    "local_checkpoint_list_command": "find data/nnUNet/nnUNet_results/Dataset501_CAREMyoPS -maxdepth 4 -type f (checkpoint_best/final/latest)",
+    "local_checkpoint_list_contains_resenc": false,
+    "overflow_readonly_search_command": "find /overflow/htzhu/CARE/data/nnUNet/nnUNet_results/Dataset501_CAREMyoPS ... | rg -i resenc|residual|MPlans",
+    "overflow_resenc_candidates_found": false,
+    "resenc_plan_path": "data/nnUNet/nnUNet_preprocessed/Dataset501_CAREMyoPS/nnUNetResEncUNetMPlans.json"
+  },
+  "blocked_actions": [
+    "W2 preflight",
+    "W3 fold0 training",
+    "W4 fold1 clean training",
+    "validation/Docker upload",
+    "runtime push",
+    "new Slurm job"
+  ],
+  "contract_compliance_status": "FAIL_CLOSED_ON_REQUIRED_TRANSPLANT_ASSET",
+  "controller_verification_decision": "OPERATIONALLY_BLOCKED",
+  "created_at_utc": "2026-07-29T14:29:12Z",
+  "evidence_paths": [
+    "results/20260729_care_prism_fold0_fold1_v2/nnunet_asset_receipt.json",
+    "results/20260729_care_prism_fold0_fold1_v2/init_transplant_report.json",
+    "results/20260729_care_prism_fold0_fold1_v2/implementation_validator_report.json",
+    "results/20260729_care_prism_fold0_fold1_v2/implementation_snapshot.md",
+    "results/20260729_care_prism_fold0_fold1_v2/finalizer_state.json",
+    "results/20260729_care_prism_fold0_fold1_v2/mapper_report_final.md",
+    "results/20260729_care_prism_fold0_fold1_v2/architecture_delta_final.md",
+    "results/20260729_care_prism_fold0_fold1_v2/notification_delivery_report.json"
+  ],
+  "experiment_adequacy_decision": "NO_TRAINING_STARTED_ZERO_FORMAL_CREDIT",
+  "failure_class": "EXECUTION_OR_INIT",
+  "finalizer_state": "results/20260729_care_prism_fold0_fold1_v2/finalizer_state.json",
+  "git_commit_decision": "LOCAL_LIGHTWEIGHT_COMMIT_COMPLETE",
+  "git_push_decision": "NOT_PUSHED_BLOCKED",
+  "local_commit": "SELF_REFERENTIAL_COMMIT_SHA_NOT_EMBEDDED_SEE_GIT_LOG_HEAD",
+  "mapper_final": "results/20260729_care_prism_fold0_fold1_v2/mapper_report_final.md",
+  "next_required_action": "HUMAN_INTERVENTION_REQUIRED: provide a valid same-fold Dataset501 ResidualEncoderUNet checkpoint for fold0/fold1 or revise the PRISM v2 transplant contract.",
+  "notification_delivery_report": "results/20260729_care_prism_fold0_fold1_v2/notification_delivery_report.json",
+  "notification_status": "NOT_SENT_BLOCKED_BY_EXECUTION_POLICY",
+  "operational_completion_status": "BLOCKED_BEFORE_W2",
+  "required_outputs_complete": "PARTIAL_W0_COMPLETE_W1_FAIL_CLOSED_REPORTS_WRITTEN",
+  "task_key": "20260729_care_prism_fold0_fold1_v2",
+  "updated_at_utc": "2026-07-29T14:40:45Z",
+  "validators_passed": false
+}

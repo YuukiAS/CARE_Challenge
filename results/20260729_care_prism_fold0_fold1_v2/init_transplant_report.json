@@ -1,0 +1,12 @@
+{
+  "blocking_reason": "No same-fold ResidualEncoderUNet checkpoint was found under Dataset501_CAREMyoPS nnUNet results; PlainConv checkpoints are not valid for this gate.",
+  "failure_class": "EXECUTION_OR_INIT",
+  "fold": 0,
+  "plainconv_checkpoint_counted_for_resenc_gate": false,
+  "plans_path": "data/nnUNet/nnUNet_preprocessed/Dataset501_CAREMyoPS/nnUNetResEncUNetMPlans.json",
+  "plans_sha256": "86f68fb738255ec7afe70a3894bfe5348f326792f14aeb74182b40023dd9f9bb",
+  "required_byte_coverage_min": 0.9,
+  "required_fp32_parity_max_abs": 1e-06,
+  "same_fold_resenc_checkpoint_candidates": [],
+  "status": "FAIL"
+}

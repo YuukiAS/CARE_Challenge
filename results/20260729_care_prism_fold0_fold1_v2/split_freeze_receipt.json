@@ -1,0 +1,64 @@
+{
+  "created_at_utc": "2026-07-29T14:10:39Z",
+  "fold1_outer_accessed": false,
+  "folds": {
+    "fold0": {
+      "actual_train_count": 164,
+      "actual_train_inner_outer_disjoint": true,
+      "actual_train_sha256": "f9a56bacc5ce4796729f0445c0b02908a4b9756cf1389813c01e08da4d077f1d",
+      "fold_outer_access_status": "FROZEN_UNREAD_FOR_TRAINING_DECISIONS",
+      "inner_select_cases": [
+        "Case1001",
+        "Case1015",
+        "Case1027",
+        "Case1039",
+        "Case1054",
+        "Case1065",
+        "Case1077",
+        "Case2010",
+        "Case2022",
+        "Case2034",
+        "Case3010",
+        "Case3022"
+      ],
+      "inner_select_count": 12,
+      "inner_select_sha256": "da6867214479fcb1a0e3a6f10c3fd0e73e8b211f5671bbc6bf67a1f18d715d25",
+      "outer_count": 44,
+      "outer_sha256": "279576ac704858f6849b562d93171b929f57b4b39e3040a9f0267aa931eb20f7",
+      "train_count": 176,
+      "train_sha256": "fd3f549d1232a2a02dedcfe199c6559493c5260426dca58a0813ebbb2abf36a6"
+    },
+    "fold1": {
+      "actual_train_count": 164,
+      "actual_train_inner_outer_disjoint": true,
+      "actual_train_sha256": "7383693ba6397acfd7c79e2c2589e2da19345a91d034074f6029d45ee28b94c8",
+      "fold_outer_access_status": "FROZEN_UNREAD_FOR_TRAINING_DECISIONS",
+      "inner_select_cases": [
+        "Case1002",
+        "Case1016",
+        "Case1026",
+        "Case1037",
+        "Case1049",
+        "Case1062",
+        "Case1076",
+        "Case2007",
+        "Case2019",
+        "Case2033",
+        "Case3010",
+        "Case3022"
+      ],
+      "inner_select_count": 12,
+      "inner_select_sha256": "1a1724898b497b5ceaff7ddcdd973a25db10355c1cf03d1573ad377f7ab9f743",
+      "outer_count": 44,
+      "outer_sha256": "c88fe9f95a43b7467459b1eed8f186d44c4ec0c5cce92ef9dcce26a2500b7ab0",
+      "train_count": 176,
+      "train_sha256": "350d60dc7dd68bf97fc1c502057de354f8970d01ac4f24b2e1ae1405ac42cfa1"
+    }
+  },
+  "nnunet_splits_final_sha256": "9c3e9f3b7e4565a5c3c2589ddbb913c78c0ad423f4265370585841c93c6f880a",
+  "note": "Inner selection frozen before any PRISM training. Fold1 outer marked unread for tuning.",
+  "split_source": "data/benchmarks/protocol/splits_MyoPS.json",
+  "split_source_sha256": "6165caeb5b47feb0d24f20380898037b7e6cead4db1eeba398a3c5a57faf9a1b",
+  "status": "PASS",
+  "task_key": "20260729_care_prism_fold0_fold1_v2"
+}

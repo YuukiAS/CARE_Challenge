@@ -1,0 +1,7 @@
+{
+  "commands": [],
+  "created_at_utc": "2026-07-29T14:29:12Z",
+  "reason": "No formal tests were run after partial W1 because the hard transplant asset gate is missing. Running synthetic-only tests would be smoke evidence, not W1 PASS.",
+  "status": "NOT_RUN_FAIL_CLOSED",
+  "task_key": "20260729_care_prism_fold0_fold1_v2"
+}

@@ -1,0 +1,47 @@
+{
+  "availability_appended_to_shared_encoder_input": false,
+  "created_at_utc": "2026-07-29T14:29:12Z",
+  "full_backbone_count": 1,
+  "input_channel_order": [
+    "LGE",
+    "T2",
+    "C0"
+  ],
+  "model_class": "CAREPRISM",
+  "prototype_default_enabled": false,
+  "shared_encoder_input_channels": 3,
+  "slice_correspondence_default_enabled": false,
+  "source_files": {
+    "scripts/evaluation/evaluate_care_prism.py": {
+      "exists": false,
+      "sha256": null
+    },
+    "scripts/evaluation/validate_care_prism_packet.py": {
+      "exists": false,
+      "sha256": null
+    },
+    "scripts/training/run_care_prism.py": {
+      "exists": false,
+      "sha256": null
+    },
+    "src/care_myocardium/data/care_prism_dataset.py": {
+      "exists": true,
+      "sha256": "f3b243aa37641ccc1e7fc5641013f31c0b46a70304735ac0d721b80424d3627b"
+    },
+    "src/care_myocardium/inference/care_prism_predictor.py": {
+      "exists": true,
+      "sha256": "1dcb689327573ec33fffa3bb7dad35271f25a9fbc7940d45e0a1121cc6da4191"
+    },
+    "src/care_myocardium/models/care_prism.py": {
+      "exists": true,
+      "sha256": "28ba006813f8f61267d46466bdb6f9cf37f53d44912660c8a9f93b385c534533"
+    },
+    "src/care_myocardium/training/care_prism_trainer.py": {
+      "exists": true,
+      "sha256": "6f228ec1e8df1956cba0cf7272f4fbfd5b8d69c12d4e1fce38b01a3a10f8d26b"
+    }
+  },
+  "status": "PARTIAL",
+  "task_key": "20260729_care_prism_fold0_fold1_v2",
+  "trainable_parameter_count": 141497187
+}

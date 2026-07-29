@@ -1,0 +1,59 @@
+{
+  "commands": {
+    "sacct": {
+      "command": [
+        "sacct",
+        "-j",
+        "61220581",
+        "--format=JobID,JobName,Partition,Account,AllocCPUS,State,ExitCode,Elapsed,NodeList,Start,End",
+        "-P"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "JobID|JobName|Partition|Account|AllocCPUS|State|ExitCode|Elapsed|NodeList|Start|End\n61220581|CareDPR5d|htzhulab|rc_htzhu_pi|8|RUNNING|0:0|09:43:59|g1807htzh01|2026-07-29T00:26:41|Unknown\n61220581.extern|extern||rc_htzhu_pi|8|RUNNING|0:0|09:43:59|g1807htzh01|2026-07-29T00:26:41|Unknown\n61220581.0|bash||rc_htzhu_pi|8|COMPLETED|0:0|00:00:00|g1807htzh01|2026-07-29T00:28:20|2026-07-29T00:28:20\n61220581.1|bash||rc_htzhu_pi|8|CANCELLED by 397557|0:9|02:05:34|g1807htzh01|2026-07-29T00:28:31|2026-07-29T02:34:05\n61220581.2|bash||rc_htzhu_pi|8|COMPLETED|0:0|00:00:01|g1807htzh01|2026-07-29T05:05:10|2026-07-29T05:05:11\n61220581.3|bash||rc_htzhu_pi|8|FAILED|1:0|00:00:12|g1807htzh01|2026-07-29T05:22:17|2026-07-29T05:22:29\n61220581.4|bash||rc_htzhu_pi|8|COMPLETED|0:0|00:00:00|g1807htzh01|2026-07-29T05:29:09|2026-07-29T05:29:09\n61220581.5|bash||rc_htzhu_pi|8|FAILED|1:0|00:00:31|g1807htzh01|2026-07-29T05:29:22|2026-07-29T05:29:53\n61220581.6|bash||rc_htzhu_pi|8|FAILED|1:0|00:00:21|g1807htzh01|2026-07-29T05:30:27|2026-07-29T05:30:48\n61220581.7|bash||rc_htzhu_pi|8|COMPLETED|0:0|00:07:52|g1807htzh01|2026-07-29T05:31:53|2026-07-29T05:39:45\n61220581.8|bash||rc_htzhu_pi|8|COMPLETED|0:0|00:00:01|g1807htzh01|2026-07-29T05:48:04|2026-07-29T05:48:05\n61220581.9|bash||rc_htzhu_pi|8|COMPLETED|0:0|00:43:17|g1807htzh01|2026-07-29T05:48:18|2026-07-29T06:31:35\n61220581.10|bash||rc_htzhu_pi|8|FAILED|1:0|00:02:30|g1807htzh01|2026-07-29T06:31:59|2026-07-29T06:34:29\n61220581.11|bash||rc_htzhu_pi|8|FAILED|1:0|00:02:08|g1807htzh01|2026-07-29T06:35:51|2026-07-29T06:37:59\n61220581.12|bash||rc_htzhu_pi|8|COMPLETED|0:0|00:00:01|g1807htzh01|2026-07-29T06:43:55|2026-07-29T06:43:56\n61220581.13|bash||rc_htzhu_pi|8|COMPLETED|0:0|00:00:00|g1807htzh01|2026-07-29T06:50:59|2026-07-29T06:50:59\n61220581.14|bash||rc_htzhu_pi|8|COMPLETED|0:0|00:00:04|g1807htzh01|2026-07-29T10:08:37|2026-07-29T10:08:41"
+    },
+    "scontrol": {
+      "command": [
+        "scontrol",
+        "show",
+        "job",
+        "61220581"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "JobId=61220581 JobName=CareDPR5d\n   UserId=aereinh(397557) GroupId=users(100) MCS_label=N/A\n   Priority=10186 Nice=0 Account=rc_htzhu_pi QOS=gpu_access\n   JobState=RUNNING Reason=None Dependency=(null)\n   Requeue=1 Restarts=0 BatchFlag=0 Reboot=0 ExitCode=0:0\n   RunTime=09:43:59 TimeLimit=5-00:00:00 TimeMin=N/A\n   SubmitTime=2026-07-29T00:26:39 EligibleTime=2026-07-29T00:26:39\n   AccrueTime=Unknown\n   StartTime=2026-07-29T00:26:41 EndTime=2026-08-03T00:26:41 Deadline=N/A\n   SuspendTime=None SecsPreSuspend=0 LastSchedEval=2026-07-29T00:26:41 Scheduler=Main\n   Partition=htzhulab AllocNode:Sid=c151604:2871630\n   ReqNodeList=(null) ExcNodeList=(null)\n   NodeList=g1807htzh01\n   BatchHost=g1807htzh01\n   NumNodes=1 NumCPUs=8 NumTasks=1 CPUs/Task=8 ReqB:S:C:T=0:0:*:*\n   ReqTRES=cpu=8,mem=64G,node=1,billing=8,gres/gpu=1\n   AllocTRES=cpu=8,mem=64G,node=1,billing=8,gres/gpu=1,gres/gpu:nvidia_h100_nvl=1\n   Socks/Node=* NtasksPerN:B:S:C=0:0:*:* CoreSpec=*\n   MinCPUsNode=8 MinMemoryNode=64G MinTmpDiskNode=0\n   Features=(null) DelayBoot=00:00:00\n   OverSubscribe=OK Contiguous=0 Licenses=(null) LicensesAlloc=(null) Network=(null)\n   Command=bash\n   SubmitLine=salloc --ntasks=1 --cpus-per-task=8 --mem=64G --time=5-00:00:00 --gres=gpu:1 --partition=htzhulab --qos=gpu_access --job-name=CareDPR5d bash -lc echo ALLOC_GRANTED job=$SLURM_JOB_ID host=c151604.ll.unc.edu start=2026-07-29T00:26:39-04:00; sleep 5d\n   WorkDir=/users/a/e/aereinh/CARE\n   TresPerNode=gres/gpu:1\n   TresPerTask=cpu=8"
+    },
+    "squeue": {
+      "command": [
+        "squeue",
+        "-j",
+        "61220581",
+        "-h",
+        "-o",
+        "%i|%t|%T|%P|%N|%M|%l|%R"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "61220581|R|RUNNING|htzhulab|g1807htzh01|9:43:59|5-00:00:00|g1807htzh01"
+    }
+  },
+  "created_at_utc": "2026-07-29T14:10:39Z",
+  "expected": {
+    "jobid": "61220581",
+    "node": "g1807htzh01",
+    "partition": "htzhulab"
+  },
+  "gpu_command_serial_required": true,
+  "live_state": "RUNNING",
+  "new_job_allowed": false,
+  "node_probe": {
+    "command_template": "srun --jobid=61220581 --overlap --ntasks=1 bash -lc '<command>'",
+    "cuda_available": true,
+    "device_count": 1,
+    "device_name": "NVIDIA H100 NVL",
+    "host": "g1807htzh01.ll.unc.edu",
+    "python": "Python 3.12.13",
+    "torch": "2.11.0+cu130"
+  },
+  "task_key": "20260729_care_prism_fold0_fold1_v2"
+}

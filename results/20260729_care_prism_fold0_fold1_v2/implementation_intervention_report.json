@@ -1,0 +1,19 @@
+{
+  "controller_independent_asset_search": {
+    "local_dataset501_checkpoint_paths": "results/20260729_care_prism_fold0_fold1_v2/controller_packet.json#asset_search_summary",
+    "overflow_readonly_resenc_search": "no resenc/residual/MPlans checkpoint path found under /overflow/htzhu/CARE/data/nnUNet/nnUNet_results/Dataset501_CAREMyoPS"
+  },
+  "created_at_utc": "2026-07-29T14:29:12Z",
+  "failure_class": "EXECUTION_OR_INIT",
+  "reason": "W1 stopped before formal mechanism intervention PASS because the required same-fold ResidualEncoderUNet checkpoint was not located; transplant/parity precondition failed.",
+  "required_interventions": {
+    "anatomy_exchange_changes_logits_and_blocks_pathology_gradient": "NOT_CREDITED_PRECONDITION_FAILED",
+    "checkpoint_resume_complete_state": "PARTIAL_CODE_PRESENT_NOT_CREDITED",
+    "loss_nonnegative_finite_gradients": "NOT_CREDITED_PRECONDITION_FAILED",
+    "no_t2_exact_zero_probability_mask_loss_gradient": "NOT_CREDITED_PRECONDITION_FAILED",
+    "proposal_negative_soft_attention_changes_final_logits": "NOT_CREDITED_PRECONDITION_FAILED",
+    "router_changes_features_and_final_logits": "NOT_CREDITED_PRECONDITION_FAILED"
+  },
+  "status": "NOT_RUN_FAIL_CLOSED",
+  "task_key": "20260729_care_prism_fold0_fold1_v2"
+}

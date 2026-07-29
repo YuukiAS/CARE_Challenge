@@ -1,0 +1,13 @@
+{
+  "blocking_reason": "Required same-fold ResidualEncoderUNet checkpoint was not located; cannot prove >=90% byte transplant or <=1e-6 FP32 scale parity before training. W2/W3/W4 are forbidden until this asset is supplied or the Planner revises the contract.",
+  "controller_verdict": "W1_FAIL_CLOSED",
+  "created_at_utc": "2026-07-29T14:29:12Z",
+  "failure_class": "EXECUTION_OR_INIT",
+  "plainconv_checkpoint_counted_for_resenc_gate": false,
+  "status": "FAIL",
+  "task_key": "20260729_care_prism_fold0_fold1_v2",
+  "transplant_report_path": "results/20260729_care_prism_fold0_fold1_v2/init_transplant_report.json",
+  "w2_allowed": false,
+  "w3_allowed": false,
+  "w4_allowed": false
+}

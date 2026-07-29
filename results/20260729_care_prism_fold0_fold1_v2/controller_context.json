@@ -1,0 +1,163 @@
+{
+  "allocation_jobid": "61220581",
+  "allocation_snapshot": "results/20260729_care_prism_fold0_fold1_v2/allocation_snapshot.json",
+  "authority_hashes": {
+    ".agents/skills/care-mapper/SKILL.md": {
+      "exists": true,
+      "sha256": "2c41516189001ec7be94d9981a69fcd5544ad5ebd244c93cdc58488f4b535d0e"
+    },
+    ".agents/skills/codex-workflow-protocol/SKILL.md": {
+      "exists": true,
+      "sha256": "828fd6ed7c86ff4b22fc5b601e73f4639fa6462006a626eb99e2d37d938089f2"
+    },
+    ".agents/skills/domains-medical-imaging-medical-imaging-deep-learning/SKILL.md": {
+      "exists": true,
+      "sha256": "5975f953429f364525a2cbcd1f16752aa6337c4791792a61553a12e0a0d3d16b"
+    },
+    ".agents/skills/slurm-routing-partition/SKILL.md": {
+      "exists": true,
+      "sha256": "2b7e87f58b275b50dc9d4a9377f4e2518c3a390c806e400cb32e07ebac3f83a6"
+    },
+    "AGENTS.md": {
+      "exists": true,
+      "sha256": "9e41eb124868681f7176ac96befb72df5f8fb32e8f6b17d241d1c8586ae9011f"
+    },
+    "GPT_PLANNER_CARE_PROTOCOL.md": {
+      "exists": true,
+      "sha256": "6e9f234de0be18674dc195fe1de830982ddbc5d3201e068eb6a2ed6ac9f9c195"
+    },
+    "START_HERE_FOR_GPT.md": {
+      "exists": true,
+      "sha256": "83a11ac74d130cfd1df2064fdd52b642e06d1b13eb3af677b02819dcad4274fe"
+    },
+    "data/benchmarks/protocol/cases_MyoPS.json": {
+      "exists": true,
+      "sha256": "8e5191f0a595378ca6f3b0492dfe226b8ddd01a2d2be1f59889e82f581457f66"
+    },
+    "data/benchmarks/protocol/splits_MyoPS.json": {
+      "exists": true,
+      "sha256": "6165caeb5b47feb0d24f20380898037b7e6cead4db1eeba398a3c5a57faf9a1b"
+    },
+    "data/nnUNet/nnUNet_preprocessed/Dataset501_CAREMyoPS/nnUNetPlans.json": {
+      "exists": true,
+      "sha256": "06492f8fc75b5de383a28006f76b7f1099f305422953cf9d4f89ae1ec38d3e2f"
+    },
+    "data/nnUNet/nnUNet_preprocessed/Dataset501_CAREMyoPS/splits_final.json": {
+      "exists": true,
+      "sha256": "9c3e9f3b7e4565a5c3c2589ddbb913c78c0ad423f4265370585841c93c6f880a"
+    },
+    "prompts/AGENT_FLOW_V2_PROTOCOL.md": {
+      "exists": true,
+      "sha256": "29b417ef95e5b54d046e9fafb6cede016d74e74c88426756546b507fb09a22a1"
+    },
+    "prompts/FINAL_OUTPUT_READABILITY_POLICY.md": {
+      "exists": true,
+      "sha256": "1d1dd49a03f2bb9c22b20e17168125abd5c5a78d6c68d675f3052c03526e069b"
+    },
+    "prompts/GPT_HARD_GATE_PROMPT.md": {
+      "exists": true,
+      "sha256": "afb068852d40a04500e818b2d53acabb811a090920042b711b34dcc55416de9b"
+    },
+    "prompts/HANDOFF_GATE_POLICY.md": {
+      "exists": true,
+      "sha256": "668765a296b5789d1560cdbd710316fcd7b93544f9195f7eaf3ebcbe263ccb1a"
+    },
+    "prompts/blueprints/CARE_PRISM_pathology_retrieval_soft_cascade_20260729.md": {
+      "exists": true,
+      "sha256": "79eaa255e787c4e4990b947d7f610d199e729451cd1776d11ccc80a8630d0791"
+    },
+    "prompts/routes/ROUTE_ANTI_LAZINESS_PROTOCOL.md": {
+      "exists": true,
+      "sha256": "a0dce70c97ef9711dbdc76a213d26419513fa5c28478accbec0dd8288a91674a"
+    },
+    "prompts/routes/ROUTE_HARD_REQUIREMENTS_MATRIX.md": {
+      "exists": true,
+      "sha256": "a225f46868eda817a0d2b2f3e33d444ffc88b683664dfc3a0dd6eb25881475d9"
+    },
+    "prompts/routes/handoffs/CURRENT.md": {
+      "exists": true,
+      "sha256": "ef19d4060b35f27529e924382311830530d9e50ae362c96fe10f491db75bb2ad"
+    },
+    "prompts/tasks/20260729_care_prism_controller_v2.md": {
+      "exists": true,
+      "sha256": "ac5bf6069d519bec45cb0e6d735aeb535fa584e4aac8878931be81fad976bbc4"
+    },
+    "prompts/tasks/20260729_care_prism_execution_hardening_amendment_v2.md": {
+      "exists": true,
+      "sha256": "4c22b8e721b1e811ac176c5eac110657cf4fcf90773864ca0a4e010112deb8bb"
+    },
+    "prompts/tasks/20260729_care_prism_fold0_fold1_executor_plan_v2.yaml": {
+      "exists": true,
+      "sha256": "aea72fa6153a4d75e97b3e47ef32ed01d5a48570f53ece1438ba62bdfbb31018"
+    },
+    "routes/README.md": {
+      "exists": true,
+      "sha256": "46cf19fabc1a6d8806643a9f5d0e4f61bd6816820c5eefe5d2e108d625db9771"
+    },
+    "wiki/README.md": {
+      "exists": true,
+      "sha256": "bdb46bd376dc62223f55e845891b1ddcea9b79d7d21502947ddc2c3f7170de71"
+    }
+  },
+  "branch": "main",
+  "created_at_utc": "2026-07-29T14:10:39Z",
+  "dirty_tree_policy": "pre-existing dirty files preserved; task-owned W0 result files under result_root",
+  "files_read": [
+    "AGENTS.md",
+    "START_HERE_FOR_GPT.md",
+    "GPT_PLANNER_CARE_PROTOCOL.md",
+    "prompts/FINAL_OUTPUT_READABILITY_POLICY.md",
+    "prompts/AGENT_FLOW_V2_PROTOCOL.md",
+    "prompts/HANDOFF_GATE_POLICY.md",
+    "prompts/GPT_HARD_GATE_PROMPT.md",
+    "prompts/routes/ROUTE_ANTI_LAZINESS_PROTOCOL.md",
+    "prompts/routes/ROUTE_HARD_REQUIREMENTS_MATRIX.md",
+    "prompts/routes/handoffs/CURRENT.md",
+    "routes/README.md",
+    "wiki/README.md",
+    ".agents/skills/slurm-routing-partition/SKILL.md",
+    ".agents/skills/care-mapper/SKILL.md",
+    ".agents/skills/codex-workflow-protocol/SKILL.md",
+    ".agents/skills/domains-medical-imaging-medical-imaging-deep-learning/SKILL.md",
+    "prompts/tasks/20260729_care_prism_execution_hardening_amendment_v2.md",
+    "prompts/blueprints/CARE_PRISM_pathology_retrieval_soft_cascade_20260729.md",
+    "prompts/tasks/20260729_care_prism_fold0_fold1_executor_plan_v2.yaml",
+    "prompts/tasks/20260729_care_prism_controller_v2.md",
+    "data/benchmarks/protocol/splits_MyoPS.json",
+    "data/benchmarks/protocol/cases_MyoPS.json",
+    "data/nnUNet/nnUNet_preprocessed/Dataset501_CAREMyoPS/splits_final.json",
+    "data/nnUNet/nnUNet_preprocessed/Dataset501_CAREMyoPS/nnUNetPlans.json"
+  ],
+  "git_head": "7e659fd6f559cad464cfea31879970b273ce2993",
+  "git_status": {
+    "command": [
+      "git",
+      "status",
+      "--short",
+      "--branch"
+    ],
+    "returncode": 0,
+    "stderr": "",
+    "stdout": "## main...origin/main\n M controller_notifications/README.md\n M controller_notifications/config.example.json\n M controller_notifications/notify_goal_watcher.py\n M controller_notifications/start_in_tmux.sh\n M results/20260724_care_myops_srr_cascade_submission_rescue/runtime_closure_repair_rc1/formal_race_watcher_history_v2.jsonl\n M results/20260724_care_myops_srr_cascade_submission_rescue/runtime_closure_repair_rc1/formal_race_watcher_state_v2.json\n M tests/ops/test_controller_notifications.py\n?? .codex_runtime/\n?? results/care_scf/canonical_model_summary_fold0.csv\n?? results/care_scf/care_gate_training_receipt.json\n?? results/care_scf/care_prediction_status.csv\n?? results/care_scf/casewise_metrics_fold0.csv\n?? results/care_scf/completion_audit.csv\n?? results/care_scf/component_dataset_feature_status.csv\n?? results/care_scf/component_dataset_fold0_diagnostic.csv\n?? results/care_scf/component_decisions.csv\n?? results/care_scf/controller_report.md\n?? results/care_scf/final_manifest.json\n?? results/care_scf/geometry_audit.csv\n?? results/care_scf/help_harm.csv\n?? results/care_scf/help_harm_summary.csv\n?? results/care_scf/mosaic_oof_status.csv\n?? results/care_scf/nnunet_oof_status.csv\n?? results/care_scf/provenance.json\n?? scripts/evaluation/build_care_scf_controller_packet.py\n?? scripts/evaluation/build_mosaic_paper_results_completion.py"
+  },
+  "phase": "W0_AUTHORITY_ROOT_CAUSE_ASSETS",
+  "recent_log": {
+    "command": [
+      "git",
+      "log",
+      "--oneline",
+      "-10"
+    ],
+    "returncode": 0,
+    "stderr": "",
+    "stdout": "7e659fd Update root wiki to CARE-PRISM v2\na446572 Advance CARE current authority to PRISM v2\nf5a2ebf Add hardened CARE-PRISM controller v2\n1245ce5 Add hardened CARE-PRISM executor plan v2\nfa3fc6a Harden CARE-PRISM architecture and mechanism gates\ne9dd084 Advance current state to CARE-PRISM redesign\n864ac0a Add CARE-PRISM controller contract\n5981803 Add CARE-PRISM executor plan\n00c2d44 Add CARE-PRISM system redesign blueprint\n1c4fd61 Add CARE-ARC W3 stop packet"
+  },
+  "remote": "YuukiAS/CARE_Challenge",
+  "repo_root": "/users/a/e/aereinh/CARE",
+  "required_runtime_paths": {
+    "nnunet_checkpoint_root": "data/nnUNet/nnUNet_results/Dataset501_CAREMyoPS/nnUNetTrainer_500epochs__nnUNetPlans__3d_fullres",
+    "nnunet_plans": "data/nnUNet/nnUNet_preprocessed/Dataset501_CAREMyoPS/nnUNetPlans.json",
+    "result_root": "results/20260729_care_prism_fold0_fold1_v2"
+  },
+  "task_key": "20260729_care_prism_fold0_fold1_v2"
+}

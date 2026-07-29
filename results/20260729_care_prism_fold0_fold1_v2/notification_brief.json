@@ -1,0 +1,18 @@
+{
+  "blocked_or_failure_reason": "No valid same-fold Dataset501 ResidualEncoderUNet checkpoint was found for the required byte transplant and FP32 parity gate.",
+  "commit_status": "local lightweight commit complete; exact SHA in git HEAD",
+  "delivery_status": "not sent by Codex; blocked by execution policy after SMTP attempt was rejected",
+  "evidence_paths": [
+    "results/20260729_care_prism_fold0_fold1_v2/nnunet_asset_receipt.json",
+    "results/20260729_care_prism_fold0_fold1_v2/init_transplant_report.json",
+    "results/20260729_care_prism_fold0_fold1_v2/implementation_validator_report.json",
+    "results/20260729_care_prism_fold0_fold1_v2/controller_report.md",
+    "results/20260729_care_prism_fold0_fold1_v2/finalizer_state.json"
+  ],
+  "final_status": "blocked before training",
+  "key_conclusion": "PRISM v2 was stopped before training because the required same-fold ResidualEncoderUNet checkpoint is missing; using PlainConv or random initialization would invalidate the mechanism experiment.",
+  "next_step": "Provide a valid same-fold ResEnc checkpoint for fold0 and fold1, or have Planner revise the transplant contract before restarting W1.",
+  "push_status": "not pushed because the controller is blocked, not achieved",
+  "slurm_terminal_status": "no PRISM GPU process was started; allocation was inspected only",
+  "task_name": "CARE-PRISM v2 fold0/fold1 controller"
+}

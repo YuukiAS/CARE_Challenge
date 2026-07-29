@@ -1,0 +1,168 @@
+{
+  "arc_w3_frozen_metric_evidence": {
+    "edema_zone_delta_vs_nnunet": -0.155363,
+    "remote_fp_ratios": "scar about 2.1x; edema about 5.1x",
+    "scar_delta_vs_nnunet": -0.180502,
+    "source": "prompts/routes/handoffs/CURRENT.md and wiki/README.md"
+  },
+  "audited_subject": "CARE-ARC W3 implementation/root cause now superseded by PRISM v2",
+  "claims": [
+    {
+      "claim": "ARC evidence gates are audit-only; gate weights are returned after decoders and not fused into encoder/proposal/decoder tensors.",
+      "evidence": [
+        {
+          "file": "src/care_myocardium/models/care_arc.py",
+          "lines": [
+            441,
+            442
+          ],
+          "symbols": [
+            "CAREARC.forward",
+            "scar_gate_weights",
+            "edema_gate_weights"
+          ]
+        }
+      ],
+      "status": "CONFIRMED"
+    },
+    {
+      "claim": "ARC anatomy decoder does not enter pathology decoder input; anatomy_features are only returned as aux.",
+      "evidence": [
+        {
+          "file": "src/care_myocardium/models/care_arc.py",
+          "lines": [
+            419,
+            445,
+            420,
+            421
+          ],
+          "symbols": [
+            "anatomy_decoder",
+            "PathologyDecoder.forward"
+          ]
+        }
+      ],
+      "status": "CONFIRMED"
+    },
+    {
+      "claim": "ARC coarse extent is auxiliary loss only and does not modulate final direct logits.",
+      "evidence": [
+        {
+          "file": "src/care_myocardium/models/care_arc.py",
+          "lines": [
+            310,
+            429
+          ],
+          "symbols": [
+            "PathologyDecoder.forward"
+          ]
+        },
+        {
+          "file": "src/care_myocardium/training/care_arc_trainer.py",
+          "lines": [
+            118,
+            119
+          ],
+          "symbols": [
+            "_pathology_loss"
+          ]
+        }
+      ],
+      "status": "CONFIRMED"
+    },
+    {
+      "claim": "ARC SDF head is disconnected from final mask and its NLL can be negative through the log-variance term.",
+      "evidence": [
+        {
+          "file": "src/care_myocardium/models/care_arc.py",
+          "lines": [
+            287,
+            314,
+            430,
+            288,
+            315,
+            431
+          ],
+          "symbols": [
+            "sdf_mean_head",
+            "sdf_logvar_head"
+          ]
+        },
+        {
+          "file": "src/care_myocardium/training/care_arc_trainer.py",
+          "lines": [
+            93
+          ],
+          "symbols": [
+            "sdf_nll"
+          ]
+        }
+      ],
+      "status": "CONFIRMED"
+    },
+    {
+      "claim": "ARC shared encoder is hand-written/random initialized and not the exact Dataset501 ResidualEncoderUNet transplant.",
+      "evidence": [
+        {
+          "file": "src/care_myocardium/models/care_arc.py",
+          "lines": [
+            93,
+            361,
+            414
+          ],
+          "symbols": [
+            "CAREARCEncoder",
+            "fusion"
+          ]
+        },
+        {
+          "file": "src/care_myocardium/models/care_arc.py",
+          "note": "No ResidualEncoderUNet import or exact nnU-Net builder appears in care_arc.py.",
+          "symbols": [
+            "ResidualEncoderUNet absence"
+          ]
+        }
+      ],
+      "status": "CONFIRMED"
+    },
+    {
+      "claim": "ARC no-T2 edema uses zero logits/heads, which yields sigmoid 0.5 unless decode separately hard-masks probability.",
+      "evidence": [
+        {
+          "file": "src/care_myocardium/models/care_arc.py",
+          "lines": [
+            28,
+            428
+          ],
+          "symbols": [
+            "CAREARCConfig.edema_missing_exact_zero_logit",
+            "CAREARC.forward"
+          ]
+        }
+      ],
+      "status": "CONFIRMED"
+    },
+    {
+      "claim": "ARC alignment can train enabled while freeze/deploy uses identity, creating train/deploy mismatch.",
+      "evidence": [
+        {
+          "file": "src/care_myocardium/models/care_arc.py",
+          "lines": [
+            26,
+            416,
+            398,
+            416
+          ],
+          "symbols": [
+            "alignment_enabled",
+            "alignment_mode"
+          ]
+        }
+      ],
+      "status": "CONFIRMED"
+    }
+  ],
+  "created_at_utc": "2026-07-29T14:10:39Z",
+  "status": "PASS",
+  "task_key": "20260729_care_prism_fold0_fold1_v2"
+}

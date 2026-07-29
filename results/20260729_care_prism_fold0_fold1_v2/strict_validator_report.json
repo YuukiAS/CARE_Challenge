@@ -1,0 +1,12 @@
+{
+  "checked_reports": [
+    "init_transplant_report.json",
+    "implementation_validator_report.json",
+    "nnunet_asset_receipt.json"
+  ],
+  "created_at_utc": "2026-07-29T14:29:12Z",
+  "decision": "FAIL_CLOSED",
+  "reason": "W1 required transplant/parity evidence missing; strict validator blocks W2/W3/W4.",
+  "status": "FAIL",
+  "task_key": "20260729_care_prism_fold0_fold1_v2"
+}

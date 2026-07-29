@@ -1,0 +1,10 @@
+{
+  "created_at_utc": "2026-07-29T14:29:12Z",
+  "known_bad_cases": {
+    "plainconv_checkpoint_as_resenc_transplant": "PASS_BLOCKED",
+    "synthetic_intervention_without_transplant": "PASS_BLOCKED"
+  },
+  "reason": "Known-bad semantic matrix not completed because W1 precondition failed; controller explicitly rejects PlainConv checkpoint substitution.",
+  "status": "NOT_RUN_FAIL_CLOSED",
+  "task_key": "20260729_care_prism_fold0_fold1_v2"
+}

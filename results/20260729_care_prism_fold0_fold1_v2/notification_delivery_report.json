@@ -1,0 +1,9 @@
+{
+  "created_at_utc": "2026-07-29T14:42:43Z",
+  "notification_brief_path": "results/20260729_care_prism_fold0_fold1_v2/notification_brief.json",
+  "reason": "The execution environment rejected sending task details and repository evidence paths by SMTP to an external email address using local credentials. The agent is not allowed to bypass that rejection.",
+  "requested_recipient": "1155246312@link.cuhk.edu.hk",
+  "safe_alternative": "notification_brief.json is written and committed for the existing watcher or a human-approved send path.",
+  "status": "NOT_SENT_BLOCKED_BY_EXECUTION_POLICY",
+  "task_key": "20260729_care_prism_fold0_fold1_v2"
+}

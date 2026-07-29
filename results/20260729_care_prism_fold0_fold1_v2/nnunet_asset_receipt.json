@@ -1,0 +1,159 @@
+{
+  "availability_shared_encoder_policy": "not_appended_to_shared_encoder_input",
+  "channel_order": [
+    "LGE",
+    "T2",
+    "C0"
+  ],
+  "controller_note": "The required ResidualEncoderUNet architecture plan exists, but no same-fold ResEnc checkpoint has been located yet. W1 transplant gate must fail closed unless Executor locates a valid same-fold ResEnc checkpoint or documents an authorized equivalent.",
+  "dataset": "Dataset501_CAREMyoPS",
+  "default_plainconv_plans_path": "data/nnUNet/nnUNet_preprocessed/Dataset501_CAREMyoPS/nnUNetPlans.json",
+  "default_plainconv_plans_sha256": "06492f8fc75b5de383a28006f76b7f1099f305422953cf9d4f89ae1ec38d3e2f",
+  "plainconv_anchor_checkpoint_root": "data/nnUNet/nnUNet_results/Dataset501_CAREMyoPS/nnUNetTrainer_500epochs__nnUNetPlans__3d_fullres",
+  "required_transplant_gate": {
+    "fp32_per_scale_max_abs_error_max": 1e-06,
+    "parameter_byte_coverage_min": 0.9
+  },
+  "resenc_architecture": {
+    "_kw_requires_import": [
+      "conv_op",
+      "norm_op",
+      "dropout_op",
+      "nonlin"
+    ],
+    "arch_kwargs": {
+      "conv_bias": true,
+      "conv_op": "torch.nn.modules.conv.Conv3d",
+      "dropout_op": null,
+      "dropout_op_kwargs": null,
+      "features_per_stage": [
+        32,
+        64,
+        128,
+        256,
+        320,
+        320,
+        320
+      ],
+      "kernel_sizes": [
+        [
+          1,
+          3,
+          3
+        ],
+        [
+          3,
+          3,
+          3
+        ],
+        [
+          3,
+          3,
+          3
+        ],
+        [
+          3,
+          3,
+          3
+        ],
+        [
+          3,
+          3,
+          3
+        ],
+        [
+          3,
+          3,
+          3
+        ],
+        [
+          3,
+          3,
+          3
+        ]
+      ],
+      "n_blocks_per_stage": [
+        1,
+        3,
+        4,
+        6,
+        6,
+        6,
+        6
+      ],
+      "n_conv_per_stage_decoder": [
+        1,
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "n_stages": 7,
+      "nonlin": "torch.nn.LeakyReLU",
+      "nonlin_kwargs": {
+        "inplace": true
+      },
+      "norm_op": "torch.nn.modules.instancenorm.InstanceNorm3d",
+      "norm_op_kwargs": {
+        "affine": true,
+        "eps": 1e-05
+      },
+      "strides": [
+        [
+          1,
+          1,
+          1
+        ],
+        [
+          1,
+          2,
+          2
+        ],
+        [
+          2,
+          2,
+          2
+        ],
+        [
+          2,
+          2,
+          2
+        ],
+        [
+          1,
+          2,
+          2
+        ],
+        [
+          1,
+          2,
+          2
+        ],
+        [
+          1,
+          2,
+          2
+        ]
+      ]
+    },
+    "network_class_name": "dynamic_network_architectures.architectures.unet.ResidualEncoderUNet"
+  },
+  "resenc_patch_size": [
+    20,
+    256,
+    256
+  ],
+  "resenc_plans_path": "data/nnUNet/nnUNet_preprocessed/Dataset501_CAREMyoPS/nnUNetResEncUNetMPlans.json",
+  "resenc_plans_sha256": "86f68fb738255ec7afe70a3894bfe5348f326792f14aeb74182b40023dd9f9bb",
+  "resenc_spacing": [
+    5.0,
+    1.3672000169754028,
+    1.3672000169754028
+  ],
+  "same_fold_resenc_checkpoint_candidates": [],
+  "same_fold_resenc_checkpoint_status": "NOT_LOCATED_UNDER_Dataset501_CAREMyoPS_nnunet_results",
+  "status": "NEEDS_REPAIR",
+  "task_key": "20260729_care_prism_fold0_fold1_v2",
+  "updated_at_utc": "2026-07-29T14:16:57Z"
+}

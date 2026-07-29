@@ -1,0 +1,45 @@
+{
+  "adopted_authority_priority": [
+    "prompts/tasks/20260729_care_prism_execution_hardening_amendment_v2.md",
+    "prompts/blueprints/CARE_PRISM_pathology_retrieval_soft_cascade_20260729.md",
+    "prompts/tasks/20260729_care_prism_fold0_fold1_executor_plan_v2.yaml",
+    "prompts/tasks/20260729_care_prism_controller_v2.md",
+    "prompts/routes/handoffs/CURRENT.md"
+  ],
+  "commit_presence": {
+    "1245ce5d2c1799f750b5cfa39f94047b76d1ef07": true,
+    "7e659fd6f559cad464cfea31879970b273ce2993": true,
+    "a446572241b5c80916d1fba21860aad1db39b9d2": true,
+    "f5a2ebfc6d673d25021540c58ee98bf54329a757": true,
+    "fa3fc6aa23976f26e1523d5c99c98470cdc43b7c": true
+  },
+  "created_at_utc": "2026-07-29T14:10:39Z",
+  "diagram_versions_read": [
+    "SRR-v2",
+    "SRR-v2.5",
+    "SRR-v3",
+    "CARE-MMRD",
+    "CARE-SRR-Cascade",
+    "CARE-DG",
+    "CARE-ARC",
+    "MoSAIC"
+  ],
+  "forbidden_actions": [
+    "sbatch",
+    "salloc",
+    "new_slurm_job",
+    "parallel_gpu",
+    "write_/overflow/htzhu/CARE",
+    "runtime_push",
+    "validation_upload",
+    "docker_upload"
+  ],
+  "parallel_execution_allowed": false,
+  "prototype_default": "disabled_until_independent_gate_passes",
+  "single_executor_id": "care_prism_v2_executor",
+  "single_mapper_id": "care_prism_v2_mapper",
+  "slice_correspondence_default": "identity_until_W2_independent_gate_passes",
+  "status": "PASS",
+  "task_key": "20260729_care_prism_fold0_fold1_v2",
+  "visual_read_status": "PASS_PROJECT_BACKGROUND_IMAGES_VISUALLY_READ_FROM_CURRENT_MD_RECEIPT"
+}

@@ -1,0 +1,13 @@
+当前任务没有完成科学执行合同；它在训练前被正确阻塞。阻塞原因是 PRISM v2 要求从同折 ResidualEncoderUNet nnU-Net checkpoint 做 >=90% 参数字节移植，并完成 FP32 逐尺度奇偶校验，但当前仓库和只读历史 CARE 结果目录没有定位到合法 checkpoint。因此所有训练阶段必须停止，不能把随机初始化、PlainConv checkpoint 或 synthetic-only tests 当作通过。
+
+```text
+controller_verification_decision: OPERATIONALLY_BLOCKED
+experiment_adequacy_decision: NO_TRAINING_STARTED_ZERO_FORMAL_CREDIT
+contract_compliance_status: FAIL_CLOSED_ON_REQUIRED_TRANSPLANT_ASSET
+all_jobs_terminal: NO_PRISM_GPU_PROCESSES_STARTED
+aggregation_complete: false
+git_commit_decision: LOCAL_LIGHTWEIGHT_COMMIT_COMPLETE
+git_push_decision: NOT_PUSHED_BLOCKED
+local_commit: SELF_REFERENTIAL_COMMIT_SHA_NOT_EMBEDDED_SEE_GIT_LOG_HEAD
+next_required_action: HUMAN_INTERVENTION_REQUIRED
+```
