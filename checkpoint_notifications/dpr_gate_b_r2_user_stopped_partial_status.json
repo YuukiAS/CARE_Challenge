@@ -1,0 +1,206 @@
+{
+  "status": "USER_STOPPED_BEFORE_GATE",
+  "gate": "CARE_DPR_GATE_B_R2",
+  "gate_reached": false,
+  "formal_fold0_authorized": false,
+  "fold_expansion_authorized": false,
+  "fold1_started": false,
+  "all_data_fit_started": false,
+  "validation_package_started": false,
+  "docker_or_validation_upload_started": false,
+  "email_sent": false,
+  "scientific_final_output_credit": 0,
+  "stopped_at": "2026-07-29T02:36:59-04:00",
+  "stopped_by": "user_request",
+  "user_request": "你别跑了, 既然没有好结果, 把目前结果传上去让gpt知道; 以及现在的interactive job",
+  "latest_user_override": {
+    "new_interactive_job_authorized": true,
+    "replacement_allocation_jobid": "61220581",
+    "note": "Earlier objective text still names allocation 60657290; later user instruction requested a new 5-day interactive job. No new GPU work is running after this stop packet."
+  },
+  "runtime": "formal_fold0_r2_balanced_c2_bank_lite",
+  "stopped_command": "srun --jobid=61220581 --overlap --ntasks=1 bash -lc 'cd /users/a/e/aereinh/CARE && ./envs/env_CARE/bin/python scripts/evaluation/evaluate_care_dpr_gate_b_r2.py --runtime-name formal_fold0_r2_balanced_c2_bank_lite --fold 0 --cache-cases 12'",
+  "partial_inner_selection": {
+    "status": "INCOMPLETE_USER_STOPPED",
+    "selection_csv": "results/20260728_care_dpr_fold0_global_redesign/runtime/formal_fold0_r2_balanced_c2_bank_lite/gate_b_r2_evaluation/gate_b_r2_inner_selection_rows.csv",
+    "selection_csv_size_bytes": 753438,
+    "selection_csv_sha256": "9462f8540106d127ef97afa60c9c983093d4e73cc879f1c12add67fdd95e4021",
+    "candidate_rows_csv": "results/20260728_care_dpr_fold0_global_redesign/runtime/formal_fold0_r2_balanced_c2_bank_lite/gate_b_r2_evaluation/gate_b_r2_inner_candidate_rows.csv",
+    "candidate_rows_csv_exists": true,
+    "candidate_rows_csv_size_bytes": 320336362,
+    "candidate_rows_csv_not_committed_reason": "large runtime detail file; lightweight pushed evidence uses selection rows plus this status packet",
+    "rows_completed": 925,
+    "rows_expected_full_grid": 1200,
+    "completion_fraction": 0.7708333333333334,
+    "eligible_rows": 0,
+    "scientific_gate_status_counts": {
+      "FAIL": 925
+    },
+    "checkpoint_steps_seen": [
+      "3250",
+      "3500",
+      "3750",
+      "4000"
+    ],
+    "rows_by_checkpoint": {
+      "3250": 300,
+      "3500": 300,
+      "3750": 300,
+      "4000": 25
+    },
+    "proposal_pairs_seen": 12,
+    "proposal_pairs_row_counts": {
+      "scar=0.3,edema=0.2": 100,
+      "scar=0.3,edema=0.3": 75,
+      "scar=0.3,edema=0.4": 75,
+      "scar=0.3,edema=0.5": 75,
+      "scar=0.4,edema=0.2": 75,
+      "scar=0.4,edema=0.3": 75,
+      "scar=0.4,edema=0.4": 75,
+      "scar=0.4,edema=0.5": 75,
+      "scar=0.5,edema=0.2": 75,
+      "scar=0.5,edema=0.3": 75,
+      "scar=0.5,edema=0.4": 75,
+      "scar=0.5,edema=0.5": 75
+    },
+    "utility_pairs_seen": 25,
+    "top_failures": [
+      {
+        "failure": "scar_dice_delta_lt_-0.005",
+        "count": 925
+      },
+      {
+        "failure": "scar_help_lt_harm_minus_1",
+        "count": 925
+      },
+      {
+        "failure": "scar_hd95_gt_1.05x_anchor",
+        "count": 925
+      },
+      {
+        "failure": "scar_remote_fp_gt_1.10x_anchor",
+        "count": 925
+      },
+      {
+        "failure": "edema_zone_dice_delta_lt_-0.005",
+        "count": 925
+      },
+      {
+        "failure": "edema_zone_help_lt_harm_minus_1",
+        "count": 925
+      },
+      {
+        "failure": "edema_zone_hd95_gt_1.05x_anchor",
+        "count": 925
+      },
+      {
+        "failure": "edema_zone_remote_fp_gt_1.10x_anchor",
+        "count": 925
+      },
+      {
+        "failure": "pure_edema_dice_delta_lt_-0.005",
+        "count": 925
+      },
+      {
+        "failure": "pure_edema_help_lt_harm_minus_1",
+        "count": 925
+      },
+      {
+        "failure": "pure_edema_hd95_gt_1.05x_anchor",
+        "count": 925
+      },
+      {
+        "failure": "pure_edema_remote_fp_gt_1.10x_anchor",
+        "count": 925
+      },
+      {
+        "failure": "no_pathology_improves_by_at_least_0.005",
+        "count": 925
+      }
+    ],
+    "best_avg_inner_dice_delta_so_far": -0.03193535188070074,
+    "best_row_so_far": {
+      "checkpoint": "results/20260728_care_dpr_fold0_global_redesign/runtime/formal_fold0_r2_balanced_c2_bank_lite/checkpoints/checkpoint_step03250.pt",
+      "checkpoint_step": "3250",
+      "checkpoint_sha256": "8c354486e34f84ae4a399299c0d1cc2ab30a7926f6f0db8c677450909bc2e93b",
+      "scar_proposal_threshold": "0.4",
+      "edema_proposal_threshold": "0.4",
+      "scar_utility_threshold": "0.0",
+      "edema_utility_threshold": "0.0",
+      "scar_accepted": "549",
+      "scar_rejected": "4",
+      "scar_signed_net_utility": "251.41866194435656",
+      "edema_accepted": "809",
+      "edema_rejected": "86",
+      "edema_signed_net_utility": "493.00752138185294",
+      "scar_add_count": "539",
+      "scar_revise_count": "14",
+      "edema_add_count": "880",
+      "edema_revise_count": "15",
+      "scientific_gate_status": "FAIL",
+      "scientific_failures": "[\"scar_dice_delta_lt_-0.005\", \"scar_help_lt_harm_minus_1\", \"scar_hd95_gt_1.05x_anchor\", \"scar_remote_fp_gt_1.10x_anchor\", \"edema_zone_dice_delta_lt_-0.005\", \"edema_zone_help_lt_harm_minus_1\", \"edema_zone_hd95_gt_1.05x_anchor\", \"edema_zone_remote_fp_gt_1.10x_anchor\", \"pure_edema_dice_delta_lt_-0.005\", \"pure_edema_help_lt_harm_minus_1\", \"pure_edema_hd95_gt_1.05x_anchor\", \"pure_edema_remote_fp_gt_1.10x_anchor\", \"no_pathology_improves_by_at_least_0.005\"]",
+      "at_least_one_inner_improves_ge_0.005": "False",
+      "all_dice_delta_ge_minus_0.005": "False",
+      "safety_gate_pass": "False",
+      "avg_inner_dice_delta": "-0.03193535188070074",
+      "eligible": "False"
+    },
+    "last_row": {
+      "checkpoint": "results/20260728_care_dpr_fold0_global_redesign/runtime/formal_fold0_r2_balanced_c2_bank_lite/checkpoints/checkpoint_step04000.pt",
+      "checkpoint_step": "4000",
+      "checkpoint_sha256": "3f99b0e2d99ca43a8ee959c1d531cb3bd8da1952f3adfd002c4e434481251dd7",
+      "scar_proposal_threshold": "0.3",
+      "edema_proposal_threshold": "0.2",
+      "scar_utility_threshold": "0.2",
+      "edema_utility_threshold": "0.2",
+      "scar_accepted": "577",
+      "scar_rejected": "6",
+      "scar_signed_net_utility": "269.6849773082848",
+      "edema_accepted": "865",
+      "edema_rejected": "156",
+      "edema_signed_net_utility": "523.5098358833334",
+      "scar_add_count": "568",
+      "scar_revise_count": "15",
+      "edema_add_count": "1006",
+      "edema_revise_count": "15",
+      "scientific_gate_status": "FAIL",
+      "scientific_failures": "[\"scar_dice_delta_lt_-0.005\", \"scar_help_lt_harm_minus_1\", \"scar_hd95_gt_1.05x_anchor\", \"scar_remote_fp_gt_1.10x_anchor\", \"edema_zone_dice_delta_lt_-0.005\", \"edema_zone_help_lt_harm_minus_1\", \"edema_zone_hd95_gt_1.05x_anchor\", \"edema_zone_remote_fp_gt_1.10x_anchor\", \"pure_edema_dice_delta_lt_-0.005\", \"pure_edema_help_lt_harm_minus_1\", \"pure_edema_hd95_gt_1.05x_anchor\", \"pure_edema_remote_fp_gt_1.10x_anchor\", \"no_pathology_improves_by_at_least_0.005\"]",
+      "at_least_one_inner_improves_ge_0.005": "False",
+      "all_dice_delta_ge_minus_0.005": "False",
+      "safety_gate_pass": "False",
+      "avg_inner_dice_delta": "-0.05330002918783211",
+      "eligible": "False"
+    },
+    "interpretation": "Partial evidence is negative: all completed rows failed the scientific selection gate; no eligible checkpoint/proposal/utility combination had appeared before the user-requested stop."
+  },
+  "interactive_allocation": {
+    "jobid": "61220581",
+    "state_at_stop_packet": "RUNNING",
+    "partition": "htzhulab",
+    "qos": "gpu_access",
+    "node": "g1807htzh01",
+    "gpu": "nvidia_h100_nvl:1",
+    "cpus": 8,
+    "mem": "64G",
+    "time_limit": "5-00:00:00",
+    "submit_time": "2026-07-29T00:26:39",
+    "start_time": "2026-07-29T00:26:41",
+    "end_time": "2026-08-03T00:26:41",
+    "holder_tmux": "care_dpr_alloc_5d_20260729_002624",
+    "holder_log": "logs/slurm_interactive/care_dpr_alloc_5d_20260729_002624.log",
+    "allocation_receipt": "results/20260728_care_dpr_fold0_global_redesign/gate_b_r2_interactive_allocation_61220581.json",
+    "squeue": "JOBID PARTITION                 NAME     USER ST       TIME  TIME_LEFT  NODES NODELIST(REASON)\n          61220581  htzhulab            CareDPR5d  aereinh  R    2:11:23 4-21:48:37      1 g1807htzh01",
+    "squeue_steps_after_stop": "STEPID     NAME PARTITION     USER      TIME NODELIST",
+    "scontrol_show_job": "JobId=61220581 JobName=CareDPR5d\n   UserId=aereinh(397557) GroupId=users(100) MCS_label=N/A\n   Priority=10186 Nice=0 Account=rc_htzhu_pi QOS=gpu_access\n   JobState=RUNNING Reason=None Dependency=(null)\n   Requeue=1 Restarts=0 BatchFlag=0 Reboot=0 ExitCode=0:0\n   RunTime=02:11:24 TimeLimit=5-00:00:00 TimeMin=N/A\n   SubmitTime=2026-07-29T00:26:39 EligibleTime=2026-07-29T00:26:39\n   AccrueTime=Unknown\n   StartTime=2026-07-29T00:26:41 EndTime=2026-08-03T00:26:41 Deadline=N/A\n   SuspendTime=None SecsPreSuspend=0 LastSchedEval=2026-07-29T00:26:41 Scheduler=Main\n   Partition=htzhulab AllocNode:Sid=c151604:2871630\n   ReqNodeList=(null) ExcNodeList=(null)\n   NodeList=g1807htzh01\n   BatchHost=g1807htzh01\n   NumNodes=1 NumCPUs=8 NumTasks=1 CPUs/Task=8 ReqB:S:C:T=0:0:*:*\n   ReqTRES=cpu=8,mem=64G,node=1,billing=8,gres/gpu=1\n   AllocTRES=cpu=8,mem=64G,node=1,billing=8,gres/gpu=1,gres/gpu:nvidia_h100_nvl=1\n   Socks/Node=* NtasksPerN:B:S:C=0:0:*:* CoreSpec=*\n   MinCPUsNode=8 MinMemoryNode=64G MinTmpDiskNode=0\n   Features=(null) DelayBoot=00:00:00\n   OverSubscribe=OK Contiguous=0 Licenses=(null) LicensesAlloc=(null) Network=(null)\n   Command=bash\n   SubmitLine=salloc --ntasks=1 --cpus-per-task=8 --mem=64G --time=5-00:00:00 --gres=gpu:1 --partition=htzhulab --qos=gpu_access --job-name=CareDPR5d bash -lc echo ALLOC_GRANTED job=$SLURM_JOB_ID host=c151604.ll.unc.edu start=2026-07-29T00:26:39-04:00; sleep 5d\n   WorkDir=/users/a/e/aereinh/CARE\n   TresPerNode=gres/gpu:1\n   TresPerTask=cpu=8",
+    "care_dpr_processes_after_stop": "1191383 /usr/bin/bash -c ./envs/env_CARE/bin/python - <<'PY' import csv, json, os, subprocess, collections, math, hashlib from pathlib import Path root = Path('/users/a/e/aereinh/CARE') runtime = 'formal_fold0_r2_balanced_c2_bank_lite' base = root / 'results/20260728_care_dpr_fold0_global_redesign' eval_dir = base / 'runtime' / runtime / 'gate_b_r2_evaluation' sel_path = eval_dir / 'gate_b_r2_inner_selection_rows.csv' candidate_path = eval_dir / 'gate_b_r2_inner_candidate_rows.csv'  def run(cmd):     try:         out = subprocess.check_output(cmd, cwd=root, stderr=subprocess.STDOUT, text=True)         return out.strip()     except subprocess.CalledProcessError as e:         return e.output.strip()  def sha256(path):     h = hashlib.sha256()     with open(path, 'rb') as f:         for b in iter(lambda: f.read(1024 * 1024), b''):             h.update(b)     return h.hexdigest() rows = 0 eligible = 0 best = None last = None ck = collections.Counter() prop = collections.Counter() util = collections.Counter() gate = collections.Counter() fail = collections.Counter() with open(sel_path, newline='') as f:     r = csv.DictReader(f)     columns = r.fieldnames or []     for row in r:         rows += 1         last = dict(row)         ck[row['checkpoint_step']] += 1         prop[(row['scar_proposal_threshold'], row['edema_proposal_threshold'])] += 1         util[(row['scar_utility_threshold'], row['edema_utility_threshold'])] += 1         gate[row['scientific_gate_status']] += 1         try:             failures = json.loads(row.get('scientific_failures') or '[]')         except Exception:             failures = []         for x in failures:             fail[x] += 1         if row.get('eligible') == 'True':             eligible += 1         try:             v = float(row['avg_inner_dice_delta'])         except Exception:             v = float('nan')         if not math.isnan(v) and (best is None or v > best[0]):             best = (v, dict(row)) expected_rows_full_grid = 4 * 12 * 25 squeue = run(['squeue','-j','61220581','-o','%.18i %.9P %.20j %.8u %.2t %.10M %.10L %.6D %R']) ssteps = run(['squeue','-s','-j','61220581']) scontrol = run(['scontrol','show','job','61220581']) pgrep = run(['pgrep','-af','evaluate_care_dpr_gate_b_r2|run_care_dpr_gate_b_r2|srun --jobid=61220581|care_dpr_alloc_5d']) head = run(['git','rev-parse','HEAD']) origin = run(['git','rev-parse','origin/main']) status_short = run(['git','status','--short']) packet = {     'status': 'USER_STOPPED_BEFORE_GATE',     'gate': 'CARE_DPR_GATE_B_R2',     'gate_reached': False,     'formal_fold0_authorized': False,     'fold_expansion_authorized': False,     'fold1_started': False,     'all_data_fit_started': False,     'validation_package_started': False,     'docker_or_validation_upload_started': False,     'email_sent': False,     'scientific_final_output_credit': 0,     'stopped_at': '2026-07-29T02:36:59-04:00',     'stopped_by': 'user_request',     'user_request': '你别跑了, 既然没有好结果, 把目前结果传上去让gpt知道; 以及现在的interactive job',     'latest_user_override': {         'new_interactive_job_authorized': True,         'replacement_allocation_jobid': '61220581',         'note': 'Earlier objective text still names allocation 60657290; later user instruction requested a new 5-day interactive job. No new GPU work is running after this stop packet.'     },     'runtime': runtime,     'stopped_command': \"srun --jobid=61220581 --overlap --ntasks=1 bash -lc 'cd /users/a/e/aereinh/CARE && ./envs/env_CARE/bin/python scripts/evaluation/evaluate_care_dpr_gate_b_r2.py --runtime-name formal_fold0_r2_balanced_c2_bank_lite --fold 0 --cache-cases 12'\",     'partial_inner_selection': {         'status': 'INCOMPLETE_USER_STOPPED',         'selection_csv': str(sel_path.relative_to(root)),         'selection_csv_size_bytes': sel_path.stat().st_size,         'selection_csv_sha256': sha256(sel_path),         'candidate_rows_csv': str(candidate_path.relative_to(root)),         'candidate_rows_csv_exists': candidate_path.exists(),         'candidate_rows_csv_size_bytes': candidate_path.stat().st_size if candidate_path.exists() else None,         'candidate_rows_csv_not_committed_reason': 'large runtime detail file; lightweight pushed evidence uses selection rows plus this status packet',         'rows_completed': rows,         'rows_expected_full_grid': expected_rows_full_grid,         'completion_fraction': rows / expected_rows_full_grid,         'eligible_rows': eligible,         'scientific_gate_status_counts': dict(gate),         'checkpoint_steps_seen': sorted([k for k in ck if k], key=lambda x:int(x)),         'rows_by_checkpoint': dict(ck),         'proposal_pairs_seen': len(prop),         'proposal_pairs_row_counts': {f'scar={k[0]},edema={k[1]}': v for k, v in sorted(prop.items())},         'utility_pairs_seen': len(util),         'top_failures': [{'failure': k, 'count': v} for k, v in fail.most_common()],         'best_avg_inner_dice_delta_so_far': best[0] if best else None,         'best_row_so_far': best[1] if best else None,         'last_row': last,         'interpretation': 'Partial evidence is negative: all completed rows failed the scientific selection gate; no eligible checkpoint/proposal/utility combination had appeared before the user-requested stop.'     },     'interactive_allocation': {         'jobid': '61220581',         'state_at_stop_packet': 'RUNNING',         'partition': 'htzhulab',         'qos': 'gpu_access',         'node': 'g1807htzh01',         'gpu': 'nvidia_h100_nvl:1',         'cpus': 8,         'mem': '64G',         'time_limit': '5-00:00:00',         'submit_time': '2026-07-29T00:26:39',         'start_time': '2026-07-29T00:26:41',         'end_time': '2026-08-03T00:26:41',         'holder_tmux': 'care_dpr_alloc_5d_20260729_002624',         'holder_log': 'logs/slurm_interactive/care_dpr_alloc_5d_20260729_002624.log',         'allocation_receipt': 'results/20260728_care_dpr_fold0_global_redesign/gate_b_r2_interactive_allocation_61220581.json',         'squeue': squeue,         'squeue_steps_after_stop': ssteps,         'scontrol_show_job': scontrol,         'care_dpr_processes_after_stop': pgrep,         'no_active_evaluator_step_after_stop': 'evaluate_care_dpr_gate_b_r2' not in pgrep and 'srun --jobid=61220581' not in pgrep,         'allocation_preserved': True     },     'git': {         'head_before_packet_commit': head,         'origin_main_before_packet_commit': origin,         'dirty_worktree_before_packet_commit': status_short,         'note': 'Only DPR Gate B-R2 lightweight status/selection evidence should be staged; unrelated existing dirty files are intentionally preserved.'     },     'next_allowed_action': 'Return to GPT/planner with this pushed partial negative evidence and current allocation state. Do not launch formal fold expansion from this state.' } paths = [     base / 'gate_b_r2_user_stopped_partial_status.json',     root / 'checkpoint_notifications/dpr_gate_b_r2_user_stopped_partial_status.json', ] for path in paths:     path.parent.mkdir(parents=True, exist_ok=True)     path.write_text(json.dumps(packet, ensure_ascii=False, indent=2) + '\\n', encoding='utf-8') md = base / 'gate_b_r2_current_status_for_gpt.md' md.write_text(f\"\"\"# CARE-DPR Gate B-R2 Current Status for GPT\\n\\nStatus: USER_STOPPED_BEFORE_GATE\\n\\nThe user stopped the running fold0 inner-selection evaluator before Gate B-R2 was reached. No formal fold expansion, all-data fit, validation package, Docker upload, or Gate email was started.\\n\\nCurrent partial evidence is negative: all {rows} completed selection rows failed the scientific gate and eligible rows remained 0. Best average inner Dice delta so far was {best[0] if best else 'NA'}. The full grid would have {expected_rows_full_grid} rows; the run stopped after {rows} rows ({rows / expected_rows_full_grid:.3f}).\\n\\nInteractive allocation is preserved: job 61220581, partition htzhulab, node g1807htzh01, H100 NVL GPU, 8 CPU, 64G, start 2026-07-29T00:26:41, end 2026-08-03T00:26:41. No evaluator step remains active after stop.\\n\\nAuthoritative packet paths:\\n\\n- results/20260728_care_dpr_fold0_global_redesign/gate_b_r2_user_stopped_partial_status.json\\n- checkpoint_notifications/dpr_gate_b_r2_user_stopped_partial_status.json\\n- results/20260728_care_dpr_fold0_global_redesign/runtime/formal_fold0_r2_balanced_c2_bank_lite/gate_b_r2_evaluation/gate_b_r2_inner_selection_rows.csv\\n\"\"\", encoding='utf-8') print(json.dumps({'wrote':[str(p.relative_to(root)) for p in paths] + [str(md.relative_to(root))], 'rows': rows, 'eligible': eligible, 'best_avg_inner_dice_delta_so_far': best[0] if best else None}, ensure_ascii=False, indent=2)) PY\n2871630 bash -lc cd /users/a/e/aereinh/CARE; LOG=logs/slurm_interactive/care_dpr_alloc_5d_20260729_002624.log; echo START_REQUEST 2026-07-29T00:26:39-04:00 | tee -a $LOG; salloc --ntasks=1 --cpus-per-task=8 --mem=64G --time=5-00:00:00 --gres=gpu:1 --partition=htzhulab --qos=gpu_access --job-name=CareDPR5d bash -lc 'echo ALLOC_GRANTED job=$SLURM_JOB_ID host=c151604.ll.unc.edu start=2026-07-29T00:26:39-04:00; sleep 5d' 2>&1 | tee -a $LOG; echo SALLOC_EXIT code=${PIPESTATUS[0]} time=2026-07-29T00:26:39-04:00 | tee -a $LOG\n2871879 tee -a logs/slurm_interactive/care_dpr_alloc_5d_20260729_002624.log",
+    "no_active_evaluator_step_after_stop": false,
+    "allocation_preserved": true
+  },
+  "git": {
+    "head_before_packet_commit": "9a277a42211eade50e3c2e08e4ac25e6d26f6848",
+    "origin_main_before_packet_commit": "9a277a42211eade50e3c2e08e4ac25e6d26f6848",
+    "dirty_worktree_before_packet_commit": "M results/20260724_care_myops_srr_cascade_submission_rescue/runtime_closure_repair_rc1/formal_race_watcher_history_v2.jsonl\n M results/20260724_care_myops_srr_cascade_submission_rescue/runtime_closure_repair_rc1/formal_race_watcher_state_v2.json\n M results/20260728_care_dpr_fold0_global_redesign/runtime/formal_fold0_r2_balanced_c2_bank_lite/gate_b_r2_evaluation/gate_b_r2_inner_selection_rows.csv\n?? .codex_runtime/\n?? results/care_scf/canonical_model_summary_fold0.csv\n?? results/care_scf/care_gate_training_receipt.json\n?? results/care_scf/care_prediction_status.csv\n?? results/care_scf/casewise_metrics_fold0.csv\n?? results/care_scf/completion_audit.csv\n?? results/care_scf/component_dataset_feature_status.csv\n?? results/care_scf/component_dataset_fold0_diagnostic.csv\n?? results/care_scf/component_decisions.csv\n?? results/care_scf/controller_report.md\n?? results/care_scf/final_manifest.json\n?? results/care_scf/geometry_audit.csv\n?? results/care_scf/help_harm.csv\n?? results/care_scf/help_harm_summary.csv\n?? results/care_scf/mosaic_oof_status.csv\n?? results/care_scf/nnunet_oof_status.csv\n?? results/care_scf/provenance.json\n?? scripts/evaluation/build_care_scf_controller_packet.py\n?? scripts/evaluation/build_mosaic_paper_results_completion.py",
+    "note": "Only DPR Gate B-R2 lightweight status/selection evidence should be staged; unrelated existing dirty files are intentionally preserved."
+  },
+  "next_allowed_action": "Return to GPT/planner with this pushed partial negative evidence and current allocation state. Do not launch formal fold expansion from this state."
+}
