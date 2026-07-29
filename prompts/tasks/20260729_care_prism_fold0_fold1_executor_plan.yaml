@@ -1,0 +1,255 @@
+task_key: 20260729_care_prism_fold0_fold1
+schema_version: 1
+status: READY_FOR_CONTROLLER
+risk_level: high
+route_change: true
+scientific_decision_scope: mechanism_signal
+execution_mode: controller_supervised
+requires_execution_controller: true
+controller_is_coordinator: true
+executor_slots: 1
+executor_count: 1
+parallel_execution_allowed: false
+mapper_slots: 1
+mapper_required: true
+architecture_impact: system
+wiki_update_required: true
+diagram_update_required: true
+slurm_runtime_continuity_required: true
+continuity_backend: tmux_watcher
+planning_review_required: false
+review_required: false
+allow_git_commit: true
+auto_git_commit: true
+allow_git_push: false
+auto_git_push: false
+allow_diagnostic_push: false
+
+repository:
+  root: /users/a/e/aereinh/CARE
+  remote: YuukiAS/CARE_Challenge
+  branch: main
+
+allocation:
+  jobid: 61220581
+  partition: htzhulab
+  node: g1807htzh01
+  command_template: "srun --jobid=61220581 --overlap --ntasks=1 bash -lc '<command>'"
+  max_parallel_gpu_processes: 1
+  forbidden:
+    - sbatch
+    - salloc
+    - new_slurm_job
+    - write_/overflow/htzhu/CARE
+    - runtime_git_push
+    - validation_upload
+    - docker_upload
+
+single_executor:
+  executor_id: care_prism_executor
+  write_scope:
+    - src/care_myocardium/models/care_prism.py
+    - src/care_myocardium/data/care_prism_dataset.py
+    - src/care_myocardium/training/care_prism_trainer.py
+    - src/care_myocardium/inference/care_prism_predictor.py
+    - scripts/training/run_care_prism.py
+    - scripts/evaluation/evaluate_care_prism.py
+    - scripts/evaluation/validate_care_prism_packet.py
+    - tests/care_prism/
+    - results/20260729_care_prism_fold0_fold1/
+    - wiki/
+  forbidden_design_substitution:
+    - tiny_random_encoder
+    - unused_router
+    - auxiliary_only_anatomy
+    - auxiliary_only_proposal
+    - disconnected_sdf_head
+    - patch_component_utility
+    - nnunet_pathology_residual
+    - multiple_full_backbones
+
+waves:
+  - id: W0_ROOT_CAUSE_AND_CONTRACT
+    dependencies: []
+    cpu_only: true
+    actions:
+      - sync origin/main and freeze required hashes
+      - read CURRENT and CARE-PRISM blueprint
+      - verify allocation 61220581 is RUNNING on g1807htzh01
+      - freeze fold0 and fold1 outer/inner/actual-train case hashes
+      - audit Dataset501 nnUNet plan and same-fold checkpoints
+      - reproduce CARE-ARC negative-loss, unused-gate, unused-anatomy, unused-coarse and random-init findings
+    exact_outputs:
+      - results/20260729_care_prism_fold0_fold1/adoption_receipt.json
+      - results/20260729_care_prism_fold0_fold1/arc_w3_root_cause_audit.json
+      - results/20260729_care_prism_fold0_fold1/split_freeze_receipt.json
+      - results/20260729_care_prism_fold0_fold1/nnunet_init_asset_receipt.json
+      - results/20260729_care_prism_fold0_fold1/allocation_snapshot.json
+    completion:
+      - root_cause_audit confirms every claimed implementation gap from blueprint with symbol/path evidence
+      - exact nnUNet architecture kwargs and checkpoint hashes frozen
+      - fold1 outer remains unread
+    failure_branch: repair audit/asset resolution in same executor; do not train
+
+  - id: W1_IMPLEMENTATION
+    dependencies: [W0_ROOT_CAUSE_AND_CONTRACT]
+    cpu_only: false
+    actions:
+      - implement exact CARE-PRISM network and losses
+      - transplant same-fold nnUNet encoder and compatible anatomy decoder weights
+      - implement actual soft routing, anatomy exchange, selective slice correspondence, prototypes, soft ROI and dual refiners
+      - implement patient-balanced sampler and augmentations
+      - implement checkpoint/resume and exact deployment decode
+      - implement executable known-bad tests
+    exact_outputs:
+      - results/20260729_care_prism_fold0_fold1/model_parameter_report.json
+      - results/20260729_care_prism_fold0_fold1/init_transplant_report.json
+      - results/20260729_care_prism_fold0_fold1/implementation_snapshot.md
+      - results/20260729_care_prism_fold0_fold1/unit_test_report.json
+      - results/20260729_care_prism_fold0_fold1/known_bad_report.json
+      - results/20260729_care_prism_fold0_fold1/implementation_validator_report.json
+    completion:
+      - encoder initialization coverage >= 0.90 by parameter bytes
+      - exactly one shared full backbone
+      - routers change routed features and final logits
+      - anatomy features/probabilities enter every pathology decoder scale
+      - proposal map changes soft ROI attention and final logits
+      - prototype similarity changes proposal but never directly labels voxels
+      - all formal losses finite and nonnegative
+      - no-T2 edema probability/mask/loss/gradient exact zero
+      - tests, known-bad and strict validator PASS
+    failure_branch: controller returns same-scope gaps to executor until PASS
+
+  - id: W2_PREFLIGHT
+    dependencies: [W1_IMPLEMENTATION]
+    cpu_only: false
+    optimizer_steps: 400
+    formal_credit: 0
+    actions:
+      - run real scar-positive, edema-positive, hard-negative, complete, LGE+C0 and LGE-only cases
+      - run forward/backward and exact resume test
+      - alternate scar-focused and edema-focused micro-batches
+      - audit augmentations, router use, anatomy exchange, proposal/refiner/prototype gradients
+      - run no-prototype and no-anatomy-exchange controls on fixed inputs
+    exact_outputs:
+      - results/20260729_care_prism_fold0_fold1/preflight_training_receipt.json
+      - results/20260729_care_prism_fold0_fold1/preflight_mechanism_report.json
+      - results/20260729_care_prism_fold0_fold1/preflight_resume_report.json
+      - results/20260729_care_prism_fold0_fold1/preflight_strict_validator_report.json
+    completion:
+      - scar and edema active segmentation losses decrease >= 30 percent without becoming negative
+      - router/anatomy/proposal/refiner/prototype branches all receive nonzero gradients
+      - predicted ROI is nonempty and covers GT on fixed cases
+      - same-stage save/resume produces exact parameters, sampler cursor and next RNG draws
+      - no-T2 exact zero and nnUNet pathology-context invariance PASS
+    failure_branch: implementation or data defects repaired in same task; preflight never counts as science
+
+  - id: W3_FOLD0_DEVELOPMENT
+    dependencies: [W2_PREFLIGHT]
+    cpu_only: false
+    formal_credit: 0
+    fold: 0
+    optimizer_steps: 6500
+    stages:
+      - {name: A, steps: 1000, purpose: strong initialization and evidence warmup}
+      - {name: B, steps: 1500, purpose: proposal prototype and negative-space learning}
+      - {name: C, steps: 2500, purpose: full-lesion soft-cascade refinement}
+      - {name: D, steps: 1500, purpose: low-LR joint calibration}
+    checkpoint_every: 500
+    selection_population: fold0_train_side_inner_only
+    outer_evaluation_count: 1
+    actions:
+      - train from same-fold nnUNet initialization, never from ARC/DPR checkpoint
+      - refresh hard-negative replay once at Stage B midpoint
+      - evaluate every declared checkpoint on train-side inner
+      - freeze one checkpoint, pathology thresholds, component minima and slice-correspondence mode
+      - evaluate fold0 outer once as zero-credit development evidence
+      - report raw proposal, soft-cascade final and no-prototype control
+    exact_outputs:
+      - results/20260729_care_prism_fold0_fold1/fold0_training_receipt.json
+      - results/20260729_care_prism_fold0_fold1/fold0_inner_selection.json
+      - results/20260729_care_prism_fold0_fold1/fold0_freeze_receipt.json
+      - results/20260729_care_prism_fold0_fold1/fold0_casewise_metrics.csv
+      - results/20260729_care_prism_fold0_fold1/fold0_mechanism_report.json
+      - results/20260729_care_prism_fold0_fold1/fold0_development_gate.json
+    completion:
+      - optimizer steps and stage budgets exact
+      - all checkpoints evaluated on inner, not only terminal
+      - fold0 outer evaluated once after freeze
+      - mechanism and safety metrics independently recomputed
+    pass_gate:
+      init_coverage_parameter_bytes_min: 0.90
+      anatomy_roi_gt_coverage_min: 0.98
+      scar_lesion_proposal_recall_min: 0.80
+      edema_lesion_proposal_recall_min: 0.90
+      scar_refiner_gain_over_proposal_dice_min: 0.05
+      edema_refiner_gain_over_proposal_dice_min: 0.05
+      scar_prototype_margin_auroc_min: 0.70
+      edema_prototype_margin_auroc_min: 0.70
+      raw_final_scar_delta_vs_nnunet_min: -0.03
+      raw_final_edema_zone_delta_vs_nnunet_min: -0.03
+      at_least_one_main_pathology_delta_min: 0.005
+      hd95_ratio_max: 1.20
+      remote_fp_ratio_max: 1.20
+      router_noncollapse: true
+      no_t2_exact_zero: true
+    failure_branch:
+      execution_failure: repair and rerun affected stage within same budget semantics
+      mechanism_failure: terminalize this task as RETURN_TO_PLANNER_FOR_GLOBAL_REDESIGN, not project abandonment
+
+  - id: W4_FOLD1_CLEAN
+    dependencies: [W3_FOLD0_DEVELOPMENT]
+    run_only_if: W3_FOLD0_DEVELOPMENT.pass_gate == true
+    cpu_only: false
+    fold: 1
+    optimizer_steps: 8000
+    checkpoint_every: 500
+    selection_population: fold1_train_side_inner_only
+    outer_evaluation_count: 1
+    actions:
+      - train from fold1 nnUNet initialization with frozen CARE-PRISM contract
+      - prohibit fold1 outer access before atomic freeze receipt
+      - select checkpoint and decode on inner only
+      - evaluate fold1 outer exactly once
+    exact_outputs:
+      - results/20260729_care_prism_fold0_fold1/fold1_training_receipt.json
+      - results/20260729_care_prism_fold0_fold1/fold1_inner_selection.json
+      - results/20260729_care_prism_fold0_fold1/fold1_atomic_outer_lock.json
+      - results/20260729_care_prism_fold0_fold1/fold1_casewise_metrics.csv
+      - results/20260729_care_prism_fold0_fold1/fold1_clean_gate.json
+    pass_gate:
+      all_pathology_dice_delta_min: -0.005
+      one_main_pathology_dice_delta_min: 0.010
+      other_main_pathology_dice_delta_min: 0.0
+      per_pathology_help_ge_harm_minus: 1
+      hd95_ratio_max: 1.05
+      remote_fp_ratio_max: 1.10
+      no_new_infinite_exact_hd: true
+      no_t2_exact_zero: true
+    failure_branch: return clean evidence to Planner; no outer retuning and no project abandonment
+
+  - id: W5_FINALIZE
+    dependencies:
+      - W3_FOLD0_DEVELOPMENT
+      - W4_FOLD1_CLEAN if started
+    cpu_only: true
+    actions:
+      - terminal Slurm accounting for every srun process
+      - aggregate and independently validate all gates
+      - mapper final and wiki/CURRENT update from real code and evidence
+      - lightweight local commit only
+      - completion email after all terminal and commit checks
+    exact_outputs:
+      - results/20260729_care_prism_fold0_fold1/controller_report.md
+      - results/20260729_care_prism_fold0_fold1/completion_check.md
+      - results/20260729_care_prism_fold0_fold1/MANIFEST.md
+      - results/20260729_care_prism_fold0_fold1/controller_packet.json
+      - results/20260729_care_prism_fold0_fold1/strict_validator_report.json
+      - results/20260729_care_prism_fold0_fold1/mapper_report_final.md
+      - results/20260729_care_prism_fold0_fold1/notification_brief.json
+    completion:
+      - all started GPU processes terminal
+      - aggregation and strict validators PASS
+      - no runtime push or upload
+      - local lightweight commit complete
+      - email sent only after final state
