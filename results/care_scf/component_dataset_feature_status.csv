@@ -1,0 +1,9 @@
+feature,notes,status
+nnU-Net probability,Do not train CARE gate until fold1-fold4 MoSAIC OOF and probability/prototype exports are present.,BLOCKED_FULL_OOF_REQUIRED
+MoSAIC probability,Do not train CARE gate until fold1-fold4 MoSAIC OOF and probability/prototype exports are present.,BLOCKED_FULL_OOF_REQUIRED
+uncertainty,Do not train CARE gate until fold1-fold4 MoSAIC OOF and probability/prototype exports are present.,AVAILABLE_FROM_LABEL_DIAGNOSTIC_ONLY
+anatomy overlap,Do not train CARE gate until fold1-fold4 MoSAIC OOF and probability/prototype exports are present.,AVAILABLE_FROM_LABEL_DIAGNOSTIC_ONLY
+size,Do not train CARE gate until fold1-fold4 MoSAIC OOF and probability/prototype exports are present.,AVAILABLE_FROM_LABEL_DIAGNOSTIC_ONLY
+morphology,Do not train CARE gate until fold1-fold4 MoSAIC OOF and probability/prototype exports are present.,AVAILABLE_FROM_LABEL_DIAGNOSTIC_ONLY
+positive prototype similarity,Do not train CARE gate until fold1-fold4 MoSAIC OOF and probability/prototype exports are present.,BLOCKED_FULL_OOF_REQUIRED
+negative prototype similarity,Do not train CARE gate until fold1-fold4 MoSAIC OOF and probability/prototype exports are present.,BLOCKED_FULL_OOF_REQUIRED

@@ -1,0 +1,6 @@
+fold,mosaic_prediction_count,mosaic_prediction_dir,reason,source,status,val_count
+0,44,results/20260725_care_myops_mosaic_fold0_reproduction/native_mosaic_predictions_compact,existing fold0 random-init fair reproduction,fold0_fair_reproduction,PRESENT,44
+1,0,results/care_scf/mosaic_oof/fold_1,no MoSAIC grid_output/5fold/foldN checkpoint directory found,missing_fold_specific_mosaic,MISSING_OOF_CHECKPOINTS,44
+2,0,results/care_scf/mosaic_oof/fold_2,no MoSAIC grid_output/5fold/foldN checkpoint directory found,missing_fold_specific_mosaic,MISSING_OOF_CHECKPOINTS,44
+3,0,results/care_scf/mosaic_oof/fold_3,no MoSAIC grid_output/5fold/foldN checkpoint directory found,missing_fold_specific_mosaic,MISSING_OOF_CHECKPOINTS,44
+4,0,results/care_scf/mosaic_oof/fold_4,no MoSAIC grid_output/5fold/foldN checkpoint directory found,missing_fold_specific_mosaic,MISSING_OOF_CHECKPOINTS,44

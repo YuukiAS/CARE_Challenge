@@ -27,6 +27,7 @@ env_CARE_nnUNet_v1/
 .tmp/
 .cursor/
 .codex/
+.codex_runtime/
 .agents/skills/*
 !.agents/skills/agent-task-executor/
 !.agents/skills/agent-task-executor/**
@@ -42,10 +43,12 @@ jobs/autopilot/
 results/autopilot/
 results/watchboard/
 scripts/autopilot/
+scripts/forensics/care_failure_forensics/render_packet_chromium.py
 CARE-Vibe-Research.code-workspace
 CURRENT_RESEARCH_BRIEF.md
 RUN.md
 VIBE_*.md
+strict_validator_report.json
 prompts/Vibe_Research.md
 
 # Local archive buckets for first-level directories.

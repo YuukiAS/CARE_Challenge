@@ -1,0 +1,9 @@
+evidence,notes,requirement,status
+final_manifest.json allocation.squeue and allocation.scontrol,No new Slurm job submission is performed by this builder.,Use only existing allocation 60657290,PASS
+mosaic_oof_status.csv,Full-data pretrained MoSAIC weights are not accepted as OOF evidence.,MoSAIC fold1-fold4 OOF inference,FAIL_MISSING_EVIDENCE
+nnunet_oof_status.csv,Expected five folds with 44 validation predictions each.,nnU-Net strong anchor OOF predictions,PASS
+component_dataset_fold0_diagnostic.csv and component_dataset_feature_status.csv,Hard-label fold0 diagnostics exist; probability and prototype features are missing.,Component dataset with required features,PARTIAL_DIAGNOSTIC_ONLY
+care_gate_training_receipt.json,Running a gate on incomplete OOF evidence would be leakage-prone.,Lightweight CARE gate,NOT_RUN_REFUSED_BY_EVIDENCE_GATE
+care_prediction_status.csv,Scar-only correction requires a trained gate.,CARE-SafeScar-v1,NOT_GENERATED
+care_prediction_status.csv,Edema arbitration requires T2-present reliable OOF features.,CARE-SCF-v2,NOT_GENERATED
+final_manifest.json forbidden_actions_observed,Builder only writes local evidence files.,No validation upload,PASS

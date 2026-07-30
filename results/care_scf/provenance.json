@@ -1,0 +1,63 @@
+{
+  "allocation": {
+    "jobid": "60657290",
+    "node": "g1807htzh01",
+    "partition": "htzhulab",
+    "scontrol": {
+      "cmd": [
+        "scontrol",
+        "show",
+        "job",
+        "60657290"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "JobId=60657290 JobName=CAREInteractive3d\n   UserId=aereinh(397557) GroupId=users(100) MCS_label=N/A\n   Priority=10186 Nice=0 Account=rc_htzhu_pi QOS=gpu_access\n   JobState=RUNNING Reason=None Dependency=(null)\n   Requeue=1 Restarts=0 BatchFlag=1 Reboot=0 ExitCode=0:0\n   RunTime=08:35:03 TimeLimit=3-00:00:00 TimeMin=N/A\n   SubmitTime=2026-07-25T21:04:50 EligibleTime=2026-07-25T21:04:50\n   AccrueTime=Unknown\n   StartTime=2026-07-25T21:04:56 EndTime=2026-07-28T21:04:56 Deadline=N/A\n   SuspendTime=None SecsPreSuspend=0 LastSchedEval=2026-07-25T21:04:56 Scheduler=Main\n   Partition=htzhulab AllocNode:Sid=c151604:1144685\n   ReqNodeList=(null) ExcNodeList=(null)\n   NodeList=g1807htzh01\n   BatchHost=g1807htzh01\n   NumNodes=1 NumCPUs=8 NumTasks=1 CPUs/Task=8 ReqB:S:C:T=0:0:*:*\n   ReqTRES=cpu=8,mem=64G,node=1,billing=8,gres/gpu=1\n   AllocTRES=cpu=8,mem=64G,node=1,billing=8,gres/gpu=1,gres/gpu:nvidia_h100_nvl=1\n   Socks/Node=* NtasksPerN:B:S:C=0:0:*:* CoreSpec=*\n   MinCPUsNode=8 MinMemoryNode=64G MinTmpDiskNode=0\n   Features=(null) DelayBoot=00:00:00\n   OverSubscribe=OK Contiguous=0 Licenses=(null) LicensesAlloc=(null) Network=(null)\n   Command=(null)\n   SubmitLine=sbatch --parsable --job-name=CAREInteractive3d --output=/dev/null --error=/dev/null --ntasks=1 --cpus-per-task=8 --mem=64G --time=3-00:00:00 --gres=gpu:1 --partition=htzhulab --qos=gpu_access --chdir=/users/a/e/aereinh/CARE --wrap=sleep 3d\n   WorkDir=/users/a/e/aereinh/CARE\n   StdErr=/dev/null\n   StdIn=/dev/null\n   StdOut=/dev/null\n   TresPerNode=gres/gpu:1\n   TresPerTask=cpu=8"
+    },
+    "squeue": {
+      "cmd": [
+        "squeue",
+        "-j",
+        "60657290",
+        "-o",
+        "%i|%t|%P|%N|%M|%l|%D|%R"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "JOBID|ST|PARTITION|NODELIST|TIME|TIME_LIMIT|NODES|NODELIST(REASON)\n60657290|R|htzhulab|g1807htzh01|8:35:03|3-00:00:00|1|g1807htzh01"
+    }
+  },
+  "git_status": {
+    "cmd": [
+      "git",
+      "status",
+      "--short",
+      "--branch"
+    ],
+    "returncode": 0,
+    "stderr": "",
+    "stdout": "## main...origin/main\n M results/20260724_care_myops_srr_cascade_submission_rescue/runtime_closure_repair_rc1/formal_race_watcher_history_v2.jsonl\n M results/20260724_care_myops_srr_cascade_submission_rescue/runtime_closure_repair_rc1/formal_race_watcher_state_v2.json\n?? .codex_runtime/\n?? results/care_scf/\n?? scripts/evaluation/build_care_scf_controller_packet.py"
+  },
+  "guardrails": {
+    "docker_upload": false,
+    "new_slurm_job": false,
+    "salloc": false,
+    "sbatch": false,
+    "validation_upload": false
+  },
+  "schema_version": 1,
+  "source_files": {
+    "builder": "scripts/evaluation/build_care_scf_controller_packet.py",
+    "fold0_geometry_audit": "results/20260725_care_myops_mosaic_fold0_reproduction/geometry_audit.csv",
+    "fold0_model_summary": "results/20260725_care_myops_mosaic_fold0_reproduction/canonical_model_summary.csv",
+    "fold0_pairwise_help_harm": "results/20260725_care_myops_mosaic_fold0_reproduction/pairwise_help_harm.csv",
+    "splits": "data/benchmarks/protocol/splits_MyoPS.json"
+  },
+  "source_sha256": {
+    "builder": "7f3ddf0125fa677473bba5e38e78951f368b2eb2f2dcc7ed832246978bbe5f55",
+    "fold0_geometry_audit": "9d2ac31131ade49f608efc319f4cad24536011d037949ecc4c3e6836bcfcee07",
+    "fold0_model_summary": "c7c2e2b20747a619fa465f5b62e2e8c163faac917ab25437361e9b59c5382d5e",
+    "fold0_pairwise_help_harm": "7f84a594754a35153bf5a0999f36f4b8427c013bfe4c6c03f8f3513d51f4b1f5",
+    "splits": "6165caeb5b47feb0d24f20380898037b7e6cead4db1eeba398a3c5a57faf9a1b"
+  }
+}

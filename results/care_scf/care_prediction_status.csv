@@ -1,0 +1,3 @@
+artifact,edema_policy,pathology_scope,reason,status,validation_ready
+CARE-SafeScar-v1,fallback_to_anchor,scar_only,CARE gate was not trained because full MoSAIC OOF component evidence is missing.,NOT_GENERATED,0
+CARE-SCF-v2,no_T2_cases_forbidden_as_edema_negative,scar_plus_t2_present_edema_arbitration,CARE gate was not trained and edema component arbitration lacks reliable T2-present OOF features.,NOT_GENERATED,0

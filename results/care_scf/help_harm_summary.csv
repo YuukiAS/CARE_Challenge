@@ -1,0 +1,7 @@
+count,help_harm,pathology
+15,harm,pure_edema
+1,help,pure_edema
+28,not_applicable_empty_gt,pure_edema
+33,harm,scar
+9,help,scar
+2,tie,scar

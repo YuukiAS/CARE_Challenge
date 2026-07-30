@@ -35,7 +35,7 @@
   ],
   "decision": "TERMINAL_NEEDS_ACCOUNTING",
   "dry_run": false,
-  "iteration": 38,
+  "iteration": 1,
   "pairs": [
     {
       "a100_job": "60571937",
@@ -148,5 +148,5 @@
       "state": "CANCELLED"
     }
   },
-  "timestamp_utc": "2026-07-25T05:37:48.978016+00:00"
+  "timestamp_utc": "2026-07-26T03:56:17.013769+00:00"
 }

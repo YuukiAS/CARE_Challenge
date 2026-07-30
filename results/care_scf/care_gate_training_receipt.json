@@ -1,0 +1,30 @@
+{
+  "allowed_model_classes": [
+    "logistic_regression",
+    "shallow_tree",
+    "tiny_mlp"
+  ],
+  "component_rows": 88,
+  "edema_no_t2_negative_policy": "ENFORCED_NO_T2_NOT_USED_AS_NEGATIVE",
+  "forbidden_model_classes": [
+    "transformer",
+    "large_cnn",
+    "new_encoder",
+    "new_segmentation_backbone"
+  ],
+  "missing_feature_row_count": 88,
+  "missing_mosaic_oof_folds": [
+    1,
+    2,
+    3,
+    4
+  ],
+  "mosaic_oof_complete": false,
+  "probability_feature_status": "MISSING",
+  "prototype_feature_status": "MISSING",
+  "reason": "Required fold1-fold4 MoSAIC OOF predictions and probability/prototype features are missing.",
+  "schema_version": 1,
+  "selected_model_class": null,
+  "status": "NOT_RUN_REFUSED_BY_EVIDENCE_GATE",
+  "training_eligible_rows": 0
+}

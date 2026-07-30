@@ -1,0 +1,74 @@
+{
+  "allocation": {
+    "jobid": "60657290",
+    "node": "g1807htzh01",
+    "partition": "htzhulab",
+    "scontrol": {
+      "cmd": [
+        "scontrol",
+        "show",
+        "job",
+        "60657290"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "JobId=60657290 JobName=CAREInteractive3d\n   UserId=aereinh(397557) GroupId=users(100) MCS_label=N/A\n   Priority=10186 Nice=0 Account=rc_htzhu_pi QOS=gpu_access\n   JobState=RUNNING Reason=None Dependency=(null)\n   Requeue=1 Restarts=0 BatchFlag=1 Reboot=0 ExitCode=0:0\n   RunTime=08:35:03 TimeLimit=3-00:00:00 TimeMin=N/A\n   SubmitTime=2026-07-25T21:04:50 EligibleTime=2026-07-25T21:04:50\n   AccrueTime=Unknown\n   StartTime=2026-07-25T21:04:56 EndTime=2026-07-28T21:04:56 Deadline=N/A\n   SuspendTime=None SecsPreSuspend=0 LastSchedEval=2026-07-25T21:04:56 Scheduler=Main\n   Partition=htzhulab AllocNode:Sid=c151604:1144685\n   ReqNodeList=(null) ExcNodeList=(null)\n   NodeList=g1807htzh01\n   BatchHost=g1807htzh01\n   NumNodes=1 NumCPUs=8 NumTasks=1 CPUs/Task=8 ReqB:S:C:T=0:0:*:*\n   ReqTRES=cpu=8,mem=64G,node=1,billing=8,gres/gpu=1\n   AllocTRES=cpu=8,mem=64G,node=1,billing=8,gres/gpu=1,gres/gpu:nvidia_h100_nvl=1\n   Socks/Node=* NtasksPerN:B:S:C=0:0:*:* CoreSpec=*\n   MinCPUsNode=8 MinMemoryNode=64G MinTmpDiskNode=0\n   Features=(null) DelayBoot=00:00:00\n   OverSubscribe=OK Contiguous=0 Licenses=(null) LicensesAlloc=(null) Network=(null)\n   Command=(null)\n   SubmitLine=sbatch --parsable --job-name=CAREInteractive3d --output=/dev/null --error=/dev/null --ntasks=1 --cpus-per-task=8 --mem=64G --time=3-00:00:00 --gres=gpu:1 --partition=htzhulab --qos=gpu_access --chdir=/users/a/e/aereinh/CARE --wrap=sleep 3d\n   WorkDir=/users/a/e/aereinh/CARE\n   StdErr=/dev/null\n   StdIn=/dev/null\n   StdOut=/dev/null\n   TresPerNode=gres/gpu:1\n   TresPerTask=cpu=8"
+    },
+    "squeue": {
+      "cmd": [
+        "squeue",
+        "-j",
+        "60657290",
+        "-o",
+        "%i|%t|%P|%N|%M|%l|%D|%R"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "JOBID|ST|PARTITION|NODELIST|TIME|TIME_LIMIT|NODES|NODELIST(REASON)\n60657290|R|htzhulab|g1807htzh01|8:35:03|3-00:00:00|1|g1807htzh01"
+    }
+  },
+  "blocked_reason": "fold1-fold4 MoSAIC OOF checkpoints/predictions are absent; full-data pretrained MoSAIC weights must not be treated as cross-fitted evidence",
+  "care_scf_real_activation": false,
+  "controller_verification_decision": "OPERATIONALLY_BLOCKED",
+  "created_at_utc": "2026-07-26T09:39:59.385411+00:00",
+  "evidence_paths": {
+    "care_gate_training_receipt": "results/care_scf/care_gate_training_receipt.json",
+    "care_prediction_status": "results/care_scf/care_prediction_status.csv",
+    "completion_audit": "results/care_scf/completion_audit.csv",
+    "component_dataset": "results/care_scf/component_dataset_fold0_diagnostic.csv",
+    "component_decisions": "results/care_scf/component_decisions.csv",
+    "feature_status": "results/care_scf/component_dataset_feature_status.csv",
+    "geometry_audit": "results/care_scf/geometry_audit.csv",
+    "help_harm": "results/care_scf/help_harm.csv",
+    "mosaic_oof_status": "results/care_scf/mosaic_oof_status.csv",
+    "nnunet_oof_status": "results/care_scf/nnunet_oof_status.csv",
+    "provenance": "results/care_scf/provenance.json"
+  },
+  "fold0_help_harm_counts": {
+    "pure_edema::harm": 15,
+    "pure_edema::help": 1,
+    "pure_edema::not_applicable_empty_gt": 28,
+    "scar::harm": 33,
+    "scar::help": 9,
+    "scar::tie": 2
+  },
+  "forbidden_actions_observed": {
+    "docker_upload": false,
+    "new_slurm_job": false,
+    "salloc": false,
+    "sbatch": false,
+    "validation_upload": false
+  },
+  "mosaic_oof_complete": false,
+  "nnunet_anchor_complete": true,
+  "schema_version": 1,
+  "stage_status": {
+    "stage1_mosaic_fold1_fold4_oof": "BLOCKED_MISSING_OOF_CHECKPOINTS",
+    "stage2_component_dataset": "BLOCKED_FULL_OOF_AND_PROBABILITY_EXPORT_REQUIRED",
+    "stage3_lightweight_gate": "NOT_RUN_NO_TRAINING_DATA",
+    "stage4_care_safescar_v1": "NOT_GENERATED_GATE_NOT_ACTIVATED",
+    "stage5_care_scf_v2": "NOT_GENERATED_GATE_NOT_ACTIVATED"
+  },
+  "validation_submission_reason": "CARE-SCF has not produced activated predictions and lacks required cross-fitted MoSAIC component evidence.",
+  "validation_submission_recommendation": "NO_DO_NOT_SUBMIT_CARE_SCF"
+}
