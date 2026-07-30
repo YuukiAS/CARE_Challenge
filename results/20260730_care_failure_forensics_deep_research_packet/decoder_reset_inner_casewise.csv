@@ -1,2 +1,13 @@
-diagnostic,status
-D0,NOT_RUN
+diagnostic,case_id,split,myops_edema_dice_class_4,myops_scar_dice_class_5,foreground_mean_dice,myops_edema_hd95_class_4_mm,myops_scar_hd95_class_5_mm,foreground_mean_hd95_mm,prediction_file
+D0_FULL_PRETRAINED_IDENTITY,Case1001,fold0_inner_select,,0.961240,0.961240,0.000000,0.000000,0.000000,results/20260730_care_failure_forensics_deep_research_packet/runtime/D0_FULL_PRETRAINED_IDENTITY/predictions/Case1001.nii.gz
+D0_FULL_PRETRAINED_IDENTITY,Case1015,fold0_inner_select,,0.926113,0.926113,0.000000,1.367200,0.683600,results/20260730_care_failure_forensics_deep_research_packet/runtime/D0_FULL_PRETRAINED_IDENTITY/predictions/Case1015.nii.gz
+D0_FULL_PRETRAINED_IDENTITY,Case1027,fold0_inner_select,,0.865269,0.865269,0.000000,1.328100,0.664050,results/20260730_care_failure_forensics_deep_research_packet/runtime/D0_FULL_PRETRAINED_IDENTITY/predictions/Case1027.nii.gz
+D0_FULL_PRETRAINED_IDENTITY,Case1039,fold0_inner_select,,0.878491,0.878491,0.000000,1.328100,0.664050,results/20260730_care_failure_forensics_deep_research_packet/runtime/D0_FULL_PRETRAINED_IDENTITY/predictions/Case1039.nii.gz
+D0_FULL_PRETRAINED_IDENTITY,Case1054,fold0_inner_select,,0.916119,0.916119,0.000000,1.328100,0.664050,results/20260730_care_failure_forensics_deep_research_packet/runtime/D0_FULL_PRETRAINED_IDENTITY/predictions/Case1054.nii.gz
+D0_FULL_PRETRAINED_IDENTITY,Case1065,fold0_inner_select,,0.919631,0.919631,0.000000,1.484400,0.742200,results/20260730_care_failure_forensics_deep_research_packet/runtime/D0_FULL_PRETRAINED_IDENTITY/predictions/Case1065.nii.gz
+D0_FULL_PRETRAINED_IDENTITY,Case1077,fold0_inner_select,,0.799321,0.799321,0.000000,1.933513,0.966756,results/20260730_care_failure_forensics_deep_research_packet/runtime/D0_FULL_PRETRAINED_IDENTITY/predictions/Case1077.nii.gz
+D0_FULL_PRETRAINED_IDENTITY,Case2010,fold0_inner_select,0.944695,0.973017,0.958856,1.406250,1.406250,1.406250,results/20260730_care_failure_forensics_deep_research_packet/runtime/D0_FULL_PRETRAINED_IDENTITY/predictions/Case2010.nii.gz
+D0_FULL_PRETRAINED_IDENTITY,Case2022,fold0_inner_select,0.959443,0.972003,0.965723,1.425781,1.211914,1.318848,results/20260730_care_failure_forensics_deep_research_packet/runtime/D0_FULL_PRETRAINED_IDENTITY/predictions/Case2022.nii.gz
+D0_FULL_PRETRAINED_IDENTITY,Case2034,fold0_inner_select,0.940377,0.973515,0.956946,1.328125,0.000000,0.664062,results/20260730_care_failure_forensics_deep_research_packet/runtime/D0_FULL_PRETRAINED_IDENTITY/predictions/Case2034.nii.gz
+D0_FULL_PRETRAINED_IDENTITY,Case3010,fold0_inner_select,0.948122,0.913907,0.931014,0.729067,0.729067,0.729067,results/20260730_care_failure_forensics_deep_research_packet/runtime/D0_FULL_PRETRAINED_IDENTITY/predictions/Case3010.nii.gz
+D0_FULL_PRETRAINED_IDENTITY,Case3022,fold0_inner_select,0.822778,0.970027,0.896403,0.729067,0.000000,0.364533,results/20260730_care_failure_forensics_deep_research_packet/runtime/D0_FULL_PRETRAINED_IDENTITY/predictions/Case3022.nii.gz

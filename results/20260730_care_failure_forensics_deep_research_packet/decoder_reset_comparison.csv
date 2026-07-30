@@ -1,2 +1,2 @@
-diagnostic,status
-D0-D3,NOT_RUN
+comparison,status,d0_myops_edema_dice_class_4,d0_myops_scar_dice_class_5,d0_foreground_mean_dice,interpretation,outer_validation_tuning_used
+D0_stock_identity_replay_vs_decoder_reset_candidates,D0_PASS_D1_D3_READY,0.923083,0.922388,0.914594,Stock pretrained nnU-Net performs strongly on the frozen inner_select cases; PRISM failure is not explained by evaluator/font/PDF artifacts and D1-D3 decoder-reset diagnostics are now allowed.,false

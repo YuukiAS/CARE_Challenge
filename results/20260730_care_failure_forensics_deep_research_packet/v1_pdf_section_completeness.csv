@@ -1,0 +1,22 @@
+required_v2_section,present_in_v1_pdf_text,v1_status,notes
+当前 V1 为什么不完整,False,MISSING_FROM_V1_PDF,Required by V2 PDF contract.
+Batch 0,True,PRESENT_BUT_NEEDS_COMPLETION_AUDIT,Presence is not evidence of executed GPU/metric work.
+Batch7 深入复盘,False,MISSING_FROM_V1_PDF,Required by V2 PDF contract.
+MMRD,True,PRESENT_BUT_NEEDS_COMPLETION_AUDIT,Presence is not evidence of executed GPU/metric work.
+Cascade,True,PRESENT_BUT_NEEDS_COMPLETION_AUDIT,Presence is not evidence of executed GPU/metric work.
+DG/DR/DPR,False,MISSING_FROM_V1_PDF,Required by V2 PDF contract.
+ARC,True,PRESENT_BUT_NEEDS_COMPLETION_AUDIT,Presence is not evidence of executed GPU/metric work.
+PRISM,True,PRESENT_BUT_NEEDS_COMPLETION_AUDIT,Presence is not evidence of executed GPU/metric work.
+MoSAIC source/weight/recipe,False,MISSING_FROM_V1_PDF,Required by V2 PDF contract.
+统一病例级指标,False,MISSING_FROM_V1_PDF,Required by V2 PDF contract.
+视觉病例图册,False,MISSING_FROM_V1_PDF,Required by V2 PDF contract.
+error overlap,True,PRESENT_BUT_NEEDS_COMPLETION_AUDIT,Presence is not evidence of executed GPU/metric work.
+oracle,True,PRESENT_BUT_NEEDS_COMPLETION_AUDIT,Presence is not evidence of executed GPU/metric work.
+selector,True,PRESENT_BUT_NEEDS_COMPLETION_AUDIT,Presence is not evidence of executed GPU/metric work.
+feature probes,False,MISSING_FROM_V1_PDF,Required by V2 PDF contract.
+decoder-reset,True,PRESENT_BUT_NEEDS_COMPLETION_AUDIT,Presence is not evidence of executed GPU/metric work.
+alignment,True,PRESENT_BUT_NEEDS_COMPLETION_AUDIT,Presence is not evidence of executed GPU/metric work.
+Cine,True,PRESENT_BUT_NEEDS_COMPLETION_AUDIT,Presence is not evidence of executed GPU/metric work.
+历史组件生存清单,False,MISSING_FROM_V1_PDF,Required by V2 PDF contract.
+约 0.1 Dice 上限分析,False,MISSING_FROM_V1_PDF,Required by V2 PDF contract.
+Deep Research 设计约束证据,False,MISSING_FROM_V1_PDF,Required by V2 PDF contract.

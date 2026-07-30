@@ -1,2 +1,4 @@
-probe,status
-logistic_regression,NOT_RUN
+metric_name,selector_model,status,case_count,positive_count_mosaic_better,nested_cv_splits,accuracy,auroc,auprc,leakage_boundary,positive_count,notes
+scar,logistic_regression,COMPLETED_WITH_VALID_EVIDENCE,220,61,5,0.7545454545454545,0.8268893700381483,0.5531357408350024,features use prediction morphology/agreement only; GT is used only for held-out selector labels.,,
+scar,gradient_boosting_depth3,COMPLETED_WITH_VALID_EVIDENCE,220,61,5,0.7181818181818181,0.7942055882049697,0.545869839317893,features use prediction morphology/agreement only; GT is used only for held-out selector labels.,,
+pure_edema,all,BLOCKED_BY_MISSING_BOUND_ASSET,80,,1,,,,,1,At least two cases per class are required for stratified selector CV.

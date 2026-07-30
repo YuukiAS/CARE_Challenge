@@ -1,0 +1,186 @@
+{
+  "fixtures": {
+    "both_empty": {
+      "metrics": {
+        "dice": null,
+        "empty_gt": true,
+        "empty_prediction": true,
+        "gt_component_count": 0,
+        "gt_volume_mm3": 0.0,
+        "hd95_mm": 0.0,
+        "hd_mm": 0.0,
+        "lesion_precision": null,
+        "lesion_recall": null,
+        "precision": null,
+        "predicted_component_count": 0,
+        "prediction_volume_mm3": 0.0,
+        "recall": null,
+        "remote_fp_component_count_10mm": 0,
+        "remote_fp_component_count_15mm": 0,
+        "remote_fp_component_count_5mm": 0,
+        "remote_fp_volume_mm3_10mm": 0.0,
+        "remote_fp_volume_mm3_15mm": 0.0,
+        "remote_fp_volume_mm3_5mm": 0.0,
+        "specificity": 1.0,
+        "surface_dice": 1.0,
+        "volume_ratio": null
+      },
+      "passed": true
+    },
+    "gt_empty_pred_nonempty": {
+      "metrics": {
+        "dice": 0.0,
+        "empty_gt": true,
+        "empty_prediction": false,
+        "gt_component_count": 0,
+        "gt_volume_mm3": 0.0,
+        "hd95_mm": null,
+        "hd_mm": null,
+        "lesion_precision": 0.0,
+        "lesion_recall": null,
+        "precision": 0.0,
+        "predicted_component_count": 2,
+        "prediction_volume_mm3": 440.0,
+        "recall": null,
+        "remote_fp_component_count_10mm": 1,
+        "remote_fp_component_count_15mm": 1,
+        "remote_fp_component_count_5mm": 1,
+        "remote_fp_volume_mm3_10mm": 80.0,
+        "remote_fp_volume_mm3_15mm": 80.0,
+        "remote_fp_volume_mm3_5mm": 80.0,
+        "specificity": 0.997314453125,
+        "surface_dice": 0.0,
+        "volume_ratio": null
+      },
+      "passed": true
+    },
+    "gt_nonempty_pred_empty": {
+      "metrics": {
+        "dice": 0.0,
+        "empty_gt": false,
+        "empty_prediction": true,
+        "gt_component_count": 1,
+        "gt_volume_mm3": 360.0,
+        "hd95_mm": null,
+        "hd_mm": null,
+        "lesion_precision": null,
+        "lesion_recall": 0.0,
+        "precision": null,
+        "predicted_component_count": 0,
+        "prediction_volume_mm3": 0.0,
+        "recall": 0.0,
+        "remote_fp_component_count_10mm": 0,
+        "remote_fp_component_count_15mm": 0,
+        "remote_fp_component_count_5mm": 0,
+        "remote_fp_volume_mm3_10mm": 0.0,
+        "remote_fp_volume_mm3_15mm": 0.0,
+        "remote_fp_volume_mm3_5mm": 0.0,
+        "specificity": 1.0,
+        "surface_dice": 0.0,
+        "volume_ratio": 0.0
+      },
+      "passed": true
+    },
+    "hd95_uses_spacing": {
+      "metrics": {
+        "dice": 0.5,
+        "empty_gt": false,
+        "empty_prediction": false,
+        "gt_component_count": 1,
+        "gt_volume_mm3": 360.0,
+        "hd95_mm": 5.0,
+        "hd_mm": 5.0,
+        "lesion_precision": 1.0,
+        "lesion_recall": 1.0,
+        "precision": 0.5,
+        "predicted_component_count": 1,
+        "prediction_volume_mm3": 360.0,
+        "recall": 0.5,
+        "remote_fp_component_count_10mm": 0,
+        "remote_fp_component_count_15mm": 0,
+        "remote_fp_component_count_5mm": 0,
+        "remote_fp_volume_mm3_10mm": 0.0,
+        "remote_fp_volume_mm3_15mm": 0.0,
+        "remote_fp_volume_mm3_5mm": 0.0,
+        "specificity": 0.9988989478835332,
+        "surface_dice": 0.5,
+        "volume_ratio": 1.0
+      },
+      "passed": true
+    },
+    "lesion_recall_two_components_one_hit": {
+      "metrics": {
+        "dice": 0.6666666666666666,
+        "empty_gt": false,
+        "empty_prediction": false,
+        "gt_component_count": 2,
+        "gt_volume_mm3": 160.0,
+        "hd95_mm": 52.340791422096444,
+        "hd_mm": 53.075418038862395,
+        "lesion_precision": 1.0,
+        "lesion_recall": 0.5,
+        "precision": 1.0,
+        "predicted_component_count": 1,
+        "prediction_volume_mm3": 80.0,
+        "recall": 0.5,
+        "remote_fp_component_count_10mm": 0,
+        "remote_fp_component_count_15mm": 0,
+        "remote_fp_component_count_5mm": 0,
+        "remote_fp_volume_mm3_10mm": 0.0,
+        "remote_fp_volume_mm3_15mm": 0.0,
+        "remote_fp_volume_mm3_5mm": 0.0,
+        "specificity": 1.0,
+        "surface_dice": 0.6666666666666666,
+        "volume_ratio": 0.5
+      },
+      "passed": true
+    },
+    "no_t2_scar_nonempty_fixture_declared": {
+      "note": "Label semantics allow scar without T2; packet builder reports no-T2 label-4 availability separately when data are present.",
+      "passed": true
+    },
+    "orientation_flip_fixture_declared": {
+      "note": "Array-level metric fixture declares orientation as external geometry metadata; packet validator checks spatial audit files.",
+      "passed": true
+    },
+    "remote_fp_is_not_zero": {
+      "metrics": {
+        "dice": 0.9,
+        "empty_gt": false,
+        "empty_prediction": false,
+        "gt_component_count": 1,
+        "gt_volume_mm3": 360.0,
+        "hd95_mm": 47.74934554525329,
+        "hd_mm": 49.1121166312347,
+        "lesion_precision": 0.5,
+        "lesion_recall": 1.0,
+        "precision": 0.8181818181818182,
+        "predicted_component_count": 2,
+        "prediction_volume_mm3": 440.0,
+        "recall": 1.0,
+        "remote_fp_component_count_10mm": 1,
+        "remote_fp_component_count_15mm": 1,
+        "remote_fp_component_count_5mm": 1,
+        "remote_fp_volume_mm3_10mm": 80.0,
+        "remote_fp_volume_mm3_15mm": 80.0,
+        "remote_fp_volume_mm3_5mm": 80.0,
+        "specificity": 0.9995106435037925,
+        "surface_dice": 0.9,
+        "volume_ratio": 1.2222222222222223
+      },
+      "passed": true
+    },
+    "scar_edema_zone_overlap_semantics": {
+      "counts": {
+        "internal_edema_zone": 8,
+        "lv": 0,
+        "myocardium_union": 8,
+        "official_pure_edema": 4,
+        "official_scar": 4,
+        "rv": 0
+      },
+      "passed": true
+    }
+  },
+  "status": "PASS"
+}

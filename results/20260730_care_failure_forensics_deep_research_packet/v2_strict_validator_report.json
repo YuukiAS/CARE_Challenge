@@ -1,0 +1,50 @@
+{
+  "checks": [
+    {
+      "missing": [],
+      "name": "required_v2_files_exist",
+      "status": "PASS"
+    },
+    {
+      "bad_status": [],
+      "name": "required_gpu_tasks_terminal",
+      "status": "PASS",
+      "task_count": 10
+    },
+    {
+      "failures": [],
+      "name": "known_bad_reference_metrics",
+      "status": "PASS"
+    },
+    {
+      "name": "pdf_final_standard_metadata",
+      "pages": 89,
+      "status": "PASS"
+    },
+    {
+      "name": "pdf_page_count_contract",
+      "pages": 89,
+      "status": "PASS"
+    },
+    {
+      "name": "pdf_named_fonts",
+      "status": "PASS"
+    },
+    {
+      "chars": 118543,
+      "name": "pdf_chinese_extractable",
+      "status": "PASS"
+    },
+    {
+      "name": "case_montages_visual_reviewed",
+      "rows": 20,
+      "status": "PASS"
+    }
+  ],
+  "controller_verification_decision": "VERIFIED_COMPLETE",
+  "created_at": "2026-07-30T08:53:38.411422+00:00",
+  "hard_fail_count": 0,
+  "pdf": "/users/a/e/aereinh/CARE/results/20260730_care_failure_forensics_deep_research_packet/CARE_Failure_Forensics_Deep_Research_Evidence_Packet_20260730_v2.pdf",
+  "status": "PASS",
+  "validator": "care_failure_forensics_v2"
+}

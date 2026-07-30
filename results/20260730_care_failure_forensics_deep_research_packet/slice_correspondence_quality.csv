@@ -1,2 +1,3 @@
-status
-NOT_RUN
+pair,case_count,mean_best_slice_corr,median_best_slice_corr,mean_abs_best_shift,same_geometry_fraction
+LGE-C0,16,0.6246572162320085,0.6538491927060583,0.09583333333333333,1.0
+LGE-T2,16,0.4131665417598186,0.479647535446641,0.60625,1.0

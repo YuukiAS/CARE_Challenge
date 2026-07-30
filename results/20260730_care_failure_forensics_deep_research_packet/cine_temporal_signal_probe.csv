@@ -1,2 +1,10 @@
-probe,status
-CINE_P0_vs_P1,NOT_RUN
+variant,metric_name,class_id,case_count,dice_mean,delta_vs_reference_control,hd95_mean,component_count_mean,empty_prediction_rate,evidence_boundary
+anatomy_consistency_temporal,class_1_myocardium,1,59,0.4661822331407898,-0.09643915082815585,12.06773746728978,2.7796610169491527,0.0,safe-subset local proxy; no hosted metric claim; class_3 is negative control because source model has no scar head
+anatomy_consistency_temporal,class_2_lv,2,59,0.6955386759416984,-0.0753397595471601,11.855990928288145,1.0338983050847457,0.01694915254237288,safe-subset local proxy; no hosted metric claim; class_3 is negative control because source model has no scar head
+anatomy_consistency_temporal,class_3_scar_sanity,3,59,0.0,0.0,,0.0,1.0,safe-subset local proxy; no hosted metric claim; class_3 is negative control because source model has no scar head
+keyframe_context_retrieval,class_1_myocardium,1,59,0.5623431188033298,-0.00027826516561590964,11.333070746298628,1.4745762711864407,0.0,safe-subset local proxy; no hosted metric claim; class_3 is negative control because source model has no scar head
+keyframe_context_retrieval,class_2_lv,2,59,0.7708625477165425,-1.5887772315981152e-05,11.039282918770342,1.0847457627118644,0.01694915254237288,safe-subset local proxy; no hosted metric claim; class_3 is negative control because source model has no scar head
+keyframe_context_retrieval,class_3_scar_sanity,3,59,0.0,0.0,,0.0,1.0,safe-subset local proxy; no hosted metric claim; class_3 is negative control because source model has no scar head
+reference_control_safe,class_1_myocardium,1,59,0.5626213839689457,0.0,11.333070746298628,1.4745762711864407,0.0,safe-subset local proxy; no hosted metric claim; class_3 is negative control because source model has no scar head
+reference_control_safe,class_2_lv,2,59,0.7708784354888585,0.0,11.04403893492186,1.0847457627118644,0.01694915254237288,safe-subset local proxy; no hosted metric claim; class_3 is negative control because source model has no scar head
+reference_control_safe,class_3_scar_sanity,3,59,0.0,0.0,,0.0,1.0,safe-subset local proxy; no hosted metric claim; class_3 is negative control because source model has no scar head

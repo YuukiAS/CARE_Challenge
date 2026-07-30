@@ -1,0 +1,10 @@
+{
+  "evidence": [
+    "results/srr_production/inference/batch3a_*_inference_contract.json",
+    "results/20260629_cascade_teacher_route/teacher_student_delta.csv"
+  ],
+  "finding": "Historical controls must not be interpreted as a clean prototype-null test when control and SRR shared prototype inputs or cached teacher artifacts.",
+  "invalid_conclusion": "Do not claim prototype retrieval is scientifically ineffective from confounded control equality alone.",
+  "status": "COMPLETED_WITH_VALID_EVIDENCE",
+  "valid_conclusion": "Bounded cascade corrections produced near-zero gain on bound local metrics."
+}

@@ -1,0 +1,14 @@
+{
+  "case_count": 16,
+  "output_files": [
+    "cross_modal_alignment_casewise.csv",
+    "slice_correspondence_quality.csv",
+    "alignment_error_correlation.csv",
+    "spatial_geometry_audit.csv",
+    "alignment_forensics_report.md"
+  ],
+  "registration_rows": 32,
+  "source_root": "/users/a/e/aereinh/CARE/results/20260703_myops_alignment_gate",
+  "status": "COMPLETED_WITH_VALID_EVIDENCE",
+  "timestamp_utc": "2026-07-30T08:21:41.617674+00:00"
+}

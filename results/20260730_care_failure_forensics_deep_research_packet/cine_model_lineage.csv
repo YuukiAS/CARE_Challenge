@@ -1,2 +1,2 @@
-model,status
-MOSAIC_CINE,UNBOUND
+source,decision,safe_case_count,temporal_candidate_training,hosted_metric_claim
+results/20260626_cine_temporal/MANIFEST.md,KEEP_REFERENCE_CONTROL,59,not_full_candidate_training,false

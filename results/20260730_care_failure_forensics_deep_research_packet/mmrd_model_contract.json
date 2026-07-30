@@ -1,0 +1,18 @@
+{
+  "bound_code": [
+    "src/care_myocardium/models/care_mm_reliable_distill.py",
+    "src/care_myocardium/training/nnUNetTrainerCAREMMReliableDistill.py",
+    "configs/care_mm/batch9_reliable_label_distillation.yaml"
+  ],
+  "missing_for_exact_replay": [
+    "terminal checkpoint",
+    "same-budget direct/distillation prediction set",
+    "complete casewise metric table"
+  ],
+  "reusable_rules": [
+    "reliable-label supervision",
+    "no-T2 edema hygiene",
+    "structured modality dropout"
+  ],
+  "status": "BLOCKED_BY_MISSING_BOUND_ASSET"
+}

@@ -1,0 +1,3 @@
+source_model,component,original_goal,implemented_faithfully,entered_final_output,received_direct_loss,training_adequate,casewise_signal,help_harm_signal,failure_mode,evidence_for,evidence_against,prerequisites_for_future_use,risk_of_repeating_failure,future_status
+PRISM,private pyramids/routing,separate pathology features,true,yes,yes,yes,weak,weak,decoder/training schedule loss,checkpoint replay,far below anchor,requires full decoder inheritance,high,DO_NOT_REUSE_CURRENT_IMPLEMENTATION
+PRISM,stage schedule,progressive training,true,yes,yes,yes,declines late,declines late,selected checkpoint not best for V2 edema-zone,curve,late degradation,audit before reuse,medium,RETAIN_AS_OPTIONAL_MECHANISM_TO_RETEST

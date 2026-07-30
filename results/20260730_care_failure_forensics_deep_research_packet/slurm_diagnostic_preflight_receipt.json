@@ -1,0 +1,15 @@
+{
+  "status": "PASS",
+  "updated_utc": "2026-07-30T04:03:17.642817+00:00",
+  "allocation": "61220581",
+  "python_executable": "/users/a/e/aereinh/CARE/envs/env_CARE/bin/python",
+  "python_version": "3.12.13",
+  "torch_version": "2.11.0+cu130",
+  "cuda_available": true,
+  "cuda_visible_devices": "0",
+  "gpu_name": "NVIDIA H100 NVL",
+  "gpu_memory": 99951706112,
+  "repo_head": "34ec050072294ad55f729bfc22b281c9f0552951",
+  "preflight_command": "srun --jobid=61220581 --overlap --ntasks=1 bash -lc <python torch/cuda probe>",
+  "preflight_result": "PASS"
+}

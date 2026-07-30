@@ -1,4 +1,119 @@
 {
-  "status": "PARTIAL",
-  "weights_root": "/users/a/e/aereinh/MoSAIC/code/weights"
+  "status": "BOUND_REQUIRES_G4_DECOMPOSITION_RUN",
+  "created_at_utc": "2026-07-30T07:58:00Z",
+  "source_root": "/users/a/e/aereinh/MoSAIC/code/source",
+  "source_git_head": "d334bd1fb2a99dbbc230510590cd8e3ee08cc377",
+  "weights_root": "/users/a/e/aereinh/MoSAIC/code/weights",
+  "download_summary": "/users/a/e/aereinh/MoSAIC/code/weights/download_summary.json",
+  "required_source_files": {
+    "infer_and_submit": "/users/a/e/aereinh/MoSAIC/code/source/scripts/infer_and_submit.py",
+    "docker_myops_predict": "/users/a/e/aereinh/MoSAIC/code/source/docker/myops/predict.py",
+    "docker_cinemyops_predict": "/users/a/e/aereinh/MoSAIC/code/source/docker/cinemyops/predict.py"
+  },
+  "weights": [
+    {
+      "track": "myops",
+      "role": "new_coarse_for_scar_branch_and_myo_mask",
+      "path": "/users/a/e/aereinh/MoSAIC/code/weights/myops/coarse.pt",
+      "sha256": "aae815c3dd50d6776e2af769551e8d6918a5dee4f83f29309a254051e067080c"
+    },
+    {
+      "track": "myops",
+      "role": "old_coarse_for_edema_branch",
+      "path": "/users/a/e/aereinh/MoSAIC/code/weights/myops/coarse_edema.pt",
+      "sha256": "b9b596f1f5475ac852bf2c0be38a72c59e538dd3199f1f4989983433506ed9d4"
+    },
+    {
+      "track": "myops",
+      "role": "scar_fine_branch",
+      "path": "/users/a/e/aereinh/MoSAIC/code/weights/myops/fine_scar.pt",
+      "sha256": "94c54de3321000eabbc3c3a42a5d838410fb859a1c5b2460e6c2f6d773622ded"
+    },
+    {
+      "track": "myops",
+      "role": "old_edema_branch",
+      "path": "/users/a/e/aereinh/MoSAIC/code/weights/myops/edema.pt",
+      "sha256": "14a6a53f643bdbbac4c8234af2aa86e8a43423b761013f7b7f580965e1ed503c"
+    },
+    {
+      "track": "cinemyops",
+      "role": "cine_coarse",
+      "path": "/users/a/e/aereinh/MoSAIC/code/weights/cinemyops/coarse.pt",
+      "sha256": "225dedc45271216f5718391af9e0131e996c432df89b61240bef5e52ee451f4c"
+    },
+    {
+      "track": "cinemyops",
+      "role": "cine_fine_v1",
+      "path": "/users/a/e/aereinh/MoSAIC/code/weights/cinemyops/fine_v1.pt",
+      "sha256": "05b31f649befeef8dd2003a0816310d03ee0385626c5c536db80faac9edacdab"
+    },
+    {
+      "track": "cinemyops",
+      "role": "cine_fine_v2",
+      "path": "/users/a/e/aereinh/MoSAIC/code/weights/cinemyops/fine_v2.pt",
+      "sha256": "0f102c08c6d3374bd12e9d4d45585aa2017ffbf96192a0cdda1fb8653cc714fa"
+    }
+  ],
+  "myops_recipe_from_source": {
+    "coarse_for_scar": "myops/coarse.pt",
+    "coarse_for_edema": "myops/coarse_edema.pt",
+    "scar_fine": "myops/fine_scar.pt",
+    "edema_model": "myops/edema.pt",
+    "tta": {
+      "enabled": true,
+      "flips": [
+        "horizontal",
+        "vertical"
+      ]
+    },
+    "scar_threshold_source": "default_thresholds(TRACK_MYOPS, fine)",
+    "edema_threshold": 0.35,
+    "postprocess": [
+      "enforce_pathology_inside_myo for fine labels",
+      "clean_prediction_by_class {4:5,5:3}",
+      "largest_component on edema_zone",
+      "edema merge via merge_labels",
+      "largest_component on scar after final merge",
+      "train_to_official_labels"
+    ]
+  },
+  "cinemyops_recipe_from_source": {
+    "coarse": "cinemyops/coarse.pt",
+    "fine_ensemble": [
+      "cinemyops/fine_v1.pt",
+      "cinemyops/fine_v2.pt"
+    ],
+    "spacings": [
+      [
+        1.25,
+        1.25,
+        4.0
+      ],
+      [
+        1.25,
+        1.25,
+        8.0
+      ],
+      [
+        1.25,
+        1.25,
+        16.0
+      ]
+    ],
+    "tta": {
+      "enabled": true,
+      "flips": [
+        "horizontal",
+        "vertical"
+      ]
+    },
+    "postprocess": [
+      "average fine probabilities across fine_v1/fine_v2 and valid spacings",
+      "default_thresholds(TRACK_CINE, fine)",
+      "enforce_pathology_inside_myo",
+      "largest_component scar",
+      "clean_prediction_by_class {3:5}"
+    ]
+  },
+  "forensic_boundary": "This file binds source and weights only. G4 remains incomplete until M0-M10 recipe decomposition is run and aggregated."
 }

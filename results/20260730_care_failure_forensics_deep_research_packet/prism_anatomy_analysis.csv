@@ -1,0 +1,2 @@
+component,status,evidence
+anatomy_exchange,BLOCKED_BY_MISSING_BOUND_ASSET,No bound exported anatomy intermediate was found in the replay artifact set.

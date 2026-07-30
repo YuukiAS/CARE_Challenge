@@ -1,0 +1,2 @@
+source_model,component,original_goal,implemented_faithfully,entered_final_output,received_direct_loss,training_adequate,casewise_signal,help_harm_signal,failure_mode,evidence_for,evidence_against,prerequisites_for_future_use,risk_of_repeating_failure,future_status
+DG/DR/DPR,pathology-specific arbitration,separate scar/edema decisions,partly,partly,partly,partial,unresolved,unresolved,stopped/partial gates,controller packets,not terminal,reuse audit discipline only,medium,RETAIN_AS_OPTIONAL_MECHANISM_TO_RETEST

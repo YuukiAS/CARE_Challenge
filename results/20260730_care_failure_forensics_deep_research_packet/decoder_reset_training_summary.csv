@@ -1,2 +1,2 @@
-diagnostic,status
-D0_FULL_PRETRAINED_IDENTITY,NOT_RUN
+diagnostic,status,split,case_count,myops_edema_dice_class_4,myops_scar_dice_class_5,foreground_mean_dice,myops_edema_hd95_class_4_mm,myops_scar_hd95_class_5_mm,foreground_mean_hd95_mm,prediction_dir,evaluation_summary,log_path,job_id,slurm_mode,command_exit_code,notes
+D0_FULL_PRETRAINED_IDENTITY,PASS,fold0_inner_select,12,0.923083,0.922388,0.914594,0.468191,1.009720,0.738956,results/20260730_care_failure_forensics_deep_research_packet/runtime/D0_FULL_PRETRAINED_IDENTITY/predictions,results/20260730_care_failure_forensics_deep_research_packet/runtime/D0_FULL_PRETRAINED_IDENTITY/evaluation/evaluation_summary.json,logs/ForensicsD0_61220581_20260730_000747.log,61220581,existing_allocation_overlap,0,"Stock nnU-Net fold0 checkpoint replayed on frozen inner_select cases; no training, upload, or outer tuning."

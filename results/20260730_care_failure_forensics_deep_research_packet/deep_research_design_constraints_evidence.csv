@@ -1,0 +1,6 @@
+constraint_id,evidence,allowed_use,forbidden_use,status
+inherit_valid_experience,Batch7 availability-aware evidence; MMRD reliable labels/no-T2 hygiene; Cascade fallback/help-harm; ARC train-deploy parity.,"reuse as data rules, supervision rules, or verification gates",copy failed routers/SIP/simple residual heads/current PRISM decoder-reset strategy,SUPPORTED_WITH_BOUNDARIES
+nnunet_mosaic_not_only主体,nnU-Net remains strongest clean local baseline; MoSAIC hosted/full-data recipe differs from clean OOF.,"teacher, comparator, calibration, error mining",only final predictor or black-box ensemble主体,SUPPORTED_WITH_BOUNDARIES
+no_many_backbones,historical complex multi-component routes did not close final-output gains.,one strong shared representation with lightweight pathology-specific heads,stack complete nnU-Net/MoSAIC/PRISM backbones,SUPPORTED
+scar_edema_equal,PRISM/ARC/DG failures often overfit scar or leave edema under-supported; pure edema selector evidence weak.,separate but equally audited pathology paths,scar-only design with edema as appendix,SUPPORTED
+large_gain_target,large_gain_feasibility_analysis.csv,test a plausible mechanism; report uncertainty,claim 0.1 gain from oracle or full-data probe,UNCERTAIN_NOT_PROVEN

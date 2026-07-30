@@ -1,0 +1,4 @@
+source_model,component,original_goal,implemented_faithfully,entered_final_output,received_direct_loss,training_adequate,casewise_signal,help_harm_signal,failure_mode,evidence_for,evidence_against,prerequisites_for_future_use,risk_of_repeating_failure,future_status
+MMRD,reliable-label supervision,avoid invalid edema labels,true,data rule,no,bound as rule,supportive,supportive,not model-gain alone,config/source,no terminal direct gain,use as hygiene,low,RETAIN_AS_DATA_OR_SUPERVISION_RULE
+MMRD,no-T2 edema hygiene,prevent impossible edema FP,true,data rule,no,bound as rule,supportive,supportive,not model-gain alone,receipts/source,not standalone model evidence,mandatory rule,low,RETAIN_AS_DATA_OR_SUPERVISION_RULE
+MMRD,simple residual pathology head,cheap correction,partly,yes,yes,unclear,weak,weak,underpowered head,source,missing terminal metrics,requires stronger decoder,high,DO_NOT_REUSE_CURRENT_IMPLEMENTATION

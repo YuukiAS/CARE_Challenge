@@ -1,0 +1,5 @@
+source_model,component,original_goal,implemented_faithfully,entered_final_output,received_direct_loss,training_adequate,casewise_signal,help_harm_signal,failure_mode,evidence_for,evidence_against,prerequisites_for_future_use,risk_of_repeating_failure,future_status
+Batch7,availability-aware evidence,retain evidence hygiene,true,partly,partly,limited,some,mixed,implementation complexity,source/results bound,no stable gain,separate from router,medium,RETAIN_AS_DATA_OR_SUPERVISION_RULE
+Batch7,pathology-specific retrieval,candidate evidence,partly,partly,partly,limited,weak,mixed,not deployable,Batch7 assets,scar harm,simple candidate-only use,high,RETAIN_AS_OPTIONAL_MECHANISM_TO_RETEST
+Batch7,negative-space,reduce FP,partly,unclear,partly,limited,unproven,unproven,not independently validated,plans/code,no isolated gain,new ablation required,high,RETAIN_AS_OPTIONAL_MECHANISM_TO_RETEST
+Batch7,complex router/SIP,route pathology correction,partly,yes,yes,limited,harmful,harmful,scar degradation,route packets,no stable gain,avoid current implementation,high,DO_NOT_REUSE_CURRENT_IMPLEMENTATION

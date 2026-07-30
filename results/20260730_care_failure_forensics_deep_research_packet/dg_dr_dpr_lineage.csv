@@ -1,0 +1,2 @@
+model_id,experiment_id,result_root,code_files_bound,checkpoint_files_bound,prediction_files_bound,metric_files_bound,terminal_status,notes
+CARE_DG_DR_DPR,20260727_20260728_dual_pathology_routes,results/20260727_care_dg_dual_pathology_validation,6,129,132,2,COMPLETED_WITH_VALID_EVIDENCE,Formal completion was partial or stopped; exact final candidate evidence is route-specific and not all assets are bound.

@@ -1,0 +1,5 @@
+claim_id,claim_text,evidence_path,confidence
+V2_CORE_CAUSE,"Historical CARE failures mainly reflect broken evidence chains, decoder/recipe inheritance gaps, and final-output component mismatch rather than one universally invalid idea.",historical_component_survival_ledger.csv,high
+PRISM_DECODER_RESET,Encoder-only inheritance plus reset decoder is insufficient to recover nnU-Net strength.,nnunet_decoder_reset_real_summary.csv,high
+MOSAIC_RECIPE_DOMAIN,MoSAIC clean OOF and full-data recipe are different evidence regimes and must not be compared as clean architecture evidence.,mosaic_clean_full_data_gap.csv,high
+LARGE_GAIN_BOUNDARY,Case-level oracle supports only modest direct gain over nnU-Net; voxel oracle is optimistic and not deployable by itself.,large_gain_feasibility_analysis.csv,medium

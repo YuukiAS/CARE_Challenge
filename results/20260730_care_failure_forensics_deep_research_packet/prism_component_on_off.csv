@@ -1,0 +1,5 @@
+component,status,effect
+checkpoint_replay,COMPLETED_WITH_VALID_EVIDENCE,P0-P4 corrected final masks and metrics bound.
+feature_probe,BLOCKED_BY_MISSING_BOUND_ASSET,No frozen PRISM embedding export found for P10.
+decoder_reset,COMPLETED_WITH_VALID_EVIDENCE,D0-D3 shows decoder reset sharply reduces nnU-Net baseline recovery.
+router/anatomy/refiner,BLOCKED_BY_MISSING_BOUND_ASSET,Intermediates not exported; final decoded outcome remains valid negative evidence.

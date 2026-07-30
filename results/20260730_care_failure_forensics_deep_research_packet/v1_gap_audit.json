@@ -1,0 +1,675 @@
+{
+  "status": "V1_INCOMPLETE_REQUIRES_V2_COMPLETION",
+  "generated_utc": "2026-07-30T06:37:17.312472+00:00",
+  "repo": "/users/a/e/aereinh/CARE",
+  "packet": "/users/a/e/aereinh/CARE/results/20260730_care_failure_forensics_deep_research_packet",
+  "task_key": "20260730_care_failure_forensics_deep_research_packet_v2_completion",
+  "task_prompt": "/users/a/e/aereinh/.codex-homes/aereinh/attachments/4e409897-b65c-4920-9288-b69fe19898a1/pasted-text-1.txt",
+  "task_prompt_sha256": "a174ef6e36fe35647081110f50d035c624ea3c5b3db5cfa928f29a3ac38244d8",
+  "git_head": "34ec050072294ad55f729bfc22b281c9f0552951",
+  "origin_main": "34ec050072294ad55f729bfc22b281c9f0552951",
+  "v1_strict_validator": {
+    "status": "FAIL",
+    "decision": "NEEDS_REPAIR",
+    "hard_fail_count": 1,
+    "checks": [
+      {
+        "name": "required_outputs_exist",
+        "status": "PASS",
+        "missing": []
+      },
+      {
+        "name": "reference_metric_known_bad",
+        "status": "PASS"
+      },
+      {
+        "name": "claim_ledger_nonempty",
+        "status": "PASS",
+        "rows": 20
+      },
+      {
+        "name": "pdf_exists_nonempty",
+        "status": "PASS",
+        "size_bytes": 280795
+      },
+      {
+        "name": "pdf_searchable_text",
+        "status": "PASS",
+        "chars": 17571
+      },
+      {
+        "name": "pdf_page_quality",
+        "status": "PASS",
+        "bad_pages": [],
+        "pages": 20
+      },
+      {
+        "name": "no_push_authorized",
+        "status": "PASS"
+      },
+      {
+        "name": "no_validation_upload_authorized",
+        "status": "PASS"
+      },
+      {
+        "name": "required_diagnostic_waves_terminal",
+        "status": "FAIL",
+        "missing": [
+          "D1_DECODER_RESET_ENCODER_FROZEN",
+          "D2_DECODER_RESET_TOP_ENCODER_TRAINABLE",
+          "D3_FULL_MODEL_SHORT_FINETUNE",
+          "FEATURE_PROBE_HELDOUT",
+          "MOSAIC_RECIPE_DECOMPOSITION",
+          "CINE_TEMPORAL_PROBE"
+        ]
+      },
+      {
+        "name": "notification_brief_no_monitor_tokens",
+        "status": "PASS"
+      }
+    ]
+  },
+  "v1_finalizer": {
+    "status": "NEEDS_REPAIR",
+    "completed_diagnostics": [
+      "F0_BOOTSTRAP_INVENTORY_PARTIAL",
+      "PDF_RENDER_QA",
+      "REFERENCE_METRIC_KNOWN_BAD",
+      "D0_FULL_PRETRAINED_IDENTITY"
+    ],
+    "missing_required_diagnostics": [
+      "D1_DECODER_RESET_ENCODER_FROZEN",
+      "D2_DECODER_RESET_TOP_ENCODER_TRAINABLE",
+      "D3_FULL_MODEL_SHORT_FINETUNE",
+      "FEATURE_PROBE_HELDOUT",
+      "MOSAIC_RECIPE_DECOMPOSITION",
+      "CINE_TEMPORAL_PROBE"
+    ],
+    "all_jobs_terminal": true,
+    "new_slurm_jobs_submitted": false,
+    "updated_utc": "2026-07-30T04:10:19.729806+00:00",
+    "diagnostic_execution_plan": "diagnostic_execution_plan.json",
+    "slurm_diagnostic_preflight_receipt": "slurm_diagnostic_preflight_receipt.json",
+    "next_required_action": "run D1-D3 decoder-reset diagnostics and bind feature/MoSAIC/Cine probes",
+    "d0_identity_replay": {
+      "status": "PASS",
+      "summary_csv": "decoder_reset_training_summary.csv",
+      "casewise_csv": "decoder_reset_inner_casewise.csv",
+      "diagnostic_report": "decoder_reset_diagnostic_report.md"
+    }
+  },
+  "completion_check_excerpt": "# Completion Check\n\ncontroller_verification_decision: NEEDS_REPAIR\n\n已完成：启动冻结、证据库存、label semantics contract、reference metric known-bad、中文 PDF 渲染和 PDF QA。未完成：统一病例级重聚合、forward/on-off、feature probe、decoder-reset、MoSAIC M0-M10、Cine temporal probe。没有提交新 Slurm 作业，没有 push，没有 upload。\n",
+  "gap_token_counts": {
+    "NOT_RUN": 31,
+    "PARTIAL": 551,
+    "REQUIRES_": 86,
+    "PLACEHOLDER": 46,
+    "UNBOUND_CHECKPOINT": 157,
+    "UNBOUND_RECIPE": 153,
+    "NEEDS_REPAIR": 19,
+    "UNRESOLVED": 460,
+    "NEEDS_FEATURE_BINDING": 5,
+    "NEEDS_RECIPE_BINDING": 5,
+    "NEEDS_CINE_BINDING": 5,
+    "STALE": 92,
+    "VISUAL_HUMAN_CONFIRMATION_PENDING": 7,
+    "MISSING": 43
+  },
+  "gap_token_examples": {
+    "NOT_RUN": [
+      "alignment_error_correlation.csv",
+      "cine_casewise_metrics.csv",
+      "cine_motion_quality.csv",
+      "cine_temporal_signal_probe.csv",
+      "component_final_output_effect.csv",
+      "cross_modal_alignment_casewise.csv",
+      "decoder_reset_contract.json",
+      "feature_probe_case_split.json",
+      "feature_probe_full_results.csv",
+      "feature_probe_random_control.csv",
+      "feature_probe_summary.csv",
+      "loss_to_parameter_trace.csv"
+    ],
+    "PARTIAL": [
+      "architecture_fidelity_matrix.csv",
+      "checkpoint_inventory.csv",
+      "cine_data_manifest.csv",
+      "controller_context.json",
+      "controller_ledger.csv",
+      "controller_report.md",
+      "data_truth_report.md",
+      "finalizer_state.json",
+      "metric_cross_implementation_report.json",
+      "mosaic_repo_weight_recipe_binding.json",
+      "packet_consistency_report.json",
+      "pdf_text_extract.txt"
+    ],
+    "REQUIRES_": [
+      "case_error_taxonomy.csv",
+      "case_oracle_summary.csv",
+      "fn_overlap_matrix.csv",
+      "fp_overlap_matrix.csv",
+      "hd_component_matrix.csv",
+      "help_harm_matrix.csv",
+      "historical_results_matrix.csv",
+      "model_disagreement_matrix.csv",
+      "pdf_text_extract.txt",
+      "report_source/CARE_failure_forensics_20260730_xelatex_final.md",
+      "standardized_casewise_metrics.csv",
+      "standardized_model_summary.csv"
+    ],
+    "PLACEHOLDER": [
+      "case_montage_manifest.csv",
+      "v1_gap_audit.json",
+      "v1_gap_audit.md",
+      "v1_required_task_status.csv"
+    ],
+    "UNBOUND_CHECKPOINT": [
+      "checkpoint_inventory.csv",
+      "v1_gap_audit.json",
+      "v1_gap_audit.md"
+    ],
+    "UNBOUND_RECIPE": [
+      "checkpoint_inventory.csv",
+      "v1_gap_audit.json",
+      "v1_gap_audit.md"
+    ],
+    "NEEDS_REPAIR": [
+      "completion_check.md",
+      "controller_ledger.csv",
+      "controller_report.md",
+      "diagnostic_execution_plan.json",
+      "finalizer_state.json",
+      "pdf_text_extract.txt",
+      "report_source/CARE_failure_forensics_20260730_xelatex_final.md",
+      "strict_validator_report.json",
+      "v1_gap_audit.json",
+      "v1_gap_audit.md",
+      "v1_required_task_status.csv"
+    ],
+    "UNRESOLVED": [
+      "data_case_manifest.csv",
+      "pdf_text_extract.txt",
+      "report_source/CARE_failure_forensics_20260730.md",
+      "report_source/CARE_failure_forensics_20260730_xelatex_final.md",
+      "root_cause_evidence_graph.json",
+      "root_cause_ranked_table.csv",
+      "split_integrity_report.json",
+      "v1_gap_audit.json",
+      "v1_gap_audit.md",
+      "v1_required_task_status.csv"
+    ],
+    "NEEDS_FEATURE_BINDING": [
+      "diagnostic_execution_plan.json",
+      "required_diagnostic_wave_status.csv",
+      "v1_gap_audit.json",
+      "v1_gap_audit.md"
+    ],
+    "NEEDS_RECIPE_BINDING": [
+      "diagnostic_execution_plan.json",
+      "required_diagnostic_wave_status.csv",
+      "v1_gap_audit.json",
+      "v1_gap_audit.md"
+    ],
+    "NEEDS_CINE_BINDING": [
+      "diagnostic_execution_plan.json",
+      "required_diagnostic_wave_status.csv",
+      "v1_gap_audit.json",
+      "v1_gap_audit.md"
+    ],
+    "STALE": [
+      "experiment_lineage.csv",
+      "historical_failure_evidence.csv",
+      "historical_results_matrix.csv",
+      "model_lineage.csv",
+      "pdf_text_extract.txt",
+      "report_source/CARE_failure_forensics_20260730.md",
+      "report_source/CARE_failure_forensics_20260730_xelatex_final.md",
+      "v1_gap_audit.json",
+      "v1_gap_audit.md"
+    ],
+    "VISUAL_HUMAN_CONFIRMATION_PENDING": [
+      "manual_visual_review_notes.md",
+      "report_source/CARE_failure_forensics_20260730.md",
+      "report_source/CARE_failure_forensics_20260730_xelatex_final.md",
+      "report_source/sections/section_16.tex",
+      "v1_gap_audit.json",
+      "v1_gap_audit.md"
+    ],
+    "MISSING": [
+      "v1_gap_audit.json",
+      "v1_pdf_section_completeness.csv"
+    ]
+  },
+  "known_blockers": [
+    {
+      "blocker_id": "B-V1-STRICT-001",
+      "severity": "HIGH",
+      "status": "OPEN",
+      "evidence": "strict_validator_report.json",
+      "detail": "V1 strict validator status=FAIL decision=NEEDS_REPAIR hard_fail_count=1."
+    },
+    {
+      "blocker_id": "B-V1-GPU-001",
+      "severity": "HIGH",
+      "status": "OPEN",
+      "evidence": "finalizer_state.json",
+      "detail": "Missing diagnostics: D1_DECODER_RESET_ENCODER_FROZEN; D2_DECODER_RESET_TOP_ENCODER_TRAINABLE; D3_FULL_MODEL_SHORT_FINETUNE; FEATURE_PROBE_HELDOUT; MOSAIC_RECIPE_DECOMPOSITION; CINE_TEMPORAL_PROBE"
+    },
+    {
+      "blocker_id": "B-V1-PDF-001",
+      "severity": "HIGH",
+      "status": "OPEN",
+      "evidence": "CARE_Failure_Forensics_Deep_Research_Evidence_Packet_20260730.pdf",
+      "detail": "V1 PDF has 20 pages; V2 contract requires a completed evidence packet with 70-150 pages expected and no required placeholders."
+    },
+    {
+      "blocker_id": "B-V1-PRISM-D1D2-001",
+      "severity": "HIGH",
+      "status": "OPEN",
+      "evidence": "runtime/decoder_reset_diagnostics",
+      "detail": "Interrupted PRISM diagnostic artifacts must not be counted as V2 decoder-reset D1-D3 because they do not use real nnU-Net decoder/plans/6-class Dice+CE."
+    }
+  ],
+  "required_gpu_tasks": [
+    {
+      "gpu_task": "G1_NNUNET_IDENTITY_REPRODUCTION",
+      "v1_status": "PARTIAL_COMPLETED_D0_ONLY",
+      "evidence_hits": "D0_FULL_PRETRAINED_IDENTITY",
+      "notes": "D0 replay exists, but V2 requires G1 consistency/hash comparison against baseline."
+    },
+    {
+      "gpu_task": "G2_PRISM_13_CHECKPOINT_REPLAY",
+      "v1_status": "REQUIRED_NOT_TERMINAL",
+      "evidence_hits": "",
+      "notes": "No terminal V2 GPU evidence found."
+    },
+    {
+      "gpu_task": "G3_DECODER_RESET_D0_D3_REAL_NNUNET",
+      "v1_status": "NOT_COMPLETE",
+      "evidence_hits": "D1_DECODER_RESET_ENCODER_FROZEN;D2_DECODER_RESET_TOP_ENCODER_TRAINABLE;D3_FULL_MODEL_SHORT_FINETUNE",
+      "notes": "D1-D3 are missing from finalizer. Prior PRISM wrapper artifacts are explicitly non-contract because V2 requires real nnU-Net decoder/plans/loss."
+    },
+    {
+      "gpu_task": "G4_MOSAIC_RECIPE_DECOMPOSITION",
+      "v1_status": "REQUIRED_NOT_TERMINAL",
+      "evidence_hits": "mosaic_recipe_decomposition",
+      "notes": "Text hits only, not terminal V2 GPU evidence: mosaic_recipe_decomposition."
+    },
+    {
+      "gpu_task": "G5_FROZEN_FEATURE_PROBES",
+      "v1_status": "REQUIRED_NOT_TERMINAL",
+      "evidence_hits": "feature_probe_summary.csv;feature_probe_full_results.csv",
+      "notes": "Text hits only, not terminal V2 GPU evidence: feature_probe_summary.csv;feature_probe_full_results.csv."
+    },
+    {
+      "gpu_task": "G6_MODEL_COMPLEMENTARITY",
+      "v1_status": "REQUIRED_NOT_TERMINAL",
+      "evidence_hits": "case_oracle_summary.csv;voxel_error_overlap_matrix.csv",
+      "notes": "Text hits only, not terminal V2 GPU evidence: case_oracle_summary.csv;voxel_error_overlap_matrix.csv."
+    },
+    {
+      "gpu_task": "G7_SELECTOR_FEASIBILITY",
+      "v1_status": "REQUIRED_NOT_TERMINAL",
+      "evidence_hits": "selector_nested_cv_results.csv",
+      "notes": "Text hits only, not terminal V2 GPU evidence: selector_nested_cv_results.csv."
+    },
+    {
+      "gpu_task": "G8_ALIGNMENT_DIAGNOSTICS",
+      "v1_status": "REQUIRED_NOT_TERMINAL",
+      "evidence_hits": "alignment_error_correlation.csv",
+      "notes": "Text hits only, not terminal V2 GPU evidence: alignment_error_correlation.csv."
+    },
+    {
+      "gpu_task": "G9_CINE_ED_ONLY_VS_TEMPORAL",
+      "v1_status": "REQUIRED_NOT_TERMINAL",
+      "evidence_hits": "cine_temporal_signal_probe.csv",
+      "notes": "Text hits only, not terminal V2 GPU evidence: cine_temporal_signal_probe.csv."
+    },
+    {
+      "gpu_task": "G10_OLD_MODEL_REPLAY",
+      "v1_status": "REQUIRED_NOT_TERMINAL",
+      "evidence_hits": "Batch7;MMRD;Cascade;ARC;DG/DR/DPR",
+      "notes": "Text hits only, not terminal V2 GPU evidence: Batch7;MMRD;Cascade;ARC;DG/DR/DPR."
+    }
+  ],
+  "required_v2_outputs": [
+    {
+      "required_v2_output": "v2_gap_completion_manifest.json",
+      "exists_now": true,
+      "status": "EXISTS_NEEDS_V2_REVIEW",
+      "size_bytes": 741,
+      "notes": "V1-era file cannot be assumed V2-complete."
+    },
+    {
+      "required_v2_output": "v2_task_status.csv",
+      "exists_now": true,
+      "status": "EXISTS_NEEDS_V2_REVIEW",
+      "size_bytes": 1012,
+      "notes": "V1-era file cannot be assumed V2-complete."
+    },
+    {
+      "required_v2_output": "v2_gpu_job_manifest.csv",
+      "exists_now": true,
+      "status": "EXISTS_NEEDS_V2_REVIEW",
+      "size_bytes": 1712,
+      "notes": "V1-era file cannot be assumed V2-complete."
+    },
+    {
+      "required_v2_output": "v2_evidence_claim_ledger.csv",
+      "exists_now": false,
+      "status": "MISSING_FOR_V2",
+      "size_bytes": "",
+      "notes": "Must be generated for V2 completion."
+    },
+    {
+      "required_v2_output": "v2_source_manifest.csv",
+      "exists_now": true,
+      "status": "EXISTS_NEEDS_V2_REVIEW",
+      "size_bytes": 2073,
+      "notes": "V1-era file cannot be assumed V2-complete."
+    },
+    {
+      "required_v2_output": "v2_hash_manifest.csv",
+      "exists_now": false,
+      "status": "MISSING_FOR_V2",
+      "size_bytes": "",
+      "notes": "Must be generated for V2 completion."
+    },
+    {
+      "required_v2_output": "historical_model_inventory.csv",
+      "exists_now": false,
+      "status": "MISSING_FOR_V2",
+      "size_bytes": "",
+      "notes": "Must be generated for V2 completion."
+    },
+    {
+      "required_v2_output": "historical_experiment_inventory.csv",
+      "exists_now": false,
+      "status": "MISSING_FOR_V2",
+      "size_bytes": "",
+      "notes": "Must be generated for V2 completion."
+    },
+    {
+      "required_v2_output": "historical_commit_lineage.csv",
+      "exists_now": false,
+      "status": "MISSING_FOR_V2",
+      "size_bytes": "",
+      "notes": "Must be generated for V2 completion."
+    },
+    {
+      "required_v2_output": "historical_checkpoint_binding.csv",
+      "exists_now": false,
+      "status": "MISSING_FOR_V2",
+      "size_bytes": "",
+      "notes": "Must be generated for V2 completion."
+    },
+    {
+      "required_v2_output": "historical_prediction_binding.csv",
+      "exists_now": false,
+      "status": "MISSING_FOR_V2",
+      "size_bytes": "",
+      "notes": "Must be generated for V2 completion."
+    },
+    {
+      "required_v2_output": "batch0_7_design_evidence_matrix.csv",
+      "exists_now": false,
+      "status": "MISSING_FOR_V2",
+      "size_bytes": "",
+      "notes": "Must be generated for V2 completion."
+    },
+    {
+      "required_v2_output": "batch0_7_casewise_results.csv",
+      "exists_now": false,
+      "status": "MISSING_FOR_V2",
+      "size_bytes": "",
+      "notes": "Must be generated for V2 completion."
+    },
+    {
+      "required_v2_output": "batch0_7_component_survival_ledger.csv",
+      "exists_now": false,
+      "status": "MISSING_FOR_V2",
+      "size_bytes": "",
+      "notes": "Must be generated for V2 completion."
+    },
+    {
+      "required_v2_output": "batch7_mechanism_trace.md",
+      "exists_now": false,
+      "status": "MISSING_FOR_V2",
+      "size_bytes": "",
+      "notes": "Must be generated for V2 completion."
+    },
+    {
+      "required_v2_output": "mmrd_forensics_report.md",
+      "exists_now": false,
+      "status": "MISSING_FOR_V2",
+      "size_bytes": "",
+      "notes": "Must be generated for V2 completion."
+    },
+    {
+      "required_v2_output": "cascade_dg_dpr_forensics_report.md",
+      "exists_now": false,
+      "status": "MISSING_FOR_V2",
+      "size_bytes": "",
+      "notes": "Must be generated for V2 completion."
+    },
+    {
+      "required_v2_output": "arc_forensics_report.md",
+      "exists_now": false,
+      "status": "MISSING_FOR_V2",
+      "size_bytes": "",
+      "notes": "Must be generated for V2 completion."
+    },
+    {
+      "required_v2_output": "prism_forensics_report.md",
+      "exists_now": false,
+      "status": "MISSING_FOR_V2",
+      "size_bytes": "",
+      "notes": "Must be generated for V2 completion."
+    },
+    {
+      "required_v2_output": "mosaic_gap_forensics_report.md",
+      "exists_now": true,
+      "status": "EXISTS_NEEDS_V2_REVIEW",
+      "size_bytes": 109,
+      "notes": "V1-era file cannot be assumed V2-complete."
+    },
+    {
+      "required_v2_output": "standardized_casewise_metrics.csv",
+      "exists_now": true,
+      "status": "EXISTS_NEEDS_V2_REVIEW",
+      "size_bytes": 48,
+      "notes": "V1-era file cannot be assumed V2-complete."
+    },
+    {
+      "required_v2_output": "standardized_model_summary.csv",
+      "exists_now": true,
+      "status": "EXISTS_NEEDS_V2_REVIEW",
+      "size_bytes": 1717,
+      "notes": "V1-era file cannot be assumed V2-complete."
+    },
+    {
+      "required_v2_output": "standardized_subgroup_summary.csv",
+      "exists_now": false,
+      "status": "MISSING_FOR_V2",
+      "size_bytes": "",
+      "notes": "Must be generated for V2 completion."
+    },
+    {
+      "required_v2_output": "standardized_help_harm.csv",
+      "exists_now": false,
+      "status": "MISSING_FOR_V2",
+      "size_bytes": "",
+      "notes": "Must be generated for V2 completion."
+    },
+    {
+      "required_v2_output": "case_oracle_summary.csv",
+      "exists_now": true,
+      "status": "EXISTS_NEEDS_V2_REVIEW",
+      "size_bytes": 63,
+      "notes": "V1-era file cannot be assumed V2-complete."
+    },
+    {
+      "required_v2_output": "voxel_error_overlap_matrix.csv",
+      "exists_now": true,
+      "status": "EXISTS_NEEDS_V2_REVIEW",
+      "size_bytes": 34,
+      "notes": "V1-era file cannot be assumed V2-complete."
+    },
+    {
+      "required_v2_output": "selector_nested_cv_results.csv",
+      "exists_now": true,
+      "status": "EXISTS_NEEDS_V2_REVIEW",
+      "size_bytes": 41,
+      "notes": "V1-era file cannot be assumed V2-complete."
+    },
+    {
+      "required_v2_output": "feature_probe_summary.csv",
+      "exists_now": true,
+      "status": "EXISTS_NEEDS_V2_REVIEW",
+      "size_bytes": 46,
+      "notes": "V1-era file cannot be assumed V2-complete."
+    },
+    {
+      "required_v2_output": "decoder_reset_comparison.csv",
+      "exists_now": true,
+      "status": "EXISTS_NEEDS_V2_REVIEW",
+      "size_bytes": 442,
+      "notes": "V1-era file cannot be assumed V2-complete."
+    },
+    {
+      "required_v2_output": "alignment_error_correlation.csv",
+      "exists_now": true,
+      "status": "EXISTS_NEEDS_V2_REVIEW",
+      "size_bytes": 15,
+      "notes": "V1-era file cannot be assumed V2-complete."
+    },
+    {
+      "required_v2_output": "cine_temporal_signal_probe.csv",
+      "exists_now": true,
+      "status": "EXISTS_NEEDS_V2_REVIEW",
+      "size_bytes": 35,
+      "notes": "V1-era file cannot be assumed V2-complete."
+    },
+    {
+      "required_v2_output": "historical_component_survival_ledger.csv",
+      "exists_now": false,
+      "status": "MISSING_FOR_V2",
+      "size_bytes": "",
+      "notes": "Must be generated for V2 completion."
+    },
+    {
+      "required_v2_output": "large_gain_feasibility_analysis.csv",
+      "exists_now": false,
+      "status": "MISSING_FOR_V2",
+      "size_bytes": "",
+      "notes": "Must be generated for V2 completion."
+    },
+    {
+      "required_v2_output": "deep_research_design_constraints_evidence.csv",
+      "exists_now": false,
+      "status": "MISSING_FOR_V2",
+      "size_bytes": "",
+      "notes": "Must be generated for V2 completion."
+    },
+    {
+      "required_v2_output": "historical_component_survival_report.md",
+      "exists_now": false,
+      "status": "MISSING_FOR_V2",
+      "size_bytes": "",
+      "notes": "Must be generated for V2 completion."
+    },
+    {
+      "required_v2_output": "large_gain_feasibility_report.md",
+      "exists_now": false,
+      "status": "MISSING_FOR_V2",
+      "size_bytes": "",
+      "notes": "Must be generated for V2 completion."
+    },
+    {
+      "required_v2_output": "deep_research_design_brief.md",
+      "exists_now": false,
+      "status": "MISSING_FOR_V2",
+      "size_bytes": "",
+      "notes": "Must be generated for V2 completion."
+    },
+    {
+      "required_v2_output": "external_deep_research_question_bank.md",
+      "exists_now": true,
+      "status": "EXISTS_NEEDS_V2_REVIEW",
+      "size_bytes": 365,
+      "notes": "V1-era file cannot be assumed V2-complete."
+    },
+    {
+      "required_v2_output": "deep_research_prompt_seed.md",
+      "exists_now": true,
+      "status": "EXISTS_NEEDS_V2_REVIEW",
+      "size_bytes": 145,
+      "notes": "V1-era file cannot be assumed V2-complete."
+    },
+    {
+      "required_v2_output": "CARE_Failure_Forensics_Deep_Research_Evidence_Packet_20260730_v2.pdf",
+      "exists_now": false,
+      "status": "MISSING_FOR_V2",
+      "size_bytes": "",
+      "notes": "Must be generated for V2 completion."
+    },
+    {
+      "required_v2_output": "v2_pdf_validation_report.json",
+      "exists_now": false,
+      "status": "MISSING_FOR_V2",
+      "size_bytes": "",
+      "notes": "Must be generated for V2 completion."
+    },
+    {
+      "required_v2_output": "v2_known_bad_report.json",
+      "exists_now": false,
+      "status": "MISSING_FOR_V2",
+      "size_bytes": "",
+      "notes": "Must be generated for V2 completion."
+    },
+    {
+      "required_v2_output": "v2_strict_validator_report.json",
+      "exists_now": false,
+      "status": "MISSING_FOR_V2",
+      "size_bytes": "",
+      "notes": "Must be generated for V2 completion."
+    },
+    {
+      "required_v2_output": "v2_completion_check.md",
+      "exists_now": false,
+      "status": "MISSING_FOR_V2",
+      "size_bytes": "",
+      "notes": "Must be generated for V2 completion."
+    },
+    {
+      "required_v2_output": "v2_controller_report.md",
+      "exists_now": false,
+      "status": "MISSING_FOR_V2",
+      "size_bytes": "",
+      "notes": "Must be generated for V2 completion."
+    },
+    {
+      "required_v2_output": "v2_MANIFEST.md",
+      "exists_now": false,
+      "status": "MISSING_FOR_V2",
+      "size_bytes": "",
+      "notes": "Must be generated for V2 completion."
+    },
+    {
+      "required_v2_output": "notification_brief.json",
+      "exists_now": true,
+      "status": "EXISTS_NEEDS_V2_REVIEW",
+      "size_bytes": 1206,
+      "notes": "V1-era file cannot be assumed V2-complete."
+    }
+  ],
+  "non_contract_residuals": [
+    {
+      "path": "results/20260730_care_failure_forensics_deep_research_packet/runtime/decoder_reset_diagnostics",
+      "status": "NON_CONTRACT_PRISM_DIAGNOSTIC_RESIDUAL",
+      "reason": "Generated by interrupted PRISM wrapper; V2 requires real nnU-Net D1-D3 diagnostics."
+    }
+  ],
+  "next_required_action": "Generate true V2 evidence plan and run required GPU diagnostics sequentially, starting with real nnU-Net G1/G3 preflight."
+}

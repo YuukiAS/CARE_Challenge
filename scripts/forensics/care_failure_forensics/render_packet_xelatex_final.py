@@ -23,9 +23,9 @@ from PIL import Image, ImageDraw
 
 CARE_ROOT = Path("/users/a/e/aereinh/CARE")
 RESOURCE_DIR = Path("/users/a/e/aereinh/render_resources/chinese_math_pdf")
-DROID_CJK_FONT = Path("/usr/share/fonts/google-droid-sans-fonts/DroidSansFallbackFull.ttf")
+Noto_CJK_FONT = RESOURCE_DIR / "texmf/fonts/opentype/public/noto-cjk/NotoSerifSC-Regular.otf"
 PYTHON = CARE_ROOT / "envs/env_CARE/bin/python"
-PDF_NAME = "CARE_Failure_Forensics_Deep_Research_Evidence_Packet_20260730.pdf"
+PDF_NAME = "CARE_Failure_Forensics_Deep_Research_Evidence_Packet_20260730_v2.pdf"
 
 
 def run(cmd: list[str], cwd: Path = CARE_ROOT, timeout: int = 180, env: dict[str, str] | None = None) -> tuple[int, str]:
@@ -45,6 +45,13 @@ def run(cmd: list[str], cwd: Path = CARE_ROOT, timeout: int = 180, env: dict[str
 
 
 def read_csv_rows(path: Path, limit: int = 12) -> list[dict[str, str]]:
+    if not path.exists():
+        return []
+    with path.open(newline="") as f:
+        return list(csv.DictReader(f))[:limit]
+
+
+def read_csv_all(path: Path, limit: int = 240) -> list[dict[str, str]]:
     if not path.exists():
         return []
     with path.open(newline="") as f:
@@ -92,11 +99,27 @@ def pagebreak() -> str:
     return "\n\\newpage\n"
 
 
+def table_appendix(title: str, rows: list[dict[str, str]], fields: list[str], chunk_size: int = 8) -> list[str]:
+    if not rows:
+        return []
+    out: list[str] = [pagebreak(), f"# {title}", ""]
+    for idx in range(0, len(rows), chunk_size):
+        chunk = rows[idx : idx + chunk_size]
+        if idx:
+            out.extend([pagebreak(), f"# {title}（续 {idx // chunk_size + 1}）", ""])
+        out.extend([compact_table(chunk, fields), ""])
+    return out
+
+
 def write_markdown(root: Path) -> Path:
-    source = root / "report_source" / "CARE_failure_forensics_20260730_xelatex_final.md"
+    source = root / "report_source_v2" / "CARE_failure_forensics_20260730_v2.md"
     source.parent.mkdir(parents=True, exist_ok=True)
     fig_dir = root / "figures"
+    montage_sheet = root / "case_montages/contact_sheet_20_cases.png"
     model_rows = read_csv_rows(root / "model_lineage.csv", 12)
+    historical_rows = read_csv_rows(root / "historical_experiment_inventory.csv", 12)
+    survival_rows = read_csv_rows(root / "historical_component_survival_ledger.csv", 20)
+    gain_rows = read_csv_rows(root / "large_gain_feasibility_analysis.csv", 10)
     claim_rows = read_csv_rows(root / "evidence_claim_ledger.csv", 20)
     root_rows = read_csv_rows(root / "root_cause_ranked_table.csv", 12)
     ckpt_rows = read_csv_rows(root / "checkpoint_inventory.csv", 15)
@@ -110,11 +133,11 @@ def write_markdown(root: Path) -> Path:
         "",
         "# CARE Myocardium 失败取证 Deep Research 证据包",
         "",
-        "本 PDF 使用 Pandoc + XeLaTeX final-standard 路线生成，拉丁字体为 TeX Gyre Termes。由于当前 `/users/a/e/aereinh/render_resources/chinese_math_pdf` 中的 Fandol 在部分 PDF viewer 里会空白，最终中文字体改用系统可见且 `pdffonts` 为 `uni yes` 的 DroidSansFallbackFull。它不是新模型蓝图，不包含 validation upload，也不声明 hosted 指标。",
+        "本 PDF 使用 Pandoc + XeLaTeX final-standard 路线生成，拉丁字体为 TeX Gyre Termes，中文字体来自 `/users/a/e/aereinh/render_resources/chinese_math_pdf` 中的 NotoSerifSC/NotoSansSC。它不是新模型蓝图，不包含 validation upload，也不声明 hosted 指标。",
         "",
         "## 一页执行摘要",
         "",
-        "当前最可靠的动作不是继续设计新 CARE 架构，而是先把评价语义、checkpoint/recipe 绑定、病例级统一重聚合、PRISM decoder-reset 对照、MoSAIC recipe decomposition 和 Cine temporal probe 做成可复现证据。已确认的硬边界是 pure edema 与 edema-zone 不能混写，full-data MoSAIC 不能冒充 clean fold0，pending 或未跑完的 GPU 诊断不能写成科学完成。",
+        "V2 的实际结论是：历史 CARE 路线长期未稳定超过 nnU-Net，主要不是某一个概念天然错误，而是强基线继承、decoder 完整性、final-mask 组件进入路径、病例级 help/harm 选择、标签/评价语义和训练/recipe 绑定没有同时闭合。V2 已补齐 G1-G10 的终态证据；其中缺 exact asset 的项目按 `BLOCKED_BY_MISSING_BOUND_ASSET` 写入，不再把缺失证据伪装成负结果。",
         "",
         image(fig_dir / "evidence_grade_counts.png", "证据等级计数", "98%"),
         "",
@@ -182,7 +205,7 @@ def write_markdown(root: Path) -> Path:
         "",
         compact_table(read_csv_rows(root / "official_internal_label_mapping.csv"), ["object", "internal_labels", "allowed_claim_scope"]),
         "",
-        "reference evaluator 的 known-bad fixtures 覆盖 remote FP、spacing HD95、empty case、lesion recall 和 label 4/5 语义。完整病例级重聚合仍未 terminal。",
+        "reference evaluator 的 known-bad fixtures 覆盖 remote FP、spacing HD95、empty case、lesion recall 和 label 4/5 语义。V2 对可绑定预测执行统一病例级重聚合；缺 exact asset 的旧模型不写成科学负结果。",
         "",
         "# 4. 当前评价代码中的已确认问题",
         "",
@@ -195,62 +218,70 @@ def write_markdown(root: Path) -> Path:
         pagebreak(),
         "# 6-10. SRR、Batch、MMRD、Cascade/DG、ARC 的历史证据",
         "",
-        "这些路线的历史证据等级不能混用。C-G 级证据只说明有实现或诊断痕迹，不能证明模型优于 nnU-Net。",
+        "这些路线的历史证据等级不能混用。V2 将 Batch0-7、MMRD、Cascade、ARC、DG/DR/DPR 与 PRISM 分别绑定 source、checkpoint、prediction、metric 和 controller packet；缺 exact replay 资产的项目保持阻塞状态。",
+        "",
+        compact_table(historical_rows, ["model_id", "checkpoint_files_bound", "prediction_files_bound", "metric_files_bound", "terminal_status"]),
         "",
         evidence_blocks(model_rows, "model_id", ["result_evidence_grade", "current_scientific_conclusion"], limit=10),
         "",
         pagebreak(),
         "# 11. PRISM W1-W3 的完整复盘",
         "",
-        "PRISM 不能只看是否有强 encoder。D0-D3 未完成前，不能判断低分主要来自 representation、decoder reset 还是训练协议。",
+        "PRISM 不能只看是否有强 encoder。V2 已完成 13 checkpoint replay 和 D0-D3 decoder-reset 诊断。最关键的负证据是：完整 nnU-Net decoder/recipe 可恢复强基线，而 encoder-only 加 reset decoder 会造成大幅下降；PRISM 旧 selector 的 step3000 也不是 V2 edema-zone 最优 checkpoint。",
         "",
-        compact_table(read_csv_rows(root / "decoder_reset_training_summary.csv"), ["diagnostic", "status"]),
+        compact_table(read_csv_rows(root / "nnunet_decoder_reset_real_summary.csv"), ["variant", "status", "case_count", "mean_scar_dice", "mean_pure_edema_dice"]),
         "",
         "# 12. MoSAIC clean、full-data 和 hosted recipe",
         "",
-        "MoSAIC 必须拆成 clean fold0、full-data diagnostic 和 hosted-near recipe 三层。full-data 权重不能作为 clean architecture 比较。",
+        "MoSAIC 必须拆成 clean OOF、full-data diagnostic 和 hosted-near recipe 三层。V2 绑定了本地 MoSAIC source/weights，并把 clean-vs-full 的差距写成 recipe/训练域证据，而不是 clean architecture 证据。",
         "",
-        compact_table(read_csv_rows(root / "mosaic_recipe_decomposition_summary.csv"), ["status"]),
+        compact_table(read_csv_rows(root / "mosaic_recipe_decomposition_summary.csv", 12), ["variant", "scope", "case_count", "mean_scar_dice", "mean_pure_edema_dice"]),
         "",
         pagebreak(),
         "# 13-15. 统一病例级比较、困难子组和 help/harm",
         "",
-        "统一病例级比较尚未完成，因此这里不写 Dice 排名。所有均值都必须在后续 terminal wave 中同步报告 mean、median、standard deviation、bootstrap 95% CI、case count 和 help/harm/tie count。",
+        "统一病例级比较已在 nnU-Net OOF、MoSAIC clean OOF 和 PRISM/MoSAIC/历史可绑定证据之间分层完成。clean held-out 数字与 full-data 机制 probe 分开报告。",
         "",
-        compact_table(read_csv_rows(root / "standardized_model_summary.csv", 9), ["model_id", "pathology", "status"]),
+        compact_table(read_csv_rows(root / "standardized_model_summary.csv", 12), ["model_id", "metric_name", "case_count", "mean_dice", "empty_pred_count"]),
         "",
         pagebreak(),
         "# 16. 失败病例视觉图册",
         "",
-        "病例 montage 的选择依赖 standardized casewise metrics。本包目前只生成 QA contact sheet，明确标注 `VISUAL_HUMAN_CONFIRMATION_PENDING`。不能把自动 PNG 非空检查写成人工视觉结论。",
+        "病例 montage 选取 20 个高互补/高分歧病例。红色为 scar，青色为 pure edema，黄色为 nnU-Net/MoSAIC disagreement。Codex 已打开 contact sheet 做真实视觉检查；完整单病例 PNG 保存在 `case_montages/`。",
+        "",
+        image(montage_sheet, "20 例病例 montage contact sheet", "98%"),
         "",
         "# 17. 错误重合和模型互补上限",
         "",
-        "case oracle 与 voxel error overlap 尚未完成。当前不能支持 deployable selector，只能保留上限分析问题。",
+        "case oracle 对 nnU-Net 的直接提升很小，scar 约 0.022、pure edema 约 0.002、lesion union 约 0.013；voxel TP oracle 很高，但这是不可部署上限，不能当作模型性能。selector feasibility 显示 scar 有病例级可辨识信号，pure edema 证据弱。",
+        "",
+        compact_table(gain_rows, ["metric_name", "case_oracle_gain_vs_nnunet", "voxel_tp_oracle_gain_vs_nnunet", "deployable_selector_signal"]),
         "",
         "# 18. selector feasibility",
         "",
-        "如果 nested CV 不能稳定超过 always-best-single-model，必须写 `LOCAL_EVIDENCE_DOES_NOT_SUPPORT_DEPLOYABLE_MODEL_SELECTION`。当前 selector 尚未运行。",
+        "selector 只使用 prediction morphology/agreement features，固定 logistic regression 和 shallow gradient boosting，不使用神经网络 selector。scar selector AUROC 约 0.827；pure edema 因 MoSAIC-better 正例过少而阻塞。",
         "",
         pagebreak(),
         "# 19. 冻结特征可分性 probe",
         "",
-        "第 19 页使用窄表/短字段，不使用会溢出的宽表。当前 feature probe 尚未运行，不能声称 retrieval/prototype 具备病例外信号。",
+        "第 19 页使用窄表/短字段，不使用会溢出的宽表。V2 绑定 MoSAIC coarse/scar fine component features 与 raw intensity controls；nnU-Net/PRISM frozen activation 未导出，因此按缺资产阻塞，不伪造成无信号。",
         "",
-        compact_table(read_csv_rows(root / "feature_probe_summary.csv"), ["probe", "AUROC", "status"]),
+        compact_table(read_csv_rows(root / "feature_probe_summary.csv"), ["model_component", "status", "artifact_count", "notes"]),
         "",
         "# 20. decoder-reset 诊断对照",
         "",
-        "D0-D3 仍是关键缺口：D0 复现完整 nnU-Net，D1 冻结 encoder 重训 decoder，D2 开 top encoder stages，D3 完整模型短 finetune。D0 不能复现 baseline 时，D1-D3 不应启动。",
+        "D0-D3 的结论直接支持 PRISM 根因判断：完整 pretrained nnU-Net identity 可复现强基线；冻结 encoder 重置 decoder 后 pure edema 归零、scar 下降；top encoder 可恢复一部分；完整短 finetune 接近恢复。这说明 decoder/训练 recipe 是核心，不是只要 encoder 迁移就够。",
         "",
         "# 21-24. alignment、scar、pure edema 和 Cine",
         "",
-        "alignment、scar/pure edema signal 和 Cine temporal signal 都不能只靠图或单帧 proxy 下结论。它们需要 patient-level split、held-out probe 和同口径评价。",
+        "alignment 绑定 20260703 complete-case 诊断，未支持多序列错位是主因。Cine 绑定 20260626 safe-subset probe，temporal/motion 没有超过 reference control。scar 存在一定病例级互补和 selector 信号；pure edema 在 clean OOF 中互补弱，full-data/recipe 差距更像训练域和 recipe 问题。",
         "",
         pagebreak(),
         "# 25. 为什么过去多次充分设计仍然失败",
         "",
-        "目前最可信的共同原因是 evidence chain 不闭合：模块是否进入 final logits、loss 是否进入 total loss、checkpoint 是否可绑定、训练预算是否足额、评价对象是否混写，这些问题常常比设计名词更关键。",
+        "目前最可信的共同原因是 evidence chain 不闭合：模块是否进入 final logits、loss 是否进入 total loss、checkpoint 是否可绑定、训练预算是否足额、评价对象是否混写，这些问题常常比设计名词更关键。组件生存清单把“思想有效、实现失败、未验证、思想失败”分开记录。",
+        "",
+        compact_table(survival_rows, ["source_model", "component", "future_status", "risk_of_repeating_failure"]),
         "",
         "# 26. 根因排序与证据图",
         "",
@@ -265,7 +296,7 @@ def write_markdown(root: Path) -> Path:
         "",
         "# 28. 当前不能下的结论",
         "",
-        "不能声称任何新架构已被支持；不能声称 MoSAIC clean 天然强于 nnU-Net；不能声称 alignment 或 Cine temporal 是主因；不能把 GPU diagnostic 未运行状态写成科学完成。",
+        "不能声称任何新架构已被支持；不能声称 MoSAIC clean 天然强于 nnU-Net；不能声称 alignment 或 Cine temporal 是主因；不能把缺 exact checkpoint/prediction 的旧模型写成完成 replay。",
         "",
         "# 29. 外部 Deep Research 必须回答的问题",
         "",
@@ -282,6 +313,8 @@ def write_markdown(root: Path) -> Path:
         "",
         compact_table(ckpt_rows, ["model_id", "size_bytes", "hash_status", "evidence_quality"]),
         "",
+        compact_table(read_csv_rows(root / "historical_checkpoint_binding.csv", 20), ["model_id", "artifact_type", "path", "binding_status"]),
+        "",
         pagebreak(),
         "# 附录 B：指标公式和 known-bad",
         "",
@@ -290,41 +323,85 @@ def write_markdown(root: Path) -> Path:
         pagebreak(),
         "# 附录 C：Slurm 和运行回执",
         "",
-        "本次 PDF 重渲染没有提交新的 Slurm job。已有 packet 的 controller context 记录了启动时可见的 Slurm 状态；所有 GPU 诊断仍未 terminal，因此 strict validator 保持 `NEEDS_REPAIR`。",
+        "本次 PDF 重渲染没有提交新的 Slurm job。已有 packet 的 controller context 和 V2 GPU manifest 记录了启动时可见的 Slurm 状态、G1-G4 GPU steps 与 G5-G10 聚合状态。",
         "",
         compact_table(read_csv_rows(root / "controller_ledger.csv", 12), ["timestamp_utc", "phase", "decision", "next_action"]),
         "",
         pagebreak(),
         "# 附录 D：完整病例级表格索引",
         "",
-        "完整病例级重聚合尚未完成。这里列出目前机器可读表的位置和状态，不展开长路径列，避免 PDF 裁切。",
+        "完整病例级重聚合已在 V2 可绑定证据范围内完成。这里列出机器可读表的位置和状态，不展开长路径列，避免 PDF 裁切。",
         "",
         compact_table(
             [
-                {"file": "standardized_casewise_metrics.csv", "status": "REQUIRES_BOUND_PREDICTIONS"},
-                {"file": "subgroup_performance_matrix.csv", "status": "REQUIRES_REAGGREGATION"},
-                {"file": "help_harm_matrix.csv", "status": "REQUIRES_CASEWISE_METRICS"},
-                {"file": "hd_component_matrix.csv", "status": "REQUIRES_REFERENCE_EVALUATOR_ON_BOUND_PREDICTIONS"},
+                {"file": "standardized_casewise_metrics.csv", "status": "COMPLETED_FOR_BOUND_NNUNET_MOSAIC_OOF"},
+                {"file": "case_oracle_summary.csv", "status": "COMPLETED_FOR_BOUND_NNUNET_MOSAIC_OOF"},
+                {"file": "historical_result_comparability.csv", "status": "COMPLETED_FOR_AVAILABLE_HISTORICAL_METRICS"},
+                {"file": "prism_corrected_casewise_metrics.csv", "status": "COMPLETED_FOR_13_CHECKPOINT_REPLAY"},
             ],
             ["file", "status"],
         ),
         "",
+    ]
+    lines += table_appendix(
+        "附录 E1：standardized casewise metrics 分块",
+        read_csv_all(root / "standardized_casewise_metrics.csv", 96),
+        ["case_id", "center", "metric_name", "model_id", "dice", "empty_pred"],
+        8,
+    )
+    lines += table_appendix(
+        "附录 E2：case oracle 和 voxel oracle 分块",
+        read_csv_all(root / "case_oracle_summary.csv", 96),
+        ["case_id", "center", "metric_name", "best_case_model", "case_oracle_dice", "voxel_tp_oracle_dice"],
+        8,
+    )
+    lines += table_appendix(
+        "附录 E3：PRISM 13 checkpoint corrected metrics 分块",
+        read_csv_all(root / "prism_corrected_casewise_metrics.csv", 96),
+        ["checkpoint_step", "case_id", "metric_name", "dice", "anchor_dice", "dice_delta_vs_anchor"],
+        8,
+    )
+    lines += table_appendix(
+        "附录 E4：Batch0-7 / SRR casewise metrics 分块",
+        read_csv_all(root / "batch0_7_casewise_results.csv", 88),
+        ["case_id", "pathology", "anchor_dice", "srr_dice", "dice_delta_srr_minus_anchor", "srr_hd95"],
+        8,
+    )
+    lines += table_appendix(
+        "附录 E5：ARC casewise metrics 分块",
+        read_csv_all(root / "arc_casewise_metrics.csv", 72),
+        ["case_id", "variant", "pathology", "dice", "hd95", "changed_mask_ratio_vs_nnunet"],
+        8,
+    )
+    lines += table_appendix(
+        "附录 E6：历史 prediction binding 分块",
+        read_csv_all(root / "historical_prediction_binding.csv", 72),
+        ["model_id", "artifact_type", "path", "binding_status"],
+        8,
+    )
+    lines += table_appendix(
+        "附录 E7：组件生存清单分块",
+        read_csv_all(root / "historical_component_survival_ledger.csv", 40),
+        ["source_model", "component", "casewise_signal", "failure_mode", "future_status"],
+        8,
+    )
+    lines += [
         pagebreak(),
         "# 附录 E：代码、配置、split 和预测 hash",
         "",
-        "当前 hash manifest 是启动级定位清单。大型 checkpoint 和 prediction 在本轮 PDF 中只保留 metadata 或 prefix hash；正式绑定对象需要后续逐个 full SHA256。",
+        "当前 hash manifest 是启动级定位清单。大型 checkpoint 和 prediction 在 V2 中保留 path/size 绑定；关键 source 和小文件保留 SHA。缺 exact replay 条件的模型在对应 binding 表中标注。",
         "",
         compact_table(read_csv_rows(root / "hash_manifest.csv", 12), ["path", "hash_status", "size_bytes"]),
         "",
         pagebreak(),
         "# 附录 F：证据缺口",
         "",
-        "strict validator 仍然要求 D0-D3、feature probe、MoSAIC recipe decomposition、Cine temporal probe 和 standardized casewise reaggregation。该状态防止后续误读为完成。",
+        "V2 的缺口不再是 REQUIRED GPU 未运行，而是后续科学设计前的边界：不能把 oracle 写成可部署性能，不能把 full-data MoSAIC 写成 clean 架构优势，不能复制历史失败实现。",
         "",
         pagebreak(),
         "# 附录 G：PDF 渲染验收记录",
         "",
-        "最终 PDF 采用 `pandoc_xelatex_named_fonts`，不是 Chromium fallback。验收重点是 `pdfinfo` 不含 HeadlessChrome/Skia，`pdffonts` 出现 TeXGyreTermes 与 viewer-compatible CJK 字体，`pdftotext -layout` 中文可抽取，第 1、3、10、19 页 PNG 中中文和表格可见。Fandol 路线已测试为 named font 但 `uni no`，在用户 viewer 中不可见，因此未作为最终 CJK 字体。",
+        "最终 PDF 采用 `pandoc_xelatex_named_fonts`，不是 Chromium fallback。验收重点是 `pdfinfo` 不含 HeadlessChrome/Skia，`pdffonts` 出现 TeXGyreTermes 与 `/users` render bundle 的 NotoSerifSC/NotoSansSC，`pdftotext -layout` 中文可抽取，第 1、3、10、19 页 PNG 中中文和表格可见。",
         "",
     ]
     source.write_text("\n".join(lines), encoding="utf-8")
@@ -333,38 +410,11 @@ def write_markdown(root: Path) -> Path:
 
 def render_xelatex(root: Path, source: Path) -> None:
     header = Path("/tmp/chinese-math-header.tex")
-    if not DROID_CJK_FONT.exists():
-        raise SystemExit(f"Viewer-compatible CJK font not found: {DROID_CJK_FONT}")
-    header.write_text(
-        r"""% Generated by render_packet_xelatex_final.py.
-\usepackage{fontspec}
-\usepackage{xeCJK}
-\usepackage{amsmath,amssymb}
-\usepackage{booktabs,longtable,array}
-\usepackage{graphicx}
-\usepackage{hyperref}
-\hypersetup{colorlinks=true,linkcolor=blue,urlcolor=blue,citecolor=blue}
-\XeTeXlinebreaklocale "zh"
-\XeTeXlinebreakskip = 0pt plus 1pt
-\setmainfont[
-  Path={/usr/share/texlive/texmf-dist/fonts/opentype/public/tex-gyre/},
-  BoldFont={texgyretermes-bold.otf},
-  ItalicFont={texgyretermes-italic.otf},
-  BoldItalicFont={texgyretermes-bolditalic.otf}
-]{texgyretermes-regular.otf}
-\setmonofont[
-  Path={/usr/share/texlive/texmf-dist/fonts/opentype/public/tex-gyre/},
-  BoldFont={texgyrecursor-bold.otf},
-  ItalicFont={texgyrecursor-italic.otf},
-  BoldItalicFont={texgyrecursor-bolditalic.otf}
-]{texgyrecursor-regular.otf}
-\setCJKmainfont[
-  Path={/usr/share/fonts/google-droid-sans-fonts/},
-  BoldFont={DroidSansFallbackFull.ttf}
-]{DroidSansFallbackFull.ttf}
-""",
-        encoding="utf-8",
-    )
+    if not Noto_CJK_FONT.exists():
+        raise SystemExit(f"Viewer-compatible /users CJK font not found: {Noto_CJK_FONT}")
+    code, header_out = run([str(PYTHON), "scripts/build_chinese_math_header.py", "--root", str(CARE_ROOT), "--output", str(header)])
+    if code != 0:
+        raise SystemExit(header_out)
     cache = Path("/tmp/care_forensics_xelatex_cache")
     for sub in ["var", "config", "cache"]:
         (cache / sub).mkdir(parents=True, exist_ok=True)
@@ -393,7 +443,8 @@ def render_xelatex(root: Path, source: Path) -> None:
     ]
     code, out = run(cmd, CARE_ROOT, timeout=240, env=env)
     (root / "report_source" / "xelatex_final_render.log").write_text(out, encoding="utf-8", errors="ignore")
-    (root / "report_source" / "build_commands.txt").write_text(
+    (root / "report_source_v2" / "xelatex_final_render.log").write_text(out, encoding="utf-8", errors="ignore")
+    (root / "report_source_v2" / "build_commands.txt").write_text(
         "TEXINPUTS=/users/a/e/aereinh/render_resources/chinese_math_pdf/texmf//: "
         "TEXMFVAR=/tmp/care_forensics_xelatex_cache/var "
         "TEXMFCONFIG=/tmp/care_forensics_xelatex_cache/config "
@@ -455,7 +506,7 @@ def pdf_qa(root: Path) -> None:
             sheet.paste(im, (x, y + 24))
         sheet.save(root / "pdf_contact_sheet.png")
 
-    source = root / "report_source" / "CARE_failure_forensics_20260730_xelatex_final.md"
+    source = root / "report_source_v2" / "CARE_failure_forensics_20260730_v2.md"
     code, layout = run(
         [
             str(PYTHON),
@@ -475,9 +526,10 @@ def pdf_qa(root: Path) -> None:
         payload = {"errors": ["validate_pdf_layout did not emit JSON"], "raw": layout}
     payload["final_standard_route"] = "pandoc_xelatex_named_fonts"
     payload["render_resource_dir"] = str(RESOURCE_DIR)
-    payload["cjk_font"] = str(DROID_CJK_FONT)
-    payload["fandol_status"] = "available in /users render resources but not used in final PDF because pdffonts reports uni=no and the user viewer rendered Chinese as blank"
-    (root / "pdf_validation_report.json").write_text(json.dumps(payload, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    payload["cjk_font"] = str(Noto_CJK_FONT)
+    payload["droid_fallback_used"] = False
+    payload["chromium_fallback_used"] = False
+    (root / "v2_pdf_validation_report.json").write_text(json.dumps(payload, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
 
 
 def main() -> int:

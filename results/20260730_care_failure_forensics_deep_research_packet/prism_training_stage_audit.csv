@@ -1,0 +1,2 @@
+stage,selected_step3000_stage,surface_mil_enabled,trainable_parameter_switch,late_performance_decline,status
+W3 formal,mid,not_bound_in_exported_metrics,source code bound; exact per-step trainable count not exported,"best V2 edema-zone checkpoint was step2500, not old step3000 selector",COMPLETED_WITH_VALID_EVIDENCE

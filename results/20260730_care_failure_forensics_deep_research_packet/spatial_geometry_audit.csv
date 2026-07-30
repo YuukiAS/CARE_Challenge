@@ -1,2 +1,2 @@
-audit,status,cases,note
-raw_label_scan,PARTIAL,220,Full raw/preprocessed/export round-trip not completed
+audit,status,cases,source,warp_sanity,stop_reason
+historical_alignment_gate_binding,COMPLETED_WITH_VALID_EVIDENCE,16,results/20260703_myops_alignment_gate/registration_metrics.csv,results/20260703_myops_alignment_gate/warp_sanity.csv,not attempted after STOP_ALIGNMENT_NOT_PRIMARY; not executed because Phase 1 did not support alignment as primary bottleneck

@@ -1,0 +1,36 @@
+{
+  "status": "PASS",
+  "updated_utc": "2026-07-30T04:10:19.729806+00:00",
+  "repo_head": "34ec050072294ad55f729bfc22b281c9f0552951",
+  "summary": {
+    "diagnostic": "D0_FULL_PRETRAINED_IDENTITY",
+    "status": "PASS",
+    "split": "fold0_inner_select",
+    "case_count": 12,
+    "myops_edema_dice_class_4": "0.923083",
+    "myops_scar_dice_class_5": "0.922388",
+    "foreground_mean_dice": "0.914594",
+    "myops_edema_hd95_class_4_mm": "0.468191",
+    "myops_scar_hd95_class_5_mm": "1.009720",
+    "foreground_mean_hd95_mm": "0.738956",
+    "prediction_dir": "results/20260730_care_failure_forensics_deep_research_packet/runtime/D0_FULL_PRETRAINED_IDENTITY/predictions",
+    "evaluation_summary": "results/20260730_care_failure_forensics_deep_research_packet/runtime/D0_FULL_PRETRAINED_IDENTITY/evaluation/evaluation_summary.json",
+    "log_path": "logs/ForensicsD0_61220581_20260730_000747.log",
+    "job_id": "61220581",
+    "slurm_mode": "existing_allocation_overlap",
+    "command_exit_code": 0,
+    "notes": "Stock nnU-Net fold0 checkpoint replayed on frozen inner_select cases; no training, upload, or outer tuning."
+  },
+  "missing_predictions": [],
+  "generated_files": [
+    "decoder_reset_training_summary.csv",
+    "decoder_reset_inner_casewise.csv",
+    "decoder_reset_checkpoint_manifest.csv",
+    "decoder_reset_comparison.csv",
+    "decoder_reset_diagnostic_report.md",
+    "required_diagnostic_wave_status.csv",
+    "diagnostic_execution_plan.json",
+    "finalizer_state.json",
+    "controller_ledger.csv"
+  ]
+}

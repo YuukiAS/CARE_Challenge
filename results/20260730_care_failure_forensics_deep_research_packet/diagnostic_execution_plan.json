@@ -1,0 +1,127 @@
+{
+  "status": "NEEDS_REPAIR",
+  "updated_utc": "2026-07-30T04:10:19.729806+00:00",
+  "repo_head": "34ec050072294ad55f729bfc22b281c9f0552951",
+  "origin_main": "34ec050072294ad55f729bfc22b281c9f0552951",
+  "existing_allocation": "61220581",
+  "gpu_preflight": {
+    "python_executable": "/users/a/e/aereinh/CARE/envs/env_CARE/bin/python",
+    "python_version": "3.12.13",
+    "torch_version": "2.11.0+cu130",
+    "cuda_available": true,
+    "cuda_visible_devices": "0",
+    "gpu_name": "NVIDIA H100 NVL",
+    "gpu_memory": 99951706112,
+    "repo_head": "34ec050072294ad55f729bfc22b281c9f0552951",
+    "preflight_command": "srun --jobid=61220581 --overlap --ntasks=1 bash -lc <python torch/cuda probe>",
+    "preflight_result": "PASS"
+  },
+  "missing_required_diagnostics": [
+    "D1_DECODER_RESET_ENCODER_FROZEN",
+    "D2_DECODER_RESET_TOP_ENCODER_TRAINABLE",
+    "D3_FULL_MODEL_SHORT_FINETUNE",
+    "FEATURE_PROBE_HELDOUT",
+    "MOSAIC_RECIPE_DECOMPOSITION",
+    "CINE_TEMPORAL_PROBE"
+  ],
+  "first_executable_wave": "D1_DECODER_RESET_ENCODER_FROZEN",
+  "sequencing_rule": "D1-D3 must not start until D0 reproduces the bound stock nnU-Net baseline.",
+  "no_outer_tuning": true,
+  "no_new_architecture": true,
+  "no_validation_upload": true,
+  "notes": [
+    "This file records readiness only; it is not completion evidence.",
+    "User later explicitly requested commit/push of the partial packet; the original task contract remains no-auto-push for future runtime work."
+  ],
+  "waves": [
+    {
+      "diagnostic": "D0_FULL_PRETRAINED_IDENTITY",
+      "phase": "F7B",
+      "depends_on": "bound Dataset501 fold0 stock nnU-Net checkpoint and evaluator",
+      "allowed_split": "fold0_inner_select",
+      "forbidden_split": "fold0_outer",
+      "execution_mode": "existing_allocation_overlap",
+      "state": "PASS",
+      "next_action": "D0 complete; use as baseline for D1-D3"
+    },
+    {
+      "diagnostic": "D1_DECODER_RESET_ENCODER_FROZEN",
+      "phase": "F7B",
+      "depends_on": "D0_FULL_PRETRAINED_IDENTITY terminal PASS",
+      "allowed_split": "fold0_actual_train_to_inner_select",
+      "forbidden_split": "fold0_outer",
+      "execution_mode": "single_gpu_slurm_after_D0",
+      "state": "READY_AFTER_D0",
+      "next_action": "train 1500 optimizer steps only if D0 reproduces baseline"
+    },
+    {
+      "diagnostic": "D2_DECODER_RESET_TOP_ENCODER_TRAINABLE",
+      "phase": "F7B",
+      "depends_on": "D0_FULL_PRETRAINED_IDENTITY terminal PASS",
+      "allowed_split": "fold0_actual_train_to_inner_select",
+      "forbidden_split": "fold0_outer",
+      "execution_mode": "single_gpu_slurm_after_D0",
+      "state": "READY_AFTER_D0",
+      "next_action": "train 3000 optimizer steps only if D0 reproduces baseline"
+    },
+    {
+      "diagnostic": "D3_FULL_MODEL_SHORT_FINETUNE",
+      "phase": "F7B",
+      "depends_on": "D0_FULL_PRETRAINED_IDENTITY terminal PASS",
+      "allowed_split": "fold0_actual_train_to_inner_select",
+      "forbidden_split": "fold0_outer",
+      "execution_mode": "single_gpu_slurm_after_D0",
+      "state": "READY_AFTER_D0",
+      "next_action": "fine-tune 1000 optimizer steps with lr=1e-5"
+    },
+    {
+      "diagnostic": "FEATURE_PROBE_HELDOUT",
+      "phase": "F7",
+      "depends_on": "feature tensor binding for nnU-Net/PRISM/MoSAIC",
+      "allowed_split": "actual_train_probe_train_inner_select_probe_eval",
+      "forbidden_split": "fold0_outer",
+      "execution_mode": "single_gpu_or_cpu_after_binding",
+      "state": "NEEDS_FEATURE_BINDING",
+      "next_action": "write feature extraction wrapper or mark missing features by model"
+    },
+    {
+      "diagnostic": "MOSAIC_RECIPE_DECOMPOSITION",
+      "phase": "F8",
+      "depends_on": "MoSAIC source and 7 checkpoint roles bound",
+      "allowed_split": "inner_select",
+      "forbidden_split": "fold0_outer_tuning",
+      "execution_mode": "single_gpu_fixed_recipe_replay",
+      "state": "NEEDS_RECIPE_BINDING",
+      "next_action": "bind checkpoint roles and implement M0-M10 fixed ablation replay"
+    },
+    {
+      "diagnostic": "CINE_TEMPORAL_PROBE",
+      "phase": "F9B",
+      "depends_on": "Cine ED/reference frame and temporal feature binding",
+      "allowed_split": "patient_level_train_eval",
+      "forbidden_split": "hosted_validation",
+      "execution_mode": "cpu_or_single_gpu_light_probe",
+      "state": "NEEDS_CINE_BINDING",
+      "next_action": "bind Cine manifests and run ED-only versus temporal lightweight probe"
+    }
+  ],
+  "d0_identity_replay_result": {
+    "diagnostic": "D0_FULL_PRETRAINED_IDENTITY",
+    "status": "PASS",
+    "split": "fold0_inner_select",
+    "case_count": 12,
+    "myops_edema_dice_class_4": "0.923083",
+    "myops_scar_dice_class_5": "0.922388",
+    "foreground_mean_dice": "0.914594",
+    "myops_edema_hd95_class_4_mm": "0.468191",
+    "myops_scar_hd95_class_5_mm": "1.009720",
+    "foreground_mean_hd95_mm": "0.738956",
+    "prediction_dir": "results/20260730_care_failure_forensics_deep_research_packet/runtime/D0_FULL_PRETRAINED_IDENTITY/predictions",
+    "evaluation_summary": "results/20260730_care_failure_forensics_deep_research_packet/runtime/D0_FULL_PRETRAINED_IDENTITY/evaluation/evaluation_summary.json",
+    "log_path": "logs/ForensicsD0_61220581_20260730_000747.log",
+    "job_id": "61220581",
+    "slurm_mode": "existing_allocation_overlap",
+    "command_exit_code": 0,
+    "notes": "Stock nnU-Net fold0 checkpoint replayed on frozen inner_select cases; no training, upload, or outer tuning."
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "case_count": 220,
+  "feature_probe_boundary": "G5 is terminal blocked for missing bound activations except MoSAIC scar/coarse and raw morphology controls.",
+  "oracle_rows": 520,
+  "selector_rows": 3,
+  "source_manifest": "results/20260726_care_fullinfo_nnunet_and_care_scf/care_scf_v1/mosaic_oof_prediction_manifest.csv",
+  "standardized_rows": 1040,
+  "status": "COMPLETED_WITH_VALID_EVIDENCE",
+  "timestamp_utc": "2026-07-30T08:19:39.695601+00:00"
+}

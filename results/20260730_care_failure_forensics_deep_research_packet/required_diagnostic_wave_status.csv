@@ -1,0 +1,8 @@
+diagnostic,phase,depends_on,allowed_split,forbidden_split,execution_mode,state,next_action
+D0_FULL_PRETRAINED_IDENTITY,F7B,bound Dataset501 fold0 stock nnU-Net checkpoint and evaluator,fold0_inner_select,fold0_outer,existing_allocation_overlap,PASS,D0 complete; start D1-D3 decoder-reset diagnostics if runtime budget permits
+D1_DECODER_RESET_ENCODER_FROZEN,F7B,D0_FULL_PRETRAINED_IDENTITY terminal PASS,fold0_actual_train_to_inner_select,fold0_outer,single_gpu_slurm_after_D0,READY_AFTER_D0,train 1500 optimizer steps only if D0 reproduces baseline
+D2_DECODER_RESET_TOP_ENCODER_TRAINABLE,F7B,D0_FULL_PRETRAINED_IDENTITY terminal PASS,fold0_actual_train_to_inner_select,fold0_outer,single_gpu_slurm_after_D0,READY_AFTER_D0,train 3000 optimizer steps only if D0 reproduces baseline
+D3_FULL_MODEL_SHORT_FINETUNE,F7B,D0_FULL_PRETRAINED_IDENTITY terminal PASS,fold0_actual_train_to_inner_select,fold0_outer,single_gpu_slurm_after_D0,READY_AFTER_D0,fine-tune 1000 optimizer steps with lr=1e-5
+FEATURE_PROBE_HELDOUT,F7,feature tensor binding for nnU-Net/PRISM/MoSAIC,actual_train_probe_train_inner_select_probe_eval,fold0_outer,single_gpu_or_cpu_after_binding,NEEDS_FEATURE_BINDING,write feature extraction wrapper or mark missing features by model
+MOSAIC_RECIPE_DECOMPOSITION,F8,MoSAIC source and 7 checkpoint roles bound,inner_select,fold0_outer_tuning,single_gpu_fixed_recipe_replay,NEEDS_RECIPE_BINDING,bind checkpoint roles and implement M0-M10 fixed ablation replay
+CINE_TEMPORAL_PROBE,F9B,Cine ED/reference frame and temporal feature binding,patient_level_train_eval,hosted_validation,cpu_or_single_gpu_light_probe,NEEDS_CINE_BINDING,bind Cine manifests and run ED-only versus temporal lightweight probe

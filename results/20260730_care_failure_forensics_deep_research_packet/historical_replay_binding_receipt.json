@@ -1,0 +1,9 @@
+{
+  "casewise_summary_rows": 42,
+  "created_at": "2026-07-30T08:39:09.948336+00:00",
+  "experiment_rows": 7,
+  "git_head": "34ec050072294ad55f729bfc22b281c9f0552951",
+  "model_rows": 7,
+  "status": "COMPLETED_WITH_VALID_EVIDENCE",
+  "terminal_boundary": "Exact inference replay was performed only where predictions/metrics were already bound; missing exact assets are explicitly recorded."
+}

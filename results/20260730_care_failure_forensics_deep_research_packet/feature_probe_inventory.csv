@@ -1,2 +1,10 @@
-feature_source,status
-nnunet_encoder,NOT_EXTRACTED
+model_feature_source,status,bound_artifact_count,task_coverage,artifact_glob,limitation
+nnU-Net encoder,BLOCKED_BY_MISSING_BOUND_ASSET,0,,,No bound frozen activation/embedding artifact found in V2 namespace or OOF manifests.
+nnU-Net decoder,BLOCKED_BY_MISSING_BOUND_ASSET,0,,,No bound frozen activation/embedding artifact found in V2 namespace or OOF manifests.
+PRISM shared,BLOCKED_BY_MISSING_BOUND_ASSET,0,,,No bound frozen activation/embedding artifact found in V2 namespace or OOF manifests.
+PRISM routed,BLOCKED_BY_MISSING_BOUND_ASSET,0,,,No bound frozen activation/embedding artifact found in V2 namespace or OOF manifests.
+PRISM refiner,BLOCKED_BY_MISSING_BOUND_ASSET,0,,,No bound frozen activation/embedding artifact found in V2 namespace or OOF manifests.
+MoSAIC coarse,COMPLETED_WITH_VALID_EVIDENCE,5,scar component probability/anatomy features,results/20260726_care_fullinfo_nnunet_and_care_scf/care_scf_v1/mosaic_oof/fold*/features/scar_component_features.csv,Does not cover pure-edema FP/FN frozen activations.
+MoSAIC scar fine,COMPLETED_WITH_VALID_EVIDENCE,5,scar component probability/anatomy features,results/20260726_care_fullinfo_nnunet_and_care_scf/care_scf_v1/mosaic_oof/fold*/features/scar_component_features.csv,Does not cover pure-edema FP/FN frozen activations.
+MoSAIC edema,BLOCKED_BY_MISSING_BOUND_ASSET,0,,,No bound frozen activation/embedding artifact found in V2 namespace or OOF manifests.
+raw intensity control,COMPLETED_WITH_VALID_EVIDENCE,220,prediction morphology and center/modality controls in selector table,results/20260730_care_failure_forensics_deep_research_packet/standardized_casewise_metrics.csv,"Control is case-level, not voxel-level raw intensity probe."

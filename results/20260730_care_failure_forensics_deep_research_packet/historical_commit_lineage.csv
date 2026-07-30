@@ -1,0 +1,8 @@
+model_id,experiment_id,commit,date,subject
+BATCH0_3_SRR_V2_ANCHOR_CONTROL,srr_production_anchor_bounded_controls,34ec050072294ad55f729bfc22b281c9f0552951,2026-07-30,Current binding point for Batch0-3; controller also ran a read-only git log --all forensic scan before aggregation.
+BATCH7_BR2_SIP,batch7_minimal_pathology_decomposition_and_repair,34ec050072294ad55f729bfc22b281c9f0552951,2026-07-30,Current binding point for Batch7; controller also ran a read-only git log --all forensic scan before aggregation.
+MMRD_BATCH9,batch9_reliable_label_distillation,34ec050072294ad55f729bfc22b281c9f0552951,2026-07-30,Current binding point for MMRD; controller also ran a read-only git log --all forensic scan before aggregation.
+SRR_CASCADE_RESCUE,20260629_cascade_teacher_route,34ec050072294ad55f729bfc22b281c9f0552951,2026-07-30,Current binding point for Cascade; controller also ran a read-only git log --all forensic scan before aggregation.
+CARE_ARC,20260729_care_arc_clean_fold1,34ec050072294ad55f729bfc22b281c9f0552951,2026-07-30,Current binding point for ARC; controller also ran a read-only git log --all forensic scan before aggregation.
+CARE_DG_DR_DPR,20260727_20260728_dual_pathology_routes,34ec050072294ad55f729bfc22b281c9f0552951,2026-07-30,Current binding point for DG/DR/DPR; controller also ran a read-only git log --all forensic scan before aggregation.
+CARE_PRISM_V2,20260729_care_prism_fold0_fold1_v2,34ec050072294ad55f729bfc22b281c9f0552951,2026-07-30,Current binding point for PRISM; controller also ran a read-only git log --all forensic scan before aggregation.

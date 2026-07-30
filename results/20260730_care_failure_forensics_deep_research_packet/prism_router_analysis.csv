@@ -1,0 +1,2 @@
+component,status,evidence
+router_weights,BLOCKED_BY_MISSING_BOUND_ASSET,"13 checkpoint replay binds final decoded masks/probabilities, but no exported per-case router-weight tensor was found."

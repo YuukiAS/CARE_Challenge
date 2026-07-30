@@ -1,0 +1,243 @@
+{
+  "status": "READY",
+  "diagnostic": "D0_FULL_PRETRAINED_IDENTITY",
+  "cases": [
+    "Case1001",
+    "Case1015",
+    "Case1027",
+    "Case1039",
+    "Case1054",
+    "Case1065",
+    "Case1077",
+    "Case2010",
+    "Case2022",
+    "Case2034",
+    "Case3010",
+    "Case3022"
+  ],
+  "case_count": 12,
+  "input_dir": "results/20260730_care_failure_forensics_deep_research_packet/runtime/D0_FULL_PRETRAINED_IDENTITY/input_images",
+  "output_dir": "results/20260730_care_failure_forensics_deep_research_packet/runtime/D0_FULL_PRETRAINED_IDENTITY/predictions",
+  "links": [
+    {
+      "case_id": "Case1001",
+      "channel": "0000",
+      "src": "data/nnUNet/nnUNet_raw/Dataset501_CAREMyoPS/imagesTr/Case1001_0000.nii.gz",
+      "dst": "results/20260730_care_failure_forensics_deep_research_packet/runtime/D0_FULL_PRETRAINED_IDENTITY/input_images/Case1001_0000.nii.gz"
+    },
+    {
+      "case_id": "Case1001",
+      "channel": "0001",
+      "src": "data/nnUNet/nnUNet_raw/Dataset501_CAREMyoPS/imagesTr/Case1001_0001.nii.gz",
+      "dst": "results/20260730_care_failure_forensics_deep_research_packet/runtime/D0_FULL_PRETRAINED_IDENTITY/input_images/Case1001_0001.nii.gz"
+    },
+    {
+      "case_id": "Case1001",
+      "channel": "0002",
+      "src": "data/nnUNet/nnUNet_raw/Dataset501_CAREMyoPS/imagesTr/Case1001_0002.nii.gz",
+      "dst": "results/20260730_care_failure_forensics_deep_research_packet/runtime/D0_FULL_PRETRAINED_IDENTITY/input_images/Case1001_0002.nii.gz"
+    },
+    {
+      "case_id": "Case1015",
+      "channel": "0000",
+      "src": "data/nnUNet/nnUNet_raw/Dataset501_CAREMyoPS/imagesTr/Case1015_0000.nii.gz",
+      "dst": "results/20260730_care_failure_forensics_deep_research_packet/runtime/D0_FULL_PRETRAINED_IDENTITY/input_images/Case1015_0000.nii.gz"
+    },
+    {
+      "case_id": "Case1015",
+      "channel": "0001",
+      "src": "data/nnUNet/nnUNet_raw/Dataset501_CAREMyoPS/imagesTr/Case1015_0001.nii.gz",
+      "dst": "results/20260730_care_failure_forensics_deep_research_packet/runtime/D0_FULL_PRETRAINED_IDENTITY/input_images/Case1015_0001.nii.gz"
+    },
+    {
+      "case_id": "Case1015",
+      "channel": "0002",
+      "src": "data/nnUNet/nnUNet_raw/Dataset501_CAREMyoPS/imagesTr/Case1015_0002.nii.gz",
+      "dst": "results/20260730_care_failure_forensics_deep_research_packet/runtime/D0_FULL_PRETRAINED_IDENTITY/input_images/Case1015_0002.nii.gz"
+    },
+    {
+      "case_id": "Case1027",
+      "channel": "0000",
+      "src": "data/nnUNet/nnUNet_raw/Dataset501_CAREMyoPS/imagesTr/Case1027_0000.nii.gz",
+      "dst": "results/20260730_care_failure_forensics_deep_research_packet/runtime/D0_FULL_PRETRAINED_IDENTITY/input_images/Case1027_0000.nii.gz"
+    },
+    {
+      "case_id": "Case1027",
+      "channel": "0001",
+      "src": "data/nnUNet/nnUNet_raw/Dataset501_CAREMyoPS/imagesTr/Case1027_0001.nii.gz",
+      "dst": "results/20260730_care_failure_forensics_deep_research_packet/runtime/D0_FULL_PRETRAINED_IDENTITY/input_images/Case1027_0001.nii.gz"
+    },
+    {
+      "case_id": "Case1027",
+      "channel": "0002",
+      "src": "data/nnUNet/nnUNet_raw/Dataset501_CAREMyoPS/imagesTr/Case1027_0002.nii.gz",
+      "dst": "results/20260730_care_failure_forensics_deep_research_packet/runtime/D0_FULL_PRETRAINED_IDENTITY/input_images/Case1027_0002.nii.gz"
+    },
+    {
+      "case_id": "Case1039",
+      "channel": "0000",
+      "src": "data/nnUNet/nnUNet_raw/Dataset501_CAREMyoPS/imagesTr/Case1039_0000.nii.gz",
+      "dst": "results/20260730_care_failure_forensics_deep_research_packet/runtime/D0_FULL_PRETRAINED_IDENTITY/input_images/Case1039_0000.nii.gz"
+    },
+    {
+      "case_id": "Case1039",
+      "channel": "0001",
+      "src": "data/nnUNet/nnUNet_raw/Dataset501_CAREMyoPS/imagesTr/Case1039_0001.nii.gz",
+      "dst": "results/20260730_care_failure_forensics_deep_research_packet/runtime/D0_FULL_PRETRAINED_IDENTITY/input_images/Case1039_0001.nii.gz"
+    },
+    {
+      "case_id": "Case1039",
+      "channel": "0002",
+      "src": "data/nnUNet/nnUNet_raw/Dataset501_CAREMyoPS/imagesTr/Case1039_0002.nii.gz",
+      "dst": "results/20260730_care_failure_forensics_deep_research_packet/runtime/D0_FULL_PRETRAINED_IDENTITY/input_images/Case1039_0002.nii.gz"
+    },
+    {
+      "case_id": "Case1054",
+      "channel": "0000",
+      "src": "data/nnUNet/nnUNet_raw/Dataset501_CAREMyoPS/imagesTr/Case1054_0000.nii.gz",
+      "dst": "results/20260730_care_failure_forensics_deep_research_packet/runtime/D0_FULL_PRETRAINED_IDENTITY/input_images/Case1054_0000.nii.gz"
+    },
+    {
+      "case_id": "Case1054",
+      "channel": "0001",
+      "src": "data/nnUNet/nnUNet_raw/Dataset501_CAREMyoPS/imagesTr/Case1054_0001.nii.gz",
+      "dst": "results/20260730_care_failure_forensics_deep_research_packet/runtime/D0_FULL_PRETRAINED_IDENTITY/input_images/Case1054_0001.nii.gz"
+    },
+    {
+      "case_id": "Case1054",
+      "channel": "0002",
+      "src": "data/nnUNet/nnUNet_raw/Dataset501_CAREMyoPS/imagesTr/Case1054_0002.nii.gz",
+      "dst": "results/20260730_care_failure_forensics_deep_research_packet/runtime/D0_FULL_PRETRAINED_IDENTITY/input_images/Case1054_0002.nii.gz"
+    },
+    {
+      "case_id": "Case1065",
+      "channel": "0000",
+      "src": "data/nnUNet/nnUNet_raw/Dataset501_CAREMyoPS/imagesTr/Case1065_0000.nii.gz",
+      "dst": "results/20260730_care_failure_forensics_deep_research_packet/runtime/D0_FULL_PRETRAINED_IDENTITY/input_images/Case1065_0000.nii.gz"
+    },
+    {
+      "case_id": "Case1065",
+      "channel": "0001",
+      "src": "data/nnUNet/nnUNet_raw/Dataset501_CAREMyoPS/imagesTr/Case1065_0001.nii.gz",
+      "dst": "results/20260730_care_failure_forensics_deep_research_packet/runtime/D0_FULL_PRETRAINED_IDENTITY/input_images/Case1065_0001.nii.gz"
+    },
+    {
+      "case_id": "Case1065",
+      "channel": "0002",
+      "src": "data/nnUNet/nnUNet_raw/Dataset501_CAREMyoPS/imagesTr/Case1065_0002.nii.gz",
+      "dst": "results/20260730_care_failure_forensics_deep_research_packet/runtime/D0_FULL_PRETRAINED_IDENTITY/input_images/Case1065_0002.nii.gz"
+    },
+    {
+      "case_id": "Case1077",
+      "channel": "0000",
+      "src": "data/nnUNet/nnUNet_raw/Dataset501_CAREMyoPS/imagesTr/Case1077_0000.nii.gz",
+      "dst": "results/20260730_care_failure_forensics_deep_research_packet/runtime/D0_FULL_PRETRAINED_IDENTITY/input_images/Case1077_0000.nii.gz"
+    },
+    {
+      "case_id": "Case1077",
+      "channel": "0001",
+      "src": "data/nnUNet/nnUNet_raw/Dataset501_CAREMyoPS/imagesTr/Case1077_0001.nii.gz",
+      "dst": "results/20260730_care_failure_forensics_deep_research_packet/runtime/D0_FULL_PRETRAINED_IDENTITY/input_images/Case1077_0001.nii.gz"
+    },
+    {
+      "case_id": "Case1077",
+      "channel": "0002",
+      "src": "data/nnUNet/nnUNet_raw/Dataset501_CAREMyoPS/imagesTr/Case1077_0002.nii.gz",
+      "dst": "results/20260730_care_failure_forensics_deep_research_packet/runtime/D0_FULL_PRETRAINED_IDENTITY/input_images/Case1077_0002.nii.gz"
+    },
+    {
+      "case_id": "Case2010",
+      "channel": "0000",
+      "src": "data/nnUNet/nnUNet_raw/Dataset501_CAREMyoPS/imagesTr/Case2010_0000.nii.gz",
+      "dst": "results/20260730_care_failure_forensics_deep_research_packet/runtime/D0_FULL_PRETRAINED_IDENTITY/input_images/Case2010_0000.nii.gz"
+    },
+    {
+      "case_id": "Case2010",
+      "channel": "0001",
+      "src": "data/nnUNet/nnUNet_raw/Dataset501_CAREMyoPS/imagesTr/Case2010_0001.nii.gz",
+      "dst": "results/20260730_care_failure_forensics_deep_research_packet/runtime/D0_FULL_PRETRAINED_IDENTITY/input_images/Case2010_0001.nii.gz"
+    },
+    {
+      "case_id": "Case2010",
+      "channel": "0002",
+      "src": "data/nnUNet/nnUNet_raw/Dataset501_CAREMyoPS/imagesTr/Case2010_0002.nii.gz",
+      "dst": "results/20260730_care_failure_forensics_deep_research_packet/runtime/D0_FULL_PRETRAINED_IDENTITY/input_images/Case2010_0002.nii.gz"
+    },
+    {
+      "case_id": "Case2022",
+      "channel": "0000",
+      "src": "data/nnUNet/nnUNet_raw/Dataset501_CAREMyoPS/imagesTr/Case2022_0000.nii.gz",
+      "dst": "results/20260730_care_failure_forensics_deep_research_packet/runtime/D0_FULL_PRETRAINED_IDENTITY/input_images/Case2022_0000.nii.gz"
+    },
+    {
+      "case_id": "Case2022",
+      "channel": "0001",
+      "src": "data/nnUNet/nnUNet_raw/Dataset501_CAREMyoPS/imagesTr/Case2022_0001.nii.gz",
+      "dst": "results/20260730_care_failure_forensics_deep_research_packet/runtime/D0_FULL_PRETRAINED_IDENTITY/input_images/Case2022_0001.nii.gz"
+    },
+    {
+      "case_id": "Case2022",
+      "channel": "0002",
+      "src": "data/nnUNet/nnUNet_raw/Dataset501_CAREMyoPS/imagesTr/Case2022_0002.nii.gz",
+      "dst": "results/20260730_care_failure_forensics_deep_research_packet/runtime/D0_FULL_PRETRAINED_IDENTITY/input_images/Case2022_0002.nii.gz"
+    },
+    {
+      "case_id": "Case2034",
+      "channel": "0000",
+      "src": "data/nnUNet/nnUNet_raw/Dataset501_CAREMyoPS/imagesTr/Case2034_0000.nii.gz",
+      "dst": "results/20260730_care_failure_forensics_deep_research_packet/runtime/D0_FULL_PRETRAINED_IDENTITY/input_images/Case2034_0000.nii.gz"
+    },
+    {
+      "case_id": "Case2034",
+      "channel": "0001",
+      "src": "data/nnUNet/nnUNet_raw/Dataset501_CAREMyoPS/imagesTr/Case2034_0001.nii.gz",
+      "dst": "results/20260730_care_failure_forensics_deep_research_packet/runtime/D0_FULL_PRETRAINED_IDENTITY/input_images/Case2034_0001.nii.gz"
+    },
+    {
+      "case_id": "Case2034",
+      "channel": "0002",
+      "src": "data/nnUNet/nnUNet_raw/Dataset501_CAREMyoPS/imagesTr/Case2034_0002.nii.gz",
+      "dst": "results/20260730_care_failure_forensics_deep_research_packet/runtime/D0_FULL_PRETRAINED_IDENTITY/input_images/Case2034_0002.nii.gz"
+    },
+    {
+      "case_id": "Case3010",
+      "channel": "0000",
+      "src": "data/nnUNet/nnUNet_raw/Dataset501_CAREMyoPS/imagesTr/Case3010_0000.nii.gz",
+      "dst": "results/20260730_care_failure_forensics_deep_research_packet/runtime/D0_FULL_PRETRAINED_IDENTITY/input_images/Case3010_0000.nii.gz"
+    },
+    {
+      "case_id": "Case3010",
+      "channel": "0001",
+      "src": "data/nnUNet/nnUNet_raw/Dataset501_CAREMyoPS/imagesTr/Case3010_0001.nii.gz",
+      "dst": "results/20260730_care_failure_forensics_deep_research_packet/runtime/D0_FULL_PRETRAINED_IDENTITY/input_images/Case3010_0001.nii.gz"
+    },
+    {
+      "case_id": "Case3010",
+      "channel": "0002",
+      "src": "data/nnUNet/nnUNet_raw/Dataset501_CAREMyoPS/imagesTr/Case3010_0002.nii.gz",
+      "dst": "results/20260730_care_failure_forensics_deep_research_packet/runtime/D0_FULL_PRETRAINED_IDENTITY/input_images/Case3010_0002.nii.gz"
+    },
+    {
+      "case_id": "Case3022",
+      "channel": "0000",
+      "src": "data/nnUNet/nnUNet_raw/Dataset501_CAREMyoPS/imagesTr/Case3022_0000.nii.gz",
+      "dst": "results/20260730_care_failure_forensics_deep_research_packet/runtime/D0_FULL_PRETRAINED_IDENTITY/input_images/Case3022_0000.nii.gz"
+    },
+    {
+      "case_id": "Case3022",
+      "channel": "0001",
+      "src": "data/nnUNet/nnUNet_raw/Dataset501_CAREMyoPS/imagesTr/Case3022_0001.nii.gz",
+      "dst": "results/20260730_care_failure_forensics_deep_research_packet/runtime/D0_FULL_PRETRAINED_IDENTITY/input_images/Case3022_0001.nii.gz"
+    },
+    {
+      "case_id": "Case3022",
+      "channel": "0002",
+      "src": "data/nnUNet/nnUNet_raw/Dataset501_CAREMyoPS/imagesTr/Case3022_0002.nii.gz",
+      "dst": "results/20260730_care_failure_forensics_deep_research_packet/runtime/D0_FULL_PRETRAINED_IDENTITY/input_images/Case3022_0002.nii.gz"
+    }
+  ],
+  "missing": [],
+  "outer_used": false,
+  "checkpoint": "data/nnUNet/nnUNet_results/Dataset501_CAREMyoPS/nnUNetTrainer_500epochs__nnUNetPlans__3d_fullres/fold_0/checkpoint_final.pth",
+  "command": "nnUNetv2_predict -i <input_dir> -o <output_dir> -d Dataset501_CAREMyoPS -tr nnUNetTrainer_500epochs -p nnUNetPlans -c 3d_fullres -f 0 -chk checkpoint_final.pth"
+}

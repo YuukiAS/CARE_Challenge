@@ -1,2 +1,4 @@
-status
-NOT_RUN
+comparison,metric,clean_oof_value,full_recipe_value,numeric_delta_full_minus_clean,interpretation_boundary
+clean_oof_vs_full_data_recipe,mean_scar_dice,0.3781679456697728,0.7724874299908467,0.39431948432107394,Not same population: clean OOF is held-out train GT; full recipe is trained-on-case mechanism probe.
+clean_oof_vs_full_data_recipe,mean_pure_edema_dice,0.05275611807880284,0.4068927712103255,0.3541366531315227,Not same population: clean OOF is held-out train GT; full recipe is trained-on-case mechanism probe.
+clean_oof_vs_full_data_recipe,mean_lesion_union_dice,0.33671691700576617,0.41729032514337167,0.0805734081376055,Not same population: clean OOF is held-out train GT; full recipe is trained-on-case mechanism probe.

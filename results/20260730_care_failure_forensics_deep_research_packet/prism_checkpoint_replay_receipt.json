@@ -1,0 +1,46 @@
+{
+  "case_count": 35,
+  "checkpoint_count": 13,
+  "created_at_utc": "2026-07-30T07:55:08.788361+00:00",
+  "environment": {
+    "cuda_available": true,
+    "cuda_device": "NVIDIA H100 NVL",
+    "hostname": "g1807htzh01.ll.unc.edu",
+    "platform": "Linux-5.14.0-611.16.1.el9_7.x86_64-x86_64-with-glibc2.34",
+    "python": "/users/a/e/aereinh/CARE/envs/env_CARE/bin/python",
+    "slurm_job_id": "61220581",
+    "slurm_partition": "htzhulab",
+    "slurm_step_id": "47",
+    "torch": "2.11.0+cu130"
+  },
+  "outer_accessed": false,
+  "outputs": {
+    "casewise_csv": "results/20260730_care_failure_forensics_deep_research_packet/prism_corrected_casewise_metrics.csv",
+    "curve_csv": "results/20260730_care_failure_forensics_deep_research_packet/prism_checkpoint_curve.csv",
+    "raw_probability_manifest": "results/20260730_care_failure_forensics_deep_research_packet/prism_raw_probability_manifest.csv",
+    "runtime_probability_root": "results/20260730_care_failure_forensics_deep_research_packet/runtime/prism_checkpoint_replay_v2/g2_prism_13ckpt_20260730T0729Z/raw_probabilities"
+  },
+  "probability_row_count": 455,
+  "repo_head": "34ec050072294ad55f729bfc22b281c9f0552951",
+  "row_count": 1365,
+  "run_id": "g2_prism_13ckpt_20260730T0729Z",
+  "selected_by_edema_zone_mean_dice": {
+    "case_count": 35,
+    "checkpoint": "results/20260729_care_prism_v2_backbone_repair_and_resume/runtime/fold0_w3_fold0_6500_formal_v2/checkpoints/checkpoint_step02500.pt",
+    "checkpoint_sha256": "6d38e8084f024395183e8154f7d545200cec9a3d7019207d08d0523467c2d1e6",
+    "checkpoint_step": 2500,
+    "harm_case_count": 34,
+    "help_case_count": 0,
+    "mean_dice": "0.335179337",
+    "median_dice": "0.000000000",
+    "metric_name": "edema_zone",
+    "raw_probability_rows": 35
+  },
+  "split": "inner_select",
+  "status": "COMPLETED_WITH_VALID_EVIDENCE",
+  "task": "G2_PRISM_13_CHECKPOINT_REPLAY",
+  "thresholds": {
+    "edema": 0.5,
+    "scar": 0.5
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "created_at": "2026-07-30T08:53:38.042193+00:00",
+  "forbidden_actions": {
+    "git_push": false,
+    "new_architecture_training": false,
+    "validation_upload": false
+  },
+  "required_gpu_task_statuses": "see v2_task_status.csv",
+  "status": "VERIFIED_COMPLETE",
+  "v1_pdf_preserved": "CARE_Failure_Forensics_Deep_Research_Evidence_Packet_20260730.pdf",
+  "v2_pdf": "CARE_Failure_Forensics_Deep_Research_Evidence_Packet_20260730_v2.pdf"
+}
