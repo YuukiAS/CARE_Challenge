@@ -1,0 +1,15 @@
+{
+  "task_name": "20260730_care_failure_forensics_deep_research_packet",
+  "final_status": "blocked",
+  "commit_status": "not_committed_validator_needs_repair",
+  "push_status": "not_pushed_forbidden",
+  "key_conclusion": "中文 PDF 和本地证据骨架已生成，但关键 forensic diagnostics 未完成，不能声明 VERIFIED_COMPLETE。",
+  "blocked_or_failure_reason": "strict validator requires decoder-reset, feature probe, MoSAIC recipe decomposition, Cine temporal probe, and standardized casewise reaggregation before completion.",
+  "slurm_terminal_status": "no_new_slurm_jobs_submitted; existing allocation 61220581 observed running at bootstrap only",
+  "evidence_paths": [
+    "/users/a/e/aereinh/CARE/results/20260730_care_failure_forensics_deep_research_packet/CARE_Failure_Forensics_Deep_Research_Evidence_Packet_20260730.pdf",
+    "/users/a/e/aereinh/CARE/results/20260730_care_failure_forensics_deep_research_packet/strict_validator_report.json",
+    "/users/a/e/aereinh/CARE/results/20260730_care_failure_forensics_deep_research_packet/controller_report.md"
+  ],
+  "next_step": "Run authorized bounded forensic diagnostic jobs or accept this as partial Deep Research seed packet."
+}

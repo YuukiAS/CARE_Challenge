@@ -1,0 +1,33 @@
+\contentsline {section}{\numberline {1}1. 为什么现在必须做失败取证}{4}{section.1}%
+\contentsline {section}{\numberline {2}2. CARE 数据、中心、模态和标签真值}{5}{section.2}%
+\contentsline {section}{\numberline {3}3. 官方与内部指标语义}{6}{section.3}%
+\contentsline {section}{\numberline {4}4. 当前评价代码中的已确认问题}{7}{section.4}%
+\contentsline {section}{\numberline {5}5. nnU-Net 强基线到底强在哪里}{8}{section.5}%
+\contentsline {section}{\numberline {6}6. SRR v2-v3 的设计意图与落地差距}{9}{section.6}%
+\contentsline {section}{\numberline {7}7. Batch 0-7 历史证据}{10}{section.7}%
+\contentsline {section}{\numberline {8}8. MMRD 的设计、实现和失败}{11}{section.8}%
+\contentsline {section}{\numberline {9}9. Cascade/DG 的设计、实现和失败}{12}{section.9}%
+\contentsline {section}{\numberline {10}10. ARC 的设计、实现和失败}{13}{section.10}%
+\contentsline {section}{\numberline {11}11. PRISM W1-W3 的完整复盘}{14}{section.11}%
+\contentsline {section}{\numberline {12}12. MoSAIC clean、full-data 和 hosted recipe}{15}{section.12}%
+\contentsline {section}{\numberline {13}13. 所有模型统一病例级比较}{16}{section.13}%
+\contentsline {section}{\numberline {14}14. 困难子组}{17}{section.14}%
+\contentsline {section}{\numberline {15}15. case-wise help/harm}{18}{section.15}%
+\contentsline {section}{\numberline {16}16. 失败病例视觉图册}{19}{section.16}%
+\contentsline {section}{\numberline {17}17. 错误重合和模型互补上限}{20}{section.17}%
+\contentsline {section}{\numberline {18}18. selector feasibility}{21}{section.18}%
+\contentsline {section}{\numberline {19}19. 冻结特征可分性 probe}{22}{section.19}%
+\contentsline {section}{\numberline {20}20. decoder-reset 诊断对照}{23}{section.20}%
+\contentsline {section}{\numberline {21}21. 多序列错位是否为主因}{24}{section.21}%
+\contentsline {section}{\numberline {22}22. scar 的真实瓶颈}{25}{section.22}%
+\contentsline {section}{\numberline {23}23. pure edema 的真实瓶颈}{26}{section.23}%
+\contentsline {section}{\numberline {24}24. Cine 的真实瓶颈}{27}{section.24}%
+\contentsline {section}{\numberline {25}25. 为什么过去多次充分设计仍然失败}{28}{section.25}%
+\contentsline {section}{\numberline {26}26. 根因排序与证据图}{29}{section.26}%
+\contentsline {section}{\numberline {27}27. 当前能下的结论}{30}{section.27}%
+\contentsline {section}{\numberline {28}28. 当前不能下的结论}{31}{section.28}%
+\contentsline {section}{\numberline {29}29. 外部 Deep Research 必须回答的问题}{32}{section.29}%
+\contentsline {section}{\numberline {30}30. 下一轮决策树}{33}{section.30}%
+\contentsline {section}{\numberline {A}模型和 checkpoint provenance}{34}{appendix.A}%
+\contentsline {section}{\numberline {B}指标公式和 known-bad}{34}{appendix.B}%
+\contentsline {section}{\numberline {C}证据缺口}{36}{appendix.C}%

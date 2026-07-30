@@ -1,0 +1,33 @@
+{
+  "pdf": "/users/a/e/aereinh/CARE/results/20260730_care_failure_forensics_deep_research_packet/CARE_Failure_Forensics_Deep_Research_Evidence_Packet_20260730.pdf",
+  "errors": [],
+  "warnings": [],
+  "pdfinfo": "Title:          CARE Myocardium 失败取证 Deep Research 证据包\nAuthor:         CARE Forensic Research Controller\nCreator:        LaTeX via pandoc\nProducer:       xdvipdfmx (20200315)\nCreationDate:   Wed Jul 29 22:40:17 2026 EDT\nTagged:         no\nUserProperties: no\nSuspects:       no\nForm:           none\nJavaScript:     no\nPages:          20\nEncrypted:      no\nPage size:      595.28 x 841.89 pts (A4)\nPage rot:       0\nFile size:      280795 bytes\nOptimized:      no\nPDF version:    1.5\n",
+  "pages": 20,
+  "pdffonts": "name                                 type              encoding         emb sub uni object ID\n------------------------------------ ----------------- ---------------- --- --- --- ---------\nUPJYWR+TeXGyreTermes-Regular-Identity-H CID Type 0C       Identity-H       yes yes yes      5  0\nHVSTYT+DroidSansFallback             CID TrueType      Identity-H       yes yes yes      7  0\nRSUUAL+TeXGyreTermes-Bold-Identity-H CID Type 0C       Identity-H       yes yes yes      9  0\nJEKVRV+TeXGyreCursor-Regular-Identity-H CID Type 0C       Identity-H       yes yes yes     11  0\n",
+  "fonts_embedded": true,
+  "text_checks": {
+    "errors": [],
+    "warnings": [],
+    "fragmentation": {
+      "cjk_lines": 140,
+      "short_cjk_lines": 1,
+      "short_ratio": 0.007142857142857143,
+      "failed": false
+    },
+    "table_survival": {
+      "source_table_rows": 93,
+      "checked_rows": 12,
+      "matched_rows": 12,
+      "failed": false
+    }
+  },
+  "preview_prefix": "/users/a/e/aereinh/CARE/results/20260730_care_failure_forensics_deep_research_packet/xelatex_final_preview/CARE_Failure_Forensics_Deep_Research_Evidence_Packet_20260730",
+  "preview_paths": [
+    "/users/a/e/aereinh/CARE/results/20260730_care_failure_forensics_deep_research_packet/xelatex_final_preview/CARE_Failure_Forensics_Deep_Research_Evidence_Packet_20260730-01.png"
+  ],
+  "final_standard_route": "pandoc_xelatex_named_fonts",
+  "render_resource_dir": "/users/a/e/aereinh/render_resources/chinese_math_pdf",
+  "cjk_font": "/usr/share/fonts/google-droid-sans-fonts/DroidSansFallbackFull.ttf",
+  "fandol_status": "available in /users render resources but not used in final PDF because pdffonts reports uni=no and the user viewer rendered Chinese as blank"
+}

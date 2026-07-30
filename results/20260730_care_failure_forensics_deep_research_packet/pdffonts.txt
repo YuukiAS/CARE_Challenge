@@ -1,0 +1,6 @@
+name                                 type              encoding         emb sub uni object ID
+------------------------------------ ----------------- ---------------- --- --- --- ---------
+UPJYWR+TeXGyreTermes-Regular-Identity-H CID Type 0C       Identity-H       yes yes yes      5  0
+HVSTYT+DroidSansFallback             CID TrueType      Identity-H       yes yes yes      7  0
+RSUUAL+TeXGyreTermes-Bold-Identity-H CID Type 0C       Identity-H       yes yes yes      9  0
+JEKVRV+TeXGyreCursor-Regular-Identity-H CID Type 0C       Identity-H       yes yes yes     11  0

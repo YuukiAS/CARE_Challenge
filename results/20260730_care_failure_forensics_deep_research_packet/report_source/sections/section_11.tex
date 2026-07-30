@@ -1,0 +1,19 @@
+\section{11. PRISM W1-W3 的完整复盘}
+
+本章先回答一个取证问题：现有本地证据能否支持对应的科学判断。它重要是因为过去多条路线混合了设计承诺、实现状态、训练预算、评价语义和 hosted 结果。本包只采用本地可绑定证据；无法绑定的数字不会被写成性能结论。
+
+
+
+PRISM 不能只看是否有强 encoder。D0-D3 未完成前，不能判断低分主要来自 representation、decoder reset 还是训练协议。
+
+\begin{longtable}{p{0.19\linewidth}p{0.19\linewidth}p{0.19\linewidth}p{0.19\linewidth}p{0.19\linewidth}}
+\toprule
+diagnostic & status\\
+\midrule
+D0\_FULL\_PRETRAINED\_IDENTITY & NOT\_RUN\\
+\bottomrule
+\end{longtable}
+
+
+
+\clearpage

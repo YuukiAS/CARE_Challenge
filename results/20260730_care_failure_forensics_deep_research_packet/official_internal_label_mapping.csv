@@ -1,0 +1,4 @@
+object,internal_labels,official_export,allowed_claim_scope
+scar,5,scar,official
+pure_edema,4,edema,T2-present official edema
+edema_zone,4|5,none,internal only

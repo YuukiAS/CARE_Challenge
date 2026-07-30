@@ -1,0 +1,19 @@
+{
+  "status": "NEEDS_REPAIR",
+  "completed_diagnostics": [
+    "REFERENCE_METRIC_KNOWN_BAD",
+    "F0_BOOTSTRAP_INVENTORY_PARTIAL",
+    "PDF_RENDER_QA"
+  ],
+  "missing_required_diagnostics": [
+    "D0_FULL_PRETRAINED_IDENTITY",
+    "D1_DECODER_RESET_ENCODER_FROZEN",
+    "D2_DECODER_RESET_TOP_ENCODER_TRAINABLE",
+    "D3_FULL_MODEL_SHORT_FINETUNE",
+    "FEATURE_PROBE_HELDOUT",
+    "MOSAIC_RECIPE_DECOMPOSITION",
+    "CINE_TEMPORAL_PROBE"
+  ],
+  "all_jobs_terminal": true,
+  "new_slurm_jobs_submitted": false
+}

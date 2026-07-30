@@ -1,0 +1,26 @@
+model_id,design_goal,checkpoint_selection,result_evidence_grade,current_scientific_conclusion
+NNUNET,historical CARE route or baseline,UNBOUND,A_VERIFIED_FAIR_FINAL_MASK,强基线；需继续绑定五折和同口径病例级指标。
+SRR_V2,historical CARE route or baseline,UNBOUND,E_STALE_OR_INCONSISTENT,历史证据需绑定代码、checkpoint、split 和预测。
+SRR_V25,historical CARE route or baseline,UNBOUND,E_STALE_OR_INCONSISTENT,历史证据需绑定代码、checkpoint、split 和预测。
+SRR_V3,historical CARE route or baseline,UNBOUND,E_STALE_OR_INCONSISTENT,历史证据需绑定代码、checkpoint、split 和预测。
+BATCH0,historical CARE route or baseline,UNBOUND,E_STALE_OR_INCONSISTENT,历史证据需绑定代码、checkpoint、split 和预测。
+BATCH1,historical CARE route or baseline,UNBOUND,E_STALE_OR_INCONSISTENT,历史证据需绑定代码、checkpoint、split 和预测。
+BATCH2,historical CARE route or baseline,UNBOUND,E_STALE_OR_INCONSISTENT,历史证据需绑定代码、checkpoint、split 和预测。
+BATCH3,historical CARE route or baseline,UNBOUND,E_STALE_OR_INCONSISTENT,历史证据需绑定代码、checkpoint、split 和预测。
+BATCH4,historical CARE route or baseline,UNBOUND,E_STALE_OR_INCONSISTENT,历史证据需绑定代码、checkpoint、split 和预测。
+BATCH5,historical CARE route or baseline,UNBOUND,E_STALE_OR_INCONSISTENT,历史证据需绑定代码、checkpoint、split 和预测。
+BATCH6,historical CARE route or baseline,UNBOUND,E_STALE_OR_INCONSISTENT,历史证据需绑定代码、checkpoint、split 和预测。
+BATCH7,historical CARE route or baseline,UNBOUND,E_STALE_OR_INCONSISTENT,历史证据需绑定代码、checkpoint、split 和预测。
+MMRD,historical CARE route or baseline,UNBOUND,E_STALE_OR_INCONSISTENT,历史证据需绑定代码、checkpoint、split 和预测。
+SRR_CASCADE,historical CARE route or baseline,UNBOUND,B_VERIFIED_DIAGNOSTIC,已有控制器证据可作为诊断负结果，不等同于新路线失败的普遍定理。
+CARE_ARC,historical CARE route or baseline,UNBOUND,B_VERIFIED_DIAGNOSTIC,已有控制器证据可作为诊断负结果，不等同于新路线失败的普遍定理。
+CARE_DG,historical CARE route or baseline,UNBOUND,E_STALE_OR_INCONSISTENT,历史证据需绑定代码、checkpoint、split 和预测。
+CARE_DR,historical CARE route or baseline,UNBOUND,E_STALE_OR_INCONSISTENT,历史证据需绑定代码、checkpoint、split 和预测。
+DPR,historical CARE route or baseline,UNBOUND,B_VERIFIED_DIAGNOSTIC,已有控制器证据可作为诊断负结果，不等同于新路线失败的普遍定理。
+CARE_PRISM_V1,historical CARE route or baseline,UNBOUND,D_UNDERTRAINED,W1-W3 现有证据提示 decoder/reset、loss stage 和 evaluator 语义需要继续诊断。
+CARE_PRISM_V2,historical CARE route or baseline,UNBOUND,D_UNDERTRAINED,W1-W3 现有证据提示 decoder/reset、loss stage 和 evaluator 语义需要继续诊断。
+MOSAIC_CLEAN,historical CARE route or baseline,UNBOUND,B_VERIFIED_DIAGNOSTIC,clean/full-data/hosted recipe 必须分层，full-data 不能作为 clean 公平比较。
+MOSAIC_FULL_DATA,historical CARE route or baseline,UNBOUND,B_VERIFIED_DIAGNOSTIC,clean/full-data/hosted recipe 必须分层，full-data 不能作为 clean 公平比较。
+MOSAIC_HOSTED_RECIPE,historical CARE route or baseline,UNBOUND,E_STALE_OR_INCONSISTENT,clean/full-data/hosted recipe 必须分层，full-data 不能作为 clean 公平比较。
+CINE_BASELINES,historical CARE route or baseline,UNBOUND,E_STALE_OR_INCONSISTENT,历史证据需绑定代码、checkpoint、split 和预测。
+MOSAIC_CINE,historical CARE route or baseline,UNBOUND,B_VERIFIED_DIAGNOSTIC,clean/full-data/hosted recipe 必须分层，full-data 不能作为 clean 公平比较。

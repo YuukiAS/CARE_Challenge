@@ -1,0 +1,93 @@
+\documentclass[11pt]{article}
+\usepackage[a4paper,margin=1.8cm]{geometry}
+\usepackage{fontspec}
+\usepackage{xeCJK}
+\usepackage{unicode-math}
+\setmainfont{texgyretermes-regular.otf}[
+  Path=/usr/share/texlive/texmf-dist/fonts/opentype/public/tex-gyre/,
+  BoldFont=texgyretermes-bold.otf,
+  ItalicFont=texgyretermes-italic.otf,
+  BoldItalicFont=texgyretermes-bolditalic.otf
+]
+\setsansfont{texgyreheros-regular.otf}[
+  Path=/usr/share/texlive/texmf-dist/fonts/opentype/public/tex-gyre/,
+  BoldFont=texgyreheros-bold.otf,
+  ItalicFont=texgyreheros-italic.otf,
+  BoldItalicFont=texgyreheros-bolditalic.otf
+]
+\setmonofont{lmmono10-regular.otf}[
+  Path=/usr/share/texlive/texmf-dist/fonts/opentype/public/lm/,
+  ItalicFont=lmmono10-italic.otf
+]
+\setmathfont{texgyretermes-math.otf}[
+  Path=/usr/share/texlive/texmf-dist/fonts/opentype/public/tex-gyre-math/
+]
+\setCJKmainfont{FandolSong-Regular.otf}[
+  Path=/users/a/e/aereinh/render_resources/chinese_math_pdf/texmf/fonts/opentype/public/fandol/,
+  BoldFont=FandolSong-Bold.otf,
+  AutoFakeSlant=0.18
+]
+\setCJKsansfont{FandolHei-Regular.otf}[
+  Path=/users/a/e/aereinh/render_resources/chinese_math_pdf/texmf/fonts/opentype/public/fandol/,
+  BoldFont=FandolHei-Bold.otf
+]
+\setCJKmonofont{FandolSong-Regular.otf}[
+  Path=/users/a/e/aereinh/render_resources/chinese_math_pdf/texmf/fonts/opentype/public/fandol/,
+  BoldFont=FandolSong-Bold.otf
+]
+\usepackage{graphicx}
+\usepackage{longtable}
+\usepackage{booktabs}
+\usepackage{xcolor}
+\usepackage{hyperref}
+\hypersetup{colorlinks=true,linkcolor=blue,urlcolor=blue}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0.55em}
+\begin{document}
+\begin{titlepage}
+\centering
+{\Huge CARE Myocardium 失败取证 Deep Research 证据包\par}
+\vspace{1cm}
+{\Large 20260730 本地证据冻结版\par}
+\vfill
+本 PDF 是可搜索中文报告。它不是新模型蓝图，不包含 validation upload，也不声明 hosted 指标。
+\end{titlepage}
+\tableofcontents
+\clearpage
+\section*{一页执行摘要}
+这轮取证的直接结论是：当前最可靠的动作不是继续设计新 CARE 架构，而是先把评价语义、checkpoint/recipe 绑定、病例级统一重聚合、PRISM decoder-reset 对照、MoSAIC recipe decomposition 和 Cine temporal probe 做成可复现证据。已确认的硬边界是 pure edema 与 edema-zone 不能混写，full-data MoSAIC 不能冒充 clean fold0，pending 或未跑完的 GPU 诊断不能写成科学完成。
+
+\includegraphics[width=0.95\linewidth]{generated_figures/evidence_grade_counts.png}
+\clearpage
+\input{sections/section_01.tex}
+\input{sections/section_02.tex}
+\input{sections/section_03.tex}
+\input{sections/section_04.tex}
+\input{sections/section_05.tex}
+\input{sections/section_06.tex}
+\input{sections/section_07.tex}
+\input{sections/section_08.tex}
+\input{sections/section_09.tex}
+\input{sections/section_10.tex}
+\input{sections/section_11.tex}
+\input{sections/section_12.tex}
+\input{sections/section_13.tex}
+\input{sections/section_14.tex}
+\input{sections/section_15.tex}
+\input{sections/section_16.tex}
+\input{sections/section_17.tex}
+\input{sections/section_18.tex}
+\input{sections/section_19.tex}
+\input{sections/section_20.tex}
+\input{sections/section_21.tex}
+\input{sections/section_22.tex}
+\input{sections/section_23.tex}
+\input{sections/section_24.tex}
+\input{sections/section_25.tex}
+\input{sections/section_26.tex}
+\input{sections/section_27.tex}
+\input{sections/section_28.tex}
+\input{sections/section_29.tex}
+\input{sections/section_30.tex}
+\input{sections/appendices.tex}
+\end{document}

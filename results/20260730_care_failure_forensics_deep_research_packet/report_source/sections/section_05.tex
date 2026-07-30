@@ -1,0 +1,23 @@
+\section{5. nnU-Net 强基线到底强在哪里}
+
+本章先回答一个取证问题：现有本地证据能否支持对应的科学判断。它重要是因为过去多条路线混合了设计承诺、实现状态、训练预算、评价语义和 hosted 结果。本包只采用本地可绑定证据；无法绑定的数字不会被写成性能结论。
+
+
+
+nnU-Net 仍是现代强基线。当前包不以 foreground mean 掩盖 scar 和 pure edema；统一重聚合尚未完成。
+
+\begin{longtable}{p{0.19\linewidth}p{0.19\linewidth}p{0.19\linewidth}p{0.19\linewidth}p{0.19\linewidth}}
+\toprule
+model\_id & design\_goal & input\_modalities & missing\_modality\_handling & backbone\\
+\midrule
+NNUNET & historical CARE route or baseline & UNBOUND\_OR\_ROUTE\_SPECIFIC & UNBOUND & UNBOUND\\
+SRR\_V2 & historical CARE route or baseline & UNBOUND\_OR\_ROUTE\_SPECIFIC & UNBOUND & UNBOUND\\
+SRR\_V25 & historical CARE route or baseline & UNBOUND\_OR\_ROUTE\_SPECIFIC & UNBOUND & UNBOUND\\
+SRR\_V3 & historical CARE route or baseline & UNBOUND\_OR\_ROUTE\_SPECIFIC & UNBOUND & UNBOUND\\
+BATCH0 & historical CARE route or baseline & UNBOUND\_OR\_ROUTE\_SPECIFIC & UNBOUND & UNBOUND\\
+\bottomrule
+\end{longtable}
+
+
+
+\clearpage

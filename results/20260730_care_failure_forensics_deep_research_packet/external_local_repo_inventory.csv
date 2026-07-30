@@ -1,0 +1,4 @@
+path,exists,kind,write_authorized
+/users/a/e/aereinh/MoSAIC,True,external_local_repo_or_asset,False
+/users/a/e/aereinh/MoSAIC/code/source,True,external_local_repo_or_asset,False
+/users/a/e/aereinh/MoSAIC/code/weights,True,external_local_repo_or_asset,False

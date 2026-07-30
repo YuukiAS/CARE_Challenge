@@ -1,0 +1,430 @@
+---
+title: CARE Myocardium 失败取证 Deep Research 证据包
+author: CARE Forensic Research Controller
+date: 20260730 本地证据冻结版
+---
+
+# CARE Myocardium 失败取证 Deep Research 证据包
+
+本 PDF 使用 Pandoc + XeLaTeX final-standard 路线生成，拉丁字体为 TeX Gyre Termes。由于当前 `/users/a/e/aereinh/render_resources/chinese_math_pdf` 中的 Fandol 在部分 PDF viewer 里会空白，最终中文字体改用系统可见且 `pdffonts` 为 `uni yes` 的 DroidSansFallbackFull。它不是新模型蓝图，不包含 validation upload，也不声明 hosted 指标。
+
+## 一页执行摘要
+
+当前最可靠的动作不是继续设计新 CARE 架构，而是先把评价语义、checkpoint/recipe 绑定、病例级统一重聚合、PRISM decoder-reset 对照、MoSAIC recipe decomposition 和 Cine temporal probe 做成可复现证据。已确认的硬边界是 pure edema 与 edema-zone 不能混写，full-data MoSAIC 不能冒充 clean fold0，pending 或未跑完的 GPU 诊断不能写成科学完成。
+
+![证据等级计数](/users/a/e/aereinh/CARE/results/20260730_care_failure_forensics_deep_research_packet/figures/evidence_grade_counts.png){width=98%}
+
+
+\newpage
+
+# 目录式章节索引
+
+| 章节 | 主题 |
+| --- | --- |
+| 1 | 为什么现在必须做失败取证 |
+| 2 | CARE 数据、中心、模态和标签真值 |
+| 3 | 官方与内部指标语义 |
+| 4 | 当前评价代码中的已确认问题 |
+| 5 | nnU-Net 强基线到底强在哪里 |
+| 6 | SRR v2-v3 的设计意图与落地差距 |
+| 7 | Batch 0-7 历史证据 |
+| 8 | MMRD 的设计、实现和失败 |
+| 9 | Cascade/DG 的设计、实现和失败 |
+| 10 | ARC 的设计、实现和失败 |
+| 11 | PRISM W1-W3 的完整复盘 |
+| 12 | MoSAIC clean、full-data 和 hosted recipe |
+| 13 | 所有模型统一病例级比较 |
+| 14 | 困难子组 |
+| 15 | case-wise help/harm |
+| 16 | 失败病例视觉图册 |
+| 17 | 错误重合和模型互补上限 |
+| 18 | selector feasibility |
+| 19 | 冻结特征可分性 probe |
+| 20 | decoder-reset 诊断对照 |
+| 21 | 多序列错位是否为主因 |
+| 22 | scar 的真实瓶颈 |
+| 23 | pure edema 的真实瓶颈 |
+| 24 | Cine 的真实瓶颈 |
+| 25 | 为什么过去多次充分设计仍然失败 |
+| 26 | 根因排序与证据图 |
+| 27 | 当前能下的结论 |
+| 28 | 当前不能下的结论 |
+| 29 | 外部 Deep Research 必须回答的问题 |
+| 30 | 下一轮决策树 |
+
+
+\newpage
+
+# 1. 为什么现在必须做失败取证
+
+过去几轮路线没有稳定超过 nnU-Net，不能直接归结为“模型不够复杂”。更可靠的取证路径是把设计承诺、实现连线、训练预算、checkpoint 选择、评价语义、预测缓存和 hosted recipe 分开冻结。
+
+# 2. CARE 数据、中心、模态和标签真值
+
+本节回答数据层面是否存在足够明确的标签和模态条件。关键边界是 official scar、official pure edema 和 internal edema-zone 必须分开。
+
+![中心病例数](/users/a/e/aereinh/CARE/results/20260730_care_failure_forensics_deep_research_packet/figures/center_case_counts.png){width=92%}
+
+![病灶体积分布](/users/a/e/aereinh/CARE/results/20260730_care_failure_forensics_deep_research_packet/figures/pathology_volume_distribution.png){width=92%}
+
+| cases | scar_positive | pure_edema_positive | t2_present |
+| --- | --- | --- | --- |
+| 220 | 212 | 80 | 220 |
+
+
+\newpage
+
+# 3. 官方与内部指标语义
+
+第 3 页不使用宽表。下面只列三列：对象、内部标签、允许声明范围，避免右侧列截断。
+
+| object | internal_labels | allowed_claim_scope |
+| --- | --- | --- |
+| scar | 5 | official |
+| pure_edema | 4 | T2-present official edema |
+| edema_zone | 4\|5 | internal only |
+
+reference evaluator 的 known-bad fixtures 覆盖 remote FP、spacing HD95、empty case、lesion recall 和 label 4/5 语义。完整病例级重聚合仍未 terminal。
+
+# 4. 当前评价代码中的已确认问题
+
+当前可确认的是评价风险，而不是所有历史结论已经被推翻。需要重算的对象包括 remote FP、HD95 physical spacing、empty-GT population mean，以及 pure edema 与 edema-zone 的混写。
+
+# 5. nnU-Net 强基线到底强在哪里
+
+nnU-Net 作为强基线的意义在于完整 decoder、稳定训练 recipe、成熟数据增强和直接 final mask 输出。当前包没有使用 foreground mean 掩盖 scar/pure edema。
+
+
+\newpage
+
+# 6-10. SRR、Batch、MMRD、Cascade/DG、ARC 的历史证据
+
+这些路线的历史证据等级不能混用。C-G 级证据只说明有实现或诊断痕迹，不能证明模型优于 nnU-Net。
+
+- **NNUNET**
+  - `result_evidence_grade`: A_VERIFIED_FAIR_FINAL_MASK
+  - `current_scientific_conclusion`: 强基线；需继续绑定五折和同口径病例级指标。
+- **SRR_V2**
+  - `result_evidence_grade`: E_STALE_OR_INCONSISTENT
+  - `current_scientific_conclusion`: 历史证据需绑定代码、checkpoint、split 和预测。
+- **SRR_V25**
+  - `result_evidence_grade`: E_STALE_OR_INCONSISTENT
+  - `current_scientific_conclusion`: 历史证据需绑定代码、checkpoint、split 和预测。
+- **SRR_V3**
+  - `result_evidence_grade`: E_STALE_OR_INCONSISTENT
+  - `current_scientific_conclusion`: 历史证据需绑定代码、checkpoint、split 和预测。
+- **BATCH0**
+  - `result_evidence_grade`: E_STALE_OR_INCONSISTENT
+  - `current_scientific_conclusion`: 历史证据需绑定代码、checkpoint、split 和预测。
+- **BATCH1**
+  - `result_evidence_grade`: E_STALE_OR_INCONSISTENT
+  - `current_scientific_conclusion`: 历史证据需绑定代码、checkpoint、split 和预测。
+- **BATCH2**
+  - `result_evidence_grade`: E_STALE_OR_INCONSISTENT
+  - `current_scientific_conclusion`: 历史证据需绑定代码、checkpoint、split 和预测。
+- **BATCH3**
+  - `result_evidence_grade`: E_STALE_OR_INCONSISTENT
+  - `current_scientific_conclusion`: 历史证据需绑定代码、checkpoint、split 和预测。
+- **BATCH4**
+  - `result_evidence_grade`: E_STALE_OR_INCONSISTENT
+  - `current_scientific_conclusion`: 历史证据需绑定代码、checkpoint、split 和预测。
+- **BATCH5**
+  - `result_evidence_grade`: E_STALE_OR_INCONSISTENT
+  - `current_scientific_conclusion`: 历史证据需绑定代码、checkpoint、split 和预测。
+
+
+\newpage
+
+# 11. PRISM W1-W3 的完整复盘
+
+PRISM 不能只看是否有强 encoder。D0-D3 未完成前，不能判断低分主要来自 representation、decoder reset 还是训练协议。
+
+| diagnostic | status |
+| --- | --- |
+| D0_FULL_PRETRAINED_IDENTITY | NOT_RUN |
+
+# 12. MoSAIC clean、full-data 和 hosted recipe
+
+MoSAIC 必须拆成 clean fold0、full-data diagnostic 和 hosted-near recipe 三层。full-data 权重不能作为 clean architecture 比较。
+
+| status |
+| --- |
+| NOT_RUN |
+
+
+\newpage
+
+# 13-15. 统一病例级比较、困难子组和 help/harm
+
+统一病例级比较尚未完成，因此这里不写 Dice 排名。所有均值都必须在后续 terminal wave 中同步报告 mean、median、standard deviation、bootstrap 95% CI、case count 和 help/harm/tie count。
+
+| model_id | pathology | status |
+| --- | --- | --- |
+| NNUNET | official_scar | REQUIRES_STANDARDIZED_REAGGREGATION |
+| NNUNET | official_pure_edema | REQUIRES_STANDARDIZED_REAGGREGATION |
+| NNUNET | internal_edema_zone | REQUIRES_STANDARDIZED_REAGGREGATION |
+| MOSAIC_CLEAN | official_scar | REQUIRES_STANDARDIZED_REAGGREGATION |
+| MOSAIC_CLEAN | official_pure_edema | REQUIRES_STANDARDIZED_REAGGREGATION |
+| MOSAIC_CLEAN | internal_edema_zone | REQUIRES_STANDARDIZED_REAGGREGATION |
+| MOSAIC_FULL_DATA | official_scar | REQUIRES_STANDARDIZED_REAGGREGATION |
+| MOSAIC_FULL_DATA | official_pure_edema | REQUIRES_STANDARDIZED_REAGGREGATION |
+| MOSAIC_FULL_DATA | internal_edema_zone | REQUIRES_STANDARDIZED_REAGGREGATION |
+
+
+\newpage
+
+# 16. 失败病例视觉图册
+
+病例 montage 的选择依赖 standardized casewise metrics。本包目前只生成 QA contact sheet，明确标注 `VISUAL_HUMAN_CONFIRMATION_PENDING`。不能把自动 PNG 非空检查写成人工视觉结论。
+
+# 17. 错误重合和模型互补上限
+
+case oracle 与 voxel error overlap 尚未完成。当前不能支持 deployable selector，只能保留上限分析问题。
+
+# 18. selector feasibility
+
+如果 nested CV 不能稳定超过 always-best-single-model，必须写 `LOCAL_EVIDENCE_DOES_NOT_SUPPORT_DEPLOYABLE_MODEL_SELECTION`。当前 selector 尚未运行。
+
+
+\newpage
+
+# 19. 冻结特征可分性 probe
+
+第 19 页使用窄表/短字段，不使用会溢出的宽表。当前 feature probe 尚未运行，不能声称 retrieval/prototype 具备病例外信号。
+
+| probe | AUROC | status |
+| --- | --- | --- |
+| P1_scar_vs_normal |  | NOT_RUN |
+
+# 20. decoder-reset 诊断对照
+
+D0-D3 仍是关键缺口：D0 复现完整 nnU-Net，D1 冻结 encoder 重训 decoder，D2 开 top encoder stages，D3 完整模型短 finetune。D0 不能复现 baseline 时，D1-D3 不应启动。
+
+# 21-24. alignment、scar、pure edema 和 Cine
+
+alignment、scar/pure edema signal 和 Cine temporal signal 都不能只靠图或单帧 proxy 下结论。它们需要 patient-level split、held-out probe 和同口径评价。
+
+
+\newpage
+
+# 25. 为什么过去多次充分设计仍然失败
+
+目前最可信的共同原因是 evidence chain 不闭合：模块是否进入 final logits、loss 是否进入 total loss、checkpoint 是否可绑定、训练预算是否足额、评价对象是否混写，这些问题常常比设计名词更关键。
+
+# 26. 根因排序与证据图
+
+![决策状态](/users/a/e/aereinh/CARE/results/20260730_care_failure_forensics_deep_research_packet/figures/decision_state.png){width=92%}
+
+- **METRIC_IMPLEMENTATION**
+  - `severity`: HIGH
+  - `confidence`: MODERATE
+  - `confirmed`: True
+  - `evidence`: remote FP 和 pure-edema/edema-zone 语义已有 known-bad 保护；全量影响未重算。
+- **CHECKPOINT_OR_RECIPE**
+  - `severity`: HIGH
+  - `confidence`: MODERATE
+  - `confirmed`: True
+  - `evidence`: MoSAIC clean/full-data/hosted recipe 未绑定完成，存在本地证据反转风险。
+- **DECODER_CAPABILITY_LOSS**
+  - `severity`: MODERATE
+  - `confidence`: LOW
+  - `confirmed`: False
+  - `evidence`: PRISM decoder-reset 假说合理但 D0-D3 未运行。
+- **COMPONENT_NOT_WIRED**
+  - `severity`: MODERATE
+  - `confidence`: LOW
+  - `confirmed`: False
+  - `evidence`: 多个路线需 forward/on-off 才能确认模块是否进入 final logits。
+- **INSUFFICIENT_PATHOLOGY_SIGNAL**
+  - `severity`: MODERATE
+  - `confidence`: UNRESOLVED
+  - `confirmed`: False
+  - `evidence`: feature probe 未运行。
+- **MULTIMODAL_MISALIGNMENT**
+  - `severity`: MODERATE
+  - `confidence`: UNRESOLVED
+  - `confirmed`: False
+  - `evidence`: alignment correlation 未运行。
+- **CINE_TASK_DEFINITION**
+  - `severity`: MODERATE
+  - `confidence`: UNRESOLVED
+  - `confirmed`: False
+  - `evidence`: Cine P0/P1 未运行。
+
+
+\newpage
+
+# 27. 当前能下的结论
+
+# Local Evidence Conclusions
+
+当前本地证据支持 A 和 I：先做评价/数据/recipe 绑定修复，并承认关键证据仍缺失。尚不能支持新的 CARE 架构蓝图。
+
+
+# 28. 当前不能下的结论
+
+不能声称任何新架构已被支持；不能声称 MoSAIC clean 天然强于 nnU-Net；不能声称 alignment 或 Cine temporal 是主因；不能把 GPU diagnostic 未运行状态写成科学完成。
+
+# 29. 外部 Deep Research 必须回答的问题
+
+- [DR-001] Small-lesion scar segmentation beyond nnU-Net requires which evidence standard?
+- [DR-002] Can clean MoSAIC recipe gains be separated from full-data target-domain advantage?
+- [DR-003] Do frozen encoder features contain patient-held-out scar FN/FP separability?
+- [DR-004] When does cine temporal information improve pathology segmentation over ED-only?
+
+
+
+\newpage
+
+# 30. 下一轮决策树
+
+# Research Decision Tree
+
+1. 先完成 evaluation/data repair。
+2. 若 D0 不能复现 nnU-Net，停止 decoder-reset。
+3. 若 selector nested CV 不超过 always-best-single-model，停止 deployable selector。
+4. 若 feature probe control 不成立，停止 retrieval/prototype 叙事。
+
+
+# 附录 A：模型和 checkpoint provenance
+
+checkpoint 清单只显示定位字段，不展开长路径列，避免右侧截断。完整路径仍保留在 CSV。
+
+| model_id | size_bytes | hash_status | evidence_quality |
+| --- | --- | --- | --- |
+| NNUNET | 354608437 | LARGE_METADATA_ONLY | PARTIALLY_BOUND_BY_PATH |
+| NNUNET | 354266799 | LARGE_METADATA_ONLY | PARTIALLY_BOUND_BY_PATH |
+| NNUNET | 354383029 | LARGE_METADATA_ONLY | PARTIALLY_BOUND_BY_PATH |
+| NNUNET | 354382767 | LARGE_METADATA_ONLY | PARTIALLY_BOUND_BY_PATH |
+| NNUNET | 354382965 | LARGE_METADATA_ONLY | PARTIALLY_BOUND_BY_PATH |
+| NNUNET | 354201839 | LARGE_METADATA_ONLY | PARTIALLY_BOUND_BY_PATH |
+| NNUNET | 354383093 | LARGE_METADATA_ONLY | PARTIALLY_BOUND_BY_PATH |
+| NNUNET | 354242031 | LARGE_METADATA_ONLY | PARTIALLY_BOUND_BY_PATH |
+| NNUNET | 354383349 | LARGE_METADATA_ONLY | PARTIALLY_BOUND_BY_PATH |
+| NNUNET | 354270127 | LARGE_METADATA_ONLY | PARTIALLY_BOUND_BY_PATH |
+| NNUNET | 354382965 | LARGE_METADATA_ONLY | PARTIALLY_BOUND_BY_PATH |
+| NNUNET | 354369135 | LARGE_METADATA_ONLY | PARTIALLY_BOUND_BY_PATH |
+| NNUNET | 31579 | PREFIX_8192_BYTES | PARTIALLY_BOUND_BY_PATH |
+| NNUNET | 235538772 | LARGE_METADATA_ONLY | PARTIALLY_BOUND_BY_PATH |
+| NNUNET | 4305 | FULL | PARTIALLY_BOUND_BY_PATH |
+
+
+\newpage
+
+# 附录 B：指标公式和 known-bad
+
+- **E-DATA-001**
+  - `source_path`: data_case_manifest.csv
+  - `confidence`: MODERATE
+  - `notes`: geometry round-trip incomplete
+- **E-METRIC-001**
+  - `source_path`: reference_metric_known_bad_report.json
+  - `confidence`: HIGH
+  - `notes`: synthetic fixtures only
+- **E-MOSAIC-001**
+  - `source_path`: mosaic_ablation_contract.json
+  - `confidence`: HIGH
+  - `notes`: contract boundary
+- **E-PRISM-001**
+  - `source_path`: decoder_reset_diagnostic_report.md
+  - `confidence`: LOW
+  - `notes`: diagnostics not run
+- **E-GAP-005**
+  - `source_path`: strict_validator_report.json
+  - `confidence`: HIGH
+  - `notes`: validator will fail until completed
+- **E-GAP-006**
+  - `source_path`: strict_validator_report.json
+  - `confidence`: HIGH
+  - `notes`: validator will fail until completed
+- **E-GAP-007**
+  - `source_path`: strict_validator_report.json
+  - `confidence`: HIGH
+  - `notes`: validator will fail until completed
+- **E-GAP-008**
+  - `source_path`: strict_validator_report.json
+  - `confidence`: HIGH
+  - `notes`: validator will fail until completed
+- **E-GAP-009**
+  - `source_path`: strict_validator_report.json
+  - `confidence`: HIGH
+  - `notes`: validator will fail until completed
+- **E-GAP-010**
+  - `source_path`: strict_validator_report.json
+  - `confidence`: HIGH
+  - `notes`: validator will fail until completed
+- **E-GAP-011**
+  - `source_path`: strict_validator_report.json
+  - `confidence`: HIGH
+  - `notes`: validator will fail until completed
+- **E-GAP-012**
+  - `source_path`: strict_validator_report.json
+  - `confidence`: HIGH
+  - `notes`: validator will fail until completed
+
+
+\newpage
+
+# 附录 C：Slurm 和运行回执
+
+本次 PDF 重渲染没有提交新的 Slurm job。已有 packet 的 controller context 记录了启动时可见的 Slurm 状态；所有 GPU 诊断仍未 terminal，因此 strict validator 保持 `NEEDS_REPAIR`。
+
+| timestamp_utc | phase | decision | next_action |
+| --- | --- | --- | --- |
+| 2026-07-30T02:42:43.130967+00:00 | F0 | PARTIAL_BOOTSTRAP_CAPTURED | build inventories and reference metric fixtures |
+| 2026-07-30T02:49:59.562048+00:00 | F0 | PARTIAL_BOOTSTRAP_CAPTURED | build inventories and reference metric fixtures |
+| 2026-07-30T02:51:37.977381+00:00 | F0 | PARTIAL_BOOTSTRAP_CAPTURED | build inventories and reference metric fixtures |
+| 2026-07-30T02:53:12.215539+00:00 | F0 | PARTIAL_BOOTSTRAP_CAPTURED | build inventories and reference metric fixtures |
+| 2026-07-30T02:54:04.904928+00:00 | F0 | PARTIAL_BOOTSTRAP_CAPTURED | build inventories and reference metric fixtures |
+| 2026-07-30T02:55:51.309340+00:00 | F0 | PARTIAL_BOOTSTRAP_CAPTURED | build inventories and reference metric fixtures |
+| 2026-07-30T02:57:24.502262+00:00 | F0 | PARTIAL_BOOTSTRAP_CAPTURED | build inventories and reference metric fixtures |
+
+
+\newpage
+
+# 附录 D：完整病例级表格索引
+
+完整病例级重聚合尚未完成。这里列出目前机器可读表的位置和状态，不展开长路径列，避免 PDF 裁切。
+
+| file | status |
+| --- | --- |
+| standardized_casewise_metrics.csv | REQUIRES_BOUND_PREDICTIONS |
+| subgroup_performance_matrix.csv | REQUIRES_REAGGREGATION |
+| help_harm_matrix.csv | REQUIRES_CASEWISE_METRICS |
+| hd_component_matrix.csv | REQUIRES_REFERENCE_EVALUATOR_ON_BOUND_PREDICTIONS |
+
+
+\newpage
+
+# 附录 E：代码、配置、split 和预测 hash
+
+当前 hash manifest 是启动级定位清单。大型 checkpoint 和 prediction 在本轮 PDF 中只保留 metadata 或 prefix hash；正式绑定对象需要后续逐个 full SHA256。
+
+| path | hash_status | size_bytes |
+| --- | --- | --- |
+| results/20260729_care_prism_fold0_fold1_v2/finalizer_state.json | FULL | 1260 |
+| results/20260729_care_prism_v2_backbone_repair_and_resume/checkpoint_resume_r... | FULL | 594 |
+| results/20260729_care_prism_v2_backbone_repair_and_resume/controller_context.... | FULL | 2190 |
+| results/20260729_care_prism_v2_backbone_repair_and_resume/w3_training_summary... | FULL | 2759 |
+| results/20260729_care_prism_fold0_fold1_v2/controller_context.json | PREFIX_8192_BYTES | 8289 |
+| results/20260729_care_prism_fold0_fold1_v2/controller_bootstrap_snapshot.md | FULL | 894 |
+| results/20260729_care_prism_fold0_fold1_v2/architecture_delta_final.md | FULL | 4306 |
+| results/20260729_care_prism_fold0_fold1_v2/known_bad_report.json | FULL | 443 |
+| results/20260729_care_prism_fold0_fold1_v2/unit_test_report.json | FULL | 327 |
+| results/20260729_care_prism_fold0_fold1_v2/controller_report.md | FULL | 1976 |
+| results/20260729_care_prism_fold0_fold1_v2/mapper_report_final.md | PREFIX_8192_BYTES | 9056 |
+| results/20260729_care_prism_fold0_fold1_v2/adoption_receipt.json | FULL | 1524 |
+
+
+\newpage
+
+# 附录 F：证据缺口
+
+strict validator 仍然要求 D0-D3、feature probe、MoSAIC recipe decomposition、Cine temporal probe 和 standardized casewise reaggregation。该状态防止后续误读为完成。
+
+
+\newpage
+
+# 附录 G：PDF 渲染验收记录
+
+最终 PDF 采用 `pandoc_xelatex_named_fonts`，不是 Chromium fallback。验收重点是 `pdfinfo` 不含 HeadlessChrome/Skia，`pdffonts` 出现 TeXGyreTermes 与 viewer-compatible CJK 字体，`pdftotext -layout` 中文可抽取，第 1、3、10、19 页 PNG 中中文和表格可见。Fandol 路线已测试为 named font 但 `uni no`，在用户 viewer 中不可见，因此未作为最终 CJK 字体。

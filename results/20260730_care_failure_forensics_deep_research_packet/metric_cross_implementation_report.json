@@ -1,0 +1,5 @@
+{
+  "status": "PARTIAL",
+  "implementation_A": "NumPy/SciPy",
+  "implementation_B": "independent fixtures only; no external install"
+}

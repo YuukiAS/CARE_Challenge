@@ -1,0 +1,16 @@
+{
+  "task_key": "20260730_care_failure_forensics_deep_research_packet",
+  "task_prompt_path": "/users/a/e/aereinh/CARE/prompts/tasks/20260730_care_failure_forensics_deep_research_packet.md",
+  "task_prompt_sha256": "332bed6ad863135da2290634f1dbd3b548979c40344c7597f873ec6b3977e589",
+  "attachment_path": "/users/a/e/aereinh/.codex-homes/aereinh/attachments/19b97eab-8192-4c40-9608-3bc3f08d9ff0/pasted-text.txt",
+  "attachment_sha256": "9add03daf65cd27af61cda6e1e2bad24ca2e7c5b778f6bc563e4f6da90312e52",
+  "status": "AUTHORIZED_LOCAL_FORENSIC_AUDIT",
+  "forbidden_actions": [
+    "validation upload",
+    "docker upload",
+    "hosted leaderboard claim",
+    "new architecture training",
+    "fold0 outer tuning",
+    "git push"
+  ]
+}

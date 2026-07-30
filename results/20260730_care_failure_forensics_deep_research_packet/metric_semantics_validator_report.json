@@ -1,0 +1,9 @@
+{
+  "status": "PASS",
+  "pure_edema_not_edema_zone": true,
+  "remote_fp_thresholds_mm": [
+    5,
+    10,
+    15
+  ]
+}

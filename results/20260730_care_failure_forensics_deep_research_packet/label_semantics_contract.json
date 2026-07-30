@@ -1,0 +1,8 @@
+{
+  "official_scar": "label == 5",
+  "official_pure_edema": "label == 4, reported only on reliable T2-present population when used for official edema claims",
+  "internal_edema_zone": "label in {4, 5}; internal structure analysis only, not official edema",
+  "myocardium_union": "label in {1, 4, 5}",
+  "LV": "label == 2",
+  "RV": "label == 3"
+}

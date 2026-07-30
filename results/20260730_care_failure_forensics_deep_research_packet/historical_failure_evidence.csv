@@ -1,0 +1,26 @@
+model_id,failure_status,evidence_grade
+NNUNET,强基线；需继续绑定五折和同口径病例级指标。,A_VERIFIED_FAIR_FINAL_MASK
+SRR_V2,历史证据需绑定代码、checkpoint、split 和预测。,E_STALE_OR_INCONSISTENT
+SRR_V25,历史证据需绑定代码、checkpoint、split 和预测。,E_STALE_OR_INCONSISTENT
+SRR_V3,历史证据需绑定代码、checkpoint、split 和预测。,E_STALE_OR_INCONSISTENT
+BATCH0,历史证据需绑定代码、checkpoint、split 和预测。,E_STALE_OR_INCONSISTENT
+BATCH1,历史证据需绑定代码、checkpoint、split 和预测。,E_STALE_OR_INCONSISTENT
+BATCH2,历史证据需绑定代码、checkpoint、split 和预测。,E_STALE_OR_INCONSISTENT
+BATCH3,历史证据需绑定代码、checkpoint、split 和预测。,E_STALE_OR_INCONSISTENT
+BATCH4,历史证据需绑定代码、checkpoint、split 和预测。,E_STALE_OR_INCONSISTENT
+BATCH5,历史证据需绑定代码、checkpoint、split 和预测。,E_STALE_OR_INCONSISTENT
+BATCH6,历史证据需绑定代码、checkpoint、split 和预测。,E_STALE_OR_INCONSISTENT
+BATCH7,历史证据需绑定代码、checkpoint、split 和预测。,E_STALE_OR_INCONSISTENT
+MMRD,历史证据需绑定代码、checkpoint、split 和预测。,E_STALE_OR_INCONSISTENT
+SRR_CASCADE,已有控制器证据可作为诊断负结果，不等同于新路线失败的普遍定理。,B_VERIFIED_DIAGNOSTIC
+CARE_ARC,已有控制器证据可作为诊断负结果，不等同于新路线失败的普遍定理。,B_VERIFIED_DIAGNOSTIC
+CARE_DG,历史证据需绑定代码、checkpoint、split 和预测。,E_STALE_OR_INCONSISTENT
+CARE_DR,历史证据需绑定代码、checkpoint、split 和预测。,E_STALE_OR_INCONSISTENT
+DPR,已有控制器证据可作为诊断负结果，不等同于新路线失败的普遍定理。,B_VERIFIED_DIAGNOSTIC
+CARE_PRISM_V1,W1-W3 现有证据提示 decoder/reset、loss stage 和 evaluator 语义需要继续诊断。,D_UNDERTRAINED
+CARE_PRISM_V2,W1-W3 现有证据提示 decoder/reset、loss stage 和 evaluator 语义需要继续诊断。,D_UNDERTRAINED
+MOSAIC_CLEAN,clean/full-data/hosted recipe 必须分层，full-data 不能作为 clean 公平比较。,B_VERIFIED_DIAGNOSTIC
+MOSAIC_FULL_DATA,clean/full-data/hosted recipe 必须分层，full-data 不能作为 clean 公平比较。,B_VERIFIED_DIAGNOSTIC
+MOSAIC_HOSTED_RECIPE,clean/full-data/hosted recipe 必须分层，full-data 不能作为 clean 公平比较。,E_STALE_OR_INCONSISTENT
+CINE_BASELINES,历史证据需绑定代码、checkpoint、split 和预测。,E_STALE_OR_INCONSISTENT
+MOSAIC_CINE,clean/full-data/hosted recipe 必须分层，full-data 不能作为 clean 公平比较。,B_VERIFIED_DIAGNOSTIC

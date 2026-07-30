@@ -1,0 +1,4 @@
+- [DR-001] Small-lesion scar segmentation beyond nnU-Net requires which evidence standard?
+- [DR-002] Can clean MoSAIC recipe gains be separated from full-data target-domain advantage?
+- [DR-003] Do frozen encoder features contain patient-held-out scar FN/FP separability?
+- [DR-004] When does cine temporal information improve pathology segmentation over ED-only?

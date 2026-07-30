@@ -1,0 +1,87 @@
+{
+  "task_key": "20260730_care_failure_forensics_deep_research_packet",
+  "created_utc": "2026-07-30T02:57:24.497805+00:00",
+  "head": "4c488deb25515cfe2a8653e213fa0f3094e13bb1",
+  "origin_main": "4c488deb25515cfe2a8653e213fa0f3094e13bb1",
+  "git_context": {
+    "head": {
+      "cmd": "git rev-parse HEAD",
+      "returncode": 0,
+      "output": "4c488deb25515cfe2a8653e213fa0f3094e13bb1\n"
+    },
+    "origin_main": {
+      "cmd": "git rev-parse origin/main",
+      "returncode": 0,
+      "output": "4c488deb25515cfe2a8653e213fa0f3094e13bb1\n"
+    },
+    "branch": {
+      "cmd": "git branch --show-current",
+      "returncode": 0,
+      "output": "main\n"
+    },
+    "status_no_untracked": {
+      "cmd": "git status --short --branch --untracked-files=no",
+      "returncode": 0,
+      "output": "## main...origin/main\n M results/20260724_care_myops_srr_cascade_submission_rescue/runtime_closure_repair_rc1/formal_race_watcher_history_v2.jsonl\n M results/20260724_care_myops_srr_cascade_submission_rescue/runtime_closure_repair_rc1/formal_race_watcher_state_v2.json\n"
+    },
+    "log_15": {
+      "cmd": "git log --oneline --decorate -15",
+      "returncode": 0,
+      "output": "4c488de (HEAD -> main, origin/main) Codify controller notification flow\nb4262fc Close CARE-PRISM W1-W3 gate loop\nca3b9f3 Authorize continuous PRISM controller through W5\naddb547 Make PRISM W1 W2 repair controller auto-continue\nb8c373e Make PRISM controller continuously self-auditing\n29dc6c5 Correct PRISM fold0 checkpoint hash in CURRENT\n07ef5bf Block PRISM W3 after W1 W2 critic review\n03a0690 Add PRISM W1 W2 repair controller prompt\na76f3fd Block PRISM W3 pending W1 W2 semantic repair\n71717f0 Repair PRISM stock backbone W1 preflight\nd62e4b7 Merge remote-tracking branch 'origin/main'\n06d1e49 Update wiki for PRISM stock-backbone repair\n5269f9b Resume PRISM with stock nnU-Net backbone repair\n24a7b09 Merge remote-tracking branch 'origin/main'\nacbc44c Add PRISM backbone repair controller prompt\n"
+    }
+  },
+  "worktree_status_note": "Full git status/diff may be slow; status_no_untracked captured in git_context.",
+  "task_prompt_sha256": "332bed6ad863135da2290634f1dbd3b548979c40344c7597f873ec6b3977e589",
+  "AGENTS_sha256": "26ee05ead9500c5d455a345f7d1a2cbc03fde6b87fb508bd8668cce362a8fe61",
+  "CURRENT_sha256": "5df001bf95d5b619ac536c274317cded89afe9e081ffc308366b55d3f77d015c",
+  "wiki_fingerprint": "f3d19e2b413d8acb37d380338871755010ee09857735987d1226d94df43f3b89",
+  "slurm_skill_sha256": "2b7e87f58b275b50dc9d4a9377f4e2518c3a390c806e400cb32e07ebac3f83a6",
+  "mapper_skill_sha256": "2c41516189001ec7be94d9981a69fcd5544ad5ebd244c93cdc58488f4b535d0e",
+  "visible_gpu_allocation": {
+    "squeue_user": {
+      "cmd": "squeue -u aereinh",
+      "returncode": 99,
+      "output": "Command '['squeue', '-u', 'aereinh']' timed out after 5 seconds"
+    },
+    "sacct_user": {
+      "cmd": "sacct -u aereinh --starttime 2026-07-29 --format=JobID,JobName%30,Partition,State,ExitCode,Elapsed,NodeList -P",
+      "returncode": 1,
+      "output": "sacct: error: Invalid user id: aereinh\n"
+    },
+    "sinfo": {
+      "cmd": "sinfo -o %P|%a|%l|%D|%t|%G",
+      "returncode": 99,
+      "output": "Command '['sinfo', '-o', '%P|%a|%l|%D|%t|%G']' timed out after 5 seconds"
+    }
+  },
+  "known_tasks_results_code_external_local_repo": [
+    "CARE main",
+    "/users/a/e/aereinh/MoSAIC read-only"
+  ],
+  "authorization": {
+    "new_slurm_jobs_authorized": true,
+    "new_slurm_scope": "FORENSIC_DIAGNOSTIC_ONLY",
+    "validation_upload_authorized": false,
+    "docker_upload_authorized": false,
+    "hosted_metric_claim_authorized": false,
+    "new_architecture_training_authorized": false,
+    "auto_git_commit": true,
+    "auto_git_push": false
+  },
+  "waves": {
+    "F0": "PARTIAL_COMPLETE",
+    "F1": "PARTIAL_COMPLETE",
+    "F2": "NOT_STARTED",
+    "F3": "NOT_STARTED",
+    "F4": "NOT_STARTED",
+    "F5": "NOT_STARTED",
+    "F6": "NOT_STARTED",
+    "F7": "NOT_STARTED",
+    "F8": "NOT_STARTED",
+    "F9": "NOT_STARTED",
+    "F10": "NOT_STARTED",
+    "F11": "NOT_STARTED",
+    "F12": "NOT_STARTED"
+  },
+  "source_manifest_rows": 21
+}
