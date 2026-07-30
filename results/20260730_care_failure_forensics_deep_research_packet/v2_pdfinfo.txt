@@ -2,16 +2,16 @@ Title:          CARE Myocardium 失败取证 Deep Research 证据包
 Author:         CARE Forensic Research Controller
 Creator:        LaTeX via pandoc
 Producer:       xdvipdfmx (20200315)
-CreationDate:   Thu Jul 30 03:47:19 2026 EDT
+CreationDate:   Thu Jul 30 04:27:21 2026 EDT
 Tagged:         no
 UserProperties: no
 Suspects:       no
 Form:           none
 JavaScript:     no
-Pages:          89
+Pages:          101
 Encrypted:      no
 Page size:      595.28 x 841.89 pts (A4)
 Page rot:       0
-File size:      1292386 bytes
+File size:      4577034 bytes
 Optimized:      no
 PDF version:    1.5

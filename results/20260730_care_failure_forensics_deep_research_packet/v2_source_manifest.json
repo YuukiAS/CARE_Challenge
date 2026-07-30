@@ -1,5 +1,5 @@
 {
-  "git_head": "34ec050072294ad55f729bfc22b281c9f0552951",
+  "git_head": "8dc0af6eca9581cc56eb66c875a3fd8341652e0b",
   "pdf_engine": "xelatex",
   "pdf_route": "pandoc_xelatex_named_fonts",
   "render_resource_dir": "/users/a/e/aereinh/render_resources/chinese_math_pdf",

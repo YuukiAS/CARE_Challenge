@@ -29,6 +29,6 @@ pdf_visual_validation_complete: true
 validators_passed: true
 all_jobs_terminal: true
 aggregation_complete: true
-git_commit_decision: local_commit_required
+git_commit_decision: auto_local_commit_after_validator
 git_push_decision: forbidden_by_contract_not_attempted
 next_required_action: external Deep Research design using V2 constraints

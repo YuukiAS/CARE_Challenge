@@ -62,17 +62,157 @@ def md_escape(value: object) -> str:
     return str(value).replace("|", "\\|").replace("\n", " ").strip()
 
 
+def latex_escape(value: object) -> str:
+    text = str(value)
+    replacements = {
+        "\\": r"\textbackslash{}",
+        "&": r"\&",
+        "%": r"\%",
+        "$": r"\$",
+        "#": r"\#",
+        "_": r"\_",
+        "{": r"\{",
+        "}": r"\}",
+        "~": r"\textasciitilde{}",
+        "^": r"\textasciicircum{}",
+    }
+    return "".join(replacements.get(ch, ch) for ch in text)
+
+
+HEADER_LABELS = {
+    "artifact_count": "n_artifacts",
+    "artifact_type": "artifact",
+    "anchor_dice": "anchor",
+    "best_case_model": "best_model",
+    "binding_status": "status",
+    "case_oracle_dice": "case_oracle",
+    "case_oracle_gain_vs_nnunet": "case_gain",
+    "changed_mask_ratio_vs_nnunet": "mask_delta",
+    "checkpoint_files_bound": "ckpt_bound",
+    "checkpoint_step": "step",
+    "checkpoint_scope": "scope",
+    "current_scientific_conclusion": "conclusion",
+    "deployable_selector_signal": "selector_signal",
+    "dice_delta_srr_minus_anchor": "dice_delta",
+    "dice_delta_vs_nnunet": "delta",
+    "dice_delta_vs_anchor": "delta",
+    "empty_pred_count": "empty_pred",
+    "evidence_quality": "quality",
+    "future_status": "future",
+    "inner_select_count": "inner_n",
+    "limitation": "limit",
+    "bound_artifact_count": "n_artifacts",
+    "mean_pure_edema_dice": "mean_edema",
+    "metric_files_bound": "metric_bound",
+    "model_component": "component",
+    "model_feature_source": "feature_source",
+    "nnunet_dice": "nnunet",
+    "official_pure_edema_label4_dice": "pure_edema",
+    "official_scar_label5_dice": "scar",
+    "prediction_files_bound": "pred_bound",
+    "risk_of_repeating_failure": "repeat_risk",
+    "stage_id": "stage",
+    "stage_name": "recipe",
+    "terminal_status": "terminal",
+    "timestamp_utc": "time_utc",
+    "voxel_tp_oracle_dice": "voxel_oracle",
+    "voxel_tp_oracle_gain_vs_nnunet": "voxel_gain",
+}
+
+STATUS_LABELS = {
+    "BLOCKED_BY_MISSING_BOUND_ASSET": "MISSING_ASSET",
+    "COMPLETED_FOR_13_CHECKPOINT_REPLAY": "DONE_PRISM13",
+    "COMPLETED_FOR_AVAILABLE_HISTORICAL_METRICS": "DONE_HIST_METRIC",
+    "COMPLETED_FOR_BOUND_NNUNET_MOSAIC_OOF": "DONE_OOF",
+    "COMPLETED_WITH_VALID_EVIDENCE": "VALID",
+    "DO_NOT_REUSE_CURRENT_IDEA": "DO_NOT_REUSE",
+    "NEEDS_REPAIR_D0_READY": "NEEDS_D0",
+    "F0B_DIAGNOSTIC_READINESS": "F0B_READY",
+    "F7B_D0_IDENTITY_REPLAY": "F7B_D0",
+    "NO_PASS_D1_D3_READY": "D1_D3_READY",
+    "PARTIAL_BOOTSTRAP_CAPTURED": "PARTIAL_BOOTSTRAP",
+    "PARTIALLY_BOUND_BY_PATH": "PATH_BOUND",
+    "RETAIN_AS_DATA_OR_SUPERVISION_RULE": "KEEP_DATA_RULE",
+    "RETAIN_AS_OPTIONAL_MECHANISM_TO_RETEST": "RETEST_OPTION",
+    "RETAIN_WITH_STRONG_EVIDENCE": "KEEP_STRONG",
+}
+
+MODEL_LABELS = {
+    "BATCH0_3_SRR_V2_ANCHOR_CONTROL": "B0_3_SRR_ANCHOR",
+    "BATCH7_BR2_SIP": "B7_BR2_SIP",
+    "CARE_DG_DR_DPR": "DG_DR_DPR",
+    "CARE_PRISM_V2": "PRISM_V2",
+    "MOSAIC_CLEAN_OOF": "MOSAIC_OOF",
+    "NNUNET": "NNUNET",
+    "SRR_CASCADE_RESCUE": "SRR_CASCADE",
+}
+
+VARIANT_LABELS = {
+    "raw_direct_enabled": "raw_direct",
+    "raw_direct_identity": "raw_identity",
+    "postprocessed_enabled": "postproc",
+    "nnunet_anchor": "nnunet",
+    "mosaic_clean_oof": "mosaic_oof",
+    "nnunet_oof": "nnunet_oof",
+}
+
+
+def _short_number(text: str) -> str:
+    try:
+        value = float(text)
+    except (TypeError, ValueError):
+        return text
+    if not np.isfinite(value):
+        return text
+    if abs(value) >= 1000:
+        return f"{value:.1f}".rstrip("0").rstrip(".")
+    return f"{value:.4f}".rstrip("0").rstrip(".")
+
+
+def _short_path(text: str) -> str:
+    if "/" not in text:
+        return text
+    parts = [p for p in text.split("/") if p]
+    if not parts:
+        return text
+    if len(parts) <= 2:
+        return "/".join(parts)
+    return f"{parts[0]}/.../{parts[-1]}"
+
+
+def display_value(field: str, value: object, max_len: int) -> str:
+    text = md_escape(value)
+    if not text:
+        return ""
+    text = STATUS_LABELS.get(text, text)
+    text = MODEL_LABELS.get(text, text)
+    text = VARIANT_LABELS.get(text, text)
+    text = _short_number(text)
+    if field in {"timestamp_utc"}:
+        text = text.replace("2026-07-30T", "07-30 ").split(".", 1)[0]
+    if field in {"path", "source_path", "evidence_path"}:
+        text = _short_path(text)
+    if field == "model_id":
+        text = MODEL_LABELS.get(text, text)
+    if field == "variant":
+        text = VARIANT_LABELS.get(text, text)
+    if field == "next_action":
+        text = text.replace("reference metric fixtures", "metric fixtures")
+    if len(text) > max_len:
+        text = text[: max_len - 3] + "..."
+    return text
+
+
 def compact_table(rows: list[dict[str, str]], fields: list[str]) -> str:
     if not rows:
         return "_暂无可展示行。_"
-    lines = ["| " + " | ".join(fields) + " |", "| " + " | ".join(["---"] * len(fields)) + " |"]
+    max_len = max(12, min(44, 96 // max(len(fields), 1)))
+    headers = [HEADER_LABELS.get(field, field) for field in fields]
+    lines = ["| " + " | ".join(headers) + " |", "| " + " | ".join(["---"] * len(fields)) + " |"]
     for row in rows:
         cells = []
         for field in fields:
-            text = md_escape(row.get(field, ""))
-            if len(text) > 80:
-                text = text[:77] + "..."
-            cells.append(text)
+            cells.append(display_value(field, row.get(field, ""), max_len))
         lines.append("| " + " | ".join(cells) + " |")
     return "\n".join(lines)
 
@@ -111,6 +251,63 @@ def table_appendix(title: str, rows: list[dict[str, str]], fields: list[str], ch
     return out
 
 
+def grouped_count_rows(rows: list[dict[str, str]], fields: list[str]) -> list[dict[str, str]]:
+    counts: dict[tuple[str, ...], int] = {}
+    for row in rows:
+        key = tuple(display_value(field, row.get(field, ""), 28) for field in fields)
+        counts[key] = counts.get(key, 0) + 1
+    out = []
+    for key, count in sorted(counts.items()):
+        item = {field: key[idx] for idx, field in enumerate(fields)}
+        item["rows"] = str(count)
+        out.append(item)
+    return out
+
+
+def case_montage_detail_pages(root: Path) -> list[str]:
+    rows = read_csv_all(root / "case_montage_manifest.csv", 20)
+    out: list[str] = []
+    if not rows:
+        return out
+    out.extend(
+        [
+            pagebreak(),
+            "# 16B. 失败病例单例大图",
+            "",
+            "下面每页显示一个病例 montage。红色为 scar，青色为 pure edema，黄色为 nnU-Net/MoSAIC disagreement；完整 PNG 文件仍保存在 `case_montages/`。",
+            "",
+        ]
+    )
+    for idx, row in enumerate(rows, 1):
+        case_id = row.get("case_id", f"case_{idx}")
+        center = row.get("center", "")
+        modality = row.get("modality_availability", "")
+        slice_index = row.get("slice_index", "")
+        montage_rel = row.get("montage_path", "")
+        if montage_rel.startswith("results/"):
+            montage_path = CARE_ROOT / montage_rel
+        else:
+            montage_path = root / montage_rel if montage_rel else Path()
+        out.extend(
+            [
+                pagebreak(),
+                r"\begin{landscape}",
+                "",
+                rf"\section*{{{latex_escape(case_id)}}}",
+                "",
+                rf"\noindent\texttt{{center={latex_escape(center)} modality={latex_escape(modality)} slice={latex_escape(slice_index)}}}",
+                "",
+                r"\begin{center}",
+                rf"\includegraphics[width=0.98\linewidth]{{\detokenize{{{montage_path.resolve()}}}}}",
+                r"\end{center}",
+                "",
+                r"\end{landscape}",
+                "",
+            ]
+        )
+    return out
+
+
 def write_markdown(root: Path) -> Path:
     source = root / "report_source_v2" / "CARE_failure_forensics_20260730_v2.md"
     source.parent.mkdir(parents=True, exist_ok=True)
@@ -123,6 +320,14 @@ def write_markdown(root: Path) -> Path:
     claim_rows = read_csv_rows(root / "evidence_claim_ledger.csv", 20)
     root_rows = read_csv_rows(root / "root_cause_ranked_table.csv", 12)
     ckpt_rows = read_csv_rows(root / "checkpoint_inventory.csv", 15)
+    checkpoint_binding_summary = grouped_count_rows(
+        read_csv_all(root / "historical_checkpoint_binding.csv", 240),
+        ["model_id", "artifact_type", "binding_status"],
+    )
+    prediction_binding_summary = grouped_count_rows(
+        read_csv_all(root / "historical_prediction_binding.csv", 240),
+        ["model_id", "artifact_type", "binding_status"],
+    )
 
     lines: list[str] = [
         "---",
@@ -229,13 +434,19 @@ def write_markdown(root: Path) -> Path:
         "",
         "PRISM 不能只看是否有强 encoder。V2 已完成 13 checkpoint replay 和 D0-D3 decoder-reset 诊断。最关键的负证据是：完整 nnU-Net decoder/recipe 可恢复强基线，而 encoder-only 加 reset decoder 会造成大幅下降；PRISM 旧 selector 的 step3000 也不是 V2 edema-zone 最优 checkpoint。",
         "",
-        compact_table(read_csv_rows(root / "nnunet_decoder_reset_real_summary.csv"), ["variant", "status", "case_count", "mean_scar_dice", "mean_pure_edema_dice"]),
+        compact_table(
+            read_csv_rows(root / "nnunet_decoder_reset_real_summary.csv"),
+            ["variant", "status", "inner_select_count", "official_scar_label5_dice", "official_pure_edema_label4_dice"],
+        ),
         "",
         "# 12. MoSAIC clean、full-data 和 hosted recipe",
         "",
         "MoSAIC 必须拆成 clean OOF、full-data diagnostic 和 hosted-near recipe 三层。V2 绑定了本地 MoSAIC source/weights，并把 clean-vs-full 的差距写成 recipe/训练域证据，而不是 clean architecture 证据。",
         "",
-        compact_table(read_csv_rows(root / "mosaic_recipe_decomposition_summary.csv", 12), ["variant", "scope", "case_count", "mean_scar_dice", "mean_pure_edema_dice"]),
+        compact_table(
+            read_csv_rows(root / "mosaic_recipe_decomposition_summary.csv", 12),
+            ["stage_id", "stage_name", "checkpoint_scope", "case_count", "mean_scar_dice", "mean_pure_edema_dice"],
+        ),
         "",
         pagebreak(),
         "# 13-15. 统一病例级比较、困难子组和 help/harm",
@@ -251,6 +462,10 @@ def write_markdown(root: Path) -> Path:
         "",
         image(montage_sheet, "20 例病例 montage contact sheet", "98%"),
         "",
+    ]
+    lines += case_montage_detail_pages(root)
+    lines += [
+        pagebreak(),
         "# 17. 错误重合和模型互补上限",
         "",
         "case oracle 对 nnU-Net 的直接提升很小，scar 约 0.022、pure edema 约 0.002、lesion union 约 0.013；voxel TP oracle 很高，但这是不可部署上限，不能当作模型性能。selector feasibility 显示 scar 有病例级可辨识信号，pure edema 证据弱。",
@@ -266,7 +481,7 @@ def write_markdown(root: Path) -> Path:
         "",
         "第 19 页使用窄表/短字段，不使用会溢出的宽表。V2 绑定 MoSAIC coarse/scar fine component features 与 raw intensity controls；nnU-Net/PRISM frozen activation 未导出，因此按缺资产阻塞，不伪造成无信号。",
         "",
-        compact_table(read_csv_rows(root / "feature_probe_summary.csv"), ["model_component", "status", "artifact_count", "notes"]),
+        compact_table(read_csv_rows(root / "feature_probe_summary.csv"), ["model_feature_source", "status", "bound_artifact_count", "limitation"]),
         "",
         "# 20. decoder-reset 诊断对照",
         "",
@@ -313,7 +528,9 @@ def write_markdown(root: Path) -> Path:
         "",
         compact_table(ckpt_rows, ["model_id", "size_bytes", "hash_status", "evidence_quality"]),
         "",
-        compact_table(read_csv_rows(root / "historical_checkpoint_binding.csv", 20), ["model_id", "artifact_type", "path", "binding_status"]),
+        "checkpoint binding 以聚合计数进入 PDF；完整逐项路径保留在 `historical_checkpoint_binding.csv`。",
+        "",
+        compact_table(checkpoint_binding_summary, ["model_id", "artifact_type", "binding_status", "rows"]),
         "",
         pagebreak(),
         "# 附录 B：指标公式和 known-bad",
@@ -358,7 +575,7 @@ def write_markdown(root: Path) -> Path:
     lines += table_appendix(
         "附录 E3：PRISM 13 checkpoint corrected metrics 分块",
         read_csv_all(root / "prism_corrected_casewise_metrics.csv", 96),
-        ["checkpoint_step", "case_id", "metric_name", "dice", "anchor_dice", "dice_delta_vs_anchor"],
+        ["checkpoint_step", "case_id", "metric_name", "dice", "nnunet_dice", "dice_delta_vs_nnunet"],
         8,
     )
     lines += table_appendix(
@@ -373,12 +590,15 @@ def write_markdown(root: Path) -> Path:
         ["case_id", "variant", "pathology", "dice", "hd95", "changed_mask_ratio_vs_nnunet"],
         8,
     )
-    lines += table_appendix(
-        "附录 E6：历史 prediction binding 分块",
-        read_csv_all(root / "historical_prediction_binding.csv", 72),
-        ["model_id", "artifact_type", "path", "binding_status"],
-        8,
-    )
+    lines += [
+        pagebreak(),
+        "# 附录 E6：历史 prediction binding 摘要",
+        "",
+        "逐项 prediction 路径很长，完整清单保留在 `historical_prediction_binding.csv`。PDF 只展示按模型、资产类型和绑定状态聚合的计数，避免路径列覆盖其它列。",
+        "",
+        compact_table(prediction_binding_summary, ["model_id", "artifact_type", "binding_status", "rows"]),
+        "",
+    ]
     lines += table_appendix(
         "附录 E7：组件生存清单分块",
         read_csv_all(root / "historical_component_survival_ledger.csv", 40),
@@ -401,7 +621,7 @@ def write_markdown(root: Path) -> Path:
         pagebreak(),
         "# 附录 G：PDF 渲染验收记录",
         "",
-        "最终 PDF 采用 `pandoc_xelatex_named_fonts`，不是 Chromium fallback。验收重点是 `pdfinfo` 不含 HeadlessChrome/Skia，`pdffonts` 出现 TeXGyreTermes 与 `/users` render bundle 的 NotoSerifSC/NotoSansSC，`pdftotext -layout` 中文可抽取，第 1、3、10、19 页 PNG 中中文和表格可见。",
+        "最终 PDF 采用 `pandoc_xelatex_named_fonts`，不是 Chromium fallback。验收重点是 `pdfinfo` 不含 HeadlessChrome/Skia，`pdffonts` 出现 TeXGyreTermes 与 `/users` render bundle 的 NotoSerifSC/NotoSansSC，`pdftotext -layout` 中文可抽取，并完成全页 PNG 视觉检查。",
         "",
     ]
     source.write_text("\n".join(lines), encoding="utf-8")

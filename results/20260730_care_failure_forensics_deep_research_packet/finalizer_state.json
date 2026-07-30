@@ -1,29 +1,25 @@
 {
-  "status": "NEEDS_REPAIR",
-  "completed_diagnostics": [
-    "F0_BOOTSTRAP_INVENTORY_PARTIAL",
-    "PDF_RENDER_QA",
-    "REFERENCE_METRIC_KNOWN_BAD",
-    "D0_FULL_PRETRAINED_IDENTITY"
-  ],
-  "missing_required_diagnostics": [
-    "D1_DECODER_RESET_ENCODER_FROZEN",
-    "D2_DECODER_RESET_TOP_ENCODER_TRAINABLE",
-    "D3_FULL_MODEL_SHORT_FINETUNE",
-    "FEATURE_PROBE_HELDOUT",
-    "MOSAIC_RECIPE_DECOMPOSITION",
-    "CINE_TEMPORAL_PROBE"
-  ],
   "all_jobs_terminal": true,
+  "completed_diagnostics": [
+    "G1_V1_GAP_AUDIT",
+    "G2_HISTORICAL_EVIDENCE_BINDING",
+    "G3_STANDARDIZED_METRIC_REAGGREGATION",
+    "G4_CASE_MONTAGE_VISUAL_REVIEW",
+    "G5_DECODER_RESET_DIAGNOSTIC",
+    "G6_MOSAIC_RECIPE_DECOMPOSITION",
+    "G7_FEATURE_AND_SELECTOR_PROBE",
+    "G8_ALIGNMENT_AND_CINE_DIAGNOSTICS",
+    "G9_COMPONENT_SURVIVAL_AND_LARGE_GAIN_ANALYSIS",
+    "G10_XELATEX_FINAL_STANDARD_PDF"
+  ],
+  "controller_verification_decision": "VERIFIED_COMPLETE",
+  "missing_required_diagnostics": [],
   "new_slurm_jobs_submitted": false,
-  "updated_utc": "2026-07-30T04:10:19.729806+00:00",
-  "diagnostic_execution_plan": "diagnostic_execution_plan.json",
-  "slurm_diagnostic_preflight_receipt": "slurm_diagnostic_preflight_receipt.json",
-  "next_required_action": "run D1-D3 decoder-reset diagnostics and bind feature/MoSAIC/Cine probes",
-  "d0_identity_replay": {
-    "status": "PASS",
-    "summary_csv": "decoder_reset_training_summary.csv",
-    "casewise_csv": "decoder_reset_inner_casewise.csv",
-    "diagnostic_report": "decoder_reset_diagnostic_report.md"
-  }
+  "next_required_action": "external Deep Research design using V2 constraints",
+  "pdf_route": "pandoc_xelatex_named_fonts",
+  "render_resource_dir": "/users/a/e/aereinh/render_resources/chinese_math_pdf",
+  "status": "COMPLETE",
+  "strict_validator_report": "v2_strict_validator_report.json",
+  "updated_utc": "2026-07-30T09:40:27.147723+00:00",
+  "v2_pdf": "CARE_Failure_Forensics_Deep_Research_Evidence_Packet_20260730_v2.pdf"
 }

@@ -101,15 +101,15 @@ nnU-Net 作为强基线的意义在于完整 decoder、稳定训练 recipe、成
 
 这些路线的历史证据等级不能混用。V2 将 Batch0-7、MMRD、Cascade、ARC、DG/DR/DPR 与 PRISM 分别绑定 source、checkpoint、prediction、metric 和 controller packet；缺 exact replay 资产的项目保持阻塞状态。
 
-| model_id | checkpoint_files_bound | prediction_files_bound | metric_files_bound | terminal_status |
+| model_id | ckpt_bound | pred_bound | metric_bound | terminal |
 | --- | --- | --- | --- | --- |
-| BATCH0_3_SRR_V2_ANCHOR_CONTROL | 3 | 132 | 1 | COMPLETED_WITH_VALID_EVIDENCE |
-| BATCH7_BR2_SIP | 21 | 0 | 0 | BLOCKED_BY_MISSING_BOUND_ASSET |
-| MMRD_BATCH9 | 9 | 0 | 0 | BLOCKED_BY_MISSING_BOUND_ASSET |
-| SRR_CASCADE_RESCUE | 17 | 0 | 2 | COMPLETED_WITH_VALID_EVIDENCE |
-| CARE_ARC | 8 | 0 | 1 | COMPLETED_WITH_VALID_EVIDENCE |
-| CARE_DG_DR_DPR | 129 | 132 | 2 | COMPLETED_WITH_VALID_EVIDENCE |
-| CARE_PRISM_V2 | 13 | 455 | 1 | COMPLETED_WITH_VALID_EVIDENCE |
+| B0_3_SRR_ANCHOR | 3 | 132 | 1 | VALID |
+| B7_BR2_SIP | 21 | 0 | 0 | MISSING_ASSET |
+| MMRD_BATCH9 | 9 | 0 | 0 | MISSING_ASSET |
+| SRR_CASCADE | 17 | 0 | 2 | VALID |
+| CARE_ARC | 8 | 0 | 1 | VALID |
+| DG_DR_DPR | 129 | 132 | 2 | VALID |
+| PRISM_V2 | 13 | 455 | 1 | VALID |
 
 - **NNUNET**
   - `result_evidence_grade`: A_VERIFIED_FAIR_FINAL_MASK
@@ -149,31 +149,31 @@ nnU-Net 作为强基线的意义在于完整 decoder、稳定训练 recipe、成
 
 PRISM 不能只看是否有强 encoder。V2 已完成 13 checkpoint replay 和 D0-D3 decoder-reset 诊断。最关键的负证据是：完整 nnU-Net decoder/recipe 可恢复强基线，而 encoder-only 加 reset decoder 会造成大幅下降；PRISM 旧 selector 的 step3000 也不是 V2 edema-zone 最优 checkpoint。
 
-| variant | status | case_count | mean_scar_dice | mean_pure_edema_dice |
+| variant | status | inner_n | scar | pure_edema |
 | --- | --- | --- | --- | --- |
-| D0_FULL_PRETRAINED_IDENTITY | COMPLETED_WITH_VALID_EVIDENCE |  |  |  |
-| D1_DECODER_RESET_ENCODER_FROZEN | COMPLETED_WITH_VALID_EVIDENCE |  |  |  |
-| D2_DECODER_RESET_TOP_ENCODER_TRAINABLE | COMPLETED_WITH_VALID_EVIDENCE |  |  |  |
-| D3_FULL_MODEL_SHORT_FINETUNE | COMPLETED_WITH_VALID_EVIDENCE |  |  |  |
+| D0_FULL_PRETRAIN... | VALID | 12 | 0.9224 | 0.9231 |
+| D1_DECODER_RESET... | VALID | 12 | 0.547 | 0 |
+| D2_DECODER_RESET... | VALID | 12 | 0.7108 | 0.2664 |
+| D3_FULL_MODEL_SH... | VALID | 12 | 0.9227 | 0.9225 |
 
 # 12. MoSAIC clean、full-data 和 hosted recipe
 
 MoSAIC 必须拆成 clean OOF、full-data diagnostic 和 hosted-near recipe 三层。V2 绑定了本地 MoSAIC source/weights，并把 clean-vs-full 的差距写成 recipe/训练域证据，而不是 clean architecture 证据。
 
-| variant | scope | case_count | mean_scar_dice | mean_pure_edema_dice |
-| --- | --- | --- | --- | --- |
-|  |  | 220 | 0.3781679456697728 | 0.05275611807880284 |
-|  |  | 44 | 0.36007285419901636 | 0.2637805903940142 |
-|  |  | 44 | 0.3849004359975014 | 0.0 |
-|  |  | 44 | 0.3727637804724566 | 0.0 |
-|  |  | 44 | 0.37787652201445904 | 0.0 |
-|  |  | 44 | 0.3952261356654306 | 0.0 |
-|  |  | 220 | 0.3781679456697728 | 0.05275611807880284 |
-|  |  | 44 | 0.36007285419901636 | 0.2637805903940142 |
-|  |  | 44 | 0.3849004359975014 | 0.0 |
-|  |  | 44 | 0.3727637804724566 | 0.0 |
-|  |  | 44 | 0.37787652201445904 | 0.0 |
-|  |  | 44 | 0.3952261356654306 | 0.0 |
+| stage | recipe | scope | case_count | mean_scar_dice | mean_edema |
+| --- | --- | --- | --- | --- | --- |
+| M0 | clean single ... | ALL_SCOPES | 220 | 0.3782 | 0.0528 |
+| M0 | clean single ... | oof_fold0 | 44 | 0.3601 | 0.2638 |
+| M0 | clean single ... | oof_fold1 | 44 | 0.3849 | 0 |
+| M0 | clean single ... | oof_fold2 | 44 | 0.3728 | 0 |
+| M0 | clean single ... | oof_fold3 | 44 | 0.3779 | 0 |
+| M0 | clean single ... | oof_fold4 | 44 | 0.3952 | 0 |
+| M1 | clean patholo... | ALL_SCOPES | 220 | 0.3782 | 0.0528 |
+| M1 | clean patholo... | oof_fold0 | 44 | 0.3601 | 0.2638 |
+| M1 | clean patholo... | oof_fold1 | 44 | 0.3849 | 0 |
+| M1 | clean patholo... | oof_fold2 | 44 | 0.3728 | 0 |
+| M1 | clean patholo... | oof_fold3 | 44 | 0.3779 | 0 |
+| M1 | clean patholo... | oof_fold4 | 44 | 0.3952 | 0 |
 
 
 \newpage
@@ -182,14 +182,14 @@ MoSAIC 必须拆成 clean OOF、full-data diagnostic 和 hosted-near recipe 三�
 
 统一病例级比较已在 nnU-Net OOF、MoSAIC clean OOF 和 PRISM/MoSAIC/历史可绑定证据之间分层完成。clean held-out 数字与 full-data 机制 probe 分开报告。
 
-| model_id | metric_name | case_count | mean_dice | empty_pred_count |
+| model_id | metric_name | case_count | mean_dice | empty_pred |
 | --- | --- | --- | --- | --- |
-| mosaic_clean_oof | lesion_union | 220 | 0.33671691700576617 | 0 |
-| mosaic_clean_oof | pure_edema | 80 | 0.05275611807880284 | 64 |
-| mosaic_clean_oof | scar | 220 | 0.3781679456697728 | 0 |
-| nnunet_oof | lesion_union | 220 | 0.5754706667529812 | 3 |
-| nnunet_oof | pure_edema | 80 | 0.43081230355478206 | 0 |
-| nnunet_oof | scar | 220 | 0.5610470930146593 | 3 |
+| mosaic_oof | lesion_union | 220 | 0.3367 | 0 |
+| mosaic_oof | pure_edema | 80 | 0.0528 | 64 |
+| mosaic_oof | scar | 220 | 0.3782 | 0 |
+| nnunet_oof | lesion_union | 220 | 0.5755 | 3 |
+| nnunet_oof | pure_edema | 80 | 0.4308 | 0 |
+| nnunet_oof | scar | 220 | 0.561 | 3 |
 
 
 \newpage
@@ -200,15 +200,325 @@ MoSAIC 必须拆成 clean OOF、full-data diagnostic 和 hosted-near recipe 三�
 
 ![20 例病例 montage contact sheet](/users/a/e/aereinh/CARE/results/20260730_care_failure_forensics_deep_research_packet/case_montages/contact_sheet_20_cases.png){width=98%}
 
+
+\newpage
+
+# 16B. 失败病例单例大图
+
+下面每页显示一个病例 montage。红色为 scar，青色为 pure edema，黄色为 nnU-Net/MoSAIC disagreement；完整 PNG 文件仍保存在 `case_montages/`。
+
+
+\newpage
+
+\begin{landscape}
+
+\section*{Case8021}
+
+\noindent\texttt{center=CenterH modality=LGE-only slice=4}
+
+\begin{center}
+\includegraphics[width=0.98\linewidth]{\detokenize{/users/a/e/aereinh/CARE/results/20260730_care_failure_forensics_deep_research_packet/case_montages/Case8021_montage.png}}
+\end{center}
+
+\end{landscape}
+
+
+\newpage
+
+\begin{landscape}
+
+\section*{Case3010}
+
+\noindent\texttt{center=CenterC modality=C0+LGE+T2 slice=3}
+
+\begin{center}
+\includegraphics[width=0.98\linewidth]{\detokenize{/users/a/e/aereinh/CARE/results/20260730_care_failure_forensics_deep_research_packet/case_montages/Case3010_montage.png}}
+\end{center}
+
+\end{landscape}
+
+
+\newpage
+
+\begin{landscape}
+
+\section*{Case3036}
+
+\noindent\texttt{center=CenterC modality=C0+LGE+T2 slice=2}
+
+\begin{center}
+\includegraphics[width=0.98\linewidth]{\detokenize{/users/a/e/aereinh/CARE/results/20260730_care_failure_forensics_deep_research_packet/case_montages/Case3036_montage.png}}
+\end{center}
+
+\end{landscape}
+
+
+\newpage
+
+\begin{landscape}
+
+\section*{Case1022}
+
+\noindent\texttt{center=CenterA modality=LGE-only slice=14}
+
+\begin{center}
+\includegraphics[width=0.98\linewidth]{\detokenize{/users/a/e/aereinh/CARE/results/20260730_care_failure_forensics_deep_research_packet/case_montages/Case1022_montage.png}}
+\end{center}
+
+\end{landscape}
+
+
+\newpage
+
+\begin{landscape}
+
+\section*{Case2019}
+
+\noindent\texttt{center=CenterB modality=C0+LGE+T2 slice=3}
+
+\begin{center}
+\includegraphics[width=0.98\linewidth]{\detokenize{/users/a/e/aereinh/CARE/results/20260730_care_failure_forensics_deep_research_packet/case_montages/Case2019_montage.png}}
+\end{center}
+
+\end{landscape}
+
+
+\newpage
+
+\begin{landscape}
+
+\section*{Case1045}
+
+\noindent\texttt{center=CenterA modality=LGE-only slice=6}
+
+\begin{center}
+\includegraphics[width=0.98\linewidth]{\detokenize{/users/a/e/aereinh/CARE/results/20260730_care_failure_forensics_deep_research_packet/case_montages/Case1045_montage.png}}
+\end{center}
+
+\end{landscape}
+
+
+\newpage
+
+\begin{landscape}
+
+\section*{Case1011}
+
+\noindent\texttt{center=CenterA modality=LGE-only slice=1}
+
+\begin{center}
+\includegraphics[width=0.98\linewidth]{\detokenize{/users/a/e/aereinh/CARE/results/20260730_care_failure_forensics_deep_research_packet/case_montages/Case1011_montage.png}}
+\end{center}
+
+\end{landscape}
+
+
+\newpage
+
+\begin{landscape}
+
+\section*{Case1054}
+
+\noindent\texttt{center=CenterA modality=LGE-only slice=7}
+
+\begin{center}
+\includegraphics[width=0.98\linewidth]{\detokenize{/users/a/e/aereinh/CARE/results/20260730_care_failure_forensics_deep_research_packet/case_montages/Case1054_montage.png}}
+\end{center}
+
+\end{landscape}
+
+
+\newpage
+
+\begin{landscape}
+
+\section*{Case8017}
+
+\noindent\texttt{center=CenterH modality=LGE-only slice=5}
+
+\begin{center}
+\includegraphics[width=0.98\linewidth]{\detokenize{/users/a/e/aereinh/CARE/results/20260730_care_failure_forensics_deep_research_packet/case_montages/Case8017_montage.png}}
+\end{center}
+
+\end{landscape}
+
+
+\newpage
+
+\begin{landscape}
+
+\section*{Case1029}
+
+\noindent\texttt{center=CenterA modality=LGE-only slice=17}
+
+\begin{center}
+\includegraphics[width=0.98\linewidth]{\detokenize{/users/a/e/aereinh/CARE/results/20260730_care_failure_forensics_deep_research_packet/case_montages/Case1029_montage.png}}
+\end{center}
+
+\end{landscape}
+
+
+\newpage
+
+\begin{landscape}
+
+\section*{Case3012}
+
+\noindent\texttt{center=CenterC modality=C0+LGE+T2 slice=1}
+
+\begin{center}
+\includegraphics[width=0.98\linewidth]{\detokenize{/users/a/e/aereinh/CARE/results/20260730_care_failure_forensics_deep_research_packet/case_montages/Case3012_montage.png}}
+\end{center}
+
+\end{landscape}
+
+
+\newpage
+
+\begin{landscape}
+
+\section*{Case2034}
+
+\noindent\texttt{center=CenterB modality=C0+LGE+T2 slice=4}
+
+\begin{center}
+\includegraphics[width=0.98\linewidth]{\detokenize{/users/a/e/aereinh/CARE/results/20260730_care_failure_forensics_deep_research_packet/case_montages/Case2034_montage.png}}
+\end{center}
+
+\end{landscape}
+
+
+\newpage
+
+\begin{landscape}
+
+\section*{Case2025}
+
+\noindent\texttt{center=CenterB modality=C0+LGE+T2 slice=5}
+
+\begin{center}
+\includegraphics[width=0.98\linewidth]{\detokenize{/users/a/e/aereinh/CARE/results/20260730_care_failure_forensics_deep_research_packet/case_montages/Case2025_montage.png}}
+\end{center}
+
+\end{landscape}
+
+
+\newpage
+
+\begin{landscape}
+
+\section*{Case2009}
+
+\noindent\texttt{center=CenterB modality=C0+LGE+T2 slice=3}
+
+\begin{center}
+\includegraphics[width=0.98\linewidth]{\detokenize{/users/a/e/aereinh/CARE/results/20260730_care_failure_forensics_deep_research_packet/case_montages/Case2009_montage.png}}
+\end{center}
+
+\end{landscape}
+
+
+\newpage
+
+\begin{landscape}
+
+\section*{Case2010}
+
+\noindent\texttt{center=CenterB modality=C0+LGE+T2 slice=4}
+
+\begin{center}
+\includegraphics[width=0.98\linewidth]{\detokenize{/users/a/e/aereinh/CARE/results/20260730_care_failure_forensics_deep_research_packet/case_montages/Case2010_montage.png}}
+\end{center}
+
+\end{landscape}
+
+
+\newpage
+
+\begin{landscape}
+
+\section*{Case3017}
+
+\noindent\texttt{center=CenterC modality=C0+LGE+T2 slice=1}
+
+\begin{center}
+\includegraphics[width=0.98\linewidth]{\detokenize{/users/a/e/aereinh/CARE/results/20260730_care_failure_forensics_deep_research_packet/case_montages/Case3017_montage.png}}
+\end{center}
+
+\end{landscape}
+
+
+\newpage
+
+\begin{landscape}
+
+\section*{Case2026}
+
+\noindent\texttt{center=CenterB modality=C0+LGE+T2 slice=3}
+
+\begin{center}
+\includegraphics[width=0.98\linewidth]{\detokenize{/users/a/e/aereinh/CARE/results/20260730_care_failure_forensics_deep_research_packet/case_montages/Case2026_montage.png}}
+\end{center}
+
+\end{landscape}
+
+
+\newpage
+
+\begin{landscape}
+
+\section*{Case1033}
+
+\noindent\texttt{center=CenterA modality=LGE-only slice=16}
+
+\begin{center}
+\includegraphics[width=0.98\linewidth]{\detokenize{/users/a/e/aereinh/CARE/results/20260730_care_failure_forensics_deep_research_packet/case_montages/Case1033_montage.png}}
+\end{center}
+
+\end{landscape}
+
+
+\newpage
+
+\begin{landscape}
+
+\section*{Case2029}
+
+\noindent\texttt{center=CenterB modality=C0+LGE+T2 slice=5}
+
+\begin{center}
+\includegraphics[width=0.98\linewidth]{\detokenize{/users/a/e/aereinh/CARE/results/20260730_care_failure_forensics_deep_research_packet/case_montages/Case2029_montage.png}}
+\end{center}
+
+\end{landscape}
+
+
+\newpage
+
+\begin{landscape}
+
+\section*{Case1014}
+
+\noindent\texttt{center=CenterA modality=LGE-only slice=4}
+
+\begin{center}
+\includegraphics[width=0.98\linewidth]{\detokenize{/users/a/e/aereinh/CARE/results/20260730_care_failure_forensics_deep_research_packet/case_montages/Case1014_montage.png}}
+\end{center}
+
+\end{landscape}
+
+
+\newpage
+
 # 17. 错误重合和模型互补上限
 
 case oracle 对 nnU-Net 的直接提升很小，scar 约 0.022、pure edema 约 0.002、lesion union 约 0.013；voxel TP oracle 很高，但这是不可部署上限，不能当作模型性能。selector feasibility 显示 scar 有病例级可辨识信号，pure edema 证据弱。
 
-| metric_name | case_oracle_gain_vs_nnunet | voxel_tp_oracle_gain_vs_nnunet | deployable_selector_signal |
+| metric_name | case_gain | voxel_gain | selector_signal |
 | --- | --- | --- | --- |
-| scar | 0.02195407548910211 | 0.23751872769841142 | 0.8268893700381483 |
-| pure_edema | 0.002292654276233319 | 0.17295548404011052 | 0.0 |
-| lesion_union | 0.013324679806061557 | 0.22474083562937552 | 0.0 |
+| scar | 0.022 | 0.2375 | 0.8269 |
+| pure_edema | 0.0023 | 0.173 | 0 |
+| lesion_union | 0.0133 | 0.2247 | 0 |
 
 # 18. selector feasibility
 
@@ -221,17 +531,17 @@ selector 只使用 prediction morphology/agreement features，固定 logistic re
 
 第 19 页使用窄表/短字段，不使用会溢出的宽表。V2 绑定 MoSAIC coarse/scar fine component features 与 raw intensity controls；nnU-Net/PRISM frozen activation 未导出，因此按缺资产阻塞，不伪造成无信号。
 
-| model_component | status | artifact_count | notes |
+| feature_source | status | n_artifacts | limit |
 | --- | --- | --- | --- |
-|  | BLOCKED_BY_MISSING_BOUND_ASSET |  |  |
-|  | BLOCKED_BY_MISSING_BOUND_ASSET |  |  |
-|  | BLOCKED_BY_MISSING_BOUND_ASSET |  |  |
-|  | BLOCKED_BY_MISSING_BOUND_ASSET |  |  |
-|  | BLOCKED_BY_MISSING_BOUND_ASSET |  |  |
-|  | COMPLETED_WITH_VALID_EVIDENCE |  |  |
-|  | COMPLETED_WITH_VALID_EVIDENCE |  |  |
-|  | BLOCKED_BY_MISSING_BOUND_ASSET |  |  |
-|  | COMPLETED_WITH_VALID_EVIDENCE |  |  |
+| nnU-Net encoder | MISSING_ASSET | 0 | No bound frozen activ... |
+| nnU-Net decoder | MISSING_ASSET | 0 | No bound frozen activ... |
+| PRISM shared | MISSING_ASSET | 0 | No bound frozen activ... |
+| PRISM routed | MISSING_ASSET | 0 | No bound frozen activ... |
+| PRISM refiner | MISSING_ASSET | 0 | No bound frozen activ... |
+| MoSAIC coarse | VALID | 5 | Does not cover pure-e... |
+| MoSAIC scar fine | VALID | 5 | Does not cover pure-e... |
+| MoSAIC edema | MISSING_ASSET | 0 | No bound frozen activ... |
+| raw intensity control | VALID | 220 | Control is case-level... |
 
 # 20. decoder-reset 诊断对照
 
@@ -248,23 +558,23 @@ alignment 绑定 20260703 complete-case 诊断，未支持多序列错位是主�
 
 目前最可信的共同原因是 evidence chain 不闭合：模块是否进入 final logits、loss 是否进入 total loss、checkpoint 是否可绑定、训练预算是否足额、评价对象是否混写，这些问题常常比设计名词更关键。组件生存清单把“思想有效、实现失败、未验证、思想失败”分开记录。
 
-| source_model | component | future_status | risk_of_repeating_failure |
+| source_model | component | future | repeat_risk |
 | --- | --- | --- | --- |
-| Batch7 | availability-aware evidence | RETAIN_AS_DATA_OR_SUPERVISION_RULE | medium |
-| Batch7 | pathology-specific retrieval | RETAIN_AS_OPTIONAL_MECHANISM_TO_RETEST | high |
-| Batch7 | negative-space | RETAIN_AS_OPTIONAL_MECHANISM_TO_RETEST | high |
-| Batch7 | complex router/SIP | DO_NOT_REUSE_CURRENT_IMPLEMENTATION | high |
-| MMRD | reliable-label supervision | RETAIN_AS_DATA_OR_SUPERVISION_RULE | low |
-| MMRD | no-T2 edema hygiene | RETAIN_AS_DATA_OR_SUPERVISION_RULE | low |
-| MMRD | simple residual pathology head | DO_NOT_REUSE_CURRENT_IMPLEMENTATION | high |
-| Cascade | strong baseline fallback | RETAIN_WITH_STRONG_EVIDENCE | low |
-| Cascade | bounded correction | RETAIN_AS_OPTIONAL_MECHANISM_TO_RETEST | medium |
+| Batch7 | availability-aware ev... | KEEP_DATA_RULE | medium |
+| Batch7 | pathology-specific re... | RETEST_OPTION | high |
+| Batch7 | negative-space | RETEST_OPTION | high |
+| Batch7 | complex router/SIP | DO_NOT_REUSE_CURRENT_... | high |
+| MMRD | reliable-label superv... | KEEP_DATA_RULE | low |
+| MMRD | no-T2 edema hygiene | KEEP_DATA_RULE | low |
+| MMRD | simple residual patho... | DO_NOT_REUSE_CURRENT_... | high |
+| Cascade | strong baseline fallback | KEEP_STRONG | low |
+| Cascade | bounded correction | RETEST_OPTION | medium |
 | Cascade | prototype input | UNRESOLVED | high |
-| ARC | direct reconstruction | RETAIN_AS_OPTIONAL_MECHANISM_TO_RETEST | medium |
-| ARC | decoder reset | DO_NOT_REUSE_CURRENT_IDEA | high |
-| DG/DR/DPR | pathology-specific arbitration | RETAIN_AS_OPTIONAL_MECHANISM_TO_RETEST | medium |
-| PRISM | private pyramids/routing | DO_NOT_REUSE_CURRENT_IMPLEMENTATION | high |
-| PRISM | stage schedule | RETAIN_AS_OPTIONAL_MECHANISM_TO_RETEST | medium |
+| ARC | direct reconstruction | RETEST_OPTION | medium |
+| ARC | decoder reset | DO_NOT_REUSE | high |
+| DG/DR/DPR | pathology-specific ar... | RETEST_OPTION | medium |
+| PRISM | private pyramids/routing | DO_NOT_REUSE_CURRENT_... | high |
+| PRISM | stage schedule | RETEST_OPTION | medium |
 
 # 26. 根因排序与证据图
 
@@ -345,46 +655,36 @@ alignment 绑定 20260703 complete-case 诊断，未支持多序列错位是主�
 
 checkpoint 清单只显示定位字段，不展开长路径列，避免右侧截断。完整路径仍保留在 CSV。
 
-| model_id | size_bytes | hash_status | evidence_quality |
+| model_id | size_bytes | hash_status | quality |
 | --- | --- | --- | --- |
-| NNUNET | 354608437 | LARGE_METADATA_ONLY | PARTIALLY_BOUND_BY_PATH |
-| NNUNET | 354266799 | LARGE_METADATA_ONLY | PARTIALLY_BOUND_BY_PATH |
-| NNUNET | 354383029 | LARGE_METADATA_ONLY | PARTIALLY_BOUND_BY_PATH |
-| NNUNET | 354382767 | LARGE_METADATA_ONLY | PARTIALLY_BOUND_BY_PATH |
-| NNUNET | 354382965 | LARGE_METADATA_ONLY | PARTIALLY_BOUND_BY_PATH |
-| NNUNET | 354201839 | LARGE_METADATA_ONLY | PARTIALLY_BOUND_BY_PATH |
-| NNUNET | 354383093 | LARGE_METADATA_ONLY | PARTIALLY_BOUND_BY_PATH |
-| NNUNET | 354242031 | LARGE_METADATA_ONLY | PARTIALLY_BOUND_BY_PATH |
-| NNUNET | 354383349 | LARGE_METADATA_ONLY | PARTIALLY_BOUND_BY_PATH |
-| NNUNET | 354270127 | LARGE_METADATA_ONLY | PARTIALLY_BOUND_BY_PATH |
-| NNUNET | 354382965 | LARGE_METADATA_ONLY | PARTIALLY_BOUND_BY_PATH |
-| NNUNET | 354369135 | LARGE_METADATA_ONLY | PARTIALLY_BOUND_BY_PATH |
-| NNUNET | 31579 | PREFIX_8192_BYTES | PARTIALLY_BOUND_BY_PATH |
-| NNUNET | 235538772 | LARGE_METADATA_ONLY | PARTIALLY_BOUND_BY_PATH |
-| NNUNET | 4305 | FULL | PARTIALLY_BOUND_BY_PATH |
+| NNUNET | 354608437 | LARGE_METADATA_ONLY | PATH_BOUND |
+| NNUNET | 354266799 | LARGE_METADATA_ONLY | PATH_BOUND |
+| NNUNET | 354383029 | LARGE_METADATA_ONLY | PATH_BOUND |
+| NNUNET | 354382767 | LARGE_METADATA_ONLY | PATH_BOUND |
+| NNUNET | 354382965 | LARGE_METADATA_ONLY | PATH_BOUND |
+| NNUNET | 354201839 | LARGE_METADATA_ONLY | PATH_BOUND |
+| NNUNET | 354383093 | LARGE_METADATA_ONLY | PATH_BOUND |
+| NNUNET | 354242031 | LARGE_METADATA_ONLY | PATH_BOUND |
+| NNUNET | 354383349 | LARGE_METADATA_ONLY | PATH_BOUND |
+| NNUNET | 354270127 | LARGE_METADATA_ONLY | PATH_BOUND |
+| NNUNET | 354382965 | LARGE_METADATA_ONLY | PATH_BOUND |
+| NNUNET | 354369135 | LARGE_METADATA_ONLY | PATH_BOUND |
+| NNUNET | 31579 | PREFIX_8192_BYTES | PATH_BOUND |
+| NNUNET | 235538772 | LARGE_METADATA_ONLY | PATH_BOUND |
+| NNUNET | 4305 | FULL | PATH_BOUND |
 
-| model_id | artifact_type | path | binding_status |
+checkpoint binding 以聚合计数进入 PDF；完整逐项路径保留在 `historical_checkpoint_binding.csv`。
+
+| model_id | artifact | status | rows |
 | --- | --- | --- | --- |
-| BATCH0_3_SRR_V2_ANCHOR_CONTROL | checkpoint | results/srr_production/inference/runtime_checkpoints/anchor_bounded_srr_corre... | BOUND |
-| BATCH0_3_SRR_V2_ANCHOR_CONTROL | checkpoint | results/srr_production/inference/runtime_checkpoints/anchor_identity_control_... | BOUND |
-| BATCH0_3_SRR_V2_ANCHOR_CONTROL | checkpoint | results/srr_production/inference/runtime_checkpoints/srr_no_anchor_control_ze... | BOUND |
-| BATCH7_BR2_SIP | checkpoint | results/20260721_srr_batch7_mechanism_closure_repair/runtime/assets/semantic_... | BOUND |
-| BATCH7_BR2_SIP | checkpoint | results/20260721_srr_batch7_mechanism_closure_repair/runtime/checkpoint_round... | BOUND |
-| BATCH7_BR2_SIP | checkpoint | results/20260721_srr_batch7_mechanism_closure_repair/runtime/stages/proposal/... | BOUND |
-| BATCH7_BR2_SIP | checkpoint | results/20260721_srr_batch7_mechanism_closure_repair/runtime/stages/proposal/... | BOUND |
-| BATCH7_BR2_SIP | checkpoint | results/20260721_srr_batch7_mechanism_closure_repair/runtime/stages/proposal/... | BOUND |
-| BATCH7_BR2_SIP | checkpoint | results/20260721_srr_batch7_mechanism_closure_repair/runtime/stages/proposal/... | BOUND |
-| BATCH7_BR2_SIP | checkpoint | results/20260721_srr_batch7_mechanism_closure_repair/runtime/stages/proposal/... | BOUND |
-| BATCH7_BR2_SIP | checkpoint | results/20260721_srr_batch7_mechanism_closure_repair/runtime/stages/proposal/... | BOUND |
-| BATCH7_BR2_SIP | checkpoint | results/20260721_srr_batch7_mechanism_closure_repair/runtime/stages/proposal/... | BOUND |
-| BATCH7_BR2_SIP | checkpoint | results/20260721_srr_batch7_mechanism_closure_repair/runtime/stages/proposal/... | BOUND |
-| BATCH7_BR2_SIP | checkpoint | results/20260721_srr_batch7_upstream_candidate_quality/runtime/assets/batch7_... | BOUND |
-| BATCH7_BR2_SIP | checkpoint | results/20260721_srr_batch7_upstream_candidate_quality/runtime/attempts/batch... | BOUND |
-| BATCH7_BR2_SIP | checkpoint | results/20260721_srr_batch7_upstream_candidate_quality/runtime/attempts/batch... | BOUND |
-| BATCH7_BR2_SIP | checkpoint | results/20260721_srr_batch7_upstream_candidate_quality/runtime/attempts/batch... | BOUND |
-| BATCH7_BR2_SIP | checkpoint | results/20260721_srr_batch7_upstream_candidate_quality/runtime/attempts/batch... | BOUND |
-| BATCH7_BR2_SIP | checkpoint | results/20260721_srr_batch7_upstream_candidate_quality/runtime/attempts/batch... | BOUND |
-| BATCH7_BR2_SIP | checkpoint | results/20260721_srr_batch7_upstream_candidate_quality/runtime/attempts/batch... | BOUND |
+| B0_3_SRR_ANCHOR | checkpoint | BOUND | 3 |
+| B7_BR2_SIP | checkpoint | BOUND | 21 |
+| CARE_ARC | checkpoint | BOUND | 8 |
+| DG_DR_DPR | checkpoint | BOUND | 120 |
+| DG_DR_DPR | checkpoint | BOUND_TRUNCATED_FOR_P... | 1 |
+| MMRD_BATCH9 | checkpoint | BOUND | 9 |
+| PRISM_V2 | checkpoint | BOUND | 13 |
+| SRR_CASCADE | checkpoint | BOUND | 17 |
 
 
 \newpage
@@ -447,17 +747,17 @@ checkpoint 清单只显示定位字段，不展开长路径列，避免右侧截
 
 本次 PDF 重渲染没有提交新的 Slurm job。已有 packet 的 controller context 和 V2 GPU manifest 记录了启动时可见的 Slurm 状态、G1-G4 GPU steps 与 G5-G10 聚合状态。
 
-| timestamp_utc | phase | decision | next_action |
+| time_utc | phase | decision | next_action |
 | --- | --- | --- | --- |
-| 2026-07-30T02:42:43.130967+00:00 | F0 | PARTIAL_BOOTSTRAP_CAPTURED | build inventories and reference metric fixtures |
-| 2026-07-30T02:49:59.562048+00:00 | F0 | PARTIAL_BOOTSTRAP_CAPTURED | build inventories and reference metric fixtures |
-| 2026-07-30T02:51:37.977381+00:00 | F0 | PARTIAL_BOOTSTRAP_CAPTURED | build inventories and reference metric fixtures |
-| 2026-07-30T02:53:12.215539+00:00 | F0 | PARTIAL_BOOTSTRAP_CAPTURED | build inventories and reference metric fixtures |
-| 2026-07-30T02:54:04.904928+00:00 | F0 | PARTIAL_BOOTSTRAP_CAPTURED | build inventories and reference metric fixtures |
-| 2026-07-30T02:55:51.309340+00:00 | F0 | PARTIAL_BOOTSTRAP_CAPTURED | build inventories and reference metric fixtures |
-| 2026-07-30T02:57:24.502262+00:00 | F0 | PARTIAL_BOOTSTRAP_CAPTURED | build inventories and reference metric fixtures |
-| 2026-07-30T04:03:17.729502+00:00 | F0B_DIAGNOSTIC_READINESS | NEEDS_REPAIR_D0_READY | run D0 identity replay before D1-D3 |
-| 2026-07-30T04:10:19.729806+00:00 | F7B_D0_IDENTITY_REPLAY | D0_PASS_D1_D3_READY | run decoder-reset diagnostics; keep feature/MoSAIC/Cine marked needs-binding |
+| 07-30 02:42:43 | F0 | PARTIAL_BOOTSTRAP | build inventories and... |
+| 07-30 02:49:59 | F0 | PARTIAL_BOOTSTRAP | build inventories and... |
+| 07-30 02:51:37 | F0 | PARTIAL_BOOTSTRAP | build inventories and... |
+| 07-30 02:53:12 | F0 | PARTIAL_BOOTSTRAP | build inventories and... |
+| 07-30 02:54:04 | F0 | PARTIAL_BOOTSTRAP | build inventories and... |
+| 07-30 02:55:51 | F0 | PARTIAL_BOOTSTRAP | build inventories and... |
+| 07-30 02:57:24 | F0 | PARTIAL_BOOTSTRAP | build inventories and... |
+| 07-30 04:03:17 | F0B_READY | NEEDS_D0 | run D0 identity repla... |
+| 07-30 04:10:19 | F7B_D0 | D0_PASS_D1_D3_READY | run decoder-reset dia... |
 
 
 \newpage
@@ -468,10 +768,10 @@ checkpoint 清单只显示定位字段，不展开长路径列，避免右侧截
 
 | file | status |
 | --- | --- |
-| standardized_casewise_metrics.csv | COMPLETED_FOR_BOUND_NNUNET_MOSAIC_OOF |
-| case_oracle_summary.csv | COMPLETED_FOR_BOUND_NNUNET_MOSAIC_OOF |
-| historical_result_comparability.csv | COMPLETED_FOR_AVAILABLE_HISTORICAL_METRICS |
-| prism_corrected_casewise_metrics.csv | COMPLETED_FOR_13_CHECKPOINT_REPLAY |
+| standardized_casewise_metrics.csv | DONE_OOF |
+| case_oracle_summary.csv | DONE_OOF |
+| historical_result_comparability.csv | DONE_HIST_METRIC |
+| prism_corrected_casewise_metrics.csv | DONE_PRISM13 |
 
 
 \newpage
@@ -480,14 +780,14 @@ checkpoint 清单只显示定位字段，不展开长路径列，避免右侧截
 
 | case_id | center | metric_name | model_id | dice | empty_pred |
 | --- | --- | --- | --- | --- | --- |
-| Case1002 | CenterA | scar | nnunet_oof | 0.6167400881057269 | 0 |
-| Case1002 | CenterA | scar | mosaic_clean_oof | 0.1154562383612663 | 0 |
-| Case1002 | CenterA | lesion_union | nnunet_oof | 0.6167400881057269 | 0 |
-| Case1002 | CenterA | lesion_union | mosaic_clean_oof | 0.17831021437578815 | 0 |
-| Case1007 | CenterA | scar | nnunet_oof | 0.5810928013876843 | 0 |
-| Case1007 | CenterA | scar | mosaic_clean_oof | 0.24926450922706606 | 0 |
-| Case1007 | CenterA | lesion_union | nnunet_oof | 0.5810928013876843 | 0 |
-| Case1007 | CenterA | lesion_union | mosaic_clean_oof | 0.0841116507445162 | 0 |
+| Case1002 | CenterA | scar | nnunet_oof | 0.6167 | 0 |
+| Case1002 | CenterA | scar | mosaic_oof | 0.1155 | 0 |
+| Case1002 | CenterA | lesion_union | nnunet_oof | 0.6167 | 0 |
+| Case1002 | CenterA | lesion_union | mosaic_oof | 0.1783 | 0 |
+| Case1007 | CenterA | scar | nnunet_oof | 0.5811 | 0 |
+| Case1007 | CenterA | scar | mosaic_oof | 0.2493 | 0 |
+| Case1007 | CenterA | lesion_union | nnunet_oof | 0.5811 | 0 |
+| Case1007 | CenterA | lesion_union | mosaic_oof | 0.0841 | 0 |
 
 
 \newpage
@@ -496,14 +796,14 @@ checkpoint 清单只显示定位字段，不展开长路径列，避免右侧截
 
 | case_id | center | metric_name | model_id | dice | empty_pred |
 | --- | --- | --- | --- | --- | --- |
-| Case1009 | CenterA | scar | nnunet_oof | 0.6048804535370964 | 0 |
-| Case1009 | CenterA | scar | mosaic_clean_oof | 0.08628378993355784 | 0 |
-| Case1009 | CenterA | lesion_union | nnunet_oof | 0.6048804535370964 | 0 |
-| Case1009 | CenterA | lesion_union | mosaic_clean_oof | 0.14033049315775883 | 0 |
-| Case1010 | CenterA | scar | nnunet_oof | 0.48279378027020137 | 0 |
-| Case1010 | CenterA | scar | mosaic_clean_oof | 0.2520026702269693 | 0 |
-| Case1010 | CenterA | lesion_union | nnunet_oof | 0.48279378027020137 | 0 |
-| Case1010 | CenterA | lesion_union | mosaic_clean_oof | 0.13030652815185328 | 0 |
+| Case1009 | CenterA | scar | nnunet_oof | 0.6049 | 0 |
+| Case1009 | CenterA | scar | mosaic_oof | 0.0863 | 0 |
+| Case1009 | CenterA | lesion_union | nnunet_oof | 0.6049 | 0 |
+| Case1009 | CenterA | lesion_union | mosaic_oof | 0.1403 | 0 |
+| Case1010 | CenterA | scar | nnunet_oof | 0.4828 | 0 |
+| Case1010 | CenterA | scar | mosaic_oof | 0.252 | 0 |
+| Case1010 | CenterA | lesion_union | nnunet_oof | 0.4828 | 0 |
+| Case1010 | CenterA | lesion_union | mosaic_oof | 0.1303 | 0 |
 
 
 \newpage
@@ -512,14 +812,14 @@ checkpoint 清单只显示定位字段，不展开长路径列，避免右侧截
 
 | case_id | center | metric_name | model_id | dice | empty_pred |
 | --- | --- | --- | --- | --- | --- |
-| Case1021 | CenterA | scar | nnunet_oof | 0.5699192044748291 | 0 |
-| Case1021 | CenterA | scar | mosaic_clean_oof | 0.3915743991358358 | 0 |
-| Case1021 | CenterA | lesion_union | nnunet_oof | 0.5699192044748291 | 0 |
-| Case1021 | CenterA | lesion_union | mosaic_clean_oof | 0.20414414414414414 | 0 |
-| Case1023 | CenterA | scar | nnunet_oof | 0.6466011466011466 | 0 |
-| Case1023 | CenterA | scar | mosaic_clean_oof | 0.06664127951256664 | 0 |
-| Case1023 | CenterA | lesion_union | nnunet_oof | 0.6466011466011466 | 0 |
-| Case1023 | CenterA | lesion_union | mosaic_clean_oof | 0.06243793445878848 | 0 |
+| Case1021 | CenterA | scar | nnunet_oof | 0.5699 | 0 |
+| Case1021 | CenterA | scar | mosaic_oof | 0.3916 | 0 |
+| Case1021 | CenterA | lesion_union | nnunet_oof | 0.5699 | 0 |
+| Case1021 | CenterA | lesion_union | mosaic_oof | 0.2041 | 0 |
+| Case1023 | CenterA | scar | nnunet_oof | 0.6466 | 0 |
+| Case1023 | CenterA | scar | mosaic_oof | 0.0666 | 0 |
+| Case1023 | CenterA | lesion_union | nnunet_oof | 0.6466 | 0 |
+| Case1023 | CenterA | lesion_union | mosaic_oof | 0.0624 | 0 |
 
 
 \newpage
@@ -528,14 +828,14 @@ checkpoint 清单只显示定位字段，不展开长路径列，避免右侧截
 
 | case_id | center | metric_name | model_id | dice | empty_pred |
 | --- | --- | --- | --- | --- | --- |
-| Case1029 | CenterA | scar | nnunet_oof | 0.16436865021770683 | 0 |
-| Case1029 | CenterA | scar | mosaic_clean_oof | 0.0012158054711246201 | 0 |
-| Case1029 | CenterA | lesion_union | nnunet_oof | 0.16436865021770683 | 0 |
-| Case1029 | CenterA | lesion_union | mosaic_clean_oof | 0.002017103355535478 | 0 |
-| Case1033 | CenterA | scar | nnunet_oof | 0.671361030077457 | 0 |
-| Case1033 | CenterA | scar | mosaic_clean_oof | 0.09626672927917351 | 0 |
-| Case1033 | CenterA | lesion_union | nnunet_oof | 0.671361030077457 | 0 |
-| Case1033 | CenterA | lesion_union | mosaic_clean_oof | 0.1056726338847345 | 0 |
+| Case1029 | CenterA | scar | nnunet_oof | 0.1644 | 0 |
+| Case1029 | CenterA | scar | mosaic_oof | 0.0012 | 0 |
+| Case1029 | CenterA | lesion_union | nnunet_oof | 0.1644 | 0 |
+| Case1029 | CenterA | lesion_union | mosaic_oof | 0.002 | 0 |
+| Case1033 | CenterA | scar | nnunet_oof | 0.6714 | 0 |
+| Case1033 | CenterA | scar | mosaic_oof | 0.0963 | 0 |
+| Case1033 | CenterA | lesion_union | nnunet_oof | 0.6714 | 0 |
+| Case1033 | CenterA | lesion_union | mosaic_oof | 0.1057 | 0 |
 
 
 \newpage
@@ -544,14 +844,14 @@ checkpoint 清单只显示定位字段，不展开长路径列，避免右侧截
 
 | case_id | center | metric_name | model_id | dice | empty_pred |
 | --- | --- | --- | --- | --- | --- |
-| Case1040 | CenterA | scar | nnunet_oof | 0.4280078895463511 | 0 |
-| Case1040 | CenterA | scar | mosaic_clean_oof | 0.11125265392781317 | 0 |
-| Case1040 | CenterA | lesion_union | nnunet_oof | 0.4280078895463511 | 0 |
-| Case1040 | CenterA | lesion_union | mosaic_clean_oof | 0.08434668373362078 | 0 |
-| Case1042 | CenterA | scar | nnunet_oof | 0.7573770491803279 | 0 |
-| Case1042 | CenterA | scar | mosaic_clean_oof | 0.06666666666666667 | 0 |
-| Case1042 | CenterA | lesion_union | nnunet_oof | 0.7573770491803279 | 0 |
-| Case1042 | CenterA | lesion_union | mosaic_clean_oof | 0.04156845939575744 | 0 |
+| Case1040 | CenterA | scar | nnunet_oof | 0.428 | 0 |
+| Case1040 | CenterA | scar | mosaic_oof | 0.1113 | 0 |
+| Case1040 | CenterA | lesion_union | nnunet_oof | 0.428 | 0 |
+| Case1040 | CenterA | lesion_union | mosaic_oof | 0.0843 | 0 |
+| Case1042 | CenterA | scar | nnunet_oof | 0.7574 | 0 |
+| Case1042 | CenterA | scar | mosaic_oof | 0.0667 | 0 |
+| Case1042 | CenterA | lesion_union | nnunet_oof | 0.7574 | 0 |
+| Case1042 | CenterA | lesion_union | mosaic_oof | 0.0416 | 0 |
 
 
 \newpage
@@ -560,14 +860,14 @@ checkpoint 清单只显示定位字段，不展开长路径列，避免右侧截
 
 | case_id | center | metric_name | model_id | dice | empty_pred |
 | --- | --- | --- | --- | --- | --- |
-| Case1045 | CenterA | scar | nnunet_oof | 0.09968847352024922 | 0 |
-| Case1045 | CenterA | scar | mosaic_clean_oof | 0.06570996978851963 | 0 |
-| Case1045 | CenterA | lesion_union | nnunet_oof | 0.09968847352024922 | 0 |
-| Case1045 | CenterA | lesion_union | mosaic_clean_oof | 0.09969824038876043 | 0 |
-| Case1047 | CenterA | scar | nnunet_oof | 0.6283120251991847 | 0 |
-| Case1047 | CenterA | scar | mosaic_clean_oof | 0.4432244614315497 | 0 |
-| Case1047 | CenterA | lesion_union | nnunet_oof | 0.6283120251991847 | 0 |
-| Case1047 | CenterA | lesion_union | mosaic_clean_oof | 0.23638550872160274 | 0 |
+| Case1045 | CenterA | scar | nnunet_oof | 0.0997 | 0 |
+| Case1045 | CenterA | scar | mosaic_oof | 0.0657 | 0 |
+| Case1045 | CenterA | lesion_union | nnunet_oof | 0.0997 | 0 |
+| Case1045 | CenterA | lesion_union | mosaic_oof | 0.0997 | 0 |
+| Case1047 | CenterA | scar | nnunet_oof | 0.6283 | 0 |
+| Case1047 | CenterA | scar | mosaic_oof | 0.4432 | 0 |
+| Case1047 | CenterA | lesion_union | nnunet_oof | 0.6283 | 0 |
+| Case1047 | CenterA | lesion_union | mosaic_oof | 0.2364 | 0 |
 
 
 \newpage
@@ -576,14 +876,14 @@ checkpoint 清单只显示定位字段，不展开长路径列，避免右侧截
 
 | case_id | center | metric_name | model_id | dice | empty_pred |
 | --- | --- | --- | --- | --- | --- |
-| Case1053 | CenterA | scar | nnunet_oof | 0.5196241017136539 | 0 |
-| Case1053 | CenterA | scar | mosaic_clean_oof | 0.11735941320293398 | 0 |
-| Case1053 | CenterA | lesion_union | nnunet_oof | 0.5196241017136539 | 0 |
-| Case1053 | CenterA | lesion_union | mosaic_clean_oof | 0.053154058808745915 | 0 |
-| Case1062 | CenterA | scar | nnunet_oof | 0.5070823546159869 | 0 |
-| Case1062 | CenterA | scar | mosaic_clean_oof | 0.18349627401381008 | 0 |
-| Case1062 | CenterA | lesion_union | nnunet_oof | 0.5070823546159869 | 0 |
-| Case1062 | CenterA | lesion_union | mosaic_clean_oof | 0.0973629374146727 | 0 |
+| Case1053 | CenterA | scar | nnunet_oof | 0.5196 | 0 |
+| Case1053 | CenterA | scar | mosaic_oof | 0.1174 | 0 |
+| Case1053 | CenterA | lesion_union | nnunet_oof | 0.5196 | 0 |
+| Case1053 | CenterA | lesion_union | mosaic_oof | 0.0532 | 0 |
+| Case1062 | CenterA | scar | nnunet_oof | 0.5071 | 0 |
+| Case1062 | CenterA | scar | mosaic_oof | 0.1835 | 0 |
+| Case1062 | CenterA | lesion_union | nnunet_oof | 0.5071 | 0 |
+| Case1062 | CenterA | lesion_union | mosaic_oof | 0.0974 | 0 |
 
 
 \newpage
@@ -592,14 +892,14 @@ checkpoint 清单只显示定位字段，不展开长路径列，避免右侧截
 
 | case_id | center | metric_name | model_id | dice | empty_pred |
 | --- | --- | --- | --- | --- | --- |
-| Case1070 | CenterA | scar | nnunet_oof | 0.5004500450045004 | 0 |
-| Case1070 | CenterA | scar | mosaic_clean_oof | 0.402416918429003 | 0 |
-| Case1070 | CenterA | lesion_union | nnunet_oof | 0.5004500450045004 | 0 |
-| Case1070 | CenterA | lesion_union | mosaic_clean_oof | 0.09348922308001249 | 0 |
-| Case1073 | CenterA | scar | nnunet_oof | 0.4282765737874097 | 0 |
-| Case1073 | CenterA | scar | mosaic_clean_oof | 0.11658653846153846 | 0 |
-| Case1073 | CenterA | lesion_union | nnunet_oof | 0.4282765737874097 | 0 |
-| Case1073 | CenterA | lesion_union | mosaic_clean_oof | 0.12659045404637345 | 0 |
+| Case1070 | CenterA | scar | nnunet_oof | 0.5005 | 0 |
+| Case1070 | CenterA | scar | mosaic_oof | 0.4024 | 0 |
+| Case1070 | CenterA | lesion_union | nnunet_oof | 0.5005 | 0 |
+| Case1070 | CenterA | lesion_union | mosaic_oof | 0.0935 | 0 |
+| Case1073 | CenterA | scar | nnunet_oof | 0.4283 | 0 |
+| Case1073 | CenterA | scar | mosaic_oof | 0.1166 | 0 |
+| Case1073 | CenterA | lesion_union | nnunet_oof | 0.4283 | 0 |
+| Case1073 | CenterA | lesion_union | mosaic_oof | 0.1266 | 0 |
 
 
 \newpage
@@ -608,14 +908,14 @@ checkpoint 清单只显示定位字段，不展开长路径列，避免右侧截
 
 | case_id | center | metric_name | model_id | dice | empty_pred |
 | --- | --- | --- | --- | --- | --- |
-| Case1080 | CenterA | scar | nnunet_oof | 0.6369426751592356 | 0 |
-| Case1080 | CenterA | scar | mosaic_clean_oof | 0.1005765534913517 | 0 |
-| Case1080 | CenterA | lesion_union | nnunet_oof | 0.6369426751592356 | 0 |
-| Case1080 | CenterA | lesion_union | mosaic_clean_oof | 0.07381254482264026 | 0 |
-| Case2002 | CenterB | scar | nnunet_oof | 0.5602700096432015 | 0 |
-| Case2002 | CenterB | scar | mosaic_clean_oof | 0.7485981308411215 | 0 |
-| Case2002 | CenterB | pure_edema | nnunet_oof | 0.5376005596362364 | 0 |
-| Case2002 | CenterB | pure_edema | mosaic_clean_oof | 0.44604893702366627 | 0 |
+| Case1080 | CenterA | scar | nnunet_oof | 0.6369 | 0 |
+| Case1080 | CenterA | scar | mosaic_oof | 0.1006 | 0 |
+| Case1080 | CenterA | lesion_union | nnunet_oof | 0.6369 | 0 |
+| Case1080 | CenterA | lesion_union | mosaic_oof | 0.0738 | 0 |
+| Case2002 | CenterB | scar | nnunet_oof | 0.5603 | 0 |
+| Case2002 | CenterB | scar | mosaic_oof | 0.7486 | 0 |
+| Case2002 | CenterB | pure_edema | nnunet_oof | 0.5376 | 0 |
+| Case2002 | CenterB | pure_edema | mosaic_oof | 0.446 | 0 |
 
 
 \newpage
@@ -624,14 +924,14 @@ checkpoint 清单只显示定位字段，不展开长路径列，避免右侧截
 
 | case_id | center | metric_name | model_id | dice | empty_pred |
 | --- | --- | --- | --- | --- | --- |
-| Case2002 | CenterB | lesion_union | nnunet_oof | 0.6753080082135524 | 0 |
-| Case2002 | CenterB | lesion_union | mosaic_clean_oof | 0.5788543507641127 | 0 |
-| Case2007 | CenterB | scar | nnunet_oof | 0.4898728214790391 | 0 |
-| Case2007 | CenterB | scar | mosaic_clean_oof | 0.5997541990987301 | 0 |
-| Case2007 | CenterB | pure_edema | nnunet_oof | 0.5701357466063348 | 0 |
-| Case2007 | CenterB | pure_edema | mosaic_clean_oof | 0.5136444784493751 | 0 |
-| Case2007 | CenterB | lesion_union | nnunet_oof | 0.7220942408376964 | 0 |
-| Case2007 | CenterB | lesion_union | mosaic_clean_oof | 0.7312165985539139 | 0 |
+| Case2002 | CenterB | lesion_union | nnunet_oof | 0.6753 | 0 |
+| Case2002 | CenterB | lesion_union | mosaic_oof | 0.5789 | 0 |
+| Case2007 | CenterB | scar | nnunet_oof | 0.4899 | 0 |
+| Case2007 | CenterB | scar | mosaic_oof | 0.5998 | 0 |
+| Case2007 | CenterB | pure_edema | nnunet_oof | 0.5701 | 0 |
+| Case2007 | CenterB | pure_edema | mosaic_oof | 0.5136 | 0 |
+| Case2007 | CenterB | lesion_union | nnunet_oof | 0.7221 | 0 |
+| Case2007 | CenterB | lesion_union | mosaic_oof | 0.7312 | 0 |
 
 
 \newpage
@@ -640,14 +940,14 @@ checkpoint 清单只显示定位字段，不展开长路径列，避免右侧截
 
 | case_id | center | metric_name | model_id | dice | empty_pred |
 | --- | --- | --- | --- | --- | --- |
-| Case2008 | CenterB | scar | nnunet_oof | 0.7531584062196307 | 0 |
-| Case2008 | CenterB | scar | mosaic_clean_oof | 0.7747178329571106 | 0 |
-| Case2008 | CenterB | pure_edema | nnunet_oof | 0.3485546711353163 | 0 |
-| Case2008 | CenterB | pure_edema | mosaic_clean_oof | 0.2998538316976404 | 0 |
-| Case2008 | CenterB | lesion_union | nnunet_oof | 0.5702576112412178 | 0 |
-| Case2008 | CenterB | lesion_union | mosaic_clean_oof | 0.5596801827527127 | 0 |
-| Case2017 | CenterB | scar | nnunet_oof | 0.5470588235294118 | 0 |
-| Case2017 | CenterB | scar | mosaic_clean_oof | 0.6924019607843137 | 0 |
+| Case2008 | CenterB | scar | nnunet_oof | 0.7532 | 0 |
+| Case2008 | CenterB | scar | mosaic_oof | 0.7747 | 0 |
+| Case2008 | CenterB | pure_edema | nnunet_oof | 0.3486 | 0 |
+| Case2008 | CenterB | pure_edema | mosaic_oof | 0.2999 | 0 |
+| Case2008 | CenterB | lesion_union | nnunet_oof | 0.5703 | 0 |
+| Case2008 | CenterB | lesion_union | mosaic_oof | 0.5597 | 0 |
+| Case2017 | CenterB | scar | nnunet_oof | 0.5471 | 0 |
+| Case2017 | CenterB | scar | mosaic_oof | 0.6924 | 0 |
 
 
 \newpage
@@ -656,893 +956,762 @@ checkpoint 清单只显示定位字段，不展开长路径列，避免右侧截
 
 | case_id | center | metric_name | model_id | dice | empty_pred |
 | --- | --- | --- | --- | --- | --- |
-| Case2017 | CenterB | pure_edema | nnunet_oof | 0.6796246648793566 | 0 |
-| Case2017 | CenterB | pure_edema | mosaic_clean_oof | 0.3809687984830202 | 0 |
-| Case2017 | CenterB | lesion_union | nnunet_oof | 0.8161448741559238 | 0 |
-| Case2017 | CenterB | lesion_union | mosaic_clean_oof | 0.5424458495896677 | 0 |
-| Case2020 | CenterB | scar | nnunet_oof | 0.4196185286103542 | 0 |
-| Case2020 | CenterB | scar | mosaic_clean_oof | 0.0 | 0 |
-| Case2020 | CenterB | pure_edema | nnunet_oof | 0.5630676084762866 | 0 |
-| Case2020 | CenterB | pure_edema | mosaic_clean_oof | 0.0 | 0 |
+| Case2017 | CenterB | pure_edema | nnunet_oof | 0.6796 | 0 |
+| Case2017 | CenterB | pure_edema | mosaic_oof | 0.381 | 0 |
+| Case2017 | CenterB | lesion_union | nnunet_oof | 0.8161 | 0 |
+| Case2017 | CenterB | lesion_union | mosaic_oof | 0.5424 | 0 |
+| Case2020 | CenterB | scar | nnunet_oof | 0.4196 | 0 |
+| Case2020 | CenterB | scar | mosaic_oof | 0 | 0 |
+| Case2020 | CenterB | pure_edema | nnunet_oof | 0.5631 | 0 |
+| Case2020 | CenterB | pure_edema | mosaic_oof | 0 | 0 |
 
 
 \newpage
 
 # 附录 E2：case oracle 和 voxel oracle 分块
 
-| case_id | center | metric_name | best_case_model | case_oracle_dice | voxel_tp_oracle_dice |
+| case_id | center | metric_name | best_model | case_oracle | voxel_oracle |
 | --- | --- | --- | --- | --- | --- |
-| Case1002 | CenterA | scar | nnunet_oof | 0.6167400881057269 | 0.7338041142155358 |
-| Case1002 | CenterA | lesion_union | nnunet_oof | 0.6167400881057269 | 0.8946663093004557 |
-| Case1007 | CenterA | scar | nnunet_oof | 0.5810928013876843 | 0.911968777103209 |
-| Case1007 | CenterA | lesion_union | nnunet_oof | 0.5810928013876843 | 0.9486695998323905 |
-| Case1009 | CenterA | scar | nnunet_oof | 0.6048804535370964 | 0.7778275810548334 |
-| Case1009 | CenterA | lesion_union | nnunet_oof | 0.6048804535370964 | 0.855623950755456 |
-| Case1010 | CenterA | scar | nnunet_oof | 0.48279378027020137 | 0.7890460427324707 |
-| Case1010 | CenterA | lesion_union | nnunet_oof | 0.48279378027020137 | 0.9465968586387434 |
+| Case1002 | CenterA | scar | nnunet_oof | 0.6167 | 0.7338 |
+| Case1002 | CenterA | lesion_union | nnunet_oof | 0.6167 | 0.8947 |
+| Case1007 | CenterA | scar | nnunet_oof | 0.5811 | 0.912 |
+| Case1007 | CenterA | lesion_union | nnunet_oof | 0.5811 | 0.9487 |
+| Case1009 | CenterA | scar | nnunet_oof | 0.6049 | 0.7778 |
+| Case1009 | CenterA | lesion_union | nnunet_oof | 0.6049 | 0.8556 |
+| Case1010 | CenterA | scar | nnunet_oof | 0.4828 | 0.789 |
+| Case1010 | CenterA | lesion_union | nnunet_oof | 0.4828 | 0.9466 |
 
 
 \newpage
 
 # 附录 E2：case oracle 和 voxel oracle 分块（续 2）
 
-| case_id | center | metric_name | best_case_model | case_oracle_dice | voxel_tp_oracle_dice |
+| case_id | center | metric_name | best_model | case_oracle | voxel_oracle |
 | --- | --- | --- | --- | --- | --- |
-| Case1021 | CenterA | scar | nnunet_oof | 0.5699192044748291 | 0.8075624577987845 |
-| Case1021 | CenterA | lesion_union | nnunet_oof | 0.5699192044748291 | 0.8910518053375196 |
-| Case1023 | CenterA | scar | nnunet_oof | 0.6466011466011466 | 0.809106830122592 |
-| Case1023 | CenterA | lesion_union | nnunet_oof | 0.6466011466011466 | 0.9032258064516129 |
-| Case1029 | CenterA | scar | nnunet_oof | 0.16436865021770683 | 0.8728323699421965 |
-| Case1029 | CenterA | lesion_union | nnunet_oof | 0.16436865021770683 | 0.9024390243902439 |
-| Case1033 | CenterA | scar | nnunet_oof | 0.671361030077457 | 0.9045765669037713 |
-| Case1033 | CenterA | lesion_union | nnunet_oof | 0.671361030077457 | 0.9621057985757884 |
+| Case1021 | CenterA | scar | nnunet_oof | 0.5699 | 0.8076 |
+| Case1021 | CenterA | lesion_union | nnunet_oof | 0.5699 | 0.8911 |
+| Case1023 | CenterA | scar | nnunet_oof | 0.6466 | 0.8091 |
+| Case1023 | CenterA | lesion_union | nnunet_oof | 0.6466 | 0.9032 |
+| Case1029 | CenterA | scar | nnunet_oof | 0.1644 | 0.8728 |
+| Case1029 | CenterA | lesion_union | nnunet_oof | 0.1644 | 0.9024 |
+| Case1033 | CenterA | scar | nnunet_oof | 0.6714 | 0.9046 |
+| Case1033 | CenterA | lesion_union | nnunet_oof | 0.6714 | 0.9621 |
 
 
 \newpage
 
 # 附录 E2：case oracle 和 voxel oracle 分块（续 3）
 
-| case_id | center | metric_name | best_case_model | case_oracle_dice | voxel_tp_oracle_dice |
+| case_id | center | metric_name | best_model | case_oracle | voxel_oracle |
 | --- | --- | --- | --- | --- | --- |
-| Case1040 | CenterA | scar | nnunet_oof | 0.4280078895463511 | 0.749494365790234 |
-| Case1040 | CenterA | lesion_union | nnunet_oof | 0.4280078895463511 | 0.9095490047871 |
-| Case1042 | CenterA | scar | nnunet_oof | 0.7573770491803279 | 0.8738346799254195 |
-| Case1042 | CenterA | lesion_union | nnunet_oof | 0.7573770491803279 | 0.8984802431610942 |
-| Case1045 | CenterA | scar | nnunet_oof | 0.09968847352024922 | 0.21903052064631956 |
-| Case1045 | CenterA | lesion_union | mosaic_clean_oof | 0.09969824038876043 | 0.9229098805646037 |
-| Case1047 | CenterA | scar | nnunet_oof | 0.6283120251991847 | 0.7999641994092902 |
-| Case1047 | CenterA | lesion_union | nnunet_oof | 0.6283120251991847 | 0.9152981150392363 |
+| Case1040 | CenterA | scar | nnunet_oof | 0.428 | 0.7495 |
+| Case1040 | CenterA | lesion_union | nnunet_oof | 0.428 | 0.9095 |
+| Case1042 | CenterA | scar | nnunet_oof | 0.7574 | 0.8738 |
+| Case1042 | CenterA | lesion_union | nnunet_oof | 0.7574 | 0.8985 |
+| Case1045 | CenterA | scar | nnunet_oof | 0.0997 | 0.219 |
+| Case1045 | CenterA | lesion_union | mosaic_oof | 0.0997 | 0.9229 |
+| Case1047 | CenterA | scar | nnunet_oof | 0.6283 | 0.8 |
+| Case1047 | CenterA | lesion_union | nnunet_oof | 0.6283 | 0.9153 |
 
 
 \newpage
 
 # 附录 E2：case oracle 和 voxel oracle 分块（续 4）
 
-| case_id | center | metric_name | best_case_model | case_oracle_dice | voxel_tp_oracle_dice |
+| case_id | center | metric_name | best_model | case_oracle | voxel_oracle |
 | --- | --- | --- | --- | --- | --- |
-| Case1053 | CenterA | scar | nnunet_oof | 0.5196241017136539 | 0.6927860696517413 |
-| Case1053 | CenterA | lesion_union | nnunet_oof | 0.5196241017136539 | 0.7743440233236152 |
-| Case1062 | CenterA | scar | nnunet_oof | 0.5070823546159869 | 0.8913910391742904 |
-| Case1062 | CenterA | lesion_union | nnunet_oof | 0.5070823546159869 | 0.9570782301666115 |
-| Case1070 | CenterA | scar | nnunet_oof | 0.5004500450045004 | 0.9154228855721394 |
-| Case1070 | CenterA | lesion_union | nnunet_oof | 0.5004500450045004 | 0.9742225859247136 |
-| Case1073 | CenterA | scar | nnunet_oof | 0.4282765737874097 | 0.605580215599239 |
-| Case1073 | CenterA | lesion_union | nnunet_oof | 0.4282765737874097 | 0.8110300081103001 |
+| Case1053 | CenterA | scar | nnunet_oof | 0.5196 | 0.6928 |
+| Case1053 | CenterA | lesion_union | nnunet_oof | 0.5196 | 0.7743 |
+| Case1062 | CenterA | scar | nnunet_oof | 0.5071 | 0.8914 |
+| Case1062 | CenterA | lesion_union | nnunet_oof | 0.5071 | 0.9571 |
+| Case1070 | CenterA | scar | nnunet_oof | 0.5005 | 0.9154 |
+| Case1070 | CenterA | lesion_union | nnunet_oof | 0.5005 | 0.9742 |
+| Case1073 | CenterA | scar | nnunet_oof | 0.4283 | 0.6056 |
+| Case1073 | CenterA | lesion_union | nnunet_oof | 0.4283 | 0.811 |
 
 
 \newpage
 
 # 附录 E2：case oracle 和 voxel oracle 分块（续 5）
 
-| case_id | center | metric_name | best_case_model | case_oracle_dice | voxel_tp_oracle_dice |
+| case_id | center | metric_name | best_model | case_oracle | voxel_oracle |
 | --- | --- | --- | --- | --- | --- |
-| Case1080 | CenterA | scar | nnunet_oof | 0.6369426751592356 | 0.8048359240069085 |
-| Case1080 | CenterA | lesion_union | nnunet_oof | 0.6369426751592356 | 0.8945686900958466 |
-| Case2002 | CenterB | scar | mosaic_clean_oof | 0.7485981308411215 | 0.9008810572687225 |
-| Case2002 | CenterB | pure_edema | nnunet_oof | 0.5376005596362364 | 0.8198004304441401 |
-| Case2002 | CenterB | lesion_union | nnunet_oof | 0.6753080082135524 | 0.8740532959326788 |
-| Case2007 | CenterB | scar | mosaic_clean_oof | 0.5997541990987301 | 0.7985246657445828 |
-| Case2007 | CenterB | pure_edema | nnunet_oof | 0.5701357466063348 | 0.9036370453693289 |
-| Case2007 | CenterB | lesion_union | mosaic_clean_oof | 0.7312165985539139 | 0.9472682276794213 |
+| Case1080 | CenterA | scar | nnunet_oof | 0.6369 | 0.8048 |
+| Case1080 | CenterA | lesion_union | nnunet_oof | 0.6369 | 0.8946 |
+| Case2002 | CenterB | scar | mosaic_oof | 0.7486 | 0.9009 |
+| Case2002 | CenterB | pure_edema | nnunet_oof | 0.5376 | 0.8198 |
+| Case2002 | CenterB | lesion_union | nnunet_oof | 0.6753 | 0.8741 |
+| Case2007 | CenterB | scar | mosaic_oof | 0.5998 | 0.7985 |
+| Case2007 | CenterB | pure_edema | nnunet_oof | 0.5701 | 0.9036 |
+| Case2007 | CenterB | lesion_union | mosaic_oof | 0.7312 | 0.9473 |
 
 
 \newpage
 
 # 附录 E2：case oracle 和 voxel oracle 分块（续 6）
 
-| case_id | center | metric_name | best_case_model | case_oracle_dice | voxel_tp_oracle_dice |
+| case_id | center | metric_name | best_model | case_oracle | voxel_oracle |
 | --- | --- | --- | --- | --- | --- |
-| Case2008 | CenterB | scar | mosaic_clean_oof | 0.7747178329571106 | 0.9579487179487179 |
-| Case2008 | CenterB | pure_edema | nnunet_oof | 0.3485546711353163 | 0.4638669793221062 |
-| Case2008 | CenterB | lesion_union | nnunet_oof | 0.5702576112412178 | 0.6719378953421506 |
-| Case2017 | CenterB | scar | mosaic_clean_oof | 0.6924019607843137 | 0.8994565217391305 |
-| Case2017 | CenterB | pure_edema | nnunet_oof | 0.6796246648793566 | 0.9097633136094675 |
-| Case2017 | CenterB | lesion_union | nnunet_oof | 0.8161448741559238 | 0.9754112260471426 |
-| Case2020 | CenterB | scar | nnunet_oof | 0.4196185286103542 | 0.4307692307692308 |
-| Case2020 | CenterB | pure_edema | nnunet_oof | 0.5630676084762866 | 0.7018867924528301 |
+| Case2008 | CenterB | scar | mosaic_oof | 0.7747 | 0.9579 |
+| Case2008 | CenterB | pure_edema | nnunet_oof | 0.3486 | 0.4639 |
+| Case2008 | CenterB | lesion_union | nnunet_oof | 0.5703 | 0.6719 |
+| Case2017 | CenterB | scar | mosaic_oof | 0.6924 | 0.8995 |
+| Case2017 | CenterB | pure_edema | nnunet_oof | 0.6796 | 0.9098 |
+| Case2017 | CenterB | lesion_union | nnunet_oof | 0.8161 | 0.9754 |
+| Case2020 | CenterB | scar | nnunet_oof | 0.4196 | 0.4308 |
+| Case2020 | CenterB | pure_edema | nnunet_oof | 0.5631 | 0.7019 |
 
 
 \newpage
 
 # 附录 E2：case oracle 和 voxel oracle 分块（续 7）
 
-| case_id | center | metric_name | best_case_model | case_oracle_dice | voxel_tp_oracle_dice |
+| case_id | center | metric_name | best_model | case_oracle | voxel_oracle |
 | --- | --- | --- | --- | --- | --- |
-| Case2020 | CenterB | lesion_union | nnunet_oof | 0.7695139911634757 | 0.7922668688400303 |
-| Case2031 | CenterB | scar | nnunet_oof | 0.8013937282229965 | 0.8972559029993619 |
-| Case2031 | CenterB | pure_edema | nnunet_oof | 0.29880478087649404 | 0.7984344422700587 |
-| Case2031 | CenterB | lesion_union | nnunet_oof | 0.8012589928057554 | 0.9197416974169742 |
-| Case2033 | CenterB | scar | mosaic_clean_oof | 0.7440613026819923 | 0.9776951672862454 |
-| Case2033 | CenterB | pure_edema | nnunet_oof | 0.523033309709426 | 0.9168008588298443 |
-| Case2033 | CenterB | lesion_union | nnunet_oof | 0.7858133544680008 | 0.9875180028804609 |
-| Case3004 | CenterC | scar | nnunet_oof | 0.6247040252565115 | 0.8873475245156661 |
+| Case2020 | CenterB | lesion_union | nnunet_oof | 0.7695 | 0.7923 |
+| Case2031 | CenterB | scar | nnunet_oof | 0.8014 | 0.8973 |
+| Case2031 | CenterB | pure_edema | nnunet_oof | 0.2988 | 0.7984 |
+| Case2031 | CenterB | lesion_union | nnunet_oof | 0.8013 | 0.9197 |
+| Case2033 | CenterB | scar | mosaic_oof | 0.7441 | 0.9777 |
+| Case2033 | CenterB | pure_edema | nnunet_oof | 0.523 | 0.9168 |
+| Case2033 | CenterB | lesion_union | nnunet_oof | 0.7858 | 0.9875 |
+| Case3004 | CenterC | scar | nnunet_oof | 0.6247 | 0.8873 |
 
 
 \newpage
 
 # 附录 E2：case oracle 和 voxel oracle 分块（续 8）
 
-| case_id | center | metric_name | best_case_model | case_oracle_dice | voxel_tp_oracle_dice |
+| case_id | center | metric_name | best_model | case_oracle | voxel_oracle |
 | --- | --- | --- | --- | --- | --- |
-| Case3004 | CenterC | pure_edema | nnunet_oof | 0.4530451866404715 | 0.8063480741797432 |
-| Case3004 | CenterC | lesion_union | nnunet_oof | 0.7493601102579248 | 0.9805929919137466 |
-| Case3011 | CenterC | scar | mosaic_clean_oof | 0.7138450993831391 | 0.8494663231505337 |
-| Case3011 | CenterC | pure_edema | nnunet_oof | 0.26666666666666666 | 0.5664739884393064 |
-| Case3011 | CenterC | lesion_union | mosaic_clean_oof | 0.754122752634842 | 0.8860688885789988 |
-| Case3012 | CenterC | scar | nnunet_oof | 0.8267066766691673 | 0.8777379530067703 |
-| Case3012 | CenterC | pure_edema | nnunet_oof | 0.45068083693125205 | 0.5211420310805926 |
-| Case3012 | CenterC | lesion_union | nnunet_oof | 0.703188303681522 | 0.7577528089887641 |
+| Case3004 | CenterC | pure_edema | nnunet_oof | 0.453 | 0.8063 |
+| Case3004 | CenterC | lesion_union | nnunet_oof | 0.7494 | 0.9806 |
+| Case3011 | CenterC | scar | mosaic_oof | 0.7138 | 0.8495 |
+| Case3011 | CenterC | pure_edema | nnunet_oof | 0.2667 | 0.5665 |
+| Case3011 | CenterC | lesion_union | mosaic_oof | 0.7541 | 0.8861 |
+| Case3012 | CenterC | scar | nnunet_oof | 0.8267 | 0.8777 |
+| Case3012 | CenterC | pure_edema | nnunet_oof | 0.4507 | 0.5211 |
+| Case3012 | CenterC | lesion_union | nnunet_oof | 0.7032 | 0.7578 |
 
 
 \newpage
 
 # 附录 E2：case oracle 和 voxel oracle 分块（续 9）
 
-| case_id | center | metric_name | best_case_model | case_oracle_dice | voxel_tp_oracle_dice |
+| case_id | center | metric_name | best_model | case_oracle | voxel_oracle |
 | --- | --- | --- | --- | --- | --- |
-| Case3023 | CenterC | scar | mosaic_clean_oof | 0.6629643814630409 | 0.9761904761904762 |
-| Case3023 | CenterC | pure_edema | mosaic_clean_oof | 0.3463302752293578 | 0.5878003696857671 |
-| Case3023 | CenterC | lesion_union | nnunet_oof | 0.7185840707964601 | 0.9637166442695335 |
-| Case3026 | CenterC | scar | nnunet_oof | 0.8081740276862228 | 0.9205207687538748 |
-| Case3026 | CenterC | pure_edema | nnunet_oof | 0.21919504643962848 | 0.4873810508895325 |
-| Case3026 | CenterC | lesion_union | mosaic_clean_oof | 0.7943426179823928 | 0.9611764705882353 |
-| Case3034 | CenterC | scar | nnunet_oof | 0.8293831423638361 | 0.9992917847025495 |
-| Case3034 | CenterC | pure_edema | nnunet_oof | 0.6546035125066525 | 0.8521543227259927 |
+| Case3023 | CenterC | scar | mosaic_oof | 0.663 | 0.9762 |
+| Case3023 | CenterC | pure_edema | mosaic_oof | 0.3463 | 0.5878 |
+| Case3023 | CenterC | lesion_union | nnunet_oof | 0.7186 | 0.9637 |
+| Case3026 | CenterC | scar | nnunet_oof | 0.8082 | 0.9205 |
+| Case3026 | CenterC | pure_edema | nnunet_oof | 0.2192 | 0.4874 |
+| Case3026 | CenterC | lesion_union | mosaic_oof | 0.7943 | 0.9612 |
+| Case3034 | CenterC | scar | nnunet_oof | 0.8294 | 0.9993 |
+| Case3034 | CenterC | pure_edema | nnunet_oof | 0.6546 | 0.8522 |
 
 
 \newpage
 
 # 附录 E2：case oracle 和 voxel oracle 分块（续 10）
 
-| case_id | center | metric_name | best_case_model | case_oracle_dice | voxel_tp_oracle_dice |
+| case_id | center | metric_name | best_model | case_oracle | voxel_oracle |
 | --- | --- | --- | --- | --- | --- |
-| Case3034 | CenterC | lesion_union | nnunet_oof | 0.8200217198143943 | 0.9770767613038907 |
-| Case3038 | CenterC | scar | nnunet_oof | 0.75830144426614 | 0.8583495340886237 |
-| Case3038 | CenterC | pure_edema | nnunet_oof | 0.16778761061946904 | 0.5391705069124424 |
-| Case3038 | CenterC | lesion_union | nnunet_oof | 0.7429068277503204 | 0.9254175976167678 |
-| Case3040 | CenterC | scar | mosaic_clean_oof | 0.896551724137931 | 0.9404626469472885 |
-| Case3040 | CenterC | pure_edema | nnunet_oof | 0.24913093858632676 | 0.9072512647554806 |
-| Case3040 | CenterC | lesion_union | nnunet_oof | 0.8685294117647059 | 0.9888114155991568 |
-| Case3044 | CenterC | scar | nnunet_oof | 0.7844537386514332 | 0.8406698084829038 |
+| Case3034 | CenterC | lesion_union | nnunet_oof | 0.82 | 0.9771 |
+| Case3038 | CenterC | scar | nnunet_oof | 0.7583 | 0.8583 |
+| Case3038 | CenterC | pure_edema | nnunet_oof | 0.1678 | 0.5392 |
+| Case3038 | CenterC | lesion_union | nnunet_oof | 0.7429 | 0.9254 |
+| Case3040 | CenterC | scar | mosaic_oof | 0.8966 | 0.9405 |
+| Case3040 | CenterC | pure_edema | nnunet_oof | 0.2491 | 0.9073 |
+| Case3040 | CenterC | lesion_union | nnunet_oof | 0.8685 | 0.9888 |
+| Case3044 | CenterC | scar | nnunet_oof | 0.7845 | 0.8407 |
 
 
 \newpage
 
 # 附录 E2：case oracle 和 voxel oracle 分块（续 11）
 
-| case_id | center | metric_name | best_case_model | case_oracle_dice | voxel_tp_oracle_dice |
+| case_id | center | metric_name | best_model | case_oracle | voxel_oracle |
 | --- | --- | --- | --- | --- | --- |
-| Case3044 | CenterC | pure_edema | nnunet_oof | 0.16612529002320187 | 0.849015317286652 |
-| Case3044 | CenterC | lesion_union | mosaic_clean_oof | 0.8614214019750688 | 0.9557705597788528 |
-| Case5005 | CenterE | scar | nnunet_oof | 0.5725747629467542 | 0.6074055604039397 |
-| Case5005 | CenterE | lesion_union | nnunet_oof | 0.5725747629467542 | 0.6373063315847262 |
-| Case6001 | CenterF | scar | nnunet_oof | 0.44598337950138506 | 0.7146321746160065 |
-| Case6001 | CenterF | lesion_union | nnunet_oof | 0.44598337950138506 | 0.7445716541650217 |
-| Case6010 | CenterF | scar | nnunet_oof | 0.49259110933119743 | 0.5942290351668169 |
-| Case6010 | CenterF | lesion_union | nnunet_oof | 0.49259110933119743 | 0.8540977581771407 |
+| Case3044 | CenterC | pure_edema | nnunet_oof | 0.1661 | 0.849 |
+| Case3044 | CenterC | lesion_union | mosaic_oof | 0.8614 | 0.9558 |
+| Case5005 | CenterE | scar | nnunet_oof | 0.5726 | 0.6074 |
+| Case5005 | CenterE | lesion_union | nnunet_oof | 0.5726 | 0.6373 |
+| Case6001 | CenterF | scar | nnunet_oof | 0.446 | 0.7146 |
+| Case6001 | CenterF | lesion_union | nnunet_oof | 0.446 | 0.7446 |
+| Case6010 | CenterF | scar | nnunet_oof | 0.4926 | 0.5942 |
+| Case6010 | CenterF | lesion_union | nnunet_oof | 0.4926 | 0.8541 |
 
 
 \newpage
 
 # 附录 E2：case oracle 和 voxel oracle 分块（续 12）
 
-| case_id | center | metric_name | best_case_model | case_oracle_dice | voxel_tp_oracle_dice |
+| case_id | center | metric_name | best_model | case_oracle | voxel_oracle |
 | --- | --- | --- | --- | --- | --- |
-| Case7005 | CenterG | scar | nnunet_oof | 0.0 | 1.0 |
-| Case7005 | CenterG | lesion_union | nnunet_oof | 0.0 | 1.0 |
-| Case8003 | CenterH | scar | mosaic_clean_oof | 0.7372156126069714 | 0.8894625674724244 |
-| Case8003 | CenterH | lesion_union | nnunet_oof | 0.7172976649285876 | 0.9875909285408644 |
-| Case8011 | CenterH | scar | mosaic_clean_oof | 0.2871452420701169 | 0.6880907372400756 |
-| Case8011 | CenterH | lesion_union | nnunet_oof | 0.22406639004149378 | 0.8528925619834711 |
-| Case8015 | CenterH | scar | nnunet_oof | 0.46925795053003533 | 0.608346709470305 |
-| Case8015 | CenterH | lesion_union | nnunet_oof | 0.46925795053003533 | 0.9468569693288794 |
+| Case7005 | CenterG | scar | nnunet_oof | 0 | 1 |
+| Case7005 | CenterG | lesion_union | nnunet_oof | 0 | 1 |
+| Case8003 | CenterH | scar | mosaic_oof | 0.7372 | 0.8895 |
+| Case8003 | CenterH | lesion_union | nnunet_oof | 0.7173 | 0.9876 |
+| Case8011 | CenterH | scar | mosaic_oof | 0.2871 | 0.6881 |
+| Case8011 | CenterH | lesion_union | nnunet_oof | 0.2241 | 0.8529 |
+| Case8015 | CenterH | scar | nnunet_oof | 0.4693 | 0.6083 |
+| Case8015 | CenterH | lesion_union | nnunet_oof | 0.4693 | 0.9469 |
 
 
 \newpage
 
 # 附录 E3：PRISM 13 checkpoint corrected metrics 分块
 
-| checkpoint_step | case_id | metric_name | dice | anchor_dice | dice_delta_vs_anchor |
+| step | case_id | metric_name | dice | nnunet | delta |
 | --- | --- | --- | --- | --- | --- |
-| 500 | Case1004 | scar | 0.530063061 |  |  |
-| 500 | Case1004 | pure_edema | 1.000000000 |  |  |
-| 500 | Case1004 | edema_zone | 0.000000000 |  |  |
-| 500 | Case1008 | scar | 0.351104376 |  |  |
-| 500 | Case1008 | pure_edema | 1.000000000 |  |  |
-| 500 | Case1008 | edema_zone | 0.000000000 |  |  |
-| 500 | Case1020 | scar | 0.301903303 |  |  |
-| 500 | Case1020 | pure_edema | 1.000000000 |  |  |
+| 500 | Case1004 | scar | 0.5301 | 0.8826 | -0.3525 |
+| 500 | Case1004 | pure_edema | 1 | 1 | 0 |
+| 500 | Case1004 | edema_zone | 0 | 0.8826 | -0.8826 |
+| 500 | Case1008 | scar | 0.3511 | 0.8739 | -0.5228 |
+| 500 | Case1008 | pure_edema | 1 | 1 | 0 |
+| 500 | Case1008 | edema_zone | 0 | 0.8739 | -0.8739 |
+| 500 | Case1020 | scar | 0.3019 | 0.7594 | -0.4575 |
+| 500 | Case1020 | pure_edema | 1 | 1 | 0 |
 
 
 \newpage
 
 # 附录 E3：PRISM 13 checkpoint corrected metrics 分块（续 2）
 
-| checkpoint_step | case_id | metric_name | dice | anchor_dice | dice_delta_vs_anchor |
+| step | case_id | metric_name | dice | nnunet | delta |
 | --- | --- | --- | --- | --- | --- |
-| 500 | Case1020 | edema_zone | 0.000000000 |  |  |
-| 500 | Case1026 | scar | 0.308909785 |  |  |
-| 500 | Case1026 | pure_edema | 1.000000000 |  |  |
-| 500 | Case1026 | edema_zone | 0.000000000 |  |  |
-| 500 | Case1032 | scar | 0.313862475 |  |  |
-| 500 | Case1032 | pure_edema | 1.000000000 |  |  |
-| 500 | Case1032 | edema_zone | 0.000000000 |  |  |
-| 500 | Case1035 | scar | 0.373240645 |  |  |
+| 500 | Case1020 | edema_zone | 0 | 0.7594 | -0.7594 |
+| 500 | Case1026 | scar | 0.3089 | 0.8388 | -0.5299 |
+| 500 | Case1026 | pure_edema | 1 | 1 | 0 |
+| 500 | Case1026 | edema_zone | 0 | 0.8388 | -0.8388 |
+| 500 | Case1032 | scar | 0.3139 | 0.7676 | -0.4537 |
+| 500 | Case1032 | pure_edema | 1 | 1 | 0 |
+| 500 | Case1032 | edema_zone | 0 | 0.7676 | -0.7676 |
+| 500 | Case1035 | scar | 0.3732 | 0.875 | -0.5018 |
 
 
 \newpage
 
 # 附录 E3：PRISM 13 checkpoint corrected metrics 分块（续 3）
 
-| checkpoint_step | case_id | metric_name | dice | anchor_dice | dice_delta_vs_anchor |
+| step | case_id | metric_name | dice | nnunet | delta |
 | --- | --- | --- | --- | --- | --- |
-| 500 | Case1035 | pure_edema | 1.000000000 |  |  |
-| 500 | Case1035 | edema_zone | 0.000000000 |  |  |
-| 500 | Case1039 | scar | 0.354683374 |  |  |
-| 500 | Case1039 | pure_edema | 1.000000000 |  |  |
-| 500 | Case1039 | edema_zone | 0.000000000 |  |  |
-| 500 | Case1043 | scar | 0.340329835 |  |  |
-| 500 | Case1043 | pure_edema | 1.000000000 |  |  |
-| 500 | Case1043 | edema_zone | 0.000000000 |  |  |
+| 500 | Case1035 | pure_edema | 1 | 1 | 0 |
+| 500 | Case1035 | edema_zone | 0 | 0.875 | -0.875 |
+| 500 | Case1039 | scar | 0.3547 | 0.8657 | -0.5111 |
+| 500 | Case1039 | pure_edema | 1 | 1 | 0 |
+| 500 | Case1039 | edema_zone | 0 | 0.8657 | -0.8657 |
+| 500 | Case1043 | scar | 0.3403 | 0.7731 | -0.4327 |
+| 500 | Case1043 | pure_edema | 1 | 1 | 0 |
+| 500 | Case1043 | edema_zone | 0 | 0.7731 | -0.7731 |
 
 
 \newpage
 
 # 附录 E3：PRISM 13 checkpoint corrected metrics 分块（续 4）
 
-| checkpoint_step | case_id | metric_name | dice | anchor_dice | dice_delta_vs_anchor |
+| step | case_id | metric_name | dice | nnunet | delta |
 | --- | --- | --- | --- | --- | --- |
-| 500 | Case1056 | scar | 0.297742319 |  |  |
-| 500 | Case1056 | pure_edema | 1.000000000 |  |  |
-| 500 | Case1056 | edema_zone | 0.000000000 |  |  |
-| 500 | Case1058 | scar | 0.400374550 |  |  |
-| 500 | Case1058 | pure_edema | 1.000000000 |  |  |
-| 500 | Case1058 | edema_zone | 0.000000000 |  |  |
-| 500 | Case1071 | scar | 0.265054471 |  |  |
-| 500 | Case1071 | pure_edema | 1.000000000 |  |  |
+| 500 | Case1056 | scar | 0.2977 | 0.8541 | -0.5564 |
+| 500 | Case1056 | pure_edema | 1 | 1 | 0 |
+| 500 | Case1056 | edema_zone | 0 | 0.8541 | -0.8541 |
+| 500 | Case1058 | scar | 0.4004 | 0.9069 | -0.5065 |
+| 500 | Case1058 | pure_edema | 1 | 1 | 0 |
+| 500 | Case1058 | edema_zone | 0 | 0.9069 | -0.9069 |
+| 500 | Case1071 | scar | 0.2651 | 0.8407 | -0.5756 |
+| 500 | Case1071 | pure_edema | 1 | 1 | 0 |
 
 
 \newpage
 
 # 附录 E3：PRISM 13 checkpoint corrected metrics 分块（续 5）
 
-| checkpoint_step | case_id | metric_name | dice | anchor_dice | dice_delta_vs_anchor |
+| step | case_id | metric_name | dice | nnunet | delta |
 | --- | --- | --- | --- | --- | --- |
-| 500 | Case1071 | edema_zone | 0.000000000 |  |  |
-| 500 | Case1074 | scar | 0.274797723 |  |  |
-| 500 | Case1074 | pure_edema | 1.000000000 |  |  |
-| 500 | Case1074 | edema_zone | 0.000000000 |  |  |
-| 500 | Case1077 | scar | 0.160764612 |  |  |
-| 500 | Case1077 | pure_edema | 1.000000000 |  |  |
-| 500 | Case1077 | edema_zone | 0.000000000 |  |  |
-| 500 | Case2009 | scar | 0.297890659 |  |  |
+| 500 | Case1071 | edema_zone | 0 | 0.8407 | -0.8407 |
+| 500 | Case1074 | scar | 0.2748 | 0.9189 | -0.6441 |
+| 500 | Case1074 | pure_edema | 1 | 1 | 0 |
+| 500 | Case1074 | edema_zone | 0 | 0.9189 | -0.9189 |
+| 500 | Case1077 | scar | 0.1608 | 0.8127 | -0.6519 |
+| 500 | Case1077 | pure_edema | 1 | 1 | 0 |
+| 500 | Case1077 | edema_zone | 0 | 0.8127 | -0.8127 |
+| 500 | Case2009 | scar | 0.2979 | 0.5996 | -0.3017 |
 
 
 \newpage
 
 # 附录 E3：PRISM 13 checkpoint corrected metrics 分块（续 6）
 
-| checkpoint_step | case_id | metric_name | dice | anchor_dice | dice_delta_vs_anchor |
+| step | case_id | metric_name | dice | nnunet | delta |
 | --- | --- | --- | --- | --- | --- |
-| 500 | Case2009 | pure_edema | 0.236245037 |  |  |
-| 500 | Case2009 | edema_zone | 0.578436965 |  |  |
-| 500 | Case2011 | scar | 0.450949894 |  |  |
-| 500 | Case2011 | pure_edema | 0.254467582 |  |  |
-| 500 | Case2011 | edema_zone | 0.725151311 |  |  |
-| 500 | Case2012 | scar | 0.088264300 |  |  |
-| 500 | Case2012 | pure_edema | 0.230547550 |  |  |
-| 500 | Case2012 | edema_zone | 0.237605913 |  |  |
+| 500 | Case2009 | pure_edema | 0.2362 | 0.8094 | -0.5731 |
+| 500 | Case2009 | edema_zone | 0.5784 | 0.7874 | -0.2089 |
+| 500 | Case2011 | scar | 0.4509 | 0.9236 | -0.4727 |
+| 500 | Case2011 | pure_edema | 0.2545 | 0.8881 | -0.6336 |
+| 500 | Case2011 | edema_zone | 0.7252 | 0.9363 | -0.2111 |
+| 500 | Case2012 | scar | 0.0883 | 0.6156 | -0.5274 |
+| 500 | Case2012 | pure_edema | 0.2305 | 0.7723 | -0.5418 |
+| 500 | Case2012 | edema_zone | 0.2376 | 0.7309 | -0.4933 |
 
 
 \newpage
 
 # 附录 E3：PRISM 13 checkpoint corrected metrics 分块（续 7）
 
-| checkpoint_step | case_id | metric_name | dice | anchor_dice | dice_delta_vs_anchor |
+| step | case_id | metric_name | dice | nnunet | delta |
 | --- | --- | --- | --- | --- | --- |
-| 500 | Case2016 | scar | 0.359180649 |  |  |
-| 500 | Case2016 | pure_edema | 0.217131669 |  |  |
-| 500 | Case2016 | edema_zone | 0.574229180 |  |  |
-| 500 | Case2018 | scar | 0.195901920 |  |  |
-| 500 | Case2018 | pure_edema | 0.137720096 |  |  |
-| 500 | Case2018 | edema_zone | 0.450291095 |  |  |
-| 500 | Case2019 | scar | 0.302401890 |  |  |
-| 500 | Case2019 | pure_edema | 0.167984934 |  |  |
+| 500 | Case2016 | scar | 0.3592 | 0.8874 | -0.5283 |
+| 500 | Case2016 | pure_edema | 0.2171 | 0.7967 | -0.5796 |
+| 500 | Case2016 | edema_zone | 0.5742 | 0.8869 | -0.3127 |
+| 500 | Case2018 | scar | 0.1959 | 0.9197 | -0.7238 |
+| 500 | Case2018 | pure_edema | 0.1377 | 0.8875 | -0.7498 |
+| 500 | Case2018 | edema_zone | 0.4503 | 0.939 | -0.4887 |
+| 500 | Case2019 | scar | 0.3024 | 0.9268 | -0.6244 |
+| 500 | Case2019 | pure_edema | 0.168 | 0.8462 | -0.6782 |
 
 
 \newpage
 
 # 附录 E3：PRISM 13 checkpoint corrected metrics 分块（续 8）
 
-| checkpoint_step | case_id | metric_name | dice | anchor_dice | dice_delta_vs_anchor |
+| step | case_id | metric_name | dice | nnunet | delta |
 | --- | --- | --- | --- | --- | --- |
-| 500 | Case2019 | edema_zone | 0.641064946 |  |  |
-| 500 | Case2021 | scar | 0.531396648 |  |  |
-| 500 | Case2021 | pure_edema | 0.184663132 |  |  |
-| 500 | Case2021 | edema_zone | 0.595887650 |  |  |
-| 500 | Case2023 | scar | 0.413302614 |  |  |
-| 500 | Case2023 | pure_edema | 0.355800092 |  |  |
-| 500 | Case2023 | edema_zone | 0.640534583 |  |  |
-| 500 | Case2034 | scar | 0.383697505 |  |  |
+| 500 | Case2019 | edema_zone | 0.6411 | 0.8901 | -0.249 |
+| 500 | Case2021 | scar | 0.5314 | 0.9027 | -0.3713 |
+| 500 | Case2021 | pure_edema | 0.1847 | 0.845 | -0.6603 |
+| 500 | Case2021 | edema_zone | 0.5959 | 0.9286 | -0.3327 |
+| 500 | Case2023 | scar | 0.4133 | 0.8803 | -0.467 |
+| 500 | Case2023 | pure_edema | 0.3558 | 0.796 | -0.4402 |
+| 500 | Case2023 | edema_zone | 0.6405 | 0.8879 | -0.2473 |
+| 500 | Case2034 | scar | 0.3837 | 0.8926 | -0.5089 |
 
 
 \newpage
 
 # 附录 E3：PRISM 13 checkpoint corrected metrics 分块（续 9）
 
-| checkpoint_step | case_id | metric_name | dice | anchor_dice | dice_delta_vs_anchor |
+| step | case_id | metric_name | dice | nnunet | delta |
 | --- | --- | --- | --- | --- | --- |
-| 500 | Case2034 | pure_edema | 0.219345455 |  |  |
-| 500 | Case2034 | edema_zone | 0.483364428 |  |  |
-| 500 | Case3009 | scar | 0.231240876 |  |  |
-| 500 | Case3009 | pure_edema | 0.087815326 |  |  |
-| 500 | Case3009 | edema_zone | 0.223065476 |  |  |
-| 500 | Case3014 | scar | 0.473822656 |  |  |
-| 500 | Case3014 | pure_edema | 0.147459529 |  |  |
-| 500 | Case3014 | edema_zone | 0.609071545 |  |  |
+| 500 | Case2034 | pure_edema | 0.2193 | 0.8288 | -0.6095 |
+| 500 | Case2034 | edema_zone | 0.4834 | 0.8943 | -0.411 |
+| 500 | Case3009 | scar | 0.2312 | 0.9245 | -0.6933 |
+| 500 | Case3009 | pure_edema | 0.0878 | 0.8288 | -0.741 |
+| 500 | Case3009 | edema_zone | 0.2231 | 0.9179 | -0.6948 |
+| 500 | Case3014 | scar | 0.4738 | 0.8971 | -0.4233 |
+| 500 | Case3014 | pure_edema | 0.1475 | 0.7489 | -0.6014 |
+| 500 | Case3014 | edema_zone | 0.6091 | 0.9073 | -0.2982 |
 
 
 \newpage
 
 # 附录 E3：PRISM 13 checkpoint corrected metrics 分块（续 10）
 
-| checkpoint_step | case_id | metric_name | dice | anchor_dice | dice_delta_vs_anchor |
+| step | case_id | metric_name | dice | nnunet | delta |
 | --- | --- | --- | --- | --- | --- |
-| 500 | Case3017 | scar | 0.559992978 |  |  |
-| 500 | Case3017 | pure_edema | 0.085812357 |  |  |
-| 500 | Case3017 | edema_zone | 0.550992958 |  |  |
-| 500 | Case3028 | scar | 0.364503554 |  |  |
-| 500 | Case3028 | pure_edema | 0.274458874 |  |  |
-| 500 | Case3028 | edema_zone | 0.491357091 |  |  |
-| 500 | Case3032 | scar | 0.000000000 |  |  |
-| 500 | Case3032 | pure_edema | 0.061583578 |  |  |
+| 500 | Case3017 | scar | 0.56 | 0.8898 | -0.3298 |
+| 500 | Case3017 | pure_edema | 0.0858 | 0.794 | -0.7082 |
+| 500 | Case3017 | edema_zone | 0.551 | 0.9045 | -0.3535 |
+| 500 | Case3028 | scar | 0.3645 | 0.8845 | -0.52 |
+| 500 | Case3028 | pure_edema | 0.2745 | 0.9186 | -0.6441 |
+| 500 | Case3028 | edema_zone | 0.4914 | 0.919 | -0.4277 |
+| 500 | Case3032 | scar | 0 | 0 | 0 |
+| 500 | Case3032 | pure_edema | 0.0616 | 0.9619 | -0.9003 |
 
 
 \newpage
 
 # 附录 E3：PRISM 13 checkpoint corrected metrics 分块（续 11）
 
-| checkpoint_step | case_id | metric_name | dice | anchor_dice | dice_delta_vs_anchor |
+| step | case_id | metric_name | dice | nnunet | delta |
 | --- | --- | --- | --- | --- | --- |
-| 500 | Case3032 | edema_zone | 0.483450895 |  |  |
-| 500 | Case3036 | scar | 0.689690198 |  |  |
-| 500 | Case3036 | pure_edema | 0.167058824 |  |  |
-| 500 | Case3036 | edema_zone | 0.643038322 |  |  |
-| 500 | Case3042 | scar | 0.547086765 |  |  |
-| 500 | Case3042 | pure_edema | 0.070341362 |  |  |
-| 500 | Case3042 | edema_zone | 0.693790961 |  |  |
-| 500 | Case7006 | scar | 0.000000000 |  |  |
+| 500 | Case3032 | edema_zone | 0.4835 | 0.9558 | -0.4724 |
+| 500 | Case3036 | scar | 0.6897 | 0.909 | -0.2193 |
+| 500 | Case3036 | pure_edema | 0.1671 | 0.8001 | -0.633 |
+| 500 | Case3036 | edema_zone | 0.643 | 0.8957 | -0.2527 |
+| 500 | Case3042 | scar | 0.5471 | 0.9563 | -0.4092 |
+| 500 | Case3042 | pure_edema | 0.0703 | 0.8499 | -0.7796 |
+| 500 | Case3042 | edema_zone | 0.6938 | 0.9606 | -0.2668 |
+| 500 | Case7006 | scar | 0 | 1 | -1 |
 
 
 \newpage
 
 # 附录 E3：PRISM 13 checkpoint corrected metrics 分块（续 12）
 
-| checkpoint_step | case_id | metric_name | dice | anchor_dice | dice_delta_vs_anchor |
+| step | case_id | metric_name | dice | nnunet | delta |
 | --- | --- | --- | --- | --- | --- |
-| 500 | Case7006 | pure_edema | 1.000000000 |  |  |
-| 500 | Case7006 | edema_zone | 1.000000000 |  |  |
-| 500 | Case8009 | scar | 0.216859325 |  |  |
-| 500 | Case8009 | pure_edema | 1.000000000 |  |  |
-| 500 | Case8009 | edema_zone | 0.000000000 |  |  |
-| 500 | Case8012 | scar | 0.124890760 |  |  |
-| 500 | Case8012 | pure_edema | 1.000000000 |  |  |
-| 500 | Case8012 | edema_zone | 0.000000000 |  |  |
+| 500 | Case7006 | pure_edema | 1 | 1 | 0 |
+| 500 | Case7006 | edema_zone | 1 | 1 | 0 |
+| 500 | Case8009 | scar | 0.2169 | 0.8006 | -0.5838 |
+| 500 | Case8009 | pure_edema | 1 | 1 | 0 |
+| 500 | Case8009 | edema_zone | 0 | 0.8006 | -0.8006 |
+| 500 | Case8012 | scar | 0.1249 | 0.8958 | -0.7709 |
+| 500 | Case8012 | pure_edema | 1 | 1 | 0 |
+| 500 | Case8012 | edema_zone | 0 | 0.8958 | -0.8958 |
 
 
 \newpage
 
 # 附录 E4：Batch0-7 / SRR casewise metrics 分块
 
-| case_id | pathology | anchor_dice | srr_dice | dice_delta_srr_minus_anchor | srr_hd95 |
+| case_id | pathology | anchor | srr_dice | dice_delta | srr_hd95 |
 | --- | --- | --- | --- | --- | --- |
-| Case1002 | edema |  |  |  | 0.0 |
-| Case1002 | scar | 0.6167400881057269 | 0.6167400881057269 | 0.0 | 4.323466070663145 |
-| Case1007 | edema |  |  |  | 0.0 |
-| Case1007 | scar | 0.5810928013876843 | 0.5810928013876843 | 0.0 | 6.836000084877014 |
-| Case1009 | edema |  |  |  | 0.0 |
-| Case1009 | scar | 0.6048804535370964 | 0.6048804535370964 | 0.0 | 8.496820117260281 |
-| Case1010 | edema |  |  |  | 0.0 |
-| Case1010 | scar | 0.48279378027020137 | 0.48279378027020137 | 0.0 | 9.103254137198277 |
+| Case1002 | edema |  |  |  | 0 |
+| Case1002 | scar | 0.6167 | 0.6167 | 0 | 4.3235 |
+| Case1007 | edema |  |  |  | 0 |
+| Case1007 | scar | 0.5811 | 0.5811 | 0 | 6.836 |
+| Case1009 | edema |  |  |  | 0 |
+| Case1009 | scar | 0.6049 | 0.6049 | 0 | 8.4968 |
+| Case1010 | edema |  |  |  | 0 |
+| Case1010 | scar | 0.4828 | 0.4828 | 0 | 9.1033 |
 
 
 \newpage
 
 # 附录 E4：Batch0-7 / SRR casewise metrics 分块（续 2）
 
-| case_id | pathology | anchor_dice | srr_dice | dice_delta_srr_minus_anchor | srr_hd95 |
+| case_id | pathology | anchor | srr_dice | dice_delta | srr_hd95 |
 | --- | --- | --- | --- | --- | --- |
-| Case1021 | edema |  |  |  | 0.0 |
-| Case1021 | scar | 0.5699192044748291 | 0.5699192044748291 | 0.0 | 7.972077529615252 |
-| Case1023 | edema |  |  |  | 0.0 |
-| Case1023 | scar | 0.6466011466011466 | 0.6466011466011466 | 0.0 | 5.0 |
-| Case1029 | edema |  |  |  | 0.0 |
-| Case1029 | scar | 0.16436865021770683 | 0.16436865021770683 | 0.0 | 51.395270620488255 |
-| Case1033 | edema |  |  |  | 0.0 |
-| Case1033 | scar | 0.671361030077457 | 0.671361030077457 | 0.0 | 7.152037197524651 |
+| Case1021 | edema |  |  |  | 0 |
+| Case1021 | scar | 0.5699 | 0.5699 | 0 | 7.9721 |
+| Case1023 | edema |  |  |  | 0 |
+| Case1023 | scar | 0.6466 | 0.6466 | 0 | 5 |
+| Case1029 | edema |  |  |  | 0 |
+| Case1029 | scar | 0.1644 | 0.1644 | 0 | 51.3953 |
+| Case1033 | edema |  |  |  | 0 |
+| Case1033 | scar | 0.6714 | 0.6714 | 0 | 7.152 |
 
 
 \newpage
 
 # 附录 E4：Batch0-7 / SRR casewise metrics 分块（续 3）
 
-| case_id | pathology | anchor_dice | srr_dice | dice_delta_srr_minus_anchor | srr_hd95 |
+| case_id | pathology | anchor | srr_dice | dice_delta | srr_hd95 |
 | --- | --- | --- | --- | --- | --- |
-| Case1040 | edema |  |  |  | 0.0 |
-| Case1040 | scar | 0.4280078895463511 | 0.4280078895463511 | 0.0 | 8.5 |
-| Case1042 | edema |  |  |  | 0.0 |
-| Case1042 | scar | 0.7573770491803279 | 0.7573770491803279 | 0.0 | 3.057152176795867 |
-| Case1045 | edema |  |  |  | 0.0 |
-| Case1045 | scar | 0.09968847352024922 | 0.09968847352024922 | 0.0 | 58.23937490442107 |
-| Case1047 | edema |  |  |  | 0.0 |
-| Case1047 | scar | 0.6283120251991847 | 0.6283120251991847 | 0.0 | 5.781199932098389 |
+| Case1040 | edema |  |  |  | 0 |
+| Case1040 | scar | 0.428 | 0.428 | 0 | 8.5 |
+| Case1042 | edema |  |  |  | 0 |
+| Case1042 | scar | 0.7574 | 0.7574 | 0 | 3.0572 |
+| Case1045 | edema |  |  |  | 0 |
+| Case1045 | scar | 0.0997 | 0.0997 | 0 | 58.2394 |
+| Case1047 | edema |  |  |  | 0 |
+| Case1047 | scar | 0.6283 | 0.6283 | 0 | 5.7812 |
 
 
 \newpage
 
 # 附录 E4：Batch0-7 / SRR casewise metrics 分块（续 4）
 
-| case_id | pathology | anchor_dice | srr_dice | dice_delta_srr_minus_anchor | srr_hd95 |
+| case_id | pathology | anchor | srr_dice | dice_delta | srr_hd95 |
 | --- | --- | --- | --- | --- | --- |
-| Case1053 | edema |  |  |  | 0.0 |
-| Case1053 | scar | 0.5196241017136539 | 0.5196241017136539 | 0.0 | 27.536782421660927 |
-| Case1062 | edema |  |  |  | 0.0 |
-| Case1062 | scar | 0.5070823546159869 | 0.5070823546159869 | 0.0 | 15.291149322372709 |
-| Case1070 | edema |  |  |  | 0.0 |
-| Case1070 | scar | 0.5004500450045004 | 0.5004500450045004 | 0.0 | 34.297412438841505 |
-| Case1073 | edema |  |  |  | 0.0 |
-| Case1073 | scar | 0.4282765737874097 | 0.4282765737874097 | 0.0 | 10.678173489481713 |
+| Case1053 | edema |  |  |  | 0 |
+| Case1053 | scar | 0.5196 | 0.5196 | 0 | 27.5368 |
+| Case1062 | edema |  |  |  | 0 |
+| Case1062 | scar | 0.5071 | 0.5071 | 0 | 15.2911 |
+| Case1070 | edema |  |  |  | 0 |
+| Case1070 | scar | 0.5005 | 0.5005 | 0 | 34.2974 |
+| Case1073 | edema |  |  |  | 0 |
+| Case1073 | scar | 0.4283 | 0.4283 | 0 | 10.6782 |
 
 
 \newpage
 
 # 附录 E4：Batch0-7 / SRR casewise metrics 分块（续 5）
 
-| case_id | pathology | anchor_dice | srr_dice | dice_delta_srr_minus_anchor | srr_hd95 |
+| case_id | pathology | anchor | srr_dice | dice_delta | srr_hd95 |
 | --- | --- | --- | --- | --- | --- |
-| Case1080 | edema |  |  |  | 0.0 |
-| Case1080 | scar | 0.6369426751592356 | 0.6369426751592356 | 0.0 | 11.0 |
-| Case2002 | edema | 0.5376005596362364 | 0.5376005596362364 | 0.0 | 17.453201935819685 |
-| Case2002 | scar | 0.5602700096432015 | 0.5602700096432015 | 0.0 | 21.415372143918024 |
-| Case2007 | edema | 0.5701357466063348 | 0.5701357466063348 | 0.0 | 7.5130097186944615 |
-| Case2007 | scar | 0.4898728214790391 | 0.4898728214790391 | 0.0 | 11.682996338833703 |
-| Case2008 | edema | 0.3485546711353163 | 0.3485546711353163 | 0.0 | 33.237885822186755 |
-| Case2008 | scar | 0.7531584062196307 | 0.7531584062196307 | 0.0 | 6.640625 |
+| Case1080 | edema |  |  |  | 0 |
+| Case1080 | scar | 0.6369 | 0.6369 | 0 | 11 |
+| Case2002 | edema | 0.5376 | 0.5376 | 0 | 17.4532 |
+| Case2002 | scar | 0.5603 | 0.5603 | 0 | 21.4154 |
+| Case2007 | edema | 0.5701 | 0.5701 | 0 | 7.513 |
+| Case2007 | scar | 0.4899 | 0.4899 | 0 | 11.683 |
+| Case2008 | edema | 0.3486 | 0.3486 | 0 | 33.2379 |
+| Case2008 | scar | 0.7532 | 0.7532 | 0 | 6.6406 |
 
 
 \newpage
 
 # 附录 E4：Batch0-7 / SRR casewise metrics 分块（续 6）
 
-| case_id | pathology | anchor_dice | srr_dice | dice_delta_srr_minus_anchor | srr_hd95 |
+| case_id | pathology | anchor | srr_dice | dice_delta | srr_hd95 |
 | --- | --- | --- | --- | --- | --- |
-| Case2017 | edema | 0.6796246648793566 | 0.6793211255024565 | -0.00030353937690008603 | 10.0 |
-| Case2017 | scar | 0.5470588235294118 | 0.5470588235294118 | 0.0 | 11.338866091557966 |
-| Case2020 | edema | 0.5630676084762866 | 0.5630676084762866 | 0.0 | 7.5130097186944615 |
-| Case2020 | scar | 0.4196185286103542 | 0.4196185286103542 | 0.0 | 20.994429281533453 |
-| Case2031 | edema | 0.29880478087649404 | 0.29880478087649404 | 0.0 | 25.052956799932126 |
-| Case2031 | scar | 0.8013937282229965 | 0.8013937282229965 | 0.0 | 5.008673145796307 |
-| Case2033 | edema | 0.523033309709426 | 0.5228480340063762 | -0.0001852757030497143 | 10.76453641085509 |
-| Case2033 | scar | 0.7208988764044943 | 0.7208988764044943 | 0.0 | 10.0 |
+| Case2017 | edema | 0.6796 | 0.6793 | -0.0003 | 10 |
+| Case2017 | scar | 0.5471 | 0.5471 | 0 | 11.3389 |
+| Case2020 | edema | 0.5631 | 0.5631 | 0 | 7.513 |
+| Case2020 | scar | 0.4196 | 0.4196 | 0 | 20.9944 |
+| Case2031 | edema | 0.2988 | 0.2988 | 0 | 25.053 |
+| Case2031 | scar | 0.8014 | 0.8014 | 0 | 5.0087 |
+| Case2033 | edema | 0.523 | 0.5228 | -0.0002 | 10.7645 |
+| Case2033 | scar | 0.7209 | 0.7209 | 0 | 10 |
 
 
 \newpage
 
 # 附录 E4：Batch0-7 / SRR casewise metrics 分块（续 7）
 
-| case_id | pathology | anchor_dice | srr_dice | dice_delta_srr_minus_anchor | srr_hd95 |
+| case_id | pathology | anchor | srr_dice | dice_delta | srr_hd95 |
 | --- | --- | --- | --- | --- | --- |
-| Case3004 | edema | 0.4530451866404715 | 0.4530451866404715 | 0.0 | 9.222044972510458 |
-| Case3004 | scar | 0.6247040252565115 | 0.6247040252565115 | 0.0 | 24.000003814697266 |
-| Case3011 | edema | 0.26666666666666666 | 0.26666666666666666 | 0.0 | 34.26613348722458 |
-| Case3011 | scar | 0.6389535925461387 | 0.6389535925461387 | 0.0 | 10.960275328815657 |
-| Case3012 | edema | 0.45068083693125205 | 0.4506060102938735 | -7.482663737856665e-05 | 22.41143161325818 |
-| Case3012 | scar | 0.8267066766691673 | 0.8267066766691673 | 0.0 | 2.916266679763794 |
-| Case3023 | edema | 0.16291793313069908 | 0.16291793313069908 | 0.0 | 41.324851944191856 |
-| Case3023 | scar | 0.6612691466083152 | 0.6612691466083152 | 0.0 | 4.124789669313123 |
+| Case3004 | edema | 0.453 | 0.453 | 0 | 9.222 |
+| Case3004 | scar | 0.6247 | 0.6247 | 0 | 24 |
+| Case3011 | edema | 0.2667 | 0.2667 | 0 | 34.2661 |
+| Case3011 | scar | 0.639 | 0.639 | 0 | 10.9603 |
+| Case3012 | edema | 0.4507 | 0.4506 | -0.0001 | 22.4114 |
+| Case3012 | scar | 0.8267 | 0.8267 | 0 | 2.9163 |
+| Case3023 | edema | 0.1629 | 0.1629 | 0 | 41.3249 |
+| Case3023 | scar | 0.6613 | 0.6613 | 0 | 4.1248 |
 
 
 \newpage
 
 # 附录 E4：Batch0-7 / SRR casewise metrics 分块（续 8）
 
-| case_id | pathology | anchor_dice | srr_dice | dice_delta_srr_minus_anchor | srr_hd95 |
+| case_id | pathology | anchor | srr_dice | dice_delta | srr_hd95 |
 | --- | --- | --- | --- | --- | --- |
-| Case3026 | edema | 0.21919504643962848 | 0.21919504643962848 | 0.0 | 17.325748731744103 |
-| Case3026 | scar | 0.8081740276862228 | 0.8081740276862228 | 0.0 | 2.916266679763794 |
-| Case3034 | edema | 0.6546035125066525 | 0.6544293695131684 | -0.00017414299348406104 | 9.135179190762985 |
-| Case3034 | scar | 0.8293831423638361 | 0.8293831423638361 | 0.0 | 1.6302426341173635 |
-| Case3038 | edema | 0.16778761061946904 | 0.16778761061946904 | 0.0 | 28.21288893486063 |
-| Case3038 | scar | 0.75830144426614 | 0.75830144426614 | 0.0 | 8.297908510253126 |
-| Case3040 | edema | 0.24913093858632676 | 0.24913093858632676 | 0.0 | 24.13887469193756 |
-| Case3040 | scar | 0.8691367757193535 | 0.8691367757193535 | 0.0 | 1.458133339881897 |
+| Case3026 | edema | 0.2192 | 0.2192 | 0 | 17.3257 |
+| Case3026 | scar | 0.8082 | 0.8082 | 0 | 2.9163 |
+| Case3034 | edema | 0.6546 | 0.6544 | -0.0002 | 9.1352 |
+| Case3034 | scar | 0.8294 | 0.8294 | 0 | 1.6302 |
+| Case3038 | edema | 0.1678 | 0.1678 | 0 | 28.2129 |
+| Case3038 | scar | 0.7583 | 0.7583 | 0 | 8.2979 |
+| Case3040 | edema | 0.2491 | 0.2491 | 0 | 24.1389 |
+| Case3040 | scar | 0.8691 | 0.8691 | 0 | 1.4581 |
 
 
 \newpage
 
 # 附录 E4：Batch0-7 / SRR casewise metrics 分块（续 9）
 
-| case_id | pathology | anchor_dice | srr_dice | dice_delta_srr_minus_anchor | srr_hd95 |
+| case_id | pathology | anchor | srr_dice | dice_delta | srr_hd95 |
 | --- | --- | --- | --- | --- | --- |
-| Case3044 | edema | 0.16612529002320187 | 0.16612529002320187 | 0.0 | 22.61223504639135 |
-| Case3044 | scar | 0.7844537386514332 | 0.7844537386514332 | 0.0 | 4.89072790235209 |
-| Case5005 | edema |  |  |  | 0.0 |
-| Case5005 | scar | 0.5725747629467542 | 0.5725747629467542 | 0.0 | 11.148974014770653 |
-| Case6001 | edema |  |  |  | 0.0 |
-| Case6001 | scar | 0.44598337950138506 | 0.44598337950138506 | 0.0 | 10.606601717798213 |
-| Case6010 | edema |  |  |  | 0.0 |
-| Case6010 | scar | 0.49259110933119743 | 0.49259110933119743 | 0.0 | 13.050383136138187 |
+| Case3044 | edema | 0.1661 | 0.1661 | 0 | 22.6122 |
+| Case3044 | scar | 0.7845 | 0.7845 | 0 | 4.8907 |
+| Case5005 | edema |  |  |  | 0 |
+| Case5005 | scar | 0.5726 | 0.5726 | 0 | 11.149 |
+| Case6001 | edema |  |  |  | 0 |
+| Case6001 | scar | 0.446 | 0.446 | 0 | 10.6066 |
+| Case6010 | edema |  |  |  | 0 |
+| Case6010 | scar | 0.4926 | 0.4926 | 0 | 13.0504 |
 
 
 \newpage
 
 # 附录 E4：Batch0-7 / SRR casewise metrics 分块（续 10）
 
-| case_id | pathology | anchor_dice | srr_dice | dice_delta_srr_minus_anchor | srr_hd95 |
+| case_id | pathology | anchor | srr_dice | dice_delta | srr_hd95 |
 | --- | --- | --- | --- | --- | --- |
-| Case7005 | edema |  |  |  | 0.0 |
-| Case7005 | scar | 0.0 | 0.0 | 0.0 |  |
-| Case8003 | edema |  |  |  | 0.0 |
-| Case8003 | scar | 0.7172976649285876 | 0.7172976649285876 | 0.0 | 8.754271418365223 |
-| Case8011 | edema |  |  |  | 0.0 |
-| Case8011 | scar | 0.22406639004149378 | 0.22406639004149378 | 0.0 | 31.32764229603699 |
-| Case8015 | edema |  |  |  | 0.0 |
-| Case8015 | scar | 0.46925795053003533 | 0.46925795053003533 | 0.0 | 20.046675576268406 |
+| Case7005 | edema |  |  |  | 0 |
+| Case7005 | scar | 0 | 0 | 0 |  |
+| Case8003 | edema |  |  |  | 0 |
+| Case8003 | scar | 0.7173 | 0.7173 | 0 | 8.7543 |
+| Case8011 | edema |  |  |  | 0 |
+| Case8011 | scar | 0.2241 | 0.2241 | 0 | 31.3276 |
+| Case8015 | edema |  |  |  | 0 |
+| Case8015 | scar | 0.4693 | 0.4693 | 0 | 20.0467 |
 
 
 \newpage
 
 # 附录 E4：Batch0-7 / SRR casewise metrics 分块（续 11）
 
-| case_id | pathology | anchor_dice | srr_dice | dice_delta_srr_minus_anchor | srr_hd95 |
+| case_id | pathology | anchor | srr_dice | dice_delta | srr_hd95 |
 | --- | --- | --- | --- | --- | --- |
-| Case8019 | edema |  |  |  | 0.0 |
-| Case8019 | scar | 0.6588021778584392 | 0.6588021778584392 | 0.0 | 11.25 |
-| Case8021 | edema |  |  |  | 0.0 |
-| Case8021 | scar | 0.0 | 0.0 | 0.0 |  |
-| Case8022 | edema |  |  |  | 0.0 |
-| Case8022 | scar | 0.6748560460652591 | 0.6748560460652591 | 0.0 | 10.093025488583056 |
-| Case8023 | edema |  |  |  | 0.0 |
-| Case8023 | scar | 0.45514445007602633 | 0.45514445007602633 | 0.0 | 32.0090827611819 |
+| Case8019 | edema |  |  |  | 0 |
+| Case8019 | scar | 0.6588 | 0.6588 | 0 | 11.25 |
+| Case8021 | edema |  |  |  | 0 |
+| Case8021 | scar | 0 | 0 | 0 |  |
+| Case8022 | edema |  |  |  | 0 |
+| Case8022 | scar | 0.6749 | 0.6749 | 0 | 10.093 |
+| Case8023 | edema |  |  |  | 0 |
+| Case8023 | scar | 0.4551 | 0.4551 | 0 | 32.0091 |
 
 
 \newpage
 
 # 附录 E5：ARC casewise metrics 分块
 
-| case_id | variant | pathology | dice | hd95 | changed_mask_ratio_vs_nnunet |
+| case_id | variant | pathology | dice | hd95 | mask_delta |
 | --- | --- | --- | --- | --- | --- |
-| Case1002 | raw_direct_enabled | scar | 0.3811576354679803 | 15.316167399909908 | 0.7589718719689622 |
-| Case1002 | raw_direct_enabled | edema_zone | 0.3811576354679803 | 15.316167399909908 | 0.7589718719689622 |
-| Case1002 | raw_direct_enabled | pure_edema |  | 0.0 | 0.0 |
-| Case1002 | postprocessed_enabled | scar | 0.4097646033129904 | 16.08990523109105 | 0.8098933074684772 |
-| Case1002 | postprocessed_enabled | edema_zone | 0.4097646033129904 | 16.08990523109105 | 0.8098933074684772 |
-| Case1002 | postprocessed_enabled | pure_edema |  | 0.0 | 0.0 |
-| Case1002 | nnunet_anchor | scar | 0.6167400881057269 | 4.323466070663145 | 0.0 |
-| Case1002 | nnunet_anchor | edema_zone | 0.6167400881057269 | 4.323466070663145 | 0.0 |
+| Case1002 | raw_direct | scar | 0.3812 | 15.3162 | 0.759 |
+| Case1002 | raw_direct | edema_zone | 0.3812 | 15.3162 | 0.759 |
+| Case1002 | raw_direct | pure_edema |  | 0 | 0 |
+| Case1002 | postproc | scar | 0.4098 | 16.0899 | 0.8099 |
+| Case1002 | postproc | edema_zone | 0.4098 | 16.0899 | 0.8099 |
+| Case1002 | postproc | pure_edema |  | 0 | 0 |
+| Case1002 | nnunet | scar | 0.6167 | 4.3235 | 0 |
+| Case1002 | nnunet | edema_zone | 0.6167 | 4.3235 | 0 |
 
 
 \newpage
 
 # 附录 E5：ARC casewise metrics 分块（续 2）
 
-| case_id | variant | pathology | dice | hd95 | changed_mask_ratio_vs_nnunet |
+| case_id | variant | pathology | dice | hd95 | mask_delta |
 | --- | --- | --- | --- | --- | --- |
-| Case1002 | nnunet_anchor | pure_edema |  | 0.0 | 0.0 |
-| Case1002 | raw_direct_identity | scar | 0.3811576354679803 | 15.316167399909908 | 0.7589718719689622 |
-| Case1002 | raw_direct_identity | edema_zone | 0.3811576354679803 | 15.316167399909908 | 0.7589718719689622 |
-| Case1002 | raw_direct_identity | pure_edema |  | 0.0 | 0.0 |
-| Case1002 | postprocessed_identity | scar | 0.4097646033129904 | 16.08990523109105 | 0.8098933074684772 |
-| Case1002 | postprocessed_identity | edema_zone | 0.4097646033129904 | 16.08990523109105 | 0.8098933074684772 |
-| Case1002 | postprocessed_identity | pure_edema |  | 0.0 | 0.0 |
-| Case1007 | raw_direct_enabled | scar | 0.5335622853574774 | 5.890021974846564 | 1.1359107214029494 |
+| Case1002 | nnunet | pure_edema |  | 0 | 0 |
+| Case1002 | raw_identity | scar | 0.3812 | 15.3162 | 0.759 |
+| Case1002 | raw_identity | edema_zone | 0.3812 | 15.3162 | 0.759 |
+| Case1002 | raw_identity | pure_edema |  | 0 | 0 |
+| Case1002 | postprocessed... | scar | 0.4098 | 16.0899 | 0.8099 |
+| Case1002 | postprocessed... | edema_zone | 0.4098 | 16.0899 | 0.8099 |
+| Case1002 | postprocessed... | pure_edema |  | 0 | 0 |
+| Case1007 | raw_direct | scar | 0.5336 | 5.89 | 1.1359 |
 
 
 \newpage
 
 # 附录 E5：ARC casewise metrics 分块（续 3）
 
-| case_id | variant | pathology | dice | hd95 | changed_mask_ratio_vs_nnunet |
+| case_id | variant | pathology | dice | hd95 | mask_delta |
 | --- | --- | --- | --- | --- | --- |
-| Case1007 | raw_direct_enabled | edema_zone | 0.5335622853574774 | 5.890021974846564 | 1.1359107214029494 |
-| Case1007 | raw_direct_enabled | pure_edema |  | 0.0 | 0.0 |
-| Case1007 | postprocessed_enabled | scar | 0.5289711053355756 | 6.348233338766624 | 1.1992825827022717 |
-| Case1007 | postprocessed_enabled | edema_zone | 0.5289711053355756 | 6.348233338766624 | 1.1992825827022717 |
-| Case1007 | postprocessed_enabled | pure_edema |  | 0.0 | 0.0 |
-| Case1007 | nnunet_anchor | scar | 0.5810928013876843 | 6.836000084877014 | 0.0 |
-| Case1007 | nnunet_anchor | edema_zone | 0.5810928013876843 | 6.836000084877014 | 0.0 |
-| Case1007 | nnunet_anchor | pure_edema |  | 0.0 | 0.0 |
+| Case1007 | raw_direct | edema_zone | 0.5336 | 5.89 | 1.1359 |
+| Case1007 | raw_direct | pure_edema |  | 0 | 0 |
+| Case1007 | postproc | scar | 0.529 | 6.3482 | 1.1993 |
+| Case1007 | postproc | edema_zone | 0.529 | 6.3482 | 1.1993 |
+| Case1007 | postproc | pure_edema |  | 0 | 0 |
+| Case1007 | nnunet | scar | 0.5811 | 6.836 | 0 |
+| Case1007 | nnunet | edema_zone | 0.5811 | 6.836 | 0 |
+| Case1007 | nnunet | pure_edema |  | 0 | 0 |
 
 
 \newpage
 
 # 附录 E5：ARC casewise metrics 分块（续 4）
 
-| case_id | variant | pathology | dice | hd95 | changed_mask_ratio_vs_nnunet |
+| case_id | variant | pathology | dice | hd95 | mask_delta |
 | --- | --- | --- | --- | --- | --- |
-| Case1007 | raw_direct_identity | scar | 0.5335622853574774 | 5.890021974846564 | 1.1359107214029494 |
-| Case1007 | raw_direct_identity | edema_zone | 0.5335622853574774 | 5.890021974846564 | 1.1359107214029494 |
-| Case1007 | raw_direct_identity | pure_edema |  | 0.0 | 0.0 |
-| Case1007 | postprocessed_identity | scar | 0.5289711053355756 | 6.348233338766624 | 1.1992825827022717 |
-| Case1007 | postprocessed_identity | edema_zone | 0.5289711053355756 | 6.348233338766624 | 1.1992825827022717 |
-| Case1007 | postprocessed_identity | pure_edema |  | 0.0 | 0.0 |
-| Case1009 | raw_direct_enabled | scar | 0.5536579736902839 | 10.890367585526468 | 0.49926650366748165 |
-| Case1009 | raw_direct_enabled | edema_zone | 0.5536579736902839 | 10.890367585526468 | 0.49926650366748165 |
+| Case1007 | raw_identity | scar | 0.5336 | 5.89 | 1.1359 |
+| Case1007 | raw_identity | edema_zone | 0.5336 | 5.89 | 1.1359 |
+| Case1007 | raw_identity | pure_edema |  | 0 | 0 |
+| Case1007 | postprocessed... | scar | 0.529 | 6.3482 | 1.1993 |
+| Case1007 | postprocessed... | edema_zone | 0.529 | 6.3482 | 1.1993 |
+| Case1007 | postprocessed... | pure_edema |  | 0 | 0 |
+| Case1009 | raw_direct | scar | 0.5537 | 10.8904 | 0.4993 |
+| Case1009 | raw_direct | edema_zone | 0.5537 | 10.8904 | 0.4993 |
 
 
 \newpage
 
 # 附录 E5：ARC casewise metrics 分块（续 5）
 
-| case_id | variant | pathology | dice | hd95 | changed_mask_ratio_vs_nnunet |
+| case_id | variant | pathology | dice | hd95 | mask_delta |
 | --- | --- | --- | --- | --- | --- |
-| Case1009 | raw_direct_enabled | pure_edema |  | 0.0 | 0.0 |
-| Case1009 | postprocessed_enabled | scar | 0.5547378104875805 | 10.884015542109314 | 0.5232273838630807 |
-| Case1009 | postprocessed_enabled | edema_zone | 0.5547378104875805 | 10.884015542109314 | 0.5232273838630807 |
-| Case1009 | postprocessed_enabled | pure_edema |  | 0.0 | 0.0 |
-| Case1009 | nnunet_anchor | scar | 0.6048804535370964 | 8.496820117260281 | 0.0 |
-| Case1009 | nnunet_anchor | edema_zone | 0.6048804535370964 | 8.496820117260281 | 0.0 |
-| Case1009 | nnunet_anchor | pure_edema |  | 0.0 | 0.0 |
-| Case1009 | raw_direct_identity | scar | 0.5536579736902839 | 10.890367585526468 | 0.49926650366748165 |
+| Case1009 | raw_direct | pure_edema |  | 0 | 0 |
+| Case1009 | postproc | scar | 0.5547 | 10.884 | 0.5232 |
+| Case1009 | postproc | edema_zone | 0.5547 | 10.884 | 0.5232 |
+| Case1009 | postproc | pure_edema |  | 0 | 0 |
+| Case1009 | nnunet | scar | 0.6049 | 8.4968 | 0 |
+| Case1009 | nnunet | edema_zone | 0.6049 | 8.4968 | 0 |
+| Case1009 | nnunet | pure_edema |  | 0 | 0 |
+| Case1009 | raw_identity | scar | 0.5537 | 10.8904 | 0.4993 |
 
 
 \newpage
 
 # 附录 E5：ARC casewise metrics 分块（续 6）
 
-| case_id | variant | pathology | dice | hd95 | changed_mask_ratio_vs_nnunet |
+| case_id | variant | pathology | dice | hd95 | mask_delta |
 | --- | --- | --- | --- | --- | --- |
-| Case1009 | raw_direct_identity | edema_zone | 0.5536579736902839 | 10.890367585526468 | 0.49926650366748165 |
-| Case1009 | raw_direct_identity | pure_edema |  | 0.0 | 0.0 |
-| Case1009 | postprocessed_identity | scar | 0.5547378104875805 | 10.884015542109314 | 0.5232273838630807 |
-| Case1009 | postprocessed_identity | edema_zone | 0.5547378104875805 | 10.884015542109314 | 0.5232273838630807 |
-| Case1009 | postprocessed_identity | pure_edema |  | 0.0 | 0.0 |
-| Case1010 | raw_direct_enabled | scar | 0.3667673716012085 | 14.003965359377354 | 1.1158051689860835 |
-| Case1010 | raw_direct_enabled | edema_zone | 0.3667673716012085 | 14.003965359377354 | 1.1158051689860835 |
-| Case1010 | raw_direct_enabled | pure_edema |  | 0.0 | 0.0 |
+| Case1009 | raw_identity | edema_zone | 0.5537 | 10.8904 | 0.4993 |
+| Case1009 | raw_identity | pure_edema |  | 0 | 0 |
+| Case1009 | postprocessed... | scar | 0.5547 | 10.884 | 0.5232 |
+| Case1009 | postprocessed... | edema_zone | 0.5547 | 10.884 | 0.5232 |
+| Case1009 | postprocessed... | pure_edema |  | 0 | 0 |
+| Case1010 | raw_direct | scar | 0.3668 | 14.004 | 1.1158 |
+| Case1010 | raw_direct | edema_zone | 0.3668 | 14.004 | 1.1158 |
+| Case1010 | raw_direct | pure_edema |  | 0 | 0 |
 
 
 \newpage
 
 # 附录 E5：ARC casewise metrics 分块（续 7）
 
-| case_id | variant | pathology | dice | hd95 | changed_mask_ratio_vs_nnunet |
+| case_id | variant | pathology | dice | hd95 | mask_delta |
 | --- | --- | --- | --- | --- | --- |
-| Case1010 | postprocessed_enabled | scar | 0.4023602135431301 | 13.96507748175677 | 1.166003976143141 |
-| Case1010 | postprocessed_enabled | edema_zone | 0.4023602135431301 | 13.96507748175677 | 1.166003976143141 |
-| Case1010 | postprocessed_enabled | pure_edema |  | 0.0 | 0.0 |
-| Case1010 | nnunet_anchor | scar | 0.48279378027020137 | 9.103254137198277 | 0.0 |
-| Case1010 | nnunet_anchor | edema_zone | 0.48279378027020137 | 9.103254137198277 | 0.0 |
-| Case1010 | nnunet_anchor | pure_edema |  | 0.0 | 0.0 |
-| Case1010 | raw_direct_identity | scar | 0.3667673716012085 | 14.003965359377354 | 1.1158051689860835 |
-| Case1010 | raw_direct_identity | edema_zone | 0.3667673716012085 | 14.003965359377354 | 1.1158051689860835 |
+| Case1010 | postproc | scar | 0.4024 | 13.9651 | 1.166 |
+| Case1010 | postproc | edema_zone | 0.4024 | 13.9651 | 1.166 |
+| Case1010 | postproc | pure_edema |  | 0 | 0 |
+| Case1010 | nnunet | scar | 0.4828 | 9.1033 | 0 |
+| Case1010 | nnunet | edema_zone | 0.4828 | 9.1033 | 0 |
+| Case1010 | nnunet | pure_edema |  | 0 | 0 |
+| Case1010 | raw_identity | scar | 0.3668 | 14.004 | 1.1158 |
+| Case1010 | raw_identity | edema_zone | 0.3668 | 14.004 | 1.1158 |
 
 
 \newpage
 
 # 附录 E5：ARC casewise metrics 分块（续 8）
 
-| case_id | variant | pathology | dice | hd95 | changed_mask_ratio_vs_nnunet |
+| case_id | variant | pathology | dice | hd95 | mask_delta |
 | --- | --- | --- | --- | --- | --- |
-| Case1010 | raw_direct_identity | pure_edema |  | 0.0 | 0.0 |
-| Case1010 | postprocessed_identity | scar | 0.4023602135431301 | 13.96507748175677 | 1.166003976143141 |
-| Case1010 | postprocessed_identity | edema_zone | 0.4023602135431301 | 13.96507748175677 | 1.166003976143141 |
-| Case1010 | postprocessed_identity | pure_edema |  | 0.0 | 0.0 |
-| Case1021 | raw_direct_enabled | scar | 0.523430028689831 | 9.57040011882782 | 0.5996602491506229 |
-| Case1021 | raw_direct_enabled | edema_zone | 0.523430028689831 | 9.57040011882782 | 0.5996602491506229 |
-| Case1021 | raw_direct_enabled | pure_edema |  | 0.0 | 0.0 |
-| Case1021 | postprocessed_enabled | scar | 0.5278200060808756 | 9.965796328325363 | 0.6540203850509626 |
+| Case1010 | raw_identity | pure_edema |  | 0 | 0 |
+| Case1010 | postprocessed... | scar | 0.4024 | 13.9651 | 1.166 |
+| Case1010 | postprocessed... | edema_zone | 0.4024 | 13.9651 | 1.166 |
+| Case1010 | postprocessed... | pure_edema |  | 0 | 0 |
+| Case1021 | raw_direct | scar | 0.5234 | 9.5704 | 0.5997 |
+| Case1021 | raw_direct | edema_zone | 0.5234 | 9.5704 | 0.5997 |
+| Case1021 | raw_direct | pure_edema |  | 0 | 0 |
+| Case1021 | postproc | scar | 0.5278 | 9.9658 | 0.654 |
 
 
 \newpage
 
 # 附录 E5：ARC casewise metrics 分块（续 9）
 
-| case_id | variant | pathology | dice | hd95 | changed_mask_ratio_vs_nnunet |
+| case_id | variant | pathology | dice | hd95 | mask_delta |
 | --- | --- | --- | --- | --- | --- |
-| Case1021 | postprocessed_enabled | edema_zone | 0.5278200060808756 | 9.965796328325363 | 0.6540203850509626 |
-| Case1021 | postprocessed_enabled | pure_edema |  | 0.0 | 0.0 |
-| Case1021 | nnunet_anchor | scar | 0.5699192044748291 | 7.972077529615252 | 0.0 |
-| Case1021 | nnunet_anchor | edema_zone | 0.5699192044748291 | 7.972077529615252 | 0.0 |
-| Case1021 | nnunet_anchor | pure_edema |  | 0.0 | 0.0 |
-| Case1021 | raw_direct_identity | scar | 0.523430028689831 | 9.57040011882782 | 0.5996602491506229 |
-| Case1021 | raw_direct_identity | edema_zone | 0.523430028689831 | 9.57040011882782 | 0.5996602491506229 |
-| Case1021 | raw_direct_identity | pure_edema |  | 0.0 | 0.0 |
+| Case1021 | postproc | edema_zone | 0.5278 | 9.9658 | 0.654 |
+| Case1021 | postproc | pure_edema |  | 0 | 0 |
+| Case1021 | nnunet | scar | 0.5699 | 7.9721 | 0 |
+| Case1021 | nnunet | edema_zone | 0.5699 | 7.9721 | 0 |
+| Case1021 | nnunet | pure_edema |  | 0 | 0 |
+| Case1021 | raw_identity | scar | 0.5234 | 9.5704 | 0.5997 |
+| Case1021 | raw_identity | edema_zone | 0.5234 | 9.5704 | 0.5997 |
+| Case1021 | raw_identity | pure_edema |  | 0 | 0 |
 
 
 \newpage
 
-# 附录 E6：历史 prediction binding 分块
+# 附录 E6：历史 prediction binding 摘要
 
-| model_id | artifact_type | path | binding_status |
+逐项 prediction 路径很长，完整清单保留在 `historical_prediction_binding.csv`。PDF 只展示按模型、资产类型和绑定状态聚合的计数，避免路径列覆盖其它列。
+
+| model_id | artifact | status | rows |
 | --- | --- | --- | --- |
-| BATCH0_3_SRR_V2_ANCHOR_CONTROL | prediction | results/srr_production/inference/anchor_bounded_srr_correction/predictions/Ca... | BOUND |
-| BATCH0_3_SRR_V2_ANCHOR_CONTROL | prediction | results/srr_production/inference/anchor_bounded_srr_correction/predictions/Ca... | BOUND |
-| BATCH0_3_SRR_V2_ANCHOR_CONTROL | prediction | results/srr_production/inference/anchor_bounded_srr_correction/predictions/Ca... | BOUND |
-| BATCH0_3_SRR_V2_ANCHOR_CONTROL | prediction | results/srr_production/inference/anchor_bounded_srr_correction/predictions/Ca... | BOUND |
-| BATCH0_3_SRR_V2_ANCHOR_CONTROL | prediction | results/srr_production/inference/anchor_bounded_srr_correction/predictions/Ca... | BOUND |
-| BATCH0_3_SRR_V2_ANCHOR_CONTROL | prediction | results/srr_production/inference/anchor_bounded_srr_correction/predictions/Ca... | BOUND |
-| BATCH0_3_SRR_V2_ANCHOR_CONTROL | prediction | results/srr_production/inference/anchor_bounded_srr_correction/predictions/Ca... | BOUND |
-| BATCH0_3_SRR_V2_ANCHOR_CONTROL | prediction | results/srr_production/inference/anchor_bounded_srr_correction/predictions/Ca... | BOUND |
-
-
-\newpage
-
-# 附录 E6：历史 prediction binding 分块（续 2）
-
-| model_id | artifact_type | path | binding_status |
-| --- | --- | --- | --- |
-| BATCH0_3_SRR_V2_ANCHOR_CONTROL | prediction | results/srr_production/inference/anchor_bounded_srr_correction/predictions/Ca... | BOUND |
-| BATCH0_3_SRR_V2_ANCHOR_CONTROL | prediction | results/srr_production/inference/anchor_bounded_srr_correction/predictions/Ca... | BOUND |
-| BATCH0_3_SRR_V2_ANCHOR_CONTROL | prediction | results/srr_production/inference/anchor_bounded_srr_correction/predictions/Ca... | BOUND |
-| BATCH0_3_SRR_V2_ANCHOR_CONTROL | prediction | results/srr_production/inference/anchor_bounded_srr_correction/predictions/Ca... | BOUND |
-| BATCH0_3_SRR_V2_ANCHOR_CONTROL | prediction | results/srr_production/inference/anchor_bounded_srr_correction/predictions/Ca... | BOUND |
-| BATCH0_3_SRR_V2_ANCHOR_CONTROL | prediction | results/srr_production/inference/anchor_bounded_srr_correction/predictions/Ca... | BOUND |
-| BATCH0_3_SRR_V2_ANCHOR_CONTROL | prediction | results/srr_production/inference/anchor_bounded_srr_correction/predictions/Ca... | BOUND |
-| BATCH0_3_SRR_V2_ANCHOR_CONTROL | prediction | results/srr_production/inference/anchor_bounded_srr_correction/predictions/Ca... | BOUND |
-
-
-\newpage
-
-# 附录 E6：历史 prediction binding 分块（续 3）
-
-| model_id | artifact_type | path | binding_status |
-| --- | --- | --- | --- |
-| BATCH0_3_SRR_V2_ANCHOR_CONTROL | prediction | results/srr_production/inference/anchor_bounded_srr_correction/predictions/Ca... | BOUND |
-| BATCH0_3_SRR_V2_ANCHOR_CONTROL | prediction | results/srr_production/inference/anchor_bounded_srr_correction/predictions/Ca... | BOUND |
-| BATCH0_3_SRR_V2_ANCHOR_CONTROL | prediction | results/srr_production/inference/anchor_bounded_srr_correction/predictions/Ca... | BOUND |
-| BATCH0_3_SRR_V2_ANCHOR_CONTROL | prediction | results/srr_production/inference/anchor_bounded_srr_correction/predictions/Ca... | BOUND |
-| BATCH0_3_SRR_V2_ANCHOR_CONTROL | prediction | results/srr_production/inference/anchor_bounded_srr_correction/predictions/Ca... | BOUND |
-| BATCH0_3_SRR_V2_ANCHOR_CONTROL | prediction | results/srr_production/inference/anchor_bounded_srr_correction/predictions/Ca... | BOUND |
-| BATCH0_3_SRR_V2_ANCHOR_CONTROL | prediction | results/srr_production/inference/anchor_bounded_srr_correction/predictions/Ca... | BOUND |
-| BATCH0_3_SRR_V2_ANCHOR_CONTROL | prediction | results/srr_production/inference/anchor_bounded_srr_correction/predictions/Ca... | BOUND |
-
-
-\newpage
-
-# 附录 E6：历史 prediction binding 分块（续 4）
-
-| model_id | artifact_type | path | binding_status |
-| --- | --- | --- | --- |
-| BATCH0_3_SRR_V2_ANCHOR_CONTROL | prediction | results/srr_production/inference/anchor_bounded_srr_correction/predictions/Ca... | BOUND |
-| BATCH0_3_SRR_V2_ANCHOR_CONTROL | prediction | results/srr_production/inference/anchor_bounded_srr_correction/predictions/Ca... | BOUND |
-| BATCH0_3_SRR_V2_ANCHOR_CONTROL | prediction | results/srr_production/inference/anchor_bounded_srr_correction/predictions/Ca... | BOUND |
-| BATCH0_3_SRR_V2_ANCHOR_CONTROL | prediction | results/srr_production/inference/anchor_bounded_srr_correction/predictions/Ca... | BOUND |
-| BATCH0_3_SRR_V2_ANCHOR_CONTROL | prediction | results/srr_production/inference/anchor_bounded_srr_correction/predictions/Ca... | BOUND |
-| BATCH0_3_SRR_V2_ANCHOR_CONTROL | prediction | results/srr_production/inference/anchor_bounded_srr_correction/predictions/Ca... | BOUND |
-| BATCH0_3_SRR_V2_ANCHOR_CONTROL | prediction | results/srr_production/inference/anchor_bounded_srr_correction/predictions/Ca... | BOUND |
-| BATCH0_3_SRR_V2_ANCHOR_CONTROL | prediction | results/srr_production/inference/anchor_bounded_srr_correction/predictions/Ca... | BOUND |
-
-
-\newpage
-
-# 附录 E6：历史 prediction binding 分块（续 5）
-
-| model_id | artifact_type | path | binding_status |
-| --- | --- | --- | --- |
-| BATCH0_3_SRR_V2_ANCHOR_CONTROL | prediction | results/srr_production/inference/anchor_bounded_srr_correction/predictions/Ca... | BOUND |
-| BATCH0_3_SRR_V2_ANCHOR_CONTROL | prediction | results/srr_production/inference/anchor_bounded_srr_correction/predictions/Ca... | BOUND |
-| BATCH0_3_SRR_V2_ANCHOR_CONTROL | prediction | results/srr_production/inference/anchor_bounded_srr_correction/predictions/Ca... | BOUND |
-| BATCH0_3_SRR_V2_ANCHOR_CONTROL | prediction | results/srr_production/inference/anchor_bounded_srr_correction/predictions/Ca... | BOUND |
-| BATCH0_3_SRR_V2_ANCHOR_CONTROL | prediction | results/srr_production/inference/anchor_bounded_srr_correction/predictions/Ca... | BOUND |
-| BATCH0_3_SRR_V2_ANCHOR_CONTROL | prediction | results/srr_production/inference/anchor_bounded_srr_correction/predictions/Ca... | BOUND |
-| BATCH0_3_SRR_V2_ANCHOR_CONTROL | prediction | results/srr_production/inference/anchor_bounded_srr_correction/predictions/Ca... | BOUND |
-| BATCH0_3_SRR_V2_ANCHOR_CONTROL | prediction | results/srr_production/inference/anchor_bounded_srr_correction/predictions/Ca... | BOUND |
-
-
-\newpage
-
-# 附录 E6：历史 prediction binding 分块（续 6）
-
-| model_id | artifact_type | path | binding_status |
-| --- | --- | --- | --- |
-| BATCH0_3_SRR_V2_ANCHOR_CONTROL | prediction | results/srr_production/inference/anchor_bounded_srr_correction/predictions/Ca... | BOUND |
-| BATCH0_3_SRR_V2_ANCHOR_CONTROL | prediction | results/srr_production/inference/anchor_bounded_srr_correction/predictions/Ca... | BOUND |
-| BATCH0_3_SRR_V2_ANCHOR_CONTROL | prediction | results/srr_production/inference/anchor_bounded_srr_correction/predictions/Ca... | BOUND |
-| BATCH0_3_SRR_V2_ANCHOR_CONTROL | prediction | results/srr_production/inference/anchor_bounded_srr_correction/predictions/Ca... | BOUND |
-| BATCH0_3_SRR_V2_ANCHOR_CONTROL | prediction | results/srr_production/inference/anchor_identity_control/predictions/Case1002... | BOUND |
-| BATCH0_3_SRR_V2_ANCHOR_CONTROL | prediction | results/srr_production/inference/anchor_identity_control/predictions/Case1007... | BOUND |
-| BATCH0_3_SRR_V2_ANCHOR_CONTROL | prediction | results/srr_production/inference/anchor_identity_control/predictions/Case1009... | BOUND |
-| BATCH0_3_SRR_V2_ANCHOR_CONTROL | prediction | results/srr_production/inference/anchor_identity_control/predictions/Case1010... | BOUND |
-
-
-\newpage
-
-# 附录 E6：历史 prediction binding 分块（续 7）
-
-| model_id | artifact_type | path | binding_status |
-| --- | --- | --- | --- |
-| BATCH0_3_SRR_V2_ANCHOR_CONTROL | prediction | results/srr_production/inference/anchor_identity_control/predictions/Case1021... | BOUND |
-| BATCH0_3_SRR_V2_ANCHOR_CONTROL | prediction | results/srr_production/inference/anchor_identity_control/predictions/Case1023... | BOUND |
-| BATCH0_3_SRR_V2_ANCHOR_CONTROL | prediction | results/srr_production/inference/anchor_identity_control/predictions/Case1029... | BOUND |
-| BATCH0_3_SRR_V2_ANCHOR_CONTROL | prediction | results/srr_production/inference/anchor_identity_control/predictions/Case1033... | BOUND |
-| BATCH0_3_SRR_V2_ANCHOR_CONTROL | prediction | results/srr_production/inference/anchor_identity_control/predictions/Case1040... | BOUND |
-| BATCH0_3_SRR_V2_ANCHOR_CONTROL | prediction | results/srr_production/inference/anchor_identity_control/predictions/Case1042... | BOUND |
-| BATCH0_3_SRR_V2_ANCHOR_CONTROL | prediction | results/srr_production/inference/anchor_identity_control/predictions/Case1045... | BOUND |
-| BATCH0_3_SRR_V2_ANCHOR_CONTROL | prediction | results/srr_production/inference/anchor_identity_control/predictions/Case1047... | BOUND |
-
-
-\newpage
-
-# 附录 E6：历史 prediction binding 分块（续 8）
-
-| model_id | artifact_type | path | binding_status |
-| --- | --- | --- | --- |
-| BATCH0_3_SRR_V2_ANCHOR_CONTROL | prediction | results/srr_production/inference/anchor_identity_control/predictions/Case1053... | BOUND |
-| BATCH0_3_SRR_V2_ANCHOR_CONTROL | prediction | results/srr_production/inference/anchor_identity_control/predictions/Case1062... | BOUND |
-| BATCH0_3_SRR_V2_ANCHOR_CONTROL | prediction | results/srr_production/inference/anchor_identity_control/predictions/Case1070... | BOUND |
-| BATCH0_3_SRR_V2_ANCHOR_CONTROL | prediction | results/srr_production/inference/anchor_identity_control/predictions/Case1073... | BOUND |
-| BATCH0_3_SRR_V2_ANCHOR_CONTROL | prediction | results/srr_production/inference/anchor_identity_control/predictions/Case1080... | BOUND |
-| BATCH0_3_SRR_V2_ANCHOR_CONTROL | prediction | results/srr_production/inference/anchor_identity_control/predictions/Case2002... | BOUND |
-| BATCH0_3_SRR_V2_ANCHOR_CONTROL | prediction | results/srr_production/inference/anchor_identity_control/predictions/Case2007... | BOUND |
-| BATCH0_3_SRR_V2_ANCHOR_CONTROL | prediction | results/srr_production/inference/anchor_identity_control/predictions/Case2008... | BOUND |
-
-
-\newpage
-
-# 附录 E6：历史 prediction binding 分块（续 9）
-
-| model_id | artifact_type | path | binding_status |
-| --- | --- | --- | --- |
-| BATCH0_3_SRR_V2_ANCHOR_CONTROL | prediction | results/srr_production/inference/anchor_identity_control/predictions/Case2017... | BOUND |
-| BATCH0_3_SRR_V2_ANCHOR_CONTROL | prediction | results/srr_production/inference/anchor_identity_control/predictions/Case2020... | BOUND |
-| BATCH0_3_SRR_V2_ANCHOR_CONTROL | prediction | results/srr_production/inference/anchor_identity_control/predictions/Case2031... | BOUND |
-| BATCH0_3_SRR_V2_ANCHOR_CONTROL | prediction | results/srr_production/inference/anchor_identity_control/predictions/Case2033... | BOUND |
-| BATCH0_3_SRR_V2_ANCHOR_CONTROL | prediction | results/srr_production/inference/anchor_identity_control/predictions/Case3004... | BOUND |
-| BATCH0_3_SRR_V2_ANCHOR_CONTROL | prediction | results/srr_production/inference/anchor_identity_control/predictions/Case3011... | BOUND |
-| BATCH0_3_SRR_V2_ANCHOR_CONTROL | prediction | results/srr_production/inference/anchor_identity_control/predictions/Case3012... | BOUND |
-| BATCH0_3_SRR_V2_ANCHOR_CONTROL | prediction | results/srr_production/inference/anchor_identity_control/predictions/Case3023... | BOUND |
+| B0_3_SRR_ANCHOR | prediction | BOUND | 120 |
+| B0_3_SRR_ANCHOR | prediction | BOUND_TRUNCATED_FOR_P... | 1 |
+| DG_DR_DPR | prediction | BOUND | 119 |
 
 
 \newpage
 
 # 附录 E7：组件生存清单分块
 
-| source_model | component | casewise_signal | failure_mode | future_status |
+| source_model | component | casewise_signal | failure_mode | future |
 | --- | --- | --- | --- | --- |
-| Batch7 | availability-aware evidence | some | implementation complexity | RETAIN_AS_DATA_OR_SUPERVISION_RULE |
-| Batch7 | pathology-specific retrieval | weak | not deployable | RETAIN_AS_OPTIONAL_MECHANISM_TO_RETEST |
-| Batch7 | negative-space | unproven | not independently validated | RETAIN_AS_OPTIONAL_MECHANISM_TO_RETEST |
-| Batch7 | complex router/SIP | harmful | scar degradation | DO_NOT_REUSE_CURRENT_IMPLEMENTATION |
-| MMRD | reliable-label supervision | supportive | not model-gain alone | RETAIN_AS_DATA_OR_SUPERVISION_RULE |
-| MMRD | no-T2 edema hygiene | supportive | not model-gain alone | RETAIN_AS_DATA_OR_SUPERVISION_RULE |
-| MMRD | simple residual pathology head | weak | underpowered head | DO_NOT_REUSE_CURRENT_IMPLEMENTATION |
-| Cascade | strong baseline fallback | protective | gain near zero | RETAIN_WITH_STRONG_EVIDENCE |
+| Batch7 | availability-awa... | some | implementation c... | KEEP_DATA_RULE |
+| Batch7 | pathology-specif... | weak | not deployable | RETEST_OPTION |
+| Batch7 | negative-space | unproven | not independentl... | RETEST_OPTION |
+| Batch7 | complex router/SIP | harmful | scar degradation | DO_NOT_REUSE_CUR... |
+| MMRD | reliable-label s... | supportive | not model-gain a... | KEEP_DATA_RULE |
+| MMRD | no-T2 edema hygiene | supportive | not model-gain a... | KEEP_DATA_RULE |
+| MMRD | simple residual ... | weak | underpowered head | DO_NOT_REUSE_CUR... |
+| Cascade | strong baseline ... | protective | gain near zero | KEEP_STRONG |
 
 
 \newpage
 
 # 附录 E7：组件生存清单分块（续 2）
 
-| source_model | component | casewise_signal | failure_mode | future_status |
+| source_model | component | casewise_signal | failure_mode | future |
 | --- | --- | --- | --- | --- |
-| Cascade | bounded correction | small | ceiling too low | RETAIN_AS_OPTIONAL_MECHANISM_TO_RETEST |
-| Cascade | prototype input | unresolved | control shared inputs | UNRESOLVED |
-| ARC | direct reconstruction | mixed | decoder/final-mask mismatch | RETAIN_AS_OPTIONAL_MECHANISM_TO_RETEST |
-| ARC | decoder reset | harmful | random decoder loses strong baseline | DO_NOT_REUSE_CURRENT_IDEA |
-| DG/DR/DPR | pathology-specific arbitration | unresolved | stopped/partial gates | RETAIN_AS_OPTIONAL_MECHANISM_TO_RETEST |
-| PRISM | private pyramids/routing | weak | decoder/training schedule loss | DO_NOT_REUSE_CURRENT_IMPLEMENTATION |
-| PRISM | stage schedule | declines late | selected checkpoint not best for V2 edema-zone | RETAIN_AS_OPTIONAL_MECHANISM_TO_RETEST |
+| Cascade | bounded correction | small | ceiling too low | RETEST_OPTION |
+| Cascade | prototype input | unresolved | control shared i... | UNRESOLVED |
+| ARC | direct reconstru... | mixed | decoder/final-ma... | RETEST_OPTION |
+| ARC | decoder reset | harmful | random decoder l... | DO_NOT_REUSE |
+| DG/DR/DPR | pathology-specif... | unresolved | stopped/partial ... | RETEST_OPTION |
+| PRISM | private pyramids... | weak | decoder/training... | DO_NOT_REUSE_CUR... |
+| PRISM | stage schedule | declines late | selected checkpo... | RETEST_OPTION |
 
 
 \newpage
@@ -1553,18 +1722,18 @@ checkpoint 清单只显示定位字段，不展开长路径列，避免右侧截
 
 | path | hash_status | size_bytes |
 | --- | --- | --- |
-| results/20260729_care_prism_fold0_fold1_v2/finalizer_state.json | FULL | 1260 |
-| results/20260729_care_prism_v2_backbone_repair_and_resume/checkpoint_resume_r... | FULL | 594 |
-| results/20260729_care_prism_v2_backbone_repair_and_resume/controller_context.... | FULL | 2190 |
-| results/20260729_care_prism_v2_backbone_repair_and_resume/w3_training_summary... | FULL | 2759 |
-| results/20260729_care_prism_fold0_fold1_v2/controller_context.json | PREFIX_8192_BYTES | 8289 |
-| results/20260729_care_prism_fold0_fold1_v2/controller_bootstrap_snapshot.md | FULL | 894 |
-| results/20260729_care_prism_fold0_fold1_v2/architecture_delta_final.md | FULL | 4306 |
-| results/20260729_care_prism_fold0_fold1_v2/known_bad_report.json | FULL | 443 |
-| results/20260729_care_prism_fold0_fold1_v2/unit_test_report.json | FULL | 327 |
-| results/20260729_care_prism_fold0_fold1_v2/controller_report.md | FULL | 1976 |
-| results/20260729_care_prism_fold0_fold1_v2/mapper_report_final.md | PREFIX_8192_BYTES | 9056 |
-| results/20260729_care_prism_fold0_fold1_v2/adoption_receipt.json | FULL | 1524 |
+| results/.../finalizer_state.json | FULL | 1260 |
+| results/.../checkpoint_resume... | FULL | 594 |
+| results/.../controller_contex... | FULL | 2190 |
+| results/.../w3_training_summa... | FULL | 2759 |
+| results/.../controller_contex... | PREFIX_8192_BYTES | 8289 |
+| results/.../controller_bootst... | FULL | 894 |
+| results/.../architecture_delt... | FULL | 4306 |
+| results/.../known_bad_report.... | FULL | 443 |
+| results/.../unit_test_report.... | FULL | 327 |
+| results/.../controller_report.md | FULL | 1976 |
+| results/.../mapper_report_fin... | PREFIX_8192_BYTES | 9056 |
+| results/.../adoption_receipt.... | FULL | 1524 |
 
 
 \newpage
@@ -1578,4 +1747,4 @@ V2 的缺口不再是 REQUIRED GPU 未运行，而是后续科学设计前的边
 
 # 附录 G：PDF 渲染验收记录
 
-最终 PDF 采用 `pandoc_xelatex_named_fonts`，不是 Chromium fallback。验收重点是 `pdfinfo` 不含 HeadlessChrome/Skia，`pdffonts` 出现 TeXGyreTermes 与 `/users` render bundle 的 NotoSerifSC/NotoSansSC，`pdftotext -layout` 中文可抽取，第 1、3、10、19 页 PNG 中中文和表格可见。
+最终 PDF 采用 `pandoc_xelatex_named_fonts`，不是 Chromium fallback。验收重点是 `pdfinfo` 不含 HeadlessChrome/Skia，`pdffonts` 出现 TeXGyreTermes 与 `/users` render bundle 的 NotoSerifSC/NotoSansSC，`pdftotext -layout` 中文可抽取，并完成全页 PNG 视觉检查。

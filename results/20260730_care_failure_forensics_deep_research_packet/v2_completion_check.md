@@ -20,6 +20,6 @@ pdf_visual_validation_complete: true
 validators_passed: true
 all_jobs_terminal: true
 aggregation_complete: true
-git_commit_decision: commit_after_validator
+git_commit_decision: auto_local_commit_after_validator
 git_push_decision: forbidden_by_contract_not_attempted
 next_required_action: hand V2 local evidence packet to external Deep Research; do not start new architecture in this task

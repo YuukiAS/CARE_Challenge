@@ -1,6 +1,6 @@
 {
   "blocked_or_failure_reason": "",
-  "commit_status": "local_commit_created_by_final_step",
+  "commit_status": "auto_local_commit_after_v2_validator",
   "evidence_paths": [
     "results/20260730_care_failure_forensics_deep_research_packet/CARE_Failure_Forensics_Deep_Research_Evidence_Packet_20260730_v2.pdf",
     "results/20260730_care_failure_forensics_deep_research_packet/v2_strict_validator_report.json",

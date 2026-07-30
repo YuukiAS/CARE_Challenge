@@ -30,6 +30,7 @@ def write_care_header(output: Path) -> bool:
 \usepackage{amsmath,amssymb}
 \usepackage{booktabs,longtable,array}
 \usepackage{graphicx}
+\usepackage{pdflscape}
 \usepackage{hyperref}
 \hypersetup{colorlinks=true,linkcolor=blue,urlcolor=blue,citecolor=blue}
 \XeTeXlinebreaklocale "zh"

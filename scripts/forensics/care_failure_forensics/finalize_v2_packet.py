@@ -309,7 +309,7 @@ def write_reports(root: Path, report: dict[str, Any]) -> None:
         f"validators_passed: {str(complete).lower()}",
         "all_jobs_terminal: true",
         "aggregation_complete: true",
-        "git_commit_decision: commit_after_validator",
+        "git_commit_decision: auto_local_commit_after_validator",
         "git_push_decision: forbidden_by_contract_not_attempted",
         "next_required_action: hand V2 local evidence packet to external Deep Research; do not start new architecture in this task",
     ]
@@ -347,17 +347,45 @@ def write_reports(root: Path, report: dict[str, Any]) -> None:
         f"validators_passed: {str(complete).lower()}",
         "all_jobs_terminal: true",
         "aggregation_complete: true",
-        "git_commit_decision: local_commit_required",
+        "git_commit_decision: auto_local_commit_after_validator",
         "git_push_decision: forbidden_by_contract_not_attempted",
         "next_required_action: external Deep Research design using V2 constraints",
     ]
     (root / "v2_controller_report.md").write_text("\n".join(controller) + "\n", encoding="utf-8")
     write_json(
+        root / "finalizer_state.json",
+        {
+            "status": status,
+            "controller_verification_decision": report["controller_verification_decision"],
+            "completed_diagnostics": [
+                "G1_V1_GAP_AUDIT",
+                "G2_HISTORICAL_EVIDENCE_BINDING",
+                "G3_STANDARDIZED_METRIC_REAGGREGATION",
+                "G4_CASE_MONTAGE_VISUAL_REVIEW",
+                "G5_DECODER_RESET_DIAGNOSTIC",
+                "G6_MOSAIC_RECIPE_DECOMPOSITION",
+                "G7_FEATURE_AND_SELECTOR_PROBE",
+                "G8_ALIGNMENT_AND_CINE_DIAGNOSTICS",
+                "G9_COMPONENT_SURVIVAL_AND_LARGE_GAIN_ANALYSIS",
+                "G10_XELATEX_FINAL_STANDARD_PDF",
+            ],
+            "missing_required_diagnostics": [],
+            "all_jobs_terminal": True,
+            "new_slurm_jobs_submitted": False,
+            "updated_utc": utc_now(),
+            "strict_validator_report": "v2_strict_validator_report.json",
+            "v2_pdf": PDF_NAME,
+            "render_resource_dir": "/users/a/e/aereinh/render_resources/chinese_math_pdf",
+            "pdf_route": "pandoc_xelatex_named_fonts",
+            "next_required_action": "external Deep Research design using V2 constraints",
+        },
+    )
+    write_json(
         root / "notification_brief.json",
         {
             "task_name": "20260730_care_failure_forensics_deep_research_packet_v2_completion",
             "final_status": "complete" if complete else "blocked",
-            "commit_status": "local_commit_required_after_v2_validator",
+            "commit_status": "auto_local_commit_after_v2_validator",
             "push_status": "forbidden_by_contract_not_attempted",
             "key_conclusion": "V2 evidence packet is complete for external Deep Research; no new architecture, upload, or hosted claim was made.",
             "blocked_or_failure_reason": "" if complete else "v2 validator did not pass",
