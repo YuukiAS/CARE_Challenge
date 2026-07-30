@@ -1,16 +1,17 @@
 {
   "blocked_or_failure_reason": "",
-  "commit_status": "committed 78bf1f5 forensics: finalize CARE deep-research evidence packet v3",
+  "commit_status": "evidence committed 18362fb forensics: finalize CARE design-readiness evidence packet v4",
   "evidence_paths": [
-    "results/20260730_care_failure_forensics_deep_research_packet/CARE_Failure_Forensics_Deep_Research_Evidence_Packet_20260730_v3.pdf",
-    "results/20260730_care_failure_forensics_deep_research_packet/v3_strict_validator_report.json",
-    "results/20260730_care_failure_forensics_deep_research_packet/v3_pdf_validation_report.json",
-    "results/20260730_care_failure_forensics_deep_research_packet/DEEP_RESEARCH_MODEL_DESIGN_INPUT_20260730.md"
+    "results/20260730_care_failure_forensics_deep_research_packet/CARE_Failure_Forensics_Deep_Research_Evidence_Packet_20260730_v4.pdf",
+    "results/20260730_care_failure_forensics_deep_research_packet/v4_strict_validator_report.json",
+    "results/20260730_care_failure_forensics_deep_research_packet/v4_pdf_validation_report.json",
+    "results/20260730_care_failure_forensics_deep_research_packet/v4_pdf_page_bbox_scan.csv",
+    "results/20260730_care_failure_forensics_deep_research_packet/DEEP_RESEARCH_MODEL_DESIGN_INPUT_20260730_v4.md"
   ],
   "final_status": "complete",
-  "key_conclusion": "V3 final-standard XeLaTeX PDF is complete; /users render resources were used, Chinese text is extractable, named TeXGyre/Noto fonts are embedded, and 40 atlas cases bind MoSAIC full/final voxel predictions.",
-  "next_step": "Use the V3 PDF and DEEP_RESEARCH_MODEL_DESIGN_INPUT_20260730.md for the external Deep Research model-design step.",
-  "push_status": "pushed origin/main 78bf1f5",
-  "slurm_terminal_status": "V3 feature probe Slurm jobs terminal: 61365568 failed due script bug; 61365632 and 61369267 completed; all required evidence was regenerated after repair.",
-  "task_name": "20260730_care_failure_forensics_deep_research_packet_v3_completion"
+  "key_conclusion": "V4 design-readiness evidence packet is complete. The final PDF was rendered with Pandoc + XeLaTeX using /users/a/e/aereinh/render_resources/chinese_math_pdf; Chinese text is extractable, named TeXGyreTermes/NotoSerifSC fonts are embedded, no Chromium/Skia fallback was used, and page bbox/visual checks no longer show overlay or clipped wide tables. Current model status remains FAILED_GATE; no validation upload, Docker upload, hosted claim, or new architecture training was authorized.",
+  "next_step": "Use the V4 PDF and DEEP_RESEARCH_MODEL_DESIGN_INPUT_20260730_v4.md as evidence input for external Deep Research model design; do not treat this as current model success.",
+  "push_status": "pushed origin/main 18362fb",
+  "slurm_terminal_status": "V4 MoSAIC/feature probe accounting terminal: 61220581.51-.52 completed MoSAIC evidence; 61220581.53/.55/.57 failed during repair iterations; 61220581.54/.56 were cancelled slow/obsolete attempts; 61220581.58 completed final feature probe evidence; duplicate queued job 61376439 was cancelled.",
+  "task_name": "20260730_care_failure_forensics_deep_research_packet_v4_completion"
 }
