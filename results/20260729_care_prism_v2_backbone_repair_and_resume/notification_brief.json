@@ -1,0 +1,18 @@
+{
+  "blocked_or_failure_reason": "CARE-PRISM v2 已完成 W1/W2 strict validation 和 W3 fold0 6500-step formal training；frozen step3000 checkpoint 在 fold0 outer 一次评价上同时低于同折 nnU-Net，scar 与 edema-zone 多数病例为 harm，因此不能进入 W4/fold1。",
+  "commit_status": "local commit b4262fc61d866459f259ba58126035d2555c37c3 created",
+  "evidence_paths": [
+    "results/20260729_care_prism_v2_backbone_repair_and_resume/controller_w3_return_packet.json",
+    "results/20260729_care_prism_v2_backbone_repair_and_resume/w3_strict_validator_report.json",
+    "results/20260729_care_prism_v2_backbone_repair_and_resume/mapper_final_report.json",
+    "results/20260729_care_prism_v2_backbone_repair_and_resume/evaluation/fold0_w3_outer_once_formal_v2/summary.json",
+    "prompts/routes/handoffs/CURRENT.md",
+    "wiki/README.md"
+  ],
+  "final_status": "blocked",
+  "key_conclusion": "CARE-PRISM v2 的实现与训练链路已经跑到 fold0 W3 终点，但最终 frozen checkpoint 在 outer 上伤害 scar 和 edema-zone；这说明当前校准或 refinement 策略不能替代同折 nnU-Net，必须回到 Planner 重新规划，不能继续 W4。",
+  "next_step": "Planner 读取 pushed commit b4262fc61d866459f259ba58126035d2555c37c3 和结果包，针对 calibration/refinement 重新规划；除非新 W3 门通过，不得训练 fold1 或访问 fold1 outer。",
+  "push_status": "pushed to origin/main at b4262fc61d866459f259ba58126035d2555c37c3",
+  "slurm_terminal_status": "job 61220581 allocation alive; W2 training, W3 training, inner selection, and one-time outer evaluation commands all exited 0",
+  "task_name": "CARE-PRISM v2 W1/W2 repair and W3 fold0 gate"
+}

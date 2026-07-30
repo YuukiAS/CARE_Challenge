@@ -15,13 +15,58 @@ The default recipient and SMTP settings are in `config.example.json`. The defaul
 
 ## Controller completion brief
 
-For main-controller batches, the controller must write a concise terminal brief before marking the goal complete or blocked:
+For main-controller batches, the controller must write a concise terminal brief only after the batch is truly terminal: aggregation, validators, Slurm terminal accounting, commit status, and push status have all been checked. Every goal achievement or goal block must produce this brief and send one email through the existing watcher.
 
 ```text
 results/<task>/notification_brief.json
 ```
 
+Minimum schema:
+
+```json
+{
+  "task_name": "...",
+  "final_status": "complete | blocked",
+  "commit_status": "...",
+  "push_status": "...",
+  "key_conclusion": "中文短结论",
+  "blocked_or_failure_reason": "",
+  "slurm_terminal_status": "...",
+  "evidence_paths": ["results/..."],
+  "next_step": "下一步"
+}
+```
+
 Required fields are `task_name`, `final_status`, `commit_status`, `push_status`, `key_conclusion`, `blocked_or_failure_reason`, `slurm_terminal_status`, `evidence_paths`, and `next_step`. The watcher refuses to send a main completion email if this file is missing or if any brief value still contains `PENDING`, `RUNNING`, `NEEDS_MONITOR`, `JOB_SUBMITTED`, or `AWAITING_SACCT`. This keeps submitted-only and monitor packets from producing completion emails.
+
+Do not write an ad hoc SMTP script, do not call `smtp.send_message(...)` directly, do not create another notifier, and do not route sending through watchboard. Use only the existing watcher commands below.
+
+## Controller Send Flow
+
+One-shot send after terminal brief:
+
+```bash
+./envs/env_CARE/bin/python controller_notifications/notify_goal_watcher.py --once
+```
+
+Long-running existing watcher:
+
+```bash
+bash controller_notifications/start_in_tmux.sh
+```
+
+It runs in:
+
+```text
+care_notifier:Notifier
+```
+
+Logs and status:
+
+```text
+controller_notifications/logs/notify_goal_watcher.log
+controller_notifications/state/notify_goal_watcher_status.json
+```
 
 ## Checks
 

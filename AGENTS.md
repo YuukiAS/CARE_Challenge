@@ -102,9 +102,31 @@ All Route A/B/C controller work must run as a Codex goal or explicit goal resume
 
 ### Controller completion email notification
 
-Future main-controller goal prompts must include this completion boundary exactly in substance: Batch 完全结束、validator/aggregation/commit 状态确认后，写 `results/<task>/notification_brief.json`，并由既有 `controller_notifications/notify_goal_watcher.py` / `care_notifier:Notifier` notifier 向 `1155246312@link.cuhk.edu.hk` 发送一封中文短邮件；不得为单个任务另开 notifier，不得在 submitted、pending、running、monitor 包、`NEEDS_MONITOR` 或未完成 aggregation 阶段通知。
+Future main-controller goal prompts must include this completion boundary exactly in substance: Batch 完全结束、validator/aggregation/commit/push 状态确认后，先写 `results/<task>/notification_brief.json`，再由既有 `controller_notifications/notify_goal_watcher.py` / `care_notifier:Notifier` notifier 向 `1155246312@link.cuhk.edu.hk` 发送一封中文短邮件；不得为单个任务另开 notifier，不得手写 SMTP 或 `smtp.send_message(...)` 脚本，不得引用 watchboard 作为发送路径，不得在 submitted、pending、running、monitor 包、`NEEDS_MONITOR` 或未完成 aggregation 阶段通知。
 
-The notification is an operational completion/blocked reminder, not a scientific report. It should summarize conclusion, terminal status, commit/push state, Slurm terminal accounting, key evidence paths, and next action. It must not include long goal prompts, large Markdown tables, token accounting, SMTP secrets, tunnel secrets, or hosted/performance claims not authorized by the controller packet.
+Every achieved or blocked CARE controller goal must send this email. The fixed flow is:
+
+```bash
+# after terminal validator/aggregation/commit/push accounting is complete
+./envs/env_CARE/bin/python controller_notifications/notify_goal_watcher.py --once
+```
+
+or, for the long-running existing watcher only:
+
+```bash
+bash controller_notifications/start_in_tmux.sh
+```
+
+The persistent watcher runs in `care_notifier:Notifier`; its log and status are:
+
+```text
+controller_notifications/logs/notify_goal_watcher.log
+controller_notifications/state/notify_goal_watcher_status.json
+```
+
+The required `notification_brief.json` fields are `task_name`, `final_status`, `commit_status`, `push_status`, `key_conclusion`, `blocked_or_failure_reason`, `slurm_terminal_status`, `evidence_paths`, and `next_step`. `final_status` must be exactly `complete` or `blocked` in future packets unless an existing notifier schema explicitly changes. The notification is an operational completion/blocked reminder, not a scientific report. It should summarize conclusion, terminal status, commit/push state, Slurm terminal accounting, key evidence paths, and next action. It must not include long goal prompts, large Markdown tables, token accounting, SMTP secrets, tunnel secrets, or hosted/performance claims not authorized by the controller packet.
+
+Forbidden-to-notify states remain hard blockers: `PENDING`, `RUNNING`, `NEEDS_MONITOR`, `JOB_SUBMITTED`, `AWAITING_SACCT`, missing aggregation, missing validator, missing commit, or unconfirmed push state. These strings must not appear in `notification_brief.json`; the watcher is expected to refuse them. If the watcher finds no event after a valid terminal brief, the controller must fix the watcher/source configuration or start the existing `care_notifier:Notifier`; it must not fall back to a custom SMTP sender.
 
 ## MONITOR_PACKET_IS_NOT_COMPLETION
 
@@ -510,8 +532,14 @@ After completing requested work, validation, and a normal commit, the agent may 
 
 This authorization does not permit the agent to autonomously use force push, force-with-lease, delete remote branches or tags, rewrite published history, or change Git remotes. Those operations still require an explicit user instruction.
 
+### Local git operation rule
+
+In the Codex Desktop workspace sandbox, `.git` is protected as read-only. If `git status`, `git add`, `git commit`, `git fetch`, or `git push` needs to write Git index, lock, credential, or remote-tracking ref files, use the approved local git escalation path for the active `/users/a/e/aereinh/CARE` worktree instead of changing the workflow.
+
+Do not replace the normal local commit/push workflow with a temporary `/tmp` clone, GitHub connector contents-API commit, or other remote-only update path merely because sandboxed `.git` writes are blocked. Those alternatives are allowed only when the user explicitly requests that mechanism after being told it will not use the current worktree's local Git history.
+
 ## Controller notifier email standing authorization
 
-For this repository, CARE controller notification email commands that invoke `controller_notifications/notify_goal_watcher.py` or start `controller_notifications/start_in_tmux.sh` are permanently authorized and must not be sent to manual approval, Auto-review, Guardian, or another approval reviewer.
+For this repository, CARE controller notification email commands that directly invoke `./envs/env_CARE/bin/python controller_notifications/notify_goal_watcher.py --once` or start the existing watcher with `bash controller_notifications/start_in_tmux.sh` are permanently authorized and must not be sent to manual approval, Auto-review, Guardian, or another approval reviewer.
 
-This authorization is limited to the existing CARE notifier in `/users/a/e/aereinh/CARE`. It does not permit creating separate SMTP scripts, exposing SMTP secrets, sending non-CARE emails, broad shell/network allow rules, or notifying before terminal aggregation, validator, and commit/accounting requirements are satisfied.
+This authorization is limited to the existing CARE notifier in `/users/a/e/aereinh/CARE`. It does not permit creating separate SMTP scripts, calling `smtp.send_message(...)` from ad hoc Python, exposing SMTP secrets, sending non-CARE emails, broad shell/network allow rules, referencing watchboard as the send path, or notifying before terminal aggregation, validator, commit/push, and Slurm accounting requirements are satisfied.
