@@ -367,11 +367,46 @@ def collect_goal_facts(
                         }
                     )
                 )
+            facts.extend(collect_manual_completion_facts(config, route))
             continue
+        facts.extend(collect_manual_completion_facts(config, route))
         pane_fact = read_goal_fact_from_pane(config, route, capture_func=capture_func)
         if pane_fact is not None:
             facts.append(pane_fact)
     return facts
+
+
+def collect_manual_completion_facts(config: dict[str, Any], route: str) -> list[GoalFact]:
+    repo_root = repo_root_from_config(config)
+    candidates: list[Path] = []
+    for raw in route_config(config, route).get("notification_brief_paths", []):
+        pattern = Path(str(raw))
+        pattern_text = str(pattern if pattern.is_absolute() else repo_root / pattern)
+        matches = [Path(match) for match in glob.glob(pattern_text)] if any(ch in pattern_text for ch in "*?[") else [Path(pattern_text)]
+        candidates.extend(path for path in matches if path.is_file())
+    candidates.sort(key=lambda path: path.stat().st_mtime, reverse=True)
+    for path in candidates[:1]:
+        try:
+            payload = json.loads(path.read_text(encoding="utf-8"))
+        except (OSError, json.JSONDecodeError):
+            continue
+        if not isinstance(payload, dict) or notification_brief_error(payload):
+            continue
+        status = str(payload.get("final_status", "")).lower()
+        if status not in NOTIFY_STATUSES:
+            continue
+        return [
+            GoalFact(
+                route=route,
+                source="manual_controller_completion",
+                source_path=str(path.relative_to(repo_root) if path.is_relative_to(repo_root) else path),
+                thread_id=str(payload.get("task_name") or path.parent.name),
+                objective=str(payload.get("key_conclusion") or payload.get("task_name") or path.parent.name),
+                status=status,
+                updated_at_ms=str(int(path.stat().st_mtime * 1000)),
+            )
+        ]
+    return []
 
 
 def observed_key(fact: GoalFact) -> str:
@@ -422,6 +457,8 @@ def pending_events_from_facts(config: dict[str, Any], state: dict[str, Any], fac
         key = observed_key(fact)
         previous = state["observed"].get(key, {})
         previous_status = str(previous.get("status", ""))
+        if not previous_status and fact.source == "manual_controller_completion":
+            previous_status = "manual_pending"
         if fact.status in NOTIFY_STATUSES and previous_status and previous_status not in NOTIFY_STATUSES:
             event = event_for_transition(config, fact, previous_status)
             if event.key not in state["notified"]:

@@ -1,15 +1,16 @@
 {
   "blocked_or_failure_reason": "",
-  "commit_status": "auto_local_commit_after_v2_validator",
+  "commit_status": "committed 78bf1f5 forensics: finalize CARE deep-research evidence packet v3",
   "evidence_paths": [
-    "results/20260730_care_failure_forensics_deep_research_packet/CARE_Failure_Forensics_Deep_Research_Evidence_Packet_20260730_v2.pdf",
-    "results/20260730_care_failure_forensics_deep_research_packet/v2_strict_validator_report.json",
-    "results/20260730_care_failure_forensics_deep_research_packet/v2_controller_report.md"
+    "results/20260730_care_failure_forensics_deep_research_packet/CARE_Failure_Forensics_Deep_Research_Evidence_Packet_20260730_v3.pdf",
+    "results/20260730_care_failure_forensics_deep_research_packet/v3_strict_validator_report.json",
+    "results/20260730_care_failure_forensics_deep_research_packet/v3_pdf_validation_report.json",
+    "results/20260730_care_failure_forensics_deep_research_packet/DEEP_RESEARCH_MODEL_DESIGN_INPUT_20260730.md"
   ],
   "final_status": "complete",
-  "key_conclusion": "V2 evidence packet is complete for external Deep Research; no new architecture, upload, or hosted claim was made.",
-  "next_step": "Use V2 evidence packet for external Deep Research design constraints.",
-  "push_status": "forbidden_by_contract_not_attempted",
-  "slurm_terminal_status": "all required diagnostic evidence terminal or explicitly missing-bound-asset",
-  "task_name": "20260730_care_failure_forensics_deep_research_packet_v2_completion"
+  "key_conclusion": "V3 final-standard XeLaTeX PDF is complete; /users render resources were used, Chinese text is extractable, named TeXGyre/Noto fonts are embedded, and 40 atlas cases bind MoSAIC full/final voxel predictions.",
+  "next_step": "Use the V3 PDF and DEEP_RESEARCH_MODEL_DESIGN_INPUT_20260730.md for the external Deep Research model-design step.",
+  "push_status": "pushed origin/main 78bf1f5",
+  "slurm_terminal_status": "V3 feature probe Slurm jobs terminal: 61365568 failed due script bug; 61365632 and 61369267 completed; all required evidence was regenerated after repair.",
+  "task_name": "20260730_care_failure_forensics_deep_research_packet_v3_completion"
 }
