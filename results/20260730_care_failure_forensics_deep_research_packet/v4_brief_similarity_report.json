@@ -1,0 +1,9 @@
+{
+  "created_at": "2026-07-30T15:41:28+00:00",
+  "note": "Token-overlap check is a conservative script gate; full prose review still required.",
+  "passes_under_0_40": true,
+  "pure_edema_unique_tokens": 82,
+  "scar_unique_tokens": 82,
+  "shared_unique_tokens": 12,
+  "similarity_fraction": 0.14634146341463414
+}

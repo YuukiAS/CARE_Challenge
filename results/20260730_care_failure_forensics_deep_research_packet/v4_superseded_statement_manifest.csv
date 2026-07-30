@@ -1,0 +1,4 @@
+statement,replacement,reason
+V3 controller_verification_decision=VERIFIED_COMPLETE,Operational V3 artifact existed; V4 science-readiness is not complete.,V3 state conflated four decision layers.
+V3 atlas QA fail=0,"V3 PDF atlas placement failed geometry, so V4 uses a separate A3 landscape atlas with positive bbox margins.",V3 image physical width exceeded A4 page width.
+Prototype/cascade negative conclusion,Prototype claim is limited unless control/SRR inputs are proven isolated.,Input equivalence can confound prototype effectiveness.

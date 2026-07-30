@@ -1,0 +1,23 @@
+{
+  "case_count": 80,
+  "created_at": "2026-07-30T15:35:06+00:00",
+  "fold_count": 5,
+  "load_report": [],
+  "outer_cases_used_read_only_diagnostic": 16,
+  "outer_used_for_training_or_tuning": false,
+  "patient_level_refold_completed": true,
+  "required_controls": [
+    "CASE_VOLUME_ONLY_CONTROL",
+    "CENTER_ONLY_CONTROL",
+    "MODALITY_ONLY_CONTROL",
+    "PATIENT_ID_LEAKAGE_CONTROL",
+    "RANDOM_LABEL_CONTROL",
+    "SHUFFLED_ACROSS_PATIENT_CONTROL",
+    "SHUFFLED_WITHIN_PATIENT_CONTROL",
+    "SPATIAL_COORDINATE_ONLY_CONTROL"
+  ],
+  "same_patient_train_eval_overlap": false,
+  "single_class_fold_rows": 0,
+  "status": "PASS",
+  "v4_status": "PASS_V4_PATIENT_LEVEL_REFOLD"
+}

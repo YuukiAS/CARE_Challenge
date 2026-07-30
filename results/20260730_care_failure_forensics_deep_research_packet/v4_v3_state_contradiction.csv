@@ -1,0 +1,6 @@
+state_layer,v3_problem,v4_value,reason
+operational_execution_status,VERIFIED_COMPLETE was used as a single umbrella decision.,INCOMPLETE,"V4 required artifacts, validators and PDF are not all present yet."
+scientific_evidence_status,Operational completion was mixed with evidence sufficiency.,INSUFFICIENT,"MoSAIC, feature probe and large-gain gates remain open; atlas and alignment are no longer V4 blockers."
+current_model_status,Evidence packet completion obscured PRISM W3 failure.,FAILED_GATE,PRISM W3 outer gate failed and W4 was not authorized.
+deep_research_readiness,High-risk gaps were still present.,NOT_READY,Design input is not complete until all V4 evidence gates pass.
+git_publication_policy,The objective body forbids push while the final line requests push.,CONFLICT_RECORDED,No push is allowed before verified V4 completion; final handling requires explicit accounting.

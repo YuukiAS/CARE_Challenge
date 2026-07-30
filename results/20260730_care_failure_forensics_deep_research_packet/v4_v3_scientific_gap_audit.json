@@ -1,0 +1,94 @@
+{
+  "created_at": "2026-07-30T15:41:25+00:00",
+  "critical_gap_count": 8,
+  "decision": "V3_NOT_SCIENTIFIC_DESIGN_READY",
+  "gap_count": 12,
+  "gaps": [
+    {
+      "current_status": "OPEN",
+      "id": "G01_BATCH0_7",
+      "observed_gap": "Batch lineage remains grouped; V4 requires individual BATCH0 through BATCH7 recovery.",
+      "required_v4_output": "v4_batch_history_recovery.csv",
+      "severity": "critical"
+    },
+    {
+      "current_status": "PARTIAL",
+      "id": "G02_BATCH7",
+      "observed_gap": "Batch7 has usable historical traces, but final design conclusion still needs explicit component survival synthesis.",
+      "required_v4_output": "v4_batch7_*",
+      "severity": "critical"
+    },
+    {
+      "current_status": "PARTIAL",
+      "id": "G03_MMRD",
+      "observed_gap": "Batch9 MMRD has matched-seed casewise evidence; V4 must bind decoder inheritance and direct/distill comparisons.",
+      "required_v4_output": "v4_mmrd_*",
+      "severity": "critical"
+    },
+    {
+      "current_status": "PARTIAL",
+      "id": "G04_CASCADE",
+      "observed_gap": "Cascade evidence supports bounded tiny correction; prototype/control isolation remains a semantic risk.",
+      "required_v4_output": "v4_cascade_*",
+      "severity": "high"
+    },
+    {
+      "current_status": "PARTIAL",
+      "id": "G05_ARC",
+      "observed_gap": "ARC has implementation/runtime evidence but must keep blueprint, code and runtime separate.",
+      "required_v4_output": "v4_arc_*",
+      "severity": "high"
+    },
+    {
+      "current_status": "OPEN",
+      "id": "G06_MOSAIC",
+      "observed_gap": "V3 M2-M10 fields remain underpopulated for full-data mechanism claims.",
+      "required_v4_output": "v4_mosaic_*",
+      "severity": "critical"
+    },
+    {
+      "current_status": "OPEN",
+      "id": "G07_FEATURE_PROBE",
+      "observed_gap": "V3 edema probes contain single-class folds; V4 requires patient-level refolding and leakage controls.",
+      "required_v4_output": "v4_feature_probe_*",
+      "severity": "critical"
+    },
+    {
+      "current_status": "OPEN",
+      "id": "G08_SCAR_EDEMA_BRIEFS",
+      "observed_gap": "Disease briefs need independent text and similarity validation.",
+      "required_v4_output": "v4_scar_scientific_brief.md; v4_pure_edema_scientific_brief.md",
+      "severity": "high"
+    },
+    {
+      "current_status": "OPEN",
+      "id": "G09_LARGE_GAIN",
+      "observed_gap": "V3 has oracle summaries but not pool-level 0.1 Dice recovery accounting.",
+      "required_v4_output": "v4_large_gain_*",
+      "severity": "critical"
+    },
+    {
+      "current_status": "CLOSED",
+      "id": "G10_ALIGNMENT",
+      "observed_gap": "V4 binds complete-trimodal alignment rows and recomputes bootstrap/center-adjusted statistics.",
+      "required_v4_output": "v4_alignment_*",
+      "severity": "high"
+    },
+    {
+      "current_status": "CLOSED",
+      "id": "G11_ATLAS",
+      "observed_gap": "V4 rebuilds the atlas as A3 landscape and validates positive page margins.",
+      "required_v4_output": "v4_atlas_*",
+      "severity": "critical"
+    },
+    {
+      "current_status": "CLOSED",
+      "id": "G12_STATE_SEMANTICS",
+      "observed_gap": "V4 separates execution, evidence, model-failure and design-readiness state.",
+      "required_v4_output": "v4_state_semantics_contract.json; v4_final_state.json",
+      "severity": "critical"
+    }
+  ],
+  "open_or_partial_gap_count": 9,
+  "source_pdf": "CARE_Failure_Forensics_Deep_Research_Evidence_Packet_20260730_v3.pdf"
+}

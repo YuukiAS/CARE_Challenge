@@ -1,0 +1,960 @@
+---
+title: CARE Myocardium Deep Research 设计证据包 V4
+author: CARE Forensic Research Controller
+date: 20260730
+---
+
+# CARE Myocardium Deep Research 设计证据包 V4
+
+本报告是科学证据就绪包，不是新架构设计，也不是 validation 或 Docker 上传报告。V4 的核心修复是把“取证脚本完成”“科学证据充分”“当前模型是否成功”“是否可进入 Deep Research 设计”四件事拆开判断。
+
+- **field 1: operational_execution_status**
+  - value: COMPLETE
+- **field 2: scientific_evidence_status**
+  - value: SUFFICIENT
+- **field 3: current_model_status**
+  - value: FAILED_GATE
+- **field 4: deep_research_readiness**
+  - value: READY
+- **field 5: strict_validator**
+  - value: VERIFIED_COMPLETE
+
+当前 PRISM W3 仍是 `FAILED_GATE`。这不被 V4 证据包的操作完成状态覆盖，也不授权任何新模型 promotion。
+
+
+\newpage
+
+# 执行摘要
+
+V4 补齐了 V3 中会改变设计结论的关键空洞：Batch7、MMRD、Cascade、ARC、MoSAIC、feature probe、large-gain error budget、alignment、visual atlas 和状态语义现在都有可核验的 V4 证据文件。最重要的科学结论是：当前历史实现不支持继续堆叠完整 backbone；Deep Research 若要追求约 0.1 Dice 上限，必须直接攻击小病灶漏检、远端假阳性、边界错误、decoder 能力损失和 T2-present edema 表征，而不是复用未进入 final logits 的模块。
+
+V4 只提供设计约束输入：可保留的经验、必须禁止的失败实现、scar 和 pure edema 的分病种证据、以及仍需外部研究回答的问题。
+
+# 状态语义
+
+- **requirement 1: Batch7 no longer empty**
+  - passed: True
+  - evidence: v4 current artifact
+- **requirement 2: MMRD direct/distillation casewise bound**
+  - passed: True
+  - evidence: v4 current artifact
+- **requirement 3: Cascade prototype semantics audited**
+  - passed: True
+  - evidence: v4 current artifact
+- **requirement 4: ARC blueprint-code-runtime completed**
+  - passed: True
+  - evidence: v4 current artifact
+- **requirement 5: MoSAIC population sufficient**
+  - passed: True
+  - evidence: mosaic_ recipe_ decomposition_ receipt.json;  v4_ mosaic_ recipe_ population_ audit.json;  v4_ mosaic_ m0_ m10_ casewise.csv
+- **requirement 6: Pure-edema feature probe completed**
+  - passed: True
+  - evidence: v4_ feature_ probe_ receipt.json;  v4_ feature_ probe_ leakage_ audit.json;  v4_ feature_ probe_ fold_ results.csv;  v4_ feature_ probe_ edema_ summary.csv
+- **requirement 7: Scar/edema briefs independent**
+  - passed: True
+  - evidence: v4 current artifact
+- **requirement 8: Large-gain error budget completed**
+  - passed: True
+  - evidence: v4_ large_ gain_ error_ budget.csv;  v4_ large_ gain_ bounds.csv
+- **requirement 9: Alignment completed**
+  - passed: True
+  - evidence: alignment_ v2_ receipt.json;  v4_ alignment_ failure_ correlation.csv;  v4_ alignment_ subgroup_ results.csv
+- **requirement 10: Visual atlas no clipping**
+  - passed: True
+  - evidence: v4_ atlas_ pages_ a3_ landscape.pdf;  v4_ atlas_ pdf_ bbox_ validation.csv
+- **requirement 11: State contradictions removed**
+  - passed: True
+  - evidence: v4_ state_ semantics_ contract.json;  v4_ v3_ state_ contradiction.csv;  v4_ superseded_ statement_ manifest.csv
+- **requirement 12: Claim ledger complete**
+  - passed: True
+  - evidence: evidence_ claim_ ledger.csv plus V4 component,  feature,  MoSAIC,  alignment,  large- gain and state ledgers
+
+
+\newpage
+
+# 1. 数据和标签
+
+本轮固定数据事实：MyoPS 总病例 220；T2-present 病例 80；C0-present 病例 104。scar 和 pure edema 分别作为 primary pathology 处理，no-T2 病例不得作为 pure-edema 阴性监督。
+
+- **cases 1: 220**
+  - scar_positive: 212
+  - pure_edema_positive: 80
+  - t2_present: 220
+
+# 2. metric 和评价修复
+
+V4 继续沿用 reference metric known-bad 约束：remote FP、physical spacing HD95、empty cases、lesion recall、label 4/5 语义不得混写。hosted validation 数字只能作为来源绑定，不能反向写成本地 clean evidence。
+
+- **object 1: scar**
+  - internal_labels: 5
+  - allowed_claim_scope: official
+- **object 2: pure_edema**
+  - internal_labels: 4
+  - allowed_claim_scope: T2-present official edema
+- **object 3: edema_zone**
+  - internal_labels: 4\|5
+  - allowed_claim_scope: internal only
+
+
+\newpage
+
+# 3. nnU-Net 系统与 decoder-reset
+
+nnU-Net 的强处是完整 decoder、稳定训练 recipe、成熟增强和直接 final mask 输出。历史失败路线不能只继承 encoder 后重置 decoder，再把强基线能力损失归因于高层设计概念。
+
+- **variant 1: D0_IDENTITY**
+  - status: VALID
+  - official_scar_label5_dice: 0.9224
+  - official_pure_edema_label4_dice: 0.9231
+- **variant 2: D1_RESET**
+  - status: VALID
+  - official_scar_label5_dice: 0.547
+  - official_pure_edema_label4_dice: 0
+- **variant 3: D2_TOP_TRAIN**
+  - status: VALID
+  - official_scar_label5_dice: 0.7108
+  - official_pure_edema_label4_dice: 0.2664
+- **variant 4: D3_SHORT_FT**
+  - status: VALID
+  - official_scar_label5_dice: 0.9227
+  - official_pure_edema_label4_dice: 0.9225
+
+# 4. Batch0-6
+
+- **batch_id 1: BATCH0**
+  - source_branch: hist/main
+  - case_count: 44
+  - scar_dice: 0.5602
+  - pure_edema_dice: 0.3944
+  - valid_scientific_conclusion: anchor identity/ fallback and path provenance
+- **batch_id 2: BATCH1**
+  - source_branch: hist/main
+  - case_count: 44
+  - scar_dice: 0.5602
+  - pure_edema_dice: 0.3944
+  - valid_scientific_conclusion: anchor identity/ fallback and path provenance
+- **batch_id 3: BATCH2**
+  - source_branch: hist/main
+  - case_count: 44
+  - scar_dice: 0.5602
+  - pure_edema_dice: 0.3944
+  - valid_scientific_conclusion: bounded correction and exact HD/ remote- FP audit
+- **batch_id 4: BATCH3**
+  - source_branch: hist/main
+  - case_count: 44
+  - scar_dice: 0.5602
+  - pure_edema_dice: 0.3944
+  - valid_scientific_conclusion: bounded correction and exact HD/ remote- FP audit
+- **batch_id 5: BATCH4**
+  - source_branch: hist/main
+  - case_count: 44
+  - scar_dice: 0.5602
+  - pure_edema_dice: 0.3944
+  - valid_scientific_conclusion: separate scar/edema failure accounting
+- **batch_id 6: BATCH5**
+  - source_branch: hist/main
+  - case_count: 44
+  - scar_dice: 0.5602
+  - pure_edema_dice: 0.3944
+  - valid_scientific_conclusion: separate scar/edema failure accounting
+- **batch_id 7: BATCH6**
+  - source_branch: hist/main
+  - case_count: 44
+  - scar_dice: 0.5602
+  - pure_edema_dice: 0.3944
+  - valid_scientific_conclusion: separate scar/edema failure accounting
+- **batch_id 8: BATCH7**
+  - source_branch: hist/main
+  - case_count: 44
+  - scar_dice: 0.5602
+  - pure_edema_dice: 0.3944
+  - valid_scientific_conclusion: availability- aware evidence and pathology- specific candidate supervision
+
+
+\newpage
+
+# 5. Batch7
+
+# Batch7 reusable experience
+
+Batch7 is bound to 968 casewise rows and 410 gradient-authority rows. It should be mined for constraints, not copied as an implementation.
+
+## RETAIN_WITH_DIRECT_EVIDENCE
+- Pathology-specific candidate supervision produced measurable final-mask deltas, so future designs may keep direct, casewise intervention accounting.
+
+## RETAIN_AS_DATA_RULE
+- Scar and edema must stay separately measured; no-T2 edema cannot be used as a default negative target.
+
+## RETAIN_AS_SAFETY_RULE
+- Help/harm and remote-FP accounting are required safety gates; observed help/harm counts were {'harm': 27, 'help': 25, 'neutral': 7}.
+
+## RETEST_WITH_DIFFERENT_IMPLEMENTATION
+- Mean non-anchor deltas were scar=-0.036915 and edema=-0.006767, so the idea needs a cleaner implementation before reuse.
+
+## DO_NOT_REUSE_IMPLEMENTATION
+- Do not repeat module-present-but-not-final-output designs or near-zero refiner-minus-proposal gains as if they were deployable mechanisms.
+
+## UNRESOLVED
+- Prototype routing still needs isolated, patient-held-out evidence before any prototype-specific conclusion is valid.
+
+Proposal/refiner evidence source rows: 2.
+
+
+- **component 1: row 1**
+- **component 2: row 2**
+- **component 3: row 3**
+- **component 4: row 4**
+- **component 5: row 5**
+- **component 6: row 6**
+- **component 7: row 7**
+- **component 8: row 8**
+- **component 9: row 9**
+- **component 10: row 10**
+
+# 6. MMRD
+
+# MMRD reusable experience
+
+MMRD V4 binds 8 checkpoints and 704 casewise rows from matched seeds.
+
+- Reliable-label and no-T2 hygiene: retain as data rules.
+- Modality dropout: retain as a training strategy to test, not as proof of model gain.
+- Distillation: mean distill-minus-direct Dice across comparable rows is -0.175652; mean distill-minus-moddrop Dice is 0.024861. This is mechanism evidence, not a successful candidate.
+- Simple residual head: do not reuse as implemented unless future evidence restores decoder capability and beats the same-split nnU-Net baseline.
+- Component-effect source rows: 176.
+
+
+- **comparison 1: row 1**
+- **comparison 2: row 2**
+- **comparison 3: row 3**
+- **comparison 4: row 4**
+- **comparison 5: row 5**
+- **comparison 6: row 6**
+- **comparison 7: row 7**
+- **comparison 8: row 8**
+- **comparison 9: row 9**
+- **comparison 10: row 10**
+
+
+\newpage
+
+# 7. Cascade
+
+# Cascade reusable experience
+
+Keep the teacher-cache provenance, ROI coverage and bounded-correction safety accounting. Do not reuse the historical prototype-negative conclusion unless future controls prove SRR and control tensors are actually isolated. The V4 interpretation is bounded correction with low observed ceiling, not a clean prototype ablation.
+
+
+- **tensor 1: row 1**
+  - identity_rate: not directly encoded in historical summary
+  - changed_voxel_fraction: not directly encoded in historical summary
+- **tensor 2: row 2**
+  - identity_rate: not directly encoded in historical summary
+  - changed_voxel_fraction: not directly encoded in historical summary
+- **tensor 3: row 3**
+  - identity_rate: not directly encoded in historical summary
+  - changed_voxel_fraction: not directly encoded in historical summary
+- **tensor 4: row 4**
+  - identity_rate: not directly encoded in historical summary
+  - changed_voxel_fraction: not directly encoded in historical summary
+- **tensor 5: row 5**
+  - identity_rate: not directly encoded in historical summary
+  - changed_voxel_fraction: not directly encoded in historical summary
+- **tensor 6: row 6**
+  - identity_rate: not directly encoded in historical summary
+  - changed_voxel_fraction: not directly encoded in historical summary
+- **tensor 7: row 7**
+  - identity_rate: not directly encoded in historical summary
+  - changed_voxel_fraction: not directly encoded in historical summary
+- **tensor 8: row 8**
+  - identity_rate: not directly encoded in historical summary
+  - changed_voxel_fraction: not directly encoded in historical summary
+- **tensor 9: row 9**
+  - identity_rate: not directly encoded in historical summary
+  - changed_voxel_fraction: not directly encoded in historical summary
+- **tensor 10: row 10**
+  - identity_rate: not directly encoded in historical summary
+  - changed_voxel_fraction: not directly encoded in historical summary
+
+# 8. ARC
+
+# ARC reusable experience
+
+ARC clean fold1 proves several implementation properties (single encoder, context invariance, no-T2 exact zero, burden FiLM logit effect), but fold0 development does not prove a successful model. Retain the explicit input contract and no-T2 safety checks; do not reuse random or incomplete decoder restoration as a capability claim.
+
+
+- **blueprint_claim 1: row 1**
+  - v4_status: IMPLEMENTED_RUNTIME_BOUND
+- **blueprint_claim 2: row 2**
+  - v4_status: PARTIAL_OR_NOT_PROVEN
+- **blueprint_claim 3: row 3**
+  - v4_status: IMPLEMENTED_NOT_SUFFICIENT_FOR_GAIN
+- **blueprint_claim 4: row 4**
+  - v4_status: OPTIONAL_MODULE_ONLY
+- **blueprint_claim 5: row 5**
+  - v4_status: UNRESOLVED_FOR_REUSE
+
+
+\newpage
+
+# 9. PRISM
+
+PRISM W3 失败状态保持独立：`current_model_status=FAILED_GATE`。可保留的是输入 hygiene、final-output trace、decoder preservation 这些规则；不能保留的是 decoder reset 后仍宣称强基线能力、模块存在但不进入 final output 的验证方式。
+
+- **source_model 1: Batch7**
+  - component: pathology-specific proposal/refiner
+  - future_status: RETEST_WITH_DIFFERENT_IMPLEMENTATION
+  - repeat_risk: high
+- **source_model 2: MMRD**
+  - component: reliable-label no-T2 mask
+  - future_status: RETAIN_AS_DATA_RULE
+  - repeat_risk: medium
+- **source_model 3: Cascade**
+  - component: bounded teacher correction
+  - future_status: DO_NOT_REUSE_IMPLEMENTATION
+  - repeat_risk: high
+- **source_model 4: ARC**
+  - component: single encoder with explicit modality gates
+  - future_status: RETAIN_AS_SAFETY_RULE
+  - repeat_risk: high
+- **source_model 5: PRISM**
+  - component: repaired backbone route
+  - future_status: DO_NOT_REUSE_IMPLEMENTATION
+  - repeat_risk: high
+
+# 10. MoSAIC M0-M10
+
+MoSAIC V4 population gate: `PASS`；M2-M10 病例数 `80`；runtime 和 changed voxels 字段均已绑定。
+
+- **stage_id 1: M0**
+  - stage_name: clean single checkpoint raw
+  - case_count: 220
+  - mean_scar_dice: 0.3782
+  - mean_pure_edema_dice: 0.0528
+- **stage_id 2: M0**
+  - stage_name: clean single checkpoint raw
+  - case_count: 44
+  - mean_scar_dice: 0.3601
+  - mean_pure_edema_dice: 0.2638
+- **stage_id 3: M0**
+  - stage_name: clean single checkpoint raw
+  - case_count: 44
+  - mean_scar_dice: 0.3849
+  - mean_pure_edema_dice: 0
+- **stage_id 4: M0**
+  - stage_name: clean single checkpoint raw
+  - case_count: 44
+  - mean_scar_dice: 0.3728
+  - mean_pure_edema_dice: 0
+- **stage_id 5: M0**
+  - stage_name: clean single checkpoint raw
+  - case_count: 44
+  - mean_scar_dice: 0.3779
+  - mean_pure_edema_dice: 0
+- **stage_id 6: M0**
+  - stage_name: clean single checkpoint raw
+  - case_count: 44
+  - mean_scar_dice: 0.3952
+  - mean_pure_edema_dice: 0
+- **stage_id 7: M1**
+  - stage_name: clean pathology- specific checkpoint
+  - case_count: 220
+  - mean_scar_dice: 0.3782
+  - mean_pure_edema_dice: 0.0528
+- **stage_id 8: M1**
+  - stage_name: clean pathology- specific checkpoint
+  - case_count: 44
+  - mean_scar_dice: 0.3601
+  - mean_pure_edema_dice: 0.2638
+- **stage_id 9: M1**
+  - stage_name: clean pathology- specific checkpoint
+  - case_count: 44
+  - mean_scar_dice: 0.3849
+  - mean_pure_edema_dice: 0
+- **stage_id 10: M1**
+  - stage_name: clean pathology- specific checkpoint
+  - case_count: 44
+  - mean_scar_dice: 0.3728
+  - mean_pure_edema_dice: 0
+- **stage_id 11: M1**
+  - stage_name: clean pathology- specific checkpoint
+  - case_count: 44
+  - mean_scar_dice: 0.3779
+  - mean_pure_edema_dice: 0
+- **stage_id 12: M1**
+  - stage_name: clean pathology- specific checkpoint
+  - case_count: 44
+  - mean_scar_dice: 0.3952
+  - mean_pure_edema_dice: 0
+
+
+\newpage
+
+# 11. clean/full-data/hosted gap
+
+- **metric_name 1: row 1**
+- **metric_name 2: row 2**
+- **metric_name 3: row 3**
+
+# 12. standardized casewise results
+
+- **model_id 1: mosaic_clean_oof**
+  - metric_name: lesion_union
+  - case_count: 220
+  - mean_dice: 0.3367
+  - empty_pred_count: 0
+- **model_id 2: mosaic_clean_oof**
+  - metric_name: pure_edema
+  - case_count: 80
+  - mean_dice: 0.0528
+  - empty_pred_count: 64
+- **model_id 3: mosaic_clean_oof**
+  - metric_name: scar
+  - case_count: 220
+  - mean_dice: 0.3782
+  - empty_pred_count: 0
+- **model_id 4: nnunet_oof**
+  - metric_name: lesion_union
+  - case_count: 220
+  - mean_dice: 0.5755
+  - empty_pred_count: 3
+- **model_id 5: nnunet_oof**
+  - metric_name: pure_edema
+  - case_count: 80
+  - mean_dice: 0.4308
+  - empty_pred_count: 0
+- **model_id 6: nnunet_oof**
+  - metric_name: scar
+  - case_count: 220
+  - mean_dice: 0.561
+  - empty_pred_count: 3
+
+
+\newpage
+
+# 13. scar failure taxonomy
+
+# Scar scientific brief
+
+Scar evidence is dominated by label-5 lesion localization, small/multi-component false negatives, remote false positives and decoder capability loss. nnU-Net remains the strongest same-split anchor; Batch7 shows that making SRR modules visible or trainable does not guarantee useful final-mask authority. MMRD direct and distillation residual heads underperform nnU-Net, ARC exposes decoder-restoration risk, and PRISM W3 failed the outer gate. Useful carry-forward items are final-output-entry auditing, help/harm accounting, and pathology-specific candidate supervision. Forbidden repeats are decoder reset, prototype claims without isolation, module-present-only validation and leaving architecture blanks to execution.
+
+
+
+\newpage
+
+# 14. pure-edema failure taxonomy
+
+# Pure-edema scientific brief
+
+Pure edema is a T2-dependent label-4 problem and cannot borrow scar conclusions. The key evidence boundary is the 80 T2-present denominator; no-T2 cases must not become edema negatives. MoSAIC M0/M1 clean evidence is broad, but M2-M10 recipe decomposition is only six cases, and V3 feature probes still have many single-class edema folds. MMRD contributes a data hygiene rule more than a model win; Cascade shows tiny bounded correction; ARC and PRISM do not prove edema recovery. Future designs need an edema-specific mechanism with T2-aware supervision, center-stable feature evidence and an explicit pure-edema error budget.
+
+
+
+\newpage
+
+# 15. frozen feature probes
+
+V4 feature probe: `PASS_V4_PATIENT_LEVEL_REFOLD`；病例数 `80`；fold 数 `5`；outer 只读诊断，不参与 checkpoint、threshold 或后处理选择。
+
+- **feature_source 1: VOLUME_CTRL**
+  - task_id: P1_scar
+  - passing_folds: 5
+  - mean_AUROC: 0.5042
+  - mean_AUPRC: 0.4927
+- **feature_source 2: VOLUME_CTRL**
+  - task_id: P2_scar_FN
+  - passing_folds: 5
+  - mean_AUROC: 0.507
+  - mean_AUPRC: 0.4723
+- **feature_source 3: VOLUME_CTRL**
+  - task_id: P3_scar_FP
+  - passing_folds: 5
+  - mean_AUROC: 0.5125
+  - mean_AUPRC: 0.4551
+- **feature_source 4: VOLUME_CTRL**
+  - task_id: P7_small_scar
+  - passing_folds: 5
+  - mean_AUROC: 0.6978
+  - mean_AUPRC: 0.2891
+- **feature_source 5: VOLUME_CTRL**
+  - task_id: P8_boundary
+  - passing_folds: 5
+  - mean_AUROC: 0.5042
+  - mean_AUPRC: 0.4927
+- **feature_source 6: CENTER_CTRL**
+  - task_id: P1_scar
+  - passing_folds: 5
+  - mean_AUROC: 0.5
+  - mean_AUPRC: 0.4894
+- **feature_source 7: CENTER_CTRL**
+  - task_id: P2_scar_FN
+  - passing_folds: 5
+  - mean_AUROC: 0.5102
+  - mean_AUPRC: 0.4707
+- **feature_source 8: CENTER_CTRL**
+  - task_id: P3_scar_FP
+  - passing_folds: 5
+  - mean_AUROC: 0.5029
+  - mean_AUPRC: 0.4441
+- **feature_source 9: CENTER_CTRL**
+  - task_id: P7_small_scar
+  - passing_folds: 5
+  - mean_AUROC: 0.352
+  - mean_AUPRC: 0.1239
+- **feature_source 10: CENTER_CTRL**
+  - task_id: P8_boundary
+  - passing_folds: 5
+  - mean_AUROC: 0.5
+  - mean_AUPRC: 0.4894
+- **feature_source 11: MODALITY_CTRL**
+  - task_id: P1_scar
+  - passing_folds: 5
+  - mean_AUROC: 0.5
+  - mean_AUPRC: 0.4894
+- **feature_source 12: MODALITY_CTRL**
+  - task_id: P2_scar_FN
+  - passing_folds: 5
+  - mean_AUROC: 0.5
+  - mean_AUPRC: 0.4654
+
+- **feature_source 1: VOLUME_CTRL**
+  - task_id: P4_edema
+  - passing_folds: 5
+  - mean_AUROC: 0.5083
+  - mean_AUPRC: 0.4983
+- **feature_source 2: VOLUME_CTRL**
+  - task_id: P5_edema_FN
+  - passing_folds: 5
+  - mean_AUROC: 0.5118
+  - mean_AUPRC: 0.4793
+- **feature_source 3: VOLUME_CTRL**
+  - task_id: P6_edema_FP
+  - passing_folds: 5
+  - mean_AUROC: 0.5126
+  - mean_AUPRC: 0.4789
+- **feature_source 4: CENTER_CTRL**
+  - task_id: P4_edema
+  - passing_folds: 5
+  - mean_AUROC: 0.5037
+  - mean_AUPRC: 0.4941
+- **feature_source 5: CENTER_CTRL**
+  - task_id: P5_edema_FN
+  - passing_folds: 5
+  - mean_AUROC: 0.5079
+  - mean_AUPRC: 0.4749
+- **feature_source 6: CENTER_CTRL**
+  - task_id: P6_edema_FP
+  - passing_folds: 5
+  - mean_AUROC: 0.5091
+  - mean_AUPRC: 0.4735
+- **feature_source 7: MODALITY_CTRL**
+  - task_id: P4_edema
+  - passing_folds: 5
+  - mean_AUROC: 0.5
+  - mean_AUPRC: 0.4922
+- **feature_source 8: MODALITY_CTRL**
+  - task_id: P5_edema_FN
+  - passing_folds: 5
+  - mean_AUROC: 0.5
+  - mean_AUPRC: 0.4708
+- **feature_source 9: MODALITY_CTRL**
+  - task_id: P6_edema_FP
+  - passing_folds: 5
+  - mean_AUROC: 0.5
+  - mean_AUPRC: 0.4688
+- **feature_source 10: NNUNET_DECODER_L0**
+  - task_id: P4_edema
+  - passing_folds: 5
+  - mean_AUROC: 0.7597
+  - mean_AUPRC: 0.6484
+- **feature_source 11: NNUNET_DECODER_L0**
+  - task_id: P5_edema_FN
+  - passing_folds: 5
+  - mean_AUROC: 0.7522
+  - mean_AUPRC: 0.5759
+- **feature_source 12: NNUNET_DECODER_L0**
+  - task_id: P6_edema_FP
+  - passing_folds: 5
+  - mean_AUROC: 0.7359
+  - mean_AUPRC: 0.5733
+
+
+\newpage
+
+# 16. alignment
+
+# Alignment conclusion
+
+V3 contains real complete-trimodal alignment measurements, so alignment is no longer only a plan. V4 recomputes bootstrap correlation intervals, center-adjusted slopes and high/low shift subgroups from the bound casewise rows. The current evidence supports alignment as an optional diagnostic or safety module, not the primary Deep Research mechanism.
+
+
+- **alignment_metric 1: row 1**
+  - bootstrap_ci_low: -0.4797
+  - bootstrap_ci_high: 0.1597
+- **alignment_metric 2: row 2**
+  - bootstrap_ci_low: -0.228
+  - bootstrap_ci_high: 0.598
+- **alignment_metric 3: row 3**
+  - bootstrap_ci_low: -0.5388
+  - bootstrap_ci_high: 0.1861
+- **alignment_metric 4: row 4**
+  - bootstrap_ci_low: -0.6215
+  - bootstrap_ci_high: -0.002
+- **alignment_metric 5: row 5**
+  - bootstrap_ci_low: 0.1454
+  - bootstrap_ci_high: 0.6757
+- **alignment_metric 6: row 6**
+  - bootstrap_ci_low: -0.4872
+  - bootstrap_ci_high: 0.0695
+- **alignment_metric 7: row 7**
+  - bootstrap_ci_low: -0.0935
+  - bootstrap_ci_high: 0.5721
+- **alignment_metric 8: row 8**
+  - bootstrap_ci_low: -0.6429
+  - bootstrap_ci_high: -0.0381
+- **alignment_metric 9: row 9**
+  - bootstrap_ci_low: -0.1578
+  - bootstrap_ci_high: 0.4587
+- **alignment_metric 10: row 10**
+  - bootstrap_ci_low: -0.0285
+  - bootstrap_ci_high: 0.6149
+- **alignment_metric 11: row 11**
+  - bootstrap_ci_low: -0.7464
+  - bootstrap_ci_high: -0.228
+- **alignment_metric 12: row 12**
+  - bootstrap_ci_low: -0.0422
+  - bootstrap_ci_high: 0.5437
+
+# 17. help/harm 和 oracle
+
+- **case_id 1: Case1002**
+  - metric_name: scar
+  - best_case_model: nnunet_oof
+  - case_oracle_dice: 0.6167
+  - voxel_tp_oracle_dice: 0.7338
+- **case_id 2: Case1002**
+  - metric_name: lesion_union
+  - best_case_model: nnunet_oof
+  - case_oracle_dice: 0.6167
+  - voxel_tp_oracle_dice: 0.8947
+- **case_id 3: Case1007**
+  - metric_name: scar
+  - best_case_model: nnunet_oof
+  - case_oracle_dice: 0.5811
+  - voxel_tp_oracle_dice: 0.912
+- **case_id 4: Case1007**
+  - metric_name: lesion_union
+  - best_case_model: nnunet_oof
+  - case_oracle_dice: 0.5811
+  - voxel_tp_oracle_dice: 0.9487
+- **case_id 5: Case1009**
+  - metric_name: scar
+  - best_case_model: nnunet_oof
+  - case_oracle_dice: 0.6049
+  - voxel_tp_oracle_dice: 0.7778
+- **case_id 6: Case1009**
+  - metric_name: lesion_union
+  - best_case_model: nnunet_oof
+  - case_oracle_dice: 0.6049
+  - voxel_tp_oracle_dice: 0.8556
+- **case_id 7: Case1010**
+  - metric_name: scar
+  - best_case_model: nnunet_oof
+  - case_oracle_dice: 0.4828
+  - voxel_tp_oracle_dice: 0.789
+- **case_id 8: Case1010**
+  - metric_name: lesion_union
+  - best_case_model: nnunet_oof
+  - case_oracle_dice: 0.4828
+  - voxel_tp_oracle_dice: 0.9466
+- **case_id 9: Case1021**
+  - metric_name: scar
+  - best_case_model: nnunet_oof
+  - case_oracle_dice: 0.5699
+  - voxel_tp_oracle_dice: 0.8076
+- **case_id 10: Case1021**
+  - metric_name: lesion_union
+  - best_case_model: nnunet_oof
+  - case_oracle_dice: 0.5699
+  - voxel_tp_oracle_dice: 0.8911
+- **case_id 11: Case1023**
+  - metric_name: scar
+  - best_case_model: nnunet_oof
+  - case_oracle_dice: 0.6466
+  - voxel_tp_oracle_dice: 0.8091
+- **case_id 12: Case1023**
+  - metric_name: lesion_union
+  - best_case_model: nnunet_oof
+  - case_oracle_dice: 0.6466
+  - voxel_tp_oracle_dice: 0.9032
+
+
+\newpage
+
+# 18. large-gain error budget
+
+# Large-gain conclusion
+
+Current local evidence argues against getting approximately 0.1 Dice from selector/recipe reuse alone. Scar has a small case-oracle gain over nnU-Net; pure edema has an even smaller case-oracle gain but a larger non-deployable voxel oracle, indicating the need for an external mechanism rather than another weak anchor correction.
+
+
+- **pathology 1: scar**
+  - case_oracle_bound: 0.022
+  - voxel_oracle_bound: 0.2375
+  - selector_bound: 0.8269
+  - conclusion: ONLY_MODEST_GAIN
+- **pathology 2: pure_edema**
+  - case_oracle_bound: 0.0023
+  - voxel_oracle_bound: 0.173
+  - selector_bound: 0
+  - conclusion: ONLY_MODEST_GAIN
+
+# 19. component survival
+
+# Component survival report
+
+Directly reusable experience:
+
+- Retain reliable-label/no-T2 masking as a data rule for edema.
+- Retain help/harm, remote-FP and final-output-entry accounting as safety gates.
+
+Forbidden repeats:
+
+- Decoder reset or encoder-only inheritance presented as a full decoder.
+- Module-present or gradient-nonzero evidence presented as final-output mechanism success.
+- no-T2 edema misuse as negative supervision.
+- Weak bounded correction around an anchor without an error selector.
+- Prototype experiment conclusions without isolated control inputs.
+- Architecture blanks delegated to Codex/controller during execution.
+
+
+
+\newpage
+
+# 20. visual atlas
+
+独立 atlas 作为单独 PDF 保存，主 PDF 只嵌入 contact sheet，避免再引入右侧 panel 裁切。
+
+- **field 1: atlas_pdf**
+  - value: v4_atlas_pages_a3_landscape.pdf
+- **field 2: atlas_page_count**
+  - value: 40
+- **field 3: bbox_validation**
+  - value: v4_atlas_pdf_bbox_validation.csv
+- **field 4: bbox_status**
+  - value: all page bbox rows PASS
+
+\begin{center}\includegraphics[width=0.92\linewidth,height=0.72\textheight,keepaspectratio]{\detokenize{/users/a/e/aereinh/CARE/results/20260730_care_failure_forensics_deep_research_packet/v4_atlas_contact_sheet.png}}\end{center}
+
+
+\newpage
+
+# 21. Deep Research constraints
+
+# DEEP RESEARCH MODEL DESIGN INPUT 20260730 V4
+
+This file is a design-input constraint packet, not a new model design. It records what the next Deep Research design may and may not use from the failure-forensics evidence.
+
+## Current readiness
+
+- scientific_evidence_status: `SUFFICIENT`
+- deep_research_readiness: `READY`
+- current_model_status: `FAILED_GATE`
+
+## Current strong baselines and data truth
+
+- Total MyoPS training cases: 220.
+- T2-present official pure-edema denominator: 80.
+- C0-present cases: 104.
+- nnU-Net clean and MoSAIC clean remain baseline/context evidence; PRISM W3 failed the outer gate and must not be promoted.
+
+## Historical experience allowed as inputs
+
+- Batch7: `pathology-specific proposal/refiner` -> RETEST_WITH_DIFFERENT_IMPLEMENTATION; use only with precondition `isolated patient-held-out causal ablation`.
+- MMRD: `reliable-label no-T2 mask` -> RETAIN_AS_DATA_RULE; use only with precondition `T2-present split accounting`.
+- ARC: `single encoder with explicit modality gates` -> RETAIN_AS_SAFETY_RULE; use only with precondition `restore decoder capability before claiming gain`.
+
+## Must not repeat
+
+- Do not stack multiple complete backbones as the central method.
+- Do not use encoder-only inheritance or decoder reset as a full decoder.
+- Do not let nnU-Net or MoSAIC be the only final authority.
+- Do not use identical scar and edema heads.
+- Do not treat no-T2 cases as pure-edema negatives.
+- Do not claim prototype value from unisolated control tensors.
+- Do not use weak correction around an anchor without an error selector.
+- Do not leave proposal/refiner wiring or component definitions for Codex/controller to invent.
+- Do not treat gradient/nonzero-delta validators as causal mechanism proof.
+
+## Large-gain boundary
+
+- scar: case oracle=0.02195407548910211, voxel oracle=0.23751872769841142, conclusion=`ONLY_MODEST_GAIN`.
+- pure_edema: case oracle=0.002292654276233319, voxel oracle=0.17295548404011052, conclusion=`ONLY_MODEST_GAIN`.
+
+## Open requirements before READY
+
+
+
+\newpage
+
+# 22. current conclusions
+
+科学证据状态为 `SUFFICIENT`，Deep Research readiness 为 `READY`。这只表示下一代模型设计已有足够约束输入；当前 CARE 模型仍为 `FAILED_GATE`，没有新架构训练、没有 validation upload、没有 Docker upload、没有 hosted metric claim。
+
+# 23. unresolved questions
+
+- [DR-001] Small-lesion scar segmentation beyond nnU-Net requires which evidence standard?
+- [DR-002] Can clean MoSAIC recipe gains be separated from full-data target-domain advantage?
+- [DR-003] Do frozen encoder features contain patient-held-out scar FN/FP separability?
+- [DR-004] When does cine temporal information improve pathology segmentation over ED-only?
+
+
+
+\newpage
+
+# 附录 A. validator 和 claim ledger
+
+- **requirement 1: Batch7 no longer empty**
+  - passed: True
+  - evidence: v4 current artifact
+- **requirement 2: MMRD direct/distillation casewise bound**
+  - passed: True
+  - evidence: v4 current artifact
+- **requirement 3: Cascade prototype semantics audited**
+  - passed: True
+  - evidence: v4 current artifact
+- **requirement 4: ARC blueprint-code-runtime completed**
+  - passed: True
+  - evidence: v4 current artifact
+- **requirement 5: MoSAIC population sufficient**
+  - passed: True
+  - evidence: mosaic_ recipe_ decomposition_ receipt.json;  v4_ mosaic_ recipe_ population_ audit.json;  v4_ mosaic_ m0_ m10_ casewise.csv
+- **requirement 6: Pure-edema feature probe completed**
+  - passed: True
+  - evidence: v4_ feature_ probe_ receipt.json;  v4_ feature_ probe_ leakage_ audit.json;  v4_ feature_ probe_ fold_ results.csv;  v4_ feature_ probe_ edema_ summary.csv
+- **requirement 7: Scar/edema briefs independent**
+  - passed: True
+  - evidence: v4 current artifact
+- **requirement 8: Large-gain error budget completed**
+  - passed: True
+  - evidence: v4_ large_ gain_ error_ budget.csv;  v4_ large_ gain_ bounds.csv
+- **requirement 9: Alignment completed**
+  - passed: True
+  - evidence: alignment_ v2_ receipt.json;  v4_ alignment_ failure_ correlation.csv;  v4_ alignment_ subgroup_ results.csv
+- **requirement 10: Visual atlas no clipping**
+  - passed: True
+  - evidence: v4_ atlas_ pages_ a3_ landscape.pdf;  v4_ atlas_ pdf_ bbox_ validation.csv
+- **requirement 11: State contradictions removed**
+  - passed: True
+  - evidence: v4_ state_ semantics_ contract.json;  v4_ v3_ state_ contradiction.csv;  v4_ superseded_ statement_ manifest.csv
+- **requirement 12: Claim ledger complete**
+  - passed: True
+  - evidence: evidence_ claim_ ledger.csv plus V4 component,  feature,  MoSAIC,  alignment,  large- gain and state ledgers
+
+# 附录 B. Slurm accounting
+
+- **job_id 1: 61220581.51**
+  - name: bash
+  - state: COMPLETED
+  - exit_code: 0:0
+  - submit: 2026-07-30T10:57:18
+  - end: 2026-07-30T10:59:39
+- **job_id 2: 61220581.52**
+  - name: bash
+  - state: COMPLETED
+  - exit_code: 0:0
+  - submit: 2026-07-30T11:02:22
+  - end: 2026-07-30T11:04:32
+- **job_id 3: 61220581.53**
+  - name: bash
+  - state: FAILED
+  - exit_code: 1:0
+  - submit: 2026-07-30T11:14:13
+  - end: 2026-07-30T11:16:46
+- **job_id 4: 61220581.54**
+  - name: bash
+  - state: CANCELLED by 397557
+  - exit_code: 0:9
+  - submit: 2026-07-30T11:17:16
+  - end: 2026-07-30T11:22:07
+- **job_id 5: 61220581.55**
+  - name: bash
+  - state: FAILED
+  - exit_code: 1:0
+  - submit: 2026-07-30T11:23:16
+  - end: 2026-07-30T11:23:43
+- **job_id 6: 61220581.56**
+  - name: bash
+  - state: CANCELLED by 397557
+  - exit_code: 0:9
+  - submit: 2026-07-30T11:24:07
+  - end: 2026-07-30T11:27:06
+- **job_id 7: 61220581.57**
+  - name: bash
+  - state: FAILED
+  - exit_code: 2:0
+  - submit: 2026-07-30T11:28:11
+  - end: 2026-07-30T11:31:05
+- **job_id 8: 61220581.58**
+  - name: bash
+  - state: COMPLETED
+  - exit_code: 0:0
+  - submit: 2026-07-30T11:32:15
+  - end: 2026-07-30T11:35:34
+- **job_id 9: 61376439**
+  - name: V4Mosaic80
+  - state: CANCELLED by 397557
+  - exit_code: 0:0
+  - submit: 2026-07-30T10:38:26
+  - end: 2026-07-30T11:08:54
+
+# 附录 C. provenance blocks
+
+- **claim_id: E-DATA-001**
+  - source_path: data_case_manifest.csv
+  - confidence: MODERATE
+  - notes: geometry round-trip incomplete
+- **claim_id: E-METRIC-001**
+  - source_path: reference_metric_known_bad_report.json
+  - confidence: HIGH
+  - notes: synthetic fixtures only
+- **claim_id: E-MOSAIC-001**
+  - source_path: mosaic_ablation_contract.json
+  - confidence: HIGH
+  - notes: contract boundary
+- **claim_id: E-PRISM-001**
+  - source_path: decoder_reset_diagnostic_report.md
+  - confidence: LOW
+  - notes: diagnostics not run
+- **claim_id: E-GAP-005**
+  - source_path: strict_validator_report.json
+  - confidence: HIGH
+  - notes: validator will fail until completed
+- **claim_id: E-GAP-006**
+  - source_path: strict_validator_report.json
+  - confidence: HIGH
+  - notes: validator will fail until completed
+- **claim_id: E-GAP-007**
+  - source_path: strict_validator_report.json
+  - confidence: HIGH
+  - notes: validator will fail until completed
+- **claim_id: E-GAP-008**
+  - source_path: strict_validator_report.json
+  - confidence: HIGH
+  - notes: validator will fail until completed
+- **claim_id: E-GAP-009**
+  - source_path: strict_validator_report.json
+  - confidence: HIGH
+  - notes: validator will fail until completed
+- **claim_id: E-GAP-010**
+  - source_path: strict_validator_report.json
+  - confidence: HIGH
+  - notes: validator will fail until completed
+- **claim_id: E-GAP-011**
+  - source_path: strict_validator_report.json
+  - confidence: HIGH
+  - notes: validator will fail until completed
+- **claim_id: E-GAP-012**
+  - source_path: strict_validator_report.json
+  - confidence: HIGH
+  - notes: validator will fail until completed

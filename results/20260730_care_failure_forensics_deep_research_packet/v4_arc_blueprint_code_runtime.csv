@@ -1,0 +1,6 @@
+blueprint_component,code_contract,runtime_evidence,actual_final_output_role,v4_status
+single encoder,True,1,shared features feed pathology heads,IMPLEMENTED_RUNTIME_BOUND
+anatomy decoder into pathology decoder,not a full inherited nnU-Net decoder in ARC clean fold1,raw direct summary and casewise underperform anchor,"direct pathology logits, not proven anatomy-decoder restoration",PARTIAL_OR_NOT_PROVEN
+gates / burden FiLM,True,0.3896176218986511,changes logits in implementation validator,IMPLEMENTED_NOT_SUFFICIENT_FOR_GAIN
+alignment module,alignment enabled/identity comparison exists,"{'confidence_ok': True, 'edema_zone_dice_gain_enabled_minus_identity': 0.003778161021795623, 'edema_zone_hd95_ratio_enabled_over_identity': 0.9403250254226742, 'frozen_alignment_mode': 'identity', 'mean_dice_gain': 0.003946679426559546, 'offset_ok': False, 'scar_dice_gain_enabled_minus_identity': 0.004115197831323469, 'scar_hd95_ratio_enabled_over_identity': 0.9309064560087428, 'status': 'PASS'}",small enabled-minus-identity deltas,OPTIONAL_MODULE_ONLY
+crop/refine/paste-back,"crop freeze exists, but no mature cascade proof",results/20260729_care_arc_clean_fold1/crop_freeze_receipt.json,not sufficient to rescue fold0 development,UNRESOLVED_FOR_REUSE

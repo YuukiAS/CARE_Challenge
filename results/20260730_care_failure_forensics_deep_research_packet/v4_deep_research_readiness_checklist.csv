@@ -1,0 +1,13 @@
+requirement,passed,evidence
+Batch7 no longer empty,True,v4 current artifact
+MMRD direct/distillation casewise bound,True,v4 current artifact
+Cascade prototype semantics audited,True,v4 current artifact
+ARC blueprint-code-runtime completed,True,v4 current artifact
+MoSAIC population sufficient,True,mosaic_recipe_decomposition_receipt.json; v4_mosaic_recipe_population_audit.json; v4_mosaic_m0_m10_casewise.csv
+Pure-edema feature probe completed,True,v4_feature_probe_receipt.json; v4_feature_probe_leakage_audit.json; v4_feature_probe_fold_results.csv; v4_feature_probe_edema_summary.csv
+Scar/edema briefs independent,True,v4 current artifact
+Large-gain error budget completed,True,v4_large_gain_error_budget.csv; v4_large_gain_bounds.csv
+Alignment completed,True,alignment_v2_receipt.json; v4_alignment_failure_correlation.csv; v4_alignment_subgroup_results.csv
+Visual atlas no clipping,True,v4_atlas_pages_a3_landscape.pdf; v4_atlas_pdf_bbox_validation.csv
+State contradictions removed,True,v4_state_semantics_contract.json; v4_v3_state_contradiction.csv; v4_superseded_statement_manifest.csv
+Claim ledger complete,True,"evidence_claim_ledger.csv plus V4 component, feature, MoSAIC, alignment, large-gain and state ledgers"

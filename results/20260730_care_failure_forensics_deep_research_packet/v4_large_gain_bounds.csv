@@ -1,0 +1,3 @@
+pathology,case_oracle_bound,voxel_oracle_bound,recipe_only_bound,selector_bound,decoder_restoration_bound,alignment_bound,feature_probe_bound,single_backbone_new_mechanism_bound,conclusion
+scar,0.02195407548910211,0.23751872769841142,mean_scar_dice=0.39431948432107394,0.8268893700381483,NOT_BOUND,NOT_BOUND,NOT_BOUND,"below oracle; requires new model, not ensemble copying",ONLY_MODEST_GAIN
+pure_edema,0.002292654276233319,0.17295548404011052,mean_pure_edema_dice=0.3541366531315227,0.0,NOT_BOUND,NOT_BOUND,NOT_BOUND,"below oracle; requires new model, not ensemble copying",ONLY_MODEST_GAIN

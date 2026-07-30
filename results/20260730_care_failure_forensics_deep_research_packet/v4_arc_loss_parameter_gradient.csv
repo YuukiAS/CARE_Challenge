@@ -1,0 +1,4 @@
+loss_or_check,status,evidence
+preflight_gradient_report,PASS,results/20260729_care_arc_clean_fold1/runtime/preflight/gradient_report.json
+fold0_development_gate,FAIL,results/20260729_care_arc_clean_fold1/fold0_development_adequacy_gate.json
+implementation_validator,PASS,results/20260729_care_arc_clean_fold1/implementation_validator_report.json

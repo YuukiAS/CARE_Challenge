@@ -15,6 +15,7 @@ import json
 import os
 import subprocess
 import sys
+import time
 from collections import defaultdict
 from datetime import datetime, timezone
 from pathlib import Path
@@ -63,7 +64,7 @@ def write_csv(path: Path, rows: list[dict[str, Any]], fieldnames: list[str] | No
                     fields.append(key)
         fieldnames = fields
     with path.open("w", newline="") as f:
-        writer = csv.DictWriter(f, fieldnames=fieldnames)
+        writer = csv.DictWriter(f, fieldnames=fieldnames, lineterminator="\n")
         writer.writeheader()
         for row in rows:
             writer.writerow({key: row.get(key, "") for key in fieldnames})
@@ -111,6 +112,8 @@ def metrics_row(
     target: np.ndarray | None,
     edema_reliable: bool,
     checkpoint_scope: str,
+    runtime_seconds: float | None = None,
+    changed_voxels: int | None = None,
     notes: str = "",
 ) -> dict[str, Any]:
     row: dict[str, Any] = {
@@ -126,6 +129,8 @@ def metrics_row(
         "prediction_voxels_rv": int((prediction == 3).sum()),
         "prediction_voxels_pure_edema": int((prediction == 4).sum()),
         "prediction_voxels_scar": int((prediction == 5).sum()),
+        "runtime_seconds": "" if runtime_seconds is None else float(runtime_seconds),
+        "changed_voxels": "" if changed_voxels is None else int(changed_voxels),
         "notes": notes,
     }
     if target is not None:
@@ -208,6 +213,9 @@ def summarize(casewise: list[dict[str, Any]]) -> list[dict[str, Any]]:
             "prediction_voxels_scar",
         ]:
             out[f"mean_{vox}"] = float(np.mean([float(r[vox]) for r in rows])) if rows else ""
+        for field in ["runtime_seconds", "changed_voxels"]:
+            vals = [float(r[field]) for r in rows if str(r.get(field, "")) not in {"", "nan"}]
+            out[f"mean_{field}"] = float(np.mean(vals)) if vals else ""
         summary.append(out)
     return summary
 
@@ -349,6 +357,7 @@ def full_recipe_case_rows(
     case_id: str,
     device: torch.device,
 ) -> list[dict[str, Any]]:
+    t0 = time.monotonic()
     TRACK_MYOPS = api["TRACK_MYOPS"]
     preprocess_myops_case = api["preprocess_myops_case"]
     cache_path = api["cache_path"]
@@ -471,8 +480,14 @@ def full_recipe_case_rows(
         ("M9", "postprocess", m9),
         ("M10", "exact final local recipe", m10),
     ]
-    return [
-        metrics_row(
+    elapsed = time.monotonic() - t0
+    rows = []
+    previous: np.ndarray | None = None
+    per_stage_runtime = elapsed / max(len(stages), 1)
+    for stage_id, stage_name, pred in stages:
+        changed = 0 if previous is None else int(np.count_nonzero(pred != previous))
+        rows.append(
+            metrics_row(
             case_id=case_id,
             center=center,
             stage_id=stage_id,
@@ -482,10 +497,13 @@ def full_recipe_case_rows(
             target=target,
             edema_reliable=edema_reliable,
             checkpoint_scope="full_data_downloaded_weights",
+            runtime_seconds=per_stage_runtime,
+            changed_voxels=changed,
             notes="Full-data weights are recipe-mechanism evidence, not fair validation evidence.",
         )
-        for stage_id, stage_name, pred in stages
-    ]
+        )
+        previous = pred
+    return rows
 
 
 def aggregate_clean_oof(root: Path, limit: int | None = None) -> list[dict[str, Any]]:
@@ -573,6 +591,7 @@ def main() -> int:
     parser.add_argument("--weight-root", type=Path, default=DEFAULT_WEIGHTS)
     parser.add_argument("--run-id", default="g4_mosaic_recipe_decomposition_v2")
     parser.add_argument("--case", action="append", dest="cases", help="center:case_id; repeatable")
+    parser.add_argument("--cases-from-file", type=Path, help="Text file with one center:case_id per line")
     parser.add_argument("--clean-oof-limit", type=int, default=220)
     parser.add_argument("--require-cuda", action="store_true")
     args = parser.parse_args()
@@ -589,7 +608,14 @@ def main() -> int:
     api = bind_imports(args.source_root)
     models = load_models(api, args.source_root, args.weight_root, device)
 
-    selected_cases = args.cases or [
+    file_cases: list[str] = []
+    if args.cases_from_file:
+        file_cases = [
+            line.strip()
+            for line in args.cases_from_file.read_text(encoding="utf-8").splitlines()
+            if line.strip() and not line.strip().startswith("#")
+        ]
+    selected_cases = args.cases or file_cases or [
         "CenterB:Case2002",
         "CenterB:Case2017",
         "CenterC:Case3004",

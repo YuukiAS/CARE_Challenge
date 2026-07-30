@@ -1,0 +1,16 @@
+variant,pathology,case_count,mean_dice,mean_hd95,mean_changed_mask_ratio_vs_nnunet,mean_remote_fp_volume_mm3
+nnunet_anchor,edema_zone,44,0.581573,14.526261,0.000000,793.951703
+nnunet_anchor,pure_edema,44,0.394436,7.276922,0.000000,148.284761
+nnunet_anchor,scar,44,0.560169,13.600533,0.000000,645.666942
+postprocessed_enabled,edema_zone,44,0.379622,31.640004,4.569442,2362.580572
+postprocessed_enabled,pure_edema,44,0.246381,13.247212,0.844948,1507.475330
+postprocessed_enabled,scar,44,0.336663,30.517179,4.543156,855.105242
+postprocessed_identity,edema_zone,44,0.375930,33.647945,4.350207,2563.259410
+postprocessed_identity,pure_edema,44,0.242407,13.998493,0.857525,1650.510801
+postprocessed_identity,scar,44,0.332641,32.782218,4.320228,912.748608
+raw_direct_enabled,edema_zone,44,0.435178,30.951823,5.075801,3735.848947
+raw_direct_enabled,pure_edema,44,0.313000,13.226531,1.113314,2433.131949
+raw_direct_enabled,scar,44,0.390092,30.176546,5.056287,1302.716998
+raw_direct_identity,edema_zone,44,0.429740,32.734260,5.041766,4073.881618
+raw_direct_identity,pure_edema,44,0.305421,14.667967,1.131017,2695.914406
+raw_direct_identity,scar,44,0.383769,30.707155,5.013518,1377.967212

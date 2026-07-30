@@ -1,0 +1,8 @@
+component,real_permission,faithfully_implemented,entered_final_logits_or_masks,evidence,scientific_interpretation,future_status
+nnU-Net anchor,baseline/final anchor,True,True,anchor_identity rows,Strong comparator; may be used as baseline but not final authority monopoly.,RETAIN_AS_DATA_RULE
+SRR correction head,bounded final-mask intervention,True,True,intervention_casewise_metrics,Changed final masks but effect was tiny/harmful for scar.,RETEST_WITH_DIFFERENT_IMPLEMENTATION
+BR2/SIP evidence heads,pathology-specific candidate evidence,True,False,gradient_authority nonzero heads,Useful as supervision idea; logs/losses alone are not a final-output mechanism.,RETEST_WITH_DIFFERENT_IMPLEMENTATION
+router/dictionary/prototype,candidate/prototype routing,True,False,semantic_memory and prototype intervention files,Do not claim prototype success without patient-held-out isolated inputs.,UNRESOLVED
+proposal stage,lesion candidate proposal,True,True,proposal_stage_casewise.csv,Proposal changed masks; refiner gain over proposal was near zero.,RETEST_WITH_DIFFERENT_IMPLEMENTATION
+refiner,proposal refinement,True,True,proposal_refiner_metrics.csv,Refiner-minus-proposal gain is too small for reuse as implemented.,DO_NOT_REUSE_IMPLEMENTATION
+negative-space safety,remote FP accounting,True,False,help_harm.csv; intervention_summary.csv,Keep remote-FP accounting as safety rule.,RETAIN_AS_SAFETY_RULE

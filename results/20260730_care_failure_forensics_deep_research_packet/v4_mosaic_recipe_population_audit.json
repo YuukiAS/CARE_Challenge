@@ -1,0 +1,12 @@
+{
+  "changed_voxels_field_present": true,
+  "created_at": "2026-07-30T15:41:28+00:00",
+  "invalid_use": "Do not treat full-data recipe rows as fair local validation or hosted metric evidence.",
+  "m0_m1_clean_oof_cases": 220,
+  "m2_m10_cases": 80,
+  "run_id": "v4_mosaic_80case_61220581",
+  "runtime_seconds_field_present": true,
+  "source": "mosaic_recipe_decomposition_casewise.csv",
+  "v4_population_gate": "PASS",
+  "valid_use": "M0/M1 support clean OOF baseline; M2-M10 support 80-case full-data recipe mechanism diagnostics when gate passes."
+}

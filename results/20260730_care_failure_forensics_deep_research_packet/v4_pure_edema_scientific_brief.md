@@ -1,0 +1,3 @@
+# Pure-edema scientific brief
+
+Pure edema is a T2-dependent label-4 problem and cannot borrow scar conclusions. The key evidence boundary is the 80 T2-present denominator; no-T2 cases must not become edema negatives. MoSAIC M0/M1 clean evidence is broad, but M2-M10 recipe decomposition is only six cases, and V3 feature probes still have many single-class edema folds. MMRD contributes a data hygiene rule more than a model win; Cascade shows tiny bounded correction; ARC and PRISM do not prove edema recovery. Future designs need an edema-specific mechanism with T2-aware supervision, center-stable feature evidence and an explicit pure-edema error budget.

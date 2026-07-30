@@ -1,0 +1,66 @@
+{
+  "created_at": "2026-07-30T15:41:52+00:00",
+  "decision": "VERIFIED_COMPLETE",
+  "known_bad": [
+    {
+      "id": 1,
+      "name": "operational_complete_as_science_sufficient",
+      "rejected": false
+    },
+    {
+      "id": 2,
+      "name": "prism_failure_overwritten",
+      "rejected": true
+    },
+    {
+      "id": 3,
+      "name": "batch0_7_empty_table",
+      "rejected": true
+    },
+    {
+      "id": 4,
+      "name": "mmrd_direct_distillation_missing",
+      "rejected": true
+    },
+    {
+      "id": 5,
+      "name": "mosaic_m2_m10_underpopulation_claimed_complete",
+      "rejected": false
+    },
+    {
+      "id": 6,
+      "name": "feature_probe_single_class_claimed_complete",
+      "rejected": false
+    },
+    {
+      "id": 7,
+      "name": "briefs_highly_similar",
+      "rejected": true
+    },
+    {
+      "id": 8,
+      "name": "large_gain_empty_table",
+      "rejected": true
+    },
+    {
+      "id": 9,
+      "name": "alignment_plan_only_claimed_complete",
+      "rejected": false
+    },
+    {
+      "id": 10,
+      "name": "visual_atlas_clipped_claimed_pass",
+      "rejected": false
+    },
+    {
+      "id": 11,
+      "name": "new_architecture_trained",
+      "rejected": true
+    },
+    {
+      "id": 12,
+      "name": "push_or_upload_happened",
+      "rejected": true
+    }
+  ]
+}

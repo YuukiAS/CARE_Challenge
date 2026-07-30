@@ -1,0 +1,11 @@
+pathology,parameter_group,required_group,parameter_count,nonzero_gradient_count,grad_abs_sum_total,evidence_source
+scar,scar_evidence_head,True,2,2,0.10976752080023289,results/20260721_srr_batch7_mechanism_closure_repair/gradient_authority.csv
+scar,edema_evidence_head,False,2,0,0.0,results/20260721_srr_batch7_mechanism_closure_repair/gradient_authority.csv
+scar,scar_dictionary,True,15,14,52.6912974123843,results/20260721_srr_batch7_mechanism_closure_repair/gradient_authority.csv
+scar,edema_dictionary,False,15,0,0.0,results/20260721_srr_batch7_mechanism_closure_repair/gradient_authority.csv
+scar,spatial_dictionary,True,171,65,33.566571515893884,results/20260721_srr_batch7_mechanism_closure_repair/gradient_authority.csv
+edema,scar_evidence_head,False,2,0,0.0,results/20260721_srr_batch7_mechanism_closure_repair/gradient_authority.csv
+edema,edema_evidence_head,True,2,2,3.176053911447525,results/20260721_srr_batch7_mechanism_closure_repair/gradient_authority.csv
+edema,scar_dictionary,False,15,0,0.0,results/20260721_srr_batch7_mechanism_closure_repair/gradient_authority.csv
+edema,edema_dictionary,True,15,14,41.18734940729337,results/20260721_srr_batch7_mechanism_closure_repair/gradient_authority.csv
+edema,spatial_dictionary,True,171,148,5.0586768412264576,results/20260721_srr_batch7_mechanism_closure_repair/gradient_authority.csv

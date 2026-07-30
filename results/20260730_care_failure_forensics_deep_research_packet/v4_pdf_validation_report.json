@@ -1,0 +1,27 @@
+{
+  "chinese_text_extractable": true,
+  "chromium_fallback_used": false,
+  "contact_sheet": "v4_pdf_contact_sheet.png",
+  "creator_contains_headless_chrome": false,
+  "decision": "PASS",
+  "exists": true,
+  "named_font_hits": [
+    "TeXGyreTermes",
+    "NotoSerifSC"
+  ],
+  "page_count_from_png": 24,
+  "page_quality_failures": [],
+  "pdf": "/users/a/e/aereinh/CARE/results/20260730_care_failure_forensics_deep_research_packet/CARE_Failure_Forensics_Deep_Research_Evidence_Packet_20260730_v4.pdf",
+  "preview_pages": [
+    "v4_pdf_pages/page-1.png",
+    "v4_pdf_pages/page-3.png",
+    "v4_pdf_pages/page-10.png",
+    "v4_pdf_pages/page-19.png"
+  ],
+  "producer_contains_skia": false,
+  "render_resource_dir": "/users/a/e/aereinh/render_resources/chinese_math_pdf",
+  "route": "pandoc_xelatex_named_fonts",
+  "sha256": "637c82a82f4a76c72517a7a147794557a472a43fcdc93a6a76e5520c9141c9ec",
+  "size_bytes": 3420276,
+  "texinputs": "/users/a/e/aereinh/render_resources/chinese_math_pdf/texmf//:"
+}

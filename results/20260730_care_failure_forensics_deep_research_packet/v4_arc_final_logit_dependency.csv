@@ -1,0 +1,5 @@
+dependency,value,entered_final_logits,evidence
+formal_pathology_inputs,LGE;T2;C0;availability,True,implementation_contract.json
+independent_pathology_heads,scar.coarse;scar.direct;scar.presence;scar.burden;scar.sdf_mean_logvar;edema_zone.coarse;edema_zone.direct;edema_zone.presence;edema_zone.burden;edema_zone.sdf_mean_logvar,True,implementation_contract.json
+external_context,forbidden,False,context_invariance=True
+no_t2_edema,exact zero,False,no_t2_edema_max_abs=0.0

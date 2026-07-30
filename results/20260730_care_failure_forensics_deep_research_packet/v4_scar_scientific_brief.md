@@ -1,0 +1,3 @@
+# Scar scientific brief
+
+Scar evidence is dominated by label-5 lesion localization, small/multi-component false negatives, remote false positives and decoder capability loss. nnU-Net remains the strongest same-split anchor; Batch7 shows that making SRR modules visible or trainable does not guarantee useful final-mask authority. MMRD direct and distillation residual heads underperform nnU-Net, ARC exposes decoder-restoration risk, and PRISM W3 failed the outer gate. Useful carry-forward items are final-output-entry auditing, help/harm accounting, and pathology-specific candidate supervision. Forbidden repeats are decoder reset, prototype claims without isolation, module-present-only validation and leaving architecture blanks to execution.

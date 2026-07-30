@@ -1,0 +1,15 @@
+{
+  "claim_sources": [
+    "evidence_claim_ledger.csv",
+    "v4_component_survival_ledger.csv",
+    "v4_deep_research_readiness_checklist.csv",
+    "v4_large_gain_bounds.csv",
+    "v4_mosaic_recipe_population_audit.json",
+    "v4_alignment_conclusion.md",
+    "v4_feature_probe_receipt.json",
+    "v4_final_state.json"
+  ],
+  "created_at": "2026-07-30T15:41:52+00:00",
+  "decision": "PASS",
+  "unresolved_claims": []
+}

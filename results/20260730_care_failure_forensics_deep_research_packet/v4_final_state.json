@@ -1,0 +1,15 @@
+{
+  "created_at": "2026-07-30T15:41:52+00:00",
+  "current_model_status": "FAILED_GATE",
+  "deep_research_readiness": "READY",
+  "docker_upload": false,
+  "new_architecture_training": false,
+  "open_requirement_count": 0,
+  "operational_execution_status": "COMPLETE",
+  "prism_w3_status": "FAILED_GATE_SEPARATE_FROM_PACKET_EXECUTION",
+  "push_before_completion": false,
+  "route_change": false,
+  "scientific_evidence_status": "SUFFICIENT",
+  "task_key": "20260730_care_failure_forensics_v4_design_readiness",
+  "validation_upload": false
+}

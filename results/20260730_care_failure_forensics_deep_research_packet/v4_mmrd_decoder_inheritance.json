@@ -1,0 +1,113 @@
+{
+  "backbone": "dynamic_network_architectures.architectures.unet.ResidualEncoderUNet",
+  "created_at": "2026-07-30T15:41:26+00:00",
+  "decoder_inheritance_status": "PARTIAL_VERIFIED_BY_RESENC_CONTRACT_AND_CHECKPOINT_RECEIPTS",
+  "design_warning": "Reliable-label hygiene and no-T2 masking are data rules; they do not prove the residual-head/distillation implementation is effective.",
+  "features_per_stage": [
+    32,
+    64,
+    128,
+    256,
+    320,
+    320,
+    320
+  ],
+  "final_logit_authority": [
+    {
+      "check": "scar_edema_losses_use_final_margin",
+      "edema_margin": "class4_minus_logsumexp_classes0_1_2_3_5",
+      "evidence": "",
+      "scar_margin": "class5_minus_logsumexp_classes0_to4",
+      "status": "PASS"
+    },
+    {
+      "check": "no_logits_mean_gradient_proxy",
+      "edema_margin": "",
+      "evidence": "loss_gradient_matrix uses named runtime losses",
+      "scar_margin": "",
+      "status": "PASS"
+    }
+  ],
+  "legacy_module_import_instance_forward_counts_all_zero": true,
+  "loss_gradient_matrix": [
+    {
+      "authorized_parameter_grad_abs_sum": "487.05960090233197",
+      "declared_weight": "1.0",
+      "in_total_loss": "True",
+      "loss_name": "loss_anatomy_ce_dice",
+      "status": "PASS"
+    },
+    {
+      "authorized_parameter_grad_abs_sum": "8583004.206635762",
+      "declared_weight": "1.0",
+      "in_total_loss": "True",
+      "loss_name": "loss_scar_final_margin_bce_dice",
+      "status": "PASS"
+    },
+    {
+      "authorized_parameter_grad_abs_sum": "759475.3229845959",
+      "declared_weight": "1.0",
+      "in_total_loss": "True",
+      "loss_name": "loss_edema_final_margin_bce_dice_reliable_only",
+      "status": "PASS"
+    },
+    {
+      "authorized_parameter_grad_abs_sum": "481.9541294623277",
+      "declared_weight": "0.5",
+      "in_total_loss": "True",
+      "loss_name": "loss_final_six_class_reliable",
+      "status": "PASS"
+    },
+    {
+      "authorized_parameter_grad_abs_sum": "3787095.7599444436",
+      "declared_weight": "0.1",
+      "in_total_loss": "True",
+      "loss_name": "loss_moddrop_consistency",
+      "status": "PASS"
+    },
+    {
+      "authorized_parameter_grad_abs_sum": "114.11793153975128",
+      "declared_weight": "0.5",
+      "in_total_loss": "True",
+      "loss_name": "loss_distill_logits",
+      "status": "PASS"
+    },
+    {
+      "authorized_parameter_grad_abs_sum": "10196895.323266927",
+      "declared_weight": "0.1",
+      "in_total_loss": "True",
+      "loss_name": "loss_distill_feature",
+      "status": "PASS"
+    },
+    {
+      "authorized_parameter_grad_abs_sum": "108.63902873320848",
+      "declared_weight": "0.1",
+      "in_total_loss": "True",
+      "loss_name": "loss_distill_anatomy",
+      "status": "PASS"
+    }
+  ],
+  "matched_run_manifest": [
+    {
+      "control_warm_start": "results/20260722_care_myops_batch9_reliable_label_distillation/runtime/seed20260723/student_direct_reliable/checkpoint_epoch500.pt",
+      "distill_warm_start": "results/20260722_care_myops_batch9_reliable_label_distillation/runtime/seed20260723/student_direct_reliable/checkpoint_epoch500.pt",
+      "only_difference": "distillation_loss_weights",
+      "same_optimizer_and_budget": "1",
+      "same_student_initial_checkpoint": "1",
+      "same_teacher_forward_required": "1",
+      "seed": "20260723",
+      "status": "PASS"
+    },
+    {
+      "control_warm_start": "results/20260722_care_myops_batch9_reliable_label_distillation/runtime/seed20260724/student_direct_reliable/checkpoint_epoch500.pt",
+      "distill_warm_start": "results/20260722_care_myops_batch9_reliable_label_distillation/runtime/seed20260724/student_direct_reliable/checkpoint_epoch500.pt",
+      "only_difference": "distillation_loss_weights",
+      "same_optimizer_and_budget": "1",
+      "same_student_initial_checkpoint": "1",
+      "same_teacher_forward_required": "1",
+      "seed": "20260724",
+      "status": "PASS"
+    }
+  ],
+  "source_root": "results/20260722_care_myops_batch9_reliable_label_distillation"
+}
