@@ -1,0 +1,4 @@
+source_model,component,original_goal,implemented_faithfully,entered_final_output,received_direct_loss,training_adequate,casewise_signal,help_harm_signal,failure_mode,evidence_for,evidence_against,prerequisites_for_future_use,risk_of_repeating_failure,future_status
+Cascade,strong baseline fallback,avoid harming nnU-Net,true,yes,indirect,yes,protective,protective,gain near zero,casewise metrics,little improvement,keep as safety gate,low,RETAIN_WITH_STRONG_EVIDENCE
+Cascade,bounded correction,small safe edits,true,yes,yes,yes,small,small,ceiling too low,teacher_student_delta,delta near zero,use only with stronger candidates,medium,RETAIN_AS_OPTIONAL_MECHANISM_TO_RETEST
+Cascade,prototype input,retrieve lesion context,confounded,unclear,unclear,no,unresolved,unresolved,control shared inputs,audit notes,invalid prototype-null conclusion,new clean control required,high,UNRESOLVED

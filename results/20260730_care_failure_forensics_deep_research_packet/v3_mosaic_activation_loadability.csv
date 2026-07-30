@@ -1,0 +1,4 @@
+model,checkpoint_path,checkpoint_sha256,missing_keys,unexpected_keys,status
+MOSAIC_COARSE,/users/a/e/aereinh/MoSAIC/code/weights/myops/coarse.pt,aae815c3dd50d6776e2af769551e8d6918a5dee4f83f29309a254051e067080c,0,0,LOADED_AND_HOOKED
+MOSAIC_SCAR_FINE,/users/a/e/aereinh/MoSAIC/code/weights/myops/fine_scar.pt,94c54de3321000eabbc3c3a42a5d838410fb859a1c5b2460e6c2f6d773622ded,0,0,LOADED_AND_HOOKED
+MOSAIC_EDEMA,/users/a/e/aereinh/MoSAIC/code/weights/myops/edema.pt,14a6a53f643bdbbac4c8234af2aa86e8a43423b761013f7b7f580965e1ed503c,0,0,LOADED_AND_HOOKED

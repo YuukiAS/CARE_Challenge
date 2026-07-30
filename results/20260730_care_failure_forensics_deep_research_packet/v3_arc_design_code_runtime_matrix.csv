@@ -1,0 +1,7 @@
+component,design_promised,implemented,entered_final_mask,role
+encoder,yes,yes,yes,feature extraction
+decoder,yes,yes,yes,direct logits
+anatomy,yes,yes,auxiliary_or_postprocess,guidance/loss
+coarse extent,yes,partial,partial,extent prior
+SDF,yes,partial,no,auxiliary
+scar/edema gate,yes,partial,partial,pathology path

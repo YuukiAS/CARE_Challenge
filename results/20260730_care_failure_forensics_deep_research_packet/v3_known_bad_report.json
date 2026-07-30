@@ -1,0 +1,55 @@
+{
+  "decision": "VERIFIED_COMPLETE",
+  "known_bad": [
+    {
+      "id": 1,
+      "name": "T2-present mismatch",
+      "rejected": true
+    },
+    {
+      "id": 2,
+      "name": "pure edema uses no-T2 cases",
+      "rejected": true
+    },
+    {
+      "id": 4,
+      "name": "completion/missing contradiction allowed",
+      "rejected": true
+    },
+    {
+      "id": 13,
+      "name": "feature activation available but left MISSING_ASSET",
+      "rejected": true
+    },
+    {
+      "id": 14,
+      "name": "nnU-Net/PRISM/MoSAIC probe incomplete",
+      "rejected": true
+    },
+    {
+      "id": 18,
+      "name": "case montage blank pages",
+      "rejected": true
+    },
+    {
+      "id": 20,
+      "name": "PDF still says diagnostics not run",
+      "rejected": true
+    },
+    {
+      "id": 22,
+      "name": "GPU job non-terminal",
+      "rejected": true
+    },
+    {
+      "id": 24,
+      "name": "new architecture trained",
+      "rejected": true
+    },
+    {
+      "id": 25,
+      "name": "push/upload executed",
+      "rejected": true
+    }
+  ]
+}

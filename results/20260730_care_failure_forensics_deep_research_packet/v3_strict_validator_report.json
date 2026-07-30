@@ -1,0 +1,103 @@
+{
+  "blocking_checks": [],
+  "checks": [
+    {
+      "check": "T2 count matches canonical manifest",
+      "detail": "manifest=80; audit=80",
+      "evidence": "v3_canonical_modality_manifest.csv + v3_t2_availability_audit.json",
+      "passed": true
+    },
+    {
+      "check": "no no-T2 case counted as official pure edema",
+      "detail": "[]",
+      "evidence": "v3_t2_availability_audit.json",
+      "passed": true
+    },
+    {
+      "check": "controller state is terminal verified",
+      "detail": "VERIFIED_COMPLETE",
+      "evidence": "v3_final_task_state.json",
+      "passed": true
+    },
+    {
+      "check": "feature receipt full PASS",
+      "detail": "PASS",
+      "evidence": "v3_feature_probe_receipt.json",
+      "passed": true
+    },
+    {
+      "check": "all required MoSAIC feature sources present",
+      "detail": "",
+      "evidence": "v3_feature_probe_summary.csv",
+      "passed": true
+    },
+    {
+      "check": "no NOT_IMPLEMENTED feature probes",
+      "detail": "",
+      "evidence": "v3_feature_probe_summary.csv",
+      "passed": true
+    },
+    {
+      "check": "40 atlas cases bind MoSAIC full/final voxel predictions",
+      "detail": "atlas_bound=40; prediction_pass=40",
+      "evidence": "v3_case_atlas_manifest.csv + v3_mosaic_full_final_prediction_manifest.csv",
+      "passed": true
+    },
+    {
+      "check": "PDF exists",
+      "detail": "",
+      "evidence": "CARE_Failure_Forensics_Deep_Research_Evidence_Packet_20260730_v3.pdf",
+      "passed": true
+    },
+    {
+      "check": "PDF is XeLaTeX not Chromium",
+      "detail": "",
+      "evidence": "v3_pdfinfo.txt",
+      "passed": true
+    },
+    {
+      "check": "PDF named fonts",
+      "detail": "",
+      "evidence": "v3_pdffonts.txt",
+      "passed": true
+    },
+    {
+      "check": "PDF text extracts Chinese",
+      "detail": "",
+      "evidence": "v3_pdf_text_extract.txt",
+      "passed": true
+    },
+    {
+      "check": "PDF pages nonblank",
+      "detail": "",
+      "evidence": "v3_pdf_validation_report.json",
+      "passed": true
+    },
+    {
+      "check": "no validation upload",
+      "detail": "",
+      "evidence": "v3_final_task_state.json",
+      "passed": true
+    },
+    {
+      "check": "no docker upload",
+      "detail": "",
+      "evidence": "v3_final_task_state.json",
+      "passed": true
+    },
+    {
+      "check": "no architecture training",
+      "detail": "",
+      "evidence": "v3_final_task_state.json",
+      "passed": true
+    },
+    {
+      "check": "push forbidden and not claimed",
+      "detail": "",
+      "evidence": "v3_final_task_state.json",
+      "passed": true
+    }
+  ],
+  "decision": "VERIFIED_COMPLETE",
+  "validator": "validate_v3_packet.py"
+}

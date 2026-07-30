@@ -1,0 +1,39 @@
+{
+  "c0_present": 104,
+  "case_count": 220,
+  "center_counts": {
+    "CenterA": 81,
+    "CenterB": 35,
+    "CenterC": 45,
+    "CenterE": 7,
+    "CenterF": 9,
+    "CenterG": 8,
+    "CenterH": 35
+  },
+  "center_modality_combos": {
+    "CenterA:LGE": 81,
+    "CenterB:LGE+T2+C0": 35,
+    "CenterC:LGE+T2+C0": 45,
+    "CenterE:LGE+C0": 7,
+    "CenterF:LGE+C0": 9,
+    "CenterG:LGE+C0": 8,
+    "CenterH:LGE": 35
+  },
+  "corrected_interpretation": "T2_present is 80 by raw/meta evidence; Dataset501 still has three image slots because missing modalities are zero placeholders.",
+  "created_at": "2026-07-30T13:34:19+00:00",
+  "dataset_json_description": "data/CARE_Challenge/MyoPS_train (LGE ref, missing modalities zero)",
+  "lge_present": 220,
+  "no_t2_label4_positive_cases": [],
+  "pure_edema_positive_label4_all_cases": 80,
+  "pure_edema_positive_official_t2_present": 80,
+  "scar_positive_label5": 212,
+  "source_of_truth": [
+    "raw CARE MyoPS files",
+    "subject_meta.json",
+    "Dataset501 dataset.json",
+    "nnUNet labelsTr"
+  ],
+  "t2_absent": 140,
+  "t2_present": 80,
+  "v2_t2_present_220_is_wrong": true
+}

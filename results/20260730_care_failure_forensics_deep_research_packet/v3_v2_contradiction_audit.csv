@@ -1,0 +1,6 @@
+contradiction_id,v2_statement_a,v2_statement_b,v3_truth_source,v3_resolution
+C1_D0_D3_STATUS,第 7 页称 D0-D3 已完成,第 34/37 页称未运行,v3_final_task_state.json + nnunet_decoder_reset_real_summary.csv,D0-D3 decoder-reset 诊断已完成并绑定真实预测；V3 正文只保留完成状态和结果边界。
+C2_MOSAIC_BINDING,第 7 页称 MoSAIC source/weights 已绑定,第 34 页称 recipe 未绑定,v3_mosaic_recipe_binding.json + v3_mosaic_m0_m10_summary.csv,source/weights 和 M0-M10 recipe 均以 V3 binding 文件统一描述；clean/full/hosted 分层。
+C3_G1_G10_VALIDATOR,第 1 页称 G1-G10 已终态,第 37 页称 validator 尚未完成,v3_final_task_state.json + v3_strict_validator_report.json,V3 不沿用 V2 正文旧 validator 句子；validator 是终态文件。
+C4_ARCHITECTURE_SUPPORT,第 35 页称不支持任何架构,后续部分加入新诊断和可保留经验,v3_component_survival_upgrade.csv + Deep Research input,V3 区分支持继承经验、禁止实现和仍未授权的新架构；不把经验写成候选模型。
+C5_REQUIRED_GPU_AND_ACTIVATION,第 100 页称 required GPU 已完成,正文仍有 missing activation,v3_feature_probe_summary.csv + v3_final_gpu_state.csv,V3 必须用 feature probe 结果或可复现阻塞替换 missing activation 文本。

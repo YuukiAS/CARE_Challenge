@@ -1,0 +1,113 @@
+{
+  "blockers": [
+    {
+      "checkpoint_path": "data/nnUNet/nnUNet_results/Dataset501_CAREMyoPS/nnUNetTrainer_500epochs__nnUNetPlans__3d_fullres/fold_0/checkpoint_final.pth",
+      "checkpoint_sha256": "8bceb20cae8920e87d43b14665a0db9dfd4f1204533d25a3cd6e40ad9de74111",
+      "missing_keys": 0,
+      "model": "nnUNet",
+      "status": "LOADED",
+      "unexpected_keys": 0
+    },
+    {
+      "checkpoint_path": "results/20260729_care_prism_v2_backbone_repair_and_resume/runtime/fold0_w3_fold0_6500_formal_v2/checkpoints/checkpoint_step03000.pt",
+      "checkpoint_sha256": "33ce3dc6fa72b5bda9eca7489d01ec2ae12acf90edbba46eda3456ef5e5504e6",
+      "missing_keys": 0,
+      "model": "PRISM",
+      "status": "LOADED",
+      "unexpected_keys": 0
+    },
+    {
+      "checkpoint_path": "/users/a/e/aereinh/MoSAIC/code/weights/myops/coarse.pt",
+      "checkpoint_sha256": "aae815c3dd50d6776e2af769551e8d6918a5dee4f83f29309a254051e067080c",
+      "missing_keys": 0,
+      "model": "MOSAIC_COARSE",
+      "status": "LOADED_AND_HOOKED",
+      "unexpected_keys": 0
+    },
+    {
+      "checkpoint_path": "/users/a/e/aereinh/MoSAIC/code/weights/myops/fine_scar.pt",
+      "checkpoint_sha256": "94c54de3321000eabbc3c3a42a5d838410fb859a1c5b2460e6c2f6d773622ded",
+      "missing_keys": 0,
+      "model": "MOSAIC_SCAR_FINE",
+      "status": "LOADED_AND_HOOKED",
+      "unexpected_keys": 0
+    },
+    {
+      "checkpoint_path": "/users/a/e/aereinh/MoSAIC/code/weights/myops/edema.pt",
+      "checkpoint_sha256": "14a6a53f643bdbbac4c8234af2aa86e8a43423b761013f7b7f580965e1ed503c",
+      "missing_keys": 0,
+      "model": "MOSAIC_EDEMA",
+      "status": "LOADED_AND_HOOKED",
+      "unexpected_keys": 0
+    }
+  ],
+  "created_at": "2026-07-30T11:49:38+00:00",
+  "device": "cuda",
+  "eval_case_limit": 16,
+  "eval_split": "inner_select",
+  "feature_sources": [
+    "MOSAIC_COARSE",
+    "MOSAIC_EDEMA",
+    "MOSAIC_SCAR_FINE",
+    "NNUNET_DECODER_L0",
+    "NNUNET_DECODER_L1",
+    "NNUNET_DECODER_L2",
+    "NNUNET_DECODER_L3",
+    "NNUNET_DECODER_L4",
+    "NNUNET_ENCODER_L0",
+    "NNUNET_ENCODER_L1",
+    "NNUNET_ENCODER_L2",
+    "NNUNET_ENCODER_L3",
+    "NNUNET_ENCODER_L4",
+    "NNUNET_ENCODER_L5",
+    "NNUNET_ENCODER_L6",
+    "PRISM_EDEMA_REFINER",
+    "PRISM_EDEMA_ROUTED_L0",
+    "PRISM_EDEMA_ROUTED_L1",
+    "PRISM_EDEMA_ROUTED_L2",
+    "PRISM_EDEMA_ROUTED_L3",
+    "PRISM_PRIVATE_C0_L0",
+    "PRISM_PRIVATE_C0_L1",
+    "PRISM_PRIVATE_C0_L2",
+    "PRISM_PRIVATE_C0_L3",
+    "PRISM_PRIVATE_LGE_L0",
+    "PRISM_PRIVATE_LGE_L1",
+    "PRISM_PRIVATE_LGE_L2",
+    "PRISM_PRIVATE_LGE_L3",
+    "PRISM_PRIVATE_T2_L0",
+    "PRISM_PRIVATE_T2_L1",
+    "PRISM_PRIVATE_T2_L2",
+    "PRISM_PRIVATE_T2_L3",
+    "PRISM_SCAR_REFINER",
+    "PRISM_SCAR_ROUTED_L0",
+    "PRISM_SCAR_ROUTED_L1",
+    "PRISM_SCAR_ROUTED_L2",
+    "PRISM_SCAR_ROUTED_L3",
+    "PRISM_SHARED_L0",
+    "PRISM_SHARED_L1",
+    "PRISM_SHARED_L2",
+    "PRISM_SHARED_L3",
+    "RAW_INTENSITY_CONTROL"
+  ],
+  "mosaic_activation_receipt": "v3_mosaic_activation_probe_receipt.json",
+  "mosaic_feature_sources": [
+    "MOSAIC_COARSE",
+    "MOSAIC_EDEMA",
+    "MOSAIC_SCAR_FINE"
+  ],
+  "mosaic_split_source": "v3_feature_probe_feature_matrix actual_train/inner_select cases",
+  "outer_accessed": false,
+  "status": "PASS",
+  "tasks": [
+    "P1_scar_vs_normal_myocardium",
+    "P2_nnunet_scar_FN_vs_true_negative",
+    "P3_nnunet_scar_FP_vs_true_negative",
+    "P4_pure_edema_vs_normal_myocardium",
+    "P5_nnunet_pure_edema_FN",
+    "P6_nnunet_pure_edema_FP",
+    "P7_small_scar_vs_normal_myocardium",
+    "P8_boundary_scar_vs_non_scar_myocardium"
+  ],
+  "train_case_limit": 16,
+  "train_split": "actual_train"
+}

@@ -1,0 +1,4 @@
+metric_name,case_count,nnunet_mean,case_oracle_mean,case_oracle_gain,voxel_oracle_mean,warning
+scar,220,0.5610470930146593,0.5830011685037614,0.02195407548910211,0.7985658207130707,case oracle is selector bound; voxel oracle is non-deployable
+pure_edema,80,0.43081230355478206,0.4331049578310154,0.002292654276233319,0.6037677875948926,case oracle is selector bound; voxel oracle is non-deployable
+lesion_union,220,0.5754706667529812,0.5887953465590428,0.013324679806061557,0.8002115023823567,case oracle is selector bound; voxel oracle is non-deployable

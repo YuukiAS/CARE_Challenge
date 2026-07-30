@@ -1,0 +1,2 @@
+job_id,scope,state,terminal,notes
+NONE_SUBMITTED_IN_THIS_V3_BUILDER_PASS,initial V3 evidence rebuild,not_submitted,true,No new GPU job was started by build_v3_finalization_packet.py

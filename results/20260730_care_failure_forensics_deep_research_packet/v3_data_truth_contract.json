@@ -1,0 +1,26 @@
+{
+  "case_count": 220,
+  "created_at": "2026-07-30T13:34:19+00:00",
+  "label_truth": {
+    "edema_zone": "label 4 or 5; internal structural metric only",
+    "myocardium_union": "label 1 or 4 or 5",
+    "pure_edema": "label 4; official edema only for raw/meta T2-present reliable cases",
+    "scar": "label 5"
+  },
+  "modality_truth": {
+    "C0_present": 104,
+    "LGE_present": 220,
+    "T2_present": 80,
+    "source_priority": [
+      "subject_meta.json",
+      "raw modality files",
+      "Dataset501 channel_names as slot names only"
+    ],
+    "warning": "Do not infer modality availability from nnUNet imagesTr slot existence; zero placeholders are expected."
+  },
+  "positive_counts": {
+    "pure_edema_label4_all_cases": 80,
+    "pure_edema_official_t2_present": 80,
+    "scar_label5": 212
+  }
+}

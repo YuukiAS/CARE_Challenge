@@ -1,0 +1,11 @@
+{
+  "case_count": 40,
+  "created_at": "2026-07-30T13:32:38+00:00",
+  "device": "cpu",
+  "docker_upload": false,
+  "manifest": "v3_mosaic_full_final_prediction_manifest.csv",
+  "new_architecture_training": false,
+  "prediction_dir": "/users/a/e/aereinh/CARE/results/20260730_care_failure_forensics_deep_research_packet/runtime/v3_mosaic_full_final_atlas_predictions/preds",
+  "status": "PASS",
+  "validation_upload": false
+}

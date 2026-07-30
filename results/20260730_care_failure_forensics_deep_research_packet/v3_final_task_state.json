@@ -1,0 +1,14 @@
+{
+  "controller_verification_decision": "VERIFIED_COMPLETE",
+  "created_at": "2026-07-30T13:34:20+00:00",
+  "current_blockers": [],
+  "docker_upload": false,
+  "git_head": "a668c531a47c959d8a324d239e9b33775f9c1f0d",
+  "limitations": [],
+  "new_architecture_training": false,
+  "origin_main": "a668c531a47c959d8a324d239e9b33775f9c1f0d",
+  "push_allowed": false,
+  "route_change": false,
+  "task_key": "20260730_care_failure_forensics_v3_finalization",
+  "validation_upload": false
+}

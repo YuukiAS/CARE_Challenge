@@ -1,0 +1,13 @@
+{
+  "created_at": "2026-07-30T13:34:20+00:00",
+  "outputs": [
+    "v3_canonical_modality_manifest.csv",
+    "v3_t2_availability_audit.json",
+    "v3_label_reliability_manifest.csv",
+    "v3_data_truth_contract.json",
+    "v3_v2_contradiction_audit.csv",
+    "v3_v2_stale_statement_audit.csv",
+    "DEEP_RESEARCH_MODEL_DESIGN_INPUT_20260730.md"
+  ],
+  "script": "scripts/forensics/care_failure_forensics/build_v3_finalization_packet.py"
+}

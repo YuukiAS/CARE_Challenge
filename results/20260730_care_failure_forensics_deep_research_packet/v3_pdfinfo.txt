@@ -1,0 +1,17 @@
+Title:          CARE Failure Forensics Deep Research Evidence Packet V3
+Author:         CARE Forensic Evidence Finalization Controller
+Creator:        LaTeX via pandoc
+Producer:       xdvipdfmx (20200315)
+CreationDate:   Thu Jul 30 08:37:03 2026 EDT
+Tagged:         no
+UserProperties: no
+Suspects:       no
+Form:           none
+JavaScript:     no
+Pages:          88
+Encrypted:      no
+Page size:      595.28 x 841.89 pts (A4)
+Page rot:       0
+File size:      36616880 bytes
+Optimized:      no
+PDF version:    1.5

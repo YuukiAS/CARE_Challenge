@@ -1,0 +1,4 @@
+superseded_file,replacement,reason
+data_case_manifest.csv,v3_canonical_modality_manifest.csv,V2 inferred T2/C0 from nnUNet placeholder channels.
+label_availability_matrix.csv,v3_label_reliability_manifest.csv,V2 used T2_present=220 and did not separate raw T2 availability from slot existence.
+report_source_v2/CARE_failure_forensics_20260730_v2.md,future report_source_v3/CARE_failure_forensics_20260730_v3.md,V2 prose contains stale completion/missing-status contradictions.

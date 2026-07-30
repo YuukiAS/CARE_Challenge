@@ -1,0 +1,6 @@
+task_id,required,status,terminal_status,evidence_path,notes
+V3_DATA_TRUTH,true,COMPLETED_WITH_VALID_EVIDENCE,COMPLETE,v3_data_truth_contract.json,T2_present corrected to 80 raw/meta cases
+V3_STALE_STATEMENT_AUDIT,true,COMPLETED_WITH_VALID_EVIDENCE,COMPLETE,v3_v2_stale_statement_audit.csv,V2 stale statements classified and excluded from V3 current-state prose
+V3_FEATURE_HOOKS,true,COMPLETED_WITH_VALID_EVIDENCE,COMPLETE,v3_feature_probe_summary.csv,receipt_status=PASS; required sources missing=none; missing probe models=none; hard failures=none
+V3_VISUAL_ATLAS_40,true,COMPLETED_WITH_VALID_EVIDENCE,COMPLETE,v3_case_atlas_manifest.csv,40 case atlas pages; QA failures=0
+V3_REMAINING_SCIENTIFIC_ASSETS,true,COMPLETED_WITH_VALID_EVIDENCE,COMPLETE,v3_missing_scientific_evidence.csv,none

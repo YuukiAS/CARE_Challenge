@@ -1,0 +1,6 @@
+{
+  "conclusion": "MMRD evidence is preserved as component-level historical evidence; any checkpoint load failure must be reported with keys/shape details before claiming scientific failure.",
+  "created_at": "2026-07-30T13:34:20+00:00",
+  "source": "mmrd_model_contract.json + mmrd_checkpoint_binding.csv",
+  "status": "CHECKPOINT_BOUND_REPLAY_EVIDENCE_REUSED_FROM_V2"
+}

@@ -1,0 +1,15 @@
+{
+  "pdf": "/users/a/e/aereinh/CARE/results/20260730_care_failure_forensics_deep_research_packet/CARE_Failure_Forensics_Deep_Research_Evidence_Packet_20260730_v3.pdf",
+  "exists": true,
+  "size_bytes": 36616880,
+  "sha256": "4aea3d8dbc7f617f4abd36d93094208f3c0e9c1a24d4c929dacb5f512074de1c",
+  "route": "pandoc_xelatex_named_fonts",
+  "render_resource_dir": "/users/a/e/aereinh/render_resources/chinese_math_pdf",
+  "chromium_fallback_used": false,
+  "page_count_from_png": 88,
+  "page_quality_failures": [],
+  "pdfinfo_path": "v3_pdfinfo.txt",
+  "pdffonts_path": "v3_pdffonts.txt",
+  "pdftotext_path": "v3_pdf_text_extract.txt",
+  "contact_sheet": "v3_pdf_contact_sheet.png"
+}

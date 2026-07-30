@@ -1,0 +1,8 @@
+{
+  "chromium_fallback_used": false,
+  "decision": "VERIFIED_COMPLETE",
+  "feature_receipt_status": "PASS",
+  "final_task_state_decision": "VERIFIED_COMPLETE",
+  "pdf_decision_visible": true,
+  "pdf_route": "pandoc_xelatex_named_fonts"
+}
