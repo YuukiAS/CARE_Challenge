@@ -1,0 +1,25 @@
+{
+  "data_root": "/users/a/e/aereinh/CARE",
+  "device_requested": "cuda",
+  "formal_arm_training_started": false,
+  "generated_utc": "2026-07-31T09:50:53.096597+00:00",
+  "git_head": {
+    "command": "git rev-parse HEAD",
+    "returncode": 0,
+    "stderr": "",
+    "stdout": "218df3b65c29f87f9c63c9e7d98d5f05ae47ad93"
+  },
+  "git_status": {
+    "command": "git status --short --branch",
+    "returncode": 0,
+    "stderr": "",
+    "stdout": "## task/20260731-myowall-geometry-diagnostic...origin/main [behind 1]\n?? scripts/forensics/myowall_geometry_diagnostic/\n?? tests/forensics/myowall_geometry_diagnostic/"
+  },
+  "objective_paths_read": [
+    "/users/a/e/aereinh/.codex-homes/CARE/attachments/2af0215d-c3e7-4d71-a948-8c5a796428db/goal-objective.md"
+  ],
+  "outer_accessed": false,
+  "previous_result_root": "results/20260731_care_myowall_if_mechanism_pilot",
+  "repo_root": "/users/a/e/aereinh/CARE_worktrees/task_myowall_geometry_diagnostic_20260731",
+  "task_key": "20260731_care_myowall_geometry_diagnostic_closure"
+}

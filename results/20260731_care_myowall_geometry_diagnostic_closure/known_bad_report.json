@@ -1,0 +1,89 @@
+{
+  "known_bad": [
+    {
+      "id": 1,
+      "rejected": true
+    },
+    {
+      "id": 2,
+      "rejected": true
+    },
+    {
+      "id": 3,
+      "rejected": true
+    },
+    {
+      "id": 4,
+      "rejected": true
+    },
+    {
+      "id": 5,
+      "rejected": true
+    },
+    {
+      "id": 6,
+      "rejected": true
+    },
+    {
+      "id": 7,
+      "rejected": true
+    },
+    {
+      "id": 8,
+      "rejected": true
+    },
+    {
+      "id": 9,
+      "rejected": true
+    },
+    {
+      "id": 10,
+      "rejected": true
+    },
+    {
+      "id": 11,
+      "rejected": true
+    },
+    {
+      "id": 12,
+      "rejected": true
+    },
+    {
+      "id": 13,
+      "rejected": true
+    },
+    {
+      "id": 14,
+      "rejected": true
+    },
+    {
+      "id": 15,
+      "rejected": true
+    },
+    {
+      "id": 16,
+      "rejected": true
+    },
+    {
+      "id": 17,
+      "rejected": true
+    },
+    {
+      "id": 18,
+      "rejected": true
+    },
+    {
+      "id": 19,
+      "rejected": true
+    },
+    {
+      "id": 20,
+      "rejected": true
+    },
+    {
+      "id": 21,
+      "rejected": true
+    }
+  ],
+  "status": "PASS"
+}

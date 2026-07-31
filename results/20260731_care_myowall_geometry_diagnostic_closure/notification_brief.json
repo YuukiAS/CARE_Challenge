@@ -1,0 +1,17 @@
+{
+  "blocked_or_failure_reason": "none",
+  "commit_status": "pending_commit_before_notifier",
+  "evidence_paths": [
+    "results/20260731_care_myowall_geometry_diagnostic_closure/geometry_casewise_all_modes.csv",
+    "results/20260731_care_myowall_geometry_diagnostic_closure/geometry_summary_all_modes.csv",
+    "results/20260731_care_myowall_geometry_diagnostic_closure/case_attribution.csv",
+    "results/20260731_care_myowall_geometry_diagnostic_closure/controller_report.md",
+    "results/20260731_care_myowall_geometry_diagnostic_closure/strict_validator_report.json"
+  ],
+  "final_status": "complete",
+  "key_conclusion": "HARD_WALL_REPRESENTATION_INVALID",
+  "next_step": "Return to Planner for decision on whether MyoWall can continue without using current predicted anatomy as sole hard-wall entry.",
+  "push_status": "pending_push_before_notifier",
+  "slurm_terminal_status": "diagnostic computation terminal; no C0/W1/W2/W3 formal training started",
+  "task_name": "20260731_care_myowall_geometry_diagnostic_closure"
+}

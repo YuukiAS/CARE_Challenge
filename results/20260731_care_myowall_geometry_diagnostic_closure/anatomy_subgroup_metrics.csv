@@ -1,0 +1,19 @@
+mode,subgroup,case_count,median_lv_dice,median_myocardium_union_dice,median_lv_component_count,median_wall_component_count,median_wall_empty_slice_count
+G0_current_predicted,all,32,0.980594284424759,0.9413418109074962,1.0,1.0,6.5
+G0_current_predicted,CenterB,6,0.9702407349296804,0.9413418109074962,1.0,1.0,10.0
+G0_current_predicted,CenterC,10,0.9810979974758942,0.9677155643291141,1.0,1.0,6.0
+G0_current_predicted,CenterH,4,1.0,0.8696021864817631,0.0,1.0,7.0
+G0_current_predicted,complete tri-modal,16,0.9804210920778869,0.9645257334452859,1.0,1.0,7.0
+G0_current_predicted,LGE+C0,8,0.9759669881474503,0.9166804185069555,1.0,1.0,8.0
+G0_current_predicted,LGE-only,8,0.9943222292059501,0.8773455164240721,0.5,1.0,4.0
+G0_current_predicted,failed five,5,1.0,0.8698991838694191,0.0,1.0,8.0
+G0_current_predicted,other 27,27,0.9784396244739398,0.9439182550599332,1.0,1.0,6.0
+G3_repaired_predicted,all,32,0.9788694302038794,0.6794717552574431,1.0,1.0,7.0
+G3_repaired_predicted,CenterB,6,0.968592202541871,0.70706364766146,1.0,1.0,10.0
+G3_repaired_predicted,CenterC,10,0.980482711666099,0.7260530128375857,1.0,1.0,6.0
+G3_repaired_predicted,CenterH,4,1.0,0.8691980568542381,0.0,1.0,7.0
+G3_repaired_predicted,complete tri-modal,16,0.978666727129286,0.7140556244701484,1.0,1.0,7.0
+G3_repaired_predicted,LGE+C0,8,0.9753703333531769,0.5853798954251939,1.0,1.0,8.0
+G3_repaired_predicted,LGE-only,8,0.994108060674439,0.4986619361373775,0.5,1.0,5.0
+G3_repaired_predicted,failed five,5,1.0,0.8687893631910427,0.0,1.0,8.0
+G3_repaired_predicted,other 27,27,0.9770967845555877,0.6747049769112365,1.0,1.0,7.0

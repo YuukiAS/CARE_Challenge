@@ -1,0 +1,50 @@
+{
+  "checkpoint": "/users/a/e/aereinh/CARE/data/nnUNet/nnUNet_results/Dataset501_CAREMyoPS/nnUNetTrainer_500epochs__nnUNetPlans__3d_fullres/fold_1/checkpoint_final.pth",
+  "checkpoint_sha256": "5310569ff62f2f9a6ff2bc7dd3754404140071427a2025caf5e25d2916cfe400",
+  "dataset_json": "/users/a/e/aereinh/CARE/data/nnUNet/nnUNet_preprocessed/Dataset501_CAREMyoPS/dataset.json",
+  "dataset_json_sha256": "8437262d92fb898c8d16a89150efd4629602dd71e0fa5bbcf1c6c80cc3b535ae",
+  "fold1_outer_accessed": false,
+  "geometry_gate_spacing_zyx": [
+    1.0,
+    1.0,
+    1.0
+  ],
+  "gt_geometry_runtime_only": true,
+  "labels": {
+    "LV_blood": 2,
+    "RV_blood": 3,
+    "background": 0,
+    "edema": 4,
+    "myocardium": 1,
+    "scar": 5
+  },
+  "pilot_inner_count": 32,
+  "pilot_train_count": 144,
+  "plans": "/users/a/e/aereinh/CARE/data/nnUNet/nnUNet_preprocessed/Dataset501_CAREMyoPS/nnUNetPlans.json",
+  "plans_sha256": "06492f8fc75b5de383a28006f76b7f1099f305422953cf9d4f89ae1ec38d3e2f",
+  "previous_case_geometry_valid_rate": 0.84375,
+  "previous_failed_cases": [
+    "Case3029",
+    "Case8003",
+    "Case8022",
+    "Case8027",
+    "Case8028"
+  ],
+  "previous_pilot_split_receipt": {
+    "fold": 1,
+    "fold1_outer_read": false,
+    "fold1_train_total": 176,
+    "hash_seed": "CARE_MyoWall_IF_20260731",
+    "pilot_inner_count": 32,
+    "pilot_inner_lge_c0": 8,
+    "pilot_inner_lge_only": 8,
+    "pilot_inner_sha256": "b32b44bbce06ba717690ec8907609a1206e25f809616184d7e2ddb52f4a1abcb",
+    "pilot_inner_t2_present": 16,
+    "pilot_train_count": 144,
+    "pilot_train_sha256": "53df53db7c5a9271b9ec8d4ae49944d842f98ceae83d7c96017641944815a80f",
+    "split_source": "data/benchmarks/protocol/splits_MyoPS.json",
+    "status": "PASS"
+  },
+  "previous_stock_parity_status": "PASS",
+  "status": "PASS"
+}

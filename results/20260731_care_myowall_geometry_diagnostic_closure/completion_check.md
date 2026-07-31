@@ -1,0 +1,12 @@
+# Completion Check
+
+status: COMPLETE
+controller_verification_decision: VERIFIED_COMPLETE
+scientific_decision: HARD_WALL_REPRESENTATION_INVALID
+G0_reproduction: PASS
+GT_geometry_training_cache_written: false
+pilot_inner_used_for_threshold_selection: false
+formal_arm_training_started: false
+production_geometry_modified: false
+outer_accessed: false
+validation_or_docker_upload_started: false

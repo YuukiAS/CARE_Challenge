@@ -1,0 +1,125 @@
+{
+  "centerh": [
+    {
+      "attribution": "wall_transform_or_GT_shape_failure",
+      "case_id": "Case8003",
+      "center": "CenterH",
+      "g0_geometry_valid": false,
+      "g1_gt_geometry_valid": false,
+      "g2_supported_denominator_valid": false,
+      "g3_repaired_predicted_valid": false,
+      "modality_group": "LGE-only",
+      "was_failed_five": true
+    },
+    {
+      "attribution": "wall_transform_or_GT_shape_failure",
+      "case_id": "Case8022",
+      "center": "CenterH",
+      "g0_geometry_valid": false,
+      "g1_gt_geometry_valid": false,
+      "g2_supported_denominator_valid": false,
+      "g3_repaired_predicted_valid": false,
+      "modality_group": "LGE-only",
+      "was_failed_five": true
+    },
+    {
+      "attribution": "wall_transform_or_GT_shape_failure",
+      "case_id": "Case8027",
+      "center": "CenterH",
+      "g0_geometry_valid": false,
+      "g1_gt_geometry_valid": false,
+      "g2_supported_denominator_valid": false,
+      "g3_repaired_predicted_valid": false,
+      "modality_group": "LGE-only",
+      "was_failed_five": true
+    },
+    {
+      "attribution": "wall_transform_or_GT_shape_failure",
+      "case_id": "Case8028",
+      "center": "CenterH",
+      "g0_geometry_valid": false,
+      "g1_gt_geometry_valid": false,
+      "g2_supported_denominator_valid": false,
+      "g3_repaired_predicted_valid": false,
+      "modality_group": "LGE-only",
+      "was_failed_five": true
+    }
+  ],
+  "controller_verification_decision": "VERIFIED_COMPLETE",
+  "failed_five": [
+    {
+      "attribution": "wall_transform_or_GT_shape_failure",
+      "case_id": "Case3029",
+      "center": "CenterC",
+      "g0_geometry_valid": false,
+      "g1_gt_geometry_valid": false,
+      "g2_supported_denominator_valid": false,
+      "g3_repaired_predicted_valid": false,
+      "modality_group": "C0+LGE+T2",
+      "was_failed_five": true
+    },
+    {
+      "attribution": "wall_transform_or_GT_shape_failure",
+      "case_id": "Case8003",
+      "center": "CenterH",
+      "g0_geometry_valid": false,
+      "g1_gt_geometry_valid": false,
+      "g2_supported_denominator_valid": false,
+      "g3_repaired_predicted_valid": false,
+      "modality_group": "LGE-only",
+      "was_failed_five": true
+    },
+    {
+      "attribution": "wall_transform_or_GT_shape_failure",
+      "case_id": "Case8022",
+      "center": "CenterH",
+      "g0_geometry_valid": false,
+      "g1_gt_geometry_valid": false,
+      "g2_supported_denominator_valid": false,
+      "g3_repaired_predicted_valid": false,
+      "modality_group": "LGE-only",
+      "was_failed_five": true
+    },
+    {
+      "attribution": "wall_transform_or_GT_shape_failure",
+      "case_id": "Case8027",
+      "center": "CenterH",
+      "g0_geometry_valid": false,
+      "g1_gt_geometry_valid": false,
+      "g2_supported_denominator_valid": false,
+      "g3_repaired_predicted_valid": false,
+      "modality_group": "LGE-only",
+      "was_failed_five": true
+    },
+    {
+      "attribution": "wall_transform_or_GT_shape_failure",
+      "case_id": "Case8028",
+      "center": "CenterH",
+      "g0_geometry_valid": false,
+      "g1_gt_geometry_valid": false,
+      "g2_supported_denominator_valid": false,
+      "g3_repaired_predicted_valid": false,
+      "modality_group": "LGE-only",
+      "was_failed_five": true
+    }
+  ],
+  "g0_reproduction": {
+    "compared_cases": 32,
+    "diffs": [],
+    "status": "PASS"
+  },
+  "scientific_decision": "HARD_WALL_REPRESENTATION_INVALID",
+  "slurm_terminal_status": "NO_FORMAL_TRAINING_GPU_JOB_USED_FOR_DIAGNOSTIC_ONLY",
+  "threshold_winner": {
+    "case_count": 144,
+    "case_geometry_valid_rate": 0.013888888888888888,
+    "fifth_percentile_roundtrip_dice": 0.1134755493758199,
+    "hd95_metrics_computed": true,
+    "l1_distance_from_original_threshold": 0.25,
+    "lv_threshold": 0.15,
+    "median_roundtrip_hd95_mm": 7.745697711887631,
+    "secondary_metrics_computed": true,
+    "selection_population": "pilot_train",
+    "wall_threshold": 0.15
+  }
+}

@@ -1,0 +1,27 @@
+{
+  "checked_required_outputs": [
+    "controller_context.json",
+    "frozen_input_manifest.json",
+    "pilot_train_threshold_search.csv",
+    "frozen_repair_contract.json",
+    "geometry_casewise_all_modes.csv",
+    "geometry_summary_all_modes.csv",
+    "anatomy_casewise_metrics.csv",
+    "anatomy_subgroup_metrics.csv",
+    "failed_reason_counts.csv",
+    "case_attribution.csv",
+    "geometry_diagnostic_atlas.pdf",
+    "geometry_diagnostic_contact_sheet.png",
+    "case_visual_findings.md",
+    "gt_geometry_safety_receipt.json",
+    "known_bad_report.json",
+    "mapper_report_final.md",
+    "controller_report.md",
+    "completion_check.md",
+    "MANIFEST.md",
+    "notification_brief.json"
+  ],
+  "errors": [],
+  "status": "PASS",
+  "warnings": []
+}

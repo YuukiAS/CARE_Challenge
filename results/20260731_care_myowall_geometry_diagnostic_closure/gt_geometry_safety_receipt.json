@@ -1,0 +1,109 @@
+{
+  "g1_geometry_status": "FAIL",
+  "g1_summary": [
+    {
+      "case_count": 32,
+      "fifth_percentile_roundtrip_dice": 0.815157300652308,
+      "geometry_valid_rate": 0.78125,
+      "median_roundtrip_dice": 0.9997043692390791,
+      "median_roundtrip_hd95_mm": 0.0,
+      "median_supported_slice_count": 12.0,
+      "median_valid_angle_fraction": 1.0,
+      "mode": "G1_GT_anatomy",
+      "subgroup": "all"
+    },
+    {
+      "case_count": 6,
+      "fifth_percentile_roundtrip_dice": 0.9993005022568613,
+      "geometry_valid_rate": 0.8333333333333334,
+      "median_roundtrip_dice": 0.9996658172059101,
+      "median_roundtrip_hd95_mm": 0.0,
+      "median_supported_slice_count": 10.0,
+      "median_valid_angle_fraction": 1.0,
+      "mode": "G1_GT_anatomy",
+      "subgroup": "CenterB"
+    },
+    {
+      "case_count": 10,
+      "fifth_percentile_roundtrip_dice": 0.9992517656466993,
+      "geometry_valid_rate": 0.9,
+      "median_roundtrip_dice": 1.0,
+      "median_roundtrip_hd95_mm": 0.0,
+      "median_supported_slice_count": 14.0,
+      "median_valid_angle_fraction": 1.0,
+      "mode": "G1_GT_anatomy",
+      "subgroup": "CenterC"
+    },
+    {
+      "case_count": 4,
+      "fifth_percentile_roundtrip_dice": 0.5863909549532711,
+      "geometry_valid_rate": 0.0,
+      "median_roundtrip_dice": 0.812338702868767,
+      "median_roundtrip_hd95_mm": 2.0,
+      "median_supported_slice_count": 0.0,
+      "median_valid_angle_fraction": 0.01484375,
+      "mode": "G1_GT_anatomy",
+      "subgroup": "CenterH"
+    },
+    {
+      "case_count": 16,
+      "fifth_percentile_roundtrip_dice": 0.999196704300912,
+      "geometry_valid_rate": 0.875,
+      "median_roundtrip_dice": 1.0,
+      "median_roundtrip_hd95_mm": 0.0,
+      "median_supported_slice_count": 13.0,
+      "median_valid_angle_fraction": 1.0,
+      "mode": "G1_GT_anatomy",
+      "subgroup": "complete tri-modal"
+    },
+    {
+      "case_count": 8,
+      "fifth_percentile_roundtrip_dice": 0.9958802667149108,
+      "geometry_valid_rate": 1.0,
+      "median_roundtrip_dice": 0.9996982123579615,
+      "median_roundtrip_hd95_mm": 0.0,
+      "median_supported_slice_count": 12.0,
+      "median_valid_angle_fraction": 1.0,
+      "mode": "G1_GT_anatomy",
+      "subgroup": "LGE+C0"
+    },
+    {
+      "case_count": 8,
+      "fifth_percentile_roundtrip_dice": 0.6329231361485855,
+      "geometry_valid_rate": 0.375,
+      "median_roundtrip_dice": 0.9849235774639076,
+      "median_roundtrip_hd95_mm": 1.0,
+      "median_supported_slice_count": 7.5,
+      "median_valid_angle_fraction": 0.475537109375,
+      "mode": "G1_GT_anatomy",
+      "subgroup": "LGE-only"
+    },
+    {
+      "case_count": 5,
+      "fifth_percentile_roundtrip_dice": 0.5980240002520998,
+      "geometry_valid_rate": 0.0,
+      "median_roundtrip_dice": 0.8405246807041767,
+      "median_roundtrip_hd95_mm": 1.7071067811865475,
+      "median_supported_slice_count": 0.0,
+      "median_valid_angle_fraction": 0.019921875,
+      "mode": "G1_GT_anatomy",
+      "subgroup": "failed five"
+    },
+    {
+      "case_count": 27,
+      "fifth_percentile_roundtrip_dice": 0.9942545645445833,
+      "geometry_valid_rate": 0.9259259259259259,
+      "median_roundtrip_dice": 0.9998055231427461,
+      "median_roundtrip_hd95_mm": 0.0,
+      "median_supported_slice_count": 14.0,
+      "median_valid_angle_fraction": 1.0,
+      "mode": "G1_GT_anatomy",
+      "subgroup": "other 27"
+    }
+  ],
+  "gt_geometry_runtime_only": true,
+  "gt_geometry_safety_status": "PASS",
+  "gt_geometry_used_as_formal_prediction": false,
+  "gt_geometry_written_to_training_cache": false,
+  "status": "PASS"
+}
