@@ -78,6 +78,8 @@ Do not stack unexplained English technical phrases. Controller analysis of statu
 
 As of 2026-07-20, future GPT/Codex implementation defaults to `main` in `/users/a/e/aereinh/CARE`. Route A/B/C worktrees and remote route branches are retained for provenance, but they are not active development targets. Do not start a new route controller, route worktree implementation, portfolio round, validation upload, route promotion, M11, hosted metric claim, or final scientific decision unless the user explicitly authorizes that scope in a new handoff. Historical route protocols remain binding when reading route evidence or if a route is later reactivated by a human-approved handoff.
 
+Branch creation is not part of the default main-only workflow. Do not create, publish, or preserve a task branch unless the current user instruction explicitly authorizes that branch workflow. If a frozen task contract names an isolated branch/worktree, treat it as local isolation only unless the user also explicitly authorizes pushing that branch; after the user asks to merge into `main`, merge to `main`, push `main` only when authorized, and delete the temporary branch reference.
+
 For new CARE handoffs, `prompts/AGENT_FLOW_V2_PROTOCOL.md` and `prompts/schemas/agent_flow_policy.yaml` are the canonical sources. Use only these active role names: `planner`, `critic`, `controller`, `executor`, `mapper`, `finalizer`, `validator`, and `reviewer`. Historical `auditor`, `execution_controller`, and `strategic-controller` fields are legacy aliases only; do not create a controller-internal legacy `auditor` subagent in new tasks.
 
 Short, non-Slurm, low-resume-risk work may use `planner -> executor -> local result commit -> planner`. Overnight, long Slurm, multi-job, or high-resume-risk work must use `planner -> controller/coordinator -> executor/mapper/finalizer/validator -> controller verification and repair loop -> local result commit -> planner`.
@@ -529,6 +531,8 @@ For high-risk CARE work, a Codex executor result cannot authorize fold expansion
 For this repository, ordinary `git push` commands are permanently authorized and must not be sent to manual approval, Auto-review, Guardian, or another approval reviewer.
 
 After completing requested work, validation, and a normal commit, the agent may push the current branch to the existing origin without asking for separate confirmation.
+
+This standing authorization only covers the user-authorized target branch for the current task. It must not be interpreted as permission to create or push a new task branch when the repository is in main-only posture or when the user expected the work to land on `main`.
 
 This authorization does not permit the agent to autonomously use force push, force-with-lease, delete remote branches or tags, rewrite published history, or change Git remotes. Those operations still require an explicit user instruction.
 
