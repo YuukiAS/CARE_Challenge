@@ -1,0 +1,16 @@
+{
+  "arm": "DENSE",
+  "batch_manifest_path": "/users/a/e/aereinh/CARE/results/20260731_care_qif_v2_signal_audit/batch_descriptor_manifest_CB.jsonl",
+  "batch_manifest_sha256": "0882b6a3f94a2f18648551ad5d6c3c1dba1842eccf61d3d3836295dfe20ae52f",
+  "created_at": "2026-07-31T14:44:04+00:00",
+  "direction": "CB",
+  "effective_batch": 4,
+  "formal_credit": true,
+  "gradient_accumulation": 4,
+  "optimizer_steps": 4000,
+  "parameter_count": 727393,
+  "physical_batch": 1,
+  "run_name": "CB_DENSE",
+  "selected_checkpoint": "/users/a/e/aereinh/.tmp/codex-CARE/20260731_care_qif_v2_signal_audit/query_runs/CB_DENSE/checkpoints/checkpoint_step00500.pt",
+  "status": "PASS"
+}

@@ -1,0 +1,156 @@
+{
+  "atlas": {
+    "case_count": 13,
+    "contact_sheet": "/users/a/e/aereinh/CARE/results/20260731_care_qif_v2_signal_audit/case_atlas_contact_sheet.png",
+    "pdf": "/users/a/e/aereinh/CARE/results/20260731_care_qif_v2_signal_audit/case_atlas.pdf",
+    "visual_rows": [
+      {
+        "case_id": "Case3008",
+        "label_alignment_checked": true,
+        "orientation_checked": true,
+        "slice_z": 8
+      },
+      {
+        "case_id": "Case3009",
+        "label_alignment_checked": true,
+        "orientation_checked": true,
+        "slice_z": 3
+      },
+      {
+        "case_id": "Case3015",
+        "label_alignment_checked": true,
+        "orientation_checked": true,
+        "slice_z": 7
+      },
+      {
+        "case_id": "Case3020",
+        "label_alignment_checked": true,
+        "orientation_checked": true,
+        "slice_z": 10
+      },
+      {
+        "case_id": "Case3001",
+        "label_alignment_checked": true,
+        "orientation_checked": true,
+        "slice_z": 6
+      },
+      {
+        "case_id": "Case3002",
+        "label_alignment_checked": true,
+        "orientation_checked": true,
+        "slice_z": 9
+      },
+      {
+        "case_id": "Case3003",
+        "label_alignment_checked": true,
+        "orientation_checked": true,
+        "slice_z": 1
+      },
+      {
+        "case_id": "Case3018",
+        "label_alignment_checked": true,
+        "orientation_checked": true,
+        "slice_z": 7
+      },
+      {
+        "case_id": "Case3034",
+        "label_alignment_checked": true,
+        "orientation_checked": true,
+        "slice_z": 6
+      },
+      {
+        "case_id": "Case3039",
+        "label_alignment_checked": true,
+        "orientation_checked": true,
+        "slice_z": 3
+      },
+      {
+        "case_id": "Case3041",
+        "label_alignment_checked": true,
+        "orientation_checked": true,
+        "slice_z": 5
+      },
+      {
+        "case_id": "Case3007",
+        "label_alignment_checked": true,
+        "orientation_checked": true,
+        "slice_z": 5
+      },
+      {
+        "case_id": "Case3004",
+        "label_alignment_checked": true,
+        "orientation_checked": true,
+        "slice_z": 7
+      }
+    ]
+  },
+  "checkpoint_rows": [
+    {
+      "arm": "DENSE",
+      "direction": "BC",
+      "held_out_center_used_for_selection": "False",
+      "run_name": "BC_DENSE",
+      "selected_checkpoint": "/users/a/e/aereinh/.tmp/codex-CARE/20260731_care_qif_v2_signal_audit/query_runs/BC_DENSE/checkpoints/checkpoint_step00500.pt",
+      "selected_checkpoint_reloaded": "True",
+      "selection_policy": "train-center-internal-only",
+      "selection_score": "0.9278250234707975"
+    },
+    {
+      "arm": "QUERY",
+      "direction": "BC",
+      "held_out_center_used_for_selection": "False",
+      "run_name": "BC_QUERY",
+      "selected_checkpoint": "/users/a/e/aereinh/.tmp/codex-CARE/20260731_care_qif_v2_signal_audit/query_runs/BC_QUERY/checkpoints/checkpoint_step01000.pt",
+      "selected_checkpoint_reloaded": "True",
+      "selection_policy": "train-center-internal-only",
+      "selection_score": "0.9765565572460043"
+    },
+    {
+      "arm": "DENSE",
+      "direction": "CB",
+      "held_out_center_used_for_selection": "False",
+      "run_name": "CB_DENSE",
+      "selected_checkpoint": "/users/a/e/aereinh/.tmp/codex-CARE/20260731_care_qif_v2_signal_audit/query_runs/CB_DENSE/checkpoints/checkpoint_step00500.pt",
+      "selected_checkpoint_reloaded": "True",
+      "selection_policy": "train-center-internal-only",
+      "selection_score": "0.7873330381539412"
+    },
+    {
+      "arm": "QUERY",
+      "direction": "CB",
+      "held_out_center_used_for_selection": "False",
+      "run_name": "CB_QUERY",
+      "selected_checkpoint": "/users/a/e/aereinh/.tmp/codex-CARE/20260731_care_qif_v2_signal_audit/query_runs/CB_QUERY/checkpoints/checkpoint_step00500.pt",
+      "selected_checkpoint_reloaded": "True",
+      "selection_policy": "train-center-internal-only",
+      "selection_score": "0.7702444525107225"
+    }
+  ],
+  "component_query_decision": "COMPONENT_QUERY_FACT_FAIL",
+  "created_at": "2026-07-31T16:51:08+00:00",
+  "evaluated_cases": 80,
+  "gate_predicates": {
+    "BC_dice_delta_ge_minus_0_01": true,
+    "BC_duplicate_query_rate_le_0_20": false,
+    "BC_harm_fraction_lt_0_40": false,
+    "BC_hd95_delta_le_2mm": true,
+    "BC_lesion_delta_ge_0_05": false,
+    "BC_query_precision_ge_0_50": true,
+    "BC_remote_fp_count_delta_le_0_20": false,
+    "BC_remote_fp_volume_le_dense_1_10": true,
+    "CB_dice_delta_ge_minus_0_01": false,
+    "CB_duplicate_query_rate_le_0_20": false,
+    "CB_harm_fraction_lt_0_40": false,
+    "CB_hd95_delta_le_2mm": true,
+    "CB_lesion_delta_ge_0_05": false,
+    "CB_query_precision_ge_0_50": true,
+    "CB_remote_fp_count_delta_le_0_20": true,
+    "CB_remote_fp_volume_le_dense_1_10": true,
+    "pooled_lesion_recall_delta_ge_0_08": false,
+    "pooled_small_lesion_recall_delta_ge_0_12": true,
+    "query_intervention_changed_final_labels": true
+  },
+  "pooled_lesion_recall_delta": 0.008522727272727293,
+  "pooled_small_lesion_recall_delta": 0.25,
+  "status": "PASS"
+}

@@ -1,0 +1,8 @@
+{
+  "final_loss": 2.2787320613861084,
+  "query_on_off_changed_final_labels": true,
+  "run_name": "BC_QUERY_PREFLIGHT",
+  "save_reload_max_abs_error": 0.0,
+  "status": "PASS",
+  "steps": 200
+}

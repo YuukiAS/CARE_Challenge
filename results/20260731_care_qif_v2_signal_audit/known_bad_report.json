@@ -1,0 +1,126 @@
+{
+  "case_count": 30,
+  "status": "PASS",
+  "tests": {
+    "CURRENT/wiki modified": {
+      "expected": "validator rejects completion",
+      "passed": true
+    },
+    "GO auto-starts long training": {
+      "expected": "validator rejects completion",
+      "passed": true
+    },
+    "GT context entering deployable path": {
+      "expected": "validator rejects completion",
+      "passed": true
+    },
+    "OOF leakage": {
+      "expected": "validator rejects completion",
+      "passed": true
+    },
+    "component overflow": {
+      "expected": "validator rejects completion",
+      "passed": true
+    },
+    "data contract mismatch": {
+      "expected": "validator rejects completion",
+      "passed": true
+    },
+    "dense/query descriptor mismatch": {
+      "expected": "validator rejects completion",
+      "passed": true
+    },
+    "duplicate query over threshold still PASS": {
+      "expected": "validator rejects completion",
+      "passed": true
+    },
+    "early stopping": {
+      "expected": "validator rejects completion",
+      "passed": true
+    },
+    "feature tensor committed": {
+      "expected": "validator rejects completion",
+      "passed": true
+    },
+    "held-out checkpoint selection": {
+      "expected": "validator rejects completion",
+      "passed": true
+    },
+    "injury label-4-only definition": {
+      "expected": "validator rejects completion",
+      "passed": true
+    },
+    "missing no-object hard negatives": {
+      "expected": "validator rejects completion",
+      "passed": true
+    },
+    "missing query intervention": {
+      "expected": "validator rejects completion",
+      "passed": true
+    },
+    "no-T2 enters injury audit": {
+      "expected": "validator rejects completion",
+      "passed": true
+    },
+    "notify before push": {
+      "expected": "validator rejects completion",
+      "passed": true
+    },
+    "official validation access": {
+      "expected": "validator rejects completion",
+      "passed": true
+    },
+    "outer fold access": {
+      "expected": "validator rejects completion",
+      "passed": true
+    },
+    "patch proxy": {
+      "expected": "validator rejects completion",
+      "passed": true
+    },
+    "pending masquerades as completion": {
+      "expected": "validator rejects completion",
+      "passed": true
+    },
+    "query auxiliary-only": {
+      "expected": "validator rejects completion",
+      "passed": true
+    },
+    "query precision under threshold still PASS": {
+      "expected": "validator rejects completion",
+      "passed": true
+    },
+    "remote FP explosion still PASS": {
+      "expected": "validator rejects completion",
+      "passed": true
+    },
+    "runtime push": {
+      "expected": "validator rejects completion",
+      "passed": true
+    },
+    "single-direction success only": {
+      "expected": "validator rejects completion",
+      "passed": true
+    },
+    "small GT components dropped": {
+      "expected": "validator rejects completion",
+      "passed": true
+    },
+    "stock scar authority": {
+      "expected": "validator rejects completion",
+      "passed": true
+    },
+    "task branch push": {
+      "expected": "validator rejects completion",
+      "passed": true
+    },
+    "test-center selection": {
+      "expected": "validator rejects completion",
+      "passed": true
+    },
+    "under 4000 optimizer steps": {
+      "expected": "validator rejects completion",
+      "passed": true
+    }
+  }
+}

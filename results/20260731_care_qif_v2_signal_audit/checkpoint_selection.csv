@@ -1,0 +1,6 @@
+run_name,direction,arm,selection_policy,selected_checkpoint,selection_score,held_out_center_used_for_selection,selected_checkpoint_reloaded
+BC_QUERY_PREFLIGHT,BC,QUERY,train-center-internal-only,/users/a/e/aereinh/.tmp/codex-CARE/20260731_care_qif_v2_signal_audit/query_runs/BC_QUERY_PREFLIGHT/checkpoints/checkpoint_step00200.pt,1.0246479986736237,False,True
+BC_DENSE,BC,DENSE,train-center-internal-only,/users/a/e/aereinh/.tmp/codex-CARE/20260731_care_qif_v2_signal_audit/query_runs/BC_DENSE/checkpoints/checkpoint_step00500.pt,0.9278250234707975,False,True
+BC_QUERY,BC,QUERY,train-center-internal-only,/users/a/e/aereinh/.tmp/codex-CARE/20260731_care_qif_v2_signal_audit/query_runs/BC_QUERY/checkpoints/checkpoint_step01000.pt,0.9765565572460043,False,True
+CB_DENSE,CB,DENSE,train-center-internal-only,/users/a/e/aereinh/.tmp/codex-CARE/20260731_care_qif_v2_signal_audit/query_runs/CB_DENSE/checkpoints/checkpoint_step00500.pt,0.7873330381539412,False,True
+CB_QUERY,CB,QUERY,train-center-internal-only,/users/a/e/aereinh/.tmp/codex-CARE/20260731_care_qif_v2_signal_audit/query_runs/CB_QUERY/checkpoints/checkpoint_step00500.pt,0.7702444525107225,False,True

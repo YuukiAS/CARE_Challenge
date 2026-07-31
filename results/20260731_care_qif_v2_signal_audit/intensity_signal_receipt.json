@@ -1,0 +1,25 @@
+{
+  "created_at": "2026-07-31T16:46:24+00:00",
+  "gate_predicates": {
+    "injury_CenterC_q25_auroc_ge_0_60": true,
+    "injury_both_direction_auprc_lift_ge_2": false,
+    "injury_both_direction_macro_auroc_ge_0_65": true,
+    "injury_deployable_no_more_than_0_05_below_gt": true,
+    "injury_median_auroc_ge_0_70_both_centers": true,
+    "injury_rank_improves_raw_one_direction_and_not_worse_other": false,
+    "scar_CenterC_q25_auroc_ge_0_60": true,
+    "scar_both_direction_auprc_lift_ge_2": true,
+    "scar_both_direction_macro_auroc_ge_0_65": true,
+    "scar_deployable_no_more_than_0_05_below_gt": true,
+    "scar_median_auroc_ge_0_70_both_centers": true,
+    "scar_rank_improves_raw_one_direction_and_not_worse_other": false
+  },
+  "injury_decision": "FAIL",
+  "inputs": {
+    "feature_cache_manifest_sha256": "f9156fc1ac52006d84ce4da346efb1be5d93118c7be23e6f62a5f94959e17aa6",
+    "oof_manifest_sha256": "2fcb27ad8ee1012acc75cf91d5316874f71bf46ae9379362cd519df447aeb2b6"
+  },
+  "intensity_signal_decision": "INTENSITY_SIGNAL_FAIL_BOTH",
+  "scar_decision": "FAIL",
+  "status": "PASS"
+}

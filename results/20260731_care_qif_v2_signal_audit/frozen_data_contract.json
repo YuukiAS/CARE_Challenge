@@ -1,0 +1,28 @@
+{
+  "CenterB": 35,
+  "CenterC": 45,
+  "all_cases_for_component_statistics": 220,
+  "complete_triomodal_cases": 80,
+  "created_at": "2026-07-31T12:00:43+00:00",
+  "data_contract_status": "PASS",
+  "expected_CenterB": 35,
+  "expected_CenterC": 45,
+  "expected_complete_triomodal_cases": 80,
+  "labels": {
+    "LV_cavity": 2,
+    "healthy_myocardium": 1,
+    "injury_zone": [
+      4,
+      5
+    ],
+    "myocardium_union": [
+      1,
+      4,
+      5
+    ],
+    "pure_edema": 4,
+    "scar": 5
+  },
+  "oof_feature_provenance_status": "PASS",
+  "query_capacity_status": "PASS"
+}

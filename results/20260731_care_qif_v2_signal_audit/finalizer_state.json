@@ -1,0 +1,9 @@
+{
+  "aggregation_complete": true,
+  "created_at": "2026-07-31T16:57:55+00:00",
+  "local_sha": "4a1204e4dc9602bbb8514678dbdf7281fa794f0d",
+  "remote_main_sha": "",
+  "slurm_terminal": true,
+  "status": "PASS",
+  "validator_expected_path": "results/20260731_care_qif_v2_signal_audit/strict_validator_report.json"
+}
