@@ -1,0 +1,18 @@
+{
+  "blocked_or_failure_reason": "",
+  "commit_status": "pushed:c623f78b32dc38c1d8de933ed7deae9be92111f8",
+  "evidence_paths": [
+    "results/20260731_care_qif_v2_signal_audit/controller_report.md",
+    "results/20260731_care_qif_v2_signal_audit/joint_decision_receipt.json",
+    "results/20260731_care_qif_v2_signal_audit/strict_validator_report.json",
+    "results/20260731_care_qif_v2_signal_audit/component_query_receipt.json",
+    "results/20260731_care_qif_v2_signal_audit/intensity_signal_receipt.json",
+    "results/20260731_care_qif_v2_signal_audit/case_atlas.pdf"
+  ],
+  "final_status": "complete",
+  "key_conclusion": "joint=NO_GO_QIF_V2; validator=PASS; local=c623f78b32dc38c1d8de933ed7deae9be92111f8; remote=c623f78b32dc38c1d8de933ed7deae9be92111f8",
+  "next_step": "Planner/user decides whether to authorize the next CARE-QIF v2 design or a narrower redesign based on the joint decision.",
+  "push_status": "remote-main-verified:c623f78b32dc38c1d8de933ed7deae9be92111f8",
+  "slurm_terminal_status": "61454941:FAILED:1:0; 61454941.batch:FAILED:1:0; 61454941.extern:COMPLETED:0:0; 61470772:CANCELLED by 397557:0:0; 61470772.batch:CANCELLED:0:15; 61470772.extern:COMPLETED:0:0; 61472338:COMPLETED:0:0; 61472338.batch:COMPLETED:0:0; 61472338.extern:COMPLETED:0:0",
+  "task_name": "20260731_care_qif_v2_signal_audit"
+}
