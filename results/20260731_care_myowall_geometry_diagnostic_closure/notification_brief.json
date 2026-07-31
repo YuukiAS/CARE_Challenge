@@ -1,6 +1,6 @@
 {
   "blocked_or_failure_reason": "none",
-  "commit_status": "pending_commit_before_notifier",
+  "commit_status": "committed_and_pushed_to_main:df7833ccb98a2ad99e7f1af88f4ce81b96e3e450",
   "evidence_paths": [
     "results/20260731_care_myowall_geometry_diagnostic_closure/geometry_casewise_all_modes.csv",
     "results/20260731_care_myowall_geometry_diagnostic_closure/geometry_summary_all_modes.csv",
@@ -9,9 +9,9 @@
     "results/20260731_care_myowall_geometry_diagnostic_closure/strict_validator_report.json"
   ],
   "final_status": "complete",
-  "key_conclusion": "HARD_WALL_REPRESENTATION_INVALID",
-  "next_step": "Return to Planner for decision on whether MyoWall can continue without using current predicted anatomy as sole hard-wall entry.",
-  "push_status": "pending_push_before_notifier",
-  "slurm_terminal_status": "diagnostic computation terminal; no C0/W1/W2/W3 formal training started",
+  "key_conclusion": "hard wall representation 在 pilot_inner 上被 GT anatomy 诊断否定；G0 复现通过，G1/G3 均未达到门槛，Case3029 不是单纯 denominator bug，CenterH LGE-only 四例在 GT geometry 下仍系统失败。",
+  "next_step": "Return to Planner/user for architecture decision; do not start MyoWall formal arms unless a new design replaces hard wall as sole entry or explicitly authorizes another diagnostic.",
+  "push_status": "remote_main_verified:df7833ccb98a2ad99e7f1af88f4ce81b96e3e450",
+  "slurm_terminal_status": "diagnostic GPU step on existing htzhulab allocation completed successfully; no C0/W1/W2/W3 formal training job started",
   "task_name": "20260731_care_myowall_geometry_diagnostic_closure"
 }

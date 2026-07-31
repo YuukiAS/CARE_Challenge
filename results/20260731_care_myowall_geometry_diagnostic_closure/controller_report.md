@@ -13,8 +13,8 @@ required_outputs_complete: PASS
 validators_passed: PASS
 all_jobs_terminal: TRUE
 aggregation_complete: TRUE
-git_commit_decision: PENDING
-git_push_decision: PENDING
+git_commit_decision: COMMITTED df7833ccb98a2ad99e7f1af88f4ce81b96e3e450
+git_push_decision: PUSHED_MAIN_VERIFIED df7833ccb98a2ad99e7f1af88f4ce81b96e3e450
 next_required_action: RETURN_TO_PLANNER
 
 ## Threshold Winner
