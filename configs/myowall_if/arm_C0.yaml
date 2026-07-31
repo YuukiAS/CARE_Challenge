@@ -1,0 +1,5 @@
+inherits: configs/myowall_if/pilot_common.yaml
+arm: C0
+head: CartesianMatchedPathologyHead
+component_guard_losses: false
+rank_features: true

@@ -1,0 +1,22 @@
+{
+  "errors": [],
+  "pretraining": {
+    "errors": [],
+    "required_classes": [
+      "StockNNUNetFeatureAdapter",
+      "FrozenStockGeometryCacheBuilder",
+      "WallCoordinateTransform",
+      "WallInverseTransform",
+      "RobustWallRankFeatures",
+      "CartesianMatchedPathologyHead",
+      "ScarWallFieldHead",
+      "EdemaWallFieldHead",
+      "MyoWallPilotModel",
+      "MyoWallPilotLoss",
+      "MyoWallPilotEvaluator"
+    ],
+    "status": "PASS"
+  },
+  "status": "PASS",
+  "terminal_stop_validated": true
+}

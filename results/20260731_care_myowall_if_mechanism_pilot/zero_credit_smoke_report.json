@@ -1,0 +1,8 @@
+{
+  "arm": "C0",
+  "checkpoint_reload_required": true,
+  "formal_credit": false,
+  "metric_dependency_checked": true,
+  "optimizer_steps": 0,
+  "status": "ZERO_CREDIT_SMOKE_RECORDED"
+}

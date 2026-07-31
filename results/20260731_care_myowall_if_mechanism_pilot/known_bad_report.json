@@ -1,0 +1,53 @@
+{
+  "known_bad": [
+    {
+      "id": "decoder_reset",
+      "rejected": true
+    },
+    {
+      "id": "z112_hardcoded",
+      "rejected": true
+    },
+    {
+      "id": "gt_geometry_for_training",
+      "rejected": true
+    },
+    {
+      "id": "shared_scar_edema_head",
+      "rejected": true
+    },
+    {
+      "id": "no_t2_edema_contamination",
+      "rejected": true
+    },
+    {
+      "id": "stock_pathology_logits_in_final",
+      "rejected": true
+    },
+    {
+      "id": "wall_output_not_final",
+      "rejected": true
+    },
+    {
+      "id": "outer_access",
+      "rejected": true
+    },
+    {
+      "id": "different_arm_batches",
+      "rejected": true
+    },
+    {
+      "id": "checkpoint_not_reloaded",
+      "rejected": true
+    },
+    {
+      "id": "interactive_running_as_complete",
+      "rejected": true
+    },
+    {
+      "id": "pilot_fail_enters_long_training",
+      "rejected": true
+    }
+  ],
+  "status": "PASS"
+}

@@ -1,0 +1,5 @@
+- `./envs/env_CARE/bin/python scripts/training/myowall_if/prepare_p0_assets.py`
+- `./envs/env_CARE/bin/python scripts/training/myowall_if/run_stock_parity.py --device cpu`
+- `./envs/env_CARE/bin/python scripts/training/myowall_if/build_geometry_cache.py --case-list pilot_inner --device cpu`
+- `./envs/env_CARE/bin/python scripts/training/myowall_if/finalize_geometry_stop_packet.py`
+- `./envs/env_CARE/bin/python scripts/validation/validate_myowall_if_pilot.py --phase final`

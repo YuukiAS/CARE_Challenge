@@ -1,0 +1,14 @@
+{
+  "sinfo": {
+    "command": "sinfo -o %P|%a|%l|%D|%t|%G",
+    "returncode": 0,
+    "stderr": "",
+    "stdout": "PARTITION|AVAIL|TIMELIMIT|NODES|STATE|GRES\ngeneral*|up|11-00:00:00|5|mix-|(null)\ngeneral*|up|11-00:00:00|1|drng@|(null)\ngeneral*|up|11-00:00:00|142|mix|(null)\ngeneral*|up|11-00:00:00|38|alloc|(null)\ngeneral*|up|11-00:00:00|78|idle|(null)\ngeneral_big|up|11-00:00:00|30|mix|(null)\ngeneral_big|up|11-00:00:00|1|alloc|(null)\nbigmem|up|11-00:00:00|2|mix|(null)\nvolta-gpu|up|11-00:00:00|16|mix|gpu:tesla_v100-sxm2-16gb:4(S:0),myJob:1\ngpu|up|11-00:00:00|3|mix-|gpu:nvidia_geforce_gtx_1080:8(S:0-1)\na100-gpu|up|6-00:00:00|8|mix-|gpu:nvidia_a100-pcie-40gb:3\nl40-gpu|up|11-00:00:00|5|mix-|gpu:nvidia_l40:4\nl40-gpu|up|11-00:00:00|12|mix-|gpu:nvidia_l40s:8(S:0-1)\nl40-gpu|up|11-00:00:00|1|alloc|gpu:nvidia_l40s:8(S:0-1)\ndatamover|up|11-00:00:00|4|idle|(null)\ninteract|up|8:00:00|5|mix-|(null)\ninteract|up|8:00:00|1|drng@|(null)\ninteract|up|8:00:00|142|mix|(null)\ninteract|up|8:00:00|38|alloc|(null)\ninteract|up|8:00:00|78|idle|(null)\nhov|up|11-00:00:00|5|mix-|(null)\nhov|up|11-00:00:00|1|drng@|(null)\nhov|up|11-00:00:00|6|mix|(null)\nhov|up|11-00:00:00|37|alloc|(null)\nspill|up|11-00:00:00|5|mix-|(null)\nspill|up|11-00:00:00|1|drng@|(null)\nspill|up|11-00:00:00|142|mix|(null)\nspill|up|11-00:00:00|38|alloc|(null)\nspill|up|11-00:00:00|78|idle|(null)\nwebportal|up|10:00:00|5|mix|(null)\nwebportal|up|10:00:00|1|mix|gpu:nvidia_a100-pcie-40gb:3(S:0-1)\nwebportal|up|10:00:00|1|idle|(null)\nwebportal_gpu|up|10:00:00|1|mix|gpu:nvidia_a100_2g.10gb:9,gpu:nvidia_a100_1g.5gb:3\nwebportal_big|up|10:00:00|7|mix|(null)\nwebportal_big|up|10:00:00|1|idle|(null)"
+  },
+  "squeue_user": {
+    "command": "squeue -u aereinh -o %i|%j|%P|%T|%M|%L|%R|%b",
+    "returncode": 0,
+    "stderr": "",
+    "stdout": "JOBID|NAME|PARTITION|STATE|TIME|TIME_LEFT|NODELIST(REASON)|TRES_PER_NODE\n61392148|create-tunnel_tailscale|general|RUNNING|10:00:37|9-13:59:23|c0810|N/A\n61350432|create-tunnel_cloudflared_backup|general|RUNNING|23:56:32|9-00:03:28|c151407|N/A\n61144610|create-tunnel_tailscale|general|RUNNING|2-09:59:49|7-14:00:11|c151408|N/A\n60585184|create-tunnel_cursor|general|RUNNING|5-15:59:32|4-08:00:28|c0307|N/A\n60397663|create-tunnel_cloudflared|general|RUNNING|6-14:01:07|3-09:58:53|c0412|N/A\n60166590|create-tunnel_vscode|general|RUNNING|7-15:24:35|2-08:35:25|c151410|N/A"
+  }
+}

@@ -1,12 +1,44 @@
 # CARE 架构 Wiki
 
-architecture_version: `care-prism-v2-w3-gate-failed-20260729`  
-latest_verified_runtime: `PRISM v2 W1/W2 strict PASS; W3 fold0 6500-step formal v2 completed with one-time outer evaluation`  
-latest_scientific_status: `W3 fail-closed: selected checkpoint harms scar and edema-zone versus same-fold nnU-Net; W4 not authorized`  
-latest_controller_task: `20260729_care_prism_v2_backbone_repair_and_resume`  
-route_status: `MAIN_ONLY_PRISM_V2_RETURN_TO_PLANNER`
+architecture_version: `care-myowall-if-geometry-stop-20260731`
+latest_verified_runtime: `MyoWall-IF P0/P1 completed through frozen-stock pilot_inner geometry gate; no formal arm training`
+latest_scientific_status: `STOP_GEOMETRY_NOT_RELIABLE: predicted geometry gate failed before C0/W1/W2/W3 training`
+latest_controller_task: `20260731_care_myowall_if_mechanism_pilot`
+route_status: `MAIN_ONLY_MYOWALL_IF_RETURN_TO_PLANNER`
 
-当前机器真值是 `prompts/routes/handoffs/CURRENT.md`。CARE-PRISM v2 已完成 stock same-fold nnU-Net 主干修复、W1/W2 strict validation、W3 fold0 6500-step training、13 个 checkpoint 的 inner selection、freeze receipt 和 fold0 outer 一次性评价。W3 selected checkpoint 为 step3000，但 outer 上 scar Dice `0.4196441776` 低于同折 nnU-Net `0.5340911530`，edema-zone Dice `0.2471543848` 低于同折 nnU-Net `0.5592277699`，两项均有 `37/44` outer cases harm；因此 W3 strict validator 返回 `FAIL / CALIBRATION`，不得进入 W4/fold1。
+当前机器真值是 `prompts/routes/handoffs/CURRENT.md`。CARE-MyoWall-IF 机制试验已完成 metric dependency、fold1 stock nnU-Net 资产冻结、fold1 train-derived pilot split、stock parity、实现/known-bad/final validator 和完整 `pilot_inner` predicted geometry gate。geometry gate 未通过：case geometry valid rate `0.84375` 低于 `>=0.95`，5th-percentile wall roundtrip Dice `0.7068920140479127` 低于 `>=0.90`；因此合同终态为 `STOP_GEOMETRY_NOT_RELIABLE`。C0/W1/W2/W3 8000-step formal training 未启动，fold1 outer 未读取，validation/Docker upload 未启动。
+
+## 2026-07-31 MyoWall-IF 终态证据
+
+```text
+result_root:
+results/20260731_care_myowall_if_mechanism_pilot
+
+terminal packet:
+results/20260731_care_myowall_if_mechanism_pilot/controller_terminal_packet.json
+
+strict validator:
+results/20260731_care_myowall_if_mechanism_pilot/strict_validator_report.json
+status: PASS
+terminal_stop_validated: true
+
+geometry gate:
+results/20260731_care_myowall_if_mechanism_pilot/geometry_gate_report.json
+formal_geometry_gate: FAIL
+case_count: 32
+case_geometry_valid_rate: 0.84375
+median_wall_roundtrip_dice: 0.9998856896450612
+fifth_percentile_wall_roundtrip_dice: 0.7068920140479127
+median_roundtrip_hd95_mm: 0.0
+
+stock parity:
+results/20260731_care_myowall_if_mechanism_pilot/stock_parity_report.json
+status: PASS
+fp32_stock_logit_parity_max_abs_error: 0.0
+argmax_changed_voxels: 0
+```
+
+## 2026-07-29 PRISM W3 终态证据
 
 ## 2026-07-29 W3 终态证据
 

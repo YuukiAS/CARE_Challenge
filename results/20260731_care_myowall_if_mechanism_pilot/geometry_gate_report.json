@@ -1,0 +1,15 @@
+{
+  "case_count": 32,
+  "case_geometry_valid_rate": 0.84375,
+  "case_list": "pilot_inner",
+  "fifth_percentile_wall_roundtrip_dice": 0.7068920140479127,
+  "formal_geometry_gate": "FAIL",
+  "geometry_source": "frozen_stock_fold1_probabilities",
+  "lv_probability_threshold": 0.35,
+  "median_roundtrip_hd95_mm": 0.0,
+  "median_wall_roundtrip_dice": 0.9998856896450612,
+  "status": "FAIL",
+  "stock_checkpoint_path": "data/nnUNet/nnUNet_results/Dataset501_CAREMyoPS/nnUNetTrainer_500epochs__nnUNetPlans__3d_fullres/fold_1/checkpoint_final.pth",
+  "valid_angle_rate_denominator": "active_predicted_wall_lv_slices",
+  "wall_probability_threshold": 0.2
+}

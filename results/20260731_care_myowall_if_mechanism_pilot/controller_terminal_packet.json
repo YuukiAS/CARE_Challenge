@@ -1,0 +1,66 @@
+{
+  "asset_freeze_status": "PASS",
+  "controller_verification_decision": "VERIFIED_COMPLETE",
+  "evidence_paths": [
+    "results/20260731_care_myowall_if_mechanism_pilot/metric_dependency_receipt.json",
+    "results/20260731_care_myowall_if_mechanism_pilot/pilot_split_receipt.json",
+    "results/20260731_care_myowall_if_mechanism_pilot/asset_freeze_receipt.json",
+    "results/20260731_care_myowall_if_mechanism_pilot/stock_parity_report.json",
+    "results/20260731_care_myowall_if_mechanism_pilot/geometry_gate_report.json",
+    "results/20260731_care_myowall_if_mechanism_pilot/geometry_casewise_metrics.csv",
+    "results/20260731_care_myowall_if_mechanism_pilot/slurm_terminal_snapshot.json",
+    "prompts/routes/handoffs/CURRENT.md",
+    "wiki/README.md"
+  ],
+  "fold1_outer_read": false,
+  "formal_arm_status": {
+    "C0": "NOT_STARTED_GEOMETRY_GATE_FAILED",
+    "W1": "NOT_STARTED_GEOMETRY_GATE_FAILED",
+    "W2": "NOT_STARTED_GEOMETRY_GATE_FAILED",
+    "W3": "NOT_STARTED_GEOMETRY_GATE_FAILED"
+  },
+  "formal_training_started": false,
+  "full_long_training_started": false,
+  "generated_utc": "2026-07-31T04:25:54.223380+00:00",
+  "geometry_failed_case_count": 5,
+  "geometry_failed_cases": [
+    "Case3029",
+    "Case8003",
+    "Case8022",
+    "Case8027",
+    "Case8028"
+  ],
+  "geometry_gate": {
+    "case_count": 32,
+    "case_geometry_valid_rate": 0.84375,
+    "case_list": "pilot_inner",
+    "fifth_percentile_wall_roundtrip_dice": 0.7068920140479127,
+    "formal_geometry_gate": "FAIL",
+    "geometry_source": "frozen_stock_fold1_probabilities",
+    "lv_probability_threshold": 0.35,
+    "median_roundtrip_hd95_mm": 0.0,
+    "median_wall_roundtrip_dice": 0.9998856896450612,
+    "status": "FAIL",
+    "stock_checkpoint_path": "data/nnUNet/nnUNet_results/Dataset501_CAREMyoPS/nnUNetTrainer_500epochs__nnUNetPlans__3d_fullres/fold_1/checkpoint_final.pth",
+    "valid_angle_rate_denominator": "active_predicted_wall_lv_slices",
+    "wall_probability_threshold": 0.2
+  },
+  "metric_dependency_status": "PASS",
+  "metric_receipt_source": "external_isolated_metric_truth_worktree",
+  "next_step": "Planner should decide whether to authorize a geometry-repair-only follow-up before any matched four-arm training.",
+  "schema_version": 1,
+  "scientific_decision": "STOP_GEOMETRY_NOT_RELIABLE",
+  "slurm_terminal_status": "NO_TRAINING_ALLOCATION_STARTED_AFTER_GEOMETRY_FAIL",
+  "stock_argmax_changed_voxels": 0,
+  "stock_parity_max_abs_error": 0.0,
+  "stock_parity_status": "PASS",
+  "task_key": "20260731_care_myowall_if_mechanism_pilot",
+  "unauthorized_scope_not_done": [
+    "fold1_outer",
+    "validation_upload",
+    "docker_submission",
+    "full_long_training",
+    "formal_C0_W1_W2_W3_training"
+  ],
+  "validation_or_docker_upload_started": false
+}

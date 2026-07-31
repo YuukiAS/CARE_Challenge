@@ -1,0 +1,25 @@
+{
+  "checkpoint_path": "data/nnUNet/nnUNet_results/Dataset501_CAREMyoPS/nnUNetTrainer_500epochs__nnUNetPlans__3d_fullres/fold_1/checkpoint_final.pth",
+  "checkpoint_sha256": "5310569ff62f2f9a6ff2bc7dd3754404140071427a2025caf5e25d2916cfe400",
+  "checkpoint_size_bytes": 357381813,
+  "dataset_json_path": "data/nnUNet/nnUNet_preprocessed/Dataset501_CAREMyoPS/dataset.json",
+  "dataset_json_sha256": "8437262d92fb898c8d16a89150efd4629602dd71e0fa5bbcf1c6c80cc3b535ae",
+  "fold": 1,
+  "input_order": [
+    "LGE",
+    "T2",
+    "C0"
+  ],
+  "network_class": "dynamic_network_architectures.architectures.unet.PlainConvUNet",
+  "patch_size": [
+    20,
+    256,
+    256
+  ],
+  "plans_path": "data/nnUNet/nnUNet_preprocessed/Dataset501_CAREMyoPS/nnUNetPlans.json",
+  "plans_sha256": "06492f8fc75b5de383a28006f76b7f1099f305422953cf9d4f89ae1ec38d3e2f",
+  "splits_path": "data/benchmarks/protocol/splits_MyoPS.json",
+  "splits_sha256": "6165caeb5b47feb0d24f20380898037b7e6cead4db1eeba398a3c5a57faf9a1b",
+  "status": "PASS",
+  "trainer": "nnUNetTrainer_500epochs"
+}

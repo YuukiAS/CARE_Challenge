@@ -1,5 +1,55 @@
 # CARE 当前开发状态
 
+## 2026-07-31 最新机器真值：CARE-MyoWall-IF frozen-stock geometry gate 失败，禁止进入四臂正式训练
+
+CARE-MyoWall-IF 机制试验已完成 metric dependency、fold1 stock nnU-Net 资产冻结、pilot split、stock parity、代码/known-bad validator 和完整 `pilot_inner` frozen-stock predicted geometry gate。metric truth 依赖来自隔离 metric-truth worktree 的正式 PASS receipt；当前 main 仍没有本地同名 receipt，因此后续 Planner 若要求严格 current-main metric 归档，需要先合并/落地该 receipt。
+
+`pilot_inner` 共 32 例；fold1 outer 未读取。冻结 fold1 nnU-Net 的最终 logit 与独立 source model FP32 parity 为 0，argmax changed voxels 为 0。但 predicted geometry 前置门失败：case geometry valid rate `0.84375`，低于合同要求 `>=0.95`；5th-percentile wall roundtrip Dice `0.7068920140479127`，低于合同要求 `>=0.90`。因此科学决策为 `STOP_GEOMETRY_NOT_RELIABLE`，不得通过 GT geometry、Cartesian fallback 或降低 gate 门限继续正式四臂训练。
+
+```text
+state_id: care_myowall_if_geometry_stop_20260731
+active_development_branch: main
+active_worktree: /users/a/e/aereinh/CARE
+single_active_scientific_line: CARE_MYOWALL_IF_GEOMETRY_STOP_RETURN_TO_PLANNER
+method_name: CARE-MyoWall-IF
+controller_is_coordinator: true
+result_root: results/20260731_care_myowall_if_mechanism_pilot
+metric_dependency_status: PASS
+metric_receipt_source: external_isolated_metric_truth_worktree
+fold: 1
+pilot_inner_count: 32
+pilot_train_count: 144
+fold1_outer_accessed: false
+stock_parity_status: PASS
+fp32_stock_logit_parity_max_abs_error: 0.0
+argmax_changed_voxels: 0
+geometry_gate: FAIL
+case_geometry_valid_rate: 0.84375
+median_wall_roundtrip_dice: 0.9998856896450612
+fifth_percentile_wall_roundtrip_dice: 0.7068920140479127
+median_roundtrip_hd95_mm: 0.0
+scientific_decision: STOP_GEOMETRY_NOT_RELIABLE
+controller_verification_decision: VERIFIED_COMPLETE
+C0_W1_W2_W3_formal_training_started: false
+validation_upload_authorized: false
+docker_upload_authorized: false
+hosted_metric_claim_authorized: false
+```
+
+关键证据：
+
+```text
+results/20260731_care_myowall_if_mechanism_pilot/controller_terminal_packet.json
+results/20260731_care_myowall_if_mechanism_pilot/strict_validator_report.json
+results/20260731_care_myowall_if_mechanism_pilot/geometry_gate_report.json
+results/20260731_care_myowall_if_mechanism_pilot/geometry_casewise_metrics.csv
+results/20260731_care_myowall_if_mechanism_pilot/stock_parity_report.json
+results/20260731_care_myowall_if_mechanism_pilot/pilot_split_receipt.json
+results/20260731_care_myowall_if_mechanism_pilot/metric_dependency_receipt.json
+```
+
+本状态覆盖下面旧的 PRISM 连续 controller 中间授权。除非 Planner 明确授权新的 geometry-repair-only follow-up，不得启动 C0/W1/W2/W3 8000-step formal training、不得访问 fold1 outer、不得上传 validation/Docker、不得作 hosted metric claim。
+
 ## 2026-07-29 最新机器真值：CARE-PRISM v2 W3 足额完成，但 fold0 门失败，禁止进入 W4
 
 CARE-PRISM v2 已从修复后的 fold0 stock nnU-Net checkpoint 重新完成 W1/W2，并执行 W3 fold0 6500-step formal v2。W3 训练本身、每 500 step checkpoint 审计、all-checkpoint inner selection、freeze receipt 和 fold0 outer 一次性评价链路完整；但是 frozen selected checkpoint 在 outer 上同时伤害 scar 和 edema-zone，相对同折 nnU-Net 明显下降，因此 W3 strict validator fail-closed，W4/fold1 clean training 不得启动，需返回 Planner 重新规划 calibration/refinement。

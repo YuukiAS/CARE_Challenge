@@ -1,0 +1,31 @@
+task_key: 20260731_care_myowall_if_mechanism_pilot
+dataset: Dataset501_CAREMyoPS
+configuration: 3d_fullres
+fold: 1
+input_order: [LGE, T2, C0]
+patch_size_source: nnUNetPlans.json
+wall_lattice:
+  angles: 256
+  radial_bins: 32
+  rho_min: -0.15
+  rho_max: 1.15
+training:
+  optimizer: AdamW
+  lr: 0.0003
+  weight_decay: 0.0001
+  physical_batch_size: 2
+  gradient_accumulation: 2
+  effective_batch_size: 4
+  warmup_steps: 500
+  total_optimizer_steps: 8000
+  cosine_min_lr: 0.000001
+  gradient_clip: 12
+  checkpoint_every_steps: 1000
+  evaluation_every_steps: 1000
+  amp_h100_a100: bf16
+guards:
+  no_t2_edema_logit: -16
+  fold1_outer_access: forbidden
+  stock_pathology_logits_in_final: forbidden
+  validation_upload: forbidden
+  docker_upload: forbidden

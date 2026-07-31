@@ -1,0 +1,17 @@
+{
+  "errors": [],
+  "required_classes": [
+    "StockNNUNetFeatureAdapter",
+    "FrozenStockGeometryCacheBuilder",
+    "WallCoordinateTransform",
+    "WallInverseTransform",
+    "RobustWallRankFeatures",
+    "CartesianMatchedPathologyHead",
+    "ScarWallFieldHead",
+    "EdemaWallFieldHead",
+    "MyoWallPilotModel",
+    "MyoWallPilotLoss",
+    "MyoWallPilotEvaluator"
+  ],
+  "status": "PASS"
+}

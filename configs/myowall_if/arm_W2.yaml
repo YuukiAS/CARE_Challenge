@@ -1,0 +1,7 @@
+inherits: configs/myowall_if/pilot_common.yaml
+arm: W2
+head: wall_coordinate_field
+scar_head: ScarWallFieldHead
+edema_head: EdemaWallFieldHead
+component_guard_losses: false
+rank_features: true
