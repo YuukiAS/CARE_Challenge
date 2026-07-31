@@ -1,0 +1,51 @@
+{
+  "allowed_comparison_groups": {
+    "clean_oof_local_fair": [
+      "NNUNET_CLEAN_OOF_SCAR_220",
+      "NNUNET_CLEAN_OOF_PURE_EDEMA_T2_80",
+      "MOSAIC_CLEAN_OOF_SCAR_220",
+      "MOSAIC_CLEAN_OOF_PURE_EDEMA_T2_80"
+    ],
+    "fold0_outer_once_diagnostic": [
+      "PRISM_W3_OUTER_ONCE_SCAR",
+      "PRISM_W3_OUTER_ONCE_INTERNAL_EDEMA_ZONE",
+      "NNUNET_FOLD0_OUTER_COMPARATOR_SCAR",
+      "NNUNET_FOLD0_OUTER_COMPARATOR_INTERNAL_EDEMA_ZONE"
+    ],
+    "hosted_leaderboard_reference": [
+      "MOSAIC_HOSTED_SCAR_20260706_USER_ATTESTED",
+      "MOSAIC_HOSTED_EDEMA_20260706_USER_ATTESTED",
+      "MOSAIC_HOSTED_CINEMYOPS_20260708_CLOSEST_FINAL_RECIPE",
+      "NNUNET_HOSTED_20260518_CONFIRMED_SCAR",
+      "NNUNET_HOSTED_20260518_CONFIRMED_EDEMA",
+      "NNUNET_HOSTED_20260518_CONFIRMED_CINEMYOPS"
+    ]
+  },
+  "canonical_t2_present_count": 80,
+  "created_at_utc": "2026-07-31T00:11:52.216063+00:00",
+  "forbidden_direct_comparisons": [
+    "D0 inner-select GT Dice vs clean OOF 220-case Dice",
+    "MoSAIC M2-M10 full-data train-on-case probe vs hosted validation",
+    "PRISM fold0 outer once vs future fold1 or validation selection",
+    "internal edema-zone vs official pure edema leaderboard",
+    "D0/D1/D2/D3 inner-select diagnostics vs hosted validation leaderboard",
+    "MoSAIC M2-M10 full-data train-on-case probe vs clean OOF held-out Dice",
+    "hosted hidden validation rows vs local clean OOF rows as if same denominator",
+    "official pure edema label 4 vs internal edema-zone labels 4 or 5"
+  ],
+  "label_semantics": {
+    "hosted_cinemyops": "official hosted CineMyoPS myocardium target; hidden validation set",
+    "internal_edema_zone": "internal labels 4 or 5; internal diagnostic only; not official edema",
+    "myocardium_union": "internal labels 1 or 4 or 5; diagnostic unless explicitly exported as myocardium",
+    "official_pure_edema": "internal label 4; official edema; T2-present denominator only",
+    "official_scar": "internal label 5; official scar"
+  },
+  "population_groups": {
+    "clean_oof": "held-out OOF local predictions on 220 training cases for scar/lesion union; pure edema restricted to 80 T2-present cases",
+    "full_data_train_on_case_probe": "80 T2-present cases used in MoSAIC full recipe mechanism decomposition; not fair validation",
+    "hosted_validation": "hidden official validation leaderboard; local GT/case counts unavailable",
+    "inner_select_decoder_reset": "frozen 12-case fold0 inner-select diagnostic; used to understand D0-D3 behavior only",
+    "outer_once_prism": "fold0 44-case outer evaluation after inner checkpoint selection; not reusable for selection"
+  },
+  "source_task": "prompts/tasks/20260731_care_metric_truth_reconciliation.md"
+}
