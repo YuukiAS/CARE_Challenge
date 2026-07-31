@@ -1,0 +1,1 @@
+job_id,variant,partition,state,exit_code,elapsed,node,log_path,runtime_output_path,aggregation_command,aggregation_exit_code

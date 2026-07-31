@@ -1,0 +1,137 @@
+{
+  "checkpoint_path": "/users/a/e/aereinh/CARE/data/nnUNet/nnUNet_results/Dataset501_CAREMyoPS/nnUNetTrainer_500epochs__nnUNetPlans__3d_fullres/fold_0/checkpoint_final.pth",
+  "checkpoint_sha256": "8bceb20cae8920e87d43b14665a0db9dfd4f1204533d25a3cd6e40ad9de74111",
+  "checkpoint_sha256_status": "PASS",
+  "cuda_available": false,
+  "no_t2": {
+    "edema_candidate_max": -20.0,
+    "edema_probability_max": 0.0,
+    "expected_candidate_logit": -20.0
+  },
+  "optimizer_contracts": {
+    "A1": {
+      "optimizer": "AdamW",
+      "steps": 3000
+    },
+    "A2": {
+      "optimizer": "AdamW",
+      "steps": 5000
+    },
+    "A3": {
+      "optimizer": "AdamW",
+      "steps": 8000
+    }
+  },
+  "parameter_byte_coverage": 1.0,
+  "plans_path": "/users/a/e/aereinh/CARE/data/nnUNet/nnUNet_preprocessed/Dataset501_CAREMyoPS/nnUNetPlans.json",
+  "plans_sha256": "06492f8fc75b5de383a28006f76b7f1099f305422953cf9d4f89ae1ec38d3e2f",
+  "proposal_enters_final_logits": true,
+  "python_executable": "/users/a/e/aereinh/CARE/envs/env_CARE/bin/python",
+  "scar_edema_heads_share_parameters": false,
+  "shape_contract": {
+    "availability": [
+      1,
+      3
+    ],
+    "delta_edema_global": [
+      1,
+      1,
+      16,
+      64,
+      64
+    ],
+    "delta_scar_global": [
+      1,
+      1,
+      16,
+      64,
+      64
+    ],
+    "edema_probability": [
+      1,
+      1,
+      16,
+      64,
+      64
+    ],
+    "f_dec0": [
+      1,
+      32,
+      16,
+      64,
+      64
+    ],
+    "f_dec1": [
+      1,
+      64,
+      16,
+      64,
+      64
+    ],
+    "final_logits": [
+      1,
+      6,
+      16,
+      64,
+      64
+    ],
+    "p_edema_band": [
+      1,
+      1,
+      16,
+      64,
+      64
+    ],
+    "p_edema_candidate": [
+      1,
+      1,
+      16,
+      64,
+      64
+    ],
+    "p_scar_candidate": [
+      1,
+      1,
+      16,
+      64,
+      64
+    ],
+    "p_scar_center": [
+      1,
+      1,
+      16,
+      64,
+      64
+    ],
+    "stem_c0": [
+      1,
+      32,
+      16,
+      64,
+      64
+    ],
+    "stem_lge": [
+      1,
+      32,
+      16,
+      64,
+      64
+    ],
+    "stem_t2": [
+      1,
+      32,
+      16,
+      64,
+      64
+    ],
+    "stock_logits": [
+      1,
+      6,
+      16,
+      64,
+      64
+    ]
+  },
+  "status": "PASS",
+  "torch_version": "2.11.0+cu130"
+}

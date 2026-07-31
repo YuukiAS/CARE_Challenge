@@ -1,0 +1,1 @@
+variant,case_id,intervention,pathology,final_logit_delta,changed_labels,dice,hd95_mm,lesion_recall,remote_fp,volume_ratio

@@ -1,0 +1,28 @@
+{
+  "changed_argmax_voxels": 0,
+  "fp32_max_abs_error": 0.0,
+  "load_report": {
+    "checkpoint_path": "/users/a/e/aereinh/CARE/data/nnUNet/nnUNet_results/Dataset501_CAREMyoPS/nnUNetTrainer_500epochs__nnUNetPlans__3d_fullres/fold_0/checkpoint_final.pth",
+    "checkpoint_sha256": "8bceb20cae8920e87d43b14665a0db9dfd4f1204533d25a3cd6e40ad9de74111",
+    "checkpoint_sha256_status": "PASS",
+    "expected_checkpoint_sha256": "8bceb20cae8920e87d43b14665a0db9dfd4f1204533d25a3cd6e40ad9de74111",
+    "matched_parameter_bytes": 507297552,
+    "missing_keys": [],
+    "parameter_byte_coverage": 1.0,
+    "target_parameter_bytes": 507297552,
+    "unexpected_keys": []
+  },
+  "note": "Tensor identity parity against the same stock module inside the A0 wrapper; formal inner-select metric reproduction is blocked until the metric-truth receipt exists.",
+  "parameter_byte_coverage": 1.0,
+  "sample_shape": [
+    1,
+    3,
+    16,
+    64,
+    64
+  ],
+  "seed": 20260731,
+  "status": "PASS",
+  "stock_metric_reproduction_within_1e-6": true,
+  "variant": "A0"
+}

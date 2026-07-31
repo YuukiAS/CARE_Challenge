@@ -1,0 +1,8 @@
+{
+  "task_key": "20260731_care_myopath_pr_a0_a3_feasibility",
+  "seed": 20260731,
+  "metric_truth_receipt_required_before_formal_training": true,
+  "metric_truth_required_status": "PASS",
+  "fold1_outer_access_authorized": false,
+  "validation_upload_authorized": false
+}

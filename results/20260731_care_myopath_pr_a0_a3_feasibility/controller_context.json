@@ -1,0 +1,105 @@
+{
+  "agents_sha256": "26ee05ead9500c5d455a345f7d1a2cbc03fde6b87fb508bd8668cce362a8fe61",
+  "branch": "task/20260731-myopath-a0-a3",
+  "deep_research_decision": {
+    "decision": "NO_GO_FOR_HIGH_GAIN_MODEL",
+    "effect_on_a0_a3_packet": "supports blocked research-prototype posture; does not authorize high-gain long training or ROI refinement",
+    "source_path": "/users/a/e/aereinh/CARE/CARE Myocardium 下一代模型深度研究与设计裁决.md",
+    "source_tracking": "untracked_file_in_main_checkout_read_only"
+  },
+  "git_head": "768795535a577c94eebd9fc9d38ca5544c379732",
+  "metric_truth_receipt": {
+    "canonical_t2_present_count": 80,
+    "clean_oof_contract_ids": [
+      "NNUNET_CLEAN_OOF_SCAR_220",
+      "NNUNET_CLEAN_OOF_PURE_EDEMA_T2_80",
+      "MOSAIC_CLEAN_OOF_SCAR_220",
+      "MOSAIC_CLEAN_OOF_PURE_EDEMA_T2_80"
+    ],
+    "contract_execution_status": "COMPLETED_FAIL_CLOSED",
+    "core_scores_bound": [
+      "D0_INNER_SELECT_STOCK_GT_SCAR",
+      "D0_INNER_SELECT_STOCK_GT_PURE_EDEMA",
+      "D1_INNER_SELECT_DECODER_RESET_SCAR",
+      "D1_INNER_SELECT_DECODER_RESET_PURE_EDEMA",
+      "D2_INNER_SELECT_TOP_TRAIN_SCAR",
+      "D2_INNER_SELECT_TOP_TRAIN_PURE_EDEMA",
+      "D3_INNER_SELECT_FULL_SHORT_FT_SCAR",
+      "D3_INNER_SELECT_FULL_SHORT_FT_PURE_EDEMA",
+      "NNUNET_CLEAN_OOF_SCAR_220",
+      "NNUNET_CLEAN_OOF_PURE_EDEMA_T2_80",
+      "MOSAIC_CLEAN_OOF_SCAR_220",
+      "MOSAIC_CLEAN_OOF_PURE_EDEMA_T2_80",
+      "PRISM_W3_OUTER_ONCE_SCAR",
+      "PRISM_W3_OUTER_ONCE_INTERNAL_EDEMA_ZONE",
+      "NNUNET_FOLD0_OUTER_COMPARATOR_SCAR",
+      "NNUNET_FOLD0_OUTER_COMPARATOR_INTERNAL_EDEMA_ZONE",
+      "MOSAIC_HOSTED_SCAR_20260706_USER_ATTESTED",
+      "MOSAIC_HOSTED_EDEMA_20260706_USER_ATTESTED",
+      "MOSAIC_HOSTED_CINEMYOPS_20260708_CLOSEST_FINAL_RECIPE"
+    ],
+    "created_at_utc": "2026-07-31T00:11:52.221073+00:00",
+    "d0_0p922_semantics": "D0 0.922379592 scar and 0.923082832 pure edema are GT Dice from stock fold0 nnU-Net predictions against GT on the frozen 12-case inner-select split; not prediction parity, not clean OOF, not train-on-case, and not hosted validation.",
+    "forbidden_direct_comparisons": [
+      "D0 inner-select GT Dice vs clean OOF 220-case Dice",
+      "MoSAIC M2-M10 full-data train-on-case probe vs hosted validation",
+      "PRISM fold0 outer once vs future fold1 or validation selection",
+      "internal edema-zone vs official pure edema leaderboard",
+      "D0/D1/D2/D3 inner-select diagnostics vs hosted validation leaderboard",
+      "MoSAIC M2-M10 full-data train-on-case probe vs clean OOF held-out Dice",
+      "hosted hidden validation rows vs local clean OOF rows as if same denominator",
+      "official pure edema label 4 vs internal edema-zone labels 4 or 5"
+    ],
+    "hosted_contract_ids": [
+      "MOSAIC_HOSTED_SCAR_20260706_USER_ATTESTED",
+      "MOSAIC_HOSTED_EDEMA_20260706_USER_ATTESTED",
+      "MOSAIC_HOSTED_CINEMYOPS_20260708_CLOSEST_FINAL_RECIPE",
+      "NNUNET_HOSTED_20260518_CONFIRMED_SCAR",
+      "NNUNET_HOSTED_20260518_CONFIRMED_EDEMA",
+      "NNUNET_HOSTED_20260518_CONFIRMED_CINEMYOPS"
+    ],
+    "inner_select_contract_ids": [
+      "D0_INNER_SELECT_STOCK_GT_SCAR",
+      "D0_INNER_SELECT_STOCK_GT_PURE_EDEMA",
+      "D1_INNER_SELECT_DECODER_RESET_SCAR",
+      "D1_INNER_SELECT_DECODER_RESET_PURE_EDEMA",
+      "D2_INNER_SELECT_TOP_TRAIN_SCAR",
+      "D2_INNER_SELECT_TOP_TRAIN_PURE_EDEMA",
+      "D3_INNER_SELECT_FULL_SHORT_FT_SCAR",
+      "D3_INNER_SELECT_FULL_SHORT_FT_PURE_EDEMA"
+    ],
+    "late_user_supplied_deep_research_draft": {
+      "correction": "draft D0 official-validation wording is rejected; D0 0.922x is inner-select GT Dice",
+      "handling": "read-only source occurrence audit; not moved under current task scope",
+      "path": "/users/a/e/aereinh/CARE/CARE Myocardium 下一代模型深度研究与设计裁决.md",
+      "sha256": "41ab0c185f0fb26398bbcfcec2b0134d51ffdb478d4cf66b8a5334b49dd749ac"
+    },
+    "metric_contract_status": "FAIL",
+    "new_slurm_jobs_started": false,
+    "new_training_started": false,
+    "new_upload_started": false,
+    "outer_once_contract_ids": [
+      "PRISM_W3_OUTER_ONCE_SCAR",
+      "PRISM_W3_OUTER_ONCE_INTERNAL_EDEMA_ZONE",
+      "NNUNET_FOLD0_OUTER_COMPARATOR_SCAR",
+      "NNUNET_FOLD0_OUTER_COMPARATOR_INTERNAL_EDEMA_ZONE"
+    ],
+    "pass_rule": "PASS only if all core scores, hosted package lineage, labels, case populations, prediction manifests, and strict validator are fully bound without unresolved blockers.",
+    "present": true,
+    "remaining_blockers": [
+      "Exact hosted ZIP bytes and official upload receipt for the 2026-07-06/2026-07-08 MoSAIC-hosted rows are not fully bound locally; lineage is user-attested / partial-source bound.",
+      "Hosted validation case counts and GT are hidden by the official leaderboard, so hosted rows cannot be recomputed from local prediction manifests.",
+      "The v4 metric_cross_implementation_report.json status is PARTIAL, so independent implementation parity is fixture-level rather than a complete external reimplementation.",
+      "Late user-supplied Deep Research draft contains prose that calls D0 0.922x official validation; corrected here as inner-select GT Dice and not accepted as machine truth."
+    ],
+    "why_fail": "The task graph and validator completed, but exact MoSAIC hosted package/upload provenance remains partial, so the metric truth contract must fail closed rather than claim PASS."
+  },
+  "metric_truth_receipt_path": "/users/a/e/aereinh/CARE_worktrees/task_metric_truth_20260731/results/20260731_care_metric_truth_reconciliation/metric_truth_receipt.json",
+  "origin_main": "768795535a577c94eebd9fc9d38ca5544c379732",
+  "phase": "BLOCKED_BEFORE_FORMAL_A1_A3_TRAINING",
+  "required_job_ids": [],
+  "required_runtime_paths": [],
+  "slurm_skill_sha256": "2b7e87f58b275b50dc9d4a9377f4e2518c3a390c806e400cb32e07ebac3f83a6",
+  "task_prompt_path": "prompts/tasks/20260731_care_myopath_pr_a0_a3_controller.md",
+  "task_prompt_sha256": "dffc560f9a76e75b2dfacae3097633824f7e31da1019a184d2e0ec74c1ef9445"
+}

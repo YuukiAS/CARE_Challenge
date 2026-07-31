@@ -1,0 +1,16 @@
+{
+  "blocked_or_failure_reason": "metric_truth_receipt.json存在但metric_contract_status不是PASS；深研报告也不授权高增益长训练。",
+  "commit_status": "local_commit_created_current_head",
+  "evidence_paths": [
+    "results/20260731_care_myopath_pr_a0_a3_feasibility/controller_report.md",
+    "results/20260731_care_myopath_pr_a0_a3_feasibility/completion_check.md",
+    "results/20260731_care_myopath_pr_a0_a3_feasibility/a0_identity_report.json",
+    "results/20260731_care_myopath_pr_a0_a3_feasibility/implementation_snapshot.md"
+  ],
+  "final_status": "blocked",
+  "key_conclusion": "A0/preflight/validator基础完成；Lane A指标真值receipt为FAIL，深研报告裁决NO_GO_FOR_HIGH_GAIN_MODEL，因此正式A1-A3训练继续阻断。",
+  "next_step": "等待Lane A产出metric_contract_status: PASS后恢复当前task worktree继续正式训练。",
+  "push_status": "not_authorized",
+  "slurm_terminal_status": "no_slurm_jobs_submitted",
+  "task_name": "20260731_care_myopath_pr_a0_a3_feasibility"
+}

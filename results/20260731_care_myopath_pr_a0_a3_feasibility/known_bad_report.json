@@ -1,0 +1,145 @@
+{
+  "cases": [
+    {
+      "case": "encoder_only",
+      "errors": [
+        "encoder-only inheritance is forbidden"
+      ],
+      "rejected": true
+    },
+    {
+      "case": "decoder_reset",
+      "errors": [
+        "decoder reset is forbidden"
+      ],
+      "rejected": true
+    },
+    {
+      "case": "a0_not_pixel_identity",
+      "errors": [
+        "A0 must reproduce stock logits and labels exactly"
+      ],
+      "rejected": true
+    },
+    {
+      "case": "no_t2_edema_loss_nonzero",
+      "errors": [
+        "no-T2 edema loss must be exactly zero"
+      ],
+      "rejected": true
+    },
+    {
+      "case": "scar_edema_shared_parameters",
+      "errors": [
+        "scar and edema parameters must not be shared"
+      ],
+      "rejected": true
+    },
+    {
+      "case": "proposal_auxiliary_only",
+      "errors": [
+        "proposal cannot be auxiliary-only"
+      ],
+      "rejected": true
+    },
+    {
+      "case": "proposal_not_in_final_logits",
+      "errors": [
+        "proposal must enter final logits"
+      ],
+      "rejected": true
+    },
+    {
+      "case": "intervention_gradient_only_no_label_change",
+      "errors": [
+        "on/off intervention cannot be gradient-only"
+      ],
+      "rejected": true
+    },
+    {
+      "case": "variant_checkpoint_chaining",
+      "errors": [
+        "A1/A2/A3 must independently start from A0 stock checkpoint"
+      ],
+      "rejected": true
+    },
+    {
+      "case": "case_order_or_augmentation_mismatch",
+      "errors": [
+        "variant case order, sampler seed, and augmentation must match"
+      ],
+      "rejected": true
+    },
+    {
+      "case": "outer_used_for_selection",
+      "errors": [
+        "outer split cannot be used for selection"
+      ],
+      "rejected": true
+    },
+    {
+      "case": "edema_zone_as_pure_edema",
+      "errors": [
+        "edema-zone cannot be reported as pure edema"
+      ],
+      "rejected": true
+    },
+    {
+      "case": "short_smoke_as_formal_training",
+      "errors": [
+        "short smoke cannot claim formal training"
+      ],
+      "rejected": true
+    },
+    {
+      "case": "scheduler_base_lr_overwritten",
+      "errors": [
+        "scheduler must not overwrite base LR each step"
+      ],
+      "rejected": true
+    },
+    {
+      "case": "refiner_started_after_failed_proposal_gate",
+      "errors": [
+        "refiner is not authorized after failed proposal gate"
+      ],
+      "rejected": true
+    },
+    {
+      "case": "new_loss_or_module_after_a3_failure",
+      "errors": [
+        "A3 failure cannot authorize new loss/module"
+      ],
+      "rejected": true
+    },
+    {
+      "case": "pending_job_claims_completion",
+      "errors": [
+        "pending/running job cannot claim completion"
+      ],
+      "rejected": true
+    },
+    {
+      "case": "mean_dice_only_evaluator",
+      "errors": [
+        "mean Dice only evaluator is insufficient"
+      ],
+      "rejected": true
+    },
+    {
+      "case": "scar_gain_masks_edema_failure",
+      "errors": [
+        "scar improvement cannot mask systematic edema failure"
+      ],
+      "rejected": true
+    },
+    {
+      "case": "missing_hash_or_provenance",
+      "errors": [
+        "model/config/split/checkpoint hashes are required"
+      ],
+      "rejected": true
+    }
+  ],
+  "status": "PASS"
+}

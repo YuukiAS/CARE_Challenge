@@ -1,0 +1,9 @@
+{
+  "fold1_outer_accessed": false,
+  "formal_training_started": false,
+  "metric_truth_receipt_path": "/users/a/e/aereinh/CARE_worktrees/task_metric_truth_20260731/results/20260731_care_metric_truth_reconciliation/metric_truth_receipt.json",
+  "reason": "metric_truth_receipt.json is missing or metric_contract_status is not PASS",
+  "slurm_jobs": [],
+  "status": "BLOCKED_WAITING_METRIC_TRUTH_RECEIPT",
+  "variant": "A1"
+}

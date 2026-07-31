@@ -1,0 +1,10 @@
+当前控制器只能停在外部前置阻断：A0/preflight/validator 基础已完成，但 `metric_truth_receipt.json` 缺失或未 PASS，正式 A1-A3 GPU 训练被合同禁止。
+
+controller_verification_decision: OPERATIONALLY_BLOCKED
+required_outputs_complete: true_for_blocked_packet
+validators_passed: true_for_blocked_packet
+all_jobs_terminal: true_no_jobs_submitted
+aggregation_complete: true_no_runtime_aggregation_required
+fold1_outer_accessed: false
+validation_upload_authorized: false
+git_push_decision: NOT_AUTHORIZED
