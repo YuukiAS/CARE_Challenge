@@ -1,0 +1,175 @@
+task_key: 20260731_care_qif_v2_signal_audit
+execution_mode: controller_supervised
+controller_is_coordinator: true
+executor_slots: 1
+executor_count: 1
+parallel_execution_allowed: false
+mapper_slots: 1
+mapper_required: true
+architecture_impact: component
+wiki_update_required: false
+diagram_update_required: false
+slurm_runtime_continuity_required: true
+continuity_backend: slurm_dependency
+branch_policy:
+  development_branch: main
+  task_branch_creation_authorized: false
+  remote_publication_branch: main
+  forbidden_remote_branch_patterns:
+    - task/*
+    - codex/*
+write_scopes:
+  - scripts/forensics/care_qif_v2_signal_audit/**
+  - scripts/training/care_qif_v2_signal_audit/**
+  - scripts/evaluation/care_qif_v2_signal_audit/**
+  - tests/care_qif_v2_signal_audit/**
+  - configs/care_qif_v2_signal_audit/**
+  - jobs/care_qif_v2_signal_audit/**
+  - results/20260731_care_qif_v2_signal_audit/**
+forbidden_writes:
+  - src/care_myocardium/models/care_myopath_pilot.py
+  - src/care_myocardium/models/myowall_if/**
+  - prompts/routes/handoffs/CURRENT.md
+  - wiki/README.md
+  - data/**
+  - results/20260731_care_myopath_a0_a3_full_volume_closure/**
+  - results/20260731_care_myowall_geometry_diagnostic_closure/**
+read_only_inputs:
+  - prompts/blueprints/CARE_QIF_v2_signal_audit_20260731.md
+  - results/20260731_care_metric_truth_reconciliation/**
+  - results/20260731_care_myopath_a0_a3_full_volume_closure/**
+  - results/20260731_care_myowall_geometry_diagnostic_closure/**
+  - results/20260730_care_failure_forensics_deep_research_packet/**
+  - data/nnUNet/nnUNet_preprocessed/Dataset501_CAREMyoPS/**
+  - data/nnUNet/nnUNet_results/Dataset501_CAREMyoPS/**
+formal_python: /users/a/e/aereinh/CARE/envs/env_CARE/bin/python
+waves:
+  - wave_id: W0
+    name: bootstrap_and_freeze
+    dependencies: []
+    gpu_required: false
+    required_outputs:
+      - results/20260731_care_qif_v2_signal_audit/controller_context.json
+      - results/20260731_care_qif_v2_signal_audit/frozen_data_contract.json
+      - results/20260731_care_qif_v2_signal_audit/oof_backbone_manifest.csv
+      - results/20260731_care_qif_v2_signal_audit/component_statistics.csv
+    completion_gate:
+      - canonical complete-trimodal count equals 80
+      - CenterB count equals 35
+      - CenterC count equals 45
+      - every case has exactly one clean-OOF checkpoint
+      - query capacity covers at least 99 percent of all 220 cases
+  - wave_id: W1
+    name: intensity_signal_audit
+    dependencies:
+      - W0
+    gpu_required: false
+    required_outputs:
+      - results/20260731_care_qif_v2_signal_audit/intensity_casewise_metrics.csv
+      - results/20260731_care_qif_v2_signal_audit/intensity_transfer_summary.csv
+      - results/20260731_care_qif_v2_signal_audit/intensity_context_comparison.csv
+      - results/20260731_care_qif_v2_signal_audit/intensity_signal_receipt.json
+    completion_gate:
+      - both cross-center directions completed
+      - GT and deployable context completed
+      - raw and rank-composite probes completed
+      - no test-center preprocessing fit
+  - wave_id: W2
+    name: query_pilot_implementation_and_preflight
+    dependencies:
+      - W0
+    gpu_required: true
+    required_outputs:
+      - results/20260731_care_qif_v2_signal_audit/implementation_snapshot.md
+      - results/20260731_care_qif_v2_signal_audit/feature_cache_manifest.csv
+      - results/20260731_care_qif_v2_signal_audit/parameter_count_report.json
+      - results/20260731_care_qif_v2_signal_audit/one_batch_overfit_report.json
+      - results/20260731_care_qif_v2_signal_audit/preflight_validator_report.json
+    completion_gate:
+      - OOF feature extraction is patient clean
+      - dense and query arms use identical common inputs
+      - query enters final scar probability
+      - no-object and Hungarian matching execute
+      - full-volume forward and reload pass
+  - wave_id: W3
+    name: matched_cross_center_training
+    dependencies:
+      - W2
+    gpu_required: true
+    sequential_runs:
+      - BC_DENSE
+      - BC_QUERY
+      - CB_DENSE
+      - CB_QUERY
+    required_outputs:
+      - results/20260731_care_qif_v2_signal_audit/training_accounting.csv
+      - results/20260731_care_qif_v2_signal_audit/checkpoint_selection.csv
+      - results/20260731_care_qif_v2_signal_audit/batch_manifest_hashes.csv
+    completion_gate:
+      - every run reaches 4000 optimizer steps
+      - same-direction dense and query batch manifests match
+      - selected checkpoints are reloaded
+      - no held-out-center metric participates in selection
+  - wave_id: W4
+    name: full_volume_cross_center_evaluation
+    dependencies:
+      - W3
+    gpu_required: true
+    required_outputs:
+      - results/20260731_care_qif_v2_signal_audit/query_casewise_metrics.csv
+      - results/20260731_care_qif_v2_signal_audit/query_transfer_summary.csv
+      - results/20260731_care_qif_v2_signal_audit/query_intervention_metrics.csv
+      - results/20260731_care_qif_v2_signal_audit/component_query_receipt.json
+      - results/20260731_care_qif_v2_signal_audit/case_atlas.pdf
+      - results/20260731_care_qif_v2_signal_audit/case_atlas_contact_sheet.png
+      - results/20260731_care_qif_v2_signal_audit/visual_findings.md
+    completion_gate:
+      - all 80 held-out-center predictions evaluated exactly once
+      - lesion and small-lesion recall reported
+      - remote false positive and HD95 reported
+      - query on-off changes final labels
+  - wave_id: W5
+    name: aggregation_validation_push_notify
+    dependencies:
+      - W1
+      - W4
+    gpu_required: false
+    required_outputs:
+      - results/20260731_care_qif_v2_signal_audit/joint_decision_receipt.json
+      - results/20260731_care_qif_v2_signal_audit/strict_validator_report.json
+      - results/20260731_care_qif_v2_signal_audit/known_bad_report.json
+      - results/20260731_care_qif_v2_signal_audit/mapper_report_final.md
+      - results/20260731_care_qif_v2_signal_audit/controller_report.md
+      - results/20260731_care_qif_v2_signal_audit/completion_check.md
+      - results/20260731_care_qif_v2_signal_audit/MANIFEST.md
+      - results/20260731_care_qif_v2_signal_audit/notification_brief.json
+    completion_gate:
+      - all Slurm jobs terminal
+      - aggregation complete
+      - strict validator and known-bad pass
+      - lightweight commit pushed to origin/main
+      - remote main SHA verified
+      - existing notifier invoked after push verification
+slurm:
+  preferred_partition: htzhulab
+  fallback_partition: a100-gpu
+  gpu_count: 1
+  cpus_per_task: 16
+  memory: 128G
+  walltime: 12:00:00
+  formal_training_dependency: afterok
+  finalizer_dependency: afterany
+  pending_fallback_minutes: 30
+  max_active_gpu_jobs: 1
+  exact_resume_required: true
+push_policy:
+  terminal_push_authorized: true
+  push_during_runtime_forbidden: true
+  push_ref: HEAD:main
+  force_push_forbidden: true
+  remote_sha_verification_required: true
+notification_policy:
+  notify_on_complete: true
+  notify_on_blocked: true
+  notifier_command: ./envs/env_CARE/bin/python controller_notifications/notify_goal_watcher.py --once
+  notify_before_push_forbidden: true
