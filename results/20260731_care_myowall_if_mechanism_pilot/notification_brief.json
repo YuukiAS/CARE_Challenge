@@ -1,0 +1,17 @@
+{
+  "blocked_or_failure_reason": "Geometry gate failed before formal matched-arm training: case geometry valid rate 0.84375 was below required 0.95, and 5th-percentile wall roundtrip Dice 0.7068920140479127 was below required 0.90.",
+  "commit_status": "committed cd7b4faaab64963001c6e627b3dcd84882cbd458",
+  "evidence_paths": [
+    "results/20260731_care_myowall_if_mechanism_pilot/controller_terminal_packet.json",
+    "results/20260731_care_myowall_if_mechanism_pilot/strict_validator_report.json",
+    "results/20260731_care_myowall_if_mechanism_pilot/geometry_gate_report.json",
+    "results/20260731_care_myowall_if_mechanism_pilot/geometry_casewise_metrics.csv",
+    "results/20260731_care_myowall_if_mechanism_pilot/result.md"
+  ],
+  "final_status": "complete",
+  "key_conclusion": "CARE-MyoWall-IF completed as a contract-defined geometry-stop terminal packet. The frozen fold1 stock nnU-Net passed parity, but predicted wall geometry was not reliable enough on pilot_inner, so C0/W1/W2/W3 formal training was not started.",
+  "next_step": "Planner should decide whether to authorize a geometry-repair-only follow-up before any four-arm mechanism training.",
+  "push_status": "pushed origin/main cd7b4faaab64963001c6e627b3dcd84882cbd458",
+  "slurm_terminal_status": "No formal training allocation was started because the geometry gate failed before training.",
+  "task_name": "20260731_care_myowall_if_mechanism_pilot"
+}
