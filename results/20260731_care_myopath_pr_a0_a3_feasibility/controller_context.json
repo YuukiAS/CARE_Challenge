@@ -1,0 +1,45 @@
+{
+  "branch": "task/20260731-myopath-a0-a3",
+  "controller_mode": "controller_supervised_human_override_metric_truth_gate",
+  "forbidden_scope": {
+    "checkpoint_selection": false,
+    "docker_upload": false,
+    "fold1_outer_accessed": false,
+    "production_evaluator_modified": false,
+    "roi_refinement_started": false,
+    "threshold_search": false,
+    "validation_upload": false
+  },
+  "git_head": "f9424993371bbc7343c08362d887e3d50730cb2d",
+  "human_override_metric_truth_pass_gate": true,
+  "human_override_path": "/users/a/e/aereinh/CARE_worktrees/task_myopath_a0_a3_20260731/results/20260731_care_myopath_pr_a0_a3_feasibility/human_override_metric_truth_gate.json",
+  "metric_truth_receipt_path": "/users/a/e/aereinh/CARE_worktrees/task_metric_truth_20260731/results/20260731_care_metric_truth_reconciliation/metric_truth_receipt.json",
+  "metric_truth_receipt_sha256": "aec3bf2b9a0725db32c8b03deb62cc6b3684a0c93fc097e15d72d29919f0792b",
+  "metric_truth_receipt_status": "PASS",
+  "origin_main": "9e86ce58ef88576c98f61d629eb0bb01340baddf",
+  "slurm_job_ids": {
+    "a1": "61426370",
+    "a2": "61426371",
+    "a3": "61426372",
+    "preflight": "61425768"
+  },
+  "split_contract": {
+    "actual_train_count": 141,
+    "complete_inner_select_count": 7,
+    "fold1_outer_accessed": false,
+    "inner_select_count": 35,
+    "sha256": {
+      "actual_train": "24e76c92541e1f6ebb74cfec00e558be8a03b8ccf00bc9b3e53499205f9853b5",
+      "complete_actual_train": "20095366f148646fe406a3df50e748027e58674327f986d7531a23be2a2ace4f",
+      "complete_inner_select": "b9bdf85dabcdfecb28fc87335aac420713fabe99c81a13ff55b583f2ea29fff0",
+      "inner_select": "8fe167ca4baaacf92d1721edc29bcce879b1cc7328d1b8a63b1ac7272eca57c9",
+      "outer_train": "127d03972f57429fe62999636a651a2b67e1892e80f252071c8c6f90a7ea57b2",
+      "outer_val": "bf8d6e46c88a07e34500a77857db79e44699e567568b14373ea951c525177daa",
+      "t2_present_inner_select": "b9bdf85dabcdfecb28fc87335aac420713fabe99c81a13ff55b583f2ea29fff0"
+    },
+    "t2_present_inner_select_count": 7
+  },
+  "task_key": "20260731_care_myopath_pr_a0_a3_feasibility",
+  "task_prompt_path": "prompts/tasks/20260731_care_myopath_pr_a0_a3_controller.md",
+  "task_prompt_sha256": "dffc560f9a76e75b2dfacae3097633824f7e31da1019a184d2e0ec74c1ef9445"
+}

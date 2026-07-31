@@ -1,0 +1,56 @@
+{
+  "a0_gate": "PASS_TENSOR_IDENTITY; STOCK_METRIC_REPRODUCTION_NOT_RECOMPUTED_IN_THIS_PACKET",
+  "a1_gate": "NOT_PASSED_PATCH_PROXY_ONLY_A0_FULL_VOLUME_COMPARISON_REQUIRED",
+  "a2_gate": "NOT_PASSED_PATCH_PROXY_ONLY_FULL_VOLUME_HELP_HARM_REQUIRED",
+  "a3_gate": "NOT_PASSED_PATCH_PROXY_ONLY_AND_EDEMA_INTERVENTION_ZERO_LABEL_CHANGE",
+  "aggregation_complete": true,
+  "all_jobs_terminal": true,
+  "checkpoint_sha256": {
+    "A1": "455d640da0114cd179f60daa562100e8e173733bbfc2ff89c42997b0a2623f22",
+    "A2": "3108c4f9a6310ab41c8b0c09798e440ac0dc0a8f283529013c70de00273223e4",
+    "A3": "36d02389f596ddf81ddce72399ed12ef81c5b1140a60732a29eeba9eda2e4c76"
+  },
+  "commit_status": "local_commit_created_before_notification",
+  "component_intervention_changed_labels_sum": {
+    "disable_edema_head": 2410,
+    "disable_edema_proposal": 772,
+    "disable_scar_head": 25208,
+    "disable_scar_proposal": 9677
+  },
+  "controller_verification_decision": "NEEDS_REPAIR",
+  "expected_steps": {
+    "A1": 3000,
+    "A2": 5000,
+    "A3": 8000
+  },
+  "experiment_adequacy_decision": "TRAINING_COMPLETE_BUT_FULL_VOLUME_GATE_EVIDENCE_INSUFFICIENT",
+  "final_status": "complete",
+  "fold_expansion_authorized": false,
+  "formal_steps": {
+    "A1": 3000,
+    "A2": 5000,
+    "A3": 8000
+  },
+  "human_override_metric_truth_pass_gate": true,
+  "metric_truth_receipt_status_observed": "PASS",
+  "new_architecture_training_authorized": false,
+  "no_t2_edema_probability_max_terminal": {
+    "A1": 0.0,
+    "A2": 0.0,
+    "A3": 0.0
+  },
+  "operational_completion_status": "FORMAL_A1_A2_A3_TRAINING_CHAIN_TERMINAL_SUCCESS_WITH_FAIL_CLOSED_EVALUATION_REPAIR_REQUIRED",
+  "pure_edema_mechanism_signal": "NOT_CONFIRMED; T2_PRESENT_DENOMINATOR_7_AND_EDEMA_INTERVENTION_ZERO_LABEL_CHANGE_IN_PATCH_PROXY",
+  "push_status": "not_authorized",
+  "roi_refinement_authorized": false,
+  "scar_mechanism_signal": "PATCH_PROXY_SUGGESTS_SCAR_BRANCH_CHANGES_LABELS; NOT_FULL_VOLUME_GATE",
+  "slurm_jobs": {
+    "a1": "61426370",
+    "a2": "61426371",
+    "a3": "61426372"
+  },
+  "strict_validator_fail_closed_semantics": "PASS",
+  "strict_validator_status": "PASS",
+  "validation_upload_authorized": false,
+  "validators_complete": true
+}
