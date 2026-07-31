@@ -1,9 +1,48 @@
 {
-  "fold1_outer_accessed": false,
-  "formal_training_started": false,
-  "metric_truth_receipt_path": "/users/a/e/aereinh/CARE_worktrees/task_metric_truth_20260731/results/20260731_care_metric_truth_reconciliation/metric_truth_receipt.json",
-  "reason": "metric_truth_receipt.json is missing or metric_contract_status is not PASS",
-  "slurm_jobs": [],
-  "status": "BLOCKED_WAITING_METRIC_TRUTH_RECEIPT",
+  "checkpoint_path": "/users/a/e/aereinh/CARE_worktrees/task_myopath_a0_a3_20260731/results/20260731_care_myopath_pr_a0_a3_feasibility/runtime/a2_formal_override/checkpoint_step05000.pt",
+  "checkpoint_sha256": "3108c4f9a6310ab41c8b0c09798e440ac0dc0a8f283529013c70de00273223e4",
+  "device": "cuda",
+  "elapsed_seconds": 2735.9,
+  "expected_steps": 5000,
+  "formal_training_started": true,
+  "human_override_metric_truth_gate_path": "/users/a/e/aereinh/CARE_worktrees/task_myopath_a0_a3_20260731/results/20260731_care_myopath_pr_a0_a3_feasibility/human_override_metric_truth_gate.json",
+  "human_override_metric_truth_pass_gate": true,
+  "last_metrics": {
+    "edema_global": 0.231798455119133,
+    "no_t2_edema_probability_max": 0.0,
+    "scar_global": 0.27011554315686226,
+    "stock_ce": 0.15430968441069126
+  },
+  "load_report": {
+    "checkpoint_path": "/users/a/e/aereinh/CARE/data/nnUNet/nnUNet_results/Dataset501_CAREMyoPS/nnUNetTrainer_500epochs__nnUNetPlans__3d_fullres/fold_0/checkpoint_final.pth",
+    "checkpoint_sha256": "8bceb20cae8920e87d43b14665a0db9dfd4f1204533d25a3cd6e40ad9de74111",
+    "checkpoint_sha256_status": "PASS",
+    "expected_checkpoint_sha256": "8bceb20cae8920e87d43b14665a0db9dfd4f1204533d25a3cd6e40ad9de74111",
+    "matched_parameter_bytes": 507297552,
+    "missing_keys": [],
+    "parameter_byte_coverage": 1.0,
+    "target_parameter_bytes": 507297552,
+    "unexpected_keys": []
+  },
+  "loss_curve_path": "/users/a/e/aereinh/CARE_worktrees/task_myopath_a0_a3_20260731/results/20260731_care_myopath_pr_a0_a3_feasibility/runtime/a2_formal_override/loss_curve.csv",
+  "split_contract": {
+    "actual_train_count": 141,
+    "complete_inner_select_count": 7,
+    "fold1_outer_accessed": false,
+    "inner_select_count": 35,
+    "sha256": {
+      "actual_train": "24e76c92541e1f6ebb74cfec00e558be8a03b8ccf00bc9b3e53499205f9853b5",
+      "complete_actual_train": "20095366f148646fe406a3df50e748027e58674327f986d7531a23be2a2ace4f",
+      "complete_inner_select": "b9bdf85dabcdfecb28fc87335aac420713fabe99c81a13ff55b583f2ea29fff0",
+      "inner_select": "8fe167ca4baaacf92d1721edc29bcce879b1cc7328d1b8a63b1ac7272eca57c9",
+      "outer_train": "127d03972f57429fe62999636a651a2b67e1892e80f252071c8c6f90a7ea57b2",
+      "outer_val": "bf8d6e46c88a07e34500a77857db79e44699e567568b14373ea951c525177daa",
+      "t2_present_inner_select": "b9bdf85dabcdfecb28fc87335aac420713fabe99c81a13ff55b583f2ea29fff0"
+    },
+    "t2_present_inner_select_count": 7
+  },
+  "status": "FORMAL_TRAINING_COMPLETE",
+  "steps": 5000,
+  "trainability_manifest_path": "/users/a/e/aereinh/CARE_worktrees/task_myopath_a0_a3_20260731/results/20260731_care_myopath_pr_a0_a3_feasibility/runtime/a2_formal_override/trainability_manifest.json",
   "variant": "A2"
 }

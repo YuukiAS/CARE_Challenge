@@ -1,7 +1,12 @@
 {
-  "blocked_packet_semantics": "PASS",
-  "controller_verification_decision": "OPERATIONALLY_BLOCKED",
+  "controller_verification_decision": "NEEDS_REPAIR",
   "errors": [],
+  "fail_closed_semantics": "PASS",
+  "formal_steps_expected": {
+    "A1": 3000,
+    "A2": 5000,
+    "A3": 8000
+  },
   "known_bad_cases": [
     {
       "case": "encoder_only",
@@ -162,7 +167,12 @@
     "mapper_report_final.md",
     "controller_report.md",
     "completion_check.md",
-    "MANIFEST.md"
+    "MANIFEST.md",
+    "human_override_metric_truth_gate.json"
   ],
-  "status": "PASS"
+  "status": "PASS",
+  "warnings": [
+    "casewise metrics are patch proxy; controller decision must remain NEEDS_REPAIR",
+    "edema proposal changes labels in patch proxy; verify direction with full evaluator"
+  ]
 }

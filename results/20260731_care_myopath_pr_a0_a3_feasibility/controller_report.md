@@ -1,34 +1,25 @@
-当前任务没有进入正式机制训练，因为另一个并行任务给出的指标口径回执尚未 PASS；在这个前置条件缺失时启动 A1-A3 会把 scar 和 pure edema 的评价语义建立在猜测上。控制器已完成允许的本地部分：恢复完整 stock nnU-Net 输出路径，建立 A0-A3 pilot 代码、preflight、A0 identity 检查和 fail-closed known-bad 验证。下一步只能等待指标真值任务产出 `metric_contract_status: PASS`，之后再按 3000/5000/8000 steps 的冻结预算启动正式训练；当前仍不允许访问 fold1 outer、不允许 validation/Docker 上传、不允许 ROI refinement，也不允许把等待状态包装成模型成功。
+A0 的逐体素 identity 和 checkpoint 绑定是成立的，A1/A2/A3 也已经在人工覆盖 Lane A 等待门后完整跑完；但这轮不能宣布机制成功，因为最终评价仍是 patch proxy，缺少 full-volume inner-select 35 例的 A0 基线对照、HD95/exact HD、lesion recall 和 remote FP。A3 的 scar 分支在 patch proxy 中能改变标签，edema 分支在当前 intervention 中基本没有改变 final labels；因此 ROI refinement、fold expansion、validation 上传和正式训练推广都不允许。下一步应由 Planner 决定是否先补 full-volume evaluator/A0 comparison repair，而不是继续加新 loss、新模块或 refiner。
 
-## 科学问题回答
+1. A0 是否完整保持成熟基线：A0 tensor identity PASS，checkpoint SHA 和 parameter coverage PASS；stock metric reproduction 未在本 packet 重新计算，不能写成完整 metric gate PASS。
+2. A1 是否证明可靠监督至少不会破坏能力：未证明。A1 3000 steps 完成，但当前只有 patch proxy，缺少 full-volume A0 help/harm 和 HD95。
+3. A2 是否证明 scar/edema 独立路径有真实增量：未证明。A2 5000 steps 完成，loss/heads 正常，但 gate 指标仍缺 full-volume 证据。
+4. A3 是否形成有效病灶候选：未证明。A3 8000 steps 完成，scar proposal/head on-off 改变标签；edema intervention 在 patch proxy 中 changed labels 为 0，且 proposal gate 所需 recall/coverage/remote FP 未完整计算。
+5. 哪个病种有效、哪个无效：scar 有 patch-level 机制信号但未过正式 gate；pure edema 未形成可靠机制证据，T2-present denominator 只有 7 例，no-T2 safety 为 0。
+6. 是否值得进入 ROI refinement：不允许。A3 gate 未过，按合同不得启动 refiner。
+7. 是否应被前沿 Deep Research 的新范式取代：本任务不能裁决；当前只能说明 A0-A3 机制路线需要 evaluator repair 后再由 Planner 和 Deep Research 共同裁决。
 
-1. A0 是否完整保持成熟基线：代码路径保持，A0 tensor identity 检查通过；正式 inner-select metric reproduction 因指标 receipt 缺失未运行。
-2. A1 是否证明可靠监督没有破坏能力：未证明，正式训练被前置指标合同阻断。
-3. A2 是否证明 scar/edema 独立路径有价值：未证明，未启动正式训练。
-4. A3 是否形成真实有效病灶候选：未证明，proposal 代码已接入 final logits，但没有正式 checkpoint 和 intervention 证据。
-5. scar 与 edema 分别成功还是失败：当前均为未判定，不是成功也不是科学失败。
-6. 是否值得进入 ROI refinement：不授权；A3 尚未通过。
-7. 是否应被前沿 Deep Research 的新范式取代：已有仓库内未跟踪深研报告给出 `NO_GO_FOR_HIGH_GAIN_MODEL`，因此当前不能把 A0-A3 包装成高增益主航道；它最多是受 gate 约束的研究原型，仍需 Lane A/B/C 的机器证据返回 Planner 后再决定是否恢复。
-
-## 机器字段
-
-controller_verification_decision: OPERATIONALLY_BLOCKED
-operational_completion_status: BLOCKED_ON_PARALLEL_METRIC_TRUTH_RECEIPT_FAIL_CLOSED
-experiment_adequacy_decision: PREFLIGHT_AND_A0_ONLY_ZERO_FORMAL_TRAINING_CREDIT
-a0_gate: PASS_TENSOR_IDENTITY
-a1_gate: BLOCKED_NOT_RUN
-a2_gate: BLOCKED_NOT_RUN
-a3_gate: BLOCKED_NOT_RUN
-scar_mechanism_signal: UNDETERMINED_NOT_TRAINED
-pure_edema_mechanism_signal: UNDETERMINED_NOT_TRAINED
+controller_verification_decision: NEEDS_REPAIR
+operational_completion_status: FORMAL_A1_A2_A3_TRAINING_CHAIN_TERMINAL_SUCCESS_WITH_FAIL_CLOSED_EVALUATION_REPAIR_REQUIRED
+experiment_adequacy_decision: TRAINING_COMPLETE_BUT_FULL_VOLUME_GATE_EVIDENCE_INSUFFICIENT
+a0_gate: PASS_TENSOR_IDENTITY; STOCK_METRIC_REPRODUCTION_NOT_RECOMPUTED_IN_THIS_PACKET
+a1_gate: NOT_PASSED_PATCH_PROXY_ONLY_A0_FULL_VOLUME_COMPARISON_REQUIRED
+a2_gate: NOT_PASSED_PATCH_PROXY_ONLY_FULL_VOLUME_HELP_HARM_REQUIRED
+a3_gate: NOT_PASSED_PATCH_PROXY_ONLY_AND_EDEMA_INTERVENTION_ZERO_LABEL_CHANGE
+scar_mechanism_signal: PATCH_PROXY_SUGGESTS_SCAR_BRANCH_CHANGES_LABELS; NOT_FULL_VOLUME_GATE
+pure_edema_mechanism_signal: NOT_CONFIRMED; T2_PRESENT_DENOMINATOR_7_AND_EDEMA_INTERVENTION_ZERO_LABEL_CHANGE_IN_PATCH_PROXY
 roi_refinement_authorized: false
 fold_expansion_authorized: false
 validation_upload_authorized: false
-git_commit_decision: LOCAL_COMMIT_CREATED_CURRENT_HEAD
+git_commit_decision: PENDING_LOCAL_COMMIT
 git_push_decision: NOT_AUTHORIZED
-deep_research_decision: NO_GO_FOR_HIGH_GAIN_MODEL_FROM_USER_SUPPLIED_RESEARCH_DRAFT
-next_required_action: WAIT_FOR_METRIC_TRUTH_PASS_THEN_RESUME_CURRENT_TASK
-
-## 补充深研来源
-
-已读取主 checkout 中用户指出的未跟踪文件：`/users/a/e/aereinh/CARE/CARE Myocardium 下一代模型深度研究与设计裁决.md`。该报告的核心裁决是 `NO_GO_FOR_HIGH_GAIN_MODEL`：它支持把 CARE-MyoPath-PR 作为有边界的单-backbone 研究原型，但不授权高增益长训练、不授权 ROI refinement，也不允许把 proposal/refiner 模块存在等同于 official validation 成功。当前 A0-A3 包的阻断结论与该裁决一致。
+next_required_action: PLANNER_DECIDES_FULL_VOLUME_EVALUATOR_REPAIR_OR_ROUTE_REDESIGN; DO_NOT_START_ROI_OR_NEW_ARCHITECTURE_FROM_THIS_PACKET

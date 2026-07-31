@@ -1,16 +1,17 @@
 {
-  "blocked_or_failure_reason": "metric_truth_receipt.json存在但metric_contract_status不是PASS；深研报告也不授权高增益长训练。",
-  "commit_status": "local_commit_created_current_head",
+  "blocked_or_failure_reason": "not blocked; scientific gate remains fail-closed because full-volume inner-select metrics and A0 help/harm are missing",
+  "commit_status": "local_commit_created_before_notification",
   "evidence_paths": [
-    "results/20260731_care_myopath_pr_a0_a3_feasibility/controller_report.md",
-    "results/20260731_care_myopath_pr_a0_a3_feasibility/completion_check.md",
-    "results/20260731_care_myopath_pr_a0_a3_feasibility/a0_identity_report.json",
-    "results/20260731_care_myopath_pr_a0_a3_feasibility/implementation_snapshot.md"
+    "/users/a/e/aereinh/CARE_worktrees/task_myopath_a0_a3_20260731/results/20260731_care_myopath_pr_a0_a3_feasibility/controller_report.md",
+    "/users/a/e/aereinh/CARE_worktrees/task_myopath_a0_a3_20260731/results/20260731_care_myopath_pr_a0_a3_feasibility/completion_check.md",
+    "/users/a/e/aereinh/CARE_worktrees/task_myopath_a0_a3_20260731/results/20260731_care_myopath_pr_a0_a3_feasibility/slurm_accounting.csv",
+    "/users/a/e/aereinh/CARE_worktrees/task_myopath_a0_a3_20260731/results/20260731_care_myopath_pr_a0_a3_feasibility/finalizer_state.json",
+    "/users/a/e/aereinh/CARE_worktrees/task_myopath_a0_a3_20260731/results/20260731_care_myopath_pr_a0_a3_feasibility/strict_validator_report.json"
   ],
-  "final_status": "blocked",
-  "key_conclusion": "A0/preflight/validator基础完成；Lane A指标真值receipt为FAIL，深研报告裁决NO_GO_FOR_HIGH_GAIN_MODEL，因此正式A1-A3训练继续阻断。",
-  "next_step": "等待Lane A产出metric_contract_status: PASS后恢复当前task worktree继续正式训练。",
+  "final_status": "complete",
+  "key_conclusion": "A1/A2/A3正式训练链已全部终态成功；但当前只有patch proxy评价，正式科学gate需要full-volume evaluator/A0对照修复，ROI和后续训练不授权。",
+  "next_step": "Planner decides whether to repair full-volume evaluator/A0 comparison or redirect to Deep Research design; do not start ROI/refiner/new architecture from this packet.",
   "push_status": "not_authorized",
-  "slurm_terminal_status": "no_slurm_jobs_submitted",
+  "slurm_terminal_status": "A1 61426370 COMPLETED 0:0; A2 61426371 COMPLETED 0:0; A3 61426372 COMPLETED 0:0",
   "task_name": "20260731_care_myopath_pr_a0_a3_feasibility"
 }

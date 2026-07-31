@@ -1,10 +1,13 @@
-当前控制器只能停在外部前置阻断：A0/preflight/validator 基础已完成，但 `metric_truth_receipt.json` 缺失或未 PASS，正式 A1-A3 GPU 训练被合同禁止。
+A1/A2/A3 formal Slurm jobs all reached terminal success, but the scientific gate remains fail-closed because current evaluation is patch proxy rather than full-volume inner-select truth. Required packet files are present; strict validator must pass this as an honest NEEDS_REPAIR packet, not as model success.
 
-controller_verification_decision: OPERATIONALLY_BLOCKED
-required_outputs_complete: true_for_blocked_packet
-validators_passed: true_for_blocked_packet
-all_jobs_terminal: true_no_jobs_submitted
-aggregation_complete: true_no_runtime_aggregation_required
+controller_verification_decision: NEEDS_REPAIR
+required_outputs_complete: true
+validators_expected: strict_validator plus known_bad
+all_jobs_terminal: true
+slurm_terminal_status: A1 61426370 COMPLETED 0:0; A2 61426371 COMPLETED 0:0; A3 61426372 COMPLETED 0:0
+aggregation_complete: true
 fold1_outer_accessed: false
 validation_upload_authorized: false
-git_push_decision: NOT_AUTHORIZED
+roi_refinement_authorized: false
+local_commit_required: true
+push_authorized: false

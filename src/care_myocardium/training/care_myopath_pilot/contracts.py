@@ -3,7 +3,11 @@ from __future__ import annotations
 import json
 from pathlib import Path
 from typing import Any
-VARIANT_CONTRACTS = {'A1': {'steps': 3000, 'optimizer': 'AdamW'}, 'A2': {'steps': 5000, 'optimizer': 'AdamW'}, 'A3': {'steps': 8000, 'optimizer': 'AdamW'}}
+VARIANT_CONTRACTS = {
+    'A1': {'steps': 3000, 'optimizer': 'AdamW', 'stock_lr': 1e-5, 'new_lr': 0.0, 'batch_size_physical': 2, 'gradient_accumulation': 4, 'weight_decay': 1e-4, 'clip_grad_norm': 12.0},
+    'A2': {'steps': 5000, 'optimizer': 'AdamW', 'stock_lr': 3e-5, 'new_lr': 3e-4, 'batch_size_physical': 2, 'gradient_accumulation': 4, 'weight_decay': 1e-4, 'clip_grad_norm': 12.0},
+    'A3': {'steps': 8000, 'optimizer': 'AdamW', 'stock_lr': 3e-5, 'new_lr': 3e-4, 'batch_size_physical': 2, 'gradient_accumulation': 4, 'weight_decay': 1e-4, 'clip_grad_norm': 12.0},
+}
 KNOWN_BAD_CASES = ['encoder_only','decoder_reset','a0_not_pixel_identity','no_t2_edema_loss_nonzero','scar_edema_shared_parameters','proposal_auxiliary_only','proposal_not_in_final_logits','intervention_gradient_only_no_label_change','variant_checkpoint_chaining','case_order_or_augmentation_mismatch','outer_used_for_selection','edema_zone_as_pure_edema','short_smoke_as_formal_training','scheduler_base_lr_overwritten','refiner_started_after_failed_proposal_gate','new_loss_or_module_after_a3_failure','pending_job_claims_completion','mean_dice_only_evaluator','scar_gain_masks_edema_failure','missing_hash_or_provenance']
 def read_metric_truth_receipt(path: Path) -> dict[str, Any]:
     if not path.is_file(): return {'present': False, 'metric_contract_status': 'MISSING'}

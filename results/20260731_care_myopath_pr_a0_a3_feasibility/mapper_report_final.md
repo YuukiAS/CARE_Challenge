@@ -1,5 +1,7 @@
 # Mapper Report Final
 
-当前 pilot 代码已接入完整 stock encoder/decoder/output head。A0/A1 保持 stock final logits；A2 的 scar/edema global head 参数独立并进入 final logits；A3 proposal 以冻结系数 `0.5` 进入 final logits。正式训练和 intervention 证据因 metric truth receipt 缺失仍为 missing。
+A0/A1 use the full stock encoder-decoder-output path; no encoder-only inheritance or decoder reset was used. A2 adds independent scar and edema global heads. A3 adds scar/edema proposal heads and proposal logits enter final logits with the frozen 0.5 coefficient. Scar and edema heads do not share parameters, and no-T2 edema probability stayed at 0.0 in terminal training receipts.
 
-wiki update: not authorized.
+Architecture scope stayed inside `src/care_myocardium/models/care_myopath_pilot.py` and task-specific training/job files. Production PRISM, stock nnU-Net source, MoSAIC source, wiki, fold locks, validation packaging, and production evaluator were not modified.
+
+Mapper limitation: result CSVs are patch-proxy diagnostics, not full-volume evaluator truth; therefore gates that depend on HD95, exact HD, lesion recall, remote FP, and full A0 help/harm remain unverified.
