@@ -1,0 +1,2 @@
+job_id,step_id,variant,partition,state,exit_code,elapsed,node,log_path,runtime_output_path,aggregation_command,aggregation_exit_code
+61220581,60,A0_A1_A2_A3_full_volume_closure,htzhulab,COMPLETED_STEP,0:0,recorded_in_run_accounting_json,g1807htzh01,/tmp/care_fvc_logs/full_volume_closure_61220581_60_20260731_043900.log,/users/a/e/aereinh/.tmp/codex-CARE/20260731_care_myopath_a0_a3_full_volume_closure,full_volume_closure.py run,0

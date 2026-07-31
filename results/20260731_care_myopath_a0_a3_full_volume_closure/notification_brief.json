@@ -1,0 +1,15 @@
+{
+  "blocked_or_failure_reason": "",
+  "commit_status": "result_commit_created_before_notification",
+  "evidence_paths": [
+    "results/20260731_care_myopath_a0_a3_full_volume_closure/controller_report.md",
+    "results/20260731_care_myopath_a0_a3_full_volume_closure/summary_metrics.csv",
+    "results/20260731_care_myopath_a0_a3_full_volume_closure/strict_validator_report.json"
+  ],
+  "final_status": "complete",
+  "key_conclusion": "SYSTEMATIC_HARM: full-volume A3 harms scar (Dice delta -0.193264, harm 29/35) and pure edema (Dice delta -0.065310, harm 5/7); do not continue ROI/refiner/fold expansion/upload.",
+  "next_step": "return to Planner; stop this A0-A3 mechanism route unless a new, separately authorized redesign task is written",
+  "push_status": "origin_main_push_and_remote_sha_verified_before_notification",
+  "slurm_terminal_status": "completed Slurm step 61220581.60 on htzhulab node g1807htzh01 with exit_code 0:0",
+  "task_name": "20260731_care_myopath_a0_a3_full_volume_closure"
+}

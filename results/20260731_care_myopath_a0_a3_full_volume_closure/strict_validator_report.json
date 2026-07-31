@@ -1,0 +1,32 @@
+{
+  "controller_verification_decision": "VERIFIED_COMPLETE",
+  "errors": [],
+  "known_bad_report_status": "PASS",
+  "required_outputs_checked": [
+    "controller_context.json",
+    "frozen_input_manifest.json",
+    "checkpoint_manifest.csv",
+    "split_manifest.csv",
+    "inference_accounting.csv",
+    "casewise_metrics.csv",
+    "summary_metrics.csv",
+    "subgroup_metrics.csv",
+    "lesion_metrics.csv",
+    "remote_fp_metrics.csv",
+    "help_harm.csv",
+    "intervention_casewise.csv",
+    "intervention_summary.csv",
+    "full_volume_case_atlas.pdf",
+    "full_volume_case_contact_sheet.png",
+    "visual_review_notes.md",
+    "evaluator_semantics_receipt.json",
+    "known_bad_report.json",
+    "slurm_accounting.csv",
+    "controller_report.md",
+    "completion_check.md",
+    "MANIFEST.md",
+    "notification_brief.json"
+  ],
+  "status": "PASS",
+  "warnings": []
+}

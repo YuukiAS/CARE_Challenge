@@ -1,0 +1,13 @@
+{
+  "branch": "task/20260731-a0-a3-full-volume-closure",
+  "canonical_t2_present_count": 80,
+  "created_at_utc": "2026-07-31T08:43:51.166667+00:00",
+  "git_head": "218df3b65c29f87f9c63c9e7d98d5f05ae47ad93",
+  "metric_contract_status": "PASS",
+  "new_training_started": false,
+  "origin_main": "218df3b65c29f87f9c63c9e7d98d5f05ae47ad93",
+  "outer_accessed": false,
+  "runtime_root": "/users/a/e/aereinh/.tmp/codex-CARE/20260731_care_myopath_a0_a3_full_volume_closure",
+  "source_feasibility": "results/20260731_care_myopath_pr_a0_a3_feasibility",
+  "task_key": "20260731_care_myopath_a0_a3_full_volume_closure"
+}

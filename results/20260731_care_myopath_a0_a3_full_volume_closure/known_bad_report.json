@@ -1,0 +1,85 @@
+{
+  "cases": [
+    {
+      "case": "patch_proxy_as_full_volume",
+      "rejected": true
+    },
+    {
+      "case": "missing_a0",
+      "rejected": true
+    },
+    {
+      "case": "checkpoint_sha_mismatch",
+      "rejected": true
+    },
+    {
+      "case": "checkpoint_not_reloaded",
+      "rejected": true
+    },
+    {
+      "case": "incomplete_case_count",
+      "rejected": true
+    },
+    {
+      "case": "pure_edema_denominator_not_7",
+      "rejected": true
+    },
+    {
+      "case": "no_t2_in_edema_denominator",
+      "rejected": true
+    },
+    {
+      "case": "edema_zone_as_pure_edema",
+      "rejected": true
+    },
+    {
+      "case": "missing_hd95_exact_hd",
+      "rejected": true
+    },
+    {
+      "case": "missing_lesion_recall",
+      "rejected": true
+    },
+    {
+      "case": "missing_remote_fp",
+      "rejected": true
+    },
+    {
+      "case": "all_help_harm_neutral",
+      "rejected": true
+    },
+    {
+      "case": "intervention_logit_only",
+      "rejected": true
+    },
+    {
+      "case": "outer_accessed",
+      "rejected": true
+    },
+    {
+      "case": "new_training_started",
+      "rejected": true
+    },
+    {
+      "case": "roi_refiner_implemented",
+      "rejected": true
+    },
+    {
+      "case": "runtime_prediction_tracked",
+      "rejected": true
+    },
+    {
+      "case": "current_or_wiki_modified",
+      "rejected": true
+    },
+    {
+      "case": "pending_job_as_completion",
+      "rejected": true
+    },
+    {
+      "case": "scientific_decision_metric_mismatch",
+      "rejected": true
+    }
+  ],
+  "status": "PASS"
+}

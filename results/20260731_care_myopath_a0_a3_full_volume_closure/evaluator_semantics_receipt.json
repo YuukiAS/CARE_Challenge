@@ -1,0 +1,27 @@
+{
+  "blood_pool_adjacent_fp_definition": "FP component distance to LV/RV blood pool labels 2/3 <= 3.0 mm",
+  "connected_component_connectivity": "3D face connectivity via scipy generate_binary_structure(ndim=3, connectivity=1)",
+  "decode_rule": "argmax over final_logits; no threshold search, TTA, ensemble, or postprocessing",
+  "empty_gt_policy": "Dice empty-empty equals 1; HD empty-empty equals 0; one-empty HD is null; GT-positive summaries are separate",
+  "function_names": [
+    "full_volume_logits",
+    "case_metric_row",
+    "lesion_recalls",
+    "fp_metrics",
+    "hausdorff",
+    "run"
+  ],
+  "plans_patch_size_zyx": [
+    20,
+    256,
+    256
+  ],
+  "plans_path": "/users/a/e/aereinh/CARE/data/nnUNet/nnUNet_preprocessed/Dataset501_CAREMyoPS/nnUNetPlans.json",
+  "plans_sha256": "06492f8fc75b5de383a28006f76b7f1099f305422953cf9d4f89ae1ec38d3e2f",
+  "preprocessing_source": "same CARE MyoPath pilot read_case normalization used by formal A1-A3 training; full image arrays from /users/a/e/aereinh/CARE/data/nnUNet/nnUNet_raw/Dataset501_CAREMyoPS",
+  "remote_fp_definition": "FP component minimum distance to GT > 10.0 mm; if GT empty, every FP component is remote",
+  "small_lesion_threshold_mm3": 50.0,
+  "source_path": "/users/a/e/aereinh/CARE_worktrees/task_a0_a3_full_volume_closure_20260731/scripts/evaluation/care_myopath_full_volume_closure/full_volume_closure.py",
+  "source_sha256": "a7a87b48b4b4e823bf9a871619d2e8838f3b698e93d1d7d90ca5bfca2cb6535f",
+  "spacing_source": "SimpleITK label image GetSpacing reversed to z,y,x"
+}

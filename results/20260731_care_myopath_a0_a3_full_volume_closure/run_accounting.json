@@ -1,0 +1,25 @@
+{
+  "atlas_cases": [
+    "Case1017",
+    "Case1081",
+    "Case3008",
+    "Case6009",
+    "Case3009",
+    "Case8014",
+    "Case8012",
+    "Case8016",
+    "Case1046",
+    "Case2015",
+    "Case2010",
+    "Case2021",
+    "Case2024",
+    "Case2027"
+  ],
+  "case_count": 35,
+  "completed_at_utc": "2026-07-31T08:43:51.288687+00:00",
+  "device": "cuda",
+  "slurm_job_id": "61220581",
+  "slurm_job_partition": "htzhulab",
+  "started_at_utc": "2026-07-31T08:39:12.360421+00:00",
+  "t2_present_case_count": 7
+}

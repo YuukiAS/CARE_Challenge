@@ -1,0 +1,14 @@
+controller_verification_decision: VERIFIED_COMPLETE
+scientific_decision: SYSTEMATIC_HARM
+strict_validator_status: PASS
+known_bad_status: PASS
+all_jobs_terminal: true
+aggregation_complete: true
+metric_contract_status: PASS
+case_count: 35
+t2_present_case_count: 7
+new_training_started: false
+outer_accessed: false
+validation_upload_authorized: false
+docker_upload_authorized: false
+roi_refinement_authorized: false
