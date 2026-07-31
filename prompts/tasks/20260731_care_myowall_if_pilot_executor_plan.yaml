@@ -1,0 +1,126 @@
+task_key: 20260731_care_myowall_if_mechanism_pilot
+execution_mode: controller_supervised
+executor_count: 1
+executor_slots: 1
+parallel_execution_allowed: false
+controller_is_coordinator: true
+worktree: /users/a/e/aereinh/CARE
+branch: main
+runtime_root: results/20260731_care_myowall_if_mechanism_pilot/runtime
+result_root: results/20260731_care_myowall_if_mechanism_pilot
+waves:
+  - wave_id: P0_metric_and_asset_freeze
+    dependencies: []
+    write_scope:
+      - results/20260731_care_myowall_if_mechanism_pilot/**
+    required_outputs:
+      - metric_dependency_receipt.json
+      - asset_freeze_receipt.json
+      - pilot_split_receipt.json
+      - pilot_train_cases.txt
+      - pilot_inner_cases.txt
+    completion_conditions:
+      - metric truth receipt PASS or explicit verified blocker
+      - fold1 outer remains unread
+      - stock fold1 checkpoint and nnUNetPlans hashes bound
+    failure_branch: NEEDS_REPAIR_OR_OPERATIONALLY_BLOCKED
+  - wave_id: P1_geometry_closure
+    dependencies:
+      - P0_metric_and_asset_freeze
+    write_scope:
+      - src/care_myocardium/models/myowall_if/**
+      - scripts/training/myowall_if/**
+      - scripts/evaluation/myowall_if/**
+      - tests/myowall_if/**
+      - configs/myowall_if/**
+      - results/20260731_care_myowall_if_mechanism_pilot/**
+    required_outputs:
+      - geometry_cache_manifest.csv
+      - geometry_casewise_metrics.csv
+      - geometry_gate_report.json
+      - stock_parity_report.json
+    completion_conditions:
+      - stock FP32 parity pass
+      - geometry valid case rate >= 0.95
+      - median roundtrip Dice >= 0.96
+      - 5th percentile roundtrip Dice >= 0.90
+      - median roundtrip HD95 <= 2.0 mm
+    failure_branch: STOP_GEOMETRY_NOT_RELIABLE
+  - wave_id: P2_implementation_and_zero_credit
+    dependencies:
+      - P1_geometry_closure
+    write_scope:
+      - src/care_myocardium/models/myowall_if/**
+      - scripts/training/myowall_if/**
+      - scripts/evaluation/myowall_if/**
+      - jobs/myowall_if/**
+      - tests/myowall_if/**
+      - configs/myowall_if/**
+      - results/20260731_care_myowall_if_mechanism_pilot/**
+    required_outputs:
+      - implementation_snapshot.md
+      - tensor_contract_report.json
+      - one_batch_overfit_report.json
+      - zero_credit_smoke_report.json
+      - batch_descriptor_manifest.jsonl
+      - pretraining_strict_validator_report.json
+    completion_conditions:
+      - exact classes and wiring match blueprint
+      - wall and Cartesian arms parameter counts within 5 percent
+      - no-T2 edema loss/output/gradient exact zero
+      - save reload max abs error <= 1e-6
+      - all known-bad pretraining fixtures pass
+    failure_branch: NEEDS_REPAIR
+  - wave_id: P3_matched_arm_training
+    dependencies:
+      - P2_implementation_and_zero_credit
+    write_scope:
+      - results/20260731_care_myowall_if_mechanism_pilot/runtime/**
+      - results/20260731_care_myowall_if_mechanism_pilot/**
+    required_outputs:
+      - arm_C0_training_summary.json
+      - arm_W1_training_summary.json
+      - arm_W2_training_summary.json
+      - arm_W3_training_summary.json
+      - checkpoint_manifest.csv
+      - interactive_job_accounting.csv
+    completion_conditions:
+      - each arm reaches 8000 optimizer steps
+      - same batch descriptor and augmentation sequence across arms
+      - checkpoints every 1000 steps saved and reloadable
+      - all interactive Slurm steps terminal
+    failure_branch: SAME_SCOPE_REPAIR_OR_OPERATIONALLY_BLOCKED
+  - wave_id: P4_evaluation_and_decision
+    dependencies:
+      - P3_matched_arm_training
+    write_scope:
+      - results/20260731_care_myowall_if_mechanism_pilot/**
+      - wiki/**
+      - prompts/routes/handoffs/CURRENT.md
+    required_outputs:
+      - casewise_metrics.csv
+      - arm_summary.csv
+      - component_metrics.csv
+      - help_harm.csv
+      - causal_ablation_report.md
+      - strict_validator_report.json
+      - known_bad_report.json
+      - mapper_report_final.md
+      - controller_report.md
+      - completion_check.md
+      - MANIFEST.md
+      - notification_brief.json
+    completion_conditions:
+      - all checkpoints reloaded and evaluated on frozen pilot_inner
+      - scar and pure-edema metrics separated
+      - geometry and complexity gates enforced
+      - final decision is one allowed blueprint token
+      - lightweight commit pushed to origin/main
+      - completion email sent through existing notifier
+    failure_branch: NEEDS_REPAIR_OR_OPERATIONALLY_BLOCKED
+merge_order:
+  - P0_metric_and_asset_freeze
+  - P1_geometry_closure
+  - P2_implementation_and_zero_credit
+  - P3_matched_arm_training
+  - P4_evaluation_and_decision
