@@ -1,6 +1,6 @@
 # Planner Gap Resolution Handoff
 
-当前不是“四个模型都不行”。训练层面已经跑完的是 M0R/M1/M3 的 fold2/fold3；没有跑的是 M2，因为官方 I-MMSeg 权重/ViT 资产没有落地，合同禁止用 rank-channel 或空模型替代。M0R 的关键实现缺口已经补过一轮：新的 interactive rerun 使用 AdamW、250 optimizer-step warmup、per-step cosine decay 到 `1e-6`，并写出 fold2/fold3 的 `checkpoint_step00500.pth` 到 `checkpoint_step04000.pth`。现在真正剩下的是合同后半段：checkpoint 深审计、full-volume inner/outer evaluation、统一 aggregation、atlas、mapper 和 final validator。
+当前不是“四个模型都不行”。训练层面已经跑完的是 M0R/M1/M3 的 fold2/fold3。M2 之前没跑是因为官方 I-MMSeg 权重/ViT 资产没有落地，合同禁止用 rank-channel 或空模型替代；现在两个公开核心权重已经下载并记录 SHA256，M2 剩下的是 CARE Dataset501 adapter、BiomedCLIP/cache 检查、preflight、训练和评价。M0R 的关键实现缺口已经补过一轮：新的 interactive rerun 使用 AdamW、250 optimizer-step warmup、per-step cosine decay 到 `1e-6`，并写出 fold2/fold3 的 `checkpoint_step00500.pth` 到 `checkpoint_step04000.pth`。现在真正剩下的是合同后半段：checkpoint 深审计、full-volume inner/outer evaluation、统一 aggregation、atlas、mapper 和 final validator。
 
 ## Current Published State
 
@@ -19,7 +19,7 @@
 | --- | --- | --- | --- |
 | M0R faithful nnU-Net control | repaired interactive rerun in `61220581` completed 4000 steps | repaired interactive rerun in `61220581` completed 4000 steps | training complete with AdamW warmup-cosine and 500-step checkpoint grid; still needs reload/SHA, full-volume inner selection, and manifest-bound crop/augmentation fidelity decision |
 | M1 MyoPS-Net-L CARE | lane job `61576324` completed | lane job `61576324` completed | training complete, needs full-volume reconstruction/evaluation |
-| M2 I-MMSeg CARE | not run | not run | official source pinned, external weights missing |
+| M2 I-MMSeg CARE | not run | not run | official source and two public core weights present; CARE adapter/preflight/training pending |
 | M3 CARE-TDS | interactive `61220581` completed 4000 steps | interactive `61220581` completed 4000 steps | training complete, but model/loss fidelity and full-volume evaluation gaps remain |
 
 ## External Assets
@@ -49,18 +49,34 @@ No extra M1 pretrained weights were used in the current CARE adapter. The curren
   - `R50-ViT-B_16.npz`
   - `epoch_299.pth`
   - MyoPS380 raw/processed dataset only if institutional approval is granted
-- expected CARE placement:
+- downloaded CARE placement:
   - `third_party/I_MMSeg_PINNED/model/vit_checkpoint/imagenet21k/R50-ViT-B_16.npz`
+    - source file id: `1qJI7m6sM6deBZsSmcZjltHNWygRYagdD`
+    - size: `461217452`
+    - sha256: `ff009bf39bb4f9198b834cfe46aba2bfdaf730e933ab3e3c4b1edf4226eaafbe`
   - `third_party/I_MMSeg_PINNED/weights/TU_Myops128/TU_pretrain_R50-ViT-B_16_skip3_epo300_bs24_lr0.001_128/epoch_299.pth`
+    - source file id: `1niuQ5BDD1A4lX3oN-ARZ0f3NO1GxLu6F`
+    - size: `340373498`
+    - sha256: `56a274d79638ba3dc5a44b5243e3e339702e3ec46ce0714fc2acfb1ab0835da6`
+  - receipt: `results/20260801_care_target_domain_race_gap_closure/m2_i_mmseg_care/asset_download_receipt.json`
 
-Download command if the current account can access the Google Drive folder:
+Reproducible download command:
 
 ```bash
-mkdir -p /users/a/e/aereinh/.tmp/codex-CARE/20260801_care_target_domain_race_gap_closure/i_mmseg_assets_raw
-python -m gdown --folder 'https://drive.google.com/drive/folders/1WHcpG8YlDlEdnlclbXKDZJANLX10iSq3?usp=drive_link' -O /users/a/e/aereinh/.tmp/codex-CARE/20260801_care_target_domain_race_gap_closure/i_mmseg_assets_raw
+./envs/env_CARE/bin/python -m pip install gdown
+mkdir -p third_party/I_MMSeg_PINNED/model/vit_checkpoint/imagenet21k
+mkdir -p third_party/I_MMSeg_PINNED/weights/TU_Myops128/TU_pretrain_R50-ViT-B_16_skip3_epo300_bs24_lr0.001_128
+./envs/env_CARE/bin/python -m gdown \
+  'https://drive.google.com/uc?id=1qJI7m6sM6deBZsSmcZjltHNWygRYagdD' \
+  -O third_party/I_MMSeg_PINNED/model/vit_checkpoint/imagenet21k/R50-ViT-B_16.npz \
+  --continue
+./envs/env_CARE/bin/python -m gdown \
+  'https://drive.google.com/uc?id=1niuQ5BDD1A4lX3oN-ARZ0f3NO1GxLu6F' \
+  -O third_party/I_MMSeg_PINNED/weights/TU_Myops128/TU_pretrain_R50-ViT-B_16_skip3_epo300_bs24_lr0.001_128/epoch_299.pth \
+  --continue
 ```
 
-If `gdown` is unavailable, install it in `env_CARE` or download manually from the browser into the same raw folder, then copy the two required model files to the expected CARE placement. Do not use MyoPS380 as CARE training data unless the planner explicitly authorizes a data-compliance path.
+Do not use MyoPS380 as CARE training data unless the planner explicitly authorizes a data-compliance path. This run did not download `MyoPS380_dataset/` or `I_MMSeg_env.tar.gz`.
 
 BiomedCLIP note: upstream I-MMSeg calls `open_clip.create_model_from_pretrained('hf-hub:microsoft/BiomedCLIP-PubMedBERT_256-vit_base_patch16_224')`; first run needs HuggingFace access/cache unless the model is already cached.
 
@@ -92,17 +108,17 @@ Repair plan:
 - Add a deterministic M1 inference/evaluation script that loads each step checkpoint, slices Dataset501 inner cases, reconstructs full volumes, maps `seg_lge` scar and `seg_t2` pure-edema outputs back to label space, and writes per-checkpoint metrics.
 - Use inner cases only for checkpoint selection; do not touch fold outer until global source selection is frozen.
 
-### Gap 3: M2 is asset-gated, not scientifically failed
+### Gap 3: M2 assets are now present, but implementation/preflight is still pending
 
 Evidence:
 - source is pinned at `third_party/I_MMSeg_PINNED`.
-- required Google Drive assets are not present.
+- `R50-ViT-B_16.npz` and `epoch_299.pth` are present with SHA256 recorded in `m2_i_mmseg_care/asset_download_receipt.json`.
 - rank-channel substitute was explicitly not used.
 
 Repair plan:
-- Download and place `R50-ViT-B_16.npz` and `epoch_299.pth` as listed above.
 - Verify text feature files already present under `third_party/I_MMSeg_PINNED/text_features/`.
 - Add a CARE Dataset501 adapter that preserves I-MMSeg CLIP/text prior semantics without replacing them with handcrafted rank channels.
+- Confirm BiomedCLIP HuggingFace cache or network availability for `hf-hub:microsoft/BiomedCLIP-PubMedBERT_256-vit_base_patch16_224`.
 - Run preflight, then formal fold2/fold3 training/evaluation only after assets are present.
 
 ### Gap 4: M3 training ran, but architecture/loss fidelity is partial

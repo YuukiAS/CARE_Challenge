@@ -50,16 +50,43 @@ git -C third_party/I_MMSeg_PINNED checkout 90f46c4eb72924509895fcda6bc6a3b8c3316
   - `third_party/I_MMSeg_PINNED/weights/TU_Myops128/TU_pretrain_R50-ViT-B_16_skip3_epo300_bs24_lr0.001_128/epoch_299.pth`
   - `third_party/I_MMSeg_PINNED/text_features/embedding_class_information.pth` 已随源码存在
   - `third_party/I_MMSeg_PINNED/text_features/embedding_MRI_information.pth` 已随源码存在
-- 可用下载命令，前提是 Google Drive folder 对当前账号可访问：
+- 2026-08-01 实测：Google Drive folder 可公开列目录。`gdown --folder --json` 返回了公开 file id；本次只下载两个模型资产，没有下载 `MyoPS380_dataset/` 或 `I_MMSeg_env.tar.gz`。
+
+已下载并放置：
+
+```text
+R50-ViT-B_16.npz
+source: https://drive.google.com/uc?id=1qJI7m6sM6deBZsSmcZjltHNWygRYagdD
+path: third_party/I_MMSeg_PINNED/model/vit_checkpoint/imagenet21k/R50-ViT-B_16.npz
+size_bytes: 461217452
+sha256: ff009bf39bb4f9198b834cfe46aba2bfdaf730e933ab3e3c4b1edf4226eaafbe
+
+epoch_299.pth
+source: https://drive.google.com/uc?id=1niuQ5BDD1A4lX3oN-ARZ0f3NO1GxLu6F
+path: third_party/I_MMSeg_PINNED/weights/TU_Myops128/TU_pretrain_R50-ViT-B_16_skip3_epo300_bs24_lr0.001_128/epoch_299.pth
+size_bytes: 340373498
+sha256: 56a274d79638ba3dc5a44b5243e3e339702e3ec46ce0714fc2acfb1ab0835da6
+```
+
+可复现下载命令：
 
 ```bash
-mkdir -p /users/a/e/aereinh/.tmp/codex-CARE/20260801_care_target_domain_race_gap_closure/i_mmseg_assets_raw
-python -m gdown --folder 'https://drive.google.com/drive/folders/1WHcpG8YlDlEdnlclbXKDZJANLX10iSq3?usp=drive_link' -O /users/a/e/aereinh/.tmp/codex-CARE/20260801_care_target_domain_race_gap_closure/i_mmseg_assets_raw
+./envs/env_CARE/bin/python -m pip install gdown
+mkdir -p third_party/I_MMSeg_PINNED/model/vit_checkpoint/imagenet21k
+mkdir -p third_party/I_MMSeg_PINNED/weights/TU_Myops128/TU_pretrain_R50-ViT-B_16_skip3_epo300_bs24_lr0.001_128
+./envs/env_CARE/bin/python -m gdown \
+  'https://drive.google.com/uc?id=1qJI7m6sM6deBZsSmcZjltHNWygRYagdD' \
+  -O third_party/I_MMSeg_PINNED/model/vit_checkpoint/imagenet21k/R50-ViT-B_16.npz \
+  --continue
+./envs/env_CARE/bin/python -m gdown \
+  'https://drive.google.com/uc?id=1niuQ5BDD1A4lX3oN-ARZ0f3NO1GxLu6F' \
+  -O third_party/I_MMSeg_PINNED/weights/TU_Myops128/TU_pretrain_R50-ViT-B_16_skip3_epo300_bs24_lr0.001_128/epoch_299.pth \
+  --continue
 ```
 
 - BiomedCLIP 运行时资产：`train.py` 调用 `open_clip.create_model_from_pretrained('hf-hub:microsoft/BiomedCLIP-PubMedBERT_256-vit_base_patch16_224')`，首次运行需要 HuggingFace 网络/缓存或预先下载缓存。
 - MyoPS380 边界：上游文档说 release agreement 需签名并从机构邮箱发送给 `donggenf@whu.edu.cn`，主题 `MyoPS380 Dataset Release Agreement`。CARE 本任务不应下载或混用 MyoPS380 作为训练数据；M2 只允许用官方 I-MMSeg 结构和公开/获批的模型资产适配 Dataset501。
-- 当前 preflight：pinned source 到位，CLIP/text prior code signal 到位，rank-channel substitute 未使用；Google Drive weights/ViT asset 尚未放置，因此正式 M2 training 仍需 asset check。
+- 当前 preflight：pinned source 到位，CLIP/text prior code signal 到位，rank-channel substitute 未使用；Google Drive ViT/checkpoint 核心资产已放置。下一步仍需实现 Dataset501 CARE adapter、确认 BiomedCLIP HuggingFace cache/网络、跑真实 M2 preflight；MyoPS380 数据集仍不得混用。
 
 ## M3_CARE_TDS
 

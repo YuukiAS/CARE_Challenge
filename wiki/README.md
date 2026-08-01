@@ -1,12 +1,12 @@
 # CARE 架构 Wiki
 
 architecture_version: `care-target-domain-gap-closure-active-after-m0r-faithful-rerun-20260801`
-latest_verified_runtime: `M3 fold2/fold3 complete in interactive allocation 61220581; M0R faithful fold2/fold3 rerun complete in interactive allocation 61220581 with AdamW warmup-cosine and 500-step checkpoint grid; M1 lane job 61576324 completed with 12 CPU/96G/12h`
-latest_scientific_status: `CONTROLLER_ACTIVE_CONTINUATION: previous interactive-lost blocked packet is superseded; M0R/M1/M3 training complete, M2 remains source-pinned asset-check-required, evaluation/aggregation/final validation still pending`
+latest_verified_runtime: `M3 fold2/fold3 complete in interactive allocation 61220581; M0R faithful fold2/fold3 rerun complete in interactive allocation 61220581 with AdamW warmup-cosine and 500-step checkpoint grid; M1 lane job 61576324 completed with 12 CPU/96G/12h; M2 source and core public weights downloaded`
+latest_scientific_status: `CONTROLLER_ACTIVE_CONTINUATION: previous interactive-lost blocked packet is superseded; M0R/M1/M3 training complete, M2 source and core assets ready but CARE adapter/preflight/training still pending, evaluation/aggregation/final validation still pending`
 latest_controller_task: `20260801_care_target_domain_race_gap_closure`
 route_status: `MAIN_ONLY_TARGET_DOMAIN_GAP_CLOSURE_ACTIVE_CONTINUATION`
 
-当前机器真值是 `prompts/routes/handoffs/CURRENT.md`。完整三模态四模型缺口闭合任务已完成 W0 启动审计；此前资源前提阻塞结论已被用户提供并经 controller 验证的 `61220581 / htzhulab / g1807htzh01` RUNNING GPU allocation 撤销。旧 M0 已重新审计为 `HIGH_LR_SHORT_FINETUNE_NEGATIVE`，不能作为忠实目标域微调负结果。当前 M3 fold2/fold3 已完成 4000-step interactive 训练；M0R 旧 fold2 job `61565286` 和 fold3 takeover PID `4039804` 已被新的 faithful rerun supersede，新的 M0R fold2/fold3 均在 `61220581` 内完成 4000 steps，receipt 记录 `AdamW`、`WarmupCosine_per_optimizer_step`、250-step warmup、cosine min lr `1e-6`，并写出 `checkpoint_step00500.pth` 到 `checkpoint_step04000.pth`。旧 M1 fold jobs `61565288`/`61565289` 因资源合同不符已取消，替换为 12 CPU/96G/12h 的 lane-level job `61576324`，该 job 已完成 fold2+fold3。takeover monitor PID `4185840` 的最终状态是 `M1_QUEUE_COMPLETED_NO_TAKEOVER_NEEDED`。M2 官方 source 已 pin，但 Google Drive ViT/model weights 未落地，因此保持 asset check，不做替代训练。`checkpoint_reload_audit.json` 已写出快速资产表：M0R/M1/M3 的 500-step checkpoint grid 齐全，状态 `PASS`；深度 torch reload/SHA256 因速度暂未完成。剩余工作是 bounded checkpoint reload/hash、inner selection、outer replay、aggregation、atlas、mapper、strict final validator、commit/push 和 notifier。
+当前机器真值是 `prompts/routes/handoffs/CURRENT.md`。完整三模态四模型缺口闭合任务已完成 W0 启动审计；此前资源前提阻塞结论已被用户提供并经 controller 验证的 `61220581 / htzhulab / g1807htzh01` RUNNING GPU allocation 撤销。旧 M0 已重新审计为 `HIGH_LR_SHORT_FINETUNE_NEGATIVE`，不能作为忠实目标域微调负结果。当前 M3 fold2/fold3 已完成 4000-step interactive 训练；M0R 旧 fold2 job `61565286` 和 fold3 takeover PID `4039804` 已被新的 faithful rerun supersede，新的 M0R fold2/fold3 均在 `61220581` 内完成 4000 steps，receipt 记录 `AdamW`、`WarmupCosine_per_optimizer_step`、250-step warmup、cosine min lr `1e-6`，并写出 `checkpoint_step00500.pth` 到 `checkpoint_step04000.pth`。旧 M1 fold jobs `61565288`/`61565289` 因资源合同不符已取消，替换为 12 CPU/96G/12h 的 lane-level job `61576324`，该 job 已完成 fold2+fold3。takeover monitor PID `4185840` 的最终状态是 `M1_QUEUE_COMPLETED_NO_TAKEOVER_NEEDED`。M2 官方 source 已 pin，Google Drive 两个公开核心权重 `R50-ViT-B_16.npz` 和 `epoch_299.pth` 已下载并记录 SHA256；MyoPS380 dataset 没有下载也不得混入 CARE 训练。`checkpoint_reload_audit.json` 已写出快速资产表：M0R/M1/M3 的 500-step checkpoint grid 齐全，状态 `PASS`；深度 torch reload/SHA256 因速度暂未完成。剩余工作是 bounded checkpoint reload/hash、inner selection、outer replay、aggregation、atlas、mapper、strict final validator、commit/push 和 notifier。
 
 ## 2026-08-01 目标域四模型缺口闭合继续执行证据
 
@@ -40,7 +40,7 @@ M3: fold2/fold3 complete 4000 steps
 M0R: old fold2 job 61565286 and fold3 takeover PID 4039804 superseded; faithful fold2/fold3 rerun completed in interactive allocation 61220581; log logs/M0RGapLane_61220581_20260801_014519.log
 M1: old fold jobs 61565288/61565289 cancelled; lane job 61576324 COMPLETED with 12 CPU/96G/12h
 takeover monitor: PID 4185840 exited as M1_QUEUE_COMPLETED_NO_TAKEOVER_NEEDED, state results/20260801_care_target_domain_race_gap_closure/interactive_takeover_monitor_state.json
-M2: source pinned, Google Drive assets required
+M2: source pinned; R50-ViT-B_16.npz and epoch_299.pth downloaded; Dataset501 adapter/preflight/training pending; MyoPS380 dataset not downloaded
 
 checkpoint asset manifest:
 results/20260801_care_target_domain_race_gap_closure/checkpoint_reload_audit.json

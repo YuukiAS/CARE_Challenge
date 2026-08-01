@@ -46,12 +46,19 @@
       "status": "TRAINING_COMPLETE_FOLD2_FOLD3_PENDING_RELOAD_AND_EVALUATION"
     },
     "M2_I_MMSEG_CARE": {
-      "google_drive_assets_required": true,
+      "google_drive_assets_required": false,
+      "core_model_assets_downloaded": true,
+      "asset_download_receipt": "results/20260801_care_target_domain_race_gap_closure/m2_i_mmseg_care/asset_download_receipt.json",
+      "vit_checkpoint_path": "third_party/I_MMSeg_PINNED/model/vit_checkpoint/imagenet21k/R50-ViT-B_16.npz",
+      "vit_checkpoint_sha256": "ff009bf39bb4f9198b834cfe46aba2bfdaf730e933ab3e3c4b1edf4226eaafbe",
+      "epoch_299_path": "third_party/I_MMSeg_PINNED/weights/TU_Myops128/TU_pretrain_R50-ViT-B_16_skip3_epo300_bs24_lr0.001_128/epoch_299.pth",
+      "epoch_299_sha256": "56a274d79638ba3dc5a44b5243e3e339702e3ec46ce0714fc2acfb1ab0835da6",
+      "myops380_dataset_downloaded": false,
       "pinned_source_at_required_commit": true,
       "rank_channel_substitute_used": false,
       "required_commit": "90f46c4eb72924509895fcda6bc6a3b8c3316e66",
       "required_source": "https://github.com/zzzzzzl24/I_MMSeg",
-      "status": "PREFLIGHT_PASS_SOURCE_READY_ASSET_CHECK_REQUIRED"
+      "status": "SOURCE_AND_CORE_ASSETS_READY_PENDING_CARE_ADAPTER_PREFLIGHT"
     },
     "M3_CARE_TDS": {
       "batch_manifest_fold2_sha256": "917a8312fd3bffdd45c1d6295ca16b04e02804639c4aec243804b799728d6d60",

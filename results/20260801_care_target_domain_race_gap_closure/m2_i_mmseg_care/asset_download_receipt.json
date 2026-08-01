@@ -1,0 +1,31 @@
+{
+  "created_at": "2026-08-01T10:27:00+00:00",
+  "download_tool": "gdown 6.1.0",
+  "folder_url": "https://drive.google.com/drive/folders/1WHcpG8YlDlEdnlclbXKDZJANLX10iSq3?usp=drive_link",
+  "lane_id": "M2_I_MMSEG_CARE",
+  "myops380_dataset_downloaded": false,
+  "notes": [
+    "Google Drive folder listing succeeded with gdown --folder --json.",
+    "Only public model assets R50-ViT-B_16.npz and epoch_299.pth were downloaded.",
+    "I_MMSeg_env.tar.gz and MyoPS380_dataset were not downloaded or used."
+  ],
+  "source_commit_required": "90f46c4eb72924509895fcda6bc6a3b8c3316e66",
+  "source_repo": "https://github.com/zzzzzzl24/I_MMSeg",
+  "status": "CORE_MODEL_ASSETS_DOWNLOADED",
+  "weights": [
+    {
+      "drive_file_id": "1qJI7m6sM6deBZsSmcZjltHNWygRYagdD",
+      "path": "third_party/I_MMSeg_PINNED/model/vit_checkpoint/imagenet21k/R50-ViT-B_16.npz",
+      "sha256": "ff009bf39bb4f9198b834cfe46aba2bfdaf730e933ab3e3c4b1edf4226eaafbe",
+      "size_bytes": 461217452,
+      "source_url": "https://drive.google.com/uc?id=1qJI7m6sM6deBZsSmcZjltHNWygRYagdD"
+    },
+    {
+      "drive_file_id": "1niuQ5BDD1A4lX3oN-ARZ0f3NO1GxLu6F",
+      "path": "third_party/I_MMSeg_PINNED/weights/TU_Myops128/TU_pretrain_R50-ViT-B_16_skip3_epo300_bs24_lr0.001_128/epoch_299.pth",
+      "sha256": "56a274d79638ba3dc5a44b5243e3e339702e3ec46ce0714fc2acfb1ab0835da6",
+      "size_bytes": 340373498,
+      "source_url": "https://drive.google.com/uc?id=1niuQ5BDD1A4lX3oN-ARZ0f3NO1GxLu6F"
+    }
+  ]
+}
