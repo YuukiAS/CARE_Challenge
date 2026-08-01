@@ -1,11 +1,14 @@
 {
-  "created_at": "2026-08-01T05:05:24.975921+00:00",
+  "created_at": "2026-08-01T05:06:25.196913+00:00",
   "interactive_job_id": "61220581",
   "interactive_state": "RUNNING",
   "m0r_interactive_pid": 4039804,
-  "m0r_interactive_pid_running": true,
+  "m0r_interactive_pid_running": false,
+  "m0r_interactive_pid_terminal_meaning": "process exited after writing fold3_training_receipt.json",
   "m1_queue_job_id": "61576324",
-  "m1_queue_state": "PENDING",
-  "poll": 1,
-  "status": "MONITORING"
+  "m1_queue_state": "COMPLETED",
+  "m1_queue_sacct_exit_code": "0:0",
+  "m1_queue_elapsed": "00:09:44",
+  "poll": 2,
+  "status": "M1_QUEUE_COMPLETED_NO_TAKEOVER_NEEDED"
 }

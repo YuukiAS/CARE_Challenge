@@ -10,11 +10,14 @@
       "batch_manifest_fold3_sha256": "2a5599328357ca35978a6577b11f38fb97df8039da94067cfd5f7cf3ffce955c",
       "optimizer": "AdamW",
       "fold2_queue_job_id": "61565286",
-      "fold2_queue_state_at_last_check": "RUNNING",
+      "fold2_queue_state_at_last_check": "COMPLETED",
+      "fold2_training_receipt": "results/20260801_care_target_domain_race_gap_closure/m0r_faithful_control/fold2_training_receipt.json",
       "fold3_cancelled_queue_job_id": "61565287",
       "fold3_interactive_takeover_pid": 4039804,
+      "fold3_interactive_takeover_pid_state": "EXITED_AFTER_COMPLETION",
+      "fold3_training_receipt": "results/20260801_care_target_domain_race_gap_closure/m0r_faithful_control/fold3_training_receipt.json",
       "scheduler": "LambdaLR_constant",
-      "status": "PREFLIGHT_PASS_READY_FOR_HTZHULAB_TRAINING",
+      "status": "TRAINING_COMPLETE_FOLD2_FOLD3_PENDING_RELOAD_AND_EVALUATION",
       "stock_parity_fold2": "PASS",
       "stock_parity_fold3": "PASS"
     },
@@ -26,11 +29,15 @@
       ],
       "lane_level_queue_job_id": "61576324",
       "lane_level_queue_resources": "htzhulab gpu=1 cpus=12 mem=96G time=12:00:00",
+      "lane_level_queue_state_at_last_check": "COMPLETED",
+      "lane_level_queue_sacct_exit_code": "0:0",
+      "fold2_training_receipt": "results/20260801_care_target_domain_race_gap_closure/m1_myopsnet_l_care/fold2_training_receipt.json",
+      "fold3_training_receipt": "results/20260801_care_target_domain_race_gap_closure/m1_myopsnet_l_care/fold3_training_receipt.json",
       "uses_t1_or_t2star_placeholders": false,
       "pinned_source_at_required_commit": true,
       "required_commit": "479f07028c5bdb12b405dc92212aa48ae6ba947a",
       "required_source": "https://github.com/QJYBall/MyoPS-Net",
-      "status": "PREFLIGHT_PASS_SOURCE_PINNED_READY_FOR_WRAPPER_TRAINING"
+      "status": "TRAINING_COMPLETE_FOLD2_FOLD3_PENDING_RELOAD_AND_EVALUATION"
     },
     "M2_I_MMSEG_CARE": {
       "google_drive_assets_required": true,
@@ -49,11 +56,11 @@
       "fold2_formal_training_steps_complete": 4000,
       "fold3_gradient_smoke": "PASS",
       "fold3_formal_training_steps_complete": 4000,
-      "status": "PREFLIGHT_PASS_READY_FOR_INTERACTIVE_TRAINING",
+      "status": "TRAINING_COMPLETE_FOLD2_FOLD3_PENDING_RELOAD_AND_EVALUATION",
       "stock_class4_5_logits_used_for_final_prediction": false
     }
   },
-  "next_scheduler_action": "keep M0R fold2 job 61565286 running and M0R fold3 interactive PID 4039804 running; if interactive frees while M1 lane job 61576324 is still pending, cancel 61576324, wait for CANCELLED accounting, and run M1 fold2+fold3 serially in allocation 61220581",
+  "next_scheduler_action": "no active lane training remains except asset-gated M2; proceed to checkpoint reload/hash audit, inner full-volume selection, outer replay, aggregation, atlas, mapper, strict validator, final packet, commit/push, and notifier",
   "task_key": "20260801_care_target_domain_race_gap_closure",
   "validation_upload_authorized": false
 }

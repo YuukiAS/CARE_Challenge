@@ -6,7 +6,9 @@
 
 此前 `OPERATIONALLY_BLOCKED_EXISTING_INTERACTIVE_LOST` packet 是过早的资源门误判，现已被用户提供并经 controller 验证的 `61220581 / htzhulab / g1807htzh01` RUNNING GPU allocation 撤销。`srun --jobid=61220581 --overlap` 的 CUDA probe 已确认该 allocation 暴露 `NVIDIA H100 NVL`。当前状态是非终局继续执行：M3 先用该 interactive GPU；M0R/M1/M2 在 preflight 后提交 `htzhulab` 队列作业；若 interactive 跑完而某个队列作业仍 pending，则取消一个 pending 作业并在 interactive allocation 中串行接力。不得把旧 blocked packet 解释为四模型全失败。
 
-截至 2026-08-01 01:04 EDT，M3 fold2/fold3 已在 `61220581` 中完成 4000-step 训练；M0R fold2 job `61565286` 正在 `htzhulab` 跑；M0R fold3 原 pending job `61565287` 已按规则取消并由 interactive allocation 接力运行，launcher PID `4039804`。旧 M1 fold jobs `61565288`/`61565289` 因资源合同不符已取消，替换为 12 CPU/96G/12h 的 lane-level job `61576324`，该 job 负责 fold2+fold3。interactive takeover monitor PID `4185840` 正在运行：若 M0R interactive 结束且 `61576324` 仍 PENDING，它会取消 `61576324`、等待 sacct CANCELLED、再用 `61220581` 跑 M1 lane。M2 source 已 pin 到 `third_party/I_MMSeg_PINNED`，但 Google Drive ViT/model weights 尚未落地，因此不得提交替代 job。
+截至 2026-08-01 当前复查，M3 fold2/fold3 已在 `61220581` 中完成 4000-step 训练；M0R fold2 job `61565286` 已 `COMPLETED 0:0` 并写出 `fold2_training_receipt.json`；M0R fold3 原 pending job `61565287` 已按规则取消，并已由 interactive allocation 接力完成 4000 steps，launcher PID `4039804` 已退出。旧 M1 fold jobs `61565288`/`61565289` 因资源合同不符已取消；替换后的 12 CPU/96G/12h lane-level job `61576324` 已 `COMPLETED 0:0` 并完成 fold2+fold3。interactive takeover monitor PID `4185840` 的最终含义是 `M1_QUEUE_COMPLETED_NO_TAKEOVER_NEEDED`：它没有取消 M1，因为 M1 已经启动并随后正常完成。M2 source 已 pin 到 `third_party/I_MMSeg_PINNED`，但 Google Drive ViT/model weights 尚未落地，因此不得提交替代 job。
+
+现在剩余的不是“再把四个模型训练一遍”，而是目标合同后半段：checkpoint reload/hash 审计、inner full-volume selection、outer deterministic replay、统一 aggregation、失败/缺口 atlas、mapper 更新、strict final validator、最终轻量 commit/push 和 notifier。M2 的缺口是外部资产缺失；M0R/M1/M3 的缺口是合同级评价与若干实现 fidelity 差距尚未补齐。
 
 ```text
 state_id: care_target_domain_gap_closure_active_after_interactive_recovery_20260801
@@ -27,13 +29,14 @@ formal_lane_training_started: true
 queue_jobs_submitted_by_this_goal: true
 interactive_steps_started_by_this_goal: true
 M3_fold2_fold3_training: complete_4000_steps_each
-M0R_fold2_job: 61565286 RUNNING
+M0R_fold2_job: 61565286 COMPLETED_0_0
 M0R_fold3_cancelled_job: 61565287 CANCELLED_FOR_INTERACTIVE_TAKEOVER
-M0R_fold3_interactive_pid: 4039804 RUNNING
+M0R_fold3_interactive_pid: 4039804 EXITED_AFTER_COMPLETION
 M1_old_fold_jobs: 61565288,61565289 CANCELLED_RESOURCE_CONTRACT_REPLACED
-M1_lane_job: 61576324 PENDING 12CPU_96G_12H
-interactive_takeover_monitor_pid: 4185840 MONITORING
+M1_lane_job: 61576324 COMPLETED_0_0 12CPU_96G_12H
+interactive_takeover_monitor_pid: 4185840 EXITED_M1_QUEUE_COMPLETED_NO_TAKEOVER_NEEDED
 M2_status: SOURCE_PINNED_ASSET_CHECK_REQUIRED
+remaining_required_work: checkpoint_reload_hash_audit, inner_full_volume_selection, outer_replay, aggregation, atlas, mapper, strict_final_validator, final_commit_push, notification
 scientific_decision: CONTROLLER_ACTIVE_CONTINUATION
 controller_verification_decision: ACTIVE_CONTINUATION
 validation_upload_authorized: false

@@ -173,6 +173,7 @@ The usual working environment is a compute node. The user also has access to the
 ### Existing interactive allocation checks
 
 When a CARE controller contract requires reusing an existing interactive allocation, the controller must check the lab partition directly before declaring the allocation missing. Do not rely only on a generic or truncated `squeue -u "$USER"` view.
+All live interactive-job checks for a lab allocation must include an `htzhulab`-scoped query, even if a specific job id was supplied. A missing row in a generic/default queue view is not evidence that the interactive job is gone.
 
 Minimum required checks:
 

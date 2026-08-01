@@ -5,10 +5,12 @@
     "job_id": "61220581",
     "launcher_log": "/users/a/e/aereinh/.tmp/codex-CARE/20260801_care_target_domain_race_gap_closure/logs/m0r_fold3_interactive_61220581_launcher.log",
     "launcher_pid": 4039804,
-    "lane": "M0R_FAITHFUL_CONTROL",
+    "last_completed_lane": "M0R_FAITHFUL_CONTROL",
+    "last_verified_at": "2026-08-01T01:20:36-04:00",
     "node": "g1807htzh01",
     "partition": "htzhulab",
-    "state": "RUNNING"
+    "state": "RUNNING",
+    "state_meaning": "allocation still usable; M0R fold3 launcher process has exited after training completion"
   },
   "interactive_completed_before_takeover": [
     {
@@ -46,7 +48,10 @@
       "lane": "M0R_FAITHFUL_CONTROL",
       "log": "logs/M0RGap_fold2_61565286_20260801_004005.log",
       "partition": "htzhulab",
-      "state_at_receipt": "RUNNING"
+      "sacct_state": "COMPLETED",
+      "sacct_exit_code": "0:0",
+      "state_at_receipt": "COMPLETED",
+      "training_receipt": "results/20260801_care_target_domain_race_gap_closure/m0r_faithful_control/fold2_training_receipt.json"
     },
     {
       "fold": 3,
@@ -56,7 +61,9 @@
       "sacct_state_after_cancel": "CANCELLED by 397557",
       "state_at_receipt": "CANCELLED_FOR_INTERACTIVE_TAKEOVER",
       "takeover_launcher_log": "/users/a/e/aereinh/.tmp/codex-CARE/20260801_care_target_domain_race_gap_closure/logs/m0r_fold3_interactive_61220581_launcher.log",
-      "takeover_launcher_pid": 4039804
+      "takeover_launcher_pid": 4039804,
+      "takeover_pid_state": "EXITED_AFTER_COMPLETION",
+      "takeover_training_receipt": "results/20260801_care_target_domain_race_gap_closure/m0r_faithful_control/fold3_training_receipt.json"
     },
     {
       "fold": 2,
@@ -84,10 +91,19 @@
       "partition": "htzhulab",
       "requested_cpus": 12,
       "requested_memory": "96G",
-      "state_at_receipt": "PENDING",
-      "time_limit": "12:00:00"
+      "sacct_state": "COMPLETED",
+      "sacct_exit_code": "0:0",
+      "elapsed": "00:09:44",
+      "node": "g1807htzh01",
+      "state_at_receipt": "COMPLETED",
+      "start_time": "2026-08-01T01:06:19-04:00",
+      "time_limit": "12:00:00",
+      "training_receipts": [
+        "results/20260801_care_target_domain_race_gap_closure/m1_myopsnet_l_care/fold2_training_receipt.json",
+        "results/20260801_care_target_domain_race_gap_closure/m1_myopsnet_l_care/fold3_training_receipt.json"
+      ]
     }
   ],
-  "scheduler_policy": "M3 completed in existing interactive allocation. M0R fold3 was still pending, so job 61565287 was cancelled, sacct confirmed CANCELLED, and M0R fold3 is now running serially in allocation 61220581. Old M1 fold-specific pending jobs 61565288/61565289 used 8 CPU/64G/8h and were cancelled; replacement M1 lane-level job 61576324 requests 12 CPU/96G/12h and runs fold2+fold3. When interactive work finishes again, if 61576324 is still pending, cancel it, wait for CANCELLED accounting, and run M1 fold2+fold3 serially in the interactive allocation.",
+  "scheduler_policy": "M3 completed first in existing interactive allocation 61220581. M0R fold2 completed as htzhulab job 61565286. M0R fold3 was still pending, so job 61565287 was cancelled, sacct confirmed CANCELLED, and fold3 completed serially inside allocation 61220581. Old M1 fold-specific pending jobs 61565288/61565289 used 8 CPU/64G/8h and were cancelled; replacement M1 lane-level job 61576324 requested 12 CPU/96G/12h, ran fold2+fold3, and completed 0:0. No takeover cancellation was needed because M1 had already started by the time the interactive monitor checked. M2 remains asset-gated; no fake substitute job was submitted.",
   "task_key": "20260801_care_target_domain_race_gap_closure"
 }
