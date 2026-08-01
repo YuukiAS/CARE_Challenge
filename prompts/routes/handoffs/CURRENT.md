@@ -1,5 +1,47 @@
 # CARE 当前开发状态
 
+## 2026-08-01 最新机器真值：四模型缺口闭合已完成本地评价，终态为 scar-only candidate
+
+完整三模态四模型缺口闭合任务已经完成 M0R/M1/M2/M3 fold2+fold3 训练、checkpoint reload 审计、inner full-volume evaluation、global source freeze 和 outer deterministic replay。旧 M0 仍只能标记为 `HIGH_LR_SHORT_FINETUNE_NEGATIVE`；本轮真正的获胜 source 是修复后的 M0R faithful control。最终科学结论不是“四个模型都失败”，也不是完整 target-domain candidate，而是 `SCAR_ONLY_CANDIDATE_READY`：scar 可作为本地候选，edema 在 CenterC sentinel 上仍明显漏检。
+
+```text
+state_id: care_target_domain_gap_closure_scar_only_candidate_20260801
+active_development_branch: main
+active_worktree: /users/a/e/aereinh/CARE
+single_active_scientific_line: CARE_TARGET_DOMAIN_GAP_CLOSURE_SCAR_ONLY_CANDIDATE_READY
+result_root: results/20260801_care_target_domain_race_gap_closure
+old_m0_classification: HIGH_LR_SHORT_FINETUNE_NEGATIVE
+existing_interactive_job_id: 61220581
+M0R_training: complete_fold2_fold3_4000_steps_each
+M1_training: 61576324_COMPLETED_0_0
+M2_training: 61627615_COMPLETED_0_0
+M3_training: complete_fold2_fold3_4000_steps_each
+inner_evaluation: complete_all_four_lanes
+global_scar_source: m0r_faithful_control_step3500
+global_edema_source: m0r_faithful_control_step4000
+outer_replay: complete_fold2_fold3_outer
+outer_scar_dice_mean: 0.6500
+outer_edema_dice_mean: 0.4340
+scientific_decision: SCAR_ONLY_CANDIDATE_READY
+validation_upload_authorized: false
+docker_upload_authorized: false
+hosted_metric_claim_authorized: false
+remaining_operational_boundary: final_validator_commit_push_remote_sha_notification
+```
+
+Key evidence:
+
+```text
+results/20260801_care_target_domain_race_gap_closure/completion_check.md
+results/20260801_care_target_domain_race_gap_closure/scientific_decision.json
+results/20260801_care_target_domain_race_gap_closure/inner_evaluation/global_source_selection.json
+results/20260801_care_target_domain_race_gap_closure/outer_replay/outer_replay_receipt.json
+results/20260801_care_target_domain_race_gap_closure/outer_replay/sentinel_case_atlas.md
+results/20260801_care_target_domain_race_gap_closure/mapper_report_final.md
+```
+
+下一步只允许 GPT Planner 基于本地 evidence 决定是否扩展 scar line、修 edema line，或停止；不得把这个结果解释成 hosted validation claim，不得自动上传 validation/Docker。
+
 ## 2026-08-01 最新机器真值：四模型缺口闭合继续执行，旧 W0 interactive-lost 阻塞已撤销
 
 完整三模态四模型缺口闭合任务已经同步到 `main` 最新合同，并完成 W0 启动审计、协议读取、SRR-v2/v2.5/v3 视觉读取、旧 M0 fidelity 审计、split 复用 hash、executor plan validator 修复和目标 validator。旧 M0 不能再解释为忠实目标域微调负结果；它实际使用 nnU-Net 默认 `SGD`、初始学习率 `1e-2`、`PolyLRScheduler` 和 16 epoch 训练，没有 500-step checkpoint 的全体积 inner selection，因此只能标记为 `HIGH_LR_SHORT_FINETUNE_NEGATIVE`。

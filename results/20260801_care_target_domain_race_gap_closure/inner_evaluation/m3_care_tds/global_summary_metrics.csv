@@ -1,0 +1,17 @@
+lane,fold,checkpoint_step,pathology,case_count,dice_mean,hd95_vox_mean,exact_hd_vox_mean,precision_mean,sensitivity_mean,lesion_recall_mean,small_lesion_recall_mean,remote_fp_count_sum,remote_fp_voxels_sum,blood_pool_adjacent_fp_count_sum,blood_pool_adjacent_fp_voxels_sum,pred_component_count_sum,gt_component_count_sum,volume_ratio_mean
+m3_care_tds,2+3,500,scar,26,0.022935203349639142,136.75003447771616,182.10307909485917,0.019172804214693452,0.034300539874611874,0.47435897435897434,0.0,10595,81343,333,2959,11055,33,1.3239310396640689
+m3_care_tds,2+3,500,pure_edema,26,0.0,,,0.0,0.0,0.0,0.0,0,0,0,0,0,260,0.0
+m3_care_tds,2+3,1000,scar,26,0.0,124.26584406022437,127.09838708654017,0.0,0.0,0.0,0.0,1,1,0,0,1,33,9.644317568088882e-06
+m3_care_tds,2+3,1000,pure_edema,26,0.0,,,0.0,0.0,0.0,0.0,0,0,0,0,0,260,0.0
+m3_care_tds,2+3,1500,scar,26,0.0,,,0.0,0.0,0.0,0.0,0,0,0,0,0,33,0.0
+m3_care_tds,2+3,1500,pure_edema,26,0.0,,,0.0,0.0,0.0,0.0,0,0,0,0,0,260,0.0
+m3_care_tds,2+3,2000,scar,26,0.0,,,0.0,0.0,0.0,0.0,0,0,0,0,0,33,0.0
+m3_care_tds,2+3,2000,pure_edema,26,0.0,,,0.0,0.0,0.0,0.0,0,0,0,0,0,260,0.0
+m3_care_tds,2+3,2500,scar,26,0.0,,,0.0,0.0,0.0,0.0,0,0,0,0,0,33,0.0
+m3_care_tds,2+3,2500,pure_edema,26,0.0,,,0.0,0.0,0.0,0.0,0,0,0,0,0,260,0.0
+m3_care_tds,2+3,3000,scar,26,0.0,,,0.0,0.0,0.0,0.0,0,0,0,0,0,33,0.0
+m3_care_tds,2+3,3000,pure_edema,26,0.0,,,0.0,0.0,0.0,0.0,0,0,0,0,0,260,0.0
+m3_care_tds,2+3,3500,scar,26,0.0,,,0.0,0.0,0.0,0.0,0,0,0,0,0,33,0.0
+m3_care_tds,2+3,3500,pure_edema,26,0.0,,,0.0,0.0,0.0,0.0,0,0,0,0,0,260,0.0
+m3_care_tds,2+3,4000,scar,26,0.0,,,0.0,0.0,0.0,0.0,0,0,0,0,0,33,0.0
+m3_care_tds,2+3,4000,pure_edema,26,0.0,,,0.0,0.0,0.0,0.0,0,0,0,0,0,260,0.0

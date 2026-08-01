@@ -1,0 +1,3 @@
+lane,fold,checkpoint_step,pathology,case_count,dice_mean,hd95_vox_mean,exact_hd_vox_mean,precision_mean,sensitivity_mean,lesion_recall_mean,small_lesion_recall_mean,remote_fp_count_sum,remote_fp_voxels_sum,blood_pool_adjacent_fp_count_sum,blood_pool_adjacent_fp_voxels_sum,pred_component_count_sum,gt_component_count_sum,volume_ratio_mean
+outer_replay_composite,2+3_outer,-1,scar,32,0.6499932386609182,6.812652520700316,14.007563754964774,0.6353289319910498,0.7263998333354355,0.9274193548387096,0.0,21,2200,308,27636,68,41,1.4718718082864968
+outer_replay_composite,2+3_outer,-1,pure_edema,32,0.43400137231012703,11.87357217164124,20.30970308404406,0.5572865903438851,0.41244935932894033,0.46977774064171124,0.21707785678373911,13,486,571,23439,329,218,0.7640723094376312

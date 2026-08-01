@@ -1,7 +1,7 @@
 {
   "errors": [],
   "known_bad_case_count_expected": 21,
-  "phase": "bootstrap",
+  "phase": "final",
   "status": "PASS",
   "warnings": []
 }
