@@ -1,0 +1,66 @@
+{
+  "created_at": "2026-08-01T12:24:22.368081+00:00",
+  "known_bad_cases": [
+    {
+      "known_bad_case": "HD vox mislabeled as mm",
+      "rejected": true
+    },
+    {
+      "known_bad_case": "small lesion defined in voxels",
+      "rejected": true
+    },
+    {
+      "known_bad_case": "M0R compared without same-case stock",
+      "rejected": true
+    },
+    {
+      "known_bad_case": "inner stock-training privilege ignored",
+      "rejected": true
+    },
+    {
+      "known_bad_case": "M2 omitted from outer because it lost inner selection",
+      "rejected": true
+    },
+    {
+      "known_bad_case": "M2 checkpoint/threshold changed after outer access",
+      "rejected": true
+    },
+    {
+      "known_bad_case": "M1 simplified wrapper called faithful negative",
+      "rejected": true
+    },
+    {
+      "known_bad_case": "M3 shallow BCE heads called faithful CARE-TDS",
+      "rejected": true
+    },
+    {
+      "known_bad_case": "GT anatomy enters inference",
+      "rejected": true
+    },
+    {
+      "known_bad_case": "outer-driven source selection",
+      "rejected": true
+    },
+    {
+      "known_bad_case": "empty-GT cases inflate pathology mean",
+      "rejected": true
+    },
+    {
+      "known_bad_case": "validator PASS substitutes scientific gate",
+      "rejected": true
+    },
+    {
+      "known_bad_case": "CURRENT/wiki retain scar-only candidate after same-case negative",
+      "rejected": true
+    },
+    {
+      "known_bad_case": "new training or new Slurm job launched",
+      "rejected": true
+    },
+    {
+      "known_bad_case": "notify before push or nonterminal notify",
+      "rejected": true
+    }
+  ],
+  "status": "PASS"
+}

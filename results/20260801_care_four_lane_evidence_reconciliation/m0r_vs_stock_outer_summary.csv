@@ -1,0 +1,3 @@
+pathology,m0r_checkpoint_step,m0r_dice_positive_gt_mean,stock_dice_positive_gt_mean,delta_dice_positive_gt_mean,m0r_hd95_mm_positive_gt_mean,stock_hd95_mm_positive_gt_mean,delta_hd95_mm_positive_gt_mean,harm_fraction,help_count,harm_count,neutral_count
+scar,3500,0.671004084046672,0.673015974528387,-0.0020118904817150174,19.605292055432987,19.20850293642443,0.39678911900855596,0.28125,11,9,12
+pure_edema,4000,0.4357112616240192,0.4658254398274189,-0.030114178203399733,22.099011276484813,19.713855418343208,2.385155858141605,0.53125,9,17,6

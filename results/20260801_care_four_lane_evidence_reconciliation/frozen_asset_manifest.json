@@ -1,0 +1,170 @@
+{
+  "created_at": "2026-08-01T12:13:45.035613+00:00",
+  "hash_algorithm": "sha256",
+  "missing_records": [],
+  "records": [
+    {
+      "exists": true,
+      "path": "/users/a/e/aereinh/CARE/data/nnUNet/nnUNet_results/Dataset501_CAREMyoPS/nnUNetTrainer_500epochs__nnUNetPlans__3d_fullres/fold_2/checkpoint_final.pth",
+      "role": "stock_nnunet_fold2_checkpoint",
+      "sha256": "31470ab242055b0af5c783f0f522bc8e490199cb2b4d42f5d0cefffb41de019b",
+      "size_bytes": 357381493
+    },
+    {
+      "exists": true,
+      "path": "/users/a/e/aereinh/.tmp/codex-CARE/20260801_care_target_domain_race_gap_closure/m0r_faithful_control/nnUNet_results/Dataset501_CAREMyoPS/nnUNetTrainerGapClosureM0R4000__nnUNetPlans__3d_fullres/fold_2/checkpoint_step03500.pth",
+      "role": "m0r_fold2_scar_selected_checkpoint",
+      "sha256": "6e8168d1971a412b9d4a3b92c13b37654568825ef807c788f82933eda81957ac",
+      "size_bytes": 535639243
+    },
+    {
+      "exists": true,
+      "path": "/users/a/e/aereinh/.tmp/codex-CARE/20260801_care_target_domain_race_gap_closure/m0r_faithful_control/nnUNet_results/Dataset501_CAREMyoPS/nnUNetTrainerGapClosureM0R4000__nnUNetPlans__3d_fullres/fold_2/checkpoint_step04000.pth",
+      "role": "m0r_fold2_pure_edema_selected_checkpoint",
+      "sha256": "6a9b342e3d456080da2ba932d29cbabd4f7a88a680aeaf64b91927766a2884b9",
+      "size_bytes": 535640523
+    },
+    {
+      "exists": true,
+      "path": "/users/a/e/aereinh/.tmp/codex-CARE/20260801_care_target_domain_race_gap_closure/m2_i_mmseg_care/fold2/checkpoints/checkpoint_step04500.pt",
+      "role": "m2_fold2_scar_selected_checkpoint",
+      "sha256": "3a914b4e3c403887b2a83b227b16bfb84fb53f06d2612f84b823a1f54545f840",
+      "size_bytes": 940421333
+    },
+    {
+      "exists": true,
+      "path": "/users/a/e/aereinh/.tmp/codex-CARE/20260801_care_target_domain_race_gap_closure/m2_i_mmseg_care/fold2/checkpoints/checkpoint_step02500.pt",
+      "role": "m2_fold2_pure_edema_selected_checkpoint",
+      "sha256": "834d2f44b292dc7d85f45a835f0be649856472ca23680e6eb6459fce018157a8",
+      "size_bytes": 940421333
+    },
+    {
+      "exists": true,
+      "path": "/users/a/e/aereinh/.tmp/codex-CARE/20260801_care_target_domain_race_gap_closure/m1_myopsnet_l_care/fold2/checkpoints/checkpoint_step04000.pt",
+      "role": "m1_myopsnet_l_care_fold2_scar_inner_selected_checkpoint",
+      "sha256": "5bbc7c0611c86858a88aadb167029caea02f4f6e0de350ab0c49141c601e0178",
+      "size_bytes": 1431987085
+    },
+    {
+      "exists": true,
+      "path": "/users/a/e/aereinh/.tmp/codex-CARE/20260801_care_target_domain_race_gap_closure/m1_myopsnet_l_care/fold2/checkpoints/checkpoint_step04500.pt",
+      "role": "m1_myopsnet_l_care_fold2_pure_edema_inner_selected_checkpoint",
+      "sha256": "174d457b34df7e82222df4a7c28d012790c10e40b2046f94481ad3b3c90542da",
+      "size_bytes": 1431987085
+    },
+    {
+      "exists": true,
+      "path": "/users/a/e/aereinh/.tmp/codex-CARE/20260801_care_target_domain_race_gap_closure/m3_care_tds/fold2/checkpoints/checkpoint_step00500.pt",
+      "role": "m3_care_tds_fold2_scar_inner_selected_checkpoint",
+      "sha256": "de299fdf9b2a84147553c582bbcac1d44f95605b8fe6569753773cc6c755fbc5",
+      "size_bytes": 180031661
+    },
+    {
+      "exists": true,
+      "path": "/users/a/e/aereinh/.tmp/codex-CARE/20260801_care_target_domain_race_gap_closure/m3_care_tds/fold2/checkpoints/checkpoint_step00500.pt",
+      "role": "m3_care_tds_fold2_pure_edema_inner_selected_checkpoint",
+      "sha256": "de299fdf9b2a84147553c582bbcac1d44f95605b8fe6569753773cc6c755fbc5",
+      "size_bytes": 180031661
+    },
+    {
+      "exists": true,
+      "path": "/users/a/e/aereinh/CARE/data/nnUNet/nnUNet_results/Dataset501_CAREMyoPS/nnUNetTrainer_500epochs__nnUNetPlans__3d_fullres/fold_3/checkpoint_final.pth",
+      "role": "stock_nnunet_fold3_checkpoint",
+      "sha256": "0c27009930261c93a4890c66aa7f88f226a5f8b32a3358e43dd10d357b6fdeb8",
+      "size_bytes": 357381813
+    },
+    {
+      "exists": true,
+      "path": "/users/a/e/aereinh/.tmp/codex-CARE/20260801_care_target_domain_race_gap_closure/m0r_faithful_control/nnUNet_results/Dataset501_CAREMyoPS/nnUNetTrainerGapClosureM0R4000__nnUNetPlans__3d_fullres/fold_3/checkpoint_step03500.pth",
+      "role": "m0r_fold3_scar_selected_checkpoint",
+      "sha256": "3f62a3a9878bf977bc60275d3701bc478c852e123ae3f75d161a4f676d4287c1",
+      "size_bytes": 535639243
+    },
+    {
+      "exists": true,
+      "path": "/users/a/e/aereinh/.tmp/codex-CARE/20260801_care_target_domain_race_gap_closure/m0r_faithful_control/nnUNet_results/Dataset501_CAREMyoPS/nnUNetTrainerGapClosureM0R4000__nnUNetPlans__3d_fullres/fold_3/checkpoint_step04000.pth",
+      "role": "m0r_fold3_pure_edema_selected_checkpoint",
+      "sha256": "1d821b043f4dae1d5df15463729b3764e106becc142ecdab2bfd223f73871294",
+      "size_bytes": 535640523
+    },
+    {
+      "exists": true,
+      "path": "/users/a/e/aereinh/.tmp/codex-CARE/20260801_care_target_domain_race_gap_closure/m2_i_mmseg_care/fold3/checkpoints/checkpoint_step04500.pt",
+      "role": "m2_fold3_scar_selected_checkpoint",
+      "sha256": "d322300ea2cce88dd3b97db393eca2849c5e135d796dcf3ec3a254b7168df4fe",
+      "size_bytes": 940421333
+    },
+    {
+      "exists": true,
+      "path": "/users/a/e/aereinh/.tmp/codex-CARE/20260801_care_target_domain_race_gap_closure/m2_i_mmseg_care/fold3/checkpoints/checkpoint_step02500.pt",
+      "role": "m2_fold3_pure_edema_selected_checkpoint",
+      "sha256": "6eaef91a1e21323fbdb91572dfa5c16661c4105b11d236939ed05e0ddca9128a",
+      "size_bytes": 940421333
+    },
+    {
+      "exists": true,
+      "path": "/users/a/e/aereinh/.tmp/codex-CARE/20260801_care_target_domain_race_gap_closure/m1_myopsnet_l_care/fold3/checkpoints/checkpoint_step04000.pt",
+      "role": "m1_myopsnet_l_care_fold3_scar_inner_selected_checkpoint",
+      "sha256": "b54f5c19818bd6c57bddff9517d334bf160346988b41ba09563bead1a548d650",
+      "size_bytes": 1431987085
+    },
+    {
+      "exists": true,
+      "path": "/users/a/e/aereinh/.tmp/codex-CARE/20260801_care_target_domain_race_gap_closure/m1_myopsnet_l_care/fold3/checkpoints/checkpoint_step04500.pt",
+      "role": "m1_myopsnet_l_care_fold3_pure_edema_inner_selected_checkpoint",
+      "sha256": "1eebd41c2c2a6ee0129755969726f75d86463aa6b5e5ec6b72814ec030d976c5",
+      "size_bytes": 1431987085
+    },
+    {
+      "exists": true,
+      "path": "/users/a/e/aereinh/.tmp/codex-CARE/20260801_care_target_domain_race_gap_closure/m3_care_tds/fold3/checkpoints/checkpoint_step00500.pt",
+      "role": "m3_care_tds_fold3_scar_inner_selected_checkpoint",
+      "sha256": "bcf4c82f37f89a0a14e61b3d792b390f633945b60fc2d229b5b05075666d9e42",
+      "size_bytes": 180031661
+    },
+    {
+      "exists": true,
+      "path": "/users/a/e/aereinh/.tmp/codex-CARE/20260801_care_target_domain_race_gap_closure/m3_care_tds/fold3/checkpoints/checkpoint_step00500.pt",
+      "role": "m3_care_tds_fold3_pure_edema_inner_selected_checkpoint",
+      "sha256": "bcf4c82f37f89a0a14e61b3d792b390f633945b60fc2d229b5b05075666d9e42",
+      "size_bytes": 180031661
+    },
+    {
+      "exists": true,
+      "path": "/users/a/e/aereinh/CARE/results/20260801_care_target_domain_race_gap_closure/split_receipt_copy.json",
+      "role": "split_receipt_copy",
+      "sha256": "c54ea68d132595ec3cf17a60665b67c7d0d41752715605fcd8bf4459bda94689",
+      "size_bytes": 3693
+    },
+    {
+      "exists": true,
+      "path": "/users/a/e/aereinh/CARE/scripts/evaluation/four_lane_reconciliation/evaluate_frozen_outer.py",
+      "role": "evaluation_script",
+      "sha256": "1de9ee07c949fdbda4ace9cfe0e35fbb412124011599b95146201f7153b0e85f",
+      "size_bytes": 43613
+    },
+    {
+      "exists": true,
+      "path": "/users/a/e/aereinh/CARE/scripts/validation/validate_four_lane_evidence_reconciliation.py",
+      "role": "validation_script",
+      "sha256": "a28a7d7bdd34ee66b4f6721553b6970ff2bf6cc095ba326708c19e31f6d2f625",
+      "size_bytes": 12295
+    },
+    {
+      "exists": true,
+      "path": "/users/a/e/aereinh/CARE/scripts/evaluation/target_domain_gap_closure/evaluate_inner_lanes.py",
+      "role": "source_prediction_helper",
+      "sha256": "9a8c8fdab271aa994f90943dc85f613684d107f75ff939f4be2c64ff9b00fb1a",
+      "size_bytes": 26248
+    },
+    {
+      "exists": true,
+      "path": "/users/a/e/aereinh/CARE/scripts/evaluation/target_domain_gap_closure/replay_outer_composition.py",
+      "role": "source_stock_helper",
+      "sha256": "61f4a8f56007819bae0f72b73aad628ef669be09ae0fd4f06ce808160934552d",
+      "size_bytes": 7307
+    }
+  ],
+  "source_task_key": "20260801_care_target_domain_race_gap_closure",
+  "task_key": "20260801_care_four_lane_evidence_reconciliation"
+}

@@ -1,0 +1,10 @@
+{
+  "aggregation_complete": true,
+  "controller_verification_decision": "VERIFIED_COMPLETE",
+  "created_at": "2026-08-01T12:16:00+00:00",
+  "finalizer_status": "READY_FOR_LOCAL_PACKET_COMMIT",
+  "new_slurm_job": false,
+  "new_training": false,
+  "result_root": "results/20260801_care_four_lane_evidence_reconciliation",
+  "scientific_decision": "FOUR_LANE_EVIDENCE_CORRECTED_NO_CANDIDATE"
+}

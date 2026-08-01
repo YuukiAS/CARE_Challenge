@@ -1,21 +1,52 @@
 # CARE 架构 Wiki
 
-architecture_version: `care-target-domain-gap-closure-scar-only-candidate-20260801`
-latest_verified_runtime: `M0R/M1/M2/M3 fold2+fold3 training complete; checkpoint reload audit PASS; all four lanes inner full-volume evaluation complete; global sources frozen from fold2+fold3 inner only; outer deterministic replay complete`
-latest_scientific_status: `SCAR_ONLY_CANDIDATE_READY: M0R won global scar step3500 and edema step4000 source selection; outer scar Dice mean 0.6500, outer edema Dice mean 0.4340; edema remains weak on CenterC sentinel cases`
-latest_controller_task: `20260801_care_target_domain_race_gap_closure`
-route_status: `MAIN_ONLY_TARGET_DOMAIN_GAP_CLOSURE_SCAR_ONLY_CANDIDATE_READY`
+architecture_version: `care-four-lane-evidence-reconciled-no-candidate-20260801`
+latest_verified_runtime: `M0R/M1/M2/M3 frozen fold2+fold3 evidence reconciled; same-case stock comparison complete; M2 outer replay complete; physical-space metric correction complete`
+latest_scientific_status: `FOUR_LANE_EVIDENCE_CORRECTED_NO_CANDIDATE: M0R did not beat same-case stock on outer scar or edema, and M2 did not pass scar/edema packaging gates`
+latest_controller_task: `20260801_care_four_lane_evidence_reconciliation`
+route_status: `MAIN_ONLY_FOUR_LANE_RECONCILIATION_RETURN_TO_PLANNER`
 
-当前机器真值是 `prompts/routes/handoffs/CURRENT.md`。完整三模态四模型缺口闭合任务已经完成本地训练和评价闭环：M0R/M1/M2/M3 都完成 fold2+fold3 训练，checkpoint reload 审计通过，inner full-volume evaluation 完成，global source selection 只使用 fold2+fold3 inner 汇总，outer deterministic replay 已完成。旧 M0 已重新审计为 `HIGH_LR_SHORT_FINETUNE_NEGATIVE`，不能作为忠实目标域微调负结果。最终本地科学结论为 `SCAR_ONLY_CANDIDATE_READY`；不得解释为 hosted validation claim，也不得自动上传 validation 或 Docker。
+当前机器真值是 `prompts/routes/handoffs/CURRENT.md`。最新四模型证据纠偏已经完成：M0R 与同病例 stock nnU-Net 的 outer 对比为负，M2 补做 outer 后也没有达到候选门槛；M1/M3 的失败被归类为实现不忠实导致的负结果，而不是对应论文路线的科学失败。旧的 scar-only 候选说法已撤销；不得解释为 hosted validation claim，也不得自动上传 validation 或 Docker。
 
-## 2026-08-01 目标域四模型缺口闭合终态证据
+## 2026-08-01 四模型证据纠偏终态
+
+```text
+result_root:
+results/20260801_care_four_lane_evidence_reconciliation
+
+scientific_decision:
+FOUR_LANE_EVIDENCE_CORRECTED_NO_CANDIDATE
+
+M0R same-case stock comparison:
+scar Dice delta -0.0020118904817150174
+pure-edema Dice delta -0.030114178203399733
+
+M2 outer gate:
+scar gate false, Dice delta -0.05011471399535905
+pure-edema gate false, Dice delta 0.018926404811234976, harm fraction 0.46875
+
+metric correction:
+HD95 and exact HD are reported in mm from nnU-Net preprocessing properties; small lesion uses physical volume <1000 mm3.
+```
+
+关键证据：
+
+```text
+results/20260801_care_four_lane_evidence_reconciliation/controller_report.md
+results/20260801_care_four_lane_evidence_reconciliation/four_lane_scientific_interpretation.md
+results/20260801_care_four_lane_evidence_reconciliation/m0r_vs_stock_outer_summary.csv
+results/20260801_care_four_lane_evidence_reconciliation/m2_vs_stock_outer_summary.csv
+results/20260801_care_four_lane_evidence_reconciliation/strict_validator_report.json
+```
+
+## 2026-08-01 已撤销历史证据：目标域四模型缺口闭合曾标记候选
 
 ```text
 result_root:
 results/20260801_care_target_domain_race_gap_closure
 
 scientific_decision:
-SCAR_ONLY_CANDIDATE_READY
+superseded_scar_only_candidate_label
 
 global scar source:
 m0r_faithful_control checkpoint_step03500

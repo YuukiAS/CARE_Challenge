@@ -1,0 +1,40 @@
+{
+  "created_at": "2026-08-01T12:15:37.606525+00:00",
+  "docker_upload_authorized": false,
+  "hosted_metric_claim_authorized": false,
+  "m0r_edema_delta_dice_vs_stock": -0.030114178203399733,
+  "m0r_scar_delta_dice_vs_stock": -0.0020118904817150174,
+  "m2_gate_rows": [
+    {
+      "case3008_delta_dice": -0.21828140904966903,
+      "case3009_delta_dice": -0.15263383684436316,
+      "delta_dice_positive_gt_mean": -0.05011471399535905,
+      "delta_hd95_mm_positive_gt_mean": -1.789971749201964,
+      "delta_precision_positive_gt_mean": -0.0380339710955343,
+      "delta_sensitivity_positive_gt_mean": -0.05633589137491257,
+      "gate_pass": false,
+      "harm_fraction": 0.59375,
+      "m2_checkpoint_step": 4500,
+      "m2_dice_positive_gt_mean": 0.622901260533028,
+      "pathology": "scar",
+      "stock_dice_positive_gt_mean": 0.673015974528387
+    },
+    {
+      "case3008_delta_dice": 0.05714548724937546,
+      "case3009_delta_dice": 0.1899092772713395,
+      "delta_dice_positive_gt_mean": 0.018926404811234976,
+      "delta_hd95_mm_positive_gt_mean": -1.3052110167901532,
+      "delta_precision_positive_gt_mean": -0.039615645212274786,
+      "delta_sensitivity_positive_gt_mean": 0.08930561630936024,
+      "gate_pass": false,
+      "harm_fraction": 0.46875,
+      "m2_checkpoint_step": 2500,
+      "m2_dice_positive_gt_mean": 0.4847518446386539,
+      "pathology": "pure_edema",
+      "stock_dice_positive_gt_mean": 0.4658254398274189
+    }
+  ],
+  "old_decision_superseded": "SCAR_ONLY_CANDIDATE_READY",
+  "scientific_decision": "FOUR_LANE_EVIDENCE_CORRECTED_NO_CANDIDATE",
+  "validation_upload_authorized": false
+}

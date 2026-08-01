@@ -1,0 +1,25 @@
+{
+  "blueprint_losses_implemented": "partial_BCE_and_containment_only",
+  "blueprint_patch_batch_manifests_used": "partial_batch_manifest_only",
+  "code_evidence": {
+    "bce_loss_used": true,
+    "component_tversky_absent": true,
+    "mil_absent": true,
+    "remote_fp_loss_absent": true,
+    "stock_requires_grad_false": true
+  },
+  "created_at": "2026-08-01T12:13:45.049489+00:00",
+  "decision": "M3_IMPLEMENTATION_NEGATIVE_NOT_SCIENTIFIC",
+  "hard_negative_mask_in_loss": "missing",
+  "interpretation": "The observed low M3 metrics describe a shallow detached-head implementation, not a faithful CARE-TDS scientific negative.",
+  "missing_blueprint_losses": [
+    "Dice",
+    "Focal",
+    "component-Tversky",
+    "MIL",
+    "remote-FP",
+    "boundary-distance"
+  ],
+  "only_shallow_bce_heads": "yes",
+  "stock_encoder_decoder_frozen": "stock adapter parameters require_grad false"
+}

@@ -1,0 +1,20 @@
+{
+  "actual_input_size": "2D center crop 128x128",
+  "code_evidence": {
+    "contains_center_crop_dim_128": true,
+    "contains_mask_c0_argmax_detach": true,
+    "contains_nll_loss": true
+  },
+  "created_at": "2026-08-01T12:13:45.049468+00:00",
+  "decision": "M1_IMPLEMENTATION_NEGATIVE_NOT_SCIENTIFIC",
+  "full_volume_reconstruction_training": "missing_slice_center_crop_training_only",
+  "hard_argmax_anatomy_mask_used": "yes",
+  "injury_or_pure_edema_target_matches_contract": "partial_pure_edema_label4_only_no_injury_inclusiveness",
+  "interpretation": "The adapter used pinned MyoPS-Net components but did not faithfully implement the full official CMFF/MPC and pathology-inclusiveness training contract.",
+  "lesion_balanced_sampling": "missing",
+  "loss": "NLL losses over C0 segmentation plus binary scar and edema decoders",
+  "official_cmff_mpc_pathology_inclusiveness_used": "partial",
+  "optimizer": "Adam",
+  "scar_target_matches_care_label5": "yes",
+  "spatial_intensity_augmentation": "missing"
+}

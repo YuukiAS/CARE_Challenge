@@ -1,14 +1,50 @@
 # CARE 当前开发状态
 
-## 2026-08-01 最新机器真值：四模型缺口闭合已完成本地评价，终态为 scar-only candidate
+## 2026-08-01 最新机器真值：四模型证据纠偏后无本地候选
 
-完整三模态四模型缺口闭合任务已经完成 M0R/M1/M2/M3 fold2+fold3 训练、checkpoint reload 审计、inner full-volume evaluation、global source freeze 和 outer deterministic replay。旧 M0 仍只能标记为 `HIGH_LR_SHORT_FINETUNE_NEGATIVE`；本轮真正的获胜 source 是修复后的 M0R faithful control。最终科学结论不是“四个模型都失败”，也不是完整 target-domain candidate，而是 `SCAR_ONLY_CANDIDATE_READY`：scar 可作为本地候选，edema 在 CenterC sentinel 上仍明显漏检。
+本次重新评价把旧结论中最关键的漏洞补上了：M0R 必须和同病例 stock nnU-Net 比较，M2 不能因为 inner selection 失败就省略 outer 评价，距离和小病灶指标也不能再用体素单位冒充物理单位。纠偏后，M0R 在真正未见的 fold2+fold3 outer 病例上没有超过同病例 stock；M2 的 scar 明显低于 stock，edema 虽略高但没有达到候选门槛且损害比例过高。因此旧的 scar-only 候选说法已撤销，当前应回到 Planner 决定下一步，不得上传 validation、Docker 或声称 hosted 指标。
+
+```text
+state_id: care_four_lane_evidence_reconciled_no_candidate_20260801
+active_development_branch: main
+active_worktree: /users/a/e/aereinh/CARE
+single_active_scientific_line: CARE_FOUR_LANE_RECONCILIATION_RETURN_TO_PLANNER
+result_root: results/20260801_care_four_lane_evidence_reconciliation
+previous_decision_superseded: superseded_scar_only_candidate_label
+scientific_decision: FOUR_LANE_EVIDENCE_CORRECTED_NO_CANDIDATE
+M0R_outer_scar_delta_vs_stock_dice: -0.0020118904817150174
+M0R_outer_edema_delta_vs_stock_dice: -0.030114178203399733
+M2_outer_scar_delta_vs_stock_dice: -0.05011471399535905
+M2_outer_edema_delta_vs_stock_dice: 0.018926404811234976
+M2_scar_gate_pass: false
+M2_edema_gate_pass: false
+controller_verification_decision: VERIFIED_COMPLETE
+validation_upload_authorized: false
+docker_upload_authorized: false
+hosted_metric_claim_authorized: false
+```
+
+关键证据：
+
+```text
+results/20260801_care_four_lane_evidence_reconciliation/four_lane_scientific_interpretation.md
+results/20260801_care_four_lane_evidence_reconciliation/m0r_vs_stock_outer_summary.csv
+results/20260801_care_four_lane_evidence_reconciliation/m2_vs_stock_outer_summary.csv
+results/20260801_care_four_lane_evidence_reconciliation/inner_stock_privilege_audit.csv
+results/20260801_care_four_lane_evidence_reconciliation/m1_fidelity_audit.json
+results/20260801_care_four_lane_evidence_reconciliation/m3_fidelity_audit.json
+results/20260801_care_four_lane_evidence_reconciliation/strict_validator_report.json
+```
+
+## 2026-08-01 已撤销历史状态：四模型缺口闭合本地评价曾标记 scar-only 候选
+
+完整三模态四模型缺口闭合任务曾完成 M0R/M1/M2/M3 fold2+fold3 训练、checkpoint reload 审计、inner full-volume evaluation、global source freeze 和 outer deterministic replay。旧 M0 仍只能标记为 `HIGH_LR_SHORT_FINETUNE_NEGATIVE`；当时的获胜 source 是修复后的 M0R faithful control。该段只保留历史脉络；候选判断已被上方四模型证据纠偏结果撤销。
 
 ```text
 state_id: care_target_domain_gap_closure_scar_only_candidate_20260801
 active_development_branch: main
 active_worktree: /users/a/e/aereinh/CARE
-single_active_scientific_line: CARE_TARGET_DOMAIN_GAP_CLOSURE_SCAR_ONLY_CANDIDATE_READY
+single_active_scientific_line: CARE_TARGET_DOMAIN_GAP_CLOSURE_SUPERSEDED_SCAR_ONLY_CANDIDATE_LABEL
 result_root: results/20260801_care_target_domain_race_gap_closure
 old_m0_classification: HIGH_LR_SHORT_FINETUNE_NEGATIVE
 existing_interactive_job_id: 61220581
@@ -22,7 +58,7 @@ global_edema_source: m0r_faithful_control_step4000
 outer_replay: complete_fold2_fold3_outer
 outer_scar_dice_mean: 0.6500
 outer_edema_dice_mean: 0.4340
-scientific_decision: SCAR_ONLY_CANDIDATE_READY
+scientific_decision: superseded_scar_only_candidate_label
 validation_upload_authorized: false
 docker_upload_authorized: false
 hosted_metric_claim_authorized: false

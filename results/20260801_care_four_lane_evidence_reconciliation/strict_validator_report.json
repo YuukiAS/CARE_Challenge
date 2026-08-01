@@ -1,0 +1,233 @@
+{
+  "checks": [
+    {
+      "detail": "/users/a/e/aereinh/CARE/results/20260801_care_four_lane_evidence_reconciliation/controller_context.json",
+      "name": "required_file:controller_context.json",
+      "passed": true
+    },
+    {
+      "detail": "/users/a/e/aereinh/CARE/results/20260801_care_four_lane_evidence_reconciliation/frozen_asset_manifest.json",
+      "name": "required_file:frozen_asset_manifest.json",
+      "passed": true
+    },
+    {
+      "detail": "/users/a/e/aereinh/CARE/results/20260801_care_four_lane_evidence_reconciliation/metric_contract.json",
+      "name": "required_file:metric_contract.json",
+      "passed": true
+    },
+    {
+      "detail": "/users/a/e/aereinh/CARE/results/20260801_care_four_lane_evidence_reconciliation/inner_stock_privilege_audit.csv",
+      "name": "required_file:inner_stock_privilege_audit.csv",
+      "passed": true
+    },
+    {
+      "detail": "/users/a/e/aereinh/CARE/results/20260801_care_four_lane_evidence_reconciliation/m0r_vs_stock_outer_casewise.csv",
+      "name": "required_file:m0r_vs_stock_outer_casewise.csv",
+      "passed": true
+    },
+    {
+      "detail": "/users/a/e/aereinh/CARE/results/20260801_care_four_lane_evidence_reconciliation/m0r_vs_stock_outer_summary.csv",
+      "name": "required_file:m0r_vs_stock_outer_summary.csv",
+      "passed": true
+    },
+    {
+      "detail": "/users/a/e/aereinh/CARE/results/20260801_care_four_lane_evidence_reconciliation/m2_outer_casewise.csv",
+      "name": "required_file:m2_outer_casewise.csv",
+      "passed": true
+    },
+    {
+      "detail": "/users/a/e/aereinh/CARE/results/20260801_care_four_lane_evidence_reconciliation/m2_vs_stock_outer_summary.csv",
+      "name": "required_file:m2_vs_stock_outer_summary.csv",
+      "passed": true
+    },
+    {
+      "detail": "/users/a/e/aereinh/CARE/results/20260801_care_four_lane_evidence_reconciliation/sentinel_case_comparison.csv",
+      "name": "required_file:sentinel_case_comparison.csv",
+      "passed": true
+    },
+    {
+      "detail": "/users/a/e/aereinh/CARE/results/20260801_care_four_lane_evidence_reconciliation/m1_fidelity_audit.json",
+      "name": "required_file:m1_fidelity_audit.json",
+      "passed": true
+    },
+    {
+      "detail": "/users/a/e/aereinh/CARE/results/20260801_care_four_lane_evidence_reconciliation/m3_fidelity_audit.json",
+      "name": "required_file:m3_fidelity_audit.json",
+      "passed": true
+    },
+    {
+      "detail": "/users/a/e/aereinh/CARE/results/20260801_care_four_lane_evidence_reconciliation/four_lane_scientific_interpretation.md",
+      "name": "required_file:four_lane_scientific_interpretation.md",
+      "passed": true
+    },
+    {
+      "detail": "/users/a/e/aereinh/CARE/results/20260801_care_four_lane_evidence_reconciliation/scientific_decision.json",
+      "name": "required_file:scientific_decision.json",
+      "passed": true
+    },
+    {
+      "detail": "/users/a/e/aereinh/CARE/results/20260801_care_four_lane_evidence_reconciliation/controller_report.md",
+      "name": "required_file:controller_report.md",
+      "passed": true
+    },
+    {
+      "detail": "/users/a/e/aereinh/CARE/results/20260801_care_four_lane_evidence_reconciliation/completion_check.md",
+      "name": "required_file:completion_check.md",
+      "passed": true
+    },
+    {
+      "detail": "/users/a/e/aereinh/CARE/results/20260801_care_four_lane_evidence_reconciliation/MANIFEST.md",
+      "name": "required_file:MANIFEST.md",
+      "passed": true
+    },
+    {
+      "detail": "mm",
+      "name": "metric_distance_units_mm",
+      "passed": true
+    },
+    {
+      "detail": "hd95_mm",
+      "name": "metric_hd95_field_mm",
+      "passed": true
+    },
+    {
+      "detail": "exact_hd_mm",
+      "name": "metric_exact_hd_field_mm",
+      "passed": true
+    },
+    {
+      "detail": "1000.0",
+      "name": "small_lesion_volume_mm3",
+      "passed": true
+    },
+    {
+      "detail": "10.0",
+      "name": "remote_fp_physical_distance",
+      "passed": true
+    },
+    {
+      "detail": "candidate_blood_pool_adjacent_fp_count,candidate_checkpoint_step,candidate_dice,candidate_exact_hd_mm,candidate_hd95_mm,candidate_lane,candidate_lesion_recall,candidate_precision,candidate_remote_fp_count,candidate_remote_fp_volume_mm3,candidate_sensitivity,candidate_small_lesion_recall,candidate_volume_ratio,case_id,delta_dice,delta_hd95_mm,delta_precision,delta_sensitivity,fold,help_harm_neutral,pathology,stock_blood_pool_adjacent_fp_count,stock_dice,stock_exact_hd_mm,stock_hd95_mm,stock_lesion_recall,stock_precision,stock_remote_fp_count,stock_remote_fp_volume_mm3,stock_sensitivity,stock_small_lesion_recall,stock_volume_ratio",
+      "name": "m0r_vs_stock_outer_casewise.csv:no_vox_distance_headers",
+      "passed": true
+    },
+    {
+      "detail": "candidate_blood_pool_adjacent_fp_count,candidate_checkpoint_step,candidate_dice,candidate_exact_hd_mm,candidate_hd95_mm,candidate_lane,candidate_lesion_recall,candidate_precision,candidate_remote_fp_count,candidate_remote_fp_volume_mm3,candidate_sensitivity,candidate_small_lesion_recall,candidate_volume_ratio,case_id,delta_dice,delta_hd95_mm,delta_precision,delta_sensitivity,fold,help_harm_neutral,pathology,stock_blood_pool_adjacent_fp_count,stock_dice,stock_exact_hd_mm,stock_hd95_mm,stock_lesion_recall,stock_precision,stock_remote_fp_count,stock_remote_fp_volume_mm3,stock_sensitivity,stock_small_lesion_recall,stock_volume_ratio",
+      "name": "m0r_vs_stock_outer_casewise.csv:has_hd95_mm",
+      "passed": true
+    },
+    {
+      "detail": "candidate_blood_pool_adjacent_fp_count,candidate_checkpoint_step,candidate_dice,candidate_exact_hd_mm,candidate_hd95_mm,candidate_lane,candidate_lesion_recall,candidate_precision,candidate_remote_fp_count,candidate_remote_fp_volume_mm3,candidate_sensitivity,candidate_small_lesion_recall,candidate_volume_ratio,case_id,delta_dice,delta_hd95_mm,delta_precision,delta_sensitivity,fold,help_harm_neutral,pathology,stock_blood_pool_adjacent_fp_count,stock_dice,stock_exact_hd_mm,stock_hd95_mm,stock_lesion_recall,stock_precision,stock_remote_fp_count,stock_remote_fp_volume_mm3,stock_sensitivity,stock_small_lesion_recall,stock_volume_ratio",
+      "name": "m2_outer_casewise.csv:no_vox_distance_headers",
+      "passed": true
+    },
+    {
+      "detail": "candidate_blood_pool_adjacent_fp_count,candidate_checkpoint_step,candidate_dice,candidate_exact_hd_mm,candidate_hd95_mm,candidate_lane,candidate_lesion_recall,candidate_precision,candidate_remote_fp_count,candidate_remote_fp_volume_mm3,candidate_sensitivity,candidate_small_lesion_recall,candidate_volume_ratio,case_id,delta_dice,delta_hd95_mm,delta_precision,delta_sensitivity,fold,help_harm_neutral,pathology,stock_blood_pool_adjacent_fp_count,stock_dice,stock_exact_hd_mm,stock_hd95_mm,stock_lesion_recall,stock_precision,stock_remote_fp_count,stock_remote_fp_volume_mm3,stock_sensitivity,stock_small_lesion_recall,stock_volume_ratio",
+      "name": "m2_outer_casewise.csv:has_hd95_mm",
+      "passed": true
+    },
+    {
+      "detail": "rows=64",
+      "name": "m0r_casewise_64_rows",
+      "passed": true
+    },
+    {
+      "detail": "rows=64",
+      "name": "m2_casewise_64_rows",
+      "passed": true
+    },
+    {
+      "detail": "[{'pathology': 'scar', 'm0r_checkpoint_step': '3500', 'm0r_dice_positive_gt_mean': '0.671004084046672', 'stock_dice_positive_gt_mean': '0.673015974528387', 'delta_dice_positive_gt_mean': '-0.0020118904817150174', 'm0r_hd95_mm_positive_gt_mean': '19.605292055432987', 'stock_hd95_mm_positive_gt_mean': '19.20850293642443', 'delta_hd95_mm_positive_gt_mean': '0.39678911900855596', 'harm_fraction': '0.28125', 'help_count': '11', 'harm_count': '9', 'neutral_count': '12'}, {'pathology': 'pure_edema', 'm0r_checkpoint_step': '4000', 'm0r_dice_positive_gt_mean': '0.4357112616240192', 'stock_dice_positive_gt_mean': '0.4658254398274189', 'delta_dice_positive_gt_mean': '-0.030114178203399733', 'm0r_hd95_mm_positive_gt_mean': '22.099011276484813', 'stock_hd95_mm_positive_gt_mean': '19.713855418343208', 'delta_hd95_mm_positive_gt_mean': '2.385155858141605', 'harm_fraction': '0.53125', 'help_count': '9', 'harm_count': '17', 'neutral_count': '6'}]",
+      "name": "m0r_summary_two_pathologies",
+      "passed": true
+    },
+    {
+      "detail": "[{'pathology': 'scar', 'm2_checkpoint_step': '4500', 'm2_dice_positive_gt_mean': '0.622901260533028', 'stock_dice_positive_gt_mean': '0.673015974528387', 'delta_dice_positive_gt_mean': '-0.05011471399535905', 'delta_hd95_mm_positive_gt_mean': '-1.789971749201964', 'delta_sensitivity_positive_gt_mean': '-0.05633589137491257', 'delta_precision_positive_gt_mean': '-0.0380339710955343', 'harm_fraction': '0.59375', 'case3008_delta_dice': '-0.21828140904966903', 'case3009_delta_dice': '-0.15263383684436316', 'gate_pass': 'False'}, {'pathology': 'pure_edema', 'm2_checkpoint_step': '2500', 'm2_dice_positive_gt_mean': '0.4847518446386539', 'stock_dice_positive_gt_mean': '0.4658254398274189', 'delta_dice_positive_gt_mean': '0.018926404811234976', 'delta_hd95_mm_positive_gt_mean': '-1.3052110167901532', 'delta_sensitivity_positive_gt_mean': '0.08930561630936024', 'delta_precision_positive_gt_mean': '-0.039615645212274786', 'harm_fraction': '0.46875', 'case3008_delta_dice': '0.05714548724937546', 'case3009_delta_dice': '0.1899092772713395', 'gate_pass': 'False'}]",
+      "name": "m2_summary_two_pathologies",
+      "passed": true
+    },
+    {
+      "detail": "cases=['Case2019', 'Case2021', 'Case2034', 'Case3008', 'Case3009']",
+      "name": "sentinel_cases_present",
+      "passed": true
+    },
+    {
+      "detail": "{'pathology': 'scar', 'm0r_checkpoint_step': '3500', 'm0r_dice_positive_gt_mean': '0.671004084046672', 'stock_dice_positive_gt_mean': '0.673015974528387', 'delta_dice_positive_gt_mean': '-0.0020118904817150174', 'm0r_hd95_mm_positive_gt_mean': '19.605292055432987', 'stock_hd95_mm_positive_gt_mean': '19.20850293642443', 'delta_hd95_mm_positive_gt_mean': '0.39678911900855596', 'harm_fraction': '0.28125', 'help_count': '11', 'harm_count': '9', 'neutral_count': '12'}",
+      "name": "m0r_scar_delta_recorded",
+      "passed": true
+    },
+    {
+      "detail": "-0.0020118904817150174",
+      "name": "m0r_scar_not_inherited_if_below_stock",
+      "passed": true
+    },
+    {
+      "detail": "{'pathology': 'scar', 'm2_checkpoint_step': '4500', 'm2_dice_positive_gt_mean': '0.622901260533028', 'stock_dice_positive_gt_mean': '0.673015974528387', 'delta_dice_positive_gt_mean': '-0.05011471399535905', 'delta_hd95_mm_positive_gt_mean': '-1.789971749201964', 'delta_sensitivity_positive_gt_mean': '-0.05633589137491257', 'delta_precision_positive_gt_mean': '-0.0380339710955343', 'harm_fraction': '0.59375', 'case3008_delta_dice': '-0.21828140904966903', 'case3009_delta_dice': '-0.15263383684436316', 'gate_pass': 'False'}",
+      "name": "m2_scar_gate_bool",
+      "passed": true
+    },
+    {
+      "detail": "{'pathology': 'pure_edema', 'm2_checkpoint_step': '2500', 'm2_dice_positive_gt_mean': '0.4847518446386539', 'stock_dice_positive_gt_mean': '0.4658254398274189', 'delta_dice_positive_gt_mean': '0.018926404811234976', 'delta_hd95_mm_positive_gt_mean': '-1.3052110167901532', 'delta_sensitivity_positive_gt_mean': '0.08930561630936024', 'delta_precision_positive_gt_mean': '-0.039615645212274786', 'harm_fraction': '0.46875', 'case3008_delta_dice': '0.05714548724937546', 'case3009_delta_dice': '0.1899092772713395', 'gate_pass': 'False'}",
+      "name": "m2_pure_edema_gate_bool",
+      "passed": true
+    },
+    {
+      "detail": "rows=52 fold_case_pairs=26 unique_keys=52",
+      "name": "inner_privilege_rows_present",
+      "passed": true
+    },
+    {
+      "detail": "{'True'}",
+      "name": "inner_privilege_seen_by_stock_training_recorded",
+      "passed": true
+    },
+    {
+      "detail": "stock and M0R metric columns populated",
+      "name": "inner_stock_metrics_present",
+      "passed": true
+    },
+    {
+      "detail": "M1_IMPLEMENTATION_NEGATIVE_NOT_SCIENTIFIC",
+      "name": "m1_implementation_negative_not_scientific",
+      "passed": true
+    },
+    {
+      "detail": "M3_IMPLEMENTATION_NEGATIVE_NOT_SCIENTIFIC",
+      "name": "m3_implementation_negative_not_scientific",
+      "passed": true
+    },
+    {
+      "detail": "FOUR_LANE_EVIDENCE_CORRECTED_NO_CANDIDATE",
+      "name": "allowed_scientific_decision",
+      "passed": true
+    },
+    {
+      "detail": "SCAR_ONLY_CANDIDATE_READY",
+      "name": "old_decision_superseded",
+      "passed": true
+    },
+    {
+      "detail": "CURRENT.md must not retain old candidate token",
+      "name": "current_no_scar_only_ready",
+      "passed": true
+    },
+    {
+      "detail": "wiki/README.md must not retain old candidate token",
+      "name": "wiki_no_scar_only_ready",
+      "passed": true
+    },
+    {
+      "detail": "CURRENT.md references reconciliation packet",
+      "name": "current_mentions_reconciliation_task",
+      "passed": true
+    },
+    {
+      "detail": "wiki/README.md references reconciliation packet",
+      "name": "wiki_mentions_reconciliation_task",
+      "passed": true
+    }
+  ],
+  "created_at": "2026-08-01T12:24:22.370330+00:00",
+  "known_bad_status": "PASS",
+  "phase": "final",
+  "status": "PASS"
+}

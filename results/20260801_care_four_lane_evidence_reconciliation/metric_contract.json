@@ -1,0 +1,20 @@
+{
+  "blood_pool_adjacent_fp_threshold_mm": 2.0,
+  "created_at": "2026-08-01T12:13:35.757858+00:00",
+  "distance_units": "mm",
+  "empty_gt_policy": "casewise metrics retained; summaries separate all-case and positive-GT denominators",
+  "evaluation_only_gt_anatomy_use": "GT blood pool is used only for error stratification, never for model inference",
+  "exact_hd_field": "exact_hd_mm",
+  "forbidden_metric_semantics": [
+    "HD vox mislabeled as mm",
+    "small lesion defined in voxels",
+    "empty-GT cases mixed into pathology mean without denominator fields"
+  ],
+  "hd95_field": "hd95_mm",
+  "metric_status": "CORRECTED_PHYSICAL_SPACE",
+  "prediction_grid": "preprocessed_grid_with_physical_spacing_from_properties",
+  "remote_fp_distance_threshold_mm": 10.0,
+  "small_lesion_definition": "component physical volume < 1000 mm3",
+  "small_lesion_volume_threshold_mm3": 1000.0,
+  "spacing_source": "data/nnUNet/nnUNet_preprocessed/Dataset501_CAREMyoPS/nnUNetPlans_3d_fullres/<case>.pkl:spacing"
+}
