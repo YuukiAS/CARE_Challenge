@@ -1,15 +1,18 @@
 {
-  "blocked_or_failure_reason": "SUPERSEDED: 之前的blocked邮件依据错误的interactive查询；用户提供并controller验证了61220581 / htzhulab / g1807htzh01可用。",
-  "commit_status": "superseded_by_followup_commit_pending",
+  "blocked_or_failure_reason": "none",
+  "commit_status": "result packet commit 9140ac7ba983b7f9576789da9887fdbd55fb3829 pushed to origin/main; notification evidence follow-up commit will record this mail step",
   "evidence_paths": [
-    "results/20260801_care_target_domain_race_gap_closure/blocker_superseded_by_user_override.md",
-    "results/20260801_care_target_domain_race_gap_closure/existing_interactive_receipt.json",
-    "results/20260801_care_target_domain_race_gap_closure/scientific_decision.json"
+    "results/20260801_care_target_domain_race_gap_closure/completion_check.md",
+    "results/20260801_care_target_domain_race_gap_closure/scientific_decision.json",
+    "results/20260801_care_target_domain_race_gap_closure/inner_evaluation/global_source_selection.json",
+    "results/20260801_care_target_domain_race_gap_closure/outer_replay/outer_replay_receipt.json",
+    "results/20260801_care_target_domain_race_gap_closure/outer_replay/sentinel_case_atlas.md",
+    "results/20260801_care_target_domain_race_gap_closure/strict_validator_report.json"
   ],
-  "final_status": "superseded_nonterminal",
-  "key_conclusion": "旧W0 blocked通知已撤销为历史错误包；当前controller继续执行四模型缺口闭合，不能再把该任务解释成全模型失败或资源终局阻塞。",
-  "next_step": "继续M0R/M1/M2/M3实现、preflight和htzhulab调度；终局complete或真实blocked后再按既有notifier写合法notification_brief.json。",
-  "push_status": "superseded_by_followup_commit_pending",
-  "slurm_terminal_status": "usable existing interactive allocation verified: job 61220581, htzhulab, g1807htzh01, NVIDIA H100 NVL",
-  "task_name": "20260801_care_target_domain_race_gap_closure"
+  "final_status": "complete",
+  "key_conclusion": "四个模型通道都已完成训练或控制评估、内层全checkpoint选择和外层确定性回放；M0R控制通道同时赢得scar与edema来源选择。结论不是全模型失败，而是scar-only candidate ready：scar可作为候选继续推进，edema在CenterC哨兵病例仍弱，不能声称完整target-domain候选成功；本轮未授权validation upload、Docker upload或hosted metric claim。",
+  "next_step": "交回GPT Planner：决定是否围绕M0R scar候选扩展，或单独修复edema的CenterC弱点；不要把本地outer replay解释成官方验证分数。",
+  "push_status": "origin/main verified at 9140ac7ba983b7f9576789da9887fdbd55fb3829 before notification follow-up commit",
+  "slurm_terminal_status": "M1 job 61576324 COMPLETED 0:0; M2 job 61627615 COMPLETED 0:0; M0R and M3 completed inside existing htzhulab interactive allocation 61220581 on g1807htzh01; allocation 61220581 is still active but no longer gates this task's terminal evidence.",
+  "task_name": "20260801_care_target_domain_race_gap_closure_final_complete_after_superseded_block"
 }
