@@ -1,0 +1,19 @@
+{
+  "blocked_or_failure_reason": "none",
+  "commit_status": "initial_packet_commit_pushed:170c4f31b16ef8b84cef4901f17e2acc5fd54cc2",
+  "evidence_paths": [
+    "results/20260801_care_four_lane_evidence_reconciliation/controller_report.md",
+    "results/20260801_care_four_lane_evidence_reconciliation/scientific_decision.json",
+    "results/20260801_care_four_lane_evidence_reconciliation/strict_validator_report.json",
+    "results/20260801_care_four_lane_evidence_reconciliation/m0r_vs_stock_outer_summary.csv",
+    "results/20260801_care_four_lane_evidence_reconciliation/m2_vs_stock_outer_summary.csv",
+    "prompts/routes/handoffs/CURRENT.md",
+    "wiki/README.md"
+  ],
+  "final_status": "complete",
+  "key_conclusion": "四条路线证据已按物理毫米距离和外层病例重新核对；本地没有可继承为验证打包候选的模型，M1/M3 只算实现负例，M0R/M2 均未通过相对 stock 的外层证据门槛。",
+  "next_step": "返回 Planner 决定是否另开新假设；当前任务未授权 validation、Docker、hosted claim 或新训练。",
+  "push_status": "origin_main_verified:170c4f31b16ef8b84cef4901f17e2acc5fd54cc2",
+  "slurm_terminal_status": "not_applicable_existing_allocation_reused_for_frozen_inference_only_no_new_slurm_submission",
+  "task_name": "20260801_care_four_lane_evidence_reconciliation"
+}

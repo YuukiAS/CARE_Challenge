@@ -81,6 +81,11 @@
       "passed": true
     },
     {
+      "detail": "/users/a/e/aereinh/CARE/results/20260801_care_four_lane_evidence_reconciliation/notification_brief.json",
+      "name": "required_file:notification_brief.json",
+      "passed": true
+    },
+    {
       "detail": "mm",
       "name": "metric_distance_units_mm",
       "passed": true
@@ -224,10 +229,25 @@
       "detail": "wiki/README.md references reconciliation packet",
       "name": "wiki_mentions_reconciliation_task",
       "passed": true
+    },
+    {
+      "detail": "missing=[]",
+      "name": "notification_required_fields",
+      "passed": true
+    },
+    {
+      "detail": "complete",
+      "name": "notification_final_status_terminal",
+      "passed": true
+    },
+    {
+      "detail": "forbidden nonterminal tokens absent",
+      "name": "notification_no_nonterminal_tokens",
+      "passed": true
     }
   ],
-  "created_at": "2026-08-01T12:24:22.370330+00:00",
+  "created_at": "2026-08-01T12:26:15.014985+00:00",
   "known_bad_status": "PASS",
-  "phase": "final",
+  "phase": "post_notify",
   "status": "PASS"
 }
