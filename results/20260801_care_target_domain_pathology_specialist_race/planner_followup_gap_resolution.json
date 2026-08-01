@@ -1,0 +1,85 @@
+{
+  "task_key": "20260801_care_target_domain_pathology_specialist_race",
+  "created_at": "2026-08-01",
+  "created_for": "GPT planner follow-up",
+  "corrected_interpretation": "M0 completed formal fold2/fold3 training/evaluation and underperformed stock nnU-Net. M1, M2, and M3 did not complete formal model evaluation; they exposed implementation or external-asset gaps.",
+  "supersedes_planning_interpretation_of_commit": "9f302fe",
+  "not_authorized": [
+    "validation_packaging",
+    "validation_upload",
+    "hosted_metric_claim",
+    "route_promotion"
+  ],
+  "lanes": {
+    "M0_TD_NNUNET": {
+      "formal_training_credit": true,
+      "status": "COMPLETED_NEGATIVE_CONTROL",
+      "mean_delta_vs_stock": {
+        "class_4_edema": -0.03446206219674072,
+        "class_5_scar": -0.04316733008374579,
+        "foreground_mean": -0.02234850424867657
+      },
+      "evidence": [
+        "results/20260801_care_target_domain_pathology_specialist_race/m0_td_nnunet/m0_vs_stock_outer_summary.csv",
+        "results/20260801_care_target_domain_pathology_specialist_race/m0_td_nnunet/m0_vs_stock_outer_summary.json"
+      ],
+      "next_action": "Do not upload; keep as negative control unless planner requires M0 rerun for batch-descriptor proof."
+    },
+    "M1_MYOPSNET_L_CARE": {
+      "formal_training_credit": false,
+      "status": "PREFLIGHT_NEEDS_IMPLEMENTATION",
+      "local_source": "third_party/MyoPS-Net",
+      "official_source": "https://github.com/QJYBall/MyoPS-Net",
+      "remote_pin_checked": "479f07028c5bdb12b405dc92212aa48ae6ba947a",
+      "blocking_gaps": [
+        "CARE complete-trimodal C0/LGE/T2 exporter",
+        "full-volume training wrapper",
+        "split binding to fold2/fold3 target-domain protocol",
+        "full-volume reconstruction",
+        "CARE evaluator integration"
+      ],
+      "next_action": "Pin/audit official source, implement CARE adapter/wrapper, run one-case preflight, then formal fold2/fold3."
+    },
+    "M2_I_MMSEG_CARE": {
+      "formal_training_credit": false,
+      "status": "LANE_BLOCKED_EXTERNAL_ASSET",
+      "official_source": "https://github.com/zzzzzzl24/I_MMSeg",
+      "publication": {
+        "pmid": "41967142",
+        "doi": "10.1016/j.media.2026.104072"
+      },
+      "remote_pin_checked": "90f46c4eb72924509895fcda6bc6a3b8c3316e66",
+      "google_drive_asset_folder": "https://drive.google.com/drive/folders/1WHcpG8YlDlEdnlclbXKDZJANLX10iSq3?usp=drive_link",
+      "required_assets_from_readme": [
+        "I_MMSeg_env.tar.gz",
+        "R50-ViT-B_16.npz",
+        "epoch_299.pth",
+        "MyoPS380 dataset raw + processed, available upon approval"
+      ],
+      "blocking_gaps": [
+        "third_party/I_MMSeg_PINNED missing",
+        "official assets not downloaded/pinned",
+        "CARE C0/LGE/T2 adapter missing",
+        "official intensity-prior/text-feature pathway not validated"
+      ],
+      "next_action": "Download/pin official source/assets first; if Drive approval blocks, report ASSET_APPROVAL_REQUIRED and continue M3/M1."
+    },
+    "M3_CARE_TDS": {
+      "formal_training_credit": false,
+      "status": "PREFLIGHT_NEEDS_IMPLEMENTATION",
+      "external_asset_required": false,
+      "preflight_positive_evidence": "fold2/fold3 stock parity PASS",
+      "blocking_gaps": [
+        "independent scar head",
+        "pure-edema head",
+        "injury support head",
+        "boundary or distance-transform head",
+        "direct-gradient pathology losses",
+        "matched batch descriptor hash",
+        "known-bad rejection for stock-logit shortcut"
+      ],
+      "next_action": "Implement CARE-TDS first, run preflight gates, then formal fold2/fold3 if gates pass."
+    }
+  },
+  "recommended_planner_instruction": "Treat commit 9f302fe as M0 complete no-go plus M1/M2/M3 gap audit, not four-model terminal failure. Authorize M3 implementation first, M1 wrapper second, and M2 only after official I_MMSeg assets are pinned. No validation upload or hosted metric claim."
+}
